@@ -1779,3 +1779,19 @@ Function WB_KillParameterWaves(stimset)
 
 	return 1
 End
+
+/// @brief Kill (custom) stimset
+Function WB_KillStimset(stimset)
+   string stimset
+
+   DFREF setDFR = GetSetFolder(GetStimSetType(stimset))
+   WAVE/Z/SDFR=setDFR wv = $stimset
+
+   if(!WaveExists(wv))
+	   return 1
+   endif
+
+   KillOrMoveToTrash(wv=wv)
+
+   return 1
+End

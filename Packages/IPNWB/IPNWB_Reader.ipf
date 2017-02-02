@@ -53,6 +53,22 @@ Function/S ReadStimulus(fileID)
 	return H5_ListGroups(fileID, "/stimulus/presentation")
 End
 
+/// @brief List all stimsets
+///
+/// @param  fileID identifier of open HDF5 file
+/// @return        comma separated list of contents of the stimset group
+Function/S ReadStimsets(fileID)
+	variable fileID
+
+	ASSERT(H5_IsFileOpen(fileID), "given HDF5 file identifier is not valid")
+
+	if(!IPNWB#StimsetPathExists(fileID))
+		return ""
+	endif
+
+	return H5_ListGroupMembers(fileID, PATH_STIMSETS)
+End
+
 /// @brief Check if the file can be handled by the IPNWB Read Procedures
 ///
 /// @param   fileID  Open HDF5-File Identifier
@@ -354,4 +370,15 @@ Function OpenStimulus(fileID)
 	variable fileID
 
 	return H5_OpenGroup(fileID, "/stimulus/presentation")
+End
+
+/// @brief Open hdf5 group containing stimsets
+///
+/// @param fileID id of an open hdf5 group or file
+///
+/// @return id of hdf5 group
+Function OpenStimset(fileID)
+	variable fileID
+
+	return H5_OpenGroup(fileID, "/general/stimsets")
 End

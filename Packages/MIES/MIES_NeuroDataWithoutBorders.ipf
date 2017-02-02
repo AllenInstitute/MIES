@@ -802,6 +802,266 @@ static Function NWB_WriteStimsetTemplateWaves(locationID, stimSet, chunkedLayout
 	HDF5CloseGroup groupID
 End
 
+/// @brief Load specified stimset from Stimset Group
+///
+/// @param locationID   id of an open hdf5 group containing the stimsets
+/// @param stimset      string of stimset
+/// @param verbose      [optional] set to get more output to the command line
+/// @param overwrite    indicate whether the stored stimsets should be deleted if they exist
+///
+/// @return 1 on error
+static Function NWB_LoadStimset(locationID, stimset, overwrite, [verbose])
+	variable locationID, overwrite, verbose
+	string stimset
+
+	variable stimsetType
+	string NWBstimsets, WP_name, WPT_name, SegWvType_name
+
+	if(ParamIsDefault(verbose))
+		verbose = 0
+	endif
+
+	// check if parameter waves exist
+	if(!overwrite && WB_ParameterWavesExist(stimset))
+		if(verbose > 0)
+			printf "stimmset %s exists with parameter waves\r", stimset
+			ControlWindowToFront()
+		endif
+		return 0
+	endif
+
+	// check if custom stimset exists
+	if(!overwrite && WB_StimsetExists(stimset))
+		WB_KillParameterWaves(stimset)
+		if(verbose > 0)
+			printf "stimmset %s exists as third party stimset\r", stimset
+			ControlWindowToFront()
+		endif
+		return 0
+	endif
+
+	WB_KillParameterWaves(stimset)
+	WB_KillStimset(stimset)
+
+	// load stimsets with parameter waves
+	stimsetType = GetStimSetType(stimset)
+	DFREF paramDFR = GetSetParamFolder(stimsetType)
+
+	// convert stimset name to upper case
+	NWBstimsets = IPNWB#H5_ListGroupMembers(locationID, "./")
+	WP_name = WB_GetParameterWaveName(stimset, STIMSET_PARAM_WP, nwbFormat = 1)
+	WP_name = StringFromList(WhichListItem(WP_name, NWBstimsets, ";", 0, 0), NWBstimsets)
+	WPT_name = WB_GetParameterWaveName(stimset, STIMSET_PARAM_WPT, nwbFormat = 1)
+	WPT_name = StringFromList(WhichListItem(WPT_name, NWBstimsets, ";", 0, 0), NWBstimsets)
+	SegWvType_name = WB_GetParameterWaveName(stimset, STIMSET_PARAM_SEGWVTYPE, nwbFormat = 1)
+	SegWvType_name = StringFromList(WhichListItem(SegWvType_name, NWBstimsets, ";", 0, 0), NWBstimsets)
+
+	WAVE/Z   WP        = IPNWB#H5_LoadDataset(locationID, WP_name)
+	WAVE/Z/T WPT       = IPNWB#H5_LoadDataset(locationID, WPT_name)
+	WAVE/Z   SegWVType = IPNWB#H5_LoadDataset(locationID, SegWvType_name)
+	if(WaveExists(WP) && WaveExists(WPT) && WaveExists(SegWvType))
+		MoveWave WP,        paramDFR:$(WB_GetParameterWaveName(stimset, STIMSET_PARAM_WP))
+		MoveWave WPT,       paramDFR:$(WB_GetParameterWaveName(stimset, STIMSET_PARAM_WPT))
+		MoveWave SegWVType, paramDFR:$(WB_GetParameterWaveName(stimset, STIMSET_PARAM_SEGWVTYPE))
+	endif
+
+	if(WB_ParameterWavesExist(stimset))
+		return 0
+	endif
+
+	// load custom stimset if previous load failed
+	WB_KillParameterWaves(stimset)
+
+	if(IPNWB#H5_DatasetExists(locationID, stimset))
+		WAVE/Z wv = IPNWB#H5_LoadDataset(locationID, stimset)
+		if(!WaveExists(wv))
+			DFREF setDFR = GetSetParamFolder(stimsetType)
+			MoveWave wv setDFR
+			return 0
+		endif
+	endif
+
+	printf "Could not load stimset %s from NWB file.\r", stimset
+	ControlWindowToFront()
+
+	return 1
+End
+
+/// @brief Load a custom wave from NWB file
+///
+/// loads waves that were saved by NWB_WriteStimsetCustomWave
+///
+/// @param locationID  open file or group from nwb file
+/// @param fullPath    full Path in igor notation to custom wave
+/// @param overwrite   indicate whether the stored custom wave should be deleted if it exists
+///
+/// @return 1 on error and 0 on success
+Function NWB_LoadCustomWave(locationID, fullPath, overwrite)
+	variable locationID, overwrite
+	string fullPath
+
+	string pathInNWB
+
+	WAVE/Z wv = $fullPath
+	if(WaveExists(wv))
+		if(overwrite)
+			KillOrMoveToTrash(wv=wv)
+		else
+			return 0
+		endif
+	endif
+
+	pathInNWB = RemovePrefix(fullPath, startStr = "root:")
+	pathInNWB = ReplaceString(":", pathInNWB, "/")
+	pathInNWB = "/general/stimsets/referenced/" + pathInNWB
+
+	if(!IPNWB#H5_DatasetExists(locationID, pathInNWB))
+		printf "custom wave \t%s not found in current NWB file on location \t%s\r", fullPath, pathInNWB
+		return 1
+	endif
+
+	WAVE wv = IPNWB#H5_LoadDataset(locationID, pathInNWB)
+	DFREF dfr = createDFWithAllParents(GetFolder(fullPath))
+	MoveWave wv dfr
+
+	return 0
+End
+
+/// @brief Load all stimsets from specified HDF5 file.
+///
+/// @param overwrite   [optional] indicate if the stored stimset should be deleted before the load.
+/// @return 1 on error and 0 on success
+Function NWB_LoadAllStimsets([overwrite])
+	variable overwrite
+
+	variable fileID, groupID, error, numStimsets, i, refNum
+	string stimsets, stimset, suffix, fullPath
+
+	if(ParamIsDefault(overwrite))
+		overwrite = 0
+	else
+		overwrite = !!overwrite
+	endif
+
+	Open/D/R/M="Load all stimulus sets"/F="NWB Files:*.nwb;All Files:.*;" refNum
+
+	if(IsEmpty(S_fileName))
+		return NaN
+	endif
+
+	fullPath = S_fileName
+
+	fileID = IPNWB#H5_OpenFile(fullPath)
+
+	if(!IPNWB#StimsetPathExists(fileID))
+		printf "no stimsets present in %s\r", fullPath
+		return 1
+	endif
+
+	stimsets = IPNWB#ReadStimsets(fileID)
+	if(ItemsInList(stimsets) == 0)
+		return 0
+	endif
+
+	// merge stimset Parameter Waves to one unique entry in stimsets list
+	sprintf suffix, "_%s;", GetWaveBuilderParameterTypeName(STIMSET_PARAM_WP)
+	stimsets = ReplaceString(suffix, stimsets, ";")
+	sprintf suffix, "_%s;", GetWaveBuilderParameterTypeName(STIMSET_PARAM_WPT)
+	stimsets = ReplaceString(suffix, stimsets, ";")
+	sprintf suffix, "_%s;", GetWaveBuilderParameterTypeName(STIMSET_PARAM_SEGWVTYPE)
+	stimsets = ReplaceString(suffix, stimsets, ";")
+	WAVE/T wv = ListToTextWave(stimsets, ";")
+	stimsets = TextWaveToList(GetUniqueTextEntries(wv, caseSensitive = 0), ";")
+
+	groupID = IPNWB#OpenStimset(fileID)
+	numStimsets = ItemsInList(stimsets)
+	for(i = 0; i < numStimsets; i += 1)
+		stimset = StringFromList(i, stimsets)
+		if(NWB_LoadStimset(groupID, stimset, overwrite, verbose = 1))
+			printf "error loading stimset %s\r", stimset
+			error = 1
+		endif
+	endfor
+	NWB_LoadCustomWaves(groupID, stimsets, overwrite)
+	HDF5CloseGroup/Z groupID
+	return error
+End
+
+/// @brief Load specified stimsets and their dependencies from NWB file
+///
+/// see AB_LoadStimsets() for similar structure
+///
+/// @param groupID           Open Stimset Group of HDF5 File. See IPNWB#OpenStimset()
+/// @param stimsets          ";" separated list of all stimsets of the current sweep.
+/// @param processedStimsets [optional] the list indicates which stimsets were already loaded.
+///                          on recursion this parameter avoids duplicate circle references.
+/// @param overwrite         indicate whether the stored stimsets should be deleted if they exist
+///
+/// @return 1 on error and 0 on success
+Function NWB_LoadStimsets(groupID, stimsets, overwrite, [processedStimsets])
+	variable groupID, overwrite
+	string stimsets, processedStimsets
+
+	string stimset, totalStimsets, newStimsets, oldStimsets
+	variable numBefore, numMoved, numAfter, numNewStimsets, i
+
+	if(ParamIsDefault(processedStimsets))
+		processedStimsets = ""
+	endif
+
+	totalStimsets = stimsets + processedStimsets
+	numBefore = ItemsInList(totalStimsets)
+
+	// load first order stimsets
+	numNewStimsets = ItemsInList(stimsets)
+	for(i = 0; i < numNewStimsets; i += 1)
+		stimset = StringFromList(i, stimsets)
+		if(NWB_LoadStimset(groupID, stimset, overwrite))
+			if(ItemsInList(processedStimsets) == 0)
+				continue
+			endif
+			return 1
+		endif
+		numMoved += WB_StimsetFamilyNames(totalStimsets, parent = stimset)
+	endfor
+	numAfter = ItemsInList(totalStimsets)
+
+	// load next order stimsets
+	numNewStimsets = numAfter - numBefore + numMoved
+	if(numNewStimsets > 0)
+		newStimsets = ListFromList(totalStimsets, 0, numNewStimsets - 1)
+		oldStimsets = ListFromList(totalStimsets, numNewStimsets, inf)
+		return NWB_LoadStimsets(groupID, newStimsets, overwrite, processedStimsets = oldStimsets)
+	endif
+
+	return 0
+End
+
+/// @brief Load custom waves for specified stimset from Igor experiment file
+///
+/// see AB_LoadCustomWaves() for similar structure
+///
+/// @return 1 on error and 0 on success
+Function NWB_LoadCustomWaves(groupID, stimsets, overwrite)
+	variable groupID, overwrite
+	string stimsets
+
+	string custom_waves
+	variable numWaves, i
+
+	stimsets = WB_StimsetRecursionForList(stimsets)
+	WAVE/T cw = WB_CustomWavesPathFromStimSet(stimsetList = stimsets)
+
+	numWaves = DimSize(cw, ROWS)
+	for(i = 0; i < numWaves; i += 1)
+		if(NWB_LoadCustomWave(groupID, cw[i], overwrite))
+			return 1
+		endif
+	endfor
+
+	return 0
+End
+
 static Function NWB_GetTimeSeriesProperties(p, tsp)
 	STRUCT IPNWB#WriteChannelParams &p
 	STRUCT IPNWB#TimeSeriesProperties &tsp
