@@ -479,20 +479,23 @@ static Function/WAVE WB_MakeWaveBuilderWave(WP, WPT, SegWvType, stepCount, numEp
 			case EPOCH_TYPE_PULSE_TRAIN:
 				params.randomSeed = WB_InitializeSeed(WP, i, type, stepCount)
 
+				Make/FREE/D/N=(MINIMUM_WAVE_SIZE) pulseStartTimes
+
 				if(WP[46][i][type]) // "Number of pulses" checkbox
-					WB_PulseTrainSegment(params, PULSE_TRAIN_MODE_PULSE)
+					WB_PulseTrainSegment(params, PULSE_TRAIN_MODE_PULSE, pulseStartTimes)
 					if(windowExists("WaveBuilder") && GetTabID("WaveBuilder", "WBP_WaveType") == EPOCH_TYPE_PULSE_TRAIN)
 						WBP_UpdateControlAndWP("SetVar_WaveBuilder_P0", params.duration)
 					endif
 					defMode = "Pulse"
 				else
-					WB_PulseTrainSegment(params, PULSE_TRAIN_MODE_DUR)
+					WB_PulseTrainSegment(params, PULSE_TRAIN_MODE_DUR, pulseStartTimes)
 					if(windowExists("WaveBuilder") && GetTabID("WaveBuilder", "WBP_WaveType") == EPOCH_TYPE_PULSE_TRAIN)
 						WBP_UpdateControlAndWP("SetVar_WaveBuilder_P45", params.numberOfPulses)
 					endif
 					defMode = "Duration"
 				endif
 
+				pulseStartTimes[] += accumulatedDuration
 
 				AddEntryIntoWaveNoteAsList(WaveBuilderWave, "Duration"               , var=params.Duration)
 				AddEntryIntoWaveNoteAsList(WaveBuilderWave, "Amplitude"              , var=params.Amplitude)
@@ -504,6 +507,7 @@ static Function/WAVE WB_MakeWaveBuilderWave(WP, WPT, SegWvType, stepCount, numEp
 				AddEntryIntoWaveNoteAsList(WaveBuilderWave, "Number of pulses"       , var=params.NumberOfPulses)
 				AddEntryIntoWaveNoteAsList(WaveBuilderWave, "Poisson distribution"   , str=SelectString(params.poisson, "False", "True"))
 				AddEntryIntoWaveNoteAsList(WaveBuilderWave, "Random seed"            , var=params.randomSeed)
+				AddEntryIntoWaveNoteAsList(WaveBuilderWave, PULSE_START_TIMES_KEY    , str=NumericWaveToList(pulseStartTimes, ",", format="%.15g"))
 				AddEntryIntoWaveNoteAsList(WaveBuilderWave, "Definition mode"        , str=defMode)
 				break
 			case EPOCH_TYPE_PSC:
@@ -938,12 +942,80 @@ Function WB_ToEpochType(epochTypeStr)
 	endswitch
 End
 
-static Function WB_PulseTrainSegment(pa, mode)
+/// @brief Extract a list of [begin, end] ranges in milliseconds denoting
+///        all pulses from all pulse train epochs in that sweep of the stimset
+Function/WAVE WB_GetPulsesFromPulseTrains(stimset, sweep)
+	WAVE stimset
+	variable sweep
+
+	string str, matches, startTimesList, line, epochTypeStr
+	variable i, numMatches, epochType, flipping, length, pulseDuration
+
+	Make/FREE/D/N=(0) allStartTimes
+
+	str = note(stimset)
+
+	// passed stimset is from the testpulse
+	if(IsEmpty(str))
+		return allStartTimes
+	endif
+
+	matches = GrepList(str, "^Stimset;", 0, "\r")
+	ASSERT(!IsEmpty(matches), "Could not find stimset settings entry in note")
+	line = matches
+
+	flipping = NumberByKey("Flip", line, " = ", ";")
+	ASSERT(flipping == 0 || flipping == 1, "Invalid flipping value")
+
+	ASSERT(IsInteger(sweep) && sweep >= 0, "Invalid sweep")
+	matches = GrepList(str, "^Sweep = " + num2str(sweep), 0, "\r")
+
+	numMatches = ItemsInList(matches, "\r")
+	for(i = 0; i < numMatches; i += 1)
+		line = trimstring(StringFromList(i, matches, "\r"), 1)
+
+		epochTypeStr = StringByKey("Type", line, " = ", ";")
+		epochType = WB_ToEpochType(epochTypeStr)
+
+		/// @todo support combine stimsets as soon as mk/save/stimset is merged
+		if(epochType != EPOCH_TYPE_PULSE_TRAIN)
+			continue
+		endif
+
+		startTimesList = StringByKey(PULSE_START_TIMES_KEY, line, " = ", ";")
+		ASSERT(!IsEmpty(startTimesList), "Could not find pulse start times entry")
+
+		WAVE/Z/D startTimes = ListToNumericWave(startTimesList, ",")
+		ASSERT(WaveExists(startTimes) && DimSize(startTimes, ROWS) > 0, "Found no starting times")
+
+		FindValue/V=(NaN) startTimes
+		ASSERT(V_Value == -1, "Unexpected NaN found in starting times")
+
+		if(flipping)
+			pulseDuration = NumberByKey("Pulse Duration", line, " = ", ";")
+			ASSERT(IsFinite(pulseDuration) && pulseDuration > 0, "Invalid pulse duration")
+
+			length = rightx(stimset)
+			// mirroring must also move the startTimes by the pulseDuration
+			startTimes[] = length - startTimes[p] - pulseDuration
+		endif
+
+		Concatenate/NP=0 {startTimes}, allStartTimes
+	endfor
+
+	Sort allStartTimes, allStartTimes
+
+	return allStartTimes
+End
+
+static Function/WAVE WB_PulseTrainSegment(pa, mode, pulseStartTimes)
 	struct SegmentParameters &pa
 	variable mode
+	WAVE pulseStartTimes
 
-	variable i, pulseStartTime, endIndex, startIndex
-	variable numRows, interPulseInterval
+	variable pulseStartTime, endIndex, startIndex
+	variable numRows, interPulseInterval, idx
+	string str
 
 	if(!(pa.frequency > 0))
 		printf "Resetting invalid frequency of %gHz to 1Hz\r", pa.frequency
@@ -984,6 +1056,9 @@ static Function WB_PulseTrainSegment(pa, mode)
 			startIndex = floor(pulseStartTime / HARDWARE_ITC_MIN_SAMPINT)
 			WB_CreatePulse(segmentWave, pa.pulseType, pa.amplitude, startIndex, endIndex)
 
+			EnsureLargeEnoughWave(pulseStartTimes, minimumSize=idx)
+			pulseStartTimes[idx++] = pulseStartTime
+
 			pulseStartTime += interPulseInterval + pa.pulseDuration
 		endfor
 	else
@@ -997,8 +1072,13 @@ static Function WB_PulseTrainSegment(pa, mode)
 
 			startIndex = floor(pulseStartTime / HARDWARE_ITC_MIN_SAMPINT)
 			WB_CreatePulse(segmentWave, pa.pulseType, pa.amplitude, startIndex, endIndex)
+
+			EnsureLargeEnoughWave(pulseStartTimes, minimumSize=idx)
+			pulseStartTimes[idx++] = pulseStartTime
 		endfor
 	endif
+
+	Redimension/N=(idx) pulseStartTimes
 
 	// remove the zero part at the end
 	FindValue/V=(0)/S=(pa.pulseType == WB_PULSE_TRAIN_TYPE_SQUARE ? startIndex : startIndex + 1) segmentWave
@@ -1010,9 +1090,10 @@ static Function WB_PulseTrainSegment(pa, mode)
 		DEBUGPRINT("No removal of points")
 	endif
 
-	DEBUGPRINT("interPulseInterval", var=interPulseInterval)
-	DEBUGPRINT("numberOfPulses", var=pa.numberOfPulses)
-	DEBUGPRINT("Real duration", var=DimSize(segmentWave, ROWS) * HARDWARE_ITC_MIN_SAMPINT, format="%.6f")
+	sprintf str, "interPulseInterval=%g ms, numberOfPulses=%g [a.u.], pulseDuration=%g [ms], real duration=%.6f [a.u.]\r", \
+	 			  interPulseInterval, pa.numberOfPulses, pa.pulseDuration, DimSize(segmentWave, ROWS) * HARDWARE_ITC_MIN_SAMPINT
+
+	DEBUGPRINT(str)
 End
 
 static Function WB_PSCSegment(pa)
