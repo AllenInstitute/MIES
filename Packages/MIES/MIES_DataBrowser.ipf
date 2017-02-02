@@ -74,7 +74,7 @@ End
 Function/S DB_GetMainGraph(panelTitle)
 	string panelTitle
 
-	return panelTitle + "#DataBrowserGraph"
+	return GetMainWindow(panelTitle) + "#DataBrowserGraph"
 End
 
 static Function/S DB_GetLabNoteBookGraph(panelTitle)
