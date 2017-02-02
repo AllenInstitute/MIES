@@ -4,13 +4,15 @@
 /// @brief Configure MIES for Multi-patch experiments	
 Function MultiPatchConfig()
 	
-	string UserConfigNB, win, filename, ITCDevNum, ITCDevType
+	string UserConfigNB, win, filename, ITCDevNum, ITCDevType, fullPath
 	
 //	movewindow /C 1450, 530,-1,-1								// position command window
 	
 	DoWindow UserConfigNB
 	if(!V_flag)
-		OpenNotebook /R/Z/N=UserConfigNB/V=0/T="WMTO" USER_CONFIG_PATH
+		fullPath = GetFolder(FunctionPath("")) + USER_CONFIG_PATH
+		ASSERT(!cmpstr(GetFileSuffix(fullPath), "txt"), "Only plain notebooks are supported")
+		OpenNotebook/ENCG=1/R/N=UserConfigNB/V=0 fullPath
 		if(V_flag)
 			ASSERT(V_flag > 0, "Configuration Notebook not loaded")
 		endif		
