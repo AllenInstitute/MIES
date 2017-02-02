@@ -192,8 +192,8 @@ Function TI_selectHeadStage(headstage, [cmdID])
 End
 
 /// @brief function for saving data space in the nwb format, to be invoked from the WSE
-/// @param nwbFileLocation			file path for nwb file location
-/// @param cmdID					optional parameter...if being called from WSE, this will be present.
+/// @param nwbFileLocation	complete file path for nwb save file
+/// @param cmdID			[optional, defaults to blank] if called from WSE, this will be present.
 Function TI_saveNWBFile(nwbFileLocation, [cmdID])
 	string nwbFileLocation
 	string cmdID
@@ -201,15 +201,9 @@ Function TI_saveNWBFile(nwbFileLocation, [cmdID])
 	string changeFilePath
 	string fileName
 	
-	print "testing..."
-	//make sure that the file directory exists
-	CreateFolderOnDisk(nwbFileLocation)
+	changeFilePath = nwbFileLocation
 	
-	//build up the filename
-	fileName="\\_" + GetTimeStamp() + ".nwb"
-	changeFilePath = nwbFileLocation + fileName
-	
-	print "Saving experiment data in NWB format to ", changefilepath
+	print "Saving experiment data in NWB format to ", changeFilePath
 
 	NWB_ExportAllData(overrideFilePath=changeFilePath)
 	
