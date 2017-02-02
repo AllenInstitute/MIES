@@ -65,6 +65,7 @@
 #include "MIES_PanelITC"
 #include "MIES_PressureControl"
 #include "MIES_ProgrammaticGuiControl"
+#include "MIES_PulseAveraging"
 #include "MIES_RepeatedAcquisition"
 #include "MIES_SamplingInterval"
 #include "MIES_Structures"

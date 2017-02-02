@@ -1190,6 +1190,7 @@ static Function SetSweepSettingsTextDimLabels(wv)
 	SetDimLabel COLS,  9, $"Post DAQ function"      , wv
 	SetDimLabel COLS, 10, $"oodDAQ regions"         , wv
 	SetDimLabel COLS, 11, $"Electrode"              , wv
+	SetDimLabel COLS, 12, $PULSE_START_TIMES_KEY    , wv
 End
 
 /// @brief Returns a wave reference to the sweepSettingsWave
@@ -1456,7 +1457,7 @@ End
 Function/Wave GetSweepSettingsTextWave(panelTitle)
 	string panelTitle
 
-	variable versionOfNewWave = 9
+	variable versionOfNewWave = 10
 	string newName = "sweepSettingsTextValues"
 	DFREF newDFR = GetDevSpecLabNBTempFolder(panelTitle)
 
@@ -1471,9 +1472,9 @@ Function/Wave GetSweepSettingsTextWave(panelTitle)
 	if(ExistsWithCorrectLayoutVersion(wv, versionOfNewWave))
 		return wv
 	elseif(WaveExists(wv))
-		Redimension/N=(-1, 12, LABNOTEBOOK_LAYER_COUNT) wv
+		Redimension/N=(-1, 13, LABNOTEBOOK_LAYER_COUNT) wv
 	else
-		Make/T/N=(1, 12, LABNOTEBOOK_LAYER_COUNT) newDFR:$newName/Wave=wv
+		Make/T/N=(1, 13, LABNOTEBOOK_LAYER_COUNT) newDFR:$newName/Wave=wv
 	endif
 
 	wv = ""
@@ -1504,10 +1505,11 @@ End
 /// - 9: Analysis function post daq
 /// -10: oodDAQ regions
 /// -11: Electrode
+/// -12: Pulse Train Pulses (list)
 Function/Wave GetSweepSettingsTextKeyWave(panelTitle)
 	string panelTitle
 
-	variable versionOfNewWave = 9
+	variable versionOfNewWave = 10
 	string newName = "sweepSettingsTextKeys"
 	DFREF newDFR = GetDevSpecLabNBTempFolder(panelTitle)
 
@@ -1522,9 +1524,9 @@ Function/Wave GetSweepSettingsTextKeyWave(panelTitle)
 	if(ExistsWithCorrectLayoutVersion(wv, versionOfNewWave))
 		return wv
 	elseif(WaveExists(wv))
-		Redimension/N=(-1, 12, 0) wv
+		Redimension/N=(-1, 13, 0) wv
 	else
-		Make/T/N=(1, 12) newDFR:$newName/Wave=wv
+		Make/T/N=(1, 13) newDFR:$newName/Wave=wv
 	endif
 
 	wv = ""
@@ -1541,6 +1543,7 @@ Function/Wave GetSweepSettingsTextKeyWave(panelTitle)
 	wv[0][9]  = "Post DAQ function"
 	wv[0][10] = "oodDAQ regions"
 	wv[0][11] = "Electrode"
+	wv[0][12] = PULSE_START_TIMES_KEY
 
 	SetSweepSettingsTextDimLabels(wv)
 	SetWaveVersion(wv, versionOfNewWave)
