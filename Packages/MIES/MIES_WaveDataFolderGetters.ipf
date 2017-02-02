@@ -4823,9 +4823,10 @@ End
 
 /// @brief Read User_Config NoteBook file and extract parameters as a KeyWordList
 ///
-/// @param UserConfigNB  Name of User Configuration Notebook as a string
-/// @return ConfigList   KeyWordList string of configuration parameters to be called by ReadConfigList
-Function /WAVE MPConfig_ImportUserSettings(ConfigNB, KeyTypes)
+/// @param  ConfigNB		Name of User Configuration Notebook as a string
+/// @param  KeyTypes		Text wave of key types to parse configuration notebook
+/// @return UserSettings	Text wave of configuration parameters 
+Function /WAVE GetMultiPatchUserSettings(ConfigNB, KeyTypes)
 	string ConfigNB
 	Wave KeyTypes
 	

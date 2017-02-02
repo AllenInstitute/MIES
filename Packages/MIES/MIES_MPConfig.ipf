@@ -1,5 +1,16 @@
-#pragma TextEncoding = "Windows-1252"
+#pragma TextEncoding = "UTF-8"
 #pragma rtGlobals=3		// Use modern global access method and strict wave access.
+#pragma igorVersion=7.0
+
+/// @file MIES_MPConfig.ipf
+///
+/// @brief __MPConfig__ Import user settings to configure paramters for MultiPatch experiments
+///
+/// These include:
+/// - Amplifier settings
+/// - Pressure regulator settings
+/// - Interactions with MCCs
+/// - DAEphys panel settings
 
 /// @brief Configure MIES for Multi-patch experiments	
 Function MultiPatchConfig()
@@ -20,7 +31,7 @@ Function MultiPatchConfig()
 	
 	UserConfigNB = winname(0,16)
 	Wave /T KeyTypes = GetMultiPatchConfigKeyTypes()
-	Wave /T UserSettings = MPConfig_ImportUserSettings(UserConfigNB, KeyTypes)
+	Wave /T UserSettings = GetMultiPatchUserSettings(UserConfigNB, KeyTypes)
 	FindValue /TXOP = 4 /TEXT = ITC_DEV_TYPE UserSettings
 	ITCDevType = UserSettings[V_value][%SettingValue]
 	FindValue /TXOP = 4 /TEXT = ITC_DEV_NUM UserSettings
@@ -33,7 +44,7 @@ Function MultiPatchConfig()
 			win = BASE_WINDOW_TITLE
 		else	
 			win = DAP_CreateDAEphysPanel() 									//open DA_Ephys
-			movewindow /W = $win 1500, -700,-1,-1				//position DA_Ephys window
+//			movewindow /W = $win 1500, -700,-1,-1				//position DA_Ephys window
 		endif
 		
 		PGC_SetAndActivateControl(win,"popup_MoreSettings_DeviceType", val = WhichListItem(ITCDevType,DEVICE_TYPES))
@@ -74,9 +85,7 @@ End
 /// @brief  Open and configure amplifiers for Multi-Patch experiments
 ///
 /// @param panelTitle		Name of ITC device panel
-/// @param ConfigList (optional)		List of configurable variables from a configuration NoteBook
-/// @param ConfigNB (optional)		Configuration NoteBook to generate list of configureable variabels
-///	 One or the other ConfigList or ConfigNB need to be defined
+/// @param UserSettings	User settings wave from configuration Notebook
 Function MPConfig_Amplifiers(panelTitle, UserSettings)
 	string panelTitle
 	Wave /T UserSettings
@@ -91,7 +100,7 @@ Function MPConfig_Amplifiers(panelTitle, UserSettings)
 	
 	Assert(AI_OpenMCCs(AmpSerialLocal, ampTitleList = AmpTitleLocal, maxAttempts = ATTEMPTS),"Evil kittens prevented MultiClamp from opening - FULL STOP" ) 
 	
-	Position_MCC_Win(AmpSerialLocal,AmpTitleLocal)
+	MPConfig_Position_MCC_Win(AmpSerialLocal,AmpTitleLocal)
 	
 	PGC_SetAndActivateControl(panelTitle,"button_Settings_UpdateAmpStatus")
 	
@@ -101,10 +110,10 @@ Function MPConfig_Amplifiers(panelTitle, UserSettings)
 		
 		if(!mod(i,2)) // even 
 			ampSerial = str2num(StringFromList(ii, AmpSerialLocal))
-			PGC_SetAndActivateControl(panelTitle,"popup_Settings_Amplifier", val = FindAmpInList(ampSerial, 1))
+			PGC_SetAndActivateControl(panelTitle,"popup_Settings_Amplifier", val = MPConfig_FindAmpInList(ampSerial, 1))
 		else //odd
 			ampSerial = str2num(StringFromList(ii, AmpSerialLocal))
-			PGC_SetAndActivateControl(panelTitle,"popup_Settings_Amplifier", val = FindAmpInList(ampSerial, 2))
+			PGC_SetAndActivateControl(panelTitle,"popup_Settings_Amplifier", val = MPConfig_FindAmpInList(ampSerial, 2))
 			ii+=1
 		endif 
 		
@@ -119,7 +128,7 @@ Function MPConfig_Amplifiers(panelTitle, UserSettings)
 		CheckDA = GetPanelControl(i, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_CHECK)
 		PGC_SetAndActivateControl(panelTitle,CheckDA,val = CHECKBOX_SELECTED)
 		PGC_SetAndActivateControl(panelTitle,"ADC", val = DA_EPHYS_PANEL_DATA_ACQUISITION)
-		MCC_InitParams(panelTitle,i)
+		MPConfig_MCC_InitParams(panelTitle,i)
 		PGC_SetAndActivateControl(panelTitle,"ADC", val = DA_EPHYS_PANEL_HARDWARE)
 	endfor
 	
@@ -129,9 +138,7 @@ End
 /// @brief  Configure pressure devices for Multi-Patch experiments
 ///
 /// @param panelTitle		Name of ITC device panel
-/// @param ConfigList (optional)		List of configurable variables from a configuration NoteBook
-/// @param ConfigNB (optional)		Configuration NoteBook to generate list of configureable variabels
-///	 One or the other ConfigList or ConfigNB need to be defined
+/// @param UserSettings	User settings wave from configuration Notebook
 Function MPConfig_Pressure(panelTitle, UserSettings)
 	string panelTitle
 	Wave /T UserSettings
@@ -202,9 +209,7 @@ End
 /// @brief  Monitor set and bath temperature during experiments
 ///
 /// @param panelTitle		Name of ITC device panel
-/// @param ConfigList (optional)		List of configurable variables from a configuration NoteBook
-/// @param ConfigNB (optional)		Configuration NoteBook to generate list of configureable variabels
-///	 One or the other ConfigList or ConfigNB need to be defined		
+/// @param @param UserSettings	User settings wave from configuration Notebook		
 Function MPConfig_AsyncTemp(panelTitle, UserSettings)
 	string panelTitle
 	Wave /T UserSettings
@@ -231,9 +236,7 @@ End
 /// @brief  Set user defined experimental parameters
 ///
 /// @param panelTitle		Name of ITC device panel
-/// @param ConfigList (optional)		List of configurable variables from a configuration NoteBook
-/// @param ConfigNB (optional)		Configuration NoteBook to generate list of configureable variabels
-///	 One or the other ConfigList or ConfigNB need to be defined		
+/// @param @param UserSettings	User settings wave from configuration Notebook		
 Function MPConfig_DAEphysSettings(panelTitle, UserSettings)
 	string panelTitle
 	Wave /T UserSettings
@@ -276,7 +279,7 @@ End
 ///
 /// @param panelTitle	ITC device panel
 /// @param headStage	Active headstage	 index
-Function MCC_InitParams(panelTitle, headStage)
+Function MPConfig_MCC_InitParams(panelTitle, headStage)
 	string panelTitle
 	variable headStage
 
@@ -322,11 +325,11 @@ End
 ///
 /// @param serialNum	Serial number of MCC
 /// @param winTitle		Name of MCC window 
-Function Position_MCC_Win(serialNum, winTitle)
-string serialNum, winTitle
-Make /T /FREE winNm
-string cmd
-variable w
+Function MPConfig_Position_MCC_Win(serialNum, winTitle)
+	string serialNum, winTitle
+	Make /T /FREE winNm
+	string cmd
+	variable w
 
 	for(w = 0; w<NUM_HEADSTAGES/2; w+=1)
 	
@@ -388,7 +391,7 @@ End
 ///
 /// @param ampSerialRef		Amplifier Serial Number to search for
 /// @param ampChannelIDRef	Headstage reference number
-Function FindAmpInList(ampSerialRef, ampChannelIDRef)
+Function MPConfig_FindAmpInList(ampSerialRef, ampChannelIDRef)
 	variable ampSerialRef, ampChannelIDRef
 
 	string listOfAmps, ampDef
