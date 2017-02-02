@@ -216,6 +216,8 @@ Function/Wave WB_GetStimSet([setName])
 	Make/FREE/N=(lengthOf1DWaves, numSweeps) stimSet
 	FastOp stimSet = 0
 
+	SetScale/P x 0, HARDWARE_ITC_MIN_SAMPINT, "ms", stimset
+
 	for(i = 0; i < numSweeps; i += 1)
 		WAVE wv = data[i]
 
@@ -227,10 +229,7 @@ Function/Wave WB_GetStimSet([setName])
 		last = length - 1
 		Multithread stimSet[0, last][i] = wv[p]
 
-		if(i == 0)
-			Note stimSet, note(wv)
-			CopyScales/P wv, stimset
-		endif
+		Note/NOCR stimSet, note(wv)
 	endfor
 
 	if(SegWvType[98])
@@ -426,28 +425,21 @@ static Function/WAVE WB_MakeWaveBuilderWave(WP, WPT, SegWvType, stepCount, numEp
 			continue
 		endif
 
+		AddEntryIntoWaveNoteAsList(WaveBuilderWave, "Sweep", var=stepCount)
+		AddEntryIntoWaveNoteAsList(WaveBuilderWave, "Epoch", var=i)
+		AddEntryIntoWaveNoteAsList(WaveBuilderWave, "Type" , str=WB_ToEpochTypeString(type))
+
 		switch(type)
 			case EPOCH_TYPE_SQUARE_PULSE:
 				WB_SquareSegment(params)
-				AddEntryIntoWaveNoteAsList(WaveBuilderWave, "Epoch"          , var=i)
-				AddEntryIntoWaveNoteAsList(WaveBuilderWave, "Type"           , str="Square pulse")
-				AddEntryIntoWaveNoteAsList(WaveBuilderWave, "Amplitude"      , var=params.Amplitude)
-				AddEntryIntoWaveNoteAsList(WaveBuilderWave, "Delta amplitude", var=params.DeltaAmp)
-				AddEntryIntoWaveNoteAsList(WaveBuilderWave, "Duration"       , var=params.Duration)
-				AddEntryIntoWaveNoteAsList(WaveBuilderWave, "Delta duration" , var=params.DeltaDur)
-				AddEntryIntoWaveNoteAsList(WaveBuilderWave, "Offset"         , var=params.Offset)
-				AddEntryIntoWaveNoteAsList(WaveBuilderWave, "Delta offset"   , var=params.DeltaOffset, appendCR=1)
+				AddEntryIntoWaveNoteAsList(WaveBuilderWave, "Duration" , var=params.Duration)
+				AddEntryIntoWaveNoteAsList(WaveBuilderWave, "Amplitude", var=params.Amplitude)
 				break
 			case EPOCH_TYPE_RAMP:
 				WB_RampSegment(params)
-				AddEntryIntoWaveNoteAsList(WaveBuilderWave, "Epoch"          , var=i)
-				AddEntryIntoWaveNoteAsList(WaveBuilderWave, "Type"           , str="Ramp")
-				AddEntryIntoWaveNoteAsList(WaveBuilderWave, "Amplitude"      , var=params.Amplitude)
-				AddEntryIntoWaveNoteAsList(WaveBuilderWave, "Delta amplitude", var=params.DeltaAmp)
-				AddEntryIntoWaveNoteAsList(WaveBuilderWave, "Duration"       , var=params.Duration)
-				AddEntryIntoWaveNoteAsList(WaveBuilderWave, "Delta duration" , var=params.DeltaDur)
-				AddEntryIntoWaveNoteAsList(WaveBuilderWave, "Offset"         , var=params.Offset)
-				AddEntryIntoWaveNoteAsList(WaveBuilderWave, "Delta offset"   , var=params.DeltaOffset, appendCR=1)
+				AddEntryIntoWaveNoteAsList(WaveBuilderWave, "Duration" , var=params.Duration)
+				AddEntryIntoWaveNoteAsList(WaveBuilderWave, "Amplitude", var=params.Amplitude)
+				AddEntryIntoWaveNoteAsList(WaveBuilderWave, "Offset"   , var=params.Offset)
 				break
 			case EPOCH_TYPE_NOISE:
 				params.randomSeed = WB_InitializeSeed(WP, i, type, stepCount)
@@ -456,40 +448,33 @@ static Function/WAVE WB_MakeWaveBuilderWave(WP, WPT, SegWvType, stepCount, numEp
 				WAVE segmentWave = WB_GetSegmentWave()
 				WBP_ShowFFTSpectrumIfReq(segmentWave, stepCount)
 
-				AddEntryIntoWaveNoteAsList(WaveBuilderWave, "Epoch"                  , var=i)
-				AddEntryIntoWaveNoteAsList(WaveBuilderWave, "Type"                   , str="Noise")
-				AddEntryIntoWaveNoteAsList(WaveBuilderWave, "Noise Type"             , \
-							               str=StringFromList(params.noiseType, NOISE_TYPES_STRINGS))
-				AddEntryIntoWaveNoteAsList(WaveBuilderWave, "Amplitude"              , var=params.Amplitude)
-				AddEntryIntoWaveNoteAsList(WaveBuilderWave, "Amplitude delta"        , var=params.DeltaAmp)
-				AddEntryIntoWaveNoteAsList(WaveBuilderWave, "Low pass cut off"       , var=params.LowPassCutOff)
-				AddEntryIntoWaveNoteAsList(WaveBuilderWave, "Low pass cut off delta" , var=params.DeltaLowPassCutOff)
-				AddEntryIntoWaveNoteAsList(WaveBuilderWave, "High pass cut off"      , var=params.HighPassCutOff)
-				AddEntryIntoWaveNoteAsList(WaveBuilderWave, "High pass cut off delta", var=params.DeltaHighPassCutOff)
-				AddEntryIntoWaveNoteAsList(WaveBuilderWave, "Filter order"           , var=params.filterOrder)
-				AddEntryIntoWaveNoteAsList(WaveBuilderWave, "Filter order delta"     , var=params.DeltaFilterOrder)
-				AddEntryIntoWaveNoteAsList(WaveBuilderWave, "Build resolution"       , var=params.buildResolution)
-				AddEntryIntoWaveNoteAsList(WaveBuilderWave, "Offset"                 , var=params.Offset)
-				AddEntryIntoWaveNoteAsList(WaveBuilderWave, "Random seed"            , var=params.randomSeed)
-				AddEntryIntoWaveNoteAsList(WaveBuilderWave, "Delta offset"           , var=params.DeltaOffset, appendCR=1)
+				AddEntryIntoWaveNoteAsList(WaveBuilderWave, "Duration"          , var=params.Duration)
+				AddEntryIntoWaveNoteAsList(WaveBuilderWave, "Amplitude"         , var=params.Amplitude)
+				AddEntryIntoWaveNoteAsList(WaveBuilderWave, "Offset"            , var=params.Offset)
+				AddEntryIntoWaveNoteAsList(WaveBuilderWave, "Noise Type"        , \
+															str=StringFromList(params.noiseType, NOISE_TYPES_STRINGS))
+				AddEntryIntoWaveNoteAsList(WaveBuilderWave, "Low pass cut off"  , var=params.LowPassCutOff)
+				AddEntryIntoWaveNoteAsList(WaveBuilderWave, "High pass cut off" , var=params.HighPassCutOff)
+				AddEntryIntoWaveNoteAsList(WaveBuilderWave, "Filter order"      , var=params.filterOrder)
+				AddEntryIntoWaveNoteAsList(WaveBuilderWave, "Build resolution"  , var=params.buildResolution)
+				AddEntryIntoWaveNoteAsList(WaveBuilderWave, "Random seed"       , var=params.randomSeed)
 				break
 			case EPOCH_TYPE_SIN_COS:
 				WB_TrigSegment(params)
-				AddEntryIntoWaveNoteAsList(WaveBuilderWave, "Epoch"              , var=i)
-				AddEntryIntoWaveNoteAsList(WaveBuilderWave, "Type"               , str="Sin Wave")
-				AddEntryIntoWaveNoteAsList(WaveBuilderWave, "Frequency"          , var=params.Frequency)
-				AddEntryIntoWaveNoteAsList(WaveBuilderWave, "Frequency delta"    , var=params.DeltaFreq)
-				AddEntryIntoWaveNoteAsList(WaveBuilderWave, "End frequency"      , var=params.EndFrequency)
-				AddEntryIntoWaveNoteAsList(WaveBuilderWave, "End frequency delta", var=params.DeltaEndFrequency, appendCR=1)
+				AddEntryIntoWaveNoteAsList(WaveBuilderWave, "Duration"     , var=params.Duration)
+				AddEntryIntoWaveNoteAsList(WaveBuilderWave, "Amplitude"    , var=params.Amplitude)
+				AddEntryIntoWaveNoteAsList(WaveBuilderWave, "Offset"       , var=params.Offset)
+				AddEntryIntoWaveNoteAsList(WaveBuilderWave, "Frequency"    , var=params.Frequency)
+				AddEntryIntoWaveNoteAsList(WaveBuilderWave, "End frequency", var=params.EndFrequency)
+				AddEntryIntoWaveNoteAsList(WaveBuilderWave, "Log chirp"    , str=SelectString(params.SinChirp, "True", "False"))
+				AddEntryIntoWaveNoteAsList(WaveBuilderWave, "FunctionType" , str=SelectString(params.trigFuncType, "Sin", "Cos"))
 				break
 			case EPOCH_TYPE_SAW_TOOTH:
 				WB_SawToothSegment(params)
-				AddEntryIntoWaveNoteAsList(WaveBuilderWave, "Epoch"          , var=i)
-				AddEntryIntoWaveNoteAsList(WaveBuilderWave, "Type"           , str="Saw tooth")
-				AddEntryIntoWaveNoteAsList(WaveBuilderWave, "Frequency"      , var=params.Frequency)
-				AddEntryIntoWaveNoteAsList(WaveBuilderWave, "Frequency delta", var=params.DeltaFreq)
-				AddEntryIntoWaveNoteAsList(WaveBuilderWave, "Offset"         , var=params.Offset)
-				AddEntryIntoWaveNoteAsList(WaveBuilderWave, "Delta offset"   , var=params.DeltaOffset, appendCR=1)
+				AddEntryIntoWaveNoteAsList(WaveBuilderWave, "Duration" , var=params.Duration)
+				AddEntryIntoWaveNoteAsList(WaveBuilderWave, "Amplitude", var=params.Amplitude)
+				AddEntryIntoWaveNoteAsList(WaveBuilderWave, "Frequency", var=params.Frequency)
+				AddEntryIntoWaveNoteAsList(WaveBuilderWave, "Offset"   , var=params.Offset)
 				break
 			case EPOCH_TYPE_PULSE_TRAIN:
 				params.randomSeed = WB_InitializeSeed(WP, i, type, stepCount)
@@ -508,33 +493,28 @@ static Function/WAVE WB_MakeWaveBuilderWave(WP, WPT, SegWvType, stepCount, numEp
 					defMode = "Duration"
 				endif
 
-				AddEntryIntoWaveNoteAsList(WaveBuilderWave, "Epoch"               , var=i)
-				AddEntryIntoWaveNoteAsList(WaveBuilderWave, "Type"                , str="PT")
-				AddEntryIntoWaveNoteAsList(WaveBuilderWave, "Pulse Type"          , \
+
+				AddEntryIntoWaveNoteAsList(WaveBuilderWave, "Duration"               , var=params.Duration)
+				AddEntryIntoWaveNoteAsList(WaveBuilderWave, "Amplitude"              , var=params.Amplitude)
+				AddEntryIntoWaveNoteAsList(WaveBuilderWave, "Offset"                 , var=params.Offset)
+				AddEntryIntoWaveNoteAsList(WaveBuilderWave, "Pulse Type"             , \
 							               str=StringFromList(params.pulseType, PULSE_TYPES_STRINGS))
-				AddEntryIntoWaveNoteAsList(WaveBuilderWave, "Amplitude"           , var=params.Amplitude)
-				AddEntryIntoWaveNoteAsList(WaveBuilderWave, "Amplitude delta"     , var=params.DeltaAmp)
-				AddEntryIntoWaveNoteAsList(WaveBuilderWave, "Frequency"           , var=params.Frequency)
-				AddEntryIntoWaveNoteAsList(WaveBuilderWave, "Frequency delta"     , var=params.DeltaFreq)
-				AddEntryIntoWaveNoteAsList(WaveBuilderWave, "Pulse duration"      , var=params.PulseDuration)
-				AddEntryIntoWaveNoteAsList(WaveBuilderWave, "Pulse duration delta", var=params.DeltaPulsedur)
-				AddEntryIntoWaveNoteAsList(WaveBuilderWave, "Offset"              , var=params.Offset)
-				AddEntryIntoWaveNoteAsList(WaveBuilderWave, "Delta offset"        , var=params.DeltaOffset)
-				AddEntryIntoWaveNoteAsList(WaveBuilderWave, "Number of pulses"    , var=params.NumberOfPulses)
-				AddEntryIntoWaveNoteAsList(WaveBuilderWave, "Poisson distribution", str=SelectString(params.poisson, "False", "True"))
-				AddEntryIntoWaveNoteAsList(WaveBuilderWave, "Random seed"         , var=params.randomSeed)
-				AddEntryIntoWaveNoteAsList(WaveBuilderWave, "Definition mode"     , str=defMode, appendCR=1)
+				AddEntryIntoWaveNoteAsList(WaveBuilderWave, "Frequency"              , var=params.Frequency)
+				AddEntryIntoWaveNoteAsList(WaveBuilderWave, "Pulse duration"         , var=params.PulseDuration)
+				AddEntryIntoWaveNoteAsList(WaveBuilderWave, "Number of pulses"       , var=params.NumberOfPulses)
+				AddEntryIntoWaveNoteAsList(WaveBuilderWave, "Poisson distribution"   , str=SelectString(params.poisson, "False", "True"))
+				AddEntryIntoWaveNoteAsList(WaveBuilderWave, "Random seed"            , var=params.randomSeed)
+				AddEntryIntoWaveNoteAsList(WaveBuilderWave, "Definition mode"        , str=defMode)
 				break
 			case EPOCH_TYPE_PSC:
 				WB_PSCSegment(params)
-				AddEntryIntoWaveNoteAsList(WaveBuilderWave, "Epoch"             , var=i)
-				AddEntryIntoWaveNoteAsList(WaveBuilderWave, "Type"              , str="PSC")
+				AddEntryIntoWaveNoteAsList(WaveBuilderWave, "Duration"          , var=params.Duration)
+				AddEntryIntoWaveNoteAsList(WaveBuilderWave, "Amplitude"         , var=params.Amplitude)
+				AddEntryIntoWaveNoteAsList(WaveBuilderWave, "Offset"            , var=params.Offset)
 				AddEntryIntoWaveNoteAsList(WaveBuilderWave, "Tau rise"          , var=params.TauRise)
 				AddEntryIntoWaveNoteAsList(WaveBuilderWave, "Tau decay 1"       , var=params.TauDecay1)
 				AddEntryIntoWaveNoteAsList(WaveBuilderWave, "Tau decay 2"       , var=params.TauDecay2)
 				AddEntryIntoWaveNoteAsList(WaveBuilderWave, "Tau decay 2 weight", var=params.TauDecay2Weight)
-				AddEntryIntoWaveNoteAsList(WaveBuilderWave, "Offset"            , var=params.Offset)
-				AddEntryIntoWaveNoteAsList(WaveBuilderWave, "Delta offset"      , var=params.DeltaOffset, appendCR=1)
 				break
 			case EPOCH_TYPE_CUSTOM:
 				WAVE/Z customWave = $""
@@ -566,11 +546,9 @@ static Function/WAVE WB_MakeWaveBuilderWave(WP, WPT, SegWvType, stepCount, numEp
 
 				if(WaveExists(customWave))
 					WB_CustomWaveSegment(params, customWave)
-					AddEntryIntoWaveNoteAsList(WaveBuilderWave, "Epoch"       , var=i)
-					AddEntryIntoWaveNoteAsList(WaveBuilderWave, "Type"        , str="Custom Wave")
-					AddEntryIntoWaveNoteAsList(WaveBuilderWave, "Name"        , str=customWaveName)
-					AddEntryIntoWaveNoteAsList(WaveBuilderWave, "Offset"      , var=params.offset)
-					AddEntryIntoWaveNoteAsList(WaveBuilderWave, "Delta offset", var=params.deltaOffset, appendCR=1)
+					AddEntryIntoWaveNoteAsList(WaveBuilderWave, "Duration"    , var=params.Duration)
+					AddEntryIntoWaveNoteAsList(WaveBuilderWave, "Offset"      , var=params.Offset)
+					AddEntryIntoWaveNoteAsList(WaveBuilderWave, "CustomWavePath", str=customWaveName)
 				elseif(!isEmpty(customWaveName))
 					printf "Failed to recreate custom wave epoch %d as the referenced wave %s is missing\r", i, customWaveName
 				endif
@@ -603,17 +581,16 @@ static Function/WAVE WB_MakeWaveBuilderWave(WP, WPT, SegWvType, stepCount, numEp
 
 				params.Duration = DimSize(segmentWave, ROWS) * HARDWARE_ITC_MIN_SAMPINT
 
-				AddEntryIntoWaveNoteAsList(WaveBuilderWave, "Epoch"           , var=i)
-				AddEntryIntoWaveNoteAsList(WaveBuilderWave, "Type"            , str="Combine")
-				AddEntryIntoWaveNoteAsList(WaveBuilderWave, "Duration"        , var=params.Duration)
 				AddEntryIntoWaveNoteAsList(WaveBuilderWave, "Formula"         , str=formula_for_note)
 				AddEntryIntoWaveNoteAsList(WaveBuilderWave, "Formula Version" , str=formula_version)
-
 				break
 			default:
 				printf "Ignoring unknown epoch type %d\r", type
 				continue
 		endswitch
+
+		// add CR as we have finished an epoch
+		Note/NOCR WaveBuilderWave, "\r"
 
 		if(type != EPOCH_TYPE_COMBINE)
 			WB_ApplyOffset(params)
@@ -627,12 +604,12 @@ static Function/WAVE WB_MakeWaveBuilderWave(WP, WPT, SegWvType, stepCount, numEp
 				endif
 				epochID[i][%timeBegin] = accumulatedDuration
 				epochID[i][%timeEnd]   = accumulatedDuration + params.duration
-
-				accumulatedDuration += params.duration
 			endif
 		endif
 
 		WAVE segmentWave = WB_GetSegmentWave()
+		accumulatedDuration += DimSize(segmentWave, ROWS) * HARDWARE_ITC_MIN_SAMPINT
+
 		Concatenate/NP=0 {segmentWave}, WaveBuilderWave
 	endfor
 
@@ -646,15 +623,17 @@ static Function/WAVE WB_MakeWaveBuilderWave(WP, WPT, SegWvType, stepCount, numEp
 		endif
 	endif
 
-	AddEntryIntoWaveNoteAsList(WaveBuilderWave, "ITI", var=SegWvType[99])
-	AddEntryIntoWaveNoteAsList(WaveBuilderWave, StringFromList(PRE_DAQ_EVENT, EVENT_NAME_LIST), str=WPT[1][99])
-	AddEntryIntoWaveNoteAsList(WaveBuilderWave, StringFromList(MID_SWEEP_EVENT, EVENT_NAME_LIST), str=WPT[2][99])
-	AddEntryIntoWaveNoteAsList(WaveBuilderWave, StringFromList(POST_SWEEP_EVENT, EVENT_NAME_LIST), str=WPT[3][99])
-	AddEntryIntoWaveNoteAsList(WaveBuilderWave, StringFromList(POST_SET_EVENT, EVENT_NAME_LIST), str=WPT[4][99])
-	AddEntryIntoWaveNoteAsList(WaveBuilderWave, StringFromList(POST_DAQ_EVENT, EVENT_NAME_LIST), str=WPT[5][99])
-	AddEntryIntoWaveNoteAsList(WaveBuilderWave, "Flip", var=SegWvType[98], appendCR=1)
-
-	SetScale /P x 0, HARDWARE_ITC_MIN_SAMPINT, "ms", WaveBuilderWave
+	// add stimset entries at last step
+	if(stepCount + 1 == SegWvType[101])
+		AddEntryIntoWaveNoteAsList(WaveBuilderWave, "Stimset")
+		AddEntryIntoWaveNoteAsList(WaveBuilderWave, "ITI", var=SegWvType[99])
+		AddEntryIntoWaveNoteAsList(WaveBuilderWave, StringFromList(PRE_DAQ_EVENT, EVENT_NAME_LIST), str=WPT[1][99])
+		AddEntryIntoWaveNoteAsList(WaveBuilderWave, StringFromList(MID_SWEEP_EVENT, EVENT_NAME_LIST), str=WPT[2][99])
+		AddEntryIntoWaveNoteAsList(WaveBuilderWave, StringFromList(POST_SWEEP_EVENT, EVENT_NAME_LIST), str=WPT[3][99])
+		AddEntryIntoWaveNoteAsList(WaveBuilderWave, StringFromList(POST_SET_EVENT, EVENT_NAME_LIST), str=WPT[4][99])
+		AddEntryIntoWaveNoteAsList(WaveBuilderWave, StringFromList(POST_DAQ_EVENT, EVENT_NAME_LIST), str=WPT[5][99])
+		AddEntryIntoWaveNoteAsList(WaveBuilderWave, "Flip", var=SegWvType[98], appendCR=1)
+	endif
 
 	return WaveBuilderWave
 End
@@ -899,6 +878,64 @@ static Function WB_CreatePulse(wv, pulseType, amplitude, first, last)
 	else
 		ASSERT(0, "unknown pulse type")
 	endif
+End
+
+/// @brief Convert the numeric epoch type to a stringified version
+Function/S WB_ToEpochTypeString(epochType)
+	variable epochType
+
+	switch(epochType)
+		case EPOCH_TYPE_SQUARE_PULSE:
+			return "Square pulse"
+		case EPOCH_TYPE_RAMP:
+			return "Ramp"
+		case EPOCH_TYPE_NOISE:
+			return "Noise"
+		case EPOCH_TYPE_SIN_COS:
+			return "Sin Wave"
+		case EPOCH_TYPE_SAW_TOOTH:
+			return "Saw tooth"
+		case EPOCH_TYPE_PULSE_TRAIN:
+			return "Pulse Train"
+		case EPOCH_TYPE_PSC:
+			return "PSC"
+		case EPOCH_TYPE_CUSTOM:
+			return "Custom Wave"
+		case EPOCH_TYPE_COMBINE:
+			return "Combine"
+		default:
+			ASSERT(0, "Unknown epoch: " + num2str(epochType))
+			return ""
+	endswitch
+End
+
+/// @brief Convert the stringified epoch type to a numerical one
+Function WB_ToEpochType(epochTypeStr)
+	string epochTypeStr
+
+	strswitch(epochTypeStr)
+		case "Square pulse":
+			return EPOCH_TYPE_SQUARE_PULSE
+		case "Ramp":
+			return EPOCH_TYPE_RAMP
+		case "Noise":
+			return EPOCH_TYPE_NOISE
+		case "Sin Wave":
+			return EPOCH_TYPE_SIN_COS
+		case "Saw tooth":
+			return EPOCH_TYPE_SAW_TOOTH
+		case "Pulse Train":
+			return EPOCH_TYPE_PULSE_TRAIN
+		case "PSC":
+			return EPOCH_TYPE_PSC
+		case "Custom Wave":
+			return EPOCH_TYPE_CUSTOM
+		case "Combine":
+			return EPOCH_TYPE_COMBINE
+		default:
+			ASSERT(0, "Unknown epoch: " + epochTypeStr)
+			return NaN
+	endswitch
 End
 
 static Function WB_PulseTrainSegment(pa, mode)
