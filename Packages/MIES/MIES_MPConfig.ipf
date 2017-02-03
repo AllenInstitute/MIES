@@ -12,13 +12,13 @@
 /// - Interactions with MCCs
 /// - DAEphys panel settings
 
-/// @brief Configure MIES for Multi-patch experiments	
+/// @brief Configure MIES for Multi-patch experiments
 Function MultiPatchConfig()
-	
+
 	string UserConfigNB, win, filename, ITCDevNum, ITCDevType, fullPath
-	
+
 //	movewindow /C 1450, 530,-1,-1								// position command window
-	
+
 	DoWindow UserConfigNB
 	if(!V_flag)
 		fullPath = GetFolder(FunctionPath("")) + USER_CONFIG_PATH
@@ -26,9 +26,9 @@ Function MultiPatchConfig()
 		OpenNotebook/ENCG=1/R/N=UserConfigNB/V=0 fullPath
 		if(V_flag)
 			ASSERT(V_flag > 0, "Configuration Notebook not loaded")
-		endif		
+		endif
 	endif
-	
+
 	UserConfigNB = winname(0,16)
 	Wave /T KeyTypes = GetMultiPatchConfigKeyTypes()
 	Wave /T UserSettings = GetMultiPatchUserSettings(UserConfigNB, KeyTypes)
@@ -42,45 +42,45 @@ Function MultiPatchConfig()
 	else
 		if(WindowExists("DA_Ephys"))
 			win = BASE_WINDOW_TITLE
-		else	
+		else
 			win = DAP_CreateDAEphysPanel() 									//open DA_Ephys
 //			movewindow /W = $win 1500, -700,-1,-1				//position DA_Ephys window
 		endif
-		
+
 		PGC_SetAndActivateControl(win,"popup_MoreSettings_DeviceType", val = WhichListItem(ITCDevType,DEVICE_TYPES))
-		PGC_SetAndActivateControl(win,"popup_moreSettings_DeviceNo", val = WhichListItem(ITCDevNum,DEVICE_TYPES)) 
+		PGC_SetAndActivateControl(win,"popup_moreSettings_DeviceNo", val = WhichListItem(ITCDevNum,DEVICE_TYPES))
 		PGC_SetAndActivateControl(win,"button_SettingsPlus_LockDevice")
-		
+
 		win = BuildDeviceString(ITCDevType, ITCDevNum)
-	endif	
-	
+	endif
+
 	MPConfig_Amplifiers(win, UserSettings)
-	
+
 	MPConfig_Pressure(win, UserSettings)
-	
+
 	MPConfig_ClampModes(win, UserSettings)
-	
+
 	MPConfig_AsyncTemp(win, UserSettings)
-	
+
 	MPConfig_DAEphysSettings(win, UserSettings)
-	
+
 
 	HD_LoadReplaceStimSet()
-	
+
 	PGC_SetAndActivateControl(win,"ADC", val = DA_EPHYS_PANEL_DATA_ACQUISITION)
 	PGC_SetAndActivateControl(win, "tab_DataAcq_Amp", val = DA_EPHYS_PANEL_VCLAMP)
 	PGC_SetAndActivateControl(win, "tab_DataAcq_Pressure", val = DA_EPHYS_PANEL_PRESSURE_AUTO)
-	
+
 	filename = GetTimeStamp() + PACKED_FILE_EXPERIMENT_SUFFIX
 	NewPath /C/O SavePath, SAVE_PATH
-	
+
 	SaveExperiment /P=SavePath as filename
-	
+
 	PGC_SetAndActivateControl(win,"StartTestPulseButton")
-	
+
 	print ("Start Sciencing")
 
-End		
+End
 
 /// @brief  Open and configure amplifiers for Multi-Patch experiments
 ///
@@ -89,52 +89,52 @@ End
 Function MPConfig_Amplifiers(panelTitle, UserSettings)
 	string panelTitle
 	Wave /T UserSettings
-	
+
 	string AmpSerialLocal, AmpTitleLocal, CheckDA
 	variable i, ii, ampSerial
-	
+
 	FindValue /TXOP = 4 /TEXT = AMP_SERIAL UserSettings
 	AmpSerialLocal = UserSettings[V_value][%SettingValue]
 	FindValue /TXOP = 4 /TEXT = AMP_TITLE UserSettings
 	AmpTitleLocal = UserSettings[V_value][%SettingValue]
-	
-	Assert(AI_OpenMCCs(AmpSerialLocal, ampTitleList = AmpTitleLocal, maxAttempts = ATTEMPTS),"Evil kittens prevented MultiClamp from opening - FULL STOP" ) 
-	
+
+	Assert(AI_OpenMCCs(AmpSerialLocal, ampTitleList = AmpTitleLocal, maxAttempts = ATTEMPTS),"Evil kittens prevented MultiClamp from opening - FULL STOP" )
+
 	MPConfig_Position_MCC_Win(AmpSerialLocal,AmpTitleLocal)
-	
+
 	PGC_SetAndActivateControl(panelTitle,"button_Settings_UpdateAmpStatus")
-	
+
 	for(i = 0; i<NUM_HEADSTAGES; i+=1)
-		
+
 		PGC_SetAndActivateControl(panelTitle,"Popup_Settings_HeadStage", val = i)
-		
-		if(!mod(i,2)) // even 
+
+		if(!mod(i,2)) // even
 			ampSerial = str2num(StringFromList(ii, AmpSerialLocal))
 			PGC_SetAndActivateControl(panelTitle,"popup_Settings_Amplifier", val = MPConfig_FindAmpInList(ampSerial, 1))
 		else //odd
 			ampSerial = str2num(StringFromList(ii, AmpSerialLocal))
 			PGC_SetAndActivateControl(panelTitle,"popup_Settings_Amplifier", val = MPConfig_FindAmpInList(ampSerial, 2))
 			ii+=1
-		endif 
-		
+		endif
+
 		PGC_SetAndActivateControl(panelTitle,"Popup_Settings_VC_DA", val = i)
-		
-		if(i>3) 
+
+		if(i>3)
 			PGC_SetAndActivateControl(panelTitle,"Popup_Settings_VC_AD", val = i+4)
 			else
 			PGC_SetAndActivateControl(panelTitle,"Popup_Settings_VC_AD", val = i)
 		endif
-		
+
 		CheckDA = GetPanelControl(i, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_CHECK)
 		PGC_SetAndActivateControl(panelTitle,CheckDA,val = CHECKBOX_SELECTED)
 		PGC_SetAndActivateControl(panelTitle,"ADC", val = DA_EPHYS_PANEL_DATA_ACQUISITION)
 		MPConfig_MCC_InitParams(panelTitle,i)
 		PGC_SetAndActivateControl(panelTitle,"ADC", val = DA_EPHYS_PANEL_HARDWARE)
 	endfor
-	
+
 	PGC_SetAndActivateControl(panelTitle,"button_Hardware_AutoGainAndUnit")
 End
-		
+
 /// @brief  Configure pressure devices for Multi-Patch experiments
 ///
 /// @param panelTitle		Name of ITC device panel
@@ -142,20 +142,20 @@ End
 Function MPConfig_Pressure(panelTitle, UserSettings)
 	string panelTitle
 	Wave /T UserSettings
-	
+
 	variable i, ii=0, PressDevVal
 	string NIDev, PressureDevLocal, PressureDataList
-	
+
 	PGC_SetAndActivateControl(panelTitle,"button_Settings_UpdateDACList")
 	FindValue /TXOP = 4 /TEXT = PRESSURE_DEV UserSettings
 	PressureDevLocal = UserSettings[V_value][%SettingValue]
 	NIDev = HW_NI_ListDevices()
-	
+
 	for(i = 0; i<NUM_HEADSTAGES; i+=1)
 		PressDevVal = WhichListItem(StringFromList(ii,PressureDevLocal),NIDev)
 		PGC_SetAndActivateControl(panelTitle,"Popup_Settings_HeadStage", val = i)
 		PGC_SetAndActivateControl(panelTitle,"popup_Settings_Pressure_dev", val = PressDevVal+1)
-		 
+
 		if(!mod(i,2)) // even
 			PGC_SetAndActivateControl(panelTitle,"Popup_Settings_Pressure_DA", val = 0)
 			PGC_SetAndActivateControl(panelTitle,"Popup_Settings_Pressure_AD", val = 0)
@@ -167,25 +167,25 @@ Function MPConfig_Pressure(panelTitle, UserSettings)
 			PGC_SetAndActivateControl(panelTitle,"Popup_Settings_Pressure_TTLA", val = 3)
 			PGC_SetAndActivateControl(panelTitle,"Popup_Settings_Pressure_TTLB", val = 4)
 			ii+= 1
-		endif		
+		endif
 	endfor
-	
+
 	PGC_SetAndActivateControl(panelTitle,"button_Hardware_P_Enable")
-	
+
 	PGC_SetAndActivateControl(panelTitle,"ADC", val = DA_EPHYS_PANEL_SETTINGS)
 	FindValue /TXOP = 4 /TEXT = PRESSURE_BATH UserSettings
 	PGC_SetAndActivateControl(panelTitle,"setvar_Settings_InBathP", val = str2num(UserSettings[V_value][%SettingValue]))
-	FindValue /TXOP = 4 /TEXT = PRESSURE_STARTSEAL UserSettings  			
+	FindValue /TXOP = 4 /TEXT = PRESSURE_STARTSEAL UserSettings
 	PGC_SetAndActivateControl(panelTitle,"setvar_Settings_SealStartP", val = str2num(UserSettings[V_value][%SettingValue]))
-	FindValue /TXOP = 4 /TEXT = PRESSURE_MAXSEAL UserSettings		
-	PGC_SetAndActivateControl(panelTitle,"setvar_Settings_SealMaxP", val = str2num(UserSettings[V_value][%SettingValue]))		
-	
+	FindValue /TXOP = 4 /TEXT = PRESSURE_MAXSEAL UserSettings
+	PGC_SetAndActivateControl(panelTitle,"setvar_Settings_SealMaxP", val = str2num(UserSettings[V_value][%SettingValue]))
+
 	// Set pressure calibration values
 	FindValue /TXOP = 4 /TEXT = PRESSURE_CONST UserSettings
 	Wave /T PressureConstantTextWv = ListToTextWave(UserSettings[V_value][%SettingValue], ";")
 	Make /D/FREE PressureConstants = str2num(PressureConstantTextWv)
 	WAVE pressureDataWv = P_GetPressureDataWaveRef(panelTitle)
-	
+
 	pressureDataWv[%headStage_0][%PosCalConst] = PressureConstants[0]
 	pressureDataWv[%headStage_1][%PosCalConst] = PressureConstants[1]
 	pressureDataWv[%headStage_2][%PosCalConst] = PressureConstants[2]
@@ -203,18 +203,18 @@ Function MPConfig_Pressure(panelTitle, UserSettings)
 	pressureDataWv[%headStage_5][%NegCalConst] = -PressureConstants[5]
 	pressureDataWv[%headStage_6][%NegCalConst] = -PressureConstants[6]
 	pressureDataWv[%headStage_7][%NegCalConst] = -PressureConstants[7]
-	
-End 
+
+End
 
 /// @brief  Monitor set and bath temperature during experiments
 ///
 /// @param panelTitle		Name of ITC device panel
-/// @param UserSettings	User settings wave from configuration Notebook		
+/// @param UserSettings	User settings wave from configuration Notebook
 Function MPConfig_AsyncTemp(panelTitle, UserSettings)
 	string panelTitle
 	Wave /T UserSettings
 
-	PGC_SetAndActivateControl(panelTitle,"ADC", val = DA_EPHYS_PANEL_ASYNCHRONOUS)		
+	PGC_SetAndActivateControl(panelTitle,"ADC", val = DA_EPHYS_PANEL_ASYNCHRONOUS)
 	PGC_SetAndActivateControl(panelTitle,"SetVar_AsyncAD_Title_00", str = "Set Temperature")
 	PGC_SetAndActivateControl(panelTitle,"Check_AsyncAD_00", val = 1)
 	FindValue /TXOP = 4 /TEXT = TEMP_GAIN UserSettings
@@ -236,11 +236,11 @@ End
 /// @brief  Set user defined experimental parameters
 ///
 /// @param panelTitle		Name of ITC device panel
-/// @param UserSettings	User settings wave from configuration Notebook		
+/// @param UserSettings	User settings wave from configuration Notebook
 Function MPConfig_DAEphysSettings(panelTitle, UserSettings)
 	string panelTitle
 	Wave /T UserSettings
- 	
+
 	PGC_SetAndActivateControl(panelTitle,"ADC", val = DA_EPHYS_PANEL_SETTINGS)
 	FindValue /TXOP = 4 /TEXT = TP_AFTER_DAQ UserSettings
 	PGC_SetAndActivateControl(panelTitle,"check_Settings_TPAfterDAQ", val = str2num(UserSettings[V_value][%CheckBoxValue]))
@@ -252,7 +252,7 @@ Function MPConfig_DAEphysSettings(panelTitle, UserSettings)
 	PGC_SetAndActivateControl(panelTitle,"Check_Settings_Append", val = str2num(UserSettings[V_value][%CheckBoxValue]))
 	FindValue /TXOP = 4 /TEXT = SYNC_MIES_MCC UserSettings
 	PGC_SetAndActivateControl(panelTitle,"check_Settings_SyncMiesToMCC", val = str2num(UserSettings[V_value][%CheckBoxValue]))
-	FindValue /TXOP = 4 /TEXT = ENABLE_I_EQUAL_ZERO UserSettings	
+	FindValue /TXOP = 4 /TEXT = ENABLE_I_EQUAL_ZERO UserSettings
 	PGC_SetAndActivateControl(panelTitle,"check_Settings_AmpIEQZstep", val = str2num(UserSettings[V_value][%CheckBoxValue]))
 	PGC_SetAndActivateControl(panelTitle,"ADC", val = DA_EPHYS_PANEL_DATA_ACQUISITION)
 	FindValue /TXOP = 4 /TEXT = ENABLE_OODAQ UserSettings
@@ -268,11 +268,11 @@ Function MPConfig_DAEphysSettings(panelTitle, UserSettings)
 	FindValue /TXOP = 4 /TEXT = DEFAULT_ITI UserSettings
 	PGC_SetAndActivateControl(panelTitle,"SetVar_DataAcq_ITI", val = str2num(UserSettings[V_value][%CheckBoxValue]))
 	FindValue /TXOP = 4 /TEXT  = PRESSURE_USER_FOLLOW_HS UserSettings
-	PGC_SetAndActivateControl(panelTitle,"check_DataACq_Pressure_AutoOFF", val = str2num(UserSettings[V_value][%CheckBoxValue]))	
+	PGC_SetAndActivateControl(panelTitle,"check_DataACq_Pressure_AutoOFF", val = str2num(UserSettings[V_value][%CheckBoxValue]))
 	FindValue /TXOP = 4 /TEXT = PRESSURE_USER_ON_SEAL UserSettings
 	PGC_SetAndActivateControl(panelTitle,"check_Settings_UserP_Seal", val = str2num(UserSettings[V_value][%CheckBoxValue]))
 	FindValue /TXOP = 4 /TEXT = TP_AMP_VC UserSettings
- 	PGC_SetAndActivateControl(panelTitle,"SetVar_DataAcq_TPAmplitude", val = str2num(UserSettings[V_value][%SettingValue]))
+	PGC_SetAndActivateControl(panelTitle,"SetVar_DataAcq_TPAmplitude", val = str2num(UserSettings[V_value][%SettingValue]))
 End
 
 /// @brief Intiate MCC parameters for active headstages
@@ -283,7 +283,7 @@ Function MPConfig_MCC_InitParams(panelTitle, headStage)
 	string panelTitle
 	variable headStage
 
-	// Set initial parameters within MCC itself. 
+	// Set initial parameters within MCC itself.
 
 	AI_SelectMultiClamp(panelTitle, headStage)
 
@@ -295,7 +295,7 @@ Function MPConfig_MCC_InitParams(panelTitle, headStage)
 	MCC_SetFastCompTau(1.8e-6)
 	MCC_SetSlowCompTau(1e-5)
 	MCC_SetSlowCompTauX20Enable(0)
-	MCC_SetRsCompBandwidth(1.02e3)	
+	MCC_SetRsCompBandwidth(1.02e3)
 	MCC_SetRSCompCorrection(0)
 	MCC_SetPrimarySignalGain(1)
 	MCC_SetPrimarySignalLPF(10e3)
@@ -324,7 +324,7 @@ End
 /// @brief Position MCC windows to upper right monitor using nircmd.exe
 ///
 /// @param serialNum	Serial number of MCC
-/// @param winTitle		Name of MCC window 
+/// @param winTitle		Name of MCC window
 Function MPConfig_Position_MCC_Win(serialNum, winTitle)
 	string serialNum, winTitle
 	Make /T /FREE winNm
@@ -332,26 +332,26 @@ Function MPConfig_Position_MCC_Win(serialNum, winTitle)
 	variable w
 
 	for(w = 0; w<NUM_HEADSTAGES/2; w+=1)
-	
+
 		winNm[w] = {stringfromlist(w,winTitle) + "(" + stringfromlist(w,serialNum) + ")"}
 		sprintf cmd, "nircmd.exe win center title \"%s\"", winNm[w]
-		ExecuteScriptText cmd 
+		ExecuteScriptText cmd
 	endfor
-	
+
 	sprintf cmd, "nircmd.exe win move title \"%s\" 2300 -1250 0 0",  winNm[0]
-	ExecuteScriptText cmd 
+	ExecuteScriptText cmd
 	sprintf cmd, "nircmd.exe win activate title \"%s\"", winNm[0]
 	ExecuteScriptText cmd
 	sprintf cmd, "nircmd.exe win move title \"%s\" 2675 -1250 0 0",  winNm[1]
-	ExecuteScriptText cmd 
+	ExecuteScriptText cmd
 	sprintf cmd, "nircmd.exe win activate title \"%s\"", winNm[1]
 	ExecuteScriptText cmd
 	sprintf cmd, "nircmd.exe win move title \"%s\" 2300 -900 0 0",  winNm[2]
-	ExecuteScriptText cmd 
+	ExecuteScriptText cmd
 	sprintf cmd, "nircmd.exe win activate title \"%s\"", winNm[2]
 	ExecuteScriptText cmd
 	sprintf cmd, "nircmd.exe win move title \"%s\" 2675 -900 0 0",  winNm[3]
-	ExecuteScriptText cmd 
+	ExecuteScriptText cmd
 	sprintf cmd, "nircmd.exe win activate title \"%s\"", winNm[3]
 	ExecuteScriptText cmd
 
@@ -384,7 +384,7 @@ Function MPConfig_ClampModes(panelTitle, UserSettings)
 	PGC_SetAndActivateControl(panelTitle,"setvar_DataAcq_IbiasMax", val = str2num(UserSettings[V_value][%SettingValue]))
 	PGC_SetAndActivateControl(panelTitle,"check_DataAcq_AutoBias", val = CHECKBOX_SELECTED)
 	PGC_SetAndActivateControl(panelTitle,"Check_DataAcq_SendToAllAmp", val = CHECKBOX_UNSELECTED)
-	
+
 End
 
 /// @brief Find the list index of a connected amplifier serial number
@@ -407,6 +407,6 @@ Function MPConfig_FindAmpInList(ampSerialRef, ampChannelIDRef)
 			return i
 		endif
 	endfor
-	
+
 		ASSERT(0, "Could not find amplifier")
 End

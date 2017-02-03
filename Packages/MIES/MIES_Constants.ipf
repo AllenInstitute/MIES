@@ -588,13 +588,13 @@ Constant DA_EPHYS_PANEL_PRESSURE_USER = 2
 
 ///@name KeyWord constants for User Configuration Notebook
 ///@{
-Constant		MPCONFIG_VERSION_NUM    = 1
+Constant    MPCONFIG_VERSION_NUM    = 1
 StrConstant USER_CONFIG_PATH        = "..:..:UserConfig.txt"
 Constant    ATTEMPTS                = 5
-StrConstant CONFIG_VERSION 			   = "Version"
+StrConstant CONFIG_VERSION          = "Version"
 StrConstant SAVE_PATH               = "D:MiesSave"
 StrConstant ITC_DEV_TYPE            = "Name of ITC Device"
-StrConstant ITC_DEV_NUM				 =  "ITC Device number"
+StrConstant ITC_DEV_NUM             = "ITC Device number"
 StrConstant AMP_TITLE               = "Amplifier Names"
 StrConstant AMP_SERIAL              = "Amplifier Serial Numbers"
 StrConstant PRESSURE_DEV            = "Name of Pressure Devices"
@@ -621,8 +621,7 @@ StrConstant DEFAULT_ITI             = "Default ITI (ms)"
 StrConstant ENABLE_OODAQ            = "Enable ooDAQ"
 StrConstant OODAQ_POST_DELAY        = "ooDAQ post sweep delay (ms)"
 StrConstant OODAQ_RESOLUTION        = "ooDAQ resolution (ms)"
-StrConstant HOLDING						= "Initial Holding Potential"
-StrConstant AUTOBIAS_RANGE				= "I-clamp Autobias range (mV)"
-StrConstant AUTOBIAS_MAXI				= "I-clamp Max bias current (pA)"
+StrConstant HOLDING                 = "Initial Holding Potential"
+StrConstant AUTOBIAS_RANGE          = "I-clamp Autobias range (mV)"
+StrConstant AUTOBIAS_MAXI           = "I-clamp Max bias current (pA)"
 ///@}
-

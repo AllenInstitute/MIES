@@ -57,6 +57,7 @@
 #include "MIES_Manipulator"
 #include "MIES_Menu"
 #include "MIES_MiesUtilities"
+#include "MIES_MPConfig"
 #include "MIES_NeuroDataWithoutBorders"
 #include "MIES_OptimzedOverlapDistributedAcquisition"
 #include "MIES_Oscilloscope"
@@ -75,4 +76,3 @@
 #include "MIES_WaveBuilder"
 #include "MIES_WaveBuilderPanel" menus=0
 #include "MIES_WaveDataFolderGetters"
-#include "MIES_MPConfig"

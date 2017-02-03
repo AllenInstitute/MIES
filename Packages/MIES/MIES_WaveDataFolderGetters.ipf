@@ -4797,26 +4797,26 @@ End
 /// @brief Set Key:Value types for User_Config Notebook
 Function/WAVE GetMultiPatchConfigKeyTypes()
 
-    variable numRows
+	variable numRows
 
 	Make/FREE/T stringKeys = {ITC_DEV_TYPE, ITC_DEV_NUM, AMP_TITLE, AMP_SERIAL, PRESSURE_DEV, PRESSURE_CONST}
-	Make/FREE/T numKeys    = {CONFIG_VERSION, TEMP_GAIN, TEMP_MAX, TEMP_MIN,                  \
-                              PRESSURE_BATH, PRESSURE_STARTSEAL, PRESSURE_MAXSEAL, TP_AMP_VC, \
-                              NUM_STIM_SETS, DEFAULT_ITI, OODAQ_POST_DELAY, OODAQ_RESOLUTION,  \
-                              HOLDING, AUTOBIAS_RANGE, AUTOBIAS_MAXI}
-	Make/FREE/T checkBoxKeys = {TP_AFTER_DAQ, SAVE_TP, EXPORT_NWB, APPEND_ASYNC,                                     	\
+	Make/FREE/T numKeys    = {CONFIG_VERSION, TEMP_GAIN, TEMP_MAX, TEMP_MIN,                   \
+							  PRESSURE_BATH, PRESSURE_STARTSEAL, PRESSURE_MAXSEAL, TP_AMP_VC,  \
+							  NUM_STIM_SETS, DEFAULT_ITI, OODAQ_POST_DELAY, OODAQ_RESOLUTION,  \
+							  HOLDING, AUTOBIAS_RANGE, AUTOBIAS_MAXI}
+	Make/FREE/T checkBoxKeys = {TP_AFTER_DAQ, SAVE_TP, EXPORT_NWB, APPEND_ASYNC,                                     \
 								SYNC_MIES_MCC, ENABLE_I_EQUAL_ZERO, PRESSURE_USER_ON_SEAL, PRESSURE_USER_FOLLOW_HS,  \
 								REPEAT_ACQ, GET_SET_ITI, ENABLE_OODAQ}
 
-    numRows = max(DimSize(stringKeys, ROWS), DimSize(numKeys, ROWS), DimSize(checkBoxKeys, ROWS))
+	numRows = max(DimSize(stringKeys, ROWS), DimSize(numKeys, ROWS), DimSize(checkBoxKeys, ROWS))
 	Make/FREE/T/N=(numRows, 3) keyTypes
 	SetWaveDimLabel(keyTypes, "StringKeys;NumKeys;CheckBoxKeys", COLS)
 
 	Redimension/N=(numRows) stringKeys, numKeys, checkBoxKeys
 
-    keyTypes[][%StringKeys]       = stringKeys[p]
-    keyTypes[][%NumKeys]         = numKeys[p]
-    keyTypes[][%CheckBoxKeys] = checkBoxKeys[p]
+	keyTypes[][%StringKeys]       = stringKeys[p]
+	keyTypes[][%NumKeys]         = numKeys[p]
+	keyTypes[][%CheckBoxKeys] = checkBoxKeys[p]
 
 	return keyTypes
 End
@@ -4825,26 +4825,26 @@ End
 ///
 /// @param  ConfigNB		Name of User Configuration Notebook as a string
 /// @param  KeyTypes		Text wave of key types to parse configuration notebook
-/// @return UserSettings	Text wave of configuration parameters 
+/// @return UserSettings	Text wave of configuration parameters
 Function /WAVE GetMultiPatchUserSettings(ConfigNB, KeyTypes)
 	string ConfigNB
 	Wave KeyTypes
-	
+
 	string Content, CurrentKey, CurrentValue, errorMsg, CurrentKeyType, line
 	variable i, ii, delimiter, NumValue, minimumSize, numRows, numCols, numLines
 	Make /FREE/T/N=(MINIMUM_WAVE_SIZE,2) UserSettings
-	
+
 	SetWaveDimLabel(UserSettings, "SettingKey;SettingValue", COLs)
-	
-	
+
+
 		Notebook $ConfigNB selection = {startOfFile, endOfFile}
 		GetSelection notebook, $ConfigNB, 2
 		Content = S_Selection
-		
+
 		numLines = ItemsInList(Content, "\r")
 		for(i = 0; i < numLines; i += 1)
 			line = StringFromList(i, Content, "\r")
-		
+
 		if(!isEmpty(line))
 			if(cmpstr(line[0], "#"))
 				delimiter = strsearch(line, "=", 0)
@@ -4857,7 +4857,7 @@ Function /WAVE GetMultiPatchUserSettings(ConfigNB, KeyTypes)
 				ASSERT(V_value >= 0, errorMsg)
 				CurrentKeyType = GetDimLabel(KeyTypes, 1, floor(V_value/DimSize(KeyTypes, 0)))
 				if(isEmpty(CurrentValue))
-					sprintf errorMsg, "%s has not been set, please enter a value in the Configuration NoteBook", CurrentKey  
+					sprintf errorMsg, "%s has not been set, please enter a value in the Configuration NoteBook", CurrentKey
 					ASSERT(isEmpty(CurrentValue), errorMsg)
 				elseif(!cmpstr(CurrentKey, "Version"))
 					ASSERT(str2num(CurrentValue) == MPCONFIG_VERSION_NUM, "Invalid version, please update Configuration NoteBook")
@@ -4899,14 +4899,14 @@ Function /WAVE GetMultiPatchUserSettings(ConfigNB, KeyTypes)
 					endif
 				endif
 			endif
-			
-		endif	
-	
+
+		endif
+
 	endfor
-	
+
 	ASSERT(ii > 0, "No User Settings were found")
 	Redimension /N = (ii, DimSize(UserSettings, COLS)) UserSettings
-	
+
 	return UserSettings
-	
+
 End
