@@ -34,7 +34,7 @@ Asyncronous channel 0 = Set Temperature
 
 Asyncronous channel 1 = Bath Temperature
 
-Asyncrnous Unit = degC 
+Asyncronous Unit = degC 
 
 Temperature control gain (in V) = 0.01
 
