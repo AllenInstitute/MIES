@@ -13,7 +13,7 @@
 /// - DAEphys panel settings
 
 /// @brief Configure MIES for experiments
-Function ConfigureMIES()
+static Function ConfigureMIES()
 
 	string UserConfigNB, win, filename, ITCDevNum, ITCDevType, fullPath, StimSetPath
 
@@ -88,7 +88,7 @@ End
 ///
 /// @param panelTitle		Name of ITC device panel
 /// @param UserSettings	User settings wave from configuration Notebook
-Function ExpConfig_Amplifiers(panelTitle, UserSettings)
+static Function ExpConfig_Amplifiers(panelTitle, UserSettings)
 	string panelTitle
 	Wave /T UserSettings
 
@@ -147,7 +147,7 @@ End
 ///
 /// @param panelTitle		Name of ITC device panel
 /// @param UserSettings	User settings wave from configuration Notebook
-Function ExpConfig_Pressure(panelTitle, UserSettings)
+static Function ExpConfig_Pressure(panelTitle, UserSettings)
 	string panelTitle
 	Wave /T UserSettings
 
@@ -225,7 +225,7 @@ End
 ///
 /// @param panelTitle		Name of ITC device panel
 /// @param UserSettings	User settings wave from configuration Notebook
-Function ExpConfig_AsyncTemp(panelTitle, UserSettings)
+static Function ExpConfig_AsyncTemp(panelTitle, UserSettings)
 	string panelTitle
 	Wave /T UserSettings
 
@@ -256,7 +256,7 @@ End
 ///
 /// @param panelTitle		Name of ITC device panel
 /// @param UserSettings	User settings wave from configuration Notebook
-Function ExpConfig_DAEphysSettings(panelTitle, UserSettings)
+static Function ExpConfig_DAEphysSettings(panelTitle, UserSettings)
 	string panelTitle
 	Wave /T UserSettings
 
@@ -300,7 +300,7 @@ End
 ///
 /// @param panelTitle	ITC device panel
 /// @param headStage	Active headstage	 index
-Function ExpConfig_MCC_InitParams(panelTitle, headStage)
+static Function ExpConfig_MCC_InitParams(panelTitle, headStage)
 	string panelTitle
 	variable headStage
 
@@ -346,7 +346,7 @@ End
 ///
 /// @param serialNum	Serial number of MCC
 /// @param winTitle		Name of MCC window
-Function ExpConfig_Position_MCC_Win(serialNum, winTitle)
+static Function ExpConfig_Position_MCC_Win(serialNum, winTitle)
 	string serialNum, winTitle
 	Make /T /FREE winNm
 	string cmd, fullPath
@@ -385,7 +385,7 @@ Function ExpConfig_Position_MCC_Win(serialNum, winTitle)
 End
 
 ///@brief Set intial values for headstage clamp modes
-Function ExpConfig_ClampModes(panelTitle, UserSettings)
+static Function ExpConfig_ClampModes(panelTitle, UserSettings)
 	string panelTitle
 	Wave /T UserSettings
 
@@ -418,7 +418,7 @@ End
 ///
 /// @param ampSerialRef		Amplifier Serial Number to search for
 /// @param ampChannelIDRef	Headstage reference number
-Function ExpConfig_FindAmpInList(ampSerialRef, ampChannelIDRef)
+static Function ExpConfig_FindAmpInList(ampSerialRef, ampChannelIDRef)
 	variable ampSerialRef, ampChannelIDRef
 
 	string listOfAmps, ampDef
