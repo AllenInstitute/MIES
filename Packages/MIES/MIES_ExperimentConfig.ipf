@@ -30,8 +30,8 @@ Function ConfigureMIES()
 	endif
 
 	UserConfigNB = winname(0,16)
-	Wave /T KeyTypes = GetMultiPatchConfigKeyTypes()
-	Wave /T UserSettings = GetMultiPatchUserSettings(UserConfigNB, KeyTypes)
+	Wave /T KeyTypes = GetExpConfigKeyTypes()
+	Wave /T UserSettings = GetExpUserSettings(UserConfigNB, KeyTypes)
 	FindValue /TXOP = 4 /TEXT = ITC_DEV_TYPE UserSettings
 	ITCDevType = UserSettings[V_value][%SettingValue]
 	FindValue /TXOP = 4 /TEXT = ITC_DEV_NUM UserSettings

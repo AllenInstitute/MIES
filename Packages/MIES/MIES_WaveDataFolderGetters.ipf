@@ -4795,7 +4795,7 @@ End
 /// @}
 
 /// @brief Set Key:Value types for User_Config Notebook
-Function/WAVE GetMultiPatchConfigKeyTypes()
+Function/WAVE GetExpConfigKeyTypes()
 
 	variable numRows
 
@@ -4827,7 +4827,7 @@ End
 /// @param  ConfigNB		Name of User Configuration Notebook as a string
 /// @param  KeyTypes		Text wave of key types to parse configuration notebook
 /// @return UserSettings	Text wave of configuration parameters
-Function /WAVE GetMultiPatchUserSettings(ConfigNB, KeyTypes)
+Function /WAVE GetExpUserSettings(ConfigNB, KeyTypes)
 	string ConfigNB
 	Wave KeyTypes
 
@@ -4861,7 +4861,7 @@ Function /WAVE GetMultiPatchUserSettings(ConfigNB, KeyTypes)
 					sprintf errorMsg, "%s has not been set, please enter a value in the Configuration NoteBook", CurrentKey
 					ASSERT(isEmpty(CurrentValue), errorMsg)
 				elseif(!cmpstr(CurrentKey, "Version"))
-					ASSERT(str2num(CurrentValue) == MPCONFIG_VERSION_NUM, "Invalid version, please update Configuration NoteBook")
+					ASSERT(str2num(CurrentValue) == EXPCONFIG_VERSION_NUM, "Invalid version, please update Configuration NoteBook")
 					ASSERT(ii == 0, "Configuration Notebook version must be specified first")
 					EnsureLargeEnoughWave(UserSettings, minimumSize = ii)
 					UserSettings[ii][%SettingKey] = CurrentKey
