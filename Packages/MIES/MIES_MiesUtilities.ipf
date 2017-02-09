@@ -1917,15 +1917,16 @@ Function PostPlotTransformations(graph, pps)
 	crsA = CsrInfo(A, graph)
 	crsB = CsrInfo(B, graph)
 
-traceList = GetAllSweepTraces(graph)
+	traceList = GetAllSweepTraces(graph)
 
 	ZeroTracesIfReq(graph, traceList, pps.zeroTraces)
 	if(pps.timeAlignment)
 		TimeAlignmentIfReq(graph, traceList, pps.timeAlignMode, pps.timeAlignRefTrace, pps.timeAlignLevel)
 	endif
-	AverageWavesFromSameYAxisIfReq(graph, traceList, pps.averageTraces, pps.averageDataFolder)
 
+	AverageWavesFromSameYAxisIfReq(graph, traceList, pps.averageTraces, pps.averageDataFolder)
 	AR_HighlightArtefactsEntry(graph)
+	PA_ShowPulses(graph, pps.averageDataFolder, pps.pulseAverSett)
 
 	RestoreCursor(graph, crsA)
 	RestoreCursor(graph, crsB)

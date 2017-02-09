@@ -31,6 +31,7 @@
 #include ":MIES_GuiUtilities"
 #include ":MIES_MiesUtilities"
 #include ":MIES_ProgrammaticGUIControl"
+#include ":MIES_PulseAveraging"
 #include ":MIES_Utilities"
 #include ":MIES_Structures"
 #include ":MIES_WaveDataFolderGetters"

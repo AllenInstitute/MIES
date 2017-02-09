@@ -156,6 +156,8 @@ static Function SB_InitPostPlotSettings(graph, pps)
 	pps.timeAlignLevel    = GetSetVariable(panel, "setvar_sweepBrowser_tAlignLevel")
 	pps.timeAlignRefTrace = GetPopupMenuString(panel, "popup_sweepBrowser_tAlignMaster")
 
+	PA_GatherSettings(graph, pps)
+
 	FUNCREF FinalUpdateHookProto pps.finalUpdateHook = SB_PanelUpdate
 End
 
@@ -710,8 +712,11 @@ Function/DF SB_CreateNewSweepBrowser()
 	PopupMenu popup_sweep_selector,pos={13.00,91.00},size={127.00,19.00},bodyWidth=127,proc=SB_PopupMenuSelectSweep
 	PopupMenu popup_sweep_selector,help={"List of sweeps in this sweep browser"}
 	PopupMenu popup_sweep_selector,value= #("SB_GetSweepList(\"" + graph + "\")")
-	Button button_SweepBrowser_OpenChanSel,pos={96.00,25.00},size={40.00,20.00},proc=SB_OpenChannelSelectionPanel,title="Chan"
+	Button button_SweepBrowser_OpenChanSel,pos={71.00,25.00},size={40.00,20.00},proc=SB_OpenChannelSelectionPanel,title="Chan"
 	Button button_SweepBrowser_OpenChanSel,help={"Open the channel selection dialog, allows to disable single channels and headstages"}
+	CheckBox check_SweepBrowser_PulseAvg,pos={114.00,26.00},size={37.00,15.00},proc=SB_CheckboxChangedSettings,title="PPA"
+	CheckBox check_SweepBrowser_PulseAvg,help={"Display per pulse averaged data"}
+	CheckBox check_SweepBrowser_PulseAvg,value= 0
 	GroupBox group_SB_axes_scaling,pos={11.00,310.00},size={133.00,60.00},title="Axes Scaling"
 	CheckBox check_SB_visibleXRange,pos={19.00,329.00},size={40.00,15.00},proc=SB_AxisScaling,title="Vis X"
 	CheckBox check_SB_visibleXRange,help={"Scale the y axis to the visible x data range"}
@@ -1103,6 +1108,8 @@ Function SB_CheckboxChangedSettings(cba) : CheckBoxControl
 			elseif(!cmpstr(ctrl, "check_SweepBrowser_OpenArtRem"))
 				WAVE listBoxWave = GetArtefactRemovalListWave(dfr)
 				AR_TogglePanel(win, listBoxWave)
+			elseif(!cmpstr(ctrl, "check_SweepBrowser_PulseAvg"))
+				PA_TogglePanel(win)
 			endif
 
 			SB_UpdateSweepPlot(graph)

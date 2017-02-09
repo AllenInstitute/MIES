@@ -33,8 +33,28 @@ Structure PostPlotSettings
 	variable timeAlignLevel
 	/// @}
 
+	STRUCT PulseAverageSettings pulseAverSett
+
 	/// Hook function which is called at the very end of #PostPlotTransformations
 	FUNCREF FinalUpdateHookProto finalUpdateHook
+EndStructure
+
+Function InitPulseAverageSettings(pa)
+	STRUCT PulseAverageSettings &pa
+
+	pa.showIndividualTraces = NaN
+	pa.showAverageTrace     = NaN
+	pa.startingPulse        = NaN
+	pa.endingPulse          = NaN
+	pa.regionSlider         = NaN
+	pa.fallbackPulseLength  = NaN
+	pa.multipleGraphs       = NaN
+End
+
+Structure PulseAverageSettings
+	variable showIndividualTraces, showAverageTrace
+	variable startingPulse, endingPulse, regionSlider
+	variable fallbackPulseLength, multipleGraphs
 EndStructure
 
 /// @brief Parameter to #CreateTiledChannelGraph

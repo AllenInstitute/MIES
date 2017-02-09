@@ -27,6 +27,7 @@
 #include ":MIES_MiesUtilities"
 #include ":MIES_OverlaySweeps"
 #include ":MIES_ProgrammaticGuiControl"
+#include ":MIES_PulseAveraging"
 #include ":MIES_Utilities"
 #include ":MIES_Structures"
 #include ":MIES_Cache"
@@ -268,6 +269,9 @@ Function DB_UpdateSweepPlot(panelTitle, [dummyArg])
 	pps.zeroTraces        = GetCheckBoxState(panelTitle, "check_DataBrowser_ZeroTraces")
 	pps.timeAlignRefTrace = ""
 	pps.timeAlignMode     = TIME_ALIGNMENT_NONE
+
+	PA_GatherSettings(panelTitle, pps)
+
 	FUNCREF FinalUpdateHookProto pps.finalUpdateHook = DB_PanelUpdate
 
 	PostPlotTransformations(graph, pps)
@@ -352,9 +356,9 @@ static Function DB_UpdateOverlaySweepWaves(panelTitle)
 	OVS_UpdatePanel(panelTitle, listBoxWave, listBoxSelWave, stimsetListWave, sweepWaveList, textualValues=textualValues)
 End
 
-Window DataBrowser() : Panel
+Window Databrowser() : Panel
 	PauseUpdate; Silent 1		// building window...
-	NewPanel /K=1 /W=(8,449,1220,1169) as "DataBrowser"
+	NewPanel /K=1 /W=(-10,192,1202,912) as "DataBrowser"
 	Button button_DataBrowser_NextSweep,pos={628.00,630.00},size={425.00,45.00},proc=DB_ButtonProc_Sweep,title="Next Sweep \\W649"
 	Button button_DataBrowser_NextSweep,help={"Displays the next sweep (sweep no. = last sweep number + step)"}
 	Button button_DataBrowser_NextSweep,userdata(ResizeControlsInfo)= A"!!,J.!!#D-J,hsdJ,hnmz!!#](Aon\"q<C^(Dzzzzzzzzzzzzz!!#](Aon\"q<C^(Dz"
@@ -376,44 +380,39 @@ Window DataBrowser() : Panel
 	ValDisplay valdisp_DataBrowser_LastSweep,limits={0,0,0},barmisc={0,1000}
 	ValDisplay valdisp_DataBrowser_LastSweep,value= #"0"
 	ValDisplay valdisp_DataBrowser_LastSweep,barBackColor= (56576,56576,56576)
-	CheckBox check_DataBrowser_DisplayDAchan,pos={20.00,9.00},size={122.00,15.00},proc=DB_CheckProc_ChangedSetting,title="Display DA channels"
+	CheckBox check_DataBrowser_DisplayDAchan,pos={18.00,9.00},size={122.00,15.00},proc=DB_CheckProc_ChangedSetting,title="Display DA channels"
 	CheckBox check_DataBrowser_DisplayDAchan,help={"Display DA (digital to analog) channel data"}
-	CheckBox check_DataBrowser_DisplayDAchan,userdata(ResizeControlsInfo)= A"!!,BY!!#:r!!#@X!!#<(z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
+	CheckBox check_DataBrowser_DisplayDAchan,userdata(ResizeControlsInfo)= A"!!,BI!!#:r!!#@X!!#<(z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	CheckBox check_DataBrowser_DisplayDAchan,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Duafnzzzzzzzzzzz"
 	CheckBox check_DataBrowser_DisplayDAchan,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
 	CheckBox check_DataBrowser_DisplayDAchan,value= 0
-	CheckBox check_databrowser_OverlayChan,pos={205.00,27.00},size={107.00,15.00},proc=DB_CheckProc_ChangedSetting,title="Overlay Channels"
+	CheckBox check_databrowser_OverlayChan,pos={153.00,27.00},size={107.00,15.00},proc=DB_CheckProc_ChangedSetting,title="Overlay Channels"
 	CheckBox check_databrowser_OverlayChan,help={"Displays all channels using a single  vertical axis"}
-	CheckBox check_databrowser_OverlayChan,userdata(ResizeControlsInfo)= A"!!,G]!!#=;!!#@:!!#<(z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
+	CheckBox check_databrowser_OverlayChan,userdata(ResizeControlsInfo)= A"!!,G)!!#=;!!#@:!!#<(z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	CheckBox check_databrowser_OverlayChan,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Duafnzzzzzzzzzzz"
 	CheckBox check_databrowser_OverlayChan,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
-	CheckBox check_databrowser_OverlayChan,value= 0
-	CheckBox check_databrowser_dDAQMode,pos={205.00,47.00},size={85.00,15.00},proc=DB_CheckProc_ChangedSetting,title="dDAQ Viewer"
+	CheckBox check_databrowser_OverlayChan,value= 1
+	CheckBox check_databrowser_dDAQMode,pos={153.00,45.00},size={85.00,15.00},proc=DB_CheckProc_ChangedSetting,title="dDAQ Viewer"
 	CheckBox check_databrowser_dDAQMode,help={"Enable dedicated support for viewing distributed DAQ data"}
-	CheckBox check_databrowser_dDAQMode,userdata(ResizeControlsInfo)= A"!!,G]!!#>J!!#?c!!#<(z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
+	CheckBox check_databrowser_dDAQMode,userdata(ResizeControlsInfo)= A"!!,G)!!#>B!!#?c!!#<(z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	CheckBox check_databrowser_dDAQMode,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Duafnzzzzzzzzzzz"
 	CheckBox check_databrowser_dDAQMode,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
 	CheckBox check_databrowser_dDAQMode,value= 0
-	Button button_DataBrowser_OpenChanSel,pos={155.00,25.00},size={40.00,20.00},proc=DB_OpenChannelSelectionPanel,title="Chan"
-	Button button_DataBrowser_OpenChanSel,help={"Open the channel selection dialog, allows to disable single channels and headstages"}
-	Button button_DataBrowser_OpenChanSel,userdata(ResizeControlsInfo)= A"!!,G+!!#=+!!#>.!!#<Xz!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
-	Button button_DataBrowser_OpenChanSel,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Duafn!(TR7zzzzzzzzzz"
-	Button button_DataBrowser_OpenChanSel,userdata(ResizeControlsInfo) += A"zzz!!#u:Duafn!(TR7zzzzzzzzzzzzz!!!"
-	TitleBox ListBox_DataBrowser_NoteDisplay,pos={1756,75},size={197.00,39.00}
-	TitleBox ListBox_DataBrowser_NoteDisplay,labelBack=(62208,62208,62208),fSize=8
-	TitleBox ListBox_DataBrowser_NoteDisplay,frame=0
+	TitleBox ListBox_DataBrowser_NoteDisplay,pos={1756.00,75.00},size={197.00,39.00}
 	TitleBox ListBox_DataBrowser_NoteDisplay,userdata(ResizeControlsInfo)= A"!!,LBJ,hp%!!#AT!!#>*z!!#o2B4uAezzzzzzzzzzzzzz!!#o2B4uAezz"
 	TitleBox ListBox_DataBrowser_NoteDisplay,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Duafnzzzzzzzzzzz"
 	TitleBox ListBox_DataBrowser_NoteDisplay,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
-	CheckBox check_DataBrowser_SweepOverlay,pos={205.00,9.00},size={97.00,15.00},proc=DB_CheckboxProc_OverlaySweeps,title="Overlay Sweeps"
+	TitleBox ListBox_DataBrowser_NoteDisplay,labelBack=(62208,62208,62208),fSize=8
+	TitleBox ListBox_DataBrowser_NoteDisplay,frame=0
+	CheckBox check_DataBrowser_SweepOverlay,pos={153.00,9.00},size={97.00,15.00},proc=DB_CheckboxProc_OverlaySweeps,title="Overlay Sweeps"
 	CheckBox check_DataBrowser_SweepOverlay,help={"Adds unplotted sweep to graph. Removes plotted sweep from graph."}
-	CheckBox check_DataBrowser_SweepOverlay,userdata(ResizeControlsInfo)= A"!!,G]!!#:r!!#@&!!#<(z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
+	CheckBox check_DataBrowser_SweepOverlay,userdata(ResizeControlsInfo)= A"!!,G)!!#:r!!#@&!!#<(z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	CheckBox check_DataBrowser_SweepOverlay,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Duafnzzzzzzzzzzz"
 	CheckBox check_DataBrowser_SweepOverlay,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
 	CheckBox check_DataBrowser_SweepOverlay,value= 0
-	CheckBox check_DataBrowser_AutoUpdate,pos={484.00,9.00},size={159.00,15.00},title="Display last sweep acquired"
+	CheckBox check_DataBrowser_AutoUpdate,pos={382.00,9.00},size={159.00,15.00},title="Display last sweep acquired"
 	CheckBox check_DataBrowser_AutoUpdate,help={"Displays the last sweep acquired when data acquistion is ongoing"}
-	CheckBox check_DataBrowser_AutoUpdate,userdata(ResizeControlsInfo)= A"!!,IX!!#:r!!#A.!!#<(z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
+	CheckBox check_DataBrowser_AutoUpdate,userdata(ResizeControlsInfo)= A"!!,I%!!#:r!!#A.!!#<(z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	CheckBox check_DataBrowser_AutoUpdate,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Duafnzzzzzzzzzzz"
 	CheckBox check_DataBrowser_AutoUpdate,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
 	CheckBox check_DataBrowser_AutoUpdate,value= 0
@@ -423,21 +422,21 @@ Window DataBrowser() : Panel
 	PopupMenu popup_DB_lockedDevices,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#?(FEDG<!(TR7zzzzzzzzzz"
 	PopupMenu popup_DB_lockedDevices,userdata(ResizeControlsInfo) += A"zzz!!#?(FEDG<!(TR7zzzzzzzzzzzzz!!!"
 	PopupMenu popup_DB_lockedDevices,mode=1,popvalue="- none -",value= #"DB_GetAllDevicesWithData()"
-	CheckBox check_DataBrowser_DisplayTTL,pos={20.00,27.00},size={128.00,15.00},proc=DB_CheckProc_ChangedSetting,title="Display TTL Channels"
+	CheckBox check_DataBrowser_DisplayTTL,pos={18.00,27.00},size={128.00,15.00},proc=DB_CheckProc_ChangedSetting,title="Display TTL Channels"
 	CheckBox check_DataBrowser_DisplayTTL,help={"Display TTL channel data"}
-	CheckBox check_DataBrowser_DisplayTTL,userdata(ResizeControlsInfo)= A"!!,BY!!#=;!!#@d!!#<(z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
+	CheckBox check_DataBrowser_DisplayTTL,userdata(ResizeControlsInfo)= A"!!,BI!!#=;!!#@d!!#<(z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	CheckBox check_DataBrowser_DisplayTTL,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Duafnzzzzzzzzzzz"
 	CheckBox check_DataBrowser_DisplayTTL,userdata(ResizeControlsInfo) += A"zzz!!#u:Duafnzzzzzzzzzzzzzz!!!"
 	CheckBox check_DataBrowser_DisplayTTL,value= 0
-	CheckBox check_DataBrowser_DisplayADChan,pos={20.00,45.00},size={124.00,15.00},proc=DB_CheckProc_ChangedSetting,title="Display AD Channels"
+	CheckBox check_DataBrowser_DisplayADChan,pos={18.00,45.00},size={124.00,15.00},proc=DB_CheckProc_ChangedSetting,title="Display AD Channels"
 	CheckBox check_DataBrowser_DisplayADChan,help={"Display AD (analog to digital) channel data"}
-	CheckBox check_DataBrowser_DisplayADChan,userdata(ResizeControlsInfo)= A"!!,BY!!#>B!!#@\\!!#<(z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
+	CheckBox check_DataBrowser_DisplayADChan,userdata(ResizeControlsInfo)= A"!!,BI!!#>B!!#@\\!!#<(z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	CheckBox check_DataBrowser_DisplayADChan,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Duafnzzzzzzzzzzz"
 	CheckBox check_DataBrowser_DisplayADChan,userdata(ResizeControlsInfo) += A"zzz!!#u:Duafnzzzzzzzzzzzzzz!!!"
 	CheckBox check_DataBrowser_DisplayADChan,value= 1
-	CheckBox check_DataBrowser_AverageTraces,pos={349.00,9.00},size={92.00,15.00},proc=DB_CheckProc_ChangedSetting,title="Average traces"
+	CheckBox check_DataBrowser_AverageTraces,pos={270.00,9.00},size={92.00,15.00},proc=DB_CheckProc_ChangedSetting,title="Average traces"
 	CheckBox check_DataBrowser_AverageTraces,help={"Displays the average (pink trace) of overlayed sweeps for each channel"}
-	CheckBox check_DataBrowser_AverageTraces,userdata(ResizeControlsInfo)= A"!!,HiJ,hkH!!#?q!!#<(z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
+	CheckBox check_DataBrowser_AverageTraces,userdata(ResizeControlsInfo)= A"!!,HB!!#:r!!#?q!!#<(z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	CheckBox check_DataBrowser_AverageTraces,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Duafnzzzzzzzzzzz"
 	CheckBox check_DataBrowser_AverageTraces,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
 	CheckBox check_DataBrowser_AverageTraces,value= 0
@@ -453,34 +452,34 @@ Window DataBrowser() : Panel
 	SetVariable setvar_DataBrowser_SweepNo,userdata(ResizeControlsInfo) += A"zzz!!#?(FEDG<zzzzzzzzzzzzzz!!!"
 	SetVariable setvar_DataBrowser_SweepNo,userdata(lastSweep)=  "NaN",fSize=24
 	SetVariable setvar_DataBrowser_SweepNo,limits={0,0,1},value= _NUM:0,live= 1
-	PopupMenu popup_LBNumericalKeys,pos={1041,460},size={150.00,19.00},bodyWidth=150,proc=DB_PopMenuProc_LabNotebook
+	PopupMenu popup_LBNumericalKeys,pos={1041.00,460.00},size={150.00,19.00},bodyWidth=150,proc=DB_PopMenuProc_LabNotebook
 	PopupMenu popup_LBNumericalKeys,help={"Select numeric lab notebook data to display"}
-	PopupMenu popup_LBNumericalKeys,mode=1,popvalue="- none -",value= #"DB_GetLBNumericalKeys(\"\")"
 	PopupMenu popup_LBNumericalKeys,userdata(ResizeControlsInfo)= A"!!,K>+94dk!!#A%!!#<Pz!!#N3Bk1ct<C^(Dzzzzzzzzzzzzz!!#N3Bk1ct<C^(Dz"
 	PopupMenu popup_LBNumericalKeys,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#N3Bk1ct<C]S7zzzzzzzzzz"
 	PopupMenu popup_LBNumericalKeys,userdata(ResizeControlsInfo) += A"zzz!!#N3Bk1ct<C]S7zzzzzzzzzzzzz!!!"
-	PopupMenu popup_LBTextualKeys,pos={1041,489},size={150.00,19.00},bodyWidth=150,proc=DB_PopMenuProc_LabNotebook
+	PopupMenu popup_LBNumericalKeys,mode=1,popvalue="- none -",value= #"\"- none -\""
+	PopupMenu popup_LBTextualKeys,pos={1041.00,489.00},size={150.00,19.00},bodyWidth=150,proc=DB_PopMenuProc_LabNotebook
 	PopupMenu popup_LBTextualKeys,help={"Select textual lab notebook data to display"}
-	PopupMenu popup_LBTextualKeys,mode=1,popvalue="- none -",value= #"DB_GetLBTextualKeys(\"\")"
 	PopupMenu popup_LBTextualKeys,userdata(ResizeControlsInfo)= A"!!,K>+94e$J,hqP!!#<Pz!!#N3Bk1ct<C^(Dzzzzzzzzzzzzz!!#N3Bk1ct<C^(Dz"
 	PopupMenu popup_LBTextualKeys,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#N3Bk1ct<C]S7zzzzzzzzzz"
 	PopupMenu popup_LBTextualKeys,userdata(ResizeControlsInfo) += A"zzz!!#N3Bk1ct<C]S7zzzzzzzzzzzzz!!!"
-	Button button_clearlabnotebookgraph,pos={1075,521},size={80.00,20.00},proc=DB_ButtonProc_ClearGraph,title="Clear graph"
+	PopupMenu popup_LBTextualKeys,mode=1,popvalue="- none -",value= #"\"- none -\""
+	Button button_clearlabnotebookgraph,pos={1075.00,521.00},size={80.00,20.00},proc=DB_ButtonProc_ClearGraph,title="Clear graph"
 	Button button_clearlabnotebookgraph,userdata(ResizeControlsInfo)= A"!!,KB?iWRr5QF-D!!#<Xz!!#N3Bk1ct<C^(Dzzzzzzzzzzzzz!!#N3Bk1ct<C^(Dz"
 	Button button_clearlabnotebookgraph,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#N3Bk1ct<C]S7zzzzzzzzzz"
 	Button button_clearlabnotebookgraph,userdata(ResizeControlsInfo) += A"zzz!!#N3Bk1ct<C]S7zzzzzzzzzzzzz!!!"
-	Button button_switchxaxis,pos={1075,548},size={80.00,20.00},proc=DB_ButtonProc_SwitchXAxis,title="Switch X-axis"
+	Button button_switchxaxis,pos={1075.00,548.00},size={80.00,20.00},proc=DB_ButtonProc_SwitchXAxis,title="Switch X-axis"
 	Button button_switchxaxis,help={"Toggle lab notebook horizontal axis between time of day or sweep number"}
 	Button button_switchxaxis,userdata(ResizeControlsInfo)= A"!!,KB?iWS$!!#?Y!!#<Xz!!#N3Bk1ct<C^(Dzzzzzzzzzzzzz!!#N3Bk1ct<C^(Dz"
 	Button button_switchxaxis,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#N3Bk1ct<C]S7zzzzzzzzzz"
 	Button button_switchxaxis,userdata(ResizeControlsInfo) += A"zzz!!#N3Bk1ct<C]S7zzzzzzzzzzzzz!!!"
-	GroupBox group_labnotebook_ctrls,pos={1033,439},size={170.00,78.00},title="Settings History Column"
+	GroupBox group_labnotebook_ctrls,pos={1033.00,439.00},size={170.00,78.00},title="Settings History Column"
 	GroupBox group_labnotebook_ctrls,userdata(ResizeControlsInfo)= A"!!,K=+94d`J,hqd!!#?Uz!!#N3Bk1ct<C^(Dzzzzzzzzzzzzz!!#N3Bk1ct<C^(Dz"
 	GroupBox group_labnotebook_ctrls,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#N3Bk1ct<C]S7zzzzzzzzzz"
 	GroupBox group_labnotebook_ctrls,userdata(ResizeControlsInfo) += A"zzz!!#N3Bk1ct<C]S7zzzzzzzzzzzzz!!!"
-	CheckBox check_DataBrowser_ZeroTraces,pos={349.00,27.00},size={73.00,15.00},proc=DB_CheckProc_ChangedSetting,title="Zero traces"
+	CheckBox check_DataBrowser_ZeroTraces,pos={270.00,27.00},size={73.00,15.00},proc=DB_CheckProc_ChangedSetting,title="Zero traces"
 	CheckBox check_DataBrowser_ZeroTraces,help={"Sets the baseline of the sweep to zero by differentiating and the integrating a copy of the sweep"}
-	CheckBox check_DataBrowser_ZeroTraces,userdata(ResizeControlsInfo)= A"!!,HiJ,hmf!!#?K!!#<(z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
+	CheckBox check_DataBrowser_ZeroTraces,userdata(ResizeControlsInfo)= A"!!,HB!!#=;!!#?K!!#<(z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	CheckBox check_DataBrowser_ZeroTraces,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Duafnzzzzzzzzzzz"
 	CheckBox check_DataBrowser_ZeroTraces,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
 	CheckBox check_DataBrowser_ZeroTraces,value= 0
@@ -497,23 +496,35 @@ Window DataBrowser() : Panel
 	CheckBox checkbox_DB_AutoScaleVertAxVisX,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#?(FEDG<zzzzzzzzzzz"
 	CheckBox checkbox_DB_AutoScaleVertAxVisX,userdata(ResizeControlsInfo) += A"zzz!!#?(FEDG<zzzzzzzzzzzzzz!!!"
 	CheckBox checkbox_DB_AutoScaleVertAxVisX,value= 0
-	Slider slider_dDAQ_regions,pos={657.00,12.00},size={233.00,54.00},disable=2,proc=DB_SliderProc_ChangedSetting
+	Slider slider_dDAQ_regions,pos={546.00,11.00},size={233.00,54.00},disable=2,proc=DB_SliderProc_ChangedSetting
 	Slider slider_dDAQ_regions,help={"Allows to view only regions from the selected headstage (oodDAQ) resp. the selected headstage (dDAQ). Choose -1 to display all."}
-	Slider slider_dDAQ_regions,userdata(ResizeControlsInfo)= A"!!,J55QF)8!!#B#!!#>fz!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
+	Slider slider_dDAQ_regions,userdata(ResizeControlsInfo)= A"!!,InJ,hkh!!#B#!!#>fz!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	Slider slider_dDAQ_regions,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:DuaGl<C]S7zzzzzzzzzz"
 	Slider slider_dDAQ_regions,userdata(ResizeControlsInfo) += A"zzz!!#u:DuaGl<C]S7zzzzzzzzzzzzz!!!"
 	Slider slider_dDAQ_regions,limits={-1,7,1},value= -1,vert= 0
-	CheckBox CheckBox_DataBrowser_OpenArtRem,pos={349.00,46.00},size={106.00,15.00},proc=DB_CheckBoxProc_ArtRemoval,title="Artefact Removal"
+	CheckBox CheckBox_DataBrowser_OpenArtRem,pos={270.00,45.00},size={106.00,15.00},proc=DB_CheckBoxProc_ArtRemoval,title="Artefact Removal"
 	CheckBox CheckBox_DataBrowser_OpenArtRem,help={"Open the artefact removal dialog"}
-	CheckBox CheckBox_DataBrowser_OpenArtRem,userdata(ResizeControlsInfo)= A"!!,HiJ,hnq!!#@8!!#<(z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
+	CheckBox CheckBox_DataBrowser_OpenArtRem,userdata(ResizeControlsInfo)= A"!!,HB!!#>B!!#@8!!#<(z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	CheckBox CheckBox_DataBrowser_OpenArtRem,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Duafn!(TR7zzzzzzzzzz"
 	CheckBox CheckBox_DataBrowser_OpenArtRem,userdata(ResizeControlsInfo) += A"zzz!!#u:Duafn!(TR7zzzzzzzzzzzzz!!!"
 	CheckBox CheckBox_DataBrowser_OpenArtRem,value= 0
-	Button button_databrowser_restore,pos={483.00,29.00},size={76.00,21.00},proc=DB_ButtonProc_RestoreData,title="Restore data"
+	Button button_databrowser_restore,pos={816.00,23.00},size={76.00,21.00},proc=DB_ButtonProc_RestoreData,title="Restore data"
 	Button button_databrowser_restore,help={"Restore the data in its pristine state without any modifications"}
-	Button button_databrowser_restore,userdata(ResizeControlsInfo)= A"!!,IWJ,hn!!!#?Q!!#<`z!!#](Aon\"q<C^(Dzzzzzzzzzzzzz!!#](Aon\"Q<C^(Dz"
+	Button button_databrowser_restore,userdata(ResizeControlsInfo)= A"!!,J]!!#<p!!#?Q!!#<`z!!#](Aon\"q<C^(Dzzzzzzzzzzzzz!!#](Aon\"Q<C^(Dz"
 	Button button_databrowser_restore,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:DuaGl<C]S7zzzzzzzzzz"
 	Button button_databrowser_restore,userdata(ResizeControlsInfo) += A"zzz!!#u:Duafn!(TR7zzzzzzzzzzzzz!!!"
+	CheckBox check_DataBrowser_PulseAvg,pos={382.00,45.00},size={100.00,15.00},proc=DB_ButtonProc_PerPulseAver,title="Pulse Averaging"
+	CheckBox check_DataBrowser_PulseAvg,help={"Allows to average multiple pulses from pulse train epochs"}
+	CheckBox check_DataBrowser_PulseAvg,userdata(ResizeControlsInfo)= A"!!,I%!!#>B!!#@,!!#<(z!!#](Aon\"q<C^(Dzzzzzzzzzzzzz!!#](Aon\"Q<C^(Dz"
+	CheckBox check_DataBrowser_PulseAvg,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:DuaGl<C]S7zzzzzzzzzz"
+	CheckBox check_DataBrowser_PulseAvg,userdata(ResizeControlsInfo) += A"zzz!!#u:Duafn!(TR7zzzzzzzzzzzzz!!!"
+	CheckBox check_DataBrowser_PulseAvg,value= 0
+	CheckBox check_DataBrowser_OpenChanSel,pos={382.00,27.00},size={110.00,15.00},proc=DB_OpenChannelSelectionPanel,title="Channel Selection"
+	CheckBox check_DataBrowser_OpenChanSel,help={"Open the channel selection dialog, allows to disable single channels and headstages"}
+	CheckBox check_DataBrowser_OpenChanSel,userdata(ResizeControlsInfo)= A"!!,I%!!#=;!!#@@!!#<(z!!#](Aon\"q<C^(Dzzzzzzzzzzzzz!!#](Aon\"Q<C^(Dz"
+	CheckBox check_DataBrowser_OpenChanSel,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:DuaGl<C]S7zzzzzzzzzz"
+	CheckBox check_DataBrowser_OpenChanSel,userdata(ResizeControlsInfo) += A"zzz!!#u:Duafn!(TR7zzzzzzzzzzzzz!!!"
+	CheckBox check_DataBrowser_OpenChanSel,value= 0
 	DefineGuide UGV0={FR,-200},UGH1={FT,0.584722,FB},UGH0={UGH1,0.662207,FB}
 	SetWindow kwTopWin,hook(ResizeControls)=ResizeControls#ResizeControlsHook
 	SetWindow kwTopWin,userdata(ResizeControlsInfo)= A"!!*'\"z!!#ERJ,htozzzzzzzzzzzzzzzzzzzzz"
@@ -523,6 +534,7 @@ Window DataBrowser() : Panel
 	SetWindow kwTopWin,userdata(ResizeControlsInfoUGV0)= A":-hTC3`S[N0KW?-:-(dOFC@LVDg-86E][6':dmEFF(KAR85E,T>#.mm5tj<n4&A^O8Q88W:-(*`0et@80KVd)8OQ!%3_!\"/7o`,K75?nc;FO8U:K'ha8P`)B/M]\"63r"
 	SetWindow kwTopWin,userdata(ResizeControlsInfoUGH1)= A":-hTC3`S[@0frH.:-(dOFC@LVDg-86E][6':dmEFF(KAR85E,T>#.mm5tj<o4&A^O8Q88W:-(3e0eP.64%E:B6q&gk7T;H><CoSI1-.lk4&SL@:et\"]<(Tk\\3\\W0D3&EQL1-5"
 	SetWindow kwTopWin,userdata(ResizeControlsInfoUGH0)= A":-hTC3`S[@0KW?-:-(dOFC@LVDg-86E][6':dmEFF(KAR85E,T>#.mm5tj<o4&A^O8Q88W:-(9f3A*!>4%E:B6q&gk<C]S74%E:B6q&jl7RB1778-NR;b9q[:JNr)/iGUC1,(XK"
+	SetWindow kwTopWin,userdata(panelVersion)=  "1"
 	SetWindow kwTopWin,userdata(MiesPanelType)=  "DataBrowser"
 	Execute/Q/Z "SetWindow kwTopWin sizeLimit={909,540,inf,inf}" // sizeLimit requires Igor 7 or later
 	Display/W=(18,72,1039,362)/FG=($"",$"",UGV0,UGH1)/HOST=#
@@ -861,17 +873,17 @@ static Function DB_PanelUpdate(graphOrPanel)
 	endif
 End
 
-Function DB_OpenChannelSelectionPanel(ba) : ButtonControl
-	STRUCT WMButtonAction &ba
+Function DB_OpenChannelSelectionPanel(cba) : CheckBoxControl
+	STRUCT WMCheckBoxAction &cba
 
-	string panelTitle
+	string win
 
-	switch(ba.eventCode)
+	switch(cba.eventCode)
 		case 2: // mouse up
-			panelTitle = GetMainWindow(ba.win)
-			DFREF dataBrowserDFR = DB_GetDataBrowserPath(panelTitle)
+			win = GetMainWindow(cba.win)
+			DFREF dataBrowserDFR = DB_GetDataBrowserPath(win)
 			WAVE channelSel      = GetChannelSelectionWave(dataBrowserDFR)
-			ToggleChannelSelectionPanel(panelTitle, channelSel, "DB_CheckProc_ChangedSetting")
+			ToggleChannelSelectionPanel(win, channelSel, "DB_CheckProc_ChangedSetting")
 			break
 	endswitch
 
@@ -998,6 +1010,22 @@ Function DB_ButtonProc_RestoreData(ba) : ButtonControl
 			endif
 
 			SetCheckBoxState(win, "check_DataBrowser_ZeroTraces", zeroTracesOldState)
+			break
+	endswitch
+
+	return 0
+End
+
+Function DB_ButtonProc_PerPulseAver(cba) : CheckBoxControl
+	STRUCT WMCheckBoxAction &cba
+
+	string win
+
+	switch(cba.eventCode)
+		case 2: // mouse up
+			win = cba.win
+			PA_TogglePanel(win)
+			DB_UpdateSweepPlot(win)
 			break
 	endswitch
 

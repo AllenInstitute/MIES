@@ -4601,6 +4601,51 @@ Function/WAVE GetPressureTypeWv(panelTitle)
 	return wv
 End
 
+/// @brief Return the pulse averaging folder
+Function/DF GetDevicePulseAverageFolder(dfr)
+	DFREF dfr
+
+	return createDFWithAllParents(GetDevicePulseAverageFolderAS(dfr))
+End
+
+/// @brief Return the full path to the pulse averaging folder, e.g. dfr:PulseAveraging
+Function/S GetDevicePulseAverageFolderAS(dfr)
+	DFREF dfr
+
+	return GetDataFolder(1, dfr) + "PulseAveraging"
+End
+
+/// @brief Return a wave reference to the single pulse defined by the given parameters
+///
+/// @param dfr           datafolder reference where to create the empty wave if it does not exist
+/// @param channelType   ITC XOP numeric channel type
+/// @param channelNumber channel number
+/// @param region        region index (a region is the range with data in a dDAQ/oodDAQ measurement)
+/// @param pulseIndex    pulse number, 0-based
+Function/WAVE GetPulseAverageWave(dfr, channelType, channelNumber, region, pulseIndex)
+	DFREF dfr
+	variable channelType, pulseIndex, channelNumber, region
+
+	string wvName
+
+	ASSERT(channelType < ItemsInList(ITC_CHANNEL_NAMES), "Invalid channel type")
+	ASSERT(channelNumber < GetNumberFromType(itcVar=channelType) , "Invalid channel number")
+	ASSERT(DataFolderExistsDFR(dfr), "Missing dfr")
+	ASSERT(IsInteger(pulseIndex) && pulseIndex >= 0, "Invalid pulseIndex")
+
+	wvName  = StringFromList(channelType, ITC_CHANNEL_NAMES) + num2str(channelNumber)
+	wvName += "_R" + num2str(region) + "_P" + num2str(pulseIndex)
+
+	WAVE/SDFR=dfr/Z/D wv = $wvName
+	if(WaveExists(wv))
+		return wv
+	else
+		Make/N=(0)/D dfr:$wvName/WAVE=wv
+	endif
+
+	return wv
+End
+
 /// @brief Return the artefact removal listbox wave for the
 ///        databrowser or the sweepbrowser
 Function/WAVE GetArtefactRemovalListWave(dfr)
