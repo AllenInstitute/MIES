@@ -583,7 +583,6 @@ Function DB_DataBrowserStartupSettings()
 
 	SetCheckBoxState(panelTitle, "check_databrowser_OverlayChan", CHECKBOX_SELECTED)
 	SetCheckBoxState(panelTitle, "check_DataBrowser_DisplayADChan", CHECKBOX_SELECTED)
-	EnableControls(panelTitle, "check_DataBrowser_DisplayDAchan;check_databrowser_OverlayChan;check_DataBrowser_DisplayADChan;check_DataBrowser_DisplayTTL")
 
 	SetSliderPositionIndex(panelTitle, "slider_dDAQ_regions", -1)
 	DisableControl(panelTitle, "slider_dDAQ_regions")
