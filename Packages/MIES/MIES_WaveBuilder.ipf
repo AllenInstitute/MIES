@@ -375,7 +375,7 @@ static Function/WAVE WB_MakeWaveBuilderWave(WP, WPT, SegWvType, stepCount, numEp
 
 	string customWaveName, debugMsg, defMode, formula, formula_version
 	string formula_for_note
-	variable i, j, type, accumulatedDuration
+	variable i, j, type, accumulatedDuration, pulseToPulseLength
 	STRUCT SegmentParameters params
 
 	for(i=0; i < numEpochs; i+=1)
@@ -482,13 +482,13 @@ static Function/WAVE WB_MakeWaveBuilderWave(WP, WPT, SegWvType, stepCount, numEp
 				Make/FREE/D/N=(MINIMUM_WAVE_SIZE) pulseStartTimes
 
 				if(WP[46][i][type]) // "Number of pulses" checkbox
-					WB_PulseTrainSegment(params, PULSE_TRAIN_MODE_PULSE, pulseStartTimes)
+					WB_PulseTrainSegment(params, PULSE_TRAIN_MODE_PULSE, pulseStartTimes, pulseToPulseLength)
 					if(windowExists("WaveBuilder") && GetTabID("WaveBuilder", "WBP_WaveType") == EPOCH_TYPE_PULSE_TRAIN)
 						WBP_UpdateControlAndWP("SetVar_WaveBuilder_P0", params.duration)
 					endif
 					defMode = "Pulse"
 				else
-					WB_PulseTrainSegment(params, PULSE_TRAIN_MODE_DUR, pulseStartTimes)
+					WB_PulseTrainSegment(params, PULSE_TRAIN_MODE_DUR, pulseStartTimes, pulseToPulseLength)
 					if(windowExists("WaveBuilder") && GetTabID("WaveBuilder", "WBP_WaveType") == EPOCH_TYPE_PULSE_TRAIN)
 						WBP_UpdateControlAndWP("SetVar_WaveBuilder_P45", params.numberOfPulses)
 					endif
@@ -503,6 +503,7 @@ static Function/WAVE WB_MakeWaveBuilderWave(WP, WPT, SegWvType, stepCount, numEp
 				AddEntryIntoWaveNoteAsList(WaveBuilderWave, "Pulse Type"             , \
 							               str=StringFromList(params.pulseType, PULSE_TYPES_STRINGS))
 				AddEntryIntoWaveNoteAsList(WaveBuilderWave, "Frequency"              , var=params.Frequency)
+				AddEntryIntoWaveNoteAsList(WaveBuilderWave, PULSE_TO_PULSE_LENGTH_KEY, var=pulseToPulseLength)
 				AddEntryIntoWaveNoteAsList(WaveBuilderWave, "Pulse duration"         , var=params.PulseDuration)
 				AddEntryIntoWaveNoteAsList(WaveBuilderWave, "Number of pulses"       , var=params.NumberOfPulses)
 				AddEntryIntoWaveNoteAsList(WaveBuilderWave, "Poisson distribution"   , str=SelectString(params.poisson, "False", "True"))
@@ -1008,10 +1009,11 @@ Function/WAVE WB_GetPulsesFromPulseTrains(stimset, sweep)
 	return allStartTimes
 End
 
-static Function/WAVE WB_PulseTrainSegment(pa, mode, pulseStartTimes)
+static Function/WAVE WB_PulseTrainSegment(pa, mode, pulseStartTimes, pulseToPulseLength)
 	struct SegmentParameters &pa
 	variable mode
 	WAVE pulseStartTimes
+	variable &pulseToPulseLength
 
 	variable pulseStartTime, endIndex, startIndex
 	variable numRows, interPulseInterval, idx
@@ -1046,6 +1048,9 @@ static Function/WAVE WB_PulseTrainSegment(pa, mode, pulseStartTimes)
 	numRows = DimSize(segmentWave, ROWS)
 
 	if(!pa.poisson)
+
+		pulseToPulseLength = interPulseInterval + pa.pulseDuration
+
 		for(;;)
 			endIndex = floor((pulseStartTime + pa.pulseDuration) / HARDWARE_ITC_MIN_SAMPINT)
 
@@ -1062,6 +1067,9 @@ static Function/WAVE WB_PulseTrainSegment(pa, mode, pulseStartTimes)
 			pulseStartTime += interPulseInterval + pa.pulseDuration
 		endfor
 	else
+
+		pulseToPulseLength = 0
+
 		for(;;)
 			pulseStartTime += -ln(abs(enoise(1, NOISE_GEN_MERSENNE_TWISTER))) / pa.frequency * 1000
 			endIndex = floor((pulseStartTime + pa.pulseDuration) / HARDWARE_ITC_MIN_SAMPINT)

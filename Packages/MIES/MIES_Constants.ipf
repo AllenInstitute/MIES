@@ -632,4 +632,5 @@ StrConstant ASYNC_CH01					= "Asyncronous channel 1"
 StrConstant ASYNC_UNIT					= "Asyncronous Unit"
 ///@}
 
-StrConstant PULSE_START_TIMES_KEY = "Pulse Train Pulses"
+StrConstant PULSE_START_TIMES_KEY     = "Pulse Train Pulses"
+StrConstant PULSE_TO_PULSE_LENGTH_KEY = "Pulse To Pulse Length"
