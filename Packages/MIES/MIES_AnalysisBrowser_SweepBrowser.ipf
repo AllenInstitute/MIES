@@ -1101,9 +1101,6 @@ Function SB_CheckboxChangedSettings(cba) : CheckBoxControl
 				ParseChannelSelectionControl(cba.ctrlName, channelType, channelNum)
 				channelSel[channelNum][%$channelType] = checked
 			elseif(!cmpstr(ctrl, "check_SweepBrowser_OpenArtRem"))
-
-				WAVE/T sweepMap = SB_GetSweepBrowserMap(dfr)
-				device = sweepMap[idx][%Device]
 				WAVE listBoxWave = GetArtefactRemovalListWave(dfr)
 				AR_TogglePanel(win, listBoxWave)
 			endif
@@ -1111,6 +1108,8 @@ Function SB_CheckboxChangedSettings(cba) : CheckBoxControl
 			SB_UpdateSweepPlot(graph)
 			break
 	endswitch
+
+	return 0
 End
 
 Function SB_ButtonProc_RestoreData(ba) : ButtonControl
