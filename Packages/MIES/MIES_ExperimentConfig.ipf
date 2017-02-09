@@ -15,7 +15,7 @@
 /// @brief Configure MIES for experiments
 Function ConfigureMIES()
 
-	string UserConfigNB, win, filename, ITCDevNum, ITCDevType, fullPath
+	string UserConfigNB, win, filename, ITCDevNum, ITCDevType, fullPath, StimSetPath
 
 //	movewindow /C 1450, 530,-1,-1								// position command window
 
@@ -64,15 +64,17 @@ Function ConfigureMIES()
 
 	ExpConfig_DAEphysSettings(win, UserSettings)
 
-
-	HD_LoadReplaceStimSet()
+	FindValue /TXOP = 4 /TEXT = STIMSET_PATH UserSettings
+	StimSetPath = UserSettings[V_value][%SettingValue]
+	HD_LoadReplaceStimSet(incomingFileDirectory = StimSetPath)
 
 	PGC_SetAndActivateControl(win,"ADC", val = DA_EPHYS_PANEL_DATA_ACQUISITION)
 	PGC_SetAndActivateControl(win, "tab_DataAcq_Amp", val = DA_EPHYS_PANEL_VCLAMP)
 	PGC_SetAndActivateControl(win, "tab_DataAcq_Pressure", val = DA_EPHYS_PANEL_PRESSURE_AUTO)
 
 	filename = GetTimeStamp() + PACKED_FILE_EXPERIMENT_SUFFIX
-	NewPath /C/O SavePath, SAVE_PATH
+	FindValue /TXOP = 4 /TEXT = SAVE_PATH UserSettings
+	NewPath /C/O SavePath, UserSettings[V_value][%SettingValue]
 
 	SaveExperiment /P=SavePath as filename
 

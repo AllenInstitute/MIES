@@ -2,6 +2,12 @@
 
 Version= 1
 
+####### Load/Save Directories (for Windows replace '\' with '\\' or ':', ex C:Users\\Data or C:Users:Data) #######
+
+Save data to = D:MiesSave
+
+Load stim set from = Y:\\MiesHDF5Files\\SavedStimSets
+
 ####### Device Settings #######
 
 Name of ITC Device = ITC1600

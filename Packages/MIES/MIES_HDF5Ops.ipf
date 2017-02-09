@@ -279,9 +279,10 @@ Function HD_SaveStimSet([cmdID])
 End
 
 /// @brief Load stim sets from HDF5 file and replace all of the current stimulus waves
-Function HD_LoadReplaceStimSet([incomingFileName, cmdID])
+Function HD_LoadReplaceStimSet([incomingFileName, cmdID, incomingFileDirectory])
 	string incomingFileName
 	string cmdID
+	string incomingFileDirectory
 	    
 	variable fileID, waveCounter
 	string dataSet
@@ -296,13 +297,25 @@ Function HD_LoadReplaceStimSet([incomingFileName, cmdID])
 	savedDataFolder = GetDataFolder(1)
 	
 	if(ParamIsDefault(incomingFileName))
-		NewPath/O miesHDF5StimStorage, "C:\\MiesHDF5Files\\SavedStimSets"
-		HDF5OpenFile /R /Z /P=miesHDF5StimStorage fileID as ""	 // Displays a dialog
-		if(V_flag == 0)				 // User selected a file?
-			HDF5ListGroup /R=1 /TYPE=3 fileID, "/"
+		if(ParamIsDefault(incomingFileDirectory))
+			NewPath/O miesHDF5StimStorage, "C:\\MiesHDF5Files\\SavedStimSets"
+			HDF5OpenFile /R /Z /P=miesHDF5StimStorage fileID as ""	 // Displays a dialog
+			if(V_flag == 0)				 // User selected a file?
+				HDF5ListGroup /R=1 /TYPE=3 fileID, "/"
+			else
+				print "File load cancelled..."
+				return 0
+			endif
 		else
-			print "File load cancelled..."
-			return 0
+			NewPath/O miesHDF5StimStorage, incomingFileDirectory
+			ASSERT(V_flag == 0, "Stim set directory does not exist or is not connected/accessible if mapped drive")
+			HDF5OpenFile /R /Z /P=miesHDF5StimStorage fileID as ""	 // Displays a dialog
+			if(V_flag == 0)				 // User selected a file?
+				HDF5ListGroup /R=1 /TYPE=3 fileID, "/"
+			else
+				print "File load cancelled..."
+				return 0
+			endif
 		endif
 	else
 		if(StringMatch(incomingFileName, "*stim*") != 1)
