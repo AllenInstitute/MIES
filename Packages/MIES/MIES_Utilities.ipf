@@ -2894,3 +2894,17 @@ Function/WAVE GetSetIntersection(wave1, wave2)
 
 	return resultWave
 End
+
+/// @brief Kill all passed windows
+///
+/// Silently ignore errors.
+Function KillWindows(list)
+	string list
+
+	variable numEntries, i
+
+	numEntries = ItemsInList(list)
+	for(i = 0; i < numEntries; i += 1)
+		KillWindow/Z $StringFromList(i, list)
+	endfor
+End
