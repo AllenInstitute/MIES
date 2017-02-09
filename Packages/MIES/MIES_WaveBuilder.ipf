@@ -945,16 +945,19 @@ End
 
 /// @brief Extract a list of [begin, end] ranges in milliseconds denoting
 ///        all pulses from all pulse train epochs in that sweep of the stimset
-Function/WAVE WB_GetPulsesFromPulseTrains(stimset, sweep)
+Function/WAVE WB_GetPulsesFromPulseTrains(stimset, sweep, pulseToPulseLength)
 	WAVE stimset
 	variable sweep
+	variable &pulseToPulseLength
 
-	string str, matches, startTimesList, line, epochTypeStr
+	string str, matches, startTimesList, line, epochTypeStr, pulseToPulseLengthStr
 	variable i, numMatches, epochType, flipping, length, pulseDuration
 
 	Make/FREE/D/N=(0) allStartTimes
 
 	str = note(stimset)
+
+	pulseToPulseLength = NaN
 
 	// passed stimset is from the testpulse
 	if(IsEmpty(str))
@@ -985,6 +988,11 @@ Function/WAVE WB_GetPulsesFromPulseTrains(stimset, sweep)
 
 		startTimesList = StringByKey(PULSE_START_TIMES_KEY, line, " = ", ";")
 		ASSERT(!IsEmpty(startTimesList), "Could not find pulse start times entry")
+
+		pulseToPulseLengthStr = StringByKey(PULSE_TO_PULSE_LENGTH_KEY, line, " = ", ";")
+		ASSERT(!IsEmpty(pulseToPulseLengthStr), "Could not find pulse to pulse lengths")
+
+		pulseToPulseLength = str2num(pulseToPulseLengthStr)
 
 		WAVE/Z/D startTimes = ListToNumericWave(startTimesList, ",")
 		ASSERT(WaveExists(startTimes) && DimSize(startTimes, ROWS) > 0, "Found no starting times")
