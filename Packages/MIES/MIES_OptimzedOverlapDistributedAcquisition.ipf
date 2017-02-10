@@ -84,9 +84,8 @@ End
 
 /// @brief Return a text wave with a list marking the feature regions, see
 /// #OOdDAQParams.regions for more info.
-static Function/WAVE OOD_ExtractFeatureRegions(stimSets, decimationFactor, minSamplingInterval)
+static Function/WAVE OOD_ExtractFeatureRegions(stimSets)
 	WAVE/WAVE stimSets
-	variable decimationFactor, minSamplingInterval
 
 	variable numSets, start, foundLevel, first, last, i, pLevel
 	variable dataLength
@@ -123,8 +122,8 @@ static Function/WAVE OOD_ExtractFeatureRegions(stimSets, decimationFactor, minSa
 			else
 				last  = pLevel
 				ASSERT(IsFinite(first), "Expected to have found an rising edge already")
-				first *= minSamplingInterval / 1000 / decimationFactor
-				last  *= minSamplingInterval / 1000 / decimationFactor
+				first *= HARDWARE_ITC_MIN_SAMPINT
+				last  *= HARDWARE_ITC_MIN_SAMPINT
 				sprintf str, "%d-%d", first, last
 				list  = AddListItem(str, list, ";", INF)
 				first = NaN
@@ -137,8 +136,8 @@ static Function/WAVE OOD_ExtractFeatureRegions(stimSets, decimationFactor, minSa
 		// no falling edge as last level crossing
 		if(IsFinite(first))
 			last   = dataLength - 1
-			first *= minSamplingInterval / 1000 / decimationFactor
-			last  *= minSamplingInterval / 1000 / decimationFactor
+			first *= HARDWARE_ITC_MIN_SAMPINT
+			last  *= HARDWARE_ITC_MIN_SAMPINT
 			sprintf str, "%d-%d", first, last
 			list  = AddListItem(str, list, ";", INF)
 		endif
@@ -385,9 +384,8 @@ End
 ///
 /// For yoking we sort the lead and follower devices according to their device number.
 /// Each device will use the result of the previous device offset calculation as preloaded data.
-Function OOD_CalculateOffsetsYoked(panelTitle, decimationFactor, minSamplingInterval, params)
+Function OOD_CalculateOffsetsYoked(panelTitle, params)
 	string panelTitle
-	variable decimationFactor, minSamplingInterval
 	STRUCT OOdDAQParams &params
 
 	OOD_SmearStimSet(params)
@@ -397,7 +395,7 @@ Function OOD_CalculateOffsetsYoked(panelTitle, decimationFactor, minSamplingInte
 		OOD_CalculateOffsets(params)
 
 		OOD_CreateStimSetWithSmear(params)
-		WAVE/T params.regions = OOD_ExtractFeatureRegions(params.stimSetsSmearedAndOffset, decimationFactor, minSamplingInterval)
+		WAVE/T params.regions = OOD_ExtractFeatureRegions(params.stimSetsSmearedAndOffset)
 
 #if defined(DEBUGGING_ENABLED)
 	OOD_Debugging(params)
@@ -416,7 +414,7 @@ Function OOD_CalculateOffsetsYoked(panelTitle, decimationFactor, minSamplingInte
 	OOD_CalculateOffsets(params)
 
 	OOD_CreateStimSetWithSmear(params)
-	WAVE/T params.regions = OOD_ExtractFeatureRegions(params.stimSetsSmearedAndOffset, decimationFactor, minSamplingInterval)
+	WAVE/T params.regions = OOD_ExtractFeatureRegions(params.stimSetsSmearedAndOffset)
 
 	WAVE preload = OOD_GeneratePreload(params)
 	OOD_StorePreload(panelTitle, preload)
