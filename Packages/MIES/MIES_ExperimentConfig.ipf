@@ -4,7 +4,7 @@
 
 /// @file MIES_ExperimentConfig.ipf
 ///
-/// @brief __ExperimentConfig__ Import user settings to configure paramters for Ephys experiments
+/// @brief __ExpConfig__ Import user settings to configure paramters for Ephys experiments
 ///
 /// These include:
 /// - Amplifier settings
@@ -13,7 +13,7 @@
 /// - DAEphys panel settings
 
 /// @brief Configure MIES for experiments
-Function ConfigureMIES()
+Function ExpConfig_ConfigureMIES()
 
 	string UserConfigNB, win, filename, ITCDevNum, ITCDevType, fullPath, StimSetPath, activeNotebooks
 	variable i
