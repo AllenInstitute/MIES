@@ -46,6 +46,7 @@
 #include "MIES_Downsample" menus=0
 #include "MIES_EnhancedWMRoutines"
 #include "MIES_EventDetectionCode"
+#include "MIES_ExperimentConfig"
 #include "MIES_ExperimentDocumentation"
 #include "MIES_ForeignFunctionInterface"
 #include "MIES_GlobalStringAndVariableAccess"
@@ -57,7 +58,6 @@
 #include "MIES_Manipulator"
 #include "MIES_Menu"
 #include "MIES_MiesUtilities"
-#include "MIES_MPConfig"
 #include "MIES_NeuroDataWithoutBorders"
 #include "MIES_OptimzedOverlapDistributedAcquisition"
 #include "MIES_Oscilloscope"
