@@ -82,6 +82,18 @@ static Function OOD_StorePreload(panelTitle, preload)
 	Duplicate/O preload, preloadPerm
 End
 
+/// @brief Return a list with `$first-$last` added
+static Function/S OOD_AddToRegionList(first, last, list)
+	variable first, last
+	string list
+
+	string str
+
+	sprintf str, "%d-%d", first * HARDWARE_ITC_MIN_SAMPINT, last * HARDWARE_ITC_MIN_SAMPINT
+
+	return AddListItem(str, list, ";", INF)
+End
+
 /// @brief Return a text wave with a list marking the feature regions, see
 /// #OOdDAQParams.regions for more info.
 static Function/WAVE OOD_ExtractFeatureRegions(stimSets)
@@ -122,10 +134,7 @@ static Function/WAVE OOD_ExtractFeatureRegions(stimSets)
 			else
 				last  = pLevel
 				ASSERT(IsFinite(first), "Expected to have found an rising edge already")
-				first *= HARDWARE_ITC_MIN_SAMPINT
-				last  *= HARDWARE_ITC_MIN_SAMPINT
-				sprintf str, "%d-%d", first, last
-				list  = AddListItem(str, list, ";", INF)
+				list  = OOD_AddToRegionList(first, last, list)
 				first = NaN
 				last  = NaN
 			endif
@@ -135,11 +144,8 @@ static Function/WAVE OOD_ExtractFeatureRegions(stimSets)
 
 		// no falling edge as last level crossing
 		if(IsFinite(first))
-			last   = dataLength - 1
-			first *= HARDWARE_ITC_MIN_SAMPINT
-			last  *= HARDWARE_ITC_MIN_SAMPINT
-			sprintf str, "%d-%d", first, last
-			list  = AddListItem(str, list, ";", INF)
+			last = dataLength - 1
+			list = OOD_AddToRegionList(first, last, list)
 		endif
 
 		regions[i] = list
