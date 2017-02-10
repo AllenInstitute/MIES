@@ -570,3 +570,64 @@ StrConstant PULSE_TYPES_STRINGS = "Square;Triangle"
 
 StrConstant NOTE_KEY_ZEROED           = "Zeroed"
 StrConstant NOTE_KEY_ARTEFACT_REMOVAL = "ArtefactRemoval"
+
+/// DA_Ephys Panel Tabs
+Constant DA_EPHYS_PANEL_DATA_ACQUISITION = 0
+Constant DA_EPHYS_PANEL_DA = 1
+Constant DA_EPHYS_PANEL_AD = 2
+Constant DA_EPHYS_PANEL_TTL = 3
+Constant DA_EPHYS_PANEL_ASYNCHRONOUS = 4
+Constant DA_EPHYS_PANEL_SETTINGS = 5
+Constant DA_EPHYS_PANEL_HARDWARE = 6
+Constant DA_EPHYS_PANEL_VCLAMP = 0
+Constant DA_EPHYS_PANEL_ICLAMP = 1
+Constant DA_EPHYS_PANEL_IEQUALZERO = 2
+Constant DA_EPHYS_PANEL_PRESSURE_AUTO = 0
+Constant DA_EPHYS_PANEL_PRESSURE_MANUAL = 1
+Constant DA_EPHYS_PANEL_PRESSURE_USER = 2
+
+///@name KeyWord constants for User Configuration Notebook
+///@{
+Constant    EXPCONFIG_VERSION_NUM   = 1
+StrConstant USER_CONFIG_PATH        = "..:..:UserConfig.txt"
+Constant    ATTEMPTS                = 5
+StrConstant CONFIG_VERSION          = "Version"
+StrConstant SAVE_PATH               = "Save data to"
+StrConstant STIMSET_PATH			= "Load stim set from"
+StrConstant ITC_DEV_TYPE            = "Name of ITC Device"
+StrConstant ITC_DEV_NUM             = "ITC Device number"
+StrConstant AMP_TITLE               = "Amplifier Names"
+StrConstant AMP_SERIAL              = "Amplifier Serial Numbers"
+StrConstant PRESSURE_DEV            = "Name of Pressure Devices"
+StrConstant TEMP_GAIN               = "Temperature control gain (in V)"
+StrConstant TEMP_MAX                = "Maximum Temperature Allowed (in degrees C)"
+StrConstant TEMP_MIN                = "Minimum Temperature Allowed (in degrees C)"
+StrConstant PRESSURE_CONST          = "Positive Pressure Calibration Constants"
+StrConstant PRESSURE_BATH           = "In bath pressure (psi)"
+StrConstant PRESSURE_STARTSEAL      = "Initial Seal Pressure (psi)"
+StrConstant PRESSURE_MAXSEAL        = "Maximum Seal Pressure (psi)"
+StrConstant TP_AFTER_DAQ            = "Activate TP after DAQ"
+StrConstant SAVE_TP                 = "Save TP record"
+StrConstant EXPORT_NWB              = "Export to NWB"
+StrConstant APPEND_ASYNC            = "Append Asynchronous reading to wave note"
+StrConstant SYNC_MIES_MCC           = "Sync MIES to MCC"
+StrConstant ENABLE_I_EQUAL_ZERO     = "Switch clamp modes via I equal zero"
+StrConstant PRESSURE_USER_ON_SEAL   = "Enter User Pressure Mode for Sealing"
+StrConstant PRESSURE_USER_FOLLOW_HS = "Prevent User Pressure Mode from following headstage"
+StrConstant TP_AMP_VC               = "TP Amplitude in VC"
+StrConstant REPEAT_ACQ              = "Enable repeated acquisition"
+StrConstant NUM_STIM_SETS           = "Number of stimulus set repeats"
+StrConstant GET_SET_ITI             = "Get stimulus set ITI"
+StrConstant DEFAULT_ITI             = "Default ITI (ms)"
+StrConstant ENABLE_OODAQ            = "Enable ooDAQ"
+StrConstant OODAQ_POST_DELAY        = "ooDAQ post sweep delay (ms)"
+StrConstant OODAQ_RESOLUTION        = "ooDAQ resolution (ms)"
+StrConstant HOLDING                 = "Initial Holding Potential"
+StrConstant AUTOBIAS_RANGE          = "I-clamp Autobias range (mV)"
+StrConstant AUTOBIAS_MAXI           = "I-clamp Max bias current (pA)"
+StrConstant ENABLE_MULTIPLE_ITC		= "Enable multiple ITC devices" 
+StrConstant ACTIVE_HEADSTAGES			= "Active headstages"
+StrConstant ASYNC_CH00					= "Asyncronous channel 0"
+StrConstant ASYNC_CH01					= "Asyncronous channel 1"
+StrConstant ASYNC_UNIT					= "Asyncronous Unit"
+///@}
