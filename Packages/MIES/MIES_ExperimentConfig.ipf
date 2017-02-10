@@ -13,20 +13,24 @@
 /// - DAEphys panel settings
 
 /// @brief Configure MIES for experiments
-static Function ConfigureMIES()
+Function ConfigureMIES()
 
-	string UserConfigNB, win, filename, ITCDevNum, ITCDevType, fullPath, StimSetPath
-
+	string UserConfigNB, win, filename, ITCDevNum, ITCDevType, fullPath, StimSetPath, activeNotebooks
+	variable i
 //	movewindow /C 1450, 530,-1,-1								// position command window
 
-	DoWindow UserConfigNB
-	if(!V_flag)
-		fullPath = GetFolder(FunctionPath("")) + USER_CONFIG_PATH
-		ASSERT(!cmpstr(GetFileSuffix(fullPath), "txt"), "Only plain notebooks are supported")
-		OpenNotebook/ENCG=1/R/N=UserConfigNB/V=0 fullPath
-		if(V_flag)
-			ASSERT(V_flag > 0, "Configuration Notebook not loaded")
-		endif
+	activeNotebooks = WinList("*",";","WIN:16")
+	if(!isempty(activeNotebooks))
+		for(i = 0; i < ItemsInList(activeNotebooks); i += 1)
+			KillWindow /Z $StringFromList(i, activeNotebooks)
+		endfor
+	endif
+	
+	fullPath = GetFolder(FunctionPath("")) + USER_CONFIG_PATH
+	ASSERT(!cmpstr(GetFileSuffix(fullPath), "txt"), "Only plain notebooks are supported")
+	OpenNotebook/ENCG=1/R/N=UserConfigNB/V=0/Z fullPath
+	if(V_flag)
+		ASSERT(V_flag > 0, "Configuration Notebook not loaded")
 	endif
 
 	UserConfigNB = winname(0,16)
