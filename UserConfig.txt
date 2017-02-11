@@ -2,11 +2,11 @@
 
 Version= 1
 
-####### Load/Save Directories (for Windows replace '\' with '\\' or ':', ex C:Users\\Data or C:Users:Data) #######
+####### Load/Save Directories #######
 
 Save data to = D:MiesSave
 
-Load stim set from = Y:\\MiesHDF5Files\\SavedStimSets
+Load stim set from = C:\MiesHDF5Files\SavedStimSets
 
 ####### Device Settings #######
 
@@ -14,7 +14,7 @@ Name of ITC Device = ITC1600
 
 ITC Device number = 0
 
-Enable multiple ITC devices = Yes
+Enable multiple ITC devices = No
 
 ####### Separate headstages on the same amplifier with ',' and separate headstages on different amplifiers with ';' (ex. 0,1;2,3;...)
 
@@ -28,7 +28,7 @@ Active headstages = 0;1;2;3;4;5;6;7
 
 Amplifier Serial Numbers = 836760;836761;836782;836783
 
-Name of Pressure Devices = Dev6;Dev7;Dev2;Dev1
+Name of Pressure Devices = Pressure1and2;Pressure3and4;Pressure5and6;Pressure7and8
 
 ####### Separate calibration constants with ';'. Negative constants are assumed to be equal and opposite to positive constants  #######
 
