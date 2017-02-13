@@ -501,7 +501,6 @@ Function ITC_StartDAQMultiDevice(panelTitle)
 			 ITC_StopTestPulseMultiDevice(panelTitle)
 		endif
 
-		ITC_CallFuncForDevicesMDYoked(panelTitle, DAP_OneTimeCallBeforeDAQ)
 		ITC_StartDAQMultiDeviceLowLevel(panelTitle)
 	else // data aquistion is ongoing, stop data acq
 		DataAcqState = 0
