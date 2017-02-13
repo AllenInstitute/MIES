@@ -4538,9 +4538,9 @@ Function DAP_PopMenuChkProc_StimSetList(pa) : PopupMenuControl
 	STRUCT WMPopupAction& pa
 
 	string ctrl, list
-	string panelTitle, stimSet
-	variable channelIndex, channelType, channelControl
-	variable i, numEntries, idx
+	string panelTitle, stimSet, checkCtrl
+	variable channelIndex, channelType, channelControl, isAllControl, indexing
+	variable i, numEntries, idx, dataAcqRunMode, headstage, activeChannel
 
 	switch(pa.eventCode)
 		case 2:
@@ -4549,6 +4549,28 @@ Function DAP_PopMenuChkProc_StimSetList(pa) : PopupMenuControl
 			stimSet    = pa.popStr
 			idx        = pa.popNum
 
+			DAP_AbortIfUnlocked(panelTitle)
+			DAP_ParsePanelControl(ctrl, channelIndex, channelType, channelControl)
+
+			checkCtrl     = GetPanelControl(channelIndex, channelType, CHANNEL_CONTROL_CHECK)
+			indexing      = GetCheckBoxState(panelTitle, "Check_DataAcq_Indexing")
+			isAllControl  = DAP_IsAllControl(channelIndex)
+			activeChannel = isAllControl                                       \
+			                || (GetCheckBoxState(panelTitle, checkCtrl)        \
+			                   && (channelControl == CHANNEL_CONTROL_WAVE      \
+			                   || (channelControl == CHANNEL_CONTROL_INDEX_END \
+			                   && indexing)))
+
+			if(activeChannel)
+				dataAcqRunMode = ITC_StopDAQ(panelTitle)
+
+				// stopping DAQ will reset the stimset popupmenu to its initial value
+				// so we have to set the now old value again
+				if(indexing && channelControl == CHANNEL_CONTROL_WAVE)
+					SetPopupMenuIndex(panelTitle, ctrl, idx - 1)
+				endif
+			endif
+
 			// check if this is a third party stim set which
 			// is not yet reflected in the "MenuExp" user data
 			list = GetUserData(panelTitle, ctrl, "MenuExp")
@@ -4556,11 +4578,7 @@ Function DAP_PopMenuChkProc_StimSetList(pa) : PopupMenuControl
 				WBP_UpdateITCPanelPopUps()
 			endif
 
-			DAP_AbortIfUnlocked(panelTitle)
-			DAP_ParsePanelControl(ctrl, channelIndex, channelType, channelControl)
-
-			if(DAP_isAllControl(channelIndex))
-
+			if(isAllControl)
 				numEntries = GetNumberFromType(var=channelType)
 				for(i = 0; i < numEntries; i += 1)
 					ctrl = GetPanelControl(i, channelType, channelControl)
@@ -4575,6 +4593,10 @@ Function DAP_PopMenuChkProc_StimSetList(pa) : PopupMenuControl
 
 			DAP_UpdateITIAcrossSets(panelTitle)
 			DAP_UpdateSweepSetVariables(panelTitle)
+
+			if(activeChannel)
+				ITC_RestartDAQ(panelTitle, dataAcqRunMode)
+			endif
 
 			break
 		endswitch

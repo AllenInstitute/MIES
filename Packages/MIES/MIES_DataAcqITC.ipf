@@ -515,3 +515,57 @@ Function ITC_StartDAQMultiDevice(panelTitle)
 		ITC_StopOngoingDAQMultiDevice(panelTitle)
 	endif
 End
+
+/// @brief Stop any running background DAQ
+///
+/// Assumes that single device and multi device do not run at the same time.
+/// @return One of @ref DAQRunModes
+Function ITC_StopDAQ(panelTitle)
+	string panelTitle
+
+	variable runMode
+
+	NVAR dataAcqRunMode = $GetDataAcqRunMode(panelTitle)
+
+	// create copy as the implicitly called DAP_OneTimeCallAfterDAQ()
+	// will change it
+	runMode = dataAcqRunMode
+
+	switch(runMode)
+		case DAQ_FG_SINGLE_DEVICE:
+			// can not be stopped
+			return runMode
+		case DAQ_BG_SINGLE_DEVICE:
+			DAP_StopOngoingDataAcquisition(panelTitle)
+			return runMode
+		case DAQ_BG_MULTI_DEVICE:
+			ITC_StopOngoingDAQMultiDevice(panelTitle)
+			return runMode
+	endswitch
+
+	return DAQ_NOT_RUNNING
+End
+
+/// @todo how to handle yoked devices??
+Function ITC_RestartDAQ(panelTitle, dataAcqRunMode)
+	string panelTitle
+	variable dataAcqRunMode
+
+	switch(dataAcqRunMode)
+		case DAQ_NOT_RUNNING:
+			// nothing to do
+			break
+		case DAQ_FG_SINGLE_DEVICE:
+			ITC_StartDAQSingleDevice(panelTitle, useBackground=0)
+			break
+		case DAQ_BG_SINGLE_DEVICE:
+			ITC_StartDAQSingleDevice(panelTitle, useBackground=1)
+			break
+		case DAQ_BG_MULTI_DEVICE:
+			ITC_StartDAQMultiDevice(panelTitle)
+			break
+		default:
+			DEBUGPRINT("Ignoring unknown value:", var=dataAcqRunMode)
+			break
+	endswitch
+End
