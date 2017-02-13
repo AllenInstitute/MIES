@@ -350,14 +350,15 @@ End
 ///
 /// @param serialNum	Serial number of MCC
 /// @param winTitle		Name of MCC window
-static Function ExpConfig_Position_MCC_Win(serialNum, winTitle)
+Function ExpConfig_Position_MCC_Win(serialNum, winTitle)
 	string serialNum, winTitle
 	Make /T /FREE winNm
-	string cmd, fullPath
+	string cmd, fullPath, cmdPath
 	variable w
 	
 	fullPath = GetFolder(FunctionPath("")) + "..:..:nircmd.exe"
 	GetFileFolderInfo /Q/Z fullPath
+	cmdPath = S_Creator
 	if(V_flag != 0)
 		printf "nircmd.exe is not installed, please download it here: %s", "http://www.nirsoft.net/utils/nircmd.html"
 	endif
@@ -365,25 +366,25 @@ static Function ExpConfig_Position_MCC_Win(serialNum, winTitle)
 	for(w = 0; w<NUM_HEADSTAGES/2; w+=1)
 
 		winNm[w] = {stringfromlist(w,winTitle) + "(" + stringfromlist(w,serialNum) + ")"}
-		sprintf cmd, "nircmd.exe win center title \"%s\"", winNm[w]
+		sprintf cmd, "\"%s\" nircmd.exe win center title \"%s\"", cmdPath, winNm[w]
 		ExecuteScriptText cmd
 	endfor
 
-	sprintf cmd, "nircmd.exe win move title \"%s\" 2300 -1250 0 0",  winNm[0]
+	sprintf cmd, "\"%s\" nircmd.exe win move title \"%s\" 2300 -1250 0 0", cmdPath, winNm[0]
 	ExecuteScriptText cmd
-	sprintf cmd, "nircmd.exe win activate title \"%s\"", winNm[0]
+	sprintf cmd, "\"%s\" nircmd.exe win activate title \"%s\"", cmdPath, winNm[0]
 	ExecuteScriptText cmd
-	sprintf cmd, "nircmd.exe win move title \"%s\" 2675 -1250 0 0",  winNm[1]
+	sprintf cmd, "\"%s\" nircmd.exe win move title \"%s\" 2675 -1250 0 0", cmdPath, winNm[1]
 	ExecuteScriptText cmd
-	sprintf cmd, "nircmd.exe win activate title \"%s\"", winNm[1]
+	sprintf cmd, "\"%s\" nircmd.exe win activate title \"%s\"", cmdPath, winNm[1]
 	ExecuteScriptText cmd
-	sprintf cmd, "nircmd.exe win move title \"%s\" 2300 -900 0 0",  winNm[2]
+	sprintf cmd, "\"%s\" nircmd.exe win move title \"%s\" 2300 -900 0 0", cmdPath, winNm[2]
 	ExecuteScriptText cmd
-	sprintf cmd, "nircmd.exe win activate title \"%s\"", winNm[2]
+	sprintf cmd, "\"%s\" nircmd.exe win activate title \"%s\"", cmdPath, winNm[2]
 	ExecuteScriptText cmd
-	sprintf cmd, "nircmd.exe win move title \"%s\" 2675 -900 0 0",  winNm[3]
+	sprintf cmd, "nircmd.exe win move title \"%s\" 2675 -900 0 0", cmdPath, winNm[3]
 	ExecuteScriptText cmd
-	sprintf cmd, "nircmd.exe win activate title \"%s\"", winNm[3]
+	sprintf cmd, "\"%s\" nircmd.exe win activate title \"%s\"", cmdPath, winNm[3]
 	ExecuteScriptText cmd
 
 End
