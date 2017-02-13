@@ -217,8 +217,8 @@ Function HSU_UnlockDevice(panelTitle)
 	DAP_UpdateAllYokeControls()
 
 	// reset our state variables to safe defaults
-	NVAR dataAcqState = $GetDataAcqState(panelTitle)
-	dataAcqState = 0
+	NVAR dataAcqRunMode = $GetDataAcqRunMode(panelTitle)
+	dataAcqRunMode = DAQ_NOT_RUNNING
 	NVAR count = $GetCount(panelTitle)
 	count = NaN
 	NVAR runMode = $GetTestpulseRunMode(panelTitle)

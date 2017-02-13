@@ -20,7 +20,7 @@ Function ITC_StartDAQMultiDeviceLowLevel(panelTitle)
 
 	// configure passed device
 	NVAR ITCDeviceIDGlobal = $GetITCDeviceIDGlobal(panelTitle)
-	DAP_OneTimeCallBeforeDAQ(panelTitle)
+	DAP_OneTimeCallBeforeDAQ(panelTitle, DAQ_BG_MULTI_DEVICE)
 	DC_ConfigureDataForITC(panelTitle, DATA_ACQUISITION_MODE)
 	HW_SelectDevice(HARDWARE_ITC_DAC, ITCDeviceIDGlobal, flags=HARDWARE_ABORT_ON_ERROR)
 	HW_ITC_PrepareAcq(ITCDeviceIDGlobal)
@@ -36,7 +36,7 @@ Function ITC_StartDAQMultiDeviceLowLevel(panelTitle)
 	// configure follower devices
 	for(i = 0; i < numFollower; i += 1)
 		followerPanelTitle = StringFromList(i, listOfFollowerDevices)
-		DAP_OneTimeCallBeforeDAQ(panelTitle)
+		DAP_OneTimeCallBeforeDAQ(panelTitle, DAQ_BG_MULTI_DEVICE)
 		DC_ConfigureDataForITC(followerPanelTitle, DATA_ACQUISITION_MODE)
 		NVAR ITCDeviceIDGlobal = $GetITCDeviceIDGlobal(followerPanelTitle)
 		HW_SelectDevice(HARDWARE_ITC_DAC, ITCDeviceIDGlobal, flags=HARDWARE_ABORT_ON_ERROR)

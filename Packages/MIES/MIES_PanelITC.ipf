@@ -4303,10 +4303,16 @@ static Function DAP_AdaptAssocHeadstageState(panelTitle, checkboxCtrl)
 End
 
 /// @brief One time initialization before data acquisition
-Function DAP_OneTimeCallBeforeDAQ(panelTitle)
+///
+/// @param panelTitle device
+/// @param runMode    One of @ref DAQRunModes except DAQ_NOT_RUNNING
+Function DAP_OneTimeCallBeforeDAQ(panelTitle, runMode)
 	string panelTitle
+	variable runMode
 
 	variable numHS, i
+
+	ASSERT(runMode != DAQ_NOT_RUNNING, "Invalid running mode")
 
 	NVAR count = $GetCount(panelTitle)
 	count = NaN
@@ -4332,10 +4338,11 @@ Function DAP_OneTimeCallBeforeDAQ(panelTitle)
 		DisableControl(panelTitle, DAP_GetClampModeControl(I_EQUAL_ZERO_MODE, i))
 	endfor
 
-	NVAR DataAcqState = $GetDataAcqState(panelTitle)
-	DataAcqState = 1
+	NVAR dataAcqRunMode = $GetDataAcqRunMode(panelTitle)
+	dataAcqRunMode = runMode
+
 	DAP_ToggleAcquisitionButton(panelTitle, DATA_ACQ_BUTTON_TO_STOP)
-	
+
 	// turn off active pressure control modes
 	if(GetCheckboxState(panelTitle, "check_Settings_DisablePressure"))
 		P_SetAllHStoAtmospheric(panelTitle)
@@ -4367,8 +4374,8 @@ Function DAP_OneTimeCallAfterDAQ(panelTitle)
 	DM_CallAnalysisFunctions(panelTitle, POST_SET_EVENT)
 	DM_CallAnalysisFunctions(panelTitle, POST_DAQ_EVENT)
 
-	NVAR DataAcqState = $GetDataAcqState(panelTitle)
-	DataAcqState = 0
+	NVAR dataAcqRunMode = $GetDataAcqRunMode(panelTitle)
+	dataAcqRunMode = DAQ_NOT_RUNNING
 
 	// restore the selected sets before DAQ
 	if(GetCheckBoxState(panelTitle, "Check_DataAcq_Indexing"))
@@ -6571,12 +6578,12 @@ Function DAP_ButtonProc_TestPulse(ba) : ButtonControl
 
 			DAP_AbortIfUnlocked(panelTitle)
 
-			NVAR DataAcqState = $GetDataAcqState(panelTitle)
+			NVAR dataAcqRunMode = $GetDataAcqRunMode(panelTitle)
 
 			// if data acquisition is currently running we just
 			// want just call TP_StartTestPulse* which automatically
 			// ends DAQ
-			if(!DataAcqState && TP_CheckIfTestpulseIsRunning(panelTitle))
+			if(dataAcqRunMode == DAQ_NOT_RUNNING && TP_CheckIfTestpulseIsRunning(panelTitle))
 				TP_StopTestPulse(panelTitle)
 			elseif(GetCheckBoxState(panelTitle, "check_Settings_MD"))
 				TP_StartTestPulseMultiDevice(panelTitle)

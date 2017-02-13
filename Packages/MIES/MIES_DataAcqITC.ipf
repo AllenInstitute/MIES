@@ -455,9 +455,9 @@ End
 Function ITC_StartDAQSingleDevice(panelTitle)
 	string panelTitle
 
-	NVAR DataAcqState = $GetDataAcqState(panelTitle)
+	NVAR dataAcqRunMode = $GetDataAcqRunMode(panelTitle)
 
-	if(!DataAcqState) // data aquisition is stopped
+	if(dataAcqRunMode == DAQ_NOT_RUNNING)
 
 		AbortOnValue DAP_CheckSettings(panelTitle, DATA_ACQUISITION_MODE),1
 
@@ -489,9 +489,9 @@ End
 Function ITC_StartDAQMultiDevice(panelTitle)
 	string panelTitle
 
-	NVAR DataAcqState = $GetDataAcqState(panelTitle)
+	NVAR dataAcqRunMode = $GetDataAcqRunMode(panelTitle)
 
-	if(!DataAcqState)
+	if(dataAcqRunMode == DAQ_NOT_RUNNING)
 
 		AbortOnValue DAP_CheckSettings(panelTitle, DATA_ACQUISITION_MODE), 1
 
