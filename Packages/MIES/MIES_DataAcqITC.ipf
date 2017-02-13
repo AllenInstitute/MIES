@@ -452,8 +452,13 @@ End
 /// @brief Start data acquisition using single device mode
 ///
 /// This is the high level function usable for all external users.
-Function ITC_StartDAQSingleDevice(panelTitle)
+///
+/// @param panelTitle    device
+/// @param useBackground [optional, defaults to background checkbox setting in the DA_Ephys
+///                      panel]
+Function ITC_StartDAQSingleDevice(panelTitle, [useBackground])
 	string panelTitle
+	variable useBackground
 
 	NVAR dataAcqRunMode = $GetDataAcqRunMode(panelTitle)
 
@@ -465,10 +470,16 @@ Function ITC_StartDAQSingleDevice(panelTitle)
 			ITC_StopTestPulseSingleDevice(panelTitle)
 		endif
 
-		DAP_OneTimeCallBeforeDAQ(panelTitle)
+		if(ParamIsDefault(useBackground))
+			useBackground = GetCheckBoxState(panelTitle, "Check_Settings_BackgrndDataAcq")
+		else
+			useBackground = !!useBackground
+		endif
+
+		DAP_OneTimeCallBeforeDAQ(panelTitle, useBackground == 1 ? DAQ_BG_SINGLE_DEVICE : DAQ_FG_SINGLE_DEVICE)
 		DC_ConfigureDataForITC(panelTitle, DATA_ACQUISITION_MODE)
 
-		if(!GetCheckBoxState(panelTitle, "Check_Settings_BackgrndDataAcq"))
+		if(!useBackground)
 			ITC_DataAcq(panelTitle)
 			if(GetCheckBoxState(panelTitle, "Check_DataAcq1_RepeatAcq"))
 				RA_Start(panelTitle)
