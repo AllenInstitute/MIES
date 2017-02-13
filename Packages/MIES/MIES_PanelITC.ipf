@@ -6000,6 +6000,7 @@ Function DAP_StopOngoingDataAcquisition(panelTitle)
 
 	if(IsDeviceActiveWithBGTask(panelTitle, "ITC_FIFOMonitor"))
 		ITC_STOPFifoMonitor()
+		ITC_StopITCDeviceTimer(panelTitle)
 
 		HW_ITC_StopAcq()
 		// zero channels that may be left high

@@ -478,10 +478,8 @@ Function ITC_StartDAQSingleDevice(panelTitle)
 		else
 			ITC_BkrdDataAcq(panelTitle)
 		endif
-	else // data aquistion is ongoing
-		DataAcqState = 0
+	else
 		DAP_StopOngoingDataAcquisition(panelTitle)
-		ITC_StopITCDeviceTimer(panelTitle)
 	endif
 End
 
@@ -502,9 +500,7 @@ Function ITC_StartDAQMultiDevice(panelTitle)
 		endif
 
 		ITC_StartDAQMultiDeviceLowLevel(panelTitle)
-	else // data aquistion is ongoing, stop data acq
-		DataAcqState = 0
+	else // data acquistion is ongoing, stop data acq
 		ITC_StopOngoingDAQMultiDevice(panelTitle)
-		ITC_StopITCDeviceTimer(panelTitle)
 	endif
 End

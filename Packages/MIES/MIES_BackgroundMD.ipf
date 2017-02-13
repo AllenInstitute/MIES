@@ -203,6 +203,7 @@ static Function ITC_StopOngoingDAQMDHelper(panelTitle)
 
 	if(IsDeviceActiveWithBGTask(panelTitle, "ITC_FIFOMonitorMD"))
 		ITC_TerminateOngoingDAQMDHelper(panelTitle)
+		ITC_StopITCDeviceTimer(panelTitle)
 
 		if(!discardData)
 			DM_SaveAndScaleITCData(panelTitle)
