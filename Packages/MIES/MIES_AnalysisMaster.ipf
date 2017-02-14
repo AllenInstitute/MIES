@@ -188,7 +188,7 @@ Function AM_PSA_sweepLevelQC(panelTitle, headStage)
 	idx0 = idx1 - (0.500*hertzRate)
 
 	// measure vm of the segment
-	Duplicate/FREE/O/R=[idx0,(idx1-1)] singleAD, sweepSegment
+	Duplicate/FREE/R=[idx0,(idx1-1)] singleAD, sweepSegment
 	segMean = mean(sweepSegment)
 	sweepSegment -= segMean
 	sweepSegment = sweepSegment^2
@@ -206,7 +206,7 @@ Function AM_PSA_sweepLevelQC(panelTitle, headStage)
 	idx0 = idx1 - (0.0015*hertzRate)
 
 	// measure vm of the shorter segment
-	Duplicate/FREE/O/R=[idx0,(idx1-1)] singleAD, sweepSegment
+	Duplicate/FREE/R=[idx0,(idx1-1)] singleAD, sweepSegment
 	segMean = mean(sweepSegment)
 	sweepSegment -= segMean
 	sweepSegment = sweepSegment^2

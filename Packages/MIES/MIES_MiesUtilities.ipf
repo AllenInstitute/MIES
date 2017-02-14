@@ -1312,7 +1312,7 @@ Function CreateTiledChannelGraph(graph, config, sweepNo, numericalValues,  textu
 					endif
 
 					GetTraceColor(colorIndex, red, green, blue)
-					ModifyGraph/W=$graph rgb($trace)=(red, green, blue), userData($trace)={channelType, 0, channelID}, userData($trace)={channelNumber, 0, num2str(chan)}, userData($trace)={sweepNumber, 0, num2str(sweepNo)}, userData($trace)={headstage, 0, num2str(headstage)}
+					ModifyGraph/W=$graph rgb($trace)=(red, green, blue), userData($trace)={channelType, 0, channelID}, userData($trace)={channelNumber, 0, num2str(chan)}, userData($trace)={sweepNumber, 0, num2str(sweepNo)}, userData($trace)={headstage, 0, num2str(headstage)}, userData($trace)={textualValues, 0, GetWavesDataFolder(textualValues, 2)}, userData($trace)={numericalValues, 0, GetWavesDataFolder(numericalValues, 2)}
 
 					sprintf str, "colorIndex=%d", colorIndex
 					DEBUGPRINT(str)
@@ -1917,15 +1917,16 @@ Function PostPlotTransformations(graph, pps)
 	crsA = CsrInfo(A, graph)
 	crsB = CsrInfo(B, graph)
 
-traceList = GetAllSweepTraces(graph)
+	traceList = GetAllSweepTraces(graph)
 
 	ZeroTracesIfReq(graph, traceList, pps.zeroTraces)
 	if(pps.timeAlignment)
 		TimeAlignmentIfReq(graph, traceList, pps.timeAlignMode, pps.timeAlignRefTrace, pps.timeAlignLevel)
 	endif
-	AverageWavesFromSameYAxisIfReq(graph, traceList, pps.averageTraces, pps.averageDataFolder)
 
+	AverageWavesFromSameYAxisIfReq(graph, traceList, pps.averageTraces, pps.averageDataFolder)
 	AR_HighlightArtefactsEntry(graph)
+	PA_ShowPulses(graph, pps.averageDataFolder, pps.pulseAverSett)
 
 	RestoreCursor(graph, crsA)
 	RestoreCursor(graph, crsB)
@@ -3222,7 +3223,7 @@ Function RemoveDisabledChannels(channelSel, ADCs, DACs, numericalValues, sweepNo
 		return NaN
 	endif
 
-	Duplicate/O/FREE channelSel, channelSelMod
+	Duplicate/FREE channelSel, channelSelMod
 
 	numADCs = DimSize(ADCs, ROWS)
 	numDACs = DimSize(DACs, ROWS)

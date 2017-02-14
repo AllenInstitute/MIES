@@ -520,6 +520,7 @@ Function/Wave OOD_CreateStimSet(params)
 
 		Multithread acc[offset, *] = stimSet[p - offset][column]
 		CopyScales/P stimSet, acc
+		Note acc, note(stimSet)
 
 		// remove empty space beyond `postFeatureTime` at the end
 		FindLevels/P/EDGE=2/Q/DEST=crossing acc, level

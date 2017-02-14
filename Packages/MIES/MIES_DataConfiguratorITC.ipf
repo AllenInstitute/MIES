@@ -672,7 +672,7 @@ static Function DC_PlaceDataInITCDataWave(panelTitle, numActiveChannels, dataAcq
 	string ctrl, str, list, func, colLabel
 	variable oneFullCycle, val, singleSetLength, singleInsertStart, minSamplingInterval
 	variable channelMode, TPAmpVClamp, TPAmpIClamp, testPulseLength, maxStimSetLength
-	variable GlobalTPInsert, scalingZero, indexingLocked, indexing, distributedDAQ
+	variable GlobalTPInsert, scalingZero, indexingLocked, indexing, distributedDAQ, pulseToPulseLength
 	variable distributedDAQDelay, onSetDelay, onsetDelayAuto, onsetDelayUser, decimationFactor, cutoff
 	variable multiplier, j, powerSpectrum, distributedDAQOptOv, distributedDAQOptPre, distributedDAQOptPost, distributedDAQOptRes, headstage
 	variable/C ret
@@ -880,6 +880,12 @@ static Function DC_PlaceDataInITCDataWave(panelTitle, numActiveChannels, dataAcq
 		DC_DocumentChannelProperty(panelTitle, "Stim set length", headstageDAC[i], DAC[i], var=setLength[i])
 		DC_DocumentChannelProperty(panelTitle, "Delay onset oodDAQ", headstageDAC[i], DAC[i], var=offsets[i])
 		DC_DocumentChannelProperty(panelTitle, "oodDAQ regions", headstageDAC[i], DAC[i], str=regions[i])
+
+		WAVE pulses = WB_GetPulsesFromPulseTrains(stimSet[i], setColumn[i], pulseToPulseLength)
+		// pulse positions are in ms, but not yet offsetted for the onset delays
+		pulses[] += IndexToScale(ITCDataWave, insertStart[i], ROWS) + offsets[i]
+		DC_DocumentChannelProperty(panelTitle, PULSE_START_TIMES_KEY, headstageDAC[i], DAC[i], str=NumericWaveToList(pulses, ";", format="%.15g"))
+		DC_DocumentChannelProperty(panelTitle, PULSE_TO_PULSE_LENGTH_KEY, headstageDAC[i], DAC[i], var=pulseToPulseLength)
 	endfor
 
 	DC_DocumentChannelProperty(panelTitle, "Sampling interval multiplier", INDEP_HEADSTAGE, NaN, var=multiplier)

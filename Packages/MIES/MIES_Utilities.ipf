@@ -562,7 +562,7 @@ Function/Wave GetUniqueEntries(wv)
 	numRows = DimSize(wv,ROWS)
 	ASSERT(numRows == numpnts(wv), "Wave must be 1D")
 
-	Duplicate/O/FREE wv, result
+	Duplicate/FREE wv, result
 
 	if(numRows == 0)
 		return result
@@ -2844,4 +2844,67 @@ Function GetMarkerSkip(numPoints, numMarkers)
 	endif
 
 	return trunc(limit(numPoints / numMarkers, 1, 2^15 - 1))
+End
+
+/// @brief Return a wave with the set theory style intersection of wave1 and wave2
+///
+/// Given {1, 2, 4, 10} and {2, 5, 11} this will return {2}.
+///
+/// Inspired by http://www.igorexchange.com/node/366 but adapted to modern Igor Pro
+Function/WAVE GetSetIntersection(wave1, wave2)
+	WAVE wave1
+	WAVE wave2
+
+	variable type, wave1Rows, wave2Rows
+	variable longRows, shortRows, entry
+	variable i, j, longWaveRow
+
+	type = WaveType(wave1)
+	ASSERT(type == WaveType(wave2), "Wave type mismatch")
+
+	wave1Rows = DimSize(wave1, ROWS)
+	wave2Rows = DimSize(wave2, ROWS)
+
+	if(wave1Rows > wave2Rows)
+		Duplicate/FREE wave1, longWave
+		WAVE shortWave = wave2
+		longRows  = wave1Rows
+		shortRows = wave2Rows
+	else
+		Duplicate/FREE wave2, longWave
+		WAVE shortWave = wave1
+		longRows  = wave2Rows
+		shortRows = wave1Rows
+	endif
+
+	// Sort values in longWave
+	Sort longWave, longWave
+	Make/FREE/N=(shortRows) resultWave
+
+	for(i = 0; i < shortRows; i += 1)
+		entry = shortWave[i]
+		longWaveRow = BinarySearch(longWave, entry)
+		if(longWaveRow >= 0 && longWave[longWaveRow] == entry)
+			resultWave[j] = entry
+			j += 1
+		endif
+	endfor
+
+	Redimension/N=(j) resultWave
+
+	return resultWave
+End
+
+/// @brief Kill all passed windows
+///
+/// Silently ignore errors.
+Function KillWindows(list)
+	string list
+
+	variable numEntries, i
+
+	numEntries = ItemsInList(list)
+	for(i = 0; i < numEntries; i += 1)
+		KillWindow/Z $StringFromList(i, list)
+	endfor
 End

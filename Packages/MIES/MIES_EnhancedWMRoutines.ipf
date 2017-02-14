@@ -258,7 +258,7 @@ static Function MonotonicCheck(wx,smallestXIncrement)
 
 	Variable isMonotonic=0
 
-	Duplicate/O/Free wx, diff
+	Duplicate/Free wx, diff
 	Differentiate/DIM=0/EP=0/METH=1/P diff
 	WaveStats/Q/M=0 diff
 	isMonotonic= (V_min > 0) == (V_max > 0)

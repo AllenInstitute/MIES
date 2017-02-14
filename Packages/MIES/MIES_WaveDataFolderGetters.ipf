@@ -1171,6 +1171,7 @@ static Function SetSweepSettingsDimLabels(wv)
 	SetDimLabel COLS, 28, $"oodDAQ Resolution"           , wv
 	SetDimLabel COLS, 29, $"Optimized Overlap dDAQ"      , wv
 	SetDimLabel COLS, 30, $"Delay onset oodDAQ"          , wv
+	SetDimLabel COLS, 31, $PULSE_TO_PULSE_LENGTH_KEY     , wv
 End
 
 /// @brief Set dimension labels for GetSweepSettingsTextKeyWave() and
@@ -1190,6 +1191,7 @@ static Function SetSweepSettingsTextDimLabels(wv)
 	SetDimLabel COLS,  9, $"Post DAQ function"      , wv
 	SetDimLabel COLS, 10, $"oodDAQ regions"         , wv
 	SetDimLabel COLS, 11, $"Electrode"              , wv
+	SetDimLabel COLS, 12, $PULSE_START_TIMES_KEY    , wv
 End
 
 /// @brief Returns a wave reference to the sweepSettingsWave
@@ -1211,7 +1213,7 @@ End
 Function/Wave GetSweepSettingsWave(panelTitle)
 	string panelTitle
 
-	variable versionOfNewWave = 7
+	variable versionOfNewWave = 8
 	string newName = "sweepSettingsNumericValues"
 	DFREF newDFR = GetDevSpecLabNBTempFolder(panelTitle)
 
@@ -1226,9 +1228,9 @@ Function/Wave GetSweepSettingsWave(panelTitle)
 	if(ExistsWithCorrectLayoutVersion(wv, versionOfNewWave))
 		return wv
 	elseif(WaveExists(wv))
-		Redimension/N=(-1, 31, LABNOTEBOOK_LAYER_COUNT) wv
+		Redimension/N=(-1, 32, LABNOTEBOOK_LAYER_COUNT) wv
 	else
-		Make/N=(1, 31, LABNOTEBOOK_LAYER_COUNT) newDFR:$newName/Wave=wv
+		Make/N=(1, 32, LABNOTEBOOK_LAYER_COUNT) newDFR:$newName/Wave=wv
 	endif
 
 	wv = NaN
@@ -1281,10 +1283,11 @@ End
 /// - 28: oodDAQ Resolution
 /// - 29: Optimized Overlap dDAQ
 /// - 30: Delay onset oodDAQ
+/// - 31: Pulse To Pulse Length for pulse Train stimsets
 Function/Wave GetSweepSettingsKeyWave(panelTitle)
 	string panelTitle
 
-	variable versionOfNewWave = 9
+	variable versionOfNewWave = 10
 	string newName = "sweepSettingsNumericKeys"
 	DFREF newDFR = GetDevSpecLabNBTempFolder(panelTitle)
 
@@ -1299,9 +1302,9 @@ Function/Wave GetSweepSettingsKeyWave(panelTitle)
 	if(ExistsWithCorrectLayoutVersion(wv, versionOfNewWave))
 		return wv
 	elseif(WaveExists(wv))
-		Redimension/N=(-1, 31) wv
+		Redimension/N=(-1, 32) wv
 	else
-		Make/T/N=(3, 31) newDFR:$newName/Wave=wv
+		Make/T/N=(3, 32) newDFR:$newName/Wave=wv
 	endif
 
 	wv = ""
@@ -1434,6 +1437,10 @@ Function/Wave GetSweepSettingsKeyWave(panelTitle)
 	wv[%Units][30]     = "ms"
 	wv[%Tolerance][30] = "1"
 
+	wv[%Parameter][31] = PULSE_TO_PULSE_LENGTH_KEY
+	wv[%Units][31]     = "ms"
+	wv[%Tolerance][31] = "1"
+
 	SetSweepSettingsDimLabels(wv)
 	SetWaveVersion(wv, versionOfNewWave)
 
@@ -1456,7 +1463,7 @@ End
 Function/Wave GetSweepSettingsTextWave(panelTitle)
 	string panelTitle
 
-	variable versionOfNewWave = 9
+	variable versionOfNewWave = 10
 	string newName = "sweepSettingsTextValues"
 	DFREF newDFR = GetDevSpecLabNBTempFolder(panelTitle)
 
@@ -1471,9 +1478,9 @@ Function/Wave GetSweepSettingsTextWave(panelTitle)
 	if(ExistsWithCorrectLayoutVersion(wv, versionOfNewWave))
 		return wv
 	elseif(WaveExists(wv))
-		Redimension/N=(-1, 12, LABNOTEBOOK_LAYER_COUNT) wv
+		Redimension/N=(-1, 13, LABNOTEBOOK_LAYER_COUNT) wv
 	else
-		Make/T/N=(1, 12, LABNOTEBOOK_LAYER_COUNT) newDFR:$newName/Wave=wv
+		Make/T/N=(1, 13, LABNOTEBOOK_LAYER_COUNT) newDFR:$newName/Wave=wv
 	endif
 
 	wv = ""
@@ -1504,10 +1511,11 @@ End
 /// - 9: Analysis function post daq
 /// -10: oodDAQ regions
 /// -11: Electrode
+/// -12: Pulse Train Pulses (list)
 Function/Wave GetSweepSettingsTextKeyWave(panelTitle)
 	string panelTitle
 
-	variable versionOfNewWave = 9
+	variable versionOfNewWave = 10
 	string newName = "sweepSettingsTextKeys"
 	DFREF newDFR = GetDevSpecLabNBTempFolder(panelTitle)
 
@@ -1522,9 +1530,9 @@ Function/Wave GetSweepSettingsTextKeyWave(panelTitle)
 	if(ExistsWithCorrectLayoutVersion(wv, versionOfNewWave))
 		return wv
 	elseif(WaveExists(wv))
-		Redimension/N=(-1, 12, 0) wv
+		Redimension/N=(-1, 13, 0) wv
 	else
-		Make/T/N=(1, 12) newDFR:$newName/Wave=wv
+		Make/T/N=(1, 13) newDFR:$newName/Wave=wv
 	endif
 
 	wv = ""
@@ -1541,6 +1549,7 @@ Function/Wave GetSweepSettingsTextKeyWave(panelTitle)
 	wv[0][9]  = "Post DAQ function"
 	wv[0][10] = "oodDAQ regions"
 	wv[0][11] = "Electrode"
+	wv[0][12] = PULSE_START_TIMES_KEY
 
 	SetSweepSettingsTextDimLabels(wv)
 	SetWaveVersion(wv, versionOfNewWave)
@@ -4588,6 +4597,51 @@ Function/WAVE GetPressureTypeWv(panelTitle)
 	endif
 
 	Make/N=(NUM_HEADSTAGES) dfr:pressureType/Wave=wv
+
+	return wv
+End
+
+/// @brief Return the pulse averaging folder
+Function/DF GetDevicePulseAverageFolder(dfr)
+	DFREF dfr
+
+	return createDFWithAllParents(GetDevicePulseAverageFolderAS(dfr))
+End
+
+/// @brief Return the full path to the pulse averaging folder, e.g. dfr:PulseAveraging
+Function/S GetDevicePulseAverageFolderAS(dfr)
+	DFREF dfr
+
+	return GetDataFolder(1, dfr) + "PulseAveraging"
+End
+
+/// @brief Return a wave reference to the single pulse defined by the given parameters
+///
+/// @param dfr           datafolder reference where to create the empty wave if it does not exist
+/// @param channelType   ITC XOP numeric channel type
+/// @param channelNumber channel number
+/// @param region        region index (a region is the range with data in a dDAQ/oodDAQ measurement)
+/// @param pulseIndex    pulse number, 0-based
+Function/WAVE GetPulseAverageWave(dfr, channelType, channelNumber, region, pulseIndex)
+	DFREF dfr
+	variable channelType, pulseIndex, channelNumber, region
+
+	string wvName
+
+	ASSERT(channelType < ItemsInList(ITC_CHANNEL_NAMES), "Invalid channel type")
+	ASSERT(channelNumber < GetNumberFromType(itcVar=channelType) , "Invalid channel number")
+	ASSERT(DataFolderExistsDFR(dfr), "Missing dfr")
+	ASSERT(IsInteger(pulseIndex) && pulseIndex >= 0, "Invalid pulseIndex")
+
+	wvName  = StringFromList(channelType, ITC_CHANNEL_NAMES) + num2str(channelNumber)
+	wvName += "_R" + num2str(region) + "_P" + num2str(pulseIndex)
+
+	WAVE/SDFR=dfr/Z/D wv = $wvName
+	if(WaveExists(wv))
+		return wv
+	else
+		Make/N=(0)/D dfr:$wvName/WAVE=wv
+	endif
 
 	return wv
 End
