@@ -516,6 +516,7 @@ Function TP_Setup(panelTitle, runMode)
 
 	if(!(runMode & TEST_PULSE_DURING_RA_MOD))
 		DAP_ToggleTestpulseButton(panelTitle, TESTPULSE_BUTTON_TO_STOP)
+		DisableControls(panelTitle, CONTROLS_DISABLE_DURING_DAQ_TP)
 	endif
 
 	TP_ResetTPStorage(panelTitle)
@@ -534,13 +535,18 @@ End
 Function TP_Teardown(panelTitle)
 	string panelTitle
 
+	NVAR runMode = $GetTestpulseRunMode(panelTitle)
+
+	if(!(runMode & TEST_PULSE_DURING_RA_MOD))
+		EnableControls(panelTitle, CONTROLS_DISABLE_DURING_DAQ_TP)
+	endif
+
 	DAP_ToggleTestpulseButton(panelTitle, TESTPULSE_BUTTON_TO_START)
 
 	ED_TPDocumentation(panelTitle)
 
 	SCOPE_KillScopeWindowIfRequest(panelTitle)
 
-	NVAR runMode= $GetTestpulseRunMode(panelTitle)
 	runMode = TEST_PULSE_NOT_RUNNING
 
 	P_LoadPressureButtonState(panelTitle)

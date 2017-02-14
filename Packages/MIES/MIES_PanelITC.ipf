@@ -4342,6 +4342,7 @@ Function DAP_OneTimeCallBeforeDAQ(panelTitle, runMode)
 	dataAcqRunMode = runMode
 
 	DAP_ToggleAcquisitionButton(panelTitle, DATA_ACQ_BUTTON_TO_STOP)
+	DisableControls(panelTitle, CONTROLS_DISABLE_DURING_DAQ_TP)
 
 	// turn off active pressure control modes
 	if(GetCheckboxState(panelTitle, "check_Settings_DisablePressure"))
@@ -4363,6 +4364,7 @@ Function DAP_ResetGUIAfterDAQ(panelTitle)
 	endfor
 
 	DAP_ToggleAcquisitionButton(panelTitle, DATA_ACQ_BUTTON_TO_DAQ)
+	EnableControls(panelTitle, CONTROLS_DISABLE_DURING_DAQ_TP)
 End
 
 /// @brief One time cleaning up after data acquisition
