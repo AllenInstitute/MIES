@@ -166,6 +166,19 @@ For testing compilation manually perform the following steps:
 * Execute `tools\compilation-testing\check_mies_compilation.bat`
 * Watch the output
 
+### Unit testing
+One of the bamboo jobs is responsible for executing our unit tests.
+All tests must be written using the [Igor Unit Testing
+Framework](http://www.igorexchange.com/project/unitTesting) and referenced in
+the main test experiment located in `tools\unit-testing\RunAllTests.pxp`
+For executing the tests manually perform the followings steps:
+
+* Create in `User Procedures` a shortcut pointing to `Packages\MIES_Include.ipf`, `Packages\unit-testing` and `Packages\Testing-MIES`
+* Remove the shortcut `Packages\MIES_Include.ipf` in `Igor Procedures`
+* Close all Igor Pro instances
+* Execute `tools\unit-testing\autorun-test.bat`
+* Watch the output
+
 ### Documentation building
 The documentation for the master and the latest release branch,
 `release/$number`, are automatically built by
