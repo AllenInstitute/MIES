@@ -2,6 +2,10 @@
 #pragma rtGlobals=3		// Use modern global access method and strict wave access.
 #pragma rtFunctionErrors=1
 
+#ifdef AUTOMATED_TESTING
+#pragma ModuleName=MIES_DP
+#endif
+
 /// @file MIES_DebugPanel.ipf
 ///
 /// @brief __DP__ Holds the debug panel

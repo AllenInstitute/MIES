@@ -2,6 +2,10 @@
 #pragma rtGlobals=3		// Use modern global access method and strict wave access.
 #pragma rtFunctionErrors=1
 
+#ifdef AUTOMATED_TESTING
+#pragma ModuleName=MIES_IH
+#endif
+
 /// @file MIES_IgorHooks.ipf
 /// @brief __IH__ Various hooks which influence the behaviour at certain global events
 

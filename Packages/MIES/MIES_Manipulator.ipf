@@ -2,6 +2,10 @@
 #pragma rtGlobals=3		// Use modern global access method and strict wave access.
 #pragma rtFunctionErrors=1
 
+#ifdef AUTOMATED_TESTING
+#pragma ModuleName=MIES_MANIP
+#endif
+
 /// @file MIES_Manipulator.ipf
 /// @brief __M__ Functions related to manipulator control and position documentation
 

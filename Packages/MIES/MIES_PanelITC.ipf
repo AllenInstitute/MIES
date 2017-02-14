@@ -2,6 +2,10 @@
 #pragma rtGlobals=3		// Use modern global access method and strict wave access.
 #pragma rtFunctionErrors=1
 
+#ifdef AUTOMATED_TESTING
+#pragma ModuleName=MIES_DAP
+#endif
+
 /// @file MIES_PanelITC.ipf
 /// @brief __DAP__ Main data acquisition panel DA_EPHYS
 

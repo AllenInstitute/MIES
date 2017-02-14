@@ -2,6 +2,10 @@
 #pragma rtGlobals=3		// Use modern global access method and strict wave access.
 #pragma rtFunctionErrors=1
 
+#ifdef AUTOMATED_TESTING
+#pragma ModuleName=MIES_ITC
+#endif
+
 /// @file MIES_DataAcqITC.ipf
 /// @brief __ITC__ Data acquisition handling
 

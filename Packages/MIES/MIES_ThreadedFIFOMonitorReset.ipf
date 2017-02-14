@@ -1,6 +1,10 @@
 #pragma rtGlobals=3		// Use modern global access method and strict wave access.
 #pragma rtFunctionErrors=1
 
+#ifdef AUTOMATED_TESTING
+#pragma ModuleName=MIES_TFM
+#endif
+
 /// @file MIES_ThreadedFIFOMonitorReset.ipf
 /// @brief __TFM__ Functions related to threadsafe FIFO monitor and reset daemons
 

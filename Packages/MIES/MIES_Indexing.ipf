@@ -2,6 +2,10 @@
 #pragma rtGlobals=3		// Use modern global access method and strict wave access.
 #pragma rtFunctionErrors=1
 
+#ifdef AUTOMATED_TESTING
+#pragma ModuleName=MIES_IDX
+#endif
+
 /// @file MIES_Indexing.ipf
 /// @brief __IDX__ Indexing related functionality
 

@@ -1,6 +1,10 @@
 #pragma rtGlobals=3		// Use modern global access method and strict wave access.
 #pragma rtFunctionErrors=1
 
+#ifdef AUTOMATED_TESTING
+#pragma ModuleName=MIES_TS
+#endif
+
 /// @file MIES_ThreadsafeUtilities.ipf
 /// @brief __TS__ Helper functions for threadsafe code and main/worker function interactions.
 

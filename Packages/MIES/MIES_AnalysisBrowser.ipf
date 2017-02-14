@@ -3,6 +3,10 @@
 #pragma rtFunctionErrors=1
 #pragma igorVersion=7.0
 
+#ifdef AUTOMATED_TESTING
+#pragma ModuleName=MIES_AB
+#endif
+
 /// @file MIES_AnalysisBrowser.ipf
 /// @brief __AB__ Analysis browser
 ///

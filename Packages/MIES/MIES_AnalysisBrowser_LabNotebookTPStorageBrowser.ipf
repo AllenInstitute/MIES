@@ -2,6 +2,10 @@
 #pragma rtGlobals=3		// Use modern global access method and strict wave access.
 #pragma rtFunctionErrors=1
 
+#ifdef AUTOMATED_TESTING
+#pragma ModuleName=MIES_LBN
+#endif
+
 /// @file MIES_AnalysisBrowser_LabNotebookTPStorageBrowser.ipf
 /// @brief __LBN__ Panels for browsing the labnotebook and the TPStorage waves
 /// in the analysis browser

@@ -2,6 +2,10 @@
 #pragma rtGlobals=3		// Use modern global access method and strict wave access.
 #pragma rtFunctionErrors=1
 
+#ifdef AUTOMATED_TESTING
+#pragma ModuleName=MIES_AFP
+#endif
+
 /// @file MIES_AnalysisFunctionPrototypes.ipf
 /// @brief __AF__ Analysis functions prototypes to be called during data acquisition
 ///
