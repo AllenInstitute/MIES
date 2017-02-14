@@ -16,6 +16,10 @@ ITC Device number = 0
 
 Enable multiple ITC devices = No
 
+####### Force position of MCCs to one of the following monitors: Upper Right, Lower Right, Upper Left, Lower Left. May be left to - none - and MCCs will opwn in place #######
+
+Position MCCs = - none -
+
 ####### Separate headstages on the same amplifier with ',' and separate headstages on different amplifiers with ';' (ex. 0,1;2,3;...)
 
 Amplifier Names = 0,1;2,3;4,5;6,7
@@ -87,7 +91,7 @@ Enable repeated acquisition = Yes
 
 Number of stimulus set repeats = 5
 
-Get stimulus set ITI = Yes
+Get stimulus set ITI = No
 
 Default ITI (ms) = 15
 

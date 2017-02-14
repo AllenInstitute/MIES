@@ -96,7 +96,7 @@ static Function ExpConfig_Amplifiers(panelTitle, UserSettings)
 	string panelTitle
 	Wave /T UserSettings
 
-	string AmpSerialLocal, AmpTitleLocal, CheckDA, HeadstagesToConfigure
+	string AmpSerialLocal, AmpTitleLocal, CheckDA, HeadstagesToConfigure, MCCWinPosition
 	variable i, ii, ampSerial
 
 	FindValue /TXOP = 4 /TEXT = AMP_SERIAL UserSettings
@@ -108,7 +108,11 @@ static Function ExpConfig_Amplifiers(panelTitle, UserSettings)
 
 	Assert(AI_OpenMCCs(AmpSerialLocal, ampTitleList = AmpTitleLocal, maxAttempts = ATTEMPTS),"Evil kittens prevented MultiClamp from opening - FULL STOP" )
 
-	ExpConfig_Position_MCC_Win(AmpSerialLocal,AmpTitleLocal)
+	FindValue /TXOP = 4 /TEXT = POSITION_MCC UserSettings
+	MCCWinPosition = UserSettings[V_Value][%SettingValue]
+	if(cmpstr(NONE, MCCWinPosition) != 0)
+		ExpConfig_Position_MCC_Win(AmpSerialLocal,AmpTitleLocal, MCCWinPosition)
+	endif
 
 	PGC_SetAndActivateControl(panelTitle,"button_Settings_UpdateAmpStatus")
 
@@ -350,11 +354,16 @@ End
 ///
 /// @param serialNum	Serial number of MCC
 /// @param winTitle		Name of MCC window
-Function ExpConfig_Position_MCC_Win(serialNum, winTitle)
-	string serialNum, winTitle
+/// @param winPosition One of 4 monitors to position MCCs in
+Function ExpConfig_Position_MCC_Win(serialNum, winTitle, winPosition)
+	string serialNum, winTitle, winPosition
 	Make /T /FREE winNm
 	string cmd, fullPath, cmdPath
 	variable w
+	
+	if(cmpstr(winPosition, NONE) == 0)
+		return 0
+	endif
 	
 	fullPath = GetFolder(FunctionPath("")) + "..:..:nircmd.exe"
 	GetFileFolderInfo /Q/Z fullPath
@@ -370,22 +379,77 @@ Function ExpConfig_Position_MCC_Win(serialNum, winTitle)
 		ExecuteScriptText cmd
 	endfor
 
-	sprintf cmd, "\"%s\" nircmd.exe win move title \"%s\" 2300 -1250 0 0", cmdPath, winNm[0]
-	ExecuteScriptText cmd
-	sprintf cmd, "\"%s\" nircmd.exe win activate title \"%s\"", cmdPath, winNm[0]
-	ExecuteScriptText cmd
-	sprintf cmd, "\"%s\" nircmd.exe win move title \"%s\" 2675 -1250 0 0", cmdPath, winNm[1]
-	ExecuteScriptText cmd
-	sprintf cmd, "\"%s\" nircmd.exe win activate title \"%s\"", cmdPath, winNm[1]
-	ExecuteScriptText cmd
-	sprintf cmd, "\"%s\" nircmd.exe win move title \"%s\" 2300 -900 0 0", cmdPath, winNm[2]
-	ExecuteScriptText cmd
-	sprintf cmd, "\"%s\" nircmd.exe win activate title \"%s\"", cmdPath, winNm[2]
-	ExecuteScriptText cmd
-	sprintf cmd, "nircmd.exe win move title \"%s\" 2675 -900 0 0", cmdPath, winNm[3]
-	ExecuteScriptText cmd
-	sprintf cmd, "\"%s\" nircmd.exe win activate title \"%s\"", cmdPath, winNm[3]
-	ExecuteScriptText cmd
+	if(cmpstr(winPosition, "Upper Right") == 0)
+		sprintf cmd, "\"%s\" nircmd.exe win move title \"%s\" 2300 -1250 0 0", cmdPath, winNm[0]
+		ExecuteScriptText cmd
+		sprintf cmd, "\"%s\" nircmd.exe win activate title \"%s\"", cmdPath, winNm[0]
+		ExecuteScriptText cmd
+		sprintf cmd, "\"%s\" nircmd.exe win move title \"%s\" 2675 -1250 0 0", cmdPath, winNm[1]
+		ExecuteScriptText cmd
+		sprintf cmd, "\"%s\" nircmd.exe win activate title \"%s\"", cmdPath, winNm[1]
+		ExecuteScriptText cmd
+		sprintf cmd, "\"%s\" nircmd.exe win move title \"%s\" 2300 -900 0 0", cmdPath, winNm[2]
+		ExecuteScriptText cmd
+		sprintf cmd, "\"%s\" nircmd.exe win activate title \"%s\"", cmdPath, winNm[2]
+		ExecuteScriptText cmd
+		sprintf cmd, "\"%s\"nircmd.exe win move title \"%s\" 2675 -900 0 0", cmdPath, winNm[3]
+		ExecuteScriptText cmd
+		sprintf cmd, "\"%s\" nircmd.exe win activate title \"%s\"", cmdPath, winNm[3]
+		ExecuteScriptText cmd
+	elseif(cmpstr(winPosition, "Lower Right") == 0)
+		sprintf cmd, "\"%s\" nircmd.exe win move title \"%s\" 2300 -200 0 0", cmdPath, winNm[0]
+		ExecuteScriptText cmd
+		sprintf cmd, "\"%s\" nircmd.exe win activate title \"%s\"", cmdPath, winNm[0]
+		ExecuteScriptText cmd
+		sprintf cmd, "\"%s\" nircmd.exe win move title \"%s\" 2675 -200 0 0", cmdPath, winNm[1]
+		ExecuteScriptText cmd
+		sprintf cmd, "\"%s\" nircmd.exe win activate title \"%s\"", cmdPath, winNm[1]
+		ExecuteScriptText cmd
+		sprintf cmd, "\"%s\" nircmd.exe win move title \"%s\" 2300 100 0 0", cmdPath, winNm[2]
+		ExecuteScriptText cmd
+		sprintf cmd, "\"%s\" nircmd.exe win activate title \"%s\"", cmdPath, winNm[2]
+		ExecuteScriptText cmd
+		sprintf cmd, "\"%s\"nircmd.exe win move title \"%s\" 2675 100 0 0", cmdPath, winNm[3]
+		ExecuteScriptText cmd
+		sprintf cmd, "\"%s\" nircmd.exe win activate title \"%s\"", cmdPath, winNm[3]
+		ExecuteScriptText cmd
+	elseif(cmpstr(winPosition, "Lower Left") == 0)
+		sprintf cmd, "\"%s\" nircmd.exe win move title \"%s\" 300 -200 0 0", cmdPath, winNm[0]
+		ExecuteScriptText cmd
+		sprintf cmd, "\"%s\" nircmd.exe win activate title \"%s\"", cmdPath, winNm[0]
+		ExecuteScriptText cmd
+		sprintf cmd, "\"%s\" nircmd.exe win move title \"%s\" 700 -200 0 0", cmdPath, winNm[1]
+		ExecuteScriptText cmd
+		sprintf cmd, "\"%s\" nircmd.exe win activate title \"%s\"", cmdPath, winNm[1]
+		ExecuteScriptText cmd
+		sprintf cmd, "\"%s\" nircmd.exe win move title \"%s\" 300 100 0 0", cmdPath, winNm[2]
+		ExecuteScriptText cmd
+		sprintf cmd, "\"%s\" nircmd.exe win activate title \"%s\"", cmdPath, winNm[2]
+		ExecuteScriptText cmd
+		sprintf cmd, "\"%s\"nircmd.exe win move title \"%s\" 700 100 0 0", cmdPath, winNm[3]
+		ExecuteScriptText cmd
+		sprintf cmd, "\"%s\" nircmd.exe win activate title \"%s\"", cmdPath, winNm[3]
+		ExecuteScriptText cmd
+	elseif(cmpstr(winPosition, "Upper Left") == 0)
+		sprintf cmd, "\"%s\" nircmd.exe win move title \"%s\" 300 -1250 0 0", cmdPath, winNm[0]
+		ExecuteScriptText cmd
+		sprintf cmd, "\"%s\" nircmd.exe win activate title \"%s\"", cmdPath, winNm[0]
+		ExecuteScriptText cmd
+		sprintf cmd, "\"%s\" nircmd.exe win move title \"%s\" 700 -1250 0 0", cmdPath, winNm[1]
+		ExecuteScriptText cmd
+		sprintf cmd, "\"%s\" nircmd.exe win activate title \"%s\"", cmdPath, winNm[1]
+		ExecuteScriptText cmd
+		sprintf cmd, "\"%s\" nircmd.exe win move title \"%s\" 300 -900 0 0", cmdPath, winNm[2]
+		ExecuteScriptText cmd
+		sprintf cmd, "\"%s\" nircmd.exe win activate title \"%s\"", cmdPath, winNm[2]
+		ExecuteScriptText cmd
+		sprintf cmd, "\"%s\"nircmd.exe win move title \"%s\" 700 -900 0 0", cmdPath, winNm[3]
+		ExecuteScriptText cmd
+		sprintf cmd, "\"%s\" nircmd.exe win activate title \"%s\"", cmdPath, winNm[3]
+		ExecuteScriptText cmd
+	else
+		printf "Message: If you would like to position the MCC windows please select a monitor in the Configuration text file"
+	endif
 
 End
 
