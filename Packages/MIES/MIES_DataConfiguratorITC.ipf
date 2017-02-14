@@ -803,7 +803,7 @@ static Function DC_PlaceDataInITCDataWave(panelTitle, numActiveChannels, dataAcq
 	if(distributedDAQOptOv && dataAcqOrTP == DATA_ACQUISITION_MODE)
 		STRUCT OOdDAQParams params
 		InitOOdDAQParams(params, stimSet, setColumn, distributedDAQOptPre, distributedDAQOptPost, distributedDAQOptRes)
-		OOD_CalculateOffsetsYoked(panelTitle, decimationFactor, minSamplingInterval, params)
+		OOD_CalculateOffsetsYoked(panelTitle, params)
 		WAVE offsets = params.offsets
 		WAVE/T regions = params.regions
 		WAVE/WAVE stimSet = OOD_CreateStimSet(params)
@@ -866,10 +866,7 @@ static Function DC_PlaceDataInITCDataWave(panelTitle, numActiveChannels, dataAcq
 	if(!WaveExists(offsets))
 		Make/FREE/N=(numEntries) offsets = 0
 	else
-		// realSamplingInterval / 1000 is the real sampling interval in ms
-		// decimationFactor because offset is in number of stimset points and stimsets
-		// are with minimum sampling interval
-		offsets[] *= minSamplingInterval / 1000 / decimationFactor
+		offsets[] *= HARDWARE_ITC_MIN_SAMPINT
 	endif
 
 	if(!WaveExists(regions))

@@ -82,16 +82,27 @@ static Function OOD_StorePreload(panelTitle, preload)
 	Duplicate/O preload, preloadPerm
 End
 
+/// @brief Return a list with `$first-$last` added
+static Function/S OOD_AddToRegionList(first, last, list)
+	variable first, last
+	string list
+
+	string str
+
+	sprintf str, "%d-%d", first * HARDWARE_ITC_MIN_SAMPINT, last * HARDWARE_ITC_MIN_SAMPINT
+
+	return AddListItem(str, list, ";", INF)
+End
+
 /// @brief Return a text wave with a list marking the feature regions, see
 /// #OOdDAQParams.regions for more info.
-static Function/WAVE OOD_ExtractFeatureRegions(stimSets, decimationFactor, minSamplingInterval)
+static Function/WAVE OOD_ExtractFeatureRegions(stimSets)
 	WAVE/WAVE stimSets
-	variable decimationFactor, minSamplingInterval
 
 	variable numSets, start, foundLevel, first, last, i, pLevel
-	variable dataLength
-	string list, str
-	variable level
+	variable dataLength, level
+	string list = ""
+	string str
 
 	numSets = DimSize(stimSets, ROWS)
 	Make/FREE/T/N=(numSets) regions
@@ -103,6 +114,16 @@ static Function/WAVE OOD_ExtractFeatureRegions(stimSets, decimationFactor, minSa
 		ASSERT(DimSize(stimSet, COLS) <= 1, "stimSet must be a 1D wave")
 
 		WaveStats/Q/M=1 stimSet
+
+		// FindLevel errouneously finds a level crossing with constant data
+		// work around that issue
+		if(V_min == V_max)
+			first = 0
+			last  = dataLength - 1
+			regions[i] = OOD_AddToRegionList(first, last, "")
+			continue
+		endif
+
 		level = V_min + (V_max - V_min) * 0.10
 
 		list  = ""
@@ -123,10 +144,7 @@ static Function/WAVE OOD_ExtractFeatureRegions(stimSets, decimationFactor, minSa
 			else
 				last  = pLevel
 				ASSERT(IsFinite(first), "Expected to have found an rising edge already")
-				first *= minSamplingInterval / 1000 / decimationFactor
-				last  *= minSamplingInterval / 1000 / decimationFactor
-				sprintf str, "%d-%d", first, last
-				list  = AddListItem(str, list, ";", INF)
+				list  = OOD_AddToRegionList(first, last, list)
 				first = NaN
 				last  = NaN
 			endif
@@ -136,11 +154,8 @@ static Function/WAVE OOD_ExtractFeatureRegions(stimSets, decimationFactor, minSa
 
 		// no falling edge as last level crossing
 		if(IsFinite(first))
-			last   = dataLength - 1
-			first *= minSamplingInterval / 1000 / decimationFactor
-			last  *= minSamplingInterval / 1000 / decimationFactor
-			sprintf str, "%d-%d", first, last
-			list  = AddListItem(str, list, ";", INF)
+			last = dataLength - 1
+			list = OOD_AddToRegionList(first, last, list)
 		endif
 
 		regions[i] = list
@@ -385,9 +400,8 @@ End
 ///
 /// For yoking we sort the lead and follower devices according to their device number.
 /// Each device will use the result of the previous device offset calculation as preloaded data.
-Function OOD_CalculateOffsetsYoked(panelTitle, decimationFactor, minSamplingInterval, params)
+Function OOD_CalculateOffsetsYoked(panelTitle, params)
 	string panelTitle
-	variable decimationFactor, minSamplingInterval
 	STRUCT OOdDAQParams &params
 
 	OOD_SmearStimSet(params)
@@ -397,7 +411,7 @@ Function OOD_CalculateOffsetsYoked(panelTitle, decimationFactor, minSamplingInte
 		OOD_CalculateOffsets(params)
 
 		OOD_CreateStimSetWithSmear(params)
-		WAVE/T params.regions = OOD_ExtractFeatureRegions(params.stimSetsSmearedAndOffset, decimationFactor, minSamplingInterval)
+		WAVE/T params.regions = OOD_ExtractFeatureRegions(params.stimSetsSmearedAndOffset)
 
 #if defined(DEBUGGING_ENABLED)
 	OOD_Debugging(params)
@@ -416,7 +430,7 @@ Function OOD_CalculateOffsetsYoked(panelTitle, decimationFactor, minSamplingInte
 	OOD_CalculateOffsets(params)
 
 	OOD_CreateStimSetWithSmear(params)
-	WAVE/T params.regions = OOD_ExtractFeatureRegions(params.stimSetsSmearedAndOffset, decimationFactor, minSamplingInterval)
+	WAVE/T params.regions = OOD_ExtractFeatureRegions(params.stimSetsSmearedAndOffset)
 
 	WAVE preload = OOD_GeneratePreload(params)
 	OOD_StorePreload(panelTitle, preload)
@@ -436,7 +450,7 @@ End
 Function OOD_SmearStimSet(params)
 	STRUCT OOdDAQParams &params
 
-	variable i, numLevels, foundLevel, pLevel
+	variable i, numLevels, foundLevel, pLevel, preDelayWarnCount, postDelayWarnCount
 	variable dataLength, first, last, start, numSets
 	variable level = 0.25
 	string msg
@@ -476,9 +490,23 @@ Function OOD_SmearStimSet(params)
 				endif
 
 				if(V_rising)
+					if(pLevel - params.preFeaturePoints < 0 && preDelayWarnCount == 0)
+						printf "Warning: Requested oodDAQ pre delay is longer than the baseline leading up to the pulse train.\r"
+						printf "         Either reduce the duration of the pre delay or (in the WaveBuilder) add more leading baseline.\r"
+						ControlWindowToFront()
+						preDelayWarnCount += 1
+					endif
+
 					first = max(pLevel - params.preFeaturePoints, 0)
 					last  = pLevel
 				else
+					if(pLevel + params.postFeaturePoints > dataLength - 1 && postDelayWarnCount == 0)
+						printf "Warning: Requested oodDAQ post delay is longer than the trailing baseline at the end of the pulse train.\r"
+						printf "         Either reduce the duration of the post delay or (in the WaveBuilder) add more trailing baseline at the end of the pulse train.\r"
+						ControlWindowToFront()
+						postDelayWarnCount += 1
+					endif
+
 					first = pLevel
 					last  = min(pLevel + params.postFeaturePoints, dataLength - 1)
 				endif
