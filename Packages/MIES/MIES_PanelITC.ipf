@@ -4113,7 +4113,7 @@ Function DAP_SetVarProc_Channel_Search(sva) : SetVariableControl
 			listOfWaves = WaveList(searchString, ";", "")
 			SetDataFolder saveDFR
 
-			if(IsAllControl(channelIndex))
+			if(DAP_IsAllControl(channelIndex))
 				first = 0
 				last  = GetNumberFromType(var=channelType)
 			else
@@ -4175,7 +4175,7 @@ Function DAP_CheckProc_Channel_All(cba) : CheckBoxControl
 			allChecked = cba.checked
 			DAP_ParsePanelControl(cba.ctrlName, channelIndex, channelType, controlType)
 			ASSERT(controlType  == CHANNEL_CONTROL_CHECK, "Invalid control type")
-			ASSERT(ISAllControl(channelIndex), "Invalid channel index")
+			ASSERT(DAP_ISAllControl(channelIndex), "Invalid channel index")
 
 			numEntries = GetNumberFromType(var=channelType)
 
@@ -4200,7 +4200,7 @@ Function DAP_CheckProc_Channel_All(cba) : CheckBoxControl
 End
 
 /// @brief Determines if the control refers to an "All" control
-Function IsAllControl(channelIndex)
+Function DAP_IsAllControl(channelIndex)
 	variable channelIndex
 
 	return channelIndex == CHANNEL_INDEX_ALL \
@@ -4218,7 +4218,7 @@ Function DAP_DACHasExpectedClampMode(panelTitle, controlChannelIndex, channelNum
 
 	variable headstage, clampMode
 
-	ASSERT(IsAllControl(controlChannelIndex), "Invalid controlChannelIndex")
+	ASSERT(DAP_IsAllControl(controlChannelIndex), "Invalid controlChannelIndex")
 
 	if(channelType != CHANNEL_TYPE_DAC || controlChannelIndex == CHANNEL_INDEX_ALL)
 		return 1 // don't care
@@ -4559,7 +4559,7 @@ Function DAP_PopMenuChkProc_StimSetList(pa) : PopupMenuControl
 			DAP_AbortIfUnlocked(panelTitle)
 			DAP_ParsePanelControl(ctrl, channelIndex, channelType, channelControl)
 
-			if(IsAllControl(channelIndex))
+			if(DAP_isAllControl(channelIndex))
 
 				numEntries = GetNumberFromType(var=channelType)
 				for(i = 0; i < numEntries; i += 1)
@@ -4596,7 +4596,7 @@ Function DAP_SetVarProc_DA_Scale(sva) : SetVariableControl
 			panelTitle = sva.win
 
 			DAP_ParsePanelControl(ctrl, channelIndex, channelType, controlType)
-			ASSERT(IsAllControl(channelIndex), "Unexpected channel index")
+			ASSERT(DAP_IsAllControl(channelIndex), "Unexpected channel index")
 
 			numEntries = GetNumberFromType(var=channelType)
 
