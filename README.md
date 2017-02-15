@@ -160,8 +160,8 @@ The full MIES installation and the partial installations are IGOR Pro compiled
 using a bamboo job. This allows to catch compile time errors early on.<br>
 For testing compilation manually perform the following steps:
 
-* Create in "User Procedures" a shortcut pointing to Packages\MIES_Include.ipf
-* Remove the shortcut Packages\MIES_Include.ipf in "Igor Procedures"
+* Create in `User Procedures` a shortcut pointing to `Packages\MIES_Include.ipf`
+* Remove the shortcut `Packages\MIES_Include.ipf` in `Igor Procedures`
 * Close all Igor Pro instances
 * Execute `tools\compilation-testing\check_mies_compilation.bat`
 * Watch the output
