@@ -333,7 +333,7 @@ Function ITC_ApplyAutoBias(panelTitle, BaselineSSAvg, SSResistance)
 		current += actualCurrent
 
 		if( abs(current) > maximumAutoBiasCurrent)
-			printf "Not applying autobias current shot of %gA as that would exceed the maximum allowed current of %gA\r", current, maximumAutoBiasCurrent
+			printf "Headstage %d: Not applying autobias current shot of %gA as that would exceed the maximum allowed current of %gA\r", headStage, current, maximumAutoBiasCurrent
 			continue
 		endif
 
