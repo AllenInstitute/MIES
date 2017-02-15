@@ -630,6 +630,7 @@ StrConstant ACTIVE_HEADSTAGES			= "Active headstages"
 StrConstant ASYNC_CH00					= "Asyncronous channel 0"
 StrConstant ASYNC_CH01					= "Asyncronous channel 1"
 StrConstant ASYNC_UNIT					= "Asyncronous Unit"
+StrConstant POSITION_MCC				= "Position MCCs"
 ///@}
 
 StrConstant PULSE_START_TIMES_KEY     = "Pulse Train Pulses"
