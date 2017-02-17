@@ -4113,7 +4113,7 @@ Function DAP_SetVarProc_Channel_Search(sva) : SetVariableControl
 			listOfWaves = WaveList(searchString, ";", "")
 			SetDataFolder saveDFR
 
-			if(IsAllControl(channelIndex))
+			if(DAP_IsAllControl(channelIndex))
 				first = 0
 				last  = GetNumberFromType(var=channelType)
 			else
@@ -4175,7 +4175,7 @@ Function DAP_CheckProc_Channel_All(cba) : CheckBoxControl
 			allChecked = cba.checked
 			DAP_ParsePanelControl(cba.ctrlName, channelIndex, channelType, controlType)
 			ASSERT(controlType  == CHANNEL_CONTROL_CHECK, "Invalid control type")
-			ASSERT(ISAllControl(channelIndex), "Invalid channel index")
+			ASSERT(DAP_ISAllControl(channelIndex), "Invalid channel index")
 
 			numEntries = GetNumberFromType(var=channelType)
 
@@ -4200,7 +4200,7 @@ Function DAP_CheckProc_Channel_All(cba) : CheckBoxControl
 End
 
 /// @brief Determines if the control refers to an "All" control
-Function IsAllControl(channelIndex)
+Function DAP_IsAllControl(channelIndex)
 	variable channelIndex
 
 	return channelIndex == CHANNEL_INDEX_ALL \
@@ -4218,7 +4218,7 @@ Function DAP_DACHasExpectedClampMode(panelTitle, controlChannelIndex, channelNum
 
 	variable headstage, clampMode
 
-	ASSERT(IsAllControl(controlChannelIndex), "Invalid controlChannelIndex")
+	ASSERT(DAP_IsAllControl(controlChannelIndex), "Invalid controlChannelIndex")
 
 	if(channelType != CHANNEL_TYPE_DAC || controlChannelIndex == CHANNEL_INDEX_ALL)
 		return 1 // don't care
@@ -4303,15 +4303,19 @@ static Function DAP_AdaptAssocHeadstageState(panelTitle, checkboxCtrl)
 End
 
 /// @brief One time initialization before data acquisition
-Function DAP_OneTimeCallBeforeDAQ(panelTitle)
+///
+/// @param panelTitle device
+/// @param runMode    One of @ref DAQRunModes except DAQ_NOT_RUNNING
+Function DAP_OneTimeCallBeforeDAQ(panelTitle, runMode)
 	string panelTitle
+	variable runMode
 
 	variable numHS, i
 
-	NVAR/Z/SDFR=GetDevicePath(panelTitle) count
-	if(NVAR_Exists(count))
-		KillVariables count
-	endif
+	ASSERT(runMode != DAQ_NOT_RUNNING, "Invalid running mode")
+
+	NVAR count = $GetCount(panelTitle)
+	count = NaN
 
 	if(GetCheckBoxState(panelTitle, "Check_DataAcq_Indexing"))
 		IDX_StoreStartFinishForIndexing(panelTitle)
@@ -4328,16 +4332,18 @@ Function DAP_OneTimeCallBeforeDAQ(panelTitle)
 			continue
 		endif
 
-		EnableControl(panelTitle, GetPanelControl(i, CHANNEL_TYPE_HEADSTAGE, CHANNEL_CONTROL_CHECK))
+		DisableControl(panelTitle, GetPanelControl(i, CHANNEL_TYPE_HEADSTAGE, CHANNEL_CONTROL_CHECK))
 		DisableControl(panelTitle, DAP_GetClampModeControl(I_CLAMP_MODE, i))
 		DisableControl(panelTitle, DAP_GetClampModeControl(V_CLAMP_MODE, i))
 		DisableControl(panelTitle, DAP_GetClampModeControl(I_EQUAL_ZERO_MODE, i))
 	endfor
 
-	NVAR DataAcqState = $GetDataAcqState(panelTitle)
-	DataAcqState = 1
+	NVAR dataAcqRunMode = $GetDataAcqRunMode(panelTitle)
+	dataAcqRunMode = runMode
+
 	DAP_ToggleAcquisitionButton(panelTitle, DATA_ACQ_BUTTON_TO_STOP)
-	
+	DisableControls(panelTitle, CONTROLS_DISABLE_DURING_DAQ_TP)
+
 	// turn off active pressure control modes
 	if(GetCheckboxState(panelTitle, "check_Settings_DisablePressure"))
 		P_SetAllHStoAtmospheric(panelTitle)
@@ -4358,6 +4364,7 @@ Function DAP_ResetGUIAfterDAQ(panelTitle)
 	endfor
 
 	DAP_ToggleAcquisitionButton(panelTitle, DATA_ACQ_BUTTON_TO_DAQ)
+	EnableControls(panelTitle, CONTROLS_DISABLE_DURING_DAQ_TP)
 End
 
 /// @brief One time cleaning up after data acquisition
@@ -4369,11 +4376,8 @@ Function DAP_OneTimeCallAfterDAQ(panelTitle)
 	DM_CallAnalysisFunctions(panelTitle, POST_SET_EVENT)
 	DM_CallAnalysisFunctions(panelTitle, POST_DAQ_EVENT)
 
-	NVAR DataAcqState = $GetDataAcqState(panelTitle)
-	DataAcqState = 0
-
-	NVAR count = $GetCount(panelTitle)
-	KillVariables count
+	NVAR dataAcqRunMode = $GetDataAcqRunMode(panelTitle)
+	dataAcqRunMode = DAQ_NOT_RUNNING
 
 	// restore the selected sets before DAQ
 	if(GetCheckBoxState(panelTitle, "Check_DataAcq_Indexing"))
@@ -4534,9 +4538,9 @@ Function DAP_PopMenuChkProc_StimSetList(pa) : PopupMenuControl
 	STRUCT WMPopupAction& pa
 
 	string ctrl, list
-	string panelTitle, stimSet
-	variable channelIndex, channelType, channelControl
-	variable i, numEntries, idx
+	string panelTitle, stimSet, checkCtrl
+	variable channelIndex, channelType, channelControl, isAllControl, indexing
+	variable i, numEntries, idx, dataAcqRunMode, headstage, activeChannel
 
 	switch(pa.eventCode)
 		case 2:
@@ -4545,6 +4549,28 @@ Function DAP_PopMenuChkProc_StimSetList(pa) : PopupMenuControl
 			stimSet    = pa.popStr
 			idx        = pa.popNum
 
+			DAP_AbortIfUnlocked(panelTitle)
+			DAP_ParsePanelControl(ctrl, channelIndex, channelType, channelControl)
+
+			checkCtrl     = GetPanelControl(channelIndex, channelType, CHANNEL_CONTROL_CHECK)
+			indexing      = GetCheckBoxState(panelTitle, "Check_DataAcq_Indexing")
+			isAllControl  = DAP_IsAllControl(channelIndex)
+			activeChannel = isAllControl                                       \
+			                || (GetCheckBoxState(panelTitle, checkCtrl)        \
+			                   && (channelControl == CHANNEL_CONTROL_WAVE      \
+			                   || (channelControl == CHANNEL_CONTROL_INDEX_END \
+			                   && indexing)))
+
+			if(activeChannel)
+				dataAcqRunMode = ITC_StopDAQ(panelTitle)
+
+				// stopping DAQ will reset the stimset popupmenu to its initial value
+				// so we have to set the now old value again
+				if(indexing && channelControl == CHANNEL_CONTROL_WAVE)
+					SetPopupMenuIndex(panelTitle, ctrl, idx - 1)
+				endif
+			endif
+
 			// check if this is a third party stim set which
 			// is not yet reflected in the "MenuExp" user data
 			list = GetUserData(panelTitle, ctrl, "MenuExp")
@@ -4552,11 +4578,7 @@ Function DAP_PopMenuChkProc_StimSetList(pa) : PopupMenuControl
 				WBP_UpdateITCPanelPopUps()
 			endif
 
-			DAP_AbortIfUnlocked(panelTitle)
-			DAP_ParsePanelControl(ctrl, channelIndex, channelType, channelControl)
-
-			if(IsAllControl(channelIndex))
-
+			if(isAllControl)
 				numEntries = GetNumberFromType(var=channelType)
 				for(i = 0; i < numEntries; i += 1)
 					ctrl = GetPanelControl(i, channelType, channelControl)
@@ -4571,6 +4593,10 @@ Function DAP_PopMenuChkProc_StimSetList(pa) : PopupMenuControl
 
 			DAP_UpdateITIAcrossSets(panelTitle)
 			DAP_UpdateSweepSetVariables(panelTitle)
+
+			if(activeChannel)
+				ITC_RestartDAQ(panelTitle, dataAcqRunMode)
+			endif
 
 			break
 		endswitch
@@ -4592,7 +4618,7 @@ Function DAP_SetVarProc_DA_Scale(sva) : SetVariableControl
 			panelTitle = sva.win
 
 			DAP_ParsePanelControl(ctrl, channelIndex, channelType, controlType)
-			ASSERT(IsAllControl(channelIndex), "Unexpected channel index")
+			ASSERT(DAP_IsAllControl(channelIndex), "Unexpected channel index")
 
 			numEntries = GetNumberFromType(var=channelType)
 
@@ -6005,6 +6031,7 @@ Function DAP_StopOngoingDataAcquisition(panelTitle)
 
 	if(IsDeviceActiveWithBGTask(panelTitle, "ITC_FIFOMonitor"))
 		ITC_STOPFifoMonitor()
+		ITC_StopITCDeviceTimer(panelTitle)
 
 		HW_ITC_StopAcq()
 		// zero channels that may be left high
@@ -6017,9 +6044,8 @@ Function DAP_StopOngoingDataAcquisition(panelTitle)
 		needsOTCAfterDAQ = needsOTCAfterDAQ | 1
 	else
 		// force a stop if invoked during a 'down' time, with nothing happening.
-		NVAR count = $GetCount(panelTitle)
-
-		if(IsFinite(count))
+		if(!RA_IsFirstSweep(panelTitle))
+			NVAR count = $GetCount(panelTitle)
 			count = GetValDisplayAsNum(panelTitle, "valdisp_DataAcq_SweepsInSet")
 			needsOTCAfterDAQ = needsOTCAfterDAQ | 1
 		endif
@@ -6576,12 +6602,12 @@ Function DAP_ButtonProc_TestPulse(ba) : ButtonControl
 
 			DAP_AbortIfUnlocked(panelTitle)
 
-			NVAR DataAcqState = $GetDataAcqState(panelTitle)
+			NVAR dataAcqRunMode = $GetDataAcqRunMode(panelTitle)
 
 			// if data acquisition is currently running we just
 			// want just call TP_StartTestPulse* which automatically
 			// ends DAQ
-			if(!DataAcqState && TP_CheckIfTestpulseIsRunning(panelTitle))
+			if(dataAcqRunMode == DAQ_NOT_RUNNING && TP_CheckIfTestpulseIsRunning(panelTitle))
 				TP_StopTestPulse(panelTitle)
 			elseif(GetCheckBoxState(panelTitle, "check_Settings_MD"))
 				TP_StartTestPulseMultiDevice(panelTitle)

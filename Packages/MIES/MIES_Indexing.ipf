@@ -74,14 +74,8 @@ Function IDX_ResetStartFinishForIndexing(panelTitle)
 		ctrl = GetPanelControl(i, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_WAVE)
 		SetPopupMenuIndex(paneltitle, ctrl, DACIndexingStorageWave[0][i] - 1)
 
-		ctrl = GetPanelControl(i, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_INDEX_END)
-		SetPopupMenuIndex(paneltitle, ctrl, DACIndexingStorageWave[1][i] - 1)
-
 		ctrl = GetPanelControl(i, CHANNEL_TYPE_TTL, CHANNEL_CONTROL_WAVE)
 		SetPopupMenuIndex(paneltitle, ctrl, TTLIndexingStorageWave[0][i] - 1)
-
-		ctrl = GetPanelControl(i, CHANNEL_TYPE_TTL, CHANNEL_CONTROL_INDEX_END)
-		SetPopupMenuIndex(paneltitle, ctrl, TTLIndexingStorageWave[1][i] - 1)
 	endfor
 End
 

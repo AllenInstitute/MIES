@@ -59,8 +59,7 @@ Function ITC_StopDataAcq()
 
 	DM_SaveAndScaleITCData(panelTitleG)
 
-	NVAR count = $GetCount(panelTitleG)
-	if(!IsFinite(count))
+	if(RA_IsFirstSweep(panelTitleG))
 		if(GetCheckboxState(panelTitleG, "Check_DataAcq1_RepeatAcq"))
 			RA_Start(PanelTitleG)
 		else
@@ -201,8 +200,7 @@ Function ITC_TestPulseFunc(s)
 		SCOPE_UpdateGraph(panelTitle)
 	endif
 
-	NVAR count = $GetCount(panelTitle)
-	if(!IsFinite(count))
+	if(RA_IsFirstSweep(panelTitle))
 		if(GetKeyState(0) & ESCAPE_KEY)
 			beep
 			ITC_StopTestPulseSingleDevice(panelTitle)
@@ -454,12 +452,17 @@ End
 /// @brief Start data acquisition using single device mode
 ///
 /// This is the high level function usable for all external users.
-Function ITC_StartDAQSingleDevice(panelTitle)
+///
+/// @param panelTitle    device
+/// @param useBackground [optional, defaults to background checkbox setting in the DA_Ephys
+///                      panel]
+Function ITC_StartDAQSingleDevice(panelTitle, [useBackground])
 	string panelTitle
+	variable useBackground
 
-	NVAR DataAcqState = $GetDataAcqState(panelTitle)
+	NVAR dataAcqRunMode = $GetDataAcqRunMode(panelTitle)
 
-	if(!DataAcqState) // data aquisition is stopped
+	if(dataAcqRunMode == DAQ_NOT_RUNNING)
 
 		AbortOnValue DAP_CheckSettings(panelTitle, DATA_ACQUISITION_MODE),1
 
@@ -467,10 +470,16 @@ Function ITC_StartDAQSingleDevice(panelTitle)
 			ITC_StopTestPulseSingleDevice(panelTitle)
 		endif
 
-		DAP_OneTimeCallBeforeDAQ(panelTitle)
+		if(ParamIsDefault(useBackground))
+			useBackground = GetCheckBoxState(panelTitle, "Check_Settings_BackgrndDataAcq")
+		else
+			useBackground = !!useBackground
+		endif
+
+		DAP_OneTimeCallBeforeDAQ(panelTitle, useBackground == 1 ? DAQ_BG_SINGLE_DEVICE : DAQ_FG_SINGLE_DEVICE)
 		DC_ConfigureDataForITC(panelTitle, DATA_ACQUISITION_MODE)
 
-		if(!GetCheckBoxState(panelTitle, "Check_Settings_BackgrndDataAcq"))
+		if(!useBackground)
 			ITC_DataAcq(panelTitle)
 			if(GetCheckBoxState(panelTitle, "Check_DataAcq1_RepeatAcq"))
 				RA_Start(panelTitle)
@@ -480,10 +489,8 @@ Function ITC_StartDAQSingleDevice(panelTitle)
 		else
 			ITC_BkrdDataAcq(panelTitle)
 		endif
-	else // data aquistion is ongoing
-		DataAcqState = 0
+	else
 		DAP_StopOngoingDataAcquisition(panelTitle)
-		ITC_StopITCDeviceTimer(panelTitle)
 	endif
 End
 
@@ -493,9 +500,9 @@ End
 Function ITC_StartDAQMultiDevice(panelTitle)
 	string panelTitle
 
-	NVAR DataAcqState = $GetDataAcqState(panelTitle)
+	NVAR dataAcqRunMode = $GetDataAcqRunMode(panelTitle)
 
-	if(!DataAcqState)
+	if(dataAcqRunMode == DAQ_NOT_RUNNING)
 
 		AbortOnValue DAP_CheckSettings(panelTitle, DATA_ACQUISITION_MODE), 1
 
@@ -503,11 +510,62 @@ Function ITC_StartDAQMultiDevice(panelTitle)
 			 ITC_StopTestPulseMultiDevice(panelTitle)
 		endif
 
-		ITC_CallFuncForDevicesMDYoked(panelTitle, DAP_OneTimeCallBeforeDAQ)
 		ITC_StartDAQMultiDeviceLowLevel(panelTitle)
-	else // data aquistion is ongoing, stop data acq
-		DataAcqState = 0
+	else // data acquistion is ongoing, stop data acq
 		ITC_StopOngoingDAQMultiDevice(panelTitle)
-		ITC_StopITCDeviceTimer(panelTitle)
 	endif
+End
+
+/// @brief Stop any running background DAQ
+///
+/// Assumes that single device and multi device do not run at the same time.
+/// @return One of @ref DAQRunModes
+Function ITC_StopDAQ(panelTitle)
+	string panelTitle
+
+	variable runMode
+
+	NVAR dataAcqRunMode = $GetDataAcqRunMode(panelTitle)
+
+	// create copy as the implicitly called DAP_OneTimeCallAfterDAQ()
+	// will change it
+	runMode = dataAcqRunMode
+
+	switch(runMode)
+		case DAQ_FG_SINGLE_DEVICE:
+			// can not be stopped
+			return runMode
+		case DAQ_BG_SINGLE_DEVICE:
+			DAP_StopOngoingDataAcquisition(panelTitle)
+			return runMode
+		case DAQ_BG_MULTI_DEVICE:
+			ITC_StopOngoingDAQMultiDevice(panelTitle)
+			return runMode
+	endswitch
+
+	return DAQ_NOT_RUNNING
+End
+
+/// @todo how to handle yoked devices??
+Function ITC_RestartDAQ(panelTitle, dataAcqRunMode)
+	string panelTitle
+	variable dataAcqRunMode
+
+	switch(dataAcqRunMode)
+		case DAQ_NOT_RUNNING:
+			// nothing to do
+			break
+		case DAQ_FG_SINGLE_DEVICE:
+			ITC_StartDAQSingleDevice(panelTitle, useBackground=0)
+			break
+		case DAQ_BG_SINGLE_DEVICE:
+			ITC_StartDAQSingleDevice(panelTitle, useBackground=1)
+			break
+		case DAQ_BG_MULTI_DEVICE:
+			ITC_StartDAQMultiDevice(panelTitle)
+			break
+		default:
+			DEBUGPRINT("Ignoring unknown value:", var=dataAcqRunMode)
+			break
+	endswitch
 End

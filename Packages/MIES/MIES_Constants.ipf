@@ -332,6 +332,16 @@ Constant TEST_PULSE_DURING_RA_MOD    = 0x100 ///< Or'ed with the testpulse mode.
 // foreground multi device does not exist
 /// @}
 
+/// @name Data acquisition modes
+/// @anchor DAQRunModes
+/// @{
+Constant DAQ_NOT_RUNNING      = 0x000
+Constant DAQ_BG_SINGLE_DEVICE = 0x001
+Constant DAQ_BG_MULTI_DEVICE  = 0x002
+Constant DAQ_FG_SINGLE_DEVICE = 0x004
+// foreground multi device does not exist
+/// @}
+
 /// @name Constants for GetAxisOrientation
 /// @anchor AxisOrientationConstants
 /// @{
@@ -635,3 +645,6 @@ StrConstant POSITION_MCC				= "Position MCCs"
 
 StrConstant PULSE_START_TIMES_KEY     = "Pulse Train Pulses"
 StrConstant PULSE_TO_PULSE_LENGTH_KEY = "Pulse To Pulse Length"
+
+/// DA_Ephys controls which should be disabled during DAQ *and* TP
+StrConstant CONTROLS_DISABLE_DURING_DAQ_TP = "check_Settings_MD;Check_Settings_BkgTP;Check_Settings_BackgrndDataAcq"

@@ -147,8 +147,7 @@ Function ITC_BkrdTPFuncMD(s)
 			SCOPE_UpdateGraph(panelTitle)
 		endif
 
-		NVAR count = $GetCount(panelTitle)
-		if(!IsFinite(count))
+		if(RA_IsFirstSweep(panelTitle))
 			if(GetKeyState(0) & ESCAPE_KEY)
 				// only stop the currently active device
 				if(!cmpstr(panelTitle,GetMainWindow(GetCurrentWindow())))

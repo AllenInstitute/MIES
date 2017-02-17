@@ -155,13 +155,13 @@ static Function/S CreateMiesVersion()
 	return RemoveEnding(version, "\r")
 End
 
-/// @brief Returns the absolute path to the variable `DataAcqState`
+/// @brief Returns the absolute path to the variable `runMode`
 ///
-/// The variable holds 1 if a data acquisition is currently running, 0 if not
-Function/S GetDataAcqState(panelTitle)
+/// The variable holds one of @ref DAQRunModes.
+Function/S GetDataAcqRunMode(panelTitle)
 	string panelTitle
 
-	return GetNVARAsString(GetDevicePath(panelTitle), "DataAcqState", initialValue=0)
+	return GetNVARAsString(GetDevicePath(panelTitle), "runMode", initialValue=DAQ_NOT_RUNNING)
 End
 
 /// @brief Return the list of follower devices of a lead device
@@ -190,8 +190,8 @@ End
 /// @brief Returns the absolute path to the global variable `count` storing the
 ///        number of data acquisition still left to perform.
 ///
-///        The initial value of NaN has the same semantics as the previous non existence
-///        of this variable. Both meaning that no data acquisition is done right now.
+/// If the return value is NaN it means either that this is the very
+/// first sweep or that no DAQ is ongoing.
 Function/S GetCount(panelTitle)
 	string panelTitle
 

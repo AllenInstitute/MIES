@@ -20,6 +20,7 @@ Function ITC_StartDAQMultiDeviceLowLevel(panelTitle)
 
 	// configure passed device
 	NVAR ITCDeviceIDGlobal = $GetITCDeviceIDGlobal(panelTitle)
+	DAP_OneTimeCallBeforeDAQ(panelTitle, DAQ_BG_MULTI_DEVICE)
 	DC_ConfigureDataForITC(panelTitle, DATA_ACQUISITION_MODE)
 	HW_SelectDevice(HARDWARE_ITC_DAC, ITCDeviceIDGlobal, flags=HARDWARE_ABORT_ON_ERROR)
 	HW_ITC_PrepareAcq(ITCDeviceIDGlobal)
@@ -35,6 +36,7 @@ Function ITC_StartDAQMultiDeviceLowLevel(panelTitle)
 	// configure follower devices
 	for(i = 0; i < numFollower; i += 1)
 		followerPanelTitle = StringFromList(i, listOfFollowerDevices)
+		DAP_OneTimeCallBeforeDAQ(panelTitle, DAQ_BG_MULTI_DEVICE)
 		DC_ConfigureDataForITC(followerPanelTitle, DATA_ACQUISITION_MODE)
 		NVAR ITCDeviceIDGlobal = $GetITCDeviceIDGlobal(followerPanelTitle)
 		HW_SelectDevice(HARDWARE_ITC_DAC, ITCDeviceIDGlobal, flags=HARDWARE_ABORT_ON_ERROR)
@@ -130,13 +132,11 @@ static Function ITC_StopDataAcqMD(panelTitle, ITCDeviceIDGlobal)
 	String panelTitle
 	Variable ITCDeviceIDGlobal
 
-	NVAR count = $GetCount(panelTitle)
-
 	HW_SelectDevice(HARDWARE_ITC_DAC, ITCDeviceIDGlobal, flags=HARDWARE_ABORT_ON_ERROR)
 	HW_StopAcq(HARDWARE_ITC_DAC, ITCDeviceIDGlobal, prepareForDAQ=1)
 
 	DM_SaveAndScaleITCData(panelTitle)
-	if(!IsFinite(count))
+	if(RA_IsFirstSweep(panelTitle))
 		if(GetCheckboxState(panelTitle, "Check_DataAcq1_RepeatAcq"))
 			RA_YokedRAStartMD(panelTitle)
 		else
@@ -203,6 +203,7 @@ static Function ITC_StopOngoingDAQMDHelper(panelTitle)
 
 	if(IsDeviceActiveWithBGTask(panelTitle, "ITC_FIFOMonitorMD"))
 		ITC_TerminateOngoingDAQMDHelper(panelTitle)
+		ITC_StopITCDeviceTimer(panelTitle)
 
 		if(!discardData)
 			DM_SaveAndScaleITCData(panelTitle)
