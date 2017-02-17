@@ -601,8 +601,8 @@ Function PA_ShowPulses(win, dfr, pa)
 			endfor // channels
 
 			if(!pa.multipleGraphs)
-				EquallySpaceAxis(graph, "left_R" + num2str(activeRegionCount))
-				EquallySpaceAxis(graph, "bottom")
+				EquallySpaceAxis(graph, "left_R" + num2str(activeRegionCount), sortOrder=1)
+				EquallySpaceAxis(graph, "bottom", sortOrder=1)
 			endif
 		endfor // headstages
 	endfor // channelType
