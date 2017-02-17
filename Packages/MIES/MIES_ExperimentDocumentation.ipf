@@ -1,5 +1,6 @@
 #pragma TextEncoding = "UTF-8"
 #pragma rtGlobals=3		// Use modern global access method and strict wave access.
+#pragma rtFunctionErrors=1
 
 /// @file MIES_ExperimentDocumentation.ipf
 /// @brief __ED__ Writing numerical/textual information to the labnotebook
@@ -63,7 +64,7 @@ static Function ED_WriteChangedValuesToNote(saveDataWave, incomingNumericalKeys,
 
 	string key, factor, unit, text, frontLabel
 	string str = ""
-	variable tolerance, i, j, numRows, numCols
+	variable tolerance, i, j, numRows, numCols, err
 
 	if(!WaveExists(saveDataWave))
 		return NaN
@@ -108,7 +109,7 @@ static Function ED_WriteChangedValuesToNote(saveDataWave, incomingNumericalKeys,
 				continue
 			endif
 
-			tolerance = str2num(factor)
+			tolerance = str2num(factor); err = GetRTError(1)
 
 			// in case we have tolerance as "-" we get tolerance == NaN
 			// and the following check is false
@@ -123,7 +124,7 @@ static Function ED_WriteChangedValuesToNote(saveDataWave, incomingNumericalKeys,
 			endif
 
 			if (!cmpstr(factor, "-"))
-				sprintf text, "%s%s: %s\r" frontLabel, key, SelectString(currentSetting[i], "Off", "On")
+				sprintf text, "%s%s: %s\r" frontLabel, key, SelectString(currentSetting[i], "Off", "On"); err = GetRTError(1)
 			else
 				sprintf text, "%s%s: %.2f %s\r" frontLabel, key, currentSetting[i], unit
 			endif

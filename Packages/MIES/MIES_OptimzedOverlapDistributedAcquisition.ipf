@@ -1,5 +1,6 @@
 #pragma TextEncoding = "UTF-8"
 #pragma rtGlobals=3
+#pragma rtFunctionErrors=1
 
 /// @file MIES_OptimzedOverlapDistributedAcquisition.ipf
 /// @brief __OOD__ This file holds functions related to oodDAQ.

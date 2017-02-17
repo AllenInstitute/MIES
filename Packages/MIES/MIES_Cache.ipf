@@ -1,5 +1,6 @@
 #pragma TextEncoding = "UTF-8"
 #pragma rtGlobals=3
+#pragma rtFunctionErrors=1
 
 /// @file MIES_Cache.ipf
 /// @brief __CA__ This file holds functions related to caching of waves.

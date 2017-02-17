@@ -1,5 +1,6 @@
 #pragma TextEncoding = "UTF-8"
 #pragma rtGlobals=3		// Use modern global access method and strict wave access.
+#pragma rtFunctionErrors=1
 
 /// @file MIES_AnalysisFunctionHelpers.ipf
 /// @brief __AFH__ Helper functions for analysis function writers

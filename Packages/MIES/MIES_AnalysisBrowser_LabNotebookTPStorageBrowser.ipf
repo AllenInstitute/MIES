@@ -1,5 +1,6 @@
 #pragma TextEncoding = "UTF-8"
 #pragma rtGlobals=3		// Use modern global access method and strict wave access.
+#pragma rtFunctionErrors=1
 
 /// @file MIES_AnalysisBrowser_LabNotebookTPStorageBrowser.ipf
 /// @brief __LBN__ Panels for browsing the labnotebook and the TPStorage waves

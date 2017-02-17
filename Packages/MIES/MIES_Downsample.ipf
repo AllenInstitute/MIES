@@ -1,5 +1,6 @@
 #pragma TextEncoding = "UTF-8"
 #pragma rtGlobals=3
+#pragma rtFunctionErrors=1
 #pragma igorVersion=7.0
 
 /// @file MIES_Downsample.ipf
