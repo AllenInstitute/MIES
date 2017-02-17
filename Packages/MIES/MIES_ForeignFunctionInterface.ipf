@@ -42,7 +42,10 @@ Function/WAVE FFI_ReturnTPValues()
 		tpCycleCount = GetNumberFromWaveNote(tpStorageWave, TP_CYLCE_COUNT_KEY) // used to pull most recent values from TP
 
 		//make sure we get a valid TPCycleCount value
-		ASSERT(TPCycleCount > 0, "Invalid CycleCount value")
+		if (TPCycleCount == 0)
+			print "TP Cycle Count is zero...returning null"
+			return $""	
+		endif
 
 		numChannels = DimSize(ADCs, ROWS)
 
