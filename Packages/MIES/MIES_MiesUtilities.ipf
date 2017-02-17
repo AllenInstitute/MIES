@@ -1455,7 +1455,7 @@ Function EquallySpaceAxis(graph, axisBaseName, [sortOrder])
 	axes    = ListMatch(AxisList(graph), axisBaseName + "*")
 	numAxes = ItemsInList(axes)
 
-	if(numAxes == 0)
+	if(numAxes < 1)
 		return NaN
 	endif
 
