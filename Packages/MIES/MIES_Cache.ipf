@@ -2,6 +2,10 @@
 #pragma rtGlobals=3
 #pragma rtFunctionErrors=1
 
+#ifdef AUTOMATED_TESTING
+#pragma ModuleName=MIES_CA
+#endif
+
 /// @file MIES_Cache.ipf
 /// @brief __CA__ This file holds functions related to caching of waves.
 ///

@@ -3,6 +3,10 @@
 #pragma rtFunctionErrors=1
 #pragma igorVersion=7.0
 
+#ifdef AUTOMATED_TESTING
+#pragma ModuleName=MIES_WBP
+#endif
+
 /// @file MIES_WaveBuilderPanel.ipf
 /// @brief __WBP__ Panel for creating stimulus sets
 

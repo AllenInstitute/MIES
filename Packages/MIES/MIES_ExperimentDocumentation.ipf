@@ -2,6 +2,10 @@
 #pragma rtGlobals=3		// Use modern global access method and strict wave access.
 #pragma rtFunctionErrors=1
 
+#ifdef AUTOMATED_TESTING
+#pragma ModuleName=MIES_ED
+#endif
+
 /// @file MIES_ExperimentDocumentation.ipf
 /// @brief __ED__ Writing numerical/textual information to the labnotebook
 

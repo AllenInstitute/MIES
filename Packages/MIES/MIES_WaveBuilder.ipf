@@ -2,6 +2,10 @@
 #pragma rtGlobals=3		// Use modern global access method and strict Wave access.
 #pragma rtFunctionErrors=1
 
+#ifdef AUTOMATED_TESTING
+#pragma ModuleName=MIES_WB
+#endif
+
 /// @file MIES_WaveBuilder.ipf
 /// @brief __WB__ Stimulus set creation
 

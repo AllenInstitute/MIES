@@ -2,6 +2,10 @@
 #pragma rtGlobals=3		// Use modern global access method and strict wave access.
 #pragma rtFunctionErrors=1
 
+#ifdef AUTOMATED_TESTING
+#pragma ModuleName=MIES_P
+#endif
+
 /// @file MIES_PressureControl.ipf
 /// @brief __P__ Supports use of analog pressure regulators controlled via a
 /// ITC device for automated pressure control during approach, seal, break in,

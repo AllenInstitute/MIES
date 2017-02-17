@@ -2,6 +2,10 @@
 #pragma rtGlobals=3		// Use modern global access method and strict wave access.
 #pragma rtFunctionErrors=1
 
+#ifdef AUTOMATED_TESTING
+#pragma ModuleName=MIES_STRUCTURES
+#endif
+
 /// @file MIES_Structures.ipf
 ///
 /// @brief All non-static structures together with their initialization

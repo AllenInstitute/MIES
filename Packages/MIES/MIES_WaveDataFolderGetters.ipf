@@ -2,6 +2,10 @@
 #pragma rtGlobals=3
 #pragma rtFunctionErrors=1
 
+#ifdef AUTOMATED_TESTING
+#pragma ModuleName=MIES_WAVEGETTERS
+#endif
+
 /// @file MIES_WaveDataFolderGetters.ipf
 ///
 /// @brief Collection of Wave and Datafolder getter functions

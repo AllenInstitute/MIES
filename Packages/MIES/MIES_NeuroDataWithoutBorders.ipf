@@ -2,6 +2,10 @@
 #pragma rtGlobals=3		// Use modern global access method and strict wave access.
 #pragma rtFunctionErrors=1
 
+#ifdef AUTOMATED_TESTING
+#pragma ModuleName=MIES_NWB
+#endif
+
 /// @file MIES_NeuroDataWithoutBorders.ipf
 /// @brief __NWB__ Functions related to MIES data export into the NeuroDataWithoutBorders format
 ///

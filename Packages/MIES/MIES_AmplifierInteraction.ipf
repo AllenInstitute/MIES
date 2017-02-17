@@ -2,6 +2,10 @@
 #pragma rtGlobals=3		// Use modern global access method and strict wave access.
 #pragma rtFunctionErrors=1
 
+#ifdef AUTOMATED_TESTING
+#pragma ModuleName=MiesTesting
+#endif
+
 /// @file MIES_AmplifierInteraction.ipf
 /// @brief __AI__ Interface with the Axon/MCC amplifiers
 

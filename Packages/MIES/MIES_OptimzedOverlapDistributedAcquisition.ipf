@@ -2,6 +2,10 @@
 #pragma rtGlobals=3
 #pragma rtFunctionErrors=1
 
+#ifdef AUTOMATED_TESTING
+#pragma ModuleName=MIES_OOD
+#endif
+
 /// @file MIES_OptimzedOverlapDistributedAcquisition.ipf
 /// @brief __OOD__ This file holds functions related to oodDAQ.
 

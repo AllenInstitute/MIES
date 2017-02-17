@@ -3,6 +3,10 @@
 #pragma rtFunctionErrors=1
 #pragma igorVersion=7.0
 
+#ifdef AUTOMATED_TESTING
+#pragma ModuleName=MIES_DOWN
+#endif
+
 /// @file MIES_Downsample.ipf
 /// @brief Panel for downsampling acquired data
 ///

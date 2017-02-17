@@ -2,6 +2,10 @@
 #pragma rtGlobals=3
 #pragma rtFunctionErrors=1
 
+#ifdef AUTOMATED_TESTING
+#pragma ModuleName=MIES_MIESUTILS
+#endif
+
 #include <Axis Utilities>
 
 /// @file MIES_MiesUtilities.ipf

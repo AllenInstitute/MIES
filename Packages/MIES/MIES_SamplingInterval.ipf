@@ -2,6 +2,10 @@
 #pragma rtGlobals=3		// Use modern global access method and strict wave access.
 #pragma rtFunctionErrors=1
 
+#ifdef AUTOMATED_TESTING
+#pragma ModuleName=MIES_SI
+#endif
+
 /// @file MIES_SamplingInterval.ipf
 ///
 /// @brief __SI__ Routines for calculating and handling the minimum sampling interval
