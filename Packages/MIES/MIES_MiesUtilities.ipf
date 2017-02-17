@@ -1440,8 +1440,14 @@ Function SetLabNotebookBottomLabel(graph, isTimeAxis)
 End
 
 /// @brief Space the matching axis in an equal manner
-Function EquallySpaceAxis(graph, axisBaseName)
+///
+/// @param graph        graph
+/// @param axisBaseName prefix of to-be-matched axis names
+/// @param sortOrder    [optional, defaults to no sorting (NaN)] apply different sorting
+///                     schemes to list of axes, see sortingOrder parameter of `SortList`
+Function EquallySpaceAxis(graph, axisBaseName, [sortOrder])
 	string graph, axisBaseName
+	variable sortOrder
 
 	variable numAxes, axisInc, axisStart, axisEnd, i
 	string axes, axis
@@ -1451,6 +1457,12 @@ Function EquallySpaceAxis(graph, axisBaseName)
 
 	if(numAxes == 0)
 		return NaN
+	endif
+
+	if(ParamIsDefault(sortOrder) || !IsFinite(sortOrder))
+		// do nothing
+	else
+		axes = SortList(axes, ";", sortOrder)
 	endif
 
 	axisInc = 1 / numAxes
