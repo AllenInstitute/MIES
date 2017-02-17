@@ -41,12 +41,11 @@ Function/WAVE FFI_ReturnTPValues()
 		tpCycleCount = GetNumberFromWaveNote(tpStorageWave, TP_CYLCE_COUNT_KEY) // used to pull most recent values from TP
 
 		//make sure we get a valid TPCycleCount value
-		if (TPCycleCount = 0)
-			print "TP Cycle Count is zero...returning null wave"
-			Wave nullWave
-			return nullWave	
+		if (TPCycleCount == 0)
+			print "TP Cycle Count is zero...returning null"
+			return $""	
 		endif
-		
+
 		numChannels = DimSize(ADCs, ROWS)
 
 		// pull the relevant information out of the tpStorageWave and put it into acqStorageWave
