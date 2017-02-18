@@ -160,7 +160,7 @@ static Function AB_RemoveMapEntry(index)
 	endif
 End
 
-/// @brief  Get single matching entry from getAnalysisBrowserMap
+/// @brief  Get single matching entry from GetAnalysisBrowserMap
 /// @param  discLocation: first column. Path to file on disc
 /// @return wave with 4 columns
 /// Columns:
@@ -171,7 +171,7 @@ End
 Function/Wave AB_GetMap(discLocation)
 	string discLocation
 
-	WAVE/T map = getAnalysisBrowserMap()
+	WAVE/T map = GetAnalysisBrowserMap()
 
 	FindValue/TXOP=4/TEXT=(discLocation) map
 	ASSERT(V_Value >= 0, "invalid index")
