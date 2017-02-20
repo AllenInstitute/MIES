@@ -354,11 +354,11 @@ static Function DB_UpdateOverlaySweepWaves(panelTitle)
 	WAVE listBoxWave       = GetOverlaySweepsListWave(dfr)
 	WAVE listBoxSelWave    = GetOverlaySweepsListSelWave(dfr)
 	WAVE/T textualValues   = DB_GetTextualValues(panelTitle)
-	WAVE/T stimsetListWave = GetOverlaySweepsStimsetListWave(dfr)
+	WAVE/T sweepSelChoices = GetOverlaySweepSelectionChoices(dfr)
 
 	sweepWaveList = DB_GetListOfSweepWaves(panelTitle)
 
-	OVS_UpdatePanel(panelTitle, listBoxWave, listBoxSelWave, stimsetListWave, sweepWaveList, textualValues=textualValues)
+	OVS_UpdatePanel(panelTitle, listBoxWave, listBoxSelWave, sweepSelChoices, sweepWaveList, textualValues=textualValues)
 End
 
 Window Databrowser() : Panel
@@ -929,11 +929,11 @@ Function DB_CheckboxProc_OverlaySweeps(cba) : CheckBoxControl
 			DFREF dfr = GetDeviceDataBrowserPath(device)
 			WAVE/T listBoxWave        = GetOverlaySweepsListWave(dfr)
 			WAVE listBoxSelWave       = GetOverlaySweepsListSelWave(dfr)
-			WAVE/WAVE stimsetListWave = GetOverlaySweepsStimsetListWave(dfr)
+			WAVE/WAVE sweepSelChoices = GetOverlaySweepSelectionChoices(dfr)
 
 			WAVE/T textualValues  = DB_GetTextualValues(panelTitle)
 			sweepWaveList = DB_GetListOfSweepWaves(panelTitle)
-			OVS_UpdatePanel(panelTitle, listBoxWave, listBoxSelWave, stimsetListWave, sweepWaveList, textualValues=textualValues)
+			OVS_UpdatePanel(panelTitle, listBoxWave, listBoxSelWave, sweepSelChoices, sweepWaveList, textualValues=textualValues)
 			if(!OVS_TogglePanel(panelTitle, listBoxWave, listBoxSelWave))
 				sweepNo = GetSetVariable(panelTitle, "setvar_DataBrowser_SweepNo")
 				OVS_SelectSweep(panelTitle, sweepNo=sweepNo)

@@ -1167,11 +1167,11 @@ Function SB_CheckboxProc_OverlaySweeps(cba) : CheckBoxControl
 			DFREF dfr = $SB_GetSweepBrowserFolder(graph)
 			WAVE/T listBoxWave        = GetOverlaySweepsListWave(dfr)
 			WAVE listBoxSelWave       = GetOverlaySweepsListSelWave(dfr)
-			WAVE/WAVE stimsetListWave = GetOverlaySweepsStimsetListWave(dfr)
+			WAVE/WAVE sweepSelChoices = GetOverlaySweepSelectionChoices(dfr)
 
 			WAVE/WAVE allTextualValues = SB_GetTextualValuesWaves(graph)
 			sweepWaveList = SB_GetPlainSweepList(graph)
-			OVS_UpdatePanel(graph, listBoxWave, listBoxSelWave, stimsetListWave, sweepWaveList, allTextualValues=allTextualValues)
+			OVS_UpdatePanel(graph, listBoxWave, listBoxSelWave, sweepSelChoices, sweepWaveList, allTextualValues=allTextualValues)
 			if(!OVS_TogglePanel(extPanel, listBoxWave, listBoxSelWave))
 				index = GetPopupMenuIndex(extPanel, "popup_sweep_selector")
 				OVS_SelectSweep(extPanel, index=index)

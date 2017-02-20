@@ -90,9 +90,9 @@ Function/S OVS_GetSweepSelectionChoices(win)
 	variable i, numEntries
 
 	DFREF dfr = OVS_GetFolder(win)
-	WAVE/T stimsetListWave = GetOverlaySweepsStimsetListWave(dfr)
+	WAVE/T sweepSelChoices = GetOverlaySweepSelectionChoices(dfr)
 
-	FindDuplicates/Z/RT=dupsRemovedWave stimsetListWave
+	FindDuplicates/Z/RT=dupsRemovedWave sweepSelChoices
 
 	return NONE + ";All;\\M1(-;\\M1(DA Stimulus Sets;" + TextWaveToList(MakeWaveFree(dupsRemovedWave), ";")
 End
@@ -120,11 +120,11 @@ End
 /// @brief Update the overlay sweep waves
 ///
 /// Must be called after the sweeps changed.
-Function OVS_UpdatePanel(win, listBoxWave, listBoxSelWave, stimSetListWave, sweepWaveList, [allTextualValues, textualValues])
+Function OVS_UpdatePanel(win, listBoxWave, listBoxSelWave, sweepSelectionChoices, sweepWaveList, [allTextualValues, textualValues])
 	string win
 	WAVE/T listBoxWave
 	WAVE listBoxSelWave
-	WAVE/T stimSetListWave
+	WAVE/T sweepSelectionChoices
 	WAVE/T textualValues
 	WAVE/WAVE allTextualValues
 	string sweepWaveList
@@ -144,7 +144,7 @@ Function OVS_UpdatePanel(win, listBoxWave, listBoxSelWave, stimSetListWave, swee
 		ASSERT(0, "Expected exactly one of textualValues or allTextualValues")
 	endif
 
-	Redimension/N=(numEntries, -1) listBoxWave, listBoxSelWave, stimSetListWave
+	Redimension/N=(numEntries, -1, -1) listBoxWave, listBoxSelWave, sweepSelectionChoices
 
 	Make/FREE/U/I/N=(numEntries) sweeps = ExtractSweepNumber(StringFromList(p, sweepWaveList))
 	MultiThread listBoxWave[][%Sweep] = num2str(sweeps[p])
@@ -159,7 +159,7 @@ Function OVS_UpdatePanel(win, listBoxWave, listBoxSelWave, stimSetListWave, swee
 
 	for(i = 0; i < numEntries; i += 1)
 		WAVE/T stimsets = GetLastSettingText(allTextualValues[i], sweeps[i], STIM_WAVE_NAME_KEY, DATA_ACQUISITION_MODE)
-		stimSetListWave[i][] = stimsets[q]
+		sweepSelectionChoices[i][] = stimsets[q]
 	endfor
 End
 
@@ -490,7 +490,7 @@ Function OVS_PopMenuProc_Select(pa) : PopupMenuControl
 
 			DFREF dfr = OVS_GetFolder(win)
 			WAVE listboxSelWave    = GetOverlaySweepsListSelWave(dfr)
-			WAVE/T stimsetListWave = GetOverlaySweepsStimsetListWave(dfr)
+			WAVE/T sweepSelChoices = GetOverlaySweepSelectionChoices(dfr)
 
 			if(!cmpstr(popStr, NONE))
 				listboxSelWave[][%Sweep] = listboxSelWave[p][q] & ~LISTBOX_CHECKBOX_SELECTED
@@ -500,7 +500,7 @@ Function OVS_PopMenuProc_Select(pa) : PopupMenuControl
 				listboxSelWave[][%Sweep] = listboxSelWave[p][q] & ~LISTBOX_CHECKBOX_SELECTED
 
 				for(i = 0; i < NUM_HEADSTAGES; i += 1)
-					WAVE/Z indizes = FindIndizes(wvText=stimsetListWave, col=i, str=popStr)
+					WAVE/Z indizes = FindIndizes(wvText=sweepSelChoices, col=i, str=popStr)
 					if(!WaveExists(indizes))
 						continue
 					endif
