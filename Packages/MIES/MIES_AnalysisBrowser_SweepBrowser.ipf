@@ -803,7 +803,8 @@ End
 static Function/WAVE SB_GetTextualValuesWaves(graph)
 	string graph
 
-	string list = "", str
+	string list = ""
+	string str
 	variable numRows, i
 
 	WAVE/T map = SB_GetSweepBrowserMapFromGraph(graph)
@@ -811,7 +812,7 @@ static Function/WAVE SB_GetTextualValuesWaves(graph)
 	numRows = GetNumberFromWaveNote(map, NOTE_INDEX)
 
 	Make/WAVE/FREE/N=(numRows) allTextualValues
-	allTextualValues[0, numRows - 1] = GetAnalysLBTextualValues(map[p][%DataFolder], map[p][%Device])
+	allTextualValues[] = GetAnalysLBTextualValues(map[p][%DataFolder], map[p][%Device])
 
 	return allTextualValues
 End
