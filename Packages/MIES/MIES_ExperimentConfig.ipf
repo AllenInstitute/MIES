@@ -13,6 +13,29 @@
 /// - Interactions with MCCs
 /// - DAEphys panel settings
 
+/// @brief launch ExpConfig_ConfigureMIES on startup or new experiment
+Function IgorStartOrNewHook(igorApplicationNameStr)
+	String igorApplicationNameStr
+	String igorConfig, configOptions
+	
+	configOptions = "Configure MIES for new experiment; Open Analysis Browser; Open blank Igor Window"
+	
+	Prompt igorConfig, "Choose what you would like to do in Igor:", popup, configOptions
+	
+	DoPrompt "Igor Startup", igorConfig
+	
+	if(!V_flag)
+		if(cmpstr(igorConfig, StringFromList(0, configOptions)) == 0)
+			ExpConfig_ConfigureMIES()
+		elseif(cmpstr(igorConfig, StringFromList(1, configOptions)) == 0)
+			AB_OpenAnalysisBrowser()
+		else
+			return 0
+		endif
+	endif
+	
+End
+
 /// @brief Configure MIES for experiments
 Function ExpConfig_ConfigureMIES()
 
