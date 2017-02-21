@@ -162,7 +162,7 @@ static Function/WAVE PA_GetTraceInfos(graph)
 
 	// replace duplicates with empty entries
 	Make/T/FREE tracesFullPath
-	FindDuplicates/ST=""/STDS=tracesFullPath traceWaveList
+	FindDuplicates/Z/ST=""/STDS=tracesFullPath traceWaveList
 
 	WAVE indizes = FindIndizes(wvText=tracesFullPath, prop=PROP_NON_EMPTY, col=0)
 
@@ -195,7 +195,7 @@ static Function/WAVE PA_GetUniqueHeadstages(traceData, indizesChannelType)
 	Make/D/FREE/N=(DimSize(indizesChannelType, ROWS)) headstages = str2num(traceData[indizesChannelType[p]][%headstage])
 
 	Make/FREE/D headstagesClean
-	FindDuplicates/SN=(NaN)/SNDS=headstagesClean headstages
+	FindDuplicates/Z/SN=(NaN)/SNDS=headstagesClean headstages
 
 	return headstagesClean
 End
@@ -601,8 +601,8 @@ Function PA_ShowPulses(win, dfr, pa)
 			endfor // channels
 
 			if(!pa.multipleGraphs)
-				EquallySpaceAxis(graph, "left_R" + num2str(activeRegionCount))
-				EquallySpaceAxis(graph, "bottom")
+				EquallySpaceAxis(graph, "left_R" + num2str(activeRegionCount), sortOrder=1)
+				EquallySpaceAxis(graph, "bottom", sortOrder=1)
 			endif
 		endfor // headstages
 	endfor // channelType

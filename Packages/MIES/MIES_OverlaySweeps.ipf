@@ -92,7 +92,7 @@ Function/S OVS_GetSweepSelectionChoices(win)
 	DFREF dfr = OVS_GetFolder(win)
 	WAVE/T stimsetListWave = GetOverlaySweepsStimsetListWave(dfr)
 
-	FindDuplicates/RT=dupsRemovedWave stimsetListWave
+	FindDuplicates/Z/RT=dupsRemovedWave stimsetListWave
 
 	return NONE + ";All;\\M1(-;\\M1(DA Stimulus Sets;" + TextWaveToList(MakeWaveFree(dupsRemovedWave), ";")
 End
