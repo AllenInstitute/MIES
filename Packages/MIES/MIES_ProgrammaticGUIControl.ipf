@@ -133,13 +133,15 @@ End
 /// PopupMenus:
 /// - `val` is mandatory and 0-based.
 /// - `str` must be supplied if the GUI control procedure requires it.
+///
+/// @return 1 if val was modified by control limits, 0 if val was unmodified
 Function PGC_SetAndActivateControl(win, control, [val, str])
 	string win, control
 	variable val
 	string str
 
 	string procedure
-	variable paramType, controlType, variableType
+	variable paramType, controlType, variableType, inputWasModified
 
 	if(IsControlDisabled(win, control))
 		DEBUGPRINT("Can't click a disabled control (or better should not)")
@@ -151,7 +153,7 @@ Function PGC_SetAndActivateControl(win, control, [val, str])
 	ControlInfo/W=$win $control
 	ASSERT(V_flag != 0, "Non-existing control or window")
 	controlType = abs(V_flag)
-
+	
 	switch(controlType)
 		case CONTROL_TYPE_BUTTON:
 
@@ -237,7 +239,7 @@ Function PGC_SetAndActivateControl(win, control, [val, str])
 			endif
 
 			if(variableType == SET_VARIABLE_BUILTIN_NUM)
-				SetSetVariable(win, control, val)
+				inputWasModified = SetSetVariable(win, control, val, respectLimits = 1) != val
 			elseif(variableType == SET_VARIABLE_BUILTIN_STR)
 				SetSetVariableString(win, control, str)
 			else
@@ -285,4 +287,6 @@ Function PGC_SetAndActivateControl(win, control, [val, str])
 			ASSERT(0, "Unsupported control type")
 			break
 	endswitch
+	
+	return inputWasModified
 End
