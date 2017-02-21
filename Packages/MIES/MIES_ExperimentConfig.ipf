@@ -52,11 +52,13 @@ Function ExpConfig_ConfigureMIES()
 	
 	fullPath = GetFolder(FunctionPath("")) + USER_CONFIG_PATH
 	ASSERT(!cmpstr(GetFileSuffix(fullPath), "txt"), "Only plain notebooks are supported")
+	printf "Opening User Configuration Notebook\r"
 	OpenNotebook/ENCG=1/R/N=UserConfigNB/V=0/Z fullPath
 	if(V_flag)
 		ASSERT(V_flag > 0, "Configuration Notebook not loaded")
 	endif
-
+	printf "Configuration Notebook successfully loaded, extracting user settings\r"
+	
 	UserConfigNB = winname(0,16)
 	Wave /T KeyTypes = GetExpConfigKeyTypes()
 	Wave /T UserSettings = GetExpUserSettings(UserConfigNB, KeyTypes)
@@ -122,7 +124,7 @@ static Function ExpConfig_Amplifiers(panelTitle, UserSettings)
 
 	string AmpSerialLocal, AmpTitleLocal, CheckDA, HeadstagesToConfigure, MCCWinPosition
 	variable i, ii, ampSerial
-
+	
 	FindValue /TXOP = 4 /TEXT = AMP_SERIAL UserSettings
 	AmpSerialLocal = UserSettings[V_value][%SettingValue]
 	FindValue /TXOP = 4 /TEXT = AMP_TITLE UserSettings
@@ -130,6 +132,7 @@ static Function ExpConfig_Amplifiers(panelTitle, UserSettings)
 	FindValue /TXOP = 4 /TEXT = ACTIVE_HEADSTAGES UserSettings
 	HeadstagesToConfigure = UserSettings[V_value][%SettingValue]
 
+	printf "Openning MCC amplifiers\r"
 	Assert(AI_OpenMCCs(AmpSerialLocal, ampTitleList = AmpTitleLocal, maxAttempts = ATTEMPTS),"Evil kittens prevented MultiClamp from opening - FULL STOP" )
 
 	FindValue /TXOP = 4 /TEXT = POSITION_MCC UserSettings
@@ -140,6 +143,7 @@ static Function ExpConfig_Amplifiers(panelTitle, UserSettings)
 
 	PGC_SetAndActivateControl(panelTitle,"button_Settings_UpdateAmpStatus")
 
+	printf "Configuring headstage:\r"
 	for(i = 0; i<NUM_HEADSTAGES; i+=1)
 
 		PGC_SetAndActivateControl(panelTitle,"Popup_Settings_HeadStage", val = i)
@@ -167,8 +171,11 @@ static Function ExpConfig_Amplifiers(panelTitle, UserSettings)
 			PGC_SetAndActivateControl(panelTitle,"ADC", val = DA_EPHYS_PANEL_DATA_ACQUISITION)
 			ExpConfig_MCC_InitParams(panelTitle,i)
 			PGC_SetAndActivateControl(panelTitle,"ADC", val = DA_EPHYS_PANEL_HARDWARE)
+			
+			printf "%d successful\r", i
 		else
 			PGC_SetAndActivateControl(panelTitle,"popup_Settings_Amplifier", val = WhichListItem(NONE, DAP_GetNiceAmplifierChannelList()))
+			printf "%d not active\r", i
 		endif
 	endfor
 
@@ -192,7 +199,8 @@ static Function ExpConfig_Pressure(panelTitle, UserSettings)
 	NIDev = HW_NI_ListDevices()
 	FindValue /TXOP = 4 /TEXT = ACTIVE_HEADSTAGES UserSettings
 	HeadstagesToConfigure = UserSettings[V_value][%SettingValue]
-
+	
+	printf "Configuring pressure device for headstage:\r"
 	for(i = 0; i<NUM_HEADSTAGES; i+=1)
 		
 		PGC_SetAndActivateControl(panelTitle,"Popup_Settings_HeadStage", val = i)
@@ -212,8 +220,10 @@ static Function ExpConfig_Pressure(panelTitle, UserSettings)
 				PGC_SetAndActivateControl(panelTitle,"Popup_Settings_Pressure_TTLB", val = 4)
 				ii+= 1
 			endif
+			printf "%d successful\r", i
 		else
 			PGC_SetAndActivateControl(panelTitle,"popup_Settings_Pressure_dev", val = WhichListItem(NONE, DAP_GetNiceAmplifierChannelList()))
+			printf "%d not active\r", i
 		endif
 	endfor
 
@@ -232,7 +242,8 @@ static Function ExpConfig_Pressure(panelTitle, UserSettings)
 	Wave /T PressureConstantTextWv = ListToTextWave(UserSettings[V_value][%SettingValue], ";")
 	Make /D/FREE PressureConstants = str2num(PressureConstantTextWv)
 	WAVE pressureDataWv = P_GetPressureDataWaveRef(panelTitle)
-
+	printf "Setting pressure calibration constants\r"
+	
 	pressureDataWv[%headStage_0][%PosCalConst] = PressureConstants[0]
 	pressureDataWv[%headStage_1][%PosCalConst] = PressureConstants[1]
 	pressureDataWv[%headStage_2][%PosCalConst] = PressureConstants[2]
@@ -260,7 +271,8 @@ End
 static Function ExpConfig_AsyncTemp(panelTitle, UserSettings)
 	string panelTitle
 	Wave /T UserSettings
-
+	printf "Setting Asynchronous Temperature monitoring\r"
+	
 	PGC_SetAndActivateControl(panelTitle,"ADC", val = DA_EPHYS_PANEL_ASYNCHRONOUS)
 	FindValue /TXOP = 4 /TEXT = ASYNC_CH00 UserSettings
 	PGC_SetAndActivateControl(panelTitle,"SetVar_AsyncAD_Title_00", str = UserSettings[V_value][%SettingValue])
@@ -291,7 +303,7 @@ End
 static Function ExpConfig_DAEphysSettings(panelTitle, UserSettings)
 	string panelTitle
 	Wave /T UserSettings
-
+	printf "Setting user defined DA_Ephys parameters\r"
 	PGC_SetAndActivateControl(panelTitle,"ADC", val = DA_EPHYS_PANEL_SETTINGS)
 	FindValue /TXOP = 4 /TEXT = ENABLE_MULTIPLE_ITC UserSettings
 	PGC_SetAndActivateControl(panelTitle,"check_Settings_MD", val = str2num(UserSettings[V_value][%SettingValue]))
