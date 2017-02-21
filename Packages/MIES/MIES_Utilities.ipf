@@ -1045,7 +1045,7 @@ Function/Wave FindIndizes([col, colLabel, var, str, prop, wv, wvText, startRow, 
 	string colLabel
 	variable startRow, endRow
 
-	variable numCols, numRows
+	variable numCols, numRows, err
 
 	ASSERT(ParamIsDefault(col) + ParamIsDefault(colLabel) == 1, "Expected exactly one col/colLabel argument")
 	ASSERT(ParamIsDefault(wv) + ParamIsDefault(wvText) == 1, "Expected exactly one optional wv/wvText argument")
@@ -1056,7 +1056,7 @@ Function/Wave FindIndizes([col, colLabel, var, str, prop, wv, wvText, startRow, 
 			  "Expected exactly one optional var/str/prop argument")
 
 	if(ParamIsDefault(var))
-		var = str2num(str)
+		var = str2num(str); err = GetRTError(1)
 	elseif(ParamIsDefault(str))
 		str = num2str(var)
 	endif
