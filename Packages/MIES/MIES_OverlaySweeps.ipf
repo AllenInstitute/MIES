@@ -87,14 +87,23 @@ End
 Function/S OVS_GetSweepSelectionChoices(win)
 	string win
 
-	variable i, numEntries
-
 	DFREF dfr = OVS_GetFolder(win)
 	WAVE/T sweepSelChoices = GetOverlaySweepSelectionChoices(dfr)
 
-	FindDuplicates/Z/RT=dupsRemovedWave sweepSelChoices
+	Duplicate/FREE/R=[][][0]/T sweepSelChoices, sweepSelectionChoicesStimSets
 
-	return NONE + ";All;\\M1(-;\\M1(DA Stimulus Sets;" + TextWaveToList(MakeWaveFree(dupsRemovedWave), ";")
+	Make/FREE/T dupsRemovedStimSets
+	FindDuplicates/Z/RT=dupsRemovedStimSets sweepSelectionChoicesStimSets
+
+	Duplicate/FREE/R=[][][1]/T sweepSelChoices, sweepSelectionChoicesClamp
+
+	Make/FREE/T dupsRemovedStimSetsClamp
+	FindDuplicates/Z/RT=dupsRemovedStimSetsClamp sweepSelectionChoicesClamp
+
+	return NONE + ";All;\\M1(-;\\M1(DA Stimulus Sets;"           \
+				+ TextWaveToList(dupsRemovedStimSets, ";")       \
+				+ "\\M1(-;\\M1(DA Stimulus Sets and Clamp Mode;" \
+				+ TextWaveToList(dupsRemovedStimSetsClamp, ";")
 End
 
 /// @brief Return the datafolder reference to the folder storing the listbox and selection wave
@@ -120,7 +129,7 @@ End
 /// @brief Update the overlay sweep waves
 ///
 /// Must be called after the sweeps changed.
-Function OVS_UpdatePanel(win, listBoxWave, listBoxSelWave, sweepSelectionChoices, sweepWaveList, [allTextualValues, textualValues])
+Function OVS_UpdatePanel(win, listBoxWave, listBoxSelWave, sweepSelectionChoices, sweepWaveList, [allTextualValues, textualValues, allNumericalValues, numericalValues])
 	string win
 	WAVE/T listBoxWave
 	WAVE listBoxSelWave
@@ -128,6 +137,8 @@ Function OVS_UpdatePanel(win, listBoxWave, listBoxSelWave, sweepSelectionChoices
 	WAVE/T textualValues
 	WAVE/WAVE allTextualValues
 	string sweepWaveList
+	WAVE/WAVE allNumericalValues
+	WAVE/T numericalValues
 
 	variable i, numEntries, sweepNo
 	string ttlStimSets, extPanel
@@ -142,6 +153,14 @@ Function OVS_UpdatePanel(win, listBoxWave, listBoxSelWave, sweepSelectionChoices
 		ASSERT(numEntries == DimSize(allTextualValues, ROWS), "allTextualValues number of rows is not matching")
 	else
 		ASSERT(0, "Expected exactly one of textualValues or allTextualValues")
+	endif
+
+	if(!ParamIsDefault(numericalValues))
+		Make/WAVE/FREE/N=(numEntries) allNumericalValues = numericalValues
+	elseif(!ParamIsDefault(allNumericalValues))
+		ASSERT(numEntries == DimSize(allNumericalValues, ROWS), "allNumericalValues number of rows is not matching")
+	else
+		ASSERT(0, "Expected exactly one of numericalValues or allNumericalValues")
 	endif
 
 	Redimension/N=(numEntries, -1, -1) listBoxWave, listBoxSelWave, sweepSelectionChoices
@@ -159,7 +178,10 @@ Function OVS_UpdatePanel(win, listBoxWave, listBoxSelWave, sweepSelectionChoices
 
 	for(i = 0; i < numEntries; i += 1)
 		WAVE/T stimsets = GetLastSettingText(allTextualValues[i], sweeps[i], STIM_WAVE_NAME_KEY, DATA_ACQUISITION_MODE)
-		sweepSelectionChoices[i][] = stimsets[q]
+		sweepSelectionChoices[i][][%Stimset] = stimsets[q]
+
+		WAVE clampModes = GetLastSetting(allNumericalValues[i], sweeps[i], "Clamp Mode", DATA_ACQUISITION_MODE)
+		sweepSelectionChoices[i][][%StimsetAndClampMode] = SelectString(IsFinite(clampModes[q]), "", stimsets[q] + " (" + ConvertAmplifierModeShortStr(clampModes[q]) + ")")
 	endfor
 End
 
@@ -382,17 +404,22 @@ Function OVS_TogglePanel(win, listboxWave, listboxSelWave)
 
 	win = GetMainWindow(win)
 	SetActiveSubWindow $win
-	NewPanel/HOST=#/EXT=1/W=(200,0,0,407)
+	NewPanel/HOST=#/EXT=1/W=(200,0,0,485)
 	SetWindow kwTopWin, hook(main)=OVS_MainWindowHook
-	ListBox list_of_ranges,pos={7.00,70.00},size={186.00,330},proc=OVS_MainListBoxProc
-	ListBox list_of_ranges,mode=0,widths={50,50},listWave=listboxWave,selWave=listboxSelWave
+	ListBox list_of_ranges,pos={7.00,94.00},size={186.00,381.00},proc=OVS_MainListBoxProc
 	ListBox list_of_ranges,help={"Select sweeps for overlay; The second column (\"Headstages\") allows to ignore some headstages for the graphing. Syntax is a semicolon \";\" separated list of subranges, e.g. \"0\", \"0,2\", \"1;4;2\""}
-	PopupMenu popup_overlaySweeps_select,pos={19.00,24.00},size={156.00,19.00},proc=OVS_PopMenuProc_Select,title="Select"
-	PopupMenu popup_overlaySweeps_select,mode=1,popvalue="- none -",value=#("OVS_GetSweepSelectionChoices(\"" + extPanel + "\")")
+	ListBox list_of_ranges,listWave=listboxWave, selWave=listboxSelWave,widths={50,50}
+	PopupMenu popup_overlaySweeps_select,pos={27.00,14.00},size={143.00,19.00},bodyWidth=109,proc=OVS_PopMenuProc_Select,title="Select"
 	PopupMenu popup_overlaySweeps_select,help={"Select sweeps according to various properties"}
-	CheckBox check_overlaySweeps_disableHS,pos={22.00,50.00},size={122.00,15.00},proc=OVS_CheckBoxProc_HS_Select,title="Headstage Removal"
+	PopupMenu popup_overlaySweeps_select,mode=1,popvalue=NONE,value= #("OVS_GetSweepSelectionChoices(\"" + extPanel + "\")")
+	CheckBox check_overlaySweeps_disableHS,pos={14.00,75.00},size={120.00,15.00},proc=OVS_CheckBoxProc_HS_Select,title="Headstage Removal"
 	CheckBox check_overlaySweeps_disableHS,help={"Toggle headstage removal"}
 	CheckBox check_overlaySweeps_disableHS,value= 0
+	SetVariable setvar_overlaySweeps_offset,pos={12.00,41.00},size={81.00,18.00},bodyWidth=45,title="Offset",value=_NUM:0, proc=OVS_SetVarProc_SelectionRange, limits={0, inf, 1}
+	SetVariable setvar_overlaySweeps_offset,help={"Offsets the first selected sweep from the selection menu"}
+	SetVariable setvar_overlaySweeps_step,pos={99.00,41.00},size={72.00,18.00},bodyWidth=45,title="Step",value=_NUM:1, proc=OVS_SetVarProc_SelectionRange, limits={1, inf, 1}
+	SetVariable setvar_overlaySweeps_step,help={"Selects every `step` sweep from the selection menu"}
+	GroupBox group_overlaySweeps_selecction,pos={5.00,4.00},size={191.00,65.00}
 	RenameWindow #,OverlaySweeps
 	SetActiveSubwindow ##
 
@@ -452,6 +479,50 @@ static Function OVS_IsSweepHighlighted(listBoxWave, index)
 	return state == index
 End
 
+/// @brief Change the selected sweep according to one of the popup menu options
+static Function OVS_ChangeSweepSelection(win, choiceString)
+	string win, choiceString
+
+	variable i, j, numEntries, numLayers, offset, step
+	string extPanel
+
+	extPanel  = OVS_GetExtPanel(win)
+
+	DFREF dfr = OVS_GetFolder(win)
+	WAVE listboxSelWave          = GetOverlaySweepsListSelWave(dfr)
+	WAVE/T sweepSelectionChoices = GetOverlaySweepSelectionChoices(dfr)
+
+	offset = GetSetVariable(extPanel, "setvar_overlaySweeps_offset")
+	step   = GetSetVariable(extPanel, "setvar_overlaySweeps_step")
+
+	// deselect all
+	listboxSelWave[][%Sweep] = listboxSelWave[p][q] & ~LISTBOX_CHECKBOX_SELECTED
+
+	if(!cmpstr(choiceString, NONE))
+		// nothing to do
+	elseif(!cmpstr(choiceString, "All"))
+		listboxSelWave[offset, inf;step][%Sweep] = listboxSelWave[p][q] | LISTBOX_CHECKBOX_SELECTED
+	else
+		numLayers = DimSize(sweepSelectionChoices, LAYERS)
+		for(i = 0; i < NUM_HEADSTAGES; i += 1)
+			for(j = 0; j < numLayers; j += 1)
+				Duplicate/FREE/R=[][][j] sweepSelectionChoices, sweepSelectionChoicesSingle
+				WAVE/Z indizes = FindIndizes(wvText=sweepSelectionChoicesSingle, col=i, str=choiceString)
+				if(!WaveExists(indizes))
+					continue
+				endif
+
+				numEntries = DimSize(indizes, ROWS)
+				for(j = offset; j < numEntries; j += step)
+					listboxSelWave[indizes[j]][%Sweep] = listboxSelWave[p][q] | LISTBOX_CHECKBOX_SELECTED
+				endfor
+			endfor
+		endfor
+	endif
+
+	UpdateSweepPlot(win)
+End
+
 Function OVS_MainListBoxProc(lba) : ListBoxControl
 	STRUCT WMListboxAction &lba
 
@@ -480,39 +551,9 @@ End
 Function OVS_PopMenuProc_Select(pa) : PopupMenuControl
 	STRUCT WMPopupAction &pa
 
-	string popStr, win
-	variable i, numEntries, j
-
 	switch(pa.eventCode)
 		case 2: // mouse up
-			win = pa.win
-			popStr     = pa.popStr
-
-			DFREF dfr = OVS_GetFolder(win)
-			WAVE listboxSelWave    = GetOverlaySweepsListSelWave(dfr)
-			WAVE/T sweepSelChoices = GetOverlaySweepSelectionChoices(dfr)
-
-			if(!cmpstr(popStr, NONE))
-				listboxSelWave[][%Sweep] = listboxSelWave[p][q] & ~LISTBOX_CHECKBOX_SELECTED
-			elseif(!cmpstr(popStr, "All"))
-				listboxSelWave[][%Sweep] = listboxSelWave[p][q] | LISTBOX_CHECKBOX_SELECTED
-			else
-				listboxSelWave[][%Sweep] = listboxSelWave[p][q] & ~LISTBOX_CHECKBOX_SELECTED
-
-				for(i = 0; i < NUM_HEADSTAGES; i += 1)
-					WAVE/Z indizes = FindIndizes(wvText=sweepSelChoices, col=i, str=popStr)
-					if(!WaveExists(indizes))
-						continue
-					endif
-
-					numEntries = DimSize(indizes, ROWS)
-					for(j = 0; j < numEntries; j += 1)
-						listboxSelWave[indizes[j]][%Sweep] = listboxSelWave[p][q] | LISTBOX_CHECKBOX_SELECTED
-					endfor
-				endfor
-			endif
-
-			UpdateSweepPlot(win)
+			OVS_ChangeSweepSelection(pa.win, pa.popStr)
 			break
 	endswitch
 
@@ -537,6 +578,24 @@ Function OVS_MainWindowHook(s)
 			endif
 
 			PGC_SetAndActivateControl(win, ctrl, val=CHECKBOX_UNSELECTED)
+			break
+	endswitch
+
+	return 0
+End
+
+Function OVS_SetVarProc_SelectionRange(sva) : SetVariableControl
+	STRUCT WMSetVariableAction &sva
+
+	string popStr, win
+
+	switch(sva.eventCode)
+		case 1: // mouse up
+		case 2: // Enter key
+		case 3: // Live update
+			win = sva.win
+			popStr = GetPopupMenuString(win, "popup_overlaySweeps_select")
+			OVS_ChangeSweepSelection(win, popStr)
 			break
 	endswitch
 

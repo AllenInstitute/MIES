@@ -799,6 +799,24 @@ static Function/S SB_GetPlainSweepList(graph)
 	return list
 End
 
+/// @brief Return a wave reference wave with all numerical value labnotebook waves
+static Function/WAVE SB_GetNumericalValuesWaves(graph)
+	string graph
+
+	string list = ""
+	string str
+	variable numRows, i
+
+	WAVE/T map = SB_GetSweepBrowserMapFromGraph(graph)
+
+	numRows = GetNumberFromWaveNote(map, NOTE_INDEX)
+
+	Make/WAVE/FREE/N=(numRows) allNumericalValues
+	allNumericalValues[] = GetAnalysLBNumericalValues(map[p][%DataFolder], map[p][%Device])
+
+	return allNumericalValues
+End
+
 /// @brief Return a wave reference wave with all textual value labnotebook waves
 static Function/WAVE SB_GetTextualValuesWaves(graph)
 	string graph
@@ -1169,9 +1187,11 @@ Function SB_CheckboxProc_OverlaySweeps(cba) : CheckBoxControl
 			WAVE listBoxSelWave       = GetOverlaySweepsListSelWave(dfr)
 			WAVE/WAVE sweepSelChoices = GetOverlaySweepSelectionChoices(dfr)
 
-			WAVE/WAVE allTextualValues = SB_GetTextualValuesWaves(graph)
+			WAVE/WAVE allNumericalValues = SB_GetNumericalValuesWaves(graph)
+			WAVE/WAVE allTextualValues   = SB_GetTextualValuesWaves(graph)
+
 			sweepWaveList = SB_GetPlainSweepList(graph)
-			OVS_UpdatePanel(graph, listBoxWave, listBoxSelWave, sweepSelChoices, sweepWaveList, allTextualValues=allTextualValues)
+			OVS_UpdatePanel(graph, listBoxWave, listBoxSelWave, sweepSelChoices, sweepWaveList, allTextualValues=allTextualValues, allNumericalValues=allNumericalValues)
 			if(!OVS_TogglePanel(extPanel, listBoxWave, listBoxSelWave))
 				index = GetPopupMenuIndex(extPanel, "popup_sweep_selector")
 				OVS_SelectSweep(extPanel, index=index)

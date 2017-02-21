@@ -4750,7 +4750,7 @@ End
 Function/WAVE GetOverlaySweepSelectionChoices(dfr)
 	DFREF dfr
 
-	variable versionOfNewWave = 1
+	variable versionOfNewWave = 2
 	string newName = "overlaySweepSelectionChoices"
 
 	STRUCT WaveLocationMod p
@@ -4763,10 +4763,12 @@ Function/WAVE GetOverlaySweepSelectionChoices(dfr)
 	if(ExistsWithCorrectLayoutVersion(wv, versionOfNewWave))
 		return wv
 	elseif(WaveExists(wv))
-		// handle upgrade
+		Redimension/N=(-1, -1, 2) wv
 	else
-		Make/T/N=(MINIMUM_WAVE_SIZE, NUM_HEADSTAGES) dfr:overlaySweepsStimSetListWave/Wave=wv
+		Make/T/N=(MINIMUM_WAVE_SIZE, NUM_HEADSTAGES, 2) dfr:$newName/Wave=wv
 	endif
+
+	SetWaveDimLabel(wv, "Stimset;StimsetAndClampMode", LAYERS)
 
 	SetWaveVersion(wv, versionOfNewWave)
 	return wv

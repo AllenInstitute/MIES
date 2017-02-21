@@ -931,9 +931,10 @@ Function DB_CheckboxProc_OverlaySweeps(cba) : CheckBoxControl
 			WAVE listBoxSelWave       = GetOverlaySweepsListSelWave(dfr)
 			WAVE/WAVE sweepSelChoices = GetOverlaySweepSelectionChoices(dfr)
 
-			WAVE/T textualValues  = DB_GetTextualValues(panelTitle)
+			WAVE/T numericalValues = DB_GetNumericalValues(panelTitle)
+			WAVE/T textualValues   = DB_GetTextualValues(panelTitle)
 			sweepWaveList = DB_GetListOfSweepWaves(panelTitle)
-			OVS_UpdatePanel(panelTitle, listBoxWave, listBoxSelWave, sweepSelChoices, sweepWaveList, textualValues=textualValues)
+			OVS_UpdatePanel(panelTitle, listBoxWave, listBoxSelWave, sweepSelChoices, sweepWaveList, textualValues=textualValues, numericalValues=numericalValues)
 			if(!OVS_TogglePanel(panelTitle, listBoxWave, listBoxSelWave))
 				sweepNo = GetSetVariable(panelTitle, "setvar_DataBrowser_SweepNo")
 				OVS_SelectSweep(panelTitle, sweepNo=sweepNo)
