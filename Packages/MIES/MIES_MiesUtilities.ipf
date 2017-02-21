@@ -3011,7 +3011,7 @@ Function SearchForDuplicates(wv)
 
 	variable sucess
 
-	FindDuplicates/INDX=idx wv
+	FindDuplicates/Z/INDX=idx wv
 
 	sucess = DimSize(idx, ROWS) > 0
 	KillOrMoveToTrash(wv=idx)
