@@ -1003,7 +1003,7 @@ Function/S LineBreakingIntoParWithMinWidth(str)
 		next = SelectString(i < len, "", str[i + 1])
 
 		// str2num skips leading spaces and tabs
-		if((!cmpstr(curr, " ") || !cmpstr(curr, "\t")) && !IsFinite(str2num(next)) && cmpstr(next, " ") && cmpstr(next, "\t"))
+		if((!cmpstr(curr, " ") || !cmpstr(curr, "\t")) && !IsFinite(str2numSafe(next)) && cmpstr(next, " ") && cmpstr(next, "\t"))
 			output += "\r"
 			continue
 		endif
@@ -2912,4 +2912,15 @@ Function KillWindows(list)
 	for(i = 0; i < numEntries; i += 1)
 		KillWindow/Z $StringFromList(i, list)
 	endfor
+End
+
+/// @brief str2num variant with no runtime error on invalid conversions
+Function str2numSafe(str)
+	string str
+
+	variable err, var
+
+	var = str2num(str); err = GetRTError(1)
+
+	return var
 End
