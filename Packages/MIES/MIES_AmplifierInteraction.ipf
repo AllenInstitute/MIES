@@ -15,25 +15,6 @@ static StrConstant AMPLIFIER_CONTROLS_VC = "setvar_DataAcq_Hold_VC;check_DataAcq
 static StrConstant AMPLIFIER_CONTROLS_IC = "setvar_DataAcq_Hold_IC;check_DatAcq_HoldEnable;setvar_DataAcq_BB;check_DatAcq_BBEnable;setvar_DataAcq_CN;check_DatAcq_CNEnable;setvar_DataAcq_AutoBiasV;setvar_DataAcq_AutoBiasVrange;setvar_DataAcq_IbiasMax;check_DataAcq_AutoBias;setvar_DataAcq_PipetteOffset_IC;button_DataAcq_AutoBridgeBal_IC"
 static Constant MAX_PIPETTEOFFSET = 150 // mV
 static Constant MIN_PIPETTEOFFSET = -150
-/// @brief Stringified version of the clamp mode
-Function/S AI_ConvertAmplifierModeToString(mode)
-	variable mode
-
-	switch(mode)
-		case V_CLAMP_MODE:
-			return "V_CLAMP_MODE"
-			break
-		case I_CLAMP_MODE:
-			return "I_CLAMP_MODE"
-			break
-		case I_EQUAL_ZERO_MODE:
-			return "I_EQUAL_ZERO_MODE"
-			break
-		default:
-			return "Unknown mode (" + num2str(mode) + ")"
-			break
-	endswitch
-End
 
 /// @returns AD gain of selected Amplifier in current clamp mode
 /// Gain is returned in V/pA for V_CLAMP_MODE, V/mV for I_CLAMP_MODE/I_EQUAL_ZERO_MODE
@@ -594,7 +575,7 @@ Function AI_MIESHeadstageMatchesMCCMode(panelTitle, headStage)
 	equalModes = (setMode == storedMode)
 
 	if(!equalModes)
-		printf "(%s) Headstage %d has different modes stored (%s) and set (%s)\r", panelTitle, headstage, AI_ConvertAmplifierModeToString(storedMode), AI_ConvertAmplifierModeToString(setMode)
+		printf "(%s) Headstage %d has different modes stored (%s) and set (%s)\r", panelTitle, headstage, ConvertAmplifierModeToString(storedMode), ConvertAmplifierModeToString(setMode)
 	endif
 
 	return equalModes
@@ -842,7 +823,7 @@ Function AI_UpdateAmpModel(panelTitle, ctrl, headStage, [value, sendToAll, check
 					DAP_ChangeHeadStageMode(panelTitle, clampMode, i, SKIP_MCC_MIES_SYNCING)
 				catch
 					if(GetCheckBoxState(panelTitle, "check_Settings_SyncMiesToMCC"))
-						printf "(%s) The pipette offset for %s of headstage %d is invalid.\r", panelTitle, AI_ConvertAmplifierModeToString(oppositeMode), i
+						printf "(%s) The pipette offset for %s of headstage %d is invalid.\r", panelTitle, ConvertAmplifierModeToString(oppositeMode), i
 					endif
 					// do nothing
 				endtry
@@ -1567,8 +1548,8 @@ Function AI_QueryGainsFromMCC(panelTitle)
 			AI_SetClampMode(panelTitle, i, old_clampMode)
 		else
 			printf "It appears that a holding potential is being applied, therefore as a precaution, "
-			printf "the gains cannot be imported for the %s.\r", AI_ConvertAmplifierModeToString(clampMode == V_CLAMP_MODE ? I_CLAMP_MODE : V_CLAMP_MODE)
-			printf "The gains were successfully imported for the %s on i: %d\r", AI_ConvertAmplifierModeToString(clampMode), i
+			printf "the gains cannot be imported for the %s.\r", ConvertAmplifierModeToString(clampMode == V_CLAMP_MODE ? I_CLAMP_MODE : V_CLAMP_MODE)
+			printf "The gains were successfully imported for the %s on i: %d\r", ConvertAmplifierModeToString(clampMode), i
 		endif
 	endfor
 
