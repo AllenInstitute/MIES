@@ -13,33 +13,10 @@
 /// - Interactions with MCCs
 /// - DAEphys panel settings
 
-/// @brief launch ExpConfig_ConfigureMIES on startup or new experiment
-Function IgorStartOrNewHook(igorApplicationNameStr)
-	String igorApplicationNameStr
-	String igorConfig, configOptions
-	
-	configOptions = "Configure MIES for new experiment; Open Analysis Browser; Open blank Igor Window"
-	
-	Prompt igorConfig, "Choose what you would like to do in Igor:", popup, configOptions
-	
-	DoPrompt "Igor Startup", igorConfig
-	
-	if(!V_flag)
-		if(cmpstr(igorConfig, StringFromList(0, configOptions)) == 0)
-			ExpConfig_ConfigureMIES()
-		elseif(cmpstr(igorConfig, StringFromList(1, configOptions)) == 0)
-			AB_OpenAnalysisBrowser()
-		else
-			return 0
-		endif
-	endif
-	
-End
-
 /// @brief Configure MIES for experiments
 Function ExpConfig_ConfigureMIES()
 
-	string UserConfigNB, win, filename, ITCDevNum, ITCDevType, fullPath, StimSetPath, activeNotebooks
+	string UserConfigNB, win, filename, ITCDevNum, ITCDevType, fullPath, StimSetPath, activeNotebooks, AmpSerialLocal, AmpTitleLocal
 	variable i
 //	movewindow /C 1450, 530,-1,-1								// position command window
 
@@ -62,6 +39,15 @@ Function ExpConfig_ConfigureMIES()
 	UserConfigNB = winname(0,16)
 	Wave /T KeyTypes = GetExpConfigKeyTypes()
 	Wave /T UserSettings = GetExpUserSettings(UserConfigNB, KeyTypes)
+	
+	FindValue /TXOP = 4 /TEXT = AMP_SERIAL UserSettings
+	AmpSerialLocal = UserSettings[V_value][%SettingValue]
+	FindValue /TXOP = 4 /TEXT = AMP_TITLE UserSettings
+	AmpTitleLocal = UserSettings[V_value][%SettingValue]
+
+	printf "Openning MCC amplifiers\r"
+	Assert(AI_OpenMCCs(AmpSerialLocal, ampTitleList = AmpTitleLocal, maxAttempts = ATTEMPTS),"Evil kittens prevented MultiClamp from opening - FULL STOP" )
+	
 	FindValue /TXOP = 4 /TEXT = ITC_DEV_TYPE UserSettings
 	ITCDevType = UserSettings[V_value][%SettingValue]
 	FindValue /TXOP = 4 /TEXT = ITC_DEV_NUM UserSettings
@@ -123,7 +109,7 @@ static Function ExpConfig_Amplifiers(panelTitle, UserSettings)
 	Wave /T UserSettings
 
 	string AmpSerialLocal, AmpTitleLocal, CheckDA, HeadstagesToConfigure, MCCWinPosition
-	variable i, ii, ampSerial
+	variable i, ii, ampSerial, numRows
 	
 	FindValue /TXOP = 4 /TEXT = AMP_SERIAL UserSettings
 	AmpSerialLocal = UserSettings[V_value][%SettingValue]
@@ -132,9 +118,14 @@ static Function ExpConfig_Amplifiers(panelTitle, UserSettings)
 	FindValue /TXOP = 4 /TEXT = ACTIVE_HEADSTAGES UserSettings
 	HeadstagesToConfigure = UserSettings[V_value][%SettingValue]
 
-	printf "Openning MCC amplifiers\r"
-	Assert(AI_OpenMCCs(AmpSerialLocal, ampTitleList = AmpTitleLocal, maxAttempts = ATTEMPTS),"Evil kittens prevented MultiClamp from opening - FULL STOP" )
+	WAVE telegraphServers = GetAmplifierTelegraphServers()
 
+	numRows = DimSize(telegraphServers, ROWS)
+	if(!numRows)
+		printf "Openning MCC amplifiers\r"
+		Assert(AI_OpenMCCs(AmpSerialLocal, ampTitleList = AmpTitleLocal, maxAttempts = ATTEMPTS),"Evil kittens prevented MultiClamp from opening - FULL STOP" )
+	endif
+	
 	FindValue /TXOP = 4 /TEXT = POSITION_MCC UserSettings
 	MCCWinPosition = UserSettings[V_Value][%SettingValue]
 	if(cmpstr(NONE, MCCWinPosition) != 0)
@@ -347,7 +338,8 @@ End
 static Function ExpConfig_MCC_InitParams(panelTitle, headStage)
 	string panelTitle
 	variable headStage
-
+	
+	
 	// Set initial parameters within MCC itself.
 
 	AI_SelectMultiClamp(panelTitle, headStage)
@@ -355,6 +347,18 @@ static Function ExpConfig_MCC_InitParams(panelTitle, headStage)
 	//Set V-clamp parameters
 
 	DAP_ChangeHeadStageMode(panelTitle, V_CLAMP_MODE, headStage, DO_MCC_MIES_SYNCING)
+#if defined(IGOR64)
+	MCC_SetHoldingEnable(0)
+	MCC_SetOscKillerEnable(0)
+	MCC_SetFastCompTau(1.8e-6)
+	MCC_SetSlowCompTau(1e-5)
+	MCC_SetSlowCompTauX20Enable(0)
+	MCC_SetRsCompBandwidth(1.02e3)
+	MCC_SetRSCompCorrection(0)
+	MCC_SetPrimarySignalGain(1)
+	MCC_SetSecondarySignalGain(1)
+	MCC_SetSecondarySignalLPF(10e3)
+#else
 	MCC_SetHoldingEnable(0)
 	MCC_SetOscKillerEnable(0)
 	MCC_SetFastCompTau(1.8e-6)
@@ -367,10 +371,20 @@ static Function ExpConfig_MCC_InitParams(panelTitle, headStage)
 	MCC_SetPrimarySignalHPF(0)
 	MCC_SetSecondarySignalGain(1)
 	MCC_SetSecondarySignalLPF(10e3)
+#endif
 
 	//Set I-Clamp Parameters
 
 	DAP_ChangeHeadStageMode(panelTitle, I_CLAMP_MODE, headStage, DO_MCC_MIES_SYNCING)
+#if defined(IGOR64)
+	MCC_SetHoldingEnable(0)
+	MCC_SetSlowCurrentInjEnable(0)
+	MCC_SetNeutralizationEnable(0)
+	MCC_SetOscKillerEnable(0)
+	MCC_SetPrimarySignalGain(1)
+	MCC_SetSecondarySignalGain(1)
+	MCC_SetSecondarySignalLPF(10e3)
+#else
 	MCC_SetHoldingEnable(0)
 	MCC_SetSlowCurrentInjEnable(0)
 	MCC_SetNeutralizationEnable(0)
@@ -380,6 +394,7 @@ static Function ExpConfig_MCC_InitParams(panelTitle, headStage)
 	MCC_SetPrimarySignalHPF(0)
 	MCC_SetSecondarySignalGain(1)
 	MCC_SetSecondarySignalLPF(10e3)
+#endif
 
 	//Set mode back to V-clamp
 	DAP_ChangeHeadStageMode(panelTitle, V_CLAMP_MODE, headStage, DO_MCC_MIES_SYNCING)
