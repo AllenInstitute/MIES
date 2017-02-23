@@ -202,6 +202,9 @@ End
 Function ITC_StopITCDeviceTimer(panelTitle)
 	string panelTitle
 
+	variable timerID
+	string msg
+
 	WAVE/Z/SDFR=GetActiveITCDevicesTimerFolder() CycleTimeStorageWave
 
 	if(!WaveExists(CycleTimeStorageWave))
@@ -210,7 +213,12 @@ Function ITC_StopITCDeviceTimer(panelTitle)
 
 	NVAR ITCDeviceIDGlobal = $GetITCDeviceIDGlobal(panelTitle)
 
-	return stopmstimer(CycleTimeStorageWave[ITCDeviceIDGlobal]) / 1000000
+	timerID = CycleTimeStorageWave[ITCDeviceIDGlobal]
+
+	sprintf msg, "stopped timer %d", timerID
+	DEBUGPRINT(msg)
+
+	return stopmstimer(timerID) / 1000000
 End
 
 /// @brief Stops all ms timers
