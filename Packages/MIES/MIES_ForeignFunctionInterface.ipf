@@ -47,7 +47,6 @@ Function/WAVE FFI_ReturnTPValues()
 
 		//make sure we get a valid TPCycleCount value
 		if (TPCycleCount == 0)
-			print "TP Cycle Count is zero...returning null"
 			return $""	
 		endif
 
