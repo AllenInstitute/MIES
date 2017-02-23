@@ -146,6 +146,35 @@ Function SetControlTitle(win, controlName, newTitle)
 	ModifyControl $ControlName WIN = $win, title = newTitle
 End
 
+/// @brief Return the title of a control
+///
+/// @param recMacro     recreation macro for ctrl
+/// @param supress      supress assertion that ctrl must have a title
+/// @return Returns     the title or an empty string
+Function/S GetTitle(recMacro, [supress])
+ 	string recMacro
+ 	variable supress
+ 
+ 	string title, errorMessage
+
+ 	if(ParamIsDefault(supress))
+ 		supress = 0
+ 	endif
+    
+    // [^\"\\\\] matches everything except escaped quotes
+    // \\\\.     eats backslashes
+    // [^\"\\\\] up to the next escaped quote
+    // does only match valid strings
+ 	SplitString/E="(?i)title=\"([^\"\\\\]*(?:\\\\.[^\"\\\\]*)*)\"" recMacro, title
+ 
+ 	if(!V_Flag)
+	 	sprintf errorMessage, "recreation macro %.30s does not contain a title", recMacro
+ 		ASSERT(supress, errorMessage)
+ 	endif
+ 
+  	return title
+End
+
 /// @brief Change color of the title of mulitple controls
 Function SetControlTitleColors(win, controlList, R, G, B)
 	string win, controlList
@@ -275,16 +304,30 @@ Function GetCheckBoxState(win, control)
 End
 
 /// @brief Set the internal number in a setvariable control
-Function SetSetVariable(win,Control, newValue)
+Function SetSetVariable(win,Control, newValue, [respectLimits])
 	string win, control
 	variable newValue
-
+	variable respectLimits
+	
+	if(ParamIsDefault(respectLimits))
+		respectLimits = 0
+	endif
+	
 	ControlInfo/W=$win $control
 	ASSERT(V_flag != 0, "Non-existing control or window")
 	ASSERT(abs(V_flag) == CONTROL_TYPE_SETVARIABLE, "Control is not a setvariable")
+	
+	if(respectLimits)
+		if(!CheckIfValueIsInsideLimits(win, control, newValue))
+			newValue = GetLimitConstrainedSetVar(win, control, newValue)	
+		endif	
+	endif
+
 	if(newValue != v_value)
 		SetVariable $control, win = $win, value =_NUM:newValue
 	endif
+	
+	return newValue
 End
 
 Function SetSetVariableString(win,Control, newString)
@@ -996,6 +1039,21 @@ Function CheckIfValueIsInsideLimits(win, control, val)
 	endif
 
 	return val >= minVal && val <= maxVal
+End
+/// @brief Returns a value that is constrained by the limits defined by the control
+///
+/// @return val <= control max and val >= contorl min
+Function GetLimitConstrainedSetVar(win, control, val)
+	string win
+	string control
+	variable val
+	
+	variable minVal, maxVal, incVal
+	if(!ExtractLimits(win, control, minVal, maxVal, incVal))
+		val = limit(val, minVal, maxVal)
+   	endif
+   	
+   	return val
 End
 
 /// @brief Return the parameter type a function parameter
