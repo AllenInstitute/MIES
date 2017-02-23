@@ -315,7 +315,7 @@ Function RA_CounterMD(panelTitle)
 	endif
 
 	if(count < totTrials)
-		ITC_StartDAQMultiDeviceLowLevel(panelTitle)
+		ITC_StartDAQMultiDeviceLowLevel(panelTitle, initialSetupReq=0)
 	endif
 End
 
