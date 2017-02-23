@@ -5400,14 +5400,14 @@ static Function DAP_CheckHeadStage(panelTitle, headStage, mode)
 
 	realMode = channelClampMode[DACchannel][%DAC]
 	if(realMode != clampMode)
-		printf "(%s) The clamp mode of DA %d is %s and differs from the requested mode %s.\r", panelTitle, DACchannel, AI_ConvertAmplifierModeToString(realMode), AI_ConvertAmplifierModeToString(clampMode)
+		printf "(%s) The clamp mode of DA %d is %s and differs from the requested mode %s.\r", panelTitle, DACchannel, ConvertAmplifierModeToString(realMode), ConvertAmplifierModeToString(clampMode)
 		ControlWindowToFront()
 		return 1
 	endif
 
 	realMode = channelClampMode[ADCchannel][%ADC]
 	if(realMode != clampMode)
-		printf "(%s) The clamp mode of AD %d is %s and differs from the requested mode %s.\r", panelTitle, ADCchannel, AI_ConvertAmplifierModeToString(realMode), AI_ConvertAmplifierModeToString(clampMode)
+		printf "(%s) The clamp mode of AD %d is %s and differs from the requested mode %s.\r", panelTitle, ADCchannel, ConvertAmplifierModeToString(realMode), ConvertAmplifierModeToString(clampMode)
 		ControlWindowToFront()
 		return 1
 	endif
@@ -5850,7 +5850,7 @@ Function DAP_ChangeHeadStageMode(panelTitle, clampMode, headStage, mccMiesSyncOv
 	endif
 
 	if(!IsFinite(DAC) || !IsFinite(ADC))
-		printf "(%s) Could not switch the clamp mode to %s as no DA and/or AD channels are associated with headstage %d.\r", panelTitle, AI_ConvertAmplifierModeToString(clampMode), headstage
+		printf "(%s) Could not switch the clamp mode to %s as no DA and/or AD channels are associated with headstage %d.\r", panelTitle, ConvertAmplifierModeToString(clampMode), headstage
 		Abort
 	endif
 

@@ -4745,21 +4745,30 @@ Function/WAVE GetOverlaySweepsListSelWave(dfr)
 	return wv
 End
 
-/// @brief Return the overlay sweeps wave with all stimsets from all sweeps
+/// @brief Return the overlay sweeps wave with all sweep selection choices
 /// for the databrowser or the sweepbrowser
-Function/WAVE GetOverlaySweepsStimsetListWave(dfr)
+Function/WAVE GetOverlaySweepSelectionChoices(dfr)
 	DFREF dfr
 
-	variable versionOfNewWave = 1
-	WAVE/T/Z/SDFR=dfr wv = overlaySweepsStimSetListWave
+	variable versionOfNewWave = 2
+	string newName = "overlaySweepSelectionChoices"
+
+	STRUCT WaveLocationMod p
+	p.dfr     = dfr
+	p.name    = "overlaySweepsStimSetListWave"
+	p.newName = newName
+
+	WAVE/T/Z wv = UpgradeWaveLocationAndGetIt(p)
 
 	if(ExistsWithCorrectLayoutVersion(wv, versionOfNewWave))
 		return wv
 	elseif(WaveExists(wv))
-		// handle upgrade
+		Redimension/N=(-1, -1, 2) wv
 	else
-		Make/T/N=(MINIMUM_WAVE_SIZE, NUM_HEADSTAGES) dfr:overlaySweepsStimSetListWave/Wave=wv
+		Make/T/N=(MINIMUM_WAVE_SIZE, NUM_HEADSTAGES, 2) dfr:$newName/Wave=wv
 	endif
+
+	SetWaveDimLabel(wv, "Stimset;StimsetAndClampMode", LAYERS)
 
 	SetWaveVersion(wv, versionOfNewWave)
 	return wv

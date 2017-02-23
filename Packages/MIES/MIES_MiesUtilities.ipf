@@ -3441,3 +3441,43 @@ Function UpdateSweepPlot(win)
 
 	return f(GetMainWindow(win))
 End
+
+/// @brief Stringified short version of the clamp mode
+Function/S ConvertAmplifierModeShortStr(mode)
+	variable mode
+
+	switch(mode)
+		case V_CLAMP_MODE:
+			return "VC"
+			break
+		case I_CLAMP_MODE:
+			return "IC"
+			break
+		case I_EQUAL_ZERO_MODE:
+			return "IZ"
+			break
+		default:
+			return "Unknown mode (" + num2str(mode) + ")"
+			break
+	endswitch
+End
+
+/// @brief Stringified version of the clamp mode
+Function/S ConvertAmplifierModeToString(mode)
+	variable mode
+
+	switch(mode)
+		case V_CLAMP_MODE:
+			return "V_CLAMP_MODE"
+			break
+		case I_CLAMP_MODE:
+			return "I_CLAMP_MODE"
+			break
+		case I_EQUAL_ZERO_MODE:
+			return "I_EQUAL_ZERO_MODE"
+			break
+		default:
+			return "Unknown mode (" + num2str(mode) + ")"
+			break
+	endswitch
+End
