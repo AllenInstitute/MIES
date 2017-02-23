@@ -12,6 +12,7 @@
 static StrConstant OPTIONAL_TANGO_INCLUDE = "MIES_TangoInteract"
 
 Menu "Mies Panels", dynamic
+	"Configure MIES/1"				, /Q, ExpConfig_ConfigureMIES()
 	"DA_Ephys"                      , /Q, DAP_CreateDAEphysPanel()
 	"WaveBuilder"                   , /Q, WBP_CreateWaveBuilderPanel()
 	"Data Browser"                  , /Q, DB_OpenDataBrowser()
