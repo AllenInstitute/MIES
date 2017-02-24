@@ -4384,6 +4384,9 @@ Function DAP_OneTimeCallAfterDAQ(panelTitle)
 	NVAR dataAcqRunMode = $GetDataAcqRunMode(panelTitle)
 	dataAcqRunMode = DAQ_NOT_RUNNING
 
+	NVAR count = $GetCount(panelTitle)
+	count = NaN
+
 	// restore the selected sets before DAQ
 	if(GetCheckBoxState(panelTitle, "Check_DataAcq_Indexing"))
 		IDX_ResetStartFinishForIndexing(panelTitle)
