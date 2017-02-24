@@ -347,7 +347,7 @@ static Function ExpConfig_MCC_InitParams(panelTitle, headStage)
 	//Set V-clamp parameters
 
 	DAP_ChangeHeadStageMode(panelTitle, V_CLAMP_MODE, headStage, DO_MCC_MIES_SYNCING)
-#if defined(IGOR64)
+
 	MCC_SetHoldingEnable(0)
 	MCC_SetOscKillerEnable(0)
 	MCC_SetFastCompTau(1.8e-6)
@@ -356,45 +356,29 @@ static Function ExpConfig_MCC_InitParams(panelTitle, headStage)
 	MCC_SetRsCompBandwidth(1.02e3)
 	MCC_SetRSCompCorrection(0)
 	MCC_SetPrimarySignalGain(1)
-	MCC_SetSecondarySignalGain(1)
-	MCC_SetSecondarySignalLPF(10e3)
-#else
-	MCC_SetHoldingEnable(0)
-	MCC_SetOscKillerEnable(0)
-	MCC_SetFastCompTau(1.8e-6)
-	MCC_SetSlowCompTau(1e-5)
-	MCC_SetSlowCompTauX20Enable(0)
-	MCC_SetRsCompBandwidth(1.02e3)
-	MCC_SetRSCompCorrection(0)
-	MCC_SetPrimarySignalGain(1)
+#ifndef IGOR64 //IGOR32
 	MCC_SetPrimarySignalLPF(10e3)
 	MCC_SetPrimarySignalHPF(0)
+#endif
 	MCC_SetSecondarySignalGain(1)
 	MCC_SetSecondarySignalLPF(10e3)
-#endif
 
 	//Set I-Clamp Parameters
 
 	DAP_ChangeHeadStageMode(panelTitle, I_CLAMP_MODE, headStage, DO_MCC_MIES_SYNCING)
-#if defined(IGOR64)
+
 	MCC_SetHoldingEnable(0)
 	MCC_SetSlowCurrentInjEnable(0)
 	MCC_SetNeutralizationEnable(0)
 	MCC_SetOscKillerEnable(0)
 	MCC_SetPrimarySignalGain(1)
-	MCC_SetSecondarySignalGain(1)
-	MCC_SetSecondarySignalLPF(10e3)
-#else
-	MCC_SetHoldingEnable(0)
-	MCC_SetSlowCurrentInjEnable(0)
-	MCC_SetNeutralizationEnable(0)
-	MCC_SetOscKillerEnable(0)
-	MCC_SetPrimarySignalGain(1)
+#ifndef IGOR64 //IGOR32
 	MCC_SetPrimarySignalLPF(10e3)
 	MCC_SetPrimarySignalHPF(0)
+#endif
 	MCC_SetSecondarySignalGain(1)
 	MCC_SetSecondarySignalLPF(10e3)
-#endif
+
 
 	//Set mode back to V-clamp
 	DAP_ChangeHeadStageMode(panelTitle, V_CLAMP_MODE, headStage, DO_MCC_MIES_SYNCING)
