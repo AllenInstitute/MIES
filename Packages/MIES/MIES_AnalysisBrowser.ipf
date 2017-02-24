@@ -457,11 +457,7 @@ static Function AB_LoadDataWrapper(tmpDFR, expFilePath, datafolderPath, listOfNa
 
 	ResetDebugOnError(debugOnError)
 
-	// LoadData may have created empty datafolders
-	numEntries = CountObjectsDFR(tmpDFR, COUNTOBJECTS_DATAFOLDER)
-	for(i = 0; i < numEntries; i += 1)
-		RemoveEmptyDataFolder($GetIndexedObjNameDFR(tmpDFR, COUNTOBJECTS_DATAFOLDER, i))
-	endfor
+	RemoveAllEmptyDataFolders(tmpDFR)
 
 	list = GetListOfObjects(tmpDFR, ".*", matchList=listOfNames, recursive=1, typeFlag=typeFlags)
 

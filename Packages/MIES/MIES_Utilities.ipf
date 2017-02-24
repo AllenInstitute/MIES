@@ -614,6 +614,29 @@ Function RemoveEmptyDataFolder(dfr)
     return 0
 end
 
+/// @brief Removes all empty datafolders in the passed datafolder reference
+Function RemoveAllEmptyDataFolders(sourceDFR)
+	DFREF sourceDFR
+
+	variable numFolder, i
+	string folder
+
+	if(!DataFolderExistsDFR(sourceDFR))
+		return NaN
+	endif
+
+	numFolder = CountObjectsDFR(sourceDFR, COUNTOBJECTS_DATAFOLDER)
+
+	if(!numFolder)
+		return NaN
+	endif
+
+	for(i = numFolder - 1; i >= 0; i -= 1)
+		folder = GetDataFolder(1, sourceDFR) + GetIndexedObjNameDFR(sourceDFR, COUNTOBJECTS_DATAFOLDER, i)
+		RemoveEmptyDataFolder($folder)
+	endfor
+end
+
 /// @brief Recursively remove all folders from the datafolder path,
 /// if and only if all are empty.
 Function RecursiveRemoveEmptyDataFolder(dfr)
