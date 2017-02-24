@@ -2924,3 +2924,29 @@ Function str2numSafe(str)
 
 	return var
 End
+
+/// @brief Open a folder selection dialog
+///
+/// @return a string denoting the selected folder, or an empty string if
+/// nothing was supplied.
+Function/S AskUserForExistingFolder([baseFolder])
+	string baseFolder
+
+	string symbPath, selectedFolder
+	symbPath = GetUniqueSymbolicPath()
+
+	if(!ParamIsDefault(baseFolder))
+		NewPath/O/Q/Z $symbPath baseFolder
+		// preset next undirected NewPath/Open call using the contents of a
+		// *symbolic* folder
+		PathInfo/S $symbPath
+	endif
+
+	// let the user choose a folder, starts in $baseFolder if supplied
+	NewPath/O/Q/Z $symbPath
+	PathInfo $symbPath
+	selectedFolder = S_path
+	KillPath/Z $symbPath
+
+	return selectedFolder
+End
