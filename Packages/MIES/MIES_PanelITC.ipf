@@ -5184,6 +5184,13 @@ Function DAP_CheckSettings(panelTitle, mode)
 				return 1
 			endif
 
+			if(GetCheckBoxState(panelTitle, "Check_DataAcq1_RepeatAcq") && !GetCheckBoxState(panelTitle, "Check_Settings_BackgrndDataAcq"))
+				printf "(%s) Repeated random acquisition with foregound DAQ is currently brocken.\r", panelTitle
+				printf "(%s) If you need this feature please contact the MIES developers.\r", panelTitle
+				ControlWindowToFront()
+				return 1
+			endif
+
 			if(GetCheckBoxState(panelTitle, "Check_DataAcq1_DistribDaq") && GetCheckBoxState(panelTitle, "Check_DataAcq1_dDAQOptOv"))
 				printf "(%s) Only one of distributed DAQ and optimized overlap distributed DAQ can be checked.\r", panelTitle
 				ControlWindowToFront()
