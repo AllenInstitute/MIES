@@ -1722,6 +1722,28 @@ Function/S ListFromList(list, itemBegin, itemEnd, [listSep])
 	return list[start, stop - 1]
 End
 
+/// @brief calculates the relative complement of list2 in list1
+///
+/// also called the set-theoretic difference of list1 and list2
+/// @returns difference as list
+Function/S GetListDifference(list1, list2)
+	string list1, list2
+
+	variable i, numList1
+	string item
+	string result = ""
+
+	numList1 = ItemsInList(list1)
+	for(i = 0; i < numList1; i += 1)
+		item = StringFromList(i, list1)
+		if(WhichlistItem(item, list2) == -1)
+			result = AddListItem(item, result)
+		endif
+	endfor
+
+	return result
+End
+
 /// @brief Return a list of datafolders located in `dfr`
 ///
 /// @param dfr base folder

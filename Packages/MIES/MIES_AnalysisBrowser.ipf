@@ -1398,7 +1398,7 @@ Function AB_LoadStimsetFromFile(discLocation, dataFolder, fileType, device, swee
 	string discLocation, dataFolder, fileType, device
 	variable sweep, overwrite
 
-	string stimsets, msg
+	string stimsets, loadedStimsets, msg
 	variable h5_fileID, h5_groupID
 
 	if(ParamIsDefault(overwrite))
@@ -1409,12 +1409,10 @@ Function AB_LoadStimsetFromFile(discLocation, dataFolder, fileType, device, swee
 	strswitch(fileType)
 		case ANALYSISBROWSER_FILE_TYPE_IGOR:
 			stimsets = NWB_GetStimsetFromSpecificSweep(dataFolder, device, sweep)
-			if(AB_LoadStimsets(discLocation, stimsets, overwrite))
-				AB_LoadStimsetsRAW(discLocation, stimsets, overwrite)
-				return 1
-			endif
-			if(AB_LoadCustomWaves(discLocation, stimsets, overwrite))
-				AB_LoadStimsetsRAW(discLocation, stimsets, overwrite)
+			loadedStimsets = AB_LoadStimsets(discLocation, stimsets, overwrite)
+			loadedStimsets = AB_LoadCustomWaves(discLocation, loadedStimsets, overwrite)
+			stimsets = GetListDifference(stimsets, loadedStimsets)
+			if(AB_LoadStimsetsRAW(discLocation, stimsets, overwrite))
 				return 1
 			endif
 			break
@@ -1722,12 +1720,13 @@ End
 /// @param overwrite          overwrite flag
 ///
 /// @return 1 on error and 0 on success
-Function AB_LoadStimsets(expFilePath, stimsets, overwrite, [processedStimsets])
+Function/S AB_LoadStimsets(expFilePath, stimsets, overwrite, [processedStimsets])
 	string expFilePath, stimsets, processedStimsets
 	variable overwrite
 
 	string stimset, totalStimsets, newStimsets, oldStimsets
 	variable numBefore, numMoved, numAfter, numNewStimsets, i
+	string loadedStimsets = ""
 
 	if(ParamIsDefault(processedStimsets))
 		processedStimsets = ""
@@ -1742,14 +1741,16 @@ Function AB_LoadStimsets(expFilePath, stimsets, overwrite, [processedStimsets])
 		stimset = StringFromList(i, stimsets)
 		if(AB_LoadStimset(expFilePath, stimset, overwrite))
 			if(ItemsInList(processedStimsets) == 0)
-				// if a parent is corrupt, load other parents.
+				// parent corrupt
+				// load other parents, no children needed.
 				continue
 			else
 				// if a (dependent) stimset is missing
 				// the corresponding parent can not be created with Parameter Waves
-				return 1
+				return loadedStimsets
 			endif
 		endif
+		loadedStimsets = AddListItem(stimset, loadedStimsets)
 		numMoved += WB_StimsetFamilyNames(totalStimsets, parent = stimset)
 	endfor
 	numAfter = ItemsInList(totalStimsets)
@@ -1759,10 +1760,10 @@ Function AB_LoadStimsets(expFilePath, stimsets, overwrite, [processedStimsets])
 	if(numNewStimsets > 0)
 		newStimsets = ListFromList(totalStimsets, 0, numNewStimsets - 1)
 		oldStimsets = ListFromList(totalStimsets, numNewStimsets, inf)
-		return AB_LoadStimsets(expFilePath, newStimsets, overwrite, processedStimsets = oldStimsets)
+		return loadedStimsets + AB_LoadStimsets(expFilePath, newStimsets, overwrite, processedStimsets = oldStimsets)
 	endif
 
-	return 0
+	return loadedStimsets
 End
 
 /// @brief Load specified stimset from Igor experiment file
@@ -1888,17 +1889,18 @@ End
 /// @brief Load custom waves for specified stimset from Igor experiment file
 ///
 /// @return 1 on error and 0 on success
-Function AB_LoadCustomWaves(expFilePath, stimsets, overwrite)
+Function/S AB_LoadCustomWaves(expFilePath, stimsets, overwrite)
 	string expFilePath, stimsets
 	variable overwrite
 
-	string custom_waves, path, customWaveName
-	variable numWaves, i
+	string dependentStimsets, stimset, custom_waves, path, customWaveName
+	variable numWaves, numStimsets, i, j, valid
+	string loadedStimsets = ""
 
-	stimsets = WB_StimsetRecursionForList(stimsets)
 	WAVE/T cw = WB_CustomWavesPathFromStimSet(stimsetList = stimsets)
 
 	numWaves = DimSize(cw, ROWS)
+	Make/FREE/I/N=(numWaves) loaded = 1
 	for(i = 0; i < numWaves; i += 1)
 		customWaveName = cw[i]
 
@@ -1914,13 +1916,42 @@ Function AB_LoadCustomWaves(expFilePath, stimsets, overwrite)
 			endif
 		endif
 
-		if(AB_LoadWave(expFilePath, customWaveName, overwrite))
-			printf "experiment:%s \tCould not load custom wave %s in %s\r", expFilePath, customWaveName, stimsets
-			return 1
+		// load standard wave format
+		if(!AB_LoadWave(expFilePath, customWaveName, overwrite))
+			continue
+		endif
+
+		// indicate error
+		loaded[i] = 0
+	endfor
+
+	if(numWaves == 0 || sum(loaded) == numWaves)
+		return stimsets
+	endif
+
+	// search for uncorrupt stimsets
+	numStimsets = ItemsInList(stimsets)
+	for(i = 0; i < numStimsets; i += 1)
+		valid = 1
+		stimset = StringFromList(i, stimsets)
+		WAVE/T single_cw = WB_CustomWavesPathFromStimSet(stimsetList = stimset)
+		numWaves = DimSize(single_cw, 0)
+		for(j = 0; j < numWaves; j += 1)
+			FindValue/TEXT=(single_cw[j]) cw
+			if(V_Value == -1)
+				continue
+			endif
+			if(loaded[V_Value] == 0)
+				valid = 0
+				break
+			endif
+		endfor
+		if(valid)
+			loadedStimsets = AddListItem(stimset, loadedStimsets)
 		endif
 	endfor
 
-	return 0
+	return loadedStimsets
 End
 
 /// @brief Load specified wave from Igor Experiment file.

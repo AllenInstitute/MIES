@@ -277,6 +277,8 @@ Function/Wave WB_GetStimSet([setName])
 		WAVE/T WPT     = GetWaveBuilderWaveTextParam()
 		WAVE SegWvType = GetSegmentTypeWave()
 		channelType    = WBP_GetOutputType()
+
+		setName = ""
 	else
 		WAVE WP        = WB_GetWaveParamForSet(setName)
 		WAVE/T WPT     = WB_GetWaveTextParamForSet(setName)
@@ -303,7 +305,7 @@ Function/Wave WB_GetStimSet([setName])
 	MAKE/WAVE/FREE/N=(numSweeps) data
 
 	for(i=0; i < numSweeps; i+=1)
-		data[i] = WB_MakeWaveBuilderWave(WPCopy, WPT, SegWvType, i, numEpochs, channelType, updateEpochIDWave)
+		data[i] = WB_MakeWaveBuilderWave(WPCopy, WPT, SegWvType, i, numEpochs, channelType, updateEpochIDWave, stimset = setName)
 		lengthOf1DWaves = max(DimSize(data[i], ROWS), lengthOf1DWaves)
 		WB_AddDelta(WPCopy, numEpochs)
 	endfor
@@ -467,11 +469,16 @@ static Structure SegmentParameters
 	variable pulseType // 0: square, 1: triangle
 EndStructure
 
-static Function/WAVE WB_MakeWaveBuilderWave(WP, WPT, SegWvType, stepCount, numEpochs, channelType, updateEpochIDWave)
+static Function/WAVE WB_MakeWaveBuilderWave(WP, WPT, SegWvType, stepCount, numEpochs, channelType, updateEpochIDWave, [stimset])
 	Wave WP
 	Wave/T WPT
 	Wave SegWvType
 	variable stepCount, numEpochs, channelType, updateEpochIDWave
+	string stimset
+
+	if(ParamIsDefault(stimset))
+		stimset = ""
+	endif
 
 	Make/FREE/N=0 WaveBuilderWave
 
@@ -521,7 +528,7 @@ static Function/WAVE WB_MakeWaveBuilderWave(WP, WPT, SegWvType, stepCount, numEp
 		DEBUGPRINT("params", str=debugMsg)
 
 		if(params.duration < 0 || !IsFinite(params.duration))
-			Print "User input has generated a negative/non-finite epoch duration. Please adjust input. Duration for epoch has been reset to 1 ms."
+			printf "Stimset %s: User input has generated a negative/non-finite epoch duration. Please adjust input. Duration for epoch has been reset to 1 ms.", stimset
 			params.duration = 1
 		elseif(params.duration == 0 && type != EPOCH_TYPE_CUSTOM && type != EPOCH_TYPE_COMBINE && type != EPOCH_TYPE_PULSE_TRAIN)
 			continue
@@ -633,7 +640,7 @@ static Function/WAVE WB_MakeWaveBuilderWave(WP, WPT, SegWvType, stepCount, numEp
 					AddEntryIntoWaveNoteAsList(WaveBuilderWave, "Offset"      , var=params.Offset)
 					AddEntryIntoWaveNoteAsList(WaveBuilderWave, "CustomWavePath", str=customWaveName)
 				elseif(!isEmpty(customWaveName))
-					printf "Failed to recreate custom wave epoch %d as the referenced wave %s is missing\r", i, customWaveName
+					printf "Stimset %s: Failed to recreate custom wave epoch %d as the referenced wave %s is missing\r", stimset, i, customWaveName
 				endif
 				WaveClear customWave
 				break
@@ -645,19 +652,19 @@ static Function/WAVE WB_MakeWaveBuilderWave(WP, WPT, SegWvType, stepCount, numEp
 				formula_version  = WPT[7][i]
 
 				if(isEmpty(formula))
-					printf "Skipping combine epoch with empty formula\r"
+					printf "Stimset %s: Skipping combine epoch with empty formula\r", stimset
 					break
 				endif
 
 				if(cmpstr(formula_version, WAVEBUILDER_COMBINE_FORMULA_VER))
-					printf "Could not create the wave from formula of version %s\r", WAVEBUILDER_COMBINE_FORMULA_VER
+					printf "Stimset %s: Could not create the wave from formula of version %s\r", stimset, WAVEBUILDER_COMBINE_FORMULA_VER
 					break
 				endif
 
 				WAVE/Z combinedWave = WB_FillWaveFromFormula(formula, channelType, stepCount)
 
 				if(!WaveExists(combinedWave))
-					print "Could not create the wave from the formula"
+					printf "Stimset %s: Could not create the wave from the formula", stimset
 					break
 				endif
 
@@ -669,7 +676,7 @@ static Function/WAVE WB_MakeWaveBuilderWave(WP, WPT, SegWvType, stepCount, numEp
 				AddEntryIntoWaveNoteAsList(WaveBuilderWave, "Formula Version" , str=formula_version)
 				break
 			default:
-				printf "Ignoring unknown epoch type %d\r", type
+				printf "Stimset %s: Ignoring unknown epoch type %d\r", stimset, type
 				continue
 		endswitch
 
