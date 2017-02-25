@@ -1420,6 +1420,10 @@ Function AB_LoadStimsetFromFile(discLocation, dataFolder, fileType, device, swee
 		case ANALYSISBROWSER_FILE_TYPE_NWB:
 			stimsets = NWB_GetStimsetFromSpecificSweep(dataFolder, device, sweep)
 			h5_fileID  = IPNWB#H5_OpenFile(discLocation)
+			if(!IPNWB#StimsetPathExists(h5_fileID))
+				IPNWB#H5_CloseFile(h5_fileID)
+				return 1
+			endif
 			h5_groupID = IPNWB#OpenStimset(h5_fileID)
 			if(NWB_LoadStimsets(h5_groupID, stimsets, overwrite))
 				IPNWB#H5_CloseFile(h5_fileID)

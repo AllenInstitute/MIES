@@ -3,6 +3,8 @@
 #pragma IndependentModule=IPNWB
 #pragma version=0.15
 
+static strConstant PATH_STIMSETS = "/general/stimsets"
+
 /// @file IPNWB_Reader.ipf
 /// @brief Generic functions related to import from the NeuroDataWithoutBorders format
 
@@ -380,5 +382,13 @@ End
 Function OpenStimset(fileID)
 	variable fileID
 
-	return H5_OpenGroup(fileID, "/general/stimsets")
+	Assert(StimsetPathExists(fileID), "Path is not in nwb file")
+
+	return H5_OpenGroup(fileID, PATH_STIMSETS)
+End
+
+Function StimsetPathExists(fileID)
+	variable fileID
+
+	return IPNWB#H5_GroupExists(fileID, PATH_STIMSETS)
 End
