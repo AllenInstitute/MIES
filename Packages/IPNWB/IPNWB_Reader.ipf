@@ -24,7 +24,14 @@ End
 Function/S ReadLabNoteBooks(fileID)
 	Variable fileID
 
-	return H5_ListGroups(fileID, "/general/labnotebook")
+	string result = ""
+	string path = "/general/labnotebook"
+
+	if(H5_GroupExists(fileID, path))
+		result = H5_ListGroups(fileID, path)
+	endif
+
+	return result
 End
 
 /// @brief List all acquisition channels.
