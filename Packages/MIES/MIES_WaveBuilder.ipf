@@ -1516,8 +1516,10 @@ Function/WAVE WB_CustomWavesFromStimSet([stimsetList])
 	variable i, j, numStimsets
 
 	if(ParamIsDefault(stimsetList))
+		WB_UpgradeCustomWaves()
 		WAVE/T cw = WB_CustomWavesPathFromStimSet()
 	else
+		WB_UpgradeCustomWaves(stimsetList = stimsetList)
 		WAVE/T cw = WB_CustomWavesPathFromStimSet(stimsetList = stimsetList)
 	endif
 
@@ -1545,8 +1547,8 @@ End
 Function/WAVE WB_CustomWavesPathFromStimSet([stimsetList])
 	string stimsetList
 
+	variable numStimSets, i, j, k, numEpochs
 	string stimset
-	variable i, j, k, numEpochs, numStimSets
 
 	if(ParamIsDefault(stimsetList))
 		numStimsets = 1
@@ -1585,6 +1587,53 @@ Function/WAVE WB_CustomWavesPathFromStimSet([stimsetList])
 
 	Redimension/N=(k) customWaves
 	return customWaves
+End
+
+/// @brief Try to upgrade all epochs with custom waves from the stimsetlist.
+///
+/// you can only use this function if the custom wave is present in the current experiment.
+/// do not try to upgrade when loading stimsets. The custom waves have to be loaded first.
+///
+/// @returns a text wave with paths to custom waves.
+Function/WAVE WB_UpgradeCustomWaves([stimsetList])
+	string stimsetList
+
+	variable channelType, numStimsets, numEpochs, i, j
+	string stimset
+
+	if(ParamIsDefault(stimsetList))
+		numStimsets = 1
+	else
+		numStimsets = ItemsInList(stimsetList)
+	endif
+
+	for(i = 0; i < numStimsets; i += 1)
+		if(ParamIsDefault(stimsetList))
+			WAVE/Z/T WPT     = GetWaveBuilderWaveTextParam()
+			WAVE/Z SegWvType = GetSegmentTypeWave()
+			channelType    = WBP_GetOutputType()
+		else
+			stimset = StringFromList(i, stimsetList)
+			WAVE/Z/T WPT     = WB_GetWaveTextParamForSet(stimSet)
+			WAVE/Z SegWvType = WB_GetSegWvTypeForSet(stimSet)
+			channelType    = GetStimSetType(stimSet)
+		endif
+
+		if(!WaveExists(WPT) || !WaveExists(SegWvType))
+			continue
+		endif
+
+		UpgradeSegWvType(SegWvType)
+		UpgradeWaveTextParam(WPT)
+
+		ASSERT(FindDimLabel(SegWvType, ROWS, "Total number of epochs") != -2, "SegWave Layout column not found. Check for changed DimLabels in SegWave!")
+		numEpochs = SegWvType[%'Total number of epochs']
+		for(j = 0; j < numEpochs; j += 1)
+			if(SegWvType[j] == 7)
+				WB_UpgradecustomWaveInWPT(WPT, channelType, j)
+			endif
+		endfor
+	endfor
 End
 
 /// @brief Search for stimsets in formula epochs

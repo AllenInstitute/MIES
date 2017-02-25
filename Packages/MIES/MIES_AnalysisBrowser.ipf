@@ -1414,6 +1414,7 @@ Function AB_LoadStimsetFromFile(discLocation, dataFolder, fileType, device, swee
 				return 1
 			endif
 			if(AB_LoadCustomWaves(discLocation, stimsets, overwrite))
+				AB_LoadStimsetsRAW(discLocation, stimsets, overwrite)
 				return 1
 			endif
 			break
@@ -1891,7 +1892,7 @@ Function AB_LoadCustomWaves(expFilePath, stimsets, overwrite)
 	string expFilePath, stimsets
 	variable overwrite
 
-	string custom_waves
+	string custom_waves, path, customWaveName
 	variable numWaves, i
 
 	stimsets = WB_StimsetRecursionForList(stimsets)
@@ -1899,7 +1900,22 @@ Function AB_LoadCustomWaves(expFilePath, stimsets, overwrite)
 
 	numWaves = DimSize(cw, ROWS)
 	for(i = 0; i < numWaves; i += 1)
-		if(AB_LoadWave(expFilePath, cw[i], overwrite))
+		customWaveName = cw[i]
+
+		// handle legacy custom wave format
+		if(!isEmpty(customWaveName) && strsearch(customWaveName, ":", 0) == -1)
+			path = GetSetFolderAsString(CHANNEL_TYPE_DAC) + ":" + customWaveName
+			if(!AB_LoadWave(expFilePath, path, overwrite))
+				continue
+			endif
+			path = GetSetFolderAsString(CHANNEL_TYPE_TTL) + ":" + customWaveName
+			if(!AB_LoadWave(expFilePath, path, overwrite))
+				continue
+			endif
+		endif
+
+		if(AB_LoadWave(expFilePath, customWaveName, overwrite))
+			printf "experiment:%s \tCould not load custom wave %s in %s\r", expFilePath, customWaveName, stimsets
 			return 1
 		endif
 	endfor
@@ -1931,10 +1947,12 @@ Function AB_LoadWave(expFilePath, fullPath, overwrite)
 
 	dataFolder = GetFolder(fullPath)
 	loadList = AddListItem(RemovePrefix(fullPath, startStr = dataFolder), loadList)
+	if(isEmpty(dataFolder))
+		dataFolder = "root:"
+	endif
 	numWavesLoaded = AB_LoadDataWrapper(newDFR, expFilePath, dataFolder, loadList)
 
 	if(numWavesLoaded != 1)
-		printf "Could not load custom wave %s in %s\r", fullPath, expFilePath
 		SetDataFolder saveDFR
 		KillOrMoveToTrash(dfr=newDFR)
 		KillOrMoveToTrash(dfr=sweepDFR)

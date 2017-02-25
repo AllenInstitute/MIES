@@ -2455,6 +2455,8 @@ Function GetStimSetType(setName)
 End
 
 /// @brief Return the stimset folder from the numeric channelType, #CHANNEL_TYPE_DAC or #CHANNEL_TYPE_TTL
+///
+/// @returns Data Folder reference to Stimset dataFolder
 Function/DF GetSetFolder(channelType)
 	variable channelType
 
@@ -2462,6 +2464,21 @@ Function/DF GetSetFolder(channelType)
 		return GetWBSvdStimSetDAPath()
 	elseif(channelType == CHANNEL_TYPE_TTL)
 		return GetWBSvdStimSetTTLPath()
+	else
+		ASSERT(0, "unknown channelType")
+	endif
+End
+
+/// @brief Return the stimset folder from the numeric channelType, #CHANNEL_TYPE_DAC or #CHANNEL_TYPE_TTL
+///
+/// @returns String with full path to Stimset dataFolder
+Function/S GetSetFolderAsString(channelType)
+	variable channelType
+
+	if(channelType == CHANNEL_TYPE_DAC)
+		return GetWBSvdStimSetDAPathAsString()
+	elseif(channelType == CHANNEL_TYPE_TTL)
+		return GetWBSvdStimSetTTLPathAsString()
 	else
 		ASSERT(0, "unknown channelType")
 	endif
