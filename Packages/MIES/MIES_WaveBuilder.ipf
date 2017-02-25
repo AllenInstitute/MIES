@@ -1610,10 +1610,12 @@ static Function/S WB_StimsetChildren([stimset])
 	endif
 
 	ASSERT(WaveExists(WP) && WaveExists(WPT) && WaveExists(SegWvType), "Parameter Waves not found.")
-	ASSERT(FindDimLabel(SegWvType, ROWS, "Total number of epochs") != -2, "SEGWVTYPE_WAVE_LAYOUT_VERSION = 4 is required. Check for changed DimLabels in SegWave!")
+
+	UpgradeSegWvType(SegWvType)
+	ASSERT(FindDimLabel(SegWvType, ROWS, "Total number of epochs") != -2, "Dimension Label not found. Check for changed DimLabels in SegWave!")
+	numEpochs = SegWvType[%'Total number of epochs']
 
 	// search for stimsets in all formula-epochs by a regex pattern
-	numEpochs = SegWvType[%'Total number of epochs']
 	for(i = 0; i < numEpochs; i += 1)
 		if(SegWvType[i] == 8)
 			formula = WPT[6][i]
