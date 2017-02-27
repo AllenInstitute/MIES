@@ -1231,12 +1231,18 @@ Function CreateTiledChannelGraph(graph, config, sweepNo, numericalValues,  textu
 							sprintf str, "begin[ms] = %g, end[ms] = %g", xRangeStart, xRangeEnd
 							DEBUGPRINT(str)
 
-							xRangeStart = delayOnsetUser + delayOnsetAuto + xRangeStart / samplingInt
-							xRangeEnd   = delayOnsetUser + delayOnsetAuto + xRangeEnd   / samplingInt
+							xRangeStart /= samplingInt
+							xRangeEnd   /= samplingInt
 						endif
 					else
 						xRangeStart = NaN
 						xRangeEnd   = NaN
+					endif
+
+					if(tgs.dDAQDisplayMode && oodDAQEnabled && channelTypes[i] != ITC_XOP_CHANNEL_TYPE_TTL)
+						SetScale/P x, -(delayOnsetUser + delayOnsetAuto) * samplingInt, DimDelta(wv, ROWS), WaveUnits(wv, ROWS), wv
+					else
+						SetScale/P x, 0.0, DimDelta(wv, ROWS), WaveUnits(wv, ROWS), wv
 					endif
 
 					trace = UniqueTraceName(graph, name)
