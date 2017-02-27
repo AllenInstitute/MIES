@@ -51,6 +51,7 @@
 
 #include ":MIES_AnalysisBrowser_LabNotebookTPStorageBrowser"
 #include ":MIES_AnalysisBrowser_SweepBrowser"
+#include ":MIES_AnalysisBrowser_SweepBrowser_Export"
 
 static Constant EXPERIMENT_TREEVIEW_COLUMN = 0
 static Constant DEVICE_TREEVIEW_COLUMN     = 2

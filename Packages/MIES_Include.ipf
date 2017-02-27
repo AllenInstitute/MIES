@@ -27,6 +27,7 @@
 #include "MIES_AnalysisBrowser" menus=0
 #include "MIES_AnalysisBrowser_LabNotebookTPStorageBrowser"
 #include "MIES_AnalysisBrowser_SweepBrowser"
+#include "MIES_AnalysisBrowser_SweepBrowser_Export"
 #include "MIES_AnalysisFunctionHelpers"
 #include "MIES_AnalysisFunctionPrototypes"
 #include "MIES_AnalysisFunctions"
