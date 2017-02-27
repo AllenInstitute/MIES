@@ -195,7 +195,7 @@ static Function PA_AddMissingADTraceInfo(traceData)
 			newData[cnt][] = traceData[i][q]
 
 			newData[cnt][%traceName]     = ""
-			newData[cnt][%fullPath]      = GetWavesDataFolder(allWaves, 2)
+			newData[cnt][%fullPath]      = GetWavesDataFolder(wv, 2)
 			newData[cnt][%channelType]   = StringFromList(ITC_XOP_CHANNEL_TYPE_ADC, ITC_CHANNEL_NAMES)
 			newData[cnt][%channelNumber] = num2str(j)
 			newData[cnt][%headstage]     = num2str(headstage)
@@ -290,7 +290,7 @@ static Function/WAVE PA_GetUniqueHeadstages(traceData, indizesChannelType)
 	return headstagesClean
 End
 
-static Function/WAVE PA_GetPulseStartTimes(traceData, idx, region, channelTypeStr)
+Function/WAVE PA_GetPulseStartTimes(traceData, idx, region, channelTypeStr)
 	WAVE/T traceData
 	variable idx, region
 	string channelTypeStr

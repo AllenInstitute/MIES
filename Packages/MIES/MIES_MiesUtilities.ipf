@@ -2482,7 +2482,6 @@ Function EqualizeVerticalAxesRanges(graph, [ignoreAxesWithLevelCrossing, level, 
 			endif
 
 			clampMode = str2num(GetUserData(graph, trace, "clampMode"))
-			AI_AssertOnInvalidClampMode(clampMode)
 
 			if(!IsFinite(refClampMode))
 				refClampMode = clampMode

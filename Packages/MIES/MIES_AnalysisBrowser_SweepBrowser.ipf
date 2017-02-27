@@ -604,8 +604,8 @@ Function/DF SB_CreateNewSweepBrowser()
 	SetVariable setvar_SB_equalYLevel,pos={98.00,348.00},size={25.00,18.00},disable=2,proc=SB_AxisScalingLevelCross
 	SetVariable setvar_SB_equalYLevel,help={"Crossing level value for 'Equal Y ign.\""}
 	SetVariable setvar_SB_equalYLevel,limits={-inf,inf,0},value= _NUM:0
-	Button button_SweepBrowser_DupGraph,pos={28.00,375.00},size={100.00,25.00},proc=SB_ButtonProc_DupGraph,title="Duplicate Graph"
-	Button button_SweepBrowser_DupGraph,help={"Duplicate the graph and its trace for further processing"}
+	Button button_SweepBrowser_ExportGraph,pos={28.00,375.00},size={100.00,25.00},proc=SB_ButtonProc_ExportTraces,title="Export Traces"
+	Button button_SweepBrowser_ExportGraph,help={"Export the traces for further processing"}
 	GroupBox group_sweep,pos={6.00,71.00},size={139.00,98.00},title="Sweep"
 	CheckBox check_sweepbrowser_dDAQ,pos={97.00,50.00},size={47.00,15.00},proc=SB_CheckboxChangedSettings,title="dDAQ"
 	CheckBox check_sweepbrowser_dDAQ,help={"Enable dedicated support for viewing distributed DAQ data"}
@@ -910,12 +910,12 @@ Function SB_OpenChannelSelectionPanel(ba) : ButtonControl
 	return 0
 End
 
-Function SB_ButtonProc_DupGraph(ba) : ButtonControl
+Function SB_ButtonProc_ExportTraces(ba) : ButtonControl
 	STRUCT WMButtonAction &ba
 
 	switch(ba.eventCode)
 		case 2: // mouse up
-			SBE_DuplicateSweepBrowser(GetMainWindow(ba.win))
+			SBE_ShowExportPanel(ba.win)
 			break
 	endswitch
 
