@@ -2992,3 +2992,29 @@ Function/S AskUserForExistingFolder([baseFolder])
 
 	return selectedFolder
 End
+
+/// @brief Return all axes with the given orientation
+///
+/// @param graph graph
+/// @param axisOrientation One of @ref AxisOrientationConstants
+Function/S GetAllAxesWithOrientation(graph, axisOrientation)
+	string graph
+	variable axisOrientation
+
+	string axList, axis
+	string list = ""
+	variable numAxes, i
+
+	axList  = AxisList(graph)
+	numAxes = ItemsInList(axList)
+
+	for(i = 0; i < numAxes; i += 1)
+		axis = StringFromList(i, axList)
+
+		if(axisOrientation & GetAxisOrientation(graph, axis))
+			list = AddListItem(axis, list, ";", inf)
+		endif
+	endfor
+
+	return list
+End
