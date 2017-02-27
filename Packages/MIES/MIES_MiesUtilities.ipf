@@ -890,8 +890,7 @@ End
 /// @param numericalValues numerical labnotebook wave
 /// @param textualValues   textual labnotebook wave
 /// @param tgs             settings for tuning the display, see @ref TiledGraphSettings
-/// @param sweepDFR        datafolder to either multi-column sweep waves or the topfolder to splitted
-///                        1D sweep waves. Splitted 1D sweep waves are preferred if available.
+/// @param sweepDFR        top datafolder to splitted 1D sweep waves
 /// @param axisLabelCache  store existing vertical axis labels
 /// @param channelSelWave  [optional] channel selection wave
 Function CreateTiledChannelGraph(graph, config, sweepNo, numericalValues,  textualValues, tgs, sweepDFR, axisLabelCache, [channelSelWave])
@@ -1183,15 +1182,11 @@ Function CreateTiledChannelGraph(graph, config, sweepNo, numericalValues,  textu
 
 				DFREF singleSweepDFR = GetSingleSweepFolder(sweepDFR, sweepNo)
 
-				if(DataFolderExistsDFR(singleSweepDFR))
-					WAVE/Z wv = GetITCDataSingleColumnWave(singleSweepDFR, channelTypes[i], chan, splitTTLBits=tgs.splitTTLBits, ttlBit=j)
-					if(!WaveExists(wv))
-						continue
-					endif
-					idx = 0
-				else
-					idx = AFH_GetITCDataColumn(config, chan, channelTypes[i])
-					WAVE/SDFR=sweepDFR wv = $GetSweepWaveName(sweepNo)
+				ASSERT(DataFolderExistsDFR(singleSweepDFR), "Missing singleSweepDFR")
+
+				WAVE/Z wv = GetITCDataSingleColumnWave(singleSweepDFR, channelTypes[i], chan, splitTTLBits=tgs.splitTTLBits, ttlBit=j)
+				if(!WaveExists(wv))
+					continue
 				endif
 
 				DEBUGPRINT("")
@@ -1250,10 +1245,10 @@ Function CreateTiledChannelGraph(graph, config, sweepNo, numericalValues,  textu
 					DEBUGPRINT(str)
 
 					if(!IsFinite(xRangeStart) && !IsFinite(XRangeEnd))
-						AppendToGraph/W=$graph/L=$vertAxis wv[][idx]/TN=$trace
+						AppendToGraph/W=$graph/L=$vertAxis wv[][0]/TN=$trace
 					else
 						horizAxis = vertAxis + "_b"
-						AppendToGraph/W=$graph/L=$vertAxis/B=$horizAxis wv[xRangeStart, xRangeEnd][idx]/TN=$trace
+						AppendToGraph/W=$graph/L=$vertAxis/B=$horizAxis wv[xRangeStart, xRangeEnd][0]/TN=$trace
 						first = first
 						last  = first + (xRangeEnd - xRangeStart) / totalXRange
 						ModifyGraph/W=$graph axisEnab($horizAxis)={first, min(last, 1.0)}
