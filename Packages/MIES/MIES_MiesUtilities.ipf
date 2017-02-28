@@ -593,12 +593,22 @@ Function/WAVE GetLastSweepWithSettingText(numericalValues, setting, sweepNo)
 	return data
 End
 
-/// @brief Returns a list of all devices, e.g. "ITC18USB_Dev_0;", with an existing datafolder returned by `GetDevicePathAsString(device)`
-Function/S GetAllActiveDevices()
+/// @brief Returns a list of all devices, e.g. "ITC18USB_Dev_0;..."
+///
+/// @param activeOnly [optional, defaults to false] restrict the list to devices
+///                   with an existing datafolder returned by `GetDevicePathAsString(device)`
+Function/S GetAllDevices([activeOnly])
+	variable activeOnly
 
 	variable i, j, numTypes, numNumbers
 	string type, number, device
 	string path, list = ""
+
+	if(ParamIsDefault(activeOnly))
+		activeOnly = 0
+	else
+		activeOnly = !!activeOnly
+	endif
 
 	path = GetITCDevicesFolderAsString()
 
@@ -611,22 +621,14 @@ Function/S GetAllActiveDevices()
 	for(i = 0; i < numTypes; i += 1)
 		type = StringFromList(i, DEVICE_TYPES)
 
-		path = GetDeviceTypePathAsString(type)
-
-		if(!DataFolderExists(path))
-			continue
-		endif
-
 		for(j = 0; j < numNumbers ; j += 1)
 			number = StringFromList(j, DEVICE_NUMBERS)
 			device = BuildDeviceString(type, number)
 			path   = GetDevicePathAsString(device)
 
-			if(!DataFolderExists(path))
-				continue
+			if(!activeOnly || DataFolderExists(path))
+				list = AddListItem(device, list, ";", inf)
 			endif
-
-			list = AddListItem(device, list, ";", inf)
 		endfor
 	endfor
 
@@ -640,7 +642,7 @@ Function/S GetAllDevicesWithData()
 	string deviceList, device, path
 	string list = ""
 
-	deviceList = GetAllActiveDevices()
+	deviceList = GetAllDevices(activeOnly = 1)
 
 	numDevices = ItemsInList(deviceList)
 	for(i = 0; i < numDevices; i += 1)
@@ -1796,7 +1798,7 @@ Function SaveExperimentSpecial(mode)
 		CallFunctionForEachListItem($"DAP_ClearCommentNotebook", list)
 
 		// remove other waves from active devices
-		activeDevices = GetAllActiveDevices()
+		activeDevices = GetAllDevices(activeOnly = 1)
 		numDevices = ItemsInList(activeDevices)
 		for(i = 0; i < numDevices; i += 1)
 			device = StringFromList(i, activeDevices)
