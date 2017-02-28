@@ -17,15 +17,29 @@
 ///
 /// Handles the calls to the data configurator (DC) functions and BackgroundMD
 /// it is required because of the special handling syncronous ITC1600s require
-Function ITC_StartDAQMultiDeviceLowLevel(panelTitle)
+///
+/// @param panelTitle      device
+/// @param initialSetupReq [optional, defaults to true] performs initialization routines
+///                        at the very beginning of DAQ, turn off for RA
+Function ITC_StartDAQMultiDeviceLowLevel(panelTitle, [initialSetupReq])
 	string panelTitle
+	variable initialSetupReq
 
 	variable numFollower, i
 	string followerPanelTitle
 
+	if(ParamIsDefault(initialSetupReq))
+		initialSetupReq = 1
+	else
+		initialSetupReq = !!initialSetupReq
+	endif
+
+	if(initialSetupReq)
+		DAP_OneTimeCallBeforeDAQ(panelTitle, DAQ_BG_MULTI_DEVICE)
+	endif
+
 	// configure passed device
 	NVAR ITCDeviceIDGlobal = $GetITCDeviceIDGlobal(panelTitle)
-	DAP_OneTimeCallBeforeDAQ(panelTitle, DAQ_BG_MULTI_DEVICE)
 	DC_ConfigureDataForITC(panelTitle, DATA_ACQUISITION_MODE)
 	HW_SelectDevice(HARDWARE_ITC_DAC, ITCDeviceIDGlobal, flags=HARDWARE_ABORT_ON_ERROR)
 	HW_ITC_PrepareAcq(ITCDeviceIDGlobal)
@@ -41,7 +55,11 @@ Function ITC_StartDAQMultiDeviceLowLevel(panelTitle)
 	// configure follower devices
 	for(i = 0; i < numFollower; i += 1)
 		followerPanelTitle = StringFromList(i, listOfFollowerDevices)
-		DAP_OneTimeCallBeforeDAQ(panelTitle, DAQ_BG_MULTI_DEVICE)
+
+		if(initialSetupReq)
+			DAP_OneTimeCallBeforeDAQ(followerPanelTitle, DAQ_BG_MULTI_DEVICE)
+		endif
+
 		DC_ConfigureDataForITC(followerPanelTitle, DATA_ACQUISITION_MODE)
 		NVAR ITCDeviceIDGlobal = $GetITCDeviceIDGlobal(followerPanelTitle)
 		HW_SelectDevice(HARDWARE_ITC_DAC, ITCDeviceIDGlobal, flags=HARDWARE_ABORT_ON_ERROR)

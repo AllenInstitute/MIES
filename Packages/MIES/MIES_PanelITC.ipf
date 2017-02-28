@@ -4384,6 +4384,9 @@ Function DAP_OneTimeCallAfterDAQ(panelTitle)
 	NVAR dataAcqRunMode = $GetDataAcqRunMode(panelTitle)
 	dataAcqRunMode = DAQ_NOT_RUNNING
 
+	NVAR count = $GetCount(panelTitle)
+	count = NaN
+
 	// restore the selected sets before DAQ
 	if(GetCheckBoxState(panelTitle, "Check_DataAcq_Indexing"))
 		IDX_ResetStartFinishForIndexing(panelTitle)
@@ -5176,6 +5179,13 @@ Function DAP_CheckSettings(panelTitle, mode)
 
 			if(GetCheckBoxState(panelTitle, "Check_DataAcq1_RepeatAcq") && GetCheckBoxState(panelTitle, "check_DataAcq_RepAcqRandom") && indexingEnabled)
 				printf "(%s) Repeated random acquisition can not be combined with indexing.\r", panelTitle
+				printf "(%s) If you need this feature please contact the MIES developers.\r", panelTitle
+				ControlWindowToFront()
+				return 1
+			endif
+
+			if(GetCheckBoxState(panelTitle, "Check_DataAcq1_RepeatAcq") && !GetCheckBoxState(panelTitle, "Check_Settings_BackgrndDataAcq"))
+				printf "(%s) Repeated random acquisition with foregound DAQ is currently brocken.\r", panelTitle
 				printf "(%s) If you need this feature please contact the MIES developers.\r", panelTitle
 				ControlWindowToFront()
 				return 1
