@@ -302,17 +302,20 @@ End
 Function NWB_ExportAllData([overrideFilePath])
 	string overrideFilePath
 
-	string devicesWithContent, panelTitle, list, name
+	string devicesWithContent, panelTitle, list, name, stimsets, stimset
 	variable i, j, numEntries, locationID, sweep, numWaves
 
 	devicesWithContent = GetAllDevicesWithContent(contentType = CONTENT_TYPE_ALL)
 
-	if(isEmpty(devicesWithContent))
-		print "No devices with acquired content found for NWB export"
-		return NaN
-	endif
+	if(IsEmpty(devicesWithContent))
+		stimsets = ReturnListOfAllStimSets(CHANNEL_TYPE_DAC, "*DA*") + ReturnListOfAllStimSets(CHANNEL_TYPE_TTL, "*TTL*")
 
-	print "Please be patient while we export all existing data of all devices to NWB"
+		if(IsEmpty(stimsets))
+			print "Neither acquired content nor stimsets found for NWB export"
+			ControlWindowToFront()
+			return NaN
+		endif
+	endif
 
 	if(!ParamIsDefault(overrideFilePath))
 		locationID = NWB_GetFileForExport(overrideFilePath=overrideFilePath)
@@ -325,6 +328,22 @@ Function NWB_ExportAllData([overrideFilePath])
 	endif
 
 	IPNWB#AddModificationTimeEntry(locationID)
+
+	if(IsEmpty(devicesWithContent))
+		print "Please be patient while we export all existing stimsets to NWB"
+		ControlWindowToFront()
+
+		numEntries = ItemsInList(stimsets)
+		for(i = 0; i < numEntries; i += 1)
+			stimset = StringFromList(i, stimsets)
+			NWB_WriteStimsetTemplateWaves(locationID, stimset, 1)
+		endfor
+
+		return NaN
+	endif
+
+	print "Please be patient while we export all existing acquired content of all devices to NWB"
+	ControlWindowToFront()
 
 	numEntries = ItemsInList(devicesWithContent)
 	for(i = 0; i < numEntries; i += 1)
