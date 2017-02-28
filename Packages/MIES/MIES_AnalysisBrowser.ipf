@@ -1744,19 +1744,15 @@ End
 Function AB_ButtonProc_SelectDirectory(ba) : ButtonControl
 	STRUCT WMButtonAction &ba
 
-	string path, win
+	string path, win, baseFolder, folder
+
 	switch(ba.eventCode)
 		case 2: // mouse up
-				// If exists start with previously saved folder in setvar_baseFolder
-				win = ba.win
-				PathInfo/S $GetSetVariableString(win, "setvar_baseFolder")
-				GetFileFolderInfo/D/Q/Z=2
-
-				// store results and scan chosen folder
-				if(V_flag == 0 && V_isFolder)
-					SetSetVariableString(win, "setvar_baseFolder", S_Path)
-					AB_ScanFolder(win)
-				endif
+			win = ba.win
+			baseFolder = GetSetVariableString(win, "setvar_baseFolder")
+			folder = AskUserForExistingFolder(baseFolder=baseFolder)
+			SetSetVariableString(win, "setvar_baseFolder", folder)
+			AB_ScanFolder(win)
 			break
 	endswitch
 
