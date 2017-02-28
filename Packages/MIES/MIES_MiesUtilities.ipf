@@ -1313,6 +1313,7 @@ Function CreateTiledChannelGraph(graph, config, sweepNo, numericalValues,  textu
 						if(!IsEmpty(horizAxis))
 							ModifyGraph/W=$graph axRGB($horizAxis)=(65535,65535,65535), tlblRGB($horizAxis)=(65535,65535,65535)
 							ModifyGraph/W=$graph alblRGB($horizAxis)=(65535,65535,65535), axThick($horizAxis)=0
+							ModifyGraph/W=$graph freePos($vertAxis)={1 / numHorizWaves * k,kwFraction}, freePos($horizAxis)={0,$vertAxis}
 						endif
 					endif
 
@@ -1353,9 +1354,9 @@ Function CreateTiledChannelGraph(graph, config, sweepNo, numericalValues,  textu
 	while(moreData)
 
 	if(tgs.dDAQDisplayMode)
-		ModifyGraph/W=$graph margin(left)=28
+		ModifyGraph/W=$graph margin(left)=28, margin(bottom)=1
 	else
-		ModifyGraph/W=$graph margin(left)=0
+		ModifyGraph/W=$graph margin(left)=0, margin(bottom)=0
 	endif
 End
 
