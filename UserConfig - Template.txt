@@ -86,6 +86,10 @@ Append Asynchronous reading to wave note = Yes
 
 Sync MIES to MCC = Yes
 
+Save amplifier settings = Yes
+
+Require amplifier connection to active headstage = Yes
+
 ###### Data Acquisition Settings ######
 Switch clamp modes via I equal zero = Yes
 

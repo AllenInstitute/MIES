@@ -308,6 +308,10 @@ static Function ExpConfig_DAEphysSettings(panelTitle, UserSettings)
 	PGC_SetAndActivateControl(panelTitle,"Check_Settings_Append", val = str2num(UserSettings[V_value][%SettingValue]))
 	FindValue /TXOP = 4 /TEXT = SYNC_MIES_MCC UserSettings
 	PGC_SetAndActivateControl(panelTitle,"check_Settings_SyncMiesToMCC", val = str2num(UserSettings[V_value][%SettingValue]))
+	FindValue /TXOP = 4 /TEXT = SAVE_AMP_SETTINGS UserSettings
+	PGC_SetAndActivateControl(panelTitle,"check_Settings_SaveAmpSettings", val = str2num(UserSettings[V_value][%SettingValue]))
+	FindValue /TXOP = 4 /TEXT = REQUIRE_AMP UserSettings
+	PGC_SetAndActivateControl(panelTitle,"check_Settings_RequireAmpConn", val = str2num(UserSettings[V_value][%SettingValue]))
 	FindValue /TXOP = 4 /TEXT = ENABLE_I_EQUAL_ZERO UserSettings
 	PGC_SetAndActivateControl(panelTitle,"check_Settings_AmpIEQZstep", val = str2num(UserSettings[V_value][%SettingValue]))
 	PGC_SetAndActivateControl(panelTitle,"ADC", val = DA_EPHYS_PANEL_DATA_ACQUISITION)

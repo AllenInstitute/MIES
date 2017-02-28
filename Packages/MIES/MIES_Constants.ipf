@@ -646,6 +646,8 @@ StrConstant ASYNC_CH00					= "Asyncronous channel 0"
 StrConstant ASYNC_CH01					= "Asyncronous channel 1"
 StrConstant ASYNC_UNIT					= "Asyncronous Unit"
 StrConstant POSITION_MCC				= "Position MCCs"
+StrConstant SAVE_AMP_SETTINGS			= "Save amplifier settings"
+StrConstant REQUIRE_AMP				= "Require amplifier connection to active headstage"
 ///@}
 
 StrConstant PULSE_START_TIMES_KEY     = "Pulse Train Pulses"
