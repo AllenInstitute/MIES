@@ -3421,7 +3421,7 @@ Function HasPanelLatestVersion(win, expectedVersion)
 	version = str2num(GetUserData(win, "", "panelVersion"))
 
 	return version == expectedVersion
-end
+End
 
 Function UPDATESWEEPPLOT_PROTOTYPE(win, [optArg])
 	string win

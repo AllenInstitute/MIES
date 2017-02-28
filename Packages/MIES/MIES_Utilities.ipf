@@ -760,18 +760,37 @@ Function SetNumberInWaveNote(wv, key, val)
 	Note/K wv, ReplaceNumberByKey(key, note(wv), val)
 End
 
-/// @brief Return the string value of `key` found in the wave note,
-/// returns an empty string if it could not be found
+/// @brief Return the string value of `key` found in the wave note
+/// default expected wave note format: `key1:val1;key2:str2;`
+/// counterpart of AddModificationTimeEntry when supplied with keySep = "="
 ///
-/// The expected wave note format is: `key1:val1;key2:str2;`
-Function/S GetStringFromWaveNote(wv, key)
+/// @param wv   wave reference where the WaveNote is taken from
+/// @param key  search for the value at key:value;
+/// @param keySep  [optional, defaults to `:`] separation character for (key, value) pairs
+/// @param listSep [optional, defaults to `;`] list separation character
+///
+/// @returns the value on success. An empty string is returned if it could not be found
+Function/S GetStringFromWaveNote(wv, key, [keySep, listSep])
 	Wave wv
 	string key
+	string keySep, listSep
+	string wvNote
+
+	if(ParamIsDefault(keySep))
+		keySep = ":"
+	endif
+	if(ParamIsDefault(listSep))
+		listSep = ";"
+	endif
 
 	ASSERT(WaveExists(wv), "Missing wave")
 	ASSERT(!IsEmpty(key), "Empty key")
 
-	return StringByKey(key, note(wv))
+	wvNote = note(wv)
+	// AddEntryIntoWaveNoteAsList creates whitespaces "key = value;"
+	wvNote = ReplaceString(" " + keySep + " ", wvNote, keySep)
+
+	return StringByKey(key, wvNote, keySep, listSep)
 End
 
 /// @brief Update the string value of `key` found in the wave note to `str`
@@ -2304,15 +2323,15 @@ End
 /// relative order of the entries
 static Function/WAVE DeleteDuplicatesNum(numWave)
 	WAVE numWave
-	
+
 	variable i, numRows
 	numRows = DimSize(numWave, ROWS)
-	
+
 	Duplicate/FREE numWave, dest
 	if(numRows <= 1)
 		return dest
 	endif
-	
+
 	FindDuplicates/RN=dest numWave
 
 	return dest

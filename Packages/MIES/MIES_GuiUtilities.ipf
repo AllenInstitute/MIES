@@ -815,7 +815,7 @@ Function/S GetNextFreeAxisName(graph, axesBaseName)
 	return axesBaseName + num2str(numAxes)
 End
 
-/// @brief Generic wrapper for setting a control's value 
+/// @brief Generic wrapper for setting a control's value
 /// pass in the value as a string, and then decide whether to change to a number based on the type of control
 Function SetGuiControlValue(win, control, value)
 	string win, control
@@ -847,7 +847,7 @@ Function SetGuiControlValue(win, control, value)
 	endif
 End
 
-/// @brief Generic wrapper for getting a control's value 
+/// @brief Generic wrapper for getting a control's value
 Function/S GetGuiControlValue(win, control)
 	string win, control
 
@@ -860,9 +860,9 @@ Function/S GetGuiControlValue(win, control)
 
 	if(controlType == CONTROL_TYPE_CHECKBOX)
 		value = num2str(GetCheckBoxState(win, control))
-	elseif(controlType == CONTROL_TYPE_SLIDER) 
+	elseif(controlType == CONTROL_TYPE_SLIDER)
 		value = num2str(V_value)
-	elseif(controlType == CONTROL_TYPE_SETVARIABLE) 
+	elseif(controlType == CONTROL_TYPE_SETVARIABLE)
 		variableType = GetInternalSetVariableType(S_recreation)
 		if(variableType == SET_VARIABLE_BUILTIN_STR)
 			value = GetSetVariableString(win, control)
@@ -876,7 +876,7 @@ Function/S GetGuiControlValue(win, control)
 	else
 		value = ""
 	endif
-	
+
 	return value
 End
 

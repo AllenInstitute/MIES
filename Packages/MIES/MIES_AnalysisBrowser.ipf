@@ -160,7 +160,7 @@ static Function AB_RemoveMapEntry(index)
 	endif
 End
 
-/// @brief  Get single matching entry from getAnalysisBrowserMap
+/// @brief  Get single matching entry from GetAnalysisBrowserMap
 /// @param  discLocation: first column. Path to file on disc
 /// @return wave with 4 columns
 /// Columns:
@@ -171,7 +171,7 @@ End
 Function/Wave AB_GetMap(discLocation)
 	string discLocation
 
-	WAVE/T map = getAnalysisBrowserMap()
+	WAVE/T map = GetAnalysisBrowserMap()
 
 	FindValue/TXOP=4/TEXT=(discLocation) map
 	ASSERT(V_Value >= 0, "invalid index")
@@ -1596,7 +1596,7 @@ Window AnalysisBrowser() : Panel
 	Button button_expand_all, help={"Expand all entries giving the longest view"}
 	Button button_load_selection,pos={7,190},size={100,25},proc=AB_ButtonProc_LoadSelection,title="Load Selection"
 	Button button_load_selection, help={"Open a sweep browser panel from the selected sweeps. In case an experiment or device is selected, all sweeps are loaded from them."}
-	Button button_show_usercomments,pos={7,226},size={100,25},proc=AB_ButtonProc_OpenCommentNB,title="Open comment NB"	
+	Button button_show_usercomments,pos={7,226},size={100,25},proc=AB_ButtonProc_OpenCommentNB,title="Open comment NB"
 	Button button_show_usercomments, help={"Open a read-only notebook showing the user comment for the currently selected experiment."}
 	SetWindow kwTopWin,hook(ResizeControls)=ResizeControls#ResizeControlsHook
 	SetWindow kwTopWin,userdata(ResizeControlsInfo)= A"!!*'\"z!!#DQ^]6a@J,fQLzzzzzzzzzzzzzzzzzzzz"
