@@ -653,3 +653,11 @@ StrConstant PULSE_TO_PULSE_LENGTH_KEY = "Pulse To Pulse Length"
 
 /// DA_Ephys controls which should be disabled during DAQ *and* TP
 StrConstant CONTROLS_DISABLE_DURING_DAQ_TP = "check_Settings_MD;Check_Settings_BkgTP;Check_Settings_BackgrndDataAcq"
+
+/// @name Parameters for GetAllDevicesWithContent()
+/// @anchor CONTENT_TYPES
+/// @{
+Constant CONTENT_TYPE_SWEEP     = 0x01
+Constant CONTENT_TYPE_TPSTORAGE = 0x02
+Constant CONTENT_TYPE_ALL       = 0xFF
+/// @}

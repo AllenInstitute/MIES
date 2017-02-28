@@ -781,7 +781,7 @@ End
 
 Function/S DB_GetAllDevicesWithData()
 
-	return AddListItem(NONE, GetAllDevicesWithData(), ";", 0)
+	return AddListItem(NONE, GetAllDevicesWithContent(), ";", 0)
 End
 
 Function DB_ButtonProc_SwitchXAxis(ba) : ButtonControl

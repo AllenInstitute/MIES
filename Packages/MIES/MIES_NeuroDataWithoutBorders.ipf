@@ -36,7 +36,7 @@ static Function NWB_FirstStartTimeOfAllSweeps()
 	variable numEntries, numWaves, i, j
 	variable oldest = Inf
 
-	devicesWithData = GetAllDevicesWithData()
+	devicesWithData = GetAllDevicesWithContent()
 
 	if(isEmpty(devicesWithData))
 		return NaN
@@ -302,13 +302,13 @@ End
 Function NWB_ExportAllData([overrideFilePath])
 	string overrideFilePath
 
-	string devicesWithData, panelTitle, list, name
+	string devicesWithContent, panelTitle, list, name
 	variable i, j, numEntries, locationID, sweep, numWaves
 
-	devicesWithData = GetAllDevicesWithData()
+	devicesWithContent = GetAllDevicesWithContent(contentType = CONTENT_TYPE_ALL)
 
-	if(isEmpty(devicesWithData))
-		print "No devices with data found for NWB export"
+	if(isEmpty(devicesWithContent))
+		print "No devices with acquired content found for NWB export"
 		return NaN
 	endif
 
@@ -326,9 +326,9 @@ Function NWB_ExportAllData([overrideFilePath])
 
 	IPNWB#AddModificationTimeEntry(locationID)
 
-	numEntries = ItemsInList(devicesWithData)
+	numEntries = ItemsInList(devicesWithContent)
 	for(i = 0; i < numEntries; i += 1)
-		panelTitle = StringFromList(i, devicesWithData)
+		panelTitle = StringFromList(i, devicesWithContent)
 		NWB_AddDeviceSpecificData(locationID, panelTitle, chunkedLayout=1)
 
 		DFREF dfr = GetDeviceDataPath(panelTitle)

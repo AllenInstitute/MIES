@@ -463,7 +463,7 @@ Function HD_SaveSweepData([cmdID])
 	string cmdID
 	
 	// get the names of all the devices that have data present, regardless of being locked or not
-	string dataPresentDevList = GetAllDevicesWithData()
+	string dataPresentDevList = GetAllDevicesWithContent()
 	variable noDataPresentDevs = ItemsInList(dataPresentDevList)
 
 	string win, control

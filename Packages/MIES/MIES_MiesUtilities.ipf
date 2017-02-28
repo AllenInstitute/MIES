@@ -636,28 +636,41 @@ Function/S GetAllDevices([activeOnly])
 End
 
 /// @brief Returns a list of all devices, e.g. "ITC18USB_Dev_0;", which have acquired data.
-Function/S GetAllDevicesWithData()
+///
+/// @param contentType [optional, defaults to CONTENT_TYPE_SWEEP] type of
+///                    content to look for, one of @ref CONTENT_TYPES
+Function/S GetAllDevicesWithContent([contentType])
+	variable contentType
 
 	variable i, numDevices
-	string deviceList, device, path
+	string deviceList, device, dataPath, testPulsePath
 	string list = ""
+
+	if(ParamIsDefault(contentType))
+		contentType = CONTENT_TYPE_SWEEP
+	endif
 
 	deviceList = GetAllDevices(activeOnly = 1)
 
 	numDevices = ItemsInList(deviceList)
 	for(i = 0; i < numDevices; i += 1)
-		device = StringFromList(i, deviceList)
-		path   = GetDeviceDataPathAsString(device)
+		device        = StringFromList(i, deviceList)
+		dataPath      = GetDeviceDataPathAsString(device)
+		testPulsePath = GetDeviceTestPulseAsString(device)
 
-		if(!DataFolderExists(path))
+		if(contentType & CONTENT_TYPE_SWEEP                   \
+		   && DataFolderExists(dataPath)                      \
+		   && CountObjects(dataPath, COUNTOBJECTS_WAVES) > 0)
+			list = AddListItem(device, list, ";", inf)
 			continue
 		endif
 
-		if(CountObjects(path, COUNTOBJECTS_WAVES) == 0)
+		if(contentType & CONTENT_TYPE_TPSTORAGE                                     \
+		   && DataFolderExists(testPulsePath)                                       \
+		   && ItemsInList(GetListOfObjects($testPulsePath, TP_STORAGE_REGEXP)) > 0)
+			list = AddListItem(device, list, ";", inf)
 			continue
 		endif
-
-		list = AddListItem(device, list, ";", inf)
 	endfor
 
 	return list
@@ -1774,7 +1787,7 @@ Function SaveExperimentSpecial(mode)
 	FUNCREF CALL_FUNCTION_LIST_PROTOTYPE killFunc = KillOrMoveToTrashPath
 
 	// remove sweep data from all devices with data
-	devicesWithData = GetAllDevicesWithData()
+	devicesWithData = GetAllDevicesWithContent()
 	numDevices = ItemsInList(devicesWithData)
 	for(i = 0; i < numDevices; i += 1)
 		device = StringFromList(i, devicesWithData)
