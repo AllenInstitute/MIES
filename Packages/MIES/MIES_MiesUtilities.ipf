@@ -2180,8 +2180,6 @@ static Function TimeAlignmentIfReq(panel, traceList, mode, refTrace, level)
 
 	ASSERT(windowExists(panel), "Graph must exist")
 	graph = GetMainWindow(panel)
-	
-	return NaN
 
 	if(mode == TIME_ALIGNMENT_NONE) // nothing to do
 		return NaN
@@ -2209,7 +2207,7 @@ static Function TimeAlignmentIfReq(panel, traceList, mode, refTrace, level)
 	refAxis = StringByKey("YAXIS", TraceInfo(graph, refTrace, 0))
 
 	numTraces = ItemsInList(traceList)
-	MAKE/O/D/N=(numTraces) featurePos = NaN, sweepNumber = NaN
+	MAKE/FREE/D/N=(numTraces) featurePos = NaN, sweepNumber = NaN
 	for(i = 0; i < numTraces; i += 1)
 		trace = StringFromList(i, traceList)
 		axis = StringByKey("YAXIS", TraceInfo(graph, trace, 0))
