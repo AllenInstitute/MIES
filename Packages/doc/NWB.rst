@@ -69,8 +69,8 @@ The following tree describes how MIES creates NWB files
             device_XXX: Name of the DA_ephys device, something like "Harvard Bioscience ITC 18USB"
             intracellular_ephys:
                     electrode_XXX: (XXX can be set by the user via writing into GetCellElectrodeNames())
-                        description: Holds the description of the electrode, something like "Headstage 1".
-                        device: Device used to record the data
+                        description : Holds the description of the electrode, something like "Headstage 1".
+                        device      : Device used to record the data
 
         labnotebook: custom entry
             XXXX: Name of the device
@@ -92,8 +92,9 @@ The following tree describes how MIES creates NWB files
         stimsets: custom entry
                 XXXXXX_DA/TTL_Y_SegWvType/WP/WPT: The Wavebuilder parameter waves. These waves will not be available for
                                                   "third party stimsets" created outside of MIES.
-                XXXXXX_DA/TTL_Y: Name of the stimset, referenced from stimulus_description. Only present if not all
-                                 parameter waves could be found.
+                XXXXXX_DA/TTL_Y: Name of the stimset, referenced from
+                                 stimulus_description if acquired data is present. Only present
+                                 if not all parameter waves could be found.
 
     file_create_date    : text array with UTC modification timestamps
     identifier          : SHA256 hash, ensured to be unique
