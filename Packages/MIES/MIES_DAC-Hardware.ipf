@@ -1591,9 +1591,18 @@ Function HW_NI_ResetDevice(device, [flags])
 	string device
 	variable flags
 
+	variable ret
+
 	DEBUGPRINTSTACKINFO()
 
-	fDAQmx_resetDevice(device)
+	ret = fDAQmx_resetDevice(device)
+	if(ret)
+		print fDAQmx_ErrorString()
+		printf "Error %d: fDAQmx_resetDevice\r", ret
+		if(flags & HARDWARE_ABORT_ON_ERROR)
+			ASSERT(0, "Error calling fDAQmx_DIO_Finished")
+		endif
+	endif
 End
 
 /// @brief Check if the device is running
