@@ -32,7 +32,7 @@ Function ExpConfig_ConfigureMIES()
 	printf "Opening User Configuration Notebook\r"
 	OpenNotebook/ENCG=1/R/N=UserConfigNB/V=0/Z fullPath
 	if(V_flag)
-		sprintf ConfigError, "A User Configuration Notebook could not be loaded.\r" + \
+		printf "A User Configuration Notebook could not be loaded.\r" + \
 				 "Please ensure that there is a plain text file named 'UserConfig.txt' in the following path: %s\r" + \
 				 "If it does not exist you may create one using the following format:\r" + \
 				 "#### Header information or instructions that will NOT be parsed ####\r" + \
@@ -42,72 +42,73 @@ Function ExpConfig_ConfigureMIES()
 				 "#### end ####\r" + \
 				 "Add a strConstant for each configurable control text and use that strConstant in GetExpConfigKeyTypes to extract Control:Value pairs\r", fullPath
 		ControlWindowToFront()
-		ASSERT(V_flag > 0, ConfigError)
-	endif
-	printf "Configuration Notebook successfully loaded, extracting user settings\r"
-	
-	UserConfigNB = winname(0,16)
-	Wave /T KeyTypes = GetExpConfigKeyTypes()
-	Wave /T UserSettings = GetExpUserSettings(UserConfigNB, KeyTypes)
-	
-	FindValue /TXOP = 4 /TEXT = AMP_SERIAL UserSettings
-	AmpSerialLocal = UserSettings[V_value][%SettingValue]
-	FindValue /TXOP = 4 /TEXT = AMP_TITLE UserSettings
-	AmpTitleLocal = UserSettings[V_value][%SettingValue]
-
-	printf "Openning MCC amplifiers\r"
-	Assert(AI_OpenMCCs(AmpSerialLocal, ampTitleList = AmpTitleLocal, maxAttempts = ATTEMPTS),"Evil kittens prevented MultiClamp from opening - FULL STOP" )
-	
-	FindValue /TXOP = 4 /TEXT = ITC_DEV_TYPE UserSettings
-	ITCDevType = UserSettings[V_value][%SettingValue]
-	FindValue /TXOP = 4 /TEXT = ITC_DEV_NUM UserSettings
-	ITCDevNum = UserSettings[V_value][%SettingValue]
-
-	if(WindowExists(BuildDeviceString(ITCDevType, ITCDevNum)))
-		win = BuildDeviceString(ITCDevType, ITCDevNum)
+		
 	else
-		if(WindowExists("DA_Ephys"))
-			win = BASE_WINDOW_TITLE
+	
+		printf "Configuration Notebook successfully loaded, extracting user settings\r"
+		
+		UserConfigNB = winname(0,16)
+		Wave /T KeyTypes = GetExpConfigKeyTypes()
+		Wave /T UserSettings = GetExpUserSettings(UserConfigNB, KeyTypes)
+		
+		FindValue /TXOP = 4 /TEXT = AMP_SERIAL UserSettings
+		AmpSerialLocal = UserSettings[V_value][%SettingValue]
+		FindValue /TXOP = 4 /TEXT = AMP_TITLE UserSettings
+		AmpTitleLocal = UserSettings[V_value][%SettingValue]
+	
+		printf "Openning MCC amplifiers\r"
+		Assert(AI_OpenMCCs(AmpSerialLocal, ampTitleList = AmpTitleLocal, maxAttempts = ATTEMPTS),"Evil kittens prevented MultiClamp from opening - FULL STOP" )
+		
+		FindValue /TXOP = 4 /TEXT = ITC_DEV_TYPE UserSettings
+		ITCDevType = UserSettings[V_value][%SettingValue]
+		FindValue /TXOP = 4 /TEXT = ITC_DEV_NUM UserSettings
+		ITCDevNum = UserSettings[V_value][%SettingValue]
+	
+		if(WindowExists(BuildDeviceString(ITCDevType, ITCDevNum)))
+			win = BuildDeviceString(ITCDevType, ITCDevNum)
 		else
-			win = DAP_CreateDAEphysPanel() 									//open DA_Ephys
-//			movewindow /W = $win 1500, -700,-1,-1				//position DA_Ephys window
+			if(WindowExists("DA_Ephys"))
+				win = BASE_WINDOW_TITLE
+			else
+				win = DAP_CreateDAEphysPanel() 									//open DA_Ephys
+				//			movewindow /W = $win 1500, -700,-1,-1				//position DA_Ephys window
+			endif
+	
+			PGC_SetAndActivateControl(win,"popup_MoreSettings_DeviceType", val = WhichListItem(ITCDevType,DEVICE_TYPES))
+			PGC_SetAndActivateControl(win,"popup_moreSettings_DeviceNo", val = WhichListItem(ITCDevNum,DEVICE_NUMBERS))
+			PGC_SetAndActivateControl(win,"button_SettingsPlus_LockDevice")
+	
+			win = BuildDeviceString(ITCDevType, ITCDevNum)
 		endif
-
-		PGC_SetAndActivateControl(win,"popup_MoreSettings_DeviceType", val = WhichListItem(ITCDevType,DEVICE_TYPES))
-		PGC_SetAndActivateControl(win,"popup_moreSettings_DeviceNo", val = WhichListItem(ITCDevNum,DEVICE_NUMBERS))
-		PGC_SetAndActivateControl(win,"button_SettingsPlus_LockDevice")
-
-		win = BuildDeviceString(ITCDevType, ITCDevNum)
+	
+		ExpConfig_Amplifiers(win, UserSettings)
+	
+		ExpConfig_Pressure(win, UserSettings)
+	
+		ExpConfig_ClampModes(win, UserSettings)
+	
+		ExpConfig_AsyncTemp(win, UserSettings)
+	
+		ExpConfig_DAEphysSettings(win, UserSettings)
+	
+		FindValue /TXOP = 4 /TEXT = STIMSET_PATH UserSettings
+		StimSetPath = UserSettings[V_value][%SettingValue]
+		HD_LoadReplaceStimSet(incomingFileDirectory = StimSetPath)
+	
+		PGC_SetAndActivateControl(win,"ADC", val = DA_EPHYS_PANEL_DATA_ACQUISITION)
+		PGC_SetAndActivateControl(win, "tab_DataAcq_Amp", val = DA_EPHYS_PANEL_VCLAMP)
+		PGC_SetAndActivateControl(win, "tab_DataAcq_Pressure", val = DA_EPHYS_PANEL_PRESSURE_AUTO)
+	
+		filename = GetTimeStamp() + PACKED_FILE_EXPERIMENT_SUFFIX
+		FindValue /TXOP = 4 /TEXT = SAVE_PATH UserSettings
+		NewPath /C/O SavePath, UserSettings[V_value][%SettingValue]
+	
+		SaveExperiment /P=SavePath as filename
+	
+		PGC_SetAndActivateControl(win,"StartTestPulseButton")
+	
+		print ("Start Sciencing")
 	endif
-
-	ExpConfig_Amplifiers(win, UserSettings)
-
-	ExpConfig_Pressure(win, UserSettings)
-
-	ExpConfig_ClampModes(win, UserSettings)
-
-	ExpConfig_AsyncTemp(win, UserSettings)
-
-	ExpConfig_DAEphysSettings(win, UserSettings)
-
-	FindValue /TXOP = 4 /TEXT = STIMSET_PATH UserSettings
-	StimSetPath = UserSettings[V_value][%SettingValue]
-	HD_LoadReplaceStimSet(incomingFileDirectory = StimSetPath)
-
-	PGC_SetAndActivateControl(win,"ADC", val = DA_EPHYS_PANEL_DATA_ACQUISITION)
-	PGC_SetAndActivateControl(win, "tab_DataAcq_Amp", val = DA_EPHYS_PANEL_VCLAMP)
-	PGC_SetAndActivateControl(win, "tab_DataAcq_Pressure", val = DA_EPHYS_PANEL_PRESSURE_AUTO)
-
-	filename = GetTimeStamp() + PACKED_FILE_EXPERIMENT_SUFFIX
-	FindValue /TXOP = 4 /TEXT = SAVE_PATH UserSettings
-	NewPath /C/O SavePath, UserSettings[V_value][%SettingValue]
-
-	SaveExperiment /P=SavePath as filename
-
-	PGC_SetAndActivateControl(win,"StartTestPulseButton")
-
-	print ("Start Sciencing")
-
 End
 
 /// @brief  Open and configure amplifiers for Multi-Patch experiments
