@@ -231,7 +231,7 @@ Function PGC_SetAndActivateControl(win, control, [val, str])
 			variableType = GetInternalSetVariableType(S_recreation)
 
 			if(ParamIsDefault(val))
-				val = str2num(str)
+				val = str2numSafe(str)
 			endif
 
 			if(ParamIsDefault(str))
