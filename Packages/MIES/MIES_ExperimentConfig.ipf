@@ -16,7 +16,7 @@
 /// @brief Configure MIES for experiments
 Function ExpConfig_ConfigureMIES()
 
-	string UserConfigNB, win, filename, ITCDevNum, ITCDevType, fullPath, StimSetPath, activeNotebooks, AmpSerialLocal, AmpTitleLocal
+	string UserConfigNB, win, filename, ITCDevNum, ITCDevType, fullPath, StimSetPath, activeNotebooks, AmpSerialLocal, AmpTitleLocal, ConfigError
 	variable i
 //	movewindow /C 1450, 530,-1,-1								// position command window
 
@@ -32,7 +32,17 @@ Function ExpConfig_ConfigureMIES()
 	printf "Opening User Configuration Notebook\r"
 	OpenNotebook/ENCG=1/R/N=UserConfigNB/V=0/Z fullPath
 	if(V_flag)
-		ASSERT(V_flag > 0, "Configuration Notebook not loaded")
+		sprintf ConfigError, "A User Configuration Notebook could not be loaded.\r" + \
+				 "Please ensure that there is a plain text file named 'UserConfig.txt' in the following path: %s\r" + \
+				 "If it does not exist you may create one using the following format:\r" + \
+				 "#### Header information or instructions that will NOT be parsed ####\r" + \
+				 "Control A to be configured = control A setting\r" + \
+				 "Control B to be configured = control B setting\r" + \
+				 "...\r" + \
+				 "#### end ####\r" + \
+				 "Add a strConstant for each configurable control text and use that strConstant in GetExpConfigKeyTypes to extract Control:Value pairs\r", fullPath
+		ControlWindowToFront()
+		ASSERT(V_flag > 0, ConfigError)
 	endif
 	printf "Configuration Notebook successfully loaded, extracting user settings\r"
 	
