@@ -18,7 +18,7 @@ The following tree describes how MIES creates NWB files
    :linenos:
 
    acquisition:
-        timeseries:
+        timeseries: (empty if no acquired data is saved)
             data_XXXXX_ADY:
                     stimulus_description : custom entry, name of the stimset
                     data                 : 1D dataset with attributes unit, conversion and resolution
@@ -49,7 +49,7 @@ The following tree describes how MIES creates NWB files
                     neurodata_type : TimeSeries
 
     stimulus:
-        presentation:
+        presentation: (empty if no acquired data is saved)
             data_XXXXX_DA_Y: DA data as sent to the neuron, including delays, scaling, initial TP, etc.
                     data           : 1D dataset
                     electrode_name : Name of the electrode headstage, more info in /general/intracellular_ephys/electrode_name
@@ -65,7 +65,7 @@ The following tree describes how MIES creates NWB files
         template: unused
 
     general:
-        devices:
+        devices: (empty if no acquired data is saved)
             device_XXX: Name of the DA_ephys device, something like "Harvard Bioscience ITC 18USB"
             intracellular_ephys:
                     electrode_XXX: (XXX can be set by the user via writing into GetCellElectrodeNames())
