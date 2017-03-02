@@ -81,7 +81,8 @@ The following tree describes how MIES creates NWB files
 
         testpulse: custom entry
             XXXX: Name of the device
-                TPStorage_X: testpulse property waves
+                TPStorage/TPStorage_X: testpulse property waves
+
         user_comment:
             XXXX: Name of the device
                 userComment: All user comments from this session
