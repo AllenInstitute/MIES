@@ -711,7 +711,7 @@ Function/DF SB_CreateNewSweepBrowser()
 	SetVariable setvar_sweepBrowser_tAlignLevel,limits={-inf,inf,0},value= _NUM:0
 	PopupMenu popup_sweepBrowser_tAlignMaster,pos={7.00,239.00},size={134.00,19.00},bodyWidth=50,disable=2,proc=SB_TimeAlignmentPopup,title="Reference trace"
 	PopupMenu popup_sweepBrowser_tAlignMaster,help={"Select the reference trace to which all other traces should be aligned to"}
-	PopupMenu popup_sweepBrowser_tAlignMaster,mode=1,popvalue="AD0",value= #"SB_GetAllTraces(\"SweepBrowser1\")"
+	PopupMenu popup_sweepBrowser_tAlignMaster,mode=1,popvalue="AD0",value= #("SB_GetAllTraces(\"" + graph + "\")")
 	Button button_SweepBrowser_DoTimeAlign,pos={117.00,174.00},size={30.00,20.00},disable=2,proc=SB_DoTimeAlignment,title="Do!"
 	Button button_SweepBrowser_DoTimeAlign,help={"Perform the time alignment, needs the cursors A and B to have a selected feature"}
 	PopupMenu popup_sweep_selector,pos={13.00,91.00},size={127.00,19.00},bodyWidth=127,proc=SB_PopupMenuSelectSweep
