@@ -1389,7 +1389,7 @@ Function HW_NI_ReadDigital(device, [DIOPort, DIOLine, flags])
 	string device
 	variable DIOPort, DIOLine, flags
 
-	variable taskID, ret, result, lineGrouping
+	variable taskID, ret, result, lineGrouping, err
 	string line
 
 	DEBUGPRINTSTACKINFO()
@@ -1407,6 +1407,8 @@ Function HW_NI_ReadDigital(device, [DIOPort, DIOLine, flags])
 		sprintf line "/%s/port%d/line%d", device, DIOPort, DIOline
 	endif
 
+	// clear RTE
+	err = GetRTError(1)
 	DAQmx_DIO_Config/DEV=device/DIR=1/LGRP=(lineGrouping) line
 	if (GetRTError(1))
 		print fDAQmx_ErrorString()
@@ -1445,7 +1447,7 @@ Function HW_NI_WriteDigital(device, value, [DIOPort, DIOLine, flags])
 	string device
 	variable DIOPort, DIOLine, value, flags
 
-	variable taskID, ret, lineGrouping
+	variable taskID, ret, lineGrouping, err
 	string line
 
 	DEBUGPRINTSTACKINFO()
@@ -1463,6 +1465,8 @@ Function HW_NI_WriteDigital(device, value, [DIOPort, DIOLine, flags])
 		sprintf line "/%s/port%d/line%d", device, DIOPort, DIOline
 	endif
 
+	// clear RTE
+	err = GetRTError(1)
 	DAQmx_DIO_Config/DEV=device/DIR=1/LGRP=(lineGrouping) line
 	if (GetRTError(1))
 		print fDAQmx_ErrorString()
