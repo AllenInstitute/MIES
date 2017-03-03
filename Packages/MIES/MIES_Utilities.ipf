@@ -1850,30 +1850,91 @@ End
 /// @param[out] prefix (optional) string preceding word. ("" for unmatched pattern)
 /// @param[out] suffix (optional) string succeeding word.
 ///
+/// example of the usage of SearchStringBase (basically the same as WM GrepString())
+/// @code
+/// Function SearchString(str, substring)
+/// 	string str, substring
+///
+/// 	ASSERT(strlen(substring) > 0, "supplied substring has zero length")
+/// 	WAVE/Z/T wv = SearchStringBase(str, "(.*)\\Q" + substring + "\\E(.*)")
+///
+/// 	return WaveExists(wv)
+/// End
+/// @endcode
+///
 /// @return 1 if word was found in str and word was not "". 0 if not.
 Function SearchWordInString(str, word, [prefix, suffix])
 	string str, word
 	string &prefix, &suffix
 
-	string regex, str0, str1
-	regex = "(.*)\\b\\Q" + word + "\\E\\b(.*)"
+	WAVE/Z/T wv = SearchStringBase(str, "(.*)\\b\\Q" + word + "\\E\\b(.*)")
+	if(!WaveExists(wv))
+		return 0
+	endif
 
-	SplitString/E=regex str, str0, str1
-
-	// store result if ByRef Strings were initialized
 	if(!ParamIsDefault(prefix))
-		prefix = str0
+		prefix = wv[0]
 	endif
-	if(!ParamIsDefault(suffix))
-		suffix = str1
-	Endif
 
-	// two subpatterns (.*) were specified in regex.
-	if((V_flag == 2) && (strlen(word) > 0))
-		return 1
+	if(!ParamIsDefault(suffix))
+		suffix = wv[1]
 	endif
-	return 0
+
+	return 1
 End
+
+/// @brief More advanced version of SplitString
+///
+/// supports 6 subpatterns, specified by curly brackets in regex
+///
+/// @returns text wave containing subpatterns of regex call
+Function/WAVE SearchStringBase(str, regex)
+	string str, regex
+
+	string command
+	variable i, numBrackets
+	string str0, str1, str2, str3, str4, str5
+
+	// create wave for storing parsing results
+	ASSERT(!GrepString(regex, "\\\\[\\(|\\)]"), "unsupported escaped brackets in regex pattern")
+	numBrackets = CountSubstrings(regex, "(")
+	ASSERT(numBrackets == CountSubstrings(regex, ")"), "missing bracket in regex pattern")
+	ASSERT(numBrackets < 7, "maximum 6 subpatterns are supported")
+	Make/N=(6)/FREE/T wv
+
+	// call SplitString
+	SplitString/E=regex str, str0, str1, str2, str3, str4, str5
+	wv[0] = str0
+	wv[1] = str1
+	wv[2] = str2
+	wv[3] = str3
+	wv[4] = str4
+	wv[5] = str5
+
+	// return wv on success
+	if(V_flag  == numBrackets)
+		Redimension/N=(numbrackets) wv
+		return wv
+	endif
+	return $""
+End
+
+/// @brief Search for the occurence of pattern in string
+///
+/// @returns number of occurences
+Function CountSubstrings(str, pattern)
+	string str, pattern
+
+	variable i = -1, position = -1
+
+	do
+		i += 1
+		position += 1
+		position = strsearch(str, pattern, position)
+	while(position != -1)
+
+	return i
+end
 
 /// @brief Search the row in refWave which has the same contents as the given row in the sourceWave
 Function GetRowWithSameContent(refWave, sourceWave, row)
