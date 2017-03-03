@@ -815,6 +815,27 @@ Function/S GetNextFreeAxisName(graph, axesBaseName)
 	return axesBaseName + num2str(numAxes)
 End
 
+/// @brief Return a unique axis name
+Function/S GetUniqueAxisName(graph, axesBaseName)
+	string graph, axesBaseName
+
+	variable numAxes, count, i
+	string list, axis
+
+	list = AxisList(graph)
+	axis = axesBaseName
+
+	for(i = 0; i < 10000; i += 1)
+		if(WhichListItem(axis, list) == -1)
+			return axis
+		endif
+
+		axis = axesBaseName + num2str(count++)
+	endfor
+
+	ASSERT(0, "Could not find a free axis name")
+End
+
 /// @brief Generic wrapper for setting a control's value
 /// pass in the value as a string, and then decide whether to change to a number based on the type of control
 Function SetGuiControlValue(win, control, value)
