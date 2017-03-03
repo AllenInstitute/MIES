@@ -1462,18 +1462,29 @@ End
 
 /// @brief Space the matching axis in an equal manner
 ///
-/// @param graph        graph
-/// @param axisBaseName prefix of to-be-matched axis names
-/// @param sortOrder    [optional, defaults to no sorting (NaN)] apply different sorting
-///                     schemes to list of axes, see sortingOrder parameter of `SortList`
-Function EquallySpaceAxis(graph, axisBaseName, [sortOrder])
-	string graph, axisBaseName
-	variable sortOrder
+/// @param graph           graph
+/// @param axisRegExp      [optional, defaults to ".*"] regular expression matching the axes names
+/// @param axisOrientation [optional, defaults to all] allows to apply equalization to all axis of one orientation
+/// @param sortOrder       [optional, defaults to no sorting (NaN)] apply different sorting
+///                        schemes to list of axes, see sortingOrder parameter of `SortList`
+Function EquallySpaceAxis(graph, [axisRegExp, axisOrientation, sortOrder])
+	string graph, axisRegExp
+	variable axisOrientation, sortOrder
 
 	variable numAxes, axisInc, axisStart, axisEnd, i
-	string axes, axis
+	string axes, axis, list
 
-	axes    = ListMatch(AxisList(graph), axisBaseName + "*")
+	if(ParamIsDefault(axisRegExp))
+		axisRegExp = ".*"
+	endif
+
+	if(ParamIsDefault(axisOrientation))
+		list = AxisList(graph)
+	else
+		list = GetAllAxesWithOrientation(graph, axisOrientation)
+	endif
+
+	axes    = GrepList(list, axisRegExp)
 	numAxes = ItemsInList(axes)
 
 	if(numAxes < 1)
@@ -1658,7 +1669,7 @@ Function AddTraceToLBGraph(graph, keys, values, key)
 	ModifyGraph/W=$graph nticks(bottom) = 10, manTick(bottom) = {0,1,0,0}, manMinor(bottom) = {0,50}
 
 	SetLabNotebookBottomLabel(graph, isTimeAxis)
-	EquallySpaceAxis(graph, VERT_AXIS_BASE_NAME)
+	EquallySpaceAxis(graph, axisRegExp=VERT_AXIS_BASE_NAME + ".*")
 	UpdateLBGraphLegend(graph, traceList=traceList)
 End
 
