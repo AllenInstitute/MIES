@@ -252,6 +252,7 @@ Function HW_WriteDAC(hardwareType, deviceID, channel, value, [flags])
 			break
 		case HARDWARE_NI_DAC:
 			device = HW_GetInternalDeviceName(hardwareType, deviceID)
+			HW_NI_AssertOnInvalid(device)
 			HW_NI_WriteAnalogSingleAndSlow(device, channel, value, flags=flags)
 			break
 	endswitch
@@ -278,6 +279,7 @@ Function HW_ReadADC(hardwareType, deviceID, channel, [flags])
 			break
 		case HARDWARE_NI_DAC:
 			device = HW_GetInternalDeviceName(hardwareType, deviceID)
+			HW_NI_AssertOnInvalid(device)
 			return HW_NI_ReadAnalogSingleAndSlow(device, channel, flags=flags)
 			break
 	endswitch
@@ -312,6 +314,7 @@ Function HW_ReadDigital(hardwareType, deviceID, channel, [line, flags])
 			break
 		case HARDWARE_NI_DAC:
 			device = HW_GetInternalDeviceName(hardwareType, deviceID)
+			HW_NI_AssertOnInvalid(device)
 			if(ParamisDefault(line))
 				return HW_NI_ReadDigital(device, DIOPort=channel, flags=flags)
 			else
@@ -349,6 +352,7 @@ Function HW_WriteDigital(hardwareType, deviceID, channel, value, [line, flags])
 			break
 		case HARDWARE_NI_DAC:
 			device = HW_GetInternalDeviceName(hardwareType, deviceID)
+			HW_NI_AssertOnInvalid(device)
 			if(ParamisDefault(line))
 				HW_NI_WriteDigital(device, value, DIOPort=channel, flags=flags)
 			else
@@ -376,6 +380,7 @@ Function HW_EnableYoking(hardwareType, deviceID, [flags])
 			break
 		case HARDWARE_NI_DAC:
 			device = HW_GetInternalDeviceName(hardwareType, deviceID)
+			HW_NI_AssertOnInvalid(device)
 			ASSERT(0, "Not implemented")
 			break
 	endswitch
@@ -399,6 +404,7 @@ Function HW_DisableYoking(hardwareType, deviceID, [flags])
 			break
 		case HARDWARE_NI_DAC:
 			device = HW_GetInternalDeviceName(hardwareType, deviceID)
+			HW_NI_AssertOnInvalid(device)
 			ASSERT(0, "Not implemented")
 			break
 	endswitch
@@ -422,6 +428,7 @@ Function HW_StopAcq(hardwareType, deviceID, [prepareForDAQ, flags])
 			break
 		case HARDWARE_NI_DAC:
 			device = HW_GetInternalDeviceName(hardwareType, deviceID)
+			HW_NI_AssertOnInvalid(device)
 			HW_NI_StopAcq(device)
 			break
 	endswitch
@@ -446,6 +453,7 @@ Function HW_IsRunning(hardwareType, deviceID, [flags])
 			break
 		case HARDWARE_NI_DAC:
 			device = HW_GetInternalDeviceName(hardwareType, deviceID)
+			HW_NI_AssertOnInvalid(device)
 			return HW_NI_IsRunning(device, flags=flags)
 			break
 	endswitch
@@ -493,6 +501,7 @@ Function HW_ResetDevice(hardwareType, deviceID, [flags])
 			break
 		case HARDWARE_NI_DAC:
 			device = HW_GetInternalDeviceName(hardwareType, deviceID)
+			HW_NI_AssertOnInvalid(device)
 			HW_NI_ResetDevice(device, flags=flags)
 			break
 	endswitch
@@ -1324,6 +1333,24 @@ End
 /// @name NI
 /// @{
 
+/// @brief Assert on using an invalid NI device name
+///
+/// @param deviceName NI device name
+Function HW_NI_AssertOnInvalid(deviceName)
+	string deviceName
+
+	ASSERT(HW_NI_IsValidDeviceName(deviceName), "Invalid NI device name")
+End
+
+/// @brief Check wether the given NI device name is valid
+///
+/// Currently a device name is valid if it is not empty.
+Function HW_NI_IsValidDeviceName(deviceName)
+	string deviceName
+
+	return !isEmpty(deviceName)
+End
+
 #if exists("fDAQmx_DeviceNames")
 
 /// @name Minimum voltages for the analog inputs/outputs
@@ -1389,7 +1416,7 @@ Function HW_NI_ReadDigital(device, [DIOPort, DIOLine, flags])
 	string device
 	variable DIOPort, DIOLine, flags
 
-	variable taskID, ret, result, lineGrouping
+	variable taskID, ret, result, lineGrouping, err
 	string line
 
 	DEBUGPRINTSTACKINFO()
@@ -1407,6 +1434,8 @@ Function HW_NI_ReadDigital(device, [DIOPort, DIOLine, flags])
 		sprintf line "/%s/port%d/line%d", device, DIOPort, DIOline
 	endif
 
+	// clear RTE
+	err = GetRTError(1)
 	DAQmx_DIO_Config/DEV=device/DIR=1/LGRP=(lineGrouping) line
 	if (GetRTError(1))
 		print fDAQmx_ErrorString()
@@ -1445,7 +1474,7 @@ Function HW_NI_WriteDigital(device, value, [DIOPort, DIOLine, flags])
 	string device
 	variable DIOPort, DIOLine, value, flags
 
-	variable taskID, ret, lineGrouping
+	variable taskID, ret, lineGrouping, err
 	string line
 
 	DEBUGPRINTSTACKINFO()
@@ -1463,6 +1492,8 @@ Function HW_NI_WriteDigital(device, value, [DIOPort, DIOLine, flags])
 		sprintf line "/%s/port%d/line%d", device, DIOPort, DIOline
 	endif
 
+	// clear RTE
+	err = GetRTError(1)
 	DAQmx_DIO_Config/DEV=device/DIR=1/LGRP=(lineGrouping) line
 	if (GetRTError(1))
 		print fDAQmx_ErrorString()
@@ -1591,9 +1622,18 @@ Function HW_NI_ResetDevice(device, [flags])
 	string device
 	variable flags
 
+	variable ret
+
 	DEBUGPRINTSTACKINFO()
 
-	fDAQmx_resetDevice(device)
+	ret = fDAQmx_resetDevice(device)
+	if(ret)
+		print fDAQmx_ErrorString()
+		printf "Error %d: fDAQmx_resetDevice\r", ret
+		if(flags & HARDWARE_ABORT_ON_ERROR)
+			ASSERT(0, "Error calling fDAQmx_DIO_Finished")
+		endif
+	endif
 End
 
 /// @brief Check if the device is running
