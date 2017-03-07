@@ -188,6 +188,7 @@ Function CreateIntraCellularEphys(locationID, [filtering])
 
 	H5_CreateGroupsRecursively(locationID, "/general/intracellular_ephys", groupID=groupID)
 	H5_WriteTextDataset(groupID, "filtering" , str=filtering)
+	HDF5CloseGroup groupID
 End
 
 /// @brief Add an entry for the device `name` with contents `data`
