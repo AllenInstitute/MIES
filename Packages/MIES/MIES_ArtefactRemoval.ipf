@@ -423,7 +423,7 @@ Function AR_TogglePanel(win, listboxWave)
 	SetVariable setvar_cutoff_length_after,limits={0,inf,0.1},value= _NUM:0.2
 	SetVariable setvar_cutoff_length_before,pos={105.00,9.00},size={45.00,18.00},proc=AR_SetVarProcCutoffLength
 	SetVariable setvar_cutoff_length_before,help={"Time in ms which should be cutoff *before* the artefact."}
-	SetVariable setvar_cutoff_length_before,limits={0,inf,0.1},value= _NUM:0.2
+	SetVariable setvar_cutoff_length_before,limits={0,inf,0.1},value= _NUM:0.1
 	CheckBox check_auto_remove,pos={69.00,43.00},size={84.00,15.00},title="Auto remove"
 	CheckBox check_auto_remove,help={"Automatically remove the found ranges on sweep plotting"}
 	CheckBox check_auto_remove,value= 0,proc=AR_CheckProc_Update
