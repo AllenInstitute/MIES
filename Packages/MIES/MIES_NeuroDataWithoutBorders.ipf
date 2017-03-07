@@ -36,7 +36,7 @@ static Function NWB_FirstStartTimeOfAllSweeps()
 	variable numEntries, numWaves, i, j
 	variable oldest = Inf
 
-	devicesWithData = GetAllDevicesWithData()
+	devicesWithData = GetAllDevicesWithContent()
 
 	if(isEmpty(devicesWithData))
 		return NaN
@@ -148,7 +148,6 @@ static Function NWB_GetFileForExport([overrideFilePath, createdNewNWBFile])
 		endif
 
 		IPNWB#CreateCommonGroups(fileID, toplevelInfo=ti)
-		IPNWB#CreateIntraCellularEphys(fileID)
 
 		NWB_AddGeneratorString(fileID)
 
@@ -302,17 +301,20 @@ End
 Function NWB_ExportAllData([overrideFilePath])
 	string overrideFilePath
 
-	string devicesWithData, panelTitle, list, name
-	variable i, j, numEntries, locationID, sweep, numWaves
+	string devicesWithContent, panelTitle, list, name, stimsets, stimset
+	variable i, j, numEntries, locationID, sweep, numWaves, firstCall
 
-	devicesWithData = GetAllDevicesWithData()
+	devicesWithContent = GetAllDevicesWithContent(contentType = CONTENT_TYPE_ALL)
 
-	if(isEmpty(devicesWithData))
-		print "No devices with data found for NWB export"
-		return NaN
+	if(IsEmpty(devicesWithContent))
+		stimsets = ReturnListOfAllStimSets(CHANNEL_TYPE_DAC, "*DA*") + ReturnListOfAllStimSets(CHANNEL_TYPE_TTL, "*TTL*")
+
+		if(IsEmpty(stimsets))
+			print "Neither acquired content nor stimsets found for NWB export"
+			ControlWindowToFront()
+			return NaN
+		endif
 	endif
-
-	print "Please be patient while we export all existing data of all devices to NWB"
 
 	if(!ParamIsDefault(overrideFilePath))
 		locationID = NWB_GetFileForExport(overrideFilePath=overrideFilePath)
@@ -326,15 +328,37 @@ Function NWB_ExportAllData([overrideFilePath])
 
 	IPNWB#AddModificationTimeEntry(locationID)
 
-	numEntries = ItemsInList(devicesWithData)
+	if(IsEmpty(devicesWithContent))
+		print "Please be patient while we export all existing stimsets to NWB"
+		ControlWindowToFront()
+
+		numEntries = ItemsInList(stimsets)
+		for(i = 0; i < numEntries; i += 1)
+			stimset = StringFromList(i, stimsets)
+			NWB_WriteStimsetTemplateWaves(locationID, stimset, 1)
+		endfor
+
+		return NaN
+	endif
+
+	print "Please be patient while we export all existing acquired content of all devices to NWB"
+	ControlWindowToFront()
+
+	firstCall = 1
+	numEntries = ItemsInList(devicesWithContent)
 	for(i = 0; i < numEntries; i += 1)
-		panelTitle = StringFromList(i, devicesWithData)
+		panelTitle = StringFromList(i, devicesWithContent)
 		NWB_AddDeviceSpecificData(locationID, panelTitle, chunkedLayout=1)
 
 		DFREF dfr = GetDeviceDataPath(panelTitle)
 		list = GetListOfObjects(dfr, DATA_SWEEP_REGEXP)
 		numWaves = ItemsInList(list)
 		for(j = 0; j < numWaves; j += 1)
+			if(firstCall)
+				IPNWB#CreateIntraCellularEphys(locationID)
+				firstCall = 0
+			endif
+
 			name = StringFromList(j, list)
 			WAVE/SDFR=dfr sweepWave = $name
 			WAVE configWave = GetConfigWave(sweepWave)
@@ -401,6 +425,7 @@ Function NWB_AppendSweep(panelTitle, ITCDataWave, ITCChanConfigWave, sweep)
 		NWB_ExportAllData()
 	else
 		IPNWB#AddModificationTimeEntry(locationID)
+		IPNWB#CreateIntraCellularEphys(locationID)
 		NWB_AddDeviceSpecificData(locationID, panelTitle)
 		NWB_AppendSweepLowLevel(locationID, panelTitle, ITCDataWave, ITCChanConfigWave, sweep)
 	endif

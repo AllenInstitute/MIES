@@ -593,12 +593,22 @@ Function/WAVE GetLastSweepWithSettingText(numericalValues, setting, sweepNo)
 	return data
 End
 
-/// @brief Returns a list of all devices, e.g. "ITC18USB_Dev_0;", with an existing datafolder returned by `GetDevicePathAsString(device)`
-Function/S GetAllActiveDevices()
+/// @brief Returns a list of all devices, e.g. "ITC18USB_Dev_0;..."
+///
+/// @param activeOnly [optional, defaults to false] restrict the list to devices
+///                   with an existing datafolder returned by `GetDevicePathAsString(device)`
+Function/S GetAllDevices([activeOnly])
+	variable activeOnly
 
 	variable i, j, numTypes, numNumbers
 	string type, number, device
 	string path, list = ""
+
+	if(ParamIsDefault(activeOnly))
+		activeOnly = 0
+	else
+		activeOnly = !!activeOnly
+	endif
 
 	path = GetITCDevicesFolderAsString()
 
@@ -611,22 +621,14 @@ Function/S GetAllActiveDevices()
 	for(i = 0; i < numTypes; i += 1)
 		type = StringFromList(i, DEVICE_TYPES)
 
-		path = GetDeviceTypePathAsString(type)
-
-		if(!DataFolderExists(path))
-			continue
-		endif
-
 		for(j = 0; j < numNumbers ; j += 1)
 			number = StringFromList(j, DEVICE_NUMBERS)
 			device = BuildDeviceString(type, number)
 			path   = GetDevicePathAsString(device)
 
-			if(!DataFolderExists(path))
-				continue
+			if(!activeOnly || DataFolderExists(path))
+				list = AddListItem(device, list, ";", inf)
 			endif
-
-			list = AddListItem(device, list, ";", inf)
 		endfor
 	endfor
 
@@ -634,28 +636,41 @@ Function/S GetAllActiveDevices()
 End
 
 /// @brief Returns a list of all devices, e.g. "ITC18USB_Dev_0;", which have acquired data.
-Function/S GetAllDevicesWithData()
+///
+/// @param contentType [optional, defaults to CONTENT_TYPE_SWEEP] type of
+///                    content to look for, one of @ref CONTENT_TYPES
+Function/S GetAllDevicesWithContent([contentType])
+	variable contentType
 
 	variable i, numDevices
-	string deviceList, device, path
+	string deviceList, device, dataPath, testPulsePath
 	string list = ""
 
-	deviceList = GetAllActiveDevices()
+	if(ParamIsDefault(contentType))
+		contentType = CONTENT_TYPE_SWEEP
+	endif
+
+	deviceList = GetAllDevices(activeOnly = 1)
 
 	numDevices = ItemsInList(deviceList)
 	for(i = 0; i < numDevices; i += 1)
-		device = StringFromList(i, deviceList)
-		path   = GetDeviceDataPathAsString(device)
+		device        = StringFromList(i, deviceList)
+		dataPath      = GetDeviceDataPathAsString(device)
+		testPulsePath = GetDeviceTestPulseAsString(device)
 
-		if(!DataFolderExists(path))
+		if(contentType & CONTENT_TYPE_SWEEP                   \
+		   && DataFolderExists(dataPath)                      \
+		   && CountObjects(dataPath, COUNTOBJECTS_WAVES) > 0)
+			list = AddListItem(device, list, ";", inf)
 			continue
 		endif
 
-		if(CountObjects(path, COUNTOBJECTS_WAVES) == 0)
+		if(contentType & CONTENT_TYPE_TPSTORAGE                                     \
+		   && DataFolderExists(testPulsePath)                                       \
+		   && ItemsInList(GetListOfObjects($testPulsePath, TP_STORAGE_REGEXP)) > 0)
+			list = AddListItem(device, list, ";", inf)
 			continue
 		endif
-
-		list = AddListItem(device, list, ";", inf)
 	endfor
 
 	return list
@@ -1772,7 +1787,7 @@ Function SaveExperimentSpecial(mode)
 	FUNCREF CALL_FUNCTION_LIST_PROTOTYPE killFunc = KillOrMoveToTrashPath
 
 	// remove sweep data from all devices with data
-	devicesWithData = GetAllDevicesWithData()
+	devicesWithData = GetAllDevicesWithContent()
 	numDevices = ItemsInList(devicesWithData)
 	for(i = 0; i < numDevices; i += 1)
 		device = StringFromList(i, devicesWithData)
@@ -1796,7 +1811,7 @@ Function SaveExperimentSpecial(mode)
 		CallFunctionForEachListItem($"DAP_ClearCommentNotebook", list)
 
 		// remove other waves from active devices
-		activeDevices = GetAllActiveDevices()
+		activeDevices = GetAllDevices(activeOnly = 1)
 		numDevices = ItemsInList(activeDevices)
 		for(i = 0; i < numDevices; i += 1)
 			device = StringFromList(i, activeDevices)
