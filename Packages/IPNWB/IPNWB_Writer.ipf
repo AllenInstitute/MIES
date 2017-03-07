@@ -187,7 +187,7 @@ Function CreateIntraCellularEphys(locationID, [filtering])
 	endif
 
 	H5_CreateGroupsRecursively(locationID, "/general/intracellular_ephys", groupID=groupID)
-	H5_WriteTextDataset(groupID, "filtering" , str=filtering)
+	H5_WriteTextDataset(groupID, "filtering" , str=filtering, overwrite=1)
 	HDF5CloseGroup groupID
 End
 
