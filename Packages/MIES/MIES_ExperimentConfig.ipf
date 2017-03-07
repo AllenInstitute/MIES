@@ -16,7 +16,7 @@
 /// @brief Configure MIES for experiments
 Function ExpConfig_ConfigureMIES()
 
-	string UserConfigNB, win, filename, ITCDevNum, ITCDevType, fullPath, StimSetPath, activeNotebooks
+	string UserConfigNB, win, filename, ITCDevNum, ITCDevType, fullPath, StimSetPath, activeNotebooks, AmpSerialLocal, AmpTitleLocal, ConfigError
 	variable i
 //	movewindow /C 1450, 530,-1,-1								// position command window
 
@@ -29,64 +29,86 @@ Function ExpConfig_ConfigureMIES()
 	
 	fullPath = GetFolder(FunctionPath("")) + USER_CONFIG_PATH
 	ASSERT(!cmpstr(GetFileSuffix(fullPath), "txt"), "Only plain notebooks are supported")
+	printf "Opening User Configuration Notebook\r"
 	OpenNotebook/ENCG=1/R/N=UserConfigNB/V=0/Z fullPath
 	if(V_flag)
-		ASSERT(V_flag > 0, "Configuration Notebook not loaded")
-	endif
-
-	UserConfigNB = winname(0,16)
-	Wave /T KeyTypes = GetExpConfigKeyTypes()
-	Wave /T UserSettings = GetExpUserSettings(UserConfigNB, KeyTypes)
-	FindValue /TXOP = 4 /TEXT = ITC_DEV_TYPE UserSettings
-	ITCDevType = UserSettings[V_value][%SettingValue]
-	FindValue /TXOP = 4 /TEXT = ITC_DEV_NUM UserSettings
-	ITCDevNum = UserSettings[V_value][%SettingValue]
-
-	if(WindowExists(BuildDeviceString(ITCDevType, ITCDevNum)))
-		win = BuildDeviceString(ITCDevType, ITCDevNum)
+		printf "A User Configuration Notebook could not be loaded.\r" + \
+				 "Please ensure that there is a plain text file named 'UserConfig.txt' in the following path: %s\r" + \
+				 "If it does not exist you may create one using the following format:\r" + \
+				 "#### Header information or instructions that will NOT be parsed ####\r" + \
+				 "Control A to be configured = control A setting\r" + \
+				 "Control B to be configured = control B setting\r" + \
+				 "...\r" + \
+				 "#### end ####\r" + \
+				 "Add a strConstant for each configurable control text and use that strConstant in GetExpConfigKeyTypes to extract Control:Value pairs\r", fullPath
+		ControlWindowToFront()
+		
 	else
-		if(WindowExists("DA_Ephys"))
-			win = BASE_WINDOW_TITLE
+	
+		printf "Configuration Notebook successfully loaded, extracting user settings\r"
+		
+		UserConfigNB = winname(0,16)
+		Wave /T KeyTypes = GetExpConfigKeyTypes()
+		Wave /T UserSettings = GetExpUserSettings(UserConfigNB, KeyTypes)
+		
+		FindValue /TXOP = 4 /TEXT = AMP_SERIAL UserSettings
+		AmpSerialLocal = UserSettings[V_value][%SettingValue]
+		FindValue /TXOP = 4 /TEXT = AMP_TITLE UserSettings
+		AmpTitleLocal = UserSettings[V_value][%SettingValue]
+	
+		printf "Openning MCC amplifiers\r"
+		Assert(AI_OpenMCCs(AmpSerialLocal, ampTitleList = AmpTitleLocal, maxAttempts = ATTEMPTS),"Evil kittens prevented MultiClamp from opening - FULL STOP" )
+		
+		FindValue /TXOP = 4 /TEXT = ITC_DEV_TYPE UserSettings
+		ITCDevType = UserSettings[V_value][%SettingValue]
+		FindValue /TXOP = 4 /TEXT = ITC_DEV_NUM UserSettings
+		ITCDevNum = UserSettings[V_value][%SettingValue]
+	
+		if(WindowExists(BuildDeviceString(ITCDevType, ITCDevNum)))
+			win = BuildDeviceString(ITCDevType, ITCDevNum)
 		else
-			win = DAP_CreateDAEphysPanel() 									//open DA_Ephys
-//			movewindow /W = $win 1500, -700,-1,-1				//position DA_Ephys window
+			if(WindowExists("DA_Ephys"))
+				win = BASE_WINDOW_TITLE
+			else
+				win = DAP_CreateDAEphysPanel() 									//open DA_Ephys
+				//			movewindow /W = $win 1500, -700,-1,-1				//position DA_Ephys window
+			endif
+	
+			PGC_SetAndActivateControl(win,"popup_MoreSettings_DeviceType", val = WhichListItem(ITCDevType,DEVICE_TYPES))
+			PGC_SetAndActivateControl(win,"popup_moreSettings_DeviceNo", val = WhichListItem(ITCDevNum,DEVICE_NUMBERS))
+			PGC_SetAndActivateControl(win,"button_SettingsPlus_LockDevice")
+	
+			win = BuildDeviceString(ITCDevType, ITCDevNum)
 		endif
-
-		PGC_SetAndActivateControl(win,"popup_MoreSettings_DeviceType", val = WhichListItem(ITCDevType,DEVICE_TYPES))
-		PGC_SetAndActivateControl(win,"popup_moreSettings_DeviceNo", val = WhichListItem(ITCDevNum,DEVICE_TYPES))
-		PGC_SetAndActivateControl(win,"button_SettingsPlus_LockDevice")
-
-		win = BuildDeviceString(ITCDevType, ITCDevNum)
+	
+		ExpConfig_Amplifiers(win, UserSettings)
+	
+		ExpConfig_Pressure(win, UserSettings)
+	
+		ExpConfig_ClampModes(win, UserSettings)
+	
+		ExpConfig_AsyncTemp(win, UserSettings)
+	
+		ExpConfig_DAEphysSettings(win, UserSettings)
+	
+		FindValue /TXOP = 4 /TEXT = STIMSET_PATH UserSettings
+		StimSetPath = UserSettings[V_value][%SettingValue]
+		HD_LoadReplaceStimSet(incomingFileDirectory = StimSetPath)
+	
+		PGC_SetAndActivateControl(win,"ADC", val = DA_EPHYS_PANEL_DATA_ACQUISITION)
+		PGC_SetAndActivateControl(win, "tab_DataAcq_Amp", val = DA_EPHYS_PANEL_VCLAMP)
+		PGC_SetAndActivateControl(win, "tab_DataAcq_Pressure", val = DA_EPHYS_PANEL_PRESSURE_AUTO)
+	
+		filename = GetTimeStamp() + PACKED_FILE_EXPERIMENT_SUFFIX
+		FindValue /TXOP = 4 /TEXT = SAVE_PATH UserSettings
+		NewPath /C/O SavePath, UserSettings[V_value][%SettingValue]
+	
+		SaveExperiment /P=SavePath as filename
+	
+		PGC_SetAndActivateControl(win,"StartTestPulseButton")
+	
+		print ("Start Sciencing")
 	endif
-
-	ExpConfig_Amplifiers(win, UserSettings)
-
-	ExpConfig_Pressure(win, UserSettings)
-
-	ExpConfig_ClampModes(win, UserSettings)
-
-	ExpConfig_AsyncTemp(win, UserSettings)
-
-	ExpConfig_DAEphysSettings(win, UserSettings)
-
-	FindValue /TXOP = 4 /TEXT = STIMSET_PATH UserSettings
-	StimSetPath = UserSettings[V_value][%SettingValue]
-	HD_LoadReplaceStimSet(incomingFileDirectory = StimSetPath)
-
-	PGC_SetAndActivateControl(win,"ADC", val = DA_EPHYS_PANEL_DATA_ACQUISITION)
-	PGC_SetAndActivateControl(win, "tab_DataAcq_Amp", val = DA_EPHYS_PANEL_VCLAMP)
-	PGC_SetAndActivateControl(win, "tab_DataAcq_Pressure", val = DA_EPHYS_PANEL_PRESSURE_AUTO)
-
-	filename = GetTimeStamp() + PACKED_FILE_EXPERIMENT_SUFFIX
-	FindValue /TXOP = 4 /TEXT = SAVE_PATH UserSettings
-	NewPath /C/O SavePath, UserSettings[V_value][%SettingValue]
-
-	SaveExperiment /P=SavePath as filename
-
-	PGC_SetAndActivateControl(win,"StartTestPulseButton")
-
-	print ("Start Sciencing")
-
 End
 
 /// @brief  Open and configure amplifiers for Multi-Patch experiments
@@ -98,8 +120,8 @@ static Function ExpConfig_Amplifiers(panelTitle, UserSettings)
 	Wave /T UserSettings
 
 	string AmpSerialLocal, AmpTitleLocal, CheckDA, HeadstagesToConfigure, MCCWinPosition
-	variable i, ii, ampSerial
-
+	variable i, ii, ampSerial, numRows
+	
 	FindValue /TXOP = 4 /TEXT = AMP_SERIAL UserSettings
 	AmpSerialLocal = UserSettings[V_value][%SettingValue]
 	FindValue /TXOP = 4 /TEXT = AMP_TITLE UserSettings
@@ -107,8 +129,14 @@ static Function ExpConfig_Amplifiers(panelTitle, UserSettings)
 	FindValue /TXOP = 4 /TEXT = ACTIVE_HEADSTAGES UserSettings
 	HeadstagesToConfigure = UserSettings[V_value][%SettingValue]
 
-	Assert(AI_OpenMCCs(AmpSerialLocal, ampTitleList = AmpTitleLocal, maxAttempts = ATTEMPTS),"Evil kittens prevented MultiClamp from opening - FULL STOP" )
+	WAVE telegraphServers = GetAmplifierTelegraphServers()
 
+	numRows = DimSize(telegraphServers, ROWS)
+	if(!numRows)
+		printf "Openning MCC amplifiers\r"
+		Assert(AI_OpenMCCs(AmpSerialLocal, ampTitleList = AmpTitleLocal, maxAttempts = ATTEMPTS),"Evil kittens prevented MultiClamp from opening - FULL STOP" )
+	endif
+	
 	FindValue /TXOP = 4 /TEXT = POSITION_MCC UserSettings
 	MCCWinPosition = UserSettings[V_Value][%SettingValue]
 	if(cmpstr(NONE, MCCWinPosition) != 0)
@@ -117,6 +145,7 @@ static Function ExpConfig_Amplifiers(panelTitle, UserSettings)
 
 	PGC_SetAndActivateControl(panelTitle,"button_Settings_UpdateAmpStatus")
 
+	printf "Configuring headstage:\r"
 	for(i = 0; i<NUM_HEADSTAGES; i+=1)
 
 		PGC_SetAndActivateControl(panelTitle,"Popup_Settings_HeadStage", val = i)
@@ -144,8 +173,11 @@ static Function ExpConfig_Amplifiers(panelTitle, UserSettings)
 			PGC_SetAndActivateControl(panelTitle,"ADC", val = DA_EPHYS_PANEL_DATA_ACQUISITION)
 			ExpConfig_MCC_InitParams(panelTitle,i)
 			PGC_SetAndActivateControl(panelTitle,"ADC", val = DA_EPHYS_PANEL_HARDWARE)
+			
+			printf "%d successful\r", i
 		else
 			PGC_SetAndActivateControl(panelTitle,"popup_Settings_Amplifier", val = WhichListItem(NONE, DAP_GetNiceAmplifierChannelList()))
+			printf "%d not active\r", i
 		endif
 	endfor
 
@@ -169,7 +201,8 @@ static Function ExpConfig_Pressure(panelTitle, UserSettings)
 	NIDev = HW_NI_ListDevices()
 	FindValue /TXOP = 4 /TEXT = ACTIVE_HEADSTAGES UserSettings
 	HeadstagesToConfigure = UserSettings[V_value][%SettingValue]
-
+	
+	printf "Configuring pressure device for headstage:\r"
 	for(i = 0; i<NUM_HEADSTAGES; i+=1)
 		
 		PGC_SetAndActivateControl(panelTitle,"Popup_Settings_HeadStage", val = i)
@@ -189,8 +222,10 @@ static Function ExpConfig_Pressure(panelTitle, UserSettings)
 				PGC_SetAndActivateControl(panelTitle,"Popup_Settings_Pressure_TTLB", val = 4)
 				ii+= 1
 			endif
+			printf "%d successful\r", i
 		else
 			PGC_SetAndActivateControl(panelTitle,"popup_Settings_Pressure_dev", val = WhichListItem(NONE, DAP_GetNiceAmplifierChannelList()))
+			printf "%d not active\r", i
 		endif
 	endfor
 
@@ -209,7 +244,8 @@ static Function ExpConfig_Pressure(panelTitle, UserSettings)
 	Wave /T PressureConstantTextWv = ListToTextWave(UserSettings[V_value][%SettingValue], ";")
 	Make /D/FREE PressureConstants = str2num(PressureConstantTextWv)
 	WAVE pressureDataWv = P_GetPressureDataWaveRef(panelTitle)
-
+	printf "Setting pressure calibration constants\r"
+	
 	pressureDataWv[%headStage_0][%PosCalConst] = PressureConstants[0]
 	pressureDataWv[%headStage_1][%PosCalConst] = PressureConstants[1]
 	pressureDataWv[%headStage_2][%PosCalConst] = PressureConstants[2]
@@ -237,22 +273,23 @@ End
 static Function ExpConfig_AsyncTemp(panelTitle, UserSettings)
 	string panelTitle
 	Wave /T UserSettings
-
+	printf "Setting Asynchronous Temperature monitoring\r"
+	
 	PGC_SetAndActivateControl(panelTitle,"ADC", val = DA_EPHYS_PANEL_ASYNCHRONOUS)
 	FindValue /TXOP = 4 /TEXT = ASYNC_CH00 UserSettings
-	PGC_SetAndActivateControl(panelTitle,"SetVar_AsyncAD_Title_00", str = UserSettings[V_value][%SettingValue])
+	SetSetVariableString(panelTitle,"SetVar_AsyncAD_Title_00", UserSettings[V_value][%SettingValue])
 	PGC_SetAndActivateControl(panelTitle,"Check_AsyncAD_00", val = 1)
 	FindValue /TXOP = 4 /TEXT = TEMP_GAIN UserSettings
 	PGC_SetAndActivateControl(panelTitle,"Gain_AsyncAD_00", val = str2num(UserSettings[V_value][%SettingValue]))
 	FindValue /TXOP = 4 /TEXT = ASYNC_UNIT UserSettings
-	PGC_SetAndActivateControl(panelTitle,"Unit_AsyncAD_00", str = UserSettings[V_value][%SettingValue])
+	SetSetVariableString(panelTitle,"Unit_AsyncAD_00", UserSettings[V_value][%SettingValue])
 	FindValue /TXOP = 4 /TEXT = ASYNC_CH01 UserSettings
-	PGC_SetAndActivateControl(panelTitle,"SetVar_AsyncAD_Title_01", str = UserSettings[V_value][%SettingValue])
+	SetSetVariableString(panelTitle,"SetVar_AsyncAD_Title_01", UserSettings[V_value][%SettingValue])
 	PGC_SetAndActivateControl(panelTitle,"Check_AsyncAD_01", val = 1)
 	FindValue /TXOP = 4 /TEXT = TEMP_GAIN UserSettings
 	PGC_SetAndActivateControl(panelTitle,"Gain_AsyncAD_01", val = str2num(UserSettings[V_value][%SettingValue]))
 	FindValue /TXOP = 4 /TEXT = ASYNC_UNIT UserSettings
-	PGC_SetAndActivateControl(panelTitle,"Unit_AsyncAD_01", str = UserSettings[V_value][%SettingValue])
+	SetSetVariableString(panelTitle,"Unit_AsyncAD_01", UserSettings[V_value][%SettingValue])
 	PGC_SetAndActivateControl(panelTitle,"check_AsyncAlarm_01", val = 1)
 	FindValue /TXOP = 4 /TEXT = TEMP_MAX UserSettings
 	PGC_SetAndActivateControl(panelTitle,"max_AsyncAD_01", val = str2num(UserSettings[V_value][%SettingValue]))
@@ -268,7 +305,7 @@ End
 static Function ExpConfig_DAEphysSettings(panelTitle, UserSettings)
 	string panelTitle
 	Wave /T UserSettings
-
+	printf "Setting user defined DA_Ephys parameters\r"
 	PGC_SetAndActivateControl(panelTitle,"ADC", val = DA_EPHYS_PANEL_SETTINGS)
 	FindValue /TXOP = 4 /TEXT = ENABLE_MULTIPLE_ITC UserSettings
 	PGC_SetAndActivateControl(panelTitle,"check_Settings_MD", val = str2num(UserSettings[V_value][%SettingValue]))
@@ -282,6 +319,10 @@ static Function ExpConfig_DAEphysSettings(panelTitle, UserSettings)
 	PGC_SetAndActivateControl(panelTitle,"Check_Settings_Append", val = str2num(UserSettings[V_value][%SettingValue]))
 	FindValue /TXOP = 4 /TEXT = SYNC_MIES_MCC UserSettings
 	PGC_SetAndActivateControl(panelTitle,"check_Settings_SyncMiesToMCC", val = str2num(UserSettings[V_value][%SettingValue]))
+	FindValue /TXOP = 4 /TEXT = SAVE_AMP_SETTINGS UserSettings
+	PGC_SetAndActivateControl(panelTitle,"check_Settings_SaveAmpSettings", val = str2num(UserSettings[V_value][%SettingValue]))
+	FindValue /TXOP = 4 /TEXT = REQUIRE_AMP UserSettings
+	PGC_SetAndActivateControl(panelTitle,"check_Settings_RequireAmpConn", val = str2num(UserSettings[V_value][%SettingValue]))
 	FindValue /TXOP = 4 /TEXT = ENABLE_I_EQUAL_ZERO UserSettings
 	PGC_SetAndActivateControl(panelTitle,"check_Settings_AmpIEQZstep", val = str2num(UserSettings[V_value][%SettingValue]))
 	PGC_SetAndActivateControl(panelTitle,"ADC", val = DA_EPHYS_PANEL_DATA_ACQUISITION)
@@ -312,7 +353,8 @@ End
 static Function ExpConfig_MCC_InitParams(panelTitle, headStage)
 	string panelTitle
 	variable headStage
-
+	
+	
 	// Set initial parameters within MCC itself.
 
 	AI_SelectMultiClamp(panelTitle, headStage)
@@ -320,6 +362,7 @@ static Function ExpConfig_MCC_InitParams(panelTitle, headStage)
 	//Set V-clamp parameters
 
 	DAP_ChangeHeadStageMode(panelTitle, V_CLAMP_MODE, headStage, DO_MCC_MIES_SYNCING)
+
 	MCC_SetHoldingEnable(0)
 	MCC_SetOscKillerEnable(0)
 	MCC_SetFastCompTau(1.8e-6)
@@ -328,23 +371,29 @@ static Function ExpConfig_MCC_InitParams(panelTitle, headStage)
 	MCC_SetRsCompBandwidth(1.02e3)
 	MCC_SetRSCompCorrection(0)
 	MCC_SetPrimarySignalGain(1)
+#ifndef IGOR64 //IGOR32
 	MCC_SetPrimarySignalLPF(10e3)
 	MCC_SetPrimarySignalHPF(0)
+#endif
 	MCC_SetSecondarySignalGain(1)
 	MCC_SetSecondarySignalLPF(10e3)
 
 	//Set I-Clamp Parameters
 
 	DAP_ChangeHeadStageMode(panelTitle, I_CLAMP_MODE, headStage, DO_MCC_MIES_SYNCING)
+
 	MCC_SetHoldingEnable(0)
 	MCC_SetSlowCurrentInjEnable(0)
 	MCC_SetNeutralizationEnable(0)
 	MCC_SetOscKillerEnable(0)
 	MCC_SetPrimarySignalGain(1)
+#ifndef IGOR64 //IGOR32
 	MCC_SetPrimarySignalLPF(10e3)
 	MCC_SetPrimarySignalHPF(0)
+#endif
 	MCC_SetSecondarySignalGain(1)
 	MCC_SetSecondarySignalLPF(10e3)
+
 
 	//Set mode back to V-clamp
 	DAP_ChangeHeadStageMode(panelTitle, V_CLAMP_MODE, headStage, DO_MCC_MIES_SYNCING)

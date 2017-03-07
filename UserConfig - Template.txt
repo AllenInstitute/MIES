@@ -18,7 +18,7 @@ Enable multiple ITC devices = No
 
 ####### Amplifier and Pressure Settings #######
 
-#### Force position of MCCs to one of the following monitors: Upper Right, Lower Right, Upper Left, Lower Left. May be left to - none - and MCCs will opwn in place ####
+#### Force position of MCCs to one of the following monitors: Upper Right, Lower Right, Upper Left, Lower Left. May be left to - none - and MCCs will open in place ####
 
 Position MCCs = - none -
 
@@ -85,6 +85,10 @@ Export to NWB = Yes
 Append Asynchronous reading to wave note = Yes
 
 Sync MIES to MCC = Yes
+
+Save amplifier settings = Yes
+
+Require amplifier connection to active headstage = Yes
 
 ###### Data Acquisition Settings ######
 Switch clamp modes via I equal zero = Yes
