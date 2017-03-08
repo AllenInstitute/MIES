@@ -354,11 +354,12 @@ static Function DB_UpdateOverlaySweepWaves(panelTitle)
 	WAVE listBoxWave       = GetOverlaySweepsListWave(dfr)
 	WAVE listBoxSelWave    = GetOverlaySweepsListSelWave(dfr)
 	WAVE/T textualValues   = DB_GetTextualValues(panelTitle)
+	WAVE numericalValues   = DB_GetNumericalValues(panelTitle)
 	WAVE/T sweepSelChoices = GetOverlaySweepSelectionChoices(dfr)
 
 	sweepWaveList = DB_GetListOfSweepWaves(panelTitle)
 
-	OVS_UpdatePanel(panelTitle, listBoxWave, listBoxSelWave, sweepSelChoices, sweepWaveList, textualValues=textualValues)
+	OVS_UpdatePanel(panelTitle, listBoxWave, listBoxSelWave, sweepSelChoices, sweepWaveList, textualValues=textualValues, numericalValues=numericalValues)
 End
 
 Window Databrowser() : Panel
