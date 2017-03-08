@@ -1,7 +1,6 @@
 #pragma TextEncoding = "UTF-8"
 #pragma rtGlobals=3		// Use modern global access method and strict wave access.
 #pragma rtFunctionErrors=1
-#pragma IgorVersion=6.3
 #pragma IndependentModule=IPNWB
 #pragma version=0.15
 
@@ -187,7 +186,8 @@ Function CreateIntraCellularEphys(locationID, [filtering])
 	endif
 
 	H5_CreateGroupsRecursively(locationID, "/general/intracellular_ephys", groupID=groupID)
-	H5_WriteTextDataset(groupID, "filtering" , str=filtering)
+	H5_WriteTextDataset(groupID, "filtering" , str=filtering, overwrite=1)
+	HDF5CloseGroup groupID
 End
 
 /// @brief Add an entry for the device `name` with contents `data`
