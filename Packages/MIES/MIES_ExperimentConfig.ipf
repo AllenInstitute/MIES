@@ -120,7 +120,7 @@ static Function ExpConfig_Amplifiers(panelTitle, UserSettings)
 	Wave /T UserSettings
 
 	string AmpSerialLocal, AmpTitleLocal, CheckDA, HeadstagesToConfigure, MCCWinPosition
-	variable i, ii, ampSerial, numRows
+	variable i, ii, ampSerial, numRows, RequireAmpConnection
 	
 	FindValue /TXOP = 4 /TEXT = AMP_SERIAL UserSettings
 	AmpSerialLocal = UserSettings[V_value][%SettingValue]
@@ -128,6 +128,10 @@ static Function ExpConfig_Amplifiers(panelTitle, UserSettings)
 	AmpTitleLocal = UserSettings[V_value][%SettingValue]
 	FindValue /TXOP = 4 /TEXT = ACTIVE_HEADSTAGES UserSettings
 	HeadstagesToConfigure = UserSettings[V_value][%SettingValue]
+	FindValue /TXOP = 4 /TEXT = REQUIRE_AMP UserSettings
+	RequireAmpConnection = str2num(UserSettings[V_value][%SettingValue])
+	PGC_SetAndActivateControl(panelTitle,"check_Settings_RequireAmpConn", val = RequireAmpConnection)
+	FindValue /TXOP = 4 /TEXT = ENABLE_I_EQUAL_ZERO UserSettings
 
 	WAVE telegraphServers = GetAmplifierTelegraphServers()
 
@@ -151,30 +155,39 @@ static Function ExpConfig_Amplifiers(panelTitle, UserSettings)
 		PGC_SetAndActivateControl(panelTitle,"Popup_Settings_HeadStage", val = i)
 		
 		if(WhichListItem(num2str(i), HeadstagesToConfigure) != -1)
-			if(!mod(i,2)) // even
-				ampSerial = str2num(StringFromList(ii, AmpSerialLocal))
-				PGC_SetAndActivateControl(panelTitle,"popup_Settings_Amplifier", val = ExpConfig_FindAmpInList(ampSerial, 1))
-			else //odd
-				ampSerial = str2num(StringFromList(ii, AmpSerialLocal))
-				PGC_SetAndActivateControl(panelTitle,"popup_Settings_Amplifier", val = ExpConfig_FindAmpInList(ampSerial, 2))
-				ii+=1
-			endif
-	
-			PGC_SetAndActivateControl(panelTitle,"Popup_Settings_VC_DA", val = i)
-	
-			if(i>3)
-				PGC_SetAndActivateControl(panelTitle,"Popup_Settings_VC_AD", val = i+4)
-			else
-				PGC_SetAndActivateControl(panelTitle,"Popup_Settings_VC_AD", val = i)
-			endif
-	
 			CheckDA = GetPanelControl(i, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_CHECK)
-			PGC_SetAndActivateControl(panelTitle,CheckDA,val = CHECKBOX_SELECTED)
-			PGC_SetAndActivateControl(panelTitle,"ADC", val = DA_EPHYS_PANEL_DATA_ACQUISITION)
-			ExpConfig_MCC_InitParams(panelTitle,i)
-			PGC_SetAndActivateControl(panelTitle,"ADC", val = DA_EPHYS_PANEL_HARDWARE)
-			
-			printf "%d successful\r", i
+			if(IsInteger(str2num(StringFromList(ii, AmpSerialLocal))))
+				if(!mod(i,2)) // even
+					ampSerial = str2num(StringFromList(ii, AmpSerialLocal))
+					PGC_SetAndActivateControl(panelTitle,"popup_Settings_Amplifier", val = ExpConfig_FindAmpInList(ampSerial, 1))
+				else //odd
+					ampSerial = str2num(StringFromList(ii, AmpSerialLocal))
+					PGC_SetAndActivateControl(panelTitle,"popup_Settings_Amplifier", val = ExpConfig_FindAmpInList(ampSerial, 2))
+					ii+=1
+				endif
+		
+				PGC_SetAndActivateControl(panelTitle,"Popup_Settings_VC_DA", val = i)
+		
+				if(i>3)
+					PGC_SetAndActivateControl(panelTitle,"Popup_Settings_VC_AD", val = i+4)
+				else
+					PGC_SetAndActivateControl(panelTitle,"Popup_Settings_VC_AD", val = i)
+				endif
+
+				PGC_SetAndActivateControl(panelTitle,CheckDA,val = CHECKBOX_SELECTED)
+				PGC_SetAndActivateControl(panelTitle,"ADC", val = DA_EPHYS_PANEL_DATA_ACQUISITION)
+				ExpConfig_MCC_InitParams(panelTitle,i)
+				PGC_SetAndActivateControl(panelTitle,"ADC", val = DA_EPHYS_PANEL_HARDWARE)
+		
+				printf "%d successful\r", i
+			elseif(!RequireAmpConnection)  
+				PGC_SetAndActivateControl(panelTitle,"popup_Settings_Amplifier", val = WhichListItem(NONE, DAP_GetNiceAmplifierChannelList()))
+				PGC_SetAndActivateControl(panelTitle,CheckDA,val = CHECKBOX_SELECTED)
+				printf "%d not connected to amplifier but configured\r", i	
+			else
+				PGC_SetAndActivateControl(panelTitle,"popup_Settings_Amplifier", val = WhichListItem(NONE, DAP_GetNiceAmplifierChannelList()))
+				printf "%d not active\r", i
+			endif
 		else
 			PGC_SetAndActivateControl(panelTitle,"popup_Settings_Amplifier", val = WhichListItem(NONE, DAP_GetNiceAmplifierChannelList()))
 			printf "%d not active\r", i
@@ -208,21 +221,26 @@ static Function ExpConfig_Pressure(panelTitle, UserSettings)
 		PGC_SetAndActivateControl(panelTitle,"Popup_Settings_HeadStage", val = i)
 		
 		if(WhichListItem(num2str(i), HeadstagesToConfigure) != -1)
-			PressDevVal = WhichListItem(StringFromList(ii,PressureDevLocal),NIDev)
-			PGC_SetAndActivateControl(panelTitle,"popup_Settings_Pressure_dev", val = PressDevVal+1)
-			if(!mod(i,2)) // even
-				PGC_SetAndActivateControl(panelTitle,"Popup_Settings_Pressure_DA", val = 0)
-				PGC_SetAndActivateControl(panelTitle,"Popup_Settings_Pressure_AD", val = 0)
-				PGC_SetAndActivateControl(panelTitle,"Popup_Settings_Pressure_TTLA", val = 1)
-				PGC_SetAndActivateControl(panelTitle,"Popup_Settings_Pressure_TTLB", val = 2)
-			else // odd
-				PGC_SetAndActivateControl(panelTitle,"Popup_Settings_Pressure_DA", val = 1)
-				PGC_SetAndActivateControl(panelTitle,"Popup_Settings_Pressure_AD", val = 1)
-				PGC_SetAndActivateControl(panelTitle,"Popup_Settings_Pressure_TTLA", val = 3)
-				PGC_SetAndActivateControl(panelTitle,"Popup_Settings_Pressure_TTLB", val = 4)
-				ii+= 1
+			if(IsInteger(str2num(StringFromList(ii, PressureDevLocal))))
+				PressDevVal = WhichListItem(StringFromList(ii,PressureDevLocal),NIDev)
+				PGC_SetAndActivateControl(panelTitle,"popup_Settings_Pressure_dev", val = PressDevVal+1)
+				if(!mod(i,2)) // even
+					PGC_SetAndActivateControl(panelTitle,"Popup_Settings_Pressure_DA", val = 0)
+					PGC_SetAndActivateControl(panelTitle,"Popup_Settings_Pressure_AD", val = 0)
+					PGC_SetAndActivateControl(panelTitle,"Popup_Settings_Pressure_TTLA", val = 1)
+					PGC_SetAndActivateControl(panelTitle,"Popup_Settings_Pressure_TTLB", val = 2)
+				else // odd
+					PGC_SetAndActivateControl(panelTitle,"Popup_Settings_Pressure_DA", val = 1)
+					PGC_SetAndActivateControl(panelTitle,"Popup_Settings_Pressure_AD", val = 1)
+					PGC_SetAndActivateControl(panelTitle,"Popup_Settings_Pressure_TTLA", val = 3)
+					PGC_SetAndActivateControl(panelTitle,"Popup_Settings_Pressure_TTLB", val = 4)
+					ii+= 1
+				endif
+				printf "%d successful\r", i
+			else
+				PGC_SetAndActivateControl(panelTitle,"popup_Settings_Pressure_dev", val = WhichListItem(NONE, DAP_GetNiceAmplifierChannelList()))
+				printf "%d not connected to pressure DAQ\r", i
 			endif
-			printf "%d successful\r", i
 		else
 			PGC_SetAndActivateControl(panelTitle,"popup_Settings_Pressure_dev", val = WhichListItem(NONE, DAP_GetNiceAmplifierChannelList()))
 			printf "%d not active\r", i
@@ -321,8 +339,6 @@ static Function ExpConfig_DAEphysSettings(panelTitle, UserSettings)
 	PGC_SetAndActivateControl(panelTitle,"check_Settings_SyncMiesToMCC", val = str2num(UserSettings[V_value][%SettingValue]))
 	FindValue /TXOP = 4 /TEXT = SAVE_AMP_SETTINGS UserSettings
 	PGC_SetAndActivateControl(panelTitle,"check_Settings_SaveAmpSettings", val = str2num(UserSettings[V_value][%SettingValue]))
-	FindValue /TXOP = 4 /TEXT = REQUIRE_AMP UserSettings
-	PGC_SetAndActivateControl(panelTitle,"check_Settings_RequireAmpConn", val = str2num(UserSettings[V_value][%SettingValue]))
 	FindValue /TXOP = 4 /TEXT = ENABLE_I_EQUAL_ZERO UserSettings
 	PGC_SetAndActivateControl(panelTitle,"check_Settings_AmpIEQZstep", val = str2num(UserSettings[V_value][%SettingValue]))
 	PGC_SetAndActivateControl(panelTitle,"ADC", val = DA_EPHYS_PANEL_DATA_ACQUISITION)
