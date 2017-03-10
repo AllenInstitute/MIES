@@ -3048,3 +3048,32 @@ Function/S SortAxisList(graph, list)
 
 	return TextWaveToList(axisListWave, ";")
 End
+
+/// @brief Replaces all occurences of the string `word`, treated as regexp word,
+///        in `str` with `replacement`. Does not ignore case.
+Function/S ReplaceWordInString(word, str, replacement)
+	string word, str, replacement
+
+	ASSERT(!IsEmpty(word), "Empty regex")
+
+	variable ret
+	string result, prefix, suffix
+
+	if(!cmpstr(word, replacement, 0))
+		return str
+	endif
+
+	result = str
+
+	for(;;)
+		ret = SearchWordInString(result, word, prefix = prefix, suffix = suffix)
+
+		if(!ret)
+			break
+		endif
+
+		result = prefix + replacement + suffix
+	endfor
+
+	return result
+End

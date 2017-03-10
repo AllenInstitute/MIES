@@ -51,3 +51,65 @@ Function RemoveAllEmpty_Works4()
 	CHECK_EQUAL_VAR(CountObjectsDFR(dfr, 4), 4)
 End
 /// @}
+
+/// ReplaceWordInString
+/// @{
+Function AbortsEmptyFirstArg()
+
+	try
+		ReplaceWordInString("", "abcd", "abcde")
+		FAIL()
+	catch
+		PASS()
+	endtry
+End
+
+Function ReturnsUnchangedString()
+
+	string expected = "123"
+	string actual   = ReplaceWordInString("ABCD", "123", "abcd")
+	CHECK_EQUAL_STR(actual, expected)
+End
+
+Function SearchesForARealWord()
+
+	string expected = "abcd"
+	string actual   = ReplaceWordInString("abc", "abcd", "123")
+	CHECK_EQUAL_STR(actual, expected)
+End
+
+Function WorksWithSameWordAndRepl()
+
+	string expected = "abcd"
+	string actual   = ReplaceWordInString("abc", "abcd", "abc")
+	CHECK_EQUAL_STR(actual, expected)
+End
+
+Function ReplacesOneOccurrence()
+
+	string expected = "1 2 3"
+	string actual   = ReplaceWordInString("a", "1 a 3", "2")
+	CHECK_EQUAL_STR(actual, expected)
+End
+
+Function ReplacesAllOccurences()
+
+	string expected = "1 2 3 2 5"
+	string actual   = ReplaceWordInString("a", "1 a 3 a 5", "2")
+	CHECK_EQUAL_STR(actual, expected)
+End
+
+Function DoesNotIgnoreCase()
+
+	string expected = "1 2 3 A 5"
+	string actual   = ReplaceWordInString("a", "1 a 3 A 5", "2")
+	CHECK_EQUAL_STR(actual, expected)
+End
+
+Function ReplacesWithEmptyString()
+
+	string expected = "b"
+	string actual   = ReplaceWordInString("a ", "a b", "")
+	CHECK_EQUAL_STR(actual, expected)
+End
+/// @}
