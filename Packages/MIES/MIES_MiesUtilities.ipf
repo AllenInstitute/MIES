@@ -2038,14 +2038,42 @@ Function ReplaceAllWavesWithBackup(graph, traceList)
 	endfor
 End
 
-/// @brief Return all traces with real data
-Function/S GetAllSweepTraces(graph)
+/// @brief Return all traces with real sweep data.
+///
+/// The traces must have correct user data as created by CreateTiledChannelGraph().
+///
+/// @param graph graph
+/// @param channelType [optional, defaults to all] restrict the returned traces
+///                    to the given channel type
+Function/S GetAllSweepTraces(graph, [channelType])
 	string graph
+	variable channelType
 
-	string traceList
+	string traceList, trace, channelTypeAct, channelTypeRef
+	string traceListClean = ""
+	variable numTraces, i
 
 	traceList = TraceNameList(graph, ";", 0+1)
-	return ListMatch(traceList, "!average*")
+	traceList = ListMatch(traceList, "!average*")
+
+	if(ParamIsDefault(channelType))
+		return traceList
+	endif
+
+	channelTypeRef = StringFromList(channelType, ITC_CHANNEL_NAMES)
+	ASSERT(!IsEmpty(channelTypeRef), "Invalid channelType")
+
+	numTraces = ItemsInList(traceList)
+	for(i = 0; i < numTraces; i += 1)
+		trace = StringFromList(i, traceList)
+		channelTypeAct = GetUserData(graph, trace, "channelType")
+
+		if(!cmpstr(channelTypeAct, channelTypeRef))
+			traceListClean = AddListItem(trace, traceListClean, ";", inf)
+		endif
+	endfor
+
+	return traceListClean
 End
 
 /// @brief Average traces in the graph from the same y-axis and append them to the graph
