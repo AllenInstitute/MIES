@@ -929,8 +929,10 @@ Function TI_finishInitAccessQCCheck(s)
 		print "pushing the start button..."
 		PGC_SetAndActivateControl(currentPanel, "DataAcquireButton")
 		qcResult = instResistanceVal
-	else // since the check failed, have to turn off the test pulse
-		ITC_StopTestPulseSingleDevice(currentPanel)
+	else
+		// run the EXTPBREAKN wave so that things are saved into the data record
+		print "pushing the start button..."
+		PGC_SetAndActivateControl(currentPanel, "DataAcquireButton")
 	endif
 
 	print "qcResult: ", qcResult
@@ -1244,8 +1246,7 @@ Function TI_finishGigOhmSealQCCheck(s)
 			ITC_StartDAQSingleDevice(currentPanel)
 			qcResult = ssResistanceVal
 		else
-			// failed two tries at the QC check, so turn off the test pulse
-			ITC_StopTestPulseSingleDevice(currentPanel)
+			ITC_StartDAQSingleDevice(currentPanel) // Run the EXTPCIIATT wave so that things are saved into the data record
 		endif
 	endtry
 	
