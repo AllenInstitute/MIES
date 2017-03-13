@@ -1,10 +1,5 @@
 #pragma TextEncoding = "UTF-8"
 #pragma rtGlobals=3		// Use modern global access method and strict wave access.
-#pragma rtFunctionErrors=1
-
-#ifdef AUTOMATED_TESTING
-#pragma ModuleName=MIES_TI
-#endif
 
 /// @file MIES_TangoInteract.ipf
 /// @brief __TI__ Interface to the [tango](http://www.tango-controls.org/) layer
@@ -935,7 +930,9 @@ Function TI_finishInitAccessQCCheck(s)
 		PGC_SetAndActivateControl(currentPanel, "DataAcquireButton")
 		qcResult = instResistanceVal
 	else // since the check failed, have to turn off the test pulse
-		ITC_StopTestPulseSingleDevice(currentPanel)
+		// run the EXTPBREAKN wave so that things are saved into the data record, even though the QC check failed
+		print "pushing the start button..."
+		PGC_SetAndActivateControl(currentPanel, "DataAcquireButton")
 	endif
 
 	print "qcResult: ", qcResult
@@ -1249,8 +1246,7 @@ Function TI_finishGigOhmSealQCCheck(s)
 			ITC_StartDAQSingleDevice(currentPanel)
 			qcResult = ssResistanceVal
 		else
-			// failed two tries at the QC check, so turn off the test pulse
-			ITC_StopTestPulseSingleDevice(currentPanel)
+			ITC_StartDAQSingleDevice(currentPanel) // Run the EXTPCIIATT wave to store in data record despite the QC failure
 		endif
 	endtry
 	
