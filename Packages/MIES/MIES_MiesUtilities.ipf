@@ -1471,7 +1471,7 @@ Function EquallySpaceAxis(graph, [axisRegExp, axisOrientation, sortOrder])
 	string graph, axisRegExp
 	variable axisOrientation, sortOrder
 
-	variable numAxes, axisInc, axisStart, axisEnd, i
+	variable numAxes, axisInc, axisStart, axisEnd, i, spacing
 	string axes, axis, list
 
 	if(ParamIsDefault(axisRegExp))
@@ -1499,10 +1499,16 @@ Function EquallySpaceAxis(graph, [axisRegExp, axisOrientation, sortOrder])
 
 	axisInc = 1 / numAxes
 
+	if(axisInc < GRAPH_DIV_SPACING)
+		spacing = axisInc/5
+	else
+		spacing = GRAPH_DIV_SPACING
+	endif
+
 	for(i = numAxes - 1; i >= 0; i -= 1)
 		axis = StringFromList(i, axes)
-		axisStart = GRAPH_DIV_SPACING + axisInc * i
-		axisEnd   = (i == numAxes - 1 ? 1 : axisInc * (i + 1) - GRAPH_DIV_SPACING)
+		axisStart = (i == 0 ? 0 : spacing + axisInc * i)
+		axisEnd   = (i == numAxes - 1 ? 1 : axisInc * (i + 1) - spacing)
 		ModifyGraph/W=$graph axisEnab($axis) = {axisStart, axisEnd}
 	endfor
 End
