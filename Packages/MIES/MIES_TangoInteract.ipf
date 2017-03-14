@@ -927,12 +927,12 @@ Function TI_finishInitAccessQCCheck(s)
 	if ((instResistanceVal<20.0) && (instResistanceVal < (.15*ssResistanceVal)))
 		// and now run the EXTPBREAKN wave so that things are saved into the data record
 		print "pushing the start button..."
-		PGC_SetAndActivateControl(currentPanel, "DataAcquireButton")
+		ITC_StartDAQSingleDevice(currentPanel)
 		qcResult = instResistanceVal
 	else
 		// run the EXTPBREAKN wave so that things are saved into the data record
 		print "pushing the start button..."
-		PGC_SetAndActivateControl(currentPanel, "DataAcquireButton")
+		ITC_StartDAQSingleDevice(currentPanel)
 	endif
 
 	print "qcResult: ", qcResult
