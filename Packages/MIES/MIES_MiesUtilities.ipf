@@ -412,7 +412,13 @@ Function/WAVE GetLastSetting(numericalValues, sweepNo, setting, entrySourceType)
 					hasValidTPPulseDurationEntry = 0
 				endif
 
-				if(hasValidTPPulseDurationEntry)
+				// Since dd49bf47 (Document the testpulse settings in the
+				// labnotebook, 2015-07-28) we can have a "TP Pulse Duration"
+				// entry but no "TP Peak Resistance" entry iff the user only
+				// acquired sweep data but never TP.
+				if(peakResistanceCol < 0)
+					blockType = DATA_ACQUISITION_MODE
+				elseif(hasValidTPPulseDurationEntry)
 					// if the previous row has a "TP Peak Resistance" entry we know that this is a testpulse block
 					status[] = numericalValues[i - 1][peakResistanceCol][p]
 					WaveStats/Q/M=1 status
