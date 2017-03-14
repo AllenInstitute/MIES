@@ -3461,9 +3461,7 @@ Function DAP_EphysPanelStartUpSettings()
 		return NaN
 	endif
 
-	if(!DAP_DeviceIsUnlocked(panelTitle))
-		HSU_UnlockDevice(panelTitle)
-	endif
+	HSU_UnlockDevice(panelTitle)
 
 	panelTitle = GetMainWindow(GetCurrentWindow())
 
@@ -3960,9 +3958,8 @@ Function DAP_WindowHook(s)
 	switch(s.eventCode)
 		case EVENT_KILL_WINDOW_HOOK:
 			panelTitle = s.winName
-			if(!DAP_DeviceIsUnlocked(panelTitle))
-				HSU_UnlockDevice(panelTitle)
-			endif
+			HSU_UnlockDevice(panelTitle)
+
 			return 1
 		break
 	endswitch

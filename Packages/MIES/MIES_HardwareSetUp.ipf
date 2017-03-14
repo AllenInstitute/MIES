@@ -186,6 +186,11 @@ Function HSU_UnlockDevice(panelTitle)
 		return NaN
 	endif
 
+	if(DAP_DeviceIsUnlocked(panelTitle))
+		DEBUGPRINT("Device is not locked, doing nothing", str=panelTitle)
+		return NaN
+	endif
+
 	DAP_SerializeCommentNotebook(panelTitle)
 	DAP_LockCommentNotebook(panelTitle)
 	P_Disable() // Closes DACs used for pressure regulation
