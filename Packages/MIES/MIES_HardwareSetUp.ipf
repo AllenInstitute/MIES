@@ -179,7 +179,7 @@ End
 Function HSU_UnlockDevice(panelTitle)
 	string panelTitle
 
-	variable flags
+	variable flags, state
 
 	if(!windowExists(panelTitle))
 		DEBUGPRINT("Can not unlock the non-existing panel", str=panelTitle)
@@ -190,6 +190,14 @@ Function HSU_UnlockDevice(panelTitle)
 		DEBUGPRINT("Device is not locked, doing nothing", str=panelTitle)
 		return NaN
 	endif
+
+	// we need to turn off TP after DAQ as this could prevent stopping the TP,
+	// especially for foreground TP
+	state = GetCheckBoxState(panelTitle, "check_Settings_TPAfterDAQ")
+	SetCheckBoxState(panelTitle, "check_Settings_TPAfterDAQ", CHECKBOX_UNSELECTED)
+	ITC_StopDAQ(panelTitle)
+	TP_StopTestPulse(panelTitle)
+	SetCheckBoxState(panelTitle, "check_Settings_TPAfterDAQ", state)
 
 	DAP_SerializeCommentNotebook(panelTitle)
 	DAP_LockCommentNotebook(panelTitle)
