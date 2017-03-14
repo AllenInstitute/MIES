@@ -160,9 +160,13 @@ static Function/WAVE PA_GetTraceInfos(graph)
 
 	Make/FREE/T/N=(numTraces) traceWaveList = GetWavesDataFolder(TraceNameToWaveRef(graph, StringFromList(p, traceList)), 2)
 
-	// replace duplicates with empty entries
-	Make/T/FREE tracesFullPath
-	FindDuplicates/Z/ST=""/STDS=tracesFullPath traceWaveList
+	if(numTraces > 1)
+		// replace duplicates with empty entries
+		Make/T/FREE tracesFullPath
+		FindDuplicates/Z/ST=""/STDS=tracesFullPath traceWaveList
+	else
+		WAVE/T tracesFullPath = traceWaveList
+	endif
 
 	WAVE indizes = FindIndizes(wvText=tracesFullPath, prop=PROP_NON_EMPTY, col=0)
 
@@ -193,6 +197,10 @@ static Function/WAVE PA_GetUniqueHeadstages(traceData, indizesChannelType)
 	endif
 
 	Make/D/FREE/N=(DimSize(indizesChannelType, ROWS)) headstages = str2num(traceData[indizesChannelType[p]][%headstage])
+
+	if(DimSize(headstages, ROWS) == 1)
+		return headstages
+	endif
 
 	Make/FREE/D headstagesClean
 	FindDuplicates/Z/SN=(NaN)/SNDS=headstagesClean headstages
