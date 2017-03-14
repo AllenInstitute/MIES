@@ -2227,9 +2227,13 @@ Function WBP_MainWindowHook(s)
 			break
 		endif
 
+		GetAxis/Q/W=$WaveBuilderGraph bottom
+		if(V_Flag)
+			break
+		endif
+
 		loc = AxisValFromPixel(WaveBuilderGraph, "bottom", s.mouseLoc.h)
 
-		GetAxis/Q/W=$WaveBuilderGraph bottom
 		if(loc < V_min || loc > V_max)
 			break
 		endif
