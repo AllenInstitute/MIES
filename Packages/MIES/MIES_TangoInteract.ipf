@@ -929,16 +929,12 @@ Function TI_finishInitAccessQCCheck(s)
 	print "SS Resistance: ", ssResistanceVal
 
 	// See if we pass the baseline QC
-	if ((instResistanceVal<20.0) && (instResistanceVal < (.15*ssResistanceVal)))
-		// and now run the EXTPBREAKN wave so that things are saved into the data record
-		print "pushing the start button..."
-		ITC_StartDAQSingleDevice(currentPanel)
+	if ((instResistanceVal<20.0) && (instResistanceVal < (.15*ssResistanceVal)))		
 		qcResult = instResistanceVal
-	else
-		// run the EXTPBREAKN wave so that things are saved into the data record
-		print "pushing the start button..."
-		ITC_StartDAQSingleDevice(currentPanel)
 	endif
+
+	// and now run the EXTPBREAKN wave so that things are saved into the data record
+	ITC_StartDAQSingleDevice(currentPanel)
 
 	print "qcResult: ", qcResult
 
@@ -1230,9 +1226,7 @@ Function TI_finishGigOhmSealQCCheck(s)
 	//  added a second pass....if we don't pass the QC on the first go, check again before you fail out of the QC
 	try
 		if(ssResistanceVal > 1000)  // ssResistance value is in MOhms
-			// and now run the EXTPCIIATT wave so that things are saved into the data record
-			// now start the sweep process
-				
+			// and now run the EXTPCIIATT wave so that things are saved into the data record	
 			ITC_StartDAQSingleDevice(currentPanel)
 			qcResult = ssResistanceVal
 		else
@@ -1245,14 +1239,10 @@ Function TI_finishGigOhmSealQCCheck(s)
 		print "Second Pass: Steady State Resistance: ", ssResistanceVal
 			
 		if(ssResistanceVal > 1000)  // ssResistance value is in MOhms
-			// and now run the EXTPCIIATT wave so that things are saved into the data record
-			// now start the sweep process
-				
-			ITC_StartDAQSingleDevice(currentPanel)
 			qcResult = ssResistanceVal
-		else
-			ITC_StartDAQSingleDevice(currentPanel) // Run the EXTPCIIATT wave so that things are saved into the data record
 		endif
+
+		ITC_StartDAQSingleDevice(currentPanel) // Run the EXTPCIIATT wave so that things are saved into the data record
 	endtry
 	
 	print "qcResult: ", qcResult
