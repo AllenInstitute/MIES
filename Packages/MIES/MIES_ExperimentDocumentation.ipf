@@ -380,6 +380,8 @@ Function ED_createWaveNoteTags(panelTitle, sweepCount)
 			continue
 		endif
 
+		ASSERT(i == activeHSProp[j][%Headstage], "The state of the active headstages is inconsistent.")
+
 		numSettings[0][1][i] = activeHSProp[j][%ClampMode]
 		j += 1
 	endfor
