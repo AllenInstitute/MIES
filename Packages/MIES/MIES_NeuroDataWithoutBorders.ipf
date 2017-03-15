@@ -619,9 +619,10 @@ static Function NWB_AppendSweepLowLevel(locationID, panelTitle, ITCDataWave, ITC
 		endif
 
 		// unassociated channel data
-		// can currently be ADC only
+		// can currently be ADC only or for buggy
+		// data, where a headstage is turned off but
+		// actually active, also all other channels
 		path                   = "/acquisition/timeseries"
-		ASSERT(ITCChanConfigWave[i][0] == ITC_XOP_CHANNEL_TYPE_ADC, "Unexpected channel type")
 		params.clampMode       = NaN
 		params.electrodeNumber = NaN
 		params.electrodeName   = ""
