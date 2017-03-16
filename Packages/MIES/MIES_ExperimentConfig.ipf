@@ -16,12 +16,20 @@
 /// @brief Configure MIES for experiments
 ///
 /// @param [optional, allows MIES config in the middle of experiment. Instead of setting MCC parameters they are pulled from actively recording MCCs to configure MIES]
-Function ExpConfig_ConfigureMIES()
+Function ExpConfig_ConfigureMIES([middleOfExperiment])
+	variable middleOfExperiment
 
 	string UserConfigNB, win, filename, ITCDevNum, ITCDevType, fullPath, StimSetPath, activeNotebooks, AmpSerialLocal, AmpTitleLocal, ConfigError
-	variable i, middleOfExperiment
+	variable i
 //	movewindow /C 1450, 530,-1,-1								// position command window
-
+	
+	if(ParamIsDefault(middleOfExperiment))
+		middleOfExperiment = 0
+	else
+		middleOfExperiment = !!middleOfExperiment
+		itccloseall2
+	endif
+	
 	activeNotebooks = WinList("*",";","WIN:16")
 	if(!isempty(activeNotebooks))
 		for(i = 0; i < ItemsInList(activeNotebooks); i += 1)
@@ -82,12 +90,16 @@ Function ExpConfig_ConfigureMIES()
 	
 			win = BuildDeviceString(ITCDevType, ITCDevNum)
 		endif
-
-		ExpConfig_Amplifiers(win, UserSettings)
+		
+		if(middleOfExperiment)
+			PGC_SetAndActivateControl(win,"check_Settings_SyncMiesToMCC", val = CHECKBOX_UNSELECTED)
+		endif
+		
+		ExpConfig_Amplifiers(win, UserSettings, middleOfExperiment)
 	
 		ExpConfig_Pressure(win, UserSettings)
 	
-		ExpConfig_ClampModes(win, UserSettings)
+		ExpConfig_ClampModes(win, UserSettings, middleOfExperiment)
 	
 		ExpConfig_AsyncTemp(win, UserSettings)
 	
@@ -117,9 +129,10 @@ End
 ///
 /// @param panelTitle		Name of ITC device panel
 /// @param UserSettings	User settings wave from configuration Notebook
-static Function ExpConfig_Amplifiers(panelTitle, UserSettings)
+static Function ExpConfig_Amplifiers(panelTitle, UserSettings, midExp)
 	string panelTitle
 	Wave /T UserSettings
+	variable midExp
 
 	string AmpSerialLocal, AmpTitleLocal, CheckDA, HeadstagesToConfigure, MCCWinPosition
 	variable i, ii, ampSerial, numRows, RequireAmpConnection
@@ -175,10 +188,15 @@ static Function ExpConfig_Amplifiers(panelTitle, UserSettings)
 				else
 					PGC_SetAndActivateControl(panelTitle,"Popup_Settings_VC_AD", val = i)
 				endif
-
+				
+				if(!midExp)
+					ExpConfig_MCC_InitParams(panelTitle, i)
+				else
+					ExpConfig_MCC_MidExp(panelTitle, i, UserSettings)
+				endif
+				
 				PGC_SetAndActivateControl(panelTitle,CheckDA,val = CHECKBOX_SELECTED)
 				PGC_SetAndActivateControl(panelTitle,"ADC", val = DA_EPHYS_PANEL_DATA_ACQUISITION)
-				ExpConfig_MCC_InitParams(panelTitle,i)
 				PGC_SetAndActivateControl(panelTitle,"ADC", val = DA_EPHYS_PANEL_HARDWARE)
 		
 				printf "%d successful\r", i
@@ -325,6 +343,7 @@ End
 static Function ExpConfig_DAEphysSettings(panelTitle, UserSettings)
 	string panelTitle
 	Wave /T UserSettings
+	variable midExp
 	printf "Setting user defined DA_Ephys parameters\r"
 	PGC_SetAndActivateControl(panelTitle,"ADC", val = DA_EPHYS_PANEL_SETTINGS)
 	FindValue /TXOP = 4 /TEXT = ENABLE_MULTIPLE_ITC UserSettings
@@ -415,6 +434,64 @@ static Function ExpConfig_MCC_InitParams(panelTitle, headStage)
 
 	//Set mode back to V-clamp
 	DAP_ChangeHeadStageMode(panelTitle, V_CLAMP_MODE, headStage, DO_MCC_MIES_SYNCING)
+
+End
+
+static Function ExpConfig_MCC_MidExp(panelTitle, headStage, UserSettings)
+	string panelTitle
+	variable headStage
+	Wave /T UserSettings
+
+	variable settingValue, clampMode
+	
+	AI_SelectMultiClamp(panelTitle, headStage)
+	
+	clampMode = MCC_GetMode()
+	
+	if(clampMode == V_CLAMP_MODE)
+		DAP_ChangeHeadStageMode(panelTitle, V_CLAMP_MODE, headStage, SKIP_MCC_MIES_SYNCING)
+		settingValue = AI_SendToAmp(panelTitle, headStage, V_CLAMP_MODE, MCC_GETPIPETTEOFFSET_FUNC, NaN, checkBeforeWrite = 1)
+		PGC_SetAndActivateControl(panelTitle, "setvar_DataAcq_PipetteOffset_VC", val = settingValue)
+		PGC_SetAndActivateControl(panelTitle, "setvar_DataAcq_PipetteOffset_IC", val = settingValue)
+		settingValue = AI_SendToAmp(panelTitle, headStage, V_CLAMP_MODE, MCC_GETHOLDING_FUNC, NaN, checkBeforeWrite = 1)
+		PGC_SetAndActivateControl(panelTitle, "setvar_DataAcq_Hold_VC", val = settingValue)
+		settingValue = AI_SendToAmp(panelTitle, headStage, V_CLAMP_MODE, MCC_GETHOLDINGENABLE_FUNC, NaN, checkBeforeWrite = 1)
+		PGC_SetAndActivateControl(panelTitle, "check_DatAcq_HoldEnableVC", val = settingValue)
+		FindValue /TXOP = 4 /TEXT = HOLDING UserSettings
+		PGC_SetAndActivateControl(panelTitle,"setvar_DataAcq_AutoBiasV", val = str2numSafe(UserSettings[V_value][%SettingValue]))
+		FindValue /TXOP = 4 /TEXT = AUTOBIAS_RANGE UserSettings
+		PGC_SetAndActivateControl(panelTitle,"setvar_DataAcq_AutoBiasVrange", val = str2numSafe(UserSettings[V_value][%SettingValue]))
+		FindValue /TXOP = 4 /TEXT = AUTOBIAS_MAXI UserSettings
+		PGC_SetAndActivateControl(panelTitle,"setvar_DataAcq_IbiasMax", val = str2numSafe(UserSettings[V_value][%SettingValue]))
+		PGC_SetAndActivateControl(panelTitle,"check_DataAcq_AutoBias", val = CHECKBOX_SELECTED)
+		printf "HeadStage %d is in V-Clamp mode and has been configured from the MCC. I-Clamp settings were reset to initial values, check before switching!\r", headStage
+	elseif(clampMode == I_CLAMP_MODE)
+		DAP_ChangeHeadStageMode(panelTitle, I_CLAMP_MODE, headStage, SKIP_MCC_MIES_SYNCING)
+		settingValue = AI_SendToAmp(panelTitle, headStage, V_CLAMP_MODE, MCC_GETPIPETTEOFFSET_FUNC, NaN, checkBeforeWrite = 1)
+		PGC_SetAndActivateControl(panelTitle, "setvar_DataAcq_PipetteOffset_VC", val = settingValue)
+		PGC_SetAndActivateControl(panelTitle, "setvar_DataAcq_PipetteOffset_IC", val = settingValue)
+		settingValue = AI_SendToAmp(panelTitle, headStage, I_CLAMP_MODE, MCC_GETHOLDING_FUNC, NaN, checkBeforeWrite = 1)
+		PGC_SetAndActivateControl(panelTitle, "setvar_DataAcq_Hold_IC", val = settingValue)
+		settingValue = AI_SendToAmp(panelTitle, headStage, I_CLAMP_MODE, MCC_GETHOLDINGENABLE_FUNC, NaN, checkBeforeWrite = 1)
+		PGC_SetAndActivateControl(panelTitle, "check_DatAcq_HoldEnableIC", val = settingValue)
+		settingValue = AI_SendToAmp(panelTitle, headStage, I_CLAMP_MODE, MCC_GETBRIDGEBALRESIST_FUNC, NaN, checkBeforeWrite = 1)
+		PGC_SetAndActivateControl(panelTitle, "setvar_DataAcq_BB", val = settingValue)
+		settingValue = AI_SendToAmp(panelTitle, headStage, I_CLAMP_MODE, MCC_GETBRIDGEBALENABLE_FUNC, NaN, checkBeforeWrite = 1)
+		PGC_SetAndActivateControl(panelTitle, "check_DatAcq_BBEnable", val = settingValue)
+		settingValue = AI_SendToAmp(panelTitle, headStage, I_CLAMP_MODE, MCC_GETNEUTRALIZATIONCAP_FUNC, NaN, checkBeforeWrite = 1)
+		PGC_SetAndActivateControl(panelTitle, "setvar_DataAcq_CN", val = settingValue)
+		settingValue = AI_SendToAmp(panelTitle, headStage, I_CLAMP_MODE, MCC_GETNEUTRALIZATIONENABL_FUNC, NaN, checkBeforeWrite = 1)
+		PGC_SetAndActivateControl(panelTitle, "check_DatAcq_CNEnable", val = settingValue)
+		FindValue /TXOP = 4 /TEXT = AUTOBIAS_RANGE UserSettings
+		PGC_SetAndActivateControl(panelTitle,"setvar_DataAcq_AutoBiasVrange", val = str2numSafe(UserSettings[V_value][%SettingValue]))
+		FindValue /TXOP = 4 /TEXT = AUTOBIAS_MAXI UserSettings
+		PGC_SetAndActivateControl(panelTitle,"setvar_DataAcq_IbiasMax", val = str2numSafe(UserSettings[V_value][%SettingValue]))
+		PGC_SetAndActivateControl(panelTitle,"check_DataAcq_AutoBias", val = CHECKBOX_UNSELECTED)
+		PGC_SetAndActivateControl(panelTitle,"check_DatAcq_HoldEnableVC", val = CHECKBOX_UNSELECTED)
+		FindValue /TXOP = 4 /TEXT = HOLDING UserSettings
+		PGC_SetAndActivateControl(panelTitle,"setvar_DataAcq_Hold_VC", val = str2numSafe(UserSettings[V_value][%SettingValue]))
+		printf "HeadStage %d is in I-Clamp mode and has been configured from the MCC. V-Clamp settings were reset to initial values, check before switching!\r", headStage
+	endif
 
 End
 
@@ -522,33 +599,36 @@ Function ExpConfig_Position_MCC_Win(serialNum, winTitle, winPosition)
 End
 
 ///@brief Set intial values for headstage clamp modes
-static Function ExpConfig_ClampModes(panelTitle, UserSettings)
+static Function ExpConfig_ClampModes(panelTitle, UserSettings, midExp)
 	string panelTitle
 	Wave /T UserSettings
+	variable midExp
 
-	// Set initial values for V-Clamp and I-Clamp in MIES
-	PGC_SetAndActivateControl(panelTitle,"Check_DataAcq_SendToAllAmp", val = CHECKBOX_SELECTED)
-	PGC_SetAndActivateControl(panelTitle,"check_DatAcq_HoldEnableVC", val = CHECKBOX_UNSELECTED)
-	FindValue /TXOP = 4 /TEXT = HOLDING UserSettings
-	PGC_SetAndActivateControl(panelTitle,"setvar_DataAcq_Hold_VC", val = str2numSafe(UserSettings[V_value][%SettingValue]))
-	PGC_SetAndActivateControl(panelTitle,"setvar_DataAcq_PipetteOffset_VC", val = 0)
-	PGC_SetAndActivateControl(panelTitle,"setvar_DataAcq_WCC", val = 0)
-	PGC_SetAndActivateControl(panelTitle,"setvar_DataAcq_WCR", val = 0)
-	PGC_SetAndActivateControl(panelTitle,"setvar_DataAcq_RsCorr", val = 0)
-	PGC_SetAndActivateControl(panelTitle,"setvar_DataAcq_RsPred", val = 0)
-	PGC_SetAndActivateControl(panelTitle,"check_DatAcq_HoldEnable", val = CHECKBOX_UNSELECTED)
-	PGC_SetAndActivateControl(panelTitle,"check_DatAcq_BBEnable", val = CHECKBOX_UNSELECTED)
-	PGC_SetAndActivateControl(panelTitle,"check_DatAcq_CNEnable", val = CHECKBOX_UNSELECTED)
-	PGC_SetAndActivateControl(panelTitle,"setvar_DataAcq_PipetteOffset_IC", val = 0)
-	FindValue /TXOP = 4 /TEXT = HOLDING UserSettings
-	PGC_SetAndActivateControl(panelTitle,"setvar_DataAcq_AutoBiasV", val = str2numSafe(UserSettings[V_value][%SettingValue]))
-	FindValue /TXOP = 4 /TEXT = AUTOBIAS_RANGE UserSettings
-	PGC_SetAndActivateControl(panelTitle,"setvar_DataAcq_AutoBiasVrange", val = str2numSafe(UserSettings[V_value][%SettingValue]))
-	FindValue /TXOP = 4 /TEXT = AUTOBIAS_MAXI UserSettings
-	PGC_SetAndActivateControl(panelTitle,"setvar_DataAcq_IbiasMax", val = str2numSafe(UserSettings[V_value][%SettingValue]))
-	PGC_SetAndActivateControl(panelTitle,"check_DataAcq_AutoBias", val = CHECKBOX_SELECTED)
-	PGC_SetAndActivateControl(panelTitle,"Check_DataAcq_SendToAllAmp", val = CHECKBOX_UNSELECTED)
-
+	if(!midExp)
+	
+		// Set initial values for V-Clamp and I-Clamp in MIES
+		PGC_SetAndActivateControl(panelTitle,"Check_DataAcq_SendToAllAmp", val = CHECKBOX_SELECTED)
+		PGC_SetAndActivateControl(panelTitle,"check_DatAcq_HoldEnableVC", val = CHECKBOX_UNSELECTED)
+		FindValue /TXOP = 4 /TEXT = HOLDING UserSettings
+		PGC_SetAndActivateControl(panelTitle,"setvar_DataAcq_Hold_VC", val = str2numSafe(UserSettings[V_value][%SettingValue]))
+		PGC_SetAndActivateControl(panelTitle,"setvar_DataAcq_PipetteOffset_VC", val = 0)
+		PGC_SetAndActivateControl(panelTitle,"setvar_DataAcq_WCC", val = 0)
+		PGC_SetAndActivateControl(panelTitle,"setvar_DataAcq_WCR", val = 0)
+		PGC_SetAndActivateControl(panelTitle,"setvar_DataAcq_RsCorr", val = 0)
+		PGC_SetAndActivateControl(panelTitle,"setvar_DataAcq_RsPred", val = 0)
+		PGC_SetAndActivateControl(panelTitle,"check_DatAcq_HoldEnable", val = CHECKBOX_UNSELECTED)
+		PGC_SetAndActivateControl(panelTitle,"check_DatAcq_BBEnable", val = CHECKBOX_UNSELECTED)
+		PGC_SetAndActivateControl(panelTitle,"check_DatAcq_CNEnable", val = CHECKBOX_UNSELECTED)
+		PGC_SetAndActivateControl(panelTitle,"setvar_DataAcq_PipetteOffset_IC", val = 0)
+		FindValue /TXOP = 4 /TEXT = HOLDING UserSettings
+		PGC_SetAndActivateControl(panelTitle,"setvar_DataAcq_AutoBiasV", val = str2numSafe(UserSettings[V_value][%SettingValue]))
+		FindValue /TXOP = 4 /TEXT = AUTOBIAS_RANGE UserSettings
+		PGC_SetAndActivateControl(panelTitle,"setvar_DataAcq_AutoBiasVrange", val = str2numSafe(UserSettings[V_value][%SettingValue]))
+		FindValue /TXOP = 4 /TEXT = AUTOBIAS_MAXI UserSettings
+		PGC_SetAndActivateControl(panelTitle,"setvar_DataAcq_IbiasMax", val = str2numSafe(UserSettings[V_value][%SettingValue]))
+		PGC_SetAndActivateControl(panelTitle,"check_DataAcq_AutoBias", val = CHECKBOX_SELECTED)
+		PGC_SetAndActivateControl(panelTitle,"Check_DataAcq_SendToAllAmp", val = CHECKBOX_UNSELECTED)
+	endif
 End
 
 /// @brief Find the list index of a connected amplifier serial number
