@@ -129,6 +129,7 @@ End
 ///
 /// @param panelTitle		Name of ITC device panel
 /// @param UserSettings	User settings wave from configuration Notebook
+/// @param midExp			Configure in middle of experiment, default  = 0
 static Function ExpConfig_Amplifiers(panelTitle, UserSettings, midExp)
 	string panelTitle
 	Wave /T UserSettings
@@ -598,7 +599,11 @@ Function ExpConfig_Position_MCC_Win(serialNum, winTitle, winPosition)
 
 End
 
-///@brief Set intial values for headstage clamp modes
+/// @brief Set intial values for headstage clamp modes
+///
+/// @param panelTitle		Name of ITC device panel
+/// @param UserSettings	User settings wave from configuration Notebook
+/// @param midExp			Configure in middle of experiment, default  = 0
 static Function ExpConfig_ClampModes(panelTitle, UserSettings, midExp)
 	string panelTitle
 	Wave /T UserSettings
