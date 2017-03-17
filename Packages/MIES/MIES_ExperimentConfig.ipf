@@ -15,7 +15,7 @@
 
 /// @brief Configure MIES for experiments
 ///
-/// @param [optional, allows MIES config in the middle of experiment. Instead of setting MCC parameters they are pulled from actively recording MCCs to configure MIES]
+/// @param middleOfExperiment [optional, defaults to false] Allows MIES config in the middle of experiment. Instead of setting MCC parameters they are pulled from actively recording MCCs to configure MIES]
 Function ExpConfig_ConfigureMIES([middleOfExperiment])
 	variable middleOfExperiment
 
@@ -445,7 +445,7 @@ static Function ExpConfig_MCC_InitParams(panelTitle, headStage)
 
 End
 
-static Function ExpConfig_MCC_MidExp(panelTitle, headStage, UserSettings)
+Function ExpConfig_MCC_MidExp(panelTitle, headStage, UserSettings)
 	string panelTitle
 	variable headStage
 	Wave /T UserSettings
@@ -454,7 +454,7 @@ static Function ExpConfig_MCC_MidExp(panelTitle, headStage, UserSettings)
 	
 	AI_SelectMultiClamp(panelTitle, headStage)
 	
-	clampMode = MCC_GetMode()
+	clampMode = DAP_MIESHeadstageMode(panelTitle, headStage)
 	
 	if(clampMode == V_CLAMP_MODE)
 		DAP_ChangeHeadStageMode(panelTitle, V_CLAMP_MODE, headStage, SKIP_MCC_MIES_SYNCING)
@@ -499,6 +499,8 @@ static Function ExpConfig_MCC_MidExp(panelTitle, headStage, UserSettings)
 		FindValue /TXOP = 4 /TEXT = HOLDING UserSettings
 		PGC_SetAndActivateControl(panelTitle,"setvar_DataAcq_Hold_VC", val = str2numSafe(UserSettings[V_value][%SettingValue]))
 		printf "HeadStage %d is in I-Clamp mode and has been configured from the MCC. V-Clamp settings were reset to initial values, check before switching!\r", headStage
+	elseif(clampMode == I_EQUAL_ZERO_MODE)
+		// do nothing
 	endif
 
 End
