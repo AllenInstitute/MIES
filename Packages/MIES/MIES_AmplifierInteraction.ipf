@@ -201,7 +201,7 @@ Function AI_SetClampMode(panelTitle, headStage, mode)
 	string panelTitle
 	variable headStage
 	variable mode
-
+	
 	AI_AssertOnInvalidClampMode(mode)
 
 	if(AI_SelectMultiClamp(panelTitle, headStage) != AMPLIFIER_CONNECTION_SUCCESS)
@@ -211,6 +211,8 @@ Function AI_SetClampMode(panelTitle, headStage, mode)
 	if(!IsFinite(MCC_SetMode(mode)))
 		printf "MCC amplifier cannot be switched to mode %d. Linked MCC is no longer present\r", mode
 	endif
+
+	return 1
 End
 
 static Function AI_IsValidSerialAndChannel([mccSerial, axonSerial, channel])
