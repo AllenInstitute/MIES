@@ -6369,6 +6369,9 @@ Function DAP_SliderProc_MIESHeadStage(sc) : SliderControl
 	return 0
 End
 
+///@brief User selected headstage function calls
+///@param panelTitle Device
+///@param headstage Headstage [0, 8[
 Function DAP_Slider(panelTitle, headstage)
 	string panelTitle
 	variable headstage
