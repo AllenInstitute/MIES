@@ -819,7 +819,7 @@ Function HW_ITC_CloseAllDevices([flags])
 		HW_ITC_StopAcq(flags=flags)
 	endif
 
-	ITCCloseAll2/Z
+	ITCCloseAll2/Z=(flags & HARDWARE_PREVENT_ERROR_POPUP)
 	
 End
 
