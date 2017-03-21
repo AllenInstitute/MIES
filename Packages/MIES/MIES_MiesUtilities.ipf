@@ -1467,12 +1467,15 @@ End
 /// @param axisOrientation [optional, defaults to all] allows to apply equalization to all axis of one orientation
 /// @param sortOrder       [optional, defaults to no sorting (NaN)] apply different sorting
 ///                        schemes to list of axes, see sortingOrder parameter of `SortList`
-Function EquallySpaceAxis(graph, [axisRegExp, axisOrientation, sortOrder])
-	string graph, axisRegExp
+/// @param listForBegin    [optional, defaults to an empty list] list of axes to move to the front of the sorted axis list
+/// @param listForEnd      [optional, defaults to an empty list] list of axes to move to the end of the sorted axis list
+Function EquallySpaceAxis(graph, [axisRegExp, axisOrientation, sortOrder, listForBegin, listForEnd])
+	string graph, axisRegExp, listForBegin, listForEnd
 	variable axisOrientation, sortOrder
 
 	variable numAxes, axisInc, axisStart, axisEnd, i, spacing
 	string axes, axis, list
+	string adaptedList = ""
 
 	if(ParamIsDefault(axisRegExp))
 		axisRegExp = ".*"
@@ -1487,16 +1490,46 @@ Function EquallySpaceAxis(graph, [axisRegExp, axisOrientation, sortOrder])
 	axes    = GrepList(list, axisRegExp)
 	numAxes = ItemsInList(axes)
 
-	if(numAxes < 1)
-		return NaN
+	if(ParamIsDefault(listForEnd))
+		listForEnd = ""
+	else
+		listForEnd = RemoveEnding(listForEnd, ";")
+	endif
+
+	if(ParamIsDefault(listForBegin))
+		listForBegin = ""
+	else
+		listForBegin = RemoveEnding(listForBegin, ";")
 	endif
 
 	if(ParamIsDefault(sortOrder) || !IsFinite(sortOrder))
 		// do nothing
 	else
-		axes = SortList(axes, ";", sortOrder)
+		axes         = SortList(axes, ";", sortOrder)
+		listForEnd   = SortList(listForEnd, ";", sortOrder)
+		listForBegin = SortList(listForBegin, ";", sortOrder)
 	endif
 
+	if(!IsEmpty(listForBegin) || !IsEmpty(listForEnd))
+		for(i = 0; i < numAxes; i += 1)
+			axis = StringFromList(i, axes)
+
+			if(WhichListItem(axis, listForBegin) == -1 && WhichListItem(axis, listForEnd) == -1)
+				adaptedList = AddListItem(axis, adaptedList, ";", inf)
+			endif
+		endfor
+
+		// adaptedList now holds all axes which are neither in listForBegin nor listForEnd
+		if(!IsEmpty(listForBegin))
+			adaptedList = AddListItem(listForBegin, adaptedList, ";", 0)
+		endif
+
+		if(!IsEmpty(listForEnd))
+			adaptedList = AddListItem(listForEnd, adaptedList, ";", inf)
+		endif
+	endif
+
+	numAxes = ItemsInList(adaptedList)
 	axisInc = 1 / numAxes
 
 	if(axisInc < GRAPH_DIV_SPACING)
@@ -1506,7 +1539,7 @@ Function EquallySpaceAxis(graph, [axisRegExp, axisOrientation, sortOrder])
 	endif
 
 	for(i = numAxes - 1; i >= 0; i -= 1)
-		axis = StringFromList(i, axes)
+		axis = StringFromList(i, adaptedList)
 		axisStart = (i == 0 ? 0 : spacing + axisInc * i)
 		axisEnd   = (i == numAxes - 1 ? 1 : axisInc * (i + 1) - spacing)
 		ModifyGraph/W=$graph axisEnab($axis) = {axisStart, axisEnd}
