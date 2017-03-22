@@ -5832,74 +5832,153 @@ End
 /// @brief Change the clamp mode of the given headstage
 /// @param panelTitle          device
 /// @param clampMode           clamp mode to activate
-/// @param headStage           Headstage [0, 8[
+/// @param headstage           Headstage [0, 8[
 /// @param mccMiesSyncOverride should be zero for normal callers, 1 for callers which
 ///                            are doing a auto MCC function and need to change the clamp mode temporarily.
 ///                            Use one of @ref MCCSyncOverrides for better readability.
-Function DAP_ChangeHeadStageMode(panelTitle, clampMode, headStage, mccMiesSyncOverride)
+/// @param allHeadstages [optional: defaults to false] Changes the clamp mode of all headstages when > 0
+Function DAP_ChangeHeadStageMode(panelTitle, clampMode, headstage, mccMiesSyncOverride, [allHeadstages])
 	string panelTitle
-	variable headStage, clampMode, mccMiesSyncOverride
+	variable headstage, clampMode, mccMiesSyncOverride, allHeadstages
 
-	string iZeroCtrl, VCctrl, ICctrl, headStageCtrl, ctrl
-	variable activeHS, testPulseMode, oppositeMode, DAC, ADC
+	string iZeroCtrl, VCctrl, ICctrl, headstageCtrl, ctrl
+	variable activeHS, testPulseMode, oppositeMode, DAC, ADC, i, loopMax, sliderPos
 
 	AI_AssertOnInvalidClampMode(clampMode)
 	DAP_AbortIfUnlocked(panelTitle)
 
 	WAVE ChanAmpAssign = GetChanAmpAssign(panelTitle)
+	WAVE GuiState = GetDA_EphysGuiStateNum(panelTitle)
 
-	if(clampMode == V_CLAMP_MODE)
-		DAC = ChanAmpAssign[%VC_DA][headStage]
-		ADC = ChanAmpAssign[%VC_AD][headStage]
-	elseif(clampMode == I_CLAMP_MODE || clampMode == I_EQUAL_ZERO_MODE)
-		DAC = ChanAmpAssign[%IC_DA][headStage]
-		ADC = ChanAmpAssign[%IC_AD][headStage]
+   if(ParamIsDefault(allHeadstages))
+       allHeadstages = 0
+   else
+       allHeadstages = !!allHeadstages 
+   endif
+       
+	if(allHeadstages)
+		loopMax = NUM_HEADSTAGES
+		headstage = 0
+	else
+		loopMax = 1
+		activeHS = DAP_GetHSstate(panelTitle, headstage)
 	endif
-
-	if(!IsFinite(DAC) || !IsFinite(ADC))
-		printf "(%s) Could not switch the clamp mode to %s as no DA and/or AD channels are associated with headstage %d.\r", panelTitle, ConvertAmplifierModeToString(clampMode), headstage
-		Abort
-	endif
-
-	headStageCtrl = GetPanelControl(headStage, CHANNEL_TYPE_HEADSTAGE, CHANNEL_CONTROL_CHECK)
-	activeHS = GetCheckBoxState(panelTitle, headStageCtrl)
-	if(activeHS)
+	
+	sliderPos = GetSliderPositionIndex(panelTitle, "slider_DataAcq_ActiveHeadstage")
+	
+	if(activeHS || allHeadstages)
 		testPulseMode = TP_StopTestPulse(panelTitle)
 	endif
-
-	VCctrl    = DAP_GetClampModeControl(V_CLAMP_MODE, headStage)
-	ICctrl    = DAP_GetClampModeControl(I_CLAMP_MODE, headStage)
-	iZeroCtrl = DAP_GetClampModeControl(I_EQUAL_ZERO_MODE, headStage)
-	ctrl      = DAP_GetClampModeControl(clampMode, headStage)
-
-	SetCheckboxState(panelTitle, VCctrl, CHECKBOX_UNSELECTED)
-	SetCheckboxState(panelTitle, ICctrl, CHECKBOX_UNSELECTED)
-	SetCheckboxState(panelTitle, iZeroCtrl, CHECKBOX_UNSELECTED)
-
-	SetCheckboxState(panelTitle, ctrl, CHECKBOX_SELECTED)
-
-	if(activeHS)
-		oppositeMode = (clampMode == I_CLAMP_MODE || clampMode == I_EQUAL_ZERO_MODE ? V_CLAMP_MODE : I_CLAMP_MODE)
-		DAP_RemoveClampModeSettings(panelTitle, headStage, oppositeMode)
-		DAP_ApplyClmpModeSavdSettngs(panelTitle, headStage, clampMode)
-		if(GetCheckBoxState(panelTitle, "check_Settings_AmpIEQZstep") && (clampMode == I_CLAMP_MODE || clampMode == V_CLAMP_MODE))
-			AI_SetClampMode(panelTitle, headStage, I_EQUAL_ZERO_MODE)
-			Sleep/Q/T/C=-1 6
+	
+	for(i = 0; i < loopMax ; i +=1)
+		if(clampMode == V_CLAMP_MODE)
+			DAC = ChanAmpAssign[%VC_DA][headstage]
+			ADC = ChanAmpAssign[%VC_AD][headstage]
+		elseif(clampMode == I_CLAMP_MODE || clampMode == I_EQUAL_ZERO_MODE)
+			DAC = ChanAmpAssign[%IC_DA][headstage]
+			ADC = ChanAmpAssign[%IC_AD][headstage]
 		endif
-		AI_SetClampMode(panelTitle, headStage, clampMode)
-	endif
-
-	WAVE GUIState = GetDA_EphysGuiStateNum(panelTitle)
-	GuiState[headStage][%HSmode] = clampMode
-
-	DAP_UpdateClampmodeTabs(panelTitle, headStage, clampMode, mccMiesSyncOverride)
+	
+		if(!IsFinite(DAC) || !IsFinite(ADC))
+			printf "(%s) Could not switch the clamp mode to %s as no DA and/or AD channels are associated with headstage %d.\r", panelTitle, ConvertAmplifierModeToString(clampMode), headstage
+			continue
+		endif
+		GuiState[headstage][%HSmode] = clampMode 
+		if(isFinite(DAP_IZeroSetClampMode(panelTitle, headstage, clampMode)))
+			DAP_SetAmpModeControls(panelTitle, headstage, clampMode)
+			DAP_SetHeadstageChanControls(panelTitle, headstage, clampMode)
+			DAP_ConditionallySetAmpGui(panelTitle, headstage, clampMode, sliderPos, mccMiesSyncOverride)
+		elseif(!getCheckboxState(panelTitle, "check_Settings_RequireAmpConn"))
+			DAP_SetAmpModeControls(panelTitle, headstage, clampMode)
+			DAP_SetHeadstageChanControls(panelTitle, headstage, clampMode)
+		elseif(getCheckboxState(panelTitle, "check_Settings_RequireAmpConn"))
+			DAP_SetAmpModeControls(panelTitle, headstage, clampMode)
+		endif
+		
+		headstage += 1 
+	endfor
+	
 	DAP_UpdateITCSampIntDisplay(panelTitle)
-
-	if(activeHS)
+	
+	if(activeHS || allHeadstages)
 		TP_RestartTestPulse(panelTitle, testPulseMode)
 	endif
 
 	DAP_UpdateAllCtrlsPerClampMode(panelTitle)
+End
+
+///@brief Sets the clamp mode by going through I=0 mode if check_Settings_AmpIEQZstep is checked
+///			Stops the TP if changing mode for a single headstage
+/// @param 	panelTitle		device
+/// @param 	headstage			headstage to undergo mode switch
+/// @param 	clampMode			clamp mode to activate
+static Function DAP_IZeroSetClampMode(panelTitle, headstage, clampMode)
+	string panelTitle
+	variable headstage
+	variable clampMode
+			
+	if(GetCheckBoxState(panelTitle, "check_Settings_AmpIEQZstep") && (clampMode == I_CLAMP_MODE || clampMode == V_CLAMP_MODE))
+		AI_SetClampMode(panelTitle, headstage, I_EQUAL_ZERO_MODE)
+		Sleep/Q/T/C=-1 6
+	endif
+	
+	return AI_SetClampMode(panelTitle, headstage, clampMode)
+End
+
+///@brief Sets the control state of the radio buttons used for setting the clamp mode on the Data Acquisition Tab of the DA_Ephys panel
+///@param panelTitle	device
+///@param headstage		controls associated with headstage are set
+///@param clampMode		clamp mode to activate
+static Function DAP_SetAmpModeControls(panelTitle, headstage, clampMode)
+	string panelTitle
+	variable headstage
+	variable clampMode
+	
+	string VCctrl    = DAP_GetClampModeControl(V_CLAMP_MODE, headstage)
+	string ICctrl    = DAP_GetClampModeControl(I_CLAMP_MODE, headstage)
+	string iZeroCtrl = DAP_GetClampModeControl(I_EQUAL_ZERO_MODE, headstage)
+	string ctrl      = DAP_GetClampModeControl(clampMode, headstage)
+
+	SetCheckboxState(panelTitle, VCctrl, CHECKBOX_UNSELECTED)
+	SetCheckboxState(panelTitle, ICctrl, CHECKBOX_UNSELECTED)
+	SetCheckboxState(panelTitle, iZeroCtrl, CHECKBOX_UNSELECTED)
+	SetCheckboxState(panelTitle, ctrl, CHECKBOX_SELECTED)
+End
+
+///@brief Sets the DA and AD channel settings according to the headstage mode
+///@param	panelTitle 	Device (used for data acquisition)
+///@param	headstage		channels associated with headstage are set
+///@param	clampMode		clamp mode to activate
+static Function DAP_SetHeadstageChanControls(panelTitle, headstage, clampMode)
+	string panelTitle
+	variable headstage
+	variable clampMode
+	
+	if(DAP_GetHSstate(panelTitle, headstage))
+		variable oppositeMode = (clampMode == I_CLAMP_MODE || clampMode == I_EQUAL_ZERO_MODE ? V_CLAMP_MODE : I_CLAMP_MODE)
+		DAP_RemoveClampModeSettings(panelTitle, headstage, oppositeMode)
+		DAP_ApplyClmpModeSavdSettngs(panelTitle, headstage, clampMode)
+	endif
+End
+
+///@brief Sets the amp GUI (updates the selected tab according to the clamp mode) if the headstage being set and the user selected headstage are the same.
+///@param	panelTitle 	Device (used for data acquisition)
+///@param	headstage		channels associated with headstage are set
+///@param	clampMode		clamp mode to activate
+///@param	sliderPos		index of the slider control: slider_DataAcq_ActiveHeadstage
+///@param	mccMiesSyncOverride should be zero for normal callers, 1 for callers which
+///                            are doing a auto MCC function and need to change the clamp mode temporarily.
+///                            Use one of @ref MCCSyncOverrides for better readability.
+static Function DAP_ConditionallySetAmpGui(panelTitle, headstage, clampMode, sliderPos, mccMiesSyncOverride)
+	string panelTitle
+	variable headstage
+	variable clampMode
+	variable sliderPos
+	variable mccMiesSyncOverride
+	
+	if(sliderPos == headstage)
+		DAP_UpdateClampmodeTabs(panelTitle, headstage, clampMode, mccMiesSyncOverride)
+	endif
 End
 
 static Function DAP_UpdateAllCtrlsPerClampMode(panelTitle)
@@ -6003,7 +6082,7 @@ static Function DAP_ChangeHeadstageState(panelTitle, headStageCtrl, enabled)
 	VCstate    = GetCheckBoxState(panelTitle, VCctrl)
 	ICstate    = GetCheckBoxState(panelTitle, ICctrl)
 	IZeroState = GetCheckBoxState(panelTitle, IZeroCtrl)
-
+	
 	if(VCstate + ICstate + IZeroState != 1) // someone messed up the radio button logic, reset to V_CLAMP_MODE
 		PGC_SetAndActivateControl(panelTitle, VCctrl, val=CHECKBOX_SELECTED)
 	else
