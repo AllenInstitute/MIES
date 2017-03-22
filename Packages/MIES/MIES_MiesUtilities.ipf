@@ -2367,7 +2367,7 @@ Function EqualizeVerticalAxesRanges(graph, [ignoreAxesWithLevelCrossing, level])
 	string axList, axis, traceList, trace, info
 	variable i, j, numAxes, axisOrient, xRangeBegin, xRangeEnd
 	variable beginY, endY
-	variable maxYRange, numTraces
+	variable maxYRange, numTraces, err
 
 	if(ParamIsDefault(ignoreAxesWithLevelCrossing))
 		ignoreAxesWithLevelCrossing = 0
@@ -2381,10 +2381,14 @@ Function EqualizeVerticalAxesRanges(graph, [ignoreAxesWithLevelCrossing, level])
 		ASSERT(ignoreAxesWithLevelCrossing, "Optional argument level makes only sense if ignoreAxesWithLevelCrossing is enabled")
 	endif
 
-	GetAxis/W=$graph/Q bottom
-	ASSERT(!V_flag, "Axis bottom expected to be used in the graph")
-	xRangeBegin = V_min
-	xRangeEnd   = V_max
+	GetAxis/W=$graph/Q bottom; err = GetRTError(1)
+	if(!V_Flag)
+		xRangeBegin = V_min
+		xRangeEnd   = V_max
+	else
+		xRangeBegin = NaN
+		xRangeEnd   = NaN
+	endif
 
 	traceList = GetAllSweepTraces(graph)
 	numTraces = ItemsInList(traceList)
@@ -2413,6 +2417,11 @@ Function EqualizeVerticalAxesRanges(graph, [ignoreAxesWithLevelCrossing, level])
 			endif
 
 			WAVE wv = TraceNameToWaveRef(graph, trace)
+
+			if(!IsFinite(xRangeBegin) || !IsFinite(xRangeEnd))
+				xRangeBegin = leftx(wv)
+				xRangeEnd   = rightx(wv)
+			endif
 
 			if(ignoreAxesWithLevelCrossing)
 				FindLevel/Q/R=(xRangeBegin, xRangeEnd) wv, level
