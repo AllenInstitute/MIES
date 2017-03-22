@@ -2365,7 +2365,7 @@ Function EqualizeVerticalAxesRanges(graph, [ignoreAxesWithLevelCrossing, level])
 	variable level
 
 	string axList, axis, traceList, trace, info
-	variable i, j, numAxes, axisOrient, xRangeBegin, xRangeEnd, axisWithMaxYRange
+	variable i, j, numAxes, axisOrient, xRangeBegin, xRangeEnd
 	variable beginY, endY
 	variable maxYRange, numTraces
 
