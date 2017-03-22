@@ -206,6 +206,8 @@ Constant I_CLAMP_MODE      = 1
 Constant I_EQUAL_ZERO_MODE = 2
 /// @}
 
+Constant NUM_CLAMP_MODES = 3
+
 /// @name Possible values for the function parameter of AI_SendToAmp
 /// @anchor AI_SendToAmpConstants
 /// @{

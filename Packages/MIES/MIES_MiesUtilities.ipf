@@ -2355,24 +2355,31 @@ End
 
 /// @brief Equalize all vertical axes ranges so that they cover the same range
 ///
-/// @param graph graph
+/// @param graph                       graph
 /// @param ignoreAxesWithLevelCrossing [optional, defaults to false] ignore all vertical axis which
-/// cross the given level in the visible range
-/// @param level [optional, defaults to zero] level to be used for `ignoreAxesWithLevelCrossing=1`
-Function EqualizeVerticalAxesRanges(graph, [ignoreAxesWithLevelCrossing, level])
+///                                    cross the given level in the visible range
+/// @param level                       [optional, defaults to zero] level to be used for `ignoreAxesWithLevelCrossing=1`
+/// @param rangePerClampMode           [optional, defaults to false] use separate Y ranges per clamp mode
+Function EqualizeVerticalAxesRanges(graph, [ignoreAxesWithLevelCrossing, level, rangePerClampMode])
 	string graph
 	variable ignoreAxesWithLevelCrossing
-	variable level
+	variable level, rangePerClampMode
 
 	string axList, axis, traceList, trace, info
 	variable i, j, numAxes, axisOrient, xRangeBegin, xRangeEnd
-	variable beginY, endY
-	variable maxYRange, numTraces, err
+	variable beginY, endY, clampMode
+	variable maxYRange, numTraces , range, refClampMode, err
 
 	if(ParamIsDefault(ignoreAxesWithLevelCrossing))
 		ignoreAxesWithLevelCrossing = 0
 	else
 		ignoreAxesWithLevelCrossing = !!ignoreAxesWithLevelCrossing
+	endif
+
+	if(ParamIsDefault(rangePerClampMode))
+		rangePerClampMode = 0
+	else
+		rangePerClampMode = !!rangePerClampMode
 	endif
 
 	if(ParamIsDefault(level))
@@ -2395,7 +2402,10 @@ Function EqualizeVerticalAxesRanges(graph, [ignoreAxesWithLevelCrossing, level])
 	axList = AxisList(graph)
 	numAxes = ItemsInList(axList)
 
+	Make/FREE/D/N=(NUM_CLAMP_MODES) maxYRangeClampMode = 0
+	Make/FREE/D/N=(numAxes) axisClampMode = Nan
 	Make/FREE/D/N=(numAxes, 2) YValues = NaN
+
 	SetDimLabel COLS, 0, minimum, YValues
 	SetDimLabel COLS, 1, maximum, YValues
 
@@ -2408,6 +2418,8 @@ Function EqualizeVerticalAxesRanges(graph, [ignoreAxesWithLevelCrossing, level])
 		if(axisOrient != AXIS_ORIENTATION_LEFT && axisOrient != AXIS_ORIENTATION_RIGHT)
 			continue
 		endif
+
+		refClampMode = NaN
 
 		for(j = 0; j < numTraces; j += 1)
 			trace = StringFromList(j, traceList)
@@ -2430,12 +2442,26 @@ Function EqualizeVerticalAxesRanges(graph, [ignoreAxesWithLevelCrossing, level])
 				endif
 			endif
 
+			clampMode = str2num(GetUserData(graph, trace, "clampMode"))
+			AI_AssertOnInvalidClampMode(clampMode)
+
+			if(!IsFinite(refClampMode))
+				refClampMode = clampMode
+			else
+				axisClampMode[i] = refClampMode == clampMode ? clampMode : -1
+			endif
+
 			WaveStats/M=2/Q/R=(xRangeBegin, xRangeEnd) wv
 			YValues[i][%minimum] = V_min
 			YValues[i][%maximum] = V_max
-			if(abs(V_max - V_min) > maxYRange)
-				maxYRange = abs(V_max - V_min)
-				axisWithMaxYRange = i
+
+			range = abs(V_max - V_min)
+			if(range > maxYRange)
+				maxYRange = range
+			endif
+
+			if(range > maxYRangeClampMode[clampMode])
+				maxYRangeClampMode[clampMode] = range
 			endif
 		endfor
 	endfor
@@ -2458,7 +2484,13 @@ Function EqualizeVerticalAxesRanges(graph, [ignoreAxesWithLevelCrossing, level])
 		endif
 
 		beginY = YValues[i][%minimum]
-		endY   = YValues[i][%minimum] + maxYRange
+
+		if(rangePerClampMode && axisClampMode[i] >= 0)
+			endY = beginY + maxYRangeClampMode[axisClampMode[i]]
+		else
+			endY = beginY + maxYRange
+		endif
+
 		DebugPrint("Setting new axis ranges for:", str=axis)
 		DebugPrint("beginY:", var=beginY)
 		DebugPrint("endY:", var=endY)
