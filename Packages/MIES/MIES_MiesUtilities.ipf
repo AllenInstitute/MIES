@@ -2062,11 +2062,11 @@ static Function AverageWavesFromSameYAxisIfReq(graph, traceList, averagingEnable
 
 	variable referenceTime
 	string averageWaveName, listOfWaves, listOfWaves1D, listOfChannelTypes, listOfChannelNumbers
-	string xRange, listOfXRanges, firstXAxis
+	string xRange, listOfXRanges, firstXAxis, listOfClampModes
 	string averageWaves = ""
 	variable i, j, k, l, numAxes, numTraces, numWaves, ret
 	variable red, green, blue, column, first, last, orientation
-	string axis, trace, axList, baseName
+	string axis, trace, axList, baseName, clampMode
 	string channelType, channelNumber, fullPath, panel
 
 	referenceTime = DEBUG_TIMER_START()
@@ -2096,6 +2096,7 @@ static Function AverageWavesFromSameYAxisIfReq(graph, traceList, averagingEnable
 		listOfChannelTypes   = ""
 		listOfChannelNumbers = ""
 		listOfXRanges        = ""
+		listOfClampModes     = ""
 		firstXAxis           = ""
 
 		orientation = GetAxisOrientation(graph, axis)
@@ -2109,12 +2110,14 @@ static Function AverageWavesFromSameYAxisIfReq(graph, traceList, averagingEnable
 				fullPath      = GetWavesDataFolder(TraceNameToWaveRef(graph, trace), 2)
 				channelType   = GetUserData(graph, trace, "channelType")
 				channelNumber = GetUserData(graph, trace, "channelNumber")
+				clampMode     = GetUserData(graph, trace, "clampMode")
 				xRange        = StringByKey("YRANGE", allTraceInfo[j])
 
 				listOfWaves          = AddListItem(fullPath, listOfWaves, ";", Inf)
 				listOfChannelTypes   = AddListItem(channelType, listOfChannelTypes, ";", Inf)
 				listOfChannelNumbers = AddListItem(channelNumber, listOfChannelNumbers, ";", Inf)
 				listOfXRanges        = AddListItem(xRange, listOfXRanges, "_", Inf)
+				listOfClampModes     = AddListItem(clampMode, listOfClampModes, ";", Inf)
 
 				if(IsEmpty(firstXAxis))
 					firstXAxis = StringByKey("XAXIS", allTraceInfo[j])
@@ -2194,6 +2197,10 @@ static Function AverageWavesFromSameYAxisIfReq(graph, traceList, averagingEnable
 			AppendToGraph/Q/W=$graph/L=$axis/B=$firstXAxis averageWave[first, last]
 		else
 			AppendToGraph/Q/W=$graph/L=$axis/B=$firstXAxis averageWave
+		endif
+
+		if(ListHasOnlyOneUniqueEntry(listOfClampModes))
+			ModifyGraph/W=$graph userData($averageWaveName)={clampMode, 0, StringFromList(0, listOfClampModes)}
 		endif
 
 		averageWaves = AddListItem(averageWaveName, averageWaves, ";", Inf)
