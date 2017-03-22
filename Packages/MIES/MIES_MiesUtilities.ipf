@@ -2404,10 +2404,13 @@ Function EqualizeVerticalAxesRanges(graph, [ignoreAxesWithLevelCrossing, level, 
 
 	Make/FREE/D/N=(NUM_CLAMP_MODES) maxYRangeClampMode = 0
 	Make/FREE/D/N=(numAxes) axisClampMode = Nan
-	Make/FREE/D/N=(numAxes, 2) YValues = NaN
+	Make/FREE/D/N=(numAxes, 2) YValues = inf
 
 	SetDimLabel COLS, 0, minimum, YValues
 	SetDimLabel COLS, 1, maximum, YValues
+
+	YValues[][%minimum] =  inf
+	YValues[][%maximum] = -inf
 
 	// collect the y ranges of the visible x range of all vertical axis
 	// respecting ignoreAxesWithLevelCrossing
@@ -2452,10 +2455,10 @@ Function EqualizeVerticalAxesRanges(graph, [ignoreAxesWithLevelCrossing, level, 
 			endif
 
 			WaveStats/M=2/Q/R=(xRangeBegin, xRangeEnd) wv
-			YValues[i][%minimum] = V_min
-			YValues[i][%maximum] = V_max
+			YValues[i][%minimum] = min(V_min, YValues[i][%minimum])
+			YValues[i][%maximum] = max(V_max, YValues[i][%maximum])
 
-			range = abs(V_max - V_min)
+			range = abs(YValues[i][%maximum] - YValues[i][%minimum])
 			if(range > maxYRange)
 				maxYRange = range
 			endif
