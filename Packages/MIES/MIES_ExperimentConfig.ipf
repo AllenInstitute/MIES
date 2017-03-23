@@ -455,11 +455,15 @@ Function ExpConfig_MCC_MidExp(panelTitle, headStage, UserSettings)
 
 	variable settingValue, clampMode
 	
+	PGC_SetAndActivateControl(panelTitle,"ADC", val = DA_EPHYS_PANEL_DATA_ACQUISITION)
+	PGC_SetAndActivateControl(panelTitle,"slider_DataAcq_ActiveHeadstage", val = headStage)
+	
 	AI_SelectMultiClamp(panelTitle, headStage)
 	
-	clampMode = DAP_MIESHeadstageMode(panelTitle, headStage)
+	clampMode = MCC_GetMode()
 	
 	if(clampMode == V_CLAMP_MODE)
+		
 		DAP_ChangeHeadStageMode(panelTitle, V_CLAMP_MODE, headStage, SKIP_MCC_MIES_SYNCING)
 		settingValue = AI_SendToAmp(panelTitle, headStage, V_CLAMP_MODE, MCC_GETPIPETTEOFFSET_FUNC, NaN, checkBeforeWrite = 1)
 		PGC_SetAndActivateControl(panelTitle, "setvar_DataAcq_PipetteOffset_VC", val = settingValue)
@@ -478,13 +482,13 @@ Function ExpConfig_MCC_MidExp(panelTitle, headStage, UserSettings)
 		printf "HeadStage %d is in V-Clamp mode and has been configured from the MCC. I-Clamp settings were reset to initial values, check before switching!\r", headStage
 	elseif(clampMode == I_CLAMP_MODE)
 		DAP_ChangeHeadStageMode(panelTitle, I_CLAMP_MODE, headStage, SKIP_MCC_MIES_SYNCING)
-		settingValue = AI_SendToAmp(panelTitle, headStage, V_CLAMP_MODE, MCC_GETPIPETTEOFFSET_FUNC, NaN, checkBeforeWrite = 1)
+		settingValue = AI_SendToAmp(panelTitle, headStage, I_CLAMP_MODE, MCC_GETPIPETTEOFFSET_FUNC, NaN, checkBeforeWrite = 1)
 		PGC_SetAndActivateControl(panelTitle, "setvar_DataAcq_PipetteOffset_VC", val = settingValue)
 		PGC_SetAndActivateControl(panelTitle, "setvar_DataAcq_PipetteOffset_IC", val = settingValue)
 		settingValue = AI_SendToAmp(panelTitle, headStage, I_CLAMP_MODE, MCC_GETHOLDING_FUNC, NaN, checkBeforeWrite = 1)
 		PGC_SetAndActivateControl(panelTitle, "setvar_DataAcq_Hold_IC", val = settingValue)
 		settingValue = AI_SendToAmp(panelTitle, headStage, I_CLAMP_MODE, MCC_GETHOLDINGENABLE_FUNC, NaN, checkBeforeWrite = 1)
-		PGC_SetAndActivateControl(panelTitle, "check_DatAcq_HoldEnableIC", val = settingValue)
+		PGC_SetAndActivateControl(panelTitle, "check_DatAcq_HoldEnable", val = settingValue)
 		settingValue = AI_SendToAmp(panelTitle, headStage, I_CLAMP_MODE, MCC_GETBRIDGEBALRESIST_FUNC, NaN, checkBeforeWrite = 1)
 		PGC_SetAndActivateControl(panelTitle, "setvar_DataAcq_BB", val = settingValue)
 		settingValue = AI_SendToAmp(panelTitle, headStage, I_CLAMP_MODE, MCC_GETBRIDGEBALENABLE_FUNC, NaN, checkBeforeWrite = 1)
@@ -505,7 +509,7 @@ Function ExpConfig_MCC_MidExp(panelTitle, headStage, UserSettings)
 	elseif(clampMode == I_EQUAL_ZERO_MODE)
 		// do nothing
 	endif
-
+	PGC_SetAndActivateControl(panelTitle,"ADC", val = DA_EPHYS_PANEL_SETTINGS)
 End
 
 /// @brief Position MCC windows to upper right monitor using nircmd.exe
