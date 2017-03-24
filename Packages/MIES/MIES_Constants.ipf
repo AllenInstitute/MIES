@@ -154,7 +154,8 @@ Constant CHANNEL_CONTROL_SEARCH    = 0x140
 /// @}
 
 /// @name Controls for multiple channels have negative channel indizes
-/// @{anchor AllHeadstageModeConstants
+/// @anchor AllHeadstageModeConstants
+/// @{
 Constant CHANNEL_INDEX_ALL         = -1
 Constant CHANNEL_INDEX_ALL_V_CLAMP = -2
 Constant CHANNEL_INDEX_ALL_I_CLAMP = -3
