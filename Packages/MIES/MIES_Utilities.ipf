@@ -3018,3 +3018,33 @@ Function/S GetAllAxesWithOrientation(graph, axisOrientation)
 
 	return list
 End
+
+/// @brief Return the list of axis sorted from highest
+///        to lowest starting value of the `axisEnab` keyword.
+///
+/// `list` must be from one orientation, usually something returned by GetAllAxesWithOrientation()
+Function/S SortAxisList(graph, list)
+	string graph, list
+
+	variable numAxes, i
+	string axis
+
+	numAxes = ItemsInList(list)
+
+	if(numAxes < 2)
+		return list
+	endif
+
+	Make/FREE/D/N=(numAxes) axisStart
+
+	for(i = 0; i < numAxes; i += 1)
+		axis         = StringFromList(i, list)
+		axisStart[i] = GetNumFromModifyStr(AxisInfo(graph, axis), "axisEnab", "{", 0)
+	endfor
+
+	WAVE/T axisListWave = ListToTextWave(list, ";")
+
+	Sort/R axisStart, axisListWave
+
+	return TextWaveToList(axisListWave, ";")
+End

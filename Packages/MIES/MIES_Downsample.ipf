@@ -18,6 +18,9 @@
 /// Wave         |  $dataPath:rateWave        | Holds all rates in kHz for each wave.                                  | GetDownsampleRateWave()
 /// Wave         |  $dataPath:sweepProperties | Used by the list box to show the properties of each sweep              | GetDownsampleListWave()
 
+// stock igor
+#include <Readback ModifyStr>
+
 // third party includes
 #include ":ACL_TabUtilities"
 #include ":ACL_UserdataEditor"

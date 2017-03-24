@@ -9,6 +9,7 @@
 // stock igor
 #include <Resize Controls>
 #include <ZoomBrowser>
+#include <Readback ModifyStr>
 
 // third party includes
 #include "ACL_TabUtilities"

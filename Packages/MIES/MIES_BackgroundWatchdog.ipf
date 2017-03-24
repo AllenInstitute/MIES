@@ -7,6 +7,10 @@
 /// @brief __BW__ Panel for inspecting the state of the MIES DAQ/TP background functions
 
 /// @cond DOXYGEN_IGNORES_THIS
+
+// stock igor
+#include <Readback ModifyStr>
+
 #include ":ACL_TabUtilities"
 
 #include ":MIES_Constants"
