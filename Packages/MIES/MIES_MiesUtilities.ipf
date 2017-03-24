@@ -1503,7 +1503,7 @@ Function EquallySpaceAxis(graph, [axisRegExp, axisOrientation, sortOrder, listFo
 	endif
 
 	if(ParamIsDefault(sortOrder) || !IsFinite(sortOrder))
-		// do nothing
+		list = SortAxisList(graph, list)
 	else
 		axes         = SortList(axes, ";", sortOrder)
 		listForEnd   = SortList(listForEnd, ";", sortOrder)
