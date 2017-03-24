@@ -53,6 +53,8 @@
 
 static Constant EXPERIMENT_TREEVIEW_COLUMN = 0
 static Constant DEVICE_TREEVIEW_COLUMN     = 2
+static Constant AB_LOAD_SWEEP = 0
+static Constant AB_LOAD_STIMSET = 1
 
 Menu "Mies Panels"
 	"Analysis Browser"   , /Q, AB_OpenAnalysisBrowser()
@@ -1099,8 +1101,7 @@ Function AB_ExpandListEntry(row, col)
 End
 
 /// @returns 0 if the treeview could be expanded, zero otherwise
-static Function AB_ExpandIfCollapsed(sweepBrowser, row, subSectionColumn)
-	DFREF sweepBrowser
+static Function AB_ExpandIfCollapsed(row, subSectionColumn)
 	variable row, subSectionColumn
 
 	WAVE expBrowserSel = GetExperimentBrowserGUISel()
@@ -1118,17 +1119,56 @@ static Function AB_ExpandIfCollapsed(sweepBrowser, row, subSectionColumn)
 	endif
 End
 
-/// @returns 0 if at least one sweep could be loaded, 1 otherwise
-static Function AB_LoadSweepsFromExpandedRange(sweepBrowser, row, subSectionColumn)
-	DFREF sweepBrowser
-	variable row, subSectionColumn
+/// @brief get indizes from AB window while successive expanding all columns
+///
+/// @returns valid indizes wave on success
+static Function/WAVE AB_GetExpandedIndices()
+	variable i, row
 
-	variable j, endRow, mapIndex, ret, sweep, oneValidSweep
+	WAVE expBrowserSel    = GetExperimentBrowserGUISel()
+	// Our mode for the listbox stores the selection bit only in the first column
+	WAVE/Z wv = FindIndizes(wv=expBrowserSel, col=0, var=1, prop=PROP_MATCHES_VAR_BIT_MASK)
+	if(!WaveExists(wv))
+		Make/FREE/N=0 wv
+		return wv
+	endif
+
+	// expand all selected treeviews
+	// as indizes might change during the loop run we have to determine the
+	// dimension size in the loop condition
+	for(i = 0; i < DimSize(wv, ROWS); i += 1)
+		row = wv[i]
+
+		// we have to refetch the selected entries
+		if(!AB_ExpandIfCollapsed(row, EXPERIMENT_TREEVIEW_COLUMN))
+			WAVE wv = FindIndizes(wv=expBrowserSel, col=0, var=1, prop=PROP_MATCHES_VAR_BIT_MASK)
+			i = 0
+		endif
+
+		if(!AB_ExpandIfCollapsed(row, DEVICE_TREEVIEW_COLUMN))
+			WAVE wv = FindIndizes(wv=expBrowserSel, col=0, var=1, prop=PROP_MATCHES_VAR_BIT_MASK)
+			i = 0
+		endif
+	endfor
+
+	return wv
+End
+
+/// @returns 0 if at least one sweep or stimset could be loaded, 1 otherwise
+static Function AB_LoadFromExpandedRange(row, subSectionColumn, AB_LoadType, [overwrite, sweepBrowserDFR])
+	variable row, subSectionColumn, AB_LoadType, overwrite
+	DFREF sweepBrowserDFR
+
+	variable j, endRow, mapIndex, sweep, oneValidLoad
 	string device, discLocation, dataFolder, fileName, fileType
 
 	WAVE expBrowserSel    = GetExperimentBrowserGUISel()
 	WAVE/T expBrowserList = GetExperimentBrowserGUIList()
 	WAVE/T map = GetAnalysisBrowserMap()
+
+	if(ParamIsDefault(overwrite))
+		overwrite = 0
+	endif
 
 	ASSERT(subSectionColumn == EXPERIMENT_TREEVIEW_COLUMN || subSectionColumn == DEVICE_TREEVIEW_COLUMN, "Invalid subsection column")
 	if(!(expBrowserSel[row][subSectionColumn] & LISTBOX_TREEVIEW))
@@ -1159,15 +1199,26 @@ static Function AB_LoadSweepsFromExpandedRange(sweepBrowser, row, subSectionColu
 		fileType     = map[mapIndex][%FileType]
 		fileName     = map[mapIndex][%FileName]
 
-		if(AB_LoadSweepAndRelated(discLocation, dataFolder, fileType, device, sweep) == 1)
-			continue
-		endif
-
-		oneValidSweep = 1
-		SB_AddToSweepBrowser(sweepBrowser, fileName, dataFolder, device, sweep)
+		switch(AB_LoadType)
+			case AB_LOAD_STIMSET:
+				if(AB_LoadStimsetFromFile(discLocation, dataFolder, fileType, device, sweep, overwrite = overwrite) == 1)
+					continue
+				endif
+				oneValidLoad = 1
+				break
+			case AB_LOAD_SWEEP:
+				if(AB_LoadSweepFromFile(discLocation, dataFolder, fileType, device, sweep, overwrite = overwrite) == 1)
+					continue
+				endif
+				oneValidLoad = 1
+				SB_AddToSweepBrowser(sweepBrowserDFR, fileName, dataFolder, device, sweep)
+				break
+			default:
+				break
+		endswitch
 	endfor
 
-	if(oneValidSweep)
+	if(oneValidLoad)
 		return 0
 	else
 		return 1
@@ -1194,24 +1245,124 @@ static Function AB_GetRowWithNextTreeView(selWave, startRow, col)
 	return numRows
 End
 
-/// @returns 0 if the sweeps could be loaded, or already exists, and 1 on error
-Function AB_LoadSweepAndRelated(filePath, dataFolder, fileType, device, sweep)
-	string filePath, dataFolder, fileType, device
-	variable sweep
+Function AB_LoadFromFile(AB_LoadType, [sweepBrowserDFR])
+	variable AB_LoadType
+	DFREF sweepBrowserDFR
 
-	String sweepFolder, sweeps, msg
-	Variable failure
+	variable mapIndex, sweep, numRows, i, row, overwrite, oneValidLoad
+	string dataFolder, fileName, discLocation, fileType, device
 
-	ASSERT(!isEmpty(filePath), "Empty file or Folder name on disc")
+	if(AB_LoadType == AB_LOAD_SWEEP)
+		ASSERT(!ParamIsDefault(sweepBrowserDFR), "create sweepBrowser DataFolder with SB_CreateNewSweepBrowser() prior")
+		ASSERT(DataFolderRefStatus(sweepBrowserDFR) == 1, "sweepBrowser DataFolder does not exist")
+	endif
+
+	WAVE indizes = AB_GetExpandedIndices()
+	numRows = DimSize(indizes, ROWS)
+	if(numRows == 0)
+		return 0
+	endif
+
+	WAVE/T expBrowserList = GetExperimentBrowserGUIList()
+	WAVE/T map = GetAnalysisBrowserMap()
+	overwrite = GetCheckBoxState("AnalysisBrowser", "checkbox_load_overwrite")
+
+	for(i = 0; i < numRows; i += 1)
+		row = indizes[i]
+
+		// handle not expanded EXPERIMENT and DEVICE COLUMNS
+		switch(AB_LoadType)
+			case AB_LOAD_STIMSET:
+				if(!AB_LoadFromExpandedRange(row, EXPERIMENT_TREEVIEW_COLUMN, AB_LoadType, overwrite = overwrite))
+					oneValidLoad = 1
+					continue
+				endif
+				if(!AB_LoadFromExpandedRange(row, DEVICE_TREEVIEW_COLUMN, AB_LoadType, overwrite = overwrite))
+					oneValidLoad = 1
+					continue
+				endif
+				break
+			case AB_LOAD_SWEEP:
+				if(!AB_LoadFromExpandedRange(row, EXPERIMENT_TREEVIEW_COLUMN, AB_LoadType, sweepBrowserDFR = sweepBrowserDFR, overwrite = overwrite))
+					oneValidLoad = 1
+					continue
+				endif
+				if(!AB_LoadFromExpandedRange(row, DEVICE_TREEVIEW_COLUMN, AB_LoadType, sweepBrowserDFR = sweepBrowserDFR, overwrite = overwrite))
+					oneValidLoad = 1
+					continue
+				endif
+				break
+			default:
+				break
+		endswitch
+
+		sweep  = str2num(GetLastNonEmptyEntry(expBrowserList, "sweep", row))
+		if(!IsFinite(sweep))
+			continue
+		endif
+		device = GetLastNonEmptyEntry(expBrowserList, "device", row)
+
+		mapIndex    = str2num(expBrowserList[row][%experiment][1])
+		fileName     = map[mapIndex][%FileName]
+		dataFolder   = map[mapIndex][%DataFolder]
+		discLocation = map[mapIndex][%DiscLocation]
+		fileType     = map[mapIndex][%FileType]
+
+		switch(AB_LoadType)
+			case AB_LOAD_STIMSET:
+				if(AB_LoadStimsetFromFile(discLocation, dataFolder, fileType, device, sweep, overwrite = overwrite))
+					continue
+				endif
+				oneValidLoad = 1
+				break
+			case AB_LOAD_SWEEP:
+				if(AB_LoadSweepFromFile(discLocation, dataFolder, fileType, device, sweep, overwrite = overwrite))
+					continue
+				endif
+				oneValidLoad = 1
+				SB_AddToSweepBrowser(sweepBrowserDFR, fileName, dataFolder, device, sweep)
+				break
+			default:
+				break
+		endswitch
+	endfor
+
+	return oneValidLoad
+End
+
+// @brief common ASSERT statements for AB_LoadSweepFromFile and AB_LoadStimsetFromFile
+static Function AB_LoadFromFileASSERT(discLocation, dataFolder, fileType, device, sweep, overwrite)
+	string discLocation, dataFolder, fileType, device
+	variable sweep, overwrite
+
+	ASSERT(!isEmpty(discLocation), "Empty file or Folder name on disc")
 	ASSERT(!isEmpty(dataFolder), "Empty dataFolder")
 	ASSERT(cmpstr(fileType, "unknown"), "unknown file format")
 	ASSERT(!isEmpty(device), "Empty device")
 	ASSERT(isFinite(sweep), "Non-finite sweep")
+	ASSERT(overwrite == 0 || overwrite == 1, "overwrite can either be one or zero")
+End
+
+/// @returns 0 if the sweeps could be loaded, or already exists, and 1 on error
+Function AB_LoadSweepFromFile(discLocation, dataFolder, fileType, device, sweep, [overwrite])
+	string discLocation, dataFolder, fileType, device
+	variable sweep, overwrite
+
+	string sweepFolder, sweeps, msg
+	variable h5_fileID, h5_groupID
+
+	if(ParamIsDefault(overwrite))
+		overwrite = 0
+	endif
+	AB_LoadFromFileASSERT(discLocation, dataFolder, fileType, device, sweep, overwrite)
 
 	sweepFolder = GetAnalysisSweepDataPathAS(dataFolder, device, sweep)
 
 	// sweep already loaded
 	if(DataFolderExists(sweepFolder))
+		if(overwrite)
+			/// @todo check complete sweep overwrite and *_LoadSweep functions
+		endif
 		return 0
 	endif
 
@@ -1219,7 +1370,7 @@ Function AB_LoadSweepAndRelated(filePath, dataFolder, fileType, device, sweep)
 
 	strswitch(fileType)
 		case ANALYSISBROWSER_FILE_TYPE_IGOR:
-			sweeps = AB_LoadSweepFromIgor(filePath, sweepDFR, device, sweep)
+			sweeps = AB_LoadSweepFromIgor(discLocation, sweepDFR, device, sweep)
 			if(!cmpstr(sweeps, ""))
 				return 1
 			endif
@@ -1229,7 +1380,7 @@ Function AB_LoadSweepAndRelated(filePath, dataFolder, fileType, device, sweep)
 			endif
 			break
 		case ANALYSISBROWSER_FILE_TYPE_NWB:
-			if(AB_LoadSweepFromNWB(filePath, sweepDFR, device, sweep))
+			if(AB_LoadSweepFromNWB(discLocation, sweepDFR, device, sweep))
 				return 1
 			endif
 			break
@@ -1237,7 +1388,57 @@ Function AB_LoadSweepAndRelated(filePath, dataFolder, fileType, device, sweep)
 			ASSERT(0, "fileType not handled")
 	endswitch
 
-	sprintf msg, "Loaded sweep %d of device %s and %s\r", sweep, device, filePath
+	sprintf msg, "Loaded sweep %d of device %s and %s\r", sweep, device, discLocation
+	DEBUGPRINT(msg)
+
+	return 0
+End
+
+Function AB_LoadStimsetFromFile(discLocation, dataFolder, fileType, device, sweep, [overwrite])
+	string discLocation, dataFolder, fileType, device
+	variable sweep, overwrite
+
+	string stimsets, loadedStimsets, msg
+	variable h5_fileID, h5_groupID
+
+	if(ParamIsDefault(overwrite))
+		overwrite = 0
+	endif
+	AB_LoadFromFileASSERT(discLocation, dataFolder, fileType, device, sweep, overwrite)
+
+	strswitch(fileType)
+		case ANALYSISBROWSER_FILE_TYPE_IGOR:
+			stimsets = NWB_GetStimsetFromSpecificSweep(dataFolder, device, sweep)
+			loadedStimsets = AB_LoadStimsets(discLocation, stimsets, overwrite)
+			loadedStimsets = AB_LoadCustomWaves(discLocation, loadedStimsets, overwrite)
+			stimsets = GetListDifference(stimsets, loadedStimsets)
+			if(AB_LoadStimsetsRAW(discLocation, stimsets, overwrite))
+				return 1
+			endif
+			break
+		case ANALYSISBROWSER_FILE_TYPE_NWB:
+			stimsets = NWB_GetStimsetFromSpecificSweep(dataFolder, device, sweep)
+			h5_fileID  = IPNWB#H5_OpenFile(discLocation)
+			if(!IPNWB#StimsetPathExists(h5_fileID))
+				IPNWB#H5_CloseFile(h5_fileID)
+				return 1
+			endif
+			h5_groupID = IPNWB#OpenStimset(h5_fileID)
+			if(NWB_LoadStimsets(h5_groupID, stimsets, overwrite))
+				IPNWB#H5_CloseFile(h5_fileID)
+				return 1
+			endif
+			if(NWB_LoadCustomWaves(h5_groupID, stimsets, overwrite))
+				IPNWB#H5_CloseFile(h5_fileID)
+				return 1
+			endif
+			IPNWB#H5_CloseFile(h5_fileID)
+			break
+		default:
+			ASSERT(0, "fileType not handled")
+	endswitch
+
+	sprintf msg, "Loaded stimsets %s of device %s and %s\r", stimsets, device, discLocation
 	DEBUGPRINT(msg)
 
 	return 0
@@ -1428,6 +1629,9 @@ Function AB_SortConfigSweeps(config)
 	Note/K config, ConvertTextWaveToList(units)
 End
 
+/// @brief Load specified device/sweep combination from Igor experiment file to sweepDFR
+///
+/// @returns name of loaded sweep
 Function/S AB_LoadSweepFromIgor(expFilePath, sweepDFR, device, sweep)
 	string expFilePath, device
 	DFREF sweepDFR
@@ -1467,6 +1671,334 @@ Function/S AB_LoadSweepFromIgor(expFilePath, sweepDFR, device, sweep)
 	KillOrMoveToTrash(dfr=newDFR)
 
 	return sweepWaveName
+End
+
+/// @brief a failsave alternative for AB_LoadStimsets() to load RAW stimsets
+///
+/// If a stimset could not get loaded using AB_LoadStimsets()
+/// this function is used in addition to try to load the
+/// stimset without its corresponding Parameter Waves.
+/// overwrite is not supported
+///
+/// @param expFilePath    Path on disc to igor experiment
+/// @param stimsets       ";" separated list of all stimsets
+/// @param overwrite      overwrite flag
+///
+/// @return 1 on error and 0 on success
+static Function AB_LoadStimsetsRAW(expFilePath, stimsets, overwrite)
+	string expFilePath, stimsets
+	variable overwrite
+
+	string stimset
+	variable numStimsets, i
+	variable error = 0
+
+	numStimsets = ItemsInList(stimsets)
+	for(i = 0; i < numStimsets; i += 1)
+		stimset = StringFromList(i, stimsets)
+		if(AB_LoadStimsetRAW(expFilePath, stimset, overwrite))
+			printf "experiment: \t%s \tstimset: \t%s \tload failed for complete stimset\r", expFilePath, stimset
+			error = 1
+			continue
+		endif
+		printf "experiment: \t%s \tstimset: \t%s \tloaded complete stimset\r", expFilePath, stimset
+	endfor
+
+	return error
+End
+
+/// @brief Load specified stimsets from Igor experiment file
+///
+/// recurses into all dependent stimsets as soon as they have been loaded.
+/// the list of stimsets is extended "on the left side": new items are added left.
+/// use numEnd to indicate unto which item the list was already processed.
+/// see StimsetRecursion() for a similar structure
+///
+/// @param expFilePath Path on disc to igor experiment
+/// @param stimsets           ";" separated list of all stimsets of the current sweep.
+/// @param processedStimsets  [optional] input a list of already processed stimsets
+/// @param overwrite          overwrite flag
+///
+/// @return 1 on error and 0 on success
+Function/S AB_LoadStimsets(expFilePath, stimsets, overwrite, [processedStimsets])
+	string expFilePath, stimsets, processedStimsets
+	variable overwrite
+
+	string stimset, totalStimsets, newStimsets, oldStimsets
+	variable numBefore, numMoved, numAfter, numNewStimsets, i
+	string loadedStimsets = ""
+
+	if(ParamIsDefault(processedStimsets))
+		processedStimsets = ""
+	endif
+
+	totalStimsets = stimsets + processedStimsets
+	numBefore = ItemsInList(totalStimsets)
+
+	// load first order stimsets
+	numNewStimsets = ItemsInList(stimsets)
+	for(i = 0; i < numNewStimsets; i += 1)
+		stimset = StringFromList(i, stimsets)
+		if(AB_LoadStimset(expFilePath, stimset, overwrite))
+			if(ItemsInList(processedStimsets) == 0)
+				// parent corrupt
+				// load other parents, no children needed.
+				continue
+			else
+				// if a (dependent) stimset is missing
+				// the corresponding parent can not be created with Parameter Waves
+				return loadedStimsets
+			endif
+		endif
+		loadedStimsets = AddListItem(stimset, loadedStimsets)
+		numMoved += WB_StimsetFamilyNames(totalStimsets, parent = stimset)
+	endfor
+	numAfter = ItemsInList(totalStimsets)
+
+	// load next order stimsets
+	numNewStimsets = numAfter - numBefore + numMoved
+	if(numNewStimsets > 0)
+		newStimsets = ListFromList(totalStimsets, 0, numNewStimsets - 1)
+		oldStimsets = ListFromList(totalStimsets, numNewStimsets, inf)
+		return loadedStimsets + AB_LoadStimsets(expFilePath, newStimsets, overwrite, processedStimsets = oldStimsets)
+	endif
+
+	return loadedStimsets
+End
+
+/// @brief Load specified stimset from Igor experiment file
+///
+/// @return 1 on error and 0 on success
+static Function AB_LoadStimset(expFilePath, stimset, overwrite)
+	string expFilePath, stimset
+	variable overwrite
+
+	if(overwrite)
+		WB_KillParameterWaves(stimset)
+		WB_KillStimset(stimset)
+	endif
+
+	if(WB_ParameterWavesExist(stimset))
+		return 0
+	endif
+	if(WB_StimsetExists(stimset))
+		return 0
+	endif
+
+	if(overwrite)
+		WB_KillParameterWaves(stimset)
+	endif
+	if(!AB_LoadStimsetTemplateWaves(expFilePath, stimset))
+		return 0
+	endif
+	if(!AB_LoadStimsetRAW(expFilePath, stimset, overwrite))
+		return 0
+	endif
+
+	printf "experiment: \t%s \tstimset: \t%s \tfailed to recreate stimset\r", expFilePath, stimset
+	return 1
+End
+
+static Function AB_LoadStimsetRAW(expFilePath, stimset, overwrite)
+	string expFilePath, stimset
+	variable overwrite
+
+	string dataPath, data
+	variable numWavesLoaded
+
+	WB_KillParameterWaves(stimset)
+	if(overwrite)
+		WB_KillStimset(stimset)
+	endif
+
+	DFREF newDFR = UniqueDataFolder(GetAnalysisFolder(), "temp")
+	DFREF setDFR = GetSetFolder(GetStimSetType(stimset))
+
+	WAVE/Z/SDFR=setDFR wv = $stimset
+	if(WaveExists(wv))
+		return 0
+	endif
+
+	dataPath = GetDataFolder(1, setDFR)
+	data = AddListItem(stimset, "")
+
+	DFREF saveDFR = GetDataFolderDFR()
+	numWavesLoaded = AB_LoadDataWrapper(newDFR, expFilePath, dataPath, data)
+	SetDataFolder saveDFR
+
+	if(numWavesLoaded != 1)
+		KillOrMoveToTrash(dfr=newDFR)
+		return 1
+	endif
+
+	MoveWave newDFR:$stimset setDFR
+	KillOrMoveToTrash(dfr=newDFR)
+
+	return 0
+End
+
+/// @brief Load template waves for a specific stimset from Igor experiment file
+///
+/// @return 1 on error and 0 on success
+static Function AB_LoadStimsetTemplateWaves(expFilePath, stimset)
+	string expFilePath, stimset
+
+	variable channelType, numWavesLoaded, numStimsets, i
+	string dataPath
+	string parameterWaves = ""
+
+	// load parameter waves
+	DFREF newDFR = UniqueDataFolder(GetAnalysisFolder(), "temp")
+
+	parameterWaves = AddListItem(WB_GetParameterWaveName(stimset, STIMSET_PARAM_WP), parameterWaves)
+	parameterWaves = AddListItem(WB_GetParameterWaveName(stimset, STIMSET_PARAM_WPT), parameterWaves)
+	parameterWaves = AddListItem(WB_GetParameterWaveName(stimset, STIMSET_PARAM_SEGWVTYPE), parameterWaves)
+
+	channelType = GetStimSetType(stimset)
+	dataPath = GetSetParamFolderAsString(channelType)
+
+	DFREF saveDFR = GetDataFolderDFR()
+	numWavesLoaded = AB_LoadDataWrapper(newDFR, expFilePath, dataPath, parameterWaves)
+	SetDataFolder saveDFR
+
+	if(numWavesLoaded != 3)
+		KillOrMoveToTrash(dfr=newDFR)
+		return 1
+	endif
+
+	// move loaded waves to stimset parameter dataFolder
+	WAVE WP        = newDFR:$(WB_GetParameterWaveName(stimset, STIMSET_PARAM_WP))
+	WAVE/T WPT     = newDFR:$(WB_GetParameterWaveName(stimset, STIMSET_PARAM_WPT))
+	WAVE SegWvType = newDFR:$(WB_GetParameterWaveName(stimset, STIMSET_PARAM_SEGWVTYPE))
+
+	DFREF paramDFR = GetSetParamFolder(channelType)
+
+	MoveWave WP, paramDFR
+	MoveWave WPT, paramDFR
+	MoveWave SegWvType, paramDFR
+
+	KillOrMoveToTrash(dfr=newDFR)
+
+	if(WB_ParameterWavesExist(stimset))
+		return 0
+	endif
+
+	return 1
+End
+
+/// @brief Load custom waves for specified stimset from Igor experiment file
+///
+/// @return 1 on error and 0 on success
+Function/S AB_LoadCustomWaves(expFilePath, stimsets, overwrite)
+	string expFilePath, stimsets
+	variable overwrite
+
+	string dependentStimsets, stimset, custom_waves, path, customWaveName
+	variable numWaves, numStimsets, i, j, valid
+	string loadedStimsets = ""
+
+	WAVE/T cw = WB_CustomWavesPathFromStimSet(stimsetList = stimsets)
+
+	numWaves = DimSize(cw, ROWS)
+	Make/FREE/I/N=(numWaves) loaded = 1
+	for(i = 0; i < numWaves; i += 1)
+		customWaveName = cw[i]
+
+		// handle legacy custom wave format
+		if(!isEmpty(customWaveName) && strsearch(customWaveName, ":", 0) == -1)
+			path = GetSetFolderAsString(CHANNEL_TYPE_DAC) + ":" + customWaveName
+			if(!AB_LoadWave(expFilePath, path, overwrite))
+				continue
+			endif
+			path = GetSetFolderAsString(CHANNEL_TYPE_TTL) + ":" + customWaveName
+			if(!AB_LoadWave(expFilePath, path, overwrite))
+				continue
+			endif
+		endif
+
+		// load standard wave format
+		if(!AB_LoadWave(expFilePath, customWaveName, overwrite))
+			continue
+		endif
+
+		// indicate error
+		loaded[i] = 0
+	endfor
+
+	if(numWaves == 0 || sum(loaded) == numWaves)
+		return stimsets
+	endif
+
+	// search for uncorrupt stimsets
+	numStimsets = ItemsInList(stimsets)
+	for(i = 0; i < numStimsets; i += 1)
+		valid = 1
+		stimset = StringFromList(i, stimsets)
+		WAVE/T single_cw = WB_CustomWavesPathFromStimSet(stimsetList = stimset)
+		numWaves = DimSize(single_cw, 0)
+		for(j = 0; j < numWaves; j += 1)
+			FindValue/TEXT=(single_cw[j]) cw
+			if(V_Value == -1)
+				continue
+			endif
+			if(loaded[V_Value] == 0)
+				valid = 0
+				break
+			endif
+		endfor
+		if(valid)
+			loadedStimsets = AddListItem(stimset, loadedStimsets)
+		endif
+	endfor
+
+	return loadedStimsets
+End
+
+/// @brief Load specified wave from Igor Experiment file.
+///
+/// @return 1 on error and 0 on success
+Function AB_LoadWave(expFilePath, fullPath, overwrite)
+	string expFilePath, fullPath
+	variable overwrite
+
+	variable numWavesLoaded
+	string dataFolder
+	string loadList = ""
+
+	WAVE/Z wv = $fullPath
+	if(overwrite)
+		KillOrMoveToTrash(wv=wv)
+	endif
+	if(WaveExists(wv))
+		return 0
+	endif
+
+	DFREF saveDFR = GetDataFolderDFR()
+	DFREF newDFR = UniqueDataFolder(GetAnalysisFolder(), "temp")
+
+	dataFolder = GetFolder(fullPath)
+	loadList = AddListItem(RemovePrefix(fullPath, startStr = dataFolder), loadList)
+	if(isEmpty(dataFolder))
+		dataFolder = "root:"
+	endif
+	numWavesLoaded = AB_LoadDataWrapper(newDFR, expFilePath, dataFolder, loadList)
+
+	if(numWavesLoaded != 1)
+		SetDataFolder saveDFR
+		KillOrMoveToTrash(dfr=newDFR)
+		KillOrMoveToTrash(dfr=sweepDFR)
+		return 1
+	endif
+
+	WAVE wv = $(GetIndexedObjNameDFR(newDFR, 1, 0))
+	SetDataFolder root:
+	createDFWithAllParents(dataFolder)
+	MoveWave wv, $fullPath
+
+	SetDataFolder saveDFR
+	KillOrMoveToTrash(dfr=newDFR)
+
+	return 0
 End
 
 static Function AB_SplitSweepIntoComponents(expFolder, device, sweep, sweepWave)
@@ -1558,20 +2090,24 @@ End
 
 Window AnalysisBrowser() : Panel
 	PauseUpdate; Silent 1		// building window...
-	NewPanel /K=1 /W=(180,275,1057,764)
-	Button button_base_folder_scan,pos={6,41},size={100,20},proc=AB_ButtonProc_ScanFolder,title="Scan folder"
-	Button button_base_folder_scan,userdata(ResizeControlsInfo)= A"!!,@#!!#>2!!#@,!!#<Xz!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
+	NewPanel /K=1 /W=(242,176,1118,664)
+	SetDrawLayer UserBack
+	DrawLine 5,185,105,185
+	DrawLine 5,275,105,275
+	DrawLine 5,74,105,74
+	Button button_base_folder_scan,pos={5,45},size={100,25},proc=AB_ButtonProc_ScanFolder,title="Scan folder"
+	Button button_base_folder_scan,userdata(ResizeControlsInfo)= A"!!,?X!!#>B!!#@,!!#=+z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	Button button_base_folder_scan,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	Button button_base_folder_scan,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
 	Button button_base_folder_scan, help={"Start scanning the base folder recursively for packed/unpacked experiments holding MIES data"}
-	SetVariable setvar_baseFolder,pos={118,17},size={338,16}
-	SetVariable setvar_baseFolder,userdata(ResizeControlsInfo)= A"!!,FQ!!#<@!!#Bc!!#<8z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
+	SetVariable setvar_baseFolder,pos={118.00,17.00},size={338.00,18.00}
+	SetVariable setvar_baseFolder,userdata(ResizeControlsInfo)= A"!!,FQ!!#<@!!#Bc!!#<Hz!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	SetVariable setvar_baseFolder,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	SetVariable setvar_baseFolder,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
 	SetVariable setvar_baseFolder,value= _STR:"",noedit= 1
 	SetVariable setvar_baseFolder, help={"Base folder which is recursively searched for packed/unpacked experiments holding MIES data"}
-	ListBox list_experiment_contents,pos={119,44},size={748,429},proc=AB_ListBoxProc_ExpBrowser
-	ListBox list_experiment_contents,userdata(ResizeControlsInfo)= A"!!,FS!!#>>!!#D1J,hs7J,fQL!!#](Aon\"Qzzzzzzzzzzzzzz!!#o2B4uAezz"
+	ListBox list_experiment_contents,pos={119.00,43.00},size={749.00,439.00},proc=AB_ListBoxProc_ExpBrowser
+	ListBox list_experiment_contents,userdata(ResizeControlsInfo)= A"!!,FS!!#>:!!#DK5QF1+J,fQL!!#](Aon\"Qzzzzzzzzzzzzzz!!#o2B4uAezz"
 	ListBox list_experiment_contents,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	ListBox list_experiment_contents,userdata(ResizeControlsInfo) += A"zzz!!#?(FEDG<zzzzzzzzzzzzzz!!!"
 	ListBox list_experiment_contents,listWave=root:MIES:Analysis:expBrowserList
@@ -1580,28 +2116,51 @@ Window AnalysisBrowser() : Panel
 	ListBox list_experiment_contents,widths={33,260,24,137,55,45,75,130,45,63}
 	ListBox list_experiment_contents,userColumnResize= 1,hScroll= 3
 	ListBox list_experiment_contents, help={"Various properties of the loaded sweep data"}
-	Button button_select_same_stim_sets,pos={6,67},size={101,33},proc=AB_ButtonProc_SelectStimSets,title="Select same\rstim set sweeps"
-	Button button_select_same_stim_sets,userdata(ResizeControlsInfo)= A"!!,@#!!#??!!#@.!!#=gz!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
+	Button button_select_same_stim_sets,pos={5,80},size={100,40},proc=AB_ButtonProc_SelectStimSets,title="Select same\rstim set sweeps"
+	Button button_select_same_stim_sets,help={"Starting from one selected sweep, select all other sweeps which were acquired with the same stimset"}
+	Button button_select_same_stim_sets,userdata(ResizeControlsInfo)= A"!!,?X!!#?Y!!#@,!!#>.z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	Button button_select_same_stim_sets,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	Button button_select_same_stim_sets,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
-	Button button_select_same_stim_sets, help={"Starting from one selected sweep, select all other sweeps which were acquired with the same stimset"}
-	Button button_select_directory,pos={6,14},size={100,20},proc=AB_ButtonProc_SelectDirectory,title="Select directory"
-	Button button_select_directory,userdata(ResizeControlsInfo)= A"!!,@#!!#;m!!#@,!!#<Xz!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
+	Button button_select_directory,pos={5,15},size={100,25},proc=AB_ButtonProc_SelectDirectory,title="Select directory"
+	Button button_select_directory,userdata(ResizeControlsInfo)= A"!!,?X!!#<(!!#@,!!#=+z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	Button button_select_directory,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	Button button_select_directory,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
 	Button button_select_directory, help={"Open a directory selection dialog"}
-	Button button_collapse_all,pos={7,123},size={100,23},proc=AB_ButtonProc_CollapseAll,title="Collapse all"
+	Button button_collapse_all,pos={5,125},size={100,25},proc=AB_ButtonProc_CollapseAll,title="Collapse all"
 	Button button_collapse_all, help={"Collapse all entries giving the most compact view"}
-	Button button_expand_all,pos={7,158},size={100,19},proc=AB_ButtonProc_ExpandAll,title="Expand all"
+	Button button_collapse_all,userdata(ResizeControlsInfo)= A"!!,?X!!#@^!!#@,!!#=+z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
+	Button button_collapse_all,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
+	Button button_collapse_all,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
+	Button button_expand_all,pos={5,155},size={100,25},proc=AB_ButtonProc_ExpandAll,title="Expand all"
 	Button button_expand_all, help={"Expand all entries giving the longest view"}
-	Button button_load_selection,pos={7,190},size={100,25},proc=AB_ButtonProc_LoadSelection,title="Load Selection"
-	Button button_load_selection, help={"Open a sweep browser panel from the selected sweeps. In case an experiment or device is selected, all sweeps are loaded from them."}
-	Button button_show_usercomments,pos={7,226},size={100,25},proc=AB_ButtonProc_OpenCommentNB,title="Open comment NB"
+	Button button_expand_all,userdata(ResizeControlsInfo)= A"!!,?X!!#A*!!#@,!!#=+z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
+	Button button_expand_all,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
+	Button button_expand_all,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
+	Button button_load_sweeps,pos={5.00,190.00},size={100.00,25.00},proc=AB_ButtonProc_LoadSweeps,title="Load Sweeps"
+	Button button_load_sweeps, help={"Open a sweep browser panel from the selected sweeps. In case an experiment or device is selected, all sweeps are loaded from them."}
+	Button button_load_sweeps,userdata(ResizeControlsInfo)= A"!!,?X!!#AM!!#@,!!#=+z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
+	Button button_load_sweeps,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
+	Button button_load_sweeps,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
+	Button button_load_stimsets,pos={5.00,220.00},size={100.00,25.00},proc=AB_ButtonProc_LoadStimsets,title="Load Stimsets"
+	Button button_load_stimsets,help={"Open the wave builder panel with the selected stimset. All selected stimsets are loaded recursively."}
+	Button button_load_stimsets,userdata(ResizeControlsInfo)= A"!!,?X!!#Ak!!#@,!!#=+z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
+	Button button_load_stimsets,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
+	Button button_load_stimsets,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
+	Button button_show_usercomments,pos={5,280},size={100,40},proc=AB_ButtonProc_OpenCommentNB,title="Open comment \rNB"
 	Button button_show_usercomments, help={"Open a read-only notebook showing the user comment for the currently selected experiment."}
+	Button button_show_usercomments,userdata(ResizeControlsInfo)= A"!!,?X!!#BF!!#@,!!#>.z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
+	Button button_show_usercomments,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
+	Button button_show_usercomments,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
+	CheckBox checkbox_load_overwrite,pos={20,250},size={64.00,15.00},title="overwrite"
+	CheckBox checkbox_load_overwrite,userdata(ResizeControlsInfo)= A"!!,BY!!#B4!!#?9!!#<(z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
+	CheckBox checkbox_load_overwrite,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
+	CheckBox checkbox_load_overwrite,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
+	CheckBox checkbox_load_overwrite,value= 0, help={"Overwrite existing stimsets"}
 	SetWindow kwTopWin,hook(ResizeControls)=ResizeControls#ResizeControlsHook
-	SetWindow kwTopWin,userdata(ResizeControlsInfo)= A"!!*'\"z!!#DQ^]6a@J,fQLzzzzzzzzzzzzzzzzzzzz"
+	SetWindow kwTopWin,userdata(ResizeControlsInfo)= A"!!*'\"z!!#Dk!!#CYzzzzzzzzzzzzzzzzzzzzz"
 	SetWindow kwTopWin,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzzzzzzzzzzzzzzz"
 	SetWindow kwTopWin,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzzzzzzzzz!!!"
+	Execute/Q/Z "SetWindow kwTopWin sizeLimit={657,366,inf,inf}" // sizeLimit requires Igor 7 or later
 EndMacro
 
 /// @brief Button "Expand all"
@@ -1631,90 +2190,40 @@ Function AB_ButtonProc_CollapseAll(ba) : ButtonControl
 	return 0
 End
 
-/// @brief Button "Load Selection"
-Function AB_ButtonProc_LoadSelection(ba) : ButtonControl
+/// @brief Button "Load Sweeps"
+Function AB_ButtonProc_LoadSweeps(ba) : ButtonControl
 	STRUCT WMButtonAction &ba
 
-	variable mapIndex, sweep, numRows, i, row, ret, oneValidSweep
-	string dataFolder, fileName, discLocation, fileType, device
+	variable oneValidSweep
 
 	switch(ba.eventcode)
 		case 2:
-			WAVE expBrowserSel    = GetExperimentBrowserGUISel()
-			WAVE/T expBrowserList = GetExperimentBrowserGUIList()
-			WAVE/T map = GetAnalysisBrowserMap()
-
-			// Our mode for the listbox stores the selection bit only in the first column
-			WAVE/Z indizes = FindIndizes(wv=expBrowserSel, col=0, var=1, prop=PROP_MATCHES_VAR_BIT_MASK)
-
-			if(!WaveExists(indizes))
-				break
-			endif
-
-			DFREF sweepBrowserDFR = SB_CreateNewSweepBrowser()
-
-			// expand all selected treeviews
-			// as indizes might change during the loop run we have to determine the
-			// dimension size in the loop condition
-			for(i = 0; i < DimSize(indizes, ROWS); i += 1)
-				row = indizes[i]
-
-				// we have to refetch the selected entries
-				if(!AB_ExpandIfCollapsed(sweepBrowserDFR, row, EXPERIMENT_TREEVIEW_COLUMN))
-					WAVE indizes = FindIndizes(wv=expBrowserSel, col=0, var=1, prop=PROP_MATCHES_VAR_BIT_MASK)
-					i = 0
-				endif
-
-				if(!AB_ExpandIfCollapsed(sweepBrowserDFR, row, DEVICE_TREEVIEW_COLUMN))
-					WAVE indizes = FindIndizes(wv=expBrowserSel, col=0, var=1, prop=PROP_MATCHES_VAR_BIT_MASK)
-					i = 0
-				endif
-			endfor
-
-			// the matches might include rows with devices or experiments only.
-			// In that case we load everything from the experiment or device.
-			numRows = DimSize(indizes, ROWS)
-			for(i = 0; i < numRows; i += 1)
-				row = indizes[i]
-
-				if(!AB_LoadSweepsFromExpandedRange(sweepBrowserDFR, row, EXPERIMENT_TREEVIEW_COLUMN))
-					oneValidSweep = 1
-					continue
-				endif
-
-				if(!AB_LoadSweepsFromExpandedRange(sweepBrowserDFR, row, DEVICE_TREEVIEW_COLUMN))
-					oneValidSweep = 1
-					continue
-				endif
-
-				// selection is a plain sweep, the current row either holds the sweep number, or one of the previous ones
-				sweep  = str2num(GetLastNonEmptyEntry(expBrowserList, "sweep", row))
-
-				if(!IsFinite(sweep))
-					continue
-				endif
-
-				device = GetLastNonEmptyEntry(expBrowserList, "device", row)
-
-				mapIndex    = str2num(expBrowserList[row][%experiment][1])
-				fileName     = map[mapIndex][%FileName]
-				dataFolder   = map[mapIndex][%DataFolder]
-				discLocation = map[mapIndex][%DiscLocation]
-				fileType     = map[mapIndex][%FileType]
-
-				if(AB_LoadSweepAndRelated(discLocation, dataFolder, fileType, device, sweep))
-					continue
-				endif
-
-				oneValidSweep = 1
-				SB_AddToSweepBrowser(sweepBrowserDFR, fileName, dataFolder, device, sweep)
-			endfor
-
-			SVAR/SDFR=sweepBrowserDFR graph
+			DFREF dfr = SB_CreateNewSweepBrowser()
+			oneValidSweep = AB_LoadFromFile(AB_LOAD_SWEEP, sweepBrowserDFR = dfr)
+			SVAR/SDFR=dfr graph
 			if(oneValidSweep)
 				SB_UpdateSweepPlot(graph, newSweep=0)
 			else
 				KillWindow $graph
+			endif
+			break
+	endswitch
+
+
+	return 0
+End
+
+/// @brief Button "Load Stimsets"
+Function AB_ButtonProc_LoadStimsets(ba) : ButtonControl
+	STRUCT WMButtonAction &ba
+
+	variable oneValidStimset
+
+	switch(ba.eventcode)
+		case 2:
+			oneValidStimset = AB_LoadFromFile(AB_LOAD_STIMSET)
+			if(oneValidStimset)
+				WBP_CreateWaveBuilderPanel()
 			endif
 			break
 	endswitch

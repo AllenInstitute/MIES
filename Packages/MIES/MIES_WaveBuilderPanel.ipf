@@ -1543,11 +1543,17 @@ End
 /// @brief This function creates a string that is used to name the 2d output wave of the wavebuilder panel.
 ///
 /// The naming is based on userinput to the wavebuilder panel
-static Function/S WBP_AssembleSetName()
+static Function/S WBP_AssembleSetName([modName])
+	string modName
 	string AssembledBaseName = ""
 
 	ControlInfo/W=$panel setvar_WaveBuilder_baseName
-	AssembledBaseName += s_value[0,15]
+	if(ParamIsDefault(modName))
+		AssembledBaseName += s_value[0,15]
+	else
+		AssembledBaseName += s_value[0,(15 - strlen(modName))]
+		AssembledBaseName += modName
+	endif
 	ControlInfo/W=$panel popup_WaveBuilder_OutputType
 	AssembledBaseName += "_" + s_value + "_"
 	ControlInfo/W=$panel setvar_WaveBuilder_SetNumber
@@ -1616,8 +1622,8 @@ Function/S WBP_ReturnListSavedSets(setType)
 end
 
 static Function WBP_SaveSetParam()
-
-	string setName
+	string setName, childStimsets
+	variable i
 
 	WAVE SegWvType = GetSegmentTypeWave()
 	WAVE WP        = GetWaveBuilderWaveParam()
@@ -1626,19 +1632,32 @@ static Function WBP_SaveSetParam()
 	DFREF dfr = GetSetParamFolder(WBP_GetOutputType())
 	setName = WBP_AssembleSetName()
 
-	Duplicate/O SegWvType , dfr:$("SegWvType_" + setName)
-	Duplicate/O WP	       , dfr:$("WP_" + setName)
-	Duplicate/O WPT       , dfr:$("WPT_" + setName)
+	// avoid circle references of any order
+	childStimsets = WB_StimsetRecursion()
+	if(WhichListItem(setname, childStimsets, ";", 0, 0) != -1)
+		do
+			i += 1
+			setName = WBP_AssembleSetName(modName = "_" + num2str(i))
+		while(WhichListItem(setname, childStimsets, ";", 0, 0) != -1)
+		printf "Naming failure: Stimset can not reference itself. Saving with different name: \"%s\" to remove reference to itself.\r", setName
+	endif
+
+	Duplicate/O SegWvType , dfr:$WB_GetParameterWaveName(setName, STIMSET_PARAM_SEGWVTYPE)
+	Duplicate/O WP	      , dfr:$WB_GetParameterWaveName(setName, STIMSET_PARAM_WP)
+	Duplicate/O WPT       , dfr:$WB_GetParameterWaveName(setName, STIMSET_PARAM_WPT)
 End
 
 static Function WBP_LoadSet(setName)
 	string setName
 
 	string funcList, setPrefix
-	variable channelType, setNumber
+	variable channelType, setNumber, preventUpdate
+
+	// prevent update until graph was loaded
+	preventUpdate = GetCheckBoxState(panel, "check_PreventUpdate")
+	SetCheckBoxState(panel, "check_PreventUpdate", 1)
 
 	if(cmpstr(setName, NONE))
-
 		WBP_SplitSetname(setName, setPrefix, channelType, setNumber)
 
 		WAVE WP        = WB_GetWaveParamForSet(setName)
@@ -1693,6 +1712,10 @@ static Function WBP_LoadSet(setName)
 
 	WBP_SelectEpoch(0)
 	WBP_UpdateEpochControls()
+
+	// reset old state of checkbox and update panel
+	SetCheckBoxState(panel, "check_PreventUpdate", preventUpdate)
+	WBP_UpdatePanelIfAllowed()
 End
 
 static Function SetAnalysisFunctionIfFuncExists(win, ctrl, funcList, func)
@@ -1715,9 +1738,9 @@ static Function WBP_DeleteSet()
 
 	setName = GetPopupMenuString(panel, "popup_WaveBuilder_SetList")
 
-	WPName = "WP_" + setName
-	WPTName = "WPT_" + setName
-	SegWvTypeName = "SegWvType_" + setName
+	WPName        = WB_GetParameterWaveName(setName, STIMSET_PARAM_WP)
+	WPTName       = WB_GetParameterWaveName(setName, STIMSET_PARAM_WPT)
+	SegWvTypeName = WB_GetParameterWaveName(setName, STIMSET_PARAM_SEGWVTYPE)
 
 	// makes sure that a set is selected
 	if(!CmpStr(setName, NONE))

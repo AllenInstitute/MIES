@@ -1,7 +1,9 @@
 #pragma rtGlobals=3		// Use modern global access method and strict wave access.
 #pragma rtFunctionErrors=1
 #pragma IndependentModule=IPNWB
-#pragma version=0.15
+#pragma version=0.16
+
+static strConstant PATH_STIMSETS = "/general/stimsets"
 
 /// @file IPNWB_Reader.ipf
 /// @brief Generic functions related to import from the NeuroDataWithoutBorders format
@@ -51,6 +53,22 @@ Function/S ReadStimulus(fileID)
 	variable fileID
 
 	return H5_ListGroups(fileID, "/stimulus/presentation")
+End
+
+/// @brief List all stimsets
+///
+/// @param  fileID identifier of open HDF5 file
+/// @return        comma separated list of contents of the stimset group
+Function/S ReadStimsets(fileID)
+	variable fileID
+
+	ASSERT(H5_IsFileOpen(fileID), "given HDF5 file identifier is not valid")
+
+	if(!IPNWB#StimsetPathExists(fileID))
+		return ""
+	endif
+
+	return H5_ListGroupMembers(fileID, PATH_STIMSETS)
 End
 
 /// @brief Check if the file can be handled by the IPNWB Read Procedures
@@ -287,15 +305,9 @@ Function/Wave LoadDataWave(locationID, channel, [path])
 	Assert(IPNWB#H5_GroupExists(locationID, path), "Path is not in nwb file")
 
 	path += channel + "/data"
-	HDF5LoadData/Q/IGOR=(-1) locationID, path
+	WAVE wv = H5_LoadDataset(locationID, path, renameTo = channel)
 
-	Assert(!V_flag, "could not load data wave from specified path")
-	Assert(ItemsInList(S_waveNames) == 1, "unspecified data format")
-
-	wave data = $StringFromList(0, S_waveNames)
-	MoveWave data $channel
-
-	return MakeWaveFree(data)
+	return MakeWaveFree(wv)
 End
 
 /// @brief Load single channel data as a wave from /acquisition/timeseries
@@ -360,4 +372,23 @@ Function OpenStimulus(fileID)
 	variable fileID
 
 	return H5_OpenGroup(fileID, "/stimulus/presentation")
+End
+
+/// @brief Open hdf5 group containing stimsets
+///
+/// @param fileID id of an open hdf5 group or file
+///
+/// @return id of hdf5 group
+Function OpenStimset(fileID)
+	variable fileID
+
+	Assert(StimsetPathExists(fileID), "Path is not in nwb file")
+
+	return H5_OpenGroup(fileID, PATH_STIMSETS)
+End
+
+Function StimsetPathExists(fileID)
+	variable fileID
+
+	return IPNWB#H5_GroupExists(fileID, PATH_STIMSETS)
 End

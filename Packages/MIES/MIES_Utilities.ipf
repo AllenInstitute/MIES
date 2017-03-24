@@ -557,14 +557,17 @@ End
 
 /// @brief Returns an unsorted free wave with all unique entries from wv neglecting NaN.
 ///
-/// This is not the best possible implementation but should
-/// suffice for our needs.
+/// uses built-in igor function FindDuplicates. Entries are deleted from left to right.
 Function/Wave GetUniqueEntries(wv)
 	Wave wv
 
-	variable numRows, i, idx
+	variable numRows, i
 
-	numRows = DimSize(wv,ROWS)
+	if(IsTextWave(wv))
+		return GetUniqueTextEntries(wv)
+	endif
+
+	numRows = DimSize(wv, ROWS)
 	ASSERT(numRows == numpnts(wv), "Wave must be 1D")
 
 	Duplicate/FREE wv, result
@@ -573,20 +576,51 @@ Function/Wave GetUniqueEntries(wv)
 		return result
 	endif
 
-	result  = NaN
-	idx     = numRows - 1
-	for(i=0; i < numRows; i+=1 )
-		if (!IsFinite(wv[i]))
-			continue
-		endif
-		FindValue/V=(wv[i])/S=(idx) result
-		if(V_Value == -1)
-			result[idx] = wv[i]
-			idx -= 1
-		endif
-	endfor
+	FindDuplicates/RN=result wv
 
-	DeletePoints 0, idx+1, result
+	WaveTransform/O zapNaNs wv
+	WaveTransform/O zapINFs wv
+
+	return result
+End
+
+/// @brief Search and Remove Duplicates from Text Wave wv
+///
+/// Duplicates are removed from left to right
+///
+/// @param wv             text wave reference
+/// @param caseSensitive  [optional] Indicates whether comparison should be case sensitive. defaults to True
+///
+/// @return free wave with unique entries
+Function/Wave GetUniqueTextEntries(wv, [caseSensitive])
+	Wave/T wv
+	variable caseSensitive
+
+	variable numEntries, numDuplicates, i
+
+	if(ParamIsDefault(caseSensitive))
+		caseSensitive = 1
+	endif
+
+	numEntries = DimSize(wv, ROWS)
+	ASSERT(numEntries == numpnts(wv), "Wave must be 1D.")
+
+	Duplicate/T/FREE wv result
+	if(numEntries <= 1)
+		return result
+	endif
+
+	if(caseSensitive)
+		FindDuplicates/RT=result wv
+	else
+		Make/I/FREE index
+		MAKE/T/FREE/N=(numEntries) duplicates = LowerStr(wv[p])
+		FindDuplicates/INDX=index duplicates
+		numDuplicates = DimSize(index, ROWS)
+		for(i = numDuplicates - 1; i >= 0; i -= 1)
+			DeletePoints index[i], 1, result
+		endfor
+	endif
 
 	return result
 End
@@ -1644,6 +1678,72 @@ Function/S ConvertTextWaveToList(wv, [listSepString])
 	return list
 End
 
+/// @brief return a subset of the input list
+///
+/// @param list       input list
+/// @param itemBegin  first item
+/// @param itemEnd    last item
+/// @param listSep    [optional] list Separation character. default is ";"
+///
+/// @return a list with elements ranging from itemBegin to itemEnd of the input list
+Function/S ListFromList(list, itemBegin, itemEnd, [listSep])
+	string list, listSep
+	variable itemBegin, itemEnd
+
+	variable i,  numItems, start, stop
+
+	if(ParamIsDefault(listSep))
+		listSep = ";"
+	endif
+
+	ASSERT(itemBegin <= itemEnd, "SubSet missmatch")
+
+	numItems = ItemsInList(list, listSep)
+	if(itemBegin >= numItems)
+		return ""
+	endif
+	if(itemEnd >= numItems)
+		itemEnd = numItems - 1
+	endif
+
+	if(itemBegin == itemEnd)
+		return StringFromList(itemBegin, list, listSep) + listSep
+	endif
+
+	for(i = 0; i < itemBegin; i += 1)
+		start = strsearch(list, listSep, start) + 1
+	endfor
+
+	stop = start
+	for(i = itemBegin; i < itemEnd + 1; i += 1)
+		stop = strsearch(list, listSep, stop) + 1
+	endfor
+
+	return list[start, stop - 1]
+End
+
+/// @brief calculates the relative complement of list2 in list1
+///
+/// also called the set-theoretic difference of list1 and list2
+/// @returns difference as list
+Function/S GetListDifference(list1, list2)
+	string list1, list2
+
+	variable i, numList1
+	string item
+	string result = ""
+
+	numList1 = ItemsInList(list1)
+	for(i = 0; i < numList1; i += 1)
+		item = StringFromList(i, list1)
+		if(WhichlistItem(item, list2) == -1)
+			result = AddListItem(item, result)
+		endif
+	endfor
+
+	return result
+End
+
 /// @brief Return a list of datafolders located in `dfr`
 ///
 /// @param dfr base folder
@@ -1675,37 +1775,69 @@ End
 /// @brief Return the base name of the file
 ///
 /// Given `path/file.suffix` this gives `file`.
-Function/S GetBaseName(filePathWithSuffix)
-	string filePathWithSuffix
+///
+/// @param filePathWithSuffix full path
+/// @param sep                [optional, defaults to ":"] character
+///                           separating the path components
+Function/S GetBaseName(filePathWithSuffix, [sep])
+	string filePathWithSuffix, sep
 
-	return ParseFilePath(3, filePathWithSuffix, ":", 1, 0)
+	if(ParamIsDefault(sep))
+		sep = ":"
+	endif
+
+	return ParseFilePath(3, filePathWithSuffix, sep, 1, 0)
 End
 
 /// @brief Return the file extension (suffix)
 ///
 /// Given `path/file.suffix` this gives `suffix`.
-Function/S GetFileSuffix(filePathWithSuffix)
-	string filePathWithSuffix
+///
+/// @param filePathWithSuffix full path
+/// @param sep                [optional, defaults to ":"] character
+///                           separating the path components
+Function/S GetFileSuffix(filePathWithSuffix, [sep])
+	string filePathWithSuffix, sep
 
-	return ParseFilePath(4, filePathWithSuffix, ":", 0, 0)
+	if(ParamIsDefault(sep))
+		sep = ":"
+	endif
+
+	return ParseFilePath(4, filePathWithSuffix, sep, 0, 0)
 End
 
 /// @brief Return the folder of the file
 ///
 /// Given `path/file.suffix` this gives `path`.
-Function/S GetFolder(filePathWithSuffix)
-	string filePathWithSuffix
+///
+/// @param filePathWithSuffix full path
+/// @param sep                [optional, defaults to ":"] character
+///                           separating the path components
+Function/S GetFolder(filePathWithSuffix, [sep])
+	string filePathWithSuffix, sep
 
-	return ParseFilePath(1, filePathWithSuffix, ":", 1, 0)
+	if(ParamIsDefault(sep))
+		sep = ":"
+	endif
+
+	return ParseFilePath(1, filePathWithSuffix, sep, 1, 0)
 End
 
 /// @brief Return the filename with extension
 ///
 /// Given `path/file.suffix` this gives `file.suffix`.
-Function/S GetFile(filePathWithSuffix)
-	string filePathWithSuffix
+///
+/// @param filePathWithSuffix full path
+/// @param sep                [optional, defaults to ":"] character
+///                           separating the path components
+Function/S GetFile(filePathWithSuffix, [sep])
+	string filePathWithSuffix, sep
 
-	return ParseFilePath(0, filePathWithSuffix, ":", 1, 0)
+	if(ParamIsDefault(sep))
+		sep = ":"
+	endif
+
+	return ParseFilePath(0, filePathWithSuffix, sep, 1, 0)
 End
 
 /// @brief Set the given bit mask in var
@@ -1812,30 +1944,91 @@ End
 /// @param[out] prefix (optional) string preceding word. ("" for unmatched pattern)
 /// @param[out] suffix (optional) string succeeding word.
 ///
+/// example of the usage of SearchStringBase (basically the same as WM GrepString())
+/// @code
+/// Function SearchString(str, substring)
+/// 	string str, substring
+///
+/// 	ASSERT(strlen(substring) > 0, "supplied substring has zero length")
+/// 	WAVE/Z/T wv = SearchStringBase(str, "(.*)\\Q" + substring + "\\E(.*)")
+///
+/// 	return WaveExists(wv)
+/// End
+/// @endcode
+///
 /// @return 1 if word was found in str and word was not "". 0 if not.
 Function SearchWordInString(str, word, [prefix, suffix])
 	string str, word
 	string &prefix, &suffix
 
-	string regex, str0, str1
-	regex = "(.*)\\b\\Q" + word + "\\E\\b(.*)"
+	WAVE/Z/T wv = SearchStringBase(str, "(.*)\\b\\Q" + word + "\\E\\b(.*)")
+	if(!WaveExists(wv))
+		return 0
+	endif
 
-	SplitString/E=regex str, str0, str1
-
-	// store result if ByRef Strings were initialized
 	if(!ParamIsDefault(prefix))
-		prefix = str0
+		prefix = wv[0]
 	endif
-	if(!ParamIsDefault(suffix))
-		suffix = str1
-	Endif
 
-	// two subpatterns (.*) were specified in regex.
-	if((V_flag == 2) && (strlen(word) > 0))
-		return 1
+	if(!ParamIsDefault(suffix))
+		suffix = wv[1]
 	endif
-	return 0
+
+	return 1
 End
+
+/// @brief More advanced version of SplitString
+///
+/// supports 6 subpatterns, specified by curly brackets in regex
+///
+/// @returns text wave containing subpatterns of regex call
+Function/WAVE SearchStringBase(str, regex)
+	string str, regex
+
+	string command
+	variable i, numBrackets
+	string str0, str1, str2, str3, str4, str5
+
+	// create wave for storing parsing results
+	ASSERT(!GrepString(regex, "\\\\[\\(|\\)]"), "unsupported escaped brackets in regex pattern")
+	numBrackets = CountSubstrings(regex, "(")
+	ASSERT(numBrackets == CountSubstrings(regex, ")"), "missing bracket in regex pattern")
+	ASSERT(numBrackets < 7, "maximum 6 subpatterns are supported")
+	Make/N=(6)/FREE/T wv
+
+	// call SplitString
+	SplitString/E=regex str, str0, str1, str2, str3, str4, str5
+	wv[0] = str0
+	wv[1] = str1
+	wv[2] = str2
+	wv[3] = str3
+	wv[4] = str4
+	wv[5] = str5
+
+	// return wv on success
+	if(V_flag  == numBrackets)
+		Redimension/N=(numbrackets) wv
+		return wv
+	endif
+	return $""
+End
+
+/// @brief Search for the occurence of pattern in string
+///
+/// @returns number of occurences
+Function CountSubstrings(str, pattern)
+	string str, pattern
+
+	variable i = -1, position = -1
+
+	do
+		i += 1
+		position += 1
+		position = strsearch(str, pattern, position)
+	while(position != -1)
+
+	return i
+end
 
 /// @brief Search the row in refWave which has the same contents as the given row in the sourceWave
 Function GetRowWithSameContent(refWave, sourceWave, row)

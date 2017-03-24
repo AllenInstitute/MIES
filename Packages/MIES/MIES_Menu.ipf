@@ -25,6 +25,7 @@ Menu "Mies Panels", dynamic
 	"Open Downsample Panel"         , /Q, CreateDownsamplePanel()
 	"Open AnalysisMaster Panel"     , /Q, analysisMaster()
 	"Export all data into NWB"      , /Q, NWB_ExportWithDialog()
+	"Load Stimsets from NWB"        , /Q, NWB_LoadAllStimsets()
 	"-"
 	GetOptTangoIncludeMenuTitle(), /Q, HandleTangoOptionalInclude()
 	"-"

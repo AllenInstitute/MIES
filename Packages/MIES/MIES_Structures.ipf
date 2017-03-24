@@ -77,7 +77,7 @@ EndStructure
 
 /// @brief Helper structure for formula parsing of the Wavebuilder combine epoch
 Structure FormulaProperties
-	string formula
+	string formula, stimsetList
 	variable numRows, numCols /// minimum number of rows and colums in the referenced sets
 EndStructure
 
@@ -85,6 +85,7 @@ Function InitFormulaProperties(fp)
 	struct FormulaProperties &fp
 
 	fp.formula = ""
+	fp.stimsetList = ""
 	fp.numRows = NaN
 	fp.numCols = NaN
 End

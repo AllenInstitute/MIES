@@ -2,7 +2,7 @@
 #pragma rtGlobals=3		// Use modern global access method and strict wave access.
 #pragma rtFunctionErrors=1
 #pragma IndependentModule=IPNWB
-#pragma version=0.15
+#pragma version=0.16
 
 static Constant H5_ATTRIBUTE_SIZE_LIMIT = 60e3
 
@@ -99,6 +99,8 @@ static Function H5_WriteDatasetLowLevel(locationID, name, wv, overwrite, chunked
 	variable overwrite, chunkedLayout, skipIfExists, writeIgorAttr
 
 	variable numDims, attrFlag
+
+	ASSERT(H5_IsValidIdentifier(GetFile(name, sep="/")), "name of saved dataset is not valid HDF5 format")
 
 	numDims = WaveDims(wv)
 
@@ -314,6 +316,41 @@ Function H5_DatasetExists(locationID, name)
 	return !HDF5DatasetInfo(locationID, name, 2^0, di)
 End
 
+/// @brief Load a specified dataset as wave
+///
+/// @param[in] locationID           HDF5 identifier, can be a file or group
+/// @param[in] name                 path on top of `locationID` which identifies
+///                                 the dataset
+/// @param[in] renameTo [optional]  rename the loaded Data set to the specified string
+/// @return                         reference to wave containing loaded data
+Function/WAVE H5_LoadDataset(locationID, name, [renameTo])
+	variable locationID
+	string name, renameTo
+
+	if(!H5_DatasetExists(locationID, name))
+		return $""
+	endif
+
+	DFREF saveDFR = GetDataFolderDFR()
+	DFREF dfr = NewFreeDataFolder()
+
+	SetDataFolder dfr
+	HDF5LoadData/Q/IGOR=(-1) locationID, name
+	SetDataFolder saveDFR
+
+	ASSERT(!V_flag, "could not load data wave from specified path")
+	ASSERT(ItemsInList(S_waveNames) == 1, "unspecified data format")
+
+	WAVE/Z wv = dfr:$StringFromList(0, S_waveNames)
+	ASSERT(WaveExists(wv), "loaded wave not found")
+
+	if(!ParamIsDefault(renameTo))
+		Rename wv $renameTo
+	endif
+
+	return wv
+End
+
 /// @brief Return 1 if the given HDF5 group exists, 0 otherwise.
 ///
 /// @param[in] locationID           HDF5 identifier, can be a file or group
@@ -346,34 +383,37 @@ End
 /// @brief Create all groups along the given path
 ///
 /// @param[in] locationID          HDF5 identifier, can be a file or group
-/// @param[in] path                Additional path on top of `locationID` which identifies
+/// @param[in] fullPath            Additional path on top of `locationID` which identifies
 ///                                the group
 /// @param[out] groupID [optional] Allows to return the locationID of the group, zero in case
 ///                                the group could not be created. If this parameter is not
 ///                                provided, the group is closed before the function returns.
-Function H5_CreateGroupsRecursively(locationID, path, [groupID])
+Function H5_CreateGroupsRecursively(locationID, fullPath, [groupID])
 	variable locationID
-	string path
+	string fullPath
 	variable &groupID
 
 	variable id, i, numElements, start
-	string str
+	string path, group
 
-	if(!H5_GroupExists(locationID, path, groupID=id))
-		numElements = ItemsInList(path, "/")
+	if(!H5_GroupExists(locationID, fullPath, groupID=id))
+		numElements = ItemsInList(fullPath, "/")
 
-		if(!cmpstr(path[0], "/"))
+		if(!cmpstr(fullPath[0], "/"))
 			start = 1
-			str   = "/"
+			path   = "/"
 		else
 			start = 0
-			str   = ""
+			path   = ""
 		endif
 
 		for(i = start; i < numElements; i += 1)
-			str += StringFromList(i, path, "/")
+			group = StringFromList(i, fullPath, "/")
+			path += group
 
-			HDF5CreateGroup/Z locationID, str, id
+			ASSERT(H5_IsValidIdentifier(group), "invalid HDF5 group name")
+
+			HDF5CreateGroup/Z locationID, path, id
 			if(V_flag)
 				HDf5DumpErrors/CLR=1
 				HDF5DumpState
@@ -384,7 +424,7 @@ Function H5_CreateGroupsRecursively(locationID, path, [groupID])
 				HDF5CloseGroup/Z id
 			endif
 
-			str += "/"
+			path += "/"
 		endfor
 	endif
 

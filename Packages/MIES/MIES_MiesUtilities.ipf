@@ -2455,6 +2455,8 @@ Function GetStimSetType(setName)
 End
 
 /// @brief Return the stimset folder from the numeric channelType, #CHANNEL_TYPE_DAC or #CHANNEL_TYPE_TTL
+///
+/// @returns Data Folder reference to Stimset dataFolder
 Function/DF GetSetFolder(channelType)
 	variable channelType
 
@@ -2467,7 +2469,26 @@ Function/DF GetSetFolder(channelType)
 	endif
 End
 
-/// @brief Return the stimset parameter folder from the numeric channelType, #CHANNEL_TYPE_DAC or #CHANNEL_TYPE_TTL
+/// @brief Return the stimset folder from the numeric channelType, #CHANNEL_TYPE_DAC or #CHANNEL_TYPE_TTL
+///
+/// @returns String with full path to Stimset dataFolder
+Function/S GetSetFolderAsString(channelType)
+	variable channelType
+
+	if(channelType == CHANNEL_TYPE_DAC)
+		return GetWBSvdStimSetDAPathAsString()
+	elseif(channelType == CHANNEL_TYPE_TTL)
+		return GetWBSvdStimSetTTLPathAsString()
+	else
+		ASSERT(0, "unknown channelType")
+	endif
+End
+
+/// @brief Get the stimset parameter folder
+///
+/// @param channelType #CHANNEL_TYPE_DAC or #CHANNEL_TYPE_TTL
+///
+/// @returns dataFolder as DFREF
 Function/DF GetSetParamFolder(channelType)
 	variable channelType
 
@@ -2475,6 +2496,23 @@ Function/DF GetSetParamFolder(channelType)
 		return GetWBSvdStimSetParamDAPath()
 	elseif(channelType == CHANNEL_TYPE_TTL)
 		return GetWBSvdStimSetParamTTLPath()
+	else
+		ASSERT(0, "unknown channelType")
+	endif
+End
+
+/// @brief Get the stimset parameter folder
+///
+/// @param channelType #CHANNEL_TYPE_DAC or #CHANNEL_TYPE_TTL
+///
+/// @returns dataFolder as String
+Function/S GetSetParamFolderAsString(channelType)
+	variable channelType
+
+	if(channelType == CHANNEL_TYPE_DAC)
+		return GetWBSvdStimSetParamPathAS() + ":DA"
+	elseif(channelType == CHANNEL_TYPE_TTL)
+		return GetWBSvdStimSetParamPathAS() + ":TTL"
 	else
 		ASSERT(0, "unknown channelType")
 	endif
@@ -2601,7 +2639,7 @@ Function/S ReturnListOfAllStimSets(DAorTTL, searchString, [WBstimSetList, thirdP
 	numWaves = ItemsInList(list)
 	for(i = 0; i < numWaves; i += 1)
 		item = StringFromList(i, list)
-		if(FindListItem(item, listInternal) == -1)
+		if(FindListItem(item, listInternal, ";", 0, 0) == -1)
 			listThirdParty = AddListItem(item, listThirdParty, ";", Inf)
 		endif
 	endfor
@@ -2617,6 +2655,33 @@ Function/S ReturnListOfAllStimSets(DAorTTL, searchString, [WBstimSetList, thirdP
 	endif
 
 	return SortList(listInternal + listThirdParty, ";", 16)
+End
+
+/// @brief Return the name short String of the Parameter Wave used in the WaveBuilder
+///
+/// @param type One of @ref ParameterWaveTypes
+///
+/// @return name as string
+Function/S GetWaveBuilderParameterTypeName(type)
+	variable type
+
+	string shortname
+
+	switch(type)
+		case STIMSET_PARAM_WP:
+			shortname = "WP"
+			break
+		case STIMSET_PARAM_WPT:
+			shortname = "WPT"
+			break
+		case STIMSET_PARAM_SEGWVTYPE:
+			shortname = "SegWvType"
+			break
+		default:
+			break
+	endswitch
+
+	return shortname
 End
 
 /// @brief Returns the mode of all setVars in the DA_Ephys panel of a controlType

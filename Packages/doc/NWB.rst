@@ -91,11 +91,13 @@ The following tree describes how MIES creates NWB files
             Nx2 text data array describing the system which created the data. First column is the key, second the value.
 
         stimsets: custom entry
-                XXXXXX_DA/TTL_Y_SegWvType/WP/WPT: The Wavebuilder parameter waves. These waves will not be available for
-                                                  "third party stimsets" created outside of MIES.
-                XXXXXX_DA/TTL_Y: Name of the stimset, referenced from
-                                 stimulus_description if acquired data is present. Only present
-                                 if not all parameter waves could be found.
+            XXXXXX_DA/TTL_Y_SegWvType/WP/WPT: The Wavebuilder parameter waves. These waves will not be available for
+                                              "third party stimsets" created outside of MIES.
+            XXXXXX_DA/TTL_Y: Name of the stimset, referenced from
+                             stimulus_description if acquired data is present. Only present if
+                             not all parameter waves could be found.
+            referenced: All referenced custom waves are stored here in a file-system like group-structure.
+                        /general/stimsets/referenced/ relates to root: in the igor Experiment.
 
     file_create_date    : text array with UTC modification timestamps
     identifier          : SHA256 hash, ensured to be unique
