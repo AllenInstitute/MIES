@@ -151,11 +151,14 @@ Constant CHANNEL_TYPE_ALARM        = 0x110
 Constant CHANNEL_CONTROL_ALARM_MIN = 0x120
 Constant CHANNEL_CONTROL_ALARM_MAX = 0x130
 Constant CHANNEL_CONTROL_SEARCH    = 0x140
+/// @}
+
 /// @name Controls for multiple channels have negative channel indizes
-/// @{
+/// @{anchor AllHeadstageModeConstants
 Constant CHANNEL_INDEX_ALL         = -1
 Constant CHANNEL_INDEX_ALL_V_CLAMP = -2
 Constant CHANNEL_INDEX_ALL_I_CLAMP = -3
+Constant CHANNEL_INDEX_ALL_I_ZERO  = -4
 /// @}
 Constant CHANNEL_TYPE_UNKNOWN      = 0x150
 /// @}
