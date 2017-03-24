@@ -5892,14 +5892,14 @@ End
 /// @param[out] mode        I_CLAMP_MODE, V_CLAMP_MODE or I_EQUAL_ZERO_MODE, the currently active mode for headstage controls
 ///                         and the clamp mode of the control for clamp mode controls
 /// @param[out] headStage   number of the headstage or one of @ref AllHeadstageModeConstants
- Function DAP_GetInfoFromControl(panelTitle, ctrl, mode, headStage)
+static Function DAP_GetInfoFromControl(panelTitle, ctrl, mode, headStage)
 	string panelTitle, ctrl
 	variable &mode, &headStage
 
 	string clampMode     = "Radio_ClampMode_"
 	string headStageCtrl = "Check_DataAcqHS_"
 	variable pos1, pos2, ctrlNo
-	string ICctrl, VCctrl, iZeroCtrl, ctrlClean
+	string ICctrl, VCctrl, iZeroCtrl, ctrlClean, ctrlSuffix
 
 	mode      = NaN
 	headStage = NaN
@@ -5911,17 +5911,18 @@ End
 
 	if(pos1 != -1)
 		ctrlClean = RemoveEnding(ctrl, "IZ")
-			if(!cmpstr(ctrlClean[pos1 + strlen(clampMode), inf], "AllVclamp"))
+		ctrlSuffix = ctrlClean[pos1 + strlen(clampMode), inf]
+			if(!cmpstr(ctrlSuffix, "AllVclamp"))
 				headStage = CHANNEL_INDEX_ALL_V_CLAMP
 				mode = V_CLAMP_MODE
-			elseif(!cmpstr(ctrlClean[pos1 + strlen(clampMode), inf], "AllIclamp"))
+			elseif(!cmpstr(ctrlSuffix, "AllIclamp"))
 				headStage = CHANNEL_INDEX_ALL_I_CLAMP
 				mode = I_CLAMP_MODE
-			elseif(!cmpstr(ctrlClean[pos1 + strlen(clampMode), inf], "AllIzero"))
+			elseif(!cmpstr(ctrlSuffix, "AllIzero"))
 				headStage = CHANNEL_INDEX_ALL_I_ZERO
 				mode = I_EQUAL_ZERO_MODE			
 			else
-				ctrlNo = str2num(ctrlClean[pos1 + strlen(clampMode), inf])
+				ctrlNo = str2num(ctrlSuffix)
 				ASSERT(IsFinite(ctrlNo), "non finite number parsed from control")
 				if(mod(ctrlNo, 2) == 0)
 					mode = V_CLAMP_MODE
@@ -6009,7 +6010,7 @@ End
 /// @brief Change the clamp mode of the given headstage
 /// @param panelTitle          device
 /// @param clampMode           clamp mode to activate
-/// @param headstage           Headstage [0, 8[
+/// @param headstage           Headstage [0, 8[ or use one of @ref AllHeadstageModeConstants
 /// @param mccMiesSyncOverride should be zero for normal callers, 1 for callers which
 ///                            are doing a auto MCC function and need to change the clamp mode temporarily.
 ///                            Use one of @ref MCCSyncOverrides for better readability.
