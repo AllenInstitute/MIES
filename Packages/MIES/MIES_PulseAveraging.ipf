@@ -525,8 +525,9 @@ Function PA_ShowPulses(win, dfr, pa)
 
 				for(l = startingPulse; l <= endingPulse; l += 1)
 
-					first  = ScaleToIndex(wv, pulseStartTimes[l], ROWS)
-					length = ScaleToIndex(wv, pulseToPulseLength, ROWS)
+					// ignore wave offset, as it is only used for display purposes
+					first  = round(pulseStartTimes[l] / DimDelta(wv, ROWS))
+					length = round(pulseToPulseLength / DimDelta(wv, ROWS))
 
 					WAVE plotWave = PA_CreateAndFillPulseWaveIfReq(wv, singlePulseFolder, channelType, channelNumber, region, l, first, length)
 

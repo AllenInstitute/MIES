@@ -896,8 +896,7 @@ End
 /// @param numericalValues numerical labnotebook wave
 /// @param textualValues   textual labnotebook wave
 /// @param tgs             settings for tuning the display, see @ref TiledGraphSettings
-/// @param sweepDFR        datafolder to either multi-column sweep waves or the topfolder to splitted
-///                        1D sweep waves. Splitted 1D sweep waves are preferred if available.
+/// @param sweepDFR        top datafolder to splitted 1D sweep waves
 /// @param axisLabelCache  store existing vertical axis labels
 /// @param channelSelWave  [optional] channel selection wave
 Function CreateTiledChannelGraph(graph, config, sweepNo, numericalValues,  textualValues, tgs, sweepDFR, axisLabelCache, [channelSelWave])
@@ -1189,15 +1188,11 @@ Function CreateTiledChannelGraph(graph, config, sweepNo, numericalValues,  textu
 
 				DFREF singleSweepDFR = GetSingleSweepFolder(sweepDFR, sweepNo)
 
-				if(DataFolderExistsDFR(singleSweepDFR))
-					WAVE/Z wv = GetITCDataSingleColumnWave(singleSweepDFR, channelTypes[i], chan, splitTTLBits=tgs.splitTTLBits, ttlBit=j)
-					if(!WaveExists(wv))
-						continue
-					endif
-					idx = 0
-				else
-					idx = AFH_GetITCDataColumn(config, chan, channelTypes[i])
-					WAVE/SDFR=sweepDFR wv = $GetSweepWaveName(sweepNo)
+				ASSERT(DataFolderExistsDFR(singleSweepDFR), "Missing singleSweepDFR")
+
+				WAVE/Z wv = GetITCDataSingleColumnWave(singleSweepDFR, channelTypes[i], chan, splitTTLBits=tgs.splitTTLBits, ttlBit=j)
+				if(!WaveExists(wv))
+					continue
 				endif
 
 				DEBUGPRINT("")
@@ -1242,12 +1237,18 @@ Function CreateTiledChannelGraph(graph, config, sweepNo, numericalValues,  textu
 							sprintf str, "begin[ms] = %g, end[ms] = %g", xRangeStart, xRangeEnd
 							DEBUGPRINT(str)
 
-							xRangeStart = delayOnsetUser + delayOnsetAuto + xRangeStart / samplingInt
-							xRangeEnd   = delayOnsetUser + delayOnsetAuto + xRangeEnd   / samplingInt
+							xRangeStart /= samplingInt
+							xRangeEnd   /= samplingInt
 						endif
 					else
 						xRangeStart = NaN
 						xRangeEnd   = NaN
+					endif
+
+					if(tgs.dDAQDisplayMode && oodDAQEnabled && channelTypes[i] != ITC_XOP_CHANNEL_TYPE_TTL)
+						SetScale/P x, -(delayOnsetUser + delayOnsetAuto) * samplingInt, DimDelta(wv, ROWS), WaveUnits(wv, ROWS), wv
+					else
+						SetScale/P x, 0.0, DimDelta(wv, ROWS), WaveUnits(wv, ROWS), wv
 					endif
 
 					trace = UniqueTraceName(graph, name)
@@ -1256,10 +1257,10 @@ Function CreateTiledChannelGraph(graph, config, sweepNo, numericalValues,  textu
 					DEBUGPRINT(str)
 
 					if(!IsFinite(xRangeStart) && !IsFinite(XRangeEnd))
-						AppendToGraph/W=$graph/L=$vertAxis wv[][idx]/TN=$trace
+						AppendToGraph/W=$graph/L=$vertAxis wv[][0]/TN=$trace
 					else
 						horizAxis = vertAxis + "_b"
-						AppendToGraph/W=$graph/L=$vertAxis/B=$horizAxis wv[xRangeStart, xRangeEnd][idx]/TN=$trace
+						AppendToGraph/W=$graph/L=$vertAxis/B=$horizAxis wv[xRangeStart, xRangeEnd][0]/TN=$trace
 						first = first
 						last  = first + (xRangeEnd - xRangeStart) / totalXRange
 						ModifyGraph/W=$graph axisEnab($horizAxis)={first, min(last, 1.0)}
@@ -1318,6 +1319,7 @@ Function CreateTiledChannelGraph(graph, config, sweepNo, numericalValues,  textu
 						if(!IsEmpty(horizAxis))
 							ModifyGraph/W=$graph axRGB($horizAxis)=(65535,65535,65535), tlblRGB($horizAxis)=(65535,65535,65535)
 							ModifyGraph/W=$graph alblRGB($horizAxis)=(65535,65535,65535), axThick($horizAxis)=0
+							ModifyGraph/W=$graph freePos($vertAxis)={1 / numHorizWaves * k,kwFraction}, freePos($horizAxis)={0,$vertAxis}
 						endif
 					endif
 
@@ -1358,9 +1360,9 @@ Function CreateTiledChannelGraph(graph, config, sweepNo, numericalValues,  textu
 	while(moreData)
 
 	if(tgs.dDAQDisplayMode)
-		ModifyGraph/W=$graph margin(left)=28
+		ModifyGraph/W=$graph margin(left)=28, margin(bottom)=1
 	else
-		ModifyGraph/W=$graph margin(left)=0
+		ModifyGraph/W=$graph margin(left)=0, margin(bottom)=0
 	endif
 End
 
