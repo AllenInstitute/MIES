@@ -1099,6 +1099,7 @@ Function CreateTiledChannelGraph(graph, config, sweepNo, numericalValues,  textu
 		endif
 	endif
 
+	WAVE clampModes  = GetLastSetting(numericalValues, sweepNo, "Clamp Mode", DATA_ACQUISITION_MODE)
 	WAVE/Z statusDAC = GetLastSetting(numericalValues, sweepNo, "DAC", DATA_ACQUISITION_MODE)
 	WAVE/Z statusADC = GetLastSetting(numericalValues, sweepNo, "ADC", DATA_ACQUISITION_MODE)
 
@@ -1340,7 +1341,7 @@ Function CreateTiledChannelGraph(graph, config, sweepNo, numericalValues,  textu
 					endif
 
 					GetTraceColor(colorIndex, red, green, blue)
-					ModifyGraph/W=$graph rgb($trace)=(red, green, blue), userData($trace)={channelType, 0, channelID}, userData($trace)={channelNumber, 0, num2str(chan)}, userData($trace)={sweepNumber, 0, num2str(sweepNo)}, userData($trace)={headstage, 0, num2str(headstage)}, userData($trace)={textualValues, 0, GetWavesDataFolder(textualValues, 2)}, userData($trace)={numericalValues, 0, GetWavesDataFolder(numericalValues, 2)}
+					ModifyGraph/W=$graph rgb($trace)=(red, green, blue), userData($trace)={channelType, 0, channelID}, userData($trace)={channelNumber, 0, num2str(chan)}, userData($trace)={sweepNumber, 0, num2str(sweepNo)}, userData($trace)={headstage, 0, num2str(headstage)}, userData($trace)={textualValues, 0, GetWavesDataFolder(textualValues, 2)}, userData($trace)={numericalValues, 0, GetWavesDataFolder(numericalValues, 2)}, userData($trace)={clampMode, 0, num2str(clampModes[headstage])}
 
 					sprintf str, "colorIndex=%d", colorIndex
 					DEBUGPRINT(str)
@@ -1464,36 +1465,86 @@ End
 
 /// @brief Space the matching axis in an equal manner
 ///
-/// @param graph        graph
-/// @param axisBaseName prefix of to-be-matched axis names
-/// @param sortOrder    [optional, defaults to no sorting (NaN)] apply different sorting
-///                     schemes to list of axes, see sortingOrder parameter of `SortList`
-Function EquallySpaceAxis(graph, axisBaseName, [sortOrder])
-	string graph, axisBaseName
-	variable sortOrder
+/// @param graph           graph
+/// @param axisRegExp      [optional, defaults to ".*"] regular expression matching the axes names
+/// @param axisOrientation [optional, defaults to all] allows to apply equalization to all axis of one orientation
+/// @param sortOrder       [optional, defaults to no sorting (NaN)] apply different sorting
+///                        schemes to list of axes, see sortingOrder parameter of `SortList`
+/// @param listForBegin    [optional, defaults to an empty list] list of axes to move to the front of the sorted axis list
+/// @param listForEnd      [optional, defaults to an empty list] list of axes to move to the end of the sorted axis list
+Function EquallySpaceAxis(graph, [axisRegExp, axisOrientation, sortOrder, listForBegin, listForEnd])
+	string graph, axisRegExp, listForBegin, listForEnd
+	variable axisOrientation, sortOrder
 
-	variable numAxes, axisInc, axisStart, axisEnd, i
-	string axes, axis
+	variable numAxes, axisInc, axisStart, axisEnd, i, spacing
+	string axes, axis, list
+	string adaptedList = ""
 
-	axes    = ListMatch(AxisList(graph), axisBaseName + "*")
+	if(ParamIsDefault(axisRegExp))
+		axisRegExp = ".*"
+	endif
+
+	if(ParamIsDefault(axisOrientation))
+		list = AxisList(graph)
+	else
+		list = GetAllAxesWithOrientation(graph, axisOrientation)
+	endif
+
+	axes    = GrepList(list, axisRegExp)
 	numAxes = ItemsInList(axes)
 
-	if(numAxes < 1)
-		return NaN
+	if(ParamIsDefault(listForEnd))
+		listForEnd = ""
+	else
+		listForEnd = RemoveEnding(listForEnd, ";")
+	endif
+
+	if(ParamIsDefault(listForBegin))
+		listForBegin = ""
+	else
+		listForBegin = RemoveEnding(listForBegin, ";")
 	endif
 
 	if(ParamIsDefault(sortOrder) || !IsFinite(sortOrder))
-		// do nothing
+		list = SortAxisList(graph, list)
 	else
-		axes = SortList(axes, ";", sortOrder)
+		axes         = SortList(axes, ";", sortOrder)
+		listForEnd   = SortList(listForEnd, ";", sortOrder)
+		listForBegin = SortList(listForBegin, ";", sortOrder)
 	endif
 
+	if(!IsEmpty(listForBegin) || !IsEmpty(listForEnd))
+		for(i = 0; i < numAxes; i += 1)
+			axis = StringFromList(i, axes)
+
+			if(WhichListItem(axis, listForBegin) == -1 && WhichListItem(axis, listForEnd) == -1)
+				adaptedList = AddListItem(axis, adaptedList, ";", inf)
+			endif
+		endfor
+
+		// adaptedList now holds all axes which are neither in listForBegin nor listForEnd
+		if(!IsEmpty(listForBegin))
+			adaptedList = AddListItem(listForBegin, adaptedList, ";", 0)
+		endif
+
+		if(!IsEmpty(listForEnd))
+			adaptedList = AddListItem(listForEnd, adaptedList, ";", inf)
+		endif
+	endif
+
+	numAxes = ItemsInList(adaptedList)
 	axisInc = 1 / numAxes
 
+	if(axisInc < GRAPH_DIV_SPACING)
+		spacing = axisInc/5
+	else
+		spacing = GRAPH_DIV_SPACING
+	endif
+
 	for(i = numAxes - 1; i >= 0; i -= 1)
-		axis = StringFromList(i, axes)
-		axisStart = GRAPH_DIV_SPACING + axisInc * i
-		axisEnd   = (i == numAxes - 1 ? 1 : axisInc * (i + 1) - GRAPH_DIV_SPACING)
+		axis = StringFromList(i, adaptedList)
+		axisStart = (i == 0 ? 0 : spacing + axisInc * i)
+		axisEnd   = (i == numAxes - 1 ? 1 : axisInc * (i + 1) - spacing)
 		ModifyGraph/W=$graph axisEnab($axis) = {axisStart, axisEnd}
 	endfor
 End
@@ -1660,7 +1711,7 @@ Function AddTraceToLBGraph(graph, keys, values, key)
 	ModifyGraph/W=$graph nticks(bottom) = 10, manTick(bottom) = {0,1,0,0}, manMinor(bottom) = {0,50}
 
 	SetLabNotebookBottomLabel(graph, isTimeAxis)
-	EquallySpaceAxis(graph, VERT_AXIS_BASE_NAME)
+	EquallySpaceAxis(graph, axisRegExp=VERT_AXIS_BASE_NAME + ".*")
 	UpdateLBGraphLegend(graph, traceList=traceList)
 End
 
@@ -1990,14 +2041,42 @@ Function ReplaceAllWavesWithBackup(graph, traceList)
 	endfor
 End
 
-/// @brief Return all traces with real data
-Function/S GetAllSweepTraces(graph)
+/// @brief Return all traces with real sweep data.
+///
+/// The traces must have correct user data as created by CreateTiledChannelGraph().
+///
+/// @param graph graph
+/// @param channelType [optional, defaults to all] restrict the returned traces
+///                    to the given channel type
+Function/S GetAllSweepTraces(graph, [channelType])
 	string graph
+	variable channelType
 
-	string traceList
+	string traceList, trace, channelTypeAct, channelTypeRef
+	string traceListClean = ""
+	variable numTraces, i
 
 	traceList = TraceNameList(graph, ";", 0+1)
-	return ListMatch(traceList, "!average*")
+	traceList = ListMatch(traceList, "!average*")
+
+	if(ParamIsDefault(channelType))
+		return traceList
+	endif
+
+	channelTypeRef = StringFromList(channelType, ITC_CHANNEL_NAMES)
+	ASSERT(!IsEmpty(channelTypeRef), "Invalid channelType")
+
+	numTraces = ItemsInList(traceList)
+	for(i = 0; i < numTraces; i += 1)
+		trace = StringFromList(i, traceList)
+		channelTypeAct = GetUserData(graph, trace, "channelType")
+
+		if(!cmpstr(channelTypeAct, channelTypeRef))
+			traceListClean = AddListItem(trace, traceListClean, ";", inf)
+		endif
+	endfor
+
+	return traceListClean
 End
 
 /// @brief Average traces in the graph from the same y-axis and append them to the graph
@@ -2014,11 +2093,11 @@ static Function AverageWavesFromSameYAxisIfReq(graph, traceList, averagingEnable
 
 	variable referenceTime
 	string averageWaveName, listOfWaves, listOfWaves1D, listOfChannelTypes, listOfChannelNumbers
-	string xRange, listOfXRanges, firstXAxis
+	string xRange, listOfXRanges, firstXAxis, listOfClampModes
 	string averageWaves = ""
 	variable i, j, k, l, numAxes, numTraces, numWaves, ret
 	variable red, green, blue, column, first, last, orientation
-	string axis, trace, axList, baseName
+	string axis, trace, axList, baseName, clampMode
 	string channelType, channelNumber, fullPath, panel
 
 	referenceTime = DEBUG_TIMER_START()
@@ -2048,6 +2127,7 @@ static Function AverageWavesFromSameYAxisIfReq(graph, traceList, averagingEnable
 		listOfChannelTypes   = ""
 		listOfChannelNumbers = ""
 		listOfXRanges        = ""
+		listOfClampModes     = ""
 		firstXAxis           = ""
 
 		orientation = GetAxisOrientation(graph, axis)
@@ -2061,12 +2141,14 @@ static Function AverageWavesFromSameYAxisIfReq(graph, traceList, averagingEnable
 				fullPath      = GetWavesDataFolder(TraceNameToWaveRef(graph, trace), 2)
 				channelType   = GetUserData(graph, trace, "channelType")
 				channelNumber = GetUserData(graph, trace, "channelNumber")
+				clampMode     = GetUserData(graph, trace, "clampMode")
 				xRange        = StringByKey("YRANGE", allTraceInfo[j])
 
 				listOfWaves          = AddListItem(fullPath, listOfWaves, ";", Inf)
 				listOfChannelTypes   = AddListItem(channelType, listOfChannelTypes, ";", Inf)
 				listOfChannelNumbers = AddListItem(channelNumber, listOfChannelNumbers, ";", Inf)
 				listOfXRanges        = AddListItem(xRange, listOfXRanges, "_", Inf)
+				listOfClampModes     = AddListItem(clampMode, listOfClampModes, ";", Inf)
 
 				if(IsEmpty(firstXAxis))
 					firstXAxis = StringByKey("XAXIS", allTraceInfo[j])
@@ -2146,6 +2228,10 @@ static Function AverageWavesFromSameYAxisIfReq(graph, traceList, averagingEnable
 			AppendToGraph/Q/W=$graph/L=$axis/B=$firstXAxis averageWave[first, last]
 		else
 			AppendToGraph/Q/W=$graph/L=$axis/B=$firstXAxis averageWave
+		endif
+
+		if(ListHasOnlyOneUniqueEntry(listOfClampModes))
+			ModifyGraph/W=$graph userData($averageWaveName)={clampMode, 0, StringFromList(0, listOfClampModes)}
 		endif
 
 		averageWaves = AddListItem(averageWaveName, averageWaves, ";", Inf)
@@ -2307,24 +2393,31 @@ End
 
 /// @brief Equalize all vertical axes ranges so that they cover the same range
 ///
-/// @param graph graph
+/// @param graph                       graph
 /// @param ignoreAxesWithLevelCrossing [optional, defaults to false] ignore all vertical axis which
-/// cross the given level in the visible range
-/// @param level [optional, defaults to zero] level to be used for `ignoreAxesWithLevelCrossing=1`
-Function EqualizeVerticalAxesRanges(graph, [ignoreAxesWithLevelCrossing, level])
+///                                    cross the given level in the visible range
+/// @param level                       [optional, defaults to zero] level to be used for `ignoreAxesWithLevelCrossing=1`
+/// @param rangePerClampMode           [optional, defaults to false] use separate Y ranges per clamp mode
+Function EqualizeVerticalAxesRanges(graph, [ignoreAxesWithLevelCrossing, level, rangePerClampMode])
 	string graph
 	variable ignoreAxesWithLevelCrossing
-	variable level
+	variable level, rangePerClampMode
 
 	string axList, axis, traceList, trace, info
-	variable i, j, numAxes, axisOrient, xRangeBegin, xRangeEnd, axisWithMaxYRange
-	variable beginY, endY
-	variable maxYRange, numTraces
+	variable i, j, numAxes, axisOrient, xRangeBegin, xRangeEnd
+	variable beginY, endY, clampMode
+	variable maxYRange, numTraces , range, refClampMode, err
 
 	if(ParamIsDefault(ignoreAxesWithLevelCrossing))
 		ignoreAxesWithLevelCrossing = 0
 	else
 		ignoreAxesWithLevelCrossing = !!ignoreAxesWithLevelCrossing
+	endif
+
+	if(ParamIsDefault(rangePerClampMode))
+		rangePerClampMode = 0
+	else
+		rangePerClampMode = !!rangePerClampMode
 	endif
 
 	if(ParamIsDefault(level))
@@ -2333,19 +2426,29 @@ Function EqualizeVerticalAxesRanges(graph, [ignoreAxesWithLevelCrossing, level])
 		ASSERT(ignoreAxesWithLevelCrossing, "Optional argument level makes only sense if ignoreAxesWithLevelCrossing is enabled")
 	endif
 
-	GetAxis/W=$graph/Q bottom
-	ASSERT(!V_flag, "Axis bottom expected to be used in the graph")
-	xRangeBegin = V_min
-	xRangeEnd   = V_max
+	GetAxis/W=$graph/Q bottom; err = GetRTError(1)
+	if(!V_Flag)
+		xRangeBegin = V_min
+		xRangeEnd   = V_max
+	else
+		xRangeBegin = NaN
+		xRangeEnd   = NaN
+	endif
 
 	traceList = GetAllSweepTraces(graph)
 	numTraces = ItemsInList(traceList)
 	axList = AxisList(graph)
 	numAxes = ItemsInList(axList)
 
-	Make/FREE/D/N=(numAxes, 2) YValues = NaN
+	Make/FREE/D/N=(NUM_CLAMP_MODES) maxYRangeClampMode = 0
+	Make/FREE/D/N=(numAxes) axisClampMode = Nan
+	Make/FREE/D/N=(numAxes, 2) YValues = inf
+
 	SetDimLabel COLS, 0, minimum, YValues
 	SetDimLabel COLS, 1, maximum, YValues
+
+	YValues[][%minimum] =  inf
+	YValues[][%maximum] = -inf
 
 	// collect the y ranges of the visible x range of all vertical axis
 	// respecting ignoreAxesWithLevelCrossing
@@ -2357,6 +2460,8 @@ Function EqualizeVerticalAxesRanges(graph, [ignoreAxesWithLevelCrossing, level])
 			continue
 		endif
 
+		refClampMode = NaN
+
 		for(j = 0; j < numTraces; j += 1)
 			trace = StringFromList(j, traceList)
 			info = TraceInfo(graph, trace, 0)
@@ -2366,6 +2471,11 @@ Function EqualizeVerticalAxesRanges(graph, [ignoreAxesWithLevelCrossing, level])
 
 			WAVE wv = TraceNameToWaveRef(graph, trace)
 
+			if(!IsFinite(xRangeBegin) || !IsFinite(xRangeEnd))
+				xRangeBegin = leftx(wv)
+				xRangeEnd   = rightx(wv)
+			endif
+
 			if(ignoreAxesWithLevelCrossing)
 				FindLevel/Q/R=(xRangeBegin, xRangeEnd) wv, level
 				if(!V_flag)
@@ -2373,12 +2483,25 @@ Function EqualizeVerticalAxesRanges(graph, [ignoreAxesWithLevelCrossing, level])
 				endif
 			endif
 
+			clampMode = str2num(GetUserData(graph, trace, "clampMode"))
+
+			if(!IsFinite(refClampMode))
+				refClampMode = clampMode
+			else
+				axisClampMode[i] = refClampMode == clampMode ? clampMode : -1
+			endif
+
 			WaveStats/M=2/Q/R=(xRangeBegin, xRangeEnd) wv
-			YValues[i][%minimum] = V_min
-			YValues[i][%maximum] = V_max
-			if(abs(V_max - V_min) > maxYRange)
-				maxYRange = abs(V_max - V_min)
-				axisWithMaxYRange = i
+			YValues[i][%minimum] = min(V_min, YValues[i][%minimum])
+			YValues[i][%maximum] = max(V_max, YValues[i][%maximum])
+
+			range = abs(YValues[i][%maximum] - YValues[i][%minimum])
+			if(range > maxYRange)
+				maxYRange = range
+			endif
+
+			if(range > maxYRangeClampMode[clampMode])
+				maxYRangeClampMode[clampMode] = range
 			endif
 		endfor
 	endfor
@@ -2401,7 +2524,13 @@ Function EqualizeVerticalAxesRanges(graph, [ignoreAxesWithLevelCrossing, level])
 		endif
 
 		beginY = YValues[i][%minimum]
-		endY   = YValues[i][%minimum] + maxYRange
+
+		if(rangePerClampMode && axisClampMode[i] >= 0)
+			endY = beginY + maxYRangeClampMode[axisClampMode[i]]
+		else
+			endY = beginY + maxYRange
+		endif
+
 		DebugPrint("Setting new axis ranges for:", str=axis)
 		DebugPrint("beginY:", var=beginY)
 		DebugPrint("endY:", var=endY)

@@ -206,6 +206,8 @@ Constant I_CLAMP_MODE      = 1
 Constant I_EQUAL_ZERO_MODE = 2
 /// @}
 
+Constant NUM_CLAMP_MODES = 3
+
 /// @name Possible values for the function parameter of AI_SendToAmp
 /// @anchor AI_SendToAmpConstants
 /// @{
@@ -350,10 +352,12 @@ Constant DAQ_FG_SINGLE_DEVICE = 0x004
 /// @name Constants for GetAxisOrientation
 /// @anchor AxisOrientationConstants
 /// @{
-Constant AXIS_ORIENTATION_LEFT   = 0x01
-Constant AXIS_ORIENTATION_RIGHT  = 0x02
-Constant AXIS_ORIENTATION_BOTTOM = 0x04
-Constant AXIS_ORIENTATION_TOP    = 0x08
+Constant AXIS_ORIENTATION_HORIZ  = 0x01
+Constant AXIS_ORIENTATION_BOTTOM = 0x05
+Constant AXIS_ORIENTATION_TOP    = 0x09
+Constant AXIS_ORIENTATION_VERT   = 0x02
+Constant AXIS_ORIENTATION_LEFT   = 0x12
+Constant AXIS_ORIENTATION_RIGHT  = 0x22
 /// @}
 
 /// @name Constants for DAP_ToggleAcquisitionButton

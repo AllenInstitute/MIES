@@ -51,7 +51,7 @@ static Function/Wave SB_GetSweepBrowserMap(sweepBrowser)
 	return wv
 End
 
-static Function/S SB_GetSweepBrowserFolder(graph)
+Function/S SB_GetSweepBrowserFolder(graph)
 	string graph
 
 	ASSERT(windowExists(graph), "Window must exist")
@@ -195,137 +195,6 @@ static Function/WAVE SB_GetSweepPropertyFromNumLBN(graph, mapIndex, key)
 	WAVE numericalValues = GetAnalysLBNumericalValues(expFolder, device)
 
 	return GetLastSetting(numericalValues, sweep, key, DATA_ACQUISITION_MODE)
-End
-
-/// @brief Duplicate the sweep browser graph to a user given folder and name
-///
-/// Only duplicates the main graph without external subwindows
-static Function SB_DuplicateSweepBrowser(graph)
-	string graph
-
-	string trace, folder, newPrefix, analysisPrefix, relativeDest
-	string newGraphName, graphMacro, saveDFR, traceList
-	variable numTraces, i, pos, numLines, useCursorRange, resetWaveZero
-	variable beginX, endX, xcsrA, xcsrB, beginXPerWave, endXPerWave
-	variable manualRangeBegin, manualRangeEnd, clipXRange
-
-	folder           = "myFolder"
-	newGraphName     = "myGraph"
-	useCursorRange   = 0
-	resetWaveZero    = 0
-	manualRangeBegin = NaN
-	manualRangeEnd   = NaN
-
-	Prompt folder,           "Datafolder: "
-	Prompt newGraphName,     "Graph name: "
-	Prompt useCursorRange,   "Duplicate only the cursor range: "
-	Prompt manualRangeBegin, "Manual X range begin: "
-	Prompt manualRangeEnd,   "Manual X range end: "
-	Prompt resetWaveZero,    "Reset the wave's dim offset to zero: "
-
-	DoPrompt/HELP="No help available" "Please provide some information for the duplicated graph", folder, newGraphName, useCursorRange, manualRangeBegin, manualRangeEnd, resetWaveZero
-	if(V_flag)
-		return NaN
-	endif
-
-	DFREF sweepBrowserDFR = $SB_GetSweepBrowserFolder(graph)
-	newPrefix      = GetDataFolder(1, UniqueDataFolder($"root:", folder))
-	newPrefix      = RemoveEnding(newPrefix, ":")
-	analysisPrefix = GetAnalysisFolderAS()
-
-	if(useCursorRange)
-		xcsrA  = xcsr(A, graph)
-		xcsrB  = xcsr(B, graph)
-		beginX = min(xcsrA, xcsrB)
-		endX   = max(xcsrA, xcsrB)
-		clipXRange = 1
-	elseif(isFinite(manualRangeBegin) && IsFinite(manualRangeEnd))
-		beginX = manualRangeBegin
-		endX   = manualRangeEnd
-		clipXRange = 1
-	endif
-
-	traceList = TraceNameList(graph, ";", 0 + 1)
-	numTraces = ItemsInList(traceList)
-	for(i = 0; i < numTraces; i += 1)
-		trace = StringFromList(i, traceList)
-		WAVE wv = TraceNameToWaveRef(graph, trace)
-
-		// the waves can be in two locations, either in root:$sweepBrowser
-		// or done below in root:MIES:analysis:$Experiment:$Device:sweep:$X
-		DFREF loc = GetWavesDataFolderDFR(wv)
-		if(DataFolderRefsEqual(loc, sweepBrowserDFR))
-			DFREF dfr = createDFWithAllParents(newPrefix)
-		else
-			relativeDest = RemovePrefix(GetDataFolder(1, loc), startStr=analysisPrefix)
-			DFREF dfr = createDFWithAllParents(newPrefix + relativeDest)
-		endif
-
-		if(clipXRange)
-			beginXPerWave = max(leftx(wv), beginX)
-			endXPerWave   = min(rightx(wv), endX)
-		else
-			beginXPerWave = leftx(wv)
-			endXPerWave   = rightx(wv)
-		endif
-
-		Duplicate/R=(beginXPerWave, endXPerWave) wv, dfr:$UniqueWaveName(dfr, NameOfWave(wv))/WAVE=dup
-		WaveClear wv
-		if(clipXRange)
-			AddEntryIntoWaveNoteAsList(dup, "CursorA", var=beginX)
-			AddEntryIntoWaveNoteAsList(dup, "CursorB", var=endX)
-		endif
-		if(resetWaveZero)
-			AddEntryIntoWaveNoteAsList(dup, "OldDimOffset", var=DimOffset(dup, ROWS))
-			SetScale/P x, 0, DimDelta(dup, ROWS), WaveUnits(dup, ROWS), dup
-		endif
-	endfor
-
-	graphMacro = WinRecreation(graph, 0)
-
-	// everything we don't need anymore starts in the line with SetWindow
-	// ranging to the macro's end
-	pos = strsearch(graphMacro, "SetWindow kwTopWin" , 0)
-	if(pos != -1)
-		graphMacro = graphMacro[0, pos - 2]
-	endif
-	// remove setting the CDF, we do that ourselves later on
-	graphMacro = ListMatch(graphMacro, "!*SetDataFolder fldrSav*", "\r")
-
-	// remove setting the bottom axis range, as this might be wrong
-	graphMacro = ListMatch(graphMacro, "!*SetAxis bottom*", "\r")
-
-	// replace the old data location with the new one
-	graphMacro = ReplaceString(analysisPrefix, graphMacro, newPrefix)
-
-	// replace relative reference to sweepBrowserDFR
-	// with absolut ones to newPrefix
-	folder = GetDataFolder(1, sweepBrowserDFR)
-	folder = RemovePrefix(folder, startStr="root:")
-	folder = ":::::::" + folder
-	graphMacro = ReplaceString(folder, graphMacro, newPrefix + ":")
-
-	saveDFR = GetDataFolder(1)
-	// The first three lines are:
-	// Window SweepBrowser1() : Graph
-	//		PauseUpdate; Silent 1		// building window...
-	// 		String fldrSav0= GetDataFolder(1)
-	numLines = ItemsInList(graphMacro, "\r")
-	for(i = 3; i < numLines; i += 1)
-		string line = StringFromList(i, graphMacro, "\r")
-		Execute/Q line
-	endfor
-
-	// rename the graph
-	newGraphName = CleanUpName(newGraphName, 0)
-	if(windowExists(newGraphName))
-		newGraphName = UniqueName(newGraphName, 6, 0)
-	endif
-	SVAR S_name
-	RenameWindow $S_name, $newGraphName
-
-	Execute/P/Q "KillStrings/Z S_name"
-	Execute/P/Q "SetDataFolder " + saveDFR
 End
 
 /// @brief Return a list of experiments from which the sweeps in the sweep browser
@@ -735,8 +604,8 @@ Function/DF SB_CreateNewSweepBrowser()
 	SetVariable setvar_SB_equalYLevel,pos={98.00,348.00},size={25.00,18.00},disable=2,proc=SB_AxisScalingLevelCross
 	SetVariable setvar_SB_equalYLevel,help={"Crossing level value for 'Equal Y ign.\""}
 	SetVariable setvar_SB_equalYLevel,limits={-inf,inf,0},value= _NUM:0
-	Button button_SweepBrowser_DupGraph,pos={28.00,375.00},size={100.00,25.00},proc=SB_ButtonProc_DupGraph,title="Duplicate Graph"
-	Button button_SweepBrowser_DupGraph,help={"Duplicate the graph and its trace for further processing"}
+	Button button_SweepBrowser_ExportGraph,pos={28.00,375.00},size={100.00,25.00},proc=SB_ButtonProc_ExportTraces,title="Export Traces"
+	Button button_SweepBrowser_ExportGraph,help={"Export the traces for further processing"}
 	GroupBox group_sweep,pos={6.00,71.00},size={139.00,98.00},title="Sweep"
 	CheckBox check_sweepbrowser_dDAQ,pos={97.00,50.00},size={47.00,15.00},proc=SB_CheckboxChangedSettings,title="dDAQ"
 	CheckBox check_sweepbrowser_dDAQ,help={"Enable dedicated support for viewing distributed DAQ data"}
@@ -1041,12 +910,12 @@ Function SB_OpenChannelSelectionPanel(ba) : ButtonControl
 	return 0
 End
 
-Function SB_ButtonProc_DupGraph(ba) : ButtonControl
+Function SB_ButtonProc_ExportTraces(ba) : ButtonControl
 	STRUCT WMButtonAction &ba
 
 	switch(ba.eventCode)
 		case 2: // mouse up
-			SB_DuplicateSweepBrowser(GetMainWindow(ba.win))
+			SBE_ShowExportPanel(ba.win)
 			break
 	endswitch
 

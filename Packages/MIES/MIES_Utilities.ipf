@@ -3185,3 +3185,88 @@ Function/S AskUserForExistingFolder([baseFolder])
 
 	return selectedFolder
 End
+
+/// @brief Return all axes with the given orientation
+///
+/// @param graph graph
+/// @param axisOrientation One of @ref AxisOrientationConstants
+Function/S GetAllAxesWithOrientation(graph, axisOrientation)
+	string graph
+	variable axisOrientation
+
+	string axList, axis
+	string list = ""
+	variable numAxes, i
+
+	axList  = AxisList(graph)
+	numAxes = ItemsInList(axList)
+
+	for(i = 0; i < numAxes; i += 1)
+		axis = StringFromList(i, axList)
+
+		if(axisOrientation & GetAxisOrientation(graph, axis))
+			list = AddListItem(axis, list, ";", inf)
+		endif
+	endfor
+
+	return list
+End
+
+/// @brief Return the list of axis sorted from highest
+///        to lowest starting value of the `axisEnab` keyword.
+///
+/// `list` must be from one orientation, usually something returned by GetAllAxesWithOrientation()
+Function/S SortAxisList(graph, list)
+	string graph, list
+
+	variable numAxes, i
+	string axis
+
+	numAxes = ItemsInList(list)
+
+	if(numAxes < 2)
+		return list
+	endif
+
+	Make/FREE/D/N=(numAxes) axisStart
+
+	for(i = 0; i < numAxes; i += 1)
+		axis         = StringFromList(i, list)
+		axisStart[i] = GetNumFromModifyStr(AxisInfo(graph, axis), "axisEnab", "{", 0)
+	endfor
+
+	WAVE/T axisListWave = ListToTextWave(list, ";")
+
+	Sort/R axisStart, axisListWave
+
+	return TextWaveToList(axisListWave, ";")
+End
+
+/// @brief Replaces all occurences of the string `word`, treated as regexp word,
+///        in `str` with `replacement`. Does not ignore case.
+Function/S ReplaceWordInString(word, str, replacement)
+	string word, str, replacement
+
+	ASSERT(!IsEmpty(word), "Empty regex")
+
+	variable ret
+	string result, prefix, suffix
+
+	if(!cmpstr(word, replacement, 0))
+		return str
+	endif
+
+	result = str
+
+	for(;;)
+		ret = SearchWordInString(result, word, prefix = prefix, suffix = suffix)
+
+		if(!ret)
+			break
+		endif
+
+		result = prefix + replacement + suffix
+	endfor
+
+	return result
+End

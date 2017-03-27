@@ -15,6 +15,7 @@
 // stock igor
 #include <Resize Controls>
 #include <ZoomBrowser>
+#include <Readback ModifyStr>
 
 // third party includes
 #include ":ACL_TabUtilities"
@@ -50,6 +51,7 @@
 
 #include ":MIES_AnalysisBrowser_LabNotebookTPStorageBrowser"
 #include ":MIES_AnalysisBrowser_SweepBrowser"
+#include ":MIES_AnalysisBrowser_SweepBrowser_Export"
 
 static Constant EXPERIMENT_TREEVIEW_COLUMN = 0
 static Constant DEVICE_TREEVIEW_COLUMN     = 2

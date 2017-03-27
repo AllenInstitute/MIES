@@ -95,7 +95,7 @@ static Function LBN_AddTraceToTPStorage(panel, TPStorage, ActiveADC, key)
 	ModifyGraph/W=$graph mode = 3
 	ModifyGraph/W=$graph nticks(bottom) = 10
 
-	EquallySpaceAxis(graph, VERT_AXIS_BASE_NAME)
+	EquallySpaceAxis(graph, axisRegExp=VERT_AXIS_BASE_NAME + ".*")
 
 	traceList = AddListItem(trace, traceList, ";", inf)
 	LBN_UpdateTPSGraphLegend(graph, traceList=traceList)

@@ -141,15 +141,93 @@ static Function/WAVE PA_CalculatePulseStartTimes(DA, totalOnsetDelay)
 	return levels
 End
 
+/// @brief Add all available sweep data to traceData
+///
+/// This function can fill in the available data for traces which are *not*
+/// shown.
+static Function PA_AddMissingADTraceInfo(traceData)
+	WAVE/T traceData
+
+	variable numPaths, i, j, idx, cnt, sweepNumber
+	variable numEntries, headstage
+	string folder
+
+	Duplicate/FREE/T traceData, newData
+	newData = ""
+
+	// get a list of folders holding the sweep data
+	numPaths = DimSize(traceData, ROWS)
+	Make/FREE/WAVE/N=(numPaths) shownWaves = $traceData[p][%fullPath]
+
+	for(i = 0; i < numPaths; i += 1)
+		DFREF sweepDFR = $GetWavesDataFolder(shownWaves[i], 1)
+		WAVE/WAVE allWaves = GetITCDataSingleColumnWaves(sweepDFR, ITC_XOP_CHANNEL_TYPE_ADC)
+
+		WAVE numericalValues = $traceData[i][%numericalValues]
+		sweepNumber = str2num(traceData[i][%sweepNumber])
+
+		WAVE ADCs = GetLastSetting(numericalValues, sweepNumber, "ADC", DATA_ACQUISITION_MODE)
+		WAVE HS = GetLastSetting(numericalValues, sweepNumber, "Headstage Active", DATA_ACQUISITION_MODE)
+
+		numEntries = DimSize(allWaves, ROWS)
+		for(j = 0; j < numEntries; j += 1)
+			WAVE/Z wv = allWaves[j]
+
+			// no sweep data for this channel
+			if(!WaveExists(wv))
+				continue
+			endif
+
+			idx = GetRowIndex(shownWaves, refWave = allWaves[j])
+
+			if(IsFinite(idx)) // single sweep data already in traceData
+				continue
+			endif
+
+			// labnotebook layer where the ADC can be found is the headstage number
+			headstage = GetRowIndex(ADCs, val=j)
+
+			if(!IsFinite(headstage)) // unassociated ADC
+				continue
+			endif
+
+			EnsureLargeEnoughWave(newData, minimumSize=cnt)
+			newData[cnt][] = traceData[i][q]
+
+			newData[cnt][%traceName]     = ""
+			newData[cnt][%fullPath]      = GetWavesDataFolder(wv, 2)
+			newData[cnt][%channelType]   = StringFromList(ITC_XOP_CHANNEL_TYPE_ADC, ITC_CHANNEL_NAMES)
+			newData[cnt][%channelNumber] = num2str(j)
+			newData[cnt][%headstage]     = num2str(headstage)
+			cnt += 1
+		endfor
+	endfor
+
+	if(cnt == 0)
+		return NaN
+	endif
+
+	Redimension/N=(numPaths + cnt, -1) traceData
+
+	traceData[numPaths, inf][] = newData[p - numPaths][q]
+End
+
 /// @brief Return a list of all sweep traces in the graph skipping traces which
 ///        refer to the same wave.
 ///
 ///        Columns have colum labels and include various userdata readout from the traces.
-static Function/WAVE PA_GetTraceInfos(graph)
+Function/WAVE PA_GetTraceInfos(graph, [includeOtherADData])
 	string graph
+	variable includeOtherADData
 
 	variable numTraces, numEntries, i
 	string trace, traceList, traceListClean, traceFullPath
+
+	if(ParamIsDefault(includeOtherADData))
+		includeOtherADData = 0
+	else
+		includeOtherADData = !!includeOtherADData
+	endif
 
 	traceList = GetAllSweepTraces(graph)
 	numTraces = ItemsInList(traceList)
@@ -160,9 +238,13 @@ static Function/WAVE PA_GetTraceInfos(graph)
 
 	Make/FREE/T/N=(numTraces) traceWaveList = GetWavesDataFolder(TraceNameToWaveRef(graph, StringFromList(p, traceList)), 2)
 
-	// replace duplicates with empty entries
-	Make/T/FREE tracesFullPath
-	FindDuplicates/Z/ST=""/STDS=tracesFullPath traceWaveList
+	if(numTraces > 1)
+		// replace duplicates with empty entries
+		Make/T/FREE tracesFullPath
+		FindDuplicates/Z/ST=""/STDS=tracesFullPath traceWaveList
+	else
+		WAVE/T tracesFullPath = traceWaveList
+	endif
 
 	WAVE indizes = FindIndizes(wvText=tracesFullPath, prop=PROP_NON_EMPTY, col=0)
 
@@ -174,6 +256,10 @@ static Function/WAVE PA_GetTraceInfos(graph)
 	traceData[][%traceName]        = StringFromList(indizes[p], traceList)
 	traceData[][%fullPath]         = GetWavesDataFolder(TraceNameToWaveRef(graph, traceData[p][%traceName]), 2)
 	traceData[][%channelType, inf] = GetUserData(graph, traceData[p][%traceName], GetDimLabel(traceData, COLS, q))
+
+	if(includeOtherADData)
+		PA_AddMissingADTraceInfo(traceData)
+	endif
 
 	SortColumns/A/DIML/KNDX={2, 3, 4, 5} sortWaves=traceData
 
@@ -194,13 +280,17 @@ static Function/WAVE PA_GetUniqueHeadstages(traceData, indizesChannelType)
 
 	Make/D/FREE/N=(DimSize(indizesChannelType, ROWS)) headstages = str2num(traceData[indizesChannelType[p]][%headstage])
 
+	if(DimSize(headstages, ROWS) == 1)
+		return headstages
+	endif
+
 	Make/FREE/D headstagesClean
 	FindDuplicates/Z/SN=(NaN)/SNDS=headstagesClean headstages
 
 	return headstagesClean
 End
 
-static Function/WAVE PA_GetPulseStartTimes(traceData, idx, region, channelTypeStr)
+Function/WAVE PA_GetPulseStartTimes(traceData, idx, region, channelTypeStr)
 	WAVE/T traceData
 	variable idx, region
 	string channelTypeStr
@@ -602,8 +692,8 @@ Function PA_ShowPulses(win, dfr, pa)
 			endfor // channels
 
 			if(!pa.multipleGraphs)
-				EquallySpaceAxis(graph, "left_R" + num2str(activeRegionCount), sortOrder=1)
-				EquallySpaceAxis(graph, "bottom", sortOrder=0)
+				EquallySpaceAxis(graph, axisRegExp="left_R" + num2str(activeRegionCount) + ".*", sortOrder=1)
+				EquallySpaceAxis(graph, axisRegExp="bottom.*", sortOrder=0)
 			endif
 		endfor // headstages
 	endfor // channelType
