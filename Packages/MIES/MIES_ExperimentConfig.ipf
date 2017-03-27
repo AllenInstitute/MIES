@@ -30,7 +30,7 @@ Function ExpConfig_ConfigureMIES([middleOfExperiment])
 	endif
 	
 	if(middleOfExperiment)
-		HW_ITC_CloseAllDevices(flags = HARDWARE_PREVENT_ERROR_POPUP)
+		HW_ITC_CloseAllDevices(flags = HARDWARE_PREVENT_ERROR_POPUP | HARDWARE_PREVENT_ERROR_MESSAGE)
 	endif
 	
 	activeNotebooks = WinList("*",";","WIN:16")
