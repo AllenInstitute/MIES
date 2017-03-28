@@ -222,15 +222,22 @@ std::string CallIgorFunctionFromMessage(std::string msg)
 {
   try
   {
-    RequestInterface req(msg);
+    try
+    {
+      RequestInterface req(msg);
 
-    req.CanBeProcessed();
-    auto reply = req.Call();
+      req.CanBeProcessed();
+      auto reply = req.Call();
 
-    DebugOutput(fmt::sprintf("%s: Function return value is %.255s\r", __func__,
-                             reply.dump(4)));
+      DebugOutput(fmt::sprintf("%s: Function return value is %.255s\r",
+                               __func__, reply.dump(4)));
 
-    return reply.dump(4);
+      return reply.dump(4);
+    }
+    catch(const std::bad_alloc &)
+    {
+      throw RequestInterfaceException(REQ_OUT_OF_MEMORY);
+    }
   }
   catch(const IgorException &e)
   {
