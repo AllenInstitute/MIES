@@ -116,3 +116,44 @@ Function CallsFunctionsAtIdleEventOnly()
 	expected = FunctionToCall()
 	CHECK_EQUAL_VAR(resultVariable, expected)
 End
+
+static Function ReturnsOOMError()
+	string msg, replyMessage
+	variable errorValue, resultVariable, ret
+	string expected, actual
+
+#ifdef IGOR64
+	printf "Skipping test \"%s\" on Igor Pro 64bit\r", GetRTStackInfo(1)
+	PASS()
+	return NaN
+#endif
+
+	ExhaustMemory(1.0)
+
+	// wave will be returned by TestFunctionReturnExistingWave
+	// on serialization this will then trigger the OOM
+	Make/N=(100e6)/B/O root:bigWAVE
+
+	msg = "{\"version\"     : 1, "                    + \
+		  "\"CallFunction\" : {"                      + \
+		  "\"name\"         : \"TestFunctionReturnExistingWave\"" + \
+		  "}}"
+
+	zeromq_stop()
+	zeromq_server_bind("tcp://127.0.0.1:5555")
+	zeromq_client_connect("tcp://127.0.0.1:5555")
+
+	ret = zeromq_handler_start()
+	CHECK_EQUAL_VAR(ret, 0)
+
+	zeromq_client_send(msg)
+	// the json message is now in the internal message queue and
+	// will be processed at the next idle event
+	// zeromq_recv will also create idle events while waiting
+	replyMessage = zeromq_client_recv()
+
+	errorValue = ExtractErrorValue(replyMessage)
+	CHECK_EQUAL_VAR(errorValue, REQ_OUT_OF_MEMORY)
+
+	KillWaves/Z root:bigWave
+End
