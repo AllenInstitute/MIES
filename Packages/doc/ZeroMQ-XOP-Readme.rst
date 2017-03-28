@@ -314,7 +314,7 @@ Building libzmq
     mkdir build-msvc
     # 32bit
     cd build-msvc
-    cmake -g "Visual Studio 14 2015" ..
+    cmake -G "Visual Studio 14 2015" ..
     cmake --build . --config release
     ctest -C release
     # Import/static libs are in lib/release, dll in bin/release
@@ -322,7 +322,7 @@ Building libzmq
     # 64bit
     mkdir build-msvc-64
     cd build-msvc-64
-    cmake -g "Visual Studio 14 2015 Win64" ..
+    cmake -G "Visual Studio 14 2015 Win64" ..
     cmake --build . --config release
     ctest -C release
     # Import/static libs are in lib/release, dll in bin/release
