@@ -307,8 +307,8 @@ Building libzmq
 
 .. code-block:: sh
 
-    # As of libzmq revision 6ce2fb2b (Merge pull request #2162 from
-    # hnwyllmm/master, 2016-10-14) all tests pass.
+    # As of libzmq revision 84d94b4f (Merge pull request #2475 from
+    # chrisstaite/master, 2017-03-28) all tests pass.
     git clone https://github.com/zeromq/libzmq.git
     cd libzmq
     mkdir build-msvc
