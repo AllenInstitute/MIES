@@ -232,7 +232,7 @@ std::string CallIgorFunctionFromMessage(std::string msg)
 
     return reply.dump(4);
   }
-  catch(const RequestInterfaceException &e)
+  catch(const IgorException &e)
   {
     auto docTemplate = R"( {
            "errorCode" : {
