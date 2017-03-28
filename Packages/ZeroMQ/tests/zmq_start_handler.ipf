@@ -109,14 +109,10 @@ Function CallsFunctionsAtIdleEventOnly()
 	// zeromq_recv will also create idle events while waiting
 	replyMessage = zeromq_client_recv()
 
-	print replyMessage
-
 	errorValue = ExtractErrorValue(replyMessage)
 	CHECK_EQUAL_VAR(errorValue, REQ_SUCCESS)
 
 	ExtractReturnValue(replyMessage, var=resultVariable)
 	expected = FunctionToCall()
 	CHECK_EQUAL_VAR(resultVariable, expected)
-
-	CHECK_EQUAL_VAR(ret, 0)
 End
