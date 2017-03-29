@@ -617,6 +617,7 @@ Constant    ATTEMPTS                = 5
 StrConstant CONFIG_VERSION          = "Version"
 StrConstant SAVE_PATH               = "Save data to"
 StrConstant STIMSET_PATH			= "Load stim set from"
+StrConstant STIMSET_NAME			= "Stim set file name"
 StrConstant ITC_DEV_TYPE            = "Name of ITC Device"
 StrConstant ITC_DEV_NUM             = "ITC Device number"
 StrConstant AMP_TITLE               = "Amplifier Names"

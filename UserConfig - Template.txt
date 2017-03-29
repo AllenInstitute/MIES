@@ -8,6 +8,8 @@ Save data to = D:MiesSave
 
 Load stim set from = C:\MiesHDF5Files\SavedStimSets
 
+Stim set file name = 
+
 ####### Device Settings #######
 
 Name of ITC Device = ITC1600

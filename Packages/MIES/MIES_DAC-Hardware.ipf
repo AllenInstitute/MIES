@@ -809,6 +809,20 @@ Function HW_ITC_OpenDevice(deviceType, deviceNumber, [flags])
 	return deviceID
 End
 
+/// @brief Close all ITC devices 
+Function HW_ITC_CloseAllDevices([flags])
+	variable flags
+
+	DEBUGPRINTSTACKINFO()
+
+	if(HW_ITC_IsRunning(flags=flags))
+		HW_ITC_StopAcq(flags=flags)
+	endif
+
+	ITCCloseAll2/Z=(flags & HARDWARE_PREVENT_ERROR_POPUP)
+	
+End
+
 /// @see HW_CloseDevice
 Function HW_ITC_CloseDevice([flags])
 	variable flags
