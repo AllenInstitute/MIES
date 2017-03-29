@@ -6034,6 +6034,8 @@ Function DAP_ChangeHeadStageMode(panelTitle, clampMode, headstage, mccMiesSyncOv
 	else
 		changeHS[headstage] = 1
 		activeHS = DAP_GetHSstate(panelTitle, headstage)
+		DAP_Slider(panelTitle, headstage)
+		SetSliderPositionIndex(panelTitle, "slider_DataAcq_ActiveHeadstage", headstage)
 	endif
 	
 	sliderPos = GetSliderPositionIndex(panelTitle, "slider_DataAcq_ActiveHeadstage")
@@ -6117,7 +6119,10 @@ static Function DAP_SetAmpModeControls(panelTitle, headstage, clampMode)
 	SetCheckboxState(panelTitle, VCctrl, CHECKBOX_UNSELECTED)
 	SetCheckboxState(panelTitle, ICctrl, CHECKBOX_UNSELECTED)
 	SetCheckboxState(panelTitle, iZeroCtrl, CHECKBOX_UNSELECTED)
-	SetCheckboxState(panelTitle, ctrl, CHECKBOX_SELECTED)
+
+	if(headstage >= 0)
+		SetCheckboxState(panelTitle, ctrl, CHECKBOX_SELECTED)
+	endif
 End
 
 ///@brief Sets the DA and AD channel settings according to the headstage mode
