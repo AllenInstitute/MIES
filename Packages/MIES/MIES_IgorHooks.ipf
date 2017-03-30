@@ -95,6 +95,7 @@ static Function BeforeExperimentSaveHook(rN, fileName, path, type, creator, kind
 
 	IH_SerAllCommentNBsWrapper()
 	IH_KillTemporaries()
+	NWB_Flush()
 End
 
 static Function IH_Cleanup()

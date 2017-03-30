@@ -1161,3 +1161,15 @@ Function NWB_LoadLabNoteBook(locationID, notebook, dfr)
 
 	return 0
 End
+
+/// @brief Flushes the contents of the NWB file to disc
+Function NWB_Flush()
+	SVAR filePathExport = $GetNWBFilePathExport()
+	NVAR fileIDExport   = $GetNWBFileIDExport()
+
+	if(!IsFinite(fileIDExport))
+		return NaN
+	endif
+
+	fileIDExport = IPNWB#H5_FlushFile(fileIDExport, filePathExport, write = 1)
+End
