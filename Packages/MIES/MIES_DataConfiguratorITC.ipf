@@ -71,6 +71,14 @@ Function DC_ConfigureDataForITC(panelTitle, dataAcqOrTP, [multiDevice])
 		multiDevice = !!multiDevice
 	endif
 
+	if(GetFreeMemory() < FREE_MEMORY_LOWER_LIMIT)
+		printf "The amount of free memory is below %gGB, therefore a new experiment is started.\r", FREE_MEMORY_LOWER_LIMIT
+		printf "Please be patient while we are performing all the necessary steps.\r"
+		ControlWindowToFront()
+
+		SaveExperimentSpecial(SAVE_AND_SPLIT)
+	endif
+
 	KillOrMoveToTrash(wv=GetSweepSettingsWave(panelTitle))
 	KillOrMoveToTrash(wv=GetSweepSettingsTextWave(panelTitle))
 	KillOrMoveToTrash(wv=GetSweepSettingsKeyWave(panelTitle))

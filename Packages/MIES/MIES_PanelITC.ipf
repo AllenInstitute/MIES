@@ -5187,7 +5187,7 @@ Function DAP_CheckSettings(panelTitle, mode)
 	variable numDACs, numADCs, numHS, numEntries, i, indexingEnabled, clampMode
 	variable ampSerial, ampChannelID
 	string ctrl, endWave, ttlWave, dacWave, refDacWave
-	string list, msg
+	string list
 
 	ASSERT(mode == DATA_ACQUISITION_MODE || mode == TEST_PULSE_MODE, "Invalid mode")
 
@@ -5201,25 +5201,6 @@ Function DAP_CheckSettings(panelTitle, mode)
 		printf "%s: Pre DAQ analysis function requested an abort\r", panelTitle
 		ControlWindowToFront()
 		return 1
-	endif
-
-	if(GetFreeMemory() < FREE_MEMORY_LOWER_LIMIT)
-		DFREF dfr = GetMiesPath()
-		NVAR/Z/SDFR=dfr skip_free_memory_warning
-
-		if(!NVAR_Exists(skip_free_memory_warning) || !skip_free_memory_warning)
-			sprintf msg, "The amount of free memory is below %gGB,\r would you like to start a new experiment?", FREE_MEMORY_LOWER_LIMIT
-			ControlWindowToFront()
-			DoAlert/T="Low memory warning" 1, msg
-			if(V_flag == 1)
-				SaveExperimentSpecial(SAVE_AND_SPLIT)
-				print "Please restart data acquisition"
-				ControlWindowToFront()
-				return 1
-			else
-				variable/G dfr:skip_free_memory_warning = 1
-			endif
-		endif
 	endif
 
 	// check that if multiple devices are locked we are in multi device mode
