@@ -3185,13 +3185,25 @@ End
 ///
 /// It is currently not possible to check if SaveExperiment was successfull
 /// (E-Mail from Howard Rodstein WaveMetrics, 30 Jan 2015)
-Function SaveExperimentWrapper(path, filename)
+///
+/// @param path                    Igor symbolic path where the experiment should be stored
+/// @param filename 			   filename of the experiment *including* suffix, usually #PACKED_FILE_EXPERIMENT_SUFFIX
+/// @param overrideInteractiveMode [optional, defaults to GetInteractiveMode()] Overrides the current setting of
+///                                the interactive mode
+Function SaveExperimentWrapper(path, filename, [overrideInteractiveMode])
 	string path, filename
+	variable overrideInteractiveMode
 
 	variable refNum
-	NVAR interactiveMode = $GetInteractiveMode()
 
-	if(interactiveMode)
+	if(ParamIsDefault(overrideInteractiveMode))
+		NVAR interactiveMode = $GetInteractiveMode()
+		overrideInteractiveMode = interactiveMode
+	else
+		overrideInteractiveMode = !!overrideInteractiveMode
+	endif
+
+	if(overrideInteractiveMode)
 		Open/D/M="Save experiment"/F="All Files:.*;"/P=$path refNum as filename
 
 		if(isEmpty(S_fileName))
