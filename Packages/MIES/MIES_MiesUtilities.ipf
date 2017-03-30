@@ -1776,7 +1776,7 @@ Function SaveExperimentSpecial(mode)
 	variable mode
 
 	variable numDevices, i, ret, pos
-	variable zeroSweepCounter, keepOtherData, showSaveDialog
+	variable zeroSweepCounter, keepOtherData, showSaveDialog, useNewNWBFile
 	string path, devicesWithData, activeDevices, device, expLoc, list, refNum
 	string expName, substr
 
@@ -1784,10 +1784,12 @@ Function SaveExperimentSpecial(mode)
 		zeroSweepCounter = 1
 		keepOtherData    = 0
 		showSaveDialog   = 1
+		useNewNWBFile    = 1
 	elseif(mode == SAVE_AND_SPLIT)
 		zeroSweepCounter = 0
 		keepOtherData    = 1
 		showSaveDialog   = 0
+		useNewNWBFile    = 0
 	else
 		ASSERT(0, "Unknown mode")
 	endif
@@ -1889,7 +1891,9 @@ Function SaveExperimentSpecial(mode)
 
 	SaveExperiment
 
-	CloseNWBFile()
+	if(useNewNWBFile)
+		CloseNWBFile()
+	endif
 End
 
 /// @brief Return the maximum count of the given type
