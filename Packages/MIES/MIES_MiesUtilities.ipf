@@ -1776,16 +1776,16 @@ Function SaveExperimentSpecial(mode)
 	variable mode
 
 	variable numDevices, i, ret, pos
-	variable zeroSweeps, keepOtherData
+	variable zeroSweepCounter, keepOtherData
 	string path, devicesWithData, activeDevices, device, expLoc, list, refNum
 	string expName, substr
 
 	if(mode == SAVE_AND_CLEAR)
-		zeroSweeps    = 1
-		keepOtherData = 0
+		zeroSweepCounter = 1
+		keepOtherData    = 0
 	elseif(mode == SAVE_AND_SPLIT)
-		zeroSweeps    = 0
-		keepOtherData = 1
+		zeroSweepCounter = 0
+		keepOtherData    = 1
 	else
 		ASSERT(0, "Unknown mode")
 	endif
@@ -1854,7 +1854,7 @@ Function SaveExperimentSpecial(mode)
 		path = GetDeviceDataPathAsString(device)
 		killFunc(path)
 
-		if(windowExists(device) && zeroSweeps)
+		if(windowExists(device) && zeroSweepCounter)
 			SetSetVariable(device, "SetVar_Sweep", 0)
 		endif
 	endfor
