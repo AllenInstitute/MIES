@@ -84,6 +84,34 @@ Function/S DB_GetMainGraph(panelTitle)
 	return GetMainWindow(panelTitle) + "#DataBrowserGraph"
 End
 
+Function/S DB_ClearAllGraphs()
+
+	string unlocked, locked, listOfGraphs
+	string listOfPanels = ""
+	string graph
+	variable i, numEntries
+
+	locked   = WinList("DB_*", ";", "WIN:64")
+	unlocked = WinList("DataBrowser*", ";", "WIN:64")
+
+	if(!IsEmpty(locked))
+		listOfPanels = AddListItem(locked, listOfPanels, ";", inf)
+	endif
+
+	if(!IsEmpty(unlocked))
+		listOfPanels = AddListItem(unlocked, listOfPanels, ";", inf)
+	endif
+
+	numEntries = ItemsInList(listOfPanels)
+	for(i = 0; i < numEntries; i += 1)
+		graph = DB_GetMainGraph(StringFromList(i, listOfPanels))
+
+		if(WindowExists(graph))
+			RemoveTracesFromGraph(graph)
+		endif
+	endfor
+End
+
 static Function/S DB_GetLabNoteBookGraph(panelTitle)
 	string panelTitle
 

@@ -1886,7 +1886,11 @@ Function SaveExperimentSpecial(mode)
 			DFREF dfr = GetDeviceTestPulse(device)
 			list = GetListOfObjects(dfr, "TPStorage_*", fullPath=1)
 			CallFunctionForEachListItem(killFunc, list)
+
+			RemoveTracesFromGraph(GetScopeGraphWrapper(device))
 		endfor
+
+		ClearDataBrowserGraphsWrapper()
 	endif
 
 	SaveExperiment
@@ -1894,6 +1898,28 @@ Function SaveExperimentSpecial(mode)
 	if(useNewNWBFile)
 		CloseNWBFile()
 	endif
+End
+
+Function ClearDataBrowserGraphsProto()
+
+End
+
+static Function ClearDataBrowserGraphsWrapper()
+
+	FUNCREF ClearDataBrowserGraphsProto f = $"DB_ClearAllGraphs"
+	f()
+End
+
+Function/S GetScopeGraphProto(panelTitle)
+	string panelTitle
+
+End
+
+static Function/S GetScopeGraphWrapper(panelTitle)
+	string panelTitle
+
+	FUNCREF GetScopeGraphProto f = $"SCOPE_GetGraph"
+	return f(panelTitle)
 End
 
 /// @brief Return the maximum count of the given type
