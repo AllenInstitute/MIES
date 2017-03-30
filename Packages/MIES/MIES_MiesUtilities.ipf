@@ -1814,7 +1814,7 @@ Function SaveExperimentSpecial(mode)
 			return NaN
 		endif
 
-		// the user might have changed the experimet name in the dialog
+		// the user might have changed the experiment name in the dialog
 		expName = GetExperimentName()
 	else
 		SaveExperiment
