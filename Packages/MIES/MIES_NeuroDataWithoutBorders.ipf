@@ -168,7 +168,7 @@ static Function NWB_GetFileForExport([overrideFilePath, createdNewNWBFile])
 	return fileIDExport
 End
 
-Function NWB_AddGeneratorString(fileID)
+static Function NWB_AddGeneratorString(fileID)
 	variable fileID
 
 	Make/FREE/T/N=(5, 2) props
