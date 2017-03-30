@@ -3277,7 +3277,7 @@ Window DA_Ephys() : Panel
 	SetVariable setvar_DataAcq_OnsetDelayUser,userdata(ResizeControlsInfo)= A"!!,HOJ,htZJ,hqa!!#<Hz!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	SetVariable setvar_DataAcq_OnsetDelayUser,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	SetVariable setvar_DataAcq_OnsetDelayUser,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
-	SetVariable setvar_DataAcq_OnsetDelayUser,limits={0,inf,1},value= _NUM:1
+	SetVariable setvar_DataAcq_OnsetDelayUser,limits={0,inf,1},value= _NUM:0
 	ValDisplay valdisp_DataAcq_OnsetDelayAuto,pos={321.00,756.00},size={143.00,17.00},bodyWidth=50,disable=1,title="Onset delay (ms)"
 	ValDisplay valdisp_DataAcq_OnsetDelayAuto,help={"The additional onset delay required by the \"Insert TP\" setting."}
 	ValDisplay valdisp_DataAcq_OnsetDelayAuto,userdata(tabnum)=  "0"
@@ -3560,7 +3560,7 @@ Window DA_Ephys() : Panel
 	CheckBox Radio_ClampMode_AllVClamp,userdata(ResizeControlsInfo)= A"!!,I.!!#?1!!#;]!!#;]z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	CheckBox Radio_ClampMode_AllVClamp,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	CheckBox Radio_ClampMode_AllVClamp,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
-	CheckBox Radio_ClampMode_AllVClamp,value= 1,mode=1
+	CheckBox Radio_ClampMode_AllVClamp,value= 0,mode=1
 	CheckBox Radio_ClampMode_AllIClamp,pos={400.00,111.00},size={13.00,13.00},disable=1,proc=DAP_CheckProc_ClampMode,title=""
 	CheckBox Radio_ClampMode_AllIClamp,userdata(tabnum)=  "0"
 	CheckBox Radio_ClampMode_AllIClamp,userdata(tabcontrol)=  "ADC"
