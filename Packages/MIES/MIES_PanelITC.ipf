@@ -5438,6 +5438,10 @@ Function DAP_CheckSettings(panelTitle, mode)
 		endif
 	endfor
 
+	if(GetCheckBoxState(panelTitle, "Check_Settings_NwbExport"))
+		NWB_PrepareExport()
+	endif
+
 	return 0
 End
 
