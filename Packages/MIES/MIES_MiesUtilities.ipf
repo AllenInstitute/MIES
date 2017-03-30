@@ -1776,30 +1776,32 @@ Function SaveExperimentSpecial(mode)
 	variable mode
 
 	variable numDevices, i, ret, pos
-	variable zeroSweepCounter, keepOtherData
+	variable zeroSweepCounter, keepOtherData, showSaveDialog
 	string path, devicesWithData, activeDevices, device, expLoc, list, refNum
 	string expName, substr
 
 	if(mode == SAVE_AND_CLEAR)
 		zeroSweepCounter = 1
 		keepOtherData    = 0
+		showSaveDialog   = 1
 	elseif(mode == SAVE_AND_SPLIT)
 		zeroSweepCounter = 0
 		keepOtherData    = 1
+		showSaveDialog   = 0
 	else
 		ASSERT(0, "Unknown mode")
 	endif
 
 	// We want never to loose data so we do the following:
 	// Case 1: Unitled experiment
-	// - Save with dialog without fileNameSuffix suffix
-	// - Save with dialog with fileNameSuffix suffix
+	// - Save (with dialog if requested) without fileNameSuffix suffix
+	// - Save (with dialog if requested) with fileNameSuffix suffix
 	// - Clear data
 	// - Save without dialog
 	//
 	// Case 2: Experiment with name
 	// - Save without dialog
-	// - Save with dialog with fileNameSuffix suffix
+	// - Save (with dialog if requested) with fileNameSuffix suffix
 	// - Clear data
 	// - Save without dialog
 	//
@@ -1808,7 +1810,7 @@ Function SaveExperimentSpecial(mode)
 	expName = GetExperimentName()
 
 	if(!cmpstr(expName, UNTITLED_EXPERIMENT))
-		ret = SaveExperimentWrapper("", "_" + GetTimeStamp() + PACKED_FILE_EXPERIMENT_SUFFIX)
+		ret = SaveExperimentWrapper("", "_" + GetTimeStamp() + PACKED_FILE_EXPERIMENT_SUFFIX, overrideInteractiveMode = showSaveDialog)
 
 		if(ret)
 			return NaN
@@ -1837,7 +1839,7 @@ Function SaveExperimentSpecial(mode)
 	expLoc  = "home"
 	expName = UniqueFile(expLoc, expName, PACKED_FILE_EXPERIMENT_SUFFIX)
 
-	ret = SaveExperimentWrapper(expLoc, expName)
+	ret = SaveExperimentWrapper(expLoc, expName, overrideInteractiveMode = showSaveDialog)
 
 	if(ret)
 		return NaN
