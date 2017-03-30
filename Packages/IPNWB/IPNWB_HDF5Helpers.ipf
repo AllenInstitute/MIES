@@ -489,6 +489,10 @@ Function/S H5_ListGroups(fileID, path)
 	return S_HDF5ListGroup
 End
 
+/// @brief Open the group reachable via `locationID` and `path` and return its ID
+///
+/// @param locationID  HDF5 file identifier
+/// @param path        Full path to the group inside locationID
 Function H5_OpenGroup(locationID, path)
 	Variable locationID
 	String path
