@@ -101,7 +101,7 @@ static Function NWB_GetFileForExport([overrideFilePath, createdNewNWBFile])
 			filePath = S_fileName
 		else
 			PathInfo home
-			filePath = S_path + expName + ".nwb"
+			filePath = S_path + CleanupExperimentName(expName) + ".nwb"
 		endif
 	endif
 
