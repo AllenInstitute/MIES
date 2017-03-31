@@ -1825,14 +1825,7 @@ Function SaveExperimentSpecial(mode)
 	endif
 
 	if(mode == SAVE_AND_SPLIT)
-		// Remove the following suffixes:
-		// - sibling
-		// - time stamp
-		// - numerical suffixes added to prevent overwriting files
-		expName  = RemoveEndingRegExp(expName, "_[[:digit:]]{4}_[[:digit:]]{2}_[[:digit:]]{2}_[[:digit:]]{6}") // example: 2015_03_25_213219
-		expName  = RemoveEndingRegExp(expName, "_[[:digit:]]+") // example: _1, _123
-		expName  = RemoveEnding(expName, SIBLING_FILENAME_SUFFIX)
-		expName += SIBLING_FILENAME_SUFFIX
+		expName = CleanupExperimentName(expName) + SIBLING_FILENAME_SUFFIX
 	elseif(mode == SAVE_AND_CLEAR)
 		expName = "_" + GetTimeStamp()
 	endif
@@ -1898,6 +1891,21 @@ Function SaveExperimentSpecial(mode)
 	if(useNewNWBFile)
 		CloseNWBFile()
 	endif
+End
+
+/// @brief Cleanup the experiment name
+Function/S CleanupExperimentName(expName)
+	string expName
+
+	// Remove the following suffixes:
+	// - sibling
+	// - time stamp
+	// - numerical suffixes added to prevent overwriting files
+	expName  = RemoveEndingRegExp(expName, "_[[:digit:]]{4}_[[:digit:]]{2}_[[:digit:]]{2}_[[:digit:]]{6}") // example: 2015_03_25_213219
+	expName  = RemoveEndingRegExp(expName, "_[[:digit:]]+") // example: _1, _123
+	expName  = RemoveEnding(expName, SIBLING_FILENAME_SUFFIX)
+
+	return expName
 End
 
 Function ClearDataBrowserGraphsProto()
