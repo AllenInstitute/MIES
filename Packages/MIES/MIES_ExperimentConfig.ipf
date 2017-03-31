@@ -237,7 +237,7 @@ static Function ExpConfig_Pressure(panelTitle, UserSettings)
 	Wave /T UserSettings
 
 	variable i, ii=0, PressDevVal
-	string NIDev, PressureDevLocal, PressureDataList, HeadstagesToConfigure
+	string NIDev, PressureDevLocal, PressureDataList, HeadstagesToConfigure, AmpSerialLocal
 
 	PGC_SetAndActivateControl(panelTitle,"button_Settings_UpdateDACList")
 	FindValue /TXOP = 4 /TEXT = PRESSURE_DEV UserSettings
@@ -245,6 +245,8 @@ static Function ExpConfig_Pressure(panelTitle, UserSettings)
 	NIDev = HW_NI_ListDevices()
 	FindValue /TXOP = 4 /TEXT = ACTIVE_HEADSTAGES UserSettings
 	HeadstagesToConfigure = UserSettings[V_value][%SettingValue]
+	FindValue /TXOP = 4 /TEXT = AMP_SERIAL UserSettings
+	AmpSerialLocal = UserSettings[V_value][%SettingValue]
 	
 	printf "Configuring pressure device for headstage:\r"
 	for(i = 0; i<NUM_HEADSTAGES; i+=1)
@@ -252,7 +254,7 @@ static Function ExpConfig_Pressure(panelTitle, UserSettings)
 		PGC_SetAndActivateControl(panelTitle,"Popup_Settings_HeadStage", val = i)
 		
 		if(WhichListItem(num2str(i), HeadstagesToConfigure) != -1)
-			if(IsInteger(str2numSafe(StringFromList(ii, PressureDevLocal))))
+			if(IsInteger(str2numSafe(StringFromList(ii, AmpSerialLocal))))
 				PressDevVal = WhichListItem(StringFromList(ii,PressureDevLocal),NIDev)
 				PGC_SetAndActivateControl(panelTitle,"popup_Settings_Pressure_dev", val = PressDevVal+1)
 				if(!mod(i,2)) // even
