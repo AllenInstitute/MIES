@@ -38,6 +38,7 @@ Packages/Arduino/*exe              export-ignore
 
 *.exe binary
 *.zip binary
+*.pdb binary
 
 *.ipf whitespace=indent-with-non-tab,tabwidth=4
 *.ibw binary
