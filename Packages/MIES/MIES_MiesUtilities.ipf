@@ -1530,6 +1530,8 @@ Function EquallySpaceAxis(graph, [axisRegExp, axisOrientation, sortOrder, listFo
 		if(!IsEmpty(listForEnd))
 			adaptedList = AddListItem(listForEnd, adaptedList, ";", inf)
 		endif
+	else
+		adaptedList = axes
 	endif
 
 	numAxes = ItemsInList(adaptedList)
