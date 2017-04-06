@@ -910,7 +910,7 @@ Function CreateTiledChannelGraph(graph, config, sweepNo, numericalValues,  textu
 	WAVE/T axisLabelCache
 	WAVE/Z channelSelWave
 
-	variable red, green, blue, axisIndex, numChannels
+	variable red, green, blue, axisIndex, numChannels, offset
 	variable numDACs, numADCs, numTTLs, i, j, k, channelOffset, hasPhysUnit, slotMult
 	variable moreData, low, high, step, spacePerSlot, chan, numSlots, numHorizWaves, numVertWaves, idx, configIdx
 	variable numTTLBits, colorIndex, totalVertBlocks, headstage
@@ -1247,9 +1247,13 @@ Function CreateTiledChannelGraph(graph, config, sweepNo, numericalValues,  textu
 					endif
 
 					if(tgs.dDAQDisplayMode && oodDAQEnabled && channelTypes[i] != ITC_XOP_CHANNEL_TYPE_TTL)
-						SetScale/P x, -(delayOnsetUser + delayOnsetAuto) * samplingInt, DimDelta(wv, ROWS), WaveUnits(wv, ROWS), wv
+						offset = -(delayOnsetUser + delayOnsetAuto) * samplingInt
 					else
-						SetScale/P x, 0.0, DimDelta(wv, ROWS), WaveUnits(wv, ROWS), wv
+						offset = 0.0
+					endif
+
+					if(DimOffset(wv, ROWS) != offset)
+						SetScale/P x, offset, DimDelta(wv, ROWS), WaveUnits(wv, ROWS), wv
 					endif
 
 					trace = UniqueTraceName(graph, name)
