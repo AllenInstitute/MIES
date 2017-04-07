@@ -1,14 +1,26 @@
 #pragma rtGlobals=3
-#pragma version=1.03
+#pragma version=1.06
+#pragma TextEncoding="UTF-8"
 
-// Author: Thomas Braun (c) 2015
-// Email: thomas dot braun at byte-physics dott de
+// Licensed under 3-Clause BSD, see License.txt
 
 /// Creates a notebook with the special name "HistoryCarbonCopy"
 /// which will hold a copy of the history
-Function CreateHistoryLog()
-	DoWindow/K HistoryCarbonCopy
-	NewNotebook/V=0/F=0 /N=HistoryCarbonCopy
+Function CreateHistoryLog([recreate])
+	variable recreate
+
+	if(ParamIsDefault(recreate))
+		recreate = 1
+	endif
+	DoWindow HistoryCarbonCopy
+	if (V_flag)
+		if (recreate)
+			DoWindow/K HistoryCarbonCopy
+			NewNotebook/V=0/F=0 /N=HistoryCarbonCopy
+		endif
+	else
+		NewNotebook/V=0/F=0 /N=HistoryCarbonCopy
+	endif
 End
 
 /// Hook function which is executed after opening a file
@@ -39,10 +51,33 @@ static Function AfterFileOpenHook(refNum, file, pathName, type, creator, kind)
 	FuncRef AUTORUN_MODE_PROTO f = $StringFromList(0, funcList)
 
 	// state file exists, call the run routine and quit Igor afterwards
-	CreateHistoryLog()
+	CreateHistoryLog(recreate=0)
 	f()
 
 	Execute/P "SaveHistoryLog(); Quit/N"
+End
+
+/// resets a global filename template string for output
+Function ClearBaseFilename()
+	dfref dfr = GetPackageFolder()
+	string/G dfr:baseFilename = ""
+End
+
+/// creates a new filename template, if template already present return current
+Function/S GetBaseFilename()
+	dfref dfr = GetPackageFolder()
+	SVAR/Z/SDFR=dfr baseFilename
+
+	if(!SVAR_Exists(baseFilename))
+		string/G dfr:baseFilename = ""
+		SVAR/SDFR=dfr baseFilename
+	endif
+
+	if(strlen(baseFilename))
+		return baseFilename
+	endif
+	sprintf baseFilename, "%s_%s_%s", IgorInfo(1), Secs2Date(DateTime, -2), ReplaceString(":", Secs2Time(DateTime, 1), "-")
+	return baseFilename
 End
 
 /// Save the contents of the history notebook on disk
@@ -50,11 +85,18 @@ End
 Function SaveHistoryLog()
 
 	string historyLog
-	sprintf historyLog, "%s_%s_%s.log", IgorInfo(1), Secs2Date(DateTime, -2), ReplaceString(":", Secs2Time(DateTime, 1), "-")
+	historyLog = GetBaseFilename() + ".log"
 
 	DoWindow HistoryCarbonCopy
 	if(V_flag == 0)
 		print "No log notebook found, please call CreateHistoryLog() before."
+		return NaN
+	endif
+
+	PathInfo home
+	historyLog = getUnusedFileName(S_path + historyLog)
+	if(!strlen(historyLog))
+		printf "Error: Unable to determine unused file name for History Log output in path %s !", S_path
 		return NaN
 	endif
 
