@@ -898,8 +898,9 @@ End
 /// @param tgs             settings for tuning the display, see @ref TiledGraphSettings
 /// @param sweepDFR        top datafolder to splitted 1D sweep waves
 /// @param axisLabelCache  store existing vertical axis labels
+/// @param traceIndex      [internal use only] set to zero on the first call in a row of successive calls
 /// @param channelSelWave  [optional] channel selection wave
-Function CreateTiledChannelGraph(graph, config, sweepNo, numericalValues,  textualValues, tgs, sweepDFR, axisLabelCache, [channelSelWave])
+Function CreateTiledChannelGraph(graph, config, sweepNo, numericalValues,  textualValues, tgs, sweepDFR, axisLabelCache, traceIndex, [channelSelWave])
 	string graph
 	WAVE config
 	variable sweepNo
@@ -908,6 +909,7 @@ Function CreateTiledChannelGraph(graph, config, sweepNo, numericalValues,  textu
 	STRUCT TiledGraphSettings &tgs
 	DFREF sweepDFR
 	WAVE/T axisLabelCache
+	variable &traceIndex
 	WAVE/Z channelSelWave
 
 	variable red, green, blue, axisIndex, numChannels, offset
@@ -1256,8 +1258,8 @@ Function CreateTiledChannelGraph(graph, config, sweepNo, numericalValues,  textu
 						SetScale/P x, offset, DimDelta(wv, ROWS), WaveUnits(wv, ROWS), wv
 					endif
 
-					trace = UniqueTraceName(graph, name)
-
+					trace = "trace" + num2str(traceIndex)
+					traceIndex += 1
 					sprintf str, "i=%d, j=%d, k=%d, vertAxis=%s, traceType=%s, name=%s", i, j, k, vertAxis, traceType, name
 					DEBUGPRINT(str)
 

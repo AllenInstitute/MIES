@@ -194,7 +194,7 @@ Function DB_UpdateSweepPlot(panelTitle, [dummyArg])
 	string panelTitle
 	variable dummyArg
 
-	variable numEntries, i, sweepNo, highlightSweep, referenceTime
+	variable numEntries, i, sweepNo, highlightSweep, referenceTime, traceIndex
 	string device, subWindow, graph
 
 	if(!HasPanelLatestVersion(panelTitle, DATABROWSER_PANEL_VERSION))
@@ -261,7 +261,7 @@ Function DB_UpdateSweepPlot(panelTitle, [dummyArg])
 		DB_SplitSweepsIfReq(panelTitle, sweepNo)
 		WAVE config = GetConfigWave(sweepWave)
 
-		CreateTiledChannelGraph(graph, config, sweepNo, numericalValues, textualValues, tgs, dfr, axisLabelCache, channelSelWave=sweepChannelSel)
+		CreateTiledChannelGraph(graph, config, sweepNo, numericalValues, textualValues, tgs, dfr, axisLabelCache, traceIndex, channelSelWave=sweepChannelSel)
 		AR_UpdateTracesIfReq(graph, dfr, numericalValues, sweepNo)
 	endfor
 
