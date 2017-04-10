@@ -216,9 +216,9 @@ End
 ///        refer to the same wave.
 ///
 ///        Columns have colum labels and include various userdata readout from the traces.
-Function/WAVE PA_GetTraceInfos(graph, [includeOtherADData])
+Function/WAVE PA_GetTraceInfos(graph, [includeOtherADData, channelType])
 	string graph
-	variable includeOtherADData
+	variable includeOtherADData, channelType
 
 	variable numTraces, numEntries, i
 	string trace, traceList, traceListClean, traceFullPath
@@ -229,7 +229,12 @@ Function/WAVE PA_GetTraceInfos(graph, [includeOtherADData])
 		includeOtherADData = !!includeOtherADData
 	endif
 
-	traceList = GetAllSweepTraces(graph)
+	if(ParamIsDefault(channelType))
+		traceList = GetAllSweepTraces(graph)
+	else
+		traceList = GetAllSweepTraces(graph, channelType = channelType)
+	endif
+
 	numTraces = ItemsInList(traceList)
 
 	if(numTraces == 0)
