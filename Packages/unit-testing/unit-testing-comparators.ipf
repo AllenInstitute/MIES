@@ -1,8 +1,8 @@
 #pragma rtGlobals=3
-#pragma version=1.03
+#pragma version=1.06
+#pragma TextEncoding="UTF-8"
 
-// Author: Thomas Braun (c) 2015
-// Email: thomas dot braun at byte-physics dott de
+// Licensed under 3-Clause BSD, see License.txt
 
 // documentation guidelines:
 // -document the _WRAPPER function using "@class *_DOCU" without the flags parameter
@@ -113,6 +113,97 @@ static Function EMPTY_STR_WRAPPER(str, flags)
 
 	variable result = (strlen(str) == 0)
 	DebugOutput("Assumption that the string is empty is", result)
+
+	if(!result)
+		if(flags & OUTPUT_MESSAGE)
+			printFailInfo()
+		endif
+		if(flags & INCREASE_ERROR)
+			incrError()
+		endif
+		if(flags & ABORT_FUNCTION)
+			abortNow()
+		endif
+	endif
+End
+
+/// @class NON_NULL_STR_DOCU
+/// Tests if str is not null.
+///
+/// An empty string is always non null.
+/// @param str    string to test
+static Function NON_NULL_STR_WRAPPER(str, flags)
+	string &str
+	variable flags
+
+	incrAssert()
+
+	if(shouldDoAbort())
+		return NaN
+	endif
+
+	if(!NON_NULL_STR(str))
+		if(flags & OUTPUT_MESSAGE)
+			printFailInfo()
+		endif
+		if(flags & INCREASE_ERROR)
+			incrError()
+		endif
+		if(flags & ABORT_FUNCTION)
+			abortNow()
+		endif
+	endif
+End
+
+/// @class NON_EMPTY_STR_DOCU
+/// Tests if str is not empty.
+///
+/// A null string is a non empty string too.
+/// @param str  string to test
+static Function NON_EMPTY_STR_WRAPPER(str, flags)
+	string &str
+	variable flags
+
+	incrAssert()
+
+	if(shouldDoAbort())
+		return NaN
+	endif
+
+	variable result = (strlen(str) > 0 || NULL_STR(str))
+	DebugOutput("Assumption that the string is non empty is", result)
+
+	if(!result)
+		if(flags & OUTPUT_MESSAGE)
+			printFailInfo()
+		endif
+		if(flags & INCREASE_ERROR)
+			incrError()
+		endif
+		if(flags & ABORT_FUNCTION)
+			abortNow()
+		endif
+	endif
+End
+
+/// @class PROPER_STR_DOCU
+/// Tests if str is a "proper" string, i.e. a string with a length larger than
+/// zero.
+///
+/// Neither null strings nor empty strings are proper strings.
+/// @param str  string to test
+static Function PROPER_STR_WRAPPER(str, flags)
+	string &str
+	variable flags
+
+	incrAssert()
+
+	if(shouldDoAbort())
+		return NaN
+	endif
+
+	variable result = (strlen(str) > 0)
+	DebugOutput("Assumption that the string is a proper string is", result)
 
 	if(!result)
 		if(flags & OUTPUT_MESSAGE)
@@ -373,7 +464,7 @@ End
 /// @param majorType  major wave type
 /// @param minorType  (optional) minor wave type
 /// @see testWaveFlags
-static Function TEST_WAVE_WRAPPER(wv, flags, majorType, [minorType])
+static Function TEST_WAVE_WRAPPER(wv, majorType, flags, [minorType])
 	Wave/Z wv
 	variable majorType, minorType
 	variable flags
@@ -399,7 +490,7 @@ static Function TEST_WAVE_WRAPPER(wv, flags, majorType, [minorType])
 		endif
 	endif
 
-	result = (WaveType(wv, 1) != majorType)
+	result = (WaveType(wv, 1) == majorType)
 	string str
 	sprintf str, "Assumption that the wave's main type is %d", majorType
 	DebugOutput(str, result)
@@ -560,6 +651,15 @@ static Function EQUAL_WAVE_WRAPPER(wv1, wv2, flags, [mode, tol])
 			endif
 		endif
 	endfor
+End
+
+static Function NON_NULL_STR(str)
+	string &str
+
+	variable result = (numtype(strlen(str)) == 0)
+
+	DebugOutput("Assumption of str being non null is ", result)
+	return result
 End
 
 static Function NULL_STR(str)
@@ -899,6 +999,44 @@ Function REQUIRE_EMPTY_STR(str)
 	EMPTY_STR_WRAPPER(str, REQUIRE_MODE)
 End
 
+Function WARN_NON_EMPTY_STR(str)
+	string &str
+
+	NON_EMPTY_STR_WRAPPER(str, WARN_MODE)
+End
+
+/// @copydoc NON_EMPTY_STR_DOCU
+Function CHECK_NON_EMPTY_STR(str)
+	string &str
+
+	NON_EMPTY_STR_WRAPPER(str, CHECK_MODE)
+End
+
+Function REQUIRE_NON_EMPTY_STR(str)
+	string &str
+
+	NON_EMPTY_STR_WRAPPER(str, REQUIRE_MODE)
+End
+
+Function WARN_PROPER_STR(str)
+	string &str
+
+	PROPER_STR_WRAPPER(str, WARN_MODE)
+End
+
+/// @copydoc PROPER_STR_DOCU
+Function CHECK_PROPER_STR(str)
+	string &str
+
+	PROPER_STR_WRAPPER(str, CHECK_MODE)
+End
+
+Function REQUIRE_PROPER_STR(str)
+	string &str
+
+	PROPER_STR_WRAPPER(str, REQUIRE_MODE)
+End
+
 Function WARN_NULL_STR(str)
 	string &str
 
@@ -916,6 +1054,25 @@ Function REQUIRE_NULL_STR(str)
 	string &str
 
 	NULL_STR_WRAPPER(str, REQUIRE_MODE)
+End
+
+Function WARN_NON_NULL_STR(str)
+	string &str
+
+	NON_NULL_STR_WRAPPER(str, WARN_MODE)
+End
+
+/// @copydoc NON_NULL_STR_DOCU
+Function CHECK_NON_NULL_STR(str)
+	string &str
+
+	NON_NULL_STR_WRAPPER(str, CHECK_MODE)
+End
+
+Function REQUIRE_NON_NULL_STR(str)
+	string &str
+
+	NON_NULL_STR_WRAPPER(str, REQUIRE_MODE)
 End
 
 Function WARN_EQUAL_STR(str1, str2, [case_sensitive])
@@ -1065,6 +1222,82 @@ Function REQUIRE_EQUAL_WAVES(wv1, wv2, [mode, tol])
 		EQUAL_WAVE_WRAPPER(wv1, wv2, REQUIRE_MODE, tol=tol, mode=mode)
 	endif
 End
+
+#if (IgorVersion() >=7.00)
+
+Function WARN_EQUAL_TEXTWAVES(wv1, wv2, [mode])
+	Wave/Z/T wv1, wv2
+	variable mode
+
+	if(ParamIsDefault(mode))
+		EQUAL_WAVE_WRAPPER(wv1, wv2, WARN_MODE)
+	else
+		EQUAL_WAVE_WRAPPER(wv1, wv2, WARN_MODE, mode=mode)
+	endif
+End
+
+Function CHECK_EQUAL_TEXTWAVES(wv1, wv2, [mode])
+	Wave/Z/T wv1, wv2
+	variable mode
+
+	if(ParamIsDefault(mode))
+		EQUAL_WAVE_WRAPPER(wv1, wv2, CHECK_MODE)
+	else
+		EQUAL_WAVE_WRAPPER(wv1, wv2, CHECK_MODE, mode=mode)
+	endif
+End
+
+Function REQUIRE_EQUAL_TEXTWAVES(wv1, wv2, [mode])
+	Wave/Z/T wv1, wv2
+	variable mode
+
+	if(ParamIsDefault(mode))
+		EQUAL_WAVE_WRAPPER(wv1, wv2, REQUIRE_MODE)
+	else
+		EQUAL_WAVE_WRAPPER(wv1, wv2, REQUIRE_MODE, mode=mode)
+	endif
+End
+
+#else
+
+Function WARN_EQUAL_TEXTWAVES(wv1, wv2, [mode])
+	Wave/T wv1, wv2
+	variable mode
+
+	if(ParamIsDefault(mode))
+		EQUAL_WAVE_WRAPPER(wv1, wv2, WARN_MODE)
+	else
+		EQUAL_WAVE_WRAPPER(wv1, wv2, WARN_MODE, mode=mode)
+	endif
+End
+
+/// Tests two text waves for equality
+/// @param wv1    first text wave, can be invalid for Igor Pro 7 or later
+/// @param wv2    second text wave, can be invalid for Igor Pro 7 or later
+/// @param mode   (optional) features of the waves to compare, defaults to all modes, defined at @ref equalWaveFlags
+Function CHECK_EQUAL_TEXTWAVES(wv1, wv2, [mode])
+	Wave/T wv1, wv2
+	variable mode
+
+	if(ParamIsDefault(mode))
+		EQUAL_WAVE_WRAPPER(wv1, wv2, CHECK_MODE)
+	else
+		EQUAL_WAVE_WRAPPER(wv1, wv2, CHECK_MODE, mode=mode)
+	endif
+End
+
+Function REQUIRE_EQUAL_TEXTWAVES(wv1, wv2, [mode])
+	Wave/T wv1, wv2
+	variable mode
+
+	if(ParamIsDefault(mode))
+		EQUAL_WAVE_WRAPPER(wv1, wv2, REQUIRE_MODE)
+	else
+		EQUAL_WAVE_WRAPPER(wv1, wv2, REQUIRE_MODE, mode=mode)
+	endif
+End
+
+#endif
 
 Function WARN_EMPTY_FOLDER()
 	CDF_EMPTY_WRAPPER(WARN_MODE)
