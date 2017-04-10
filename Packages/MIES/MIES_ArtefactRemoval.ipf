@@ -230,7 +230,8 @@ Function AR_HandleRanges(graph, [removeRange])
 	DFREF sweepDFR = AR_GetSweepFolder(graph)
 	WAVE/WAVE ADCs = GetITCDataSingleColumnWaves(sweepDFR, ITC_XOP_CHANNEL_TYPE_ADC)
 
-	Make/FREE/T/N=(NUM_AD_CHANNELS, NUM_HEADSTAGES) leftAxisInfo = TraceInfo(graph, "AD" + num2str(p) + SelectString(q == 0, "_" + num2str(q) , ""), 0)
+	WAVE/T traceData = PA_GetTraceInfos(graph, channelType = ITC_XOP_CHANNEL_TYPE_ADC)
+	Make/FREE/T/N=(DimSize(traceData, ROWS)) leftAxisData = StringByKey("YAXIS", TraceInfo(graph, traceData[p][%traceName], 0))
 
 	ASSERT(DimSize(listBoxWave, ROWS) == DimSize(artefactWave, ROWS), "Unexpected dimension sizes")
 
@@ -249,6 +250,11 @@ Function AR_HandleRanges(graph, [removeRange])
 				continue
 			endif
 
+			WAVE/Z indizes = FindIndizes(wvText=traceData, colLabel="channelNumber",var = j)
+			ASSERT(WaveExists(indizes) && DimSize(indizes, ROWS) >= 1, "Expected one hit")
+
+			leftAxis = leftAxisData[indizes[0]]
+
 			// skip that AD as the range originated from the DA of the same headstage
 			if(j == artefactWave[i][%ADC])
 				continue
@@ -256,32 +262,6 @@ Function AR_HandleRanges(graph, [removeRange])
 
 			first = limit(ScaleToIndex(AD, str2num(listBoxWave[i][0]), ROWS), 0, DimSize(AD, ROWS) - 1)
 			last  = limit(ScaleToIndex(AD, str2num(listBoxWave[i][1]), ROWS), 0, DimSize(AD, ROWS) - 1)
-
-			leftAxis = ""
-			for(k = 0; k < NUM_HEADSTAGES; k += 1)
-				yRangeStr = StringByKey("YRANGE", leftAxisInfo[j][k])
-
-				if(IsEmpty(yRangeStr))
-					continue
-				endif
-
-				WAVE yRange = ExtractFromSubrange(yRangeStr, ROWS)
-				if((yRange[0][0] == -1 && yRange[0][1] == -1) || (yRange[0][0] <= first && yRange[0][1] >= last))
-					leftAxis = StringByKey("YAXIS", leftAxisInfo[j][k])
-					break
-				endif
-			endfor
-
-			if(IsEmpty(leftAxis) && !removeRange)
-				// axis is not shown, can happen with oodDAQ region slider
-				continue
-			endif
-
-			// AD wave is not displayed
-			GetAxis/W=$graph/Q $leftAxis
-			if(V_flag)
-				continue
-			endif
 
 			// check if we need a special bottom axis, required for dDAQ viewing
 			bottomAxis = leftAxis + "_b"
