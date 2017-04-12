@@ -849,16 +849,19 @@ static Function DC_PlaceDataInITCDataWave(panelTitle, numActiveChannels, dataAcq
 		singleSetLength = setLength[0]
 		ASSERT(DimSize(singleStimSet, COLS) <= 1, "Expected a 1D testpulse wave")
 		if(multiDevice)
-			Multithread ITCDataWave[][0, numEntries - 1] = (DAGain[q] * DAScale[q]) * singleStimSet[decimationFactor * mod(p, singleSetLength)][0]
+			Multithread ITCDataWave[][0, numEntries - 1] = \
+				(DAGain[q] * DAScale[q]) * singleStimSet[decimationFactor * mod(p, singleSetLength)][0]
 			cutOff = mod(DimSize(ITCDataWave, ROWS), testPulseLength)
 			ITCDataWave[DimSize(ITCDataWave, ROWS) - cutoff, *][0, numEntries - 1] = 0
 		else
-			Multithread ITCDataWave[0, setLength[0] - 1][0, numEntries - 1] = (DAGain[q] * DAScale[q]) * singleStimSet[decimationFactor * p][0]
+			Multithread ITCDataWave[0, setLength[0] - 1][0, numEntries - 1] = \
+				(DAGain[q] * DAScale[q]) * singleStimSet[decimationFactor * p][0]
 		endif
 	elseif(dataAcqOrTP == DATA_ACQUISITION_MODE)
 		for(i = 0; i < numEntries; i += 1)
 			WAVE singleStimSet = stimSet[i]
-			Multithread ITCDataWave[insertStart[i], insertStart[i] + setLength[i] - 1][i] = (DAGain[i] * DAScale[i]) * singleStimSet[decimationFactor * (p - insertStart[i])][setColumn[i]]
+			Multithread ITCDataWave[insertStart[i], insertStart[i] + setLength[i] - 1][i] = \
+				(DAGain[i] * DAScale[i]) * singleStimSet[decimationFactor * (p - insertStart[i])][setColumn[i]]
 		endfor
 
 		if(globalTPInsert)
