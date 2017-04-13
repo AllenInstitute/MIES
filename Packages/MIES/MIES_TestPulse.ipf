@@ -68,16 +68,23 @@ Function TP_StartTestPulseSingleDevice(panelTitle)
 	DAP_StopOngoingDataAcquisition(panelTitle)
 	DAP_UpdateITCSampIntDisplay(panelTitle)
 
-	if(GetCheckBoxState(panelTitle, "Check_Settings_BkgTP"))
-		TP_Setup(panelTitle, TEST_PULSE_BG_SINGLE_DEVICE)
-		ITC_StartBackgroundTestPulse(panelTitle)
+	try
+		if(GetCheckBoxState(panelTitle, "Check_Settings_BkgTP"))
 
-		P_InitBeforeTP(panelTitle)
-	else
-		TP_Setup(panelTitle, TEST_PULSE_FG_SINGLE_DEVICE)
-		ITC_StartTestPulse(panelTitle)
+			TP_Setup(panelTitle, TEST_PULSE_BG_SINGLE_DEVICE)
+
+			ITC_StartBackgroundTestPulse(panelTitle)
+
+			P_InitBeforeTP(panelTitle)
+		else
+			TP_Setup(panelTitle, TEST_PULSE_FG_SINGLE_DEVICE)
+			ITC_StartTestPulse(panelTitle)
+			TP_Teardown(panelTitle)
+		endif
+	catch
 		TP_Teardown(panelTitle)
-	endif
+		return NaN
+	endtry
 End
 
 /// @brief Start a multi device test pulse, always done in background mode

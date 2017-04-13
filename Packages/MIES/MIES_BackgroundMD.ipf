@@ -34,13 +34,24 @@ Function ITC_StartDAQMultiDeviceLowLevel(panelTitle, [initialSetupReq])
 		initialSetupReq = !!initialSetupReq
 	endif
 
-	if(initialSetupReq)
-		DAP_OneTimeCallBeforeDAQ(panelTitle, DAQ_BG_MULTI_DEVICE)
-	endif
+	try
+		if(initialSetupReq)
+			DAP_OneTimeCallBeforeDAQ(panelTitle, DAQ_BG_MULTI_DEVICE)
+		endif
+
+		DC_ConfigureDataForITC(panelTitle, DATA_ACQUISITION_MODE)
+	catch
+		if(initialSetupReq)
+			DAP_OneTimeCallAfterDAQ(panelTitle)
+		else // required for RA for the lead device only
+			ITC_StopITCDeviceTimer(panelTitle)
+		endif
+
+		return NaN
+	endtry
 
 	// configure passed device
 	NVAR ITCDeviceIDGlobal = $GetITCDeviceIDGlobal(panelTitle)
-	DC_ConfigureDataForITC(panelTitle, DATA_ACQUISITION_MODE)
 	HW_SelectDevice(HARDWARE_ITC_DAC, ITCDeviceIDGlobal, flags=HARDWARE_ABORT_ON_ERROR)
 	HW_ITC_PrepareAcq(ITCDeviceIDGlobal)
 
@@ -52,15 +63,35 @@ Function ITC_StartDAQMultiDeviceLowLevel(panelTitle, [initialSetupReq])
 	SVAR listOfFollowerDevices = $GetFollowerList(panelTitle)
 	numFollower = ItemsInList(listOfFollowerDevices)
 
+	try
+		for(i = 0; i < numFollower; i += 1)
+			followerPanelTitle = StringFromList(i, listOfFollowerDevices)
+
+			if(initialSetupReq)
+				DAP_OneTimeCallBeforeDAQ(followerPanelTitle, DAQ_BG_MULTI_DEVICE)
+			endif
+
+			DC_ConfigureDataForITC(followerPanelTitle, DATA_ACQUISITION_MODE)
+		endfor
+	catch
+		if(initialSetupReq)
+			for(i = 0; i < numFollower; i += 1)
+				followerPanelTitle = StringFromList(i, listOfFollowerDevices)
+				DAP_OneTimeCallAfterDAQ(followerPanelTitle)
+			endfor
+
+			DAP_OneTimeCallAfterDAQ(panelTitle)
+		else // required for RA for the lead device only
+			ITC_StopITCDeviceTimer(panelTitle)
+		endif
+
+		return NaN
+	endtry
+
 	// configure follower devices
 	for(i = 0; i < numFollower; i += 1)
 		followerPanelTitle = StringFromList(i, listOfFollowerDevices)
 
-		if(initialSetupReq)
-			DAP_OneTimeCallBeforeDAQ(followerPanelTitle, DAQ_BG_MULTI_DEVICE)
-		endif
-
-		DC_ConfigureDataForITC(followerPanelTitle, DATA_ACQUISITION_MODE)
 		NVAR ITCDeviceIDGlobal = $GetITCDeviceIDGlobal(followerPanelTitle)
 		HW_SelectDevice(HARDWARE_ITC_DAC, ITCDeviceIDGlobal, flags=HARDWARE_ABORT_ON_ERROR)
 		HW_ITC_PrepareAcq(ITCDeviceIDGlobal)

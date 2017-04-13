@@ -174,7 +174,11 @@ Function RA_Counter(panelTitle)
 	endif
 
 	if(Count < TotTrials)
-		DC_ConfigureDataForITC(panelTitle, DATA_ACQUISITION_MODE)
+		try
+			DC_ConfigureDataForITC(panelTitle, DATA_ACQUISITION_MODE)
+		catch
+			RA_FinishAcquisition(panelTitle)
+		endtry
 
 		if(!backgroundDAQ)
 			ITC_DataAcq(panelTitle)

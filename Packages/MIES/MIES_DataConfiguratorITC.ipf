@@ -58,6 +58,8 @@ End
 /// @param panelTitle  panel title
 /// @param dataAcqOrTP one of #DATA_ACQUISITION_MODE or #TEST_PULSE_MODE
 /// @param multiDevice [optional: defaults to false] Fine tune data handling for single device (false) or multi device (true)
+///
+/// @exception Abort configuration failure
 Function DC_ConfigureDataForITC(panelTitle, dataAcqOrTP, [multiDevice])
 	string panelTitle
 	variable dataAcqOrTP, multiDevice
@@ -668,6 +670,8 @@ End
 /// @param numActiveChannels number of active channels as returned by DC_ChanCalcForITCChanConfigWave()
 /// @param dataAcqOrTP       one of #DATA_ACQUISITION_MODE or #TEST_PULSE_MODE
 /// @param multiDevice       [optional: defaults to false] Fine tune data handling for single device (false) or multi device (true)
+///
+/// @exception Abort configuration failure
 static Function DC_PlaceDataInITCDataWave(panelTitle, numActiveChannels, dataAcqOrTP, multiDevice)
 	string panelTitle
 	variable numActiveChannels, dataAcqOrTP, multiDevice
@@ -976,6 +980,18 @@ static Function DC_PlaceDataInITCDataWave(panelTitle, numActiveChannels, dataAcq
 			ITCDataWave[singleInsertStart, singleInsertStart + singleSetLength - 1][activeColumn] = \
    			  limit(TTLWave[decimationFactor * (p - singleInsertStart)], SIGNED_INT_16BIT_MIN, SIGNED_INT_16BIT_MAX)
 		endif
+	endif
+
+	FindValue/I=(SIGNED_INT_16BIT_MIN) ITCDataWave
+
+	if(V_Value == -1)
+		FindValue/I=(SIGNED_INT_16BIT_MAX) ITCDataWave
+	endif
+
+	if(V_Value != -1)
+		printf "Error writing stimsets into ITCDataWave: The values are out of range. Maybe the DA/AD Gain needs adjustment?\r"
+		ControlWindowToFront()
+		Abort
 	endif
 End
 
