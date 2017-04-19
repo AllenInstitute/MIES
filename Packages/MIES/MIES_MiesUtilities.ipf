@@ -1902,7 +1902,7 @@ Function/S CleanupExperimentName(expName)
 	// - time stamp
 	// - numerical suffixes added to prevent overwriting files
 	expName  = RemoveEndingRegExp(expName, "_[[:digit:]]{4}_[[:digit:]]{2}_[[:digit:]]{2}_[[:digit:]]{6}") // example: 2015_03_25_213219
-	expName  = RemoveEndingRegExp(expName, "_[[:digit:]]+") // example: _1, _123
+	expName  = RemoveEndingRegExp(expName, "_[[:digit:]]{1,5}") // example: _1, _123
 	expName  = RemoveEnding(expName, SIBLING_FILENAME_SUFFIX)
 
 	return expName
