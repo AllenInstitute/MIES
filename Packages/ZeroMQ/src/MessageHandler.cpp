@@ -64,10 +64,17 @@ void WorkerThread()
 
       try
       {
-        const auto payload = CreateStringFromZMsg(&payloadMsg);
-        reqQueue.push(std::make_shared<RequestInterface>(identity, payload));
+        try
+        {
+          const auto payload = CreateStringFromZMsg(&payloadMsg);
+          reqQueue.push(std::make_shared<RequestInterface>(identity, payload));
+        }
+        catch(const std::bad_alloc &)
+        {
+          throw RequestInterfaceException(REQ_OUT_OF_MEMORY);
+        }
       }
-      catch(const RequestInterfaceException &e)
+      catch(const IgorException &e)
       {
         auto docTemplate = R"( {
                  "errorCode" : {
@@ -87,11 +94,11 @@ void WorkerThread()
             fmt::sprintf("%s: ZeroMQSendAsServer returned %d\r", __func__, rc));
       }
     }
-    catch(const IgorException &e)
+    catch(const std::exception &e)
     {
       XOPNotice_ts(fmt::sprintf(
-          "%s: Caught IgorException(%d, %s). This must NOT happen!\r", __func__,
-          e.m_errorCode, e.what()));
+          "%s: Caught std::exception with what=\"%s\". This must NOT happen!\r",
+          __func__, e.what()));
     }
     catch(...)
     {
@@ -109,11 +116,18 @@ void CallAndReply(RequestInterfacePtr req) noexcept
 {
   try
   {
-    req->CanBeProcessed();
-    auto reply = req->Call();
-    ZeroMQServerSend(req->GetCallerIdentity(), reply.dump(4));
+    try
+    {
+      req->CanBeProcessed();
+      auto reply = req->Call();
+      ZeroMQServerSend(req->GetCallerIdentity(), reply.dump(4));
+    }
+    catch(const std::bad_alloc &)
+    {
+      throw RequestInterfaceException(REQ_OUT_OF_MEMORY);
+    }
   }
-  catch(const RequestInterfaceException &e)
+  catch(const IgorException &e)
   {
     auto docTemplate = R"( {
              "errorCode" : {

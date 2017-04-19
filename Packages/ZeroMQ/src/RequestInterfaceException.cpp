@@ -25,6 +25,9 @@ std::string GetErrorMessageFromCode(int errorCode)
   case REQ_INVALID_MESSAGEID:
     return "Invalid optional messageID.";
     break;
+  case REQ_OUT_OF_MEMORY:
+    return "Request cancelled due to Out Of Memory condition.";
+    break;
   case REQ_NON_EXISTING_FUNCTION:
     return "CallFunction: Unknown function.";
     break;

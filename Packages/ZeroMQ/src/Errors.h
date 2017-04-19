@@ -23,6 +23,7 @@
 #define REQ_INVALID_OPERATION          5
 #define REQ_INVALID_OPERATION_FORMAT   6
 #define REQ_INVALID_MESSAGEID          7
+#define REQ_OUT_OF_MEMORY              8
 /// @name Error codes for the CallFunction class
 /// @{
 #define REQ_PROC_NOT_COMPILED        100

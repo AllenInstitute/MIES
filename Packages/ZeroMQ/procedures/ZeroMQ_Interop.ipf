@@ -35,6 +35,7 @@ Constant REQ_INVALID_VERSION                 =   4
 Constant REQ_INVALID_OPERATION               =   5
 Constant REQ_INVALID_OPERATION_FORMAT        =   6
 Constant REQ_INVALID_MESSAGEID               =   7
+Constant REQ_OUT_OF_MEMORY                   =   8
 // error codes for CallFunction class
 Constant REQ_PROC_NOT_COMPILED               = 100
 Constant REQ_NON_EXISTING_FUNCTION           = 101

@@ -113,12 +113,14 @@ ELSEIF(WIN32)
   TARGET_LINK_LIBRARIES(${libname} version.lib ${EXTRA_LIBS}
                         ${CMAKE_SOURCE_DIR}/XOPSupport/IGOR${bitness}.lib
                         ${CMAKE_SOURCE_DIR}/XOPSupport/VC2015/XOPSupport${bitness}.lib
-                        optimized ${CMAKE_SOURCE_DIR}/libzmq/${bitnessLibFolder}/libzmq-v140-mt-4_2_0.lib
-                        debug ${CMAKE_SOURCE_DIR}/libzmq/${bitnessLibFolder}/libzmq-v140-mt-gd-4_2_0.lib)
+                        optimized ${CMAKE_SOURCE_DIR}/libzmq/${bitnessLibFolder}/libzmq-v140-mt-4_2_3.lib
+                        debug ${CMAKE_SOURCE_DIR}/libzmq/${bitnessLibFolder}/libzmq-v140-mt-gd-4_2_3.lib)
 
   # Use parallel builds
   IF(MSVC)
     SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /MP")
+    set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} /Zi")
+    set(CMAKE_SHARED_LINKER_FLAGS_RELEASE "${CMAKE_SHARED_LINKER_FLAGS_RELEASE} /DEBUG /OPT:REF /OPT:ICF")
   ENDIF()
 ENDIF()
 
@@ -138,10 +140,17 @@ INSTALL(TARGETS ${libname}
         RUNTIME
         DESTINATION ${installFolder})
 
-INSTALL(FILES libzmq/${bitnessLibFolder}/libzmq-v140-mt-4_2_0.dll
+INSTALL(FILES libzmq/${bitnessLibFolder}/libzmq-v140-mt-4_2_3.dll
         DESTINATION ${installFolder}
         CONFIGURATIONS Release)
 
-INSTALL(FILES libzmq/${bitnessLibFolder}/libzmq-v140-mt-gd-4_2_0.dll
+IF(MSVC)
+  INSTALL(FILES ${CMAKE_BINARY_DIR}/release/${PROJECT_NAME}${bitnessWithDash}.pdb
+          DESTINATION ${CMAKE_SOURCE_DIR}/PDBs
+          CONFIGURATIONS Release
+          RENAME ${PROJECT_NAME}${bitnessWithDash}.pdb)
+ENDIF()
+
+INSTALL(FILES libzmq/${bitnessLibFolder}/libzmq-v140-mt-gd-4_2_3.dll
         DESTINATION ${installFolder}
         CONFIGURATIONS Debug)

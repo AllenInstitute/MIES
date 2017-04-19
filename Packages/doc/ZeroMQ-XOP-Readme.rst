@@ -307,14 +307,14 @@ Building libzmq
 
 .. code-block:: sh
 
-    # As of libzmq revision 6ce2fb2b (Merge pull request #2162 from
-    # hnwyllmm/master, 2016-10-14) all tests pass.
+    # As of libzmq revision 84d94b4f (Merge pull request #2475 from
+    # chrisstaite/master, 2017-03-28) all tests pass.
     git clone https://github.com/zeromq/libzmq.git
     cd libzmq
     mkdir build-msvc
     # 32bit
     cd build-msvc
-    cmake -g "Visual Studio 14 2015" ..
+    cmake -G "Visual Studio 14 2015" ..
     cmake --build . --config release
     ctest -C release
     # Import/static libs are in lib/release, dll in bin/release
@@ -322,7 +322,7 @@ Building libzmq
     # 64bit
     mkdir build-msvc-64
     cd build-msvc-64
-    cmake -g "Visual Studio 14 2015 Win64" ..
+    cmake -G "Visual Studio 14 2015 Win64" ..
     cmake --build . --config release
     ctest -C release
     # Import/static libs are in lib/release, dll in bin/release
