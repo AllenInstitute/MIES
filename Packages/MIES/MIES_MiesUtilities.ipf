@@ -2112,11 +2112,6 @@ static Function AverageWavesFromSameYAxisIfReq(graph, traceList, averagingEnable
 
 	if(!averagingEnabled)
 		listOfWaves = GetListOfObjects(averageDataFolder, "average.*", fullPath=1)
-		numWaves = ItemsInList(listOfWaves)
-		for(i = 0; i < numWaves; i += 1)
-			WAVE wv = $StringFromList(i, listOfWaves)
-			RemoveTracesFromGraph(graph, wv=wv)
-		endfor
 		CallFunctionForEachListItem(KillOrMoveToTrashPath, listOfWaves)
 		RemoveEmptyDataFolder(averageDataFolder)
 		return NaN
@@ -2230,7 +2225,6 @@ static Function AverageWavesFromSameYAxisIfReq(graph, traceList, averagingEnable
 		ASSERT(ret != -1, "Wave averaging failed")
 
 		WAVE/SDFR=averageDataFolder averageWave = $averageWaveName
-		RemoveTracesFromGraph(graph, wv=averageWave)
 
 		if(IsFinite(first) && IsFinite(last))
 			AppendToGraph/Q/W=$graph/L=$axis/B=$firstXAxis averageWave[first, last]
