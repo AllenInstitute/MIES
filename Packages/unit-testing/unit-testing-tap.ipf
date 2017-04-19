@@ -57,24 +57,24 @@ End
 
 /// Writes Case result to TAP File only if TAP is enabled
 Function TAP_WriteCaseIfReq(tap_caseCount, tap_skipCase, tap_caseErr)
-variable tap_caseCount, tap_skipCase, tap_caseErr
+	variable tap_caseCount, tap_skipCase, tap_caseErr
 
-if(!TAP_IsOutputEnabled())
-    return NaN
-endif
+	if(!TAP_IsOutputEnabled())
+		return NaN
+	endif
 
-TAP_WriteCase(tap_caseCount, tap_skipCase, tap_caseErr)
+	TAP_WriteCase(tap_caseCount, tap_skipCase, tap_caseErr)
 End
 
 /// Writes to TAP File only if TAP is enabled
 Function TAP_WriteOutputIfReq(str)
-string str
+	string str
 
-if(!TAP_IsOutputEnabled())
-    return NaN
-endif
+	if(!TAP_IsOutputEnabled())
+		return NaN
+	endif
 
-TAP_WriteOutput(str)
+	TAP_WriteOutput(str)
 End
 
 /// Writes string str to the TAP file, the file is opened/closed on each write for flushes to disk

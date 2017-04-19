@@ -730,7 +730,7 @@ Function RunTest(procWinList, [name, testCase, enableJU, enableTAP, allowDebug, 
 
 	ClearBaseFilename()
 	CreateHistoryLog(recreate=0)
-	
+
 	PathInfo home
 	if(!V_flag)
 		printf "Error: Please Save experiment first.\r"
