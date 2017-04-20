@@ -2100,7 +2100,7 @@ static Function AverageWavesFromSameYAxisIfReq(graph, traces, averagingEnabled, 
 	DFREF averageDataFolder
 
 	variable referenceTime
-	string averageWaveName, listOfWaves, listOfWaves1D, listOfChannelTypes, listOfChannelNumbers
+	string averageWaveName, listOfWaves, listOfChannelTypes, listOfChannelNumbers
 	string xRange, listOfXRanges, firstXAxis, listOfClampModes
 	string averageWaves = ""
 	variable i, j, k, l, numAxes, numTraces, numWaves, ret
@@ -2197,32 +2197,10 @@ static Function AverageWavesFromSameYAxisIfReq(graph, traces, averagingEnabled, 
 			averageWaveName = UniqueWaveName(averageDataFolder,averageWaveName)
 		endif
 
-		ASSERT(numWaves == ItemsInList(listOfChannelTypes) && numWaves == ItemsInList(listOfChannelNumbers), "Non matching list sizes")
-
-		DFREF tmpDFR = GetUniqueTempPath()
-		listOfWaves1D = ""
-		for(l = 0; l < numWaves; l += 1)
-			fullPath = StringFromList(l, listOfWaves)
-			WAVE sweep = $fullPath
-			if(DimSize(sweep, COLS) > 1) // unsplitted 2D-data
-				WAVE config = GetConfigWave(sweep)
-
-				channelType   = StringFromList(l, listOfChannelTypes)
-				channelNumber = StringFromList(l, listOfChannelNumbers)
-
-				column = AFH_GetITCDataColumn(config, str2num(channelNumber), WhichListItem(channelType, ITC_CHANNEL_NAMES))
-				WAVE singleChannel = ExtractOneDimDataFromSweep(config, sweep, column)
-				MoveWave singleChannel, tmpDFR:$("data" + num2str(l))
-				listOfWaves1D = AddListItem(GetWavesDataFolder(singleChannel, 2), listOfWaves1D, ";", Inf)
-			else
-				listOfWaves1D = AddListItem(fullPath, listOfWaves1D, ";", Inf)
-			endif
-		endfor
-
 		/// @todo for dDaQ mode we could cache the result of the first column
 		/// @todo change to fWaveAverage as soon as IP 6.37 is released
 		/// as this will solve the need for our own copy.
-		ret = MIES_fWaveAverage(listOfWaves1D, "", 0, 0, GetDataFolder(1, averageDataFolder) + averageWaveName, "")
+		ret = MIES_fWaveAverage(listOfWaves, "", 0, 0, GetDataFolder(1, averageDataFolder) + averageWaveName, "")
 		ASSERT(ret != -1, "Wave averaging failed")
 
 		WAVE/SDFR=averageDataFolder averageWave = $averageWaveName
@@ -2243,7 +2221,6 @@ static Function AverageWavesFromSameYAxisIfReq(graph, traces, averagingEnabled, 
 		ModifyGraph/W=$graph rgb($averageWaveName)=(red, green, blue)
 
 		AddEntryIntoWaveNoteAsList(averageWave, "SourceWavesForAverage", str=listOfWaves)
-		KillOrMoveToTrash(dfr=tmpDFR)
 	endfor
 
 	DEBUGPRINT_ELAPSED(referenceTime)
