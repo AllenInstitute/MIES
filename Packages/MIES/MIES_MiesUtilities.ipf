@@ -2023,7 +2023,7 @@ Function PostPlotTransformations(graph, pps)
 		TimeAlignmentIfReq(graph, traces, pps.timeAlignMode, pps.timeAlignRefTrace, pps.timeAlignLevel)
 	endif
 
-	AverageWavesFromSameYAxisIfReq(graph, traces, pps.averageTraces, pps.averageDataFolder)
+	AverageWavesFromSameYAxisIfReq(graph, traces, pps.averageTraces, pps.averageDataFolder,pps.hideSweep)
 	AR_HighlightArtefactsEntry(graph)
 	PA_ShowPulses(graph, pps.averageDataFolder, pps.pulseAverSett)
 
@@ -2093,18 +2093,20 @@ End
 /// @param traces            all traces of the graph except suplimentary ones like the average trace
 /// @param averagingEnabled  switch if averaging is enabled or not
 /// @param averageDataFolder permanent datafolder where the average waves can be stored
-static Function AverageWavesFromSameYAxisIfReq(graph, traces, averagingEnabled, averageDataFolder)
+/// @param hideSweep         are normal channel traces hidden or not
+static Function AverageWavesFromSameYAxisIfReq(graph, traces, averagingEnabled, averageDataFolder, hideSweep)
 	string graph
 	WAVE/T traces
 	variable averagingEnabled
 	DFREF averageDataFolder
+	variable hideSweep
 
 	variable referenceTime, traceIndex
-	string averageWaveName, listOfWaves, listOfChannelTypes, listOfChannelNumbers
+	string averageWaveName, listOfWaves, listOfChannelTypes, listOfChannelNumbers, listOfHeadstages
 	string xRange, listOfXRanges, firstXAxis, listOfClampModes
 	variable i, j, k, l, numAxes, numTraces, numWaves, ret
 	variable red, green, blue, column, first, last, orientation
-	string axis, trace, axList, baseName, clampMode, traceName
+	string axis, trace, axList, baseName, clampMode, traceName, headstage
 	string channelType, channelNumber, fullPath, panel
 
 	referenceTime = DEBUG_TIMER_START()
@@ -2130,6 +2132,7 @@ static Function AverageWavesFromSameYAxisIfReq(graph, traces, averagingEnabled, 
 		listOfChannelNumbers = ""
 		listOfXRanges        = ""
 		listOfClampModes     = ""
+		listOfHeadstages     = ""
 		firstXAxis           = ""
 
 		orientation = GetAxisOrientation(graph, axis)
@@ -2145,6 +2148,7 @@ static Function AverageWavesFromSameYAxisIfReq(graph, traces, averagingEnabled, 
 				channelType   = GetUserData(graph, trace, "channelType")
 				channelNumber = GetUserData(graph, trace, "channelNumber")
 				clampMode     = GetUserData(graph, trace, "clampMode")
+				headstage     = GetUserData(graph, trace, "headstage")
 				xRange        = StringByKey("YRANGE", allTraceInfo[j])
 
 				listOfWaves          = AddListItem(fullPath, listOfWaves, ";", Inf)
@@ -2152,6 +2156,7 @@ static Function AverageWavesFromSameYAxisIfReq(graph, traces, averagingEnabled, 
 				listOfChannelNumbers = AddListItem(channelNumber, listOfChannelNumbers, ";", Inf)
 				listOfXRanges        = AddListItem(xRange, listOfXRanges, "_", Inf)
 				listOfClampModes     = AddListItem(clampMode, listOfClampModes, ";", Inf)
+				listOfHeadstages     = AddListItem(headstage, listOfHeadstages, ";", Inf)
 
 				if(IsEmpty(firstXAxis))
 					firstXAxis = StringByKey("XAXIS", allTraceInfo[j])
@@ -2207,8 +2212,13 @@ static Function AverageWavesFromSameYAxisIfReq(graph, traces, averagingEnabled, 
 			ModifyGraph/W=$graph userData($traceName)={clampMode, 0, StringFromList(0, listOfClampModes)}
 		endif
 
-		GetTraceColor(NUM_HEADSTAGES + 1, red, green, blue)
-		ModifyGraph/W=$graph rgb($traceName)=(red, green, blue)
+		if(WaveListHasSameWaveNames(listOfHeadstages, headstage)&& hideSweep)
+			GetTraceColor(str2num(headstage), red, green, blue)
+		else
+			GetTraceColor(NUM_HEADSTAGES + 1, red, green, blue)
+		endif
+
+		ModifyGraph/W=$graph rgb($traceName)=(red, green, blue, 0.80 * 65535)
 	endfor
 
 	DEBUGPRINT_ELAPSED(referenceTime)
