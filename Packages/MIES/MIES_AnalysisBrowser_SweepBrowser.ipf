@@ -160,6 +160,7 @@ static Function SB_InitPostPlotSettings(graph, pps)
 	pps.timeAlignMode     = GetPopupMenuIndex(panel, "popup_sweepBrowser_tAlignMode")
 	pps.timeAlignLevel    = GetSetVariable(panel, "setvar_sweepBrowser_tAlignLevel")
 	pps.timeAlignRefTrace = GetPopupMenuString(panel, "popup_sweepBrowser_tAlignMaster")
+	pps.hideSweep         = GetCheckBoxState(panel, "check_SweepBrowser_HideSweep")
 
 	PA_GatherSettings(graph, pps)
 
@@ -355,6 +356,7 @@ Function SB_UpdateSweepPlot(graph, [newSweep])
 	tgs.splitTTLBits    = GetCheckBoxState(extPanel, "check_SweepBrowser_SplitTTL")
 	tgs.dDAQDisplayMode = GetCheckBoxState(extPanel, "check_sweepbrowser_dDAQ")
 	tgs.dDAQHeadstageRegions = str2num(GetPopupMenuString(extPanel, "popup_dDAQ_regions"))
+	tgs.hideSweep       = GetCheckBoxState(extPanel, "check_SweepBrowser_HideSweep")
 
 	STRUCT PostPlotSettings pps
 	SB_InitPostPlotSettings(graph, pps)
@@ -557,7 +559,7 @@ Function/DF SB_CreateNewSweepBrowser()
 	CheckBox check_SweepBrowser_AveragTraces,value= 0
 	Button button_SweepBrowser_RestData,pos={100.00,277.00},size={51.00,20.00},proc=SB_ButtonProc_RestoreData,title="Restore"
 	Button button_SweepBrowser_RestData,help={"Duplicate the graph and its trace for further processing"}
-	SetVariable setvar_SweepBrowser_SweepStep,pos={46.00,141.00},size={64.00,18.00},title="Step"
+	SetVariable setvar_SweepBrowser_SweepStep,pos={68.00,141.00},size={64.00,18.00},title="Step"
 	SetVariable setvar_SweepBrowser_SweepStep,help={"Number of sweeps to step for each Previous/Next click or mouse wheel turn"}
 	SetVariable setvar_SweepBrowser_SweepStep,limits={1,inf,1},value= _NUM:1
 	CheckBox check_sweepbrowser_OverlayChan,pos={13.00,50.00},size={64.00,15.00},proc=SB_CheckboxChangedSettings,title="Channels"
@@ -613,6 +615,9 @@ Function/DF SB_CreateNewSweepBrowser()
 	PopupMenu popup_dDAQ_regions,pos={96.00,67.00},size={35.00,19.00},bodyWidth=35,disable=2,proc=SB_PopMenuProc_ChangedSettings
 	PopupMenu popup_dDAQ_regions,help={"Allows to view only oodDAQ regions from the selected headstage. Choose -1 to display all."}
 	PopupMenu popup_dDAQ_regions,mode=1,popvalue="-1",value= #"\"-1;0;1;2;3;4;5;6;7\""
+	CheckBox check_SweepBrowser_HideSweep,pos={20.00,143.00},size={50.00,15.00},proc=SB_CheckboxChangedSettings,title="Hide"
+	CheckBox check_SweepBrowser_HideSweep,help={"Hide sweep traces. Usually combined with \"Average traces\"."}
+	CheckBox check_SweepBrowser_HideSweep,value= 0
 	RenameWindow #,P0
 	SetActiveSubwindow ##
 	NewPanel/HOST=#/EXT=0/W=(0,0,214,407)  as "Analysis Results"
