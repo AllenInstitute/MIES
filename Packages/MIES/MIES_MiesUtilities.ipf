@@ -2181,7 +2181,7 @@ static Function AverageWavesFromSameYAxisIfReq(graph, traces, averagingEnabled, 
 		if(WaveListHasSameWaveNames(listOfWaves, baseName))
 			// add channel type suffix if they are all equal
 			if(ListHasOnlyOneUniqueEntry(listOfChannelTypes))
-				sprintf averageWaveName, "average_%s_%s", baseName, channelType
+				sprintf averageWaveName, "average_%s", baseName
 			else
 				sprintf averageWaveName, "average_%s_%d", baseName, k
 				k += 1
