@@ -2197,13 +2197,7 @@ static Function AverageWavesFromSameYAxisIfReq(graph, traces, averagingEnabled, 
 			averageWaveName = UniqueWaveName(averageDataFolder,averageWaveName)
 		endif
 
-		/// @todo for dDaQ mode we could cache the result of the first column
-		/// @todo change to fWaveAverage as soon as IP 6.37 is released
-		/// as this will solve the need for our own copy.
-		ret = MIES_fWaveAverage(listOfWaves, "", 0, 0, GetDataFolder(1, averageDataFolder) + averageWaveName, "")
-		ASSERT(ret != -1, "Wave averaging failed")
-
-		WAVE/SDFR=averageDataFolder averageWave = $averageWaveName
+		WAVE averageWave = CalculateAverage(listOfWaves, GetDataFolder(1, averageDataFolder) + averageWaveName)
 
 		if(IsFinite(first) && IsFinite(last))
 			AppendToGraph/Q/W=$graph/L=$axis/B=$firstXAxis averageWave[first, last]
@@ -2224,6 +2218,24 @@ static Function AverageWavesFromSameYAxisIfReq(graph, traces, averagingEnabled, 
 	endfor
 
 	DEBUGPRINT_ELAPSED(referenceTime)
+End
+
+/// @brief Calculate the average of a list of waves, wrapper for MIES_fWaveAverage().
+///
+/// @param listOfWaves     list of 1D waves to average
+/// @param averageWavePath full wavepath where the average should be placed
+Function/WAVE CalculateAverage(listOfWaves, averageWavePath)
+	string listOfWaves, averageWavePath
+
+	variable ret
+
+	/// @todo for dDaQ mode we could cache the result of the first column
+	/// @todo change to fWaveAverage as soon as IP 6.37 is released
+	/// as this will solve the need for our own copy.
+	ret = MIES_fWaveAverage(listOfWaves, "", 0, 0, averageWavePath, "")
+	ASSERT(ret != -1, "Wave averaging failed")
+
+	return $averageWavePath
 End
 
 /// @brief Zero all given traces
