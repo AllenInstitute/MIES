@@ -2099,13 +2099,12 @@ static Function AverageWavesFromSameYAxisIfReq(graph, traces, averagingEnabled, 
 	variable averagingEnabled
 	DFREF averageDataFolder
 
-	variable referenceTime
+	variable referenceTime, traceIndex
 	string averageWaveName, listOfWaves, listOfChannelTypes, listOfChannelNumbers
 	string xRange, listOfXRanges, firstXAxis, listOfClampModes
-	string averageWaves = ""
 	variable i, j, k, l, numAxes, numTraces, numWaves, ret
 	variable red, green, blue, column, first, last, orientation
-	string axis, trace, axList, baseName, clampMode
+	string axis, trace, axList, baseName, clampMode, traceName
 	string channelType, channelNumber, fullPath, panel
 
 	referenceTime = DEBUG_TIMER_START()
@@ -2193,28 +2192,23 @@ static Function AverageWavesFromSameYAxisIfReq(graph, traces, averagingEnabled, 
 			k += 1
 		endif
 
-		if(WhichListItem(averageWaveName, averageWaves) != -1)
-			averageWaveName = UniqueWaveName(averageDataFolder,averageWaveName)
-		endif
+		traceName = averageWaveName + "_" + num2str(traceIndex)
+		traceIndex += 1
 
-		WAVE averageWave = CalculateAverage(listOfWaves, GetDataFolder(1, averageDataFolder) + averageWaveName)
+		WAVE averageWave = CalculateAverage(listOfWaves, averageDataFolder, averageWaveName)
 
 		if(IsFinite(first) && IsFinite(last))
-			AppendToGraph/Q/W=$graph/L=$axis/B=$firstXAxis averageWave[first, last]
+			AppendToGraph/Q/W=$graph/L=$axis/B=$firstXAxis averageWave[first, last]/TN=$traceName
 		else
-			AppendToGraph/Q/W=$graph/L=$axis/B=$firstXAxis averageWave
+			AppendToGraph/Q/W=$graph/L=$axis/B=$firstXAxis averageWave/TN=$traceName
 		endif
 
 		if(ListHasOnlyOneUniqueEntry(listOfClampModes))
-			ModifyGraph/W=$graph userData($averageWaveName)={clampMode, 0, StringFromList(0, listOfClampModes)}
+			ModifyGraph/W=$graph userData($traceName)={clampMode, 0, StringFromList(0, listOfClampModes)}
 		endif
 
-		averageWaves = AddListItem(averageWaveName, averageWaves, ";", Inf)
-
 		GetTraceColor(NUM_HEADSTAGES + 1, red, green, blue)
-		ModifyGraph/W=$graph rgb($averageWaveName)=(red, green, blue)
-
-		AddEntryIntoWaveNoteAsList(averageWave, "SourceWavesForAverage", str=listOfWaves)
+		ModifyGraph/W=$graph rgb($traceName)=(red, green, blue)
 	endfor
 
 	DEBUGPRINT_ELAPSED(referenceTime)
@@ -2222,20 +2216,57 @@ End
 
 /// @brief Calculate the average of a list of waves, wrapper for MIES_fWaveAverage().
 ///
-/// @param listOfWaves     list of 1D waves to average
-/// @param averageWavePath full wavepath where the average should be placed
-Function/WAVE CalculateAverage(listOfWaves, averageWavePath)
-	string listOfWaves, averageWavePath
+/// For performance enhancements:
+/// - The average waves are cached
+/// - References to existing average waves are returned in case they already exist
+///
+/// @param listOfWaves       list of 1D waves to average
+/// @param averageDataFolder folder where the data is to be stored
+/// @param averageWaveName   base name of the averaged data
+///
+/// @return wave reference to the average wave
+Function/WAVE CalculateAverage(listOfWaves, averageDataFolder, averageWaveName)
+	string listOfWaves
+	DFREF averageDataFolder
+	string averageWaveName
 
-	variable ret
+	variable ret, crc
+	string key, wvName
 
-	/// @todo for dDaQ mode we could cache the result of the first column
-	/// @todo change to fWaveAverage as soon as IP 6.37 is released
-	/// as this will solve the need for our own copy.
-	ret = MIES_fWaveAverage(listOfWaves, "", 0, 0, averageWavePath, "")
+	WAVE waveRefs = ListToWaveRefWave(listOfWaves, 1)
+	key = CA_AveragingKey(waveRefs)
+
+	WAVE/Z freeAverageWave = CA_TryFetchingEntryFromCache(key)
+
+	if(WaveExists(freeAverageWave)) // found in the cache
+		wvName = averageWaveName + "_" + num2istr(GetNumberFromWaveNote(freeAverageWave, "DataCRC"))
+		WAVE/Z/SDFR=averageDataFolder permAverageWave = $wvName
+
+		if(!WaveExists(permAverageWave))
+			MoveWave freeAverageWave, averageDataFolder:$wvName
+			WAVE/SDFR=averageDataFolder permAverageWave = $wvName
+		endif
+
+		return permAverageWave
+	endif
+
+	ret = MIES_fWaveAverage(listOfWaves, "", 0, 0, GetDataFolder(1, averageDataFolder) + averageWaveName, "")
 	ASSERT(ret != -1, "Wave averaging failed")
 
-	return $averageWavePath
+	WAVE/SDFR=averageDataFolder averageWave = $averageWaveName
+
+	crc = WaveCRC(0, averageWave)
+	wvName = averageWaveName + "_" + num2istr(crc)
+
+	WAVE/Z/SDFR=averageDataFolder averageWaveToDelete = $wvName
+	KillOrMoveToTrash(wv=averageWaveToDelete)
+	MoveWave averageWave, averageDataFolder:$wvName
+
+	SetNumberInWaveNote(averageWave, "DataCRC", crc)
+	AddEntryIntoWaveNoteAsList(averageWave, "SourceWavesForAverage", str=listOfWaves)
+	CA_StoreEntryIntoCache(key, averageWave)
+
+	return averageWave
 End
 
 /// @brief Zero all given traces

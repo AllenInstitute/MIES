@@ -98,6 +98,29 @@ Function/S CA_ArtefactRemovalRangesKey(singleSweepDFR, sweepNo)
 	return num2istr(crc) + "Version 1"
 End
 
+/// @brief Cache key generator for averaging
+Function/S CA_AveragingKey(waveRefs)
+	WAVE/WAVE waveRefs
+
+	return CA_WaveCRCs(waveRefs) + "Version 1"
+End
+
+/// Calculate all CRC values of the contents of the waves referenced in waveRefs
+static Function/S CA_WaveCRCs(waveRefs)
+	WAVE/WAVE waveRefs
+
+	variable rows
+
+	rows = DimSize(waveRefs, ROWS)
+	ASSERT(rows > 0, "Unexpected number of entries")
+
+	Make/D/FREE/N=(rows) crc
+
+	MultiThread crc[] = WaveCRC(0, waveRefs[p])
+
+	return NumericWaveToList(crc, ";", format = "%d")
+End
+
 /// @}
 
 /// @brief Make space for one new entry in the cache waves
