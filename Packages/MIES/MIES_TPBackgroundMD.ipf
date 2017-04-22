@@ -73,7 +73,7 @@ static Function ITC_BkrdTPMD(panelTitle, [triggerMode])
 	HW_SelectDevice(HARDWARE_ITC_DAC, ITCDeviceIDGlobal, flags=HARDWARE_ABORT_ON_ERROR)
 	HW_ITC_ResetFifo(ITCDeviceIDGlobal)
 	HW_StartAcq(HARDWARE_ITC_DAC, ITCDeviceIDGlobal, triggerMode=triggerMode, flags=HARDWARE_ABORT_ON_ERROR)
-	TFM_StartFIFOResetDeamon(HARDWARE_ITC_DAC, ITCDeviceIDGlobal)
+	TFH_StartFIFOResetDeamon(HARDWARE_ITC_DAC, ITCDeviceIDGlobal)
 
 	if(!IsBackgroundTaskRunning("TestPulseMD"))
 		CtrlNamedBackground TestPulseMD, period = 1, proc = ITC_BkrdTPFuncMD
@@ -130,13 +130,13 @@ Function ITC_BkrdTPFuncMD(s)
 			// checks to see if the hardware buffer is at max capacity
 			if(fifoPos > 0 && abs(fifoPos - ActiveDeviceList[i][5]) <= 1)
 				if(ActiveDeviceList[i][3] > NUM_CONSEC_FIFO_STILLSTANDS)
-					TFM_StopFifoResetDaemon(HARDWARE_ITC_DAC, deviceID)
+					TFH_StopFifoDaemon(HARDWARE_ITC_DAC, deviceID)
 					HW_StopAcq(HARDWARE_ITC_DAC, deviceID, flags=HARDWARE_PREVENT_ERROR_POPUP)
 
 					HW_ITC_PrepareAcq(deviceID, flags=HARDWARE_PREVENT_ERROR_POPUP)
 					HW_StartAcq(HARDWARE_ITC_DAC, deviceID, flags=HARDWARE_ABORT_ON_ERROR)
 					printf "Device %s restarted\r", panelTitle
-					TFM_StartFIFOResetDeamon(HARDWARE_ITC_DAC, deviceID)
+					TFH_StartFIFOResetDeamon(HARDWARE_ITC_DAC, deviceID)
 					ActiveDeviceList[i][3] = 0
 				else
 				ActiveDeviceList[i][3] += 1
@@ -182,7 +182,7 @@ static Function ITC_StopTPMD(panelTitle)
 	WAVE/T/SDFR=dfr ActiveDeviceList
 	NVAR ITCDeviceIDGlobal = $GetITCDeviceIDGlobal(panelTitle)
 
-	TFM_StopFifoResetDaemon(HARDWARE_ITC_DAC, ITCDeviceIDGlobal)
+	TFH_StopFifoDaemon(HARDWARE_ITC_DAC, ITCDeviceIDGlobal)
 	HW_SelectDevice(HARDWARE_ITC_DAC, ITCDeviceIDGlobal, flags=HARDWARE_ABORT_ON_ERROR)
 
 	if(HW_IsRunning(HARDWARE_ITC_DAC, ITCDeviceIDGlobal)) // makes sure the device being stopped is actually running

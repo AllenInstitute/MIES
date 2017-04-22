@@ -5,8 +5,8 @@
 #pragma ModuleName=MIES_TFM
 #endif
 
-/// @file MIES_ThreadedFIFOMonitorReset.ipf
-/// @brief __TFM__ Functions related to threadsafe FIFO monitor and reset daemons
+/// @file MIES_ThreadedFIFOHandling.ipf
+/// @brief __TFH__ Functions related to threadsafe FIFO monitor and stop daemons
 
 /// FIFO will be resetted once this fraction of the stop collection point is
 /// reached
@@ -17,7 +17,7 @@ static Constant TIMEOUT_IN_MS = 50
 /// @brief Start the FIFO reset daemon used for TP MD
 ///
 /// We create one thread group for each device.
-Function TFM_StartFIFOResetDeamon(hwType, deviceID)
+Function TFH_StartFIFOResetDeamon(hwType, deviceID)
 	variable hwType, deviceID
 
 	string panelTitle
@@ -36,17 +36,17 @@ Function TFM_StartFIFOResetDeamon(hwType, deviceID)
 
 	dataLength = DimSize(ITCDataWave, ROWS)
 
-	TFM_StopFifoResetDaemon(hwType, deviceID)
+	TFH_StopFifoDaemon(hwType, deviceID)
 	NVAR tgID  = $GetThreadGroupIDFifo(panelTitle)
 	tgID = ThreadGroupCreate(1)
-	ThreadStart tgID, 0, TFM_ResetFifoLoop(config_t, deviceID, stopCollectionPoint, ADChannelToMonitor, dataLength)
+	ThreadStart tgID, 0, TFH_ResetFifoLoop(config_t, deviceID, stopCollectionPoint, ADChannelToMonitor, dataLength)
 	WaveClear config_t
 End
 
-/// @brief Stop the FIFO reset daemon if required
+/// @brief Stop the FIFO daemon if required
 ///
 /// Sets the global `threadGroupIDFifo` to NaN afterwards.
-Function TFM_StopFIFOResetDaemon(hwType, deviceID)
+Function TFH_StopFIFODaemon(hwType, deviceID)
 	variable hwType, deviceID
 
 	variable numThreadsRunning, returnValue, releaseValue
@@ -63,7 +63,7 @@ Function TFM_StopFIFOResetDaemon(hwType, deviceID)
 	TS_ThreadGroupPutVariable(tgID, "abort", 1)
 
 	numThreadsRunning = ThreadGroupWait(tgID, 100)
-	sprintf msg, "TFM_StopFifoDaemon: num running threads: %d\r", numThreadsRunning
+	sprintf msg, "TFH_StopFifoDaemon: num running threads: %d\r", numThreadsRunning
 	DEBUGPRINT_TS(msg)
 
 	if(numThreadsRunning)
@@ -72,7 +72,7 @@ Function TFM_StopFIFOResetDaemon(hwType, deviceID)
 
 	returnValue  = ThreadReturnValue(tgID, 0)
 	releaseValue = ThreadGroupRelease(tgID)
-	sprintf msg, "TFM_StopFifoDaemon: return value %g, thread release %g\r", returnValue, releaseValue
+	sprintf msg, "TFH_StopFifoDaemon: return value %g, thread release %g\r", returnValue, releaseValue
 	DEBUGPRINT_TS(msg)
 
 	tgID = NaN
@@ -83,7 +83,7 @@ End
 /// Stops in the following cases:
 /// - An error during ITC operation calls
 /// - The input queue is not empty
-threadsafe static Function TFM_ResetFifoLoop(config_t, deviceID, stopCollectionPoint, ADChannelToMonitor, dataLength)
+threadsafe static Function TFH_ResetFifoLoop(config_t, deviceID, stopCollectionPoint, ADChannelToMonitor, dataLength)
 	WAVE config_t
 	variable deviceID, stopCollectionPoint, ADChannelToMonitor, dataLength
 
@@ -106,7 +106,7 @@ threadsafe static Function TFM_ResetFifoLoop(config_t, deviceID, stopCollectionP
 		while(V_ITCXOPError == SLOT_LOCKED_TO_OTHER_THREAD && V_ITCError == 0)
 
 		if(V_ITCError != 0 || V_ITCXOPERROR != 0)
-			sprintf msg, "TFM_ResetFifoLoop: Communication error with ITC XOP2: itc=%g, xop=%g\r", V_ITCERror, V_ITCXOPERROR
+			sprintf msg, "TFH_ResetFifoLoop: Communication error with ITC XOP2: itc=%g, xop=%g\r", V_ITCERror, V_ITCXOPERROR
 			ASSERT_TS(0, msg)
 			break
 		endif
