@@ -68,6 +68,7 @@ Function TFH_StopFIFODaemon(hwType, deviceID)
 
 	if(numThreadsRunning)
 		printf "WARNING: The FIFO monitoring thread will be forcefully stopped. This might turn out ugly!\r"
+		ControlWindowToFront()
 	endif
 
 	returnValue  = ThreadReturnValue(tgID, 0)
