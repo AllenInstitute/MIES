@@ -898,8 +898,9 @@ End
 /// @param tgs             settings for tuning the display, see @ref TiledGraphSettings
 /// @param sweepDFR        top datafolder to splitted 1D sweep waves
 /// @param axisLabelCache  store existing vertical axis labels
+/// @param traceIndex      [internal use only] set to zero on the first call in a row of successive calls
 /// @param channelSelWave  [optional] channel selection wave
-Function CreateTiledChannelGraph(graph, config, sweepNo, numericalValues,  textualValues, tgs, sweepDFR, axisLabelCache, [channelSelWave])
+Function CreateTiledChannelGraph(graph, config, sweepNo, numericalValues,  textualValues, tgs, sweepDFR, axisLabelCache, traceIndex, [channelSelWave])
 	string graph
 	WAVE config
 	variable sweepNo
@@ -908,9 +909,10 @@ Function CreateTiledChannelGraph(graph, config, sweepNo, numericalValues,  textu
 	STRUCT TiledGraphSettings &tgs
 	DFREF sweepDFR
 	WAVE/T axisLabelCache
+	variable &traceIndex
 	WAVE/Z channelSelWave
 
-	variable red, green, blue, axisIndex, numChannels
+	variable red, green, blue, axisIndex, numChannels, offset
 	variable numDACs, numADCs, numTTLs, i, j, k, channelOffset, hasPhysUnit, slotMult
 	variable moreData, low, high, step, spacePerSlot, chan, numSlots, numHorizWaves, numVertWaves, idx, configIdx
 	variable numTTLBits, colorIndex, totalVertBlocks, headstage
@@ -1247,13 +1249,17 @@ Function CreateTiledChannelGraph(graph, config, sweepNo, numericalValues,  textu
 					endif
 
 					if(tgs.dDAQDisplayMode && oodDAQEnabled && channelTypes[i] != ITC_XOP_CHANNEL_TYPE_TTL)
-						SetScale/P x, -(delayOnsetUser + delayOnsetAuto) * samplingInt, DimDelta(wv, ROWS), WaveUnits(wv, ROWS), wv
+						offset = -(delayOnsetUser + delayOnsetAuto) * samplingInt
 					else
-						SetScale/P x, 0.0, DimDelta(wv, ROWS), WaveUnits(wv, ROWS), wv
+						offset = 0.0
 					endif
 
-					trace = UniqueTraceName(graph, name)
+					if(DimOffset(wv, ROWS) != offset)
+						SetScale/P x, offset, DimDelta(wv, ROWS), WaveUnits(wv, ROWS), wv
+					endif
 
+					trace = "trace" + num2str(traceIndex)
+					traceIndex += 1
 					sprintf str, "i=%d, j=%d, k=%d, vertAxis=%s, traceType=%s, name=%s", i, j, k, vertAxis, traceType, name
 					DEBUGPRINT(str)
 
@@ -1530,6 +1536,8 @@ Function EquallySpaceAxis(graph, [axisRegExp, axisOrientation, sortOrder, listFo
 		if(!IsEmpty(listForEnd))
 			adaptedList = AddListItem(listForEnd, adaptedList, ";", inf)
 		endif
+	else
+		adaptedList = axes
 	endif
 
 	numAxes = ItemsInList(adaptedList)
@@ -2008,14 +2016,14 @@ Function PostPlotTransformations(graph, pps)
 	crsA = CsrInfo(A, graph)
 	crsB = CsrInfo(B, graph)
 
-	traceList = GetAllSweepTraces(graph)
+	WAVE/T traces = ListToTextWave(GetAllSweepTraces(graph), ";")
 
-	ZeroTracesIfReq(graph, traceList, pps.zeroTraces)
+	ZeroTracesIfReq(graph, traces, pps.zeroTraces)
 	if(pps.timeAlignment)
-		TimeAlignmentIfReq(graph, traceList, pps.timeAlignMode, pps.timeAlignRefTrace, pps.timeAlignLevel)
+		TimeAlignmentIfReq(graph, traces, pps.timeAlignMode, pps.timeAlignRefTrace, pps.timeAlignLevel)
 	endif
 
-	AverageWavesFromSameYAxisIfReq(graph, traceList, pps.averageTraces, pps.averageDataFolder)
+	AverageWavesFromSameYAxisIfReq(graph, traces, pps.averageTraces, pps.averageDataFolder)
 	AR_HighlightArtefactsEntry(graph)
 	PA_ShowPulses(graph, pps.averageDataFolder, pps.pulseAverSett)
 
@@ -2082,12 +2090,12 @@ End
 /// @brief Average traces in the graph from the same y-axis and append them to the graph
 ///
 /// @param graph             graph with traces create by #CreateTiledChannelGraph
-/// @param traceList         all traces of the graph except suplimentary ones like the average trace
+/// @param traces            all traces of the graph except suplimentary ones like the average trace
 /// @param averagingEnabled  switch if averaging is enabled or not
 /// @param averageDataFolder permanent datafolder where the average waves can be stored
-static Function AverageWavesFromSameYAxisIfReq(graph, traceList, averagingEnabled, averageDataFolder)
+static Function AverageWavesFromSameYAxisIfReq(graph, traces, averagingEnabled, averageDataFolder)
 	string graph
-	string traceList
+	WAVE/T traces
 	variable averagingEnabled
 	DFREF averageDataFolder
 
@@ -2104,11 +2112,6 @@ static Function AverageWavesFromSameYAxisIfReq(graph, traceList, averagingEnable
 
 	if(!averagingEnabled)
 		listOfWaves = GetListOfObjects(averageDataFolder, "average.*", fullPath=1)
-		numWaves = ItemsInList(listOfWaves)
-		for(i = 0; i < numWaves; i += 1)
-			WAVE wv = $StringFromList(i, listOfWaves)
-			RemoveTracesFromGraph(graph, wv=wv)
-		endfor
 		CallFunctionForEachListItem(KillOrMoveToTrashPath, listOfWaves)
 		RemoveEmptyDataFolder(averageDataFolder)
 		return NaN
@@ -2116,10 +2119,10 @@ static Function AverageWavesFromSameYAxisIfReq(graph, traceList, averagingEnable
 
 	axList = AxisList(graph)
 	numAxes = ItemsInList(axList)
-	numTraces = ItemsInList(traceList)
+	numTraces = DimSize(traces, ROWS)
 
 	// precompute traceInfo data
-	Make/FREE/T/N=(numTraces) allTraceInfo = TraceInfo(graph, StringFromList(p, traceList), 0)
+	Make/FREE/T/N=(numTraces) allTraceInfo = TraceInfo(graph, traces[p], 0)
 
 	for(i = 0; i < numAxes; i += 1)
 		axis = StringFromList(i, axList)
@@ -2136,8 +2139,9 @@ static Function AverageWavesFromSameYAxisIfReq(graph, traceList, averagingEnable
 		endif
 
 		for(j = 0; j < numTraces; j += 1)
-			trace = StringFromList(j, traceList)
 			if(!cmpstr(axis, StringByKey("YAXIS", allTraceInfo[j])))
+				trace = traces[j]
+
 				fullPath      = GetWavesDataFolder(TraceNameToWaveRef(graph, trace), 2)
 				channelType   = GetUserData(graph, trace, "channelType")
 				channelNumber = GetUserData(graph, trace, "channelNumber")
@@ -2222,7 +2226,6 @@ static Function AverageWavesFromSameYAxisIfReq(graph, traceList, averagingEnable
 		ASSERT(ret != -1, "Wave averaging failed")
 
 		WAVE/SDFR=averageDataFolder averageWave = $averageWaveName
-		RemoveTracesFromGraph(graph, wv=averageWave)
 
 		if(IsFinite(first) && IsFinite(last))
 			AppendToGraph/Q/W=$graph/L=$axis/B=$firstXAxis averageWave[first, last]
@@ -2247,10 +2250,10 @@ static Function AverageWavesFromSameYAxisIfReq(graph, traceList, averagingEnable
 End
 
 /// @brief Zero all given traces
-static Function ZeroTracesIfReq(graph, traceList, zeroTraces)
+static Function ZeroTracesIfReq(graph, traces, zeroTraces)
 	string graph
 	variable zeroTraces
-	string traceList
+	WAVE/T traces
 
 	string trace
 	variable numTraces, i
@@ -2259,9 +2262,9 @@ static Function ZeroTracesIfReq(graph, traceList, zeroTraces)
 		return NaN
 	endif
 
-	numTraces = ItemsInList(traceList)
+	numTraces = DimSize(traces, ROWS)
 	for(i = 0; i < numTraces; i += 1)
-		trace = StringFromList(i, traceList)
+		trace = traces[i]
 
 		WAVE wv = TraceNameToWaveRef(graph, trace)
 
@@ -2277,9 +2280,10 @@ static Function ZeroTracesIfReq(graph, traceList, zeroTraces)
 End
 
 /// @brief Perform time alignment of features in the sweep traces
-static Function TimeAlignmentIfReq(panel, traceList, mode, refTrace, level)
+static Function TimeAlignmentIfReq(panel, traces, mode, refTrace, level)
 	string panel
-	string traceList, refTrace
+	WAVE/T traces
+	string refTrace
 	variable mode, level
 
 	string csrA, csrB, str, axList, refAxis, axis
@@ -2315,10 +2319,10 @@ static Function TimeAlignmentIfReq(panel, traceList, mode, refTrace, level)
 	axList  = AxisList(graph)
 	refAxis = StringByKey("YAXIS", TraceInfo(graph, refTrace, 0))
 
-	numTraces = ItemsInList(traceList)
+	numTraces = DimSize(traces, ROWS)
 	MAKE/FREE/D/N=(numTraces) featurePos = NaN, sweepNumber = NaN
 	for(i = 0; i < numTraces; i += 1)
-		trace = StringFromList(i, traceList)
+		trace = traces[i]
 		axis = StringByKey("YAXIS", TraceInfo(graph, trace, 0))
 
 		if(cmpstr(axis, refAxis))
@@ -2340,7 +2344,7 @@ static Function TimeAlignmentIfReq(panel, traceList, mode, refTrace, level)
 	// now shift all traces from all sweeps according to their relative offsets
 	// to the reference position
 	for(i = 0; i < numTraces; i += 1)
-		trace = StringFromList(i, traceList)
+		trace = traces[i]
 		WAVE wv = TraceNameToWaveRef(graph, trace)
 
 		j = GetRowIndex(sweepNumber, str=GetUserData(graph, trace, "sweepNumber"))

@@ -194,12 +194,14 @@ Function DB_UpdateSweepPlot(panelTitle, [dummyArg])
 	string panelTitle
 	variable dummyArg
 
-	variable numEntries, i, sweepNo, highlightSweep
+	variable numEntries, i, sweepNo, highlightSweep, referenceTime, traceIndex
 	string device, subWindow, graph
 
 	if(!HasPanelLatestVersion(panelTitle, DATABROWSER_PANEL_VERSION))
 		Abort "Can not display data. The Databrowser panel is too old to be usable. Please close it and open a new one."
 	endif
+
+	referenceTime = DEBUG_TIMER_START()
 
 	DFREF dfr = DB_GetDataPath(panelTitle)
 
@@ -259,9 +261,11 @@ Function DB_UpdateSweepPlot(panelTitle, [dummyArg])
 		DB_SplitSweepsIfReq(panelTitle, sweepNo)
 		WAVE config = GetConfigWave(sweepWave)
 
-		CreateTiledChannelGraph(graph, config, sweepNo, numericalValues, textualValues, tgs, dfr, axisLabelCache, channelSelWave=sweepChannelSel)
+		CreateTiledChannelGraph(graph, config, sweepNo, numericalValues, textualValues, tgs, dfr, axisLabelCache, traceIndex, channelSelWave=sweepChannelSel)
 		AR_UpdateTracesIfReq(graph, dfr, numericalValues, sweepNo)
 	endfor
+
+	DEBUGPRINT_ELAPSED(referenceTime)
 
 	if(WaveExists(sweepWave))
 		Notebook $subWindow selection={startOfFile, endOfFile} // select entire contents of notebook
@@ -282,6 +286,7 @@ Function DB_UpdateSweepPlot(panelTitle, [dummyArg])
 
 	PostPlotTransformations(graph, pps)
 	SetAxesRanges(graph, axesRanges)
+	DEBUGPRINT_ELAPSED(referenceTime)
 End
 
 static Function DB_ClearGraph(panelTitle)

@@ -334,7 +334,7 @@ Function SB_UpdateSweepPlot(graph, [newSweep])
 	variable newSweep
 
 	string device, dataFolder, extPanel
-	variable mapIndex, i, numEntries, sweepNo, highlightSweep
+	variable mapIndex, i, numEntries, sweepNo, highlightSweep, traceIndex
 
 	graph = GetMainWindow(graph)
 	DFREF sweepBrowserDFR = $SB_GetSweepBrowserFolder(graph)
@@ -398,7 +398,7 @@ Function SB_UpdateSweepPlot(graph, [newSweep])
 		WAVE configWave = GetAnalysisConfigWave(dataFolder, device, sweepNo)
 		WAVE textualValues = GetAnalysLBTextualValues(dataFolder, device)
 
-		CreateTiledChannelGraph(graph, configWave, sweepNo, numericalValues, textualValues, tgs, sweepDFR, axisLabelCache, channelSelWave=sweepChannelSel)
+		CreateTiledChannelGraph(graph, configWave, sweepNo, numericalValues, textualValues, tgs, sweepDFR, axisLabelCache, traceIndex, channelSelWave=sweepChannelSel)
 		AR_UpdateTracesIfReq(graph, sweepDFR, numericalValues, sweepNo)
 	endfor
 
