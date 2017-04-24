@@ -929,10 +929,12 @@ End
 
 /// @brief Load all stimsets from specified HDF5 file.
 ///
+/// @param fileName		[optional] provide full file name/path for loading stimset
 /// @param overwrite   [optional] indicate if the stored stimset should be deleted before the load.
 /// @return 1 on error and 0 on success
-Function NWB_LoadAllStimsets([overwrite])
+Function NWB_LoadAllStimsets([overwrite, fileName])
 	variable overwrite
+	string fileName
 
 	variable fileID, groupID, error, numStimsets, i, refNum
 	string stimsets, stimset, suffix, fullPath
@@ -942,14 +944,18 @@ Function NWB_LoadAllStimsets([overwrite])
 	else
 		overwrite = !!overwrite
 	endif
+	
+	if(ParamIsDefault(fileName))
+		Open/D/R/M="Load all stimulus sets"/F="NWB Files:*.nwb;All Files:.*;" refNum
 
-	Open/D/R/M="Load all stimulus sets"/F="NWB Files:*.nwb;All Files:.*;" refNum
+		if(IsEmpty(S_fileName))
+			return NaN
+		endif
 
-	if(IsEmpty(S_fileName))
-		return NaN
+		fullPath = S_fileName
+	else
+		fullPath = fileName
 	endif
-
-	fullPath = S_fileName
 
 	fileID = IPNWB#H5_OpenFile(fullPath)
 

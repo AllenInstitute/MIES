@@ -19,7 +19,7 @@
 Function ExpConfig_ConfigureMIES([middleOfExperiment])
 	variable middleOfExperiment
 
-	string UserConfigNB, win, filename, ITCDevNum, ITCDevType, fullPath, StimSetPath, activeNotebooks, AmpSerialLocal, AmpTitleLocal, ConfigError, StimSetName
+	string UserConfigNB, win, filename, ITCDevNum, ITCDevType, fullPath, StimSetPath, activeNotebooks, AmpSerialLocal, AmpTitleLocal, ConfigError
 	variable i
 //	movewindow /C 1450, 530,-1,-1								// position command window
 	
@@ -108,15 +108,12 @@ Function ExpConfig_ConfigureMIES([middleOfExperiment])
 	
 		ExpConfig_DAEphysSettings(win, UserSettings)
 	
-		FindValue /TXOP = 4 /TEXT = STIMSET_PATH UserSettings
-		StimSetPath = UserSettings[V_value][%SettingValue]
 		FindValue /TXOP = 4 /TEXT = STIMSET_NAME UserSettings
 		if(V_value != -1)
-			StimSetName = UserSettings[V_value][%SettingValue]
-			fullPath = StimSetPath + "\\" + StimSetName
-			HD_LoadReplaceStimSet(incomingFileName = fullPath)
+			StimSetPath = UserSettings[V_value][%SettingValue]
+			NWB_LoadAllStimSets(fileName = StimSetPath)
 		else
-			HD_LoadReplaceStimSet(incomingFileDirectory = StimSetPath)
+			NWB_LoadAllStimSets()
 		endif
 		
 		PGC_SetAndActivateControl(win,"ADC", val = DA_EPHYS_PANEL_DATA_ACQUISITION)
