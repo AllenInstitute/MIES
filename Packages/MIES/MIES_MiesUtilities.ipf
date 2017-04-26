@@ -1784,30 +1784,34 @@ Function SaveExperimentSpecial(mode)
 	variable mode
 
 	variable numDevices, i, ret, pos
-	variable zeroSweeps, keepOtherData
+	variable zeroSweepCounter, keepOtherData, showSaveDialog, useNewNWBFile
 	string path, devicesWithData, activeDevices, device, expLoc, list, refNum
 	string expName, substr
 
 	if(mode == SAVE_AND_CLEAR)
-		zeroSweeps    = 1
-		keepOtherData = 0
+		zeroSweepCounter = 1
+		keepOtherData    = 0
+		showSaveDialog   = 1
+		useNewNWBFile    = 1
 	elseif(mode == SAVE_AND_SPLIT)
-		zeroSweeps    = 0
-		keepOtherData = 1
+		zeroSweepCounter = 0
+		keepOtherData    = 1
+		showSaveDialog   = 0
+		useNewNWBFile    = 0
 	else
 		ASSERT(0, "Unknown mode")
 	endif
 
 	// We want never to loose data so we do the following:
 	// Case 1: Unitled experiment
-	// - Save with dialog without fileNameSuffix suffix
-	// - Save with dialog with fileNameSuffix suffix
+	// - Save (with dialog if requested) without fileNameSuffix suffix
+	// - Save (with dialog if requested) with fileNameSuffix suffix
 	// - Clear data
 	// - Save without dialog
 	//
 	// Case 2: Experiment with name
 	// - Save without dialog
-	// - Save with dialog with fileNameSuffix suffix
+	// - Save (with dialog if requested) with fileNameSuffix suffix
 	// - Clear data
 	// - Save without dialog
 	//
@@ -1816,27 +1820,20 @@ Function SaveExperimentSpecial(mode)
 	expName = GetExperimentName()
 
 	if(!cmpstr(expName, UNTITLED_EXPERIMENT))
-		ret = SaveExperimentWrapper("", "_" + GetTimeStamp() + PACKED_FILE_EXPERIMENT_SUFFIX)
+		ret = SaveExperimentWrapper("", "_" + GetTimeStamp() + PACKED_FILE_EXPERIMENT_SUFFIX, overrideInteractiveMode = showSaveDialog)
 
 		if(ret)
 			return NaN
 		endif
 
-		// the user might have changed the experimet name in the dialog
+		// the user might have changed the experiment name in the dialog
 		expName = GetExperimentName()
 	else
 		SaveExperiment
 	endif
 
 	if(mode == SAVE_AND_SPLIT)
-		// Remove the following suffixes:
-		// - sibling
-		// - time stamp
-		// - numerical suffixes added to prevent overwriting files
-		expName  = RemoveEnding(expName, "_" + SIBLING_FILENAME_SUFFIX)
-		expName  = RemoveEndingRegExp(expName, "_[[:digit:]]{4}_[[:digit:]]{2}_[[:digit:]]{2}_[[:digit:]]{6}") // example: 2015_03_25_213219
-		expName  = RemoveEndingRegExp(expName, "_[[:digit:]]+") // example: _1, _123
-		expName += SIBLING_FILENAME_SUFFIX
+		expName = CleanupExperimentName(expName) + SIBLING_FILENAME_SUFFIX
 	elseif(mode == SAVE_AND_CLEAR)
 		expName = "_" + GetTimeStamp()
 	endif
@@ -1845,7 +1842,7 @@ Function SaveExperimentSpecial(mode)
 	expLoc  = "home"
 	expName = UniqueFile(expLoc, expName, PACKED_FILE_EXPERIMENT_SUFFIX)
 
-	ret = SaveExperimentWrapper(expLoc, expName)
+	ret = SaveExperimentWrapper(expLoc, expName, overrideInteractiveMode = showSaveDialog)
 
 	if(ret)
 		return NaN
@@ -1862,7 +1859,7 @@ Function SaveExperimentSpecial(mode)
 		path = GetDeviceDataPathAsString(device)
 		killFunc(path)
 
-		if(windowExists(device) && zeroSweeps)
+		if(windowExists(device) && zeroSweepCounter)
 			SetSetVariable(device, "SetVar_Sweep", 0)
 		endif
 	endfor
@@ -1890,12 +1887,55 @@ Function SaveExperimentSpecial(mode)
 			DFREF dfr = GetDeviceTestPulse(device)
 			list = GetListOfObjects(dfr, "TPStorage_*", fullPath=1)
 			CallFunctionForEachListItem(killFunc, list)
+
+			RemoveTracesFromGraph(GetScopeGraphWrapper(device))
 		endfor
+
+		ClearDataBrowserGraphsWrapper()
 	endif
 
 	SaveExperiment
 
-	CloseNWBFile()
+	if(useNewNWBFile)
+		CloseNWBFile()
+	endif
+End
+
+/// @brief Cleanup the experiment name
+Function/S CleanupExperimentName(expName)
+	string expName
+
+	// Remove the following suffixes:
+	// - sibling
+	// - time stamp
+	// - numerical suffixes added to prevent overwriting files
+	expName  = RemoveEndingRegExp(expName, "_[[:digit:]]{4}_[[:digit:]]{2}_[[:digit:]]{2}_[[:digit:]]{6}") // example: 2015_03_25_213219
+	expName  = RemoveEndingRegExp(expName, "_[[:digit:]]{1,5}") // example: _1, _123
+	expName  = RemoveEnding(expName, SIBLING_FILENAME_SUFFIX)
+
+	return expName
+End
+
+Function ClearDataBrowserGraphsProto()
+
+End
+
+static Function ClearDataBrowserGraphsWrapper()
+
+	FUNCREF ClearDataBrowserGraphsProto f = $"DB_ClearAllGraphs"
+	f()
+End
+
+Function/S GetScopeGraphProto(panelTitle)
+	string panelTitle
+
+End
+
+static Function/S GetScopeGraphWrapper(panelTitle)
+	string panelTitle
+
+	FUNCREF GetScopeGraphProto f = $"SCOPE_GetGraph"
+	return f(panelTitle)
 End
 
 /// @brief Return the maximum count of the given type
@@ -3189,13 +3229,25 @@ End
 ///
 /// It is currently not possible to check if SaveExperiment was successfull
 /// (E-Mail from Howard Rodstein WaveMetrics, 30 Jan 2015)
-Function SaveExperimentWrapper(path, filename)
+///
+/// @param path                    Igor symbolic path where the experiment should be stored
+/// @param filename 			   filename of the experiment *including* suffix, usually #PACKED_FILE_EXPERIMENT_SUFFIX
+/// @param overrideInteractiveMode [optional, defaults to GetInteractiveMode()] Overrides the current setting of
+///                                the interactive mode
+Function SaveExperimentWrapper(path, filename, [overrideInteractiveMode])
 	string path, filename
+	variable overrideInteractiveMode
 
 	variable refNum
-	NVAR interactiveMode = $GetInteractiveMode()
 
-	if(interactiveMode)
+	if(ParamIsDefault(overrideInteractiveMode))
+		NVAR interactiveMode = $GetInteractiveMode()
+		overrideInteractiveMode = interactiveMode
+	else
+		overrideInteractiveMode = !!overrideInteractiveMode
+	endif
+
+	if(overrideInteractiveMode)
 		Open/D/M="Save experiment"/F="All Files:.*;"/P=$path refNum as filename
 
 		if(isEmpty(S_fileName))

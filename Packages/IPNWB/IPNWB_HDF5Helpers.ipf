@@ -489,6 +489,10 @@ Function/S H5_ListGroups(fileID, path)
 	return S_HDF5ListGroup
 End
 
+/// @brief Open the group reachable via `locationID` and `path` and return its ID
+///
+/// @param locationID  HDF5 file identifier
+/// @param path        Full path to the group inside locationID
 Function H5_OpenGroup(locationID, path)
 	Variable locationID
 	String path
@@ -498,4 +502,31 @@ Function H5_OpenGroup(locationID, path)
 	ASSERT(H5_GroupExists(locationID, path, groupID = id), path + " not in HDF5 file")
 
 	return id
+End
+
+/// @brief Flush the file contents to disc
+///
+/// Currently uses open/close and thus it is not very fast. This approach results
+/// in the fileID being changed!
+///
+/// @param fileID       HDF5 file identifier
+/// @param discLocation Full path to the HDF5 file
+/// @param write        [optional, defaults to false] Reopen the file for writing
+///
+/// @return changed fileID
+Function H5_FlushFile(fileID, discLocation, [write])
+	variable fileID
+	string discLocation
+	variable write
+
+	DEBUGPRINT("H5_FlushFile: Flushing!")
+
+	HDF5CloseFile/Z fileID
+
+	if(V_flag)
+		DEBUGPRINT("Closing the HDF5 File returned error:", var = V_flag)
+		return NaN
+	endif
+
+	return H5_OpenFile(discLocation, write = write)
 End

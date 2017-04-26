@@ -21,7 +21,6 @@ static Function IH_KillTemporaries()
 	DFREF dfr = GetMiesPath()
 
 	KillStrings/Z dfr:version
-	KillVariables/Z dfr:skip_free_memory_warning
 
 	// try to delete all trash folders
 	allFolders = StringByKey("FOLDERS", DataFolderDir(1, dfr))
@@ -96,6 +95,7 @@ static Function BeforeExperimentSaveHook(rN, fileName, path, type, creator, kind
 
 	IH_SerAllCommentNBsWrapper()
 	IH_KillTemporaries()
+	NWB_Flush()
 End
 
 static Function IH_Cleanup()

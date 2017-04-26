@@ -101,7 +101,7 @@ static Function NWB_GetFileForExport([overrideFilePath, createdNewNWBFile])
 			filePath = S_fileName
 		else
 			PathInfo home
-			filePath = S_path + expName + ".nwb"
+			filePath = S_path + CleanupExperimentName(expName) + ".nwb"
 		endif
 	endif
 
@@ -168,7 +168,7 @@ static Function NWB_GetFileForExport([overrideFilePath, createdNewNWBFile])
 	return fileIDExport
 End
 
-Function NWB_AddGeneratorString(fileID)
+static Function NWB_AddGeneratorString(fileID)
 	variable fileID
 
 	Make/FREE/T/N=(5, 2) props
@@ -437,6 +437,29 @@ static Function NWB_AppendStimset(locationID, stimsets)
 	endfor
 End
 
+/// @brief Prepare everything for sweep-by-sweep NWB export
+Function NWB_PrepareExport([createdNewNWBFile])
+	variable &createdNewNWBFile
+
+	variable locationID, createdNewNWBFileLocal
+
+	locationID = NWB_GetFileForExport(createdNewNWBFile = createdNewNWBFileLocal)
+
+	if(!ParamIsDefault(createdNewNWBFile))
+		createdNewNWBFile = createdNewNWBFileLocal
+	endif
+
+	if(!IsFinite(locationID))
+		return NaN
+	endif
+
+	if(createdNewNWBFileLocal)
+		NWB_ExportAllData()
+	endif
+
+	return locationID
+End
+
 Function NWB_AppendSweep(panelTitle, ITCDataWave, ITCChanConfigWave, sweep)
 	string panelTitle
 	WAVE ITCDataWave, ITCChanConfigWave
@@ -445,21 +468,19 @@ Function NWB_AppendSweep(panelTitle, ITCDataWave, ITCChanConfigWave, sweep)
 	variable locationID, createdNewNWBFile
 	string stimsets
 
-	locationID = NWB_GetFileForExport(createdNewNWBFile=createdNewNWBFile)
-	if(!IsFinite(locationID))
+	locationID = NWB_PrepareExport(createdNewNWBFile = createdNewNWBFile)
+
+	// in case we created a new NWB file we already exported everyting so we are done
+	if(!IsFinite(locationID) || createdNewNWBFile)
 		return NaN
 	endif
 
-	if(createdNewNWBFile)
-		NWB_ExportAllData()
-	else
-		IPNWB#AddModificationTimeEntry(locationID)
-		IPNWB#CreateIntraCellularEphys(locationID)
-		NWB_AddDeviceSpecificData(locationID, panelTitle)
-		NWB_AppendSweepLowLevel(locationID, panelTitle, ITCDataWave, ITCChanConfigWave, sweep)
-		stimsets = NWB_GetStimsetFromPanel(panelTitle, sweep)
-		NWB_AppendStimset(locationID, stimsets)
-	endif
+	IPNWB#AddModificationTimeEntry(locationID)
+	IPNWB#CreateIntraCellularEphys(locationID)
+	NWB_AddDeviceSpecificData(locationID, panelTitle)
+	NWB_AppendSweepLowLevel(locationID, panelTitle, ITCDataWave, ITCChanConfigWave, sweep)
+	stimsets = NWB_GetStimsetFromPanel(panelTitle, sweep)
+	NWB_AppendStimset(locationID, stimsets)
 End
 
 /// @brief Get stimsets by analysing currently loaded sweep
@@ -1160,4 +1181,16 @@ Function NWB_LoadLabNoteBook(locationID, notebook, dfr)
 	endif
 
 	return 0
+End
+
+/// @brief Flushes the contents of the NWB file to disc
+Function NWB_Flush()
+	SVAR filePathExport = $GetNWBFilePathExport()
+	NVAR fileIDExport   = $GetNWBFileIDExport()
+
+	if(!IsFinite(fileIDExport))
+		return NaN
+	endif
+
+	fileIDExport = IPNWB#H5_FlushFile(fileIDExport, filePathExport, write = 1)
 End

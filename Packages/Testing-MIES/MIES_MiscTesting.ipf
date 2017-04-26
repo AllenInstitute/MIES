@@ -95,3 +95,29 @@ Function createDummySettingsWave(panelTitle, SweepCount)
 	// now call the function that will create the wave notes
 	ED_createWaveNotes(dummySettingsWave, dummySettingsKey, SweepCount, panelTitle, UNKNOWN_MODE)
 End
+
+/// @brief Exhaust all memory so that only `amountOfFreeMemoryLeft` [GB] is left
+///
+/// Unwise use of this function can break Igor!
+Function ExhaustMemory(amountOfFreeMemoryLeft)
+	variable amountOfFreeMemoryLeft
+
+	variable i, expo=10, err
+	string str
+
+	for(i = expo; i >= 0;)
+		err = GetRTError(1)
+		str = UniqueName("base", 1, 0)
+		Make/D/N=(10^expo) $str; err = GetRTError(1)
+
+		if(err != 0)
+			expo -= 1
+		endif
+
+		printf "Free Memory: %gGB\r", GetFreeMemory()
+
+		if(GetFreeMemory() < amountOfFreeMemoryLeft)
+			break
+		endif
+	endfor
+End
