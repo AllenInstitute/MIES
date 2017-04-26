@@ -111,9 +111,9 @@ Function ExpConfig_ConfigureMIES([middleOfExperiment])
 		FindValue /TXOP = 4 /TEXT = STIMSET_NAME UserSettings
 		if(V_value != -1)
 			StimSetPath = UserSettings[V_value][%SettingValue]
-			NWB_LoadAllStimSets(fileName = StimSetPath)
+			NWB_LoadAllStimSets(overwrite = 1, fileName = StimSetPath)
 		else
-			NWB_LoadAllStimSets()
+			NWB_LoadAllStimSets(overwrite = 1)
 		endif
 		
 		PGC_SetAndActivateControl(win,"ADC", val = DA_EPHYS_PANEL_DATA_ACQUISITION)
