@@ -112,18 +112,14 @@ Function ExpConfig_ConfigureMIES([middleOfExperiment])
 		if(V_value != -1)
 			StimSetPath = UserSettings[V_value][%SettingValue]
 			load = NWB_LoadAllStimSets(overwrite = 1, fileName = StimSetPath)
-			if(!load)
-				print ("Stim set successfully loaded")
-			else
-				print ("Stim set failed to load, check file path")
-			endif
 		else
 			load = NWB_LoadAllStimSets(overwrite = 1)
-			if(!load)
-				print ("Stim set successfully loaded")
-			else
-				print ("Stim set failed to load, check file path")
-			endif
+		endif
+		
+		if (!load)
+			print "Stim set successfully loaded"
+		else
+			print "Stim set failed to load, check file path"
 		endif
 		
 		PGC_SetAndActivateControl(win,"ADC", val = DA_EPHYS_PANEL_DATA_ACQUISITION)
@@ -138,7 +134,7 @@ Function ExpConfig_ConfigureMIES([middleOfExperiment])
 	
 		PGC_SetAndActivateControl(win,"StartTestPulseButton")
 	
-		print ("Start Sciencing")
+		print "Start Sciencing"
 	endif
 End
 
