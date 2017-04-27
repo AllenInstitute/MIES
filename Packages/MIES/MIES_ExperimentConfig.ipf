@@ -20,7 +20,7 @@ Function ExpConfig_ConfigureMIES([middleOfExperiment])
 	variable middleOfExperiment
 
 	string UserConfigNB, win, filename, ITCDevNum, ITCDevType, fullPath, StimSetPath, activeNotebooks, AmpSerialLocal, AmpTitleLocal, ConfigError
-	variable i
+	variable i, load
 //	movewindow /C 1450, 530,-1,-1								// position command window
 	
 	if(ParamIsDefault(middleOfExperiment))
@@ -111,9 +111,19 @@ Function ExpConfig_ConfigureMIES([middleOfExperiment])
 		FindValue /TXOP = 4 /TEXT = STIMSET_NAME UserSettings
 		if(V_value != -1)
 			StimSetPath = UserSettings[V_value][%SettingValue]
-			NWB_LoadAllStimSets(overwrite = 1, fileName = StimSetPath)
+			load = NWB_LoadAllStimSets(overwrite = 1, fileName = StimSetPath)
+			if(!load)
+				print ("Stim set successfully loaded")
+			else
+				print ("Stim set failed to load, check file path")
+			endif
 		else
-			NWB_LoadAllStimSets(overwrite = 1)
+			load = NWB_LoadAllStimSets(overwrite = 1)
+			if(!load)
+				print ("Stim set successfully loaded")
+			else
+				print ("Stim set failed to load, check file path")
+			endif
 		endif
 		
 		PGC_SetAndActivateControl(win,"ADC", val = DA_EPHYS_PANEL_DATA_ACQUISITION)
