@@ -78,3 +78,10 @@ threadsafe Function TS_ThreadGroupPutDFR(tgID, dfr)
 	SetDataFolder $dataFolder
 	ThreadGroupPutDF tgId, :
 End
+
+/// @brief Returns 1 if all worker threads have finished
+Function TS_ThreadGroupFinished(tgID)
+	variable tgID
+
+	return !ThreadGroupWait(tgID, 0)
+End

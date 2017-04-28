@@ -102,6 +102,7 @@ static Function ITC_BkrdDataAcqMD(panelTitle, [triggerMode])
 	endif
 
 	HW_StartAcq(HARDWARE_ITC_DAC, ITCDeviceIDGlobal, triggerMode=triggerMode, flags=HARDWARE_ABORT_ON_ERROR)
+	TFH_StartFIFOStopDaemon(HARDWARE_ITC_DAC, ITCDeviceIDGlobal)
 
 	ITC_MakeOrUpdateActivDevLstWave(panelTitle, ITCDeviceIDGlobal, ADChannelToMonitor, StopCollectionPoint, 1) // adds a device
 
@@ -120,7 +121,7 @@ Function ITC_FIFOMonitorMD(s)
 
 	DFREF activeDevices = GetActiveITCDevicesFolder()
 	WAVE/SDFR=activeDevices ActiveDeviceList
-	variable deviceID, moreData
+	variable deviceID
 	variable i, fifoPos
 	string panelTitle
 
@@ -128,13 +129,13 @@ Function ITC_FIFOMonitorMD(s)
 		deviceID   = ActiveDeviceList[i][0]
 		panelTitle = HW_GetMainDeviceName(HARDWARE_ITC_DAC, deviceID)
 
-		HW_SelectDevice(HARDWARE_ITC_DAC, deviceID, flags=HARDWARE_ABORT_ON_ERROR)
-		moreData = HW_ITC_MoreData(deviceID, fifoPos=fifoPos)
+		NVAR tgID = $GetThreadGroupIDFIFO(panelTitle)
+		fifoPos = TS_GetNewestFromThreadQueue(tgID, "fifoPos")
 
 		DM_UpdateOscilloscopeData(panelTitle, DATA_ACQUISITION_MODE, fifoPos=fifoPos)
 		DM_CallAnalysisFunctions(panelTitle, MID_SWEEP_EVENT)
 
-		if(!moreData)
+		if(TS_ThreadGroupFinished(tgID))
 			print "stopped data acq on " + panelTitle, "device ID global = ", deviceID
 			ITC_MakeOrUpdateActivDevLstWave(panelTitle, deviceID, 0, 0, -1)
 			ITC_StopDataAcqMD(panelTitle, deviceID)
@@ -155,6 +156,7 @@ static Function ITC_StopDataAcqMD(panelTitle, ITCDeviceIDGlobal)
 	String panelTitle
 	Variable ITCDeviceIDGlobal
 
+	TFH_StopFIFODaemon(HARDWARE_ITC_DAC, ITCDeviceIDGlobal)
 	HW_SelectDevice(HARDWARE_ITC_DAC, ITCDeviceIDGlobal, flags=HARDWARE_ABORT_ON_ERROR)
 	HW_StopAcq(HARDWARE_ITC_DAC, ITCDeviceIDGlobal, prepareForDAQ=1)
 
@@ -179,6 +181,7 @@ static Function ITC_TerminateOngoingDAQMDHelper(panelTitle)
 	NVAR ITCDeviceIDGlobal = $GetITCDeviceIDGlobal(panelTitle)
 	WAVE/T/SDFR=GetActiveITCDevicesFolder() ActiveDeviceList
 
+	TFH_StopFIFODaemon(HARDWARE_ITC_DAC, ITCDeviceIDGlobal)
 	HW_SelectDevice(HARDWARE_ITC_DAC, ITCDeviceIDGlobal, flags=HARDWARE_ABORT_ON_ERROR)
 	HW_StopAcq(HARDWARE_ITC_DAC, ITCDeviceIDGlobal)
 	

@@ -73,7 +73,7 @@
 #include "MIES_SamplingInterval"
 #include "MIES_Structures"
 #include "MIES_TPBackgroundMD"
-#include "MIES_ThreadedFIFOMonitorReset"
+#include "MIES_ThreadedFIFOHandling"
 #include "MIES_ThreadsafeUtilities"
 #include "MIES_TestPulse"
 #include "MIES_Utilities"
