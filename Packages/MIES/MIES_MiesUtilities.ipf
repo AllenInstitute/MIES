@@ -1347,7 +1347,7 @@ Function CreateTiledChannelGraph(graph, config, sweepNo, numericalValues,  textu
 					endif
 
 					GetTraceColor(colorIndex, red, green, blue)
-					ModifyGraph/W=$graph rgb($trace)=(red, green, blue), userData($trace)={channelType, 0, channelID}, userData($trace)={channelNumber, 0, num2str(chan)}, userData($trace)={sweepNumber, 0, num2str(sweepNo)}, userData($trace)={headstage, 0, num2str(headstage)}, userData($trace)={textualValues, 0, GetWavesDataFolder(textualValues, 2)}, userData($trace)={numericalValues, 0, GetWavesDataFolder(numericalValues, 2)}, userData($trace)={clampMode, 0, num2str(clampModes[headstage])}
+					ModifyGraph/W=$graph hideTrace($trace)=(tgs.hideSweep), rgb($trace)=(red, green, blue), userData($trace)={channelType, 0, channelID}, userData($trace)={channelNumber, 0, num2str(chan)}, userData($trace)={sweepNumber, 0, num2str(sweepNo)}, userData($trace)={headstage, 0, num2str(headstage)}, userData($trace)={textualValues, 0, GetWavesDataFolder(textualValues, 2)}, userData($trace)={numericalValues, 0, GetWavesDataFolder(numericalValues, 2)}, userData($trace)={clampMode, 0, num2str(clampModes[headstage])}
 
 					sprintf str, "colorIndex=%d", colorIndex
 					DEBUGPRINT(str)
@@ -2063,7 +2063,7 @@ Function PostPlotTransformations(graph, pps)
 		TimeAlignmentIfReq(graph, traces, pps.timeAlignMode, pps.timeAlignRefTrace, pps.timeAlignLevel)
 	endif
 
-	AverageWavesFromSameYAxisIfReq(graph, traces, pps.averageTraces, pps.averageDataFolder)
+	AverageWavesFromSameYAxisIfReq(graph, traces, pps.averageTraces, pps.averageDataFolder,pps.hideSweep)
 	AR_HighlightArtefactsEntry(graph)
 	PA_ShowPulses(graph, pps.averageDataFolder, pps.pulseAverSett)
 
@@ -2133,19 +2133,20 @@ End
 /// @param traces            all traces of the graph except suplimentary ones like the average trace
 /// @param averagingEnabled  switch if averaging is enabled or not
 /// @param averageDataFolder permanent datafolder where the average waves can be stored
-static Function AverageWavesFromSameYAxisIfReq(graph, traces, averagingEnabled, averageDataFolder)
+/// @param hideSweep         are normal channel traces hidden or not
+static Function AverageWavesFromSameYAxisIfReq(graph, traces, averagingEnabled, averageDataFolder, hideSweep)
 	string graph
 	WAVE/T traces
 	variable averagingEnabled
 	DFREF averageDataFolder
+	variable hideSweep
 
-	variable referenceTime
-	string averageWaveName, listOfWaves, listOfWaves1D, listOfChannelTypes, listOfChannelNumbers
+	variable referenceTime, traceIndex
+	string averageWaveName, listOfWaves, listOfChannelTypes, listOfChannelNumbers, listOfHeadstages
 	string xRange, listOfXRanges, firstXAxis, listOfClampModes
-	string averageWaves = ""
 	variable i, j, k, l, numAxes, numTraces, numWaves, ret
 	variable red, green, blue, column, first, last, orientation
-	string axis, trace, axList, baseName, clampMode
+	string axis, trace, axList, baseName, clampMode, traceName, headstage
 	string channelType, channelNumber, fullPath, panel
 
 	referenceTime = DEBUG_TIMER_START()
@@ -2171,6 +2172,7 @@ static Function AverageWavesFromSameYAxisIfReq(graph, traces, averagingEnabled, 
 		listOfChannelNumbers = ""
 		listOfXRanges        = ""
 		listOfClampModes     = ""
+		listOfHeadstages     = ""
 		firstXAxis           = ""
 
 		orientation = GetAxisOrientation(graph, axis)
@@ -2186,6 +2188,7 @@ static Function AverageWavesFromSameYAxisIfReq(graph, traces, averagingEnabled, 
 				channelType   = GetUserData(graph, trace, "channelType")
 				channelNumber = GetUserData(graph, trace, "channelNumber")
 				clampMode     = GetUserData(graph, trace, "clampMode")
+				headstage     = GetUserData(graph, trace, "headstage")
 				xRange        = StringByKey("YRANGE", allTraceInfo[j])
 
 				listOfWaves          = AddListItem(fullPath, listOfWaves, ";", Inf)
@@ -2193,6 +2196,7 @@ static Function AverageWavesFromSameYAxisIfReq(graph, traces, averagingEnabled, 
 				listOfChannelNumbers = AddListItem(channelNumber, listOfChannelNumbers, ";", Inf)
 				listOfXRanges        = AddListItem(xRange, listOfXRanges, "_", Inf)
 				listOfClampModes     = AddListItem(clampMode, listOfClampModes, ";", Inf)
+				listOfHeadstages     = AddListItem(headstage, listOfHeadstages, ";", Inf)
 
 				if(IsEmpty(firstXAxis))
 					firstXAxis = StringByKey("XAXIS", allTraceInfo[j])
@@ -2221,7 +2225,7 @@ static Function AverageWavesFromSameYAxisIfReq(graph, traces, averagingEnabled, 
 		if(WaveListHasSameWaveNames(listOfWaves, baseName))
 			// add channel type suffix if they are all equal
 			if(ListHasOnlyOneUniqueEntry(listOfChannelTypes))
-				sprintf averageWaveName, "average_%s_%s", baseName, channelType
+				sprintf averageWaveName, "average_%s", baseName
 			else
 				sprintf averageWaveName, "average_%s_%d", baseName, k
 				k += 1
@@ -2233,60 +2237,86 @@ static Function AverageWavesFromSameYAxisIfReq(graph, traces, averagingEnabled, 
 			k += 1
 		endif
 
-		if(WhichListItem(averageWaveName, averageWaves) != -1)
-			averageWaveName = UniqueWaveName(averageDataFolder,averageWaveName)
-		endif
+		traceName = averageWaveName + "_" + num2str(traceIndex)
+		traceIndex += 1
 
-		ASSERT(numWaves == ItemsInList(listOfChannelTypes) && numWaves == ItemsInList(listOfChannelNumbers), "Non matching list sizes")
-
-		DFREF tmpDFR = GetUniqueTempPath()
-		listOfWaves1D = ""
-		for(l = 0; l < numWaves; l += 1)
-			fullPath = StringFromList(l, listOfWaves)
-			WAVE sweep = $fullPath
-			if(DimSize(sweep, COLS) > 1) // unsplitted 2D-data
-				WAVE config = GetConfigWave(sweep)
-
-				channelType   = StringFromList(l, listOfChannelTypes)
-				channelNumber = StringFromList(l, listOfChannelNumbers)
-
-				column = AFH_GetITCDataColumn(config, str2num(channelNumber), WhichListItem(channelType, ITC_CHANNEL_NAMES))
-				WAVE singleChannel = ExtractOneDimDataFromSweep(config, sweep, column)
-				MoveWave singleChannel, tmpDFR:$("data" + num2str(l))
-				listOfWaves1D = AddListItem(GetWavesDataFolder(singleChannel, 2), listOfWaves1D, ";", Inf)
-			else
-				listOfWaves1D = AddListItem(fullPath, listOfWaves1D, ";", Inf)
-			endif
-		endfor
-
-		/// @todo for dDaQ mode we could cache the result of the first column
-		/// @todo change to fWaveAverage as soon as IP 6.37 is released
-		/// as this will solve the need for our own copy.
-		ret = MIES_fWaveAverage(listOfWaves1D, "", 0, 0, GetDataFolder(1, averageDataFolder) + averageWaveName, "")
-		ASSERT(ret != -1, "Wave averaging failed")
-
-		WAVE/SDFR=averageDataFolder averageWave = $averageWaveName
+		WAVE averageWave = CalculateAverage(listOfWaves, averageDataFolder, averageWaveName)
 
 		if(IsFinite(first) && IsFinite(last))
-			AppendToGraph/Q/W=$graph/L=$axis/B=$firstXAxis averageWave[first, last]
+			AppendToGraph/Q/W=$graph/L=$axis/B=$firstXAxis averageWave[first, last]/TN=$traceName
 		else
-			AppendToGraph/Q/W=$graph/L=$axis/B=$firstXAxis averageWave
+			AppendToGraph/Q/W=$graph/L=$axis/B=$firstXAxis averageWave/TN=$traceName
 		endif
 
 		if(ListHasOnlyOneUniqueEntry(listOfClampModes))
-			ModifyGraph/W=$graph userData($averageWaveName)={clampMode, 0, StringFromList(0, listOfClampModes)}
+			ModifyGraph/W=$graph userData($traceName)={clampMode, 0, StringFromList(0, listOfClampModes)}
 		endif
 
-		averageWaves = AddListItem(averageWaveName, averageWaves, ";", Inf)
+		if(WaveListHasSameWaveNames(listOfHeadstages, headstage)&& hideSweep)
+			GetTraceColor(str2num(headstage), red, green, blue)
+		else
+			GetTraceColor(NUM_HEADSTAGES + 1, red, green, blue)
+		endif
 
-		GetTraceColor(NUM_HEADSTAGES + 1, red, green, blue)
-		ModifyGraph/W=$graph rgb($averageWaveName)=(red, green, blue)
-
-		AddEntryIntoWaveNoteAsList(averageWave, "SourceWavesForAverage", str=listOfWaves)
-		KillOrMoveToTrash(dfr=tmpDFR)
+		ModifyGraph/W=$graph rgb($traceName)=(red, green, blue, 0.80 * 65535)
 	endfor
 
 	DEBUGPRINT_ELAPSED(referenceTime)
+End
+
+/// @brief Calculate the average of a list of waves, wrapper for MIES_fWaveAverage().
+///
+/// For performance enhancements:
+/// - The average waves are cached
+/// - References to existing average waves are returned in case they already exist
+///
+/// @param listOfWaves       list of 1D waves to average
+/// @param averageDataFolder folder where the data is to be stored
+/// @param averageWaveName   base name of the averaged data
+///
+/// @return wave reference to the average wave
+Function/WAVE CalculateAverage(listOfWaves, averageDataFolder, averageWaveName)
+	string listOfWaves
+	DFREF averageDataFolder
+	string averageWaveName
+
+	variable ret, crc
+	string key, wvName
+
+	WAVE waveRefs = ListToWaveRefWave(listOfWaves, 1)
+	key = CA_AveragingKey(waveRefs)
+
+	WAVE/Z freeAverageWave = CA_TryFetchingEntryFromCache(key)
+
+	if(WaveExists(freeAverageWave)) // found in the cache
+		wvName = averageWaveName + "_" + num2istr(GetNumberFromWaveNote(freeAverageWave, "DataCRC"))
+		WAVE/Z/SDFR=averageDataFolder permAverageWave = $wvName
+
+		if(!WaveExists(permAverageWave))
+			MoveWave freeAverageWave, averageDataFolder:$wvName
+			WAVE/SDFR=averageDataFolder permAverageWave = $wvName
+		endif
+
+		return permAverageWave
+	endif
+
+	ret = MIES_fWaveAverage(listOfWaves, "", 0, 0, GetDataFolder(1, averageDataFolder) + averageWaveName, "")
+	ASSERT(ret != -1, "Wave averaging failed")
+
+	WAVE/SDFR=averageDataFolder averageWave = $averageWaveName
+
+	crc = WaveCRC(0, averageWave)
+	wvName = averageWaveName + "_" + num2istr(crc)
+
+	WAVE/Z/SDFR=averageDataFolder averageWaveToDelete = $wvName
+	KillOrMoveToTrash(wv=averageWaveToDelete)
+	MoveWave averageWave, averageDataFolder:$wvName
+
+	SetNumberInWaveNote(averageWave, "DataCRC", crc)
+	AddEntryIntoWaveNoteAsList(averageWave, "SourceWavesForAverage", str=listOfWaves)
+	CA_StoreEntryIntoCache(key, averageWave)
+
+	return averageWave
 End
 
 /// @brief Zero all given traces

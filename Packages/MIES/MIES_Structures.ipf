@@ -27,6 +27,8 @@ Structure PostPlotSettings
 	DFREF averageDataFolder
 	/// @}
 
+	variable hideSweep
+
 	/// Zero traces settings
 	variable zeroTraces
 
@@ -73,6 +75,7 @@ Structure TiledGraphSettings
 	int16 dDAQDisplayMode
 	int16 dDAQHeadstageRegions
 	int16 highlightSweep
+	int16 hideSweep
 EndStructure
 
 /// @brief Helper structure for formula parsing of the Wavebuilder combine epoch
