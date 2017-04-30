@@ -8,7 +8,7 @@
 
 ### Latest released version
 
-* Download from [bamboo](http://bamboo.corp.alleninstitute.org/browse/MIES-RELEASE/latestSuccessful) below "Shared artifacts"
+* Download from [bamboo](http://bamboo.corp.alleninstitute.org/browse/MIES-RELEASE/latestSuccessful) in the "Artifacts" menu.
 
 ## Bug reporting
 
