@@ -305,9 +305,8 @@ Function/Wave LoadDataWave(locationID, channel, [path])
 	Assert(IPNWB#H5_GroupExists(locationID, path), "Path is not in nwb file")
 
 	path += channel + "/data"
-	WAVE wv = H5_LoadDataset(locationID, path, renameTo = channel)
 
-	return MakeWaveFree(wv)
+	return H5_LoadDataset(locationID, path)
 End
 
 /// @brief Load single channel data as a wave from /acquisition/timeseries

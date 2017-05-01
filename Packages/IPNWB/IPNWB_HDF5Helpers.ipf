@@ -317,14 +317,13 @@ End
 
 /// @brief Load a specified dataset as wave
 ///
-/// @param[in] locationID           HDF5 identifier, can be a file or group
-/// @param[in] name                 path on top of `locationID` which identifies
-///                                 the dataset
-/// @param[in] renameTo [optional]  rename the loaded Data set to the specified string
-/// @return                         reference to wave containing loaded data
-Function/WAVE H5_LoadDataset(locationID, name, [renameTo])
+/// @param[in] locationID HDF5 identifier, can be a file or group
+/// @param[in] name       path on top of `locationID` which identifies the dataset
+///
+/// @return               reference to wave containing loaded data
+Function/WAVE H5_LoadDataset(locationID, name)
 	variable locationID
-	string name, renameTo
+	string name
 
 	if(!H5_DatasetExists(locationID, name))
 		return $""
@@ -342,10 +341,6 @@ Function/WAVE H5_LoadDataset(locationID, name, [renameTo])
 
 	WAVE/Z wv = dfr:$StringFromList(0, S_waveNames)
 	ASSERT(WaveExists(wv), "loaded wave not found")
-
-	if(!ParamIsDefault(renameTo))
-		Rename wv $renameTo
-	endif
 
 	return wv
 End
