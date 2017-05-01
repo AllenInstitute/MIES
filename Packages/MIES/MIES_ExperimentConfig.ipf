@@ -19,8 +19,8 @@
 Function ExpConfig_ConfigureMIES([middleOfExperiment])
 	variable middleOfExperiment
 
-	string UserConfigNB, win, filename, ITCDevNum, ITCDevType, fullPath, StimSetPath, activeNotebooks, AmpSerialLocal, AmpTitleLocal, ConfigError, StimSetName
-	variable i
+	string UserConfigNB, win, filename, ITCDevNum, ITCDevType, fullPath, StimSetPath, activeNotebooks, AmpSerialLocal, AmpTitleLocal, ConfigError
+	variable i, load
 //	movewindow /C 1450, 530,-1,-1								// position command window
 	
 	if(ParamIsDefault(middleOfExperiment))
@@ -108,15 +108,18 @@ Function ExpConfig_ConfigureMIES([middleOfExperiment])
 	
 		ExpConfig_DAEphysSettings(win, UserSettings)
 	
-		FindValue /TXOP = 4 /TEXT = STIMSET_PATH UserSettings
-		StimSetPath = UserSettings[V_value][%SettingValue]
 		FindValue /TXOP = 4 /TEXT = STIMSET_NAME UserSettings
 		if(V_value != -1)
-			StimSetName = UserSettings[V_value][%SettingValue]
-			fullPath = StimSetPath + "\\" + StimSetName
-			HD_LoadReplaceStimSet(incomingFileName = fullPath)
+			StimSetPath = UserSettings[V_value][%SettingValue]
+			load = NWB_LoadAllStimSets(overwrite = 1, fileName = StimSetPath)
 		else
-			HD_LoadReplaceStimSet(incomingFileDirectory = StimSetPath)
+			load = NWB_LoadAllStimSets(overwrite = 1)
+		endif
+		
+		if (!load)
+			print "Stim set successfully loaded"
+		else
+			print "Stim set failed to load, check file path"
 		endif
 		
 		PGC_SetAndActivateControl(win,"ADC", val = DA_EPHYS_PANEL_DATA_ACQUISITION)
@@ -131,7 +134,7 @@ Function ExpConfig_ConfigureMIES([middleOfExperiment])
 	
 		PGC_SetAndActivateControl(win,"StartTestPulseButton")
 	
-		print ("Start Sciencing")
+		print "Start Sciencing"
 	endif
 End
 
