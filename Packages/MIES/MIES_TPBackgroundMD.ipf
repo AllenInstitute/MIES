@@ -28,22 +28,40 @@ Function ITC_StartTestPulseMultiDevice(panelTitle, [runModifier])
 	endif
 
 	if(!DeviceHasFollower(panelTitle))
-		TP_Setup(panelTitle, runMode)
-		ITC_BkrdTPMD(panelTitle)
+		try
+			TP_Setup(panelTitle, runMode)
+			ITC_BkrdTPMD(panelTitle)
+		catch
+			TP_Teardown(panelTitle)
+		endtry
+
 		return NaN
 	endif
 
 	SVAR listOfFollowerDevices = $GetFollowerList(panelTitle)
 	numFollower = ItemsInList(listOfFollowerDevices)
 
-	// configure all followers
-	for(i = 0; i < numFollower; i += 1)
-		followerPanelTitle = StringFromList(i, listOfFollowerDevices)
-		TP_Setup(followerPanelTitle, runMode)
-	endfor
+	try
+		// configure all followers
+		for(i = 0; i < numFollower; i += 1)
+			followerPanelTitle = StringFromList(i, listOfFollowerDevices)
+			TP_Setup(followerPanelTitle, runMode)
+		endfor
+
+		TP_Setup(panelTitle, runMode)
+	catch
+		// deconfigure all followers
+		for(i = 0; i < numFollower; i += 1)
+			followerPanelTitle = StringFromList(i, listOfFollowerDevices)
+			TP_Teardown(followerPanelTitle)
+		endfor
+
+		// deconfigure leader
+		TP_Teardown(panelTitle)
+		return NaN
+	endtry
 
 	// Sets lead board in wait for trigger
-	TP_Setup(panelTitle, runMode)
 	ITC_BkrdTPMD(panelTitle, triggerMode=HARDWARE_DAC_EXTERNAL_TRIGGER)
 
 	// set followers in wait for trigger

@@ -482,7 +482,14 @@ Function ITC_StartDAQSingleDevice(panelTitle, [useBackground])
 		endif
 
 		DAP_OneTimeCallBeforeDAQ(panelTitle, useBackground == 1 ? DAQ_BG_SINGLE_DEVICE : DAQ_FG_SINGLE_DEVICE)
-		DC_ConfigureDataForITC(panelTitle, DATA_ACQUISITION_MODE)
+
+		try
+			DC_ConfigureDataForITC(panelTitle, DATA_ACQUISITION_MODE)
+		catch
+			// we need to undo the earlier one time call only
+			DAP_OneTimeCallAfterDAQ(panelTitle)
+			return NaN
+		endtry
 
 		if(!useBackground)
 			ITC_DataAcq(panelTitle)

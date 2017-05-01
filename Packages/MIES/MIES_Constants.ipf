@@ -681,3 +681,11 @@ Constant STIMSET_PARAM_WP        = 0
 Constant STIMSET_PARAM_WPT       = 1
 Constant STIMSET_PARAM_SEGWVTYPE = 2
 /// @}
+
+/// @name Ranges for different integer wave types
+///
+/// @anchor IntegerWaveRanges
+/// @{
+Constant SIGNED_INT_16BIT_MIN = -32768
+Constant SIGNED_INT_16BIT_MAX =  32767
+/// @}
