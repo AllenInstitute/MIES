@@ -5,6 +5,7 @@
 #pragma version=0.16
 
 static Constant H5_ATTRIBUTE_SIZE_LIMIT = 60e3
+static Constant H5_CHUNK_SIZE           = 8192 // 2^13, determined by trial-and-error
 
 /// @cond DOXYGEN_IGNORES_THIS
 #include "HDF5 Browser", version=1.20
@@ -79,8 +80,6 @@ Function H5_WriteDataset(locationID, name, [var, varType, wv, overwrite, chunked
 
 	H5_WriteDatasetLowLevel(locationID, name, wv, overwrite, chunkedLayout, skipIfExists, writeIgorAttr)
 End
-
-static Constant H5_CHUNK_SIZE = 8192 // 2^13, determined by trial-and-error
 
 /// @brief Return a wave for the valid chunk sizes of each dimension.
 static Function/Wave H5_GetChunkSizes(wv)
