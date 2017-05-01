@@ -119,7 +119,8 @@ If guidelines are not followed, the MIES version will be unknown, and data acqui
 * Checkout the master branch
 * Check that main MIES and all separate modules compile
 * Check that doxygen/sphinx/breathe returns neither errors nor warnings
-* Adapt the release notes in `Packages\doc\releasenotes.rst`, `tools\create-changelog.sh` allows to generate a changelog as template
+* Paste the contents of `Packages\doc\releasenotes_template.rst` to the top of `Packages\doc\releasenotes.rst`
+* Call `tools\create-changelog.sh` which generate a raw changelog and fill `releasenotes.rst` with a cleaned up version of it.
 * Tag the current state with `git tag Release_X.Y_*`, see `git tag` for how the asterisk should look like
 * Push the tag: `git push --tags`
 * Create the release branches:
