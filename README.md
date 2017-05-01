@@ -8,7 +8,7 @@
 
 ### Latest released version
 
-* Download from [bamboo](http://bamboo.corp.alleninstitute.org/browse/MIES-RELEASE/latestSuccessful) below "Shared artifacts"
+* Download from [bamboo](http://bamboo.corp.alleninstitute.org/browse/MIES-RELEASE/latestSuccessful) in the "Artifacts" menu.
 
 ## Bug reporting
 
@@ -16,7 +16,7 @@ Please have a look at ReportingBugs.md.
 
 ## Full Installation
 
-Pressure control may be implemented with ITC and/or NIDAQ hardware.  For NIDAQ
+Pressure control may be implemented with ITC and/or NIDAQ hardware. For NIDAQ
 hardware, install the [NIDAQ Tool MX](https://www.wavemetrics.com/products/nidaqtools/nidaqtools.htm)
 package from Wavemetrics.
 
@@ -37,7 +37,7 @@ packages both for 32bit(x86) and 64bit(x64) in English.
 	* In "Igor Extensions" a shortcut pointing to
 		* "XOPs-IP7"
 		* "XOP-tango-IP7"
-	* In "Igor Help Files"  a shortcut pointing to HelpFiles-IP7
+	* In "Igor Help Files" a shortcut pointing to HelpFiles-IP7
 * Start Igor Pro
 
 ### Igor Pro 7.0.1 or later (64bit)
@@ -54,7 +54,7 @@ packages both for 32bit(x86) and 64bit(x64) in English.
 	* In "Igor Extensions (64-bit)" a shortcut pointing to
 		* "XOPs-IP7-64bit"
 		* "XOP-tango-64bit"
-	* In "Igor Help Files"  a shortcut pointing to HelpFiles-IP7
+	* In "Igor Help Files" a shortcut pointing to HelpFiles-IP7
 * Start Igor Pro
 
 ## Partial Installation without hardware dependencies
@@ -184,3 +184,60 @@ The documentation for the master and the latest release branch,
 `release/$number`, are automatically built by
 [MIES-BUILD](http://bamboo.corp.alleninstitute.org/browse/MIES-BUILD) and
 [MIES-BUILDRELEASE](http://bamboo.corp.alleninstitute.org/browse/MIES-BUILDRELEASE).
+
+### Setting up a continous integration server
+
+#### Preliminaries
+* Linux box with fixed IP
+* Choose a user, here named `john`, for running the tests.
+
+#### Enable remote access and auto login
+* Setup autologin into X for this user. E.g. for `mdm` add the following lines to `/etc/mdm/mdm.conf`:
+
+    ~~~text
+    [daemon]
+    AutomaticLoginEnable=true
+    AutomaticLogin=john
+    ~~~
+
+* Restart the PC and test that autologin works.
+* Setup remote SSH access with public keys. On the client (your PC!) try logging into using SSH.
+  Enable port forwarding (`local: 5900 to localhost:5900`).
+* `apt-get install  gawk graphviz pandoc apache2 texlive-full tmux git x11vnc wget`.
+* Checkout the mies repository
+* Copy the scripts `tools/start*.sh` to `/home/john`.
+* Open a ssh terminal, execute `~/start_x11vnc.sh` and try connecting to the remote X session using e.g.
+  TightVNC and `localhost:5900` as destination address.
+
+#### Install required software
+* (Relevant for Linux Mint 17 Qiana only) Add a file with the following sources in `/etc/apt/sources.list.d/`:
+
+    ~~~text
+    deb http://ppa.launchpad.net/openjdk-r/ppa/ubuntu trusty main
+    deb-src http://ppa.launchpad.net/openjdk-r/ppa/ubuntu trusty main
+    deb http://ppa.launchpad.net/ubuntu-wine/ppa/ubuntu trusty main
+    deb-src http://ppa.launchpad.net/ubuntu-wine/ppa/ubuntu trusty main
+    ~~~
+
+* `sudo apt-get update`
+* `sudo apt-get install wine openjdk-8-jre`
+* Download and install doxygen (version 1.8.12 or later) from [here](http://www.doxygen.org).
+* `pip install -U breathe sphinx sphinxcontrib-fulltoc`
+* Test if building the mies documentation works.
+* Install the script `tools/mies_deploy_documentation.sh` as described in its file header comment.
+
+#### Install Igor Pro
+* Install Igor Pro 7 using wine as described [here](http://www.igorexchange.com/node/1098#comment-12432).
+  The last tested version was 7.01.
+
+#### Setup bamboo agent
+* `wget http://bamboo.corp.alleninstitute.org/agentServer/agentInstaller/atlassian-bamboo-agent-installer-5.14.1.jar`
+* `~/start_bamboo_agent.sh`
+* In the bamboo web app search the agents list and add the capability `Igor` to the newly created agent.
+* Add the line `su -c /home/john/start_bamboo_agent_wrapper.sh john` to `/etc/rc.local`.
+  This ensures that the bamboo agent automatically starts after a reboot.
+* Reboot the PC and check that `tmux attach bamboo-agent` opens an existing tmux session and that the bamboo agent is running.
+
+#### Bamboo jobs
+* Add bamboo jobs requiring the capability `Igor`.
+* Done!

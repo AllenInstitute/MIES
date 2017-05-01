@@ -6,10 +6,10 @@ set -e
 # - sudo cp tools/depoly_documentation.sh /usr/local/bin/mies_deploy_documentation.sh
 # - sudo chown root:root /usr/local/bin/mies_deploy_documentation.sh
 # - sudo chown 744 /usr/local/bin/mies_deploy_documentation.sh
-# - Make the script executable as root by the bamboo user, e.g. add the following entry
-#   with "sudo visudo":
-#   bambooUser ALL=(root) NOPASSWD: /usr/local/bin/mies_deploy_documentation.sh
-# - Test from inside a mies git repository with "sudo mies_deploy_documentation.sh"
+# - Make the script executable as root by the bamboo user with the following steps:
+#   - `sudo echo bambooUser ALL=(root) NOPASSWD: /usr/local/bin/mies_deploy_documentation.sh > /etc/sudoers.d/mies_documentation`
+#   - `sudo chmod 0440 /etc/sudoers.d/mies_documentation`
+# - Test from inside a mies git repository with `sudo mies_deploy_documentation.sh`
 
 # The requirement for local installation is done for safety reasons, as the
 # solution that a script from the git repository is directly executed with
