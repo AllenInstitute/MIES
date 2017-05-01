@@ -444,7 +444,7 @@ Function H5_IsValidIdentifier(name)
 	return GrepString(name, "^[A-Za-z0-9_ -]+$")
 End
 
-/// @brief Non-recursivly list all datasets at path
+/// @brief List all datasets at path (non-recursively)
 ///
 /// @param[in] locationID          HDF5 identifier, can be a file or group
 /// @param[in] path                Additional path on top of `locationID` which identifies
@@ -468,7 +468,7 @@ Function/S H5_ListGroupMembers(locationID, path)
 	return S_HDF5ListGroup
 End
 
-/// @brief List all groups inside a group
+/// @brief List all groups inside a group (non-recursively)
 ///
 /// @param[in]  fileID        HDF5 file identifier
 /// @param[in]  path          Full path to the group inside fileID
