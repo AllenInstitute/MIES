@@ -1,3 +1,221 @@
+Release 1.2
+===========
+
+General
+-------
+- Add menu entry for loading stimsets from an NWB file
+- Entry type heuristic: Handle old labnotebooks without entry source type and no TP data properly
+- Rework TPStorage contents
+- Don't allow aborting SaveExperimentWrapper in SAVE_AND_SPLIT mode
+- Keep the NWB file open on SAVE_AND_SPLIT
+- Averaging: Fix rounding error due to single precision intermediate wave
+- Upgrade to NIDAQ XOPs version 1.10 final
+
+DA\_Ephys
+---------
+- oodDAQ:
+
+  - Fix some edge cases (works around a FindLevel limitation in older Igor 7 versions)
+  - Allow to use analysis functions in this mode as well
+  - Inform the user if the pre/post oodDAQ delays are out of range
+- Make clamp mode changing faster and add controls for changing the clamp mode once for all active headstages
+- Change inital onset user delay to 0ms
+- Added checkbox control to de/activate all headstages simultaneously
+- Complain and abort DAQ/TP if the requested settings would exceed the signed 16bit range of the ITCDataWave
+- Remove backup waves as well on sweep rollback
+- Move the free memory check into DC_ConfigureDataForITC and make it
+  non-skippable. This should make it less likely that Igor crashes due to out
+  of memory during DAQ.
+- Move the FIFO checking to a separate thread for DAQ MD in order to prevent a
+  crash on heavy load on the Igor main thread
+- Disable active headstage checkboxes during DAQ
+- Disable background/multi device checkboxes during DAQ/TP
+- Add support for stopping and restarting DAQ on stimset change
+- Prevent foreground DAQ with RA
+- Stop DAQ/TP before unlocking the device
+
+AnalysisBrowser
+---------------
+- Better code for deriving the initial filesystem folder
+- Allow loading stimsets, including dependent stimsets and custom waves, from NWB/PXP
+
+DataBrowser/SweepBrowser
+------------------------
+- Fix oodDAQ display with only TTL data shown
+- Unify oodDAQ and dDAQ display. The region slider can now be used to select
+  oodDAQ regions or dDAQ headstage regions.
+- Add new overlay sweeps functionality with the following features:
+
+  - Select sweeps by popup menu (stimset and stimset plus clamp mode), checkbox
+    clicking or "prev"/"next" buttons
+  - The user can choose the offset and the stepping for all popupmenu
+    selections except "none".
+  - Allow to ignore headstages per sweep by context menu selection or
+    listbox entries
+  - Regenerate the graph of overlayed sweeps on every change, this also
+    makes it possible to allow all other settings to be available while
+    overlay sweeps is active
+- Make averaging work in dDAQ mode
+- Speedup displaying lots of sweeps a lot (by more than one magnitude for averaging turned on)
+- ArtefactRemoval:
+  - Make range highlightning optional
+  - Speed it up and fix some edge cases
+  - Replace range with first value instead of NaN
+- Zero traces: Skip superfluous invocations
+- Add pulse averaging
+
+  - Allow the user to average pulses from a pulse train stimset.
+  - New graphs are created for each region and active channel to the right
+    hand side of the databrowser/sweep browser.
+- Adjust waves for onset delay for oodDAQ view
+- Enhance axis positioning in dDAQ mode
+- Time alignment: Make it usable again
+- Add checkbox for hiding normal sweeps:
+
+  - Use our headstage colors if normal sweeps are hidden
+
+SweepBrowser
+------------
+- SweepBrowser: Enhance export functionality
+
+  - Use a real panel for querying user input instead of DoPrompt
+  - Add new options:
+
+    - Source graph
+    - Target graph
+    - Target left/bottom axis
+    - Target left/bottom axis name
+
+DataBrowser
+-----------
+- Add panel versioning
+- Lock to device on panel opening if we only have data from one.
+- Unify all settings to use checkboxes
+
+Labnotebook
+-----------
+- Document the train pulse starting times and pulse lengths
+- GetLastSetting/GetLastSettingText/... learned to treat edge cases including
+  DAQ/TP and sweep number rollback properly. This is a change in the
+  labnotebook reading routines only.
+
+New numerical keys
+~~~~~~~~~~~~~~~~~~
+- ``Pulse To Pulse Length``: Distance in ms of two pulses in pulse train stimsets
+
+New textual keys
+~~~~~~~~~~~~~~~~
+- ``Pulse Train Pulses``: List of pulse train starting times in ms (relative to the stimset start)
+
+NWB/IPNWB
+---------
+- Raise version to 0.16
+- Truncate the written wave notes to avoid triggering the "64k" limit on attribute sizes.
+- Add rtFunctionErrors pragma
+- ReadLabNoteBooks: Don't assert out if we could not find the labnotebook
+- Require Igor Pro 7
+- Allow exporting unassociated channel data of all channel types
+- Add generic routines for loading datasets into free waves
+- Flush the NWB file to disc on Igor experiment save
+
+File format
+~~~~~~~~~~~
+- Allow creating NWB files with only TPStorage waves or stimsets
+- Store dependent stimsets, due to formula epochs, and referenced custom waves
+  in NWB as well when storing the stimset of a sweep.
+
+Pressure Control
+----------------
+- Fix NI device resetting code on device close
+
+User Config
+-----------
+- Add a config file and code to allow setting the required MIES settings in an
+  automated way.
+
+WaveBuilder
+-----------
+- Square Pulse Train:
+
+  - Rename Square Pulse Train to Pulse Train
+  - The pulse type can now be either square (as before) or triangle.
+  - Add amplitude related entries to wave note
+  - Make poisson distributed pulses reproducible. This also adds "New Seed" and
+    a "Seed / Sweep" controls.
+  - Add the pulse starting times to the stimset wave notes
+- Fix flipping with multi sweep stimsets
+- Speedup sawtooth on Igor Pro 7.02 and later
+- CustomWave: Use the same offset than all other epoch types. This also fixes
+  the problem that the wrong "offset"/"delta offset" was added to the
+  segment wave note.
+- More use of the magical speedup keywords
+- Use differnt colors for sweeps in the wavebuilder
+- Show the delta mode also for the custom wave
+- Show user analysis functions from UserAnalysisFunctions.ipf as well in the popup menues
+- Prevent RTE due to non existing bottom axis on empty graph
+- Improved detection of the need to regenerate the stimset from the parameter
+  waves. Recreate the stimsets if one of the following elements changed:
+
+  - any custom wave has changed
+  - any stimsets within a formula have changed
+- Rework stimset wave note generation:
+  We now document the settings of each sweep (aka step) and not only of the first
+  including delta. This also changes the format of the sweep wave note.
+
+  Example of the new stimset wave note format:
+
+  .. code-block:: text
+
+    Sweep = 0;Epoch = 0;Type = Square pulse;Duration = 1000;Amplitude = 0;
+    Sweep = 0;Epoch = 1;Type = Pulse Train;Duration = 1840.01;Amplitude = 1;Offset = 0;Pulse Type = Square;Frequency = 5;Pulse duration = 40;Number of pulses = 10;Poisson distribution = False;Random seed = 0.943029;Definition mode = Duration;
+    Stimset;ITI = 0;Pre DAQ = ;Mid Sweep = ;Post Sweep = ;Post Set = ;Post DAQ = ;Flip = 0;
+
+Work Sequencing Engine
+----------------------
+None
+
+Downsample
+----------
+None
+
+Foreign Function interface
+--------------------------
+- FFI_ReturnTPValues: Return a null wave if the testpulse has not yet been running
+
+ITC XOP 2
+----------
+- Change /V flag handling of ITCSetDAC2 to match the documentation
+- Fix a potential crash in ITCInitialize2/U (we don't use this flag)
+- Add PDB files
+
+ZeroMQ XOP
+----------
+- Return a newly added and more specific error message on catching ``std::bad_alloc`` exceptions.
+- Try handling out of memory cases more gracefully, in some cases caller are even responed to with a specific error message.
+- Update to latest libzmq version (84d94b4f)
+- Add PDB files
+
+Internal
+--------
+- GetTPStorage: Fix wave note formatting on upgrade
+- Replace GetClampModeString by a more versatile solution, namely the GetActiveHSProperties wave
+- Fix sweep splitting for changed sweep waves
+- PGC_SetAndActivateControl: Set popStr for PopupMenues if not supplied
+- Prevent storing sweep data with differing channel number in ``config`` and ``sweep``
+- PGC_SetAndActivateControl: Respect the valid data range for ``SetVariable`` controls
+- Add rtFunctionErrors pragma which should catch more programming errors
+- Finalize transition to always existing count variable
+- Add infrastructure and bamboo jobs for automated unit testing
+- Update to latest version of the igor unit testing framework and enable JUNIT output for the tests
+- Use the parent experiment name for deriving the NWB filename. The result is
+  that sibling experiments now use the same NWB file as the parent
+  experiment.
+
+Tango
+-----
+- TI_ConfigureMCCforIVSCC: Use correct clamp mode
+- TI_saveNWBFile: Take the full path
+
 Release 1.1
 ===========
 
