@@ -42,11 +42,11 @@ Function CreateCommonGroups(locationID, [toplevelInfo, generalInfo, subjectInfo]
 		ti = toplevelInfo
 	endif
 
-	WriteTextDatasetIfSet(locationID, "nwb_version", NWB_VERSION)
-	WriteTextDatasetIfSet(locationID, "identifier", Hash(GetISO8601TimeStamp() + num2str(enoise(1, NOISE_GEN_MERSENNE_TWISTER)), 1))
+	H5_WriteTextDataset(locationID, "nwb_version", str=NWB_VERSION)
+	H5_WriteTextDataset(locationID, "identifier", str=Hash(GetISO8601TimeStamp() + num2str(enoise(1, NOISE_GEN_MERSENNE_TWISTER)), 1))
 	// file_create_date needs to be appendable for the modified timestamps, and that is equivalent to having chunked layout
-	WriteTextDatasetIfSet(locationID, "file_create_date", GetISO8601TimeStamp(), chunkedLayout=1)
-	WriteTextDatasetIfSet(locationID, "session_start_time", GetISO8601TimeStamp(secondsSinceIgorEpoch=ti.session_start_time))
+	H5_WriteTextDataset(locationID, "file_create_date", str=GetISO8601TimeStamp(), chunkedLayout=1)
+	H5_WriteTextDataset(locationID, "session_start_time", str=GetISO8601TimeStamp(secondsSinceIgorEpoch=ti.session_start_time))
 	H5_WriteTextDataset(locationID, "session_description", str=ti.session_description)
 
 	H5_CreateGroupsRecursively(locationID, "/general", groupID=groupID)
