@@ -372,6 +372,7 @@ Function OpenStimset(fileID)
 	return H5_OpenGroup(fileID, PATH_STIMSETS)
 End
 
+/// @brief Check if the path to the stimsets exist in the NWB file.
 Function StimsetPathExists(fileID)
 	variable fileID
 
