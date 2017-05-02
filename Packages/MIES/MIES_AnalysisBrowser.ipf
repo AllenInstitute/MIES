@@ -1524,19 +1524,19 @@ Function AB_LoadSweepFromNWBgeneric(h5_groupID, channelList, sweepDFR, configSwe
 		switch(p.channelType)
 			case ITC_XOP_CHANNEL_TYPE_DAC:
 				channelName = "DA"
-				wave loaded = IPNWB#LoadStimulus(h5_groupID, channel, dfr = sweepDFR)
+				wave loaded = IPNWB#LoadStimulus(h5_groupID, channel)
 				channelName += "_" + num2str(p.channelNumber)
 				fakeConfigWave = 1
 				break
 			case ITC_XOP_CHANNEL_TYPE_ADC:
 				channelName = "AD"
-				wave loaded = IPNWB#LoadTimeseries(h5_groupID, channel, dfr = sweepDFR)
+				wave loaded = IPNWB#LoadTimeseries(h5_groupID, channel)
 				channelName += "_" + num2str(p.channelNumber)
 				fakeConfigWave = 1
 				break
 			case ITC_XOP_CHANNEL_TYPE_TTL:
 				channelName  = "TTL"
-				wave loaded = IPNWB#LoadStimulus(h5_groupID, channel, dfr = sweepDFR, channelPrefix = channelName)
+				wave loaded = IPNWB#LoadStimulus(h5_groupID, channel)
 				channelName += "_" + num2str(p.channelNumber)
 
 				// always fake TTL base wave (bitwise sum of all TTL channels)

@@ -204,20 +204,6 @@ Function/Wave MakeWaveFree(wv)
 	return wv
 End
 
-/// @brief Rename wv to newName. Check for Unique Name and return new name of wave
-Function MoveAndRename(wv, newName, [dfr])
-	WAVE wv
-	String newName
-	DFREF dfr
-
-	if(ParamIsDefault(dfr))
-		dfr = GetWavesDataFolderDFR(wv)
-	endif
-	newName = UniqueWaveName(dfr, newName)
-
-	MoveWave wv, dfr:$newName
-End
-
 /// @brief Returns a wave name not used in the given datafolder
 ///
 /// Basically a datafolder aware version of UniqueName for datafolders

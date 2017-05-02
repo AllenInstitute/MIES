@@ -313,17 +313,12 @@ End
 ///
 /// @param locationID   id of an open hdf5 group or file
 /// @param channel      name of channel for which data attribute is loaded
-/// @param dfr          dataFolder where data is saved
 /// @return             reference to wave containing loaded data
-Function/Wave LoadTimeseries(locationID, channel, [dfr])
+Function/Wave LoadTimeseries(locationID, channel)
 	Variable locationID
 	String channel
-	DFREF dfr
 
 	WAVE data = LoadDataWave(locationID, channel, path = "/acquisition/timeseries/")
-	if(!ParamIsDefault(dfr))
-		MoveAndRename(data, "AD" + NameOfWave(data), dfr = dfr)
-	endif
 
 	return data
 End
@@ -332,21 +327,12 @@ End
 ///
 /// @param locationID    id of an open hdf5 group or file
 /// @param channel       name of channel for which data attribute is loaded
-/// @param dfr           dataFolder where data is saved
-/// @param channelPrefix Add custom Prefix to WaveName
 /// @return             reference to wave containing loaded data
-Function/Wave LoadStimulus(locationID, channel, [dfr, channelPrefix])
+Function/Wave LoadStimulus(locationID, channel)
 	Variable locationID
-	String channel, channelPrefix
-	DFREF dfr
-	if(ParamIsDefault(channelPrefix))
-		channelPrefix = "DA"
-	endif
+	String channel
 
 	WAVE data = LoadDataWave(locationID, channel, path = "/stimulus/presentation/")
-	if(!ParamIsDefault(dfr))
-		MoveAndRename(data, channelPrefix + NameOfWave(data), dfr = dfr)
-	endif
 
 	return data
 End
