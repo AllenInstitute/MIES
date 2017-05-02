@@ -110,6 +110,9 @@ Structure ToplevelInfo
 	string session_description
 	/// timestamp in seconds since Igor Pro epoch, UTC timezone
 	variable session_start_time
+	string nwb_version ///< NWB specification version
+	string identifier
+	WAVE/T file_create_date
 EndStructure
 
 /// @brief Initialization routine for ToplevelInfo
@@ -118,6 +121,11 @@ Function InitToplevelInfo(ti)
 
 	ti.session_description = PLACEHOLDER
 	ti.session_start_time  = DateTimeInUTC()
+	ti.nwb_version         = NWB_VERSION
+	ti.identifier          = Hash(GetISO8601TimeStamp() + num2str(enoise(1, NOISE_GEN_MERSENNE_TWISTER)), 1)
+
+	Make/N=1/T/FREE file_create_date = GetISO8601TimeStamp()
+	WAVE/T ti.file_create_date = file_create_date
 End
 
 /// @brief Holds class specific entries for TimeSeries objects
