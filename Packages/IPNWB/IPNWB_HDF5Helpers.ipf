@@ -336,7 +336,12 @@ Function/WAVE H5_LoadDataset(locationID, name)
 	HDF5LoadData/Q/IGOR=(-1) locationID, name
 	SetDataFolder saveDFR
 
-	ASSERT(!V_flag, "could not load data wave from specified path")
+	if(V_flag)
+		HDf5DumpErrors/CLR=1
+		HDF5DumpState
+		ASSERT(0, "Could not read HDF5 dataset " + name)
+	endif
+
 	ASSERT(ItemsInList(S_waveNames) == 1, "unspecified data format")
 
 	WAVE/Z wv = dfr:$StringFromList(0, S_waveNames)
