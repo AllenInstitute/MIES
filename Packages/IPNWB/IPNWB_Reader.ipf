@@ -3,7 +3,7 @@
 #pragma IndependentModule=IPNWB
 #pragma version=0.16
 
-static strConstant PATH_STIMSETS = "/general/stimsets"
+static StrConstant PATH_STIMSETS = "/general/stimsets"
 
 /// @file IPNWB_Reader.ipf
 /// @brief Generic functions related to import from the NeuroDataWithoutBorders format
