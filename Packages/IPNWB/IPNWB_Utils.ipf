@@ -167,6 +167,67 @@ Function WriteTextDatasetIfSet(locationID, name, str, [chunkedLayout])
 	H5_WriteTextDataset(locationID, name, str=str, chunkedLayout=chunkedLayout)
 End
 
+/// @brief Read a text dataset as text wave, return a single element
+///        wave with #PLACEHOLDER if it does not exist.
+///
+/// @param locationID HDF5 identifier, can be a file or group
+/// @param name    Name of the HDF5 dataset
+Function/WAVE ReadTextDataSet(locationID, name)
+	variable locationID
+	string name
+
+	WAVE/T/Z wv = H5_LoadDataset(locationID, name)
+
+	if(!WaveExists(wv))
+		Make/FREE/T/N=1 wv = PLACEHOLDER
+		return wv
+	endif
+
+	ASSERT(WaveType(wv, 1) == 2, "Expected a text wave")
+
+	return wv
+End
+
+/// @brief Read a text dataset as string, return #PLACEHOLDER if it does not exist
+///
+/// @param locationID HDF5 identifier, can be a file or group
+/// @param name       Name of the HDF5 dataset
+Function/S ReadTextDataSetAsString(locationID, name)
+	variable locationID
+	string name
+
+	WAVE/T/Z wv = H5_LoadDataset(locationID, name)
+
+	if(!WaveExists(wv))
+		return PLACEHOLDER
+	endif
+
+	ASSERT(DimSize(wv, ROWS) == 1, "Expected exactly one row")
+	ASSERT(WaveType(wv, 1) == 2, "Expected a text wave")
+
+	return wv[0]
+End
+
+/// @brief Read a text dataset as number, return `NaN` if it does not exist
+///
+/// @param locationID HDF5 identifier, can be a file or group
+/// @param name       Name of the HDF5 dataset
+Function ReadDataSetAsNumber(locationID, name)
+	variable locationID
+	string name
+
+	WAVE/Z wv = H5_LoadDataset(locationID, name)
+
+	if(!WaveExists(wv))
+		return NaN
+	endif
+
+	ASSERT(DimSize(wv, ROWS) == 1, "Expected exactly one row")
+	ASSERT(WaveType(wv, 1) == 1, "Expected a numeric wave")
+
+	return wv[0]
+End
+
 /// @brief Remove a string prefix from each list item and
 /// return the new list
 Function/S RemovePrefixFromListItem(prefix, list, [listSep])
@@ -337,4 +398,26 @@ Function/S GetFile(filePathWithSuffix, [sep])
 	endif
 
 	return ParseFilePath(0, filePathWithSuffix, sep, 1, 0)
+End
+
+/// @brief Parse a timestamp created by GetISO8601TimeStamp() and returns the number
+/// of seconds since Igor Pro epoch (1/1/1904) in UTC time zone
+Function ParseISO8601TimeStamp(timestamp)
+	string timestamp
+
+	string year, month, day, hour, minute, second, regexp
+	variable secondsSinceEpoch
+
+	regexp = "([[:digit:]]+)-([[:digit:]]+)-([[:digit:]]+) ([[:digit:]]+):([[:digit:]]+):([[:digit:]]+)Z"
+	SplitString/E=regexp timestamp, year, month, day, hour, minute, second
+
+	if(V_flag != 6)
+		return NaN
+	endif
+
+	secondsSinceEpoch  = date2secs(str2num(year), str2num(month), str2num(day))          // date
+	secondsSinceEpoch += 60 * 60* str2num(hour) + 60 * str2num(minute) + str2num(second) // time
+	// timetstamp is in UTC so we don't need to add/subtract anything
+
+	return secondsSinceEpoch
 End

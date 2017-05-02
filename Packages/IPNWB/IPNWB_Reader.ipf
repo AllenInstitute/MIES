@@ -367,3 +367,68 @@ Function StimsetPathExists(fileID)
 
 	return IPNWB#H5_GroupExists(fileID, PATH_STIMSETS)
 End
+
+/// @brief Read in all NWB datasets from the root group ('/')
+Function ReadTopLevelInfo(fileID, toplevelInfo)
+	variable fileID
+	STRUCT ToplevelInfo &toplevelInfo
+
+	variable groupID
+
+	groupID = H5_OpenGroup(fileID, "/")
+
+	toplevelInfo.session_description     = ReadTextDataSetAsString(groupID, "session_description")
+	toplevelInfo.nwb_version             = ReadTextDataSetAsString(groupID, "nwb_version")
+	toplevelInfo.identifier              = ReadTextDataSetAsString(groupID, "identifier")
+	toplevelInfo.session_start_time      = ParseISO8601TimeStamp(ReadTextDataSetAsString(groupID, "session_start_time"))
+	WAVE/T toplevelInfo.file_create_date = ReadTextDataSet(groupID, "file_create_date")
+
+	HDF5CloseGroup/Z groupID
+End
+
+/// @brief Read in all standard NWB datasets from the group '/general'
+Function ReadGeneralInfo(fileID, generalinfo)
+	variable fileID
+	STRUCT GeneralInfo &generalinfo
+
+	variable groupID
+
+	groupID = H5_OpenGroup(fileID, "/general")
+
+	generalInfo.session_id             = ReadTextDataSetAsString(groupID, "session_id")
+	generalInfo.experimenter           = ReadTextDataSetAsString(groupID, "experimenter")
+	generalInfo.institution            = ReadTextDataSetAsString(groupID, "institution")
+	generalInfo.lab                    = ReadTextDataSetAsString(groupID, "lab")
+	generalInfo.related_publications   = ReadTextDataSetAsString(groupID, "related_publications")
+	generalInfo.notes                  = ReadTextDataSetAsString(groupID, "notes")
+	generalInfo.experiment_description = ReadTextDataSetAsString(groupID, "experiment_description")
+	generalInfo.data_collection        = ReadTextDataSetAsString(groupID, "data_collection")
+	generalInfo.stimulus               = ReadTextDataSetAsString(groupID, "stimulus")
+	generalInfo.pharmacology           = ReadTextDataSetAsString(groupID, "pharmacology")
+	generalInfo.surgery                = ReadTextDataSetAsString(groupID, "surgery")
+	generalInfo.protocol               = ReadTextDataSetAsString(groupID, "protocol")
+	generalInfo.virus                  = ReadTextDataSetAsString(groupID, "virus")
+	generalInfo.slices                 = ReadTextDataSetAsString(groupID, "slices")
+
+	HDF5CloseGroup/Z groupID
+End
+
+/// @brief Read in all NWB datasets from the root group '/general/subject'
+Function ReadSubjectInfo(fileID, subjectInfo)
+	variable fileID
+	STRUCT SubjectInfo &subjectInfo
+
+	variable groupID
+
+	groupID = H5_OpenGroup(fileID, "/general/subject")
+
+	subjectInfo.subject_id  = ReadTextDataSetAsString(groupID, "subject_id")
+	subjectInfo.description = ReadTextDataSetAsString(groupID, "description")
+	subjectInfo.species     = ReadTextDataSetAsString(groupID, "species")
+	subjectInfo.genotype    = ReadTextDataSetAsString(groupID, "genotype")
+	subjectInfo.sex         = ReadTextDataSetAsString(groupID, "sex")
+	subjectInfo.age         = ReadTextDataSetAsString(groupID, "age")
+	subjectInfo.weight      = ReadTextDataSetAsString(groupID, "weight")
+
+	HDF5CloseGroup/Z groupID
+End
