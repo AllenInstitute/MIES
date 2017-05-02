@@ -13,7 +13,7 @@ static strConstant PATH_STIMSETS = "/general/stimsets"
 /// @param  fileID identifier of open HDF5 file
 /// @return        comma separated list of devices
 Function/S ReadDevices(fileID)
-	Variable fileID
+	variable fileID
 
 	return RemovePrefixFromListItem("device_", H5_ListGroupMembers(fileID, "/general/devices"))
 End
@@ -23,7 +23,7 @@ End
 /// @param  fileID identifier of open HDF5 file
 /// @return        list with name of all groups inside /general/labnotebook/*
 Function/S ReadLabNoteBooks(fileID)
-	Variable fileID
+	variable fileID
 
 	string result = ""
 	string path = "/general/labnotebook"
@@ -118,13 +118,13 @@ End
 ///          False:   Error(s) occured.
 ///                   The result of the analysis is printed to history.
 Function CheckChannel(groupID, channel)
-	Variable groupID
-	String channel
+	variable groupID
+	string channel
 
 	Struct ReadChannelParams p
 	Struct ReadChannelParams q
 
-	Variable integrity = 1
+	variable integrity = 1
 
 	LoadSourceAttribute(groupID, channel, p)
 	AnalyseChannelName(channel, q)
@@ -148,11 +148,11 @@ End
 ///          False:      Error(s) occured.
 ///                      The result of the analysis is printed to history.
 Function CheckChannels(groupID, channelList)
-	Variable groupID
-	String channelList
+	variable groupID
+	string channelList
 
-	String channel
-	Variable numChannels, i
+	string channel
+	variable numChannels, i
 
 	numChannels = ItemsInList(channelList)
 	for(i = 0; i < numChannels; i += 1)
@@ -188,9 +188,10 @@ EndStructure
 /// @param[in]  channel  Input channel name in form data_00000_TTL1_3
 /// @param[out] p        ReadChannelParams structure to get filled
 Function AnalyseChannelName(channel, p)
-	String channel
+	string channel
 	STRUCT ReadChannelParams &p
-	String groupIndex, channelTypeStr, channelNumber, channelSuffix, channelID
+
+	string groupIndex, channelTypeStr, channelNumber, channelSuffix, channelID
 
 	SplitString/E="^(?i)data_([A-Z0-9]+)_([A-Z]+)([0-9]+)(?:_([A-Z0-9]+)){0,1}" channel, groupIndex, channelID, channelNumber, p.channelSuffix
 	p.groupIndex = str2num(groupIndex)
@@ -315,8 +316,8 @@ End
 /// @param channel      name of channel for which data attribute is loaded
 /// @return             reference to wave containing loaded data
 Function/Wave LoadTimeseries(locationID, channel)
-	Variable locationID
-	String channel
+	variable locationID
+	string channel
 
 	WAVE data = LoadDataWave(locationID, channel, path = "/acquisition/timeseries/")
 
@@ -329,8 +330,8 @@ End
 /// @param channel       name of channel for which data attribute is loaded
 /// @return             reference to wave containing loaded data
 Function/Wave LoadStimulus(locationID, channel)
-	Variable locationID
-	String channel
+	variable locationID
+	string channel
 
 	WAVE data = LoadDataWave(locationID, channel, path = "/stimulus/presentation/")
 
@@ -367,7 +368,7 @@ End
 Function OpenStimset(fileID)
 	variable fileID
 
-	Assert(StimsetPathExists(fileID), "Path is not in nwb file")
+	ASSERT(StimsetPathExists(fileID), "Path is not in nwb file")
 
 	return H5_OpenGroup(fileID, PATH_STIMSETS)
 End

@@ -249,13 +249,13 @@ End
 /// @param write         open file for writing. default is readonly.
 /// @return              ID for referencing open hdf5 file
 Function H5_OpenFile(discLocation, [write])
-	String discLocation
+	string discLocation
 	variable write
 	if(ParamIsDefault(write))
 		write = 0
 	endif
 
-	Variable fileID
+	variable fileID
 
 	GetFileFolderInfo/Q/Z discLocation
 	ASSERT(!V_Flag, "The given file does not exist.")
@@ -445,11 +445,11 @@ End
 /// @param[in] path                Additional path on top of `locationID` which identifies
 ///                                the group
 Function/S H5_ListGroupMembers(locationID, path)
-	Variable locationID
-	String path
+	variable locationID
+	string path
 
-	Variable groupID
-	String groupList
+	variable groupID
+	string groupList
 
 	ASSERT(H5_GroupExists(locationID, path), path + " not in HDF5 file")
 
@@ -468,8 +468,8 @@ End
 /// @param[in]  fileID        HDF5 file identifier
 /// @param[in]  path          Full path to the group inside fileID
 Function/S H5_ListGroups(fileID, path)
-	Variable fileID
-	String path
+	variable fileID
+	string path
 
 	ASSERT(H5_GroupExists(fileID, path), path + " not in HDF5 file")
 
@@ -488,10 +488,10 @@ End
 /// @param locationID  HDF5 file identifier
 /// @param path        Full path to the group inside locationID
 Function H5_OpenGroup(locationID, path)
-	Variable locationID
-	String path
+	variable locationID
+	string path
 
-	Variable id
+	variable id
 
 	ASSERT(H5_GroupExists(locationID, path, groupID = id), path + " not in HDF5 file")
 
