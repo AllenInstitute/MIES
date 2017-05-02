@@ -171,18 +171,6 @@ Function CheckChannels(groupID, channelList)
 	return 1
 End
 
-/// @brief Loader structure analog to #IPNWB::WriteChannelParams
-Structure ReadChannelParams
-	string   device           ///< name of the measure device, e.g. "ITC18USB_Dev_0"
-	string   channelSuffix    ///< custom channel suffix, in case the channel number is ambiguous
-	variable sweep            ///< running number for each measurement
-	variable channelType      ///< channel type, one of @ref IPNWB_ChannelTypes
-	variable channelNumber    ///< running number of the channel
-	variable electrodeNumber  ///< electrode identifier the channel was acquired with
-	variable groupIndex       ///< constant for all channels in this measurement.
-	variable ttlBit           ///< unambigous ttl-channel-number
-EndStructure
-
 /// @brief Try to extract information from channel name string
 ///
 /// @param[in]  channel  Input channel name in form data_00000_TTL1_3
