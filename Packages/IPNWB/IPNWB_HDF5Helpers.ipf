@@ -453,9 +453,6 @@ Function/S H5_ListGroupMembers(locationID, path)
 	variable locationID
 	string path
 
-	variable groupID
-	string groupList
-
 	ASSERT(H5_GroupExists(locationID, path), path + " not in HDF5 file")
 
 	HDF5ListGroup/Z locationID, path
