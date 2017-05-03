@@ -1,7 +1,7 @@
 #pragma rtGlobals=3		// Use modern global access method and strict wave access.
 #pragma rtFunctionErrors=1
 #pragma IndependentModule=IPNWB
-#pragma version=0.16
+#pragma version=0.17
 
 static StrConstant PATH_STIMSETS = "/general/stimsets"
 
