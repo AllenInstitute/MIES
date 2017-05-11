@@ -280,10 +280,10 @@ Function/Wave WB_GetStimSet([setName])
 
 		setName = ""
 	else
-		WAVE WP        = WB_GetWaveParamForSet(setName)
-		WAVE/T WPT     = WB_GetWaveTextParamForSet(setName)
-		WAVE SegWvType = WB_GetSegWvTypeForSet(setName)
-		channelType    = GetStimSetType(setName)
+		WAVE/Z WP        = WB_GetWaveParamForSet(setName)
+		WAVE/T/Z WPT     = WB_GetWaveTextParamForSet(setName)
+		WAVE/Z SegWvType = WB_GetSegWvTypeForSet(setName)
+		channelType      = GetStimSetType(setName)
 
 		if(!WaveExists(WP) || !WaveExists(WPT) || !WaveExists(SegWvType))
 			return $""
