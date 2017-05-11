@@ -457,7 +457,7 @@ Constant HARDWARE_DAC_EXTERNAL_TRIGGER = 0x1
 /// @}
 
 /// Used to upgrade the GuiStateWave as well as the DA Ephys panel
-Constant DA_EPHYS_PANEL_VERSION    = 14
+Constant DA_EPHYS_PANEL_VERSION    = 15
 Constant DATABROWSER_PANEL_VERSION = 4
 Constant WAVEBUILDER_PANEL_VERSION = 1
 
@@ -661,6 +661,9 @@ StrConstant REQUIRE_AMP				= "Require amplifier connection to active headstage"
 
 StrConstant PULSE_START_TIMES_KEY     = "Pulse Train Pulses"
 StrConstant PULSE_TO_PULSE_LENGTH_KEY = "Pulse To Pulse Length"
+
+/// DA_Ephys controls which should be disabled during DAQ
+StrConstant CONTROLS_DISABLE_DURING_DAQ = "Check_DataAcqHS_All;Radio_ClampMode_AllIClamp;Radio_ClampMode_AllVClamp;Radio_ClampMode_AllIZero"
 
 /// DA_Ephys controls which should be disabled during DAQ *and* TP
 StrConstant CONTROLS_DISABLE_DURING_DAQ_TP = "check_Settings_MD;Check_Settings_BkgTP;Check_Settings_BackgrndDataAcq"
