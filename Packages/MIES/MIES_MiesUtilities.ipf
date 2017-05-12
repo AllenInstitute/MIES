@@ -314,6 +314,11 @@ End
 /// @brief Returns a wave with the latest value of a setting from the history wave
 /// for a given sweep number.
 ///
+/// @param numericalValues numerical labnotebook
+/// @param sweepNo         sweep number
+/// @param setting         name of the setting to query
+/// @param entrySourceType type of the labnotebook entry, one of @ref DataAcqModes
+///
 /// @return a free wave with #LABNOTEBOOK_LAYER_COUNT rows. In case
 /// the setting could not be found an invalid wave reference is returned.
 Function/WAVE GetLastSetting(numericalValues, sweepNo, setting, entrySourceType)
@@ -436,6 +441,11 @@ End
 /// for a given sweep number.
 ///
 /// Text wave version of GetLastSetting().
+///
+/// @param textualValues   textual labnotebook
+/// @param sweepNo         sweep number
+/// @param setting         name of the setting to query
+/// @param entrySourceType type of the labnotebook entry, one of @ref DataAcqModes
 ///
 /// @return a free wave with #LABNOTEBOOK_LAYER_COUNT rows. In case
 /// the setting could not be found an invalid wave reference is returned.
