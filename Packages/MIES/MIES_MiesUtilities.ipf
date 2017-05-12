@@ -263,6 +263,91 @@ Function/S GetPanelControl(channelIndex, channelType, controlType)
 	return ctrl
 End
 
+/// @brief Find the first and last point index of a consecutive range of
+/// values in the labnotebook
+///
+/// @param[in]  wv                wave to search
+/// @param[in]  col               column to look for
+/// @param[in]  val               value to search
+/// @param[in]  forwardORBackward find the first(1) or last(0) range
+/// @param[in]  entrySourceType   type of the labnotebook entry, one of @ref DataAcqModes
+/// @param[out] first             point index of the beginning of the range
+/// @param[out] last              point index of the end of the range
+Function FindRange(wv, col, val, forwardORBackward, entrySourceType, first, last)
+	WAVE wv
+	variable col, val, forwardORBackward, entrySourceType
+	variable &first, &last
+
+	variable numRows, i, sourceTypeCol
+
+	first = NaN
+	last  = NaN
+
+	if(!WaveType(wv))
+		WAVE/Z indizesSetting = FindIndizes(col=col, var=val, wvText=wv)
+	else
+		WAVE/Z indizesSetting = FindIndizes(col=col, var=val, wv=wv)
+	endif
+
+	if(!WaveExists(indizesSetting))
+		return NaN
+	endif
+
+	if(IsFinite(entrySourceType))
+		sourceTypeCol = FindDimLabel(wv, COLS, "EntrySourceType")
+
+		if(sourceTypeCol >= 0) // labnotebook has a entrySourceType column
+			if(!WaveType(wv))
+				WAVE/Z indizesSourceType = FindIndizes(col=sourceTypeCol, var=entrySourceType, wvText=wv, startRow = WaveMin(indizesSetting), endRow = WaveMax(indizesSetting))
+			else
+				WAVE/Z indizesSourceType = FindIndizes(col=sourceTypeCol, var=entrySourceType, wv=wv, startRow = WaveMin(indizesSetting), endRow = WaveMax(indizesSetting))
+			endif
+		endif
+	endif
+
+	if(WaveExists(indizesSourceType)) // entrySourceType could be found
+		WAVE indizes = GetSetIntersection(indizesSetting, indizesSourceType)
+	else
+		WAVE indizes = indizesSetting
+	endif
+
+	numRows = DimSize(indizes, ROWS)
+
+	if(numRows == 1)
+		first = indizes[0]
+		last  = indizes[0]
+		return NaN
+	endif
+
+	if(forwardORBackward)
+
+		first = indizes[0]
+		last  = indizes[0]
+
+		for(i = 1; i < numRows; i += 1)
+			// a forward search stops after the end of the first sequence
+			if(indizes[i] > last + 1)
+				return NaN
+			endif
+
+			last = indizes[i]
+		endfor
+	else
+
+		first = indizes[numRows - 1]
+		last  = indizes[numRows - 1]
+
+		for(i = numRows - 2; i >= 0; i -= 1)
+			// a backward search stops when the beginning of the last sequence was found
+			if(indizes[i] < first - 1)
+				return NaN
+			endif
+
+			first = indizes[i]
+		endfor
+	endif
+End
+
 /// @brief Returns the numerical index for the sweep number column
 /// in the settings history waves (numeric and text)
 Function GetSweepColumn(labnotebookValues)
@@ -374,7 +459,7 @@ Function/WAVE GetLastSetting(numericalValues, sweepNo, setting, entrySourceType)
 	endif
 
 	sweepCol = GetSweepColumn(numericalValues)
-	FindRange(numericalValues, sweepCol, sweepNo, 0, first, last)
+	FindRange(numericalValues, sweepCol, sweepNo, 0, entrySourceType, first, last)
 
 	if(!IsFinite(first) && !IsFinite(last)) // sweep number is unknown
 		return $""
@@ -507,7 +592,7 @@ Function/WAVE GetLastSettingText(textualValues, sweepNo, setting, entrySourceTyp
 	endif
 
 	sweepCol = GetSweepColumn(textualValues)
-	FindRange(textualValues, sweepCol, sweepNo, 0, first, last)
+	FindRange(textualValues, sweepCol, sweepNo, 0, entrySourceType, first, last)
 
 	if(!IsFinite(first) && !IsFinite(last)) // sweep number is unknown
 		return $""
