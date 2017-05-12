@@ -26,7 +26,7 @@ static StrConstant AMPLIFIER_DEF_FORMAT   = "AmpNo %d Chan %d"
 
 Window DA_Ephys() : Panel
 	PauseUpdate; Silent 1		// building window...
-	NewPanel /K=1 /W=(230,556,714,1437)
+	NewPanel /K=1 /W=(230,108,714,989)
 	ValDisplay valdisp_DataAcq_P_LED_Clear,pos={366.00,298.00},size={86.00,29.00},disable=1
 	ValDisplay valdisp_DataAcq_P_LED_Clear,help={"red:user"},userdata(tabnum)=  "0"
 	ValDisplay valdisp_DataAcq_P_LED_Clear,userdata(tabcontrol)=  "tab_DataAcq_Pressure"
@@ -3575,7 +3575,7 @@ Window DA_Ephys() : Panel
 	CheckBox Radio_ClampMode_AllIZero,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	CheckBox Radio_ClampMode_AllIZero,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
 	CheckBox Radio_ClampMode_AllIZero,value= 0,mode=1
-	CheckBox Check_DataAcqHS_All,pos={400.00,85.00},size={29.00,15.00},disable=1,title="All"
+	CheckBox Check_DataAcqHS_All,pos={400.00,85.00},size={29.00,15.00},disable=1,proc=DAP_CheckProc_HedstgeChck,title="All"
 	CheckBox Check_DataAcqHS_All,userdata(tabnum)=  "0",userdata(tabcontrol)=  "ADC"
 	CheckBox Check_DataAcqHS_All,userdata(ResizeControlsInfo)= A"!!,I.!!#?c!!#=K!!#<(z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	CheckBox Check_DataAcqHS_All,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
@@ -4490,6 +4490,8 @@ Function DAP_OneTimeCallBeforeDAQ(panelTitle, runMode)
 		DisableControl(panelTitle, DAP_GetClampModeControl(I_EQUAL_ZERO_MODE, i))
 	endfor
 
+	DisableControls(panelTitle, CONTROLS_DISABLE_DURING_DAQ)
+		
 	NVAR dataAcqRunMode = $GetDataAcqRunMode(panelTitle)
 	dataAcqRunMode = runMode
 
@@ -4514,6 +4516,8 @@ Function DAP_ResetGUIAfterDAQ(panelTitle)
 		EnableControl(panelTitle, DAP_GetClampModeControl(V_CLAMP_MODE, i))
 		EnableControl(panelTitle, DAP_GetClampModeControl(I_EQUAL_ZERO_MODE, i))
 	endfor
+
+	EnableControls(panelTitle, CONTROLS_DISABLE_DURING_DAQ)
 
 	DAP_ToggleAcquisitionButton(panelTitle, DATA_ACQ_BUTTON_TO_DAQ)
 	EnableControls(panelTitle, CONTROLS_DISABLE_DURING_DAQ_TP)
@@ -6212,9 +6216,9 @@ End
 static Function DAP_ChangeHeadstageState(panelTitle, headStageCtrl, enabled)
 	string panelTitle, headStageCtrl
 	variable enabled
-
+	
 	variable clampMode, headStage, TPState, ICstate, VCstate, IZeroState
-	variable channelType, controlType
+	variable channelType, controlType, i
 	string VCctrl, ICctrl, IZeroCtrl
 
 	DAP_AbortIfUnlocked(panelTitle)
@@ -6225,40 +6229,57 @@ static Function DAP_ChangeHeadstageState(panelTitle, headStageCtrl, enabled)
 	ASSERT(channelType == CHANNEL_TYPE_HEADSTAGE && controlType == CHANNEL_CONTROL_CHECK, "Expected headstage checkbox control")
 
 	TPState = TP_StopTestPulse(panelTitle)
-	GuiState[headStage][%HSState] = enabled
-
-	clampMode = GuiState[headStage][%HSmode]
-	if(!enabled)
-		DAP_RemoveClampModeSettings(panelTitle, headStage, clampMode)
-		P_SetPressureMode(panelTitle, headStage, PRESSURE_METHOD_ATM)
-		P_GetPressureType(panelTitle)
+	
+	Make/FREE/N=(NUM_HEADSTAGES) changeHS = 0    
+	if(headstage >= 0)
+		changeHS[headstage] = 1
 	else
-		DAP_ApplyClmpModeSavdSettngs(panelTitle, headStage, clampMode)
+		changeHS[] = 1
 	endif
+	
+	for(i = 0; i < NUM_HEADSTAGES ; i +=1)
+		if(!changeHS[i])
+			continue
+		endif
+		
+		headStageCtrl = GetPanelControl(i, CHANNEL_TYPE_HEADSTAGE, CHANNEL_CONTROL_CHECK)
+		SetCheckBoxState(panelTitle, headStageCtrl, enabled)
+
+		GuiState[i][%HSState] = enabled
+	
+		clampMode = GuiState[i][%HSmode]
+		if(!enabled)
+			DAP_RemoveClampModeSettings(panelTitle, i, clampMode)
+			P_SetPressureMode(panelTitle, i, PRESSURE_METHOD_ATM)
+			P_GetPressureType(panelTitle)
+		else
+			DAP_ApplyClmpModeSavdSettngs(panelTitle, i, clampMode)
+		endif
+
+		VCctrl    = DAP_GetClampModeControl(V_CLAMP_MODE, i)
+		ICctrl    = DAP_GetClampModeControl(I_CLAMP_MODE, i)
+		IZeroCtrl = DAP_GetClampModeControl(I_EQUAL_ZERO_MODE, i)
+	
+		VCstate    = GetCheckBoxState(panelTitle, VCctrl)
+		ICstate    = GetCheckBoxState(panelTitle, ICctrl)
+		IZeroState = GetCheckBoxState(panelTitle, IZeroCtrl)
+
+		if(VCstate + ICstate + IZeroState != 1) // someone messed up the radio button logic, reset to V_CLAMP_MODE
+			PGC_SetAndActivateControl(panelTitle, VCctrl, val=CHECKBOX_SELECTED)
+		else
+			if(enabled && GetCheckBoxState(panelTitle, "check_Settings_SyncMiesToMCC"))
+				PGC_SetAndActivateControl(panelTitle, DAP_GetClampModeControl(clampMode, i), val=CHECKBOX_SELECTED)
+			endif
+		endif
+	endfor
 
 	DAP_UpdateITCSampIntDisplay(panelTitle)
 	DAP_UpdateITIAcrossSets(panelTitle)
 	DAP_UpdateSweepSetVariables(panelTitle)
 
-	VCctrl    = DAP_GetClampModeControl(V_CLAMP_MODE, headstage)
-	ICctrl    = DAP_GetClampModeControl(I_CLAMP_MODE, headstage)
-	IZeroCtrl = DAP_GetClampModeControl(I_EQUAL_ZERO_MODE, headstage)
-
-	VCstate    = GetCheckBoxState(panelTitle, VCctrl)
-	ICstate    = GetCheckBoxState(panelTitle, ICctrl)
-	IZeroState = GetCheckBoxState(panelTitle, IZeroCtrl)
-	
-	if(VCstate + ICstate + IZeroState != 1) // someone messed up the radio button logic, reset to V_CLAMP_MODE
-		PGC_SetAndActivateControl(panelTitle, VCctrl, val=CHECKBOX_SELECTED)
-	else
-		if(enabled && GetCheckBoxState(panelTitle, "check_Settings_SyncMiesToMCC"))
-			PGC_SetAndActivateControl(panelTitle, DAP_GetClampModeControl(clampMode, headstage), val=CHECKBOX_SELECTED)
-		endif
-
-		WAVE statusHS = DC_ControlStatusWaveCache(panelTitle, CHANNEL_TYPE_HEADSTAGE)
-		if(Sum(statusHS) > 0 )
-			TP_RestartTestPulse(panelTitle, TPState)
-		endif
+	WAVE statusHS = DC_ControlStatusWaveCache(panelTitle, CHANNEL_TYPE_HEADSTAGE)
+	if(Sum(statusHS) > 0 )
+		TP_RestartTestPulse(panelTitle, TPState)
 	endif
 End
 
