@@ -10,6 +10,14 @@
 
 * Download from [bamboo](http://bamboo.corp.alleninstitute.org/browse/MIES-RELEASE/latestSuccessful) in the "Artifacts" menu.
 
+## Supported versions
+
+* master
+* 1.1
+* 1.2
+
+For supported versions we fix all critical bugs.
+
 ## Bug reporting
 
 Please have a look at ReportingBugs.md.
@@ -130,6 +138,7 @@ If guidelines are not followed, the MIES version will be unknown, and data acqui
 	* Patch the IVSCC branch using a commit similiar to e0a9df52 (Remove unneeded NIDAQmx.XOP, 2016-11-10)
 	* `git push -u origin release/X.Y-IVSCC`
 * Change the bamboo jobs using release branches to use the branch release/X.Y
+* Adapt the list of supported versions above
 
 ### Creating a release package manually
 * Open a git bash terminal by choosing Actions->"Open in terminal" in SourceTree
