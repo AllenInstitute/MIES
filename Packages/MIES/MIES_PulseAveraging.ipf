@@ -129,7 +129,7 @@ static Function/WAVE PA_CalculatePulseStartTimes(DA, totalOnsetDelay)
 	WAVE DA
 	variable totalOnsetDelay
 
-	variable level
+	variable level, delta
 	ASSERT(totalOnsetDelay >= 0, "Invalid onsetDelay")
 
 	WaveStats/Q/M=1/R=(totalOnsetDelay, inf) DA
@@ -137,6 +137,13 @@ static Function/WAVE PA_CalculatePulseStartTimes(DA, totalOnsetDelay)
 
 	MAKE/FREE/D levels
 	FindLevels/Q/R=(totalOnsetDelay, inf)/EDGE=1/DEST=levels DA, level
+
+	delta = DimDelta(DA, ROWS)
+
+	// FindLevels interpolates between two points and searches for a rising edge
+	// so the returned value is commonly a bit too large
+	// round to the last wave point
+	levels[] = levels[p] - mod(levels[p], delta)
 
 	return levels
 End
