@@ -1129,71 +1129,6 @@ Function/Wave FindIndizes([col, colLabel, var, str, prop, wv, wvText, startRow, 
 	return matches
 End
 
-/// @brief Find the first and last point index of a consecutive range of values
-///
-/// @param[in]  wv                wave to search
-/// @param[in]  col               column to look for
-/// @param[in]  val               value to search
-/// @param[in]  forwardORBackward find the first(1) or last(0) range
-/// @param[out] first             point index of the beginning of the range
-/// @param[out] last              point index of the end of the range
-Function FindRange(wv, col, val, forwardORBackward, first, last)
-	WAVE wv
-	variable col, val, forwardORBackward
-	variable &first, &last
-
-	variable numRows, i
-
-	first = NaN
-	last  = NaN
-
-	if(!WaveType(wv))
-		WAVE/Z indizes = FindIndizes(col=col, var=val, wvText=wv)
-	else
-		WAVE/Z indizes = FindIndizes(col=col, var=val, wv=wv)
-	endif
-
-	if(!WaveExists(indizes))
-		return NaN
-	endif
-
-	numRows = DimSize(indizes, ROWS)
-
-	if(numRows == 1)
-		first = indizes[0]
-		last  = indizes[0]
-		return NaN
-	endif
-
-	if(forwardORBackward)
-
-		first = indizes[0]
-		last  = indizes[0]
-
-		for(i = 1; i < numRows; i += 1)
-			// a forward search stops after the end of the first sequence
-			if(indizes[i] > last + 1)
-				return NaN
-			endif
-
-			last = indizes[i]
-		endfor
-	else
-
-		first = indizes[numRows - 1]
-		last  = indizes[numRows - 1]
-
-		for(i = numRows - 2; i >= 0; i -= 1)
-			// a backward search stops when the beginning of the last sequence was found
-			if(indizes[i] < first - 1)
-				return NaN
-			endif
-
-			first = indizes[i]
-		endfor
-	endif
-End
-
 /// @brief Returns a reference to a newly created datafolder
 ///
 /// Basically a datafolder aware version of UniqueName for datafolders
@@ -2761,4 +2696,53 @@ Function RemoveAllDimLabels(wv)
 			SetDimLabel i, j, $"", wv
 		endfor
 	endfor
+End
+
+/// @brief Return a wave with the set theory style intersection of wave1 and wave2
+///
+/// Given {1, 2, 4, 10} and {2, 5, 11} this will return {2}.
+///
+/// Inspired by http://www.igorexchange.com/node/366 but adapted to modern Igor Pro
+Function/WAVE GetSetIntersection(wave1, wave2)
+	WAVE wave1
+	WAVE wave2
+
+	variable type, wave1Rows, wave2Rows
+	variable longRows, shortRows, entry
+	variable i, j, longWaveRow
+
+	type = WaveType(wave1)
+	ASSERT(type == WaveType(wave2), "Wave type mismatch")
+
+	wave1Rows = DimSize(wave1, ROWS)
+	wave2Rows = DimSize(wave2, ROWS)
+
+	if(wave1Rows > wave2Rows)
+		Duplicate/FREE wave1, longWave
+		WAVE shortWave = wave2
+		longRows  = wave1Rows
+		shortRows = wave2Rows
+	else
+		Duplicate/FREE wave2, longWave
+		WAVE shortWave = wave1
+		longRows  = wave2Rows
+		shortRows = wave1Rows
+	endif
+
+	// Sort values in longWave
+	Sort longWave, longWave
+	Make/FREE/N=(shortRows) resultWave
+
+	for(i = 0; i < shortRows; i += 1)
+		entry = shortWave[i]
+		longWaveRow = BinarySearch(longWave, entry)
+		if(longWaveRow >= 0 && longWave[longWaveRow] == entry)
+			resultWave[j] = entry
+			j += 1
+		endif
+	endfor
+
+	Redimension/N=(j) resultWave
+
+	return resultWave
 End
