@@ -1335,8 +1335,8 @@ Function CreateTiledChannelGraph(graph, config, sweepNo, numericalValues,  textu
 							sprintf str, "begin[ms] = %g, end[ms] = %g", xRangeStart, xRangeEnd
 							DEBUGPRINT(str)
 
-							xRangeStart /= samplingInt
-							xRangeEnd   /= samplingInt
+							xRangeStart = delayOnsetUser + delayOnsetAuto + xRangeStart / samplingInt
+							xRangeEnd   = delayOnsetUser + delayOnsetAuto + xRangeEnd / samplingInt
 						endif
 					else
 						xRangeStart = NaN
