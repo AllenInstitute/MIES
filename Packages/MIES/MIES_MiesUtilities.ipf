@@ -1327,8 +1327,8 @@ Function CreateTiledChannelGraph(graph, config, sweepNo, numericalValues,  textu
 								totalXRange = (xRangeEnd - XRangeStart) * numHorizWaves
 							endif
 						elseif(oodDAQEnabled)
-							/// regions list format: $begin1-$end1;$begin2-$end2;...
-							/// the values are in x values of the ITCDataWave but we need points here ignored the onset delays
+							/// @sa GetSweepSettingsTextKeyWave for the format
+							/// we need points here with taking the onset delays into account
 							xRangeStart = str2num(StringFromList(0, StringFromList(k, oodDAQRegionsAll, ";"), "-"))
 							xRangeEnd   = str2num(StringFromList(1, StringFromList(k, oodDAQRegionsAll, ";"), "-"))
 

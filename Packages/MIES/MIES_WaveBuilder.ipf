@@ -1062,7 +1062,7 @@ Function WB_ToEpochType(epochTypeStr)
 	endswitch
 End
 
-/// @brief Extract a list of [begin, end] ranges in milliseconds denoting
+/// @brief Extract a list of [begin, end] ranges in `stimset build ms` denoting
 ///        all pulses from all pulse train epochs in that sweep of the stimset
 Function/WAVE WB_GetPulsesFromPulseTrains(stimset, sweep, pulseToPulseLength)
 	WAVE stimset

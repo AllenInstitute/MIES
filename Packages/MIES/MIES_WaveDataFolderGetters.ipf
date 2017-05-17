@@ -1514,9 +1514,13 @@ End
 /// - 7: Analysis function post sweep
 /// - 8: Analysis function post set
 /// - 9: Analysis function post daq
-/// -10: oodDAQ regions
+/// -10: oodDAQ regions list
+///      - Format: `$begin1-$end1;$begin2-$end2;...`.
+///      - Unit: `stimset build ms`.
 /// -11: Electrode
-/// -12: Pulse Train Pulses (list)
+/// -12: Pulse Train Pulses
+///      - Format: `$begin1;$begin2;...`.
+///      - Unit: `sweep ms`.
 Function/Wave GetSweepSettingsTextKeyWave(panelTitle)
 	string panelTitle
 
