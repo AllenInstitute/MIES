@@ -417,7 +417,7 @@ static Function/WAVE PA_CreateAndFillPulseWaveIfReq(wv, singleSweepFolder, chann
 	ASSERT(length > 0, "Invalid length")
 	length = limit(length, 1, DimSize(wv, ROWS) - first)
 
-	if(DimSize(singlePulseWave, ROWS) == length && ModDate(singlePulseWave) > ModDate(wv))
+	if(DimSize(singlePulseWave, ROWS) == length && GetNumberFromWaveNote(wv, "SOURCE_WAVE_TS") == ModDate(wv))
 		return singlePulseWave
 	endif
 
@@ -425,6 +425,8 @@ static Function/WAVE PA_CreateAndFillPulseWaveIfReq(wv, singleSweepFolder, chann
 
 	MultiThread singlePulseWave[] = wv[first + p]
 	SetScale/P x, 0.0, DimDelta(wv, ROWS), WaveUnits(wv, ROWS), singlePulseWave
+
+	SetNumberInWaveNote(wv, "SOUREC_WAVE_TS", ModDate(wv))
 
 	return singlePulseWave
 End
