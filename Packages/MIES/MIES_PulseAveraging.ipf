@@ -302,6 +302,15 @@ static Function/WAVE PA_GetUniqueHeadstages(traceData, indizesChannelType)
 	return headstagesClean
 End
 
+/// @brief Return the total onset delay of the given sweep
+static Function PA_GetTotalOnsetDelay(numericalValues, sweepNo)
+	WAVE numericalValues
+	variable sweepNo
+
+	return GetLastSettingIndep(numericalValues, sweepNo, "Delay onset auto", DATA_ACQUISITION_MODE) + \
+			GetLastSettingIndep(numericalValues, sweepNo, "Delay onset user", DATA_ACQUISITION_MODE)
+End
+
 Function/WAVE PA_GetPulseStartTimes(traceData, idx, region, channelTypeStr)
 	WAVE/T traceData
 	variable idx, region
@@ -318,6 +327,8 @@ Function/WAVE PA_GetPulseStartTimes(traceData, idx, region, channelTypeStr)
 	WAVE/Z numericalValues = $traceData[idx][%numericalValues]
 
 	ASSERT(WaveExists(textualValues) && WaveExists(numericalValues), "Missing labnotebook waves")
+
+	totalOnsetDelay = PA_GetTotalOnsetDelay(numericalValues, sweepNo)
 
 	WAVE/Z pulseStartTimes = PA_GetPulseStartTimesFromLB(textualValues, sweepNo, region)
 
@@ -343,9 +354,6 @@ Function/WAVE PA_GetPulseStartTimes(traceData, idx, region, channelTypeStr)
 	// get the DA wave in that folder
 	WAVE DACs = GetLastSetting(numericalValues, sweepNo, "DAC", DATA_ACQUISITION_MODE)
 	WAVE DA = GetITCDataSingleColumnWave(singleSweepFolder, ITC_XOP_CHANNEL_TYPE_DAC, DACs[region])
-
-	totalOnsetDelay = GetLastSettingIndep(numericalValues, sweepNo, "Delay onset auto", DATA_ACQUISITION_MODE) + \
-					  GetLastSettingIndep(numericalValues, sweepNo, "Delay onset user", DATA_ACQUISITION_MODE)
 
 	WAVE pulseStartTimes = PA_CalculatePulseStartTimes(DA, totalOnsetDelay)
 
