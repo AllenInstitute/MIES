@@ -424,7 +424,7 @@ static Function/WAVE PA_CreateAndFillPulseWaveIfReq(wv, singleSweepFolder, chann
 	Redimension/N=(length) singlePulseWave
 
 	MultiThread singlePulseWave[] = wv[first + p]
-	CopyScales/P wv, singlePulseWave
+	SetScale/P x, 0.0, DimDelta(wv, ROWS), WaveUnits(wv, ROWS), singlePulseWave
 
 	return singlePulseWave
 End
