@@ -2304,19 +2304,6 @@ static Function AverageWavesFromSameYAxisIfReq(graph, traces, averagingEnabled, 
 			continue
 		endif
 
-		WAVE ranges = ExtractFromSubrange(listOfXRanges, ROWS)
-		MatrixOP/FREE rangeStart = col(ranges, 0)
-		MatrixOP/FREE rangeStop  = col(ranges, 1)
-
-		if(WaveMin(rangeStart) != -1 && WaveMin(rangeStop) != -1)
-			first = WaveMin(rangeStart)
-			last  = WaveMax(rangeStop)
-		else
-			first = NaN
-			last  = Nan
-		endif
-		WaveClear rangeStart, rangeStop
-
 		if(WaveListHasSameWaveNames(listOfWaves, baseName))
 			// add channel type suffix if they are all equal
 			if(ListHasOnlyOneUniqueEntry(listOfChannelTypes))
@@ -2334,6 +2321,20 @@ static Function AverageWavesFromSameYAxisIfReq(graph, traces, averagingEnabled, 
 
 		traceName = averageWaveName + "_" + num2str(traceIndex)
 		traceIndex += 1
+
+		WAVE ranges = ExtractFromSubrange(listOfXRanges, ROWS)
+
+		MatrixOP/FREE rangeStart = col(ranges, 0)
+		MatrixOP/FREE rangeStop  = col(ranges, 1)
+
+		if(WaveMin(rangeStart) != -1 && WaveMin(rangeStop) != -1)
+			first = WaveMin(rangeStart)
+			last  = WaveMax(rangeStop)
+		else
+			first = NaN
+			last  = Nan
+		endif
+		WaveClear rangeStart, rangeStop
 
 		WAVE averageWave = CalculateAverage(listOfWaves, averageDataFolder, averageWaveName)
 
