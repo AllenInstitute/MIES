@@ -2324,8 +2324,14 @@ static Function AverageWavesFromSameYAxisIfReq(graph, traces, averagingEnabled, 
 
 		WAVE ranges = ExtractFromSubrange(listOfXRanges, ROWS)
 
+		// convert ranges from points to ms
+		Redimension/D ranges
+
 		MatrixOP/FREE rangeStart = col(ranges, 0)
 		MatrixOP/FREE rangeStop  = col(ranges, 1)
+
+		rangeStart[] = IndexToScale($StringFromList(p, listOfWaves), rangeStart[p], ROWS)
+		rangeStop[]  = IndexToScale($StringFromList(p, listOfWaves), rangeStop[p], ROWS)
 
 		if(WaveMin(rangeStart) != -1 && WaveMin(rangeStop) != -1)
 			first = WaveMin(rangeStart)
@@ -2337,6 +2343,10 @@ static Function AverageWavesFromSameYAxisIfReq(graph, traces, averagingEnabled, 
 		WaveClear rangeStart, rangeStop
 
 		WAVE averageWave = CalculateAverage(listOfWaves, averageDataFolder, averageWaveName)
+
+		// and now convert it back to points in the average wave
+		first = ScaleToIndex(averageWave, first, ROWS)
+		last  = ScaleToIndex(averageWave, last, ROWS)
 
 		if(IsFinite(first) && IsFinite(last))
 			AppendToGraph/Q/W=$graph/L=$axis/B=$firstXAxis averageWave[first, last]/TN=$traceName
