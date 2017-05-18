@@ -102,7 +102,7 @@ End
 Function/S CA_AveragingKey(waveRefs)
 	WAVE/WAVE waveRefs
 
-	return CA_WaveCRCs(waveRefs) + "Version 1"
+	return CA_WaveCRCs(waveRefs, crcMode=2) + "Version 2"
 End
 
 /// @brief Calculate all CRC values of the waves referenced in waveRefs
