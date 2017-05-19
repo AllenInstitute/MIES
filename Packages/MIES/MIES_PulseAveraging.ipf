@@ -129,7 +129,7 @@ static Function/WAVE PA_CalculatePulseStartTimes(DA, totalOnsetDelay)
 	WAVE DA
 	variable totalOnsetDelay
 
-	variable level
+	variable level, delta
 	ASSERT(totalOnsetDelay >= 0, "Invalid onsetDelay")
 
 	WaveStats/Q/M=1/R=(totalOnsetDelay, inf) DA
@@ -137,6 +137,13 @@ static Function/WAVE PA_CalculatePulseStartTimes(DA, totalOnsetDelay)
 
 	MAKE/FREE/D levels
 	FindLevels/Q/R=(totalOnsetDelay, inf)/EDGE=1/DEST=levels DA, level
+
+	delta = DimDelta(DA, ROWS)
+
+	// FindLevels interpolates between two points and searches for a rising edge
+	// so the returned value is commonly a bit too large
+	// round to the last wave point
+	levels[] = levels[p] - mod(levels[p], delta)
 
 	return levels
 End
@@ -295,6 +302,19 @@ static Function/WAVE PA_GetUniqueHeadstages(traceData, indizesChannelType)
 	return headstagesClean
 End
 
+/// @brief Return the total onset delay of the given sweep
+static Function PA_GetTotalOnsetDelay(numericalValues, sweepNo)
+	WAVE numericalValues
+	variable sweepNo
+
+	return GetLastSettingIndep(numericalValues, sweepNo, "Delay onset auto", DATA_ACQUISITION_MODE) + \
+			GetLastSettingIndep(numericalValues, sweepNo, "Delay onset user", DATA_ACQUISITION_MODE)
+End
+
+/// @brief Return the pulse starting times reduced by the total onset delay
+///
+/// Removing the total onset delay is required as we want to extract the
+/// same pulses from a different sweep with different total onset delay.
 Function/WAVE PA_GetPulseStartTimes(traceData, idx, region, channelTypeStr)
 	WAVE/T traceData
 	variable idx, region
@@ -312,11 +332,16 @@ Function/WAVE PA_GetPulseStartTimes(traceData, idx, region, channelTypeStr)
 
 	ASSERT(WaveExists(textualValues) && WaveExists(numericalValues), "Missing labnotebook waves")
 
+	totalOnsetDelay = PA_GetTotalOnsetDelay(numericalValues, sweepNo)
+
 	WAVE/Z pulseStartTimes = PA_GetPulseStartTimesFromLB(textualValues, sweepNo, region)
 
 	if(WaveExists(pulseStartTimes))
 		sprintf str, "Found pulse starting times for headstage %d", region
 		DEBUGPRINT(str)
+
+		pulseStartTimes[] -= totalOnsetDelay
+
 		return pulseStartTimes
 	endif
 
@@ -337,9 +362,6 @@ Function/WAVE PA_GetPulseStartTimes(traceData, idx, region, channelTypeStr)
 	WAVE DACs = GetLastSetting(numericalValues, sweepNo, "DAC", DATA_ACQUISITION_MODE)
 	WAVE DA = GetITCDataSingleColumnWave(singleSweepFolder, ITC_XOP_CHANNEL_TYPE_DAC, DACs[region])
 
-	totalOnsetDelay = GetLastSettingIndep(numericalValues, sweepNo, "Delay onset auto", DATA_ACQUISITION_MODE) + \
-					  GetLastSettingIndep(numericalValues, sweepNo, "Delay onset user", DATA_ACQUISITION_MODE)
-
 	WAVE pulseStartTimes = PA_CalculatePulseStartTimes(DA, totalOnsetDelay)
 
 	if(DimSize(pulseStartTimes, ROWS) == 0)
@@ -348,6 +370,8 @@ Function/WAVE PA_GetPulseStartTimes(traceData, idx, region, channelTypeStr)
 
 	sprintf str, "Calculated pulse starting times for headstage %d", region
 	DEBUGPRINT(str)
+
+	pulseStartTimes[] -= totalOnsetDelay
 
 	return pulseStartTimes
 End
@@ -410,14 +434,16 @@ static Function/WAVE PA_CreateAndFillPulseWaveIfReq(wv, singleSweepFolder, chann
 	ASSERT(length > 0, "Invalid length")
 	length = limit(length, 1, DimSize(wv, ROWS) - first)
 
-	if(DimSize(singlePulseWave, ROWS) == length && ModDate(singlePulseWave) > ModDate(wv))
+	if(DimSize(singlePulseWave, ROWS) == length && GetNumberFromWaveNote(wv, "SOURCE_WAVE_TS") == ModDate(wv))
 		return singlePulseWave
 	endif
 
 	Redimension/N=(length) singlePulseWave
 
 	MultiThread singlePulseWave[] = wv[first + p]
-	CopyScales/P wv, singlePulseWave
+	SetScale/P x, 0.0, DimDelta(wv, ROWS), WaveUnits(wv, ROWS), singlePulseWave
+
+	SetNumberInWaveNote(wv, "SOUREC_WAVE_TS", ModDate(wv))
 
 	return singlePulseWave
 End
@@ -500,7 +526,7 @@ Function PA_ShowPulses(win, dfr, pa)
 	variable first, numEntries, startingPulse, endingPulse, numGraphs
 	variable startingPulseSett, endingPulseSett, ret, pulseToPulseLength, numSweeps
 	variable red, green, blue, channelNumber, region, channelType, numHeadstages, length
-	variable numChannelTypeTraces, activeRegionCount, activeChanCount
+	variable numChannelTypeTraces, activeRegionCount, activeChanCount, totalOnsetDelay
 	string listOfWaves, channelList, vertAxis, horizAxis, channelNumberStr
 	string newlyCreatedGraphs = ""
 
@@ -595,9 +621,10 @@ Function PA_ShowPulses(win, dfr, pa)
 					continue
 				endif
 
-				sweepNo          = str2num(traceData[idx][%sweepNumber])
-				channelNumberStr = traceData[idx][%channelNumber]
-				channelNumber    = str2num(channelNumberStr)
+				sweepNo              = str2num(traceData[idx][%sweepNumber])
+				channelNumberStr     = traceData[idx][%channelNumber]
+				channelNumber        = str2num(channelNumberStr)
+				WAVE numericalValues = $traceData[idx][%numericalValues]
 
 				if(WhichListItem(channelNumberStr, channelList) == -1)
 					activeChanCount += 1
@@ -610,6 +637,8 @@ Function PA_ShowPulses(win, dfr, pa)
 
 				DFREF singlePulseFolder = GetSingleSweepFolder(pulseAverageDFR, sweepNo)
 
+				totalOnsetDelay = PA_GetTotalOnsetDelay(numericalValues, sweepNo)
+
 				graph = PA_GetGraph(win, pa.multipleGraphs, channelType, channelNumber, region, activeRegionCount, activeChanCount)
 				PA_GetAxes(pa.multipleGraphs, activeRegionCount, activeChanCount, vertAxis, horizAxis)
 
@@ -621,7 +650,8 @@ Function PA_ShowPulses(win, dfr, pa)
 				for(l = startingPulse; l <= endingPulse; l += 1)
 
 					// ignore wave offset, as it is only used for display purposes
-					first  = round(pulseStartTimes[l] / DimDelta(wv, ROWS))
+					// but use the totalOnsetDelay of this sweep
+					first  = round((pulseStartTimes[l] + totalOnsetDelay) / DimDelta(wv, ROWS))
 					length = round(pulseToPulseLength / DimDelta(wv, ROWS))
 
 					WAVE plotWave = PA_CreateAndFillPulseWaveIfReq(wv, singlePulseFolder, channelType, channelNumber, region, l, first, length)

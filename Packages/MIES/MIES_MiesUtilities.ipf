@@ -1327,16 +1327,16 @@ Function CreateTiledChannelGraph(graph, config, sweepNo, numericalValues,  textu
 								totalXRange = (xRangeEnd - XRangeStart) * numHorizWaves
 							endif
 						elseif(oodDAQEnabled)
-							/// regions list format: $begin1-$end1;$begin2-$end2;...
-							/// the values are in x values of the ITCDataWave but we need points here ignored the onset delays
+							/// @sa GetSweepSettingsTextKeyWave for the format
+							/// we need points here with taking the onset delays into account
 							xRangeStart = str2num(StringFromList(0, StringFromList(k, oodDAQRegionsAll, ";"), "-"))
 							xRangeEnd   = str2num(StringFromList(1, StringFromList(k, oodDAQRegionsAll, ";"), "-"))
 
 							sprintf str, "begin[ms] = %g, end[ms] = %g", xRangeStart, xRangeEnd
 							DEBUGPRINT(str)
 
-							xRangeStart /= samplingInt
-							xRangeEnd   /= samplingInt
+							xRangeStart = delayOnsetUser + delayOnsetAuto + xRangeStart / samplingInt
+							xRangeEnd   = delayOnsetUser + delayOnsetAuto + xRangeEnd / samplingInt
 						endif
 					else
 						xRangeStart = NaN
@@ -2304,19 +2304,6 @@ static Function AverageWavesFromSameYAxisIfReq(graph, traces, averagingEnabled, 
 			continue
 		endif
 
-		WAVE ranges = ExtractFromSubrange(listOfXRanges, ROWS)
-		MatrixOP/FREE rangeStart = col(ranges, 0)
-		MatrixOP/FREE rangeStop  = col(ranges, 1)
-
-		if(WaveMin(rangeStart) != -1 && WaveMin(rangeStop) != -1)
-			first = WaveMin(rangeStart)
-			last  = WaveMax(rangeStop)
-		else
-			first = NaN
-			last  = Nan
-		endif
-		WaveClear rangeStart, rangeStop
-
 		if(WaveListHasSameWaveNames(listOfWaves, baseName))
 			// add channel type suffix if they are all equal
 			if(ListHasOnlyOneUniqueEntry(listOfChannelTypes))
@@ -2335,7 +2322,31 @@ static Function AverageWavesFromSameYAxisIfReq(graph, traces, averagingEnabled, 
 		traceName = averageWaveName + "_" + num2str(traceIndex)
 		traceIndex += 1
 
+		WAVE ranges = ExtractFromSubrange(listOfXRanges, ROWS)
+
+		// convert ranges from points to ms
+		Redimension/D ranges
+
+		MatrixOP/FREE rangeStart = col(ranges, 0)
+		MatrixOP/FREE rangeStop  = col(ranges, 1)
+
+		rangeStart[] = IndexToScale($StringFromList(p, listOfWaves), rangeStart[p], ROWS)
+		rangeStop[]  = IndexToScale($StringFromList(p, listOfWaves), rangeStop[p], ROWS)
+
+		if(WaveMin(rangeStart) != -1 && WaveMin(rangeStop) != -1)
+			first = WaveMin(rangeStart)
+			last  = WaveMax(rangeStop)
+		else
+			first = NaN
+			last  = Nan
+		endif
+		WaveClear rangeStart, rangeStop
+
 		WAVE averageWave = CalculateAverage(listOfWaves, averageDataFolder, averageWaveName)
+
+		// and now convert it back to points in the average wave
+		first = ScaleToIndex(averageWave, first, ROWS)
+		last  = ScaleToIndex(averageWave, last, ROWS)
 
 		if(IsFinite(first) && IsFinite(last))
 			AppendToGraph/Q/W=$graph/L=$axis/B=$firstXAxis averageWave[first, last]/TN=$traceName

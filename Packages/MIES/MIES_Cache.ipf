@@ -102,21 +102,29 @@ End
 Function/S CA_AveragingKey(waveRefs)
 	WAVE/WAVE waveRefs
 
-	return CA_WaveCRCs(waveRefs) + "Version 1"
+	return CA_WaveCRCs(waveRefs, crcMode=2) + "Version 2"
 End
 
-/// Calculate all CRC values of the contents of the waves referenced in waveRefs
-static Function/S CA_WaveCRCs(waveRefs)
+/// @brief Calculate all CRC values of the waves referenced in waveRefs
+///
+/// @param waveRefs  wave reference wave
+/// @param crcMode   parameter to WaveCRC
+static Function/S CA_WaveCRCs(waveRefs, [crcMode])
 	WAVE/WAVE waveRefs
+	variable crcMode
 
 	variable rows
+
+	if(ParamIsDefault(crcMode))
+		crcMode = 0
+	endif
 
 	rows = DimSize(waveRefs, ROWS)
 	ASSERT(rows > 0, "Unexpected number of entries")
 
 	Make/D/FREE/N=(rows) crc
 
-	MultiThread crc[] = WaveCRC(0, waveRefs[p])
+	MultiThread crc[] = WaveCRC(0, waveRefs[p], crcMode)
 
 	return NumericWaveToList(crc, ";", format = "%d")
 End
