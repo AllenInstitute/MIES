@@ -10,6 +10,14 @@
 
 * Download from [bamboo](http://bamboo.corp.alleninstitute.org/browse/MIES-RELEASE/latestSuccessful) in the "Artifacts" menu.
 
+## Supported versions
+
+* master
+* 1.1
+* 1.2
+
+For supported versions we fix all critical bugs.
+
 ## Bug reporting
 
 Please have a look at ReportingBugs.md.
@@ -119,7 +127,8 @@ If guidelines are not followed, the MIES version will be unknown, and data acqui
 * Checkout the master branch
 * Check that main MIES and all separate modules compile
 * Check that doxygen/sphinx/breathe returns neither errors nor warnings
-* Adapt the release notes in `Packages\doc\releasenotes.rst`, `tools\create-changelog.sh` allows to generate a changelog as template
+* Paste the contents of `Packages\doc\releasenotes_template.rst` to the top of `Packages\doc\releasenotes.rst`
+* Call `tools\create-changelog.sh` which generate a raw changelog and fill `releasenotes.rst` with a cleaned up version of it.
 * Tag the current state with `git tag Release_X.Y_*`, see `git tag` for how the asterisk should look like
 * Push the tag: `git push --tags`
 * Create the release branches:
@@ -129,6 +138,7 @@ If guidelines are not followed, the MIES version will be unknown, and data acqui
 	* Patch the IVSCC branch using a commit similiar to e0a9df52 (Remove unneeded NIDAQmx.XOP, 2016-11-10)
 	* `git push -u origin release/X.Y-IVSCC`
 * Change the bamboo jobs using release branches to use the branch release/X.Y
+* Adapt the list of supported versions above
 
 ### Creating a release package manually
 * Open a git bash terminal by choosing Actions->"Open in terminal" in SourceTree
