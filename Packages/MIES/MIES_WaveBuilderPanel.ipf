@@ -1,7 +1,7 @@
 #pragma TextEncoding = "UTF-8"
 #pragma rtGlobals=3		// Use modern global access method and strict wave access.
 #pragma rtFunctionErrors=1
-#pragma igorVersion=7.0
+#pragma IgorVersion=7.04
 
 #ifdef AUTOMATED_TESTING
 #pragma ModuleName=MIES_WBP

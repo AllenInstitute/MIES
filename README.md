@@ -31,7 +31,7 @@ package from Wavemetrics.
 Install the [Visual C++ Redistributable for Visual Studio 2015](https://www.microsoft.com/en-us/download/details.aspx?id=48145)
 packages both for 32bit(x86) and 64bit(x64) in English.
 
-### Igor Pro 7.0.1 or later (32bit)
+### Igor Pro 7.0.4 or later (32bit)
 
 * Quit Igor Pro
 * Create the following shortcuts in "C:\Users\$username\Documents\WaveMetrics\Igor Pro 7 User Files"
@@ -48,7 +48,7 @@ packages both for 32bit(x86) and 64bit(x64) in English.
 	* In "Igor Help Files" a shortcut pointing to HelpFiles-IP7
 * Start Igor Pro
 
-### Igor Pro 7.0.1 or later (64bit)
+### Igor Pro 7.0.4 or later (64bit)
 
 * Quit Igor Pro
 * Create the following shortcuts in "C:\Users\$username\Documents\WaveMetrics\Igor Pro 7 User Files"
