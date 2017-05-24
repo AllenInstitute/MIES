@@ -113,3 +113,78 @@ Function ReplacesWithEmptyString()
 	CHECK_EQUAL_STR(actual, expected)
 End
 /// @}
+
+/// ParseISO8601TimeStamp
+/// @{
+Function ReturnsNaNOnInvalid1()
+
+	variable expected = NaN
+	variable actual   = ParseISO8601TimeStamp("")
+	CHECK_EQUAL_VAR(actual, expected)
+End
+
+Function ReturnsNaNOnInvalid2()
+
+	variable expected = NaN
+	variable actual   = ParseISO8601TimeStamp("asdklajsd")
+	CHECK_EQUAL_VAR(actual, expected)
+End
+
+Function AcceptsValid1()
+
+	variable expected = 3578412052
+	variable actual   = ParseISO8601TimeStamp("2017-05-23 19:20:52Z")
+	CHECK_EQUAL_VAR(actual, expected)
+End
+
+Function AcceptsValid2()
+
+	variable expected = 3578412052
+	variable actual   = ParseISO8601TimeStamp("2017-05-23 19:20:52")
+	CHECK_EQUAL_VAR(actual, expected)
+End
+
+Function AcceptsValid3()
+
+	variable expected = 3578412052
+	variable actual   = ParseISO8601TimeStamp("2017-05-23T19:20:52")
+	CHECK_EQUAL_VAR(actual, expected)
+End
+
+Function AcceptsValid4()
+
+	variable expected = 3578412052
+	variable actual   = ParseISO8601TimeStamp("2017-05-23T19:20:52Z")
+	CHECK_EQUAL_VAR(actual, expected)
+End
+
+Function AcceptsValid5()
+
+	variable expected = 3578412052.12345678910
+	variable actual   = ParseISO8601TimeStamp("2017-05-23 19:20:52.12345678910")
+	CHECK_EQUAL_VAR(actual, expected)
+End
+
+Function AcceptsValid6()
+
+	variable expected = 3578412052.12345678910
+	variable actual   = ParseISO8601TimeStamp("2017-05-23T19:20:52.12345678910")
+	CHECK_EQUAL_VAR(actual, expected)
+End
+
+Function AcceptsValid7()
+
+	variable expected = 3578412052.12345678910
+	variable actual   = ParseISO8601TimeStamp("2017-05-23T19:20:52.12345678910Z")
+	CHECK_EQUAL_VAR(actual, expected)
+End
+
+Function AcceptsValid8()
+
+	variable expected = 3578412052.12345678910
+	// ISO 8601 does not define decimal separator, so comma is also okay
+	variable actual   = ParseISO8601TimeStamp("2017-05-23T19:20:52,12345678910")
+	CHECK_EQUAL_VAR(actual, expected)
+End
+
+/// @}
