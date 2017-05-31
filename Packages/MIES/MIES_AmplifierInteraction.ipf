@@ -1657,13 +1657,29 @@ End
 /// Distinguishes between i386 and x64 Igor versions
 static Function/S AI_GetMCCWinFilePath()
 
-	string progFolder = GetProgramFilesFolder()
+	variable numEntries, i
+	string progFolder, path
+
+	progFolder = GetProgramFilesFolder()
 
 #if defined(IGOR64)
-	return progFolder + "Molecular Devices\\MultiClamp_64\\MC700B.exe"
+	MAKE/FREE/T locations = {"Molecular Devices\\MultiClamp_64\\MC700B.exe", "Molecular Devices\\MultiClamp 700B Commander\\MC700B.exe"}
 #else
-	return progFolder + "Molecular Devices\\MultiClamp 700B Commander\\MC700B.exe"
+	MAKE/FREE/T locations = {"Molecular Devices\\MultiClamp 700B Commander\\MC700B.exe"}
 #endif
+
+	numEntries = DimSize(locations, ROWS)
+	for(i = 0; i < numEntries; i += 1)
+		path = progFolder + locations[i]
+
+		GetFileFolderInfo/Z/Q path
+		if(!V_flag) // exists
+			return path
+		endif
+	endfor
+
+	ASSERT(0, "Could not find the MCC application")
+	return "ERROR"
 End
 
 ///@brief Returns the holding command of the amplifier
