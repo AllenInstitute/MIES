@@ -26,7 +26,7 @@ static StrConstant AMPLIFIER_DEF_FORMAT   = "AmpNo %d Chan %d"
 
 Window DA_Ephys() : Panel
 	PauseUpdate; Silent 1		// building window...
-	NewPanel /K=1 /W=(230,108,714,989)
+	NewPanel /K=1 /W=(156,218,640,1099)
 	ValDisplay valdisp_DataAcq_P_LED_Clear,pos={366.00,298.00},size={86.00,29.00},disable=1
 	ValDisplay valdisp_DataAcq_P_LED_Clear,help={"red:user"},userdata(tabnum)=  "0"
 	ValDisplay valdisp_DataAcq_P_LED_Clear,userdata(tabcontrol)=  "tab_DataAcq_Pressure"
@@ -134,7 +134,7 @@ Window DA_Ephys() : Panel
 	ValDisplay valdisp_DataAcq_P_LED_0,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	ValDisplay valdisp_DataAcq_P_LED_0,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
 	ValDisplay valdisp_DataAcq_P_LED_0,frame=5
-	ValDisplay valdisp_DataAcq_P_LED_0,limits={-1,2,0},barmisc={0,0},mode= 2,highColor= (65535,49000,49000),lowColor= (65535,65535,65535),zeroColor= (49151,53155,65535)
+	ValDisplay valdisp_DataAcq_P_LED_0,limits={-1,2,0},barmisc={0,0},mode= 2,highColor= (65278,0,0),lowColor= (0,0,0),zeroColor= (0,0,65535)
 	ValDisplay valdisp_DataAcq_P_LED_0,value= _NUM:-1
 	ValDisplay valdisp_DataAcq_P_LED_1,pos={149.00,347.00},size={43.00,29.00},disable=1
 	ValDisplay valdisp_DataAcq_P_LED_1,help={"Blue:Automated mode, Purple:Manual, Red:User"}
@@ -2275,7 +2275,7 @@ Window DA_Ephys() : Panel
 	GroupBox group_Settings_Asynch,userdata(ResizeControlsInfo)= A"!!,Ba!!#C<J,hsnJ,hpCz!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	GroupBox group_Settings_Asynch,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Duafnzzzzzzzzzzz"
 	GroupBox group_Settings_Asynch,userdata(ResizeControlsInfo) += A"zzz!!#u:Duafnzzzzzzzzzzzzzz!!!"
-	GroupBox group_Settings_TP,pos={21.00,68.00},size={445.00,90.00},disable=1,title="Test Pulse"
+	GroupBox group_Settings_TP,pos={21.00,68.00},size={445.00,100.00},disable=1,title="Test Pulse"
 	GroupBox group_Settings_TP,userdata(tabnum)=  "5",userdata(tabcontrol)=  "ADC"
 	GroupBox group_Settings_TP,userdata(ResizeControlsInfo)= A"!!,Ba!!#?A!!#CCJ,hpCz!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	GroupBox group_Settings_TP,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Duafnzzzzzzzzzzz"
@@ -2773,7 +2773,7 @@ Window DA_Ephys() : Panel
 	SetVariable setvar_Settings_TP_RTolerance,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Duafnzzzzzzzzzzz"
 	SetVariable setvar_Settings_TP_RTolerance,userdata(ResizeControlsInfo) += A"zzz!!#u:Duafnzzzzzzzzzzzzzz!!!"
 	SetVariable setvar_Settings_TP_RTolerance,limits={1,inf,1},value= _NUM:5
-	CheckBox check_Settings_TP_SaveTPRecord,pos={357.00,133.00},size={93.00,15.00},disable=1,title="Save TP record"
+	CheckBox check_Settings_TP_SaveTPRecord,pos={342.00,133.00},size={93.00,15.00},disable=1,title="Save TP record"
 	CheckBox check_Settings_TP_SaveTPRecord,help={"When unchecked, the TP analysis record (from the previous TP run), is overwritten on the initiation of of the TP"}
 	CheckBox check_Settings_TP_SaveTPRecord,userdata(tabnum)=  "5"
 	CheckBox check_Settings_TP_SaveTPRecord,userdata(tabcontrol)=  "ADC"
@@ -3033,6 +3033,7 @@ Window DA_Ephys() : Panel
 	ValDisplay valdisp_DataAcq_P_0,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Duafnzzzzzzzzzzz"
 	ValDisplay valdisp_DataAcq_P_0,userdata(ResizeControlsInfo) += A"zzz!!#u:Duafnzzzzzzzzzzzzzz!!!"
 	ValDisplay valdisp_DataAcq_P_0,fSize=14,frame=0,fStyle=0
+	ValDisplay valdisp_DataAcq_P_0,valueColor=(65000,65000,65000)
 	ValDisplay valdisp_DataAcq_P_0,valueBackColor=(65535,65535,65535,0)
 	ValDisplay valdisp_DataAcq_P_0,limits={0,0,0},barmisc={0,1000},value= #"0.00"
 	ValDisplay valdisp_DataAcq_P_1,pos={153.00,351.00},size={35.00,21.00},bodyWidth=35,disable=1
@@ -3581,6 +3582,14 @@ Window DA_Ephys() : Panel
 	CheckBox Check_DataAcqHS_All,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	CheckBox Check_DataAcqHS_All,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
 	CheckBox Check_DataAcqHS_All,value= 0
+	CheckBox check_Settings_TP_SaveTP,pos={342.00,150.00},size={117.00,15.00},disable=1,title="Save each testpulse"
+	CheckBox check_Settings_TP_SaveTP,help={"Store the complete scaled testpulse for each run (requires loads of RAM)"}
+	CheckBox check_Settings_TP_SaveTP,userdata(tabnum)=  "5"
+	CheckBox check_Settings_TP_SaveTP,userdata(tabcontrol)=  "ADC"
+	CheckBox check_Settings_TP_SaveTP,userdata(ResizeControlsInfo)= A"!!,HmJ,hq?!!#?s!!#<(z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
+	CheckBox check_Settings_TP_SaveTP,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Duafnzzzzzzzzzzz"
+	CheckBox check_Settings_TP_SaveTP,userdata(ResizeControlsInfo) += A"zzz!!#u:Duafnzzzzzzzzzzzzzz!!!"
+	CheckBox check_Settings_TP_SaveTP,value= 0
 	DefineGuide UGV0={FR,-25},UGH0={FB,-27},UGV1={FL,481}
 	SetWindow kwTopWin,hook(cleanup)=DAP_WindowHook
 	SetWindow kwTopWin,userdata(ResizeControlsInfo)= A"!!*'\"z!!#CW!!#Dl5QCcbzzzzzzzzzzzzzzzzzzzz"
@@ -4042,6 +4051,7 @@ Function DAP_EphysPanelStartUpSettings()
 	CheckBox Check_Settings_InsertTP WIN = $panelTitle,value= 1
 	CheckBox Check_DataAcq_Get_Set_ITI WIN = $panelTitle, value = 1
 	CheckBox check_Settings_TP_SaveTPRecord WIN = $panelTitle, value = 0
+	CheckBox check_Settings_TP_SaveTP WIN = $panelTitle, value = 0
 	CheckBox check_settings_TP_show_steady WIN = $panelTitle, value = 1
 	CheckBox check_settings_TP_show_peak WIN = $panelTitle, value = 1
 	CheckBox check_settings_show_power WIN = $panelTitle, value = 0

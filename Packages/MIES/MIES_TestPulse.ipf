@@ -101,6 +101,47 @@ Function TP_StartTestPulseMultiDevice(panelTitle)
 	P_InitBeforeTP(panelTitle)
 End
 
+/// @brief Store the full test pulse wave for later inspection
+Function TP_StoreFullWave(panelTitle)
+	string panelTitle
+
+	variable index
+
+	WAVE OscilloscopeData = GetOscilloscopeWave(panelTitle)
+	WAVE/WAVE storedTP = GetStoredTestPulseWave(panelTitle)
+
+	index = GetNumberFromWaveNote(storedTP, NOTE_INDEX)
+	EnsureLargeEnoughWave(storedTP, minimumSize = index)
+	Duplicate/FREE OscilloscopeData, tmp
+	storedTP[index++] = tmp
+	WaveClear tmp
+
+	SetNumberInWaveNote(storedTP, NOTE_INDEX, index)
+End
+
+/// @brief Split the stored testpulse wave reference wave into single waves
+///        for easier handling
+Function TP_SplitStoredTestPulseWave(panelTitle)
+	string panelTitle
+
+	variable numEntries, i
+
+	WAVE/WAVE storedTP = GetStoredTestPulseWave(panelTitle)
+	DFREF dfr = GetDeviceTestPulse(panelTitle)
+
+	numEntries = GetNumberFromWaveNote(storedTP, NOTE_INDEX)
+	for(i = 0; i < numEntries; i += 1)
+
+		WAVE/Z wv = storedTP[i]
+
+		if(!WaveExists(wv))
+			continue
+		endif
+
+		Duplicate/O wv, dfr:$("StoredTestPulses_" + num2str(i))
+	endfor
+End
+
 /// @brief Calculates peak and steady state resistance simultaneously on all active headstages. Also returns basline Vm.
 // The function TPDelta is called by the TP dataaquistion functions
 // It updates a wave in the Test pulse folder for the device
@@ -111,6 +152,12 @@ Function TP_Delta(panelTitle)
 	variable amplitudeIC, amplitudeVC, referenceTime
 
 	referenceTime = DEBUG_TIMER_START()
+
+	WAVE GUIState = GetDA_EphysGuiStateNum(panelTitle)
+
+	if(GUIState[0][%check_Settings_TP_SaveTP])
+		TP_StoreFullWave(panelTitle)
+	endif
 
 	DFREF dfr = GetDeviceTestPulse(panelTitle)
 	
