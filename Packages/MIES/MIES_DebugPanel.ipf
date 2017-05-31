@@ -41,6 +41,9 @@ Function DP_OpenDebugPanel()
 	WAVE/T listWave  = GetDebugPanelListWave()
 	WAVE listSelWave = GetDebugPanelListSelWave()
 	ListBox listbox_mies_files win=$PANEL, listWave=listWave, selWave=listSelWave
+
+	SetCheckBoxState(PANEL, "check_debug_mode", QuerySetIgorOption("DEBUGGING_ENABLED") == 1)
+	// we can't readout the ITC XOP debugging state
 End
 
 Window DP_DebugPanel() : Panel
