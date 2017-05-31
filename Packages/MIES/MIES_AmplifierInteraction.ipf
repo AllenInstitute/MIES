@@ -1660,9 +1660,9 @@ static Function/S AI_GetMCCWinFilePath()
 	string progFolder = GetProgramFilesFolder()
 
 #if defined(IGOR64)
-	return progFolder + "Molecular Devices\MultiClamp_64\MC700B.exe"
+	return progFolder + "Molecular Devices\\MultiClamp_64\\MC700B.exe"
 #else
-	return progFolder + "Molecular Devices\MultiClamp 700B Commander\MC700B.exe"
+	return progFolder + "Molecular Devices\\MultiClamp 700B Commander\\MC700B.exe"
 #endif
 End
 
