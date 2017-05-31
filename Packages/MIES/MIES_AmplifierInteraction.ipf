@@ -1614,7 +1614,7 @@ Function AI_OpenMCCs(ampSerialNumList, [ampTitleList, maxAttempts])
 			title = stringfromlist(i, AmpTitleList)
 			findvalue/I=(serialNum) OpenMCCList
 			if( V_value == -1)
-				sprintf cmd, "\"%s%s\" /S00%g /T%s(%s)" GetProgramFilesFolder(), AI_GetMCCWinFilePath(), SerialNum, title, SerialStr
+				sprintf cmd, "\"%s\" /S00%g /T%s(%s)", AI_GetMCCWinFilePath(), SerialNum, title, SerialStr
 				executeScriptText cmd
 			endif
 		endfor
@@ -1657,10 +1657,12 @@ End
 /// Distinguishes between i386 and x64 Igor versions
 static Function/S AI_GetMCCWinFilePath()
 
+	string progFolder = GetProgramFilesFolder()
+
 #if defined(IGOR64)
-	return "Molecular Devices\MultiClamp_64\MC700B.exe"
+	return progFolder + "Molecular Devices\MultiClamp_64\MC700B.exe"
 #else
-	return "Molecular Devices\MultiClamp 700B Commander\MC700B.exe"
+	return progFolder + "Molecular Devices\MultiClamp 700B Commander\MC700B.exe"
 #endif
 End
 
