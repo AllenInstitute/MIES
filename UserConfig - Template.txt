@@ -68,9 +68,13 @@ Prevent User Pressure Mode from following headstage = Yes
 
 Initial Holding Potential = -70
 
+Enable I-clamp Autobias = Yes
+
 I-clamp Autobias range (mV) = 1
 
 I-clamp Max bias current (pA) = 500
+
+Capacitance Neutralization enabled = No
 
 ######## Test Pulse Settings ######
 Activate TP after DAQ = Yes
@@ -106,3 +110,11 @@ Enable ooDAQ = Yes
 ooDAQ post sweep delay (ms) = 150
 
 ooDAQ resolution (ms) = 25
+
+User onset delay (ms) = 500
+
+Termination delay (ms) = 1000
+
+Initial stim set = PulseTrain_20Hz_DA_0
+
+Initial stim set amplitude = 70
