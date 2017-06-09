@@ -41,6 +41,5 @@ build/
 bld/
 [Bb]in/
 [Oo]bj/
-UserConfig.txt
-UserConfig_master.txt
-UserConfig_working.txt
+UserConfig*.txt
+

@@ -120,9 +120,9 @@ Function ExpConfig_ConfigureMIES([middleOfExperiment])
 			print "Stim set successfully loaded"
 			StimSetList = "- none -;"+ReturnListOfAllStimSets(0,"*DA*")
 			FindValue /TXOP = 4 /TEXT = FIRST_STIM UserSettings
-			PGC_SetAndActivateControl(win,"Wave_DA_AllVClamp", val = WhichListItem(UserSettings[V_value][%SettingValue], StimSetList))
+			PGC_SetAndActivateControl(win,GetPanelControl(CHANNEL_INDEX_ALL_V_CLAMP,CHANNEL_TYPE_DAC,CHANNEL_CONTROL_WAVE), val = WhichListItem(UserSettings[V_value][%SettingValue], StimSetList))
 			FindValue /TXOP = 4 /TEXT = FIRST_STIM_AMP UserSettings
-			PGC_SetAndActivateControl(win,"Scale_DA_AllVClamp", val = str2numSafe(UserSettings[V_value][%SettingValue]))
+			PGC_SetAndActivateControl(win,GetPanelControl(CHANNEL_INDEX_ALL_V_CLAMP,CHANNEL_TYPE_DAC,CHANNEL_CONTROL_SCALE), val = str2numSafe(UserSettings[V_value][%SettingValue]))
 		else
 			print "Stim set failed to load, check file path"
 		endif
