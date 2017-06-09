@@ -110,7 +110,6 @@ static Function NWB_GetFileForExport([overrideFilePath, createdNewNWBFile])
 		fileID = IPNWB#H5_OpenFile(filePath, write = 1)
 
 		sessionStartTimeReadBack = NWB_ReadSessionStartTime(fileID)
-		ASSERT(IsFinite(sessionStartTimeReadBack), "Could not read session_start_time back from the NWB file")
 
 		fileIDExport   = fileID
 		filePathExport = filePath
@@ -152,7 +151,6 @@ static Function NWB_GetFileForExport([overrideFilePath, createdNewNWBFile])
 		NWB_AddGeneratorString(fileID)
 
 		sessionStartTimeReadBack = NWB_ReadSessionStartTime(fileID)
-		ASSERT(IsFinite(sessionStartTimeReadBack), "Could not read session_start_time back from the NWB file")
 
 		fileIDExport   = fileID
 		filePathExport = filePath
@@ -200,27 +198,9 @@ End
 static Function NWB_ReadSessionStartTime(fileID)
 	variable fileID
 
-	string str
+	string str = IPNWB#ReadTextDataSetAsString(fileID, "/session_start_time")
 
-	if(!IPNWB#H5_DatasetExists(fileID, "/session_start_time"))
-		return NaN
-	endif
-
-	HDF5LoadData/O/Q/TYPE=2/Z fileID, "/session_start_time"
-
-	if(V_flag)
-		HDf5DumpErrors/CLR=1
-		HDF5DumpState
-		ASSERT(0, "Could not load the HDF5 dataset /session_start_time")
-	endif
-
-	ASSERT(ItemsInList(S_WaveNames) == 1, "Expected only one wave")
-	WAVE/T wv = $StringFromList(0, S_WaveNames)
-	ASSERT(WaveType(wv, 1) == 2, "Expected a dataset of type text")
-	ASSERT(numpnts(wv) == 1, "Expected a wave with only one entry")
-
-	str = wv[0]
-	KillOrMoveToTrash(wv=wv)
+	ASSERT(cmpstr(str, "PLACEHOLDER"), "Could not read session_start_time back from the NWB file")
 
 	return ParseISO8601TimeStamp(str)
 End

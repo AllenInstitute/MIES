@@ -2,9 +2,10 @@
 #pragma rtGlobals=3		// Use modern global access method and strict wave access.
 #pragma rtFunctionErrors=1
 #pragma IndependentModule=IPNWB
-#pragma version=0.16
+#pragma version=0.17
 
 static Constant H5_ATTRIBUTE_SIZE_LIMIT = 60e3
+static Constant H5_CHUNK_SIZE           = 8192 // 2^13, determined by trial-and-error
 
 /// @cond DOXYGEN_IGNORES_THIS
 #include "HDF5 Browser", version=1.20
@@ -79,8 +80,6 @@ Function H5_WriteDataset(locationID, name, [var, varType, wv, overwrite, chunked
 
 	H5_WriteDatasetLowLevel(locationID, name, wv, overwrite, chunkedLayout, skipIfExists, writeIgorAttr)
 End
-
-static Constant H5_CHUNK_SIZE = 8192 // 2^13, determined by trial-and-error
 
 /// @brief Return a wave for the valid chunk sizes of each dimension.
 static Function/Wave H5_GetChunkSizes(wv)
@@ -250,13 +249,13 @@ End
 /// @param write         open file for writing. default is readonly.
 /// @return              ID for referencing open hdf5 file
 Function H5_OpenFile(discLocation, [write])
-	String discLocation
+	string discLocation
 	variable write
 	if(ParamIsDefault(write))
 		write = 0
 	endif
 
-	Variable fileID
+	variable fileID
 
 	GetFileFolderInfo/Q/Z discLocation
 	ASSERT(!V_Flag, "The given file does not exist.")
@@ -318,14 +317,13 @@ End
 
 /// @brief Load a specified dataset as wave
 ///
-/// @param[in] locationID           HDF5 identifier, can be a file or group
-/// @param[in] name                 path on top of `locationID` which identifies
-///                                 the dataset
-/// @param[in] renameTo [optional]  rename the loaded Data set to the specified string
-/// @return                         reference to wave containing loaded data
-Function/WAVE H5_LoadDataset(locationID, name, [renameTo])
+/// @param[in] locationID HDF5 identifier, can be a file or group
+/// @param[in] name       path on top of `locationID` which identifies the dataset
+///
+/// @return               reference to wave containing loaded data
+Function/WAVE H5_LoadDataset(locationID, name)
 	variable locationID
-	string name, renameTo
+	string name
 
 	if(!H5_DatasetExists(locationID, name))
 		return $""
@@ -338,15 +336,16 @@ Function/WAVE H5_LoadDataset(locationID, name, [renameTo])
 	HDF5LoadData/Q/IGOR=(-1) locationID, name
 	SetDataFolder saveDFR
 
-	ASSERT(!V_flag, "could not load data wave from specified path")
+	if(V_flag)
+		HDf5DumpErrors/CLR=1
+		HDF5DumpState
+		ASSERT(0, "Could not read HDF5 dataset " + name)
+	endif
+
 	ASSERT(ItemsInList(S_waveNames) == 1, "unspecified data format")
 
 	WAVE/Z wv = dfr:$StringFromList(0, S_waveNames)
 	ASSERT(WaveExists(wv), "loaded wave not found")
-
-	if(!ParamIsDefault(renameTo))
-		Rename wv $renameTo
-	endif
 
 	return wv
 End
@@ -445,17 +444,14 @@ Function H5_IsValidIdentifier(name)
 	return GrepString(name, "^[A-Za-z0-9_ -]+$")
 End
 
-/// @brief Non-recursivly list all datasets at path
+/// @brief List all datasets at path (non-recursively)
 ///
 /// @param[in] locationID          HDF5 identifier, can be a file or group
 /// @param[in] path                Additional path on top of `locationID` which identifies
 ///                                the group
 Function/S H5_ListGroupMembers(locationID, path)
-	Variable locationID
-	String path
-
-	Variable groupID
-	String groupList
+	variable locationID
+	string path
 
 	ASSERT(H5_GroupExists(locationID, path), path + " not in HDF5 file")
 
@@ -469,13 +465,13 @@ Function/S H5_ListGroupMembers(locationID, path)
 	return S_HDF5ListGroup
 End
 
-/// @brief List all groups inside a group
+/// @brief List all groups inside a group (non-recursively)
 ///
 /// @param[in]  fileID        HDF5 file identifier
 /// @param[in]  path          Full path to the group inside fileID
 Function/S H5_ListGroups(fileID, path)
-	Variable fileID
-	String path
+	variable fileID
+	string path
 
 	ASSERT(H5_GroupExists(fileID, path), path + " not in HDF5 file")
 
@@ -494,10 +490,10 @@ End
 /// @param locationID  HDF5 file identifier
 /// @param path        Full path to the group inside locationID
 Function H5_OpenGroup(locationID, path)
-	Variable locationID
-	String path
+	variable locationID
+	string path
 
-	Variable id
+	variable id
 
 	ASSERT(H5_GroupExists(locationID, path, groupID = id), path + " not in HDF5 file")
 

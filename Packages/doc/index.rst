@@ -10,7 +10,7 @@ Table of Contents
   filelist
   structlist
   namespacelist
-  NWB
+  IPNWB
   misc
   ZeroMQ-XOP-Readme
 

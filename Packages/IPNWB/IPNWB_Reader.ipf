@@ -1,9 +1,9 @@
 #pragma rtGlobals=3		// Use modern global access method and strict wave access.
 #pragma rtFunctionErrors=1
 #pragma IndependentModule=IPNWB
-#pragma version=0.16
+#pragma version=0.17
 
-static strConstant PATH_STIMSETS = "/general/stimsets"
+static StrConstant PATH_STIMSETS = "/general/stimsets"
 
 /// @file IPNWB_Reader.ipf
 /// @brief Generic functions related to import from the NeuroDataWithoutBorders format
@@ -13,7 +13,7 @@ static strConstant PATH_STIMSETS = "/general/stimsets"
 /// @param  fileID identifier of open HDF5 file
 /// @return        comma separated list of devices
 Function/S ReadDevices(fileID)
-	Variable fileID
+	variable fileID
 
 	return RemovePrefixFromListItem("device_", H5_ListGroupMembers(fileID, "/general/devices"))
 End
@@ -23,7 +23,7 @@ End
 /// @param  fileID identifier of open HDF5 file
 /// @return        list with name of all groups inside /general/labnotebook/*
 Function/S ReadLabNoteBooks(fileID)
-	Variable fileID
+	variable fileID
 
 	string result = ""
 	string path = "/general/labnotebook"
@@ -118,13 +118,13 @@ End
 ///          False:   Error(s) occured.
 ///                   The result of the analysis is printed to history.
 Function CheckChannel(groupID, channel)
-	Variable groupID
-	String channel
+	variable groupID
+	string channel
 
 	Struct ReadChannelParams p
 	Struct ReadChannelParams q
 
-	Variable integrity = 1
+	variable integrity = 1
 
 	LoadSourceAttribute(groupID, channel, p)
 	AnalyseChannelName(channel, q)
@@ -148,11 +148,11 @@ End
 ///          False:      Error(s) occured.
 ///                      The result of the analysis is printed to history.
 Function CheckChannels(groupID, channelList)
-	Variable groupID
-	String channelList
+	variable groupID
+	string channelList
 
-	String channel
-	Variable numChannels, i
+	string channel
+	variable numChannels, i
 
 	numChannels = ItemsInList(channelList)
 	for(i = 0; i < numChannels; i += 1)
@@ -171,26 +171,15 @@ Function CheckChannels(groupID, channelList)
 	return 1
 End
 
-/// @brief Loader structure analog to #IPNWB::WriteChannelParams
-Structure ReadChannelParams
-	string   device           ///< name of the measure device, e.g. "ITC18USB_Dev_0"
-	string   channelSuffix    ///< custom channel suffix, in case the channel number is ambiguous
-	variable sweep            ///< running number for each measurement
-	variable channelType      ///< channel type, one of @ref IPNWB_ChannelTypes
-	variable channelNumber    ///< running number of the channel
-	variable electrodeNumber  ///< electrode identifier the channel was acquired with
-	variable groupIndex       ///< constant for all channels in this measurement.
-	variable ttlBit           ///< unambigous ttl-channel-number
-EndStructure
-
 /// @brief Try to extract information from channel name string
 ///
 /// @param[in]  channel  Input channel name in form data_00000_TTL1_3
 /// @param[out] p        ReadChannelParams structure to get filled
 Function AnalyseChannelName(channel, p)
-	String channel
+	string channel
 	STRUCT ReadChannelParams &p
-	String groupIndex, channelTypeStr, channelNumber, channelSuffix, channelID
+
+	string groupIndex, channelTypeStr, channelNumber, channelSuffix, channelID
 
 	SplitString/E="^(?i)data_([A-Z0-9]+)_([A-Z]+)([0-9]+)(?:_([A-Z0-9]+)){0,1}" channel, groupIndex, channelID, channelNumber, p.channelSuffix
 	p.groupIndex = str2num(groupIndex)
@@ -305,26 +294,20 @@ Function/Wave LoadDataWave(locationID, channel, [path])
 	Assert(IPNWB#H5_GroupExists(locationID, path), "Path is not in nwb file")
 
 	path += channel + "/data"
-	WAVE wv = H5_LoadDataset(locationID, path, renameTo = channel)
 
-	return MakeWaveFree(wv)
+	return H5_LoadDataset(locationID, path)
 End
 
 /// @brief Load single channel data as a wave from /acquisition/timeseries
 ///
 /// @param locationID   id of an open hdf5 group or file
 /// @param channel      name of channel for which data attribute is loaded
-/// @param dfr          dataFolder where data is saved
 /// @return             reference to wave containing loaded data
-Function/Wave LoadTimeseries(locationID, channel, [dfr])
-	Variable locationID
-	String channel
-	DFREF dfr
+Function/Wave LoadTimeseries(locationID, channel)
+	variable locationID
+	string channel
 
 	WAVE data = LoadDataWave(locationID, channel, path = "/acquisition/timeseries/")
-	if(!ParamIsDefault(dfr))
-		MoveAndRename(data, "AD" + NameOfWave(data), dfr = dfr)
-	endif
 
 	return data
 End
@@ -333,21 +316,12 @@ End
 ///
 /// @param locationID    id of an open hdf5 group or file
 /// @param channel       name of channel for which data attribute is loaded
-/// @param dfr           dataFolder where data is saved
-/// @param channelPrefix Add custom Prefix to WaveName
 /// @return             reference to wave containing loaded data
-Function/Wave LoadStimulus(locationID, channel, [dfr, channelPrefix])
-	Variable locationID
-	String channel, channelPrefix
-	DFREF dfr
-	if(ParamIsDefault(channelPrefix))
-		channelPrefix = "DA"
-	endif
+Function/Wave LoadStimulus(locationID, channel)
+	variable locationID
+	string channel
 
 	WAVE data = LoadDataWave(locationID, channel, path = "/stimulus/presentation/")
-	if(!ParamIsDefault(dfr))
-		MoveAndRename(data, channelPrefix + NameOfWave(data), dfr = dfr)
-	endif
 
 	return data
 End
@@ -382,13 +356,79 @@ End
 Function OpenStimset(fileID)
 	variable fileID
 
-	Assert(StimsetPathExists(fileID), "Path is not in nwb file")
+	ASSERT(StimsetPathExists(fileID), "Path is not in nwb file")
 
 	return H5_OpenGroup(fileID, PATH_STIMSETS)
 End
 
+/// @brief Check if the path to the stimsets exist in the NWB file.
 Function StimsetPathExists(fileID)
 	variable fileID
 
 	return IPNWB#H5_GroupExists(fileID, PATH_STIMSETS)
+End
+
+/// @brief Read in all NWB datasets from the root group ('/')
+Function ReadTopLevelInfo(fileID, toplevelInfo)
+	variable fileID
+	STRUCT ToplevelInfo &toplevelInfo
+
+	variable groupID
+
+	groupID = H5_OpenGroup(fileID, "/")
+
+	toplevelInfo.session_description     = ReadTextDataSetAsString(groupID, "session_description")
+	toplevelInfo.nwb_version             = ReadTextDataSetAsString(groupID, "nwb_version")
+	toplevelInfo.identifier              = ReadTextDataSetAsString(groupID, "identifier")
+	toplevelInfo.session_start_time      = ParseISO8601TimeStamp(ReadTextDataSetAsString(groupID, "session_start_time"))
+	WAVE/T toplevelInfo.file_create_date = ReadTextDataSet(groupID, "file_create_date")
+
+	HDF5CloseGroup/Z groupID
+End
+
+/// @brief Read in all standard NWB datasets from the group '/general'
+Function ReadGeneralInfo(fileID, generalinfo)
+	variable fileID
+	STRUCT GeneralInfo &generalinfo
+
+	variable groupID
+
+	groupID = H5_OpenGroup(fileID, "/general")
+
+	generalInfo.session_id             = ReadTextDataSetAsString(groupID, "session_id")
+	generalInfo.experimenter           = ReadTextDataSetAsString(groupID, "experimenter")
+	generalInfo.institution            = ReadTextDataSetAsString(groupID, "institution")
+	generalInfo.lab                    = ReadTextDataSetAsString(groupID, "lab")
+	generalInfo.related_publications   = ReadTextDataSetAsString(groupID, "related_publications")
+	generalInfo.notes                  = ReadTextDataSetAsString(groupID, "notes")
+	generalInfo.experiment_description = ReadTextDataSetAsString(groupID, "experiment_description")
+	generalInfo.data_collection        = ReadTextDataSetAsString(groupID, "data_collection")
+	generalInfo.stimulus               = ReadTextDataSetAsString(groupID, "stimulus")
+	generalInfo.pharmacology           = ReadTextDataSetAsString(groupID, "pharmacology")
+	generalInfo.surgery                = ReadTextDataSetAsString(groupID, "surgery")
+	generalInfo.protocol               = ReadTextDataSetAsString(groupID, "protocol")
+	generalInfo.virus                  = ReadTextDataSetAsString(groupID, "virus")
+	generalInfo.slices                 = ReadTextDataSetAsString(groupID, "slices")
+
+	HDF5CloseGroup/Z groupID
+End
+
+/// @brief Read in all NWB datasets from the root group '/general/subject'
+Function ReadSubjectInfo(fileID, subjectInfo)
+	variable fileID
+	STRUCT SubjectInfo &subjectInfo
+
+	variable groupID
+
+	groupID = H5_OpenGroup(fileID, "/general/subject")
+
+	subjectInfo.subject_id  = ReadTextDataSetAsString(groupID, "subject_id")
+	subjectInfo.description = ReadTextDataSetAsString(groupID, "description")
+	subjectInfo.species     = ReadTextDataSetAsString(groupID, "species")
+	subjectInfo.genotype    = ReadTextDataSetAsString(groupID, "genotype")
+	subjectInfo.sex         = ReadTextDataSetAsString(groupID, "sex")
+	subjectInfo.age         = ReadTextDataSetAsString(groupID, "age")
+	subjectInfo.weight      = ReadTextDataSetAsString(groupID, "weight")
+
+	HDF5CloseGroup/Z groupID
 End
