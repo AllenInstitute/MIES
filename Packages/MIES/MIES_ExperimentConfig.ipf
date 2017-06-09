@@ -337,23 +337,23 @@ static Function ExpConfig_AsyncTemp(panelTitle, UserSettings)
 	PGC_SetAndActivateControl(panelTitle,"ADC", val = DA_EPHYS_PANEL_ASYNCHRONOUS)
 	FindValue /TXOP = 4 /TEXT = ASYNC_CH00 UserSettings
 	SetSetVariableString(panelTitle,"SetVar_AsyncAD_Title_00", UserSettings[V_value][%SettingValue])
-	PGC_SetAndActivateControl(panelTitle,"Check_AsyncAD_00", val = 1)
+	PGC_SetAndActivateControl(panelTitle, GetPanelControl(0, CHANNEL_TYPE_ASYNC, CHANNEL_CONTROL_CHECK), val = 1)
 	FindValue /TXOP = 4 /TEXT = TEMP_GAIN UserSettings
-	PGC_SetAndActivateControl(panelTitle,"Gain_AsyncAD_00", val = str2numSafe(UserSettings[V_value][%SettingValue]))
+	PGC_SetAndActivateControl(panelTitle, GetPanelControl(0, CHANNEL_TYPE_ASYNC, CHANNEL_CONTROL_GAIN), val = str2numSafe(UserSettings[V_value][%SettingValue]))
 	FindValue /TXOP = 4 /TEXT = ASYNC_UNIT UserSettings
-	SetSetVariableString(panelTitle,"Unit_AsyncAD_00", UserSettings[V_value][%SettingValue])
+	SetSetVariableString(panelTitle, GetPanelControl(0, CHANNEL_TYPE_ASYNC, CHANNEL_CONTROL_UNIT), UserSettings[V_value][%SettingValue])
 	FindValue /TXOP = 4 /TEXT = ASYNC_CH01 UserSettings
 	SetSetVariableString(panelTitle,"SetVar_AsyncAD_Title_01", UserSettings[V_value][%SettingValue])
-	PGC_SetAndActivateControl(panelTitle,"Check_AsyncAD_01", val = 1)
+	PGC_SetAndActivateControl(panelTitle, GetPanelControl(1, CHANNEL_TYPE_ASYNC, CHANNEL_CONTROL_CHECK), val = 1)
 	FindValue /TXOP = 4 /TEXT = TEMP_GAIN UserSettings
-	PGC_SetAndActivateControl(panelTitle,"Gain_AsyncAD_01", val = str2numSafe(UserSettings[V_value][%SettingValue]))
+	PGC_SetAndActivateControl(panelTitle, GetPanelControl(1, CHANNEL_TYPE_ASYNC, CHANNEL_CONTROL_GAIN), val = str2numSafe(UserSettings[V_value][%SettingValue]))
 	FindValue /TXOP = 4 /TEXT = ASYNC_UNIT UserSettings
-	SetSetVariableString(panelTitle,"Unit_AsyncAD_01", UserSettings[V_value][%SettingValue])
-	PGC_SetAndActivateControl(panelTitle,"check_AsyncAlarm_01", val = 1)
+	SetSetVariableString(panelTitle, GetPanelControl(1, CHANNEL_TYPE_ASYNC, CHANNEL_CONTROL_UNIT), UserSettings[V_value][%SettingValue])
+	PGC_SetAndActivateControl(panelTitle, GetPanelControl(1, CHANNEL_TYPE_ALARM, CHANNEL_CONTROL_CHECK), val = 1)
 	FindValue /TXOP = 4 /TEXT = TEMP_MAX UserSettings
-	PGC_SetAndActivateControl(panelTitle,"max_AsyncAD_01", val = str2numSafe(UserSettings[V_value][%SettingValue]))
+	PGC_SetAndActivateControl(panelTitle,GetPanelControl(1, CHANNEL_TYPE_ALARM, CHANNEL_CONTROL_ALARM_MAX), val = str2numSafe(UserSettings[V_value][%SettingValue]))
 	FindValue /TXOP = 4 /TEXT = TEMP_MIN UserSettings
-	PGC_SetAndActivateControl(panelTitle,"min_AsyncAD_01", val = str2numSafe(UserSettings[V_value][%SettingValue]))
+	PGC_SetAndActivateControl(panelTitle, GetPanelControl(1, CHANNEL_TYPE_ALARM, CHANNEL_CONTROL_ALARM_MIN), val = str2numSafe(UserSettings[V_value][%SettingValue]))
 
 End
 
