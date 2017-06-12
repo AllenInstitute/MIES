@@ -2344,11 +2344,11 @@ static Function AverageWavesFromSameYAxisIfReq(graph, traces, averagingEnabled, 
 
 		WAVE averageWave = CalculateAverage(listOfWaves, averageDataFolder, averageWaveName)
 
-		// and now convert it back to points in the average wave
-		first = ScaleToIndex(averageWave, first, ROWS)
-		last  = ScaleToIndex(averageWave, last, ROWS)
-
 		if(IsFinite(first) && IsFinite(last))
+			// and now convert it back to points in the average wave
+			first = ScaleToIndex(averageWave, first, ROWS)
+			last  = ScaleToIndex(averageWave, last, ROWS)
+
 			AppendToGraph/Q/W=$graph/L=$axis/B=$firstXAxis averageWave[first, last]/TN=$traceName
 		else
 			AppendToGraph/Q/W=$graph/L=$axis/B=$firstXAxis averageWave/TN=$traceName
