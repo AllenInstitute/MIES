@@ -142,30 +142,6 @@ Function ITC_BkrdTPFuncMD(s)
 			ActiveDeviceList[i][4] = activeChunk
 		endif
 
-		// sometimes when moving around panels in Igor the ITC18USB locks up and returns
-		// a negative value for the FIFO advance
-		if(!DeviceCanLead(panelTitle))
-			// checks to see if the hardware buffer is at max capacity
-			if(fifoPos > 0 && abs(fifoPos - ActiveDeviceList[i][5]) <= 1)
-				if(ActiveDeviceList[i][3] > NUM_CONSEC_FIFO_STILLSTANDS)
-					TFH_StopFifoDaemon(HARDWARE_ITC_DAC, deviceID)
-					HW_StopAcq(HARDWARE_ITC_DAC, deviceID, flags=HARDWARE_PREVENT_ERROR_POPUP)
-
-					HW_ITC_PrepareAcq(deviceID, flags=HARDWARE_PREVENT_ERROR_POPUP)
-					HW_StartAcq(HARDWARE_ITC_DAC, deviceID, flags=HARDWARE_ABORT_ON_ERROR)
-					printf "Device %s restarted\r", panelTitle
-					TFH_StartFIFOResetDeamon(HARDWARE_ITC_DAC, deviceID)
-					ActiveDeviceList[i][3] = 0
-				else
-				ActiveDeviceList[i][3] += 1
-				endif
-			else
-				ActiveDeviceList[i][3] = 0
-			endif
-		endif
-
-		ActiveDeviceList[i][5] = fifoPos
-
 		if(mod(s.count, TEST_PULSE_LIVE_UPDATE_INTERVAL) == 0)
 			SCOPE_UpdateGraph(panelTitle)
 		endif
@@ -232,18 +208,18 @@ static Function ITC_MakeOrUpdateTPDevLstWave(panelTitle, ITCDeviceIDGlobal, ADCh
 			ActiveDeviceList[0][0] = ITCDeviceIDGlobal
 			ActiveDeviceList[0][1] = ADChannelToMonitor
 			ActiveDeviceList[0][2] = StopCollectionPoint
-			ActiveDeviceList[0][3] = 0 // number of consecutive loop iterations with stuck FIFO
+			ActiveDeviceList[0][3] = NaN // unused
 			ActiveDeviceList[0][4] = NaN // Active chunk of the ITCDataWave
-			ActiveDeviceList[0][5] = 0 // FIFO position
+			ActiveDeviceList[0][5] = NaN // unused
 		else
 			numberOfRows = DimSize(ActiveDeviceList, ROWS)
 			Redimension/N=(numberOfRows + 1, 6) ActiveDeviceList
 			ActiveDeviceList[numberOfRows][0] = ITCDeviceIDGlobal
 			ActiveDeviceList[numberOfRows][1] = ADChannelToMonitor
 			ActiveDeviceList[numberOfRows][2] = StopCollectionPoint
-			ActiveDeviceList[numberOfRows][3] = 0
+			ActiveDeviceList[numberOfRows][3] = NaN
 			ActiveDeviceList[numberOfRows][4] = NaN
-			ActiveDeviceList[numberOfRows][5] = 0
+			ActiveDeviceList[numberOfRows][5] = NaN
 		endif
 	elseif(addOrRemoveDevice == -1) // remove a ITC device
 		Duplicate/FREE/R=[][0] ActiveDeviceList ListOfITCDeviceIDGlobal
