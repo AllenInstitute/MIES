@@ -246,9 +246,8 @@ Function HSU_UnlockDevice(panelTitle)
 	if(!cmpstr(ITCPanelTitleList, ""))
 		CloseNWBFile()
 
-		DFREF dfr = GetActITCDevicesTestPulseFolder()
-		WAVE/Z/SDFR=dfr ActiveDeviceList
-		HSU_ClearWaveIfExists(ActiveDeviceList)
+		WAVE ActiveDevicesTPMD = GetActiveDevicesTPMD()
+		ActiveDevicesTPMD = NaN
 
 		DFREF dfr = GetActiveITCDevicesFolder()
 		WAVE/Z/SDFR=dfr ActiveDeviceList

@@ -86,7 +86,7 @@ static Function ITC_BkrdTPMD(panelTitle, [triggerMode])
 	NVAR ADChannelToMonitor  = $GetADChannelToMonitor(panelTitle)
 	NVAR ITCDeviceIDGlobal = $GetITCDeviceIDGlobal(panelTitle)
 
-	ITC_MakeOrUpdateTPDevLstWave(panelTitle, ITCDeviceIDGlobal, ADChannelToMonitor, StopCollectionPoint, 1)
+	ITC_AddDevice(panelTitle)
 
 	HW_SelectDevice(HARDWARE_ITC_DAC, ITCDeviceIDGlobal, flags=HARDWARE_ABORT_ON_ERROR)
 	HW_ITC_ResetFifo(ITCDeviceIDGlobal)
@@ -106,7 +106,7 @@ Function ITC_BkrdTPFuncMD(s)
 	variable pointsCompletedInITCDataWave, activeChunk
 	string panelTitle
 
-	WAVE/SDFR=GetActITCDevicesTestPulseFolder() ActiveDeviceList
+	WAVE ActiveDeviceList = GetActiveDevicesTPMD()
 
 	if(s.wmbs.started)
 		s.wmbs.started = 0
@@ -117,10 +117,8 @@ Function ITC_BkrdTPFuncMD(s)
 
 	// works through list of active devices
 	// update parameters for a particular active device
-	// ActiveDeviceList size might change inside the loop so we can
-	// *not* precompute it.
-	for(i = 0; i < DimSize(ActiveDeviceList, ROWS); i += 1)
-		deviceID = ActiveDeviceList[i][0]
+	for(i = 0; i < GetNumberFromWaveNote(ActiveDeviceList, NOTE_INDEX); i += 1)
+		deviceID = ActiveDeviceList[i][%DeviceID]
 		panelTitle = HW_GetMainDeviceName(HARDWARE_ITC_DAC, deviceID)
 
 		WAVE ITCDataWave                  = GetITCDataWave(panelTitle)
@@ -136,10 +134,10 @@ Function ITC_BkrdTPFuncMD(s)
 
 		// Ensures that the new TP chunk isn't the same as the last one.
 		// This is required to keep the TP buffer in sync.
-		if(activeChunk != ActiveDeviceList[i][4])
+		if(activeChunk != ActiveDeviceList[i][%ActiveChunk])
 			DM_UpdateOscilloscopeData(panelTitle, TEST_PULSE_MODE, chunk=activeChunk)
 			TP_Delta(panelTitle)
-			ActiveDeviceList[i][4] = activeChunk
+			ActiveDeviceList[i][%ActiveChunk] = activeChunk
 		endif
 
 		if(mod(s.count, TEST_PULSE_LIVE_UPDATE_INTERVAL) == 0)
@@ -172,8 +170,6 @@ End
 static Function ITC_StopTPMD(panelTitle)
 	string panelTitle
 
-	DFREF dfr = GetActITCDevicesTestPulseFolder()
-	WAVE/T/SDFR=dfr ActiveDeviceList
 	NVAR ITCDeviceIDGlobal = $GetITCDeviceIDGlobal(panelTitle)
 
 	TFH_StopFifoDaemon(HARDWARE_ITC_DAC, ITCDeviceIDGlobal)
@@ -182,9 +178,9 @@ static Function ITC_StopTPMD(panelTitle)
 	if(HW_IsRunning(HARDWARE_ITC_DAC, ITCDeviceIDGlobal)) // makes sure the device being stopped is actually running
 		HW_StopAcq(HARDWARE_ITC_DAC, ITCDeviceIDGlobal)
 
-		ITC_MakeOrUpdateTPDevLstWave(panelTitle, ITCDeviceIDGlobal, 0, 0, -1)
+		ITC_RemoveDevice(panelTitle)
 		ITC_ZeroITCOnActiveChan(panelTitle) // zeroes the active DA channels - makes sure the DA isn't left in the TP up state.
-		if (dimsize(ActiveDeviceList, 0) == 0)
+		if(!ITC_HasActiveDevices())
 			CtrlNamedBackground TestPulseMD, stop
 			print "Stopping test pulse on:", panelTitle, "In ITC_StopTPMD"
 		endif
@@ -193,40 +189,55 @@ static Function ITC_StopTPMD(panelTitle)
 	endif
 End
 
-static Function ITC_MakeOrUpdateTPDevLstWave(panelTitle, ITCDeviceIDGlobal, ADChannelToMonitor, StopCollectionPoint, addOrRemoveDevice)
+static Function ITC_HasActiveDevices()
+	WAVE ActiveDevicesTPMD = GetActiveDevicesTPMD()
+
+	return GetNumberFromWaveNote(ActiveDevicesTPMD, NOTE_INDEX) > 0
+End
+
+static Function ITC_RemoveDevice(panelTitle)
 	string panelTitle
-	variable ITCDeviceIDGlobal, ADChannelToMonitor, StopCollectionPoint, addOrRemoveDevice
 
-	variable numberOfRows
+	variable idx
+	string msg
 
-	DFREF dfr = GetActITCDevicesTestPulseFolder()
-	WAVE/Z/SDFR=dfr ActiveDeviceList
+	WAVE ActiveDevicesTPMD = GetActiveDevicesTPMD()
+	NVAR ITCDeviceIDGlobal = $GetITCDeviceIDGlobal(panelTitle)
 
-	if(addOrRemoveDevice == 1) // add a ITC device
-		if(!WaveExists(ActiveDeviceList))
-			Make/N=(1, 6) dfr:ActiveDeviceList/Wave=ActiveDeviceList
-			ActiveDeviceList[0][0] = ITCDeviceIDGlobal
-			ActiveDeviceList[0][1] = ADChannelToMonitor
-			ActiveDeviceList[0][2] = StopCollectionPoint
-			ActiveDeviceList[0][3] = NaN // unused
-			ActiveDeviceList[0][4] = NaN // Active chunk of the ITCDataWave
-			ActiveDeviceList[0][5] = NaN // unused
-		else
-			numberOfRows = DimSize(ActiveDeviceList, ROWS)
-			Redimension/N=(numberOfRows + 1, 6) ActiveDeviceList
-			ActiveDeviceList[numberOfRows][0] = ITCDeviceIDGlobal
-			ActiveDeviceList[numberOfRows][1] = ADChannelToMonitor
-			ActiveDeviceList[numberOfRows][2] = StopCollectionPoint
-			ActiveDeviceList[numberOfRows][3] = NaN
-			ActiveDeviceList[numberOfRows][4] = NaN
-			ActiveDeviceList[numberOfRows][5] = NaN
-		endif
-	elseif(addOrRemoveDevice == -1) // remove a ITC device
-		Duplicate/FREE/R=[][0] ActiveDeviceList ListOfITCDeviceIDGlobal
-		FindValue/V=(ITCDeviceIDGlobal) ListOfITCDeviceIDGlobal
-		ASSERT(V_Value >= 0, "Trying to remove a non existing device")
-		DeletePoints/m=(ROWS) V_Value, 1, ActiveDeviceList
-	else
-		ASSERT(0, "Invalid addOrRemoveDevice value")
-	endif
+	idx = GetNumberFromWaveNote(ActiveDevicesTPMD, NOTE_INDEX) - 1
+	ASSERT(idx >= 0, "Invalid index")
+
+	Duplicate/FREE/R=[0, idx][0] ActiveDevicesTPMD, deviceIDs
+	FindValue/V=(ITCDeviceIDGlobal) deviceIDs
+	ASSERT(V_Value != -1, "Could not find the device")
+
+	// overwrite the to be removed device with the last one
+	ActiveDevicesTPMD[V_Value][] = ActiveDevicesTPMD[idx][q]
+	ActiveDevicesTPMD[idx][]     = NaN
+
+	SetNumberInWaveNote(ActiveDevicesTPMD, NOTE_INDEX, idx)
+
+	sprintf msg, "Remove device %s in row %d", panelTitle, V_Value
+	DEBUGPRINT(msg)
+End
+
+static Function ITC_AddDevice(panelTitle)
+	string panelTitle
+
+	variable idx
+	string msg
+
+	NVAR ITCDeviceIDGlobal = $GetITCDeviceIDGlobal(panelTitle)
+	WAVE ActiveDevicesTPMD = GetActiveDevicesTPMD()
+
+	idx = GetNumberFromWaveNote(ActiveDevicesTPMD, NOTE_INDEX)
+	EnsureLargeEnoughWave(ActiveDevicesTPMD, minimumSize=idx + 1)
+
+	ActiveDevicesTPMD[idx][%DeviceID]    = ITCDeviceIDGlobal
+	ActiveDevicesTPMD[idx][%activeChunk] = NaN
+
+	SetNumberInWaveNote(ActiveDevicesTPMD, NOTE_INDEX, idx + 1)
+
+	sprintf msg, "Adding device %s with deviceID %d in row %d", panelTitle, ITCDeviceIDGlobal, idx
+	DEBUGPRINT(msg)
 End
