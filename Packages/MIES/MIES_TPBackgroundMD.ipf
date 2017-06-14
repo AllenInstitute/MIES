@@ -82,8 +82,6 @@ static Function ITC_BkrdTPMD(panelTitle, [triggerMode])
 		triggerMode = HARDWARE_DAC_DEFAULT_TRIGGER
 	endif
 
-	NVAR stopCollectionPoint = $GetStopCollectionPoint(panelTitle)
-	NVAR ADChannelToMonitor  = $GetADChannelToMonitor(panelTitle)
 	NVAR ITCDeviceIDGlobal = $GetITCDeviceIDGlobal(panelTitle)
 
 	ITC_AddDevice(panelTitle)
@@ -121,9 +119,7 @@ Function ITC_BkrdTPFuncMD(s)
 		deviceID = ActiveDeviceList[i][%DeviceID]
 		panelTitle = HW_GetMainDeviceName(HARDWARE_ITC_DAC, deviceID)
 
-		WAVE ITCDataWave                  = GetITCDataWave(panelTitle)
-		NVAR stopCollectionPoint          = $GetStopCollectionPoint(panelTitle)
-		NVAR ADChannelToMonitor           = $GetADChannelToMonitor(panelTitle)
+		WAVE ITCDataWave = GetITCDataWave(panelTitle)
 
 		NVAR tgID = $GetThreadGroupIDFIFO(panelTitle)
 		fifoPos = TS_GetNewestFromThreadQueue(tgID, "fifoPos")
