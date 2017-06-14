@@ -102,6 +102,11 @@ static Function IH_Cleanup()
 
 	variable error, debuggerState
 
+	// don't try cleaning up if the user never used MIES
+	if(!DataFolderExists(GetMiesPathAsString()))
+		return NaN
+	endif
+
 	debuggerState = DisableDebugger()
 
 	try
