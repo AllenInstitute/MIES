@@ -127,7 +127,7 @@ static Function IgorBeforeQuitHook(unsavedExp, unsavedNotebooks, unsavedProcedur
 	IH_Cleanup()
 
 	// save the experiment silently if it was saved before
-	if(unsavedExp == 0)
+	if(unsavedExp == 0 && cmpstr(UNTITLED_EXPERIMENT, GetExperimentName()))
 		SaveExperiment
 	endif
 
