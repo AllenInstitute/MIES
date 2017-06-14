@@ -189,6 +189,19 @@ Function DM_UpdateOscilloscopeData(panelTitle, dataAcqOrTP, [chunk, fifoPos])
 		last   = first + length - 1
 		ASSERT(first >= 0 && last < DimSize(ITCDataWave, ROWS) && first < last, "Invalid wave subrange")
 
+#ifdef DEBUGGING_ENABLED
+		if(DP_DebuggingEnabledForFile(GetFile(FunctionPath(""))))
+
+		ITCDataWave[0][0] += 0
+		if(!WindowExists("ITCDataWaveTPMD"))
+			Display/N=ITCDataWaveTPMD ITCDataWave[][1]
+		endif
+
+		Cursor/W=ITCDataWaveTPMD/H=2/P A ITCDataWave first
+		Cursor/W=ITCDataWaveTPMD/H=2/P B ITCDataWave last
+		endif
+#endif
+
 		Multithread OscilloscopeData[][startOfADColumns, startOfADColumns + numEntries - 1] = ITCDataWave[first + p][q] / gain[q - startOfADColumns]
 
 		if(GetDA_EphysGuiStateNum(panelTitle)[0][%check_settings_show_power])
