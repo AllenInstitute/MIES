@@ -100,8 +100,9 @@ End
 
 static Function IH_Cleanup()
 
-	variable error
-	variable debuggerState = DisableDebugger()
+	variable error, debuggerState
+
+	debuggerState = DisableDebugger()
 
 	try
 		IH_UnlockAllDevicesWrapper(); AbortOnRTE
