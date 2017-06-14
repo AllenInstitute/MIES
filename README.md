@@ -57,8 +57,10 @@ packages both for 32bit(x86) and 64bit(x64) in English.
 ### Analysis Browser
 * Quit Igor Pro
 * Create the following shortcuts in "C:\Users\$username\Documents\WaveMetrics\Igor Pro 7 User Files"
-  * In "Igor Procedures" a shortcut pointing to
+  * In "User Procedures" a shortcut pointing to
     * "Packages\HDF-IP7"
+    * "Packages\IPNWB"
+  * In "Igor Procedures" a shortcut pointing to
     * "Packages\MIES\MIES_AnalysisBrowser.ipf"
   * In "Igor Extensions (64-bit)" a shortcut pointing to
     * "XOPs-IP7-64bit\HDF5-64.xop"
