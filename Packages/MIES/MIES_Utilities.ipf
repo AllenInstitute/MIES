@@ -1776,14 +1776,14 @@ Function/S GetFile(filePathWithSuffix, [sep])
 End
 
 /// @brief Set the given bit mask in var
-Function SetBit(var, bit)
+threadsafe Function SetBit(var, bit)
 	variable var, bit
 
 	return var | bit
 End
 
 /// @brief Clear the given bit mask in var
-Function ClearBit(var, bit)
+threadsafe Function ClearBit(var, bit)
 	variable var, bit
 
 	return var & ~bit
