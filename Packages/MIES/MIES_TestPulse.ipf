@@ -599,13 +599,16 @@ Function TP_UpdateHoldCmdInTPStorage(panelTitle, headStage)
 		return NaN
 	endif
 
+	col = TP_GetTPResultsColOfHS(panelTitle, headStage)
+
+	if(col < 0) // headstage is not active
+		return NaN
+	endif
+
 	clampMode = DAP_MIESHeadstageMode(panelTitle, headStage)
 
 	WAVE TPStorage = GetTPStorage(panelTitle)
 	count = GetNumberFromWaveNote(TPStorage, TP_CYLCE_COUNT_KEY)
-
-	col = TP_GetTPResultsColOfHS(panelTitle, headStage)
-	ASSERT(col >= 0, "Invalid TP column")
 
 	EnsureLargeEnoughWave(TPStorage, minimumSize=count, dimension=ROWS, initialValue=NaN)
 
