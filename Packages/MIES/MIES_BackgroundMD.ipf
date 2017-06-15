@@ -163,8 +163,8 @@ Function ITC_FIFOMonitorMD(s)
 		NVAR tgID = $GetThreadGroupIDFIFO(panelTitle)
 		fifoPos = TS_GetNewestFromThreadQueue(tgID, "fifoPos")
 
-		DM_UpdateOscilloscopeData(panelTitle, DATA_ACQUISITION_MODE, fifoPos=fifoPos)
-		DM_CallAnalysisFunctions(panelTitle, MID_SWEEP_EVENT)
+		SCOPE_UpdateOscilloscopeData(panelTitle, DATA_ACQUISITION_MODE, fifoPos=fifoPos)
+		AFM_CallAnalysisFunctions(panelTitle, MID_SWEEP_EVENT)
 
 		if(TS_ThreadGroupFinished(tgID))
 			print "stopped data acq on " + panelTitle, "device ID global = ", deviceID
@@ -191,7 +191,7 @@ static Function ITC_StopDataAcqMD(panelTitle, ITCDeviceIDGlobal)
 	HW_SelectDevice(HARDWARE_ITC_DAC, ITCDeviceIDGlobal, flags=HARDWARE_ABORT_ON_ERROR)
 	HW_StopAcq(HARDWARE_ITC_DAC, ITCDeviceIDGlobal, prepareForDAQ=1)
 
-	DM_SaveAndScaleITCData(panelTitle)
+	SWS_SaveAndScaleITCData(panelTitle)
 	if(RA_IsFirstSweep(panelTitle))
 		if(GetCheckboxState(panelTitle, "Check_DataAcq1_RepeatAcq"))
 			RA_YokedRAStartMD(panelTitle)
@@ -263,7 +263,7 @@ static Function ITC_StopOngoingDAQMDHelper(panelTitle)
 		ITC_StopITCDeviceTimer(panelTitle)
 
 		if(!discardData)
-			DM_SaveAndScaleITCData(panelTitle)
+			SWS_SaveAndScaleITCData(panelTitle)
 		endif
 
 		needsOTCAfterDAQ = needsOTCAfterDAQ | 1

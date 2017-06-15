@@ -420,3 +420,88 @@ Function SCOPE_SetADAxisLabel(panelTitle,activeHeadStage)
 		endfor
 	endif
 End
+
+/// @brief Prepares a subset/copy of `ITCDataWave` for displaying it in the
+/// oscilloscope panel
+///
+/// @param panelTitle  panel title
+/// @param dataAcqOrTP One of #DATA_ACQUISITION_MODE or #TEST_PULSE_MODE
+/// @param chunk       Only for #TEST_PULSE_MODE and multi device mode; Selects
+///                    the testpulse to extract
+/// @param fifoPos     Position of the fifo used by the ITC XOP to keep track of
+///                    the position which will be written next
+Function SCOPE_UpdateOscilloscopeData(panelTitle, dataAcqOrTP, [chunk, fifoPos])
+	string panelTitle
+	variable dataAcqOrTP, chunk, fifoPos
+
+	variable length, first, last
+	variable startOfADColumns, numEntries
+
+	WAVE OscilloscopeData = GetOscilloscopeWave(panelTitle)
+	WAVE ITCDataWave      = GetITCDataWave(panelTitle)
+	WAVE ITCChanConfigWave = GetITCChanConfigWave(panelTitle)
+	WAVE ADCs = GetADCListFromConfig(ITCChanConfigWave)
+	WAVE DA_EphysGuiState = GetDA_EphysGuiStateNum(panelTitle)
+	startOfADColumns = DimSize(GetDACListFromConfig(ITCChanConfigWave), ROWS)
+	numEntries = DimSize(ADCs, ROWS)
+
+	//do the AD scaling here manually so that is can be as fast as possible
+	Make/FREE/N=(numEntries) gain = DA_EphysGuiState[ADCs[p]][%ADGain] * HARDWARE_ITC_BITS_PER_VOLT
+
+	if(dataAcqOrTP == TEST_PULSE_MODE)
+		if(ParamIsDefault(chunk))
+			chunk = 0
+		endif
+
+		ASSERT(ParamIsDefault(fifoPos), "optional parameter fifoPos is not possible with TEST_PULSE_MODE")
+
+		length = TP_GetTestPulseLengthInPoints(panelTitle, REAL_SAMPLING_INTERVAL_TYPE)
+		first  = chunk * length
+		last   = first + length - 1
+		ASSERT(first >= 0 && last < DimSize(ITCDataWave, ROWS) && first < last, "Invalid wave subrange")
+
+#ifdef DEBUGGING_ENABLED
+		if(DP_DebuggingEnabledForFile(GetFile(FunctionPath(""))))
+
+		ITCDataWave[0][0] += 0
+		if(!WindowExists("ITCDataWaveTPMD"))
+			Display/N=ITCDataWaveTPMD ITCDataWave[][1]
+		endif
+
+		Cursor/W=ITCDataWaveTPMD/H=2/P A ITCDataWave first
+		Cursor/W=ITCDataWaveTPMD/H=2/P B ITCDataWave last
+		endif
+#endif
+
+		Multithread OscilloscopeData[][startOfADColumns, startOfADColumns + numEntries - 1] = ITCDataWave[first + p][q] / gain[q - startOfADColumns]
+
+		if(GetDA_EphysGuiStateNum(panelTitle)[0][%check_settings_show_power])
+			WAVE powerSpectrum = GetTPPowerSpectrumWave(panelTitle)
+			// FFT knows how to transform units without prefix so transform them it temporarly
+			SetScale/P x, DimOffset(ITCDataWave, ROWS) / 1000, DimDelta(ITCDataWave, ROWS) / 1000, "s", ITCDataWave
+			FFT/OUT=4/DEST=powerSpectrum/COLS ITCDataWave
+			SetScale/P x, DimOffset(ITCDataWave, ROWS) * 1000, DimDelta(ITCDataWave, ROWS) * 1000, "ms", ITCDataWave
+		endif
+
+	elseif(dataAcqOrTP == DATA_ACQUISITION_MODE)
+		ASSERT(ParamIsDefault(chunk), "optional parameter chunk is not possible with DATA_ACQUISITION_MODE")
+		ASSERT(EqualWaves(ITCDataWave, OscilloscopeData, 512), "ITCDataWave and OscilloscopeData have differing dimensions")
+
+		ASSERT(!ParamIsDefault(fifoPos), "optional parameter fifoPos missing")
+
+		if(fifoPos == 0)
+			// nothing to do
+			return NaN
+		elseif(fifoPos < 0)
+			printf "fifoPos was clipped to zero, old value %g\r", fifoPos
+			return NaN
+		elseif(fifoPos >= DimSize(OscilloscopeData, ROWS))
+			printf "fifoPos was clipped to row size of OscilloscopeData, old value %g\r", fifoPos
+			fifoPos = DimSize(OscilloscopeData, ROWS) - 1
+		endif
+
+		Multithread OscilloscopeData[0, fifoPos - 1][startOfADColumns, startOfADColumns + numEntries - 1] = ITCDataWave[p][q] / gain[q - startOfADColumns]
+	else
+		ASSERT(0, "Invalid dataAcqOrTP value")
+	endif
+End

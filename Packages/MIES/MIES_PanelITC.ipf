@@ -4473,7 +4473,7 @@ Function DAP_OneTimeCallBeforeDAQ(panelTitle, runMode)
 		IDX_StoreStartFinishForIndexing(panelTitle)
 	endif
 
-	DM_DeleteDataWaves(panelTitle)
+	SWS_DeleteDataWaves(panelTitle)
 
 	// disable the clamp mode checkboxes of all active headstages
 	WAVE statusHS = DC_ControlStatusWave(panelTitle, CHANNEL_TYPE_HEADSTAGE)
@@ -4529,8 +4529,8 @@ Function DAP_OneTimeCallAfterDAQ(panelTitle)
 
 	DAP_ResetGUIAfterDAQ(panelTitle)
 
-	DM_CallAnalysisFunctions(panelTitle, POST_SET_EVENT)
-	DM_CallAnalysisFunctions(panelTitle, POST_DAQ_EVENT)
+	AFM_CallAnalysisFunctions(panelTitle, POST_SET_EVENT)
+	AFM_CallAnalysisFunctions(panelTitle, POST_DAQ_EVENT)
 
 	NVAR dataAcqRunMode = $GetDataAcqRunMode(panelTitle)
 	dataAcqRunMode = DAQ_NOT_RUNNING
@@ -5201,7 +5201,7 @@ Function DAP_CheckSettings(panelTitle, mode)
 		return 1
 	endif
 
-	if(mode == DATA_ACQUISITION_MODE && DM_CallAnalysisFunctions(panelTitle, PRE_DAQ_EVENT))
+	if(mode == DATA_ACQUISITION_MODE && AFM_CallAnalysisFunctions(panelTitle, PRE_DAQ_EVENT))
 		printf "%s: Pre DAQ analysis function requested an abort\r", panelTitle
 		ControlWindowToFront()
 		return 1
@@ -6315,7 +6315,7 @@ Function DAP_StopOngoingDataAcquisition(panelTitle)
 		ITC_ZeroITCOnActiveChan(panelTitle)
 
 		if(!discardData)
-			DM_SaveAndScaleITCData(panelTitle)
+			SWS_SaveAndScaleITCData(panelTitle)
 		endif
 
 		needsOTCAfterDAQ = needsOTCAfterDAQ | 1

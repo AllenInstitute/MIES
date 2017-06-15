@@ -28,13 +28,13 @@ Function ITC_DataAcq(panelTitle)
 
 	do
 		DoXOPIdle
-		DM_UpdateOscilloscopeData(panelTitle, DATA_ACQUISITION_MODE, fifoPos=fifoPos)
+		SCOPE_UpdateOscilloscopeData(panelTitle, DATA_ACQUISITION_MODE, fifoPos=fifoPos)
 		DoUpdate/W=$oscilloscopeSubwindow
 	while(HW_ITC_MoreData(ITCDeviceIDGlobal, fifoPos=fifoPos))
 
 	HW_StopAcq(HARDWARE_ITC_DAC, ITCDeviceIDGlobal, prepareForDAQ=1)
 
-	DM_SaveAndScaleITCData(panelTitle)
+	SWS_SaveAndScaleITCData(panelTitle)
 End
 
 Function ITC_BkrdDataAcq(panelTitle)
@@ -62,7 +62,7 @@ Function ITC_StopDataAcq()
 	HW_SelectDevice(HARDWARE_ITC_DAC, ITCDeviceIDGlobal)
 	HW_StopAcq(HARDWARE_ITC_DAC, ITCDeviceIDGlobal, prepareForDAQ=1)
 
-	DM_SaveAndScaleITCData(panelTitleG)
+	SWS_SaveAndScaleITCData(panelTitleG)
 
 	if(RA_IsFirstSweep(panelTitleG))
 		if(GetCheckboxState(panelTitleG, "Check_DataAcq1_RepeatAcq"))
@@ -94,9 +94,9 @@ Function ITC_FIFOMonitor(s)
 
 	moreData = HW_ITC_MoreData(ITCDeviceIDGlobal, fifoPos=fifoPos)
 
-	DM_UpdateOscilloscopeData(panelTitleG, DATA_ACQUISITION_MODE, fifoPos=fifoPos)
+	SCOPE_UpdateOscilloscopeData(panelTitleG, DATA_ACQUISITION_MODE, fifoPos=fifoPos)
 
-	DM_CallAnalysisFunctions(panelTitleG, MID_SWEEP_EVENT)
+	AFM_CallAnalysisFunctions(panelTitleG, MID_SWEEP_EVENT)
 	AM_analysisMasterMidSweep(panelTitleG)
 
 	if(!moreData)
@@ -198,7 +198,7 @@ Function ITC_TestPulseFunc(s)
 	while (HW_ITC_MoreData(ITCDeviceIDGlobal))
 
 	HW_StopAcq(HARDWARE_ITC_DAC, ITCDeviceIDGlobal, prepareForDAQ=1)
-	DM_UpdateOscilloscopeData(panelTitle, TEST_PULSE_MODE)
+	SCOPE_UpdateOscilloscopeData(panelTitle, TEST_PULSE_MODE)
 	TP_Delta(panelTitle)
 
 	if(mod(s.count, TEST_PULSE_LIVE_UPDATE_INTERVAL) == 0)
@@ -369,7 +369,7 @@ Function ITC_StartTestPulse(panelTitle)
 		while (HW_ITC_MoreData(ITCDeviceIDGlobal))
 
 		HW_ITC_StopAcq(prepareForDAQ=1)
-		DM_UpdateOscilloscopeData(panelTitle, TEST_PULSE_MODE)
+		SCOPE_UpdateOscilloscopeData(panelTitle, TEST_PULSE_MODE)
 		TP_Delta(panelTitle)
 		DoUpdate/W=$oscilloscopeSubwindow
 

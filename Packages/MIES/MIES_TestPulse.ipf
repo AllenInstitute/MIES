@@ -522,7 +522,7 @@ Function TP_Setup(panelTitle, runMode)
 
 	variable multiDevice
 
-	DM_DeleteDataWaves(panelTitle)
+	SWS_DeleteDataWaves(panelTitle)
 
 	multiDevice = (runMode & TEST_PULSE_BG_MULTI_DEVICE)
 
