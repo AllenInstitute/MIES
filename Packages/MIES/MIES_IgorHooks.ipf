@@ -98,6 +98,10 @@ static Function BeforeExperimentSaveHook(rN, fileName, path, type, creator, kind
 	NWB_Flush()
 End
 
+/// @brief Cleanup before closing or starting a new experiment
+///
+/// Takes care of unlocking the hardware, removing any data which is stale on
+/// reload anyway (amplifier connection details) and removes temporary waves.
 static Function IH_Cleanup()
 
 	variable error, debuggerState
