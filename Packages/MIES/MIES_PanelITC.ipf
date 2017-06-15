@@ -7671,6 +7671,10 @@ static Function DAP_UnlockDevice(panelTitle)
 	DAP_UpdateDataFolderDisplay(panelTitleUnlocked,locked)
 
 	NVAR/SDFR=GetDevicePath(panelTitle) ITCDeviceIDGlobal
+
+	// shutdown the FIFO thread now in case it is still running (which should never be the case)
+	TFH_StopFIFODaemon(HARDWARE_ITC_DAC, ITCDeviceIDGlobal)
+
 	flags = HARDWARE_PREVENT_ERROR_POPUP | HARDWARE_PREVENT_ERROR_MESSAGE
 	HW_SelectDevice(HARDWARE_ITC_DAC, ITCDeviceIDGlobal, flags=flags)
 	HW_CloseDevice(HARDWARE_ITC_DAC, ITCDeviceIDGlobal, flags=flags)
