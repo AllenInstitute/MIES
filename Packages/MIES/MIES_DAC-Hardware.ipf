@@ -1075,7 +1075,7 @@ Function/Wave HW_WAVE_GETTER_PROTOTYPE(str)
 	string str
 end
 
-Function/WAVE HW_ITC_TransposeAndToDouble(wv)
+threadsafe Function/WAVE HW_ITC_TransposeAndToDouble(wv)
 	WAVE wv
 
 	MatrixOp/FREE wv_t = fp64(wv^t)
