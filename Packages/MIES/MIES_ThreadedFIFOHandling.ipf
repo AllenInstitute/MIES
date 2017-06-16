@@ -113,12 +113,12 @@ threadsafe static Function TFH_FifoLoop(config_t, deviceID, stopCollectionPoint,
 	WAVE config_t
 	variable deviceID, stopCollectionPoint, ADChannelToMonitor, dataLength, mode
 
-	variable fifoPos, border
+	variable fifoPos, border, flags
 
 	variable enableDebug = 0 // = 1 for debugging
 	string msg
 
-	ITCSetGlobals2/Z/D=(enableDebug)
+	HW_ITC_DebugMode_TS(enableDebug, flags = flags)
 
 	switch(mode)
 		case TFH_RESET_FIFO:
@@ -131,6 +131,8 @@ threadsafe static Function TFH_FifoLoop(config_t, deviceID, stopCollectionPoint,
 			ASSERT_TS(0, "Invalid mode")
 			break
 	endswitch
+
+	flags = HARDWARE_ABORT_ON_ERROR | HARDWARE_PREVENT_ERROR_POPUP
 
 	do
 		DFREF dfr = ThreadGroupGetDFR(0, TIMEOUT_IN_MS)
@@ -167,9 +169,7 @@ threadsafe static Function TFH_FifoLoop(config_t, deviceID, stopCollectionPoint,
 					break
 				case TFH_STOP_ACQ:
 
-					do
-						ITCStopAcq2/DEV=(deviceID)
-					while(V_ITCXOPError == SLOT_LOCKED_TO_OTHER_THREAD && V_ITCError == 0)
+					HW_ITC_StopAcq_TS(deviceID, flags = flags)
 
 					return 0
 					break
