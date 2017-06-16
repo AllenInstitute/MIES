@@ -89,7 +89,7 @@ static Function ITC_BkrdTPMD(panelTitle, [triggerMode])
 	HW_SelectDevice(HARDWARE_ITC_DAC, ITCDeviceIDGlobal, flags=HARDWARE_ABORT_ON_ERROR)
 	HW_ITC_ResetFifo(ITCDeviceIDGlobal)
 	HW_StartAcq(HARDWARE_ITC_DAC, ITCDeviceIDGlobal, triggerMode=triggerMode, flags=HARDWARE_ABORT_ON_ERROR)
-	TFH_StartFIFOResetDeamon(HARDWARE_ITC_DAC, ITCDeviceIDGlobal)
+	TFH_StartFIFOResetDeamon(HARDWARE_ITC_DAC, ITCDeviceIDGlobal, triggerMode)
 
 	if(!IsBackgroundTaskRunning("TestPulseMD"))
 		CtrlNamedBackground TestPulseMD, period = 1, proc = ITC_BkrdTPFuncMD
@@ -100,7 +100,7 @@ End
 Function ITC_BkrdTPFuncMD(s)
 	STRUCT BackgroundStruct &s
 
-	variable i, deviceID, fifoPos
+	variable i, deviceID
 	variable pointsCompletedInITCDataWave, activeChunk
 	string panelTitle
 
@@ -122,8 +122,17 @@ Function ITC_BkrdTPFuncMD(s)
 		WAVE ITCDataWave = GetITCDataWave(panelTitle)
 
 		NVAR tgID = $GetThreadGroupIDFIFO(panelTitle)
-		fifoPos = TS_GetNewestFromThreadQueue(tgID, "fifoPos")
-		pointsCompletedInITCDataWave = mod(fifoPos, DimSize(ITCDataWave, ROWS))
+		WAVE result = TS_GetNewestFromThreadQueueMult(tgID, {"fifoPos", "startSequence"})
+
+		if(IsFinite(result[%startSequence]))
+			ARDStartSequence()
+		endif
+
+		if(!IsFinite(result[%fifoPos]))
+			continue
+		endif
+
+		pointsCompletedInITCDataWave = mod(result[%fifoPos], DimSize(ITCDataWave, ROWS))
 
 		// don't extract the last chunk for plotting
 		activeChunk = max(0, floor(pointsCompletedInITCDataWave / TP_GetTestPulseLengthInPoints(panelTitle, REAL_SAMPLING_INTERVAL_TYPE)) - 1)
