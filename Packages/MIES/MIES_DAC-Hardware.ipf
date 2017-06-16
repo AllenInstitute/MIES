@@ -700,7 +700,7 @@ End
 /// @brief Return the error message for the given ITC XOP2 error code
 ///
 /// @param errCode one of @ref ITCXOP2Errors
-static Function/S HW_ITC_GetXOPErrorMessage(errCode)
+threadsafe static Function/S HW_ITC_GetXOPErrorMessage(errCode)
 	variable errCode
 
 	switch(errCode)
