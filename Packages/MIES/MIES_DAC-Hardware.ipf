@@ -1257,16 +1257,18 @@ Function HW_ITC_PrepareAcq(deviceID, [data, dataFunc, config, configFunc, fifoPo
 	HW_ITC_HandleReturnValues(flags, V_ITCError, V_ITCXOPError)
 
 #ifdef DEBUGGING_ENABLED
-	do
-		ITCGetAllChannelsConfig2/O/Z=(flags & HARDWARE_PREVENT_ERROR_POPUP) config_t, settings
-	while(V_ITCXOPError == SLOT_LOCKED_TO_OTHER_THREAD && V_ITCError == 0)
+	if(DP_DebuggingEnabledForFile(GetFile(FunctionPath(""))))
+		do
+			ITCGetAllChannelsConfig2/O/Z=(flags & HARDWARE_PREVENT_ERROR_POPUP) config_t, settings
+		while(V_ITCXOPError == SLOT_LOCKED_TO_OTHER_THREAD && V_ITCError == 0)
 
-	HW_ITC_HandleReturnValues(flags, V_ITCError, V_ITCXOPError)
+		HW_ITC_HandleReturnValues(flags, V_ITCError, V_ITCXOPError)
 
-	printf "xop: %d with alignment %d\r", settings[%FIFOPointer][0], GetAlignment(settings[%FIFOPointer][0])
-	printf "xop: %d with alignment %d\r", settings[%FIFOPointer][1], GetAlignment(settings[%FIFOPointer][1])
-	printf "diff = %d\r", settings[%FIFOPointer][1] - settings[%FIFOPointer][0]
-	printf "numRows = %d\r", DimSize(data, ROWS)
+		printf "xop: %d with alignment %d\r", settings[%FIFOPointer][0], GetAlignment(settings[%FIFOPointer][0])
+		printf "xop: %d with alignment %d\r", settings[%FIFOPointer][1], GetAlignment(settings[%FIFOPointer][1])
+		printf "diff = %d\r", settings[%FIFOPointer][1] - settings[%FIFOPointer][0]
+		printf "numRows = %d\r", DimSize(data, ROWS)
+	endif
 #endif // DEBUGGING_ENABLED
 
 	WAVE fifoPos_t = HW_ITC_TransposeAndToDouble(fifoPos)
