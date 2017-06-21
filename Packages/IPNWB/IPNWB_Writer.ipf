@@ -92,6 +92,8 @@ Function CreateCommonGroups(locationID, [toplevelInfo, generalInfo, subjectInfo]
 
 	H5_CreateGroupsRecursively(locationID, "/general/stimsets")
 	MarkAsCustomEntry(locationID, "/general/stimsets")
+
+	AddModificationTimeEntry(locationID)
 End
 
 /// @brief Create the HDF5 group for intracellular ephys
