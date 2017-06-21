@@ -2,13 +2,25 @@ Igor Pro module for reading and writing NeurodataWithoutBorder files
 --------------------------------------------------------------------
 
 This modules allows to easily write and read valid `NeurodataWithoutBorder <https://nwb.org>`__ style HDF5
-files. It encapsulates most parts of the specification in easy to use functions.
+files. It encapsulates the most commonly used parts of the specification in easy to use functions.
 
-Main features:
+Main features
+^^^^^^^^^^^^^
 
-- Read and write NWB compliant files (specification version 1.0.5)
-- Compatible with Igor Pro 7 on Windows/MacOSX
-- Requires the stock HDF5 XOP only
+* Read and write NWB compliant files (specification version 1.0.5)
+* Compatible with Igor Pro 7 or later on Windows/MacOSX
+* Requires the stock HDF5 XOP only
+
+Installation
+^^^^^^^^^^^^
+
+* Quit Igor Pro
+* Install the HDF5 XOP and the HDF5 Browser as described in ``DisplayHelpTopic "Installing The HDF5 Package"``
+* Create the following shortcut in ``C:\Users\$username\Documents\WaveMetrics\Igor Pro 7 User Files``
+
+  * In "Igor Procedures" a shortcut pointing to the basefolder of the IPNWB package
+
+* Restart Igor Pro
 
 Example of writing into NWB
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -24,10 +36,6 @@ Example of writing into NWB
       // Open a dialog for selecting an HDF5 file name
       HDF5CreateFile fileID as ""
 
-      // If you open an existing NWB file to append to, use the following command
-      // to add an modification time entry
-      // IPNWB#AddModificationTimeEntry(locationID)
-
       // fill gi/ti/si with appropriate data for your lab and experiment
       // if you don't care about that info just pass the initialized structures
       STRUCT IPNWB#GeneralInfo gi
@@ -41,16 +49,21 @@ Example of writing into NWB
 
       IPNWB#CreateCommonGroups(fileID, toplevelInfo=ti, generalInfo=gi, subjectInfo=si)
 
+      // If you open an existing NWB file to append to, use the following command
+      // to add an modification time entry, is implicitly called in IPNWB#CreateCommonGroups
+      // IPNWB#AddModificationTimeEntry(locationID)
+
       // 1D waves from your measurement program
       // we use fake data here
-      Make/FREE AD = (sin(p) + cos(p/10)) * enoise(0.1)
+      Make/FREE/N=1000 AD = (sin(p) + cos(p/10)) * enoise(0.1)
+      SetScale/P x, 0, 5e-6, "s"
 
       // write AD data to the file
       STRUCT IPNWB#WriteChannelParams params
       IPNWB#InitWriteChannelParams(params)
 
       params.device          = "My Hardware"
-      params.clampMode       = 0 // 0 for V_CLAMP_MODE 1 for I_CLAMP_MODE
+      params.clampMode       = 0 // 0 for V_CLAMP_MODE, 1 for I_CLAMP_MODE
       params.channelSuffix   = ""
       params.sweep           = 123
       params.electrodeNumber = 1
@@ -68,7 +81,7 @@ Example of writing into NWB
       // calculate the timepoint of the first wave point relative to the session_start_time
       params.startingTime  = NumberByKeY("MODTIME", WaveInfo(AD, 0)) - date2secs(-1, -1, -1) // last time the wave was modified (UTC)
       params.startingTime -= ti.session_start_time // relative to the start of the session
-      params.startingTime -= DimSize(AD, 0) / 1000 // we want the timestamp of the beginning of the measurement, assumes "ms" as wave units
+      params.startingTime -= IndexToScale(AD, DimSize(AD, 0) - 1, 0) // we want the timestamp of the beginning of the measurement
 
       IPNWB#AddDevice(fileID, "Device name", "My hardware specs")
 
@@ -86,10 +99,10 @@ Example of writing into NWB
       // ...
 
       // close file
-      HDF5CloseFile fileID
+      IPNWB#H5_CloseFile(fileID)
     End
 
-Example of reading into NWB
+Example of reading from NWB
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 .. code-block:: igorpro
@@ -195,7 +208,7 @@ NWB file format description
   the data into Igor Pro back.
 - For AD/DA/TTL groups the naming scheme is
   data\_\ ``XXXXX``\ \_[AD/DA/TTL]\ ``suffix`` where ``XXXXX`` is a
-  running number incremented for every sweep ``suffix`` the channel number
+  running number incremented for every sweep and ``suffix`` the channel number
   (TTL channels: plus TTL line).
 - For I=0 clamp mode neither the DA data nor the stimset is saved.
 - Some entries in the following tree are specific to MIES, these are marked
