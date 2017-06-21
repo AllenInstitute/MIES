@@ -90,7 +90,7 @@ Function CreateCommonGroups(locationID, [toplevelInfo, generalInfo, subjectInfo]
 	H5_CreateGroupsRecursively(locationID, "/processing")
 	H5_CreateGroupsRecursively(locationID, "/analysis")
 
-	IPNWB#H5_CreateGroupsRecursively(locationID, "/general/stimsets")
+	H5_CreateGroupsRecursively(locationID, "/general/stimsets")
 	MarkAsCustomEntry(locationID, "/general/stimsets")
 End
 
