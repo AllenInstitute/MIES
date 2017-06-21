@@ -2,7 +2,7 @@
 #pragma rtGlobals=3		// Use modern global access method and strict wave access.
 #pragma rtFunctionErrors=1
 #pragma IndependentModule=IPNWB
-#pragma version=0.17
+#pragma version=0.18
 
 // This file is part of the `IPNWB` project and licensed under BSD-3-Clause.
 
