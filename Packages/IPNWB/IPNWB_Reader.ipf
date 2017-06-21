@@ -3,6 +3,8 @@
 #pragma IndependentModule=IPNWB
 #pragma version=0.17
 
+// This file is part of the `IPNWB` project and licensed under BSD-3-Clause.
+
 static StrConstant PATH_STIMSETS = "/general/stimsets"
 
 /// @file IPNWB_Reader.ipf

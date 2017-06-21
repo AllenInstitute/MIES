@@ -1,3 +1,5 @@
+.. This file is part of the `IPNWB` project and licensed under BSD-3-Clause.
+
 Igor Pro module for reading and writing NeurodataWithoutBorder files
 --------------------------------------------------------------------
 

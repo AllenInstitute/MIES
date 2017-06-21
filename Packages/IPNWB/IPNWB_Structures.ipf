@@ -4,6 +4,8 @@
 #pragma IndependentModule=IPNWB
 #pragma version=0.17
 
+// This file is part of the `IPNWB` project and licensed under BSD-3-Clause.
+
 /// @brief Helper structure for WriteSingleChannel()
 Structure WriteChannelParams
 	string device            ///< name of the measure device, e.g. "ITC18USB_Dev_0"

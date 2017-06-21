@@ -3,6 +3,8 @@
 #pragma rtFunctionErrors=1
 #pragma IgorVersion=7.0
 
+// This file is part of the `IPNWB` project and licensed under BSD-3-Clause.
+
 /// @file IPNWB_Include.ipf
 /// @brief Main include
 

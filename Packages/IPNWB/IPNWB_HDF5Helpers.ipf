@@ -4,6 +4,8 @@
 #pragma IndependentModule=IPNWB
 #pragma version=0.17
 
+// This file is part of the `IPNWB` project and licensed under BSD-3-Clause.
+
 static Constant H5_ATTRIBUTE_SIZE_LIMIT = 60e3
 static Constant H5_CHUNK_SIZE           = 8192 // 2^13, determined by trial-and-error
 
