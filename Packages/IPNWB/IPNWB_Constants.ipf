@@ -4,6 +4,8 @@
 #pragma IndependentModule=IPNWB
 #pragma version=0.17
 
+// This file is part of the `IPNWB` project and licensed under BSD-3-Clause.
+
 /// @file IPNWB_Constants.ipf
 /// @brief Constants
 
@@ -27,10 +29,10 @@ Constant IGOR_TYPE_STRUCT_PARAMETER = 0x200
 /// Convenience definition to nicify expressions like DimSize(wv, ROWS)
 /// easier to read than DimSize(wv, 0).
 /// @{
-Constant ROWS                = 0
-Constant COLS                = 1
-Constant LAYERS              = 2
-Constant CHUNKS              = 3
+Constant ROWS   = 0
+Constant COLS   = 1
+Constant LAYERS = 2
+Constant CHUNKS = 3
 /// @}
 
 StrConstant CHANNEL_NAMES = "AD;DA;;TTL"
