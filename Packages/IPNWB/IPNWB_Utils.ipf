@@ -400,24 +400,34 @@ Function/S GetFile(filePathWithSuffix, [sep])
 	return ParseFilePath(0, filePathWithSuffix, sep, 1, 0)
 End
 
-/// @brief Parse a timestamp created by GetISO8601TimeStamp() and returns the number
-/// of seconds since Igor Pro epoch (1/1/1904) in UTC time zone
+/// @brief Parse a ISO8601 timestamp, e.g. created by GetISO8601TimeStamp(), and returns the number
+/// of seconds, including fractional parts, since Igor Pro epoch (1/1/1904) in UTC time zone
+///
+/// Accepts also the following specialities:
+/// - no UTC timezone specifier (UTC timezone is still used)
+/// - ` `/`T` between date and time
+/// - fractional seconds
+/// - `,`/`.` as decimal separator
 Function ParseISO8601TimeStamp(timestamp)
 	string timestamp
 
-	string year, month, day, hour, minute, second, regexp
+	string year, month, day, hour, minute, second, regexp, fracSeconds
 	variable secondsSinceEpoch
 
-	regexp = "([[:digit:]]+)-([[:digit:]]+)-([[:digit:]]+) ([[:digit:]]+):([[:digit:]]+):([[:digit:]]+)Z"
-	SplitString/E=regexp timestamp, year, month, day, hour, minute, second
+	regexp = "^([[:digit:]]+)-([[:digit:]]+)-([[:digit:]]+)[T ]{1}([[:digit:]]+):([[:digit:]]+):([[:digit:]]+)([.,][[:digit:]]+)?Z?$"
+	SplitString/E=regexp timestamp, year, month, day, hour, minute, second, fracSeconds
 
-	if(V_flag != 6)
+	if(V_flag < 6)
 		return NaN
 	endif
 
 	secondsSinceEpoch  = date2secs(str2num(year), str2num(month), str2num(day))          // date
 	secondsSinceEpoch += 60 * 60* str2num(hour) + 60 * str2num(minute) + str2num(second) // time
 	// timetstamp is in UTC so we don't need to add/subtract anything
+
+	if(!IsEmpty(fracSeconds))
+		secondsSinceEpoch += str2num(ReplaceString(",", fracSeconds, "."))
+	endif
 
 	return secondsSinceEpoch
 End
