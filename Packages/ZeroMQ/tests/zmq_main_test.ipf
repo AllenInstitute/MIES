@@ -69,7 +69,6 @@ Function TEST_CASE_BEGIN_OVERRIDE(name)
 	TEST_CASE_BEGIN(name)
 	zeromq_stop()
 	zeromq_set(ZeroMQ_SET_FLAGS_DEBUG | ZeroMQ_SET_FLAGS_DEFAULT)
-	DebuggerOptions enable=0
 End
 
 Function TEST_CASE_END_OVERRIDE(name)
