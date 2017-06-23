@@ -59,9 +59,11 @@ static Constant AB_LOAD_SWEEP = 0
 static Constant AB_LOAD_STIMSET = 1
 
 Menu "Mies Panels"
-	"Analysis Browser"   , /Q, AB_OpenAnalysisBrowser()
-	"Labnotebook Browser", /Q, LBN_OpenLabnotebookBrowser()
-	"TPStorage Browser"  , /Q, LBN_OpenTPStorageBrowser()
+	"Analysis Browser"        , /Q, AB_OpenAnalysisBrowser()
+	"Labnotebook Browser"     , /Q, LBN_OpenLabnotebookBrowser()
+	"TPStorage Browser"       , /Q, LBN_OpenTPStorageBrowser()
+	"Export all data into NWB", /Q, NWB_ExportWithDialog()
+	"Load Stimsets from NWB"  , /Q, NWB_LoadAllStimsets()
 End
 
 static Function AB_ResetSelectionWave()
