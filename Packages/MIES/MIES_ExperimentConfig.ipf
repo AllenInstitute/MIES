@@ -19,7 +19,7 @@
 Function ExpConfig_ConfigureMIES([middleOfExperiment])
 	variable middleOfExperiment
 
-	string UserConfigNB, win, filename, ITCDevNum, ITCDevType, fullPath, StimSetPath, activeNotebooks, AmpSerialLocal, AmpTitleLocal, ConfigError
+	string UserConfigNB, win, filename, ITCDevNum, ITCDevType, fullPath, StimSetPath, activeNotebooks, AmpSerialLocal, AmpTitleLocal, ConfigError, StimSetList
 	variable i, load
 //	movewindow /C 1450, 530,-1,-1								// position command window
 	
@@ -118,6 +118,11 @@ Function ExpConfig_ConfigureMIES([middleOfExperiment])
 		
 		if (!load)
 			print "Stim set successfully loaded"
+			StimSetList = "- none -;"+ReturnListOfAllStimSets(0,"*DA*")
+			FindValue /TXOP = 4 /TEXT = FIRST_STIM UserSettings
+			PGC_SetAndActivateControl(win,GetPanelControl(CHANNEL_INDEX_ALL_V_CLAMP,CHANNEL_TYPE_DAC,CHANNEL_CONTROL_WAVE), val = WhichListItem(UserSettings[V_value][%SettingValue], StimSetList))
+			FindValue /TXOP = 4 /TEXT = FIRST_STIM_AMP UserSettings
+			PGC_SetAndActivateControl(win,GetPanelControl(CHANNEL_INDEX_ALL_V_CLAMP,CHANNEL_TYPE_DAC,CHANNEL_CONTROL_SCALE), val = str2numSafe(UserSettings[V_value][%SettingValue]))
 		else
 			print "Stim set failed to load, check file path"
 		endif
@@ -332,23 +337,23 @@ static Function ExpConfig_AsyncTemp(panelTitle, UserSettings)
 	PGC_SetAndActivateControl(panelTitle,"ADC", val = DA_EPHYS_PANEL_ASYNCHRONOUS)
 	FindValue /TXOP = 4 /TEXT = ASYNC_CH00 UserSettings
 	SetSetVariableString(panelTitle,"SetVar_AsyncAD_Title_00", UserSettings[V_value][%SettingValue])
-	PGC_SetAndActivateControl(panelTitle,"Check_AsyncAD_00", val = 1)
+	PGC_SetAndActivateControl(panelTitle, GetPanelControl(0, CHANNEL_TYPE_ASYNC, CHANNEL_CONTROL_CHECK), val = 1)
 	FindValue /TXOP = 4 /TEXT = TEMP_GAIN UserSettings
-	PGC_SetAndActivateControl(panelTitle,"Gain_AsyncAD_00", val = str2numSafe(UserSettings[V_value][%SettingValue]))
+	PGC_SetAndActivateControl(panelTitle, GetPanelControl(0, CHANNEL_TYPE_ASYNC, CHANNEL_CONTROL_GAIN), val = str2numSafe(UserSettings[V_value][%SettingValue]))
 	FindValue /TXOP = 4 /TEXT = ASYNC_UNIT UserSettings
-	SetSetVariableString(panelTitle,"Unit_AsyncAD_00", UserSettings[V_value][%SettingValue])
+	SetSetVariableString(panelTitle, GetPanelControl(0, CHANNEL_TYPE_ASYNC, CHANNEL_CONTROL_UNIT), UserSettings[V_value][%SettingValue])
 	FindValue /TXOP = 4 /TEXT = ASYNC_CH01 UserSettings
 	SetSetVariableString(panelTitle,"SetVar_AsyncAD_Title_01", UserSettings[V_value][%SettingValue])
-	PGC_SetAndActivateControl(panelTitle,"Check_AsyncAD_01", val = 1)
+	PGC_SetAndActivateControl(panelTitle, GetPanelControl(1, CHANNEL_TYPE_ASYNC, CHANNEL_CONTROL_CHECK), val = 1)
 	FindValue /TXOP = 4 /TEXT = TEMP_GAIN UserSettings
-	PGC_SetAndActivateControl(panelTitle,"Gain_AsyncAD_01", val = str2numSafe(UserSettings[V_value][%SettingValue]))
+	PGC_SetAndActivateControl(panelTitle, GetPanelControl(1, CHANNEL_TYPE_ASYNC, CHANNEL_CONTROL_GAIN), val = str2numSafe(UserSettings[V_value][%SettingValue]))
 	FindValue /TXOP = 4 /TEXT = ASYNC_UNIT UserSettings
-	SetSetVariableString(panelTitle,"Unit_AsyncAD_01", UserSettings[V_value][%SettingValue])
-	PGC_SetAndActivateControl(panelTitle,"check_AsyncAlarm_01", val = 1)
+	SetSetVariableString(panelTitle, GetPanelControl(1, CHANNEL_TYPE_ASYNC, CHANNEL_CONTROL_UNIT), UserSettings[V_value][%SettingValue])
+	PGC_SetAndActivateControl(panelTitle, GetPanelControl(1, CHANNEL_TYPE_ALARM, CHANNEL_CONTROL_CHECK), val = 1)
 	FindValue /TXOP = 4 /TEXT = TEMP_MAX UserSettings
-	PGC_SetAndActivateControl(panelTitle,"max_AsyncAD_01", val = str2numSafe(UserSettings[V_value][%SettingValue]))
+	PGC_SetAndActivateControl(panelTitle,GetPanelControl(1, CHANNEL_TYPE_ALARM, CHANNEL_CONTROL_ALARM_MAX), val = str2numSafe(UserSettings[V_value][%SettingValue]))
 	FindValue /TXOP = 4 /TEXT = TEMP_MIN UserSettings
-	PGC_SetAndActivateControl(panelTitle,"min_AsyncAD_01", val = str2numSafe(UserSettings[V_value][%SettingValue]))
+	PGC_SetAndActivateControl(panelTitle, GetPanelControl(1, CHANNEL_TYPE_ALARM, CHANNEL_CONTROL_ALARM_MIN), val = str2numSafe(UserSettings[V_value][%SettingValue]))
 
 End
 
@@ -385,6 +390,10 @@ static Function ExpConfig_DAEphysSettings(panelTitle, UserSettings)
 	PGC_SetAndActivateControl(panelTitle,"setvar_DataAcq_dDAQOptOvPost", val = str2numSafe(UserSettings[V_value][%SettingValue]))
 	FindValue /TXOP = 4 /TEXT = OODAQ_RESOLUTION UserSettings
 	PGC_SetAndActivateControl(panelTitle,"setvar_DataAcq_dDAQOptOvRes", val = str2numSafe(UserSettings[V_value][%SettingValue]))
+	FindValue /TXOP = 4 /TEXT = USER_ONSET_DELAY UserSettings
+	PGC_SetAndActivateControl(panelTitle,"setvar_DataAcq_OnsetDelayUser", val = str2numSafe(UserSettings[V_value][%SettingValue]))
+	FindValue /TXOP = 4 /TEXT = TERMINATION_DELAY UserSettings
+	PGC_SetAndActivateControl(panelTitle,"setvar_DataAcq_TerminationDelay", val = str2numSafe(UserSettings[V_value][%SettingValue]))
 	FindValue /TXOP = 4 /TEXT = NUM_STIM_SETS UserSettings
 	PGC_SetAndActivateControl(panelTitle,"SetVar_DataAcq_SetRepeats", val = str2numSafe(UserSettings[V_value][%SettingValue]))
 	FindValue /TXOP = 4 /TEXT = GET_SET_ITI UserSettings
@@ -644,7 +653,9 @@ static Function ExpConfig_ClampModes(panelTitle, UserSettings, midExp)
 		PGC_SetAndActivateControl(panelTitle,"setvar_DataAcq_RsPred", val = 0)
 		PGC_SetAndActivateControl(panelTitle,"check_DatAcq_HoldEnable", val = CHECKBOX_UNSELECTED)
 		PGC_SetAndActivateControl(panelTitle,"check_DatAcq_BBEnable", val = CHECKBOX_UNSELECTED)
-		PGC_SetAndActivateControl(panelTitle,"check_DatAcq_CNEnable", val = CHECKBOX_UNSELECTED)
+		PGC_SetAndActivateControl(panelTitle,"setvar_DataAcq_CN", val = 0)
+		FindValue /TXOP = 4 /TEXT = CAP_NEUT UserSettings
+		PGC_SetAndActivateControl(panelTitle,"check_DatAcq_CNEnable", val = str2numSafe(UserSettings[V_value][%SettingValue]))
 		PGC_SetAndActivateControl(panelTitle,"setvar_DataAcq_PipetteOffset_IC", val = 0)
 		FindValue /TXOP = 4 /TEXT = HOLDING UserSettings
 		PGC_SetAndActivateControl(panelTitle,"setvar_DataAcq_AutoBiasV", val = str2numSafe(UserSettings[V_value][%SettingValue]))
@@ -652,7 +663,8 @@ static Function ExpConfig_ClampModes(panelTitle, UserSettings, midExp)
 		PGC_SetAndActivateControl(panelTitle,"setvar_DataAcq_AutoBiasVrange", val = str2numSafe(UserSettings[V_value][%SettingValue]))
 		FindValue /TXOP = 4 /TEXT = AUTOBIAS_MAXI UserSettings
 		PGC_SetAndActivateControl(panelTitle,"setvar_DataAcq_IbiasMax", val = str2numSafe(UserSettings[V_value][%SettingValue]))
-		PGC_SetAndActivateControl(panelTitle,"check_DataAcq_AutoBias", val = CHECKBOX_SELECTED)
+		FindValue /TXOP = 4 /TEXT = AUTOBIAS UserSettings
+		PGC_SetAndActivateControl(panelTitle,"check_DataAcq_AutoBias", val = str2numSafe(UserSettings[V_value][%SettingValue]))
 		PGC_SetAndActivateControl(panelTitle,"Check_DataAcq_SendToAllAmp", val = CHECKBOX_UNSELECTED)
 	endif
 End
