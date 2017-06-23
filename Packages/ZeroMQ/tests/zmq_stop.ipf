@@ -32,6 +32,7 @@ Function StopsConnections()
 	CHECK_EQUAL_VAR(GetListeningStatus_IGNORE(5555), 1)
 
 	ret = zeromq_client_connect("tcp://127.0.0.1:5555")
+	CHECK_EQUAL_VAR(ret, 0)
 
 	ret = zeromq_stop()
 	CHECK_EQUAL_VAR(ret, 0)
