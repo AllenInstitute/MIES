@@ -460,7 +460,7 @@ void AddDimensionLabelsFullIfSet(json &doc, waveHndl waveHandle,
 
   for(size_t i = 0; i < numDimensions; i++)
   {
-    char label[MAX_DIM_LABEL_CHARS + 1];
+    char label[MAX_DIM_LABEL_BYTES + 1];
     auto rc = MDGetDimensionLabel(waveHandle, static_cast<int>(i), -1, label);
     ASSERT(rc == 0);
 
@@ -496,7 +496,7 @@ void AddDimensionLabelsEachIfSet(json &doc, waveHndl waveHandle,
   {
     for(CountInt j = 0; j < dimSizes[i]; j++)
     {
-      char label[MAX_DIM_LABEL_CHARS + 1];
+      char label[MAX_DIM_LABEL_BYTES + 1];
       auto rc = MDGetDimensionLabel(waveHandle, static_cast<int>(i), j, label);
       ASSERT(rc == 0);
 
