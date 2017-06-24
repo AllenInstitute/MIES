@@ -1,6 +1,5 @@
-CMAKE_MINIMUM_REQUIRED(VERSION 2.8.11)
+CMAKE_MINIMUM_REQUIRED(VERSION 3.8)
 
-# get working XOP on MacOSX, exported symbol list??
 PROJECT(ZeroMQ)
 
 IF(CMAKE_SIZEOF_VOID_P EQUAL 4)
@@ -21,6 +20,7 @@ IF(APPLE)
   # use RPATH
   cmake_policy(SET CMP0042 NEW)
   SET(RESOURCES "${PROJECT_NAME}.r")
+  SET(installFolder "${CMAKE_SOURCE_DIR}/../output/mac")
 ELSEIF(WIN32)
   SET(RESOURCES "${PROJECT_NAME}.rc")
   SET(installFolder "${CMAKE_SOURCE_DIR}/../output/win/${bitnessLibFolder}")
@@ -81,7 +81,27 @@ SOURCE_GROUP("Headers" FILES ${HEADERS})
 INCLUDE_DIRECTORIES(XOPSupport . "libzmq/include")
 
 IF(APPLE)
+
+  # heavily inspired by https://github.com/Kitware/CMake/blob/master/Tests/CFBundleTest/CMakeLists.txt
+
+  SET(MISC
+    InfoPlist.strings
+    ${CMAKE_BINARY_DIR}/${libname}.rsrc)
+
+  ADD_EXECUTABLE(${libname} MACOSX_BUNDLE ${SOURCES} ${SOURCES_EXT} ${HEADERS} ${RESOURCES} ${MISC})
+
   SET_TARGET_PROPERTIES(${libname} PROPERTIES PREFIX "")
+  SET_TARGET_PROPERTIES(${libname} PROPERTIES BUNDLE_EXTENSION "xop")
+  SET_TARGET_PROPERTIES(${libname} PROPERTIES ENABLE_EXPORTS true)
+  SET_TARGET_PROPERTIES(${libname} PROPERTIES XCODE_ATTRIBUTE_EXPORTED_SYMBOLS_FILE "${CMAKE_SOURCE_DIR}/Exports.exp")
+  SET_TARGET_PROPERTIES(${libname} PROPERTIES XCODE_ATTRIBUTE_MACH_O_TYPE mh_bundle)
+
+  SET(sysroot)
+  IF(CMAKE_OSX_SYSROOT)
+    SET(sysroot -isysroot ${CMAKE_OSX_SYSROOT})
+  ENDIF()
+
+  SET_TARGET_PROPERTIES(${libname} PROPERTIES CXX_STANDARD 14)
 
   FIND_LIBRARY(CARBON_LIBRARY Carbon)
   FIND_LIBRARY(COCOA_LIBRARY Cocoa)
@@ -91,17 +111,48 @@ IF(APPLE)
   SET(EXTRA_LIBS ${CARBON_LIBRARY} ${COCOA_LIBRARY} ${AUDIO_TOOLBOX} ${AUDIO_UNIT})
 
   FIND_PROGRAM(APPLE_RESOURCE Rez /Developer/Tools)
+  IF(NOT APPLE_RESOURCE)
+    MESSAGE(FATAL_ERROR "Could not find Rez to build resources from .r file.")
+  ENDIF()
+
+  ADD_CUSTOM_COMMAND(TARGET ${libname}
+    PRE_BUILD
+    COMMAND ${APPLE_RESOURCE}
+    ${sysroot}
+    -i XOPSupport
+    -F ${CARBON_LIBRARY}
+    -useDF
+    ${RESOURCES}
+    -o ${CMAKE_BINARY_DIR}/${libname}.rsrc
+    WORKING_DIRECTORY ${CMAKE_SOURCE_DIR})
+
   ADD_CUSTOM_COMMAND(TARGET ${libname}
     POST_BUILD
-    COMMAND ${APPLE_RESOURCE} -i XOPSupport -F ${CARBON_LIBRARY}/.. ${RESOURCES} -o ${CMAKE_BINARY_DIR}/${libname}.xop
-    WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
-    )
+    COMMAND zip
+    -r ${libname}.zip
+    ${CMAKE_CFG_INTDIR}/${libname}.xop
+    WORKING_DIRECTORY ${CMAKE_BINARY_DIR})
+
+  SET_SOURCE_FILES_PROPERTIES(
+      ${CMAKE_BINARY_DIR}/${libname}.rsrc
+      PROPERTIES GENERATED 1)
+
+  SET_SOURCE_FILES_PROPERTIES(
+    ${CMAKE_BINARY_DIR}/${libname}.rsrc
+    PROPERTIES MACOSX_PACKAGE_LOCATION "Resources")
+
+  SET_SOURCE_FILES_PROPERTIES(
+    ${CMAKE_SOURCE_DIR}/InfoPlist.strings
+    PROPERTIES MACOSX_PACKAGE_LOCATION "Resources/English.lproj")
 
   TARGET_LINK_LIBRARIES(${libname} ${EXTRA_LIBS}
                          ${CMAKE_SOURCE_DIR}/XOPSupport/Xcode/libXOPSupport${bitness}.a
-                         /Users/thomas/devel/libzmq/build/lib/libzmq-static.a)
+                         ${CMAKE_SOURCE_DIR}/libzmq/${bitnessLibFolder}_mac/libzmq.a)
 
-  SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -D=TARGET_OS_MAC -Wno-deprecated -mmacosx-version-min=10.9")
+  SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -D=TARGET_OS_MAC -Wno-deprecated")
+  SET(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -D=_DEBUG")
+
+  LIST(APPEND CMAKE_PROGRAM_PATH "/usr/local/opt/llvm/bin")
 ELSEIF(WIN32)
 
   ADD_LIBRARY(${libname} SHARED ${SOURCES} ${SOURCES_EXT} ${HEADERS} ${RESOURCES})
@@ -127,17 +178,17 @@ ENDIF()
 
 # run clang-format before building
 ADD_CUSTOM_COMMAND(TARGET ${libname}
-        PRE_BUILD
-        COMMAND clang-format -i ${SOURCES} ${HEADERS}
-        WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
-        COMMENT "Running clang-format" VERBATIM)
+                   PRE_BUILD
+                   COMMAND clang-format -i ${SOURCES} ${HEADERS}
+                   WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
+                   COMMENT "Running clang-format" VERBATIM)
+
+FIND_PROGRAM(CLANG-TIDY clang-tidy)
 
 ADD_CUSTOM_TARGET(clang-tidy
-        COMMAND clang-tidy -i -- ${SOURCES} -p=${CMAKE_BUILD_DIR} -checks=*
-        WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
-        COMMENT "Running clang-tidy" VERBATIM)
-
-
+                  COMMAND ${CLANG-TIDY} -fix -p=${CMAKE_BINARY_DIR} -checks=* ${SOURCES}
+                  WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
+                  COMMENT "Running clang-tidy" VERBATIM)
 
 IF(MSVC)
   INSTALL(TARGETS ${libname}
@@ -155,4 +206,7 @@ IF(MSVC)
   INSTALL(FILES libzmq/${bitnessLibFolder}/libzmq-v140-mt-4_2_3.dll
           DESTINATION ${installFolder}
           CONFIGURATIONS Release)
+ELSEIF(APPLE)
+  INSTALL(FILES ${CMAKE_BINARY_DIR}/${libname}.zip
+          DESTINATION ${installFolder})
 ENDIF()
