@@ -302,6 +302,19 @@ Functions returning waves:
 | result.value.note                 | string                   | wave note                                                                                                                                 |
 +-----------------------------------+--------------------------+-------------------------------------------------------------------------------------------------------------------------------------------+
 
+Compilation instructions
+^^^^^^^^^^^^^^^^^^^^^^^^
+
+Required additional software:
+
+- (Windows only) Visual Studio 2015
+- (MacOSX only) Xcode
+- `CMake <https://cmake.org>`__ version 3.8 or later
+- `XOPSupport Toolkit 7 <https://www.wavemetrics.com/products/xoptoolkit/xoptoolkit.htm>`__
+- `fmt library <https://github.com/fmtlib/fmt>`__ in version 5f26b5da2871cc5f562231af9d2062fb18df1ca5
+- `json library <https://github.com/nlohmann/json>`__ in version 94331a355d5fc2032810af7160504addcf86f783
+- `Igor Unit Testing Framework <http://www.igorexchange.com/project/unitTesting>`__
+
 Building libzmq
 ~~~~~~~~~~~~~~~
 
