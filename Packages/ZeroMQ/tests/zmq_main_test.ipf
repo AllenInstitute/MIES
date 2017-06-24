@@ -40,6 +40,7 @@ Function GetListeningStatus_IGNORE(port)
 	string contents = ""
 	variable refNum
 
+#ifdef WINDOWS
 	tmpDir = SpecialDirPath("Temporary", 0, 0, 0)
 
 	// Make sure that the directory we just got is, in fact, a directory.
@@ -77,6 +78,17 @@ Function GetListeningStatus_IGNORE(port)
 	Close refNum
 
 	return strlen(contents) > 0
+#else
+	sprintf cmd, "do shell script \"netstat -an\"", port
+
+	ExecuteScriptText/Z cmd
+	AbortOnValue (V_flag != 0), 7
+
+	// we want to match the line
+	// tcp4       0      0  127.0.0.1.5555         *.*                    LISTEN
+	return GrepString(S_Value, ".*" + "\." + num2str(port) + ".*LISTEN")
+#endif
+
 End
 
 Function TEST_CASE_BEGIN_OVERRIDE(name)
