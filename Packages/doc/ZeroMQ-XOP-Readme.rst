@@ -331,6 +331,24 @@ Building libzmq
     # Import/static libs are in lib/release, dll in bin/release
     # }
 
+    # MACOSX
+    # {
+    # 32bit
+    cd build
+    cmake -DCMAKE_OSX_ARCHITECTURES=i386 -DCMAKE_OSX_DEPLOYMENT_TARGET=10.9 ..
+    cmake --build . --config Release
+    ctest -C Release
+    # static libs are in lib
+
+    # 64bit
+    mkdir build-64
+    cd build-64
+    cmake -DCMAKE_OSX_ARCHITECTURES=x86_64 -DCMAKE_OSX_DEPLOYMENT_TARGET=10.9 ..
+    cmake --build . --config Release
+    ctest -C Release
+    # static libs are in lib
+    # }
+
 Building and installing the ZeroMQ.xop
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -348,6 +366,15 @@ Building and installing the ZeroMQ.xop
    cd ..
    cmake -G "Visual Studio 14 2015 Win64" ..
    cmake --build . --config Release --target INSTALL
+   # }
+
+   # MacOSX
+   # {
+   cmake -DCMAKE_OSX_ARCHITECTURES=i386 -DCMAKE_OSX_DEPLOYMENT_TARGET=10.9 -G Xcode ..
+   cmake --build . --config Release --target install
+   cd ..
+   cmake -DCMAKE_OSX_ARCHITECTURES=x86_64 -DCMAKE_OSX_DEPLOYMENT_TARGET=10.9 -G Xcode ..
+   cmake --build . --config Release --target install
    # }
 
 Running the test suite
