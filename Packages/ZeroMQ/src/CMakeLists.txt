@@ -8,13 +8,11 @@ IF(CMAKE_SIZEOF_VOID_P EQUAL 4)
   SET(bitnessWithDash "")
   SET(bitnessWithDashAndText "-64")
   SET(bitnessLibFolder "x86")
-  SET(installFolder "${CMAKE_SOURCE_DIR}/../../../XOPs-IP7")
 ELSEIF(CMAKE_SIZEOF_VOID_P EQUAL 8)
   SET(bitness "64")
   SET(bitnessWithDash "-64")
   SET(bitnessWithDashAndText "-64bit")
   SET(bitnessLibFolder "x64")
-  SET(installFolder "${CMAKE_SOURCE_DIR}/../../../XOPs-IP7-64bit")
 ENDIF()
 
 SET(libname "${PROJECT_NAME}${bitnessWithDash}")
@@ -25,6 +23,7 @@ IF(APPLE)
   SET(RESOURCES "${PROJECT_NAME}.r")
 ELSEIF(WIN32)
   SET(RESOURCES "${PROJECT_NAME}.rc")
+  SET(installFolder "${CMAKE_SOURCE_DIR}/../output/win/${bitnessLibFolder}")
 ENDIF()
 
 SET(SOURCES
@@ -138,21 +137,22 @@ ADD_CUSTOM_TARGET(clang-tidy
         WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
         COMMENT "Running clang-tidy" VERBATIM)
 
-INSTALL(TARGETS ${libname}
-        RUNTIME
-        DESTINATION ${installFolder})
 
-INSTALL(FILES libzmq/${bitnessLibFolder}/libzmq-v140-mt-4_2_3.dll
-        DESTINATION ${installFolder}
-        CONFIGURATIONS Release)
 
 IF(MSVC)
-  INSTALL(FILES ${CMAKE_BINARY_DIR}/release/${PROJECT_NAME}${bitnessWithDash}.pdb
-          DESTINATION ${CMAKE_SOURCE_DIR}/PDBs
-          CONFIGURATIONS Release
-          RENAME ${PROJECT_NAME}${bitnessWithDash}.pdb)
-ENDIF()
+  INSTALL(TARGETS ${libname}
+          RUNTIME
+          DESTINATION ${installFolder})
 
-INSTALL(FILES libzmq/${bitnessLibFolder}/libzmq-v140-mt-gd-4_2_3.dll
-        DESTINATION ${installFolder}
-        CONFIGURATIONS Debug)
+  INSTALL(FILES ${CMAKE_BINARY_DIR}/Release/${libname}.pdb
+          DESTINATION ${installFolder}
+          CONFIGURATIONS Release)
+
+  INSTALL(FILES libzmq/${bitnessLibFolder}/libzmq-v140-mt-gd-4_2_3.dll
+          DESTINATION ${installFolder}
+          CONFIGURATIONS Debug)
+
+  INSTALL(FILES libzmq/${bitnessLibFolder}/libzmq-v140-mt-4_2_3.dll
+          DESTINATION ${installFolder}
+          CONFIGURATIONS Release)
+ENDIF()
