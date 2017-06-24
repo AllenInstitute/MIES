@@ -2,6 +2,22 @@
 #pragma rtGlobals=3		// Use modern global access method and strict wave access.
 #pragma IgorVersion=7.0
 
+/// @brief Return the amount of free memory in GB
+///
+/// Due to memory fragmentation you can not assume that you can still create a wave
+/// occupying as much space as returned.
+Function GetFreeMemory()
+	variable freeMem
+
+#if defined(IGOR64)
+	freeMem = NumberByKey("PHYSMEM", IgorInfo(0)) - NumberByKey("USEDPHYSMEM", IgorInfo(0))
+#else
+	freeMem = NumberByKey("FREEMEM", IgorInfo(0))
+#endif
+
+	return freeMem / 1024 / 1024 / 1024
+End
+
 Function CheckErrorMessage(returnedError, xopError)
 	variable returnedError, xopError
 
@@ -178,7 +194,7 @@ Function ExtractReturnValue(replyMessage, [var, str, dfr, wvProp, passByRefWave]
 	FindValue/TXOP=4/TEXT="type" T_TokenText
 	CHECK_NEQ_VAR(V_value,-1)
 
-	if(!IsEmpty(type))
+	if(strlen(type) > 0)
 		actual   = T_TokenText[V_value + 1]
 		expected = type
 		CHECK_EQUAL_STR(actual, expected)
