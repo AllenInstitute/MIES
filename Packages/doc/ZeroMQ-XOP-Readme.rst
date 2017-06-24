@@ -310,39 +310,45 @@ Building libzmq
     # As of libzmq revision 84d94b4f (Merge pull request #2475 from
     # chrisstaite/master, 2017-03-28) all tests pass.
     git clone https://github.com/zeromq/libzmq.git
+
     cd libzmq
-    mkdir build-msvc
+    mkdir build build-64
+
+    # WINDOWS
+    # {
     # 32bit
-    cd build-msvc
+    cd build
     cmake -G "Visual Studio 14 2015" ..
-    cmake --build . --config release
-    ctest -C release
+    cmake --build . --config Release
+    ctest -C Release
     # Import/static libs are in lib/release, dll in bin/release
 
     # 64bit
-    mkdir build-msvc-64
-    cd build-msvc-64
+    cd build-64
     cmake -G "Visual Studio 14 2015 Win64" ..
-    cmake --build . --config release
-    ctest -C release
+    cmake --build . --config Release
+    ctest -C Release
     # Import/static libs are in lib/release, dll in bin/release
+    # }
 
 Building and installing the ZeroMQ.xop
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 .. code-block:: sh
 
+   # Windows
+   # {
    # Install cmake from www.cmake.org
    # Install Visual Studio 2015 Community
    # Open a Visual Studio 2015 command prompt
    cd Packages/ZeroMQ/src
-   mkdir build
+   mkdir build build-64
    cmake -G "Visual Studio 14 2015" ..
-   cmake --build . --config release --target INSTALL
+   cmake --build . --config Release --target INSTALL
    cd ..
-   mkdir build-Win64
    cmake -G "Visual Studio 14 2015 Win64" ..
-   cmake --build . --config release --target INSTALL
+   cmake --build . --config Release --target INSTALL
+   # }
 
 Running the test suite
 ~~~~~~~~~~~~~~~~~~~~~~
