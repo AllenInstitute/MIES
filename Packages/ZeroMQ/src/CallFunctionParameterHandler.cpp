@@ -56,8 +56,8 @@ CallFunctionParameterHandler::CallFunctionParameterHandler(
       u.variable = ConvertStringToDouble(params[i]);
       break;
     case HSTRING_TYPE:
-      u.stringHandle = NewHandle(params[i].size());
-      ASSERT(u.stringHandle != nullptr && !MemError());
+      u.stringHandle = WMNewHandle(params[i].size());
+      ASSERT(u.stringHandle != nullptr);
       memcpy(*u.stringHandle, params[i].c_str(), params[i].size());
       break;
     case DATAFOLDER_TYPE:
@@ -122,7 +122,7 @@ CallFunctionParameterHandler::~CallFunctionParameterHandler()
       memcpy(&u, src, m_paramSizesInBytes[i]);
       if(u.stringHandle != nullptr)
       {
-        DisposeHandle(u.stringHandle);
+        WMDisposeHandle(u.stringHandle);
       }
       break;
     }

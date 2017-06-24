@@ -6,7 +6,7 @@ extern "C" int zeromq_server_bind(zeromq_server_bindParams *p)
   BEGIN_OUTER_CATCH
 
   const auto localPoint = GetStringFromHandle(p->localPoint);
-  DisposeHandle(p->localPoint);
+  WMDisposeHandle(p->localPoint);
   p->localPoint = nullptr;
 
   GET_SERVER_SOCKET(socket);

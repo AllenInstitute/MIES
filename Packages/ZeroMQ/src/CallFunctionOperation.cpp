@@ -41,7 +41,7 @@ std::string ExtractReturnStringFromUnion(IgorTypeUnion *ret, int returnType)
     break;
   case HSTRING_TYPE:
     result = GetStringFromHandle(ret->stringHandle);
-    DisposeHandle(ret->stringHandle);
+    WMDisposeHandle(ret->stringHandle);
     ret->stringHandle = nullptr;
     needsQuotes       = true;
     break;

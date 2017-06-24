@@ -229,8 +229,8 @@ void ToString<char *>(fmt::MemoryWriter &writer, waveHndl waveHandle,
     return;
   }
 
-  Handle textHandle = NewHandle(0);
-  ASSERT(textHandle != nullptr && !MemError());
+  Handle textHandle = WMNewHandle(0);
+  ASSERT(textHandle != nullptr);
   const auto mode = 0;
   auto rc         = GetTextWaveData(waveHandle, mode, &textHandle);
   ASSERT(rc == 0);
@@ -252,7 +252,7 @@ void ToString<char *>(fmt::MemoryWriter &writer, waveHndl waveHandle,
 
   writer << "]";
 
-  DisposeHandle(textHandle);
+  WMDisposeHandle(textHandle);
 }
 
 std::string WaveToStringImpl(int waveType, waveHndl waveHandle, CountInt offset)
@@ -527,7 +527,7 @@ void AddWaveNoteIfSet(json &doc, waveHndl waveHandle)
   }
 
   doc["note"] = json(GetStringFromHandle(handle));
-  DisposeHandle(handle);
+  WMDisposeHandle(handle);
 }
 
 } // anonymous namespace

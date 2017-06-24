@@ -16,8 +16,8 @@ extern "C" int zeromq_test_serializeWave(zeromq_test_serializeWaveParams *p)
   DebugOutput(fmt::sprintf("%s: output=%.255s\r", __func__, str));
 
   auto len  = str.size();
-  p->result = NewHandle(len);
-  ASSERT(p->result != nullptr && !MemError());
+  p->result = WMNewHandle(len);
+  ASSERT(p->result != nullptr);
   memcpy(*(p->result), str.c_str(), len);
 
   END_OUTER_CATCH

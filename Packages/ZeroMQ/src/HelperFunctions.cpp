@@ -10,7 +10,7 @@ std::string GetStringFromHandle(Handle strHandle)
     return "";
   }
 
-  size_t strLen = GetHandleSize(strHandle);
+  size_t strLen = WMGetHandleSize(strHandle);
   return std::string(*strHandle, strLen);
 }
 
@@ -424,13 +424,13 @@ void InitHandle(Handle *handle, size_t size)
 {
   if(*handle == nullptr)
   {
-    *handle = NewHandle(size);
+    *handle = WMNewHandle(size);
     ASSERT(*handle != nullptr);
   }
   else
   {
-    SetHandleSize(*handle, size);
-    ASSERT(GetHandleSize(*handle) == size);
+    WMSetHandleSize(*handle, size);
+    ASSERT(WMGetHandleSize(*handle) == size);
   }
 }
 

@@ -6,7 +6,7 @@ extern "C" int zeromq_client_send(zeromq_client_sendParams *p)
   BEGIN_OUTER_CATCH
 
   const auto msg = GetStringFromHandle(p->msg);
-  DisposeHandle(p->msg);
+  WMDisposeHandle(p->msg);
 
   ZeroMQClientSend(msg);
 

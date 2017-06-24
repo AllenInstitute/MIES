@@ -191,13 +191,13 @@ void GlobalData::EnsureInteropProcFileAvailable()
   }
 
   const std::string procedure = "ZeroMQ_Interop.ipf";
-  Handle listHandle           = NewHandle(0);
-  ASSERT(listHandle != nullptr && !MemError());
+  Handle listHandle           = WMNewHandle(0);
+  ASSERT(listHandle != nullptr);
   auto rc = WinList(listHandle, procedure.c_str(), ";", "");
   ASSERT(rc == 0);
 
-  const auto exists = GetHandleSize(listHandle) > 0;
-  DisposeHandle(listHandle);
+  const auto exists = WMGetHandleSize(listHandle) > 0;
+  WMDisposeHandle(listHandle);
 
   if(!exists)
   {
