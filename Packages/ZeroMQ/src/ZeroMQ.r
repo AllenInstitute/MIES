@@ -32,8 +32,8 @@ resource 'STR#' (1100) {					/* custom error messages */
 resource 'XOPI' (1100) {
 	XOP_VERSION,					// XOP protocol version.
 	DEV_SYS_CODE,					// Development system information.
-	0,										// Obsolete - set to zero.
-	0,										// Obsolete - set to zero.
+	XOP_FEATURE_FLAGS,	  // Tells Igor about XOP features
+	XOPI_RESERVED,				// Reserved - must be zero.
 	XOP_TOOLKIT_VERSION,	// XOP Toolkit version.
 };
 

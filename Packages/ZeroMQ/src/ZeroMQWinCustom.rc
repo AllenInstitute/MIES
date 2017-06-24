@@ -26,7 +26,7 @@ END
 BEGIN
 	XOP_VERSION,					// Version number of host XOP system.
 	DEV_SYS_CODE,					// Code for development system used to make XOP.
-	0,								// Obsolete - set to zero.
-	0,								// Obsolete - set to zero.
-	XOP_TOOLKIT_VERSION				// XOP Toolkit version.
+	XOP_FEATURE_FLAGS,	  // Tells Igor about XOP features
+	XOPI_RESERVED,				// Reserved - must be zero.
+	XOP_TOOLKIT_VERSION		// XOP Toolkit version.
 END
