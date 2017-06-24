@@ -362,10 +362,10 @@ Building and installing the ZeroMQ.xop
    cd Packages/ZeroMQ/src
    mkdir build build-64
    cmake -G "Visual Studio 14 2015" ..
-   cmake --build . --config Release --target INSTALL
+   cmake --build . --config Release --target install
    cd ..
    cmake -G "Visual Studio 14 2015 Win64" ..
-   cmake --build . --config Release --target INSTALL
+   cmake --build . --config Release --target install
    # }
 
    # MacOSX
