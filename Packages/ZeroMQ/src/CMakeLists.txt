@@ -164,7 +164,7 @@ ELSEIF(WIN32)
 
   TARGET_LINK_LIBRARIES(${libname} version.lib ${EXTRA_LIBS}
                         ${CMAKE_SOURCE_DIR}/XOPSupport/IGOR${bitness}.lib
-                        ${CMAKE_SOURCE_DIR}/XOPSupport/VC2015/XOPSupport${bitness}.lib
+                        ${CMAKE_SOURCE_DIR}/XOPSupport/VC/XOPSupport${bitness}.lib
                         optimized ${CMAKE_SOURCE_DIR}/libzmq/${bitnessLibFolder}/libzmq-v140-mt-4_2_3.lib
                         debug ${CMAKE_SOURCE_DIR}/libzmq/${bitnessLibFolder}/libzmq-v140-mt-gd-4_2_3.lib)
 
