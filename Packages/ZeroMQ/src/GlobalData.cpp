@@ -36,7 +36,7 @@ void SetDealerSocketDefaults(void *s)
 
 } // anonymous namespace
 
-GlobalData::GlobalData() : m_busyWaiting(true), m_debugging(false)
+GlobalData::GlobalData() : m_debugging(false), m_busyWaiting(true)
 {
   zmq_context = zmq_ctx_new();
   ZEROMQ_ASSERT(zmq_context != nullptr);
