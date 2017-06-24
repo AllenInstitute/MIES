@@ -159,7 +159,7 @@ ConvertUTF2ToIgorTextEncoding(UniChar* unicodeText, int unicodeLength, char* tex
 	Sets pathOut to refer to the file or folder. If *fsRefPtr refers to a folder then
 	pathOut will include a trailing colon.
 	
-	NOTE: MAX_PATH_LEN must hold MAX_PATH_LEN characters plus a null terminator.
+	NOTE: pathOut must hold MAX_PATH_LEN characters plus a null terminator.
 	
 	When running with Igor Pro 6, pathOut is encoded as system text encoding.
 	

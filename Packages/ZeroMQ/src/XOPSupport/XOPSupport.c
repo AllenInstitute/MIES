@@ -10,7 +10,6 @@ int igorVersion = 0;							// Set by XOPInit. Example: 128 for version 1.28.
 static PSInt gMainThreadID = 0;					// HR, 091123: Used in RunningInMainThread.
 static int gUseThreadsafeCallbackMethod = 0;	// HR, 091118: Igor now supports threadsafe callback method.
 
-
 // *** Utility Routines ***
 
 // Capitalize removed from XOP Toolkit 6. Use CmpStr instead of calling Capitalize and strcmp.
@@ -160,7 +159,7 @@ EscapeSpecialCharacters(const char* input, int inputLength, char* output, int ou
 	
 	tempOutputBufferAllocated = 0;
 	if (output == input) {
-		output = (char*)NewPtr(outputBufferSize);
+		output = (char*)WMNewPtr(outputBufferSize);
 		if (output == NULL)
 			return NOMEM;	
 		tempOutputBufferAllocated = 1;
@@ -238,7 +237,7 @@ EscapeSpecialCharacters(const char* input, int inputLength, char* output, int ou
 	
 	if (tempOutputBufferAllocated) {
 		memcpy((char*)input, output, *numCharsOutPtr);
-		DisposePtr(output);
+		WMDisposePtr(output);
 	}
 	
 	return err;
@@ -293,7 +292,7 @@ UnEscapeSpecialCharacters(const char* input, int inputLength, char* output, int 
 	
 	tempOutputBufferAllocated = 0;
 	if (output == input) {
-		output = (char*)NewPtr(outputBufferSize);
+		output = (char*)WMNewPtr(outputBufferSize);
 		if (output == NULL)
 			return NOMEM;	
 		tempOutputBufferAllocated = 1;
@@ -370,7 +369,7 @@ UnEscapeSpecialCharacters(const char* input, int inputLength, char* output, int 
 	
 	if (tempOutputBufferAllocated) {
 		memcpy((char*)input, output, *numCharsOutPtr);
-		DisposePtr(output);
+		WMDisposePtr(output);
 	}
 	
 	return err;
@@ -531,7 +530,7 @@ GetCStringFromHandle(Handle h, char* str, int maxChars)
 	if (h == NULL)
 		return USING_NULL_STRVAR;
 
-	numBytesInString = (int)GetHandleSize(h);
+	numBytesInString = (int)WMGetHandleSize(h);
 	if (numBytesInString > maxChars) {
 		numBytesInString = maxChars;
 		err = STR_TOO_LONG;
@@ -564,14 +563,15 @@ int
 PutCStringInHandle(const char* str, Handle h)
 {
 	int numBytesInString;
+	int err = 0;
 
 	if (h == NULL)
 		return USING_NULL_STRVAR;
 		
 	numBytesInString = (int)strlen(str);
-	SetHandleSize(h, numBytesInString);
-	if (MemError())
-		return NOMEM;
+	err = WMSetHandleSize(h, numBytesInString);
+	if (err != 0)
+		return err;
 	
 	memcpy(*h, str, numBytesInString);
 	
@@ -787,15 +787,15 @@ IgorVersion(void)
 		versionInfoSize = GetFileVersionInfoSize(igorName, &dwHandle);
 		if (versionInfoSize <= 0)
 			return 0;
-		versionBuffer = (char*)NewPtr(versionInfoSize);
+		versionBuffer = (char*)WMNewPtr(versionInfoSize);
 		if (versionBuffer == NULL)
 			return 0;
 		if (GetFileVersionInfo(igorName, 0L, versionInfoSize, versionBuffer) == 0) {
-			DisposePtr(versionBuffer);
+			WMDisposePtr(versionBuffer);
 			return 0;
 		}
 		if (VerQueryValue(versionBuffer, "\\", (void**)&vsp, &vsLen) == 0) {
-			DisposePtr(versionBuffer);
+			WMDisposePtr(versionBuffer);
 			return 0;
 		}
 	
@@ -804,7 +804,7 @@ IgorVersion(void)
 		hundredths = vsp->dwFileVersionLS >> 16;
 		version = 100*units + 10*tenths + hundredths;
 		
-		DisposePtr(versionBuffer);
+		WMDisposePtr(versionBuffer);
 		return version;
 	}
 	#endif
@@ -855,6 +855,10 @@ XOPInit(IORecHandle ioRecHandle)
 {
 	XOPRecHandle = ioRecHandle;		// Set global rec handle.
 	
+	/*	We can not do anything that calls WMNewHandle, WMGetHandleSize, WMSetHandleSize
+		or other WM memory XOPSupport routines until InitWMMemory is called below.
+	*/
+	
 	// gMainThreadID is used by RunningInMainThread
 	if (gMainThreadID == 0) {
 		#ifdef MACIGOR
@@ -874,6 +878,9 @@ XOPInit(IORecHandle ioRecHandle)
 		if (CallBack1(SET_IGOR_CALLBACK_METHOD, XOP_CALLBACK_INT(1)) == 0)	// This should always succeed.
 			gUseThreadsafeCallbackMethod = 1;					// Callbacks will use the threadsafe method.
 	}
+	
+	extern void InitWMMemory();
+	InitWMMemory();					// Must be done after igorVersion is set
 }
 
 /*	RunningInMainThread()
@@ -940,7 +947,7 @@ CheckRunningInMainThread(const char* routineName)
 		TickCountInt currentTicks = TickCount();
 		if (currentTicks >= lastMessageTicks+3600) {	// Prevent a cascade of dialogs
 			char temp[256];
-			sprintf(temp, "BUG: %s is not threadsafe." CR_STR, routineName);
+			snprintf(temp, sizeof(temp), "BUG: %s is not threadsafe." CR_STR, routineName);
 			XOPEmergencyAlert(temp);
 			lastMessageTicks = currentTicks;
 		}
@@ -1533,7 +1540,7 @@ GetIgorErrorMessage(int errCode, char errorMessage[256])
 	Thread Safety: WinInfo is not thread-safe.
 */
 int
-WinInfo(int index, int typeMask, char *name, IgorWindowRef* windowRefPtr)
+WinInfo(int index, int typeMask, char name[MAX_OBJ_NAME+1], IgorWindowRef* windowRefPtr)
 {
 	if (!CheckRunningInMainThread("WinInfo"))
 		return 0;	// Return value is an Igor window type.
@@ -1757,7 +1764,7 @@ XOPCommand2(const char *cmdPtr, int silent, int sendToHistory)
 	XOPCommand3 returns via *historyTextHPtr any result text inserted into the history
 	area as a result of the command. In the event of an error, *historyTextHPtr is set
 	to NULL. If no error occurs, *historyTextHPtr is set to a new handle which you own
-	and must dispose using DisposeHandle when you no longer need it. *historyTextHPtr
+	and must dispose using WMDisposeHandle when you no longer need it. *historyTextHPtr
 	is not null terminated.
 
 	XOPCommand3 returns the result from the command execution.
@@ -1902,7 +1909,7 @@ FetchStrVar(const char *varName, char *stringPtr)
 	FetchStrHandle returns the handle containing the text for the named string
 	variable or NULL if no such string variable exists.
 	
-	The text is not null terminated. Use GetHandleSize to determine the
+	The text is not null terminated. Use WMGetHandleSize to determine the
 	number of characters in the string.
 	
 	You should not dispose of or otherwise modify this handle since it belongs
@@ -2188,7 +2195,7 @@ SetIgorStringVar(const char* stringVarName, const char* stringVarValue, int forc
 	You can call it from a thread created by Igor but not from a private thread that you created yourself.
 */
 int
-UniqueName(const char *baseName, char *finalName)
+UniqueName(const char *baseName, char finalName[MAX_OBJ_NAME+1])
 {
 	return (int)CallBack2(UNIQUENAME, (void*)baseName, finalName);
 }
@@ -2219,15 +2226,14 @@ UniqueName(const char *baseName, char *finalName)
 	You can call it from a thread created by Igor but not from a private thread that you created yourself.
 */
 int
-UniqueName2(int nameSpaceCode, const char *baseName, char *finalName, int* suffixNumPtr)
+UniqueName2(int nameSpaceCode, const char *baseName, char finalName[MAX_OBJ_NAME+1], int* suffixNumPtr)
 {
 	return (int)CallBack4(UNIQUENAME2, XOP_CALLBACK_INT(nameSpaceCode), (void*)baseName, finalName, suffixNumPtr);
 }
 
 /*	SanitizeWaveName(waveName, column)
 
-	NOTE: If your XOP requires IGOR Pro 3 or later, you should use CleanupName
-		  instead of the older SanitizeWaveName.
+	NOTE: This routine is obsolete. Use CleanupName, CheckName and CreateValidDataObjectName instead.
 
 	Given a pointer to a C string containing a proposed wave name,
 	SanitizeWaveName() changes it to make it a valid wave name if necessary.
@@ -2242,14 +2248,14 @@ UniqueName2(int nameSpaceCode, const char *baseName, char *finalName, int* suffi
 	You can call it from a thread created by Igor but not from a private thread that you created yourself.
 */
 int
-SanitizeWaveName(char *waveName, int column)
+SanitizeWaveName(char waveName[MAX_OBJ_NAME+1], int column)
 {
 	int len, i, ch;
 	int result = 0;
 	
 	len = (int)strlen(waveName);
 	if (len==0) {
-		sprintf(waveName, "NoName%d", column);
+		snprintf(waveName, MAX_OBJ_NAME+1, "NoName%d", column);
 		return 1;
 	}
 	
@@ -2330,21 +2336,22 @@ CheckName(DataFolderHandle dataFolderH, int objectType, const char* name)
 
 	Returns true if the name was quoted, false otherwise.
 	
-	NOTE: name must be able to hold two additional characters. Thus, you
-		  should declare name: char name[MAX_OBJ_NAME+2+1];
+	NOTE:	name must be able to hold MAX_OBJ_NAME plus two additional bytes plus
+			the null terminator. Thus you should declare name:
+				char name[MAX_OBJ_NAME+2+1];
 		  
-	NOTE: Liberal rules are still not allowed for string and numeric variable names.
+	NOTE:	Liberal rules are still not allowed for string and numeric variable names.
 	
 	Thread Safety: PossiblyQuoteName is Igor-thread-safe with XOP Toolkit 6 and Igor Pro 6.20 or later.
 	You can call it from a thread created by Igor but not from a private thread that you created yourself.
 */
 int
-PossiblyQuoteName(char *name)
+PossiblyQuoteName(char name[MAX_OBJ_NAME+2+1])
 {
 	return (int)CallBack1(POSSIBLY_QUOTE_NAME, name);
 }
 
-/*	CatPossiblyQuotedName(char* str, char* name)
+/*	CatPossiblyQuotedName(str, name)
 
 	Adds the specified Igor object name to the end of the string.
 	If necessary, puts single quotes around the name so that it can be
@@ -2352,12 +2359,15 @@ PossiblyQuoteName(char *name)
 	
 	Use this to concatenate a wave name to the end of a command string
 	when the wave name may be a liberal name that needs to be quoted to
-	be used in the command line. 
+	be used in the command line.
+	
+	The memory pointed to by str must be big enough to hold an additional MAX_OBJ_NAME+2
+	bytes, plus the null terminator.
 	
 	Example:
 		char waveName[MAX_OBJ_NAME+1];				// This contains a wave name.
-		char cmd[256];
-		strcpy(cmd, "Redimension/N=1000 ");
+		char cmd[MAX_OBJ_NAME+2+32+1];
+		strcpy(cmd, "Display ");
 		CatPossiblyQuotedName(cmd, waveName);
 		XOPSilentCommand(cmd);
 	
@@ -2374,12 +2384,18 @@ CatPossiblyQuotedName(char* str, const char* name)
 	PossiblyQuoteName(str + len);
 }
 
-/*	CleanupName(beLiberal, name, maxNameChars)
+/*	CleanupName(beLiberal, name, maxNameBytes)
+	
+	If your goal is to generate a valid object name that you can use to create a
+	data object, consider using CreateValidDataObjectName instead of CleanupName.
 	
 	name contains an Igor object name.
 	CleanupName changes it, if necessary, to make it a legal name.
+
+	On input, name may be longer than maxNameBytes bytes. On output, it is
+	truncated if necessary.
 	
-	For most uses, pass MAX_OBJ_NAME for the maxNameChars parameter.
+	For most uses, pass MAX_OBJ_NAME for the maxNameBytes parameter.
 
 	Igor Pro allows wave and data folder names to contain characters,
 	such as space and dot, that were previously illegal in names. We call this
@@ -2397,9 +2413,9 @@ CatPossiblyQuotedName(char* str, const char* name)
 	You can call it from a thread created by Igor but not from a private thread that you created yourself.
 */
 int
-CleanupName(int beLiberal, char *name, int maxNameChars)
+CleanupName(int beLiberal, char* name, int maxNameBytes)
 {
-	return (int)CallBack3(CLEANUP_NAME, XOP_CALLBACK_INT(beLiberal), name, XOP_CALLBACK_INT(maxNameChars));
+	return (int)CallBack3(CLEANUP_NAME, XOP_CALLBACK_INT(beLiberal), name, XOP_CALLBACK_INT(maxNameBytes));
 }
 
 /*	CreateValidDataObjectName(...)
@@ -2460,7 +2476,7 @@ CleanupName(int beLiberal, char *name, int maxNameChars)
 int
 CreateValidDataObjectName(
 	DataFolderHandle dataFolderH,
-	const char* inName, char* outName, int* suffixNumPtr, int objectType,
+	const char* inName, char outName[MAX_OBJ_NAME+1], int* suffixNumPtr, int objectType,
 	int beLiberal, int allowOverwrite, int inNameIsBaseName, int printMessage,
 	int* nameChangedPtr, int* doOverwritePtr)
 {
@@ -2470,7 +2486,7 @@ CreateValidDataObjectName(
 	int namespaceCode;
 	int needToUniquify;
 	int objectType2;
-	char temp[256];
+	char temp[2*MAX_OBJ_NAME+256];
 	int needMessage;
 	int err;
 	
@@ -2506,11 +2522,13 @@ CreateValidDataObjectName(
 	// If inName2 is a base name to which we must add a suffix, add the suffix here.
 	if (inNameIsBaseName) {
 		if (allowOverwrite) {
-			sprintf(name, "%s%d", inName2, *suffixNumPtr);				// Use next suffix even if it is already used.
+			snprintf(name, sizeof(name), "%s%d", inName2, *suffixNumPtr);					// Use next suffix even if it is already used.
 			*suffixNumPtr += 1;
 		}
 		else {
-			UniqueName2(namespaceCode, inName2, name, suffixNumPtr);	// Choose a suffix that is not already used.
+			err = UniqueName2(namespaceCode, inName2, name, suffixNumPtr);	// Choose a suffix that is not already used.
+			if (err != 0)
+				goto done;
 		}
 	}
 
@@ -2557,14 +2575,14 @@ CreateValidDataObjectName(
 					strcpy(temp, name);
 					tempLen = (int)strlen(temp);
 					while(1) {
-						sprintf(suffixStr, "%d", *suffixNumPtr);		// Use next suffix even if it is already used.
+						snprintf(suffixStr, sizeof(suffixStr), "%d", *suffixNumPtr);	// Use next suffix even if it is already used.
 						*suffixNumPtr += 1;
 						suffixStrLen = (int)strlen(suffixStr);
 						if (tempLen + suffixStrLen > MAX_OBJ_NAME) {	// e.g., tempLen=31, suffixStrLen=1
 							temp[MAX_OBJ_NAME-suffixStrLen] = 0;		// e.g., temp[30]=0 leaving temp[30] available for the suffix.
 							tempLen = (int)strlen(temp);
 						}
-						sprintf(name, "%s%s", temp, suffixStr);
+						snprintf(name, sizeof(name), "%s%s", temp, suffixStr);
 						if (GetDataFolderObject(dataFolderH, name, &objectType2, NULL) == 0) {
 							if (objectType2 == objectType) {
 								*doOverwritePtr = 1;
@@ -2607,10 +2625,10 @@ CreateValidDataObjectName(
 				strcpy(objectTypeStr, "Data folder");
 				break;
 			default:
-				sprintf(objectTypeStr, "BUG: CreateValidDataObjectName, objectType=%d", objectType);
+				snprintf(objectTypeStr, sizeof(objectTypeStr), "BUG: CreateValidDataObjectName, objectType=%d", objectType);
 				break;
 		}
-		sprintf(temp, "%s \'%s\' changed to \'%s\' because of a conflict.\015", objectTypeStr, inName2, name);
+		snprintf(temp, sizeof(temp), "%s \'%s\' changed to \'%s\' because of a conflict." CR_STR, objectTypeStr, inName2, name);
 		XOPNotice(temp);
 	}
 	
@@ -2800,10 +2818,10 @@ MacRectToWinRect(const Rect *mr, RECT *wr)
 	options is for possible future use. Pass 0.
 	
 	The output data is returned via hPtr. In the event of an error, *hPtr is set to NULL.
-	If *hPtr is not NULL then it belongs to you and you must dispose it via DisposeHandle.
+	If *hPtr is not NULL then it belongs to you and you must dispose it via WMDisposeHandle.
 
 	The length of the output data is returned via lengthPtr. This will be the same as
-	GetHandleSize(*hPtr);
+	WMGetHandleSize(*hPtr);
 
 	If you just want to tell if a given type of data is available on the clipboard and don't
 	want to actually get that data, pass NULL for hPtr. In this case, XOPGetClipboardData sets
@@ -3403,7 +3421,7 @@ XOPSetContextualHelpMessage(IgorWindowRef xopWindowRef, const char* message, con
 	Thread Safety: DoWindowRecreationDialog is not thread-safe.
 */
 enum CloseWinAction
-DoWindowRecreationDialog(char* procedureName)
+DoWindowRecreationDialog(char procedureName[MAX_OBJ_NAME+1])
 {
 	if (!CheckRunningInMainThread("DoWindowRecreationDialog"))
 		return kCloseWinCancel;
@@ -3424,9 +3442,9 @@ DoWindowRecreationDialog(char* procedureName)
 	list of procedure names. Depending on the flags parameter, the list may contain
 	names of macros, names of user functions, or names of both macros and user functions.
 	
-	Note that the handle is not null terminated. Use GetHandleSize to determine how
+	Note that the handle is not null terminated. Use WMGetHandleSize to determine how
 	many characters are in the handle. This handle belongs to you, so call
-	DisposeHandle to dispose it when you no longer need it.
+	WMDisposeHandle to dispose it when you no longer need it.
 	
 	If Igor can not build the list, it returns a non-zero error code and sets
 	*hPtr to NULL.
@@ -3476,9 +3494,9 @@ GetIgorProcedureList(Handle* hPtr, int flags)
 	and returns a result of 0. The handle will contain the text for the specified
 	procedure with a carriage return at the end of each line.
 	
-	Note that the handle is not null terminated. Use GetHandleSize to determine how
+	Note that the handle is not null terminated. Use WMGetHandleSize to determine how
 	many characters are in the handle. This handle belongs to you, so call
-	DisposeHandle to dispose it when you no longer need it.
+	WMDisposeHandle to dispose it when you no longer need it.
 	
 	If Igor can not find the procedure, it returns a non-zero error code and sets
 	*hPtr to NULL.
@@ -3646,10 +3664,12 @@ SetIgorProcedure(const char* procedureName, Handle h, int flags)
 	When you call GetFunctionInfo with a simple function name, such as "MyFunction",
 	the information returned describes the named function in the currently-executing
 	independent module. If you call GetFunctionInfo with a fully-qualified name,
-	such as "MyModule#MyFunction", the information returned describes the named
-	function in the named independent module. So if you want to call from one
+	such as "ProcGlobal#MyFunction" or "MyModule#MyFunction", the information returned
+	describes the named function in the named module. So if you want to call from one
 	independent module to another using CallFunction, you must use fully-qualified
-	names when calling GetFunctionInfo.
+	names when calling GetFunctionInfo. If you want to call a function in the built-in
+	ProcGlobal module, it is a good idea to specify it in the function name. See
+	"CallFunction and Igor Independent Modules" in the XOP Toolkit manual for an example.
 	
 	The information returned by GetFunctionInfo should be used and then discarded.
 	If the user does anything to cause procedures to be compiled then the values
@@ -4032,7 +4052,7 @@ CallFunction(FunctionInfoPtr fip, void* parameters, void* resultPtr)
 	this handle belongs to you and you must dispose it when you no longer need it.
 
 	If *callStackHPtr is not NULL it contains a list of Igor procedures separated by semicolons.
-	*callStackHPtr is not null terminated. Use GetHandleSize to determine the size of the stack crawl text.
+	*callStackHPtr is not null terminated. Use WMGetHandleSize to determine the size of the stack crawl text.
 	
 	In some cases the currently running procedure can not be determined, for example because
 	because Igor procedures need to be compiled. If so then GetIgorCallerInfo acts as if no
@@ -4064,7 +4084,7 @@ GetIgorCallerInfo(char pathOrTitle[MAX_PATH_LEN+1], int* linePtr, char routineNa
 	of the string returned by the built-in Igor function GetRTStackInfo. See the
 	documentation for GetRTStackInfo for details.
 	
-	The string stored in *stackInfoHPtr is not null-terminated. Use GetHandleSize on *stackInfoHPtr
+	The string stored in *stackInfoHPtr is not null-terminated. Use WMGetHandleSize on *stackInfoHPtr
 	to determine the size of the text.
 	
 	Thread Safety: GetIgorRTStackInfo is not thread-safe.
@@ -5004,5 +5024,7 @@ int
 ThreadGroupGetDF(int threadGroupID, int waitMilliseconds, DataFolderHandle* dataFolderHPtr)
 {
 	*dataFolderHPtr = NULL;
-	return (int)CallBack3(THREAD_GROUP_PUT_DF, XOP_CALLBACK_INT(threadGroupID), XOP_CALLBACK_INT(waitMilliseconds), dataFolderHPtr);
+	
+	// HR, 2016-08-02, XOP Toolkit 7.01: Replaced THREAD_GROUP_PUT_DF with THREAD_GROUP_GET_DF.
+	return (int)CallBack3(THREAD_GROUP_GET_DF, XOP_CALLBACK_INT(threadGroupID), XOP_CALLBACK_INT(waitMilliseconds), dataFolderHPtr);
 }

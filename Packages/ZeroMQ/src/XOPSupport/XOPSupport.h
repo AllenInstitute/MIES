@@ -45,6 +45,20 @@ XOPIORecResult CallBack6(int message, void* item0, void* item1, void* item2, voi
 XOPIORecResult CallBack7(int message, void* item0, void* item1, void* item2, void* item3, void* item4, void* item5, void* item6);
 XOPIORecResult CallBack8(int message, void* item0, void* item1, void* item2, void* item3, void* item4, void* item5, void* item6, void* item7);
 
+// Handle Routines (in XOPSupport.c)
+Handle WMNewHandle(BCInt numBytes);
+BCInt WMGetHandleSize(Handle h);
+int WMSetHandleSize(Handle h, BCInt numBytes);
+int WMHandToHand(Handle* hPtr);
+int WMHandAndHand(Handle h1, Handle h2);
+void WMDisposeHandle(Handle h);
+void* WMNewPtr(BCInt numBytes);
+BCInt WMGetPtrSize(void* p);
+int WMSetPtrSize(void* p, BCInt numBytes);
+int WMPtrToHand(const void* p, Handle* hPtr, BCInt numBytes);
+int WMPtrAndHand(const void* p, Handle h, BCInt numBytes);
+void WMDisposePtr(void* p);
+
 // Notice Routines (in XOPSupport.c).
 void XOPNotice(const char* noticePtr);
 void XOPNotice2(const char* noticePtr, UInt32 options);
@@ -81,7 +95,7 @@ int GetXOPStatus(void);
 XOPIORecParam GetXOPItem(int itemNumber);
 void IgorError(const char* title, int errCode);
 int GetIgorErrorMessage(int errCode, char errorMessage[256]);
-int WinInfo(int index, int typeMask, char* name, IgorWindowRef* windowRefPtr);
+int WinInfo(int index, int typeMask, char name[MAX_OBJ_NAME+1], IgorWindowRef* windowRefPtr);
 
 // Numeric conversion utilities (in XOPNumericConversion.c).
 #define SIGNED_INT 1
@@ -227,7 +241,7 @@ waveHndl FetchWave(const char* waveName);
 waveHndl FetchWaveFromDataFolder(DataFolderHandle dataFolderH, const char* waveName);
 int WaveType(waveHndl waveHandle);
 CountInt WavePoints(waveHndl waveHandle);
-void WaveName(waveHndl waveHandle, char* namePtr);
+void WaveName(waveHndl waveHandle, char name[MAX_OBJ_NAME+1]);
 void* WaveData(waveHndl waveHandle);
 void WaveScaling(waveHndl waveHandle, double* hsAPtr, double* hsBPtr, double* topPtr, double* botPtr);
 void SetWaveScaling(waveHndl waveHandle, const double* hsAPtr, const double* hsBPtr, const double* topPtr, const double* botPtr);
@@ -290,11 +304,15 @@ int MDGetWaveScaling(waveHndl waveH, int dimension, double* sfA, double* sfB);
 int MDSetWaveScaling(waveHndl waveH, int dimension, const double* sfA, const double* sfB);
 int MDGetWaveUnits(waveHndl waveH, int dimension, char units[MAX_UNIT_CHARS+1]);
 int MDSetWaveUnits(waveHndl waveH, int dimension, const char units[MAX_UNIT_CHARS+1]);
-int MDGetDimensionLabel(waveHndl waveH, int dimension, IndexInt element, char label[MAX_DIM_LABEL_CHARS+1]);
-int MDSetDimensionLabel(waveHndl waveH, int dimension, IndexInt element, const char label[MAX_DIM_LABEL_CHARS+1]);
+int MDGetDimensionLabel(waveHndl waveH, int dimension, IndexInt element, char label[MAX_DIM_LABEL_BYTES+1]);
+int MDSetDimensionLabel(waveHndl waveH, int dimension, IndexInt element, const char label[MAX_DIM_LABEL_BYTES+1]);
 int MDAccessNumericWaveData(waveHndl waveH, int accessMode, BCInt* dataOffsetPtr);
 int MDGetNumericWavePointValue(waveHndl waveH, IndexInt indices[MAX_DIMENSIONS], double value[2]);
 int MDSetNumericWavePointValue(waveHndl waveH, IndexInt indices[MAX_DIMENSIONS], double value[2]);
+int MDGetNumericWavePointValueSInt64(waveHndl waveH, IndexInt indices[MAX_DIMENSIONS], SInt64 value[2]);	// Added in Igor Pro 7.03.
+int MDSetNumericWavePointValueSInt64(waveHndl waveH, IndexInt indices[MAX_DIMENSIONS], SInt64 value[2]);	// Added in Igor Pro 7.03.
+int MDGetNumericWavePointValueUInt64(waveHndl waveH, IndexInt indices[MAX_DIMENSIONS], UInt64 value[2]);	// Added in Igor Pro 7.03.
+int MDSetNumericWavePointValueUInt64(waveHndl waveH, IndexInt indices[MAX_DIMENSIONS], UInt64 value[2]);	// Added in Igor Pro 7.03.
 int MDGetDPDataFromNumericWave(waveHndl waveH, double* dPtr);
 int MDStoreDPDataInNumericWave(waveHndl waveH, const double* dPtr);
 int MDGetTextWavePointValue(waveHndl waveH, IndexInt indices[MAX_DIMENSIONS], Handle textH);
@@ -323,14 +341,14 @@ int SetIgorComplexVar(const char* numVarName, const double* realValuePtr, const 
 int SetIgorStringVar(const char* stringVarName, const char* stringVarValue, int forceGlobal);
 
 // Name utilities (in XOPSupport.c).
-int UniqueName(const char* baseName, char* finalName);
-int UniqueName2(int nameSpaceCode, const char* baseName, char* finalName, int* suffixNumPtr);
-int SanitizeWaveName(char* waveName, int column);
+int UniqueName(const char* baseName, char finalName[MAX_OBJ_NAME+1]);
+int UniqueName2(int nameSpaceCode, const char* baseName, char finalName[MAX_OBJ_NAME+1], int* suffixNumPtr);
+int SanitizeWaveName(char waveName[MAX_OBJ_NAME+1], int column);
 int CheckName(DataFolderHandle dataFolderH, int objectType, const char* name);
-int PossiblyQuoteName(char* name);
+int PossiblyQuoteName(char name[MAX_OBJ_NAME+2+1]);
 void CatPossiblyQuotedName(char* str, const char* name);
-int CleanupName(int beLiberal, char* name, int maxNameChars);
-int CreateValidDataObjectName(DataFolderHandle dataFolderH, const char* inName, char* outName, int* suffixNumPtr, int objectType, int beLiberal, int allowOverwrite, int inNameIsBaseName, int printMessage, int* nameChangedPtr, int* doOverwritePtr);
+int CleanupName(int beLiberal, char* name, int maxNameBytes);
+int CreateValidDataObjectName(DataFolderHandle dataFolderH, const char* inName, char outName[MAX_OBJ_NAME+1], int* suffixNumPtr, int objectType, int beLiberal, int allowOverwrite, int inNameIsBaseName, int printMessage, int* nameChangedPtr, int* doOverwritePtr);
 
 // Igor thread support (in XOPSupport.c).
 int ThreadProcessorCount(void);																	// Added for Igor Pro 6.23B01.
@@ -514,18 +532,9 @@ int ParseFilePath(int mode, const char* pathIn, const char* separator, int which
 int SpecialDirPath(const char* pathID, int domain, int flags, int createDir, char pathOut[MAX_PATH_LEN+1]);								// Added for Igor Pro 6.20B03
 
 // File loader utilities (in XOPFiles.c).
-int FileLoaderMakeWave(int column, char* waveName, CountInt numPoints, int fileLoaderFlags, waveHndl* waveHandlePtr);
+int FileLoaderMakeWave(int column, char waveName[MAX_OBJ_NAME+1], CountInt numPoints, int fileLoaderFlags, waveHndl* waveHandlePtr);
 int SetFileLoaderOutputVariables(const char* fileNameOrPath, int numWavesLoaded, const char* waveNames);
 int SetFileLoaderOperationOutputVariables(int runningInUserFunction, const char* fileNameOrPath, int numWavesLoaded, const char* waveNames);
-
-// Data loading and saving utilities for internal WaveMetrics use only (used by WaveMetrics Browser). (In XOPFiles.c).
-struct LoadDataInfo;		// GNU C requires this.
-struct LoadFileInfo;		// GNU C requires this.
-struct SaveDataInfo;		// GNU C requires this.
-int PrepareLoadIgorData(struct LoadDataInfo* ldiPtr, int* refNumPtr, struct LoadFileInfo*** topFIHPtr);
-int LoadIgorData(struct LoadDataInfo* ldiPtr, int refNum, struct LoadFileInfo** topFIH, DataFolderHandle destDataFolderH);
-int EndLoadIgorData(struct LoadDataInfo* ldiPtr, int refNum, struct LoadFileInfo** topFIH);
-int SaveIgorData(struct SaveDataInfo* sdiPtr, DataFolderHandle topDataFolderH);
 
 // IGOR color table routines (in XOPSupport.c).
 int GetIndexedIgorColorTableName(int index, char name[MAX_OBJ_NAME+1]);
@@ -558,7 +567,7 @@ int SaveXOPPrefsHandle(Handle prefsHandle);
 int GetXOPPrefsHandle(Handle* prefsHandlePtr);
 int GetPrefsState(int* prefsStatePtr);
 int XOPDisplayHelpTopic(const char* title, const char* topicStr, int flags);
-enum CloseWinAction DoWindowRecreationDialog(char* procedureName);
+enum CloseWinAction DoWindowRecreationDialog(char procedureName[MAX_OBJ_NAME+1]);
 int GetIgorProcedureList(Handle* hPtr, int flags);
 int GetIgorProcedure(const char* procedureName, Handle* hPtr, int flags);
 int SetIgorProcedure(const char* procedureName, Handle h, int flags);

@@ -9,9 +9,9 @@
 type 'XOPI' {
 	integer;							// XOP protocol version. Use XOP_VERSION.
 	integer;							// Code for development system used to make XOP. Use DEV_SYS_CODE.
-	integer;							// Obsolete. Set to zero.
-	integer;							// Obsolete. Set to zero.
-	integer;							// XOP Toolkit version. 600 means version 6.00. Use XOP_TOOLKIT_VERSION. Old XOPs will have zero in this field.
+	integer;							// XOP feature flags. Use XOP_FEATURE_FLAGS.
+	integer;							// Reserved. Use XOPI_RESERVED.
+	integer;							// XOP Toolkit version. 600 means version 6.00. Use XOP_TOOLKIT_VERSION. Very old XOPs will have zero in this field.
 };
 
 

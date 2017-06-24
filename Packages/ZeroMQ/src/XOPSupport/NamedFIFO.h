@@ -12,9 +12,6 @@
 **		where ZSIZEOF is defined like so:
 **			#define ZSIZEOF(x,y) ((size_t)&( (x *) 0)->y)
 **
-**	Note:
-**		MAX_OBJ_NAME= 31
-**		number types below are described in help for WaveType
 **	LH951230: Made sneaky change to struct ChartChanInfo. First element
 **		was a long and is now two shorts. Old code should contine to work
 **		without change.
@@ -32,12 +29,12 @@
 #pragma pack(2)		// All structures passed to Igor are two-byte aligned.
 
 #define FIFO_VERSION_NUM 0x03
-
 #define FIFO_SWAP_BYTES 1		// for use in the flags field
+#define MAX_FIFO_NAME 31
 
 typedef struct NamedFIFO{
 	struct NamedFIFO **next;	// linked list of these thingies
-	char name[MAX_OBJ_NAME+1];	// name of this fifo
+	char fifoName[MAX_FIFO_NAME+1];	// name of this fifo
 	
 	int fifoTot;				// total chunks written to fifo so far
 	int diskTot;				// total chunks written to disk so far
@@ -72,13 +69,14 @@ typedef struct NamedFIFO{
 
 #define MAX_NOTESIZE 255
 #define FIFO_CHAN_VERSION_NUM 0x01
+#define MAX_FIFO_CHANNEL_NAME 31
 
 typedef struct ChartChanInfo{
 	short vectpnts;				// if not zero, makes this channel a color strip of this number of points
 	short ntype;				// number type -- NT_FP32 or NT_I16 or ...
 	double offset,gain;			// result= (measval-offset)*gain
 	double fsPlus,fsMinus;		// value of + & - full scale
-	char name[MAX_OBJ_NAME+1];	// name of this channel
+	char fifoChannelName[MAX_FIFO_CHANNEL_NAME+1];	// name of this channel
 	char units[4];				// SU abbrev of units
 	int chanRefcon;				// for use by data acquisition sw
 }ChartChanInfo;

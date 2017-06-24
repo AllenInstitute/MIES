@@ -339,6 +339,15 @@ XOPOpenFileDialog(
 	NSString* titleStr = [NSString stringWithUTF8String:prompt];		// Auto-released
 	[panel setTitle:titleStr];											// Copies titleStr
 	
+	/*	Starting in OS X 10.11, Apple no longer displays the title bar in the Open
+		File dialogs so we use the message property instead.
+	*/
+	#ifndef NSAppKitVersionNumber10_11				// #define was added in OS X 10.11 SDK headers
+		#define NSAppKitVersionNumber10_11 1404		// From https://developer.apple.com/library/content/releasenotes/AppKit/RN-AppKit/
+	#endif
+	if (floor(NSAppKitVersionNumber) >= NSAppKitVersionNumber10_11)
+		[panel setMessage:titleStr];									// Copies titleStr
+	
 	if (*initialDir != 0) {
 		char posixPath[MAX_PATH_LEN+1];
 		int err2 = HFSToPosixPath(initialDir, posixPath, 1);

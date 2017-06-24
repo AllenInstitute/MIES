@@ -26,6 +26,28 @@ int XOPRefNum(void);
 Handle GetXOPResource(int resType, int resID);
 Handle GetXOPNamedResource(int resType, const char* name);
 
+#if !defined(ALLOW_MAC_OS_NATIVE_MEMORY_ROUTINES)
+	/*	This causes a link error when compiling an for Macintosh if you use Mac OS native
+		memory management routines. To run with 64-bit MacIGOR 8.00 or later, you need to
+		make source code changes and recompile.
+		
+		For details, See "WM Memory XOPSupport Routines" in XOPMemory.c.
+	*/
+	#define NewHandle XOP_using_obsolete_memory_routines
+	#define GetHandleSize XOP_using_obsolete_memory_routines
+	#define SetHandleSize XOP_using_obsolete_memory_routines
+	#define HandToHand XOP_using_obsolete_memory_routines
+	#define HandAndHand XOP_using_obsolete_memory_routines
+	#define DisposeHandle XOP_using_obsolete_memory_routines
+	#define NewPtr XOP_using_obsolete_memory_routines
+	#define GetPtrSize XOP_using_obsolete_memory_routines
+	#define SetPtrSize XOP_using_obsolete_memory_routines
+	#define PtrToHand XOP_using_obsolete_memory_routines
+	#define PtrAndHand XOP_using_obsolete_memory_routines
+	#define DisposePtr XOP_using_obsolete_memory_routines
+	#define MemError XOP_using_obsolete_memory_routines
+#endif
+
 #ifdef __cplusplus
 }
 #endif

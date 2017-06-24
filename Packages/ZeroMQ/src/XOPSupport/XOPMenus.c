@@ -1048,9 +1048,8 @@ NullTerminateHandle(Handle h)		// Adds null byte to end of handle
 	int len;
 	int err;
 	
-	len = (int)GetHandleSize(h);
-	SetHandleSize(h, len+1);
-	err = MemError();
+	len = (int)WMGetHandleSize(h);
+	err = WMSetHandleSize(h, len+1);
 	if (err != 0)
 		return err;
 	(*h)[len] = 0;					// Add null terminator
@@ -1079,23 +1078,23 @@ XOPFillWaveMenu(XOPMenuRef menuRef, const char *match, const char *options, int 
 	if (!CheckRunningInMainThread("XOPFillWaveMenu"))
 		return NOT_IN_THREADSAFE;
 	
-	listHandle = NewHandle(0L);
+	listHandle = WMNewHandle(0L);
 	err = WaveList(listHandle, match, ";", options);
 	if (err != 0) {
-		DisposeHandle(listHandle);
+		WMDisposeHandle(listHandle);
 		return err;
 	}
 	
 	// Convert to C string by adding null terminator
 	err = NullTerminateHandle(listHandle);
 	if (err != 0) {
-		DisposeHandle(listHandle);
+		WMDisposeHandle(listHandle);
 		return err;
 	}
 	
 	XOPFillMenuNoMeta(menuRef, afterItemNumber, *listHandle);
 	
-	DisposeHandle(listHandle);
+	WMDisposeHandle(listHandle);
 	
 	return err;
 }
@@ -1121,23 +1120,23 @@ XOPFillPathMenu(XOPMenuRef menuRef, const char *match, const char *options, int 
 	if (!CheckRunningInMainThread("XOPFillPathMenu"))
 		return NOT_IN_THREADSAFE;
 	
-	listHandle = NewHandle(0L);
+	listHandle = WMNewHandle(0L);
 	err = PathList(listHandle, match, ";", options);
 	if (err != 0) {
-		DisposeHandle(listHandle);
+		WMDisposeHandle(listHandle);
 		return err;
 	}
 	
 	// Convert to C string by adding null terminator
 	err = NullTerminateHandle(listHandle);
 	if (err != 0) {
-		DisposeHandle(listHandle);
+		WMDisposeHandle(listHandle);
 		return err;
 	}
 	
 	XOPFillMenuNoMeta(menuRef, afterItemNumber, *listHandle);
 	
-	DisposeHandle(listHandle);
+	WMDisposeHandle(listHandle);
 	
 	return err;
 }
@@ -1167,23 +1166,23 @@ XOPFillWinMenu(XOPMenuRef menuRef, const char *match, const char *options, int a
 	if (!CheckRunningInMainThread("XOPFillPathMenu"))
 		return NOT_IN_THREADSAFE;
 	
-	listHandle = NewHandle(0L);
+	listHandle = WMNewHandle(0L);
 	err = WinList(listHandle, match, ";", options);
 	if (err != 0) {
-		DisposeHandle(listHandle);
+		WMDisposeHandle(listHandle);
 		return err;
 	}
 	
 	// Convert to C string by adding null terminator
 	err = NullTerminateHandle(listHandle);
 	if (err != 0) {
-		DisposeHandle(listHandle);
+		WMDisposeHandle(listHandle);
 		return err;
 	}
 	
 	XOPFillMenuNoMeta(menuRef, afterItemNumber, *listHandle);
 	
-	DisposeHandle(listHandle);
+	WMDisposeHandle(listHandle);
 	
 	return err;
 }

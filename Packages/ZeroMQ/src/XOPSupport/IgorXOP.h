@@ -1,4 +1,4 @@
-﻿// IgorXOP.h -- Miscellaneous equates for interfacing XOP to Igor.
+// IgorXOP.h -- Miscellaneous equates for interfacing XOP to Igor.
 
 /*	These equates come from .h files used in compiling Igor and include
 	various information that an XOP might need in communicating with Igor.
@@ -269,7 +269,13 @@ enum CloseWinAction {
 	#define TRUE -1
 #endif
 
-#define MAXCMDLEN 400		// HR, 10/2/93 -- changed from 200 to 400 for Igor 2.0.
+// Max bytes in a command line. Also maximum for a data folder path.
+#ifdef XOP_LONG_NAMES_AND_PATHS
+	// Your XOP will require Igor Pro 8.00 or later
+	#define MAXCMDLEN 2500
+#else
+	#define MAXCMDLEN 400		// HR, 10/2/93 -- changed from 200 to 400 for Igor 2.0.
+#endif
 
 #define WAVE_OBJECT 1
 #define WAVEARRAY_OBJECT 2
@@ -387,8 +393,14 @@ enum CloseWinAction {
 
 
 // From wave.h
-#define MAX_WAVE_NAME 31		// maximum length of wave name -- not including the null
-								//	NOTE: Prior to Igor 3.0, this was 18 and we recommended that you use MAX_OBJ_NAME (31) instead of MAX_WAVE_NAME.
+
+// Max bytes in a wave name, not including trailing null.
+// MAX_WAVE_NAME has the same value as MAX_OBJ_NAME.
+#ifdef XOP_LONG_NAMES_AND_PATHS
+	#define MAX_WAVE_NAME 255	// Your XOP will require Igor Pro 8.00 or later
+#else
+	#define MAX_WAVE_NAME 31
+#endif
 
 #define TEXT_WAVE_TYPE 0		// The wave type code for text waves. Added in Igor Pro 3.0.
 
@@ -402,8 +414,13 @@ enum CloseWinAction {
 #define MAX_UNIT_CHARS 49		// Max number of characters in a units string, not including trailing null, in Igor Pro 3.0 or later.
 								// Prior to Igor Pro 3.0, the maximum was 3 characters.
 
-#define MAX_DIM_LABEL_CHARS 31	// Max chars in a dimension label, not including trailing null.
-								
+// Max bytes in a dimension label, not including trailing null
+#ifdef XOP_LONG_NAMES_AND_PATHS
+	#define MAX_DIM_LABEL_BYTES 255	// Your XOP will require Igor Pro 8.00 or later
+#else
+	#define MAX_DIM_LABEL_BYTES 31
+#endif
+
 #define kMDWaveAccessMode0 0	// Access code for MDAccessNumericWaveData. Used by Igor for future compatibility check.
 
 // From WM.h
@@ -414,23 +431,38 @@ enum CloseWinAction {
 #define HANDCURSOR 4
 #define SPINNINGCURSOR 5
 #define CROSSHAIRCURSOR 6
-#define MAX_OBJ_NAME 31			// maximum length of: variables,macros,annotations.
+
+// Max bytes in an object name, not including trailing null.
+// MAX_OBJ_NAME has the same value as MAX_WAVE_NAME.
+#ifdef XOP_LONG_NAMES_AND_PATHS
+	#define MAX_OBJ_NAME 255	// Your XOP will require Igor Pro 8.00 or later
+#else
+	#define MAX_OBJ_NAME 31
+#endif
 #define MAX_LONG_NAME 255		// Added in 6.00D00. Used for double names.
 
-#ifdef MACIGOR
-	// HR, 080728: XOP Toolkit 5.09 - Support long file names on Macintosh.
-	#define MAX_VOLUMENAME_LEN 255			// Maximum length of volume name
-	#define MAX_DIRNAME_LEN 255				// Maximum length of directory name
-	#define MAX_FILENAME_LEN 255			// Maximum length of file name
-	#define MAX_PATH_LEN 511				// Maximum length of path name. This was 511 in Igor 3.0 so I am leaving it as 511 even though it is not clear whether the Mac OS support more than 255.
+#ifdef XOP_LONG_NAMES_AND_PATHS
+	// Your XOP will require Igor Pro 8.00 or later
+	#define MAX_VOLUMENAME_LEN 255				// Maximum length of volume name
+	#define MAX_DIRNAME_LEN 255					// Maximum length of directory name
+	#define MAX_FILENAME_LEN 255				// Maximum length of file name
+	#define MAX_PATH_LEN 2000					// Maximum length of path name. Mac OS actually maxes out at 1026 bytes.
+#else
+	// Here for XOPs that do not support long names and paths
+	#ifdef MACIGOR
+		// HR, 080728: XOP Toolkit 5.09 - Support long file names on Macintosh.
+		#define MAX_VOLUMENAME_LEN 255			// Maximum length of volume name
+		#define MAX_DIRNAME_LEN 255				// Maximum length of directory name
+		#define MAX_FILENAME_LEN 255			// Maximum length of file name
+		#define MAX_PATH_LEN 511				// Maximum length of path name. This was 511 in Igor 3.0 so I am leaving it as 511 even though it is not clear whether the Mac OS support more than 255.
+	#endif
+	#ifdef WINIGOR
+		#define MAX_VOLUMENAME_LEN 255			// Maximum length of volume name (e.g., "C:")
+		#define MAX_DIRNAME_LEN 255				// Maximum length of directory name
+		#define MAX_FILENAME_LEN 255			// maximum length of file name
+		#define MAX_PATH_LEN 259				// maximum length of path name
+	#endif
 #endif
-#ifdef WINIGOR
-	#define MAX_VOLUMENAME_LEN 255			// Maximum length of volume name (e.g., "C:")
-	#define MAX_DIRNAME_LEN 255				// Maximum length of directory name
-	#define MAX_FILENAME_LEN 255			// maximum length of file name
-	#define MAX_PATH_LEN 259				// maximum length of path name
-#endif
-
 
 /*	This is used to select one of two ways of doing something or to allow both.
 	For an example, see VolumeNameLength() in WMFileUtils.c.
@@ -562,7 +594,7 @@ struct WaveRangeRec {
 	int gotRange;					// true if /R=range was present
 
 	// next, you setup these fields
-	Handle waveHandle;
+	waveHndl waveHandle;
 	CountInt minPoints;				// min number of points in acceptable range
 	
 	// Then, following fields are setup by CalcWaveRange

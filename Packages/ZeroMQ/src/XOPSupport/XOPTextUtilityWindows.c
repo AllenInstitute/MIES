@@ -595,8 +595,8 @@ TUSetSelLocs(TUStuffHandle TU, TULocPtr startLocPtr, TULocPtr endLocPtr, int fla
 	paragraph is assumed to be a valid paragraph number.
 	
 	textPtrPtr is a pointer to your char* variable.
-	Igor allocates a pointer, using NewPtr, and sets *textPtrPtr to point to the allocated memory.
-	The returned pointer belongs to you. Dispose it using DisposePtr when you no longer need it.
+	Igor allocates a pointer, using WMNewPtr, and sets *textPtrPtr to point to the allocated memory.
+	The returned pointer belongs to you. Dispose it using WMDisposePtr when you no longer need it.
 	
 	Example:
 		char* p;
@@ -609,13 +609,13 @@ TUSetSelLocs(TUStuffHandle TU, TULocPtr startLocPtr, TULocPtr endLocPtr, int fla
 		
 		<Deal with the text>
 		
-		DisposePtr(p);
+		WMDisposePtr(p);
 	
 	Note that the text pointed to by p is NOT null terminated and therefore
 	is not a C string. You can turn it into a C string as follows:
-		SetPtrSize(p, length+1);
-		if (result = MemError()) {
-			DisposePtr(p);
+		result = WMSetPtrSize(p, length+1);
+		if (result != 0) {
+			WMDisposePtr(p);
 			return result
 		}
 		p[length] = 0;
@@ -652,14 +652,14 @@ TUFetchParagraphText(TUStuffHandle TU, int paragraph, Ptr *textPtrPtr, int *leng
 		
 		<Deal with the text>
 		
-		DisposeHandle(h);
+		WMDisposeHandle(h);
 	
 	Note that the text in the handle h is NOT null terminated and therefore
 	is not a C string. You can turn it into a C string as follows:
-		length = GetHandleSize(h);
-		SetHandleSize(h, length+1);
-		if (result = MemError()) {
-			DisposeHandle(h);
+		length = WMGetHandleSize(h);
+		result = WMSetHandleSize(h, length+1);
+		if (result != 0) {
+			WMDisposeHandle(h);
 			return result
 		}
 		*h[length] = 0;
@@ -702,14 +702,14 @@ TUFetchSelectedText(TUStuffHandle TU, Handle* textHandlePtr, void* reservedForFu
 		
 		<Deal with the text>
 		
-		DisposeHandle(h);
+		WMDisposeHandle(h);
 	
 	Note that the text in the handle h is NOT null terminated and therefore
 	is not a C string. You can turn it into a C string as follows:
-		length = GetHandleSize(h);
-		SetHandleSize(h, length+1);
-		if (result = MemError()) {
-			DisposeHandle(h);
+		length = WMGetHandleSize(h);
+		result = WMSetHandleSize(h, length+1);
+		if (result != 0) {
+			WMDisposeHandle(h);
 			return result
 		}
 		*h[length] = 0;
@@ -979,7 +979,7 @@ HistorySetSelLocs(TULocPtr startLocPtr, TULocPtr endLocPtr, int flags)
 	To get the length of the paragraph text without actually getting the text, pass NULL for textPtrPtr.
 
 	I textPtrPtr is not NULL and *textPtrPtr is not NULL then you must dispose *textPtrPtr using
-	DisposePtr when you no longer need it.
+	WMDisposePtr when you no longer need it.
 	
 	Thread Safety: HistoryFetchParagraphText is not thread-safe.
 */
@@ -1005,7 +1005,7 @@ HistoryFetchParagraphText(int paragraph,  Ptr* textPtrPtr, int* lengthPtr)
 	
 	On return, if there is an error, *textHPtr will be NULL. If there is no error, *textHPtr
 	will point to a handle containing the text. *textHPtr is not null-terminated. *textHPtr
-	belongs to you so dispose it using DisposeHandle when you are finished with it.
+	belongs to you so dispose it using WMDisposeHandle when you are finished with it.
 	
 	Thread Safety: HistoryFetchText is not thread-safe.
 */

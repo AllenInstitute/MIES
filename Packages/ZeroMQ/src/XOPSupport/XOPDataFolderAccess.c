@@ -118,7 +118,7 @@ SetDataFolderProperties(DataFolderHandle dataFolderH, int properties)
 	You must create h and dispose it when you no longer need it. Its contents will
 	be replaced by the listing.
 	
-	The listing does not include a null terminator character. Use GetHandleSize to
+	The listing does not include a null terminator character. Use WMGetHandleSize to
 	find the length of the text and add a null terminator if you want to treat it
 	as a C string.
 	
@@ -545,7 +545,7 @@ GetIndexedDataFolderObject(DataFolderHandle dataFolderH, int objectType, int ind
 	The handles returned via the waveH, strH and dfH fields belong to Igor. Do not modify or dispose them.
 	
 	Remember also that strings in handles do not contain a null terminator (they are not C strings).
-	To find the number of characters, call GetHandleSize on the handle.
+	To find the number of characters, call WMGetHandleSize on the handle.
 
 	Thread Safety: GetDataFolderObject is Igor-thread-safe with XOP Toolkit 6 and Igor Pro 6.20 or later.
 	You can call it from a thread created by Igor but not from a private thread that you created yourself.
@@ -578,7 +578,7 @@ GetDataFolderObject(DataFolderHandle dataFolderH, const char objectName[MAX_OBJ_
 								(if you created it).
 								Remember also that strings in handles do not contain a null terminator
 								(they are not C strings). To find the number of characters, call
-								GetHandleSize on the handle.
+								WMGetHandleSize on the handle.
 								
 		For DATAFOLDER_OBJECT:	Does nothing.
 
