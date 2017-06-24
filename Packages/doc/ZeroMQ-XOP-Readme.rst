@@ -385,3 +385,14 @@ Running the test suite
 - Open Packages/ZeroMQ/tests/RunTests.pxp
 - Execute in Igor ``run()``
 - The test suite always passes *without* errors
+
+Running clang-tidy on MacOSX
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+- Install `Homebrew <https://brew.sh>`__
+- ``brew install llvm``
+- Create compilation database
+
+  - ``mkdir clang-tidy; cd clang-tidy``
+  - ``cmake -DCMAKE_OSX_ARCHITECTURES=x86_64 -DCMAKE_OSX_DEPLOYMENT_TARGET=10.9 -DCMAKE_EXPORT_COMPILE_COMMANDS=ON ..``
+  - ``cmake --build . --target clang-tidy``
