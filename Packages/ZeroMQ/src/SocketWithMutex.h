@@ -5,14 +5,14 @@
   SocketWithMutex A(GlobalData::Instance().ZMQClientSocket(),                  \
                     GlobalData::Instance().m_clientMutex);
 
-//DebugOutput(fmt::sprintf("%s: Trying to lock client socket\n", __func__));   \
+// DebugOutput(fmt::sprintf("%s: Trying to lock client socket\n", __func__));
 
 /// @param A object name to create
 #define GET_SERVER_SOCKET(A)                                                   \
   SocketWithMutex A(GlobalData::Instance().ZMQServerSocket(),                  \
                     GlobalData::Instance().m_serverMutex);
 
-//DebugOutput(fmt::sprintf("%s: Trying to lock server socket\n", __func__));   \
+// DebugOutput(fmt::sprintf("%s: Trying to lock server socket\n", __func__));
 
 class SocketWithMutex
 {
