@@ -78,9 +78,6 @@ SocketWithMutex.h
 ZeroMQ.h)
 
 SOURCE_GROUP("Headers" FILES ${HEADERS})
-ADD_LIBRARY(${libname} SHARED ${SOURCES} ${SOURCES_EXT} ${HEADERS} ${RESOURCES})
-
-SET_TARGET_PROPERTIES(${libname} PROPERTIES SUFFIX ".xop")
 
 INCLUDE_DIRECTORIES(XOPSupport . "libzmq/include")
 
@@ -107,6 +104,11 @@ IF(APPLE)
 
   SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -D=TARGET_OS_MAC -Wno-deprecated -mmacosx-version-min=10.9")
 ELSEIF(WIN32)
+
+  ADD_LIBRARY(${libname} SHARED ${SOURCES} ${SOURCES_EXT} ${HEADERS} ${RESOURCES})
+
+  SET_TARGET_PROPERTIES(${libname} PROPERTIES SUFFIX ".xop")
+
   # CMAKE links by default to the MSVC runtime dynamically
   # so we don't have to set that here
 
