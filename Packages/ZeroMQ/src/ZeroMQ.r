@@ -22,7 +22,8 @@ resource 'STR#' (1100) {					/* custom error messages */
   "Message handler already running.",                // HANDLER_ALREADY_RUNNING
   "Message handler could not find a binded server.", // HANDLER_NO_CONNECTION
   "Can not handle multipart messages.",              // INVALID_MULTIPART_MSG
-  "Required procedure files are missing."            // MISSING_PROCEDURE_FILES
+  "Required procedure files are missing.",           // MISSING_PROCEDURE_FILES
+  "Unexpected multi-part message format."            // INVALID_MESSAGE_FORMAT
 	}
 };
 
