@@ -41,6 +41,31 @@ threadsafe Function TS_GetNewestFromThreadQueue(tgID, varName)
 	return var
 End
 
+/// @brief Return the variable named `varName` from the thread queue or `NaN`
+///        if there is none.
+///
+/// Throws away anything else in the datafolder from the thread queue.
+threadsafe Function TS_ThreadGroupGetVariable(tgID, varName)
+	variable tgID
+	string varName
+
+	ASSERT_TS(!isEmpty(varName), "varName must not be empty")
+
+	DFREF dfr = ThreadGroupGetDFR(tgID, 0)
+
+	if(!DataFolderExistsDFR(dfr))
+		return NaN
+	endif
+
+	NVAR/Z/SDFR=dfr var = $varName
+
+	if(!NVAR_Exists(var)) // we got something different
+		return NaN
+	endif
+
+	return var
+End
+
 /// @brief Push a single variable named `varName` with value `varValue` to the
 /// thread queue
 threadsafe Function TS_ThreadGroupPutVariable(tgID, varName, varValue)
