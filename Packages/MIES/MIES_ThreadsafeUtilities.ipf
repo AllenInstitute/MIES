@@ -41,6 +41,79 @@ threadsafe Function TS_GetNewestFromThreadQueue(tgID, varName)
 	return var
 End
 
+/// @brief Return the newest variables from the thread queue
+///
+/// The function returns if it received at least one variable from the thread queue.
+///
+/// Throws away anything else in the datafolder from the thread queue.
+threadsafe Function/WAVE TS_GetNewestFromThreadQueueMult(tgID, varNames)
+	variable tgID
+	Wave/T varNames
+
+	variable numEntries, i, oneValidEntry
+	string varName
+
+	ASSERT_TS(DimSize(varNames, COLS) == 0, "Expected a 1D wave")
+	ASSERT_TS(IsTextWave(varNames), "Expected a text wave")
+
+	numEntries = DimSize(varNames, ROWS)
+	Make/D/N=(numEntries)/FREE result = NaN
+
+	for(i = 0; i < numEntries; i += 1)
+		varName = varNames[i]
+		ASSERT_TS(!isEmpty(varName), "varName must not be empty")
+		SetDimLabel Rows, i, $varName, result
+	endfor
+
+	for(;;)
+		DFREF dfr = ThreadGroupGetDFR(tgID, 0)
+
+		if(!DataFolderExistsDFR(dfr))
+			if(!oneValidEntry)
+				continue
+			endif
+
+			return result
+		endif
+
+		for(i = 0; i < numEntries; i += 1)
+			NVAR/Z/SDFR=dfr var = $GetDimLabel(result, ROWS, i)
+
+			if(NVAR_Exists(var))
+				oneValidEntry = 1
+				result[i]     = var
+			endif
+		endfor
+	endfor
+
+	return result
+End
+
+/// @brief Return the variable named `varName` from the thread queue or `NaN`
+///        if there is none.
+///
+/// Throws away anything else in the datafolder from the thread queue.
+threadsafe Function TS_ThreadGroupGetVariable(tgID, varName)
+	variable tgID
+	string varName
+
+	ASSERT_TS(!isEmpty(varName), "varName must not be empty")
+
+	DFREF dfr = ThreadGroupGetDFR(tgID, 0)
+
+	if(!DataFolderExistsDFR(dfr))
+		return NaN
+	endif
+
+	NVAR/Z/SDFR=dfr var = $varName
+
+	if(!NVAR_Exists(var)) // we got something different
+		return NaN
+	endif
+
+	return var
+End
+
 /// @brief Push a single variable named `varName` with value `varValue` to the
 /// thread queue
 threadsafe Function TS_ThreadGroupPutVariable(tgID, varName, varValue)

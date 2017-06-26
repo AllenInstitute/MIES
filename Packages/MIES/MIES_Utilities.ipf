@@ -1776,14 +1776,14 @@ Function/S GetFile(filePathWithSuffix, [sep])
 End
 
 /// @brief Set the given bit mask in var
-Function SetBit(var, bit)
+threadsafe Function SetBit(var, bit)
 	variable var, bit
 
 	return var | bit
 End
 
 /// @brief Clear the given bit mask in var
-Function ClearBit(var, bit)
+threadsafe Function ClearBit(var, bit)
 	variable var, bit
 
 	return var & ~bit
@@ -2960,7 +2960,7 @@ Function/WAVE DeepCopyWaveRefWave(src, [dimension, index, indexWave])
 End
 
 /// @brief Return 1 if the wave is a text wave, zero otherwise
-Function IsTextWave(wv)
+threadsafe Function IsTextWave(wv)
 	WAVE wv
 
 	return WaveType(wv, 1) == 2

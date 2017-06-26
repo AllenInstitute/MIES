@@ -655,6 +655,48 @@ End
 /// @name ITC
 /// @{
 
+/// @brief Output an informative error message for the ITC XOP2 operations (threadsafe variant)
+///
+/// @return 0 on success, 1 otherwise
+threadsafe Function HW_ITC_HandleReturnValues_TS(flags, ITCError, ITCXOPError)
+	variable flags, ITCError, ITCXOPError
+
+	// we only need the lower 32bits of the error
+	ITCError = ITCError & 0x00000000ffffffff
+
+	if(ITCError != 0 && !(flags & HARDWARE_PREVENT_ERROR_MESSAGE))
+		printf "The ITC XOP returned the following errors: ITCError=%#x, ITCXOPError=%d\r", ITCError, ITCXOPError
+
+		do
+			ITCGetErrorString2/X itcError
+		while(V_ITCXOPError == SLOT_LOCKED_TO_OTHER_THREAD && V_ITCError == 0)
+
+		print S_errorMEssage
+		print "Some hints you might want to try!"
+		print "- Is the correct ITC device type selected?"
+		print "- Is your ITC Device connected to a power socket?"
+		print "- Is your ITC Device connected to your computer?"
+		print "- Have you tried unlocking/locking the device already?"
+		print "- Reseating all connections between the DAC and the computer has also helped in the past."
+	elseif(ITCXOPError != 0 && !(flags & HARDWARE_PREVENT_ERROR_MESSAGE))
+		printf "The ITC XOP returned the following errors: ITCError=%#x, ITCXOPError=%d\r", ITCError, ITCXOPError
+		printf "The ITC XOP was called incorrectly, please inform the MIES developers!\r"
+		printf "XOP error message: %s\r", HW_ITC_GetXOPErrorMessage(ITCXOPError)
+		printf "Responsible function: (not available)\r"
+		printf "Complete call stack: (not available)\r"
+	endif
+
+#ifndef EVIL_KITTEN_EATING_MODE
+	if(ITCXOPError != 0 || ITCError != 0)
+		ASSERT_TS(!(flags & HARDWARE_ABORT_ON_ERROR), "DAC error")
+	endif
+
+	return ITCXOPError != 0 || ITCError != 0
+#else
+	return 0
+#endif
+End
+
 /// @brief Output an informative error message for the ITC XOP2 operations
 ///
 /// @return 0 on success, 1 otherwise
@@ -700,7 +742,7 @@ End
 /// @brief Return the error message for the given ITC XOP2 error code
 ///
 /// @param errCode one of @ref ITCXOP2Errors
-static Function/S HW_ITC_GetXOPErrorMessage(errCode)
+threadsafe static Function/S HW_ITC_GetXOPErrorMessage(errCode)
 	variable errCode
 
 	switch(errCode)
@@ -877,6 +919,25 @@ Function HW_ITC_DisableYoking([flags])
 	HW_ITC_HandleReturnValues(flags, V_ITCError, V_ITCXOPError)
 End
 
+/// @see HW_StopAcq (threadsafe variant)
+threadsafe Function HW_ITC_StopAcq_TS(deviceID, [prepareForDAQ, flags])
+	variable deviceID, prepareForDAQ, flags
+
+	do
+		ITCStopAcq2/DEV=(deviceID)/Z=(flags & HARDWARE_PREVENT_ERROR_POPUP)
+	while(V_ITCXOPError == SLOT_LOCKED_TO_OTHER_THREAD && V_ITCError == 0)
+
+	HW_ITC_HandleReturnValues_TS(flags, V_ITCError, V_ITCXOPError)
+
+	if(prepareForDAQ)
+		do
+			ITCConfigChannelUpload2/DEV=(deviceID)/Z=(flags & HARDWARE_PREVENT_ERROR_POPUP)
+		while(V_ITCXOPError == SLOT_LOCKED_TO_OTHER_THREAD && V_ITCError == 0)
+
+		HW_ITC_HandleReturnValues_TS(flags, V_ITCError, V_ITCXOPError)
+	endif
+End
+
 /// @see HW_StopAcq
 Function HW_ITC_StopAcq([prepareForDAQ, flags])
 	variable prepareForDAQ, flags
@@ -914,6 +975,25 @@ Function HW_ITC_GetCurrentDevice([flags])
 	return V_Value
 End
 
+/// @brief Reset the AD/DA channel FIFOs (threadsafe variant)
+///
+/// @param deviceID device identifier
+/// @param fifoPos  Wave with new fifo positions
+/// @param flags    [optional, default none] One or multiple flags from @ref HardwareInteractionFlags
+threadsafe Function HW_ITC_ResetFifo_TS(deviceID, fifoPos, [flags])
+	variable deviceID
+	WAVE fifoPos
+	variable flags
+
+	WAVE fifoPos_t = HW_ITC_TransposeAndToDouble(fifoPos)
+
+	do
+		ITCUpdateFIFOPositionAll2/DEV=(deviceID)/Z=(flags & HARDWARE_PREVENT_ERROR_POPUP) fifoPos_t
+	while(V_ITCXOPError == SLOT_LOCKED_TO_OTHER_THREAD && V_ITCError == 0)
+
+	HW_ITC_HandleReturnValues_TS(flags, V_ITCError, V_ITCXOPError)
+End
+
 /// @brief Reset the AD/DA channel FIFOs
 ///
 /// @param deviceID device identifier
@@ -942,6 +1022,31 @@ Function HW_ITC_ResetFifo(deviceID, [fifoPos, flags])
 	while(V_ITCXOPError == SLOT_LOCKED_TO_OTHER_THREAD && V_ITCError == 0)
 
 	HW_ITC_HandleReturnValues(flags, V_ITCError, V_ITCXOPError)
+End
+
+/// @see HW_StartAcq (threadsafe variant)
+threadsafe Function HW_ITC_StartAcq_TS(deviceID, triggerMode, [flags])
+	variable deviceID, triggerMode, flags
+
+	switch(triggerMode)
+		case HARDWARE_DAC_EXTERNAL_TRIGGER:
+			do
+				ITCStartAcq2/DEV=(deviceID)/EXT=256/Z=(flags & HARDWARE_PREVENT_ERROR_POPUP)
+			while(V_ITCXOPError == SLOT_LOCKED_TO_OTHER_THREAD && V_ITCError == 0)
+
+			break
+		case HARDWARE_DAC_DEFAULT_TRIGGER:
+			do
+				ITCStartAcq2/DEV=(deviceID)/Z=(flags & HARDWARE_PREVENT_ERROR_POPUP)
+			while(V_ITCXOPError == SLOT_LOCKED_TO_OTHER_THREAD && V_ITCError == 0)
+
+			break
+		default:
+			ASSERT_TS(0, "Unknown trigger mode")
+			break
+	endswitch
+
+	HW_ITC_HandleReturnValues_TS(flags, V_ITCError, V_ITCXOPError)
 End
 
 /// @see HW_StartAcq
@@ -1062,6 +1167,13 @@ Function HW_ITC_WriteDigital(deviceID, xopChannel, value, [flags])
 	HW_ITC_HandleReturnValues(flags, V_ITCError, V_ITCXOPError)
 End
 
+/// @brief Set the debug flag of the ITC XOP to ON/OFF (threadsafe variant)
+threadsafe Function HW_ITC_DebugMode_TS(state, [flags])
+	variable state, flags
+
+	ITCSetGlobals2/D=(state)/Z=(flags & HARDWARE_PREVENT_ERROR_POPUP)
+End
+
 /// @brief Set the debug flag of the ITC XOP to ON/OFF
 Function HW_ITC_DebugMode(state, [flags])
 	variable state, flags
@@ -1075,7 +1187,7 @@ Function/Wave HW_WAVE_GETTER_PROTOTYPE(str)
 	string str
 end
 
-Function/WAVE HW_ITC_TransposeAndToDouble(wv)
+threadsafe Function/WAVE HW_ITC_TransposeAndToDouble(wv)
 	WAVE wv
 
 	MatrixOp/FREE wv_t = fp64(wv^t)
@@ -1145,16 +1257,18 @@ Function HW_ITC_PrepareAcq(deviceID, [data, dataFunc, config, configFunc, fifoPo
 	HW_ITC_HandleReturnValues(flags, V_ITCError, V_ITCXOPError)
 
 #ifdef DEBUGGING_ENABLED
-	do
-		ITCGetAllChannelsConfig2/O/Z=(flags & HARDWARE_PREVENT_ERROR_POPUP) config_t, settings
-	while(V_ITCXOPError == SLOT_LOCKED_TO_OTHER_THREAD && V_ITCError == 0)
+	if(DP_DebuggingEnabledForFile(GetFile(FunctionPath(""))))
+		do
+			ITCGetAllChannelsConfig2/O/Z=(flags & HARDWARE_PREVENT_ERROR_POPUP) config_t, settings
+		while(V_ITCXOPError == SLOT_LOCKED_TO_OTHER_THREAD && V_ITCError == 0)
 
-	HW_ITC_HandleReturnValues(flags, V_ITCError, V_ITCXOPError)
+		HW_ITC_HandleReturnValues(flags, V_ITCError, V_ITCXOPError)
 
-	printf "xop: %d with alignment %d\r", settings[%FIFOPointer][0], GetAlignment(settings[%FIFOPointer][0])
-	printf "xop: %d with alignment %d\r", settings[%FIFOPointer][1], GetAlignment(settings[%FIFOPointer][1])
-	printf "diff = %d\r", settings[%FIFOPointer][1] - settings[%FIFOPointer][0]
-	printf "numRows = %d\r", DimSize(data, ROWS)
+		printf "xop: %d with alignment %d\r", settings[%FIFOPointer][0], GetAlignment(settings[%FIFOPointer][0])
+		printf "xop: %d with alignment %d\r", settings[%FIFOPointer][1], GetAlignment(settings[%FIFOPointer][1])
+		printf "diff = %d\r", settings[%FIFOPointer][1] - settings[%FIFOPointer][0]
+		printf "numRows = %d\r", DimSize(data, ROWS)
+	endif
 #endif // DEBUGGING_ENABLED
 
 	WAVE fifoPos_t = HW_ITC_TransposeAndToDouble(fifoPos)
@@ -1164,6 +1278,42 @@ Function HW_ITC_PrepareAcq(deviceID, [data, dataFunc, config, configFunc, fifoPo
 	while(V_ITCXOPError == SLOT_LOCKED_TO_OTHER_THREAD && V_ITCError == 0)
 
 	HW_ITC_HandleReturnValues(flags, V_ITCError, V_ITCXOPError)
+End
+
+/// @brief Check wether more data can be acquired (threadsafe variant)
+///
+/// @param[in] deviceID            device identifier
+/// @param[in] ADChannelToMonitor  first AD channel
+/// @param[in] stopCollectionPoint number of points to acquire
+/// @param[in] config              ITC config wave
+/// @param[out] fifoPos            allows to query the current fifo position
+/// @param flags                   [optional, default none] One or multiple flags from @ref HardwareInteractionFlags
+///
+/// @return 1 if more data needs to be acquired, 0 if done
+threadsafe Function HW_ITC_MoreData_TS(deviceID, ADChannelToMonitor, stopCollectionPoint, config, [fifoPos, flags])
+	variable deviceID
+	variable ADChannelToMonitor, stopCollectionPoint
+	WAVE config
+	variable &fifoPos
+	variable flags
+
+	variable fifoPosValue
+
+	WAVE config_t = HW_ITC_TransposeAndToDouble(config)
+
+	do
+		ITCFIFOAvailableALL2/DEV=(deviceID)/FREE/Z=(flags & HARDWARE_PREVENT_ERROR_POPUP) config_t, fifoAvail_t
+	while(V_ITCXOPError == SLOT_LOCKED_TO_OTHER_THREAD && V_ITCError == 0)
+
+	HW_ITC_HandleReturnValues_TS(flags, V_ITCError, V_ITCXOPError)
+
+	fifoPosValue = fifoAvail_t[2][ADChannelToMonitor]
+
+	if(!ParamIsDefault(fifoPos))
+		fifoPos = fifoPosValue
+	endif
+
+	return fifoPosValue < stopCollectionPoint
 End
 
 /// @brief Check wether more data can be acquired

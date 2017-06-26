@@ -29,6 +29,7 @@
 #include "MIES_AnalysisBrowser_SweepBrowser"
 #include "MIES_AnalysisBrowser_SweepBrowser_Export"
 #include "MIES_AnalysisFunctionHelpers"
+#include "MIES_AnalysisFunctionManagement"
 #include "MIES_AnalysisFunctionPrototypes"
 #include "MIES_AnalysisFunctions"
 #include "MIES_AnalysisMaster"
@@ -43,7 +44,6 @@
 #include "MIES_DataAcqITC"
 #include "MIES_DataBrowser" menus=0
 #include "MIES_DataConfiguratorITC"
-#include "MIES_DataManagementNew"
 #include "MIES_Debugging"
 #include "MIES_DebugPanel"
 #include "MIES_Downsample" menus=0
@@ -54,7 +54,6 @@
 #include "MIES_ForeignFunctionInterface"
 #include "MIES_GlobalStringAndVariableAccess"
 #include "MIES_GuiUtilities"
-#include "MIES_HardwareSetUp"
 #include "MIES_HDF5Ops"
 #include "MIES_IgorHooks"
 #include "MIES_Indexing"
@@ -72,6 +71,7 @@
 #include "MIES_RepeatedAcquisition"
 #include "MIES_SamplingInterval"
 #include "MIES_Structures"
+#include "MIES_SweepSaving"
 #include "MIES_TPBackgroundMD"
 #include "MIES_ThreadedFIFOHandling"
 #include "MIES_ThreadsafeUtilities"

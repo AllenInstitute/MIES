@@ -909,13 +909,15 @@ static Function WB_NoiseSegment(pa)
 	WAVE SegmentWave = WB_GetSegmentWave(duration=pa.duration)
 
 #ifdef DEBUGGING_ENABLED
-	Duplicate/O magphase, noiseEpochMagnitude
-	Redimension/R noiseEpochMagnitude
-	Duplicate/O magphase, noiseEpochPhase
-	Redimension/R noiseEpochPhase
+	if(DP_DebuggingEnabledForFile(GetFile(FunctionPath(""))))
+		Duplicate/O magphase, noiseEpochMagnitude
+		Redimension/R noiseEpochMagnitude
+		Duplicate/O magphase, noiseEpochPhase
+		Redimension/R noiseEpochPhase
 
-	MultiThread noiseEpochPhase = imag(magphase[p]) * 180 / Pi
-	MultiThread noiseEpochMagnitude = 20 * log(real(magphase[p]))
+		MultiThread noiseEpochPhase = imag(magphase[p]) * 180 / Pi
+		MultiThread noiseEpochMagnitude = 20 * log(real(magphase[p]))
+	endif
 #endif // DEBUGGING_ENABLED
 
 	MultiThread magphase = p2Rect(magphase)

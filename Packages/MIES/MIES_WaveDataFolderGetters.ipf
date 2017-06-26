@@ -4265,6 +4265,41 @@ Function/S GetActITCDevicesTestPulFolderA()
 	return GetITCDevicesFolderAsString() + ":ActiveITCDevices:TestPulse"
 End
 
+/// @brief Return the active devices wave for TP MD
+///
+/// Rows:
+///   - Devices taking part in TP MD
+/// Columns:
+///   - 0: DeviceID
+///   - 1: ActiveChunk
+///
+/// The `$NOTE_INDEX` wave note entry holds the number of active devices.
+/// In addition it is also the next free row index.
+Function/WAVE GetActiveDevicesTPMD()
+
+	DFREF dfr = GetActITCDevicesTestPulseFolder()
+	variable versionOfNewWave = 1
+
+	WAVE/Z/SDFR=dfr wv = ActiveDevicesTPMD
+
+	if(ExistsWithCorrectLayoutVersion(wv, versionOfNewWave))
+		return wv
+	elseif(WaveExists(wv))
+		// handle upgrade
+	else
+		Make/N=(MINIMUM_WAVE_SIZE, 2) dfr:ActiveDevicesTPMD/Wave=wv
+		wv = NaN
+	endif
+
+	SetDimLabel COLS, 0, DeviceID,    wv
+	SetDimLabel COLS, 1, ActiveChunk, wv
+
+	SetWaveVersion(wv, versionOfNewWave)
+	SetNumberInWaveNote(wv, NOTE_INDEX, 0)
+
+	return wv
+End
+
 /// @brief Returns wave (DA_EphysGuiState) that stores the DA_Ephys GUI state
 /// DA_EphysGuiState is stored in the device specific folder
 /// e.g. root:MIES:ITCDevices:ITC18USB:Device0
