@@ -5246,6 +5246,14 @@ Function DAP_CheckSettings(panelTitle, mode)
 		endif
 #endif
 
+		if(mode == TEST_PULSE_MODE && GetCheckBoxState(panelTitle, "check_Settings_MD"))
+			printf "(%s) Testpulse in multi device mode is broken in this version of MIES.\r", panelTitle
+			printf "Either switch to single device TP or upgrade MIES.\r"
+			printf "Mea culpa!\r"
+			ControlWindowToFront()
+			return 1
+		endif
+
 		if(!HasPanelLatestVersion(panelTitle, DA_EPHYS_PANEL_VERSION))
 			printf "(%s) The DA_Ephys panel is too old to be usable. Please close it and open a new one.\r", panelTitle
 			ControlWindowToFront()
