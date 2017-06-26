@@ -639,7 +639,6 @@ Function DB_DataBrowserStartupSettings()
 		SetCheckBoxState(panelTitle, StringFromList(i, allCheckBoxes), CHECKBOX_UNSELECTED)
 	endfor
 
-	SetCheckBoxState(panelTitle, "check_databrowser_OverlayChan", CHECKBOX_SELECTED)
 	SetCheckBoxState(panelTitle, "check_DataBrowser_DisplayADChan", CHECKBOX_SELECTED)
 
 	SetSliderPositionIndex(panelTitle, "slider_dDAQ_regions", -1)
