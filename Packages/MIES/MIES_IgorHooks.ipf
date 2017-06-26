@@ -98,10 +98,20 @@ static Function BeforeExperimentSaveHook(rN, fileName, path, type, creator, kind
 	NWB_Flush()
 End
 
+/// @brief Cleanup before closing or starting a new experiment
+///
+/// Takes care of unlocking the hardware, removing any data which is stale on
+/// reload anyway (amplifier connection details) and removes temporary waves.
 static Function IH_Cleanup()
 
-	variable error
-	variable debuggerState = DisableDebugger()
+	variable error, debuggerState
+
+	// don't try cleaning up if the user never used MIES
+	if(!DataFolderExists(GetMiesPathAsString()))
+		return NaN
+	endif
+
+	debuggerState = DisableDebugger()
 
 	try
 		IH_UnlockAllDevicesWrapper(); AbortOnRTE
@@ -121,7 +131,7 @@ static Function IgorBeforeQuitHook(unsavedExp, unsavedNotebooks, unsavedProcedur
 	IH_Cleanup()
 
 	// save the experiment silently if it was saved before
-	if(unsavedExp == 0)
+	if(unsavedExp == 0 && cmpstr(UNTITLED_EXPERIMENT, GetExperimentName()))
 		SaveExperiment
 	endif
 
