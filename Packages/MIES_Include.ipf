@@ -60,7 +60,7 @@
 #include "MIES_Manipulator"
 #include "MIES_Menu"
 #include "MIES_MiesUtilities"
-#include "MIES_NeuroDataWithoutBorders"
+#include "MIES_NeuroDataWithoutBorders" menus=0
 #include "MIES_OptimzedOverlapDistributedAcquisition"
 #include "MIES_Oscilloscope"
 #include "MIES_OverlaySweeps"
