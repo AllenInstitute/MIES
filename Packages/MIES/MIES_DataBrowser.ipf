@@ -433,7 +433,7 @@ Window DataBrowser() : Panel
 	CheckBox check_databrowser_OverlayChan,userdata(ResizeControlsInfo)= A"!!,G)!!#=;!!#@:!!#<(z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	CheckBox check_databrowser_OverlayChan,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Duafnzzzzzzzzzzz"
 	CheckBox check_databrowser_OverlayChan,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
-	CheckBox check_databrowser_OverlayChan,value= 1
+	CheckBox check_databrowser_OverlayChan,value= 0
 	CheckBox check_databrowser_dDAQMode,pos={153.00,45.00},size={85.00,15.00},proc=DB_CheckProc_ChangedSetting,title="dDAQ Viewer"
 	CheckBox check_databrowser_dDAQMode,help={"Enable dedicated support for viewing distributed DAQ data"}
 	CheckBox check_databrowser_dDAQMode,userdata(ResizeControlsInfo)= A"!!,G)!!#>B!!#?c!!#<(z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
@@ -567,7 +567,7 @@ Window DataBrowser() : Panel
 	CheckBox check_DataBrowser_OpenChanSel,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:DuaGl<C]S7zzzzzzzzzz"
 	CheckBox check_DataBrowser_OpenChanSel,userdata(ResizeControlsInfo) += A"zzz!!#u:Duafn!(TR7zzzzzzzzzzzzz!!!"
 	CheckBox check_DataBrowser_OpenChanSel,value= 0
-	CheckBox check_DataBrowser_HideSweep,pos={18.00,63.00},size={124.00,15.00},proc=DB_CheckProc_ChangedSetting,title="Hide sweep traces"
+	CheckBox check_DataBrowser_HideSweep,pos={18.00,63.00},size={110.00,15.00},proc=DB_CheckProc_ChangedSetting,title="Hide sweep traces"
 	CheckBox check_DataBrowser_HideSweep,help={"Hide all sweep traces. This setting is usually combined with \"Average Traces\"."}
 	CheckBox check_DataBrowser_HideSweep,userdata(ResizeControlsInfo)= A"!!,BI!!#?5!!#@\\!!#<(z!!#](Aon\"q<C^(Dzzzzzzzzzzzzz!!#](Aon\"Q<C^(Dz"
 	CheckBox check_DataBrowser_HideSweep,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:DuaGl<C]S7zzzzzzzzzz"
@@ -582,7 +582,8 @@ Window DataBrowser() : Panel
 	SetWindow kwTopWin,userdata(ResizeControlsInfoUGV0)= A":-hTC3`S[N0KW?-:-(dOFC@LVDg-86E][6':dmEFF(KAR85E,T>#.mm5tj<n4&A^O8Q88W:-(*`0ek:70KVd)8OQ!%3_!\"/7o`,K75?nc;FO8U:K'ha8P`)B/M]\"63r"
 	SetWindow kwTopWin,userdata(ResizeControlsInfoUGH1)= A":-hTC3`S[@0frH.:-(dOFC@LVDg-86E][6':dmEFF(KAR85E,T>#.mm5tj<o4&A^O8Q88W:-(3h0eP.64%E:B6q&gk7T;H><CoSI1-.lk4&SL@:et\"]<(Tk\\3\\W0E0JYFC3'."
 	SetWindow kwTopWin,userdata(ResizeControlsInfoUGH0)= A":-hTC3`S[@0KW?-:-(dOFC@LVDg-86E][6':dmEFF(KAR85E,T>#.mm5tj<o4&A^O8Q88W:-(9j3A*!>4%E:B6q&gk<C]S74%E:B6q&jl7RB1778-NR;b9q[:JNr)/iPI<2D[9R"
-	SetWindow kwTopWin,userdata(panelVersion)=  "3"
+	SetWindow kwTopWin,userdata(panelVersion)=  "4"
+	Execute/Q/Z "SetWindow kwTopWin sizeLimit={908.25,561,inf,inf}" // sizeLimit requires Igor 7 or later
 	Display/W=(18,85,1039,362)/FG=($"",$"",UGV0,UGH1)/HOST=#
 	ModifyGraph margin(left)=28,margin(bottom)=1
 	SetWindow kwTopWin,userdata(MiesPanelType)=  "DataBrowser"
@@ -593,6 +594,7 @@ Window DataBrowser() : Panel
 	Notebook kwTopWin newRuler=Normal, justification=0, margins={0,0,128}, spacing={0,0,0}, tabs={}, rulerDefaults={"Arial",10,0,(0,0,0)}
 	Notebook kwTopWin, zdata= "GaqDU%ejN7!Z)u^\"(F_BAcgt=>?2+c&.'2989@[[K>tpnK\"?L6M8jCF(5$*oAmu5P!$@%)/c"
 	Notebook kwTopWin, zdataEnd= 1
+	Execute/Q/Z "SetWindow kwTopWin sizeLimit={908.25,561,inf,inf}" // sizeLimit requires Igor 7 or later
 	RenameWindow #,WaveNoteDisplay
 	SetActiveSubwindow ##
 	Display/W=(17,427,1051,614)/FG=($"",UGH1,UGV0,UGH0)/HOST=#
