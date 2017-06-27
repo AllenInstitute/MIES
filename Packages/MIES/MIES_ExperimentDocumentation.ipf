@@ -13,6 +13,10 @@
 ///
 /// The history wave will use layers to report the different headstages.
 ///
+/// The incoming value wave can have zero to nine #LABNOTEBOOK_LAYER_COUNT
+/// layers. The first eight layers are for headstage dependent data, the last
+/// layer for headstage independent data.
+///
 /// @param incomingNumericalValues settingsWave sent by the each reporting subsystem
 /// @param incomingNumericalKeys   key wave that is used to reference the incoming settings wave
 /// @param sweepNo                 sweep number
@@ -291,6 +295,10 @@ End
 /// @brief Add textual entries to the labnotebook
 ///
 /// The text documentation wave will use layers to report the different headstages.
+///
+/// The incoming value wave can have zero to nine (#NUM_HEADSTAGES + 1) layers. The
+/// first eight layers are for headstage dependent data, the last layer for
+/// headstage independent data.
 ///
 /// @param incomingTextualValues  incoming Text Documentation Wave sent by the each reporting subsystem
 /// @param incomingTextualKeys    incoming Text Documentation key wave that is used to reference the incoming settings wave
