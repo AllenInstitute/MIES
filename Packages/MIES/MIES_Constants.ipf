@@ -463,7 +463,7 @@ Constant WAVEBUILDER_PANEL_VERSION = 1
 
 /// Version of the labnotebooks (numerical and textual)
 ///
-/// Hast to be increased on the following occasions:
+/// Has to be increased on the following occasions:
 /// - New entries
 /// - Changed names of entries
 /// - Changed units or meaning of entries
