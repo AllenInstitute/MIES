@@ -474,7 +474,7 @@ static Function ED_createAsyncWaveNoteTags(panelTitle, sweepCount)
 	Variable sweepCount
 
 	string ctrl
-	variable minSettingValue, maxSettingValue
+	variable minSettingValue, maxSettingValue, step
 
 	Wave asyncSettingsWave = GetAsyncSettingsWave()
 	Wave/T asyncSettingsKey = GetAsyncSettingsKeyWave()
@@ -485,27 +485,30 @@ static Function ED_createAsyncWaveNoteTags(panelTitle, sweepCount)
 	Wave asyncMeasurementWave = GetAsyncMeasurementWave()
 	Wave/T asyncMeasurementKey = GetAsyncMeasurementKeyWave()
 
+	step = LABNOTEBOOK_LAYER_COUNT - 1
+	ASSERT(step > 0, "Unexpected step size")
+
 	variable asyncVariablesCounter
 	for(asyncVariablesCounter = 0;asyncVariablesCounter < NUM_ASYNC_CHANNELS ;asyncVariablesCounter += 1)
 		ctrl = GetPanelControl(asyncVariablesCounter, CHANNEL_TYPE_ASYNC, CHANNEL_CONTROL_CHECK)
 
 		if (GetCheckBoxState(panelTitle, ctrl))
-			asyncSettingsWave[0][asyncVariablesCounter] = CHECKBOX_SELECTED
+			asyncSettingsWave[0][asyncVariablesCounter][,;step] = CHECKBOX_SELECTED
 
 			ctrl = GetPanelControl(asyncVariablesCounter, CHANNEL_TYPE_ASYNC, CHANNEL_CONTROL_GAIN)
-			asyncSettingsWave[0][asyncVariablesCounter + 8] = GetSetVariable(panelTitle, ctrl)
+			asyncSettingsWave[0][asyncVariablesCounter + 8][,;step] = GetSetVariable(panelTitle, ctrl)
 
 			ctrl = GetPanelControl(asyncVariablesCounter, CHANNEL_TYPE_ALARM, CHANNEL_CONTROL_CHECK)
 			minSettingValue = GetCheckBoxState(panelTitle, ctrl)
-			asyncSettingsWave[0][asyncVariablesCounter + 16] = minSettingValue
+			asyncSettingsWave[0][asyncVariablesCounter + 16][,;step] = minSettingValue
 			
 			ctrl = GetPanelControl(asyncVariablesCounter, CHANNEL_TYPE_ASYNC, CHANNEL_CONTROL_ALARM_MIN)
 			maxSettingValue = GetSetVariable(panelTitle, ctrl)
-			asyncSettingsWave[0][asyncVariablesCounter + 24] = maxSettingValue
+			asyncSettingsWave[0][asyncVariablesCounter + 24][,;step] = maxSettingValue
 			
 			ctrl = GetPanelControl(asyncVariablesCounter, CHANNEL_TYPE_ASYNC, CHANNEL_CONTROL_ALARM_MAX)
 			minSettingValue = GetSetVariable(panelTitle, ctrl)
-			asyncSettingsWave[0][asyncVariablesCounter + 32] = minSettingValue
+			asyncSettingsWave[0][asyncVariablesCounter + 32][,;step] = minSettingValue
 	
 			// Take the Min and Max values and use them for setting the tolerance value in the measurement key wave
 			asyncMeasurementKey[%Tolerance][asyncVariablesCounter] = num2str(abs((maxSettingValue - minSettingValue)/2))
@@ -516,7 +519,7 @@ static Function ED_createAsyncWaveNoteTags(panelTitle, sweepCount)
 			string titleStringValue = GetSetVariableString(panelTitle, ctrl)
 			string adTitleStringValue 
 			sprintf adTitleStringValue, "Async AD %d: %s" asyncVariablesCounter, titleStringValue
-			asyncSettingsTxtWave[0][asyncVariablesCounter] = titleStringValue
+			asyncSettingsTxtWave[0][asyncVariablesCounter][,;step] = titleStringValue
 			// add the text unit value into the measurementKey Wave
 			asyncMeasurementKey[%Parameter][asyncVariablesCounter] = adTitleStringValue
 
@@ -524,9 +527,9 @@ static Function ED_createAsyncWaveNoteTags(panelTitle, sweepCount)
 			string unitStringValue = GetSetVariableString(panelTitle, ctrl)
 			string adUnitStringValue
 			sprintf adUnitStringValue, "Async AD %d: %s" asyncVariablesCounter, unitStringValue
-			asyncSettingsTxtWave[0][asyncVariablesCounter + 8] = adUnitStringValue
+			asyncSettingsTxtWave[0][asyncVariablesCounter + 8][,;step] = adUnitStringValue
 			// add the unit value into numericalKeys
-			asyncMeasurementKey[%Units][asyncVariablesCounter] = adUnitStringValue
+			asyncMeasurementKey[%Units][asyncVariablesCounter][,;step] = adUnitStringValue
 		endif
 	endfor
 
