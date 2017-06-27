@@ -18,6 +18,37 @@ The XOP provides the following functions:
 - :cpp:func:`zeromq_stop()`
 - :cpp:func:`zeromq_set()`
 
+Installation
+~~~~~~~~~~~~
+
+Windows
+^^^^^^^
+
+- Quit Igor Pro
+- Install the vcredist packages in "output/win"
+- Create the following shortcuts in "$HOME\\Documents\\WaveMetrics\\Igor Pro 7 User Files"
+
+  - In "Igor Procedures" a shortcut pointing to "procedures"
+  - In "Igor Help Files" a shortcut pointing to "help"
+  - In "Igor Extensions" a shortcut pointing to "output/win/x86"
+  - In "Igor Extensions (64-bit)" a shortcut pointing to "output/win/x64"
+
+- Start Igor Pro
+
+MacOSX
+^^^^^^
+
+- Quit Igor Pro
+- Unzip the files in "output/mac"
+- Create the following symbolic links (symlinks) in "$HOME/Documents/WaveMetrics/Igor Pro 7 User Files"
+
+  - In "Igor Procedures" a symlink pointing to "procedures"
+  - In "Igor Help Files" a symlink pointing to "help"
+  - In "Igor Extensions" a symlink pointing to "output/mac/ZeroMQ"
+  - In "Igor Extensions (64-bit)" a symlink pointing to "output/mac/ZeroMQ-64"
+
+- Start Igor Pro
+
 In the following the JSON message format is discussed.
 
 Direction: World -> Igor Pro
