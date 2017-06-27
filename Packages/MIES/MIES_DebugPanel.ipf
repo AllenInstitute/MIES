@@ -25,7 +25,7 @@ Function DP_DebuggingEnabledForFile(file)
 	FindValue/TXOP=4/TEXT=file listWave
 	ASSERT(V_Value != -1, "Invalid filename")
 
-	return listSelWave[V_Value] & 0x10
+	return listSelWave[V_Value] & LISTBOX_CHECKBOX_SELECTED
 End
 
 Function DP_OpenDebugPanel()
@@ -41,6 +41,9 @@ Function DP_OpenDebugPanel()
 	WAVE/T listWave  = GetDebugPanelListWave()
 	WAVE listSelWave = GetDebugPanelListSelWave()
 	ListBox listbox_mies_files win=$PANEL, listWave=listWave, selWave=listSelWave
+
+	SetCheckBoxState(PANEL, "check_debug_mode", QuerySetIgorOption("DEBUGGING_ENABLED") == 1)
+	// we can't readout the ITC XOP debugging state
 End
 
 Window DP_DebugPanel() : Panel
@@ -144,9 +147,9 @@ Function DP_PopMenuProc_Selection(pa) : PopupMenuControl
 			WAVE listSelWave = GetDebugPanelListSelWave()
 
 			if(!cmpstr(popStr, NONE))
-				listSelWave = ClearBit(listSelWave[p], 0x10)
+				listSelWave = ClearBit(listSelWave[p], LISTBOX_CHECKBOX_SELECTED)
 			elseif(!cmpstr(popStr, "All"))
-				listSelWave = SetBit(listSelWave[p], 0x10)
+				listSelWave = SetBit(listSelWave[p], LISTBOX_CHECKBOX_SELECTED)
 			else
 				ASSERT(0, "unknown selection")
 			endif

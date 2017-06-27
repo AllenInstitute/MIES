@@ -1708,6 +1708,24 @@ Function/WAVE GetTPPowerSpectrumWave(panelTitle)
 	return wv
 End
 
+/// @brief Return a wave reference wave for storing the *full* test pulses
+Function/WAVE GetStoredTestPulseWave(panelTitle)
+	string panelTitle
+
+	DFREF dfr = GetDeviceTestPulse(panelTitle)
+	WAVE/WAVE/Z/SDFR=dfr wv = StoredTestPulses
+
+	if(WaveExists(wv))
+		return wv
+	endif
+
+	Make/N=(MINIMUM_WAVE_SIZE)/WAVE dfr:StoredTestPulses/Wave=wv
+
+	SetNumberInWaveNote(wv, NOTE_INDEX, 0)
+
+	return wv
+End
+
 /// @brief Return the testpulse instantenous resistance wave
 ///
 /// The columns hold the *active* AD channels only and are subject to resizing.
