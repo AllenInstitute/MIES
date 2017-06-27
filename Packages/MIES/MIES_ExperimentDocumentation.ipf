@@ -9,6 +9,28 @@
 /// @file MIES_ExperimentDocumentation.ipf
 /// @brief __ED__ Writing numerical/textual information to the labnotebook
 
+/// @brief Add numerical/textual entries to the labnotebook
+///
+/// @see ED_createTextNotes, ED_createWaveNote
+Function ED_AddEntriesToLabnotebook(vals, keys, sweepNo, panelTitle, entrySourceType)
+	wave vals, keys
+	string panelTitle
+	variable sweepNo, entrySourceType
+
+	ASSERT(DimSize(vals, ROWS)   == 1, "Mismatched row count")
+	ASSERT(DimSize(vals, COLS)   == DimSize(keys, COLS), "Mismatched column count")
+	ASSERT(DimSize(vals, LAYERS) <= LABNOTEBOOK_LAYER_COUNT, "Mismatched layer count")
+
+	ASSERT(DimSize(keys, ROWS)   == 1 || DimSize(keys, ROWS) == 3, "Mismatched row count")
+	ASSERT(DimSize(keys, LAYERS) <= 1, "Mismatched layer count")
+
+	if(IsTextWave(vals))
+		ED_createTextNotes(vals, keys, sweepNo, panelTitle, entrySourceType)
+	else
+		ED_createWaveNotes(vals, keys, sweepNo, panelTitle, entrySourceType)
+	endif
+End
+
 /// @brief Add textual entries to the labnotebook
 ///
 /// The text documentation wave will use layers to report the different headstages.
@@ -22,7 +44,7 @@
 /// @param sweepNo                sweep number
 /// @param panelTitle             device
 /// @param entrySourceType         type of reporting subsystem, one of @ref DataAcqModes
-Function ED_createTextNotes(incomingTextualValues, incomingTextualKeys, sweepNo, panelTitle, entrySourceType)
+static Function ED_createTextNotes(incomingTextualValues, incomingTextualKeys, sweepNo, panelTitle, entrySourceType)
 	wave/T incomingTextualValues
 	wave/T incomingTextualKeys
 	string panelTitle
@@ -32,12 +54,6 @@ Function ED_createTextNotes(incomingTextualValues, incomingTextualKeys, sweepNo,
 
 	WAVE/T textualValues = GetLBTextualValues(panelTitle)
 	WAVE/T textualKeys   = GetLBTextualKeys(panelTitle)
-
-	ASSERT(!cmpstr(textualKeys[0][2], "TimeStampSinceIgorEpochUTC"), "Labnotebook update failed")
-	ASSERT(DimSize(incomingTextualValues, ROWS)   == 1, "Mismatched row counts")
-	ASSERT(DimSize(incomingTextualValues, LAYERS) <= DimSize(textualValues, LAYERS), "Mismatched layer counts")
-	ASSERT(DimSize(incomingTextualValues, COLS)   == DimSize(incomingTextualKeys, COLS), "Mismatched column counts")
-	ASSERT(DimSize(incomingTextualKeys, LAYERS)   == 1, "Mismatched row count")
 
 	WAVE indizes = ED_FindIndizesAndRedimension(incomingTextualKeys, textualKeys, textualValues, rowIndex)
 
@@ -81,7 +97,7 @@ End
 /// @param sweepNo                 sweep number
 /// @param panelTitle              device
 /// @param entrySourceType         type of reporting subsystem, one of @ref DataAcqModes
-Function ED_createWaveNotes(incomingNumericalValues, incomingNumericalKeys, sweepNo, panelTitle, entrySourceType)
+static Function ED_createWaveNotes(incomingNumericalValues, incomingNumericalKeys, sweepNo, panelTitle, entrySourceType)
 	wave incomingNumericalValues
 	wave/T incomingNumericalKeys
 	string panelTitle
@@ -92,9 +108,6 @@ Function ED_createWaveNotes(incomingNumericalValues, incomingNumericalKeys, swee
 
 	WAVE/T numericalKeys = GetLBNumericalKeys(panelTitle)
 	WAVE numericalValues = GetLBNumericalValues(panelTitle)
-
-	ASSERT(!cmpstr(numericalKeys[0][2], "TimeStampSinceIgorEpochUTC"), "Labnotebook update failed")
-	ASSERT(DimSize(incomingNumericalValues, LAYERS) <= DimSize(numericalValues, LAYERS), "Unexpected large layer count in the incoming settings wave")
 
 	WAVE indizes = ED_FindIndizesAndRedimension(incomingNumericalKeys, numericalKeys, numericalValues, rowIndex)
 
@@ -360,11 +373,11 @@ Function ED_createWaveNoteTags(panelTitle, sweepCount)
 
 	WAVE sweepSettingsWave = GetSweepSettingsWave(panelTitle)
 	WAVE/T sweepSettingsKey = GetSweepSettingsKeyWave(panelTitle)
-	ED_createWaveNotes(sweepSettingsWave, sweepSettingsKey, SweepCount, panelTitle, DATA_ACQUISITION_MODE)
+	ED_AddEntriesToLabnotebook(sweepSettingsWave, sweepSettingsKey, SweepCount, panelTitle, DATA_ACQUISITION_MODE)
 
 	WAVE/T sweepSettingsTxtWave = GetSweepSettingsTextWave(panelTitle)
 	WAVE/T sweepSettingsTxtKey = GetSweepSettingsTextKeyWave(panelTitle)
-	ED_createTextNotes(sweepSettingsTxtWave, sweepSettingsTxtKey, SweepCount, panelTitle, DATA_ACQUISITION_MODE)
+	ED_AddEntriesToLabnotebook(sweepSettingsTxtWave, sweepSettingsTxtKey, SweepCount, panelTitle, DATA_ACQUISITION_MODE)
 
 	// document active headstages and their clamp modes
 	Make/FREE/N=(3, 2)/T numKeys
@@ -395,7 +408,7 @@ Function ED_createWaveNoteTags(panelTitle, sweepCount)
 		j += 1
 	endfor
 
-	ED_createWaveNotes(numSettings, numKeys, SweepCount, panelTitle, DATA_ACQUISITION_MODE)
+	ED_AddEntriesToLabnotebook(numSettings, numKeys, SweepCount, panelTitle, DATA_ACQUISITION_MODE)
 
 	Make/FREE/T/N=(3, 2) keys
 	keys = ""
@@ -419,7 +432,7 @@ Function ED_createWaveNoteTags(panelTitle, sweepCount)
 	SVAR miesVersion = $GetMiesVersion()
 	values[0][1][INDEP_HEADSTAGE] = miesVersion
 
-	ED_createTextNotes(values, keys, SweepCount, panelTitle, DATA_ACQUISITION_MODE)
+	ED_AddEntriesToLabnotebook(values, keys, SweepCount, panelTitle, DATA_ACQUISITION_MODE)
 
 	if(GetCheckboxState(panelTitle, "check_Settings_SaveAmpSettings"))
 		AI_FillAndSendAmpliferSettings(panelTitle, sweepCount)
@@ -452,7 +465,7 @@ Function ED_WriteUserCommentToLabNB(panelTitle, comment, sweepNo)
 	Make/FREE/T/N=(1, 1, LABNOTEBOOK_LAYER_COUNT) values
 	values[][][8] = comment
 
-	ED_createTextNotes(values, keys, sweepNo, panelTitle, UNKNOWN_MODE)
+	ED_AddEntriesToLabnotebook(values, keys, sweepNo, panelTitle, UNKNOWN_MODE)
 End
 
 /// @brief This function is used to create wave notes for the informations found in the Asynchronous tab in the DA_Ephys panel
@@ -517,11 +530,11 @@ static Function ED_createAsyncWaveNoteTags(panelTitle, sweepCount)
 		endif
 	endfor
 
-	ED_createTextNotes(asyncSettingsTxtWave, asyncSettingsTxtKey, sweepCount, panelTitle, DATA_ACQUISITION_MODE)
-	ED_createWaveNotes(asyncSettingsWave, asyncSettingsKey, SweepCount, panelTitle, DATA_ACQUISITION_MODE)
+	ED_AddEntriesToLabnotebook(asyncSettingsTxtWave, asyncSettingsTxtKey, sweepCount, panelTitle, DATA_ACQUISITION_MODE)
+	ED_AddEntriesToLabnotebook(asyncSettingsWave, asyncSettingsKey, SweepCount, panelTitle, DATA_ACQUISITION_MODE)
 
 	ITC_ADDataBasedWaveNotes(asyncMeasurementWave, panelTitle)
-	ED_createWaveNotes(asyncMeasurementWave, asyncMeasurementKey, SweepCount, panelTitle, DATA_ACQUISITION_MODE)
+	ED_AddEntriesToLabnotebook(asyncMeasurementWave, asyncMeasurementKey, SweepCount, panelTitle, DATA_ACQUISITION_MODE)
 End
 
 /// @brief Stores test pulse related data in the labnotebook
@@ -621,7 +634,7 @@ Function ED_TPDocumentation(panelTitle)
 	endfor
 
 	sweepNo = AFH_GetLastSweepAcquired(panelTitle)
-	ED_createWaveNotes(TPSettingsWave, TPKeyWave, sweepNo, panelTitle, TEST_PULSE_MODE)
+	ED_AddEntriesToLabnotebook(TPSettingsWave, TPKeyWave, sweepNo, panelTitle, TEST_PULSE_MODE)
 
 	ED_TPSettingsDocumentation(panelTitle, TEST_PULSE_MODE)
 End
@@ -668,5 +681,5 @@ static Function ED_TPSettingsDocumentation(panelTitle, entrySourceType)
 	TPSettingsWave[0][3][INDEP_HEADSTAGE] = pulseDuration
 
 	sweepNo = AFH_GetLastSweepAcquired(panelTitle)
-	ED_createWaveNotes(TPSettingsWave, TPKeyWave, sweepNo, panelTitle, entrySourceType)
+	ED_AddEntriesToLabnotebook(TPSettingsWave, TPKeyWave, sweepNo, panelTitle, entrySourceType)
 End

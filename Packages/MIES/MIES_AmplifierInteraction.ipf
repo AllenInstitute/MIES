@@ -1079,7 +1079,7 @@ static Function/S AI_AmpStorageControlToRowLabel(ctrl)
 	endswitch
 End
 
-/// @brief Fill the amplifier settings wave by querying the MC700B and send the data to ED_createWaveNotes
+/// @brief Fill the amplifier settings wave by querying the MC700B and send the data to ED_AddEntriesToLabnotebook
 ///
 /// @param panelTitle 		 device
 /// @param sweepNo           data wave sweep number
@@ -1178,8 +1178,8 @@ Function AI_FillAndSendAmpliferSettings(panelTitle, sweepNo)
 		ampSettingsWave[0][35][i] = MCC_GetPipetteOffset() * AI_GetMCCScale(NaN, MCC_GETPIPETTEOFFSET_FUNC)
 	endfor
 
-	ED_createWaveNotes(ampSettingsWave, ampSettingsKey, sweepNo, panelTitle, DATA_ACQUISITION_MODE)
-	ED_createTextNotes(ampSettingsTextWave, ampSettingsTextKey, sweepNo, panelTitle, DATA_ACQUISITION_MODE)
+	ED_AddEntriesToLabnotebook(ampSettingsWave, ampSettingsKey, sweepNo, panelTitle, DATA_ACQUISITION_MODE)
+	ED_AddEntriesToLabnotebook(ampSettingsTextWave, ampSettingsTextKey, sweepNo, panelTitle, DATA_ACQUISITION_MODE)
 End
 
 // Below is code to open the MCC and manipulate the MCC windows. It is hard coded from TimJs 700Bs. Needs to be adapted for MIES

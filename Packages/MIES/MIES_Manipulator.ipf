@@ -211,7 +211,7 @@ Function M_DocumentManipulatorXYZ(panelTitle)
 	endfor
 
 	sweepNo = AFH_GetLastSweepAcquired(panelTitle)
-	ED_createWaveNotes(TPSettingsWave, TPKeyWave, sweepNo, panelTitle, UNKNOWN_MODE)
+	ED_AddEntriesToLabnotebook(TPSettingsWave, TPKeyWave, sweepNo, panelTitle, UNKNOWN_MODE)
 End
 
 /// @brief Check if settings are valid to send a manipulator server call

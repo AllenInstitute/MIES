@@ -1454,7 +1454,7 @@ End
 
 /// @brief Returns a wave reference to SweepSettingsTxtData
 ///
-/// SweepSettingsTxtData is passed to ED_createTextNotes to add entries to the labnotebook.
+/// SweepSettingsTxtData is passed to ED_AddEntriesToLabnotebook to add entries to the labnotebook.
 ///
 /// Rows:
 /// - Only one
