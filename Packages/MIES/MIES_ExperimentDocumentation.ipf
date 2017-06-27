@@ -9,6 +9,65 @@
 /// @file MIES_ExperimentDocumentation.ipf
 /// @brief __ED__ Writing numerical/textual information to the labnotebook
 
+/// @brief Add textual entries to the labnotebook
+///
+/// The text documentation wave will use layers to report the different headstages.
+///
+/// The incoming value wave can have zero to nine (#NUM_HEADSTAGES + 1) layers. The
+/// first eight layers are for headstage dependent data, the last layer for
+/// headstage independent data.
+///
+/// @param incomingTextualValues  incoming Text Documentation Wave sent by the each reporting subsystem
+/// @param incomingTextualKeys    incoming Text Documentation key wave that is used to reference the incoming settings wave
+/// @param sweepNo                sweep number
+/// @param panelTitle             device
+/// @param entrySourceType         type of reporting subsystem, one of @ref DataAcqModes
+Function ED_createTextNotes(incomingTextualValues, incomingTextualKeys, sweepNo, panelTitle, entrySourceType)
+	wave/T incomingTextualValues
+	wave/T incomingTextualKeys
+	string panelTitle
+	variable sweepNo, entrySourceType
+
+	variable rowIndex, numCols, i, lastValidIncomingLayer
+
+	WAVE/T textualValues = GetLBTextualValues(panelTitle)
+	WAVE/T textualKeys   = GetLBTextualKeys(panelTitle)
+
+	ASSERT(!cmpstr(textualKeys[0][2], "TimeStampSinceIgorEpochUTC"), "Labnotebook update failed")
+	ASSERT(DimSize(incomingTextualValues, ROWS)   == 1, "Mismatched row counts")
+	ASSERT(DimSize(incomingTextualValues, LAYERS) <= DimSize(textualValues, LAYERS), "Mismatched layer counts")
+	ASSERT(DimSize(incomingTextualValues, COLS)   == DimSize(incomingTextualKeys, COLS), "Mismatched column counts")
+	ASSERT(DimSize(incomingTextualKeys, LAYERS)   == 1, "Mismatched row count")
+
+	WAVE indizes = ED_FindIndizesAndRedimension(incomingTextualKeys, textualKeys, textualValues, rowIndex)
+
+	textualValues[rowIndex][0] = num2istr(sweepNo)
+	textualValues[rowIndex][1] = num2istr(DateTime)
+	textualValues[rowIndex][2] = num2istr(DateTimeInUTC())
+	textualValues[rowIndex][3] = num2istr(entrySourceType)
+
+	WAVE textualValuesDat = ExtractLBColumnTimeStamp(textualValues)
+	EnsureLargeEnoughWave(textualValuesDat, minimumSize=rowIndex, dimension=ROWS)
+	textualValuesDat[rowIndex] = str2num(textualValues[rowIndex][1])
+
+	WAVE textualValuesSweep = ExtractLBColumnSweep(textualValues)
+	EnsureLargeEnoughWave(textualValuesSweep, minimumSize=rowIndex, dimension=ROWS)
+	textualValuesSweep[rowIndex] = str2num(textualValues[rowIndex][0])
+
+	numCols = DimSize(incomingTextualValues, COLS)
+	lastValidIncomingLayer = DimSize(incomingTextualValues, LAYERS) == 0 ? 0 : DimSize(incomingTextualValues, LAYERS) - 1
+	for(i = 0; i < numCols; i += 1)
+		textualValues[rowIndex][indizes[i]][0, lastValidIncomingLayer] = incomingTextualValues[0][i][r]
+	endfor
+
+	SetNumberInWaveNote(textualValues, NOTE_INDEX, rowIndex + 1)
+
+	SetDimensionLabels(textualKeys, textualValues)
+
+	WAVE/Z saveDataWave = GetSweepWave(panelTitle, sweepNo)
+	ED_WriteChangedValuesToNoteText(saveDataWave, incomingTextualKeys, textualValues, sweepNo, entrySourceType)
+End
+
 /// @brief Add numerical entries to the labnotebook
 ///
 /// The history wave will use layers to report the different headstages.
@@ -290,64 +349,6 @@ static Function/Wave ED_FindIndizesAndRedimension(incomingKey, key, values, rowI
 	endif
 
 	return indizes
-End
-
-/// @brief Add textual entries to the labnotebook
-///
-/// The text documentation wave will use layers to report the different headstages.
-///
-/// The incoming value wave can have zero to nine (#NUM_HEADSTAGES + 1) layers. The
-/// first eight layers are for headstage dependent data, the last layer for
-/// headstage independent data.
-///
-/// @param incomingTextualValues  incoming Text Documentation Wave sent by the each reporting subsystem
-/// @param incomingTextualKeys    incoming Text Documentation key wave that is used to reference the incoming settings wave
-/// @param sweepNo                sweep number
-/// @param panelTitle             device
-/// @param entrySourceType         type of reporting subsystem, one of @ref DataAcqModes
-Function ED_createTextNotes(incomingTextualValues, incomingTextualKeys, sweepNo, panelTitle, entrySourceType)
-	wave/T incomingTextualValues
-	wave/T incomingTextualKeys
-	string panelTitle
-	variable sweepNo, entrySourceType
-
-	variable rowIndex, numCols, i, lastValidIncomingLayer
-
-	WAVE/T textualValues = GetLBTextualValues(panelTitle)
-	WAVE/T textualKeys   = GetLBTextualKeys(panelTitle)
-
-	ASSERT(!cmpstr(textualKeys[0][2], "TimeStampSinceIgorEpochUTC"), "Labnotebook update failed")
-	ASSERT(DimSize(incomingTextualValues, ROWS)   == 1, "Mismatched row counts")
-	ASSERT(DimSize(incomingTextualValues, LAYERS) <= DimSize(textualValues, LAYERS), "Mismatched layer counts")
-	ASSERT(DimSize(incomingTextualValues, COLS)   == DimSize(incomingTextualKeys, COLS), "Mismatched column counts")
-
-	WAVE indizes = ED_FindIndizesAndRedimension(incomingTextualKeys, textualKeys, textualValues, rowIndex)
-
-	textualValues[rowIndex][0] = num2istr(sweepNo)
-	textualValues[rowIndex][1] = num2istr(DateTime)
-	textualValues[rowIndex][2] = num2istr(DateTimeInUTC())
-	textualValues[rowIndex][3] = num2istr(entrySourceType)
-
-	WAVE textualValuesDat = ExtractLBColumnTimeStamp(textualValues)
-	EnsureLargeEnoughWave(textualValuesDat, minimumSize=rowIndex, dimension=ROWS)
-	textualValuesDat[rowIndex] = str2num(textualValues[rowIndex][1])
-
-	WAVE textualValuesSweep = ExtractLBColumnSweep(textualValues)
-	EnsureLargeEnoughWave(textualValuesSweep, minimumSize=rowIndex, dimension=ROWS)
-	textualValuesSweep[rowIndex] = str2num(textualValues[rowIndex][0])
-
-	numCols = DimSize(incomingTextualValues, COLS)
-	lastValidIncomingLayer = DimSize(incomingTextualValues, LAYERS) == 0 ? 0 : DimSize(incomingTextualValues, LAYERS) - 1
-	for(i = 0; i < numCols; i += 1)
-		textualValues[rowIndex][indizes[i]][0, lastValidIncomingLayer] = incomingTextualValues[0][i][r]
-	endfor
-
-	SetNumberInWaveNote(textualValues, NOTE_INDEX, rowIndex + 1)
-
-	SetDimensionLabels(textualKeys, textualValues)
-
-	WAVE/Z saveDataWave = GetSweepWave(panelTitle, sweepNo)
-	ED_WriteChangedValuesToNoteText(saveDataWave, incomingTextualKeys, textualValues, sweepNo, entrySourceType)
 End
 
 /// @brief Add sweep specific information to the labnotebook
