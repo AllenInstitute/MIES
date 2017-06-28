@@ -992,6 +992,8 @@ static Function UpgradeLabNotebook(panelTitle)
 	endif
 
 	// no upgrade for async entries also in the INDEP_HEADSTAGE layer
+
+	// no upgrade for basic entries like sweepNum only in first layer due to IP7 semantics change
 End
 
 /// @brief Return a wave reference to the text labnotebook keys

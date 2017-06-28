@@ -57,10 +57,10 @@ static Function ED_createTextNotes(incomingTextualValues, incomingTextualKeys, s
 
 	WAVE indizes = ED_FindIndizesAndRedimension(incomingTextualKeys, textualKeys, textualValues, rowIndex)
 
-	textualValues[rowIndex][0] = num2istr(sweepNo)
-	textualValues[rowIndex][1] = num2istr(DateTime)
-	textualValues[rowIndex][2] = num2istr(DateTimeInUTC())
-	textualValues[rowIndex][3] = num2istr(entrySourceType)
+	textualValues[rowIndex][0][] = num2istr(sweepNo)
+	textualValues[rowIndex][1][] = num2istr(DateTime)
+	textualValues[rowIndex][2][] = num2istr(DateTimeInUTC())
+	textualValues[rowIndex][3][] = num2istr(entrySourceType)
 
 	WAVE textualValuesDat = ExtractLBColumnTimeStamp(textualValues)
 	EnsureLargeEnoughWave(textualValuesDat, minimumSize=rowIndex, dimension=ROWS)
@@ -111,10 +111,10 @@ static Function ED_createWaveNotes(incomingNumericalValues, incomingNumericalKey
 
 	WAVE indizes = ED_FindIndizesAndRedimension(incomingNumericalKeys, numericalKeys, numericalValues, rowIndex)
 
-	numericalValues[rowIndex][0] = sweepNo
-	numericalValues[rowIndex][1] = DateTime
-	numericalValues[rowIndex][2] = DateTimeInUTC()
-	numericalValues[rowIndex][3] = entrySourceType
+	numericalValues[rowIndex][0][] = sweepNo
+	numericalValues[rowIndex][1][] = DateTime
+	numericalValues[rowIndex][2][] = DateTimeInUTC()
+	numericalValues[rowIndex][3][] = entrySourceType
 
 	WAVE numericalValuesDat = ExtractLBColumnTimeStamp(numericalValues)
 	EnsureLargeEnoughWave(numericalValuesDat, minimumSize=rowIndex, dimension=ROWS, initialValue=NaN)
