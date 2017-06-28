@@ -236,11 +236,11 @@ Function OVS_InvertSweepSelection(win, [sweepNo, index])
 		return NaN
 	endif
 
-	selectionState = listboxSelWave[index]
+	selectionState = listboxSelWave[index][0]
 	if(selectionState & LISTBOX_CHECKBOX_SELECTED)
-		listboxSelWave[index] = ClearBit(selectionState, LISTBOX_CHECKBOX_SELECTED)
+		listboxSelWave[index][0] = ClearBit(selectionState, LISTBOX_CHECKBOX_SELECTED)
 	else
-		listboxSelWave[index] = SetBit(selectionState, LISTBOX_CHECKBOX_SELECTED)
+		listboxSelWave[index][0] = SetBit(selectionState, LISTBOX_CHECKBOX_SELECTED)
 	endif
 End
 
