@@ -1042,7 +1042,7 @@ Function MDsort(w, keyColPrimary, [keyColSecondary, keyColTertiary, reversed])
 	if(type == 0)
 		Duplicate/FREE/T indirectSourceText, newtoInsertText
 		newtoInsertText[][][][] = indirectSourceText[valindex[p]][q][r][s]
-		indirectSourceText = newtoInsertText
+		MultiThread indirectSourceText = newtoInsertText
 	else
 		Duplicate/FREE indirectSource, newtoInsert
 		MultiThread newtoinsert[][][][] = indirectSource[valindex[p]][q][r][s]
