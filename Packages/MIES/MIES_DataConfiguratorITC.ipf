@@ -624,8 +624,7 @@ static Function DC_PlaceDataInITCChanConfigWave(panelTitle, dataAcqOrTP)
 	ITCChanConfigWave[][3] = 0
 
 	if(dataAcqOrTP == DATA_ACQUISITION_MODE)
-		WAVE sweepDataLNB      = GetSweepSettingsWave(panelTitle)
-		WAVE/T sweepDataTxTLNB = GetSweepSettingsTextWave(panelTitle)
+		WAVE sweepDataLNB = GetSweepSettingsWave(panelTitle)
 
 		if(DC_AreTTLsInRackChecked(RACK_ZERO, panelTitle))
 			ITCChanConfigWave[j][0] = ITC_XOP_CHANNEL_TYPE_TTL
