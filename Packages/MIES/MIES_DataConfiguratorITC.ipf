@@ -631,7 +631,7 @@ static Function DC_PlaceDataInITCChanConfigWave(panelTitle, dataAcqOrTP)
 
 			channel = HW_ITC_GetITCXOPChannelForRack(panelTitle, RACK_ZERO)
 			ITCChanConfigWave[j][1] = channel
-			sweepDataLNB[0][10][]   = channel
+			sweepDataLNB[0][10][INDEP_HEADSTAGE] = channel
 
 			j += 1
 		endif
@@ -641,7 +641,7 @@ static Function DC_PlaceDataInITCChanConfigWave(panelTitle, dataAcqOrTP)
 
 			channel = HW_ITC_GetITCXOPChannelForRack(panelTitle, RACK_ONE)
 			ITCChanConfigWave[j][1] = channel
-			sweepDataLNB[0][11][]   = channel
+			sweepDataLNB[0][11][INDEP_HEADSTAGE] = channel
 		endif
 	endif
 End
