@@ -1767,6 +1767,7 @@ Function AddTraceToLBGraph(graph, keys, values, key)
 
 		GetTraceColor(i, red, green, blue)
 		ModifyGraph/W=$graph rgb($trace)=(red, green, blue)
+		SetAxis/W=$graph/A=2 $axis
 	endfor
 
 	if(isTextData)

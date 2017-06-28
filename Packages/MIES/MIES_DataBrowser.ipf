@@ -695,7 +695,7 @@ Function DB_ButtonProc_AutoScale(ba) : ButtonControl
 		case 2: // mouse up
 			panelTitle = ba.win
 			SetAxis/A/W=$DB_GetMainGraph(panelTitle)
-			SetAxis/A/W=$DB_GetLabNotebookGraph(panelTitle)
+			SetAxis/A=2/W=$DB_GetLabNotebookGraph(panelTitle)
 			break
 	endswitch
 
