@@ -386,13 +386,13 @@ static Function PA_GetPulseToPulseLength(traceData, idx, region, pulseStartTimes
 	sweepNo = str2num(traceData[idx][%sweepNumber])
 	WAVE/Z pulseToPulseLengths = GetLastSetting(numericalValues, sweepNo, PULSE_TO_PULSE_LENGTH_KEY, DATA_ACQUISITION_MODE)
 
-	if(WaveExists(pulseToPulseLengths))
-		// existing pulse train stimset and poisson distribution turned off
-		return pulseToPulseLengths[region]
-	else
+	if(!WaveExists(pulseToPulseLengths) || pulseToPulseLengths[region] == 0)
 		// either an old stim set without starting times or a new one
 		// with poission distribution turned on
 		return PA_GetAveragePulseLength(pulseStartTimes, startingPulse, endingPulse, fallbackPulseLength)
+	else
+		// existing pulse train stimset and poisson distribution turned off
+		return pulseToPulseLengths[region]
 	endif
 End
 
