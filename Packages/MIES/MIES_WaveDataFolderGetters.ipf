@@ -4935,7 +4935,7 @@ Function/WAVE GetExpConfigKeyTypes()
 	Make/FREE/T checkBoxKeys = {TP_AFTER_DAQ, SAVE_TP, EXPORT_NWB, APPEND_ASYNC,                                     \
 								SYNC_MIES_MCC, ENABLE_I_EQUAL_ZERO, PRESSURE_USER_ON_SEAL, PRESSURE_USER_FOLLOW_HS,  \
 								REPEAT_ACQ, GET_SET_ITI, ENABLE_OODAQ, ENABLE_MULTIPLE_ITC, SAVE_AMP_SETTINGS, REQUIRE_AMP, \
-								AUTOBIAS, CAP_NEUT}
+								AUTOBIAS, CAP_NEUT, SAVE_TP_SWEEP}
 
 	numRows = max(DimSize(stringKeys, ROWS), DimSize(numKeys, ROWS), DimSize(checkBoxKeys, ROWS))
 	Make/FREE/T/N=(numRows, 3) keyTypes
