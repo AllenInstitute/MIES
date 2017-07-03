@@ -153,7 +153,7 @@ static Function DC_UpdateTestPulseWaveMD(panelTitle, TestPulse)
 	Make/FREE singlePulse
 	DC_UpdateTestPulseWave(panelTitle, singlePulse)
 	singlePulseLength = DimSize(singlePulse, ROWS)
-	numPulses = max(10, ceil(2^MINIMUM_ITCDATAWAVE_EXPONENT / singlePulseLength))
+	numPulses = max(10, ceil((2^(MINIMUM_ITCDATAWAVE_EXPONENT + 1) * 0.90) / singlePulseLength))
 	length = numPulses * singlePulseLength
 
 	Redimension/N=(length) TestPulse
