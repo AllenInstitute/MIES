@@ -989,8 +989,8 @@ Window DA_Ephys() : Panel
 	SetVariable Unit_AsyncAD_07,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	SetVariable Unit_AsyncAD_07,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
 	SetVariable Unit_AsyncAD_07,value= _STR:""
-	CheckBox Check_Settings_Append,pos={34.00,452.00},size={243.00,15.00},disable=1,title="\\JCAppend Asynchronus reading to wave note"
-	CheckBox Check_Settings_Append,help={"Turns on TTL pulse at onset of sweep"}
+	CheckBox Check_Settings_Append,pos={34.00,452.00},size={144.00,15.00},disable=1,title="Enable async acquisition"
+	CheckBox Check_Settings_Append,help={"Enable querying and storing the asynchronous parameters in the labnotebook."}
 	CheckBox Check_Settings_Append,userdata(tabnum)=  "5"
 	CheckBox Check_Settings_Append,userdata(tabcontrol)=  "ADC"
 	CheckBox Check_Settings_Append,userdata(ResizeControlsInfo)= A"!!,Cl!!#CG!!#B-!!#<(z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
