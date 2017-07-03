@@ -330,7 +330,6 @@ static Function/Wave ED_FindIndizesAndRedimension(incomingKey, key, values, rowI
 		else
 			idx = numKeyCols + numAdditions
 			EnsureLargeEnoughWave(key, minimumSize=idx, dimension=COLS)
-			ASSERT(strlen(incomingKey[0][i]) > 0, "can not handle empty incoming key")
 			key[0, lastValidIncomingKeyRow][idx] = incomingKey[p][i]
 			indizes[i] = idx
 			numAdditions += 1
