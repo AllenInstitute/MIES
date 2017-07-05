@@ -17,28 +17,8 @@ extern "C" {
 #define DEV_SYS_CODE_MAC_MPW 1			// Obsolete.
 #define DEV_SYS_CODE_MAC_MACH 2			// Use this for Macintosh Mach-O XOPs.
 
-/*	XOP version history
-	
-	XOP_VERSION identifies the XOP Toolkit protocol. It is changed only when
-	a major change in protocol occurs (that is, almost never).
-	
-	XOP_VERSION = 1: Released with Igor 1.1
-	XOP_VERSION = 3: Released with Igor 1.2
-	XOP_VERSION = 4: Released with Igor 2.0 (Igor Pro 2.0D82)	10/1/93
-	XOP_VERSION = 5: Released with Igor Pro 5.0, XOP Toolkit 5 beta May, 2003
-	XOP_VERSION = 4: Released with Igor Pro 5.01, XOP Toolkit 5 beta December, 2003
-	
-	HR, 031212: I realized that changing XOP_VERSION to 5 meant that XOPs compiled with
-	XOP Toolkit 5 would be considered incompatible by Igor Pro 4. This is not necessary.
-	Therefore, with Igor Pro 5.01 and XOP Toolkit 5 Beta from December, 2003, I rolled
-	XOP_VERSION back to 4. However, I left XOP_HIGH_VERSION at 5 so that XOPs compiled
-	with early beta versions of the toolkit would continue to work with Igor Pro 5.
-*/
-#define XOP_VERSION 4						// current XOP version; NOTE: this is in XOPResources.h also.
-#define XOP_LOW_VERSION 2					// lowest supported XOP version
-#define XOP_HIGH_VERSION 5					// highest supported XOP version
-#define MAX_XOP_NAME MAX_OBJ_NAME			// This relationship is assumed.
-#define MAX_XOP_FILE_NAME (MAX_XOP_NAME+4)	// +4 to allow for extension on Windows.
+#define XOP_VERSION 4					// Current XOP version; NOTE: This is in XOPResources.h also.
+#define XOP_MAX_OBJ_NAME_31 31			// Used where names are limited to 31 bytes in XOPs that have not been updated to support long names
 
 // *** Data Types ***
 
@@ -88,10 +68,10 @@ extern "C" {
 */
 struct XOPStuff {					// Structure of private bookkeeping info
 	struct XOPStuff **nextXOPHandle;// For linked list of open XOPs
-	char XOPName[MAX_XOP_NAME+1];	// Name of XOP
+	char wasXOPName[XOP_MAX_OBJ_NAME_31+1];	// Was name of XOP. Now this field is for Igor's private use. Must be 32 bytes for backward compatibility because XOPSupport routines access this structure.
 	struct IORec **ioRecHandle;		// Handle to main ioRec for this XOP
 	unsigned char flags;			// Private flags used by Igor; 10/28/93
-	unsigned char system;			// Code for development system
+	unsigned char developmentSystem;// Code for development system
 
 	#ifdef MACIGOR					// Mac-specific fields [
 		Handle mapHandle;			// Obsolete - always NULL
@@ -108,12 +88,6 @@ struct XOPStuff {					// Structure of private bookkeeping info
 	#endif							// End Mac-specific fields ]
 	
 	// Fields below here are private to Igor and can be changed from version to version
-
-	#ifdef WINIGOR					// Windows-specific fields [
-		HMODULE hModule;			// XOP DLL module handle.
-	#endif							// End Windows-specific fields ]
-
-	short XOPToolkitVersion;		// From the XOPI, 1100 resource - the value of XOP_TOOLKIT_VERSION when XOP was compiled
 };
 typedef struct XOPStuff XOPStuff;
 typedef XOPStuff *XOPStuffPtr;
@@ -130,7 +104,7 @@ typedef XOPStuffPtr *XOPStuffHandle;
 #define NO_DOUBLE 2					// OBSOLETE: XOP uses extended instead of double. This was used in the days of THINK C 3.0.
 
 struct IORec {
-	short version;					// XOP protocol version
+	short XOPProtocolVersion;		// XOP protocol version as specified by the first field in the XOP's XOPI resource
 	int XOPType;					// Transient/resident, idle/no idle and other info
 	XOPIORecResult result;			// Result code from XOP or from callback -- inited to 0
 	int status;						// Various status info depending on operation
@@ -362,9 +336,9 @@ typedef struct XOPCallRec *XOPCallRecPtr;
 #define CHECKNAME 150						/* Added in Igor Pro 3.0. */
 #define POSSIBLY_QUOTE_NAME 151				/* Added in Igor Pro 3.0. */
 #define CLEANUP_NAME 152					/* Added in Igor Pro 3.0. */
-#define PREPARE_LOAD_IGOR_DATA 153			/* For internal WaveMetrics use only (used by WaveMetrics Browser). */
-#define DO_LOAD_IGOR_DATA 154				/* For internal WaveMetrics use only (used by WaveMetrics Browser). */
-#define END_LOAD_IGOR_DATA 155				/* For internal WaveMetrics use only (used by WaveMetrics Browser). */
+#define PREPARE_LOAD_IGOR_DATA 153			/* Obsolete and not supported as of Igor7 and XOP Toolkit 7 */
+#define DO_LOAD_IGOR_DATA 154				/* Obsolete and not supported as of Igor7 and XOP Toolkit 7 */
+#define END_LOAD_IGOR_DATA 155				/* Obsolete and not supported as of Igor7 and XOP Toolkit 7 */
 #define IS_STRING_EXPRESSION 156			/* Added in Igor Pro 3.0. */
 #define FETCHWAVE_FROM_DATAFOLDER 157		/* Added in Igor Pro 3.0. */
 #define GET_DATAFOLDER 158					/* Added in Igor Pro 3.0. */
@@ -403,7 +377,7 @@ typedef struct XOPCallRec *XOPCallRecPtr;
 #define SHOW_HIDE_CONTEXTUAL_HELP 184		// Added in Igor Pro 5.0. This is a NOP on Windows.
 #define SET_CONTEXTUAL_HELP_MESSAGE 185		// Added in Igor Pro 5.0. Works on Macintosh and Windows.
 
-#define DO_SAVE_IGOR_DATA 186				// For internal WaveMetrics use only (used by WaveMetrics Browser).
+#define DO_SAVE_IGOR_DATA 186				// Obsolete and not supported as of Igor7 and XOP Toolkit 7
 
 #define REGISTER_OPERATION 187					// Added in Igor Pro 5.0.
 #define SET_RUNTIME_NUMERIC_VARIABLE 188		// Added in Igor Pro 5.0.
@@ -503,6 +477,13 @@ typedef struct XOPCallRec *XOPCallRecPtr;
 #define XOP_SAVE_FILE_DIALOG_2 289				// Added in Igor Pro 7.00, requires XOP Toolkit 7 and Igor7
 #define XOP_GET_CLIPBOARD_DATA 290				// Added in Igor Pro 7.00, requires XOP Toolkit 7 and Igor7
 #define XOP_SET_CLIPBOARD_DATA 291				// Added in Igor Pro 7.00, requires XOP Toolkit 7 and Igor7
+
+#define GET_IGOR_INTERNAL_INFO 292				// Added in Igor Pro 8.00, requires XOP Toolkit 7.03 and Igor8
+
+#define MD_GETWAVEPOINTVALUE_SINT64 293			// Added in Igor Pro 7.03, requires XOP Toolkit 7.01
+#define MD_SETWAVEPOINTVALUE_SINT64 294			// Added in Igor Pro 7.03, requires XOP Toolkit 7.01
+#define MD_GETWAVEPOINTVALUE_UINT64 295			// Added in Igor Pro 7.03, requires XOP Toolkit 7.01
+#define MD_SETWAVEPOINTVALUE_UINT64 296			// Added in Igor Pro 7.03, requires XOP Toolkit 7.01
 
 
 /*	Text utility callback operation codes -- callback codes passed from XOP to host  */

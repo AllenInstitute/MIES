@@ -1061,7 +1061,7 @@ FileLoaderMakeWave(int column, char *waveName, CountInt numPoints, int fileLoade
 {	
 	int type, overwrite;
 	char newName[MAX_OBJ_NAME+2];
-	char temp[128];
+	char temp[MAX_OBJ_NAME+128];
 	int result;
 
 	type = (fileLoaderFlags & FILE_LOADER_DOUBLE_PRECISION) ? NT_FP64:NT_FP32;
@@ -1072,10 +1072,10 @@ FileLoaderMakeWave(int column, char *waveName, CountInt numPoints, int fileLoade
 		with an operation or function. Try again using a different wave name.
 	*/
 	if (result && result != NOMEM && result != NAME_WAV_CONFLICT) {
-		sprintf(newName, "X_%s", waveName);
+		snprintf(newName, sizeof(newName), "X_%s", waveName);
 		SanitizeWaveName(newName, column);
 		if (!(fileLoaderFlags&FILE_LOADER_QUIET)) {
-			sprintf(temp, "Name conflict making %s, name changed to %s\015", waveName, newName);
+			snprintf(temp, sizeof(temp), "Name conflict making %s, name changed to %s\015", waveName, newName);
 			XOPNotice(temp);
 		}
 		result = MakeWave(waveHandlePtr,newName,numPoints,type,overwrite);
@@ -1084,7 +1084,7 @@ FileLoaderMakeWave(int column, char *waveName, CountInt numPoints, int fileLoade
 	}
 
 	if (result && !(fileLoaderFlags&FILE_LOADER_QUIET)) {
-		sprintf(temp, "Error making %s\015", waveName);
+		snprintf(temp, sizeof(temp), "Error making %s\015", waveName);
 		XOPNotice(temp);
 	}
 	return(result);
@@ -1253,75 +1253,4 @@ int
 SetFileLoaderOperationOutputVariables(int runningInUserFunction, const char* fileNameOrPath, int numWavesLoaded, const char* waveNames)
 {
 	return DoSetFileLoaderOutputVariables(runningInUserFunction, fileNameOrPath, numWavesLoaded, waveNames);
-}
-	
-/*	PrepareLoadIgorData(ldiPtr, refNumPtr, topFIHPtr)
-
-	This routine is for use by the WaveMetrics Data Browser only.
-	
-	ldiPtr is a pointer to a LoadDataInfo structure. This structure is private to WaveMetrics.
-	topFIHPtr is a pointer to a LoadFileInfo structure handle. This structure is private to WaveMetrics.
-	
-	Thread Safety: PrepareLoadIgorData is not thread-safe.
-*/
-int
-PrepareLoadIgorData(struct LoadDataInfo* ldiPtr, int* refNumPtr, struct LoadFileInfo*** topFIHPtr)
-{
-	if (!CheckRunningInMainThread("PrepareLoadIgorData"))
-		return NOT_IN_THREADSAFE;
-
-	return (int)CallBack3(PREPARE_LOAD_IGOR_DATA, ldiPtr, refNumPtr, topFIHPtr);
-}
-	
-/*	LoadIgorData(ldiPtr, refNum, topFIH, destDataFolderH)
-
-	This routine is for use by the WaveMetrics Data Browser only.
-	
-	ldiPtr is a pointer to a LoadDataInfo structure. This structure is private to WaveMetrics.
-	topFIH is a handle to a LoadFileInfo structure. This structure is private to WaveMetrics.
-	
-	Thread Safety: LoadIgorData is not thread-safe.
-*/
-int
-LoadIgorData(struct LoadDataInfo* ldiPtr, int refNum, struct LoadFileInfo** topFIH, DataFolderHandle destDataFolderH)
-{
-	if (!CheckRunningInMainThread("LoadIgorData"))
-		return NOT_IN_THREADSAFE;
-
-	return (int)CallBack4(DO_LOAD_IGOR_DATA, ldiPtr, XOP_CALLBACK_INT(refNum), topFIH, destDataFolderH);
-}
-	
-/*	EndLoadIgorData(ldiPtr, refNum, topFIH)
-
-	This routine is for use by the WaveMetrics Data Browser only.
-	
-	ldiPtr is a pointer to a LoadDataInfo structure. This structure is private to WaveMetrics.
-	topFIH is a handle to a LoadFileInfo structure. This structure is private to WaveMetrics.
-	
-	Thread Safety: EndLoadIgorData is not thread-safe.
-*/
-int
-EndLoadIgorData(struct LoadDataInfo* ldiPtr, int refNum, struct LoadFileInfo** topFIH)
-{
-	if (!CheckRunningInMainThread("EndLoadIgorData"))
-		return NOT_IN_THREADSAFE;
-
-	return (int)CallBack3(END_LOAD_IGOR_DATA, ldiPtr, XOP_CALLBACK_INT(refNum), topFIH);
-}
-
-/*	SaveIgorData(sdiPtr, topDataFolderH)
-
-	This routine is for use by the WaveMetrics Data Browser only.
-	
-	sdiPtr is a pointer to a SaveDataInfo structure. This structure is private to WaveMetrics.
-	
-	Thread Safety: SaveIgorData is not thread-safe.
-*/
-int
-SaveIgorData(struct SaveDataInfo* sdiPtr, DataFolderHandle topDataFolderH)
-{
-	if (!CheckRunningInMainThread("SaveIgorData"))
-		return NOT_IN_THREADSAFE;
-
-	return (int)CallBack2(DO_SAVE_IGOR_DATA, sdiPtr, topDataFolderH);
 }

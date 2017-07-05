@@ -2,6 +2,22 @@
 #pragma rtGlobals=3		// Use modern global access method and strict wave access.
 #pragma IgorVersion=7.0
 
+/// @brief Return the amount of free memory in GB
+///
+/// Due to memory fragmentation you can not assume that you can still create a wave
+/// occupying as much space as returned.
+Function GetFreeMemory()
+	variable freeMem
+
+#if defined(IGOR64)
+	freeMem = NumberByKey("PHYSMEM", IgorInfo(0)) - NumberByKey("USEDPHYSMEM", IgorInfo(0))
+#else
+	freeMem = NumberByKey("FREEMEM", IgorInfo(0))
+#endif
+
+	return freeMem / 1024 / 1024 / 1024
+End
+
 Function CheckErrorMessage(returnedError, xopError)
 	variable returnedError, xopError
 
@@ -24,6 +40,7 @@ Function GetListeningStatus_IGNORE(port)
 	string contents = ""
 	variable refNum
 
+#ifdef WINDOWS
 	tmpDir = SpecialDirPath("Temporary", 0, 0, 0)
 
 	// Make sure that the directory we just got is, in fact, a directory.
@@ -61,6 +78,17 @@ Function GetListeningStatus_IGNORE(port)
 	Close refNum
 
 	return strlen(contents) > 0
+#else
+	sprintf cmd, "do shell script \"netstat -an\"", port
+
+	ExecuteScriptText/Z cmd
+	AbortOnValue (V_flag != 0), 7
+
+	// we want to match the line
+	// tcp4       0      0  127.0.0.1.5555         *.*                    LISTEN
+	return GrepString(S_Value, ".*" + "\." + num2str(port) + ".*LISTEN")
+#endif
+
 End
 
 Function TEST_CASE_BEGIN_OVERRIDE(name)
@@ -69,7 +97,6 @@ Function TEST_CASE_BEGIN_OVERRIDE(name)
 	TEST_CASE_BEGIN(name)
 	zeromq_stop()
 	zeromq_set(ZeroMQ_SET_FLAGS_DEBUG | ZeroMQ_SET_FLAGS_DEFAULT)
-	DebuggerOptions enable=0
 End
 
 Function TEST_CASE_END_OVERRIDE(name)
@@ -179,7 +206,7 @@ Function ExtractReturnValue(replyMessage, [var, str, dfr, wvProp, passByRefWave]
 	FindValue/TXOP=4/TEXT="type" T_TokenText
 	CHECK_NEQ_VAR(V_value,-1)
 
-	if(!IsEmpty(type))
+	if(strlen(type) > 0)
 		actual   = T_TokenText[V_value + 1]
 		expected = type
 		CHECK_EQUAL_STR(actual, expected)

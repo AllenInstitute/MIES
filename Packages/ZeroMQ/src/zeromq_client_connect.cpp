@@ -6,7 +6,7 @@ extern "C" int zeromq_client_connect(zeromq_client_connectParams *p)
   BEGIN_OUTER_CATCH
 
   const auto remotePoint = GetStringFromHandle(p->remotePoint);
-  DisposeHandle(p->remotePoint);
+  WMDisposeHandle(p->remotePoint);
   p->remotePoint = nullptr;
 
   GET_CLIENT_SOCKET(socket);

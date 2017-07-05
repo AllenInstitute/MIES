@@ -23,11 +23,6 @@
 			#define IGOR32		// Defined for 32-bit Igor only
 			#define WINIGOR32	// Defined for 32-bit Igor on Windows only
 		#endif
-
-		// See "Text Encodings in Visual C++" in the XOP Toolkit manual
-		#ifndef XOP_DONT_SET_EXECUTION_CHARACTER_SET
-			#pragma execution_character_set("utf-8")
-		#endif
 	#endif
 	
 	#ifdef MACIGOR				// Compiling for Macintosh [

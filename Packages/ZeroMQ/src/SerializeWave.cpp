@@ -229,8 +229,8 @@ void ToString<char *>(fmt::MemoryWriter &writer, waveHndl waveHandle,
     return;
   }
 
-  Handle textHandle = NewHandle(0);
-  ASSERT(textHandle != nullptr && !MemError());
+  Handle textHandle = WMNewHandle(0);
+  ASSERT(textHandle != nullptr);
   const auto mode = 0;
   auto rc         = GetTextWaveData(waveHandle, mode, &textHandle);
   ASSERT(rc == 0);
@@ -252,7 +252,7 @@ void ToString<char *>(fmt::MemoryWriter &writer, waveHndl waveHandle,
 
   writer << "]";
 
-  DisposeHandle(textHandle);
+  WMDisposeHandle(textHandle);
 }
 
 std::string WaveToStringImpl(int waveType, waveHndl waveHandle, CountInt offset)
@@ -460,7 +460,7 @@ void AddDimensionLabelsFullIfSet(json &doc, waveHndl waveHandle,
 
   for(size_t i = 0; i < numDimensions; i++)
   {
-    char label[MAX_DIM_LABEL_CHARS + 1];
+    char label[MAX_DIM_LABEL_BYTES + 1];
     auto rc = MDGetDimensionLabel(waveHandle, static_cast<int>(i), -1, label);
     ASSERT(rc == 0);
 
@@ -496,7 +496,7 @@ void AddDimensionLabelsEachIfSet(json &doc, waveHndl waveHandle,
   {
     for(CountInt j = 0; j < dimSizes[i]; j++)
     {
-      char label[MAX_DIM_LABEL_CHARS + 1];
+      char label[MAX_DIM_LABEL_BYTES + 1];
       auto rc = MDGetDimensionLabel(waveHandle, static_cast<int>(i), j, label);
       ASSERT(rc == 0);
 
@@ -527,7 +527,7 @@ void AddWaveNoteIfSet(json &doc, waveHndl waveHandle)
   }
 
   doc["note"] = json(GetStringFromHandle(handle));
-  DisposeHandle(handle);
+  WMDisposeHandle(handle);
 }
 
 } // anonymous namespace

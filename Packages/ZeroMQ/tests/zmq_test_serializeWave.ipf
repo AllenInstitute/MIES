@@ -100,7 +100,7 @@ Function WorksWithNonEmptyIntegerWaves()
 
 	Make/FREE/I types = {INT8_WAVE, INT16_WAVE, INT32_WAVE, INT64_WAVE, INT8_WAVE | UNSIGNED_WAVE, INT16_WAVE | UNSIGNED_WAVE, INT32_WAVE | UNSIGNED_WAVE, INT64_WAVE | UNSIGNED_WAVE}
 
-	numEntries = DimSize(types, ROWS)
+	numEntries = DimSize(types, 0)
 	for(i = 0; i < numEntries; i++)
 		Make/FREE/Y=(types[i])/N=(2, 3, 4, 5)/R wv = p * q * r * t
 		actual = zeromq_test_serializeWave(wv)

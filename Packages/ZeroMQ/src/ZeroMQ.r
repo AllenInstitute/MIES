@@ -22,7 +22,8 @@ resource 'STR#' (1100) {					/* custom error messages */
   "Message handler already running.",                // HANDLER_ALREADY_RUNNING
   "Message handler could not find a binded server.", // HANDLER_NO_CONNECTION
   "Can not handle multipart messages.",              // INVALID_MULTIPART_MSG
-  "Required procedure files are missing."            // MISSING_PROCEDURE_FILES
+  "Required procedure files are missing.",           // MISSING_PROCEDURE_FILES
+  "Unexpected multi-part message format."            // INVALID_MESSAGE_FORMAT
 	}
 };
 
@@ -31,8 +32,8 @@ resource 'STR#' (1100) {					/* custom error messages */
 resource 'XOPI' (1100) {
 	XOP_VERSION,					// XOP protocol version.
 	DEV_SYS_CODE,					// Development system information.
-	0,										// Obsolete - set to zero.
-	0,										// Obsolete - set to zero.
+	XOP_FEATURE_FLAGS,	  // Tells Igor about XOP features
+	XOPI_RESERVED,				// Reserved - must be zero.
 	XOP_TOOLKIT_VERSION,	// XOP Toolkit version.
 };
 

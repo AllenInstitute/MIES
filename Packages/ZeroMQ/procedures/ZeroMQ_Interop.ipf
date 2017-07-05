@@ -82,4 +82,10 @@ Function/S ZeroMQ_FunctionInfo(functionNameStr)
 
 	return FunctionInfo(functionNameStr)
 End
+
+Function ZeroMQ_ShowHelp(topic)
+	string topic
+
+	DisplayHelpTopic topic
+End
 /// @}

@@ -18,6 +18,37 @@ The XOP provides the following functions:
 - :cpp:func:`zeromq_stop()`
 - :cpp:func:`zeromq_set()`
 
+Installation
+~~~~~~~~~~~~
+
+Windows
+^^^^^^^
+
+- Quit Igor Pro
+- Install the vcredist packages in "output/win"
+- Create the following shortcuts in "$HOME\\Documents\\WaveMetrics\\Igor Pro 7 User Files"
+
+  - In "Igor Procedures" a shortcut pointing to "procedures"
+  - In "Igor Help Files" a shortcut pointing to "help"
+  - In "Igor Extensions" a shortcut pointing to "output/win/x86"
+  - In "Igor Extensions (64-bit)" a shortcut pointing to "output/win/x64"
+
+- Start Igor Pro
+
+MacOSX
+^^^^^^
+
+- Quit Igor Pro
+- Unzip the files in "output/mac"
+- Create the following symbolic links (symlinks) in "$HOME/Documents/WaveMetrics/Igor Pro 7 User Files"
+
+  - In "Igor Procedures" a symlink pointing to "procedures"
+  - In "Igor Help Files" a symlink pointing to "help"
+  - In "Igor Extensions" a symlink pointing to "output/mac/ZeroMQ"
+  - In "Igor Extensions (64-bit)" a symlink pointing to "output/mac/ZeroMQ-64"
+
+- Start Igor Pro
+
 In the following the JSON message format is discussed.
 
 Direction: World -> Igor Pro
@@ -302,6 +333,19 @@ Functions returning waves:
 | result.value.note                 | string                   | wave note                                                                                                                                 |
 +-----------------------------------+--------------------------+-------------------------------------------------------------------------------------------------------------------------------------------+
 
+Compilation instructions
+^^^^^^^^^^^^^^^^^^^^^^^^
+
+Required additional software:
+
+- (Windows only) Visual Studio 2015
+- (MacOSX only) Xcode
+- `CMake <https://cmake.org>`__ version 3.8 or later
+- `XOPSupport Toolkit 7 <https://www.wavemetrics.com/products/xoptoolkit/xoptoolkit.htm>`__
+- `fmt library <https://github.com/fmtlib/fmt>`__ in version 5f26b5da2871cc5f562231af9d2062fb18df1ca5
+- `json library <https://github.com/nlohmann/json>`__ in version 94331a355d5fc2032810af7160504addcf86f783
+- `Igor Unit Testing Framework <http://www.igorexchange.com/project/unitTesting>`__
+
 Building libzmq
 ~~~~~~~~~~~~~~~
 
@@ -310,39 +354,72 @@ Building libzmq
     # As of libzmq revision 84d94b4f (Merge pull request #2475 from
     # chrisstaite/master, 2017-03-28) all tests pass.
     git clone https://github.com/zeromq/libzmq.git
+
     cd libzmq
-    mkdir build-msvc
+    mkdir build build-64
+
+    # WINDOWS
+    # {
     # 32bit
-    cd build-msvc
+    cd build
     cmake -G "Visual Studio 14 2015" ..
-    cmake --build . --config release
-    ctest -C release
+    cmake --build . --config Release
+    ctest -C Release
     # Import/static libs are in lib/release, dll in bin/release
 
     # 64bit
-    mkdir build-msvc-64
-    cd build-msvc-64
+    cd build-64
     cmake -G "Visual Studio 14 2015 Win64" ..
-    cmake --build . --config release
-    ctest -C release
+    cmake --build . --config Release
+    ctest -C Release
     # Import/static libs are in lib/release, dll in bin/release
+    # }
+
+    # MACOSX
+    # {
+    # 32bit
+    cd build
+    cmake -DCMAKE_OSX_ARCHITECTURES=i386 -DCMAKE_OSX_DEPLOYMENT_TARGET=10.9 ..
+    cmake --build . --config Release
+    ctest -C Release
+    # static libs are in lib
+
+    # 64bit
+    mkdir build-64
+    cd build-64
+    cmake -DCMAKE_OSX_ARCHITECTURES=x86_64 -DCMAKE_OSX_DEPLOYMENT_TARGET=10.9 ..
+    cmake --build . --config Release
+    ctest -C Release
+    # static libs are in lib
+    # }
 
 Building and installing the ZeroMQ.xop
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 .. code-block:: sh
 
+   # Windows
+   # {
    # Install cmake from www.cmake.org
    # Install Visual Studio 2015 Community
    # Open a Visual Studio 2015 command prompt
    cd Packages/ZeroMQ/src
-   mkdir build
+   mkdir build build-64
    cmake -G "Visual Studio 14 2015" ..
-   cmake --build . --config release --target INSTALL
+   cmake --build . --config Release --target install
    cd ..
-   mkdir build-Win64
    cmake -G "Visual Studio 14 2015 Win64" ..
-   cmake --build . --config release --target INSTALL
+   cmake --build . --config Release --target install
+   # }
+
+   # MacOSX
+   # {
+   cmake -DCMAKE_OSX_ARCHITECTURES=i386 -DCMAKE_OSX_DEPLOYMENT_TARGET=10.9 -G Xcode ..
+   cmake --build . --config Release --target install
+   cd ..
+   cmake -DCMAKE_OSX_ARCHITECTURES=x86_64 -DCMAKE_OSX_DEPLOYMENT_TARGET=10.9 -G Xcode ..
+   cmake --build . --config Release --target install
+   # }
 
 Running the test suite
 ~~~~~~~~~~~~~~~~~~~~~~
@@ -352,3 +429,38 @@ Running the test suite
 - Open Packages/ZeroMQ/tests/RunTests.pxp
 - Execute in Igor ``run()``
 - The test suite always passes *without* errors
+
+Running clang-tidy on MacOSX
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+- Install `Homebrew <https://brew.sh>`__
+- ``brew install llvm``
+- Create compilation database
+
+  - ``mkdir clang-tidy; cd clang-tidy``
+  - ``cmake -DCMAKE_OSX_ARCHITECTURES=x86_64 -DCMAKE_OSX_DEPLOYMENT_TARGET=10.9 -DCMAKE_EXPORT_COMPILE_COMMANDS=ON ..``
+  - ``cmake --build . --target clang-tidy``
+
+ZeroMQ XOP implementation details
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+The XOP uses the ``Dealer`` (called Client in the XOP interface) and ``Router`` (called Server in the XOP interface) socket types.
+
+The default socket options are:
+
+- ``ZMQ_LINGER``           = ``0``
+- ``ZMQ_SNDTIMEO``         = ``0``
+- ``ZMQ_RCVTIMEO``         = ``0``
+- ``ZMQ_ROUTER_MANDATORY`` = ``1`` (``Router`` only)
+- ``ZMQ_MAXMSGSIZE``       = ``1024`` (in bytes, ``Router`` only)
+- ``ZMQ_IDENTITY``         = ``zeromq xop: dealer`` (``Dealer`` only)
+
+The ``Router``/Server expects three frames (identity, empty, payload) and the
+``Dealer``/Client expects two frames (empty, payload) when sending/receiving
+messages. This format is used to be compatible with REP/REQ sockets.
+
+The passed function in the JSON message is currently always executed in the
+main thread during ``IDLE`` events. ``IDLE`` events are generated by Igor Pro
+only when no functions are running. In case you want to execute a function
+during the time when functions are running the operation ``DoXOPIdle`` allows
+to force an ``IDLE`` event.

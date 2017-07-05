@@ -1,5 +1,7 @@
-﻿#ifndef IGORERRORSH
-#define IGORERRORSH
+#ifndef IGOR_ERRORS_H
+#define IGOR_ERRORS_H
+
+#define NOHELP 0		/* for ErrorReport() */
 
 /*  codes returned by MacErr()  in errors.c */
 #define MERR_QUIT      0	/* do nothing to fix error (user acknowledges error) */
@@ -47,7 +49,7 @@
 #define NO_SF_CHANGE 34			/* Can't change a special symbolic path. */
 #define NO_MULT_BIN_SAVE 35		/* Can't save multiple waves to a single binary file. */
 #define BAD_BINARY_FILE 36		/* This does not appear to be a valid Igor binary wave file */
-#define WAVE_TOO_BIG 37			/* "total size of wave data can't exceed 2147000000 bytes" */
+#define WAVE_TOO_BIG 37			/* "total size of wave data can't exceed 2GB (Igor32) or 20GB (Igor64)" */
 #define BAD_BIN_VERSION 38		/* Bad or incompatible binary version */
 #define NOKILL_WAVE_IN_USE 39	/* can't kill a wave that is part of a graph or table */
 #define TOO_MANY_PARAMS 40		/* Too many parameters on command line. */
@@ -72,7 +74,7 @@
 #define NO_DATA_IN_FILE 59			/* no data was found in file. */
 #define LINE_TOO_LONG_IN_FILE 60	/* file contains a line that is too long. */
 #define TOOMANYCOLS_IN_FILE 61		/* file contains too many columns. */
-#define WAVE_NAME_TOO_LONG 62		/* Wave names can't exceed 31 characters */
+#define WAVE_NAME_TOO_LONG 62		/* Wave names can't exceed <MAX_WAVE_NAME> bytes */
 #define BAD_CHAR_IN_NAME 63			/* names must start with a letter and contain letters, digits or '_' */
 #define TOO_MANY_MAKE_WAVES 64		/* More than 100 waves specified in one make command */
 #define BAD_IGOR_TEXT_FILE 65		/* Bad Igor text file. (missing keyword IGOR) */
@@ -95,7 +97,7 @@
 #define DUP_NO_OVERWRITE 81			/* Can't overwrite self  */
 #define EXPECT_LPAREN_OR_EQUAL 82	/* Expected '(' or '=' */
 #define UNKNOWN_KEYWORD 83			/* Unknown keyword */
-#define BAD_IRANGE 84				/* Expected number between ^2 and ^3 */
+#define BAD_IRANGE 84				/* expected number between %3 and %4 */
 #define PROC_TOO_BIG 85				/* The procedure file is getting too big */
 #define TEXT_TOO_BIG 86				/* The window can't hold any more text */
 #define BAD_FONT_NAME 87			/* Font not available */
@@ -142,7 +144,7 @@
 #define EXPECTED_LAYOUT_OBJECT 127	/* expected name of object in layout */
 #define NO_LAYOUTS 128				/* there are no page layouts */
 #define EBAR_WAVES_MISSING 129		/* both positive & negative error bar waves are missing */
-#define BAD_LAYOUT_EXPAND 130		/* magnification must be .25, .5, 1, or 2 */
+#define BAD_LAYOUT_EXPAND 130		/* invalid magnification */
 #define EXPECTED_LAYOUT 131			/* expected name of page layout window */
 #define NO_PRINT_RECORD 132			/* can't open page setup record (check print driver) */
 #define ONLY_GRAF 133				/* this operation is for graphs only */
@@ -219,9 +221,9 @@
 
 #define BAD_FLAG_NUM 191			/* "Flag usage is '/N=number or /N=(expression)" */
 
-#define BAD_IRANGE_ODD 192			// "Expected odd number between ^2 and ^3"
-#define BAD_EXPECTED_RANGE 193		// "expected ^1 between ^2 and ^3" 
-#define BAD_ODD_EXPECTED_RANGE 194	// "expected odd ^1 between ^2 and ^3"
+#define BAD_IRANGE_ODD 192			// "expected odd number between %3 and %4"
+#define BAD_EXPECTED_RANGE 193		// "expected %2 between %3 and %4"
+#define BAD_ODD_EXPECTED_RANGE 194	// "expected odd %2 between %3 and %4"
 
 #define BAD_XWave 195			// "X data does not match Y data (length or number type)"
 #define BAD_WWave 196			// "Weight data does not match Y data (length or number type)"
@@ -257,7 +259,7 @@
 #define NO_WIND_STYLE_MACRO		 225	// "No style macro for this type of window"
 #define WRONG_CONTROL			 226	// "^0 is not a ^1 control"
 #define EXPECTED_NAME			 227	// "Expected name"
-#define RFLAG_NEEDS_CFLAG		 228	// "/C flag must preceed /R flag"
+#define RFLAG_NEEDS_CFLAG		 228	// "/C flag must precede /R flag"
 #define ORN_RENAMED				 229	// "(no changes, except annotation already renamed to '^0'.)"
 #define CROSS_AXIS_MISSING		 230	// "Crossing axis not found"
 #define CROSS_AXIS_NOT_PERP		 231	// "Crossing axis is not perpendicular"
@@ -276,8 +278,8 @@
 #define EXPECTED_FUNCTION_KEY	 244	// "Expected Function keyword"
 #define EXTRA_MACRO_TEXT		 245	// "Extra text in macro, proc, or function"
 
-#define BAD_FILE_TYPE_SPEC		 246	// "A file type specifier must have exactly 4 characters"
-#define BAD_FILE_CREATOR_SPEC	 247	// "A file creator specifier must have exactly 4 characters"
+#define BAD_FILE_TYPE_SPEC		 246	// "A file type specifier must have exactly 4 bytes"
+#define BAD_FILE_CREATOR_SPEC	 247	// "A file creator specifier must have exactly 4 bytes"
 #define PATH_TOO_LONG			 248	// "The path to file is too long"
 #define FILE_OPEN_READ_ONLY		 249	// "The file ^1 is already open read-only"
 #define FILE_OPEN_WRONG_NAME	 250	// "The file ^1 is already open but with the window name ^2"
@@ -382,9 +384,9 @@
 #define NEED_COMPILE			335		/* "The procedure window(s) need to be compiled. Perhaps auto-compile is off." */
 #define NOKILL_OBJ_IN_FCTN		336		/* "Can't kill a wave or variable that is part a user function or dependency expression." */
 #define TAG_FUNCTION_ERROR		337		/* "A tag access function is only valid while a tag is being drawn." */
-#define TRACE_SPECIFED_TWICE	338		/* "A trace was specifed twice." */
+#define TRACE_SPECIFED_TWICE	338		/* "A trace was specified twice." */
 
-#define WIN_TITLE_BAD_LENGTH	339		/* "Window titles must be 1 to 255 characters long" */
+#define WIN_TITLE_BAD_LENGTH	339		/* "Window titles must be 1 to 255 bytes long" */
 #define UNKNOWN_LUMP_REC_VERSION 340	/* "This version of Igor can't handle this packed experiment file" */
 #define CANT_UNTIL_CHOOSE_FROM_LIST 341	/* "Select an item in the list" */
 #define XOP_RESOURCES_MISSING	342		/* "The XOP file '^1' is missing required resources. . ." */
@@ -428,7 +430,7 @@
 
 #define DO_WINDOW_FROM_FUNCTION 371			/* "DoWindow/R requires recompiling functions and thus can't be called from a function." */
 
-#define NO_TEXTNUMERIC_WAVE_OVERWRITE 372	/* "Can't overwrite a text wave with a numeric wave or vice versa." */
+#define NO_TEXTNUMERIC_WAVE_OVERWRITE 372	/* "Can't convert a text wave to or from another type" */
 #define NEED2PNTS_FOR_THIS_OP 373			/* "This operation requires a wave with at least two points." */
 #define NO_TEXT_OP 374						/* "This operation does not work on text waves." */
 #define NODATA_IN_DIM 375					/* "There is no data allocated in this dimension." */
@@ -600,7 +602,7 @@
 
 #define CANT_REMOVE_NORMAL_RULER 518		// "The Normal ruler can not be removed."
 
-#define CANT_HANDLE_NON_NATIVE_PICT 519		// "This operation can't handle a <other platform> picture."
+#define CANT_HANDLE_NON_NATIVE_PICT 519		// "This operation can't handle a platform non-native picture."
 #define ERR_520 520							// Error 520 is available for duty.
 
 #define SIN_FIFO_EXPECT_1CHAN 521			// "FIFO not setup properly (no channel info)"
@@ -624,12 +626,12 @@
 #define FAIL_READING_WindowsMF 538			// "An error occurred while attempting to read a windows metafile."
 #define FAIL_READING_DIB 539				// "An error occurred while attempting to read a device independent bitmap."
 
-#define CANT_READ_THAT_GRAPHICS_TYPE 540	// "Can't read the graphics format of the specifed file."
+#define CANT_READ_THAT_GRAPHICS_TYPE 540	// "Can't read the graphics format of the specified file."
 #define NO_AUDIO_DEVICE 541					// "Could not find an audio device."
 #define AUDIO_SYNCH_ONLY 542				// "Your audio setup does not support asynchronous output."
 #define CLIP_NOT_AVAIL 543					// "Clipboard in use by another application."
-#define PNG_WRITE_ERROR 544					// "An error occured while writing a PNG file."
-#define CLIP_ERROR 545						// "A clipboard error occured."
+#define PNG_WRITE_ERROR 544					// "An error occurred while writing a PNG file."
+#define CLIP_ERROR 545						// "A clipboard error occurred."
 #define EXPECT_SVAR 546						// "Expected name of string variable reference (SVAR)."
 #define EXPECT_NVAR 547						// "Expected name of numeric variable reference (NVAR)."
 #define EXPECT_0_OR_LPAREN 548				/* "expected 0 or '('" */
@@ -671,7 +673,7 @@
 #define kNumPointsMustBeEven	576			// "Histogram levels must be in pairs."
 #define	kNoSuchThresholdMethod	577			// "The specified method is not supported."
 #define kWavesMustBeSameSize	578			// "Both images must be the same size."
-#define kWantsUnsignedCharData	579			// "This image operation supports only unsigned char (/B/U) data"
+#define kWantsUnsignedCharData	579			// "This operation supports only unsigned char (/B/U) data"
 #define kMissingClipValue		580			// "Adaptive Histogram requires clip value (/C flag)"
 #define kBadRegionSpecifier		581			// "Bad region specifier. Check that the image can be evenly divided into the number of specified regions."
 #define kBadClipValue			582			// "Clipping value must be positive. /C=1 returns the original image."
@@ -702,7 +704,7 @@
 
 #define kBadROIDimensions		601			// "ROI dimensions do not match the target image."
 
-#define BAD_FILE_TYPE_EXT_SPEC	602			// "A filetype/extension specifier must have exactly 4 characters or start with '.'"
+#define BAD_FILE_TYPE_EXT_SPEC	602			// "A filetype/extension specifier must have exactly 4 bytes or start with '.'"
 
 // These were created as platform-independent error codes that can be used when standard C file I/O routines return errors.
 #define FILE_READ_ERROR 603					// "A file read error occurred."
@@ -781,7 +783,7 @@
 #define kBadMultipleImageCount		667		// "Bad count for multiple images."						AG 	20SEP99
 #define kBadValueForFirstImage		668		// "Bad value for first image."							AG	20SEP99
 #define kWantsNewerQuickTime		669		// "Operation requires a newer version of QuickTime."	AG 	20SEP99
-
+#define kLookingForImageFileError	670		// "Looking for image file"
 #define kMustSpecifyDataWave		671		// "Data wave must be specified (see /D flag)."			AG 	11OCT99 
 #define kIncompatibleFlagOptions	672		// "Flag options appear to be incompatible."			AG 	29OCT99
 #define kAGBloatedFortranCrap		673		// "AG's bloated fortran crap is not compiled."			AG	01NOV99
@@ -803,29 +805,29 @@
 #define NO_SUCH_TOOL_NAME	688	// "Expected \"normal\", \"arrow\", \"text\", \"line\", \"rect\", \"rrect\", \"oval\", or \"poly\"."
 
 #define NO_MOVIE 689	// "no movie"
-#define FAILED_TO_PLAY_MOVIE 690	// "failed to play movie"
-#define EXPECT_WATERFALL 691	// "expected a waterfall plot"
-#define X_VECTOR_MISMATCH 692		// "x vector mismatch"
-#define Y_VECTOR_MISMATCH 693		// "y vector mismatch"
-#define EXPECTED_INSTANCE 694		// "expected instance"
-#define UNMATCHED_CONDITIONAL 695	// "unmatched ?: conditional"
-#define NOT_IN_MACROS 696			// "this syntax is not allowed in macros -- use functions"
-#define LINK_NO_XFUNC 697			// "During link, couldn't find external function."
-#define LINK_TYPE_XFUNCMISMATCH 698	// "During link, external function did not match."
-#define LINK_NO_FUNC 699			// "During link, couldn't find user function."
-#define LINK_TYPE_MISMATCH 700		// "During link, user function did not match."
-#define LINK_NO_CONST 701			// "During link, couldn't find constant."
-#define SEMICOLON_EXPECTED 702		// "Expected semicolon."
-#define EXPECT_OBJ_NAME 703			// "Expected object name."
+#define FAILED_TO_PLAY_MOVIE 690		// "failed to play movie"
+#define EXPECT_WATERFALL 691			// "expected a waterfall plot"
+#define X_VECTOR_MISMATCH 692			// "x vector mismatch"
+#define Y_VECTOR_MISMATCH 693			// "y vector mismatch"
+#define EXPECTED_INSTANCE 694			// "expected instance"
+#define UNMATCHED_CONDITIONAL 695		// "unmatched ?: conditional"
+#define NOT_IN_MACROS 696				// "this syntax is not allowed in macros -- use functions"
+#define LINK_NO_XFUNC 697				// "During link, couldn't find external function."
+#define LINK_TYPE_XFUNCMISMATCH 698		// "During link, external function did not match."
+#define LINK_NO_FUNC 699				// "During link, couldn't find user function."
+#define LINK_TYPE_MISMATCH 700			// "During link, user function did not match."
+#define LINK_NO_CONST 701				// "During link, couldn't find constant."
+#define SEMICOLON_EXPECTED 702			// "Expected semicolon."
+#define EXPECT_OBJ_NAME 703				// "Expected object name."
 #define EXPECT_CONSTANT_OR_LITERAL 704	// "Expected symbolic constant or literal"
-#define EXPECT_FUNC_NAME 705		// "Expected function name."
+#define EXPECT_FUNC_NAME 705			// "Expected function name."
 #define FUNCREF_TYPE_INCONSISTENT 706	// "Function reference type inconsistent."
 #define CANT_USE_FUNCREF_HERE 707		// "Can't use a function reference here."
 #define EXPECT_LOCALVAR_NAME 708		// "Expected a local variable name."
 #define REF_VAR_DIFFERENT_TYPE 709		// "Reference variable is of a different type."
 #define COULD_NOT_FIND_PROTO_FUNC 710	// "Couldn't find prototype function."
-#define EXPECT_FUNC_REF 711		// "Expected function reference."
-#define NO_STATIC_FUNC_HERE 712	// "Can't use a static function here."
+#define EXPECT_FUNC_REF 711				// "Expected function reference."
+#define NO_STATIC_FUNC_HERE 712			// "Can't use a static function here."
 #define NO_PROMPT_THIS_TYPE 713			// "Can't prompt for this type of variable."
 #define EXPECT_POPUP 714				// "Expected popup keyword."
 #define NO_PROMPT_DEFINED 715			// "No prompt defined for this variable."
@@ -870,7 +872,7 @@
 #define NVAR_REF_FAILED 749					// "Failed to resolve a local NVAR \"^0\" reference to a global variable."
 #define SVAR_REF_FAILED 750					// "Failed to resolve a local SVAR \"^0\" reference to a global string."
 
-#define DIM_LABEL_TOO_LONG 751				// "Dimension labels are limited to 31 characters."
+#define DIM_LABEL_TOO_LONG 751				// "Dimension labels are limited to <MAX_DIM_LABEL_SIZE> bytes."
 
 #define CF_PLOTIT_NoGuessBuiltin 752		// "you must enter function coefficient values. Select Manual from the Guess Method menu first."
 #define CF_PLOTIT_NoGuessPolyLine 753		// "you must enter function coefficient values. For poly and line fits, check the Hold box in order to enter values."
@@ -880,7 +882,7 @@
 #define COLUMN_INFO_EXPECTED_NUMBER 756		// "Expected a number in column info specifier."
 #define COLUMN_INFO_BAD_NAME 757			// "A name in the column info specifier contained illegal characters."
 #define COLUMN_INFO_BAD_NAME_TERM 758		// "Missing comma or semicolon after a name in the column info specifier."
-#define COLUMN_INFO_NAME_TOO_LONG 759		// "A name in the column info specifier can not exceed 31 characters in length."
+#define COLUMN_INFO_NAME_TOO_LONG 759		// "A name in the column info specifier can not exceed <MAX_OBJ_NAME> bytes in length."
 #define COLUMN_INFO_BAD_NUMBER 760			// "Bad number in the column info specifier."
 #define COLUMN_INFO_BAD_NUMBER_TERM 761		// "Missing comma or semicolon after a number in the column info specifier."
 #define BAD_FIXED_FIELD_NUMBER_OF_COLUMNS 762	// "The number of columns in a fixed field file must be between 1 and 10000."
@@ -889,7 +891,7 @@
 #define CL_LOOKUP_REQUIRES_CTAB 765				// "ColorScale lookup requires ctab keyword."
 #define CURVEFIT_NOSTATICFUNCTIONS 766			// "Static function references are not allowed as curve fitting functions."
 #define EXPECTED_GRAPH_TABLE_LAYOUT_PROCEDURE_NOTEBOOK_CMDWIN_BUT_NOT_PANEL 767	 // "This operation is for graphs, tables, layouts, notebooks, procedure windows, or the command/history window."
-#define EXPECTED_TARG_PROC_CMDWIN_NAME 768		// "expected name of a target window, procedure window, or \"kwCmdHist\"."
+#define EXPECTED_TARG_PROC_CMDWIN_NAME 768		// "Expected name of a target window, procedure window, or one of \"kwTopWin\", \"kwCmdHist\", \"kwFrameInner\", or \"kwFrameOuter\".
 #define CURVEFIT_NOTENOUGHPOINTS 769			// "You must have at least as many data points as fit parameters."
 #define BAD_TIMEUNIT 770						// "Expected the name of a time unit like sec, week, year, etc."
 #define MANDATE_INCMUSTBEINTEGER 771			// "The manual tick increment for a date/time axis must be an integer."
@@ -903,7 +905,7 @@
 #define LAYOUT_CAN_NOT_BE_COMPILED 777			// "The Layout operation can not be used in a function. Use NewLayout instead."
 #define APPENDTOLAYOUT_CAN_NOT_BE_COMPILED 778	// "The AppendToLayout operation can not be used in a function. Use AppendLayoutObject instead."
 #define BAD_FRAME_VALUE 779						// "Expected a frame value: 0=none, 1=single, 2=double, 3=triple, 4=shadow."
-#define BAD_LAYOUT_OBJECT_TYPE 780				// "Expected a page layout object type keyword: graph, table, picture or textbox."
+#define BAD_LAYOUT_OBJECT_TYPE 780				// "Expected a page layout object type keyword: graph, table, picture, textbox or gizmo."
 #define EXPECTED_LAYOUT_NAME 781				// "Expected the name of a page layout window."
 #define LAYOUT_USE_TEXTBOX_CMD 782				// "Can't append a textbox via AppendLayoutObject. Use Textbox or Legend instead."
 #define FLAG_ALLOWED_JUST_ONCE 783				// "This flag can be used only once per command."
@@ -911,11 +913,11 @@
 #define OPTIMIZE_NOXFLAG 784					// "When optimizing a multivariate function, you must provide a starting guess using the /X flag."
 #define OPTIMIZE_NAN 785						// "The user function you are trying to optimize has returned NaN (Not a Number)."
 #define OPTIMIZE_NOBRACKET 786					// "The Optimize operation was unable to find a pair of X values that bracket the minimum (or maximum). Use /L and /H to specify bracketing values."
-#define OPTIMIZE_NOPROGRESS 787					// "The Optimize operation could not find a better solution than your starting guess. Your function may be too non-linear, the stopping tolerance may be too large, or your starting guess is a solution."
-#define OPTIMIZE_TOOMANYITERATIONS 788			// "The Optimize operation has performed more ^0 iterations, which is more than the maximum allowed."
-#define OPTIMIZE_MAXSTEPSIZE 789				// "The Optimize operation  has exceded the maximum step size. It may be that your function is unbounded or approaches a value assymptotically."
+#define OPTIMIZE_NOPROGRESS 787					// "The Optimize operation could not find a better solution compared to the last iteration. Your function may be too non-linear, the stopping tolerance may be too small, or a solution may have been achieved."
+#define OPTIMIZE_TOOMANYITERATIONS 788			// "The Optimize operation has performed ^0 iterations, which is more than the maximum allowed."
+#define OPTIMIZE_MAXSTEPSIZE 789				// "The Optimize operation has exceeded the maximum step size. It may be that your function is unbounded or approaches a value asymptotically."
 #define OPTIMIZE_NTYPSIZEMISMATCH 790			// "The number of values used with the /R flag must match the number of X values."
-#define OPTIMIZE_CRITICALPOINT 791				// "Your starting guess is too near a critical point and Optimize can't procede. Try a different starting guess."
+#define OPTIMIZE_CRITICALPOINT 791				// "Your starting guess is too near a critical point and Optimize can't proceed. Try a different starting guess."
 
 #define EXPECTED_LOCAL_NUM_OR_STR_VAR_NAME 792	// "Expected the name of a local numeric variable or NVAR, or a local string variable or SVAR."
 #define SSCANF_RAN_OUT_OF_CONVERSIONS 793		// "The sscanf format string does not have enough conversion specifiers or there are too many output variables."
@@ -973,7 +975,7 @@
 #define kBadTriangulationWave		835			// "Bad Triangulation Wave."
 #define kBadDestinationWave			836			// "Bad Destination Wave."
 #define kDoesNotSupport4D			837			// "Does not support 4D waves."
-#define kBadUserFunctionFormat		838			// "Bad user function format."
+#define kBadUserFunctionFormat		838			// "Bad user function. Function is either static or its format is inappropriate."
 #define FFT_COLS_EVEN				839			// "The number of columns must be even."
 #define kWave_Scaling_Mismatch		840			// "Wave Scaling Mismatch"
 #define kBadMatrixOPToken			841			// "Bad MatrixOPs token."
@@ -1128,8 +1130,8 @@
 #define NOT_IN_THREADSAFE 978					// "Not allowed in ThreadSafe functions."
 #define NOT_YET_IN_THREADSAFE 979				// "Not yet available in ThreadSafe functions."
 #define INVALID_THREAD_GROUP 980				// "Invalid Thread Group ID or index."
-#define WAVE_USED_BY_THREAD 981					// "Wave is in use by preemtive thread. Can't be resized or killed."
-#define ILLEGAL_THREAD_PARAM 982				// "Parameter not allowd when spawning a preemptive thread."
+#define WAVE_USED_BY_THREAD 981					// "Wave is in use by preemptive thread. Can't be resized or killed."
+#define ILLEGAL_THREAD_PARAM 982				// "Parameter not allowed when spawning a preemptive thread."
 #define ONLY_THREADSAFE 983						// "Function must be ThreadSafe."
 #define NO_CALLS_OUTSIDE_IM 984					// "Functions in Independent Module can't call outside."
 
@@ -1237,7 +1239,7 @@
 #define SUBRANGE_DLOG_REQUIREDPNTS_TOOBIG 1079	// "No dimension in the wave is large enough."
 #define SUBRANGE_DLOG_BADRANGEDIM 1080			// "Required points too large for selected range dimension."
 #define SUBRANGE_DLOG_LABEL_NOT_ALLOWED 1081	// "A dimension label is not allowed in the range dimension."
-#define SUBRANGE_DLOG_INC_TOO_BIG 1082			// "This increment causes the range to excede the wave dimension size. It must be less than ^3."
+#define SUBRANGE_DLOG_INC_TOO_BIG 1082			// "This increment causes the range to exceede the wave dimension size. It must be less than ^3."
 
 #define CVODE_ILLEGAL_INPUT 1083				// "IntegrateODE reports illegal input for method 2 or 3"
 #define CVODE_SETUP_FAILURE 1084				// "IntegrateODE reports setup failure for method 2 or 3"
@@ -1398,7 +1400,7 @@
 
 #define EXPECT_CONTROL_OR_TRACE			1212	// JW 080428 for GetUserData(), "Expected name of a control or graph trace."
 #define CF_XYMISMATCH					1213	// JW 080516 Curve fit was using BAD_XWave, but curve fit no longer requires matching number type. "X and Y data have different number of points."
-#define JW_RESERVED_4					1214
+#define FIXEDSIZE_SIZELIMIT_CONFLICT	1214	// Error from SetWindow sizeLimit when applied to a control panel that has fixedSize=1. "Cannot set sizeLimit on a control panel with fixedSize=1."
 #define JW_RESERVED_5					1215
 #define JW_RESERVED_6					1216
 #define JW_RESERVED_7					1217
@@ -1446,7 +1448,7 @@
 #define NUMERIC_ACCESS_ON_NON_NUMERIC_WAVE	1252	// "An attempt was made to treat a non-numeric wave (text, wave reference or DFREF) as if it were a numeric wave."
 #define DOCUMENT_OPEN_FOR_READ_ONLY	1253			// "The document is open for read only."
 #define PX_WAVE_LOOP_ONLY	1254					// "P or X used outside of a wave assignment loop"
-#define LH_RES_ERR_21	1255						// "LH Reserved error 21"
+#define NO_MOVIE_SPECIFIED	1255					// "Invalid or no movie specification"
 #define LH_RES_ERR_22	1256						// "LH Reserved error 22"
 #define LH_RES_ERR_23	1257						// "LH Reserved error 23"
 #define LH_RES_ERR_24	1258						// "LH Reserved error 24"
@@ -1577,12 +1579,11 @@
 #define OH_EXPECTED_CLOSE_QUALIFIER 1440			// "Expected right parenthesis closing keyword qualifier."
 #define OH_SIMPLE_MAIN_ARRAY_FULL 1441				// "Too many main parameters"
 #define OH_KEYWORD_ARRAY_FULL 1442					// "Too many parameters in a single command for this keyword"
-#define NOGRAF_OR_PANEL_OR_GIZMO 1443				// "There are no graph, panel, or Gizmo windows or the specified window does not exist"));
-#define EXPECTED_GRAF_OR_PANEL_OR_GIZMO 1444		// "Expected graph, panel, or Gizmo name."
-
-#define TOO_MANY_MAIN_MENUS_IN_FILE 1445			// "There are too many main user-defined menus in ^0 (the maximum is 100)."	// ^0 is file name
-#define STRING_EXPORT_GRAPHICS_NOT_IMPL 1446		// "_string_ output for EPSF and PDF graphics formats not implemented."
-
+#define TOO_MANY_MAIN_MENUS_IN_FILE 1443			// "There are too many main user-defined menus in %1 (the maximum is 100)."	// %1 is file name
+#define STRING_EXPORT_GRAPHICS_NOT_IMPL 1444		// "_string_ output for EPSF and PDF graphics formats not implemented."
+#define NOGRAF_OR_PANEL_OR_GIZMO 1445				// "There are no graph, panel, or Gizmo windows or the specified window does not exist"
+#define EXPECTED_GRAF_OR_PANEL_OR_GIZMO 1446		// "Expected graph, panel, or Gizmo name."
+#define TABLE_EXTERNAL_PANEL_ONLY 1447				// "A table window can host external panels only"
 // *** RESERVED FOR IP6 ERRORS - ADD IP7 OPERATION ERRORS TO MORE OPERATION ERRORS SECTION ***
 
 // Range of error codes allocated for operations ends at 1499 - see LAST_BIFCTN above
@@ -1597,7 +1598,7 @@
 enum MoreOperationErrorCodes {
 	kBadVersionError = FIRST_MORE_OP_ERR,		// "Bad or unrecognized version."
 	kSingularOrNaNInput,						// "Singular value or NaN encountered."
-	kComplexExponent,							// "Complex Gammma Exponent out of range."
+	kComplexExponent,							// "Complex Gamma Exponent out of range."
 	kUseComplexFunction,						// "Try using the complex version of this function."
 	kStepSizeUnderflow,							// "Algorithm stopped because of step-size underflow."
 	kFailedToComputeDistribution,				// "Failed to compute the distribution."
@@ -1651,7 +1652,7 @@ enum MoreOperationErrorCodes {
 	kChildObjectNotFound,						// "Child object was not found."
 	kParentObjectNotFound,						// "Parent object was not found."
 	kExpectedCurrentGroupObject,				// "Expected a current group selection."
-	kTooManyTickmarks,							// "Too many tickmarks."
+	kTooManyTickmarks,							// "Too many tick marks."
 	kTooManyNestedGroups,						// "Too many nexted groups."
 	kTooManyClipPlanes,							// "Too many clip planes."
 	kBadBoxLimits,								// "Bad outerbox limits.
@@ -1685,15 +1686,17 @@ enum MoreOperationErrorCodes {
 	kDataBrowserShowModalBrowserKeywordNotAllowed,	// "The \"showModalBrowser\" keyword is only allowed when the /M flag is present."
 	kDataBrowserOnlyPromptKeywordIsAllowed,			// "Only the \"prompt\" keyword is allowed when the /M flag is used."
 	kDataBrowserKeywordNotAllowedWithSlashM,	// "The \"%1\" keyword is not allowed when the /M flag is used."
-	kDataBrowserCommandStringTooLong,			// "The command string for the \"%1\" keyword is too long. Command lines are limited to %2 characters."
+	kDataBrowserCommandStringTooLongWithParams,			// "The command string for the \"%1\" keyword is too long. Command lines are limited to %2 bytes."
 	kDataBrowserNoSuchButton,					// "There is no user button in the data browser with the specified name."
 	kDataBrowserNoMoreButtons,					// "The maximum number of user buttons has already been reached."
-	kDataBrowserBadCommand,						// "Browser commands may not include quotes, any variation of printf, or more than one \"%\" character."
+	kDataBrowserBadCommand,						// "Browser commands may not include any variation of printf."
+	kDataBrowserOnlyOnePctSAllowed,				// "Browser commands may not contain more than one \"%s\" token."
 	kDataBrowserInvalidTargetModeParameterValue,	// "The optional \"targetMode\" parameter must be 0, 1, or 2 if it is provided."
 	kDataBrowserUnexpectedErrorChangingProperty,// "An unexpected error prevented the property from being changed."
 	kDataBrowserCantFindVariable,				// "Could not change the value of a variable or string because it could not be found."
 	kDataBrowserObjectCouldNotBeRenamed,		// "The object could not be renamed because the new name is invalid or already in use."
 	kDataBrowserUnableToBrowseExperiment,		// "The Data Browser was unable to browse the specified experiment."
+	kDataBrowserErrorExecutingCommand,			// "There was an error executing a Data Browser command."
 	kNoSuchGizmoName,								// "The name provided does not match an existing Gizmo name."
 	kNoTransferOfGroupObjectsBetweenGizmos,		// "Group objects cannot be copied between Gizmos."
 	kDoesNotSupportInt64Waves,					// "Does not support Int64 waves."
@@ -1719,7 +1722,7 @@ enum MoreOperationErrorCodes {
 	kNoSaveInPrivateDF,							// "Can't save in PRIVATE data folder."
 	EXPECTED_DIALOG_NAME,						// "Expected the name of a modeless dialog."
 	EXPECTED_PROC_TITLE,						// "Expected the title of a procedure window."		for MoveWindow
-	EXPECTED_TARG_PROC_DLOG_CMDWIN_NAME,		// "expected name of a target window, procedure window, dialog, or \"kwCmdHist\"."
+	ERROR_6126_UNUSED,							//  Now unused, was previously EXPECTED_TARG_PROC_DLOG_CMDWIN_NAME
 	kUnexpectedDataInPrivateFolder,				// "Unexpected data found in private data folder."
 	kEpsilonTooSmall,							// "Epsilon value is too small."
 	kBigTiffFormatEncountered,					// "BIG-TIFF file format.  Use /BIGT flag to load."
@@ -1746,7 +1749,7 @@ enum MoreOperationErrorCodes {
 	kPrefsQSettingsAccessError,					// "An access error occurred while trying to access a preferences file."
 	kPrefsQSettingsFormatError,					// "A format error occurred while trying to load a preferences file."
 	kPrefsQSettingsNotWritable,					// "A preferences file could not be modified because it is read-only."
-	kPrefsDataTooLarge,							// "Data too large. A maximum of 2^31 bytes may be saved."
+	kDataTooLarge,								// "Data too large. A maximum of 2^31 bytes may be used."
 	kBadKernelSpecification,					// "Bad kernel specification."
 	kBadBWMethod,								// "Bad bandwidth method."
 	kParticleFillInconsistent,					// "Inconsistency in particle fill results.  Reported area may not include holes."
@@ -1784,6 +1787,244 @@ enum MoreOperationErrorCodes {
 
 	kExpectedNameOfAllowedHostWindow,			// "Expected name of an allowed host window."
 	EXPECTED_GRAPH_OR_PANEL,					// "Expected name of a graph or panel."
+
+	kLOCFlagNotAllowedWithAFlag,				// "The /LOC flag cannot be used with the /A flag."
+	kBadBinsWave,								// "Bad bin specification wave."
+	kBinsWaveNotMonotonicallyIncreasing,		// "Data in bins wave must be monotonically increasing."
+	kNaNsINFsNotAllowedInBinsWave,				// "NaNs or INFs are not allowed in bins wave."
+	kDPSSBadNpi,								// "Bad time-bandwidth product."
+	kDPSSBadNPoints,							// "Bad number of points."
+	kDPSSBadNWin,								// "Bad number of windows."
+	kBadDPSSInput,								// "Bad or incomplete DPSS input."
+
+	kInterp2BadPoints,							// "Number of points must be >= 2."
+	kInterp2BAD_YFLAG,							// "Expected 1 (match 1st derivative) or 2 (match 2nd derivative)."
+	kInterp2SUFFIX_TOO_LONG,					// "Suffix must be 6 bytes or less."
+	kInterp2BAD_SUFFIX,							// "Suffix can contain alphanumeric characters or '_'."
+	kInterp2BAD_OUT_POINTS,						// "Destination wave must be at least a long as source wave."
+	kInterp2BAD_WAVE_TYPE,						// "Waves must be single or double precision, not complex."
+	kInterp2DEST_NAME_TOO_LONG,					// "Destination wave name is too long."
+	kInterp2BAD_X_POINTS,						// "The X wave must have same length as the Y wave."
+	kInterp2BAD_INTERP_TYPE,					// "1 = linear, 2 = cubic spline."
+	kInterp2YWAVE_SAMEAS_XWAVE,					// "The x and y source waves must be distinct."
+	kInterp2YDEST_SAMEAS_XDEST,					// "The x and y destination waves must be distinct."
+	kInterp2SOURCE_SAMEAS_DEST,					// "The source and destination waves must be distinct."
+	kInterp2TOO_FEW_POINTS,						// "There are not enough input points. At least two for linear or four for cubic spline are required."
+	kInterp2X_DEST_NAME_TOO_LONG,				// "The X destination name is too long."
+	kInterp2Y_DEST_NAME_TOO_LONG,				// "The Y destination name is too long."
+	kInterp2BAD_PREAVERAGE_NODES_LINEAR,			// "Between 2 and 10000 preaverage nodes needed for linear interpolation."
+	kInterp2BAD_PREAVERAGE_NODES_CUBIC,				// "Between 4 and 10000 preaverage nodes needed for spline interpolation."
+	kInterp2TOO_FEW_POINTS_AFTER_REMOVING_NANS_AND_INFS,// "After removing NaNs and INFs, there are not enough data points to do the interpolation."
+	kInterp2TOO_FEW_POINTS_AFTER_PREAVERAGING,		// "After preaveraging, there are not enough data points to do the interpolation."
+	kInterp2WAVE_TYPE_NOT_SUPPORTED,				// "Interpolate can not handle this wave’s numeric type."
+	kInterp2TOO_MANY_EXTRA_NODES,					// "Too many extra nodes were specified. The limit is 32."
+	kInterp2BAD_EXTRA_NODE_MODE,					// "Expected a number from 0 to 2."
+	kInterp2BAD_X_COORDS_MODE,						// "Expected a number from 0 to 3."
+	kInterp2NEED_XDEST_FOR_LOG_SPACING,				// "Log spacing requires an X destination wave."
+	kInterp2NEED_XDEST_FOR_EVEN_SPACING_PLUS,		// "Even spacing + requires an X destination wave."
+	kInterp2X_COORDS_FROM_DEST_AND_X_DEST_DOES_NOT_EXIST,		// "The x destination wave does not exist."
+	kInterp2X_COORDS_FROM_DEST_AND_X_DEST_HAS_WRONG_NUMPOINTS,	// "The length of the x destination wave must agree with the number of destination points (/N flag)."
+	kInterp2X_COORDS_FROM_DEST_AND_X_DEST_HAS_WRONG_TYPE,		// "The x destination wave must be single or double precision floating point."
+	kInterp2TOO_FEW_POINTS_AFTER_REMOVING_NEGS_NANS_AND_INFS,	// "After removing non-positive X values, NaNs and INFs, there are not enough data points to do the interpolation."
+	kInterp2BAD_SMOOTHING_FACTOR,					// "Expected a number from 0 to 1e6."
+	kInterp2STD_DEV_WAVE_DOES_NOT_EXIST,			// "The standard deviation wave does not exist."
+	kInterp2BAD_D_POINTS,							// "The standard deviation wave must have same length as the Y wave."
+	kInterp2BAD_STD_DEV,							// "Expected an estimate of the standard deviation of the noise."
+	kInterp2STD_DEV_WAVE_SAMEAS_DEST,				// "The standard deviation and destination waves must be distinct."
+	kInterp2EXPECTED_STD_DEV_CONSTANT_OR_WAVE,		// "Expected /S=(std dev constant) or /S=<stdDevWaveName>."
+	kBadNormalizationValue,							// "Bad normalization value."
+	kBadNumberOfTapers,								// "Bad number of tapers".
+	kBadTimeBandwidthProduct,						// "Bad Time-Bandwidth product."
+	kGBLoadWaveIMPROPER_FILE_TYPE,					// " not the type of file this XOP loads."
+	kGBLoadWaveNO_DATA_FOUND,						// "file being loaded contains no data."
+	kGBLoadWaveEXPECTED_GB_FILE,					// "expected name of loadable file."
+	kGBLoadWaveEXPECTED_BASENAME,					// "expected base name for new waves."
+	kGBLoadWaveEXPECTED_FILETYPE,					// "expected file type."
+	kGBLoadWaveTOO_MANY_FILETYPES,					// "too many file types."
+	kGBLoadWaveBAD_DATA_LENGTH,						// "data length in bits must be 8, 16, 32 or 64."
+	kGBLoadWaveBAD_NUM_WAVES,						// "number of waves must be >= 1."
+	kGBLoadWaveNOT_ENOUGH_BYTES,					// "file contains too few bytes for specified ..."
+	kGBLoadWaveBAD_DATA_TYPE,						// "bad data type value."
+	kGBLoadWaveBAD_FP_FORMAT_CODE,					// "Valid floating point formats are 1 (IEEE) and 2 (VAX)."
+	kGBLoadWaveARRAY_TOO_BIG_FOR_IGOR,				// "The array is too big for an Igor wave."
+	kBadDistanceParam,								// "Bad distance parameter."
+	kInputWaveTooLarge,								// "Input wave is too large."
+
+	// START of XLLoadWave errors.		[
+	kXLLoadWave_UNRECOGNIZED_FILE,							/* XLLoadWave does not recognize this as an Excel file. */
+	kXLLoadWave_CANT_OPEN_XLXS_OR_XLSM,						/* Unable to open the Excel .xlsx or .xlsm file. */
+	kXLLoadWave_NO_DATA_FOUND_IN_FILE,						/* No waves could be created from file. */
+	kXLLoadWave_APPEARS_TO_BE_A_TEXT_FILE,					/* This appears to be a text file, not an Excel binary file. Inspect it with a text editor. */
+	kXLLoadWave_EXPECTED_BASENAME,							/* Expected base name for new waves. */
+	kXLLoadWave_PASSWORD_ERR,								/* Can't read password protected file. */
+	kXLLoadWave_FILE_NO_GOOD,								/* Can't make sense of file. */
+	kXLLoadWave_EXPECTED_CELL_NAME,							/* Expected cell name, a letter followed by a number (e.g. A1). */
+	kXLLoadWave_NO_SUCH_ROW,								/* Can't find a required row. */
+	kXLLoadWave_NO_INDEX,									/* Unable to find the index information for the worksheet. */
+	kXLLoadWave_ROW_TOO_BIG,								/* A row is too big to be loaded. */
+	kXLLoadWave_UNEXPECTED_RECORD_TYPE,						/* Didn't expect this type of record in this version file. */
+	kXLLoadWave_SHEET_NAME_TOO_LONG,						/* Worksheet names are limited to 255 bytes. */
+	kXLLoadWave_WORKSHEET_NOT_FOUND,						/* Could not find a worksheet with the specified name. */
+	kXLLoadWave_MISSING_BUNDLEHEADER,						/* Could not find a header record for the specified worksheet. */
+	kXLLoadWave_BAD_CELL_RANGE,								/* The range of cells must include at least one column and one row. */
+	kXLLoadWave_BAD_NAMES_ROW,								/* The row containing names must be between 1 and 16384. */
+	kXLLoadWave_FILE_NAME_TOO_LONG,							/* The file name is too long. */
+	kXLLoadWave_XL5_EXPECTED_WORKBOOK_GLOBALS,				/* Unable to find header information at the start of the Excel5 workbook. */
+	kXLLoadWave_XL5_MISSING_WORKBOOK_GLOBALS_EOF,			/* Did not find the end of the Excel5 workbook header information. */
+	kXLLoadWave_XL5_NO_WORKSHEETS_FOUND,					/* Unable to find any worksheets in this Excel5 workbook. */
+	kXLLoadWave_NO_DIMENSIONS,								/* Unable to find the dimensions information for the worksheet. */
+	kXLLoadWave_BAD_MULRK_RECORD,							/* The worksheet contains an unintelligible 'MULRK' record. */
+	kXLLoadWave_EMPTY_WORKSHEET,							/* The worksheet contains no used cells. */
+	kXLLoadWave_UNEXPECTED_FILE_VERSION,					// This does not appear to be an Excel 2.2, 3.0, 4.0, 5.0, 95, or 97 file.
+	kXLLoadWave_NO_SHARED_STRING_TABLE,						// No SST (Shared String Table) record was found in the file.
+	kXLLoadWave_BAD_SHARED_STRING_INDEX,					// A string record had an out-of-range shared string table index.
+	kXLLoadWave_BAD_COLUMN_TYPE_ROW,						// The row specified by the /C flag does not exist in the worksheet.
+	kXLLoadWave_BAD_COLUMN_TYPE_CODE,						// The column type code specified by the /C flag is not valid.
+	kXLLoadWave_BAD_INFO_MODE,								// The information mode flag specified by /J must be between 0 and 2.
+	kXLLoadWave_FIRST_OLEDOC_ERR,
+	kXLLoadWave_OLEDOC_NOT_AN_OLE_COMPOUND_DOC = kXLLoadWave_FIRST_OLEDOC_ERR,
+	kXLLoadWave_OLEDOC_SHARING_VIOLATION,				// On Windows, we can't open the file if it is also open in Excel.
+	kXLLoadWave_OLEDOC_CANT_OPEN_AS_OLE_COMPOUND_DOC,
+	kXLLoadWave_OLEDOC_CANT_OPEN_STREAM,
+	kXLLoadWave_OLEDOC_ERROR_READING_STREAM,
+	kXLLoadWave_OLEDOC_ERROR_STREAM_GETPOS,
+	kXLLoadWave_OLEDOC_BAD_SET_POS_MODE,
+	kXLLoadWave_OLEDOC_ERROR_STREAM_SETPOS,
+	kXLLoadWave_OLEDOC_INIT_OLE_FAILED,
+	kXLLoadWave_OLEDOC_OLE_INIT_FAILED,
+	kXLLoadWave_LAST_OLEDOC_ERR = kXLLoadWave_OLEDOC_OLE_INIT_FAILED,
+	kXLLoadWave_XLSX_CANT_READ_OR_CANT_PARSE,				// "Can't read or can't parse parts of the XLSX file.
+	kXLLoadWave_XLSX_NO_WORKSHEETS,							// "Could not find any worksheets in this Excel file."
+	// END of XLLoadWave errors		]
+
+	//	START of JCAMPLoadWave errors	[
+	JCAMP_NO_COMPLEX,						/* "JCAMP-DX should not contain complex data." */
+	JCAMP_NO_NUMPNTS,						/* "This file lacks a header label giving number of points in the data set (##NPOINTS=)." */
+	JCAMP_NO_FIRSTX,						/* "This file lacks a header label giving first X value in the data set (##FIRSTX=)." */
+	JCAMP_NO_LASTX,							/* "This file lacks a header label giving last X value in the data set (##LASTX=)." */
+	JCAMP_TITLE_NOT_FIRST,					/* "A title label (##TITLE=) was found that isn't at the start of a data set." */
+	JCAMP_EOF_IN_HEADER,					/* "The end of the file was encountered while processing header information." */
+	JCAMP_ILLEGAL_CHAR,						/* "An illegal character was encountered." */
+	JCAMP_ILLEGAL_X,						/* "An X value was found that is not in the expected sequence." */
+	JCAMP_EOF_IN_DATA,						/* "The end of the file was encountered before the expected number of points was read." */
+	JCAMP_BAD_LABEL,						/* "A JCAMP-DX label was flagged (## found) but no terminator (=) was found on the line." */
+	JCAMP_TOO_MANY_POINTS,					/* "There are more data points than were expected based on the ##NPOINTS= label." */
+	JCAMP_LABEL_IN_DATA,					/* "A JCAMP-DX label was encountered before reading the expected number of data points." */
+	JCAMP_UNKNOWN_DATA_FORMAT,				/* "JCAMP loader recognizes only XY..XY data format (XY pairs) or X++(Y..Y) (X and list of Y's) data format." */
+	JCAMP_UNSUPPORTED_DATA_FORMAT,			/* "At present, the JCAMP loader can only load X++(Y..Y) (X and list of Y's) data format." */
+	JCAMP_NO_PEAK_TABLE,					/* "At present, the JCAMP loader does not support loading peak tables." */
+	JCAMP_BAD_Y,							/* "An illegal Y value was found in the JCAMP file." */
+	JCAMP_NO_XYXY_DATA,						/* "At present, the JCAMP loader does not support loading XYXY data." */
+	JCAMP_FOUND_NEW_HEADER,					/* "Found a new header in the JCAMP file." */
+	// END of JCAMPLoadWave errors	]
+
+	kInvalidEnvironmentVariableName,					// "Invalid environment variable name."
+	kCantWriteNanOrInfIntoIntWave,						// "Cannot write NaN or INF into an integer wave."
+	kUseMiscSettingsDialog,								// "Use Misc. Settings Dialog."
+	kExpectedQualityRangeError,							// "Expected quality in the range [0,1]"
+	kJpegHasNoAlpha,									// "JPEG file format does not support alpha channel."
+	kBadNumberOfLayers,									// "Bad number of layers for image file."
+	kDisplayListNameExists,								// "An operation by this name exists with different parameters."
+	kBadVoxelgramBoxSize,								// "Voxelgram box size is in the range (0,2]."
+	kExportRequiresAVisibleGizmo,						// "Exporting an image requires a visible Gizmo window."
+	kLowerLimitFunctionMustBeThreadSafe,				// "Lower limit function must be threadsafe."
+	kUpperLimitFunctionMustBeThreadSafe,				// "Upper limit function must be threadsafe."
+	kMainIntegrationFunctionMustBeThreadSafe,			// "Main integration function must be threadsafe."
+	kFileUnexpectedlyClosed,							// "The file \"%1\" has unexpectedly closed. It may have been deleted, overwritten, or it may be on an inaccessible server. Igor will kill the document to prevent a crash."
+
+	kDFAndStringNameListAreMutuallyExclusive,			// "The /DF flag may not be used if a list of strings is provided."
+	kExpectedGlobalVariableOrReference,					// "Expected a global variable or global variable reference, not a local variable."
+	kRequestedResTooHigh,								// "Gizmo Notice: Failed to generate an image probably because the hardware does not support requested resolution."
+	kJSONParserNotEnoughTokens,							// "Not enough tokens were provided."
+	kJSONInvalidCharInString,							// "Invalid character inside JSON string."
+	kJSONStringIncomplete,								// "The string is not a full JSON packet, more bytes expected."
+
+	SOUNDLW_UNSUPPORTEDFILETYPE,						// "The file %1 contains a format that can't be decoded on this system."
+	SOUNDLW_BADSTART,									// "The specified start time is past the end of the sound file."
+	kTooManyFormatChars,								// "Number of bytes in the format string exceeds the maximum."
+	kTooFewFormats,										// "Number of formats > 1 and not equal to the number of wave columns."
+
+	// START MLLoadWave Errors [
+	kIS_NOT_MATLAB4_FILE,								// "This does not appear to be a Matlab 4 binary file. (See MLLoadWave Help about loading Matlab 5 files.)"
+	kEXPECTED_BASENAME,									// "Expected base name for new waves."
+	kOLD_IGOR,											// "This version of MLLoadWave requires Igor version 5.00 or later."
+	kBAD_MATRIX_MODE,									// "Expected a number from 1 to 3."
+	kBAD_DATA_TYPE,										// "Bad data type value."
+	kBAD_STRING_MODE,									// "Expected a number from 1 to 3."
+	kVAX_D_NOT_SUPPORTED,								// "This file contains VAX D format floating point. MLLoadWave can not load this format."
+	kBAD_DEBUG_CODE,									// "Unknown debug code."
+	kV5_UNSUPPORTED_MATLAB_DATATYPE,					// "Unsupported data type (cell, structure, object, sparse array . . .)."
+	kV5_mxGetData_RETURNED_NULL,						// "The Mathworks libmex library routine mxGetData returned NULL."
+	kV5_mxGetImagData_RETURNED_NULL,					// "The Mathworks libmex library routine mxGetImagData returned NULL."
+	kV5_matOpen_RETURNED_NULL,							// "The Mathworks libmat library routine matOpen returned NULL. This may be due to a bad file name."
+	kV5_matGetNextArray_FILE_ERROR,						// "While calling the Mathworks libmat library routine matGetNextArray, a file-related error occurred."
+	kV5_matClose_ERROR,									// "The Mathworks libmat library routine matClose failed."
+	kMatDynLibNotFound,									// "Igor was unable to find the Mathworks libraries libmat and/or libmx at \"%1\", or failed to find a function in those libraries."
+	kMatFuncNotFound,									// "Igor was unable to find the function \"%1\" in the Mathworks dynamic libraries."
+	kCANT_FIND_MATLIBS,									// "Can't find Matlab dynamic libraries"
+	// END MLLoadWaveErrors ]
+
+	kSourceAndDestNTypeMisMatch,						// "Source and destination data types much match."
+	kCloseHelp_FILE_NAME_FlagsRequired,					// "Either the /FILE or /NAME flag must be used, but not both."
+
+    kNoCameraFound,                                     // "No camera found on this computer."
+    kNoNamedCamera,                                     // "There is no camera matching this name."
+    kCameraFeatureNotSupported,                         // "The specified camera feature is not supported."
+	kNamedCameraInUse,									// "This name is already in use by a camera."
+	kTooManyOpenCameras,								// "Too many open cameras."
+	kFailedToInitializeCamera,							// "Failed to initialize camera."
+	kNoDefaultCamera,									// "Default camera not found"
+	kEmptyImage,										// "The image is empty."
+	kExpectedCameraWindow,								// "Expected Camera Window."
+	kBadNumberOfFrames,									// "Bad number of frames."
+	kBadTimeInterval,									// "Bad time interval."
+
+	kBAD_IntXWaveNeedsOneMorePoint,						// "X wave needs one more data point than Y wave for rectangular integration"
+
+	kSlashWRequiresSlashC,								// "/W=winName requires /C=(xpix,ypix)"
+	kNoMovieByThatID,									// "Bad movie specification.  There is no movie by that ID"
+	kBadHardwareForGizmo,								// "Graphics hardware is not compatible with Gizmo."
+	kIgorWebUpdate_UnsupportedUpdateInformationVersion,	// "The web update information uses an unsupported format."
+	kIgorWebUpdate_NoInformationForProduct,				// "The web update information contains no information for this product."
+	kIgorWebUpdate_CouldNotSaveInformationToTempFile,	// "Could not save web update information to a temporary file."
+
+	EXPECTED_COMMA_COMMENT_EOL,							// "Expected comma, comment, or end of line"
+	kExpectNxNOddMatrix,								// "Expect NxN Matrix with N odd.
+	kOpNotDefinedForQuat,								// "Operation not defined for quaternions."
+	kBadRotationMatrix,									// "Bad rotation matrix."
+	kExpectedDataTokenOrParen,							// "Expected data token or parenthesis."
+	kMatrixTokenHasNoData,								// "Matrix token has no data."
+	kCantOverwrite3DWave,								// "MatrixOP can't overwrite a 3D wave that also appears on the RHS of the expression."
+	kBadTokenRange,										// "Bad token range.  A NaN or out of range index encountered."
+	kUnsupportedDataTypeInMatrixOP,						// "Unsupported data type in MatrixOP token."
+	kSupportsSingleColumnsOnly,							// "MatrixOP function supports single columns only."
+	kShiftCantExceedPoints,								// "Shift can't exceed the number of points in the wave."
+	kBadMatrixOPOption,									// "Bad MatrixOP selector or option parameter."
+	kExpect1ColToken,									// "Expected one column token."
+	kBad3264Mix,										// "Input does not match the current version of Igor."
+
+	EXPERIMENT_REQUIRES_NEWER_IGOR,						// "This experiment requires a newer version of Igor."
+	DATA_FOLDER_PATH_TOO_LONG,							// "Data folder paths are limited to <MAXCMDLEN> bytes"
+
+	// Reserved for Igor7
+	kErrorCodeReservedForIgor7_1,
+	kErrorCodeReservedForIgor7_2,
+	kErrorCodeReservedForIgor7_3,
+	kErrorCodeReservedForIgor7_4,
+	kErrorCodeReservedForIgor7_5,
+	kErrorCodeReservedForIgor7_6,
+	kErrorCodeReservedForIgor7_7,
+	kErrorCodeReservedForIgor7_8,
+	kErrorCodeReservedForIgor7_9,
+	kErrorCodeReservedForIgor7_10,
+	
+	// Start of Igor8 Error Codes
+	NAME_TOO_LONG_FOR_OLD_XOP,							// "The name is too long for this XOP which is limited to 31-byte names"
+	DIM_LABEL_TOO_LONG_FOR_OLD_XOP,						// "The dimension label is too long for this XOP which is limited to 31-byte dimension labels"
+
+	EXPECTED_GRAPH_OR_LAYOUT_OR_GIZMO,					// "expected name of a graph, layout, or gizmo"
+	kTooManyMatrixOPTokens,								// "Too many MatrixOP tokens."
+	kErrorWritingTiffFile,								// "An error occurred while writing TIFF file."
 };
 
 // *** More Operation Errors End ***
@@ -1807,7 +2048,7 @@ enum LibcurlErrorCodes {
 	// in WMLibcurl.cpp, works correctly.
 	/* 0 */
 	kLibcurl_UNKNOWN = FIRST_LIBCURL_ERR,						/* "The network library returned an unknown error." */
-	kLibcurl_UNSUPPORTED_PROTOCOL,			/* "The specified URL uses an unsupported protocol." */
+	kLibcurl_UNSUPPORTED_PROTOCOL,			/* "The specified URL uses an unsupported scheme." */
 	kLibcurl_FAILED_INIT,					/* "The network library failed to properly initialize." */
 	kLibcurl_URL_MALFORMAT,					/* "The specified URL is missing or not properly formatted." */
 	kLibcurl_CURLE_NOT_BUILT_IN,			/* "A requested feature, protocol, or option is not available." */
@@ -1824,7 +2065,7 @@ enum LibcurlErrorCodes {
 	kLibcurl_FTP_WEIRD_PASV_REPLY,			/* "FTP: The server gave an unexpected reply to the PASV command." */
 	kLibcurl_FTP_WEIRD_227_FORMAT,			/* "FTP: Got an unexpected response format to the PASV command." */
 	kLibcurl_FTP_CANT_GET_HOST,				/* "FTP: The host supplied by the PASV response could not be looked up." */
-	kLibcurl_OBSOLETE16,					/* "Obsolete error code." */
+	kLibcurl_CURLE_HTTP2,					/* "A problem was detected in the HTTP2 framing layer." */
 	kLibcurl_FTP_COULDNT_SET_TYPE,			/* "FTP: Could not set the file type." */
 	kLibcurl_PARTIAL_FILE,					/* "A file transfer was shorter or larger than expected." */
 	kLibcurl_FTP_COULDNT_RETR_FILE,			/* "FTP: Could not retrieve the specified file." */
@@ -1914,9 +2155,37 @@ enum LibcurlErrorCodes {
 	kLibcurl_NO_CONNECTION_AVAILABLE,		/* "No connection available, the session will be queued." */
 
 	/* 90 */
+	kLibcurl_CURLE_SSL_PINNEDPUBKEYNOTMATCH,/* "Specified pinned public key did not match." */
+	kLibcurl_CURLE_SSL_INVALIDCERTSTATUS,	/* "Invalid certificate status." */
 };
 
 // *** libcurl Errors End ***
+
+
+// *** URLRequest Errors Start ***
+
+#define FIRST_URLREQUEST_ERR 8300						// Start of range allocated for URLRequest errors
+#define LAST_URLREQUEST_ERR 8399						// End of range allocated for URLRequest errors
+
+enum URLRequestErrorCodes {
+	// Error codes used by the URLRequest operation
+
+	kURLRequest_E_INVALID_URLREQUEST_METHOD = FIRST_URLREQUEST_ERR,						/* "The method must be specified and must be one of the following: get, post, put, delete, head." */
+	kURLRequest_E_INVALID_DATA_SOURCE_FLAG_COMBO,										/* "Only one of the /DFIL and /DSTR flags may be used in a command." */
+	kURLRequest_E_MISSING_DFIL_OR_DSTR_FLAG,											/* "When using the PUT or POST methods, either the /DFIL or /DSTR flags must be used." */
+	kURLRequest_E_INVALID_IGN_FLAG_VALUE,												/* "The value provided for the /IGN= flag is out of range." */
+	kURLRequest_E_INVALID_NRED_FLAG_VALUE,												/* "The value provided for the /NRED= flag is out of range." */
+	kURLRequest_E_INVALID_TIME_FLAG_VALUE,												/* "The value provided for the /TIME= flag is out of range." */
+	kURLRequest_E_INVALID_V_FLAG_VALUE,													/* "The value provided for the /V= flag is out of range." */
+	kURLRequest_E_INVALID_Z_FLAG_VALUE,													/* "The value provided for the /Z= flag is out of range." */
+	kURLRequest_E_INVALID_POST_PUT_DATA_FILE,											/* "The data file specified by the /DFIL (and possibly /P) flag does not exist." */
+	kURLRequest_E_INVALID_DEST_DATA_FILE,												/* "The location specified by the /FILE (and possibly /P) flag is not valid." */
+	kURLRequest_E_DEST_FILE_EXISTS_NO_O_FLAG,											/* "The destination data file specified by the /FILE (and possibly /P) flag exists but the /O (overwrite) flag was not used." */
+	kURLRequest_E_NO_SYSTEM_PROXIES_FOR_QUERY,											/* "Could not find any system proxy information relevant to the network request." */
+};
+
+// *** URLRequest Errors End ***
+
 
 // *** ICU Errors Start ***
 
@@ -1937,7 +2206,7 @@ enum {
 	kICUInvalidCharacter,						// "he text contains an invalid character." (U_INVALID_CHAR_FOUND in API other than conversion)
 	kICUUnmappableCharacter,					// "Text conversion failed - can't map input text to output text encoding." (U_INVALID_CHAR_FOUND in conversion API)
 	kICUTruncatedCharacterError,				// "Truncated character error." (U_TRUNCATED_CHAR_FOUND)
-	kICUIllegalCharacterError,					// "Illegal character." (U_ILLEGAL_CHAR_FOUND)
+	kICUIllegalCharacterError,					// "Illegal character - the text contains a character that is not valid in the operative text encoding." (U_ILLEGAL_CHAR_FOUND)
 	kICUInvalidTableFormatError,				// "ICU invalid table format." (U_INVALID_TABLE_FORMAT)
 	kICUInvalidTableFileError,					// "ICU invalid table file." (U_INVALID_TABLE_FILE)
 	kICUBufferOverflowError,					// "The output from a text encoding conversion did not fit in the available memory." (U_BUFFER_OVERFLOW_ERROR)
@@ -1979,7 +2248,7 @@ enum {
 	EM_OLD_VERSION,						// "obsolete version"
 	DETACH_RESOURCE_FAILED,				// "an attempt to detach a resource failed"
 	WM_BAD_FILE_NAME,					// "ill-formed file name"
-	WM_FILE_NAME_TOO_LONG,				// "a file name is limited to 255 characters"
+	WM_FILE_NAME_TOO_LONG,				// "a file name is limited to 255 bytes"
 	DIRECTORY_REFERENCED_TWICE,			// "an alias has created two references to the same folder"
 	BALLOON_INSERT_ERR,					// "an error occurred while creating a help balloon"
 	MINUS_ONE_ERR,						// "an error occurred"
@@ -1992,20 +2261,20 @@ enum {
 	WM_BAD_DIRID,						// "BUG: A bad directory ID was used"
 	WM_BAD_WDREFNUM,					// "BUG: A bad working directory reference number was used"
 	WM_BAD_FILE_REFNUM,					// "BUG: A bad file reference number was used"
-	WM_DIRNAME_TOO_LONG,				// "a directory name is limited to 255 characters"
-	WM_FILENAME_TOO_LONG,				// "a file name is limited to 255 characters"
+	WM_DIRNAME_TOO_LONG,				// "a directory name is limited to 255 bytes"
+	WM_FILENAME_TOO_LONG,				// "a file name is limited to 255 bytes"
 	WM_FILE_TOO_LARGE,					// "Can't handle a file with more than 2^32 bytes"
 	WM_UNKNOWN_ERROR,					// "An error of an unknown nature occurred"
 	WM_PRINTER_DRIVER_NOT_OPEN,			// "The printer driver is not open"
 	WM_BAD_PATH_SYNTAX,					// "The path is not properly formed"
 	WM_DATEFORMAT_BAD_SYSTEMDATE,		// "Expected a system date format code between 0 and 2."
 	WM_DATEFORMAT_BAD_LANGUAGE,			// "Expected a language code between 1 and 16"
-	WM_DATEFORMAT_BAD_YEARFORMAT,		// "Expected a year format code betwen 1 and 2."
+	WM_DATEFORMAT_BAD_YEARFORMAT,		// "Expected a year format code between 1 and 2."
 	WM_DATEFORMAT_BAD_MONTHFORMAT,		// "Expected a month format between 1 and 2".
 	WM_DATEFORMAT_BAD_DAYOFMONTHFORMAT,	// "Expected a day-of-month format between 1 and 2."
 	WM_DATEFORMAT_BAD_DAYOFWEEKFORMAT,	// "Expected a day-of-month format between 1 and 2."
 	WM_DATEFORMAT_BAD_LAYOUT,			// "The layout of the date format is incorrect."
-	WM_DATEFORMAT_BAD_SEPARATOR,		// "A date separator is limited to 15 characters."
+	WM_DATEFORMAT_BAD_SEPARATOR,		// "A date separator is limited to 15 bytes."
 	WM_DATEFORMAT_BAD_PIVOTYEAR,		// "Expected a pivot year between 4 and 40."
 	WM_DATEFORMAT_BAD_VERSION,			// "Unrecognized date format."
 	EXPECTED_WM_LANGUAGE_NAME,			// "Expected the name of a supported language."
@@ -2017,7 +2286,7 @@ enum {
 	URL_MISSING_PROTOCOL,				// "The URL must include \"http://\" or \"ftp://\"."
 	URL_MISSING_HTTP,					// "The URL must include \"http://\" (e.g., <http://www.wavemetrics.com>)."
 	URL_MISSING_FTP,					// "The URL must include \"ftp://\" (e.g., <ftp://ftp.wavemetrics.com>)."
-	URL_TOO_LONG,						// "The URL exceeds 255 characters in length."
+	URL_TOO_LONG,						// "The URL exceeds 255 bytes in length."
 	WM_FTP_NOT_AVAILABLE,				// "FTP support is not available."	// Obsolete.
 	WM_FTP_HOST_ERROR,					// "The FTP host returned an unknown error."
 	WM_FTP_OPERATION_TIMED_OUT,			// "The operation has timed out."
@@ -2058,16 +2327,30 @@ enum {
 	DESKTOP_AREA_TOO_SMALL,					// "The specified desktop area is too small."
 	NO_PERUNIT_WITHOUT_AXES,				// "Cannot use per unit mode if nothing is displayed in the graph."	-- used in the ModifyGraphDialog
 	NO_PLAN_WITHOUT_AXES,					// "Cannot use plan mode if nothing is displayed in the graph."  -- used in the ModifyGraphDialog
+	INCOMPATIBLE_SIZE_MODES,				// "Should not use aspect mode or plan mode if the other dimension is using aspect or plan mode."  -- used in the ModifyGraphDialog
 	EXPECTED_CURRENT_OR_FUTURE_PICTURE_NAME,// "Expected name of current or future proc picture"	-- used in NotebookActionDialog
-	WM_CANT_DELETE_FOLDER,					// "Can't delete folder. You many not have sufficient privileges or possibly a file or folder is locked."
+	WM_CANT_DELETE_FOLDER,					// "Can't delete folder. You may not have sufficient privileges or possibly a file or folder is locked."
 											// This error is necessary because our CocoaDeleteDirectory routine can't determine the item that caused the error
 											// and also because the error reporting from removeFileAtPath is unreliable.
 	EXPECTED_POSITIVE_NUMBER_OR_ZERO,		// "Expected positive number or zero."
 	MARGINS_TOO_LARGE,						// "Margins are too large."
+	INVALID_MARGINS,						// "Invalid margins."
 	NO_SUCH_SCREEN,							// "No such screen."
 	ERROR_OPENING_URL,						// "There was an error opening the specified URL."
 	NO_BINARY_TEXT_ENCODING_HERE,			// "Binary (255) is not an allowed text encoding code here."
-
+	TEXT_ENCODING_PRAGMA_INVALID,			// "TextEncoding pragma is invalid"
+	TEXT_ENCODING_PRAGMA_UNKNOWN_ENCODING,	// "TextEncoding pragma specifies unknown text encoding name"
+	TEXT_ENCODING_PRAGMA_DID_NOT_WORK,		// "The text encoding specified by the TextEncoding pragma is not valid for the text in the file"
+	TEXT_ENCODING_PRAGMA_DUPLICATE,			// "The TextEncoding pragma may appear only once in a procedure file"
+	TEXT_ENCODING_PRAGMA_CONFLICT,			// "There is a conflict between the TextEncoding pragma and the file's text encoding"
+	UTF16_AND_32_NOT_ALLOWED_FOR_PROCWIN,	// "The UTF-16 and UTF-32 text encodings are not supported for procedure files. Convert the file to UTF-8."
+	TEXT_CONTAINS_NULL_BYTE,				// "The text contains one or more null bytes"
+	TEXT_CONTAINS_NULL_CHARACTER,			// "The text contains one or more null characters"
+	NO_VALID_TEXT_ENCODINGS,				// "The file is not valid for any supported text encoding. It may be a binary file or a text file containing null bytes."
+	TEXT_ENCODING_NOT_SUPPORTED_FOR_OPERATION,	// "The text encoding is not supported for this operation."
+	BAD_TEXT_ENCODING_OPTIONS,				// "Invalid value for text encoding options parameter."
+	WMfnfErrWithParam,						// "File \"%1\" not found"
+	WMdirNFErrWithParam,					// "Directory \"%1\" not found"
 };
 
 // *** Generic Errors End ***
@@ -2135,7 +2418,7 @@ enum {
 #define COMP_FUNC_ERROR			2034		/* "Function compilation error" */
 #define COMP_MENU_ERROR			2035		/* "Menu compilation error" */
 #define NO_MACROS_IN_FUNCTIONS	2036		/* "Sorry, you can't invoke a macro . . ." */
-#define CMD_LINE_TOO_LONG		2037		/* "The line is too long. Igor command lines are limited to 400 characters." */
+#define CMD_LINE_TOO_LONG		2037		/* "The line is too long. Igor command lines are limited to <MAXCMDLEN> bytes." */
 #define TOO_MANY_PROMPTS		2038		/* "Too many Prompts (max of 10)." */
 
 // *** Parsing Errors End ***
@@ -2162,7 +2445,7 @@ enum {
 #define RTF_BAD_SYNTAX 3014					/* "this is not valid RTF syntax" */
 #define DUPLICATE_RULER_NAME 3015			/* "this is the name of an existing ruler" */
 #define BAD_RULER_NAME 3016					/* "ruler names must consist of letters, numbers or '_'" */
-#define RULER_NAME_TOO_LONG 3017			/* "ruler names are limited to 31 characters" */
+#define RULER_NAME_TOO_LONG 3017			/* "ruler names are limited to 31 bytes" */
 #define MW_ILLEGAL_CHAR 3018				/* "illegal character in text; code=^2, offset=^3" */
 #define MW_ILLEGAL_CHAR_REPLACED 3019		/* "one or more illegal characters in text were replaced with '?'" */
 #define MW_EXPECTED_RULER_NAME 3020			/* "expected ruler name" */
@@ -2170,7 +2453,7 @@ enum {
 #define MW_BAD_PREFS_VERSION 3022			/* "this version of preferences record is not supported" */
 #define MW_DEFAULT_FONT_NOT_ALLOWED 3023	/* "need the name of an actual font, 'default' is not allowed" */
 #define MW_DEFAULT_SIZE_NOT_ALLOWED 3024	/* "need an actual text size, 'default' is not allowed" */
-#define MW_LINE_TOO_LONG 3025				/* "Line too long. Paragraphs are limited to 65000 characters." */
+#define MW_LINE_TOO_LONG 3025				/* "Line too long. Paragraphs are limited to 65000 bytes." */
 #define MW_CANT_FIND_ACROSS_PARAGRAPHS 3026	/* "The search string contains a carriage return and this program can't do a find across paragraph boundaries." */
 #define MW_CANT_REPLACE_ACROSS_PARAGRAPHS 3027	/* "The replace string contains a carriage return and this program can't do a replace across paragraph boundaries." */
 #define NOT_FORMATTED_TEXT_FILE 3028		// "The file does not appear to be a formatted text file."
@@ -2237,7 +2520,7 @@ enum {
 #define LOOK_FIXED_FIELD 4146				// "a fixed field text file". Appears in open file dialog.
 #define kLookingForImageFile 4147			// OBSOLETE - use MS_LookingForAnImageFile
 #define AVAILABLE_4148 4148					/* "Available for future use." */
-#define CANT_SAVE_SYMBOLIC_PATH_INFO 4149	// "An error occured while trying to access the folder associated with the symbolic path '%s'."
+#define CANT_SAVE_SYMBOLIC_PATH_INFO 4149	// "An error occurred while trying to access the folder associated with the symbolic path '%s'."
 #define FSEXCHANGE_ERROR_FORMAT 4150		// "While attempting to transfer new data to \"%s\", an error occurred:"
 #define DELETE_FILE_ERROR_FORMAT 4151		// "While deleting the file \"%s\", an error occurred:"
 #define RENAME_FILE_ERROR_FORMAT 4152		// "While renaming \"%s\" as \"%s\", an error occurred:"
@@ -2273,7 +2556,8 @@ enum {
 	TOPIC_NOT_FOUND,								// "The topic was not found after searching all Igor help files in the Igor Pro folder and subfolders."
 	CANT_OPEN_STATIONERY_AS_HELP_FILE,				// "Can't open a stationery file as a help file"
 	TOPIC_NAME_EMPTY,								// "Topic is empty"
-	SUBTOPIC_NAME_EMPTY								// "Subtopic is empty"
+	SUBTOPIC_NAME_EMPTY	,							// "Subtopic is empty"
+	CANT_OPEN_MULTIPLE_HELP_FILES_WITH_SAME_FILE_NAME,	// "Can't open multiple help files with the same file name"
 };
 
 // *** Help Errors End
@@ -2307,7 +2591,7 @@ enum {
 	WMpermErr = -54,						// "there was an attempt to open a locked file for writing"
 	WMiMemFullErr = -108,					// "there is insufficient application memory"
 	WMdirNFErr = -120,						// "Directory not found"
-	WMuserCanceledErr = -128,				// "There is no error message for this"
+	WMuserCanceledErr = -128,				// "Operation canceled"
 	WMresNotFound=-192,						// "Resource not found"
 	WMresFNotFound=-193,					// "Resource file not found"
 	WMaddResFailed=-194,					// "AddResource failed"
@@ -2366,4 +2650,4 @@ typedef int PackedXOPErrorCode;				// 1-XOP ID in high word, 1-based strID in lo
 
 // *** XOP Errors End ***
 
-#endif		// IGORERRORSH
+#endif		// IGOR_ERRORS_H

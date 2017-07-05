@@ -1966,7 +1966,7 @@ ConvertData(const void* src, void* dest, CountInt numValues, int srcBytes, int s
 	This does the same thing as ConvertData (see above) except that it
 	takes the standard Igor number type codes as parameters. These are
 		NT_FP64, NT_FP32
-		NT_I32, NT_I16, NT_I8
+		NT_I64, NT_I32, NT_I16, NT_I8
 		NT_I32 | NT_UNSIGNED, NT_I16 | NT_UNSIGNED, NT_I8 | NT_UNSIGNED
 
 	The number type should NOT include NT_CMPLX. If the data is complex,
@@ -2020,6 +2020,11 @@ ScaleFloat(float* fPtr, double* offset, double* multiplier, CountInt numValues)	
 	}
 }
 
+/*	ScaleSInt64 is subject to inaccuracies for values exceeding 2^53 in magnitude
+	because calculations are done in double-precision and double-precision can not
+	precisely represent the full range of 64-integer values. See "64-bit Integer Issues"
+	in the XOP Toolkit manual for further discussion.
+*/
 void
 ScaleSInt64(SInt64* iPtr, double* offset, double* multiplier, CountInt numValues)	// Thread-safe
 {
@@ -2064,6 +2069,11 @@ ScaleByte(char* cPtr, double* offset, double* multiplier, CountInt numValues)		/
 	}
 }
 
+/*	ScaleUInt64 is subject to inaccuracies for values exceeding 2^53 in magnitude
+	because calculations are done in double-precision and double-precision can not
+	precisely represent the full range of 64-integer values. See "64-bit Integer Issues"
+	in the XOP Toolkit manual for further discussion.
+*/
 void
 ScaleUInt64(UInt64* iPtr, double* offset, double* multiplier, CountInt numValues)	// Thread-safe
 {
@@ -2117,6 +2127,14 @@ ScaleUnsignedByte(unsigned char* cPtr, double* offset, double *multiplier, Count
 	The NT_CMPLX bit should NOT be set. If the data is complex, this
 	should be reflected in the numValues parameter.
 	
+	All calculations are done in double precision.
+	
+	Scaling of signed and unsigned 64-bit integer values is subject to inaccuracies
+	for values exceeding 2^53 in magnitude because calculations are done in double-precision
+	and double-precision can not precisely represent the full range of 64-integer values.
+	In evaluating the result, if any value exceeds 2^53 in magnitude, the result is undefined.
+	See "64-bit Integer Issues" in the XOP Toolkit manual for further discussion.
+	
 	Thread Safety: ScaleData is thread-safe. It can be called from any thread.
 */
 void
@@ -2132,6 +2150,9 @@ ScaleData(int dataType, void* dataPtr, double* offsetPtr, double* multiplierPtr,
 		case NT_FP32:
 			ScaleFloat((float*)dataPtr, offsetPtr, multiplierPtr, numValues);
 			break;
+		case NT_I64:						// Added in Igor Pro 7.00
+			ScaleSInt64((SInt64*)dataPtr, offsetPtr, multiplierPtr, numValues);
+			break;
 		case NT_I32:
 			ScaleSInt32((SInt32*)dataPtr, offsetPtr, multiplierPtr, numValues);
 			break;
@@ -2140,6 +2161,9 @@ ScaleData(int dataType, void* dataPtr, double* offsetPtr, double* multiplierPtr,
 			break;
 		case NT_I8:
 			ScaleByte((char*)dataPtr, offsetPtr, multiplierPtr, numValues);
+			break;
+		case NT_I64 | NT_UNSIGNED:			// Added in Igor Pro 7.00
+			ScaleUInt64((UInt64*)dataPtr, offsetPtr, multiplierPtr, numValues);
 			break;
 		case NT_I32 | NT_UNSIGNED:
 			ScaleUInt32((UInt32*)dataPtr, offsetPtr, multiplierPtr, numValues);
@@ -2211,6 +2235,33 @@ ScaleClipAndRoundFloat(float* fPtr, CountInt numValues, double offset, double mu
 			
 		*fPtr = (float)val;
 		fPtr++;
+	}
+}
+
+static void
+ScaleClipAndRoundSInt64(SInt64* iPtr, CountInt numValues, double offset, double multiplier, double dMin, double dMax, int doScale, int doClip, int doRound)	// Thread-safe
+{
+	CountInt p;
+	double val;
+
+	for (p = 0; p < numValues; p++) {
+		val = (double)*iPtr;
+		
+		if (doScale)
+			val = (val + offset) * multiplier;
+
+		if (doClip) {
+			if (val < dMin)
+				val = dMin;
+			if (val > dMax)
+				val = dMax;
+		}
+		
+		if (doRound)
+			val = dround(val);
+			
+		*iPtr = (SInt64)val;
+		iPtr++;
 	}
 }
 
@@ -2292,6 +2343,33 @@ ScaleClipAndRoundByte(char* cPtr, CountInt numValues, double offset, double mult
 			
 		*cPtr = (char)val;
 		cPtr++;
+	}
+}
+
+static void
+ScaleClipAndRoundUInt64(UInt64* iPtr, CountInt numValues, double offset, double multiplier, double dMin, double dMax, int doScale, int doClip, int doRound)	// Thread-safe
+{
+	CountInt p;
+	double val;
+
+	for (p = 0; p < numValues; p++) {
+		val = (double)*iPtr;
+		
+		if (doScale)
+			val = (val + offset) * multiplier;
+
+		if (doClip) {
+			if (val < dMin)
+				val = dMin;
+			if (val > dMax)
+				val = dMax;
+		}
+		
+		if (doRound)
+			val = dround(val);
+			
+		*iPtr = (UInt64)val;
+		iPtr++;
 	}
 }
 
@@ -2385,13 +2463,24 @@ ScaleClipAndRoundUnsignedByte(unsigned char* cPtr, CountInt numValues, double of
 	Scales the data pointed to by dataPtr by adding the offset and multiplying
 	by the multiplier. If offset is 0.0 and multiplier is 1.0, no scaling is done.
 	
-	Clips to the specified min and max. If min is -INF and max is +INF, no clipping
-	is done. If min and max are both zero, integer data is clipped to the minimum
-	and maximum value that can be represented by the data type.
+	Clips to the specified min and max. If min is -INF and max is +INF, no clipping is done.
+	
+	If min and max are both zero, integer data is clipped to the minimum and maximum values
+	that can be represented by the data type except for signed and unsigned 64-bit integer.
+	The largest integer value that can be precisely represented in double-precision floating
+	point is 2^53 = 9007199254740992. For signed 64-bit integer (NT_I64), the minimum is
+	-9007199254740992 and the maximum is 9007199254740992. For unsigned 64-bit integer
+	(NT_I64 | NT_UNSIGNED), the minimum is 0 and the maximum is 9007199254740992.
 	
 	If doRound is non-zero, the data is rounded to the nearest integer.
 	
 	All calculations are done in double precision.
+	
+	Scaling of signed and unsigned 64-bit integer values is subject to inaccuracies
+	for values exceeding 2^53 in magnitude because calculations are done in double-precision
+	and double-precision can not precisely represent the full range of 64-integer values.
+	In evaluating the result, if any value exceeds 2^53 in magnitude, the result is undefined.
+	See "64-bit Integer Issues" in the XOP Toolkit manual for further discussion.
 	
 	Thread Safety: ScaleClipAndRoundData is thread-safe. It can be called from any thread.
 */
@@ -2420,6 +2509,14 @@ ScaleClipAndRoundData(int dataType, void* dataPtr, CountInt numValues, double of
 				doClip = 0;							// Does not apply to floating point.
 				break;
 
+			case NT_I64:							// Added in Igor Pro 7.00
+				/*	The largest integer that can be precisely represented in double-precision floating point
+					is 2^53 = 9007199254740992
+				*/
+				dMin = -9007199254740992.0;
+				dMax = 9007199254740992.0;
+				break;
+
 			case NT_I32:
 				dMin = -2147483648.0;
 				dMax = 2147483647.0;
@@ -2433,6 +2530,14 @@ ScaleClipAndRoundData(int dataType, void* dataPtr, CountInt numValues, double of
 			case NT_I8:
 				dMin = -128.0;
 				dMax = 127.0;
+				break;
+
+			case NT_I64 | NT_UNSIGNED:				// Added in Igor Pro 7.00
+				/*	The largest integer that can be precisely represented in double-precision floating point
+					is 2^53 = 9007199254740992
+				*/
+				dMin = 0.0;
+				dMax = 9007199254740992.0;
 				break;
 
 			case NT_I32 | NT_UNSIGNED:
@@ -2464,6 +2569,10 @@ ScaleClipAndRoundData(int dataType, void* dataPtr, CountInt numValues, double of
 			ScaleClipAndRoundFloat((float*)dataPtr, numValues, offset, multiplier, dMin, dMax, doScale, doClip, doRound);
 			break;
 
+		case NT_I64:						// Added in Igor Pro 7.00
+			ScaleClipAndRoundSInt64((SInt64*)dataPtr, numValues, offset, multiplier, dMin, dMax, doScale, doClip, doRound);
+			break;
+
 		case NT_I32:
 			ScaleClipAndRoundSInt32((SInt32*)dataPtr, numValues, offset, multiplier, dMin, dMax, doScale, doClip, doRound);
 			break;
@@ -2474,6 +2583,10 @@ ScaleClipAndRoundData(int dataType, void* dataPtr, CountInt numValues, double of
 
 		case NT_I8:
 			ScaleClipAndRoundByte((char*)dataPtr, numValues, offset, multiplier, dMin, dMax, doScale, doClip, doRound);
+			break;
+
+		case NT_I64 | NT_UNSIGNED:			// Added in Igor Pro 7.00
+			ScaleClipAndRoundUInt64((UInt64*)dataPtr, numValues, offset, multiplier, dMin, dMax, doScale, doClip, doRound);
 			break;
 
 		case NT_I32 | NT_UNSIGNED:

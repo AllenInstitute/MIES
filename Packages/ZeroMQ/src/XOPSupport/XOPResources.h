@@ -6,18 +6,10 @@
 		This file is needed for Macintosh and Windows.
 */
 
-/*	XOP protocol version Code
-
-	Use this in first field of the XOPI resource.
-	See discussion in XOP.h for details.
-*/
+// XOPI resource, first field: XOP protocol version. Use XOP_VERSION.
 #define XOP_VERSION 4
 
-// XOP Toolkit version. Use this in the fifth field of the XOPI resource.
-#define XOP_TOOLKIT_VERSION 700			// 700 means XOP Toolkit 7.00.
-
-
-// Development System Codes - Use DEV_SYS_CODE in the second field of the XOPI resource.
+// XOPI resource, second field: Development system code. Use DEV_SYS_CODE.
 #define DEV_SYS_CODE_ALL_OTHERS 0		// Use this for any type of development not listed below.
 #define DEV_SYS_CODE_MAC_MPW 1			// Obsolete.
 #define DEV_SYS_CODE_MAC_MACH 2			// Use this for Macintosh Mach-O XOPs.
@@ -27,6 +19,23 @@
 	#define DEV_SYS_CODE DEV_SYS_CODE_ALL_OTHERS
 #endif
 
+// XOPI resource, third field: XOP feature flags. Use XOP_FEATURE_DEFAULT_FLAGS unless you have a good reason to use another value.
+#define XOP_FEATURE_HIER_MENUS 1		// Obsolete - ignored
+#define XOP_FEATURE_LONG_NAMES 2		// XOP uses long names and paths - Requires Igor Pro 8.00 or later
+#define XOP_FEATURE_DEFAULT_FLAGS 0		// Default value for this field
+#define XOP_FEATURE_FLAGS XOP_FEATURE_DEFAULT_FLAGS
+#ifdef XOP_LONG_NAMES_AND_PATHS
+	#if XOP_LONG_NAMES_AND_PATHS != 0
+		#define XOP_FEATURE_FLAGS (XOP_FEATURE_DEFAULT_FLAGS | XOP_FEATURE_LONG_NAMES)
+	#endif
+#endif
+
+// XOPI resource, fourth field: Reserved - must be zero. Use XOPI_RESERVED.
+#define XOP_REQUIRES_FPU 1				// Obsolete - ignored
+#define XOPI_RESERVED 0					// Default value for this field
+
+// XOPI resource, fifth field: XOP Toolkit version. Use XOP_TOOLKIT_VERSION.
+#define XOP_TOOLKIT_VERSION 701			// 701 means XOP Toolkit 7.01.
 
 
 /* Operation Categories - Used in the XOPC resource. */

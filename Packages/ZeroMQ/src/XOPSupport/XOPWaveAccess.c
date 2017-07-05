@@ -1,4 +1,4 @@
-﻿/*	XOPWaveAccess.c
+/*	XOPWaveAccess.c
 	
 	Routines for Igor XOPs that provide access to multi-dimensional waves.
 */
@@ -112,9 +112,11 @@ FetchWaveFromDataFolder(DataFolderHandle dataFolderH, const char* waveName)
 
 	Returns wave type which is:
 		NT_FP32, NT_FP64 for single or double precision floating point
-		NT_I8, NT_I16, NT_I32 for 8, 16 or 32 bit signed integer
+		NT_I8, NT_I16, NT_I32, NT_I64 for 8, 16, 32 or 64 bit signed integer
 	This is ORed with NT_COMPLEX if the wave is complex
 	and ORed with NT_UNSIGNED if the wave is unsigned integer.
+	
+	64-bit integer waves (NT_I64) were added in Igor Pro 7.00.
 	
 	The wave type can also be one of the following:
 		TEXT_WAVE_TYPE			text wave
@@ -185,9 +187,9 @@ WavePoints(waveHndl waveH)
 	by Igor but not from a private thread that you created yourself.
 */
 void
-WaveName(waveHndl waveH, char *namePtr)
+WaveName(waveHndl waveH, char name[MAX_OBJ_NAME+1])
 {
-	CallBack2(WAVENAME, waveH, namePtr);
+	CallBack2(WAVENAME, waveH, name);
 }
 
 /*	WaveData(waveH)
@@ -309,7 +311,7 @@ SetWaveUnits(waveHndl waveH, const char *xUnits, const char *dataUnits)
 	Returns handle to wave's note text or NULL if wave has no note.
 	
 	The returned handle is a copy of Igor's internal wave note handle. You own the
-	returned handle and, if it is not NULL, you must dispose it using DisposeHandle.
+	returned handle and, if it is not NULL, you must dispose it using WMDisposeHandle.
 	
 	Use SetWaveNote to change the wave note.
 	
@@ -333,7 +335,7 @@ WaveNoteCopy(waveHndl waveH)
 		noteH = (Handle)CallBack1(WAVENOTE, waveH);
 		if (noteH == NULL)
 			return NULL;
-		err = HandToHand(&noteH);
+		err = WMHandToHand(&noteH);
 		if (err != 0)
 			return NULL;
 		return noteH;				// This is a copy of the original wave note handle. You own it.
@@ -584,6 +586,11 @@ KillWave(waveHndl waveH)
 	
 	NOTE: dimSizes[n] must be zero. This is how Igor determines
 		  how many dimensions the wave is to have.
+		  
+	Igor supports a maximum of four dimensions. Therefore, dimSizes[n] must be zero,
+	where n is less than or equal to four. MAX_DIMENSIONS is larger than 4 to allow
+	XOPs to continue to work in the event that a future version of Igor supports
+	more than four dimensions.
 	
 	If you are running with Igor Pro 6.20 or later, you can pass -1 for
 	dataFolderH to create a free wave. This would be appropriate if, for example,
@@ -678,7 +685,7 @@ MDGetWaveDimensions(waveHndl waveH, int* numDimensionsPtr, CountInt dimSizes[MAX
 		-1 for no change in data type.
 		
 		NT_FP32, NT_FP64 for single or double precision floating point
-		NT_I8, NT_I16, NT_I32 for 8, 16 or 32 bit signed integer.
+		NT_I8, NT_I16, NT_I32, NT_I64 for 8, 16, 32 or 64 bit signed integer.
 		These may be ORed with NT_COMPLEX to make the wave complex
 		and ORed with NT_UNSIGNED to make the wave unsigned integer.
 	
@@ -686,13 +693,23 @@ MDGetWaveDimensions(waveHndl waveH, int* numDimensionsPtr, CountInt dimSizes[MAX
 	However converting a text wave to numeric or vice versa is currently not
 	supported and will result in an error.
 	
+	64-bit integer waves (NT_I64) were added in Igor Pro 7.00.
+	
 	dimSizes[i] contains the desired number of points for dimension i.
 	For n dimensions, dimSizes[n] must be zero. Then the size of each
-	dimension is set by dimSizes[0..n-1].
-	
-	If dimSizes[i] == -1, then the size of dimension i will be unchanged.
+	dimension is set by dimSizes[0..n-1]. If dimSizes[i] == -1, then the
+	size of dimension i will be unchanged.
+		  
+	Igor supports a maximum of four dimensions. Therefore, dimSizes[n] must be zero,
+	where n is less than or equal to four. MAX_DIMENSIONS is larger than 4 to allow
+	XOPs to continue to work in the event that a future version of Igor supports
+	more than four dimensions.
 	
 	Returns 0 or an error code.
+	
+	The block of memory referenced by the wave handle can be relocated if you increase
+	the size of the wave. To avoid dangling pointer bugs, you must refresh any pointer
+	that points to the waves data after calling MDChangeWave.
 	
 	Thread Safety: MDChangeWave is Igor-thread-safe with XOP Toolkit 6 and Igor Pro 6.20 or later
 	except for waves passed to threads as parameters. You can call it from a thread created
@@ -721,6 +738,8 @@ MDChangeWave(waveHndl waveH, int type, CountInt dimSizes[MAX_DIMENSIONS+1])
 				of the platform on which you are running.
 	
 	Returns 0 or an error code.
+	
+	See MDChangeWave for further discussion.
 	
 	Thread Safety: MDChangeWave2 is Igor-thread-safe with XOP Toolkit 6 and Igor Pro 6.20 or later
 	except for waves passed to threads as parameters. You can call it from a thread created
@@ -862,10 +881,8 @@ MDSetWaveUnits(waveHndl waveH, int dimension, const char units[MAX_UNIT_CHARS+1]
 	If element is between 0 to n-1, where n is the size of the dimension,
 	then element specifies a label for that element of the dimension only.
 	
-	label should have room for MAX_DIM_LABEL_CHARS+1 bytes.
-	At present, Igor Pro truncates dimension labels at 31 characters.
-	A future version may increase this.
-		
+	label must have room for MAX_DIM_LABEL_BYTES+1 bytes.
+ 
 	The function result is 0 or an Igor error code.
 	
 	Thread Safety: MDGetDimensionLabel is Igor-thread-safe with XOP Toolkit 6 and Igor Pro 6.20 or later
@@ -873,7 +890,7 @@ MDSetWaveUnits(waveHndl waveH, int dimension, const char units[MAX_UNIT_CHARS+1]
 	by Igor but not from a private thread that you created yourself.
 */
 int
-MDGetDimensionLabel(waveHndl waveH, int dimension, IndexInt element, char label[MAX_DIM_LABEL_CHARS+1])
+MDGetDimensionLabel(waveHndl waveH, int dimension, IndexInt element, char label[MAX_DIM_LABEL_BYTES+1])
 {
 	switch (WAVE_VERSION(waveH)) {
 		case kWaveStruct3Version:
@@ -890,10 +907,7 @@ MDGetDimensionLabel(waveHndl waveH, int dimension, IndexInt element, char label[
 	If element is -1, this specifies a label for the entire dimension.
 	If element is between 0 to n-1, where n is the size of the dimension,
 	then element specifies a label for that element of the dimension only.
-	
-	At present, Igor Pro truncates dimension labels at 31 characters.
-	A future version may increase this.
-		
+ 
 	The function result is 0 or an Igor error code.
 	
 	Thread Safety: MDSetDimensionLabel is Igor-thread-safe with XOP Toolkit 6 and Igor Pro 6.20 or later
@@ -901,7 +915,7 @@ MDGetDimensionLabel(waveHndl waveH, int dimension, IndexInt element, char label[
 	by Igor but not from a private thread that you created yourself.
 */
 int
-MDSetDimensionLabel(waveHndl waveH, int dimension, IndexInt element, const char label[MAX_DIM_LABEL_CHARS+1])
+MDSetDimensionLabel(waveHndl waveH, int dimension, IndexInt element, const char label[MAX_DIM_LABEL_BYTES+1])
 {
 	switch (WAVE_VERSION(waveH)) {
 		case kWaveStruct3Version:
@@ -932,17 +946,17 @@ MDSetDimensionLabel(waveHndl waveH, int dimension, IndexInt element, const char 
 	At present, there is only one case in which MDAccessNumericWaveData will return an
 	error code. This is if the wave is a text wave.
 	
+	Numeric wave data is stored contiguously in the wave handle in one of the
+	supported data types (NT_I8, NT_I16, NT_I32, NT_I64, NT_FP32, NT_FP64). These types
+	will be ORed with NT_CMPLX if the wave is complex and ORed with NT_UNSIGNED if
+	the wave is unsigned integer. 64-bit integer waves (NT_I64) were added in Igor Pro 7.00.
+	
 	It is possible that a future version of Igor Pro will store wave data in
 	a different way, such that the current method of accessing wave data will no
 	longer work. If your XOP ever runs with such a future Igor, MDAccessNumericWaveData
 	will return an error code indicating the incompatibility. Your XOP will refrain
 	from attempting to access the wave data and return the error code to Igor.
 	This will prevent a crash and indicate the nature of the problem to the user.
-	
-	Numeric wave data is stored contiguously in the wave handle in one of the
-	supported data types (NT_I8, NT_I16, NT_I32, NT_FP32, NT_FP64). These types
-	will be ORed with NT_CMPLX if the wave is complex and ORed with NT_UNSIGNED if
-	the wave is unsigned integer.
 	
 	Although they are not truly numeric waves, MDAccessNumericWaveData also allows
 	you to access wave reference waves (WAVE_TYPE) and data folder reference waves
@@ -1047,6 +1061,14 @@ MDPointIndexV3(waveHndl waveH, CountInt indices[MAX_DIMENSIONS], IndexInt* index
 	index is the "point number" of the point of interest, considering
 	the data as one long vector.
 	
+	Scaling of signed and unsigned 64-bit integer values is subject to inaccuracies
+	for values exceeding 2^53 in magnitude because calculations are done in double-precision
+	and double-precision can not precisely represent the full range of 64-integer values.
+	Values returned for signed and unsigned 64-bit integer data will be imprecise
+	if the value exceeds 2^53 in magnitude because double-precision floating point
+	can not precisely represent integers larger than 2^53. See "64-bit Integer Issues"
+	in the XOP Toolkit manual for further discussion.
+	
 	Thread Safety: FetchNumericValue is Igor-thread-safe with XOP Toolkit 6 and Igor Pro 6.20 or later
 	except for waves passed to threads as parameters. You can call it from a thread created
 	by Igor but not from a private thread that you created yourself.
@@ -1057,6 +1079,8 @@ FetchNumericValue(int type, const char* dataStartPtr, IndexInt index, double val
 	int isComplex;
 	double* dp;
 	float* fp;
+	SInt64* llp;
+	UInt64* ullp;
 	SInt32* lp;
 	UInt32* ulp;
 	short* sp;
@@ -1082,6 +1106,20 @@ FetchNumericValue(int type, const char* dataStartPtr, IndexInt index, double val
 			value[0] = *fp++;
 			if (isComplex)
 				value[1] = *fp;
+			break;
+	
+		case NT_I64:								// Added in Igor Pro 7.00
+			llp = (SInt64*)dataStartPtr + index;	// See note above about 2^53 limit
+			value[0] = (double)*llp++;
+			if (isComplex)
+				value[1] = (double)*llp;
+			break;
+	
+		case NT_I64 | NT_UNSIGNED:					// Added in Igor Pro 7.00
+			ullp = (UInt64*)dataStartPtr + index;	// See note above about 2^53 limit
+			value[0] = (double)*ullp++;
+			if (isComplex)
+				value[1] = (double)*ullp;
 			break;
 	
 		case NT_I32:
@@ -1146,6 +1184,13 @@ FetchNumericValue(int type, const char* dataStartPtr, IndexInt index, double val
 	The value returned is always double precision floating point, regardless
 	of the precision of the wave.
 	
+	Values returned for signed and unsigned 64-bit integer waves will be imprecise
+	if the value exceeds 2^53 in magnitude because double-precision floating point
+	can not precisely represent integers larger than 2^53. See "64-bit Integer Issues"
+	in the XOP Toolkit manual for further discussion. If you must use 64-bit
+	integer waves at full precision, use MDGetNumericWavePointValueSInt64 or 
+	MDGetNumericWavePointValueUInt64 instead.
+	
 	indices is an array of dimension indices. For example, for a 3D wave,
 		indices[0] should contain the row number
 		indices[1] should contain the column number
@@ -1205,8 +1250,11 @@ MDGetNumericWavePointValue(waveHndl waveH, IndexInt indices[MAX_DIMENSIONS], dou
 	
 	index is the "point number" of the point of interest, considering
 	the data as one long vector.
-
-	HR, 091001: Added casts to prevent VC warnings.
+	
+	Values stored for signed and unsigned 64-bit integer data will be imprecise
+	if the value exceeds 2^53 in magnitude because double-precision floating point
+	can not precisely represent integers larger than 2^53. See "64-bit Integer Issues"
+	in the XOP Toolkit manual for further discussion.
 	
 	Thread Safety: StoreNumericValue is Igor-thread-safe with XOP Toolkit 6 and Igor Pro 6.20 or later
 	except for waves passed to threads as parameters. You can call it from a thread created
@@ -1218,6 +1266,8 @@ StoreNumericValue(int type, char* dataStartPtr, CountInt index, double value[2])
 	int isComplex;
 	double* dp;
 	float* fp;
+	SInt64* llp;
+	UInt64* ullp;
 	SInt32* lp;
 	UInt32* ulp;
 	short* sp;
@@ -1243,6 +1293,20 @@ StoreNumericValue(int type, char* dataStartPtr, CountInt index, double value[2])
 			*fp++ = (float)value[0];
 			if (isComplex)
 				*fp = (float)value[1];
+			break;
+	
+		case NT_I64:								// Added in Igor Pro 7.00
+			llp = (SInt64*)dataStartPtr + index;	// See note above about 2^53 limit
+			*llp++ = (SInt64)value[0];
+			if (isComplex)
+				*llp = (SInt64)value[1];
+			break;
+	
+		case NT_I64 | NT_UNSIGNED:					// Added in Igor Pro 7.00
+			ullp = (UInt64*)dataStartPtr + index;	// See note above about 2^53 limit
+			*ullp++ = (UInt64)value[0];
+			if (isComplex)
+				*ullp = (UInt64)value[1];
 			break;
 	
 		case NT_I32:
@@ -1307,6 +1371,13 @@ StoreNumericValue(int type, char* dataStartPtr, CountInt index, double value[2])
 	The value that you supply is always double precision floating point,
 	regardless of the precision of the wave.
 	
+	Values stored in signed and unsigned 64-bit integer waves will be imprecise
+	if the value exceeds 2^53 in magnitude because double-precision floating point
+	can not precisely represent integers larger than 2^53. See "64-bit Integer Issues"
+	in the XOP Toolkit manual for further discussion. If you must use 64-bit
+	integer waves at full precision, use MDSetNumericWavePointValueSInt64 or
+	MDSetNumericWavePointValueUInt64 instead.
+	
 	indices is an array of dimension indices. For example, for a 3D wave,
 		indices[0] should contain the row number
 		indices[1] should contain the column number
@@ -1358,6 +1429,176 @@ MDSetNumericWavePointValue(waveHndl waveH, IndexInt indices[MAX_DIMENSIONS], dou
 	}
 }
 
+/*	MDGetNumericWavePointValueSInt64(waveH, indices, value)
+	
+	Returns via value the value of a particular point in the specified numeric wave.
+	The value returned is always signed 64-bit integer, regardless of the
+	data type of the wave.
+	
+	This routine can be called for any numeric wave but is intended for use with signed
+	64-bit integer (NT_I64) waves. For most applications, use MDGetNumericWavePointValue instead.
+	
+	Values returned for floating point waves are truncated to integers. Values returned
+	will be incorrect if the wave value is outside the range of signed 64-bit integers
+	(-9223372036854775808 to 9223372036854775807). These issues do not apply if the data
+	type of the specified wave is NT_I64. See "64-bit Integer Issues" in the XOP Toolkit
+	manual for further discussion.
+	
+	indices is an array of dimension indices. For example, for a 3D wave,
+		indices[0] should contain the row number
+		indices[1] should contain the column number
+		indices[2] should contain the layer number
+	
+	NOTE: This routine ignores indices for dimensions that do not exist in the wave.
+	
+	The real part of the value of specified point is returned in value[0].
+	If the wave is complex, the imaginary part of the value of specified point
+	is returned in value[1]. If the wave is not complex, value[1] is undefined.
+	
+	The function result is 0 or an error code.
+	
+	MDGetNumericWavePointValueSInt64 was added in Igor Pro 7.03. If you call this
+	with an earlier version of Igor, it will return IGOR_OBSOLETE and do nothing.
+	
+	Thread Safety: MDGetNumericWavePointValueSInt64 is Igor-thread-safe with XOP Toolkit 7
+	and Igor Pro 7.03 or later except for waves passed to threads as parameters. You can call
+	it from a thread created by Igor but not from a private thread that you created yourself.
+*/
+int
+MDGetNumericWavePointValueSInt64(waveHndl waveH, IndexInt indices[MAX_DIMENSIONS], SInt64 value[2])
+{
+	int result = (int)CallBack3(MD_GETWAVEPOINTVALUE_SINT64, waveH, indices, value);
+	return result;
+}
+
+/*	MDSetNumericWavePointValueSInt64(waveH, indices, value)
+	
+	Sets the value of a particular point in the specified numeric wave. The value that
+	you supply is always signed 64-bit integer, regardless of the data type of the wave.
+	
+	This routine can be called for any numeric wave but is intended for use with signed
+	64-bit integer (NT_I64) waves. For most applications, use MDSetNumericWavePointValue instead.
+	
+	Values stored in floating point waves will be imprecise if the value exceeds
+	the range of integers that can be represented precisely in the wave's data type.
+	Values stored in integer waves will be incorrect if value is outside the range that
+	can be represented by the wave's data type. These issues do not apply if the data
+	type of the specified wave is NT_I64. See "64-bit Integer Issues" in the XOP Toolkit
+	manual for further discussion.
+	
+	indices is an array of dimension indices. For example, for a 3D wave,
+		indices[0] should contain the row number
+		indices[1] should contain the column number
+		indices[2] should contain the layer number
+	
+	NOTE: This routine ignores indices for dimensions that do not exist in the wave.
+	
+	You should pass in value[0] the real part of the value.
+	If the wave is complex, you should pass the complex part in value[1].
+	If the wave is not complex, Igor ignores value[1].
+	
+	The function result is 0 or an error code.
+
+	MDSetNumericWavePointValueSInt64 was added in Igor Pro 7.03. If you call this
+	with an earlier version of Igor, it will return IGOR_OBSOLETE and do nothing.
+	
+	Thread Safety: MDSetNumericWavePointValueSInt64 is Igor-thread-safe with XOP Toolkit 7
+	and Igor Pro 7.03 or later except for waves passed to threads as parameters. You can call
+	it from a thread created by Igor but not from a private thread that you created yourself.
+*/
+int
+MDSetNumericWavePointValueSInt64(waveHndl waveH, IndexInt indices[MAX_DIMENSIONS], SInt64 value[2])
+{
+	int result = (int)CallBack3(MD_SETWAVEPOINTVALUE_SINT64, waveH, indices, value);
+	return result;
+}
+
+/*	MDGetNumericWavePointValueUInt64(waveH, indices, value)
+	
+	Returns via value the value of a particular point in the specified numeric wave.
+	The value returned is always unsigned 64-bit integer, regardless of the
+	data type of the wave.
+	
+	This routine can be called for any numeric wave but is intended for use with unsigned
+	64-bit integer (NT_I64 | NT_UNSIGNED) waves. For most applications, use
+	MDGetNumericWavePointValue instead.
+	
+	Values returned for floating point waves are truncated to integers. Values returned
+	will be incorrect if the wave value is outside the range of unsigned 64-bit integers
+	(0 to 18446744073709551615). These issues do not apply if the data type of the specified
+	wave is NT_I64 | NT_UNSIGNED. See "64-bit Integer Issues" in the XOP Toolkit manual
+	for further discussion.
+	
+	indices is an array of dimension indices. For example, for a 3D wave,
+		indices[0] should contain the row number
+		indices[1] should contain the column number
+		indices[2] should contain the layer number
+	
+	NOTE: This routine ignores indices for dimensions that do not exist in the wave.
+	
+	The real part of the value of specified point is returned in value[0].
+	If the wave is complex, the imaginary part of the value of specified point
+	is returned in value[1]. If the wave is not complex, value[1] is undefined.
+	
+	The function result is 0 or an error code.
+	
+	MDGetNumericWavePointValueUInt64 was added in Igor Pro 7.03. If you call this
+	with an earlier version of Igor, it will return IGOR_OBSOLETE and do nothing.
+	
+	Thread Safety: MDGetNumericWavePointValueUInt64 is Igor-thread-safe with XOP Toolkit 7
+	and Igor Pro 7.03 or later except for waves passed to threads as parameters. You can call
+	it from a thread created by Igor but not from a private thread that you created yourself.
+*/
+int
+MDGetNumericWavePointValueUInt64(waveHndl waveH, IndexInt indices[MAX_DIMENSIONS], UInt64 value[2])
+{
+	int result = (int)CallBack3(MD_GETWAVEPOINTVALUE_UINT64, waveH, indices, value);
+	return result;
+}
+
+/*	MDSetNumericWavePointValueUInt64(waveH, indices, value)
+	
+	Sets the value of a particular point in the specified numeric wave. The value that
+	you supply is always unsigned 64-bit integer, regardless of the data type of the wave.
+	
+	This routine can be called for any numeric wave but is intended for use with unsigned
+	64-bit integer (NT_I64 | NT_UNSIGNED) waves. For most applications, use
+	MDSetNumericWavePointValue instead.
+	
+	Values stored in floating point waves will be imprecise if the value exceeds
+	the range of integers that can be represented precisely in the wave's data type.
+	Values stored in integer waves will be incorrect if value is outside the range that
+	can be represented by the wave's data type. These issues do not apply if the data
+	type of the specified wave is NT_I64 | NT_UNSIGNED. See "64-bit Integer Issues"
+	in the XOP Toolkit manual for further discussion.
+	
+	indices is an array of dimension indices. For example, for a 3D wave,
+		indices[0] should contain the row number
+		indices[1] should contain the column number
+		indices[2] should contain the layer number
+	
+	NOTE: This routine ignores indices for dimensions that do not exist in the wave.
+	
+	You should pass in value[0] the real part of the value.
+	If the wave is complex, you should pass the complex part in value[1].
+	If the wave is not complex, Igor ignores value[1].
+	
+	The function result is 0 or an error code.
+
+	MDSetNumericWavePointValueUInt64 was added in Igor Pro 7.03. If you call this
+	with an earlier version of Igor, it will return IGOR_OBSOLETE and do nothing.
+	
+	Thread Safety: MDSetNumericWavePointValueUInt64 is Igor-thread-safe with XOP Toolkit 7
+	and Igor Pro 7.03 or later except for waves passed to threads as parameters. You can call
+	it from a thread created by Igor but not from a private thread that you created yourself.
+*/
+int
+MDSetNumericWavePointValueUInt64(waveHndl waveH, IndexInt indices[MAX_DIMENSIONS], UInt64 value[2])
+{
+	int result = (int)CallBack3(MD_SETWAVEPOINTVALUE_UINT64, waveH, indices, value);
+	return result;
+}
+
 /*	MDGetDPDataFromNumericWave(waveH, dPtr)
 	
 	MDGetDPDataFromNumericWave stores a double-precision representation of
@@ -1365,7 +1606,15 @@ MDSetNumericWavePointValue(waveHndl waveH, IndexInt indices[MAX_DIMENSIONS], dou
 	point to a block of memory that you have allocated and which must be
 	at least (WavePoints(waveH)*sizeof(double)) bytes.
 	
-	This routine is intended for use with MDStoreDPDataInNumericWave.
+	Values returned for signed and unsigned 64-bit integer waves will be imprecise
+	if the value exceeds 2^53 in magnitude because double-precision floating point
+	can not precisely represent integers larger than 2^53. If you must use 64-bit
+	integer waves and require full precision for very large values, you must use
+	MDGetNumericWavePointValueSInt64, MDGetNumericWavePointValueUInt64, or the
+	direct access method as described for MDAccessNumericWaveData. See
+	"64-bit Integer Issues" in the XOP Toolkit manual for further discussion.
+	
+	This routine is a companion to MDStoreDPDataInNumericWave.
 	
 	The function result is zero or an error code.
 	
@@ -1418,6 +1667,14 @@ MDGetDPDataFromNumericWave(waveHndl waveH, double* dPtr)
 					bytesPerPoint = sizeof(UInt32);
 					srcFormat = UNSIGNED_INT;
 					break;
+				case NT_I64:						// Added in Igor Pro 7.00
+					bytesPerPoint = sizeof(SInt64);
+					srcFormat = SIGNED_INT;
+					break;
+				case NT_I64 | NT_UNSIGNED:			// Added in Igor Pro 7.00
+					bytesPerPoint = sizeof(UInt64);
+					srcFormat = UNSIGNED_INT;
+					break;
 				case NT_FP32:
 					bytesPerPoint = sizeof(float);
 					srcFormat = IEEE_FLOAT;
@@ -1449,7 +1706,18 @@ MDGetDPDataFromNumericWave(waveHndl waveH, double* dPtr)
 	of the wave. The conversion is done on-the-fly and the data pointed to by dPtr is not
 	changed.
 	
-	This routine is intended for use with MDGetDPDataInNumericWave.
+	When storing into an integer wave, MDStoreDPDataInNumericWave truncates the value that
+	you are storing. If you want, you can do rounding before calling MDStoreDPDataInNumericWave.
+	
+	Values stored for signed and unsigned 64-bit integer waves will be imprecise
+	if the value exceeds 2^53 in magnitude because double-precision floating point
+	can not precisely represent integers larger than 2^53. If you must use 64-bit
+	integer waves and require full precision for very large values, you must use
+	MDGetNumericWavePointValueSInt64, MDGetNumericWavePointValueUInt64, or the
+	direct access method as described for MDAccessNumericWaveData. See
+	"64-bit Integer Issues" in the XOP Toolkit manual for further discussion.
+	
+	This routine is a companion to MDGetDPDataInNumericWave.
 	
 	The function result is zero or an error code.
 	
@@ -1502,6 +1770,14 @@ MDStoreDPDataInNumericWave(waveHndl waveH, const double* dPtr)
 					bytesPerPoint = sizeof(UInt32);
 					destFormat = UNSIGNED_INT;
 					break;
+				case NT_I64:
+					bytesPerPoint = sizeof(SInt64);
+					destFormat = SIGNED_INT;
+					break;
+				case NT_I64 | NT_UNSIGNED:
+					bytesPerPoint = sizeof(UInt64);
+					destFormat = UNSIGNED_INT;
+					break;
 				case NT_FP32:
 					bytesPerPoint = sizeof(float);
 					destFormat = IEEE_FLOAT;
@@ -1543,7 +1819,7 @@ MDStoreDPDataInNumericWave(waveHndl waveH, const double* dPtr)
 	
 	You must create textH before calling MDGetTextWavePointValue.
 	For example:
-		textH = NewHandle(0L);
+		textH = WMNewHandle(0L);
 	
 	On output, if there is no error, textH contains a copy of the characters
 	in the specified wave point. A point in an Igor text wave can contain
@@ -1613,7 +1889,7 @@ MDSetTextWavePointValue(waveHndl waveH, IndexInt indices[MAX_DIMENSIONS], Handle
 	MDGetTextWavePointValue to get the wave text values one at a time.
 	
 	If the function result is 0 then *textDataHPtr is a handle that you own.
-	When you are finished, dispose of it using DisposeHandle.
+	When you are finished, dispose of it using WMDisposeHandle.
 	
 	In the event of an error, the function result will be non-zero and
 	*textDataHPtr will be NULL.
@@ -1717,7 +1993,7 @@ GetTextWaveData(waveHndl waveH, int mode, Handle* textDataHPtr)
 	it hard to trace it to the problem. So triple-check your code.
 	
 	You own the textDataH handle. When you are finished with it, dispose of it
-	using DisposeHandle.
+	using WMDisposeHandle.
 	
 	The format of textDataH depends on the mode parameter. See the documentation
 	for GetTextWaveData for a description of these formats.
@@ -1801,7 +2077,7 @@ TestGetAndSetTextWaveData(waveHndl sourceWaveH, waveHndl destWaveH, int mode, in
 		}
 
 		if (echo) {
-			sprintf(message, "Element %d: ", i);
+			snprintf(message, sizeof(message), "Element %d: ", i);
 			prefixLen = strlen(message);
 			availableBytes = sizeof(message) - prefixLen - 1 - 1;		// Allow 1 for CR and 1 for null terminator.
 			if (dataLen > availableBytes)
@@ -1829,7 +2105,7 @@ TestGetAndSetTextWaveData(waveHndl sourceWaveH, waveHndl destWaveH, int mode, in
 	
 	err = SetTextWaveData(destWaveH, mode, textDataH);
 
-	DisposeHandle(textDataH);
+	WMDisposeHandle(textDataH);
 	return err;
 }
 #endif
@@ -1845,11 +2121,11 @@ TestGetAndSetTextWaveData(waveHndl sourceWaveH, waveHndl destWaveH, int mode, in
 	
 	If the function result is non-zero then all handles in dimLabelsHArray will be NULL.
 	
-	Any non-NULL output handles belong to you. Dispose of them with DisposeHandle
+	Any non-NULL output handles belong to you. Dispose of them with WMDisposeHandle
 	when you are finished with them.
 	
 	For each dimension, the corresponding dimension label handle consists of
-	an array of N+1 C strings, each in a field of (MAX_DIM_LABEL_CHARS+1) bytes.
+	an array of N+1 C strings, each in a field of (MAX_DIM_LABEL_BYTES+1) bytes.
 	
 	The first label is the overall dimension label for that dimension.
 	
@@ -1886,7 +2162,7 @@ GetWaveDimensionLabels(waveHndl waveH, Handle dimLabelsHArray[MAX_DIMENSIONS])
 	sets the dimension labels for each existing dimension of waveH based on the
 	corresponding handle in dimLabelsHArray.
 	
-	The handles in dimLabelsHArray belong to you. Dispose of them with DisposeHandle
+	The handles in dimLabelsHArray belong to you. Dispose of them with WMDisposeHandle
 	when you are finished with them.
 	
 	See the documentation for GetWaveDimensionLabels for a discussion of how
@@ -1929,7 +2205,7 @@ TestGetAndSetWaveDimensionLabels(waveHndl sourceWaveH, waveHndl destWaveH, int e
 	IndexInt element;
 	int dim, numDimensions;
 	Handle dimLabelsHArray[MAX_DIMENSIONS];
-	char label[MAX_DIM_LABEL_CHARS+1];
+	char label[MAX_DIM_LABEL_BYTES+1];
 	char message[256];
 	int err;
 	
@@ -1946,14 +2222,14 @@ TestGetAndSetWaveDimensionLabels(waveHndl sourceWaveH, waveHndl destWaveH, int e
 		for(dim=0; dim<numDimensions; dim+=1) {
 			dimLabelsH = dimLabelsHArray[dim];
 			if (dimLabelsH == NULL) {
-				sprintf(message, "Dimension %d has no labels" CR_STR, dim);
+				snprintf(message, sizeof(message), "Dimension %d has no labels" CR_STR, dim);
 				XOPNotice(message);
 			}
 			else {
-				numLabels = GetHandleSize(dimLabelsH) / (MAX_DIM_LABEL_CHARS+1);
+				numLabels = WMGetHandleSize(dimLabelsH) / (MAX_DIM_LABEL_BYTES+1);
 				for(element=-1; element<(numLabels-1); element++) {
-					strcpy(label, *dimLabelsH + (element+1)*(MAX_DIM_LABEL_CHARS+1));
-					sprintf(message, "Dimension %d, element %ld = '%s'" CR_STR, dim, element, label);
+					strcpy(label, *dimLabelsH + (element+1)*(MAX_DIM_LABEL_BYTES+1));
+					snprintf(message, sizeof(message), "Dimension %d, element %lld = '%s'" CR_STR, dim, (SInt64)element, label);
 					XOPNotice(message);				
 				}
 			}
@@ -1966,7 +2242,7 @@ TestGetAndSetWaveDimensionLabels(waveHndl sourceWaveH, waveHndl destWaveH, int e
 	for(dim=0; dim<numDimensions; dim+=1) {
 		dimLabelsH = dimLabelsHArray[dim];
 		if (dimLabelsH != NULL)
-			DisposeHandle(dimLabelsH);
+			WMDisposeHandle(dimLabelsH);
 	}
 	
 	return err;
@@ -2110,12 +2386,12 @@ WaveTextEncoding(waveHndl waveH, int element, int getEffectiveTextEncoding, int*
 	Most XOPs will not need this function.
 	
 	In Igor Pro 6 and before wave handles were regular handles. Although there was
-	little reason to do so, you could call GetHandleSize on them and get a correct
+	little reason to do so, you could call WMGetHandleSize on them and get a correct
 	answer.
 	
 	In Igor Pro 7, to support 64 bits on Macintosh, WaveMetrics had to change the
 	way a wave's data was allocated. As a result, a wave handle is no longer
-	a regular handle. Calling GetHandleSize on it will return the wrong result
+	a regular handle. Calling WMGetHandleSize on it will return the wrong result
 	or crash. 
 	
 	This function provides a way to get information about the memory occupied by
@@ -2175,7 +2451,7 @@ WaveMemorySize(waveHndl waveH, int which)
 	
 	switch(which) {
 		case 0:									// Size in bytes of the wave handle itself
-			sizeInBytes = GetHandleSize((Handle)waveH);
+			sizeInBytes = WMGetHandleSize((Handle)waveH);
 			break;
 	
 		case 1:									// Size in bytes of the wave header
@@ -2188,7 +2464,7 @@ WaveMemorySize(waveHndl waveH, int which)
 	
 		case 2:									// Size in bytes of the wave numeric or text data
 			// The numeric or text data is stored in the wave handle after the header
-			sizeInBytes = GetHandleSize((Handle)waveH);
+			sizeInBytes = WMGetHandleSize((Handle)waveH);
 			#ifdef IGOR64
 				sizeInBytes -= 400;
 			#else
@@ -2198,7 +2474,7 @@ WaveMemorySize(waveHndl waveH, int which)
 	
 		case 3:									// Size in bytes of the wave handle plus the numeric or text data
 		case 4:									// Total memory required. In Igor Pro 6 and before which=4 is treated as which=3.
-			sizeInBytes = GetHandleSize((Handle)waveH);
+			sizeInBytes = WMGetHandleSize((Handle)waveH);
 			break;
 	
 		default:
