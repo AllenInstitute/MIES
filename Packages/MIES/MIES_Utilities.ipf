@@ -796,7 +796,7 @@ End
 
 /// @brief Return the string value of `key` found in the wave note
 /// default expected wave note format: `key1:val1;key2:str2;`
-/// counterpart of AddModificationTimeEntry when supplied with keySep = "="
+/// counterpart of AddEntryIntoWaveNoteAsList when supplied with keySep = "="
 ///
 /// @param wv   wave reference where the WaveNote is taken from
 /// @param key  search for the value at key:value;

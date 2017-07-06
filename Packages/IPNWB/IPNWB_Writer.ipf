@@ -2,7 +2,9 @@
 #pragma rtGlobals=3		// Use modern global access method and strict wave access.
 #pragma rtFunctionErrors=1
 #pragma IndependentModule=IPNWB
-#pragma version=0.17
+#pragma version=0.18
+
+// This file is part of the `IPNWB` project and licensed under BSD-3-Clause.
 
 /// @file IPNWB_Writer.ipf
 /// @brief Generic functions related to export into the NeuroDataWithoutBorders format
@@ -90,8 +92,10 @@ Function CreateCommonGroups(locationID, [toplevelInfo, generalInfo, subjectInfo]
 	H5_CreateGroupsRecursively(locationID, "/processing")
 	H5_CreateGroupsRecursively(locationID, "/analysis")
 
-	IPNWB#H5_CreateGroupsRecursively(locationID, "/general/stimsets")
+	H5_CreateGroupsRecursively(locationID, "/general/stimsets")
 	MarkAsCustomEntry(locationID, "/general/stimsets")
+
+	AddModificationTimeEntry(locationID)
 End
 
 /// @brief Create the HDF5 group for intracellular ephys
