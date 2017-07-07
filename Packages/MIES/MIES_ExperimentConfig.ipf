@@ -351,9 +351,9 @@ static Function ExpConfig_AsyncTemp(panelTitle, UserSettings)
 	SetSetVariableString(panelTitle, GetPanelControl(1, CHANNEL_TYPE_ASYNC, CHANNEL_CONTROL_UNIT), UserSettings[V_value][%SettingValue])
 	PGC_SetAndActivateControl(panelTitle, GetPanelControl(1, CHANNEL_TYPE_ALARM, CHANNEL_CONTROL_CHECK), val = 1)
 	FindValue /TXOP = 4 /TEXT = TEMP_MAX UserSettings
-	PGC_SetAndActivateControl(panelTitle,GetPanelControl(1, CHANNEL_TYPE_ALARM, CHANNEL_CONTROL_ALARM_MAX), val = str2numSafe(UserSettings[V_value][%SettingValue]))
+	PGC_SetAndActivateControl(panelTitle,GetPanelControl(1, CHANNEL_TYPE_ASYNC, CHANNEL_CONTROL_ALARM_MAX), val = str2numSafe(UserSettings[V_value][%SettingValue]))
 	FindValue /TXOP = 4 /TEXT = TEMP_MIN UserSettings
-	PGC_SetAndActivateControl(panelTitle, GetPanelControl(1, CHANNEL_TYPE_ALARM, CHANNEL_CONTROL_ALARM_MIN), val = str2numSafe(UserSettings[V_value][%SettingValue]))
+	PGC_SetAndActivateControl(panelTitle, GetPanelControl(1, CHANNEL_TYPE_ASYNC, CHANNEL_CONTROL_ALARM_MIN), val = str2numSafe(UserSettings[V_value][%SettingValue]))
 
 End
 
