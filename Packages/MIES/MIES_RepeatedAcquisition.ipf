@@ -114,15 +114,12 @@ End
 /// acquired and if repeated acquisition is on
 Function RA_Start(panelTitle)
 	string panelTitle
-
+	
 	variable totTrials
-
 	NVAR count = $GetCount(panelTitle)
-	count = 0
-
 	NVAR activeSetCount = $GetActiveSetCount(panelTitle)
-	activeSetCount = IDX_CalculcateActiveSetCount(panelTitle)
 
+	activeSetCount = IDX_CalculcateActiveSetCount(panelTitle)
 	totTrials = RA_GetTotalNumberOfTrials(panelTitle)
 
 	if(totTrials == 1)
@@ -222,10 +219,9 @@ static Function RA_StartMD(panelTitle)
 
 	variable i, totTrials, numFollower
 	string followerPanelTitle
-
 	NVAR count = $GetCount(panelTitle)
-	count = 0
 	NVAR activeSetCount = $GetActiveSetCount(panelTitle)
+	
 	activeSetCount = IDX_CalculcateActiveSetCount(panelTitle)
 	totTrials = RA_GetTotalNumberOfTrials(panelTitle)
 
@@ -412,5 +408,5 @@ Function RA_IsFirstSweep(panelTitle)
 	string panelTitle
 
 	NVAR count = $GetCount(panelTitle)
-	return !IsFinite(count)
+	return !count
 End

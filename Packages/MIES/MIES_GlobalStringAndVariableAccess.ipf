@@ -193,14 +193,13 @@ Function/S GetTPBufferSizeGlobal(panelTitle)
 End
 
 /// @brief Returns the absolute path to the global variable `count` storing the
-///        number of data acquisition still left to perform.
+///        number of data acquisition cycles performed.
 ///
-/// If the return value is NaN it means either that this is the very
-/// first sweep or that no DAQ is ongoing.
+/// Count equals zero on the first sweep.
 Function/S GetCount(panelTitle)
 	string panelTitle
 
-	return GetNVARAsString(GetDevicePath(panelTitle), "count", initialValue=NaN)
+	return GetNVARAsString(GetDevicePath(panelTitle), "count", initialValue=0)
 End
 
 /// @brief Return the absolute path to the testpulse duration variable
