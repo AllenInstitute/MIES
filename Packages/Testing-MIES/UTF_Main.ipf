@@ -7,12 +7,12 @@
 #include "UTF_WaveVersioning"
 #include "UTF_UpgradeWaveLocationAndGetIt"
 #include "UTF_Utils"
-#include "UTF_Labnotebook_EntrySourceTypeHandling"
+#include "UTF_Labnotebook"
 
 Function run()
 	string procList = ""
 	procList += "UTF_WaveVersioning.ipf;UTF_UpgradeWaveLocationAndGetIt.ipf;"
-	procList += "UTF_Utils.ipf;UTF_Labnotebook_EntrySourceTypeHandling.ipf"
+	procList += "UTF_Utils.ipf;UTF_Labnotebook.ipf"
 
 	RunTest(procList, enableJU = 1)
 End

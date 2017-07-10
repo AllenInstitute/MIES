@@ -19,6 +19,16 @@ threadsafe Function IsFinite(var)
 	return numType(var) == 0
 End
 
+/// @brief Returns 1 if var is a NaN, 0 otherwise
+///
+/// @hidecallgraph
+/// @hidecallergraph
+threadsafe Function IsNaN(var)
+	variable var
+
+	return numType(var) == 2
+End
+
 /// @brief Returns 1 if str is null, 0 otherwise
 /// @param str must not be a SVAR
 ///

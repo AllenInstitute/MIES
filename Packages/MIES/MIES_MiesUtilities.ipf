@@ -283,10 +283,18 @@ Function FindRange(wv, col, val, forwardORBackward, entrySourceType, first, last
 	first = NaN
 	last  = NaN
 
-	if(!WaveType(wv))
-		WAVE/Z indizesSetting = FindIndizes(col=col, var=val, wvText=wv)
+	if(IsNaN(val))
+		if(!WaveType(wv))
+			WAVE/Z indizesSetting = FindIndizes(col=col, prop=PROP_EMPTY, wvText=wv)
+		else
+			WAVE/Z indizesSetting = FindIndizes(col=col, prop=PROP_EMPTY, wv=wv)
+		endif
 	else
-		WAVE/Z indizesSetting = FindIndizes(col=col, var=val, wv=wv)
+		if(!WaveType(wv))
+			WAVE/Z indizesSetting = FindIndizes(col=col, var=val, wvText=wv)
+		else
+			WAVE/Z indizesSetting = FindIndizes(col=col, var=val, wv=wv)
+		endif
 	endif
 
 	if(!WaveExists(indizesSetting))

@@ -45,3 +45,14 @@ Function TestAllTypes()
 	CHECK_EQUAL_WAVES(DAQSettings, {0,NaN,NaN,NaN,NaN,NaN,NaN,NaN,NaN})
 	CHECK_EQUAL_WAVES(TPSettings,  {1,NaN,NaN,NaN,NaN,NaN,NaN,NaN,NaN})
 End
+
+Function TestLabnotebookGetters()
+
+	DFREF dfr = root:Labnotebook_misc:
+
+	// check that we can find the first entries of the testpulse which have sweepNo == NaN
+	WAVE/SDFR=dfr numericalValues_nan_sweep
+	WAVE/Z settings = GetLastSetting(numericalValues_nan_sweep, NaN, "TP Steady State Resistance", TEST_PULSE_MODE)
+
+	CHECK_EQUAL_WAVES(settings, {10.00109004974365,10.00193500518799,NaN,NaN,NaN,NaN,NaN,NaN,NaN})
+End
