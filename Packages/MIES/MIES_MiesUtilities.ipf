@@ -645,12 +645,18 @@ Function/WAVE GetLastSweepWithSetting(numericalValues, setting, sweepNo)
 	string setting
 	variable &sweepNo
 
-	variable idx
+	variable idx, col
 
 	sweepNo = NaN
 	ASSERT(WaveType(numericalValues), "Can only work with numeric waves")
 
-	WAVE/Z indizes = FindIndizes(numericalValues, colLabel=setting, prop=PROP_NON_EMPTY)
+	col = FindDimLabel(numericalValues, COLS, setting)
+
+	if(col < 0)
+		return $""
+	endif
+
+	WAVE/Z indizes = FindIndizes(numericalValues, col = col, prop=PROP_NON_EMPTY)
 	if(!WaveExists(indizes))
 		return $""
 	endif
@@ -676,12 +682,18 @@ Function/WAVE GetLastSweepWithSettingText(textualValues, setting, sweepNo)
 	string setting
 	variable &sweepNo
 
-	variable idx
+	variable idx, col
 
 	sweepNo = NaN
 	ASSERT(!WaveType(textualValues), "Can only work with text waves")
 
-	WAVE/Z indizes = FindIndizes(textualValues, colLabel=setting, prop=PROP_NON_EMPTY)
+	col = FindDimLabel(textualValues, COLS, setting)
+
+	if(col < 0)
+		return $""
+	endif
+
+	WAVE/Z indizes = FindIndizes(textualValues, col = col, prop=PROP_NON_EMPTY)
 	if(!WaveExists(indizes))
 		return $""
 	endif
