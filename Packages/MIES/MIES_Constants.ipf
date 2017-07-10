@@ -663,6 +663,7 @@ StrConstant USER_ONSET_DELAY			= "User onset delay (ms)"
 StrConstant TERMINATION_DELAY			= "Termination delay (ms)"
 StrConstant FIRST_STIM					= "Initial stim set"
 StrConstant FIRST_STIM_AMP			= "Initial stim set amplitude"
+StrConstant SAVE_TP_SWEEP				= "Save each TP sweep"
 ///@}
 
 StrConstant PULSE_START_TIMES_KEY     = "Pulse Train Pulses"
