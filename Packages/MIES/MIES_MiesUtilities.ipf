@@ -665,30 +665,30 @@ End
 /// @brief Return the last textual value of a setting from the labnotebook
 ///        and the sweep it was set.
 ///
-/// @param[in]  numericalValues  numerical labnotebook
+/// @param[in]  textualValues  textual labnotebook
 /// @param[in]  setting  name of the value to search
 /// @param[out] sweepNo  sweep number the value was last set
 ///
 /// @return a free wave with #LABNOTEBOOK_LAYER_COUNT rows. In case
 /// the setting could not be found an invalid wave reference is returned.
-Function/WAVE GetLastSweepWithSettingText(numericalValues, setting, sweepNo)
-	WAVE/T numericalValues
+Function/WAVE GetLastSweepWithSettingText(textualValues, setting, sweepNo)
+	WAVE/T textualValues
 	string setting
 	variable &sweepNo
 
 	variable idx
 
 	sweepNo = NaN
-	ASSERT(!WaveType(numericalValues), "Can only work with text waves")
+	ASSERT(!WaveType(textualValues), "Can only work with text waves")
 
-	WAVE/Z indizes = FindIndizes(numericalValues, colLabel=setting, prop=PROP_NON_EMPTY)
+	WAVE/Z indizes = FindIndizes(textualValues, colLabel=setting, prop=PROP_NON_EMPTY)
 	if(!WaveExists(indizes))
 		return $""
 	endif
 
 	idx = indizes[DimSize(indizes, ROWS) - 1]
-	Make/FREE/T/N=(DimSize(numericalValues, LAYERS)) data = numericalValues[idx][%$setting][p]
-	sweepNo = str2num(numericalValues[idx][GetSweepColumn(numericalValues)][0])
+	Make/FREE/T/N=(DimSize(textualValues, LAYERS)) data = textualValues[idx][%$setting][p]
+	sweepNo = str2num(textualValues[idx][GetSweepColumn(textualValues)][0])
 
 	return data
 End
