@@ -703,3 +703,5 @@ Constant SIGNED_INT_16BIT_MAX =  32767
 
 /// Maximum length of a valid name in bytes in Igor Pro.
 Constant MAX_OBJECT_NAME_LENGTH_IN_BYTES = 31
+
+StrConstant LABNOTEBOOK_NO_TOLERANCE = "-"

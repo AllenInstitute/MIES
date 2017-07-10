@@ -191,7 +191,7 @@ static Function ED_WriteChangedValuesToNote(saveDataWave, incomingNumericalKeys,
 
 			tolerance = str2num(factor); err = GetRTError(1)
 
-			// in case we have tolerance as "-" we get tolerance == NaN
+			// in case we have tolerance as LABNOTEBOOK_NO_TOLERANCE we get tolerance == NaN
 			// and the following check is false
 			if(abs(currentSetting[i] - lastSetting[i]) < tolerance)
 				continue
@@ -203,7 +203,7 @@ static Function ED_WriteChangedValuesToNote(saveDataWave, incomingNumericalKeys,
 				frontLabel = ""
 			endif
 
-			if (!cmpstr(factor, "-"))
+			if (!cmpstr(factor, LABNOTEBOOK_NO_TOLERANCE))
 				sprintf text, "%s%s: %s\r" frontLabel, key, SelectString(currentSetting[i], "Off", "On"); err = GetRTError(1)
 			else
 				sprintf text, "%s%s: %.2f %s\r" frontLabel, key, currentSetting[i], unit
@@ -384,11 +384,11 @@ Function ED_createWaveNoteTags(panelTitle, sweepCount)
 
 	numKeys[0][0] =  "Headstage Active"
 	numKeys[1][0] =  "On/Off"
-	numKeys[2][0] =  "-"
+	numKeys[2][0] =  LABNOTEBOOK_NO_TOLERANCE
 
 	numKeys[0][1] =  "Clamp Mode"
 	numKeys[1][1] =  ""
-	numKeys[2][1] =  "-"
+	numKeys[2][1] =  LABNOTEBOOK_NO_TOLERANCE
 
 	WAVE statusHS = DC_ControlStatusWaveCache(panelTitle, CHANNEL_TYPE_HEADSTAGE)
 
@@ -414,11 +414,11 @@ Function ED_createWaveNoteTags(panelTitle, sweepCount)
 
 	keys[0][0] = "Follower Device"
 	keys[1][0] = "On/Off"
-	keys[2][0] = "-"
+	keys[2][0] = LABNOTEBOOK_NO_TOLERANCE
 
 	keys[0][1] = "MIES version"
 	keys[1][1] = "On/Off"
-	keys[2][1] = "-"
+	keys[2][1] = LABNOTEBOOK_NO_TOLERANCE
 
 	Make/FREE/T/N=(1, 2, LABNOTEBOOK_LAYER_COUNT) values
 	values = ""
@@ -458,7 +458,7 @@ Function ED_WriteUserCommentToLabNB(panelTitle, comment, sweepNo)
 
 	keys[0][0] =  "User comment"
 	keys[1][0] =  ""
-	keys[2][0] =  "-"
+	keys[2][0] =  LABNOTEBOOK_NO_TOLERANCE
 
 
 	Make/FREE/T/N=(1, 1, LABNOTEBOOK_LAYER_COUNT) values
@@ -603,10 +603,10 @@ Function ED_TPDocumentation(panelTitle)
 	TPKeyWave[2][5]  = "1e-12"
 	TPKeyWave[2][6]  = "1e-6"
 	TPKeyWave[2][7]  = "1e-6"
-	TPKeyWave[2][8]  = "-"
+	TPKeyWave[2][8]  = LABNOTEBOOK_NO_TOLERANCE
 	TPKeyWave[2][9]  = "0.0001"
 	TPKeyWave[2][10] = "0.0001"
-	TPKeyWave[2][11] = "-"
+	TPKeyWave[2][11] = LABNOTEBOOK_NO_TOLERANCE
 
 	for(i = 0; i < NUM_HEADSTAGES; i += 1)
 
