@@ -1107,72 +1107,58 @@ End
 ///
 /// Exactly one of `var`/`str`/`prop` has to be given.
 ///
-/// Exactly one of `wv`/`wvText` has to be given.
-///
 /// Exactly one of `col`/`colLabel` has to be given.
 ///
+/// @param numericOrTextWave   wave to search in
 /// @param col [optional]      column to search in only
 /// @param colLabel [optional] column label to search in only
 /// @param var [optional]      numeric value to search
 /// @param str [optional]      string value to search
 /// @param prop [optional]     property to search, see @ref FindIndizesProps
-/// @param wv [optional]       numeric wave to search
-/// @param wvText [optional]   text wave to search
 /// @param startRow [optional] starting row to restrict the search to
 /// @param endRow [optional]   ending row to restrict the search to
 ///
 /// @returns A wave with the row indizes of the found values. An invalid wave reference if the
 /// value could not be found.
-Function/Wave FindIndizes([col, colLabel, var, str, prop, wv, wvText, startRow, endRow])
+Function/Wave FindIndizes(numericOrTextWave, [col, colLabel, var, str, prop, startRow, endRow])
+	WAVE numericOrTextWave
 	variable col, var, prop
-	string str
-	Wave wv
-	Wave/T wvText
-	string colLabel
+	string str, colLabel
 	variable startRow, endRow
 
 	variable numCols, numRows, err
 
 	ASSERT(ParamIsDefault(col) + ParamIsDefault(colLabel) == 1, "Expected exactly one col/colLabel argument")
-	ASSERT(ParamIsDefault(wv) + ParamIsDefault(wvText) == 1, "Expected exactly one optional wv/wvText argument")
+
 	ASSERT(ParamIsDefault(prop) + ParamIsDefault(var) + ParamIsDefault(str) == 2              \
 		   || (!ParamIsDefault(prop)                                                          \
 			  && (prop == PROP_MATCHES_VAR_BIT_MASK || prop == PROP_NOT_MATCHES_VAR_BIT_MASK) \
 			  && !ParamIsDefault(var) && ParamIsDefault(str)),                                \
 			  "Expected exactly one optional var/str/prop argument")
 
+	if(DimSize(numericOrTextWave, ROWS) == 0)
+		return $""
+	endif
+
+	numCols = DimSize(numericOrTextWave, COLS)
+	numRows = DimSize(numericOrTextWave, ROWS)
+	if(!ParamIsDefault(colLabel))
+		col = FindDimLabel(numericOrTextWave, COLS, colLabel)
+		ASSERT(col >= 0, "invalid column label")
+	endif
+
+	if(IsTextWave(numericOrTextWave))
+		WAVE/T wvText = numericOrTextWave
+		WAVE/Z wv     = $""
+	else
+		WAVE/T/Z wvText = $""
+		WAVE wv         = numericOrTextWave
+	endif
+
 	if(ParamIsDefault(var))
 		var = str2num(str); err = GetRTError(1)
 	elseif(ParamIsDefault(str))
 		str = num2str(var)
-	endif
-
-	if(!ParamIsDefault(wv))
-		ASSERT(WaveType(wv), "Expected numeric wave")
-
-		if(DimSize(wv, ROWS) == 0)
-			return $""
-		endif
-
-		numCols = DimSize(wv, COLS)
-		numRows = DimSize(wv, ROWS)
-		if(!ParamIsDefault(colLabel))
-			col = FindDimLabel(wv, COLS, colLabel)
-			ASSERT(col >= 0, "invalid column label")
-		endif
-	else
-		ASSERT(!WaveType(wvText), "Expected text wave")
-
-		if(DimSize(wvText, ROWS) == 0)
-			return $""
-		endif
-
-		numCols = DimSize(wvText, COLS)
-		numRows = DimSize(wvText, ROWS)
-		if(!ParamIsDefault(colLabel))
-			col = FindDimLabel(wvText, COLS, colLabel)
-			ASSERT(col >= 0, "invalid column label")
-		endif
 	endif
 
 	if(!ParamIsDefault(prop))
@@ -1199,7 +1185,7 @@ Function/Wave FindIndizes([col, colLabel, var, str, prop, wv, wvText, startRow, 
 
 	Make/FREE/R/N=(numRows) matches = NaN
 
-	if(!ParamIsDefault(wv))
+	if(WaveExists(wv))
 		if(!ParamIsDefault(prop))
 			if(prop == PROP_EMPTY)
 				MultiThread matches[startRow, endRow] = (numtype(wv[p][col]) == 2 ? p : NaN)
@@ -1837,7 +1823,7 @@ Function/S GetLastNonEmptyEntry(wv, colLabel, endRow)
 	string colLabel
 	variable endRow
 
-	WAVE/Z indizes = FindIndizes(colLabel=colLabel, wvText=wv, prop=PROP_NON_EMPTY, endRow=endRow)
+	WAVE/Z indizes = FindIndizes(wv, colLabel=colLabel, prop=PROP_NON_EMPTY, endRow=endRow)
 
 	if(!WaveExists(indizes))
 		return ""

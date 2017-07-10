@@ -100,9 +100,9 @@ Function SB_GetIndexFromSweepDataPath(graph, dataDFR)
 
 	sweepNo = ExtractSweepNumber(sweepFolder)
 
-	WAVE/Z indizesDataFolder = FindIndizes(wvText=sweepMap, colLabel="DataFolder", str=expFolder)
-	WAVE/Z indizesDevice     = FindIndizes(wvText=sweepMap, colLabel="Device", str=device)
-	WAVE/Z indizesSweep      = FindIndizes(wvText=sweepMap, colLabel="Sweep", str=num2str(sweepNo))
+	WAVE/Z indizesDataFolder = FindIndizes(sweepMap, colLabel="DataFolder", str=expFolder)
+	WAVE/Z indizesDevice     = FindIndizes(sweepMap, colLabel="Device", str=device)
+	WAVE/Z indizesSweep      = FindIndizes(sweepMap, colLabel="Sweep", str=num2str(sweepNo))
 
 	print indizesSweep
 	print indizesDevice
@@ -277,7 +277,7 @@ Function/WAVE SB_GetChannelInfoFromGraph(graph, channel, [experiment])
 		numEntries = GetNumberFromWaveNote(sweepMap, NOTE_INDEX)
 		Make/FREE/N=(numEntries) indizes = p
 	else
-		WAVE/Z indizes = FindIndizes(wvText=sweepMap, colLabel="FileName", str=experiment)
+		WAVE/Z indizes = FindIndizes(sweepMap, colLabel="FileName", str=experiment)
 		ASSERT(WaveExists(indizes), "The experiment could not be found in the sweep browser")
 		numEntries = DimSize(indizes, ROWS)
 	endif

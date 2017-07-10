@@ -284,17 +284,9 @@ Function FindRange(wv, col, val, forwardORBackward, entrySourceType, first, last
 	last  = NaN
 
 	if(IsNaN(val))
-		if(!WaveType(wv))
-			WAVE/Z indizesSetting = FindIndizes(col=col, prop=PROP_EMPTY, wvText=wv)
-		else
-			WAVE/Z indizesSetting = FindIndizes(col=col, prop=PROP_EMPTY, wv=wv)
-		endif
+		WAVE/Z indizesSetting = FindIndizes(wv, col=col, prop=PROP_EMPTY)
 	else
-		if(!WaveType(wv))
-			WAVE/Z indizesSetting = FindIndizes(col=col, var=val, wvText=wv)
-		else
-			WAVE/Z indizesSetting = FindIndizes(col=col, var=val, wv=wv)
-		endif
+		WAVE/Z indizesSetting = FindIndizes(wv, col=col, var=val)
 	endif
 
 	if(!WaveExists(indizesSetting))
@@ -305,11 +297,7 @@ Function FindRange(wv, col, val, forwardORBackward, entrySourceType, first, last
 		sourceTypeCol = FindDimLabel(wv, COLS, "EntrySourceType")
 
 		if(sourceTypeCol >= 0) // labnotebook has a entrySourceType column
-			if(!WaveType(wv))
-				WAVE/Z indizesSourceType = FindIndizes(col=sourceTypeCol, var=entrySourceType, wvText=wv, startRow = WaveMin(indizesSetting), endRow = WaveMax(indizesSetting))
-			else
-				WAVE/Z indizesSourceType = FindIndizes(col=sourceTypeCol, var=entrySourceType, wv=wv, startRow = WaveMin(indizesSetting), endRow = WaveMax(indizesSetting))
-			endif
+			WAVE/Z indizesSourceType = FindIndizes(wv, col=sourceTypeCol, var=entrySourceType, startRow = WaveMin(indizesSetting), endRow = WaveMax(indizesSetting))
 		endif
 	endif
 
@@ -662,7 +650,7 @@ Function/WAVE GetLastSweepWithSetting(numericalValues, setting, sweepNo)
 	sweepNo = NaN
 	ASSERT(WaveType(numericalValues), "Can only work with numeric waves")
 
-	WAVE/Z indizes = FindIndizes(wv=numericalValues, colLabel=setting, prop=PROP_NON_EMPTY)
+	WAVE/Z indizes = FindIndizes(numericalValues, colLabel=setting, prop=PROP_NON_EMPTY)
 	if(!WaveExists(indizes))
 		return $""
 	endif
@@ -693,7 +681,7 @@ Function/WAVE GetLastSweepWithSettingText(numericalValues, setting, sweepNo)
 	sweepNo = NaN
 	ASSERT(!WaveType(numericalValues), "Can only work with text waves")
 
-	WAVE/Z indizes = FindIndizes(wvText=numericalValues, colLabel=setting, prop=PROP_NON_EMPTY)
+	WAVE/Z indizes = FindIndizes(numericalValues, colLabel=setting, prop=PROP_NON_EMPTY)
 	if(!WaveExists(indizes))
 		return $""
 	endif
