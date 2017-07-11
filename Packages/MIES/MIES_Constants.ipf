@@ -468,7 +468,7 @@ Constant WAVEBUILDER_PANEL_VERSION = 1
 /// - Changed names of entries
 /// - Changed units or meaning of entries
 /// - New/Changed layers of entries
-Constant LABNOTEBOOK_VERSION = 10
+Constant LABNOTEBOOK_VERSION = 11
 
 /// @name The channel numbers for the different ITC devices used for accesssing
 ///       the TTLs
@@ -708,3 +708,5 @@ StrConstant LABNOTEBOOK_NO_TOLERANCE = "-"
 
 /// `Key` prefix for runtime added labnotebooks by ED_AddEntryToLabnotebook()
 StrConstant LABNOTEBOOK_USER_PREFIX = "USER_"
+
+StrConstant RA_ACQ_CYCLE_ID_KEY = "Repeated Acq Cycle ID"

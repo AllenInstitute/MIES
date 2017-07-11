@@ -340,3 +340,10 @@ Function/S GetRNGSeed(panelTitle)
 
 	return GetNVARAsString(GetDevicePath(panelTitle), "rngSeed", initialValue=NaN)
 End
+
+/// @brief Return the absolute path to the repeated acquisition cycle ID
+Function/S GetRepeatedAcquisitionCycleID(panelTitle)
+	string panelTitle
+
+	return GetNVARAsString(GetDevicePath(panelTitle), "raCycleID", initialValue=NaN)
+End

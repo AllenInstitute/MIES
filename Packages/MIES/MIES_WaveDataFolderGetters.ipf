@@ -1181,6 +1181,7 @@ static Function SetSweepSettingsDimLabels(wv)
 	SetDimLabel COLS, 29, $"Optimized Overlap dDAQ"      , wv
 	SetDimLabel COLS, 30, $"Delay onset oodDAQ"          , wv
 	SetDimLabel COLS, 31, $PULSE_TO_PULSE_LENGTH_KEY     , wv
+	SetDimLabel COLS, 32, $RA_ACQ_CYCLE_ID_KEY           , wv
 End
 
 /// @brief Set dimension labels for GetSweepSettingsTextKeyWave() and
@@ -1222,7 +1223,7 @@ End
 Function/Wave GetSweepSettingsWave(panelTitle)
 	string panelTitle
 
-	variable versionOfNewWave = 8
+	variable versionOfNewWave = 9
 	string newName = "sweepSettingsNumericValues"
 	DFREF newDFR = GetDevSpecLabNBTempFolder(panelTitle)
 
@@ -1237,9 +1238,9 @@ Function/Wave GetSweepSettingsWave(panelTitle)
 	if(ExistsWithCorrectLayoutVersion(wv, versionOfNewWave))
 		return wv
 	elseif(WaveExists(wv))
-		Redimension/N=(-1, 32, LABNOTEBOOK_LAYER_COUNT) wv
+		Redimension/N=(-1, 33, LABNOTEBOOK_LAYER_COUNT) wv
 	else
-		Make/N=(1, 32, LABNOTEBOOK_LAYER_COUNT) newDFR:$newName/Wave=wv
+		Make/N=(1, 33, LABNOTEBOOK_LAYER_COUNT) newDFR:$newName/Wave=wv
 	endif
 
 	wv = NaN
@@ -1293,10 +1294,11 @@ End
 /// - 29: Optimized Overlap dDAQ
 /// - 30: Delay onset oodDAQ
 /// - 31: Pulse To Pulse Length for pulse Train stimsets
+/// - 32: Repeated Acquisition Cycle ID
 Function/Wave GetSweepSettingsKeyWave(panelTitle)
 	string panelTitle
 
-	variable versionOfNewWave = 10
+	variable versionOfNewWave = 11
 	string newName = "sweepSettingsNumericKeys"
 	DFREF newDFR = GetDevSpecLabNBTempFolder(panelTitle)
 
@@ -1311,9 +1313,9 @@ Function/Wave GetSweepSettingsKeyWave(panelTitle)
 	if(ExistsWithCorrectLayoutVersion(wv, versionOfNewWave))
 		return wv
 	elseif(WaveExists(wv))
-		Redimension/N=(-1, 32) wv
+		Redimension/N=(-1, 33) wv
 	else
-		Make/T/N=(3, 32) newDFR:$newName/Wave=wv
+		Make/T/N=(3, 33) newDFR:$newName/Wave=wv
 	endif
 
 	wv = ""
@@ -1449,6 +1451,10 @@ Function/Wave GetSweepSettingsKeyWave(panelTitle)
 	wv[%Parameter][31] = PULSE_TO_PULSE_LENGTH_KEY
 	wv[%Units][31]     = "ms"
 	wv[%Tolerance][31] = "1"
+
+	wv[%Parameter][32] = RA_ACQ_CYCLE_ID_KEY
+	wv[%Units][32]     = ""
+	wv[%Tolerance][32] = "1"
 
 	SetSweepSettingsDimLabels(wv)
 	SetWaveVersion(wv, versionOfNewWave)
