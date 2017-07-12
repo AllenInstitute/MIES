@@ -306,7 +306,10 @@ Function FindRange(wv, col, val, forwardORBackward, entrySourceType, first, last
 	endif
 
 	if(WaveExists(indizesSourceType)) // entrySourceType could be found
-		WAVE indizes = GetSetIntersection(indizesSetting, indizesSourceType)
+		WAVE/Z indizes = GetSetIntersection(indizesSetting, indizesSourceType)
+		if(!WaveExists(indizes))
+			return NaN
+		endif
 	else
 		WAVE indizes = indizesSetting
 	endif
