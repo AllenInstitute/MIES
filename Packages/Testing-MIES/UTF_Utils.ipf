@@ -213,4 +213,12 @@ Function Works1()
 	CHECK_EQUAL_WAVES(matches, {4})
 End
 
+Function ReturnsCorrectType()
+
+	Make/Free/D data1
+	Make/Free/D data2
+
+	WAVE matches = GetSetIntersection(data1, data2)
+	CHECK_EQUAL_WAVES(data1, matches)
+End
 /// @}

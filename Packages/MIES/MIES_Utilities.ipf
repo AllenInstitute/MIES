@@ -3064,7 +3064,7 @@ Function/WAVE GetSetIntersection(wave1, wave2)
 
 	// Sort values in longWave
 	Sort longWave, longWave
-	Make/FREE/N=(shortRows) resultWave
+	Make/FREE/N=(shortRows)/Y=(type) resultWave
 
 	for(i = 0; i < shortRows; i += 1)
 		entry = shortWave[i]
