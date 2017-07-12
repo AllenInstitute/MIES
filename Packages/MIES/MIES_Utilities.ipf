@@ -2138,7 +2138,7 @@ Function PopCount(value)
 	return count
 End
 
-/// @brief Return a random value in the range (0,1]
+/// @brief Return a random value in the range (0,1] which can be used as a seed for `SetRandomSeed`
 /// Return different values for each call *not* depending on the RNG seed.
 ///
 /// Note: Calls `SetRandomSeed` and therefore changes the current RNG sequence
@@ -2154,7 +2154,8 @@ Function GetNonReproducibleRandom()
 	return GetReproducibleRandom()
 End
 
-/// @brief Return a random value in the range (0,1]
+/// @brief Return a random value in the range (0,1] which can be used as a seed for `SetRandomSeed`
+///
 /// Return a reproducible random number depending on the RNG seed.
 Function GetReproducibleRandom()
 
