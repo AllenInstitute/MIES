@@ -214,3 +214,29 @@ Function/S AFH_GetStimSetName(panelTitle, chanNo, channelType)
 
 	return stimset
 End
+
+/// @brief Return a free wave with all sweep numbers which belong to the same RA cycle
+///
+/// Return an invalid wave reference if not all required labnotebook entries are available
+Function/WAVE AFH_GetSweepsFromSameRACycle(numericalValues, sweepNo)
+	WAVE numericalValues
+	variable sweepNo
+
+	variable sweepCol, col, raCycleID
+
+	raCycleID = GetLastSettingIndep(numericalValues, sweepNo, RA_ACQ_CYCLE_ID_KEY, DATA_ACQUISITION_MODE, defValue = NaN)
+
+	if(!isFinite(raCycleID))
+		return $""
+	endif
+
+	col = FindDimLabel(numericalValues, COLS, RA_ACQ_CYCLE_ID_KEY)
+	Duplicate/FREE/R=[][col][INDEP_HEADSTAGE] numericalValues, singleColLayer
+	WAVE/Z indizes = FindIndizes(singleColLayer, col = 0, var = raCycleID)
+	ASSERT(WaveExists(indizes), "Expected at least one match")
+
+	sweepCol = GetSweepColumn(numericalValues)
+	Make/FREE/D/N=(DimSize(indizes, ROWS)) sweeps = numericalValues[indizes[p]][sweepCol][0]
+
+	return sweeps
+End
