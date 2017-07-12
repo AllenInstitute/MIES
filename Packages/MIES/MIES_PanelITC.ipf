@@ -7592,6 +7592,9 @@ Function DAP_LockDevice(panelTitle)
 	NVAR sessionStartTime = $GetSessionStartTime()
 	sessionStartTime = DateTimeInUTC()
 
+	NVAR rngSeed = $GetRNGSeed(panelTitleLocked)
+	rngSeed = GetNonReproducibleRandom()
+
 	DAP_UpdateOnsetDelay(panelTitleLocked)
 
 	HW_RegisterDevice(panelTitleLocked, HARDWARE_ITC_DAC, ITCDeviceIDGlobal)
