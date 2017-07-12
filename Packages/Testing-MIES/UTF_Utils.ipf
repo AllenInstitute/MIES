@@ -221,4 +221,31 @@ Function ReturnsCorrectType()
 	WAVE matches = GetSetIntersection(data1, data2)
 	CHECK_EQUAL_WAVES(data1, matches)
 End
+
+Function ReturnsInvalidWaveRefWOMatches1()
+
+	Make/Free/D/N=0 data1
+	Make/Free/D data2
+
+	WAVE/Z matches = GetSetIntersection(data1, data2)
+	CHECK(!WaveExists(matches))
+End
+
+Function ReturnsInvalidWaveRefWOMatches2()
+
+	Make/Free/D data1
+	Make/Free/D/N=0 data2
+
+	WAVE matches = GetSetIntersection(data1, data2)
+	CHECK(!WaveExists(matches))
+End
+
+Function ReturnsInvalidWaveRefWOMatches3()
+
+	Make/Free/D data1 = p
+	Make/Free/D data2 = -1
+
+	WAVE matches = GetSetIntersection(data1, data2)
+	CHECK(!WaveExists(matches))
+End
 /// @}

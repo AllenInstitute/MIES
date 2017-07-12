@@ -3036,6 +3036,9 @@ End
 /// Given {1, 2, 4, 10} and {2, 5, 11} this will return {2}.
 ///
 /// Inspired by http://www.igorexchange.com/node/366 but adapted to modern Igor Pro
+///
+/// @return free wave with the set intersection or an invalid wave reference
+/// if the intersection is an empty set
 Function/WAVE GetSetIntersection(wave1, wave2)
 	WAVE wave1
 	WAVE wave2
@@ -3049,6 +3052,10 @@ Function/WAVE GetSetIntersection(wave1, wave2)
 
 	wave1Rows = DimSize(wave1, ROWS)
 	wave2Rows = DimSize(wave2, ROWS)
+
+	if(wave1Rows == 0 || wave2Rows == 0)
+		return $""
+	endif
 
 	if(wave1Rows > wave2Rows)
 		Duplicate/FREE wave1, longWave
@@ -3074,6 +3081,10 @@ Function/WAVE GetSetIntersection(wave1, wave2)
 			j += 1
 		endif
 	endfor
+
+	if(j == 0)
+		return $""
+	endif
 
 	Redimension/N=(j) resultWave
 
