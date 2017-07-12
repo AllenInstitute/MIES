@@ -188,3 +188,29 @@ Function AcceptsValid8()
 End
 
 /// @}
+
+/// GetSetIntersection
+/// @{
+Function ExpectsSameWaveType()
+
+	Make/Free/D data1
+	Make/Free/R data2
+
+	try
+		WAVE/Z matches = GetSetIntersection(data1, data2)
+		FAIL()
+	catch
+		PASS()
+	endtry
+End
+
+Function Works1()
+
+	Make/Free data1 = {1, 2, 3, 4}
+	Make/Free data2 = {4, 5, 6}
+
+	WAVE/Z matches = GetSetIntersection(data1, data2)
+	CHECK_EQUAL_WAVES(matches, {4})
+End
+
+/// @}
