@@ -2135,6 +2135,7 @@ Function/Wave ExtractOneDimDataFromSweep(config, sweep, column)
 	WAVE sweep
 	variable column
 
+	ASSERT(DimSize(config, ROWS) == DimSize(sweep, COLS), "Sweep and config wave differ in the number of channels")
 	ASSERT(column < DimSize(sweep, COLS), "The column is out of range")
 
 	MatrixOP/FREE data = col(sweep, column)
