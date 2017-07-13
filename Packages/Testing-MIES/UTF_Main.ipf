@@ -4,6 +4,7 @@
 #include "MIES_include"
 #include "unit-testing"
 
+#include "UTF_AnalysisFunctionHelpers"
 #include "UTF_WaveVersioning"
 #include "UTF_UpgradeWaveLocationAndGetIt"
 #include "UTF_Utils"
@@ -11,7 +12,7 @@
 
 Function run()
 	string procList = ""
-	procList += "UTF_WaveVersioning.ipf;UTF_UpgradeWaveLocationAndGetIt.ipf;"
+	procList += "UTF_AnalysisFunctionHelpers.ipf;UTF_WaveVersioning.ipf;UTF_UpgradeWaveLocationAndGetIt.ipf;"
 	procList += "UTF_Utils.ipf;UTF_Labnotebook.ipf"
 
 	RunTest(procList, enableJU = 1)

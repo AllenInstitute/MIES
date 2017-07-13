@@ -133,6 +133,70 @@ static Function ED_createWaveNotes(incomingNumericalValues, incomingNumericalKey
 	ED_WriteChangedValuesToNote(saveDataWave, incomingNumericalKeys, numericalValues, sweepNo, entrySourceType)
 End
 
+/// @brief Add custom entries to the numerical/textual labnotebook
+///
+/// The entries are prefixed with `USER_` to distinguish them
+/// from stock MIES entries.
+///
+/// @param panelTitle device
+/// @param headstage  headstage to which the setting should be attached to.
+///                   If it is a headstage independent setting this should be `NaN`.
+/// @param key        name under which to store the entry.
+/// @param value      [optional, one of `value` or `str` must be given] entry
+/// @param str        [optional, one of `value` or `str` must be given] entry
+/// @param unit       [optional, defaults to ""]  physical unit of the entry
+/// @param tolerance  [optional, defaults to #LABNOTEBOOK_NO_TOLERANCE] tolerance of the entry, used for
+///                   judging if a change is "relevant" and should then be written to the sweep wave
+Function ED_AddEntryToLabnotebook(panelTitle, headstage, key, [value, str, unit, tolerance])
+	string panelTitle, key
+	variable headstage, value
+	string str, unit
+	variable tolerance
+
+	string toleranceStr
+	variable layer
+
+	ASSERT(!IsEmpty(key), "Empty key")
+
+	if(ParamIsDefault(unit))
+		unit = ""
+	endif
+
+	if(ParamIsDefault(tolerance) || !IsFinite(tolerance))
+		toleranceStr = LABNOTEBOOK_NO_TOLERANCE
+	else
+		toleranceStr = num2str(tolerance)
+	endif
+
+	if(IsFinite(headstage))
+		ASSERT(headstage >= 0 && headstage < NUM_HEADSTAGES, "Invalid headstage")
+		layer = headstage
+	else
+		layer = INDEP_HEADSTAGE
+	endif
+
+	ASSERT(ParamIsDefault(value) + ParamIsDefault(str) == 1, "One of value or str must be given.")
+
+	if(!ParamIsDefault(value))
+		Make/FREE/D/N=(1, 1, LABNOTEBOOK_LAYER_COUNT) valuesNum = NaN
+		valuesNum[0][0][layer] = value
+		WAVE values = valuesNum
+	elseif(!ParamIsDefault(str))
+		Make/FREE/T/N=(1, 1, LABNOTEBOOK_LAYER_COUNT) valuesText = ""
+		valuesText[0][0][layer] = str
+		WAVE values = valuesText
+	endif
+
+	Make/FREE/T/N=(3, 1) keys
+	keys[0] = LABNOTEBOOK_USER_PREFIX + key
+	keys[1] = unit
+	keys[2] = toleranceStr
+
+	ASSERT(strlen(keys[0]) < MAX_OBJECT_NAME_LENGTH_IN_BYTES, "key is too long")
+
+	ED_AddEntriesToLabnotebook(values, keys, AFH_GetLastSweepAcquired(panelTitle), panelTitle, UNKNOWN_MODE)
+End
+
 /// @brief If the newly written values differ from the values in the last sweep, we write them to the wave note
 ///
 /// Honours tolerances defined in the keywave and "On/Off" values
