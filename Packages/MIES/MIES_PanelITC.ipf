@@ -4477,7 +4477,7 @@ Function DAP_OneTimeCallBeforeDAQ(panelTitle, runMode)
 	ASSERT(runMode != DAQ_NOT_RUNNING, "Invalid running mode")
 
 	NVAR count = $GetCount(panelTitle)
-	count = NaN
+	count = 0
 
 	if(GetCheckBoxState(panelTitle, "Check_DataAcq_Indexing"))
 		IDX_StoreStartFinishForIndexing(panelTitle)
@@ -4546,7 +4546,7 @@ Function DAP_OneTimeCallAfterDAQ(panelTitle)
 	dataAcqRunMode = DAQ_NOT_RUNNING
 
 	NVAR count = $GetCount(panelTitle)
-	count = NaN
+	count = 0
 
 	// restore the selected sets before DAQ
 	if(GetCheckBoxState(panelTitle, "Check_DataAcq_Indexing"))
@@ -7698,7 +7698,7 @@ static Function DAP_UnlockDevice(panelTitle)
 	NVAR dataAcqRunMode = $GetDataAcqRunMode(panelTitle)
 	dataAcqRunMode = DAQ_NOT_RUNNING
 	NVAR count = $GetCount(panelTitle)
-	count = NaN
+	count = 0
 	NVAR runMode = $GetTestpulseRunMode(panelTitle)
 	runMode = TEST_PULSE_NOT_RUNNING
 
