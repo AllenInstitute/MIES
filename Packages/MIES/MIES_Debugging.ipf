@@ -171,6 +171,8 @@ Function DEBUGPRINT(msg, [var, str, format])
 		sprintf formatted, format, str
 	endif
 
+	msg = RemoveEnding(msg, "\r")
+
 	if(!isEmpty(func))
 		printf "DEBUG %s(...)#L%s: %s %s\r", func, line, msg, formatted
 	else
@@ -236,7 +238,7 @@ threadsafe Function DEBUGPRINT_TS(msg, [var, str, format])
 		sprintf formatted, format, str
 	endif
 
-	printf "DEBUG: %s %s\r", msg, formatted
+	printf "DEBUG: %s %s\r", RemoveEnding(msg, "\r"), formatted
 End
 
 /// @brief Print a nicely formatted stack trace to the history

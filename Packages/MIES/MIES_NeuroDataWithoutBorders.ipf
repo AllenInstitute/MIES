@@ -601,7 +601,7 @@ static Function NWB_AppendSweepLowLevel(locationID, panelTitle, ITCDataWave, ITC
 	if(!WaveExists(electrodeNames))
 		Make/FREE/T/N=(NUM_HEADSTAGES) electrodeNames = GetDefaultElectrodeName(p)
 	else
-		WAVE/Z nonEmptyElectrodes = FindIndizes(wvText=electrodeNames, col=0, prop=PROP_NON_EMPTY)
+		WAVE/Z nonEmptyElectrodes = FindIndizes(electrodeNames, col=0, prop=PROP_NON_EMPTY)
 		if(!WaveExists(nonEmptyElectrodes)) // all are empty
 			electrodeNames[] = GetDefaultElectrodeName(p)
 		endif

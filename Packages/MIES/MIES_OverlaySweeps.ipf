@@ -507,7 +507,7 @@ static Function OVS_ChangeSweepSelection(win, choiceString)
 		for(i = 0; i < NUM_HEADSTAGES; i += 1)
 			for(j = 0; j < numLayers; j += 1)
 				Duplicate/FREE/R=[][][j] sweepSelectionChoices, sweepSelectionChoicesSingle
-				WAVE/Z indizes = FindIndizes(wvText=sweepSelectionChoicesSingle, col=i, str=choiceString)
+				WAVE/Z indizes = FindIndizes(sweepSelectionChoicesSingle, col=i, str=choiceString)
 				if(!WaveExists(indizes))
 					continue
 				endif

@@ -133,6 +133,70 @@ static Function ED_createWaveNotes(incomingNumericalValues, incomingNumericalKey
 	ED_WriteChangedValuesToNote(saveDataWave, incomingNumericalKeys, numericalValues, sweepNo, entrySourceType)
 End
 
+/// @brief Add custom entries to the numerical/textual labnotebook
+///
+/// The entries are prefixed with `USER_` to distinguish them
+/// from stock MIES entries.
+///
+/// @param panelTitle device
+/// @param headstage  headstage to which the setting should be attached to.
+///                   If it is a headstage independent setting this should be `NaN`.
+/// @param key        name under which to store the entry.
+/// @param value      [optional, one of `value` or `str` must be given] entry
+/// @param str        [optional, one of `value` or `str` must be given] entry
+/// @param unit       [optional, defaults to ""]  physical unit of the entry
+/// @param tolerance  [optional, defaults to #LABNOTEBOOK_NO_TOLERANCE] tolerance of the entry, used for
+///                   judging if a change is "relevant" and should then be written to the sweep wave
+Function ED_AddEntryToLabnotebook(panelTitle, headstage, key, [value, str, unit, tolerance])
+	string panelTitle, key
+	variable headstage, value
+	string str, unit
+	variable tolerance
+
+	string toleranceStr
+	variable layer
+
+	ASSERT(!IsEmpty(key), "Empty key")
+
+	if(ParamIsDefault(unit))
+		unit = ""
+	endif
+
+	if(ParamIsDefault(tolerance) || !IsFinite(tolerance))
+		toleranceStr = LABNOTEBOOK_NO_TOLERANCE
+	else
+		toleranceStr = num2str(tolerance)
+	endif
+
+	if(IsFinite(headstage))
+		ASSERT(headstage >= 0 && headstage < NUM_HEADSTAGES, "Invalid headstage")
+		layer = headstage
+	else
+		layer = INDEP_HEADSTAGE
+	endif
+
+	ASSERT(ParamIsDefault(value) + ParamIsDefault(str) == 1, "One of value or str must be given.")
+
+	if(!ParamIsDefault(value))
+		Make/FREE/D/N=(1, 1, LABNOTEBOOK_LAYER_COUNT) valuesNum = NaN
+		valuesNum[0][0][layer] = value
+		WAVE values = valuesNum
+	elseif(!ParamIsDefault(str))
+		Make/FREE/T/N=(1, 1, LABNOTEBOOK_LAYER_COUNT) valuesText = ""
+		valuesText[0][0][layer] = str
+		WAVE values = valuesText
+	endif
+
+	Make/FREE/T/N=(3, 1) keys
+	keys[0] = LABNOTEBOOK_USER_PREFIX + key
+	keys[1] = unit
+	keys[2] = toleranceStr
+
+	ASSERT(strlen(keys[0]) < MAX_OBJECT_NAME_LENGTH_IN_BYTES, "key is too long")
+
+	ED_AddEntriesToLabnotebook(values, keys, AFH_GetLastSweepAcquired(panelTitle), panelTitle, UNKNOWN_MODE)
+End
+
 /// @brief If the newly written values differ from the values in the last sweep, we write them to the wave note
 ///
 /// Honours tolerances defined in the keywave and "On/Off" values
@@ -191,7 +255,7 @@ static Function ED_WriteChangedValuesToNote(saveDataWave, incomingNumericalKeys,
 
 			tolerance = str2num(factor); err = GetRTError(1)
 
-			// in case we have tolerance as "-" we get tolerance == NaN
+			// in case we have tolerance as LABNOTEBOOK_NO_TOLERANCE we get tolerance == NaN
 			// and the following check is false
 			if(abs(currentSetting[i] - lastSetting[i]) < tolerance)
 				continue
@@ -203,7 +267,7 @@ static Function ED_WriteChangedValuesToNote(saveDataWave, incomingNumericalKeys,
 				frontLabel = ""
 			endif
 
-			if (!cmpstr(factor, "-"))
+			if (!cmpstr(factor, LABNOTEBOOK_NO_TOLERANCE))
 				sprintf text, "%s%s: %s\r" frontLabel, key, SelectString(currentSetting[i], "Off", "On"); err = GetRTError(1)
 			else
 				sprintf text, "%s%s: %.2f %s\r" frontLabel, key, currentSetting[i], unit
@@ -330,7 +394,6 @@ static Function/Wave ED_FindIndizesAndRedimension(incomingKey, key, values, rowI
 		else
 			idx = numKeyCols + numAdditions
 			EnsureLargeEnoughWave(key, minimumSize=idx, dimension=COLS)
-			ASSERT(strlen(incomingKey[0][i]) > 0, "can not handle empty incoming key")
 			key[0, lastValidIncomingKeyRow][idx] = incomingKey[p][i]
 			indizes[i] = idx
 			numAdditions += 1
@@ -385,11 +448,11 @@ Function ED_createWaveNoteTags(panelTitle, sweepCount)
 
 	numKeys[0][0] =  "Headstage Active"
 	numKeys[1][0] =  "On/Off"
-	numKeys[2][0] =  "-"
+	numKeys[2][0] =  LABNOTEBOOK_NO_TOLERANCE
 
 	numKeys[0][1] =  "Clamp Mode"
 	numKeys[1][1] =  ""
-	numKeys[2][1] =  "-"
+	numKeys[2][1] =  LABNOTEBOOK_NO_TOLERANCE
 
 	WAVE statusHS = DC_ControlStatusWaveCache(panelTitle, CHANNEL_TYPE_HEADSTAGE)
 
@@ -415,11 +478,11 @@ Function ED_createWaveNoteTags(panelTitle, sweepCount)
 
 	keys[0][0] = "Follower Device"
 	keys[1][0] = "On/Off"
-	keys[2][0] = "-"
+	keys[2][0] = LABNOTEBOOK_NO_TOLERANCE
 
 	keys[0][1] = "MIES version"
 	keys[1][1] = "On/Off"
-	keys[2][1] = "-"
+	keys[2][1] = LABNOTEBOOK_NO_TOLERANCE
 
 	Make/FREE/T/N=(1, 2, LABNOTEBOOK_LAYER_COUNT) values
 	values = ""
@@ -459,7 +522,7 @@ Function ED_WriteUserCommentToLabNB(panelTitle, comment, sweepNo)
 
 	keys[0][0] =  "User comment"
 	keys[1][0] =  ""
-	keys[2][0] =  "-"
+	keys[2][0] =  LABNOTEBOOK_NO_TOLERANCE
 
 
 	Make/FREE/T/N=(1, 1, LABNOTEBOOK_LAYER_COUNT) values
@@ -604,10 +667,10 @@ Function ED_TPDocumentation(panelTitle)
 	TPKeyWave[2][5]  = "1e-12"
 	TPKeyWave[2][6]  = "1e-6"
 	TPKeyWave[2][7]  = "1e-6"
-	TPKeyWave[2][8]  = "-"
+	TPKeyWave[2][8]  = LABNOTEBOOK_NO_TOLERANCE
 	TPKeyWave[2][9]  = "0.0001"
 	TPKeyWave[2][10] = "0.0001"
-	TPKeyWave[2][11] = "-"
+	TPKeyWave[2][11] = LABNOTEBOOK_NO_TOLERANCE
 
 	for(i = 0; i < NUM_HEADSTAGES; i += 1)
 

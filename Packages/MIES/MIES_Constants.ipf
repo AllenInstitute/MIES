@@ -700,3 +700,11 @@ Constant STIMSET_PARAM_SEGWVTYPE = 2
 Constant SIGNED_INT_16BIT_MIN = -32768
 Constant SIGNED_INT_16BIT_MAX =  32767
 /// @}
+
+/// Maximum length of a valid name in bytes in Igor Pro.
+Constant MAX_OBJECT_NAME_LENGTH_IN_BYTES = 31
+
+StrConstant LABNOTEBOOK_NO_TOLERANCE = "-"
+
+/// `Key` prefix for runtime added labnotebooks by ED_AddEntryToLabnotebook()
+StrConstant LABNOTEBOOK_USER_PREFIX = "USER_"

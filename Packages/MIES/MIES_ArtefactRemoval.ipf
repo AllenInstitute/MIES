@@ -250,7 +250,7 @@ Function AR_HandleRanges(graph, [removeRange])
 				continue
 			endif
 
-			WAVE/Z indizes = FindIndizes(wvText=traceData, colLabel="channelNumber",var = j)
+			WAVE/Z indizes = FindIndizes(traceData, colLabel="channelNumber",var = j)
 			ASSERT(WaveExists(indizes) && DimSize(indizes, ROWS) >= 1, "Expected one hit")
 
 			leftAxis = leftAxisData[indizes[0]]

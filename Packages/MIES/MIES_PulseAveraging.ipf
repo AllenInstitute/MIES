@@ -258,7 +258,7 @@ Function/WAVE PA_GetTraceInfos(graph, [includeOtherADData, channelType])
 		WAVE/T tracesFullPath = traceWaveList
 	endif
 
-	WAVE indizes = FindIndizes(wvText=tracesFullPath, prop=PROP_NON_EMPTY, col=0)
+	WAVE indizes = FindIndizes(tracesFullPath, prop=PROP_NON_EMPTY, col=0)
 
 	numTraces = DimSize(indizes, ROWS)
 	Make/N=(numTraces, 8)/FREE/T traceData
@@ -348,9 +348,9 @@ Function/WAVE PA_GetPulseStartTimes(traceData, idx, region, channelTypeStr)
 	// old data/stimsets without the required entries
 
 	// find the folder where the referenced trace is located
-	WAVE indizesCH    = FindIndizes(wvText=traceData, colLabel="channelType", str=channelTypeStr)
-	WAVE indizesSweep = FindIndizes(wvText=traceData, colLabel="sweepNumber", var=sweepNo)
-	WAVE indizesHS    = FindIndizes(wvText=traceData, colLabel="headstage", var=region)
+	WAVE indizesCH    = FindIndizes(traceData, colLabel="channelType", str=channelTypeStr)
+	WAVE indizesSweep = FindIndizes(traceData, colLabel="sweepNumber", var=sweepNo)
+	WAVE indizesHS    = FindIndizes(traceData, colLabel="headstage", var=region)
 
 	WAVE/Z indizes = GetSetIntersection(indizesHS, GetSetIntersection(indizesCH, indizesSweep))
 	ASSERT(WaveExists(indizes) && DimSize(indizes, ROWS) == 1, "Unexpected state")
@@ -563,7 +563,7 @@ Function PA_ShowPulses(win, dfr, pa)
 		channelType    = i
 		channelTypeStr = StringFromList(channelType, ITC_CHANNEL_NAMES)
 
-		WAVE/Z indizesChannelType = FindIndizes(wvText=traceData, colLabel="channelType", str=channelTypeStr)
+		WAVE/Z indizesChannelType = FindIndizes(traceData, colLabel="channelType", str=channelTypeStr)
 		WAVE/Z headstages         = PA_GetUniqueHeadstages(traceData, indizesChannelType)
 
 		if(!WaveExists(headstages))

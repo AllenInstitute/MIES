@@ -21,6 +21,7 @@
 /// GetLastSettingText()          | Last documented textual value for headstages of a specific setting in the labnotebook for a given sweep number.
 /// GetLastSweepWithSetting()     | Last documented numerical value for headstages of a specific setting in the labnotebook and the sweep number it was set last.
 /// GetLastSweepWithSettingText() | Last documented textual value for headstages of a specific setting in the labnotebook and the sweep number it was set last.
+/// ED_AddEntryToLabnotebook()    | Add a user entry to the numerical/textual labnotebook
 
 /// @brief Return the headstage the AD channel is assigned to
 ///

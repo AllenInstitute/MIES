@@ -283,10 +283,10 @@ Function FindRange(wv, col, val, forwardORBackward, entrySourceType, first, last
 	first = NaN
 	last  = NaN
 
-	if(!WaveType(wv))
-		WAVE/Z indizesSetting = FindIndizes(col=col, var=val, wvText=wv)
+	if(IsNaN(val))
+		WAVE/Z indizesSetting = FindIndizes(wv, col=col, prop=PROP_EMPTY)
 	else
-		WAVE/Z indizesSetting = FindIndizes(col=col, var=val, wv=wv)
+		WAVE/Z indizesSetting = FindIndizes(wv, col=col, var=val)
 	endif
 
 	if(!WaveExists(indizesSetting))
@@ -297,11 +297,7 @@ Function FindRange(wv, col, val, forwardORBackward, entrySourceType, first, last
 		sourceTypeCol = FindDimLabel(wv, COLS, "EntrySourceType")
 
 		if(sourceTypeCol >= 0) // labnotebook has a entrySourceType column
-			if(!WaveType(wv))
-				WAVE/Z indizesSourceType = FindIndizes(col=sourceTypeCol, var=entrySourceType, wvText=wv, startRow = WaveMin(indizesSetting), endRow = WaveMax(indizesSetting))
-			else
-				WAVE/Z indizesSourceType = FindIndizes(col=sourceTypeCol, var=entrySourceType, wv=wv, startRow = WaveMin(indizesSetting), endRow = WaveMax(indizesSetting))
-			endif
+			WAVE/Z indizesSourceType = FindIndizes(wv, col=sourceTypeCol, var=entrySourceType, startRow = WaveMin(indizesSetting), endRow = WaveMax(indizesSetting))
 		endif
 	endif
 
@@ -649,12 +645,18 @@ Function/WAVE GetLastSweepWithSetting(numericalValues, setting, sweepNo)
 	string setting
 	variable &sweepNo
 
-	variable idx
+	variable idx, col
 
 	sweepNo = NaN
 	ASSERT(WaveType(numericalValues), "Can only work with numeric waves")
 
-	WAVE/Z indizes = FindIndizes(wv=numericalValues, colLabel=setting, prop=PROP_NON_EMPTY)
+	col = FindDimLabel(numericalValues, COLS, setting)
+
+	if(col < 0)
+		return $""
+	endif
+
+	WAVE/Z indizes = FindIndizes(numericalValues, col = col, prop=PROP_NON_EMPTY)
 	if(!WaveExists(indizes))
 		return $""
 	endif
@@ -669,30 +671,36 @@ End
 /// @brief Return the last textual value of a setting from the labnotebook
 ///        and the sweep it was set.
 ///
-/// @param[in]  numericalValues  numerical labnotebook
+/// @param[in]  textualValues  textual labnotebook
 /// @param[in]  setting  name of the value to search
 /// @param[out] sweepNo  sweep number the value was last set
 ///
 /// @return a free wave with #LABNOTEBOOK_LAYER_COUNT rows. In case
 /// the setting could not be found an invalid wave reference is returned.
-Function/WAVE GetLastSweepWithSettingText(numericalValues, setting, sweepNo)
-	WAVE/T numericalValues
+Function/WAVE GetLastSweepWithSettingText(textualValues, setting, sweepNo)
+	WAVE/T textualValues
 	string setting
 	variable &sweepNo
 
-	variable idx
+	variable idx, col
 
 	sweepNo = NaN
-	ASSERT(!WaveType(numericalValues), "Can only work with text waves")
+	ASSERT(!WaveType(textualValues), "Can only work with text waves")
 
-	WAVE/Z indizes = FindIndizes(wvText=numericalValues, colLabel=setting, prop=PROP_NON_EMPTY)
+	col = FindDimLabel(textualValues, COLS, setting)
+
+	if(col < 0)
+		return $""
+	endif
+
+	WAVE/Z indizes = FindIndizes(textualValues, col = col, prop=PROP_NON_EMPTY)
 	if(!WaveExists(indizes))
 		return $""
 	endif
 
 	idx = indizes[DimSize(indizes, ROWS) - 1]
-	Make/FREE/T/N=(DimSize(numericalValues, LAYERS)) data = numericalValues[idx][%$setting][p]
-	sweepNo = str2num(numericalValues[idx][GetSweepColumn(numericalValues)][0])
+	Make/FREE/T/N=(DimSize(textualValues, LAYERS)) data = textualValues[idx][%$setting][p]
+	sweepNo = str2num(textualValues[idx][GetSweepColumn(textualValues)][0])
 
 	return data
 End
@@ -2127,6 +2135,7 @@ Function/Wave ExtractOneDimDataFromSweep(config, sweep, column)
 	WAVE sweep
 	variable column
 
+	ASSERT(DimSize(config, ROWS) == DimSize(sweep, COLS), "Sweep and config wave differ in the number of channels")
 	ASSERT(column < DimSize(sweep, COLS), "The column is out of range")
 
 	MatrixOP/FREE data = col(sweep, column)
