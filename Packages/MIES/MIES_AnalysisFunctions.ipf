@@ -662,3 +662,148 @@ Function PlotResistanceGraph(panelTitle)
 		TextBox/C/N=text/W=$RESISTANCE_GRAPH RemoveEnding(textBoxString, "\r")
 	endif
 End
+
+/// @brief Set the DAScale value of the given headstage
+///
+/// @param panelTitle device
+/// @param headstage  MIES headstage
+/// @param DAScale    DA scale value in `A` (Amperes)
+static Function SetDAScale(panelTitle, headstage, DAScale)
+	string panelTitle
+	variable headstage, DAScale
+
+	variable amps, DAC
+	string DAUnit, ctrl
+
+	DAC = AFH_GetDACFromHeadstage(panelTitle, headstage)
+	ASSERT(IsFinite(DAC), "This analysis function does not work with unassociated DA channels")
+
+	ctrl = GetPanelControl(DAC, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_UNIT)
+	DAUnit = GetSetVariableString(panelTitle, ctrl)
+
+	// check for correct units
+	ASSERT(!cmpstr(DAunit, "pA"), "Unexpected DA Unit")
+
+	amps = DAScale / 1e-12
+	ctrl = GetPanelControl(DAC, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_SCALE)
+	SetSetVariable(panelTitle, ctrl, amps)
+
+	return 0
+End
+
+/// @brief Analysis function to experimentally determine the cell resistance by sweeping
+/// through a wave of target voltages.
+///
+/// Prerequisites:
+/// - Stimset with multiple but identical sweeps and testpulse-like shape. The
+///   number of sweeps must be larger than the number of rows in the targetVoltages wave below.
+/// - This stimset must have this analysis function set for the "Pre DAQ" and the "Post Sweep" Event
+/// - Does not support DA/AD channels not associated with a MIES headstage (aka unassociated DA/AD Channels)
+/// - All active headstages must be in "Current Clamp"
+/// - An inital DAScale of -20pA is used, a fixup value of -100pA is used on the next sweep if the measured resistance is smaller than 20MOhm
+Function ReachTargetVoltage(panelTitle, eventType, ITCDataWave, headStage, realDataLength)
+	string panelTitle
+	variable eventType
+	Wave ITCDataWave
+	variable headstage, realDataLength
+
+	variable sweepNo, index, i
+	variable amps
+	string msg
+
+	// BEGIN CHANGE ME
+	Make/FREE targetVoltages = {0.070, 0.080, 0.090, 0.1, 0.11} // units are Volts, i.e. 70mV = 0.070V
+	// END CHANGE ME
+
+	WAVE targetVoltagesIndex = GetAnalysisFuncIndexingHelper(panelTitle)
+
+	switch(eventType)
+		case PRE_DAQ_EVENT:
+			targetVoltagesIndex[headstage] = -1
+
+			if(DAP_MIESHeadstageMode(panelTitle, headstage) != I_CLAMP_MODE)
+				printf "(%s) The analysis function %s does only work in clamp mode.\r", panelTitle, GetRTStackInfo(1)
+				ControlWindowToFront()
+				return 1
+			endif
+
+			KillOrMoveToTrash(wv = GetAnalysisFuncDAScaleDeltaI(panelTitle))
+			KillOrMoveToTrash(wv = GetAnalysisFuncDAScaleDeltaV(panelTitle))
+			KillOrMoveToTrash(wv = GetAnalysisFuncDAScaleRes(panelTitle))
+			KillWindow/Z $RESISTANCE_GRAPH
+
+			SetDAScale(panelTitle, headstage, -20e-12)
+
+			return Nan
+			break
+		case POST_SWEEP_EVENT:
+			targetVoltagesIndex[headstage] += 1
+			break
+		default:
+			ASSERT(0, "Unknown eventType")
+			break
+	endswitch
+
+	// only do something if we are called for the very last headstage
+	if(DAP_GetHighestActiveHeadstage(panelTitle) != headstage)
+		return NaN
+	endif
+
+	WAVE/Z sweep = AFH_GetLastSweepWaveAcquired(panelTitle)
+	ASSERT(WaveExists(sweep), "Expected a sweep for evaluation")
+
+	sweepNo = ExtractSweepNumber(NameOfWave(sweep))
+
+	WAVE numericalValues = GetLBNumericalValues(panelTitle)
+	WAVE textualValues   = GetLBTextualValues(panelTitle)
+
+	Make/D/FREE/N=(LABNOTEBOOK_LAYER_COUNT) deltaV     = NaN
+	Make/D/FREE/N=(LABNOTEBOOK_LAYER_COUNT) deltaI     = NaN
+	Make/D/FREE/N=(LABNOTEBOOK_LAYER_COUNT) resistance = NaN
+
+	CalculateTPLikePropsFromSweep(numericalValues, textualValues, sweep, deltaI, deltaV, resistance)
+
+	ED_AddEntryToLabnotebook(panelTitle, "Delta I", deltaI, unit = "I")
+	ED_AddEntryToLabnotebook(panelTitle, "Delta V", deltaV, unit = "V")
+
+	PlotResistanceGraph(panelTitle)
+
+	WAVE/Z resistanceFitted = GetLastSetting(numericalValues, sweepNo, LABNOTEBOOK_USER_PREFIX + "ResistanceFromFit", UNKNOWN_MODE)
+	ASSERT(WaveExists(resistanceFitted), "Expected fitted resistance data")
+
+	WAVE statusHS = DAP_ControlStatusWaveCache(panelTitle, CHANNEL_TYPE_HEADSTAGE)
+
+	for(i = 0; i < NUM_HEADSTAGES; i += 1)
+
+		if(!statusHS[i])
+			continue
+		endif
+
+		index = targetVoltagesIndex[i]
+
+		if(index == DimSize(targetVoltages, ROWS))
+			// reached last sweep of stimset, do nothing
+			continue
+		endif
+
+		// index equals the number of sweeps in the stimset on the last call (*post* sweep event)
+		if(index > DimSize(targetVoltages, ROWS))
+			printf "(%s): Skipping analysis function \"%s\".\r", panelTitle, GetRTStackInfo(1)
+			printf "The stimset has too many sweeps, increase the size of DAScales.\r"
+			continue
+		endif
+
+		// check initial response
+		if(index == 0 && resistanceFitted[i] <= 20e6)
+			amps = -100e-12
+			targetVoltagesIndex[i] = -1
+		else
+			amps = targetVoltages[index] / resistanceFitted[i]
+		endif
+
+		sprintf msg, "(%s, %d): ΔR = %.0W1PΩ, V_target = %.0W1PV, I = %.0W1PA", panelTitle, i, resistanceFitted[i], targetVoltages[targetVoltagesIndex[i]], amps
+		DEBUGPRINT(msg)
+
+		SetDAScale(panelTitle, i, amps)
+	endfor
+End
