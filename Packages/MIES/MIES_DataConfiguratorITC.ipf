@@ -624,15 +624,14 @@ static Function DC_PlaceDataInITCChanConfigWave(panelTitle, dataAcqOrTP)
 	ITCChanConfigWave[][3] = 0
 
 	if(dataAcqOrTP == DATA_ACQUISITION_MODE)
-		WAVE sweepDataLNB      = GetSweepSettingsWave(panelTitle)
-		WAVE/T sweepDataTxTLNB = GetSweepSettingsTextWave(panelTitle)
+		WAVE sweepDataLNB = GetSweepSettingsWave(panelTitle)
 
 		if(DC_AreTTLsInRackChecked(RACK_ZERO, panelTitle))
 			ITCChanConfigWave[j][0] = ITC_XOP_CHANNEL_TYPE_TTL
 
 			channel = HW_ITC_GetITCXOPChannelForRack(panelTitle, RACK_ZERO)
 			ITCChanConfigWave[j][1] = channel
-			sweepDataLNB[0][10][]   = channel
+			sweepDataLNB[0][10][INDEP_HEADSTAGE] = channel
 
 			j += 1
 		endif
@@ -642,7 +641,7 @@ static Function DC_PlaceDataInITCChanConfigWave(panelTitle, dataAcqOrTP)
 
 			channel = HW_ITC_GetITCXOPChannelForRack(panelTitle, RACK_ONE)
 			ITCChanConfigWave[j][1] = channel
-			sweepDataLNB[0][11][]   = channel
+			sweepDataLNB[0][11][INDEP_HEADSTAGE] = channel
 		endif
 	endif
 End

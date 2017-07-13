@@ -1042,7 +1042,7 @@ Function MDsort(w, keyColPrimary, [keyColSecondary, keyColTertiary, reversed])
 	if(type == 0)
 		Duplicate/FREE/T indirectSourceText, newtoInsertText
 		newtoInsertText[][][][] = indirectSourceText[valindex[p]][q][r][s]
-		indirectSourceText = newtoInsertText
+		MultiThread indirectSourceText = newtoInsertText
 	else
 		Duplicate/FREE indirectSource, newtoInsert
 		MultiThread newtoinsert[][][][] = indirectSource[valindex[p]][q][r][s]
@@ -2907,6 +2907,7 @@ Function/WAVE DeepCopyWaveRefWave(src, [dimension, index, indexWave])
 	variable i, numEntries
 
 	ASSERT(WaveType(src, 1) == 4, "Expected wave ref wave")
+	ASSERT(DimSize(src, COLS) <= 1, "Expected a 1D wave for src")
 
 	if(!ParamIsDefault(dimension))
 		ASSERT(dimension >= ROWS && dimension <= CHUNKS, "Invalid dimension")
@@ -2919,8 +2920,7 @@ Function/WAVE DeepCopyWaveRefWave(src, [dimension, index, indexWave])
 
 	Duplicate/WAVE/FREE src, dst
 
-	// using numpnts so that a single `for loop` is enough
-	numEntries = numpnts(src)
+	numEntries = DimSize(src, ROWS)
 
 	if(!ParamIsDefault(indexWave))
 		ASSERT(numEntries == numpnts(indexWave), "indexWave and src must have the same number of points")
