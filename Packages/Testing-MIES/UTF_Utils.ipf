@@ -188,3 +188,64 @@ Function AcceptsValid8()
 End
 
 /// @}
+
+/// GetSetIntersection
+/// @{
+Function ExpectsSameWaveType()
+
+	Make/Free/D data1
+	Make/Free/R data2
+
+	try
+		WAVE/Z matches = GetSetIntersection(data1, data2)
+		FAIL()
+	catch
+		PASS()
+	endtry
+End
+
+Function Works1()
+
+	Make/Free data1 = {1, 2, 3, 4}
+	Make/Free data2 = {4, 5, 6}
+
+	WAVE/Z matches = GetSetIntersection(data1, data2)
+	CHECK_EQUAL_WAVES(matches, {4})
+End
+
+Function ReturnsCorrectType()
+
+	Make/Free/D data1
+	Make/Free/D data2
+
+	WAVE matches = GetSetIntersection(data1, data2)
+	CHECK_EQUAL_WAVES(data1, matches)
+End
+
+Function ReturnsInvalidWaveRefWOMatches1()
+
+	Make/Free/D/N=0 data1
+	Make/Free/D data2
+
+	WAVE/Z matches = GetSetIntersection(data1, data2)
+	CHECK(!WaveExists(matches))
+End
+
+Function ReturnsInvalidWaveRefWOMatches2()
+
+	Make/Free/D data1
+	Make/Free/D/N=0 data2
+
+	WAVE matches = GetSetIntersection(data1, data2)
+	CHECK(!WaveExists(matches))
+End
+
+Function ReturnsInvalidWaveRefWOMatches3()
+
+	Make/Free/D data1 = p
+	Make/Free/D data2 = -1
+
+	WAVE matches = GetSetIntersection(data1, data2)
+	CHECK(!WaveExists(matches))
+End
+/// @}
