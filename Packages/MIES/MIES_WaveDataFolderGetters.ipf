@@ -990,6 +990,8 @@ static Function UpgradeLabNotebook(panelTitle)
 		numericalKeys[%Tolerance][col] = sweepKeyWave[%Tolerance][sourceCol]
 		DEBUGPRINT("Fixed numeric labnotebook key wave entry \"Repeat Sets\"")
 	endif
+
+	// no upgrade for async entries also in the INDEP_HEADSTAGE layer
 End
 
 /// @brief Return a wave reference to the text labnotebook keys
@@ -1454,7 +1456,7 @@ End
 
 /// @brief Returns a wave reference to SweepSettingsTxtData
 ///
-/// SweepSettingsTxtData is passed to ED_createTextNotes to add entries to the labnotebook.
+/// SweepSettingsTxtData is passed to ED_AddEntriesToLabnotebook to add entries to the labnotebook.
 ///
 /// Rows:
 /// - Only one
@@ -2643,9 +2645,12 @@ End
 /// - 5: Async Measurement 5
 /// - 6: Async Measurement 6
 /// - 7: Async Measurement 7
+///
+/// - Layers:
+///  - 0 - #LABNOTEBOOK_LAYER_COUNT: headstage dependent and independent entries
 Function/Wave GetAsyncMeasurementWave()
 
-	Make/FREE/N=(1,8) wv
+	Make/FREE/N=(1,8, LABNOTEBOOK_LAYER_COUNT) wv
 	wv = NaN
 
 	SetDimLabel 1, 0, MeasVal0, wv
@@ -2772,9 +2777,12 @@ End
 /// - 37: Async Alarm 5 Max
 /// - 38: Async Alarm 6 Max
 /// - 39: Async Alarm 7 Max
+///
+/// - Layers:
+///  - 0 - #LABNOTEBOOK_LAYER_COUNT: headstage dependent and independent entries
 Function/Wave GetAsyncSettingsWave()
 
-	Make/N=(1,40)/FREE wv
+	Make/N=(1, 40, LABNOTEBOOK_LAYER_COUNT)/FREE wv
 	wv = Nan
 
 	SetDimLabel 1, 0, ADOnOff0, wv
@@ -3069,9 +3077,12 @@ End
 /// - 13: Async 5 Units
 /// - 14: Async 6 Units
 /// - 15: Async 7 Units
+///
+/// - Layers:
+///  - 0 - #LABNOTEBOOK_LAYER_COUNT: headstage dependent and independent entries
 Function/Wave GetAsyncSettingsTextWave()
 
-	Make/T/N=(1,16)/FREE wv
+	Make/T/N=(1,16, LABNOTEBOOK_LAYER_COUNT)/FREE wv
 	wv = ""
 
 	return wv
