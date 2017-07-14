@@ -936,6 +936,14 @@ static Function DC_PlaceDataInITCDataWave(panelTitle, numActiveChannels, dataAcq
 	DC_DocumentChannelProperty(panelTitle, "Repeated Acquisition", INDEP_HEADSTAGE, NaN, var=GetCheckboxState(panelTitle, "Check_DataAcq1_RepeatAcq"))
 	DC_DocumentChannelProperty(panelTitle, "Random Repeated Acquisition", INDEP_HEADSTAGE, NaN, var=GetCheckboxState(panelTitle, "check_DataAcq_RepAcqRandom"))
 
+	NVAR raCycleID = $GetRepeatedAcquisitionCycleID(panelTitle)
+	if(dataAcqOrTP == DATA_ACQUISITION_MODE)
+		ASSERT(IsFinite(raCycleID), "Uninitialized raCycleID detected")
+	endif
+
+	DC_DocumentChannelProperty(panelTitle, RA_ACQ_CYCLE_ID_KEY, INDEP_HEADSTAGE, NaN, var=raCycleID)
+	NVAR/Z raCycleID = $""
+
 	if(distributedDAQ)
 		// dDAQ requires that all stimsets have the same length, so store the stim set length
 		// also headstage independent

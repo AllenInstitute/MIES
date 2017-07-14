@@ -4464,6 +4464,27 @@ static Function DAP_AdaptAssocHeadstageState(panelTitle, checkboxCtrl)
 	PGC_SetAndActivateControl(panelTitle, headStageCheckBox, val=!GetCheckBoxState(panelTitle, headStageCheckBox))
 End
 
+/// @brief Return the repeated acquisition cycle ID for the given devide.
+///
+/// Follower and leader will have the same repeated acquisition cycle ID.
+static Function DAP_GetRAAcquisitionCycleID(panelTitle)
+	string panelTitle
+
+	DAP_AbortIfUnlocked(panelTitle)
+
+	if(DeviceIsFollower(panelTitle))
+		NVAR raCycleIDLead = $GetRepeatedAcquisitionCycleID(ITC1600_FIRST_DEVICE)
+		return raCycleIDLead
+	else
+		NVAR rngSeed = $GetRNGSeed(panelTitle)
+		ASSERT(IsFinite(rngSeed), "Invalid rngSeed")
+		SetRandomSeed/BETR=1 rngSeed
+		rngSeed += 1
+		// scale to the available mantissa bits in a single precision variable
+		return trunc(GetReproducibleRandom() * 2^23)
+	endif
+End
+
 /// @brief One time initialization before data acquisition
 ///
 /// @param panelTitle device
@@ -4478,6 +4499,9 @@ Function DAP_OneTimeCallBeforeDAQ(panelTitle, runMode)
 
 	NVAR count = $GetCount(panelTitle)
 	count = 0
+
+	NVAR raCycleID = $GetRepeatedAcquisitionCycleID(panelTitle)
+	raCycleID = DAP_GetRAAcquisitionCycleID(panelTitle)
 
 	if(GetCheckBoxState(panelTitle, "Check_DataAcq_Indexing"))
 		IDX_StoreStartFinishForIndexing(panelTitle)
@@ -4547,6 +4571,9 @@ Function DAP_OneTimeCallAfterDAQ(panelTitle)
 
 	NVAR count = $GetCount(panelTitle)
 	count = 0
+
+	NVAR raCycleID = $GetRepeatedAcquisitionCycleID(panelTitle)
+	raCycleID = NaN // invalidate
 
 	// restore the selected sets before DAQ
 	if(GetCheckBoxState(panelTitle, "Check_DataAcq_Indexing"))
@@ -7591,6 +7618,9 @@ Function DAP_LockDevice(panelTitle)
 
 	NVAR sessionStartTime = $GetSessionStartTime()
 	sessionStartTime = DateTimeInUTC()
+
+	NVAR rngSeed = $GetRNGSeed(panelTitleLocked)
+	rngSeed = GetNonReproducibleRandom()
 
 	DAP_UpdateOnsetDelay(panelTitleLocked)
 

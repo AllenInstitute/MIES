@@ -322,3 +322,28 @@ Function/S GetTemporaryString()
 
 	return GetSVARAsString(GetTempPath(), "tempString")
 End
+
+/// @brief Return the absolute path to the RNG seed value
+///
+/// This seed value can be used for deriving device dependent random numbers.
+///
+/// Typical sequence:
+///
+/// @code
+/// NVAR rngSeed = $GetRNGSeed(device)
+/// SetRandomSeed/BETR=1 rngSeed
+/// rngSeed += 1
+/// variable val = GetReproducibleRandonNumber()
+/// @endcode
+Function/S GetRNGSeed(panelTitle)
+	string panelTitle
+
+	return GetNVARAsString(GetDevicePath(panelTitle), "rngSeed", initialValue=NaN)
+End
+
+/// @brief Return the absolute path to the repeated acquisition cycle ID
+Function/S GetRepeatedAcquisitionCycleID(panelTitle)
+	string panelTitle
+
+	return GetNVARAsString(GetDevicePath(panelTitle), "raCycleID", initialValue=NaN)
+End

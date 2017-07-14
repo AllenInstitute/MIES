@@ -249,3 +249,37 @@ Function ReturnsInvalidWaveRefWOMatches3()
 	CHECK(!WaveExists(matches))
 End
 /// @}
+
+/// DAP_GetRAAcquisitionCycleID
+/// @{
+
+static StrConstant device = "ITC18USB_DEV_0"
+
+Function AssertOnInvalidSeed()
+	NVAR rngSeed = $GetRNGSeed(device)
+	rngSeed = NaN
+
+	try
+		MIES_DAP#DAP_GetRAAcquisitionCycleID(device)
+		FAIL()
+	catch
+		PASS()
+	endtry
+End
+
+Function CreatesReproducibleResults()
+	NVAR rngSeed = $GetRNGSeed(device)
+
+	rngSeed = 1
+	Make/FREE/N=1024/L dataInt = MIES_DAP#DAP_GetRAAcquisitionCycleID(device)
+	CHECK_EQUAL_VAR(998651135, WaveCRC(0, dataInt))
+
+	rngSeed = 1
+	Make/FREE/N=1024/D dataDouble = MIES_DAP#DAP_GetRAAcquisitionCycleID(device)
+
+	// EqualWaves is currently (7.0.5.1) broken for different data types
+	Make/FREE/B/N=1024 equal = dataInt[p] - dataDouble[p]
+	CHECK_EQUAL_VAR(WaveMax(equal), 0)
+	CHECK_EQUAL_VAR(WaveMin(equal), 0)
+End
+/// @}
