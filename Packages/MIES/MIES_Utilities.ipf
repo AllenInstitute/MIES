@@ -307,13 +307,13 @@ Function EnsureLargeEnoughWave(wv, [minimumSize, dimension, initialValue])
 	if(!ParamIsDefault(initialValue))
 		switch(dimension)
 			case ROWS:
-				wv[oldSizes[ROWS],] = initialValue
+				wv[oldSizes[ROWS],][][][] = initialValue
 			break
 			case COLS:
-				wv[][oldSizes[COLS],] = initialValue
+				wv[][oldSizes[COLS],][][] = initialValue
 			break
 			case LAYERS:
-				wv[][][oldSizes[LAYERS],] = initialValue
+				wv[][][oldSizes[LAYERS],][] = initialValue
 			break
 			case CHUNKS:
 				wv[][][][oldSizes[CHUNKS],] = initialValue
