@@ -1711,6 +1711,8 @@ static Function WBP_LoadSet(setName)
 	SetAnalysisFunctionIfFuncExists(panel, "popup_af_postSet_S4", setName, funcList, WPT[4][99])
 	SetAnalysisFunctionIfFuncExists(panel, "popup_af_postDAQEvent_S5", setName, funcList, WPT[5][99])
 
+	WBP_AnaFuncsToWPT()
+
 	WBP_SelectEpoch(0)
 	WBP_UpdateEpochControls()
 
