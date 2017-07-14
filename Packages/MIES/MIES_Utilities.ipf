@@ -285,10 +285,10 @@ Function EnsureLargeEnoughWave(wv, [minimumSize, dimension, initialValue])
 	ASSERT(WaveExists(wv), "Wave does not exist")
 
 	if(ParamIsDefault(minimumSize))
-		minimumSize = MINIMUM_WAVE_SIZE
+		minimumSize = MINIMUM_WAVE_SIZE - 1
+	else
+		minimumSize = max(MINIMUM_WAVE_SIZE - 1, minimumSize)
 	endif
-
-	minimumSize = max(MINIMUM_WAVE_SIZE,minimumSize)
 
 	Make/FREE/I/N=(MAX_DIMENSION_COUNT) oldSizes
 	oldSizes[] = DimSize(wv,p)

@@ -370,4 +370,27 @@ Function ELE_MinimumSize2()
 	CHECK(DimSize(wv, ROWS) > 100)
 End
 
+Function ELE_KeepsMinimumWaveSize1()
+
+	Make/FREE/N=(MINIMUM_WAVE_SIZE) wv
+	Duplicate/FREE wv, refWave
+	EnsureLargeEnoughWave(wv)
+	CHECK_EQUAL_WAVES(wv, refWave)
+End
+
+Function ELE_KeepsMinimumWaveSize2()
+
+	Make/FREE/N=(MINIMUM_WAVE_SIZE) wv
+	Duplicate/FREE wv, refWave
+	EnsureLargeEnoughWave(wv, minimumSize = 1)
+	CHECK_EQUAL_WAVES(wv, refWave)
+End
+
+Function ELE_KeepsMinimumWaveSize3()
+	// need to check that the index MINIMUM_WAVE_SIZE is now accessible
+	Make/FREE/N=(MINIMUM_WAVE_SIZE) wv
+	EnsureLargeEnoughWave(wv, minimumSize = MINIMUM_WAVE_SIZE)
+	CHECK(DimSize(wv, ROWS) > MINIMUM_WAVE_SIZE)
+End
+
 /// @}
