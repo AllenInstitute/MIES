@@ -283,3 +283,114 @@ Function CreatesReproducibleResults()
 	CHECK_EQUAL_VAR(WaveMin(equal), 0)
 End
 /// @}
+
+/// EnsureLargeEnoughWave
+/// @{
+Function ELE_AbortsWOWave()
+
+	try
+		EnsureLargeEnoughWave($"")
+		FAIL()
+	catch
+		PASS()
+	endtry
+End
+
+Function ELE_AbortsInvalidDim()
+
+	try
+		Make/FREE wv
+		EnsureLargeEnoughWave(wv, dimension = -1)
+		FAIL()
+	catch
+		PASS()
+	endtry
+End
+
+Function ELE_HasMinimumSize()
+
+	Make/FREE/N=0 wv
+	EnsureLargeEnoughWave(wv)
+	CHECK(DimSize(wv, ROWS) > 0)
+	CHECK(DimSize(wv, COLS) == 0)
+End
+
+Function ELE_InitsToZero()
+
+	Make/FREE/N=0 wv
+	EnsureLargeEnoughWave(wv)
+	CHECK_EQUAL_VAR(WaveMax(wv), 0)
+	CHECK_EQUAL_VAR(WaveMin(wv), 0)
+End
+
+Function ELE_KeepsExistingData()
+
+	Make/FREE/N=(1, 2) wv
+	wv[0][0] = 4711
+	EnsureLargeEnoughWave(wv)
+	CHECK_EQUAL_VAR(wv[0], 4711)
+	CHECK_EQUAL_VAR(Sum(wv), 4711) // others default to zero
+End
+
+Function ELE_HandlesCustomInitVal()
+
+	Make/FREE/N=0 wv
+	EnsureLargeEnoughWave(wv, initialValue = NaN)
+	WaveStats/M=2/Q wv
+	CHECK_EQUAL_VAR(V_npnts, 0)
+End
+
+Function ELE_HandlesCustomInitValCol()
+
+	Make/FREE/N=(1, 2, 3) wv = NaN
+	EnsureLargeEnoughWave(wv, dimension = COLS, initialValue = NaN)
+	WaveStats/M=2/Q wv
+	CHECK_EQUAL_VAR(V_npnts, 0)
+End
+
+Function ELE_WorksForColsAsWell()
+
+	Make/FREE/N=1 wv
+	EnsureLargeEnoughWave(wv, dimension = COLS)
+	CHECK_EQUAL_VAR(DimSize(wv, ROWS), 1)
+	CHECK(DimSize(wv, COLS) > 0)
+End
+
+Function ELE_MinimumSize1()
+
+	Make/FREE/N=100 wv
+	EnsureLargeEnoughWave(wv, minimumSize = 1)
+	CHECK_EQUAL_VAR(DimSize(wv, ROWS), 100)
+End
+
+Function ELE_MinimumSize2()
+
+	Make/FREE/N=100 wv
+	EnsureLargeEnoughWave(wv, minimumSize = 100)
+	CHECK(DimSize(wv, ROWS) > 100)
+End
+
+Function ELE_KeepsMinimumWaveSize1()
+
+	Make/FREE/N=(MINIMUM_WAVE_SIZE) wv
+	Duplicate/FREE wv, refWave
+	EnsureLargeEnoughWave(wv)
+	CHECK_EQUAL_WAVES(wv, refWave)
+End
+
+Function ELE_KeepsMinimumWaveSize2()
+
+	Make/FREE/N=(MINIMUM_WAVE_SIZE) wv
+	Duplicate/FREE wv, refWave
+	EnsureLargeEnoughWave(wv, minimumSize = 1)
+	CHECK_EQUAL_WAVES(wv, refWave)
+End
+
+Function ELE_KeepsMinimumWaveSize3()
+	// need to check that the index MINIMUM_WAVE_SIZE is now accessible
+	Make/FREE/N=(MINIMUM_WAVE_SIZE) wv
+	EnsureLargeEnoughWave(wv, minimumSize = MINIMUM_WAVE_SIZE)
+	CHECK(DimSize(wv, ROWS) > MINIMUM_WAVE_SIZE)
+End
+
+/// @}
