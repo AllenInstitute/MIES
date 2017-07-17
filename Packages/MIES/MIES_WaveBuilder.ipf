@@ -220,6 +220,36 @@ static Function WB_ParameterWvsNewerThanStim(setName)
 	return 0
 End
 
+/// @brief Return a checksum of the stimsets and its parameter waves.
+///
+/// Return NaN for the testpulse.
+Function WB_GetStimsetChecksum(setName, dataAcqOrTP)
+	string setName
+	variable dataAcqOrTP
+
+	variable crc
+
+	if(dataAcqOrTP == TEST_PULSE_MODE)
+		return NaN
+	endif
+
+	WAVE/Z wv = WB_CreateAndGetStimSet(setName)
+	ASSERT(WaveExists(wv), "Missing stimset")
+	crc = WaveCRC(crc, wv)
+
+	WAVE/Z WP        = WB_GetWaveParamForSet(setName)
+	WAVE/Z/T WPT     = WB_GetWaveTextParamForSet(setName)
+	WAVE/Z SegWvType = WB_GetSegWvTypeForSet(setName)
+
+	if(WaveExists(WP) && WaveExists(WPT) && WaveExists(SegWvType))
+		crc = WaveCRC(crc, WP)
+		crc = WaveCRC(crc, WPT)
+		crc = WaveCRC(crc, SegWvType)
+	endif
+
+	return crc
+End
+
 /// @brief Get modification date of saved stimset wave
 ///
 /// @param setName	string containing name of stimset
