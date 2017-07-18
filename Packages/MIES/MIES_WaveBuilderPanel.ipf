@@ -1976,6 +1976,8 @@ Function WBP_UpdateITCPanelPopUps([panelTitle])
 			SetControlUserData(panelTitle, ctrlWave, "MenuExp", TTLlist)
 			SetControlUserData(panelTitle, ctrlIndexEnd, "MenuExp", TTLlist)
 		endfor
+
+		UpdateDAQControlsWrapper(panelTitle, REASON_STIMSET_CHANGE)
 	endfor
 End
 
