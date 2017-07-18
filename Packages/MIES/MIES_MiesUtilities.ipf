@@ -3901,3 +3901,19 @@ Function/S ConvertAmplifierModeToString(mode)
 			break
 	endswitch
 End
+
+/// @brief Prototype function for DAP_UpdateDAQControls
+Function UpdateDAQControlsProto(panelTitle, updateFlag)
+	string panelTitle
+	variable updateFlag
+End
+
+/// @brief Prototype function for DAP_UpdateDAQControls
+Function UpdateDAQControlsWrapper(panelTitle, updateFlag)
+	string panelTitle
+	variable updateFlag
+
+	FUNCREF UpdateDAQControlsProto f = $"DAP_UpdateDAQControls"
+
+	f(panelTitle, updateFlag)
+End

@@ -4234,9 +4234,7 @@ Function DAP_TabControlFinalHook(tca)
 	DAP_UpdateYokeControls(tca.win)
 
 	if(tca.tab == DATA_ACQU_TAB_NUM)
-		DAP_UpdateITIAcrossSets(tca.win)
-		DAP_UpdateSweepSetVariables(tca.win)
-		DAP_UpdateITCSampIntDisplay(tca.win)
+		DAP_UpdateDAQControls(tca.win, REASON_STIMSET_CHANGE | REASON_HEADSTAGE_CHANGE)
 	endif
 
 	return 0
@@ -4628,8 +4626,7 @@ Function DAP_CheckProc_IndexingState(cba) : CheckBoxControl
 		panelTitle = cba.win
 		// makes sure user data for controls is up to date
 		WBP_UpdateITCPanelPopUps(panelTitle=panelTitle)
-		DAP_UpdateSweepSetVariables(panelTitle)
-		DAP_UpdateITIAcrossSets(panelTitle)
+		DAP_UpdateDAQControls(panelTitle, REASON_STIMSET_CHANGE)
 
 		if(cmpstr(cba.ctrlname, "Check_DataAcq1_IndexingLocked") == 0)
 			ToggleCheckBoxes(panelTitle, "Check_DataAcq1_IndexingLocked", "check_Settings_SetOption_5", cba.checked)
@@ -4785,8 +4782,7 @@ Function DAP_PopMenuChkProc_StimSetList(pa) : PopupMenuControl
 				endfor
 			endif
 
-			DAP_UpdateITIAcrossSets(panelTitle)
-			DAP_UpdateSweepSetVariables(panelTitle)
+			DAP_UpdateDAQControls(panelTitle, REASON_STIMSET_CHANGE)
 
 			if(activeChannel)
 				ITC_RestartDAQ(panelTitle, dataAcqRunMode)
@@ -4884,12 +4880,6 @@ static Function DAP_UpdateSweepLimitsAndDisplay(panelTitle)
 			SetVariable SetVar_Sweep win = $panelTitle, noEdit=0, limits = {0, maxNextSweep, 1}
 		endif
 	endfor
-End
-
-Function DAP_UpdateITCSampIntDisplay(panelTitle)
-	string panelTitle
-
-	SetValDisplay(panelTitle, "ValDisp_DataAcq_SamplingInt", var=DAP_GetITCSampInt(panelTitle, DATA_ACQUISITION_MODE))
 End
 
 /// @brief Return the ITC sampling interval with taking the mode and
@@ -6098,9 +6088,9 @@ Function DAP_ChangeHeadStageMode(panelTitle, clampMode, headstage, mccMiesSyncOv
 		endif
 		
 	endfor
-	
-	DAP_UpdateITCSampIntDisplay(panelTitle)
-	
+
+	DAP_UpdateDAQControls(panelTitle, REASON_HEADSTAGE_CHANGE)
+
 	if(activeHS || headstage < 0)
 		TP_RestartTestPulse(panelTitle, testPulseMode)
 	endif
@@ -6308,9 +6298,7 @@ static Function DAP_ChangeHeadstageState(panelTitle, headStageCtrl, enabled)
 		endif
 	endfor
 
-	DAP_UpdateITCSampIntDisplay(panelTitle)
-	DAP_UpdateITIAcrossSets(panelTitle)
-	DAP_UpdateSweepSetVariables(panelTitle)
+	DAP_UpdateDAQControls(panelTitle, REASON_STIMSET_CHANGE | REASON_HEADSTAGE_CHANGE)
 
 	WAVE statusHS = DC_ControlStatusWaveCache(panelTitle, CHANNEL_TYPE_HEADSTAGE)
 	if(Sum(statusHS) > 0 )
@@ -7879,4 +7867,22 @@ static Function DAP_SetITCDACasFollower(leadDAC, followerDAC)
 	endif
 	// TB: what does this comment mean?
 	// set the internal clock of the device
+End
+
+/// @brief Helper function to update all DAQ related controls after something changed.
+///
+/// @param panelTitle device
+/// @param updateFlag One of @ref UpdateControlsFlags
+Function DAP_UpdateDAQControls(panelTitle, updateFlag)
+	string panelTitle
+	variable updateFlag
+
+	if(updateFlag & REASON_STIMSET_CHANGE)
+		DAP_UpdateITIAcrossSets(panelTitle)
+		DAP_UpdateSweepSetVariables(panelTitle)
+	endif
+
+	if(updateFlag & REASON_HEADSTAGE_CHANGE)
+		SetValDisplay(panelTitle, "ValDisp_DataAcq_SamplingInt", var=DAP_GetITCSampInt(panelTitle, DATA_ACQUISITION_MODE))
+	endif
 End
