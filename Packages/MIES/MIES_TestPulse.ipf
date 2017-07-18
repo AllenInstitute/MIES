@@ -66,7 +66,6 @@ Function TP_StartTestPulseSingleDevice(panelTitle)
 	AbortOnValue DAP_CheckSettings(panelTitle, TEST_PULSE_MODE),1
 
 	DAP_StopOngoingDataAcquisition(panelTitle)
-	DAP_UpdateITCSampIntDisplay(panelTitle)
 
 	try
 		if(GetCheckBoxState(panelTitle, "Check_Settings_BkgTP"))
@@ -94,7 +93,6 @@ Function TP_StartTestPulseMultiDevice(panelTitle)
 	AbortOnValue DAP_CheckSettings(panelTitle, TEST_PULSE_MODE),1
 
 	ITC_StopOngoingDAQMultiDevice(panelTitle)
-	DAP_UpdateITCSampIntDisplay(panelTitle)
 
 	ITC_StartTestPulseMultiDevice(panelTitle)
 
