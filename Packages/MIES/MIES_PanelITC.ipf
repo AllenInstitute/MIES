@@ -4315,8 +4315,6 @@ Function DAP_DAorTTLCheckProc(cba) : CheckBoxControl
 				paneltitle = cba.win
 				control    = cba.ctrlName
 				DAP_AdaptAssocHeadstageState(panelTitle, control)
-				DAP_UpdateITIAcrossSets(panelTitle)
-				DAP_UpdateSweepSetVariables(panelTitle)
 			catch
 				SetCheckBoxState(panelTitle, control, !cba.checked)
 				Abort
