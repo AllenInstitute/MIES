@@ -4623,17 +4623,17 @@ Function DAP_CheckProc_IndexingState(cba) : CheckBoxControl
 	switch(cba.eventCode)
 		case 2: // mouse up
 
-		panelTitle = cba.win
-		// makes sure user data for controls is up to date
-		WBP_UpdateITCPanelPopUps(panelTitle=panelTitle)
-		DAP_UpdateDAQControls(panelTitle, REASON_STIMSET_CHANGE)
+			panelTitle = cba.win
+			// makes sure user data for controls is up to date
+			WBP_UpdateITCPanelPopUps(panelTitle=panelTitle)
+			DAP_UpdateDAQControls(panelTitle, REASON_STIMSET_CHANGE)
 
-		if(cmpstr(cba.ctrlname, "Check_DataAcq1_IndexingLocked") == 0)
-			ToggleCheckBoxes(panelTitle, "Check_DataAcq1_IndexingLocked", "check_Settings_SetOption_5", cba.checked)
-			EqualizeCheckBoxes(panelTitle, "Check_DataAcq1_IndexingLocked", "check_Settings_Option_3", cba.checked)
-		endif
+			if(cmpstr(cba.ctrlname, "Check_DataAcq1_IndexingLocked") == 0)
+				ToggleCheckBoxes(panelTitle, "Check_DataAcq1_IndexingLocked", "check_Settings_SetOption_5", cba.checked)
+				EqualizeCheckBoxes(panelTitle, "Check_DataAcq1_IndexingLocked", "check_Settings_Option_3", cba.checked)
+			endif
 
-		break
+			break
 	endswitch
 
 	return 0
