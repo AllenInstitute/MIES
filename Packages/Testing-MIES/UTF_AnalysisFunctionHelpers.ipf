@@ -17,30 +17,44 @@ End
 /// BEGIN ED_AddEntryToLabnotebook
 /// @{
 
+Function AE_ThrowsWithWrongWaveType()
+
+	try
+		Make/I/FREE/N=(LABNOTEBOOK_LAYER_COUNT) values
+		ED_AddEntryToLabnotebook(device, "a", values)
+		FAIL()
+	catch
+		PASS()
+	endtry
+End
+
 Function AE_ThrowsWithEmptyKey()
 
 	try
-		ED_AddEntryToLabnotebook(device, 0, "", value = 0)
+		Make/D/FREE/N=(LABNOTEBOOK_LAYER_COUNT) values
+		ED_AddEntryToLabnotebook(device, "", values)
 		FAIL()
 	catch
 		PASS()
 	endtry
 End
 
-Function AE_ThrowsWithInvalidHS1()
+Function AE_ThrowsWithInvalidNumRows1()
 
 	try
-		ED_AddEntryToLabnotebook(device, -1, "a", value = 0)
+		Make/D/FREE/N=(1) values
+		ED_AddEntryToLabnotebook(device, "a", values)
 		FAIL()
 	catch
 		PASS()
 	endtry
 End
 
-Function AE_ThrowsWithInvalidHS2()
+Function AE_ThrowsWithInvalidNumRows2()
 
 	try
-		ED_AddEntryToLabnotebook(device, NUM_HEADSTAGES, "a", value = 0)
+		Make/D/FREE/N=(LABNOTEBOOK_LAYER_COUNT, 1) values
+		ED_AddEntryToLabnotebook(device, "a", values)
 		FAIL()
 	catch
 		PASS()
@@ -50,7 +64,8 @@ End
 Function AE_ThrowsWithTooLongKey()
 
 	try
-		ED_AddEntryToLabnotebook(device, 0, "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa" , value = 0)
+		Make/FREE/N=(LABNOTEBOOK_LAYER_COUNT, 1) values
+		ED_AddEntryToLabnotebook(device, "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa" , values)
 		FAIL()
 	catch
 		PASS()
@@ -65,7 +80,10 @@ Function AE_Works1()
 
 	unitRef   = ""
 	toleranceRef = LABNOTEBOOK_NO_TOLERANCE
-	ED_AddEntryToLabnotebook(device, 0, key , value = 4711)
+
+	Make/D/FREE/N=(LABNOTEBOOK_LAYER_COUNT) values = NaN
+	values[0] = 4711
+	ED_AddEntryToLabnotebook(device, key , values)
 
 	WAVE/T numericalKeys   = root:MIES:LabNoteBook:ITC18USB:Device0:numericalKeys
 	WAVE   numericalValues = root:MIES:LabNoteBook:ITC18USB:Device0:numericalValues
@@ -100,7 +118,10 @@ Function AE_Works2()
 
 	unitRef   = "hi there"
 	toleranceRef = "123"
-	ED_AddEntryToLabnotebook(device, 0, key , value = 4711, unit = unitRef, tolerance = str2num(toleranceRef))
+
+	Make/D/FREE/N=(LABNOTEBOOK_LAYER_COUNT) values = NaN
+	values[0] = 4711
+	ED_AddEntryToLabnotebook(device, key , values, unit = unitRef, tolerance = str2num(toleranceRef))
 
 	WAVE/T numericalKeys   = root:MIES:LabNoteBook:ITC18USB:Device0:numericalKeys
 	WAVE   numericalValues = root:MIES:LabNoteBook:ITC18USB:Device0:numericalValues
@@ -135,8 +156,11 @@ Function AE_Works3()
 
 	unitRef = ""
 	toleranceRef = LABNOTEBOOK_NO_TOLERANCE
+
+	Make/D/FREE/N=(LABNOTEBOOK_LAYER_COUNT) values = NaN
+	values[0] = 4711
 	// internally NaN is translated to -
-	ED_AddEntryToLabnotebook(device, 0, key , value = 4711, tolerance = NaN)
+	ED_AddEntryToLabnotebook(device, key, values, tolerance = NaN)
 
 	WAVE/T numericalKeys   = root:MIES:LabNoteBook:ITC18USB:Device0:numericalKeys
 	WAVE   numericalValues = root:MIES:LabNoteBook:ITC18USB:Device0:numericalValues
@@ -171,7 +195,10 @@ Function AE_Works4()
 
 	unitRef = ""
 	toleranceRef = LABNOTEBOOK_NO_TOLERANCE
-	ED_AddEntryToLabnotebook(device, 0, key , value = 4711)
+
+	Make/D/FREE/N=(LABNOTEBOOK_LAYER_COUNT) values = NaN
+	values[0] = 4711
+	ED_AddEntryToLabnotebook(device, key, values)
 
 	WAVE/T numericalKeys   = root:MIES:LabNoteBook:ITC18USB:Device0:numericalKeys
 	WAVE   numericalValues = root:MIES:LabNoteBook:ITC18USB:Device0:numericalValues
@@ -198,6 +225,48 @@ Function AE_Works4()
 	CHECK_EQUAL_VAR(V_numNaNs, 8)
 End
 
+Function AE_WorksMultiValues()
+
+	variable row, col
+	string unit, unitRef, tolerance, toleranceRef
+	string key = "someKey"
+
+	unitRef = ""
+	toleranceRef = LABNOTEBOOK_NO_TOLERANCE
+
+	Make/D/FREE/N=(LABNOTEBOOK_LAYER_COUNT) values = NaN
+	values[] = p^2
+	ED_AddEntryToLabnotebook(device, key, values)
+
+	WAVE/T numericalKeys   = root:MIES:LabNoteBook:ITC18USB:Device0:numericalKeys
+	WAVE   numericalValues = root:MIES:LabNoteBook:ITC18USB:Device0:numericalValues
+
+	// key is added with prefix, so there is no full match
+	FindValue/TXOP=4/TEXT=key numericalKeys
+	CHECK_EQUAL_VAR(V_Value, -1)
+
+	FindValue/TEXT=key numericalKeys
+	col = floor(V_Value / DimSize(numericalKeys, ROWS))
+	row = V_Value - col * DimSize(numericalKeys, ROWS)
+	CHECK_EQUAL_VAR(row, 0)
+	CHECK_EQUAL_VAR(col, 4)
+
+	unit = numericalKeys[1][col]
+	CHECK_EQUAL_STR(unit, unitRef)
+
+	tolerance = numericalKeys[2][col]
+	CHECK_EQUAL_STR(tolerance, toleranceRef)
+
+	// entries can be found
+	Duplicate/FREE/RMD=[0][col][] numericalValues, found
+	Redimension/N=(LABNOTEBOOK_LAYER_COUNT) found
+	CHECK_EQUAL_WAVES(found, values, mode = WAVE_DATA)
+
+	WAVE/Z settings = GetLastSetting(numericalValues, NaN, LABNOTEBOOK_USER_PREFIX + key, UNKNOWN_MODE)
+	CHECK(WaveExists(settings))
+	CHECK_EQUAL_WAVES(settings, values, mode = WAVE_DATA)
+End
+
 Function AE_WorksIndepHeadstage()
 
 	variable row, col, i
@@ -206,7 +275,10 @@ Function AE_WorksIndepHeadstage()
 
 	unitRef = ""
 	toleranceRef = LABNOTEBOOK_NO_TOLERANCE
-	ED_AddEntryToLabnotebook(device, NaN, key , value = 4711)
+
+	Make/FREE/N=(LABNOTEBOOK_LAYER_COUNT) values = NaN
+	values[LABNOTEBOOK_LAYER_COUNT - 1] = 4711
+	ED_AddEntryToLabnotebook(device, key, values)
 
 	WAVE/T numericalKeys   = root:MIES:LabNoteBook:ITC18USB:Device0:numericalKeys
 	WAVE   numericalValues = root:MIES:LabNoteBook:ITC18USB:Device0:numericalValues
@@ -241,8 +313,11 @@ Function ATE_TextWorks1()
 
 	unitRef   = ""
 	toleranceRef = LABNOTEBOOK_NO_TOLERANCE
+
+	Make/T/FREE/N=(LABNOTEBOOK_LAYER_COUNT) values
 	strRef    = "4711"
-	ED_AddEntryToLabnotebook(device, 0, key , str = strRef)
+	values[0] = strRef
+	ED_AddEntryToLabnotebook(device, key, values)
 
 	WAVE/T textualKeys   = root:MIES:LabNoteBook:ITC18USB:Device0:textualKeys
 	WAVE/T textualValues = root:MIES:LabNoteBook:ITC18USB:Device0:textualValues
@@ -281,8 +356,11 @@ Function AE_TextWorksIndepHeadstage()
 
 	unitRef   = ""
 	toleranceRef = LABNOTEBOOK_NO_TOLERANCE
+
+	Make/T/FREE/N=(LABNOTEBOOK_LAYER_COUNT) values
 	strRef    = "4711"
-	ED_AddEntryToLabnotebook(device, NaN, key, str = strRef)
+	values[LABNOTEBOOK_LAYER_COUNT - 1] = strRef
+	ED_AddEntryToLabnotebook(device, key, values)
 
 	WAVE/T textualKeys   = root:MIES:LabNoteBook:ITC18USB:Device0:textualKeys
 	WAVE/T textualValues = root:MIES:LabNoteBook:ITC18USB:Device0:textualValues
