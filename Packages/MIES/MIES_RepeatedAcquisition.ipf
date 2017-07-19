@@ -231,7 +231,6 @@ static Function RA_StartMD(panelTitle)
 		for(i = 0; i < numFollower; i += 1)
 			followerPanelTitle = StringFromList(i, listOfFollowerDevices)
 
-			totTrials = max(totTrials, RA_GetTotalNumberOfTrials(followerPanelTitle))
 			SetValDisplay(followerPanelTitle, "valdisp_DataAcq_TrialsCountdown", var=totTrials - count)
 
 			NVAR followerCount = $GetCount(followerPanelTitle)
