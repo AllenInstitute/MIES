@@ -225,6 +225,10 @@ static Function RA_StartMD(panelTitle)
 	activeSetCount = IDX_CalculcateActiveSetCount(panelTitle)
 	totTrials = RA_GetTotalNumberOfTrials(panelTitle)
 
+	if(totTrials == 1)
+		return RA_FinishAcquisition(panelTitle)
+	endif
+
 	if(DeviceHasFollower(panelTitle))
 		SVAR listOfFollowerDevices = $GetFollowerList(panelTitle)
 		numFollower = ItemsInList(listOfFollowerDevices)
