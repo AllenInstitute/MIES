@@ -42,7 +42,7 @@ Function ITC_StartDAQMultiDeviceLowLevel(panelTitle, [initialSetupReq])
 		DC_ConfigureDataForITC(panelTitle, DATA_ACQUISITION_MODE)
 	catch
 		if(initialSetupReq)
-			DAP_OneTimeCallAfterDAQ(panelTitle)
+			DAP_OneTimeCallAfterDAQ(panelTitle, forcedStop = 1)
 		else // required for RA for the lead device only
 			ITC_StopITCDeviceTimer(panelTitle)
 		endif
@@ -77,10 +77,10 @@ Function ITC_StartDAQMultiDeviceLowLevel(panelTitle, [initialSetupReq])
 		if(initialSetupReq)
 			for(i = 0; i < numFollower; i += 1)
 				followerPanelTitle = StringFromList(i, listOfFollowerDevices)
-				DAP_OneTimeCallAfterDAQ(followerPanelTitle)
+				DAP_OneTimeCallAfterDAQ(followerPanelTitle, forcedStop = 1)
 			endfor
 
-			DAP_OneTimeCallAfterDAQ(panelTitle)
+			DAP_OneTimeCallAfterDAQ(panelTitle, forcedStop = 1)
 		else // required for RA for the lead device only
 			ITC_StopITCDeviceTimer(panelTitle)
 		endif
@@ -263,14 +263,14 @@ static Function ITC_StopOngoingDAQMDHelper(panelTitle)
 		ITC_StopITCDeviceTimer(panelTitle)
 
 		if(!discardData)
-			SWS_SaveAndScaleITCData(panelTitle)
+			SWS_SaveAndScaleITCData(panelTitle, forcedStop = 1)
 		endif
 
 		needsOTCAfterDAQ = needsOTCAfterDAQ | 1
 	endif
 
 	if(needsOTCAfterDAQ)
-		DAP_OneTimeCallAfterDAQ(panelTitle)
+		DAP_OneTimeCallAfterDAQ(panelTitle, forcedStop = 1)
 	endif
 End
 

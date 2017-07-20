@@ -9,10 +9,17 @@
 /// @file MIES_SweepSaving.ipf
 /// @brief __SWS__ Scale and store acquired data
 
-Function SWS_SaveAndScaleITCData(panelTitle)
+/// @brief Save the acquired sweep permanently
+///
+/// @param panelTitle device
+/// @param forcedStop [optional, defaults to false] if DAQ was aborted (true) or stopped by itself (false)
+Function SWS_SaveAndScaleITCData(panelTitle, [forcedStop])
 	string panelTitle
+	variable forcedStop
 
 	variable sweepNo
+
+	forcedStop = ParamIsDefault(forcedStop) ? 0 : !!forcedStop
 
 	sweepNo = GetSetVariable(panelTitle, "SetVar_Sweep")
 
@@ -38,7 +45,10 @@ Function SWS_SaveAndScaleITCData(panelTitle)
 	endif
 
 	AM_analysisMasterPostSweep(panelTitle, sweepNo)
-	AFM_CallAnalysisFunctions(panelTitle, POST_SWEEP_EVENT)
+
+	if(!forcedStop)
+		AFM_CallAnalysisFunctions(panelTitle, POST_SWEEP_EVENT)
+	endif
 
 	SWS_AfterSweepDataSaveHook(panelTitle)
 End

@@ -489,7 +489,7 @@ Function ITC_StartDAQSingleDevice(panelTitle, [useBackground])
 			DC_ConfigureDataForITC(panelTitle, DATA_ACQUISITION_MODE)
 		catch
 			// we need to undo the earlier one time call only
-			DAP_OneTimeCallAfterDAQ(panelTitle)
+			DAP_OneTimeCallAfterDAQ(panelTitle, forcedStop = 1)
 			return NaN
 		endtry
 

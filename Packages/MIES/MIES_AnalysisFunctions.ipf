@@ -25,6 +25,8 @@
 /// Post Sweep | After each sweep                     | Ignored                                   | None
 /// Post Set   | After a *full* set has been acquired | Ignored                                   | This event is not always reached as the user might not acquire all steps of a set
 /// Post DAQ   | After all DAQ has been finished      | Ignored                                   | None
+///
+/// The Post Sweep/Set/DAQ functions are *not* executed if a currently running sweep is aborted.
 
 /// @name Initial parameters for stimulation
 ///@{

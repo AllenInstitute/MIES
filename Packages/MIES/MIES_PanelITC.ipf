@@ -4554,13 +4554,21 @@ Function DAP_ResetGUIAfterDAQ(panelTitle)
 End
 
 /// @brief One time cleaning up after data acquisition
-Function DAP_OneTimeCallAfterDAQ(panelTitle)
+///
+/// @param panelTitle device
+/// @param forcedStop [optional, defaults to false] if DAQ was aborted (true) or stopped by itself (false)
+Function DAP_OneTimeCallAfterDAQ(panelTitle, [forcedStop])
 	string panelTitle
+	variable forcedStop
+
+	forcedStop = ParamIsDefault(forcedStop) ? 0 : !!forcedStop
 
 	DAP_ResetGUIAfterDAQ(panelTitle)
 
-	AFM_CallAnalysisFunctions(panelTitle, POST_SET_EVENT)
-	AFM_CallAnalysisFunctions(panelTitle, POST_DAQ_EVENT)
+	if(!forcedStop)
+		AFM_CallAnalysisFunctions(panelTitle, POST_SET_EVENT)
+		AFM_CallAnalysisFunctions(panelTitle, POST_DAQ_EVENT)
+	endif
 
 	NVAR dataAcqRunMode = $GetDataAcqRunMode(panelTitle)
 	dataAcqRunMode = DAQ_NOT_RUNNING
@@ -6335,7 +6343,7 @@ Function DAP_StopOngoingDataAcquisition(panelTitle)
 		ITC_ZeroITCOnActiveChan(panelTitle)
 
 		if(!discardData)
-			SWS_SaveAndScaleITCData(panelTitle)
+			SWS_SaveAndScaleITCData(panelTitle, forcedStop = 1)
 		endif
 
 		needsOTCAfterDAQ = needsOTCAfterDAQ | 1
@@ -6349,7 +6357,7 @@ Function DAP_StopOngoingDataAcquisition(panelTitle)
 	endif
 
 	if(needsOTCAfterDAQ)
-		DAP_OneTimeCallAfterDAQ(panelTitle)
+		DAP_OneTimeCallAfterDAQ(panelTitle, forcedStop = 1)
 	endif
 End
 
