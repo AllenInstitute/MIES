@@ -7187,28 +7187,56 @@ Function DAP_RecordDA_EphysGuiState(panelTitle, [GUIState])
 		Wave GUIState = GetDA_EphysGuiStateNum(panelTitle)
 	endif
 
-	GUIState[0, NUM_HEADSTAGES - 1][%HSState] = DC_ControlStatusWave(panelTitle, CHANNEL_TYPE_HEADSTAGE)[p]
-	GUIState[0, NUM_HEADSTAGES - 1][%HSMode] = DAP_GetAllHSMode(panelTitle)[p]
-	
-	GUIState[0, NUM_DA_TTL_CHANNELS - 1][%DAState] = DC_ControlStatusWave(panelTitle, CHANNEL_TYPE_DAC)[p]
-	GUIState[0, NUM_DA_TTL_CHANNELS - 1][%DAGain] = GetAllDAEphysSetVar(panelTitle, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_GAIN)[p]
-	GUIState[0, NUM_DA_TTL_CHANNELS - 1][%DAScale] = GetAllDAEphysSetVar(panelTitle, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_SCALE)[p]
-	GUIState[0, NUM_DA_TTL_CHANNELS - 1][%DAStartIndex] = GetAllDAEphysPopMenuIndex(panelTitle, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_WAVE)[p]
-	GUIState[0, NUM_DA_TTL_CHANNELS - 1][%DAEndIndex] = GetAllDAEphysPopMenuIndex(panelTitle, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_INDEX_END)[p]
-	
-	GUIState[0, NUM_AD_CHANNELS - 1][%ADState] = DC_ControlStatusWave(panelTitle, CHANNEL_TYPE_ADC)[p]
-	GUIState[0, NUM_AD_CHANNELS - 1][%ADGain] = GetAllDAEphysSetVar(panelTitle, CHANNEL_TYPE_ADC, CHANNEL_CONTROL_GAIN)[p]
-	
-	GUIState[0, NUM_DA_TTL_CHANNELS - 1][%TTLState] = DC_ControlStatusWave(panelTitle, CHANNEL_TYPE_TTL)[p]
-	GUIState[0, NUM_DA_TTL_CHANNELS - 1][%TTLStartIndex] = GetAllDAEphysPopMenuIndex(panelTitle, CHANNEL_TYPE_TTL, CHANNEL_CONTROL_WAVE)[p]
-	GUIState[0, NUM_DA_TTL_CHANNELS - 1][%TTLEndIndex] = GetAllDAEphysPopMenuIndex(panelTitle, CHANNEL_TYPE_TTL, CHANNEL_CONTROL_INDEX_END)[p]
+	WAVE state = DC_ControlStatusWave(panelTitle, CHANNEL_TYPE_HEADSTAGE)
+	GUIState[0, NUM_HEADSTAGES - 1][%HSState] = state[p]
 
-	GUIState[0, NUM_ASYNC_CHANNELS - 1][%AsyncState] = DC_ControlStatusWave(panelTitle, CHANNEL_TYPE_ASYNC)[p]
-	GUIState[0, NUM_ASYNC_CHANNELS - 1][%AsyncGain] = GetAllDAEphysSetVar(panelTitle, CHANNEL_TYPE_ASYNC, CHANNEL_CONTROL_GAIN)[p]
+	WAVE state = DAP_GetAllHSMode(panelTitle)
+	GUIState[0, NUM_HEADSTAGES - 1][%HSMode] = state[p]
+	
+	WAVE state = DC_ControlStatusWave(panelTitle, CHANNEL_TYPE_DAC)
+	GUIState[0, NUM_DA_TTL_CHANNELS - 1][%DAState] = state[p]
 
-	GUIState[0, NUM_ASYNC_CHANNELS - 1][%AlarmState] = DC_ControlStatusWave(panelTitle, CHANNEL_TYPE_ALARM)[p]
-	GUIState[0, NUM_ASYNC_CHANNELS - 1][%AlarmMin] = GetAllDAEphysSetVar(panelTitle, CHANNEL_TYPE_ASYNC, CHANNEL_CONTROL_ALARM_MIN)[p]
-	GUIState[0, NUM_ASYNC_CHANNELS - 1][%AlarmMax] = GetAllDAEphysSetVar(panelTitle, CHANNEL_TYPE_ASYNC, CHANNEL_CONTROL_ALARM_MAX)[p]
+	WAVE state = GetAllDAEphysSetVar(panelTitle, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_GAIN)
+	GUIState[0, NUM_DA_TTL_CHANNELS - 1][%DAGain] = state[p]
+
+	WAVE state = GetAllDAEphysSetVar(panelTitle, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_SCALE)
+	GUIState[0, NUM_DA_TTL_CHANNELS - 1][%DAScale] = state[p]
+
+	WAVE state = GetAllDAEphysPopMenuIndex(panelTitle, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_WAVE)
+	GUIState[0, NUM_DA_TTL_CHANNELS - 1][%DAStartIndex] = state[p]
+
+	WAVE state = GetAllDAEphysPopMenuIndex(panelTitle, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_INDEX_END)
+	GUIState[0, NUM_DA_TTL_CHANNELS - 1][%DAEndIndex] = state[p]
+
+	WAVE state = DC_ControlStatusWave(panelTitle, CHANNEL_TYPE_ADC)
+	GUIState[0, NUM_AD_CHANNELS - 1][%ADState] = state[p]
+
+	WAVE state = GetAllDAEphysSetVar(panelTitle, CHANNEL_TYPE_ADC, CHANNEL_CONTROL_GAIN)
+	GUIState[0, NUM_AD_CHANNELS - 1][%ADGain] = state[p]
+
+	WAVE state = DC_ControlStatusWave(panelTitle, CHANNEL_TYPE_TTL)
+	GUIState[0, NUM_DA_TTL_CHANNELS - 1][%TTLState] = state[p]
+
+	WAVE state = GetAllDAEphysPopMenuIndex(panelTitle, CHANNEL_TYPE_TTL, CHANNEL_CONTROL_WAVE)
+	GUIState[0, NUM_DA_TTL_CHANNELS - 1][%TTLStartIndex] = state[p]
+
+	WAVE state = GetAllDAEphysPopMenuIndex(panelTitle, CHANNEL_TYPE_TTL, CHANNEL_CONTROL_INDEX_END)
+	GUIState[0, NUM_DA_TTL_CHANNELS - 1][%TTLEndIndex] = state[p]
+
+	WAVE state = DC_ControlStatusWave(panelTitle, CHANNEL_TYPE_ASYNC)
+	GUIState[0, NUM_ASYNC_CHANNELS - 1][%AsyncState] = state[p]
+
+	WAVE state = GetAllDAEphysSetVar(panelTitle, CHANNEL_TYPE_ASYNC, CHANNEL_CONTROL_GAIN)
+	GUIState[0, NUM_ASYNC_CHANNELS - 1][%AsyncGain] = state[p]
+
+	WAVE state = DC_ControlStatusWave(panelTitle, CHANNEL_TYPE_ALARM)
+	GUIState[0, NUM_ASYNC_CHANNELS - 1][%AlarmState] = state[p]
+
+	WAVE state = GetAllDAEphysSetVar(panelTitle, CHANNEL_TYPE_ASYNC, CHANNEL_CONTROL_ALARM_MIN)
+	GUIState[0, NUM_ASYNC_CHANNELS - 1][%AlarmMin] = state[p]
+
+	WAVE state = GetAllDAEphysSetVar(panelTitle, CHANNEL_TYPE_ASYNC, CHANNEL_CONTROL_ALARM_MAX)
+	GUIState[0, NUM_ASYNC_CHANNELS - 1][%AlarmMax] = state[p]
 
 	DAP_GetDA_Ephys_UniqueCtrlState(panelTitle, GUIState)
 End
