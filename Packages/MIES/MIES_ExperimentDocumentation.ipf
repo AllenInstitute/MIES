@@ -342,8 +342,8 @@ static Function ED_WriteChangedValuesToNoteText(saveDataWave, incomingTextualKey
 				frontLabel = ""
 			endif
 
-			sprintf text, "%s%s: %s\r" frontLabel, key, currentSetting[i]
-			str += text
+			sprintf text, "%s%s: " frontLabel, key
+			str += text + currentSetting[i] + "\r"
 		endfor
 	endfor
 
