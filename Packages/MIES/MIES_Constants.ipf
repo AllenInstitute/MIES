@@ -710,3 +710,11 @@ StrConstant LABNOTEBOOK_NO_TOLERANCE = "-"
 StrConstant LABNOTEBOOK_USER_PREFIX = "USER_"
 
 StrConstant RA_ACQ_CYCLE_ID_KEY = "Repeated Acq Cycle ID"
+
+/// @name Update flags for DAP_UpdateDAQControls()
+///
+/// @anchor UpdateControlsFlags
+/// @{
+Constant REASON_STIMSET_CHANGE   = 0x01
+Constant REASON_HEADSTAGE_CHANGE = 0x02
+/// @}
