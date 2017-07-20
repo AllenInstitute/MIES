@@ -1705,11 +1705,13 @@ static Function WBP_LoadSet(setName)
 	SetSetVariable(panel, "setvar_WaveBuilder_SetNumber", setNumber)
 
 	funcList = WBP_GetAnalysisFunctions()
-	SetAnalysisFunctionIfFuncExists(panel, "popup_af_preDAQEvent_S1", funcList, WPT[1][99])
-	SetAnalysisFunctionIfFuncExists(panel, "popup_af_midSweep_S2", funcList, WPT[2][99])
-	SetAnalysisFunctionIfFuncExists(panel, "popup_af_postSweep_S3", funcList, WPT[3][99])
-	SetAnalysisFunctionIfFuncExists(panel, "popup_af_postSet_S4", funcList, WPT[4][99])
-	SetAnalysisFunctionIfFuncExists(panel, "popup_af_postDAQEvent_S5", funcList, WPT[5][99])
+	SetAnalysisFunctionIfFuncExists(panel, "popup_af_preDAQEvent_S1", setName, funcList, WPT[1][99])
+	SetAnalysisFunctionIfFuncExists(panel, "popup_af_midSweep_S2", setName, funcList, WPT[2][99])
+	SetAnalysisFunctionIfFuncExists(panel, "popup_af_postSweep_S3", setName, funcList, WPT[3][99])
+	SetAnalysisFunctionIfFuncExists(panel, "popup_af_postSet_S4", setName, funcList, WPT[4][99])
+	SetAnalysisFunctionIfFuncExists(panel, "popup_af_postDAQEvent_S5", setName, funcList, WPT[5][99])
+
+	WBP_AnaFuncsToWPT()
 
 	WBP_SelectEpoch(0)
 	WBP_UpdateEpochControls()
@@ -1719,15 +1721,21 @@ static Function WBP_LoadSet(setName)
 	WBP_UpdatePanelIfAllowed()
 End
 
-static Function SetAnalysisFunctionIfFuncExists(win, ctrl, funcList, func)
-	string win, ctrl, funcList, func
+static Function SetAnalysisFunctionIfFuncExists(win, ctrl, stimset, funcList, func)
+	string win, ctrl, stimset, funcList, func
 
 	variable idx
 
-	idx = WhichListItem(func, funcList)
+	if(IsEmpty(func))
+		idx = 0
+	else
+		idx = WhichListItem(func, funcList)
 
-	if(idx == -1)
-		idx = 0 // selects NONE
+		if(idx == -1)
+			printf "The analysis function \"%s\" referenced in the stimset \"%s\" could not be found.\r", func, stimset
+			ControlWindowToFront()
+			idx = 0 // selects NONE
+		endif
 	endif
 
 	SetPopupMenuIndex(win, ctrl, idx)
