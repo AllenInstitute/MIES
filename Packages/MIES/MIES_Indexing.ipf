@@ -9,34 +9,6 @@
 /// @file MIES_Indexing.ipf
 /// @brief __IDX__ Indexing related functionality
 
-/// @brief Returns a list of the status of the checkboxes specified by ChannelType and ControlType
-///
-/// @deprecated use @ref DAP_ControlStatusWaveCache() instead
-///
-/// @param ChannelType  one of DA, AD, or TTL
-/// @param ControlType  currently restricted to "Check"
-/// @param panelTitle   panel title
-static Function/S IDX_ControlStatusListString(ChannelType, ControlType, panelTitle)
-	String ChannelType, panelTitle
-	string ControlType
-
-	variable TotalPossibleChannels = GetNumberFromType(str=channelType)
-
-	String ControlStatusList = ""
-	String ControlName
-	variable i
-
-	i=0
-	do
-		sprintf ControlName, "%s_%s_%.2d", ControlType, ChannelType, i
-		ControlInfo /w = $panelTitle $ControlName
-		ControlStatusList = AddlistItem(num2str(v_value), ControlStatusList, ";",i)
-		i+=1
-	while(i <= (TotalPossibleChannels - 1))
-
-	return ControlStatusList
-End
-
 Function IDX_StoreStartFinishForIndexing(panelTitle)
 	string panelTitle
 
@@ -187,23 +159,18 @@ static Function IDX_IndexSingleChannel(panelTitle, channelType, i)
 	DAP_UpdateITIAcrossSets(panelTitle)
 End
 
-//NEW INDEXING FUNCTIONS FOR USE WITH 2D SETS
-
-//**************NEED TO ADD FUNCTION TO CALCULATE CYCLE STEPS FOR LOCKED INDEXING!! NEED TO TEST WITH 3 OR MORE SETS!!!!*************
-
-Function IDX_MaxSweepsLockedIndexing(panelTitle)// a sum of the largest sets for each indexing step
+/// @brief Sum of the largest sets for each indexing step
+Function IDX_MaxSweepsLockedIndexing(panelTitle)
 	string panelTitle
-	string DAChannelStatusList = IDX_ControlStatusListString("DA", "check",panelTitle)
-	string TTLChannelStatusList = IDX_ControlStatusListString("TTL", "check",panelTitle)
-	variable i = 0
-	variable MaxCycleIndexSteps= (IDX_MaxSets(panelTitle)+1)
-	variable MaxSteps
-	
+
+	variable i, maxSteps
+	variable MaxCycleIndexSteps = IDX_MaxSets(panelTitle) + 1
+
 	do
-		MaxSteps+= IDX_StepsInSetWithMaxSweeps(panelTitle,i)
+		MaxSteps += IDX_StepsInSetWithMaxSweeps(panelTitle,i)
 		i += 1
 	while(i < MaxCycleIndexSteps)
-	
+
 	return MaxSteps
 End
 
@@ -211,8 +178,7 @@ End
 static Function IDX_StepsInSetWithMaxSweeps(panelTitle,IndexNo)
 	string panelTitle
 	variable IndexNo
-	string DAChannelStatusList = IDX_ControlStatusListString("DA", "check", panelTitle)
-	string TTLChannelStatusList = IDX_ControlStatusListString("TTL", "check",panelTitle)
+
 	variable MaxSteps = 0, SetSteps
 	variable ListStartNo, ListEndNo, ListLength, Index
 	string setName
@@ -221,59 +187,66 @@ static Function IDX_StepsInSetWithMaxSweeps(panelTitle,IndexNo)
 	variable ListOffset = 1
 	string popMenuIndexStartName, popMenuIndexEndName
 
-	do // for DAs
-		if((str2num(stringfromlist(i, DAChannelStatusList,";"))) == 1)
-			popMenuIndexStartName = GetPanelControl(i, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_WAVE)
-			controlinfo /w = $panelTitle $popMenuIndexStartName
-			ListStartNo = v_value
-			popMenuIndexEndName = GetPanelControl(i, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_INDEX_END)
-			controlinfo /w = $panelTitle $popMenuIndexEndName
-			ListEndNo = v_value
-			ListLength = abs(ListStartNo - ListEndNo) + 1
-			index = indexNo
-			if(listLength <= IndexNo)
-				Index = mod(IndexNo, ListLength)
-			endif
-			
-			if((ListStartNo - ListEndNo) > 0)
-				index *= -1
-			endif
-			SetList = getuserdata(panelTitle, popMenuIndexStartName, "menuexp")
-			SetName = stringfromlist((ListStartNo+index-listoffset), SetList,";")
-			SetSteps = IDX_NumberOfTrialsInSet(panelTitle, SetName)
-			MaxSteps = max(MaxSteps, SetSteps)
+	WAVE statusDA = DAP_ControlStatusWaveCache(panelTitle, CHANNEL_TYPE_DAC)
+
+	for(i = 0; i < NUM_DA_TTL_CHANNELS; i += 1)
+
+		if(!statusDA[i])
+			continue
 		endif
-		i += 1
-	while(i < (itemsinlist(DAChannelStatusList, ";")))
+
+		popMenuIndexStartName = GetPanelControl(i, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_WAVE)
+		controlinfo /w = $panelTitle $popMenuIndexStartName
+		ListStartNo = v_value
+		popMenuIndexEndName = GetPanelControl(i, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_INDEX_END)
+		controlinfo /w = $panelTitle $popMenuIndexEndName
+		ListEndNo = v_value
+		ListLength = abs(ListStartNo - ListEndNo) + 1
+		index = indexNo
+		if(listLength <= IndexNo)
+			Index = mod(IndexNo, ListLength)
+		endif
+
+		if((ListStartNo - ListEndNo) > 0)
+			index *= -1
+		endif
+
+		SetList = getuserdata(panelTitle, popMenuIndexStartName, "menuexp")
+		SetName = stringfromlist((ListStartNo+index-listoffset), SetList,";")
+		SetSteps = IDX_NumberOfTrialsInSet(panelTitle, SetName)
+		MaxSteps = max(MaxSteps, SetSteps)
+	endfor
+
+	WAVE statusTTL = DAP_ControlStatusWaveCache(panelTitle, CHANNEL_TYPE_TTL)
+
+	for(i = 0; i < NUM_DA_TTL_CHANNELS; i += 1)
+
+		if(!statusTTL[i])
+			continue
+		endif
+
+		popMenuIndexStartName = GetPanelControl(i, CHANNEL_TYPE_TTL, CHANNEL_CONTROL_WAVE)
+		controlinfo /w = $panelTitle $popMenuIndexStartName
+		ListStartNo = v_value
+		popMenuIndexEndName = GetPanelControl(i, CHANNEL_TYPE_TTL, CHANNEL_CONTROL_INDEX_END)
+		controlinfo /w = $panelTitle $popMenuIndexEndName
+		ListEndNo = v_value
+		ListLength = abs(ListStartNo - ListEndNo) + 1
+		index = indexNo
 	
-	i = 0
-	
-	do // for TTLs
-		if((str2num(stringfromlist(i, TTLChannelStatusList, ";"))) == 1)
-			popMenuIndexStartName = GetPanelControl(i, CHANNEL_TYPE_TTL, CHANNEL_CONTROL_WAVE)
-			controlinfo /w = $panelTitle $popMenuIndexStartName
-			ListStartNo = v_value
-			popMenuIndexEndName = GetPanelControl(i, CHANNEL_TYPE_TTL, CHANNEL_CONTROL_INDEX_END)
-			controlinfo /w = $panelTitle $popMenuIndexEndName
-			ListEndNo = v_value 
-			ListLength = abs(ListStartNo - ListEndNo) + 1
-			index = indexNo
+		if(listLength <= IndexNo)
+			Index = mod(IndexNo, ListLength)
+		endif
 		
-			if(listLength <= IndexNo)
-				Index = mod(IndexNo, ListLength)
-			endif
-			
-			if((ListStartNo - ListEndNo) > 0)
-				index *= -1
-			endif
-			
+		if((ListStartNo - ListEndNo) > 0)
+			index *= -1
+		endif
+
 		SetList = getuserdata(panelTitle, popMenuIndexStartName, "menuexp")
 		SetName = stringfromlist((ListStartNo + index - listoffset), SetList, ";")
 		SetSteps = IDX_NumberOfTrialsInSet(panelTitle, SetName)
 		MaxSteps = max(MaxSteps, SetSteps)
-		endif
-		i += 1
-	while(i < (itemsinlist(TTLChannelStatusList, ";")))	
+	endfor
 	
 	return MaxSteps
 End
@@ -281,41 +254,48 @@ End
 /// @brief Return the number of sets on the active channel with the most sets.
 static Function IDX_MaxSets(panelTitle)
 	string panelTitle
-	string DAChannelStatusList = IDX_ControlStatusListString("DA", "check",panelTitle)
-	string TTLChannelStatusList = IDX_ControlStatusListString("TTL", "check",panelTitle)
+
 	variable MaxSets = 0
 	variable ChannelSets
 	string popMenuIndexStartName, popMenuIndexEndName
 	variable i = 0
-	do
-		if((str2num(stringfromlist(i, DAChannelStatusList, ";"))) == 1)
-			popMenuIndexStartName = GetPanelControl(i, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_WAVE)
-			controlinfo /w = $panelTitle $popMenuIndexStartName
-			ChannelSets = v_value
-			popMenuIndexEndName = GetPanelControl(i, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_INDEX_END)
-			controlinfo /w = $panelTitle $popMenuIndexEndName
-			ChannelSets -= v_value
-			ChannelSets  = abs(ChannelSets)
-			MaxSets = max(MaxSets,ChannelSets)
-		endif	
-		i += 1
-	while(i < (itemsinlist(DAChannelStatusList, ";")))
-	
-	i = 0
-	do
-		if((str2num(stringfromlist(i, TTLChannelStatusList, ";"))) == 1)
-			popMenuIndexStartName = GetPanelControl(i, CHANNEL_TYPE_TTL, CHANNEL_CONTROL_WAVE)
-			controlinfo /w = $panelTitle $popMenuIndexStartName
-			ChannelSets = v_value
-			popMenuIndexEndName = GetPanelControl(i, CHANNEL_TYPE_TTL, CHANNEL_CONTROL_INDEX_END)
-			controlinfo/w=$panelTitle $popMenuIndexEndName
-			ChannelSets -= v_value
-			ChannelSets = abs(ChannelSets)
-			MaxSets = max(MaxSets,ChannelSets)
-		endif	
-		i += 1
-	while(i < (itemsinlist(DAChannelStatusList,";")))
-	
+
+	WAVE statusDA  = DAP_ControlStatusWaveCache(panelTitle, CHANNEL_TYPE_DAC)
+
+	for(i = 0; i < NUM_DA_TTL_CHANNELS; i += 1)
+
+		if(!statusDA[i])
+			continue
+		endif
+
+		popMenuIndexStartName = GetPanelControl(i, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_WAVE)
+		controlinfo /w = $panelTitle $popMenuIndexStartName
+		ChannelSets = v_value
+		popMenuIndexEndName = GetPanelControl(i, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_INDEX_END)
+		controlinfo /w = $panelTitle $popMenuIndexEndName
+		ChannelSets -= v_value
+		ChannelSets  = abs(ChannelSets)
+		MaxSets = max(MaxSets,ChannelSets)
+	endfor
+
+	WAVE statusTTL = DAP_ControlStatusWaveCache(panelTitle, CHANNEL_TYPE_TTL)
+
+	for(i = 0; i < NUM_DA_TTL_CHANNELS; i += 1)
+
+		if(!statusTTL[i])
+			continue
+		endif
+
+		popMenuIndexStartName = GetPanelControl(i, CHANNEL_TYPE_TTL, CHANNEL_CONTROL_WAVE)
+		controlinfo /w = $panelTitle $popMenuIndexStartName
+		ChannelSets = v_value
+		popMenuIndexEndName = GetPanelControl(i, CHANNEL_TYPE_TTL, CHANNEL_CONTROL_INDEX_END)
+		controlinfo/w=$panelTitle $popMenuIndexEndName
+		ChannelSets -= v_value
+		ChannelSets = abs(ChannelSets)
+		MaxSets = max(MaxSets,ChannelSets)
+	endfor
+
 	return MaxSets // if the start and end set are the same, this returns 0
 End
 
@@ -328,28 +308,32 @@ End
 ///                      start (active) set, when indexing is on. 1 = over ride ON
 Function IDX_MaxNoOfSweeps(panelTitle, IndexOverRide)
 	string panelTitle
-	variable IndexOverRide// some Functions that call this function only want the max number of steps in the start (active) set, when indexing is on. 1 = over ride ON
-	variable MaxNoOfSweeps = 0
-	string DAChannelStatusList = IDX_ControlStatusListString("DA", "check",panelTitle)
-	string TTLChannelStatusList = IDX_ControlStatusListString("TTL", "check",panelTitle)
-	variable i = 0
+	variable IndexOverRide
+
+	variable MaxNoOfSweeps
+	variable i
+
+	WAVE statusDA = DAP_ControlStatusWaveCache(panelTitle, CHANNEL_TYPE_DAC)
  
- 	do
-		if(str2num(stringfromlist(i, DAChannelStatusList, ";")) == 1)
-			MaxNoOfSweeps = max(MaxNoOfSweeps, IDX_NumberOfTrialsAcrossSets(panelTitle, i, 0, IndexOverRide))
+	for(i = 0; i < NUM_DA_TTL_CHANNELS; i += 1)
+
+		if(!statusDA[i])
+			continue
 		endif
-	
-		i += 1
-	while(i < itemsinlist(DAChannelStatusList,";"))
-	
-	i = 0
-	do
-		if(str2num(stringfromlist(i, TTLChannelStatusList, ";")) == 1)
-			MaxNoOfSweeps = max(MaxNoOfSweeps, IDX_NumberOfTrialsAcrossSets(panelTitle, i, 1, IndexOverRide))
+
+		MaxNoOfSweeps = max(MaxNoOfSweeps, IDX_NumberOfTrialsAcrossSets(panelTitle, i, 0, IndexOverRide))
+	endfor
+
+	WAVE statusTTL = DAP_ControlStatusWaveCache(panelTitle, CHANNEL_TYPE_TTL)
+
+	for(i = 0; i < NUM_DA_TTL_CHANNELS; i += 1)
+
+		if(!statusTTL[i])
+			continue
 		endif
-	
-		i += 1
-	while(i < itemsinlist(TTLChannelStatusList, ";"))
+
+		MaxNoOfSweeps = max(MaxNoOfSweeps, IDX_NumberOfTrialsAcrossSets(panelTitle, i, 1, IndexOverRide))
+	endfor
 
 	return DEBUGPRINTv(MaxNoOfSweeps)
 End
@@ -515,26 +499,27 @@ End
 Function IDX_ApplyUnLockedIndexing(panelTitle, count, DAorTTL)
 	string panelTitle
 	variable count, DAorTTL
-	variable i=0
-	string ActivechannelList 
-	
-	if(DAorTTL==0)
-		ActiveChannelList = IDX_ControlStatusListString("DA","check",panelTitle)
+
+	variable i
+
+	if(DAorTTL == 0)
+		WAVE status = DAP_ControlStatusWaveCache(panelTitle, CHANNEL_TYPE_DAC)
+	elseif(DAorTTL == 1)
+		WAVE status = DAP_ControlStatusWaveCache(panelTitle, CHANNEL_TYPE_TTL)
+	else
+		ASSERT(0, "Invalid value")
 	endif
-	
-	if(DAorTTL==1)
-		ActiveChannelList = IDX_ControlStatusListString("TTL","check",panelTitle)
-	endif
-	
-	do
-		if(str2num(stringfromlist(i,ActiveChannelList,";"))==1)
-			if(IDX_DetIfCountIsAtSetBorder(panelTitle, count, i, DAorTTL)==1)
-				IDX_IndexSingleChannel(panelTitle, DAorTTL, i)
-			endif
+
+	for(i = 0; i < NUM_DA_TTL_CHANNELS; i += 1)
+
+		if(!status[i])
+			continue
 		endif
-	
-	i+=1
-	while(i<itemsinlist(ActiveChannelList,";"))
+
+		if(IDX_DetIfCountIsAtSetBorder(panelTitle, count, i, DAorTTL) == 1)
+			IDX_IndexSingleChannel(panelTitle, DAorTTL, i)
+		endif
+	endfor
 End
 
 static Function IDX_TotalIndexingListSteps(panelTitle, ChannelNumber, DAorTTL)
