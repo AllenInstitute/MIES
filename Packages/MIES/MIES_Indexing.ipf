@@ -140,7 +140,7 @@ Function IDX_IndexingDoIt(panelTitle)
 End
 
 /// @brief Indexes a single channel - used when indexing is unlocked
-Function IDX_IndexSingleChannel(panelTitle, channelType, i)
+static Function IDX_IndexSingleChannel(panelTitle, channelType, i)
 	string panelTitle
 	variable channelType, i
 
@@ -207,7 +207,8 @@ Function IDX_MaxSweepsLockedIndexing(panelTitle)// a sum of the largest sets for
 	return MaxSteps
 End
 
-Function IDX_StepsInSetWithMaxSweeps(panelTitle,IndexNo)// returns the number of steps in the largest set for a particular index number
+/// @brief Return the number of steps in the largest set for a particular index number
+static Function IDX_StepsInSetWithMaxSweeps(panelTitle,IndexNo)
 	string panelTitle
 	variable IndexNo
 	string DAChannelStatusList = IDX_ControlStatusListString("DA", "check", panelTitle)
@@ -277,7 +278,8 @@ Function IDX_StepsInSetWithMaxSweeps(panelTitle,IndexNo)// returns the number of
 	return MaxSteps
 End
 
-Function IDX_MaxSets(panelTitle)// returns the number of sets on the active channel with the most sets.
+/// @brief Return the number of sets on the active channel with the most sets.
+static Function IDX_MaxSets(panelTitle)
 	string panelTitle
 	string DAChannelStatusList = IDX_ControlStatusListString("DA", "check",panelTitle)
 	string TTLChannelStatusList = IDX_ControlStatusListString("TTL", "check",panelTitle)
@@ -317,9 +319,13 @@ Function IDX_MaxSets(panelTitle)// returns the number of sets on the active chan
 	return MaxSets // if the start and end set are the same, this returns 0
 End
 
-/// determine the max number of sweeps in the largest start set on active (checked) DA or TTL channels
+/// @brief determine the max number of sweeps in the largest start set on active (checked) DA or TTL channels
 /// works for unlocked (independent) indexing
-/// index override is the same as indexing off
+///
+/// @param panelTitle    device
+/// @param IndexOverRide index override is the same as indexing off. some
+///                      Functions that call this function only want the max number of steps in the
+///                      start (active) set, when indexing is on. 1 = over ride ON
 Function IDX_MaxNoOfSweeps(panelTitle, IndexOverRide)
 	string panelTitle
 	variable IndexOverRide// some Functions that call this function only want the max number of steps in the start (active) set, when indexing is on. 1 = over ride ON
@@ -426,7 +432,7 @@ End
 /// @param lockedIndexing defaults to false, true returns just the DAC/TTL setname
 ///
 /// Constants are defined at @ref ChannelTypeAndControlConstants
-Function/S IDX_GetSetsInRange(panelTitle, channel, channelType, lockedIndexing)
+static Function/S IDX_GetSetsInRange(panelTitle, channel, channelType, lockedIndexing)
 	string panelTitle
 	variable channel, channelType, lockedIndexing
 
@@ -471,7 +477,7 @@ Function/S IDX_GetSetsInRange(panelTitle, channel, channelType, lockedIndexing)
 End
 
 /// @brief Determine the number of trials for a DA or TTL channel
-Function IDX_NumberOfTrialsAcrossSets(panelTitle, channel, channelType, lockedIndexing)
+static Function IDX_NumberOfTrialsAcrossSets(panelTitle, channel, channelType, lockedIndexing)
 	string panelTitle
 	variable channel, channelType, lockedIndexing
 
@@ -531,7 +537,7 @@ Function IDX_ApplyUnLockedIndexing(panelTitle, count, DAorTTL)
 	while(i<itemsinlist(ActiveChannelList,";"))
 End
 
-Function IDX_TotalIndexingListSteps(panelTitle, ChannelNumber, DAorTTL)
+static Function IDX_TotalIndexingListSteps(panelTitle, ChannelNumber, DAorTTL)
 	string panelTitle
 	variable ChannelNumber, DAorTTL
 
@@ -676,7 +682,7 @@ Function IDX_UnlockedIndexingStepNo(panelTitle, channelNo, DAorTTL, count)
 		return column
 end
 
-Function IDX_DetIfCountIsAtSetBorder(panelTitle, count, channelNumber, DAorTTL)
+static Function IDX_DetIfCountIsAtSetBorder(panelTitle, count, channelNumber, DAorTTL)
 	string panelTitle
 	variable count, channelNumber, DAorTTL
 	variable AtSetBorder=0
