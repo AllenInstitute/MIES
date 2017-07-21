@@ -7484,10 +7484,42 @@ Function DAP_UpdateControlInGuiStateWv(panelTitle, controlName, state)
 	string controlName
 	variable state
 
+	variable col, channelIndex, channelType, controlType
+
 	WAVE GUIState = GetDA_EphysGuiStateNum(panelTitle)
-	variable Col = finddimlabel(GUIState, COLS, controlName)
-	ASSERT(col >= 0, "Control name does not correspond to a dimension label in the numeric GUI state wave")
-	GUIState[0][Col] = state
+	col = finddimlabel(GUIState, COLS, controlName)
+	if(col != -2)
+		GUIState[0][Col] = state
+		return NaN
+	endif
+
+	// maybe it is one of the combined entries
+	DAP_ParsePanelControl(controlName, channelIndex, channelType, controlType)
+	if(controlType == CHANNEL_CONTROL_CHECK)
+		switch(channelType)
+			case CHANNEL_TYPE_DAC:
+				GuiState[channelIndex][%DAState] = state
+				break
+			case CHANNEL_TYPE_ADC:
+				GuiState[channelIndex][%ADState] = state
+				break
+			case CHANNEL_TYPE_TTL:
+				GuiState[channelIndex][%TTLState] = state
+				break
+			case CHANNEL_TYPE_HEADSTAGE:
+				GuiState[channelIndex][%HSState] = state
+				break
+			case CHANNEL_TYPE_ASYNC:
+				GuiState[channelIndex][%AsyncState] = state
+				break
+			case CHANNEL_TYPE_ALARM:
+				GuiState[channelIndex][%AlarmState] = state
+				break
+			default:
+				ASSERT(0, "Unknown type")
+				break
+		endswitch
+	endif
 End
 
 Function DAP_CheckProc_UpdateGuiState(cba) : CheckBoxControl
