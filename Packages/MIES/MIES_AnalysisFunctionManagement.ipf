@@ -19,7 +19,9 @@ Function AFM_CallAnalysisFunctions(panelTitle, eventType)
 	variable error, i, valid_f1, valid_f2, ret
 	string func, setName
 
-	if(GetCheckBoxState(panelTitle, "Check_Settings_SkipAnalysFuncs"))
+	WAVE GuiState = GetDA_EphysGuiStateNum(panelTitle)
+
+	if(GuiState[0][%Check_Settings_SkipAnalysFuncs])
 		return 0
 	endif
 
