@@ -928,17 +928,20 @@ static Function DC_PlaceDataInITCDataWave(panelTitle, numActiveChannels, dataAcq
 		endif
 	endif
 
-	FindValue/I=(SIGNED_INT_16BIT_MIN) ITCDataWave
-
-	if(V_Value == -1)
-		FindValue/I=(SIGNED_INT_16BIT_MAX) ITCDataWave
-	endif
-
-	if(V_Value != -1)
+	if(DC_CheckIfDataWaveHasBorderVals(ITCDataWave))
 		printf "Error writing stimsets into ITCDataWave: The values are out of range. Maybe the DA/AD Gain needs adjustment?\r"
 		ControlWindowToFront()
 		Abort
 	endif
+End
+
+static Function DC_CheckIfDataWaveHasBorderVals(ITCDataWave)
+	WAVE ITCDataWave
+
+	ASSERT(WaveType(ITCDataWave) == IGOR_TYPE_16BIT_INT, "Unexpected wave type")
+	matrixop/FREE result = equal(minval(ITCDataWave), SIGNED_INT_16BIT_MIN) || equal(maxval(ITCDataWave), SIGNED_INT_16BIT_MAX)
+
+	return result[0] > 0
 End
 
 /// @brief Document channel properties of DA and AD channels
