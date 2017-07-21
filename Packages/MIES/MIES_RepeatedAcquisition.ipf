@@ -110,6 +110,20 @@ static Function RA_GetTotalNumberOfTrials(panelTitle)
 	return totTrials
 End
 
+/// @brief Update the "Sweeps remaining" control
+Function RA_StepSweepsRemaining(panelTitle)
+	string panelTitle
+
+	if(GetCheckBoxState(panelTitle, "Check_DataAcq1_RepeatAcq"))
+		variable totTrials = RA_GetTotalNumberOfTrials(panelTitle)
+		NVAR count = $GetCount(panelTitle)
+
+		SetValDisplay(panelTitle, "valdisp_DataAcq_TrialsCountdown", var = totTrials - count - 1)
+	else
+		SetValDisplay(panelTitle, "valdisp_DataAcq_TrialsCountdown", var = 0)
+	endif
+End
+
 /// @brief Function gets called after the first trial is already
 /// acquired and if repeated acquisition is on
 Function RA_Start(panelTitle)
@@ -126,7 +140,7 @@ Function RA_Start(panelTitle)
 		return RA_FinishAcquisition(panelTitle)
 	endif
 
-	SetValDisplay(panelTitle, "valdisp_DataAcq_TrialsCountdown", var=totTrials - count)
+	RA_StepSweepsRemaining(panelTitle)
 	RA_HandleITI(panelTitle)
 End
 
@@ -152,7 +166,7 @@ Function RA_Counter(panelTitle)
 	sprintf str, "count=%d, activeSetCount=%d\r" count, activeSetCount
 	DEBUGPRINT(str)
 
-	SetValDisplay(panelTitle, "valdisp_DataAcq_TrialsCountdown", var=totTrials - count)
+	RA_StepSweepsRemaining(panelTitle)
 
 	if(indexing)
 		if(activeSetcount == 0)
@@ -217,13 +231,14 @@ End
 static Function RA_StartMD(panelTitle)
 	string panelTitle
 
-	variable i, totTrials, numFollower
+	variable i, numFollower
 	string followerPanelTitle
 	NVAR count = $GetCount(panelTitle)
 	NVAR activeSetCount = $GetActiveSetCount(panelTitle)
 	
 	activeSetCount = IDX_CalculcateActiveSetCount(panelTitle)
-	totTrials = RA_GetTotalNumberOfTrials(panelTitle)
+
+	RA_StepSweepsRemaining(panelTitle)
 
 	if(DeviceHasFollower(panelTitle))
 		SVAR listOfFollowerDevices = $GetFollowerList(panelTitle)
@@ -231,15 +246,13 @@ static Function RA_StartMD(panelTitle)
 		for(i = 0; i < numFollower; i += 1)
 			followerPanelTitle = StringFromList(i, listOfFollowerDevices)
 
-			totTrials = max(totTrials, RA_GetTotalNumberOfTrials(followerPanelTitle))
-			SetValDisplay(followerPanelTitle, "valdisp_DataAcq_TrialsCountdown", var=totTrials - count)
-
 			NVAR followerCount = $GetCount(followerPanelTitle)
 			followerCount = 0
+
+			RA_StepSweepsRemaining(followerPanelTitle)
 		endfor
 	endif
 
-	SetValDisplay(panelTitle, "valdisp_DataAcq_TrialsCountdown", var=totTrials - count)
 	RA_HandleITI_MD(panelTitle)
 End
 
@@ -263,7 +276,7 @@ Function RA_CounterMD(panelTitle)
 	sprintf str, "count=%d, activeSetCount=%d\r" count, activeSetCount
 	DEBUGPRINT(str)
 
-	SetValDisplay(panelTitle, "valdisp_DataAcq_TrialsCountdown", var=totTrials - count)
+	RA_StepSweepsRemaining(panelTitle)
 
 	recalcActiveSetCount = (activeSetCount == 0)
 
@@ -293,7 +306,7 @@ Function RA_CounterMD(panelTitle)
 			NVAR followerCount = $GetCount(followerPanelTitle)
 			followerCount += 1
 
-			SetValDisplay(panelTitle, "valdisp_DataAcq_TrialsCountdown", var=totTrials - count)
+			RA_StepSweepsRemaining(followerPanelTitle)
 
 			if(indexing)
 				if(recalcActiveSetCount)
@@ -409,4 +422,56 @@ Function RA_IsFirstSweep(panelTitle)
 
 	NVAR count = $GetCount(panelTitle)
 	return !count
+End
+
+///@brief Allows skipping forward or backwards the sweep count during data acquistion
+///
+///@param panelTitle device
+///@param skipCount The number of sweeps to skip (forward or backwards) during repeated acquisition
+Function RA_SkipSweeps(panelTitle, skipCount)
+	string panelTitle
+	variable skipCount
+
+	variable numFollower, i
+	string followerPanelTitle
+	NVAR count = $GetCount(panelTitle)
+	NVAR dataAcqRunMode = $GetDataAcqRunMode(panelTitle)
+
+	//Skip sweeps if, and only if, data acquisition is ongoing.
+	if(dataAcqRunMode == DAQ_NOT_RUNNING)
+		return NaN
+	endif
+
+	count = RA_SkipSweepCalc(panelTitle, skipCount)
+	RA_StepSweepsRemaining(panelTitle)
+
+	if(DeviceHasFollower(panelTitle))
+		SVAR listOfFollowerDevices = $GetFollowerList(panelTitle)
+		numFollower = ItemsInList(listOfFollowerDevices)
+		for(i = 0; i < numFollower; i += 1)
+			followerPanelTitle = StringFromList(i, listOfFollowerDevices)
+			NVAR followerCount = $GetCount(followerPanelTitle)
+			followerCount = RA_SkipSweepCalc(followerPanelTitle, skipCount)
+			RA_StepSweepsRemaining(followerPanelTitle)
+		endfor
+	endif
+End
+
+///@brief Returns valid count after adding skipCount
+///
+///@param panelTitle device
+///@param skipCount The number of sweeps to skip (forward or backwards) during repeated acquisition.
+static Function RA_SkipSweepCalc(panelTitle, skipCount)
+	string panelTitle
+	variable skipCount
+
+	variable totSweeps = RA_GetTotalNumberOfTrials(panelTitle)
+	NVAR count = $GetCount(panelTitle)
+	if(getCheckboxState(panelTitle, "Check_DataAcq1_RepeatAcq"))
+		// RA_counter and RA_counterMD increment count at initialization, -1 accounts for this and allows a skipping back to sweep 0
+		// prevents skipping the last sweep. To skip last sweep, user is expected to stop data acquisition
+		return min(totSweeps - 2, max(count + skipCount, -1))
+	else 
+		return 0
+	endif
 End
