@@ -3,37 +3,38 @@
 
 Function GetDimLabelVsCtrlInfo(win)
 	string win
-	string CtrlList = GetUniqueCtrlList(controlNameList(win))
-	variable ctrlCount = itemsInList(CtrlList)
-	print "ctrl count:", ctrlCount
-	variable i, dimIndex, value
+
+	variable i, value
+	variable timerRefNum
+	variable microSeconds
+	variable numTrials = 10000
+
+	DAP_RecordDA_EphysGuiState(win)
 	WAVE GuiState = GetDA_EphysGuiStateNum(win)
-	Variable timerRefNum
-	Variable microSeconds
-	Variable n
-	timerRefNum = startMSTimer
-	if (timerRefNum == -1)
-		Abort "All timers are in use"
-	endif
-
-	for(i=0; i<ctrlCount; i+=1)
-	value = GuiState[0][%$stringFromList(i, ctrlList)]
-	endfor
-
-	microSeconds = stopMSTimer(timerRefNum)
-	Print microSeconds/1000/ctrlCount, "milliseconds for dimLabelSearch"
 
 	timerRefNum = startMSTimer
 	if (timerRefNum == -1)
 		Abort "All timers are in use"
 	endif
 
-	for(i=0; i<=ctrlCount; i+=1)
-		controlInfo/W=$win $stringFromList(i, ctrlList)
+	for(i=0; i<numTrials; i+=1)
+		value = GuiState[0][%Check_DataAcq1_RepeatAcq]
 	endfor
 
 	microSeconds = stopMSTimer(timerRefNum)
-	Print microSeconds/1000/ctrlCount, "milliseconds for controlInfo"
+	Print microSeconds/1000/numTrials, "milliseconds for dimLabelSearch"
+
+	timerRefNum = startMSTimer
+	if (timerRefNum == -1)
+		Abort "All timers are in use"
+	endif
+
+	for(i=0; i< numTrials; i+=1)
+		value = GetCheckBoxState(win, "Check_DataAcq1_RepeatAcq")
+	endfor
+
+	microSeconds = stopMSTimer(timerRefNum)
+	Print microSeconds/1000/numTrials, "milliseconds for controlInfo"
 End
 
 // This is a testing function to make sure the experiment documentation function is working correctly
@@ -93,7 +94,7 @@ Function createDummySettingsWave(panelTitle, SweepCount)
 	endfor
 
 	// now call the function that will create the wave notes
-	ED_createWaveNotes(dummySettingsWave, dummySettingsKey, SweepCount, panelTitle, UNKNOWN_MODE)
+	ED_AddEntriesToLabnotebook(dummySettingsWave, dummySettingsKey, SweepCount, panelTitle, UNKNOWN_MODE)
 End
 
 /// @brief Exhaust all memory so that only `amountOfFreeMemoryLeft` [GB] is left
