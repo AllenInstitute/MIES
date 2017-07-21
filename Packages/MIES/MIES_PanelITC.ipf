@@ -4524,7 +4524,7 @@ Function DAP_OneTimeCallBeforeDAQ(panelTitle, runMode)
 	SWS_DeleteDataWaves(panelTitle)
 
 	// disable the clamp mode checkboxes of all active headstages
-	WAVE statusHS = DC_ControlStatusWave(panelTitle, CHANNEL_TYPE_HEADSTAGE)
+	WAVE statusHS = DAP_ControlStatusWaveCache(panelTitle, CHANNEL_TYPE_HEADSTAGE)
 
 	numHS = DimSize(statusHS, ROWS)
 	for(i = 0; i < numHS; i += 1)
@@ -5302,14 +5302,14 @@ Function DAP_CheckSettings(panelTitle, mode)
 			return 1
 		endif
 
-		numHS = sum(DC_ControlStatusWave(panelTitle, CHANNEL_TYPE_HEADSTAGE))
+		numHS = sum(DAP_ControlStatusWaveCache(panelTitle, CHANNEL_TYPE_HEADSTAGE))
 		if(!numHS)
 			printf "(%s) Please activate at least one headstage\r", panelTitle
 			ControlWindowToFront()
 			return 1
 		endif
 
-		WAVE statusDA = DC_ControlStatusWave(panelTitle, CHANNEL_TYPE_DAC)
+		WAVE statusDA = DAP_ControlStatusWaveCache(panelTitle, CHANNEL_TYPE_DAC)
 		numDACs = sum(statusDA)
 		if(!numDACS)
 			printf "(%s) Please activate at least one DA channel\r", panelTitle
@@ -5317,19 +5317,19 @@ Function DAP_CheckSettings(panelTitle, mode)
 			return 1
 		endif
 
-		numADCs = sum(DC_ControlStatusWave(panelTitle, CHANNEL_TYPE_ADC))
+		numADCs = sum(DAP_ControlStatusWaveCache(panelTitle, CHANNEL_TYPE_ADC))
 		if(!numADCs)
 			printf "(%s) Please activate at least one AD channel\r", panelTitle
 			ControlWindowToFront()
 			return 1
 		endif
 
-		WAVE statusHS = DC_ControlStatusWave(panelTitle, CHANNEL_TYPE_HEADSTAGE)
+		WAVE statusHS = DAP_ControlStatusWaveCache(panelTitle, CHANNEL_TYPE_HEADSTAGE)
 
 		if(mode == DATA_ACQUISITION_MODE)
 			// check all selected TTLs
 			indexingEnabled = GetCheckBoxState(panelTitle, "Check_DataAcq_Indexing")
-			Wave statusTTL = DC_ControlStatusWave(panelTitle, CHANNEL_TYPE_TTL)
+			Wave statusTTL = DAP_ControlStatusWaveCache(panelTitle, CHANNEL_TYPE_TTL)
 			numEntries = DimSize(statusTTL, ROWS)
 			for(i=0; i < numEntries; i+=1)
 				if(!DC_ChannelIsActive(panelTitle, mode, CHANNEL_TYPE_TTL, i, statusTTL, statusHS))
@@ -5790,7 +5790,7 @@ static Function DAP_SyncChanAmpAssignToActiveHS(panelTitle)
 	string panelTitle
 
 	variable i, clampMode
-	WAVE statusHS = DC_ControlStatusWave(panelTitle, CHANNEL_TYPE_HEADSTAGE)
+	WAVE statusHS = DAP_ControlStatusWaveCache(panelTitle, CHANNEL_TYPE_HEADSTAGE)
 
 	for(i = 0; i < NUM_HEADSTAGES; i += 1)
 
@@ -6331,7 +6331,7 @@ static Function DAP_ChangeHeadstageState(panelTitle, headStageCtrl, enabled)
 
 	DAP_UpdateDAQControls(panelTitle, REASON_STIMSET_CHANGE | REASON_HEADSTAGE_CHANGE)
 
-	WAVE statusHS = DC_ControlStatusWaveCache(panelTitle, CHANNEL_TYPE_HEADSTAGE)
+	WAVE statusHS = DAP_ControlStatusWaveCache(panelTitle, CHANNEL_TYPE_HEADSTAGE)
 	if(Sum(statusHS) > 0 )
 		TP_RestartTestPulse(panelTitle, TPState)
 	endif
@@ -7190,6 +7190,75 @@ Function DAP_SetVarProc_TPAmp(sva) : SetVariableControl
 	return 0
 End
 
+/// @brief Returns a free wave of the status of the checkboxes specified by channelType
+///
+/// The only caller should be DAP_RecordDA_EphysGuiState.
+////
+/// @param type        one of the type constants from @ref ChannelTypeAndControlConstants
+/// @param panelTitle  panel title
+static Function/Wave DAP_ControlStatusWave(panelTitle, type)
+	string panelTitle
+	variable type
+
+	string ctrl
+	variable i, numEntries
+
+	numEntries = GetNumberFromType(var=type)
+
+	Make/FREE/U/B/N=(numEntries) wv
+
+	for(i = 0; i < numEntries; i += 1)
+		ctrl = GetPanelControl(i, type, CHANNEL_CONTROL_CHECK)
+		wv[i] = GetCheckboxState(panelTitle, ctrl)
+	endfor
+
+	return wv
+End
+
+/// @brief Return a free wave of the status of the checkboxes specified by
+///        channelType, uses GetDA_EphysGuiStateNum() instead of GUI queries.
+///
+/// @param type        one of the type constants from @ref ChannelTypeAndControlConstants
+/// @param panelTitle  panel title
+Function/Wave DAP_ControlStatusWaveCache(panelTitle, type)
+	string panelTitle
+	variable type
+
+	variable numEntries, col
+
+	WAVE GUIState = GetDA_EphysGuiStateNum(panelTitle)
+
+	numEntries = GetNumberFromType(var=type)
+
+	switch(type)
+		case CHANNEL_TYPE_ASYNC:
+			col = 12
+			break
+		case CHANNEL_TYPE_ALARM:
+			col = 14
+			break
+		case CHANNEL_TYPE_TTL:
+			col = 9
+			break
+		case CHANNEL_TYPE_DAC:
+			col = 2
+			break
+		case CHANNEL_TYPE_HEADSTAGE:
+			col = 0
+			break
+		case CHANNEL_TYPE_ADC:
+			col = 7
+			break
+		default:
+			ASSERT(0, "invalid type")
+			break
+	endswitch
+
+	Make/FREE/U/B/N=(numEntries) wv = GUIState[p][col]
+
+	return wv
+End
+
 /// @brief Records the state of the DA_ephys panel into the GUI state wave
 Function DAP_RecordDA_EphysGuiState(panelTitle, [GUIState])
 	string panelTitle
@@ -7199,13 +7268,13 @@ Function DAP_RecordDA_EphysGuiState(panelTitle, [GUIState])
 		Wave GUIState = GetDA_EphysGuiStateNum(panelTitle)
 	endif
 
-	WAVE state = DC_ControlStatusWave(panelTitle, CHANNEL_TYPE_HEADSTAGE)
+	WAVE state = DAP_ControlStatusWave(panelTitle, CHANNEL_TYPE_HEADSTAGE)
 	GUIState[0, NUM_HEADSTAGES - 1][%HSState] = state[p]
 
 	WAVE state = DAP_GetAllHSMode(panelTitle)
 	GUIState[0, NUM_HEADSTAGES - 1][%HSMode] = state[p]
 	
-	WAVE state = DC_ControlStatusWave(panelTitle, CHANNEL_TYPE_DAC)
+	WAVE state = DAP_ControlStatusWave(panelTitle, CHANNEL_TYPE_DAC)
 	GUIState[0, NUM_DA_TTL_CHANNELS - 1][%DAState] = state[p]
 
 	WAVE state = GetAllDAEphysSetVar(panelTitle, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_GAIN)
@@ -7220,13 +7289,13 @@ Function DAP_RecordDA_EphysGuiState(panelTitle, [GUIState])
 	WAVE state = GetAllDAEphysPopMenuIndex(panelTitle, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_INDEX_END)
 	GUIState[0, NUM_DA_TTL_CHANNELS - 1][%DAEndIndex] = state[p]
 
-	WAVE state = DC_ControlStatusWave(panelTitle, CHANNEL_TYPE_ADC)
+	WAVE state = DAP_ControlStatusWave(panelTitle, CHANNEL_TYPE_ADC)
 	GUIState[0, NUM_AD_CHANNELS - 1][%ADState] = state[p]
 
 	WAVE state = GetAllDAEphysSetVar(panelTitle, CHANNEL_TYPE_ADC, CHANNEL_CONTROL_GAIN)
 	GUIState[0, NUM_AD_CHANNELS - 1][%ADGain] = state[p]
 
-	WAVE state = DC_ControlStatusWave(panelTitle, CHANNEL_TYPE_TTL)
+	WAVE state = DAP_ControlStatusWave(panelTitle, CHANNEL_TYPE_TTL)
 	GUIState[0, NUM_DA_TTL_CHANNELS - 1][%TTLState] = state[p]
 
 	WAVE state = GetAllDAEphysPopMenuIndex(panelTitle, CHANNEL_TYPE_TTL, CHANNEL_CONTROL_WAVE)
@@ -7235,13 +7304,13 @@ Function DAP_RecordDA_EphysGuiState(panelTitle, [GUIState])
 	WAVE state = GetAllDAEphysPopMenuIndex(panelTitle, CHANNEL_TYPE_TTL, CHANNEL_CONTROL_INDEX_END)
 	GUIState[0, NUM_DA_TTL_CHANNELS - 1][%TTLEndIndex] = state[p]
 
-	WAVE state = DC_ControlStatusWave(panelTitle, CHANNEL_TYPE_ASYNC)
+	WAVE state = DAP_ControlStatusWave(panelTitle, CHANNEL_TYPE_ASYNC)
 	GUIState[0, NUM_ASYNC_CHANNELS - 1][%AsyncState] = state[p]
 
 	WAVE state = GetAllDAEphysSetVar(panelTitle, CHANNEL_TYPE_ASYNC, CHANNEL_CONTROL_GAIN)
 	GUIState[0, NUM_ASYNC_CHANNELS - 1][%AsyncGain] = state[p]
 
-	WAVE state = DC_ControlStatusWave(panelTitle, CHANNEL_TYPE_ALARM)
+	WAVE state = DAP_ControlStatusWave(panelTitle, CHANNEL_TYPE_ALARM)
 	GUIState[0, NUM_ASYNC_CHANNELS - 1][%AlarmState] = state[p]
 
 	WAVE state = GetAllDAEphysSetVar(panelTitle, CHANNEL_TYPE_ASYNC, CHANNEL_CONTROL_ALARM_MIN)

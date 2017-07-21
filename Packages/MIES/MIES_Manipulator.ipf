@@ -190,7 +190,7 @@ Function M_DocumentManipulatorXYZ(panelTitle)
 	
 	Make/FREE/N=(1, 3, LABNOTEBOOK_LAYER_COUNT) TPSettingsWave = NaN
 
-	WAVE statusHS = DC_ControlStatusWave(panelTitle, CHANNEL_TYPE_HEADSTAGE)
+	WAVE statusHS = DAP_ControlStatusWaveCache(panelTitle, CHANNEL_TYPE_HEADSTAGE)
 	for(i = 0; i < NUM_HEADSTAGES; i += 1)
 
 		if(!statusHS[i])
@@ -251,7 +251,7 @@ Function M_CheckSettings(panelTitle)
 			return 1
 		endif
 
-		numHS = sum(DC_ControlStatusWave(panelTitle, CHANNEL_TYPE_HEADSTAGE))
+		numHS = sum(DAP_ControlStatusWaveCache(panelTitle, CHANNEL_TYPE_HEADSTAGE))
 		if(!numHS)
 			printf "(%s) Please activate at least one headstage\r", panelTitle
 			return 1

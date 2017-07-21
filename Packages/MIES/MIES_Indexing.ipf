@@ -11,7 +11,7 @@
 
 /// @brief Returns a list of the status of the checkboxes specified by ChannelType and ControlType
 ///
-/// @deprecated use @ref DC_ControlStatusWave() instead
+/// @deprecated use @ref DAP_ControlStatusWaveCache() instead
 ///
 /// @param ChannelType  one of DA, AD, or TTL
 /// @param ControlType  currently restricted to "Check"
@@ -378,7 +378,7 @@ Function IDX_LongestITI(panelTitle, numActiveDAChannels)
 	for(i = 0; i < numPanels; i += 1)
 		panelTitle = StringFromList(i, panelList)
 
-		Wave DAChannelStatus = DC_ControlStatusWave(panelTitle, CHANNEL_TYPE_DAC)
+		Wave DAChannelStatus = DAP_ControlStatusWaveCache(panelTitle, CHANNEL_TYPE_DAC)
 		if(i == 0) // this is either the lead panel or the first and only panel
 			numActiveDAChannels = sum(DAChannelStatus)
 			if(numActiveDAChannels > 1)

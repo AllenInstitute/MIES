@@ -25,7 +25,7 @@ Function AFM_CallAnalysisFunctions(panelTitle, eventType)
 
 	NVAR count = $GetCount(panelTitle)
 	NVAR stopCollectionPoint = $GetStopCollectionPoint(panelTitle)
-	WAVE statusHS = DC_ControlStatusWaveCache(panelTitle, CHANNEL_TYPE_HEADSTAGE)
+	WAVE statusHS = DAP_ControlStatusWaveCache(panelTitle, CHANNEL_TYPE_HEADSTAGE)
 
 	for(i = 0; i < NUM_HEADSTAGES; i += 1)
 

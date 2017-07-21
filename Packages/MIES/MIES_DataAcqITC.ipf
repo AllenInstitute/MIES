@@ -394,7 +394,7 @@ Function ITC_ADDataBasedWaveNotes(asyncMeasurementWave, panelTitle)
 
 	NVAR ITCDeviceIDGlobal = $GetITCDeviceIDGlobal(panelTitle)
 
-	WAVE asyncChannelState = DC_ControlStatusWaveCache(panelTitle, CHANNEL_TYPE_ASYNC)
+	WAVE asyncChannelState = DAP_ControlStatusWaveCache(panelTitle, CHANNEL_TYPE_ASYNC)
 	deviceChannelOffset = HW_ITC_CalculateDevChannelOff(panelTitle)
 
 	numEntries = DimSize(asyncChannelState, ROWS)
@@ -446,7 +446,7 @@ Function ITC_ZeroITCOnActiveChan(panelTitle)
 	string panelTitle
 
 	variable i
-	WAVE statusDA = DC_ControlStatusWave(panelTitle, CHANNEL_TYPE_DAC)
+	WAVE statusDA = DAP_ControlStatusWaveCache(panelTitle, CHANNEL_TYPE_DAC)
 	NVAR ITCDeviceIDGlobal = $GetITCDeviceIDGlobal(panelTitle)
 
 	for(i = 0; i < NUM_DA_TTL_CHANNELS; i += 1)
