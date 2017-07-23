@@ -254,10 +254,10 @@ Function DB_UpdateSweepPlot(panelTitle, [dummyArg])
 	tgs.displayTTL      = GetCheckBoxState(panelTitle, "check_DataBrowser_DisplayTTL")
 	tgs.displayADC      = GetCheckBoxState(panelTitle, "check_DataBrowser_DisplayADChan")
 	tgs.overlaySweep    = GetCheckBoxState(panelTitle, "check_DataBrowser_SweepOverlay")
-	tgs.overlayChannels = GetCheckBoxState(panelTitle, "check_databrowser_OverlayChan")
-	tgs.dDAQDisplayMode = GetCheckBoxState(panelTitle, "check_databrowser_dDAQMode")
+	tgs.overlayChannels = GetCheckBoxState(panelTitle, "check_DataBrowser_OverlayChan")
+	tgs.dDAQDisplayMode = GetCheckBoxState(panelTitle, "check_DataBrowser_dDAQMode")
 	tgs.dDAQHeadstageRegions = GetSliderPositionIndex(panelTitle, "slider_dDAQ_regions")
-	tgs.hideSweep       = GetCheckBoxState(panelTitle, "check_databrowser_hideSweep")
+	tgs.hideSweep       = GetCheckBoxState(panelTitle, "check_DataBrowser_hideSweep")
 
 	DFREF dataBrowserDFR   = DB_GetDataBrowserPath(panelTitle)
 	WAVE channelSel        = GetChannelSelectionWave(dataBrowserDFR)
@@ -446,18 +446,18 @@ Window DataBrowser() : Panel
 	CheckBox check_DataBrowser_DisplayDAchan,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Duafnzzzzzzzzzzz"
 	CheckBox check_DataBrowser_DisplayDAchan,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
 	CheckBox check_DataBrowser_DisplayDAchan,value= 0
-	CheckBox check_databrowser_OverlayChan,pos={153.00,27.00},size={107.00,15.00},proc=DB_CheckProc_ChangedSetting,title="Overlay Channels"
-	CheckBox check_databrowser_OverlayChan,help={"Displays all channels using a single  vertical axis"}
-	CheckBox check_databrowser_OverlayChan,userdata(ResizeControlsInfo)= A"!!,G)!!#=;!!#@:!!#<(z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
-	CheckBox check_databrowser_OverlayChan,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Duafnzzzzzzzzzzz"
-	CheckBox check_databrowser_OverlayChan,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
-	CheckBox check_databrowser_OverlayChan,value= 0
-	CheckBox check_databrowser_dDAQMode,pos={153.00,45.00},size={85.00,15.00},proc=DB_CheckProc_ChangedSetting,title="dDAQ Viewer"
-	CheckBox check_databrowser_dDAQMode,help={"Enable dedicated support for viewing distributed DAQ data"}
-	CheckBox check_databrowser_dDAQMode,userdata(ResizeControlsInfo)= A"!!,G)!!#>B!!#?c!!#<(z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
-	CheckBox check_databrowser_dDAQMode,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Duafnzzzzzzzzzzz"
-	CheckBox check_databrowser_dDAQMode,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
-	CheckBox check_databrowser_dDAQMode,value= 0
+	CheckBox check_DataBrowser_OverlayChan,pos={153.00,27.00},size={107.00,15.00},proc=DB_CheckProc_ChangedSetting,title="Overlay Channels"
+	CheckBox check_DataBrowser_OverlayChan,help={"Displays all channels using a single  vertical axis"}
+	CheckBox check_DataBrowser_OverlayChan,userdata(ResizeControlsInfo)= A"!!,G)!!#=;!!#@:!!#<(z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
+	CheckBox check_DataBrowser_OverlayChan,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Duafnzzzzzzzzzzz"
+	CheckBox check_DataBrowser_OverlayChan,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
+	CheckBox check_DataBrowser_OverlayChan,value= 0
+	CheckBox check_DataBrowser_dDAQMode,pos={153.00,45.00},size={85.00,15.00},proc=DB_CheckProc_ChangedSetting,title="dDAQ Viewer"
+	CheckBox check_DataBrowser_dDAQMode,help={"Enable dedicated support for viewing distributed DAQ data"}
+	CheckBox check_DataBrowser_dDAQMode,userdata(ResizeControlsInfo)= A"!!,G)!!#>B!!#?c!!#<(z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
+	CheckBox check_DataBrowser_dDAQMode,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Duafnzzzzzzzzzzz"
+	CheckBox check_DataBrowser_dDAQMode,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
+	CheckBox check_DataBrowser_dDAQMode,value= 0
 	TitleBox ListBox_DataBrowser_NoteDisplay,pos={1756.00,75.00},size={197.00,39.00}
 	TitleBox ListBox_DataBrowser_NoteDisplay,userdata(ResizeControlsInfo)= A"!!,LBJ,hp%!!#AT!!#>*z!!#o2B4uAezzzzzzzzzzzzzz!!#o2B4uAezz"
 	TitleBox ListBox_DataBrowser_NoteDisplay,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Duafnzzzzzzzzzzz"
@@ -562,12 +562,12 @@ Window DataBrowser() : Panel
 	Slider slider_dDAQ_regions,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:DuaGl<C]S7zzzzzzzzzz"
 	Slider slider_dDAQ_regions,userdata(ResizeControlsInfo) += A"zzz!!#u:DuaGl<C]S7zzzzzzzzzzzzz!!!"
 	Slider slider_dDAQ_regions,limits={-1,7,1},value= -1,vert= 0
-	CheckBox CheckBox_DataBrowser_OpenArtRem,pos={270.00,45.00},size={106.00,15.00},proc=DB_CheckBoxProc_ArtRemoval,title="Artefact Removal"
-	CheckBox CheckBox_DataBrowser_OpenArtRem,help={"Open the artefact removal dialog"}
-	CheckBox CheckBox_DataBrowser_OpenArtRem,userdata(ResizeControlsInfo)= A"!!,HB!!#>B!!#@8!!#<(z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
-	CheckBox CheckBox_DataBrowser_OpenArtRem,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Duafn!(TR7zzzzzzzzzz"
-	CheckBox CheckBox_DataBrowser_OpenArtRem,userdata(ResizeControlsInfo) += A"zzz!!#u:Duafn!(TR7zzzzzzzzzzzzz!!!"
-	CheckBox CheckBox_DataBrowser_OpenArtRem,value= 0
+	CheckBox check_DataBrowser_OpenArtRem,pos={270.00,45.00},size={106.00,15.00},proc=DB_CheckBoxProc_ArtRemoval,title="Artefact Removal"
+	CheckBox check_DataBrowser_OpenArtRem,help={"Open the artefact removal dialog"}
+	CheckBox check_DataBrowser_OpenArtRem,userdata(ResizeControlsInfo)= A"!!,HB!!#>B!!#@8!!#<(z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
+	CheckBox check_DataBrowser_OpenArtRem,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Duafn!(TR7zzzzzzzzzz"
+	CheckBox check_DataBrowser_OpenArtRem,userdata(ResizeControlsInfo) += A"zzz!!#u:Duafn!(TR7zzzzzzzzzzzzz!!!"
+	CheckBox check_DataBrowser_OpenArtRem,value= 0
 	Button button_databrowser_restore,pos={816.00,23.00},size={76.00,21.00},proc=DB_ButtonProc_RestoreData,title="Restore data"
 	Button button_databrowser_restore,help={"Restore the data in its pristine state without any modifications"}
 	Button button_databrowser_restore,userdata(ResizeControlsInfo)= A"!!,J]!!#<p!!#?Q!!#<`z!!#](Aon\"q<C^(Dzzzzzzzzzzzzz!!#](Aon\"Q<C^(Dz"
@@ -890,7 +890,7 @@ Function DB_CheckProc_ChangedSetting(cba) : CheckBoxControl
 			checked    = cba.checked
 
 			strswitch(ctrl)
-				case "check_databrowser_dDAQMode":
+				case "check_DataBrowser_dDAQMode":
 					if(checked)
 						EnableControl(panelTitle, "slider_dDAQ_regions")
 					else
