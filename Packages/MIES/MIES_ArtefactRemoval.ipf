@@ -389,8 +389,7 @@ Function AR_TogglePanel(win, listboxWave)
 		return 1
 	endif
 
-	SetActiveSubWindow $win
-	NewPanel/HOST=#/EXT=1/W=(200,0,0,407)
+	NewPanel/HOST=$win/EXT=1/W=(200,0,0,407)/N=$EXT_PANEL_SUBWINDOW as " "
 	SetWindow kwTopWin, hook(main)=AR_MainWindowHook
 	SetDrawLayer UserBack
 	SetDrawEnv fname= "Segoe UI"
@@ -410,8 +409,6 @@ Function AR_TogglePanel(win, listboxWave)
 	CheckBox check_highlightRanges,pos={158.00,43.00},size={30.00,15.00},proc=AR_CheckProc_Update,title="HL"
 	CheckBox check_highlightRanges,help={"Visualize the found ranges in the graph (*might* slowdown graphing)"}
 	CheckBox check_highlightRanges,value= 0
-	RenameWindow #,ArtefactRemoval
-	SetActiveSubwindow ##
 
 	SetWindow $extPanel, userData(AR_FOLDER)=GetWavesDataFolder(listboxWave, 1)
 

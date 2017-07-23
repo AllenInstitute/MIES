@@ -430,8 +430,7 @@ Function OVS_TogglePanel(win, listboxWave, listboxSelWave)
 	endif
 
 	win = GetMainWindow(win)
-	SetActiveSubWindow $win
-	NewPanel/HOST=#/EXT=1/W=(200,0,0,485)
+	NewPanel/HOST=$win/EXT=1/W=(200,0,0,485)/N=$EXT_PANEL_SUBWINDOW as " "
 	SetWindow kwTopWin, hook(main)=OVS_MainWindowHook
 	ListBox list_of_ranges,pos={4.00,127.00},size={189.00,348.00},proc=OVS_MainListBoxProc
 	ListBox list_of_ranges,help={"Select sweeps for overlay; The second column (\"Headstages\") allows to ignore some headstages for the graphing. Syntax is a semicolon \";\" separated list of subranges, e.g. \"0\", \"0,2\", \"1;4;2\""}
@@ -450,8 +449,6 @@ Function OVS_TogglePanel(win, listboxWave, listboxSelWave)
 	SetVariable setvar_overlaySweeps_step,pos={99.00,41.00},size={72.00,18.00},bodyWidth=45,title="Step",value=_NUM:1, proc=OVS_SetVarProc_SelectionRange, limits={1, inf, 1}
 	SetVariable setvar_overlaySweeps_step,help={"Selects every `step` sweep from the selection menu"}
 	GroupBox group_overlaySweeps_selection,pos={5.00,4.00},size={191.00,65.00}
-	RenameWindow #,OverlaySweeps
-	SetActiveSubwindow ##
 
 	OVS_SetFolder(win, $GetWavesDataFolder(listboxWave, 1))
 

@@ -20,6 +20,9 @@ static Constant NUM_CHANNEL_TYPES   = 3
 
 static Constant GET_LB_MODE_NONE  = 0
 static Constant GET_LB_MODE_READ  = 1
+
+static StrConstant CHANNEL_SELECTION_EXT_PANEL = "channelSel"
+
 static Constant GET_LB_MODE_WRITE = 2
 
 Menu "GraphMarquee"
@@ -3644,7 +3647,7 @@ Function ToggleChannelSelectionPanel(win, channelSel, checkBoxProc)
 		return NaN
 	endif
 
-	NewPanel/HOST=$win/EXT=1/W=(149,0,0,407)/N=channelSel  as " "
+	NewPanel/HOST=$win/EXT=1/W=(149,0,0,407)/N=$CHANNEL_SELECTION_EXT_PANEL as " "
 
 	GroupBox group_channelSel_DA,pos={52.00,3.00},size={44.00,199.00},title="DA"
 	CheckBox check_channelSel_DA_0,pos={62.00,19.00},size={21.00,15.00},proc=$checkBoxProc,title="0"

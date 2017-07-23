@@ -8,11 +8,12 @@
 
 static StrConstant PULSE_AVERAGE_GRAPH_PREFIX = "PulseAverage"
 static StrConstant SOURCE_WAVE_TIMESTAMP      = "SOURCE_WAVE_TS"
+static StrConstant EXT_PANEL_SUBWINDOW        = "perPulseAverage"
 
-static Function/S PA_GetLeftPanel(win)
+static Function/S PA_GetExtPanel(win)
 	string win
 
-	return GetMainWindow(win) + "#perPulseAverage"
+	return GetMainWindow(win) + "#" + EXT_PANEL_SUBWINDOW
 End
 
 /// @brief Return a list of all average graphs
@@ -463,14 +464,14 @@ Function PA_TogglePanel(win)
 	string extPanel
 
 	win      = GetMainWindow(win)
-	extPanel = PA_GetLeftPanel(win)
+	extPanel = PA_GetExtPanel(win)
 
 	if(WindowExists(extPanel))
 		KillWindow/Z $extPanel
 		return 1
 	endif
 
-	NewPanel/HOST=$win/EXT=1/W=(150, 75, 0, 130)/N=perPulseAverage as " "
+	NewPanel/HOST=$win/EXT=1/W=(150, 75, 0, 130)/N=$EXT_PANEL_SUBWINDOW as " "
 	SetVariable setvar_pulseAver_fallbackLength,pos={1.00,109.00},size={137.00,18.00},bodyWidth=50,proc=PA_SetVarProc_Common,title="Fallback Length"
 	SetVariable setvar_pulseAver_fallbackLength,help={"Pulse To Pulse Length in ms for edge cases which can not be computed."}
 	SetVariable setvar_pulseAver_fallbackLength,value= _NUM:100
@@ -497,7 +498,7 @@ Function PA_GatherSettings(win, pps)
 	string extPanel, sbPanel
 
 	win      = GetMainWindow(win)
-	extPanel = PA_GetLeftPanel(win)
+	extPanel = PA_GetExtPanel(win)
 	sbPanel  = win + "#P0"
 
 	if(WindowExists(extPanel))
@@ -539,7 +540,7 @@ Function PA_ShowPulses(win, dfr, pa)
 	string newlyCreatedGraphs = ""
 
 	win = GetMainWindow(win)
-	extPanel = PA_GetLeftPanel(win)
+	extPanel = PA_GetExtPanel(win)
 
 	preExistingGraphs = PA_GetAverageGraphs()
 
