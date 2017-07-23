@@ -422,14 +422,16 @@ Function OVS_TogglePanel(win, listboxWave, listboxSelWave)
 	WAVE/T listboxWave
 	WAVE listboxSelWave
 
+	variable createPanel
 	string extPanel = OVS_GetExtPanel(win)
 
-	if(WindowExists(extPanel))
-		KillWindow $extPanel
+	win = GetMainWindow(win)
+
+	createPanel = TogglePanel(win, EXT_PANEL_SUBWINDOW)
+	if(!createPanel)
 		return 1
 	endif
 
-	win = GetMainWindow(win)
 	NewPanel/HOST=$win/EXT=1/W=(200,0,0,485)/N=$EXT_PANEL_SUBWINDOW as " "
 	SetWindow kwTopWin, hook(main)=OVS_MainWindowHook
 	ListBox list_of_ranges,pos={4.00,127.00},size={189.00,348.00},proc=OVS_MainListBoxProc

@@ -3636,15 +3636,17 @@ End
 /// @param channelSel   channelSelectionWave as returned by GetChannelSelectionWave()
 /// @param checkBoxProc checkbox GUI control procedure name
 Function ToggleChannelSelectionPanel(win, channelSel, checkBoxProc)
-	string win
+	string win, checkBoxProc
 	WAVE channelSel
-	string checkBoxProc
 
-	string extPanel = GetMainWindow(win) + "#channelSel"
+	variable createPanel
+	string extPanel
 
-	if(windowExists(extPanel))
-		KillWindow $extPanel
-		return NaN
+	win = GetMainWindow(win)
+
+	createPanel = TogglePanel(win, CHANNEL_SELECTION_EXT_PANEL)
+	if(!createPanel)
+		return 1
 	endif
 
 	NewPanel/HOST=$win/EXT=1/W=(149,0,0,407)/N=$CHANNEL_SELECTION_EXT_PANEL as " "
@@ -3719,6 +3721,7 @@ Function ToggleChannelSelectionPanel(win, channelSel, checkBoxProc)
 	CheckBox check_channelSel_AD_15,pos={108.00,336.00},size={27.00,15.00},proc=$checkBoxProc,title="15"
 	CheckBox check_channelSel_AD_15,value= 1
 
+	extPanel = GetMainWindow(win) + "#" + CHANNEL_SELECTION_EXT_PANEL
 	ChannelSelectionWaveToGUI(extPanel, channelSel)
 End
 

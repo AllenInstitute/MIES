@@ -461,13 +461,12 @@ End
 Function PA_TogglePanel(win)
 	string win
 
-	string extPanel
+	variable createPanel
 
-	win      = GetMainWindow(win)
-	extPanel = PA_GetExtPanel(win)
+	win = GetMainWindow(win)
 
-	if(WindowExists(extPanel))
-		KillWindow/Z $extPanel
+	createPanel = TogglePanel(win, EXT_PANEL_SUBWINDOW)
+	if(!createPanel)
 		return 1
 	endif
 

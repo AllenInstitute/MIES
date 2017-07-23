@@ -381,11 +381,14 @@ Function AR_TogglePanel(win, listboxWave)
 	string win
 	WAVE/T listboxWave
 
-	string extPanel = AR_GetExtPanel(win)
+	variable createPanel
+	string extPanel
+
+	extPanel = AR_GetExtPanel(win)
 	win = GetMainWindow(win)
 
-	if(WindowExists(extPanel))
-		KillWindow $extPanel
+	createPanel = TogglePanel(win, EXT_PANEL_SUBWINDOW)
+	if(!createPanel)
 		return 1
 	endif
 

@@ -942,14 +942,14 @@ End
 Function DB_OpenChannelSelectionPanel(cba) : CheckBoxControl
 	STRUCT WMCheckBoxAction &cba
 
-	string win
+	string panelTitle
 
 	switch(cba.eventCode)
 		case 2: // mouse up
-			win = GetMainWindow(cba.win)
-			DFREF dataBrowserDFR = DB_GetDataBrowserPath(win)
+			panelTitle = GetMainWindow(cba.win)
+			DFREF dataBrowserDFR = DB_GetDataBrowserPath(panelTitle)
 			WAVE channelSel      = GetChannelSelectionWave(dataBrowserDFR)
-			ToggleChannelSelectionPanel(win, channelSel, "DB_CheckProc_ChangedSetting")
+			ToggleChannelSelectionPanel(panelTitle, channelSel, "DB_CheckProc_ChangedSetting")
 			break
 	endswitch
 
@@ -1086,13 +1086,14 @@ End
 Function DB_ButtonProc_PerPulseAver(cba) : CheckBoxControl
 	STRUCT WMCheckBoxAction &cba
 
-	string win
+	string panelTitle
 
 	switch(cba.eventCode)
 		case 2: // mouse up
-			win = cba.win
-			PA_TogglePanel(win)
-			DB_UpdateSweepPlot(win)
+			panelTitle = GetMainWindow(cba.win)
+
+			PA_TogglePanel(panelTitle)
+			DB_UpdateSweepPlot(panelTitle)
 			break
 	endswitch
 

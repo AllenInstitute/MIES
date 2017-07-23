@@ -1415,3 +1415,25 @@ Function GetListBoxSelRow(win, ctrl)
 
 	return V_Value
 End
+
+/// @brief close a panel depending on its state
+///
+/// @param win 		name of main window
+/// @param subwin 	specify a subwindow of win. defaults to no subwindows.
+///
+/// @returns 0 if panel was closed and 1 if panel doesn't exist and needs to be opened.
+Function TogglePanel(win, subwin)
+	string win, subwin
+
+	string panel
+
+	panel = GetMainWindow(win)
+	panel += "#" + subwin
+
+	if(windowExists(panel))
+		KillWindow $panel
+		return 0
+	endif
+
+	return 1
+End
