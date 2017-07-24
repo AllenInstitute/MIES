@@ -231,7 +231,7 @@ Function setHolding(Vm1)
 	variable Vm1
 
 	variable i
-	WAVE statusHS = DC_ControlStatusWaveCache(DEFAULT_DEVICE, CHANNEL_TYPE_HEADSTAGE)
+	WAVE statusHS = DAP_ControlStatusWaveCache(DEFAULT_DEVICE, CHANNEL_TYPE_HEADSTAGE)
 
 	for(i=0; i<NUM_HEADSTAGES; i+=1)
 		if (statusHS[i] == 1)
@@ -247,7 +247,7 @@ Function setVClampMode()
 
 	variable i
 	string ctrl
-	WAVE statusHS = DC_ControlStatusWaveCache(DEFAULT_DEVICE, CHANNEL_TYPE_HEADSTAGE)
+	WAVE statusHS = DAP_ControlStatusWaveCache(DEFAULT_DEVICE, CHANNEL_TYPE_HEADSTAGE)
 
 	for(i=0; i<NUM_HEADSTAGES; i+=1)
 		if(statusHS[i])
@@ -264,7 +264,7 @@ Function setIClampMode()
 	variable i
 	string ctrl
 
-	WAVE statusHS = DC_ControlStatusWaveCache(DEFAULT_DEVICE, CHANNEL_TYPE_HEADSTAGE)
+	WAVE statusHS = DAP_ControlStatusWaveCache(DEFAULT_DEVICE, CHANNEL_TYPE_HEADSTAGE)
 
 	for(i=0; i<NUM_HEADSTAGES; i+=1)
 		if(statusHS[i])
@@ -295,7 +295,7 @@ Function switchHolding(Vm2)
 	endif
 
 	switchSweep = floor(numSweeps/2)
-	WAVE statusHS = DC_ControlStatusWaveCache(DEFAULT_DEVICE, CHANNEL_TYPE_HEADSTAGE)
+	WAVE statusHS = DAP_ControlStatusWaveCache(DEFAULT_DEVICE, CHANNEL_TYPE_HEADSTAGE)
 
     if(SweepsRemaining == switchSweep)
         for(i=0; i<NUM_HEADSTAGES; i+=1)
@@ -357,7 +357,7 @@ Function LastStimSetRun()
 	
 	WAVE /T textualValues = GetLBTextualValues(DEFAULT_DEVICE)
 	WAVE  numericalValues = GetLBNumericalValues(DEFAULT_DEVICE)
-	WAVE statusHS = DC_ControlStatusWaveCache(DEFAULT_DEVICE, CHANNEL_TYPE_HEADSTAGE)
+	WAVE statusHS = DAP_ControlStatusWaveCache(DEFAULT_DEVICE, CHANNEL_TYPE_HEADSTAGE)
 	LastSweep = AFH_GetLastSweepAcquired(DEFAULT_DEVICE)
 
 	if (!isInteger(LastSweep))

@@ -19,13 +19,15 @@ Function AFM_CallAnalysisFunctions(panelTitle, eventType)
 	variable error, i, valid_f1, valid_f2, ret
 	string func, setName
 
-	if(GetCheckBoxState(panelTitle, "Check_Settings_SkipAnalysFuncs"))
+	WAVE GuiState = GetDA_EphysGuiStateNum(panelTitle)
+
+	if(GuiState[0][%Check_Settings_SkipAnalysFuncs])
 		return 0
 	endif
 
 	NVAR count = $GetCount(panelTitle)
 	NVAR stopCollectionPoint = $GetStopCollectionPoint(panelTitle)
-	WAVE statusHS = DC_ControlStatusWaveCache(panelTitle, CHANNEL_TYPE_HEADSTAGE)
+	WAVE statusHS = DAP_ControlStatusWaveCache(panelTitle, CHANNEL_TYPE_HEADSTAGE)
 
 	for(i = 0; i < NUM_HEADSTAGES; i += 1)
 

@@ -698,7 +698,7 @@ Function AI_UpdateAmpModel(panelTitle, ctrl, headStage, [value, sendToAll, check
 
 	WAVE AmpStoragewave = GetAmplifierParamStorageWave(panelTitle)
 
-	WAVE statusHS = DC_ControlStatusWave(panelTitle, CHANNEL_TYPE_HEADSTAGE)
+	WAVE statusHS = DAP_ControlStatusWaveCache(panelTitle, CHANNEL_TYPE_HEADSTAGE)
 	if(!sendToAll)
 		statusHS[] = (p == headStage ? 1 : 0)
 	endif
@@ -1091,7 +1091,7 @@ Function AI_FillAndSendAmpliferSettings(panelTitle, sweepNo)
 	string mccSerial
 
 	WAVE channelClampMode      = GetChannelClampMode(panelTitle)
-	WAVE statusHS              = DC_ControlStatusWaveCache(panelTitle, CHANNEL_TYPE_HEADSTAGE)
+	WAVE statusHS              = DAP_ControlStatusWaveCache(panelTitle, CHANNEL_TYPE_HEADSTAGE)
 	WAVE ampSettingsWave       = GetAmplifierSettingsWave()
 	WAVE/T ampSettingsKey      = GetAmplifierSettingsKeyWave()
 	WAVE/T ampSettingsTextWave = GetAmplifierSettingsTextWave()
@@ -1398,7 +1398,7 @@ Function AI_ZeroAmps(panelTitle, [headStage])
 				AI_MIESAutoPipetteOffset(panelTitle, headStage)
 			endif
 		else
-			WAVE statusHS = DC_ControlStatusWave(panelTitle, CHANNEL_TYPE_HEADSTAGE)
+			WAVE statusHS = DAP_ControlStatusWaveCache(panelTitle, CHANNEL_TYPE_HEADSTAGE)
 			for(i = 0; i < NUM_HEADSTAGES; i += 1)
 		
 				if(!statusHS[i])

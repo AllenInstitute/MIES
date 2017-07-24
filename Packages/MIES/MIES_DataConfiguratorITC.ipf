@@ -199,77 +199,7 @@ static Function DC_NoOfChannelsSelected(panelTitle, type)
 	string panelTitle
 	variable type
 
-	return sum(DC_ControlStatusWaveCache(panelTitle, type))
-End
-
-/// @brief Returns a free wave of the status of the checkboxes specified by channelType
-///
-/// @param type        one of the type constants from @ref ChannelTypeAndControlConstants
-/// @param panelTitle  panel title
-Function/Wave DC_ControlStatusWave(panelTitle, type)
-	string panelTitle
-	variable type
-
-	string ctrl
-	variable i, numEntries
-
-	numEntries = GetNumberFromType(var=type)
-
-	Make/FREE/U/B/N=(numEntries) wv
-
-	for(i = 0; i < numEntries; i += 1)
-		ctrl = GetPanelControl(i, type, CHANNEL_CONTROL_CHECK)
-		wv[i] = GetCheckboxState(panelTitle, ctrl)
-	endfor
-
-	return wv
-End
-
-/// @brief Return a free wave of the status of the checkboxes specified by
-///        channelType, uses GetDA_EphysGuiStateNum() instead of GUI queries.
-///
-/// This function does only return correct values if GetDA_EphysGuiStateNum() is up to date.
-/// At the moment this is ensured as all callers of this function have TP_UpdateGlobals() called before.
-///
-/// @param type        one of the type constants from @ref ChannelTypeAndControlConstants
-/// @param panelTitle  panel title
-Function/Wave DC_ControlStatusWaveCache(panelTitle, type)
-	string panelTitle
-	variable type
-
-	variable numEntries, col
-
-	WAVE GUIState = GetDA_EphysGuiStateNum(panelTitle)
-
-	numEntries = GetNumberFromType(var=type)
-
-	switch(type)
-		case CHANNEL_TYPE_ASYNC:
-			col = 12
-			break
-		case CHANNEL_TYPE_ALARM:
-			col = 14
-			break
-		case CHANNEL_TYPE_TTL:
-			col = 9
-			break
-		case CHANNEL_TYPE_DAC:
-			col = 2
-			break
-		case CHANNEL_TYPE_HEADSTAGE:
-			col = 0
-			break
-		case CHANNEL_TYPE_ADC:
-			col = 7
-			break
-		default:
-			ASSERT(0, "invalid type")
-			break
-	endswitch
-
-	Make/FREE/U/B/N=(numEntries) wv = GUIState[p][col]
-
-	return wv
+	return sum(DAP_ControlStatusWaveCache(panelTitle, type))
 End
 
 /// @brief Returns the total number of combined channel types (DA, AD, and front TTLs) selected in the DA_Ephys Gui
@@ -310,7 +240,7 @@ static Function DC_AreTTLsInRackChecked(RackNo, panelTitle)
 
 	variable a
 	variable b
-	WAVE statusTTL = DC_ControlStatusWaveCache(panelTitle, CHANNEL_TYPE_TTL)
+	WAVE statusTTL = DAP_ControlStatusWaveCache(panelTitle, CHANNEL_TYPE_TTL)
 
 	if(RackNo == 0)
 		 a = 0
@@ -366,8 +296,8 @@ static Function DC_LongestOutputWave(panelTitle, dataAcqOrTP, channelType)
 	variable maxNumRows, i, numEntries
 	string channelTypeWaveList = DC_PopMenuStringList(panelTitle, channelType)
 
-	WAVE statusChannel = DC_ControlStatusWaveCache(panelTitle, channelType)
-	WAVE statusHS      = DC_ControlStatusWaveCache(panelTitle, CHANNEL_TYPE_HEADSTAGE)
+	WAVE statusChannel = DAP_ControlStatusWaveCache(panelTitle, channelType)
+	WAVE statusHS      = DAP_ControlStatusWaveCache(panelTitle, CHANNEL_TYPE_HEADSTAGE)
 
 	numEntries = DimSize(statusChannel, ROWS)
 	for(i = 0; i < numEntries; i += 1)
@@ -582,10 +512,10 @@ static Function DC_PlaceDataInITCChanConfigWave(panelTitle, dataAcqOrTP)
 
 	WAVE/SDFR=GetDevicePath(panelTitle) ITCChanConfigWave
 
-	WAVE statusHS = DC_ControlStatusWaveCache(panelTitle, CHANNEL_TYPE_HEADSTAGE)
+	WAVE statusHS = DAP_ControlStatusWaveCache(panelTitle, CHANNEL_TYPE_HEADSTAGE)
 
 	// query DA properties
-	WAVE channelStatus = DC_ControlStatusWaveCache(panelTitle, CHANNEL_TYPE_DAC)
+	WAVE channelStatus = DAP_ControlStatusWaveCache(panelTitle, CHANNEL_TYPE_DAC)
 
 	numEntries = DimSize(channelStatus, ROWS)
 	for(i = 0; i < numEntries; i += 1)
@@ -602,7 +532,7 @@ static Function DC_PlaceDataInITCChanConfigWave(panelTitle, dataAcqOrTP)
 	endfor
 
 	// query AD properties
-	WAVE channelStatus = DC_ControlStatusWaveCache(panelTitle, CHANNEL_TYPE_ADC)
+	WAVE channelStatus = DAP_ControlStatusWaveCache(panelTitle, CHANNEL_TYPE_ADC)
 
 	numEntries = DimSize(channelStatus, ROWS)
 	for(i = 0; i < numEntries; i += 1)
@@ -715,8 +645,8 @@ static Function DC_PlaceDataInITCDataWave(panelTitle, numActiveChannels, dataAcq
 
 	NVAR baselineFrac     = $GetTestpulseBaselineFraction(panelTitle)
 	WAVE ChannelClampMode = GetChannelClampMode(panelTitle)
-	WAVE statusDA         = DC_ControlStatusWaveCache(panelTitle, CHANNEL_TYPE_DAC)
-	WAVE statusHS         = DC_ControlStatusWaveCache(panelTitle, CHANNEL_TYPE_HEADSTAGE)
+	WAVE statusDA         = DAP_ControlStatusWaveCache(panelTitle, CHANNEL_TYPE_DAC)
+	WAVE statusHS         = DAP_ControlStatusWaveCache(panelTitle, CHANNEL_TYPE_HEADSTAGE)
 
 	WAVE sweepDataLNB         = GetSweepSettingsWave(panelTitle)
 	WAVE/T sweepDataTxTLNB    = GetSweepSettingsTextWave(panelTitle)
@@ -953,7 +883,7 @@ static Function DC_PlaceDataInITCDataWave(panelTitle, numActiveChannels, dataAcq
 		DC_DocumentChannelProperty(panelTitle, "Stim set length", INDEP_HEADSTAGE, NaN, var=setLength[0])
 	endif
 
-	WAVE statusAD = DC_ControlStatusWaveCache(panelTitle, CHANNEL_TYPE_ADC)
+	WAVE statusAD = DAP_ControlStatusWaveCache(panelTitle, CHANNEL_TYPE_ADC)
 
 	numEntries = DimSize(statusAD, ROWS)
 	for(i = 0; i < numEntries; i += 1)
@@ -998,17 +928,20 @@ static Function DC_PlaceDataInITCDataWave(panelTitle, numActiveChannels, dataAcq
 		endif
 	endif
 
-	FindValue/I=(SIGNED_INT_16BIT_MIN) ITCDataWave
-
-	if(V_Value == -1)
-		FindValue/I=(SIGNED_INT_16BIT_MAX) ITCDataWave
-	endif
-
-	if(V_Value != -1)
+	if(DC_CheckIfDataWaveHasBorderVals(ITCDataWave))
 		printf "Error writing stimsets into ITCDataWave: The values are out of range. Maybe the DA/AD Gain needs adjustment?\r"
 		ControlWindowToFront()
 		Abort
 	endif
+End
+
+static Function DC_CheckIfDataWaveHasBorderVals(ITCDataWave)
+	WAVE ITCDataWave
+
+	ASSERT(WaveType(ITCDataWave) == IGOR_TYPE_16BIT_INT, "Unexpected wave type")
+	matrixop/FREE result = equal(minval(ITCDataWave), SIGNED_INT_16BIT_MIN) || equal(maxval(ITCDataWave), SIGNED_INT_16BIT_MAX)
+
+	return result[0] > 0
 End
 
 /// @brief Document channel properties of DA and AD channels
@@ -1132,8 +1065,8 @@ static Function DC_MakeITCTTLWave(panelTitle, rackNo)
 	string set
 	string listOfSets = ""
 
-	WAVE statusTTL = DC_ControlStatusWaveCache(panelTitle, CHANNEL_TYPE_TTL)
-	WAVE statusHS = DC_ControlStatusWaveCache(panelTitle, CHANNEL_TYPE_HEADSTAGE)
+	WAVE statusTTL = DAP_ControlStatusWaveCache(panelTitle, CHANNEL_TYPE_TTL)
+	WAVE statusHS = DAP_ControlStatusWaveCache(panelTitle, CHANNEL_TYPE_HEADSTAGE)
 
 	string TTLWaveList = DC_PopMenuStringList(panelTitle, CHANNEL_TYPE_TTL)
 	DFREF deviceDFR = GetDevicePath(panelTitle)

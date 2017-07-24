@@ -454,7 +454,7 @@ Function ED_createWaveNoteTags(panelTitle, sweepCount)
 	numKeys[1][1] =  ""
 	numKeys[2][1] =  LABNOTEBOOK_NO_TOLERANCE
 
-	WAVE statusHS = DC_ControlStatusWaveCache(panelTitle, CHANNEL_TYPE_HEADSTAGE)
+	WAVE statusHS = DAP_ControlStatusWaveCache(panelTitle, CHANNEL_TYPE_HEADSTAGE)
 
 	Make/FREE/N=(1, 2, LABNOTEBOOK_LAYER_COUNT) numSettings = NaN
 	numSettings[0][0][0,7] = statusHS[r]
@@ -620,7 +620,7 @@ Function ED_TPDocumentation(panelTitle)
 		return NaN
 	endif
 
-	WAVE statusHS = DC_ControlStatusWaveCache(panelTitle, CHANNEL_TYPE_HEADSTAGE)
+	WAVE statusHS = DAP_ControlStatusWaveCache(panelTitle, CHANNEL_TYPE_HEADSTAGE)
 	numActiveHS = Sum(statusHS)
 
 	if(DimSize(BaselineSSAvg, COLS) != numActiveHS || DimSize(InstResistance, COLS) != numActiveHS || DimSize(SSResistance, COLS) != numActiveHS)

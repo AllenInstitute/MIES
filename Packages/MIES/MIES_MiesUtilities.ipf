@@ -173,7 +173,7 @@ End
 
 /// @brief Return a wave with all active channels
 ///
-/// @todo change to return a 0/1 wave with constant size a la DC_ControlStatusWave
+/// @todo change to return a 0/1 wave with constant size a la DAP_ControlStatusWaveCache
 ///
 /// @param config       ITCChanConfigWave as passed to the ITC XOP
 /// @param channelType  DA/AD/TTL constants, see @ref ChannelTypeAndControlConstants
