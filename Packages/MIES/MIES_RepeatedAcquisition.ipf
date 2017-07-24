@@ -209,8 +209,17 @@ End
 static Function RA_FinishAcquisition(panelTitle)
 	string panelTitle
 
+	string list
+	variable numEntries, i
+
 	ITC_StopITCDeviceTimer(panelTitle)
-	CallFunctionForEachListItem(DAP_OneTimeCallAfterDAQ, GetListofLeaderAndPossFollower(panelTitle))
+
+	list = GetListofLeaderAndPossFollower(panelTitle)
+
+	numEntries = ItemsInList(list)
+	for(i = 0; i < numEntries; i += 1)
+		DAP_OneTimeCallAfterDAQ(StringFromList(i, list))
+	endfor
 End
 
 Function RA_BckgTPwithCallToRACounter(panelTitle)
@@ -231,14 +240,16 @@ End
 static Function RA_StartMD(panelTitle)
 	string panelTitle
 
-	variable i, numFollower
+	variable i, numFollower, totTrials
 	string followerPanelTitle
 	NVAR count = $GetCount(panelTitle)
 	NVAR activeSetCount = $GetActiveSetCount(panelTitle)
-	
+
 	activeSetCount = IDX_CalculcateActiveSetCount(panelTitle)
 
 	RA_StepSweepsRemaining(panelTitle)
+
+	totTrials = RA_GetTotalNumberOfTrials(panelTitle)
 
 	if(totTrials == 1)
 		return RA_FinishAcquisition(panelTitle)
