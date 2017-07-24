@@ -3917,3 +3917,22 @@ Function UpdateDAQControlsWrapper(panelTitle, updateFlag)
 
 	f(panelTitle, updateFlag)
 End
+
+/// @brief Update the repurposed sweep time global variable
+///
+/// Currently only useful for handling mid sweep analysis functions.
+Function UpdateLeftOverSweepTime(panelTitle, fifoPos)
+	string panelTitle
+	variable fifoPos
+
+	string msg
+
+	WAVE ITCDataWave         = GetITCDataWave(panelTitle)
+	NVAR repurposedTime      = $GetRepurposedSweepTime(panelTitle)
+	NVAR stopCollectionPoint = $GetStopCollectionPoint(panelTitle)
+
+	repurposedTime = IndexToScale(ITCDataWave, stopCollectionPoint - fifoPos, ROWS) / 1e3
+
+	sprintf msg, "Repurposed time in seconds due to premature sweep stopping: %g\r", repurposedTime
+	DEBUGPRINT(msg)
+End

@@ -15,7 +15,9 @@ static Function RA_RecalculateITI(panelTitle)
 
 	variable ITI
 
-	ITI = GetSetVariable(panelTitle, "SetVar_DataAcq_ITI") - ITC_StopITCDeviceTimer(panelTitle)
+	NVAR repurposedTime = $GetRepurposedSweepTime(panelTitle)
+	ITI = GetSetVariable(panelTitle, "SetVar_DataAcq_ITI") - ITC_StopITCDeviceTimer(panelTitle) + repurposedTime
+	repurposedTime = 0
 
 	return ITI
 End

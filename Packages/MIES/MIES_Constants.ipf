@@ -420,6 +420,14 @@ Constant TOTAL_NUM_EVENTS   = 5
 /// Human readable names for @ref EVENT_TYPE_ANALYSIS_FUNCTIONS
 StrConstant EVENT_NAME_LIST = "Pre DAQ;Mid Sweep;Post Sweep;Post Set;Post DAQ"
 
+/// Special return values for analysis functions. See also @ref
+/// AnalysisFunctionReturnTypes.
+///
+/// @anchor AnalysisFuncReturnTypesConstants
+/// @{
+Constant ANALYSIS_FUNC_RET_REPURP_TIME = -100
+/// @}
+
 /// Number of layers in the labnotebook
 Constant LABNOTEBOOK_LAYER_COUNT = 9
 

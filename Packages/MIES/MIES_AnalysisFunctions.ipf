@@ -18,15 +18,28 @@
 ///
 /// @anchor AnalysisFunctionEventDescriptionTable
 ///
-/// Event      | Description                          | Analysis function return value            | Specialities
-/// -----------|--------------------------------------|-------------------------------------------|---------------------------------------------------------------
-/// Pre DAQ    | Before any DAQ occurs                | Return 1 to *not* start data acquisition  | Called before the settings are validated
-/// Mid Sweep  | Each time when new data is polled    | Ignored                                   | Available for background DAQ only
-/// Post Sweep | After each sweep                     | Ignored                                   | None
-/// Post Set   | After a *full* set has been acquired | Ignored                                   | This event is not always reached as the user might not acquire all steps of a set
-/// Post DAQ   | After all DAQ has been finished      | Ignored                                   | None
+/// Event      | Description                          | Specialities
+/// -----------|--------------------------------------|---------------------------------------------------------------
+/// Pre DAQ    | Before any DAQ occurs                | Called before the settings are validated
+/// Mid Sweep  | Each time when new data is polled    | Available for background DAQ only
+/// Post Sweep | After each sweep                     | None
+/// Post Set   | After a *full* set has been acquired | This event is not always reached as the user might not acquire all steps of a set
+/// Post DAQ   | After all DAQ has been finished      | None
 ///
 /// The Post Sweep/Set/DAQ functions are *not* executed if a currently running sweep is aborted.
+///
+/// @anchor AnalysisFunctionReturnTypes Analysis function return types
+///
+/// Some event types support a range of different return types which let the
+/// user decide what should happen next. See also @ref
+/// AnalysisFuncReturnTypesConstants.
+///
+/// Value                             | Event Types | Action
+/// ----------------------------------|-------------|-------
+/// NaN                               | All         | Nothing
+/// 0                                 | All         | Nothing
+/// 1                                 | Pre DAQ     | DAQ is prevented to start
+/// #ANALYSIS_FUNC_RET_REPURP_TIME    | Mid Sweep   | Current sweep is immediately stopped. Left over time is repurposed for ITI.
 
 /// @name Initial parameters for stimulation
 ///@{
@@ -383,4 +396,30 @@ Function LastStimSetRun()
 			printf "Stimulus Set %s completed on headstage %d in %s mode holding at %d\r", StimSet_i, i, clampHS_i, holding_i
 		endif
 	endfor
+End
+
+/// @brief Mid sweep analysis function which stops the sweeps and repurposes
+///        the left over time at the 20th call.
+///
+/// This function needs to be set for Pre DAQ, Mid Sweep and Post Sweep Event.
+Function TestPrematureSweepStop(panelTitle, eventType, ITCDataWave, headStage, realDataLength)
+	string panelTitle
+	variable eventType
+	Wave ITCDataWave
+	variable headstage, realDataLength
+
+	SVAR temp = $GetTemporaryString()
+
+	if(eventType == PRE_DAQ_EVENT || eventType == POST_SWEEP_EVENT)
+		temp = "0"
+		return NaN
+	elseif(eventType == MID_SWEEP_EVENT)
+		temp = num2str(str2num(temp) + 1)
+
+		if(str2num(temp) > 20)
+			return ANALYSIS_FUNC_RET_REPURP_TIME
+		endif
+	endif
+
+	return 0
 End

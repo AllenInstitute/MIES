@@ -11,7 +11,7 @@
 
 /// @brief Call the analysis function associated with the stimset from the wavebuilder
 ///
-/// @return 1 to signal the caller that the analysis function requests an immediate abort, 0 to continue
+/// @return Valid analysis function return types, zero otherwise, see also @ref AnalysisFunctionReturnTypes
 Function AFM_CallAnalysisFunctions(panelTitle, eventType)
 	string panelTitle
 	variable eventType
@@ -86,7 +86,9 @@ Function AFM_CallAnalysisFunctions(panelTitle, eventType)
 		SetWaveLock 0, ITCDataWave
 
 		if(eventType == PRE_DAQ_EVENT && ret == 1)
-			return  1
+			return ret
+		elseif(eventType == MID_SWEEP_EVENT && ret == ANALYSIS_FUNC_RET_REPURP_TIME)
+			return ret
 		endif
 	endfor
 
