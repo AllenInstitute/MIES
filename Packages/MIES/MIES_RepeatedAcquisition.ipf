@@ -210,7 +210,7 @@ static Function RA_FinishAcquisition(panelTitle)
 	string panelTitle
 
 	ITC_StopITCDeviceTimer(panelTitle)
-	DAP_OneTimeCallAfterDAQ(panelTitle)
+	CallFunctionForEachListItem(DAP_OneTimeCallAfterDAQ, GetListofLeaderAndPossFollower(panelTitle))
 End
 
 Function RA_BckgTPwithCallToRACounter(panelTitle)
@@ -239,6 +239,10 @@ static Function RA_StartMD(panelTitle)
 	activeSetCount = IDX_CalculcateActiveSetCount(panelTitle)
 
 	RA_StepSweepsRemaining(panelTitle)
+
+	if(totTrials == 1)
+		return RA_FinishAcquisition(panelTitle)
+	endif
 
 	if(DeviceHasFollower(panelTitle))
 		SVAR listOfFollowerDevices = $GetFollowerList(panelTitle)
@@ -335,8 +339,7 @@ End
 static Function RA_BckgTPwithCallToRACounterMD(panelTitle)
 	string panelTitle
 
-	variable totTrials, numFollower, i, numberOfFollowerDevices
-	string followerPanelTitle
+	variable totTrials
 	NVAR count = $GetCount(panelTitle)
 
 	totTrials = RA_GetTotalNumberOfTrials(panelTitle)
@@ -345,15 +348,6 @@ static Function RA_BckgTPwithCallToRACounterMD(panelTitle)
 		RA_HandleITI_MD(panelTitle)
 	else
 		RA_FinishAcquisition(panelTitle)
-
-		if(DeviceHasFollower(panelTitle))
-			SVAR listOfFollowerDevices = $GetFollowerList(panelTitle)
-			numberOfFollowerDevices = ItemsInList(listOfFollowerDevices)
-			for(i = 0; i < numberOfFollowerDevices; i += 1)
-				followerPanelTitle = StringFromList(i, listOfFollowerDevices)
-				DAP_OneTimeCallAfterDAQ(followerPanelTitle)
-			endfor
-		endif
 	endif
 End
 
