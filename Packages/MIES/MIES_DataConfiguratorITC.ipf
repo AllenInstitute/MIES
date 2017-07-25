@@ -423,6 +423,8 @@ static Function DC_MakeOscilloscopeWave(panelTitle, numActiveChannels, dataAcqOr
 	Redimension/N=(numRows, numActiveChannels) OscilloscopeData
 	SetScale/P x, 0, DimDelta(ITCDataWave, ROWS), "ms", OscilloscopeData
 	Multithread OscilloscopeData = NaN
+
+	SetNumberInWaveNote(OscilloscopeData, "lastFifoPos", 0)
 End
 
 /// @brief Creates ITCFIFOPosAllConfigWave, the wave used to configure the FIFO on all channels of the ITC device
