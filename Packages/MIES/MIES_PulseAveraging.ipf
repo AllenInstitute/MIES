@@ -404,7 +404,7 @@ static Function PA_GetAveragePulseLength(pulseStartTimes, startingPulse, endingP
 
 	numPulses = endingPulse - startingPulse + 1
 
-	if(numPulses == 1)
+	if(numPulses <= 1)
 		return fallbackPulseLength
 	endif
 
