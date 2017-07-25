@@ -464,7 +464,7 @@ Function/WAVE GetLastSetting(numericalValues, sweepNo, setting, entrySourceType)
 		return $""
 	endif
 
-	Make/FREE/N=(numLayers) status
+	Make/D/FREE/N=(numLayers) status
 
 	for(i = last; i >= first; i -= 1)
 
