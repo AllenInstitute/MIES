@@ -84,7 +84,7 @@ Function ITC_FIFOMonitor(s)
 	STRUCT WMBackgroundStruct &s
 
 	string oscilloscopeSubwindow
-	variable fifoPos, moreData
+	variable fifoPos, moreData, anaFuncReturn
 
 	SVAR panelTitleG       = $GetPanelTitleGlobal()
 	NVAR ITCDeviceIDGlobal = $GetITCDeviceIDGlobal(panelTitleG)
@@ -96,8 +96,12 @@ Function ITC_FIFOMonitor(s)
 
 	SCOPE_UpdateOscilloscopeData(panelTitleG, DATA_ACQUISITION_MODE, fifoPos=fifoPos)
 
-	AFM_CallAnalysisFunctions(panelTitleG, MID_SWEEP_EVENT)
 	AM_analysisMasterMidSweep(panelTitleG)
+
+	if(moreData && AFM_CallAnalysisFunctions(panelTitleG, MID_SWEEP_EVENT) == ANALYSIS_FUNC_RET_REPURP_TIME)
+		UpdateLeftOverSweepTime(panelTitleG, fifoPos)
+		moreData = 0
+	endif
 
 	if(!moreData)
 		ITC_STOPFifoMonitor()

@@ -347,3 +347,12 @@ Function/S GetRepeatedAcquisitionCycleID(panelTitle)
 
 	return GetNVARAsString(GetDevicePath(panelTitle), "raCycleID", initialValue=NaN)
 End
+
+/// @brief Return the absolute path to the repurposed sweep time global variable.
+///
+/// Units are seconds.
+Function/S GetRepurposedSweepTime(panelTitle)
+	string panelTitle
+
+	return GetNVARAsString(GetDevicePath(panelTitle), "additionalITI", initialValue = 0)
+End

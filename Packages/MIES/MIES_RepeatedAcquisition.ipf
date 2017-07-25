@@ -9,21 +9,32 @@
 /// @file MIES_RepeatedAcquisition.ipf
 /// @brief __RA__ Repated acquisition functionality
 
+/// @brief Recalculate the Inter trial interval (ITI) for the given device.
+static Function RA_RecalculateITI(panelTitle)
+	string panelTitle
+
+	variable ITI
+
+	NVAR repurposedTime = $GetRepurposedSweepTime(panelTitle)
+	ITI = GetSetVariable(panelTitle, "SetVar_DataAcq_ITI") - ITC_StopITCDeviceTimer(panelTitle) + repurposedTime
+	repurposedTime = 0
+
+	return ITI
+End
+
 static Function RA_HandleITI_MD(panelTitle)
 	string panelTitle
 
 	variable ITI
 
 	AFM_CallAnalysisFunctions(panelTitle, POST_SET_EVENT)
+	ITI = RA_RecalculateITI(panelTitle)
 
-	ITI = GetSetVariable(panelTitle, "SetVar_DataAcq_ITI")
 	if(!GetCheckBoxState(panelTitle, "check_Settings_ITITP"))
-		ITI -= ITC_StopITCDeviceTimer(panelTitle)
 		ITC_StartBackgroundTimerMD(ITI, "RA_CounterMD(\"" + panelTitle + "\")", "", "", panelTitle)
 		return NaN
 	endif
 
-	ITI -= ITC_StopITCDeviceTimer(panelTitle)
 	ITC_StartTestPulseMultiDevice(panelTitle, runModifier=TEST_PULSE_DURING_RA_MOD)
 
 	ITC_StartBackgroundTimerMD(ITI,"ITC_StopTestPulseMultiDevice(\"" + panelTitle + "\")", "RA_CounterMD(\"" + panelTitle + "\")",  "", panelTitle)
@@ -35,17 +46,14 @@ static Function RA_HandleITI(panelTitle)
 	variable ITI
 
 	AFM_CallAnalysisFunctions(panelTitle, POST_SET_EVENT)
+	ITI = RA_RecalculateITI(panelTitle)
 
-	ITI = GetSetVariable(panelTitle, "SetVar_DataAcq_ITI")
 	if(!GetCheckBoxState(panelTitle, "check_Settings_ITITP"))
-		ITI -= ITC_StopITCDeviceTimer(panelTitle)
 		ITC_StartBackgroundTimer(ITI, "RA_Counter(\"" + panelTitle + "\")", "", "", panelTitle)
 		return NaN
 	endif
 
 	TP_Setup(panelTitle, TEST_PULSE_BG_SINGLE_DEVICE | TEST_PULSE_DURING_RA_MOD)
-
-	ITI -= ITC_StopITCDeviceTimer(panelTitle)
 
 	ITC_StartBackgroundTestPulse(panelTitle)
 	ITC_StartBackgroundTimer(ITI, "ITC_STOPTestPulseSingleDevice(\"" + panelTitle + "\")", "RA_Counter(\"" + panelTitle + "\")", "", panelTitle)
