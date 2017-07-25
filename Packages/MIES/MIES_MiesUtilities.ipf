@@ -18,6 +18,10 @@ static Constant GRAPH_DIV_SPACING   = 0.03
 static Constant ADC_SLOT_MULTIPLIER = 4
 static Constant NUM_CHANNEL_TYPES   = 3
 
+static Constant GET_LB_MODE_NONE  = 0
+static Constant GET_LB_MODE_READ  = 1
+static Constant GET_LB_MODE_WRITE = 2
+
 Menu "GraphMarquee"
 	"Horiz Expand (VisX)", HorizExpandWithVisX()
 End
@@ -435,20 +439,42 @@ End
 /// @param sweepNo         sweep number
 /// @param setting         name of the setting to query
 /// @param entrySourceType type of the labnotebook entry, one of @ref DataAcqModes
+/// @param[in, out] first  [optional] Can be used to query
+///                        and return the labnotebook row range. Useful for routines which must make a
+///                        lot of queries to the same sweep and want to avoid the overhead of calculating `first` and `last`.
+///                        Passing #LABNOTEBOOK_GET_RANGE will set the calculated values of `first` and `last` after the function returns.
+///                        Passing a value greater or equal zero will use these values instead.
+/// @param[in, out] last   [optional] see `first`
 ///
 /// @return a free wave with #LABNOTEBOOK_LAYER_COUNT rows. In case
 /// the setting could not be found an invalid wave reference is returned.
-Function/WAVE GetLastSetting(numericalValues, sweepNo, setting, entrySourceType)
+Function/WAVE GetLastSetting(numericalValues, sweepNo, setting, entrySourceType, [first, last])
 	Wave numericalValues
 	variable sweepNo
 	string setting
 	variable entrySourceType
+	variable &first, &last
 
 	variable settingCol, numLayers, i, sweepCol, numEntries
-	variable first, last, sourceTypeCol, peakResistanceCol, pulseDurationCol
+	variable firstValue, lastValue, sourceTypeCol, peakResistanceCol, pulseDurationCol
 	variable testpulseBlockLength, blockType, hasValidTPPulseDurationEntry
+	variable mode
 
-	ASSERT(WaveType(numericalValues), "Can only work with numeric waves")
+	if(ParamIsDefault(first) && ParamIsDefault(last))
+		mode = GET_LB_MODE_NONE
+	elseif(!ParamIsDefault(first) && !ParamIsDefault(last))
+		if(first == LABNOTEBOOK_GET_RANGE && last == LABNOTEBOOK_GET_RANGE)
+			mode = GET_LB_MODE_WRITE
+		elseif(first >= 0 && last >= 0)
+			mode = GET_LB_MODE_READ
+		else
+			ASSERT(0, "Invalid params")
+		endif
+	else
+		ASSERT(0, "Invalid params")
+	endif
+
+	ASSERT(!IsTextWave(numericalValues), "Can only work with numeric waves")
 	numLayers = DimSize(numericalValues, LAYERS)
 	settingCol = FindDimLabel(numericalValues, COLS, setting)
 
@@ -457,16 +483,28 @@ Function/WAVE GetLastSetting(numericalValues, sweepNo, setting, entrySourceType)
 		return $""
 	endif
 
-	sweepCol = GetSweepColumn(numericalValues)
-	FindRange(numericalValues, sweepCol, sweepNo, 0, entrySourceType, first, last)
+	if(mode == GET_LB_MODE_NONE || mode == GET_LB_MODE_WRITE)
+		sweepCol = GetSweepColumn(numericalValues)
+		FindRange(numericalValues, sweepCol, sweepNo, 0, entrySourceType, firstValue, lastValue)
 
-	if(!IsFinite(first) && !IsFinite(last)) // sweep number is unknown
-		return $""
+		if(!IsFinite(firstValue) && !IsFinite(lastValue)) // sweep number is unknown
+			return $""
+		endif
+	elseif(mode == GET_LB_MODE_READ)
+		firstValue = first
+		lastValue  = last
+	endif
+
+	ASSERT(firstValue <= lastValue, "Invalid value range")
+
+	if(mode == GET_LB_MODE_WRITE)
+		first = firstValue
+		last  = lastValue
 	endif
 
 	Make/D/FREE/N=(numLayers) status
 
-	for(i = last; i >= first; i -= 1)
+	for(i = lastValue; i >= firstValue; i -= 1)
 
 		if(IsFinite(entrySourceType))
 			if(!sourceTypeCol)
@@ -569,19 +607,43 @@ End
 /// @param sweepNo         sweep number
 /// @param setting         name of the setting to query
 /// @param entrySourceType type of the labnotebook entry, one of @ref DataAcqModes
+/// @param[in, out] first  [optional] Can be used to query
+///                        and return the labnotebook row range. Useful for routines which must make a
+///                        lot of queries to the same sweep and want to avoid the overhead of calculating `first` and `last`.
+///                        Passing #LABNOTEBOOK_GET_RANGE will set the calculated values of `first` and `last` after the function returns.
+///                        Passing a value greater or equal zero will use these values instead.
+/// @param[in, out] last   [optional] see `first`
 ///
 /// @return a free wave with #LABNOTEBOOK_LAYER_COUNT rows. In case
 /// the setting could not be found an invalid wave reference is returned.
-Function/WAVE GetLastSettingText(textualValues, sweepNo, setting, entrySourceType)
+Function/WAVE GetLastSettingText(textualValues, sweepNo, setting, entrySourceType, [first, last])
 	Wave/T textualValues
 	variable sweepNo
 	string setting
 	variable entrySourceType
+	variable &first
+	variable &last
 
-	variable settingCol, numLayers, i, sweepCol
-	variable first, last, sourceTypeCol
+	variable settingCol, numLayers, i, sweepCol, mode
+	variable firstValue, lastValue, sourceTypeCol
 
-	ASSERT(!WaveType(textualValues), "Can only work with text waves")
+	if(ParamIsDefault(first) && ParamIsDefault(last))
+		mode = GET_LB_MODE_NONE
+	elseif(!ParamIsDefault(first) && !ParamIsDefault(last))
+		if(first == LABNOTEBOOK_GET_RANGE && last == LABNOTEBOOK_GET_RANGE)
+			mode = GET_LB_MODE_WRITE
+		elseif(first >= 0 && last >= 0)
+			mode = GET_LB_MODE_READ
+			firstValue = first
+			lastValue  = last
+		else
+			ASSERT(0, "Invalid params")
+		endif
+	else
+		ASSERT(0, "Invalid params")
+	endif
+
+	ASSERT(IsTextWave(textualValues), "Can only work with textual waves")
 	numLayers = DimSize(textualValues, LAYERS)
 	settingCol = FindDimLabel(textualValues, COLS, setting)
 
@@ -590,17 +652,29 @@ Function/WAVE GetLastSettingText(textualValues, sweepNo, setting, entrySourceTyp
 		return $""
 	endif
 
-	sweepCol = GetSweepColumn(textualValues)
-	FindRange(textualValues, sweepCol, sweepNo, 0, entrySourceType, first, last)
+	if(mode == GET_LB_MODE_NONE || mode == GET_LB_MODE_WRITE)
+		sweepCol = GetSweepColumn(textualValues)
+		FindRange(textualValues, sweepCol, sweepNo, 0, entrySourceType, firstValue, lastValue)
 
-	if(!IsFinite(first) && !IsFinite(last)) // sweep number is unknown
-		return $""
+		if(!IsFinite(firstValue) && !IsFinite(lastValue)) // sweep number is unknown
+			return $""
+		endif
+	elseif(mode == GET_LB_MODE_READ)
+		firstValue = first
+		lastValue  = last
+	endif
+
+	ASSERT(firstValue <= lastValue, "Invalid value range")
+
+	if(mode == GET_LB_MODE_WRITE)
+		first = firstValue
+		last  = lastValue
 	endif
 
 	Make/FREE/N=(numLayers)/T status
 	Make/FREE/N=(numLayers) lengths
 
-	for(i = last; i >= first; i -= 1)
+	for(i = lastValue; i >= firstValue; i -= 1)
 		if(IsFinite(entrySourceType))
 			if(!sourceTypeCol)
 				sourceTypeCol = FindDimLabel(textualValues, COLS, "EntrySourceType")
