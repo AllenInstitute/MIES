@@ -133,30 +133,43 @@ static Function ED_createWaveNotes(incomingNumericalValues, incomingNumericalKey
 	ED_WriteChangedValuesToNote(saveDataWave, incomingNumericalKeys, numericalValues, sweepNo, entrySourceType)
 End
 
-/// @brief Add custom entries to the numerical/textual labnotebook
+/// @brief Add custom entries to the numerical/textual labnotebook for the very last sweep acquired.
 ///
 /// The entries are prefixed with `USER_` to distinguish them
 /// from stock MIES entries.
 ///
+/// The index of the entry in `values` determines the headstage to which the setting applies.
+///
+/// Sample invocation:
+/// @code
+/// Make/D/FREE/N=(LABNOTEBOOK_LAYER_COUNT) values = NaN
+/// values[0] = 4711 // setting of the first headstage
+/// ED_AddEntryToLabnotebook(device, "SomeSetting", values)
+/// @endcode
+///
+/// The later on the labnotebook can be queried with:
+/// @code
+///	WAVE/Z settings = GetLastSetting(numericalValues, NaN, LABNOTEBOOK_USER_PREFIX + key, UNKNOWN_MODE)
+/// @endcode
+///
 /// @param panelTitle device
-/// @param headstage  headstage to which the setting should be attached to.
-///                   If it is a headstage independent setting this should be `NaN`.
 /// @param key        name under which to store the entry.
-/// @param value      [optional, one of `value` or `str` must be given] entry
-/// @param str        [optional, one of `value` or `str` must be given] entry
-/// @param unit       [optional, defaults to ""]  physical unit of the entry
+/// @param values     entry to add, wave can be numeric (floating point) or text, must have #LABNOTEBOOK_LAYER_COUNT rows.
+/// @param unit       [optional, defaults to ""] physical unit of the entry
 /// @param tolerance  [optional, defaults to #LABNOTEBOOK_NO_TOLERANCE] tolerance of the entry, used for
 ///                   judging if a change is "relevant" and should then be written to the sweep wave
-Function ED_AddEntryToLabnotebook(panelTitle, headstage, key, [value, str, unit, tolerance])
+Function ED_AddEntryToLabnotebook(panelTitle, key, values, [unit, tolerance])
 	string panelTitle, key
-	variable headstage, value
-	string str, unit
+	WAVE values
+	string unit
 	variable tolerance
 
 	string toleranceStr
-	variable layer
 
 	ASSERT(!IsEmpty(key), "Empty key")
+	ASSERT(DimSize(values, ROWS) == LABNOTEBOOK_LAYER_COUNT, "wv has the wrong number of rows")
+	ASSERT(DimSize(values, COLS) == 0, "wv must be 1D")
+	ASSERT(IsTextWave(values) || ((WaveType(values) & (IGOR_TYPE_32BIT_FLOAT | IGOR_TYPE_64BIT_FLOAT)) != 0), "Wave must be text or floating point")
 
 	if(ParamIsDefault(unit))
 		unit = ""
@@ -168,24 +181,8 @@ Function ED_AddEntryToLabnotebook(panelTitle, headstage, key, [value, str, unit,
 		toleranceStr = num2str(tolerance)
 	endif
 
-	if(IsFinite(headstage))
-		ASSERT(headstage >= 0 && headstage < NUM_HEADSTAGES, "Invalid headstage")
-		layer = headstage
-	else
-		layer = INDEP_HEADSTAGE
-	endif
-
-	ASSERT(ParamIsDefault(value) + ParamIsDefault(str) == 1, "One of value or str must be given.")
-
-	if(!ParamIsDefault(value))
-		Make/FREE/D/N=(1, 1, LABNOTEBOOK_LAYER_COUNT) valuesNum = NaN
-		valuesNum[0][0][layer] = value
-		WAVE values = valuesNum
-	elseif(!ParamIsDefault(str))
-		Make/FREE/T/N=(1, 1, LABNOTEBOOK_LAYER_COUNT) valuesText = ""
-		valuesText[0][0][layer] = str
-		WAVE values = valuesText
-	endif
+	Duplicate/FREE values, valuesReshaped
+	Redimension/N=(1, 1, LABNOTEBOOK_LAYER_COUNT) valuesReshaped
 
 	Make/FREE/T/N=(3, 1) keys
 	keys[0] = LABNOTEBOOK_USER_PREFIX + key
@@ -194,7 +191,7 @@ Function ED_AddEntryToLabnotebook(panelTitle, headstage, key, [value, str, unit,
 
 	ASSERT(strlen(keys[0]) < MAX_OBJECT_NAME_LENGTH_IN_BYTES, "key is too long")
 
-	ED_AddEntriesToLabnotebook(values, keys, AFH_GetLastSweepAcquired(panelTitle), panelTitle, UNKNOWN_MODE)
+	ED_AddEntriesToLabnotebook(valuesReshaped, keys, AFH_GetLastSweepAcquired(panelTitle), panelTitle, UNKNOWN_MODE)
 End
 
 /// @brief If the newly written values differ from the values in the last sweep, we write them to the wave note
