@@ -340,6 +340,40 @@ Function IDX_MaxNoOfSweeps(panelTitle, IndexOverRide)
 	return DEBUGPRINTv(MaxNoOfSweeps)
 End
 
+/// @brief Returns the number of sweeps in the stimulus set with the smallest number of sweeps (across all active stimulus sets).
+///
+/// @param panelTitle device
+Function IDX_MinNoOfSweeps(panelTitle)
+	string panelTitle
+
+	variable MinNoOfSweeps = inf
+	variable i
+
+	WAVE statusDA = DAP_ControlStatusWaveCache(panelTitle, CHANNEL_TYPE_DAC)
+
+	for(i = 0; i < NUM_DA_TTL_CHANNELS; i += 1)
+
+		if(!statusDA[i])
+			continue
+		endif
+
+		MinNoOfSweeps = min(MinNoOfSweeps, IDX_NumberOfTrialsAcrossSets(panelTitle, i, 0, 1))
+	endfor
+
+	WAVE statusTTL = DAP_ControlStatusWaveCache(panelTitle, CHANNEL_TYPE_TTL)
+
+	for(i = 0; i < NUM_DA_TTL_CHANNELS; i += 1)
+
+		if(!statusTTL[i])
+			continue
+		endif
+
+		MinNoOfSweeps = min(MinNoOfSweeps, IDX_NumberOfTrialsAcrossSets(panelTitle, i, 1, 1))
+	endfor
+
+	return MinNoOfSweeps == inf ? 0 : MinNoOfSweeps
+End
+
 static Function IDX_GetITIFromWaveNote(wv)
 	Wave wv
 
