@@ -781,14 +781,14 @@ Window DA_Ephys() : Panel
 	CheckBox Check_Settings_UseDoublePrec,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	CheckBox Check_Settings_UseDoublePrec,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
 	CheckBox Check_Settings_UseDoublePrec,value= 0
-	CheckBox Check_Settings_SkipAnalysFuncs,pos={243.00,268.00},size={155.00,15.00},disable=1,title="Skip analysis function calls"
-	CheckBox Check_Settings_SkipAnalysFuncs,help={"Should the analysis functions defined in the stim sets not be called? Mostly useful for testing/debugging."}
+	CheckBox Check_Settings_SkipAnalysFuncs,pos={243.00,268.00},size={155.00,15.00},disable=1,proc=DAP_CheckProc_RecordInGuiState,title="Skip analysis function calls"
+	CheckBox Check_Settings_SkipAnalysFuncs,help={"Should the analysis functions defined in the stim sets not be called?"}
 	CheckBox Check_Settings_SkipAnalysFuncs,userdata(tabnum)=  "5"
 	CheckBox Check_Settings_SkipAnalysFuncs,userdata(tabcontrol)=  "ADC"
 	CheckBox Check_Settings_SkipAnalysFuncs,userdata(ResizeControlsInfo)= A"!!,H.!!#B@!!#A*!!#<(z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	CheckBox Check_Settings_SkipAnalysFuncs,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	CheckBox Check_Settings_SkipAnalysFuncs,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
-	CheckBox Check_Settings_SkipAnalysFuncs,value= 0,proc=DAP_CheckProc_RecordInGuiState
+	CheckBox Check_Settings_SkipAnalysFuncs,value= 1
 	CheckBox Check_AsyncAD_00,pos={172.00,46.00},size={40.00,15.00},disable=1,proc=DAP_CheckProc_RecordInGuiState,title="AD 0"
 	CheckBox Check_AsyncAD_00,userdata(tabnum)=  "4",userdata(tabcontrol)=  "ADC"
 	CheckBox Check_AsyncAD_00,userdata(ResizeControlsInfo)= A"!!,G<!!#>F!!#>.!!#<(z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
@@ -1288,7 +1288,7 @@ Window DA_Ephys() : Panel
 	PopupMenu popup_Settings_Amplifier,userdata(ResizeControlsInfo)= A"!!,Cp!!#Bm!!#B%!!#<Pz!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	PopupMenu popup_Settings_Amplifier,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	PopupMenu popup_Settings_Amplifier,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
-	PopupMenu popup_Settings_Amplifier,mode=2,popvalue="AmpNo 0 Chan 1",value= #"DAP_GetNiceAmplifierChannelList()"
+	PopupMenu popup_Settings_Amplifier,mode=1,popvalue="- none -",value= #"DAP_GetNiceAmplifierChannelList()"
 	PopupMenu Popup_Settings_IC_DA,pos={226.00,411.00},size={47.00,19.00},proc=DAP_PopMenuProc_CAA,title="DA"
 	PopupMenu Popup_Settings_IC_DA,userdata(tabnum)=  "6"
 	PopupMenu Popup_Settings_IC_DA,userdata(tabcontrol)=  "ADC"
@@ -3771,7 +3771,7 @@ Function DAP_EphysPanelStartUpSettings()
 	SetVariable SetVar_DataAcq_SetRepeats WIN = $panelTitle,value= _NUM:1
 
 	CheckBox Check_Settings_UseDoublePrec WIN = $panelTitle, value= 0
-	CheckBox Check_Settings_SkipAnalysFuncs WIN = $panelTitle, value= 0
+	CheckBox Check_Settings_SkipAnalysFuncs WIN = $panelTitle, value= 1
 	PopupMenu Popup_Settings_SampIntMult WIN = $panelTitle, mode = 1
 
 	CheckBox Check_AsyncAD_00 WIN = $panelTitle,value= 0

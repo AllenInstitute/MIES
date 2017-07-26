@@ -437,7 +437,7 @@ Constant INDEP_HEADSTAGE = 8
 StrConstant UNKNOWN_MIES_VERSION = "unknown version"
 
 /// Number of common control groups in the DA_EPHYS panel
-Constant COMMON_CONTROL_GROUP_COUNT = 17
+Constant COMMON_CONTROL_GROUP_COUNT = 18
 
 /// Equals 2^5 from `GetKeyState`
 Constant ESCAPE_KEY = 32
