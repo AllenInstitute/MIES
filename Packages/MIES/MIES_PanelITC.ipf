@@ -8168,3 +8168,21 @@ Function DAP_CheckSkipAhead(panelTitle)
 
 	DAP_setSkipAheadLimit(panelTitle, filteredSkipAhead)
 End
+
+/// @brief Return the highest active headstage (zero-based and therefore in the range [0, 7])
+///
+/// Return `NaN` if no headstage is active at all.
+Function DAP_GetHighestActiveHeadstage(panelTitle)
+	string panelTitle
+
+	WAVE statusHS = DAP_ControlStatusWaveCache(panelTitle, CHANNEL_TYPE_HEADSTAGE)
+
+	// no headstage active
+	if(Sum(statusHS) == 0)
+		return NaN
+	endif
+
+	Make/FREE/N=(NUM_HEADSTAGES) activeHS = statusHS[p] * p
+
+	return WaveMax(activeHS)
+End
