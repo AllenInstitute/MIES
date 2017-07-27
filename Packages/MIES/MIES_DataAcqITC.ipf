@@ -125,7 +125,6 @@ Function ITC_StartBackgroundTimer(RunTimePassed,FunctionNameAPassedIn, FunctionN
 	String /G root:MIES:ITCDevices:FunctionNameB = FunctionNameBPassedIn
 	String /G root:MIES:ITCDevices:FunctionNameC = FunctionNameCPassedIn
 
-	Variable numTicks = 15		// Run every quarter second (15 ticks)
 	Variable /G root:MIES:ITCDevices:Start = ticks
 	Variable /G root:MIES:ITCDevices:RunTime = (RunTimePassed*60)
 	CtrlNamedBackground ITC_Timer, period = 5, proc = ITC_Timer
