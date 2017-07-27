@@ -726,3 +726,7 @@ StrConstant RA_ACQ_CYCLE_ID_KEY = "Repeated Acq Cycle ID"
 Constant REASON_STIMSET_CHANGE   = 0x01
 Constant REASON_HEADSTAGE_CHANGE = 0x02
 /// @}
+
+/// Parameters for GetLastSetting()/GetLastSettingText() for using the row caching
+/// mechanism.
+Constant LABNOTEBOOK_GET_RANGE = -1

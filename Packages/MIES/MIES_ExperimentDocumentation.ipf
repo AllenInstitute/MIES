@@ -79,9 +79,6 @@ static Function ED_createTextNotes(incomingTextualValues, incomingTextualKeys, s
 	SetNumberInWaveNote(textualValues, NOTE_INDEX, rowIndex + 1)
 
 	SetDimensionLabels(textualKeys, textualValues)
-
-	WAVE/Z saveDataWave = GetSweepWave(panelTitle, sweepNo)
-	ED_WriteChangedValuesToNoteText(saveDataWave, incomingTextualKeys, textualValues, sweepNo, entrySourceType)
 End
 
 /// @brief Add numerical entries to the labnotebook
@@ -129,8 +126,6 @@ static Function ED_createWaveNotes(incomingNumericalValues, incomingNumericalKey
 	SetNumberInWaveNote(numericalValues, NOTE_INDEX, rowIndex + 1)
 
 	SetDimensionLabels(numericalKeys, numericalValues)
-	WAVE/Z saveDataWave = GetSweepWave(panelTitle, sweepNo)
-	ED_WriteChangedValuesToNote(saveDataWave, incomingNumericalKeys, numericalValues, sweepNo, entrySourceType)
 End
 
 /// @brief Add custom entries to the numerical/textual labnotebook for the very last sweep acquired.
@@ -194,30 +189,34 @@ Function ED_AddEntryToLabnotebook(panelTitle, key, values, [unit, tolerance])
 	ED_AddEntriesToLabnotebook(valuesReshaped, keys, AFH_GetLastSweepAcquired(panelTitle), panelTitle, UNKNOWN_MODE)
 End
 
-/// @brief If the newly written values differ from the values in the last sweep, we write them to the wave note
+/// @brief Record changed labnotebook entries compared to the last sweep to the sweep wave note
 ///
 /// Honours tolerances defined in the keywave and "On/Off" values
-static Function ED_WriteChangedValuesToNote(saveDataWave, incomingNumericalKeys, numericalValues, sweepNo, entrySourceType)
-	Wave/Z saveDataWave
-	Wave/T incomingNumericalKeys
-	Wave numericalValues
-	variable sweepNo, entrySourceType
+static Function ED_WriteChangedValuesToNote(panelTitle, sweepNo)
+	string panelTitle
+	variable sweepNo
 
 	string key, factor, unit, text, frontLabel
 	string str = ""
 	variable tolerance, i, j, numRows, numCols, err
 
-	if(!WaveExists(saveDataWave))
-		return NaN
-	endif
+	// GetLastSetting will overwrite that on the first call
+	variable firstCurrent  = LABNOTEBOOK_GET_RANGE
+	variable lastCurrent   = LABNOTEBOOK_GET_RANGE
+	variable firstPrevious = LABNOTEBOOK_GET_RANGE
+	variable lastPrevious  = LABNOTEBOOK_GET_RANGE
 
-	numCols = DimSize(incomingNumericalKeys, COLS)
-	for (j = 0; j < numCols; j += 1)
-		key    = incomingNumericalKeys[0][j]
-		unit   = incomingNumericalKeys[1][j]
-		factor = incomingNumericalKeys[2][j]
-		Wave/Z currentSetting = GetLastSetting(numericalValues, sweepNo, key, entrySourceType)
-		Wave/Z lastSetting = GetLastSetting(numericalValues, sweepNo - 1, key, entrySourceType)
+	WAVE/T numericalKeys = GetLBNumericalKeys(panelTitle)
+	WAVE numericalValues = GetLBNumericalValues(panelTitle)
+
+	numCols = DimSize(numericalKeys, COLS)
+	for (j = INITIAL_KEY_WAVE_COL_COUNT + 1; j < numCols; j += 1)
+		key    = numericalKeys[0][j]
+		unit   = numericalKeys[1][j]
+		factor = numericalKeys[2][j]
+
+		Wave/Z currentSetting = GetLastSetting(numericalValues, sweepNo, key, UNKNOWN_MODE, first=firstCurrent, last=lastCurrent)
+		Wave/Z lastSetting = GetLastSetting(numericalValues, sweepNo - 1, key, UNKNOWN_MODE, first=firstPrevious, last=lastPrevious)
 
 		// We have four combinations for the current and the last setting:
 		// 1. valid -> valid
@@ -275,32 +274,39 @@ static Function ED_WriteChangedValuesToNote(saveDataWave, incomingNumericalKeys,
 	endfor
 
 	if(!isEmpty(str))
-		Note saveDataWave, str
+		WAVE sweepWave = GetSweepWave(panelTitle, sweepNo)
+		Note sweepWave, str
 	endif
 End
 
-/// @brief If the newly written values differ from the values in the last sweep, we write them to the wave note
+/// @brief Record changed labnotebook entries compared to the last sweep to the sweep wave note
+///
+/// Textual version.
 ///
 /// Honours tolerances defined in the keywave and "On/Off" values
-static Function ED_WriteChangedValuesToNoteText(saveDataWave, incomingTextualKeys, numericalValues, sweepNo, entrySourceType)
-	Wave/Z saveDataWave
-	Wave/T incomingTextualKeys
-	Wave/T numericalValues
-	variable sweepNo, entrySourceType
+static Function ED_WriteChangedValuesToNoteText(panelTitle, sweepNo)
+	string panelTitle
+	variable sweepNo
 
 	string key, factor, text, frontLabel
 	string str = ""
 	variable tolerance, i, j, numRows, numCols
 
-	if(!WaveExists(saveDataWave))
-		return NaN
-	endif
+	// GetLastSetting will overwrite that on the first call
+	variable firstCurrent  = LABNOTEBOOK_GET_RANGE
+	variable lastCurrent   = LABNOTEBOOK_GET_RANGE
+	variable firstPrevious = LABNOTEBOOK_GET_RANGE
+	variable lastPrevious  = LABNOTEBOOK_GET_RANGE
 
-	numCols = DimSize(incomingTextualKeys, COLS)
-	for (j = 0; j < numCols; j += 1)
-		key    = incomingTextualKeys[0][j]
-		Wave/T/Z currentSetting = GetLastSettingText(numericalValues, sweepNo, key, entrySourceType)
-		Wave/T/Z lastSetting = GetLastSettingText(numericalValues, sweepNo - 1, key, entrySourceType)
+	WAVE/T textualValues = GetLBTextualValues(panelTitle)
+	WAVE/T textualKeys   = GetLBTextualKeys(panelTitle)
+
+	numCols = DimSize(textualKeys, COLS)
+	for (j = INITIAL_KEY_WAVE_COL_COUNT + 1; j < numCols; j += 1)
+		key = textualKeys[0][j]
+
+		Wave/Z/T currentSetting = GetLastSettingText(textualValues, sweepNo, key, UNKNOWN_MODE, first=firstCurrent, last=lastCurrent)
+		Wave/Z/T lastSetting    = GetLastSettingText(textualValues, sweepNo - 1, key, UNKNOWN_MODE, first=firstPrevious, last=lastPrevious)
 
 		// We have four combinations for the current and the last setting:
 		// 1. valid -> valid
@@ -345,7 +351,8 @@ static Function ED_WriteChangedValuesToNoteText(saveDataWave, incomingTextualKey
 	endfor
 
 	if(!isEmpty(str))
-		Note saveDataWave, str
+		WAVE sweepWave = GetSweepWave(panelTitle, sweepNo)
+		Note sweepWave, str
 	endif
 End
 
@@ -506,6 +513,9 @@ Function ED_createWaveNoteTags(panelTitle, sweepCount)
 
 	// TP settings, especially useful if "global TP insertion" is active
 	ED_TPSettingsDocumentation(panelTitle, DATA_ACQUISITION_MODE)
+
+	ED_WriteChangedValuesToNote(panelTitle, sweepCount)
+	ED_WriteChangedValuesToNoteText(panelTitle, sweepCount)
 End
 
 /// @brief Write the user comment from the DA_Ephys panel to the labnotebook

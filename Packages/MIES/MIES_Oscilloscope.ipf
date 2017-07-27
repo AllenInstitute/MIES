@@ -434,7 +434,7 @@ Function SCOPE_UpdateOscilloscopeData(panelTitle, dataAcqOrTP, [chunk, fifoPos])
 	string panelTitle
 	variable dataAcqOrTP, chunk, fifoPos
 
-	variable length, first, last
+	variable length, first, last, lastFifoPos
 	variable startOfADColumns, numEntries
 
 	WAVE OscilloscopeData = GetOscilloscopeWave(panelTitle)
@@ -500,7 +500,15 @@ Function SCOPE_UpdateOscilloscopeData(panelTitle, dataAcqOrTP, [chunk, fifoPos])
 			fifoPos = DimSize(OscilloscopeData, ROWS) - 1
 		endif
 
-		Multithread OscilloscopeData[0, fifoPos - 1][startOfADColumns, startOfADColumns + numEntries - 1] = ITCDataWave[p][q] / gain[q - startOfADColumns]
+		lastFifoPos = GetNumberFromWaveNote(OscilloscopeData, "lastFifoPos")
+
+		if(lastFifoPos == fifoPos)
+			return NaN
+		endif
+
+		Multithread OscilloscopeData[lastFifoPos, fifoPos - 1][startOfADColumns, startOfADColumns + numEntries - 1] = ITCDataWave[p][q] / gain[q - startOfADColumns]
+
+		SetNumberInWaveNote(OscilloscopeData, "lastFifoPos", fifoPos)
 	else
 		ASSERT(0, "Invalid dataAcqOrTP value")
 	endif
