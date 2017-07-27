@@ -422,7 +422,8 @@ static Function DC_MakeOscilloscopeWave(panelTitle, numActiveChannels, dataAcqOr
 
 	Redimension/N=(numRows, numActiveChannels) OscilloscopeData
 	SetScale/P x, 0, DimDelta(ITCDataWave, ROWS), "ms", OscilloscopeData
-	Multithread OscilloscopeData = NaN
+	// 0/0 equals NaN, this is not accepted directly
+	WaveTransform/O/V=(0/0) setConstant OscilloscopeData
 
 	SetNumberInWaveNote(OscilloscopeData, "lastFifoPos", 0)
 End
