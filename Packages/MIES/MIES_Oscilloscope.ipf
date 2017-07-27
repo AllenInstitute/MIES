@@ -129,7 +129,6 @@ Function SCOPE_UpdateGraph(panelTitle)
 	endif
 
 	if(showPowerSpectrum)
-		DoUpdate/W=$graph
 		return NaN
 	endif
 
@@ -168,8 +167,6 @@ Function SCOPE_UpdateGraph(panelTitle)
 
 		SetAxis/W=$graph $leftAxis statsMin - spacing / 2.0, statsMax + spacing / 2.0
 	endfor
-
-	DoUpdate/W=$graph
 End
 
 static Function SCOPE_GetCheckBoxesForAddons(panelTitle, showSteadyStateResistance, showPeakResistance, showPowerSpectrum)

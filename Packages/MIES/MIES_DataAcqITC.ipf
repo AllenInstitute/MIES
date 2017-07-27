@@ -374,11 +374,12 @@ Function ITC_StartTestPulse(panelTitle)
 		HW_ITC_StopAcq(prepareForDAQ=1)
 		SCOPE_UpdateOscilloscopeData(panelTitle, TEST_PULSE_MODE)
 		TP_Delta(panelTitle)
-		DoUpdate/W=$oscilloscopeSubwindow
 
 		if(mod(i, TEST_PULSE_LIVE_UPDATE_INTERVAL) == 0)
 			SCOPE_UpdateGraph(panelTitle)
 		endif
+
+		DoUpdate/W=$oscilloscopeSubwindow
 
 		i += 1	
 	while(!(GetKeyState(0) & ESCAPE_KEY))
