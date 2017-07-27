@@ -133,8 +133,6 @@ Function SCOPE_UpdateGraph(panelTitle)
 		return NaN
 	endif
 
-	NVAR stopCollectionPoint = $GetStopCollectionPoint(panelTitle)
-
 	// scale the left AD axes
 	for(i = 0; i < numADCs; i += 1)
 
