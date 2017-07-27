@@ -76,7 +76,7 @@ Function ITC_StopDataAcq()
 END
 
 Function ITC_StartBckgrdFIFOMonitor()
-	CtrlNamedBackground ITC_FIFOMonitor, period = 2, proc = ITC_FIFOMonitor
+	CtrlNamedBackground ITC_FIFOMonitor, period = 5, proc = ITC_FIFOMonitor
 	CtrlNamedBackground ITC_FIFOMonitor, start
 End
 
@@ -171,7 +171,7 @@ End
 Function ITC_StartBackgroundTestPulse(panelTitle)
 	string panelTitle
 
-	CtrlNamedBackground TestPulse, period = 1, proc = ITC_TestPulseFunc
+	CtrlNamedBackground TestPulse, period = 5, proc = ITC_TestPulseFunc
 	CtrlNamedBackground TestPulse, start
 End
 

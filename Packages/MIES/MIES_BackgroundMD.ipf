@@ -143,7 +143,7 @@ static Function ITC_BkrdDataAcqMD(panelTitle, [triggerMode])
 End
 
 Function ITC_StartBckrdFIFOMonitorMD()
-	CtrlNamedBackground ITC_FIFOMonitorMD, period = 1, proc = ITC_FIFOMonitorMD
+	CtrlNamedBackground ITC_FIFOMonitorMD, period = 5, proc = ITC_FIFOMonitorMD
 	CtrlNamedBackground ITC_FIFOMonitorMD, start
 End
  

@@ -92,7 +92,7 @@ static Function ITC_BkrdTPMD(panelTitle, [triggerMode])
 	TFH_StartFIFOResetDeamon(HARDWARE_ITC_DAC, ITCDeviceIDGlobal, triggerMode)
 
 	if(!IsBackgroundTaskRunning("TestPulseMD"))
-		CtrlNamedBackground TestPulseMD, period = 1, proc = ITC_BkrdTPFuncMD
+		CtrlNamedBackground TestPulseMD, period = 5, proc = ITC_BkrdTPFuncMD
 		CtrlNamedBackground TestPulseMD, start
 	endif
 End
