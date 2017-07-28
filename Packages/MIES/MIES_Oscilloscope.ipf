@@ -129,11 +129,8 @@ Function SCOPE_UpdateGraph(panelTitle)
 	endif
 
 	if(showPowerSpectrum)
-		DoUpdate/W=$graph
 		return NaN
 	endif
-
-	NVAR stopCollectionPoint = $GetStopCollectionPoint(panelTitle)
 
 	// scale the left AD axes
 	for(i = 0; i < numADCs; i += 1)
@@ -170,8 +167,6 @@ Function SCOPE_UpdateGraph(panelTitle)
 
 		SetAxis/W=$graph $leftAxis statsMin - spacing / 2.0, statsMax + spacing / 2.0
 	endfor
-
-	DoUpdate/W=$graph
 End
 
 static Function SCOPE_GetCheckBoxesForAddons(panelTitle, showSteadyStateResistance, showPeakResistance, showPowerSpectrum)
@@ -237,7 +232,6 @@ Function SCOPE_CreateGraph(panelTitle, dataAcqOrTP)
 			AppendToGraph/W=$graph/L=$leftAxis OscilloscopeData[][numActiveDACs + i]
 
 			ModifyGraph/W=$graph axisEnab($leftAxis) = {YaxisLow, YaxisHigh}, freepos($leftAxis) = {0, kwFraction}
-			SetAxis/W=$graph/A=2/N=2 $leftAxis
 
 			ModifyGraph/W=$graph lblPosMode($leftAxis)=4, lblPos($leftAxis) = 50
 		endif
@@ -254,7 +248,7 @@ Function SCOPE_CreateGraph(panelTitle, dataAcqOrTP)
 				ModifyGraph/W=$graph rgb($powerSpectrumTrace)=(65535,0,0,13107)
 				ModifyGraph/W=$graph freepos($leftAxis) = {0, kwFraction}, axisEnab($leftAxis)= {YaxisLow, YaxisHigh}
 				ModifyGraph/W=$graph lblPosMode($leftAxis)=4, lblPos($leftAxis) = 50, log($leftAxis)=1
-				SetAxis/W=$graph $leftAxis, 1e-20, 1e20
+				SetAxis/W=$graph/A=2/N=2 $leftAxis
 			endif
 
 			rightAxis = "resistance" + adcStr

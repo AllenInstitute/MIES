@@ -76,7 +76,7 @@ Function ITC_StopDataAcq()
 END
 
 Function ITC_StartBckgrdFIFOMonitor()
-	CtrlNamedBackground ITC_FIFOMonitor, period = 2, proc = ITC_FIFOMonitor
+	CtrlNamedBackground ITC_FIFOMonitor, period = 5, proc = ITC_FIFOMonitor
 	CtrlNamedBackground ITC_FIFOMonitor, start
 End
 
@@ -125,7 +125,6 @@ Function ITC_StartBackgroundTimer(RunTimePassed,FunctionNameAPassedIn, FunctionN
 	String /G root:MIES:ITCDevices:FunctionNameB = FunctionNameBPassedIn
 	String /G root:MIES:ITCDevices:FunctionNameC = FunctionNameCPassedIn
 
-	Variable numTicks = 15		// Run every quarter second (15 ticks)
 	Variable /G root:MIES:ITCDevices:Start = ticks
 	Variable /G root:MIES:ITCDevices:RunTime = (RunTimePassed*60)
 	CtrlNamedBackground ITC_Timer, period = 5, proc = ITC_Timer
@@ -171,7 +170,7 @@ End
 Function ITC_StartBackgroundTestPulse(panelTitle)
 	string panelTitle
 
-	CtrlNamedBackground TestPulse, period = 1, proc = ITC_TestPulseFunc
+	CtrlNamedBackground TestPulse, period = 5, proc = ITC_TestPulseFunc
 	CtrlNamedBackground TestPulse, start
 End
 
@@ -375,11 +374,12 @@ Function ITC_StartTestPulse(panelTitle)
 		HW_ITC_StopAcq(prepareForDAQ=1)
 		SCOPE_UpdateOscilloscopeData(panelTitle, TEST_PULSE_MODE)
 		TP_Delta(panelTitle)
-		DoUpdate/W=$oscilloscopeSubwindow
 
 		if(mod(i, TEST_PULSE_LIVE_UPDATE_INTERVAL) == 0)
 			SCOPE_UpdateGraph(panelTitle)
 		endif
+
+		DoUpdate/W=$oscilloscopeSubwindow
 
 		i += 1	
 	while(!(GetKeyState(0) & ESCAPE_KEY))
