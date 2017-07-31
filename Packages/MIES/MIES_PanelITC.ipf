@@ -26,7 +26,7 @@ static StrConstant AMPLIFIER_DEF_FORMAT   = "AmpNo %d Chan %d"
 
 Window DA_Ephys() : Panel
 	PauseUpdate; Silent 1		// building window...
-	NewPanel /K=1 /W=(181,67,684,947)
+	NewPanel /K=1 /W=(620,71,1123,951)
 	ValDisplay valdisp_DataAcq_P_LED_Clear,pos={366.00,298.00},size={86.00,29.00},disable=1
 	ValDisplay valdisp_DataAcq_P_LED_Clear,help={"red:user"},userdata(tabnum)=  "0"
 	ValDisplay valdisp_DataAcq_P_LED_Clear,userdata(tabcontrol)=  "tab_DataAcq_Pressure"
@@ -103,7 +103,7 @@ Window DA_Ephys() : Panel
 	ValDisplay valdisp_DataAcq_P_LED_4,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	ValDisplay valdisp_DataAcq_P_LED_4,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
 	ValDisplay valdisp_DataAcq_P_LED_4,frame=5,valueBackColor=(61423,61423,61423)
-	ValDisplay valdisp_DataAcq_P_LED_4,limits={-1,2,0},barmisc={10,0},mode= 2,highColor= (65535,49000,49000),lowColor= (65535,65535,65535),zeroColor= (49151,53155,65535)
+	ValDisplay valdisp_DataAcq_P_LED_4,limits={-1,2,0},barmisc={0,0},mode= 2,highColor= (65535,49000,49000),lowColor= (65535,65535,65535),zeroColor= (49151,53155,65535)
 	ValDisplay valdisp_DataAcq_P_LED_4,value= _NUM:-1
 	ValDisplay valdisp_DataAcq_P_LED_4,limitsBackColor= (61423,61423,61423)
 	ValDisplay valdisp_DataAcq_P_LED_3,pos={235.00,347.00},size={43.00,29.00},disable=1
@@ -124,7 +124,7 @@ Window DA_Ephys() : Panel
 	ValDisplay valdisp_DataAcq_P_LED_2,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	ValDisplay valdisp_DataAcq_P_LED_2,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
 	ValDisplay valdisp_DataAcq_P_LED_2,frame=5
-	ValDisplay valdisp_DataAcq_P_LED_2,limits={-1,2,0},barmisc={0,0},mode= 2,highColor= (65278,0,0),lowColor= (0,0,0),zeroColor= (0,0,65535)
+	ValDisplay valdisp_DataAcq_P_LED_2,limits={-1,2,0},barmisc={0,0},mode= 2,highColor= (65535,49000,49000),lowColor= (65535,65535,65535),zeroColor= (49151,53155,65535)
 	ValDisplay valdisp_DataAcq_P_LED_2,value= _NUM:-1
 	ValDisplay valdisp_DataAcq_P_LED_0,pos={106.00,347.00},size={43.00,29.00},disable=1
 	ValDisplay valdisp_DataAcq_P_LED_0,help={"Blue:Automated mode, Purple:Manual, Red:User"}
@@ -144,7 +144,7 @@ Window DA_Ephys() : Panel
 	ValDisplay valdisp_DataAcq_P_LED_1,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	ValDisplay valdisp_DataAcq_P_LED_1,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
 	ValDisplay valdisp_DataAcq_P_LED_1,frame=5
-	ValDisplay valdisp_DataAcq_P_LED_1,limits={-1,2,0},barmisc={0,0},mode= 2,highColor= (65278,0,0),lowColor= (0,0,0),zeroColor= (0,0,65535)
+	ValDisplay valdisp_DataAcq_P_LED_1,limits={-1,2,0},barmisc={0,0},mode= 2,highColor= (65535,49000,49000),lowColor= (65535,65535,65535),zeroColor= (49151,53155,65535)
 	ValDisplay valdisp_DataAcq_P_LED_1,value= _NUM:-1
 	ValDisplay valdisp_DataAcq_P_3,pos={239.00,351.00},size={35.00,21.00},bodyWidth=35,disable=1
 	ValDisplay valdisp_DataAcq_P_3,userdata(tabcontrol)=  "tab_DataAcq_Pressure"
@@ -3041,7 +3041,6 @@ Window DA_Ephys() : Panel
 	ValDisplay valdisp_DataAcq_P_1,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Duafnzzzzzzzzzzz"
 	ValDisplay valdisp_DataAcq_P_1,userdata(ResizeControlsInfo) += A"zzz!!#u:Duafnzzzzzzzzzzzzzz!!!"
 	ValDisplay valdisp_DataAcq_P_1,fSize=14,frame=0,fStyle=0
-	ValDisplay valdisp_DataAcq_P_1,valueColor=(65000,65000,65000)
 	ValDisplay valdisp_DataAcq_P_1,valueBackColor=(65535,65535,65535,0)
 	ValDisplay valdisp_DataAcq_P_1,limits={0,0,0},barmisc={0,1000},value= #"0.00"
 	ValDisplay valdisp_DataAcq_P_2,pos={196.00,351.00},size={35.00,21.00},bodyWidth=35,disable=1
@@ -3051,7 +3050,6 @@ Window DA_Ephys() : Panel
 	ValDisplay valdisp_DataAcq_P_2,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Duafnzzzzzzzzzzz"
 	ValDisplay valdisp_DataAcq_P_2,userdata(ResizeControlsInfo) += A"zzz!!#u:Duafnzzzzzzzzzzzzzz!!!"
 	ValDisplay valdisp_DataAcq_P_2,fSize=14,frame=0,fStyle=0
-	ValDisplay valdisp_DataAcq_P_2,valueColor=(65000,65000,65000)
 	ValDisplay valdisp_DataAcq_P_2,valueBackColor=(65535,65535,65535,0)
 	ValDisplay valdisp_DataAcq_P_2,limits={0,0,0},barmisc={0,1000},value= #"0.00"
 	ValDisplay valdisp_DataAcq_P_4,pos={282.00,351.00},size={35.00,21.00},bodyWidth=35,disable=1
@@ -3493,34 +3491,34 @@ Window DA_Ephys() : Panel
 	GroupBox group_DA_AllVClamp,userdata(ResizeControlsInfo)= A"!!,A>!!#Ch!!#CPJ,hp#z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	GroupBox group_DA_AllVClamp,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	GroupBox group_DA_AllVClamp,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
-	CheckBox Check_DA_AllIClamp,pos={19.00,626.00},size={22.00,15.00},disable=3,proc=DAP_CheckProc_Channel_All,title="X"
+	CheckBox Check_DA_AllIClamp,pos={19.00,626.00},size={22.00,15.00},disable=1,proc=DAP_CheckProc_Channel_All,title="X"
 	CheckBox Check_DA_AllIClamp,userdata(tabnum)=  "1",userdata(tabcontrol)=  "ADC"
 	CheckBox Check_DA_AllIClamp,userdata(ResizeControlsInfo)= A"!!,BQ!!#D,J,hm>!!#<(z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	CheckBox Check_DA_AllIClamp,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	CheckBox Check_DA_AllIClamp,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
 	CheckBox Check_DA_AllIClamp,value= 0,side= 1
-	PopupMenu Wave_DA_AllIClamp,pos={153.00,628.00},size={125.00,19.00},bodyWidth=125,disable=3,proc=DAP_PopMenuChkProc_StimSetList
+	PopupMenu Wave_DA_AllIClamp,pos={153.00,628.00},size={125.00,19.00},bodyWidth=125,disable=1,proc=DAP_PopMenuChkProc_StimSetList
 	PopupMenu Wave_DA_AllIClamp,userdata(tabnum)=  "1",userdata(tabcontrol)=  "ADC"
 	PopupMenu Wave_DA_AllIClamp,userdata(ResizeControlsInfo)= A"!!,G)!!#D-!!#@^!!#<Pz!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	PopupMenu Wave_DA_AllIClamp,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	PopupMenu Wave_DA_AllIClamp,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
 	PopupMenu Wave_DA_AllIClamp,fSize=10
 	PopupMenu Wave_DA_AllIClamp,mode=1,popvalue="- none -",value= #"\"- none -;\"+ReturnListOfAllStimSets(0,\"*DA*\")"
-	SetVariable Search_DA_AllIClamp,pos={154.00,652.00},size={124.00,18.00},disable=3,proc=DAP_SetVarProc_Channel_Search,title="Search string"
+	SetVariable Search_DA_AllIClamp,pos={154.00,652.00},size={124.00,18.00},disable=1,proc=DAP_SetVarProc_Channel_Search,title="Search string"
 	SetVariable Search_DA_AllIClamp,userdata(tabnum)=  "1"
 	SetVariable Search_DA_AllIClamp,userdata(tabcontrol)=  "ADC"
 	SetVariable Search_DA_AllIClamp,userdata(ResizeControlsInfo)= A"!!,G*!!#D3!!#@\\!!#<Hz!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	SetVariable Search_DA_AllIClamp,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	SetVariable Search_DA_AllIClamp,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
 	SetVariable Search_DA_AllIClamp,value= _STR:""
-	SetVariable Scale_DA_AllIClamp,pos={288.00,628.00},size={50.00,18.00},bodyWidth=50,disable=3,proc=DAP_SetVarProc_DA_Scale
+	SetVariable Scale_DA_AllIClamp,pos={288.00,628.00},size={50.00,18.00},bodyWidth=50,disable=1,proc=DAP_SetVarProc_DA_Scale
 	SetVariable Scale_DA_AllIClamp,userdata(tabnum)=  "1"
 	SetVariable Scale_DA_AllIClamp,userdata(tabcontrol)=  "ADC"
 	SetVariable Scale_DA_AllIClamp,userdata(ResizeControlsInfo)= A"!!,HK!!#D-!!#>V!!#<Hz!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	SetVariable Scale_DA_AllIClamp,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	SetVariable Scale_DA_AllIClamp,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
 	SetVariable Scale_DA_AllIClamp,limits={-inf,inf,10},value= _NUM:1
-	PopupMenu IndexEnd_DA_AllIClamp,pos={354.00,628.00},size={125.00,19.00},bodyWidth=125,disable=3,proc=DAP_PopMenuChkProc_StimSetList
+	PopupMenu IndexEnd_DA_AllIClamp,pos={354.00,628.00},size={125.00,19.00},bodyWidth=125,disable=1,proc=DAP_PopMenuChkProc_StimSetList
 	PopupMenu IndexEnd_DA_AllIClamp,userdata(tabnum)=  "1"
 	PopupMenu IndexEnd_DA_AllIClamp,userdata(tabcontrol)=  "ADC"
 	PopupMenu IndexEnd_DA_AllIClamp,userdata(ResizeControlsInfo)= A"!!,Hl!!#D-!!#@^!!#<Pz!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
@@ -3583,6 +3581,11 @@ Window DA_Ephys() : Panel
 	SetVariable SetVar_DataAcq_skipAhead,userdata(tabnum)=  "0"
 	SetVariable SetVar_DataAcq_skipAhead,userdata(tabcontrol)=  "ADC"
 	SetVariable SetVar_DataAcq_skipAhead,limits={0,4,1},value= _NUM:0
+	CheckBox check_DA_applyOnModeSwitch,pos={347.00,692.00},size={134.00,15.00},disable=1,title="Apply on mode switch"
+	CheckBox check_DA_applyOnModeSwitch,help={"Apply clamp mode all-channel DA settings on mode switch"}
+	CheckBox check_DA_applyOnModeSwitch,userdata(tabnum)=  "1"
+	CheckBox check_DA_applyOnModeSwitch,userdata(tabcontrol)=  "ADC"
+	CheckBox check_DA_applyOnModeSwitch,value= 0,side= 1
 	DefineGuide UGV0={FR,-25},UGH0={FB,-27},UGV1={FL,481}
 	SetWindow kwTopWin,hook(cleanup)=DAP_WindowHook
 	SetWindow kwTopWin,userdata(ResizeControlsInfo)= A"!!*'\"z!!#CW!!#Dl5QCcbzzzzzzzzzzzzzzzzzzzz"
@@ -4079,7 +4082,33 @@ Function DAP_EphysPanelStartUpSettings()
    ValDisplay valdisp_DataAcq_P_LED_6 WIN = $panelTitle, value= _NUM:-1
    ValDisplay valdisp_DataAcq_P_LED_7 WIN = $panelTitle, value= _NUM:-1
    
-  	ValDisplay valdisp_DataAcq_P_LED_Approach WIN = $panelTitle, value= _NUM:0
+   ValDisplay valdisp_DataAcq_P_LED_0,limits={-1,2,0},barmisc={0,0},mode= 2,highColor= (65535,49000,49000),lowColor= (65535,65535,65535),zeroColor= (49151,53155,65535)
+   ValDisplay valdisp_DataAcq_P_LED_1,limits={-1,2,0},barmisc={0,0},mode= 2,highColor= (65535,49000,49000),lowColor= (65535,65535,65535),zeroColor= (49151,53155,65535)
+   ValDisplay valdisp_DataAcq_P_LED_2,limits={-1,2,0},barmisc={0,0},mode= 2,highColor= (65535,49000,49000),lowColor= (65535,65535,65535),zeroColor= (49151,53155,65535)
+   ValDisplay valdisp_DataAcq_P_LED_3,limits={-1,2,0},barmisc={0,0},mode= 2,highColor= (65535,49000,49000),lowColor= (65535,65535,65535),zeroColor= (49151,53155,65535)
+   ValDisplay valdisp_DataAcq_P_LED_4,limits={-1,2,0},barmisc={0,0},mode= 2,highColor= (65535,49000,49000),lowColor= (65535,65535,65535),zeroColor= (49151,53155,65535)
+   ValDisplay valdisp_DataAcq_P_LED_5,limits={-1,2,0},barmisc={0,0},mode= 2,highColor= (65535,49000,49000),lowColor= (65535,65535,65535),zeroColor= (49151,53155,65535)
+   ValDisplay valdisp_DataAcq_P_LED_6,limits={-1,2,0},barmisc={0,0},mode= 2,highColor= (65535,49000,49000),lowColor= (65535,65535,65535),zeroColor= (49151,53155,65535)
+   ValDisplay valdisp_DataAcq_P_LED_7,limits={-1,2,0},barmisc={0,0},mode= 2,highColor= (65535,49000,49000),lowColor= (65535,65535,65535),zeroColor= (49151,53155,65535)
+   
+   ValDisplay valdisp_DataAcq_P_0,valueBackColor=(65535,65535,65535,0)
+   ValDisplay valdisp_DataAcq_P_0,limits={0,0,0},barmisc={0,1000},value= #"0.00"
+   ValDisplay valdisp_DataAcq_P_1,valueBackColor=(65535,65535,65535,0)
+   ValDisplay valdisp_DataAcq_P_1,limits={0,0,0},barmisc={0,1000},value= #"0.00"
+   ValDisplay valdisp_DataAcq_P_2,valueBackColor=(65535,65535,65535,0)
+   ValDisplay valdisp_DataAcq_P_2,limits={0,0,0},barmisc={0,1000},value= #"0.00"
+   ValDisplay valdisp_DataAcq_P_3,valueBackColor=(65535,65535,65535,0)
+   ValDisplay valdisp_DataAcq_P_3,limits={0,0,0},barmisc={0,1000},value= #"0.00"
+   ValDisplay valdisp_DataAcq_P_4,valueBackColor=(65535,65535,65535,0)
+   ValDisplay valdisp_DataAcq_P_4,limits={0,0,0},barmisc={0,1000},value= #"0.00"
+   ValDisplay valdisp_DataAcq_P_5,valueBackColor=(65535,65535,65535,0)
+   ValDisplay valdisp_DataAcq_P_5,limits={0,0,0},barmisc={0,1000},value= #"0.00"
+   ValDisplay valdisp_DataAcq_P_6,valueBackColor=(65535,65535,65535,0)
+   ValDisplay valdisp_DataAcq_P_6,limits={0,0,0},barmisc={0,1000},value= #"0.00"
+   ValDisplay valdisp_DataAcq_P_7,valueBackColor=(65535,65535,65535,0)
+   ValDisplay valdisp_DataAcq_P_7,limits={0,0,0},barmisc={0,1000},value= #"0.00"
+	
+	ValDisplay valdisp_DataAcq_P_LED_Approach WIN = $panelTitle, value= _NUM:0
 	ValDisplay valdisp_DataAcq_P_LED_Seal WIN = $panelTitle, value= _NUM:0
 	ValDisplay valdisp_DataAcq_P_LED_Breakin WIN = $panelTitle, value= _NUM:0
 	ValDisplay valdisp_DataAcq_P_LED_Clear WIN = $panelTitle, value= _NUM:0
@@ -4090,6 +4119,7 @@ Function DAP_EphysPanelStartUpSettings()
 	CheckBox check_Settings_UserP_Clear WIN = $panelTitle, value=0
 	CheckBox check_DataACq_Pressure_AutoOFF WIN = $panelTitle, value=0
 	CheckBox check_DataACq_Pressure_User WIN = $panelTitle, value=0
+	CheckBox check_DA_applyOnModeSwitch WIN = $panelTitle, value=0
 	
 	SetVariable setvar_dataAcq_skipAhead win=$panelTitle, value= _NUM:0
 	EnableControl(panelTitle, "button_Hardware_P_Enable")
@@ -6098,7 +6128,6 @@ Function DAP_ChangeHeadStageMode(panelTitle, clampMode, headstage, mccMiesSyncOv
 		elseif(getCheckboxState(panelTitle, "check_Settings_RequireAmpConn"))
 			DAP_SetAmpModeControls(panelTitle, i, clampMode)
 		endif
-		
 	endfor
 
 	DAP_UpdateDAQControls(panelTitle, REASON_HEADSTAGE_CHANGE)
@@ -6106,8 +6135,6 @@ Function DAP_ChangeHeadStageMode(panelTitle, clampMode, headstage, mccMiesSyncOv
 	if(activeHS || headstage < 0)
 		TP_RestartTestPulse(panelTitle, testPulseMode)
 	endif
-
-	DAP_UpdateAllCtrlsPerClampMode(panelTitle)
 
 	if(oldTab != 0)
 		PGC_SetAndActivateControl(panelTitle, "ADC", val=oldTab)
@@ -6168,6 +6195,7 @@ static Function DAP_SetHeadstageChanControls(panelTitle, headstage, clampMode)
 		variable oppositeMode = (clampMode == I_CLAMP_MODE || clampMode == I_EQUAL_ZERO_MODE ? V_CLAMP_MODE : I_CLAMP_MODE)
 		DAP_RemoveClampModeSettings(panelTitle, headstage, oppositeMode)
 		DAP_ApplyClmpModeSavdSettngs(panelTitle, headstage, clampMode)
+		DAP_AllChanDASettings(panelTitle, headStage)
 	endif
 End
 
@@ -6188,48 +6216,6 @@ static Function DAP_ConditionallySetAmpGui(panelTitle, headstage, clampMode, sli
 	
 	if(sliderPos == headstage)
 		DAP_UpdateClampmodeTabs(panelTitle, headstage, clampMode, mccMiesSyncOverride)
-	endif
-End
-
-static Function DAP_UpdateAllCtrlsPerClampMode(panelTitle)
-	string panelTitle
-
-	variable i, numEntries
-	variable clampMode, numVClamp, numIClamp
-
-	WAVE GUIState = GetDA_EphysGuiStateNum(panelTitle)
-
-	for(i = 0; i < NUM_HEADSTAGES; i += 1)
-		clampMode = GuiState[i][%HSmode]
-
-		numVClamp += (clampMode == V_CLAMP_MODE)
-		numIClamp += (clampMode == I_CLAMP_MODE)
-	endfor
-
-	Make/FREE/T VControls = {"group_DA_AllVClamp",                                                                  \
-							GetPanelControl(CHANNEL_INDEX_ALL_V_CLAMP, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_CHECK),    \
-							GetPanelControl(CHANNEL_INDEX_ALL_V_CLAMP, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_WAVE),     \
-							GetPanelControl(CHANNEL_INDEX_ALL_V_CLAMP, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_SCALE),    \
-							GetPanelControl(CHANNEL_INDEX_ALL_V_CLAMP, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_SEARCH),   \
-							GetPanelControl(CHANNEL_INDEX_ALL_V_CLAMP, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_INDEX_END) }
-
-	Make/FREE/T IControls = {"group_DA_AllIClamp",                                                                  \
-							GetPanelControl(CHANNEL_INDEX_ALL_I_CLAMP, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_CHECK),    \
-							GetPanelControl(CHANNEL_INDEX_ALL_I_CLAMP, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_WAVE),     \
-							GetPanelControl(CHANNEL_INDEX_ALL_I_CLAMP, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_SCALE),    \
-							GetPanelControl(CHANNEL_INDEX_ALL_I_CLAMP, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_SEARCH),   \
-							GetPanelControl(CHANNEL_INDEX_ALL_I_CLAMP, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_INDEX_END) }
-
-	if(numVClamp)
-		EnableControls(panelTitle, TextWaveToList(VControls, ";"))
-	else
-		DisableControls(panelTitle, TextWaveToList(VControls, ";"))
-	endif
-
-	if(numIClamp)
-		EnableControls(panelTitle, TextWaveToList(IControls, ";"))
-	else
-		DisableControls(panelTitle, TextWaveToList(IControls, ";"))
 	endif
 End
 
@@ -8033,6 +8019,42 @@ Function DAP_UpdateDAQControls(panelTitle, updateFlag)
 		DAP_CheckSkipAhead(panelTitle)
 	endif
 End
+
+/// @brief Applies user settings for the clamp mode stimulus sets (DA Set and Indexing End Set) on mode switch
+///
+/// @param panelTitle device
+/// @param headStage MIES headstage number, must be in the range [0, NUM_HEADSTAGES]
+Function DAP_AllChanDASettings(panelTitle, headStage)
+	string panelTitle
+	variable headStage
+	
+	string ctrl
+	WAVE GuiState = GetDA_EphysGuiStateNum(panelTitle)
+
+	variable scalar, index, indexEnd
+	if(!GetCheckboxState(panelTitle, "check_DA_applyOnModeSwitch"))
+		return NaN
+	endif
+
+	if(GuiState[headStage][%HSmode] == V_CLAMP_MODE)
+		scalar = GetSetVariable(panelTitle, GetPanelControl(CHANNEL_INDEX_ALL_V_CLAMP,CHANNEL_TYPE_DAC,CHANNEL_CONTROL_SCALE))
+		index = GetPopupMenuIndex(panelTitle, GetPanelControl(CHANNEL_INDEX_ALL_V_CLAMP,CHANNEL_TYPE_DAC,CHANNEL_CONTROL_WAVE))
+		indexEnd = GetPopupMenuIndex(panelTitle, GetPanelControl(CHANNEL_INDEX_ALL_V_CLAMP,CHANNEL_TYPE_DAC,CHANNEL_CONTROL_INDEX_END))
+	elseif(GuiState[headStage][%HSmode] == I_CLAMP_MODE)
+		scalar = GetSetVariable(panelTitle, GetPanelControl(CHANNEL_INDEX_ALL_I_CLAMP,CHANNEL_TYPE_DAC,CHANNEL_CONTROL_SCALE))
+		index = GetPopupMenuIndex(panelTitle, GetPanelControl(CHANNEL_INDEX_ALL_I_CLAMP,CHANNEL_TYPE_DAC,CHANNEL_CONTROL_WAVE))
+		indexEnd = GetPopupMenuIndex(panelTitle, GetPanelControl(CHANNEL_INDEX_ALL_I_CLAMP,CHANNEL_TYPE_DAC,CHANNEL_CONTROL_INDEX_END))
+	endif
+	// update the scalar
+	ctrl = GetPanelControl(headStage, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_SCALE)
+	PGC_SetAndActivateControl(panelTitle, ctrl, val = scalar)
+	// update the stimulus set
+	ctrl = GetPanelControl(headStage, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_WAVE)
+	PGC_SetAndActivateControl(panelTitle, ctrl, val = index)
+	// update the Index end set
+	ctrl = GetPanelControl(headStage, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_INDEX_END)
+	PGC_SetAndActivateControl(panelTitle, ctrl, val = indexEnd)
+End	
 
 Function DAP_ButtonProc_skipSweep(ba) : ButtonControl
 	STRUCT WMButtonAction &ba

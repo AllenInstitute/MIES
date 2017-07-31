@@ -624,7 +624,7 @@ End
 /// @brief Returns pressure access defined in @ref PRESSURE_CONSTANTS of the headstage
 ///
 /// @param panelTitle The DAQ device for which user access is being queried
-/// @param headStage The headstage for which user access is being queried
+/// @param headStage MIES headstage number, must be in the range [0, NUM_HEADSTAGES]
 /// @param pressureMode One of the pressure modes defined in @ref PRESSURE_CONSTANTS
 Function P_GetUserAccess(panelTitle, headStage, pressureMode)
 	string panelTitle
@@ -2041,7 +2041,7 @@ End
 ///
 /// Intended for use by other processes
 /// @param panelTitle device
-/// @param headStage headstage number
+/// @param headStage MIES headstage number, must be in the range [0, NUM_HEADSTAGES]
 /// @param pressureMode One of the pressure modes defined in @ref PressureModeConstants
 /// @param pressure [optional, ignored by default. Sets pressure of manual mode]
 Function P_SetPressureMode(panelTitle, headStage, pressureMode, [pressure])
