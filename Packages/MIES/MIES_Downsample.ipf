@@ -363,7 +363,7 @@ Function/S GetPopupMenuRates()
 	Wave rates = GetDownsampleRateWave()
 
 	if(!DimSize(rates, ROWS))
-		return "None"
+		return NONE
 	endif
 
 	maximum = WaveMax(rates)
