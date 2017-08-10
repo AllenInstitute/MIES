@@ -290,6 +290,20 @@ static Function UpdateCurrentSize(win)
 	SetValDisplay(win, valdisp_currentsize, var=size, format="%3.0f")
 End
 
+static Function GetTargetRate(win)
+	string win
+
+	string str
+
+	str = GetPopupMenuString(win, popup_targetrate)
+
+	if(!cmpstr(str, NONE))
+		return NaN
+	endif
+
+	return str2num(str)
+End
+
 static Function UpdateEstimatedSizeAfterwards(win)
 	string win
 
@@ -297,8 +311,8 @@ static Function UpdateEstimatedSizeAfterwards(win)
 	Wave      rate    = GetDownsampleRateWave()
 	variable i, size = 0
 	variable numWaves = DimSize(dataRef, ROWS)
+	variable targetRate = GetTargetRate(win)
 
-	variable targetRate = str2num(GetPopupMenuString(win, popup_targetrate))
 	for(i=0;i<numWaves;i+=1)
 		size += GetWaveSize(dataRef[i]) * targetRate / rate[i]
 	endfor
@@ -363,7 +377,7 @@ Function/S GetPopupMenuRates()
 	Wave rates = GetDownsampleRateWave()
 
 	if(!DimSize(rates, ROWS))
-		return "None"
+		return NONE
 	endif
 
 	maximum = WaveMax(rates)
@@ -622,7 +636,7 @@ Function ButtonDoIt(ba) : ButtonControl
 			ASSERT(DimSize(dataRef, ROWS) == DimSize(rate, ROWS), "Unmatched wave sizes")
 			ASSERT(DimSize(list, ROWS)    == DimSize(rate, ROWS), "Unmatched wave sizes")
 
-			targetRate = str2num(GetPopupMenuString(win, popup_targetrate))
+			targetRate = GetTargetRate(win)
 
 			numWaves = DimSize(dataRef, ROWS)
 			for(i=0;i < numWaves; i+=1)
