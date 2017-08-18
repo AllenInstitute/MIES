@@ -576,13 +576,7 @@ static Function IDX_TotalIndexingListSteps(panelTitle, ChannelNumber, DAorTTL)
 			while( (i + TTLIndexingStorageWave[1][ChannelNumber]) <= TTLIndexingStorageWave[0][ChannelNumber] )
 		endif
 	endif
-	if(channelnumber==0)
-	//print "Chan0 total list steps = "+num2str(totalliststeps)
-	endif
-	
-	if(channelnumber==1)
-	//print "Chan1 total list steps = "+num2str(totalliststeps)
-	endif
+
 	return TotalListSteps
 End
 
@@ -606,7 +600,6 @@ Function IDX_UnlockedIndexingStepNo(panelTitle, channelNo, DAorTTL, count)
 		count -= totalListsteps
 		endif
 	while(count >= totalListSteps)
-	//print "totalListSteps = "+num2str(totalListSteps)
 	
 		ChannelPopUpMenuName = GetPanelControl(channelNo, DAorTTL, CHANNEL_CONTROL_WAVE)
 		PopUpMenuList = getuserdata(panelTitle, ChannelPopUpMenuName, "MenuExp")// returns list of waves - does not include none or testpulse
@@ -616,14 +609,10 @@ Function IDX_UnlockedIndexingStepNo(panelTitle, channelNo, DAorTTL, count)
 			if(DAorTTL == 0)//DA channel
 				do
 					StepsInSummedSets += dimsize($DAorTTLWavePath + stringfromlist((DAIndexingStorageWave[0][channelNo] + i - ListOffset), PopUpMenuList,";"),1)
-					//print (DAIndexingStorageWave[1][channelNo]+i-ListOffset)
-					//print stringfromlist((DAIndexingStorageWave[1][channelNo]+i-ListOffset),PopUpMenuList,";")
-					//print "columns in set = " + num2str(dimsize($DAorTTLWavePath+stringfromlist((DAIndexingStorageWave[0][channelNo]+i-ListOffset),PopUpMenuList,";"),1))
 					i += 1
 				while(StepsInSummedSets<=Count)
 				i-=1
 				StepsInSummedSets-=dimsize($DAorTTLWavePath+stringfromlist((DAIndexingStorageWave[0][channelNo]+i-ListOffset),PopUpMenuList,";"),1)
-				//print "steps in summed sets = "+num2str(stepsinsummedsets)
 			endif
 		
 			if(DAorTTL==1)//TTL channel
@@ -633,7 +622,6 @@ Function IDX_UnlockedIndexingStepNo(panelTitle, channelNo, DAorTTL, count)
 				while(StepsInSummedSets<=Count)
 				i-=1
 				StepsInSummedSets-=dimsize($DAorTTLWavePath+stringfromlist((TTLIndexingStorageWave[0][channelNo]+i-ListOffset),PopUpMenuList,";"),1)
-				//print "steps in summed sets = "+num2str(stepsinsummedsets)
 			endif
 		endif
 		
@@ -642,14 +630,10 @@ Function IDX_UnlockedIndexingStepNo(panelTitle, channelNo, DAorTTL, count)
 			if(DAorTTL==0)//DA channel
 				do
 					StepsInSummedSets+=dimsize($DAorTTLWavePath+stringfromlist((DAIndexingStorageWave[0][channelNo]+i-ListOffset),PopUpMenuList,";"),1)
-				//	print (DAIndexingStorageWave[0][channelNo]+i-ListOffset)
-				//	print stringfromlist((DAIndexingStorageWave[0][channelNo]+i-ListOffset),PopUpMenuList,";")
-				//	print "columns in set = " + num2str(dimsize($DAorTTLWavePath+stringfromlist((DAIndexingStorageWave[0][channelNo]+i-ListOffset),PopUpMenuList,";"),1))			
 					i-=1
 				while(StepsInSummedSets<=Count)
 				i+=1
 				StepsInSummedSets-=dimsize($DAorTTLWavePath+stringfromlist((DAIndexingStorageWave[0][channelNo]+i-ListOffset),PopUpMenuList,";"),1)
-			//	print "steps in summed sets = "+num2str(stepsinsummedsets)
 			endif
 		
 			if(DAorTTL==1)//TTL channel
@@ -659,7 +643,6 @@ Function IDX_UnlockedIndexingStepNo(panelTitle, channelNo, DAorTTL, count)
 				while(StepsInSummedSets<=Count)
 				i+=1
 				StepsInSummedSets-=dimsize($DAorTTLWavePath+stringfromlist((TTLIndexingStorageWave[0][channelNo]+i-ListOffset),PopUpMenuList,";"),1)
-				//print "steps in summed sets = "+num2str(stepsinsummedsets)
 			endif
 		endif
 		
@@ -696,9 +679,7 @@ static Function IDX_DetIfCountIsAtSetBorder(panelTitle, count, channelNumber, DA
 			if(DAorTTL==0)//DA channel
 				do
 					StepsInSummedSets+=dimsize($DAorTTLWavePath+stringfromlist((DAIndexingStorageWave[0][ChannelNumber]+i-ListOffset),PopUpMenuList,";"),1)
-					//print "steps in summed sets = "+num2str(stepsinsummedsets)
 					if(StepsInSummedSets==Count)
-						//print "At a Set Border"
 						AtSetBorder=1
 						return AtSetBorder
 					endif
@@ -714,7 +695,6 @@ static Function IDX_DetIfCountIsAtSetBorder(panelTitle, count, channelNumber, DA
 					StepsInSummedSets+=dimsize($DAorTTLWavePath+stringfromlist((TTLIndexingStorageWave[0][ChannelNumber]+i-ListOffset),PopUpMenuList,";"),1)
 					
 					if(StepsInSummedSets==Count)
-						//print "At a Set Border"
 						AtSetBorder=1
 						return AtSetBorder
 					endif
@@ -728,11 +708,6 @@ static Function IDX_DetIfCountIsAtSetBorder(panelTitle, count, channelNumber, DA
 			if(DAorTTL==0)//DA channel
 				do
 					StepsInSummedSets+=dimsize($DAorTTLWavePath+stringfromlist((DAIndexingStorageWave[0][ChannelNumber]+i-ListOffset),PopUpMenuList,";"),1)
-					if(ChannelNumber==0)
-					//print PopUpMenuList
-					// print DAIndexingStorageWave[1][ChannelNumber]
-					//print "steps in summed sets = "+num2str(stepsinsummedsets)
-					endif
 					if(StepsInSummedSets==Count)
 						AtSetBorder=1
 						return AtSetBorder
@@ -749,7 +724,6 @@ static Function IDX_DetIfCountIsAtSetBorder(panelTitle, count, channelNumber, DA
 					StepsInSummedSets+=dimsize($DAorTTLWavePath+stringfromlist((TTLIndexingStorageWave[0][ChannelNumber]+i-ListOffset),PopUpMenuList,";"),1)
 					
 					if(StepsInSummedSets==Count)
-						//print "At a Set Border"
 						AtSetBorder=1
 						return AtSetBorder
 					endif
