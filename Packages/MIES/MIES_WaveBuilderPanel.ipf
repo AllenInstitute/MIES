@@ -1682,6 +1682,11 @@ static Function WBP_LoadSet(setName)
 	else
 		setPrefix = DEFAULT_SET_PREFIX
 		channelType = CHANNEL_TYPE_DAC
+
+		KillOrMoveToTrash(wv=GetSegmentTypeWave())
+		KillOrMoveToTrash(wv=GetWaveBuilderWaveParam())
+		KillOrMoveToTrash(wv=GetWaveBuilderWaveTextParam())
+
 		PopupMenu popup_WaveBuilder_OutputType win=$panel, mode = 1
 		WBP_ChangeWaveType(STIMULUS_TYPE_DA)
 	endif
