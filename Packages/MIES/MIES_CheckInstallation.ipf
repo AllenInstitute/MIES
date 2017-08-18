@@ -123,34 +123,20 @@ Function CHI_CheckInstallation()
 		printf "Mies version info: Valid \"%s\" (Nice!)\r", miesVersion
 	endif
 
-#if defined(IGOR64)
 	CHI_CheckXOP(listOfXOPs, "itcxop2-64.xop", "ITC XOP", state)
 	CHI_CheckXOP(listOfXOPs, "VDT2-64.xop", "VDT2 XOP", state)
 	CHI_CheckXOP(listOfXOPs, "HDF5-64.xop", "HDF5 XOP", state)
 	CHI_CheckXOP(listOfXOPs, "AxonTelegraph64.xop", "Axon Telegraph XOP", state)
 	CHI_CheckXOP(listOfXOPs, "MultiClamp700xCommander64.xop", "Multi Clamp Commander XOP", state)
 	CHI_CheckXOP(listOfXOPs, "ZeroMQ-64.xop", "ZeroMQ XOP", state)
-#else
-	CHI_CheckXOP(listOfXOPs, "itcxop2.xop", "ITC XOP", state)
-	CHI_CheckXOP(listOfXOPs, "VDT2.xop", "VDT2 XOP", state)
-	CHI_CheckXOP(listOfXOPs, "HDF5.xop", "HDF5 XOP", state)
-	CHI_CheckXOP(listOfXOPs, "AxonTelegraph.xop", "Axon Telegraph XOP", state)
-	CHI_CheckXOP(listOfXOPs, "MultiClamp700xCommander.xop", "Multi Clamp Commander XOP", state)
-	CHI_CheckXOP(listOfXOPs, "ZeroMQ.xop", "ZeroMQ XOP", state)
-#endif
 
 	printf "Results: %d checks, %d number of errors, %d number of warnings\r", state.numTries, state.numErrors, state.numWarnings
 
 	CHI_InitInstallationState(state)
 	printf "\rChecking extended installation:\r"
 
-#if defined(IGOR64)
 	CHI_CheckXOP(listOfXOPs, "tango_binding-64.xop", "Tango XOP", state)
 	CHI_CheckXOP(listOfXOPs, "NIDAQmx64.xop", "NI-DAQ MX XOP", state)
-#else
-	CHI_CheckXOP(listOfXOPs, "tango_binding.xop", "Tango XOP", state)
-	CHI_CheckXOP(listOfXOPs, "NIDAQmx.xop", "NI-DAQ MX XOP", state)
-#endif
 
 	printf "Results: %d checks, %d number of errors, %d number of warnings\r", state.numTries, state.numErrors, state.numWarnings
 	ControlWindowToFront()

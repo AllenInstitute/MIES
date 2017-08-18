@@ -6,6 +6,12 @@
 #pragma ModuleName=MIES_UTILS
 #endif
 
+#ifndef IGOR64
+#ifndef EVIL_KITTEN_EATING_MODE
+	#define *** The 32bit version of MIES is not supported anymore, please switch to the 64bit version. If you are not able to switch please email the MIES devlopers why you can not switch. ***
+#endif
+#endif
+
 /// @file MIES_Utilities.ipf
 /// @brief General utility functions
 
@@ -1847,11 +1853,7 @@ End
 Function GetFreeMemory()
 	variable freeMem
 
-#if defined(IGOR64)
 	freeMem = NumberByKey("PHYSMEM", IgorInfo(0)) - NumberByKey("USEDPHYSMEM", IgorInfo(0))
-#else
-	freeMem = NumberByKey("FREEMEM", IgorInfo(0))
-#endif
 
 	return freeMem / 1024 / 1024 / 1024
 End
@@ -2400,11 +2402,7 @@ End
 /// Distinguishes between i386 and x64 Igor versions
 Function/S GetIgorExtensionFolderName()
 
-#if defined(IGOR64)
 	return "Igor Extensions (64-bit)"
-#else
-	return "Igor Extensions"
-#endif
 End
 
 /// @brief Recursively resolve shortcuts to files/directories
@@ -2484,11 +2482,7 @@ End
 ///        Igor Pro was built for.
 Function GetArchitectureBits()
 
-#if defined(IGOR64)
 	return 64
-#else
-	return 32
-#endif
 End
 
 /// @brief Return a unique symbolic path name
