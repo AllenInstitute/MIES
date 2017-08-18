@@ -728,6 +728,8 @@ Function HW_ITC_HandleReturnValues(flags, ITCError, ITCXOPError)
 		printf "Complete call stack: %s\r", GetRTStackInfo(3)
 	endif
 
+	ControlWindowToFront()
+
 #ifndef EVIL_KITTEN_EATING_MODE
 	if(ITCXOPError != 0 || ITCError != 0)
 		ASSERT(!(flags & HARDWARE_ABORT_ON_ERROR), "DAC error")
@@ -1603,6 +1605,7 @@ Function HW_NI_ReadDigital(device, [DIOPort, DIOLine, flags])
 	DAQmx_DIO_Config/DEV=device/DIR=1/LGRP=(lineGrouping) line
 	if (GetRTError(1))
 		print fDAQmx_ErrorString()
+		ControlWindowToFront()
 		if(flags & HARDWARE_ABORT_ON_ERROR)
 			ASSERT(0, "Error calling DAQmx_DIO_Config")
 		endif
@@ -1617,6 +1620,7 @@ Function HW_NI_ReadDigital(device, [DIOPort, DIOLine, flags])
 	if(ret)
 		print fDAQmx_ErrorString()
 		printf "Error %d: fDAQmx_DIO_Finished\r", ret
+		ControlWindowToFront()
 		if(flags & HARDWARE_ABORT_ON_ERROR)
 			ASSERT(0, "Error calling fDAQmx_DIO_Finished")
 		endif
@@ -1661,6 +1665,7 @@ Function HW_NI_WriteDigital(device, value, [DIOPort, DIOLine, flags])
 	DAQmx_DIO_Config/DEV=device/DIR=1/LGRP=(lineGrouping) line
 	if (GetRTError(1))
 		print fDAQmx_ErrorString()
+		ControlWindowToFront()
 		if(flags & HARDWARE_ABORT_ON_ERROR)
 			ASSERT(0, "Error calling DAQmx_DIO_Config")
 		endif
@@ -1674,6 +1679,7 @@ Function HW_NI_WriteDigital(device, value, [DIOPort, DIOLine, flags])
 	if(ret)
 		print fDAQmx_ErrorString()
 		printf "Error %d: fDAQmx_DIO_Write\r", ret
+		ControlWindowToFront()
 		if(flags & HARDWARE_ABORT_ON_ERROR)
 			ASSERT(0, "Error calling fDAQmx_DIO_Write")
 		endif
@@ -1683,6 +1689,7 @@ Function HW_NI_WriteDigital(device, value, [DIOPort, DIOLine, flags])
 	if(ret)
 		print fDAQmx_ErrorString()
 		printf "Error %d: fDAQmx_DIO_Finished\r", ret
+		ControlWindowToFront()
 		if(flags & HARDWARE_ABORT_ON_ERROR)
 			ASSERT(0, "Error calling fDAQmx_DIO_Finished")
 		endif
@@ -1794,6 +1801,7 @@ Function HW_NI_ResetDevice(device, [flags])
 	if(ret)
 		print fDAQmx_ErrorString()
 		printf "Error %d: fDAQmx_resetDevice\r", ret
+		ControlWindowToFront()
 		if(flags & HARDWARE_ABORT_ON_ERROR)
 			ASSERT(0, "Error calling fDAQmx_DIO_Finished")
 		endif

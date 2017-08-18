@@ -333,6 +333,7 @@ Function ITC_ApplyAutoBias(panelTitle, BaselineSSAvg, SSResistance)
 
 		if(!IsFinite(actualCurrent))
 			print "Queried amplifier current is non-finite"
+			ControlWindowToFront()
 			continue
 		endif
 
@@ -340,6 +341,7 @@ Function ITC_ApplyAutoBias(panelTitle, BaselineSSAvg, SSResistance)
 
 		if( abs(current) > maximumAutoBiasCurrent)
 			printf "Headstage %d: Not applying autobias current shot of %gA as that would exceed the maximum allowed current of %gA\r", headStage, current, maximumAutoBiasCurrent
+			ControlWindowToFront()
 			continue
 		endif
 
@@ -440,6 +442,7 @@ static Function ITC_SupportSystemAlarm(Channel, Measurement, MeasurementTitle, p
 		if(Measurement >= ParamMax || Measurement <= ParamMin)
 			beep
 			print time() + " !!!!!!!!!!!!! " + MeasurementTitle + " has exceeded max/min settings" + " !!!!!!!!!!!!!"
+			ControlWindowToFront()
 			beep
 		endif
 	endif

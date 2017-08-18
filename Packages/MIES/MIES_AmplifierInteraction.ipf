@@ -546,6 +546,7 @@ Function AI_SendToAmp(panelTitle, headStage, mode, func, value, [checkBeforeWrit
 
 	if(!IsFinite(ret))
 		print "Amp communication error. Check associations in hardware tab and/or use Query connected amps button"
+		ControlWindowToFront()
 	endif
 
 	// return value is only relevant for the getters

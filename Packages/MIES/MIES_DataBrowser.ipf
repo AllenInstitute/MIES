@@ -132,6 +132,7 @@ static Function DB_LockDBPanel(panelTitle, device)
 		endif
 
 		print "Please choose a device assignment for the data browser"
+		ControlWindowToFront()
 		DoWindow/W=$panelTitle/C $panelTitleNew
 		SetWindow $panelTitleNew, userdata($MIES_PANEL_TYPE_USER_DATA) = ""
 		SetWindow $panelTitleNew, userdata(DataFolderPath) = ""
@@ -614,6 +615,7 @@ Function DB_DataBrowserStartupSettings()
 
 	if(!windowExists(panelTitle))
 		print "A panel named \"DataBrowser\" does not exist"
+		ControlWindowToFront()
 		return NaN
 	endif
 

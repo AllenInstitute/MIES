@@ -256,6 +256,7 @@ static Function SI_FindMatchingTableEntry(wv, ac)
 	printf "Warning! Could not find a matching entry for the channel combination!\r"
 	print ac
 	printf "Using a sampling interval of %g micoseconds\r", SAMPLING_INTERVAL_FALLBACK * 1000
+	ControlWindowToFront()
 
 	return SAMPLING_INTERVAL_FALLBACK * 1000
 End
