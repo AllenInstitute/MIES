@@ -30,7 +30,7 @@ static Function RA_HandleITI_MD(panelTitle)
 	AFM_CallAnalysisFunctions(panelTitle, POST_SET_EVENT)
 	ITI = RA_RecalculateITI(panelTitle)
 
-	if(!GetCheckBoxState(panelTitle, "check_Settings_ITITP"))
+	if(!GetCheckBoxState(panelTitle, "check_Settings_ITITP") || ITI <= 0)
 		ITC_StartBackgroundTimerMD(ITI, "RA_CounterMD(\"" + panelTitle + "\")", "", "", panelTitle)
 		return NaN
 	endif
@@ -48,7 +48,7 @@ static Function RA_HandleITI(panelTitle)
 	AFM_CallAnalysisFunctions(panelTitle, POST_SET_EVENT)
 	ITI = RA_RecalculateITI(panelTitle)
 
-	if(!GetCheckBoxState(panelTitle, "check_Settings_ITITP"))
+	if(!GetCheckBoxState(panelTitle, "check_Settings_ITITP") || ITI <= 0)
 		ITC_StartBackgroundTimer(ITI, "RA_Counter(\"" + panelTitle + "\")", "", "", panelTitle)
 		return NaN
 	endif
