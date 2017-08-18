@@ -275,7 +275,7 @@ Function TI_ConfigureMCCforIVSCC(headstage, [cmdID])
 	string cmdID
 	variable headstage
 
-	variable initResult
+	variable initResult, oldTab
 	variable numErrors
 	string lockedDevList
 	variable noLockedDevs
@@ -290,6 +290,12 @@ Function TI_ConfigureMCCforIVSCC(headstage, [cmdID])
 	// make sure the MCC is valid
 	for(n = 0; n<noLockedDevs; n+= 1)
 		currentPanel = StringFromList(n, lockedDevList)
+
+		// explicitly switch to the data acquistion tab to avoid having
+		// the control layout messed up
+		oldTab = GetTabID(currentPanel, "ADC")
+		PGC_SetAndActivateControl(currentPanel, "ADC", val=0)
+
 		initResult = AI_SelectMultiClamp(currentPanel, headstage)
 		if(initResult != AMPLIFIER_CONNECTION_SUCCESS)
 			print "MCC not valid...cannot initialize Amplifier Settings"
@@ -424,6 +430,10 @@ Function TI_ConfigureMCCforIVSCC(headstage, [cmdID])
 				print "Error setting WholeCellCompResist to 0"
 				numErrors += 1
 			endif
+		endif
+
+		if(oldTab != 0)
+			PGC_SetAndActivateControl(currentPanel, "ADC", val=oldTab)
 		endif
 	endfor
 
