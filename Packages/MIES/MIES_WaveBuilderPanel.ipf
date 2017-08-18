@@ -1661,15 +1661,7 @@ static Function WBP_LoadSet(setName)
 	if(cmpstr(setName, NONE))
 		WBP_SplitSetname(setName, setPrefix, channelType, setNumber)
 
-		if(channelType == CHANNEL_TYPE_TTL)
-			PopupMenu popup_WaveBuilder_OutputType win=$panel, mode = 2
-			WBP_ChangeWaveType(STIMULUS_TYPE_TLL)
-		elseif(channelType == CHANNEL_TYPE_DAC)
-			PopupMenu popup_WaveBuilder_OutputType win=$panel, mode = 1
-			WBP_ChangeWaveType(STIMULUS_TYPE_DA)
-		else
-			ASSERT(0, "unknown channelType")
-		endif
+		PGC_SetAndActivateControl(panel, "popup_WaveBuilder_OutputType", val = channelType)
 
 		WAVE WP        = WB_GetWaveParamForSet(setName)
 		WAVE/T WPT     = WB_GetWaveTextParamForSet(setName)
@@ -1687,8 +1679,7 @@ static Function WBP_LoadSet(setName)
 		KillOrMoveToTrash(wv=GetWaveBuilderWaveParam())
 		KillOrMoveToTrash(wv=GetWaveBuilderWaveTextParam())
 
-		PopupMenu popup_WaveBuilder_OutputType win=$panel, mode = 1
-		WBP_ChangeWaveType(STIMULUS_TYPE_DA)
+		PGC_SetAndActivateControl(panel, "popup_WaveBuilder_OutputType", val = channelType)
 	endif
 
 	// fetch wave references, possibly updating the wave layout if required
