@@ -734,7 +734,6 @@ static Function IDX_DetIfCountIsAtSetBorder(panelTitle, count, channelNumber, DA
 					//print "steps in summed sets = "+num2str(stepsinsummedsets)
 					endif
 					if(StepsInSummedSets==Count)
-						print "At a Set Border"
 						AtSetBorder=1
 						return AtSetBorder
 					endif
