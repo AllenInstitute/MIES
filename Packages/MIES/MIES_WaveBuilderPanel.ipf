@@ -1690,13 +1690,7 @@ static Function WBP_LoadSet(setName)
 	WAVE SegWvType = GetSegmentTypeWave()
 
 	SetCheckBoxState(panel, "check_FlipEpoch_S98", SegWvType[98])
-
-	// we might be called from an old panel without an ITI setvariable control
-	ControlInfo/W=$panel setvar_WaveBuilder_ITI
-	if(V_flag > 0)
-		SetSetVariable(panel, "setvar_WaveBuilder_ITI", SegWvType[99])
-	endif
-
+	SetSetVariable(panel, "setvar_WaveBuilder_ITI", SegWvType[99])
 	SetSetVariable(panel, "SetVar_WB_NumEpochs_S100", SegWvType[100])
 	SetSetVariable(panel, "SetVar_WB_SweepCount_S101", SegWvType[101])
 	SetSetVariable(panel, "setvar_WaveBuilder_CurrentEpoch", 0)
