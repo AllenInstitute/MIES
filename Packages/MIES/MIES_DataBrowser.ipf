@@ -153,6 +153,11 @@ static Function DB_LockDBPanel(panelTitle, device)
 	DB_FirstAndLastSweepAcquired(panelTitleNew, first, last)
 	DB_UpdateSweepControls(panelTitleNew, first, last)
 	DB_UpdateSweepPlot(panelTitleNew)
+
+	if(GetCheckBoxState(panelTitleNew, "check_DataBrowser_SweepOverlay"))
+		DFREF dfr = GetDeviceDataBrowserPath(device)
+		OVS_SetFolder(panelTitleNew, dfr)
+	endif
 End
 
 static Function/S DB_GetListOfSweepWaves(panelTitle)
