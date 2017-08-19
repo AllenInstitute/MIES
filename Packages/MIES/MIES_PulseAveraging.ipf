@@ -430,8 +430,10 @@ static Function/WAVE PA_CreateAndFillPulseWaveIfReq(wv, singleSweepFolder, chann
 
 	WAVE singlePulseWave = GetPulseAverageWave(singleSweepFolder, channelType, channelNumber, region, pulseIndex)
 
-	ASSERT(first >= 0, "Invalid first")
-	ASSERT(length > 0, "Invalid length")
+	if(first < 0 || length <= 0 || (DimSize(wv, ROWS) - first) <= length)
+		return $""
+	endif
+
 	length = limit(length, 1, DimSize(wv, ROWS) - first)
 
 	if(DimSize(singlePulseWave, ROWS) == length && GetNumberFromWaveNote(wv, "SOURCE_WAVE_TS") == ModDate(wv))
@@ -654,7 +656,13 @@ Function PA_ShowPulses(win, dfr, pa)
 					first  = round((pulseStartTimes[l] + totalOnsetDelay) / DimDelta(wv, ROWS))
 					length = round(pulseToPulseLength / DimDelta(wv, ROWS))
 
-					WAVE plotWave = PA_CreateAndFillPulseWaveIfReq(wv, singlePulseFolder, channelType, channelNumber, region, l, first, length)
+					WAVE/Z plotWave = PA_CreateAndFillPulseWaveIfReq(wv, singlePulseFolder, channelType, channelNumber, region, l, first, length)
+
+					if(!WaveExists(plotWave))
+						printf "Not adding pulse %d of region %d from sweep %d because it could not be extracted due to invalid coordinates.\r", l, region, sweepNo
+						ControlWindowToFront()
+						continue
+					endif
 
 					if(pa.showIndividualTraces)
 						pulseTrace = NameOfWave(plotWave) + "_IDX" + num2str(idx)
