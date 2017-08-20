@@ -7,6 +7,7 @@
 /// @brief __PA__ Routines for dealing with pulse averaging.
 
 static StrConstant PULSE_AVERAGE_GRAPH_PREFIX = "PulseAverage"
+static StrConstant SOURCE_WAVE_TIMESTAMP      = "SOURCE_WAVE_TS"
 
 static Function/S PA_GetLeftPanel(win)
 	string win
@@ -436,7 +437,7 @@ static Function/WAVE PA_CreateAndFillPulseWaveIfReq(wv, singleSweepFolder, chann
 
 	length = limit(length, 1, DimSize(wv, ROWS) - first)
 
-	if(DimSize(singlePulseWave, ROWS) == length && GetNumberFromWaveNote(wv, "SOURCE_WAVE_TS") == ModDate(wv))
+	if(DimSize(singlePulseWave, ROWS) == length && GetNumberFromWaveNote(wv, SOURCE_WAVE_TIMESTAMP) == ModDate(wv))
 		return singlePulseWave
 	endif
 
@@ -445,7 +446,7 @@ static Function/WAVE PA_CreateAndFillPulseWaveIfReq(wv, singleSweepFolder, chann
 	MultiThread singlePulseWave[] = wv[first + p]
 	SetScale/P x, 0.0, DimDelta(wv, ROWS), WaveUnits(wv, ROWS), singlePulseWave
 
-	SetNumberInWaveNote(wv, "SOURCE_WAVE_TS", ModDate(wv))
+	SetNumberInWaveNote(wv, SOURCE_WAVE_TIMESTAMP, ModDate(wv))
 
 	return singlePulseWave
 End
