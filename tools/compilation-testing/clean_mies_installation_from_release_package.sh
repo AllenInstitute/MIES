@@ -24,7 +24,7 @@ rm -rf ~/WaveMetrics
 
 user_proc="$HOME/WaveMetrics/Igor Pro 7 User Files/User Procedures"
 igor_proc="$HOME/WaveMetrics/Igor Pro 7 User Files/Igor Procedures"
-xops="$HOME/WaveMetrics/Igor Pro 7 User Files/Igor Extensions"
+xops="$HOME/WaveMetrics/Igor Pro 7 User Files/Igor Extensions (64-bit)"
 xops_help="$HOME/WaveMetrics/Igor Pro 7 User Files/Igor Help Files"
 
 mkdir -p "$user_proc"
@@ -52,11 +52,8 @@ unzip "$release_pkg" -d $folder
 
 rm -rf "$folder"/Packages/doc/html
 cp -r  "$folder"/Packages/*  "$user_proc"
-cp -r  "$folder"/XOPs-IP7/*  "$xops"
-cp -r  "$folder"/XOP-tango/* "$xops"
+cp -r  "$folder"/XOPs-IP7-64bit/*  "$xops"
+cp -r  "$folder"/XOP-tango-IP7-64bit/* "$xops"
 cp -r  "$folder"/HelpFiles-IP7/* "$xops_help"
-
-# rename DLL, wine seems to be pickier than windows itself
-mv "$xops"/ITCMM32.dll "$xops"/ITCMM.dll
 
 exit 0

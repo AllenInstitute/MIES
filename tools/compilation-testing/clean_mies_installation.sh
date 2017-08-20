@@ -23,18 +23,15 @@ fi
 rm -rf ~/WaveMetrics
 
 user_proc="$HOME/WaveMetrics/Igor Pro 7 User Files/User Procedures"
-xops="$HOME/WaveMetrics/Igor Pro 7 User Files/Igor Extensions"
+xops="$HOME/WaveMetrics/Igor Pro 7 User Files/Igor Extensions (64-bit)"
 
 mkdir -p "$user_proc"
 mkdir -p "$xops"
 
 rm -rf "$top_level"/Packages/doc/html
 cp -r  "$top_level"/Packages/*  "$user_proc"
-cp -r  "$top_level"/XOPs-IP7/*  "$xops"
-cp -r  "$top_level"/XOP-tango/* "$xops"
-rm -f  "$xops"/NIDAQmx.*
-
-# rename DLL, wine seems to be pickier than windows itself
-mv "$xops"/ITCMM32.dll "$xops"/ITCMM.dll
+cp -r  "$top_level"/XOPs-IP7-64bit/*  "$xops"
+cp -r  "$top_level"/XOP-tango-IP7-64bit/* "$xops"
+rm -f  "$xops"/NIDAQmx64.*
 
 exit 0
