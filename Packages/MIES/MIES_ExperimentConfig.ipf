@@ -436,10 +436,8 @@ static Function ExpConfig_MCC_InitParams(panelTitle, headStage)
 	MCC_SetRsCompBandwidth(1.02e3)
 	MCC_SetRSCompCorrection(0)
 	MCC_SetPrimarySignalGain(1)
-#ifndef IGOR64 //IGOR32
 	MCC_SetPrimarySignalLPF(10e3)
 	MCC_SetPrimarySignalHPF(0)
-#endif
 	MCC_SetSecondarySignalGain(1)
 	MCC_SetSecondarySignalLPF(10e3)
 
@@ -452,13 +450,10 @@ static Function ExpConfig_MCC_InitParams(panelTitle, headStage)
 	MCC_SetNeutralizationEnable(0)
 	MCC_SetOscKillerEnable(0)
 	MCC_SetPrimarySignalGain(1)
-#ifndef IGOR64 //IGOR32
 	MCC_SetPrimarySignalLPF(10e3)
 	MCC_SetPrimarySignalHPF(0)
-#endif
 	MCC_SetSecondarySignalGain(1)
 	MCC_SetSecondarySignalLPF(10e3)
-
 
 	//Set mode back to V-clamp
 	DAP_ChangeHeadStageMode(panelTitle, V_CLAMP_MODE, headStage, DO_MCC_MIES_SYNCING)
