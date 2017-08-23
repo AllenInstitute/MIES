@@ -7,6 +7,7 @@
 /// @brief __PA__ Routines for dealing with pulse averaging.
 
 static StrConstant PULSE_AVERAGE_GRAPH_PREFIX = "PulseAverage"
+static StrConstant SOURCE_WAVE_TIMESTAMP      = "SOURCE_WAVE_TS"
 
 static Function/S PA_GetLeftPanel(win)
 	string win
@@ -430,11 +431,13 @@ static Function/WAVE PA_CreateAndFillPulseWaveIfReq(wv, singleSweepFolder, chann
 
 	WAVE singlePulseWave = GetPulseAverageWave(singleSweepFolder, channelType, channelNumber, region, pulseIndex)
 
-	ASSERT(first >= 0, "Invalid first")
-	ASSERT(length > 0, "Invalid length")
+	if(first < 0 || length <= 0 || (DimSize(wv, ROWS) - first) <= length)
+		return $""
+	endif
+
 	length = limit(length, 1, DimSize(wv, ROWS) - first)
 
-	if(DimSize(singlePulseWave, ROWS) == length && GetNumberFromWaveNote(wv, "SOURCE_WAVE_TS") == ModDate(wv))
+	if(DimSize(singlePulseWave, ROWS) == length && GetNumberFromWaveNote(wv, SOURCE_WAVE_TIMESTAMP) == ModDate(wv))
 		return singlePulseWave
 	endif
 
@@ -443,7 +446,7 @@ static Function/WAVE PA_CreateAndFillPulseWaveIfReq(wv, singleSweepFolder, chann
 	MultiThread singlePulseWave[] = wv[first + p]
 	SetScale/P x, 0.0, DimDelta(wv, ROWS), WaveUnits(wv, ROWS), singlePulseWave
 
-	SetNumberInWaveNote(wv, "SOUREC_WAVE_TS", ModDate(wv))
+	SetNumberInWaveNote(wv, SOURCE_WAVE_TIMESTAMP, ModDate(wv))
 
 	return singlePulseWave
 End
@@ -654,7 +657,13 @@ Function PA_ShowPulses(win, dfr, pa)
 					first  = round((pulseStartTimes[l] + totalOnsetDelay) / DimDelta(wv, ROWS))
 					length = round(pulseToPulseLength / DimDelta(wv, ROWS))
 
-					WAVE plotWave = PA_CreateAndFillPulseWaveIfReq(wv, singlePulseFolder, channelType, channelNumber, region, l, first, length)
+					WAVE/Z plotWave = PA_CreateAndFillPulseWaveIfReq(wv, singlePulseFolder, channelType, channelNumber, region, l, first, length)
+
+					if(!WaveExists(plotWave))
+						printf "Not adding pulse %d of region %d from sweep %d because it could not be extracted due to invalid coordinates.\r", l, region, sweepNo
+						ControlWindowToFront()
+						continue
+					endif
 
 					if(pa.showIndividualTraces)
 						pulseTrace = NameOfWave(plotWave) + "_IDX" + num2str(idx)

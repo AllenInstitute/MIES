@@ -423,9 +423,22 @@ Function OVS_TogglePanel(win, listboxWave, listboxSelWave)
 	RenameWindow #,OverlaySweeps
 	SetActiveSubwindow ##
 
-	SetWindow $extPanel, userData(OVS_FOLDER)=GetWavesDataFolder(listboxWave, 1)
+	OVS_SetFolder(win, $GetWavesDataFolder(listboxWave, 1))
 
 	return 0
+End
+
+/// @brief Set the basefolder for the current device
+///
+/// Must be called if the source device of the sweeps changed.
+Function OVS_SetFolder(win, dfr)
+	string win
+	DFREF dfr
+
+	string extPanel = OVS_GetExtPanel(win)
+
+	ASSERT(DataFolderExistsDFR(dfr), "Missing dfr")
+	SetWindow $extPanel, userData(OVS_FOLDER)=GetDataFolder(1, dfr)
 End
 
 Function OVS_CheckBoxProc_HS_Select(cba) : CheckBoxControl
