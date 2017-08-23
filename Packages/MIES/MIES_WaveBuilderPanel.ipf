@@ -1661,6 +1661,8 @@ static Function WBP_LoadSet(setName)
 	if(cmpstr(setName, NONE))
 		WBP_SplitSetname(setName, setPrefix, channelType, setNumber)
 
+		PGC_SetAndActivateControl(panel, "popup_WaveBuilder_OutputType", val = channelType)
+
 		WAVE WP        = WB_GetWaveParamForSet(setName)
 		WAVE/T WPT     = WB_GetWaveTextParamForSet(setName)
 		WAVE SegWvType = WB_GetSegWvTypeForSet(setName)
@@ -1672,16 +1674,12 @@ static Function WBP_LoadSet(setName)
 	else
 		setPrefix = DEFAULT_SET_PREFIX
 		channelType = CHANNEL_TYPE_DAC
-	endif
 
-	if(channelType == CHANNEL_TYPE_TTL)
-		PopupMenu popup_WaveBuilder_OutputType win=$panel, mode = 2
-		WBP_ChangeWaveType(STIMULUS_TYPE_TLL)
-	elseif(channelType == CHANNEL_TYPE_DAC)
-		PopupMenu popup_WaveBuilder_OutputType win=$panel, mode = 1
-		WBP_ChangeWaveType(STIMULUS_TYPE_DA)
-	else
-		ASSERT(0, "unknown channelType")
+		KillOrMoveToTrash(wv=GetSegmentTypeWave())
+		KillOrMoveToTrash(wv=GetWaveBuilderWaveParam())
+		KillOrMoveToTrash(wv=GetWaveBuilderWaveTextParam())
+
+		PGC_SetAndActivateControl(panel, "popup_WaveBuilder_OutputType", val = channelType)
 	endif
 
 	// fetch wave references, possibly updating the wave layout if required
@@ -1690,13 +1688,7 @@ static Function WBP_LoadSet(setName)
 	WAVE SegWvType = GetSegmentTypeWave()
 
 	SetCheckBoxState(panel, "check_FlipEpoch_S98", SegWvType[98])
-
-	// we might be called from an old panel without an ITI setvariable control
-	ControlInfo/W=$panel setvar_WaveBuilder_ITI
-	if(V_flag > 0)
-		SetSetVariable(panel, "setvar_WaveBuilder_ITI", SegWvType[99])
-	endif
-
+	SetSetVariable(panel, "setvar_WaveBuilder_ITI", SegWvType[99])
 	SetSetVariable(panel, "SetVar_WB_NumEpochs_S100", SegWvType[100])
 	SetSetVariable(panel, "SetVar_WB_SweepCount_S101", SegWvType[101])
 	SetSetVariable(panel, "setvar_WaveBuilder_CurrentEpoch", 0)
