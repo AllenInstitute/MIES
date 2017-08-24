@@ -7700,7 +7700,7 @@ Function DAP_LockDevice(panelTitle)
 	string panelTitle
 
 	variable locked, hardwareType, headstage
-	string panelTitleLocked
+	string panelTitleLocked, msg
 
 	SVAR miesVersion = $GetMiesVersion()
 
@@ -7715,6 +7715,15 @@ Function DAP_LockDevice(panelTitle)
 
 	if(!HasPanelLatestVersion(panelTitle, DA_EPHYS_PANEL_VERSION))
 		Abort "Can not lock the device. The DA_Ephys panel is too old to be usable. Please close it and open a new one."
+	endif
+
+	if(!DAP_GetNumITCDevicesPerType(panelTitle))
+#ifndef EVIL_KITTEN_EATING_MODE
+		sprintf msg, "Can not lock the device \"%s\" as no devices of type \"%s\" are connected.", panelTitleLocked, DAP_GetDeviceType(panelTitle)
+		Abort msg
+#else
+		print "EVIL_KITTEN_EATING_MODE is ON: Allowing to lock altough no devices could be found."
+#endif
 	endif
 
 	NVAR ITCDeviceIDGlobal = $GetITCDeviceIDGlobal(paneltitleLocked)
@@ -7902,12 +7911,19 @@ static Function DAP_UnlockDevice(panelTitle)
 	endif
 End
 
+/// @brief Return the number of ITC devices of the given `type`
+static Function DAP_GetNumITCDevicesPerType(panelTitle)
+	string panelTitle
+
+	return ItemsInList(ListMatch(HW_ITC_ListDevices(), DAP_GetDeviceType(panelTitle) + "_DEV_*"))
+End
+
 static Function DAP_IsDeviceTypeConnected(panelTitle)
 	string panelTitle
 
 	variable numDevices
 
-	numDevices = ItemsInList(ListMatch(HW_ITC_ListDevices(), DAP_GetDeviceType(panelTitle) + "_DEV_*"))
+	numDevices = DAP_GetNumITCDevicesPerType(panelTitle)
 
 	if(!numDevices)
 		DisableControl(panelTitle, "button_SettingsPlus_PingDevice")
