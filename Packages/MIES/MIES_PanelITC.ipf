@@ -7902,12 +7902,19 @@ static Function DAP_UnlockDevice(panelTitle)
 	endif
 End
 
+/// @brief Return the number of ITC devices of the given `type`
+static Function DAP_GetNumITCDevicesPerType(panelTitle)
+	string panelTitle
+
+	return ItemsInList(ListMatch(HW_ITC_ListDevices(), DAP_GetDeviceType(panelTitle) + "_DEV_*"))
+End
+
 static Function DAP_IsDeviceTypeConnected(panelTitle)
 	string panelTitle
 
 	variable numDevices
 
-	numDevices = ItemsInList(ListMatch(HW_ITC_ListDevices(), DAP_GetDeviceType(panelTitle) + "_DEV_*"))
+	numDevices = DAP_GetNumITCDevicesPerType(panelTitle)
 
 	if(!numDevices)
 		DisableControl(panelTitle, "button_SettingsPlus_PingDevice")
