@@ -133,7 +133,7 @@ static Function DC_UpdateTestPulseWave(panelTitle, TestPulse)
 
 	variable length
 
-	length = TP_GetTestPulseLengthInPoints(panelTitle, MIN_SAMPLING_INTERVAL_TYPE)
+	length = TP_GetTestPulseLengthInPoints(panelTitle)
 
 	Redimension/N=(length) TestPulse
 	FastOp TestPulse = 0
@@ -359,7 +359,13 @@ static Function DC_CalculateLongestSweep(panelTitle, dataAcqOrTP, channelType)
 	variable dataAcqOrTP
 	variable channelType
 
-	return ceil(DC_LongestOutputWave(panelTitle, dataAcqOrTP, channelType) / DC_GetDecimationFactor(panelTitle, dataAcqOrTP))
+	if(dataAcqOrTP == DATA_ACQUISITION_MODE)
+		return ceil(DC_LongestOutputWave(panelTitle, dataAcqOrTP, channelType) / DC_GetDecimationFactor(panelTitle, dataAcqOrTP))
+	elseif(dataAcqOrTP == TEST_PULSE_MODE)
+		return ceil(DC_LongestOutputWave(panelTitle, dataAcqOrTP, channelType))
+	else
+		ASSERT(0, "unhandled case")
+	endif
 End
 
 /// @brief Creates the ITCConfigALLConfigWave used to configure channels the ITC device
@@ -597,11 +603,16 @@ End
 ///
 /// @param stimSet          stimset wave
 /// @param decimationFactor see DC_GetDecimationFactor()
-static Function DC_CalculateStimsetLength(stimSet, decimationFactor)
+/// @param dataAcqOrTP      one of #DATA_ACQUISITION_MODE or #TEST_PULSE_MODE
+static Function DC_CalculateStimsetLength(stimSet, decimationFactor, dataAcqOrTP)
 	WAVE stimSet
-	variable decimationFactor
+	variable decimationFactor, dataAcqOrTP
 
-	return round(DimSize(stimSet, ROWS) / decimationFactor)
+	if(dataAcqOrTP == TEST_PULSE_MODE)
+		return round(DimSize(stimSet, ROWS))
+	elseif(dataAcqOrTP == DATA_ACQUISITION_MODE)
+		return round(DimSize(stimSet, ROWS) / decimationFactor)
+	endif
 End
 
 /// @brief Places data from appropriate DA and TTL stimulus set(s) into ITCdatawave.
@@ -758,7 +769,7 @@ static Function DC_PlaceDataInITCDataWave(panelTitle, numActiveChannels, dataAcq
 		WAVE/WAVE stimSet = OOD_CreateStimSet(params)
 	endif
 
-	setLength[] = DC_CalculateStimsetLength(stimSet[p], decimationFactor)
+	setLength[] = DC_CalculateStimsetLength(stimSet[p], decimationFactor, dataAcqOrTP)
 
 	if(dataAcqOrTP == TEST_PULSE_MODE)
 		insertStart[] = 0
@@ -793,17 +804,17 @@ static Function DC_PlaceDataInITCDataWave(panelTitle, numActiveChannels, dataAcq
 		singleSetLength = setLength[0]
 		ASSERT(DimSize(singleStimSet, COLS) <= 1, "Expected a 1D testpulse wave")
 		if(multiDevice)
-			Multithread ITCDataWave[][0, numEntries - 1] =                                               \
-			  limit(                                                                                     \
-				(DAGain[q] * DAScale[q]) * singleStimSet[decimationFactor * mod(p, singleSetLength)][0], \
-				SIGNED_INT_16BIT_MIN,                                                                    \
+			Multithread ITCDataWave[][0, numEntries - 1] =                            \
+			  limit(                                                                  \
+				(DAGain[q] * DAScale[q]) * singleStimSet[mod(p, singleSetLength)][0], \
+				SIGNED_INT_16BIT_MIN,                                                 \
 				SIGNED_INT_16BIT_MAX)
 			cutOff = mod(DimSize(ITCDataWave, ROWS), testPulseLength)
 			ITCDataWave[DimSize(ITCDataWave, ROWS) - cutoff, *][0, numEntries - 1] = 0
 		else
 			Multithread ITCDataWave[0, setLength[0] - 1][0, numEntries - 1] =      \
 		      limit(                                                               \
-		        (DAGain[q] * DAScale[q]) * singleStimSet[decimationFactor * p][0], \
+		        (DAGain[q] * DAScale[q]) * singleStimSet[p][0],                    \
 			    SIGNED_INT_16BIT_MIN,                                              \
 			    SIGNED_INT_16BIT_MAX)
 		endif
