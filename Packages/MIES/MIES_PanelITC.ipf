@@ -4653,6 +4653,7 @@ Function DAP_CheckProc_IndexingState(cba) : CheckBoxControl
 	switch(cba.eventCode)
 		case 2: // mouse up
 
+			panelTitle = cba.win
 			DAP_UpdateDAQControls(panelTitle, REASON_STIMSET_CHANGE)
 
 			if(cmpstr(cba.ctrlname, "Check_DataAcq1_IndexingLocked") == 0)
