@@ -94,8 +94,6 @@ Function CloseMies()
 	Variable index
 	Variable noOfActiveWindows = ItemsInList(activeWindows)
 
-	print "Closing Mies windows..."
-
 	for (index = 0; index < noOfActiveWindows;index += 1)
 		windowToClose = StringFromList(index, activeWindows)
 		if(StringMatch(windowToClose, "waveBuilder*")          \
@@ -107,8 +105,6 @@ Function CloseMies()
 			KillWindow $windowToClose
 		endif
 	endfor
-
-	print "Exiting Mies..."
 End
 
 Function OpenAboutDialog()

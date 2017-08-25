@@ -125,6 +125,7 @@ Function ExpConfig_ConfigureMIES([middleOfExperiment])
 			PGC_SetAndActivateControl(win,GetPanelControl(CHANNEL_INDEX_ALL_V_CLAMP,CHANNEL_TYPE_DAC,CHANNEL_CONTROL_SCALE), val = str2numSafe(UserSettings[V_value][%SettingValue]))
 		else
 			print "Stim set failed to load, check file path"
+			ControlWindowToFront()
 		endif
 		
 		PGC_SetAndActivateControl(win,"ADC", val = DA_EPHYS_PANEL_DATA_ACQUISITION)

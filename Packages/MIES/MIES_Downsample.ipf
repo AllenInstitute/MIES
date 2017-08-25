@@ -600,6 +600,7 @@ Function ButtonRestoreBackup(ba) : ButtonControl
 
 			if(!success)
 				Print "Restoring backups failed. At least one wave did not have a backup."
+				ControlWindowToFront()
 			endif
 
 			UpdatePanel(win)

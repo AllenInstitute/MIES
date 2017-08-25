@@ -306,7 +306,6 @@ Function RA_CounterMD(panelTitle)
 	if(indexing)
 		if(recalcActiveSetCount)
 			if(indexingLocked)
-				print "Index Step taken"
 				IDX_IndexingDoIt(panelTitle)
 			endif
 

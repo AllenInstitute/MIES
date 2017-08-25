@@ -2284,6 +2284,7 @@ Function AB_ButtonProc_SelectStimSets(ba) : ButtonControl
 
 			if(!WaveExists(indizes) || DimSize(indizes, ROWS) != 1)
 				print "Please select exactly one row to use this feature"
+				ControlWindowToFront()
 				break
 			endif
 
@@ -2291,6 +2292,7 @@ Function AB_ButtonProc_SelectStimSets(ba) : ButtonControl
 
 			if(isEmpty(selectedStimSet))
 				print "Can not work with an empty stim set in the selection"
+				ControlWindowToFront()
 				break
 			endif
 
@@ -2369,6 +2371,7 @@ Function AB_ButtonProc_OpenCommentNB(ba) : ButtonControl
 
 			if(!WaveExists(indizes) || DimSize(indizes, ROWS) != 1)
 				print "Please select a sweep belonging to a device to use this feature"
+				ControlWindowToFront()
 				break
 			endif
 
@@ -2378,6 +2381,7 @@ Function AB_ButtonProc_OpenCommentNB(ba) : ButtonControl
 			device = GetLastNonEmptyEntry(expBrowserList, "device", row)
 			if(isEmpty(device))
 				print "Please select a sweep belonging to a device to use this feature"
+				ControlWindowToFront()
 				break
 			endif
 

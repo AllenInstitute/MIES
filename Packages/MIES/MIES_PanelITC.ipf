@@ -3623,6 +3623,7 @@ Function DAP_EphysPanelStartUpSettings()
 
 	if(!windowExists(panelTitle))
 		print "The top panel does not exist"
+		ControlWindowToFront()
 		return NaN
 	endif
 
@@ -4241,6 +4242,7 @@ Function DAP_TabControlFinalHook(tca)
 
 	if(DAP_DeviceIsUnLocked(tca.win))
 		print "Please lock the panel to a DAC in the Hardware tab"
+		ControlWindowToFront()
 		return 0
 	endif
 
@@ -5021,6 +5023,7 @@ Function/S DAP_GetNiceAmplifierChannelList()
 	numRows = DimSize(telegraphServers, ROWS)
 	if(!numRows)
 		print "Activate Multiclamp Commander software to populate list of available amplifiers"
+		ControlWindowToFront()
 		list = AddListItem("\\M1(MC not available", list, ";", inf)
 		return list
 	endif
@@ -7734,6 +7737,7 @@ Function DAP_LockDevice(panelTitle)
 		Abort "Can not lock the device."
 #else
 		print "EVIL_KITTEN_EATING_MODE is ON: Forcing ITCDeviceIDGlobal to zero"
+		ControlWindowToFront()
 		ITCDeviceIDGlobal = 0
 #endif
 	endif

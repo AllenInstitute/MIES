@@ -298,6 +298,7 @@ Function SaveHistoryLog()
 	DoWindow HistoryCarbonCopy
 	if(V_flag == 0)
 		print "No log notebook found, please call CreateHistoryLog() before."
+		ControlWindowToFront()
 		return NaN
 	endif
 

@@ -1143,6 +1143,7 @@ Function WBP_ButtonProc_DeleteSet(ba) : ButtonControl
 
 			if(!CmpStr(SetWaveToDelete, NONE))
 				print "Select a set to delete from popup menu."
+				ControlWindowToFront()
 				break
 			endif
 

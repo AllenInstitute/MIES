@@ -576,13 +576,7 @@ static Function IDX_TotalIndexingListSteps(panelTitle, ChannelNumber, DAorTTL)
 			while( (i + TTLIndexingStorageWave[1][ChannelNumber]) <= TTLIndexingStorageWave[0][ChannelNumber] )
 		endif
 	endif
-	if(channelnumber==0)
-	//print "Chan0 total list steps = "+num2str(totalliststeps)
-	endif
-	
-	if(channelnumber==1)
-	//print "Chan1 total list steps = "+num2str(totalliststeps)
-	endif
+
 	return TotalListSteps
 End
 
@@ -606,65 +600,54 @@ Function IDX_UnlockedIndexingStepNo(panelTitle, channelNo, DAorTTL, count)
 		count -= totalListsteps
 		endif
 	while(count >= totalListSteps)
-	//print "totalListSteps = "+num2str(totalListSteps)
+
+	ChannelPopUpMenuName = GetPanelControl(channelNo, DAorTTL, CHANNEL_CONTROL_WAVE)
+	PopUpMenuList = getuserdata(panelTitle, ChannelPopUpMenuName, "MenuExp")// returns list of waves - does not include none or testpulse
+	i = 0
 	
-		ChannelPopUpMenuName = GetPanelControl(channelNo, DAorTTL, CHANNEL_CONTROL_WAVE)
-		PopUpMenuList = getuserdata(panelTitle, ChannelPopUpMenuName, "MenuExp")// returns list of waves - does not include none or testpulse
-		i = 0
-		
-		if((DAIndexingStorageWave[0][channelNo]) < (DAIndexingStorageWave[1][channelNo]))
-			if(DAorTTL == 0)//DA channel
-				do
-					StepsInSummedSets += dimsize($DAorTTLWavePath + stringfromlist((DAIndexingStorageWave[0][channelNo] + i - ListOffset), PopUpMenuList,";"),1)
-					//print (DAIndexingStorageWave[1][channelNo]+i-ListOffset)
-					//print stringfromlist((DAIndexingStorageWave[1][channelNo]+i-ListOffset),PopUpMenuList,";")
-					//print "columns in set = " + num2str(dimsize($DAorTTLWavePath+stringfromlist((DAIndexingStorageWave[0][channelNo]+i-ListOffset),PopUpMenuList,";"),1))
-					i += 1
-				while(StepsInSummedSets<=Count)
-				i-=1
-				StepsInSummedSets-=dimsize($DAorTTLWavePath+stringfromlist((DAIndexingStorageWave[0][channelNo]+i-ListOffset),PopUpMenuList,";"),1)
-				//print "steps in summed sets = "+num2str(stepsinsummedsets)
-			endif
-		
-			if(DAorTTL==1)//TTL channel
-				do
-					StepsInSummedSets+=dimsize($DAorTTLWavePath+stringfromlist((TTLIndexingStorageWave[0][channelNo]+i-ListOffset),PopUpMenuList,";"),1)
-					i+=1
-				while(StepsInSummedSets<=Count)
-				i-=1
-				StepsInSummedSets-=dimsize($DAorTTLWavePath+stringfromlist((TTLIndexingStorageWave[0][channelNo]+i-ListOffset),PopUpMenuList,";"),1)
-				//print "steps in summed sets = "+num2str(stepsinsummedsets)
-			endif
+	if((DAIndexingStorageWave[0][channelNo]) < (DAIndexingStorageWave[1][channelNo]))
+		if(DAorTTL == 0)//DA channel
+			do
+				StepsInSummedSets += dimsize($DAorTTLWavePath + stringfromlist((DAIndexingStorageWave[0][channelNo] + i - ListOffset), PopUpMenuList,";"),1)
+				i += 1
+			while(StepsInSummedSets<=Count)
+			i-=1
+			StepsInSummedSets-=dimsize($DAorTTLWavePath+stringfromlist((DAIndexingStorageWave[0][channelNo]+i-ListOffset),PopUpMenuList,";"),1)
 		endif
-		
-		i=0
-		if(DAIndexingStorageWave[0][channelNo] > DAIndexingStorageWave[1][channelNo])//  handels the situation where the start set is after the end set on the index list
-			if(DAorTTL==0)//DA channel
-				do
-					StepsInSummedSets+=dimsize($DAorTTLWavePath+stringfromlist((DAIndexingStorageWave[0][channelNo]+i-ListOffset),PopUpMenuList,";"),1)
-				//	print (DAIndexingStorageWave[0][channelNo]+i-ListOffset)
-				//	print stringfromlist((DAIndexingStorageWave[0][channelNo]+i-ListOffset),PopUpMenuList,";")
-				//	print "columns in set = " + num2str(dimsize($DAorTTLWavePath+stringfromlist((DAIndexingStorageWave[0][channelNo]+i-ListOffset),PopUpMenuList,";"),1))			
-					i-=1
-				while(StepsInSummedSets<=Count)
+
+		if(DAorTTL==1)//TTL channel
+			do
+				StepsInSummedSets+=dimsize($DAorTTLWavePath+stringfromlist((TTLIndexingStorageWave[0][channelNo]+i-ListOffset),PopUpMenuList,";"),1)
 				i+=1
-				StepsInSummedSets-=dimsize($DAorTTLWavePath+stringfromlist((DAIndexingStorageWave[0][channelNo]+i-ListOffset),PopUpMenuList,";"),1)
-			//	print "steps in summed sets = "+num2str(stepsinsummedsets)
-			endif
-		
-			if(DAorTTL==1)//TTL channel
-				do
-					StepsInSummedSets+=dimsize($DAorTTLWavePath+stringfromlist((TTLIndexingStorageWave[0][channelNo]+i-ListOffset),PopUpMenuList,";"),1)
-					i-=1
-				while(StepsInSummedSets<=Count)
-				i+=1
-				StepsInSummedSets-=dimsize($DAorTTLWavePath+stringfromlist((TTLIndexingStorageWave[0][channelNo]+i-ListOffset),PopUpMenuList,";"),1)
-				//print "steps in summed sets = "+num2str(stepsinsummedsets)
-			endif
+			while(StepsInSummedSets<=Count)
+			i-=1
+			StepsInSummedSets-=dimsize($DAorTTLWavePath+stringfromlist((TTLIndexingStorageWave[0][channelNo]+i-ListOffset),PopUpMenuList,";"),1)
 		endif
-		
-		column=count-StepsInSummedSets
-		return column
+	endif
+
+	i=0
+	if(DAIndexingStorageWave[0][channelNo] > DAIndexingStorageWave[1][channelNo])//  handels the situation where the start set is after the end set on the index list
+		if(DAorTTL==0)//DA channel
+			do
+				StepsInSummedSets+=dimsize($DAorTTLWavePath+stringfromlist((DAIndexingStorageWave[0][channelNo]+i-ListOffset),PopUpMenuList,";"),1)
+				i-=1
+			while(StepsInSummedSets<=Count)
+			i+=1
+			StepsInSummedSets-=dimsize($DAorTTLWavePath+stringfromlist((DAIndexingStorageWave[0][channelNo]+i-ListOffset),PopUpMenuList,";"),1)
+		endif
+
+		if(DAorTTL==1)//TTL channel
+			do
+				StepsInSummedSets+=dimsize($DAorTTLWavePath+stringfromlist((TTLIndexingStorageWave[0][channelNo]+i-ListOffset),PopUpMenuList,";"),1)
+				i-=1
+			while(StepsInSummedSets<=Count)
+			i+=1
+			StepsInSummedSets-=dimsize($DAorTTLWavePath+stringfromlist((TTLIndexingStorageWave[0][channelNo]+i-ListOffset),PopUpMenuList,";"),1)
+		endif
+	endif
+
+	column=count-StepsInSummedSets
+	return column
 end
 
 static Function IDX_DetIfCountIsAtSetBorder(panelTitle, count, channelNumber, DAorTTL)
@@ -691,73 +674,64 @@ static Function IDX_DetIfCountIsAtSetBorder(panelTitle, count, channelNumber, DA
 		endif
 	while(count>totalListSteps)
 		
-		if(DAIndexingStorageWave[0][ChannelNumber]<DAIndexingStorageWave[1][ChannelNumber])
-			i=0
-			if(DAorTTL==0)//DA channel
-				do
-					StepsInSummedSets+=dimsize($DAorTTLWavePath+stringfromlist((DAIndexingStorageWave[0][ChannelNumber]+i-ListOffset),PopUpMenuList,";"),1)
-					//print "steps in summed sets = "+num2str(stepsinsummedsets)
-					if(StepsInSummedSets==Count)
-						//print "At a Set Border"
-						AtSetBorder=1
-						return AtSetBorder
-					endif
-				i+=1
-				while(StepsInSummedSets<=Count)
-			endif
-			i=0
+	if(DAIndexingStorageWave[0][ChannelNumber]<DAIndexingStorageWave[1][ChannelNumber])
+		i=0
+		if(DAorTTL==0)//DA channel
+			do
+				StepsInSummedSets+=dimsize($DAorTTLWavePath+stringfromlist((DAIndexingStorageWave[0][ChannelNumber]+i-ListOffset),PopUpMenuList,";"),1)
+				if(StepsInSummedSets==Count)
+					AtSetBorder=1
+					return AtSetBorder
+				endif
+			i+=1
+			while(StepsInSummedSets<=Count)
 		endif
-		
-		if(TTLIndexingStorageWave[0][ChannelNumber]<TTLIndexingStorageWave[1][ChannelNumber])
-			if(DAorTTL==1)// TTL channel
-				do
-					StepsInSummedSets+=dimsize($DAorTTLWavePath+stringfromlist((TTLIndexingStorageWave[0][ChannelNumber]+i-ListOffset),PopUpMenuList,";"),1)
-					
-					if(StepsInSummedSets==Count)
-						//print "At a Set Border"
-						AtSetBorder=1
-						return AtSetBorder
-					endif
-				i+=1
-				while(StepsInSummedSets<=Count)
-			endif
+		i=0
+	endif
+
+	if(TTLIndexingStorageWave[0][ChannelNumber]<TTLIndexingStorageWave[1][ChannelNumber])
+		if(DAorTTL==1)// TTL channel
+			do
+				StepsInSummedSets+=dimsize($DAorTTLWavePath+stringfromlist((TTLIndexingStorageWave[0][ChannelNumber]+i-ListOffset),PopUpMenuList,";"),1)
+
+				if(StepsInSummedSets==Count)
+					AtSetBorder=1
+					return AtSetBorder
+				endif
+			i+=1
+			while(StepsInSummedSets<=Count)
 		endif
-		
-		if(DAIndexingStorageWave[0][ChannelNumber]>DAIndexingStorageWave[1][ChannelNumber])// handles end index that is in front of start index in the popup menu list
-			i=0
-			if(DAorTTL==0)//DA channel
-				do
-					StepsInSummedSets+=dimsize($DAorTTLWavePath+stringfromlist((DAIndexingStorageWave[0][ChannelNumber]+i-ListOffset),PopUpMenuList,";"),1)
-					if(ChannelNumber==0)
-					//print PopUpMenuList
-					// print DAIndexingStorageWave[1][ChannelNumber]
-					//print "steps in summed sets = "+num2str(stepsinsummedsets)
-					endif
-					if(StepsInSummedSets==Count)
-						print "At a Set Border"
-						AtSetBorder=1
-						return AtSetBorder
-					endif
-				i-=1
-				while(StepsInSummedSets<=Count)
-			endif
-			i=0
+	endif
+
+	if(DAIndexingStorageWave[0][ChannelNumber]>DAIndexingStorageWave[1][ChannelNumber])// handles end index that is in front of start index in the popup menu list
+		i=0
+		if(DAorTTL==0)//DA channel
+			do
+				StepsInSummedSets+=dimsize($DAorTTLWavePath+stringfromlist((DAIndexingStorageWave[0][ChannelNumber]+i-ListOffset),PopUpMenuList,";"),1)
+				if(StepsInSummedSets==Count)
+					AtSetBorder=1
+					return AtSetBorder
+				endif
+			i-=1
+			while(StepsInSummedSets<=Count)
 		endif
-		
-		if(TTLIndexingStorageWave[0][ChannelNumber]>TTLIndexingStorageWave[1][ChannelNumber])
-			if(DAorTTL==1)// TTL channel
-				do
-					StepsInSummedSets+=dimsize($DAorTTLWavePath+stringfromlist((TTLIndexingStorageWave[0][ChannelNumber]+i-ListOffset),PopUpMenuList,";"),1)
-					
-					if(StepsInSummedSets==Count)
-						//print "At a Set Border"
-						AtSetBorder=1
-						return AtSetBorder
-					endif
-				i-=1
-				while(StepsInSummedSets<=Count)
-			endif
+		i=0
+	endif
+
+	if(TTLIndexingStorageWave[0][ChannelNumber]>TTLIndexingStorageWave[1][ChannelNumber])
+		if(DAorTTL==1)// TTL channel
+			do
+				StepsInSummedSets+=dimsize($DAorTTLWavePath+stringfromlist((TTLIndexingStorageWave[0][ChannelNumber]+i-ListOffset),PopUpMenuList,";"),1)
+
+				if(StepsInSummedSets==Count)
+					AtSetBorder=1
+					return AtSetBorder
+				endif
+			i-=1
+			while(StepsInSummedSets<=Count)
 		endif
+	endif
+
 	return AtSetBorder
 End
 

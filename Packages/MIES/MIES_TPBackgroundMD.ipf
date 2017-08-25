@@ -187,7 +187,6 @@ static Function ITC_StopTPMD(panelTitle)
 		ITC_ZeroITCOnActiveChan(panelTitle) // zeroes the active DA channels - makes sure the DA isn't left in the TP up state.
 		if(!ITC_HasActiveDevices())
 			CtrlNamedBackground TestPulseMD, stop
-			print "Stopping test pulse on:", panelTitle, "In ITC_StopTPMD"
 		endif
 
 		TP_Teardown(panelTitle)

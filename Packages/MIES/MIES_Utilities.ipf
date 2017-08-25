@@ -489,24 +489,31 @@ Function Downsample(wv, downsampleFactor, upsampleFactor, mode, [winFunction])
 	// parameter checking
 	if(!WaveExists(wv))
 		print "Wave wv does not exist"
+		ControlWindowToFront()
 		return 1
 	elseif(downsampleFactor <= 0 || downsampleFactor >= DimSize(wv,ROWS))
 		print "Parameter downsampleFactor must be strictly positive and strictly smaller than the number of rows in wv."
+		ControlWindowToFront()
 		return 1
 	elseif(!IsInteger(downsampleFactor))
 		print "Parameter downsampleFactor must be an integer."
+		ControlWindowToFront()
 		return 1
 	elseif(upsampleFactor <= 0 )
 		print "Parameter upsampleFactor must be strictly positive."
+		ControlWindowToFront()
 		return 1
 	elseif(!IsInteger(upsampleFactor))
 		print "Parameter upsampleFactor must be an integer."
+		ControlWindowToFront()
 		return 1
 	elseif(mode != DECIMATION_BY_SMOOTHING && !ParamIsDefault(winFunction))
 		print "Invalid combination of a window function and mode."
+		ControlWindowToFront()
 		return 1
 	elseif(!ParamIsDefault(winFunction) && FindListItem(winFunction, ALL_WINDOW_FUNCTIONS) == -1)
 		print "Unknown windowing function: " + winFunction
+		ControlWindowToFront()
 		return 1
 	endif
 
@@ -534,6 +541,7 @@ Function Downsample(wv, downsampleFactor, upsampleFactor, mode, [winFunction])
 			break
 		default:
 			print "Invalid mode: " + num2str(mode)
+			ControlWindowToFront()
 			return 1
 	endswitch
 

@@ -4163,7 +4163,6 @@ Function/Wave GetConfigSettingsWaveRef(panelTitle)
 		return wv
 	endif
 
-	print "making the config wave..."
 	// Make this a 2 by 1 wave...the 1st row will have the name of the thing saved, the 2nd row will have the value, and the third will have the control state.  This wave will get redimensioned and
 	// expanded and new things are added
 	Make/T/N=(3,1) dfr:configSettings/Wave=wv

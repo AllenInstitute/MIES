@@ -172,7 +172,6 @@ Function ITC_FIFOMonitorMD(s)
 		endif
 
 		if(isFinished)
-			print "stopped data acq on " + panelTitle, "device ID global = ", deviceID
 			ITC_MakeOrUpdateActivDevLstWave(panelTitle, deviceID, 0, 0, -1)
 			ITC_StopDataAcqMD(panelTitle, deviceID)
 			i = 0
@@ -181,7 +180,6 @@ Function ITC_FIFOMonitorMD(s)
 	endfor
 
 	if(DimSize(ActiveDeviceList, ROWS) == 0)
-		print "no more active devices, stopping named background"
 		return 1
 	endif
 
@@ -228,7 +226,6 @@ static Function ITC_TerminateOngoingDAQMDHelper(panelTitle)
 
 	// determine if device removed was the last device on the list, if yes stop the background function
 	if(DimSize(ActiveDeviceList, ROWS) == 0)
-		print "no more active devices, stopping named background"
 		CtrlNamedBackground ITC_FIFOMonitorMD, stop
 	endif
 END

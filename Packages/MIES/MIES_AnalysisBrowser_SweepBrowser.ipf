@@ -104,9 +104,6 @@ Function SB_GetIndexFromSweepDataPath(graph, dataDFR)
 	WAVE/Z indizesDevice     = FindIndizes(sweepMap, colLabel="Device", str=device)
 	WAVE/Z indizesSweep      = FindIndizes(sweepMap, colLabel="Sweep", str=num2str(sweepNo))
 
-	print indizesSweep
-	print indizesDevice
-	print indizesDataFolder
 	ASSERT(WaveExists(indizesDevice) && WaveExists(indizesSweep) && WaveExists(indizesDataFolder), "Map could not be queried")
 
 	// indizesSweep is the shortest one
