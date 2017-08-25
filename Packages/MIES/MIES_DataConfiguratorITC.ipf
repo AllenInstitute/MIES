@@ -809,7 +809,7 @@ static Function DC_PlaceDataInITCDataWave(panelTitle, numActiveChannels, dataAcq
 				(DAGain[q] * DAScale[q]) * singleStimSet[mod(p, singleSetLength)][0], \
 				SIGNED_INT_16BIT_MIN,                                                 \
 				SIGNED_INT_16BIT_MAX)
-			cutOff = mod(DimSize(ITCDataWave, ROWS), testPulseLength)
+			cutOff = mod(DimSize(ITCDataWave, ROWS), singleSetLength)
 			ITCDataWave[DimSize(ITCDataWave, ROWS) - cutoff, *][0, numEntries - 1] = 0
 		else
 			Multithread ITCDataWave[0, setLength[0] - 1][0, numEntries - 1] =      \
