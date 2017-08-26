@@ -184,7 +184,7 @@ static Function IDX_StepsInSetWithMaxSweeps(panelTitle,IndexNo)
 	string setName
 	string SetList
 	variable i = 0
-	variable ListOffset = 1
+	variable ListOffset = 2
 	string popMenuIndexStartName, popMenuIndexEndName
 
 	WAVE statusDA = DAP_ControlStatusWaveCache(panelTitle, CHANNEL_TYPE_DAC)
