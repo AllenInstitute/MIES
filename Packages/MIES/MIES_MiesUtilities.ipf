@@ -3574,11 +3574,7 @@ End
 /// Distinguishes between i386 and x64 Igor versions
 Function/S GetProgramFilesFolder()
 
-#if defined(IGOR64)
 	return "C:\\Program Files\\"
-#else
-	return "C:\\Program Files (x86)\\"
-#endif
 End
 
 /// @brief Return the default name of a electrode

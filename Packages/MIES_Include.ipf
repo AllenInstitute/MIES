@@ -57,7 +57,6 @@
 #include "MIES_HDF5Ops"
 #include "MIES_IgorHooks"
 #include "MIES_Indexing"
-#include "MIES_Manipulator"
 #include "MIES_Menu"
 #include "MIES_MiesUtilities"
 #include "MIES_NeuroDataWithoutBorders" menus=0

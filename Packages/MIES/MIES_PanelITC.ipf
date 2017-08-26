@@ -3256,14 +3256,6 @@ Window DA_Ephys() : Panel
 	PopupMenu popup_Settings_Manip_MSSMnipLst,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	PopupMenu popup_Settings_Manip_MSSMnipLst,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
 	PopupMenu popup_Settings_Manip_MSSMnipLst,mode=1,popvalue="- none -",value= #"\"- none -;\" + M_GetListOfAttachedManipulators()"
-	CheckBox Check_Hardware_UseManip,pos={48.00,607.00},size={50.00,15.00},proc=DAP_Activate_Manips,title="Enable"
-	CheckBox Check_Hardware_UseManip,help={"Try to establish communication with the manipulators."}
-	CheckBox Check_Hardware_UseManip,userdata(tabnum)=  "6"
-	CheckBox Check_Hardware_UseManip,userdata(tabcontrol)=  "ADC"
-	CheckBox Check_Hardware_UseManip,userdata(ResizeControlsInfo)= A"!!,DO!!#D'^]6\\l!!#<(z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
-	CheckBox Check_Hardware_UseManip,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
-	CheckBox Check_Hardware_UseManip,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
-	CheckBox Check_Hardware_UseManip,value= 0
 	CheckBox Check_Settings_NwbExport,pos={34.00,216.00},size={102.00,15.00},disable=1,title="Export into NWB"
 	CheckBox Check_Settings_NwbExport,help={"Export all data including sweeps into a file in the NeurodataWithoutBorders fornat,"}
 	CheckBox Check_Settings_NwbExport,userdata(tabnum)=  "5"
@@ -3995,7 +3987,6 @@ Function DAP_EphysPanelStartUpSettings()
 	SetVariable Unit_DA_06 WIN = $panelTitle,limits={0,inf,1},value= _STR:""
 	SetVariable Unit_DA_07 WIN = $panelTitle,limits={0,inf,1},value= _STR:""
 
-	SetVariable Unit_AD_00 WIN = $panelTitle,limits={0,inf,1},value= _STR:""
 	SetVariable Unit_AD_01 WIN = $panelTitle,limits={0,inf,1},value= _STR:""
 	SetVariable Unit_AD_02 WIN = $panelTitle,limits={0,inf,1},value= _STR:""
 	SetVariable Unit_AD_03 WIN = $panelTitle,limits={0,inf,1},value= _STR:""
@@ -5071,10 +5062,6 @@ Function DAP_SyncDeviceAssocSettToGUI(panelTitle, headStage)
 
 	DAP_UpdateChanAmpAssignPanel(panelTitle)
 	P_UpdatePressureControls(panelTitle, headStage)
-
-	if(GetCheckBoxState(panelTitle, "Check_Hardware_UseManip"))
-		M_SetManipulatorAssocControls(panelTitle, headStage)
-	endif
 End
 
 Function DAP_PopMenuProc_Headstage(pa) : PopupMenuControl
@@ -5107,10 +5094,6 @@ Function DAP_PopMenuProc_CAA(pa) : PopupMenuControl
 
 			DAP_UpdateChanAmpAssignStorWv(panelTitle)
 			P_UpdatePressureDataStorageWv(panelTitle)
-
-			if(GetCheckBoxState(panelTitle, "Check_Hardware_UseManip"))
-				M_SetManipulatorAssociation(panelTitle)
-			endif
 			break
 	endswitch
 
