@@ -49,7 +49,7 @@ Function AFM_CallAnalysisFunctions(panelTitle, eventType)
 				// nothing to do
 				break
 			case POST_SET_EVENT:
-				if(mod(count + 1, IDX_NumberOfTrialsInSet(panelTitle, setName)) != 0)
+				if(mod(count + 1, IDX_NumberOfTrialsInSet(setName)) != 0)
 					continue
 				endif
 				break

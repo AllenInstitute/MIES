@@ -214,7 +214,7 @@ static Function IDX_StepsInSetWithMaxSweeps(panelTitle,IndexNo)
 		SetList = getuserdata(panelTitle, popMenuIndexStartName, "menuexp")
 		SetName = stringfromlist((ListStartNo+index-listoffset), SetList,";")
 		ASSERT(!IsEmpty(SetName), "Unexpected empty set")
-		SetSteps = IDX_NumberOfTrialsInSet(panelTitle, SetName)
+		SetSteps = IDX_NumberOfTrialsInSet(SetName)
 		MaxSteps = max(MaxSteps, SetSteps)
 	endfor
 
@@ -246,7 +246,7 @@ static Function IDX_StepsInSetWithMaxSweeps(panelTitle,IndexNo)
 		SetList = getuserdata(panelTitle, popMenuIndexStartName, "menuexp")
 		SetName = stringfromlist((ListStartNo + index - listoffset), SetList, ";")
 		ASSERT(!IsEmpty(SetName), "Unexpected empty set")
-		SetSteps = IDX_NumberOfTrialsInSet(panelTitle, SetName)
+		SetSteps = IDX_NumberOfTrialsInSet(SetName)
 		MaxSteps = max(MaxSteps, SetSteps)
 	endfor
 	
@@ -475,15 +475,15 @@ static Function IDX_NumberOfTrialsAcrossSets(panelTitle, channel, channelType, l
 	numEntries = ItemsInList(setList)
 	for(i = 0; i < numEntries; i += 1)
 		set = StringFromList(i, setList)
-		numTrials += IDX_NumberOfTrialsInSet(panelTitle, set)
+		numTrials += IDX_NumberOfTrialsInSet(set)
 	endfor
 
 	return DEBUGPRINTv(numTrials)
 End
 
 /// @brief Return the number of trials
-Function IDX_NumberOfTrialsInSet(panelTitle, setName)
-	string panelTitle, setName
+Function IDX_NumberOfTrialsInSet(setName)
+	string setName
 
 	if(isEmpty(setName))
 		return 0

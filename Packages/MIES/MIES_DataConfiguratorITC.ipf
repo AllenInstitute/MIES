@@ -1143,7 +1143,7 @@ static Function/C DC_CalculateChannelColumnNo(panelTitle, SetName, channelNo, ch
 	string panelTitle, SetName
 	variable ChannelNo, channelType
 
-	variable ColumnsInSet = IDX_NumberOfTrialsInSet(panelTitle, SetName)
+	variable ColumnsInSet = IDX_NumberOfTrialsInSet(SetName)
 	variable column
 	variable CycleCount // when cycleCount = 1 the set has already cycled once.
 	variable localCount
