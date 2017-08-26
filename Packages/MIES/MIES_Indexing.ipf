@@ -213,6 +213,7 @@ static Function IDX_StepsInSetWithMaxSweeps(panelTitle,IndexNo)
 
 		SetList = getuserdata(panelTitle, popMenuIndexStartName, "menuexp")
 		SetName = stringfromlist((ListStartNo+index-listoffset), SetList,";")
+		ASSERT(!IsEmpty(SetName), "Unexpected empty set")
 		SetSteps = IDX_NumberOfTrialsInSet(panelTitle, SetName)
 		MaxSteps = max(MaxSteps, SetSteps)
 	endfor
@@ -244,6 +245,7 @@ static Function IDX_StepsInSetWithMaxSweeps(panelTitle,IndexNo)
 
 		SetList = getuserdata(panelTitle, popMenuIndexStartName, "menuexp")
 		SetName = stringfromlist((ListStartNo + index - listoffset), SetList, ";")
+		ASSERT(!IsEmpty(SetName), "Unexpected empty set")
 		SetSteps = IDX_NumberOfTrialsInSet(panelTitle, SetName)
 		MaxSteps = max(MaxSteps, SetSteps)
 	endfor
@@ -544,6 +546,7 @@ static Function IDX_TotalIndexingListSteps(panelTitle, ChannelNumber, DAorTTL)
 		if(DAorTTL==0)
 			do // this do-while loop adjust count based on the number of times the list of sets has cycled
 				DAorTTLFullWaveName=DAorTTLWavePath+stringfromlist((DAIndexingStorageWave[0][ChannelNumber]+i-ListOffset),PopUpMenuList,";")
+				ASSERT(!IsEmpty(DAorTTLFullWaveName), "Unexpected empty set")
 				TotalListSteps+=dimsize($DAorTTLFullWaveName,1)
 				i+=1
 			while( (i + DAIndexingStorageWave[0][ChannelNumber]) <= DAIndexingStorageWave[1][ChannelNumber] )
@@ -552,6 +555,7 @@ static Function IDX_TotalIndexingListSteps(panelTitle, ChannelNumber, DAorTTL)
 		if(DAorTTL==1)
 			do // this do-while loop adjust count based on the number of times the list of sets has cycled
 				DAorTTLFullWaveName=DAorTTLWavePath+stringfromlist((TTLIndexingStorageWave[0][ChannelNumber]+i-ListOffset),PopUpMenuList,";")
+				ASSERT(!IsEmpty(DAorTTLFullWaveName), "Unexpected empty set")
 				TotalListSteps+=dimsize($DAorTTLFullWaveName,1)
 				i+=1
 			while( (i + TTLIndexingStorageWave[0][ChannelNumber]) <= TTLIndexingStorageWave[1][ChannelNumber] )
@@ -563,6 +567,7 @@ static Function IDX_TotalIndexingListSteps(panelTitle, ChannelNumber, DAorTTL)
 		if(DAorTTL==0)
 			do // this do-while loop adjust count based on the number of times the list of sets has cycled
 				DAorTTLFullWaveName=DAorTTLWavePath+stringfromlist((DAIndexingStorageWave[1][ChannelNumber]+i-ListOffset),PopUpMenuList,";")
+				ASSERT(!IsEmpty(DAorTTLFullWaveName), "Unexpected empty set")
 				TotalListSteps+=dimsize($DAorTTLFullWaveName,1)
 				i+=1
 			while( (i + DAIndexingStorageWave[1][ChannelNumber]) <= DAIndexingStorageWave[0][ChannelNumber] )
@@ -571,6 +576,7 @@ static Function IDX_TotalIndexingListSteps(panelTitle, ChannelNumber, DAorTTL)
 		if(DAorTTL==1)
 			do // this do-while loop adjust count based on the number of times the list of sets has cycled
 				DAorTTLFullWaveName=DAorTTLWavePath+stringfromlist((TTLIndexingStorageWave[1][ChannelNumber]+i-ListOffset),PopUpMenuList,";")
+				ASSERT(!IsEmpty(DAorTTLFullWaveName), "Unexpected empty set")
 				TotalListSteps+=dimsize($DAorTTLFullWaveName,1)
 				i+=1
 			while( (i + TTLIndexingStorageWave[1][ChannelNumber]) <= TTLIndexingStorageWave[0][ChannelNumber] )
@@ -584,7 +590,7 @@ Function IDX_UnlockedIndexingStepNo(panelTitle, channelNo, DAorTTL, count)
 	string paneltitle
 	variable channelNo, DAorTTL, count
 	variable column, i, StepsInSummedSets, totalListSteps
-	string DAorTTLWavePath, PopUpMenuList, ChannelPopUpMenuName
+	string DAorTTLWavePath, setName, PopUpMenuList, ChannelPopUpMenuName
 	variable listOffSet = 2
 
 	WAVE DAIndexingStorageWave = GetDACIndexingStorageWave(panelTitle)
@@ -608,20 +614,27 @@ Function IDX_UnlockedIndexingStepNo(panelTitle, channelNo, DAorTTL, count)
 	if((DAIndexingStorageWave[0][channelNo]) < (DAIndexingStorageWave[1][channelNo]))
 		if(DAorTTL == 0)//DA channel
 			do
-				StepsInSummedSets += dimsize($DAorTTLWavePath + stringfromlist((DAIndexingStorageWave[0][channelNo] + i - ListOffset), PopUpMenuList,";"),1)
+				setName = StringFromList((DAIndexingStorageWave[0][channelNo] + i - ListOffset), PopUpMenuList,";")
+				ASSERT(!IsEmpty(setName), "Unexpected empty set")
+				StepsInSummedSets += dimsize($DAorTTLWavePath + setName,1)
 				i += 1
 			while(StepsInSummedSets<=Count)
 			i-=1
-			StepsInSummedSets-=dimsize($DAorTTLWavePath+stringfromlist((DAIndexingStorageWave[0][channelNo]+i-ListOffset),PopUpMenuList,";"),1)
+			setName = StringFromList((DAIndexingStorageWave[0][channelNo] + i - ListOffset),PopUpMenuList,";")
+			StepsInSummedSets-=dimsize($DAorTTLWavePath + setName,1)
 		endif
 
 		if(DAorTTL==1)//TTL channel
 			do
-				StepsInSummedSets+=dimsize($DAorTTLWavePath+stringfromlist((TTLIndexingStorageWave[0][channelNo]+i-ListOffset),PopUpMenuList,";"),1)
+				setName = StringFromList((TTLIndexingStorageWave[0][channelNo]+i-ListOffset),PopUpMenuList,";")
+				ASSERT(!IsEmpty(setName), "Unexpected empty set")
+				StepsInSummedSets+=dimsize($DAorTTLWavePath + setName,1)
 				i+=1
 			while(StepsInSummedSets<=Count)
 			i-=1
-			StepsInSummedSets-=dimsize($DAorTTLWavePath+stringfromlist((TTLIndexingStorageWave[0][channelNo]+i-ListOffset),PopUpMenuList,";"),1)
+			setName = StringFromList((TTLIndexingStorageWave[0][channelNo]+i-ListOffset),PopUpMenuList,";")
+			ASSERT(!IsEmpty(setName), "Unexpected empty set")
+			StepsInSummedSets-=dimsize($DAorTTLWavePath + setName,1)
 		endif
 	endif
 
@@ -629,20 +642,28 @@ Function IDX_UnlockedIndexingStepNo(panelTitle, channelNo, DAorTTL, count)
 	if(DAIndexingStorageWave[0][channelNo] > DAIndexingStorageWave[1][channelNo])//  handels the situation where the start set is after the end set on the index list
 		if(DAorTTL==0)//DA channel
 			do
-				StepsInSummedSets+=dimsize($DAorTTLWavePath+stringfromlist((DAIndexingStorageWave[0][channelNo]+i-ListOffset),PopUpMenuList,";"),1)
+				setName = Stringfromlist((DAIndexingStorageWave[0][channelNo]+i-ListOffset),PopUpMenuList,";")
+				ASSERT(!IsEmpty(setName), "Unexpected empty set")
+				StepsInSummedSets+=dimsize($DAorTTLWavePath+ setName,1)
 				i-=1
 			while(StepsInSummedSets<=Count)
 			i+=1
-			StepsInSummedSets-=dimsize($DAorTTLWavePath+stringfromlist((DAIndexingStorageWave[0][channelNo]+i-ListOffset),PopUpMenuList,";"),1)
+			setName = StringFromList((DAIndexingStorageWave[0][channelNo]+i-ListOffset),PopUpMenuList,";")
+			ASSERT(!IsEmpty(setName), "Unexpected empty set")
+			StepsInSummedSets-=dimsize($DAorTTLWavePath + setName,1)
 		endif
 
 		if(DAorTTL==1)//TTL channel
 			do
-				StepsInSummedSets+=dimsize($DAorTTLWavePath+stringfromlist((TTLIndexingStorageWave[0][channelNo]+i-ListOffset),PopUpMenuList,";"),1)
+				setName = StringFromList((TTLIndexingStorageWave[0][channelNo]+i-ListOffset),PopUpMenuList,";")
+				ASSERT(!IsEmpty(setName), "Unexpected empty set")
+				StepsInSummedSets+=dimsize($DAorTTLWavePath + setName,1)
 				i-=1
 			while(StepsInSummedSets<=Count)
 			i+=1
-			StepsInSummedSets-=dimsize($DAorTTLWavePath+stringfromlist((TTLIndexingStorageWave[0][channelNo]+i-ListOffset),PopUpMenuList,";"),1)
+			setName = StringFromList((TTLIndexingStorageWave[0][channelNo]+i-ListOffset),PopUpMenuList,";")
+			ASSERT(!IsEmpty(setName), "Unexpected empty set")
+			StepsInSummedSets-=dimsize($DAorTTLWavePath + setName,1)
 		endif
 	endif
 
@@ -656,7 +677,7 @@ static Function IDX_DetIfCountIsAtSetBorder(panelTitle, count, channelNumber, DA
 	variable AtSetBorder=0
 	WAVE DAIndexingStorageWave = GetDACIndexingStorageWave(panelTitle)
 	WAVE TTLIndexingStorageWave = GetTTLIndexingStorageWave(panelTitle)
-	string listOfWaveInPopup, PopUpMenuList, ChannelPopUpMenuName, DAorTTLWavePath, DAorTTLFullWaveName
+	string listOfWaveInPopup, PopUpMenuList, ChannelPopUpMenuName, DAorTTLWavePath, setName
 	variable i, StepsInSummedSets, TotalListSteps
 	variable listOffset = 2
 
@@ -678,7 +699,9 @@ static Function IDX_DetIfCountIsAtSetBorder(panelTitle, count, channelNumber, DA
 		i=0
 		if(DAorTTL==0)//DA channel
 			do
-				StepsInSummedSets+=dimsize($DAorTTLWavePath+stringfromlist((DAIndexingStorageWave[0][ChannelNumber]+i-ListOffset),PopUpMenuList,";"),1)
+				setName = StringFromList((DAIndexingStorageWave[0][ChannelNumber]+i-ListOffset),PopUpMenuList,";")
+				ASSERT(!IsEmpty(setName), "Unexpected empty set")
+				StepsInSummedSets+=dimsize($DAorTTLWavePath + setName,1)
 				if(StepsInSummedSets==Count)
 					AtSetBorder=1
 					return AtSetBorder
@@ -692,7 +715,9 @@ static Function IDX_DetIfCountIsAtSetBorder(panelTitle, count, channelNumber, DA
 	if(TTLIndexingStorageWave[0][ChannelNumber]<TTLIndexingStorageWave[1][ChannelNumber])
 		if(DAorTTL==1)// TTL channel
 			do
-				StepsInSummedSets+=dimsize($DAorTTLWavePath+stringfromlist((TTLIndexingStorageWave[0][ChannelNumber]+i-ListOffset),PopUpMenuList,";"),1)
+				setName = StringFromList((TTLIndexingStorageWave[0][ChannelNumber]+i-ListOffset),PopUpMenuList,";")
+				ASSERT(!IsEmpty(setName), "Unexpected empty set")
+				StepsInSummedSets+=dimsize($DAorTTLWavePath + setName,1)
 
 				if(StepsInSummedSets==Count)
 					AtSetBorder=1
@@ -707,7 +732,9 @@ static Function IDX_DetIfCountIsAtSetBorder(panelTitle, count, channelNumber, DA
 		i=0
 		if(DAorTTL==0)//DA channel
 			do
-				StepsInSummedSets+=dimsize($DAorTTLWavePath+stringfromlist((DAIndexingStorageWave[0][ChannelNumber]+i-ListOffset),PopUpMenuList,";"),1)
+				setName = StringFromList((DAIndexingStorageWave[0][ChannelNumber]+i-ListOffset),PopUpMenuList,";")
+				ASSERT(!IsEmpty(setName), "Unexpected empty set")
+				StepsInSummedSets+=dimsize($DAorTTLWavePath + setName,1)
 				if(StepsInSummedSets==Count)
 					AtSetBorder=1
 					return AtSetBorder
@@ -721,7 +748,9 @@ static Function IDX_DetIfCountIsAtSetBorder(panelTitle, count, channelNumber, DA
 	if(TTLIndexingStorageWave[0][ChannelNumber]>TTLIndexingStorageWave[1][ChannelNumber])
 		if(DAorTTL==1)// TTL channel
 			do
-				StepsInSummedSets+=dimsize($DAorTTLWavePath+stringfromlist((TTLIndexingStorageWave[0][ChannelNumber]+i-ListOffset),PopUpMenuList,";"),1)
+				setName = StringFromList((TTLIndexingStorageWave[0][ChannelNumber]+i-ListOffset),PopUpMenuList,";")
+				ASSERT(!IsEmpty(setName), "Unexpected empty set")
+				StepsInSummedSets+=dimsize($DAorTTLWavePath + setName,1)
 
 				if(StepsInSummedSets==Count)
 					AtSetBorder=1
