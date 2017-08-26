@@ -2288,7 +2288,10 @@ Function/S GetWBSvdStimSetTTLPathAsString()
 	return GetWBSvdStimSetPathAsString() + ":TTL"
 End
 
-/// @brief Return the testpulse stimulus set
+/// @brief Return the testpulse wave
+///
+/// This wave will be written in DC_UpdateTestPulseWave()/
+/// DC_UpdateTestPulseWaveMD() and will use the real sampling interval.
 Function/WAVE GetTestPulse()
 
 	dfref dfr = GetWBSvdStimSetDAPath()
