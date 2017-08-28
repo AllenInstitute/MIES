@@ -1,3 +1,167 @@
+Release 1.3
+===========
+
+AnalysisBrowser
+---------------
+- Make the NWB menu entries available when only this module is loaded
+
+DataBrowser
+-----------
+- Reset overlay sweep folder on device locking
+- Labnotebook entry graph: Make the vertical axis scale to the visible data by default
+
+DataBrowser/SweepBrowser
+------------------------
+- Pulse averaging: Fix work preventing logic again
+- PulseAveraging: Handle invalid pulse coordinates more gracefully
+- Fix Display of TTL waves
+
+DA\_Ephys
+---------
+- Testpulse Multidevice:
+  - Use the correct testpulse length for the cutoff at the end (minor)
+  - Fix invalid extracted chunks for special baseline values
+  - Push stopCollection point further to the end
+  - Rewrite fifo handling logic to always extract the last chunk
+  - Remove device restarting logic
+- Fix the total number of sweeps calculation for locked indexing. Broken since 0.9.
+- Prevent locking a ITC device which is not present
+- Repeated Acquisition: Don't try starting TP during ITI if there is no time left
+- Oscilloscope: Prevent sub MOhm values for Rss and Rpeak
+- Oscilloscope: Don't use autoscaling in DAQ mode.
+- Background functions: Unify DAQ/TP bkg functions period to 5 ticks (12/60s = 83ms)
+- Speedup DAQ via optimizing the way we write into the oscilloscope wave
+- Experiment Documentation: Rework and speedup the sweep wave note creation with changed entries
+- Turn off analysis functions by default
+- Analysis Functions: Implement support for new mid sweep return type
+- Add support for skipping forward and back some sweeps during data acquisition
+- Repeated Acquisition: Immediately finish if we have only one trial
+- Analysis Functions: Prevent Post Sweep/Set/DAQ event execution on forced DAQ stopping
+- Experiment Documentation: Avoid bugging out on very long text entries
+- Pulse averaging: Fix fallback logic for non existing pulse lengths
+- Correct the default channels and other settings for device 1 to 9 of the type ITC1600
+- Handle non-active headstage gracefully if the user presses Approach (pressure mode)
+- Try out all possible MultiClampCommander paths
+- Add possibility to store each testpulse
+
+ExperimentConfig
+----------------
+- Remove workaround for buggy MultiClampCommander 64-bit App (Requires latest beta version of MCC App)
+- Fixed incorrect `GetPanelControl` constants to set the Min/Max Temp alarm. Fixed now
+- Add User Config field to save each TP sweep
+- Added new fields to User Configuration:
+  - Enable/Disable Autobias current
+  - Enable/Disable Cap Neutralization
+  - Set User onset and termination delay
+  - Select initial stim set and amplitude to begin data acquisition
+
+Downsample
+----------
+- Avoid erroring out on invalid target rate
+
+Foreign Function interface
+--------------------------
+None
+
+General
+-------
+- Remove 32bit, Manipulator and RemoteControl support
+- Avoid gossiping (aka printing messages) too much during operation instead use ControlWindowToFront when it is really important
+- Prevent erroneous save dialog when quitting MIES when nothing has changed
+- Readme.md: Unify full installation instructions for 32/64 bit
+- Readme.md: Enhance installation instructions without hardware
+- Raise required Igor Pro version to 7.04
+
+Labnotebook
+-----------
+- Fix adding the basic entries to all layers. Broken since the switch to Igor Pro 7.
+
+ITC XOP 2
+----------
+- Fix some erroneous tests
+- Add BSD-3-Clause License
+
+ZeroMQ XOP
+----------
+- Add help file in Igor Pro Help format
+- Nicify documentation and enhance compilation instructions
+- Add example C++ client
+- Add MacOSX XOPs
+- Upgrade to new XOPSupport 7.01
+- Recompile XOP support libraries with runtime DLL setting
+- Fix some compilation warnings found by clang on MacOSX
+- Remove dependency of the tests on MIES
+- Add BSD-3-Clause License
+
+New numerical keys
+~~~~~~~~~~~~~~~~~~
+- "Stim Wave Checksum", 32bit CRC of the stimset and its parameter waves (if present)
+- "Repeated Acq Cycle ID" holds an integer value which is unique for every
+  repeated acquisition cycle. This allows to determine if two sweeps belong to
+  the same repeaqted acquisition. Before this was only possible via an
+  heuristic which could not be correct all the time.
+
+New textual keys
+~~~~~~~~~~~~~~~~
+None
+
+Changed numerical entries
+~~~~~~~~~~~~~~~~~~~~~~~~~
+- Write "TTL rack zero/one channel" only in the headstage independent layer
+- Write asyn entries also in the headstage independent layer (For backwards compatibility we keep it in the zeroth layer)
+
+Changed textual entries
+~~~~~~~~~~~~~~~~~~~~~~~
+- Write asyn entries also in the headstage independent layer (For backwards compatibility we keep it in the zeroth layer)
+
+NWB/IPNWB
+---------
+- Link to the specification we implement
+- Nicify documentation
+- Add BSD-3-Clause License
+- Add example code for reading as well
+- H5_LoadDataset: Use HDF5 Error and dump routine in case of error
+- CreateCommonGroups: Write required datasets always
+- GeneralInfo: Include all other root folder elements as well
+
+Pressure Control
+----------------
+None
+
+WaveBuilder
+-----------
+- Fix loading default stimset values for DA type
+- Fix loading of TTL stimsets
+- Update the stimset related DA_EPHYS panel controls if only the number of sweeps of stimset changed
+- Prevent keeping non-existing analysis functions attached to a stimset during load and save cycle
+- Warn the user if the stimset references a non existing analysis function on loading
+
+Work Sequencing Engine
+----------------------
+None
+
+File format
+~~~~~~~~~~~
+None
+
+Internal
+--------
+- Switch continuous integration server to use Igor Pro 64-bit for unit and compilation testing
+- GetLastSetting: Return a double precision wave
+- EnsureLargeEnoughWave: Avoid enlarging minimum sized waves immediately
+- DA_EPHYS: Introduce a RNG seed value for each locked device
+- ExtractOneDimDataFromSweep: Add assertion for catching sweep <-> config mixups
+- ED_AddEntriesToLabnotebook: Add convenience function for easy addition of user labnotebook entries
+- FindIndizes: Simplify interface
+- Count global initializes at zero instead of NaN
+- FindRange: Make it possible to search for NaNs
+- DeepCopyWaveRefWave: Avoid claiming to support multi dimensional src waves
+- ParseISO8601TimeStamp: Accept more format variations written by the api-python code
+
+Tango
+-----
+None. But be aware that now the 64-bit version of the Tango XOP always is used.
+
 Release 1.2
 ===========
 
