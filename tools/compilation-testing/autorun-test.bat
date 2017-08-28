@@ -13,7 +13,7 @@ for /F "tokens=*" %%f IN ('dir /b *.pxp') do (
   echo Running experiment %%f
   start /D "" "C:\Program Files\WaveMetrics\Igor Pro 7 Folder\IgorBinaries_x64" Igor64.exe /N /I "%%f"
   C:\Windows\System32\timeout /t 45
-  taskkill /im Igor.exe /f
+  taskkill /im Igor64.exe /f
 )
 
 del %StateFile%
