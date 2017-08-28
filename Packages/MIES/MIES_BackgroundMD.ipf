@@ -169,6 +169,8 @@ Function ITC_FIFOMonitorMD(s)
 		if(!isFinished && AFM_CallAnalysisFunctions(panelTitle, MID_SWEEP_EVENT) == ANALYSIS_FUNC_RET_REPURP_TIME)
 			UpdateLeftOverSweepTime(panelTitle, fifoPos)
 			isFinished = 1
+		elseif(!isFinished && AFM_CallAnalysisFunctions(panelTitle, MID_SWEEP_EVENT) == ANALYSIS_FUNC_RET_EARLY_STOP)
+			isFinished = 1
 		endif
 
 		if(isFinished)

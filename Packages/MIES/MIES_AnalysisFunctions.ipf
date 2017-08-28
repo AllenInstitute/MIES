@@ -40,6 +40,7 @@
 /// 0                                 | All         | Nothing
 /// 1                                 | Pre DAQ     | DAQ is prevented to start
 /// #ANALYSIS_FUNC_RET_REPURP_TIME    | Mid Sweep   | Current sweep is immediately stopped. Left over time is repurposed for ITI.
+/// #ANALYSIS_FUNC_RET_EARLY_STOP     | Mid Sweep   | Current sweep is immediately stopped without honouring the left over time in a special way.
 
 /// @name Initial parameters for stimulation
 ///@{
@@ -417,7 +418,7 @@ Function TestPrematureSweepStop(panelTitle, eventType, ITCDataWave, headStage, r
 		temp = num2str(str2num(temp) + 1)
 
 		if(str2num(temp) > 20)
-			return ANALYSIS_FUNC_RET_REPURP_TIME
+			return ANALYSIS_FUNC_RET_EARLY_STOP
 		endif
 	endif
 

@@ -426,6 +426,7 @@ StrConstant EVENT_NAME_LIST = "Pre DAQ;Mid Sweep;Post Sweep;Post Set;Post DAQ"
 /// @anchor AnalysisFuncReturnTypesConstants
 /// @{
 Constant ANALYSIS_FUNC_RET_REPURP_TIME = -100
+Constant ANALYSIS_FUNC_RET_EARLY_STOP  = -101
 /// @}
 
 /// Number of layers in the labnotebook
