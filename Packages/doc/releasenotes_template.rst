@@ -13,6 +13,9 @@ DataBrowser/SweepBrowser
 DA\_Ephys
 ---------
 
+ExperimentConfig
+----------------
+
 Downsample
 ----------
 
@@ -36,6 +39,12 @@ New numerical keys
 
 New textual keys
 ~~~~~~~~~~~~~~~~
+
+Changed numerical entries
+~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Changed textual entries
+~~~~~~~~~~~~~~~~~~~~~~~
 
 NWB/IPNWB
 ---------
