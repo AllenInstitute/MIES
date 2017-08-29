@@ -17,8 +17,8 @@ following these are especially welcome.
 ## Supported versions
 
 * master
-* 1.1
 * 1.2
+* 1.3
 
 For supported versions we fix all critical bugs.
 
