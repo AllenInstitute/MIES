@@ -361,7 +361,7 @@ Function DB_UpdateToLastSweep(panelTitle)
 	string panelTitle
 
 	variable first, last
-	string device
+	string device, extPanel
 
 	if(!GetCheckBoxState(panelTitle, "check_DataBrowser_AutoUpdate"))
 		return NaN
@@ -377,7 +377,13 @@ Function DB_UpdateToLastSweep(panelTitle)
 	DB_UpdateSweepControls(panelTitle, first, last)
 	SetSetVariable(panelTitle, "setvar_DataBrowser_SweepNo", last)
 
-	OVS_InvertSweepSelection(panelTitle, sweepNo=last)
+	extPanel = OVS_GetExtPanel(panelTitle)
+
+	if(GetCheckBoxState(extPanel, "check_overlaySweeps_non_commula"))
+		OVS_ChangeSweepSelectionState(panelTitle, CHECKBOX_UNSELECTED, sweepNo=last - 1)
+	endif
+
+	OVS_ChangeSweepSelectionState(panelTitle, CHECKBOX_SELECTED, sweepNo=last)
 	DB_UpdateSweepPlot(panelTitle)
 End
 

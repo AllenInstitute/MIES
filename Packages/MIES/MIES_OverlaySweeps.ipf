@@ -420,20 +420,23 @@ Function OVS_TogglePanel(win, listboxWave, listboxSelWave)
 	SetActiveSubWindow $win
 	NewPanel/HOST=#/EXT=1/W=(200,0,0,485)
 	SetWindow kwTopWin, hook(main)=OVS_MainWindowHook
-	ListBox list_of_ranges,pos={7.00,94.00},size={186.00,381.00},proc=OVS_MainListBoxProc
+	ListBox list_of_ranges,pos={4.00,127.00},size={189.00,348.00},proc=OVS_MainListBoxProc
 	ListBox list_of_ranges,help={"Select sweeps for overlay; The second column (\"Headstages\") allows to ignore some headstages for the graphing. Syntax is a semicolon \";\" separated list of subranges, e.g. \"0\", \"0,2\", \"1;4;2\""}
 	ListBox list_of_ranges,listWave=listboxWave, selWave=listboxSelWave,widths={50,50}
 	PopupMenu popup_overlaySweeps_select,pos={27.00,14.00},size={143.00,19.00},bodyWidth=109,proc=OVS_PopMenuProc_Select,title="Select"
 	PopupMenu popup_overlaySweeps_select,help={"Select sweeps according to various properties"}
 	PopupMenu popup_overlaySweeps_select,mode=1,popvalue=NONE,value= #("OVS_GetSweepSelectionChoices(\"" + extPanel + "\")")
-	CheckBox check_overlaySweeps_disableHS,pos={14.00,75.00},size={120.00,15.00},proc=OVS_CheckBoxProc_HS_Select,title="Headstage Removal"
+	CheckBox check_overlaySweeps_disableHS,pos={24.00,99.00},size={120.00,15.00},proc=OVS_CheckBoxProc_HS_Select,title="Headstage Removal"
 	CheckBox check_overlaySweeps_disableHS,help={"Toggle headstage removal"}
 	CheckBox check_overlaySweeps_disableHS,value= 0
+	CheckBox check_overlaySweeps_non_commula,pos={24.00,78.00},size={153.00,15.00},title="Non-commulative update"
+	CheckBox check_overlaySweeps_non_commula,help={"If \"Display Last sweep acquired\" is checked, this checkbox here allows to only add the newly acquired sweep and will remove the currently added last sweep."}
+	CheckBox check_overlaySweeps_non_commula,value= 0
 	SetVariable setvar_overlaySweeps_offset,pos={12.00,41.00},size={81.00,18.00},bodyWidth=45,title="Offset",value=_NUM:0, proc=OVS_SetVarProc_SelectionRange, limits={0, inf, 1}
 	SetVariable setvar_overlaySweeps_offset,help={"Offsets the first selected sweep from the selection menu"}
 	SetVariable setvar_overlaySweeps_step,pos={99.00,41.00},size={72.00,18.00},bodyWidth=45,title="Step",value=_NUM:1, proc=OVS_SetVarProc_SelectionRange, limits={1, inf, 1}
 	SetVariable setvar_overlaySweeps_step,help={"Selects every `step` sweep from the selection menu"}
-	GroupBox group_overlaySweeps_selecction,pos={5.00,4.00},size={191.00,65.00}
+	GroupBox group_overlaySweeps_selection,pos={5.00,4.00},size={191.00,65.00}
 	RenameWindow #,OverlaySweeps
 	SetActiveSubwindow ##
 
