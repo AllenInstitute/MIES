@@ -155,7 +155,7 @@ static Function DB_LockDBPanel(panelTitle, device)
 	DB_UpdateSweepControls(panelTitleNew, first, last)
 	DB_UpdateSweepPlot(panelTitleNew)
 
-	if(GetCheckBoxState(panelTitleNew, "check_DataBrowser_SweepOverlay"))
+	if(OVS_IsActive(panelTitleNew))
 		DFREF dfr = GetDeviceDataBrowserPath(device)
 		OVS_SetFolder(panelTitleNew, dfr)
 	endif
@@ -385,7 +385,7 @@ Function DB_UpdateToLastSweep(panelTitle)
 
 	extPanel = OVS_GetExtPanel(panelTitle)
 
-	if(WindowExists(extPanel) && GetCheckBoxState(extPanel, "check_overlaySweeps_non_commula"))
+	if(OVS_IsActive(panelTitle) && GetCheckBoxState(extPanel, "check_overlaySweeps_non_commula"))
 		OVS_ChangeSweepSelectionState(panelTitle, CHECKBOX_UNSELECTED, sweepNo=last - 1)
 	endif
 
@@ -996,7 +996,8 @@ Function DB_CheckboxProc_OverlaySweeps(cba) : CheckBoxControl
 			WAVE/T textualValues   = DB_GetTextualValues(panelTitle)
 			sweepWaveList = DB_GetPlainSweepList(panelTitle)
 			OVS_UpdatePanel(panelTitle, listBoxWave, listBoxSelWave, sweepSelChoices, sweepWaveList, textualValues=textualValues, numericalValues=numericalValues)
-			if(!OVS_TogglePanel(panelTitle, listBoxWave, listBoxSelWave))
+			OVS_TogglePanel(panelTitle, listBoxWave, listBoxSelWave, visible = cba.checked)
+			if(OVS_IsActive(panelTitle))
 				sweepNo = GetSetVariable(panelTitle, "setvar_DataBrowser_SweepNo")
 				OVS_ChangeSweepSelectionState(panelTitle, CHECKBOX_SELECTED, sweepNo=sweepNo)
 			endif
@@ -1053,30 +1054,30 @@ End
 Function DB_ButtonProc_RestoreData(ba) : ButtonControl
 	STRUCT WMButtonAction &ba
 
-	string win, graph, traceList, artefactRemovalExtPanel
+	string mainPanel, graph, traceList, extPanel
 	variable autoRemoveOldState, zeroTracesOldState
 
 	switch(ba.eventCode)
 		case 2: // mouse up
-			win   = ba.win
-			graph = DB_GetMainGraph(win)
+			mainPanel   = GetMainWindow(ba.win)
+			graph = DB_GetMainGraph(mainPanel)
 			traceList = GetAllSweepTraces(graph)
 			ReplaceAllWavesWithBackup(graph, traceList)
 
-			zeroTracesOldState = GetCheckBoxState(win, "check_DataBrowser_ZeroTraces")
-			SetCheckBoxState(win, "check_DataBrowser_ZeroTraces", CHECKBOX_UNSELECTED)
+			zeroTracesOldState = GetCheckBoxState(mainPanel, "check_DataBrowser_ZeroTraces")
+			SetCheckBoxState(mainPanel, "check_DataBrowser_ZeroTraces", CHECKBOX_UNSELECTED)
 
-			artefactRemovalExtPanel = AR_GetExtPanel(win)
-			if(!WindowExists(artefactRemovalExtPanel))
-				DB_UpdateSweepPlot(win)
+			if(!AR_IsActive(mainPanel))
+				DB_UpdateSweepPlot(mainPanel)
 			else
-				autoRemoveOldState = GetCheckBoxState(artefactRemovalExtPanel, "check_auto_remove")
-				SetCheckBoxState(artefactRemovalExtPanel, "check_auto_remove", CHECKBOX_UNSELECTED)
-				DB_UpdateSweepPlot(win)
-				SetCheckBoxState(artefactRemovalExtPanel, "check_auto_remove", autoRemoveOldState)
+				extPanel = AR_GetExtPanel(mainPanel)
+				autoRemoveOldState = GetCheckBoxState(extPanel, "check_auto_remove")
+				SetCheckBoxState(extPanel, "check_auto_remove", CHECKBOX_UNSELECTED)
+				DB_UpdateSweepPlot(mainPanel)
+				SetCheckBoxState(extPanel, "check_auto_remove", autoRemoveOldState)
 			endif
 
-			SetCheckBoxState(win, "check_DataBrowser_ZeroTraces", zeroTracesOldState)
+			SetCheckBoxState(mainPanel, "check_DataBrowser_ZeroTraces", zeroTracesOldState)
 			break
 	endswitch
 

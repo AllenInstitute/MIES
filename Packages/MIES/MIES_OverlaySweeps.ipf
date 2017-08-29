@@ -116,7 +116,7 @@ Function/DF OVS_GetFolder(win)
 
 	string extPanel = OVS_GetExtPanel(win)
 
-	if(!WindowExists(extPanel))
+	if(!OVS_IsActive(win))
 		return $""
 	endif
 
@@ -170,7 +170,7 @@ Function OVS_UpdatePanel(win, listBoxWave, listBoxSelWave, sweepSelectionChoices
 
 	listBoxSelWave[][%Sweep] = listBoxSelWave[p] & LISTBOX_CHECKBOX_SELECTED ? LISTBOX_CHECKBOX | LISTBOX_CHECKBOX_SELECTED : LISTBOX_CHECKBOX
 
-	if(WindowExists(extPanel) && GetCheckBoxState(extPanel, "check_overlaySweeps_disableHS"))
+	if(OVS_IsActive(win) && GetCheckBoxState(extPanel, "check_overlaySweeps_disableHS"))
 		listBoxSelWave[][%Headstages] = SetBit(listBoxSelWave[p][%Headstages], LISTBOX_CELL_EDITABLE)
 	else
 		listBoxSelWave[][%Headstages] = ClearBit(listBoxSelWave[p][%Headstages], LISTBOX_CELL_EDITABLE)
@@ -197,12 +197,11 @@ Function/WAVE OVS_GetSelectedSweeps(win, mode)
 
 	ASSERT(mode == OVS_SWEEP_SELECTION_INDEX || mode == OVS_SWEEP_SELECTION_SWEEPNO, "Invalid mode")
 
-	DFREF dfr = OVS_GetFolder(win)
-
-	if(!DataFolderExistsDFR(dfr))
+	if(!OVS_IsActive(win))
 		return $""
 	endif
 
+	DFREF dfr = OVS_GetFolder(win)
 	WAVE/T listboxWave  = GetOverlaySweepsListWave(dfr)
 	WAVE listboxSelWave = GetOverlaySweepsListSelWave(dfr)
 
@@ -227,12 +226,11 @@ Function OVS_InvertSweepSelection(win, [sweepNo, index])
 
 	variable selectionState
 
-	DFREF dfr = OVS_GetFolder(win)
-
-	if(!DataFolderExistsDFR(dfr))
+	if(!OVS_IsActive(win))
 		return NaN
 	endif
 
+	DFREF dfr = OVS_GetFolder(win)
 	WAVE/T listboxWave  = GetOverlaySweepsListWave(dfr)
 	WAVE listboxSelWave = GetOverlaySweepsListSelWave(dfr)
 
@@ -271,15 +269,14 @@ Function OVS_ChangeSweepSelectionState(win, newState, [sweepNo, index])
 
 	variable selectionState
 
-	DFREF dfr = OVS_GetFolder(win)
-
-	if(!DataFolderExistsDFR(dfr))
+	if(!OVS_IsActive(win))
 		return NaN
 	endif
 
 	// coerce to 0/1
 	newState = !!newState
 
+	DFREF dfr = OVS_GetFolder(win)
 	WAVE/T listboxWave  = GetOverlaySweepsListWave(dfr)
 	WAVE listboxSelWave = GetOverlaySweepsListSelWave(dfr)
 
@@ -303,6 +300,18 @@ Function OVS_ChangeSweepSelectionState(win, newState, [sweepNo, index])
 	endif
 End
 
+/// checks if OVS is active.
+Function OVS_IsActive(win)
+	string win
+
+	string extPanel = OVS_GetExtPanel(win)
+	if(!WindowExists(extPanel))
+		return 0
+	endif
+
+	return 1
+End
+
 /// @brief Add `headstage` to the ignore list of the given `sweepNo/index`
 static Function OVS_AddToIgnoreList(win, headstage, [sweepNo, index])
 	string win
@@ -310,12 +319,11 @@ static Function OVS_AddToIgnoreList(win, headstage, [sweepNo, index])
 
 	variable row
 
-	DFREF dfr = OVS_GetFolder(win)
-
-	if(!DataFolderExistsDFR(dfr))
+	if(!OVS_IsActive(win))
 		return NaN
 	endif
 
+	DFREF dfr = OVS_GetFolder(win)
 	WAVE/T listboxWave = GetOverlaySweepsListWave(dfr)
 
 	if(!ParamIsDefault(sweepNo))
@@ -361,13 +369,16 @@ Function/WAVE OVS_ParseIgnoreList(win, highlightSweep, [sweepNo, index])
 
 	// set default
 	highlightSweep = NaN // no sweep highlighted
-
-	DFREF dfr = OVS_GetFolder(win)
-	extPanel =  OVS_GetExtPanel(win)
-	if(!DataFolderExistsDFR(dfr) || !GetCheckBoxState(extPanel, "check_overlaySweeps_disableHS"))
+	if(!OVS_IsActive(win))
 		return $""
 	endif
 
+	extPanel =  OVS_GetExtPanel(win)
+	if(!GetCheckBoxState(extPanel, "check_overlaySweeps_disableHS"))
+		return $""
+	endif
+
+	DFREF dfr = OVS_GetFolder(win)
 	WAVE/T listboxWave = GetOverlaySweepsListWave(dfr)
 
 	if(!ParamIsDefault(sweepNo))

@@ -171,7 +171,7 @@ Function AR_HighlightArtefactsEntry(graph)
 
 	extPanel = AR_GetExtPanel(graph)
 
-	if(!WindowExists(extPanel) || !GetCheckBoxState(extPanel, "check_highlightRanges"))
+	if(!AR_IsActive(extPanel) || !GetCheckBoxState(extPanel, "check_highlightRanges"))
 		return NaN
 	endif
 
@@ -424,12 +424,11 @@ Function AR_UpdateTracesIfReq(graph, sweepFolder, numericalValues, sweepNo)
 	DFREF sweepFolder
 	WAVE numericalValues
 
-	string extPanel, panelTitle
+	string panelTitle
 
 	panelTitle = GetMainWindow(graph)
-	extPanel   = AR_GetExtPanel(graph)
 
-	if(!WindowExists(extPanel))
+	if(!AR_IsActive(panelTitle))
 		return NaN
 	endif
 
@@ -473,4 +472,16 @@ Function AR_MainWindowHook(s)
 	endswitch
 
 	return 0
+End
+
+/// checks if AR is active.
+Function AR_IsActive(win)
+	string win
+
+	string extPanel = AR_GetExtPanel(win)
+	if(!WindowExists(extPanel))
+		return 0
+	endif
+
+	return 1
 End

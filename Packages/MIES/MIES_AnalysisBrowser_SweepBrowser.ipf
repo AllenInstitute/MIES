@@ -1063,7 +1063,8 @@ Function SB_CheckboxProc_OverlaySweeps(cba) : CheckBoxControl
 
 			sweepWaveList = SB_GetPlainSweepList(graph)
 			OVS_UpdatePanel(graph, listBoxWave, listBoxSelWave, sweepSelChoices, sweepWaveList, allTextualValues=allTextualValues, allNumericalValues=allNumericalValues)
-			if(!OVS_TogglePanel(extPanel, listBoxWave, listBoxSelWave))
+			OVS_TogglePanel(graph, listBoxWave, listBoxSelWave)
+			if(OVS_IsActive(graph))
 				index = GetPopupMenuIndex(extPanel, "popup_sweep_selector")
 				OVS_ChangeSweepSelectionState(extPanel, CHECKBOX_SELECTED, index=index)
 			endif

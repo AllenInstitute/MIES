@@ -500,7 +500,7 @@ Function PA_GatherSettings(win, pps)
 	extPanel = PA_GetExtPanel(win)
 	sbPanel  = win + "#P0"
 
-	if(WindowExists(extPanel))
+	if(PA_IsActive(win))
 		pps.pulseAverSett.showIndividualTraces = GetCheckboxState(extPanel, "check_pulseAver_indTraces")
 		pps.pulseAverSett.showAverageTrace     = GetCheckboxState(extPanel, "check_pulseAver_showAver")
 		pps.pulseAverSett.multipleGraphs       = GetCheckboxState(extPanel, "check_pulseAver_multGraphs")
@@ -528,7 +528,7 @@ Function PA_ShowPulses(win, dfr, pa)
 	DFREF dfr
 	STRUCT PulseAverageSettings &pa
 
-	string sourceGraph, graph, trace, extPanel, preExistingGraphs
+	string sourceGraph, graph, trace, preExistingGraphs
 	string averageWaveName, pulseTrace, channelTypeStr, str, traceList, traceFullPath
 	variable numChannels, i, j, k, l, idx, numTraces, sweepNo, headstage, numPulsesTotal, numPulses
 	variable first, numEntries, startingPulse, endingPulse, numGraphs
@@ -539,11 +539,10 @@ Function PA_ShowPulses(win, dfr, pa)
 	string newlyCreatedGraphs = ""
 
 	win = GetMainWindow(win)
-	extPanel = PA_GetExtPanel(win)
 
 	preExistingGraphs = PA_GetAverageGraphs()
 
-	if(!WindowExists(extPanel))
+	if(!PA_IsActive(win))
 		KillWindows(preExistingGraphs)
 		return NaN
 	endif
@@ -805,4 +804,16 @@ Function PA_MainWindowHook(s)
 	endswitch
 
 	return 0
+End
+
+/// checks if PA is active.
+static Function PA_IsActive(win)
+	string win
+
+	string extPanel = PA_GetExtPanel(win)
+	if(!WindowExists(extPanel))
+		return 0
+	endif
+
+	return 1
 End
