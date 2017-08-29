@@ -78,6 +78,10 @@ End
 Function/S OVS_GetExtPanel(win)
 	string win
 
+	if(IsDataBrowser(win))
+		return BSP_GetPanel(win)
+	endif
+
 	return GetMainWindow(win) + "#" + EXT_PANEL_SUBWINDOW
 End
 
@@ -304,12 +308,17 @@ End
 Function OVS_IsActive(win)
 	string win
 
+	// keep for SweepBrowser
 	string extPanel = OVS_GetExtPanel(win)
-	if(!WindowExists(extPanel))
-		return 0
+	if(!IsDataBrowser(extPanel))
+		if(!WindowExists(extPanel))
+			return 0
+		else
+			return 1
+		endif
 	endif
 
-	return 1
+	return BSP_IsActive(win, MIES_BSP_OVS)
 End
 
 /// @brief Add `headstage` to the ignore list of the given `sweepNo/index`

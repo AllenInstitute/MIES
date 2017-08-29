@@ -299,6 +299,14 @@ StrConstant MIES_PANEL_TYPE_USER_DATA = "MiesPanelType"
 StrConstant MIES_DATABROWSER_PANEL = "DataBrowser"
 /// @}
 
+/// @name TabControl values in Browser Settings Panel
+/// @{
+Constant MIES_BSP_OVS = 0
+Constant MIES_BSP_CS  = 1
+Constant MIES_BSP_AR  = 2
+Constant MIES_BSP_PA  = 3
+/// @}
+
 StrConstant NUMERALS = "First;Second;Third;Fourth;Fifth;Sixth;Seventh;Eighth"
 
 /// Generic axis name for graphs using split axis
@@ -460,7 +468,7 @@ Constant HARDWARE_DAC_EXTERNAL_TRIGGER = 0x1
 
 /// Used to upgrade the GuiStateWave as well as the DA Ephys panel
 Constant DA_EPHYS_PANEL_VERSION    = 21
-Constant DATABROWSER_PANEL_VERSION = 5
+Constant DATABROWSER_PANEL_VERSION = 6
 Constant SWEEPBROWSER_PANEL_VERSION = 0
 Constant WAVEBUILDER_PANEL_VERSION = 2
 

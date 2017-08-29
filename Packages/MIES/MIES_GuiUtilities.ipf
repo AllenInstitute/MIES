@@ -146,6 +146,30 @@ Function SetControlTitle(win, controlName, newTitle)
 	ModifyControl $ControlName WIN = $win, title = newTitle
 End
 
+/// @brief Set the procedure of a list of controls
+Function SetControlProcedures(win, controlList, newProcedure)
+	string win, controlList, newProcedure
+
+	variable i
+	string controlName
+	variable numItems = ItemsInList(controlList)
+
+	for(i = 0; i < numItems; i += 1)
+		controlName = StringFromList(i, controlList)
+		SetControlProcedure(win, controlName, newProcedure)
+	endfor
+End
+
+/// @brief Set the procedure of a control
+Function SetControlProcedure(win, controlName, newProcedure)
+	string win, controlName, newProcedure
+
+	ControlInfo/W=$win $controlName
+	ASSERT(V_flag != 0, "Non-existing control or window")
+
+	ModifyControl $ControlName WIN = $win, proc = $newProcedure
+End
+
 /// @brief Return the title of a control
 ///
 /// @param recMacro     recreation macro for ctrl
