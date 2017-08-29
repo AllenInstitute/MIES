@@ -986,7 +986,7 @@ Function DB_CheckboxProc_OverlaySweeps(cba) : CheckBoxControl
 			OVS_UpdatePanel(panelTitle, listBoxWave, listBoxSelWave, sweepSelChoices, sweepWaveList, textualValues=textualValues, numericalValues=numericalValues)
 			if(!OVS_TogglePanel(panelTitle, listBoxWave, listBoxSelWave))
 				sweepNo = GetSetVariable(panelTitle, "setvar_DataBrowser_SweepNo")
-				OVS_SelectSweep(panelTitle, sweepNo=sweepNo)
+				OVS_ChangeSweepSelectionState(panelTitle, CHECKBOX_SELECTED, sweepNo=sweepNo)
 			endif
 			DB_UpdateSweepPlot(panelTitle)
 			break

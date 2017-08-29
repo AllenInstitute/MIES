@@ -244,10 +244,17 @@ Function OVS_InvertSweepSelection(win, [sweepNo, index])
 	endif
 End
 
-/// @brief Select the given sweep in the listbox wave
-Function OVS_SelectSweep(win, [sweepNo, index])
+/// @brief Change the selection state of the the given sweep in the listbox wave
+///
+/// @param win      panel
+/// @param sweepNo  [optional] sweep number
+/// @param index    [optional] index into the listbox wave
+/// @param newState new checkbox state of the given sweep.
+///
+/// One of `sweepNo`/`index` is required.
+Function OVS_ChangeSweepSelectionState(win, newState, [sweepNo, index])
 	string win
-	variable sweepNo, index
+	variable sweepNo, index, newState
 
 	variable selectionState
 
@@ -256,6 +263,9 @@ Function OVS_SelectSweep(win, [sweepNo, index])
 	if(!DataFolderExistsDFR(dfr))
 		return NaN
 	endif
+
+	// coerce to 0/1
+	newState = !!newState
 
 	WAVE/T listboxWave  = GetOverlaySweepsListWave(dfr)
 	WAVE listboxSelWave = GetOverlaySweepsListSelWave(dfr)
@@ -273,7 +283,11 @@ Function OVS_SelectSweep(win, [sweepNo, index])
 		return NaN
 	endif
 
-	listboxSelWave[index] = SetBit(listboxSelWave[index], LISTBOX_CHECKBOX_SELECTED)
+	if(newState)
+		listboxSelWave[index] = SetBit(listboxSelWave[index], LISTBOX_CHECKBOX_SELECTED)
+	else
+		listboxSelWave[index] = ClearBit(listboxSelWave[index], LISTBOX_CHECKBOX_SELECTED)
+	endif
 End
 
 /// @brief Add `headstage` to the ignore list of the given `sweepNo/index`
