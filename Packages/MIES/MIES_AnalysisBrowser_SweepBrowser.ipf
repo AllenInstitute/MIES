@@ -335,6 +335,9 @@ Function SB_UpdateSweepPlot(graph, [newSweep])
 	variable mapIndex, i, numEntries, sweepNo, highlightSweep, traceIndex
 
 	graph = GetMainWindow(graph)
+	if(!HasPanelLatestVersion(graph, SWEEPBROWSER_PANEL_VERSION))
+		Abort "Can not display data. The SweepBrowser Graph is too old to be usable. Please close it and open a new one."
+	endif
 	DFREF sweepBrowserDFR = $SB_GetSweepBrowserFolder(graph)
 	ASSERT(DataFolderExistsDFR(sweepBrowserDFR), "sweepBrowserDFR must exist")
 
@@ -627,6 +630,7 @@ Function/DF SB_CreateNewSweepBrowser()
 	Notebook kwTopWin, zdataEnd= 1
 	SetActiveSubwindow ##
 
+	AddVersionToPanel(graph, SWEEPBROWSER_PANEL_VERSION)
 	SB_PanelUpdate(graph)
 	WMZoomBrowser#AddZoomBrowserPanel()
 
