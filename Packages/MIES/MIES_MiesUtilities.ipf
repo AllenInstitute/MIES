@@ -3915,10 +3915,28 @@ Function HasPanelLatestVersion(win, expectedVersion)
 	return 1
 #endif
 
-	ASSERT(windowExists(win), "Non existent window")
-	version = str2num(GetUserData(win, "", "panelVersion"))
+	version = GetPanelVersion(win)
 
 	return version == expectedVersion
+End
+
+/// @brief Get the user data "panelVersion"
+///
+/// @param win panel window as string
+/// @returns numeric panel version greater 0 and -1 if no version is present
+Function GetPanelVersion(win)
+	string win
+
+	variable version
+
+	ASSERT(windowExists(win), "Non existent window")
+
+	version = str2numSafe(GetUserData(win, "", "panelVersion"))
+	version = abs(version)
+	if(IsNaN(version))
+		version = -1
+	endif
+	return version
 End
 
 Function UPDATESWEEPPLOT_PROTOTYPE(win, [optArg])
