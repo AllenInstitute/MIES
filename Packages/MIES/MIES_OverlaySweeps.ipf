@@ -346,6 +346,10 @@ End
 /// - 1,3;0 (ignore HS 0 to 3)
 /// - * (ignore all headstages)
 ///
+/// @param[in] 		win				name of mainPanel
+/// @param[out] 	highlightSweep 	return of OVS_IsSweepHighlighted, defaults to no sweep highlighted
+/// @param[in] 		sweepNo 		[optional] search sweepNo in list to get index
+/// @param[in] 		index 			[optional] specify sweep directly by index
 /// @return free wave of size `NUM_HEADSTAGES` denoting with 0/1 the active state
 ///         of the headstage
 Function/WAVE OVS_ParseIgnoreList(win, highlightSweep, [sweepNo, index])
@@ -355,13 +359,11 @@ Function/WAVE OVS_ParseIgnoreList(win, highlightSweep, [sweepNo, index])
 	variable numEntries, i, start, stop, step
 	string ignoreList, subRangeStr, extPanel
 
-	extPanel =  OVS_GetExtPanel(win)
+	// set default
+	highlightSweep = NaN // no sweep highlighted
 
 	DFREF dfr = OVS_GetFolder(win)
-
-	// save default
-	highlightSweep = NaN
-
+	extPanel =  OVS_GetExtPanel(win)
 	if(!DataFolderExistsDFR(dfr) || !GetCheckBoxState(extPanel, "check_overlaySweeps_disableHS"))
 		return $""
 	endif

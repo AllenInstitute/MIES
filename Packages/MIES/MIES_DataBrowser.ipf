@@ -698,7 +698,7 @@ Function DB_ButtonProc_Sweep(ba) : ButtonControl
 
 			sweepNo = DB_ClipSweepNumber(panelTitle, sweepNo)
 			SetSetVariable(panelTitle, "setvar_DataBrowser_SweepNo", sweepNo)
-			OVS_InvertSweepSelection(panelTitle, sweepNO=sweepNo)
+			OVS_ChangeSweepSelectionState(panelTitle, CHECKBOX_SELECTED, sweepNO=sweepNo)
 			DB_UpdateSweepPlot(panelTitle)
 			break
 	endswitch
@@ -783,7 +783,7 @@ Function DB_SetVarProc_SweepNo(sva) : SetVariableControl
 			paneltitle = sva.win
 
 			DB_UpdateSweepPlot(panelTitle)
-			OVS_InvertSweepSelection(panelTitle, sweepNo=sweepNo)
+			OVS_ChangeSweepSelectionState(panelTitle, CHECKBOX_SELECTED, sweepNO=sweepNo)
 			break
 	endswitch
 
