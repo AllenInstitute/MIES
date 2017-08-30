@@ -500,26 +500,27 @@ Function PA_GatherSettings(win, pps)
 	extPanel = PA_GetExtPanel(win)
 	sbPanel  = win + "#P0"
 
-	if(PA_IsActive(win))
-		pps.pulseAverSett.showIndividualTraces = GetCheckboxState(extPanel, "check_pulseAver_indTraces")
-		pps.pulseAverSett.showAverageTrace     = GetCheckboxState(extPanel, "check_pulseAver_showAver")
-		pps.pulseAverSett.multipleGraphs       = GetCheckboxState(extPanel, "check_pulseAver_multGraphs")
-		pps.pulseAverSett.startingPulse        = GetSetVariable(extPanel, "setvar_pulseAver_startPulse")
-		pps.pulseAverSett.endingPulse          = GetSetVariable(extPanel, "setvar_pulseAver_endPulse")
-		pps.pulseAverSett.fallbackPulseLength  = GetSetVariable(extPanel, "setvar_pulseAver_fallbackLength")
-		pps.pulseAverSett.regionSlider         = -1 // save default
+	if(!PA_IsActive(win))
+		InitPulseAverageSettings(pps.pulseAverSett)
+		return 0
+	endif
 
-		if(ControlExists(win, "slider_dDAQ_regions")) // databrowser
-			if(GetCheckboxState(win, "check_databrowser_dDAQMode"))
-				pps.pulseAverSett.regionSlider = GetSliderPositionIndex(win, "slider_dDAQ_regions")
-			endif
-		else
-			if(GetCheckboxState(sbPanel, "check_sweepbrowser_dDAQ"))
-				pps.pulseAverSett.regionSlider = str2num(GetPopupMenuString(sbPanel, "popup_dDAQ_regions"))
-			endif
+	pps.pulseAverSett.showIndividualTraces = GetCheckboxState(extPanel, "check_pulseAver_indTraces")
+	pps.pulseAverSett.showAverageTrace     = GetCheckboxState(extPanel, "check_pulseAver_showAver")
+	pps.pulseAverSett.multipleGraphs       = GetCheckboxState(extPanel, "check_pulseAver_multGraphs")
+	pps.pulseAverSett.startingPulse        = GetSetVariable(extPanel, "setvar_pulseAver_startPulse")
+	pps.pulseAverSett.endingPulse          = GetSetVariable(extPanel, "setvar_pulseAver_endPulse")
+	pps.pulseAverSett.fallbackPulseLength  = GetSetVariable(extPanel, "setvar_pulseAver_fallbackLength")
+	pps.pulseAverSett.regionSlider         = -1 // save default
+
+	if(ControlExists(win, "slider_dDAQ_regions")) // databrowser
+		if(GetCheckboxState(win, "check_databrowser_dDAQMode"))
+			pps.pulseAverSett.regionSlider = GetSliderPositionIndex(win, "slider_dDAQ_regions")
 		endif
 	else
-		InitPulseAverageSettings(pps.pulseAverSett)
+		if(GetCheckboxState(sbPanel, "check_sweepbrowser_dDAQ"))
+			pps.pulseAverSett.regionSlider = str2num(GetPopupMenuString(sbPanel, "popup_dDAQ_regions"))
+		endif
 	endif
 End
 
