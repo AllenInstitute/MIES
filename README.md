@@ -182,7 +182,7 @@ bamboo, provides the following services for MIES:
 * The release packaging job can only be run on a linux box (or on a windows box with git for windows installed).
   This is ensured by a platform requirement for the job.
 
-### Compilation testing (Igor Pro 7.x 32bit only)
+### Compilation testing (Igor Pro 7.x 64bit only)
 The full MIES installation and the partial installations are IGOR Pro compiled
 using a bamboo job. This allows to catch compile time errors early on.<br>
 For testing compilation manually perform the following steps:
