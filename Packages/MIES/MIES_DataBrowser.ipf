@@ -58,6 +58,8 @@ Function DB_OpenDataBrowser()
 		device = StringFromList(0, devicesWithData)
 		PGC_SetAndActivateControl(win, "popup_DB_lockedDevices", val=1, str=device)
 	endif
+
+	// window name (win) changes by popup_DB_lockedDevices: proc
 End
 
 static Function/DF DB_GetDataPath(panelTitle)
