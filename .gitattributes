@@ -29,7 +29,6 @@ Packages/unit-testing              export-ignore
 Packages/ZeroMQ/src                export-ignore
 Packages/ZeroMQ/tests              export-ignore
 Packages/ZeroMQ/xop-stub-generator export-ignore
-Guidelines                         export-ignore
 NIDAQmx.XOP                        export-ignore
 NIDAQmx64.XOP                      export-ignore
 Packages/Arduino/*zip              export-ignore
