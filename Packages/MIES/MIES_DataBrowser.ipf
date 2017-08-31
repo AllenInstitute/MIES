@@ -161,7 +161,7 @@ static Function DB_LockDBPanel(panelTitle, device)
 	endif
 End
 
-static Function/S DB_GetListOfSweepWaves(panelTitle)
+Function/S DB_GetPlainSweepList(panelTitle)
 	string panelTitle
 
 	dfref dfr = DB_GetDataPath(panelTitle)
@@ -182,7 +182,7 @@ static Function DB_FirstAndLastSweepAcquired(panelTitle, first, last)
 	first = 0
 	last  = 0
 
-	list = DB_GetListOfSweepWaves(panelTitle)
+	list = DB_GetPlainSweepList(panelTitle)
 
 	if(!isEmpty(list))
 		first = NumberByKey("Sweep", list, "_")
@@ -403,15 +403,15 @@ static Function DB_UpdateOverlaySweepWaves(panelTitle)
 	endif
 
 	device = GetPopupMenuString(panelTitle, "popup_DB_lockedDevices")
-
 	DFREF dfr = GetDeviceDataBrowserPath(device)
+
 	WAVE listBoxWave       = GetOverlaySweepsListWave(dfr)
 	WAVE listBoxSelWave    = GetOverlaySweepsListSelWave(dfr)
 	WAVE/T textualValues   = DB_GetTextualValues(panelTitle)
 	WAVE numericalValues   = DB_GetNumericalValues(panelTitle)
 	WAVE/T sweepSelChoices = GetOverlaySweepSelectionChoices(dfr)
 
-	sweepWaveList = DB_GetListOfSweepWaves(panelTitle)
+	sweepWaveList = DB_GetPlainSweepList(panelTitle)
 
 	OVS_UpdatePanel(panelTitle, listBoxWave, listBoxSelWave, sweepSelChoices, sweepWaveList, textualValues=textualValues, numericalValues=numericalValues)
 End
@@ -994,7 +994,7 @@ Function DB_CheckboxProc_OverlaySweeps(cba) : CheckBoxControl
 
 			WAVE/T numericalValues = DB_GetNumericalValues(panelTitle)
 			WAVE/T textualValues   = DB_GetTextualValues(panelTitle)
-			sweepWaveList = DB_GetListOfSweepWaves(panelTitle)
+			sweepWaveList = DB_GetPlainSweepList(panelTitle)
 			OVS_UpdatePanel(panelTitle, listBoxWave, listBoxSelWave, sweepSelChoices, sweepWaveList, textualValues=textualValues, numericalValues=numericalValues)
 			if(!OVS_TogglePanel(panelTitle, listBoxWave, listBoxSelWave))
 				sweepNo = GetSetVariable(panelTitle, "setvar_DataBrowser_SweepNo")
