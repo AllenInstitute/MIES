@@ -152,7 +152,8 @@ End
 static Function DB_UpdatePanelProperties(panelTitle, device)
 	string panelTitle, device
 
-	SetWindow $panelTitle, userdata($MIES_PANEL_TYPE_USER_DATA) = MIES_DATABROWSER_PANEL
+	SetWindow $panelTitle, userdata($MIES_BSP_DEVICE) = device
+
 	if(!cmpstr(device, NONE))
 		return 0
 	endif
@@ -172,12 +173,13 @@ End
 static Function/S DB_GetPlainSweepList(panelTitle)
 	string panelTitle
 
-	dfref dfr = DB_GetDataPath(panelTitle)
+	DFREF dfr
 
-	if(!DataFolderExistsDFR(dfr))
+	if(!BSP_HasBoundDevice(panelTitle))
 		return ""
 	endif
 
+	dfr = DB_GetDataPath(panelTitle)
 	return GetListOfObjects(dfr, DATA_SWEEP_REGEXP, waveProperty="MINCOLS:2")
 End
 
@@ -245,9 +247,7 @@ Function DB_UpdateSweepPlot(panelTitle, [dummyArg])
 
 	referenceTime = DEBUG_TIMER_START()
 
-	DFREF dfr = DB_GetDataPath(panelTitle)
-
-	if(!DataFolderExistsDFR(dfr))
+	if(!BSP_HasBoundDevice(panelTitle))
 		return NaN
 	endif
 
@@ -279,7 +279,7 @@ Function DB_UpdateSweepPlot(panelTitle, [dummyArg])
 	endif
 
 	WAVE axisLabelCache = GetAxisLabelCacheWave()
-
+	DFREF dfr = DB_GetDataPath(panelTitle)
 	numEntries = DimSize(sweepsToOverlay, ROWS)
 	for(i = 0; i < numEntries; i += 1)
 		sweepNo = sweepsToOverlay[i]
@@ -856,6 +856,9 @@ Function DB_ButtonProc_SwitchXAxis(ba) : ButtonControl
 	switch(ba.eventCode)
 		case 2: // mouse up
 			panelTitle = ba.win
+			if(!BSP_HasBoundDevice(panelTitle))
+				break
+			endif
 			graph      = DB_GetLabNoteBookGraph(panelTitle)
 			WAVE numericalValues = DB_GetNumericalValues(panelTitle)
 			WAVE textualValues   = DB_GetTextualValues(panelTitle)
@@ -956,7 +959,7 @@ Function DB_CheckboxProc_OverlaySweeps(cba) : CheckBoxControl
 
 			ASSERT(windowExists(extPanel), "BrowserSettingsPanel does not exist.")
 
-			if(cba.checked)
+			if(cba.checked && BSP_HasBoundDevice(panelTitle))
 				EnableControls(extPanel, controlList)
 			else
 				DisableControls(extPanel, controlList)

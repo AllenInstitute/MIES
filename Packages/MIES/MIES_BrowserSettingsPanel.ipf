@@ -45,6 +45,10 @@ Function BSP_TogglePanel(mainPanel)
 		return 1
 	endif
 
+	if(!BSP_HasBoundDevice(mainPanel))
+		return 0
+	endif
+
 	ASSERT(WindowExists(mainPanel), "HOST panel does not exist")
 	NewPanel/HOST=$mainPanel/EXT=1/W=(260,0,0,600)/N=$EXT_PANEL_SUBWINDOW  as " "
 	Execute "DataBrowserPanel()"
@@ -110,18 +114,18 @@ End
 
 /// @brief get a FOLDER property from the specified panel
 ///
-/// @param panelTitle 				name of external panel or main window
+/// @param panelName 				name of external panel or main window
 /// @param MIES_BSP_FOLDER_TYPE 	see the FOLDER constants in this file
 ///
 /// @return DFR to specified folder. No check for invalid folders
-Function/DF BSP_GetFolder(panelTitle, MIES_BSP_FOLDER_TYPE)
-	string panelTitle, MIES_BSP_FOLDER_TYPE
+Function/DF BSP_GetFolder(panelName, MIES_BSP_FOLDER_TYPE)
+	string panelName, MIES_BSP_FOLDER_TYPE
 
 	// since BSP-side-panel all properties are stored in main panel
-	panelTitle = GetMainWindow(panelTitle)
-	ASSERT(WindowExists(panelTitle), "specified panel does not exist.")
+	panelName = GetMainWindow(panelName)
+	ASSERT(WindowExists(panelName), "specified panel does not exist.")
 
-	DFREF dfr = $GetUserData(panelTitle, "", MIES_BSP_FOLDER_TYPE)
+	DFREF dfr = $GetUserData(panelName, "", MIES_BSP_FOLDER_TYPE)
 	ASSERT(DataFolderExistsDFR(dfr), "DataFolder does not exist. Probably check device assignment.")
 
 	return dfr
@@ -140,6 +144,33 @@ Function BSP_SetFolder(panelName, dfr, MIES_BSP_FOLDER_TYPE)
 
 	ASSERT(DataFolderExistsDFR(dfr), "Missing dfr")
 	SetWindow $panelName, userData($MIES_BSP_FOLDER_TYPE) = GetDataFolder(1, dfr)
+End
+
+/// @brief get a the assigned DEVICE property from the specified panel
+///
+/// @param panelName 				name of external panel or main window
+///
+/// @return device as string
+Function/S BSP_GetDevice(panelName)
+	string panelName
+
+	// since BSP-side-panel all properties are stored in main panel
+	panelName = GetMainWindow(panelName)
+	ASSERT(WindowExists(panelName), "specified panel does not exist.")
+
+	return GetUserData(panelName, "", MIES_BSP_DEVICE)
+End
+
+/// @brief check if the DEVICE property has a not nullstring property
+///
+/// @param panelName 				name of external panel or main window
+/// @return 1 if device is assigned and 0 otherwise. does not check if device is valid.
+Function BSP_HasBoundDevice(panelName)
+	string panelName
+
+	string device = BSP_GetDevice(panelName)
+
+	return !(IsEmpty(device) || !cmpstr(device, NONE))
 End
 
 /// @brief control the state of the enable/disable buttons on top of the extPanel tabcontrol
@@ -486,7 +517,7 @@ Function BSP_CheckBoxProc_ArtRemoval(cba) : CheckBoxControl
 
 			ASSERT(windowExists(extPanel), "BrowserSettingsPanel does not exist.")
 
-			if(cba.checked)
+			if(cba.checked && BSP_HasBoundDevice(mainPanel))
 				EnableControls(extPanel, controlList)
 			else
 				DisableControls(extPanel, controlList)
@@ -513,7 +544,7 @@ Function BSP_CheckBoxProc_PerPulseAver(cba) : CheckBoxControl
 
 			ASSERT(windowExists(extPanel), "BrowserSettingsPanel does not exist.")
 
-			if(cba.checked)
+			if(cba.checked && BSP_HasBoundDevice(mainPanel))
 				EnableControls(extPanel, controlList)
 			else
 				DisableControls(extPanel, controlList)
