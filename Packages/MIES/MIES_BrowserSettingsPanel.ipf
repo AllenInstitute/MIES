@@ -30,7 +30,17 @@ Function BSP_TogglePanel(mainPanel)
 
 	variable openSidePanel
 
+	if(BSP_MainPanelNeedsUpdate(mainPanel))
+		Abort "Can not display data. The main panel is too old to be usable. Please close it and open a new one."
+	endif
+
 	openSidePanel = TogglePanel(mainPanel, EXT_PANEL_SUBWINDOW)
+
+	if(BSP_PanelNeedsUpdate(mainPanel))
+		KillWindow/Z $BSP_GetPanel(mainPanel)
+		openSidePanel = 1
+	endif
+
 	if(!openSidePanel)
 		return 1
 	endif
@@ -516,6 +526,45 @@ Function BSP_CheckBoxProc_PerPulseAver(cba) : CheckBoxControl
 	return 0
 End
 
+/// @brief check the DataBrowser or SweepBrowser panel if it has the required version
+///
+/// @param panelName 		name of external panel or main window
+/// @return 0 if panel has latest version and 1 if update is required
+static Function BSP_MainPanelNeedsUpdate(panelName)
+	string panelName
+
+	variable panelVersion, version
+
+	panelName = GetMainWindow(panelName)
+	panelVersion = GetPanelVersion(panelName)
+	if(IsDataBrowser(panelName))
+		version = DATABROWSER_PANEL_VERSION
+	else
+		version = SWEEPBROWSER_PANEL_VERSION
+	endif
+
+	return panelVersion < version
+End
+
+/// @brief check the BrowserSettings Panel if it has the required version
+///
+/// @param panelName 		name of external panel or main window
+/// @return 0 if panel has latest version and 1 if update is required
+static Function BSP_PanelNeedsUpdate(panelName)
+	string panelName
+
+	string extPanel
+	variable version
+
+	extPanel = BSP_GetPanel(panelName)
+	if(!WindowExists(extPanel))
+		return 0
+	endif
+
+	version = GetPanelVersion(extPanel)
+	return version < BROWSERSETTINGS_PANEL_VERSION
+End
+
 /// @brief check if the specified setting is activated
 ///
 /// @param panelName 	name of external panel or main window
@@ -529,6 +578,11 @@ Function BSP_IsActive(panelName, elementID)
 
 	extPanel = BSP_GetPanel(panelName)
 	if(!WindowExists(extPanel))
+		return 0
+	endif
+
+	// return inactive if panel is outdated
+	if(BSP_MainPanelNeedsUpdate(panelName) || BSP_PanelNeedsUpdate(panelName))
 		return 0
 	endif
 
