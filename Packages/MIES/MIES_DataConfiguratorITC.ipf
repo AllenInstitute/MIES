@@ -99,11 +99,9 @@ Function DC_ConfigureDataForITC(panelTitle, dataAcqOrTP, [multiDevice])
 
 	numActiveChannels = DC_ChanCalcForITCChanConfigWave(panelTitle, dataAcqOrTP)
 	DC_MakeITCConfigAllConfigWave(panelTitle, numActiveChannels)
-	DC_MakeITCFIFOPosAllConfigWave(panelTitle, numActiveChannels)
 
 	DC_PlaceDataInITCChanConfigWave(panelTitle, dataAcqOrTP)
 	DC_PlaceDataInITCDataWave(panelTitle, numActiveChannels, dataAcqOrTP, multiDevice)
-	DC_PDInITCFIFOPositionAllCW(panelTitle) // PD = Place Data
 
 	WAVE ITCChanConfigWave = GetITCChanConfigWave(panelTitle)
 	WAVE ADCs = GetADCListFromConfig(ITCChanConfigWave)
@@ -430,19 +428,6 @@ static Function DC_MakeOscilloscopeWave(panelTitle, numActiveChannels, dataAcqOr
 	WaveTransform/O/V=(0/0) setConstant OscilloscopeData
 
 	SetNumberInWaveNote(OscilloscopeData, "lastFifoPos", 0)
-End
-
-/// @brief Creates ITCFIFOPosAllConfigWave, the wave used to configure the FIFO on all channels of the ITC device
-///
-/// @param panelTitle        panel title
-/// @param numActiveChannels number of active channels as returned by DC_ChanCalcForITCChanConfigWave()
-static Function DC_MakeITCFIFOPosAllConfigWave(panelTitle, numActiveChannels)
-	string panelTitle
-	variable numActiveChannels
-
-	DFREF dfr = GetDevicePath(panelTitle)
-	Make/I/O/N=(numActiveChannels, 4) dfr:ITCFIFOPositionAllConfigWave/Wave=wv
-	wv = 0
 End
 
 /// @brief Check if the given channel is active
@@ -1022,20 +1007,6 @@ static Function DC_DocumentChannelProperty(panelTitle, entry, headstage, channel
 	elseif(!ParamIsDefault(str))
 		sweepDataTxTLNB[0][%$ua_entry][INDEP_HEADSTAGE] = str
 	endif
-End
-
-/// @brief Populates the ITCFIFOPositionAllConfigWave
-///
-/// @param panelTitle  panel title
-static Function DC_PDInITCFIFOPositionAllCW(panelTitle)
-	string panelTitle
-
-	WAVE ITCFIFOPositionAllConfigWave = GetITCFIFOPositionAllConfigWave(panelTitle)
-	WAVE ITCChanConfigWave = GetITCChanConfigWave(panelTitle)
-
-	ITCFIFOPositionAllConfigWave[][0,1] = ITCChanConfigWave
-	ITCFIFOPositionAllConfigWave[][2]   = -1
-	ITCFIFOPositionAllConfigWave[][3]   = 0
 End
 
 /// @brief Combines the TTL stimulus sweeps across different TTL channels into a single wave
