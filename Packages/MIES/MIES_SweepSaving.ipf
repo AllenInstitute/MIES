@@ -57,7 +57,7 @@ End
 static Function SWS_AfterSweepDataSaveHook(panelTitle)
 	string panelTitle
 
-	string panelList, dataPath, panel, panelType
+	string panelList, devicePath, panel, panelType
 	variable numPanels, i
 
 	panelList = WinList("DB_*", ";", "WIN:64")
@@ -68,8 +68,9 @@ static Function SWS_AfterSweepDataSaveHook(panelTitle)
 
 		panelType = GetUserData(panel, "", MIES_PANEL_TYPE_USER_DATA)
 		if(!cmpstr(panelType, MIES_DATABROWSER_PANEL))
-			dataPath   = GetUserData(panel, "", "DataFolderPath")
-			if(!cmpstr(dataPath, GetDevicePathAsString(panelTitle)))
+			DFREF dfr = BSP_GetFolder(panel, MIES_BSP_DEVICE_FOLDER)
+			devicePath = GetDataFolder(1, dfr)
+			if(!cmpstr(devicePath, GetDevicePathAsString(panelTitle)))
 				DB_UpdateToLastSweep(panel)
 			endif
 		endif

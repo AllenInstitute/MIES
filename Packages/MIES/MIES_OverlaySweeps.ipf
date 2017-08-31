@@ -118,16 +118,11 @@ End
 Function/DF OVS_GetFolder(win)
 	string win
 
-	string extPanel = OVS_GetExtPanel(win)
-
 	if(!OVS_IsActive(win))
 		return $""
 	endif
 
-	DFREF dfr = $GetUserData(extPanel, "", "OVS_FOLDER")
-	ASSERT(DataFolderExistsDFR(dfr), "Missing extPanel OVS_FOLDER userdata")
-
-	return dfr
+	return BSP_GetFolder(win, MIES_BSP_OVS_FOLDER)
 End
 
 /// @brief Update the overlay sweep waves
@@ -486,10 +481,7 @@ Function OVS_SetFolder(win, dfr)
 	string win
 	DFREF dfr
 
-	string extPanel = OVS_GetExtPanel(win)
-
-	ASSERT(DataFolderExistsDFR(dfr), "Missing dfr")
-	SetWindow $extPanel, userData(OVS_FOLDER)=GetDataFolder(1, dfr)
+	BSP_SetFolder(win, dfr, MIES_BSP_OVS_FOLDER)
 End
 
 Function OVS_CheckBoxProc_HS_Select(cba) : CheckBoxControl

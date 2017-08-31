@@ -58,35 +58,78 @@ static Function BSP_DynamicStartupSettings(mainPanel)
 
 	// overlay sweeps
 	SetControlProcedure(extPanel, "check_BrowserSettings_OVS", "DB_CheckBoxProc_OverlaySweeps")
-	device = GetPopupMenuString(mainPanel, "popup_DB_lockedDevices")
-	DFREF dfr = GetDeviceDataBrowserPath(device)
+	DFREF dfr = BSP_GetFolder(mainPanel, MIES_BSP_OVS_FOLDER)
 	WAVE/T listBoxWave        = GetOverlaySweepsListWave(dfr)
 	WAVE listBoxSelWave       = GetOverlaySweepsListSelWave(dfr)
 	WAVE/WAVE sweepSelChoices = GetOverlaySweepSelectionChoices(dfr)
 	ListBox list_of_ranges, listWave=listBoxWave
 	ListBox list_of_ranges, selWave=listBoxSelWave
-	SetWindow $extPanel, userData(OVS_FOLDER) = GetWavesDataFolder(listBoxWave, 1)
 	sweepNo = GetSetVariable(mainPanel, "setvar_DataBrowser_SweepNo")
 	OVS_ChangeSweepSelectionState(mainPanel, CHECKBOX_SELECTED, sweepNO=sweepNo)
 	WaveClear listBoxWave
 	PopupMenu popup_overlaySweeps_select,value= #("OVS_GetSweepSelectionChoices(\"" + extPanel + "\")")
 
 	// artefact removal
-	DFREF dfr = GetDeviceDataBrowserPath(device)
+	DFREF dfr = BSP_GetFolder(mainPanel, MIES_BSP_AR_FOLDER)
 	WAVE/T listBoxWave = GetArtefactRemovalListWave(dfr)
 	ListBox list_of_ranges1, listWave=listBoxWave
-	SetWindow $extPanel, userData(AR_FOLDER) = GetWavesDataFolder(listBoxWave, 1)
 
 	// bind the channel selection wave to the user controls of the external panel
-	DFREF dataBrowserDFR = DB_GetDataBrowserPath(mainPanel)
-	WAVE channelSel      = GetChannelSelectionWave(dataBrowserDFR)
-	ChannelSelectionWaveToGUI(extPanel, channelSel)
+	WAVE channelSelection = BSP_GetChannelSelectionWave(mainPanel)
+	ChannelSelectionWaveToGUI(mainPanel, channelSelection)
 
 	BSP_SetMainCheckboxes(extPanel, 0)
 	BSP_SetCSButtonProc(extPanel, "DB_CheckProc_ChangedSetting")
 
 	ChangeTab(extPanel, "Settings", MIES_BSP_OVS)
 	UpdateSweepPlot(mainPanel)
+End
+
+/// @brief get the channel selection wave stored in main window property CSW_FOLDER
+///
+/// @param panelName 	name of external panel or main window
+/// @returns channel selection wave
+Function/WAVE BSP_GetChannelSelectionWave(panelName)
+	string panelName
+
+	DFREF dfr = BSP_GetFolder(panelName, MIES_BSP_CS_FOLDER)
+	WAVE wv = GetChannelSelectionWave(dfr)
+
+	return wv
+End
+
+/// @brief get a FOLDER property from the specified panel
+///
+/// @param panelTitle 				name of external panel or main window
+/// @param MIES_BSP_FOLDER_TYPE 	see the FOLDER constants in this file
+///
+/// @return DFR to specified folder. No check for invalid folders
+Function/DF BSP_GetFolder(panelTitle, MIES_BSP_FOLDER_TYPE)
+	string panelTitle, MIES_BSP_FOLDER_TYPE
+
+	// since BSP-side-panel all properties are stored in main panel
+	panelTitle = GetMainWindow(panelTitle)
+	ASSERT(WindowExists(panelTitle), "specified panel does not exist.")
+
+	DFREF dfr = $GetUserData(panelTitle, "", MIES_BSP_FOLDER_TYPE)
+	ASSERT(DataFolderExistsDFR(dfr), "DataFolder does not exist. Probably check device assignment.")
+
+	return dfr
+End
+
+/// @brief set a FOLDER property at the specified panel
+///
+/// @param panelName 				name of external panel or main window
+/// @param dfr 						DataFolder Reference to th folder
+/// @param MIES_BSP_FOLDER_TYPE 	see the FOLDER constants in this file
+Function BSP_SetFolder(panelName, dfr, MIES_BSP_FOLDER_TYPE)
+	string panelName, MIES_BSP_FOLDER_TYPE
+	DFREF dfr
+
+	panelName = GetMainWindow(panelName)
+
+	ASSERT(DataFolderExistsDFR(dfr), "Missing dfr")
+	SetWindow $panelName, userData($MIES_BSP_FOLDER_TYPE) = GetDataFolder(1, dfr)
 End
 
 /// @brief control the state of the enable/disable buttons on top of the extPanel tabcontrol

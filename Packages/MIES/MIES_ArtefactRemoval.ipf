@@ -114,7 +114,7 @@ Function AR_UpdatePanel(panelTitle, ranges, sweepDFR)
 	WAVE ranges
 	DFREF sweepDFR
 
-	AR_UpdateSweepFolder(panelTitle, sweepDFR)
+	AR_SetSweepFolder(panelTitle, sweepDFR)
 
 	DFREF dfr = AR_GetFolder(panelTitle)
 	WAVE/T listBoxWave = GetArtefactRemovalListWave(dfr)
@@ -295,11 +295,21 @@ End
 Function/DF AR_GetFolder(panelTitle)
 	string panelTitle
 
+	if(!AR_IsActive(panelTitle))
+		return $""
+	endif
 
-	DFREF dfr = $GetUserData(AR_GetExtPanel(panelTitle), "", "AR_FOLDER")
-	ASSERT(DataFolderExistsDFR(dfr), "Missing extPanel AR_FOLDER userdata")
+	return BSP_GetFolder(panelTitle, MIES_BSP_AR_FOLDER)
+End
 
-	return dfr
+/// @brief Set the datafolder reference to the folder storing the listbox wave and the artefact data wave
+///
+/// Updates the `AR_SWEEPFOLDER` user data of the artefact removal panel
+Function AR_SetFolder(win, dfr)
+	string win
+	DFREF dfr
+
+	BSP_SetFolder(win, dfr, MIES_BSP_AR_FOLDER)
 End
 
 /// @brief Return the datafolder reference to the folder storing the single 1D sweep waves
@@ -308,21 +318,19 @@ End
 Function/DF AR_GetSweepFolder(panelTitle)
 	string panelTitle
 
-	DFREF dfr = $GetUserData(AR_GetExtPanel(panelTitle), "", "AR_SWEEPFOLDER")
-	ASSERT(DataFolderExistsDFR(dfr), "Missing extPanel AR_SWEEPFOLDER userdata")
+	if(!AR_IsActive(panelTitle))
+		return $""
+	endif
 
-	return dfr
+	return BSP_GetFolder(panelTitle, MIES_BSP_AR_SWEEPFOLDER)
 End
 
 /// @brief Updates the `AR_SWEEPFOLDER` user data of the artefact removal panel
-static Function AR_UpdateSweepFolder(panelTitle, sweepDFR)
+static Function AR_SetSweepFolder(panelTitle, sweepDFR)
 	string panelTitle
 	DFREF sweepDFR
 
-	string extPanel
-
-	extPanel = AR_GetExtPanel(panelTitle)
-	SetWindow $extPanel, userData(AR_SWEEPFOLDER)=GetDataFolder(1, sweepDFR)
+	BSP_SetFolder(panelTitle, sweepDFR, MIES_BSP_AR_SWEEPFOLDER)
 End
 
 Function AR_MainListBoxProc(lba) : ListBoxControl
@@ -417,7 +425,7 @@ Function AR_TogglePanel(win, listboxWave)
 	CheckBox check_highlightRanges,help={"Visualize the found ranges in the graph (*might* slowdown graphing)"}
 	CheckBox check_highlightRanges,value= 0
 
-	SetWindow $extPanel, userData(AR_FOLDER)=GetWavesDataFolder(listboxWave, 1)
+	AR_SetFolder(win, GetWavesDataFolderDFR(listboxWave))
 
 	return 0
 End

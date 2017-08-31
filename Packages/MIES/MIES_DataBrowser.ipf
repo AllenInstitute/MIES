@@ -65,13 +65,7 @@ End
 static Function/DF DB_GetDataPath(panelTitle)
 	string panelTitle
 
-	return $GetUserData(panelTitle, "", "DataFolderPath") + ":Data"
-End
-
-Function/DF DB_GetDataBrowserPath(panelTitle)
-	string panelTitle
-
-	return $GetUserData(panelTitle, "", "DataFolderPath") + ":DataBrowser"
+	return BSP_GetFolder(panelTitle, MIES_BSP_DATA_FOLDER)
 End
 
 static Function/S DB_GetNotebookSubWindow(panelTitle)
@@ -136,37 +130,43 @@ static Function DB_LockDBPanel(panelTitle, device)
 		print "Please choose a device assignment for the data browser"
 		ControlWindowToFront()
 		DoWindow/W=$panelTitle/C $panelTitleNew
-		SetWindow $panelTitleNew, userdata($MIES_PANEL_TYPE_USER_DATA) = ""
-		SetWindow $panelTitleNew, userdata(DataFolderPath) = ""
 		PopupMenu popup_LBNumericalKeys, win=$panelTitleNew, value=#("\"" + NONE + "\"")
 		PopupMenu popup_LBTextualKeys, win=$panelTitleNew, value=#("\"" + NONE + "\"")
-		DB_UpdatePanelProperties(panelTitleNew)
+		DB_UpdatePanelProperties(panelTitleNew, device)
 		return NaN
 	endif
 
 	panelTitleNew = UniqueName("DB_" + device, 9, 0)
 	DoWindow/W=$panelTitle/C $panelTitleNew
 
-	DB_UpdatePanelProperties(panelTitleNew)
+	DB_UpdatePanelProperties(panelTitleNew, device)
 
-	SetWindow $panelTitleNew, userdata($MIES_PANEL_TYPE_USER_DATA) = MIES_DATABROWSER_PANEL
-	SetWindow $panelTitleNew, userdata(DataFolderPath)   = GetDevicePathAsString(device)
 	PopupMenu popup_LBNumericalKeys, win=$panelTitleNew, value=#("DB_GetLBNumericalKeys(\"" + panelTitleNew + "\")")
 	PopupMenu popup_LBTextualKeys, win=$panelTitleNew, value=#("DB_GetLBTextualKeys(\"" + panelTitleNew + "\")")
 
 	DB_FirstAndLastSweepAcquired(panelTitleNew, first, last)
 	DB_UpdateSweepControls(panelTitleNew, first, last)
 	DB_UpdateSweepPlot(panelTitleNew)
-
-	if(OVS_IsActive(panelTitleNew))
-		DFREF dfr = GetDeviceDataBrowserPath(device)
-		OVS_SetFolder(panelTitleNew, dfr)
-	endif
 End
 
-Function/S DB_UpdatePanelProperties(panelTitle)
-	string panelTitle
+static Function DB_UpdatePanelProperties(panelTitle, device)
+	string panelTitle, device
 
+	SetWindow $panelTitle, userdata($MIES_PANEL_TYPE_USER_DATA) = MIES_DATABROWSER_PANEL
+	if(!cmpstr(device, NONE))
+		return 0
+	endif
+
+	DFREF dfr = GetDeviceDataBrowserPath(device)
+	BSP_SetFolder(panelTitle, dfr, MIES_BSP_DEVICE_FOLDER)
+
+	DFREF dfr = GetDeviceDataPath(device)
+	BSP_SetFolder(panelTitle, dfr, MIES_BSP_DATA_FOLDER)
+
+	DFREF dfr = GetDeviceDataBrowserPath(device)
+	BSP_SetFolder(panelTitle, dfr, MIES_BSP_OVS_FOLDER)
+	BSP_SetFolder(panelTitle, dfr, MIES_BSP_AR_FOLDER)
+	BSP_SetFolder(panelTitle, dfr, MIES_BSP_CS_FOLDER)
 End
 
 static Function/S DB_GetPlainSweepList(panelTitle)
@@ -267,8 +267,7 @@ Function DB_UpdateSweepPlot(panelTitle, [dummyArg])
 	tgs.dDAQHeadstageRegions = GetSliderPositionIndex(panelTitle, "slider_dDAQ_regions")
 	tgs.hideSweep       = GetCheckBoxState(panelTitle, "check_DataBrowser_hideSweep")
 
-	DFREF dataBrowserDFR   = DB_GetDataBrowserPath(panelTitle)
-	WAVE channelSel        = GetChannelSelectionWave(dataBrowserDFR)
+	WAVE channelSel        = BSP_GetChannelSelectionWave(panelTitle)
 	WAVE/Z sweepsToOverlay = OVS_GetSelectedSweeps(panelTitle, OVS_SWEEP_SELECTION_SWEEPNO)
 
 	WAVE axesRanges = GetAxesRanges(graph)
@@ -903,8 +902,7 @@ Function DB_CheckProc_ChangedSetting(cba) : CheckBoxControl
 					break
 				default:
 					if(StringMatch(ctrl, "check_channelSel_*"))
-						DFREF dataBrowserDFR = DB_GetDataBrowserPath(panelTitle)
-						WAVE channelSel      = GetChannelSelectionWave(dataBrowserDFR)
+						WAVE channelSel = BSP_GetChannelSelectionWave(panelTitle)
 						ParseChannelSelectionControl(cba.ctrlName, channelType, channelNum)
 						channelSel[channelNum][%$channelType] = checked
 					endif
@@ -964,8 +962,10 @@ Function DB_CheckboxProc_OverlaySweeps(cba) : CheckBoxControl
 				DisableControls(extPanel, controlList)
 			endif
 
-			device = GetPopupMenuString(panelTitle, "popup_DB_lockedDevices")
-			DFREF dfr = GetDeviceDataBrowserPath(device)
+			DFREF dfr = BSP_GetFolder(panelTitle, MIES_BSP_OVS_FOLDER)
+			if(!DataFolderExistsDFR(dfr))
+				return 0
+			endif
 			WAVE/T listBoxWave        = GetOverlaySweepsListWave(dfr)
 			WAVE listBoxSelWave       = GetOverlaySweepsListSelWave(dfr)
 			WAVE/WAVE sweepSelChoices = GetOverlaySweepSelectionChoices(dfr)
