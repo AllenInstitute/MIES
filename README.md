@@ -17,8 +17,8 @@ following these are especially welcome.
 ## Supported versions
 
 * master
-* 1.1
 * 1.2
+* 1.3
 
 For supported versions we fix all critical bugs.
 
@@ -35,7 +35,7 @@ package from Wavemetrics.
 Install the [Visual C++ Redistributable for Visual Studio 2015](https://www.microsoft.com/en-us/download/details.aspx?id=48145)
 packages both for 32bit(x86) and 64bit(x64) in English.
 
-### Igor Pro 7.0.4 or later
+### Igor Pro 7.0.4 or later (64bit only)
 
 * Quit Igor Pro
 * Create the following shortcuts in "C:\Users\$username\Documents\WaveMetrics\Igor Pro 7 User Files"
@@ -46,9 +46,6 @@ packages both for 32bit(x86) and 64bit(x64) in English.
     * "Packages\MIES"
     * "Packages\Tango"
   * In "Igor Procedures" a shortcut pointing to Packages\MIES_Include.ipf
-  * In "Igor Extensions" a shortcut pointing to
-    * "XOPs-IP7"
-    * "XOP-tango-IP7"
   * In "Igor Extensions (64-bit)" a shortcut pointing to
     * "XOPs-IP7-64bit"
     * "XOP-tango-64bit"
@@ -68,8 +65,6 @@ packages both for 32bit(x86) and 64bit(x64) in English.
     * "Packages\MIES\MIES_AnalysisBrowser.ipf"
   * In "Igor Extensions (64-bit)" a shortcut pointing to
     * "XOPs-IP7-64bit\HDF5-64.xop"
-  * In "Igor Extensions" a shortcut pointing to
-    * "XOPs-IP7\HDF5.xop"
 * Restart Igor Pro
 
 ### Data Browser
@@ -182,7 +177,7 @@ bamboo, provides the following services for MIES:
 * The release packaging job can only be run on a linux box (or on a windows box with git for windows installed).
   This is ensured by a platform requirement for the job.
 
-### Compilation testing (Igor Pro 7.x 32bit only)
+### Compilation testing (Igor Pro 7.x 64bit only)
 The full MIES installation and the partial installations are IGOR Pro compiled
 using a bamboo job. This allows to catch compile time errors early on.<br>
 For testing compilation manually perform the following steps:
