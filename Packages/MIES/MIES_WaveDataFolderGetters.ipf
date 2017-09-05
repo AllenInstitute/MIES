@@ -4943,3 +4943,29 @@ Function /WAVE GetExpUserSettings(ConfigNB, KeyTypes)
 	return UserSettings
 
 End
+
+/// @name AnalysisFunctionGetters Getters used by analysis functions
+/// @{
+
+/// @brief Return a wave reference which holds an headstage-dependet index
+///
+/// Can be used by analysis function to count the number of invocations.
+Function/WAVE GetAnalysisFuncIndexingHelper(panelTitle)
+	string panelTitle
+
+	variable versionOfNewWave = 1
+	DFREF dfr = GetDevicePath(panelTitle)
+	WAVE/D/Z/SDFR=dfr wv = analysisFuncIndexing
+
+	if(ExistsWithCorrectLayoutVersion(wv, versionOfNewWave))
+		return wv
+	elseif(WaveExists(wv))
+		// handle upgrade
+	else
+		Make/D/N=(NUM_HEADSTAGES) dfr:analysisFuncIndexing/WAVE=wv
+	endif
+
+	return wv
+End
+
+/// @}
