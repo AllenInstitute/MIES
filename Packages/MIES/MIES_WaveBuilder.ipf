@@ -466,27 +466,17 @@ static Structure SegmentParameters
 	variable amplitude
 	variable deltaAmp
 	variable offset
-	variable deltaOffset
 	variable frequency
 	variable deltaFreq
 	variable pulseDuration
-	variable deltaPulsedur
 	variable tauRise
-	variable deltaTauRise
 	variable tauDecay1
-	variable deltaTauDecay1
 	variable tauDecay2
-	variable deltaTauDecay2
 	variable tauDecay2Weight
-	variable deltaTauDecay2Weight
 	variable lowPassCutOff
-	variable deltaLowPassCutOff
 	variable highPassCutOff
-	variable deltaHighPassCutOff
 	variable filterOrder
-	variable deltaFilterOrder
 	variable endFrequency
-	variable deltaEndFrequency
 	variable numberOfPulses
 	// checkboxes
 	variable poisson
@@ -525,27 +515,16 @@ static Function/WAVE WB_MakeWaveBuilderWave(WP, WPT, SegWvType, stepCount, numEp
 		params.amplitude            = WP[2][i][type]
 		params.deltaAmp             = WP[3][i][type]
 		params.offset               = WP[4][i][type]
-		params.deltaOffset          = WP[5][i][type]
 		params.frequency            = WP[6][i][type]
-		params.deltaFreq            = WP[7][i][type]
 		params.pulseDuration        = WP[8][i][type]
-		params.deltaPulsedur        = WP[9][i][type]
 		params.tauRise              = WP[10][i][type]
-		params.deltaTauRise         = WP[11][i][type]
 		params.tauDecay1            = WP[12][i][type]
-		params.deltaTauDecay1       = WP[13][i][type]
 		params.tauDecay2            = WP[14][i][type]
-		params.deltaTauDecay2       = WP[15][i][type]
 		params.tauDecay2Weight      = WP[16][i][type]
-		params.deltaTauDecay2Weight = WP[17][i][type]
 		params.lowPassCutOff        = WP[20][i][type]
-		params.deltaLowPassCutOff   = WP[21][i][type]
 		params.highPassCutOff       = WP[22][i][type]
-		params.deltaHighPassCutOff  = WP[23][i][type]
 		params.endFrequency         = WP[24][i][type]
-		params.deltaEndFrequency    = WP[25][i][type]
 		params.filterOrder          = WP[26][i][type]
-		params.deltaFilterOrder     = WP[27][i][type]
 		params.sinChirp             = WP[43][i][type]
 		params.poisson              = WP[44][i][type]
 		params.numberOfPulses       = WP[45][i][type]
