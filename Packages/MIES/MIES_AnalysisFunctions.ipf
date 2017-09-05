@@ -409,15 +409,19 @@ Function TestPrematureSweepStop(panelTitle, eventType, ITCDataWave, headStage, r
 	Wave ITCDataWave
 	variable headstage, realDataLength
 
+	variable num
 	SVAR temp = $GetTemporaryString()
 
 	if(eventType == PRE_DAQ_EVENT || eventType == POST_SWEEP_EVENT)
 		temp = "0"
 		return NaN
 	elseif(eventType == MID_SWEEP_EVENT)
-		temp = num2str(str2num(temp) + 1)
+		num = str2numSafe(temp)
+		ASSERT(IsFinite(num), "Missing variable initialization, this analysis function must be set as pre daq, mid sweeep and post sweep")
+		num += 1
+		temp = num2str(num)
 
-		if(str2num(temp) > 20)
+		if(num > 20)
 			return ANALYSIS_FUNC_RET_EARLY_STOP
 		endif
 	endif
