@@ -389,10 +389,10 @@ static Function PA_GetPulseToPulseLength(traceData, idx, region, pulseStartTimes
 
 	if(!WaveExists(pulseToPulseLengths) || pulseToPulseLengths[region] == 0)
 		// either an old stim set without starting times or a new one
-		// with poission distribution turned on
+		// with poission distribution/mixed frequency turned on
 		return PA_GetAveragePulseLength(pulseStartTimes, startingPulse, endingPulse, fallbackPulseLength)
 	else
-		// existing pulse train stimset and poisson distribution turned off
+		// existing pulse train stimset and poisson distribution/mixed frequency turned off
 		return pulseToPulseLengths[region]
 	endif
 End

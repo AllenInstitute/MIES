@@ -398,7 +398,7 @@ static Function WB_AddDelta(WP, numEpochs)
 
 	numEpochTypes = DimSize(WP, LAYERS)
 
-	for(i = 0; i < 30; i += 2)
+	for(i = 0; i <= 30; i += 2)
 		for(j = 0; j < numEpochs; j += 1)
 			for(k = 0; k < numEpochTypes; k += 1)
 
@@ -487,6 +487,10 @@ static Structure SegmentParameters
 	variable noiseType // 0: white, 1: pink, 2:brown
 	variable buildResolution // value, not the popup menu index
 	variable pulseType // 0: square, 1: triangle
+	variable mixedFreq
+	variable mixedFreqShuffle
+	variable firstFreq
+	variable lastFreq
 EndStructure
 
 static Function/WAVE WB_MakeWaveBuilderWave(WP, WPT, SegWvType, stepCount, numEpochs, channelType, updateEpochIDWave, [stimset])
@@ -532,6 +536,10 @@ static Function/WAVE WB_MakeWaveBuilderWave(WP, WPT, SegWvType, stepCount, numEp
 		params.noiseType            = WP[54][i][type]
 		params.buildResolution      = str2num(StringFromList(WP[55][i][type], WBP_GetNoiseBuildResolution()))
 		params.pulseType            = WP[56][i][type]
+		params.mixedFreq            = WP[41][i][type]
+		params.mixedFreqShuffle     = WP[42][i][type]
+		params.firstFreq            = WP[28][i][type]
+		params.lastFreq             = WP[30][i][type]
 
 		sprintf debugMsg, "step count: %d, epoch: %d, duration: %g (delta %g), amplitude %d (delta %g)\r", stepCount, i, params.duration, params.DeltaDur, params.amplitude, params.DeltaAmp
 		DEBUGPRINT("params", str=debugMsg)
@@ -624,6 +632,9 @@ static Function/WAVE WB_MakeWaveBuilderWave(WP, WPT, SegWvType, stepCount, numEp
 				AddEntryIntoWaveNoteAsList(WaveBuilderWave, PULSE_TO_PULSE_LENGTH_KEY, var=pulseToPulseLength)
 				AddEntryIntoWaveNoteAsList(WaveBuilderWave, "Pulse duration"         , var=params.PulseDuration)
 				AddEntryIntoWaveNoteAsList(WaveBuilderWave, "Number of pulses"       , var=params.NumberOfPulses)
+				AddEntryIntoWaveNoteAsList(WaveBuilderWave, "Mixed frequency"        , str=SelectString(params.mixedFreq, "False", "True"))
+				AddEntryIntoWaveNoteAsList(WaveBuilderWave, "First mixed frequency"  , var=params.firstFreq)
+				AddEntryIntoWaveNoteAsList(WaveBuilderWave, "Last mixed frequency"   , var=params.lastFreq)
 				AddEntryIntoWaveNoteAsList(WaveBuilderWave, "Poisson distribution"   , str=SelectString(params.poisson, "False", "True"))
 				AddEntryIntoWaveNoteAsList(WaveBuilderWave, "Random seed"            , var=params.randomSeed)
 				AddEntryIntoWaveNoteAsList(WaveBuilderWave, PULSE_START_TIMES_KEY    , str=NumericWaveToList(pulseStartTimes, ",", format="%.15g"))
@@ -1148,28 +1159,32 @@ static Function/WAVE WB_PulseTrainSegment(pa, mode, pulseStartTimes, pulseToPuls
 	WAVE pulseStartTimes
 	variable &pulseToPulseLength
 
-	variable pulseStartTime, endIndex, startIndex
-	variable numRows, interPulseInterval, idx
+	variable pulseStartTime, endIndex, startIndex, i
+	variable numRows, interPulseInterval, idx, firstStep, lastStep, dist
 	string str
 
-	if(!(pa.frequency > 0))
-		printf "Resetting invalid frequency of %gHz to 1Hz\r", pa.frequency
-		pa.frequency = 1.0
-	endif
+	ASSERT(pa.poisson + pa.mixedFreq <= 1, "Only one of Mixed Frequency or poisson can be checked")
 
-	if(mode == PULSE_TRAIN_MODE_PULSE)
-		// user defined number of pulses
-		pa.duration = pa.numberOfPulses / pa.frequency * 1000
-	elseif(mode == PULSE_TRAIN_MODE_DUR)
-		// user defined duration
-		pa.numberOfPulses = pa.frequency * pa.duration / 1000
-	else
-		ASSERT(0, "Invalid mode")
-	endif
+	if(!pa.mixedFreq)
+		if(!(pa.frequency > 0))
+			printf "Resetting invalid frequency of %gHz to 1Hz\r", pa.frequency
+			pa.frequency = 1.0
+		endif
 
-	if(!(pa.duration > 0))
-		printf "Resetting invalid duration of %gms to 1ms\r", pa.duration
-		pa.duration = 1.0
+		if(mode == PULSE_TRAIN_MODE_PULSE)
+			// user defined number of pulses
+			pa.duration = pa.numberOfPulses / pa.frequency * 1000
+		elseif(mode == PULSE_TRAIN_MODE_DUR)
+			// user defined duration
+			pa.numberOfPulses = pa.frequency * pa.duration / 1000
+		else
+			ASSERT(0, "Invalid mode")
+		endif
+
+		if(!(pa.duration > 0))
+			printf "Resetting invalid duration of %gms to 1ms\r", pa.duration
+			pa.duration = 1.0
+		endif
 	endif
 
 	if(pa.poisson)
@@ -1195,6 +1210,39 @@ static Function/WAVE WB_PulseTrainSegment(pa, mode, pulseStartTimes, pulseToPuls
 
 			EnsureLargeEnoughWave(pulseStartTimes, minimumSize=idx)
 			pulseStartTimes[idx++] = pulseStartTime
+		endfor
+	elseif(pa.mixedFreq)
+
+		firstStep = 1 / pa.firstFreq
+		lastStep  = 1 / pa.lastFreq
+		dist      = (lastStep / firstStep)^(1 / (pa.numberOfPulses - 1))
+
+		Make/FREE/N=(pa.numberOfPulses) interPulseIntervals = firstStep * dist^(p) * 1000
+
+		if(pa.mixedFreqShuffle)
+			InPlaceRandomShuffle(interPulseIntervals, noiseGenMode = NOISE_GEN_MERSENNE_TWISTER)
+		endif
+
+		pa.duration = (sum(interPulseIntervals) + pa.numberOfPulses * pa.pulseDuration) * 1000
+		WAVE segmentWave = WB_GetSegmentWave(duration=pa.duration)
+		FastOp segmentWave = 0
+		numRows = DimSize(segmentWave, ROWS)
+
+		for(i = 0; i < pa.numberOfPulses; i += 1)
+
+			endIndex = floor((pulseStartTime + pa.pulseDuration) / HARDWARE_ITC_MIN_SAMPINT)
+
+			if(endIndex >= numRows || endIndex < 0)
+				break
+			endif
+
+			startIndex = floor(pulseStartTime / HARDWARE_ITC_MIN_SAMPINT)
+			WB_CreatePulse(segmentWave, pa.pulseType, pa.amplitude, startIndex, endIndex)
+
+			EnsureLargeEnoughWave(pulseStartTimes, minimumSize=idx)
+			pulseStartTimes[idx++] = pulseStartTime
+
+			pulseStartTime += interPulseIntervals[i] + pa.pulseDuration
 		endfor
 	else
 		interPulseInterval = (1 / pa.frequency) * 1000 - pa.pulseDuration
