@@ -1180,8 +1180,24 @@ static Function/WAVE WB_PulseTrainSegment(pa, mode, pulseStartTimes, pulseToPuls
 	FastOp segmentWave = 0
 	numRows = DimSize(segmentWave, ROWS)
 
-	if(!pa.poisson)
+	if(pa.poisson)
+		pulseToPulseLength = 0
 
+		for(;;)
+			pulseStartTime += -ln(abs(enoise(1, NOISE_GEN_MERSENNE_TWISTER))) / pa.frequency * 1000
+			endIndex = floor((pulseStartTime + pa.pulseDuration) / HARDWARE_ITC_MIN_SAMPINT)
+
+			if(endIndex >= numRows || endIndex < 0)
+				break
+			endif
+
+			startIndex = floor(pulseStartTime / HARDWARE_ITC_MIN_SAMPINT)
+			WB_CreatePulse(segmentWave, pa.pulseType, pa.amplitude, startIndex, endIndex)
+
+			EnsureLargeEnoughWave(pulseStartTimes, minimumSize=idx)
+			pulseStartTimes[idx++] = pulseStartTime
+		endfor
+	else
 		pulseToPulseLength = interPulseInterval + pa.pulseDuration
 
 		for(;;)
@@ -1198,24 +1214,6 @@ static Function/WAVE WB_PulseTrainSegment(pa, mode, pulseStartTimes, pulseToPuls
 			pulseStartTimes[idx++] = pulseStartTime
 
 			pulseStartTime += interPulseInterval + pa.pulseDuration
-		endfor
-	else
-
-		pulseToPulseLength = 0
-
-		for(;;)
-			pulseStartTime += -ln(abs(enoise(1, NOISE_GEN_MERSENNE_TWISTER))) / pa.frequency * 1000
-			endIndex = floor((pulseStartTime + pa.pulseDuration) / HARDWARE_ITC_MIN_SAMPINT)
-
-			if(endIndex >= numRows || endIndex < 0)
-				break
-			endif
-
-			startIndex = floor(pulseStartTime / HARDWARE_ITC_MIN_SAMPINT)
-			WB_CreatePulse(segmentWave, pa.pulseType, pa.amplitude, startIndex, endIndex)
-
-			EnsureLargeEnoughWave(pulseStartTimes, minimumSize=idx)
-			pulseStartTimes[idx++] = pulseStartTime
 		endfor
 	endif
 
