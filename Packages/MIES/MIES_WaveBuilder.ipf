@@ -1172,15 +1172,14 @@ static Function/WAVE WB_PulseTrainSegment(pa, mode, pulseStartTimes, pulseToPuls
 		pa.duration = 1.0
 	endif
 
-	// we want always to have the correct interpulse interval
-	// independent of the duration
-	interPulseInterval = (1 / pa.frequency) * 1000 - pa.pulseDuration
-
-	WAVE segmentWave = WB_GetSegmentWave(duration=pa.duration)
-	FastOp segmentWave = 0
-	numRows = DimSize(segmentWave, ROWS)
-
 	if(pa.poisson)
+
+		interPulseInterval = (1 / pa.frequency) * 1000 - pa.pulseDuration
+
+		WAVE segmentWave = WB_GetSegmentWave(duration=pa.duration)
+		FastOp segmentWave = 0
+		numRows = DimSize(segmentWave, ROWS)
+
 		pulseToPulseLength = 0
 
 		for(;;)
@@ -1198,6 +1197,12 @@ static Function/WAVE WB_PulseTrainSegment(pa, mode, pulseStartTimes, pulseToPuls
 			pulseStartTimes[idx++] = pulseStartTime
 		endfor
 	else
+		interPulseInterval = (1 / pa.frequency) * 1000 - pa.pulseDuration
+
+		WAVE segmentWave = WB_GetSegmentWave(duration=pa.duration)
+		FastOp segmentWave = 0
+		numRows = DimSize(segmentWave, ROWS)
+
 		pulseToPulseLength = interPulseInterval + pa.pulseDuration
 
 		for(;;)
