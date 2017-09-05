@@ -1878,22 +1878,9 @@ End
 
 Function/S WBP_ReturnFoldersList()
 
-	string parent
-	string folderNameList = ""
-	string folderName
-	variable i = 0
-
 	DFREF dfr = WBP_GetFolderPath()
-	do
-		folderName = GetIndexedObjNameDFR(dfr, 4, i)
-		if (strlen(folderName) == 0)
-			break
-		endif
-		folderNameList = AddListItem(folderName, folderNamelist, ";", inf)
-		i += 1
-	while(1)
 
-	return NONE + ";root:;..;" + folderNameList
+	return NONE + ";root:;..;" + GetListOfObjects(dfr, ".*", typeFlag = COUNTOBJECTS_DATAFOLDER)
 End
 
 Function WBP_PopMenuProc_FolderSelect(pa) : PopupMenuControl
