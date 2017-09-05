@@ -977,17 +977,30 @@ Function HW_ITC_GetCurrentDevice([flags])
 	return V_Value
 End
 
+/// @brief Create a fifo position wave from a ITCChanConfigWave
+threadsafe static Function/WAVE HW_ITC_GetFifoPosFromConfig(config_t)
+	WAVE config_t
+
+	Duplicate/FREE config_t, fifoPos_t
+
+	fifoPos_t[2,][] = NaN
+	fifoPos_t[2][]  = -1
+
+	return fifoPos_t
+End
+
 /// @brief Reset the AD/DA channel FIFOs (threadsafe variant)
 ///
 /// @param deviceID device identifier
-/// @param fifoPos  Wave with new fifo positions
+/// @param config   ITC config wave
 /// @param flags    [optional, default none] One or multiple flags from @ref HardwareInteractionFlags
-threadsafe Function HW_ITC_ResetFifo_TS(deviceID, fifoPos, [flags])
+threadsafe Function HW_ITC_ResetFifo_TS(deviceID, config, [flags])
 	variable deviceID
-	WAVE fifoPos
+	WAVE config
 	variable flags
 
-	WAVE fifoPos_t = HW_ITC_TransposeAndToDouble(fifoPos)
+	WAVE config_t  = HW_ITC_TransposeAndToDouble(config)
+	WAVE fifoPos_t = HW_ITC_GetFifoPosFromConfig(config_t)
 
 	do
 		ITCUpdateFIFOPositionAll2/DEV=(deviceID)/Z=(flags & HARDWARE_PREVENT_ERROR_POPUP) fifoPos_t
@@ -999,12 +1012,13 @@ End
 /// @brief Reset the AD/DA channel FIFOs
 ///
 /// @param deviceID device identifier
-/// @param fifoPos  [optional, defaults to GetITCFIFOPositionAllConfigWave()]
-///                 Wave with new fifo positions
-/// @param flags    [optional, default none] One or multiple flags from @ref HardwareInteractionFlags
-Function HW_ITC_ResetFifo(deviceID, [fifoPos, flags])
+/// @param[in] config                  [optional] ITC config wave
+/// @param[in] configFunc              [optional, defaults to GetITCChanConfigWave()] override wave getter for the ITC config wave
+/// @param     flags                   [optional, default none] One or multiple flags from @ref HardwareInteractionFlags
+Function HW_ITC_ResetFifo(deviceID, [config, configFunc, flags])
 	variable deviceID
-	WAVE/Z fifoPos
+	WAVE/Z config
+	FUNCREF HW_WAVE_GETTER_PROTOTYPE configFunc
 	variable  flags
 
 	string panelTitle
@@ -1013,11 +1027,16 @@ Function HW_ITC_ResetFifo(deviceID, [fifoPos, flags])
 
 	panelTitle = HW_GetMainDeviceName(HARDWARE_ITC_DAC, deviceID)
 
-	if(ParamIsDefault(fifoPos))
-		WAVE fifoPos = GetITCFIFOPositionAllConfigWave(panelTitle)
+	if(ParamIsDefault(config))
+		if(ParamIsDefault(configFunc))
+			WAVE config = GetITCChanConfigWave(panelTitle)
+		else
+			WAVE config = configFunc(panelTitle)
+		endif
 	endif
 
-	WAVE fifoPos_t = HW_ITC_TransposeAndToDouble(fifoPos)
+	WAVE config_t = HW_ITC_TransposeAndToDouble(config)
+	WAVE fifoPos_t = HW_ITC_GetFifoPosFromConfig(config_t)
 
 	do
 		ITCUpdateFIFOPositionAll2/Z=(flags & HARDWARE_PREVENT_ERROR_POPUP) fifoPos_t
@@ -1212,13 +1231,11 @@ End
 /// @param dataFunc    [optional, defaults to GetITCDataWave()] override wave getter for the ITC data wave
 /// @param config      ITC config wave
 /// @param configFunc  [optional, defaults to GetITCChanConfigWave()] override wave getter for the ITC config wave
-/// @param fifoPos     ITC fifo position wave
-/// @param fifoPosFunc [optional, defaults to GetITCFIFOPositionAllConfigWave()] override wave getter for the ITC fifo position wave
 /// @param flags       [optional, default none] One or multiple flags from @ref HardwareInteractionFlags
-Function HW_ITC_PrepareAcq(deviceID, [data, dataFunc, config, configFunc, fifoPos, fifoPosFunc, flags])
+Function HW_ITC_PrepareAcq(deviceID, [data, dataFunc, config, configFunc, flags])
 	variable deviceID
-	WAVE/Z data, config, fifoPos
-	FUNCREF HW_WAVE_GETTER_PROTOTYPE dataFunc, configFunc, fifoPosFunc
+	WAVE/Z data, config
+	FUNCREF HW_WAVE_GETTER_PROTOTYPE dataFunc, configFunc
 	variable flags
 
 	string panelTitle
@@ -1243,15 +1260,8 @@ Function HW_ITC_PrepareAcq(deviceID, [data, dataFunc, config, configFunc, fifoPo
 		endif
 	endif
 
-	if(ParamIsDefault(fifoPos))
-		if(ParamIsDefault(fifoPosFunc))
-			WAVE fifoPos = GetITCFIFOPositionAllConfigWave(panelTitle)
-		else
-			WAVE fifoPos = fifoPosFunc(panelTitle)
-		endif
-	endif
-
 	WAVE config_t = HW_ITC_TransposeAndToDouble(config)
+
 	do
 		ITCconfigAllchannels2/Z=(flags & HARDWARE_PREVENT_ERROR_POPUP) config_t, data
 	while(V_ITCXOPError == SLOT_LOCKED_TO_OTHER_THREAD && V_ITCError == 0)
@@ -1273,7 +1283,7 @@ Function HW_ITC_PrepareAcq(deviceID, [data, dataFunc, config, configFunc, fifoPo
 	endif
 #endif // DEBUGGING_ENABLED
 
-	WAVE fifoPos_t = HW_ITC_TransposeAndToDouble(fifoPos)
+	WAVE fifoPos_t = HW_ITC_GetFifoPosFromConfig(config_t)
 
 	do
 		ITCUpdateFIFOPositionAll2/Z=(flags & HARDWARE_PREVENT_ERROR_POPUP) fifoPos_t
@@ -1325,19 +1335,15 @@ End
 /// @param[in] stopCollectionPoint [optional, defaults to GetStopCollectionPoint()] number of points to acquire
 /// @param[in] config              [optional] ITC config wave
 /// @param[in] configFunc          [optional, defaults to GetITCChanConfigWave()] override wave getter for the ITC config wave
-/// @param[in] fifoAvail           [optional] ITC Fifo available wave
-/// @param[in] fifoAvailFunc       [optional, defaults to GetITCFIFOPositionAllConfigWave()] override wave getter for the ITC fifo available wave
 /// @param[out] fifoPos            [optional] allows to query the current fifo position
 /// @param flags                   [optional, default none] One or multiple flags from @ref HardwareInteractionFlags
 ///
 /// @return 1 if more data needs to be acquired, 0 if done
-Function HW_ITC_MoreData(deviceID, [ADChannelToMonitor, stopCollectionPoint, config, configFunc, fifoAvail, fifoAvailFunc, fifoPos, flags])
+Function HW_ITC_MoreData(deviceID, [ADChannelToMonitor, stopCollectionPoint, config, configFunc, fifoPos, flags])
 	variable deviceID
 	variable ADChannelToMonitor, stopCollectionPoint
 	WAVE/Z config
 	FUNCREF HW_WAVE_GETTER_PROTOTYPE configFunc
-	WAVE/Z fifoAvail
-	FUNCREF HW_WAVE_GETTER_PROTOTYPE fifoAvailFunc
 	variable &fifoPos
 	variable flags
 
@@ -1366,14 +1372,6 @@ Function HW_ITC_MoreData(deviceID, [ADChannelToMonitor, stopCollectionPoint, con
 		endif
 	endif
 
-	if(ParamIsDefault(fifoAvail))
-		if(ParamIsDefault(fifoAvailFunc))
-			WAVE fifoAvail = GetITCFIFOAvailAllConfigWave(panelTitle)
-		else
-			WAVE fifoAvail = fifoAvailFunc(panelTitle)
-		endif
-	endif
-
 	WAVE config_t = HW_ITC_TransposeAndToDouble(config)
 
 	do
@@ -1381,10 +1379,7 @@ Function HW_ITC_MoreData(deviceID, [ADChannelToMonitor, stopCollectionPoint, con
 	while(V_ITCXOPError == SLOT_LOCKED_TO_OTHER_THREAD && V_ITCError == 0)
 
 	HW_ITC_HandleReturnValues(flags, V_ITCError, V_ITCXOPError)
-	WAVE fifoAvailNew = HW_ITC_TransposeAndToInt(fifoAvail_t)
-	fifoAvail[][] = fifoAvailNew[p][q]
-
-	fifoPosValue = fifoAvail[ADChannelToMonitor][2]
+	fifoPosValue = fifoAvail_t[2][ADChannelToMonitor]
 
 	if(!ParamIsDefault(fifoPos))
 		fifoPos = fifoPosValue

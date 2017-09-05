@@ -652,40 +652,6 @@ Function/Wave GetITCChanConfigWave(panelTitle)
 	return wv
 End
 
-/// @brief Return the ITC fifo available for all channels wave
-Function/Wave GetITCFIFOAvailAllConfigWave(panelTitle)
-	string panelTitle
-
-	DFREF dfr = GetDevicePath(panelTitle)
-
-	WAVE/I/Z/SDFR=dfr wv = ITCFIFOAvailAllConfigWave
-
-	if(WaveExists(wv))
-		return wv
-	endif
-
-	Make/I/N=(2, 4) dfr:ITCFIFOAvailAllConfigWave/Wave=wv
-
-	return wv
-End
-
-/// @brief Return the ITC fifo available for all channels wave
-Function/Wave GetITCFIFOPositionAllConfigWave(panelTitle)
-	string panelTitle
-
-	DFREF dfr = GetDevicePath(panelTitle)
-
-	WAVE/I/Z/SDFR=dfr wv = ITCFIFOPositionAllConfigWave
-
-	if(WaveExists(wv))
-		return wv
-	endif
-
-	Make/I/N=(2, 4) dfr:ITCFIFOPositionAllConfigWave/Wave=wv
-
-	return wv
-End
-
 /// @brief Return the intermediate storage wave for the TTL data
 Function/Wave GetTTLWave(panelTitle)
 	string panelTitle
@@ -3273,101 +3239,6 @@ Function/WAVE P_GetITCChanConfig(panelTitle)
 	return wv
 End
 
-/// @brief Returns a wave reference to the ITCFIFOAvailConfig wave used for pressure pulses
-///
-/// Rows:
-/// - 0: DA channel specifications
-/// - 1: AD channel specifications
-/// - 2: TTL rack 0 specifications
-/// - 3: TTL rack 1 specifications (available if supported by the device)
-/// Columns:
-/// - 0: Channel Type
-/// - 1: Channel number
-/// - 2: FIFO advance
-/// - 3: Reserved
-Function/WAVE P_GetITCFIFOConfig(panelTitle)
-	string panelTitle
-
-	dfref dfr = P_DeviceSpecificPressureDFRef(panelTitle)
-
-	Wave/Z/T/SDFR=dfr P_ITCFIFOConfig
-
-	if(WaveExists(P_ITCFIFOConfig))
-		return P_ITCFIFOConfig
-	endif
-
-	Make/I/N=(4, 4) dfr:P_ITCFIFOConfig/WAVE=wv
-
-	wv = 0
-	wv[0][0] = ITC_XOP_CHANNEL_TYPE_DAC
-	wv[1][0] = ITC_XOP_CHANNEL_TYPE_ADC
-	wv[2][0] = ITC_XOP_CHANNEL_TYPE_TTL
-	wv[3][0] = ITC_XOP_CHANNEL_TYPE_TTL
-
-	// invalid TTL channels
-	wv[2][1] = -1
-	wv[3][1] = -1
-
-	wv[][2]  = -1 // reset the FIFO
-
-	SetDimLabel ROWS, 0, DA, 			wv
-	SetDimLabel ROWS, 1, AD, 			wv
-	SetDimLabel ROWS, 2, TTL_R0, 		wv
-	SetDimLabel ROWS, 3, TTL_R1, 		wv
-
-	SetDimLabel COLS, 0, Chan_Type,	 	wv
-	SetDimLabel COLS, 1, Chan_num, 		wv
-	SetDimLabel COLS, 2, FIFO_advance, 	wv
-	return wv
-End
-
-/// @brief Returns a wave reference to the ITCFIFOAvail wave used for pressure pulses
-///
-/// Rows:
-/// - 0: DA channel specifications
-/// - 1: AD channel specifications
-/// - 2: TTL rack 0 specifications
-/// - 3: TTL rack 1 specifications
-/// Columns:
-/// - 0: Channel Type
-/// - 1: Channel number
-/// - 2: FIFO available
-/// - 3: Reserved
-Function/WAVE P_GetITCFIFOAvail(panelTitle)
-	string panelTitle
-
-	dfref dfr = P_DeviceSpecificPressureDFRef(panelTitle)
-
-	Wave/Z/T/SDFR=dfr P_ITCFIFOAvail
-
-	if(WaveExists(P_ITCFIFOAvail))
-		return P_ITCFIFOAvail
-	endif
-
-	Make/I/N=(4, 4) dfr:P_ITCFIFOAvail/WAVE=wv
-
-	SetDimLabel ROWS, 0, DA        , wv
-	SetDimLabel ROWS, 1, AD        , wv
-	SetDimLabel ROWS, 2, TTL_R0    , wv
-	SetDimLabel ROWS, 3, TTL_R1    , wv
-
-	SetDimLabel COLS, 0, Chan_Type , wv
-	SetDimLabel COLS, 1, Chan_num  , wv
-	SetDimLabel COLS, 2, FIFO_avail, wv
-
-	wv = 0
-	wv[0][0] = ITC_XOP_CHANNEL_TYPE_DAC
-	wv[1][0] = ITC_XOP_CHANNEL_TYPE_ADC
-	wv[2][0] = ITC_XOP_CHANNEL_TYPE_TTL
-	wv[3][0] = ITC_XOP_CHANNEL_TYPE_TTL
-
-	// invalid TTL channels
-	wv[2][1] = -1
-	wv[3][1] = -1
-
-	return wv
-End
-
 /// @brief Set the dimension labels for the numeric pressure wave
 static Function SetPressureWaveDimLabels(wv)
 	WAVE wv
@@ -4305,7 +4176,6 @@ End
 Function/DF GetActITCDevicesTestPulseFolder()
 	return createDFWithAllParents(GetActITCDevicesTestPulFolderA())
 End
-
 
 /// @brief Return the full path to the active ITC devices location
 Function/S GetActITCDevicesTestPulFolderA()

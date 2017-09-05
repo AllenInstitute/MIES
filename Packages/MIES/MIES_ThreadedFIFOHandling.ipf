@@ -49,13 +49,12 @@ static Function TFH_StartFIFODeamonInternal(hwType, deviceID, mode, [triggerMode
 	NVAR ADChannelToMonitor  = $GetADChannelToMonitor(panelTitle)
 	WAVE ITCChanConfigWave   = GetITCChanConfigWave(panelTitle)
 	WAVE ITCDataWave         = GetITCDataWave(panelTitle)
-	WAVE fifoPosWave         = GetITCFIFOPositionAllConfigWave(panelTitle)
 
 	TFH_StopFifoDaemon(hwType, deviceID)
 	NVAR tgID  = $GetThreadGroupIDFifo(panelTitle)
 	tgID = ThreadGroupCreate(1)
-	ThreadStart tgID, 0, TFH_FifoLoop(ITCChanConfigWave, fifoPosWave, ITCDataWave, triggerMode, deviceID, stopCollectionPoint, ADChannelToMonitor, mode)
-	WaveClear ITCChanConfigWave, fifoPosWave, ITCDataWave
+	ThreadStart tgID, 0, TFH_FifoLoop(ITCChanConfigWave, ITCDataWave, triggerMode, deviceID, stopCollectionPoint, ADChannelToMonitor, mode)
+	WaveClear ITCChanConfigWave, ITCDataWave
 End
 
 /// @brief Stop the FIFO daemon if required
@@ -108,8 +107,8 @@ End
 /// - fifoPos:       fifo position
 /// - startSequence: (yoking only) inform the main thread
 ///                  that ARDStartSequence() commmand should be called
-threadsafe static Function TFH_FifoLoop(config, fifoPosWave, ITCDataWave, triggerMode, deviceID, stopCollectionPoint, ADChannelToMonitor, mode)
-	WAVE config, fifoPosWave, ITCDataWave
+threadsafe static Function TFH_FifoLoop(config, ITCDataWave, triggerMode, deviceID, stopCollectionPoint, ADChannelToMonitor, mode)
+	WAVE config, ITCDataWave
 	variable triggerMode, deviceID, stopCollectionPoint, ADChannelToMonitor, mode
 
 	variable flags, moreData, fifoPos
@@ -135,7 +134,7 @@ threadsafe static Function TFH_FifoLoop(config, fifoPosWave, ITCDataWave, trigge
 				case TFH_RESTART_ACQ:
 
 					HW_ITC_StopAcq_TS(deviceID, prepareForDAQ = 1, flags = flags)
-					HW_ITC_ResetFifo_TS(deviceID, fifoPosWave, flags = flags)
+					HW_ITC_ResetFifo_TS(deviceID, config, flags = flags)
 					HW_ITC_StartAcq_TS(deviceID, triggerMode, flags = flags)
 
 					if(triggerMode != HARDWARE_DAC_DEFAULT_TRIGGER)

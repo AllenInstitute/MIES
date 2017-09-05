@@ -482,31 +482,23 @@ static Function P_PrepareITCWaves(mainDevice, pressureDevice)
 
 	WAVE ITCData    = P_GetITCData(mainDevice)
 	WAVE ITCConfig  = P_GetITCChanConfig(mainDevice)
-	WAVE FIFOConfig = P_GetITCFIFOConfig(mainDevice)
-	WAVE FIFOAvail  = P_GetITCFIFOAvail(mainDevice)
 
 	if(!cmpstr(deviceType, "ITC1600")) // two racks
 		Redimension/N=(-1, 4) ITCData
-		Redimension/N=(4, -1) ITCConfig, FIFOConfig, FIFOAvail
+		Redimension/N=(4, -1) ITCConfig
 
 		SetDimLabel COLS, 3, TTL_R1, ITCData
-		SetDimLabel ROWS, 3, TTL_R1, ITCConfig, FIFOConfig, FIFOAvail
+		SetDimLabel ROWS, 3, TTL_R1, ITCConfig
 
 		ITCConfig[3][0]  = ITC_XOP_CHANNEL_TYPE_TTL
-		FIFOConfig[3][0] = ITC_XOP_CHANNEL_TYPE_TTL
-		FIFOAvail[3][0]  = ITC_XOP_CHANNEL_TYPE_TTL
 
 		ITCConfig[3][1]  = HW_ITC_GetITCXOPChannelForRack(pressureDevice, RACK_ONE)
-		FIFOConfig[3][1] = HW_ITC_GetITCXOPChannelForRack(pressureDevice, RACK_ONE)
-		FIFOAvail[3][1]  = HW_ITC_GetITCXOPChannelForRack(pressureDevice, RACK_ONE)
 	else // one rack
 		Redimension/N=(-1, 3) ITCData
-		Redimension/N=(3, -1) ITCConfig, FIFOConfig, FIFOAvail
+		Redimension/N=(3, -1) ITCConfig
 	endif
 
 	ITCConfig[2][1]  = HW_ITC_GetITCXOPChannelForRack(pressureDevice, RACK_ZERO)
-	FIFOConfig[2][1] = HW_ITC_GetITCXOPChannelForRack(pressureDevice, RACK_ZERO)
-	FIFOAvail[2][1]  = HW_ITC_GetITCXOPChannelForRack(pressureDevice, RACK_ZERO)
 End
 
 /// @brief Used to close ITC device used for pressure regulation
@@ -991,17 +983,10 @@ static Function P_ITC_SetChannels(panelTitle, headstage)
 	variable headstage
 
 	WAVE ITCConfig      = P_GetITCChanConfig(panelTitle)
-	WAVE FIFOConfig     = P_GetITCFIFOConfig(panelTitle)
-	WAVE FIFOAvail      = P_GetITCFIFOAvail(panelTitle)
 	WAVE pressureDataWv = P_GetPressureDataWaveRef(panelTitle)
 
 	ITCConfig[%DA][%Chan_num]  = pressureDataWv[headStage][%DAC]
-	FIFOConfig[%DA][%Chan_num] = pressureDataWv[headStage][%DAC]
-	FIFOAvail[%DA][%Chan_num]  = pressureDataWv[headStage][%DAC]
-
 	ITCConfig[%AD][%Chan_num]  = pressureDataWv[headStage][%ADC]
-	FIFOConfig[%AD][%Chan_num] = pressureDataWv[headStage][%ADC]
-	FIFOAvail[%AD][%Chan_num]  = pressureDataWv[headStage][%ADC]
 End
 
 /// @brief Perform an acquisition cycle on the pressure device for pressure control
@@ -1028,7 +1013,7 @@ static Function P_DataAcq(panelTitle, headStage)
 	pressureDataWv[headStage][%OngoingPessurePulse] = 1 // record headstage with ongoing pressure pulse
 
 	if(hwType == HARDWARE_ITC_DAC)
-		HW_ITC_PrepareAcq(deviceID, dataFunc=P_GetITCData, configFunc=P_GetITCChanConfig, fifoPosFunc=P_GetITCFIFOConfig)
+		HW_ITC_PrepareAcq(deviceID, dataFunc=P_GetITCData, configFunc=P_GetITCChanConfig)
 		HW_StartAcq(hwType, deviceID, flags=HARDWARE_ABORT_ON_ERROR)
 
 		CtrlNamedBackground P_ITC_FIFOMonitor, period = 10, proc = P_ITC_FIFOMonitorProc
@@ -1099,7 +1084,7 @@ Function P_ITC_FIFOMonitorProc(s)
 	deviceID = pressureDataWv[headStage][%DAC_DevID]
 
 	HW_SelectDevice(hwType, deviceID, flags=HARDWARE_ABORT_ON_ERROR)
-	moreData = HW_ITC_MoreData(deviceID, configFunc=P_GetITCFIFOConfig, fifoAvailFunc=P_GetITCFIFOAvail, ADChannelToMonitor=1, stopCollectionPoint=350 / HARDWARE_ITC_MIN_SAMPINT)
+	moreData = HW_ITC_MoreData(deviceID, ADChannelToMonitor=1, stopCollectionPoint=350 / HARDWARE_ITC_MIN_SAMPINT)
 
 	if(!moreData)
 		HW_StopAcq(hwType, deviceID)
