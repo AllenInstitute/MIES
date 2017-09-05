@@ -1631,7 +1631,8 @@ Function AI_OpenMCCs(ampSerialNumList, [ampTitleList, maxAttempts])
 		endfor
 		
 		if(failedToOpenCount > 0)
-			printf "%g MCCs failed to open on attempt count %g " failedTOopenCount, j
+			printf "%g MCCs failed to open on attempt count %g\r" failedTOopenCount, j
+			ControlWindowToFront()
 		endif
 		
 		j += 1		
