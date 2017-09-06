@@ -413,10 +413,15 @@ static Function PA_GetAveragePulseLength(pulseStartTimes, startingPulse, endingP
 	pulseLengths[0] = NaN
 	pulseLengths[1, inf] = pulseStartTimes[p] - pulseStartTimes[p - 1]
 
+	minimum = WaveMin(pulseLengths)
+
+	if(minimum > 0)
+		return minimum
+	endif
+
 	// remove outliers which are too large
 	// this happens with multiple epochs and space in between as then one
 	// pulse to pulse length is way too big
-	minimum = WaveMin(pulseLengths)
 	Extract/FREE pulseLengths, pulseLengthsClean, pulseLengths <= 2 * minimum
 
 	WaveStats/Q/M=1 pulseLengthsClean
