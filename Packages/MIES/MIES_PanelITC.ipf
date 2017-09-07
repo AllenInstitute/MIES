@@ -3241,21 +3241,6 @@ Window DA_Ephys() : Panel
 	PopupMenu Popup_Settings_SampIntMult,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	PopupMenu Popup_Settings_SampIntMult,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
 	PopupMenu Popup_Settings_SampIntMult,mode=1,popvalue="1",value= #"\"1;2;4;8;16;32;64\""
-	TitleBox Title_settings_Hardware_Manipul,pos={45.00,588.00},size={70.00,15.00},title="Manipulators"
-	TitleBox Title_settings_Hardware_Manipul,userdata(tabnum)=  "6"
-	TitleBox Title_settings_Hardware_Manipul,userdata(tabcontrol)=  "ADC"
-	TitleBox Title_settings_Hardware_Manipul,userdata(ResizeControlsInfo)= A"!!,DC!!#D#!!#?E!!#<(z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
-	TitleBox Title_settings_Hardware_Manipul,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
-	TitleBox Title_settings_Hardware_Manipul,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
-	TitleBox Title_settings_Hardware_Manipul,frame=0
-	PopupMenu popup_Settings_Manip_MSSMnipLst,pos={112.00,604.00},size={150.00,19.00},bodyWidth=150,disable=2,proc=DAP_PopMenuProc_CAA
-	PopupMenu popup_Settings_Manip_MSSMnipLst,help={"List of available Scientifica micromanipulators"}
-	PopupMenu popup_Settings_Manip_MSSMnipLst,userdata(tabnum)=  "6"
-	PopupMenu popup_Settings_Manip_MSSMnipLst,userdata(tabcontrol)=  "ADC"
-	PopupMenu popup_Settings_Manip_MSSMnipLst,userdata(ResizeControlsInfo)= A"!!,FE!!#D'!!#A%!!#<Pz!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
-	PopupMenu popup_Settings_Manip_MSSMnipLst,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
-	PopupMenu popup_Settings_Manip_MSSMnipLst,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
-	PopupMenu popup_Settings_Manip_MSSMnipLst,mode=1,popvalue="- none -",value= #"\"- none -;\" + M_GetListOfAttachedManipulators()"
 	CheckBox Check_Settings_NwbExport,pos={34.00,216.00},size={102.00,15.00},disable=1,title="Export into NWB"
 	CheckBox Check_Settings_NwbExport,help={"Export all data including sweeps into a file in the NeurodataWithoutBorders fornat,"}
 	CheckBox Check_Settings_NwbExport,userdata(tabnum)=  "5"
@@ -4008,9 +3993,6 @@ Function DAP_EphysPanelStartUpSettings()
 	SetVariable SetVar_Hardware_Status WIN = $panelTitle,value= _STR:"Independent",noedit= 1
 	SetVariable SetVar_Hardware_YokeList WIN = $panelTitle,value= _STR:"No Yoked Devices",noedit= 1
 	PopupMenu popup_Hardware_YokedDACs WIN = $panelTitle, mode=0,value=DAP_GUIListOfYokedDevices()
-
-	DisableControl(panelTitle, "popup_Settings_Manip_MSSMnipLst")
-	SetCheckBoxState(panelTitle, "Check_Hardware_UseManip", 0)
 
 	SetVariable SetVar_DataAcq_Hold_IC WIN = $panelTitle, value= _NUM:0
 	SetVariable Setvar_DataAcq_PipetteOffset_VC WIN = $panelTitle, value= _NUM:0
@@ -7365,25 +7347,6 @@ Function DAP_MIESHeadstageMode(panelTitle, headStage)
 	variable headStage  // range: [0, NUM_HEADSTAGES[
 						
 	return GetDA_EphysGuiStateNum(panelTitle)[headStage][%HSMode]
-End
-
-Function DAP_Activate_Manips(cba) : CheckBoxControl
-	STRUCT WMCheckboxAction &cba
-
-	string panelTitle
-
-	switch(cba.eventCode)
-		case 2: // mouse up
-			panelTitle = cba.win
-			if(cba.checked)
-				EnableControl(panelTitle, "popup_Settings_Manip_MSSMnipLst")
-			else
-				DisableControl(panelTitle, "popup_Settings_Manip_MSSMnipLst")
-			endif
-			break
-	endswitch
-
-	return 0
 End
 
 /// @brief Create a new DA_Ephys panel
