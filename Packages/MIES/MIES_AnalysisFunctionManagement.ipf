@@ -89,7 +89,7 @@ Function AFM_CallAnalysisFunctions(panelTitle, eventType)
 
 		if(eventType == PRE_DAQ_EVENT && ret == 1)
 			return ret
-		elseif(eventType == MID_SWEEP_EVENT && ret == ANALYSIS_FUNC_RET_REPURP_TIME)
+		elseif(eventType == MID_SWEEP_EVENT && (ret == ANALYSIS_FUNC_RET_REPURP_TIME || ret == ANALYSIS_FUNC_RET_EARLY_STOP))
 			return ret
 		endif
 	endfor
