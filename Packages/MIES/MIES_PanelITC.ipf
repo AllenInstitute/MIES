@@ -6051,10 +6051,17 @@ Function DAP_ChangeHeadStageMode(panelTitle, clampMode, headstage, mccMiesSyncOv
 	variable headstage, clampMode, mccMiesSyncOverride
 
 	string iZeroCtrl, VCctrl, ICctrl, headstageCtrl, ctrl
-	variable activeHS, testPulseMode, oppositeMode, DAC, ADC, i, loopMax, sliderPos
+	variable activeHS, testPulseMode, oppositeMode, DAC, ADC, i, loopMax, sliderPos, oldTab
 
 	AI_AssertOnInvalidClampMode(clampMode)
 	DAP_AbortIfUnlocked(panelTitle)
+
+	// explicitly switch to the data acquistion tab to avoid having
+	// the control layout messed up
+	oldTab = GetTabID(panelTitle, "ADC")
+	if(oldTab != 0)
+		PGC_SetAndActivateControl(panelTitle, "ADC", val=0)
+	endif
 
 	WAVE ChanAmpAssign = GetChanAmpAssign(panelTitle)
 	WAVE GuiState = GetDA_EphysGuiStateNum(panelTitle)
@@ -6114,6 +6121,10 @@ Function DAP_ChangeHeadStageMode(panelTitle, clampMode, headstage, mccMiesSyncOv
 	endif
 
 	DAP_UpdateAllCtrlsPerClampMode(panelTitle)
+
+	if(oldTab != 0)
+		PGC_SetAndActivateControl(panelTitle, "ADC", val=oldTab)
+	endif
 End
 
 ///@brief Sets the clamp mode by going through I=0 mode if check_Settings_AmpIEQZstep is checked
