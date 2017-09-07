@@ -8090,7 +8090,7 @@ Function DAP_getFilteredSkipAhead(panelTitle, skipAhead)
 	string panelTitle
 	variable skipAhead
 
-	variable maxSkipAhead = IDX_MinNoOfSweeps(panelTitle) - 1
+	variable maxSkipAhead = max(0, IDX_MinNoOfSweeps(panelTitle) - 1)
 	return skipAhead > maxSkipAhead ? maxSkipAhead : skipAhead
 End
 
