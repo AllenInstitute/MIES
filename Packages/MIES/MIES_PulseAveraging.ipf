@@ -389,10 +389,10 @@ static Function PA_GetPulseToPulseLength(traceData, idx, region, pulseStartTimes
 
 	if(!WaveExists(pulseToPulseLengths) || pulseToPulseLengths[region] == 0)
 		// either an old stim set without starting times or a new one
-		// with poission distribution turned on
+		// with poission distribution/mixed frequency turned on
 		return PA_GetAveragePulseLength(pulseStartTimes, startingPulse, endingPulse, fallbackPulseLength)
 	else
-		// existing pulse train stimset and poisson distribution turned off
+		// existing pulse train stimset and poisson distribution/mixed frequency turned off
 		return pulseToPulseLengths[region]
 	endif
 End
@@ -413,10 +413,15 @@ static Function PA_GetAveragePulseLength(pulseStartTimes, startingPulse, endingP
 	pulseLengths[0] = NaN
 	pulseLengths[1, inf] = pulseStartTimes[p] - pulseStartTimes[p - 1]
 
+	minimum = WaveMin(pulseLengths)
+
+	if(minimum > 0)
+		return minimum
+	endif
+
 	// remove outliers which are too large
 	// this happens with multiple epochs and space in between as then one
 	// pulse to pulse length is way too big
-	minimum = WaveMin(pulseLengths)
 	Extract/FREE pulseLengths, pulseLengthsClean, pulseLengths <= 2 * minimum
 
 	WaveStats/Q/M=1 pulseLengthsClean

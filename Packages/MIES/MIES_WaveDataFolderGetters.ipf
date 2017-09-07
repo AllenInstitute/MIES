@@ -2274,7 +2274,7 @@ Function/WAVE GetTestPulse()
 	return wv
 End
 
-static Constant WP_WAVE_LAYOUT_VERSION = 7
+static Constant WP_WAVE_LAYOUT_VERSION = 8
 
 /// @brief Upgrade the wave layout of `WP` to the most recent one
 ///        as defined in `WP_WAVE_LAYOUT_VERSION`
@@ -2362,9 +2362,14 @@ static Function AddDimLabelsToWP(wv)
 	SetDimLabel ROWS, 25, $("Chirp end frequency delta")      , wv
 	SetDimLabel ROWS, 26, $("Noise filter order")             , wv
 	SetDimLabel ROWS, 27, $("Noise filter order delta")       , wv
+	SetDimLabel ROWS, 28, $("PT: First Mixed Frequency")      , wv
+	SetDimLabel ROWS, 29, $("PT: First Mixed Frequency delta"), wv
+	SetDimLabel ROWS, 30, $("PT: Last Mixed Frequency")       , wv
+	SetDimLabel ROWS, 31, $("PT: Last Mixed Frequency delta") , wv
 	// unused entries are not labeled
 	SetDimLabel ROWS, 40, $("Delta type")                     , wv
-	// unused entries are not labeled
+	SetDimLabel ROWS, 41, $("PT: Mixed Frequency")            , wv
+	SetDimLabel ROWS, 42, $("PT: Shuffle")                    , wv
 	SetDimLabel ROWS, 43, $("Chirp type: Log or sin")         , wv
 	SetDimLabel ROWS, 44, $("Poisson distribution true/false"), wv
 	SetDimLabel ROWS, 45, $("Number of pulses")               , wv

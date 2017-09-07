@@ -2005,11 +2005,18 @@ End
 /// author s.r.chinn
 ///
 /// @param inwave The wave that will have its rows shuffled.
-Function InPlaceRandomShuffle(inwave)
+/// @param noiseGenMode [optional, defaults to #NOISE_GEN_LINEAR_CONGRUENTIAL] type of RNG to use
+Function InPlaceRandomShuffle(inwave, [noiseGenMode])
 	wave inwave
+	variable noiseGenMode
 
-	variable N = numpnts(inwave)
 	variable i, j, emax, temp
+	variable N = DimSize(inwave, ROWS)
+
+	if(ParamIsDefault(noiseGenMode))
+		noiseGenMode = NOISE_GEN_LINEAR_CONGRUENTIAL
+	endif
+
 	for(i = N; i>1; i-=1)
 		emax = i / 2
 		j =  floor(emax + enoise(emax))		//	random index
