@@ -414,7 +414,7 @@ End
 /// @brief Intiate MCC parameters for active headstages
 ///
 /// @param panelTitle	ITC device panel
-/// @param headStage	Active headstage	 index
+/// @param headStage	MIES headstage number, must be in the range [0, NUM_HEADSTAGES]
 static Function ExpConfig_MCC_InitParams(panelTitle, headStage)
 	string panelTitle
 	variable headStage

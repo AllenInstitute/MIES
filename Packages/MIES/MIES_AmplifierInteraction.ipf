@@ -149,8 +149,8 @@ End
 
 /// @brief Wrapper for MCC_SelectMultiClamp700B
 ///
-/// @param panelTitle                          device
-/// @param headStage	                       headstage number
+/// @param panelTitle device
+/// @param headStage MIES headstage number, must be in the range [0, NUM_HEADSTAGES]
 /// @param verbose [optional: default is true] print an error message
 ///
 /// @returns one of @ref AISelectMultiClampReturnValues
@@ -244,7 +244,7 @@ End
 /// @brief Generic interface to call MCC amplifier functions
 ///
 /// @param panelTitle       locked panel name to work on
-/// @param headStage        number of the headStage, must be in the range [0, NUM_HEADSTAGES[
+/// @param headStage        MIES headstage number, must be in the range [0, NUM_HEADSTAGES]
 /// @param mode             one of V_CLAMP_MODE, I_CLAMP_MODE or I_EQUAL_ZERO_MODE
 /// @param func             Function to call, see @ref AI_SendToAmpConstants
 /// @param value            Numerical value to send, ignored by all getter functions
@@ -658,7 +658,7 @@ End
 ///
 /// @param panelTitle       device
 /// @param ctrl             name of the amplifier control
-/// @param headStage        headstage of the desired amplifier
+/// @param headStage        MIES headstage number, must be in the range [0, NUM_HEADSTAGES]
 /// @param value            [optional: defaults to the controls value] value to set. values is in MIES units, see AI_SendToAmp()
 ///                         and there the description of `usePrefixes`.
 /// @param sendToAll        [optional: defaults to the state of the checkbox] should the value be send
@@ -953,7 +953,7 @@ End
 /// @brief Synchronizes the AmpStorageWave to the amplifier GUI control
 ///
 /// @param panelTitle  device
-/// @param headStage   headstage
+/// @param headStage   MIES headstage number, must be in the range [0, NUM_HEADSTAGES]
 /// @param ctrl        [optional, defaults to all controls] name of the control being updated
 static Function AI_UpdateAmpView(panelTitle, headStage, [ctrl])
 	string panelTitle
@@ -1418,7 +1418,7 @@ End
 /// Quicker than MCC auto pipette offset
 ///
 /// @param panelTitle device
-/// @param headStage
+/// @param headStage MIES headstage number, must be in the range [0, NUM_HEADSTAGES]
 Function AI_MIESAutoPipetteOffset(panelTitle, headStage)
 	string panelTitle
 	variable headStage
