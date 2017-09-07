@@ -68,6 +68,8 @@ packages both for 32bit(x86) and 64bit(x64) in English.
     * "Packages\MIES\MIES_AnalysisBrowser.ipf"
   * In "Igor Extensions (64-bit)" a shortcut pointing to
     * "XOPs-IP7-64bit\HDF5-64.xop"
+  * In "Igor Extensions" a shortcut pointing to
+    * "XOPs-IP7\HDF5.xop"
 * Restart Igor Pro
 
 ### Data Browser
