@@ -53,6 +53,7 @@ echo $version > "$version_file"
 "$zip_exe" -qd $version.zip "Packages/ZeroMQ/tests/*" > /dev/null
 "$zip_exe" -qd $version.zip "Packages/ZeroMQ/xop-stub-generator/*" > /dev/null
 "$zip_exe" -qd $version.zip "tools/*" > /dev/null
+"$zip_exe" -qd $version.zip "XOPs/NIDAQmx.XOP" > /dev/null
 "$zip_exe" -qd $version.zip "XOPs-IP7-64bit/NIDAQmx64.XOP" > /dev/null
 
 exit 0
