@@ -1090,16 +1090,16 @@ static Function/C DC_CalculateChannelColumnNo(panelTitle, SetName, channelNo, ch
 	variable CycleCount // when cycleCount = 1 the set has already cycled once.
 	variable localCount
 	string sequenceWaveName
+	variable skipAhead = DAP_GetskipAhead(panelTitle)
 
 	DFREF devicePath = GetDevicePath(panelTitle)
 
 	// wave exists only if random set sequence is selected
 	sequenceWaveName = SetName + num2str(channelType) + num2str(channelNo) + "_S"
 	WAVE/Z/SDFR=devicePath WorkingSequenceWave = $sequenceWaveName
-
+	NVAR count = $GetCount(panelTitle)
 	// Below code calculates the variable local count which is then used to determine what column to select from a particular set
 	if(!RA_IsFirstSweep(panelTitle))
-		NVAR count = $GetCount(panelTitle)
 		//thus the vairable "count" is used to determine if acquisition is on the first cycle
 		ControlInfo/W=$panelTitle Check_DataAcq_Indexing // check indexing status
 		if(v_value == 0)// if indexing is off...
@@ -1146,7 +1146,10 @@ static Function/C DC_CalculateChannelColumnNo(panelTitle, SetName, channelNo, ch
 	else // first sweep
 		ControlInfo/W=$panelTitle check_DataAcq_RepAcqRandom
 		if(v_value == 0) // set step sequence is not random
-			column = 0
+			count += skipAhead
+			column = count
+			DAP_ResetSkipAhead(panelTitle)
+			RA_StepSweepsRemaining(panelTitle)
 		else
 			Make/O/N=(ColumnsInSet) devicePath:$SequenceWaveName/Wave=WorkingSequenceWave = x
 			InPlaceRandomShuffle(WorkingSequenceWave)

@@ -26,7 +26,7 @@ static StrConstant AMPLIFIER_DEF_FORMAT   = "AmpNo %d Chan %d"
 
 Window DA_Ephys() : Panel
 	PauseUpdate; Silent 1		// building window...
-	NewPanel /K=1 /W=(133,441,636,1321)
+	NewPanel /K=1 /W=(181,67,684,947)
 	ValDisplay valdisp_DataAcq_P_LED_Clear,pos={366.00,298.00},size={86.00,29.00},disable=1
 	ValDisplay valdisp_DataAcq_P_LED_Clear,help={"red:user"},userdata(tabnum)=  "0"
 	ValDisplay valdisp_DataAcq_P_LED_Clear,userdata(tabcontrol)=  "tab_DataAcq_Pressure"
@@ -134,7 +134,7 @@ Window DA_Ephys() : Panel
 	ValDisplay valdisp_DataAcq_P_LED_0,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	ValDisplay valdisp_DataAcq_P_LED_0,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
 	ValDisplay valdisp_DataAcq_P_LED_0,frame=5
-	ValDisplay valdisp_DataAcq_P_LED_0,limits={-1,2,0},barmisc={0,0},mode= 2,highColor= (65278,0,0),lowColor= (0,0,0),zeroColor= (0,0,65535)
+	ValDisplay valdisp_DataAcq_P_LED_0,limits={-1,2,0},barmisc={0,0},mode= 2,highColor= (65535,49000,49000),lowColor= (65535,65535,65535),zeroColor= (49151,53155,65535)
 	ValDisplay valdisp_DataAcq_P_LED_0,value= _NUM:-1
 	ValDisplay valdisp_DataAcq_P_LED_1,pos={149.00,347.00},size={43.00,29.00},disable=1
 	ValDisplay valdisp_DataAcq_P_LED_1,help={"Blue:Automated mode, Purple:Manual, Red:User"}
@@ -1419,7 +1419,7 @@ Window DA_Ephys() : Panel
 	SetVariable Search_TTL_07,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	SetVariable Search_TTL_07,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
 	SetVariable Search_TTL_07,value= _STR:""
-	CheckBox Check_DataAcq_Indexing,pos={194.00,680.00},size={60.00,15.00},disable=1,proc=DAP_CheckProc_IndexingState,title="Indexing"
+	CheckBox Check_DataAcq_Indexing,pos={204.00,680.00},size={60.00,15.00},disable=1,proc=DAP_CheckProc_IndexingState,title="Indexing"
 	CheckBox Check_DataAcq_Indexing,help={"Data acquisition proceeds to next wave in DAC or TTL popup menu list"}
 	CheckBox Check_DataAcq_Indexing,userdata(tabnum)=  "0"
 	CheckBox Check_DataAcq_Indexing,userdata(tabcontrol)=  "ADC"
@@ -1763,7 +1763,7 @@ Window DA_Ephys() : Panel
 	TitleBox Title_TTL_Channel,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	TitleBox Title_TTL_Channel,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
 	TitleBox Title_TTL_Channel,frame=0,fStyle=1
-	CheckBox check_DataAcq_RepAcqRandom,pos={66.00,660.00},size={60.00,15.00},disable=1,title="Random"
+	CheckBox check_DataAcq_RepAcqRandom,pos={66.00,660.00},size={60.00,15.00},disable=1,proc=DAP_CheckProc_RandomRA,title="Random"
 	CheckBox check_DataAcq_RepAcqRandom,help={"Randomly selects wave from set selected for DAC channel on each trial. Doesn't repeat waves."}
 	CheckBox check_DataAcq_RepAcqRandom,userdata(tabnum)=  "0"
 	CheckBox check_DataAcq_RepAcqRandom,userdata(tabcontrol)=  "ADC"
@@ -1942,7 +1942,7 @@ Window DA_Ephys() : Panel
 	ValDisplay valdisp_DataAcq_SweepsInSet,valueBackColor=(0,0,0)
 	ValDisplay valdisp_DataAcq_SweepsInSet,limits={0,0,0},barmisc={0,1000}
 	ValDisplay valdisp_DataAcq_SweepsInSet,value= _NUM:1
-	CheckBox Check_DataAcq1_IndexingLocked,pos={210.00,714.00},size={53.00,15.00},disable=1,proc=DAP_CheckProc_IndexingState,title="Locked"
+	CheckBox Check_DataAcq1_IndexingLocked,pos={220.00,714.00},size={53.00,15.00},disable=1,proc=DAP_CheckProc_IndexingState,title="Locked"
 	CheckBox Check_DataAcq1_IndexingLocked,help={"Data acquisition proceeds to next wave in DAC or TTL popup menu list"}
 	CheckBox Check_DataAcq1_IndexingLocked,userdata(tabnum)=  "0"
 	CheckBox Check_DataAcq1_IndexingLocked,userdata(tabcontrol)=  "ADC"
@@ -1950,7 +1950,7 @@ Window DA_Ephys() : Panel
 	CheckBox Check_DataAcq1_IndexingLocked,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Duafnzzzzzzzzzzz"
 	CheckBox Check_DataAcq1_IndexingLocked,userdata(ResizeControlsInfo) += A"zzz!!#u:Duafnzzzzzzzzzzzzzz!!!"
 	CheckBox Check_DataAcq1_IndexingLocked,value= 0
-	SetVariable SetVar_DataAcq_ListRepeats,pos={134.00,734.00},size={109.00,18.00},bodyWidth=35,disable=1,proc=DAP_SetVarProc_TotSweepCount,title="Repeat List(s)"
+	SetVariable SetVar_DataAcq_ListRepeats,pos={144.00,734.00},size={109.00,18.00},bodyWidth=35,disable=1,proc=DAP_SetVarProc_TotSweepCount,title="Repeat List(s)"
 	SetVariable SetVar_DataAcq_ListRepeats,help={"This number is set automatically at based on the number of 1d waves contained in the largest set on active DA/TTL channels"}
 	SetVariable SetVar_DataAcq_ListRepeats,userdata(tabnum)=  "0"
 	SetVariable SetVar_DataAcq_ListRepeats,userdata(tabcontrol)=  "ADC"
@@ -1959,7 +1959,7 @@ Window DA_Ephys() : Panel
 	SetVariable SetVar_DataAcq_ListRepeats,userdata(ResizeControlsInfo) += A"zzz!!#u:Duafnzzzzzzzzzzzzzz!!!"
 	SetVariable SetVar_DataAcq_ListRepeats,fColor=(65280,43520,0)
 	SetVariable SetVar_DataAcq_ListRepeats,limits={1,inf,1},value= _NUM:1
-	CheckBox check_DataAcq_IndexRandom,pos={210.00,697.00},size={60.00,15.00},disable=1,title="Random"
+	CheckBox check_DataAcq_IndexRandom,pos={220.00,697.00},size={60.00,15.00},disable=1,title="Random"
 	CheckBox check_DataAcq_IndexRandom,help={"Randomly selects wave from set selected for DAC channel on each trial. Doesn't repeat waves."}
 	CheckBox check_DataAcq_IndexRandom,userdata(tabnum)=  "0"
 	CheckBox check_DataAcq_IndexRandom,userdata(tabcontrol)=  "ADC"
@@ -2742,7 +2742,7 @@ Window DA_Ephys() : Panel
 	CheckBox Check_Settings_InsertTP,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Duafnzzzzzzzzzzz"
 	CheckBox Check_Settings_InsertTP,userdata(ResizeControlsInfo) += A"zzz!!#u:Duafnzzzzzzzzzzzzzz!!!"
 	CheckBox Check_Settings_InsertTP,value= 1
-	CheckBox Check_DataAcq_Get_Set_ITI,pos={144.00,694.00},size={46.00,30.00},disable=1,proc=DAP_CheckProc_GetSet_ITI,title="Get\rset ITI"
+	CheckBox Check_DataAcq_Get_Set_ITI,pos={144.00,703.00},size={46.00,30.00},disable=1,proc=DAP_CheckProc_GetSet_ITI,title="Get\rset ITI"
 	CheckBox Check_DataAcq_Get_Set_ITI,help={"When checked the stimulus set ITIs are used. The ITI is calculated as the maximum of all active stimulus set ITIs"}
 	CheckBox Check_DataAcq_Get_Set_ITI,userdata(tabnum)=  "0"
 	CheckBox Check_DataAcq_Get_Set_ITI,userdata(tabcontrol)=  "ADC"
@@ -3033,7 +3033,6 @@ Window DA_Ephys() : Panel
 	ValDisplay valdisp_DataAcq_P_0,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Duafnzzzzzzzzzzz"
 	ValDisplay valdisp_DataAcq_P_0,userdata(ResizeControlsInfo) += A"zzz!!#u:Duafnzzzzzzzzzzzzzz!!!"
 	ValDisplay valdisp_DataAcq_P_0,fSize=14,frame=0,fStyle=0
-	ValDisplay valdisp_DataAcq_P_0,valueColor=(65000,65000,65000)
 	ValDisplay valdisp_DataAcq_P_0,valueBackColor=(65535,65535,65535,0)
 	ValDisplay valdisp_DataAcq_P_0,limits={0,0,0},barmisc={0,1000},value= #"0.00"
 	ValDisplay valdisp_DataAcq_P_1,pos={153.00,351.00},size={35.00,21.00},bodyWidth=35,disable=1
@@ -3092,13 +3091,13 @@ Window DA_Ephys() : Panel
 	TabControl tab_DataAcq_Pressure,pos={32.00,272.00},size={425.00,110.00},disable=1,proc=ACL_DisplayTab
 	TabControl tab_DataAcq_Pressure,userdata(tabnum)=  "0"
 	TabControl tab_DataAcq_Pressure,userdata(tabcontrol)=  "ADC"
-	TabControl tab_DataAcq_Pressure,userdata(currenttab)=  "1"
+	TabControl tab_DataAcq_Pressure,userdata(currenttab)=  "0"
 	TabControl tab_DataAcq_Pressure,userdata(ResizeControlsInfo)= A"!!,Cd!!#BB!!#C9J,hpkz!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	TabControl tab_DataAcq_Pressure,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Duafnzzzzzzzzzzz"
 	TabControl tab_DataAcq_Pressure,userdata(ResizeControlsInfo) += A"zzz!!#u:Duafnzzzzzzzzzzzzzz!!!"
 	TabControl tab_DataAcq_Pressure,labelBack=(60928,60928,60928),fSize=10
 	TabControl tab_DataAcq_Pressure,tabLabel(0)="Auto",tabLabel(1)="Manual"
-	TabControl tab_DataAcq_Pressure,tabLabel(2)="User",value= 1
+	TabControl tab_DataAcq_Pressure,tabLabel(2)="User",value= 0
 	Button button_DataAcq_SSSetPressureMan,pos={39.00,302.00},size={84.00,27.00},disable=3,proc=ButtonProc_DataAcq_ManPressSet,title="Apply"
 	Button button_DataAcq_SSSetPressureMan,userdata(tabnum)=  "1"
 	Button button_DataAcq_SSSetPressureMan,userdata(tabcontrol)=  "tab_DataAcq_Pressure"
@@ -3178,7 +3177,7 @@ Window DA_Ephys() : Panel
 	CheckBox check_DatAcq_SealAtm,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Duafnzzzzzzzzzzz"
 	CheckBox check_DatAcq_SealAtm,userdata(ResizeControlsInfo) += A"zzz!!#u:Duafnzzzzzzzzzzzzzz!!!"
 	CheckBox check_DatAcq_SealAtm,value= 0
-	CheckBox Check_DataAcq1_DistribDaq,pos={132.00,644.00},size={100.00,15.00},disable=1,proc=DAP_CheckProc_SyncCtrl,title="distributed DAQ"
+	CheckBox Check_DataAcq1_DistribDaq,pos={142.00,644.00},size={100.00,15.00},disable=1,proc=DAP_CheckProc_SyncCtrl,title="distributed DAQ"
 	CheckBox Check_DataAcq1_DistribDaq,help={"Determines if distributed acquisition is used."}
 	CheckBox Check_DataAcq1_DistribDaq,userdata(tabnum)=  "0"
 	CheckBox Check_DataAcq1_DistribDaq,userdata(tabcontrol)=  "ADC"
@@ -3186,7 +3185,7 @@ Window DA_Ephys() : Panel
 	CheckBox Check_DataAcq1_DistribDaq,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	CheckBox Check_DataAcq1_DistribDaq,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
 	CheckBox Check_DataAcq1_DistribDaq,value= 0
-	CheckBox Check_DataAcq1_dDAQOptOv,pos={148.00,660.00},size={61.00,15.00},bodyWidth=50,disable=1,proc=DAP_CheckProc_SyncCtrl,title="oodDAQ"
+	CheckBox Check_DataAcq1_dDAQOptOv,pos={158.00,660.00},size={61.00,15.00},bodyWidth=50,disable=1,proc=DAP_CheckProc_SyncCtrl,title="oodDAQ"
 	CheckBox Check_DataAcq1_dDAQOptOv,help={"Optimizes the stim set layout for minimum length and no overlap."}
 	CheckBox Check_DataAcq1_dDAQOptOv,userdata(tabnum)=  "0"
 	CheckBox Check_DataAcq1_dDAQOptOv,userdata(tabcontrol)=  "ADC"
@@ -3241,21 +3240,6 @@ Window DA_Ephys() : Panel
 	PopupMenu Popup_Settings_SampIntMult,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	PopupMenu Popup_Settings_SampIntMult,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
 	PopupMenu Popup_Settings_SampIntMult,mode=1,popvalue="1",value= #"\"1;2;4;8;16;32;64\""
-	TitleBox Title_settings_Hardware_Manipul,pos={45.00,588.00},size={70.00,15.00},title="Manipulators"
-	TitleBox Title_settings_Hardware_Manipul,userdata(tabnum)=  "6"
-	TitleBox Title_settings_Hardware_Manipul,userdata(tabcontrol)=  "ADC"
-	TitleBox Title_settings_Hardware_Manipul,userdata(ResizeControlsInfo)= A"!!,DC!!#D#!!#?E!!#<(z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
-	TitleBox Title_settings_Hardware_Manipul,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
-	TitleBox Title_settings_Hardware_Manipul,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
-	TitleBox Title_settings_Hardware_Manipul,frame=0
-	PopupMenu popup_Settings_Manip_MSSMnipLst,pos={112.00,604.00},size={150.00,19.00},bodyWidth=150,disable=2,proc=DAP_PopMenuProc_CAA
-	PopupMenu popup_Settings_Manip_MSSMnipLst,help={"List of available Scientifica micromanipulators"}
-	PopupMenu popup_Settings_Manip_MSSMnipLst,userdata(tabnum)=  "6"
-	PopupMenu popup_Settings_Manip_MSSMnipLst,userdata(tabcontrol)=  "ADC"
-	PopupMenu popup_Settings_Manip_MSSMnipLst,userdata(ResizeControlsInfo)= A"!!,FE!!#D'!!#A%!!#<Pz!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
-	PopupMenu popup_Settings_Manip_MSSMnipLst,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
-	PopupMenu popup_Settings_Manip_MSSMnipLst,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
-	PopupMenu popup_Settings_Manip_MSSMnipLst,mode=1,popvalue="- none -",value= #"\"- none -;\" + M_GetListOfAttachedManipulators()"
 	CheckBox Check_Settings_NwbExport,pos={34.00,216.00},size={102.00,15.00},disable=1,title="Export into NWB"
 	CheckBox Check_Settings_NwbExport,help={"Export all data including sweeps into a file in the NeurodataWithoutBorders fornat,"}
 	CheckBox Check_Settings_NwbExport,userdata(tabnum)=  "5"
@@ -3594,6 +3578,11 @@ Window DA_Ephys() : Panel
 	Button Button_DataAcq_SkipBackwards,labelBack=(0,0,0),fStyle=1
 	Button Button_DataAcq_SkipBackwards,fColor=(4369,4369,4369)
 	Button Button_DataAcq_SkipBackwards,valueColor=(65535,65535,65535)
+	SetVariable SetVar_DataAcq_skipAhead,pos={44.00,721.00},size={96.00,33.00},bodyWidth=35,disable=1,proc=DAP_SetVarProc_skipAhead,title="Skip ahead\r(sweeps)"
+	SetVariable SetVar_DataAcq_skipAhead,help={"Skip sweeps in selected stimulus set(s) on data acquisition initialization."}
+	SetVariable SetVar_DataAcq_skipAhead,userdata(tabnum)=  "0"
+	SetVariable SetVar_DataAcq_skipAhead,userdata(tabcontrol)=  "ADC"
+	SetVariable SetVar_DataAcq_skipAhead,limits={0,4,1},value= _NUM:0
 	DefineGuide UGV0={FR,-25},UGH0={FB,-27},UGV1={FL,481}
 	SetWindow kwTopWin,hook(cleanup)=DAP_WindowHook
 	SetWindow kwTopWin,userdata(ResizeControlsInfo)= A"!!*'\"z!!#CW!!#Dl5QCcbzzzzzzzzzzzzzzzzzzzz"
@@ -4009,9 +3998,6 @@ Function DAP_EphysPanelStartUpSettings()
 	SetVariable SetVar_Hardware_YokeList WIN = $panelTitle,value= _STR:"No Yoked Devices",noedit= 1
 	PopupMenu popup_Hardware_YokedDACs WIN = $panelTitle, mode=0,value=DAP_GUIListOfYokedDevices()
 
-	DisableControl(panelTitle, "popup_Settings_Manip_MSSMnipLst")
-	SetCheckBoxState(panelTitle, "Check_Hardware_UseManip", 0)
-
 	SetVariable SetVar_DataAcq_Hold_IC WIN = $panelTitle, value= _NUM:0
 	SetVariable Setvar_DataAcq_PipetteOffset_VC WIN = $panelTitle, value= _NUM:0
 	SetVariable Setvar_DataAcq_PipetteOffset_IC WIN = $panelTitle, value= _NUM:0
@@ -4105,6 +4091,7 @@ Function DAP_EphysPanelStartUpSettings()
 	CheckBox check_DataACq_Pressure_AutoOFF WIN = $panelTitle, value=0
 	CheckBox check_DataACq_Pressure_User WIN = $panelTitle, value=0
 	
+	SetVariable setvar_dataAcq_skipAhead win=$panelTitle, value= _NUM:0
 	EnableControl(panelTitle, "button_Hardware_P_Enable")
 	DisableControl(panelTitle, "button_Hardware_P_Disable")
 	EnableControls(panelTitle, "Button_DataAcq_SkipBackwards;Button_DataAcq_SkipForward")
@@ -7367,25 +7354,6 @@ Function DAP_MIESHeadstageMode(panelTitle, headStage)
 	return GetDA_EphysGuiStateNum(panelTitle)[headStage][%HSMode]
 End
 
-Function DAP_Activate_Manips(cba) : CheckBoxControl
-	STRUCT WMCheckboxAction &cba
-
-	string panelTitle
-
-	switch(cba.eventCode)
-		case 2: // mouse up
-			panelTitle = cba.win
-			if(cba.checked)
-				EnableControl(panelTitle, "popup_Settings_Manip_MSSMnipLst")
-			else
-				DisableControl(panelTitle, "popup_Settings_Manip_MSSMnipLst")
-			endif
-			break
-	endswitch
-
-	return 0
-End
-
 /// @brief Create a new DA_Ephys panel
 ///
 /// @returns panel name
@@ -8060,6 +8028,10 @@ Function DAP_UpdateDAQControls(panelTitle, updateFlag)
 	if(updateFlag & REASON_HEADSTAGE_CHANGE)
 		SetValDisplay(panelTitle, "ValDisp_DataAcq_SamplingInt", var=DAP_GetITCSampInt(panelTitle, DATA_ACQUISITION_MODE))
 	endif
+
+	if((updateFlag & REASON_HEADSTAGE_CHANGE) || (updateFlag & REASON_STIMSET_CHANGE))
+		DAP_CheckSkipAhead(panelTitle)
+	endif
 End
 
 Function DAP_ButtonProc_skipSweep(ba) : ButtonControl
@@ -8098,4 +8070,79 @@ Function DAP_CheckProc_RecordInGuiState(cba) : CheckBoxControl
 	endswitch
 
 	return 0
+End
+
+Function DAP_GetskipAhead(panelTitle)
+	string panelTitle
+
+	return GetDA_EphysGuiStateNum(panelTitle)[0][%SetVar_DataAcq_skipAhead]
+End
+
+Function DAP_ResetskipAhead(panelTitle)
+	string panelTitle
+
+	WAVE guiState = GetDA_EphysGuiStateNum(panelTitle)
+	guiState[0][%SetVar_DataAcq_skipAhead] = 0
+	PGC_SetAndActivateControl(panelTitle, "SetVar_DataAcq_skipAhead", val=0)
+End
+
+Function DAP_getFilteredSkipAhead(panelTitle, skipAhead)
+	string panelTitle
+	variable skipAhead
+
+	variable maxSkipAhead = max(0, IDX_MinNoOfSweeps(panelTitle) - 1)
+	return skipAhead > maxSkipAhead ? maxSkipAhead : skipAhead
+End
+
+Function DAP_setSkipAheadLimit(panelTitle, filteredSkipAhead)
+	string panelTitle
+	variable filteredSkipAhead
+
+	SetSetVariableLimits(panelTitle, "SetVar_DataAcq_skipAhead", 0, filteredSkipAhead, 1)
+End
+
+Function DAP_SetVarProc_skipAhead(sva) : SetVariableControl
+	STRUCT WMSetVariableAction &sva
+
+	switch( sva.eventCode )
+		case 1:
+		case 2:
+		case 3:
+			DAP_setSkipAheadLimit(sva.win,  IDX_MinNoOfSweeps(sva.win) - 1)
+			DAP_UpdateControlInGuiStateWv(sva.win, sva.ctrlName, sva.dval)
+			break
+	endswitch
+
+	return 0
+End
+
+Function DAP_CheckProc_RandomRA(cba) : CheckBoxControl
+	STRUCT WMCheckboxAction &cba
+
+	switch( cba.eventCode )
+		case 2:
+			if(cba.checked)
+				disableControl(cba.win, "SetVar_DataAcq_skipAhead")
+				PGC_SetAndActivateControl(cba.win, "SetVar_DataAcq_skipAhead", val=0)
+			else
+				enableControl(cba.win, "SetVar_DataAcq_skipAhead")
+			endif
+			break
+	endswitch
+
+	return 0
+End
+
+Function DAP_CheckSkipAhead(panelTitle)
+	string panelTitle
+
+	variable activeSkipAhead = getSetVariable(panelTitle, "SetVar_DataAcq_skipAhead")
+	variable filteredSkipAhead = DAP_getFilteredSkipAhead(panelTitle, activeSkipAhead)
+	if(activeSkipAhead > filteredSkipAhead)
+		printf "Skip ahead value exceeds allowed limit for new selection and has been set to %d \r", filteredSkipAhead
+		PGC_SetAndActivateControl(panelTitle, "SetVar_DataAcq_skipAhead", val=filteredSkipAhead)
+		controlWindowToFront()
+	endif
+
+	DAP_setSkipAheadLimit(panelTitle, filteredSkipAhead)
 End

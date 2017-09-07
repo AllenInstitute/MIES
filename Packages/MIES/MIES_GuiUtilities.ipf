@@ -357,6 +357,18 @@ Function SetCheckBoxState(win,control,state)
 	
 End
 
+/// @brief Set the input limits for a setVariable control
+Function SetSetVariableLimits(win, Control, low, high, increment)
+	string win, control
+	variable low, high, increment
+
+	ControlInfo/W=$win $control
+	ASSERT(V_flag != 0, "Non-existing control or window")
+	ASSERT(abs(V_flag) == CONTROL_TYPE_SETVARIABLE, "Control is not a setvariable")
+
+	SetVariable $control, win = $win, limits={low,high,increment}
+End
+
 /// @brief Returns the contents of a SetVariable
 Function GetSetVariable(win, control)
 	string win, control
