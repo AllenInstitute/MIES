@@ -35,7 +35,7 @@ package from Wavemetrics.
 Install the [Visual C++ Redistributable for Visual Studio 2015](https://www.microsoft.com/en-us/download/details.aspx?id=48145)
 packages both for 32bit(x86) and 64bit(x64) in English.
 
-### Igor Pro 7.0.4 or later (64bit only)
+### Igor Pro 7.0.4 or later
 
 * Quit Igor Pro
 * Create the following shortcuts in "C:\Users\$username\Documents\WaveMetrics\Igor Pro 7 User Files"
@@ -46,6 +46,9 @@ packages both for 32bit(x86) and 64bit(x64) in English.
     * "Packages\MIES"
     * "Packages\Tango"
   * In "Igor Procedures" a shortcut pointing to Packages\MIES_Include.ipf
+  * In "Igor Extensions" a shortcut pointing to
+    * "XOPs-IP7"
+    * "XOP-tango-IP7"
   * In "Igor Extensions (64-bit)" a shortcut pointing to
     * "XOPs-IP7-64bit"
     * "XOP-tango-64bit"
