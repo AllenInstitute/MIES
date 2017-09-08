@@ -13,6 +13,7 @@ static Constant TP_MAX_VALID_RESISTANCE       = 3000 ///< Units MOhm
 static Constant TP_TPSTORAGE_WRITE_INTERVAL   = 0.18
 static Constant TP_FIT_POINTS                 = 5
 static Constant TP_DIMENSION_SCALING_INTERVAL = 100  ///< Interval in steps of #TP_TPSTORAGE_WRITE_INTERVAL for recalculating the time axis
+static Constant TP_EVAL_POINT_OFFSET          = 5
 
 /// @brief Return the total length of a single testpulse with baseline
 ///
@@ -128,10 +129,11 @@ Function TP_Delta(panelTitle)
 	string 	panelTitle
 
 	variable amplitudeIC, amplitudeVC, referenceTime
-	variable duration, BaselineSteadyStateStartTime, BaselineSteadyStateEndTime, TPSSEndTime
-	variable TPInstantaneouseOnsetTime, PointsInSteadyStatePeriod, BaselineSSStartPoint
-	variable BaslineSSEndPoint, TPSSEndPoint, TPSSStartPoint, TPInstantaneousOnsetPoint
-	variable columns, i, columnsInWave, OndDBaseline, TPInstantaneousEndPoint
+	variable BaselineSSStartPoint
+	variable BaselineSSEndPoint, TPSSEndPoint, TPSSStartPoint, TPInstantaneousOnsetPoint
+	variable columns, i, columnsInWave, OndDBaseline, durationInTime, baselineInTime
+	variable lengthTPInPoints, evalRangeInPoints, refPoint, TPInstantaneousEndPoint
+	string msg
 
 	referenceTime = DEBUG_TIMER_START()
 
@@ -146,31 +148,43 @@ Function TP_Delta(panelTitle)
 	WAVE OscilloscopeData = GetOscilloscopeWave(panelTitle)
 	NVAR/SDFR=dfr amplitudeICGlobal = amplitudeIC
 	NVAR/SDFR=dfr amplitudeVCGlobal = amplitudeVC
-	NVAR/SDFR=dfr baselineFrac
 	NVAR ADChannelToMonitor = $GetADChannelToMonitor(panelTitle)
 	WAVE activeHSProp = GetActiveHSProperties(panelTitle)
+
+	NVAR duration     = $GetTestpulseDuration(panelTitle)
+	NVAR baselineFrac = $GetTestpulseBaselineFraction(panelTitle)
+	lengthTPInPoints  = TP_GetTestPulseLengthInPoints(panelTitle)
 
 	NVAR tpBufferSize = $GetTPBufferSizeGlobal(panelTitle)
 
 	amplitudeIC = abs(amplitudeICGlobal)
 	amplitudeVC = abs(amplitudeVCGlobal)
 
-	duration = DimSize(OscilloscopeData, ROWS) * DimDelta(OscilloscopeData, ROWS) // total duration of TP in ms
-	BaselineSteadyStateStartTime = 0.1 * duration
-	BaselineSteadyStateEndTime = (baselineFrac - 0.01) * duration
-	TPSSEndTime = (1 - (baselineFrac + 0.01)) * duration
-	TPInstantaneouseOnsetTime = (baselineFrac + 0.002) * duration
-	PointsInSteadyStatePeriod = ScaleToIndex(OscilloscopeData, BaselineSteadyStateEndTime, ROWS) - ScaleToIndex(OscilloscopeData, BaselineSteadyStateStartTime, ROWS)
-	BaselineSSStartPoint = ScaleToIndex(OscilloscopeData, BaselineSteadyStateStartTime, ROWS)
-	BaslineSSEndPoint = ScaleToIndex(OscilloscopeData, BaselineSteadyStateStartTime, ROWS)
-	TPSSEndPoint = ScaleToIndex(OscilloscopeData, TPSSEndTime, ROWS)
-	TPSSStartPoint = TPSSEndPoint - PointsInSteadyStatePeriod
-	TPInstantaneousOnsetPoint = ScaleToIndex(OscilloscopeData, TPInstantaneouseOnsetTime, ROWS)
+	durationInTime = duration * DimDelta(OscilloscopeData, ROWS)
+	baselineInTime = baseLineFrac * lengthTPInPoints * DimDelta(OscilloscopeData, ROWS)
+
+	// Normal durations: 20% of the minimum of duration and baseline
+	// Long durations:   5ms
+	evalRangeInPoints = min(5, 0.2 * min(durationInTime, baselineInTime)) / DimDelta(OscilloscopeData, ROWS)
+
+	// Use data immediately before elevated onset
+	refPoint = baselineFrac * lengthTPInPoints - TP_EVAL_POINT_OFFSET
+	BaselineSSStartPoint = refPoint - evalRangeInPoints
+	BaselineSSEndPoint   = refPoint
+	// Use data before the end of the elevation
+	refPoint = (1 - baselineFrac) * lengthTPInPoints - TP_EVAL_POINT_OFFSET
+	TPSSStartPoint = refPoint - evalRangeInPoints
+	TPSSEndPoint   = refPoint
+
+	TPInstantaneousOnsetPoint = (baselineFrac + 0.002) * lengthTPInPoints
 	TPInstantaneousEndPoint   = 50
+
+	sprintf msg, "%g ms/point,TP length %g ms, duration %g, baseline range [%g, %g], elevated range [%g, %g], instanenous range [%g, %g]", DimDelta(OscilloscopeData ,ROWS), IndexToScale(OscilloscopeData, lengthTPInPoints, ROWS), IndexToScale(OscilloscopeData, duration, ROWS), IndexToScale(OscilloscopeData, BaselineSSStartPoint, ROWS), IndexToScale(OscilloscopeData, BaselineSSEndPoint, ROWS), IndexToScale(OscilloscopeData, TPSSStartPoint, ROWS), IndexToScale(OscilloscopeData, TPSSEndPoint, ROWS), IndexToScale(OscilloscopeData, TPInstantaneousOnsetPoint, ROWS), IndexToScale(OscilloscopeData, TPInstantaneousEndPoint, ROWS)
+	DEBUGPRINT(msg)
 
 	//	duplicate chunks of TP wave in regions of interest: Baseline, Onset, Steady state
 	// 	OscilloscopeData has the AD columns in the order of active AD channels, not the order of active headstages
-	Duplicate/FREE/R=[BaselineSSStartPoint, BaslineSSEndPoint][] OscilloscopeData, BaselineSS
+	Duplicate/FREE/R=[BaselineSSStartPoint, BaselineSSEndPoint][] OscilloscopeData, BaselineSS
 	Duplicate/FREE/R=[TPSSStartPoint, TPSSEndPoint][] OscilloscopeData, TPSS
 	Duplicate/FREE/R=[TPInstantaneousOnsetPoint, TPInstantaneousEndPoint][] OscilloscopeData, Instantaneous
 	//	average the steady state wave
@@ -213,10 +227,10 @@ Function TP_Delta(panelTitle)
 	Multithread InstAvg = abs(InstAvg)
 
 	Duplicate/O/R=[][ADChannelToMonitor, dimsize(TPSS,1) - 1] AvgDeltaSS dfr:SSResistance/Wave=SSResistance
-	SetScale/P x TPSSEndTime,1,"ms", SSResistance // this line determines where the value sit on the bottom axis of the oscilloscope
+	SetScale/P x IndexToScale(OscilloscopeData, TPSSEndPoint, ROWS),1,"ms", SSResistance // this line determines where the value sit on the bottom axis of the oscilloscope
 
 	Duplicate/O/R=[][(ADChannelToMonitor), (dimsize(TPSS,1) - 1)] InstAvg dfr:InstResistance/Wave=InstResistance
-	SetScale/P x TPInstantaneouseOnsetTime,1,"ms", InstResistance
+	SetScale/P x IndexToScale(OscilloscopeData, TPInstantaneousOnsetPoint, ROWS),1,"ms", InstResistance
 
 	i = 0
 	do
