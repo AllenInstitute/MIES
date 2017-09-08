@@ -59,6 +59,8 @@ static Constant POST_DELAY = 150									 ///< Delay after stimulation event in 
 static Constant RESOLUTION = 25									 ///< Resolution of oodDAQ protocol in ms
 ///@}
 
+static StrConstant RESISTANCE_GRAPH = "AnalysisFuncResistanceGraph"
+
 Function TestAnalysisFunction_V1(panelTitle, eventType, ITCDataWave, headStage)
 	string panelTitle
 	variable eventType
@@ -427,4 +429,319 @@ Function TestPrematureSweepStop(panelTitle, eventType, ITCDataWave, headStage, r
 	endif
 
 	return 0
+End
+
+/// @brief Analysis function to set different "DA Scale" values for a sweep
+///
+/// Prerequisites:
+/// - Stimset with multiple but identical sweeps and testpulse-like shape. The
+///   number of sweeps must be larger than the number of rows in the DAScales wave below.
+/// - This stimset must have this analysis function set for the "Pre DAQ" and the "Post Sweep" Event
+/// - Does currently nothing for "Mid Sweep" Event
+/// - Does not support DA/AD channels not associated with a MIES headstage (aka unassociated DA/AD Channels)
+/// - All active headstages must be in "Current Clamp"
+Function AdjustDAScale(panelTitle, eventType, ITCDataWave, headStage, realDataLength)
+	string panelTitle
+	variable eventType
+	Wave ITCDataWave
+	variable headstage, realDataLength
+
+	variable val, ADC, DAC, i
+	variable DAcol, ADcol, level, low, high, baseline, elevated, firstEdge, secondEdge, sweepNo
+	variable totalOnsetDelay, first, last, index
+	string ctrl, msg
+
+	// BEGIN CHANGE ME
+	MAKE/D/FREE DAScales = {-25, 25, -50, 50, -100, 100}
+	// END CHANGE ME
+
+	WAVE DAScalesIndex = GetAnalysisFuncIndexingHelper(panelTitle)
+
+	switch(eventType)
+		case PRE_DAQ_EVENT:
+
+			WAVE GuiState = GetDA_EphysGuiStateNum(panelTitle)
+			if(GuiState[headStage][%HSmode] != I_CLAMP_MODE)
+				printf "The analysis function \"%s\" can only be used in Current Clamp mode.\r", GetRTStackInfo(1)
+				return 1
+			endif
+
+			DAScalesIndex[headstage] = 0
+			KillOrMoveToTrash(wv = GetAnalysisFuncDAScaleDeltaI(panelTitle))
+			KillOrMoveToTrash(wv = GetAnalysisFuncDAScaleDeltaV(panelTitle))
+			KillOrMoveToTrash(wv = GetAnalysisFuncDAScaleRes(panelTitle))
+			KillWindow/Z $RESISTANCE_GRAPH
+			break
+		case POST_SWEEP_EVENT:
+			DAScalesIndex[headstage] += 1
+			break
+		default:
+			ASSERT(0, "Unknown eventType")
+			break
+	endswitch
+
+	DAC = AFH_GetDACFromHeadstage(panelTitle, headstage)
+	ASSERT(IsFinite(DAC), "This analysis function does not work with unassociated DA channels")
+
+	ADC = AFH_GetADCFromHeadstage(panelTitle, headstage)
+	ASSERT(IsFinite(ADC), "This analysis function does not work with unassociated AD channels")
+
+	index = DAScalesIndex[headstage]
+	if(index < DimSize(DAScales, ROWS))
+		ctrl = GetPanelControl(DAC, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_SCALE)
+		SetSetVariable(panelTitle, ctrl, DAScales[index])
+	endif
+
+	sprintf msg, "(%s, %d): DAScale = %g", panelTitle, headstage, (index < DimSize(DAScales, ROWS) ? DAScales[index] : NaN)
+	DEBUGPRINT(msg)
+
+	// index equals the number of sweeps in the stimset on the last call (*post* sweep event)
+	if(index > DimSize(DAScales, ROWS))
+		printf "(%s): Skipping analysis function \"%s\".\r", panelTitle, GetRTStackInfo(1)
+		printf "The stimset \"%s\" of headstage %d has too many sweeps, increase the size of DAScales.\r", AFH_GetStimSetName(panelTitle, DAC,  CHANNEL_TYPE_DAC), headstage
+		return NaN
+	endif
+
+	if(eventType == PRE_DAQ_EVENT)
+		return NaN
+	endif
+
+	// only do something if we are called for the very last headstage
+	if(DAP_GetHighestActiveHeadstage(panelTitle) != headstage)
+		return NaN
+	endif
+
+	WAVE/Z sweep = AFH_GetLastSweepWaveAcquired(panelTitle)
+	ASSERT(WaveExists(sweep), "Expected a sweep for evalulation")
+
+	sweepNo = ExtractSweepNumber(NameofWave(sweep))
+
+	WAVE config = GetConfigWave(sweep)
+
+	WAVE numericalValues = GetLBNumericalValues(panelTitle)
+	WAVE textualValues   = GetLBTextualValues(panelTitle)
+
+	totalOnsetDelay = GetLastSettingIndep(numericalValues, sweepNo, "Delay onset auto", DATA_ACQUISITION_MODE) + \
+					  GetLastSettingIndep(numericalValues, sweepNo, "Delay onset user", DATA_ACQUISITION_MODE)
+
+	WAVE/T ADunit = GetLastSettingText(textualValues, sweepNo, "AD Unit", DATA_ACQUISITION_MODE)
+	WAVE/T DAunit = GetLastSettingText(textualValues, sweepNo, "DA Unit", DATA_ACQUISITION_MODE)
+
+	Make/D/FREE/N=(LABNOTEBOOK_LAYER_COUNT) deltaV     = NaN
+	Make/D/FREE/N=(LABNOTEBOOK_LAYER_COUNT) deltaI     = NaN
+	Make/D/FREE/N=(LABNOTEBOOK_LAYER_COUNT) resistance = NaN
+
+	WAVE statusHS = DAP_ControlStatusWaveCache(panelTitle, CHANNEL_TYPE_HEADSTAGE)
+
+	for(i = 0; i < NUM_HEADSTAGES; i += 1)
+
+		if(!statusHS[i])
+			continue
+		endif
+
+		DAcol = AFH_GetITCDataColumn(config, DAC, ITC_XOP_CHANNEL_TYPE_DAC)
+		ADcol = AFH_GetITCDataColumn(config, ADC, ITC_XOP_CHANNEL_TYPE_ADC)
+
+		WAVE DA = ExtractOneDimDataFromSweep(config, sweep, DACol)
+		WAVE AD = ExtractOneDimDataFromSweep(config, sweep, ADcol)
+
+		first = totalOnsetDelay
+		last  = IndexToScale(DA, DimSize(DA, ROWS) - 1, ROWS)
+
+		low  = WaveMin(DA, first, last)
+		high = WaveMax(DA, first, last)
+
+		level = low + 0.1 * (high - low)
+
+		Make/FREE/D levels
+		FindLevels/Q/P/DEST=levels/R=(first, last) DA, level
+		ASSERT(V_LevelsFound >= 2, "Could not find enough levels")
+
+		firstEdge   = levels[0]
+		secondEdge  = levels[1]
+
+		low  = floor(firstEdge * 0.9)
+		high = floor(firstEdge - 1)
+
+		baseline = sum(AD, IndexToScale(AD, low, ROWS), IndexToScale(AD, high, ROWS)) / (high - low + 1)
+
+		sprintf msg, "(%s, %d) AD: low = %d (%g ms), high = %d (%g ms), baseline %g", panelTitle, i, low, IndexToScale(AD, low, ROWS), high, IndexToScale(AD, high, ROWS), baseline
+		DEBUGPRINT(msg)
+
+		low  = floor(secondEdge * 0.9)
+		high = floor(secondEdge - 1)
+
+		elevated = sum(AD, IndexToScale(AD, low, ROWS), IndexToScale(AD, high, ROWS)) / (high - low + 1)
+
+		sprintf msg, "(%s, %d) AD: low = %d (%g ms), high = %d (%g ms), elevated %g", panelTitle, i, low, IndexToScale(AD, low, ROWS),  high, IndexToScale(AD, high, ROWS), elevated
+		DEBUGPRINT(msg)
+
+		// convert from mv to V
+		ASSERT(!cmpstr(ADunit[i], "mV"), "Unexpected AD Unit")
+
+		deltaV[i] = (elevated - baseline) * 1e-3
+
+		low  = floor(firstEdge * 0.9)
+		high = floor(firstEdge - 1)
+
+		baseline = sum(DA, IndexToScale(DA, low, ROWS), IndexToScale(DA, high, ROWS)) / (high - low + 1)
+
+		sprintf msg, "(%s, %d) DA: low = %d (%g ms), high = %d (%g ms), baseline %g", panelTitle, i, low, IndexToScale(DA, low, ROWS), high, IndexToScale(DA, high, ROWS), elevated
+		DEBUGPRINT(msg)
+
+		low  = floor(secondEdge * 0.9)
+		high = floor(secondEdge - 1)
+
+		elevated = sum(DA, IndexToScale(DA, low, ROWS), IndexToScale(DA, high, ROWS)) / (high - low + 1)
+
+		sprintf msg, "(%s, %d) DA: low = %d (%g ms), high = %d (%g ms), elevated %g", panelTitle, i, low, IndexToScale(DA, low, ROWS), high, IndexToScale(DA, high, ROWS), elevated
+		DEBUGPRINT(msg)
+
+		// convert from pA to A
+		ASSERT(!cmpstr(DAunit[i], "pA"), "Unexpected DA Unit")
+		deltaI[i] = (elevated - baseline) * 1e-12
+
+		resistance[i] = deltaV[i] / deltaI[i]
+
+		sprintf msg, "(%s, %d): ΔV = %g, ΔI = %g", panelTitle, headstage, deltaV[i], deltaI[i]
+		DEBUGPRINT(msg)
+	endfor
+
+	ED_AddEntryToLabnotebook(panelTitle, "Delta I", deltaI, unit = "I")
+	ED_AddEntryToLabnotebook(panelTitle, "Delta V", deltaV, unit = "V")
+
+	PlotResistanceGraph(panelTitle)
+End
+
+/// Plot the resistance of the sweeps of the same RA cycle
+///
+/// Usually called by AdjustDAScale().
+Function PlotResistanceGraph(panelTitle)
+	string panelTitle
+
+	variable deltaVCol, DAScaleCol, i, j, sweepNo, idx, numEntries
+	variable red, green, blue, lastWrittenSweep
+	string graph, textBoxString, trace
+
+	sweepNo = AFH_GetLastSweepAcquired(panelTitle)
+
+	if(!IsFinite(sweepNo))
+		return NaN
+	endif
+
+	WAVE numericalValues = GetLBNumericalValues(panelTitle)
+	WAVE/Z sweeps = AFH_GetSweepsFromSameRACycle(numericalValues, sweepNo)
+
+	if(!WaveExists(sweeps))
+		printf "The last sweep %d did not hold any repeated acquisition cycle information.\r", sweepNo
+		ControlWindowToFront()
+		return NaN
+	endif
+
+	WAVE statusHS = DAP_ControlStatusWaveCache(panelTitle, CHANNEL_TYPE_HEADSTAGE)
+
+	WAVE storageDeltaI = GetAnalysisFuncDAScaleDeltaI(panelTitle)
+	WAVE storageDeltaV = GetAnalysisFuncDAScaleDeltaV(panelTitle)
+	WAVE storageResist = GetAnalysisFuncDAScaleRes(panelTitle)
+
+	lastWrittenSweep = GetNumberFromWaveNote(storageDeltaV, "Last Sweep")
+
+	if(IsFinite(lastWrittenSweep))
+		Extract/O sweeps, sweeps, sweeps > lastWrittenSweep
+	endif
+
+	idx = GetNumberFromWaveNote(storageDeltaV, NOTE_INDEX)
+
+	numEntries = DimSize(sweeps, ROWS)
+	for(i = 0; i < numEntries; i += 1)
+
+		sweepNo = sweeps[i]
+		WAVE/Z deltaI = GetLastSetting(numericalValues, sweepNo, LABNOTEBOOK_USER_PREFIX + "Delta I", UNKNOWN_MODE)
+		WAVE/Z deltaV = GetLastSetting(numericalValues, sweepNo, LABNOTEBOOK_USER_PREFIX + "Delta V", UNKNOWN_MODE)
+
+		if(!WaveExists(deltaI) || !WaveExists(deltaV))
+			print "Could not find all required labnotebook keys"
+			ControlWindowToFront()
+			continue
+		endif
+
+		EnsureLargeEnoughWave(storageDeltaI, minimumSize = idx, initialValue = NaN)
+		EnsureLargeEnoughWave(storageDeltaV, minimumSize = idx, initialValue = NaN)
+
+		storageDeltaI[idx][] = deltaI[q]
+		storageDeltaV[idx][] = deltaV[q]
+
+		idx += 1
+	endfor
+
+	SetNumberInWaveNote(storageDeltaV, NOTE_INDEX, idx)
+	SetNumberInWaveNote(storageDeltaV, "Last Sweep", sweepNo)
+
+	textBoxString = ""
+	for(i = 0; i < NUM_HEADSTAGES; i += 1)
+		WaveStats/Q/M=1/RMD=[][i] storageDeltaV
+		if(V_npnts < 2)
+			if(statusHS[i])
+				sprintf textBoxString, "%sHS%d: no fit possible\r", textBoxString, i
+			endif
+
+			continue
+		endif
+
+		Make/FREE/N=2 coefWave
+		CurveFit/Q/N=1/NTHR=1/M=0/W=2 line, kwCWave=coefWave, storageDeltaV[][i]/D/X=storageDeltaI[][i]
+		WAVE W_sigma
+
+		storageResist[i][%Value] = coefWave[1]
+		storageResist[i][%Error] = W_sigma[1]
+
+		sprintf textBoxString, "%sHS%d: %.0W1PΩ +/- %.0W1PΩ\r", textBoxString, i, storageResist[i][%Value], storageResist[i][%Error]
+
+		WAVE fitWave = $("fit_" + NameOfWave(storageDeltaV))
+		RemoveFromGraph/Z $NameOfWave(fitWave)
+
+		WAVE curveFitWave = GetAnalysisFuncDAScaleResFit(panelTitle, i)
+		Duplicate/O fitWave, curveFitWave
+	endfor
+
+	Make/D/FREE/N=(LABNOTEBOOK_LAYER_COUNT) storage = NaN
+	storage[0, NUM_HEADSTAGES - 1] = storageResist[p][%Value]
+	ED_AddEntryToLabnotebook(panelTitle, "ResistanceFromDAScale", storage, unit = "Ohm")
+
+	storage = NaN
+	storage[0, NUM_HEADSTAGES - 1] = storageResist[p][%Error]
+	ED_AddEntryToLabnotebook(panelTitle, "ResistanceFromDAScale_Err", storage, unit = "Ohm")
+
+	KillOrMoveToTrash(wv=W_sigma)
+	KillOrMoveToTrash(wv=fitWave)
+
+	WAVE statusHS = DAP_ControlStatusWaveCache(panelTitle, CHANNEL_TYPE_HEADSTAGE)
+
+	if(!WindowExists(RESISTANCE_GRAPH))
+		Display/K=1/N=$RESISTANCE_GRAPH
+
+		for(i = 0; i < NUM_HEADSTAGES; i += 1)
+
+			if(!statusHS[i])
+				continue
+			endif
+
+			trace = "HS_" + num2str(i)
+			AppendToGraph/W=$RESISTANCE_GRAPH/L=VertCrossing/B=HorizCrossing storageDeltaV[][i]/TN=$trace vs storageDeltaI[][i]
+			GetTraceColor(i, red, green, blue)
+			ModifyGraph/W=$RESISTANCE_GRAPH rgb($trace)=(red, green, blue)
+			ModifyGraph/W=$RESISTANCE_GRAPH mode($trace)=3
+
+			WAVE curveFitWave = GetAnalysisFuncDAScaleResFit(panelTitle, i)
+			trace = "fit_HS_" + num2str(i)
+			AppendToGraph/W=$RESISTANCE_GRAPH/L=VertCrossing/B=HorizCrossing curveFitWave/TN=$trace
+			ModifyGraph/W=$RESISTANCE_GRAPH rgb($trace)=(red, green, blue)
+			ModifyGraph/W=$RESISTANCE_GRAPH freePos(VertCrossing)={0,HorizCrossing},freePos(HorizCrossing)={0,VertCrossing}, lblLatPos=-50
+
+		endfor
+	endif
+
+	if(!IsEmpty(textBoxString))
+		TextBox/C/N=text/W=$RESISTANCE_GRAPH RemoveEnding(textBoxString, "\r")
+	endif
 End
