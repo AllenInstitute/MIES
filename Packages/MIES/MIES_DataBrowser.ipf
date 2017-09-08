@@ -385,7 +385,7 @@ Function DB_UpdateToLastSweep(panelTitle)
 
 	extPanel = OVS_GetExtPanel(panelTitle)
 
-	if(GetCheckBoxState(extPanel, "check_overlaySweeps_non_commula"))
+	if(WindowExists(extPanel) && GetCheckBoxState(extPanel, "check_overlaySweeps_non_commula"))
 		OVS_ChangeSweepSelectionState(panelTitle, CHECKBOX_UNSELECTED, sweepNo=last - 1)
 	endif
 
