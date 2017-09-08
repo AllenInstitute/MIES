@@ -128,6 +128,10 @@ Function TP_Delta(panelTitle)
 	string 	panelTitle
 
 	variable amplitudeIC, amplitudeVC, referenceTime
+	variable duration, BaselineSteadyStateStartTime, BaselineSteadyStateEndTime, TPSSEndTime
+	variable TPInstantaneouseOnsetTime, PointsInSteadyStatePeriod, BaselineSSStartPoint
+	variable BaslineSSEndPoint, TPSSEndPoint, TPSSStartPoint, TPInstantaneousOnsetPoint
+	variable columns, i, columnsInWave, OndDBaseline, TPInstantaneousEndPoint
 
 	referenceTime = DEBUG_TIMER_START()
 
@@ -151,26 +155,24 @@ Function TP_Delta(panelTitle)
 	amplitudeIC = abs(amplitudeICGlobal)
 	amplitudeVC = abs(amplitudeVCGlobal)
 
-	variable DimOffsetVar = DimOffset(OscilloscopeData, ROWS)
-	variable DimDeltaVar = DimDelta(OscilloscopeData, ROWS)
-	variable duration = DimSize(OscilloscopeData, ROWS) * DimDeltaVar // total duration of TP in ms
-	variable BaselineSteadyStateStartTime = 0.1 * duration
-	variable BaselineSteadyStateEndTime = (baselineFrac - 0.01) * duration
-	variable TPSSEndTime = (1 - (baselineFrac + 0.01)) * duration
-	variable TPInstantaneouseOnsetTime = (baselineFrac + 0.002) * duration
-	variable PointsInSteadyStatePeriod = (((BaselineSteadyStateEndTime - DimOffsetVar) / DimDeltaVar) - ((BaselineSteadyStateStartTime - DimOffsetVar) / DimDeltaVar))
-	variable BaselineSSStartPoint = ((BaselineSteadyStateStartTime - DimOffsetVar) / DimDeltaVar)
-	variable BaslineSSEndPoint = BaselineSSStartPoint + PointsInSteadyStatePeriod
-	variable TPSSEndPoint = ((TPSSEndTime - DimOffsetVar) / DimDeltaVar)
-	variable TPSSStartPoint = TPSSEndPoint - PointsInSteadyStatePeriod
-	variable TPInstantaneousOnsetPoint = ((TPInstantaneouseOnsetTime  - DimOffsetVar) / DimDeltaVar)
-	variable columns
+	duration = DimSize(OscilloscopeData, ROWS) * DimDelta(OscilloscopeData, ROWS) // total duration of TP in ms
+	BaselineSteadyStateStartTime = 0.1 * duration
+	BaselineSteadyStateEndTime = (baselineFrac - 0.01) * duration
+	TPSSEndTime = (1 - (baselineFrac + 0.01)) * duration
+	TPInstantaneouseOnsetTime = (baselineFrac + 0.002) * duration
+	PointsInSteadyStatePeriod = ScaleToIndex(OscilloscopeData, BaselineSteadyStateEndTime, ROWS) - ScaleToIndex(OscilloscopeData, BaselineSteadyStateStartTime, ROWS)
+	BaselineSSStartPoint = ScaleToIndex(OscilloscopeData, BaselineSteadyStateStartTime, ROWS)
+	BaslineSSEndPoint = ScaleToIndex(OscilloscopeData, BaselineSteadyStateStartTime, ROWS)
+	TPSSEndPoint = ScaleToIndex(OscilloscopeData, TPSSEndTime, ROWS)
+	TPSSStartPoint = TPSSEndPoint - PointsInSteadyStatePeriod
+	TPInstantaneousOnsetPoint = ScaleToIndex(OscilloscopeData, TPInstantaneouseOnsetTime, ROWS)
+	TPInstantaneousEndPoint   = 50
 
 	//	duplicate chunks of TP wave in regions of interest: Baseline, Onset, Steady state
 	// 	OscilloscopeData has the AD columns in the order of active AD channels, not the order of active headstages
 	Duplicate/FREE/R=[BaselineSSStartPoint, BaslineSSEndPoint][] OscilloscopeData, BaselineSS
 	Duplicate/FREE/R=[TPSSStartPoint, TPSSEndPoint][] OscilloscopeData, TPSS
-	Duplicate/FREE/R=[TPInstantaneousOnsetPoint, (TPInstantaneousOnsetPoint + 50)][] OscilloscopeData, Instantaneous
+	Duplicate/FREE/R=[TPInstantaneousOnsetPoint, TPInstantaneousEndPoint][] OscilloscopeData, Instantaneous
 	//	average the steady state wave
 	MatrixOP /free /NTHR = 0 AvgTPSS = sumCols(TPSS)
 	avgTPSS /= dimsize(TPSS, ROWS)
@@ -188,14 +190,12 @@ Function TP_Delta(panelTitle)
 	AvgDeltaSS = abs(AvgDeltaSS)
 
 	//	create wave that will hold instantaneous average
-	variable 	i
-	variable 	columnsInWave = dimsize(Instantaneous, 1)
+	columnsInWave = dimsize(Instantaneous, 1)
 	if(columnsInWave == 0)
 		columnsInWave = 1
 	endif
 
 	Make/FREE/N=(1, columnsInWave) InstAvg
-	variable 	OndDBaseline
 	
 	do
 		matrixOp /Free Instantaneous1d = col(Instantaneous, i + ADChannelToMonitor)
