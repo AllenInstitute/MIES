@@ -153,7 +153,7 @@ Function ITC_FIFOMonitorMD(s)
 	DFREF activeDevices = GetActiveITCDevicesFolder()
 	WAVE/SDFR=activeDevices ActiveDeviceList
 	variable deviceID
-	variable i, fifoPos
+	variable i, fifoPos, isFinished
 	string panelTitle
 
 	for(i = 0; i < DimSize(ActiveDeviceList, ROWS); i += 1)
@@ -162,11 +162,12 @@ Function ITC_FIFOMonitorMD(s)
 
 		NVAR tgID = $GetThreadGroupIDFIFO(panelTitle)
 		fifoPos = TS_GetNewestFromThreadQueue(tgID, "fifoPos")
+		isFinished = !IsFinite(fifoPos)
 
 		DM_UpdateOscilloscopeData(panelTitle, DATA_ACQUISITION_MODE, fifoPos=fifoPos)
 		DM_CallAnalysisFunctions(panelTitle, MID_SWEEP_EVENT)
 
-		if(TS_ThreadGroupFinished(tgID))
+		if(isFinished)
 			print "stopped data acq on " + panelTitle, "device ID global = ", deviceID
 			ITC_MakeOrUpdateActivDevLstWave(panelTitle, deviceID, 0, 0, -1)
 			ITC_StopDataAcqMD(panelTitle, deviceID)

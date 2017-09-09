@@ -12,8 +12,10 @@ static Constant TS_GET_REPEAT_TIMEOUT_IN_MS = 10
 
 /// @brief Return the newest variable named `varName` from the thread queue
 ///
+/// Return `NaN` if the thread is not running anymore.
+///
 /// Throws away anything else in the datafolder from the thread queue.
-threadsafe Function TS_GetNewestFromThreadQueue(tgID, varName)
+Function TS_GetNewestFromThreadQueue(tgID, varName)
 	variable tgID
 	string varName
 
@@ -27,6 +29,8 @@ threadsafe Function TS_GetNewestFromThreadQueue(tgID, varName)
 		if(!DataFolderExistsDFR(dfr))
 			if(IsFinite(var))
 				return var
+			elseif(TS_ThreadGroupFinished(tgID))
+				return NaN
 			else
 				continue
 			endif

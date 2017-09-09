@@ -129,7 +129,16 @@ Function ITC_BkrdTPFuncMD(s)
 
 		NVAR tgID = $GetThreadGroupIDFIFO(panelTitle)
 		fifoPos = TS_GetNewestFromThreadQueue(tgID, "fifoPos")
+
+		// should never be hit
+		if(!IsFinite(fifoPos))
+			print "Retrying getting data from thread, keep fingers crossed"
+			ControlWindowToFront()
+			continue
+		endif
+
 		pointsCompletedInITCDataWave = mod(fifoPos, DimSize(ITCDataWave, ROWS))
+
 
 		// don't extract the last chunk for plotting
 		activeChunk = max(0, floor(pointsCompletedInITCDataWave / TP_GetTestPulseLengthInPoints(panelTitle, REAL_SAMPLING_INTERVAL_TYPE)) - 1)
