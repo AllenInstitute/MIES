@@ -358,7 +358,7 @@ Function SB_UpdateSweepPlot(graph, [newSweep])
 	STRUCT PostPlotSettings pps
 	SB_InitPostPlotSettings(graph, pps)
 
-	WAVE/Z sweepsToOverlay = OVS_GetSelectedSweeps(graph)
+	WAVE/Z sweepsToOverlay = OVS_GetSelectedSweeps(graph, OVS_SWEEP_SELECTION_INDEX)
 
 	WAVE axesRanges = GetAxesRanges(graph)
 

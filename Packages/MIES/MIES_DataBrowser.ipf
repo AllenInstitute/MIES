@@ -261,7 +261,7 @@ Function DB_UpdateSweepPlot(panelTitle, [dummyArg])
 
 	DFREF dataBrowserDFR   = DB_GetDataBrowserPath(panelTitle)
 	WAVE channelSel        = GetChannelSelectionWave(dataBrowserDFR)
-	WAVE/Z sweepsToOverlay = OVS_GetSelectedSweeps(panelTitle)
+	WAVE/Z sweepsToOverlay = OVS_GetSelectedSweeps(panelTitle, OVS_SWEEP_SELECTION_SWEEPNO)
 
 	WAVE axesRanges = GetAxesRanges(graph)
 

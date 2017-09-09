@@ -724,3 +724,9 @@ Constant REASON_HEADSTAGE_CHANGE = 0x02
 /// Parameters for GetLastSetting()/GetLastSettingText() for using the row caching
 /// mechanism.
 Constant LABNOTEBOOK_GET_RANGE = -1
+
+/// Mode parameters for OVS_GetSelectedSweeps()
+/// @{
+Constant OVS_SWEEP_SELECTION_INDEX   = 0x0
+Constant OVS_SWEEP_SELECTION_SWEEPNO = 0x1
+/// @}
