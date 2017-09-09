@@ -162,7 +162,7 @@ Function ITC_FIFOMonitorMD(s)
 
 		NVAR tgID = $GetThreadGroupIDFIFO(panelTitle)
 		fifoPos = TS_GetNewestFromThreadQueue(tgID, "fifoPos")
-		isFinished = TS_ThreadGroupFinished(tgID)
+		isFinished = IsNaN(fifoPos)
 
 		SCOPE_UpdateOscilloscopeData(panelTitle, DATA_ACQUISITION_MODE, fifoPos=fifoPos)
 

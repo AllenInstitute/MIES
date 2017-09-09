@@ -122,7 +122,14 @@ Function ITC_BkrdTPFuncMD(s)
 		WAVE ITCDataWave = GetITCDataWave(panelTitle)
 
 		NVAR tgID = $GetThreadGroupIDFIFO(panelTitle)
-		WAVE result = TS_GetNewestFromThreadQueueMult(tgID, {"fifoPos", "startSequence"})
+		WAVE/Z result = TS_GetNewestFromThreadQueueMult(tgID, {"fifoPos", "startSequence"})
+
+		// should never be hit
+		if(!WaveExists(result))
+			print "Retrying getting data from thread, keep fingers crossed"
+			ControlWindowToFront()
+			continue
+		endif
 
 		if(IsFinite(result[%startSequence]))
 			ARDStartSequence()
