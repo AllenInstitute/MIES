@@ -78,7 +78,7 @@ Function TFH_StopFIFODaemon(hwType, deviceID)
 
 	numThreadsRunning = ThreadGroupWait(tgID, 100)
 	sprintf msg, "TFH_StopFifoDaemon: num running threads: %d\r", numThreadsRunning
-	DEBUGPRINT_TS(msg)
+	DEBUGPRINT(msg)
 
 	if(numThreadsRunning)
 		printf "WARNING: The FIFO monitoring thread will be forcefully stopped. This might turn out ugly!\r"
@@ -88,7 +88,7 @@ Function TFH_StopFIFODaemon(hwType, deviceID)
 	returnValue  = ThreadReturnValue(tgID, 0)
 	releaseValue = ThreadGroupRelease(tgID)
 	sprintf msg, "TFH_StopFifoDaemon: return value %g, thread release %g\r", returnValue, releaseValue
-	DEBUGPRINT_TS(msg)
+	DEBUGPRINT(msg)
 
 	tgID = NaN
 End

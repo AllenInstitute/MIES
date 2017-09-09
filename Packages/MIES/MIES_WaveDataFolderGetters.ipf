@@ -4943,3 +4943,159 @@ Function /WAVE GetExpUserSettings(ConfigNB, KeyTypes)
 	return UserSettings
 
 End
+
+/// @name AnalysisFunctionGetters Getters used by analysis functions
+/// @{
+
+/// @brief Return a wave reference which holds an headstage-dependet index
+///
+/// Can be used by analysis function to count the number of invocations.
+Function/WAVE GetAnalysisFuncIndexingHelper(panelTitle)
+	string panelTitle
+
+	variable versionOfNewWave = 1
+	DFREF dfr = GetDevicePath(panelTitle)
+	WAVE/D/Z/SDFR=dfr wv = analysisFuncIndexing
+
+	if(ExistsWithCorrectLayoutVersion(wv, versionOfNewWave))
+		return wv
+	elseif(WaveExists(wv))
+		// handle upgrade
+	else
+		Make/D/N=(NUM_HEADSTAGES) dfr:analysisFuncIndexing/WAVE=wv
+	endif
+
+	return wv
+End
+
+/// @brief Return a wave reference which holds the "Delta V" values
+/// of all sweeps from one repeated acquisition cycle
+///
+/// Used by AdjustDAScale().
+///
+/// Rows:
+/// - Sweeps
+///
+/// Columns:
+/// - Headstages
+Function/WAVE GetAnalysisFuncDAScaleDeltaV(panelTitle)
+	string panelTitle
+
+	variable versionOfNewWave = 1
+	DFREF dfr = GetDevicePath(panelTitle)
+	WAVE/D/Z/SDFR=dfr wv = analysisFuncDAScaleDeltaV
+
+	if(ExistsWithCorrectLayoutVersion(wv, versionOfNewWave))
+		return wv
+	elseif(WaveExists(wv))
+		// handle upgrade
+	else
+		Make/D/N=(MINIMUM_WAVE_SIZE, NUM_HEADSTAGES) dfr:analysisFuncDAScaleDeltaV/WAVE=wv
+		wv = NaN
+	endif
+
+	SetScale d, 0, 0, "V", wv
+	SetWaveVersion(wv, versionOfNewWave)
+	SetNumberInWaveNote(wv, NOTE_INDEX, 0)
+	SetNumberInWaveNote(wv, "Last Sweep", NaN)
+
+	return wv
+End
+
+/// @brief Return a wave reference which holds the "Delta I" values
+/// of all sweeps from one repeated acquisition cycle
+///
+/// Used by AdjustDAScale().
+///
+/// Rows:
+/// - Sweeps
+///
+/// Columns:
+/// - Headstages
+Function/WAVE GetAnalysisFuncDAScaleDeltaI(panelTitle)
+	string panelTitle
+
+	variable versionOfNewWave = 1
+	DFREF dfr = GetDevicePath(panelTitle)
+	WAVE/D/Z/SDFR=dfr wv = analysisFuncDAScaleDeltaI
+
+	if(ExistsWithCorrectLayoutVersion(wv, versionOfNewWave))
+		return wv
+	elseif(WaveExists(wv))
+		// handle upgrade
+	else
+		Make/D/N=(MINIMUM_WAVE_SIZE, NUM_HEADSTAGES) dfr:analysisFuncDAScaleDeltaI/WAVE=wv
+		wv = NaN
+	endif
+
+	SetScale d, 0, 0, "A", wv
+	SetWaveVersion(wv, versionOfNewWave)
+
+	return wv
+End
+
+/// @brief Return a wave reference to the fitted resistance values and its error
+///
+/// Used by AdjustDAScale().
+///
+/// Rows:
+/// - Headstages
+///
+/// Columns:
+/// - Value
+/// - Error (standard deviation)
+Function/WAVE GetAnalysisFuncDAScaleRes(panelTitle)
+	string panelTitle
+
+	variable versionOfNewWave = 1
+	DFREF dfr = GetDevicePath(panelTitle)
+	WAVE/D/Z/SDFR=dfr wv = analysisFuncDAScaleRes
+
+	if(ExistsWithCorrectLayoutVersion(wv, versionOfNewWave))
+		return wv
+	elseif(WaveExists(wv))
+		// handle upgrade
+	else
+		Make/D/N=(NUM_HEADSTAGES, 2) dfr:analysisFuncDAScaleRes/WAVE=wv
+		wv = NaN
+	endif
+
+	SetScale d, 0, 0, "Ohm", wv
+	SetDimLabel COLS, 0, Value, wv
+	SetDimLabel COLS, 1, Error, wv
+	SetWaveVersion(wv, versionOfNewWave)
+
+	return wv
+End
+
+/// @brief Return a wave reference to the fitted resistance wave created by `CurveFit`
+///
+/// Used by AdjustDAScale().
+Function/WAVE GetAnalysisFuncDAScaleResFit(panelTitle, headstage)
+	string panelTitle
+	variable headstage
+
+	variable versionOfNewWave = 1
+	string name
+
+	DFREF dfr = GetDevicePath(panelTitle)
+	name = "analysisFuncDAScaleResFit" + "_" + num2str(headstage)
+
+	WAVE/D/Z/SDFR=dfr wv = $name
+
+	if(ExistsWithCorrectLayoutVersion(wv, versionOfNewWave))
+		return wv
+	elseif(WaveExists(wv))
+		// handle upgrade
+	else
+		Make/D/N=(2) dfr:$name/WAVE=wv
+		wv = NaN
+	endif
+
+	SetScale d, 0, 0, "Ohm", wv
+	SetWaveVersion(wv, versionOfNewWave)
+
+	return wv
+End
+
+/// @}
