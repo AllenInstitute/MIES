@@ -273,6 +273,12 @@ static Function ITC_StopOngoingDAQMDHelper(panelTitle)
 		needsOTCAfterDAQ = needsOTCAfterDAQ | 1
 	endif
 
+	NVAR dataAcqRunMode = $GetDataAcqRunMode(panelTitle)
+
+	if(dataAcqRunMode != DAQ_NOT_RUNNING)
+		needsOTCAfterDAQ = needsOTCAfterDAQ | 1
+	endif
+
 	if(needsOTCAfterDAQ)
 		DAP_OneTimeCallAfterDAQ(panelTitle, forcedStop = 1)
 	endif
