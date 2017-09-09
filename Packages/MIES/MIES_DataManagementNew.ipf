@@ -205,7 +205,7 @@ Function DM_UpdateOscilloscopeData(panelTitle, dataAcqOrTP, [chunk, fifoPos])
 
 		ASSERT(!ParamIsDefault(fifoPos), "optional parameter fifoPos missing")
 
-		if(fifoPos == 0)
+		if(fifoPos == 0 || !IsFinite(fifoPos))
 			// nothing to do
 			return NaN
 		elseif(fifoPos < 0)
