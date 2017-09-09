@@ -5,6 +5,8 @@
 #pragma ModuleName=MIES_TS
 #endif
 
+static Constant TS_GET_REPEAT_TIMEOUT_IN_MS = 10
+
 /// @file MIES_ThreadsafeUtilities.ipf
 /// @brief __TS__ Helper functions for threadsafe code and main/worker function interactions.
 
@@ -20,7 +22,7 @@ threadsafe Function TS_GetNewestFromThreadQueue(tgID, varName)
 	ASSERT_TS(!isEmpty(varName), "varName must not be empty")
 
 	for(;;)
-		DFREF dfr = ThreadGroupGetDFR(tgID, 0)
+		DFREF dfr = ThreadGroupGetDFR(tgID, TS_GET_REPEAT_TIMEOUT_IN_MS)
 
 		if(!DataFolderExistsDFR(dfr))
 			if(IsFinite(var))
