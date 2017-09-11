@@ -363,6 +363,12 @@ Function DB_UpdateToLastSweep(panelTitle)
 	variable first, last
 	string device, extPanel
 
+	if(!HasPanelLatestVersion(panelTitle, DATABROWSER_PANEL_VERSION))
+		print "Can not display data. The Databrowser panel is too old to be usable. Please close it and open a new one."
+		ControlWindowToFront()
+		return NaN
+	endif
+
 	if(!GetCheckBoxState(panelTitle, "check_DataBrowser_AutoUpdate"))
 		return NaN
 	endif
@@ -379,7 +385,7 @@ Function DB_UpdateToLastSweep(panelTitle)
 
 	extPanel = OVS_GetExtPanel(panelTitle)
 
-	if(GetCheckBoxState(extPanel, "check_overlaySweeps_non_commula"))
+	if(WindowExists(extPanel) && GetCheckBoxState(extPanel, "check_overlaySweeps_non_commula"))
 		OVS_ChangeSweepSelectionState(panelTitle, CHECKBOX_UNSELECTED, sweepNo=last - 1)
 	endif
 
