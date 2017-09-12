@@ -56,7 +56,7 @@ Function ITC_TimerMD(s)
 		timeLeft = max(ActiveDevTimeParam[i][2] - ActiveDevTimeParam[i][4], 0)
 		panelTitle = TimerFunctionListWave[i][0]
 
-		ValDisplay valdisp_DataAcq_ITICountdown win = $panelTitle, value = _NUM:(TimeLeft/60)
+		SetValDisplay(panelTitle, "valdisp_DataAcq_ITICountdown", var = timeLeft * TICKS_TO_SECONDS)
 
 		if(timeLeft == 0)
 			ExecuteListOfFunctions(TimerFunctionListWave[i][1])
