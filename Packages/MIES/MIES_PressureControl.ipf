@@ -1058,7 +1058,7 @@ static Function P_DataAcq(panelTitle, headStage)
 		while(1)
 #else
 
-	Abort "NI-DAQ XOP is not available"
+	DoAbortNow("NI-DAQ XOP is not available")
 
 #endif
 	else

@@ -756,7 +756,7 @@ Function GetAxisOrientation(graph, axes)
 			break
 	endswitch
 
-	Abort "unknown axis type"
+	DoAbortNow("unknown axis type")
 End
 
 /// @brief Returns a wave with the minimum and maximum

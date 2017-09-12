@@ -986,7 +986,7 @@ End
 Function HD_WriteAsyncResponseProto(cmdID, returnString)
 	string cmdID, returnString
 
-	Abort "Impossible to find the function TI_WriteAsyncResponse\rWas the tango XOP and the includes loaded?"
+	DoAbortNow("Impossible to find the function TI_WriteAsyncResponse\rWas the tango XOP and the includes loaded?")
 End
 
 /// @brief Wrapper for the optional tango related function #HD_WriteAsyncResponseWrapper
@@ -1006,7 +1006,7 @@ Function HD_WriteAckProto(cmdID, returnValue)
 	string cmdID
 	variable returnValue
 
-	Abort "Impossible to find the function TI_WriteAck\rWas the tango XOP and the includes loaded?"
+	DoAbortNow("Impossible to find the function TI_WriteAck\rWas the tango XOP and the includes loaded?")
 End
 
 /// @brief Wrapper for the optional tango related function #HD_WriteAckWrapper

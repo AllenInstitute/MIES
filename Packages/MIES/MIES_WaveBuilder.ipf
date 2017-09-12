@@ -842,7 +842,7 @@ static Function/Wave WB_GetSegmentWave([duration])
 	endif
 
 	if(duration > MAX_SWEEP_DURATION_IN_MS)
-		Abort "Sweeps are currently limited to 30 minutes in duration.\rAdjust MAX_SWEEP_DURATION_IN_MS to change that!"
+		DoAbortNow("Sweeps are currently limited to 30 minutes in duration.\rAdjust MAX_SWEEP_DURATION_IN_MS to change that!")
 	endif
 
 	// optimization: recreate the wave only if necessary or just resize it

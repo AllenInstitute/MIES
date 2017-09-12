@@ -7510,7 +7510,7 @@ Function DAP_AbortIfUnlocked(panelTitle)
 	string panelTitle
 
 	if(DAP_DeviceIsUnlocked(panelTitle))
-		Abort "A ITC device must be locked (see Hardware tab) to proceed"
+		DoAbortNow("A ITC device must be locked (see Hardware tab) to proceed")
 	endif
 End
 
@@ -7665,17 +7665,17 @@ Function DAP_LockDevice(panelTitle)
 
 	panelTitleLocked = BuildDeviceString(DAP_GetDeviceType(panelTitle), DAP_GetDeviceNumber(panelTitle))
 	if(windowExists(panelTitleLocked))
-		Abort "Attempt to duplicate device connection! Please choose another device number as that one is already in use."
+		DoAbortNow("Attempt to duplicate device connection! Please choose another device number as that one is already in use.")
 	endif
 
 	if(!HasPanelLatestVersion(panelTitle, DA_EPHYS_PANEL_VERSION))
-		Abort "Can not lock the device. The DA_Ephys panel is too old to be usable. Please close it and open a new one."
+		DoAbortNow("Can not lock the device. The DA_Ephys panel is too old to be usable. Please close it and open a new one.")
 	endif
 
 	if(!DAP_GetNumITCDevicesPerType(panelTitle))
 #ifndef EVIL_KITTEN_EATING_MODE
 		sprintf msg, "Can not lock the device \"%s\" as no devices of type \"%s\" are connected.", panelTitleLocked, DAP_GetDeviceType(panelTitle)
-		Abort msg
+		DoAbortNow(msg)
 #else
 		print "EVIL_KITTEN_EATING_MODE is ON: Allowing to lock altough no devices could be found."
 #endif
@@ -7686,7 +7686,7 @@ Function DAP_LockDevice(panelTitle)
 
 	if(ITCDeviceIDGlobal < 0 || ITCDeviceIDGlobal >= HARDWARE_MAX_DEVICES)
 #ifndef EVIL_KITTEN_EATING_MODE
-		Abort "Can not lock the device."
+		DoAbortNow("Can not lock the device.")
 #else
 		print "EVIL_KITTEN_EATING_MODE is ON: Forcing ITCDeviceIDGlobal to zero"
 		ControlWindowToFront()

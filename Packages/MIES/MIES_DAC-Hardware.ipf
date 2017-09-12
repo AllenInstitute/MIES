@@ -1855,35 +1855,35 @@ End
 #else
 
 Function HW_NI_PrintPropertiesOfDevices()
-	Abort "NI-DAQ XOP is not available"
+	DoAbortNow("NI-DAQ XOP is not available")
 End
 
 Function HW_NI_ReadDigital(device, [DIOPort, DIOLine, flags])
 	string device
 	variable DIOPort, DIOLine, flags
 
-	Abort "NI-DAQ XOP is not available"
+	DoAbortNow("NI-DAQ XOP is not available")
 End
 
 Function HW_NI_WriteDigital(device, value, [DIOPort, DIOLine, flags])
 	string device
 	variable DIOPort, DIOLine, value, flags
 
-	Abort "NI-DAQ XOP is not available"
+	DoAbortNow("NI-DAQ XOP is not available")
 End
 
 Function HW_NI_WriteAnalogSingleAndSlow(device, channel, value, [flags])
 	string device
 	variable channel, value, flags
 
-	Abort "NI-DAQ XOP is not available"
+	DoAbortNow("NI-DAQ XOP is not available")
 End
 
 Function HW_NI_ReadAnalogSingleAndSlow(device, channel, [flags])
 	string device
 	variable channel, flags
 
-	Abort "NI-DAQ XOP is not available"
+	DoAbortNow("NI-DAQ XOP is not available")
 End
 
 Function/S HW_NI_ListDevices([flags])
@@ -1896,21 +1896,21 @@ Function HW_NI_StopAcq(device, [flags])
 	string device
 	variable flags
 
-	Abort "NI-DAQ XOP is not available"
+	DoAbortNow("NI-DAQ XOP is not available")
 End
 
 Function HW_NI_ResetDevice(device, [flags])
 	string device
 	variable flags
 
-	Abort "NI-DAQ XOP is not available"
+	DoAbortNow("NI-DAQ XOP is not available")
 End
 
 Function HW_NI_IsRunning(device, [flags])
 	string device
 	variable flags
 
-	Abort "NI-DAQ XOP is not available"
+	DoAbortNow("NI-DAQ XOP is not available")
 End
 
 #endif // exists NI DAQ XOP
