@@ -3866,10 +3866,6 @@ End
 ///
 /// Useful for databrowser/sweepbrowser code which must know from which panel it is called.
 ///
-/// alternative to searching for the graph is the userdata:
-///	panelType = GetUserData(panel, "", MIES_PANEL_TYPE_USER_DATA)
-///	if(!cmpstr(panelType, MIES_DATABROWSER_PANEL))
-///
 /// @sa GetSweepGraph()
 Function IsDataBrowser(win)
 	string win

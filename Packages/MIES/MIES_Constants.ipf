@@ -291,14 +291,6 @@ Constant IGOR_TYPE_UNSIGNED         = 0x040 ///< Can be combined, using bitwise 
 Constant IGOR_TYPE_STRUCT_PARAMETER = 0x200
 /// @}
 
-/// User data which identifies MIES related panels
-StrConstant MIES_PANEL_TYPE_USER_DATA = "MiesPanelType"
-
-/// @name Possible values of #MIES_PANEL_TYPE_USER_DATA
-/// @{
-StrConstant MIES_DATABROWSER_PANEL = "DataBrowser"
-/// @}
-
 /// @name TabControl values in Browser Settings Panel
 /// @{
 Constant MIES_BSP_OVS = 0
