@@ -34,6 +34,12 @@ static Function RA_HandleITI_MD(panelTitle)
 	if(!GetCheckBoxState(panelTitle, "check_Settings_ITITP") || ITI <= 0)
 
 		funcList = "RA_CounterMD(\"" + panelTitle + "\")"
+
+		if(ITI <= 0 && !IsBackgroundTaskRunning("ITC_TimerMD")) // we are the only device currently
+			ExecuteListOfFunctions(funcList)
+			return NaN
+		endif
+
 		ITC_StartBackgroundTimerMD(panelTitle, ITI, funcList)
 
 		return NaN
@@ -57,6 +63,11 @@ static Function RA_HandleITI(panelTitle)
 	if(!GetCheckBoxState(panelTitle, "check_Settings_ITITP") || ITI <= 0)
 
 		funcList = "RA_Counter(\"" + panelTitle + "\")"
+
+		if(ITI <= 0)
+			ExecuteListOfFunctions(funcList)
+			return NaN
+		endif
 
 		ITC_StartBackgroundTimer(panelTitle, ITI, funcList)
 
