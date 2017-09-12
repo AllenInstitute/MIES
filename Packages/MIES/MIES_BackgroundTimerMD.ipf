@@ -9,29 +9,22 @@
 /// @file MIES_BackgroundTimerMD.ipf
 /// @brief __ITC__ Multi device background timer related code
 
-//Function name is the name of the function you want to run after run time has elapsed
-Function ITC_StartBackgroundTimerMD(RunTime,FunctionNameAPassedIn, FunctionNameBPassedIn,  FunctionNameCPassedIn, panelTitle)
-	Variable RunTime//how long you want the background timer to run in seconds
-	String FunctionNameAPassedIn, FunctionNameBPassedIn, FunctionNameCPassedIn, panelTitle
+Function ITC_StartBackgroundTimerMD(panelTitle, runTime, funcList)
+	string panelTitle, funcList
+	variable runTime
 
-	// caclulate timing parameters
-	//Variable numTicks = 15		// Run every quarter second (15 ticks)
-	Variable StartTicks = ticks
-	Variable DurationTicks = (RunTime*60)
-	Variable EndTimeTicks = StartTicks + DurationTicks
+	ASSERT(!isEmpty(funcList), "Empty funcList does not makse sense")
+
+	variable StartTicks    = ticks
+	variable DurationTicks = runTime / TICKS_TO_SECONDS
+	variable EndTimeTicks  = StartTicks + DurationTicks
 	
 	NVAR ITCDeviceIDGlobal = $GetITCDeviceIDGlobal(panelTitle)
 
-	// create string list with function names passed in
-	string ListOfFunctions = FunctionNameAPassedIn + ";" + FunctionNameBPassedIn + ";" + FunctionNameCPassedIn
-	
-	// Make or update waves that store parameters that the background timer references
-	ITC_MakeOrUpdateTimerParamWave(panelTitle, listOfFunctions, StartTicks, DurationTicks, EndTimeTicks, 1)
-	
-	// Check if bacground timer operation is running. If no, start background timer operation.
+	ITC_MakeOrUpdateTimerParamWave(panelTitle, funcList, StartTicks, DurationTicks, EndTimeTicks, 1)
+
 	if(!IsBackgroundTaskRunning("ITC_TimerMD"))
-		CtrlNamedBackground ITC_TimerMD, period = 6, proc = ITC_TimerMD // period 6 = 100 ms
-		CtrlNamedBackground ITC_TimerMD, start
+		CtrlNamedBackground ITC_TimerMD, period = 6, proc = ITC_TimerMD, start
 	endif
 	
 	If(RunTIme < 0)
