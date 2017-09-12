@@ -122,23 +122,25 @@ Function ITC_STOPFifoMonitor()
 	CtrlNamedBackground ITC_FIFOMonitor, stop
 End
 
-//Function name is the name of the function you want to run after run time has elapsed
-Function ITC_StartBackgroundTimer(RunTimePassed,FunctionNameAPassedIn, FunctionNameBPassedIn,  FunctionNameCPassedIn, panelTitle)
-	Variable RunTimePassed//how long you want the background timer to run in seconds
-	String FunctionNameAPassedIn, FunctionNameBPassedIn, FunctionNameCPassedIn, panelTitle
+Function ITC_StartBackgroundTimer(panelTitle, runTime, funcList)
+	string panelTitle, funcList
+	variable runTime
 
-	String /G root:MIES:ITCDevices:FunctionNameA = FunctionNameAPassedIn
-	String /G root:MIES:ITCDevices:FunctionNameB = FunctionNameBPassedIn
-	String /G root:MIES:ITCDevices:FunctionNameC = FunctionNameCPassedIn
+	ASSERT(!isEmpty(funcList), "Empty funcList does not makse sense")
 
-	Variable /G root:MIES:ITCDevices:Start = ticks
-	Variable /G root:MIES:ITCDevices:RunTime = (RunTimePassed*60)
-	CtrlNamedBackground ITC_Timer, period = 5, proc = ITC_Timer
-	CtrlNamedBackground ITC_Timer, start
-	
-	If(RunTimePassed < 0)
+	SVAR repeatedAcqFuncList = $GetRepeatedAcquisitionFuncList()
+	NVAR repeatedAcqDuration = $GetRepeatedAcquisitionDuration()
+	NVAR repeatedAcqStart    = $GetRepeatedAcquisitionStart()
+
+	repeatedAcqFuncList = funcList
+	repeatedAcqStart    = ticks
+	repeatedAcqDuration = runTime / TICKS_TO_SECONDS
+
+	CtrlNamedBackground ITC_Timer, period = 5, proc = ITC_Timer, start
+
+	If(runTime < 0)
 		print "The time to configure the ITC device and the sweep time are greater than the user specified ITI"
-		print "Data acquisition has not been interrupted but the actual ITI is longer than what was specified by:" + num2str(abs(RunTimePassed)) + "seconds"
+		print "Data acquisition has not been interrupted but the actual ITI is longer than what was specified by:" + num2str(abs(runTime)) + "seconds"
 	endif
 End
 
@@ -147,16 +149,16 @@ Function ITC_Timer(s)
 
 	variable timeLeft, elapsedTime
 
-	NVAR start = root:MIES:ITCDevices:Start
-	NVAR runTime = root:MIES:ITCDevices:RunTime
-	SVAR panelTitleG = $GetPanelTitleGlobal()
+	NVAR repeatedAcqStart    = $GetRepeatedAcquisitionStart()
+	NVAR repeatedAcqDuration = $GetRepeatedAcquisitionDuration()
+	SVAR panelTitleG         = $GetPanelTitleGlobal()
 
-	elapsedTime = ticks - Start
-	timeLeft = max((runTime - elapsedTime) / 60, 0)
+	elapsedTime = ticks - repeatedAcqStart
+	timeLeft    = max((repeatedAcqDuration - elapsedTime) * TICKS_TO_SECONDS, 0)
 
-	ValDisplay valdisp_DataAcq_ITICountdown win = $panelTitleG, value = _NUM:timeLeft
+	SetValDisplay(panelTitleG, "valdisp_DataAcq_ITICountdown", var = timeLeft)
 
-	if(elapsedTime >= runTime)
+	if(elapsedTime >= repeatedAcqDuration)
 		ITC_StopBackgroundTimerTask()
 		return 1
 	endif
@@ -165,12 +167,11 @@ Function ITC_Timer(s)
 End
 
 Function ITC_StopBackgroundTimerTask()
-	SVAR FunctionNameA = root:MIES:ITCDevices:FunctionNameA
-	SVAR FunctionNameB = root:MIES:ITCDevices:FunctionNameB
-	SVAR FunctionNameC = root:MIES:ITCDevices:FunctionNameC
-	CtrlNamedBackground ITC_Timer, stop // had incorrect background procedure name
-	Execute FunctionNameA
- 	Execute FunctionNameB
+
+	CtrlNamedBackground ITC_Timer, stop
+
+	SVAR repeatedAcqFuncList = $GetRepeatedAcquisitionFuncList()
+	ExecuteListOfFunctions(repeatedAcqFuncList)
 End
 
 Function ITC_StartBackgroundTestPulse(panelTitle)

@@ -356,3 +356,21 @@ Function/S GetRepurposedSweepTime(panelTitle)
 
 	return GetNVARAsString(GetDevicePath(panelTitle), "additionalITI", initialValue = 0)
 End
+
+/// @brief Return the list of functions to be executed after ITI in repeated acquisition
+Function/S GetRepeatedAcquisitionFuncList()
+
+	return GetSVARAsString(GetITCDevicesFolder(), "repeatedAcqFuncList", initialValue = "")
+End
+
+/// @brief Return the start time, in ticks, of the ITI cycle
+Function/S GetRepeatedAcquisitionStart()
+
+	return GetNVARAsString(GetITCDevicesFolder(), "repeatedAcqStart", initialValue = 0)
+End
+
+/// @brief Return the duration, in ticks, of the ITI cycle
+Function/S GetRepeatedAcquisitionDuration()
+
+	return GetNVARAsString(GetITCDevicesFolder(), "repeatedAcqDuration", initialValue = 0)
+End
