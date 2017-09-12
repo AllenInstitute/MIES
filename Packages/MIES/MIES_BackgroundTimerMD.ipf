@@ -47,8 +47,8 @@ Function ITC_TimerMD(s)
 	// column 0 = ITCDeviceIDGlobal; column 1 = Start time; column 2 = run time; column 3 = end time
 	WAVE/T/SDFR=GetActiveITCDevicesTimerFolder() TimerFunctionListWave
 	// column 0 = panel title; column 1 = list of functions
-	variable i, j
-	string panelTitle, functionsToCall
+	variable i
+	string panelTitle
 	variable TimeLeft
 
 	for(i = 0; i < DimSize(ActiveDevTimeParam, ROWS); i += 1)
@@ -59,11 +59,7 @@ Function ITC_TimerMD(s)
 		ValDisplay valdisp_DataAcq_ITICountdown win = $panelTitle, value = _NUM:(TimeLeft/60)
 
 		if(timeLeft == 0)
-			functionsToCall = TimerFunctionListWave[i][1]
-			for(j = 0; j < ItemsInList(functionsToCall); j += 1)
-				Execute StringFromList(j, functionsToCall)
-			endfor
-
+			ExecuteListOfFunctions(TimerFunctionListWave[i][1])
 			ITC_MakeOrUpdateTimerParamWave(panelTitle, "", 0, 0, 0, -1)
 
 			// restart iterating over the remaining devices
