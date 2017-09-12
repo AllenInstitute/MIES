@@ -185,9 +185,17 @@ Function OVS_UpdatePanel(win, listBoxWave, listBoxSelWave, sweepSelectionChoices
 	endfor
 End
 
-/// @return free wave with the indizes into the listbox waves, invalid wave reference in case nothing is selected
-Function/WAVE OVS_GetSelectedSweeps(win)
+/// @brief Return the selected sweeps (either indizes or the real sweep numbers)
+///
+/// @param win  window (databrowser or sweepbrowser)
+/// @param mode one of #OVS_SWEEP_SELECTION_INDEX or #OVS_SWEEP_SELECTION_SWEEPNO
+///
+/// @return invalid wave reference in case nothing is selected or indizes/sweep numbers depending on mode parameter
+Function/WAVE OVS_GetSelectedSweeps(win, mode)
 	string win
+	variable mode
+
+	ASSERT(mode == OVS_SWEEP_SELECTION_INDEX || mode == OVS_SWEEP_SELECTION_SWEEPNO, "Invalid mode")
 
 	DFREF dfr = OVS_GetFolder(win)
 
@@ -198,13 +206,18 @@ Function/WAVE OVS_GetSelectedSweeps(win)
 	WAVE/T listboxWave  = GetOverlaySweepsListWave(dfr)
 	WAVE listboxSelWave = GetOverlaySweepsListSelWave(dfr)
 
-	Extract/INDX/FREE listboxSelWave, selectedSweeps, listboxSelWave & LISTBOX_CHECKBOX_SELECTED
+	Extract/INDX/FREE listboxSelWave, selectedSweepsIndizes, listboxSelWave & LISTBOX_CHECKBOX_SELECTED
 
-	if(DimSize(selectedSweeps, ROWS) == 0)
+	if(DimSize(selectedSweepsIndizes, ROWS) == 0)
 		return $""
 	endif
 
-	return selectedSweeps
+	if(mode == OVS_SWEEP_SELECTION_SWEEPNO)
+		Make/FREE/N=(DimSize(selectedSweepsIndizes, ROWS)) selectedSweeps = str2num(listBoxWave[selectedSweepsIndizes[p]])
+		return selectedSweeps
+	endif
+
+	return selectedSweepsIndizes
 End
 
 /// @brief Invert the selection of the given sweep in the listbox wave
