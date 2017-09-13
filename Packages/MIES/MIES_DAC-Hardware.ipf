@@ -728,10 +728,9 @@ Function HW_ITC_HandleReturnValues(flags, ITCError, ITCXOPError)
 		printf "Complete call stack: %s\r", GetRTStackInfo(3)
 	endif
 
-	ControlWindowToFront()
-
 #ifndef EVIL_KITTEN_EATING_MODE
 	if(ITCXOPError != 0 || ITCError != 0)
+		ControlWindowToFront()
 		ASSERT(!(flags & HARDWARE_ABORT_ON_ERROR), "DAC error")
 	endif
 
