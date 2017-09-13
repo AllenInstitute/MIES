@@ -59,7 +59,7 @@ static Function AI_SwitchAxonAmpMode(panelTitle, headStage)
 
 	variable mode
 
-	if(AI_SelectMultiClamp(panelTitle, headStage, verbose=1) != AMPLIFIER_CONNECTION_SUCCESS)
+	if(AI_SelectMultiClamp(panelTitle, headStage) != AMPLIFIER_CONNECTION_SUCCESS)
 		return NAN
 	endif
 
@@ -151,21 +151,14 @@ End
 ///
 /// @param panelTitle device
 /// @param headStage MIES headstage number, must be in the range [0, NUM_HEADSTAGES]
-/// @param verbose [optional: default is true] print an error message
 ///
 /// @returns one of @ref AISelectMultiClampReturnValues
-Function AI_SelectMultiClamp(panelTitle, headStage, [verbose])
+Function AI_SelectMultiClamp(panelTitle, headStage)
 	string panelTitle
-	variable headStage, verbose
+	variable headStage
 
 	variable channel, errorCode, axonSerial, debugOnError
 	string mccSerial
-
-	if(ParamIsDefault(verbose))
-		verbose = 1
-	else
-		verbose = !!verbose
-	endif
 
 	// checking axonSerial is done as a service to the caller
 	axonSerial = AI_GetAmpAxonSerial(panelTitle, headStage)
@@ -173,9 +166,6 @@ Function AI_SelectMultiClamp(panelTitle, headStage, [verbose])
 	channel    = AI_GetAmpChannel(panelTitle, headStage)
 
 	if(!AI_IsValidSerialAndChannel(mccSerial=mccSerial, axonSerial=axonSerial, channel=channel))
-		if(verbose)
-			printf "(%s) No amplifier is linked with headstage %d\r", panelTitle, headStage
-		endif
 		return AMPLIFIER_CONNECTION_INVAL_SER
 	endif
 
@@ -185,9 +175,7 @@ Function AI_SelectMultiClamp(panelTitle, headStage, [verbose])
 		MCC_SelectMultiClamp700B(mccSerial, channel); AbortOnRTE
 	catch
 		errorCode = GetRTError(1)
-		if(verbose)
-			printf "(%s) The MCC for Amp serial number: %s associated with MIES headstage %d is not open or is unresponsive.\r", panelTitle, mccSerial, headStage
-		endif
+
 		ResetDebugOnError(debugOnError)
 		return AMPLIFIER_CONNECTION_MCC_FAILED
 	endtry
@@ -1464,7 +1452,7 @@ Function AI_QueryGainsUnitsForClampMode(panelTitle, headstage, clampMode, DAGain
 
 	AI_AssertOnInvalidClampMode(clampMode)
 
-	if(AI_SelectMultiClamp(panelTitle, headStage, verbose=0) != AMPLIFIER_CONNECTION_SUCCESS)
+	if(AI_SelectMultiClamp(panelTitle, headStage) != AMPLIFIER_CONNECTION_SUCCESS)
 		return NaN
 	endif
 
@@ -1527,7 +1515,7 @@ Function AI_QueryGainsFromMCC(panelTitle)
 
 	for(i = 0; i < NUM_HEADSTAGES; i += 1)
 
-		if(AI_SelectMultiClamp(panelTitle, i, verbose=0) != AMPLIFIER_CONNECTION_SUCCESS)
+		if(AI_SelectMultiClamp(panelTitle, i) != AMPLIFIER_CONNECTION_SUCCESS)
 			continue
 		endif
 

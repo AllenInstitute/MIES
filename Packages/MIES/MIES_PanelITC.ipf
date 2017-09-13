@@ -5552,7 +5552,7 @@ static Function DAP_CheckHeadStage(panelTitle, headStage, mode)
 		return 1
 	endif
 
-	ampConnState = AI_SelectMultiClamp(panelTitle, headStage, verbose=0)
+	ampConnState = AI_SelectMultiClamp(panelTitle, headStage)
 
 	if(ampConnState == AMPLIFIER_CONNECTION_SUCCESS)
 
