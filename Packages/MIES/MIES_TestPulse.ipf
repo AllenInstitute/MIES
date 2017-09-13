@@ -176,8 +176,11 @@ Function TP_Delta(panelTitle)
 	TPSSStartPoint = refPoint - evalRangeInPoints
 	TPSSEndPoint   = refPoint
 
-	TPInstantaneousOnsetPoint = (baselineFrac + 0.002) * lengthTPInPoints
-	TPInstantaneousEndPoint   = 50
+	// Use 0.25ms at the very beginning of the elevated onset
+	evalRangeInPoints = 0.25 / DimDelta(OscilloscopeData, ROWS)
+	refPoint = baselineFrac * lengthTPInPoints + TP_EVAL_POINT_OFFSET
+	TPInstantaneousOnsetPoint = refPoint
+	TPInstantaneousEndPoint   = refPoint + evalRangeInPoints
 
 	sprintf msg, "%g ms/point,TP length %g ms, duration %g, baseline range [%g, %g], elevated range [%g, %g], instanenous range [%g, %g]", DimDelta(OscilloscopeData ,ROWS), IndexToScale(OscilloscopeData, lengthTPInPoints, ROWS), IndexToScale(OscilloscopeData, duration, ROWS), IndexToScale(OscilloscopeData, BaselineSSStartPoint, ROWS), IndexToScale(OscilloscopeData, BaselineSSEndPoint, ROWS), IndexToScale(OscilloscopeData, TPSSStartPoint, ROWS), IndexToScale(OscilloscopeData, TPSSEndPoint, ROWS), IndexToScale(OscilloscopeData, TPInstantaneousOnsetPoint, ROWS), IndexToScale(OscilloscopeData, TPInstantaneousEndPoint, ROWS)
 	DEBUGPRINT(msg)
