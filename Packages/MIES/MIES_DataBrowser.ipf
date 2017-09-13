@@ -133,6 +133,7 @@ static Function DB_LockDBPanel(panelTitle, device)
 		PopupMenu popup_LBNumericalKeys, win=$panelTitleNew, value=#("\"" + NONE + "\"")
 		PopupMenu popup_LBTextualKeys, win=$panelTitleNew, value=#("\"" + NONE + "\"")
 		DB_UpdatePanelProperties(panelTitleNew, device)
+		DB_UpdateSweepPlot(panelTitleNew)
 		return NaN
 	endif
 
@@ -247,12 +248,16 @@ Function DB_UpdateSweepPlot(panelTitle, [dummyArg])
 
 	referenceTime = DEBUG_TIMER_START()
 
+	subWindow = DB_GetNotebookSubWindow(panelTitle)
+	graph     = DB_GetMainGraph(panelTitle)
+
+	WAVE axesRanges = GetAxesRanges(graph)
+
+	RemoveTracesFromGraph(graph)
+
 	if(!BSP_HasBoundDevice(panelTitle))
 		return NaN
 	endif
-
-	subWindow = DB_GetNotebookSubWindow(panelTitle)
-	graph     = DB_GetMainGraph(panelTitle)
 
 	WAVE numericalValues = DB_GetNumericalValues(panelTitle)
 	WAVE textualValues   = DB_GetTextualValues(panelTitle)
@@ -269,10 +274,6 @@ Function DB_UpdateSweepPlot(panelTitle, [dummyArg])
 
 	WAVE channelSel        = BSP_GetChannelSelectionWave(panelTitle)
 	WAVE/Z sweepsToOverlay = OVS_GetSelectedSweeps(panelTitle, OVS_SWEEP_SELECTION_SWEEPNO)
-
-	WAVE axesRanges = GetAxesRanges(graph)
-
-	RemoveTracesFromGraph(graph)
 
 	if(!WaveExists(sweepsToOverlay))
 		Make/FREE/N=1 sweepsToOverlay = GetSetVariable(panelTitle, "setvar_DataBrowser_SweepNo")
