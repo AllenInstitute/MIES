@@ -1105,8 +1105,8 @@ Function/WAVE WB_GetPulsesFromPulseTrains(stimset, sweep, pulseToPulseLength)
 
 	pulseToPulseLength = NaN
 
-	// passed stimset is from the testpulse
-	if(IsEmpty(str))
+	// passed stimset is from the testpulse or third party
+	if(IsEmpty(str) || WB_StimsetIsFromThirdParty(NameOfWave(stimset)))
 		return allStartTimes
 	endif
 
@@ -1889,6 +1889,8 @@ End
 /// @brief Determine if the stimset is third party or from MIES
 ///
 /// Third party stimsets don't have all parameter waves
+///
+/// @return true if from third party, false otherwise
 Function WB_StimsetIsFromThirdParty(stimset)
 	string stimset
 
