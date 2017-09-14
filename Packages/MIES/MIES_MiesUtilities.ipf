@@ -4035,3 +4035,103 @@ Function UpdateLeftOverSweepTime(panelTitle, fifoPos)
 	sprintf msg, "Repurposed time in seconds due to premature sweep stopping: %g\r", repurposedTime
 	DEBUGPRINT(msg)
 End
+
+/// @brief Calculate deltaI/deltaV from a testpulse like stimset in "Current Clamp" mode
+/// @todo unify with TP_Delta code
+/// @todo add support for evaluating "inserted TP" only
+Function CalculateTPLikePropsFromSweep(numericalValues, textualValues, sweep, deltaI, deltaV, resistance)
+	WAVE numericalValues, textualValues, sweep, deltaI, deltaV, resistance
+
+	variable i
+	variable DAcol, ADcol, level, low, high, baseline, elevated, firstEdge, secondEdge, sweepNo
+	variable totalOnsetDelay, first, last
+	string msg
+
+	sweepNo     = ExtractSweepNumber(NameofWave(sweep))
+	WAVE config = GetConfigWave(sweep)
+
+	totalOnsetDelay = GetLastSettingIndep(numericalValues, sweepNo, "Delay onset auto", DATA_ACQUISITION_MODE) + \
+					  GetLastSettingIndep(numericalValues, sweepNo, "Delay onset user", DATA_ACQUISITION_MODE)
+
+	WAVE ADCs = GetLastSetting(numericalValues, sweepNo, "ADC", DATA_ACQUISITION_MODE)
+	WAVE DACs = GetLastSetting(numericalValues, sweepNo, "DAC", DATA_ACQUISITION_MODE)
+
+	WAVE/T ADunit = GetLastSettingText(textualValues, sweepNo, "AD Unit", DATA_ACQUISITION_MODE)
+	WAVE/T DAunit = GetLastSettingText(textualValues, sweepNo, "DA Unit", DATA_ACQUISITION_MODE)
+
+	WAVE statusHS = GetLastSetting(numericalValues, sweepNo, "Headstage Active", DATA_ACQUISITION_MODE)
+
+	for(i = 0; i < NUM_HEADSTAGES; i += 1)
+
+		if(!statusHS[i])
+			continue
+		endif
+
+		DAcol = AFH_GetITCDataColumn(config, DACs[i], ITC_XOP_CHANNEL_TYPE_DAC)
+		ADcol = AFH_GetITCDataColumn(config, ADCs[i], ITC_XOP_CHANNEL_TYPE_ADC)
+
+		WAVE DA = ExtractOneDimDataFromSweep(config, sweep, DACol)
+		WAVE AD = ExtractOneDimDataFromSweep(config, sweep, ADcol)
+
+		first = totalOnsetDelay
+		last  = IndexToScale(DA, DimSize(DA, ROWS) - 1, ROWS)
+
+		low  = WaveMin(DA, first, last)
+		high = WaveMax(DA, first, last)
+
+		level = low + 0.1 * (high - low)
+
+		Make/FREE/D levels
+		FindLevels/Q/P/DEST=levels/R=(first, last)/N=2 DA, level
+		ASSERT(V_LevelsFound >= 2, "Could not find enough levels")
+
+		firstEdge   = levels[0]
+		secondEdge  = levels[1]
+
+		low  = floor(firstEdge * 0.9)
+		high = floor(firstEdge - 1)
+
+		baseline = sum(AD, IndexToScale(AD, low, ROWS), IndexToScale(AD, high, ROWS)) / (high - low + 1)
+
+		sprintf msg, "(%d) AD: low = %d (%g ms), high = %d (%g ms), baseline %g", i, low, IndexToScale(AD, low, ROWS), high, IndexToScale(AD, high, ROWS), baseline
+		DEBUGPRINT(msg)
+
+		low  = floor(secondEdge * 0.9)
+		high = floor(secondEdge - 1)
+
+		elevated = sum(AD, IndexToScale(AD, low, ROWS), IndexToScale(AD, high, ROWS)) / (high - low + 1)
+
+		sprintf msg, "(%d) AD: low = %d (%g ms), high = %d (%g ms), elevated %g", i, low, IndexToScale(AD, low, ROWS),  high, IndexToScale(AD, high, ROWS), elevated
+		DEBUGPRINT(msg)
+
+		// convert from mv to V
+		ASSERT(!cmpstr(ADunit[i], "mV"), "Unexpected AD Unit")
+
+		deltaV[i] = (elevated - baseline) * 1e-3
+
+		low  = floor(firstEdge * 0.9)
+		high = floor(firstEdge - 1)
+
+		baseline = sum(DA, IndexToScale(DA, low, ROWS), IndexToScale(DA, high, ROWS)) / (high - low + 1)
+
+		sprintf msg, "(%d) DA: low = %d (%g ms), high = %d (%g ms), baseline %g", i, low, IndexToScale(DA, low, ROWS), high, IndexToScale(DA, high, ROWS), elevated
+		DEBUGPRINT(msg)
+
+		low  = floor(secondEdge * 0.9)
+		high = floor(secondEdge - 1)
+
+		elevated = sum(DA, IndexToScale(DA, low, ROWS), IndexToScale(DA, high, ROWS)) / (high - low + 1)
+
+		sprintf msg, "(%d) DA: low = %d (%g ms), high = %d (%g ms), elevated %g", i, low, IndexToScale(DA, low, ROWS), high, IndexToScale(DA, high, ROWS), elevated
+		DEBUGPRINT(msg)
+
+		// convert from pA to A
+		ASSERT(!cmpstr(DAunit[i], "pA"), "Unexpected DA Unit")
+		deltaI[i] = (elevated - baseline) * 1e-12
+
+		resistance[i] = deltaV[i] / deltaI[i]
+
+		sprintf msg, "(%d): R = %.0W1PΩ, ΔU = %.0W1PV, ΔI = %.0W1PA", i, resistance[i], deltaV[i], deltaI[i]
+		DEBUGPRINT(msg)
+	endfor
+End
