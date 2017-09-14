@@ -137,11 +137,6 @@ Function ITC_StartBackgroundTimer(panelTitle, runTime, funcList)
 	repeatedAcqDuration = runTime / TICKS_TO_SECONDS
 
 	CtrlNamedBackground ITC_Timer, period = 5, proc = ITC_Timer, start
-
-	If(runTime < 0)
-		print "The time to configure the ITC device and the sweep time are greater than the user specified ITI"
-		print "Data acquisition has not been interrupted but the actual ITI is longer than what was specified by:" + num2str(abs(runTime)) + "seconds"
-	endif
 End
 
 Function ITC_Timer(s)

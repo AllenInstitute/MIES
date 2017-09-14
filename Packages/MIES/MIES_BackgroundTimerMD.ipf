@@ -26,11 +26,6 @@ Function ITC_StartBackgroundTimerMD(panelTitle, runTime, funcList)
 	if(!IsBackgroundTaskRunning("ITC_TimerMD"))
 		CtrlNamedBackground ITC_TimerMD, period = 6, proc = ITC_TimerMD, start
 	endif
-	
-	If(RunTIme < 0)
-		print "The time to configure " + panelTitle + " and the sweep time are greater than the user specified ITI"
-		print "Data acquisition has not been interrupted but the actual ITI is longer than what was specified by: " + num2str(abs(RunTime)) + "seconds"
-	endif
 End
 
 Function ITC_TimerMD(s)
