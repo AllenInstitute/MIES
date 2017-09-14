@@ -1915,3 +1915,18 @@ Function WB_KillStimset(stimset)
 
    return 1
 End
+
+/// @brief Determine if the stimset is third party or from MIES
+///
+/// Third party stimsets don't have all parameter waves
+Function WB_StimsetIsFromThirdParty(stimset)
+	string stimset
+
+	ASSERT(!IsEmpty(stimset), "Stimset name can not be empty")
+
+	WAVE/Z WP        = WB_GetWaveParamForSet(stimSet)
+	WAVE/Z WPT       = WB_GetWaveTextParamForSet(stimSet)
+	WAVE/Z SegWvType = WB_GetSegWvTypeForSet(stimSet)
+
+	return !WaveExists(WP) || !WaveExists(WPT) || !WaveExists(SegWvType)
+End
