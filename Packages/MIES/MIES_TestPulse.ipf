@@ -128,7 +128,7 @@ Function TP_Delta(panelTitle)
 
 	NVAR duration     = $GetTestpulseDuration(panelTitle)
 	NVAR baselineFrac = $GetTestpulseBaselineFraction(panelTitle)
-	lengthTPInPoints  = TP_GetTestPulseLengthInPoints(panelTitle)
+	lengthTPInPoints  = TP_GetTestPulseLengthInPoints(panelTitle, REAL_SAMPLING_INTERVAL_TYPE)
 
 	NVAR tpBufferSize = $GetTPBufferSizeGlobal(panelTitle)
 
