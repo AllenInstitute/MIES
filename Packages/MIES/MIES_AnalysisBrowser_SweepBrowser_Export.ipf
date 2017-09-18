@@ -518,9 +518,9 @@ Window SBE_ExportSettingsPanel() : Panel
 	SetVariable setvar_sweep_export_num_pulses,pos={28.00,205.00},size={148.00,18.00},bodyWidth=50,disable=2,title="Number of pulses"
 	SetVariable setvar_sweep_export_num_pulses,limits={0,12,1},value= _NUM:1
 	SetVariable setvar_sweep_export_pulse_pre,pos={28.00,227.00},size={172.00,18.00},bodyWidth=50,disable=2,title="Time before first pulse"
-	SetVariable setvar_sweep_export_pulse_pre,value= _NUM:-50
+	SetVariable setvar_sweep_export_pulse_pre,value= _NUM:0, help={"Positive values increase the x range, negative values decrease it."}
 	SetVariable setvar_sweep_export_pulse_post,pos={28.00,250.00},size={160.00,18.00},bodyWidth=50,disable=2,title="Time after last pulse"
-	SetVariable setvar_sweep_export_pulse_post,value= _NUM:0
+	SetVariable setvar_sweep_export_pulse_post,value= _NUM:0, help={"Positive values increase the x range, negative values decrease it."}
 EndMacro
 
 Function SBE_PopMenu_ExportTargetAxis(pa) : PopupMenuControl
