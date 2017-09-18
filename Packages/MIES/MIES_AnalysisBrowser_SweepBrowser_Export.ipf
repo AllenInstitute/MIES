@@ -137,8 +137,8 @@ static Function/WAVE SBE_GetPulseStartTimesForSel()
 	endif
 
 	// use the region data from the first sweep
-	region = str2num(traceData[0][%headstage])
 	idx    = indizes[0]
+	region = str2num(traceData[idx][%headstage])
 
 	return PA_GetPulseStartTimes(traceData, idx, region, "AD")
 End
