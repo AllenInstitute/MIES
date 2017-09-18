@@ -596,6 +596,9 @@ Function PlotResistanceGraph(panelTitle)
 		WaveStats/Q/M=1/RMD=[][i] storageDeltaV
 		if(V_npnts < 2)
 			if(statusHS[i])
+				storageResist[i][%Value] = deltaV[i] / deltaI[i]
+				storageResist[i][%Error] = NaN
+
 				sprintf textBoxString, "%sHS%d: no fit possible\r", textBoxString, i
 			endif
 
