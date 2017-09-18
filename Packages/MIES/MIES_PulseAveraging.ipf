@@ -318,13 +318,21 @@ End
 /// @param idx              Index into traceData, used for determining sweep numbers, labnotebooks, etc.
 /// @param region           Region (headstage) to get pulse starting times for
 /// @param channelTypeStr   Type of the channel, one of @ref ITC_CHANNEL_NAMES
-Function/WAVE PA_GetPulseStartTimes(traceData, idx, region, channelTypeStr)
+/// @param removeOnsetDelay [optional, defaults to true] Remove the onset delay from the starting times (true) or not (false)
+Function/WAVE PA_GetPulseStartTimes(traceData, idx, region, channelTypeStr, [removeOnsetDelay])
 	WAVE/T traceData
 	variable idx, region
 	string channelTypeStr
+	variable removeOnsetDelay
 
 	variable sweepNo, totalOnsetDelay
 	string str
+
+	if(ParamIsDefault(removeOnsetDelay))
+		removeOnsetDelay = 1
+	else
+		removeOnsetDelay = !!removeOnsetDelay
+	endif
 
 	// we currently use the regions from the sweep with the lowest
 	// number, see the SortColumns invocation in PA_GetTraceInfos.
@@ -335,7 +343,9 @@ Function/WAVE PA_GetPulseStartTimes(traceData, idx, region, channelTypeStr)
 
 	ASSERT(WaveExists(textualValues) && WaveExists(numericalValues), "Missing labnotebook waves")
 
-	totalOnsetDelay = PA_GetTotalOnsetDelay(numericalValues, sweepNo)
+	if(removeOnsetDelay)
+		totalOnsetDelay = PA_GetTotalOnsetDelay(numericalValues, sweepNo)
+	endif
 
 	WAVE/Z pulseStartTimes = PA_GetPulseStartTimesFromLB(textualValues, sweepNo, region)
 
