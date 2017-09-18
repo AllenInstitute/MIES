@@ -1941,8 +1941,8 @@ static Function WBP_CutOffCrossOver()
 		return NaN
 	endif
 
-	if(HighPassCutOff <= LowPassCutOff)
-		SetSetVariable(panel, "SetVar_WaveBuilder_P22", LowPassCutOff + 1)
+	if(HighPassCutOff >= LowPassCutOff)
+		SetSetVariable(panel, "SetVar_WaveBuilder_P22", LowPassCutOff - 1)
 	endif
 End
 
