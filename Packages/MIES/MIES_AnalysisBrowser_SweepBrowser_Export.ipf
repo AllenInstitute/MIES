@@ -140,7 +140,7 @@ static Function/WAVE SBE_GetPulseStartTimesForSel()
 	idx    = indizes[0]
 	region = str2num(traceData[idx][%headstage])
 
-	return PA_GetPulseStartTimes(traceData, idx, region, "AD")
+	return PA_GetPulseStartTimes(traceData, idx, region, "AD", removeOnsetDelay = 0)
 End
 
 /// @brief Display the export panel
