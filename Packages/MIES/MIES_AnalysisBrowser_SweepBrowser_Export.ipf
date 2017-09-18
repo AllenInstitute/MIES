@@ -264,6 +264,22 @@ static Function SBE_ExportSweepBrowser(sett)
 		graphMacro = graphMacro[0, pos - 2]
 	endif
 
+	// remove setting the CDF, we do that ourselves later on
+	graphMacro = ListMatch(graphMacro, "!*SetDataFolder fldrSav*", "\r")
+
+	// remove setting the bottom axis range, as this might be wrong
+	graphMacro = ListMatch(graphMacro, "!*SetAxis bottom*", "\r")
+
+	// replace the old data location with the new one
+	graphMacro = ReplaceString(analysisPrefix, graphMacro, newPrefix)
+
+	// replace relative reference to sweepBrowserDFR
+	// with absolut ones to newPrefix
+	folder = GetDataFolder(1, sweepBrowserDFR)
+	folder = RemovePrefix(folder, startStr="root:")
+	folder = ":::::::" + folder
+	graphMacro = ReplaceString(folder, graphMacro, newPrefix + ":")
+
 	traceList = TraceNameList(sett.sourceGraph, ";", 0 + 1)
 	numTraces = ItemsInList(traceList)
 
@@ -392,22 +408,6 @@ static Function SBE_ExportSweepBrowser(sett)
 			graphMacro = ReplaceWordInString(oldTrace, graphMacro, newTrace)
 		endfor
 	endif
-
-	// remove setting the CDF, we do that ourselves later on
-	graphMacro = ListMatch(graphMacro, "!*SetDataFolder fldrSav*", "\r")
-
-	// remove setting the bottom axis range, as this might be wrong
-	graphMacro = ListMatch(graphMacro, "!*SetAxis bottom*", "\r")
-
-	// replace the old data location with the new one
-	graphMacro = ReplaceString(analysisPrefix, graphMacro, newPrefix)
-
-	// replace relative reference to sweepBrowserDFR
-	// with absolut ones to newPrefix
-	folder = GetDataFolder(1, sweepBrowserDFR)
-	folder = RemovePrefix(folder, startStr="root:")
-	folder = ":::::::" + folder
-	graphMacro = ReplaceString(folder, graphMacro, newPrefix + ":")
 
 	if(!doCreateNewGraph)
 		ASSERT(WindowExists(sett.targetGraph), "Missing targetGraph")
