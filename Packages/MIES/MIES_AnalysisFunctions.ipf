@@ -623,11 +623,11 @@ Function PlotResistanceGraph(panelTitle)
 
 	Make/D/FREE/N=(LABNOTEBOOK_LAYER_COUNT) storage = NaN
 	storage[0, NUM_HEADSTAGES - 1] = storageResist[p][%Value]
-	ED_AddEntryToLabnotebook(panelTitle, "ResistanceFromDAScale", storage, unit = "Ohm")
+	ED_AddEntryToLabnotebook(panelTitle, "ResistanceFromFit", storage, unit = "Ohm")
 
 	storage = NaN
 	storage[0, NUM_HEADSTAGES - 1] = storageResist[p][%Error]
-	ED_AddEntryToLabnotebook(panelTitle, "ResistanceFromDAScale_Err", storage, unit = "Ohm")
+	ED_AddEntryToLabnotebook(panelTitle, "ResistanceFromFit_Err", storage, unit = "Ohm")
 
 	KillOrMoveToTrash(wv=W_sigma)
 	KillOrMoveToTrash(wv=fitWave)
