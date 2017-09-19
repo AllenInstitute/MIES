@@ -1095,8 +1095,8 @@ Function/WAVE WB_GetPulsesFromPulseTrains(stimset, sweep, pulseToPulseLength)
 
 	pulseToPulseLength = NaN
 
-	// passed stimset is from the testpulse
-	if(IsEmpty(str))
+	// passed stimset is from the testpulse or third party
+	if(IsEmpty(str) || WB_StimsetIsFromThirdParty(NameOfWave(stimset)))
 		return allStartTimes
 	endif
 
@@ -1914,4 +1914,21 @@ Function WB_KillStimset(stimset)
    KillOrMoveToTrash(wv=wv)
 
    return 1
+End
+
+/// @brief Determine if the stimset is third party or from MIES
+///
+/// Third party stimsets don't have all parameter waves
+///
+/// @return true if from third party, false otherwise
+Function WB_StimsetIsFromThirdParty(stimset)
+	string stimset
+
+	ASSERT(!IsEmpty(stimset), "Stimset name can not be empty")
+
+	WAVE/Z WP        = WB_GetWaveParamForSet(stimSet)
+	WAVE/Z WPT       = WB_GetWaveTextParamForSet(stimSet)
+	WAVE/Z SegWvType = WB_GetSegWvTypeForSet(stimSet)
+
+	return !WaveExists(WP) || !WaveExists(WPT) || !WaveExists(SegWvType)
 End
