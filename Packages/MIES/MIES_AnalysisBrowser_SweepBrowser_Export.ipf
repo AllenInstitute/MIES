@@ -137,10 +137,10 @@ static Function/WAVE SBE_GetPulseStartTimesForSel()
 	endif
 
 	// use the region data from the first sweep
-	region = str2num(traceData[0][%headstage])
 	idx    = indizes[0]
+	region = str2num(traceData[idx][%headstage])
 
-	return PA_GetPulseStartTimes(traceData, idx, region, "AD")
+	return PA_GetPulseStartTimes(traceData, idx, region, "AD", removeOnsetDelay = 0)
 End
 
 /// @brief Display the export panel
@@ -263,6 +263,22 @@ static Function SBE_ExportSweepBrowser(sett)
 	if(pos != -1)
 		graphMacro = graphMacro[0, pos - 2]
 	endif
+
+	// remove setting the CDF, we do that ourselves later on
+	graphMacro = ListMatch(graphMacro, "!*SetDataFolder fldrSav*", "\r")
+
+	// remove setting the bottom axis range, as this might be wrong
+	graphMacro = ListMatch(graphMacro, "!*SetAxis bottom*", "\r")
+
+	// replace the old data location with the new one
+	graphMacro = ReplaceString(analysisPrefix, graphMacro, newPrefix)
+
+	// replace relative reference to sweepBrowserDFR
+	// with absolut ones to newPrefix
+	folder = GetDataFolder(1, sweepBrowserDFR)
+	folder = RemovePrefix(folder, startStr="root:")
+	folder = ":::::::" + folder
+	graphMacro = ReplaceString(folder, graphMacro, newPrefix + ":")
 
 	traceList = TraceNameList(sett.sourceGraph, ";", 0 + 1)
 	numTraces = ItemsInList(traceList)
@@ -393,22 +409,6 @@ static Function SBE_ExportSweepBrowser(sett)
 		endfor
 	endif
 
-	// remove setting the CDF, we do that ourselves later on
-	graphMacro = ListMatch(graphMacro, "!*SetDataFolder fldrSav*", "\r")
-
-	// remove setting the bottom axis range, as this might be wrong
-	graphMacro = ListMatch(graphMacro, "!*SetAxis bottom*", "\r")
-
-	// replace the old data location with the new one
-	graphMacro = ReplaceString(analysisPrefix, graphMacro, newPrefix)
-
-	// replace relative reference to sweepBrowserDFR
-	// with absolut ones to newPrefix
-	folder = GetDataFolder(1, sweepBrowserDFR)
-	folder = RemovePrefix(folder, startStr="root:")
-	folder = ":::::::" + folder
-	graphMacro = ReplaceString(folder, graphMacro, newPrefix + ":")
-
 	if(!doCreateNewGraph)
 		ASSERT(WindowExists(sett.targetGraph), "Missing targetGraph")
 		DoWindow/F $sett.targetGraph
@@ -518,9 +518,9 @@ Window SBE_ExportSettingsPanel() : Panel
 	SetVariable setvar_sweep_export_num_pulses,pos={28.00,205.00},size={148.00,18.00},bodyWidth=50,disable=2,title="Number of pulses"
 	SetVariable setvar_sweep_export_num_pulses,limits={0,12,1},value= _NUM:1
 	SetVariable setvar_sweep_export_pulse_pre,pos={28.00,227.00},size={172.00,18.00},bodyWidth=50,disable=2,title="Time before first pulse"
-	SetVariable setvar_sweep_export_pulse_pre,value= _NUM:-50
+	SetVariable setvar_sweep_export_pulse_pre,value= _NUM:0, help={"Positive values increase the x range, negative values decrease it."}
 	SetVariable setvar_sweep_export_pulse_post,pos={28.00,250.00},size={160.00,18.00},bodyWidth=50,disable=2,title="Time after last pulse"
-	SetVariable setvar_sweep_export_pulse_post,value= _NUM:0
+	SetVariable setvar_sweep_export_pulse_post,value= _NUM:0, help={"Positive values increase the x range, negative values decrease it."}
 EndMacro
 
 Function SBE_PopMenu_ExportTargetAxis(pa) : PopupMenuControl

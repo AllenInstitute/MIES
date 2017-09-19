@@ -617,18 +617,8 @@ Function/DF SB_CreateNewSweepBrowser()
 	CheckBox check_SweepBrowser_HideSweep,value= 0
 	RenameWindow #,P0
 	SetActiveSubwindow ##
-	NewPanel/HOST=#/EXT=0/W=(0,0,214,407)  as "Analysis Results"
-	ModifyPanel fixedSize=0
-	Button button_SB_FindMinis,pos={18.00,3.00},size={60.00,23.00},proc=SB_ButtonProc_FindMinis,title="Find Minis"
-	NewNotebook /F=0 /N=NB0 /W=(16,29,196,362) /HOST=#
-	Notebook kwTopWin, defaultTab=20, autoSave= 1
-	Notebook kwTopWin font="Arial", fSize=10, fStyle=0, textRGB=(0,0,0)
-	Notebook kwTopWin, zdata= "GaqDU%ejN7!Z)%D?io>lbN?PWL]d_/WWX="
-	Notebook kwTopWin, zdataEnd= 1
-	SetActiveSubwindow ##
 
 	SB_PanelUpdate(graph)
-	WMZoomBrowser#AddZoomBrowserPanel()
 
 	return sweepBrowserDFR
 End
