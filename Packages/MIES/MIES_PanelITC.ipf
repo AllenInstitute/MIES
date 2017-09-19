@@ -4524,6 +4524,9 @@ Function DAP_OneTimeCallBeforeDAQ(panelTitle, runMode)
 	NVAR count = $GetCount(panelTitle)
 	count = 0
 
+	NVAR repurposeTime = $GetRepurposedSweepTime(panelTitle)
+	repurposeTime = 0
+
 	NVAR raCycleID = $GetRepeatedAcquisitionCycleID(panelTitle)
 	raCycleID = DAP_GetRAAcquisitionCycleID(panelTitle)
 
