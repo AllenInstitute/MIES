@@ -446,9 +446,7 @@ Function AdjustDAScale(panelTitle, eventType, ITCDataWave, headStage, realDataLe
 	Wave ITCDataWave
 	variable headstage, realDataLength
 
-	variable val, ADC, DAC, i
-	variable DAcol, ADcol, level, low, high, baseline, elevated, firstEdge, secondEdge, sweepNo
-	variable totalOnsetDelay, first, last, index
+	variable val, index, DAC, ADC
 	string ctrl, msg
 
 	// BEGIN CHANGE ME
@@ -514,98 +512,14 @@ Function AdjustDAScale(panelTitle, eventType, ITCDataWave, headStage, realDataLe
 	WAVE/Z sweep = AFH_GetLastSweepWaveAcquired(panelTitle)
 	ASSERT(WaveExists(sweep), "Expected a sweep for evalulation")
 
-	sweepNo = ExtractSweepNumber(NameofWave(sweep))
-
-	WAVE config = GetConfigWave(sweep)
-
 	WAVE numericalValues = GetLBNumericalValues(panelTitle)
 	WAVE textualValues   = GetLBTextualValues(panelTitle)
-
-	totalOnsetDelay = GetLastSettingIndep(numericalValues, sweepNo, "Delay onset auto", DATA_ACQUISITION_MODE) + \
-					  GetLastSettingIndep(numericalValues, sweepNo, "Delay onset user", DATA_ACQUISITION_MODE)
-
-	WAVE/T ADunit = GetLastSettingText(textualValues, sweepNo, "AD Unit", DATA_ACQUISITION_MODE)
-	WAVE/T DAunit = GetLastSettingText(textualValues, sweepNo, "DA Unit", DATA_ACQUISITION_MODE)
 
 	Make/D/FREE/N=(LABNOTEBOOK_LAYER_COUNT) deltaV     = NaN
 	Make/D/FREE/N=(LABNOTEBOOK_LAYER_COUNT) deltaI     = NaN
 	Make/D/FREE/N=(LABNOTEBOOK_LAYER_COUNT) resistance = NaN
 
-	WAVE statusHS = DAP_ControlStatusWaveCache(panelTitle, CHANNEL_TYPE_HEADSTAGE)
-
-	for(i = 0; i < NUM_HEADSTAGES; i += 1)
-
-		if(!statusHS[i])
-			continue
-		endif
-
-		DAcol = AFH_GetITCDataColumn(config, DAC, ITC_XOP_CHANNEL_TYPE_DAC)
-		ADcol = AFH_GetITCDataColumn(config, ADC, ITC_XOP_CHANNEL_TYPE_ADC)
-
-		WAVE DA = ExtractOneDimDataFromSweep(config, sweep, DACol)
-		WAVE AD = ExtractOneDimDataFromSweep(config, sweep, ADcol)
-
-		first = totalOnsetDelay
-		last  = IndexToScale(DA, DimSize(DA, ROWS) - 1, ROWS)
-
-		low  = WaveMin(DA, first, last)
-		high = WaveMax(DA, first, last)
-
-		level = low + 0.1 * (high - low)
-
-		Make/FREE/D levels
-		FindLevels/Q/P/DEST=levels/R=(first, last) DA, level
-		ASSERT(V_LevelsFound >= 2, "Could not find enough levels")
-
-		firstEdge   = levels[0]
-		secondEdge  = levels[1]
-
-		low  = floor(firstEdge * 0.9)
-		high = floor(firstEdge - 1)
-
-		baseline = sum(AD, IndexToScale(AD, low, ROWS), IndexToScale(AD, high, ROWS)) / (high - low + 1)
-
-		sprintf msg, "(%s, %d) AD: low = %d (%g ms), high = %d (%g ms), baseline %g", panelTitle, i, low, IndexToScale(AD, low, ROWS), high, IndexToScale(AD, high, ROWS), baseline
-		DEBUGPRINT(msg)
-
-		low  = floor(secondEdge * 0.9)
-		high = floor(secondEdge - 1)
-
-		elevated = sum(AD, IndexToScale(AD, low, ROWS), IndexToScale(AD, high, ROWS)) / (high - low + 1)
-
-		sprintf msg, "(%s, %d) AD: low = %d (%g ms), high = %d (%g ms), elevated %g", panelTitle, i, low, IndexToScale(AD, low, ROWS),  high, IndexToScale(AD, high, ROWS), elevated
-		DEBUGPRINT(msg)
-
-		// convert from mv to V
-		ASSERT(!cmpstr(ADunit[i], "mV"), "Unexpected AD Unit")
-
-		deltaV[i] = (elevated - baseline) * 1e-3
-
-		low  = floor(firstEdge * 0.9)
-		high = floor(firstEdge - 1)
-
-		baseline = sum(DA, IndexToScale(DA, low, ROWS), IndexToScale(DA, high, ROWS)) / (high - low + 1)
-
-		sprintf msg, "(%s, %d) DA: low = %d (%g ms), high = %d (%g ms), baseline %g", panelTitle, i, low, IndexToScale(DA, low, ROWS), high, IndexToScale(DA, high, ROWS), elevated
-		DEBUGPRINT(msg)
-
-		low  = floor(secondEdge * 0.9)
-		high = floor(secondEdge - 1)
-
-		elevated = sum(DA, IndexToScale(DA, low, ROWS), IndexToScale(DA, high, ROWS)) / (high - low + 1)
-
-		sprintf msg, "(%s, %d) DA: low = %d (%g ms), high = %d (%g ms), elevated %g", panelTitle, i, low, IndexToScale(DA, low, ROWS), high, IndexToScale(DA, high, ROWS), elevated
-		DEBUGPRINT(msg)
-
-		// convert from pA to A
-		ASSERT(!cmpstr(DAunit[i], "pA"), "Unexpected DA Unit")
-		deltaI[i] = (elevated - baseline) * 1e-12
-
-		resistance[i] = deltaV[i] / deltaI[i]
-
-		sprintf msg, "(%s, %d): ΔV = %g, ΔI = %g", panelTitle, headstage, deltaV[i], deltaI[i]
-		DEBUGPRINT(msg)
-	endfor
+	CalculateTPLikePropsFromSweep(numericalValues, textualValues, sweep, deltaI, deltaV, resistance)
 
 	ED_AddEntryToLabnotebook(panelTitle, "Delta I", deltaI, unit = "I")
 	ED_AddEntryToLabnotebook(panelTitle, "Delta V", deltaV, unit = "V")
@@ -682,6 +596,9 @@ Function PlotResistanceGraph(panelTitle)
 		WaveStats/Q/M=1/RMD=[][i] storageDeltaV
 		if(V_npnts < 2)
 			if(statusHS[i])
+				storageResist[i][%Value] = deltaV[i] / deltaI[i]
+				storageResist[i][%Error] = NaN
+
 				sprintf textBoxString, "%sHS%d: no fit possible\r", textBoxString, i
 			endif
 
@@ -706,11 +623,11 @@ Function PlotResistanceGraph(panelTitle)
 
 	Make/D/FREE/N=(LABNOTEBOOK_LAYER_COUNT) storage = NaN
 	storage[0, NUM_HEADSTAGES - 1] = storageResist[p][%Value]
-	ED_AddEntryToLabnotebook(panelTitle, "ResistanceFromDAScale", storage, unit = "Ohm")
+	ED_AddEntryToLabnotebook(panelTitle, "ResistanceFromFit", storage, unit = "Ohm")
 
 	storage = NaN
 	storage[0, NUM_HEADSTAGES - 1] = storageResist[p][%Error]
-	ED_AddEntryToLabnotebook(panelTitle, "ResistanceFromDAScale_Err", storage, unit = "Ohm")
+	ED_AddEntryToLabnotebook(panelTitle, "ResistanceFromFit_Err", storage, unit = "Ohm")
 
 	KillOrMoveToTrash(wv=W_sigma)
 	KillOrMoveToTrash(wv=fitWave)
@@ -744,4 +661,149 @@ Function PlotResistanceGraph(panelTitle)
 	if(!IsEmpty(textBoxString))
 		TextBox/C/N=text/W=$RESISTANCE_GRAPH RemoveEnding(textBoxString, "\r")
 	endif
+End
+
+/// @brief Set the DAScale value of the given headstage
+///
+/// @param panelTitle device
+/// @param headstage  MIES headstage
+/// @param DAScale    DA scale value in `A` (Amperes)
+static Function SetDAScale(panelTitle, headstage, DAScale)
+	string panelTitle
+	variable headstage, DAScale
+
+	variable amps, DAC
+	string DAUnit, ctrl
+
+	DAC = AFH_GetDACFromHeadstage(panelTitle, headstage)
+	ASSERT(IsFinite(DAC), "This analysis function does not work with unassociated DA channels")
+
+	ctrl = GetPanelControl(DAC, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_UNIT)
+	DAUnit = GetSetVariableString(panelTitle, ctrl)
+
+	// check for correct units
+	ASSERT(!cmpstr(DAunit, "pA"), "Unexpected DA Unit")
+
+	amps = DAScale / 1e-12
+	ctrl = GetPanelControl(DAC, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_SCALE)
+	SetSetVariable(panelTitle, ctrl, amps)
+
+	return 0
+End
+
+/// @brief Analysis function to experimentally determine the cell resistance by sweeping
+/// through a wave of target voltages.
+///
+/// Prerequisites:
+/// - Stimset with multiple but identical sweeps and testpulse-like shape. The
+///   number of sweeps must be larger than the number of rows in the targetVoltages wave below.
+/// - This stimset must have this analysis function set for the "Pre DAQ" and the "Post Sweep" Event
+/// - Does not support DA/AD channels not associated with a MIES headstage (aka unassociated DA/AD Channels)
+/// - All active headstages must be in "Current Clamp"
+/// - An inital DAScale of -20pA is used, a fixup value of -100pA is used on the next sweep if the measured resistance is smaller than 20MOhm
+Function ReachTargetVoltage(panelTitle, eventType, ITCDataWave, headStage, realDataLength)
+	string panelTitle
+	variable eventType
+	Wave ITCDataWave
+	variable headstage, realDataLength
+
+	variable sweepNo, index, i
+	variable amps
+	string msg
+
+	// BEGIN CHANGE ME
+	Make/FREE targetVoltages = {0.070, 0.080, 0.090, 0.1, 0.11} // units are Volts, i.e. 70mV = 0.070V
+	// END CHANGE ME
+
+	WAVE targetVoltagesIndex = GetAnalysisFuncIndexingHelper(panelTitle)
+
+	switch(eventType)
+		case PRE_DAQ_EVENT:
+			targetVoltagesIndex[headstage] = -1
+
+			if(DAP_MIESHeadstageMode(panelTitle, headstage) != I_CLAMP_MODE)
+				printf "(%s) The analysis function %s does only work in clamp mode.\r", panelTitle, GetRTStackInfo(1)
+				ControlWindowToFront()
+				return 1
+			endif
+
+			KillOrMoveToTrash(wv = GetAnalysisFuncDAScaleDeltaI(panelTitle))
+			KillOrMoveToTrash(wv = GetAnalysisFuncDAScaleDeltaV(panelTitle))
+			KillOrMoveToTrash(wv = GetAnalysisFuncDAScaleRes(panelTitle))
+			KillWindow/Z $RESISTANCE_GRAPH
+
+			SetDAScale(panelTitle, headstage, -20e-12)
+
+			return Nan
+			break
+		case POST_SWEEP_EVENT:
+			targetVoltagesIndex[headstage] += 1
+			break
+		default:
+			ASSERT(0, "Unknown eventType")
+			break
+	endswitch
+
+	// only do something if we are called for the very last headstage
+	if(DAP_GetHighestActiveHeadstage(panelTitle) != headstage)
+		return NaN
+	endif
+
+	WAVE/Z sweep = AFH_GetLastSweepWaveAcquired(panelTitle)
+	ASSERT(WaveExists(sweep), "Expected a sweep for evaluation")
+
+	sweepNo = ExtractSweepNumber(NameOfWave(sweep))
+
+	WAVE numericalValues = GetLBNumericalValues(panelTitle)
+	WAVE textualValues   = GetLBTextualValues(panelTitle)
+
+	Make/D/FREE/N=(LABNOTEBOOK_LAYER_COUNT) deltaV     = NaN
+	Make/D/FREE/N=(LABNOTEBOOK_LAYER_COUNT) deltaI     = NaN
+	Make/D/FREE/N=(LABNOTEBOOK_LAYER_COUNT) resistance = NaN
+
+	CalculateTPLikePropsFromSweep(numericalValues, textualValues, sweep, deltaI, deltaV, resistance)
+
+	ED_AddEntryToLabnotebook(panelTitle, "Delta I", deltaI, unit = "I")
+	ED_AddEntryToLabnotebook(panelTitle, "Delta V", deltaV, unit = "V")
+
+	PlotResistanceGraph(panelTitle)
+
+	WAVE/Z resistanceFitted = GetLastSetting(numericalValues, sweepNo, LABNOTEBOOK_USER_PREFIX + "ResistanceFromFit", UNKNOWN_MODE)
+	ASSERT(WaveExists(resistanceFitted), "Expected fitted resistance data")
+
+	WAVE statusHS = DAP_ControlStatusWaveCache(panelTitle, CHANNEL_TYPE_HEADSTAGE)
+
+	for(i = 0; i < NUM_HEADSTAGES; i += 1)
+
+		if(!statusHS[i])
+			continue
+		endif
+
+		index = targetVoltagesIndex[i]
+
+		if(index == DimSize(targetVoltages, ROWS))
+			// reached last sweep of stimset, do nothing
+			continue
+		endif
+
+		// index equals the number of sweeps in the stimset on the last call (*post* sweep event)
+		if(index > DimSize(targetVoltages, ROWS))
+			printf "(%s): Skipping analysis function \"%s\".\r", panelTitle, GetRTStackInfo(1)
+			printf "The stimset has too many sweeps, increase the size of DAScales.\r"
+			continue
+		endif
+
+		// check initial response
+		if(index == 0 && resistanceFitted[i] <= 20e6)
+			amps = -100e-12
+			targetVoltagesIndex[i] = -1
+		else
+			amps = targetVoltages[index] / resistanceFitted[i]
+		endif
+
+		sprintf msg, "(%s, %d): ΔR = %.0W1PΩ, V_target = %.0W1PV, I = %.0W1PA", panelTitle, i, resistanceFitted[i], targetVoltages[targetVoltagesIndex[i]], amps
+		DEBUGPRINT(msg)
+
+		SetDAScale(panelTitle, i, amps)
+	endfor
 End
