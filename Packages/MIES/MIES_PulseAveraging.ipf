@@ -8,11 +8,16 @@
 
 static StrConstant PULSE_AVERAGE_GRAPH_PREFIX = "PulseAverage"
 static StrConstant SOURCE_WAVE_TIMESTAMP      = "SOURCE_WAVE_TS"
+static StrConstant EXT_PANEL_SUBWINDOW        = "perPulseAverage"
 
-static Function/S PA_GetLeftPanel(win)
+static Function/S PA_GetExtPanel(win)
 	string win
 
-	return GetMainWindow(win) + "#perPulseAverage"
+	if(IsDataBrowser(win))
+		return BSP_GetPanel(win)
+	endif
+
+	return GetMainWindow(win) + "#" + EXT_PANEL_SUBWINDOW
 End
 
 /// @brief Return a list of all average graphs
@@ -472,17 +477,16 @@ End
 Function PA_TogglePanel(win)
 	string win
 
-	string extPanel
+	variable createPanel
 
-	win      = GetMainWindow(win)
-	extPanel = PA_GetLeftPanel(win)
+	win = GetMainWindow(win)
 
-	if(WindowExists(extPanel))
-		KillWindow/Z $extPanel
+	createPanel = TogglePanel(win, EXT_PANEL_SUBWINDOW)
+	if(!createPanel)
 		return 1
 	endif
 
-	NewPanel/HOST=$win/EXT=1/W=(150, 75, 0, 130)/N=perPulseAverage as " "
+	NewPanel/HOST=$win/EXT=1/W=(150, 75, 0, 130)/N=$EXT_PANEL_SUBWINDOW as " "
 	SetVariable setvar_pulseAver_fallbackLength,pos={1.00,109.00},size={137.00,18.00},bodyWidth=50,proc=PA_SetVarProc_Common,title="Fallback Length"
 	SetVariable setvar_pulseAver_fallbackLength,help={"Pulse To Pulse Length in ms for edge cases which can not be computed."}
 	SetVariable setvar_pulseAver_fallbackLength,value= _NUM:100
@@ -509,29 +513,30 @@ Function PA_GatherSettings(win, pps)
 	string extPanel, sbPanel
 
 	win      = GetMainWindow(win)
-	extPanel = PA_GetLeftPanel(win)
+	extPanel = PA_GetExtPanel(win)
 	sbPanel  = win + "#P0"
 
-	if(WindowExists(extPanel))
-		pps.pulseAverSett.showIndividualTraces = GetCheckboxState(extPanel, "check_pulseAver_indTraces")
-		pps.pulseAverSett.showAverageTrace     = GetCheckboxState(extPanel, "check_pulseAver_showAver")
-		pps.pulseAverSett.multipleGraphs       = GetCheckboxState(extPanel, "check_pulseAver_multGraphs")
-		pps.pulseAverSett.startingPulse        = GetSetVariable(extPanel, "setvar_pulseAver_startPulse")
-		pps.pulseAverSett.endingPulse          = GetSetVariable(extPanel, "setvar_pulseAver_endPulse")
-		pps.pulseAverSett.fallbackPulseLength  = GetSetVariable(extPanel, "setvar_pulseAver_fallbackLength")
-		pps.pulseAverSett.regionSlider         = -1 // save default
+	if(!PA_IsActive(win))
+		InitPulseAverageSettings(pps.pulseAverSett)
+		return 0
+	endif
 
-		if(ControlExists(win, "slider_dDAQ_regions")) // databrowser
-			if(GetCheckboxState(win, "check_databrowser_dDAQMode"))
-				pps.pulseAverSett.regionSlider = GetSliderPositionIndex(win, "slider_dDAQ_regions")
-			endif
-		else
-			if(GetCheckboxState(sbPanel, "check_sweepbrowser_dDAQ"))
-				pps.pulseAverSett.regionSlider = str2num(GetPopupMenuString(sbPanel, "popup_dDAQ_regions"))
-			endif
+	pps.pulseAverSett.showIndividualTraces = GetCheckboxState(extPanel, "check_pulseAver_indTraces")
+	pps.pulseAverSett.showAverageTrace     = GetCheckboxState(extPanel, "check_pulseAver_showAver")
+	pps.pulseAverSett.multipleGraphs       = GetCheckboxState(extPanel, "check_pulseAver_multGraphs")
+	pps.pulseAverSett.startingPulse        = GetSetVariable(extPanel, "setvar_pulseAver_startPulse")
+	pps.pulseAverSett.endingPulse          = GetSetVariable(extPanel, "setvar_pulseAver_endPulse")
+	pps.pulseAverSett.fallbackPulseLength  = GetSetVariable(extPanel, "setvar_pulseAver_fallbackLength")
+	pps.pulseAverSett.regionSlider         = -1 // save default
+
+	if(ControlExists(win, "slider_dDAQ_regions")) // databrowser
+		if(GetCheckboxState(win, "check_databrowser_dDAQMode"))
+			pps.pulseAverSett.regionSlider = GetSliderPositionIndex(win, "slider_dDAQ_regions")
 		endif
 	else
-		InitPulseAverageSettings(pps.pulseAverSett)
+		if(GetCheckboxState(sbPanel, "check_sweepbrowser_dDAQ"))
+			pps.pulseAverSett.regionSlider = str2num(GetPopupMenuString(sbPanel, "popup_dDAQ_regions"))
+		endif
 	endif
 End
 
@@ -540,7 +545,7 @@ Function PA_ShowPulses(win, dfr, pa)
 	DFREF dfr
 	STRUCT PulseAverageSettings &pa
 
-	string sourceGraph, graph, trace, extPanel, preExistingGraphs
+	string sourceGraph, graph, trace, preExistingGraphs
 	string averageWaveName, pulseTrace, channelTypeStr, str, traceList, traceFullPath
 	variable numChannels, i, j, k, l, idx, numTraces, sweepNo, headstage, numPulsesTotal, numPulses
 	variable first, numEntries, startingPulse, endingPulse, numGraphs
@@ -551,11 +556,10 @@ Function PA_ShowPulses(win, dfr, pa)
 	string newlyCreatedGraphs = ""
 
 	win = GetMainWindow(win)
-	extPanel = PA_GetLeftPanel(win)
 
 	preExistingGraphs = PA_GetAverageGraphs()
 
-	if(!WindowExists(extPanel))
+	if(!PA_IsActive(win))
 		KillWindows(preExistingGraphs)
 		return NaN
 	endif
@@ -817,4 +821,21 @@ Function PA_MainWindowHook(s)
 	endswitch
 
 	return 0
+End
+
+/// checks if PA is active.
+static Function PA_IsActive(win)
+	string win
+
+	// keep for SweepBrowser
+	string extPanel = PA_GetExtPanel(win)
+	if(!IsDataBrowser(extPanel))
+		if(!WindowExists(extPanel))
+			return 0
+		else
+			return 1
+		endif
+	endif
+
+	return BSP_IsActive(win, MIES_BSP_PA)
 End

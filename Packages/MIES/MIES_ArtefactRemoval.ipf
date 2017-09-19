@@ -15,6 +15,10 @@ static Constant AR_MIN_RANGE_FACTOR = 0.1
 Function/S AR_GetExtPanel(win)
 	string win
 
+	if(IsDataBrowser(win))
+		return BSP_GetPanel(win)
+	endif
+
 	return GetMainWindow(win) + "#" + EXT_PANEL_SUBWINDOW
 End
 
@@ -110,7 +114,7 @@ Function AR_UpdatePanel(panelTitle, ranges, sweepDFR)
 	WAVE ranges
 	DFREF sweepDFR
 
-	AR_UpdateSweepFolder(panelTitle, sweepDFR)
+	AR_SetSweepFolder(panelTitle, sweepDFR)
 
 	DFREF dfr = AR_GetFolder(panelTitle)
 	WAVE/T listBoxWave = GetArtefactRemovalListWave(dfr)
@@ -171,7 +175,7 @@ Function AR_HighlightArtefactsEntry(graph)
 
 	extPanel = AR_GetExtPanel(graph)
 
-	if(!WindowExists(extPanel) || !GetCheckBoxState(extPanel, "check_highlightRanges"))
+	if(!AR_IsActive(extPanel) || !GetCheckBoxState(extPanel, "check_highlightRanges"))
 		return NaN
 	endif
 
@@ -291,11 +295,21 @@ End
 Function/DF AR_GetFolder(panelTitle)
 	string panelTitle
 
+	if(!AR_IsActive(panelTitle))
+		return $""
+	endif
 
-	DFREF dfr = $GetUserData(AR_GetExtPanel(panelTitle), "", "AR_FOLDER")
-	ASSERT(DataFolderExistsDFR(dfr), "Missing extPanel AR_FOLDER userdata")
+	return BSP_GetFolder(panelTitle, MIES_BSP_AR_FOLDER)
+End
 
-	return dfr
+/// @brief Set the datafolder reference to the folder storing the listbox wave and the artefact data wave
+///
+/// Updates the `AR_SWEEPFOLDER` user data of the artefact removal panel
+Function AR_SetFolder(win, dfr)
+	string win
+	DFREF dfr
+
+	BSP_SetFolder(win, dfr, MIES_BSP_AR_FOLDER)
 End
 
 /// @brief Return the datafolder reference to the folder storing the single 1D sweep waves
@@ -304,21 +318,19 @@ End
 Function/DF AR_GetSweepFolder(panelTitle)
 	string panelTitle
 
-	DFREF dfr = $GetUserData(AR_GetExtPanel(panelTitle), "", "AR_SWEEPFOLDER")
-	ASSERT(DataFolderExistsDFR(dfr), "Missing extPanel AR_SWEEPFOLDER userdata")
+	if(!AR_IsActive(panelTitle))
+		return $""
+	endif
 
-	return dfr
+	return BSP_GetFolder(panelTitle, MIES_BSP_AR_SWEEPFOLDER)
 End
 
 /// @brief Updates the `AR_SWEEPFOLDER` user data of the artefact removal panel
-static Function AR_UpdateSweepFolder(panelTitle, sweepDFR)
+static Function AR_SetSweepFolder(panelTitle, sweepDFR)
 	string panelTitle
 	DFREF sweepDFR
 
-	string extPanel
-
-	extPanel = AR_GetExtPanel(panelTitle)
-	SetWindow $extPanel, userData(AR_SWEEPFOLDER)=GetDataFolder(1, sweepDFR)
+	BSP_SetFolder(panelTitle, sweepDFR, MIES_BSP_AR_SWEEPFOLDER)
 End
 
 Function AR_MainListBoxProc(lba) : ListBoxControl
@@ -381,16 +393,18 @@ Function AR_TogglePanel(win, listboxWave)
 	string win
 	WAVE/T listboxWave
 
-	string extPanel = AR_GetExtPanel(win)
+	variable createPanel
+	string extPanel
+
+	extPanel = AR_GetExtPanel(win)
 	win = GetMainWindow(win)
 
-	if(WindowExists(extPanel))
-		KillWindow $extPanel
+	createPanel = TogglePanel(win, EXT_PANEL_SUBWINDOW)
+	if(!createPanel)
 		return 1
 	endif
 
-	SetActiveSubWindow $win
-	NewPanel/HOST=#/EXT=1/W=(200,0,0,407)
+	NewPanel/HOST=$win/EXT=1/W=(200,0,0,407)/N=$EXT_PANEL_SUBWINDOW as " "
 	SetWindow kwTopWin, hook(main)=AR_MainWindowHook
 	SetDrawLayer UserBack
 	SetDrawEnv fname= "Segoe UI"
@@ -410,10 +424,8 @@ Function AR_TogglePanel(win, listboxWave)
 	CheckBox check_highlightRanges,pos={158.00,43.00},size={30.00,15.00},proc=AR_CheckProc_Update,title="HL"
 	CheckBox check_highlightRanges,help={"Visualize the found ranges in the graph (*might* slowdown graphing)"}
 	CheckBox check_highlightRanges,value= 0
-	RenameWindow #,ArtefactRemoval
-	SetActiveSubwindow ##
 
-	SetWindow $extPanel, userData(AR_FOLDER)=GetWavesDataFolder(listboxWave, 1)
+	AR_SetFolder(win, GetWavesDataFolderDFR(listboxWave))
 
 	return 0
 End
@@ -424,12 +436,11 @@ Function AR_UpdateTracesIfReq(graph, sweepFolder, numericalValues, sweepNo)
 	DFREF sweepFolder
 	WAVE numericalValues
 
-	string extPanel, panelTitle
+	string panelTitle
 
 	panelTitle = GetMainWindow(graph)
-	extPanel   = AR_GetExtPanel(graph)
 
-	if(!WindowExists(extPanel))
+	if(!AR_IsActive(panelTitle))
 		return NaN
 	endif
 
@@ -473,4 +484,21 @@ Function AR_MainWindowHook(s)
 	endswitch
 
 	return 0
+End
+
+/// checks if AR is active.
+Function AR_IsActive(win)
+	string win
+
+	// keep for SweepBrowser
+	string extPanel = AR_GetExtPanel(win)
+	if(!IsDataBrowser(extPanel))
+		if(!WindowExists(extPanel))
+			return 0
+		else
+			return 1
+		endif
+	endif
+
+	return BSP_IsActive(win, MIES_BSP_AR)
 End

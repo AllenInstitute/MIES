@@ -335,6 +335,9 @@ Function SB_UpdateSweepPlot(graph, [newSweep])
 	variable mapIndex, i, numEntries, sweepNo, highlightSweep, traceIndex
 
 	graph = GetMainWindow(graph)
+	if(!HasPanelLatestVersion(graph, SWEEPBROWSER_PANEL_VERSION))
+		Abort "Can not display data. The SweepBrowser Graph is too old to be usable. Please close it and open a new one."
+	endif
 	DFREF sweepBrowserDFR = $SB_GetSweepBrowserFolder(graph)
 	ASSERT(DataFolderExistsDFR(sweepBrowserDFR), "sweepBrowserDFR must exist")
 
@@ -618,6 +621,7 @@ Function/DF SB_CreateNewSweepBrowser()
 	RenameWindow #,P0
 	SetActiveSubwindow ##
 
+	AddVersionToPanel(graph, SWEEPBROWSER_PANEL_VERSION)
 	SB_PanelUpdate(graph)
 
 	return sweepBrowserDFR
@@ -740,7 +744,7 @@ Function SB_ButtonProc_ChangeSweep(ba) : ButtonControl
 			newSweep = currentSweep + direction * GetSetVariable(win, "setvar_SweepBrowser_SweepStep")
 			totalNumSweeps = ItemsInList(SB_GetSweepList(graph))
 			newSweep = limit(newSweep, 0, totalNumSweeps - 1)
-			OVS_InvertSweepSelection(win, index=newSweep)
+			OVS_ChangeSweepSelectionState(win, CHECKBOX_SELECTED, index=newSweep)
 			SB_UpdateSweepPlot(win, newSweep=newSweep)
 			break
 	endswitch
@@ -1053,7 +1057,8 @@ Function SB_CheckboxProc_OverlaySweeps(cba) : CheckBoxControl
 
 			sweepWaveList = SB_GetPlainSweepList(graph)
 			OVS_UpdatePanel(graph, listBoxWave, listBoxSelWave, sweepSelChoices, sweepWaveList, allTextualValues=allTextualValues, allNumericalValues=allNumericalValues)
-			if(!OVS_TogglePanel(extPanel, listBoxWave, listBoxSelWave))
+			OVS_TogglePanel(graph, listBoxWave, listBoxSelWave)
+			if(OVS_IsActive(graph))
 				index = GetPopupMenuIndex(extPanel, "popup_sweep_selector")
 				OVS_ChangeSweepSelectionState(extPanel, CHECKBOX_SELECTED, index=index)
 			endif

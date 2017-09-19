@@ -4618,6 +4618,8 @@ Function/WAVE GetArtefactRemovalListWave(dfr)
 	DFREF dfr
 
 	variable versionOfNewWave = 1
+
+	ASSERT(DataFolderExistsDFR(dfr), "Invalid dfr")
 	WAVE/T/Z/SDFR=dfr wv = artefactRemovalListBoxWave
 
 	if(ExistsWithCorrectLayoutVersion(wv, versionOfNewWave))
@@ -4641,6 +4643,8 @@ Function/WAVE GetArtefactRemovalDataWave(dfr)
 	DFREF dfr
 
 	variable versionOfNewWave = 1
+
+	ASSERT(DataFolderExistsDFR(dfr), "Invalid dfr")
 	WAVE/Z/SDFR=dfr wv = artefactRemovalDataWave
 
 	if(ExistsWithCorrectLayoutVersion(wv, versionOfNewWave))
@@ -4666,6 +4670,8 @@ Function/WAVE GetOverlaySweepsListWave(dfr)
 	DFREF dfr
 
 	variable versionOfNewWave = 1
+
+	ASSERT(DataFolderExistsDFR(dfr), "Invalid dfr")
 	WAVE/T/Z/SDFR=dfr wv = overlaySweepsListBoxWave
 
 	if(ExistsWithCorrectLayoutVersion(wv, versionOfNewWave))
@@ -4689,6 +4695,8 @@ Function/WAVE GetOverlaySweepsListSelWave(dfr)
 	DFREF dfr
 
 	variable versionOfNewWave = 1
+
+	ASSERT(DataFolderExistsDFR(dfr), "Invalid dfr")
 	WAVE/B/Z/SDFR=dfr wv = overlaySweepsListBoxSelWave
 
 	if(ExistsWithCorrectLayoutVersion(wv, versionOfNewWave))
@@ -4712,6 +4720,8 @@ Function/WAVE GetOverlaySweepSelectionChoices(dfr)
 	DFREF dfr
 
 	variable versionOfNewWave = 2
+
+	ASSERT(DataFolderExistsDFR(dfr), "Invalid dfr")
 	string newName = "overlaySweepSelectionChoices"
 
 	STRUCT WaveLocationMod p
@@ -4740,6 +4750,8 @@ Function/WAVE GetChannelSelectionWave(dfr)
 	DFREF dfr
 
 	variable versionOfNewWave = 1
+
+	ASSERT(DataFolderExistsDFR(dfr), "Invalid dfr")
 	WAVE/Z/SDFR=dfr wv = channelSelection
 
 	if(ExistsWithCorrectLayoutVersion(wv, versionOfNewWave))

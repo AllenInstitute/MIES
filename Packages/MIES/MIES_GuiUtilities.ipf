@@ -146,6 +146,30 @@ Function SetControlTitle(win, controlName, newTitle)
 	ModifyControl $ControlName WIN = $win, title = newTitle
 End
 
+/// @brief Set the procedure of a list of controls
+Function SetControlProcedures(win, controlList, newProcedure)
+	string win, controlList, newProcedure
+
+	variable i
+	string controlName
+	variable numItems = ItemsInList(controlList)
+
+	for(i = 0; i < numItems; i += 1)
+		controlName = StringFromList(i, controlList)
+		SetControlProcedure(win, controlName, newProcedure)
+	endfor
+End
+
+/// @brief Set the procedure of a control
+Function SetControlProcedure(win, controlName, newProcedure)
+	string win, controlName, newProcedure
+
+	ControlInfo/W=$win $controlName
+	ASSERT(V_flag != 0, "Non-existing control or window")
+
+	ModifyControl $ControlName WIN = $win, proc = $newProcedure
+End
+
 /// @brief Return the title of a control
 ///
 /// @param recMacro     recreation macro for ctrl
@@ -1414,4 +1438,26 @@ Function GetListBoxSelRow(win, ctrl)
 	ASSERT(V_flag == 11, "Not a listbox control")
 
 	return V_Value
+End
+
+/// @brief close a panel depending on its state
+///
+/// @param win 		name of main window
+/// @param subwin 	specify a subwindow of win. defaults to no subwindows.
+///
+/// @returns 0 if panel was closed and 1 if panel doesn't exist and needs to be opened.
+Function TogglePanel(win, subwin)
+	string win, subwin
+
+	string panel
+
+	panel = GetMainWindow(win)
+	panel += "#" + subwin
+
+	if(windowExists(panel))
+		KillWindow $panel
+		return 0
+	endif
+
+	return 1
 End

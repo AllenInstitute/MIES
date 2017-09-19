@@ -20,6 +20,9 @@ static Constant NUM_CHANNEL_TYPES   = 3
 
 static Constant GET_LB_MODE_NONE  = 0
 static Constant GET_LB_MODE_READ  = 1
+
+static StrConstant CHANNEL_SELECTION_EXT_PANEL = "channelSel"
+
 static Constant GET_LB_MODE_WRITE = 2
 
 Menu "GraphMarquee"
@@ -3633,18 +3636,20 @@ End
 /// @param channelSel   channelSelectionWave as returned by GetChannelSelectionWave()
 /// @param checkBoxProc checkbox GUI control procedure name
 Function ToggleChannelSelectionPanel(win, channelSel, checkBoxProc)
-	string win
+	string win, checkBoxProc
 	WAVE channelSel
-	string checkBoxProc
 
-	string extPanel = GetMainWindow(win) + "#channelSel"
+	variable createPanel
+	string extPanel
 
-	if(windowExists(extPanel))
-		KillWindow $extPanel
-		return NaN
+	win = GetMainWindow(win)
+
+	createPanel = TogglePanel(win, CHANNEL_SELECTION_EXT_PANEL)
+	if(!createPanel)
+		return 1
 	endif
 
-	NewPanel/HOST=$win/EXT=1/W=(149,0,0,407)/N=channelSel  as " "
+	NewPanel/HOST=$win/EXT=1/W=(149,0,0,407)/N=$CHANNEL_SELECTION_EXT_PANEL as " "
 
 	GroupBox group_channelSel_DA,pos={52.00,3.00},size={44.00,199.00},title="DA"
 	CheckBox check_channelSel_DA_0,pos={62.00,19.00},size={21.00,15.00},proc=$checkBoxProc,title="0"
@@ -3716,6 +3721,7 @@ Function ToggleChannelSelectionPanel(win, channelSel, checkBoxProc)
 	CheckBox check_channelSel_AD_15,pos={108.00,336.00},size={27.00,15.00},proc=$checkBoxProc,title="15"
 	CheckBox check_channelSel_AD_15,value= 1
 
+	extPanel = GetMainWindow(win) + "#" + CHANNEL_SELECTION_EXT_PANEL
 	ChannelSelectionWaveToGUI(extPanel, channelSel)
 End
 
@@ -3859,6 +3865,7 @@ End
 /// @brief Determine if the window/subwindow belongs to our DataBrowser
 ///
 /// Useful for databrowser/sweepbrowser code which must know from which panel it is called.
+///
 /// @sa GetSweepGraph()
 Function IsDataBrowser(win)
 	string win
@@ -3909,10 +3916,28 @@ Function HasPanelLatestVersion(win, expectedVersion)
 	return 1
 #endif
 
-	ASSERT(windowExists(win), "Non existent window")
-	version = str2num(GetUserData(win, "", "panelVersion"))
+	version = GetPanelVersion(win)
 
 	return version == expectedVersion
+End
+
+/// @brief Get the user data "panelVersion"
+///
+/// @param win panel window as string
+/// @returns numeric panel version greater 0 and -1 if no version is present
+Function GetPanelVersion(win)
+	string win
+
+	variable version
+
+	ASSERT(windowExists(win), "Non existent window")
+
+	version = str2numSafe(GetUserData(win, "", "panelVersion"))
+	version = abs(version)
+	if(IsNaN(version))
+		version = -1
+	endif
+	return version
 End
 
 Function UPDATESWEEPPLOT_PROTOTYPE(win, [optArg])

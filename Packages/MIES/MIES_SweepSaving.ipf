@@ -54,10 +54,12 @@ Function SWS_SaveAndScaleITCData(panelTitle, [forcedStop])
 End
 
 /// @brief General hook function which gets always executed after sweep data saving
+///
+/// @param panelTitle device name
 static Function SWS_AfterSweepDataSaveHook(panelTitle)
 	string panelTitle
 
-	string panelList, dataPath, panel, panelType
+	string panelList, panel
 	variable numPanels, i
 
 	panelList = WinList("DB_*", ";", "WIN:64")
@@ -66,12 +68,12 @@ static Function SWS_AfterSweepDataSaveHook(panelTitle)
 	for(i = 0; i < numPanels; i += 1)
 		panel = StringFromList(i, panelList)
 
-		panelType = GetUserData(panel, "", MIES_PANEL_TYPE_USER_DATA)
-		if(!cmpstr(panelType, MIES_DATABROWSER_PANEL))
-			dataPath   = GetUserData(panel, "", "DataFolderPath")
-			if(!cmpstr(dataPath, GetDevicePathAsString(panelTitle)))
-				DB_UpdateToLastSweep(panel)
-			endif
+		if(!IsDataBrowser(panel))
+			continue
+		endif
+
+		if(!cmpstr(panelTitle, BSP_GetDevice(panel)))
+			DB_UpdateToLastSweep(panel)
 		endif
 	endfor
 End
