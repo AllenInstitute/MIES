@@ -60,7 +60,7 @@ Function ITC_StopDataAcq()
 	NVAR ITCDeviceIDGlobal = $GetITCDeviceIDGlobal(panelTitleG)
 
 	HW_SelectDevice(HARDWARE_ITC_DAC, ITCDeviceIDGlobal)
-	HW_StopAcq(HARDWARE_ITC_DAC, ITCDeviceIDGlobal, prepareForDAQ=1)
+	HW_StopAcq(HARDWARE_ITC_DAC, ITCDeviceIDGlobal, prepareForDAQ=1, zeroDAC = 1)
 
 	SWS_SaveAndScaleITCData(panelTitleG)
 
@@ -84,7 +84,7 @@ Function ITC_FIFOMonitor(s)
 	STRUCT WMBackgroundStruct &s
 
 	string oscilloscopeSubwindow
-	variable fifoPos, moreData, anaFuncReturn
+	variable fifoPos, moreData, anaFuncReturn, result
 
 	SVAR panelTitleG       = $GetPanelTitleGlobal()
 	NVAR ITCDeviceIDGlobal = $GetITCDeviceIDGlobal(panelTitleG)
@@ -98,11 +98,15 @@ Function ITC_FIFOMonitor(s)
 
 	AM_analysisMasterMidSweep(panelTitleG)
 
-	if(moreData && AFM_CallAnalysisFunctions(panelTitleG, MID_SWEEP_EVENT) == ANALYSIS_FUNC_RET_REPURP_TIME)
-		UpdateLeftOverSweepTime(panelTitleG, fifoPos)
-		moreData = 0
-	elseif(moreData && AFM_CallAnalysisFunctions(panelTitleG, MID_SWEEP_EVENT) == ANALYSIS_FUNC_RET_EARLY_STOP)
-		moreData = 0
+	if(moreData)
+		result = AFM_CallAnalysisFunctions(panelTitleG, MID_SWEEP_EVENT)
+
+		if(result == ANALYSIS_FUNC_RET_REPURP_TIME)
+			UpdateLeftOverSweepTime(panelTitleG, fifoPos)
+			moreData = 0
+		elseif(result == ANALYSIS_FUNC_RET_EARLY_STOP)
+			moreData = 0
+		endif
 	endif
 
 	if(!moreData)
@@ -375,7 +379,7 @@ Function ITC_StartTestPulse(panelTitle)
 			// nothing
 		while (HW_ITC_MoreData(ITCDeviceIDGlobal))
 
-		HW_ITC_StopAcq(prepareForDAQ=1)
+		HW_StopAcq(HARDWARE_ITC_DAC, ITCDeviceIDGlobal, prepareForDAQ=1)
 		SCOPE_UpdateOscilloscopeData(panelTitle, TEST_PULSE_MODE)
 		TP_Delta(panelTitle)
 
@@ -448,21 +452,6 @@ static Function ITC_SupportSystemAlarm(Channel, Measurement, MeasurementTitle, p
 			beep
 		endif
 	endif
-End
-
-/// @brief Sets active DA channels to Zero - used after TP MD
-Function ITC_ZeroITCOnActiveChan(panelTitle)
-	string panelTitle
-
-	variable i
-	WAVE statusDA = DAP_ControlStatusWaveCache(panelTitle, CHANNEL_TYPE_DAC)
-	NVAR ITCDeviceIDGlobal = $GetITCDeviceIDGlobal(panelTitle)
-
-	for(i = 0; i < NUM_DA_TTL_CHANNELS; i += 1)
-		if(statusDA[i])
-			HW_WriteDAC(HARDWARE_ITC_DAC, ITCDeviceIDGlobal, i, 0)
-		endif
-	endfor
 End
 
 /// @brief Start data acquisition using single device mode

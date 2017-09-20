@@ -4524,6 +4524,9 @@ Function DAP_OneTimeCallBeforeDAQ(panelTitle, runMode)
 	NVAR count = $GetCount(panelTitle)
 	count = 0
 
+	NVAR repurposeTime = $GetRepurposedSweepTime(panelTitle)
+	repurposeTime = 0
+
 	NVAR raCycleID = $GetRepeatedAcquisitionCycleID(panelTitle)
 	raCycleID = DAP_GetRAAcquisitionCycleID(panelTitle)
 
@@ -6335,9 +6338,9 @@ Function DAP_StopOngoingDataAcquisition(panelTitle)
 		ITC_STOPFifoMonitor()
 		ITC_StopITCDeviceTimer(panelTitle)
 
-		HW_ITC_StopAcq()
-		// zero channels that may be left high
-		ITC_ZeroITCOnActiveChan(panelTitle)
+		NVAR ITCDeviceIDGlobal = $GetITCDeviceIDGlobal(panelTitle)
+		HW_SelectDevice(HARDWARE_ITC_DAC, ITCDeviceIDGlobal)
+		HW_StopAcq(HARDWARE_ITC_DAC, ITCDeviceIDGlobal, zeroDAC = 1)
 
 		if(!discardData)
 			SWS_SaveAndScaleITCData(panelTitle, forcedStop = 1)

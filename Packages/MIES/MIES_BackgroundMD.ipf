@@ -153,7 +153,7 @@ Function ITC_FIFOMonitorMD(s)
 	DFREF activeDevices = GetActiveITCDevicesFolder()
 	WAVE/SDFR=activeDevices ActiveDeviceList
 	variable deviceID, isFinished
-	variable i, fifoPos
+	variable i, fifoPos, result
 	string panelTitle
 
 	for(i = 0; i < DimSize(ActiveDeviceList, ROWS); i += 1)
@@ -166,11 +166,15 @@ Function ITC_FIFOMonitorMD(s)
 
 		SCOPE_UpdateOscilloscopeData(panelTitle, DATA_ACQUISITION_MODE, fifoPos=fifoPos)
 
-		if(!isFinished && AFM_CallAnalysisFunctions(panelTitle, MID_SWEEP_EVENT) == ANALYSIS_FUNC_RET_REPURP_TIME)
-			UpdateLeftOverSweepTime(panelTitle, fifoPos)
-			isFinished = 1
-		elseif(!isFinished && AFM_CallAnalysisFunctions(panelTitle, MID_SWEEP_EVENT) == ANALYSIS_FUNC_RET_EARLY_STOP)
-			isFinished = 1
+		if(!isFinished)
+			result = AFM_CallAnalysisFunctions(panelTitle, MID_SWEEP_EVENT)
+
+			if(result == ANALYSIS_FUNC_RET_REPURP_TIME)
+				UpdateLeftOverSweepTime(panelTitle, fifoPos)
+				isFinished = 1
+			elseif(result == ANALYSIS_FUNC_RET_EARLY_STOP)
+				isFinished = 1
+			endif
 		endif
 
 		if(isFinished)
@@ -194,7 +198,7 @@ static Function ITC_StopDataAcqMD(panelTitle, ITCDeviceIDGlobal)
 
 	TFH_StopFIFODaemon(HARDWARE_ITC_DAC, ITCDeviceIDGlobal)
 	HW_SelectDevice(HARDWARE_ITC_DAC, ITCDeviceIDGlobal, flags=HARDWARE_ABORT_ON_ERROR)
-	HW_StopAcq(HARDWARE_ITC_DAC, ITCDeviceIDGlobal, prepareForDAQ=1)
+	HW_StopAcq(HARDWARE_ITC_DAC, ITCDeviceIDGlobal, prepareForDAQ=1, zeroDAC = 1)
 
 	SWS_SaveAndScaleITCData(panelTitle)
 	if(RA_IsFirstSweep(panelTitle))
@@ -219,10 +223,8 @@ static Function ITC_TerminateOngoingDAQMDHelper(panelTitle)
 
 	TFH_StopFIFODaemon(HARDWARE_ITC_DAC, ITCDeviceIDGlobal)
 	HW_SelectDevice(HARDWARE_ITC_DAC, ITCDeviceIDGlobal, flags=HARDWARE_ABORT_ON_ERROR)
-	HW_StopAcq(HARDWARE_ITC_DAC, ITCDeviceIDGlobal)
-	
-	ITC_ZeroITCOnActiveChan(panelTitle)
-	
+	HW_StopAcq(HARDWARE_ITC_DAC, ITCDeviceIDGlobal, zeroDAC = 1)
+
 	// remove device passed in from active device lists
 	ITC_MakeOrUpdateActivDevLstWave(panelTitle, ITCDeviceIDGlobal, 0, 0, -1)
 

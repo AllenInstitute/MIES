@@ -481,8 +481,7 @@ static Function RA_SkipSweepCalc(panelTitle, skipCount)
 	NVAR count = $GetCount(panelTitle)
 	if(getCheckboxState(panelTitle, "Check_DataAcq1_RepeatAcq"))
 		// RA_counter and RA_counterMD increment count at initialization, -1 accounts for this and allows a skipping back to sweep 0
-		// prevents skipping the last sweep. To skip last sweep, user is expected to stop data acquisition
-		return min(totSweeps - 2, max(count + skipCount, -1))
+		return min(totSweeps - 1, max(count + skipCount, -1))
 	else 
 		return 0
 	endif
