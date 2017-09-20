@@ -198,7 +198,7 @@ static Function ITC_StopDataAcqMD(panelTitle, ITCDeviceIDGlobal)
 
 	TFH_StopFIFODaemon(HARDWARE_ITC_DAC, ITCDeviceIDGlobal)
 	HW_SelectDevice(HARDWARE_ITC_DAC, ITCDeviceIDGlobal, flags=HARDWARE_ABORT_ON_ERROR)
-	HW_StopAcq(HARDWARE_ITC_DAC, ITCDeviceIDGlobal, prepareForDAQ=1)
+	HW_StopAcq(HARDWARE_ITC_DAC, ITCDeviceIDGlobal, prepareForDAQ=1, zeroDAC = 1)
 
 	SWS_SaveAndScaleITCData(panelTitle)
 	if(RA_IsFirstSweep(panelTitle))
