@@ -454,21 +454,6 @@ static Function ITC_SupportSystemAlarm(Channel, Measurement, MeasurementTitle, p
 	endif
 End
 
-/// @brief Sets active DA channels to Zero - used after TP MD
-Function ITC_ZeroITCOnActiveChan(panelTitle)
-	string panelTitle
-
-	variable i
-	WAVE statusDA = DAP_ControlStatusWaveCache(panelTitle, CHANNEL_TYPE_DAC)
-	NVAR ITCDeviceIDGlobal = $GetITCDeviceIDGlobal(panelTitle)
-
-	for(i = 0; i < NUM_DA_TTL_CHANNELS; i += 1)
-		if(statusDA[i])
-			HW_WriteDAC(HARDWARE_ITC_DAC, ITCDeviceIDGlobal, i, 0)
-		endif
-	endfor
-End
-
 /// @brief Start data acquisition using single device mode
 ///
 /// This is the high level function usable for all external users.

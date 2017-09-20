@@ -6340,9 +6340,7 @@ Function DAP_StopOngoingDataAcquisition(panelTitle)
 
 		NVAR ITCDeviceIDGlobal = $GetITCDeviceIDGlobal(panelTitle)
 		HW_SelectDevice(HARDWARE_ITC_DAC, ITCDeviceIDGlobal)
-		HW_StopAcq(HARDWARE_ITC_DAC, ITCDeviceIDGlobal)
-		// zero channels that may be left high
-		ITC_ZeroITCOnActiveChan(panelTitle)
+		HW_StopAcq(HARDWARE_ITC_DAC, ITCDeviceIDGlobal, zeroDAC = 1)
 
 		if(!discardData)
 			SWS_SaveAndScaleITCData(panelTitle, forcedStop = 1)

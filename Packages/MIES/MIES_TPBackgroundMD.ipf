@@ -188,10 +188,9 @@ static Function ITC_StopTPMD(panelTitle)
 	HW_SelectDevice(HARDWARE_ITC_DAC, ITCDeviceIDGlobal, flags=HARDWARE_ABORT_ON_ERROR)
 
 	if(HW_IsRunning(HARDWARE_ITC_DAC, ITCDeviceIDGlobal)) // makes sure the device being stopped is actually running
-		HW_StopAcq(HARDWARE_ITC_DAC, ITCDeviceIDGlobal)
+		HW_StopAcq(HARDWARE_ITC_DAC, ITCDeviceIDGlobal, zeroDAC = 1)
 
 		ITC_RemoveDevice(panelTitle)
-		ITC_ZeroITCOnActiveChan(panelTitle) // zeroes the active DA channels - makes sure the DA isn't left in the TP up state.
 		if(!ITC_HasActiveDevices())
 			CtrlNamedBackground TestPulseMD, stop
 		endif

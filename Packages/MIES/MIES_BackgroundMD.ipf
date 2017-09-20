@@ -223,10 +223,8 @@ static Function ITC_TerminateOngoingDAQMDHelper(panelTitle)
 
 	TFH_StopFIFODaemon(HARDWARE_ITC_DAC, ITCDeviceIDGlobal)
 	HW_SelectDevice(HARDWARE_ITC_DAC, ITCDeviceIDGlobal, flags=HARDWARE_ABORT_ON_ERROR)
-	HW_StopAcq(HARDWARE_ITC_DAC, ITCDeviceIDGlobal)
-	
-	ITC_ZeroITCOnActiveChan(panelTitle)
-	
+	HW_StopAcq(HARDWARE_ITC_DAC, ITCDeviceIDGlobal, zeroDAC = 1)
+
 	// remove device passed in from active device lists
 	ITC_MakeOrUpdateActivDevLstWave(panelTitle, ITCDeviceIDGlobal, 0, 0, -1)
 
