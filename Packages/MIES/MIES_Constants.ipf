@@ -747,3 +747,16 @@ Constant LABNOTEBOOK_GET_RANGE = -1
 Constant OVS_SWEEP_SELECTION_INDEX   = 0x0
 Constant OVS_SWEEP_SELECTION_SWEEPNO = 0x1
 /// @}
+
+Constant PATCHSEQ_NUM_SWEEPS_PASSED       = 3
+Constant PATCHSEQ_BL_EVAL_RANGE_MS        = 500
+Constant PATCHSEQ_PULSE_DUR               = 1000
+Constant PATCHSEQ_RMS_SHORT_THRESHOLD     = 0.07 // mV
+Constant PATCHSEQ_RMS_LONG_THRESHOLD      = 0.5  // mV
+Constant PATCHSEQ_TARGETV_THRESHOLD       = 1    // mV
+StrConstant PATCHSEQ_LBN_SET_PASSED       = "Sub Thres Set QC"
+StrConstant PATCHSEQ_LBN_SWEEP_PASSED     = "Sub Thres Sweep QC"
+StrConstant PATCHSEQ_LBN_RMS_SHORT_PASSED = "Sub Thres Short RMS QC"
+StrConstant PATCHSEQ_LBN_RMS_LONG_PASSED  = "Sub Thres Long RMS QC"
+StrConstant PATCHSEQ_LBN_TargetV_PASSED   = "Sub Thres Target V QC"
+StrConstant PATCHSEQ_LBN_CHUNK_PASSED_FMT = "Sub Thres Chunk %d QC"

@@ -807,3 +807,644 @@ Function ReachTargetVoltage(panelTitle, eventType, ITCDataWave, headStage, realD
 		SetDAScale(panelTitle, i, amps)
 	endfor
 End
+
+/// @brief Patch Seq Analysis function for sub threshold stimsets
+///
+/// Prerequisites:
+/// - This stimset must have this analysis function set for the "Pre DAQ", "Mid
+///   Sweep", "Post Sweep" and "Post Set" Event
+/// - A sweep passes if all tests on all headstages pass
+/// - Assumes that the number of sets in all stimsets are equal
+/// - Assumes that the stimset has 500ms of pre pulse baseline, a 1000ms (#PATCHSEQ_PULSE_DUR) pulse and at least 1000ms post pulse baseline.
+/// - Each 500ms (#PATCHSEQ_BL_EVAL_RANGE_MS) of the baseline is a chunk
+///
+/// Testing:
+/// For testing the sweep/set passing/fail logic define the wave
+/// root:overrideResults with as many rows as sweeps in the stimset.  Each
+/// entry in that wave determines if the sweep passes (1) or failed (0).
+///
+/// Reading the results from the labnotebook:
+///
+/// \rst
+/// .. code-block:: igorpro
+///
+///    WAVE numericalValues = GetLBNumericalValues(panelTitle)
+///
+///    // set properties
+///    variable i, numEntries
+///    WAVE/Z sweeps = AFH_GetSweepsFromSameRACycle(numericalValues, sweepNo)
+///    ASSERT(WaveExists(sweeps), "Missing RA cycle information, maybe the sweep is too old?")
+///
+///    numEntries = DimSize(sweeps, ROWS)
+///    for(i = 0; i < numEntries; i += 1)
+///         setPassed = GetLastSettingIndep(numericalValues, sweeps[i], LABNOTEBOOK_USER_PREFIX + PATCHSEQ_LBN_SET_PASSED, UNKNOWN_MODE)
+///         if(isFinite(setPassed))
+///         	break
+///         endif
+///    endfor
+///
+///    if(setPassed)
+///      // set passed
+///    else
+///      // set did not pass
+///    endif
+///
+///    // single sweep properties
+///    sweepPassed = GetLastSettingIndep(numericalValues, sweepNo, LABNOTEBOOK_USER_PREFIX + PATCHSEQ_LBN_SWEEP_PASSED, UNKNOWN_MODE)
+///
+///    // chunk (500ms portions of the baseline) properties
+///    sprintf key, PATCHSEQ_LBN_CHUNK_PASSED_FMT, chunk
+///    chunkPassed = GetLastSettingIndep(numericalValues, sweepNo, LABNOTEBOOK_USER_PREFIX + key, UNKNOWN_MODE)
+///
+///    // single test properties (currently not set/queryable per chunk)
+///    rmsShortPassed = GetLastSettingIndep(numericalValues, sweepNo, LABNOTEBOOK_USER_PREFIX + PATCHSEQ_LBN_RMS_SHORT_PASSED, UNKNOWN_MODE)
+///    rmsLongPassed  = GetLastSettingIndep(numericalValues, sweepNo, LABNOTEBOOK_USER_PREFIX + PATCHSEQ_LBN_RMS_LONG_PASSED, UNKNOWN_MODE)
+///    targetVPassed  = GetLastSettingIndep(numericalValues, sweepNo, LABNOTEBOOK_USER_PREFIX + PATCHSEQ_LBN_TARGETV_PASSED, UNKNOWN_MODE)
+///
+/// \endrst
+///
+/// @verbatim
+///
+/// Sketch of a stimset with inserted TP, pre pulse baseline (-), pulse (*), and post pulse baseline (-).
+///
+///  |-|                 ***********************************
+///  | |                 |                                 |
+///  | |                 |                      \WWW/      |
+///  | |                 |                      /   \      |
+///  | |                 |                     /wwwww\     |
+///  | |                 |                   _|  o_o  |_   |
+///  | |                 |      \WWWWWWW/   (_   / \   _)  |
+///  | |                 |    _/`  o_o  `\_   |  \_/  |    |
+///  | |                 |   (_    (_)    _)  : ~~~~~ :    |
+///  | |                 |     \ '-...-' /     \_____/     |
+///  | |                 |     (`'-----'`)     [     ]     |
+///  | |                 |      `"""""""`      `"""""`     |
+///  | |                 |                                 |
+/// -| |-----------------|                                 |--------------------------------------------
+///
+/// ascii art image from: http://ascii.co.uk/art/erniebert
+///
+/// @endverbatim
+///
+Function PatchSeqSubThreshold(panelTitle, eventType, ITCDataWave, headStage, realDataLength)
+	string panelTitle
+	variable eventType
+	Wave ITCDataWave
+	variable headstage, realDataLength
+
+	variable val, totalOnsetDelay, lastFifoPos
+	variable i, sweepNo, fifoInStimsetPoint, fifoInStimsetTime
+	variable index, skipToEnd, ret
+	variable sweepPassed, setPassed
+	variable sweepsInSet, passesInSet, acquiredSweepsInSet, numBaselineChunks
+	string msg, stimset
+
+	// only do something if we are called for the very last headstage
+	if(DAP_GetHighestActiveHeadstage(panelTitle) != headstage)
+		return NaN
+	endif
+
+	// BEGIN CHANGE ME
+	MAKE/D/FREE DAScales = {-30, -70, -90}
+	// END CHANGE ME
+
+	WAVE DAScalesIndex = GetAnalysisFuncIndexingHelper(panelTitle)
+
+	WAVE statusHS = DAP_ControlStatusWaveCache(panelTitle, CHANNEL_TYPE_HEADSTAGE)
+
+	switch(eventType)
+		case PRE_DAQ_EVENT:
+			DAScalesIndex[headstage] = 0
+
+			if(!GetCheckBoxState(panelTitle, "check_Settings_ITITP"))
+				printf "(%s): TP during ITI must be checked\r", panelTitle
+				ControlWindowToFront()
+				return 1
+			elseif(!GetCheckBoxState(panelTitle, "check_DataAcq_AutoBias"))
+				printf "(%s): Auto Bias must be checked\r", panelTitle
+				ControlWindowToFront()
+				return 1
+			endif
+
+			val = GetSetVariable(panelTitle, "setvar_DataAcq_AutoBiasV")
+
+			if(!IsFinite(val) || CheckIfSmall(val, tol = 1e-12))
+				printf "(%s): Autobias value is zero or non-finite\r", panelTitle
+				ControlWindowToFront()
+				return 1
+			endif
+
+			break
+		case POST_SWEEP_EVENT:
+			sweepNo              = AFH_GetLastSweepAcquired(panelTitle)
+			WAVE numericalValues = GetLBNumericalValues(panelTitle)
+			WAVE textualValues   = GetLBTextualValues(panelTitle)
+
+			sweepPassed = GetLastSettingIndep(numericalValues, sweepNo, LABNOTEBOOK_USER_PREFIX + PATCHSEQ_LBN_SWEEP_PASSED, UNKNOWN_MODE)
+			ASSERT(IsFinite(sweepPassed), "Could not find the sweep passed labnotebook entry")
+
+			WAVE/T stimsets = GetLastSettingText(textualValues, sweepNo, STIM_WAVE_NAME_KEY, DATA_ACQUISITION_MODE)
+			stimset = stimsets[headstage]
+
+			sweepsInSet         = IDX_NumberOfTrialsInSet(stimset)
+			passesInSet         = NumPassesInSet(panelTitle, sweepNo)
+			acquiredSweepsInSet = NumAcquiredSweepsInSet(panelTitle, sweepNo)
+
+			if(!sweepPassed)
+				// not enough sweeps left to pass the set
+				skipToEnd = (sweepsInSet - acquiredSweepsInSet) < (PATCHSEQ_NUM_SWEEPS_PASSED - passesInSet)
+			else
+				if(passesInSet >= PATCHSEQ_NUM_SWEEPS_PASSED)
+					skipToEnd = 1
+				else
+					// set next DAScale value
+					DAScalesIndex[headstage] += 1
+				endif
+			endif
+
+			sprintf msg, "Sweep %s, total sweeps %d, acquired sweeps %d, passed sweeps %d, skipToEnd %s, DAScalesIndex %d\r", SelectString(sweepPassed, "failed", "passed"), sweepsInSet, acquiredSweepsInSet, passesInSet, SelectString(skiptoEnd, "false", "true"), DAScalesIndex[headstage]
+			DEBUGPRINT(msg)
+
+			if(skiptoEnd)
+				RA_SkipSweeps(panelTitle, inf)
+				return NaN
+			endif
+
+			break
+		case POST_SET_EVENT:
+			sweepNo = AFH_GetLastSweepAcquired(panelTitle)
+			setPassed = NumPassesInSet(panelTitle, sweepNo) >= PATCHSEQ_NUM_SWEEPS_PASSED
+
+			sprintf msg, "Set has %s\r", SelectString(setPassed, "failed", "passed")
+			DEBUGPRINT(msg)
+
+			Make/FREE/N=(LABNOTEBOOK_LAYER_COUNT) result = NaN
+			result[INDEP_HEADSTAGE] = setPassed
+			ED_AddEntryToLabnotebook(panelTitle, PATCHSEQ_LBN_SET_PASSED, result, unit = "On/Off")
+
+			return NaN
+			break
+	endswitch
+
+	if(eventType == PRE_DAQ_EVENT || eventType == POST_SWEEP_EVENT)
+		for(i = 0; i < NUM_HEADSTAGES; i += 1)
+			if(!statusHS[i])
+				continue
+			endif
+
+			index = DAScalesIndex[i]
+
+			// index equals the number of sweeps in the stimset on the last call (*post* sweep event)
+			if(index > DimSize(DAScales, ROWS))
+				printf "(%s): The stimset has too many sweeps, increase the size of DAScales.\r", GetRTStackInfo(1)
+				continue
+			elseif(index < DimSize(DAScales, ROWS))
+				SetDAScale(panelTitle, i, DAScales[index] * 1e-12)
+			endif
+		endfor
+	endif
+
+	if(eventType != MID_SWEEP_EVENT)
+		return NaN
+	endif
+
+	WAVE numericalValues = GetLBNumericalValues(panelTitle)
+
+	// we can't use AFH_GetLastSweepAcquired as the sweep is not yet acquired
+	sweepNo = GetSetVariable(panelTitle, "SetVar_Sweep")
+	sweepPassed = GetLastSettingIndep(numericalValues, sweepNo, LABNOTEBOOK_USER_PREFIX + PATCHSEQ_LBN_SWEEP_PASSED, UNKNOWN_MODE, defValue = 0)
+
+	if(sweepPassed) // already done
+		return NaN
+	endif
+
+	// oscilloscope data holds scaled data already
+	WAVE OscilloscopeData = GetOscilloscopeWave(panelTitle)
+	lastFifoPos = GetNumberFromWaveNote(OscilloscopeData, "lastFifoPos") - 1
+
+	totalOnsetDelay = GetSetVariable(panelTitle, "setvar_DataAcq_OnsetDelayUser") \
+					  + GetValDisplayAsNum(panelTitle, "valdisp_DataAcq_OnsetDelayAuto")
+
+	fifoInStimsetPoint = lastFifoPos - totalOnsetDelay / DimDelta(OscilloscopeData, ROWS)
+	fifoInStimsetTime  = fifoInStimsetPoint * DimDelta(OscilloscopeData, ROWS)
+
+	numBaselineChunks = GetNumberOfChunks(panelTitle)
+
+	for(i = 0; i < numBaselineChunks; i += 1)
+
+		ret = EvaluateBaselineProperties(panelTitle, sweepNo, i, fifoInStimsetTime, totalOnsetDelay)
+
+		if(IsNaN(ret))
+			// NaN: not enough data for check
+			return NaN
+		elseif(ret)
+			// != 0: failed with special mid sweep return value (on first failure)
+			if(i == 0)
+				// pre pulse baseline
+				// fail sweep
+				break
+			else
+				// post pulse baseline
+				// try next chunk
+				continue
+			endif
+		else
+			// 0: passed
+			if(i == 0)
+				// pre pulse baseline
+				// try next chunks
+				continue
+			else
+				// post baseline
+				// we're done!
+				break
+			endif
+		endif
+	endfor
+
+	sweepPassed = (ret == 0)
+
+	sprintf msg, "Sweep %s, last evaluated chunk %d returned with %g\r", SelectString(sweepPassed, "failed", "passed"), i, ret
+	DEBUGPRINT(msg)
+
+	// document sweep results
+	Make/FREE/N=(LABNOTEBOOK_LAYER_COUNT) result = NaN
+	result[INDEP_HEADSTAGE] = sweepPassed
+
+	ED_AddEntryToLabnotebook(panelTitle, PATCHSEQ_LBN_SWEEP_PASSED, result, unit = "On/Off", overrideSweepNo = sweepNo)
+
+	return sweepPassed ? ANALYSIS_FUNC_RET_EARLY_STOP : ret
+End
+
+static Constant PATCHSEQ_BL_PRE_PULSE   = 0x0
+static Constant PATCHSEQ_BL_POST_PULSE  = 0x1
+
+static Constant PATCHSEQ_RMS_SHORT_TEST = 0x0
+static Constant PATCHSEQ_RMS_LONG_TEST  = 0x1
+static Constant PATCHSEQ_TARGETV_TEST   = 0x2
+
+/// @brief Evaluate one chunk of the baseline.
+///
+/// chunk 0: Pre pulse baseline
+/// chunk 1: Post pulse baseline
+static Function EvaluateBaselineProperties(panelTitle, sweepNo, chunk, fifoInStimsetTime, totalOnsetDelay)
+	string panelTitle
+	variable sweepNo, chunk, fifoInStimsetTime, totalOnsetDelay
+
+	variable , evalStartTime, evalRangeTime
+	variable i, ADC, ADcol, chunkStartTime
+	variable targetV, index, testOverrideActive
+	variable rmsShortPassedAll, rmsLongPassedAll, chunkPassed
+	variable targetVPassedAll, baselineType
+	string msg, adUnit, ctrl, key
+
+	if(chunk == 0) // pre pulse baseline
+		chunkStartTime = totalOnsetDelay
+		baselineType   = PATCHSEQ_BL_PRE_PULSE
+	else // post pulse baseline
+		 // skip: onset delay, the pulse itself and one chunk of post pulse baseline
+		chunkStartTime = (totalOnsetDelay + PATCHSEQ_PULSE_DUR + PATCHSEQ_BL_EVAL_RANGE_MS) + chunk * PATCHSEQ_BL_EVAL_RANGE_MS
+		baselineType   = PATCHSEQ_BL_POST_PULSE
+	endif
+
+	// not enough data to evaluate
+	if(fifoInStimsetTime < chunkStartTime + PATCHSEQ_BL_EVAL_RANGE_MS)
+		return NaN
+	endif
+
+	WAVE numericalValues = GetLBNumericalValues(panelTitle)
+	WAVE textualValues   = GetLBTextualValues(panelTitle)
+
+	sprintf key, PATCHSEQ_LBN_CHUNK_PASSED_FMT, chunk
+	chunkPassed = GetLastSettingIndep(numericalValues, sweepNo, LABNOTEBOOK_USER_PREFIX + key, UNKNOWN_MODE, defValue = NaN)
+
+	if(IsFinite(chunkPassed)) // already evaluated
+		return !chunkPassed
+	endif
+
+	// Rows: baseline types
+	// - 0: pre pulse
+	// - 1: post pulse
+	//
+	// Cols: checks
+	// - 0: short RMS
+	// - 1: long RMS
+	// - 2: average voltage
+	//
+	// Contents:
+	//  0: skip test
+	//  1: perform test
+	Make/FREE/N=(2, 3) testMatrix
+
+	testMatrix[PATCHSEQ_BL_PRE_PULSE][] = 1 // all tests
+	testMatrix[PATCHSEQ_BL_POST_PULSE][PATCHSEQ_TARGETV_TEST] = 1
+
+	WAVE OscilloscopeData = GetOscilloscopeWave(panelTitle)
+
+	sprintf msg, "We have some data to evaluate in chunk %d [%g, %g]:  %gms\r", chunk, chunkStartTime, chunkStartTime + PATCHSEQ_BL_EVAL_RANGE_MS, fifoInStimsetTime
+	DEBUGPRINT(msg)
+
+	WAVE config = GetITCChanConfigWave(panelTitle)
+
+	Make/FREE/N = (LABNOTEBOOK_LAYER_COUNT) rmsShort       = NaN
+	Make/FREE/N = (LABNOTEBOOK_LAYER_COUNT) rmsShortPassed = NaN
+	Make/FREE/N = (LABNOTEBOOK_LAYER_COUNT) rmsLong        = NaN
+	Make/FREE/N = (LABNOTEBOOK_LAYER_COUNT) rmsLongPassed  = NaN
+	Make/FREE/N = (LABNOTEBOOK_LAYER_COUNT) avgVoltage     = NaN
+	Make/FREE/N = (LABNOTEBOOK_LAYER_COUNT) targetVPassed  = NaN
+
+	targetV = GetSetVariable(panelTitle, "setvar_DataAcq_AutoBiasV")
+
+	WAVE statusHS = DAP_ControlStatusWaveCache(panelTitle, CHANNEL_TYPE_HEADSTAGE)
+
+	for(i = 0; i < NUM_HEADSTAGES; i += 1)
+
+		if(!statusHS[i])
+			continue
+		endif
+
+		ADC = AFH_GetADCFromHeadstage(panelTitle, i)
+		ASSERT(IsFinite(ADC), "This analysis function does not work with unassociated AD channels")
+		ADcol = AFH_GetITCDataColumn(config, ADC, ITC_XOP_CHANNEL_TYPE_ADC)
+
+		ctrl   = GetPanelControl(ADC, CHANNEL_TYPE_ADC, CHANNEL_CONTROL_UNIT)
+		ADUnit = GetSetVariableString(panelTitle, ctrl)
+
+		// assuming millivolts
+		ASSERT(!cmpstr(ADunit, "mV"), "Unexpected AD Unit")
+
+		if(testMatrix[baselineType][PATCHSEQ_RMS_SHORT_TEST])
+
+			evalStartTime = chunkStartTime + PATCHSEQ_BL_EVAL_RANGE_MS - 1.5
+			evalRangeTime = 1.5
+
+			// check 1: RMS of the last 1.5ms of the baseline should be below 0.07mV
+			rmsShort[i]       = CalculateRMS(OscilloscopeData, ADCol, evalStartTime, evalRangeTime)
+			rmsShortPassed[i] = rmsShort[i] < PATCHSEQ_RMS_SHORT_THRESHOLD
+
+			sprintf msg, "RMS noise short: %g (%s)\r", rmsShort[i], SelectString(rmsShortPassed[i], "failed", "passed")
+			DEBUGPRINT(msg)
+		else
+			sprintf msg, "RMS noise short: (%s)\r", "skipped"
+			DEBUGPRINT(msg)
+			rmsShortPassed[i] = -1
+		endif
+
+		if(!rmsShortPassed[i])
+			continue
+		endif
+
+		if(testMatrix[baselineType][PATCHSEQ_RMS_LONG_TEST])
+
+			evalStartTime = chunkStartTime
+			evalRangeTime = PATCHSEQ_BL_EVAL_RANGE_MS
+
+			// check 2: RMS of the last 500ms of the baseline should be below 0.50mV
+			rmsLong[i]       = CalculateRMS(OscilloscopeData, ADCol, evalStartTime, evalRangeTime)
+			rmsLongPassed[i] = rmsLong[i] < PATCHSEQ_RMS_LONG_THRESHOLD
+
+			sprintf msg, "RMS noise long: %g (%s)", rmsLong[i], SelectString(rmsLongPassed[i], "failed", "passed")
+			DEBUGPRINT(msg)
+		else
+			sprintf msg, "RMS noise long: (%s)\r", "skipped"
+			DEBUGPRINT(msg)
+			rmsLongPassed[i] = -1
+		endif
+
+		if(!rmsLongPassed[i])
+			continue
+		endif
+
+		if(testMatrix[baselineType][PATCHSEQ_TARGETV_TEST])
+
+			evalStartTime = chunkStartTime
+			evalRangeTime = PATCHSEQ_BL_EVAL_RANGE_MS
+
+			// check 3: Average voltage within 1mV of auto bias target voltage
+			avgVoltage[i]    = CalculateAvg(OscilloscopeData, ADCol, evalStartTime, evalRangeTime)
+			targetVPassed[i] = abs(avgVoltage[i] - targetV) <= PATCHSEQ_TARGETV_THRESHOLD
+
+			sprintf msg, "Average voltage of %gms: %g (%s)", evalRangeTime, avgVoltage[i], SelectString(targetVPassed[i], "failed", "passed")
+			DEBUGPRINT(msg)
+		else
+			sprintf msg, "Average voltage of %gms: (%s)\r", evalRangeTime, "skipped"
+			DEBUGPRINT(msg)
+			targetVPassed[i] = -1
+		endif
+
+		if(!targetVPassed[i])
+			continue
+		endif
+
+		// more tests can be added here
+	endfor
+
+	// document results per headstage
+	ED_AddEntryToLabnotebook(panelTitle, PATCHSEQ_LBN_RMS_SHORT_PASSED, rmsShortPassed, unit = "On/Off", overrideSweepNo = sweepNo)
+	ED_AddEntryToLabnotebook(panelTitle, PATCHSEQ_LBN_RMS_LONG_PASSED, rmsLongPassed, unit = "On/Off", overrideSweepNo = sweepNo)
+	ED_AddEntryToLabnotebook(panelTitle, PATCHSEQ_LBN_TARGETV_PASSED, targetVPassed, unit = "On/Off", overrideSweepNo = sweepNo)
+
+	if(testMatrix[baselineType][PATCHSEQ_RMS_SHORT_TEST])
+		rmsShortPassedAll = WaveMin(rmsShortPassed) == 1
+	else
+		rmsShortPassedAll = -1
+	endif
+
+	if(testMatrix[baselineType][PATCHSEQ_RMS_LONG_TEST])
+		rmsLongPassedAll = WaveMin(rmsLongPassed) == 1
+	else
+		rmsLongPassedAll = -1
+	endif
+
+	if(testMatrix[baselineType][PATCHSEQ_TARGETV_TEST])
+		targetVPassedAll = WaveMin(targetVPassed) == 1
+	else
+		targetVPassedAll = -1
+	endif
+
+	if(rmsShortPassedAll == -1 && rmsLongPassedAll == - 1 && targetVPassedAll == -1)
+		print "All tests were skipped??"
+		ControlWindowToFront()
+		return NaN
+	endif
+
+	chunkPassed = rmsShortPassedAll && rmsLongPassedAll && targetVPassedAll
+
+	// BEGIN TEST
+	WAVE/Z/SDFR=root: overrideResults
+	testOverrideActive = WaveExists(overrideResults)
+
+	if(testOverrideActive)
+		NVAR count = $GetCount(panelTitle)
+		chunkPassed = overrideResults[chunk][count]
+		printf "TEST OVERRIDE ACTIVE: \"Chunk %d %s\"\r", chunk, SelectString(chunkPassed, "failed", "passed")
+	endif
+	// END TEST
+
+	// document chunk results
+	Make/FREE/N=(LABNOTEBOOK_LAYER_COUNT) result = NaN
+	result[INDEP_HEADSTAGE] = chunkPassed
+	sprintf key, PATCHSEQ_LBN_CHUNK_PASSED_FMT, chunk
+	ED_AddEntryToLabnotebook(panelTitle, key, result, unit = "On/Off", overrideSweepNo = sweepNo)
+
+	if(testOverrideActive)
+		if(baselineType == PATCHSEQ_BL_PRE_PULSE)
+			if(!chunkPassed)
+				return ANALYSIS_FUNC_RET_EARLY_STOP
+			else
+				return 0
+			endif
+		elseif(baselineType == PATCHSEQ_BL_POST_PULSE)
+			if(!chunkPassed)
+				return NaN
+			else
+				return 0
+			else
+				ASSERT(0, "unknown baseline type")
+			endif
+		endif
+	endif
+
+	if(baselineType == PATCHSEQ_BL_PRE_PULSE)
+		if(!rmsShortPassedAll)
+			return ANALYSIS_FUNC_RET_EARLY_STOP
+		elseif(!rmsLongPassedAll)
+			return ANALYSIS_FUNC_RET_EARLY_STOP
+		elseif(!targetVPassedAll)
+			NVAR repurposedTime = $GetRepurposedSweepTime(panelTitle)
+			repurposedTime = 10
+			return ANALYSIS_FUNC_RET_REPURP_TIME
+		else
+			ASSERT(chunkPassed, "logic error")
+			return 0
+		endif
+	elseif(baselineType == PATCHSEQ_BL_POST_PULSE)
+		if(chunkPassed)
+			return 0
+		else
+			return NaN
+		endif
+	else
+		ASSERT(0, "unknown baseline type")
+	endif
+End
+
+/// @brief Return the number of chunks
+///
+/// A chunk is #PATCHSEQ_BL_EVAL_RANGE_MS [ms] of baseline
+static Function GetNumberOfChunks(panelTitle)
+	string panelTitle
+
+	variable length, nonBL, totalOnsetDelay
+
+	WAVE OscilloscopeData    = GetOscilloscopeWave(panelTitle)
+	NVAR stopCollectionPoint = $GetStopCollectionPoint(panelTitle)
+	totalOnsetDelay = GetSetVariable(panelTitle, "setvar_DataAcq_OnsetDelayUser") \
+					  + GetValDisplayAsNum(panelTitle, "valdisp_DataAcq_OnsetDelayAuto")
+
+	length = stopCollectionPoint * DimDelta(OscilloscopeData, ROWS)
+	nonBL  = totalOnsetDelay + PATCHSEQ_PULSE_DUR + PATCHSEQ_BL_EVAL_RANGE_MS
+
+	return floor((length - nonBL) / PATCHSEQ_BL_EVAL_RANGE_MS)
+End
+
+// @brief Calculate the average from `startTime` spanning
+//        `rangeTime` milliseconds
+static Function CalculateAvg(wv, column, startTime, rangeTime)
+	WAVE wv
+	variable column, startTime, rangeTime
+
+	variable rangePoints, startPoints
+
+	startPoints = startTime / DimDelta(wv, ROWS)
+	rangePoints = rangeTime / DimDelta(wv, ROWS)
+
+	MatrixOP/FREE data = subWaveC(wv, startPoints, column, rangePoints)
+	MatrixOP/FREE avg  = mean(data)
+
+	ASSERT(IsFinite(avg[0]), "result must be finite")
+
+	return avg[0]
+End
+
+// @brief Calculate the RMS minus the average from `startTime` spanning
+//        `rangeTime` milliseconds
+//
+// @note: This differs from what WaveStats returns in `V_sdev` as we divide by
+//        `N` but WaveStats by `N -1`.
+static Function CalculateRMS(wv, column, startTime, rangeTime)
+	WAVE wv
+	variable column, startTime, rangeTime
+
+	variable rangePoints, startPoints
+
+	startPoints = startTime / DimDelta(wv, ROWS)
+	rangePoints = rangeTime / DimDelta(wv, ROWS)
+
+	MatrixOP/FREE data = subWaveC(wv, startPoints, column, rangePoints)
+	MatrixOP/FREE avg  = mean(data)
+	MatrixOP/FREE rms  = sqrt(sumSqr(data - avg[0]) / numRows(data))
+
+	ASSERT(IsFinite(rms[0]), "result must be finite")
+
+	return rms[0]
+End
+
+/// @brief Return the number of already acquired sweeps from the given
+///        repeated acquisition cycle.
+static Function NumAcquiredSweepsInSet(panelTitle, sweepNo)
+	string panelTitle
+	variable sweepNo
+
+	WAVE numericalValues = GetLBNumericalValues(panelTitle)
+
+	WAVE/Z sweeps = AFH_GetSweepsFromSameRACycle(numericalValues, sweepNo)
+
+	if(!WaveExists(sweeps)) // very unlikely
+		return 0
+	endif
+
+	return DimSize(sweeps, ROWS)
+End
+
+/// @brief Return the number of passed sweeps in all sweeps from the given
+///        repeated acquisition cycle.
+static Function NumPassesInSet(panelTitle, sweepNo)
+	string panelTitle
+	variable sweepNo
+
+	WAVE numericalValues = GetLBNumericalValues(panelTitle)
+
+	WAVE/Z sweeps = AFH_GetSweepsFromSameRACycle(numericalValues, sweepNo)
+
+	if(!WaveExists(sweeps)) // very unlikely
+		return NaN
+	endif
+
+	Make/FREE/N=(DimSize(sweeps, ROWS)) passes
+	passes[] = GetLastSettingIndep(numericalValues, sweeps[p], LABNOTEBOOK_USER_PREFIX + PATCHSEQ_LBN_SWEEP_PASSED, UNKNOWN_MODE)
+
+	return sum(passes)
+End
+
+/// CreateOverrideResults("ITC18USB_DEV_0", 0)
+///
+/// Rows:
+/// - chunks
+///
+/// Cols:
+/// - sweeps/steps
+Function/WAVE CreateOverrideResults(panelTitle, headstage)
+	string panelTitle
+	variable headstage
+
+	variable DAC = AFH_GetDACFromHeadstage(panelTitle, headstage)
+	string stimset = AFH_GetStimSetName(panelTitle, DAC, CHANNEL_TYPE_DAC)
+	WAVE wv = WB_CreateAndGetStimSet(stimset)
+
+	Make/O/B/N=(GetNumberOfChunks(panelTitle), IDX_NumberOfTrialsInSet(stimset)) root:overrideResults/WAVE=overrideResults
+
+	overrideResults = 0
+
+	return overrideResults
+End
