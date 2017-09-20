@@ -415,16 +415,17 @@ End
 /// @param hardwareType  One of @ref HardwareDACTypeConstants
 /// @param deviceID      device identifier
 /// @param prepareForDAQ immediately prepare for the next data acquisition after stopping it
+/// @param zeroDAC       set all used DA channels to zero
 /// @param flags         [optional, default none] One or multiple flags from @ref HardwareInteractionFlags
-Function HW_StopAcq(hardwareType, deviceID, [prepareForDAQ, flags])
-	variable hardwareType, deviceID, prepareForDAQ, flags
+Function HW_StopAcq(hardwareType, deviceID, [prepareForDAQ, zeroDAC, flags])
+	variable hardwareType, deviceID, prepareForDAQ, zeroDAC, flags
 
 	string device
 	HW_AssertOnInvalid(hardwareType, deviceID)
 
 	switch(hardwareType)
 		case HARDWARE_ITC_DAC:
-			HW_ITC_StopAcq(deviceID, prepareForDAQ=prepareForDAQ, flags=flags)
+			HW_ITC_StopAcq(deviceID, prepareForDAQ=prepareForDAQ, zeroDAC = zeroDAC, flags=flags)
 			break
 		case HARDWARE_NI_DAC:
 			device = HW_GetInternalDeviceName(hardwareType, deviceID)
@@ -944,9 +945,21 @@ threadsafe Function HW_ITC_StopAcq_TS(deviceID, [prepareForDAQ, flags])
 	endif
 End
 
+/// @param deviceID      device identifier
+/// @param config        [optional] ITC config wave
+/// @param configFunc    [optional, defaults to GetITCChanConfigWave()] override wave getter for the ITC config wave
+/// @param prepareForDAQ [optional, defaults to false] prepare for next DAQ immediately
+/// @param zeroDAC       [optional, defaults to false] set all DA channels to zero
+/// @param flags         [optional, default none] One or multiple flags from @ref HardwareInteractionFlags
+///
 /// @see HW_StopAcq
-Function HW_ITC_StopAcq(deviceID, [prepareForDAQ, flags])
-	variable deviceID, prepareForDAQ, flags
+Function HW_ITC_StopAcq(deviceID, [config, configFunc, prepareForDAQ, zeroDAC, flags])
+	variable deviceID, prepareForDAQ, zeroDAC, flags
+	WAVE/Z config
+	FUNCREF HW_WAVE_GETTER_PROTOTYPE configFunc
+
+	variable i, numEntries
+	string panelTitle
 
 	DEBUGPRINTSTACKINFO()
 
@@ -955,6 +968,25 @@ Function HW_ITC_StopAcq(deviceID, [prepareForDAQ, flags])
 	while(V_ITCXOPError == SLOT_LOCKED_TO_OTHER_THREAD && V_ITCError == 0)
 
 	HW_ITC_HandleReturnValues(flags, V_ITCError, V_ITCXOPError)
+
+	if(zeroDAC)
+		panelTitle = HW_GetMainDeviceName(HARDWARE_ITC_DAC, deviceID)
+
+		if(ParamIsDefault(config))
+			if(ParamIsDefault(configFunc))
+				WAVE config = GetITCChanConfigWave(panelTitle)
+			else
+				WAVE config = configFunc(panelTitle)
+			endif
+		endif
+
+		WAVE/Z DACs = GetDACListFromConfig(config)
+
+		numEntries = WaveExists(DACs) ? DimSize(DACs, ROWS) : 0
+		for(i = 0; i < DimSize(DACs, ROWS); i += 1)
+			HW_ITC_WriteDAC(deviceID, DACs[i], 0)
+		endfor
+	endif
 
 	if(prepareForDAQ)
 		do
