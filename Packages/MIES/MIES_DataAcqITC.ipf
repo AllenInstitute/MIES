@@ -379,7 +379,7 @@ Function ITC_StartTestPulse(panelTitle)
 			// nothing
 		while (HW_ITC_MoreData(ITCDeviceIDGlobal))
 
-		HW_ITC_StopAcq(prepareForDAQ=1)
+		HW_StopAcq(HARDWARE_ITC_DAC, ITCDeviceIDGlobal, prepareForDAQ=1)
 		SCOPE_UpdateOscilloscopeData(panelTitle, TEST_PULSE_MODE)
 		TP_Delta(panelTitle)
 

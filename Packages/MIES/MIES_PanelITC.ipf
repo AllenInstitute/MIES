@@ -6338,7 +6338,9 @@ Function DAP_StopOngoingDataAcquisition(panelTitle)
 		ITC_STOPFifoMonitor()
 		ITC_StopITCDeviceTimer(panelTitle)
 
-		HW_ITC_StopAcq()
+		NVAR ITCDeviceIDGlobal = $GetITCDeviceIDGlobal(panelTitle)
+		HW_SelectDevice(HARDWARE_ITC_DAC, ITCDeviceIDGlobal)
+		HW_StopAcq(HARDWARE_ITC_DAC, ITCDeviceIDGlobal)
 		// zero channels that may be left high
 		ITC_ZeroITCOnActiveChan(panelTitle)
 

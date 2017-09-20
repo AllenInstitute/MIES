@@ -424,7 +424,7 @@ Function HW_StopAcq(hardwareType, deviceID, [prepareForDAQ, flags])
 
 	switch(hardwareType)
 		case HARDWARE_ITC_DAC:
-			HW_ITC_StopAcq(prepareForDAQ=prepareForDAQ, flags=flags)
+			HW_ITC_StopAcq(deviceID, prepareForDAQ=prepareForDAQ, flags=flags)
 			break
 		case HARDWARE_NI_DAC:
 			device = HW_GetInternalDeviceName(hardwareType, deviceID)
@@ -856,24 +856,29 @@ End
 Function HW_ITC_CloseAllDevices([flags])
 	variable flags
 
+	variable deviceID
+
 	DEBUGPRINTSTACKINFO()
 
 	if(HW_ITC_IsRunning(flags=flags))
-		HW_ITC_StopAcq(flags=flags)
+		deviceID = HW_ITC_GetCurrentDevice()
+		HW_ITC_StopAcq(deviceID, flags=flags)
 	endif
 
 	ITCCloseAll2/Z=(flags & HARDWARE_PREVENT_ERROR_POPUP)
-	
 End
 
 /// @see HW_CloseDevice
 Function HW_ITC_CloseDevice([flags])
 	variable flags
 
+	variable deviceID
+
 	DEBUGPRINTSTACKINFO()
 
 	if(HW_ITC_IsRunning(flags=flags))
-		HW_ITC_StopAcq(flags=flags)
+		deviceID = HW_ITC_GetCurrentDevice()
+		HW_ITC_StopAcq(deviceID, flags=flags)
 	endif
 
 	do
@@ -940,8 +945,8 @@ threadsafe Function HW_ITC_StopAcq_TS(deviceID, [prepareForDAQ, flags])
 End
 
 /// @see HW_StopAcq
-Function HW_ITC_StopAcq([prepareForDAQ, flags])
-	variable prepareForDAQ, flags
+Function HW_ITC_StopAcq(deviceID, [prepareForDAQ, flags])
+	variable deviceID, prepareForDAQ, flags
 
 	DEBUGPRINTSTACKINFO()
 
