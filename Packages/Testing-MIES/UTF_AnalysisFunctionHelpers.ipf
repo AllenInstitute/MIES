@@ -328,6 +328,74 @@ Function AE_WorksIndepHeadstage()
 	CHECK_EQUAL_VAR(numericalValues[0][0][0], 0)
 End
 
+Function AE_OverrideSweepNoAborts()
+
+	variable row, col, i
+	string unit, unitRef, tolerance, toleranceRef
+	string key = "someKey"
+
+	unitRef = ""
+	toleranceRef = LABNOTEBOOK_NO_TOLERANCE
+
+	Make/FREE/N=(LABNOTEBOOK_LAYER_COUNT) values = NaN
+	values[LABNOTEBOOK_LAYER_COUNT - 1] = 4711
+
+	try
+		ED_AddEntryToLabnotebook(device, key, values, overrideSweepNo = inf)
+		FAIL()
+	catch
+		PASS()
+	endtry
+
+	try
+		ED_AddEntryToLabnotebook(device, key, values, overrideSweepNo = -1)
+		FAIL()
+	catch
+		PASS()
+	endtry
+End
+
+Function AE_OverrideSweepNoWorks()
+
+	variable row, col, i
+	string unit, unitRef, tolerance, toleranceRef
+	string key = "someKey"
+
+	unitRef = ""
+	toleranceRef = LABNOTEBOOK_NO_TOLERANCE
+
+	Make/FREE/N=(LABNOTEBOOK_LAYER_COUNT) values = NaN
+	values[LABNOTEBOOK_LAYER_COUNT - 1] = 4711
+	ED_AddEntryToLabnotebook(device, key, values, overrideSweepNo = 1234)
+
+	WAVE/T numericalKeys   = root:MIES:LabNoteBook:ITC18USB:Device0:numericalKeys
+	WAVE   numericalValues = root:MIES:LabNoteBook:ITC18USB:Device0:numericalValues
+
+	// key is added with prefix, so there is no full match
+	FindValue/TXOP=4/TEXT=key numericalKeys
+	CHECK_EQUAL_VAR(V_Value, -1)
+
+	FindValue/TEXT=key numericalKeys
+	col = floor(V_Value / DimSize(numericalKeys, ROWS))
+	row = V_Value - col * DimSize(numericalKeys, ROWS)
+	CHECK_EQUAL_VAR(row, 0)
+	CHECK_EQUAL_VAR(col, 4)
+
+	unit = numericalKeys[1][col]
+	CHECK_EQUAL_STR(unit, unitRef)
+
+	tolerance = numericalKeys[2][col]
+	CHECK_EQUAL_STR(tolerance, toleranceRef)
+
+	// entry can be found
+	CHECK_EQUAL_VAR(numericalValues[0][col][8], 4711)
+	WaveStats/Q/RMD=[0][col] numericalValues
+	CHECK_EQUAL_VAR(V_numNaNs, 8)
+
+	// inserted under correct sweep number
+	CHECK_EQUAL_VAR(numericalValues[0][0][0], 1234)
+End
+
 Function ATE_TextWorks1()
 
 	variable row, col, i
