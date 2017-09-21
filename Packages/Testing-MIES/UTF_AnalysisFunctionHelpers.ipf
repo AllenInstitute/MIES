@@ -12,6 +12,11 @@ static Function TEST_CASE_BEGIN_OVERRIDE(testCase)
 	if(DataFolderExists("root:MIES"))
 		Abort "Cleanup did not work"
 	endif
+
+	// fake one existing sweep
+	DFREF dfr = GetDeviceDataPath(device)
+	Make/N=(2, 2) dfr:Sweep_0
+	Make/N=(2, 2) dfr:Config_0
 End
 
 /// BEGIN ED_AddEntryToLabnotebook
@@ -108,6 +113,9 @@ Function AE_Works1()
 	CHECK_EQUAL_VAR(numericalValues[0][col][0], 4711)
 	WaveStats/Q/RMD=[0][col] numericalValues
 	CHECK_EQUAL_VAR(V_numNaNs, 8)
+
+	// inserted under correct sweep number
+	CHECK_EQUAL_VAR(numericalValues[0][0][0], 0)
 End
 
 Function AE_Works2()
@@ -146,6 +154,9 @@ Function AE_Works2()
 	CHECK_EQUAL_VAR(numericalValues[0][col][0], 4711)
 	WaveStats/Q/RMD=[0][col] numericalValues
 	CHECK_EQUAL_VAR(V_numNaNs, 8)
+
+	// inserted under correct sweep number
+	CHECK_EQUAL_VAR(numericalValues[0][0][0], 0)
 End
 
 Function AE_Works3()
@@ -185,6 +196,9 @@ Function AE_Works3()
 	CHECK_EQUAL_VAR(numericalValues[0][col][0], 4711)
 	WaveStats/Q/RMD=[0][col] numericalValues
 	CHECK_EQUAL_VAR(V_numNaNs, 8)
+
+	// inserted under correct sweep number
+	CHECK_EQUAL_VAR(numericalValues[0][0][0], 0)
 End
 
 Function AE_Works4()
@@ -223,6 +237,9 @@ Function AE_Works4()
 	CHECK_EQUAL_VAR(numericalValues[0][col][0], 4711)
 	WaveStats/Q/RMD=[0][col] numericalValues
 	CHECK_EQUAL_VAR(V_numNaNs, 8)
+
+	// inserted under correct sweep number
+	CHECK_EQUAL_VAR(numericalValues[0][0][0], 0)
 End
 
 Function AE_WorksMultiValues()
@@ -262,9 +279,12 @@ Function AE_WorksMultiValues()
 	Redimension/N=(LABNOTEBOOK_LAYER_COUNT) found
 	CHECK_EQUAL_WAVES(found, values, mode = WAVE_DATA)
 
-	WAVE/Z settings = GetLastSetting(numericalValues, NaN, LABNOTEBOOK_USER_PREFIX + key, UNKNOWN_MODE)
+	WAVE/Z settings = GetLastSetting(numericalValues, 0, LABNOTEBOOK_USER_PREFIX + key, UNKNOWN_MODE)
 	CHECK(WaveExists(settings))
 	CHECK_EQUAL_WAVES(settings, values, mode = WAVE_DATA)
+
+	// inserted under correct sweep number
+	CHECK_EQUAL_VAR(numericalValues[0][0][0], 0)
 End
 
 Function AE_WorksIndepHeadstage()
@@ -303,6 +323,9 @@ Function AE_WorksIndepHeadstage()
 	CHECK_EQUAL_VAR(numericalValues[0][col][8], 4711)
 	WaveStats/Q/RMD=[0][col] numericalValues
 	CHECK_EQUAL_VAR(V_numNaNs, 8)
+
+	// inserted under correct sweep number
+	CHECK_EQUAL_VAR(numericalValues[0][0][0], 0)
 End
 
 Function ATE_TextWorks1()
@@ -346,6 +369,9 @@ Function ATE_TextWorks1()
 		str = textualValues[0][col][i]
 		CHECK_EMPTY_STR(str)
 	endfor
+
+	// inserted under correct sweep number
+	CHECK_EQUAL_VAR(str2num(textualValues[0][0][0]), 0)
 End
 
 Function AE_TextWorksIndepHeadstage()
@@ -388,6 +414,9 @@ Function AE_TextWorksIndepHeadstage()
 		str = textualValues[0][col][i]
 		CHECK_EMPTY_STR(str)
 	endfor
+
+	// inserted under correct sweep number
+	CHECK_EQUAL_VAR(str2num(textualValues[0][0][0]), 0)
 End
 
 /// END ED_AddEntryToLabnotebook
