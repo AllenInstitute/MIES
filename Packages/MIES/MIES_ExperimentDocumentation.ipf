@@ -147,19 +147,24 @@ End
 ///	WAVE/Z settings = GetLastSetting(numericalValues, NaN, LABNOTEBOOK_USER_PREFIX + key, UNKNOWN_MODE)
 /// @endcode
 ///
-/// @param panelTitle device
-/// @param key        name under which to store the entry.
-/// @param values     entry to add, wave can be numeric (floating point) or text, must have #LABNOTEBOOK_LAYER_COUNT rows.
-/// @param unit       [optional, defaults to ""] physical unit of the entry
-/// @param tolerance  [optional, defaults to #LABNOTEBOOK_NO_TOLERANCE] tolerance of the entry, used for
-///                   judging if a change is "relevant" and should then be written to the sweep wave
-Function ED_AddEntryToLabnotebook(panelTitle, key, values, [unit, tolerance])
+/// @param panelTitle      device
+/// @param key             name under which to store the entry.
+/// @param values          entry to add, wave can be numeric (floating point) or text, must have #LABNOTEBOOK_LAYER_COUNT rows.
+/// @param unit            [optional, defaults to ""] physical unit of the entry
+/// @param tolerance       [optional, defaults to #LABNOTEBOOK_NO_TOLERANCE] tolerance of the entry, used for
+///                        judging if a change is "relevant" and should then be written to the sweep wave
+/// @param overrideSweepNo [optional, defaults to last acquired sweep] Adds metadata to the
+///                        given sweep number. Mostly useful for adding
+///                        labnotebook entries during #MID_SWEEP_EVENT for
+///                        analysis functions.
+Function ED_AddEntryToLabnotebook(panelTitle, key, values, [unit, tolerance, overrideSweepNo])
 	string panelTitle, key
 	WAVE values
 	string unit
-	variable tolerance
+	variable tolerance, overrideSweepNo
 
 	string toleranceStr
+	variable sweepNo
 
 	ASSERT(!IsEmpty(key), "Empty key")
 	ASSERT(DimSize(values, ROWS) == LABNOTEBOOK_LAYER_COUNT, "wv has the wrong number of rows")
@@ -176,6 +181,13 @@ Function ED_AddEntryToLabnotebook(panelTitle, key, values, [unit, tolerance])
 		toleranceStr = num2str(tolerance)
 	endif
 
+	if(ParamIsDefault(overrideSweepNo))
+		sweepNo = AFH_GetLastSweepAcquired(panelTitle)
+	else
+		ASSERT(isInteger(overrideSweepNo) && overrideSweepNo >= 0, "Invalid override sweep number")
+		sweepNo = overrideSweepNo
+	endif
+
 	Duplicate/FREE values, valuesReshaped
 	Redimension/N=(1, 1, LABNOTEBOOK_LAYER_COUNT) valuesReshaped
 
@@ -186,7 +198,7 @@ Function ED_AddEntryToLabnotebook(panelTitle, key, values, [unit, tolerance])
 
 	ASSERT(strlen(keys[0]) < MAX_OBJECT_NAME_LENGTH_IN_BYTES, "key is too long")
 
-	ED_AddEntriesToLabnotebook(valuesReshaped, keys, AFH_GetLastSweepAcquired(panelTitle), panelTitle, UNKNOWN_MODE)
+	ED_AddEntriesToLabnotebook(valuesReshaped, keys, sweepNo, panelTitle, UNKNOWN_MODE)
 End
 
 /// @brief Record changed labnotebook entries compared to the last sweep to the sweep wave note
