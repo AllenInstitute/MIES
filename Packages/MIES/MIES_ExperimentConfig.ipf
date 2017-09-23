@@ -119,10 +119,14 @@ Function ExpConfig_ConfigureMIES([middleOfExperiment])
 		if (!load)
 			print "Stim set successfully loaded"
 			StimSetList = "- none -;"+ReturnListOfAllStimSets(0,"*DA*")
-			FindValue /TXOP = 4 /TEXT = FIRST_STIM UserSettings
+			FindValue /TXOP = 4 /TEXT = FIRST_STIM_VC UserSettings
 			PGC_SetAndActivateControl(win,GetPanelControl(CHANNEL_INDEX_ALL_V_CLAMP,CHANNEL_TYPE_DAC,CHANNEL_CONTROL_WAVE), val = WhichListItem(UserSettings[V_value][%SettingValue], StimSetList))
-			FindValue /TXOP = 4 /TEXT = FIRST_STIM_AMP UserSettings
+			FindValue /TXOP = 4 /TEXT = FIRST_STIM_AMP_VC UserSettings
 			PGC_SetAndActivateControl(win,GetPanelControl(CHANNEL_INDEX_ALL_V_CLAMP,CHANNEL_TYPE_DAC,CHANNEL_CONTROL_SCALE), val = str2numSafe(UserSettings[V_value][%SettingValue]))
+			FindValue /TXOP = 4 /TEXT = FIRST_STIM_IC UserSettings
+			PGC_SetAndActivateControl(win,GetPanelControl(CHANNEL_INDEX_ALL_I_CLAMP,CHANNEL_TYPE_DAC,CHANNEL_CONTROL_WAVE), val = WhichListItem(UserSettings[V_value][%SettingValue], StimSetList))
+			FindValue /TXOP = 4 /TEXT = FIRST_STIM_AMP_IC UserSettings
+			PGC_SetAndActivateControl(win,GetPanelControl(CHANNEL_INDEX_ALL_I_CLAMP,CHANNEL_TYPE_DAC,CHANNEL_CONTROL_SCALE), val = str2numSafe(UserSettings[V_value][%SettingValue]))
 		else
 			print "Stim set failed to load, check file path"
 			ControlWindowToFront()
@@ -409,6 +413,13 @@ static Function ExpConfig_DAEphysSettings(panelTitle, UserSettings)
 	PGC_SetAndActivateControl(panelTitle,"check_Settings_UserP_Seal", val = str2numSafe(UserSettings[V_value][%SettingValue]))
 	FindValue /TXOP = 4 /TEXT = TP_AMP_VC UserSettings
 	PGC_SetAndActivateControl(panelTitle,"SetVar_DataAcq_TPAmplitude", val = str2numSafe(UserSettings[V_value][%SettingValue]))
+	FindValue /TXOP = 4 /TEXT = TP_BASELINE UserSettings
+	PGC_SetAndActivateControl(panelTitle,"SetVar_DataAcq_TPBaselinePerc", val = str2numSafe(UserSettings[V_value][%SettingValue]))
+	FindValue /TXOP = 4 /TEXT = STIM_MODE_SWITCH UserSettings
+	PGC_SetAndActivateControl(panelTitle,"check_DA_applyOnModeSwitch", val = str2numSafe(UserSettings[V_value][%SettingValue]))
+	FindValue /TXOP = 4 /TEXT = ANALYSIS_FUNC UserSettings
+	PGC_SetAndActivateControl(panelTitle,"Check_Settings_SkipAnalysFuncs", val = str2numSafe(UserSettings[V_value][%SettingValue]))
+	
 End
 
 /// @brief Intiate MCC parameters for active headstages
