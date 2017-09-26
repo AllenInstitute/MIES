@@ -1036,7 +1036,15 @@ Function PatchSeqSubThreshold(panelTitle, eventType, ITCDataWave, headStage, rea
 
 		if(IsNaN(ret))
 			// NaN: not enough data for check
-			return NaN
+			//
+			// not last chunk: retry on next invocation
+			// last chunk: mark sweep as failed
+			if(i == numBaselineChunks - 1)
+				ret = 1
+				break
+			else
+				return NaN
+			endif
 		elseif(ret)
 			// != 0: failed with special mid sweep return value (on first failure)
 			if(i == 0)
