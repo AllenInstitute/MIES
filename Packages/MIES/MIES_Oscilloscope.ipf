@@ -143,7 +143,7 @@ Function SCOPE_UpdateGraph(panelTitle)
 		statsMax = V_max
 
 		// data is propably just zero, skip the axis
-		if(statsMin == statsMax)
+		if(statsMin == statsMax || (IsNaN(statsMin) && IsNaN(statsMax)))
 			continue
 		endif
 
