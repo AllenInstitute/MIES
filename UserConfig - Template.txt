@@ -85,6 +85,8 @@ Save each TP sweep = No
 
 TP Amplitude in VC = -10
 
+Baseline % = 30
+
 ######## Data Saving Settings ######
 Export to NWB = Yes
 
@@ -117,6 +119,17 @@ User onset delay (ms) = 500
 
 Termination delay (ms) = 1000
 
-Initial stim set = PulseTrain_20Hz_DA_0
+Skip analysis function calls = Yes
 
-Initial stim set amplitude = 70
+###### Initial stimulus parameters apply to all channels ######
+
+Initial stim set VC = PulseTrain_20Hz_DA_0
+
+Initial stim set amplitude VC = 70
+
+Initial stim set IC = PulseTrain_20Hz_DA_0
+
+Initial stim set amplitude IC = 1500
+
+Enable stim set mode switch = Yes
+
