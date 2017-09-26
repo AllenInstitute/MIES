@@ -119,6 +119,10 @@ User onset delay (ms) = 500
 
 Termination delay (ms) = 1000
 
+Skip analysis function calls = Yes
+
+###### Initial stimulus parameters apply to all channels ######
+
 Initial stim set VC = PulseTrain_20Hz_DA_0
 
 Initial stim set amplitude VC = 70
@@ -129,4 +133,3 @@ Initial stim set amplitude IC = 1500
 
 Enable stim set mode switch = Yes
 
-Skip analysis function calls = Yes
