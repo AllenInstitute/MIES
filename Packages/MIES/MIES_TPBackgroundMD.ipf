@@ -141,12 +141,12 @@ Function ITC_BkrdTPFuncMD(s)
 
 		pointsCompletedInITCDataWave = mod(result[%fifoPos], DimSize(ITCDataWave, ROWS))
 
-		// don't extract the last chunk for plotting
-		activeChunk = max(0, floor(pointsCompletedInITCDataWave / TP_GetTestPulseLengthInPoints(panelTitle)) - 1)
+		// extract the last fully completed chunk
+		activeChunk = floor(pointsCompletedInITCDataWave / TP_GetTestPulseLengthInPoints(panelTitle)) - 1
 
 		// Ensures that the new TP chunk isn't the same as the last one.
 		// This is required to keep the TP buffer in sync.
-		if(activeChunk != ActiveDeviceList[i][%ActiveChunk])
+		if(activeChunk >= 0 && activeChunk != ActiveDeviceList[i][%ActiveChunk])
 			SCOPE_UpdateOscilloscopeData(panelTitle, TEST_PULSE_MODE, chunk=activeChunk)
 			TP_Delta(panelTitle)
 			ActiveDeviceList[i][%ActiveChunk] = activeChunk
