@@ -146,7 +146,7 @@ function handleParameter(params, a,  i, iOpt, str, entry)
     code = "}"
   }
   # begin of function declaration
-  else if(!insideFunction && ( match(code,/[[:space:]]function[\/[:space:]]/) || match(code,/^function[\/[:space:]]/)))
+  else if(!insideFunction && match(code,/function[[:space:]]*(\/(df|wave|c|s|t|d))?[[:space:]]+[A-Z0-9_]+[[:space:]]*\(/))
   {
     insideFunction=1
     paramsToHandle=0
