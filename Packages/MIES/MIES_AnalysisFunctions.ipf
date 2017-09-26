@@ -924,6 +924,10 @@ Function PatchSeqSubThreshold(panelTitle, eventType, ITCDataWave, headStage, rea
 				printf "(%s): Auto Bias must be checked\r", panelTitle
 				ControlWindowToFront()
 				return 1
+			elseif(!GetCheckBoxState(panelTitle, "check_Settings_MD"))
+				printf "(%s): Please check \"Multi Device\" mode.\r", panelTitle
+				ControlWindowToFront()
+				return 1
 			endif
 
 			val = GetSetVariable(panelTitle, "setvar_DataAcq_AutoBiasV")
