@@ -3232,3 +3232,24 @@ Function/S ReplaceWordInString(word, str, replacement)
 
 	return result
 End
+
+/// @brief Execute a list of functions via the Operation Queue
+///
+/// Special purpose function. Not intended for normal use.
+Function ExecuteListOfFunctions(funcList)
+	string funcList
+
+	variable i, numEntries
+	string func
+
+	numEntries = ItemsInList(funcList)
+	for(i = 0; i < numEntries; i += 1)
+		func = StringFromList(i, funcList)
+
+		if(IsEmpty(func))
+			continue
+		endif
+
+		Execute/P/Q func
+	endfor
+End

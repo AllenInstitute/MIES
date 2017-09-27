@@ -26,37 +26,59 @@ static Function RA_HandleITI_MD(panelTitle)
 	string panelTitle
 
 	variable ITI
+	string funcList
 
 	AFM_CallAnalysisFunctions(panelTitle, POST_SET_EVENT)
 	ITI = RA_RecalculateITI(panelTitle)
 
 	if(!GetCheckBoxState(panelTitle, "check_Settings_ITITP") || ITI <= 0)
-		ITC_StartBackgroundTimerMD(ITI, "RA_CounterMD(\"" + panelTitle + "\")", "", "", panelTitle)
+
+		funcList = "RA_CounterMD(\"" + panelTitle + "\")"
+
+		if(ITI <= 0 && !IsBackgroundTaskRunning("ITC_TimerMD")) // we are the only device currently
+			ExecuteListOfFunctions(funcList)
+			return NaN
+		endif
+
+		ITC_StartBackgroundTimerMD(panelTitle, ITI, funcList)
+
 		return NaN
 	endif
 
 	ITC_StartTestPulseMultiDevice(panelTitle, runModifier=TEST_PULSE_DURING_RA_MOD)
 
-	ITC_StartBackgroundTimerMD(ITI,"ITC_StopTestPulseMultiDevice(\"" + panelTitle + "\")", "RA_CounterMD(\"" + panelTitle + "\")",  "", panelTitle)
+	funcList = "ITC_StopTestPulseMultiDevice(\"" + panelTitle + "\")" + ";" + "RA_CounterMD(\"" + panelTitle + "\")"
+	ITC_StartBackgroundTimerMD(panelTitle, ITI, funcList)
 End
 
 static Function RA_HandleITI(panelTitle)
 	string panelTitle
 
 	variable ITI
+	string funcList
 
 	AFM_CallAnalysisFunctions(panelTitle, POST_SET_EVENT)
 	ITI = RA_RecalculateITI(panelTitle)
 
 	if(!GetCheckBoxState(panelTitle, "check_Settings_ITITP") || ITI <= 0)
-		ITC_StartBackgroundTimer(ITI, "RA_Counter(\"" + panelTitle + "\")", "", "", panelTitle)
+
+		funcList = "RA_Counter(\"" + panelTitle + "\")"
+
+		if(ITI <= 0)
+			ExecuteListOfFunctions(funcList)
+			return NaN
+		endif
+
+		ITC_StartBackgroundTimer(panelTitle, ITI, funcList)
+
 		return NaN
 	endif
 
 	TP_Setup(panelTitle, TEST_PULSE_BG_SINGLE_DEVICE | TEST_PULSE_DURING_RA_MOD)
-
 	ITC_StartBackgroundTestPulse(panelTitle)
-	ITC_StartBackgroundTimer(ITI, "ITC_STOPTestPulseSingleDevice(\"" + panelTitle + "\")", "RA_Counter(\"" + panelTitle + "\")", "", panelTitle)
+
+	funcList = "ITC_STOPTestPulseSingleDevice(\"" + panelTitle + "\")" + ";" + "RA_Counter(\"" + panelTitle + "\")"
+	ITC_StartBackgroundTimer(panelTitle, ITI, funcList)
 End
 
 /// @brief Return the total number of sets

@@ -9,34 +9,22 @@
 /// @file MIES_BackgroundTimerMD.ipf
 /// @brief __ITC__ Multi device background timer related code
 
-//Function name is the name of the function you want to run after run time has elapsed
-Function ITC_StartBackgroundTimerMD(RunTime,FunctionNameAPassedIn, FunctionNameBPassedIn,  FunctionNameCPassedIn, panelTitle)
-	Variable RunTime//how long you want the background timer to run in seconds
-	String FunctionNameAPassedIn, FunctionNameBPassedIn, FunctionNameCPassedIn, panelTitle
+Function ITC_StartBackgroundTimerMD(panelTitle, runTime, funcList)
+	string panelTitle, funcList
+	variable runTime
 
-	// caclulate timing parameters
-	//Variable numTicks = 15		// Run every quarter second (15 ticks)
-	Variable StartTicks = ticks
-	Variable DurationTicks = (RunTime*60)
-	Variable EndTimeTicks = StartTicks + DurationTicks
+	ASSERT(!isEmpty(funcList), "Empty funcList does not makse sense")
+
+	variable StartTicks    = ticks
+	variable DurationTicks = runTime / TICKS_TO_SECONDS
+	variable EndTimeTicks  = StartTicks + DurationTicks
 	
 	NVAR ITCDeviceIDGlobal = $GetITCDeviceIDGlobal(panelTitle)
 
-	// create string list with function names passed in
-	string ListOfFunctions = FunctionNameAPassedIn + ";" + FunctionNameBPassedIn + ";" + FunctionNameCPassedIn
-	
-	// Make or update waves that store parameters that the background timer references
-	ITC_MakeOrUpdateTimerParamWave(panelTitle, listOfFunctions, StartTicks, DurationTicks, EndTimeTicks, 1)
-	
-	// Check if bacground timer operation is running. If no, start background timer operation.
+	ITC_MakeOrUpdateTimerParamWave(panelTitle, funcList, StartTicks, DurationTicks, EndTimeTicks, 1)
+
 	if(!IsBackgroundTaskRunning("ITC_TimerMD"))
-		CtrlNamedBackground ITC_TimerMD, period = 6, proc = ITC_TimerMD // period 6 = 100 ms
-		CtrlNamedBackground ITC_TimerMD, start
-	endif
-	
-	If(RunTIme < 0)
-		print "The time to configure " + panelTitle + " and the sweep time are greater than the user specified ITI"
-		print "Data acquisition has not been interrupted but the actual ITI is longer than what was specified by: " + num2str(abs(RunTime)) + "seconds"
+		CtrlNamedBackground ITC_TimerMD, period = 6, proc = ITC_TimerMD, start
 	endif
 End
 
@@ -47,8 +35,8 @@ Function ITC_TimerMD(s)
 	// column 0 = ITCDeviceIDGlobal; column 1 = Start time; column 2 = run time; column 3 = end time
 	WAVE/T/SDFR=GetActiveITCDevicesTimerFolder() TimerFunctionListWave
 	// column 0 = panel title; column 1 = list of functions
-	variable i, j
-	string panelTitle, functionsToCall
+	variable i
+	string panelTitle
 	variable TimeLeft
 
 	for(i = 0; i < DimSize(ActiveDevTimeParam, ROWS); i += 1)
@@ -56,14 +44,10 @@ Function ITC_TimerMD(s)
 		timeLeft = max(ActiveDevTimeParam[i][2] - ActiveDevTimeParam[i][4], 0)
 		panelTitle = TimerFunctionListWave[i][0]
 
-		ValDisplay valdisp_DataAcq_ITICountdown win = $panelTitle, value = _NUM:(TimeLeft/60)
+		SetValDisplay(panelTitle, "valdisp_DataAcq_ITICountdown", var = timeLeft * TICKS_TO_SECONDS)
 
 		if(timeLeft == 0)
-			functionsToCall = TimerFunctionListWave[i][1]
-			for(j = 0; j < ItemsInList(functionsToCall); j += 1)
-				Execute StringFromList(j, functionsToCall)
-			endfor
-
+			ExecuteListOfFunctions(TimerFunctionListWave[i][1])
 			ITC_MakeOrUpdateTimerParamWave(panelTitle, "", 0, 0, 0, -1)
 
 			// restart iterating over the remaining devices
