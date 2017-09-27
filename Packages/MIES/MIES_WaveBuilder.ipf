@@ -609,13 +609,17 @@ static Function/WAVE WB_MakeWaveBuilderWave(WP, WPT, SegWvType, stepCount, numEp
 
 				if(WP[46][i][type]) // "Number of pulses" checkbox
 					WB_PulseTrainSegment(params, PULSE_TRAIN_MODE_PULSE, pulseStartTimes, pulseToPulseLength)
-					if(windowExists("WaveBuilder") && GetTabID("WaveBuilder", "WBP_WaveType") == EPOCH_TYPE_PULSE_TRAIN)
+					if(windowExists("WaveBuilder")                                              \
+					   && GetTabID("WaveBuilder", "WBP_WaveType") == EPOCH_TYPE_PULSE_TRAIN     \
+					   && GetSetVariable("WaveBuilder", "setvar_WaveBuilder_CurrentEpoch") == i)
 						WBP_UpdateControlAndWP("SetVar_WaveBuilder_P0", params.duration)
 					endif
 					defMode = "Pulse"
 				else
 					WB_PulseTrainSegment(params, PULSE_TRAIN_MODE_DUR, pulseStartTimes, pulseToPulseLength)
-					if(windowExists("WaveBuilder") && GetTabID("WaveBuilder", "WBP_WaveType") == EPOCH_TYPE_PULSE_TRAIN)
+					if(windowExists("WaveBuilder")                                              \
+					   && GetTabID("WaveBuilder", "WBP_WaveType") == EPOCH_TYPE_PULSE_TRAIN     \
+					   && GetSetVariable("WaveBuilder", "setvar_WaveBuilder_CurrentEpoch") == i)
 						WBP_UpdateControlAndWP("SetVar_WaveBuilder_P45", params.numberOfPulses)
 					endif
 					defMode = "Duration"
