@@ -861,6 +861,14 @@ End
 ///    rmsLongPassed  = GetLastSettingIndep(numericalValues, sweepNo, LABNOTEBOOK_USER_PREFIX + PATCHSEQ_LBN_RMS_LONG_PASSED, UNKNOWN_MODE)
 ///    targetVPassed  = GetLastSettingIndep(numericalValues, sweepNo, LABNOTEBOOK_USER_PREFIX + PATCHSEQ_LBN_TARGETV_PASSED, UNKNOWN_MODE)
 ///
+///    // get fitted resistance from last passing sweep
+///    variable lastSweepNo
+///    WAVE/Z sweeps = AFH_GetSweepsFromSameRACycle(numericalValues, sweepNo)
+///    ASSERT(WaveExists(sweeps), "Missing RA cycle information, maybe the sweep is too old?")
+///    lastSweepNo = sweeps[DimSize(sweeps, ROWS) - 1]
+///    WAVE/Z resistanceFitted = GetLastSetting(numericalValues, lastSweepNo, LABNOTEBOOK_USER_PREFIX + "ResistanceFromFit", UNKNOWN_MODE)
+///	   ASSERT(WaveExists(resistanceFitted), "Expected fitted resistance data")
+///	   // resistance for the first headstage can be found in resistanceFitted[0]
 /// \endrst
 ///
 /// @verbatim
@@ -958,6 +966,22 @@ Function PatchSeqSubThreshold(panelTitle, eventType, ITCDataWave, headStage, rea
 				// not enough sweeps left to pass the set
 				skipToEnd = (sweepsInSet - acquiredSweepsInSet) < (PATCHSEQ_NUM_SWEEPS_PASSED - passesInSet)
 			else
+				// sweep passed
+
+				WAVE/Z sweep = GetSweepWave(panelTitle, sweepNo)
+				ASSERT(WaveExists(sweep), "Expected a sweep for evaluation")
+
+				Make/D/FREE/N=(LABNOTEBOOK_LAYER_COUNT) deltaV     = NaN
+				Make/D/FREE/N=(LABNOTEBOOK_LAYER_COUNT) deltaI     = NaN
+				Make/D/FREE/N=(LABNOTEBOOK_LAYER_COUNT) resistance = NaN
+
+				CalculateTPLikePropsFromSweep(numericalValues, textualValues, sweep, deltaI, deltaV, resistance)
+
+				ED_AddEntryToLabnotebook(panelTitle, "Delta I", deltaI, unit = "I")
+				ED_AddEntryToLabnotebook(panelTitle, "Delta V", deltaV, unit = "V")
+
+				PlotResistanceGraph(panelTitle)
+
 				if(passesInSet >= PATCHSEQ_NUM_SWEEPS_PASSED)
 					skipToEnd = 1
 				else
