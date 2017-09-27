@@ -1217,7 +1217,7 @@ static Function/WAVE WB_PulseTrainSegment(pa, mode, pulseStartTimes, pulseToPuls
 		lastStep  = 1 / pa.lastFreq
 		dist      = (lastStep / firstStep)^(1 / (pa.numberOfPulses - 1))
 
-		Make/FREE/N=(pa.numberOfPulses) interPulseIntervals = firstStep * dist^(p) * 1000
+		Make/FREE/N=(pa.numberOfPulses) interPulseIntervals = firstStep * dist^(p) * 1000 - pa.pulseDuration
 
 		if(pa.mixedFreqShuffle)
 			InPlaceRandomShuffle(interPulseIntervals, noiseGenMode = NOISE_GEN_MERSENNE_TWISTER)
