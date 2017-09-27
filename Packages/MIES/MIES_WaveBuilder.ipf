@@ -507,7 +507,6 @@ static Function/WAVE WB_MakeWaveBuilderWave(WP, WPT, SegWvType, stepCount, numEp
 	Make/FREE/N=0 WaveBuilderWave
 
 	string customWaveName, debugMsg, defMode, formula, formula_version
-	string formula_for_note
 	variable i, j, type, accumulatedDuration, pulseToPulseLength
 	STRUCT SegmentParameters params
 
@@ -667,14 +666,8 @@ static Function/WAVE WB_MakeWaveBuilderWave(WP, WPT, SegWvType, stepCount, numEp
 			case EPOCH_TYPE_COMBINE:
 				WAVE segmentWave = WB_GetSegmentWave(duration=0)
 
-				formula_for_note = WPT[6][i]
-				formula          = WB_FormulaSwitchToShorthand(formula_for_note)
-				formula_version  = WPT[7][i]
-
-				if(isEmpty(formula))
-					printf "Stimset %s: Skipping combine epoch with empty formula\r", stimset
-					break
-				endif
+				formula         = WPT[6][i]
+				formula_version = WPT[7][i]
 
 				if(cmpstr(formula_version, WAVEBUILDER_COMBINE_FORMULA_VER))
 					printf "Stimset %s: Could not create the wave from formula of version %s\r", stimset, WAVEBUILDER_COMBINE_FORMULA_VER
@@ -692,7 +685,7 @@ static Function/WAVE WB_MakeWaveBuilderWave(WP, WPT, SegWvType, stepCount, numEp
 
 				params.Duration = DimSize(segmentWave, ROWS) * HARDWARE_ITC_MIN_SAMPINT
 
-				AddEntryIntoWaveNoteAsList(WaveBuilderWave, "Formula"         , str=formula_for_note)
+				AddEntryIntoWaveNoteAsList(WaveBuilderWave, "Formula"         , str=formula)
 				AddEntryIntoWaveNoteAsList(WaveBuilderWave, "Formula Version" , str=formula_version)
 				break
 			default:
@@ -1328,10 +1321,14 @@ static Function/WAVE WB_FillWaveFromFormula(formula, channelType, sweep)
 	variable sweep
 
 	STRUCT FormulaProperties fp
+	string shorthandFormula
 
+	// update shorthand -> stimset mapping
 	WB_UpdateEpochCombineList(channelType)
 
-	if(WB_ParseCombinerFormula(formula, sweep, fp))
+	shorthandFormula = WB_FormulaSwitchToShorthand(formula)
+
+	if(WB_ParseCombinerFormula(shorthandFormula, sweep, fp))
 		return $""
 	endif
 
