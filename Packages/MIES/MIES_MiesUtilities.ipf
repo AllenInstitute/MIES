@@ -3534,6 +3534,10 @@ End
 Function DeviceIsFollower(panelTitle)
 	string panelTitle
 
+	if(!DeviceCanFollow(panelTitle))
+		return 0
+	endif
+
 	SVAR listOfFollowerDevices = $GetFollowerList(ITC1600_FIRST_DEVICE)
 
 	return WhichListItem(panelTitle, listOfFollowerDevices) != -1
@@ -3550,9 +3554,13 @@ End
 Function DeviceHasFollower(panelTitle)
 	string panelTitle
 
+	if(!DeviceCanLead(panelTitle))
+		return 0
+	endif
+
 	SVAR listOfFollowerDevices = $GetFollowerList(panelTitle)
 
-	return DeviceCanLead(panelTitle) && ItemsInList(listOfFollowerDevices) > 0
+	return ItemsInList(listOfFollowerDevices) > 0
 End
 
 /// @brief Convenience wrapper for GetFollowerList()
