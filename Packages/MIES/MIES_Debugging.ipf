@@ -283,14 +283,14 @@ End
 
 /// Creates a notebook with the special name "HistoryCarbonCopy"
 /// which will hold a copy of the history
-Function CreateHistoryLog()
+static Function CreateHistoryLog()
 	DoWindow/K HistoryCarbonCopy
 	NewNotebook/V=0/F=0 /N=HistoryCarbonCopy
 End
 
 /// Save the contents of the history notebook on disk
 /// in the same folder as this experiment as timestamped file "run_*_*.log"
-Function SaveHistoryLog()
+static Function SaveHistoryLog()
 
 	string historyLog
 	sprintf historyLog, "%s.log", IgorInfo(1)//, Secs2Date(DateTime,-2), ReplaceString(":",Secs2Time(DateTime,1),"-")
