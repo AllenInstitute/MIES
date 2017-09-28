@@ -608,13 +608,17 @@ static Function/WAVE WB_MakeWaveBuilderWave(WP, WPT, SegWvType, stepCount, numEp
 
 				if(WP[46][i][type]) // "Number of pulses" checkbox
 					WB_PulseTrainSegment(params, PULSE_TRAIN_MODE_PULSE, pulseStartTimes, pulseToPulseLength)
-					if(windowExists("WaveBuilder") && GetTabID("WaveBuilder", "WBP_WaveType") == EPOCH_TYPE_PULSE_TRAIN)
+					if(windowExists("WaveBuilder")                                              \
+					   && GetTabID("WaveBuilder", "WBP_WaveType") == EPOCH_TYPE_PULSE_TRAIN     \
+					   && GetSetVariable("WaveBuilder", "setvar_WaveBuilder_CurrentEpoch") == i)
 						WBP_UpdateControlAndWP("SetVar_WaveBuilder_P0", params.duration)
 					endif
 					defMode = "Pulse"
 				else
 					WB_PulseTrainSegment(params, PULSE_TRAIN_MODE_DUR, pulseStartTimes, pulseToPulseLength)
-					if(windowExists("WaveBuilder") && GetTabID("WaveBuilder", "WBP_WaveType") == EPOCH_TYPE_PULSE_TRAIN)
+					if(windowExists("WaveBuilder")                                              \
+					   && GetTabID("WaveBuilder", "WBP_WaveType") == EPOCH_TYPE_PULSE_TRAIN     \
+					   && GetSetVariable("WaveBuilder", "setvar_WaveBuilder_CurrentEpoch") == i)
 						WBP_UpdateControlAndWP("SetVar_WaveBuilder_P45", params.numberOfPulses)
 					endif
 					defMode = "Duration"
@@ -1209,14 +1213,13 @@ static Function/WAVE WB_PulseTrainSegment(pa, mode, pulseStartTimes, pulseToPuls
 		firstStep = 1 / pa.firstFreq
 		lastStep  = 1 / pa.lastFreq
 		dist      = (lastStep / firstStep)^(1 / (pa.numberOfPulses - 1))
-
-		Make/FREE/N=(pa.numberOfPulses) interPulseIntervals = firstStep * dist^(p) * 1000
+		Make/D/FREE/N=(pa.numberOfPulses) interPulseIntervals = firstStep * dist^p * 1000 - pa.pulseDuration
 
 		if(pa.mixedFreqShuffle)
 			InPlaceRandomShuffle(interPulseIntervals, noiseGenMode = NOISE_GEN_MERSENNE_TWISTER)
 		endif
 
-		pa.duration = (sum(interPulseIntervals) + pa.numberOfPulses * pa.pulseDuration) * 1000
+		pa.duration = (sum(interPulseIntervals) + pa.numberOfPulses * pa.pulseDuration)
 		WAVE segmentWave = WB_GetSegmentWave(duration=pa.duration)
 		FastOp segmentWave = 0
 		numRows = DimSize(segmentWave, ROWS)

@@ -1042,7 +1042,7 @@ static Function WBP_UpdateDependentControls(checkBoxCtrl, checked)
 
 					val = str2numsafe(GetUserData(panel, "check_SPT_NumPulses_P46", "old_state"))
 					if(IsFinite(val))
-						SetCheckBoxState(panel,"check_SPT_NumPulses_P46", !!val)
+						WBP_UpdateControlAndWP("check_SPT_NumPulses_P46", !!val)
 					endif
 
 					EnableControls(panel,"check_SPT_NumPulses_P46;SetVar_WaveBuilder_P6_FD01;SetVar_WaveBuilder_P7_DD01")
@@ -1054,7 +1054,7 @@ static Function WBP_UpdateDependentControls(checkBoxCtrl, checked)
 					WBP_UpdateControlAndWP("check_SPT_Poisson_P44", CHECKBOX_UNSELECTED)
 					val = GetCheckBoxState(panel,"check_SPT_NumPulses_P46")
 					SetControlUserData(panel, "check_SPT_NumPulses_P46", "old_state", num2str(val))
-					SetCheckBoxState(panel,"check_SPT_NumPulses_P46", CHECKBOX_SELECTED)
+					WBP_UpdateControlAndWP("check_SPT_NumPulses_P46", CHECKBOX_SELECTED)
 					DisableControls(panel,"check_SPT_NumPulses_P46;SetVar_WaveBuilder_P6_FD01;SetVar_WaveBuilder_P7_DD01")
 				else
 					EnableControls(panel,"check_SPT_NumPulses_P46;SetVar_WaveBuilder_P6_FD01;SetVar_WaveBuilder_P7_DD01")
