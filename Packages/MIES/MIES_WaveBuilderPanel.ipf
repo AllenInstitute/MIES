@@ -970,7 +970,7 @@ static Function WBP_DisplaySetInPanel()
 	variable maxYValue, minYValue
 
 	if(!HasPanelLatestVersion(panel, WAVEBUILDER_PANEL_VERSION))
-		Abort "Wavebuilder panel is out of date. Please close and reopen it."
+		DoAbortNow("Wavebuilder panel is out of date. Please close and reopen it.")
 	endif
 
 	RemoveTracesFromGraph(waveBuilderGraph)

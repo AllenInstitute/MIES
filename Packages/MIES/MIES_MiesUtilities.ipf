@@ -3441,7 +3441,7 @@ Function/Wave ReplaceWaveWithBackup(wv, [nonExistingBackupIsFatal])
 
 	if(!WaveExists(backup))
 		if(nonExistingBackupIsFatal)
-			Abort "Backup wave does not exist"
+			DoAbortNow("Backup wave does not exist")
 		endif
 
 		return $""

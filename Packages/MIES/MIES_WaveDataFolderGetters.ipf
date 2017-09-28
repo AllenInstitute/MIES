@@ -4317,7 +4317,7 @@ Function RecordDA_EphysGuiStateProto(str, [GUISTATE])
 	string str
 	WAVE GUISTATE
 
-	Abort "Prototype function can not be called"
+	DoAbortNow("Prototype function can not be called")
 End
 
 /// @brief Returns a list of unique and type specific controls

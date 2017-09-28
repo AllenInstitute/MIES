@@ -243,7 +243,7 @@ Function DB_UpdateSweepPlot(panelTitle, [dummyArg])
 	string device, subWindow, graph
 
 	if(!HasPanelLatestVersion(panelTitle, DATABROWSER_PANEL_VERSION))
-		Abort "Can not display data. The Databrowser panel is too old to be usable. Please close it and open a new one."
+		DoAbortNow("Can not display data. The Databrowser panel is too old to be usable. Please close it and open a new one.")
 	endif
 
 	referenceTime = DEBUG_TIMER_START()

@@ -394,3 +394,63 @@ Function ELE_KeepsMinimumWaveSize3()
 End
 
 /// @}
+
+/// DoAbortNow
+/// @{
+
+Function DON_WorksWithDefault()
+
+	NVAR interactiveMode = $GetInteractiveMode()
+	CHECK_EQUAL_VAR(interactiveMode, 1)
+
+	try
+		DoAbortNow("")
+		FAIL()
+	catch
+		PASS()
+	endtry
+End
+
+Function DON_WorksWithNoMsgAndInterMode()
+
+	NVAR interactiveMode = $GetInteractiveMode()
+	interactiveMode = 1
+
+	try
+		DoAbortNow("")
+		FAIL()
+	catch
+		PASS()
+	endtry
+End
+
+Function DON_WorksWithNoMsgAndNInterMode()
+
+	NVAR interactiveMode = $GetInteractiveMode()
+	interactiveMode = 0
+
+	try
+		DoAbortNow("")
+		FAIL()
+	catch
+		PASS()
+	endtry
+End
+
+Function DON_WorksWithMsgAndNInterMode()
+
+	NVAR interactiveMode = $GetInteractiveMode()
+	interactiveMode = 0
+
+	try
+		DoAbortNow("MyMessage")
+		FAIL()
+	catch
+		PASS()
+	endtry
+End
+
+// we can't test with message and interactive abort as that
+// will trigger a dialog ...
+
+/// @}

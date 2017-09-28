@@ -104,7 +104,7 @@ Function AM_MSA_midSweepFindAP(panelTitle, headStage)
 	Wave actionScaleSettingsWave =  GetActionScaleSettingsWaveRef(panelTitle)	
 	Wave/Z sweep = AFH_GetLastSweepWaveAcquired(panelTitle)	
 	if(!WaveExists(sweep))
-     		Abort "***Error getting current sweep wave..."
+		DoAbortNow("***Error getting current sweep wave...")
 	endif
 	
 	Wave config = GetConfigWave(sweep)
@@ -158,7 +158,7 @@ Function AM_PSA_sweepLevelQC(panelTitle, headStage)
 
 	Wave/Z sweepWave = AFH_GetLastSweepWaveAcquired(panelTitle)
 	if(!WaveExists(sweepWave))
-		Abort "Error getting most recent sweepWave wave..."
+		DoAbortNow("Error getting most recent sweepWave wave...")
 	endif
 
 	Wave config = GetConfigWave(sweepWave)
@@ -307,7 +307,7 @@ Function AM_PSA_electrodeBaselineQC(panelTitle, headStage)
 	elapsedTime = actionScaleSettingsWave[headStage][%elapsedTime]	
 	Wave/Z sweep = AFH_GetLastSweepWaveAcquired(panelTitle)
 	if(!WaveExists(sweep))
-     		Abort "Error getting current sweep wave..."
+		DoAbortNow("Error getting current sweep wave...")
 	endif
 	
 	Wave config = GetConfigWave(sweep)
@@ -385,7 +385,7 @@ Function AM_PSA_returnActionPotential(panelTitle, headStage)
 	Wave actionScaleSettingsWave =  GetActionScaleSettingsWaveRef(panelTitle)	
 	Wave/Z sweep = AFH_GetLastSweepWaveAcquired(panelTitle)
 	if(!WaveExists(sweep))
-     		Abort "Error getting current sweep wave..."
+		DoAbortNow("Error getting current sweep wave...")
 	endif
 
 	Wave config = GetConfigWave(sweep)
@@ -1160,7 +1160,7 @@ End
 Function AM_writeAsyncResponseProto(cmdID, returnString)
 	string cmdID, returnString
 
-	Abort "Impossible to find the function TI_WriteAsyncResponse\rWas the tango XOP and the includes loaded?"
+	DoAbortNow("Impossible to find the function TI_WriteAsyncResponse\rWas the tango XOP and the includes loaded?")
 End
 
 /// @brief Wrapper for the optional tango related function #writeAsyncResponseWrapper

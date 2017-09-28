@@ -3253,3 +3253,36 @@ Function ExecuteListOfFunctions(funcList)
 		Execute/P/Q func
 	endfor
 End
+
+Function/S GetInteractiveMode_PROTO()
+
+	return ""
+End
+
+/// @brief Wrapper function for GetInteractiveMode in case it is not available
+Function/S GetInteractiveModeWrapper()
+
+	FUNCREF GetInteractiveMode_PROTO f = $"GetInteractiveMode"
+
+	return f()
+End
+
+/// @brief Wrapper function for `Abort` which honours our interactive mode setting
+Function DoAbortNow(msg)
+	string msg
+
+	DEBUGPRINTSTACKINFO()
+
+	if(IsEmpty(msg))
+		Abort
+	endif
+
+	NVAR/Z interactiveMode = $GetInteractiveModeWrapper()
+
+	if(NVAR_Exists(interactiveMode) && interactiveMode)
+		Abort msg
+	else
+		printf "Abort: %s\r", RemoveEnding(msg, "\r")
+		Abort
+	endif
+End
