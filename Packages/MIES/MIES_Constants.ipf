@@ -399,7 +399,7 @@ Constant RACK_ONE  = 0x01
 StrConstant STIM_WAVE_NAME_KEY = "Stim Wave Name"
 
 /// Last valid row index for storing epoch types in #GetSegmentTypeWave
-Constant SEGMENT_TYPE_WAVE_LAST_IDX = 97
+Constant SEGMENT_TYPE_WAVE_LAST_IDX = 96
 
 /// Minimum logarithm to base two for the ITCDataWave size
 Constant MINIMUM_ITCDATAWAVE_EXPONENT = 20
@@ -473,7 +473,7 @@ Constant HARDWARE_DAC_EXTERNAL_TRIGGER = 0x1
 Constant DA_EPHYS_PANEL_VERSION     = 22
 Constant DATABROWSER_PANEL_VERSION  = 6
 Constant SWEEPBROWSER_PANEL_VERSION = 0
-Constant WAVEBUILDER_PANEL_VERSION  = 2
+Constant WAVEBUILDER_PANEL_VERSION  = 3
 
 /// Version of the labnotebooks (numerical and textual)
 ///

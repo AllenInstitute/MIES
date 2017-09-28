@@ -84,7 +84,7 @@ End
 
 Window WaveBuilder() : Panel
 	PauseUpdate; Silent 1		// building window...
-	NewPanel /K=1 /W=(93,604,1100,1240)
+	NewPanel /K=1 /W=(94,826,1101,1462)
 	SetDrawLayer UserBack
 	SetDrawEnv fname= "MS Sans Serif",fsize= 16,fstyle= 1
 	DrawText 32,25,"Set Parameters"
@@ -660,8 +660,8 @@ Window WaveBuilder() : Panel
 	CheckBox check_SPT_NumPulses_P46,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	CheckBox check_SPT_NumPulses_P46,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
 	CheckBox check_SPT_NumPulses_P46,userdata(old_state)=  "1",value= 0
-	Button button_NewSeed_P48,pos={322.00,112.00},size={72.00,20.00},disable=1,proc=WBP_ButtonProc_NewSeed,title="New Noise"
-	Button button_NewSeed_P48,help={"Create new noise waveforms"}
+	Button button_NewSeed_P48,pos={322.00,112.00},size={72.00,20.00},disable=1,proc=WBP_ButtonProc_NewEpochSeed,title="New Noise"
+	Button button_NewSeed_P48,help={"Create new noise waveforms for the selected epoch."}
 	Button button_NewSeed_P48,userdata(tabnum)=  "2"
 	Button button_NewSeed_P48,userdata(tabcontrol)=  "WBP_WaveType"
 	Button button_NewSeed_P48,userdata(ResizeControlsInfo)= A"!!,H\\!!#@D!!#?I!!#<Xz!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
@@ -699,14 +699,14 @@ Window WaveBuilder() : Panel
 	CheckBox check_FlipEpoch_S98,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Duafnzzzzzzzzzzz"
 	CheckBox check_FlipEpoch_S98,userdata(ResizeControlsInfo) += A"zzz!!#u:Duafnzzzzzzzzzzzzzz!!!"
 	CheckBox check_FlipEpoch_S98,value= 0
-	PopupMenu popup_af_postSweep_S3,pos={7.00,102.00},size={170.00,21.00},bodyWidth=110,disable=1,proc=WBP_PopupMenu_AnalysisFunctions,title="Post Sweep"
+	PopupMenu popup_af_postSweep_S3,pos={4.00,102.00},size={173.00,19.00},bodyWidth=110,disable=1,proc=WBP_PopupMenu_AnalysisFunctions,title="Post Sweep"
 	PopupMenu popup_af_postSweep_S3,help={"After each sweep"},userdata(tabnum)=  "1"
 	PopupMenu popup_af_postSweep_S3,userdata(tabcontrol)=  "WBP_Set_Parameters"
 	PopupMenu popup_af_postSweep_S3,userdata(ResizeControlsInfo)= A"!!,@C!!#@0!!#A9!!#<`z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	PopupMenu popup_af_postSweep_S3,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Duafnzzzzzzzzzzz"
 	PopupMenu popup_af_postSweep_S3,userdata(ResizeControlsInfo) += A"zzz!!#u:Duafnzzzzzzzzzzzzzz!!!"
 	PopupMenu popup_af_postSweep_S3,mode=1,popvalue="- none -",value= #"WBP_GetAnalysisFunctions()"
-	PopupMenu popup_af_postSet_S4,pos={24.00,128.00},size={153.00,21.00},bodyWidth=110,disable=1,proc=WBP_PopupMenu_AnalysisFunctions,title="Post Set"
+	PopupMenu popup_af_postSet_S4,pos={22.00,128.00},size={155.00,19.00},bodyWidth=110,disable=1,proc=WBP_PopupMenu_AnalysisFunctions,title="Post Set"
 	PopupMenu popup_af_postSet_S4,help={"After a *full* set has been acquired (This event is not always reached as the user might not acquire all sweeps of a set)"}
 	PopupMenu popup_af_postSet_S4,userdata(tabnum)=  "1"
 	PopupMenu popup_af_postSet_S4,userdata(tabcontrol)=  "WBP_Set_Parameters"
@@ -714,7 +714,7 @@ Window WaveBuilder() : Panel
 	PopupMenu popup_af_postSet_S4,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Duafnzzzzzzzzzzz"
 	PopupMenu popup_af_postSet_S4,userdata(ResizeControlsInfo) += A"zzz!!#u:Duafnzzzzzzzzzzzzzz!!!"
 	PopupMenu popup_af_postSet_S4,mode=1,popvalue="- none -",value= #"WBP_GetAnalysisFunctions()"
-	PopupMenu popup_af_preDAQEvent_S1,pos={22.00,50.00},size={155.00,21.00},bodyWidth=110,disable=1,proc=WBP_PopupMenu_AnalysisFunctions,title="Pre DAQ"
+	PopupMenu popup_af_preDAQEvent_S1,pos={19.00,50.00},size={158.00,19.00},bodyWidth=110,disable=1,proc=WBP_PopupMenu_AnalysisFunctions,title="Pre DAQ"
 	PopupMenu popup_af_preDAQEvent_S1,help={"Immediately before any DAQ occurs"}
 	PopupMenu popup_af_preDAQEvent_S1,userdata(tabnum)=  "1"
 	PopupMenu popup_af_preDAQEvent_S1,userdata(tabcontrol)=  "WBP_Set_Parameters"
@@ -722,7 +722,7 @@ Window WaveBuilder() : Panel
 	PopupMenu popup_af_preDAQEvent_S1,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Duafnzzzzzzzzzzz"
 	PopupMenu popup_af_preDAQEvent_S1,userdata(ResizeControlsInfo) += A"zzz!!#u:Duafnzzzzzzzzzzzzzz!!!"
 	PopupMenu popup_af_preDAQEvent_S1,mode=1,popvalue="- none -",value= #"WBP_GetAnalysisFunctions()"
-	PopupMenu popup_af_midSweep_S2,pos={13.00,76.00},size={164.00,21.00},bodyWidth=110,disable=1,proc=WBP_PopupMenu_AnalysisFunctions,title="Mid sweep"
+	PopupMenu popup_af_midSweep_S2,pos={7.00,76.00},size={170.00,19.00},bodyWidth=110,disable=1,proc=WBP_PopupMenu_AnalysisFunctions,title="Mid sweep"
 	PopupMenu popup_af_midSweep_S2,help={"Each time when new data is polled (available for background DAQ only)"}
 	PopupMenu popup_af_midSweep_S2,userdata(tabnum)=  "1"
 	PopupMenu popup_af_midSweep_S2,userdata(tabcontrol)=  "WBP_Set_Parameters"
@@ -730,7 +730,7 @@ Window WaveBuilder() : Panel
 	PopupMenu popup_af_midSweep_S2,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Duafnzzzzzzzzzzz"
 	PopupMenu popup_af_midSweep_S2,userdata(ResizeControlsInfo) += A"zzz!!#u:Duafnzzzzzzzzzzzzzz!!!"
 	PopupMenu popup_af_midSweep_S2,mode=1,popvalue="- none -",value= #"WBP_GetAnalysisFunctions()"
-	PopupMenu popup_af_postDAQEvent_S5,pos={17.00,154.00},size={160.00,21.00},bodyWidth=110,disable=1,proc=WBP_PopupMenu_AnalysisFunctions,title="Post DAQ"
+	PopupMenu popup_af_postDAQEvent_S5,pos={13.00,154.00},size={164.00,19.00},bodyWidth=110,disable=1,proc=WBP_PopupMenu_AnalysisFunctions,title="Post DAQ"
 	PopupMenu popup_af_postDAQEvent_S5,help={"After all DAQ has been finished"}
 	PopupMenu popup_af_postDAQEvent_S5,userdata(tabnum)=  "1"
 	PopupMenu popup_af_postDAQEvent_S5,userdata(tabcontrol)=  "WBP_Set_Parameters"
@@ -761,7 +761,7 @@ Window WaveBuilder() : Panel
 	PopupMenu popup_WaveBuilder_build_res_P55,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	PopupMenu popup_WaveBuilder_build_res_P55,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
 	PopupMenu popup_WaveBuilder_build_res_P55,mode=1,popvalue="1",value= #"WBP_GetNoiseBuildResolution()"
-	SetVariable SetVar_WaveBuilder_P26,pos={613.00,117.00},size={123.00,18.00},bodyWidth=60,disable=1,proc=WBP_SetVarProc_UpdateParam,title="Filter Order"
+	SetVariable SetVar_WaveBuilder_P26,pos={613.00,117.00},size={123.00,18.00},bodyWidth=60,disable=3,proc=WBP_SetVarProc_UpdateParam,title="Filter Order"
 	SetVariable SetVar_WaveBuilder_P26,help={"Order of the Butterworth filter, see also DisplayHelpTopic `FilterIIR`"}
 	SetVariable SetVar_WaveBuilder_P26,userdata(tabnum)=  "2"
 	SetVariable SetVar_WaveBuilder_P26,userdata(tabcontrol)=  "WBP_WaveType"
@@ -769,7 +769,7 @@ Window WaveBuilder() : Panel
 	SetVariable SetVar_WaveBuilder_P26,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	SetVariable SetVar_WaveBuilder_P26,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
 	SetVariable SetVar_WaveBuilder_P26,limits={1,100,1},value= _NUM:0
-	SetVariable SetVar_WaveBuilder_P27,pos={741.00,117.00},size={91.00,18.00},disable=1,proc=WBP_SetVarProc_UpdateParam,title="Delta"
+	SetVariable SetVar_WaveBuilder_P27,pos={741.00,117.00},size={91.00,18.00},disable=3,proc=WBP_SetVarProc_UpdateParam,title="Delta"
 	SetVariable SetVar_WaveBuilder_P27,help={"Filter order delta."}
 	SetVariable SetVar_WaveBuilder_P27,userdata(tabnum)=  "2"
 	SetVariable SetVar_WaveBuilder_P27,userdata(tabcontrol)=  "WBP_WaveType"
@@ -793,7 +793,7 @@ Window WaveBuilder() : Panel
 	CheckBox check_NewSeedForEachSweep_P49_0,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Duafnzzzzzzzzzzz"
 	CheckBox check_NewSeedForEachSweep_P49_0,userdata(ResizeControlsInfo) += A"zzz!!#u:Duafnzzzzzzzzzzzzzz!!!"
 	CheckBox check_NewSeedForEachSweep_P49_0,value= 0
-	Button button_NewSeed_P48_0,pos={494.00,153.00},size={72.00,20.00},disable=3,proc=WBP_ButtonProc_NewSeed,title="New Seed"
+	Button button_NewSeed_P48_0,pos={494.00,153.00},size={72.00,20.00},disable=3,proc=WBP_ButtonProc_NewEpochSeed,title="New Seed"
 	Button button_NewSeed_P48_0,help={"Create a different epoch by changing the seed value of the PRNG "}
 	Button button_NewSeed_P48_0,userdata(tabnum)=  "5"
 	Button button_NewSeed_P48_0,userdata(tabcontrol)=  "WBP_WaveType"
@@ -844,6 +844,18 @@ Window WaveBuilder() : Panel
 	CheckBox check_SPT_MixedFreqShuffle_P42,userdata(tabnum)=  "5"
 	CheckBox check_SPT_MixedFreqShuffle_P42,userdata(tabcontrol)=  "WBP_WaveType"
 	CheckBox check_SPT_MixedFreqShuffle_P42,value= 0
+	Button button_NewStimsetSeed,pos={60.00,171.00},size={53.00,19.00},proc=WBP_ButtonProc_NewStimsetSeed,title="Reseed"
+	Button button_NewStimsetSeed,help={"Reseed the pseudo RNG for epochs using the global seed."}
+	Button button_NewStimsetSeed,userdata(tabnum)=  "0"
+	Button button_NewStimsetSeed,userdata(tabcontrol)=  "WBP_Set_Parameters"
+	CheckBox check_UseStimsetSeed_P39,pos={324.00,159.00},size={120.00,15.00},disable=1,proc=WBP_CheckProc,title="Epoch/Stimset Seed"
+	CheckBox check_UseStimsetSeed_P39,help={"Use the per-epoch random number generator (RNG) seed (checked) or use the stimset seed (unchecked).<br>Seeds are saved with the stimulus."}
+	CheckBox check_UseStimsetSeed_P39,userdata(tabnum)=  "2"
+	CheckBox check_UseStimsetSeed_P39,userdata(tabcontrol)=  "WBP_WaveType",value= 1
+	CheckBox check_UseEpochSeed_P39_0,pos={494.00,180.00},size={120.00,15.00},disable=1,proc=WBP_CheckProc,title="Epoch/Stimset Seed"
+	CheckBox check_UseEpochSeed_P39_0,help={"Use the per-epoch random number generator (RNG) seed (checked) or use the stimset seed (unchecked).<br>Seeds are saved with the stimulus."}
+	CheckBox check_UseEpochSeed_P39_0,userdata(tabnum)=  "5"
+	CheckBox check_UseEpochSeed_P39_0,userdata(tabcontrol)=  "WBP_WaveType",value= 1
 	DefineGuide UGH1={FT,206},UGH0={UGH1,0.902778,FB}
 	SetWindow kwTopWin,hook(main)=WBP_MainWindowHook
 	SetWindow kwTopWin,hook(ResizeControls)=ResizeControls#ResizeControlsHook
@@ -853,7 +865,7 @@ Window WaveBuilder() : Panel
 	SetWindow kwTopWin,userdata(ResizeControlsGuides)=  "UGH1;UGH0;"
 	SetWindow kwTopWin,userdata(ResizeControlsInfoUGH0)= A":-hTC3`S[@0KW?-:-)HbG%F!_Bl%<kE][6':dmEFF(KAR85E,T>#.mm5tj<o4&A^O8Q88W:-(6m1bLI94%E:B6q&gk<C]S74%E:B6q&jl7RB1778-NR;b9q[:JNr)/ibU@2`E]X"
 	SetWindow kwTopWin,userdata(ResizeControlsInfoUGH1)= A":-hTC3`S[@0frH.:-)HbG%F!_Bl%<kE][6':dmEFF(KAR85E,T>#.mm5tj<o4&A^O8Q88W:-(-a2D-[;4%E:B6q&gk7T;H><CoSI1-.Kp78-NR;b9q[:JNr+0K(u"
-	SetWindow kwTopWin,userdata(panelVersion)=  "2"
+	SetWindow kwTopWin,userdata(panelVersion)=  "3"
 	Execute/Q/Z "SetWindow kwTopWin sizeLimit={755.25,477,inf,inf}" // sizeLimit requires Igor 7 or later
 	Display/W=(0,286,1068,487)/FG=($"",UGH1,FR,UGH0)/HOST=#
 	SetWindow kwTopWin,hook(ResizeControls)=ResizeControls#ResizeControlsHook
@@ -2122,12 +2134,26 @@ Function WBP_PopupMenu(pa) : PopupMenuControl
 	return 0
 End
 
-Function WBP_ButtonProc_NewSeed(ba) : ButtonControl
+Function WBP_ButtonProc_NewEpochSeed(ba) : ButtonControl
 	STRUCT WMButtonAction &ba
 
 	switch(ba.eventCode)
 		case 2: // mouse up
 			WBP_UpdateControlAndWP(ba.ctrlName, GetNonReproducibleRandom())
+			WBP_UpdatePanelIfAllowed()
+			break
+	endswitch
+
+	return 0
+End
+
+Function WBP_ButtonProc_NewStimsetSeed(ba) : ButtonControl
+	STRUCT WMButtonAction &ba
+
+	switch(ba.eventCode)
+		case 2: // mouse up
+			Wave SegWvType = GetSegmentTypeWave()
+			SegWvType[97] = GetNonReproducibleRandom()
 			WBP_UpdatePanelIfAllowed()
 			break
 	endswitch

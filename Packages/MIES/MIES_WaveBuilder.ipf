@@ -567,7 +567,7 @@ static Function/WAVE WB_MakeWaveBuilderWave(WP, WPT, SegWvType, stepCount, numEp
 				AddEntryIntoWaveNoteAsList(WaveBuilderWave, "Offset"   , var=params.Offset)
 				break
 			case EPOCH_TYPE_NOISE:
-				params.randomSeed = WB_InitializeSeed(WP, i, type, stepCount)
+				params.randomSeed = WB_InitializeSeed(WP, SegWvType, i, type, stepCount)
 
 				WB_NoiseSegment(params)
 				WAVE segmentWave = WB_GetSegmentWave()
@@ -602,7 +602,7 @@ static Function/WAVE WB_MakeWaveBuilderWave(WP, WPT, SegWvType, stepCount, numEp
 				AddEntryIntoWaveNoteAsList(WaveBuilderWave, "Offset"   , var=params.Offset)
 				break
 			case EPOCH_TYPE_PULSE_TRAIN:
-				params.randomSeed = WB_InitializeSeed(WP, i, type, stepCount)
+				params.randomSeed = WB_InitializeSeed(WP, SegWvType, i, type, stepCount)
 
 				Make/FREE/D/N=(MINIMUM_WAVE_SIZE) pulseStartTimes
 
@@ -740,7 +740,8 @@ static Function/WAVE WB_MakeWaveBuilderWave(WP, WPT, SegWvType, stepCount, numEp
 		AddEntryIntoWaveNoteAsList(WaveBuilderWave, StringFromList(POST_SWEEP_EVENT, EVENT_NAME_LIST), str=WPT[3][99])
 		AddEntryIntoWaveNoteAsList(WaveBuilderWave, StringFromList(POST_SET_EVENT, EVENT_NAME_LIST), str=WPT[4][99])
 		AddEntryIntoWaveNoteAsList(WaveBuilderWave, StringFromList(POST_DAQ_EVENT, EVENT_NAME_LIST), str=WPT[5][99])
-		AddEntryIntoWaveNoteAsList(WaveBuilderWave, "Flip", var=SegWvType[98], appendCR=1)
+		AddEntryIntoWaveNoteAsList(WaveBuilderWave, "Flip", var=SegWvType[98])
+		AddEntryIntoWaveNoteAsList(WaveBuilderWave, "Random Seed", var=SegWvType[97], appendCR=1)
 	endif
 
 	return WaveBuilderWave
@@ -792,18 +793,29 @@ static Function WB_ApplyOffset(pa)
 End
 
 /// @brief Initialize the seed value of the pseudo random number generator
-static Function WB_InitializeSeed(WP, epoch, type, stepCount)
-	WAVE WP
+static Function WB_InitializeSeed(WP, SegWvType, epoch, type, stepCount)
+	WAVE WP, SegWvType
 	variable epoch, type, stepCount
 
 	variable j, randomSeed
 
 	// initialize the random seed value if not already done
+	// per epoch seed
 	if(WP[48][epoch][type] == 0)
 		WP[48][epoch][type] = GetNonReproducibleRandom()
 	endif
 
-	randomSeed = WP[48][epoch][type]
+	// global stimset seed
+	if(SegWvType[97] == 0)
+		SegWvType[97] = GetNonReproducibleRandom()
+	endif
+
+	if(WP[39][epoch][type])
+		randomSeed = WP[48][epoch][type]
+	else
+		randomSeed = SegWvType[97]
+	endif
+
 	SetRandomSeed/BETR=1 randomSeed
 
 	if(WP[49][epoch][type])

@@ -2274,7 +2274,7 @@ Function/WAVE GetTestPulse()
 	return wv
 End
 
-static Constant WP_WAVE_LAYOUT_VERSION = 8
+static Constant WP_WAVE_LAYOUT_VERSION = 9
 
 /// @brief Automated testing helper
 static Function GetWPVersion()
@@ -2311,6 +2311,12 @@ Function UpgradeWaveParam(wv)
 		// adapt to changed filter order definition
 		wv[26][][EPOCH_TYPE_NOISE] = 6
 		wv[27][][EPOCH_TYPE_NOISE] = 0
+	endif
+
+	// upgrade to wave version 9
+	if(WaveVersionIsSmaller(wv, 9))
+		// preselect per epoch RNG
+		wv[39][][] = 1
 	endif
 
 	SetWaveVersion(wv, WP_WAVE_LAYOUT_VERSION)
@@ -2373,6 +2379,7 @@ static Function AddDimLabelsToWP(wv)
 	SetDimLabel ROWS, 30, $("PT: Last Mixed Frequency")       , wv
 	SetDimLabel ROWS, 31, $("PT: Last Mixed Frequency delta") , wv
 	// unused entries are not labeled
+	SetDimLabel ROWS, 39, $("Reseed RNG for each epoch")      , wv
 	SetDimLabel ROWS, 40, $("Delta type")                     , wv
 	SetDimLabel ROWS, 41, $("PT: Mixed Frequency")            , wv
 	SetDimLabel ROWS, 42, $("PT: Shuffle")                    , wv
@@ -2426,6 +2433,9 @@ Function/WAVE GetWaveBuilderWaveParam()
 
 		// noise filter order
 		wv[26][][EPOCH_TYPE_NOISE] = 6
+
+		// per epoch RNG seed
+		wv[39][][] = 1
 
 		// noise type
 		wv[54][][EPOCH_TYPE_NOISE] = 0
@@ -2515,7 +2525,7 @@ Function/WAVE GetWaveBuilderWaveTextParam()
 	return wv
 End
 
-static Constant SEGWVTYPE_WAVE_LAYOUT_VERSION = 4
+static Constant SEGWVTYPE_WAVE_LAYOUT_VERSION = 5
 
 /// @brief Automated testing helper
 static Function GetSegWvTypeVersion()
@@ -2548,6 +2558,7 @@ static Function AddDimLabelsToSegWvType(wv)
 		SetDimLabel ROWS, i, $("Type of Epoch " + num2str(i)), wv
 	endfor
 
+	SetDimLabel ROWS, 97,  $("Stimset global RNG seed"), wv
 	SetDimLabel ROWS, 98,  $("Flip time axis")         , wv
 	SetDimLabel ROWS, 99,  $("Inter trial interval")   , wv
 	SetDimLabel ROWS, 100, $("Total number of epochs") , wv
@@ -2558,7 +2569,8 @@ End
 /// Remember to change #SEGMENT_TYPE_WAVE_LAST_IDX if changing the wave layout
 ///
 /// Rows:
-/// - 0 - 97: epoch types using one of @ref WaveBuilderEpochTypes
+/// - 0 - 96: epoch types using one of @ref WaveBuilderEpochTypes
+/// - 97: Stimset global RNG seed
 /// - 98: Data flipping (1 or 0)
 /// - 99: set ITI (s)
 /// - 100: total number of segments/epochs
