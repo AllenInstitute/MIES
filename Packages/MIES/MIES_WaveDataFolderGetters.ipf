@@ -2421,14 +2421,14 @@ Function/WAVE GetWaveBuilderWaveParam()
 		Make/N=(61, 100, 9) dfr:WP/Wave=wv
 
 		// noise low/high pass filter to off
-		wv[20][][2] = 0
-		wv[22][][2] = 0
+		wv[20][][EPOCH_TYPE_NOISE] = 0
+		wv[22][][EPOCH_TYPE_NOISE] = 0
 
 		// noise filter order
-		wv[26][][2] = 6
+		wv[26][][EPOCH_TYPE_NOISE] = 6
 
 		// noise type
-		wv[54][][2] = 0
+		wv[54][][EPOCH_TYPE_NOISE] = 0
 
 		AddDimLabelsToWP(wv)
 		SetWaveVersion(wv, WP_WAVE_LAYOUT_VERSION)
