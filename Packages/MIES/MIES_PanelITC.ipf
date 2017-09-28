@@ -3824,6 +3824,10 @@ Function DAP_EphysPanelStartUpSettings()
 	CheckBox Radio_ClampMode_13IZ WIN = $panelTitle, value= 0,mode=1
 	CheckBox Radio_ClampMode_15IZ WIN = $panelTitle, value= 0,mode=1
 	
+	// clamp mode sub tab
+	PGC_SetAndActivateControl(panelTitle, "tab_DataAcq_Amp", val = 0)
+	PGC_SetAndActivateControl(panelTitle, "ADC", val = 6)
+
 	CheckBox Radio_ClampMode_AllVClamp WIN = $panelTitle, value= 0,mode=1
 	CheckBox Radio_ClampMode_AllIClamp WIN = $panelTitle, value= 0,mode=1
 	CheckBox Radio_ClampMode_AllIZero WIN = $panelTitle, value= 0,mode=1
