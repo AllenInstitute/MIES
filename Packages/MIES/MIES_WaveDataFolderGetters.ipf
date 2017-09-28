@@ -2545,7 +2545,7 @@ static Function AddDimLabelsToSegWvType(wv)
 	ASSERT(SEGMENT_TYPE_WAVE_LAST_IDX < DimSize(wv, ROWS), "Number of reserved rows for epochs is larger than wave the itself")
 
 	for(i = 0; i <= SEGMENT_TYPE_WAVE_LAST_IDX; i += 1)
-	 SetDimLabel ROWS, i, $("Type of Epoch " + num2str(i)), wv
+		SetDimLabel ROWS, i, $("Type of Epoch " + num2str(i)), wv
 	endfor
 
 	SetDimLabel ROWS, SEGMENT_TYPE_WAVE_LAST_IDX + 1, $("Flip time axis")        , wv
