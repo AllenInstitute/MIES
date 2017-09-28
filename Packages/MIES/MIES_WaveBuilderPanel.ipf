@@ -1519,13 +1519,6 @@ static Function WBP_HighPassDeltaLimits()
 	endif
 End
 
-static Function WBP_ExecuteAdamsTabcontrol(tabID)
-	variable tabID
-
-	TabControl $"WBP_WaveType" win=$panel, value = tabID
-	return ChangeTab(panel, "WBP_WaveType", tabID)
-End
-
 static Function WBP_ChangeWaveType(stimulusType)
 	variable stimulusType
 
@@ -1881,7 +1874,7 @@ static Function WBP_SelectEpoch(epoch)
 
 	WAVE SegWvType = GetSegmentTypeWave()
 
-	WBP_ExecuteAdamsTabcontrol(SegWvType[epoch])
+	PGC_SetAndActivateControl(panel, "WBP_WaveType", val = SegWvType[epoch])
 	WBP_ParameterWaveToPanel(SegWvType[epoch])
 	WBP_UpdatePanelIfAllowed()
 End
