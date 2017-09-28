@@ -3979,6 +3979,7 @@ Function DAP_EphysPanelStartUpSettings()
 	SetVariable Unit_DA_06 WIN = $panelTitle,limits={0,inf,1},value= _STR:""
 	SetVariable Unit_DA_07 WIN = $panelTitle,limits={0,inf,1},value= _STR:""
 
+	SetVariable Unit_AD_00 WIN = $panelTitle,limits={0,inf,1},value= _STR:""
 	SetVariable Unit_AD_01 WIN = $panelTitle,limits={0,inf,1},value= _STR:""
 	SetVariable Unit_AD_02 WIN = $panelTitle,limits={0,inf,1},value= _STR:""
 	SetVariable Unit_AD_03 WIN = $panelTitle,limits={0,inf,1},value= _STR:""
