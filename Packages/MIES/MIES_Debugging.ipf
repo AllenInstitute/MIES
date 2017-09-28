@@ -404,7 +404,7 @@ End
 Function DEBUGPRINT_OR_ABORT(msg)
 	string msg
 
-	Abort msg
+	DoAbortNow(msg)
 End
 
 Function DEBUG_TIMER_START()
