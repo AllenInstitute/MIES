@@ -231,7 +231,6 @@ Function ITC_StopTestPulseSingleDevice(panelTitle)
 End
 
 static Constant DEFAULT_MAXAUTOBIASCURRENT = 1500e-12 /// Unit: Amps
-static Constant AUTOBIAS_INTERVALL_SECONDS = 1
 
 /// @brief Handle automatic bias current injection
 ///
@@ -249,7 +248,9 @@ Function ITC_ApplyAutoBias(panelTitle, BaselineSSAvg, SSResistance)
 	variable lastInvocation = GetNumberFromWaveNote(TPStorage, AUTOBIAS_LAST_INVOCATION_KEY)
 	variable curTime = ticks * TICKS_TO_SECONDS
 
-	if( (curTime - lastInvocation) < AUTOBIAS_INTERVALL_SECONDS )
+	WAVE guiStateWave = GetDA_EphysGuiStateNum(panelTitle)
+
+	if( (curTime - lastInvocation) < GuiStateWave[0][%setvar_Settings_AutoBiasInt] )
 		return NaN
 	endif
 
@@ -322,7 +323,7 @@ Function ITC_ApplyAutoBias(panelTitle, BaselineSSAvg, SSResistance)
 		DEBUGPRINT("current[A]=", var=current)
 		// only use part of the calculated current, as BaselineSSAvg holds
 		// an overestimate for small buffer sizes
-		current *= 0.15
+		current *= GuiStateWave[0][%setvar_Settings_AutoBiasPerc] / 100
 		
 		// check if holding is enabled. If it is not, ignore holding current value.
 		if(AI_SendToAmp(panelTitle, headStage, I_CLAMP_MODE, MCC_GETHOLDINGENABLE_FUNC, NaN))

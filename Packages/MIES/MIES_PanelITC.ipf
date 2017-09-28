@@ -26,7 +26,7 @@ static StrConstant AMPLIFIER_DEF_FORMAT   = "AmpNo %d Chan %d"
 
 Window DA_Ephys() : Panel
 	PauseUpdate; Silent 1		// building window...
-	NewPanel /K=1 /W=(620,71,1123,951)
+	NewPanel /K=1 /W=(105,357,609,1237)
 	ValDisplay valdisp_DataAcq_P_LED_Clear,pos={366.00,298.00},size={86.00,29.00},disable=1
 	ValDisplay valdisp_DataAcq_P_LED_Clear,help={"red:user"},userdata(tabnum)=  "0"
 	ValDisplay valdisp_DataAcq_P_LED_Clear,userdata(tabcontrol)=  "tab_DataAcq_Pressure"
@@ -2699,14 +2699,14 @@ Window DA_Ephys() : Panel
 	GroupBox group_Settings_Amplifier,userdata(ResizeControlsInfo)= A"!!,Ba!!#CtJ,hsn!!#@,z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	GroupBox group_Settings_Amplifier,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Duafnzzzzzzzzzzz"
 	GroupBox group_Settings_Amplifier,userdata(ResizeControlsInfo) += A"zzz!!#u:Duafnzzzzzzzzzzzzzz!!!"
-	CheckBox check_Settings_AmpMCCdefault,pos={34.00,598.00},size={190.00,15.00},disable=1,title="Default to MCC parameter values"
+	CheckBox check_Settings_AmpMCCdefault,pos={34.00,592.00},size={190.00,15.00},disable=1,title="Default to MCC parameter values"
 	CheckBox check_Settings_AmpMCCdefault,help={"FIXME"},userdata(tabnum)=  "5"
 	CheckBox check_Settings_AmpMCCdefault,userdata(tabcontrol)=  "ADC"
 	CheckBox check_Settings_AmpMCCdefault,userdata(ResizeControlsInfo)= A"!!,Cl!!#D%J,hr#!!#<(z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	CheckBox check_Settings_AmpMCCdefault,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Duafnzzzzzzzzzzz"
 	CheckBox check_Settings_AmpMCCdefault,userdata(ResizeControlsInfo) += A"zzz!!#u:Duafnzzzzzzzzzzzzzz!!!"
 	CheckBox check_Settings_AmpMCCdefault,fColor=(65280,43520,0),value= 0
-	CheckBox check_Settings_SyncMiesToMCC,pos={34.00,619.00},size={152.00,15.00},disable=1,title="Synchronize MIES to MCC"
+	CheckBox check_Settings_SyncMiesToMCC,pos={34.00,613.00},size={152.00,15.00},disable=1,title="Synchronize MIES to MCC"
 	CheckBox check_Settings_SyncMiesToMCC,help={"Send the GUI values to the MCC on mode switch/headstage activation"}
 	CheckBox check_Settings_SyncMiesToMCC,userdata(tabnum)=  "5"
 	CheckBox check_Settings_SyncMiesToMCC,userdata(tabcontrol)=  "ADC"
@@ -2933,7 +2933,7 @@ Window DA_Ephys() : Panel
 	PopupMenu Popup_Settings_Pressure_TTLA,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Duafnzzzzzzzzzzz"
 	PopupMenu Popup_Settings_Pressure_TTLA,userdata(ResizeControlsInfo) += A"zzz!!#u:Duafnzzzzzzzzzzzzzz!!!"
 	PopupMenu Popup_Settings_Pressure_TTLA,mode=2,popvalue="0",value= #"\"\\\\M1(\\u200B- none -;0;1;2;3;4;5;6;7\""
-	GroupBox group_Settings_Pressure,pos={23.00,677.00},size={445.00,130.00},disable=1,title="Pressure"
+	GroupBox group_Settings_Pressure,pos={24.00,677.00},size={444.00,100.00},disable=1,title="Pressure"
 	GroupBox group_Settings_Pressure,userdata(tabnum)=  "5"
 	GroupBox group_Settings_Pressure,userdata(tabcontrol)=  "ADC"
 	GroupBox group_Settings_Pressure,userdata(ResizeControlsInfo)= A"!!,Bq!!#D95QF1.J,hq<z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
@@ -3033,6 +3033,7 @@ Window DA_Ephys() : Panel
 	ValDisplay valdisp_DataAcq_P_0,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Duafnzzzzzzzzzzz"
 	ValDisplay valdisp_DataAcq_P_0,userdata(ResizeControlsInfo) += A"zzz!!#u:Duafnzzzzzzzzzzzzzz!!!"
 	ValDisplay valdisp_DataAcq_P_0,fSize=14,frame=0,fStyle=0
+	ValDisplay valdisp_DataAcq_P_0,valueColor=(65000,65000,65000)
 	ValDisplay valdisp_DataAcq_P_0,valueBackColor=(65535,65535,65535,0)
 	ValDisplay valdisp_DataAcq_P_0,limits={0,0,0},barmisc={0,1000},value= #"0.00"
 	ValDisplay valdisp_DataAcq_P_1,pos={153.00,351.00},size={35.00,21.00},bodyWidth=35,disable=1
@@ -3270,7 +3271,7 @@ Window DA_Ephys() : Panel
 	Button button_Hardware_ClearChanConn,userdata(ResizeControlsInfo)= A"!!,HDJ,hs4J,hqP!!#<Xz!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	Button button_Hardware_ClearChanConn,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	Button button_Hardware_ClearChanConn,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
-	CheckBox check_Settings_DisablePressure,pos={365.00,749.00},size={86.00,30.00},disable=1,title="Stop pressure\ron data acq."
+	CheckBox check_Settings_DisablePressure,pos={321.00,748.00},size={131.00,15.00},disable=1,title="Stop pressure on DAQ"
 	CheckBox check_Settings_DisablePressure,help={"Turn off all pressure modes when data aquisition is initiated"}
 	CheckBox check_Settings_DisablePressure,userdata(tabnum)=  "5"
 	CheckBox check_Settings_DisablePressure,userdata(tabcontrol)=  "ADC"
@@ -3580,12 +3581,22 @@ Window DA_Ephys() : Panel
 	SetVariable SetVar_DataAcq_skipAhead,help={"Skip sweeps in selected stimulus set(s) on data acquisition initialization."}
 	SetVariable SetVar_DataAcq_skipAhead,userdata(tabnum)=  "0"
 	SetVariable SetVar_DataAcq_skipAhead,userdata(tabcontrol)=  "ADC"
-	SetVariable SetVar_DataAcq_skipAhead,limits={0,4,1},value= _NUM:0
+	SetVariable SetVar_DataAcq_skipAhead,limits={0,0,1},value= _NUM:0
 	CheckBox check_DA_applyOnModeSwitch,pos={347.00,692.00},size={134.00,15.00},disable=1,title="Apply on mode switch"
 	CheckBox check_DA_applyOnModeSwitch,help={"Apply clamp mode all-channel DA settings on mode switch"}
 	CheckBox check_DA_applyOnModeSwitch,userdata(tabnum)=  "1"
 	CheckBox check_DA_applyOnModeSwitch,userdata(tabcontrol)=  "ADC"
 	CheckBox check_DA_applyOnModeSwitch,value= 0,side= 1
+	SetVariable setvar_Settings_AutoBiasPerc,pos={77.00,630.00},size={111.00,18.00},disable=1,title="Autobias (%)"
+	SetVariable setvar_Settings_AutoBiasPerc,help={"Autobias percentage"}
+	SetVariable setvar_Settings_AutoBiasPerc,userdata(tabnum)=  "5"
+	SetVariable setvar_Settings_AutoBiasPerc,userdata(tabcontrol)=  "ADC"
+	SetVariable setvar_Settings_AutoBiasPerc,limits={1,100,1},value= _NUM:15
+	SetVariable setvar_Settings_AutoBiasInt,pos={30.00,650.00},size={158.00,18.00},disable=1,title="Autobias interval (s)"
+	SetVariable setvar_Settings_AutoBiasInt,help={"Autobias interval"}
+	SetVariable setvar_Settings_AutoBiasInt,userdata(tabnum)=  "5"
+	SetVariable setvar_Settings_AutoBiasInt,userdata(tabcontrol)=  "ADC"
+	SetVariable setvar_Settings_AutoBiasInt,limits={0.25,1000,0.25},value= _NUM:1
 	DefineGuide UGV0={FR,-25},UGH0={FB,-27},UGV1={FL,481}
 	SetWindow kwTopWin,hook(cleanup)=DAP_WindowHook
 	SetWindow kwTopWin,userdata(ResizeControlsInfo)= A"!!*'\"z!!#CW!!#Dl5QCcbzzzzzzzzzzzzzzzzzzzz"
@@ -4023,6 +4034,10 @@ Function DAP_EphysPanelStartUpSettings()
 	SetVariable SetVar_DataAcq_AutoBiasV      WIN = $panelTitle, value = _NUM:-70
 	SetVariable SetVar_DataAcq_AutoBiasVrange WIN = $panelTitle, value = _NUM:0.5
 	SetVariable setvar_DataAcq_IbiasMax       WIN = $panelTitle, value = _NUM:200
+
+	// settings tab
+	SetVariable setvar_Settings_AutoBiasPerc  WIN = $panelTitle, value = _NUM:15
+	SetVariable setvar_Settings_AutoBiasInt   WIN = $panelTitle, value = _NUM:1
 
 	SetVariable SetVar_DataAcq_Hold_VC WIN = $panelTitle,value= _NUM:0
 	CheckBox check_DatAcq_HoldEnableVC WIN = $panelTitle,value= 0
@@ -7571,6 +7586,20 @@ Function DAP_CheckProc_UpdateGuiState(cba) : CheckBoxControl
 			Variable checked = cba.checked
 			DAP_UpdateControlInGuiStateWv(cba.win, cba.ctrlName, cba.checked)
 			P_RunP_ControlIfTPOFF(cba.win)
+			break
+	endswitch
+
+	return 0
+End
+
+Function DAP_SetVar_UpdateGuiState(sva) : SetVariableControl
+	STRUCT WMSetVariableAction &sva
+
+	switch(sva.eventCode)
+		case 1: // mouse up
+		case 2: // Enter key
+		case 3: // Live update
+			DAP_UpdateControlInGuiStateWv(sva.win, sva.ctrlName, sva.dval)
 			break
 	endswitch
 
