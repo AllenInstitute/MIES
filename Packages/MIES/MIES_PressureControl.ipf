@@ -1727,11 +1727,11 @@ Function P_UpdatePressureModeTabs(panelTitle, headStage)
 		TabControl tab_DataAcq_Pressure win=$panelTitle, tabLabel(0) = "Auto"
 		TabControl tab_DataAcq_Pressure win=$panelTitle, tabLabel(1) = "Manual"
 	elseif(pressureMode == PRESSURE_METHOD_MANUAL)
-		ChangeTab(panelTitle, "tab_DataAcq_Pressure", 1)
+		PGC_SetAndActivateControl(panelTitle, "tab_DataAcq_Pressure", val = 1)
 		TabControl tab_DataAcq_Pressure win=$panelTitle, tabLabel(0) = "Auto"
 		TabControl tab_DataAcq_Pressure win=$panelTitle, tabLabel(1) = highlightSpec + "Manual"
 	else
-		ChangeTab(panelTitle, "tab_DataAcq_Pressure", 0)
+		PGC_SetAndActivateControl(panelTitle, "tab_DataAcq_Pressure", val = 0)
 		TabControl tab_DataAcq_Pressure win=$panelTitle, tabLabel(0) = highlightSpec + "Auto"
 		TabControl tab_DataAcq_Pressure win=$panelTitle, tabLabel(1) = "Manual"
 	endif

@@ -553,25 +553,6 @@ Function ControlExists(win, control)
 	return V_flag != 0
 End
 
-/// @brief Change the active tab of a panel
-///
-/// @param panel    window name, tabs must be managed with Adam's Tab Control procedures
-/// @param ctrl     name of the TabControl
-/// @param tabID    tab index (zero-based)
-Function ChangeTab(panel, ctrl, tabID)
-	string panel, ctrl
-	variable tabID
-
-	Struct WMTabControlAction tca
-
-	tca.win	= panel
-	tca.ctrlName = ctrl
-	tca.eventCode = 2
-	tca.tab = tabID
-
-	return ACL_DisplayTab(tca)
-End
-
 /// @brief Returns the number of the current tab
 ///
 /// @param win	window name

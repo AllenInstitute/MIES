@@ -3675,7 +3675,7 @@ Function DAP_EphysPanelStartUpSettings()
 	CheckBox Check_DataAcqHS_07 WIN = $panelTitle,value= 0
 	CheckBox Check_DataAcqHS_All WIN = $panelTitle,value= 0
 
-	ChangeTab(panelTitle, "ADC", 6)
+	PGC_SetAndActivateControl(panelTitle, "ADC", val = 6)
 	DoUpdate/W=$panelTitle
 
 	SetVariable Gain_AD_00 WIN = $panelTitle, value = _NUM:0.00
@@ -6232,7 +6232,7 @@ static Function DAP_UpdateClampmodeTabs(panelTitle, headStage, clampMode, mccMie
 	AI_AssertOnInvalidClampMode(clampMode)
 
 	AI_SyncAmpStorageToGUI(panelTitle, headStage)
-	ChangeTab(panelTitle, "tab_DataAcq_Amp", clampMode)
+	PGC_SetAndActivateControl(panelTitle, "tab_DataAcq_Amp", val = clampMode)
 
 	if(GetCheckBoxState(panelTitle, "check_Settings_SyncMiesToMCC") && mccMiesSyncOverride == DO_MCC_MIES_SYNCING)
 		AI_SyncGUIToAmpStorageAndMCCApp(panelTitle, headStage, clampMode)

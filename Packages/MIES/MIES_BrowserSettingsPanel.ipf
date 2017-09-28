@@ -95,7 +95,7 @@ static Function BSP_DynamicStartupSettings(mainPanel)
 	BSP_SetMainCheckboxes(extPanel, 0)
 	BSP_SetCSButtonProc(extPanel, "DB_CheckProc_ChangedSetting")
 
-	ChangeTab(extPanel, "Settings", MIES_BSP_OVS)
+	PGC_SetAndActivateControl(extPanel, "Settings", val = MIES_BSP_OVS)
 	UpdateSweepPlot(mainPanel)
 End
 
