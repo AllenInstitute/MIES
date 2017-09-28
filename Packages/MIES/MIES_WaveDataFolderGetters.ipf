@@ -2276,6 +2276,12 @@ End
 
 static Constant WP_WAVE_LAYOUT_VERSION = 8
 
+/// @brief Automated testing helper
+static Function GetWPVersion()
+
+	return WP_WAVE_LAYOUT_VERSION
+End
+
 /// @brief Upgrade the wave layout of `WP` to the most recent one
 ///        as defined in `WP_WAVE_LAYOUT_VERSION`
 Function UpgradeWaveParam(wv)
@@ -2433,6 +2439,12 @@ End
 
 static Constant WPT_WAVE_LAYOUT_VERSION = 5
 
+/// @brief Automated testing helper
+static Function GetWPTVersion()
+
+	return WPT_WAVE_LAYOUT_VERSION
+End
+
 /// @brief Upgrade the wave layout of `WPT` to the most recent one
 ///        as defined in `WPT_WAVE_LAYOUT_VERSION`
 Function UpgradeWaveTextParam(wv)
@@ -2504,6 +2516,12 @@ Function/WAVE GetWaveBuilderWaveTextParam()
 End
 
 static Constant SEGWVTYPE_WAVE_LAYOUT_VERSION = 4
+
+/// @brief Automated testing helper
+static Function GetSegWvTypeVersion()
+
+	return SEGWVTYPE_WAVE_LAYOUT_VERSION
+End
 
 /// @brief Upgrade the wave layout of `SegWvType` to the most recent one
 ///        as defined in `SEGWVTYPE_WAVE_LAYOUT_VERSION`
