@@ -5,9 +5,9 @@ AnalysisBrowser
 ---------------
 
 - SweepBrowser Export:
-  - Fix x range determination by number of pulses
-  - Use correct region for pulse range calculation
-  - Fix operation on zoomed in graphs
+    - Fix x range determination by number of pulses
+    - Use correct region for pulse range calculation
+    - Fix operation on zoomed in graphs
 - SweepBrowser: Remove both unused sub panels on the right
 
 DataBrowser
@@ -19,8 +19,8 @@ DataBrowser/SweepBrowser
 ------------------------
 
 - Pulse Average:
-	- Make individual traces more transparent
-	- Enhance display of poisson distributed pulses
+    - Make individual traces more transparent
+    - Enhance display of poisson distributed pulses
 - Overlay Sweeps: Add mode for overlaying sweeps in a non-commulative way
 
 DA\_Ephys
@@ -32,8 +32,8 @@ DA\_Ephys
 - Disable more GUI controls during DAQ
 - Set DA channels to zero on normal stop as well (required if analysis function aborts early)
 - TP_Delta:
-	- Prefer a fixed time period for the instantaneous calculation
-	- Fix Steady state resistance calculation for non-default baselines
+    - Prefer a fixed time period for the instantaneous calculation
+    - Fix Steady state resistance calculation for non-default baselines
 - Avoid inifite loop in DAQ Multidevice (hard to trigger though)
 - New User settings for All V-clamp or I-clamp settings
 - Add jump ahead feature which allows the user to skip future sweeps
@@ -110,12 +110,12 @@ WaveBuilder
 
 - Fix combine stimset creation without Wavebuilder panel open
 - Pulse Train epoch:
-  - Adjust pulse positions relative to the begin of the stimset
-  - Fix number of pulses control updating with multiple pulse train epochs in one stimset
-	- Add mixed frequency mode
+    - Adjust pulse positions relative to the begin of the stimset
+    - Fix number of pulses control updating with multiple pulse train epochs in one stimset
+    - Add mixed frequency mode
 - Noise epoch:
-  - Fix high/low filter values and document them properly
-  - Add the possibility to create multiple epochs using the exact same RNG seed
+    - Fix high/low filter values and document them properly
+    - Add the possibility to create multiple epochs using the exact same RNG seed
 - Avoid runtime error on custom wave epoch on empty folder selection
 - Add automated regression tests
 
