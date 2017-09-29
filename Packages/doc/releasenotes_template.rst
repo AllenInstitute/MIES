@@ -19,20 +19,23 @@ ExperimentConfig
 Downsample
 ----------
 
+Analysis Functions
+------------------
+
 Foreign Function interface
 --------------------------
 
 General
 -------
 
-Labnotebook
------------
-
 ITC XOP 2
 ----------
 
 ZeroMQ XOP
 ----------
+
+Labnotebook
+-----------
 
 New numerical keys
 ~~~~~~~~~~~~~~~~~~
@@ -49,6 +52,9 @@ Changed textual entries
 NWB/IPNWB
 ---------
 
+File format
+~~~~~~~~~~~
+
 Pressure Control
 ----------------
 
@@ -57,9 +63,6 @@ WaveBuilder
 
 Work Sequencing Engine
 ----------------------
-
-File format
-~~~~~~~~~~~
 
 Internal
 --------

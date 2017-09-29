@@ -1,3 +1,140 @@
+Release 1.4
+===========
+
+AnalysisBrowser
+---------------
+
+- SweepBrowser Export:
+  - Fix x range determination by number of pulses
+  - Use correct region for pulse range calculation
+  - Fix operation on zoomed in graphs
+- SweepBrowser: Remove both unused sub panels on the right
+
+DataBrowser
+-----------
+- Rework UI to use much less horizontal space and make it more compact
+- Fix overlay sweeps for experiments with non-standard sweep ordering
+
+DataBrowser/SweepBrowser
+------------------------
+
+- Pulse Average:
+	- Make individual traces more transparent
+	- Enhance display of poisson distributed pulses
+- Overlay Sweeps: Add mode for overlaying sweeps in a non-commulative way
+
+DA\_Ephys
+---------
+
+- Avoid complaining into the history if the ITI is too short
+- Speedup repeated acqusition in case no ITI is left for the background function
+- Testpulse Multidevice: Extract the first chunk only after it is finished
+- Disable more GUI controls during DAQ
+- Set DA channels to zero on normal stop as well (required if analysis function aborts early)
+- TP_Delta:
+	- Prefer a fixed time period for the instantaneous calculation
+	- Fix Steady state resistance calculation for non-default baselines
+- Avoid inifite loop in DAQ Multidevice (hard to trigger though)
+- New User settings for All V-clamp or I-clamp settings
+- Add jump ahead feature which allows the user to skip future sweeps
+- Make the autobias percentage and the interval configurable
+
+Analysis Functions
+------------------
+
+- Added AdjustDAScale, ReachTargetVoltage and PatchSeqSubThreshold
+- Add "early abort without repurposing time" return value for Mid Sweep Event
+
+ExperimentConfig
+----------------
+
+- Added some more config fields
+
+Downsample
+----------
+None
+
+Foreign Function interface
+--------------------------
+None
+
+General
+-------
+
+- Avoid calling analysis functions twice on mid sweep event
+- Allow skipping the last sweep with repeated acquisition on
+
+ITC XOP 2
+----------
+None
+
+ZeroMQ XOP
+----------
+None
+
+Labnotebook
+-----------
+None. The new analysis functions write some labnotebook entries. See their
+documentation for details.
+
+New numerical keys
+~~~~~~~~~~~~~~~~~~
+None
+
+New textual keys
+~~~~~~~~~~~~~~~~
+None
+
+Changed numerical entries
+~~~~~~~~~~~~~~~~~~~~~~~~~
+None
+
+Changed textual entries
+~~~~~~~~~~~~~~~~~~~~~~~
+None
+
+NWB/IPNWB
+---------
+None
+
+File format
+~~~~~~~~~~~
+None
+
+Pressure Control
+----------------
+None
+
+WaveBuilder
+-----------
+
+- Fix combine stimset creation without Wavebuilder panel open
+- Pulse Train epoch:
+  - Adjust pulse positions relative to the begin of the stimset
+  - Fix number of pulses control updating with multiple pulse train epochs in one stimset
+	- Add mixed frequency mode
+- Noise epoch:
+  - Fix high/low filter values and document them properly
+  - Add the possibility to create multiple epochs using the exact same RNG seed
+- Avoid runtime error on custom wave epoch on empty folder selection
+- Add automated regression tests
+
+Work Sequencing Engine
+----------------------
+None
+
+Internal
+--------
+
+- Convert Abort with message to DoAbortNow to facilitate automated testing with hardware in future versions.
+- Fix skipped documentation for DAP\_EphysPanelStartUpSettings() due to buggy code conversion script.
+- ED_AddEntryToLabnotebook: Add optional overrideSweepNo parameter
+- Get rid of some ITC hardware related waves
+
+Tango
+-----
+None
+
 Release 1.3
 ===========
 
