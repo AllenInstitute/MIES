@@ -42,7 +42,7 @@ DA\_Ephys
 Analysis Functions
 ------------------
 
-- Added AdjustDAScale, ReachTargetVoltage and PatchSeqSubThreshold
+- Added `AdjustDAScale <http://10.128.24.29/master/file/_m_i_e_s___analysis_functions_8ipf.html#_CPPv213AdjustDAScale6string8variable4wave8variable8variable>`__, `ReachTargetVoltage <http://10.128.24.29/master/file/_m_i_e_s___analysis_functions_8ipf.html#_CPPv218ReachTargetVoltage6string8variable4wave8variable8variable>`__ and `PatchSeqSubThreshold <http://10.128.24.29/master/file/_m_i_e_s___analysis_functions_8ipf.html#_CPPv220PatchSeqSubThreshold6string8variable4wave8variable8variable>`__
 - Add "early abort without repurposing time" return value for Mid Sweep Event
 
 ExperimentConfig
