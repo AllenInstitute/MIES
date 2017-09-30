@@ -63,7 +63,7 @@ static Function BSP_DynamicStartupSettings(mainPanel)
 	string mainPanel
 
 	variable sweepNo
-	string extPanel, device
+	string extPanel
 
 	extPanel = BSP_GetPanel(mainPanel)
 
