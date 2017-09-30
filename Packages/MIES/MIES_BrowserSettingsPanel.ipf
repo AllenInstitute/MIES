@@ -161,6 +161,16 @@ Function/S BSP_GetDevice(panelName)
 	return GetUserData(panelName, "", MIES_BSP_DEVICE)
 End
 
+/// @brief set DEVICE property to the userdata of the specified panel
+///
+/// @param panelName                name of external panel or main window
+/// @param device                   bound device as string
+Function/S BSP_SetDevice(panelName, device)
+	string panelName, device
+
+	SetWindow $panelName, userdata($MIES_BSP_DEVICE) = device
+End
+
 /// @brief check if the DEVICE property has a not nullstring property
 ///
 /// @param panelName 				name of external panel or main window
