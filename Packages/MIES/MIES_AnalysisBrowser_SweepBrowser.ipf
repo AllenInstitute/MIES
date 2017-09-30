@@ -149,7 +149,6 @@ static Function SB_InitPostPlotSettings(graph, pps)
 	STRUCT PostPlotSettings &pps
 
 	string panel    = SB_GetSweepBrowserLeftPanel(graph)
-	string extPanel = AR_GetExtPaneL(panel)
 
 	pps.averageDataFolder = $SB_GetSweepBrowserFolder(graph)
 	pps.averageTraces     = GetCheckboxState(panel, "check_SweepBrowser_AveragTraces")
