@@ -30,6 +30,7 @@ Function BSP_TogglePanel(mainPanel)
 
 	variable openSidePanel
 
+	mainPanel = GetMainWindow(mainPanel)
 	if(BSP_MainPanelNeedsUpdate(mainPanel))
 		Abort "Can not display data. The main panel is too old to be usable. Please close it and open a new one."
 	endif
