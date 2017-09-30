@@ -520,7 +520,7 @@ Function SB_SweepBrowserWindowHook(s)
 	return hookResult // 0 if nothing done, else 1
 End
 
-Function/DF SB_CreateNewSweepBrowser()
+Function/DF SB_OpenSweepBrowser()
 
 	string panel
 	DFREF dfr = $"root:"
