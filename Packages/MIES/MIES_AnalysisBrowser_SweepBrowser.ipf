@@ -54,11 +54,7 @@ End
 Function/S SB_GetSweepBrowserFolder(graph)
 	string graph
 
-	ASSERT(windowExists(graph), "Window must exist")
-	string folder = GetUserData(graph, "", "folder")
-	ASSERT(DataFolderExists(folder), "Datafolder of the sweep browser could not be found")
-
-	return folder
+	return GetDataFolder(1, BSP_GetFolder(graph, MIES_BSP_DATA_FOLDER))
 End
 
 static Function/DF SB_GetSweepDataPathFromIndex(sweepBrowserDFR, mapIndex)
@@ -142,6 +138,21 @@ static Function SB_PanelUpdate(graphOrPanel)
 	SB_HandleCursorDisplay(graph)
 	SB_ScaleAxes(graph)
 	ControlUpdate/W=$panel popup_sweepBrowser_tAlignMaster
+End
+
+/// @brief set graph userdata similar to DB_SetUserData()
+///
+/// @param win SweepBrowser Graph name
+static Function SB_SetUserData(win)
+	string win
+
+	SetWindow $win, userdata = ""
+
+	DFREF dfr = UniqueDataFolder(root:, "sweepBrowser")
+	BSP_SetFolder(win, dfr, MIES_BSP_DATA_FOLDER)
+	BSP_SetFolder(win, dfr, MIES_BSP_CS_FOLDER)
+	OVS_SetFolder(win, dfr)
+	AR_SetFolder(win, dfr)
 End
 
 static Function SB_InitPostPlotSettings(graph, pps)
@@ -522,18 +533,33 @@ End
 
 Function/DF SB_OpenSweepBrowser()
 
-	string panel
-	DFREF dfr = $"root:"
-	DFREF sweepBrowserDFR = UniqueDataFolder(dfr, "sweepBrowser")
+	string win, panelTitleNew, extPanel
 
+	Execute "SweepBrowser()"
+	win = GetCurrentWindow()
+	win = GetMainWindow(win)
+	AddVersionToPanel(win, SWEEPBROWSER_PANEL_VERSION)
+
+	SetWindow $win, hook(cleanup)=SB_SweepBrowserWindowHook
+	SB_SetUserData(win)
+	SB_PanelUpdate(win)
+
+	DFREF sweepBrowserDFR = BSP_GetFolder(win, MIES_BSP_DATA_FOLDER)
 	SB_GetSweepBrowserMap(sweepBrowserDFR)
 
-	Display /W=(169.5,269,603,574.25)/K=1/N=$UniqueName("SweepBrowser", 9, 1)
-	string/G sweepBrowserDFR:graph = S_name
-	SVAR/SDFR=sweepBrowserDFR graph
+	panelTitleNew = UniqueName("SweepBrowser", 9, 1)
+	DoWindow/W=$win/C $panelTitleNew
+	string/G sweepBrowserDFR:graph = panelTitleNew
 
-	SetWindow $graph, hook(cleanup)=SB_SweepBrowserWindowHook, userdata(folder)=GetDataFolder(1, sweepBrowserDFR)
+	extPanel = SB_GetSweepBrowserLeftPanel(panelTitleNew)
+	PopupMenu popup_sweepBrowser_tAlignMaster win=$extPanel, value = #("SB_GetAllTraces(\"" + panelTitleNew + "\")")
+	PopupMenu popup_sweep_selector win=$extPanel, value= #("SB_GetSweepList(\"" + panelTitleNew + "\")")
 
+	return sweepBrowserDFR
+End
+
+Window SweepBrowser() : Graph
+	Display /W=(169.5,269,603,574.25)/K=1 as "SweepBrowser"
 	NewPanel/HOST=#/EXT=1/W=(156,0,0,407)
 	ModifyPanel fixedSize=0
 	CheckBox check_SweepBrowser_DisplayDAC,pos={13.00,6.00},size={31.00,15.00},proc=SB_CheckProc_ChangedSetting,title="DA"
@@ -581,12 +607,11 @@ Function/DF SB_OpenSweepBrowser()
 	SetVariable setvar_sweepBrowser_tAlignLevel,limits={-inf,inf,0},value= _NUM:0
 	PopupMenu popup_sweepBrowser_tAlignMaster,pos={7.00,239.00},size={134.00,19.00},bodyWidth=50,disable=2,proc=SB_TimeAlignmentPopup,title="Reference trace"
 	PopupMenu popup_sweepBrowser_tAlignMaster,help={"Select the reference trace to which all other traces should be aligned to"}
-	PopupMenu popup_sweepBrowser_tAlignMaster,mode=1,popvalue="AD0",value= #("SB_GetAllTraces(\"" + graph + "\")")
+	PopupMenu popup_sweepBrowser_tAlignMaster,mode=1,popvalue="AD0"
 	Button button_SweepBrowser_DoTimeAlign,pos={117.00,174.00},size={30.00,20.00},disable=2,proc=SB_DoTimeAlignment,title="Do!"
 	Button button_SweepBrowser_DoTimeAlign,help={"Perform the time alignment, needs the cursors A and B to have a selected feature"}
 	PopupMenu popup_sweep_selector,pos={13.00,91.00},size={127.00,19.00},bodyWidth=127,proc=SB_PopupMenuSelectSweep
 	PopupMenu popup_sweep_selector,help={"List of sweeps in this sweep browser"}
-	PopupMenu popup_sweep_selector,value= #("SB_GetSweepList(\"" + graph + "\")")
 	Button button_SweepBrowser_OpenChanSel,pos={71.00,25.00},size={40.00,20.00},proc=SB_OpenChannelSelectionPanel,title="Chan"
 	Button button_SweepBrowser_OpenChanSel,help={"Open the channel selection dialog, allows to disable single channels and headstages"}
 	CheckBox check_SweepBrowser_PulseAvg,pos={114.00,26.00},size={37.00,15.00},proc=SB_CheckProc_ChangedSetting,title="PPA"
@@ -619,12 +644,7 @@ Function/DF SB_OpenSweepBrowser()
 	CheckBox check_SweepBrowser_HideSweep,value= 0
 	RenameWindow #,P0
 	SetActiveSubwindow ##
-
-	AddVersionToPanel(graph, SWEEPBROWSER_PANEL_VERSION)
-	SB_PanelUpdate(graph)
-
-	return sweepBrowserDFR
-End
+EndMacro
 
 Function/S SB_GetSweepList(graph)
 	string graph
