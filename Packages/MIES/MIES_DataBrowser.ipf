@@ -132,7 +132,7 @@ static Function DB_LockDBPanel(panelTitle, device)
 		DoWindow/W=$panelTitle/C $panelTitleNew
 		PopupMenu popup_LBNumericalKeys, win=$panelTitleNew, value=#("\"" + NONE + "\"")
 		PopupMenu popup_LBTextualKeys, win=$panelTitleNew, value=#("\"" + NONE + "\"")
-		DB_UpdatePanelProperties(panelTitleNew, device)
+		DB_SetUserData(panelTitleNew, device)
 		DB_UpdateSweepPlot(panelTitleNew)
 		return NaN
 	endif
@@ -140,7 +140,7 @@ static Function DB_LockDBPanel(panelTitle, device)
 	panelTitleNew = UniqueName("DB_" + device, 9, 0)
 	DoWindow/W=$panelTitle/C $panelTitleNew
 
-	DB_UpdatePanelProperties(panelTitleNew, device)
+	DB_SetUserData(panelTitleNew, device)
 
 	PopupMenu popup_LBNumericalKeys, win=$panelTitleNew, value=#("DB_GetLBNumericalKeys(\"" + panelTitleNew + "\")")
 	PopupMenu popup_LBTextualKeys, win=$panelTitleNew, value=#("DB_GetLBTextualKeys(\"" + panelTitleNew + "\")")
@@ -150,7 +150,7 @@ static Function DB_LockDBPanel(panelTitle, device)
 	DB_UpdateSweepPlot(panelTitleNew)
 End
 
-static Function DB_UpdatePanelProperties(panelTitle, device)
+static Function DB_SetUserData(panelTitle, device)
 	string panelTitle, device
 
 	SetWindow $panelTitle, userdata($MIES_BSP_DEVICE) = device
