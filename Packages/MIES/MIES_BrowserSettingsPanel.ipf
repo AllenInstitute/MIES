@@ -45,10 +45,6 @@ Function BSP_TogglePanel(mainPanel)
 		return 1
 	endif
 
-	if(!BSP_HasBoundDevice(mainPanel))
-		return 0
-	endif
-
 	ASSERT(WindowExists(mainPanel), "HOST panel does not exist")
 	NewPanel/HOST=$mainPanel/EXT=1/W=(260,0,0,600)/N=$EXT_PANEL_SUBWINDOW  as " "
 	Execute "DataBrowserPanel()"

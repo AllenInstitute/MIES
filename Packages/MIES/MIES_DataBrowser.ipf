@@ -961,25 +961,29 @@ Function DB_CheckboxProc_OverlaySweeps(cba) : CheckBoxControl
 
 			ASSERT(windowExists(extPanel), "BrowserSettingsPanel does not exist.")
 
-			if(cba.checked && BSP_HasBoundDevice(panelTitle))
+			if(OVS_IsActive(panelTitle) && BSP_HasBoundDevice(panelTitle))
 				EnableControls(extPanel, controlList)
 			else
 				DisableControls(extPanel, controlList)
 			endif
 
-			DFREF dfr = BSP_GetFolder(panelTitle, MIES_BSP_OVS_FOLDER)
-			WAVE/T listBoxWave        = GetOverlaySweepsListWave(dfr)
-			WAVE listBoxSelWave       = GetOverlaySweepsListSelWave(dfr)
-			WAVE/WAVE sweepSelChoices = GetOverlaySweepSelectionChoices(dfr)
+			if(BSP_HasBoundDevice(panelTitle))
+				DFREF dfr = BSP_GetFolder(panelTitle, MIES_BSP_OVS_FOLDER)
+				WAVE/T listBoxWave        = GetOverlaySweepsListWave(dfr)
+				WAVE listBoxSelWave       = GetOverlaySweepsListSelWave(dfr)
+				WAVE/WAVE sweepSelChoices = GetOverlaySweepSelectionChoices(dfr)
 
-			WAVE/T numericalValues = DB_GetNumericalValues(panelTitle)
-			WAVE/T textualValues   = DB_GetTextualValues(panelTitle)
-			sweepWaveList = DB_GetPlainSweepList(panelTitle)
-			OVS_UpdatePanel(panelTitle, listBoxWave, listBoxSelWave, sweepSelChoices, sweepWaveList, textualValues=textualValues, numericalValues=numericalValues)
+				WAVE/T numericalValues = DB_GetNumericalValues(panelTitle)
+				WAVE/T textualValues   = DB_GetTextualValues(panelTitle)
+				sweepWaveList = DB_GetPlainSweepList(panelTitle)
+				OVS_UpdatePanel(panelTitle, listBoxWave, listBoxSelWave, sweepSelChoices, sweepWaveList, textualValues=textualValues, numericalValues=numericalValues)
+			endif
+
 			if(OVS_IsActive(panelTitle))
 				sweepNo = GetSetVariable(panelTitle, "setvar_DataBrowser_SweepNo")
 				OVS_ChangeSweepSelectionState(panelTitle, CHECKBOX_SELECTED, sweepNo=sweepNo)
 			endif
+
 			DB_UpdateSweepPlot(panelTitle)
 			break
 	endswitch
