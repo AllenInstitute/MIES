@@ -967,9 +967,6 @@ Function DB_CheckboxProc_OverlaySweeps(cba) : CheckBoxControl
 			endif
 
 			DFREF dfr = BSP_GetFolder(panelTitle, MIES_BSP_OVS_FOLDER)
-			if(!DataFolderExistsDFR(dfr))
-				return 0
-			endif
 			WAVE/T listBoxWave        = GetOverlaySweepsListWave(dfr)
 			WAVE listBoxSelWave       = GetOverlaySweepsListSelWave(dfr)
 			WAVE/WAVE sweepSelChoices = GetOverlaySweepSelectionChoices(dfr)
