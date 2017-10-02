@@ -1470,8 +1470,6 @@ Function WBP_SetVarProc_ITI(sva) : SetVariableControl
 			SegWvType[99] = sva.dval
 			WBP_UpdatePanelIfAllowed()
 			break
-		case -1: // control being killed
-			break
 	endswitch
 
 	return 0
@@ -1904,8 +1902,6 @@ Function WBP_SetVarProc_TotEpoch(sva) : SetVariableControl
 			SegWvType[100] = sva.dval
 			WBP_UpdateEpochControls()
 			break
-		case -1: // control being killed
-			break
 	endswitch
 
 	return 0
@@ -2169,8 +2165,6 @@ Function WBP_CheckProc_FlipStimSet(cba) : CheckBoxControl
 			Wave SegWvType = GetSegmentTypeWave()
 			SegWvType[98] = cba.checked
 			WBP_UpdatePanelIfAllowed()
-			break
-		case -1: // control being killed
 			break
 	endswitch
 

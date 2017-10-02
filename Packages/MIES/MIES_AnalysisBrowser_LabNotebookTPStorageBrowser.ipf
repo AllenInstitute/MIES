@@ -467,8 +467,6 @@ Function LBN_CheckProc_SyncSweepBrowser(cba) : CheckBoxControl
 		case 2: // mouse up
 			/// @todo implement
 			break
-		case -1: // control being killed
-			break
 	endswitch
 
 	return 0

@@ -5036,8 +5036,6 @@ Function DAP_CheckProc_GetSet_ITI(cba) : CheckBoxControl
 			endif
 
 			break
-		case -1: // control being killed
-			break
 	endswitch
 
 	return 0
@@ -6717,10 +6715,6 @@ Function DAP_SetVarProc_AmpCntrls(sva) : SetVariableControl
 			headStage =  GetSliderPositionIndex(panelTitle, "slider_DataAcq_ActiveHeadstage")
 			AI_UpdateAmpModel(panelTitle, ctrl, headStage)
 			break
-		case 3: // Live update
-			break
-		case -1: // control being killed
-			break
 	endswitch
 
 	return 0
@@ -6739,8 +6733,6 @@ Function DAP_ButtonProc_AmpCntrls(ba) : ButtonControl
 
 			headStage =  GetSliderPositionIndex(panelTitle, "slider_DataAcq_ActiveHeadstage")
 			AI_UpdateAmpModel(panelTitle, ctrl, headstage)
-			break
-		case -1: // control being killed
 			break
 	endswitch
 
@@ -7176,8 +7168,6 @@ Function DAP_SetVarProc_TPAmp(sva) : SetVariableControl
 		case 3: // Live update
 			Variable TPState = TP_StopTestPulse(sva.win)
 			TP_RestartTestPulse(sva.win, TPState)
-			break
-		case -1: // control being killed
 			break
 	endswitch
 

@@ -754,8 +754,6 @@ Function AM_LockedDeviceMenu(pa) : PopupMenuControl
 		case 2: // mouse up
 			DoWindow /T $panel, "AM_" + popStr
 			break
-		case -1: // control being killed
-			break
 	endswitch		
 	return 0
 End
@@ -773,8 +771,6 @@ Function AM_HeadStagePSCheckBox(cba) : CheckBoxControl
 	switch(cba.eventCode)
 		case 2: // mouse up
 			AM_PostSweepCheckBox(controlName, checked)
-			break
-		case -1: // control being killed
 			break
 	endswitch
 	return 0
@@ -849,8 +845,6 @@ Function AM_HeadStagePACheckBox(cba) : CheckBoxControl
 		case 2: // mouse up
 			AM_PostAnalysisCheckBox(cba)
 			break
-		case -1: // control being killed
-			break
 	endswitch
 	return 0
 End
@@ -918,7 +912,6 @@ Function AM_PostAnalysisCheckBox(cba) : CheckBoxControl
 				EnableControl(amPanel, midSweepMenu)
 			endif
 			analysisSettingsWave[headStageClicked][%PAAOnOff] = num2str(checked)
-		case -1: // control being killed
 			break
 	endswitch
 	
@@ -932,8 +925,6 @@ Function AM_HeadStageMSCheckBox(cba) : CheckBoxControl
 	switch(cba.eventCode)
 		case 2: // mouse up
 			AM_midSweepAnalysisCheckBox(cba)
-			break
-		case -1: // control being killed
 			break
 	endswitch
 
@@ -1004,7 +995,6 @@ Function AM_midSweepAnalysisCheckBox(cba) : CheckBoxControl
 				EnableControl(amPanel, postAnalysisMenu)	
 			endif
 			analysisSettingsWave[headStageClicked][%MSAOnOff] = num2str(checked)
-		case -1: // control being killed
 			break
 	endswitch
 	return 0
@@ -1039,7 +1029,6 @@ Function AM_PS_PopMenuChk(pa) : PopupMenuControl
 			ASSERT(V_flag != 0, "non-existing window or control")
 			
 			analysisSettingsWave[headStageSelected][%PSAType] = popStr			
-		case -1: // control being killed
 			break
 	endswitch
 	return 0
@@ -1072,8 +1061,7 @@ Function AM_PA_PopMenuChk(pa) : PopupMenuControl
 			// check to see if the panel and control exist
 			ControlInfo /w = $amPanel $ctrlName
 			ASSERT(V_flag != 0, "non-existing window or control")			
-			analysisSettingsWave[headStageSelected][%PAAType] = popStr		
-		case -1: // control being killed
+			analysisSettingsWave[headStageSelected][%PAAType] = popStr
 			break
 	endswitch
 
@@ -1107,8 +1095,7 @@ Function AM_MS_PopMenuChk(pa) : PopupMenuControl
 			// check to see if the panel and control exist
 			ControlInfo /w = $amPanel $ctrlName
 			ASSERT(V_flag != 0, "non-existing window or control")	
-			analysisSettingsWave[headStageSelected][%MSAType] = popStr		
-		case -1: // control being killed
+			analysisSettingsWave[headStageSelected][%MSAType] = popStr
 			break
 	endswitch
 
