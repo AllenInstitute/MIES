@@ -7162,12 +7162,18 @@ End
 Function DAP_SetVarProc_TPAmp(sva) : SetVariableControl
 	STRUCT WMSetVariableAction &sva
 
+	string panelTitle
+	variable TPState
+
 	switch( sva.eventCode )
 		case 1: // mouse up
 		case 2: // Enter key
 		case 3: // Live update
-			Variable TPState = TP_StopTestPulse(sva.win)
-			TP_RestartTestPulse(sva.win, TPState)
+
+			panelTitle = sva.win
+
+			TPState = TP_StopTestPulse(panelTitle)
+			TP_RestartTestPulse(panelTitle, TPState)
 			break
 	endswitch
 
