@@ -337,7 +337,7 @@ Function NWB_ExportAllStimsets([overrideFilePath])
 	variable locationID
 	string stimsets
 
-	stimsets = ReturnListOfAllStimSets(CHANNEL_TYPE_DAC, "*DA*") + ReturnListOfAllStimSets(CHANNEL_TYPE_TTL, "*TTL*")
+	stimsets = ReturnListOfAllStimSets(CHANNEL_TYPE_DAC, CHANNEL_DA_SEARCH_STRING) + ReturnListOfAllStimSets(CHANNEL_TYPE_TTL, CHANNEL_TTL_SEARCH_STRING)
 
 	if(IsEmpty(stimsets))
 		print "No stimsets found for NWB export"

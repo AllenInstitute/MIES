@@ -118,7 +118,7 @@ Function ExpConfig_ConfigureMIES([middleOfExperiment])
 		
 		if (!load)
 			print "Stim set successfully loaded"
-			StimSetList = "- none -;"+ReturnListOfAllStimSets(0,"*DA*")
+			StimSetList = "- none -;"+ReturnListOfAllStimSets(0, CHANNEL_DA_SEARCH_STRING)
 			FindValue /TXOP = 4 /TEXT = FIRST_STIM_VC_ALL UserSettings
 			PGC_SetAndActivateControl(win,GetPanelControl(CHANNEL_INDEX_ALL_V_CLAMP,CHANNEL_TYPE_DAC,CHANNEL_CONTROL_WAVE), val = WhichListItem(UserSettings[V_value][%SettingValue], StimSetList))
 			FindValue /TXOP = 4 /TEXT = FIRST_STIM_AMP_VC_ALL UserSettings
