@@ -6846,6 +6846,13 @@ Function DAP_SetVarProc_TestPulseSett(sva) : SetVariableControl
 		case 3: // Live update
 			panelTitle = sva.win
 			DAP_AbortIfUnlocked(panelTitle)
+
+			// don't stop the testpulse if we are currently doing DAQ
+			NVAR dataAcqRunMode = $GetDataAcqRunMode(panelTitle)
+			if(dataAcqRunMode != DAQ_NOT_RUNNING)
+				break
+			endif
+
 			TPState = TP_StopTestPulse(panelTitle)
 			DAP_UpdateOnsetDelay(panelTitle)
 			TP_RestartTestPulse(panelTitle, TPState)
@@ -7171,6 +7178,12 @@ Function DAP_SetVarProc_TPAmp(sva) : SetVariableControl
 		case 3: // Live update
 
 			panelTitle = sva.win
+
+			// don't stop the testpulse if we are currently doing DAQ
+			NVAR dataAcqRunMode = $GetDataAcqRunMode(panelTitle)
+			if(dataAcqRunMode != DAQ_NOT_RUNNING)
+				break
+			endif
 
 			TPState = TP_StopTestPulse(panelTitle)
 			TP_RestartTestPulse(panelTitle, TPState)
