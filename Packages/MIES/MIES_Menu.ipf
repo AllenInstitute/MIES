@@ -23,9 +23,13 @@ Menu "Mies Panels", dynamic
 	"Close Mies"                    , /Q, CloseMies()
 	"Open Downsample Panel"         , /Q, CreateDownsamplePanel()
 	"Open AnalysisMaster Panel"     , /Q, analysisMaster()
-	"Export all data into NWB"      , /Q, NWB_ExportWithDialog()
-	"Load Stimsets from NWB"        , /Q, NWB_LoadAllStimsets()
 	"-"
+	SubMenu "Neurodata Without Borders (NWB)"
+		"Export all data into NWB"      , /Q, NWB_ExportWithDialog(NWB_EXPORT_DATA)
+		"Export all stimsets into NWB"  , /Q, NWB_ExportWithDialog(NWB_EXPORT_STIMSETS)
+		"Load Stimsets from NWB"        , /Q, NWB_LoadAllStimsets()
+		"-"
+	End
 	"-"
 	"About MIES"                    , /Q, OpenAboutDialog()
 	"-"
