@@ -19,7 +19,6 @@ Menu "Mies Panels", dynamic
 	"Analysis Browser"              , /Q, AB_OpenAnalysisBrowser()
 	"Labnotebook Browser"           , /Q, LBN_OpenLabnotebookBrowser()
 	"TPStorage Browser"             , /Q, LBN_OpenTPStorageBrowser()
-	"Restart ZeroMQ Message Handler", /Q, StartZeroMQMessageHandler()
 	"Save and Clear Experiment"     , /Q, SaveExperimentSpecial(SAVE_AND_CLEAR)
 	"Close Mies"                    , /Q, CloseMies()
 	"Open Downsample Panel"         , /Q, CreateDownsamplePanel()
@@ -27,11 +26,11 @@ Menu "Mies Panels", dynamic
 	"Export all data into NWB"      , /Q, NWB_ExportWithDialog()
 	"Load Stimsets from NWB"        , /Q, NWB_LoadAllStimsets()
 	"-"
-	GetOptTangoIncludeMenuTitle(), /Q, HandleTangoOptionalInclude()
 	"-"
-	"About MIES"                 , /Q, OpenAboutDialog()
+	"About MIES"                    , /Q, OpenAboutDialog()
 	"-"
 	SubMenu "Advanced"
+		"Restart ZeroMQ Message Handler"            , /Q, StartZeroMQMessageHandler()
 		"Open debug panel"                          , /Q, DP_OpenDebugPanel()
 		"Check Installation"                        , /Q, CHI_CheckInstallation()
 		"Start Background Task watcher panel"       , /Q, BkgWatcher#BW_StartPanel()
@@ -39,6 +38,7 @@ Menu "Mies Panels", dynamic
 		"Reset and store current DA_EPHYS panel"    , /Q, DAP_EphysPanelStartUpSettings()
 		"Check GUI control procedures of top panel" , /Q, SearchForInvalidControlProcs(GetCurrentWindow())
 		"Flush Cache"                               , /Q, CA_FlushCache()
+		GetOptTangoIncludeMenuTitle()               , /Q, HandleTangoOptionalInclude()
 	End
 End
 
