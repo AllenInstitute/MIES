@@ -733,7 +733,11 @@ Function ReachTargetVoltage(panelTitle, eventType, ITCDataWave, headStage, realD
 			KillWindow/Z $RESISTANCE_GRAPH
 
 			SetDAScale(panelTitle, headstage, -20e-12)
+			
+			PGC_SetAndActivateControl(panelTitle,"Check_DataAcq1_DistribDaq", val = 1)
 
+			PGC_SetAndActivateControl(panelTitle,"Check_DataAcq1_dDAQOptOv", val = 0)
+			
 			return Nan
 			break
 		case POST_SWEEP_EVENT:
@@ -1483,4 +1487,34 @@ Function/WAVE CreateOverrideResults(panelTitle, headstage)
 	overrideResults = 0
 
 	return overrideResults
+End
+
+Function preDAQ_MP_mainConfig(panelTitle, eventType, ITCDataWave, headStage, realDataLength)
+	string panelTitle
+	variable eventType
+	Wave ITCDataWave
+	variable headstage, realDataLength
+	
+	ASSERT(eventType == PRE_DAQ_EVENT, "Invalid event type")
+
+	PGC_SetAndActivateControl(panelTitle,"Check_DataAcq1_DistribDaq", val = 0)
+
+	PGC_SetAndActivateControl(panelTitle,"Check_DataAcq1_dDAQOptOv", val = 1)
+	
+	PGC_SetAndActivateControl(panelTitle, "Check_DataAcq1_RepeatAcq", val = 1)
+End
+
+Function preDAQ_MP_ChirpIfMixed(panelTitle, eventType, ITCDataWave, headStage, realDataLength)
+	string panelTitle
+	variable eventType
+	Wave ITCDataWave
+	variable headstage, realDataLength
+	
+	ASSERT(eventType == PRE_DAQ_EVENT, "Invalid event type")
+
+	PGC_SetAndActivateControl(panelTitle,"Check_DataAcq1_DistribDaq", val = 1)
+
+	PGC_SetAndActivateControl(panelTitle,"Check_DataAcq1_dDAQOptOv", val = 0)
+	
+	PGC_SetAndActivateControl(panelTitle, "Check_DataAcq1_RepeatAcq", val = 1)
 End
