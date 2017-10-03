@@ -546,7 +546,7 @@ Function BSP_CheckBoxProc_ArtRemoval(cba) : CheckBoxControl
 
 			ASSERT(windowExists(extPanel), "BrowserSettingsPanel does not exist.")
 
-			if(cba.checked && BSP_HasBoundDevice(mainPanel))
+			if(AR_IsActive(mainPanel))
 				EnableControls(extPanel, controlList)
 			else
 				DisableControls(extPanel, controlList)
@@ -573,7 +573,7 @@ Function BSP_CheckBoxProc_PerPulseAver(cba) : CheckBoxControl
 
 			ASSERT(windowExists(extPanel), "BrowserSettingsPanel does not exist.")
 
-			if(cba.checked && BSP_HasBoundDevice(mainPanel))
+			if(PA_IsActive(mainPanel))
 				EnableControls(extPanel, controlList)
 			else
 				DisableControls(extPanel, controlList)

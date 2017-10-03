@@ -824,7 +824,7 @@ Function PA_MainWindowHook(s)
 End
 
 /// checks if PA is active.
-static Function PA_IsActive(win)
+Function PA_IsActive(win)
 	string win
 
 	// keep for SweepBrowser
