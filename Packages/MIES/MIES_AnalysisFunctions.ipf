@@ -184,7 +184,7 @@ Function StimParamGUI()
 	string StimSetList, stimSet
 	variable Vm1, Scale, sweeps, ITI
 
-	StimSetList = ReturnListOfAllStimSets(CHANNEL_TYPE_DAC,"*DA*")
+	StimSetList = ReturnListOfAllStimSets(CHANNEL_TYPE_DAC, CHANNEL_DA_SEARCH_STRING)
 	stimSet = STIM_SET_LOCAL
 	Vm1 = VM1_LOCAL
 	Scale = SCALE_LOCAL
@@ -337,7 +337,7 @@ End
 Function GetStimSet(stimSet)
 	string stimSet
 
-	string StimSetList = ReturnListOfAllStimSets(CHANNEL_TYPE_DAC,"*DA*")
+	string StimSetList = ReturnListOfAllStimSets(CHANNEL_TYPE_DAC, CHANNEL_DA_SEARCH_STRING)
 	variable stimSetIndex = whichlistitem(stimSet,StimSetList)
 
 	return stimSetIndex

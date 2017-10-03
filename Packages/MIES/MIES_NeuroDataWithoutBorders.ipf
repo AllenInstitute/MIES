@@ -277,20 +277,16 @@ End
 Function NWB_ExportAllData([overrideFilePath])
 	string overrideFilePath
 
-	string devicesWithContent, panelTitle, list, name, stimsets, stimset
+	string devicesWithContent, panelTitle, list, name
 	variable i, j, numEntries, locationID, sweep, numWaves, firstCall
 	string stimsetList = ""
 
 	devicesWithContent = GetAllDevicesWithContent(contentType = CONTENT_TYPE_ALL)
 
 	if(IsEmpty(devicesWithContent))
-		stimsets = ReturnListOfAllStimSets(CHANNEL_TYPE_DAC, "*DA*") + ReturnListOfAllStimSets(CHANNEL_TYPE_TTL, "*TTL*")
-
-		if(IsEmpty(stimsets))
-			print "Neither acquired content nor stimsets found for NWB export"
-			ControlWindowToFront()
-			return NaN
-		endif
+		print "No devices with acquired content found for NWB export"
+		ControlWindowToFront()
+		return NaN
 	endif
 
 	if(!ParamIsDefault(overrideFilePath))
@@ -304,19 +300,6 @@ Function NWB_ExportAllData([overrideFilePath])
 	endif
 
 	IPNWB#AddModificationTimeEntry(locationID)
-
-	if(IsEmpty(devicesWithContent))
-		print "Please be patient while we export all existing stimsets to NWB"
-		ControlWindowToFront()
-
-		numEntries = ItemsInList(stimsets)
-		for(i = 0; i < numEntries; i += 1)
-			stimset = StringFromList(i, stimsets)
-			NWB_WriteStimsetTemplateWaves(locationID, stimset, 1)
-		endfor
-
-		return NaN
-	endif
 
 	print "Please be patient while we export all existing acquired content of all devices to NWB"
 	ControlWindowToFront()
@@ -348,10 +331,45 @@ Function NWB_ExportAllData([overrideFilePath])
 	NWB_AppendStimset(locationID, stimsetList)
 End
 
+Function NWB_ExportAllStimsets([overrideFilePath])
+	string overrideFilePath
+
+	variable locationID
+	string stimsets
+
+	stimsets = ReturnListOfAllStimSets(CHANNEL_TYPE_DAC, CHANNEL_DA_SEARCH_STRING) + ReturnListOfAllStimSets(CHANNEL_TYPE_TTL, CHANNEL_TTL_SEARCH_STRING)
+
+	if(IsEmpty(stimsets))
+		print "No stimsets found for NWB export"
+		ControlWindowToFront()
+		return NaN
+	endif
+
+	if(!ParamIsDefault(overrideFilePath))
+		locationID = NWB_GetFileForExport(overrideFilePath=overrideFilePath)
+	else
+		locationID = NWB_GetFileForExport()
+	endif
+
+	if(!IsFinite(locationID))
+		return NaN
+	endif
+
+	IPNWB#AddModificationTimeEntry(locationID)
+
+	print "Please be patient while we export all existing stimsets to NWB"
+	ControlWindowToFront()
+
+	NWB_AppendStimset(locationID, stimsets)
+End
+
 /// @brief Export all data into NWB using compression
 ///
 /// Ask the file location from the user
-Function NWB_ExportWithDialog()
+///
+/// @param exportType Export all data and referenced stimsets (#NWB_EXPORT_DATA) or all stimsets (#NWB_EXPORT_STIMSETS)
+Function NWB_ExportWithDialog(exportType)
+	variable exportType
 
 	string expName, path, filename
 	variable refNum
@@ -383,7 +401,14 @@ Function NWB_ExportWithDialog()
 	CloseNWBFile()
 	DeleteFile/Z S_filename
 
-	NWB_ExportAllData(overrideFilePath=S_filename)
+	if(exportType == NWB_EXPORT_DATA)
+		NWB_ExportAllData(overrideFilePath=S_filename)
+	elseif(exportType == NWB_EXPORT_STIMSETS)
+		NWB_ExportAllStimsets(overrideFilePath=S_filename)
+	else
+		ASSERT(0, "unexpected exportType")
+	endif
+
 	CloseNWBFile()
 End
 

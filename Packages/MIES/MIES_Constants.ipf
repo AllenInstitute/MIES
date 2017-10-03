@@ -760,3 +760,9 @@ StrConstant PATCHSEQ_LBN_RMS_SHORT_PASSED = "Sub Thres Short RMS QC"
 StrConstant PATCHSEQ_LBN_RMS_LONG_PASSED  = "Sub Thres Long RMS QC"
 StrConstant PATCHSEQ_LBN_TargetV_PASSED   = "Sub Thres Target V QC"
 StrConstant PATCHSEQ_LBN_CHUNK_PASSED_FMT = "Sub Thres Chunk %d QC"
+
+/// Export type parameters for NWB_ExportWithDialog()
+/// @{
+Constant NWB_EXPORT_DATA     = 0x1
+Constant NWB_EXPORT_STIMSETS = 0x2
+/// @}
