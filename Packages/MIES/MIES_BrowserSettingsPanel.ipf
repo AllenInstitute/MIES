@@ -629,7 +629,6 @@ Function BSP_IsActive(panelName, elementID)
 		case MIES_BSP_PA:
 			control = "check_BrowserSettings_PA"
 			break
-		case -1:
 		default:
 			return 0
 	endswitch

@@ -5036,8 +5036,6 @@ Function DAP_CheckProc_GetSet_ITI(cba) : CheckBoxControl
 			endif
 
 			break
-		case -1: // control being killed
-			break
 	endswitch
 
 	return 0
@@ -6717,10 +6715,6 @@ Function DAP_SetVarProc_AmpCntrls(sva) : SetVariableControl
 			headStage =  GetSliderPositionIndex(panelTitle, "slider_DataAcq_ActiveHeadstage")
 			AI_UpdateAmpModel(panelTitle, ctrl, headStage)
 			break
-		case 3: // Live update
-			break
-		case -1: // control being killed
-			break
 	endswitch
 
 	return 0
@@ -6739,8 +6733,6 @@ Function DAP_ButtonProc_AmpCntrls(ba) : ButtonControl
 
 			headStage =  GetSliderPositionIndex(panelTitle, "slider_DataAcq_ActiveHeadstage")
 			AI_UpdateAmpModel(panelTitle, ctrl, headstage)
-			break
-		case -1: // control being killed
 			break
 	endswitch
 
@@ -6854,6 +6846,13 @@ Function DAP_SetVarProc_TestPulseSett(sva) : SetVariableControl
 		case 3: // Live update
 			panelTitle = sva.win
 			DAP_AbortIfUnlocked(panelTitle)
+
+			// don't stop the testpulse if we are currently doing DAQ
+			NVAR dataAcqRunMode = $GetDataAcqRunMode(panelTitle)
+			if(dataAcqRunMode != DAQ_NOT_RUNNING)
+				break
+			endif
+
 			TPState = TP_StopTestPulse(panelTitle)
 			DAP_UpdateOnsetDelay(panelTitle)
 			TP_RestartTestPulse(panelTitle, TPState)
@@ -7170,14 +7169,24 @@ End
 Function DAP_SetVarProc_TPAmp(sva) : SetVariableControl
 	STRUCT WMSetVariableAction &sva
 
+	string panelTitle
+	variable TPState
+
 	switch( sva.eventCode )
 		case 1: // mouse up
 		case 2: // Enter key
 		case 3: // Live update
-			Variable TPState = TP_StopTestPulse(sva.win)
-			TP_RestartTestPulse(sva.win, TPState)
-			break
-		case -1: // control being killed
+
+			panelTitle = sva.win
+
+			// don't stop the testpulse if we are currently doing DAQ
+			NVAR dataAcqRunMode = $GetDataAcqRunMode(panelTitle)
+			if(dataAcqRunMode != DAQ_NOT_RUNNING)
+				break
+			endif
+
+			TPState = TP_StopTestPulse(panelTitle)
+			TP_RestartTestPulse(panelTitle, TPState)
 			break
 	endswitch
 
