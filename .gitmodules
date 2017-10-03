@@ -1,3 +1,6 @@
 [submodule "Packages/unit-testing"]
 	path = Packages/unit-testing
 	url = https://github.com/t-b/igor-unit-testing-framework
+[submodule "Packages/IPNWB"]
+	path = Packages/IPNWB
+	url = https://github.com/AllenInstitute/IPNWB
