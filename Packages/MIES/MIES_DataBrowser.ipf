@@ -950,22 +950,14 @@ End
 Function DB_CheckboxProc_OverlaySweeps(cba) : CheckBoxControl
 	STRUCT WMCheckBoxAction &cba
 
-	string panelTitle, device, sweepWaveList, extPanel
+	string panelTitle, device, sweepWaveList
 	variable sweepNo
-	string controlList = "group_properties_sweeps;popup_overlaySweeps_select;setvar_overlaySweeps_offset;setvar_overlaySweeps_step;check_overlaySweeps_disableHS;check_overlaySweeps_non_commula;list_of_ranges"
 
 	switch(cba.eventCode)
 		case 2: // mouse up
 			panelTitle = GetMainWindow(cba.win)
-			extPanel = BSP_GetPanel(panelTitle)
 
-			ASSERT(windowExists(extPanel), "BrowserSettingsPanel does not exist.")
-
-			if(OVS_IsActive(panelTitle) && BSP_HasBoundDevice(panelTitle))
-				EnableControls(extPanel, controlList)
-			else
-				DisableControls(extPanel, controlList)
-			endif
+			BSP_SetOVSControlStatus(panelTitle)
 
 			if(BSP_HasBoundDevice(panelTitle))
 				DFREF dfr = BSP_GetFolder(panelTitle, MIES_BSP_OVS_FOLDER)

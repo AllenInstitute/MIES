@@ -226,6 +226,28 @@ static Function BSP_SetCSButtonProc(panelName, procedure)
 	endfor
 
 	SetControlProcedures(extPanel, controlList, procedure)
+	if(IsEmpty(procedure))
+		DisableControls(extPanel, controlList)
+	endif
+End
+
+/// @brief enable/disable the OVS buttons
+///
+/// @param panelName specify mainPanel or extPanel with OVS controls
+Function BSP_SetOVSControlStatus(panelName)
+	string panelName
+
+	string extPanel
+	string controlList = "group_properties_sweeps;popup_overlaySweeps_select;setvar_overlaySweeps_offset;setvar_overlaySweeps_step;check_overlaySweeps_disableHS;check_overlaySweeps_non_commula;list_of_ranges"
+
+	extPanel = BSP_GetPanel(panelName)
+	ASSERT(windowExists(extPanel), "BrowserSettingsPanel does not exist.")
+
+	if(OVS_IsActive(extPanel))
+		EnableControls(extPanel, controlList)
+	else
+		DisableControls(extPanel, controlList)
+	endif
 End
 
 /// @brief action for button in mainPanel
