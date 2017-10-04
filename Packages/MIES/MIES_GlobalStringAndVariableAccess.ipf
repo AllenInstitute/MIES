@@ -155,7 +155,7 @@ static Function/S CreateMiesVersion()
 
 	DEBUGPRINT("Version.txt contents:\r\r", str=version)
 
-	if(IsEmpty(version) || strsearch(version, " ", 0) != -1) // only error messages have spaces
+	if(IsEmpty(version) || strsearch(version, "Release", 0) == -1)
 		return UNKNOWN_MIES_VERSION
 	endif
 
