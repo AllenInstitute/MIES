@@ -148,12 +148,11 @@ End
 Function ButtonProc_AboutMIESCopy(ba) : ButtonControl
 	STRUCT WMButtonAction &ba
 
-	string str
 
 	switch(ba.eventCode)
 		case 2: // mouse up
-			str = GetSetVariableString(ba.win, "setvar_info")
-			PutScrapText str
+			SVAR miesVersion = $GetMiesVersion()
+			PutScrapText miesVersion
 			break
 	endswitch
 
