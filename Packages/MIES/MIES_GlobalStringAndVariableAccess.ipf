@@ -148,10 +148,12 @@ static Function/S CreateMiesVersion()
 		return UNKNOWN_MIES_VERSION
 	endif
 
-	FReadLine refNum, version
+	FStatus refNum
+	version = PadString("", V_logEOF, 0x20)
+	FBinRead refNum, version
 	Close refNum
 
-	DEBUGPRINT("Version.txt contents: ", str=version)
+	DEBUGPRINT("Version.txt contents:\r\r", str=version)
 
 	if(IsEmpty(version) || strsearch(version, " ", 0) != -1) // only error messages have spaces
 		return UNKNOWN_MIES_VERSION
