@@ -13,7 +13,7 @@ def get_version():
     return "({branch}) {version}".format(branch=branchString, version=revString)
 
 # sphinx config
-extensions = ['sphinx.ext.imgmath', 'sphinx.ext.todo', 'breathe', 'sphinxcontrib.fulltoc']
+extensions = ['sphinx.ext.imgmath', 'sphinx.ext.todo', 'breathe', 'sphinxcontrib.fulltoc', 'sphinx.ext.graphviz']
 master_doc = "index"
 project= "MIES Igor"
 
@@ -39,3 +39,6 @@ breathe_projects            = { "MIES": "xml" }
 breathe_default_project     = "MIES"
 breathe_domain_by_extension = { "ipf" : "cpp" }
 breathe_default_members     = ('members', 'undoc-members')
+
+# dot
+graphviz_output_format = 'svg'
