@@ -871,6 +871,12 @@ End
 ///	   // resistance for the first headstage can be found in resistanceFitted[0]
 /// \endrst
 ///
+/// Decision logic flowchart:
+///
+/// \rst
+///	.. graphviz:: ../patch-seq-subthreshold.dot
+/// \endrst
+///
 /// @verbatim
 ///
 /// Sketch of a stimset with inserted TP, pre pulse baseline (-), pulse (*), and post pulse baseline (-).
