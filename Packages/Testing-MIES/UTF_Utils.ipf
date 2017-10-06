@@ -500,3 +500,58 @@ Function FMS_Works3()
 	CHECK_EQUAL_STR(result, expected)
 End
 /// @}
+
+/// NormalizeToEOL
+/// @{
+
+Function NTE_AbortsWithUnknownEOL()
+
+	try
+		NormalizeToEOL("", "a")
+		FAIL()
+	catch
+		PASS()
+	endtry
+End
+
+Function NTE_Works1()
+
+	string eol      = "\r"
+	string input    = "hi there!\r"
+
+	string output   = NormalizeToEOL(input, eol)
+	string expected = input
+	CHECK_EQUAL_STR(output, expected)
+End
+
+Function NTE_Works2()
+
+	string eol      = "\r"
+	string input    = "hi there!\n\n\r"
+
+	string output   = NormalizeToEOL(input, eol)
+	string expected = "hi there!\r\r\r"
+	CHECK_EQUAL_STR(output, expected)
+End
+
+Function NTE_Works3()
+
+	string eol      = "\r"
+	string input    = "hi there!\r\n\r" // CR+LF -> CR
+
+	string output   = NormalizeToEOL(input, eol)
+	string expected = "hi there!\r\r"
+	CHECK_EQUAL_STR(output, expected)
+End
+
+Function NTE_Works4()
+
+	string eol      = "\n"
+	string input    = "hi there!\r\n\r" // CR+LF -> CR
+
+	string output   = NormalizeToEOL(input, eol)
+	string expected = "hi there!\n\n"
+	CHECK_EQUAL_STR(output, expected)
+End
+
+/// @}
