@@ -3286,3 +3286,27 @@ Function DoAbortNow(msg)
 		Abort
 	endif
 End
+
+/// @brief Return a floating point value as string rounded
+///        to the given number of minimum significant digits
+///
+/// This allows to specify the minimum number of significant digits.
+/// The normal printf/sprintf specifier only allows the maximum number of significant digits for `%g`.
+Function/S FloatWithMinSigDigits(var, [numMinSignDigits])
+	variable var, numMinSignDigits
+
+	variable numMag
+
+	if(ParamIsDefault(numMinSignDigits))
+		numMinSignDigits = 6
+	else
+		ASSERT(numMinSignDigits >= 0, "Invalid numDecimalDigits")
+	endif
+
+	numMag = ceil(log(var))
+
+	string str
+	sprintf str, "%.*g", max(numMag, numMinSignDigits), var
+
+	return str
+End

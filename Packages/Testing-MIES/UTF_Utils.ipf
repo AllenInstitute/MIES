@@ -454,3 +454,49 @@ End
 // will trigger a dialog ...
 
 /// @}
+
+/// FloatWithMinSigDigits
+/// @{
+Function FMS_Aborts()
+
+	try
+		FloatWithMinSigDigits(1, numMinSignDigits = -1)
+		FAIL()
+	catch
+		PASS()
+	endtry
+End
+
+Function FMS_Works1()
+
+	string result
+	string expected
+
+	result   = FloatWithMinSigDigits(1.23456, numMinSignDigits = 2)
+	expected = "1.2"
+
+	CHECK_EQUAL_STR(result, expected)
+End
+
+Function FMS_Works2()
+
+	string result
+	string expected
+
+	result   = FloatWithMinSigDigits(12.3456, numMinSignDigits = 2)
+	expected = "12"
+
+	CHECK_EQUAL_STR(result, expected)
+End
+
+Function FMS_Works3()
+
+	string result
+	string expected
+
+	result   = FloatWithMinSigDigits(12.3456, numMinSignDigits = 1)
+	expected = "12"
+
+	CHECK_EQUAL_STR(result, expected)
+End
+/// @}
