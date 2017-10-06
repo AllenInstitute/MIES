@@ -712,7 +712,7 @@ Function ReachTargetVoltage(panelTitle, eventType, ITCDataWave, headStage, realD
 	string msg
 
 	// BEGIN CHANGE ME
-	Make/FREE targetVoltages = {0.070, 0.080, 0.090, 0.1, 0.11} // units are Volts, i.e. 70mV = 0.070V
+	Make/FREE targetVoltages = {0.002, -0.002, -0.005, -0.01, -0.015} // units are Volts, i.e. 70mV = 0.070V
 	// END CHANGE ME
 
 	WAVE targetVoltagesIndex = GetAnalysisFuncIndexingHelper(panelTitle)
