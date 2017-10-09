@@ -709,6 +709,7 @@ Function ReachTargetVoltage(panelTitle, eventType, ITCDataWave, headStage, realD
 
 	variable sweepNo, index, i
 	variable amps
+	variable autoBiasCheck, holdingPotential
 	string msg
 
 	// BEGIN CHANGE ME
@@ -716,6 +717,8 @@ Function ReachTargetVoltage(panelTitle, eventType, ITCDataWave, headStage, realD
 	// END CHANGE ME
 
 	WAVE targetVoltagesIndex = GetAnalysisFuncIndexingHelper(panelTitle)
+	
+	WAVE statusHS = DAP_ControlStatusWaveCache(panelTitle, CHANNEL_TYPE_HEADSTAGE)
 
 	switch(eventType)
 		case PRE_DAQ_EVENT:
@@ -726,6 +729,29 @@ Function ReachTargetVoltage(panelTitle, eventType, ITCDataWave, headStage, realD
 				ControlWindowToFront()
 				return 1
 			endif
+			
+			for(i = 0; i < NUM_HEADSTAGES; i += 1)
+				if(!statusHS[i])
+					continue
+				endif
+				
+				autoBiasCheck = GetCheckBoxState(panelTitle, "check_DataAcq_AutoBias")
+				holdingPotential = GetSetVariable(panelTitle, "setvar_DataAcq_AutoBiasV")
+				
+				if(autoBiasCheck != 1)
+					printf "Abort: Autobias for headstage %d not enabled.\r", i
+					ControlWindowToFront()
+					return 1
+				endif
+				
+				if(holdingPotential != -70 && (holdingPotential > -75 && holdingPotential < -65))
+						printf "Warning: Holding potential for headstage %d is not -70mV but is within acceptable range, targetV continuing.\r", i
+					else
+						printf "Abort: Holding potential for headstage %d is set outside of the acceptable range for targetV.\r", i
+						ControlWindowToFront()
+						return 1
+				endif
+			endfor
 
 			KillOrMoveToTrash(wv = GetAnalysisFuncDAScaleDeltaI(panelTitle))
 			KillOrMoveToTrash(wv = GetAnalysisFuncDAScaleDeltaV(panelTitle))
@@ -775,7 +801,6 @@ Function ReachTargetVoltage(panelTitle, eventType, ITCDataWave, headStage, realD
 	WAVE/Z resistanceFitted = GetLastSetting(numericalValues, sweepNo, LABNOTEBOOK_USER_PREFIX + "ResistanceFromFit", UNKNOWN_MODE)
 	ASSERT(WaveExists(resistanceFitted), "Expected fitted resistance data")
 
-	WAVE statusHS = DAP_ControlStatusWaveCache(panelTitle, CHANNEL_TYPE_HEADSTAGE)
 
 	for(i = 0; i < NUM_HEADSTAGES; i += 1)
 
