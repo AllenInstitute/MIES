@@ -259,7 +259,6 @@ static Function ITC_StopOngoingDAQMDHelper(panelTitle)
 	if(IsDeviceActiveWithBGTask(panelTitle, "ITC_TimerMD"))
 		ITC_StopTimerForDeviceMD(panelTitle)
 
-		/// @todo why needs that to be different than for single device
 		needsOTCAfterDAQ = needsOTCAfterDAQ | 1
 		discardData      = discardData      | 1
 	endif
