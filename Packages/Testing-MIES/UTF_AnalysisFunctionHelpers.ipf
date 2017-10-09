@@ -487,5 +487,51 @@ Function AE_TextWorksIndepHeadstage()
 	CHECK_EQUAL_VAR(str2num(textualValues[0][0][0]), 0)
 End
 
+Function AE_NormalizesEOLs()
+
+	variable row, col, i
+	string unit, unitRef, tolerance, toleranceRef, str, strRef, normalizedStr
+	string key = "someKey"
+
+	unitRef   = ""
+	toleranceRef = LABNOTEBOOK_NO_TOLERANCE
+
+	Make/T/FREE/N=(LABNOTEBOOK_LAYER_COUNT) values
+	strRef    = "123\r456\r\n"
+	values[LABNOTEBOOK_LAYER_COUNT - 1] = strRef
+	ED_AddEntryToLabnotebook(device, key, values)
+
+	WAVE/T textualKeys   = root:MIES:LabNoteBook:ITC18USB:Device0:textualKeys
+	WAVE/T textualValues = root:MIES:LabNoteBook:ITC18USB:Device0:textualValues
+
+	// key is added with prefix, so there is no full match
+	FindValue/TXOP=4/TEXT=key textualKeys
+	CHECK_EQUAL_VAR(V_Value, -1)
+
+	FindValue/TEXT=key textualKeys
+	col = floor(V_Value / DimSize(textualKeys, ROWS))
+	row = V_Value - col * DimSize(textualKeys, ROWS)
+	CHECK_EQUAL_VAR(row, 0)
+	CHECK_EQUAL_VAR(col, 4)
+
+	unit = textualKeys[1][col]
+	CHECK_EQUAL_STR(unit, unitRef)
+
+	tolerance = textualKeys[2][col]
+	CHECK_EQUAL_STR(tolerance, toleranceRef)
+
+	// entry can be found
+	str = textualValues[0][col][8]
+	normalizedStr = "123\n456\n"
+	CHECK_EQUAL_STR(str, normalizedStr)
+	for(i = 0; i < 8; i += 1)
+		str = textualValues[0][col][i]
+		CHECK_EMPTY_STR(str)
+	endfor
+
+	// inserted under correct sweep number
+	CHECK_EQUAL_VAR(str2num(textualValues[0][0][0]), 0)
+End
+
 /// END ED_AddEntryToLabnotebook
 /// @}

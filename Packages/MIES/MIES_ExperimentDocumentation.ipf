@@ -73,7 +73,7 @@ static Function ED_createTextNotes(incomingTextualValues, incomingTextualKeys, s
 	numCols = DimSize(incomingTextualValues, COLS)
 	lastValidIncomingLayer = DimSize(incomingTextualValues, LAYERS) == 0 ? 0 : DimSize(incomingTextualValues, LAYERS) - 1
 	for(i = 0; i < numCols; i += 1)
-		textualValues[rowIndex][indizes[i]][0, lastValidIncomingLayer] = incomingTextualValues[0][i][r]
+		textualValues[rowIndex][indizes[i]][0, lastValidIncomingLayer] = NormalizeToEOL(incomingTextualValues[0][i][r], "\n")
 	endfor
 
 	SetNumberInWaveNote(textualValues, NOTE_INDEX, rowIndex + 1)
