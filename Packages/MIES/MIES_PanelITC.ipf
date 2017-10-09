@@ -6343,7 +6343,7 @@ Function DAP_StopOngoingDataAcquisition(panelTitle)
 	if(IsDeviceActiveWithBGTask(panelTitle, "ITC_Timer"))
 		ITC_StopBackgroundTimerTask()
 
-		needsOTCAfterDAQ = needsOTCAfterDAQ | 0
+		needsOTCAfterDAQ = needsOTCAfterDAQ | 1
 		discardData      = discardData      | 1
 	endif
 
