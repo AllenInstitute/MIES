@@ -744,12 +744,14 @@ Function ReachTargetVoltage(panelTitle, eventType, ITCDataWave, headStage, realD
 					return 1
 				endif
 				
-				if(holdingPotential != -70 && (holdingPotential > -75 && holdingPotential < -65))
+				if(holdingPotential != -70)
+					if(holdingPotential > -75 && holdingPotential < -65)
 						printf "Warning: Holding potential for headstage %d is not -70mV but is within acceptable range, targetV continuing.\r", i
 					else
 						printf "Abort: Holding potential for headstage %d is set outside of the acceptable range for targetV.\r", i
 						ControlWindowToFront()
 						return 1
+					endif
 				endif
 			endfor
 
