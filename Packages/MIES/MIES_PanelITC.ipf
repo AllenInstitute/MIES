@@ -4629,6 +4629,8 @@ Function DAP_OneTimeCallAfterDAQ(panelTitle, [forcedStop])
 	NVAR count = $GetCount(panelTitle)
 	count = 0
 
+	SetValDisplay(panelTitle, "valdisp_DataAcq_ITICountdown", var = 0)
+
 	NVAR raCycleID = $GetRepeatedAcquisitionCycleID(panelTitle)
 	raCycleID = NaN // invalidate
 
