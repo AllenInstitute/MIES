@@ -1,4 +1,4 @@
-del/Q *.txt *.log
+del/Q *.txt *.log *.xml
 
 echo MIES_Include          >> input.txt
 echo MIES_AnalysisBrowser  >> input.txt

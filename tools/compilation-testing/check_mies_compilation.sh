@@ -4,7 +4,7 @@ set -e
 
 export DISPLAY=:0
 
-rm -f *.txt *.log
+rm -f *.txt *.log *.xml
 
 echo MIES_Include          >> input.txt
 echo MIES_AnalysisBrowser  >> input.txt
