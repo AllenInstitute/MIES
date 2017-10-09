@@ -151,7 +151,10 @@ Function ITC_Timer(s)
 	ValDisplay valdisp_DataAcq_ITICountdown win = $panelTitleG, value = _NUM:timeLeft
 
 	if(elapsedTime >= runTime)
-		ITC_StopBackgroundTimerTask()
+		SVAR FunctionNameA = root:MIES:ITCDevices:FunctionNameA
+		SVAR FunctionNameB = root:MIES:ITCDevices:FunctionNameB
+		Execute FunctionNameA
+		Execute FunctionNameB
 		return 1
 	endif
 
@@ -159,12 +162,7 @@ Function ITC_Timer(s)
 End
 
 Function ITC_StopBackgroundTimerTask()
-	SVAR FunctionNameA = root:MIES:ITCDevices:FunctionNameA
-	SVAR FunctionNameB = root:MIES:ITCDevices:FunctionNameB
-	SVAR FunctionNameC = root:MIES:ITCDevices:FunctionNameC
 	CtrlNamedBackground ITC_Timer, stop // had incorrect background procedure name
-	Execute FunctionNameA
- 	Execute FunctionNameB
 End
 
 Function ITC_StartBackgroundTestPulse(panelTitle)
