@@ -4,7 +4,7 @@ set -e
 
 export DISPLAY=:0
 
-rm -f *.log
+rm -f *.log *.xml
 
 runner=autorun-test.sh
 
