@@ -8,7 +8,7 @@ following these are especially welcome.
 
 ### Latest development version
 
-* `git clone http://stash.corp.alleninstitute.org/scm/eng/mies-igor.git`
+* `git clone --recurse-submodules --jobs 2 http://stash.corp.alleninstitute.org/scm/eng/mies-igor.git`
 
 ### Latest released version
 

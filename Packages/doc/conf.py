@@ -17,6 +17,8 @@ extensions = ['sphinx.ext.imgmath', 'sphinx.ext.todo', 'breathe', 'sphinxcontrib
 master_doc = "index"
 project= "MIES Igor"
 
+exclude_patterns = [ 'releasenotes_template.rst']
+
 cpp_id_attributes = [ 'threadsafe' ]
 
 version = get_version()

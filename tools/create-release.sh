@@ -22,8 +22,14 @@ then
   exit 1
 fi
 
-version=$(git describe --always --tags)
 git_dir=$(git rev-parse --git-dir)
+superproject_version=$(git --git-dir=$git_dir describe --tags --always)
+submodule_status=$(git --git-dir=$git_dir submodule status)
+output_file=${superproject_version}.zip
+
+full_version="${superproject_version}
+Submodule status:
+${submodule_status}"
 
 case $MSYSTEM in
   MINGW*)
@@ -35,24 +41,29 @@ esac
 echo "Removing old release packages"
 rm -f Release_*zip
 
-git --git-dir=$git_dir archive -o $version.zip HEAD
+git --git-dir=$git_dir archive -o $output_file HEAD
+
+# no support for submodules yet so we have to do that ourselves
+# See also https://stackoverflow.com/a/46551763/4859183
+git --git-dir=$git_dir submodule --quiet foreach "cd \$toplevel; zip -qru \$toplevel/$output_file \$path"
+# delete .git files from submodules
+# but these are only present on linux and not on windows ...
+git --git-dir=$git_dir submodule --quiet foreach "cd \$toplevel; zip -qd \$toplevel/$output_file \$path/.git || :" > /dev/null
+/bin/echo -e "$full_version" | zip -qu $output_file -z
 
 version_file=$top_level/version.txt
-echo $version > "$version_file"
-"$zip_exe" -qju $version.zip "$version_file"
+/bin/echo -e "$full_version" > "$version_file"
+"$zip_exe" -qju $output_file "$version_file"
 
-# git seems to be buggy on honouring export-ignore attributes on shallow clones
-# (bamboo does them by default so we delete the unwanted folders manually here
-"$zip_exe" -qd $version.zip "Packages/doc/*"  > /dev/null
-"$zip_exe" -qd $version.zip "Packages/ITC/*" > /dev/null
-"$zip_exe" -qd $version.zip "Packages/Testing-MIES/*" > /dev/null
-"$zip_exe" -qd $version.zip "Packages/unit-testing/*" > /dev/null
-"$zip_exe" -qd $version.zip "Packages/Arduino/*.zip" > /dev/null
-"$zip_exe" -qd $version.zip "Packages/Arduino/*.exe" > /dev/null
-"$zip_exe" -qd $version.zip "Packages/ZeroMQ/src/*" > /dev/null
-"$zip_exe" -qd $version.zip "Packages/ZeroMQ/tests/*" > /dev/null
-"$zip_exe" -qd $version.zip "Packages/ZeroMQ/xop-stub-generator/*" > /dev/null
-"$zip_exe" -qd $version.zip "tools/*" > /dev/null
-"$zip_exe" -qd $version.zip "XOPs-IP7-64bit/NIDAQmx64.XOP" > /dev/null
+# delete unwanted folders from submodules
+# everything else is handled in .gitattributes using export-ignore
+"$zip_exe" -qd $output_file "Packages/ITCXOP2/*" > /dev/null
+"$zip_exe" -qd $output_file "Packages/unit-testing/*" > /dev/null
+"$zip_exe" -qd $output_file "Packages/ZeroMQ/src/*" > /dev/null
+"$zip_exe" -qd $output_file "Packages/ZeroMQ/tests/*" > /dev/null
+"$zip_exe" -qd $output_file "Packages/ZeroMQ/output/*" > /dev/null
+"$zip_exe" -qd $output_file "Packages/ZeroMQ/help/*" > /dev/null
+"$zip_exe" -qd $output_file "Packages/ZeroMQ/examples/*" > /dev/null
+"$zip_exe" -qd $output_file "Packages/ZeroMQ/xop-stub-generator/*" > /dev/null
 
 exit 0

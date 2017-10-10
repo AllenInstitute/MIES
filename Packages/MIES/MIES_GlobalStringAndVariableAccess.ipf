@@ -100,8 +100,21 @@ End
 
 /// @brief Return the version string for the mies-igor project
 ///
-/// @returns the mies version (e.g. Release_0.3.0.0_20141007-3-gdf4bb1e-dirty) or #UNKNOWN_MIES_VERSION
-static Function/S CreateMiesVersion()
+/// The mies version looks like
+///
+/// @verbatim
+/// Release_1.4_20170929-16-g497e7aa8
+/// Submodule status:
+/// 160000 6c47163858d99986b27c70f6226e8fca894ed5f7 0	Packages/IPNWB
+/// 160000 ed7e824a6e065e383ae31bb304383e13d7c7ccb5 0	Packages/ITCXOP2
+/// 160000 2bd259940cb332339ed3c82b74632f06c9b68a15 0	Packages/ZeroMQ
+/// 160000 657e9e8abdc92aa299301796d710a0a717da4ef8 0	Packages/unit-testing
+/// @endverbatim
+///
+/// or #UNKNOWN_MIES_VERSION on error
+///
+/// @returns the mies version
+Function/S CreateMiesVersion()
 
 	string path, cmd, topDir, version, gitPathCandidates, gitPath
 	string userName, gitDir, fullVersionPath
@@ -137,6 +150,18 @@ static Function/S CreateMiesVersion()
 				DEBUGPRINT("Cmd to execute: ", str=cmd)
 				ExecuteScriptText/B/Z cmd
 				ASSERT(!V_flag, "We have git installed but could not regenerate version.txt")
+
+				sprintf cmd "cmd.exe /C \"echo Submodule status: >> \"%sversion.txt\" 2>&1\"", topDir
+				DEBUGPRINT("Cmd to execute: ", str=cmd)
+				ExecuteScriptText/B/Z cmd
+				ASSERT(!V_flag, "We have git installed but could not regenerate version.txt")
+
+				// git submodule status can not be used here as submodule is currently a sh script and executing that with --git-dir does not work
+				// but we can use the helper command which outputs a slightly uglier version, but is much faster
+				// the submodule helper is shipped with git 2.7 and later, therefore its failed execution is not fatal
+				sprintf cmd "cmd.exe /C \"\"%s\" --git-dir=\"%s\" submodule--helper list >> \"%sversion.txt\" 2>&1\"", gitPath, gitDir, topDir
+				DEBUGPRINT("Cmd to execute: ", str=cmd)
+				ExecuteScriptText/B/Z cmd
 			endif
 
 			break
@@ -148,12 +173,16 @@ static Function/S CreateMiesVersion()
 		return UNKNOWN_MIES_VERSION
 	endif
 
-	FReadLine refNum, version
+	FStatus refNum
+	version = PadString("", V_logEOF, 0x20)
+	FBinRead refNum, version
 	Close refNum
 
-	DEBUGPRINT("Version.txt contents: ", str=version)
+	version = NormalizeToEOL(version, "\r")
 
-	if(IsEmpty(version) || strsearch(version, " ", 0) != -1) // only error messages have spaces
+	DEBUGPRINT("Version.txt contents:\r\r", str=version)
+
+	if(IsEmpty(version) || strsearch(version, "Release", 0) == -1)
 		return UNKNOWN_MIES_VERSION
 	endif
 

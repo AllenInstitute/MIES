@@ -122,15 +122,20 @@ Function OpenAboutDialog()
 
 	Execute panel + "()"
 	SVAR miesVersion = $GetMiesVersion()
-	SetSetVariableString(panel, "setvar_info", "MIES Version: " + miesVersion)
+	Notebook AboutMIES#MiesVersionNB selection={startOfFile, endOfFile}
+	Notebook AboutMIES#MiesVersionNB setData=miesVersion
 End
 
 Window AboutMies() : Panel
 	PauseUpdate; Silent 1		// building window...
-	NewPanel /K=1 /W=(348,491,612,592) as "About MIES"
-	Button button_okay,pos={99.00,71.00},size={50.00,20.00},proc=ButtonProc_AboutMIESClose,title="OK"
-	SetVariable setvar_info,pos={18.00,20.00},size={213.00,15.00}
-	Button button_copy_to_clipboard,pos={181.00,71.00},size={50.00,20.00},proc=ButtonProc_AboutMIESCopy,title="Copy"
+	NewPanel /K=1 /W=(348,491,982,661) as "About MIES"
+	Button button_okay,pos={246.00,136.00},size={50.00,20.00},proc=ButtonProc_AboutMIESClose,title="OK"
+	Button button_copy_to_clipboard,pos={328.00,136.00},size={50.00,20.00},proc=ButtonProc_AboutMIESCopy,title="Copy"
+	NewNotebook /F=0 /N=MiesVersionNB /W=(14,7,309,124)/FG=(FL,FT,FR,$"") /HOST=# /OPTS=15
+	Notebook kwTopWin, defaultTab=20, autoSave= 0, writeProtect=1
+	Notebook kwTopWin font="Lucida Console", fSize=11, fStyle=0, textRGB=(0,0,0)
+	RenameWindow #,MiesVersionNB
+	SetActiveSubwindow ##
 EndMacro
 
 Function ButtonProc_AboutMIESClose(ba) : ButtonControl
@@ -148,12 +153,11 @@ End
 Function ButtonProc_AboutMIESCopy(ba) : ButtonControl
 	STRUCT WMButtonAction &ba
 
-	string str
 
 	switch(ba.eventCode)
 		case 2: // mouse up
-			str = GetSetVariableString(ba.win, "setvar_info")
-			PutScrapText str
+			SVAR miesVersion = $GetMiesVersion()
+			PutScrapText miesVersion
 			break
 	endswitch
 
