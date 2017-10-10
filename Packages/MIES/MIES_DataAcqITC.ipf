@@ -154,7 +154,8 @@ Function ITC_Timer(s)
 	SetValDisplay(panelTitleG, "valdisp_DataAcq_ITICountdown", var = timeLeft)
 
 	if(elapsedTime >= repeatedAcqDuration)
-		ITC_StopBackgroundTimerTask()
+		SVAR repeatedAcqFuncList = $GetRepeatedAcquisitionFuncList()
+		ExecuteListOfFunctions(repeatedAcqFuncList)
 		return 1
 	endif
 
@@ -164,9 +165,6 @@ End
 Function ITC_StopBackgroundTimerTask()
 
 	CtrlNamedBackground ITC_Timer, stop
-
-	SVAR repeatedAcqFuncList = $GetRepeatedAcquisitionFuncList()
-	ExecuteListOfFunctions(repeatedAcqFuncList)
 End
 
 Function ITC_StartBackgroundTestPulse(panelTitle)

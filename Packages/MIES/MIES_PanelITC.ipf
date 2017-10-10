@@ -4629,6 +4629,8 @@ Function DAP_OneTimeCallAfterDAQ(panelTitle, [forcedStop])
 	NVAR count = $GetCount(panelTitle)
 	count = 0
 
+	SetValDisplay(panelTitle, "valdisp_DataAcq_ITICountdown", var = 0)
+
 	NVAR raCycleID = $GetRepeatedAcquisitionCycleID(panelTitle)
 	raCycleID = NaN // invalidate
 
@@ -6348,7 +6350,7 @@ Function DAP_StopOngoingDataAcquisition(panelTitle)
 	if(IsDeviceActiveWithBGTask(panelTitle, "ITC_Timer"))
 		ITC_StopBackgroundTimerTask()
 
-		needsOTCAfterDAQ = needsOTCAfterDAQ | 0
+		needsOTCAfterDAQ = needsOTCAfterDAQ | 1
 		discardData      = discardData      | 1
 	endif
 
