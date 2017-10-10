@@ -719,6 +719,8 @@ Function ReachTargetVoltage(panelTitle, eventType, ITCDataWave, headStage, realD
 	WAVE targetVoltagesIndex = GetAnalysisFuncIndexingHelper(panelTitle)
 	
 	WAVE statusHS = DAP_ControlStatusWaveCache(panelTitle, CHANNEL_TYPE_HEADSTAGE)
+	
+	WAVE ampParam = GetAmplifierParamStorageWave(panelTitle)
 
 	switch(eventType)
 		case PRE_DAQ_EVENT:
@@ -735,8 +737,8 @@ Function ReachTargetVoltage(panelTitle, eventType, ITCDataWave, headStage, realD
 					continue
 				endif
 				
-				autoBiasCheck = GetCheckBoxState(panelTitle, "check_DataAcq_AutoBias")
-				holdingPotential = GetSetVariable(panelTitle, "setvar_DataAcq_AutoBiasV")
+				autoBiasCheck = ampParam[%AutoBiasEnable][0][i]
+				holdingPotential = ampParam[%AutoBiasVcom][0][i]
 				
 				if(autoBiasCheck != 1)
 					printf "Abort: Autobias for headstage %d not enabled.\r", i
@@ -1531,7 +1533,7 @@ Function preDAQ_MP_mainConfig(panelTitle, eventType, ITCDataWave, headStage, rea
 	PGC_SetAndActivateControl(panelTitle, "Check_DataAcq1_RepeatAcq", val = 1)
 End
 
-Function preDAQ_MP_ChirpIfMixed(panelTitle, eventType, ITCDataWave, headStage, realDataLength)
+Function preDAQ_MP_IfMixed(panelTitle, eventType, ITCDataWave, headStage, realDataLength)
 	string panelTitle
 	variable eventType
 	Wave ITCDataWave
@@ -1540,6 +1542,21 @@ Function preDAQ_MP_ChirpIfMixed(panelTitle, eventType, ITCDataWave, headStage, r
 	ASSERT(eventType == PRE_DAQ_EVENT, "Invalid event type")
 
 	PGC_SetAndActivateControl(panelTitle,"Check_DataAcq1_DistribDaq", val = 1)
+
+	PGC_SetAndActivateControl(panelTitle,"Check_DataAcq1_dDAQOptOv", val = 0)
+	
+	PGC_SetAndActivateControl(panelTitle, "Check_DataAcq1_RepeatAcq", val = 1)
+End
+
+Function preDAQ_MP_ChirpBlowout(panelTitle, eventType, ITCDataWave, headStage, realDataLength)
+	string panelTitle
+	variable eventType
+	Wave ITCDataWave
+	variable headstage, realDataLength
+	
+	ASSERT(eventType == PRE_DAQ_EVENT, "Invalid event type")
+
+	PGC_SetAndActivateControl(panelTitle,"Check_DataAcq1_DistribDaq", val = 0)
 
 	PGC_SetAndActivateControl(panelTitle,"Check_DataAcq1_dDAQOptOv", val = 0)
 	
