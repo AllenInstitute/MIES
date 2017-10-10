@@ -70,7 +70,25 @@ Function EvaluateResult()
 	NVAR compilationState = $GetCompilationState()
 	SVAR includeFile      = root:includeFile
 
-	printf "CompilationTester evaluating \"%s\"\r", includeFile
-
-	CHECK_EQUAL_VAR(compilationState, 0x4)
+	strswitch(includeFile)
+		case "MIES_Include":
+			CHECK_EQUAL_VAR(compilationState, 0x4) // "MIES_Include"
+			break
+		case "MIES_AnalysisBrowser":
+			CHECK_EQUAL_VAR(compilationState, 0x4) // "MIES_AnalysisBrowser"
+			break
+		case "MIES_DataBrowser":
+			CHECK_EQUAL_VAR(compilationState, 0x4) // "MIES_DataBrowser"
+			break
+		case "MIES_WaveBuilderPanel":
+			CHECK_EQUAL_VAR(compilationState, 0x4) // "MIES_WaveBuilderPanel"
+			break
+		case "MIES_Downsample":
+			CHECK_EQUAL_VAR(compilationState, 0x4) // "MIES_Downsample"
+			break
+		default:
+			CHECK_EQUAL_VAR(compilationState, 0x4) // "unknown"
+			FAIL()
+			break
+	endswitch
 End
