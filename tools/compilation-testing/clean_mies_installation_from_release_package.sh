@@ -66,5 +66,6 @@ cp -r  "$folder"/Packages/*  "$user_proc"
 cp -r  "$folder"/XOPs-IP7-64bit/*  "$xops"
 cp -r  "$folder"/XOP-tango-IP7-64bit/* "$xops"
 cp -r  "$folder"/HelpFiles-IP7/* "$xops_help"
+cp "$folder"/version.txt "$IGOR_USER_FILES"
 
 exit 0

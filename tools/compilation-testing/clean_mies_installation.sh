@@ -43,5 +43,6 @@ cp -r  "$top_level"/Packages/*  "$user_proc"
 cp -r  "$top_level"/XOPs-IP7-64bit/*  "$xops"
 cp -r  "$top_level"/XOP-tango-IP7-64bit/* "$xops"
 rm -f  "$xops"/NIDAQmx64.*
+echo "Release: FAKE MIES VERSION" > "$IGOR_USER_FILES"/version.txt
 
 exit 0
