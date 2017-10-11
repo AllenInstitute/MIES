@@ -983,11 +983,13 @@ Function NWB_LoadAllStimsets([overwrite, fileName])
 
 	if(!IPNWB#StimsetPathExists(fileID))
 		printf "no stimsets present in %s\r", fullPath
+		IPNWB#H5_CloseFile(fileID)
 		return 1
 	endif
 
 	stimsets = IPNWB#ReadStimsets(fileID)
 	if(ItemsInList(stimsets) == 0)
+		IPNWB#H5_CloseFile(fileID)
 		return 0
 	endif
 
@@ -1012,6 +1014,7 @@ Function NWB_LoadAllStimsets([overwrite, fileName])
 	endfor
 	NWB_LoadCustomWaves(groupID, stimsets, overwrite)
 	HDF5CloseGroup/Z groupID
+	IPNWB#H5_CloseFile(fileID)
 	return error
 End
 
