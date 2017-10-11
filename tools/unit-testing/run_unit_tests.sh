@@ -10,7 +10,7 @@ runner=autorun-test.sh
 
 if [ -e $runner ]
 then
-  ./$runner
+  ./$runner $@
 
   exit 0
 else
