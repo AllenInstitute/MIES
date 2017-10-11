@@ -33,9 +33,9 @@ ${submodule_status}"
 
 case $MSYSTEM in
   MINGW*)
-    zip_exe=$top_level/tools/zip.exe;;
+    export zip_exe=$top_level/tools/zip.exe;;
   *)
-    zip_exe=zip;;
+    export zip_exe=zip;;
 esac
 
 echo "Removing old release packages"
@@ -45,11 +45,11 @@ git --git-dir=$git_dir archive -o $output_file HEAD
 
 # no support for submodules yet so we have to do that ourselves
 # See also https://stackoverflow.com/a/46551763/4859183
-git --git-dir=$git_dir submodule --quiet foreach "cd \$toplevel; zip -qru \$toplevel/$output_file \$path"
+git --git-dir=$git_dir submodule --quiet foreach "cd \$toplevel; \$zip_exe -qru \$toplevel/$output_file \$path"
 # delete .git files from submodules
 # but these are only present on linux and not on windows ...
-git --git-dir=$git_dir submodule --quiet foreach "cd \$toplevel; zip -qd \$toplevel/$output_file \$path/.git || :" > /dev/null
-/bin/echo -e "$full_version" | zip -qu $output_file -z
+git --git-dir=$git_dir submodule --quiet foreach "cd \$toplevel; \$zip_exe -qd \$toplevel/$output_file \$path/.git || :" > /dev/null
+/bin/echo -e "$full_version" | $zip_exe -qu $output_file -z
 
 version_file=$top_level/version.txt
 /bin/echo -e "$full_version" > "$version_file"
