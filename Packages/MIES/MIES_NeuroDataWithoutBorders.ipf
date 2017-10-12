@@ -8,9 +8,6 @@
 
 /// @file MIES_NeuroDataWithoutBorders.ipf
 /// @brief __NWB__ Functions related to MIES data export into the NeuroDataWithoutBorders format
-///
-/// @todo
-/// - use IPNWB#CHANNEL_TYPE_OTHER instead of -1 if possible
 
 /// @brief Return the starting time, in seconds since Igor Pro epoch in UTC, of the given sweep
 static Function NWB_GetStartTimeOfSweep(sweepWave)
