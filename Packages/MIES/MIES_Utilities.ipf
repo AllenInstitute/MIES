@@ -2258,7 +2258,7 @@ Function/S GetISO8601TimeStamp([secondsSinceIgorEpoch])
 		secondsSinceIgorEpoch = DateTimeInUTC()
 	endif
 
-	sprintf str, "%s %sZ", Secs2Date(secondsSinceIgorEpoch, -2), Secs2Time(secondsSinceIgorEpoch, 3, 0)
+	sprintf str, "%sT%sZ", Secs2Date(secondsSinceIgorEpoch, -2), Secs2Time(secondsSinceIgorEpoch, 3, 0)
 
 	return str
 End

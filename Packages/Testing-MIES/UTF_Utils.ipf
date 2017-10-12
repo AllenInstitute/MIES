@@ -187,6 +187,14 @@ Function AcceptsValid8()
 	CHECK_EQUAL_VAR(actual, expected)
 End
 
+Function AcceptsValid9()
+
+	variable now      = DateTimeInUTC()
+	variable expected = trunc(now)
+	variable actual   = ParseISO8601TimeStamp(GetIso8601TimeStamp(secondsSinceIgorEpoch = now))
+	CHECK_EQUAL_VAR(actual, expected)
+End
+
 /// @}
 
 /// GetSetIntersection
