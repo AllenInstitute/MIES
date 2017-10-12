@@ -489,7 +489,7 @@ Function ED_createWaveNoteTags(panelTitle, sweepCount)
 
 	ED_AddEntriesToLabnotebook(numSettings, numKeys, SweepCount, panelTitle, DATA_ACQUISITION_MODE)
 
-	Make/FREE/T/N=(3, 2) keys
+	Make/FREE/T/N=(3, 3) keys
 	keys = ""
 
 	keys[0][0] = "Follower Device"
@@ -500,7 +500,11 @@ Function ED_createWaveNoteTags(panelTitle, sweepCount)
 	keys[1][1] = "On/Off"
 	keys[2][1] = LABNOTEBOOK_NO_TOLERANCE
 
-	Make/FREE/T/N=(1, 2, LABNOTEBOOK_LAYER_COUNT) values
+	keys[0][2] = "Igor Pro version"
+	keys[1][2] = ""
+	keys[2][2] = LABNOTEBOOK_NO_TOLERANCE
+
+	Make/FREE/T/N=(1, 3, LABNOTEBOOK_LAYER_COUNT) values
 	values = ""
 
 	if(DeviceCanLead(panelTitle))
@@ -510,6 +514,8 @@ Function ED_createWaveNoteTags(panelTitle, sweepCount)
 
 	SVAR miesVersion = $GetMiesVersion()
 	values[0][1][INDEP_HEADSTAGE] = miesVersion
+
+	values[0][2][INDEP_HEADSTAGE] = StringByKey("IGORFILEVERSION", IgorInfo(3))
 
 	ED_AddEntriesToLabnotebook(values, keys, SweepCount, panelTitle, DATA_ACQUISITION_MODE)
 
