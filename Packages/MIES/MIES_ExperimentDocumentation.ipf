@@ -58,8 +58,8 @@ static Function ED_createTextNotes(incomingTextualValues, incomingTextualKeys, s
 	WAVE indizes = ED_FindIndizesAndRedimension(incomingTextualKeys, textualKeys, textualValues, rowIndex)
 
 	textualValues[rowIndex][0][] = num2istr(sweepNo)
-	textualValues[rowIndex][1][] = num2istr(DateTime)
-	textualValues[rowIndex][2][] = num2istr(DateTimeInUTC())
+	textualValues[rowIndex][1][] = num2str(DateTime)
+	textualValues[rowIndex][2][] = num2str(DateTimeInUTC())
 	textualValues[rowIndex][3][] = num2istr(entrySourceType)
 
 	WAVE textualValuesDat = ExtractLBColumnTimeStamp(textualValues)
