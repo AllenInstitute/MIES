@@ -84,7 +84,7 @@ End
 
 Window WaveBuilder() : Panel
 	PauseUpdate; Silent 1		// building window...
-	NewPanel /K=1 /W=(94,826,1101,1462)
+	NewPanel /K=1 /W=(97,418,1104,1054)
 	SetDrawLayer UserBack
 	SetDrawEnv fname= "MS Sans Serif",fsize= 16,fstyle= 1
 	DrawText 32,25,"Set Parameters"
@@ -217,10 +217,10 @@ Window WaveBuilder() : Panel
 	SetVariable SetVar_WaveBuilder_P3,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	SetVariable SetVar_WaveBuilder_P3,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
 	SetVariable SetVar_WaveBuilder_P3,value= _NUM:0
-	SetVariable setvar_WaveBuilder_SetNumber,pos={882.00,33.00},size={116.00,18.00},proc=WBP_SetVarProc_SetNo,title="Set Number"
+	SetVariable setvar_WaveBuilder_SetNumber,pos={882.00,49.00},size={116.00,18.00},bodyWidth=50,title="Number      "
 	SetVariable setvar_WaveBuilder_SetNumber,help={"A numeric suffix for the set name that can be used to sort sets with identical prefixes."}
 	SetVariable setvar_WaveBuilder_SetNumber,userdata(tabcontrol)=  "WBP_WaveType"
-	SetVariable setvar_WaveBuilder_SetNumber,userdata(ResizeControlsInfo)= A"!!,JmJ,hn=!!#@L!!#<Hz!!#o2B4uAezzzzzzzzzzzzzz!!#o2B4uAezz"
+	SetVariable setvar_WaveBuilder_SetNumber,userdata(ResizeControlsInfo)= A"!!,JmJ,ho(!!#@L!!#<Hz!!#o2B4uAezzzzzzzzzzzzzz!!#o2B4uAezz"
 	SetVariable setvar_WaveBuilder_SetNumber,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	SetVariable setvar_WaveBuilder_SetNumber,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
 	SetVariable setvar_WaveBuilder_SetNumber,limits={0,inf,1},value= _NUM:0
@@ -285,13 +285,13 @@ Window WaveBuilder() : Panel
 	SetVariable SetVar_WaveBuilder_P9,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	SetVariable SetVar_WaveBuilder_P9,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
 	SetVariable SetVar_WaveBuilder_P9,value= _NUM:0
-	SetVariable setvar_WaveBuilder_baseName,pos={882.00,55.00},size={116.00,25.00},proc=WBP_SetVarProc_SetNo,title="Name\rprefix"
+	SetVariable setvar_WaveBuilder_baseName,pos={882.00,72.00},size={116.00,18.00}
 	SetVariable setvar_WaveBuilder_baseName,help={"Stimulus set name prefix. Max number of characters = 16"}
 	SetVariable setvar_WaveBuilder_baseName,userdata(tabcontrol)=  "WBP_WaveType"
-	SetVariable setvar_WaveBuilder_baseName,userdata(ResizeControlsInfo)= A"!!,JmJ,ho@!!#@L!!#=+z!!#o2B4uAezzzzzzzzzzzzzz!!#o2B4uAezz"
+	SetVariable setvar_WaveBuilder_baseName,userdata(ResizeControlsInfo)= A"!!,JmJ,hot!!#@L!!#<Hz!!#o2B4uAezzzzzzzzzzzzzz!!#o2B4uAezz"
 	SetVariable setvar_WaveBuilder_baseName,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	SetVariable setvar_WaveBuilder_baseName,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
-	SetVariable setvar_WaveBuilder_baseName,fSize=8
+	SetVariable setvar_WaveBuilder_baseName,fSize=12
 	SetVariable setvar_WaveBuilder_baseName,limits={0,10,1},value= _STR:"StimulusSetA"
 	PopupMenu popup_WaveBuilder_SetList,pos={686.00,607.00},size={150.00,19.00},bodyWidth=150
 	PopupMenu popup_WaveBuilder_SetList,help={"Select stimulus set to load or delete."}
@@ -328,9 +328,9 @@ Window WaveBuilder() : Panel
 	PopupMenu popup_WaveBuilder_OutputType,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
 	PopupMenu popup_WaveBuilder_OutputType,fSize=14
 	PopupMenu popup_WaveBuilder_OutputType,mode=1,popvalue="DA",value= #"\"DA;TTL\""
-	Button button_WaveBuilder_SaveSet,pos={881.00,88.00},size={118.00,46.00},proc=WBP_ButtonProc_SaveSet,title="Save Set"
+	Button button_WaveBuilder_SaveSet,pos={880.00,95.00},size={120.00,22.00},proc=WBP_ButtonProc_SaveSet,title="Save Set"
 	Button button_WaveBuilder_SaveSet,help={"Saves the stimulus set and clears the WaveBuilder graph. On save the set is available for data acquisition."}
-	Button button_WaveBuilder_SaveSet,userdata(ResizeControlsInfo)= A"!!,Jm5QF-T!!#@P!!#>Fz!!#o2B4uAezzzzzzzzzzzzzz!!#o2B4uAezz"
+	Button button_WaveBuilder_SaveSet,userdata(ResizeControlsInfo)= A"!!,Jm!!#@\"!!#@T!!#<hz!!#o2B4uAezzzzzzzzzzzzzz!!#o2B4uAezz"
 	Button button_WaveBuilder_SaveSet,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Duafnzzzzzzzzzzz"
 	Button button_WaveBuilder_SaveSet,userdata(ResizeControlsInfo) += A"zzz!!#u:Duafnzzzzzzzzzzzzzz!!!"
 	SetVariable SetVar_WaveBuilder_P6_FD00,pos={194.00,104.00},size={100.00,18.00},disable=1,proc=WBP_SetVarProc_UpdateParam,title="Freq"
@@ -558,9 +558,9 @@ Window WaveBuilder() : Panel
 	GroupBox group_WaveBuilder_FolderPath,userdata(ResizeControlsInfo)= A"!!,Io!!#=k!!#B@J,hq8z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	GroupBox group_WaveBuilder_FolderPath,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Duafnzzzzzzzzzzz"
 	GroupBox group_WaveBuilder_FolderPath,userdata(ResizeControlsInfo) += A"zzz!!#u:Duafnzzzzzzzzzzzzzz!!!"
-	GroupBox group_WaveBuilder_SaveSet,pos={876.00,6.00},size={127.00,134.00},title="\\Z16\\f01Save Set"
+	GroupBox group_WaveBuilder_SaveSet,pos={877.00,6.00},size={128.00,116.00},title="\\Z16\\f01Save Set"
 	GroupBox group_WaveBuilder_SaveSet,userdata(tabcontrol)=  "WBP_WaveType"
-	GroupBox group_WaveBuilder_SaveSet,userdata(ResizeControlsInfo)= A"!!,Jl!!#:\"!!#@b!!#@jz!!#o2B4uAezzzzzzzzzzzzzz!!#o2B4uAezz"
+	GroupBox group_WaveBuilder_SaveSet,userdata(ResizeControlsInfo)= A"!!,Jl5QF'b!!#@d!!#@Lz!!#o2B4uAezzzzzzzzzzzzzz!!#o2B4uAezz"
 	GroupBox group_WaveBuilder_SaveSet,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Duafnzzzzzzzzzzz"
 	GroupBox group_WaveBuilder_SaveSet,userdata(ResizeControlsInfo) += A"zzz!!#u:Duafnzzzzzzzzzzzzzz!!!"
 	GroupBox group_WaveBuilder_SaveSet,fStyle=0
@@ -702,7 +702,7 @@ Window WaveBuilder() : Panel
 	PopupMenu popup_af_postSweep_S3,pos={4.00,102.00},size={173.00,19.00},bodyWidth=110,disable=1,proc=WBP_PopupMenu_AnalysisFunctions,title="Post Sweep"
 	PopupMenu popup_af_postSweep_S3,help={"After each sweep"},userdata(tabnum)=  "1"
 	PopupMenu popup_af_postSweep_S3,userdata(tabcontrol)=  "WBP_Set_Parameters"
-	PopupMenu popup_af_postSweep_S3,userdata(ResizeControlsInfo)= A"!!,@C!!#@0!!#A9!!#<`z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
+	PopupMenu popup_af_postSweep_S3,userdata(ResizeControlsInfo)= A"!!,?8!!#@0!!#A<!!#<Pz!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	PopupMenu popup_af_postSweep_S3,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Duafnzzzzzzzzzzz"
 	PopupMenu popup_af_postSweep_S3,userdata(ResizeControlsInfo) += A"zzz!!#u:Duafnzzzzzzzzzzzzzz!!!"
 	PopupMenu popup_af_postSweep_S3,mode=1,popvalue="- none -",value= #"WBP_GetAnalysisFunctions()"
@@ -710,7 +710,7 @@ Window WaveBuilder() : Panel
 	PopupMenu popup_af_postSet_S4,help={"After a *full* set has been acquired (This event is not always reached as the user might not acquire all sweeps of a set)"}
 	PopupMenu popup_af_postSet_S4,userdata(tabnum)=  "1"
 	PopupMenu popup_af_postSet_S4,userdata(tabcontrol)=  "WBP_Set_Parameters"
-	PopupMenu popup_af_postSet_S4,userdata(ResizeControlsInfo)= A"!!,C$!!#@d!!#A(!!#<`z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
+	PopupMenu popup_af_postSet_S4,userdata(ResizeControlsInfo)= A"!!,Bi!!#@d!!#A*!!#<Pz!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	PopupMenu popup_af_postSet_S4,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Duafnzzzzzzzzzzz"
 	PopupMenu popup_af_postSet_S4,userdata(ResizeControlsInfo) += A"zzz!!#u:Duafnzzzzzzzzzzzzzz!!!"
 	PopupMenu popup_af_postSet_S4,mode=1,popvalue="- none -",value= #"WBP_GetAnalysisFunctions()"
@@ -718,7 +718,7 @@ Window WaveBuilder() : Panel
 	PopupMenu popup_af_preDAQEvent_S1,help={"Immediately before any DAQ occurs"}
 	PopupMenu popup_af_preDAQEvent_S1,userdata(tabnum)=  "1"
 	PopupMenu popup_af_preDAQEvent_S1,userdata(tabcontrol)=  "WBP_Set_Parameters"
-	PopupMenu popup_af_preDAQEvent_S1,userdata(ResizeControlsInfo)= A"!!,Bi!!#>V!!#A*!!#<`z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
+	PopupMenu popup_af_preDAQEvent_S1,userdata(ResizeControlsInfo)= A"!!,BQ!!#>V!!#A-!!#<Pz!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	PopupMenu popup_af_preDAQEvent_S1,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Duafnzzzzzzzzzzz"
 	PopupMenu popup_af_preDAQEvent_S1,userdata(ResizeControlsInfo) += A"zzz!!#u:Duafnzzzzzzzzzzzzzz!!!"
 	PopupMenu popup_af_preDAQEvent_S1,mode=1,popvalue="- none -",value= #"WBP_GetAnalysisFunctions()"
@@ -726,7 +726,7 @@ Window WaveBuilder() : Panel
 	PopupMenu popup_af_midSweep_S2,help={"Each time when new data is polled (available for background DAQ only)"}
 	PopupMenu popup_af_midSweep_S2,userdata(tabnum)=  "1"
 	PopupMenu popup_af_midSweep_S2,userdata(tabcontrol)=  "WBP_Set_Parameters"
-	PopupMenu popup_af_midSweep_S2,userdata(ResizeControlsInfo)= A"!!,A^!!#?Q!!#A3!!#<`z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
+	PopupMenu popup_af_midSweep_S2,userdata(ResizeControlsInfo)= A"!!,@C!!#?Q!!#A9!!#<Pz!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	PopupMenu popup_af_midSweep_S2,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Duafnzzzzzzzzzzz"
 	PopupMenu popup_af_midSweep_S2,userdata(ResizeControlsInfo) += A"zzz!!#u:Duafnzzzzzzzzzzzzzz!!!"
 	PopupMenu popup_af_midSweep_S2,mode=1,popvalue="- none -",value= #"WBP_GetAnalysisFunctions()"
@@ -734,7 +734,7 @@ Window WaveBuilder() : Panel
 	PopupMenu popup_af_postDAQEvent_S5,help={"After all DAQ has been finished"}
 	PopupMenu popup_af_postDAQEvent_S5,userdata(tabnum)=  "1"
 	PopupMenu popup_af_postDAQEvent_S5,userdata(tabcontrol)=  "WBP_Set_Parameters"
-	PopupMenu popup_af_postDAQEvent_S5,userdata(ResizeControlsInfo)= A"!!,BA!!#A)!!#A/!!#<`z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
+	PopupMenu popup_af_postDAQEvent_S5,userdata(ResizeControlsInfo)= A"!!,A^!!#A)!!#A3!!#<Pz!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	PopupMenu popup_af_postDAQEvent_S5,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Duafnzzzzzzzzzzz"
 	PopupMenu popup_af_postDAQEvent_S5,userdata(ResizeControlsInfo) += A"zzz!!#u:Duafnzzzzzzzzzzzzzz!!!"
 	PopupMenu popup_af_postDAQEvent_S5,mode=1,popvalue="- none -",value= #"WBP_GetAnalysisFunctions()"
@@ -848,14 +848,25 @@ Window WaveBuilder() : Panel
 	Button button_NewStimsetSeed,help={"Reseed the pseudo RNG for epochs using the global seed."}
 	Button button_NewStimsetSeed,userdata(tabnum)=  "0"
 	Button button_NewStimsetSeed,userdata(tabcontrol)=  "WBP_Set_Parameters"
+	Button button_NewStimsetSeed,userdata(ResizeControlsInfo)= A"!!,E*!!#A:!!#>b!!#<Pz!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
+	Button button_NewStimsetSeed,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Duafnzzzzzzzzzzz"
+	Button button_NewStimsetSeed,userdata(ResizeControlsInfo) += A"zzz!!#u:Duafnzzzzzzzzzzzzzz!!!"
 	CheckBox check_UseStimsetSeed_P39,pos={324.00,159.00},size={120.00,15.00},disable=1,proc=WBP_CheckProc,title="Epoch/Stimset Seed"
 	CheckBox check_UseStimsetSeed_P39,help={"Use the per-epoch random number generator (RNG) seed (checked) or use the stimset seed (unchecked).<br>Seeds are saved with the stimulus."}
 	CheckBox check_UseStimsetSeed_P39,userdata(tabnum)=  "2"
-	CheckBox check_UseStimsetSeed_P39,userdata(tabcontrol)=  "WBP_WaveType",value= 1
+	CheckBox check_UseStimsetSeed_P39,userdata(tabcontrol)=  "WBP_WaveType"
+	CheckBox check_UseStimsetSeed_P39,userdata(ResizeControlsInfo)= A"!!,H]!!#A.!!#@T!!#<(z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
+	CheckBox check_UseStimsetSeed_P39,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Duafnzzzzzzzzzzz"
+	CheckBox check_UseStimsetSeed_P39,userdata(ResizeControlsInfo) += A"zzz!!#u:Duafnzzzzzzzzzzzzzz!!!"
+	CheckBox check_UseStimsetSeed_P39,value= 1
 	CheckBox check_UseEpochSeed_P39_0,pos={494.00,180.00},size={120.00,15.00},disable=1,proc=WBP_CheckProc,title="Epoch/Stimset Seed"
 	CheckBox check_UseEpochSeed_P39_0,help={"Use the per-epoch random number generator (RNG) seed (checked) or use the stimset seed (unchecked).<br>Seeds are saved with the stimulus."}
 	CheckBox check_UseEpochSeed_P39_0,userdata(tabnum)=  "5"
-	CheckBox check_UseEpochSeed_P39_0,userdata(tabcontrol)=  "WBP_WaveType",value= 1
+	CheckBox check_UseEpochSeed_P39_0,userdata(tabcontrol)=  "WBP_WaveType"
+	CheckBox check_UseEpochSeed_P39_0,userdata(ResizeControlsInfo)= A"!!,I]!!#AC!!#@T!!#<(z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
+	CheckBox check_UseEpochSeed_P39_0,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Duafnzzzzzzzzzzz"
+	CheckBox check_UseEpochSeed_P39_0,userdata(ResizeControlsInfo) += A"zzz!!#u:Duafnzzzzzzzzzzzzzz!!!"
+	CheckBox check_UseEpochSeed_P39_0,value= 1
 	DefineGuide UGH1={FT,206},UGH0={UGH1,0.902778,FB}
 	SetWindow kwTopWin,hook(main)=WBP_MainWindowHook
 	SetWindow kwTopWin,hook(ResizeControls)=ResizeControls#ResizeControlsHook
@@ -1218,20 +1229,6 @@ static Function WBP_SetControl(win, control, value)
 	else
 		ASSERT(0, "Unsupported control type")
 	endif
-End
-
-Function WBP_SetVarProc_SetNo(sva) : SetVariableControl
-	STRUCT WMSetVariableAction &sva
-
-	switch(sva.eventCode)
-		case 1: // mouse up
-		case 2: // Enter key
-		case 3: // Live update
-			WBP_UpdatePanelIfAllowed()
-			break
-	endswitch
-
-	return 0
 End
 
 Function WBP_ButtonProc_DeleteSet(ba) : ButtonControl
