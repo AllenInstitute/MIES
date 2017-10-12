@@ -2249,16 +2249,23 @@ End
 
 /// @brief Return a string in ISO 8601 format with timezone UTC
 /// @param secondsSinceIgorEpoch [optional, defaults to number of seconds until now] Seconds since the Igor Pro epoch (1/1/1904) in UTC
-Function/S GetISO8601TimeStamp([secondsSinceIgorEpoch])
-	variable secondsSinceIgorEpoch
+/// @param numFracSecondsDigits  [optional, defaults to zero] Number of sub-second digits
+Function/S GetISO8601TimeStamp([secondsSinceIgorEpoch, numFracSecondsDigits])
+	variable secondsSinceIgorEpoch, numFracSecondsDigits
 
 	string str
+
+	if(ParamIsDefault(numFracSecondsDigits))
+		numFracSecondsDigits = 0
+	else
+		ASSERT(IsInteger(numFracSecondsDigits) && numFracSecondsDigits >= 0, "Invalid value for numFracSecondsDigits")
+	endif
 
 	if(ParamIsDefault(secondsSinceIgorEpoch))
 		secondsSinceIgorEpoch = DateTimeInUTC()
 	endif
 
-	sprintf str, "%sT%sZ", Secs2Date(secondsSinceIgorEpoch, -2), Secs2Time(secondsSinceIgorEpoch, 3, 0)
+	sprintf str, "%sT%sZ", Secs2Date(secondsSinceIgorEpoch, -2), Secs2Time(secondsSinceIgorEpoch, 3, numFracSecondsDigits)
 
 	return str
 End
