@@ -867,6 +867,12 @@ Window WaveBuilder() : Panel
 	CheckBox check_UseEpochSeed_P39_0,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Duafnzzzzzzzzzzz"
 	CheckBox check_UseEpochSeed_P39_0,userdata(ResizeControlsInfo) += A"zzz!!#u:Duafnzzzzzzzzzzzzzz!!!"
 	CheckBox check_UseEpochSeed_P39_0,value= 1
+	CheckBox check_allow_saving_builtin_nam,pos={882.00,30.00},size={115.00,15.00},title="Allow reserv. name"
+	CheckBox check_allow_saving_builtin_nam,help={"Stimsets starting with \"_MIES\" are treated as special builtin stimsets and can only be saved if this checkbox is checked."}
+	CheckBox check_allow_saving_builtin_nam,userdata(ResizeControlsInfo)= A"!!,JmJ,hn)!!#@J!!#<(z!!#o2B4uAezzzzzzzzzzzzzz!!#o2B4uAezz"
+	CheckBox check_allow_saving_builtin_nam,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Duafnzzzzzzzzzzz"
+	CheckBox check_allow_saving_builtin_nam,userdata(ResizeControlsInfo) += A"zzz!!#u:Duafnzzzzzzzzzzzzzz!!!"
+	CheckBox check_allow_saving_builtin_nam,value= 0
 	DefineGuide UGH1={FT,206},UGH0={UGH1,0.902778,FB}
 	SetWindow kwTopWin,hook(main)=WBP_MainWindowHook
 	SetWindow kwTopWin,hook(ResizeControls)=ResizeControls#ResizeControlsHook
@@ -917,6 +923,8 @@ Function WBP_StartupSettings()
 
 	SetPopupMenuIndex(panel, "popup_WaveBuilder_FolderList", 0)
 	SetPopupMenuIndex(panel, "popup_WaveBuilder_ListOfWaves", 0)
+
+	SetCheckBoxState(panel, "check_allow_saving_builtin_nam", CHECKBOX_UNSELECTED)
 
 	WBP_LoadSet(NONE)
 
@@ -1381,8 +1389,11 @@ Function WBP_ButtonProc_SaveSet(ba) : ButtonControl
 	switch(ba.eventCode)
 		case 2: // mouse up
 
+			if(WBP_SaveSetParam())
+				break
+			endif
+
 			RemoveTracesFromGraph(WaveBuilderGraph)
-			WBP_SaveSetParam()
 			WBP_UpdateITCPanelPopUps()
 			WB_UpdateEpochCombineList(WBP_GetOutputType())
 
@@ -1718,16 +1729,35 @@ Function/S WBP_ReturnListSavedSets(setType)
 	return SortList(stimSetList, ";", 16)
 end
 
+/// @brief Return true if the given stimset is a builtin, false otherwise
+Function WBP_IsBuiltinStimset(setName)
+	string setName
+
+	return GrepString(setName, "^MIES_.*")
+End
+
+/// @brief Save the set parameter waves
+///
+/// @return 0 on success, 1 otherwise
 static Function WBP_SaveSetParam()
 	string setName, childStimsets
 	variable i
+
+	setName = WBP_AssembleSetName()
+
+	if(WBP_IsBuiltinStimset(setName) && !GetCheckBoxState(panel, "check_allow_saving_builtin_nam"))
+		printf "The stimset %s can not be saved as it violates the naming scheme "       + \
+			   "for user stimsets. Check the checkbox above if you really want to save " + \
+			   "a builtin stimset.\r", setName
+		ControlWindowToFront()
+		return 1
+	endif
 
 	WAVE SegWvType = GetSegmentTypeWave()
 	WAVE WP        = GetWaveBuilderWaveParam()
 	WAVE WPT       = GetWaveBuilderWaveTextParam()
 
 	DFREF dfr = GetSetParamFolder(WBP_GetOutputType())
-	setName = WBP_AssembleSetName()
 
 	// avoid circle references of any order
 	childStimsets = WB_StimsetRecursion()
@@ -1742,6 +1772,8 @@ static Function WBP_SaveSetParam()
 	Duplicate/O SegWvType , dfr:$WB_GetParameterWaveName(setName, STIMSET_PARAM_SEGWVTYPE)
 	Duplicate/O WP	      , dfr:$WB_GetParameterWaveName(setName, STIMSET_PARAM_WP)
 	Duplicate/O WPT       , dfr:$WB_GetParameterWaveName(setName, STIMSET_PARAM_WPT)
+
+	return 0
 End
 
 static Function WBP_LoadSet(setName)
