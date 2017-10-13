@@ -141,6 +141,8 @@ Function ExpConfig_ConfigureMIES([middleOfExperiment])
 		NewPath /C/O SavePath, UserSettings[V_value][%SettingValue]
 	
 		SaveExperiment /P=SavePath as filename
+
+		KillPath/Z SavePath
 	
 		PGC_SetAndActivateControl(win,"StartTestPulseButton")
 	
