@@ -122,7 +122,10 @@ End
 Function/DF BSP_GetFolder(panelName, MIES_BSP_FOLDER_TYPE)
 	string panelName, MIES_BSP_FOLDER_TYPE
 
-	// since BSP-side-panel all properties are stored in main panel
+	if(BSP_MainPanelNeedsUpdate(panelName))
+		DoAbortNow("The main panel is too old to be usable. Please close it and open a new one.")
+	endif
+
 	panelName = GetMainWindow(panelName)
 	ASSERT(WindowExists(panelName), "specified panel does not exist.")
 
