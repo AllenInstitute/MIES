@@ -68,15 +68,17 @@ static Function BSP_DynamicStartupSettings(mainPanel)
 	AddVersionToPanel(extPanel, BROWSERSETTINGS_PANEL_VERSION)
 
 	// overlay sweeps
-	SetControlProcedure(extPanel, "check_BrowserSettings_OVS", "DB_CheckBoxProc_OverlaySweeps")
+	if(IsDataBrowser(mainPanel))
+		SetControlProcedure(extPanel, "check_BrowserSettings_OVS", "DB_CheckBoxProc_OverlaySweeps")
+	else
+		SetControlProcedure(extPanel, "check_BrowserSettings_OVS", "SB_CheckboxProc_OverlaySweeps")
+	endif
 	DFREF dfr = BSP_GetFolder(mainPanel, MIES_BSP_OVS_FOLDER)
 	WAVE/T listBoxWave        = GetOverlaySweepsListWave(dfr)
 	WAVE listBoxSelWave       = GetOverlaySweepsListSelWave(dfr)
 	WAVE/WAVE sweepSelChoices = GetOverlaySweepSelectionChoices(dfr)
 	ListBox list_of_ranges, listWave=listBoxWave
 	ListBox list_of_ranges, selWave=listBoxSelWave
-	sweepNo = GetSetVariable(mainPanel, "setvar_DataBrowser_SweepNo")
-	OVS_ChangeSweepSelectionState(mainPanel, CHECKBOX_SELECTED, sweepNO=sweepNo)
 	WaveClear listBoxWave
 	PopupMenu popup_overlaySweeps_select,value= #("OVS_GetSweepSelectionChoices(\"" + extPanel + "\")")
 

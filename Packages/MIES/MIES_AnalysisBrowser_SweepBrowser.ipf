@@ -358,8 +358,8 @@ Function SB_UpdateSweepPlot(graph, [newSweep])
 	endif
 
 	STRUCT TiledGraphSettings tgs
+	tgs.overlaySweep 	= OVS_IsActive(extPanel)
 	tgs.displayDAC      = GetCheckBoxState(extPanel, "check_SweepBrowser_DisplayDAC")
-	tgs.overlaySweep    = GetCheckBoxState(extPanel, "check_SweepBrowser_SweepOverlay")
 	tgs.displayADC      = GetCheckBoxState(extPanel, "check_SweepBrowser_DisplayADC")
 	tgs.displayTTL      = GetCheckBoxState(extPanel, "check_SweepBrowser_DisplayTTL")
 	tgs.overlayChannels = GetCheckBoxState(extPanel, "check_SweepBrowser_OverlayChan")
@@ -590,9 +590,6 @@ Window SweepBrowser() : Graph
 	CheckBox check_SweepBrowser_OverlayChan,pos={13.00,50.00},size={64.00,15.00},proc=SB_CheckProc_ChangedSetting,title="Channels"
 	CheckBox check_SweepBrowser_OverlayChan,help={"Overlay the data from multiple channels in one graph"}
 	CheckBox check_SweepBrowser_OverlayChan,value= 0
-	CheckBox check_SweepBrowser_SweepOverlay,pos={13.00,30.00},size={54.00,15.00},proc=SB_CheckboxProc_OverlaySweeps,title="Sweeps"
-	CheckBox check_SweepBrowser_SweepOverlay,help={"Add the data from all visited sweeps instead of clearing the graph every time"}
-	CheckBox check_SweepBrowser_SweepOverlay,value= 0
 	Button button_SweepBrowser_NextSweep,pos={81.00,117.00},size={60.00,20.00},proc=SB_ButtonProc_ChangeSweep,title="Next"
 	Button button_SweepBrowser_NextSweep,help={"Select the previous sweep"}
 	Button button_SweepBrowser_PrevSweep,pos={11.00,117.00},size={60.00,20.00},proc=SB_ButtonProc_ChangeSweep,title="Previous"
@@ -1050,6 +1047,8 @@ Function SB_CheckboxProc_OverlaySweeps(cba) : CheckBoxControl
 			graph    = GetMainWindow(cba.win)
 			extPanel = SB_GetSweepBrowserLeftPanel(graph)
 
+			BSP_SetOVSControlStatus(extPanel)
+
 			DFREF dfr = SB_GetSweepBrowserFolder(graph)
 			WAVE/T listBoxWave        = GetOverlaySweepsListWave(dfr)
 			WAVE listBoxSelWave       = GetOverlaySweepsListSelWave(dfr)
@@ -1060,7 +1059,6 @@ Function SB_CheckboxProc_OverlaySweeps(cba) : CheckBoxControl
 
 			sweepWaveList = SB_GetPlainSweepList(graph)
 			OVS_UpdatePanel(graph, listBoxWave, listBoxSelWave, sweepSelChoices, sweepWaveList, allTextualValues=allTextualValues, allNumericalValues=allNumericalValues)
-			OVS_TogglePanel(graph, listBoxWave, listBoxSelWave)
 			if(OVS_IsActive(graph))
 				index = GetPopupMenuIndex(extPanel, "popup_sweep_selector")
 				OVS_ChangeSweepSelectionState(extPanel, CHECKBOX_SELECTED, index=index)

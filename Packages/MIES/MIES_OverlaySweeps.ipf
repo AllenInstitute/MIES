@@ -2,8 +2,6 @@
 #pragma rtGlobals=3		// Use modern global access method and strict wave access.
 #pragma rtFunctionErrors=1
 
-static StrConstant EXT_PANEL_SUBWINDOW = "OverlaySweeps"
-
 Menu "TracePopup"
 	"Ignore Headstage in Overlay Sweeps", /Q, OVS_IgnoreHeadstageInOverlay()
 End
@@ -74,15 +72,11 @@ Function OVS_GetIndexFromSweepDataPathW(graph, dataDFR)
 	return f(graph, dataDFR)
 End
 
-/// @brief Return the full subwindow specification of the overlay sweeps panel
+/// @brief redirects to the BrowserSettingsPanel subwindow name
 Function/S OVS_GetExtPanel(win)
 	string win
 
-	if(IsDataBrowser(win))
-		return BSP_GetPanel(win)
-	endif
-
-	return GetMainWindow(win) + "#" + EXT_PANEL_SUBWINDOW
+	return BSP_GetPanel(win)
 End
 
 /// @brief Return a list of choices for the sweep selection popup
@@ -303,16 +297,6 @@ End
 Function OVS_IsActive(win)
 	string win
 
-	// keep for SweepBrowser
-	string extPanel = OVS_GetExtPanel(win)
-	if(!IsDataBrowser(extPanel))
-		if(!WindowExists(extPanel))
-			return 0
-		else
-			return 1
-		endif
-	endif
-
 	return BSP_IsActive(win, MIES_BSP_OVS)
 End
 
@@ -429,49 +413,6 @@ Function/WAVE OVS_ParseIgnoreList(win, highlightSweep, [sweepNo, index])
 	endfor
 
 	return activeHS
-End
-
-/// @brief Toggle the overlay sweeps external panel
-///
-/// @return 0 if opened, 1 if closed
-Function OVS_TogglePanel(win, listboxWave, listboxSelWave)
-	string win
-	WAVE/T listboxWave
-	WAVE listboxSelWave
-
-	variable createPanel
-	string extPanel = OVS_GetExtPanel(win)
-
-	win = GetMainWindow(win)
-
-	createPanel = TogglePanel(win, EXT_PANEL_SUBWINDOW)
-	if(!createPanel)
-		return 1
-	endif
-
-	NewPanel/HOST=$win/EXT=1/W=(200,0,0,485)/N=$EXT_PANEL_SUBWINDOW as " "
-	SetWindow kwTopWin, hook(main)=OVS_MainWindowHook
-	ListBox list_of_ranges,pos={4.00,127.00},size={189.00,348.00},proc=OVS_MainListBoxProc
-	ListBox list_of_ranges,help={"Select sweeps for overlay; The second column (\"Headstages\") allows to ignore some headstages for the graphing. Syntax is a semicolon \";\" separated list of subranges, e.g. \"0\", \"0,2\", \"1;4;2\""}
-	ListBox list_of_ranges,listWave=listboxWave, selWave=listboxSelWave,widths={50,50}
-	PopupMenu popup_overlaySweeps_select,pos={27.00,14.00},size={143.00,19.00},bodyWidth=109,proc=OVS_PopMenuProc_Select,title="Select"
-	PopupMenu popup_overlaySweeps_select,help={"Select sweeps according to various properties"}
-	PopupMenu popup_overlaySweeps_select,mode=1,popvalue=NONE,value= #("OVS_GetSweepSelectionChoices(\"" + extPanel + "\")")
-	CheckBox check_overlaySweeps_disableHS,pos={24.00,99.00},size={120.00,15.00},proc=OVS_CheckBoxProc_HS_Select,title="Headstage Removal"
-	CheckBox check_overlaySweeps_disableHS,help={"Toggle headstage removal"}
-	CheckBox check_overlaySweeps_disableHS,value= 0
-	CheckBox check_overlaySweeps_non_commula,pos={24.00,78.00},size={153.00,15.00},title="Non-commulative update"
-	CheckBox check_overlaySweeps_non_commula,help={"If \"Display Last sweep acquired\" is checked, this checkbox here allows to only add the newly acquired sweep and will remove the currently added last sweep."}
-	CheckBox check_overlaySweeps_non_commula,value= 0
-	SetVariable setvar_overlaySweeps_offset,pos={12.00,41.00},size={81.00,18.00},bodyWidth=45,title="Offset",value=_NUM:0, proc=OVS_SetVarProc_SelectionRange, limits={0, inf, 1}
-	SetVariable setvar_overlaySweeps_offset,help={"Offsets the first selected sweep from the selection menu"}
-	SetVariable setvar_overlaySweeps_step,pos={99.00,41.00},size={72.00,18.00},bodyWidth=45,title="Step",value=_NUM:1, proc=OVS_SetVarProc_SelectionRange, limits={1, inf, 1}
-	SetVariable setvar_overlaySweeps_step,help={"Selects every `step` sweep from the selection menu"}
-	GroupBox group_overlaySweeps_selection,pos={5.00,4.00},size={191.00,65.00}
-
-	OVS_SetFolder(win, $GetWavesDataFolder(listboxWave, 1))
-
-	return 0
 End
 
 /// @brief Set the basefolder for the current device
@@ -610,30 +551,6 @@ Function OVS_PopMenuProc_Select(pa) : PopupMenuControl
 	switch(pa.eventCode)
 		case 2: // mouse up
 			OVS_ChangeSweepSelection(pa.win, pa.popStr)
-			break
-	endswitch
-
-	return 0
-End
-
-Function OVS_MainWindowHook(s)
-	STRUCT WMWinHookStruct &s
-
-	string win, mainWindow, ctrl
-
-	switch(s.eventCode)
-		case 2: // kill
-			mainWindow = GetMainWindow(s.winName)
-
-			if(IsDataBrowser(mainWindow))
-				ctrl = "check_DataBrowser_SweepOverlay"
-				win  = mainWindow
-			else
-				ctrl = "check_SweepBrowser_SweepOverlay"
-				win  = mainWindow + "#P0"
-			endif
-
-			PGC_SetAndActivateControl(win, ctrl, val=CHECKBOX_UNSELECTED)
 			break
 	endswitch
 
