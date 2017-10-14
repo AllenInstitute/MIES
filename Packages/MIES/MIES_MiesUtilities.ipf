@@ -21,8 +21,6 @@ static Constant NUM_CHANNEL_TYPES   = 3
 static Constant GET_LB_MODE_NONE  = 0
 static Constant GET_LB_MODE_READ  = 1
 
-static StrConstant CHANNEL_SELECTION_EXT_PANEL = "channelSel"
-
 static Constant GET_LB_MODE_WRITE = 2
 
 Menu "GraphMarquee"
@@ -3784,101 +3782,6 @@ Function ChannelSelectionWaveToGUI(panel, channelSel)
 		ParseChannelSelectionControl(ctrl, channelType, channelNum)
 		SetCheckBoxState(panel, ctrl, channelSel[channelNum][%$channelType])
 	endfor
-End
-
-/// @brief Open/Close the channel selection dialog
-///
-/// @param win          panel/graph
-/// @param channelSel   channelSelectionWave as returned by GetChannelSelectionWave()
-/// @param checkBoxProc checkbox GUI control procedure name
-Function ToggleChannelSelectionPanel(win, channelSel, checkBoxProc)
-	string win, checkBoxProc
-	WAVE channelSel
-
-	variable createPanel
-	string extPanel
-
-	win = GetMainWindow(win)
-
-	createPanel = TogglePanel(win, CHANNEL_SELECTION_EXT_PANEL)
-	if(!createPanel)
-		return 1
-	endif
-
-	NewPanel/HOST=$win/EXT=1/W=(149,0,0,407)/N=$CHANNEL_SELECTION_EXT_PANEL as " "
-
-	GroupBox group_channelSel_DA,pos={52.00,3.00},size={44.00,199.00},title="DA"
-	CheckBox check_channelSel_DA_0,pos={62.00,19.00},size={21.00,15.00},proc=$checkBoxProc,title="0"
-	CheckBox check_channelSel_DA_0,value= 1
-	CheckBox check_channelSel_DA_1,pos={62.00,40.00},size={21.00,15.00},proc=$checkBoxProc,title="1"
-	CheckBox check_channelSel_DA_1,value= 1
-	CheckBox check_channelSel_DA_2,pos={62.00,61.00},size={21.00,15.00},proc=$checkBoxProc,title="2"
-	CheckBox check_channelSel_DA_2,value= 1
-	CheckBox check_channelSel_DA_3,pos={62.00,82.00},size={21.00,15.00},proc=$checkBoxProc,title="3"
-	CheckBox check_channelSel_DA_3,value= 1
-	CheckBox check_channelSel_DA_4,pos={62.00,103.00},size={21.00,15.00},proc=$checkBoxProc,title="4"
-	CheckBox check_channelSel_DA_4,value= 1
-	CheckBox check_channelSel_DA_5,pos={62.00,124.00},size={21.00,15.00},proc=$checkBoxProc,title="5"
-	CheckBox check_channelSel_DA_5,value= 1
-	CheckBox check_channelSel_DA_6,pos={62.00,145.00},size={21.00,15.00},proc=$checkBoxProc,title="6"
-	CheckBox check_channelSel_DA_6,value= 1
-	CheckBox check_channelSel_DA_7,pos={62.00,166.00},size={21.00,15.00},proc=$checkBoxProc,title="7"
-	CheckBox check_channelSel_DA_7,value= 1
-
-	GroupBox group_channelSel_HEADSTAGE,pos={3.00,3.00},size={44.00,199.00},title="HS"
-	CheckBox check_channelSel_HEADSTAGE_0,pos={13.00,19.00},size={21.00,15.00},proc=$checkBoxProc,title="0"
-	CheckBox check_channelSel_HEADSTAGE_0,value= 1
-	CheckBox check_channelSel_HEADSTAGE_1,pos={13.00,40.00},size={21.00,15.00},proc=$checkBoxProc,title="1"
-	CheckBox check_channelSel_HEADSTAGE_1,value= 1
-	CheckBox check_channelSel_HEADSTAGE_2,pos={13.00,61.00},size={21.00,15.00},proc=$checkBoxProc,title="2"
-	CheckBox check_channelSel_HEADSTAGE_2,value= 1
-	CheckBox check_channelSel_HEADSTAGE_3,pos={13.00,82.00},size={21.00,15.00},proc=$checkBoxProc,title="3"
-	CheckBox check_channelSel_HEADSTAGE_3,value= 1
-	CheckBox check_channelSel_HEADSTAGE_4,pos={13.00,103.00},size={21.00,15.00},proc=$checkBoxProc,title="4"
-	CheckBox check_channelSel_HEADSTAGE_4,value= 1
-	CheckBox check_channelSel_HEADSTAGE_5,pos={13.00,124.00},size={21.00,15.00},proc=$checkBoxProc,title="5"
-	CheckBox check_channelSel_HEADSTAGE_5,value= 1
-	CheckBox check_channelSel_HEADSTAGE_6,pos={13.00,145.00},size={21.00,15.00},proc=$checkBoxProc,title="6"
-	CheckBox check_channelSel_HEADSTAGE_6,value= 1
-	CheckBox check_channelSel_HEADSTAGE_7,pos={13.00,166.00},size={21.00,15.00},proc=$checkBoxProc,title="7"
-	CheckBox check_channelSel_HEADSTAGE_7,value= 1
-
-	GroupBox group_channelSel_AD,pos={100.00,3.00},size={45.00,360.00},title="AD"
-	CheckBox check_channelSel_AD_0,pos={108.00,19.00},size={21.00,15.00},proc=$checkBoxProc,title="0"
-	CheckBox check_channelSel_AD_0,value= 1
-	CheckBox check_channelSel_AD_1,pos={108.00,40.00},size={21.00,15.00},proc=$checkBoxProc,title="1"
-	CheckBox check_channelSel_AD_1,value= 1
-	CheckBox check_channelSel_AD_2,pos={108.00,61.00},size={21.00,15.00},proc=$checkBoxProc,title="2"
-	CheckBox check_channelSel_AD_2,value= 1
-	CheckBox check_channelSel_AD_3,pos={108.00,82.00},size={21.00,15.00},proc=$checkBoxProc,title="3"
-	CheckBox check_channelSel_AD_3,value= 1
-	CheckBox check_channelSel_AD_4,pos={108.00,103.00},size={21.00,15.00},proc=$checkBoxProc,title="4"
-	CheckBox check_channelSel_AD_4,value= 1
-	CheckBox check_channelSel_AD_5,pos={108.00,124.00},size={21.00,15.00},proc=$checkBoxProc,title="5"
-	CheckBox check_channelSel_AD_5,value= 1
-	CheckBox check_channelSel_AD_6,pos={108.00,145.00},size={21.00,15.00},proc=$checkBoxProc,title="6"
-	CheckBox check_channelSel_AD_6,value= 1
-	CheckBox check_channelSel_AD_7,pos={108.00,166.00},size={21.00,15.00},proc=$checkBoxProc,title="7"
-	CheckBox check_channelSel_AD_7,value= 1
-	CheckBox check_channelSel_AD_8,pos={108.00,188.00},size={21.00,15.00},proc=$checkBoxProc,title="8"
-	CheckBox check_channelSel_AD_8,value= 1
-	CheckBox check_channelSel_AD_9,pos={108.00,209.00},size={21.00,15.00},proc=$checkBoxProc,title="9"
-	CheckBox check_channelSel_AD_9,value= 1
-	CheckBox check_channelSel_AD_10,pos={108.00,230.00},size={27.00,15.00},proc=$checkBoxProc,title="10"
-	CheckBox check_channelSel_AD_10,value= 1
-	CheckBox check_channelSel_AD_11,pos={108.00,251.00},size={27.00,15.00},proc=$checkBoxProc,title="11"
-	CheckBox check_channelSel_AD_11,value= 1
-	CheckBox check_channelSel_AD_12,pos={108.00,272.00},size={27.00,15.00},proc=$checkBoxProc,title="12"
-	CheckBox check_channelSel_AD_12,value= 1
-	CheckBox check_channelSel_AD_13,pos={108.00,293.00},size={27.00,15.00},proc=$checkBoxProc,title="13"
-	CheckBox check_channelSel_AD_13,value= 1
-	CheckBox check_channelSel_AD_14,pos={108.00,314.00},size={27.00,15.00},proc=$checkBoxProc,title="14"
-	CheckBox check_channelSel_AD_14,value= 1
-	CheckBox check_channelSel_AD_15,pos={108.00,336.00},size={27.00,15.00},proc=$checkBoxProc,title="15"
-	CheckBox check_channelSel_AD_15,value= 1
-
-	extPanel = GetMainWindow(win) + "#" + CHANNEL_SELECTION_EXT_PANEL
-	ChannelSelectionWaveToGUI(extPanel, channelSel)
 End
 
 /// @brief Removes the disabled channels and headstages from `ADCs` and `DACs`

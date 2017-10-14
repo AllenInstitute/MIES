@@ -612,8 +612,6 @@ Window SweepBrowser() : Graph
 	Button button_SweepBrowser_DoTimeAlign,help={"Perform the time alignment, needs the cursors A and B to have a selected feature"}
 	PopupMenu popup_sweep_selector,pos={13.00,91.00},size={127.00,19.00},bodyWidth=127,proc=SB_PopupMenuSelectSweep
 	PopupMenu popup_sweep_selector,help={"List of sweeps in this sweep browser"}
-	Button button_SweepBrowser_OpenChanSel,pos={71.00,25.00},size={40.00,20.00},proc=SB_OpenChannelSelectionPanel,title="Chan"
-	Button button_SweepBrowser_OpenChanSel,help={"Open the channel selection dialog, allows to disable single channels and headstages"}
 	CheckBox check_SweepBrowser_PulseAvg,pos={114.00,26.00},size={37.00,15.00},proc=SB_CheckProc_ChangedSetting,title="PPA"
 	CheckBox check_SweepBrowser_PulseAvg,help={"Display per pulse averaged data"}
 	CheckBox check_SweepBrowser_PulseAvg,value= 0
@@ -902,23 +900,6 @@ Function SB_AxisScalingLevelCross(sva) : SetVariableControl
 			if(GetCheckBoxState(sva.win, "check_SB_equalYIgnLevelCross"))
 				SB_ScaleAxes(sva.win)
 			endif
-			break
-	endswitch
-
-	return 0
-End
-
-Function SB_OpenChannelSelectionPanel(ba) : ButtonControl
-	STRUCT WMButtonAction &ba
-
-	string graph
-	switch(ba.eventCode)
-		case 2: // mouse up
-			graph = GetMainWindow(ba.win)
-
-			DFREF sweepBrowserDFR = SB_GetSweepBrowserFolder(graph)
-			WAVE channelSel = GetChannelSelectionWave(sweepBrowserDFR)
-			ToggleChannelSelectionPanel(graph, channelSel, "SB_CheckProc_ChangedSetting")
 			break
 	endswitch
 

@@ -88,9 +88,13 @@ static Function BSP_DynamicStartupSettings(mainPanel)
 	// bind the channel selection wave to the user controls of the external panel
 	WAVE channelSelection = BSP_GetChannelSelectionWave(mainPanel)
 	ChannelSelectionWaveToGUI(mainPanel, channelSelection)
+	if(IsDataBrowser(mainPanel))
+		BSP_SetCSButtonProc(extPanel, "DB_CheckProc_ChangedSetting")
+	else
+		BSP_SetCSButtonProc(extPanel, "SB_CheckProc_ChangedSetting")
+	endif
 
 	BSP_InitMainCheckboxes(extPanel)
-	BSP_SetCSButtonProc(extPanel, "DB_CheckProc_ChangedSetting")
 
 	PGC_SetAndActivateControl(extPanel, "Settings", val = MIES_BSP_OVS)
 End
