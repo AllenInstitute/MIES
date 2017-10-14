@@ -153,6 +153,7 @@ End
 static Function DB_SetUserData(panelTitle, device)
 	string panelTitle, device
 
+	SetWindow $panelTitle, userdata = ""
 	BSP_SetDevice(panelTitle, device)
 
 	if(!cmpstr(device, NONE))
