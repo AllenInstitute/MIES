@@ -634,6 +634,8 @@ Window SweepBrowser() : Graph
 	CheckBox check_SweepBrowser_HideSweep,pos={20.00,143.00},size={50.00,15.00},proc=SB_CheckProc_ChangedSetting,title="Hide"
 	CheckBox check_SweepBrowser_HideSweep,help={"Hide sweep traces. Usually combined with \"Average traces\"."}
 	CheckBox check_SweepBrowser_HideSweep,value= 0
+	SetDrawLayer UserBack
+	DrawLine 15,34,145,34
 	RenameWindow #,P0
 	SetActiveSubwindow ##
 EndMacro
