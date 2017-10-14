@@ -570,11 +570,11 @@ Window DataBrowser() : Panel
 	Button button_databrowser_restore,userdata(ResizeControlsInfo)= A"!!,JD!!#;]!!#?Q!!#<`z!!#](Aon\"q<C^(Dzzzzzzzzzzzzz!!#](Aon\"Q<C^(Dz"
 	Button button_databrowser_restore,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:DuaGl<C]S7zzzzzzzzzz"
 	Button button_databrowser_restore,userdata(ResizeControlsInfo) += A"zzz!!#u:Duafn!(TR7zzzzzzzzzzzzz!!!"
-	Button button_DataBrowser_extPanel,pos={716.00,40.00},size={76.00,21.00},proc=DB_ButtonProc_Panel,title="<<"
-	Button button_DataBrowser_extPanel,help={"Open Side Panel"}
-	Button button_DataBrowser_extPanel,userdata(ResizeControlsInfo)= A"!!,JD!!#>.!!#?Q!!#<`z!!#](Aon\"q<C^(Dzzzzzzzzzzzzz!!#](Aon\"Q<C^(Dz"
-	Button button_DataBrowser_extPanel,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Duafn!(TR7zzzzzzzzzz"
-	Button button_DataBrowser_extPanel,userdata(ResizeControlsInfo) += A"zzz!!#u:Duafn!(TR7zzzzzzzzzzzzz!!!"
+	Button button_BSP_open,pos={716.00,40.00},size={76.00,21.00},proc=BSP_ButtonProc_Panel,title="<<"
+	Button button_BSP_open,help={"Open Side Panel"}
+	Button button_BSP_open,userdata(ResizeControlsInfo)= A"!!,JD!!#>.!!#?Q!!#<`z!!#](Aon\"q<C^(Dzzzzzzzzzzzzz!!#](Aon\"Q<C^(Dz"
+	Button button_BSP_open,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Duafn!(TR7zzzzzzzzzz"
+	Button button_BSP_open,userdata(ResizeControlsInfo) += A"zzz!!#u:Duafn!(TR7zzzzzzzzzzzzz!!!"
 	CheckBox check_DataBrowser_HideSweep,pos={153.00,9.00},size={110.00,15.00},proc=DB_CheckProc_ChangedSetting,title="Hide sweep traces"
 	CheckBox check_DataBrowser_HideSweep,help={"Hide all sweep traces. This setting is usually combined with \"Average Traces\"."}
 	CheckBox check_DataBrowser_HideSweep,userdata(ResizeControlsInfo)= A"!!,G)!!#:r!!#@@!!#<(z!!#](Aon\"q<C^(Dzzzzzzzzzzzzz!!#](Aon\"Q<C^(Dz"
@@ -662,21 +662,6 @@ Function DB_DataBrowserStartupSettings()
 	PopupMenu popup_LBTextualKeys, win=$panelTitle, value=#("\"" + NONE + "\"")
 
 	SearchForInvalidControlProcs(panelTitle)
-End
-
-Function DB_ButtonProc_Panel(ba) : ButtonControl
-	STRUCT WMButtonAction &ba
-
-	string win
-
-	switch(ba.eventcode)
-		case 2: // mouse up
-			win = GetMainWindow(ba.win)
-			BSP_TogglePanel(win)
-			break
-	endswitch
-
-	return 0
 End
 
 Function DB_ButtonProc_Sweep(ba) : ButtonControl

@@ -266,7 +266,7 @@ static Function BSP_MainPanelButtonToggle(mainPanel, visible)
 		return NaN
 	endif
 
-	panelButton = "button_DataBrowser_extPanel"
+	panelButton = "button_BSP_open"
 	if(!ControlExists(mainPanel, panelButton))
 		return 0
 	endif
@@ -580,6 +580,22 @@ Function BSP_CheckBoxProc_PerPulseAver(cba) : CheckBoxControl
 			endif
 
 			UpdateSweepPlot(mainPanel)
+			break
+	endswitch
+
+	return 0
+End
+
+/// @brief procedure for the open/close button of the side panel
+Function BSP_ButtonProc_Panel(ba) : ButtonControl
+	STRUCT WMButtonAction &ba
+
+	string win
+
+	switch(ba.eventcode)
+		case 2: // mouse up
+			win = GetMainWindow(ba.win)
+			BSP_TogglePanel(win)
 			break
 	endswitch
 
