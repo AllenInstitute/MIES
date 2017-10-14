@@ -93,7 +93,6 @@ static Function BSP_DynamicStartupSettings(mainPanel)
 	BSP_SetCSButtonProc(extPanel, "DB_CheckProc_ChangedSetting")
 
 	PGC_SetAndActivateControl(extPanel, "Settings", val = MIES_BSP_OVS)
-	UpdateSweepPlot(mainPanel)
 End
 
 /// @brief get the channel selection wave stored in main window property CSW_FOLDER
