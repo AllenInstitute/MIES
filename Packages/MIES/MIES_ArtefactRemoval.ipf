@@ -11,12 +11,6 @@
 
 static Constant AR_MIN_RANGE_FACTOR = 0.1
 
-Function/S AR_GetExtPanel(win)
-	string win
-
-	return BSP_GetPanel(win)
-End
-
 /// @brief Return a free 2D wave with artefact positions and the corresponding
 ///        DA channel from which it originated.
 ///
@@ -127,7 +121,7 @@ Function AR_UpdateListBoxWave(panelTitle)
 	variable cutoffLength_before, cutoffLength_after
 	string extPanel
 
-	extPanel = AR_GetExtPanel(panelTitle)
+	extPanel = BSP_GetPanel(panelTitle)
 	DFREF dfr = AR_GetFolder(panelTitle)
 	WAVE/T listBoxWave = GetArtefactRemovalListWave(dfr)
 	WAVE artefactWave  = GetArtefactRemovalDataWave(dfr)
@@ -168,7 +162,7 @@ Function AR_HighlightArtefactsEntry(graph)
 	string traces, trace, extPanel
 	variable numEntries, i, index, row
 
-	extPanel = AR_GetExtPanel(graph)
+	extPanel = BSP_GetPanel(graph)
 
 	if(!AR_IsActive(extPanel) || !GetCheckBoxState(extPanel, "check_highlightRanges"))
 		return NaN
@@ -208,7 +202,7 @@ Function AR_HandleRanges(graph, [removeRange])
 	variable i, j, k, l, numEntries
 	string traceName, leftAxis, bottomAxis, extPanel, yRangeStr
 
-	extPanel = AR_GetExtPanel(graph)
+	extPanel = BSP_GetPanel(graph)
 
 	if(ParamIsDefault(removeRange))
 		removeRange = GetCheckboxState(extPanel, "check_auto_remove")

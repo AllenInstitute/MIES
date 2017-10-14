@@ -1030,7 +1030,7 @@ Function DB_ButtonProc_RestoreData(ba) : ButtonControl
 			if(!AR_IsActive(mainPanel))
 				DB_UpdateSweepPlot(mainPanel)
 			else
-				extPanel = AR_GetExtPanel(mainPanel)
+				extPanel = BSP_GetPanel(mainPanel)
 				autoRemoveOldState = GetCheckBoxState(extPanel, "check_auto_remove")
 				SetCheckBoxState(extPanel, "check_auto_remove", CHECKBOX_UNSELECTED)
 				DB_UpdateSweepPlot(mainPanel)
