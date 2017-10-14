@@ -16,7 +16,7 @@ Function OVS_IgnoreHeadstageInOverlay()
 	graph = S_graphName
 	trace = S_traceName
 
-	extPanel = OVS_GetExtPanel(graph)
+	extPanel = BSP_GetPanel(graph)
 
 	if(!WindowExists(graph))
 		printf "Context menu option \"%s\" is only useable for overlay sweeps.\r", S_Value
@@ -70,13 +70,6 @@ Function OVS_GetIndexFromSweepDataPathW(graph, dataDFR)
 	FUNCREF OVS_GetIndexFromSweepDataPathP f = $"SB_GetIndexFromSweepDataPath"
 
 	return f(graph, dataDFR)
-End
-
-/// @brief redirects to the BrowserSettingsPanel subwindow name
-Function/S OVS_GetExtPanel(win)
-	string win
-
-	return BSP_GetPanel(win)
 End
 
 /// @brief Return a list of choices for the sweep selection popup
@@ -136,7 +129,7 @@ Function OVS_UpdatePanel(win, listBoxWave, listBoxSelWave, sweepSelectionChoices
 	variable i, numEntries, sweepNo
 	string ttlStimSets, extPanel
 
-	extPanel = OVS_GetExtPanel(win)
+	extPanel = BSP_GetPanel(win)
 
 	numEntries = ItemsInList(sweepWaveList)
 
@@ -361,7 +354,7 @@ Function/WAVE OVS_ParseIgnoreList(win, highlightSweep, [sweepNo, index])
 		return $""
 	endif
 
-	extPanel =  OVS_GetExtPanel(win)
+	extPanel =  BSP_GetPanel(win)
 	if(!GetCheckBoxState(extPanel, "check_overlaySweeps_disableHS"))
 		return $""
 	endif
@@ -483,7 +476,7 @@ static Function OVS_ChangeSweepSelection(win, choiceString)
 	variable i, j, numEntries, numLayers, offset, step
 	string extPanel
 
-	extPanel  = OVS_GetExtPanel(win)
+	extPanel  = BSP_GetPanel(win)
 
 	DFREF dfr = OVS_GetFolder(win)
 	WAVE listboxSelWave          = GetOverlaySweepsListSelWave(dfr)

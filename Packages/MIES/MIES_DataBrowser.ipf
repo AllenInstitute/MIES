@@ -392,7 +392,7 @@ Function DB_UpdateToLastSweep(panelTitle)
 	DB_UpdateSweepControls(panelTitle, first, last)
 	SetSetVariable(panelTitle, "setvar_DataBrowser_SweepNo", last)
 
-	extPanel = OVS_GetExtPanel(panelTitle)
+	extPanel = BSP_GetPanel(panelTitle)
 
 	if(OVS_IsActive(panelTitle) && GetCheckBoxState(extPanel, "check_overlaySweeps_non_commula"))
 		OVS_ChangeSweepSelectionState(panelTitle, CHECKBOX_UNSELECTED, sweepNo=last - 1)
