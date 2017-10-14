@@ -237,13 +237,50 @@ End
 Function BSP_SetOVSControlStatus(panelName)
 	string panelName
 
-	string extPanel
 	string controlList = "group_properties_sweeps;popup_overlaySweeps_select;setvar_overlaySweeps_offset;setvar_overlaySweeps_step;check_overlaySweeps_disableHS;check_overlaySweeps_non_commula;list_of_ranges"
+
+	BSP_SetControlStatus(panelName, controlList, OVS_IsActive(panelName))
+End
+
+/// @brief enable/disable the AR buttons
+///
+/// @param panelName specify mainPanel or extPanel with OVS controls
+Function BSP_SetARControlStatus(panelName)
+	string panelName
+
+	string controlList = "group_properties_artefact;setvar_cutoff_length_before;setvar_cutoff_length_after;button_RemoveRanges;check_auto_remove;check_highlightRanges;list_of_ranges1;"
+
+	BSP_SetControlStatus(panelName, controlList, AR_IsActive(panelName))
+End
+
+/// @brief enable/disable the PA buttons
+///
+/// @param panelName specify mainPanel or extPanel with OVS controls
+Function BSP_SetPAControlStatus(panelName)
+	string panelName
+
+	string controlList = "group_properties_pulse;check_pulseAver_indTraces;check_pulseAver_showAver;check_pulseAver_multGraphs;setvar_pulseAver_startPulse;setvar_pulseAver_endPulse;setvar_pulseAver_fallbackLength;"
+
+	BSP_SetControlStatus(panelName, controlList, PA_IsActive(panelName))
+End
+
+/// @brief enable/disable a list of controls
+///
+/// @param panelName    specify mainPanel or extPanel with OVS controls
+/// @param controlList  list of controls
+/// @param status       1: enable; 0: disable
+Function BSP_SetControlStatus(panelName, controlList, status)
+	string panelName, controlList
+	variable status
+
+	string extPanel
+
+	status = !!status
 
 	extPanel = BSP_GetPanel(panelName)
 	ASSERT(windowExists(extPanel), "BrowserSettingsPanel does not exist.")
 
-	if(OVS_IsActive(extPanel))
+	if(status)
 		EnableControls(extPanel, controlList)
 	else
 		DisableControls(extPanel, controlList)
@@ -536,22 +573,12 @@ EndMacro
 Function BSP_CheckBoxProc_ArtRemoval(cba) : CheckBoxControl
 	STRUCT WMCheckBoxAction &cba
 
-	string mainPanel, extPanel
-	string controlList = "group_properties_artefact;setvar_cutoff_length_before;setvar_cutoff_length_after;button_RemoveRanges;check_auto_remove;check_highlightRanges;list_of_ranges1;"
+	string mainPanel
 
 	switch(cba.eventCode)
 		case 2: // mouse up
 			mainPanel = GetMainWindow(cba.win)
-			extPanel = BSP_GetPanel(mainPanel)
-
-			ASSERT(windowExists(extPanel), "BrowserSettingsPanel does not exist.")
-
-			if(AR_IsActive(mainPanel))
-				EnableControls(extPanel, controlList)
-			else
-				DisableControls(extPanel, controlList)
-			endif
-
+			BSP_SetARControlStatus(mainPanel)
 			UpdateSweepPlot(mainPanel)
 			break
 	endswitch
@@ -563,22 +590,12 @@ End
 Function BSP_CheckBoxProc_PerPulseAver(cba) : CheckBoxControl
 	STRUCT WMCheckBoxAction &cba
 
-	string mainPanel, extPanel
-	string controlList = "group_properties_pulse;check_pulseAver_indTraces;check_pulseAver_showAver;check_pulseAver_multGraphs;setvar_pulseAver_startPulse;setvar_pulseAver_endPulse;setvar_pulseAver_fallbackLength;"
+	string mainPanel
 
 	switch(cba.eventCode)
 		case 2: // mouse up
 			mainPanel = GetMainWindow(cba.win)
-			extPanel = BSP_GetPanel(mainPanel)
-
-			ASSERT(windowExists(extPanel), "BrowserSettingsPanel does not exist.")
-
-			if(PA_IsActive(mainPanel))
-				EnableControls(extPanel, controlList)
-			else
-				DisableControls(extPanel, controlList)
-			endif
-
+			BSP_SetPAControlStatus(mainPanel)
 			UpdateSweepPlot(mainPanel)
 			break
 	endswitch
