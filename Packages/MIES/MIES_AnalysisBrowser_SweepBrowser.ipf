@@ -536,24 +536,24 @@ Function/DF SB_OpenSweepBrowser()
 
 	NewPanel/HOST=#/EXT=1/W=(156,0,0,407)
 	ModifyPanel fixedSize=0
-	CheckBox check_SweepBrowser_DisplayDAC,pos={13.00,6.00},size={31.00,15.00},proc=SB_CheckboxChangedSettings,title="DA"
+	CheckBox check_SweepBrowser_DisplayDAC,pos={13.00,6.00},size={31.00,15.00},proc=SB_CheckProc_ChangedSetting,title="DA"
 	CheckBox check_SweepBrowser_DisplayDAC,help={"Display the DA channel data"}
 	CheckBox check_SweepBrowser_DisplayDAC,value= 0
-	CheckBox check_SweepBrowser_DisplayADC,pos={57.00,6.00},size={31.00,15.00},proc=SB_CheckboxChangedSettings,title="AD"
+	CheckBox check_SweepBrowser_DisplayADC,pos={57.00,6.00},size={31.00,15.00},proc=SB_CheckProc_ChangedSetting,title="AD"
 	CheckBox check_SweepBrowser_DisplayADC,help={"Display the AD channels"},value= 1
-	CheckBox check_SweepBrowser_DisplayTTL,pos={98.00,6.00},size={35.00,15.00},proc=SB_CheckboxChangedSettings,title="TTL"
+	CheckBox check_SweepBrowser_DisplayTTL,pos={98.00,6.00},size={35.00,15.00},proc=SB_CheckProc_ChangedSetting,title="TTL"
 	CheckBox check_SweepBrowser_DisplayTTL,help={"Display the TTL channels"}
 	CheckBox check_SweepBrowser_DisplayTTL,value= 0
-	CheckBox check_SweepBrowser_splitTTL,pos={138.00,7.00},size={13.00,13.00},proc=SB_CheckboxChangedSettings,title=""
+	CheckBox check_SweepBrowser_splitTTL,pos={138.00,7.00},size={13.00,13.00},proc=SB_CheckProc_ChangedSetting,title=""
 	CheckBox check_SweepBrowser_splitTTL,help={"Display the TTL channel data as single traces for each TTL bit"}
 	CheckBox check_SweepBrowser_splitTTL,value= 0
-	CheckBox check_SweepBrowser_OpenArtRem,pos={17.00,295.00},size={103.00,15.00},proc=SB_CheckboxChangedSettings,title="Artefact removal"
+	CheckBox check_SweepBrowser_OpenArtRem,pos={17.00,295.00},size={103.00,15.00},proc=SB_CheckProc_ChangedSetting,title="Artefact removal"
 	CheckBox check_SweepBrowser_OpenArtRem,help={"Open the \"Artefact Removal\" panel"}
 	CheckBox check_SweepBrowser_OpenArtRem,value= 0
-	CheckBox check_SweepBrowser_ZeroTraces,pos={17.00,278.00},size={76.00,15.00},proc=SB_CheckboxChangedSettings,title="Zero Traces"
+	CheckBox check_SweepBrowser_ZeroTraces,pos={17.00,278.00},size={76.00,15.00},proc=SB_CheckProc_ChangedSetting,title="Zero Traces"
 	CheckBox check_SweepBrowser_ZeroTraces,help={"Remove the offset of all traces"}
 	CheckBox check_SweepBrowser_ZeroTraces,value= 0
-	CheckBox check_SweepBrowser_AveragTraces,pos={17.00,262.00},size={95.00,15.00},proc=SB_CheckboxChangedSettings,title="Average Traces"
+	CheckBox check_SweepBrowser_AveragTraces,pos={17.00,262.00},size={95.00,15.00},proc=SB_CheckProc_ChangedSetting,title="Average Traces"
 	CheckBox check_SweepBrowser_AveragTraces,help={"Average all traces which belong to the same y axis"}
 	CheckBox check_SweepBrowser_AveragTraces,value= 0
 	Button button_SweepBrowser_RestData,pos={100.00,277.00},size={51.00,20.00},proc=SB_ButtonProc_RestoreData,title="Restore"
@@ -561,7 +561,7 @@ Function/DF SB_OpenSweepBrowser()
 	SetVariable setvar_SweepBrowser_SweepStep,pos={68.00,141.00},size={64.00,18.00},title="Step"
 	SetVariable setvar_SweepBrowser_SweepStep,help={"Number of sweeps to step for each Previous/Next click or mouse wheel turn"}
 	SetVariable setvar_SweepBrowser_SweepStep,limits={1,inf,1},value= _NUM:1
-	CheckBox check_sweepbrowser_OverlayChan,pos={13.00,50.00},size={64.00,15.00},proc=SB_CheckboxChangedSettings,title="Channels"
+	CheckBox check_sweepbrowser_OverlayChan,pos={13.00,50.00},size={64.00,15.00},proc=SB_CheckProc_ChangedSetting,title="Channels"
 	CheckBox check_sweepbrowser_OverlayChan,help={"Overlay the data from multiple channels in one graph"}
 	CheckBox check_sweepbrowser_OverlayChan,value= 0
 	CheckBox check_SweepBrowser_SweepOverlay,pos={13.00,30.00},size={54.00,15.00},proc=SB_CheckboxProc_OverlaySweeps,title="Sweeps"
@@ -589,7 +589,7 @@ Function/DF SB_OpenSweepBrowser()
 	PopupMenu popup_sweep_selector,value= #("SB_GetSweepList(\"" + graph + "\")")
 	Button button_SweepBrowser_OpenChanSel,pos={71.00,25.00},size={40.00,20.00},proc=SB_OpenChannelSelectionPanel,title="Chan"
 	Button button_SweepBrowser_OpenChanSel,help={"Open the channel selection dialog, allows to disable single channels and headstages"}
-	CheckBox check_SweepBrowser_PulseAvg,pos={114.00,26.00},size={37.00,15.00},proc=SB_CheckboxChangedSettings,title="PPA"
+	CheckBox check_SweepBrowser_PulseAvg,pos={114.00,26.00},size={37.00,15.00},proc=SB_CheckProc_ChangedSetting,title="PPA"
 	CheckBox check_SweepBrowser_PulseAvg,help={"Display per pulse averaged data"}
 	CheckBox check_SweepBrowser_PulseAvg,value= 0
 	GroupBox group_SB_axes_scaling,pos={11.00,310.00},size={133.00,60.00},title="Axes Scaling"
@@ -608,13 +608,13 @@ Function/DF SB_OpenSweepBrowser()
 	Button button_SweepBrowser_ExportGraph,pos={28.00,375.00},size={100.00,25.00},proc=SB_ButtonProc_ExportTraces,title="Export Traces"
 	Button button_SweepBrowser_ExportGraph,help={"Export the traces for further processing"}
 	GroupBox group_sweep,pos={6.00,71.00},size={139.00,98.00},title="Sweep"
-	CheckBox check_sweepbrowser_dDAQ,pos={97.00,50.00},size={47.00,15.00},proc=SB_CheckboxChangedSettings,title="dDAQ"
+	CheckBox check_sweepbrowser_dDAQ,pos={97.00,50.00},size={47.00,15.00},proc=SB_CheckProc_ChangedSetting,title="dDAQ"
 	CheckBox check_sweepbrowser_dDAQ,help={"Enable dedicated support for viewing distributed DAQ data"}
 	CheckBox check_sweepbrowser_dDAQ,value= 0
 	PopupMenu popup_dDAQ_regions,pos={96.00,67.00},size={35.00,19.00},bodyWidth=35,disable=2,proc=SB_PopMenuProc_ChangedSettings
 	PopupMenu popup_dDAQ_regions,help={"Allows to view only oodDAQ regions from the selected headstage. Choose -1 to display all."}
 	PopupMenu popup_dDAQ_regions,mode=1,popvalue="-1",value= #"\"-1;0;1;2;3;4;5;6;7\""
-	CheckBox check_SweepBrowser_HideSweep,pos={20.00,143.00},size={50.00,15.00},proc=SB_CheckboxChangedSettings,title="Hide"
+	CheckBox check_SweepBrowser_HideSweep,pos={20.00,143.00},size={50.00,15.00},proc=SB_CheckProc_ChangedSetting,title="Hide"
 	CheckBox check_SweepBrowser_HideSweep,help={"Hide sweep traces. Usually combined with \"Average traces\"."}
 	CheckBox check_SweepBrowser_HideSweep,value= 0
 	RenameWindow #,P0
@@ -898,7 +898,7 @@ Function SB_OpenChannelSelectionPanel(ba) : ButtonControl
 
 			DFREF sweepBrowserDFR = $SB_GetSweepBrowserFolder(graph)
 			WAVE channelSel = GetChannelSelectionWave(sweepBrowserDFR)
-			ToggleChannelSelectionPanel(graph, channelSel, "SB_CheckboxChangedSettings")
+			ToggleChannelSelectionPanel(graph, channelSel, "SB_CheckProc_ChangedSetting")
 			break
 	endswitch
 
@@ -967,7 +967,7 @@ Function SB_PopMenuProc_ChangedSettings(pa) : PopupMenuControl
 	return 0
 End
 
-Function SB_CheckboxChangedSettings(cba) : CheckBoxControl
+Function SB_CheckProc_ChangedSetting(cba) : CheckBoxControl
 	STRUCT WMCheckBoxAction &cba
 
 	string graph, win, ctrl, channelType, device
@@ -996,6 +996,7 @@ Function SB_CheckboxChangedSettings(cba) : CheckBoxControl
 			elseif(!cmpstr(ctrl, "check_SweepBrowser_OpenArtRem"))
 				WAVE listBoxWave = GetArtefactRemovalListWave(dfr)
 				AR_TogglePanel(win, listBoxWave)
+				BSP_TogglePanel(win)
 			elseif(!cmpstr(ctrl, "check_SweepBrowser_PulseAvg"))
 				PA_TogglePanel(win)
 			endif
