@@ -560,6 +560,8 @@ End
 
 Window SweepBrowser() : Graph
 	Display /W=(169.5,269,603,574.25)/K=1 as "SweepBrowser"
+	Button button_BSP_open,pos={5.00,5.00},size={25.00,25.00},proc=BSP_ButtonProc_Panel,title="<<"
+	Button button_BSP_open,help={"Open Side Panel"}
 	NewPanel/HOST=#/EXT=1/W=(156,0,0,407)
 	ModifyPanel fixedSize=0
 	CheckBox check_SweepBrowser_DisplayDAC,pos={13.00,6.00},size={31.00,15.00},proc=SB_CheckProc_ChangedSetting,title="DA"

@@ -291,10 +291,6 @@ static Function BSP_MainPanelButtonToggle(mainPanel, visible)
 
 	visible = !!visible ? 1 : 0
 
-	if(!IsDataBrowser(mainPanel))
-		return NaN
-	endif
-
 	panelButton = "button_BSP_open"
 	if(!ControlExists(mainPanel, panelButton))
 		return 0
