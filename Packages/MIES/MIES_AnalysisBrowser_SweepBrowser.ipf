@@ -21,7 +21,7 @@ End
 static Function/Wave SB_GetSweepBrowserMapFromGraph(graph)
 	string graph
 
-	return SB_GetSweepBrowserMap($SB_GetSweepBrowserFolder(graph))
+	return SB_GetSweepBrowserMap(SB_GetSweepBrowserFolder(graph))
 End
 
 static Function/Wave SB_GetSweepBrowserMap(sweepBrowser)
@@ -51,10 +51,10 @@ static Function/Wave SB_GetSweepBrowserMap(sweepBrowser)
 	return wv
 End
 
-Function/S SB_GetSweepBrowserFolder(graph)
+Function/DF SB_GetSweepBrowserFolder(graph)
 	string graph
 
-	return GetDataFolder(1, BSP_GetFolder(graph, MIES_BSP_DATA_FOLDER))
+	return BSP_GetFolder(graph, MIES_BSP_DATA_FOLDER)
 End
 
 static Function/DF SB_GetSweepDataPathFromIndex(sweepBrowserDFR, mapIndex)
@@ -88,7 +88,7 @@ Function SB_GetIndexFromSweepDataPath(graph, dataDFR)
 	variable mapIndex, sweepNo
 	string device, expFolder, sweepFolder
 
-	DFREF sweepBrowserDFR = $SB_GetSweepBrowserFolder(graph)
+	DFREF sweepBrowserDFR = SB_GetSweepBrowserFolder(graph)
 	WAVE/T sweepMap = SB_GetSweepBrowserMap(sweepBrowserDFR)
 
 	SplitSTring/E="root:MIES:Analysis:([^:]+):([^:]+):sweep:([^:]+):" GetDataFolder(1, dataDFR), expFolder, device, sweepFolder
@@ -161,7 +161,7 @@ static Function SB_InitPostPlotSettings(graph, pps)
 
 	string panel    = SB_GetSweepBrowserLeftPanel(graph)
 
-	pps.averageDataFolder = $SB_GetSweepBrowserFolder(graph)
+	pps.averageDataFolder = SB_GetSweepBrowserFolder(graph)
 	pps.averageTraces     = GetCheckboxState(panel, "check_SweepBrowser_AveragTraces")
 	pps.zeroTraces        = GetCheckBoxState(panel, "check_SweepBrowser_ZeroTraces")
 	pps.timeAlignMode     = GetPopupMenuIndex(panel, "popup_sweepBrowser_tAlignMode")
@@ -189,7 +189,7 @@ static Function/WAVE SB_GetSweepPropertyFromNumLBN(graph, mapIndex, key)
 	string device, expFolder
 	variable sweep
 
-	DFREF sweepBrowserDFR = $SB_GetSweepBrowserFolder(graph)
+	DFREF sweepBrowserDFR = SB_GetSweepBrowserFolder(graph)
 	WAVE/T sweepMap = SB_GetSweepBrowserMap(sweepBrowserDFR)
 
 	if(!IsFinite(mapIndex) || mapIndex < 0 || mapIndex >= DimSize(sweepMap, ROWS))
@@ -212,7 +212,7 @@ End
 Function/S SB_GetListOfExperiments(graph)
 	string graph
 
-	DFREF sweepBrowserDFR = $SB_GetSweepBrowserFolder(graph)
+	DFREF sweepBrowserDFR = SB_GetSweepBrowserFolder(graph)
 	WAVE/T sweepMap = SB_GetSweepBrowserMap(sweepBrowserDFR)
 
 	variable numEntries, i
@@ -271,7 +271,7 @@ Function/WAVE SB_GetChannelInfoFromGraph(graph, channel, [experiment])
 
 	ASSERT(FindListitem(channel, ITC_CHANNEL_NAMES) != -1, "Given channel could not be found in ITC_CHANNEL_NAMES")
 
-	DFREF sweepBrowserDFR = $SB_GetSweepBrowserFolder(graph)
+	DFREF sweepBrowserDFR = SB_GetSweepBrowserFolder(graph)
 	WAVE/T sweepMap = SB_GetSweepBrowserMap(sweepBrowserDFR)
 
 	Make/FREE/T/N=(MINIMUM_WAVE_SIZE, 3) channelMap
@@ -348,7 +348,7 @@ Function SB_UpdateSweepPlot(graph, [newSweep])
 	if(!HasPanelLatestVersion(graph, SWEEPBROWSER_PANEL_VERSION))
 		Abort "Can not display data. The SweepBrowser Graph is too old to be usable. Please close it and open a new one."
 	endif
-	DFREF sweepBrowserDFR = $SB_GetSweepBrowserFolder(graph)
+	DFREF sweepBrowserDFR = SB_GetSweepBrowserFolder(graph)
 	ASSERT(DataFolderExistsDFR(sweepBrowserDFR), "sweepBrowserDFR must exist")
 
 	extPanel = SB_GetSweepBrowserLeftPanel(graph)
@@ -494,17 +494,17 @@ End
 Function SB_SweepBrowserWindowHook(s)
 	STRUCT WMWinHookStruct &s
 
-	string folder, graph, extPanel, ctrl
+	string graph, extPanel, ctrl
 	variable hookResult
 
 	switch(s.eventCode)
 		case 2:	 // Kill
 			graph = s.winName
 
-			folder = SB_GetSweepBrowserFolder(graph)
+			DFREF sweepBrowserDFR = SB_GetSweepBrowserFolder(graph)
 
 			KillWindow $graph
-			KillOrMoveToTrashPath(folder)
+			KillOrMoveToTrash(dfr = sweepBrowserDFR)
 
 			hookResult = 1
 			break
@@ -916,7 +916,7 @@ Function SB_OpenChannelSelectionPanel(ba) : ButtonControl
 		case 2: // mouse up
 			graph = GetMainWindow(ba.win)
 
-			DFREF sweepBrowserDFR = $SB_GetSweepBrowserFolder(graph)
+			DFREF sweepBrowserDFR = SB_GetSweepBrowserFolder(graph)
 			WAVE channelSel = GetChannelSelectionWave(sweepBrowserDFR)
 			ToggleChannelSelectionPanel(graph, channelSel, "SB_CheckProc_ChangedSetting")
 			break
@@ -952,7 +952,7 @@ Function SB_ButtonProc_FindMinis(ba) : ButtonControl
 			first = min(first, last)
 			last  = max(first, last)
 
-			DFREF workDFR = UniqueDataFolder($SB_GetSweepBrowserFolder(graph), "findminis")
+			DFREF workDFR = UniqueDataFolder(SB_GetSweepBrowserFolder(graph), "findminis")
 
 			numTraces = ItemsInList(list)
 			for(i = 0; i < numTraces; i += 1)
@@ -1001,7 +1001,7 @@ Function SB_CheckProc_ChangedSetting(cba) : CheckBoxControl
 			win     = SB_GetSweepBrowserLeftPanel(cba.win)
 			graph   = GetMainWindow(win)
 			idx     = GetPopupMenuIndex(win, "popup_sweep_selector")
-			DFREF dfr = $SB_GetSweepBrowserFolder(graph)
+			DFREF dfr = SB_GetSweepBrowserFolder(graph)
 
 			strswitch(ctrl)
 				case "check_sweepbrowser_dDAQ":
@@ -1074,7 +1074,7 @@ Function SB_CheckboxProc_OverlaySweeps(cba) : CheckBoxControl
 			graph    = GetMainWindow(cba.win)
 			extPanel = SB_GetSweepBrowserLeftPanel(graph)
 
-			DFREF dfr = $SB_GetSweepBrowserFolder(graph)
+			DFREF dfr = SB_GetSweepBrowserFolder(graph)
 			WAVE/T listBoxWave        = GetOverlaySweepsListWave(dfr)
 			WAVE listBoxSelWave       = GetOverlaySweepsListSelWave(dfr)
 			WAVE/WAVE sweepSelChoices = GetOverlaySweepSelectionChoices(dfr)
