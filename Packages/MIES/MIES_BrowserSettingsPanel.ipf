@@ -507,7 +507,7 @@ EndMacro
 Function BSP_CheckBoxProc_ArtRemoval(cba) : CheckBoxControl
 	STRUCT WMCheckBoxAction &cba
 
-	string mainPanel, extPanel, device
+	string mainPanel, extPanel
 	string controlList = "group_properties_artefact;setvar_cutoff_length_before;setvar_cutoff_length_after;button_RemoveRanges;check_auto_remove;check_highlightRanges;list_of_ranges1;"
 
 	switch(cba.eventCode)
