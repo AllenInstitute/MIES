@@ -983,23 +983,30 @@ Function SB_CheckProc_ChangedSetting(cba) : CheckBoxControl
 			idx     = GetPopupMenuIndex(win, "popup_sweep_selector")
 			DFREF dfr = $SB_GetSweepBrowserFolder(graph)
 
-			if(!cmpstr(ctrl, "check_sweepbrowser_dDAQ"))
-				if(checked)
-					EnableControl(win, "popup_dDAQ_regions")
-				else
-					DisableControl(win, "popup_dDAQ_regions")
-				endif
-			elseif(StringMatch(ctrl, "check_channelSel_*"))
-				WAVE channelSel = GetChannelSelectionWave(dfr)
-				ParseChannelSelectionControl(cba.ctrlName, channelType, channelNum)
-				channelSel[channelNum][%$channelType] = checked
-			elseif(!cmpstr(ctrl, "check_SweepBrowser_OpenArtRem"))
-				WAVE listBoxWave = GetArtefactRemovalListWave(dfr)
-				AR_TogglePanel(win, listBoxWave)
-				BSP_TogglePanel(win)
-			elseif(!cmpstr(ctrl, "check_SweepBrowser_PulseAvg"))
-				PA_TogglePanel(win)
-			endif
+			strswitch(ctrl)
+				case "check_sweepbrowser_dDAQ":
+					if(checked)
+						EnableControl(win, "popup_dDAQ_regions")
+					else
+						DisableControl(win, "popup_dDAQ_regions")
+					endif
+					break
+				case "check_SweepBrowser_OpenArtRem":
+					WAVE listBoxWave = GetArtefactRemovalListWave(dfr)
+					AR_TogglePanel(win, listBoxWave)
+					BSP_TogglePanel(win)
+					break
+				case "check_SweepBrowser_PulseAvg":
+					PA_TogglePanel(win)
+					break
+				default:
+					if(StringMatch(ctrl, "check_channelSel_*"))
+						WAVE channelSel = GetChannelSelectionWave(dfr)
+						ParseChannelSelectionControl(cba.ctrlName, channelType, channelNum)
+						channelSel[channelNum][%$channelType] = checked
+					endif
+					break
+			endswitch
 
 			SB_UpdateSweepPlot(graph)
 			break
