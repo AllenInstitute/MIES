@@ -27,7 +27,7 @@ End
 static Function/Wave SB_GetSweepBrowserMap(sweepBrowser)
 	DFREF sweepBrowser
 
-	ASSERT(DataFolderExistsDFR(sweepBrowser), "Missing sweepBrowser DFR")
+	ASSERT(DataFolderExistsDFR(sweepBrowser), "Missing SweepBrowser DFR")
 
 	Variable versionOfWave = 1
 
@@ -123,21 +123,21 @@ static Function SB_PanelUpdate(graphOrPanel)
 	panel = SB_GetSweepBrowserLeftPanel(graph)
 
 	if(GetCheckBoxState(panel, "check_SweepBrowser_TimeAlign"))
-		EnableControls(panel, "popup_sweepBrowser_tAlignMode;setvar_sweepBrowser_tAlignLevel;popup_sweepBrowser_tAlignMaster;button_SweepBrowser_DoTimeAlign")
+		EnableControls(panel, "popup_SweepBrowser_tAlignMode;setvar_SweepBrowser_tAlignLevel;popup_SweepBrowser_tAlignMaster;button_SweepBrowser_DoTimeAlign")
 
-		alignMode = GetPopupMenuIndex(panel, "popup_sweepBrowser_tAlignMode")
+		alignMode = GetPopupMenuIndex(panel, "popup_SweepBrowser_tAlignMode")
 		if(alignMode == TIME_ALIGNMENT_LEVEL_RISING || alignMode == TIME_ALIGNMENT_LEVEL_FALLING)
-			EnableControl(panel, "setvar_sweepBrowser_tAlignLevel")
+			EnableControl(panel, "setvar_SweepBrowser_tAlignLevel")
 		else
-			DisableControl(panel, "setvar_sweepBrowser_tAlignLevel")
+			DisableControl(panel, "setvar_SweepBrowser_tAlignLevel")
 		endif
 	else
-		DisableControls(panel, "popup_sweepBrowser_tAlignMode;setvar_sweepBrowser_tAlignLevel;popup_sweepBrowser_tAlignMaster;button_SweepBrowser_DoTimeAlign")
+		DisableControls(panel, "popup_SweepBrowser_tAlignMode;setvar_SweepBrowser_tAlignLevel;popup_SweepBrowser_tAlignMaster;button_SweepBrowser_DoTimeAlign")
 	endif
 
 	SB_HandleCursorDisplay(graph)
 	SB_ScaleAxes(graph)
-	ControlUpdate/W=$panel popup_sweepBrowser_tAlignMaster
+	ControlUpdate/W=$panel popup_SweepBrowser_tAlignMaster
 End
 
 /// @brief set graph userdata similar to DB_SetUserData()
@@ -164,9 +164,9 @@ static Function SB_InitPostPlotSettings(graph, pps)
 	pps.averageDataFolder = SB_GetSweepBrowserFolder(graph)
 	pps.averageTraces     = GetCheckboxState(panel, "check_SweepBrowser_AveragTraces")
 	pps.zeroTraces        = GetCheckBoxState(panel, "check_SweepBrowser_ZeroTraces")
-	pps.timeAlignMode     = GetPopupMenuIndex(panel, "popup_sweepBrowser_tAlignMode")
-	pps.timeAlignLevel    = GetSetVariable(panel, "setvar_sweepBrowser_tAlignLevel")
-	pps.timeAlignRefTrace = GetPopupMenuString(panel, "popup_sweepBrowser_tAlignMaster")
+	pps.timeAlignMode     = GetPopupMenuIndex(panel, "popup_SweepBrowser_tAlignMode")
+	pps.timeAlignLevel    = GetSetVariable(panel, "setvar_SweepBrowser_tAlignLevel")
+	pps.timeAlignRefTrace = GetPopupMenuString(panel, "popup_SweepBrowser_tAlignMaster")
 	pps.hideSweep         = GetCheckBoxState(panel, "check_SweepBrowser_HideSweep")
 
 	PA_GatherSettings(graph, pps)
@@ -362,9 +362,9 @@ Function SB_UpdateSweepPlot(graph, [newSweep])
 	tgs.overlaySweep    = GetCheckBoxState(extPanel, "check_SweepBrowser_SweepOverlay")
 	tgs.displayADC      = GetCheckBoxState(extPanel, "check_SweepBrowser_DisplayADC")
 	tgs.displayTTL      = GetCheckBoxState(extPanel, "check_SweepBrowser_DisplayTTL")
-	tgs.overlayChannels = GetCheckBoxState(extPanel, "check_sweepbrowser_OverlayChan")
+	tgs.overlayChannels = GetCheckBoxState(extPanel, "check_SweepBrowser_OverlayChan")
 	tgs.splitTTLBits    = GetCheckBoxState(extPanel, "check_SweepBrowser_SplitTTL")
-	tgs.dDAQDisplayMode = GetCheckBoxState(extPanel, "check_sweepbrowser_dDAQ")
+	tgs.dDAQDisplayMode = GetCheckBoxState(extPanel, "check_SweepBrowser_dDAQ")
 	tgs.dDAQHeadstageRegions = str2num(GetPopupMenuString(extPanel, "popup_dDAQ_regions"))
 	tgs.hideSweep       = GetCheckBoxState(extPanel, "check_SweepBrowser_HideSweep")
 
@@ -587,9 +587,9 @@ Window SweepBrowser() : Graph
 	SetVariable setvar_SweepBrowser_SweepStep,pos={68.00,141.00},size={64.00,18.00},title="Step"
 	SetVariable setvar_SweepBrowser_SweepStep,help={"Number of sweeps to step for each Previous/Next click or mouse wheel turn"}
 	SetVariable setvar_SweepBrowser_SweepStep,limits={1,inf,1},value= _NUM:1
-	CheckBox check_sweepbrowser_OverlayChan,pos={13.00,50.00},size={64.00,15.00},proc=SB_CheckProc_ChangedSetting,title="Channels"
-	CheckBox check_sweepbrowser_OverlayChan,help={"Overlay the data from multiple channels in one graph"}
-	CheckBox check_sweepbrowser_OverlayChan,value= 0
+	CheckBox check_SweepBrowser_OverlayChan,pos={13.00,50.00},size={64.00,15.00},proc=SB_CheckProc_ChangedSetting,title="Channels"
+	CheckBox check_SweepBrowser_OverlayChan,help={"Overlay the data from multiple channels in one graph"}
+	CheckBox check_SweepBrowser_OverlayChan,value= 0
 	CheckBox check_SweepBrowser_SweepOverlay,pos={13.00,30.00},size={54.00,15.00},proc=SB_CheckboxProc_OverlaySweeps,title="Sweeps"
 	CheckBox check_SweepBrowser_SweepOverlay,help={"Add the data from all visited sweeps instead of clearing the graph every time"}
 	CheckBox check_SweepBrowser_SweepOverlay,value= 0
@@ -599,15 +599,15 @@ Window SweepBrowser() : Graph
 	Button button_SweepBrowser_PrevSweep,help={"Select the next sweep"}
 	CheckBox check_SweepBrowser_TimeAlign,pos={12.00,176.00},size={101.00,15.00},proc=SB_TimeAlignmentProc,title="Time Alignment"
 	CheckBox check_SweepBrowser_TimeAlign,help={"Activate time alignment"},value= 0
-	PopupMenu popup_sweepBrowser_tAlignMode,pos={0.00,195.00},size={143.00,19.00},bodyWidth=50,disable=2,proc=SB_TimeAlignmentPopup,title="Alignment Mode"
-	PopupMenu popup_sweepBrowser_tAlignMode,help={"Select the alignment mode"}
-	PopupMenu popup_sweepBrowser_tAlignMode,mode=1,popvalue="Level (Raising)",value= #"\"Level (Raising);Level (Falling);Min;Max\""
-	SetVariable setvar_sweepBrowser_tAlignLevel,pos={61.00,219.00},size={80.00,18.00},disable=2,proc=SB_TimeAlignmentLevel,title="Level"
-	SetVariable setvar_sweepBrowser_tAlignLevel,help={"Select the level (for rising and falling alignment mode) at which traces are aligned"}
-	SetVariable setvar_sweepBrowser_tAlignLevel,limits={-inf,inf,0},value= _NUM:0
-	PopupMenu popup_sweepBrowser_tAlignMaster,pos={7.00,239.00},size={134.00,19.00},bodyWidth=50,disable=2,proc=SB_TimeAlignmentPopup,title="Reference trace"
-	PopupMenu popup_sweepBrowser_tAlignMaster,help={"Select the reference trace to which all other traces should be aligned to"}
-	PopupMenu popup_sweepBrowser_tAlignMaster,mode=1,popvalue="AD0"
+	PopupMenu popup_SweepBrowser_tAlignMode,pos={0.00,195.00},size={143.00,19.00},bodyWidth=50,disable=2,proc=SB_TimeAlignmentPopup,title="Alignment Mode"
+	PopupMenu popup_SweepBrowser_tAlignMode,help={"Select the alignment mode"}
+	PopupMenu popup_SweepBrowser_tAlignMode,mode=1,popvalue="Level (Raising)",value= #"\"Level (Raising);Level (Falling);Min;Max\""
+	SetVariable setvar_SweepBrowser_tAlignLevel,pos={61.00,219.00},size={80.00,18.00},disable=2,proc=SB_TimeAlignmentLevel,title="Level"
+	SetVariable setvar_SweepBrowser_tAlignLevel,help={"Select the level (for rising and falling alignment mode) at which traces are aligned"}
+	SetVariable setvar_SweepBrowser_tAlignLevel,limits={-inf,inf,0},value= _NUM:0
+	PopupMenu popup_SweepBrowser_tAlignMaster,pos={7.00,239.00},size={134.00,19.00},bodyWidth=50,disable=2,proc=SB_TimeAlignmentPopup,title="Reference trace"
+	PopupMenu popup_SweepBrowser_tAlignMaster,help={"Select the reference trace to which all other traces should be aligned to"}
+	PopupMenu popup_SweepBrowser_tAlignMaster,mode=1,popvalue="AD0"
 	Button button_SweepBrowser_DoTimeAlign,pos={117.00,174.00},size={30.00,20.00},disable=2,proc=SB_DoTimeAlignment,title="Do!"
 	Button button_SweepBrowser_DoTimeAlign,help={"Perform the time alignment, needs the cursors A and B to have a selected feature"}
 	PopupMenu popup_sweep_selector,pos={13.00,91.00},size={127.00,19.00},bodyWidth=127,proc=SB_PopupMenuSelectSweep
@@ -633,9 +633,9 @@ Window SweepBrowser() : Graph
 	Button button_SweepBrowser_ExportGraph,pos={28.00,375.00},size={100.00,25.00},proc=SB_ButtonProc_ExportTraces,title="Export Traces"
 	Button button_SweepBrowser_ExportGraph,help={"Export the traces for further processing"}
 	GroupBox group_sweep,pos={6.00,71.00},size={139.00,98.00},title="Sweep"
-	CheckBox check_sweepbrowser_dDAQ,pos={97.00,50.00},size={47.00,15.00},proc=SB_CheckProc_ChangedSetting,title="dDAQ"
-	CheckBox check_sweepbrowser_dDAQ,help={"Enable dedicated support for viewing distributed DAQ data"}
-	CheckBox check_sweepbrowser_dDAQ,value= 0
+	CheckBox check_SweepBrowser_dDAQ,pos={97.00,50.00},size={47.00,15.00},proc=SB_CheckProc_ChangedSetting,title="dDAQ"
+	CheckBox check_SweepBrowser_dDAQ,help={"Enable dedicated support for viewing distributed DAQ data"}
+	CheckBox check_SweepBrowser_dDAQ,value= 0
 	PopupMenu popup_dDAQ_regions,pos={96.00,67.00},size={35.00,19.00},bodyWidth=35,disable=2,proc=SB_PopMenuProc_ChangedSettings
 	PopupMenu popup_dDAQ_regions,help={"Allows to view only oodDAQ regions from the selected headstage. Choose -1 to display all."}
 	PopupMenu popup_dDAQ_regions,mode=1,popvalue="-1",value= #"\"-1;0;1;2;3;4;5;6;7\""
@@ -789,7 +789,7 @@ static Function SB_HandleCursorDisplay(graph)
 	if(GetCheckBoxState(panel, "check_SweepBrowser_TimeAlign"))
 
 		// ensure that trace is really on the graph
-		trace = GetPopupMenuString(panel, "popup_sweepBrowser_tAlignMaster")
+		trace = GetPopupMenuString(panel, "popup_SweepBrowser_tAlignMaster")
 		if(FindListItem(trace, traceList) == -1)
 			trace = StringFromList(0, traceList)
 		endif
@@ -1004,7 +1004,7 @@ Function SB_CheckProc_ChangedSetting(cba) : CheckBoxControl
 			DFREF dfr = SB_GetSweepBrowserFolder(graph)
 
 			strswitch(ctrl)
-				case "check_sweepbrowser_dDAQ":
+				case "check_SweepBrowser_dDAQ":
 					if(checked)
 						EnableControl(win, "popup_dDAQ_regions")
 					else
