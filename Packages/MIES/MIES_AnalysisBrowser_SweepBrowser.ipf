@@ -576,9 +576,6 @@ Window SweepBrowser() : Graph
 	CheckBox check_SweepBrowser_splitTTL,pos={138.00,7.00},size={13.00,13.00},proc=SB_CheckProc_ChangedSetting,title=""
 	CheckBox check_SweepBrowser_splitTTL,help={"Display the TTL channel data as single traces for each TTL bit"}
 	CheckBox check_SweepBrowser_splitTTL,value= 0
-	CheckBox check_SweepBrowser_OpenArtRem,pos={17.00,295.00},size={103.00,15.00},proc=SB_CheckProc_ChangedSetting,title="Artefact removal"
-	CheckBox check_SweepBrowser_OpenArtRem,help={"Open the \"Artefact Removal\" panel"}
-	CheckBox check_SweepBrowser_OpenArtRem,value= 0
 	CheckBox check_SweepBrowser_ZeroTraces,pos={17.00,278.00},size={76.00,15.00},proc=SB_CheckProc_ChangedSetting,title="Zero Traces"
 	CheckBox check_SweepBrowser_ZeroTraces,help={"Remove the offset of all traces"}
 	CheckBox check_SweepBrowser_ZeroTraces,value= 0
@@ -1013,11 +1010,6 @@ Function SB_CheckProc_ChangedSetting(cba) : CheckBoxControl
 					else
 						DisableControl(win, "popup_dDAQ_regions")
 					endif
-					break
-				case "check_SweepBrowser_OpenArtRem":
-					WAVE listBoxWave = GetArtefactRemovalListWave(dfr)
-					AR_TogglePanel(win, listBoxWave)
-					BSP_TogglePanel(win)
 					break
 				case "check_SweepBrowser_PulseAvg":
 					PA_TogglePanel(win)

@@ -9,17 +9,12 @@
 /// @file MIES_ArtefactRemoval.ipf
 /// @brief __AR__ Functions related to artefact removal
 
-static StrConstant EXT_PANEL_SUBWINDOW = "ArtefactRemoval"
 static Constant AR_MIN_RANGE_FACTOR = 0.1
 
 Function/S AR_GetExtPanel(win)
 	string win
 
-	if(IsDataBrowser(win))
-		return BSP_GetPanel(win)
-	endif
-
-	return GetMainWindow(win) + "#" + EXT_PANEL_SUBWINDOW
+	return BSP_GetPanel(win)
 End
 
 /// @brief Return a free 2D wave with artefact positions and the corresponding
@@ -391,50 +386,6 @@ Function AR_ButtonProc_RemoveRanges(ba) : ButtonControl
 	return 0
 End
 
-/// @brief Toggle the artefact removal external panel
-///
-/// @return 0 if opened, 1 if closed
-Function AR_TogglePanel(win, listboxWave)
-	string win
-	WAVE/T listboxWave
-
-	variable createPanel
-	string extPanel
-
-	extPanel = AR_GetExtPanel(win)
-	win = GetMainWindow(win)
-
-	createPanel = TogglePanel(win, EXT_PANEL_SUBWINDOW)
-	if(!createPanel)
-		return 1
-	endif
-
-	NewPanel/HOST=$win/EXT=1/W=(200,0,0,407)/N=$EXT_PANEL_SUBWINDOW as " "
-	SetWindow kwTopWin, hook(main)=AR_MainWindowHook
-	SetDrawLayer UserBack
-	SetDrawEnv fname= "Segoe UI"
-	DrawText 2,25,"Cutoff length [ms]:"
-	ListBox list_of_ranges,pos={7.00,70.00},size={186.00,330},proc=AR_MainListBoxProc
-	ListBox list_of_ranges,mode= 1,widths={54,50,66},listWave=listboxWave
-	Button button_RemoveRanges,pos={6.00,39.00},size={55.00,22.00},proc=AR_ButtonProc_RemoveRanges,title="Remove"
-	SetVariable setvar_cutoff_length_after,pos={153.00,9.00},size={45.00,18.00},proc=AR_SetVarProcCutoffLength
-	SetVariable setvar_cutoff_length_after,help={"Time in ms which should be cutoff *after* the artefact."}
-	SetVariable setvar_cutoff_length_after,limits={0,inf,0.1},value= _NUM:0.2
-	SetVariable setvar_cutoff_length_before,pos={105.00,9.00},size={45.00,18.00},proc=AR_SetVarProcCutoffLength
-	SetVariable setvar_cutoff_length_before,help={"Time in ms which should be cutoff *before* the artefact."}
-	SetVariable setvar_cutoff_length_before,limits={0,inf,0.1},value= _NUM:0.1
-	CheckBox check_auto_remove,pos={69.00,43.00},size={84.00,15.00},title="Auto remove"
-	CheckBox check_auto_remove,help={"Automatically remove the found ranges on sweep plotting"}
-	CheckBox check_auto_remove,value= 0,proc=AR_CheckProc_Update
-	CheckBox check_highlightRanges,pos={158.00,43.00},size={30.00,15.00},proc=AR_CheckProc_Update,title="HL"
-	CheckBox check_highlightRanges,help={"Visualize the found ranges in the graph (*might* slowdown graphing)"}
-	CheckBox check_highlightRanges,value= 0
-
-	AR_SetFolder(win, GetWavesDataFolderDFR(listboxWave))
-
-	return 0
-End
-
 Function AR_UpdateTracesIfReq(graph, sweepFolder, numericalValues, sweepNo)
 	string graph
 	variable sweepNo
@@ -467,43 +418,9 @@ Function AR_CheckProc_Update(cba) : CheckBoxControl
 	return 0
 End
 
-Function AR_MainWindowHook(s)
-	STRUCT WMWinHookStruct &s
-
-	string win, mainWindow, ctrl
-
-	switch(s.eventCode)
-		case 2: // kill
-			mainWindow = GetMainWindow(s.winName)
-
-			if(IsDataBrowser(mainWindow))
-				ctrl = "CheckBox_DataBrowser_OpenArtRem"
-				win  = mainWindow
-			else
-				ctrl = "Check_SweepBrowser_OpenArtRem"
-				win  = mainWindow + "#P0"
-			endif
-
-			PGC_SetAndActivateControl(win, ctrl, val=CHECKBOX_UNSELECTED)
-			break
-	endswitch
-
-	return 0
-End
-
 /// checks if AR is active.
 Function AR_IsActive(win)
 	string win
-
-	// keep for SweepBrowser
-	string extPanel = AR_GetExtPanel(win)
-	if(!IsDataBrowser(extPanel))
-		if(!WindowExists(extPanel))
-			return 0
-		else
-			return 1
-		endif
-	endif
 
 	return BSP_IsActive(win, MIES_BSP_AR)
 End
