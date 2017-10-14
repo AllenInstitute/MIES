@@ -89,7 +89,7 @@ static Function BSP_DynamicStartupSettings(mainPanel)
 	WAVE channelSelection = BSP_GetChannelSelectionWave(mainPanel)
 	ChannelSelectionWaveToGUI(mainPanel, channelSelection)
 
-	BSP_SetMainCheckboxes(extPanel, 0)
+	BSP_InitMainCheckboxes(extPanel)
 	BSP_SetCSButtonProc(extPanel, "DB_CheckProc_ChangedSetting")
 
 	PGC_SetAndActivateControl(extPanel, "Settings", val = MIES_BSP_OVS)
@@ -180,29 +180,22 @@ Function BSP_HasBoundDevice(panelName)
 	return !(IsEmpty(device) || !cmpstr(device, NONE))
 End
 
-/// @brief control the state of the enable/disable buttons on top of the extPanel tabcontrol
+/// @brief set the initial state of the enable/disable buttons
 ///
 /// @param panelName 		name of external panel or main window
-/// @param checkBoxState 	boolean set value of checkboxes
-static Function BSP_SetMainCheckboxes(panelName, checkBoxState)
+static Function BSP_InitMainCheckboxes(panelName)
 	string panelName
-	variable checkBoxState
 
-	string extPanel, control
-
-	checkBoxState = !!checkBoxState ? CHECKBOX_SELECTED : CHECKBOX_UNSELECTED
+	string extPanel
 
 	extPanel = BSP_GetPanel(panelName)
 	if(!windowExists(extPanel))
 		return NaN
 	endif
 
-	control = "check_BrowserSettings_OVS"
-	PGC_SetAndActivateControl(extPanel, control, val = checkBoxState)
-	control = "check_BrowserSettings_AR"
-	PGC_SetAndActivateControl(extPanel, control, val = checkBoxState)
-	control = "check_BrowserSettings_PA"
-	PGC_SetAndActivateControl(extPanel, control, val = checkBoxState)
+	BSP_SetOVSControlStatus(extPanel)
+	BSP_SetARControlStatus(extPanel)
+	BSP_SetPAControlStatus(extPanel)
 
 	return 1
 End
@@ -327,7 +320,6 @@ Function BSP_ClosePanelHook(s)
 
 			ASSERT(!cmpstr(s.winName, extPanel), "this hook is only available for BSP panel.")
 
-			BSP_SetMainCheckboxes(extPanel, 0)
 			BSP_MainPanelButtonToggle(mainPanel, 1)
 
 			break
