@@ -609,9 +609,6 @@ Window SweepBrowser() : Graph
 	Button button_SweepBrowser_DoTimeAlign,help={"Perform the time alignment, needs the cursors A and B to have a selected feature"}
 	PopupMenu popup_sweep_selector,pos={13.00,91.00},size={127.00,19.00},bodyWidth=127,proc=SB_PopupMenuSelectSweep
 	PopupMenu popup_sweep_selector,help={"List of sweeps in this sweep browser"}
-	CheckBox check_SweepBrowser_PulseAvg,pos={114.00,26.00},size={37.00,15.00},proc=SB_CheckProc_ChangedSetting,title="PPA"
-	CheckBox check_SweepBrowser_PulseAvg,help={"Display per pulse averaged data"}
-	CheckBox check_SweepBrowser_PulseAvg,value= 0
 	GroupBox group_SB_axes_scaling,pos={11.00,310.00},size={133.00,60.00},title="Axes Scaling"
 	CheckBox check_SB_visibleXRange,pos={19.00,329.00},size={40.00,15.00},proc=SB_AxisScaling,title="Vis X"
 	CheckBox check_SB_visibleXRange,help={"Scale the y axis to the visible x data range"}
@@ -988,9 +985,6 @@ Function SB_CheckProc_ChangedSetting(cba) : CheckBoxControl
 					else
 						DisableControl(win, "popup_dDAQ_regions")
 					endif
-					break
-				case "check_SweepBrowser_PulseAvg":
-					PA_TogglePanel(win)
 					break
 				default:
 					if(StringMatch(ctrl, "check_channelSel_*"))
