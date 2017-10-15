@@ -54,8 +54,11 @@ Function DB_OpenDataBrowser()
 	// immediately lock if we have only data from one device
 	devicesWithData = ListMatch(DB_GetAllDevicesWithData(), "!" + NONE)
 	if(ItemsInList(devicesWithData) == 1)
-		PGC_SetAndActivateControl(win, "popup_DB_lockedDevices", val=1)
+		device = StringFromList(0, devicesWithData)
+		DB_LockDBPanel(win, device)
 	endif
+
+	BSP_OpenPanel(win)
 End
 
 static Function/S DB_GetNotebookSubWindow(win)
@@ -139,7 +142,6 @@ static Function DB_LockDBPanel(win, device)
 
 	DB_FirstAndLastSweepAcquired(win, first, last)
 	DB_UpdateLastSweepControls(win, first, last)
-	DB_UpdateSweepPlot(win)
 End
 
 static Function DB_SetUserData(win, device)
@@ -197,11 +199,11 @@ static Function DB_UpdateLastSweepControls(win, first, last)
 
 	mainPanel = GetMainWindow(win)
 
-	formerLast = GetValDisplayAsNum(mainPanel, "valdisp_DataBrowser_LastSweep")
-	SetSetVariableLimits(mainPanel, "setvar_DataBrowser_SweepNo", first, last, 1)
+	formerLast = GetValDisplayAsNum(mainPanel, "valdisp_SweepControl_LastSweep")
+	SetSetVariableLimits(mainPanel, "setvar_SweepControl_SweepNo", first, last, 1)
 
 	if(formerLast != last)
-		SetValDisplay(mainPanel, "valdisp_DataBrowser_LastSweep", var=last)
+		SetValDisplay(mainPanel, "valdisp_SweepControl_LastSweep", var=last)
 		DB_UpdateOverlaySweepWaves(win)
 	endif
 End
@@ -230,7 +232,7 @@ Function DB_UpdateSweepPlot(win, [dummyArg])
 	variable dummyArg
 
 	variable numEntries, i, sweepNo, highlightSweep, referenceTime, traceIndex
-	string device, mainPanel, lbPanel, graph
+	string device, mainPanel, lbPanel, bsPanel, graph
 
 	if(BSP_MainPanelNeedsUpdate(win))
 		DoAbortNow("Can not display data. The Databrowser panel is too old to be usable. Please close it and open a new one.")
@@ -240,6 +242,7 @@ Function DB_UpdateSweepPlot(win, [dummyArg])
 
 	mainPanel = GetMainWindow(win)
 	lbPanel   = DB_GetNotebookSubWindow(win)
+	bsPanel   = BSP_GetPanel(win)
 	graph     = DB_GetMainGraph(win)
 
 	WAVE axesRanges = GetAxesRanges(graph)
@@ -255,20 +258,20 @@ Function DB_UpdateSweepPlot(win, [dummyArg])
 	WAVE textualValues   = DB_GetTextualValues(win)
 
 	STRUCT TiledGraphSettings tgs
-	tgs.displayDAC      = GetCheckBoxState(mainPanel, "check_DataBrowser_DisplayDAchan")
-	tgs.displayTTL      = GetCheckBoxState(mainPanel, "check_DataBrowser_DisplayTTL")
-	tgs.displayADC      = GetCheckBoxState(mainPanel, "check_DataBrowser_DisplayADChan")
+	tgs.displayDAC      = GetCheckBoxState(bsPanel, "check_BrowserSettings_DAC")
+	tgs.displayTTL      = GetCheckBoxState(bsPanel, "check_BrowserSettings_TTL")
+	tgs.displayADC      = GetCheckBoxState(bsPanel, "check_BrowserSettings_ADC")
 	tgs.overlaySweep 	= OVS_IsActive(mainPanel)
-	tgs.overlayChannels = GetCheckBoxState(mainPanel, "check_DataBrowser_OverlayChan")
-	tgs.dDAQDisplayMode = GetCheckBoxState(mainPanel, "check_DataBrowser_dDAQMode")
-	tgs.dDAQHeadstageRegions = GetSliderPositionIndex(mainPanel, "slider_dDAQ_regions")
-	tgs.hideSweep       = GetCheckBoxState(mainPanel, "check_DataBrowser_hideSweep")
+	tgs.overlayChannels = GetCheckBoxState(bsPanel, "check_BrowserSettings_OChan")
+	tgs.dDAQDisplayMode = GetCheckBoxState(bsPanel, "check_BrowserSettings_dDAQ")
+	tgs.dDAQHeadstageRegions = GetSliderPositionIndex(bsPanel, "slider_BrowserSettings_dDAQ")
+	tgs.hideSweep       = GetCheckBoxState(bsPanel, "check_SweepControl_HideSweep")
 
 	WAVE channelSel        = BSP_GetChannelSelectionWave(win)
 	WAVE/Z sweepsToOverlay = OVS_GetSelectedSweeps(win, OVS_SWEEP_SELECTION_SWEEPNO)
 
 	if(!WaveExists(sweepsToOverlay))
-		Make/FREE/N=1 sweepsToOverlay = GetSetVariable(mainPanel, "setvar_DataBrowser_SweepNo")
+		Make/FREE/N=1 sweepsToOverlay = GetSetVariable(mainPanel, "setvar_SweepControl_SweepNo")
 	endif
 
 	WAVE axisLabelCache = GetAxisLabelCacheWave()
@@ -309,8 +312,8 @@ Function DB_UpdateSweepPlot(win, [dummyArg])
 
 	Struct PostPlotSettings pps
 	pps.averageDataFolder = GetDeviceDataBrowserPath(device)
-	pps.averageTraces     = GetCheckboxState(mainPanel, "check_DataBrowser_AverageTraces")
-	pps.zeroTraces        = GetCheckBoxState(mainPanel, "check_DataBrowser_ZeroTraces")
+	pps.averageTraces     = GetCheckboxState(bsPanel, "check_Calculation_AverageTraces")
+	pps.zeroTraces        = GetCheckBoxState(bsPanel, "check_Calculation_ZeroTraces")
 	pps.timeAlignRefTrace = ""
 	pps.timeAlignMode     = TIME_ALIGNMENT_NONE
 	pps.hideSweep         = tgs.hideSweep
@@ -387,7 +390,7 @@ Function DB_UpdateToLastSweep(win)
 		return NaN
 	endif
 
-	if(!GetCheckBoxState(mainPanel, "check_DataBrowser_AutoUpdate"))
+	if(!GetCheckBoxState(bsPanel, "check_SweepControl_AutoUpdate"))
 		return NaN
 	endif
 
@@ -399,7 +402,7 @@ Function DB_UpdateToLastSweep(win)
 
 	DB_FirstAndLastSweepAcquired(win, first, last)
 	DB_UpdateLastSweepControls(win, first, last)
-	SetSetVariable(mainPanel, "setvar_DataBrowser_SweepNo", last)
+	SetSetVariable(mainPanel, "setvar_SweepControl_SweepNo", last)
 
 	if(OVS_IsActive(win) && GetCheckBoxState(bsPanel, "check_overlaySweeps_non_commula"))
 		OVS_ChangeSweepSelectionState(win, CHECKBOX_UNSELECTED, sweepNo=last - 1)
@@ -434,94 +437,34 @@ End
 
 Window DataBrowser() : Panel
 	PauseUpdate; Silent 1		// building window...
-	NewPanel /K=1 /W=(248,190,1048,790) as "DataBrowser"
-	Button button_DataBrowser_NextSweep,pos={400,513},size={200.00,37.00},proc=DB_ButtonProc_ChangeSweep,title="Next Sweep \\W649"
-	Button button_DataBrowser_NextSweep,help={"Displays the next sweep (sweep no. = last sweep number + step)"}
-	Button button_DataBrowser_NextSweep,userdata(ResizeControlsInfo)= A"!!,I.!!#Ce5QF/B!!#>\"z!!#`-A7TLf!!%+Szzzzzzzzzzzzz!!#N3Bk1ct<C^(Dz"
-	Button button_DataBrowser_NextSweep,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#?(FEDG<zzzzzzzzzzz"
-	Button button_DataBrowser_NextSweep,userdata(ResizeControlsInfo) += A"zzz!!#?(FEDG<zzzzzzzzzzzzzz!!!"
-	Button button_DataBrowser_NextSweep,fSize=20
-	Button button_DataBrowser_PrevSweep,pos={20,513},size={200,37},proc=DB_ButtonProc_ChangeSweep,title="\\W646 Previous Sweep"
-	Button button_DataBrowser_PrevSweep,help={"Displays the previous sweep (sweep no. = last sweep number - step)"}
-	Button button_DataBrowser_PrevSweep,userdata(ResizeControlsInfo)= A"!!,BY!!#Ce5QF/B!!#>\"z!!#N3Bk1ct<C^(Ezzzzzzzzzzzzz!!#`-A7TLf!!%+Sz"
-	Button button_DataBrowser_PrevSweep,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#?(FEDG<zzzzzzzzzzz"
-	Button button_DataBrowser_PrevSweep,userdata(ResizeControlsInfo) += A"zzz!!#?(FEDG<zzzzzzzzzzzzzz!!!"
-	Button button_DataBrowser_PrevSweep,fSize=20
-	ValDisplay valdisp_DataBrowser_LastSweep,pos={304,516},size={89.00,34.00},bodyWidth=60,title="of"
-	ValDisplay valdisp_DataBrowser_LastSweep,help={"The number of the last sweep acquired for the device assigned to the data browser"}
-	ValDisplay valdisp_DataBrowser_LastSweep,userdata(ResizeControlsInfo)= A"!!,HS!!#Cf!!#?k!!#=kz!!#`-A7TLf!!$%Rzzzzzzzzzzzzz!!#r+D.OhkBk2=!z"
-	ValDisplay valdisp_DataBrowser_LastSweep,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#?(FEDG<zzzzzzzzzzz"
-	ValDisplay valdisp_DataBrowser_LastSweep,userdata(ResizeControlsInfo) += A"zzz!!#?(FEDG<zzzzzzzzzzzzzz!!!"
-	ValDisplay valdisp_DataBrowser_LastSweep,fSize=24,frame=2,fStyle=1
-	ValDisplay valdisp_DataBrowser_LastSweep,limits={0,0,0},barmisc={0,1000}
-	ValDisplay valdisp_DataBrowser_LastSweep,value= #"0"
-	ValDisplay valdisp_DataBrowser_LastSweep,barBackColor= (56576,56576,56576)
-	CheckBox check_DataBrowser_DisplayDAchan,pos={18.00,9.00},size={122.00,15.00},proc=DB_CheckProc_ChangedSetting,title="Display DA channels"
-	CheckBox check_DataBrowser_DisplayDAchan,help={"Display DA (digital to analog) channel data"}
-	CheckBox check_DataBrowser_DisplayDAchan,userdata(ResizeControlsInfo)= A"!!,BI!!#:r!!#@X!!#<(z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
-	CheckBox check_DataBrowser_DisplayDAchan,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Duafnzzzzzzzzzzz"
-	CheckBox check_DataBrowser_DisplayDAchan,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
-	CheckBox check_DataBrowser_DisplayDAchan,value= 0
-	CheckBox check_DataBrowser_OverlayChan,pos={153.00,27.00},size={107.00,15.00},proc=DB_CheckProc_ChangedSetting,title="Overlay Channels"
-	CheckBox check_DataBrowser_OverlayChan,help={"Displays all channels using a single  vertical axis"}
-	CheckBox check_DataBrowser_OverlayChan,userdata(ResizeControlsInfo)= A"!!,G)!!#=;!!#@:!!#<(z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
-	CheckBox check_DataBrowser_OverlayChan,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Duafnzzzzzzzzzzz"
-	CheckBox check_DataBrowser_OverlayChan,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
-	CheckBox check_DataBrowser_OverlayChan,value= 0
-	CheckBox check_DataBrowser_dDAQMode,pos={153.00,45.00},size={85.00,15.00},proc=DB_CheckProc_ChangedSetting,title="dDAQ Viewer"
-	CheckBox check_DataBrowser_dDAQMode,help={"Enable dedicated support for viewing distributed DAQ data"}
-	CheckBox check_DataBrowser_dDAQMode,userdata(ResizeControlsInfo)= A"!!,G)!!#>B!!#?c!!#<(z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
-	CheckBox check_DataBrowser_dDAQMode,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Duafnzzzzzzzzzzz"
-	CheckBox check_DataBrowser_dDAQMode,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
-	CheckBox check_DataBrowser_dDAQMode,value= 0
+	NewPanel /K=1 /W=(898,132,1698,732) as "DataBrowser"
+	ValDisplay valdisp_SweepControl_LastSweep,pos={304.00,516.00},size={89.00,34.00},bodyWidth=60,title="of"
+	ValDisplay valdisp_SweepControl_LastSweep,help={"The number of the last sweep acquired for the device assigned to the data browser"}
+	ValDisplay valdisp_SweepControl_LastSweep,userdata(ResizeControlsInfo)= A"!!,HS!!#Cf!!#?k!!#=kz!!#`-A7TLf!!$%Rzzzzzzzzzzzzz!!#r+D.OhkBk2=!z"
+	ValDisplay valdisp_SweepControl_LastSweep,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#?(FEDG<zzzzzzzzzzz"
+	ValDisplay valdisp_SweepControl_LastSweep,userdata(ResizeControlsInfo) += A"zzz!!#?(FEDG<zzzzzzzzzzzzzz!!!"
+	ValDisplay valdisp_SweepControl_LastSweep,fSize=24,frame=2,fStyle=1
+	ValDisplay valdisp_SweepControl_LastSweep,limits={0,0,0},barmisc={0,1000}
+	ValDisplay valdisp_SweepControl_LastSweep,value= #"0"
+	ValDisplay valdisp_SweepControl_LastSweep,barBackColor= (56576,56576,56576)
 	TitleBox ListBox_DataBrowser_NoteDisplay,pos={1755.00,75.00},size={197.00,39.00}
 	TitleBox ListBox_DataBrowser_NoteDisplay,userdata(ResizeControlsInfo)= A"!!,LB?iWNZ!!#AT!!#>*z!!#o2B4uAezzzzzzzzzzzzzz!!#o2B4uAezz"
 	TitleBox ListBox_DataBrowser_NoteDisplay,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Duafnzzzzzzzzzzz"
 	TitleBox ListBox_DataBrowser_NoteDisplay,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
 	TitleBox ListBox_DataBrowser_NoteDisplay,labelBack=(62208,62208,62208),fSize=8
 	TitleBox ListBox_DataBrowser_NoteDisplay,frame=0
-	CheckBox check_DataBrowser_AutoUpdate,pos={270.00,45.00},size={159.00,15.00},title="Display last sweep acquired"
-	CheckBox check_DataBrowser_AutoUpdate,help={"Displays the last sweep acquired when data acquistion is ongoing"}
-	CheckBox check_DataBrowser_AutoUpdate,userdata(ResizeControlsInfo)= A"!!,HB!!#>B!!#A.!!#<(z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
-	CheckBox check_DataBrowser_AutoUpdate,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Duafnzzzzzzzzzzz"
-	CheckBox check_DataBrowser_AutoUpdate,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
-	CheckBox check_DataBrowser_AutoUpdate,value= 0
-	PopupMenu popup_DB_lockedDevices,pos={426.00,570.00},size={275.00,19.00},bodyWidth=170,proc=DB_PopMenuProc_LockDBtoDevice,title="Device assingment:"
-	PopupMenu popup_DB_lockedDevices,help={"Select a data acquistion device to display data"}
-	PopupMenu popup_DB_lockedDevices,userdata(ResizeControlsInfo)= A"!!,I;!!#CsJ,hrnJ,hm&z!!#](Aon\"q<C^(Dzzzzzzzzzzzzz!!#N3Bk1ct<C^(Dz"
-	PopupMenu popup_DB_lockedDevices,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#?(FEDG<!(TR7zzzzzzzzzz"
-	PopupMenu popup_DB_lockedDevices,userdata(ResizeControlsInfo) += A"zzz!!#?(FEDG<!(TR7zzzzzzzzzzzzz!!!"
-	PopupMenu popup_DB_lockedDevices,mode=1,popvalue="- none -",value= #"DB_GetAllDevicesWithData()"
-	CheckBox check_DataBrowser_DisplayTTL,pos={18.00,27.00},size={128.00,15.00},proc=DB_CheckProc_ChangedSetting,title="Display TTL Channels"
-	CheckBox check_DataBrowser_DisplayTTL,help={"Display TTL channel data"}
-	CheckBox check_DataBrowser_DisplayTTL,userdata(ResizeControlsInfo)= A"!!,BI!!#=;!!#@d!!#<(z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
-	CheckBox check_DataBrowser_DisplayTTL,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Duafnzzzzzzzzzzz"
-	CheckBox check_DataBrowser_DisplayTTL,userdata(ResizeControlsInfo) += A"zzz!!#u:Duafnzzzzzzzzzzzzzz!!!"
-	CheckBox check_DataBrowser_DisplayTTL,value= 0
-	CheckBox check_DataBrowser_DisplayADChan,pos={18.00,45.00},size={124.00,15.00},proc=DB_CheckProc_ChangedSetting,title="Display AD Channels"
-	CheckBox check_DataBrowser_DisplayADChan,help={"Display AD (analog to digital) channel data"}
-	CheckBox check_DataBrowser_DisplayADChan,userdata(ResizeControlsInfo)= A"!!,BI!!#>B!!#@\\!!#<(z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
-	CheckBox check_DataBrowser_DisplayADChan,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Duafnzzzzzzzzzzz"
-	CheckBox check_DataBrowser_DisplayADChan,userdata(ResizeControlsInfo) += A"zzz!!#u:Duafnzzzzzzzzzzzzzz!!!"
-	CheckBox check_DataBrowser_DisplayADChan,value= 1
-	CheckBox check_DataBrowser_AverageTraces,pos={270.00,9.00},size={92.00,15.00},proc=DB_CheckProc_ChangedSetting,title="Average traces"
-	CheckBox check_DataBrowser_AverageTraces,help={"Displays the average (pink trace) of overlayed sweeps for each channel"}
-	CheckBox check_DataBrowser_AverageTraces,userdata(ResizeControlsInfo)= A"!!,HB!!#:r!!#?q!!#<(z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
-	CheckBox check_DataBrowser_AverageTraces,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Duafnzzzzzzzzzzz"
-	CheckBox check_DataBrowser_AverageTraces,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
-	CheckBox check_DataBrowser_AverageTraces,value= 0
 	Button button_DataBrowser_setaxis,pos={20.00,568.00},size={150.00,23.00},proc=DB_ButtonProc_AutoScale,title="Autoscale"
 	Button button_DataBrowser_setaxis,help={"Autoscale sweep data"}
 	Button button_DataBrowser_setaxis,userdata(ResizeControlsInfo)= A"!!,BY!!#Cs!!#A%!!#<pz!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	Button button_DataBrowser_setaxis,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#?(FEDG<zzzzzzzzzzz"
 	Button button_DataBrowser_setaxis,userdata(ResizeControlsInfo) += A"zzz!!#?(FEDG<zzzzzzzzzzzzzz!!!"
-	SetVariable setvar_DataBrowser_SweepNo,pos={227,515},size={74.00,35.00},proc=DB_SetVarProc_SweepNo
-	SetVariable setvar_DataBrowser_SweepNo,help={"Sweep number of last sweep plotted"}
-	SetVariable setvar_DataBrowser_SweepNo,userdata(ResizeControlsInfo)= A"!!,Gs!!#Ce^]6]c!!#=oz!!#r+D.OhkBk2=!zzzzzzzzzzzzz!!#`-A7TLf!!%+Sz"
-	SetVariable setvar_DataBrowser_SweepNo,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#?(FEDG<zzzzzzzzzzz"
-	SetVariable setvar_DataBrowser_SweepNo,userdata(ResizeControlsInfo) += A"zzz!!#?(FEDG<zzzzzzzzzzzzzz!!!"
-	SetVariable setvar_DataBrowser_SweepNo,userdata(lastSweep)=  "NaN",fSize=24
-	SetVariable setvar_DataBrowser_SweepNo,limits={0,0,1},value= _NUM:0,live= 1
+	SetVariable setvar_SweepControl_SweepNo,pos={227.00,515.00},size={74.00,35.00},proc=DB_SetVarProc_SweepNo
+	SetVariable setvar_SweepControl_SweepNo,help={"Sweep number of last sweep plotted"}
+	SetVariable setvar_SweepControl_SweepNo,userdata(ResizeControlsInfo)= A"!!,Gs!!#Ce^]6]c!!#=oz!!#r+D.OhkBk2=!zzzzzzzzzzzzz!!#`-A7TLf!!%+Sz"
+	SetVariable setvar_SweepControl_SweepNo,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#?(FEDG<zzzzzzzzzzz"
+	SetVariable setvar_SweepControl_SweepNo,userdata(ResizeControlsInfo) += A"zzz!!#?(FEDG<zzzzzzzzzzzzzz!!!"
+	SetVariable setvar_SweepControl_SweepNo,userdata(lastSweep)=  "NaN",fSize=24
+	SetVariable setvar_SweepControl_SweepNo,limits={0,0,1},value= _NUM:0,live= 1
 	PopupMenu popup_LBNumericalKeys,pos={620.00,432.00},size={150.00,19.00},bodyWidth=150,proc=DB_PopMenuProc_LabNotebook
 	PopupMenu popup_LBNumericalKeys,help={"Select numeric lab notebook data to display"}
 	PopupMenu popup_LBNumericalKeys,userdata(ResizeControlsInfo)= A"!!,J,!!#C=!!#A%!!#<Pz!!#N3Bk1ct<C^(Dzzzzzzzzzzzzz!!#N3Bk1ct<C^(Dz"
@@ -547,47 +490,11 @@ Window DataBrowser() : Panel
 	GroupBox group_labnotebook_ctrls,userdata(ResizeControlsInfo)= A"!!,J*!!#C2J,hqd!!#?Uz!!#N3Bk1ct<C^(Dzzzzzzzzzzzzz!!#N3Bk1ct<C^(Dz"
 	GroupBox group_labnotebook_ctrls,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#N3Bk1ct<C]S6zzzzzzzzzz"
 	GroupBox group_labnotebook_ctrls,userdata(ResizeControlsInfo) += A"zzz!!#N3Bk1ct<C]S6zzzzzzzzzzzzz!!!"
-	CheckBox check_DataBrowser_ZeroTraces,pos={270.00,27.00},size={73.00,15.00},proc=DB_CheckProc_ChangedSetting,title="Zero traces"
-	CheckBox check_DataBrowser_ZeroTraces,help={"Sets the baseline of the sweep to zero by differentiating and the integrating a copy of the sweep"}
-	CheckBox check_DataBrowser_ZeroTraces,userdata(ResizeControlsInfo)= A"!!,HB!!#=;!!#?K!!#<(z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
-	CheckBox check_DataBrowser_ZeroTraces,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Duafnzzzzzzzzzzz"
-	CheckBox check_DataBrowser_ZeroTraces,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
-	CheckBox check_DataBrowser_ZeroTraces,value= 0
-	SetVariable setvar_DataBrowser_SweepStep,pos={324.00,560.00},size={67.00,18.00},bodyWidth=40,title="Step"
-	SetVariable setvar_DataBrowser_SweepStep,help={"Set the increment between sweeps"}
-	SetVariable setvar_DataBrowser_SweepStep,userdata(ResizeControlsInfo)= A"!!,H]!!#Cq!!#??!!#<Hz!!#`-A7TLf!!%+Szzzzzzzzzzzzz!!#r+D.OhkBk2=!z"
-	SetVariable setvar_DataBrowser_SweepStep,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#?(FEDG<zzzzzzzzzzz"
-	SetVariable setvar_DataBrowser_SweepStep,userdata(ResizeControlsInfo) += A"zzz!!#?(FEDG<zzzzzzzzzzzzzz!!!"
-	SetVariable setvar_DataBrowser_SweepStep,userdata(lastSweep)=  "0",fSize=12
-	SetVariable setvar_DataBrowser_SweepStep,limits={1,inf,1},value= _NUM:1
-	CheckBox checkbox_DB_AutoScaleVertAxVisX,pos={179.00,572.00},size={40.00,15.00},proc=DB_CheckProc_ScaleAxes,title="Vis X"
-	CheckBox checkbox_DB_AutoScaleVertAxVisX,help={"Scale the y axis to the visible x data range"}
-	CheckBox checkbox_DB_AutoScaleVertAxVisX,userdata(ResizeControlsInfo)= A"!!,GC!!#Ct!!#>.!!#<(z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
-	CheckBox checkbox_DB_AutoScaleVertAxVisX,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#?(FEDG<zzzzzzzzzzz"
-	CheckBox checkbox_DB_AutoScaleVertAxVisX,userdata(ResizeControlsInfo) += A"zzz!!#?(FEDG<zzzzzzzzzzzzzz!!!"
-	CheckBox checkbox_DB_AutoScaleVertAxVisX,value= 0
-	Slider slider_dDAQ_regions,pos={446.00,11.00},size={233.00,54.00},disable=2,proc=DB_SliderProc_ChangedSetting
-	Slider slider_dDAQ_regions,help={"Allows to view only regions from the selected headstage (oodDAQ) resp. the selected headstage (dDAQ). Choose -1 to display all."}
-	Slider slider_dDAQ_regions,userdata(ResizeControlsInfo)= A"!!,IE!!#;=!!#B#!!#>fz!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
-	Slider slider_dDAQ_regions,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:DuaGl<C]S7zzzzzzzzzz"
-	Slider slider_dDAQ_regions,userdata(ResizeControlsInfo) += A"zzz!!#u:DuaGl<C]S7zzzzzzzzzzzzz!!!"
-	Slider slider_dDAQ_regions,limits={-1,7,1},value= -1,vert= 0
-	Button button_databrowser_restore,pos={716.00,13.00},size={76.00,21.00},proc=DB_ButtonProc_RestoreData,title="Restore data"
-	Button button_databrowser_restore,help={"Restore the data in its pristine state without any modifications"}
-	Button button_databrowser_restore,userdata(ResizeControlsInfo)= A"!!,JD!!#;]!!#?Q!!#<`z!!#](Aon\"q<C^(Dzzzzzzzzzzzzz!!#](Aon\"Q<C^(Dz"
-	Button button_databrowser_restore,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:DuaGl<C]S7zzzzzzzzzz"
-	Button button_databrowser_restore,userdata(ResizeControlsInfo) += A"zzz!!#u:Duafn!(TR7zzzzzzzzzzzzz!!!"
 	Button button_BSP_open,pos={716.00,40.00},size={76.00,21.00},proc=BSP_ButtonProc_Panel,title="<<"
 	Button button_BSP_open,help={"Open Side Panel"}
 	Button button_BSP_open,userdata(ResizeControlsInfo)= A"!!,JD!!#>.!!#?Q!!#<`z!!#](Aon\"q<C^(Dzzzzzzzzzzzzz!!#](Aon\"Q<C^(Dz"
 	Button button_BSP_open,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Duafn!(TR7zzzzzzzzzz"
 	Button button_BSP_open,userdata(ResizeControlsInfo) += A"zzz!!#u:Duafn!(TR7zzzzzzzzzzzzz!!!"
-	CheckBox check_DataBrowser_HideSweep,pos={153.00,9.00},size={110.00,15.00},proc=DB_CheckProc_ChangedSetting,title="Hide sweep traces"
-	CheckBox check_DataBrowser_HideSweep,help={"Hide all sweep traces. This setting is usually combined with \"Average Traces\"."}
-	CheckBox check_DataBrowser_HideSweep,userdata(ResizeControlsInfo)= A"!!,G)!!#:r!!#@@!!#<(z!!#](Aon\"q<C^(Dzzzzzzzzzzzzz!!#](Aon\"Q<C^(Dz"
-	CheckBox check_DataBrowser_HideSweep,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:DuaGl<C]S7zzzzzzzzzz"
-	CheckBox check_DataBrowser_HideSweep,userdata(ResizeControlsInfo) += A"zzz!!#u:Duafn!(TR7zzzzzzzzzzzzz!!!"
-	CheckBox check_DataBrowser_HideSweep,value= 0
 	DefineGuide UGV0={FR,-200},UGV1={FL,20},UGH1={FB,-100},UGH2={FT,70},UGH0={UGH1,0.25,UGH2}
 	SetWindow kwTopWin,hook(ResizeControls)=ResizeControls#ResizeControlsHook
 	SetWindow kwTopWin,userdata(ResizeControlsGuides)= A"<C^(D4&ndO0frB*8232+7n>Bs<C]S63r"
@@ -600,19 +507,19 @@ Window DataBrowser() : Panel
 	SetWindow kwTopWin,userdata(ResizeControlsInfoUGV1)= A":-hTC3`S[N0frH.:-*K.D/`i:4&f?Z764FiATBk':Jsbf:JOkT9KFjh:et\"]<(Tk\\3\\iBA0JGRY<CoSI0fhct4%E:B6q&jl4&SL@:et\"]<(Tk\\3\\iBN"
 	SetWindow kwTopWin,userdata(ResizeControlsInfoUGH2)= A":-hTC3`S[@1-8Q/:-*K.D/`i:4&f?Z764FiATBk':Jsbf:JOkT9KFmi:et\"]<(Tk\\3]A`F0JGRY<CoSI0fhd'4%E:B6q&jl4&SL@:et\"]<(Tk\\3]A`S"
 	Execute/Q/Z "SetWindow kwTopWin sizeLimit={600,450,inf,inf}" // sizeLimit requires Igor 7 or later
-	Display/W=(200,187,600,561)/FG=(UGV1,UGH2,UGV0,UGH0)/HOST=#
+	Display/W=(200,187,600,561)/FG=(UGV1,UGH2,UGV0,UGH0)/HOST=# 
 	ModifyGraph margin(left)=28,margin(bottom)=1
 	RenameWindow #,DataBrowserGraph
 	SetActiveSubwindow ##
-	NewNotebook /F=1 /N=WaveNoteDisplay /W=(200,187,600,561)/FG=(UGV0,UGH2,FR,UGH0) /HOST=# /OPTS=10
+	NewNotebook /F=1 /N=WaveNoteDisplay /W=(200,187,600,561)/FG=(UGV0,UGH2,FR,UGH0) /HOST=# /OPTS=10 
 	Notebook kwTopWin, defaultTab=36, autoSave= 1, showRuler=0, rulerUnits=1
 	Notebook kwTopWin newRuler=Normal, justification=0, margins={0,0,128}, spacing={0,0,0}, tabs={}, rulerDefaults={"Arial",10,0,(0,0,0)}
-	Notebook kwTopWin, zdata= "GaqDU%ejN7!Z)u^\"(F_BAcgt=>?2+c&.'2989@[[K>tpnK\"?L6M8jCF(5$*oAmu5P!$@%)/c"
+	Notebook kwTopWin, zdata= "GaqDU%ejN7!Z)u^\"(F_BAcgu2S,7dSL]iZ-,W[?i6\"=DG6/B>,7,t^3K>Ff@1GOXc!\"Z\"8'`"
 	Notebook kwTopWin, zdataEnd= 1
 	Execute/Q/Z "SetWindow kwTopWin sizeLimit={600,450,inf,inf}" // sizeLimit requires Igor 7 or later
 	RenameWindow #,WaveNoteDisplay
 	SetActiveSubwindow ##
-	Display/W=(200,187,600,501)/FG=(UGV1,UGH0,UGV0,UGH1)/HOST=#
+	Display/W=(200,187,600,501)/FG=(UGV1,UGH0,UGV0,UGH1)/HOST=# 
 	ModifyGraph margin(right)=74
 	TextBox/C/N=text0/F=0/B=1/X=0.50/Y=2.02/E=2 ""
 	RenameWindow #,LabNoteBook
@@ -621,13 +528,14 @@ EndMacro
 
 Function DB_DataBrowserStartupSettings()
 
-	string allCheckBoxes, mainPanel, lbPanel, mainGraph, lbGraph
+	string allCheckBoxes, mainPanel, lbPanel, mainGraph, lbGraph, bsPanel
 	variable i, numCheckBoxes
 
 	mainPanel = "DataBrowser"
 	lbPanel   = DB_GetNotebookSubWindow(mainPanel)
 	mainGraph = DB_GetMainGraph(mainPanel)
 	lbGraph   = DB_GetLabNotebookGraph(mainPanel)
+	bsPanel   = BSP_GetPanel(mainPanel)
 
 	if(!windowExists(mainPanel))
 		print "A panel named \"DataBrowser\" does not exist"
@@ -638,31 +546,23 @@ Function DB_DataBrowserStartupSettings()
 	// remove tools
 	HideTools/A/W=$mainPanel
 
-	SetSetVariable(mainPanel, "setvar_DataBrowser_SweepNo", 0)
-	SetVariable setvar_DataBrowser_SweepNo, win=$mainPanel, limits={0, 0, 1}
-	SetValDisplay(mainPanel, "valdisp_DataBrowser_LastSweep", var=0)
+	SetSetVariable(mainPanel, "setvar_SweepControl_SweepNo", 0)
+	SetVariable setvar_SweepControl_SweepNo, win=$mainPanel, limits={0, 0, 1}
+	SetValDisplay(mainPanel, "valdisp_SweepControl_LastSweep", var=0)
 
 	RemoveTracesFromGraph(mainGraph)
 	RemoveTracesFromGraph(lbGraph)
 
 	Notebook $lbPanel selection={startOfFile, endOfFile}
 	Notebook $lbPanel text = ""
-	SetPopupMenuIndex(mainPanel, "popup_DB_lockedDevices", 0)
-	SetSetVariable(mainPanel, "setvar_DataBrowser_SweepStep", 1)
+	SetSetVariable(bsPanel, "setvar_SweepControl_SweepStep", 1)
 
 	SetWindow $mainPanel, userdata(DataFolderPath) = ""
 
-	allCheckBoxes = ControlNameList(mainPanel, ";", "check*")
+	SetCheckBoxState(bsPanel, "check_BrowserSettings_ADC", CHECKBOX_SELECTED)
 
-	numCheckBoxes = ItemsInList(allCheckBoxes)
-	for(i = 0; i < numCheckBoxes; i += 1)
-		SetCheckBoxState(mainPanel, StringFromList(i, allCheckBoxes), CHECKBOX_UNSELECTED)
-	endfor
-
-	SetCheckBoxState(mainPanel, "check_DataBrowser_DisplayADChan", CHECKBOX_SELECTED)
-
-	SetSliderPositionIndex(mainPanel, "slider_dDAQ_regions", -1)
-	DisableControl(mainPanel, "slider_dDAQ_regions")
+	SetSliderPositionIndex(bsPanel, "slider_BrowserSettings_dDAQ", -1)
+	DisableControl(bsPanel, "slider_BrowserSettings_dDAQ")
 
 	DB_ClearGraph(mainPanel)
 	SetPopupMenuIndex(mainPanel, "popup_LBNumericalKeys", 0)
@@ -676,29 +576,30 @@ End
 Function DB_ButtonProc_ChangeSweep(ba) : ButtonControl
 	STRUCT WMButtonAction &ba
 
-	string win, mainPanel, ctrl
+	string win, mainPanel, bsPanel, ctrl
 	variable step, sweepNo, currentSweep
 
 	win = ba.win
 	mainPanel = GetMainWindow(win)
+	bsPanel   = BSP_GetPanel(win)
 
 	switch(ba.eventcode)
 		case 2: // mouse up
 			ctrl = ba.ctrlName
 
-			currentSweep = GetSetVariable(mainPanel, "setvar_DataBrowser_SweepNo")
-			step = GetSetVariable(mainPanel, "setvar_DataBrowser_SweepStep")
+			currentSweep = GetSetVariable(mainPanel, "setvar_SweepControl_SweepNo")
+			step = GetSetVariable(bsPanel, "setvar_SweepControl_SweepStep")
 
-			if(!cmpstr(ctrl, "button_DataBrowser_PrevSweep"))
+			if(!cmpstr(ctrl, "button_SweepControl_PrevSweep"))
 				sweepNo = currentSweep - step
-			elseif(!cmpstr(ctrl, "button_DataBrowser_NextSweep"))
+			elseif(!cmpstr(ctrl, "button_SweepControl_NextSweep"))
 				sweepNo = currentSweep + step
 			else
 				ASSERT(0, "unhandled control name")
 			endif
 
 			sweepNo = DB_ClipSweepNumber(win, sweepNo)
-			SetSetVariable(mainPanel, "setvar_DataBrowser_SweepNo", sweepNo)
+			SetSetVariable(mainPanel, "setvar_SweepControl_SweepNo", sweepNo)
 			OVS_ChangeSweepSelectionState(win, CHECKBOX_SELECTED, sweepNO=sweepNo)
 			DB_UpdateSweepPlot(win)
 			break
@@ -736,6 +637,7 @@ Function DB_PopMenuProc_LockDBtoDevice(pa) : PopupMenuControl
 	switch(pa.eventcode)
 		case 2: // mouse up
 			DB_LockDBPanel(mainPanel, pa.popStr)
+			DB_UpdateSweepPlot(mainPanel)
 			break
 	endswitch
 
@@ -895,10 +797,10 @@ Function DB_CheckProc_ChangedSetting(cba) : CheckBoxControl
 	STRUCT WMCheckboxAction &cba
 
 	variable checked, channelNum
-	string win, mainPanel, ctrl, channelType, device
+	string win, bsPanel, ctrl, channelType, device
 
 	win = cba.win
-	mainPanel = GetMainWindow(win)
+	bsPanel = BSP_GetPanel(win)
 
 	switch(cba.eventCode)
 		case 2: // mouse up
@@ -906,11 +808,11 @@ Function DB_CheckProc_ChangedSetting(cba) : CheckBoxControl
 			checked    = cba.checked
 
 			strswitch(ctrl)
-				case "check_DataBrowser_dDAQMode":
+				case "check_BrowserSettings_dDAQ":
 					if(checked)
-						EnableControl(mainPanel, "slider_dDAQ_regions")
+						EnableControl(bsPanel, "slider_BrowserSettings_dDAQ")
 					else
-						DisableControl(mainPanel, "slider_dDAQ_regions")
+						DisableControl(bsPanel, "slider_BrowserSettings_dDAQ")
 					endif
 					break
 				default:
@@ -944,12 +846,12 @@ End
 static Function DB_PanelUpdate(win)
 	string win
 
-	string mainPanel, graph
+	string bsPanel, graph
 
-	mainPanel = GetMainWindow(win)
+	bsPanel = BSP_GetPanel(win)
 	graph = DB_GetMainGraph(win)
 
-	if(GetCheckBoxState(mainPanel, "checkbox_DB_AutoScaleVertAxVisX"))
+	if(GetCheckBoxState(bsPanel, "check_Display_VisibleXrange"))
 		AutoscaleVertAxisVisXRange(graph)
 	endif
 End
@@ -981,7 +883,7 @@ Function DB_CheckProc_OverlaySweeps(cba) : CheckBoxControl
 			endif
 
 			if(OVS_IsActive(win))
-				sweepNo = GetSetVariable(mainPanel, "setvar_DataBrowser_SweepNo")
+				sweepNo = GetSetVariable(mainPanel, "setvar_SweepControl_SweepNo")
 				OVS_ChangeSweepSelectionState(win, CHECKBOX_SELECTED, sweepNo=sweepNo)
 			endif
 
@@ -1049,8 +951,8 @@ Function DB_ButtonProc_RestoreData(ba) : ButtonControl
 			traceList = GetAllSweepTraces(graph)
 			ReplaceAllWavesWithBackup(graph, traceList)
 
-			zeroTracesOldState = GetCheckBoxState(mainPanel, "check_DataBrowser_ZeroTraces")
-			SetCheckBoxState(mainPanel, "check_DataBrowser_ZeroTraces", CHECKBOX_UNSELECTED)
+			zeroTracesOldState = GetCheckBoxState(bsPanel, "check_Calculation_ZeroTraces")
+			SetCheckBoxState(bsPanel, "check_Calculation_ZeroTraces", CHECKBOX_UNSELECTED)
 
 			if(!AR_IsActive(mainPanel))
 				DB_UpdateSweepPlot(mainPanel)
@@ -1061,7 +963,7 @@ Function DB_ButtonProc_RestoreData(ba) : ButtonControl
 				SetCheckBoxState(bsPanel, "check_auto_remove", autoRemoveOldState)
 			endif
 
-			SetCheckBoxState(mainPanel, "check_DataBrowser_ZeroTraces", zeroTracesOldState)
+			SetCheckBoxState(bsPanel, "check_Calculation_ZeroTraces", zeroTracesOldState)
 			break
 	endswitch
 

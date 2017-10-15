@@ -296,10 +296,10 @@ Constant IGOR_TYPE_STRUCT_PARAMETER = 0x200
 
 /// @name TabControl values in Browser Settings Panel
 /// @{
-Constant MIES_BSP_OVS = 0
-Constant MIES_BSP_CS  = 1
-Constant MIES_BSP_AR  = 2
-Constant MIES_BSP_PA  = 3
+Constant MIES_BSP_OVS = 1
+Constant MIES_BSP_CS  = 2
+Constant MIES_BSP_AR  = 3
+Constant MIES_BSP_PA  = 4
 /// @}
 
 /// @name values for BrowserSettings UserData
