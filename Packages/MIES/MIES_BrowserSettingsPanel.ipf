@@ -48,7 +48,7 @@ Function BSP_OpenPanel(mainPanel)
 
 	ASSERT(windowExists(mainPanel), "HOST panel does not exist")
 	NewPanel/HOST=$mainPanel/EXT=1/W=(260,0,0,600)/N=$EXT_PANEL_SUBWINDOW  as " "
-	Execute "DataBrowserPanel()"
+	Execute "BrowserSettingsPanel()"
 	BSP_DynamicStartupSettings(mainPanel)
 	BSP_MainPanelButtonToggle(mainPanel, 0)
 End
@@ -335,7 +335,7 @@ Function BSP_ClosePanelHook(s)
 End
 
 /// @brief window macro for side panel
-Window DataBrowserPanel() : Panel // no dynamic changes here
+Window BrowserSettingsPanel() : Panel
 	TabControl Settings,pos={2.00,2.00},size={255.00,19.00},proc=ACL_DisplayTab
 	TabControl Settings,userdata(currenttab)=  "1",tabLabel(0)="Sweeps"
 	TabControl Settings,tabLabel(1)="Channels",tabLabel(2)="Artefact"
