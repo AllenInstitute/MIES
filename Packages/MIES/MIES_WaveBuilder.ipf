@@ -704,26 +704,18 @@ static Function/WAVE WB_MakeWaveBuilderWave(WP, WPT, SegWvType, stepCount, numEp
 			WB_ApplyOffset(params)
 		endif
 
-		if(updateEpochIDWave)
-			if(stepCount == 0)
-				WAVE epochID = GetEpochID()
-				if(i == 0)
-					epochID = 0
-				endif
-				epochID[i][%timeBegin] = accumulatedDuration
-				epochID[i][%timeEnd]   = accumulatedDuration + params.duration
-			endif
+		if(updateEpochIDWave && stepCount == 0)
+			WB_UpdateEpochID(i, params.duration, accumulatedDuration)
 		endif
 
 		WAVE segmentWave = WB_GetSegmentWave()
-		accumulatedDuration += DimSize(segmentWave, ROWS) * HARDWARE_ITC_MIN_SAMPINT
-
 		Concatenate/NP=0 {segmentWave}, WaveBuilderWave
 	endfor
 
 	// adjust epochID timestamps for stimset flipping
 	if(updateEpochIDWave && SegWvType[98])
 		if(stepCount == 0)
+			WAVE epochID = GetEpochID()
 			for(i = 0; i < numEpochs; i += 1)
 				epochID[i][%timeBegin] = accumulatedDuration - epochID[i][%timeBegin]
 				epochID[i][%timeEnd]   = accumulatedDuration - epochID[i][%timeEnd]
@@ -745,6 +737,26 @@ static Function/WAVE WB_MakeWaveBuilderWave(WP, WPT, SegWvType, stepCount, numEp
 	endif
 
 	return WaveBuilderWave
+End
+
+/// @brief Update the accumulated stimset duration for the mouse selection via GetEpochID()
+///
+/// @param[in]      epochIndex          index of the epoch
+/// @param[in]      epochDuration       duration of the current segment
+/// @param[in, out] accumulatedDuration accumulated duration in the stimset for the first step
+static Function WB_UpdateEpochID(epochIndex, epochDuration, accumulatedDuration)
+	variable epochIndex, epochDuration
+	variable &accumulatedDuration
+
+	WAVE epochID = GetEpochID()
+	if(epochIndex == 0)
+		epochID = 0
+	endif
+
+	epochID[epochIndex][%timeBegin] = accumulatedDuration
+	epochID[epochIndex][%timeEnd]   = accumulatedDuration + epochDuration
+
+	accumulatedDuration += epochDuration
 End
 
 /// @brief Try to recover a custom wave when in the old format
