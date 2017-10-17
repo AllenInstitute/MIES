@@ -1879,14 +1879,6 @@ static Function WBP_UpdateEpochControls()
 	endif
 End
 
-static Function WBP_SelectEpoch(epoch)
-	variable epoch
-
-	WAVE SegWvType = GetSegmentTypeWave()
-
-	PGC_SetAndActivateControl(panel, "WBP_WaveType", val = SegWvType[epoch])
-End
-
 Function WBP_SetVarProc_TotEpoch(sva) : SetVariableControl
 	STRUCT WMSetVariableAction &sva
 
@@ -1910,7 +1902,8 @@ Function WBP_SetVarProc_EpochToEdit(sva) : SetVariableControl
 		case 1: // mouse up
 		case 2: // Enter key
 		case 3: // Live update
-			WBP_SelectEpoch(sva.dval)
+			WAVE SegWvType = GetSegmentTypeWave()
+			PGC_SetAndActivateControl(panel, "WBP_WaveType", val = SegWvType[sva.dval])
 			break
 	endswitch
 End
