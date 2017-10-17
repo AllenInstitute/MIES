@@ -547,6 +547,9 @@ static Function/WAVE WB_MakeWaveBuilderWave(WP, WPT, SegWvType, stepCount, numEp
 			printf "Stimset %s: User input has generated a negative/non-finite epoch duration. Please adjust input. Duration for epoch has been reset to 1 ms.", stimset
 			params.duration = 1
 		elseif(params.duration == 0 && type != EPOCH_TYPE_CUSTOM && type != EPOCH_TYPE_COMBINE && type != EPOCH_TYPE_PULSE_TRAIN)
+			if(updateEpochIDWave && stepCount == 0)
+				WB_UpdateEpochID(i, params.duration, accumulatedDuration)
+			endif
 			continue
 		endif
 
