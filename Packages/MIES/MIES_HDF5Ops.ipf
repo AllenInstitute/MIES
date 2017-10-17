@@ -305,6 +305,7 @@ Function HD_LoadReplaceStimSet([incomingFileName, cmdID, incomingFileDirectory])
 		if(ParamIsDefault(incomingFileDirectory))
 			NewPath/O miesHDF5StimStorage, "C:\\MiesHDF5Files\\SavedStimSets"
 			HDF5OpenFile /R /Z /P=miesHDF5StimStorage fileID as ""	 // Displays a dialog
+			KillPath/Z miesHDF5StimStorage
 			if(V_flag == 0)				 // User selected a file?
 				HDF5ListGroup /R=1 /TYPE=3 fileID, "/"
 			else
@@ -315,6 +316,7 @@ Function HD_LoadReplaceStimSet([incomingFileName, cmdID, incomingFileDirectory])
 			NewPath/O miesHDF5StimStorage, incomingFileDirectory
 			ASSERT(V_flag == 0, "Stim set directory does not exist or is not connected/accessible if mapped drive")
 			HDF5OpenFile /R /Z /P=miesHDF5StimStorage fileID as ""	 // Displays a dialog
+			KillPath/Z miesHDF5StimStorage
 			if(V_flag == 0)				 // User selected a file?
 				HDF5ListGroup /R=1 /TYPE=3 fileID, "/"
 			else
@@ -402,6 +404,7 @@ Function HD_LoadAdditionalStimSet([incomingFileName, cmdID])
 	if(ParamIsDefault(incomingFileName))
 		NewPath/O miesHDF5StimStorage, "C:\\MiesHDF5Files\\SavedStimSets"
 		HDF5OpenFile /R /Z /P=miesHDF5StimStorage fileID as ""	 // Displays a dialog
+		KillPath/Z miesHDF5StimStorage
 		if(V_flag == 0)				 // User selected a file?
 			HDF5ListGroup /R=1 /TYPE=3 fileID, "/"
 		else
@@ -732,6 +735,7 @@ Function HD_LoadConfigSet([incomingFileName, cmdID])
 	if( ParamIsDefault(incomingFileName) )
 		NewPath/O miesHDF5ConfigStorage, "C:\\MiesHDF5Files\\SavedConfigFiles\\"
 		HDF5OpenFile /R /Z /P=miesHDF5ConfigStorage fileID as ""	 // Displays a dialog
+		KillPath/Z miesHDF5ConfigStorage
 		if(V_flag == 0)				 // User selected a file?
 			HDF5ListGroup /R=1 /TYPE=3 fileID, "/"
 		else
@@ -852,6 +856,7 @@ Function HD_LoadDataSet([incomingFileName, cmdID])
 	if(ParamIsDefault(incomingFileName))
 		NewPath/O miesHDF5DataStorage, "C:\\MiesHDF5Files\\SavedDataSets"
 		HDF5OpenFile /R /Z /P=miesHDF5DataStorage fileID as ""	 // Displays a dialog
+		KillPath/Z miesHDF5DataStorage
 		if(V_flag != 0) // User cancelled the dialog
 			print "File load cancelled..."
 			return 0

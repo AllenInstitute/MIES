@@ -372,7 +372,7 @@ Function NWB_ExportWithDialog(exportType)
 	variable exportType
 
 	string expName, path, filename
-	variable refNum
+	variable refNum, pathNeedsKilling
 
 	expName = GetExperimentName()
 
@@ -382,6 +382,7 @@ Function NWB_ExportWithDialog(exportType)
 			NewPath/Q Desktop, SpecialDirPath("Desktop", 0, 0, 0)
 		endif
 		path = "Desktop"
+		pathNeedsKilling = 1
 
 		filename = "UntitledExperiment-" + GetTimeStamp()
 	else
@@ -392,6 +393,10 @@ Function NWB_ExportWithDialog(exportType)
 	filename += "-compressed.nwb"
 
 	Open/D/M="Export into NWB"/F="NWB Files:.nwb;"/P=$path refNum as filename
+
+	if(pathNeedsKilling)
+		KillPath/Z $path
+	endif
 
 	if(isEmpty(S_filename))
 		return NaN

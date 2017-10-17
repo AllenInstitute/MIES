@@ -3466,7 +3466,7 @@ Function SaveExperimentWrapper(path, filename, [overrideInteractiveMode])
 	string path, filename
 	variable overrideInteractiveMode
 
-	variable refNum
+	variable refNum, pathNeedsKilling
 
 	if(ParamIsDefault(overrideInteractiveMode))
 		NVAR interactiveMode = $GetInteractiveMode()
@@ -3488,8 +3488,13 @@ Function SaveExperimentWrapper(path, filename, [overrideInteractiveMode])
 				NewPath/Q Desktop, SpecialDirPath("Desktop", 0, 0, 0)
 			endif
 			path = "Desktop"
+			pathNeedsKilling = 1
 		endif
 		Open/Z/P=$path refNum as filename
+
+		if(pathNeedsKilling)
+			KillPath/Z $path
+		endif
 
 		if(V_flag != 0)
 			return 1
