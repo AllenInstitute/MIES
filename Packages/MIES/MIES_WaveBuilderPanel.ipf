@@ -1887,8 +1887,6 @@ static Function WBP_SelectEpoch(epoch)
 	WAVE SegWvType = GetSegmentTypeWave()
 
 	PGC_SetAndActivateControl(panel, "WBP_WaveType", val = SegWvType[epoch])
-	WBP_ParameterWaveToPanel(SegWvType[epoch])
-	WBP_UpdatePanelIfAllowed()
 End
 
 Function WBP_SetVarProc_TotEpoch(sva) : SetVariableControl
