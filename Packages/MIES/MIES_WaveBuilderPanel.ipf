@@ -1874,8 +1874,7 @@ static Function WBP_UpdateEpochControls()
 	SetVariable setvar_WaveBuilder_CurrentEpoch win=$panel, limits = {0, numEpochs - 1, 1}
 
 	if(currentEpoch >= numEpochs)
-		SetSetVariable(panel, "setvar_WaveBuilder_CurrentEpoch", numEpochs - 1)
-		WBP_SelectEpoch(numEpochs - 1)
+		PGC_SetAndActivateControl(panel, "setvar_WaveBuilder_CurrentEpoch", val = numEpochs - 1)
 	else
 		WBP_UpdatePanelIfAllowed()
 	endif
@@ -2374,8 +2373,7 @@ Function WBP_MainWindowHook(s)
 					return 0
 				endif
 
-				SetSetVariable(panel, "setvar_WaveBuilder_CurrentEpoch", i)
-				WBP_SelectEpoch(i)
+				PGC_SetAndActivateControl(panel, "setvar_WaveBuilder_CurrentEpoch", val = i)
 				return 1
 			endif
 		endfor
