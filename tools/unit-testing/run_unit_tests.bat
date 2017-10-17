@@ -1,4 +1,4 @@
-del/Q *.log
+del/Q *.log *.xml
 
 call autorun-test.bat
 

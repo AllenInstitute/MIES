@@ -3,7 +3,7 @@
 REM Script for automatic test execution and logging from the command line
 REM Opens all experiment files in the current directory in autorun mode
 
-set IgorPath="%PROGRAMFILES%\WaveMetrics\Igor Pro 7 Folder\IgorBinaries_x64\Igor64.exe"
+set IgorPath="c:\Program Files\WaveMetrics\Igor Pro 7 Folder\IgorBinaries_x64\Igor64.exe"
 set StateFile="DO_AUTORUN.TXT"
 
 if exist %IgorPath% goto foundIgor

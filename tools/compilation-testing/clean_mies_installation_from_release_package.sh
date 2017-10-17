@@ -1,6 +1,6 @@
 #!/bin/sh
 
-# Perform a clean MIES installation on linux
+# Perform a clean MIES installation
 # Uses the files from the release package
 
 set -e
@@ -20,12 +20,23 @@ then
   exit 1
 fi
 
-rm -rf ~/WaveMetrics
+case $MSYSTEM in
+  MINGW*)
+      UNZIP_EXE="$top_level/tools/unzip.exe"
+      IGOR_USER_FILES="$USERPROFILE/Documents/WaveMetrics/Igor Pro 7 User Files"
+      ;;
+    *)
+      UNZIP_EXE=unzip
+      IGOR_USER_FILES="$HOME/WaveMetrics/Igor Pro 7 User Files"
+      ;;
+esac
 
-user_proc="$HOME/WaveMetrics/Igor Pro 7 User Files/User Procedures"
-igor_proc="$HOME/WaveMetrics/Igor Pro 7 User Files/Igor Procedures"
-xops="$HOME/WaveMetrics/Igor Pro 7 User Files/Igor Extensions (64-bit)"
-xops_help="$HOME/WaveMetrics/Igor Pro 7 User Files/Igor Help Files"
+rm -rf "$IGOR_USER_FILES"
+
+user_proc="$IGOR_USER_FILES/User Procedures"
+igor_proc="$IGOR_USER_FILES/Igor Procedures"
+xops="$IGOR_USER_FILES/Igor Extensions (64-bit)"
+xops_help="$IGOR_USER_FILES/Igor Help Files"
 
 mkdir -p "$user_proc"
 mkdir -p "$igor_proc"
@@ -48,12 +59,13 @@ folder=release_zip_extracted
 rm -rf $folder
 
 # install files from release package
-unzip "$release_pkg" -d $folder
+"$UNZIP_EXE" "$release_pkg" -d $folder
 
 rm -rf "$folder"/Packages/doc/html
 cp -r  "$folder"/Packages/*  "$user_proc"
 cp -r  "$folder"/XOPs-IP7-64bit/*  "$xops"
 cp -r  "$folder"/XOP-tango-IP7-64bit/* "$xops"
 cp -r  "$folder"/HelpFiles-IP7/* "$xops_help"
+cp "$folder"/version.txt "$IGOR_USER_FILES"
 
 exit 0
