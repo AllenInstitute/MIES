@@ -1806,7 +1806,6 @@ static Function WBP_LoadSet(setName)
 
 	ASSERT(SegWvType[100] <= SEGMENT_TYPE_WAVE_LAST_IDX, "Only supports up to different SEGMENT_TYPE_WAVE_LAST_IDX epochs")
 
-	WBP_SelectEpoch(0)
 	WBP_UpdateEpochControls()
 
 	// reset old state of checkbox and update panel
