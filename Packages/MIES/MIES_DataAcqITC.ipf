@@ -353,44 +353,6 @@ Function ITC_ApplyAutoBias(panelTitle, BaselineSSAvg, SSResistance)
 	endfor
 End
 
-/// @brief Low level implementation for starting the test pulse
-///
-/// Please check before calling this function if not the functions #TP_StartTestPulseSingleDevice
-/// or #TP_StartTestPulseMultiDevice are better suited for your application.
-Function ITC_StartTestPulse(panelTitle)
-	string panelTitle
-
-	variable i
-	string oscilloscopeSubwindow
-
-	oscilloscopeSubwindow = SCOPE_GetGraph(panelTitle)
-	NVAR ITCDeviceIDGlobal = $GetITCDeviceIDGlobal(panelTitle)
-
-	do
-		DoXOPIdle
-		HW_ITC_ResetFifo(ITCDeviceIDGlobal)
-		HW_StartAcq(HARDWARE_ITC_DAC, ITCDeviceIDGlobal, flags=HARDWARE_ABORT_ON_ERROR)
-
-		do
-			// nothing
-		while (HW_ITC_MoreData(ITCDeviceIDGlobal))
-
-		HW_StopAcq(HARDWARE_ITC_DAC, ITCDeviceIDGlobal, prepareForDAQ=1)
-		SCOPE_UpdateOscilloscopeData(panelTitle, TEST_PULSE_MODE)
-		TP_Delta(panelTitle)
-
-		if(mod(i, TEST_PULSE_LIVE_UPDATE_INTERVAL) == 0)
-			SCOPE_UpdateGraph(panelTitle)
-		endif
-
-		DoUpdate/W=$oscilloscopeSubwindow
-
-		i += 1	
-	while(!(GetKeyState(0) & ESCAPE_KEY))
-
-	TP_Teardown(panelTitle)
-END
-
 Function ITC_ADDataBasedWaveNotes(asyncMeasurementWave, panelTitle)
 	WAVE asyncMeasurementWave
 	string panelTitle

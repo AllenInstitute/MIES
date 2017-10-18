@@ -63,7 +63,7 @@ Function TP_StartTestPulseSingleDevice(panelTitle)
 			P_InitBeforeTP(panelTitle)
 		else
 			TP_Setup(panelTitle, TEST_PULSE_FG_SINGLE_DEVICE)
-			ITC_StartTestPulse(panelTitle)
+			TP_StartTestPulseForeground(panelTitle)
 			TP_Teardown(panelTitle)
 		endif
 	catch
@@ -71,6 +71,41 @@ Function TP_StartTestPulseSingleDevice(panelTitle)
 		return NaN
 	endtry
 End
+
+/// @brief Low level implementation for starting the single device foreground test pulse
+static Function TP_StartTestPulseForeground(panelTitle)
+	string panelTitle
+
+	variable i
+	string oscilloscopeSubwindow
+
+	oscilloscopeSubwindow = SCOPE_GetGraph(panelTitle)
+	NVAR ITCDeviceIDGlobal = $GetITCDeviceIDGlobal(panelTitle)
+
+	do
+		DoXOPIdle
+		HW_ITC_ResetFifo(ITCDeviceIDGlobal)
+		HW_StartAcq(HARDWARE_ITC_DAC, ITCDeviceIDGlobal, flags=HARDWARE_ABORT_ON_ERROR)
+
+		do
+			// nothing
+		while (HW_ITC_MoreData(ITCDeviceIDGlobal))
+
+		HW_StopAcq(HARDWARE_ITC_DAC, ITCDeviceIDGlobal, prepareForDAQ=1)
+		SCOPE_UpdateOscilloscopeData(panelTitle, TEST_PULSE_MODE)
+		TP_Delta(panelTitle)
+
+		if(mod(i, TEST_PULSE_LIVE_UPDATE_INTERVAL) == 0)
+			SCOPE_UpdateGraph(panelTitle)
+		endif
+
+		DoUpdate/W=$oscilloscopeSubwindow
+
+		i += 1
+	while(!(GetKeyState(0) & ESCAPE_KEY))
+
+	TP_Teardown(panelTitle)
+END
 
 /// @brief Start a multi device test pulse, always done in background mode
 Function TP_StartTestPulseMultiDevice(panelTitle)
