@@ -4652,7 +4652,7 @@ Function DAP_OneTimeCallAfterDAQ(panelTitle, [forcedStop])
 	if(GetCheckBoxState(panelTitle, "check_Settings_MD"))
 		TPM_StartTestPulseMultiDevice(panelTitle)
 	else
-		TP_StartTestPulseSingleDevice(panelTitle)
+		TPS_StartTestPulseSingleDevice(panelTitle)
 	endif
 End
 
@@ -6894,7 +6894,7 @@ Function DAP_ButtonProc_TestPulse(ba) : ButtonControl
 			elseif(GetCheckBoxState(panelTitle, "check_Settings_MD"))
 				TPM_StartTestPulseMultiDevice(panelTitle)
 			else
-				TP_StartTestPulseSingleDevice(panelTitle)
+				TPS_StartTestPulseSingleDevice(panelTitle)
 			endif
 			break
 	endswitch

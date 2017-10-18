@@ -481,7 +481,7 @@ Function TP_StopTestPulse(panelTitle)
 	runMode = runMode & ~TEST_PULSE_DURING_RA_MOD
 
 	if(runMode == TEST_PULSE_BG_SINGLE_DEVICE)
-		ITC_StopTestPulseSingleDevice(panelTitle)
+		TPS_StopTestPulseSingleDevice(panelTitle)
 		return runMode
 	elseif(runMode == TEST_PULSE_BG_MULTI_DEVICE)
 		TPM_StopTestPulseMultiDevice(panelTitle)
@@ -503,7 +503,7 @@ Function TP_RestartTestPulse(panelTitle, testPulseMode)
 		case TEST_PULSE_NOT_RUNNING:
 			break // nothing to do
 		case TEST_PULSE_BG_SINGLE_DEVICE:
-			TP_StartTestPulseSingleDevice(panelTitle)
+			TPS_StartTestPulseSingleDevice(panelTitle)
 			break
 		case TEST_PULSE_BG_MULTI_DEVICE:
 			TPM_StartTestPulseMultiDevice(panelTitle)

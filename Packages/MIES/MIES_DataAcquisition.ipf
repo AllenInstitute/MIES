@@ -28,7 +28,7 @@ static Function ITC_StopOngoingDAQHelper(panelTitle)
 	variable discardData      = 0
 
 	if(IsDeviceActiveWithBGTask(panelTitle, "Testpulse"))
-		ITC_StopTestPulseSingleDevice(panelTitle)
+		TPS_StopTestPulseSingleDevice(panelTitle)
 
 		needsOTCAfterDAQ = needsOTCAfterDAQ | 0
 		discardData      = discardData      | 1

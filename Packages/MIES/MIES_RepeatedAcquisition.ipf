@@ -75,9 +75,9 @@ static Function RA_HandleITI(panelTitle)
 	endif
 
 	TP_Setup(panelTitle, TEST_PULSE_BG_SINGLE_DEVICE | TEST_PULSE_DURING_RA_MOD)
-	ITC_StartBackgroundTestPulse(panelTitle)
+	TPS_StartBackgroundTestPulse(panelTitle)
 
-	funcList = "ITC_STOPTestPulseSingleDevice(\"" + panelTitle + "\")" + ";" + "RA_Counter(\"" + panelTitle + "\")"
+	funcList = "TPS_StopTestPulseSingleDevice(\"" + panelTitle + "\")" + ";" + "RA_Counter(\"" + panelTitle + "\")"
 	DQS_StartBackgroundTimer(panelTitle, ITI, funcList)
 End
 

@@ -517,7 +517,7 @@ Function TI_runBaselineCheckQC(headstage, [cmdID])
 		
 		// Check to see if Test Pulse is already running...if not running, turn it on...
 		if(!IsDeviceActiveWithBGTask(currentPanel, "TestPulse"))
-			TP_StartTestPulseSingleDevice(currentPanel)
+			TPS_StartTestPulseSingleDevice(currentPanel)
 		endif
 
 		// and now hit the Auto pipette offset
@@ -715,7 +715,7 @@ Function TI_runElectrodeDriftQC(headstage, expTime, [cmdID])
 		
 		// Check to see if Test Pulse is already running...if not running, turn it on...
 		if (!(IsDeviceActiveWithBGTask(currentPanel, "TestPulse")))
-			TP_StartTestPulseSingleDevice(currentPanel)
+			TPS_StartTestPulseSingleDevice(currentPanel)
 		endif
 
 		// and grab the initial resistance avg value again
@@ -855,7 +855,7 @@ Function TI_runInitAccessResisQC(headstage, [cmdID])
 
 		// Check to see if Test Pulse is already running...if not running, turn it on...
 		if(!(IsBackgroundTaskRunning("TestPulse")))
-			TP_StartTestPulseSingleDevice(currentPanel)
+			TPS_StartTestPulseSingleDevice(currentPanel)
 		endif
 
 		// Set up the QC Wave so the background task can get the information it needs
@@ -1160,7 +1160,7 @@ Function TI_runGigOhmSealQC(headstage, [cmdID])
 		
 		// Check to see if Test Pulse is already running...if not running, turn it on...
 		if (!(IsDeviceActiveWithBGTask(currentPanel, "TestPulse")))
-			TP_StartTestPulseSingleDevice(currentPanel)
+			TPS_StartTestPulseSingleDevice(currentPanel)
 		endif
 		
 		// Set up the QC Wave so the background task can get the information it needs
@@ -1520,11 +1520,11 @@ Function TI_runTestPulse(tpCmd, [cmdID])
 		
 		if(tpCmd == 1)	// Turn on the test pulse
 
-			TP_StartTestPulseSingleDevice(currentPanel)
+			TPS_StartTestPulseSingleDevice(currentPanel)
 
 			returnValue = 0
 		elseif(tpCmd == 0) // Turn off the test pulse
-			ITC_StopTestPulseSingleDevice(currentPanel)
+			TPS_StopTestPulseSingleDevice(currentPanel)
 			returnValue = 0
 		else
 			returnValue = -1

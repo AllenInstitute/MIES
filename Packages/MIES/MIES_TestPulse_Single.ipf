@@ -1,13 +1,22 @@
+#pragma TextEncoding = "UTF-8"
+#pragma rtGlobals=3		// Use modern global access method and strict wave access.
+#pragma rtFunctionErrors=1
 
-/// @todo rework logic and make static
-Function ITC_StartBackgroundTestPulse(panelTitle)
+#ifdef AUTOMATED_TESTING
+#pragma ModuleName=MIES_TP_SD
+#endif
+
+/// @file MIES_TestPulse_Multi.ipf
+/// @brief __TPM__ Multi device background test pulse functionality
+
+Function TPS_StartBackgroundTestPulse(panelTitle)
 	string panelTitle
 
-	CtrlNamedBackground TestPulse, period = 5, proc = ITC_TestPulseFunc
+	CtrlNamedBackground TestPulse, period = 5, proc = TPS_TestPulseFunc
 	CtrlNamedBackground TestPulse, start
 End
 
-Function ITC_StopTestPulseSingleDevice(panelTitle)
+Function TPS_StopTestPulseSingleDevice(panelTitle)
 	string panelTitle
 
 	variable headstage
@@ -18,11 +27,11 @@ Function ITC_StopTestPulseSingleDevice(panelTitle)
 End
 
 ///@brief Background execution function for the test pulse data acquisition
-Function ITC_TestPulseFunc(s)
+Function TPS_TestPulseFunc(s)
 	STRUCT BackgroundStruct &s
 
 	SVAR panelTitleG = $GetPanelTitleGlobal()
-	// create a copy as panelTitleG is killed in ITC_StopTestPulseSingleDevice
+	// create a copy as panelTitleG is killed in TPS_StopTestPulseSingleDevice
 	// but we still need it afterwards
 	string panelTitle = panelTitleG
 
@@ -54,7 +63,7 @@ Function ITC_TestPulseFunc(s)
 	if(RA_IsFirstSweep(panelTitle))
 		if(GetKeyState(0) & ESCAPE_KEY)
 			beep
-			ITC_StopTestPulseSingleDevice(panelTitle)
+			TPS_StopTestPulseSingleDevice(panelTitle)
 		endif
 	endif
 
@@ -63,7 +72,7 @@ End
 
 /// @brief Start a single device test pulse, either in background
 /// or in foreground mode depending on the settings
-Function TP_StartTestPulseSingleDevice(panelTitle)
+Function TPS_StartTestPulseSingleDevice(panelTitle)
 	string panelTitle
 
 	AbortOnValue DAP_CheckSettings(panelTitle, TEST_PULSE_MODE),1
@@ -80,12 +89,12 @@ Function TP_StartTestPulseSingleDevice(panelTitle)
 
 			TP_Setup(panelTitle, TEST_PULSE_BG_SINGLE_DEVICE)
 
-			ITC_StartBackgroundTestPulse(panelTitle)
+			TPS_StartBackgroundTestPulse(panelTitle)
 
 			P_InitBeforeTP(panelTitle)
 		else
 			TP_Setup(panelTitle, TEST_PULSE_FG_SINGLE_DEVICE)
-			TP_StartTestPulseForeground(panelTitle)
+			TPS_StartTestPulseForeground(panelTitle)
 			TP_Teardown(panelTitle)
 		endif
 	catch
@@ -95,7 +104,7 @@ Function TP_StartTestPulseSingleDevice(panelTitle)
 End
 
 /// @brief Low level implementation for starting the single device foreground test pulse
-static Function TP_StartTestPulseForeground(panelTitle)
+static Function TPS_StartTestPulseForeground(panelTitle)
 	string panelTitle
 
 	variable i
