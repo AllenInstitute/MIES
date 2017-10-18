@@ -177,7 +177,7 @@ End
 Function RA_Counter(panelTitle)
 	string panelTitle
 
-	variable totTrials, indexing, indexingLocked, backgroundDAQ
+	variable totTrials, indexing, indexingLocked
 	variable numSets
 	string str
 
@@ -191,7 +191,7 @@ Function RA_Counter(panelTitle)
 	totTrials      = RA_GetTotalNumberOfTrials(panelTitle)
 	indexing       = GetCheckBoxState(panelTitle, "Check_DataAcq_Indexing")
 	indexingLocked = GetCheckBoxState(panelTitle, "Check_DataAcq1_IndexingLocked")
-	backgroundDAQ  = GetCheckBoxState(panelTitle, "Check_Settings_BackgrndDataAcq")
+
 
 	sprintf str, "count=%d, activeSetCount=%d\r" count, activeSetCount
 	DEBUGPRINT(str)
@@ -221,16 +221,8 @@ Function RA_Counter(panelTitle)
 			RA_FinishAcquisition(panelTitle)
 		endtry
 
-		if(!backgroundDAQ)
-			ITC_DataAcq(panelTitle)
-			if(Count < (TotTrials - 1)) //prevents test pulse from running after last trial is acquired
-				RA_HandleITI(panelTitle)
-			else
-				RA_FinishAcquisition(panelTitle)
-			endif
-		else
-			ITC_BkrdDataAcq(panelTitle)
-		endif
+		ASSERT(GetCheckBoxState(panelTitle, "Check_Settings_BackgrndDataAcq"), "Only background DAQ can be used with RA")
+		ITC_BkrdDataAcq(panelTitle)
 	else
 		RA_FinishAcquisition(panelTitle)
 	endif
