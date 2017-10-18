@@ -429,9 +429,7 @@ Function ITC_StartDAQSingleDevice(panelTitle, [useBackground])
 
 		AbortOnValue DAP_CheckSettings(panelTitle, DATA_ACQUISITION_MODE),1
 
-		if(IsDeviceActiveWithBGTask(panelTitle, "Testpulse"))
-			ITC_StopTestPulseSingleDevice(panelTitle)
-		endif
+		TP_StopTestPulse(panelTitle)
 
 		if(ParamIsDefault(useBackground))
 			useBackground = GetCheckBoxState(panelTitle, "Check_Settings_BackgrndDataAcq")

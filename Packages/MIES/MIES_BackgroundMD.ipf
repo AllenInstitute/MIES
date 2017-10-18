@@ -25,10 +25,7 @@ Function ITC_StartDAQMultiDevice(panelTitle)
 
 		AbortOnValue DAP_CheckSettings(panelTitle, DATA_ACQUISITION_MODE), 1
 
-		if(IsDeviceActiveWithBGTask(panelTitle, "TestPulseMD"))
-			 ITC_StopTestPulseMultiDevice(panelTitle)
-		endif
-
+		TP_StopTestPulse(panelTitle)
 		ITC_StartDAQMultiDeviceLowLevel(panelTitle)
 	else // data acquistion is ongoing, stop data acq
 		ITC_StopOngoingDAQMultiDevice(panelTitle)
