@@ -55,7 +55,7 @@ Function DQS_StartDAQSingleDevice(panelTitle, [useBackground])
 			DQS_BkrdDataAcq(panelTitle)
 		endif
 	else
-		ITC_StopDAQ(panelTitle)
+		DQ_StopDAQ(panelTitle)
 	endif
 End
 
@@ -71,7 +71,7 @@ static Function DQS_DataAcq(panelTitle)
 	HW_ITC_PrepareAcq(ITCDeviceIDGlobal)
 
 	if(GetCheckBoxState(panelTitle, "Check_DataAcq1_RepeatAcq"))
-		ITC_StartITCDeviceTimer(panelTitle) // starts a timer for each ITC device. Timer is used to do real time ITI timing.
+		DQ_StartITCDeviceTimer(panelTitle) // starts a timer for each ITC device. Timer is used to do real time ITI timing.
 	endif
 
 	HW_StartAcq(HARDWARE_ITC_DAC, ITCDeviceIDGlobal, flags=HARDWARE_ABORT_ON_ERROR)
@@ -97,7 +97,7 @@ Function DQS_BkrdDataAcq(panelTitle)
 	HW_ITC_PrepareAcq(ITCDeviceIDGlobal)
 
 	if(GetCheckboxState(panelTitle, "Check_DataAcq1_RepeatAcq"))
-		ITC_StartITCDeviceTimer(panelTitle) // starts a timer for each ITC device. Timer is used to do real time ITI timing.
+		DQ_StartITCDeviceTimer(panelTitle) // starts a timer for each ITC device. Timer is used to do real time ITI timing.
 	endif
 
 	HW_StartAcq(HARDWARE_ITC_DAC, ITCDeviceIDGlobal, flags=HARDWARE_ABORT_ON_ERROR)
@@ -128,7 +128,7 @@ static Function DQS_StopDataAcq()
 END
 
 Function DQS_StartBackgroundFifoMonitor()
-	CtrlNamedBackground ITC_FIFOMonitor, period = 5, proc = ITC_FIFOMonitor
+	CtrlNamedBackground ITC_FIFOMonitor, period = 5, proc = DQS_FIFOMonitor
 	CtrlNamedBackground ITC_FIFOMonitor, start
 End
 

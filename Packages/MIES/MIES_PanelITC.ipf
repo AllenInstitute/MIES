@@ -4814,7 +4814,7 @@ Function DAP_PopMenuChkProc_StimSetList(pa) : PopupMenuControl
 			                   && indexing)))
 
 			if(activeChannel)
-				dataAcqRunMode = ITC_StopDAQ(panelTitle)
+				dataAcqRunMode = DQ_StopDAQ(panelTitle)
 
 				// stopping DAQ will reset the stimset popupmenu to its initial value
 				// so we have to set the now old value again
@@ -4846,7 +4846,7 @@ Function DAP_PopMenuChkProc_StimSetList(pa) : PopupMenuControl
 			DAP_UpdateDAQControls(panelTitle, REASON_STIMSET_CHANGE)
 
 			if(activeChannel)
-				ITC_RestartDAQ(panelTitle, dataAcqRunMode)
+				DQ_RestartDAQ(panelTitle, dataAcqRunMode)
 			endif
 
 			break
@@ -7787,7 +7787,7 @@ static Function DAP_UnlockDevice(panelTitle)
 	// especially for foreground TP
 	state = GetCheckBoxState(panelTitle, "check_Settings_TPAfterDAQ")
 	SetCheckBoxState(panelTitle, "check_Settings_TPAfterDAQ", CHECKBOX_UNSELECTED)
-	ITC_StopDAQ(panelTitle)
+	DQ_StopDAQ(panelTitle)
 	TP_StopTestPulse(panelTitle)
 	SetCheckBoxState(panelTitle, "check_Settings_TPAfterDAQ", state)
 

@@ -16,7 +16,7 @@ static Function RA_RecalculateITI(panelTitle)
 	variable ITI
 
 	NVAR repurposedTime = $GetRepurposedSweepTime(panelTitle)
-	ITI = GetSetVariable(panelTitle, "SetVar_DataAcq_ITI") - ITC_StopITCDeviceTimer(panelTitle) + repurposedTime
+	ITI = GetSetVariable(panelTitle, "SetVar_DataAcq_ITI") - DQ_StopITCDeviceTimer(panelTitle) + repurposedTime
 	repurposedTime = 0
 
 	return ITI
@@ -234,7 +234,7 @@ static Function RA_FinishAcquisition(panelTitle)
 	string list
 	variable numEntries, i
 
-	ITC_StopITCDeviceTimer(panelTitle)
+	DQ_StopITCDeviceTimer(panelTitle)
 
 	list = GetListofLeaderAndPossFollower(panelTitle)
 

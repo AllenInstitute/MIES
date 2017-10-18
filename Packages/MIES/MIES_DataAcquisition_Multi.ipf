@@ -28,7 +28,7 @@ Function DQM_StartDAQMultiDevice(panelTitle)
 		TP_StopTestPulse(panelTitle)
 		DQM_StartDAQMultiDeviceLowLevel(panelTitle)
 	else // data acquistion is ongoing, stop data acq
-		ITC_StopOngoingDAQ(panelTitle)
+		DQ_StopOngoingDAQ(panelTitle)
 	endif
 End
 
@@ -130,7 +130,7 @@ Function DQM_StartDAQMultiDeviceLowLevel(panelTitle, [initialSetupReq])
 		if(initialSetupReq)
 			DAP_OneTimeCallAfterDAQ(panelTitle, forcedStop = 1)
 		else // required for RA for the lead device only
-			ITC_StopITCDeviceTimer(panelTitle)
+			DQ_StopITCDeviceTimer(panelTitle)
 		endif
 
 		return NaN
@@ -168,7 +168,7 @@ Function DQM_StartDAQMultiDeviceLowLevel(panelTitle, [initialSetupReq])
 
 			DAP_OneTimeCallAfterDAQ(panelTitle, forcedStop = 1)
 		else // required for RA for the lead device only
-			ITC_StopITCDeviceTimer(panelTitle)
+			DQ_StopITCDeviceTimer(panelTitle)
 		endif
 
 		return NaN
@@ -193,7 +193,7 @@ Function DQM_StartDAQMultiDeviceLowLevel(panelTitle, [initialSetupReq])
 	endfor
 
 	if(GetCheckBoxState(panelTitle, "Check_DataAcq1_RepeatAcq"))
-		ITC_StartITCDeviceTimer(panelTitle)
+		DQ_StartITCDeviceTimer(panelTitle)
 	endif
 
 	// trigger
@@ -318,7 +318,7 @@ static Function DQM_BkrdDataAcq(panelTitle, [triggerMode])
 	HW_SelectDevice(HARDWARE_ITC_DAC, ITCDeviceIDGlobal, flags=HARDWARE_ABORT_ON_ERROR)
 
 	if(triggerMode == HARDWARE_DAC_DEFAULT_TRIGGER && GetCheckBoxState(panelTitle, "Check_DataAcq1_RepeatAcq"))
-		ITC_StartITCDeviceTimer(panelTitle)
+		DQ_StartITCDeviceTimer(panelTitle)
 	endif
 
 	HW_StartAcq(HARDWARE_ITC_DAC, ITCDeviceIDGlobal, triggerMode=triggerMode, flags=HARDWARE_ABORT_ON_ERROR)

@@ -6,22 +6,22 @@
 #pragma ModuleName=MIES_DAQ
 #endif
 
-static Constant DEFAULT_MAXAUTOBIASCURRENT = 1500e-12 /// Unit: Amps
+/// @file MIES_DataAcquisition.ipf
+/// @brief __DQ__ Routines for Data acquisition
 
-/// @file MIES_XXX.ipf
-/// @brief __DAQ__ XX
+static Constant DQ_DEFAULT_MAXAUTOBIASCURRENT = 1500e-12 /// Unit: Amps
 
 /// @brief Stop the DAQ and testpulse
 ///
 /// Works with single/multi device mode and on yoked devices simultaneously.
-Function ITC_StopOngoingDAQ(panelTitle)
+Function DQ_StopOngoingDAQ(panelTitle)
 	string panelTitle
 
-	DQM_CallFuncForDevicesYoked(panelTitle, ITC_StopOngoingDAQHelper)
+	DQM_CallFuncForDevicesYoked(panelTitle, DQ_StopOngoingDAQHelper)
 End
 
 /// @brief Stop the testpulse and data acquisition
-static Function ITC_StopOngoingDAQHelper(panelTitle)
+static Function DQ_StopOngoingDAQHelper(panelTitle)
 	string panelTitle
 
 	variable needsOTCAfterDAQ = 0
@@ -45,7 +45,7 @@ static Function ITC_StopOngoingDAQHelper(panelTitle)
 		needsOTCAfterDAQ = needsOTCAfterDAQ | 1
 		discardData      = discardData      | 1
 	elseif(IsDeviceActiveWithBGTask(panelTitle, "ITC_TimerMD"))
-		ITC_StopITCDeviceTimer(panelTitle)
+		DQM_StopBackgroundTimer(panelTitle)
 
 		needsOTCAfterDAQ = needsOTCAfterDAQ | 1
 		discardData      = discardData      | 1
@@ -53,7 +53,7 @@ static Function ITC_StopOngoingDAQHelper(panelTitle)
 
 	if(IsDeviceActiveWithBGTask(panelTitle, "ITC_FIFOMonitor"))
 		DQS_StopBackgroundFifoMonitor()
-		ITC_StopITCDeviceTimer(panelTitle)
+		DQ_StopITCDeviceTimer(panelTitle)
 
 		NVAR ITCDeviceIDGlobal = $GetITCDeviceIDGlobal(panelTitle)
 		HW_SelectDevice(HARDWARE_ITC_DAC, ITCDeviceIDGlobal)
@@ -66,7 +66,7 @@ static Function ITC_StopOngoingDAQHelper(panelTitle)
 		needsOTCAfterDAQ = needsOTCAfterDAQ | 1
 	elseif(IsDeviceActiveWithBGTask(panelTitle, "ITC_FIFOMonitorMD"))
 		DQM_TerminateOngoingDAQHelper(panelTitle)
-		ITC_StopITCDeviceTimer(panelTitle)
+		DQ_StopITCDeviceTimer(panelTitle)
 
 		if(!discardData)
 			SWS_SaveAndScaleITCData(panelTitle, forcedStop = 1)
@@ -93,11 +93,12 @@ static Function ITC_StopOngoingDAQHelper(panelTitle)
 	endif
 End
 
-/// @brief Stores the timer number in a wave where the row number corresponds to the Device ID global.
+/// @brief Start the per-device timer used for the ITI (inter trial interval)
 ///
-/// This function and ITC_StopITCDeviceTimer are used to correct the ITI for the time it took to collect data, and pre and post processing of data.
-/// It allows for a real time, start to start, ITI
-Function ITC_StartITCDeviceTimer(panelTitle)
+/// This function and DQ_StopITCDeviceTimer are used to correct the ITI for the
+/// time it took to collect data, and pre and post processing of data. It
+/// allows for a real time, start to start, ITI
+Function DQ_StartITCDeviceTimer(panelTitle)
 	string panelTitle
 
 	string msg
@@ -121,8 +122,8 @@ Function ITC_StartITCDeviceTimer(panelTitle)
 	DEBUGPRINT(msg)
 End
 
-/// @brief Stops the timer associated with a particular device
-Function ITC_StopITCDeviceTimer(panelTitle)
+/// @brief Stop the per-device timer associated with a particular device
+Function DQ_StopITCDeviceTimer(panelTitle)
 	string panelTitle
 
 	variable timerID
@@ -148,7 +149,7 @@ End
 ///
 /// Assumes that single device and multi device do not run at the same time.
 /// @return One of @ref DAQRunModes
-Function ITC_StopDAQ(panelTitle)
+Function DQ_StopDAQ(panelTitle)
 	string panelTitle
 
 	variable runMode
@@ -165,7 +166,7 @@ Function ITC_StopDAQ(panelTitle)
 			return runMode
 		case DAQ_BG_SINGLE_DEVICE:
 		case DAQ_BG_MULTI_DEVICE:
-			ITC_StopOngoingDAQ(panelTitle)
+			DQ_StopOngoingDAQ(panelTitle)
 			return runMode
 	endswitch
 
@@ -173,7 +174,7 @@ Function ITC_StopDAQ(panelTitle)
 End
 
 /// @todo how to handle yoked devices??
-Function ITC_RestartDAQ(panelTitle, dataAcqRunMode)
+Function DQ_RestartDAQ(panelTitle, dataAcqRunMode)
 	string panelTitle
 	variable dataAcqRunMode
 
@@ -201,7 +202,7 @@ End
 /// @param panelTitle	locked panel with test pulse running occasionally
 /// @param BaselineSSAvg
 /// @param SSResistance
-Function ITC_ApplyAutoBias(panelTitle, BaselineSSAvg, SSResistance)
+Function DQ_ApplyAutoBias(panelTitle, BaselineSSAvg, SSResistance)
 	string panelTitle
 	Wave BaselineSSAvg, SSResistance
 
@@ -218,7 +219,7 @@ Function ITC_ApplyAutoBias(panelTitle, BaselineSSAvg, SSResistance)
 		return NaN
 	endif
 
-	DEBUGPRINT("ITC_ApplyAutoBias's turn, curTime=", var=curTime)
+	DEBUGPRINT("DQ_ApplyAutoBias's turn, curTime=", var=curTime)
 	SetNumberInWaveNote(TPStorage, AUTOBIAS_LAST_INVOCATION_KEY, curTime)
 
 	if(isEmpty(panelTitle))
@@ -253,9 +254,9 @@ Function ITC_ApplyAutoBias(panelTitle, BaselineSSAvg, SSResistance)
 		DEBUGPRINT("current clamp mode set in headstage", var=headStage)
 
 		maximumAutoBiasCurrent = abs(ampSettings[%AutoBiasIbiasmax][0][headStage] * 1e-12)
-		if(maximumAutoBiasCurrent == 0 || maximumAutoBiasCurrent > DEFAULT_MAXAUTOBIASCURRENT)
-			printf "Warning for headStage %d: replacing invalid maximum auto bias currrent of %g with %g\r", headStage, maximumAutoBiasCurrent, DEFAULT_MAXAUTOBIASCURRENT
-			maximumAutoBiasCurrent = DEFAULT_MAXAUTOBIASCURRENT
+		if(maximumAutoBiasCurrent == 0 || maximumAutoBiasCurrent > DQ_DEFAULT_MAXAUTOBIASCURRENT)
+			printf "Warning for headStage %d: replacing invalid maximum auto bias currrent of %g with %g\r", headStage, maximumAutoBiasCurrent, DQ_DEFAULT_MAXAUTOBIASCURRENT
+			maximumAutoBiasCurrent = DQ_DEFAULT_MAXAUTOBIASCURRENT
 		endif
 
 		DEBUGPRINT("maximumAutoBiasCurrent=", var=maximumAutoBiasCurrent)

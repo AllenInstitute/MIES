@@ -225,7 +225,7 @@ Function TP_Delta(panelTitle)
 
 	variable numADCs = columns
 	TP_RecordTP(panelTitle, BaselineSSAvg, InstResistance, SSResistance, numADCs)
-	ITC_ApplyAutoBias(panelTitle, BaselineSSAvg, SSResistance)
+	DQ_ApplyAutoBias(panelTitle, BaselineSSAvg, SSResistance)
 
 	DEBUGPRINT_ELAPSED(referenceTime)
 End

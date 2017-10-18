@@ -117,7 +117,7 @@ Function AM_MSA_midSweepFindAP(panelTitle, headStage)
 	xPoint=V_LevelX
 	if (V_flag == 0)
 		print "AP level found at" , xPoint
-		ITC_StopOngoingDAQ(panelTitle)
+		DQ_StopOngoingDAQ(panelTitle)
 	endif
 End	
 
@@ -440,7 +440,7 @@ Function AM_PAA_adjustScaleFactor(panelTitle, headStage)
 		return 0
 	else		
 		// stop the ongoing acquisition
-		ITC_StopOngoingDAQ(panelTitle)
+		DQ_StopOngoingDAQ(panelTitle)
 		
 		// return the scale factor that caused the AP to fire
 		actionScaleSettingsWave[headStage][%result] = scaleFactor
@@ -533,7 +533,7 @@ Function AM_PAA_bracketScaleFactor(panelTitle, headStage)
 		   // action potential fired on the fine tuning
 		print "found the AP!"
 		// Stop the ongoing data acquisition
-		ITC_StopOngoingDAQ(panelTitle)
+		DQ_StopOngoingDAQ(panelTitle)
 		
 		// set things back to the starting point so that the next time this is used it will be in the correct state
 		actionScaleSettingsWave[headStage][%fineTuneUse] = 0
