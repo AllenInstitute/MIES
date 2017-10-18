@@ -103,8 +103,6 @@ static Function TP_StartTestPulseForeground(panelTitle)
 
 		i += 1
 	while(!(GetKeyState(0) & ESCAPE_KEY))
-
-	TP_Teardown(panelTitle)
 END
 
 /// @brief Start a multi device test pulse, always done in background mode
