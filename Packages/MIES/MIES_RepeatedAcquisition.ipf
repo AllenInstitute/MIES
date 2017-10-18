@@ -40,15 +40,15 @@ static Function RA_HandleITI_MD(panelTitle)
 			return NaN
 		endif
 
-		ITC_StartBackgroundTimerMD(panelTitle, ITI, funcList)
+		DQM_StartBackgroundTimer(panelTitle, ITI, funcList)
 
 		return NaN
 	endif
 
 	ITC_StartTestPulseMultiDevice(panelTitle, runModifier=TEST_PULSE_DURING_RA_MOD)
 
-	funcList = "ITC_StopTestPulseMultiDevice(\"" + panelTitle + "\")" + ";" + "RA_CounterMD(\"" + panelTitle + "\")"
-	ITC_StartBackgroundTimerMD(panelTitle, ITI, funcList)
+	funcList = "TPM_StopTestPulseMultiDevice(\"" + panelTitle + "\")" + ";" + "RA_CounterMD(\"" + panelTitle + "\")"
+	DQM_StartBackgroundTimer(panelTitle, ITI, funcList)
 End
 
 static Function RA_HandleITI(panelTitle)
@@ -364,7 +364,7 @@ Function RA_CounterMD(panelTitle)
 	endif
 
 	if(count < totTrials)
-		ITC_StartDAQMultiDeviceLowLevel(panelTitle, initialSetupReq=0)
+		DQM_StartDAQMultiDeviceLowLevel(panelTitle, initialSetupReq=0)
 	endif
 End
 

@@ -17,7 +17,7 @@ static Constant DEFAULT_MAXAUTOBIASCURRENT = 1500e-12 /// Unit: Amps
 Function ITC_StopOngoingDAQ(panelTitle)
 	string panelTitle
 
-	ITC_CallFuncForDevicesMDYoked(panelTitle, ITC_StopOngoingDAQHelper)
+	DQM_CallFuncForDevicesYoked(panelTitle, ITC_StopOngoingDAQHelper)
 End
 
 /// @brief Stop the testpulse and data acquisition
@@ -45,7 +45,7 @@ static Function ITC_StopOngoingDAQHelper(panelTitle)
 		needsOTCAfterDAQ = needsOTCAfterDAQ | 1
 		discardData      = discardData      | 1
 	elseif(IsDeviceActiveWithBGTask(panelTitle, "ITC_TimerMD"))
-		ITC_StopTimerForDeviceMD(panelTitle)
+		ITC_StopITCDeviceTimer(panelTitle)
 
 		needsOTCAfterDAQ = needsOTCAfterDAQ | 1
 		discardData      = discardData      | 1
@@ -65,7 +65,7 @@ static Function ITC_StopOngoingDAQHelper(panelTitle)
 
 		needsOTCAfterDAQ = needsOTCAfterDAQ | 1
 	elseif(IsDeviceActiveWithBGTask(panelTitle, "ITC_FIFOMonitorMD"))
-		ITC_TerminateOngoingDAQMDHelper(panelTitle)
+		DQM_TerminateOngoingDAQHelper(panelTitle)
 		ITC_StopITCDeviceTimer(panelTitle)
 
 		if(!discardData)
@@ -188,7 +188,7 @@ Function ITC_RestartDAQ(panelTitle, dataAcqRunMode)
 			ITC_StartDAQSingleDevice(panelTitle, useBackground=1)
 			break
 		case DAQ_BG_MULTI_DEVICE:
-			ITC_StartDAQMultiDevice(panelTitle)
+			DQM_StartDAQMultiDevice(panelTitle)
 			break
 		default:
 			DEBUGPRINT("Ignoring unknown value:", var=dataAcqRunMode)

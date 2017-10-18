@@ -4668,7 +4668,7 @@ Function DAP_ButtonProc_AcquireData(ba) : ButtonControl
 			DAP_AbortIfUnlocked(panelTitle)
 
 			if(GetCheckBoxState(panelTitle, "check_Settings_MD"))
-				ITC_StartDAQMultiDevice(panelTitle)
+				DQM_StartDAQMultiDevice(panelTitle)
 			else
 				ITC_StartDAQSingleDevice(panelTitle)
 			endif

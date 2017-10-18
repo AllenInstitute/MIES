@@ -98,7 +98,7 @@ End
 Function ITC_StopTestPulseMultiDevice(panelTitle)
 	string panelTitle
 
-	ITC_CallFuncForDevicesMDYoked(panelTitle, ITC_StopTPMD)
+	DQM_CallFuncForDevicesYoked(panelTitle, ITC_StopTPMD)
 End
 
 static Function ITC_BkrdTPMD(panelTitle, [triggerMode])

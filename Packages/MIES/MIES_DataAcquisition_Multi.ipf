@@ -6,6 +6,9 @@
 #pragma ModuleName=MIES_DAQ_MD
 #endif
 
+/// @file MIES_DataAcquisition_Multi.ipf
+/// @brief __DQM__ Routines for Multi Device Data acquisition
+
 //Reinitialize Device 1 with intrabox clock
 // Execute "ITCInitialize /M = 1"
 // Execute "ITCStartAcq 1, 256"
@@ -13,7 +16,7 @@
 /// @brief Start data acquisition using multi device mode
 ///
 /// This is the high level function usable for all external users.
-Function ITC_StartDAQMultiDevice(panelTitle)
+Function DQM_StartDAQMultiDevice(panelTitle)
 	string panelTitle
 
 	NVAR dataAcqRunMode = $GetDataAcqRunMode(panelTitle)
@@ -23,13 +26,13 @@ Function ITC_StartDAQMultiDevice(panelTitle)
 		AbortOnValue DAP_CheckSettings(panelTitle, DATA_ACQUISITION_MODE), 1
 
 		TP_StopTestPulse(panelTitle)
-		ITC_StartDAQMultiDeviceLowLevel(panelTitle)
+		DQM_StartDAQMultiDeviceLowLevel(panelTitle)
 	else // data acquistion is ongoing, stop data acq
 		ITC_StopOngoingDAQ(panelTitle)
 	endif
 End
 
-Function ITC_FIFOMonitorMD(s)
+Function DQM_FIFOMonitor(s)
 	STRUCT WMBackgroundStruct &s
 
 	DFREF activeDevices = GetActiveITCDevicesFolder()
@@ -60,8 +63,8 @@ Function ITC_FIFOMonitorMD(s)
 		endif
 
 		if(isFinished)
-			ITC_MakeOrUpdateActivDevLstWave(panelTitle, deviceID, 0, 0, -1)
-			ITC_StopDataAcqMD(panelTitle, deviceID)
+			DQM_MakeOrUpdateActivDevLstWave(panelTitle, deviceID, 0, 0, -1)
+			DQM_StopDataAcq(panelTitle, deviceID)
 			i = 0
 			continue
 		endif
@@ -77,7 +80,7 @@ End
 /// @brief Stop ongoing multi device DAQ
 ///
 /// Follower handling for yoked devices is done by the caller.
-Function ITC_TerminateOngoingDAQMDHelper(panelTitle)
+Function DQM_TerminateOngoingDAQHelper(panelTitle)
 	String panelTitle
 
 	NVAR ITCDeviceIDGlobal = $GetITCDeviceIDGlobal(panelTitle)
@@ -88,7 +91,7 @@ Function ITC_TerminateOngoingDAQMDHelper(panelTitle)
 	HW_StopAcq(HARDWARE_ITC_DAC, ITCDeviceIDGlobal, zeroDAC = 1)
 
 	// remove device passed in from active device lists
-	ITC_MakeOrUpdateActivDevLstWave(panelTitle, ITCDeviceIDGlobal, 0, 0, -1)
+	DQM_MakeOrUpdateActivDevLstWave(panelTitle, ITCDeviceIDGlobal, 0, 0, -1)
 
 	// determine if device removed was the last device on the list, if yes stop the background function
 	if(DimSize(ActiveDeviceList, ROWS) == 0)
@@ -104,7 +107,7 @@ END
 /// @param panelTitle      device
 /// @param initialSetupReq [optional, defaults to true] performs initialization routines
 ///                        at the very beginning of DAQ, turn off for RA
-Function ITC_StartDAQMultiDeviceLowLevel(panelTitle, [initialSetupReq])
+Function DQM_StartDAQMultiDeviceLowLevel(panelTitle, [initialSetupReq])
 	string panelTitle
 	variable initialSetupReq
 
@@ -139,7 +142,7 @@ Function ITC_StartDAQMultiDeviceLowLevel(panelTitle, [initialSetupReq])
 	HW_ITC_PrepareAcq(ITCDeviceIDGlobal)
 
 	if(!DeviceHasFollower(panelTitle))
-		ITC_BkrdDataAcqMD(panelTitle)
+		DQM_BkrdDataAcq(panelTitle)
 		return NaN
 	endif
 
@@ -181,12 +184,12 @@ Function ITC_StartDAQMultiDeviceLowLevel(panelTitle, [initialSetupReq])
 	endfor
 
 	// start lead device
-	ITC_BkrdDataAcqMD(panelTitle, triggerMode=HARDWARE_DAC_EXTERNAL_TRIGGER)
+	DQM_BkrdDataAcq(panelTitle, triggerMode=HARDWARE_DAC_EXTERNAL_TRIGGER)
 
 	// start follower devices
 	for(i = 0; i < numFollower; i += 1)
 		followerPanelTitle = StringFromList(i, listOfFollowerDevices)
-		ITC_BkrdDataAcqMD(followerPanelTitle, triggerMode=HARDWARE_DAC_EXTERNAL_TRIGGER)
+		DQM_BkrdDataAcq(followerPanelTitle, triggerMode=HARDWARE_DAC_EXTERNAL_TRIGGER)
 	endfor
 
 	if(GetCheckBoxState(panelTitle, "Check_DataAcq1_RepeatAcq"))
@@ -201,7 +204,7 @@ End
 /// for all follower too.
 ///
 /// Handles also non-yoked devices in multi device mode correctly.
-Function ITC_CallFuncForDevicesMDYoked(panelTitle, func)
+Function DQM_CallFuncForDevicesYoked(panelTitle, func)
 	string panelTitle
 	FUNCREF CALL_FUNCTION_LIST_PROTOTYPE func
 
@@ -209,7 +212,8 @@ Function ITC_CallFuncForDevicesMDYoked(panelTitle, func)
 	CallFunctionForEachListItem(func, list)
 End
 
-Function ITC_StartBackgroundTimerMD(panelTitle, runTime, funcList)
+/// @brief Start the background timer used for ITI tracking
+Function DQM_StartBackgroundTimer(panelTitle, runTime, funcList)
 	string panelTitle, funcList
 	variable runTime
 
@@ -219,26 +223,27 @@ Function ITC_StartBackgroundTimerMD(panelTitle, runTime, funcList)
 	variable DurationTicks = runTime / TICKS_TO_SECONDS
 	variable EndTimeTicks  = StartTicks + DurationTicks
 
-	ITC_MakeOrUpdateTimerParamWave(panelTitle, funcList, StartTicks, DurationTicks, EndTimeTicks, 1)
+	DQM_MakeOrUpdateTimerParamWave(panelTitle, funcList, StartTicks, DurationTicks, EndTimeTicks, 1)
 
 	if(!IsBackgroundTaskRunning("ITC_TimerMD"))
-		CtrlNamedBackground ITC_TimerMD, period = 6, proc = ITC_TimerMD, start
+		CtrlNamedBackground ITC_TimerMD, period = 6, proc = DQM_Timer, start
 	endif
 End
 
-Function ITC_StopTimerForDeviceMD(panelTitle)
+/// @brief Stop the background timer used for ITI tracking
+Function DQM_StopBackgroundTimer(panelTitle)
 	string panelTitle
 
 	WAVE/SDFR=GetActiveITCDevicesTimerFolder() ActiveDevTimeParam
 
-	ITC_MakeOrUpdateTimerParamWave(panelTitle, "", 0, 0, 0, -1)
+	DQM_MakeOrUpdateTimerParamWave(panelTitle, "", 0, 0, 0, -1)
 	variable DevicesWithActiveTimers = DimSize(ActiveDevTimeParam, 0)
 	if(DevicesWithActiveTimers == 0) // stops background timer if no more devices are in the parameter waves
 		CtrlNamedBackground ITC_TimerMD, Stop
 	endif
 End
 
-Function ITC_TimerMD(s)
+Function DQM_Timer(s)
 	STRUCT WMBackgroundStruct &s
 
 	WAVE/SDFR=GetActiveITCDevicesTimerFolder() ActiveDevTimeParam
@@ -258,7 +263,7 @@ Function ITC_TimerMD(s)
 
 		if(timeLeft == 0)
 			ExecuteListOfFunctions(TimerFunctionListWave[i][1])
-			ITC_MakeOrUpdateTimerParamWave(panelTitle, "", 0, 0, 0, -1)
+			DQM_MakeOrUpdateTimerParamWave(panelTitle, "", 0, 0, 0, -1)
 
 			// restart iterating over the remaining devices
 			i = 0
@@ -273,12 +278,32 @@ Function ITC_TimerMD(s)
 	return 0
 End
 
-static Function ITC_StartBckrdFIFOMonitorMD()
-	CtrlNamedBackground ITC_FIFOMonitorMD, period = 5, proc = ITC_FIFOMonitorMD
+static Function DQM_StartBckrdFIFOMonitor()
+	CtrlNamedBackground ITC_FIFOMonitorMD, period = 5, proc = DQM_FIFOMonitor
 	CtrlNamedBackground ITC_FIFOMonitorMD, start
 End
 
-static Function ITC_BkrdDataAcqMD(panelTitle, [triggerMode])
+static Function DQM_StopDataAcq(panelTitle, ITCDeviceIDGlobal)
+	String panelTitle
+	Variable ITCDeviceIDGlobal
+
+	TFH_StopFIFODaemon(HARDWARE_ITC_DAC, ITCDeviceIDGlobal)
+	HW_SelectDevice(HARDWARE_ITC_DAC, ITCDeviceIDGlobal, flags=HARDWARE_ABORT_ON_ERROR)
+	HW_StopAcq(HARDWARE_ITC_DAC, ITCDeviceIDGlobal, prepareForDAQ=1, zeroDAC = 1)
+
+	SWS_SaveAndScaleITCData(panelTitle)
+	if(RA_IsFirstSweep(panelTitle))
+		if(GetCheckboxState(panelTitle, "Check_DataAcq1_RepeatAcq"))
+			RA_YokedRAStartMD(panelTitle)
+		else
+			DAP_OneTimeCallAfterDAQ(panelTitle)
+		endif
+	else
+		RA_YokedRABckgTPCallRACounter(panelTitle)
+	endif
+End
+
+static Function DQM_BkrdDataAcq(panelTitle, [triggerMode])
 	string panelTitle
 	variable triggerMode
 
@@ -300,14 +325,14 @@ static Function ITC_BkrdDataAcqMD(panelTitle, [triggerMode])
 	ED_MarkSweepStart(panelTitle)
 	TFH_StartFIFOStopDaemon(HARDWARE_ITC_DAC, ITCDeviceIDGlobal)
 
-	ITC_MakeOrUpdateActivDevLstWave(panelTitle, ITCDeviceIDGlobal, ADChannelToMonitor, StopCollectionPoint, 1) // adds a device
+	DQM_MakeOrUpdateActivDevLstWave(panelTitle, ITCDeviceIDGlobal, ADChannelToMonitor, StopCollectionPoint, 1) // adds a device
 
 	if(!IsBackgroundTaskRunning("ITC_FIFOMonitorMD"))
-		ITC_StartBckrdFIFOMonitorMD()
+		DQM_StartBckrdFIFOMonitor()
 	endif
 End
 
-static Function ITC_MakeOrUpdateActivDevLstWave(panelTitle, ITCDeviceIDGlobal, ADChannelToMonitor, StopCollectionPoint, addOrRemoveDevice)
+static Function DQM_MakeOrUpdateActivDevLstWave(panelTitle, ITCDeviceIDGlobal, ADChannelToMonitor, StopCollectionPoint, addOrRemoveDevice)
 	string panelTitle
 	Variable ITCDeviceIDGlobal, ADChannelToMonitor, StopCollectionPoint, addOrRemoveDevice // when removing a device only the ITCDeviceIDGlobal is needed
 
@@ -339,27 +364,7 @@ static Function ITC_MakeOrUpdateActivDevLstWave(panelTitle, ITCDeviceIDGlobal, A
 	endif
 End
 
-static Function ITC_StopDataAcqMD(panelTitle, ITCDeviceIDGlobal)
-	String panelTitle
-	Variable ITCDeviceIDGlobal
-
-	TFH_StopFIFODaemon(HARDWARE_ITC_DAC, ITCDeviceIDGlobal)
-	HW_SelectDevice(HARDWARE_ITC_DAC, ITCDeviceIDGlobal, flags=HARDWARE_ABORT_ON_ERROR)
-	HW_StopAcq(HARDWARE_ITC_DAC, ITCDeviceIDGlobal, prepareForDAQ=1, zeroDAC = 1)
-
-	SWS_SaveAndScaleITCData(panelTitle)
-	if(RA_IsFirstSweep(panelTitle))
-		if(GetCheckboxState(panelTitle, "Check_DataAcq1_RepeatAcq"))
-			RA_YokedRAStartMD(panelTitle)
-		else
-			DAP_OneTimeCallAfterDAQ(panelTitle)
-		endif
-	else
-		RA_YokedRABckgTPCallRACounter(panelTitle)
-	endif
-END
-
-static Function ITC_MakeOrUpdateTimerParamWave(panelTitle, listOfFunctions, startTime, RunTime, EndTime, addOrRemoveDevice)
+static Function DQM_MakeOrUpdateTimerParamWave(panelTitle, listOfFunctions, startTime, RunTime, EndTime, addOrRemoveDevice)
 	string panelTitle, ListOfFunctions
 	variable startTime, RunTime, EndTime, addOrRemoveDevice
 
@@ -397,7 +402,7 @@ static Function ITC_MakeOrUpdateTimerParamWave(panelTitle, listOfFunctions, star
 		ASSERT(0, "Invalid addOrRemoveDevice value")
 	endif
 
-	ITC_MakeOrUpdtDevTimerTxtWv(panelTitle, ListOfFunctions, rowToRemove, addOrRemoveDevice)
+	DQM_MakeOrUpdtDevTimerTxtWv(panelTitle, ListOfFunctions, rowToRemove, addOrRemoveDevice)
 
 	WAVE/Z/SDFR=dfr ActiveDevTimeParam, TimerFunctionListWave
 	ASSERT(WaveExists(ActiveDevTimeParam), "Missing wave ActiveDevTimeParam")
@@ -405,7 +410,7 @@ static Function ITC_MakeOrUpdateTimerParamWave(panelTitle, listOfFunctions, star
 	ASSERT(DimSize(TimerFunctionListWave, ROWS) == DimSize(ActiveDevTimeParam, ROWS), "Number of rows in ActiveDevTimeParam and TimerFunctionListWave must be equal")
 End
 
-static Function ITC_MakeOrUpdtDevTimerTxtWv(panelTitle, listOfFunctions, rowToRemove, addOrRemoveDevice)
+static Function DQM_MakeOrUpdtDevTimerTxtWv(panelTitle, listOfFunctions, rowToRemove, addOrRemoveDevice)
 	string panelTitle, listOfFunctions
 	variable rowToRemove, addOrRemoveDevice
 
