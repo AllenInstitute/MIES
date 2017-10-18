@@ -3,7 +3,7 @@
 #pragma rtFunctionErrors=1
 
 #ifdef AUTOMATED_TESTING
-#pragma ModuleName=MIES_ITC_BKG
+#pragma ModuleName=MIES_XXX
 #endif
 
 /// @file MIES_TPBackgroundMD.ipf
@@ -72,6 +72,33 @@ Function ITC_StartTestPulseMultiDevice(panelTitle, [runModifier])
 
 	// trigger
 	ARDStartSequence()
+End
+
+/// @brief Start a multi device test pulse, always done in background mode
+Function TP_StartTestPulseMultiDevice(panelTitle)
+	string panelTitle
+
+	AbortOnValue DAP_CheckSettings(panelTitle, TEST_PULSE_MODE),1
+
+	ITC_StopOngoingDAQ(panelTitle)
+
+	// stop early as "TP after DAQ" might be already running
+	if(TP_CheckIfTestpulseIsRunning(panelTitle))
+		return NaN
+	endif
+
+	ITC_StartTestPulseMultiDevice(panelTitle)
+
+	P_InitBeforeTP(panelTitle)
+End
+
+/// @brief Stop the TP on yoked devices simultaneously
+///
+/// Handles also non-yoked devices in multi device mode correctly.
+Function ITC_StopTestPulseMultiDevice(panelTitle)
+	string panelTitle
+
+	ITC_CallFuncForDevicesMDYoked(panelTitle, ITC_StopTPMD)
 End
 
 static Function ITC_BkrdTPMD(panelTitle, [triggerMode])
@@ -160,7 +187,7 @@ Function ITC_BkrdTPFuncMD(s)
 			if(GetKeyState(0) & ESCAPE_KEY)
 				// only stop the currently active device
 				if(!cmpstr(panelTitle,GetMainWindow(GetCurrentWindow())))
-					beep 
+					beep
 					ITC_StopTestPulseMultiDevice(panelTitle)
 				endif
 			endif
@@ -168,15 +195,6 @@ Function ITC_BkrdTPFuncMD(s)
 	endfor
 
 	return 0
-End
-
-/// @brief Stop the TP on yoked devices simultaneously
-///
-/// Handles also non-yoked devices in multi device mode correctly.
-Function ITC_StopTestPulseMultiDevice(panelTitle)
-	string panelTitle
-
-	ITC_CallFuncForDevicesMDYoked(panelTitle, ITC_StopTPMD)
 End
 
 static Function ITC_StopTPMD(panelTitle)

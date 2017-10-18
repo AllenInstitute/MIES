@@ -3370,3 +3370,12 @@ Function/S GetStackTrace([prefix])
 
 	return output
 End
+
+/// @brief Stops all ms timers
+Function ITC_StopAllMSTimers()
+	variable i
+
+	for(i = 0; i < 10; i += 1)
+		print "ms timer", i, "stopped.", "Elapsed time:", stopmstimer(i)
+	endfor
+End

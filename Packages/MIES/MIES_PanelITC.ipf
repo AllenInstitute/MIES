@@ -8185,3 +8185,25 @@ Function DAP_GetHighestActiveHeadstage(panelTitle)
 
 	return WaveMax(activeHS)
 End
+
+Function ITC_SupportSystemAlarm(Channel, Measurement, MeasurementTitle, panelTitle)
+	variable Channel, Measurement
+	string MeasurementTitle, panelTitle
+
+	string minCtrl, maxCtrl, checkCtrl
+	variable paramMin, paramMax
+
+	checkCtrl = GetPanelControl(channel, CHANNEL_TYPE_ALARM, CHANNEL_CONTROL_CHECK)
+	if(GetCheckBoxState(panelTitle, checkCtrl))
+		minCtrl = GetPanelControl(channel, CHANNEL_TYPE_ASYNC, CHANNEL_CONTROL_ALARM_MIN)
+		paramMin = GetSetVariable(panelTitle, minCtrl)
+		maxCtrl = GetPanelControl(channel, CHANNEL_TYPE_ASYNC, CHANNEL_CONTROL_ALARM_MAX)
+		paramMax = GetSetVariable(panelTitle, maxCtrl)
+		if(Measurement >= ParamMax || Measurement <= ParamMin)
+			beep
+			print time() + " !!!!!!!!!!!!! " + MeasurementTitle + " has exceeded max/min settings" + " !!!!!!!!!!!!!"
+			ControlWindowToFront()
+			beep
+		endif
+	endif
+End
