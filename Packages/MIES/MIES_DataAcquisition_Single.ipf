@@ -7,7 +7,7 @@
 #endif
 
 /// @file MIES_DataAcquisition_Single.ipf
-/// @brief __DQM__ Routines for Single Device Data acquisition
+/// @brief __DQS__ Routines for Single Device Data acquisition
 
 /// @brief Start data acquisition using single device mode
 ///
@@ -16,50 +16,50 @@
 /// @param panelTitle    device
 /// @param useBackground [optional, defaults to background checkbox setting in the DA_Ephys
 ///                      panel]
-Function ITC_StartDAQSingleDevice(panelTitle, [useBackground])
-string panelTitle
-variable useBackground
+Function DQS_StartDAQSingleDevice(panelTitle, [useBackground])
+	string panelTitle
+	variable useBackground
 
-NVAR dataAcqRunMode = $GetDataAcqRunMode(panelTitle)
+	NVAR dataAcqRunMode = $GetDataAcqRunMode(panelTitle)
 
-if(dataAcqRunMode == DAQ_NOT_RUNNING)
+	if(dataAcqRunMode == DAQ_NOT_RUNNING)
 
-	AbortOnValue DAP_CheckSettings(panelTitle, DATA_ACQUISITION_MODE),1
+		AbortOnValue DAP_CheckSettings(panelTitle, DATA_ACQUISITION_MODE),1
 
-	TP_StopTestPulse(panelTitle)
+		TP_StopTestPulse(panelTitle)
 
-	if(ParamIsDefault(useBackground))
-		useBackground = GetCheckBoxState(panelTitle, "Check_Settings_BackgrndDataAcq")
-	else
-		useBackground = !!useBackground
-	endif
-
-	DAP_OneTimeCallBeforeDAQ(panelTitle, useBackground == 1 ? DAQ_BG_SINGLE_DEVICE : DAQ_FG_SINGLE_DEVICE)
-
-	try
-		DC_ConfigureDataForITC(panelTitle, DATA_ACQUISITION_MODE)
-	catch
-		// we need to undo the earlier one time call only
-		DAP_OneTimeCallAfterDAQ(panelTitle, forcedStop = 1)
-		return NaN
-	endtry
-
-	if(!useBackground)
-		ITC_DataAcq(panelTitle)
-		if(GetCheckBoxState(panelTitle, "Check_DataAcq1_RepeatAcq"))
-			RA_Start(panelTitle)
+		if(ParamIsDefault(useBackground))
+			useBackground = GetCheckBoxState(panelTitle, "Check_Settings_BackgrndDataAcq")
 		else
-			DAP_OneTimeCallAfterDAQ(panelTitle)
+			useBackground = !!useBackground
+		endif
+
+		DAP_OneTimeCallBeforeDAQ(panelTitle, useBackground == 1 ? DAQ_BG_SINGLE_DEVICE : DAQ_FG_SINGLE_DEVICE)
+
+		try
+			DC_ConfigureDataForITC(panelTitle, DATA_ACQUISITION_MODE)
+		catch
+			// we need to undo the earlier one time call only
+			DAP_OneTimeCallAfterDAQ(panelTitle, forcedStop = 1)
+			return NaN
+		endtry
+
+		if(!useBackground)
+			DQS_DataAcq(panelTitle)
+			if(GetCheckBoxState(panelTitle, "Check_DataAcq1_RepeatAcq"))
+				RA_Start(panelTitle)
+			else
+				DAP_OneTimeCallAfterDAQ(panelTitle)
+			endif
+		else
+			DQS_BkrdDataAcq(panelTitle)
 		endif
 	else
-		ITC_BkrdDataAcq(panelTitle)
+		ITC_StopDAQ(panelTitle)
 	endif
-else
-	ITC_StopOngoingDAQ(panelTitle)
-endif
 End
 
-static Function ITC_DataAcq(panelTitle)
+static Function DQS_DataAcq(panelTitle)
 	string panelTitle
 
 	variable fifoPos
@@ -88,7 +88,7 @@ static Function ITC_DataAcq(panelTitle)
 	SWS_SaveAndScaleITCData(panelTitle)
 End
 
-Function ITC_BkrdDataAcq(panelTitle)
+Function DQS_BkrdDataAcq(panelTitle)
 	string panelTitle
 
 	NVAR ITCDeviceIDGlobal = $GetITCDeviceIDGlobal(panelTitle)
@@ -103,10 +103,10 @@ Function ITC_BkrdDataAcq(panelTitle)
 	HW_StartAcq(HARDWARE_ITC_DAC, ITCDeviceIDGlobal, flags=HARDWARE_ABORT_ON_ERROR)
 	ED_MarkSweepStart(panelTitle)
 
-	ITC_StartBckgrdFIFOMonitor()
+	DQS_StartBackgroundFifoMonitor()
 End
 
-static Function ITC_StopDataAcq()
+static Function DQS_StopDataAcq()
 
 	SVAR panelTitleG = $GetPanelTitleGlobal()
 	NVAR ITCDeviceIDGlobal = $GetITCDeviceIDGlobal(panelTitleG)
@@ -127,12 +127,12 @@ static Function ITC_StopDataAcq()
 	endif
 END
 
-Function ITC_StartBckgrdFIFOMonitor()
+Function DQS_StartBackgroundFifoMonitor()
 	CtrlNamedBackground ITC_FIFOMonitor, period = 5, proc = ITC_FIFOMonitor
 	CtrlNamedBackground ITC_FIFOMonitor, start
 End
 
-Function ITC_FIFOMonitor(s)
+Function DQS_FIFOMonitor(s)
 	STRUCT WMBackgroundStruct &s
 
 	string oscilloscopeSubwindow
@@ -162,19 +162,20 @@ Function ITC_FIFOMonitor(s)
 	endif
 
 	if(!moreData)
-		ITC_STOPFifoMonitor()
-		ITC_StopDataAcq()
+		DQS_STOPBackgroundFifoMonitor()
+		DQS_StopDataAcq()
 		return 1
 	endif
 
 	return 0
 End
 
-Function ITC_STOPFifoMonitor()
+Function DQS_StopBackgroundFifoMonitor()
 	CtrlNamedBackground ITC_FIFOMonitor, stop
 End
 
-Function ITC_StartBackgroundTimer(panelTitle, runTime, funcList)
+/// @brief Start the background timer used for ITI tracking
+Function DQS_StartBackgroundTimer(panelTitle, runTime, funcList)
 	string panelTitle, funcList
 	variable runTime
 
@@ -188,15 +189,16 @@ Function ITC_StartBackgroundTimer(panelTitle, runTime, funcList)
 	repeatedAcqStart    = ticks
 	repeatedAcqDuration = runTime / TICKS_TO_SECONDS
 
-	CtrlNamedBackground ITC_Timer, period = 5, proc = ITC_Timer, start
+	CtrlNamedBackground ITC_Timer, period = 5, proc = DQS_Timer, start
 End
 
-Function ITC_StopBackgroundTimerTask()
+/// @brief Stop the background timer used for ITI tracking
+Function DQS_StopBackgroundTimer()
 
 	CtrlNamedBackground ITC_Timer, stop
 End
 
-Function ITC_Timer(s)
+Function DQS_Timer(s)
 	STRUCT WMBackgroundStruct &s
 
 	variable timeLeft, elapsedTime

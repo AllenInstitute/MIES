@@ -69,7 +69,7 @@ static Function RA_HandleITI(panelTitle)
 			return NaN
 		endif
 
-		ITC_StartBackgroundTimer(panelTitle, ITI, funcList)
+		DQS_StartBackgroundTimer(panelTitle, ITI, funcList)
 
 		return NaN
 	endif
@@ -78,7 +78,7 @@ static Function RA_HandleITI(panelTitle)
 	ITC_StartBackgroundTestPulse(panelTitle)
 
 	funcList = "ITC_STOPTestPulseSingleDevice(\"" + panelTitle + "\")" + ";" + "RA_Counter(\"" + panelTitle + "\")"
-	ITC_StartBackgroundTimer(panelTitle, ITI, funcList)
+	DQS_StartBackgroundTimer(panelTitle, ITI, funcList)
 End
 
 /// @brief Return the total number of sets
@@ -222,7 +222,7 @@ Function RA_Counter(panelTitle)
 		endtry
 
 		ASSERT(GetCheckBoxState(panelTitle, "Check_Settings_BackgrndDataAcq"), "Only background DAQ can be used with RA")
-		ITC_BkrdDataAcq(panelTitle)
+		DQS_BkrdDataAcq(panelTitle)
 	else
 		RA_FinishAcquisition(panelTitle)
 	endif

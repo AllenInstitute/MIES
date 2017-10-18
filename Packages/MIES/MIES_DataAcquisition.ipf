@@ -40,7 +40,7 @@ static Function ITC_StopOngoingDAQHelper(panelTitle)
 	endif
 
 	if(IsDeviceActiveWithBGTask(panelTitle, "ITC_Timer"))
-		ITC_StopBackgroundTimerTask()
+		DQS_StopBackgroundTimer()
 
 		needsOTCAfterDAQ = needsOTCAfterDAQ | 1
 		discardData      = discardData      | 1
@@ -52,7 +52,7 @@ static Function ITC_StopOngoingDAQHelper(panelTitle)
 	endif
 
 	if(IsDeviceActiveWithBGTask(panelTitle, "ITC_FIFOMonitor"))
-		ITC_STOPFifoMonitor()
+		DQS_StopBackgroundFifoMonitor()
 		ITC_StopITCDeviceTimer(panelTitle)
 
 		NVAR ITCDeviceIDGlobal = $GetITCDeviceIDGlobal(panelTitle)
@@ -182,10 +182,10 @@ Function ITC_RestartDAQ(panelTitle, dataAcqRunMode)
 			// nothing to do
 			break
 		case DAQ_FG_SINGLE_DEVICE:
-			ITC_StartDAQSingleDevice(panelTitle, useBackground=0)
+			DQS_StartDAQSingleDevice(panelTitle, useBackground=0)
 			break
 		case DAQ_BG_SINGLE_DEVICE:
-			ITC_StartDAQSingleDevice(panelTitle, useBackground=1)
+			DQS_StartDAQSingleDevice(panelTitle, useBackground=1)
 			break
 		case DAQ_BG_MULTI_DEVICE:
 			DQM_StartDAQMultiDevice(panelTitle)
