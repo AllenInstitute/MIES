@@ -13,6 +13,28 @@
 // Execute "ITCInitialize /M = 1"
 // Execute "ITCStartAcq 1, 256"
 
+/// @brief Start data acquisition using multi device mode
+///
+/// This is the high level function usable for all external users.
+Function ITC_StartDAQMultiDevice(panelTitle)
+	string panelTitle
+
+	NVAR dataAcqRunMode = $GetDataAcqRunMode(panelTitle)
+
+	if(dataAcqRunMode == DAQ_NOT_RUNNING)
+
+		AbortOnValue DAP_CheckSettings(panelTitle, DATA_ACQUISITION_MODE), 1
+
+		if(IsDeviceActiveWithBGTask(panelTitle, "TestPulseMD"))
+			 ITC_StopTestPulseMultiDevice(panelTitle)
+		endif
+
+		ITC_StartDAQMultiDeviceLowLevel(panelTitle)
+	else // data acquistion is ongoing, stop data acq
+		ITC_StopOngoingDAQMultiDevice(panelTitle)
+	endif
+End
+
 /// @brief Handles function calls for data acquistion. These include calls for starting Yoked ITC1600s.
 ///
 /// Handles the calls to the data configurator (DC) functions and BackgroundMD
