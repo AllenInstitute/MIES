@@ -56,7 +56,7 @@ Function ITC_BkrdDataAcq(panelTitle)
 	ITC_StartBckgrdFIFOMonitor()
 End
 
-Function ITC_StopDataAcq()
+static Function ITC_StopDataAcq()
 
 	SVAR panelTitleG = $GetPanelTitleGlobal()
 	NVAR ITCDeviceIDGlobal = $GetITCDeviceIDGlobal(panelTitleG)
