@@ -6331,56 +6331,6 @@ static Function DAP_ChangeHeadstageState(panelTitle, headStageCtrl, enabled)
 	endif
 End
 
-/// @brief Stop the testpulse and data acquisition
-///
-/// Should be used if `Multi Device Support` is not checked
-Function DAP_StopOngoingDataAcquisition(panelTitle)
-	string panelTitle
-
-	variable needsOTCAfterDAQ = 0
-	variable discardData      = 0
-
-	if(IsDeviceActiveWithBGTask(panelTitle, "Testpulse"))
-		ITC_StopTestPulseSingleDevice(panelTitle)
-
-		needsOTCAfterDAQ = needsOTCAfterDAQ | 0
-		discardData      = discardData      | 1
-	endif
-
-	if(IsDeviceActiveWithBGTask(panelTitle, "ITC_Timer"))
-		ITC_StopBackgroundTimerTask()
-
-		needsOTCAfterDAQ = needsOTCAfterDAQ | 1
-		discardData      = discardData      | 1
-	endif
-
-	if(IsDeviceActiveWithBGTask(panelTitle, "ITC_FIFOMonitor"))
-		ITC_STOPFifoMonitor()
-		ITC_StopITCDeviceTimer(panelTitle)
-
-		NVAR ITCDeviceIDGlobal = $GetITCDeviceIDGlobal(panelTitle)
-		HW_SelectDevice(HARDWARE_ITC_DAC, ITCDeviceIDGlobal)
-		HW_StopAcq(HARDWARE_ITC_DAC, ITCDeviceIDGlobal, zeroDAC = 1)
-
-		if(!discardData)
-			SWS_SaveAndScaleITCData(panelTitle, forcedStop = 1)
-		endif
-
-		needsOTCAfterDAQ = needsOTCAfterDAQ | 1
-	else
-		// force a stop if invoked during a 'down' time, with nothing happening.
-		if(!RA_IsFirstSweep(panelTitle))
-			NVAR count = $GetCount(panelTitle)
-			count = GetValDisplayAsNum(panelTitle, "valdisp_DataAcq_SweepsInSet")
-			needsOTCAfterDAQ = needsOTCAfterDAQ | 1
-		endif
-	endif
-
-	if(needsOTCAfterDAQ)
-		DAP_OneTimeCallAfterDAQ(panelTitle, forcedStop = 1)
-	endif
-End
-
 /// @brief Set the acquisition button text
 ///
 /// @param panelTitle device

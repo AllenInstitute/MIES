@@ -46,7 +46,7 @@ Function TP_StartTestPulseSingleDevice(panelTitle)
 
 	AbortOnValue DAP_CheckSettings(panelTitle, TEST_PULSE_MODE),1
 
-	DAP_StopOngoingDataAcquisition(panelTitle)
+	ITC_StopOngoingDAQ(panelTitle)
 
 	// stop early as "TP after DAQ" might be already running
 	if(TP_CheckIfTestpulseIsRunning(panelTitle))
@@ -111,7 +111,7 @@ Function TP_StartTestPulseMultiDevice(panelTitle)
 
 	AbortOnValue DAP_CheckSettings(panelTitle, TEST_PULSE_MODE),1
 
-	ITC_StopOngoingDAQMultiDevice(panelTitle)
+	ITC_StopOngoingDAQ(panelTitle)
 
 	// stop early as "TP after DAQ" might be already running
 	if(TP_CheckIfTestpulseIsRunning(panelTitle))

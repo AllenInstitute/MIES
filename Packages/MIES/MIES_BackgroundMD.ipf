@@ -28,7 +28,7 @@ Function ITC_StartDAQMultiDevice(panelTitle)
 		TP_StopTestPulse(panelTitle)
 		ITC_StartDAQMultiDeviceLowLevel(panelTitle)
 	else // data acquistion is ongoing, stop data acq
-		ITC_StopOngoingDAQMultiDevice(panelTitle)
+		ITC_StopOngoingDAQ(panelTitle)
 	endif
 End
 
@@ -255,36 +255,60 @@ static Function ITC_TerminateOngoingDAQMDHelper(panelTitle)
 	endif
 END
 
-/// @brief Stop the DAQ on yoked devices simultaneously
+/// @brief Stop the DAQ and testpulse
 ///
-/// Handles also non-yoked devices in multi device mode correctly.
-Function ITC_StopOngoingDAQMultiDevice(panelTitle)
+/// Works with single/multi device mode and on yoked devices simultaneously.
+Function ITC_StopOngoingDAQ(panelTitle)
 	string panelTitle
 
-	ITC_CallFuncForDevicesMDYoked(panelTitle, ITC_StopOngoingDAQMDHelper)
+	ITC_CallFuncForDevicesMDYoked(panelTitle, ITC_StopOngoingDAQHelper)
 End
 
-static Function ITC_StopOngoingDAQMDHelper(panelTitle)
+/// @brief Stop the testpulse and data acquisition
+static Function ITC_StopOngoingDAQHelper(panelTitle)
 	string panelTitle
 
 	variable needsOTCAfterDAQ = 0
 	variable discardData      = 0
 
-	if(IsDeviceActiveWithBGTask(panelTitle, "TestPulseMD"))
+	if(IsDeviceActiveWithBGTask(panelTitle, "Testpulse"))
+		ITC_StopTestPulseSingleDevice(panelTitle)
+
+		needsOTCAfterDAQ = needsOTCAfterDAQ | 0
+		discardData      = discardData      | 1
+	elseif(IsDeviceActiveWithBGTask(panelTitle, "TestPulseMD"))
 		ITC_StopTestPulseMultiDevice(panelTitle)
 
 		needsOTCAfterDAQ = needsOTCAfterDAQ | 0
 		discardData      = discardData      | 1
 	endif
 
-	if(IsDeviceActiveWithBGTask(panelTitle, "ITC_TimerMD"))
+	if(IsDeviceActiveWithBGTask(panelTitle, "ITC_Timer"))
+		ITC_StopBackgroundTimerTask()
+
+		needsOTCAfterDAQ = needsOTCAfterDAQ | 1
+		discardData      = discardData      | 1
+	elseif(IsDeviceActiveWithBGTask(panelTitle, "ITC_TimerMD"))
 		ITC_StopTimerForDeviceMD(panelTitle)
 
 		needsOTCAfterDAQ = needsOTCAfterDAQ | 1
 		discardData      = discardData      | 1
 	endif
 
-	if(IsDeviceActiveWithBGTask(panelTitle, "ITC_FIFOMonitorMD"))
+	if(IsDeviceActiveWithBGTask(panelTitle, "ITC_FIFOMonitor"))
+		ITC_STOPFifoMonitor()
+		ITC_StopITCDeviceTimer(panelTitle)
+
+		NVAR ITCDeviceIDGlobal = $GetITCDeviceIDGlobal(panelTitle)
+		HW_SelectDevice(HARDWARE_ITC_DAC, ITCDeviceIDGlobal)
+		HW_StopAcq(HARDWARE_ITC_DAC, ITCDeviceIDGlobal, zeroDAC = 1)
+
+		if(!discardData)
+			SWS_SaveAndScaleITCData(panelTitle, forcedStop = 1)
+		endif
+
+		needsOTCAfterDAQ = needsOTCAfterDAQ | 1
+	elseif(IsDeviceActiveWithBGTask(panelTitle, "ITC_FIFOMonitorMD"))
 		ITC_TerminateOngoingDAQMDHelper(panelTitle)
 		ITC_StopITCDeviceTimer(panelTitle)
 
@@ -293,6 +317,13 @@ static Function ITC_StopOngoingDAQMDHelper(panelTitle)
 		endif
 
 		needsOTCAfterDAQ = needsOTCAfterDAQ | 1
+	else
+		// force a stop if invoked during a 'down' time, with nothing happening.
+		if(!RA_IsFirstSweep(panelTitle))
+			NVAR count = $GetCount(panelTitle)
+			count = GetValDisplayAsNum(panelTitle, "valdisp_DataAcq_SweepsInSet")
+			needsOTCAfterDAQ = needsOTCAfterDAQ | 1
+		endif
 	endif
 
 	NVAR dataAcqRunMode = $GetDataAcqRunMode(panelTitle)

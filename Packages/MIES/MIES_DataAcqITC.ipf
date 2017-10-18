@@ -458,7 +458,7 @@ Function ITC_StartDAQSingleDevice(panelTitle, [useBackground])
 			ITC_BkrdDataAcq(panelTitle)
 		endif
 	else
-		DAP_StopOngoingDataAcquisition(panelTitle)
+		ITC_StopOngoingDAQ(panelTitle)
 	endif
 End
 
@@ -482,10 +482,8 @@ Function ITC_StopDAQ(panelTitle)
 			// can not be stopped
 			return runMode
 		case DAQ_BG_SINGLE_DEVICE:
-			DAP_StopOngoingDataAcquisition(panelTitle)
-			return runMode
 		case DAQ_BG_MULTI_DEVICE:
-			ITC_StopOngoingDAQMultiDevice(panelTitle)
+			ITC_StopOngoingDAQ(panelTitle)
 			return runMode
 	endswitch
 
