@@ -45,7 +45,7 @@ static Function RA_HandleITI_MD(panelTitle)
 		return NaN
 	endif
 
-	ITC_StartTestPulseMultiDevice(panelTitle, runModifier=TEST_PULSE_DURING_RA_MOD)
+	TPM_StartTPMultiDeviceLow(panelTitle, runModifier=TEST_PULSE_DURING_RA_MOD)
 
 	funcList = "TPM_StopTestPulseMultiDevice(\"" + panelTitle + "\")" + ";" + "RA_CounterMD(\"" + panelTitle + "\")"
 	DQM_StartBackgroundTimer(panelTitle, ITI, funcList)

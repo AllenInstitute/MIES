@@ -3,17 +3,17 @@
 #pragma rtFunctionErrors=1
 
 #ifdef AUTOMATED_TESTING
-#pragma ModuleName=MIES_XXX
+#pragma ModuleName=MIES_TP_MD
 #endif
 
-/// @file MIES_TPBackgroundMD.ipf
-/// @brief __ITC__ Multi device background test pulse functionality
+/// @file MIES_TestPulse_Multi.ipf
+/// @brief __TPM__ Multi device background test pulse functionality
 
 /// @brief Start the test pulse when MD support is activated.
 ///
 /// Handles the TP initiation for all ITC devices. Yoked ITC1600s are handled specially using the external trigger.
 /// The external trigger is assumed to be a arduino device using the arduino squencer.
-Function ITC_StartTestPulseMultiDevice(panelTitle, [runModifier])
+Function TPM_StartTPMultiDeviceLow(panelTitle, [runModifier])
 	string panelTitle
 	variable runModifier
 
@@ -30,7 +30,7 @@ Function ITC_StartTestPulseMultiDevice(panelTitle, [runModifier])
 	if(!DeviceHasFollower(panelTitle))
 		try
 			TP_Setup(panelTitle, runMode)
-			ITC_BkrdTPMD(panelTitle)
+			TPM_BkrdTPMD(panelTitle)
 		catch
 			TP_Teardown(panelTitle)
 		endtry
@@ -62,12 +62,12 @@ Function ITC_StartTestPulseMultiDevice(panelTitle, [runModifier])
 	endtry
 
 	// Sets lead board in wait for trigger
-	ITC_BkrdTPMD(panelTitle, triggerMode=HARDWARE_DAC_EXTERNAL_TRIGGER)
+	TPM_BkrdTPMD(panelTitle, triggerMode=HARDWARE_DAC_EXTERNAL_TRIGGER)
 
 	// set followers in wait for trigger
 	for(i = 0; i < numFollower; i += 1)
 		followerPanelTitle = StringFromList(i, listOfFollowerDevices)
-		ITC_BkrdTPMD(followerPanelTitle, triggerMode=HARDWARE_DAC_EXTERNAL_TRIGGER)
+		TPM_BkrdTPMD(followerPanelTitle, triggerMode=HARDWARE_DAC_EXTERNAL_TRIGGER)
 	endfor
 
 	// trigger
@@ -75,7 +75,7 @@ Function ITC_StartTestPulseMultiDevice(panelTitle, [runModifier])
 End
 
 /// @brief Start a multi device test pulse, always done in background mode
-Function TP_StartTestPulseMultiDevice(panelTitle)
+Function TPM_StartTestPulseMultiDevice(panelTitle)
 	string panelTitle
 
 	AbortOnValue DAP_CheckSettings(panelTitle, TEST_PULSE_MODE),1
@@ -87,7 +87,8 @@ Function TP_StartTestPulseMultiDevice(panelTitle)
 		return NaN
 	endif
 
-	ITC_StartTestPulseMultiDevice(panelTitle)
+	TPM_StartTPMultiDeviceLow(panelTitle)
+
 
 	P_InitBeforeTP(panelTitle)
 End
@@ -95,13 +96,13 @@ End
 /// @brief Stop the TP on yoked devices simultaneously
 ///
 /// Handles also non-yoked devices in multi device mode correctly.
-Function ITC_StopTestPulseMultiDevice(panelTitle)
+Function TPM_StopTestPulseMultiDevice(panelTitle)
 	string panelTitle
 
-	DQM_CallFuncForDevicesYoked(panelTitle, ITC_StopTPMD)
+	DQM_CallFuncForDevicesYoked(panelTitle, TPM_StopTPMD)
 End
 
-static Function ITC_BkrdTPMD(panelTitle, [triggerMode])
+static Function TPM_BkrdTPMD(panelTitle, [triggerMode])
 	string panelTitle
 	variable triggerMode
 
@@ -111,7 +112,7 @@ static Function ITC_BkrdTPMD(panelTitle, [triggerMode])
 
 	NVAR ITCDeviceIDGlobal = $GetITCDeviceIDGlobal(panelTitle)
 
-	ITC_AddDevice(panelTitle)
+	TPM_AddDevice(panelTitle)
 
 	HW_SelectDevice(HARDWARE_ITC_DAC, ITCDeviceIDGlobal, flags=HARDWARE_ABORT_ON_ERROR)
 	HW_ITC_ResetFifo(ITCDeviceIDGlobal)
@@ -119,12 +120,12 @@ static Function ITC_BkrdTPMD(panelTitle, [triggerMode])
 	TFH_StartFIFOResetDeamon(HARDWARE_ITC_DAC, ITCDeviceIDGlobal, triggerMode)
 
 	if(!IsBackgroundTaskRunning("TestPulseMD"))
-		CtrlNamedBackground TestPulseMD, period = 5, proc = ITC_BkrdTPFuncMD
+		CtrlNamedBackground TestPulseMD, period = 5, proc = TPM_BkrdTPFuncMD
 		CtrlNamedBackground TestPulseMD, start
 	endif
 End
 
-Function ITC_BkrdTPFuncMD(s)
+Function TPM_BkrdTPFuncMD(s)
 	STRUCT BackgroundStruct &s
 
 	variable i, deviceID
@@ -188,7 +189,7 @@ Function ITC_BkrdTPFuncMD(s)
 				// only stop the currently active device
 				if(!cmpstr(panelTitle,GetMainWindow(GetCurrentWindow())))
 					beep
-					ITC_StopTestPulseMultiDevice(panelTitle)
+					TPM_StopTestPulseMultiDevice(panelTitle)
 				endif
 			endif
 		endif
@@ -197,7 +198,7 @@ Function ITC_BkrdTPFuncMD(s)
 	return 0
 End
 
-static Function ITC_StopTPMD(panelTitle)
+static Function TPM_StopTPMD(panelTitle)
 	string panelTitle
 
 	NVAR ITCDeviceIDGlobal = $GetITCDeviceIDGlobal(panelTitle)
@@ -208,8 +209,8 @@ static Function ITC_StopTPMD(panelTitle)
 	if(HW_IsRunning(HARDWARE_ITC_DAC, ITCDeviceIDGlobal)) // makes sure the device being stopped is actually running
 		HW_StopAcq(HARDWARE_ITC_DAC, ITCDeviceIDGlobal, zeroDAC = 1)
 
-		ITC_RemoveDevice(panelTitle)
-		if(!ITC_HasActiveDevices())
+		TPM_RemoveDevice(panelTitle)
+		if(!TPM_HasActiveDevices())
 			CtrlNamedBackground TestPulseMD, stop
 		endif
 
@@ -217,13 +218,13 @@ static Function ITC_StopTPMD(panelTitle)
 	endif
 End
 
-static Function ITC_HasActiveDevices()
+static Function TPM_HasActiveDevices()
 	WAVE ActiveDevicesTPMD = GetActiveDevicesTPMD()
 
 	return GetNumberFromWaveNote(ActiveDevicesTPMD, NOTE_INDEX) > 0
 End
 
-static Function ITC_RemoveDevice(panelTitle)
+static Function TPM_RemoveDevice(panelTitle)
 	string panelTitle
 
 	variable idx
@@ -249,7 +250,7 @@ static Function ITC_RemoveDevice(panelTitle)
 	DEBUGPRINT(msg)
 End
 
-static Function ITC_AddDevice(panelTitle)
+static Function TPM_AddDevice(panelTitle)
 	string panelTitle
 
 	variable idx

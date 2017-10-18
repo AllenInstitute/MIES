@@ -484,7 +484,7 @@ Function TP_StopTestPulse(panelTitle)
 		ITC_StopTestPulseSingleDevice(panelTitle)
 		return runMode
 	elseif(runMode == TEST_PULSE_BG_MULTI_DEVICE)
-		ITC_StopTestPulseMultiDevice(panelTitle)
+		TPM_StopTestPulseMultiDevice(panelTitle)
 		return runMode
 	elseif(runMode == TEST_PULSE_FG_SINGLE_DEVICE)
 		// can not be stopped
@@ -506,7 +506,7 @@ Function TP_RestartTestPulse(panelTitle, testPulseMode)
 			TP_StartTestPulseSingleDevice(panelTitle)
 			break
 		case TEST_PULSE_BG_MULTI_DEVICE:
-			TP_StartTestPulseMultiDevice(panelTitle)
+			TPM_StartTestPulseMultiDevice(panelTitle)
 			break
 		default:
 			DEBUGPRINT("Ignoring unknown value:", var=testPulseMode)

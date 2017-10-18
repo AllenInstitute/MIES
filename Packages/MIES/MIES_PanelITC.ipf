@@ -4650,7 +4650,7 @@ Function DAP_OneTimeCallAfterDAQ(panelTitle, [forcedStop])
 	ASSERT(ItemsInList(ListMatch(GetRTStackInfo(0), GetRTStackInfo(1))) == 1 , "Recursion detected, aborting")
 
 	if(GetCheckBoxState(panelTitle, "check_Settings_MD"))
-		TP_StartTestPulseMultiDevice(panelTitle)
+		TPM_StartTestPulseMultiDevice(panelTitle)
 	else
 		TP_StartTestPulseSingleDevice(panelTitle)
 	endif
@@ -6892,7 +6892,7 @@ Function DAP_ButtonProc_TestPulse(ba) : ButtonControl
 			if(dataAcqRunMode == DAQ_NOT_RUNNING && TP_CheckIfTestpulseIsRunning(panelTitle))
 				TP_StopTestPulse(panelTitle)
 			elseif(GetCheckBoxState(panelTitle, "check_Settings_MD"))
-				TP_StartTestPulseMultiDevice(panelTitle)
+				TPM_StartTestPulseMultiDevice(panelTitle)
 			else
 				TP_StartTestPulseSingleDevice(panelTitle)
 			endif

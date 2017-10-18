@@ -33,7 +33,7 @@ static Function ITC_StopOngoingDAQHelper(panelTitle)
 		needsOTCAfterDAQ = needsOTCAfterDAQ | 0
 		discardData      = discardData      | 1
 	elseif(IsDeviceActiveWithBGTask(panelTitle, "TestPulseMD"))
-		ITC_StopTestPulseMultiDevice(panelTitle)
+		TPM_StopTestPulseMultiDevice(panelTitle)
 
 		needsOTCAfterDAQ = needsOTCAfterDAQ | 0
 		discardData      = discardData      | 1
