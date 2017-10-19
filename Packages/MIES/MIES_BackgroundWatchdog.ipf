@@ -102,6 +102,9 @@ Function BW_InvalidateValDisplays()
 	endfor
 End
 
+/// @brief Helper background task for debugging
+///
+/// @ingroup BackgroundFunctions
 Function BW_BackgroundWatchdog(s)
 	STRUCT WMBackgroundStruct &s
 

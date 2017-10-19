@@ -88,6 +88,9 @@ static Function DQS_DataAcq(panelTitle)
 	SWS_SaveAndScaleITCData(panelTitle)
 End
 
+/// @brief Fifo monitor for DAQ Single Device
+///
+/// @ingroup BackgroundFunctions
 Function DQS_BkrdDataAcq(panelTitle)
 	string panelTitle
 
@@ -132,6 +135,9 @@ Function DQS_StartBackgroundFifoMonitor()
 	CtrlNamedBackground ITC_FIFOMonitor, start
 End
 
+/// @brief Helper background task for debugging
+///
+/// @ingroup BackgroundFunctions
 Function DQS_FIFOMonitor(s)
 	STRUCT WMBackgroundStruct &s
 
@@ -198,6 +204,9 @@ Function DQS_StopBackgroundTimer()
 	CtrlNamedBackground ITC_Timer, stop
 End
 
+/// @brief Keep track of time during ITI
+///
+/// @ingroup BackgroundFunctions
 Function DQS_Timer(s)
 	STRUCT WMBackgroundStruct &s
 

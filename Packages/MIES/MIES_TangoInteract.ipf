@@ -549,6 +549,7 @@ End
 
 /// @brief Complete the Baseline QC check in the background
 ///
+/// @ingroup BackgroundFunctions
 Function TI_finishBaselineQCCheck(s)
 	STRUCT WMBackgroundStruct &s
 
@@ -887,6 +888,7 @@ End
 
 /// @brief Complete the Baseline QC check in the background
 ///
+/// @ingroup BackgroundFunctions
 Function TI_finishInitAccessQCCheck(s)
 	STRUCT WMBackgroundStruct &s
 
@@ -1187,7 +1189,9 @@ Function TI_StartBckgrdGigOhmSealQCCheck()
 	CtrlNamedBackground TI_finishGigOhmSealQCCheck, start
 End
 
-///@brief finish the Gig Ohm Seal QC in the background
+/// @brief finish the Gig Ohm Seal QC in the background
+///
+/// @ingroup BackgroundFunctions
 Function TI_finishGigOhmSealQCCheck(s)
 	STRUCT WMBackgroundStruct &s
 

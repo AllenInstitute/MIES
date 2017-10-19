@@ -32,6 +32,9 @@ Function DQM_StartDAQMultiDevice(panelTitle)
 	endif
 End
 
+/// @brief Fifo monitor for DAQ Multi Device
+///
+/// @ingroup BackgroundFunctions
 Function DQM_FIFOMonitor(s)
 	STRUCT WMBackgroundStruct &s
 
@@ -243,6 +246,9 @@ Function DQM_StopBackgroundTimer(panelTitle)
 	endif
 End
 
+/// @brief Background function for tracking ITI
+///
+/// @ingroup BackgroundFunctions
 Function DQM_Timer(s)
 	STRUCT WMBackgroundStruct &s
 

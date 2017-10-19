@@ -24,7 +24,9 @@ Function TPS_StopTestPulseSingleDevice(panelTitle)
 	TP_Teardown(panelTitle)
 End
 
-///@brief Background execution function for the test pulse data acquisition
+/// @brief Background TP Single Device
+///
+/// @ingroup BackgroundFunctions
 Function TPS_TestPulseFunc(s)
 	STRUCT BackgroundStruct &s
 

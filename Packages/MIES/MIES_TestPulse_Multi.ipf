@@ -125,6 +125,9 @@ static Function TPM_BkrdTPMD(panelTitle, [triggerMode])
 	endif
 End
 
+/// @brief Background TP Multi Device
+///
+/// @ingroup BackgroundFunctions
 Function TPM_BkrdTPFuncMD(s)
 	STRUCT BackgroundStruct &s
 

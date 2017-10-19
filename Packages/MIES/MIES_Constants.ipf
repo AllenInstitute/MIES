@@ -9,6 +9,8 @@
 /// @file MIES_Constants.ipf
 /// @brief Global constants
 
+/// @defgroup BackgroundFunctions All background functions
+
 /// @name Constans for the number of channels
 /// @anchor NUM_CHANNELS_CONSTANTS
 /// @{

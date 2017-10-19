@@ -7,6 +7,7 @@ Table of Contents
   Installation instructions <readme>
   Reporting Bugs <reportingbugs>
   Release Notes <releasenotes>
+  grouplist
   filelist
   structlist
   namespacelist
