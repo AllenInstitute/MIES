@@ -19,8 +19,6 @@ End
 Function TPS_StopTestPulseSingleDevice(panelTitle)
 	string panelTitle
 
-	variable headstage
-
 	CtrlNamedBackground TestPulse, stop
 
 	TP_Teardown(panelTitle)
