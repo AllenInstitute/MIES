@@ -110,12 +110,12 @@ Function DQ_StartITCDeviceTimer(panelTitle)
 	if(!WaveExists(CycleTimeStorageWave))
 		// the size of the wave is limited by the number of igor timers.
 		// This will also limit the number of simultaneously active devices possible to 10
-		Make/N=10 timer:CycleTimeStorageWave/Wave=CycleTimeStorageWave
+		Make/N=(MAX_NUM_MS_TIMERS) timer:CycleTimeStorageWave/Wave=CycleTimeStorageWave
 	endif
 
 	variable timerID = startmstimer
 
-	ASSERT(timerID != -1, "No more ms timers available, Run: ITC_StopAllMSTimers() to reset")
+	ASSERT(timerID != -1, "No more ms timers available, Run: StopAllMSTimers() to reset")
 	CycleTimeStorageWave[ITCDeviceIDGlobal] = timerID
 
 	sprintf msg, "started timer %d", timerID

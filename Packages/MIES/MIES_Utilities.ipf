@@ -3371,11 +3371,11 @@ Function/S GetStackTrace([prefix])
 	return output
 End
 
-/// @brief Stops all ms timers
-Function ITC_StopAllMSTimers()
+/// @brief Stop all millisecond Igor Pro timers
+Function StopAllMSTimers()
 	variable i
 
-	for(i = 0; i < 10; i += 1)
-		print "ms timer", i, "stopped.", "Elapsed time:", stopmstimer(i)
+	for(i = 0; i < MAX_NUM_MS_TIMERS; i += 1)
+		printf "ms timer %d stopped. Elapsed time: %g\r", i, stopmstimer(i)
 	endfor
 End
