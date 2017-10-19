@@ -635,7 +635,7 @@ static Function ED_createAsyncWaveNoteTags(panelTitle, sweepCount)
 	ED_AddEntriesToLabnotebook(asyncSettingsTxtWave, asyncSettingsTxtKey, sweepCount, panelTitle, DATA_ACQUISITION_MODE)
 	ED_AddEntriesToLabnotebook(asyncSettingsWave, asyncSettingsKey, SweepCount, panelTitle, DATA_ACQUISITION_MODE)
 
-	ITC_ADDataBasedWaveNotes(asyncMeasurementWave, panelTitle)
+	ED_ADDataBasedWaveNotes(asyncMeasurementWave, panelTitle)
 	ED_AddEntriesToLabnotebook(asyncMeasurementWave, asyncMeasurementKey, SweepCount, panelTitle, DATA_ACQUISITION_MODE)
 End
 
@@ -785,7 +785,7 @@ static Function ED_TPSettingsDocumentation(panelTitle, sweepNo, entrySourceType)
 	ED_AddEntriesToLabnotebook(TPSettingsWave, TPKeyWave, sweepNo, panelTitle, entrySourceType)
 End
 
-Function ITC_ADDataBasedWaveNotes(asyncMeasurementWave, panelTitle)
+static Function ED_ADDataBasedWaveNotes(asyncMeasurementWave, panelTitle)
 	WAVE asyncMeasurementWave
 	string panelTitle
 
@@ -818,6 +818,6 @@ Function ITC_ADDataBasedWaveNotes(asyncMeasurementWave, panelTitle)
 		// put the measurement value into the async settings wave for creation of wave notes
 		asyncMeasurementWave[0][i][,;LABNOTEBOOK_LAYER_COUNT - 1] = rawChannelValue / gain
 
-		ITC_SupportSystemAlarm(i, asyncMeasurementWave[0][i], title, panelTitle)
+		DAP_SupportSystemAlarm(i, asyncMeasurementWave[0][i], title, panelTitle)
 	endfor
 End

@@ -8186,7 +8186,9 @@ Function DAP_GetHighestActiveHeadstage(panelTitle)
 	return WaveMax(activeHS)
 End
 
-Function ITC_SupportSystemAlarm(Channel, Measurement, MeasurementTitle, panelTitle)
+/// @brief Print a warning message if the measured value of the given asyn
+///        value exceeds the limits
+Function DAP_SupportSystemAlarm(Channel, Measurement, MeasurementTitle, panelTitle)
 	variable Channel, Measurement
 	string MeasurementTitle, panelTitle
 
