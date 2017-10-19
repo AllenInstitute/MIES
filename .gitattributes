@@ -30,6 +30,8 @@ NIDAQmx64.XOP         export-ignore
 Packages/Arduino/*zip export-ignore
 Packages/Arduino/*exe export-ignore
 
+*.dot !diff
+
 *.exe binary
 *.zip binary
 *.pdb binary
