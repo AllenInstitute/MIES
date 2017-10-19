@@ -40,6 +40,7 @@ else
 fi
 
 cp "$top_level/Packages/IPNWB/Readme.rst" "$top_level/Packages/doc/IPNWB.rst"
+cp "$top_level/Packages/ZeroMQ/Readme.rst" "$top_level/Packages/doc/ZeroMQ-XOP-Readme.rst"
 
 if hash breathe-apidoc 2>/dev/null; then
   echo "Start breathe-apidoc"
