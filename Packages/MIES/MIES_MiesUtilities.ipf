@@ -3513,14 +3513,12 @@ End
 Function SearchForDuplicates(wv)
 	WAVE wv
 
-	variable sucess
+	ASSERT(WaveExists(wv), "Missing wave")
 
+	Make/FREE/U/I/N=0 idx
 	FindDuplicates/Z/INDX=idx wv
 
-	sucess = DimSize(idx, ROWS) > 0
-	KillOrMoveToTrash(wv=idx)
-
-	return sucess
+	return DimSize(idx, ROWS) > 0
 End
 
 /// @brief Check that the device can act as a follower

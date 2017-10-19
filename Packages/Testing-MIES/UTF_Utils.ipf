@@ -555,3 +555,36 @@ Function NTE_Works4()
 End
 
 /// @}
+
+/// SearchForDuplicates
+/// @{
+
+Function SFD_AbortsWithNull()
+
+	try
+		SearchForDuplicates($"")
+		FAIL()
+	catch
+		PASS()
+	endtry
+End
+
+Function SFD_WorksWithEmptyWave()
+
+	Make/FREE/N=0 data
+	CHECK(!SearchForDuplicates(data))
+End
+
+Function SFD_WorksWithSingleEntryWave()
+
+	Make/FREE/N=1 data = 0
+	CHECK(!SearchForDuplicates(data))
+End
+
+Function SFD_Works()
+
+	Make/FREE data = {0, 1, 2, 4, 5, 0}
+	CHECK(SearchForDuplicates(data))
+End
+
+/// @}
