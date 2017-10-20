@@ -524,7 +524,7 @@ Function ED_createWaveNoteTags(panelTitle, sweepCount)
 	endif
 
 	// TP settings, especially useful if "global TP insertion" is active
-	ED_TPSettingsDocumentation(panelTitle, DATA_ACQUISITION_MODE)
+	ED_TPSettingsDocumentation(panelTitle, sweepCount, DATA_ACQUISITION_MODE)
 
 	ED_WriteChangedValuesToNote(panelTitle, sweepCount)
 	ED_WriteChangedValuesToNoteText(panelTitle, sweepCount)
@@ -721,7 +721,7 @@ Function ED_TPDocumentation(panelTitle)
 	sweepNo = AFH_GetLastSweepAcquired(panelTitle)
 	ED_AddEntriesToLabnotebook(TPSettingsWave, TPKeyWave, sweepNo, panelTitle, TEST_PULSE_MODE)
 
-	ED_TPSettingsDocumentation(panelTitle, TEST_PULSE_MODE)
+	ED_TPSettingsDocumentation(panelTitle, sweepNo, TEST_PULSE_MODE)
 End
 
 /// @brief Document the settings of the Testpulse
@@ -730,12 +730,12 @@ End
 /// settings during ITI and the testpulse settings for plaint test pulses.
 ///
 /// @param panelTitle      device
+/// @param sweepNo         sweep number
 /// @param entrySourceType type of reporting subsystem, one of @ref DataAcqModes
-static Function ED_TPSettingsDocumentation(panelTitle, entrySourceType)
+static Function ED_TPSettingsDocumentation(panelTitle, sweepNo, entrySourceType)
 	string panelTitle
-	variable entrySourceType
+	variable sweepNo, entrySourceType
 
-	variable sweepNo
 	NVAR/SDFR=GetDeviceTestPulse(panelTitle) baselineFrac, AmplitudeVC, AmplitudeIC, pulseDuration
 
 	Make/FREE/T/N=(3, 4) TPKeyWave
@@ -765,6 +765,5 @@ static Function ED_TPSettingsDocumentation(panelTitle, entrySourceType)
 	TPSettingsWave[0][2][INDEP_HEADSTAGE] = AmplitudeIC
 	TPSettingsWave[0][3][INDEP_HEADSTAGE] = pulseDuration
 
-	sweepNo = AFH_GetLastSweepAcquired(panelTitle)
 	ED_AddEntriesToLabnotebook(TPSettingsWave, TPKeyWave, sweepNo, panelTitle, entrySourceType)
 End
