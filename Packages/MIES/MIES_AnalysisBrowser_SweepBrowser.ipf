@@ -720,10 +720,15 @@ Function SB_PopupMenuSelectSweep(pa) : PopupMenuControl
 	STRUCT WMPopupAction &pa
 
 	string win
+	variable newSweep
 
 	switch(pa.eventCode)
 		case 2: // mouse up
 			win = pa.win
+			if(OVS_IsActive(win))
+				newSweep = pa.popNum - 1
+				OVS_ChangeSweepSelectionState(win, CHECKBOX_SELECTED, index=newSweep)
+			endif
 			SB_UpdateSweepPlot(win)
 			break
 	endswitch
