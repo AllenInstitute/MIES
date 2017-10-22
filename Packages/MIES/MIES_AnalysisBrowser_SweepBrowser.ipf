@@ -338,11 +338,12 @@ Function SB_UpdateSweepPlot(win, [newSweep])
 	string win
 	variable newSweep
 
-	string device, dataFolder, graph, bsPanel
+	string device, dataFolder, graph, bsPanel, scPanel
 	variable mapIndex, i, numEntries, sweepNo, highlightSweep, traceIndex
 
 	graph = GetMainWindow(win)
 	bsPanel   = BSP_GetPanel(graph)
+	scPanel   = BSP_GetSweepControlsPanel(win)
 
 	if(BSP_MainPanelNeedsUpdate(graph))
 		DoAbortNow("The main panel is too old to be usable. Please close it and open a new one.")
@@ -352,7 +353,7 @@ Function SB_UpdateSweepPlot(win, [newSweep])
 	ASSERT(DataFolderExistsDFR(sweepBrowserDFR), "sweepBrowserDFR must exist")
 
 	if(!ParamIsDefault(newSweep))
-		SetPopupMenuIndex(bsPanel, "Popup_SweepControl_Selector", newSweep)
+		SetPopupMenuIndex(scPanel, "popup_SweepControl_Selector", newSweep)
 	endif
 
 	STRUCT TiledGraphSettings tgs
@@ -379,7 +380,7 @@ Function SB_UpdateSweepPlot(win, [newSweep])
 	WAVE channelSel = GetChannelSelectionWave(sweepBrowserDFR)
 
 	if(!WaveExists(sweepsToOverlay))
-		Make/FREE/N=1 sweepsToOverlay = GetPopupMenuIndex(bsPanel, "Popup_SweepControl_Selector")
+		Make/FREE/N=1 sweepsToOverlay = GetPopupMenuIndex(scPanel, "popup_SweepControl_Selector")
 	endif
 
 	WAVE axisLabelCache = GetAxisLabelCacheWave()
@@ -493,11 +494,12 @@ End
 Function SB_SweepBrowserWindowHook(s)
 	STRUCT WMWinHookStruct &s
 
-	string graph, bsPanel, ctrl
+	string graph, bsPanel, scPanel, ctrl
 	variable hookResult
 
 	graph   = GetMainWindow(s.winName)
 	bsPanel = BSP_GetPanel(graph)
+	scPanel = BSP_GetSweepControlsPanel(graph)
 
 	switch(s.eventCode)
 		case 2:	 // Kill
@@ -519,7 +521,7 @@ Function SB_SweepBrowserWindowHook(s)
 				ctrl = "button_SweepControl_NextSweep"
 			endif
 
-			PGC_SetAndActivateControl(bsPanel, ctrl)
+			PGC_SetAndActivateControl(scPanel, ctrl)
 
 			hookResult = 1
 			break
@@ -652,10 +654,11 @@ Function SB_PopupMenuSelectSweep(pa) : PopupMenuControl
 	switch(pa.eventCode)
 		case 2: // mouse up
 			win = pa.win
+			newSweep = pa.popNum - 1
 			if(OVS_IsActive(win))
-				newSweep = pa.popNum - 1
 				OVS_ChangeSweepSelectionState(win, CHECKBOX_SELECTED, index=newSweep)
 			endif
+			SetSetVariable(win, "setvar_SweepControl_SweepNo", newSweep)
 			SB_UpdateSweepPlot(win)
 			break
 	endswitch
@@ -664,11 +667,11 @@ End
 Function SB_ButtonProc_ChangeSweep(ba) : ButtonControl
 	STRUCT WMButtonAction &ba
 
-	string graph, bsPanel, ctrl
-	variable currentSweep, newSweep, direction, totalNumSweeps
+	string graph, scPanel, ctrl
+	variable currentSweep, newSweep, direction, step, totalNumSweeps
 
 	graph   = GetMainWindow(ba.win)
-	bsPanel = BSP_GetPanel(graph)
+	scPanel = BSP_GetSweepControlsPanel(graph)
 
 	switch(ba.eventCode)
 		case 2: // mouse up
@@ -678,7 +681,7 @@ Function SB_ButtonProc_ChangeSweep(ba) : ButtonControl
 				DoAbortNow("The main panel is too old to be usable. Please close it and open a new one.")
 			endif
 
-			currentSweep = GetPopupMenuIndex(bsPanel, "Popup_SweepControl_Selector")
+			currentSweep = GetPopupMenuIndex(scPanel, "popup_SweepControl_Selector")
 
 			if(!cmpstr(ctrl, "button_SweepControl_PrevSweep"))
 				direction = -1
@@ -688,9 +691,14 @@ Function SB_ButtonProc_ChangeSweep(ba) : ButtonControl
 				ASSERT(0, "unhandled control name")
 			endif
 
-			newSweep = currentSweep + direction * GetSetVariable(bsPanel, "setvar_SweepControl_SweepStep")
-			totalNumSweeps = ItemsInList(SB_GetSweepList(graph))
-			newSweep = limit(newSweep, 0, totalNumSweeps - 1)
+			step = GetSetVariable(scPanel, "setvar_SweepControl_SweepStep")
+			newSweep = currentSweep + direction * step
+			totalNumSweeps = ItemsInList(SB_GetSweepList(graph)) - 1
+			newSweep = limit(newSweep, 0, totalNumSweeps)
+
+			SetSetVariable(scPanel, "setvar_SweepControl_SweepNo", newSweep)
+			SetSetVariableLimits(scPanel, "setvar_SweepControl_SweepNo", 0, totalNumSweeps, 1)
+			SetValDisplay(scPanel, "valdisp_SweepControl_LastSweep", var = totalNumSweeps)
 
 			if(OVS_IsActive(graph))
 				OVS_ChangeSweepSelectionState(graph, CHECKBOX_SELECTED, index=newSweep)
@@ -903,12 +911,13 @@ End
 Function SB_CheckProc_ChangedSetting(cba) : CheckBoxControl
 	STRUCT WMCheckBoxAction &cba
 
-	string graph, bsPanel, ctrl, channelType, device
+	string graph, bsPanel, scPanel, ctrl, channelType, device
 	variable checked, channelNum
 	DFREF sweepDFR
 
 	graph   = GetMainWindow(cba.win)
 	bsPanel = BSP_GetPanel(graph)
+	scPanel = BSP_GetSweepControlsPanel(graph)
 
 	switch(cba.eventCode)
 		case 2: // mouse up
@@ -975,11 +984,12 @@ End
 Function SB_CheckProc_OverlaySweeps(cba) : CheckBoxControl
 	STRUCT WMCheckBoxAction &cba
 
-	string graph, bsPanel, sweepWaveList
+	string graph, bsPanel, scPanel, sweepWaveList
 	variable index
 
 	graph   = GetMainWindow(cba.win)
 	bsPanel = BSP_GetPanel(graph)
+	scPanel = BSP_GetSweepControlsPanel(graph)
 
 	switch(cba.eventCode)
 		case 2: // mouse up
@@ -996,7 +1006,7 @@ Function SB_CheckProc_OverlaySweeps(cba) : CheckBoxControl
 			sweepWaveList = SB_GetPlainSweepList(graph)
 			OVS_UpdatePanel(graph, listBoxWave, listBoxSelWave, sweepSelChoices, sweepWaveList, allTextualValues=allTextualValues, allNumericalValues=allNumericalValues)
 			if(OVS_IsActive(graph))
-				index = GetPopupMenuIndex(bsPanel, "Popup_SweepControl_Selector")
+				index = GetPopupMenuIndex(scPanel, "popup_SweepControl_Selector")
 				OVS_ChangeSweepSelectionState(bsPanel, CHECKBOX_SELECTED, index=index)
 			endif
 			SB_UpdateSweepPlot(graph)

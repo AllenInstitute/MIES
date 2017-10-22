@@ -195,15 +195,18 @@ static Function DB_UpdateLastSweepControls(win, first, last)
 	variable first, last
 
 	variable formerLast
-	string mainPanel
+	string scPanel
 
-	mainPanel = GetMainWindow(win)
+	scPanel = BSP_GetSweepControlsPanel(win)
+	if(!WindowExists(scPanel))
+		return 0
+	endif
 
-	formerLast = GetValDisplayAsNum(mainPanel, "valdisp_SweepControl_LastSweep")
-	SetSetVariableLimits(mainPanel, "setvar_SweepControl_SweepNo", first, last, 1)
+	formerLast = GetValDisplayAsNum(scPanel, "valdisp_SweepControl_LastSweep")
+	SetSetVariableLimits(scPanel, "setvar_SweepControl_SweepNo", first, last, 1)
 
 	if(formerLast != last)
-		SetValDisplay(mainPanel, "valdisp_SweepControl_LastSweep", var=last)
+		SetValDisplay(scPanel, "valdisp_SweepControl_LastSweep", var=last)
 		DB_UpdateOverlaySweepWaves(win)
 	endif
 End
@@ -213,9 +216,10 @@ static Function DB_ClipSweepNumber(win, sweepNo)
 	variable sweepNo
 
 	variable firstSweep, lastSweep
+	string scPanel = BSP_GetSweepControlsPanel(win)
 
-	DB_FirstAndLastSweepAcquired(win, firstSweep, lastSweep)
-	DB_UpdateLastSweepControls(win, firstSweep, lastSweep)
+	DB_FirstAndLastSweepAcquired(scPanel, firstSweep, lastSweep)
+	DB_UpdateLastSweepControls(scPanel, firstSweep, lastSweep)
 
 	// handles situation where data sweep number starts at a value greater than the controls number
 	// usually occurs after locking when control is set to zero
@@ -232,7 +236,7 @@ Function DB_UpdateSweepPlot(win, [dummyArg])
 	variable dummyArg
 
 	variable numEntries, i, sweepNo, highlightSweep, referenceTime, traceIndex
-	string device, mainPanel, lbPanel, bsPanel, graph
+	string device, mainPanel, lbPanel, bsPanel, scPanel, graph
 
 	if(BSP_MainPanelNeedsUpdate(win))
 		DoAbortNow("Can not display data. The Databrowser panel is too old to be usable. Please close it and open a new one.")
@@ -243,6 +247,7 @@ Function DB_UpdateSweepPlot(win, [dummyArg])
 	mainPanel = GetMainWindow(win)
 	lbPanel   = DB_GetNotebookSubWindow(win)
 	bsPanel   = BSP_GetPanel(win)
+	scPanel   = BSP_GetSweepControlsPanel(win)
 	graph     = DB_GetMainGraph(win)
 
 	WAVE axesRanges = GetAxesRanges(graph)
@@ -271,7 +276,7 @@ Function DB_UpdateSweepPlot(win, [dummyArg])
 	WAVE/Z sweepsToOverlay = OVS_GetSelectedSweeps(win, OVS_SWEEP_SELECTION_SWEEPNO)
 
 	if(!WaveExists(sweepsToOverlay))
-		Make/FREE/N=1 sweepsToOverlay = GetSetVariable(mainPanel, "setvar_SweepControl_SweepNo")
+		Make/FREE/N=1 sweepsToOverlay = GetSetVariable(scPanel, "setvar_SweepControl_SweepNo")
 	endif
 
 	WAVE axisLabelCache = GetAxisLabelCacheWave()
@@ -379,10 +384,11 @@ Function DB_UpdateToLastSweep(win)
 	string win
 
 	variable first, last
-	string device, mainPanel, bsPanel
+	string device, mainPanel, bsPanel, scPanel
 
 	mainPanel = GetMainWindow(win)
 	bsPanel   = BSP_GetPanel(win)
+	scPanel   = BSP_GetSweepControlsPanel(win)
 
 	if(!HasPanelLatestVersion(mainPanel, DATABROWSER_PANEL_VERSION))
 		print "Can not display data. The Databrowser panel is too old to be usable. Please close it and open a new one."
@@ -390,7 +396,7 @@ Function DB_UpdateToLastSweep(win)
 		return NaN
 	endif
 
-	if(!GetCheckBoxState(bsPanel, "check_SweepControl_AutoUpdate"))
+	if(!GetCheckBoxState(scPanel, "check_SweepControl_AutoUpdate"))
 		return NaN
 	endif
 
@@ -402,7 +408,7 @@ Function DB_UpdateToLastSweep(win)
 
 	DB_FirstAndLastSweepAcquired(win, first, last)
 	DB_UpdateLastSweepControls(win, first, last)
-	SetSetVariable(mainPanel, "setvar_SweepControl_SweepNo", last)
+	SetSetVariable(scPanel, "setvar_SweepControl_SweepNo", last)
 
 	if(OVS_IsActive(win) && GetCheckBoxState(bsPanel, "check_overlaySweeps_non_commula"))
 		OVS_ChangeSweepSelectionState(win, CHECKBOX_UNSELECTED, sweepNo=last - 1)
@@ -438,15 +444,6 @@ End
 Window DataBrowser() : Panel
 	PauseUpdate; Silent 1		// building window...
 	NewPanel /K=1 /W=(898,132,1698,732) as "DataBrowser"
-	ValDisplay valdisp_SweepControl_LastSweep,pos={304.00,516.00},size={89.00,34.00},bodyWidth=60,title="of"
-	ValDisplay valdisp_SweepControl_LastSweep,help={"The number of the last sweep acquired for the device assigned to the data browser"}
-	ValDisplay valdisp_SweepControl_LastSweep,userdata(ResizeControlsInfo)= A"!!,HS!!#Cf!!#?k!!#=kz!!#`-A7TLf!!$%Rzzzzzzzzzzzzz!!#r+D.OhkBk2=!z"
-	ValDisplay valdisp_SweepControl_LastSweep,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#?(FEDG<zzzzzzzzzzz"
-	ValDisplay valdisp_SweepControl_LastSweep,userdata(ResizeControlsInfo) += A"zzz!!#?(FEDG<zzzzzzzzzzzzzz!!!"
-	ValDisplay valdisp_SweepControl_LastSweep,fSize=24,frame=2,fStyle=1
-	ValDisplay valdisp_SweepControl_LastSweep,limits={0,0,0},barmisc={0,1000}
-	ValDisplay valdisp_SweepControl_LastSweep,value= #"0"
-	ValDisplay valdisp_SweepControl_LastSweep,barBackColor= (56576,56576,56576)
 	TitleBox ListBox_DataBrowser_NoteDisplay,pos={1755.00,75.00},size={197.00,39.00}
 	TitleBox ListBox_DataBrowser_NoteDisplay,userdata(ResizeControlsInfo)= A"!!,LB?iWNZ!!#AT!!#>*z!!#o2B4uAezzzzzzzzzzzzzz!!#o2B4uAezz"
 	TitleBox ListBox_DataBrowser_NoteDisplay,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Duafnzzzzzzzzzzz"
@@ -458,13 +455,6 @@ Window DataBrowser() : Panel
 	Button button_DataBrowser_setaxis,userdata(ResizeControlsInfo)= A"!!,BY!!#Cs!!#A%!!#<pz!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	Button button_DataBrowser_setaxis,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#?(FEDG<zzzzzzzzzzz"
 	Button button_DataBrowser_setaxis,userdata(ResizeControlsInfo) += A"zzz!!#?(FEDG<zzzzzzzzzzzzzz!!!"
-	SetVariable setvar_SweepControl_SweepNo,pos={227.00,515.00},size={74.00,35.00},proc=DB_SetVarProc_SweepNo
-	SetVariable setvar_SweepControl_SweepNo,help={"Sweep number of last sweep plotted"}
-	SetVariable setvar_SweepControl_SweepNo,userdata(ResizeControlsInfo)= A"!!,Gs!!#Ce^]6]c!!#=oz!!#r+D.OhkBk2=!zzzzzzzzzzzzz!!#`-A7TLf!!%+Sz"
-	SetVariable setvar_SweepControl_SweepNo,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#?(FEDG<zzzzzzzzzzz"
-	SetVariable setvar_SweepControl_SweepNo,userdata(ResizeControlsInfo) += A"zzz!!#?(FEDG<zzzzzzzzzzzzzz!!!"
-	SetVariable setvar_SweepControl_SweepNo,userdata(lastSweep)=  "NaN",fSize=24
-	SetVariable setvar_SweepControl_SweepNo,limits={0,0,1},value= _NUM:0,live= 1
 	PopupMenu popup_LBNumericalKeys,pos={620.00,432.00},size={150.00,19.00},bodyWidth=150,proc=DB_PopMenuProc_LabNotebook
 	PopupMenu popup_LBNumericalKeys,help={"Select numeric lab notebook data to display"}
 	PopupMenu popup_LBNumericalKeys,userdata(ResizeControlsInfo)= A"!!,J,!!#C=!!#A%!!#<Pz!!#N3Bk1ct<C^(Dzzzzzzzzzzzzz!!#N3Bk1ct<C^(Dz"
@@ -546,16 +536,11 @@ Function DB_DataBrowserStartupSettings()
 	// remove tools
 	HideTools/A/W=$mainPanel
 
-	SetSetVariable(mainPanel, "setvar_SweepControl_SweepNo", 0)
-	SetVariable setvar_SweepControl_SweepNo, win=$mainPanel, limits={0, 0, 1}
-	SetValDisplay(mainPanel, "valdisp_SweepControl_LastSweep", var=0)
-
 	RemoveTracesFromGraph(mainGraph)
 	RemoveTracesFromGraph(lbGraph)
 
 	Notebook $lbPanel selection={startOfFile, endOfFile}
 	Notebook $lbPanel text = ""
-	SetSetVariable(bsPanel, "setvar_SweepControl_SweepStep", 1)
 
 	SetWindow $mainPanel, userdata(DataFolderPath) = ""
 
@@ -576,19 +561,23 @@ End
 Function DB_ButtonProc_ChangeSweep(ba) : ButtonControl
 	STRUCT WMButtonAction &ba
 
-	string win, mainPanel, bsPanel, ctrl
+	string win, mainPanel, scPanel, ctrl
 	variable step, sweepNo, currentSweep
 
 	win = ba.win
 	mainPanel = GetMainWindow(win)
-	bsPanel   = BSP_GetPanel(win)
+	scPanel   = BSP_GetSweepControlsPanel(win)
 
 	switch(ba.eventcode)
 		case 2: // mouse up
 			ctrl = ba.ctrlName
 
-			currentSweep = GetSetVariable(mainPanel, "setvar_SweepControl_SweepNo")
-			step = GetSetVariable(bsPanel, "setvar_SweepControl_SweepStep")
+			if(BSP_MainPanelNeedsUpdate(win))
+				DoAbortNow("The main panel is too old to be usable. Please close it and open a new one.")
+			endif
+
+			currentSweep = GetSetVariable(scPanel, "setvar_SweepControl_SweepNo")
+			step = GetSetVariable(scPanel, "setvar_SweepControl_SweepStep")
 
 			if(!cmpstr(ctrl, "button_SweepControl_PrevSweep"))
 				sweepNo = currentSweep - step
@@ -599,7 +588,7 @@ Function DB_ButtonProc_ChangeSweep(ba) : ButtonControl
 			endif
 
 			sweepNo = DB_ClipSweepNumber(win, sweepNo)
-			SetSetVariable(mainPanel, "setvar_SweepControl_SweepNo", sweepNo)
+			SetSetVariable(scPanel, "setvar_SweepControl_SweepNo", sweepNo)
 			OVS_ChangeSweepSelectionState(win, CHECKBOX_SELECTED, sweepNO=sweepNo)
 			DB_UpdateSweepPlot(win)
 			break
@@ -847,11 +836,12 @@ End
 Function DB_CheckProc_OverlaySweeps(cba) : CheckBoxControl
 	STRUCT WMCheckBoxAction &cba
 
-	string win, mainPanel, device, sweepWaveList
+	string win, mainPanel, scPanel, device, sweepWaveList
 	variable sweepNo
 
 	win = cba.win
 	mainPanel = GetMainWindow(win)
+	scPanel   = BSP_GetSweepControlsPanel(win)
 
 	switch(cba.eventCode)
 		case 2: // mouse up
@@ -870,7 +860,7 @@ Function DB_CheckProc_OverlaySweeps(cba) : CheckBoxControl
 			endif
 
 			if(OVS_IsActive(win))
-				sweepNo = GetSetVariable(mainPanel, "setvar_SweepControl_SweepNo")
+				sweepNo = GetSetVariable(scPanel, "setvar_SweepControl_SweepNo")
 				OVS_ChangeSweepSelectionState(win, CHECKBOX_SELECTED, sweepNo=sweepNo)
 			endif
 

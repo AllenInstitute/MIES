@@ -11,6 +11,8 @@
 /// @brief __BSP__ Panel for __DB__ and __AB__ (SweepBrowser) that combines different settings in a tabcontrol.
 
 static strConstant EXT_PANEL_SUBWINDOW = "BrowserSettingsPanel"
+static strConstant EXT_PANEL_SWEEPCONTROL = "SweepControl"
+
 static Constant BROWSERSETTINGS_PANEL_VERSION = 1
 
 /// @brief return the name of the external panel depending on main window name
@@ -22,10 +24,28 @@ Function/S BSP_GetPanel(mainPanel)
 	return GetMainWindow(mainPanel) + "#" + EXT_PANEL_SUBWINDOW
 End
 
+/// @brief return the name of the bottom Panel
+///
+/// @param mainPanel 	mainWindow panel name
+Function/S BSP_GetSweepControlsPanel(mainPanel)
+	string mainPanel
+
+	return GetMainWindow(mainPanel) + "#" + EXT_PANEL_SWEEPCONTROL
+End
+
 /// @brief open BrowserSettings side Panel
 ///
 /// @param mainPanel 	mainWindow panel name
 Function BSP_OpenPanel(mainPanel)
+	string mainPanel
+
+	BSP_OpenSweepControls(mainPanel)
+	BSP_OpenSettingsPanel(mainPanel)
+
+	BSP_MainPanelButtonToggle(mainPanel, 0)
+End
+
+Function BSP_OpenSettingsPanel(mainPanel)
 	string mainPanel
 
 	string bsPanel
@@ -42,7 +62,6 @@ Function BSP_OpenPanel(mainPanel)
 
 	if(windowExists(bsPanel))
 		SetWindow $bsPanel hide=0, needUpdate=1
-		BSP_MainPanelButtonToggle(mainPanel, 0)
 		return 1
 	endif
 
@@ -50,7 +69,62 @@ Function BSP_OpenPanel(mainPanel)
 	NewPanel/HOST=$mainPanel/EXT=1/W=(236,0,0,410)/N=$EXT_PANEL_SUBWINDOW  as " "
 	Execute "BrowserSettingsPanel()"
 	BSP_DynamicStartupSettings(mainPanel)
-	BSP_MainPanelButtonToggle(mainPanel, 0)
+End
+
+/// @brief open bottom Panel
+///
+/// @param mainPanel 	mainWindow panel name
+Function BSP_OpenSweepControls(mainPanel)
+	string mainPanel
+
+	string scPanel
+
+	mainPanel = GetMainWindow(mainPanel)
+	ASSERT(WindowExists(mainPanel), "HOST panel does not exist")
+
+	scPanel = BSP_GetSweepControlsPanel(mainPanel)
+	if(WindowExists(scPanel))
+		SetWindow $scPanel hide=0, needUpdate=1
+		return 1
+	endif
+
+	NewPanel/HOST=$mainPanel/EXT=2/W=(0,0,580,66)/N=$EXT_PANEL_SWEEPCONTROL as "Sweep Control"
+	Execute "SweepControlPanel()"
+	BSP_DynamicSweepControls(mainPanel)
+End
+
+/// @brief dynamic settings for bottom panel at initialization
+///
+/// @param mainPanel 	mainWindow panel name
+static Function BSP_DynamicSweepControls(mainPanel)
+	string mainPanel
+
+	string scPanel, controlsDB, controlsSB
+
+	scPanel = BSP_GetSweepControlsPanel(mainPanel)
+	ASSERT(WindowExists(scPanel), "external SweepControl Panel not found")
+
+	SetWindow $scPanel, hook(main)=BSP_ClosePanelHook
+
+	SetControlProcedures(scPanel, "button_SweepControl_PrevSweep;button_SweepControl_NextSweep", BSP_AddBrowserPrefix(mainPanel, "ButtonProc_ChangeSweep"))
+
+	SetSetVariable(scPanel, "setvar_SweepControl_SweepNo", 0)
+	SetSetVariableLimits(scPanel, "setvar_SweepControl_SweepNo", 0, 0, 1)
+	SetValDisplay(scPanel, "valdisp_SweepControl_LastSweep", var=0)
+	SetSetVariable(scPanel, "setvar_SweepControl_SweepStep", 1)
+
+	controlsDB = "check_SweepControl_AutoUpdate;setvar_SweepControl_SweepNo;"
+	controlsSB = "popup_SweepControl_Selector;"
+	if(IsDataBrowser(mainPanel))
+		SetControlProcedures(scPanel, "setvar_SweepControl_SweepNo;", "DB_SetVarProc_SweepNo")
+		EnableControls(scPanel, controlsDB)
+		DisableControls(scPanel, controlsSB)
+	else
+		PopupMenu popup_SweepControl_Selector win=$scPanel, value= #("SB_GetSweepList(\"" + mainPanel + "\")")
+		SetControlProcedures(scPanel, "popup_SweepControl_Selector;", "SB_PopupMenuSelectSweep")
+		EnableControls(scPanel, controlsSB)
+		DisableControls(scPanel, controlsDB)
+	endif
 End
 
 /// @brief dynamic settings for panel initialization
@@ -88,16 +162,16 @@ static Function BSP_DynamicStartupSettings(mainPanel)
 	BSP_SetCSButtonProc(bsPanel, BSP_AddBrowserPrefix(mainPanel, "CheckProc_ChangedSetting"))
 
 	// settings tab
-	controls = "check_BrowserSettings_DAC;check_BrowserSettings_ADC;check_BrowserSettings_TTL;check_BrowserSettings_splitTTL;check_BrowserSettings_OChan;check_BrowserSettings_dDAQ;check_Calculation_AverageTraces;check_Calculation_ZeroTraces;check_SweepControl_HideSweep;"
+	controls = "check_BrowserSettings_DAC;check_BrowserSettings_ADC;check_BrowserSettings_TTL;check_BrowserSettings_splitTTL;check_BrowserSettings_OChan;check_BrowserSettings_dDAQ;check_Calculation_AverageTraces;check_Calculation_ZeroTraces;"
 	SetControlProcedures(bsPanel, controls, BSP_AddBrowserPrefix(mainPanel, "CheckProc_ChangedSetting"))
 	SetControlProcedure(bsPanel, "button_Calculation_RestoreData", BSP_AddBrowserPrefix(mainPanel, "ButtonProc_RestoreData"))
 	SetControlProcedure(bsPanel, "check_Display_VisibleXrange", BSP_AddBrowserPrefix(mainPanel, "CheckProc_ScaleAxes"))
-	SetControlProcedures(bsPanel, "button_SweepControl_PrevSweep;button_SweepControl_NextSweep", BSP_AddBrowserPrefix(mainPanel, "ButtonProc_ChangeSweep"))
+	SetControlProcedures(bsPanel, "check_SweepControl_HideSweep;", BSP_AddBrowserPrefix(mainPanel, "CheckProc_ChangedSetting"))
 	SetControlProcedures(bsPanel, "slider_BrowserSettings_dDAQ;", "BSP_SliderProc_ChangedSetting")
 
 	// SB/DB specific controls
-	controlsSB = "popup_SweepControl_Selector;check_BrowserSettings_splitTTL;check_BrowserSettings_TA;check_Display_EqualYrange;check_Display_EqualYignore;"
-	controlsDB = "check_SweepControl_AutoUpdate;popup_DB_lockedDevices;"
+	controlsSB = "check_BrowserSettings_splitTTL;check_BrowserSettings_TA;check_Display_EqualYrange;check_Display_EqualYignore;"
+	controlsDB = "popup_DB_lockedDevices;"
 	if(IsDataBrowser(mainPanel))
 		EnableControls(bsPanel, controlsDB)
 		DisableControls(bsPanel, controlsSB)
@@ -106,8 +180,6 @@ static Function BSP_DynamicStartupSettings(mainPanel)
 		EnableControls(bsPanel, controlsSB)
 		DisableControls(bsPanel, controlsDB)
 		PopupMenu popup_TimeAlignment_Master win=$bsPanel, value = #("SB_GetAllTraces(\"" + mainPanel + "\")")
-		PopupMenu popup_SweepControl_Selector win=$bsPanel, value= #("SB_GetSweepList(\"" + mainPanel + "\")")
-		SetControlProcedures(bsPanel, "popup_SweepControl_Selector;", "SB_PopupMenuSelectSweep")
 	endif
 
 	BSP_InitMainCheckboxes(bsPanel)
@@ -395,17 +467,20 @@ End
 Function BSP_ClosePanelHook(s)
 	STRUCT WMWinHookStruct &s
 
-	string mainPanel, bsPanel, panelButton
+	string mainPanel, panelButton
+	string panels = ""
 	variable hookResult = 0
 
 	switch(s.eventCode)
 		case 17: // killVote
 			mainPanel = GetMainWindow(s.winName)
-			bsPanel = BSP_GetPanel(mainPanel)
+			panels = AddListItem(BSP_GetPanel(mainPanel), panels)
+			panels = AddListItem(BSP_GetSweepControlsPanel(mainPanel), panels)
 
-			ASSERT(!cmpstr(s.winName, bsPanel), "this hook is only available for BSP panel.")
+			ASSERT(FindListItem(s.winName, panels) >= 0, "this hook is only available for specific BSP panel.")
 
-			SetWindow $extPanel hide=1
+			SetWindow $s.winName hide=1
+
 			BSP_MainPanelButtonToggle(mainPanel, 1)
 
 			hookResult = 2 // don't kill window
@@ -415,10 +490,44 @@ Function BSP_ClosePanelHook(s)
 	return hookResult
 End
 
+/// @brief window macro for bottom panel
+Window SweepControlPanel() : Panel
+	PauseUpdate; Silent 1		// building window...
+	//NewPanel /W=(459,529,1042,593) as "Sweep Control"
+	Button button_SweepControl_NextSweep,pos={335.00,0.00},size={150.00,37.00},title="Next  \\W649"
+	Button button_SweepControl_NextSweep,help={"Displays the next sweep (sweep no. = last sweep number + step)"}
+	Button button_SweepControl_NextSweep,fSize=20
+	ValDisplay valdisp_SweepControl_LastSweep,pos={240.00,3.00},size={89.00,34.00},bodyWidth=60,title="of"
+	ValDisplay valdisp_SweepControl_LastSweep,help={"The number of the last sweep acquired for the device assigned to the data browser"}
+	ValDisplay valdisp_SweepControl_LastSweep,fSize=24,frame=2,fStyle=1
+	ValDisplay valdisp_SweepControl_LastSweep,limits={0,0,0},barmisc={0,1000}
+	ValDisplay valdisp_SweepControl_LastSweep,value= #"0"
+	ValDisplay valdisp_SweepControl_LastSweep,barBackColor= (56576,56576,56576)
+	SetVariable setvar_SweepControl_SweepNo,pos={155.00,2.00},size={74.00,35.00}
+	SetVariable setvar_SweepControl_SweepNo,help={"Sweep number of last sweep plotted"}
+	SetVariable setvar_SweepControl_SweepNo,userdata(lastSweep)=  "NaN",fSize=24
+	SetVariable setvar_SweepControl_SweepNo,limits={0,0,1},value= _NUM:0,live= 1
+	SetVariable setvar_SweepControl_SweepStep,pos={488.00,2.00},size={92.00,35.00},bodyWidth=40,title="Step"
+	SetVariable setvar_SweepControl_SweepStep,help={"Set the increment between sweeps"}
+	SetVariable setvar_SweepControl_SweepStep,userdata(lastSweep)=  "0",fSize=24
+	SetVariable setvar_SweepControl_SweepStep,limits={1,inf,1},value= _NUM:1
+	Button button_SweepControl_PrevSweep,pos={0.00,0.00},size={150.00,37.00},title="\\W646 Previous"
+	Button button_SweepControl_PrevSweep,help={"Displays the previous sweep (sweep no. = last sweep number - step)"}
+	Button button_SweepControl_PrevSweep,fSize=20
+	PopupMenu Popup_SweepControl_Selector,pos={155.00,41.00},size={175.00,19.00},bodyWidth=175
+	PopupMenu Popup_SweepControl_Selector,help={"List of sweeps in this sweep browser"}
+	PopupMenu Popup_SweepControl_Selector,userdata(tabnum)=  "0"
+	PopupMenu Popup_SweepControl_Selector,userdata(tabcontrol)=  "Settings"
+	PopupMenu Popup_SweepControl_Selector,mode=1,popvalue=" ",value= #"\" \""
+	CheckBox check_SweepControl_AutoUpdate,pos={345.00,44.00},size={159.00,15.00},disable=2,title="Display last sweep acquired"
+	CheckBox check_SweepControl_AutoUpdate,help={"Displays the last sweep acquired when data acquistion is ongoing"}
+	CheckBox check_SweepControl_AutoUpdate,value= 0
+EndMacro
+
 /// @brief window macro for side panel
 Window BrowserSettingsPanel() : Panel
 	PauseUpdate; Silent 1		// building window...
-	//NewPanel /W=(202,80,437,499) as " "
+	//NewPanel /W=(202,80,437,493) as " "
 	GroupBox group_calc,pos={12.00,245.00},size={210.00,50.00}
 	GroupBox group_calc,userdata(tabnum)=  "0",userdata(tabcontrol)=  "Settings"
 	TabControl Settings,pos={2.00,2.00},size={230.00,19.00},proc=ACL_DisplayTab
@@ -728,35 +837,6 @@ Window BrowserSettingsPanel() : Panel
 	Slider slider_BrowserSettings_dDAQ,userdata(tabnum)=  "0"
 	Slider slider_BrowserSettings_dDAQ,userdata(tabcontrol)=  "Settings"
 	Slider slider_BrowserSettings_dDAQ,limits={-1,7,1},value= -1,vert= 0
-	PopupMenu Popup_SweepControl_Selector,pos={22.00,440.00},size={150.00,19.00},bodyWidth=150,proc=SB_PopupMenuSelectSweep
-	PopupMenu Popup_SweepControl_Selector,help={"List of sweeps in this sweep browser"}
-	PopupMenu Popup_SweepControl_Selector,userdata(tabnum)=  "0"
-	PopupMenu Popup_SweepControl_Selector,userdata(tabcontrol)=  "Settings"
-	PopupMenu Popup_SweepControl_Selector,mode=1,popvalue=" ",value= #"\" \""
-	PopupMenu popup_dDAQ_regions,pos={180.00,440.00},size={35.00,19.00},bodyWidth=35,disable=2,proc=SB_PopMenuProc_ChangedSettings
-	PopupMenu popup_dDAQ_regions,help={"Allows to view only oodDAQ regions from the selected headstage. Choose -1 to display all."}
-	PopupMenu popup_dDAQ_regions,userdata(tabnum)=  "0"
-	PopupMenu popup_dDAQ_regions,userdata(tabcontrol)=  "Settings"
-	PopupMenu popup_dDAQ_regions,mode=1,popvalue="-1",value= #"\"-1;0;1;2;3;4;5;6;7\""
-	Button button_SweepControl_NextSweep,pos={154.00,466.00},size={60.00,20.00},proc=SB_ButtonProc_ChangeSweep,title="Next"
-	Button button_SweepControl_NextSweep,help={"Select the previous sweep"}
-	Button button_SweepControl_NextSweep,userdata(tabnum)=  "0"
-	Button button_SweepControl_NextSweep,userdata(tabcontrol)=  "Settings"
-	Button button_SweepControl_PrevSweep,pos={21.00,466.00},size={60.00,20.00},proc=SB_ButtonProc_ChangeSweep,title="Previous"
-	Button button_SweepControl_PrevSweep,help={"Select the next sweep"}
-	Button button_SweepControl_PrevSweep,userdata(tabnum)=  "0"
-	Button button_SweepControl_PrevSweep,userdata(tabcontrol)=  "Settings"
-	CheckBox check_SweepControl_HideSweep,pos={170.00,492.00},size={40.00,15.00},proc=SB_CheckProc_ChangedSetting,title="Hide"
-	CheckBox check_SweepControl_HideSweep,help={"Hide sweep traces. Usually combined with \"Average traces\"."}
-	CheckBox check_SweepControl_HideSweep,userdata(tabnum)=  "0"
-	CheckBox check_SweepControl_HideSweep,userdata(tabcontrol)=  "Settings",value= 0
-	SetVariable setvar_SweepControl_SweepStep,pos={84.00,467.00},size={64.00,18.00},title="Step"
-	SetVariable setvar_SweepControl_SweepStep,help={"Number of sweeps to step for each Previous/Next click or mouse wheel turn"}
-	SetVariable setvar_SweepControl_SweepStep,userdata(tabnum)=  "0"
-	SetVariable setvar_SweepControl_SweepStep,userdata(tabcontrol)=  "Settings"
-	SetVariable setvar_SweepControl_SweepStep,limits={1,inf,1},value= _NUM:1
-	GroupBox group_sweep,pos={12.00,420.00},size={210.00,98.00},title="Sweep"
-	GroupBox group_sweep,userdata(tabnum)=  "0",userdata(tabcontrol)=  "Settings"
 	CheckBox check_SweepControl_HideSweep,pos={158.00,60.00},size={40.00,15.00},proc=SB_CheckProc_ChangedSetting,title="Hide"
 	CheckBox check_SweepControl_HideSweep,help={"Hide sweep traces. Usually combined with \"Average traces\"."}
 	CheckBox check_SweepControl_HideSweep,userdata(tabnum)=  "0"
@@ -771,9 +851,6 @@ Window BrowserSettingsPanel() : Panel
 	PopupMenu popup_DB_lockedDevices,userdata(tabnum)=  "0"
 	PopupMenu popup_DB_lockedDevices,userdata(tabcontrol)=  "Settings"
 	PopupMenu popup_DB_lockedDevices,mode=1,popvalue="- none -",value= #"DB_GetAllDevicesWithData()"
-	CheckBox check_SweepControl_AutoUpdate,pos={25.00,492.00},size={118.00,15.00},disable=2,title="last sweep acquired"
-	CheckBox check_SweepControl_AutoUpdate,help={"Displays the last sweep acquired when data acquistion is ongoing"}
-	CheckBox check_SweepControl_AutoUpdate,value= 0
 EndMacro
 
 /// @brief enable/disable checkbox control for side panel
