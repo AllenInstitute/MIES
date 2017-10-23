@@ -18,13 +18,13 @@
 ///
 /// @anchor AnalysisFunctionEventDescriptionTable
 ///
-/// Event      | Description                          | Specialities
-/// -----------|--------------------------------------|---------------------------------------------------------------
-/// Pre DAQ    | Before any DAQ occurs                | Called before the settings are validated
-/// Mid Sweep  | Each time when new data is polled    | Available for background DAQ only
-/// Post Sweep | After each sweep                     | None
-/// Post Set   | After a *full* set has been acquired | This event is not always reached as the user might not acquire all steps of a set
-/// Post DAQ   | After all DAQ has been finished      | None
+/// Event      | Description                                  | Specialities
+/// -----------|----------------------------------------------|---------------------------------------------------------------
+/// Pre DAQ    | Before any DAQ occurs                        | Called before the settings are validated
+/// Mid Sweep  | Each time when new data is polled            | Available for background DAQ only
+/// Post Sweep | After each sweep (before possible ITI pause) | None
+/// Post Set   | After a *full* set has been acquired         | This event is not always reached as the user might not acquire all steps of a set
+/// Post DAQ   | After all DAQ has been finished              | None
 ///
 /// The Post Sweep/Set/DAQ functions are *not* executed if a currently running sweep is aborted.
 ///
