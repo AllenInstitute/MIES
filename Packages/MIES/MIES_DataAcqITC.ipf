@@ -25,6 +25,7 @@ Function ITC_DataAcq(panelTitle)
 	endif
 
 	HW_StartAcq(HARDWARE_ITC_DAC, ITCDeviceIDGlobal, flags=HARDWARE_ABORT_ON_ERROR)
+	ED_MarkSweepStart(panelTitle)
 
 	do
 		DoXOPIdle
@@ -50,6 +51,7 @@ Function ITC_BkrdDataAcq(panelTitle)
 	endif
 
 	HW_StartAcq(HARDWARE_ITC_DAC, ITCDeviceIDGlobal, flags=HARDWARE_ABORT_ON_ERROR)
+	ED_MarkSweepStart(panelTitle)
 
 	ITC_StartBckgrdFIFOMonitor()
 End

@@ -443,6 +443,17 @@ static Function/Wave ED_FindIndizesAndRedimension(incomingKey, key, values, rowI
 	return indizes
 End
 
+/// @brief Remember the "exact" start of the sweep
+///
+/// Should be called immediately after HW_StartAcq().
+Function ED_MarkSweepStart(panelTitle)
+	string panelTitle
+
+	WAVE/T sweepSettingsTxtWave = GetSweepSettingsTextWave(panelTitle)
+
+	sweepSettingsTxtWave[0][%$HIGH_PREC_SWEEP_START_KEY][INDEP_HEADSTAGE] = GetISO8601TimeStamp(numFracSecondsDigits = 3)
+End
+
 /// @brief Add sweep specific information to the labnotebook
 Function ED_createWaveNoteTags(panelTitle, sweepCount)
 	string panelTitle

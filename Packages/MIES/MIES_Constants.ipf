@@ -688,6 +688,7 @@ StrConstant TP_BASELINE				= "Baseline %"
 
 StrConstant PULSE_START_TIMES_KEY     = "Pulse Train Pulses"
 StrConstant PULSE_TO_PULSE_LENGTH_KEY = "Pulse To Pulse Length"
+StrConstant HIGH_PREC_SWEEP_START_KEY = "High precision sweep start"
 
 /// DA_Ephys controls which should be disabled during DAQ
 StrConstant CONTROLS_DISABLE_DURING_DAQ = "Check_DataAcqHS_All;Radio_ClampMode_AllIClamp;Radio_ClampMode_AllVClamp;Radio_ClampMode_AllIZero;SetVar_Sweep;Check_DataAcq1_DistribDaq;Check_DataAcq1_dDAQOptOv;Check_DataAcq_Indexing;check_DataAcq_IndexRandom;Check_DataAcq1_IndexingLocked;SetVar_DataAcq_ListRepeats"
