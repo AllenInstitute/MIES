@@ -1835,7 +1835,6 @@ static Function WBP_LoadSet(setName)
 
 	ASSERT(SegWvType[100] <= SEGMENT_TYPE_WAVE_LAST_IDX, "Only supports up to different SEGMENT_TYPE_WAVE_LAST_IDX epochs")
 
-	WBP_SelectEpoch(0)
 	WBP_UpdateEpochControls()
 
 	// reset old state of checkbox and update panel
@@ -1903,21 +1902,10 @@ static Function WBP_UpdateEpochControls()
 	SetVariable setvar_WaveBuilder_CurrentEpoch win=$panel, limits = {0, numEpochs - 1, 1}
 
 	if(currentEpoch >= numEpochs)
-		SetSetVariable(panel, "setvar_WaveBuilder_CurrentEpoch", numEpochs - 1)
-		WBP_SelectEpoch(numEpochs - 1)
+		PGC_SetAndActivateControl(panel, "setvar_WaveBuilder_CurrentEpoch", val = numEpochs - 1)
 	else
 		WBP_UpdatePanelIfAllowed()
 	endif
-End
-
-static Function WBP_SelectEpoch(epoch)
-	variable epoch
-
-	WAVE SegWvType = GetSegmentTypeWave()
-
-	PGC_SetAndActivateControl(panel, "WBP_WaveType", val = SegWvType[epoch])
-	WBP_ParameterWaveToPanel(SegWvType[epoch])
-	WBP_UpdatePanelIfAllowed()
 End
 
 Function WBP_SetVarProc_TotEpoch(sva) : SetVariableControl
@@ -1943,7 +1931,8 @@ Function WBP_SetVarProc_EpochToEdit(sva) : SetVariableControl
 		case 1: // mouse up
 		case 2: // Enter key
 		case 3: // Live update
-			WBP_SelectEpoch(sva.dval)
+			WAVE SegWvType = GetSegmentTypeWave()
+			PGC_SetAndActivateControl(panel, "WBP_WaveType", val = SegWvType[sva.dval])
 			break
 	endswitch
 End
@@ -2405,8 +2394,7 @@ Function WBP_MainWindowHook(s)
 					return 0
 				endif
 
-				SetSetVariable(panel, "setvar_WaveBuilder_CurrentEpoch", i)
-				WBP_SelectEpoch(i)
+				PGC_SetAndActivateControl(panel, "setvar_WaveBuilder_CurrentEpoch", val = i)
 				return 1
 			endif
 		endfor
