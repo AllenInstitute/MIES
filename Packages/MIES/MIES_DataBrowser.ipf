@@ -46,7 +46,7 @@ End
 
 Function DB_OpenDataBrowser()
 
-	string win, devicesWithData, panelTitle
+	string win, device, devicesWithData
 
 	Execute "DataBrowser()"
 	win = GetCurrentWindow()
@@ -59,16 +59,16 @@ Function DB_OpenDataBrowser()
 	endif
 End
 
-static Function/S DB_GetNotebookSubWindow(panelTitle)
-	string panelTitle
+static Function/S DB_GetNotebookSubWindow(win)
+	string win
 
-	return panelTitle + "#WaveNoteDisplay"
+	return GetMainWindow(win) + "#WaveNoteDisplay"
 End
 
-Function/S DB_GetMainGraph(panelTitle)
-	string panelTitle
+Function/S DB_GetMainGraph(win)
+	string win
 
-	return GetMainWindow(panelTitle) + "#DataBrowserGraph"
+	return GetMainWindow(win) + "#DataBrowserGraph"
 End
 
 Function/S DB_ClearAllGraphs()
@@ -99,81 +99,81 @@ Function/S DB_ClearAllGraphs()
 	endfor
 End
 
-static Function/S DB_GetLabNoteBookGraph(panelTitle)
-	string panelTitle
+static Function/S DB_GetLabNoteBookGraph(win)
+	string win
 
-	return panelTitle + "#Labnotebook"
+	return GetMainWindow(win) + "#Labnotebook"
 End
 
-static Function DB_LockDBPanel(panelTitle, device)
-	string &panelTitle, device
+static Function DB_LockDBPanel(win, device)
+	string &win, device
 
-	string panelTitleNew
+	string renameWin
 	variable first, last
 
 	if(!CmpStr(device,NONE))
 		print "Please choose a device assignment for the data browser"
 		ControlWindowToFront()
 
-		panelTitleNew = "DataBrowser"
-		if(windowExists(panelTitleNew))
-			panelTitleNew = UniqueName("DataBrowser", 9, 1)
+		renameWin = "DataBrowser"
+		if(windowExists(renameWin))
+			renameWin = UniqueName("DataBrowser", 9, 1)
 		endif
-		DoWindow/W=$panelTitle/C $panelTitleNew
-		panelTitle = panelTitleNew
+		DoWindow/W=$win/C $renameWin
+		win = renameWin
 
-		PopupMenu popup_LBNumericalKeys, win=$panelTitle, value=#("\"" + NONE + "\"")
-		PopupMenu popup_LBTextualKeys, win=$panelTitle, value=#("\"" + NONE + "\"")
-		DB_SetUserData(panelTitle, device)
-		DB_UpdateSweepPlot(panelTitle)
+		PopupMenu popup_LBNumericalKeys, win=$win, value=#("\"" + NONE + "\"")
+		PopupMenu popup_LBTextualKeys, win=$win, value=#("\"" + NONE + "\"")
+		DB_SetUserData(win, device)
+		DB_UpdateSweepPlot(win)
 		return NaN
 	endif
 
-	panelTitleNew = UniqueName("DB_" + device, 9, 0)
-	DoWindow/W=$panelTitle/C $panelTitleNew
-	panelTitle = panelTitleNew
+	renameWin = UniqueName("DB_" + device, 9, 0)
+	DoWindow/W=$win/C $renameWin
+	win = renameWin
 
-	DB_SetUserData(panelTitle, device)
+	DB_SetUserData(win, device)
 
-	PopupMenu popup_LBNumericalKeys, win=$panelTitle, value=#("DB_GetLBNumericalKeys(\"" + panelTitle + "\")")
-	PopupMenu popup_LBTextualKeys, win=$panelTitle, value=#("DB_GetLBTextualKeys(\"" + panelTitle + "\")")
+	PopupMenu popup_LBNumericalKeys, win=$win, value=#("DB_GetLBNumericalKeys(\"" + win + "\")")
+	PopupMenu popup_LBTextualKeys, win=$win, value=#("DB_GetLBTextualKeys(\"" + win + "\")")
 
-	DB_FirstAndLastSweepAcquired(panelTitle, first, last)
-	DB_UpdateSweepControls(panelTitle, first, last)
-	DB_UpdateSweepPlot(panelTitle)
+	DB_FirstAndLastSweepAcquired(win, first, last)
+	DB_UpdateSweepControls(win, first, last)
+	DB_UpdateSweepPlot(win)
 End
 
-static Function DB_SetUserData(panelTitle, device)
-	string panelTitle, device
+static Function DB_SetUserData(win, device)
+	string win, device
 
-	SetWindow $panelTitle, userdata = ""
-	BSP_SetDevice(panelTitle, device)
+	SetWindow $win, userdata = ""
+	BSP_SetDevice(win, device)
 
 	if(!cmpstr(device, NONE))
 		return 0
 	endif
 
 	DFREF dfr = GetDeviceDataBrowserPath(device)
-	BSP_SetFolder(panelTitle, dfr, MIES_BSP_PANEL_FOLDER)
+	BSP_SetFolder(win, dfr, MIES_BSP_PANEL_FOLDER)
 End
 
-static Function/S DB_GetPlainSweepList(panelTitle)
-	string panelTitle
+static Function/S DB_GetPlainSweepList(win)
+	string win
 
 	string device
 	DFREF dfr
 
-	if(!BSP_HasBoundDevice(panelTitle))
+	if(!BSP_HasBoundDevice(win))
 		return ""
 	endif
 
-	device = BSP_GetDevice(panelTitle)
+	device = BSP_GetDevice(win)
 	dfr = GetDeviceDataPath(device)
 	return GetListOfObjects(dfr, DATA_SWEEP_REGEXP, waveProperty="MINCOLS:2")
 End
 
-static Function DB_FirstAndLastSweepAcquired(panelTitle, first, last)
-	string panelTitle
+static Function DB_FirstAndLastSweepAcquired(win, first, last)
+	string win
 	variable &first, &last
 
 	string list
@@ -181,7 +181,7 @@ static Function DB_FirstAndLastSweepAcquired(panelTitle, first, last)
 	first = 0
 	last  = 0
 
-	list = DB_GetPlainSweepList(panelTitle)
+	list = DB_GetPlainSweepList(win)
 
 	if(!isEmpty(list))
 		first = NumberByKey("Sweep", list, "_")
@@ -189,29 +189,32 @@ static Function DB_FirstAndLastSweepAcquired(panelTitle, first, last)
 	endif
 End
 
-static Function DB_UpdateSweepControls(panelTitle, first, last)
-	string panelTitle
+static Function DB_UpdateSweepControls(win, first, last)
+	string win
 	variable first, last
 
 	variable formerLast
+	string mainPanel
 
-	formerLast = GetValDisplayAsNum(panelTitle, "valdisp_DataBrowser_LastSweep")
-	SetSetVariableLimits(panelTitle, "setvar_DataBrowser_SweepNo", first, last, 1)
+	mainPanel = GetMainWindow(win)
+
+	formerLast = GetValDisplayAsNum(mainPanel, "valdisp_DataBrowser_LastSweep")
+	SetSetVariableLimits(mainPanel, "setvar_DataBrowser_SweepNo", first, last, 1)
 
 	if(formerLast != last)
-		SetValDisplay(panelTitle, "valdisp_DataBrowser_LastSweep", var=last)
-		DB_UpdateOverlaySweepWaves(panelTitle)
+		SetValDisplay(mainPanel, "valdisp_DataBrowser_LastSweep", var=last)
+		DB_UpdateOverlaySweepWaves(win)
 	endif
 End
 
-static Function DB_ClipSweepNumber(panelTitle, sweepNo)
-	string panelTitle
+static Function DB_ClipSweepNumber(win, sweepNo)
+	string win
 	variable sweepNo
 
 	variable firstSweep, lastSweep
 
-	DB_FirstAndLastSweepAcquired(panelTitle, firstSweep, lastSweep)
-	DB_UpdateSweepControls(panelTitle, firstSweep, lastSweep)
+	DB_FirstAndLastSweepAcquired(win, firstSweep, lastSweep)
+	DB_UpdateSweepControls(win, firstSweep, lastSweep)
 
 	// handles situation where data sweep number starts at a value greater than the controls number
 	// usually occurs after locking when control is set to zero
@@ -221,51 +224,52 @@ End
 /// @brief Update the sweep plotting facility
 ///
 /// Only outside callers are generic external panels which must update the graph.
-/// @param panelTitle locked databrowser
+/// @param win        locked databrowser
 /// @param dummyArg   [unnused] required to be compatible to UpdateSweepPlot()
-Function DB_UpdateSweepPlot(panelTitle, [dummyArg])
-	string panelTitle
+Function DB_UpdateSweepPlot(win, [dummyArg])
+	string win
 	variable dummyArg
 
 	variable numEntries, i, sweepNo, highlightSweep, referenceTime, traceIndex
-	string device, subWindow, graph
+	string device, mainPanel, lbPanel, graph
 
-	if(BSP_MainPanelNeedsUpdate(panelTitle))
+	if(BSP_MainPanelNeedsUpdate(win))
 		DoAbortNow("Can not display data. The Databrowser panel is too old to be usable. Please close it and open a new one.")
 	endif
 
 	referenceTime = DEBUG_TIMER_START()
 
-	subWindow = DB_GetNotebookSubWindow(panelTitle)
-	graph     = DB_GetMainGraph(panelTitle)
+	mainPanel = GetMainWindow(win)
+	lbPanel   = DB_GetNotebookSubWindow(win)
+	graph     = DB_GetMainGraph(win)
 
 	WAVE axesRanges = GetAxesRanges(graph)
 
 	RemoveTracesFromGraph(graph)
 
-	if(!BSP_HasBoundDevice(panelTitle))
+	if(!BSP_HasBoundDevice(win))
 		return NaN
 	endif
-	device = BSP_GetDevice(panelTitle)
+	device = BSP_GetDevice(win)
 
-	WAVE numericalValues = DB_GetNumericalValues(panelTitle)
-	WAVE textualValues   = DB_GetTextualValues(panelTitle)
+	WAVE numericalValues = DB_GetNumericalValues(win)
+	WAVE textualValues   = DB_GetTextualValues(win)
 
 	STRUCT TiledGraphSettings tgs
-	tgs.displayDAC      = GetCheckBoxState(panelTitle, "check_DataBrowser_DisplayDAchan")
-	tgs.displayTTL      = GetCheckBoxState(panelTitle, "check_DataBrowser_DisplayTTL")
-	tgs.displayADC      = GetCheckBoxState(panelTitle, "check_DataBrowser_DisplayADChan")
-	tgs.overlaySweep 	= OVS_IsActive(panelTitle)
-	tgs.overlayChannels = GetCheckBoxState(panelTitle, "check_DataBrowser_OverlayChan")
-	tgs.dDAQDisplayMode = GetCheckBoxState(panelTitle, "check_DataBrowser_dDAQMode")
-	tgs.dDAQHeadstageRegions = GetSliderPositionIndex(panelTitle, "slider_dDAQ_regions")
-	tgs.hideSweep       = GetCheckBoxState(panelTitle, "check_DataBrowser_hideSweep")
+	tgs.displayDAC      = GetCheckBoxState(mainPanel, "check_DataBrowser_DisplayDAchan")
+	tgs.displayTTL      = GetCheckBoxState(mainPanel, "check_DataBrowser_DisplayTTL")
+	tgs.displayADC      = GetCheckBoxState(mainPanel, "check_DataBrowser_DisplayADChan")
+	tgs.overlaySweep 	= OVS_IsActive(mainPanel)
+	tgs.overlayChannels = GetCheckBoxState(mainPanel, "check_DataBrowser_OverlayChan")
+	tgs.dDAQDisplayMode = GetCheckBoxState(mainPanel, "check_DataBrowser_dDAQMode")
+	tgs.dDAQHeadstageRegions = GetSliderPositionIndex(mainPanel, "slider_dDAQ_regions")
+	tgs.hideSweep       = GetCheckBoxState(mainPanel, "check_DataBrowser_hideSweep")
 
-	WAVE channelSel        = BSP_GetChannelSelectionWave(panelTitle)
-	WAVE/Z sweepsToOverlay = OVS_GetSelectedSweeps(panelTitle, OVS_SWEEP_SELECTION_SWEEPNO)
+	WAVE channelSel        = BSP_GetChannelSelectionWave(win)
+	WAVE/Z sweepsToOverlay = OVS_GetSelectedSweeps(win, OVS_SWEEP_SELECTION_SWEEPNO)
 
 	if(!WaveExists(sweepsToOverlay))
-		Make/FREE/N=1 sweepsToOverlay = GetSetVariable(panelTitle, "setvar_DataBrowser_SweepNo")
+		Make/FREE/N=1 sweepsToOverlay = GetSetVariable(mainPanel, "setvar_DataBrowser_SweepNo")
 	endif
 
 	WAVE axisLabelCache = GetAxisLabelCacheWave()
@@ -280,7 +284,7 @@ Function DB_UpdateSweepPlot(panelTitle, [dummyArg])
 			continue
 		endif
 
-		WAVE/Z activeHS = OVS_ParseIgnoreList(panelTitle, highlightSweep, sweepNo=sweepNo)
+		WAVE/Z activeHS = OVS_ParseIgnoreList(win, highlightSweep, sweepNo=sweepNo)
 		tgs.highlightSweep = highlightSweep
 
 		if(WaveExists(activeHS))
@@ -290,7 +294,7 @@ Function DB_UpdateSweepPlot(panelTitle, [dummyArg])
 			WAVE sweepChannelSel = channelSel
 		endif
 
-		DB_SplitSweepsIfReq(panelTitle, sweepNo)
+		DB_SplitSweepsIfReq(win, sweepNo)
 		WAVE config = GetConfigWave(sweepWave)
 
 		CreateTiledChannelGraph(graph, config, sweepNo, numericalValues, textualValues, tgs, dfr, axisLabelCache, traceIndex, channelSelWave=sweepChannelSel)
@@ -300,19 +304,19 @@ Function DB_UpdateSweepPlot(panelTitle, [dummyArg])
 	DEBUGPRINT_ELAPSED(referenceTime)
 
 	if(WaveExists(sweepWave))
-		Notebook $subWindow selection={startOfFile, endOfFile} // select entire contents of notebook
-		Notebook $subWindow text = "Sweep note: \r " + note(sweepWave) // replaces selected notebook content with new wave note.
+		Notebook $lbPanel selection={startOfFile, endOfFile} // select entire contents of notebook
+		Notebook $lbPanel text = "Sweep note: \r " + note(sweepWave) // replaces selected notebook content with new wave note.
 	endif
 
 	Struct PostPlotSettings pps
 	pps.averageDataFolder = GetDeviceDataBrowserPath(device)
-	pps.averageTraces     = GetCheckboxState(panelTitle, "check_DataBrowser_AverageTraces")
-	pps.zeroTraces        = GetCheckBoxState(panelTitle, "check_DataBrowser_ZeroTraces")
+	pps.averageTraces     = GetCheckboxState(mainPanel, "check_DataBrowser_AverageTraces")
+	pps.zeroTraces        = GetCheckBoxState(mainPanel, "check_DataBrowser_ZeroTraces")
 	pps.timeAlignRefTrace = ""
 	pps.timeAlignMode     = TIME_ALIGNMENT_NONE
 	pps.hideSweep         = tgs.hideSweep
 
-	PA_GatherSettings(panelTitle, pps)
+	PA_GatherSettings(win, pps)
 
 	FUNCREF FinalUpdateHookProto pps.finalUpdateHook = DB_PanelUpdate
 
@@ -321,111 +325,117 @@ Function DB_UpdateSweepPlot(panelTitle, [dummyArg])
 	DEBUGPRINT_ELAPSED(referenceTime)
 End
 
-static Function DB_ClearGraph(panelTitle)
-	string panelTitle
+static Function DB_ClearGraph(win)
+	string win
 
-	string graph = DB_GetLabNoteBookGraph(panelTitle)
+	string graph = DB_GetLabNoteBookGraph(win)
 	RemoveTracesFromGraph(graph)
 	UpdateLBGraphLegend(graph)
 End
 
-static Function/WAVE DB_GetNumericalValues(panelTitle)
-	string panelTitle
+static Function/WAVE DB_GetNumericalValues(win)
+	string win
 
-	string device
+	string mainPanel, device
 
-	device = GetPopupMenuString(panelTitle, "popup_DB_lockedDevices")
+	mainPanel = GetMainWindow(win)
+	device = GetPopupMenuString(mainPanel, "popup_DB_lockedDevices")
 
 	return GetLBNumericalValues(device)
 End
 
-static Function/WAVE DB_GetTextualValues(panelTitle)
-	string panelTitle
+static Function/WAVE DB_GetTextualValues(win)
+	string win
 
-	string device
+	string mainPanel, device
 
-	device = GetPopupMenuString(panelTitle, "popup_DB_lockedDevices")
+	mainPanel = GetMainWindow(win)
+	device = GetPopupMenuString(mainPanel, "popup_DB_lockedDevices")
 
 	return GetLBTextualValues(device)
 End
 
-static Function/WAVE DB_GetNumericalKeys(panelTitle)
-	string panelTitle
+static Function/WAVE DB_GetNumericalKeys(win)
+	string win
 
-	string device
+	string mainPanel, device
 
-	device = GetPopupMenuString(panelTitle, "popup_DB_lockedDevices")
+	mainPanel = GetMainWindow(win)
+	device = GetPopupMenuString(mainPanel, "popup_DB_lockedDevices")
 
 	return GetLBNumericalKeys(device)
 End
 
-static Function/WAVE DB_GetTextualKeys(panelTitle)
-	string panelTitle
+static Function/WAVE DB_GetTextualKeys(win)
+	string win
 
-	string device
+	string mainPanel, device
 
-	device = GetPopupMenuString(panelTitle, "popup_DB_lockedDevices")
+	mainPanel = GetMainWindow(win)
+	device = GetPopupMenuString(mainPanel, "popup_DB_lockedDevices")
 
 	return GetLBTextualKeys(device)
 End
 
-Function DB_UpdateToLastSweep(panelTitle)
-	string panelTitle
+Function DB_UpdateToLastSweep(win)
+	string win
 
 	variable first, last
-	string device, extPanel
+	string device, mainPanel, bsPanel
 
-	if(!HasPanelLatestVersion(panelTitle, DATABROWSER_PANEL_VERSION))
+	mainPanel = GetMainWindow(win)
+	bsPanel   = BSP_GetPanel(win)
+
+	if(!HasPanelLatestVersion(mainPanel, DATABROWSER_PANEL_VERSION))
 		print "Can not display data. The Databrowser panel is too old to be usable. Please close it and open a new one."
 		ControlWindowToFront()
 		return NaN
 	endif
 
-	if(!GetCheckBoxState(panelTitle, "check_DataBrowser_AutoUpdate"))
+	if(!GetCheckBoxState(mainPanel, "check_DataBrowser_AutoUpdate"))
 		return NaN
 	endif
 
-	device = GetPopupMenuString(panelTitle, "popup_DB_lockedDevices")
+	device = GetPopupMenuString(mainPanel, "popup_DB_lockedDevices")
 
 	if(!cmpstr(device, NONE))
 		return NaN
 	endif
 
-	DB_FirstAndLastSweepAcquired(panelTitle, first, last)
-	DB_UpdateSweepControls(panelTitle, first, last)
-	SetSetVariable(panelTitle, "setvar_DataBrowser_SweepNo", last)
+	DB_FirstAndLastSweepAcquired(win, first, last)
+	DB_UpdateSweepControls(win, first, last)
+	SetSetVariable(mainPanel, "setvar_DataBrowser_SweepNo", last)
 
-	extPanel = BSP_GetPanel(panelTitle)
-
-	if(OVS_IsActive(panelTitle) && GetCheckBoxState(extPanel, "check_overlaySweeps_non_commula"))
-		OVS_ChangeSweepSelectionState(panelTitle, CHECKBOX_UNSELECTED, sweepNo=last - 1)
+	if(OVS_IsActive(win) && GetCheckBoxState(bsPanel, "check_overlaySweeps_non_commula"))
+		OVS_ChangeSweepSelectionState(win, CHECKBOX_UNSELECTED, sweepNo=last - 1)
 	endif
 
-	OVS_ChangeSweepSelectionState(panelTitle, CHECKBOX_SELECTED, sweepNo=last)
-	DB_UpdateSweepPlot(panelTitle)
+	OVS_ChangeSweepSelectionState(win, CHECKBOX_SELECTED, sweepNo=last)
+	DB_UpdateSweepPlot(win)
 End
 
-static Function DB_UpdateOverlaySweepWaves(panelTitle)
-	string panelTitle
+static Function DB_UpdateOverlaySweepWaves(win)
+	string win
 
-	string device, sweepWaveList
+	string device, sweepWaveList, mainPanel
 
-	if(!OVS_IsActive(panelTitle))
+	if(!OVS_IsActive(win))
 		return NaN
 	endif
 
-	device = GetPopupMenuString(panelTitle, "popup_DB_lockedDevices")
+	mainPanel = GetMainWindow(win)
+	device = GetPopupMenuString(mainPanel, "popup_DB_lockedDevices")
 	DFREF dfr = GetDeviceDataBrowserPath(device)
 
 	WAVE listBoxWave       = GetOverlaySweepsListWave(dfr)
 	WAVE listBoxSelWave    = GetOverlaySweepsListSelWave(dfr)
-	WAVE/T textualValues   = DB_GetTextualValues(panelTitle)
-	WAVE numericalValues   = DB_GetNumericalValues(panelTitle)
+	WAVE/T textualValues   = DB_GetTextualValues(win)
+	WAVE numericalValues   = DB_GetNumericalValues(win)
 	WAVE/T sweepSelChoices = GetOverlaySweepSelectionChoices(dfr)
 
-	sweepWaveList = DB_GetPlainSweepList(panelTitle)
+	sweepWaveList = DB_GetPlainSweepList(win)
 
-	OVS_UpdatePanel(panelTitle, listBoxWave, listBoxSelWave, sweepSelChoices, sweepWaveList, textualValues=textualValues, numericalValues=numericalValues)
+	OVS_UpdatePanel(win, listBoxWave, listBoxSelWave, sweepSelChoices, sweepWaveList, textualValues=textualValues, numericalValues=numericalValues)
 End
 
 Window DataBrowser() : Panel
@@ -617,69 +627,73 @@ EndMacro
 
 Function DB_DataBrowserStartupSettings()
 
-	string allCheckBoxes, panelTitle, subWindow
+	string allCheckBoxes, mainPanel, lbPanel, mainGraph, lbGraph
 	variable i, numCheckBoxes
 
-	panelTitle = "DataBrowser"
-	subWindow  = DB_GetNotebookSubWindow(panelTitle)
+	mainPanel = "DataBrowser"
+	lbPanel   = DB_GetNotebookSubWindow(mainPanel)
+	mainGraph = DB_GetMainGraph(mainPanel)
+	lbGraph   = DB_GetLabNotebookGraph(mainPanel)
 
-	if(!windowExists(panelTitle))
+	if(!windowExists(mainPanel))
 		print "A panel named \"DataBrowser\" does not exist"
 		ControlWindowToFront()
 		return NaN
 	endif
 
 	// remove tools
-	HideTools/A/W=$panelTitle
+	HideTools/A/W=$mainPanel
 
-	SetSetVariable(panelTitle, "setvar_DataBrowser_SweepNo", 0)
-	SetVariable setvar_DataBrowser_SweepNo, win=$panelTitle, limits={0, 0, 1}
-	SetValDisplay(panelTitle, "valdisp_DataBrowser_LastSweep", var=0)
+	SetSetVariable(mainPanel, "setvar_DataBrowser_SweepNo", 0)
+	SetVariable setvar_DataBrowser_SweepNo, win=$mainPanel, limits={0, 0, 1}
+	SetValDisplay(mainPanel, "valdisp_DataBrowser_LastSweep", var=0)
 
-	RemoveTracesFromGraph(DB_GetMainGraph(panelTitle))
-	RemoveTracesFromGraph(DB_GetLabNotebookGraph(panelTitle))
+	RemoveTracesFromGraph(mainGraph)
+	RemoveTracesFromGraph(lbGraph)
 
-	Notebook $subWindow selection={startOfFile, endOfFile}
-	Notebook $subWindow text = ""
-	SetPopupMenuIndex(panelTitle, "popup_DB_lockedDevices", 0)
-	SetSetVariable(panelTitle, "setvar_DataBrowser_SweepStep", 1)
+	Notebook $lbPanel selection={startOfFile, endOfFile}
+	Notebook $lbPanel text = ""
+	SetPopupMenuIndex(mainPanel, "popup_DB_lockedDevices", 0)
+	SetSetVariable(mainPanel, "setvar_DataBrowser_SweepStep", 1)
 
-	SetWindow $panelTitle, userdata(DataFolderPath) = ""
+	SetWindow $mainPanel, userdata(DataFolderPath) = ""
 
-	allCheckBoxes = ControlNameList(panelTitle, ";", "check*")
+	allCheckBoxes = ControlNameList(mainPanel, ";", "check*")
 
 	numCheckBoxes = ItemsInList(allCheckBoxes)
 	for(i = 0; i < numCheckBoxes; i += 1)
-		SetCheckBoxState(panelTitle, StringFromList(i, allCheckBoxes), CHECKBOX_UNSELECTED)
+		SetCheckBoxState(mainPanel, StringFromList(i, allCheckBoxes), CHECKBOX_UNSELECTED)
 	endfor
 
-	SetCheckBoxState(panelTitle, "check_DataBrowser_DisplayADChan", CHECKBOX_SELECTED)
+	SetCheckBoxState(mainPanel, "check_DataBrowser_DisplayADChan", CHECKBOX_SELECTED)
 
-	SetSliderPositionIndex(panelTitle, "slider_dDAQ_regions", -1)
-	DisableControl(panelTitle, "slider_dDAQ_regions")
+	SetSliderPositionIndex(mainPanel, "slider_dDAQ_regions", -1)
+	DisableControl(mainPanel, "slider_dDAQ_regions")
 
-	DB_ClearGraph(panelTitle)
-	SetPopupMenuIndex(panelTitle, "popup_LBNumericalKeys", 0)
-	SetPopupMenuIndex(panelTitle, "popup_LBTextualKeys", 0)
-	PopupMenu popup_LBNumericalKeys, win=$panelTitle, value=#("\"" + NONE + "\"")
-	PopupMenu popup_LBTextualKeys, win=$panelTitle, value=#("\"" + NONE + "\"")
+	DB_ClearGraph(mainPanel)
+	SetPopupMenuIndex(mainPanel, "popup_LBNumericalKeys", 0)
+	SetPopupMenuIndex(mainPanel, "popup_LBTextualKeys", 0)
+	PopupMenu popup_LBNumericalKeys, win=$mainPanel, value=#("\"" + NONE + "\"")
+	PopupMenu popup_LBTextualKeys, win=$mainPanel, value=#("\"" + NONE + "\"")
 
-	SearchForInvalidControlProcs(panelTitle)
+	SearchForInvalidControlProcs(mainPanel)
 End
 
 Function DB_ButtonProc_ChangeSweep(ba) : ButtonControl
 	STRUCT WMButtonAction &ba
 
-	string panelTitle, ctrl
+	string win, mainPanel, ctrl
 	variable step, sweepNo, currentSweep
+
+	win = ba.win
+	mainPanel = GetMainWindow(win)
 
 	switch(ba.eventcode)
 		case 2: // mouse up
-			panelTitle = ba.win
-			ctrl       = ba.ctrlName
+			ctrl = ba.ctrlName
 
-			currentSweep = GetSetVariable(panelTitle, "setvar_DataBrowser_SweepNo")
-			step = GetSetVariable(panelTitle, "setvar_DataBrowser_SweepStep")
+			currentSweep = GetSetVariable(mainPanel, "setvar_DataBrowser_SweepNo")
+			step = GetSetVariable(mainPanel, "setvar_DataBrowser_SweepStep")
 
 			if(!cmpstr(ctrl, "button_DataBrowser_PrevSweep"))
 				sweepNo = currentSweep - step
@@ -689,10 +703,10 @@ Function DB_ButtonProc_ChangeSweep(ba) : ButtonControl
 				ASSERT(0, "unhandled control name")
 			endif
 
-			sweepNo = DB_ClipSweepNumber(panelTitle, sweepNo)
-			SetSetVariable(panelTitle, "setvar_DataBrowser_SweepNo", sweepNo)
-			OVS_ChangeSweepSelectionState(panelTitle, CHECKBOX_SELECTED, sweepNO=sweepNo)
-			DB_UpdateSweepPlot(panelTitle)
+			sweepNo = DB_ClipSweepNumber(win, sweepNo)
+			SetSetVariable(mainPanel, "setvar_DataBrowser_SweepNo", sweepNo)
+			OVS_ChangeSweepSelectionState(win, CHECKBOX_SELECTED, sweepNO=sweepNo)
+			DB_UpdateSweepPlot(win)
 			break
 	endswitch
 
@@ -702,12 +716,16 @@ End
 Function DB_ButtonProc_AutoScale(ba) : ButtonControl
 	STRUCT WMButtonAction &ba
 
-	string panelTitle
+	string win, mainGraph, lbGraph
+
+	win = ba.win
+	mainGraph = DB_GetMainGraph(win)
+	lbGraph   = DB_GetLabNotebookGraph(win)
+
 	switch(ba.eventcode)
 		case 2: // mouse up
-			panelTitle = ba.win
-			SetAxis/A/W=$DB_GetMainGraph(panelTitle)
-			SetAxis/A=2/W=$DB_GetLabNotebookGraph(panelTitle)
+			SetAxis/A/W=$mainGraph
+			SetAxis/A=2/W=$lbGraph
 			break
 	endswitch
 
@@ -719,9 +737,10 @@ Function DB_PopMenuProc_LockDBtoDevice(pa) : PopupMenuControl
 
 	string mainPanel
 
+	mainPanel = GetMainWindow(pa.win)
+
 	switch(pa.eventcode)
 		case 2: // mouse up
-			mainPanel = pa.win
 			DB_LockDBPanel(mainPanel, pa.popStr)
 			break
 	endswitch
@@ -732,12 +751,13 @@ End
 Function DB_PopMenuProc_LabNotebook(pa) : PopupMenuControl
 	STRUCT WMPopupAction &pa
 
-	string graph, popStr, panelTitle, device, ctrl
+	string lbGraph, popStr, win, device, ctrl
+
+	win = pa.win
+	lbGraph = DB_GetLabNoteBookGraph(win)
 
 	switch(pa.eventCode)
 		case 2: // mouse up
-			panelTitle = pa.win
-			graph      = DB_GetLabNoteBookGraph(panelTitle)
 			popStr     = pa.popStr
 			ctrl       = pa.ctrlName
 			if(!CmpStr(popStr, NONE))
@@ -746,19 +766,19 @@ Function DB_PopMenuProc_LabNotebook(pa) : PopupMenuControl
 
 			strswitch(ctrl)
 				case "popup_LBNumericalKeys":
-					Wave values = DB_GetNumericalValues(panelTitle)
-					WAVE keys   = DB_GetNumericalKeys(panelTitle)
+					Wave values = DB_GetNumericalValues(win)
+					WAVE keys   = DB_GetNumericalKeys(win)
 				break
 				case "popup_LBTextualKeys":
-					Wave values = DB_GetTextualValues(panelTitle)
-					WAVE keys   = DB_GetTextualKeys(panelTitle)
+					Wave values = DB_GetTextualValues(win)
+					WAVE keys   = DB_GetTextualKeys(win)
 				break
 				default:
 					ASSERT(0, "Unknown ctrl")
 					break
 			endswitch
 
-			AddTraceToLBGraph(graph, keys, values, popStr)
+			AddTraceToLBGraph(lbGraph, keys, values, popStr)
 		break
 	endswitch
 
@@ -768,7 +788,7 @@ End
 Function DB_SetVarProc_SweepNo(sva) : SetVariableControl
 	STRUCT WMSetVariableAction &sva
 
-	string panelTitle
+	string win
 	variable sweepNo
 
 	switch(sva.eventCode)
@@ -776,10 +796,10 @@ Function DB_SetVarProc_SweepNo(sva) : SetVariableControl
 		case 2: // Enter key - when a number is manually entered
 		case 3: // Live update - happens when you hit the arrow keys associated with the set variable
 			sweepNo = sva.dval
-			paneltitle = sva.win
+			win = sva.win
 
-			DB_UpdateSweepPlot(panelTitle)
-			OVS_ChangeSweepSelectionState(panelTitle, CHECKBOX_SELECTED, sweepNO=sweepNo)
+			DB_UpdateSweepPlot(win)
+			OVS_ChangeSweepSelectionState(win, CHECKBOX_SELECTED, sweepNO=sweepNo)
 			break
 	endswitch
 
@@ -798,40 +818,42 @@ Function DB_ButtonProc_ClearGraph(ba) : ButtonControl
 	return 0
 End
 
-Function/S DB_GetLBTextualKeys(panelTitle)
-	string panelTitle
+Function/S DB_GetLBTextualKeys(win)
+	string win
 
-	string device
+	string device, mainPanel
 
-	if(!windowExists(panelTitle))
+	if(!windowExists(win))
 		return NONE
 	endif
 
-	device = GetPopupMenuString(panelTitle, "popup_DB_lockedDevices")
+	mainPanel = GetMainWindow(win)
+	device = GetPopupMenuString(mainPanel, "popup_DB_lockedDevices")
 	if(!CmpStr(device, NONE))
 		return NONE
 	endif
 
-	WAVE/T keyWave = DB_GetTextualKeys(panelTitle)
+	WAVE/T keyWave = DB_GetTextualKeys(win)
 
 	return AddListItem(NONE, GetLabNotebookSortedKeys(keyWave), ";", 0)
 End
 
-Function/S DB_GetLBNumericalKeys(panelTitle)
-	string panelTitle
+Function/S DB_GetLBNumericalKeys(win)
+	string win
 
-	string device
+	string device, mainPanel
 
-	if(!windowExists(panelTitle))
+	if(!windowExists(win))
 		return NONE
 	endif
 
-	device = GetPopupMenuString(panelTitle, "popup_DB_lockedDevices")
+	mainPanel = GetMainWindow(win)
+	device = GetPopupMenuString(mainPanel, "popup_DB_lockedDevices")
 	if(!CmpStr(device, NONE))
 		return NONE
 	endif
 
-	WAVE/T keyWave = DB_GetNumericalKeys(panelTitle)
+	WAVE/T keyWave = DB_GetNumericalKeys(win)
 
 	return AddListItem(NONE, GetLabNotebookSortedKeys(keyWave), ";", 0)
 End
@@ -844,19 +866,20 @@ End
 Function DB_ButtonProc_SwitchXAxis(ba) : ButtonControl
 	STRUCT WMButtonAction &ba
 
-	string panelTitle, graph
+	string win, lbGraph
+
+	win = ba.win
+	lbGraph = DB_GetLabNoteBookGraph(win)
 
 	switch(ba.eventCode)
 		case 2: // mouse up
-			panelTitle = ba.win
-			if(!BSP_HasBoundDevice(panelTitle))
+			if(!BSP_HasBoundDevice(win))
 				break
 			endif
-			graph      = DB_GetLabNoteBookGraph(panelTitle)
-			WAVE numericalValues = DB_GetNumericalValues(panelTitle)
-			WAVE textualValues   = DB_GetTextualValues(panelTitle)
+			WAVE numericalValues = DB_GetNumericalValues(win)
+			WAVE textualValues   = DB_GetTextualValues(win)
 
-			SwitchLBGraphXAxis(graph, numericalValues, textualValues)
+			SwitchLBGraphXAxis(lbGraph, numericalValues, textualValues)
 			break
 	endswitch
 
@@ -866,11 +889,11 @@ End
 Function DB_SliderProc_ChangedSetting(spa) : SliderControl
 	STRUCT WMSliderAction &spa
 
-	string panelTitle
+	string win
 
 	if(spa.eventCode > 0 && spa.eventCode & 0x1)
-		panelTitle = spa.win
-		DB_UpdateSweepPlot(panelTitle)
+		win = spa.win
+		DB_UpdateSweepPlot(win)
 	endif
 
 	return 0
@@ -880,32 +903,34 @@ Function DB_CheckProc_ChangedSetting(cba) : CheckBoxControl
 	STRUCT WMCheckboxAction &cba
 
 	variable checked, channelNum
-	string panelTitle, ctrl, channelType, device
+	string win, mainPanel, ctrl, channelType, device
+
+	win = cba.win
+	mainPanel = GetMainWindow(win)
 
 	switch(cba.eventCode)
 		case 2: // mouse up
-			panelTitle = GetMainWindow(cba.win)
 			ctrl       = cba.ctrlName
 			checked    = cba.checked
 
 			strswitch(ctrl)
 				case "check_DataBrowser_dDAQMode":
 					if(checked)
-						EnableControl(panelTitle, "slider_dDAQ_regions")
+						EnableControl(mainPanel, "slider_dDAQ_regions")
 					else
-						DisableControl(panelTitle, "slider_dDAQ_regions")
+						DisableControl(mainPanel, "slider_dDAQ_regions")
 					endif
 					break
 				default:
 					if(StringMatch(ctrl, "check_channelSel_*"))
-						WAVE channelSel = BSP_GetChannelSelectionWave(panelTitle)
+						WAVE channelSel = BSP_GetChannelSelectionWave(win)
 						ParseChannelSelectionControl(cba.ctrlName, channelType, channelNum)
 						channelSel[channelNum][%$channelType] = checked
 					endif
 					break
 			endswitch
 
-			DB_UpdateSweepPlot(panelTitle)
+			DB_UpdateSweepPlot(win)
 			break
 	endswitch
 
@@ -924,15 +949,15 @@ Function DB_CheckProc_ScaleAxes(cba) : CheckBoxControl
 	return 0
 End
 
-static Function DB_PanelUpdate(graphOrPanel)
-	string graphOrPanel
+static Function DB_PanelUpdate(win)
+	string win
 
-	string panel, graph
+	string mainPanel, graph
 
-	panel = GetMainWindow(graphOrPanel)
-	graph = DB_GetMainGraph(panel)
+	mainPanel = GetMainWindow(win)
+	graph = DB_GetMainGraph(win)
 
-	if(GetCheckBoxState(panel, "checkbox_DB_AutoScaleVertAxVisX"))
+	if(GetCheckBoxState(mainPanel, "checkbox_DB_AutoScaleVertAxVisX"))
 		AutoscaleVertAxisVisXRange(graph)
 	endif
 End
@@ -941,47 +966,49 @@ End
 Function DB_CheckProc_OverlaySweeps(cba) : CheckBoxControl
 	STRUCT WMCheckBoxAction &cba
 
-	string panelTitle, device, sweepWaveList
+	string win, mainPanel, device, sweepWaveList
 	variable sweepNo
+
+	win = cba.win
+	mainPanel = GetMainWindow(win)
 
 	switch(cba.eventCode)
 		case 2: // mouse up
-			panelTitle = GetMainWindow(cba.win)
+			BSP_SetOVSControlStatus(win)
 
-			BSP_SetOVSControlStatus(panelTitle)
-
-			if(BSP_HasBoundDevice(panelTitle))
-				DFREF dfr = BSP_GetFolder(panelTitle, MIES_BSP_PANEL_FOLDER)
+			if(BSP_HasBoundDevice(win))
+				DFREF dfr = BSP_GetFolder(win, MIES_BSP_PANEL_FOLDER)
 				WAVE/T listBoxWave        = GetOverlaySweepsListWave(dfr)
 				WAVE listBoxSelWave       = GetOverlaySweepsListSelWave(dfr)
 				WAVE/WAVE sweepSelChoices = GetOverlaySweepSelectionChoices(dfr)
 
-				WAVE/T numericalValues = DB_GetNumericalValues(panelTitle)
-				WAVE/T textualValues   = DB_GetTextualValues(panelTitle)
-				sweepWaveList = DB_GetPlainSweepList(panelTitle)
-				OVS_UpdatePanel(panelTitle, listBoxWave, listBoxSelWave, sweepSelChoices, sweepWaveList, textualValues=textualValues, numericalValues=numericalValues)
+				WAVE/T numericalValues = DB_GetNumericalValues(win)
+				WAVE/T textualValues   = DB_GetTextualValues(win)
+				sweepWaveList = DB_GetPlainSweepList(win)
+				OVS_UpdatePanel(win, listBoxWave, listBoxSelWave, sweepSelChoices, sweepWaveList, textualValues=textualValues, numericalValues=numericalValues)
 			endif
 
-			if(OVS_IsActive(panelTitle))
-				sweepNo = GetSetVariable(panelTitle, "setvar_DataBrowser_SweepNo")
-				OVS_ChangeSweepSelectionState(panelTitle, CHECKBOX_SELECTED, sweepNo=sweepNo)
+			if(OVS_IsActive(win))
+				sweepNo = GetSetVariable(mainPanel, "setvar_DataBrowser_SweepNo")
+				OVS_ChangeSweepSelectionState(win, CHECKBOX_SELECTED, sweepNo=sweepNo)
 			endif
 
-			DB_UpdateSweepPlot(panelTitle)
+			DB_UpdateSweepPlot(win)
 			break
 	endswitch
 
 	return 0
 End
 
-static Function DB_SplitSweepsIfReq(panelTitle, sweepNo)
-	string panelTitle
+static Function DB_SplitSweepsIfReq(win, sweepNo)
+	string win
 	variable sweepNo
 
-	string device
+	string device, mainPanel
 	variable sweepModTime, numWaves, requireNewSplit, i
 
-	device = GetPopupMenuString(panelTitle, "popup_DB_lockedDevices")
+	mainPanel = GetMainWindow(win)
+	device = GetPopupMenuString(mainPanel, "popup_DB_lockedDevices")
 
 	if(!cmpstr(device, NONE))
 		return NaN
@@ -1012,7 +1039,7 @@ static Function DB_SplitSweepsIfReq(panelTitle, sweepNo)
 		return NaN
 	endif
 
-	WAVE numericalValues = DB_GetNumericalValues(panelTitle)
+	WAVE numericalValues = DB_GetNumericalValues(win)
 
 	SplitSweepIntoComponents(numericalValues, sweepNo, sweepWave, configWave, targetDFR=singleSweepDFR)
 End
@@ -1020,13 +1047,15 @@ End
 Function DB_ButtonProc_RestoreData(ba) : ButtonControl
 	STRUCT WMButtonAction &ba
 
-	string mainPanel, graph, traceList, extPanel
+	string mainPanel, graph, bsPanel, traceList
 	variable autoRemoveOldState, zeroTracesOldState
+
+	mainPanel = GetMainWindow(ba.win)
+	graph     = DB_GetMainGraph(mainPanel)
+	bsPanel   = BSP_GetPanel(mainPanel)
 
 	switch(ba.eventCode)
 		case 2: // mouse up
-			mainPanel   = GetMainWindow(ba.win)
-			graph = DB_GetMainGraph(mainPanel)
 			traceList = GetAllSweepTraces(graph)
 			ReplaceAllWavesWithBackup(graph, traceList)
 
@@ -1036,11 +1065,10 @@ Function DB_ButtonProc_RestoreData(ba) : ButtonControl
 			if(!AR_IsActive(mainPanel))
 				DB_UpdateSweepPlot(mainPanel)
 			else
-				extPanel = BSP_GetPanel(mainPanel)
-				autoRemoveOldState = GetCheckBoxState(extPanel, "check_auto_remove")
-				SetCheckBoxState(extPanel, "check_auto_remove", CHECKBOX_UNSELECTED)
+				autoRemoveOldState = GetCheckBoxState(bsPanel, "check_auto_remove")
+				SetCheckBoxState(bsPanel, "check_auto_remove", CHECKBOX_UNSELECTED)
 				DB_UpdateSweepPlot(mainPanel)
-				SetCheckBoxState(extPanel, "check_auto_remove", autoRemoveOldState)
+				SetCheckBoxState(bsPanel, "check_auto_remove", autoRemoveOldState)
 			endif
 
 			SetCheckBoxState(mainPanel, "check_DataBrowser_ZeroTraces", zeroTracesOldState)
