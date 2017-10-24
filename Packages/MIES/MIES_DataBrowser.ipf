@@ -57,8 +57,6 @@ Function DB_OpenDataBrowser()
 	if(ItemsInList(devicesWithData) == 1)
 		PGC_SetAndActivateControl(win, "popup_DB_lockedDevices", val=1)
 	endif
-
-	// window name (win) changes by popup_DB_lockedDevices: proc
 End
 
 static Function/S DB_GetNotebookSubWindow(panelTitle)
@@ -108,39 +106,41 @@ static Function/S DB_GetLabNoteBookGraph(panelTitle)
 End
 
 static Function DB_LockDBPanel(panelTitle, device)
-	string panelTitle, device
+	string &panelTitle, device
 
 	string panelTitleNew
 	variable first, last
 
 	if(!CmpStr(device,NONE))
-		panelTitleNew = "DataBrowser"
+		print "Please choose a device assignment for the data browser"
+		ControlWindowToFront()
 
+		panelTitleNew = "DataBrowser"
 		if(windowExists(panelTitleNew))
 			panelTitleNew = UniqueName("DataBrowser", 9, 1)
 		endif
-
-		print "Please choose a device assignment for the data browser"
-		ControlWindowToFront()
 		DoWindow/W=$panelTitle/C $panelTitleNew
-		PopupMenu popup_LBNumericalKeys, win=$panelTitleNew, value=#("\"" + NONE + "\"")
-		PopupMenu popup_LBTextualKeys, win=$panelTitleNew, value=#("\"" + NONE + "\"")
-		DB_SetUserData(panelTitleNew, device)
-		DB_UpdateSweepPlot(panelTitleNew)
+		panelTitle = panelTitleNew
+
+		PopupMenu popup_LBNumericalKeys, win=$panelTitle, value=#("\"" + NONE + "\"")
+		PopupMenu popup_LBTextualKeys, win=$panelTitle, value=#("\"" + NONE + "\"")
+		DB_SetUserData(panelTitle, device)
+		DB_UpdateSweepPlot(panelTitle)
 		return NaN
 	endif
 
 	panelTitleNew = UniqueName("DB_" + device, 9, 0)
 	DoWindow/W=$panelTitle/C $panelTitleNew
+	panelTitle = panelTitleNew
 
-	DB_SetUserData(panelTitleNew, device)
+	DB_SetUserData(panelTitle, device)
 
-	PopupMenu popup_LBNumericalKeys, win=$panelTitleNew, value=#("DB_GetLBNumericalKeys(\"" + panelTitleNew + "\")")
-	PopupMenu popup_LBTextualKeys, win=$panelTitleNew, value=#("DB_GetLBTextualKeys(\"" + panelTitleNew + "\")")
+	PopupMenu popup_LBNumericalKeys, win=$panelTitle, value=#("DB_GetLBNumericalKeys(\"" + panelTitle + "\")")
+	PopupMenu popup_LBTextualKeys, win=$panelTitle, value=#("DB_GetLBTextualKeys(\"" + panelTitle + "\")")
 
-	DB_FirstAndLastSweepAcquired(panelTitleNew, first, last)
-	DB_UpdateSweepControls(panelTitleNew, first, last)
-	DB_UpdateSweepPlot(panelTitleNew)
+	DB_FirstAndLastSweepAcquired(panelTitle, first, last)
+	DB_UpdateSweepControls(panelTitle, first, last)
+	DB_UpdateSweepPlot(panelTitle)
 End
 
 static Function DB_SetUserData(panelTitle, device)
@@ -701,9 +701,12 @@ End
 Function DB_PopMenuProc_LockDBtoDevice(pa) : PopupMenuControl
 	STRUCT WMPopupAction &pa
 
+	string mainPanel
+
 	switch(pa.eventcode)
 		case 2: // mouse up
-			DB_LockDBPanel(pa.win, pa.popStr)
+			mainPanel = pa.win
+			DB_LockDBPanel(mainPanel, pa.popStr)
 			break
 	endswitch
 
