@@ -621,7 +621,7 @@ End
 ///
 /// @param panelName 		name of external panel or main window
 /// @return 0 if panel has latest version and 1 if update is required
-static Function BSP_MainPanelNeedsUpdate(panelName)
+Function BSP_MainPanelNeedsUpdate(panelName)
 	string panelName
 
 	variable panelVersion, version

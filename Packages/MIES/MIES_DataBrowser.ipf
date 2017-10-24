@@ -230,7 +230,7 @@ Function DB_UpdateSweepPlot(panelTitle, [dummyArg])
 	variable numEntries, i, sweepNo, highlightSweep, referenceTime, traceIndex
 	string device, subWindow, graph
 
-	if(!HasPanelLatestVersion(panelTitle, DATABROWSER_PANEL_VERSION))
+	if(BSP_MainPanelNeedsUpdate(panelTitle))
 		DoAbortNow("Can not display data. The Databrowser panel is too old to be usable. Please close it and open a new one.")
 	endif
 
