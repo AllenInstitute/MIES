@@ -768,6 +768,8 @@ Function ReachTargetVoltage(panelTitle, eventType, ITCDataWave, headStage, realD
 
 			PGC_SetAndActivateControl(panelTitle,"Check_DataAcq1_dDAQOptOv", val = 0)
 			
+			PGC_SetAndActivateControl(panelTitle,"Setvar_DataAcq_dDAQDelay", val = 500)
+			
 			return Nan
 			break
 		case POST_SWEEP_EVENT:
