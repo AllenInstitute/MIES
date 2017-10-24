@@ -8057,6 +8057,7 @@ Function DAP_UpdateDAQControls(panelTitle, updateFlag)
 	if(updateFlag & REASON_STIMSET_CHANGE)
 		DAP_UpdateITIAcrossSets(panelTitle)
 		DAP_UpdateSweepSetVariables(panelTitle)
+		AFM_UpdateAnalysisFunctionWave(panelTitle)
 	endif
 
 	if(updateFlag & REASON_HEADSTAGE_CHANGE)

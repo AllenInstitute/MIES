@@ -37,6 +37,10 @@ static Function DC_UpdateGlobals(panelTitle, dataAcqOrTP)
 
 	DAP_RecordDA_EphysGuiState(panelTitle)
 
+	// we need to update the list of analysis functions here as the stimset
+	// can change due to indexing, etc.
+	AFM_UpdateAnalysisFunctionWave(panelTitle)
+
 	pulseDuration = GetSetVariable(panelTitle, "SetVar_DataAcq_TPDuration")
 	duration = pulseDuration / (DAP_GetITCSampInt(panelTitle, TEST_PULSE_MODE) / 1000)
 	baselineFrac = GetSetVariable(panelTitle, "SetVar_DataAcq_TPBaselinePerc") / 100

@@ -16,8 +16,8 @@ Function AFM_CallAnalysisFunctions(panelTitle, eventType)
 	string panelTitle
 	variable eventType
 
-	variable error, i, valid_f1, valid_f2, ret
-	string func, setName
+	variable error, i, valid_f1, valid_f2, ret, DAC
+	string func, setName, ctrl
 
 	WAVE GuiState = GetDA_EphysGuiStateNum(panelTitle)
 
@@ -29,15 +29,17 @@ Function AFM_CallAnalysisFunctions(panelTitle, eventType)
 	NVAR stopCollectionPoint = $GetStopCollectionPoint(panelTitle)
 	WAVE statusHS = DAP_ControlStatusWaveCache(panelTitle, CHANNEL_TYPE_HEADSTAGE)
 
+	WAVE/T analysisFunctions = GetAnalysisFunctionStorage(panelTitle)
+
 	for(i = 0; i < NUM_HEADSTAGES; i += 1)
 
 		if(!statusHS[i])
 			continue
 		endif
 
-		AFM_GetAnalysisFuncFromHS(panelTitle, i, eventType, func, setName)
+		func = analysisFunctions[i][eventType]
 
-		if(isEmpty(func) || isEmpty(setName))
+		if(isEmpty(func))
 			continue
 		endif
 
@@ -49,6 +51,11 @@ Function AFM_CallAnalysisFunctions(panelTitle, eventType)
 				// nothing to do
 				break
 			case POST_SET_EVENT:
+				DAC = AFH_GetDACFromHeadstage(panelTitle, i)
+
+				ctrl    = GetPanelControl(DAC, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_WAVE)
+				setName = GetPopupMenuString(panelTitle, ctrl)
+
 				if(mod(count + 1, IDX_NumberOfTrialsInSet(setName)) != 0)
 					continue
 				endif
@@ -97,54 +104,37 @@ Function AFM_CallAnalysisFunctions(panelTitle, eventType)
 	return 0
 End
 
-/// @brief Get the analysis function and the stimset from the headstage
+/// @brief Update the analysis function storage wave from the stimset waves notes
 ///
 /// We are called earlier than DAP_CheckSettings() so we can not rely on anything setup in a sane way.
-///
-/// @param[in]  panelTitle Device
-/// @param[in]  headStage  Headstage
-/// @param[in]  eventType  One of @ref EVENT_TYPE_ANALYSIS_FUNCTIONS
-/// @param[out] func       Analysis function name
-/// @param[out] setName    Name of the Stim set
-static Function AFM_GetAnalysisFuncFromHS(panelTitle, headStage, eventType, func, setName)
+Function AFM_UpdateAnalysisFunctionWave(panelTitle)
 	string panelTitle
-	variable headStage, eventType
-	string &func, &setName
 
-	string ctrl, dacWave, setNameFromCtrl
-	variable clampMode, DACchannel
+	variable i, j, DAC
+	string ctrl, setName
 
-	func    = ""
-	setName = ""
+	WAVE statusHS            = DAP_ControlStatusWaveCache(panelTitle, CHANNEL_TYPE_HEADSTAGE)
+	WAVE/T analysisFunctions = GetAnalysisFunctionStorage(panelTitle)
 
-	WAVE chanAmpAssign = GetChanAmpAssign(panelTitle)
+	analysisFunctions = ""
 
-	clampMode = DAP_MIESHeadstageMode(panelTitle, headStage)
-	if(clampMode == V_CLAMP_MODE)
-		DACchannel = ChanAmpAssign[%VC_DA][headStage]
-	elseif(clampMode == I_CLAMP_MODE)
-		DACchannel = ChanAmpAssign[%IC_DA][headStage]
-	else
-		return NaN
-	endif
+	for(i = 0; i < NUM_HEADSTAGES; i += 1)
 
-	if(!IsFinite(DACchannel))
-		return NaN
-	endif
+		if(!statusHS[i])
+			continue
+		endif
 
-	ctrl = GetPanelControl(DACchannel, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_WAVE)
-	setNameFromCtrl = GetPopupMenuString(panelTitle, ctrl)
+		DAC = AFH_GetDACFromHeadstage(panelTitle, i)
 
-	if(!cmpstr(setNameFromCtrl, NONE))
-		return NaN
-	endif
+		ctrl    = GetPanelControl(DAC, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_WAVE)
+		setName = GetPopupMenuString(panelTitle, ctrl)
 
-	WAVE/Z stimSet = WB_CreateAndGetStimSet(setNameFromCtrl)
+		WAVE/Z stimSet = WB_CreateAndGetStimSet(setName)
 
-	if(!WaveExists(stimSet))
-		return NaN
-	endif
+		if(!WaveExists(stimSet))
+			continue
+		endif
 
-	func    = ExtractAnalysisFuncFromStimSet(stimSet, eventType)
-	setName = setNameFromCtrl
+		analysisFunctions[i][] = ExtractAnalysisFuncFromStimSet(stimSet, q)
+	endfor
 End
