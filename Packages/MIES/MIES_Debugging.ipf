@@ -244,16 +244,7 @@ End
 /// @brief Print a nicely formatted stack trace to the history
 Function DEBUGPRINTSTACKINFO()
 
-	string stacktrace, entry, func, line, file
-	variable numCallers, i
-
-	stacktrace = GetRTStackInfo(3)
-	numCallers = ItemsInList(stacktrace)
-
-	if(numCallers < 2)
-		// we were called directly
-		return NaN
-	endif
+	string func, line, file
 
 	FindFirstOutsideCaller(func, line, file)
 
@@ -261,17 +252,7 @@ Function DEBUGPRINTSTACKINFO()
 		return NaN
 	endif
 
-	printf "DEBUG\r"
-
-	for(i = 0; i < numCallers - 1; i += 1)
-		entry = StringFromList(i, stacktrace)
-		func  = StringFromList(0, entry, ",")
-		file  = StringFromList(1, entry, ",")
-		line  = StringFromList(2, entry, ",")
-		printf "DEBUG %s(...)#L%s [%s]\r", func, line, file
-	endfor
-
-	printf "DEBUG\r"
+	print GetStackTrace(prefix = "\tDEBUG ")
 
 	if(!windowExists("HistoryCarbonCopy"))
 		ASSERT(cmpstr(GetExperimentName(), UNTITLED_EXPERIMENT), "Untitled experiments do not work")

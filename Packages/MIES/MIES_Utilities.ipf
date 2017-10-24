@@ -78,29 +78,30 @@ Function ASSERT(var, errorMsg)
 	variable var
 	string errorMsg
 
-	string file, line, func, caller, stacktrace
-	string abortMsg
-	variable numCallers
+	string stracktrace, miesVersionStr
 
 	try
 		AbortOnValue var==0, 1
 	catch
-		stacktrace = GetRTStackInfo(3)
-		numCallers = ItemsInList(stacktrace)
+		// hard coding the path here so that we don't depend on GetMiesVersion()
+		// in MIES_GlobalStringAndVariableAccess.ipf
+		SVAR/Z miesVersion = root:MIES:version
 
-		if(numCallers >= 2)
-			caller     = StringFromList(numCallers-2,stacktrace)
-			func       = StringFromList(0,caller,",")
-			file       = StringFromList(1,caller,",")
-			line       = StringFromList(2,caller,",")
+		if(SVAR_Exists(miesVersion))
+			miesVersionStr = miesVersion
 		else
-			func = ""
-			file = ""
-			line = ""
+			miesVersionStr = ""
 		endif
 
-		sprintf abortMsg, "Assertion FAILED in function %s(...) %s:%s.\rMessage: %s\r", func, file, line, errorMsg
-		printf abortMsg
+		print "!!! Assertion FAILED !!!"
+		printf "Message: \"%s\"\r", RemoveEnding(errorMsg, "\r")
+		print "Please provide the following information if you contact the MIES developers:"
+		print "################################"
+		print GetStackTrace()
+		print "MIES version:"
+		print miesVersionStr
+		print "################################"
+
 		ControlWindowToFront()
 		Debugger
 		Abort
@@ -3327,4 +3328,38 @@ Function/S NormalizeToEOL(str, eol)
 	endif
 
 	return str
+End
+
+/// @brief Return a nicely formatted multiline stacktrace
+Function/S GetStackTrace([prefix])
+	string prefix
+
+	string stacktrace, entry, func, line, file, str
+	string output
+	variable i, numCallers
+
+	if(ParamIsDefault(prefix))
+		prefix = ""
+	endif
+
+	stacktrace = GetRTStackInfo(3)
+	numCallers = ItemsInList(stacktrace)
+
+	if(numCallers < 3)
+		// our caller was called directly
+		return "Stacktrace not available"
+	endif
+
+	output = prefix + "Stacktrace:\r"
+
+	for(i = 0; i < numCallers - 2; i += 1)
+		entry = StringFromList(i, stacktrace)
+		func  = StringFromList(0, entry, ",")
+		file  = StringFromList(1, entry, ",")
+		line  = StringFromList(2, entry, ",")
+		sprintf str, "%s%s(...)#L%s [%s]\r", prefix, func, line, file
+		output += str
+	endfor
+
+	return output
 End
