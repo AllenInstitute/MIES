@@ -4537,7 +4537,7 @@ Function DAP_OneTimeCallBeforeDAQ(panelTitle, runMode)
 	string panelTitle
 	variable runMode
 
-	variable numHS, i
+	variable numHS, i, DAC, ADC
 
 	ASSERT(runMode != DAQ_NOT_RUNNING, "Invalid running mode")
 
@@ -4569,6 +4569,20 @@ Function DAP_OneTimeCallBeforeDAQ(panelTitle, runMode)
 		DisableControl(panelTitle, DAP_GetClampModeControl(I_CLAMP_MODE, i))
 		DisableControl(panelTitle, DAP_GetClampModeControl(V_CLAMP_MODE, i))
 		DisableControl(panelTitle, DAP_GetClampModeControl(I_EQUAL_ZERO_MODE, i))
+
+		DAC = AFH_GetDACFromHeadstage(paneltitle, i)
+
+		// DA controls
+		DisableControl(panelTitle, GetPanelControl(DAC, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_CHECK))
+		DisableControl(panelTitle, GetPanelControl(DAC, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_GAIN))
+		DisableControl(panelTitle, GetPanelControl(DAC, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_UNIT))
+
+		ADC = AFH_GetDACFromHeadstage(paneltitle, i)
+
+		// AD controls
+		DisableControl(panelTitle, GetPanelControl(ADC, CHANNEL_TYPE_ADC, CHANNEL_CONTROL_CHECK))
+		DisableControl(panelTitle, GetPanelControl(ADC, CHANNEL_TYPE_ADC, CHANNEL_CONTROL_GAIN))
+		DisableControl(panelTitle, GetPanelControl(ADC, CHANNEL_TYPE_ADC, CHANNEL_CONTROL_UNIT))
 	endfor
 
 	DisableControls(panelTitle, CONTROLS_DISABLE_DURING_DAQ)
@@ -4591,13 +4605,31 @@ End
 Function DAP_ResetGUIAfterDAQ(panelTitle)
 	string panelTitle
 
-	variable i
+	variable i, ADC, DAC
 
 	for(i = 0; i < NUM_HEADSTAGES; i += 1)
 		EnableControl(panelTitle, GetPanelControl(i, CHANNEL_TYPE_HEADSTAGE, CHANNEL_CONTROL_CHECK))
 		EnableControl(panelTitle, DAP_GetClampModeControl(I_CLAMP_MODE, i))
 		EnableControl(panelTitle, DAP_GetClampModeControl(V_CLAMP_MODE, i))
 		EnableControl(panelTitle, DAP_GetClampModeControl(I_EQUAL_ZERO_MODE, i))
+
+		DAC = AFH_GetDACFromHeadstage(paneltitle, i)
+
+		// DA controls
+		if(IsFinite(DAC))
+			EnableControl(panelTitle, GetPanelControl(DAC, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_CHECK))
+			EnableControl(panelTitle, GetPanelControl(DAC, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_GAIN))
+			EnableControl(panelTitle, GetPanelControl(DAC, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_UNIT))
+		endif
+
+		ADC = AFH_GetDACFromHeadstage(paneltitle, i)
+
+		// AD controls
+		if(IsFinite(ADC))
+			EnableControl(panelTitle, GetPanelControl(ADC, CHANNEL_TYPE_ADC, CHANNEL_CONTROL_CHECK))
+			EnableControl(panelTitle, GetPanelControl(ADC, CHANNEL_TYPE_ADC, CHANNEL_CONTROL_GAIN))
+			EnableControl(panelTitle, GetPanelControl(ADC, CHANNEL_TYPE_ADC, CHANNEL_CONTROL_UNIT))
+		endif
 	endfor
 
 	EnableControls(panelTitle, CONTROLS_DISABLE_DURING_DAQ)
