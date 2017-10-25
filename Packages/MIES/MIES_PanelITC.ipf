@@ -7319,6 +7319,21 @@ Static Function DAP_GetDA_Ephys_UniqueCtrlState(panelTitle, GuiState)
 
 End
 
+/// @brief Query a control value front the numerical gui state wave
+///
+/// Convienience wrapper to make the call sites nicer.
+///
+/// @param panelTitle device
+/// @param ctrl       control name
+/// @param index      [optional, default to zero] Some control entries have multiple
+///                   entries per headstage/channel/etc.
+Function DAP_GetValueFromNumStateWave(panelTitle, ctrl, [index])
+	string panelTitle, ctrl
+	variable index
+
+	return GetDA_EphysGuiStateNum(panelTitle)[index][%$ctrl]
+End
+
 /// @brief Return the mode of all DA_Ephys panel headstages
 ///
 /// All callers, except the ones updating the GUIState wave,
