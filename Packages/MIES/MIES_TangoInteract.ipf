@@ -1071,9 +1071,9 @@ Function/S TI_runAdaptiveStim(stimWaveName, initScaleFactor, scaleFactor, thresh
 		// and put the full psa function into the analysisSettingsWave...putting it as the correct item into the popmenu widget doesn't push it into wave
 		analysisSettingsWave[headstage][%PSAType] = "returnActionPotential"
 		analysisSettingsWave[headstage][%PAAType] = "adjustScaleFactor"
-		
+
 		// turn on the repeated acquisition
-		SetCheckBoxState(currentPanel, "Check_DataAcq1_RepeatAcq", 1)
+		PGC_SetAndActivateControl(currentPanel, "Check_DataAcq1_RepeatAcq", val = 1)
 		
 		// put the delta in the right place 
 		actionScaleSettingsWave[headstage][%coarseScaleValue] = scaleFactor
@@ -1387,8 +1387,8 @@ Function/S TI_runBracketingFunction(stimWaveName, coarseScaleFactor, fineScaleFa
 		analysisSettingsWave[headstage][%PAAType] = "bracketScaleFactor"
 		
 		// turn on the repeated acquisition
-		SetCheckBoxState(currentPanel, "Check_DataAcq1_RepeatAcq", 1)
-		
+		PGC_SetAndActivateControl(currentPanel, "Check_DataAcq1_RepeatAcq", val = 1)
+
 		// make sure the analysisResult is set to 0
 		analysisSettingsWave[headstage][%PSAResult] = "0"
 
