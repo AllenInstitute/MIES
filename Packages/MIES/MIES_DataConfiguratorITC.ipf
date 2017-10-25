@@ -1111,8 +1111,8 @@ static Function/C DC_CalculateChannelColumnNo(panelTitle, SetName, channelNo, ch
 			localCount = count
 			cycleCount = 0
 		else // The local count is now set length dependent
-			ControlInfo/W=$panelTitle Check_DataAcq1_IndexingLocked // check locked status. locked = popup menus on channels idex in lock - step
-			if(v_value == 1)
+			// check locked status. locked = popup menus on channels idex in lock - step
+			if(GetCheckboxState(panelTitle, "Check_DataAcq1_IndexingLocked"))
 				/// @todo this code here is different compared to what RA_BckgTPwithCallToRACounterMD and RA_CounterMD do
 				NVAR activeSetCount = $GetActiveSetCount(panelTitle)
 				localCount = IDX_CalculcateActiveSetCount(panelTitle) - activeSetCount
