@@ -1107,11 +1107,10 @@ static Function/C DC_CalculateChannelColumnNo(panelTitle, SetName, channelNo, ch
 	// Below code calculates the variable local count which is then used to determine what column to select from a particular set
 	if(!RA_IsFirstSweep(panelTitle))
 		//thus the vairable "count" is used to determine if acquisition is on the first cycle
-		ControlInfo/W=$panelTitle Check_DataAcq_Indexing // check indexing status
-		if(v_value == 0)// if indexing is off...
+		if(!GetCheckboxState(panelTitle, "Check_DataAcq_Indexing"))
 			localCount = count
 			cycleCount = 0
-		else // else is used when indexing is on. The local count is now set length dependent
+		else // The local count is now set length dependent
 			ControlInfo/W=$panelTitle Check_DataAcq1_IndexingLocked // check locked status. locked = popup menus on channels idex in lock - step
 			if(v_value == 1)
 				/// @todo this code here is different compared to what RA_BckgTPwithCallToRACounterMD and RA_CounterMD do
