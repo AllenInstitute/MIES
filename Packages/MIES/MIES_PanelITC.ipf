@@ -788,7 +788,7 @@ Window DA_Ephys() : Panel
 	CheckBox Check_Settings_SkipAnalysFuncs,userdata(ResizeControlsInfo)= A"!!,H.!!#B@!!#A*!!#<(z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	CheckBox Check_Settings_SkipAnalysFuncs,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	CheckBox Check_Settings_SkipAnalysFuncs,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
-	CheckBox Check_Settings_SkipAnalysFuncs,value= 1
+	CheckBox Check_Settings_SkipAnalysFuncs,value= 0
 	CheckBox Check_AsyncAD_00,pos={172.00,46.00},size={40.00,15.00},disable=1,proc=DAP_CheckProc_RecordInGuiState,title="AD 0"
 	CheckBox Check_AsyncAD_00,userdata(tabnum)=  "4",userdata(tabcontrol)=  "ADC"
 	CheckBox Check_AsyncAD_00,userdata(ResizeControlsInfo)= A"!!,G<!!#>F!!#>.!!#<(z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
@@ -3767,7 +3767,7 @@ Function DAP_EphysPanelStartUpSettings()
 	SetVariable SetVar_DataAcq_SetRepeats WIN = $panelTitle,value= _NUM:1
 
 	CheckBox Check_Settings_UseDoublePrec WIN = $panelTitle, value= 0
-	CheckBox Check_Settings_SkipAnalysFuncs WIN = $panelTitle, value= 1
+	CheckBox Check_Settings_SkipAnalysFuncs WIN = $panelTitle, value= 0
 	PopupMenu Popup_Settings_SampIntMult WIN = $panelTitle, mode = 1
 
 	CheckBox Check_AsyncAD_00 WIN = $panelTitle,value= 0
