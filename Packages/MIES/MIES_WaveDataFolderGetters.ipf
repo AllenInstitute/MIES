@@ -1169,6 +1169,7 @@ static Function SetSweepSettingsTextDimLabels(wv)
 	SetDimLabel COLS, 10, $"oodDAQ regions"         , wv
 	SetDimLabel COLS, 11, $"Electrode"              , wv
 	SetDimLabel COLS, 12, $PULSE_START_TIMES_KEY    , wv
+	SetDimLabel COLS, 13, $HIGH_PREC_SWEEP_START_KEY, wv
 End
 
 /// @brief Returns a wave reference to the sweepSettingsWave
@@ -1452,7 +1453,7 @@ End
 Function/Wave GetSweepSettingsTextWave(panelTitle)
 	string panelTitle
 
-	variable versionOfNewWave = 10
+	variable versionOfNewWave = 11
 	string newName = "sweepSettingsTextValues"
 	DFREF newDFR = GetDevSpecLabNBTempFolder(panelTitle)
 
@@ -1467,9 +1468,9 @@ Function/Wave GetSweepSettingsTextWave(panelTitle)
 	if(ExistsWithCorrectLayoutVersion(wv, versionOfNewWave))
 		return wv
 	elseif(WaveExists(wv))
-		Redimension/N=(-1, 13, LABNOTEBOOK_LAYER_COUNT) wv
+		Redimension/N=(-1, 14, LABNOTEBOOK_LAYER_COUNT) wv
 	else
-		Make/T/N=(1, 13, LABNOTEBOOK_LAYER_COUNT) newDFR:$newName/Wave=wv
+		Make/T/N=(1, 14, LABNOTEBOOK_LAYER_COUNT) newDFR:$newName/Wave=wv
 	endif
 
 	wv = ""
@@ -1505,10 +1506,11 @@ End
 /// -12: Pulse Train Pulses
 ///      - Format: `$begin1;$begin2;...`.
 ///      - Unit: `sweep ms`.
+/// -13: High precision sweep start timestamp in ISO8601 format
 Function/Wave GetSweepSettingsTextKeyWave(panelTitle)
 	string panelTitle
 
-	variable versionOfNewWave = 10
+	variable versionOfNewWave = 11
 	string newName = "sweepSettingsTextKeys"
 	DFREF newDFR = GetDevSpecLabNBTempFolder(panelTitle)
 
@@ -1523,9 +1525,9 @@ Function/Wave GetSweepSettingsTextKeyWave(panelTitle)
 	if(ExistsWithCorrectLayoutVersion(wv, versionOfNewWave))
 		return wv
 	elseif(WaveExists(wv))
-		Redimension/N=(-1, 13, 0) wv
+		Redimension/N=(-1, 14, 0) wv
 	else
-		Make/T/N=(1, 13) newDFR:$newName/Wave=wv
+		Make/T/N=(1, 14) newDFR:$newName/Wave=wv
 	endif
 
 	wv = ""
@@ -1543,6 +1545,7 @@ Function/Wave GetSweepSettingsTextKeyWave(panelTitle)
 	wv[0][10] = "oodDAQ regions"
 	wv[0][11] = "Electrode"
 	wv[0][12] = PULSE_START_TIMES_KEY
+	wv[0][13] = HIGH_PREC_SWEEP_START_KEY
 
 	SetSweepSettingsTextDimLabels(wv)
 	SetWaveVersion(wv, versionOfNewWave)

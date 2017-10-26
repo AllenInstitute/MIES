@@ -58,8 +58,8 @@ static Function ED_createTextNotes(incomingTextualValues, incomingTextualKeys, s
 	WAVE indizes = ED_FindIndizesAndRedimension(incomingTextualKeys, textualKeys, textualValues, rowIndex)
 
 	textualValues[rowIndex][0][] = num2istr(sweepNo)
-	textualValues[rowIndex][1][] = num2istr(DateTime)
-	textualValues[rowIndex][2][] = num2istr(DateTimeInUTC())
+	textualValues[rowIndex][1][] = num2str(DateTime)
+	textualValues[rowIndex][2][] = num2str(DateTimeInUTC())
 	textualValues[rowIndex][3][] = num2istr(entrySourceType)
 
 	WAVE textualValuesDat = ExtractLBColumnTimeStamp(textualValues)
@@ -443,6 +443,17 @@ static Function/Wave ED_FindIndizesAndRedimension(incomingKey, key, values, rowI
 	return indizes
 End
 
+/// @brief Remember the "exact" start of the sweep
+///
+/// Should be called immediately after HW_StartAcq().
+Function ED_MarkSweepStart(panelTitle)
+	string panelTitle
+
+	WAVE/T sweepSettingsTxtWave = GetSweepSettingsTextWave(panelTitle)
+
+	sweepSettingsTxtWave[0][%$HIGH_PREC_SWEEP_START_KEY][INDEP_HEADSTAGE] = GetISO8601TimeStamp(numFracSecondsDigits = 3)
+End
+
 /// @brief Add sweep specific information to the labnotebook
 Function ED_createWaveNoteTags(panelTitle, sweepCount)
 	string panelTitle
@@ -489,7 +500,7 @@ Function ED_createWaveNoteTags(panelTitle, sweepCount)
 
 	ED_AddEntriesToLabnotebook(numSettings, numKeys, SweepCount, panelTitle, DATA_ACQUISITION_MODE)
 
-	Make/FREE/T/N=(3, 2) keys
+	Make/FREE/T/N=(3, 3) keys
 	keys = ""
 
 	keys[0][0] = "Follower Device"
@@ -500,7 +511,11 @@ Function ED_createWaveNoteTags(panelTitle, sweepCount)
 	keys[1][1] = "On/Off"
 	keys[2][1] = LABNOTEBOOK_NO_TOLERANCE
 
-	Make/FREE/T/N=(1, 2, LABNOTEBOOK_LAYER_COUNT) values
+	keys[0][2] = "Igor Pro version"
+	keys[1][2] = ""
+	keys[2][2] = LABNOTEBOOK_NO_TOLERANCE
+
+	Make/FREE/T/N=(1, 3, LABNOTEBOOK_LAYER_COUNT) values
 	values = ""
 
 	if(DeviceCanLead(panelTitle))
@@ -510,6 +525,8 @@ Function ED_createWaveNoteTags(panelTitle, sweepCount)
 
 	SVAR miesVersion = $GetMiesVersion()
 	values[0][1][INDEP_HEADSTAGE] = miesVersion
+
+	values[0][2][INDEP_HEADSTAGE] = StringByKey("IGORFILEVERSION", IgorInfo(3))
 
 	ED_AddEntriesToLabnotebook(values, keys, SweepCount, panelTitle, DATA_ACQUISITION_MODE)
 
