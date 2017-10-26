@@ -5144,3 +5144,22 @@ Function/WAVE GetAnalysisFuncDAScaleResFit(panelTitle, headstage)
 End
 
 /// @}
+
+/// @brief Return the storage wave for the analysis functions
+Function/WAVE GetAnalysisFunctionStorage(panelTitle)
+	string panelTitle
+
+	variable versionOfWave = 0
+	DFREF dfr = GetDevicePath(panelTitle)
+	WAVE/T/Z/SDFR=dfr wv = analysisFunctions
+
+	if(ExistsWithCorrectLayoutVersion(wv, versionOfWave))
+		return wv
+	elseif(WaveExists(wv))
+		 // handle upgrade
+	else
+		Make/T/N=(NUM_HEADSTAGES, TOTAL_NUM_EVENTS) dfr:analysisFunctions/WAVE=wv
+	endif
+
+	return wv
+End
