@@ -180,7 +180,11 @@ Function DQS_StopBackgroundFifoMonitor()
 	CtrlNamedBackground ITC_FIFOMonitor, stop
 End
 
-/// @brief Start the background timer used for ITI tracking
+/// @brief Start the background timer for the inter trial interval (ITI)
+///
+/// @param panelTitle device
+/// @param runTime    left over time to wait in seconds
+/// @param funcList   list of functions to execute at the end of the ITI
 Function DQS_StartBackgroundTimer(panelTitle, runTime, funcList)
 	string panelTitle, funcList
 	variable runTime
