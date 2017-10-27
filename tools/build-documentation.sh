@@ -40,6 +40,7 @@ else
 fi
 
 cp "$top_level/Packages/IPNWB/Readme.rst" "$top_level/Packages/doc/IPNWB.rst"
+cp "$top_level/Packages/ZeroMQ/Readme.rst" "$top_level/Packages/doc/ZeroMQ-XOP-Readme.rst"
 
 if hash breathe-apidoc 2>/dev/null; then
   echo "Start breathe-apidoc"
@@ -55,7 +56,17 @@ fi
 if hash sphinx-build 2>/dev/null; then
   echo "Start sphinx-build"
 
-  sphinx-build . html
+  rm -f sphinx-output.log
+
+  sphinx-build -Q -w sphinx-output.log . html
+
+  if [ -e "sphinx-output.log" ]
+  then
+    echo "Errors building the documentation" 1>&2
+    echo "sphinx-build says: "               1>&2
+    cat sphinx-output.log                    1>&2
+    exit 1
+  fi
 
 else
   echo "Errors building the documentation" 1>&2

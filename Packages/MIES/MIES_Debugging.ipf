@@ -309,7 +309,7 @@ Function DEBUG_TIMER_START()
 	return stopmstimer(-2)
 End
 
-/// @brief Print the elapsed time for performance measurements
+/// @brief Print the elapsed time for performance measurements in seconds
 /// @see DEBUG_TIMER_START()
 Function DEBUGPRINT_ELAPSED(referenceTime)
 	variable referenceTime

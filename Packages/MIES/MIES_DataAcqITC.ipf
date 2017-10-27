@@ -9,7 +9,7 @@
 /// @file MIES_DataAcqITC.ipf
 /// @brief __ITC__ Data acquisition handling
 
-Function ITC_DataAcq(panelTitle)
+static Function ITC_DataAcq(panelTitle)
 	string panelTitle
 
 	variable fifoPos

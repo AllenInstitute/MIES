@@ -60,11 +60,6 @@ static Structure P_PressureDA
    variable first, last
 EndStructure
 
-static Structure PressureBackgroundStruct
-	STRUCT WMBackgroundStruct wmbs
-	variable startTime, firedTime, firedTTL, numCalls
-EndStructure
-
 /// @brief Applies pressure methods based on data in PressureDataWv
 ///
 /// This function gets called by TP_RecordTP. It also gets called when the approach button is pushed.
