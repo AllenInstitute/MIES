@@ -336,10 +336,9 @@ End
 static Function/WAVE DB_GetNumericalValues(win)
 	string win
 
-	string mainPanel, device
+	string device
 
-	mainPanel = GetMainWindow(win)
-	device = GetPopupMenuString(mainPanel, "popup_DB_lockedDevices")
+	device = BSP_GetDevice(win)
 
 	return GetLBNumericalValues(device)
 End
@@ -347,10 +346,9 @@ End
 static Function/WAVE DB_GetTextualValues(win)
 	string win
 
-	string mainPanel, device
+	string device
 
-	mainPanel = GetMainWindow(win)
-	device = GetPopupMenuString(mainPanel, "popup_DB_lockedDevices")
+	device = BSP_GetDevice(win)
 
 	return GetLBTextualValues(device)
 End
@@ -358,10 +356,9 @@ End
 static Function/WAVE DB_GetNumericalKeys(win)
 	string win
 
-	string mainPanel, device
+	string device
 
-	mainPanel = GetMainWindow(win)
-	device = GetPopupMenuString(mainPanel, "popup_DB_lockedDevices")
+	device = BSP_GetDevice(win)
 
 	return GetLBNumericalKeys(device)
 End
@@ -369,10 +366,9 @@ End
 static Function/WAVE DB_GetTextualKeys(win)
 	string win
 
-	string mainPanel, device
+	string device
 
-	mainPanel = GetMainWindow(win)
-	device = GetPopupMenuString(mainPanel, "popup_DB_lockedDevices")
+	device = BSP_GetDevice(win)
 
 	return GetLBTextualKeys(device)
 End
@@ -396,7 +392,7 @@ Function DB_UpdateToLastSweep(win)
 		return NaN
 	endif
 
-	device = GetPopupMenuString(mainPanel, "popup_DB_lockedDevices")
+	device = BSP_GetDevice(win)
 
 	if(!cmpstr(device, NONE))
 		return NaN
@@ -423,8 +419,7 @@ static Function DB_UpdateOverlaySweepWaves(win)
 		return NaN
 	endif
 
-	mainPanel = GetMainWindow(win)
-	device = GetPopupMenuString(mainPanel, "popup_DB_lockedDevices")
+	device = BSP_GetDevice(win)
 	DFREF dfr = GetDeviceDataBrowserPath(device)
 
 	WAVE listBoxWave       = GetOverlaySweepsListWave(dfr)
@@ -827,8 +822,7 @@ Function/S DB_GetLBTextualKeys(win)
 		return NONE
 	endif
 
-	mainPanel = GetMainWindow(win)
-	device = GetPopupMenuString(mainPanel, "popup_DB_lockedDevices")
+	device = BSP_GetDevice(win)
 	if(!CmpStr(device, NONE))
 		return NONE
 	endif
@@ -847,8 +841,7 @@ Function/S DB_GetLBNumericalKeys(win)
 		return NONE
 	endif
 
-	mainPanel = GetMainWindow(win)
-	device = GetPopupMenuString(mainPanel, "popup_DB_lockedDevices")
+	device = BSP_GetDevice(win)
 	if(!CmpStr(device, NONE))
 		return NONE
 	endif
@@ -1007,9 +1000,7 @@ static Function DB_SplitSweepsIfReq(win, sweepNo)
 	string device, mainPanel
 	variable sweepModTime, numWaves, requireNewSplit, i
 
-	mainPanel = GetMainWindow(win)
-	device = GetPopupMenuString(mainPanel, "popup_DB_lockedDevices")
-
+	device = BSP_GetDevice(win)
 	if(!cmpstr(device, NONE))
 		return NaN
 	endif
