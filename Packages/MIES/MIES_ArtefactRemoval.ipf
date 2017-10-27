@@ -234,7 +234,12 @@ Function AR_HandleRanges(graph, [removeRange])
 	DFREF sweepDFR = AR_GetSweepFolder(graph)
 	WAVE/WAVE ADCs = GetITCDataSingleColumnWaves(sweepDFR, ITC_XOP_CHANNEL_TYPE_ADC)
 
-	WAVE/T traceData = PA_GetTraceInfos(graph, channelType = ITC_XOP_CHANNEL_TYPE_ADC)
+	WAVE/T/Z traceData = PA_GetTraceInfos(graph, channelType = ITC_XOP_CHANNEL_TYPE_ADC)
+
+	if(!WaveExists(traceData))
+		return NaN
+	endif
+
 	Make/FREE/T/N=(DimSize(traceData, ROWS)) leftAxisData = StringByKey("YAXIS", TraceInfo(graph, traceData[p][%traceName], 0))
 
 	ASSERT(DimSize(listBoxWave, ROWS) == DimSize(artefactWave, ROWS), "Unexpected dimension sizes")
