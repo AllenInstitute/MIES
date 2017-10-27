@@ -215,7 +215,13 @@ Function DQM_CallFuncForDevicesYoked(panelTitle, func)
 	CallFunctionForEachListItem(func, list)
 End
 
-/// @brief Start the background timer used for ITI tracking
+/// @brief Start the background timer for the inter trial interval (ITI)
+///
+/// Multi device variant
+///
+/// @param panelTitle device
+/// @param runTime    left over time to wait in seconds
+/// @param funcList   list of functions to execute at the end of the ITI
 Function DQM_StartBackgroundTimer(panelTitle, runTime, funcList)
 	string panelTitle, funcList
 	variable runTime
