@@ -3379,3 +3379,9 @@ Function StopAllMSTimers()
 		printf "ms timer %d stopped. Elapsed time: %g\r", i, stopmstimer(i)
 	endfor
 End
+
+/// @brief Return a time with high precision, microsecond resolution, using an
+///        arbitrary zero point.
+Function RelativeNowHighPrec()
+	return stopmstimer(-2)/1e6
+End

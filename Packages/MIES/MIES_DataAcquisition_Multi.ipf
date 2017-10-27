@@ -228,7 +228,7 @@ Function DQM_StartBackgroundTimer(panelTitle, runTime, funcList)
 
 	ASSERT(!isEmpty(funcList), "Empty funcList does not makse sense")
 
-	variable startTime    = ticks * TICKS_TO_SECONDS
+	variable startTime    = RelativeNowHighPrec()
 	variable durationTime = runTime
 	variable endTime      = startTime + durationTime
 
@@ -266,7 +266,7 @@ Function DQM_Timer(s)
 	variable TimeLeft
 
 	for(i = 0; i < DimSize(ActiveDevTimeParam, ROWS); i += 1)
-		ActiveDevTimeParam[i][4] = (ticks * TICKS_TO_SECONDS - ActiveDevTimeParam[i][1])
+		ActiveDevTimeParam[i][4] = (RelativeNowHighPrec() - ActiveDevTimeParam[i][1])
 		timeLeft = max(ActiveDevTimeParam[i][2] - ActiveDevTimeParam[i][4], 0)
 		panelTitle = TimerFunctionListWave[i][0]
 

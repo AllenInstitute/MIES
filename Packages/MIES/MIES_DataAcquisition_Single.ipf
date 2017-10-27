@@ -196,7 +196,7 @@ Function DQS_StartBackgroundTimer(panelTitle, runTime, funcList)
 	NVAR repeatedAcqStart    = $GetRepeatedAcquisitionStart()
 
 	repeatedAcqFuncList = funcList
-	repeatedAcqStart    = ticks * TICKS_TO_SECONDS
+	repeatedAcqStart    = RelativeNowHighPrec()
 	repeatedAcqDuration = runTime
 
 	CtrlNamedBackground ITC_Timer, period = 5, proc = DQS_Timer, start
@@ -220,7 +220,7 @@ Function DQS_Timer(s)
 	NVAR repeatedAcqDuration = $GetRepeatedAcquisitionDuration()
 	SVAR panelTitleG         = $GetPanelTitleGlobal()
 
-	elapsedTime = ticks * TICKS_TO_SECONDS - repeatedAcqStart
+	elapsedTime = RelativeNowHighPrec() - repeatedAcqStart
 	timeLeft    = max(repeatedAcqDuration - elapsedTime, 0)
 
 	SetValDisplay(panelTitleG, "valdisp_DataAcq_ITICountdown", var = timeLeft)
