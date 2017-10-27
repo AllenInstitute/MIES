@@ -8,7 +8,7 @@
 /// @file MIES_ThreadedFIFOHandling.ipf
 /// @brief __TFH__ Functions related to threadsafe FIFO monitor and stop daemons
 
-static Constant TIMEOUT_IN_MS = 50
+static Constant TIMEOUT_IN_MS = 5
 
 /// @brief Mode constants
 ///
