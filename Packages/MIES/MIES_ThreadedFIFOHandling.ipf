@@ -119,7 +119,7 @@ threadsafe static Function TFH_FifoLoop(config, triggerMode, deviceID, stopColle
 	HW_ITC_DebugMode_TS(enableDebug, flags = flags)
 
 	do
-		DFREF dfr = ThreadGroupGetDFR(0, TIMEOUT_IN_MS)
+		DFREF dfr = ThreadGroupGetDFR(MAIN_THREAD, TIMEOUT_IN_MS)
 
 		if(DataFolderExistsDFR(dfr))
 			break
