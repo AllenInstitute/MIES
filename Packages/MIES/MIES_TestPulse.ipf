@@ -48,6 +48,11 @@ Function TP_StartTestPulseSingleDevice(panelTitle)
 
 	DAP_StopOngoingDataAcquisition(panelTitle)
 
+	// stop early as "TP after DAQ" might be already running
+	if(TP_CheckIfTestpulseIsRunning(panelTitle))
+		return NaN
+	endif
+
 	try
 		if(GetCheckBoxState(panelTitle, "Check_Settings_BkgTP"))
 
@@ -74,6 +79,11 @@ Function TP_StartTestPulseMultiDevice(panelTitle)
 	AbortOnValue DAP_CheckSettings(panelTitle, TEST_PULSE_MODE),1
 
 	ITC_StopOngoingDAQMultiDevice(panelTitle)
+
+	// stop early as "TP after DAQ" might be already running
+	if(TP_CheckIfTestpulseIsRunning(panelTitle))
+		return NaN
+	endif
 
 	ITC_StartTestPulseMultiDevice(panelTitle)
 
