@@ -68,11 +68,7 @@ static Function BSP_DynamicStartupSettings(mainPanel)
 	AddVersionToPanel(bsPanel, BROWSERSETTINGS_PANEL_VERSION)
 
 	// overlay sweeps
-	if(IsDataBrowser(mainPanel))
-		SetControlProcedure(bsPanel, "check_BrowserSettings_OVS", "DB_CheckProc_OverlaySweeps")
-	else
-		SetControlProcedure(bsPanel, "check_BrowserSettings_OVS", "SB_CheckProc_OverlaySweeps")
-	endif
+	SetControlProcedure(bsPanel, "check_BrowserSettings_OVS", BSP_AddBrowserPrefix(mainPanel, "CheckProc_OverlaySweeps"))
 	DFREF dfr = BSP_GetFolder(mainPanel, MIES_BSP_PANEL_FOLDER)
 	WAVE/T listBoxWave        = GetOverlaySweepsListWave(dfr)
 	WAVE listBoxSelWave       = GetOverlaySweepsListSelWave(dfr)
@@ -89,15 +85,22 @@ static Function BSP_DynamicStartupSettings(mainPanel)
 	// bind the channel selection wave to the user controls of the external panel
 	WAVE channelSelection = BSP_GetChannelSelectionWave(mainPanel)
 	ChannelSelectionWaveToGUI(mainPanel, channelSelection)
-	if(IsDataBrowser(mainPanel))
-		BSP_SetCSButtonProc(bsPanel, "DB_CheckProc_ChangedSetting")
-	else
-		BSP_SetCSButtonProc(bsPanel, "SB_CheckProc_ChangedSetting")
-	endif
+	BSP_SetCSButtonProc(bsPanel, BSP_AddBrowserPrefix(mainPanel, "CheckProc_ChangedSetting"))
 
 	BSP_InitMainCheckboxes(bsPanel)
 
 	PGC_SetAndActivateControl(bsPanel, "Settings", val = MIES_BSP_OVS)
+End
+
+/// @brief add SB_* or DB_* prefix to the input string depending on current window
+Function/S BSP_AddBrowserPrefix(win, str)
+	string win, str
+
+	if(IsDataBrowser(win))
+		return "DB_" + str
+	else
+		return "SB_" + str
+	endif
 End
 
 /// @brief get the channel selection wave stored in main window property CSW_FOLDER
