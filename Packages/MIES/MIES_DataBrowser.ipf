@@ -415,13 +415,13 @@ End
 Window DataBrowser() : Panel
 	PauseUpdate; Silent 1		// building window...
 	NewPanel /K=1 /W=(248,190,1048,790) as "DataBrowser"
-	Button button_DataBrowser_NextSweep,pos={400,513},size={200.00,37.00},proc=DB_ButtonProc_Sweep,title="Next Sweep \\W649"
+	Button button_DataBrowser_NextSweep,pos={400,513},size={200.00,37.00},proc=DB_ButtonProc_ChangeSweep,title="Next Sweep \\W649"
 	Button button_DataBrowser_NextSweep,help={"Displays the next sweep (sweep no. = last sweep number + step)"}
 	Button button_DataBrowser_NextSweep,userdata(ResizeControlsInfo)= A"!!,I.!!#Ce5QF/B!!#>\"z!!#`-A7TLf!!%+Szzzzzzzzzzzzz!!#N3Bk1ct<C^(Dz"
 	Button button_DataBrowser_NextSweep,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#?(FEDG<zzzzzzzzzzz"
 	Button button_DataBrowser_NextSweep,userdata(ResizeControlsInfo) += A"zzz!!#?(FEDG<zzzzzzzzzzzzzz!!!"
 	Button button_DataBrowser_NextSweep,fSize=20
-	Button button_DataBrowser_PrevSweep,pos={20,513},size={200,37},proc=DB_ButtonProc_Sweep,title="\\W646 Previous Sweep"
+	Button button_DataBrowser_PrevSweep,pos={20,513},size={200,37},proc=DB_ButtonProc_ChangeSweep,title="\\W646 Previous Sweep"
 	Button button_DataBrowser_PrevSweep,help={"Displays the previous sweep (sweep no. = last sweep number - step)"}
 	Button button_DataBrowser_PrevSweep,userdata(ResizeControlsInfo)= A"!!,BY!!#Ce5QF/B!!#>\"z!!#N3Bk1ct<C^(Ezzzzzzzzzzzzz!!#`-A7TLf!!%+Sz"
 	Button button_DataBrowser_PrevSweep,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#?(FEDG<zzzzzzzzzzz"
@@ -651,7 +651,7 @@ Function DB_DataBrowserStartupSettings()
 	SearchForInvalidControlProcs(panelTitle)
 End
 
-Function DB_ButtonProc_Sweep(ba) : ButtonControl
+Function DB_ButtonProc_ChangeSweep(ba) : ButtonControl
 	STRUCT WMButtonAction &ba
 
 	string panelTitle, ctrl
