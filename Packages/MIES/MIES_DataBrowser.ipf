@@ -919,7 +919,7 @@ static Function DB_PanelUpdate(graphOrPanel)
 End
 
 /// @brief enable/disable checkbox control for side panel
-Function DB_CheckboxProc_OverlaySweeps(cba) : CheckBoxControl
+Function DB_CheckProc_OverlaySweeps(cba) : CheckBoxControl
 	STRUCT WMCheckBoxAction &cba
 
 	string panelTitle, device, sweepWaveList

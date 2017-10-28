@@ -69,9 +69,9 @@ static Function BSP_DynamicStartupSettings(mainPanel)
 
 	// overlay sweeps
 	if(IsDataBrowser(mainPanel))
-		SetControlProcedure(extPanel, "check_BrowserSettings_OVS", "DB_CheckBoxProc_OverlaySweeps")
+		SetControlProcedure(extPanel, "check_BrowserSettings_OVS", "DB_CheckProc_OverlaySweeps")
 	else
-		SetControlProcedure(extPanel, "check_BrowserSettings_OVS", "SB_CheckboxProc_OverlaySweeps")
+		SetControlProcedure(extPanel, "check_BrowserSettings_OVS", "SB_CheckProc_OverlaySweeps")
 	endif
 	DFREF dfr = BSP_GetFolder(mainPanel, MIES_BSP_PANEL_FOLDER)
 	WAVE/T listBoxWave        = GetOverlaySweepsListWave(dfr)

@@ -1029,7 +1029,7 @@ Function SB_ButtonProc_RestoreData(ba) : ButtonControl
 	return 0
 End
 
-Function SB_CheckboxProc_OverlaySweeps(cba) : CheckBoxControl
+Function SB_CheckProc_OverlaySweeps(cba) : CheckBoxControl
 	STRUCT WMCheckBoxAction &cba
 
 	string graph, sweepWaveList, extPanel
