@@ -932,7 +932,7 @@ End
 
 Function DB_CheckProc_ScaleAxes(cba) : CheckBoxControl
 	STRUCT WMCheckboxAction &cba
-	
+
 	switch(cba.eventCode)
 		case 2: // mouse up
 			DB_PanelUpdate(cba.win)
