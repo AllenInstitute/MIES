@@ -540,7 +540,7 @@ Window DataBrowser() : Panel
 	SetVariable setvar_DataBrowser_SweepStep,userdata(ResizeControlsInfo) += A"zzz!!#?(FEDG<zzzzzzzzzzzzzz!!!"
 	SetVariable setvar_DataBrowser_SweepStep,userdata(lastSweep)=  "0",fSize=12
 	SetVariable setvar_DataBrowser_SweepStep,limits={1,inf,1},value= _NUM:1
-	CheckBox checkbox_DB_AutoScaleVertAxVisX,pos={179.00,572.00},size={40.00,15.00},proc=DB_ScaleAxis,title="Vis X"
+	CheckBox checkbox_DB_AutoScaleVertAxVisX,pos={179.00,572.00},size={40.00,15.00},proc=DB_CheckProc_ScaleAxes,title="Vis X"
 	CheckBox checkbox_DB_AutoScaleVertAxVisX,help={"Scale the y axis to the visible x data range"}
 	CheckBox checkbox_DB_AutoScaleVertAxVisX,userdata(ResizeControlsInfo)= A"!!,GC!!#Ct!!#>.!!#<(z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	CheckBox checkbox_DB_AutoScaleVertAxVisX,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#?(FEDG<zzzzzzzzzzz"
@@ -893,7 +893,7 @@ Function DB_CheckProc_ChangedSetting(cba) : CheckBoxControl
 	return 0
 End
 
-Function DB_ScaleAxis(cba) : CheckBoxControl
+Function DB_CheckProc_ScaleAxes(cba) : CheckBoxControl
 	STRUCT WMCheckboxAction &cba
 	
 	switch(cba.eventCode)

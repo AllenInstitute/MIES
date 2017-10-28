@@ -607,13 +607,13 @@ Window SweepBrowser() : Graph
 	PopupMenu popup_sweep_selector,pos={13.00,91.00},size={127.00,19.00},bodyWidth=127,proc=SB_PopupMenuSelectSweep
 	PopupMenu popup_sweep_selector,help={"List of sweeps in this sweep browser"}
 	GroupBox group_SB_axes_scaling,pos={11.00,310.00},size={133.00,60.00},title="Axes Scaling"
-	CheckBox check_SB_visibleXRange,pos={19.00,329.00},size={40.00,15.00},proc=SB_AxisScaling,title="Vis X"
+	CheckBox check_SB_visibleXRange,pos={19.00,329.00},size={40.00,15.00},proc=SB_CheckProc_ScaleAxes,title="Vis X"
 	CheckBox check_SB_visibleXRange,help={"Scale the y axis to the visible x data range"}
 	CheckBox check_SB_visibleXRange,value= 0
-	CheckBox check_SB_equalYRanges,pos={69.00,329.00},size={54.00,15.00},proc=SB_AxisScaling,title="Equal Y"
+	CheckBox check_SB_equalYRanges,pos={69.00,329.00},size={54.00,15.00},proc=SB_CheckProc_ScaleAxes,title="Equal Y"
 	CheckBox check_SB_equalYRanges,help={"Equalize the vertical axes ranges"}
 	CheckBox check_SB_equalYRanges,value= 0
-	CheckBox check_SB_equalYIgnLevelCross,pos={19.00,348.00},size={77.00,15.00},proc=SB_AxisScaling,title="Equal Y ign."
+	CheckBox check_SB_equalYIgnLevelCross,pos={19.00,348.00},size={77.00,15.00},proc=SB_CheckProc_ScaleAxes,title="Equal Y ign."
 	CheckBox check_SB_equalYIgnLevelCross,help={"Equalize the vertical axes ranges but ignore all traces with level crossings"}
 	CheckBox check_SB_equalYIgnLevelCross,value= 0
 	SetVariable setvar_SB_equalYLevel,pos={98.00,348.00},size={25.00,18.00},disable=2,proc=SB_AxisScalingLevelCross
@@ -854,7 +854,7 @@ Function SB_DoTimeAlignment(ba) : ButtonControl
 	return 0
 End
 
-Function SB_AxisScaling(cba) : CheckBoxControl
+Function SB_CheckProc_ScaleAxes(cba) : CheckBoxControl
 	STRUCT WMCheckboxAction &cba
 
 	string ctrls, panel
