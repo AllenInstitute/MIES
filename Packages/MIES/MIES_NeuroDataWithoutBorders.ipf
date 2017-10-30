@@ -9,12 +9,26 @@
 /// @file MIES_NeuroDataWithoutBorders.ipf
 /// @brief __NWB__ Functions related to MIES data export into the NeuroDataWithoutBorders format
 
-/// @brief Return the starting time, in seconds since Igor Pro epoch in UTC, of the given sweep
-static Function NWB_GetStartTimeOfSweep(sweepWave)
+/// @brief Return the starting time, in fractional seconds since Igor Pro epoch in UTC, of the given sweep
+///
+/// For existing sweeps with #HIGH_PREC_SWEEP_START_KEY labnotebook entries we use the sweep wave's modification time.
+/// The sweep wave can be either an `ITCDataWave` or a `Sweep_$num` wave. Passing the `ITCDataWave` is more accurate.
+static Function NWB_GetStartTimeOfSweep(panelTitle, sweepNo, sweepWave)
+	string panelTitle
+	variable sweepNo
 	WAVE sweepWave
 
 	variable startingTime
+	string timestamp
 
+	WAVE/T textualValues = GetLBTextualValues(panelTitle)
+	timestamp = GetLastSettingTextIndep(textualValues, sweepNo, HIGH_PREC_SWEEP_START_KEY, DATA_ACQUISITION_MODE)
+
+	if(!isEmpty(timestamp))
+		return ParseISO8601TimeStamp(timestamp)
+	endif
+
+	// fallback mode for old sweeps
 	ASSERT(!cmpstr(WaveUnits(sweepWave, ROWS), "ms"), "Expected ms as wave units")
 	// last time the wave was modified (UTC)
 	startingTime  = NumberByKeY("MODTIME", WaveInfo(sweepWave, 0)) - date2secs(-1, -1, -1)
@@ -30,7 +44,7 @@ End
 static Function NWB_FirstStartTimeOfAllSweeps()
 
 	string devicesWithData, panelTitle, list, name
-	variable numEntries, numWaves, i, j
+	variable numEntries, numWaves, sweepNo, i, j
 	variable oldest = Inf
 
 	devicesWithData = GetAllDevicesWithContent()
@@ -48,9 +62,11 @@ static Function NWB_FirstStartTimeOfAllSweeps()
 		numWaves = ItemsInList(list)
 		for(j = 0; j < numWaves; j += 1)
 			name = StringFromList(j, list)
+			sweepNo = ExtractSweepNumber(name)
+			ASSERT(IsValidSweepNumber(sweepNo), "Could not extract sweep number")
 			WAVE/SDFR=dfr sweepWave = $name
 
-			oldest = min(oldest, NWB_GetStartTimeOfSweep(sweepWave))
+			oldest = min(oldest, NWB_GetStartTimeOfSweep(panelTitle, sweepNo, sweepWave))
 		endfor
 	endfor
 
@@ -638,7 +654,7 @@ static Function NWB_AppendSweepLowLevel(locationID, panelTitle, ITCDataWave, ITC
 	params.channelSuffix = ""
 
 	// starting time of the dataset, relative to the start of the session
-	params.startingTime = NWB_GetStartTimeOfSweep(ITCDataWave) - session_start_time
+	params.startingTime = NWB_GetStartTimeOfSweep(panelTitle, sweep, ITCDataWave) - session_start_time
 	ASSERT(params.startingTime > 0, "TimeSeries starting time can not be negative")
 
 	params.samplingRate = ConvertSamplingIntervalToRate(GetSamplingInterval(ITCChanConfigWave)) * 1000
