@@ -8,7 +8,7 @@
 /// @file MIES_ThreadedFIFOHandling.ipf
 /// @brief __TFH__ Functions related to threadsafe FIFO monitor and stop daemons
 
-static Constant TIMEOUT_IN_MS = 50
+static Constant TIMEOUT_IN_MS = 5
 
 /// @brief Mode constants
 ///
@@ -48,13 +48,13 @@ static Function TFH_StartFIFODeamonInternal(hwType, deviceID, mode, [triggerMode
 	NVAR stopCollectionPoint = $GetStopCollectionPoint(panelTitle)
 	NVAR ADChannelToMonitor  = $GetADChannelToMonitor(panelTitle)
 	WAVE ITCChanConfigWave   = GetITCChanConfigWave(panelTitle)
-	WAVE ITCDataWave         = GetITCDataWave(panelTitle)
 
 	TFH_StopFifoDaemon(hwType, deviceID)
 	NVAR tgID  = $GetThreadGroupIDFifo(panelTitle)
 	tgID = ThreadGroupCreate(1)
-	ThreadStart tgID, 0, TFH_FifoLoop(ITCChanConfigWave, ITCDataWave, triggerMode, deviceID, stopCollectionPoint, ADChannelToMonitor, mode)
-	WaveClear ITCChanConfigWave, ITCDataWave
+
+	Duplicate/FREE ITCChanConfigWave, config
+	ThreadStart tgID, 0, TFH_FifoLoop(config, triggerMode, deviceID, stopCollectionPoint, ADChannelToMonitor, mode)
 End
 
 /// @brief Stop the FIFO daemon if required
@@ -107,8 +107,8 @@ End
 /// - fifoPos:       fifo position
 /// - startSequence: (yoking only) inform the main thread
 ///                  that ARDStartSequence() commmand should be called
-threadsafe static Function TFH_FifoLoop(config, ITCDataWave, triggerMode, deviceID, stopCollectionPoint, ADChannelToMonitor, mode)
-	WAVE config, ITCDataWave
+threadsafe static Function TFH_FifoLoop(config, triggerMode, deviceID, stopCollectionPoint, ADChannelToMonitor, mode)
+	WAVE config
 	variable triggerMode, deviceID, stopCollectionPoint, ADChannelToMonitor, mode
 
 	variable flags, moreData, fifoPos
@@ -119,7 +119,7 @@ threadsafe static Function TFH_FifoLoop(config, ITCDataWave, triggerMode, device
 	HW_ITC_DebugMode_TS(enableDebug, flags = flags)
 
 	do
-		DFREF dfr = ThreadGroupGetDFR(0, TIMEOUT_IN_MS)
+		DFREF dfr = ThreadGroupGetDFR(MAIN_THREAD, TIMEOUT_IN_MS)
 
 		if(DataFolderExistsDFR(dfr))
 			break

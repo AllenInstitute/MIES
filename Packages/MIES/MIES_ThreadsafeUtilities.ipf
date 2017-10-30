@@ -5,7 +5,7 @@
 #pragma ModuleName=MIES_TS
 #endif
 
-static Constant TS_GET_REPEAT_TIMEOUT_IN_MS = 10
+static Constant TS_GET_REPEAT_TIMEOUT_IN_MS = 1
 
 /// @file MIES_ThreadsafeUtilities.ipf
 /// @brief __TS__ Helper functions for threadsafe code and main/worker function interactions.
