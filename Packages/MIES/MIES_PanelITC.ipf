@@ -1583,7 +1583,7 @@ Window DA_Ephys() : Panel
 	ValDisplay valdisp_DataAcq_ITICountdown,userdata(ResizeControlsInfo)= A"!!,EB!!#CrJ,hq>!!#<`z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	ValDisplay valdisp_DataAcq_ITICountdown,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	ValDisplay valdisp_DataAcq_ITICountdown,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
-	ValDisplay valdisp_DataAcq_ITICountdown,fSize=14,format="%1g",fStyle=0
+	ValDisplay valdisp_DataAcq_ITICountdown,fSize=14,format="%.1f",fStyle=0
 	ValDisplay valdisp_DataAcq_ITICountdown,valueColor=(65535,65535,65535)
 	ValDisplay valdisp_DataAcq_ITICountdown,valueBackColor=(0,0,0)
 	ValDisplay valdisp_DataAcq_ITICountdown,limits={0,0,0},barmisc={0,1000}
