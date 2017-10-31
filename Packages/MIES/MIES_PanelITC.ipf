@@ -4299,7 +4299,7 @@ Function DAP_SetVarProc_Channel_Search(sva) : SetVariableControl
 			ctrl       = sva.ctrlName
 			varstr     = sva.sval
 
-			DAP_ParsePanelControl(ctrl, channelIndex, channelType, channelControl)
+			ASSERT(!DAP_ParsePanelControl(ctrl, channelIndex, channelType, channelControl), "Invalid control format")
 
 			DFREF saveDFR = GetDataFolderDFR()
 			SetDataFolder GetSetFolder(channelType)
@@ -4375,7 +4375,7 @@ Function DAP_CheckProc_Channel_All(cba) : CheckBoxControl
 		case 2: // mouse up
 			paneltitle = cba.win
 			allChecked = cba.checked
-			DAP_ParsePanelControl(cba.ctrlName, channelIndex, channelType, controlType)
+			ASSERT(!DAP_ParsePanelControl(cba.ctrlName, channelIndex, channelType, controlType), "Invalid control format")
 			ASSERT(controlType  == CHANNEL_CONTROL_CHECK, "Invalid control type")
 			ASSERT(DAP_ISAllControl(channelIndex), "Invalid channel index")
 
@@ -4480,7 +4480,7 @@ static Function DAP_AdaptAssocHeadstageState(panelTitle, checkboxCtrl)
 
 	DAP_AbortIfUnlocked(panelTitle)
 
-	DAP_ParsePanelControl(checkboxCtrl, idx, channelType, controlType)
+	ASSERT(!DAP_ParsePanelControl(checkboxCtrl, idx, channelType, controlType), "Invalid control format")
 	ASSERT(CHANNEL_CONTROL_CHECK == controlType, "Not a valid control type")
 
 	if(channelType == CHANNEL_TYPE_DAC)
@@ -4833,7 +4833,7 @@ Function DAP_PopMenuChkProc_StimSetList(pa) : PopupMenuControl
 			idx        = pa.popNum
 
 			DAP_AbortIfUnlocked(panelTitle)
-			DAP_ParsePanelControl(ctrl, channelIndex, channelType, channelControl)
+			ASSERT(!DAP_ParsePanelControl(ctrl, channelIndex, channelType, channelControl), "Invalid control format")
 
 			checkCtrl     = GetPanelControl(channelIndex, channelType, CHANNEL_CONTROL_CHECK)
 			indexing      = GetCheckBoxState(panelTitle, "Check_DataAcq_Indexing")
@@ -4899,7 +4899,7 @@ Function DAP_SetVarProc_DA_Scale(sva) : SetVariableControl
 			ctrl       = sva.ctrlName
 			panelTitle = sva.win
 
-			DAP_ParsePanelControl(ctrl, channelIndex, channelType, controlType)
+			ASSERT(!DAP_ParsePanelControl(ctrl, channelIndex, channelType, controlType), "Invalid control format")
 			ASSERT(DAP_IsAllControl(channelIndex), "Unexpected channel index")
 
 			numEntries = GetNumberFromType(var=channelType)
@@ -6306,7 +6306,7 @@ static Function DAP_ChangeHeadstageState(panelTitle, headStageCtrl, enabled)
 
 	WAVE GUIState = GetDA_EphysGuiStateNum(panelTitle)
 
-	DAP_ParsePanelControl(headStageCtrl, headstage, channelType, controlType)
+	ASSERT(!DAP_ParsePanelControl(headStageCtrl, headstage, channelType, controlType), "Invalid control format")
 	ASSERT(channelType == CHANNEL_TYPE_HEADSTAGE && controlType == CHANNEL_CONTROL_CHECK, "Expected headstage checkbox control")
 
 	TPState = TP_StopTestPulse(panelTitle)
@@ -7397,6 +7397,8 @@ End
 /// @brief Extracts `channelType`, `controlType` and `channelIndex` from `ctrl`
 ///
 /// Counterpart to GetPanelControl()
+///
+/// @return 0 if the control name could be parsed, one otherwise
 Function DAP_ParsePanelControl(ctrl, channelIndex, channelType, controlType)
 	string ctrl
 	variable &channelIndex, &channelType, &controlType
@@ -7408,9 +7410,14 @@ Function DAP_ParsePanelControl(ctrl, channelIndex, channelType, controlType)
 	channelType  = NaN
 	controlType  = NaN
 
-	ASSERT(!isEmpty(ctrl), "Empty control")
+	if(isEmpty(ctrl))
+		return 1
+	endif
+
 	numUnderlines = ItemsInList(ctrl, "_")
-	ASSERT(numUnderlines >= 2, "Unexpected control naming scheme")
+	if(numUnderlines < 2)
+		return 1
+	endif
 
 	elem0 = StringFromList(0, ctrl, "_")
 	elem1 = StringFromList(1, ctrl, "_")
@@ -7445,7 +7452,10 @@ Function DAP_ParsePanelControl(ctrl, channelIndex, channelType, controlType)
 			controlType = CHANNEL_CONTROL_SEARCH
 			break
 		default:
-			ASSERT(0, "Invalid controlType")
+			channelIndex = NaN
+			channelType  = NaN
+			controlType  = NaN
+			return 1
 			break
 	endswitch
 
@@ -7469,7 +7479,10 @@ Function DAP_ParsePanelControl(ctrl, channelIndex, channelType, controlType)
 			channelType = CHANNEL_TYPE_ASYNC
 			break
 		default:
-			ASSERT(0, "Invalid channelType")
+			channelIndex = NaN
+			channelType  = NaN
+			controlType  = NaN
+			return 1
 			break
 	endswitch
 
@@ -7485,9 +7498,16 @@ Function DAP_ParsePanelControl(ctrl, channelIndex, channelType, controlType)
 			break
 		default:
 			channelIndex = str2numSafe(elem2)
-			ASSERT(IsFinite(channelIndex), "Invalid channelIndex")
+			if(!IsFinite(channelIndex))
+				channelIndex = NaN
+				channelType  = NaN
+				controlType  = NaN
+				return 1
+			endif
 			break
 	endswitch
+
+	return 0
 End
 
 /// @brief Update the list of available pressure devices on all locked device panels
