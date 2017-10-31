@@ -1578,7 +1578,7 @@ Function/S GetLabNotebookSortedKeys(keyWave)
 End
 
 /// @brief Check if the x wave belonging to the first trace in the
-/// graph has a date/time scale. Returns true if no traces have been found.
+/// graph has a date/time scale. Returns false if no traces have been found.
 Function CheckIfXAxisIsTime(graph)
 	string graph
 
@@ -1586,9 +1586,9 @@ Function CheckIfXAxisIsTime(graph)
 
 	list = TraceNameList(graph, ";", 0 + 1)
 
-	// default is time axis
+	// default is sweep axis
 	if(isEmpty(list))
-		return 1
+		return 0
 	endif
 
 	trace = StringFromList(0, list)
