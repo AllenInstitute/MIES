@@ -3194,7 +3194,7 @@ Function/S GetWaveBuilderParameterTypeName(type)
 End
 
 /// @brief Returns the mode of all setVars in the DA_Ephys panel of a controlType
-Function/Wave GetAllDAEphysSetVar(panelTitle, channelType, controlType)
+Function/Wave GetAllDAEphysSetVarNum(panelTitle, channelType, controlType)
 	string panelTitle
 	variable channelType, controlType
 	

@@ -4212,24 +4212,32 @@ End
 Function/Wave GetDA_EphysGuiStateNum(panelTitle)
 	string panelTitle
 
-	DFREF dfr= GetDevicePath(panelTitle)
-	Wave/Z/SDFR=dfr wv = DA_EphysGuiState
 	variable uniqueCtrlCount
-	string uniqueCtrlList
+	string uniqueCtrlList, newName
+
+	DFREF dfr = GetDevicePath(panelTitle)
+	newName = "DA_EphysGuiStateNum"
+
+	STRUCT WaveLocationMod p
+	p.dfr     = dfr
+	p.name    = "DA_EphysGuiState"
+	p.newName = newName
+
+	WAVE/Z wv = UpgradeWaveLocationAndGetIt(p)
 
 	if(ExistsWithCorrectLayoutVersion(wv, DA_EPHYS_PANEL_VERSION))
 		return wv
 	elseif(WaveExists(wv)) // handle upgrade
 		// change the required dimensions and leave all others untouched with -1
 		// the extended dimensions are initialized with zero
-		uniqueCtrlList = GetUniqueSpecCtrlTypeList(panelTitle)
+		uniqueCtrlList = GetUniqueSpecCtrlTypeListNum(panelTitle)
 		uniqueCtrlCount = itemsInList(uniqueCtrlList)
-		Redimension/N=(NUM_MAX_CHANNELS, COMMON_CONTROL_GROUP_COUNT + uniqueCtrlCount, -1, -1) wv
+		Redimension/N=(NUM_MAX_CHANNELS, COMMON_CONTROL_GROUP_COUNT_NUM + uniqueCtrlCount, -1, -1) wv
 		wv = Nan
 	else
-		uniqueCtrlList = GetUniqueSpecCtrlTypeList(panelTitle)
+		uniqueCtrlList = GetUniqueSpecCtrlTypeListNum(panelTitle)
 		uniqueCtrlCount = itemsInList(uniqueCtrlList)
-		Make/N=(NUM_MAX_CHANNELS, COMMON_CONTROL_GROUP_COUNT + uniqueCtrlCount) dfr:DA_EphysGuiState/Wave=wv
+		Make/N=(NUM_MAX_CHANNELS, COMMON_CONTROL_GROUP_COUNT_NUM + uniqueCtrlCount) dfr:DA_EphysGuiStateNum/Wave=wv
 		wv = Nan
 	endif
 
@@ -4251,24 +4259,24 @@ Function/Wave GetDA_EphysGuiStateNum(panelTitle)
 	SetDimLabel COLS, 15, AlarmMin, wv
 	SetDimLabel COLS, 16, AlarmMax, wv
 
-	SetWaveDimLabel(wv, uniqueCtrlList, COLS, startPos = COMMON_CONTROL_GROUP_COUNT)
+	SetWaveDimLabel(wv, uniqueCtrlList, COLS, startPos = COMMON_CONTROL_GROUP_COUNT_NUM)
 	SetWaveVersion(wv, DA_EPHYS_PANEL_VERSION)
 	// needs to be called after setting the wave version in order to avoid infinite recursion
-	RecordDA_EphysGuiStateWrapper(panelTitle, wv)
+	RecordGuiStateNumWrapper(panelTitle, wv)
 	return wv
 End
 
-/// @brief Calls `DAP_RecordDA_EphysGuiState` if it can be found,
-/// otherwise calls `RecordDA_EphysGuiStateProto` which aborts.
-static Function RecordDA_EphysGuiStateWrapper(str, wv)
+/// @brief Calls DAP_RecordGuiStateNum() if it can be found,
+/// otherwise calls RecordGuiStateProto() which aborts.
+static Function RecordGuiStateNumWrapper(str, wv)
 	string str
 	WAVE wv
 
-	FUNCREF RecordDA_EphysGuiStateProto f = $"DAP_RecordDA_EphysGuiState"
+	FUNCREF RecordGuiStateProto f = $"DAP_RecordGuiStateNum"
 	f(str, GUISTATE=wv)
 End
 
-Function RecordDA_EphysGuiStateProto(str, [GUISTATE])
+Function RecordGuiStateProto(str, [GUISTATE])
 	string str
 	WAVE GUISTATE
 
@@ -4292,15 +4300,15 @@ End
 
 /// @brief Returns a list of unique and type specific controls
 ///
-Function/S GetUniqueSpecCtrlTypeList(panelTitle)
+Function/S GetUniqueSpecCtrlTypeListNum(panelTitle)
 	string panelTitle
 
-	return GetSpecificCtrlTypes(panelTitle, GetUniqueCtrlList(panelTitle))
+	return GetSpecificCtrlTypesNum(panelTitle, GetUniqueCtrlList(panelTitle))
 End
 
 /// @brief Parses a list of controls in the panelTitle and returns a list of unique controls
 ///
-Function/S GetUniqueCtrlList(panelTitle)
+Function/S GetUniqueCtrlList(paneltitle)
 	string panelTitle
 
 	string prunedList = ""
@@ -4337,20 +4345,19 @@ Function/S GetUniqueCtrlList(panelTitle)
 End
 
 /// @brief Parses a list of controls and returns numeric checkBox, valDisplay, setVariable, popUpMenu, and slider controls
-///
-Function/S GetSpecificCtrlTypes(panelTitle,list)
+static Function/S GetSpecificCtrlTypesNum(panelTitle,list)
 	string panelTitle
 	string list
 
 	string subtypeCtrlList = ""
-	variable i, type
+	variable i, numEntries
 	string controlName
 
-	for(i=0;i<itemsinlist(list);i+=1)
-		controlName = stringfromlist(i, list)
+	numEntries = itemsinlist(list)
+	for(i = 0; i < numEntries; i += 1)
+		controlName = StringFromList(i, list)
 		controlInfo/W=$panelTitle $controlName
-		type = abs(V_flag)
-		switch(type)
+		switch(abs(V_flag))
 			case CONTROL_TYPE_CHECKBOX:
 			case CONTROL_TYPE_POPUPMENU:
 			case CONTROL_TYPE_SLIDER: // fallthrough by design

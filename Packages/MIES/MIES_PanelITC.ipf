@@ -7172,8 +7172,8 @@ End
 
 /// @brief Returns a free wave of the status of the checkboxes specified by channelType
 ///
-/// The only caller should be DAP_RecordDA_EphysGuiState.
-////
+/// The only caller should be DAP_RecordGuiStateNum().
+///
 /// @param type        one of the type constants from @ref ChannelTypeAndControlConstants
 /// @param panelTitle  panel title
 static Function/Wave DAP_ControlStatusWave(panelTitle, type)
@@ -7239,10 +7239,13 @@ Function/Wave DAP_ControlStatusWaveCache(panelTitle, type)
 	return wv
 End
 
-/// @brief Records the state of the DA_ephys panel into the GUI state wave
-Function DAP_RecordDA_EphysGuiState(panelTitle, [GUIState])
+/// @brief Records the state of the DA_ephys panel into the numerical GUI state wave
+Function DAP_RecordGuiStateNum(panelTitle, [GUIState])
 	string panelTitle
 	WAVE GUIState
+
+	variable i, numEntries
+	string ctrlName
 
 	if(ParamIsDefault(GuiState))
 		Wave GUIState = GetDA_EphysGuiStateNum(panelTitle)
@@ -7257,10 +7260,10 @@ Function DAP_RecordDA_EphysGuiState(panelTitle, [GUIState])
 	WAVE state = DAP_ControlStatusWave(panelTitle, CHANNEL_TYPE_DAC)
 	GUIState[0, NUM_DA_TTL_CHANNELS - 1][%DAState] = state[p]
 
-	WAVE state = GetAllDAEphysSetVar(panelTitle, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_GAIN)
+	WAVE state = GetAllDAEphysSetVarNum(panelTitle, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_GAIN)
 	GUIState[0, NUM_DA_TTL_CHANNELS - 1][%DAGain] = state[p]
 
-	WAVE state = GetAllDAEphysSetVar(panelTitle, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_SCALE)
+	WAVE state = GetAllDAEphysSetVarNum(panelTitle, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_SCALE)
 	GUIState[0, NUM_DA_TTL_CHANNELS - 1][%DAScale] = state[p]
 
 	WAVE state = GetAllDAEphysPopMenuIndex(panelTitle, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_WAVE)
@@ -7272,7 +7275,7 @@ Function DAP_RecordDA_EphysGuiState(panelTitle, [GUIState])
 	WAVE state = DAP_ControlStatusWave(panelTitle, CHANNEL_TYPE_ADC)
 	GUIState[0, NUM_AD_CHANNELS - 1][%ADState] = state[p]
 
-	WAVE state = GetAllDAEphysSetVar(panelTitle, CHANNEL_TYPE_ADC, CHANNEL_CONTROL_GAIN)
+	WAVE state = GetAllDAEphysSetVarNum(panelTitle, CHANNEL_TYPE_ADC, CHANNEL_CONTROL_GAIN)
 	GUIState[0, NUM_AD_CHANNELS - 1][%ADGain] = state[p]
 
 	WAVE state = DAP_ControlStatusWave(panelTitle, CHANNEL_TYPE_TTL)
@@ -7287,19 +7290,25 @@ Function DAP_RecordDA_EphysGuiState(panelTitle, [GUIState])
 	WAVE state = DAP_ControlStatusWave(panelTitle, CHANNEL_TYPE_ASYNC)
 	GUIState[0, NUM_ASYNC_CHANNELS - 1][%AsyncState] = state[p]
 
-	WAVE state = GetAllDAEphysSetVar(panelTitle, CHANNEL_TYPE_ASYNC, CHANNEL_CONTROL_GAIN)
+	WAVE state = GetAllDAEphysSetVarNum(panelTitle, CHANNEL_TYPE_ASYNC, CHANNEL_CONTROL_GAIN)
 	GUIState[0, NUM_ASYNC_CHANNELS - 1][%AsyncGain] = state[p]
 
 	WAVE state = DAP_ControlStatusWave(panelTitle, CHANNEL_TYPE_ALARM)
 	GUIState[0, NUM_ASYNC_CHANNELS - 1][%AlarmState] = state[p]
 
-	WAVE state = GetAllDAEphysSetVar(panelTitle, CHANNEL_TYPE_ASYNC, CHANNEL_CONTROL_ALARM_MIN)
+	WAVE state = GetAllDAEphysSetVarNum(panelTitle, CHANNEL_TYPE_ASYNC, CHANNEL_CONTROL_ALARM_MIN)
 	GUIState[0, NUM_ASYNC_CHANNELS - 1][%AlarmMin] = state[p]
 
-	WAVE state = GetAllDAEphysSetVar(panelTitle, CHANNEL_TYPE_ASYNC, CHANNEL_CONTROL_ALARM_MAX)
+	WAVE state = GetAllDAEphysSetVarNum(panelTitle, CHANNEL_TYPE_ASYNC, CHANNEL_CONTROL_ALARM_MAX)
 	GUIState[0, NUM_ASYNC_CHANNELS - 1][%AlarmMax] = state[p]
 
-	DAP_GetDA_Ephys_UniqueCtrlState(panelTitle, GUIState)
+	numEntries = DimSize(GUIState, COLS)
+	for(i = COMMON_CONTROL_GROUP_COUNT_NUM; i < numEntries; i += 1)
+		ctrlName = GetDimLabel(GUIState, COLS, i)
+		controlInfo/w=$panelTitle $ctrlName
+		ASSERT(V_flag != 0, "invalid or non existing control")
+		GUIState[0][i] = V_Value
+	endfor
 End
 
 /// @brief Records the state of unique controls in the DA_ephys panel into the GUI state wave
@@ -7310,16 +7319,15 @@ Static Function DAP_GetDA_Ephys_UniqueCtrlState(panelTitle, GuiState)
 	string ctrlName
 	variable col
 	variable lastCol = dimSize(GuiState, COLS)
-	for(col = COMMON_CONTROL_GROUP_COUNT; col < lastCol; col+=1)
+	for(col = COMMON_CONTROL_GROUP_COUNT_NUM; col < lastCol; col+=1)
 		ctrlName = getDimLabel(GUIState, COLS, col)
 		controlInfo/w=$panelTitle $ctrlName
 		ASSERT(V_flag != 0, "invalid or non existing control")
 		GUIState[0][col] = V_Value
 	endfor
-
 End
 
-/// @brief Query a control value front the numerical gui state wave
+/// @brief Query a control value from the numerical gui state wave
 ///
 /// Convienience wrapper to make the call sites nicer.
 ///
@@ -7774,7 +7782,7 @@ Function DAP_LockDevice(panelTitle)
 	DAP_UnlockCommentNotebook(panelTitleLocked)
 	DAP_ToggleAcquisitionButton(panelTitleLocked, DATA_ACQ_BUTTON_TO_DAQ)
 	SI_CalculateMinSampInterval(panelTitleLocked, DATA_ACQUISITION_MODE)
-	DAP_RecordDA_EphysGuiState(panelTitleLocked)
+	DAP_RecordGuiStateNum(panelTitleLocked)
 
 	headstage = GetSliderPositionIndex(panelTitleLocked, "slider_DataAcq_ActiveHeadstage")
 	P_SaveUserSelectedHeadstage(panelTitleLocked, headstage)
