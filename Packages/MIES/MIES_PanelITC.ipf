@@ -7594,7 +7594,6 @@ Function DAP_CheckProc_UpdateGuiState(cba) : CheckBoxControl
 		case 2: // mouse up
 			Variable checked = cba.checked
 			DAP_UpdateControlInGuiStateWv(cba.win, cba.ctrlName, cba.checked)
-			P_RunP_ControlIfTPOFF(cba.win)
 			break
 	endswitch
 
