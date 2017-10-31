@@ -196,7 +196,7 @@ static Function DB_UpdateSweepControls(panelTitle, first, last)
 	variable formerLast
 
 	formerLast = GetValDisplayAsNum(panelTitle, "valdisp_DataBrowser_LastSweep")
-	SetVariable setvar_DataBrowser_SweepNo win = $panelTitle, limits = {first, last, 1}
+	SetSetVariableLimits(panelTitle, "setvar_DataBrowser_SweepNo", first, last, 1)
 
 	if(formerLast != last)
 		SetValDisplay(panelTitle, "valdisp_DataBrowser_LastSweep", var=last)
