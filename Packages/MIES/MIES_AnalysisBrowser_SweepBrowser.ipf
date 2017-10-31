@@ -759,7 +759,11 @@ Function SB_ButtonProc_ChangeSweep(ba) : ButtonControl
 			newSweep = currentSweep + direction * GetSetVariable(win, "setvar_SweepBrowser_SweepStep")
 			totalNumSweeps = ItemsInList(SB_GetSweepList(graph))
 			newSweep = limit(newSweep, 0, totalNumSweeps - 1)
-			OVS_ChangeSweepSelectionState(win, CHECKBOX_SELECTED, index=newSweep)
+
+			if(OVS_IsActive(win))
+				OVS_ChangeSweepSelectionState(win, CHECKBOX_SELECTED, index=newSweep)
+			endif
+
 			SB_UpdateSweepPlot(win, newSweep=newSweep)
 			break
 	endswitch
