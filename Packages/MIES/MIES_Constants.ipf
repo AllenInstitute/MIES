@@ -153,6 +153,7 @@ Constant CHANNEL_TYPE_ALARM        = 0x110
 Constant CHANNEL_CONTROL_ALARM_MIN = 0x120
 Constant CHANNEL_CONTROL_ALARM_MAX = 0x130
 Constant CHANNEL_CONTROL_SEARCH    = 0x140
+Constant CHANNEL_CONTROL_TITLE     = 0x150
 /// @}
 
 /// @name Controls for multiple channels have negative channel indizes

@@ -252,6 +252,8 @@ Function/S GetPanelControl(channelIndex, channelType, controlType)
 		ctrl = "Max_" + ctrl
 	elseif(controlType == CHANNEL_CONTROL_SEARCH)
 		ctrl = "Search_" + ctrl
+	elseif(controlType == CHANNEL_CONTROL_TITLE)
+		ctrl = "Title_" + ctrl
 	else
 		ASSERT(0, "Invalid controlType")
 	endif
