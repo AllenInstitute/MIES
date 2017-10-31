@@ -126,6 +126,11 @@ Function AFM_UpdateAnalysisFunctionWave(panelTitle)
 
 		DAC = AFH_GetDACFromHeadstage(panelTitle, i)
 
+		// ignore unassociated DACs
+		if(!IsFinite(DAC))
+			continue
+		endif
+
 		ctrl    = GetPanelControl(DAC, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_WAVE)
 		setName = GetPopupMenuString(panelTitle, ctrl)
 
