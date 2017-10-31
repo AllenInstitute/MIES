@@ -36,6 +36,7 @@ static Function DC_UpdateGlobals(panelTitle, dataAcqOrTP)
 	NVAR/SDFR=testPulseDFR baselineFrac
 
 	DAP_RecordGuiStateNum(panelTitle)
+	DAP_RecordGuiStateTxT(panelTitle)
 
 	// we need to update the list of analysis functions here as the stimset
 	// can change due to indexing, etc.

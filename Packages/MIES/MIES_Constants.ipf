@@ -453,6 +453,7 @@ StrConstant UNKNOWN_MIES_VERSION = "unknown version"
 
 /// Number of common control groups in the DA_EPHYS panel
 Constant COMMON_CONTROL_GROUP_COUNT_NUM = 18
+Constant COMMON_CONTROL_GROUP_COUNT_TXT = 10
 
 /// Equals 2^5 from `GetKeyState`
 Constant ESCAPE_KEY = 32

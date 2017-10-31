@@ -7331,19 +7331,56 @@ Function DAP_RecordGuiStateNum(panelTitle, [GUIState])
 	endfor
 End
 
-/// @brief Records the state of unique controls in the DA_ephys panel into the GUI state wave
-Static Function DAP_GetDA_Ephys_UniqueCtrlState(panelTitle, GuiState)
+/// @brief Records the state of the DA_ephys panel into the textual GUI state wave
+Function DAP_RecordGuiStateTxT(panelTitle, [GUIState])
 	string panelTitle
 	WAVE GUIState
 
+	variable i, numEntries
 	string ctrlName
-	variable col
-	variable lastCol = dimSize(GuiState, COLS)
-	for(col = COMMON_CONTROL_GROUP_COUNT_NUM; col < lastCol; col+=1)
-		ctrlName = getDimLabel(GUIState, COLS, col)
+
+	if(ParamIsDefault(GuiState))
+		Wave/T GUIStateTxT = GetDA_EphysGuiStateTxT(panelTitle)
+	else
+		WAVE/T GUIStateTxT = GUIState
+	endif
+
+	WAVE/T state = GetAllDAEphysPopMenuString(panelTitle, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_WAVE)
+	GUIStateTxT[0, NUM_DA_TTL_CHANNELS - 1][%DAStartIndex] = state[p]
+
+	WAVE/T state = GetAllDAEphysPopMenuString(panelTitle, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_INDEX_END)
+	GUIStateTxT[0, NUM_DA_TTL_CHANNELS - 1][%DAEndIndex] = state[p]
+
+	WAVE/T state = GetAllDAEphysSetVarTxT(panelTitle, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_UNIT)
+	GUIStateTxT[0, NUM_DA_TTL_CHANNELS - 1][%DAUnit] = state[p]
+
+	WAVE/T state = GetAllDAEphysSetVarTxT(panelTitle, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_SEARCH)
+	GUIStateTxT[0, NUM_DA_TTL_CHANNELS - 1][%DASearch] = state[p]
+
+	WAVE/T state = GetAllDAEphysSetVarTxT(panelTitle, CHANNEL_TYPE_ADC, CHANNEL_CONTROL_UNIT)
+	GUIStateTxT[0, NUM_DA_TTL_CHANNELS - 1][%ADUnit] = state[p]
+
+	WAVE/T state = GetAllDAEphysPopMenuString(panelTitle, CHANNEL_TYPE_TTL, CHANNEL_CONTROL_WAVE)
+	GUIStateTxT[0, NUM_DA_TTL_CHANNELS - 1][%TTLStartIndex] = state[p]
+
+	WAVE/T state = GetAllDAEphysPopMenuString(panelTitle, CHANNEL_TYPE_TTL, CHANNEL_CONTROL_INDEX_END)
+	GUIStateTxT[0, NUM_DA_TTL_CHANNELS - 1][%TTLEndIndex] = state[p]
+
+	WAVE/T state = GetAllDAEphysSetVarTxT(panelTitle, CHANNEL_TYPE_TTL, CHANNEL_CONTROL_SEARCH)
+	GUIStateTxT[0, NUM_DA_TTL_CHANNELS - 1][%TTLSearch] = state[p]
+
+	WAVE/T state = GetAllDAEphysSetVarTxT(panelTitle, CHANNEL_TYPE_ASYNC, CHANNEL_CONTROL_TITLE)
+	GUIStateTxT[0, NUM_ASYNC_CHANNELS - 1][%AsyncTitle] = state[p]
+
+	WAVE/T state = GetAllDAEphysSetVarTxT(panelTitle, CHANNEL_TYPE_ASYNC, CHANNEL_CONTROL_UNIT)
+	GUIStateTxT[0, NUM_ASYNC_CHANNELS - 1][%AsyncUnit] = state[p]
+
+	numEntries = DimSize(GUIStateTxT, COLS)
+	for(i = COMMON_CONTROL_GROUP_COUNT_NUM; i < numEntries; i += 1)
+		ctrlName = GetDimLabel(GUIStateTxT, COLS, i)
 		controlInfo/w=$panelTitle $ctrlName
 		ASSERT(V_flag != 0, "invalid or non existing control")
-		GUIState[0][col] = V_Value
+		GUIStateTxT[0][i] = S_Value
 	endfor
 End
 
@@ -7360,6 +7397,23 @@ Function DAP_GetValueFromNumStateWave(panelTitle, ctrl, [index])
 	variable index
 
 	return GetDA_EphysGuiStateNum(panelTitle)[index][%$ctrl]
+End
+
+/// @brief Query a control value from the textual gui state wave
+///
+/// Convienience wrapper to make the call sites nicer.
+///
+/// @param panelTitle device
+/// @param ctrl       control name
+/// @param index      [optional, default to zero] Some control entries have multiple
+///                   entries per headstage/channel/etc.
+Function/S DAP_GetValueFromTxTStateWave(panelTitle, ctrl, [index])
+	string panelTitle, ctrl
+	variable index
+
+	WAVE/T GUIState = GetDA_EphysGuiStateTxT(panelTitle)
+
+	return GUIState[index][%$ctrl]
 End
 
 /// @brief Return the mode of all DA_Ephys panel headstages
@@ -7806,6 +7860,7 @@ Function DAP_LockDevice(panelTitle)
 	DAP_ToggleAcquisitionButton(panelTitleLocked, DATA_ACQ_BUTTON_TO_DAQ)
 	SI_CalculateMinSampInterval(panelTitleLocked, DATA_ACQUISITION_MODE)
 	DAP_RecordGuiStateNum(panelTitleLocked)
+	DAP_RecordGuiStateTxT(panelTitleLocked)
 
 	headstage = GetSliderPositionIndex(panelTitleLocked, "slider_DataAcq_ActiveHeadstage")
 	P_SaveUserSelectedHeadstage(panelTitleLocked, headstage)

@@ -4266,6 +4266,65 @@ Function/Wave GetDA_EphysGuiStateNum(panelTitle)
 	return wv
 End
 
+/// @brief Return a wave reference to the textual GUI state wave
+///
+/// Rows:
+/// - Column specific GUI control settings usually associated with control name number
+///
+/// Columns:
+/// - 0: DAStartIndex  (DA)  First stimset name
+/// - 1: DAEndIndex    (DA)  Last stimset name
+/// - 2: DAUnit        (DA)  Unit
+/// - 3: DASearch      (DA)  Search string
+/// - 4: ADUnit        (AD)  Unit
+/// - 5: TTLStartIndex (TTL) First stimset name
+/// - 6: TTLEndIndex   (TTL) Last stimset name
+/// - 7: TTLSearch     (TTL) Search string
+/// - 8: AsyncTitle    (Async) Title
+/// - 9: AsyncUnit     (Async) Unit
+/// - 10+: Unique controls (SetVariable and PopupMenu only)
+Function/Wave GetDA_EphysGuiStateTxT(panelTitle)
+	string panelTitle
+
+	DFREF dfr= GetDevicePath(panelTitle)
+	Wave/Z/T/SDFR=dfr wv = DA_EphysGuiStateTxT
+	variable uniqueCtrlCount
+	string uniqueCtrlList
+
+	if(ExistsWithCorrectLayoutVersion(wv, DA_EPHYS_PANEL_VERSION))
+		return wv
+	elseif(WaveExists(wv)) // handle upgrade
+		// change the required dimensions and leave all others untouched with -1
+		// the extended dimensions are initialized with zero
+		uniqueCtrlList = GetUniqueSpecCtrlTypeListTxT(panelTitle)
+		uniqueCtrlCount = itemsInList(uniqueCtrlList)
+		Redimension/N=(NUM_MAX_CHANNELS, COMMON_CONTROL_GROUP_COUNT_TXT + uniqueCtrlCount, -1, -1) wv
+		wv = ""
+	else
+		uniqueCtrlList = GetUniqueSpecCtrlTypeListTxT(panelTitle)
+		uniqueCtrlCount = itemsInList(uniqueCtrlList)
+		Make/T/N=(NUM_MAX_CHANNELS, COMMON_CONTROL_GROUP_COUNT_TXT + uniqueCtrlCount) dfr:DA_EphysGuiStateTxT/Wave=wv
+		wv = ""
+	endif
+
+	SetDimLabel COLS,  0, DAStartIndex, wv
+	SetDimLabel COLS,  1, DAEndIndex, wv
+	SetDimLabel COLS,  2, DAUnit, wv
+	SetDimLabel COLS,  3, DASearch, wv
+	SetDimLabel COLS,  4, ADUnit, wv
+	SetDimLabel COLS,  5, TTLStartIndex, wv
+	SetDimLabel COLS,  6, TTLEndIndex, wv
+	SetDimLabel COLS,  7, TTLSearch, wv
+	SetDimLabel COLS,  8, AsyncTitle, wv
+	SetDimLabel COLS,  9, AsyncUnit, wv
+
+	SetWaveDimLabel(wv, uniqueCtrlList, COLS, startPos = COMMON_CONTROL_GROUP_COUNT_TXT)
+	SetWaveVersion(wv, DA_EPHYS_PANEL_VERSION)
+	// needs to be called after setting the wave version in order to avoid infinite recursion
+	RecordGuiStateTxTWrapper(panelTitle, wv)
+	return wv
+End
+
 /// @brief Calls DAP_RecordGuiStateNum() if it can be found,
 /// otherwise calls RecordGuiStateProto() which aborts.
 static Function RecordGuiStateNumWrapper(str, wv)
@@ -4273,6 +4332,16 @@ static Function RecordGuiStateNumWrapper(str, wv)
 	WAVE wv
 
 	FUNCREF RecordGuiStateProto f = $"DAP_RecordGuiStateNum"
+	f(str, GUISTATE=wv)
+End
+
+/// @brief Calls DAP_RecordGuiStateTxT() if it can be found,
+/// otherwise calls RecordGuiStateProto)() which aborts.
+static Function RecordGuiStateTxTWrapper(str, wv)
+	string str
+	WAVE wv
+
+	FUNCREF RecordGuiStateProto f = $"DAP_RecordGuiStateTxT"
 	f(str, GUISTATE=wv)
 End
 
@@ -4306,8 +4375,14 @@ Function/S GetUniqueSpecCtrlTypeListNum(panelTitle)
 	return GetSpecificCtrlTypesNum(panelTitle, GetUniqueCtrlList(panelTitle))
 End
 
+/// @brief Returns a list of unique and type specific controls with textual values
+Function/S GetUniqueSpecCtrlTypeListTxT(panelTitle)
+	string panelTitle
+
+	return GetSpecificCtrlTypesTxT(panelTitle, GetUniqueCtrlList(panelTitle))
+End
+
 /// @brief Parses a list of controls in the panelTitle and returns a list of unique controls
-///
 Function/S GetUniqueCtrlList(paneltitle)
 	string panelTitle
 
@@ -4366,6 +4441,38 @@ static Function/S GetSpecificCtrlTypesNum(panelTitle,list)
 			case CONTROL_TYPE_VALDISPLAY:
 			case CONTROL_TYPE_SETVARIABLE:  // fallthrough by design
 				if(!DoesControlHaveInternalString(panelTitle, controlName))
+					subtypeCtrlList = AddListItem(controlName, subtypeCtrlList)
+				endif
+				break
+			default:
+				// do nothing
+				break
+		endswitch
+	endfor
+
+	return subtypeCtrlList
+End
+
+/// @brief Parses a list of controls and returns textual valDisplay, setVariable and popUpMenu controls
+static Function/S GetSpecificCtrlTypesTxT(panelTitle,list)
+	string panelTitle
+	string list
+
+	string subtypeCtrlList = ""
+	variable i, numEntries
+	string controlName
+
+	numEntries = itemsinlist(list)
+	for(i = 0; i < numEntries; i += 1)
+		controlName = StringFromList(i, list)
+		controlInfo/W=$panelTitle $controlName
+		switch(abs(V_flag))
+			case CONTROL_TYPE_POPUPMENU:
+				subtypeCtrlList = AddListItem(controlName, subtypeCtrlList)
+				break
+			case CONTROL_TYPE_VALDISPLAY:
+			case CONTROL_TYPE_SETVARIABLE:  // fallthrough by design
+				if(DoesControlHaveInternalString(panelTitle, controlName))
 					subtypeCtrlList = AddListItem(controlName, subtypeCtrlList)
 				endif
 				break

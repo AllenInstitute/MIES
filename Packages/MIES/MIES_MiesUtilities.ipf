@@ -3209,6 +3209,22 @@ Function/Wave GetAllDAEphysSetVarNum(panelTitle, channelType, controlType)
 	return wv
 End
 
+/// @brief Returns the mode of all setVars in the DA_Ephys panel of a controlType
+Function/Wave GetAllDAEphysSetVarTxT(panelTitle, channelType, controlType)
+	string panelTitle
+	variable channelType, controlType
+
+	variable CtrlNum = GetNumberFromType(var=channelType)
+	string ctrl
+	make/FREE/n=(CtrlNum)/T Wv
+	variable i
+	for(i = 0; i < CtrlNum; i+=1)
+		ctrl = GetPanelControl(i, channelType, controlType)
+		wv[i] = GetSetVariableString(panelTitle, ctrl)
+	endfor
+	return wv
+End
+
 /// @brief Returns the index of all popupmenus in the DA_Ephys panel of a controlType
 Function/Wave GetAllDAEphysPopMenuIndex(panelTitle, channelType, controlType)
 	string panelTitle
@@ -3221,6 +3237,22 @@ Function/Wave GetAllDAEphysPopMenuIndex(panelTitle, channelType, controlType)
 	for(i = 0; i < CtrlNum; i+=1)
 		ctrl = GetPanelControl(i, channelType, controlType)
 		wv[i] = GetPopupMenuIndex(panelTitle, ctrl)
+	endfor
+	return wv
+End
+
+/// @brief Returns the string contents of all popupmenus in the DA_Ephys panel of a controlType
+Function/Wave GetAllDAEphysPopMenuString(panelTitle, channelType, controlType)
+	string panelTitle
+	variable channelType, controlType
+
+	variable CtrlNum = GetNumberFromType(var=channelType)
+	string ctrl
+	make/FREE/n=(CtrlNum)/T Wv
+	variable i
+	for(i = 0; i < CtrlNum; i+=1)
+		ctrl = GetPanelControl(i, channelType, controlType)
+		wv[i] = GetPopupMenuString(panelTitle, ctrl)
 	endfor
 	return wv
 End
