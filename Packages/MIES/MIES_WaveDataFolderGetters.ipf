@@ -4275,6 +4275,21 @@ Function RecordDA_EphysGuiStateProto(str, [GUISTATE])
 	ASSERT(0, "Prototype function can not be called")
 End
 
+Function ParsePanelControlWrapper(ctrl, channelIndex, channelType, controlType)
+	string ctrl
+	variable channelIndex, channelType, controlType
+
+	FUNCREF ParsePanelControlProto f = $"DAP_ParsePanelControl"
+	f(ctrl, channelIndex, channelType, controlType)
+End
+
+Function ParsePanelControlProto(ctrl, channelIndex, channelType, controlType)
+	string ctrl
+	variable channelIndex, channelType, controlType
+
+	ASSERT(0, "Prototype function can not be called")
+End
+
 /// @brief Returns a list of unique and type specific controls
 ///
 Function/S GetUniqueSpecCtrlTypeList(panelTitle)
@@ -4288,21 +4303,37 @@ End
 Function/S GetUniqueCtrlList(panelTitle)
 	string panelTitle
 
-	string list = controlNameList(panelTitle)
-	string relatedSetVar   = "Gain_*;Scale_*;Unit_*;Min_*;Max_*;Search_DA_*;Search_TTL_*;"
-	string relatedCheckBox = "Check_AD_*;Check_DA_*;Check_TTL_*;Check_AsyncAlarm_*;Check_AsyncAD_*;Check_DataAcqHS_*;Radio_ClampMode_*;"
-	string relatedPopUp    = "IndexEnd_*;Wave_*;"
-	string relatedValDisp  = "ValDisp_DataAcq_P_*;"
-	string ctrlToRemove    = relatedSetVar + relatedCheckBox + relatedPopUp + relatedValDisp
-	string prunedList
-	variable i,j
+	string prunedList = ""
+	string list, ctrlToRemove, ctrl
+	variable i, channelIndex, channelType, controlType, numEntries
 
-	for(i=0;i<itemsinlist(ctrlToRemove);i+=1)
-		prunedList = ListMatch(list, stringfromlist(i, ctrlToRemove))
-		list = removefromlist(prunedList, list)
+	list = ControlNameList(panelTitle)
+
+	// remove special controls (1)
+	ctrlToRemove = "Radio_ClampMode_*;ValDisp_DataAcq_P_*"
+	numEntries = ItemsInlist(ctrlToRemove)
+	for(i = 0; i < numEntries ; i += 1)
+		prunedList = ListMatch(list, StringFromList(i, ctrlToRemove))
+		list = RemoveFromList(prunedList, list)
 	endfor
 
-	return list
+	// remove special controls (2)
+	numEntries = ItemsInlist(list)
+	for(i = 0;i < numEntries ;i += 1)
+		ctrl = StringFromList(i, list)
+		if(!ParsePanelControlWrapper(ctrl,  channelIndex, channelType, controlType))
+			// special control already handled
+			continue
+		endif
+		prunedList = AddListItem(ctrl, prunedList, ";", inf)
+	endfor
+
+	// remove controls which are too complicate to handle
+	ctrlToRemove = "Popup_Settings_VC_DA;setvar_Settings_VC_DAgain;SetVar_Hardware_VC_DA_Unit;Popup_Settings_VC_AD;setvar_Settings_VC_ADgain;SetVar_Hardware_VC_AD_Unit;Popup_Settings_IC_DA;setvar_Settings_IC_DAgain;SetVar_Hardware_IC_DA_Unit;Popup_Settings_IC_AD;setvar_Settings_IC_ADgain;SetVar_Hardware_IC_AD_Unit;popup_Settings_Pressure_dev;Popup_Settings_Pressure_DA;Popup_Settings_Pressure_AD;setvar_Settings_Pressure_DAgain;setvar_Settings_Pressure_ADgain,;SetVar_Hardware_Pressur_DA_Unit;SetVar_Hardware_Pressur_AD_Unit;Popup_Settings_Pressure_TTLA;Popup_Settings_Pressure_TTLB"
+
+	prunedList = RemoveFromList(ctrlToRemove, prunedList)
+
+	return prunedList
 End
 
 /// @brief Parses a list of controls and returns numeric checkBox, valDisplay, setVariable, popUpMenu, and slider controls
