@@ -4360,7 +4360,7 @@ Function DAP_DAorTTLCheckProc(cba) : CheckBoxControl
 				Abort
 			endtry
 
-			DAP_UpdateControlInGuiStateWv(cba.win, cba.ctrlName, cba.checked)
+			DAP_UpdateControlInGuiStateWv(cba.win, cba.ctrlName, val = cba.checked)
 			break
 	endswitch
 End
@@ -4461,7 +4461,7 @@ Function DAP_CheckProc_AD(cba) : CheckBoxControl
 				Abort
 			endtry
 
-			DAP_UpdateControlInGuiStateWv(cba.win, cba.ctrlName, cba.checked)
+			DAP_UpdateControlInGuiStateWv(cba.win, cba.ctrlName, val = cba.checked)
 
 			break
 	endswitch
@@ -4725,7 +4725,7 @@ Function DAP_CheckProc_IndexingState(cba) : CheckBoxControl
 				EqualizeCheckBoxes(panelTitle, "Check_DataAcq1_IndexingLocked", "check_Settings_Option_3", cba.checked)
 			endif
 
-			DAP_UpdateControlInGuiStateWv(cba.win, cba.ctrlName, cba.checked)
+			DAP_UpdateControlInGuiStateWv(cba.win, cba.ctrlName, val = cba.checked)
 
 			break
 	endswitch
@@ -4748,7 +4748,7 @@ Function DAP_CheckProc_ShowScopeWin(cba) : CheckBoxControl
 				SCOPE_KillScopeWindowIfRequest(panelTitle)
 			endif
 
-			DAP_UpdateControlInGuiStateWv(cba.win, cba.ctrlName, cba.checked)
+			DAP_UpdateControlInGuiStateWv(cba.win, cba.ctrlName, val = cba.checked)
 
 			break
 	endswitch
@@ -4928,7 +4928,7 @@ Function DAP_SetVarProc_NextSweepLimit(sva) : SetVariableControl
 		case 2:
 		case 3:
 			DAP_UpdateSweepLimitsAndDisplay(sva.win)
-			DAP_UpdateControlInGuiStateWv(sva.win, sva.ctrlName, sva.dval)
+			DAP_UpdateControlInGuiStateWv(sva.win, sva.ctrlName, val = sva.dval)
 			break
 	endswitch
 
@@ -5032,7 +5032,7 @@ Function DAP_SetVarProc_TotSweepCount(sva) : SetVariableControl
 			panelTitle = sva.win
 			DAP_UpdateSweepSetVariables(panelTitle)
 			DAP_SyncGuiFromLeaderToFollower(panelTitle)
-			DAP_UpdateControlInGuiStateWv(sva.win, sva.ctrlName, sva.dval)
+			DAP_UpdateControlInGuiStateWv(sva.win, sva.ctrlName, val = sva.dval)
 			break
 	endswitch
 
@@ -5071,7 +5071,7 @@ Function DAP_CheckProc_GetSet_ITI(cba) : CheckBoxControl
 				DAP_SyncGuiFromLeaderToFollower(cba.win)
 			endif
 
-			DAP_UpdateControlInGuiStateWv(cba.win, cba.ctrlName, cba.checked)
+			DAP_UpdateControlInGuiStateWv(cba.win, cba.ctrlName, val = cba.checked)
 
 			break
 	endswitch
@@ -5189,7 +5189,7 @@ Function DAP_SetVarProc_CAA(sva) : SetVariableControl
 
 			DAP_UpdateChanAmpAssignStorWv(panelTitle)
 			P_UpdatePressureDataStorageWv(panelTitle)
-			DAP_UpdateControlInGuiStateWv(sva.win, sva.ctrlName, sva.dval)
+			DAP_UpdateControlInGuiStateWv(sva.win, sva.ctrlName, val = sva.dval)
 			break
 	endswitch
 
@@ -6663,7 +6663,7 @@ Function DAP_SliderProc_MIESHeadStage(sc) : SliderControl
 	// compared to other controls
 	if(sc.eventCode > 0 && sc.eventCode & 0x1)
 		DAP_Slider(sc.win, sc.curVal)
-		DAP_UpdateControlInGuiStateWv(sc.win, sc.ctrlName, sc.curval)
+		DAP_UpdateControlInGuiStateWv(sc.win, sc.ctrlName, val = sc.curval)
 	endif
 
 	return 0
@@ -6703,7 +6703,7 @@ Function DAP_SetVarProc_AmpCntrls(sva) : SetVariableControl
 			ctrl       = sva.ctrlName
 			headStage =  GetSliderPositionIndex(panelTitle, "slider_DataAcq_ActiveHeadstage")
 			AI_UpdateAmpModel(panelTitle, ctrl, headStage)
-			DAP_UpdateControlInGuiStateWv(sva.win, sva.ctrlName, sva.dval)
+			DAP_UpdateControlInGuiStateWv(sva.win, sva.ctrlName, val = sva.dval)
 			break
 	endswitch
 
@@ -6742,7 +6742,7 @@ Function DAP_CheckProc_AmpCntrls(cba) : CheckBoxControl
 
 			headStage =  GetSliderPositionIndex(panelTitle, "slider_DataAcq_ActiveHeadstage")
 			AI_UpdateAmpModel(panelTitle, ctrl, headStage)
-			DAP_UpdateControlInGuiStateWv(cba.win, cba.ctrlName, cba.checked)
+			DAP_UpdateControlInGuiStateWv(cba.win, cba.ctrlName, val = cba.checked)
 			break
 	endswitch
 
@@ -6756,7 +6756,7 @@ Function DAP_CheckProc_MDEnable(cba) : CheckBoxControl
 	switch(cba.eventCode)
 		case 2: // mouse up
 			DAP_SwitchSingleMultiMode(cba.win, cba.checked)
-			DAP_UpdateControlInGuiStateWv(cba.win, cba.ctrlName, cba.checked)
+			DAP_UpdateControlInGuiStateWv(cba.win, cba.ctrlName, val = cba.checked)
 			break
 	endswitch
 
@@ -6800,7 +6800,7 @@ Function DAP_CheckProc_InsertTP(cba) : CheckBoxControl
 	switch(cba.eventCode)
 		case 2:
 			DAP_UpdateOnsetDelay(cba.win)
-			DAP_UpdateControlInGuiStateWv(cba.win, cba.ctrlName, cba.checked)
+			DAP_UpdateControlInGuiStateWv(cba.win, cba.ctrlName, val = cba.checked)
 		break
 	endswitch
 
@@ -6836,7 +6836,7 @@ Function DAP_SetVarProc_TestPulseSett(sva) : SetVariableControl
 		case 2: // Enter key
 		case 3: // Live update
 			panelTitle = sva.win
-			DAP_UpdateControlInGuiStateWv(sva.win, sva.ctrlName, sva.dval)
+			DAP_UpdateControlInGuiStateWv(sva.win, sva.ctrlName, val = sva.dval)
 			DAP_AbortIfUnlocked(panelTitle)
 
 			// don't stop the testpulse if we are currently doing DAQ
@@ -6881,7 +6881,7 @@ Function DAP_CheckProc_RepeatedAcq(cba) : CheckBoxControl
 		case 2: // mouse up
 			DAP_UpdateSweepSetVariables(cba.win)
 			DAP_SyncGuiFromLeaderToFollower(cba.win)
-			DAP_UpdateControlInGuiStateWv(cba.win, cba.ctrlName, cba.checked)
+			DAP_UpdateControlInGuiStateWv(cba.win, cba.ctrlName, val = cba.checked)
 			break
 	endswitch
 
@@ -6894,7 +6894,7 @@ Function DAP_CheckProc_SyncCtrl(cba) : CheckBoxControl
 	switch(cba.eventCode)
 		case 2: // mouse up
 			DAP_SyncGuiFromLeaderToFollower(cba.win)
-			DAP_UpdateControlInGuiStateWv(cba.win, cba.ctrlName, cba.checked)
+			DAP_UpdateControlInGuiStateWv(cba.win, cba.ctrlName, val = cba.checked)
 			break
 	endswitch
 
@@ -6909,7 +6909,7 @@ Function DAP_SetVarProc_SyncCtrl(sva) : SetVariableControl
 		case 2: // Enter key
 		case 3: // Live update
 			DAP_SyncGuiFromLeaderToFollower(sva.win)
-			DAP_UpdateControlInGuiStateWv(sva.win, sva.ctrlName, sva.dval)
+			DAP_UpdateControlInGuiStateWv(sva.win, sva.ctrlName, val = sva.dval)
 			break
 	endswitch
 
@@ -7183,7 +7183,7 @@ Function DAP_SetVarProc_TPAmp(sva) : SetVariableControl
 			TPState = TP_StopTestPulse(panelTitle)
 			TP_RestartTestPulse(panelTitle, TPState)
 
-			DAP_UpdateControlInGuiStateWv(sva.win, sva.ctrlName, sva.dval)
+			DAP_UpdateControlInGuiStateWv(sva.win, sva.ctrlName, val = sva.dval)
 			break
 	endswitch
 
@@ -7482,7 +7482,7 @@ Function DAP_CheckProc_LockedLogic(cba) : CheckBoxControl
 			if(cmpstr(cba.win, "check_Settings_Option_3") == 0 && cba.checked)
 				PGC_SetAndActivateControl(cba.win, "Check_DataAcq_Indexing", val = 1)
 			endif
-			DAP_UpdateControlInGuiStateWv(cba.win, cba.ctrlName, cba.checked)
+			DAP_UpdateControlInGuiStateWv(cba.win, cba.ctrlName, val = cba.checked)
 			break
 	endswitch
 
@@ -7642,46 +7642,61 @@ Function DAP_AbortIfUnlocked(panelTitle)
 End
 
 /// @brief Updates the state of a control in the GUIState numeric wave
-Function DAP_UpdateControlInGuiStateWv(panelTitle, controlName, state)
+Function DAP_UpdateControlInGuiStateWv(panelTitle, controlName, [val, str])
 	string panelTitle
 	string controlName
-	variable state
+	variable val
+	string str
 
 	variable col, channelIndex, channelType, controlType
 
-	WAVE GUIState = GetDA_EphysGuiStateNum(panelTitle)
-	col = finddimlabel(GUIState, COLS, controlName)
-	if(col != -2)
-		GUIState[0][Col] = state
-		return NaN
+	ASSERT(ParamIsDefault(val) + ParamIsDefault(str) < 2, "One or both of `val` and `str` must be passed.")
+
+	if(!ParamIsDefault(val))
+		WAVE GUIState = GetDA_EphysGuiStateNum(panelTitle)
+		col = FindDimLabel(GUIState, COLS, controlName)
+		if(col != -2)
+			GUIState[0][Col] = val
+			return NaN
+		endif
+
+		// maybe it is one of the combined entries
+		/// @TODO write the rest
+		DAP_ParsePanelControl(controlName, channelIndex, channelType, controlType)
+		if(controlType == CHANNEL_CONTROL_CHECK)
+			switch(channelType)
+				case CHANNEL_TYPE_DAC:
+					GuiState[channelIndex][%DAState] = val
+					break
+				case CHANNEL_TYPE_ADC:
+					GuiState[channelIndex][%ADState] = val
+					break
+				case CHANNEL_TYPE_TTL:
+					GuiState[channelIndex][%TTLState] = val
+					break
+				case CHANNEL_TYPE_HEADSTAGE:
+					GuiState[channelIndex][%HSState] = val
+					break
+				case CHANNEL_TYPE_ASYNC:
+					GuiState[channelIndex][%AsyncState] = val
+					break
+				case CHANNEL_TYPE_ALARM:
+					GuiState[channelIndex][%AlarmState] = val
+					break
+				default:
+					ASSERT(0, "Unknown type")
+					break
+			endswitch
+		endif
 	endif
 
-	// maybe it is one of the combined entries
-	DAP_ParsePanelControl(controlName, channelIndex, channelType, controlType)
-	if(controlType == CHANNEL_CONTROL_CHECK)
-		switch(channelType)
-			case CHANNEL_TYPE_DAC:
-				GuiState[channelIndex][%DAState] = state
-				break
-			case CHANNEL_TYPE_ADC:
-				GuiState[channelIndex][%ADState] = state
-				break
-			case CHANNEL_TYPE_TTL:
-				GuiState[channelIndex][%TTLState] = state
-				break
-			case CHANNEL_TYPE_HEADSTAGE:
-				GuiState[channelIndex][%HSState] = state
-				break
-			case CHANNEL_TYPE_ASYNC:
-				GuiState[channelIndex][%AsyncState] = state
-				break
-			case CHANNEL_TYPE_ALARM:
-				GuiState[channelIndex][%AlarmState] = state
-				break
-			default:
-				ASSERT(0, "Unknown type")
-				break
-		endswitch
+	if(!ParamIsDefault(str))
+		WAVE/T GUIStateTxT = GetDA_EphysGuiStateTxT(panelTitle)
+		col = FindDimLabel(GUIStateTxT, COLS, controlName)
+		if(col != -2)
+			GUIStateTxT[0][Col] = str
+			return NaN
+		endif
 	endif
 End
 
@@ -7692,7 +7707,7 @@ Function DAP_CheckProc_UpdateGuiState(cba) : CheckBoxControl
 
 	switch( cba.eventCode )
 		case 2: // mouse up
-			DAP_UpdateControlInGuiStateWv(cba.win, cba.ctrlName, cba.checked)
+			DAP_UpdateControlInGuiStateWv(cba.win, cba.ctrlName, val = cba.checked)
 			break
 	endswitch
 
@@ -7706,7 +7721,7 @@ Function DAP_SetVar_UpdateGuiState(sva) : SetVariableControl
 		case 1: // mouse up
 		case 2: // Enter key
 		case 3: // Live update
-			DAP_UpdateControlInGuiStateWv(sva.win, sva.ctrlName, sva.dval)
+			DAP_UpdateControlInGuiStateWv(sva.win, sva.ctrlName, val = sva.dval)
 			break
 	endswitch
 
@@ -7722,14 +7737,14 @@ Function DAP_CheckProc_Settings_PUser(cba) : CheckBoxControl
 			DAP_AbortIfUnlocked(cba.win)
 			WAVE pressureDataWv = P_GetPressureDataWaveRef(cba.win)
 			WAVE GUIState = GetDA_EphysGuiStateNum(cba.win)
-			DAP_UpdateControlInGuiStateWv(cba.win, cba.ctrlName, cba.checked)
+			DAP_UpdateControlInGuiStateWv(cba.win, cba.ctrlName, val = cba.checked)
 			P_RunP_ControlIfTPOFF(cba.win)
 			if(P_ValidatePressureSetHeadstage(cba.win, PressureDataWv[0][%UserSelectedHeadStage]))
 				P_SetPressureValves(cba.win, PressureDataWv[0][%UserSelectedHeadStage], P_GetUserAccess(cba.win, PressureDataWv[0][%UserSelectedHeadStage],PressureDataWv[PressureDataWv[0][%UserSelectedHeadStage]][%Approach_Seal_BrkIn_Clear]))
 			endif
 			P_GetPressureType(cba.win)
 
-			DAP_UpdateControlInGuiStateWv(cba.win, cba.ctrlName, cba.checked)
+			DAP_UpdateControlInGuiStateWv(cba.win, cba.ctrlName, val = cba.checked)
 			break
 	endswitch
 
@@ -8265,7 +8280,7 @@ Function DAP_SetVarProc_skipAhead(sva) : SetVariableControl
 		case 2:
 		case 3:
 			DAP_setSkipAheadLimit(sva.win,  IDX_MinNoOfSweeps(sva.win) - 1)
-			DAP_UpdateControlInGuiStateWv(sva.win, sva.ctrlName, sva.dval)
+			DAP_UpdateControlInGuiStateWv(sva.win, sva.ctrlName, val = sva.dval)
 			break
 	endswitch
 
@@ -8283,7 +8298,7 @@ Function DAP_CheckProc_RandomRA(cba) : CheckBoxControl
 			else
 				enableControl(cba.win, "SetVar_DataAcq_skipAhead")
 			endif
-			DAP_UpdateControlInGuiStateWv(cba.win, cba.ctrlName, cba.checked)
+			DAP_UpdateControlInGuiStateWv(cba.win, cba.ctrlName, val = cba.checked)
 			break
 	endswitch
 

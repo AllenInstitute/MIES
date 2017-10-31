@@ -2177,7 +2177,7 @@ Function CheckProc_ClearEnable(cba) : CheckBoxControl
 				DisableControl(cba.win, "button_DataAcq_Clear")
 			endif
 
-			DAP_UpdateControlInGuiStateWv(cba.win, cba.ctrlName, cba.checked)
+			DAP_UpdateControlInGuiStateWv(cba.win, cba.ctrlName, val = cba.checked)
 			break
 	endswitch
 
@@ -2264,7 +2264,7 @@ Function P_Check_ApproachNear(cba) : CheckBoxControl
 			DAP_AbortIfUnlocked(cba.win)
 			P_UpdatePressureDataStorageWv(cba.win)
 			P_RunP_ControlIfTPOFF(cba.win)
-			DAP_UpdateControlInGuiStateWv(cba.win, cba.ctrlName, cba.checked)
+			DAP_UpdateControlInGuiStateWv(cba.win, cba.ctrlName, val = cba.checked)
 			break
 	endswitch
 
@@ -2278,7 +2278,7 @@ Function P_Check_SealAtm(cba) : CheckBoxControl
 		case 2: // mouse up
 			DAP_AbortIfUnlocked(cba.win)
 			P_UpdatePressureDataStorageWv(cba.win)
-			DAP_UpdateControlInGuiStateWv(cba.win, cba.ctrlName, cba.checked)
+			DAP_UpdateControlInGuiStateWv(cba.win, cba.ctrlName, val = cba.checked)
 			break
 	endswitch
 
