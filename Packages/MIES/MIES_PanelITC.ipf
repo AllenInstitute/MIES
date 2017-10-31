@@ -4054,7 +4054,6 @@ Function DAP_EphysPanelStartUpSettings()
 	CheckBox check_DatAcq_BBEnable WIN = $panelTitle,value= 0
 	CheckBox check_Settings_MD WIN = $panelTitle,value= 0
 
-	DAP_SwitchSingleMultiMode(panelTitle, 0)
 	SetControlUserData(panelTitle, "Check_Settings_BkgTP", "oldState", "")
 	SetControlUserData(panelTitle, "Check_Settings_BackgrndDataAcq", "oldState", "")
 
@@ -6480,9 +6479,8 @@ Function DAP_ButtonProc_Follow(ba) : ButtonControl
 
 			DAP_SetITCDACasFollower(leadPanel, panelToYoke)
 			DAP_UpdateFollowerControls(leadPanel, panelToYoke)
-			DAP_SwitchSingleMultiMode(leadpanel, 1)
-			DAP_SwitchSingleMultiMode(panelToYoke, 1)
-
+			PGC_SetAndActivateControl(leadPanel, "check_Settings_MD", val = 1)
+			PGC_SetAndActivateControl(panelToYoke, "check_Settings_MD", val = 1)
 			DAP_UpdateITIAcrossSets(leadPanel)
 			DisableControls(panelToYoke, YOKE_CONTROLS_DISABLE)
 			DisableControls(panelToYoke, YOKE_CONTROLS_DISABLE_AND_LINK)
@@ -6766,23 +6764,21 @@ static Function DAP_SwitchSingleMultiMode(panelTitle, useMultiDevice)
 	variable checkedState
 
 	if(useMultiDevice)
-		DisableControls(panelTitle, "Check_Settings_BkgTP;Check_Settings_BackgrndDataAcq")
 		checkedState = GetCheckBoxState(panelTitle, "Check_Settings_BkgTP")
 		SetControlUserData(panelTitle, "Check_Settings_BkgTP", "oldState", num2str(checkedState))
 		checkedState = GetCheckBoxState(panelTitle, "Check_Settings_BackgrndDataAcq")
 		SetControlUserData(panelTitle, "Check_Settings_BackgrndDataAcq", "oldState", num2str(checkedState))
 
-		SetCheckBoxState(panelTitle, "Check_Settings_BkgTP", CHECKBOX_SELECTED)
-		SetCheckBoxState(panelTitle, "Check_Settings_BackgrndDataAcq", CHECKBOX_SELECTED)
+		PGC_SetAndActivateControl(panelTitle, "Check_Settings_BkgTP", val = CHECKBOX_SELECTED)
+		PGC_SetAndActivateControl(panelTitle, "Check_Settings_BackgrndDataAcq", val = CHECKBOX_SELECTED)
+		DisableControls(panelTitle, "Check_Settings_BkgTP;Check_Settings_BackgrndDataAcq")
 	else
 		EnableControls(panelTitle, "Check_Settings_BkgTP;Check_Settings_BackgrndDataAcq")
 		checkedState = str2num(GetUserData(panelTitle, "Check_Settings_BkgTP", "oldState"))
-		SetCheckBoxState(panelTitle, "Check_Settings_BkgTP", checkedState)
+		PGC_SetAndActivateControl(panelTitle, "Check_Settings_BkgTP", val = checkedState)
 		checkedState = str2num(GetUserData(panelTitle, "Check_Settings_BackgrndDataAcq", "oldState"))
-		SetCheckBoxState(panelTitle, "Check_Settings_BackgrndDataAcq", checkedState)
+		PGC_SetAndActivateControl(panelTitle, "Check_Settings_BackgrndDataAcq", val = checkedState)
 	endif
-
-	SetCheckBoxState(panelTitle, "check_Settings_MD", useMultiDevice)
 End
 
 /// @brief Controls TP Insertion into set sweeps before the sweep begins
