@@ -992,7 +992,7 @@ Function SB_CheckProc_ChangedSetting(cba) : CheckBoxControl
 	STRUCT WMCheckBoxAction &cba
 
 	string graph, bsPanel, ctrl, channelType, device
-	variable idx, checked, channelNum
+	variable checked, channelNum
 	DFREF sweepDFR
 
 	graph   = GetMainWindow(cba.win)
@@ -1002,7 +1002,6 @@ Function SB_CheckProc_ChangedSetting(cba) : CheckBoxControl
 		case 2: // mouse up
 			ctrl      = cba.ctrlName
 			checked   = cba.checked
-			idx       = GetPopupMenuIndex(bsPanel, "popup_sweep_selector")
 
 			if(BSP_MainPanelNeedsUpdate(graph))
 				DoAbortNow("The main panel is too old to be usable. Please close it and open a new one.")
