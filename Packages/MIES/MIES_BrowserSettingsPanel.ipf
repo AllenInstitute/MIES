@@ -28,20 +28,20 @@ End
 Function BSP_OpenPanel(mainPanel)
 	string mainPanel
 
-	string extPanel
+	string bsPanel
 
 	mainPanel = GetMainWindow(mainPanel)
 	if(BSP_MainPanelNeedsUpdate(mainPanel))
 		Abort "Can not display data. The main panel is too old to be usable. Please close it and open a new one."
 	endif
 
-	extPanel = BSP_GetPanel(mainPanel)
+	bsPanel = BSP_GetPanel(mainPanel)
 	if(BSP_PanelNeedsUpdate(mainPanel))
-		KillWindow/Z $extPanel
+		KillWindow/Z $bsPanel
 	endif
 
-	if(windowExists(extPanel))
-		SetWindow $extPanel hide=0, needUpdate=1
+	if(windowExists(bsPanel))
+		SetWindow $bsPanel hide=0, needUpdate=1
 		BSP_MainPanelButtonToggle(mainPanel, 0)
 		return 1
 	endif
