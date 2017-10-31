@@ -7484,7 +7484,7 @@ Function DAP_ParsePanelControl(ctrl, channelIndex, channelType, controlType)
 			channelIndex = CHANNEL_INDEX_ALL_I_CLAMP
 			break
 		default:
-			channelIndex = str2num(elem2)
+			channelIndex = str2numSafe(elem2)
 			ASSERT(IsFinite(channelIndex), "Invalid channelIndex")
 			break
 	endswitch
