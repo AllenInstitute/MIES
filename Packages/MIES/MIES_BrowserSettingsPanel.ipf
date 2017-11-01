@@ -15,6 +15,9 @@ static strConstant EXT_PANEL_SWEEPCONTROL = "SweepControl"
 
 static Constant BROWSERSETTINGS_PANEL_VERSION = 1
 
+static strConstant BROWSERTYPE_DATABROWSER  = "D"
+static strConstant BROWSERTYPE_SWEEPBROWSER = "S"
+
 /// @brief return the name of the external panel depending on main window name
 ///
 /// @param mainPanel 	mainWindow panel name
@@ -289,6 +292,58 @@ Function/S BSP_SetDevice(win, device)
 	ASSERT(WindowExists(mainPanel), "specified panel does not exist.")
 
 	SetWindow $mainPanel, userdata($MIES_BSP_DEVICE) = device
+End
+
+/// @brief get the MIES Browser Type
+///
+/// @param win 	name of external panel or main window
+///
+/// @return D for DataBrowser or S for SweepBrowser
+static Function/S BSP_GetBrowserType(win)
+	string win
+
+	string mainPanel
+
+	mainPanel = GetMainWindow(win)
+	ASSERT(WindowExists(mainPanel), "specified panel does not exist.")
+
+	return GetUserData(mainPanel, "", MIES_BSP_BROWSER)
+End
+
+/// @brief set DEVICE property to the userdata of the main panel
+///
+/// @param win 	name of external panel or main window
+/// @param type One of #BROWSERTYPE_DATABROWSER or #BROWSERTYPE_SWEEPBROWSER
+static Function/S BSP_SetBrowserType(win, type)
+	string win, type
+
+	string mainPanel
+
+	mainPanel = GetMainWindow(win)
+	ASSERT(WindowExists(mainPanel), "specified panel does not exist.")
+
+	SetWindow $mainPanel, userdata($MIES_BSP_BROWSER) = type
+End
+
+/// @brief wrapper function for external calls
+Function BSP_SetDataBrowser(win)
+	string win
+
+	BSP_SetBrowserType(win, BROWSERTYPE_DATABROWSER)
+End
+
+/// @brief wrapper function for external calls
+Function BSP_SetSweepBrowser(win)
+	string win
+
+	BSP_SetBrowserType(win, BROWSERTYPE_SWEEPBROWSER)
+End
+
+/// @brief wrapper function for external calls
+Function BSP_IsDataBrowser(win)
+	string win
+
+	return !cmpstr(BSP_GetBrowserType(win), BROWSERTYPE_DATABROWSER)
 End
 
 /// @brief check if the DEVICE property has a not nullstring property

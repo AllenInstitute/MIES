@@ -51,7 +51,9 @@ Function DB_OpenDataBrowser()
 
 	Execute "DataBrowser()"
 	win = GetCurrentWindow()
+
 	AddVersionToPanel(win, DATABROWSER_PANEL_VERSION)
+	BSP_SetDataBrowser(win)
 
 	// immediately lock if we have only data from one device
 	devicesWithData = ListMatch(DB_GetAllDevicesWithData(), "!" + NONE)
@@ -67,7 +69,7 @@ End
 Function/S DB_GetMainGraph(win)
 	string win
 
-	return GetMainWindow(win) + "#DataBrowserGraph"
+	return GetMainWindow(win)
 End
 
 Function DB_OpenSettingsHistory(win)
@@ -466,34 +468,11 @@ End
 
 Window DataBrowser() : Panel
 	PauseUpdate; Silent 1		// building window...
-	NewPanel /K=1 /W=(992,103,1792,703) as "DataBrowser"
-	TitleBox ListBox_DataBrowser_NoteDisplay,pos={1755.00,75.00},size={197.00,39.00}
-	TitleBox ListBox_DataBrowser_NoteDisplay,userdata(ResizeControlsInfo)= A"!!,LB?iWNZ!!#AT!!#>*z!!#o2B4uAezzzzzzzzzzzzzz!!#o2B4uAezz"
-	Button button_BSP_open,pos={5.00,5.00},size={25.00,25.00},proc=DB_ButtonProc_Panel,title="<<"
-	TitleBox ListBox_DataBrowser_NoteDisplay,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
-	TitleBox ListBox_DataBrowser_NoteDisplay,labelBack=(62208,62208,62208),fSize=8
-	TitleBox ListBox_DataBrowser_NoteDisplay,frame=0
-	Button button_BSP_open,pos={716.00,40.00},size={76.00,21.00},proc=BSP_ButtonProc_Panel,title="<<"
-	Button button_BSP_open,help={"Open Side Panel"}
-	Button button_BSP_open,userdata(ResizeControlsInfo)= A"!!,JD!!#>.!!#?Q!!#<`z!!#](Aon\"q<C^(Dzzzzzzzzzzzzz!!#](Aon\"Q<C^(Dz"
-	Button button_BSP_open,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Duafn!(TR7zzzzzzzzzz"
-	Button button_BSP_open,userdata(ResizeControlsInfo) += A"zzz!!#u:Duafn!(TR7zzzzzzzzzzzzz!!!"
-	DefineGuide UGV0={FR,-200},UGV1={FL,20},UGH1={FB,-100},UGH2={FT,70},UGH0={UGH1,0.25,UGH2}
-	SetWindow kwTopWin,hook(ResizeControls)=ResizeControls#ResizeControlsHook
-	SetWindow kwTopWin,userdata(ResizeControlsGuides)= A"<C^(D4&ndO0frB*8232+7n>Bs<C]S63r"
-	SetWindow kwTopWin,userdata(ResizeControlsInfoUGV0)= A":-hTC3`S[N0KW?-:-*K.D/`i:4&f?Z764FiATBk':Jsbf:JOkT9KFjh:et\"]<(Tk\\3]8ZG/het@7o`,K756hm;EIBK8OQ!&3]g5.9MeM`8Q88W:-'s^0JGQ"
-	SetWindow kwTopWin,userdata(ResizeControlsInfoUGH1)= A":-hTC3`S[@0frH.:-*K.D/`i:4&f?Z764FiATBk':Jsbf:JOkT9KFmi:et\"]<(Tk\\3]/TF/het@7o`,K756hm69@\\;8OQ!&3]g5.9MeM`8Q88W:-'s]0JGQ"
-	SetWindow kwTopWin,userdata(ResizeControlsInfoUGH0)= A":-hTC3`S[@0KW?-:-*K.D/`i:4&f?Z764FiATBk':Jsbf:JOkT9KFmi:et\"]<(Tk\\3\\rcO/het@7o`,K756i'7n>?r7o`,K75?o(7n>Bs;FO8U:K'ha8P`)B0J5+<3r"
-	SetWindow kwTopWin,userdata(ResizeControlsInfo)= A"!!*'\"z!!#DX!!#D&zzzzzzzzzzzzzzzzzzzzz"
-	SetWindow kwTopWin,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzzzzzzzzzzzzzzz"
-	SetWindow kwTopWin,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzzzzzzzzz!!!"
-	SetWindow kwTopWin,userdata(ResizeControlsInfoUGV1)= A":-hTC3`S[N0frH.:-*K.D/`i:4&f?Z764FiATBk':Jsbf:JOkT9KFjh:et\"]<(Tk\\3\\iBA0JGRY<CoSI0fhct4%E:B6q&jl4&SL@:et\"]<(Tk\\3\\iBN"
-	SetWindow kwTopWin,userdata(ResizeControlsInfoUGH2)= A":-hTC3`S[@1-8Q/:-*K.D/`i:4&f?Z764FiATBk':Jsbf:JOkT9KFmi:et\"]<(Tk\\3]A`F0JGRY<CoSI0fhd'4%E:B6q&jl4&SL@:et\"]<(Tk\\3]A`S"
-	Execute/Q/Z "SetWindow kwTopWin sizeLimit={600,450,inf,inf}" // sizeLimit requires Igor 7 or later
-	Display/W=(200,187,600,561)/FG=(UGV1,UGH2,UGV0,UGH0)/HOST=# 
+	Display /W=(850.5,168.5,1284,473.75)/K=1  as "DataBrowser"
+	SetWindow kwTopWin,userdata(panelVersion)=  "7"
 	ModifyGraph margin(left)=28,margin(bottom)=1
-	RenameWindow #,DataBrowserGraph
-	SetActiveSubwindow ##
+	Button button_BSP_open,pos={5.00,5.00},size={25.00,25.00},proc=DB_ButtonProc_Panel,title="<<"
+	Button button_BSP_open,help={"Open Side Panel"}
 EndMacro
 
 /// @brief procedure for the open button of the side panel

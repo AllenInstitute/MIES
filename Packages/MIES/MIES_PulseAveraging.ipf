@@ -497,7 +497,7 @@ Function PA_ShowPulses(win, dfr, pa)
 	DFREF dfr
 	STRUCT PulseAverageSettings &pa
 
-	string sourceGraph, graph, trace, preExistingGraphs
+	string graph, trace, preExistingGraphs
 	string averageWaveName, pulseTrace, channelTypeStr, str, traceList, traceFullPath
 	variable numChannels, i, j, k, l, idx, numTraces, sweepNo, headstage, numPulsesTotal, numPulses
 	variable first, numEntries, startingPulse, endingPulse, numGraphs
@@ -524,8 +524,7 @@ Function PA_ShowPulses(win, dfr, pa)
 		endingPulseSett = pa.endingPulse
 	endif
 
-	sourceGraph        = GetSweepGraph(win)
-	WAVE/T/Z traceData = PA_GetTraceInfos(sourceGraph)
+	WAVE/T/Z traceData = PA_GetTraceInfos(win)
 
 	if(!WaveExists(traceData)) // no traces
 		KillWindows(preExistingGraphs)

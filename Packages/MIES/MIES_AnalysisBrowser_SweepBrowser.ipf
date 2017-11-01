@@ -551,6 +551,7 @@ Function/DF SB_OpenSweepBrowser()
 	mainWin = GetMainWindow(GetCurrentWindow())
 
 	AddVersionToPanel(mainWin, SWEEPBROWSER_PANEL_VERSION)
+	BSP_SetSweepBrowser(mainWin)
 
 	SetWindow $mainWin, hook(cleanup)=SB_SweepBrowserWindowHook
 	SB_SetUserData(mainWin)
