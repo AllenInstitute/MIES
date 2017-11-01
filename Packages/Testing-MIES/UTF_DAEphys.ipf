@@ -7,7 +7,7 @@ static StrConstant panelTitle = "ITC18USB_DEV_0"
 
 Function CheckIfAllControlsReferStateWv()
 
-	string unlockedPanelTitle, list, ctrl, str, expected, lbl
+	string unlockedPanelTitle, list, ctrl, str, expected, lbl, uniqueControls
 	variable i, numEntries, val, channelIndex, channelType, controlType, index, oldVal
 	variable err, inputModified
 
@@ -21,6 +21,8 @@ Function CheckIfAllControlsReferStateWv()
 
 	list  = ControlNameList(panelTitle, ";")
 
+	uniqueControls = GetUniqueCtrlList(panelTitle)
+
 	numEntries = ItemsInList(list)
 	CHECK(numEntries > 0)
 	for(i = 0; i < numEntries; i += 1)
@@ -33,11 +35,11 @@ Function CheckIfAllControlsReferStateWv()
 		else
 			index = 0
 			lbl   = ctrl
-		endif
 
-		// another special control
-		if(GrepString(ctrl, "^Radio_ClampMode.*"))
-			continue
+			// ignore controls we don't store
+			if(WhichListItem(ctrl, uniqueControls) == -1)
+				continue
+			endif
 		endif
 
 		// ignore turned off controls
@@ -46,6 +48,7 @@ Function CheckIfAllControlsReferStateWv()
 		endif
 
 		// normal control
+		print ctrl
 
 		switch(abs(V_Flag))
 			case CONTROL_TYPE_BUTTON:
@@ -154,4 +157,79 @@ Function CheckIfAllControlsReferStateWv()
 				break
 		endswitch
 	endfor
+End
+
+Function CheckStartupSettings()
+
+	string unlockedPanelTitle, list, ctrl, str, expected, lbl
+	variable i, numEntries, val, channelIndex, channelType, controlType, index, oldVal
+
+	Initialize_IGNORE()
+
+	SetRandomSeed/BETR=1 1
+
+	unlockedPanelTitle = DAP_CreateDAEphysPanel()
+
+	PGC_SetAndActivateControl(unlockedPanelTitle, "popup_MoreSettings_DeviceType", val=5)
+	PGC_SetAndActivateControl(unlockedPanelTitle, "button_SettingsPlus_LockDevice")
+	REQUIRE(WindowExists(panelTitle))
+
+	Duplicate/O GetDA_EphysGuiStateNum(panelTitle), guiStateNumRef
+	Duplicate/O GetDA_EphysGuiStateTxT(panelTitle), guiStateTxTRef
+
+	list  = ControlNameList(panelTitle, ";")
+
+	numEntries = ItemsInList(list)
+	CHECK(numEntries > 0)
+	for(i = 0; i < numEntries; i += 1)
+		ctrl = StringFromList(i, list)
+		ControlInfo/W=$panelTitle $ctrl
+
+		switch(abs(V_Flag))
+			case CONTROL_TYPE_BUTTON:
+			case CONTROL_TYPE_LISTBOX:
+			case CONTROL_TYPE_TAB:
+			case CONTROL_TYPE_VALDISPLAY:
+				// nothing to do
+				break
+			case CONTROL_TYPE_CHECKBOX:
+				oldVal = V_Value
+				val    = !oldVal
+				SetCheckBoxState(panelTitle, ctrl, val)
+				break
+			case CONTROL_TYPE_SETVARIABLE:
+				if(DoesControlHaveInternalString(panelTitle, ctrl))
+					SetSetVariableString(panelTitle, ctrl, num2str(enoise(1, 2)))
+				else
+					SetSetVariable(panelTitle, ctrl, enoise(5, 2))
+				endif
+				break
+			case CONTROL_TYPE_SLIDER:
+
+				oldVal = V_Value
+				SetSliderPositionIndex(panelTitle, ctrl, oldVal + 1)
+
+				break
+			case CONTROL_TYPE_POPUPMENU:
+
+				SetPopupMenuIndex(panelTitle, ctrl, 1 + enoise(2, 2))
+				break
+		endswitch
+	endfor
+
+	DAP_EphysPanelStartUpSettings()
+	unlockedPanelTitle = GetCurrentWindow()
+
+	SCOPE_OpenScopeWindow(unlockedPanelTitle)
+	AddVersionToPanel(unlockedPanelTitle, DA_EPHYS_PANEL_VERSION)
+
+	PGC_SetAndActivateControl(unlockedPanelTitle, "popup_MoreSettings_DeviceType", val=5)
+	PGC_SetAndActivateControl(unlockedPanelTitle, "button_SettingsPlus_LockDevice")
+	REQUIRE(WindowExists(panelTitle))
+
+	Duplicate/O GetDA_EphysGuiStateNum(panelTitle), guiStateNumNew
+	Duplicate/O GetDA_EphysGuiStateTxT(panelTitle), guiStateTxTNew
+
+	CHECK_EQUAL_WAVES(guiStateNumRef, guiStateNumNew, mode = WAVE_DATA | DIMENSION_LABELS)
+	CHECK_EQUAL_WAVES(guiStateTxTRef, guiStateTxTNew, mode = WAVE_DATA | DIMENSION_LABELS)
 End

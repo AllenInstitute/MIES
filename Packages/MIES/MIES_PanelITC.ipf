@@ -3606,6 +3606,9 @@ EndMacro
 Function DAP_EphysPanelStartUpSettings()
 	string panelTitle
 
+	variable i
+	string popValue
+
 	panelTitle = GetMainWindow(GetCurrentWindow())
 
 	if(!windowExists(panelTitle))
@@ -3706,18 +3709,19 @@ Function DAP_EphysPanelStartUpSettings()
 	SetVariable Gain_DA_05 WIN = $panelTitle, value = _NUM:0.00
 	SetVariable Gain_DA_06 WIN = $panelTitle, value = _NUM:0.00
 	SetVariable Gain_DA_07 WIN = $panelTitle, value = _NUM:0.00
-	
-	PopupMenu Wave_DA_00 WIN = $panelTitle,mode=1, userdata(MenuExp) = ""
-	PopupMenu Wave_DA_01 WIN = $panelTitle,mode=1, userdata(MenuExp) = ""
-	PopupMenu Wave_DA_02 WIN = $panelTitle,mode=1, userdata(MenuExp) = ""
-	PopupMenu Wave_DA_03 WIN = $panelTitle,mode=1, userdata(MenuExp) = ""
-	PopupMenu Wave_DA_04 WIN = $panelTitle,mode=1, userdata(MenuExp) = ""
-	PopupMenu Wave_DA_05 WIN = $panelTitle,mode=1, userdata(MenuExp) = ""
-	PopupMenu Wave_DA_06 WIN = $panelTitle,mode=1, userdata(MenuExp) = ""
-	PopupMenu Wave_DA_07 WIN = $panelTitle,mode=1, userdata(MenuExp) = ""
-	PopupMenu Wave_DA_All WIN = $panelTitle,mode=1, userdata(MenuExp) = ""
-	PopupMenu Wave_DA_AllVClamp WIN = $panelTitle,mode=1, userdata(MenuExp) = ""
-	PopupMenu Wave_DA_AllIClamp WIN = $panelTitle,mode=1, userdata(MenuExp) = ""
+
+	popValue = DAP_FormatStimSetPopupValue(CHANNEL_TYPE_DAC, GetSearchStringForChannelType(CHANNEL_TYPE_DAC))
+	PopupMenu Wave_DA_00 WIN = $panelTitle,mode=1, userdata(MenuExp) = "", value=#popValue
+	PopupMenu Wave_DA_01 WIN = $panelTitle,mode=1, userdata(MenuExp) = "", value=#popValue
+	PopupMenu Wave_DA_02 WIN = $panelTitle,mode=1, userdata(MenuExp) = "", value=#popValue
+	PopupMenu Wave_DA_03 WIN = $panelTitle,mode=1, userdata(MenuExp) = "", value=#popValue
+	PopupMenu Wave_DA_04 WIN = $panelTitle,mode=1, userdata(MenuExp) = "", value=#popValue
+	PopupMenu Wave_DA_05 WIN = $panelTitle,mode=1, userdata(MenuExp) = "", value=#popValue
+	PopupMenu Wave_DA_06 WIN = $panelTitle,mode=1, userdata(MenuExp) = "", value=#popValue
+	PopupMenu Wave_DA_07 WIN = $panelTitle,mode=1, userdata(MenuExp) = "", value=#popValue
+	PopupMenu Wave_DA_All WIN = $panelTitle,mode=1, userdata(MenuExp) = "", value=#popValue
+	PopupMenu Wave_DA_AllVClamp WIN = $panelTitle,mode=1, userdata(MenuExp) = "", value=#popValue
+	PopupMenu Wave_DA_AllIClamp WIN = $panelTitle,mode=1, userdata(MenuExp) = "", value=#popValue
 
 	SetVariable Scale_DA_00 WIN = $panelTitle, value = _NUM:1
 	SetVariable Scale_DA_01 WIN = $panelTitle, value = _NUM:1
@@ -3743,15 +3747,16 @@ Function DAP_EphysPanelStartUpSettings()
 	SetVariable SetVar_DataAcq_TPAmplitude  WIN = $panelTitle,value= _NUM:10
 	SetVariable SetVar_DataAcq_TPBaselinePerc  WIN = $panelTitle,value= _NUM:25
 
-	PopupMenu Wave_TTL_00 Win = $panelTitle ,mode=1, userdata(MenuExp) = ""
-	PopupMenu Wave_TTL_01 Win = $panelTitle ,mode=1, userdata(MenuExp) = ""
-	PopupMenu Wave_TTL_02 Win = $panelTitle ,mode=1, userdata(MenuExp) = ""
-	PopupMenu Wave_TTL_03 Win = $panelTitle ,mode=1, userdata(MenuExp) = ""
-	PopupMenu Wave_TTL_04 Win = $panelTitle ,mode=1, userdata(MenuExp) = ""
-	PopupMenu Wave_TTL_05 Win = $panelTitle ,mode=1, userdata(MenuExp) = ""
-	PopupMenu Wave_TTL_06 Win = $panelTitle ,mode=1, userdata(MenuExp) = ""
-	PopupMenu Wave_TTL_07 Win = $panelTitle ,mode=1, userdata(MenuExp) = ""
-	PopupMenu Wave_TTL_All Win = $panelTitle ,mode=1, userdata(MenuExp) = ""
+	popValue = DAP_FormatStimSetPopupValue(CHANNEL_TYPE_TTL, GetSearchStringForChannelType(CHANNEL_TYPE_TTL))
+	PopupMenu Wave_TTL_00 Win = $panelTitle ,mode=1, userdata(MenuExp) = "", value=#popValue
+	PopupMenu Wave_TTL_01 Win = $panelTitle ,mode=1, userdata(MenuExp) = "", value=#popValue
+	PopupMenu Wave_TTL_02 Win = $panelTitle ,mode=1, userdata(MenuExp) = "", value=#popValue
+	PopupMenu Wave_TTL_03 Win = $panelTitle ,mode=1, userdata(MenuExp) = "", value=#popValue
+	PopupMenu Wave_TTL_04 Win = $panelTitle ,mode=1, userdata(MenuExp) = "", value=#popValue
+	PopupMenu Wave_TTL_05 Win = $panelTitle ,mode=1, userdata(MenuExp) = "", value=#popValue
+	PopupMenu Wave_TTL_06 Win = $panelTitle ,mode=1, userdata(MenuExp) = "", value=#popValue
+	PopupMenu Wave_TTL_07 Win = $panelTitle ,mode=1, userdata(MenuExp) = "", value=#popValue
+	PopupMenu Wave_TTL_All Win = $panelTitle ,mode=1, userdata(MenuExp) = "", value=#popValue
 	
 	CheckBox Check_Settings_TrigOut Win = $panelTitle, value = 0
 	CheckBox Check_Settings_TrigIn Win = $panelTitle, value = 0
@@ -3872,28 +3877,30 @@ Function DAP_EphysPanelStartUpSettings()
 	SetVariable Search_TTL_07 WIN = $panelTitle, value= _STR:""
 	SetVariable Search_TTL_All WIN = $panelTitle, value= _STR:""
 
-	PopupMenu IndexEnd_DA_00 WIN = $panelTitle, mode=1, userdata(MenuExp) = ""
-	PopupMenu IndexEnd_DA_01 WIN = $panelTitle, mode=1, userdata(MenuExp) = ""
-	PopupMenu IndexEnd_DA_02 WIN = $panelTitle, mode=1, userdata(MenuExp) = ""
-	PopupMenu IndexEnd_DA_03 WIN = $panelTitle, mode=1, userdata(MenuExp) = ""
-	PopupMenu IndexEnd_DA_04 WIN = $panelTitle, mode=1, userdata(MenuExp) = ""
-	PopupMenu IndexEnd_DA_05 WIN = $panelTitle, mode=1, userdata(MenuExp) = ""
-	PopupMenu IndexEnd_DA_06 WIN = $panelTitle, mode=1, userdata(MenuExp) = ""
-	PopupMenu IndexEnd_DA_07 WIN = $panelTitle, mode=1, userdata(MenuExp) = ""
-	PopupMenu IndexEnd_DA_All WIN = $panelTitle, mode=1, userdata(MenuExp) = ""
-	PopupMenu IndexEnd_DA_AllVClamp WIN = $panelTitle, mode=1, userdata(MenuExp) = ""
-	PopupMenu IndexEnd_DA_AllICLamp WIN = $panelTitle, mode=1, userdata(MenuExp) = ""
+	popValue = DAP_FormatStimSetPopupValue(CHANNEL_TYPE_DAC, GetSearchStringForChannelType(CHANNEL_TYPE_DAC))
+	PopupMenu IndexEnd_DA_00 WIN = $panelTitle, mode=1, userdata(MenuExp) = "", value=#popValue
+	PopupMenu IndexEnd_DA_01 WIN = $panelTitle, mode=1, userdata(MenuExp) = "", value=#popValue
+	PopupMenu IndexEnd_DA_02 WIN = $panelTitle, mode=1, userdata(MenuExp) = "", value=#popValue
+	PopupMenu IndexEnd_DA_03 WIN = $panelTitle, mode=1, userdata(MenuExp) = "", value=#popValue
+	PopupMenu IndexEnd_DA_04 WIN = $panelTitle, mode=1, userdata(MenuExp) = "", value=#popValue
+	PopupMenu IndexEnd_DA_05 WIN = $panelTitle, mode=1, userdata(MenuExp) = "", value=#popValue
+	PopupMenu IndexEnd_DA_06 WIN = $panelTitle, mode=1, userdata(MenuExp) = "", value=#popValue
+	PopupMenu IndexEnd_DA_07 WIN = $panelTitle, mode=1, userdata(MenuExp) = "", value=#popValue
+	PopupMenu IndexEnd_DA_All WIN = $panelTitle, mode=1, userdata(MenuExp) = "", value=#popValue
+	PopupMenu IndexEnd_DA_AllVClamp WIN = $panelTitle, mode=1, userdata(MenuExp) = "", value=#popValue
+	PopupMenu IndexEnd_DA_AllICLamp WIN = $panelTitle, mode=1, userdata(MenuExp) = "", value=#popValue
 
-	PopupMenu IndexEnd_TTL_00 WIN = $panelTitle, mode=1, userdata(MenuExp) = ""
-	PopupMenu IndexEnd_TTL_01 WIN = $panelTitle, mode=1, userdata(MenuExp) = ""
-	PopupMenu IndexEnd_TTL_02 WIN = $panelTitle, mode=1, userdata(MenuExp) = ""
-	PopupMenu IndexEnd_TTL_03 WIN = $panelTitle, mode=1, userdata(MenuExp) = ""
-	PopupMenu IndexEnd_TTL_04 WIN = $panelTitle, mode=1, userdata(MenuExp) = ""
-	PopupMenu IndexEnd_TTL_05 WIN = $panelTitle, mode=1, userdata(MenuExp) = ""
-	PopupMenu IndexEnd_TTL_06 WIN = $panelTitle, mode=1, userdata(MenuExp) = ""
-	PopupMenu IndexEnd_TTL_07 WIN = $panelTitle, mode=1, userdata(MenuExp) = ""
-	PopupMenu IndexEnd_TTL_All WIN = $panelTitle, mode=1, userdata(MenuExp) = ""
-	
+	popValue = DAP_FormatStimSetPopupValue(CHANNEL_TYPE_TTL, GetSearchStringForChannelType(CHANNEL_TYPE_TTL))
+	PopupMenu IndexEnd_TTL_00 WIN = $panelTitle, mode=1, userdata(MenuExp) = "", value=#popValue
+	PopupMenu IndexEnd_TTL_01 WIN = $panelTitle, mode=1, userdata(MenuExp) = "", value=#popValue
+	PopupMenu IndexEnd_TTL_02 WIN = $panelTitle, mode=1, userdata(MenuExp) = "", value=#popValue
+	PopupMenu IndexEnd_TTL_03 WIN = $panelTitle, mode=1, userdata(MenuExp) = "", value=#popValue
+	PopupMenu IndexEnd_TTL_04 WIN = $panelTitle, mode=1, userdata(MenuExp) = "", value=#popValue
+	PopupMenu IndexEnd_TTL_05 WIN = $panelTitle, mode=1, userdata(MenuExp) = "", value=#popValue
+	PopupMenu IndexEnd_TTL_06 WIN = $panelTitle, mode=1, userdata(MenuExp) = "", value=#popValue
+	PopupMenu IndexEnd_TTL_07 WIN = $panelTitle, mode=1, userdata(MenuExp) = "", value=#popValue
+	PopupMenu IndexEnd_TTL_All WIN = $panelTitle, mode=1, userdata(MenuExp) = "", value=#popValue
+
 	PopupMenu popup_Settings_Amplifier,mode=1,popvalue="- none -"
 	// don't make the scope subwindow part of the recreation macro
 	CheckBox check_Settings_ShowScopeWindow WIN = $panelTitle, value= 0
@@ -3962,6 +3969,7 @@ Function DAP_EphysPanelStartUpSettings()
 
 	CheckBox check_Settings_SetOption_5 WIN = $panelTitle,value= 1
 	CheckBox Check_DataAcq1_IndexingLocked WIN = $panelTitle, value= 0
+	CheckBox Check_DataAcq_Indexing WIN = $panelTitle, value= 0
 
 	SetVariable SetVar_DataAcq_ListRepeats WIN = $panelTitle,limits={1,inf,1},value= _NUM:1
 
@@ -4003,7 +4011,8 @@ Function DAP_EphysPanelStartUpSettings()
 	SetVariable Unit_AD_14 WIN = $panelTitle,limits={0,inf,1},value= _STR:""
 	SetVariable Unit_AD_15 WIN = $panelTitle,limits={0,inf,1},value= _STR:""
 
-	PopupMenu popup_Hardware_AvailITC1600s WIN = $panelTitle,mode=0
+	PopupMenu popup_Hardware_AvailITC1600s WIN = $panelTitle,mode=1
+	PopupMenu popup_Hardware_YokedDACs WIN = $panelTitle,mode=1
 
 	SetVariable SetVar_Hardware_Status WIN = $panelTitle,value= _STR:"Independent",noedit= 1
 	SetVariable SetVar_Hardware_YokeList WIN = $panelTitle,value= _STR:"No Yoked Devices",noedit= 1
@@ -4045,6 +4054,9 @@ Function DAP_EphysPanelStartUpSettings()
 	CheckBox check_DataAcq_Amp_Chain WIN = $panelTitle,value= 0
 	CheckBox check_DatAcq_BBEnable WIN = $panelTitle,value= 0
 	CheckBox check_Settings_MD WIN = $panelTitle,value= 0
+	SetVariable setvar_Settings_TP_RTolerance WIN = $panelTitle,value= _NUM:1
+	CheckBox check_Settings_SaveAmpSettings WIN = $panelTitle,value= 0
+	CheckBox check_Settings_AmpIEQZstep WIN = $panelTitle,value= 0
 
 	SetControlUserData(panelTitle, "Check_Settings_BkgTP", "oldState", "")
 	SetControlUserData(panelTitle, "Check_Settings_BackgrndDataAcq", "oldState", "")
@@ -4083,7 +4095,19 @@ Function DAP_EphysPanelStartUpSettings()
 	SetVariable setvar_Settings_SurfaceHeight  , win=$panelTitle, value= _NUM:3500
 	SetVariable setvar_Settings_SliceSurfHeight, win=$panelTitle, value= _NUM:350
 	CheckBox check_Settings_DisablePressure    , win=$panelTitle, value= 0
- 
+	CheckBox check_DatAcq_ApproachAll          , win=$panelTitle, value= 0
+	CheckBox check_DatAcq_BreakInAll           , win=$panelTitle, value= 0
+	CheckBox check_DatAcq_SealALl              , win=$panelTitle, value= 0
+	CheckBox check_DatAcq_ClearEnable          , win=$panelTitle, value= 0
+	CheckBox check_Settings_AmpIEQZstep        , win=$panelTitle, value= 0
+	CheckBox check_DatAcq_SealAtm              , win=$panelTitle, value= 0
+	CheckBox check_DatAcq_ApproachNear         , win=$panelTitle, value= 0
+	CheckBox check_DataAcq_ManPressureAll      , win=$panelTitle, value= 0
+	CheckBox check_Settings_SaveAmpSettings    , win=$panelTitle, value= 1
+	SetVariable setvar_DataAcq_PPDuration, win=$panelTitle, value= _NUM:0
+	SetVariable setvar_DataAcq_PPPressure, win=$panelTitle, value= _NUM:0
+	SetVariable setvar_DataAcq_SSPressure, win=$panelTitle, value= _NUM:0
+
    ValDisplay valdisp_DataAcq_P_LED_0 WIN = $panelTitle, value= _NUM:-1
    ValDisplay valdisp_DataAcq_P_LED_1 WIN = $panelTitle, value= _NUM:-1
    ValDisplay valdisp_DataAcq_P_LED_2 WIN = $panelTitle, value= _NUM:-1
@@ -4162,7 +4186,7 @@ End
 
 /// @brief Return a popValue string suitable for stimsets
 /// @todo rework the code to have a fixed popValue
-static Function/S DAP_FormatStimSetPopupValue(channelType, searchString)
+Function/S DAP_FormatStimSetPopupValue(channelType, searchString)
 	variable channelType
 	string searchString
 
