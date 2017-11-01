@@ -980,6 +980,11 @@ static Function WBP_AddEpochHLTraces(dfr, epochHLType, epoch, numEpochs)
 		last  = epochID[numEpochs - 1][%timeEnd]
 	endif
 
+	if(first == last)
+		// don't try to highlight empty epochs
+		return NaN
+	endif
+
 	SetScale/I x, first, last, "ms", waveBegin, waveEnd
 
 	AppendToGraph/W=$waveBuilderGraph waveBegin
