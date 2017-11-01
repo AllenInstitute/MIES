@@ -40,6 +40,8 @@
 #include ":MIES_Cache"
 #include ":MIES_WaveDataFolderGetters"
 
+static strConstant EXT_PANEL_SETTINGSHISTORY = "SettingsHistoryPanel"
+
 Menu "Mies Panels", dynamic
 	"Data Browser", /Q, DB_OpenDataBrowser()
 End
@@ -59,12 +61,32 @@ Function DB_OpenDataBrowser()
 	endif
 
 	BSP_OpenPanel(win)
+	DB_OpenSettingsHistory(win)
 End
 
 Function/S DB_GetMainGraph(win)
 	string win
 
 	return GetMainWindow(win) + "#DataBrowserGraph"
+End
+
+Function DB_OpenSettingsHistory(win)
+	string win
+
+	string mainPanel, shPanel
+
+	mainPanel = GetMainWindow(win)
+	ASSERT(WindowExists(mainPanel), "HOST panel does not exist")
+
+	shPanel = DB_GetSettingsHistoryPanel(win)
+	if(windowExists(shPanel))
+		SetWindow $shPanel hide=0, needUpdate=1
+		return 1
+	endif
+
+	NewPanel/HOST=$mainPanel/EXT=2/W=(0,0,580,140)/N=$EXT_PANEL_SETTINGSHISTORY  as " "
+	Execute "SettingsHistoryPanel()"
+	DB_DynamicSettingsHistory(mainPanel)
 End
 
 Function/S DB_ClearAllGraphs()
@@ -95,10 +117,16 @@ Function/S DB_ClearAllGraphs()
 	endfor
 End
 
+static Function/S DB_GetSettingsHistoryPanel(win)
+	string win
+
+	return GetMainWindow(win) + "#" + EXT_PANEL_SETTINGSHISTORY
+End
+
 static Function/S DB_GetLabNoteBookGraph(win)
 	string win
 
-	return GetMainWindow(win) + "#Labnotebook"
+	return DB_GetSettingsHistoryPanel(win) + "#Labnotebook"
 End
 
 static Function DB_LockDBPanel(win, device)
@@ -118,9 +146,8 @@ static Function DB_LockDBPanel(win, device)
 		DoWindow/W=$win/C $renameWin
 		win = renameWin
 
-		PopupMenu popup_LBNumericalKeys, win=$win, value=#("\"" + NONE + "\"")
-		PopupMenu popup_LBTextualKeys, win=$win, value=#("\"" + NONE + "\"")
 		DB_SetUserData(win, device)
+		DB_DynamicSettingsHistory(win)
 		DB_UpdateSweepPlot(win)
 		return NaN
 	endif
@@ -131,9 +158,7 @@ static Function DB_LockDBPanel(win, device)
 
 	DB_SetUserData(win, device)
 
-	PopupMenu popup_LBNumericalKeys, win=$win, value=#("DB_GetLBNumericalKeys(\"" + win + "\")")
-	PopupMenu popup_LBTextualKeys, win=$win, value=#("DB_GetLBTextualKeys(\"" + win + "\")")
-
+	DB_DynamicSettingsHistory(win)
 	DB_FirstAndLastSweepAcquired(win, first, last)
 	DB_UpdateLastSweepControls(win, first, last)
 End
@@ -330,6 +355,10 @@ static Function DB_ClearGraph(win)
 	string win
 
 	string graph = DB_GetLabNoteBookGraph(win)
+	if(!WindowExists(graph))
+		return 0
+	endif
+
 	RemoveTracesFromGraph(graph)
 	UpdateLBGraphLegend(graph)
 End
@@ -437,43 +466,13 @@ End
 
 Window DataBrowser() : Panel
 	PauseUpdate; Silent 1		// building window...
-	NewPanel /K=1 /W=(898,132,1698,732) as "DataBrowser"
+	NewPanel /K=1 /W=(992,103,1792,703) as "DataBrowser"
 	TitleBox ListBox_DataBrowser_NoteDisplay,pos={1755.00,75.00},size={197.00,39.00}
 	TitleBox ListBox_DataBrowser_NoteDisplay,userdata(ResizeControlsInfo)= A"!!,LB?iWNZ!!#AT!!#>*z!!#o2B4uAezzzzzzzzzzzzzz!!#o2B4uAezz"
-	TitleBox ListBox_DataBrowser_NoteDisplay,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Duafnzzzzzzzzzzz"
+	Button button_BSP_open,pos={5.00,5.00},size={25.00,25.00},proc=DB_ButtonProc_Panel,title="<<"
 	TitleBox ListBox_DataBrowser_NoteDisplay,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
 	TitleBox ListBox_DataBrowser_NoteDisplay,labelBack=(62208,62208,62208),fSize=8
 	TitleBox ListBox_DataBrowser_NoteDisplay,frame=0
-	Button button_DataBrowser_setaxis,pos={20.00,568.00},size={150.00,23.00},proc=DB_ButtonProc_AutoScale,title="Autoscale"
-	Button button_DataBrowser_setaxis,help={"Autoscale sweep data"}
-	Button button_DataBrowser_setaxis,userdata(ResizeControlsInfo)= A"!!,BY!!#Cs!!#A%!!#<pz!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
-	Button button_DataBrowser_setaxis,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#?(FEDG<zzzzzzzzzzz"
-	Button button_DataBrowser_setaxis,userdata(ResizeControlsInfo) += A"zzz!!#?(FEDG<zzzzzzzzzzzzzz!!!"
-	PopupMenu popup_LBNumericalKeys,pos={620.00,432.00},size={150.00,19.00},bodyWidth=150,proc=DB_PopMenuProc_LabNotebook
-	PopupMenu popup_LBNumericalKeys,help={"Select numeric lab notebook data to display"}
-	PopupMenu popup_LBNumericalKeys,userdata(ResizeControlsInfo)= A"!!,J,!!#C=!!#A%!!#<Pz!!#N3Bk1ct<C^(Dzzzzzzzzzzzzz!!#N3Bk1ct<C^(Dz"
-	PopupMenu popup_LBNumericalKeys,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#N3Bk1ct<C]S6zzzzzzzzzz"
-	PopupMenu popup_LBNumericalKeys,userdata(ResizeControlsInfo) += A"zzz!!#N3Bk1ct<C]S6zzzzzzzzzzzzz!!!"
-	PopupMenu popup_LBNumericalKeys,mode=1,popvalue="- none -",value= #"DB_GetLBNumericalKeys(\"DB_ITC18USB_Dev_03\")"
-	PopupMenu popup_LBTextualKeys,pos={620.00,461.00},size={150.00,19.00},bodyWidth=150,proc=DB_PopMenuProc_LabNotebook
-	PopupMenu popup_LBTextualKeys,help={"Select textual lab notebook data to display"}
-	PopupMenu popup_LBTextualKeys,userdata(ResizeControlsInfo)= A"!!,J,!!#CKJ,hqP!!#<Pz!!#N3Bk1ct<C^(Dzzzzzzzzzzzzz!!#N3Bk1ct<C^(Dz"
-	PopupMenu popup_LBTextualKeys,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#N3Bk1ct<C]S6zzzzzzzzzz"
-	PopupMenu popup_LBTextualKeys,userdata(ResizeControlsInfo) += A"zzz!!#N3Bk1ct<C]S6zzzzzzzzzzzzz!!!"
-	PopupMenu popup_LBTextualKeys,mode=1,popvalue="- none -",value= #"DB_GetLBTextualKeys(\"DB_ITC18USB_Dev_03\")"
-	Button button_clearlabnotebookgraph,pos={611.00,491.00},size={80.00,25.00},proc=DB_ButtonProc_ClearGraph,title="Clear graph"
-	Button button_clearlabnotebookgraph,userdata(ResizeControlsInfo)= A"!!,J)^]6apJ,hp/!!#=+z!!#N3Bk1ct<C^(Dzzzzzzzzzzzzz!!#N3Bk1ct<C^(Dz"
-	Button button_clearlabnotebookgraph,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#N3Bk1ct<C]S6zzzzzzzzzz"
-	Button button_clearlabnotebookgraph,userdata(ResizeControlsInfo) += A"zzz!!#N3Bk1ct<C]S6zzzzzzzzzzzzz!!!"
-	Button button_switchxaxis,pos={703.00,491.00},size={80.00,25.00},proc=DB_ButtonProc_SwitchXAxis,title="Switch X-axis"
-	Button button_switchxaxis,help={"Toggle lab notebook horizontal axis between time of day or sweep number"}
-	Button button_switchxaxis,userdata(ResizeControlsInfo)= A"!!,J@^]6apJ,hp/!!#=+z!!#N3Bk1ct<C^(Dzzzzzzzzzzzzz!!#N3Bk1ct<C^(Dz"
-	Button button_switchxaxis,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#N3Bk1ct<C]S6zzzzzzzzzz"
-	Button button_switchxaxis,userdata(ResizeControlsInfo) += A"zzz!!#N3Bk1ct<C]S6zzzzzzzzzzzzz!!!"
-	GroupBox group_labnotebook_ctrls,pos={612.00,411.00},size={170.00,78.00},title="Settings History Column"
-	GroupBox group_labnotebook_ctrls,userdata(ResizeControlsInfo)= A"!!,J*!!#C2J,hqd!!#?Uz!!#N3Bk1ct<C^(Dzzzzzzzzzzzzz!!#N3Bk1ct<C^(Dz"
-	GroupBox group_labnotebook_ctrls,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#N3Bk1ct<C]S6zzzzzzzzzz"
-	GroupBox group_labnotebook_ctrls,userdata(ResizeControlsInfo) += A"zzz!!#N3Bk1ct<C]S6zzzzzzzzzzzzz!!!"
 	Button button_BSP_open,pos={716.00,40.00},size={76.00,21.00},proc=BSP_ButtonProc_Panel,title="<<"
 	Button button_BSP_open,help={"Open Side Panel"}
 	Button button_BSP_open,userdata(ResizeControlsInfo)= A"!!,JD!!#>.!!#?Q!!#<`z!!#](Aon\"q<C^(Dzzzzzzzzzzzzz!!#](Aon\"Q<C^(Dz"
@@ -495,12 +494,124 @@ Window DataBrowser() : Panel
 	ModifyGraph margin(left)=28,margin(bottom)=1
 	RenameWindow #,DataBrowserGraph
 	SetActiveSubwindow ##
-	Display/W=(200,187,600,501)/FG=(UGV1,UGH0,UGV0,UGH1)/HOST=# 
+EndMacro
+
+/// @brief procedure for the open button of the side panel
+Function DB_ButtonProc_Panel(ba) : ButtonControl
+	STRUCT WMButtonAction &ba
+
+	string win
+
+	switch(ba.eventcode)
+		case 2: // mouse up
+			win = GetMainWindow(ba.win)
+			DB_OpenSettingsHistory(win)
+			break
+	endswitch
+
+	BSP_ButtonProc_Panel(ba)
+	return 0
+End
+
+Window SettingsHistoryPanel() : Panel
+	PauseUpdate; Silent 1		// building window...
+	//NewPanel /W=(458,631,1041,778) as "Settings History"
+	PopupMenu popup_LBNumericalKeys,pos={411.00,26.00},size={150.00,19.00},bodyWidth=150,proc=DB_PopMenuProc_LabNotebook
+	PopupMenu popup_LBNumericalKeys,help={"Select numeric lab notebook data to display"}
+	PopupMenu popup_LBNumericalKeys,userdata(ResizeControlsInfo)= A"!!,I3J,hm^!!#A%!!#<Pz!!#N3Bk1ct<C^(Dzzzzzzzzzzzzz!!#N3Bk1ct<C^(Dz"
+	PopupMenu popup_LBNumericalKeys,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:DuaGl<C]S6zzzzzzzzzz"
+	PopupMenu popup_LBNumericalKeys,userdata(ResizeControlsInfo) += A"zzz!!#u:DuaGl<C]S6zzzzzzzzzzzzz!!!"
+	PopupMenu popup_LBNumericalKeys,mode=1,popvalue="- none -"
+	PopupMenu popup_LBTextualKeys,pos={411.00,55.00},size={150.00,19.00},bodyWidth=150,proc=DB_PopMenuProc_LabNotebook
+	PopupMenu popup_LBTextualKeys,help={"Select textual lab notebook data to display"}
+	PopupMenu popup_LBTextualKeys,userdata(ResizeControlsInfo)= A"!!,I3J,ho@!!#A%!!#<Pz!!#N3Bk1ct<C^(Dzzzzzzzzzzzzz!!#N3Bk1ct<C^(Dz"
+	PopupMenu popup_LBTextualKeys,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:DuaGl<C]S6zzzzzzzzzz"
+	PopupMenu popup_LBTextualKeys,userdata(ResizeControlsInfo) += A"zzz!!#u:DuaGl<C]S6zzzzzzzzzzzzz!!!"
+	PopupMenu popup_LBTextualKeys,mode=1,popvalue="- none -"
+	Button button_clearlabnotebookgraph,pos={402.00,85.00},size={80.00,25.00},proc=DB_ButtonProc_ClearGraph,title="Clear graph"
+	Button button_clearlabnotebookgraph,userdata(ResizeControlsInfo)= A"!!,I/!!#?c!!#?Y!!#=+z!!#N3Bk1ct<C^(Dzzzzzzzzzzzzz!!#N3Bk1ct<C^(Dz"
+	Button button_clearlabnotebookgraph,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:DuaGl<C]S6zzzzzzzzzz"
+	Button button_clearlabnotebookgraph,userdata(ResizeControlsInfo) += A"zzz!!#u:DuaGl<C]S6zzzzzzzzzzzzz!!!"
+	Button button_switchxaxis,pos={494.00,85.00},size={80.00,25.00},proc=DB_ButtonProc_SwitchXAxis,title="Switch X-axis"
+	Button button_switchxaxis,help={"Toggle lab notebook horizontal axis between time of day or sweep number"}
+	Button button_switchxaxis,userdata(ResizeControlsInfo)= A"!!,I]!!#?c!!#?Y!!#=+z!!#N3Bk1ct<C^(Dzzzzzzzzzzzzz!!#N3Bk1ct<C^(Dz"
+	Button button_switchxaxis,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:DuaGl<C]S6zzzzzzzzzz"
+	Button button_switchxaxis,userdata(ResizeControlsInfo) += A"zzz!!#u:DuaGl<C]S6zzzzzzzzzzzzz!!!"
+	GroupBox group_labnotebook_ctrls,pos={403.00,5.00},size={170.00,78.00},title="Settings History Column"
+	GroupBox group_labnotebook_ctrls,userdata(ResizeControlsInfo)= A"!!,I/J,hj-!!#A9!!#?Uz!!#N3Bk1ct<C^(Dzzzzzzzzzzzzz!!#N3Bk1ct<C^(Dz"
+	GroupBox group_labnotebook_ctrls,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:DuaGl<C]S6zzzzzzzzzz"
+	GroupBox group_labnotebook_ctrls,userdata(ResizeControlsInfo) += A"zzz!!#u:DuaGl<C]S6zzzzzzzzzzzzz!!!"
+	Button button_DataBrowser_setaxis,pos={401.00,114.00},size={171.00,25.00},proc=DB_ButtonProc_AutoScale,title="Autoscale"
+	Button button_DataBrowser_setaxis,help={"Autoscale sweep data"}
+	Button button_DataBrowser_setaxis,userdata(ResizeControlsInfo)= A"!!,I.J,hps!!#A:!!#=+z!!#N3Bk1ct<C^(Dzzzzzzzzzzzzz!!#N3Bk1ct<C^(Dz"
+	Button button_DataBrowser_setaxis,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Duafnzzzzzzzzzzz"
+	Button button_DataBrowser_setaxis,userdata(ResizeControlsInfo) += A"zzz!!#u:Duafnzzzzzzzzzzzzzz!!!"
+	DefineGuide UGV0={FR,-187}
+	SetWindow kwTopWin,hook(ResizeControls)=ResizeControls#ResizeControlsHook
+	SetWindow kwTopWin,userdata(ResizeControlsInfo)= A"!!*'\"z!!#D!^]6_8zzzzzzzzzzzzzzzzzzzzz"
+	SetWindow kwTopWin,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzzzzzzzzzzzzzzz"
+	SetWindow kwTopWin,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzzzzzzzzz!!!"
+	SetWindow kwTopWin,userdata(ResizeControlsGuides)=  "UGV0;"
+	SetWindow kwTopWin,userdata(ResizeControlsInfoUGV0)= A":-hTC3`S[N0KW?-:-)<bFED57B6-UXF*)>@Grnu.:dmEFF(KAR85E,T>#.mm5tj<n4&A^O8Q88W:-(0k2D-[;4%E:B6q&gk7T)<<<CoSI1-.Kp78-NR;b9q[:JNr&0fV*R"
+	Execute/Q/Z "SetWindow kwTopWin sizeLimit={437.25,110.25,inf,inf}" // sizeLimit requires Igor 7 or later
+	Display/W=(200,187,395,501)/FG=(FL,FT,UGV0,FB)/HOST=#
 	ModifyGraph margin(right)=74
 	TextBox/C/N=text0/F=0/B=1/X=0.50/Y=2.02/E=2 ""
 	RenameWindow #,LabNoteBook
 	SetActiveSubwindow ##
 EndMacro
+
+static Function DB_DynamicSettingsHistory(win)
+	string win
+
+	string mainPanel, shPanel
+
+	mainPanel = GetMainWindow(win)
+	shPanel = DB_GetSettingsHistoryPanel(win)
+	if(!WindowExists(shPanel))
+		return 0
+	endif
+
+	SetWindow $shPanel, hook(main)=DB_CloseSettingsHistoryHook
+
+	if(BSP_HasBoundDevice(win))
+		PopupMenu popup_LBNumericalKeys, win=$shPanel, value=#("DB_GetLBNumericalKeys(\"" + mainPanel + "\")")
+		PopupMenu popup_LBTextualKeys, win=$shPanel, value=#("DB_GetLBTextualKeys(\"" + mainPanel + "\")")
+	else
+		PopupMenu popup_LBNumericalKeys, win=$shPanel, value=#("\"" + NONE + "\"")
+		PopupMenu popup_LBTextualKeys, win=$shPanel, value=#("\"" + NONE + "\"")
+	endif
+
+	SetPopupMenuIndex(shPanel, "popup_LBNumericalKeys", 0)
+	SetPopupMenuIndex(shPanel, "popup_LBTextualKeys", 0)
+
+	ModifyPanel/W=$shPanel fixedSize=0
+End
+
+/// @brief panel close hook for settings history panel
+Function DB_CloseSettingsHistoryHook(s)
+	STRUCT WMWinHookStruct &s
+
+	string mainPanel, shPanel
+	variable hookResult = 0
+
+	switch(s.eventCode)
+		case 17: // killVote
+			mainPanel = GetMainWindow(s.winName)
+			shPanel = DB_GetSettingsHistoryPanel(mainPanel)
+
+			ASSERT(!cmpstr(s.winName, shPanel), "This hook is only available for Setting History Panel.")
+
+			SetWindow $s.winName hide=1
+
+			BSP_MainPanelButtonToggle(mainPanel, 1)
+
+			hookResult = 2 // don't kill window
+			break
+	endswitch
+
+	return hookResult
+End
 
 Function DB_DataBrowserStartupSettings()
 
@@ -523,7 +634,9 @@ Function DB_DataBrowserStartupSettings()
 	HideTools/A/W=$mainPanel
 
 	RemoveTracesFromGraph(mainGraph)
-	RemoveTracesFromGraph(lbGraph)
+	if(windowExists(lbGraph))
+		RemoveTracesFromGraph(lbGraph)
+	endif
 
 	Notebook $lbPanel selection={startOfFile, endOfFile}
 	Notebook $lbPanel text = ""
@@ -536,10 +649,6 @@ Function DB_DataBrowserStartupSettings()
 	DisableControl(bsPanel, "slider_BrowserSettings_dDAQ")
 
 	DB_ClearGraph(mainPanel)
-	SetPopupMenuIndex(mainPanel, "popup_LBNumericalKeys", 0)
-	SetPopupMenuIndex(mainPanel, "popup_LBTextualKeys", 0)
-	PopupMenu popup_LBNumericalKeys, win=$mainPanel, value=#("\"" + NONE + "\"")
-	PopupMenu popup_LBTextualKeys, win=$mainPanel, value=#("\"" + NONE + "\"")
 
 	SearchForInvalidControlProcs(mainPanel)
 End
@@ -589,13 +698,13 @@ Function DB_ButtonProc_AutoScale(ba) : ButtonControl
 	string win, mainGraph, lbGraph
 
 	win = ba.win
-	mainGraph = DB_GetMainGraph(win)
 	lbGraph   = DB_GetLabNotebookGraph(win)
 
 	switch(ba.eventcode)
 		case 2: // mouse up
-			SetAxis/A/W=$mainGraph
-			SetAxis/A=2/W=$lbGraph
+			if(WindowExists(lbGraph))
+				SetAxis/A=2/W=$lbGraph
+			endif
 			break
 	endswitch
 
