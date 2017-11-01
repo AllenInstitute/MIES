@@ -302,7 +302,7 @@ Constant MIES_BSP_AR  = 2
 Constant MIES_BSP_PA  = 3
 /// @}
 
-/// @name Possible values for MIES_BSP_FOLDER_TYPE in #BSP_GetFolder
+/// @name values for BrowserSettings UserData
 /// @{
 strConstant MIES_BSP_DEVICE = "DEVICE"
 strConstant MIES_BSP_PANEL_FOLDER = "PANEL_FOLDER"
