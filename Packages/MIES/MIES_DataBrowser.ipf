@@ -61,12 +61,6 @@ Function DB_OpenDataBrowser()
 	BSP_OpenPanel(win)
 End
 
-static Function/S DB_GetNotebookSubWindow(win)
-	string win
-
-	return GetMainWindow(win) + "#WaveNoteDisplay"
-End
-
 Function/S DB_GetMainGraph(win)
 	string win
 
@@ -245,7 +239,7 @@ Function DB_UpdateSweepPlot(win, [dummyArg])
 	referenceTime = DEBUG_TIMER_START()
 
 	mainPanel = GetMainWindow(win)
-	lbPanel   = DB_GetNotebookSubWindow(win)
+	lbPanel   = BSP_GetNotebookSubWindow(win)
 	bsPanel   = BSP_GetPanel(win)
 	scPanel   = BSP_GetSweepControlsPanel(win)
 	graph     = DB_GetMainGraph(win)
@@ -501,14 +495,6 @@ Window DataBrowser() : Panel
 	ModifyGraph margin(left)=28,margin(bottom)=1
 	RenameWindow #,DataBrowserGraph
 	SetActiveSubwindow ##
-	NewNotebook /F=1 /N=WaveNoteDisplay /W=(200,187,600,561)/FG=(UGV0,UGH2,FR,UGH0) /HOST=# /OPTS=10 
-	Notebook kwTopWin, defaultTab=36, autoSave= 1, showRuler=0, rulerUnits=1
-	Notebook kwTopWin newRuler=Normal, justification=0, margins={0,0,128}, spacing={0,0,0}, tabs={}, rulerDefaults={"Arial",10,0,(0,0,0)}
-	Notebook kwTopWin, zdata= "GaqDU%ejN7!Z)u^\"(F_BAcgu2S,7dSL]iZ-,W[?i6\"=DG6/B>,7,t^3K>Ff@1GOXc!\"Z\"8'`"
-	Notebook kwTopWin, zdataEnd= 1
-	Execute/Q/Z "SetWindow kwTopWin sizeLimit={600,450,inf,inf}" // sizeLimit requires Igor 7 or later
-	RenameWindow #,WaveNoteDisplay
-	SetActiveSubwindow ##
 	Display/W=(200,187,600,501)/FG=(UGV1,UGH0,UGV0,UGH1)/HOST=# 
 	ModifyGraph margin(right)=74
 	TextBox/C/N=text0/F=0/B=1/X=0.50/Y=2.02/E=2 ""
@@ -522,7 +508,7 @@ Function DB_DataBrowserStartupSettings()
 	variable i, numCheckBoxes
 
 	mainPanel = "DataBrowser"
-	lbPanel   = DB_GetNotebookSubWindow(mainPanel)
+	lbPanel   = BSP_GetNotebookSubWindow(mainPanel)
 	mainGraph = DB_GetMainGraph(mainPanel)
 	lbGraph   = DB_GetLabNotebookGraph(mainPanel)
 	bsPanel   = BSP_GetPanel(mainPanel)

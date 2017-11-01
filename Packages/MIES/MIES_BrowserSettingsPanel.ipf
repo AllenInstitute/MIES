@@ -24,6 +24,13 @@ Function/S BSP_GetPanel(mainPanel)
 	return GetMainWindow(mainPanel) + "#" + EXT_PANEL_SUBWINDOW
 End
 
+/// @brief return the name of the WaveNote Display inside BSP
+Function/S BSP_GetNotebookSubWindow(win)
+	string win
+
+	return BSP_GetPanel(win) + "#WaveNoteDisplay"
+End
+
 /// @brief return the name of the bottom Panel
 ///
 /// @param mainPanel 	mainWindow panel name
@@ -66,7 +73,7 @@ Function BSP_OpenSettingsPanel(mainPanel)
 	endif
 
 	ASSERT(windowExists(mainPanel), "HOST panel does not exist")
-	NewPanel/HOST=$mainPanel/EXT=1/W=(236,0,0,410)/N=$EXT_PANEL_SUBWINDOW  as " "
+	NewPanel/HOST=$mainPanel/EXT=1/W=(280,0,0,410)/N=$EXT_PANEL_SUBWINDOW  as " "
 	Execute "BrowserSettingsPanel()"
 	BSP_DynamicStartupSettings(mainPanel)
 End
@@ -527,13 +534,14 @@ EndMacro
 /// @brief window macro for side panel
 Window BrowserSettingsPanel() : Panel
 	PauseUpdate; Silent 1		// building window...
-	//NewPanel /W=(202,80,437,493) as " "
+	//NewPanel /W=(202,80,484,492) as " "
+	SetDrawLayer UserBack
 	GroupBox group_calc,pos={12.00,245.00},size={210.00,50.00}
 	GroupBox group_calc,userdata(tabnum)=  "0",userdata(tabcontrol)=  "Settings"
-	TabControl Settings,pos={2.00,2.00},size={230.00,19.00},proc=ACL_DisplayTab
+	TabControl Settings,pos={2.00,2.00},size={280.00,19.00},proc=ACL_DisplayTab
 	TabControl Settings,userdata(currenttab)=  "0",tabLabel(0)="Settings"
 	TabControl Settings,tabLabel(1)="OVS",tabLabel(2)="CS",tabLabel(3)="AR"
-	TabControl Settings,tabLabel(4)="PA",value= 0
+	TabControl Settings,tabLabel(4)="PA",tabLabel(5)="Note",value= 0
 	ListBox list_of_ranges,pos={27.00,206.00},size={186.00,200.00},disable=1,proc=OVS_MainListBoxProc
 	ListBox list_of_ranges,help={"Select sweeps for overlay; The second column (\"Headstages\") allows to ignore some headstages for the graphing. Syntax is a semicolon \";\" separated list of subranges, e.g. \"0\", \"0,2\", \"1;4;2\""}
 	ListBox list_of_ranges,userdata(tabnum)=  "1",userdata(tabcontrol)=  "Settings"
@@ -851,6 +859,15 @@ Window BrowserSettingsPanel() : Panel
 	PopupMenu popup_DB_lockedDevices,userdata(tabnum)=  "0"
 	PopupMenu popup_DB_lockedDevices,userdata(tabcontrol)=  "Settings"
 	PopupMenu popup_DB_lockedDevices,mode=1,popvalue="- none -",value= #"DB_GetAllDevicesWithData()"
+	NewNotebook /F=1 /N=WaveNoteDisplay /W=(200,24,600,561)/FG=(FL,$"",FR,UGH0) /HOST=# /V=0 /OPTS=10
+	Notebook kwTopWin, defaultTab=36, autoSave= 1, showRuler=0, rulerUnits=1
+	Notebook kwTopWin newRuler=Normal, justification=0, margins={0,0,189}, spacing={0,0,0}, tabs={}, rulerDefaults={"Arial",10,0,(0,0,0)}
+	Notebook kwTopWin, zdata= "GaqDU%ejN7!Z)u^\"(F_BAcgu2S,7dSL]iZ-,W[?i6\"=DG6/B>,7,t^3K>Ff@1GOXc!\"Z\"8'`"
+	Notebook kwTopWin, zdataEnd= 1
+	SetWindow kwTopWin,userdata(tabnum)=  "5"
+	SetWindow kwTopWin,userdata(tabcontrol)=  "Settings"
+	RenameWindow #,WaveNoteDisplay
+	SetActiveSubwindow ##
 EndMacro
 
 /// @brief enable/disable checkbox control for side panel

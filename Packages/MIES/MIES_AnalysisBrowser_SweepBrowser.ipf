@@ -338,12 +338,13 @@ Function SB_UpdateSweepPlot(win, [newSweep])
 	string win
 	variable newSweep
 
-	string device, dataFolder, graph, bsPanel, scPanel
-	variable mapIndex, i, numEntries, sweepNo, highlightSweep, traceIndex
+	string device, dataFolder, graph, bsPanel, scPanel, lbPanel
+	variable mapIndex, i, numEntries, sweepNo, highlightSweep, traceIndex, currentSweep
 
 	graph = GetMainWindow(win)
 	bsPanel   = BSP_GetPanel(graph)
 	scPanel   = BSP_GetSweepControlsPanel(win)
+	lbPanel   = BSP_GetNotebookSubWindow(win)
 
 	if(BSP_MainPanelNeedsUpdate(graph))
 		DoAbortNow("The main panel is too old to be usable. Please close it and open a new one.")
@@ -379,8 +380,9 @@ Function SB_UpdateSweepPlot(win, [newSweep])
 	WAVE/T sweepMap = SB_GetSweepBrowserMap(sweepBrowserDFR)
 	WAVE channelSel = GetChannelSelectionWave(sweepBrowserDFR)
 
+	currentSweep = GetPopupMenuIndex(scPanel, "popup_SweepControl_Selector")
 	if(!WaveExists(sweepsToOverlay))
-		Make/FREE/N=1 sweepsToOverlay = GetPopupMenuIndex(scPanel, "popup_SweepControl_Selector")
+		Make/FREE/N=1 sweepsToOverlay = currentSweep
 	endif
 
 	WAVE axisLabelCache = GetAxisLabelCacheWave()
@@ -412,6 +414,16 @@ Function SB_UpdateSweepPlot(win, [newSweep])
 		CreateTiledChannelGraph(graph, configWave, sweepNo, numericalValues, textualValues, tgs, sweepDFR, axisLabelCache, traceIndex, channelSelWave=sweepChannelSel)
 		AR_UpdateTracesIfReq(graph, sweepDFR, numericalValues, sweepNo)
 	endfor
+
+	dataFolder = sweepMap[currentSweep][%DataFolder]
+	device     = sweepMap[currentSweep][%Device]
+	sweepNo    = str2num(sweepMap[currentSweep][%Sweep])
+	DFREF sweepDATAdfr = GetAnalysisSweepDataPath(dataFolder, device, sweepNo)
+	SVAR/Z sweepNote = sweepDATAdfr:note
+	if(SVAR_EXISTS(sweepNote))
+		Notebook $lbPanel text = "Sweep note: \r " + sweepNote
+	endif
+	Notebook $lbPanel selection={startOfFile, endOfFile} // select entire contents of notebook
 
 	PostPlotTransformations(graph, pps)
 	SetAxesRanges(graph, axesRanges)
