@@ -295,7 +295,7 @@ static Function TP_RecordTP(panelTitle, BaselineSSAvg, InstResistance, SSResista
 		TPStorage[0][][%TimeInSeconds] = now
 
 		for(i = 0 ; i < NUM_HEADSTAGES; i += 1)
-			if(GUIState[i][%HSState])
+			if(GUIState[i][%$GetSpecialControlLabel(CHANNEL_TYPE_HEADSTAGE, CHANNEL_CONTROL_CHECK)])
 				TP_UpdateHoldCmdInTPStorage(panelTitle, i)
 			endif
 		endfor

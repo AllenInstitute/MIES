@@ -4185,29 +4185,29 @@ End
 /// - Column specific GUI control settings usually associated with control name number
 ///
 /// Columns:
-/// - 0: HSState State of control Check_DataAcqHS_RowNum. 0 = UnChecked, 1 = Checked
-/// - 1: HSMode Clamp mode of HS number that matches Row number. 0 = VC, 1 = IC, 2 = NC.
-/// - 2: DAState State of control Check_DA_RowNum. 0 = UnChecked, 1 = Checked
-/// - 3: DAGain Internal number stored in control Gain_DA_RowNum. Gain is user/hardware defined.
-/// - 4: DAScale Internal number stored in setvar:Scale_DA_RowNum. Scalar is user defined.
-/// - 5: DAStartIndex PopupMenu Index of popupMenu:Wave_DA_RowNum. Stores index
+/// - 0: State of control Check_DataAcqHS_RowNum. 0 = UnChecked, 1 = Checked
+/// - 1: Clamp mode of HS number that matches Row number. 0 = VC, 1 = IC, 2 = NC.
+/// - 2: State of control Check_DA_RowNum. 0 = UnChecked, 1 = Checked
+/// - 3: Internal number stored in control Gain_DA_RowNum. Gain is user/hardware defined.
+/// - 4: Internal number stored in setvar:Scale_DA_RowNum. Scalar is user defined.
+/// - 5: PopupMenu Index of popupMenu:Wave_DA_RowNum. Stores index
 ///  	 of active DA stimulus set during data acquisition. Stores index of next DA
 ///      stimulus set when data acquistion is not active.
-/// - 6: DAEndIndex PopupMenu Index of popupMenu:IndexEnd_DA_RowNum. Stores the
+/// - 6: PopupMenu Index of popupMenu:IndexEnd_DA_RowNum. Stores the
 ///      index of the last DA stimulus set used in indexed aquisition mode.
-/// - 7: ADState State of checkbox control Check_AD_RowNum. 0 = UnChecked, 1 = Checked
-/// - 8: ADGain Internal number stored in Gain_AD_RowNum. Gain is user/hardware defined.
-/// - 9: TTLState State of checkbox control Check_TTL_RowNum.  0 = UnChecked, 1 = Checked
-/// - 10: TTLStartIndex PopupMenu Index of popupMenu:Wave_TTL_RowNum. Stores
+/// - 7: State of checkbox control Check_AD_RowNum. 0 = UnChecked, 1 = Checked
+/// - 8: Internal number stored in Gain_AD_RowNum. Gain is user/hardware defined.
+/// - 9: State of checkbox control Check_TTL_RowNum.  0 = UnChecked, 1 = Checked
+/// - 10: PopupMenu Index of popupMenu:Wave_TTL_RowNum. Stores
 ///       index of active TTL stimulus set during data acquisition. Stores index of
 ///       next TTL stimulus set when data acquistion is not active.
-/// - 11: TTLEndIndex PopupMenu Index of popupMenu:IndexEnd_TTL_RowNum. Stores
+/// - 11: PopupMenu Index of popupMenu:IndexEnd_TTL_RowNum. Stores
 ///       the index of the last TTL stimulus set used in indexed aquisition mode.
-/// - 12: AsyncState State of control Check_AsyncAD_RowNum. 0 = UnChecked, 1 = Checked
-/// - 13: AsyncGain Internal number stored in control SetVar_AsyncAD_Gain_RowNum. Gain is user/hardware defined.
-/// - 14: AlarmState State of control check_AsyncAlarm_RowNum. 0 = UnChecked, 1 = Checked
-/// - 15: AlarmMin Internal number stored in control min_AsyncAD__RowNum. The minium value alarm trigger.
-/// - 16: AlarmMax Internal number stored in control max_AsyncAD_RowNum. The max value alarm trigger.
+/// - 12: State of control Check_AsyncAD_RowNum. 0 = UnChecked, 1 = Checked
+/// - 13: Internal number stored in control SetVar_AsyncAD_Gain_RowNum. Gain is user/hardware defined.
+/// - 14: State of control check_AsyncAlarm_RowNum. 0 = UnChecked, 1 = Checked
+/// - 15: Internal number stored in control min_AsyncAD__RowNum. The minium value alarm trigger.
+/// - 16: Internal number stored in control max_AsyncAD_RowNum. The max value alarm trigger.
 /// - 17+: Unique controls
 Function/Wave GetDA_EphysGuiStateNum(panelTitle)
 	string panelTitle
@@ -4241,23 +4241,23 @@ Function/Wave GetDA_EphysGuiStateNum(panelTitle)
 		wv = Nan
 	endif
 
-	SetDimLabel COLS,  0, HSState, wv
+	SetDimLabel COLS,  0, $GetSpecialControlLabel(CHANNEL_TYPE_HEADSTAGE, CHANNEL_CONTROL_CHECK), wv
 	SetDimLabel COLS,  1, HSMode, wv
-	SetDimLabel COLS,  2, DAState, wv
-	SetDimLabel COLS,  3, DAGain, wv
-	SetDimLabel COLS,  4, DAScale, wv
-	SetDimLabel COLS,  5, DAStartIndex, wv
-	SetDimLabel COLS,  6, DAEndIndex, wv
-	SetDimLabel COLS,  7, ADState, wv
-	SetDimLabel COLS,  8, ADGain, wv
-	SetDimLabel COLS,  9, TTLState, wv
-	SetDimLabel COLS, 10, TTLStartIndex, wv
-	SetDimLabel COLS, 11, TTLEndIndex, wv
-	SetDimLabel COLS, 12, AsyncState, wv
-	SetDimLabel COLS, 13, AsyncGain, wv
-	SetDimLabel COLS, 14, AlarmState, wv
-	SetDimLabel COLS, 15, AlarmMin, wv
-	SetDimLabel COLS, 16, AlarmMax, wv
+	SetDimLabel COLS,  2, $GetSpecialControlLabel(CHANNEL_TYPE_DAC, CHANNEL_CONTROL_CHECK), wv
+	SetDimLabel COLS,  3, $GetSpecialControlLabel(CHANNEL_TYPE_DAC, CHANNEL_CONTROL_GAIN), wv
+	SetDimLabel COLS,  4, $GetSpecialControlLabel(CHANNEL_TYPE_DAC, CHANNEL_CONTROL_SCALE), wv
+	SetDimLabel COLS,  5, $GetSpecialControlLabel(CHANNEL_TYPE_DAC, CHANNEL_CONTROL_WAVE), wv
+	SetDimLabel COLS,  6, $GetSpecialControlLabel(CHANNEL_TYPE_DAC, CHANNEL_CONTROL_INDEX_END), wv
+	SetDimLabel COLS,  7, $GetSpecialControlLabel(CHANNEL_TYPE_ADC, CHANNEL_CONTROL_CHECK), wv
+	SetDimLabel COLS,  8, $GetSpecialControlLabel(CHANNEL_TYPE_ADC, CHANNEL_CONTROL_GAIN), wv
+	SetDimLabel COLS,  9, $GetSpecialControlLabel(CHANNEL_TYPE_TTL, CHANNEL_CONTROL_CHECK), wv
+	SetDimLabel COLS, 10, $GetSpecialControlLabel(CHANNEL_TYPE_TTL, CHANNEL_CONTROL_WAVE), wv
+	SetDimLabel COLS, 11, $GetSpecialControlLabel(CHANNEL_TYPE_TTL, CHANNEL_CONTROL_INDEX_END), wv
+	SetDimLabel COLS, 12, $GetSpecialControlLabel(CHANNEL_TYPE_ASYNC, CHANNEL_CONTROL_CHECK), wv
+	SetDimLabel COLS, 13, $GetSpecialControlLabel(CHANNEL_TYPE_ASYNC, CHANNEL_CONTROL_GAIN), wv
+	SetDimLabel COLS, 14, $GetSpecialControlLabel(CHANNEL_TYPE_ALARM, CHANNEL_CONTROL_CHECK), wv
+	SetDimLabel COLS, 15, $GetSpecialControlLabel(CHANNEL_TYPE_ASYNC, CHANNEL_CONTROL_ALARM_MIN), wv
+	SetDimLabel COLS, 16, $GetSpecialControlLabel(CHANNEL_TYPE_ASYNC, CHANNEL_CONTROL_ALARM_MAX), wv
 
 	SetWaveDimLabel(wv, uniqueCtrlList, COLS, startPos = COMMON_CONTROL_GROUP_COUNT_NUM)
 	SetWaveVersion(wv, DA_EPHYS_PANEL_VERSION)
@@ -4272,16 +4272,16 @@ End
 /// - Column specific GUI control settings usually associated with control name number
 ///
 /// Columns:
-/// - 0: DAStartIndex  (DA)  First stimset name
-/// - 1: DAEndIndex    (DA)  Last stimset name
-/// - 2: DAUnit        (DA)  Unit
-/// - 3: DASearch      (DA)  Search string
-/// - 4: ADUnit        (AD)  Unit
-/// - 5: TTLStartIndex (TTL) First stimset name
-/// - 6: TTLEndIndex   (TTL) Last stimset name
-/// - 7: TTLSearch     (TTL) Search string
-/// - 8: AsyncTitle    (Async) Title
-/// - 9: AsyncUnit     (Async) Unit
+/// - 0: (DA)  First stimset name
+/// - 1: (DA)  Last stimset name
+/// - 2: (DA)  Unit
+/// - 3: (DA)  Search string
+/// - 4: (AD)  Unit
+/// - 5: (TTL) First stimset name
+/// - 6: (TTL) Last stimset name
+/// - 7: (TTL) Search string
+/// - 8: (Async) Title
+/// - 9: (Async) Unit
 /// - 10+: Unique controls (SetVariable and PopupMenu only)
 Function/Wave GetDA_EphysGuiStateTxT(panelTitle)
 	string panelTitle
@@ -4307,22 +4307,29 @@ Function/Wave GetDA_EphysGuiStateTxT(panelTitle)
 		wv = ""
 	endif
 
-	SetDimLabel COLS,  0, DAStartIndex, wv
-	SetDimLabel COLS,  1, DAEndIndex, wv
-	SetDimLabel COLS,  2, DAUnit, wv
-	SetDimLabel COLS,  3, DASearch, wv
-	SetDimLabel COLS,  4, ADUnit, wv
-	SetDimLabel COLS,  5, TTLStartIndex, wv
-	SetDimLabel COLS,  6, TTLEndIndex, wv
-	SetDimLabel COLS,  7, TTLSearch, wv
-	SetDimLabel COLS,  8, AsyncTitle, wv
-	SetDimLabel COLS,  9, AsyncUnit, wv
+	SetDimLabel COLS,  0, $GetSpecialControlLabel(CHANNEL_TYPE_DAC, CHANNEL_CONTROL_WAVE), wv
+	SetDimLabel COLS,  1, $GetSpecialControlLabel(CHANNEL_TYPE_DAC, CHANNEL_CONTROL_INDEX_END), wv
+	SetDimLabel COLS,  2, $GetSpecialControlLabel(CHANNEL_TYPE_DAC, CHANNEL_CONTROL_UNIT), wv
+	SetDimLabel COLS,  3, $GetSpecialControlLabel(CHANNEL_TYPE_DAC, CHANNEL_CONTROL_SEARCH), wv
+	SetDimLabel COLS,  4, $GetSpecialControlLabel(CHANNEL_TYPE_ADC, CHANNEL_CONTROL_UNIT), wv
+	SetDimLabel COLS,  5, $GetSpecialControlLabel(CHANNEL_TYPE_TTL, CHANNEL_CONTROL_WAVE), wv
+	SetDimLabel COLS,  6, $GetSpecialControlLabel(CHANNEL_TYPE_TTL, CHANNEL_CONTROL_INDEX_END), wv
+	SetDimLabel COLS,  7, $GetSpecialControlLabel(CHANNEL_TYPE_TTL, CHANNEL_CONTROL_SEARCH), wv
+	SetDimLabel COLS,  8, $GetSpecialControlLabel(CHANNEL_TYPE_ASYNC, CHANNEL_CONTROL_TITLE), wv
+	SetDimLabel COLS,  9, $GetSpecialControlLabel(CHANNEL_TYPE_ASYNC, CHANNEL_CONTROL_UNIT), wv
 
 	SetWaveDimLabel(wv, uniqueCtrlList, COLS, startPos = COMMON_CONTROL_GROUP_COUNT_TXT)
 	SetWaveVersion(wv, DA_EPHYS_PANEL_VERSION)
 	// needs to be called after setting the wave version in order to avoid infinite recursion
 	RecordGuiStateTxTWrapper(panelTitle, wv)
 	return wv
+End
+
+/// @brief Return the dimension label for the special, aka non-unique, controls
+Function/S GetSpecialControlLabel(channelType, controlType)
+	variable channelType, controlType
+
+	return RemoveEnding(GetPanelControl(0, channelType, controlType), "_00")
 End
 
 /// @brief Calls DAP_RecordGuiStateNum() if it can be found,
@@ -4404,8 +4411,8 @@ Function/S GetUniqueCtrlList(paneltitle)
 	numEntries = ItemsInlist(list)
 	for(i = 0;i < numEntries ;i += 1)
 		ctrl = StringFromList(i, list)
-		if(!ParsePanelControlWrapper(ctrl,  channelIndex, channelType, controlType))
-			// special control already handled
+		if(!ParsePanelControlWrapper(ctrl,  channelIndex, channelType, controlType) && channelIndex >= 0)
+			// special control already handled, but only for non-All controls
 			continue
 		endif
 		prunedList = AddListItem(ctrl, prunedList, ";", inf)

@@ -5904,7 +5904,7 @@ static Function DAP_ApplyClmpModeSavdSettngs(panelTitle, headStage, clampMode)
 	// DAC channels
 	ctrl = GetPanelControl(DACchannel, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_CHECK)
 	SetCheckBoxState(panelTitle, 	ctrl, CHECKBOX_SELECTED)
-	GuiState[DACchannel][%DAState] = CHECKBOX_SELECTED
+	GuiState[DACchannel][%$GetSpecialControlLabel(CHANNEL_TYPE_DAC, CHANNEL_CONTROL_CHECK)] = CHECKBOX_SELECTED
 	ctrl = GetPanelControl(DACchannel, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_GAIN)
 	SetSetVariable(panelTitle, ctrl, DaGain)
 	ctrl = GetPanelControl(DACchannel, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_UNIT)
@@ -5914,7 +5914,7 @@ static Function DAP_ApplyClmpModeSavdSettngs(panelTitle, headStage, clampMode)
 	// ADC channels
 	ctrl = GetPanelControl(ADCchannel, CHANNEL_TYPE_ADC, CHANNEL_CONTROL_CHECK)
 	SetCheckBoxState(panelTitle, ctrl, CHECKBOX_SELECTED)
-	GuiState[ADCchannel][%ADState] = CHECKBOX_SELECTED
+	GuiState[ADCchannel][%$GetSpecialControlLabel(CHANNEL_TYPE_ADC, CHANNEL_CONTROL_CHECK)] = CHECKBOX_SELECTED
 	ctrl = GetPanelControl(ADCchannel, CHANNEL_TYPE_ADC, CHANNEL_CONTROL_GAIN)
 	SetSetVariable(panelTitle, ctrl, ADGain)
 	ctrl = GetPanelControl(ADCchannel, CHANNEL_TYPE_ADC, CHANNEL_CONTROL_UNIT)
@@ -5948,12 +5948,12 @@ static Function DAP_RemoveClampModeSettings(panelTitle, headStage, clampMode)
 	ctrl = GetPanelControl(DACchannel, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_CHECK)
 	SetCheckBoxState(panelTitle, ctrl, CHECKBOX_UNSELECTED)
 	ChannelClampMode[DACchannel][%DAC] = nan
-	GuiState[DACchannel][%DAState]     = CHECKBOX_UNSELECTED
+	GuiState[DACchannel][%$GetSpecialControlLabel(CHANNEL_TYPE_DAC, CHANNEL_CONTROL_CHECK)] = CHECKBOX_UNSELECTED
 
 	ctrl = GetPanelControl(ADCchannel, CHANNEL_TYPE_ADC, CHANNEL_CONTROL_CHECK)
 	SetCheckBoxState(panelTitle, ctrl, CHECKBOX_UNSELECTED)
 	ChannelClampMode[ADCchannel][%ADC] = nan
-	GuiState[ADCchannel][%ADState]     = CHECKBOX_UNSELECTED
+	GuiState[ADCchannel][%$GetSpecialControlLabel(CHANNEL_TYPE_ADC, CHANNEL_CONTROL_CHECK)] = CHECKBOX_UNSELECTED
 End
 
 /// @brief Returns the name of the checkbox control (radio button) handling the clamp mode of the given headstage or all headstages
@@ -6332,7 +6332,7 @@ static Function DAP_ChangeHeadstageState(panelTitle, headStageCtrl, enabled)
 		headStageCtrl = GetPanelControl(i, CHANNEL_TYPE_HEADSTAGE, CHANNEL_CONTROL_CHECK)
 		SetCheckBoxState(panelTitle, headStageCtrl, enabled)
 
-		GuiState[i][%HSState] = enabled
+		GuiState[i][%$GetSpecialControlLabel(CHANNEL_TYPE_HEADSTAGE, CHANNEL_CONTROL_CHECK)] = enabled
 	
 		clampMode = GuiState[i][%HSmode]
 		if(!enabled)
@@ -7265,62 +7265,78 @@ Function DAP_RecordGuiStateNum(panelTitle, [GUIState])
 	WAVE GUIState
 
 	variable i, numEntries
-	string ctrlName
+	string ctrlName, lbl
 
 	if(ParamIsDefault(GuiState))
 		Wave GUIState = GetDA_EphysGuiStateNum(panelTitle)
 	endif
 
 	WAVE state = DAP_ControlStatusWave(panelTitle, CHANNEL_TYPE_HEADSTAGE)
-	GUIState[0, NUM_HEADSTAGES - 1][%HSState] = state[p]
+	lbl        = GetSpecialControlLabel(CHANNEL_TYPE_HEADSTAGE, CHANNEL_CONTROL_CHECK)
+	GUIState[0, NUM_HEADSTAGES - 1][%$lbl] = state[p]
 
 	WAVE state = DAP_GetAllHSMode(panelTitle)
 	GUIState[0, NUM_HEADSTAGES - 1][%HSMode] = state[p]
 	
 	WAVE state = DAP_ControlStatusWave(panelTitle, CHANNEL_TYPE_DAC)
-	GUIState[0, NUM_DA_TTL_CHANNELS - 1][%DAState] = state[p]
+	lbl        = GetSpecialControlLabel(CHANNEL_TYPE_DAC, CHANNEL_CONTROL_CHECK)
+	GUIState[0, NUM_DA_TTL_CHANNELS - 1][%$lbl] = state[p]
 
 	WAVE state = GetAllDAEphysSetVarNum(panelTitle, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_GAIN)
-	GUIState[0, NUM_DA_TTL_CHANNELS - 1][%DAGain] = state[p]
+	lbl        = GetSpecialControlLabel(CHANNEL_TYPE_DAC, CHANNEL_CONTROL_GAIN)
+	GUIState[0, NUM_DA_TTL_CHANNELS - 1][%$lbl] = state[p]
 
 	WAVE state = GetAllDAEphysSetVarNum(panelTitle, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_SCALE)
-	GUIState[0, NUM_DA_TTL_CHANNELS - 1][%DAScale] = state[p]
+	lbl        = GetSpecialControlLabel(CHANNEL_TYPE_DAC, CHANNEL_CONTROL_SCALE)
+	GUIState[0, NUM_DA_TTL_CHANNELS - 1][%$lbl] = state[p]
 
 	WAVE state = GetAllDAEphysPopMenuIndex(panelTitle, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_WAVE)
-	GUIState[0, NUM_DA_TTL_CHANNELS - 1][%DAStartIndex] = state[p]
+	lbl        = GetSpecialControlLabel(CHANNEL_TYPE_DAC, CHANNEL_CONTROL_WAVE)
+	GUIState[0, NUM_DA_TTL_CHANNELS - 1][%$lbl] = state[p]
 
 	WAVE state = GetAllDAEphysPopMenuIndex(panelTitle, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_INDEX_END)
-	GUIState[0, NUM_DA_TTL_CHANNELS - 1][%DAEndIndex] = state[p]
+	lbl        = GetSpecialControlLabel(CHANNEL_TYPE_DAC, CHANNEL_CONTROL_INDEX_END)
+	GUIState[0, NUM_DA_TTL_CHANNELS - 1][%$lbl] = state[p]
 
 	WAVE state = DAP_ControlStatusWave(panelTitle, CHANNEL_TYPE_ADC)
-	GUIState[0, NUM_AD_CHANNELS - 1][%ADState] = state[p]
+	lbl        = GetSpecialControlLabel(CHANNEL_TYPE_ADC, CHANNEL_CONTROL_CHECK)
+	GUIState[0, NUM_AD_CHANNELS - 1][%$lbl] = state[p]
 
 	WAVE state = GetAllDAEphysSetVarNum(panelTitle, CHANNEL_TYPE_ADC, CHANNEL_CONTROL_GAIN)
-	GUIState[0, NUM_AD_CHANNELS - 1][%ADGain] = state[p]
+	lbl        = GetSpecialControlLabel(CHANNEL_TYPE_ADC, CHANNEL_CONTROL_GAIN)
+	GUIState[0, NUM_AD_CHANNELS - 1][%$lbl] = state[p]
 
 	WAVE state = DAP_ControlStatusWave(panelTitle, CHANNEL_TYPE_TTL)
-	GUIState[0, NUM_DA_TTL_CHANNELS - 1][%TTLState] = state[p]
+	lbl        = GetSpecialControlLabel(CHANNEL_TYPE_TTL, CHANNEL_CONTROL_CHECK)
+	GUIState[0, NUM_DA_TTL_CHANNELS - 1][%$lbl] = state[p]
 
 	WAVE state = GetAllDAEphysPopMenuIndex(panelTitle, CHANNEL_TYPE_TTL, CHANNEL_CONTROL_WAVE)
-	GUIState[0, NUM_DA_TTL_CHANNELS - 1][%TTLStartIndex] = state[p]
+	lbl        = GetSpecialControlLabel(CHANNEL_TYPE_TTL, CHANNEL_CONTROL_WAVE)
+	GUIState[0, NUM_DA_TTL_CHANNELS - 1][%$lbl] = state[p]
 
 	WAVE state = GetAllDAEphysPopMenuIndex(panelTitle, CHANNEL_TYPE_TTL, CHANNEL_CONTROL_INDEX_END)
-	GUIState[0, NUM_DA_TTL_CHANNELS - 1][%TTLEndIndex] = state[p]
+	lbl        = GetSpecialControlLabel(CHANNEL_TYPE_TTL, CHANNEL_CONTROL_INDEX_END)
+	GUIState[0, NUM_DA_TTL_CHANNELS - 1][%$lbl] = state[p]
 
 	WAVE state = DAP_ControlStatusWave(panelTitle, CHANNEL_TYPE_ASYNC)
-	GUIState[0, NUM_ASYNC_CHANNELS - 1][%AsyncState] = state[p]
+	lbl        = GetSpecialControlLabel(CHANNEL_TYPE_ASYNC, CHANNEL_CONTROL_CHECK)
+	GUIState[0, NUM_ASYNC_CHANNELS - 1][%$lbl] = state[p]
 
 	WAVE state = GetAllDAEphysSetVarNum(panelTitle, CHANNEL_TYPE_ASYNC, CHANNEL_CONTROL_GAIN)
-	GUIState[0, NUM_ASYNC_CHANNELS - 1][%AsyncGain] = state[p]
+	lbl        = GetSpecialControlLabel(CHANNEL_TYPE_ASYNC, CHANNEL_CONTROL_GAIN)
+	GUIState[0, NUM_ASYNC_CHANNELS - 1][%$lbl] = state[p]
 
 	WAVE state = DAP_ControlStatusWave(panelTitle, CHANNEL_TYPE_ALARM)
-	GUIState[0, NUM_ASYNC_CHANNELS - 1][%AlarmState] = state[p]
+	lbl        = GetSpecialControlLabel(CHANNEL_TYPE_ALARM, CHANNEL_CONTROL_CHECK)
+	GUIState[0, NUM_ASYNC_CHANNELS - 1][%$lbl] = state[p]
 
 	WAVE state = GetAllDAEphysSetVarNum(panelTitle, CHANNEL_TYPE_ASYNC, CHANNEL_CONTROL_ALARM_MIN)
-	GUIState[0, NUM_ASYNC_CHANNELS - 1][%AlarmMin] = state[p]
+	lbl        = GetSpecialControlLabel(CHANNEL_TYPE_ASYNC, CHANNEL_CONTROL_ALARM_MIN)
+	GUIState[0, NUM_ASYNC_CHANNELS - 1][%$lbl] = state[p]
 
 	WAVE state = GetAllDAEphysSetVarNum(panelTitle, CHANNEL_TYPE_ASYNC, CHANNEL_CONTROL_ALARM_MAX)
-	GUIState[0, NUM_ASYNC_CHANNELS - 1][%AlarmMax] = state[p]
+	lbl        = GetSpecialControlLabel(CHANNEL_TYPE_ASYNC, CHANNEL_CONTROL_ALARM_MAX)
+	GUIState[0, NUM_ASYNC_CHANNELS - 1][%$lbl] = state[p]
 
 	numEntries = DimSize(GUIState, COLS)
 	for(i = COMMON_CONTROL_GROUP_COUNT_NUM; i < numEntries; i += 1)
@@ -7337,7 +7353,7 @@ Function DAP_RecordGuiStateTxT(panelTitle, [GUIState])
 	WAVE GUIState
 
 	variable i, numEntries
-	string ctrlName
+	string ctrlName, lbl
 
 	if(ParamIsDefault(GuiState))
 		Wave/T GUIStateTxT = GetDA_EphysGuiStateTxT(panelTitle)
@@ -7346,34 +7362,44 @@ Function DAP_RecordGuiStateTxT(panelTitle, [GUIState])
 	endif
 
 	WAVE/T state = GetAllDAEphysPopMenuString(panelTitle, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_WAVE)
-	GUIStateTxT[0, NUM_DA_TTL_CHANNELS - 1][%DAStartIndex] = state[p]
+	lbl          = GetSpecialControlLabel(CHANNEL_TYPE_DAC, CHANNEL_CONTROL_WAVE)
+	GUIStateTxT[0, NUM_DA_TTL_CHANNELS - 1][%$lbl] = state[p]
 
 	WAVE/T state = GetAllDAEphysPopMenuString(panelTitle, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_INDEX_END)
-	GUIStateTxT[0, NUM_DA_TTL_CHANNELS - 1][%DAEndIndex] = state[p]
+	lbl          = GetSpecialControlLabel(CHANNEL_TYPE_DAC, CHANNEL_CONTROL_INDEX_END)
+	GUIStateTxT[0, NUM_DA_TTL_CHANNELS - 1][%$lbl] = state[p]
 
 	WAVE/T state = GetAllDAEphysSetVarTxT(panelTitle, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_UNIT)
-	GUIStateTxT[0, NUM_DA_TTL_CHANNELS - 1][%DAUnit] = state[p]
+	lbl          = GetSpecialControlLabel(CHANNEL_TYPE_DAC, CHANNEL_CONTROL_UNIT)
+	GUIStateTxT[0, NUM_DA_TTL_CHANNELS - 1][%$lbl] = state[p]
 
 	WAVE/T state = GetAllDAEphysSetVarTxT(panelTitle, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_SEARCH)
-	GUIStateTxT[0, NUM_DA_TTL_CHANNELS - 1][%DASearch] = state[p]
+	lbl          = GetSpecialControlLabel(CHANNEL_TYPE_DAC, CHANNEL_CONTROL_SEARCH)
+	GUIStateTxT[0, NUM_DA_TTL_CHANNELS - 1][%$lbl] = state[p]
 
 	WAVE/T state = GetAllDAEphysSetVarTxT(panelTitle, CHANNEL_TYPE_ADC, CHANNEL_CONTROL_UNIT)
-	GUIStateTxT[0, NUM_DA_TTL_CHANNELS - 1][%ADUnit] = state[p]
+	lbl          = GetSpecialControlLabel(CHANNEL_TYPE_ADC, CHANNEL_CONTROL_UNIT)
+	GUIStateTxT[0, NUM_DA_TTL_CHANNELS - 1][%$lbl] = state[p]
 
 	WAVE/T state = GetAllDAEphysPopMenuString(panelTitle, CHANNEL_TYPE_TTL, CHANNEL_CONTROL_WAVE)
-	GUIStateTxT[0, NUM_DA_TTL_CHANNELS - 1][%TTLStartIndex] = state[p]
+	lbl          = GetSpecialControlLabel(CHANNEL_TYPE_TTL, CHANNEL_CONTROL_WAVE)
+	GUIStateTxT[0, NUM_DA_TTL_CHANNELS - 1][%$lbl] = state[p]
 
 	WAVE/T state = GetAllDAEphysPopMenuString(panelTitle, CHANNEL_TYPE_TTL, CHANNEL_CONTROL_INDEX_END)
-	GUIStateTxT[0, NUM_DA_TTL_CHANNELS - 1][%TTLEndIndex] = state[p]
+	lbl          = GetSpecialControlLabel(CHANNEL_TYPE_TTL, CHANNEL_CONTROL_INDEX_END)
+	GUIStateTxT[0, NUM_DA_TTL_CHANNELS - 1][%$lbl] = state[p]
 
 	WAVE/T state = GetAllDAEphysSetVarTxT(panelTitle, CHANNEL_TYPE_TTL, CHANNEL_CONTROL_SEARCH)
-	GUIStateTxT[0, NUM_DA_TTL_CHANNELS - 1][%TTLSearch] = state[p]
+	lbl          = GetSpecialControlLabel(CHANNEL_TYPE_TTL, CHANNEL_CONTROL_SEARCH)
+	GUIStateTxT[0, NUM_DA_TTL_CHANNELS - 1][%$lbl] = state[p]
 
 	WAVE/T state = GetAllDAEphysSetVarTxT(panelTitle, CHANNEL_TYPE_ASYNC, CHANNEL_CONTROL_TITLE)
-	GUIStateTxT[0, NUM_ASYNC_CHANNELS - 1][%AsyncTitle] = state[p]
+	lbl          = GetSpecialControlLabel(CHANNEL_TYPE_ASYNC, CHANNEL_CONTROL_TITLE)
+	GUIStateTxT[0, NUM_ASYNC_CHANNELS - 1][%$lbl] = state[p]
 
 	WAVE/T state = GetAllDAEphysSetVarTxT(panelTitle, CHANNEL_TYPE_ASYNC, CHANNEL_CONTROL_UNIT)
-	GUIStateTxT[0, NUM_ASYNC_CHANNELS - 1][%AsyncUnit] = state[p]
+	lbl          = GetSpecialControlLabel(CHANNEL_TYPE_ASYNC, CHANNEL_CONTROL_UNIT)
+	GUIStateTxT[0, NUM_ASYNC_CHANNELS - 1][%$lbl] = state[p]
 
 	numEntries = DimSize(GUIStateTxT, COLS)
 	for(i = COMMON_CONTROL_GROUP_COUNT_NUM; i < numEntries; i += 1)
@@ -7467,7 +7493,7 @@ Function DAP_GetHSState(panelTitle, headStage)
 	variable headStage
 
 	WAVE wv = GetDA_EphysGuiStateNum(panelTitle)
-	return wv[headStage][%HSState]
+	return wv[headStage][%$GetSpecialControlLabel(CHANNEL_TYPE_HEADSTAGE, CHANNEL_CONTROL_CHECK)]
 End
 
 /// @brief	Sets the locked indexing logic checkbox states
@@ -7656,46 +7682,27 @@ Function DAP_UpdateControlInGuiStateWv(panelTitle, controlName, [val, str])
 		WAVE GUIState = GetDA_EphysGuiStateNum(panelTitle)
 		col = FindDimLabel(GUIState, COLS, controlName)
 		if(col != -2)
-			GUIState[0][Col] = val
-			return NaN
-		endif
-
-		// maybe it is one of the combined entries
-		/// @TODO write the rest
-		DAP_ParsePanelControl(controlName, channelIndex, channelType, controlType)
-		if(controlType == CHANNEL_CONTROL_CHECK)
-			switch(channelType)
-				case CHANNEL_TYPE_DAC:
-					GuiState[channelIndex][%DAState] = val
-					break
-				case CHANNEL_TYPE_ADC:
-					GuiState[channelIndex][%ADState] = val
-					break
-				case CHANNEL_TYPE_TTL:
-					GuiState[channelIndex][%TTLState] = val
-					break
-				case CHANNEL_TYPE_HEADSTAGE:
-					GuiState[channelIndex][%HSState] = val
-					break
-				case CHANNEL_TYPE_ASYNC:
-					GuiState[channelIndex][%AsyncState] = val
-					break
-				case CHANNEL_TYPE_ALARM:
-					GuiState[channelIndex][%AlarmState] = val
-					break
-				default:
-					ASSERT(0, "Unknown type")
-					break
-			endswitch
+			GUIState[0][col] = val
+		elseif(!DAP_ParsePanelControl(controlName, channelIndex, channelType, controlType))
+			col = FindDimLabel(GUIState, COLS, GetSpecialControlLabel(channelType, controlType))
+			if(col != -2)
+				GuiState[channelIndex][col] = val
+			endif
 		endif
 	endif
+
+	WaveClear GuiState
 
 	if(!ParamIsDefault(str))
 		WAVE/T GUIStateTxT = GetDA_EphysGuiStateTxT(panelTitle)
 		col = FindDimLabel(GUIStateTxT, COLS, controlName)
 		if(col != -2)
-			GUIStateTxT[0][Col] = str
-			return NaN
+			GUIStateTxT[0][col] = str
+		elseif(!DAP_ParsePanelControl(controlName, channelIndex, channelType, controlType))
+			col = FindDimLabel(GUIStateTxT, COLS, GetSpecialControlLabel(channelType, controlType))
+			if(col != -2)
+				GuiStateTxT[channelIndex][col] = str
+			endif
 		endif
 	endif
 End
