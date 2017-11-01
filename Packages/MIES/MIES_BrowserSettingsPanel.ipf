@@ -590,8 +590,7 @@ EndMacro
 Window BrowserSettingsPanel() : Panel
 	PauseUpdate; Silent 1		// building window...
 	//NewPanel /W=(202,80,484,492) as " "
-	SetDrawLayer UserBack
-	GroupBox group_calc,pos={12.00,245.00},size={210.00,50.00}
+	GroupBox group_calc,pos={12.00,195.00},size={210.00,50.00}
 	GroupBox group_calc,userdata(tabnum)=  "0",userdata(tabcontrol)=  "Settings"
 	TabControl Settings,pos={2.00,2.00},size={280.00,19.00},proc=ACL_DisplayTab
 	TabControl Settings,userdata(currenttab)=  "0",tabLabel(0)="Settings"
@@ -832,74 +831,74 @@ Window BrowserSettingsPanel() : Panel
 	CheckBox check_BrowserSettings_dDAQ,help={"Enable dedicated support for viewing distributed DAQ data"}
 	CheckBox check_BrowserSettings_dDAQ,userdata(tabnum)=  "0"
 	CheckBox check_BrowserSettings_dDAQ,userdata(tabcontrol)=  "Settings",value= 0
-	CheckBox check_Calculation_ZeroTraces,pos={25.00,270.00},size={76.00,15.00},proc=SB_CheckProc_ChangedSetting,title="Zero Traces"
+	CheckBox check_Calculation_ZeroTraces,pos={25.00,220.00},size={76.00,15.00},proc=SB_CheckProc_ChangedSetting,title="Zero Traces"
 	CheckBox check_Calculation_ZeroTraces,help={"Remove the offset of all traces"}
 	CheckBox check_Calculation_ZeroTraces,userdata(tabnum)=  "0"
 	CheckBox check_Calculation_ZeroTraces,userdata(tabcontrol)=  "Settings",value= 0
-	CheckBox check_Calculation_AverageTraces,pos={25.00,250.00},size={95.00,15.00},proc=SB_CheckProc_ChangedSetting,title="Average Traces"
+	CheckBox check_Calculation_AverageTraces,pos={25.00,200.00},size={95.00,15.00},proc=SB_CheckProc_ChangedSetting,title="Average Traces"
 	CheckBox check_Calculation_AverageTraces,help={"Average all traces which belong to the same y axis"}
 	CheckBox check_Calculation_AverageTraces,userdata(tabnum)=  "0"
 	CheckBox check_Calculation_AverageTraces,userdata(tabcontrol)=  "Settings"
 	CheckBox check_Calculation_AverageTraces,value= 0
-	CheckBox check_BrowserSettings_TA,pos={90.00,162.00},size={50.00,15.00},proc=SB_TimeAlignmentProc,title="enable"
+	CheckBox check_BrowserSettings_TA,pos={90.00,112.00},size={50.00,15.00},proc=SB_TimeAlignmentProc,title="enable"
 	CheckBox check_BrowserSettings_TA,help={"Activate time alignment"}
 	CheckBox check_BrowserSettings_TA,userdata(tabnum)=  "0"
 	CheckBox check_BrowserSettings_TA,userdata(tabcontrol)=  "Settings",value= 0
-	PopupMenu popup_TimeAlignment_Mode,pos={19.00,185.00},size={143.00,19.00},bodyWidth=50,disable=2,proc=SB_TimeAlignmentPopup,title="Alignment Mode"
+	PopupMenu popup_TimeAlignment_Mode,pos={19.00,135.00},size={143.00,19.00},bodyWidth=50,disable=2,proc=SB_TimeAlignmentPopup,title="Alignment Mode"
 	PopupMenu popup_TimeAlignment_Mode,help={"Select the alignment mode"}
 	PopupMenu popup_TimeAlignment_Mode,userdata(tabnum)=  "0"
 	PopupMenu popup_TimeAlignment_Mode,userdata(tabcontrol)=  "Settings"
 	PopupMenu popup_TimeAlignment_Mode,mode=1,popvalue="Level (Raising)",value= #"\"Level (Raising);Level (Falling);Min;Max\""
-	SetVariable setvar_TimeAlignment_LevelCross,pos={163.00,186.00},size={50.00,18.00},disable=2,proc=SB_TimeAlignmentLevel,title="Level"
+	SetVariable setvar_TimeAlignment_LevelCross,pos={163.00,136.00},size={50.00,18.00},disable=2,proc=SB_TimeAlignmentLevel,title="Level"
 	SetVariable setvar_TimeAlignment_LevelCross,help={"Select the level (for rising and falling alignment mode) at which traces are aligned"}
 	SetVariable setvar_TimeAlignment_LevelCross,userdata(tabnum)=  "0"
 	SetVariable setvar_TimeAlignment_LevelCross,userdata(tabcontrol)=  "Settings"
 	SetVariable setvar_TimeAlignment_LevelCross,limits={-inf,inf,0},value= _NUM:0
-	Button button_TimeAlignment_Action,pos={183.00,209.00},size={30.00,20.00},disable=2,proc=SB_DoTimeAlignment,title="Do!"
+	Button button_TimeAlignment_Action,pos={183.00,159.00},size={30.00,20.00},disable=2,proc=SB_DoTimeAlignment,title="Do!"
 	Button button_TimeAlignment_Action,help={"Perform the time alignment, needs the cursors A and B to have a selected feature"}
 	Button button_TimeAlignment_Action,userdata(tabnum)=  "0"
 	Button button_TimeAlignment_Action,userdata(tabcontrol)=  "Settings"
-	GroupBox group_SB_axes_scaling,pos={12.00,298.00},size={210.00,50.00},title="Axes Scaling"
+	GroupBox group_SB_axes_scaling,pos={12.00,248.00},size={210.00,50.00},title="Axes Scaling"
 	GroupBox group_SB_axes_scaling,userdata(tabnum)=  "0"
 	GroupBox group_SB_axes_scaling,userdata(tabcontrol)=  "Settings"
-	CheckBox check_Display_VisibleXrange,pos={25.00,322.00},size={40.00,15.00},title="Vis X"
+	CheckBox check_Display_VisibleXrange,pos={25.00,272.00},size={40.00,15.00},title="Vis X"
 	CheckBox check_Display_VisibleXrange,help={"Scale the y axis to the visible x data range"}
 	CheckBox check_Display_VisibleXrange,userdata(tabnum)=  "0"
 	CheckBox check_Display_VisibleXrange,userdata(tabcontrol)=  "Settings",value= 0
-	CheckBox check_Display_EqualYrange,pos={79.00,322.00},size={54.00,15.00},title="Equal Y"
+	CheckBox check_Display_EqualYrange,pos={79.00,272.00},size={54.00,15.00},title="Equal Y"
 	CheckBox check_Display_EqualYrange,help={"Equalize the vertical axes ranges"}
 	CheckBox check_Display_EqualYrange,userdata(tabnum)=  "0"
 	CheckBox check_Display_EqualYrange,userdata(tabcontrol)=  "Settings",value= 0
-	CheckBox check_Display_EqualYignore,pos={139.00,322.00},size={35.00,15.00},title="ign."
+	CheckBox check_Display_EqualYignore,pos={139.00,272.00},size={35.00,15.00},title="ign."
 	CheckBox check_Display_EqualYignore,help={"Equalize the vertical axes ranges but ignore all traces with level crossings"}
 	CheckBox check_Display_EqualYignore,userdata(tabnum)=  "0"
 	CheckBox check_Display_EqualYignore,userdata(tabcontrol)=  "Settings",value= 0
-	SetVariable setvar_Display_EqualYlevel,pos={178.00,320.00},size={25.00,18.00},disable=2,proc=SB_AxisScalingLevelCross
+	SetVariable setvar_Display_EqualYlevel,pos={178.00,270.00},size={25.00,18.00},disable=2,proc=SB_AxisScalingLevelCross
 	SetVariable setvar_Display_EqualYlevel,help={"Crossing level value for 'Equal Y ign.\""}
 	SetVariable setvar_Display_EqualYlevel,userdata(tabnum)=  "0"
 	SetVariable setvar_Display_EqualYlevel,userdata(tabcontrol)=  "Settings"
 	SetVariable setvar_Display_EqualYlevel,limits={-inf,inf,0},value= _NUM:0
-	PopupMenu popup_TimeAlignment_Master,pos={27.00,209.00},size={134.00,19.00},bodyWidth=50,disable=2,proc=SB_TimeAlignmentPopup,title="Reference trace"
+	PopupMenu popup_TimeAlignment_Master,pos={27.00,159.00},size={134.00,19.00},bodyWidth=50,disable=2,proc=SB_TimeAlignmentPopup,title="Reference trace"
 	PopupMenu popup_TimeAlignment_Master,help={"Select the reference trace to which all other traces should be aligned to"}
 	PopupMenu popup_TimeAlignment_Master,userdata(tabnum)=  "0"
 	PopupMenu popup_TimeAlignment_Master,userdata(tabcontrol)=  "Settings"
 	PopupMenu popup_TimeAlignment_Master,mode=1,popvalue="AD0",value= #"\"\""
-	Button button_Calculation_RestoreData,pos={137.00,260.00},size={75.00,25.00},proc=SB_ButtonProc_RestoreData,title="Restore"
+	Button button_Calculation_RestoreData,pos={137.00,210.00},size={75.00,25.00},proc=SB_ButtonProc_RestoreData,title="Restore"
 	Button button_Calculation_RestoreData,help={"Duplicate the graph and its trace for further processing"}
 	Button button_Calculation_RestoreData,userdata(tabnum)=  "0"
 	Button button_Calculation_RestoreData,userdata(tabcontrol)=  "Settings"
-	Button button_BrowserSettings_Export,pos={68.00,383.00},size={100.00,25.00},proc=SB_ButtonProc_ExportTraces,title="Export Traces"
+	Button button_BrowserSettings_Export,pos={68.00,333.00},size={100.00,25.00},proc=SB_ButtonProc_ExportTraces,title="Export Traces"
 	Button button_BrowserSettings_Export,help={"Export the traces for further processing"}
 	Button button_BrowserSettings_Export,userdata(tabnum)=  "0"
 	Button button_BrowserSettings_Export,userdata(tabcontrol)=  "Settings"
-	GroupBox group_timealignment,pos={12.00,139.00},size={210.00,98.00},title="Time Alignment"
+	GroupBox group_timealignment,pos={12.00,89.00},size={210.00,98.00},title="Time Alignment"
 	GroupBox group_timealignment,userdata(tabnum)=  "0"
 	GroupBox group_timealignment,userdata(tabcontrol)=  "Settings"
-	Slider slider_BrowserSettings_dDAQ,pos={12.00,84.00},size={210.00,54.00},disable=2,proc=BSP_SliderProc_ChangedSetting
+	Slider slider_BrowserSettings_dDAQ,pos={232.00,38.00},size={54.00,300.00},disable=2,proc=BSP_SliderProc_ChangedSetting
 	Slider slider_BrowserSettings_dDAQ,help={"Allows to view only regions from the selected headstage (oodDAQ) resp. the selected headstage (dDAQ). Choose -1 to display all."}
 	Slider slider_BrowserSettings_dDAQ,userdata(tabnum)=  "0"
 	Slider slider_BrowserSettings_dDAQ,userdata(tabcontrol)=  "Settings"
-	Slider slider_BrowserSettings_dDAQ,limits={-1,7,1},value= -1,vert= 0
+	Slider slider_BrowserSettings_dDAQ,limits={-1,7,1},value= -1
 	CheckBox check_SweepControl_HideSweep,pos={158.00,60.00},size={40.00,15.00},proc=SB_CheckProc_ChangedSetting,title="Hide"
 	CheckBox check_SweepControl_HideSweep,help={"Hide sweep traces. Usually combined with \"Average traces\"."}
 	CheckBox check_SweepControl_HideSweep,userdata(tabnum)=  "0"
@@ -909,7 +908,7 @@ Window BrowserSettingsPanel() : Panel
 	CheckBox check_BrowserSettings_splitTTL,userdata(tabnum)=  "0"
 	CheckBox check_BrowserSettings_splitTTL,userdata(tabcontrol)=  "Settings"
 	CheckBox check_BrowserSettings_splitTTL,value= 0
-	PopupMenu popup_DB_lockedDevices,pos={13.00,354.00},size={205.00,19.00},bodyWidth=100,proc=DB_PopMenuProc_LockDBtoDevice,title="Device assingment:"
+	PopupMenu popup_DB_lockedDevices,pos={13.00,304.00},size={205.00,19.00},bodyWidth=100,proc=DB_PopMenuProc_LockDBtoDevice,title="Device assingment:"
 	PopupMenu popup_DB_lockedDevices,help={"Select a data acquistion device to display data"}
 	PopupMenu popup_DB_lockedDevices,userdata(tabnum)=  "0"
 	PopupMenu popup_DB_lockedDevices,userdata(tabcontrol)=  "Settings"
