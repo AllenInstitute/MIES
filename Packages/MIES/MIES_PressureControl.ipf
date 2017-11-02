@@ -375,7 +375,7 @@ static Function P_ApplyNegV(panelTitle, headStage)
 	variable	lastVcom = PressureDataWv[headStage][%LastVcom]
 
 	if(getCheckBoxstate(panelTitle, "Check_DataAcq_SendToAllAmp")) // ensure that vCom is being updated on headstage associated amplifier (not all amplifiers).
-		setCheckBoxstate(panelTitle, "Check_DataAcq_SendToAllAmp",0)
+		PGC_SetAndActivateControl(panelTitle, "Check_DataAcq_SendToAllAmp",val = CHECKBOX_UNSELECTED)
 	endif
 
 	if(lastVCom != vCom && resistance >= SEAL_RESISTANCE_THRESHOLD)
@@ -2289,7 +2289,7 @@ Function P_GetAutoUserOff(panelTitle)
 
 	WAVE GuiState = GetDA_EphysGuiStateNum(panelTitle)
 	if(GuiState[0][%check_DataACq_Pressure_AutoOFF] && GuiState[0][%check_DataACq_Pressure_User])
-		SetCheckBoxState(panelTitle,"check_DataACq_Pressure_User",CHECKBOX_UNSELECTED)
+		PGC_SetAndActivateControl(panelTitle,"check_DataACq_Pressure_User", val = CHECKBOX_UNSELECTED)
 		GuiState[0][%check_DataACq_Pressure_User] = 0
 	endif
 End

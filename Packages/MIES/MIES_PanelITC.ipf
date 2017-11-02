@@ -4769,7 +4769,7 @@ static Function DAP_TurnOffAllChannels(panelTitle, channelType)
 	// the checkbox to unselected here
 	if(channelType == CHANNEL_TYPE_ADC || channelType == CHANNEL_TYPE_DAC || channelType == CHANNEL_TYPE_TTL)
 		ctrl = GetPanelControl(CHANNEL_INDEX_ALL, channelType, CHANNEL_CONTROL_CHECK)
-		SetCheckBoxState(panelTitle, ctrl, CHECKBOX_UNSELECTED)
+		PGC_SetAndActivateControl(panelTitle, ctrl, val=CHECKBOX_UNSELECTED)
 	endif
 End
 
@@ -4805,10 +4805,7 @@ Function DAP_UpdateITIAcrossSets(panelTitle)
 	if(GetCheckBoxState(panelTitle, "Check_DataAcq_Get_Set_ITI"))
 		SetSetVariable(panelTitle, "SetVar_DataAcq_ITI", maxITI)
 	elseif(maxITI == 0 && numActiveDAChannels > 0)
-		ControlInfo/W=$panelTitle Check_DataAcq_Get_Set_ITI
-		if(V_flag != 0)
-			SetCheckBoxState(panelTitle, "Check_DataAcq_Get_Set_ITI", CHECKBOX_UNSELECTED)
-		endif
+		PGC_SetAndActivateControl(panelTitle, "Check_DataAcq_Get_Set_ITI", val = CHECKBOX_UNSELECTED)
 	endif
 
 	if(DAP_DeviceIsLeader(panelTitle))
@@ -7386,7 +7383,7 @@ Function DAP_CheckProc_LockedLogic(cba) : CheckBoxControl
 			ToggleCheckBoxes(cba.win, cba.ctrlName, checkBoxPartener, cba.checked)
 			EqualizeCheckBoxes(cba.win, "check_Settings_Option_3", "Check_DataAcq1_IndexingLocked", getCheckBoxState(cba.win, "check_Settings_Option_3"))
 			if(cmpstr(cba.win, "check_Settings_Option_3") == 0 && cba.checked)
-				SetCheckBoxState(cba.win, "Check_DataAcq_Indexing", 1)
+				PGC_SetAndActivateControl(cba.win, "Check_DataAcq_Indexing", val = 1)
 			endif
 			break
 	endswitch
@@ -7837,10 +7834,10 @@ static Function DAP_UnlockDevice(panelTitle)
 	// we need to turn off TP after DAQ as this could prevent stopping the TP,
 	// especially for foreground TP
 	state = GetCheckBoxState(panelTitle, "check_Settings_TPAfterDAQ")
-	SetCheckBoxState(panelTitle, "check_Settings_TPAfterDAQ", CHECKBOX_UNSELECTED)
+	PGC_SetAndActivateControl(panelTitle, "check_Settings_TPAfterDAQ", val = CHECKBOX_UNSELECTED)
 	DQ_StopDAQ(panelTitle)
 	TP_StopTestPulse(panelTitle)
-	SetCheckBoxState(panelTitle, "check_Settings_TPAfterDAQ", state)
+	PGC_SetAndActivateControl(panelTitle, "check_Settings_TPAfterDAQ", val = state)
 
 	DAP_SerializeCommentNotebook(panelTitle)
 	DAP_LockCommentNotebook(panelTitle)
