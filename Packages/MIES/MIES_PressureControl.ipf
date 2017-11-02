@@ -1936,7 +1936,7 @@ static Function P_Enable()
 			EnableControl(lockedDevice, "button_Hardware_P_Disable")
 			EnableControls(lockedDevice, PRESSURE_CONTROL_CHECKBOX_LIST)
 
-			headstage = GetSliderPositionIndex(lockedDevice, "slider_DataAcq_ActiveHeadstage")
+			headStage = DAP_GetValueFromNumStateWave(lockedDevice, "slider_DataAcq_ActiveHeadstage")
 			P_SaveUserSelectedHeadstage(lockedDevice, headstage)
 
 			P_LoadPressureButtonState(lockedDevice)
@@ -2171,7 +2171,7 @@ Function CheckProc_ClearEnable(cba) : CheckBoxControl
 		case 2: // mouse up
 			Variable checked = cba.checked
 			if(checked)
-				if(TP_CheckIfTestpulseIsRunning(cba.win) && P_IsHSActiveAndInVClamp(cba.win, GetSliderPositionIndex(cba.win, "slider_DataAcq_ActiveHeadstage")))
+				if(TP_CheckIfTestpulseIsRunning(cba.win) && P_IsHSActiveAndInVClamp(cba.win, DAP_GetValueFromNumStateWave(cba.win, "slider_DataAcq_ActiveHeadstage")))
 					EnableControl(cba.win, "button_DataAcq_Clear")
 				endif
 			else
@@ -2249,7 +2249,7 @@ Function ButtonProc_ManPP(ba) : ButtonControl
 
 	switch(ba.eventCode)
 		case 2: // mouse up
-			variable headStage = GetSliderPositionIndex(ba.win, "slider_DataAcq_ActiveHeadstage")
+			variable headStage = DAP_GetValueFromNumStateWave(ba.win, "slider_DataAcq_ActiveHeadstage")
 			P_ManPressurePulse(ba.win, headStage)
 			break
 	endswitch

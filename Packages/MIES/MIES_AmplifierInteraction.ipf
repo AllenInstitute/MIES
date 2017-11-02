@@ -662,7 +662,7 @@ Function AI_UpdateAmpModel(panelTitle, ctrl, headStage, [value, sendToAll, check
 
 	DAP_AbortIfUnlocked(panelTitle)
 
-	selectedHeadstage = GetSliderPositionIndex(panelTitle, "slider_DataAcq_ActiveHeadstage")
+	selectedHeadstage = DAP_GetValueFromNumStateWave(panelTitle, "slider_DataAcq_ActiveHeadstage")
 
 	if(ParamIsDefault(value))
 		ASSERT(headstage == selectedHeadstage, "Supply the optional argument value if setting values of other headstages than the current one")
@@ -909,7 +909,7 @@ Function AI_SyncGUIToAmpStorageAndMCCApp(panelTitle, headStage, clampMode)
 
 	DAP_AbortIfUnlocked(panelTitle)
 
-	if(GetSliderPositionIndex(panelTitle, "slider_DataAcq_ActiveHeadstage") != headStage)
+	if(DAP_GetValueFromNumStateWave(panelTitle, "slider_DataAcq_ActiveHeadstage") != headStage)
 		return NaN
 	elseif(!AI_MIESHeadstageMatchesMCCMode(panelTitle, headStage))
 		return NaN
@@ -951,7 +951,7 @@ static Function AI_UpdateAmpView(panelTitle, headStage, [ctrl])
 	DAP_AbortIfUnlocked(panelTitle)
 
 	// only update view if headstage is selected
-	if(GetSliderPositionIndex(panelTitle, "slider_DataAcq_ActiveHeadstage") != headStage)
+	if(DAP_GetValueFromNumStateWave(panelTitle, "slider_DataAcq_ActiveHeadstage") != headStage)
 		return NaN
 	endif
 
@@ -1361,7 +1361,7 @@ Function AI_SetMIESHeadstage(panelTitle, [headstage, increment])
 	endif
 	
 	if(!ParamIsDefault(increment))
-		headstage = GetSliderPositionIndex(panelTitle, "slider_DataAcq_ActiveHeadstage") + increment
+		headstage = DAP_GetValueFromNumStateWave(panelTitle, "slider_DataAcq_ActiveHeadstage") + increment
 	endif
 
 	if(headstage >= 0 && headstage < NUM_HEADSTAGES)	

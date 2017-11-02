@@ -5713,15 +5713,7 @@ static Function DAP_CheckHeadStage(panelTitle, headStage, mode)
 		return 1
 	endif
 
-<<<<<<< HEAD
-	string ctrl = GetPanelControl(DACchannel, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_UNIT)
-	unit = GetSetVariableString(panelTitle, ctrl)
-||||||| parent of 314f4dba... DA_Ephys: Replace GetSetVariableString with DAP_GetValueFromTxTStateWave
-	ctrl = GetPanelControl(DACchannel, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_UNIT)
-	unit = GetSetVariableString(panelTitle, ctrl)
-=======
 	unit = DAP_GetValueFromTxTStateWave(panelTitle, GetSpecialControlLabel(CHANNEL_TYPE_DAC, CHANNEL_CONTROL_UNIT), index = DACchannel)
->>>>>>> 314f4dba... DA_Ephys: Replace GetSetVariableString with DAP_GetValueFromTxTStateWave
 	if(isEmpty(unit))
 		printf "(%s) The unit for DACchannel %d is empty.\r", panelTitle, DACchannel
 		ControlWindowToFront()
@@ -6182,9 +6174,10 @@ Function DAP_ChangeHeadStageMode(panelTitle, clampMode, headstage, mccMiesSyncOv
 		activeHS = DAP_GetHSstate(panelTitle, headstage)
 		DAP_Slider(panelTitle, headstage)
 		SetSliderPositionIndex(panelTitle, "slider_DataAcq_ActiveHeadstage", headstage)
+		DAP_UpdateControlInGuiStateWv(panelTitle, "slider_DataAcq_ActiveHeadstage", val = headstage)
 	endif
 	
-	sliderPos = GetSliderPositionIndex(panelTitle, "slider_DataAcq_ActiveHeadstage")
+	sliderPos = DAP_GetValueFromNumStateWave(panelTitle, "slider_DataAcq_ActiveHeadstage")
 	
 	if(activeHS || headstage < 0)
 		testPulseMode = TP_StopTestPulse(panelTitle)
@@ -6732,7 +6725,7 @@ Function DAP_SetVarProc_AmpCntrls(sva) : SetVariableControl
 		case 2: // Enter key
 			panelTitle = sva.win
 			ctrl       = sva.ctrlName
-			headStage =  GetSliderPositionIndex(panelTitle, "slider_DataAcq_ActiveHeadstage")
+			headStage = DAP_GetValueFromNumStateWave(panelTitle, "slider_DataAcq_ActiveHeadstage")
 			AI_UpdateAmpModel(panelTitle, ctrl, headStage)
 			DAP_UpdateControlInGuiStateWv(sva.win, sva.ctrlName, val = sva.dval)
 			break
@@ -6752,7 +6745,7 @@ Function DAP_ButtonProc_AmpCntrls(ba) : ButtonControl
 			panelTitle = ba.win
 			ctrl       = ba.ctrlName
 
-			headStage =  GetSliderPositionIndex(panelTitle, "slider_DataAcq_ActiveHeadstage")
+			headStage = DAP_GetValueFromNumStateWave(panelTitle, "slider_DataAcq_ActiveHeadstage")
 			AI_UpdateAmpModel(panelTitle, ctrl, headstage)
 			break
 	endswitch
@@ -6771,7 +6764,7 @@ Function DAP_CheckProc_AmpCntrls(cba) : CheckBoxControl
 			panelTitle = cba.win
 			ctrl       = cba.ctrlName
 
-			headStage =  GetSliderPositionIndex(panelTitle, "slider_DataAcq_ActiveHeadstage")
+			headStage = DAP_GetValueFromNumStateWave(panelTitle, "slider_DataAcq_ActiveHeadstage")
 			AI_UpdateAmpModel(panelTitle, ctrl, headStage)
 			DAP_UpdateControlInGuiStateWv(cba.win, cba.ctrlName, val = cba.checked)
 			break
@@ -7915,6 +7908,7 @@ Function DAP_LockDevice(panelTitle)
 	DAP_RecordGuiStateNum(panelTitleLocked)
 	DAP_RecordGuiStateTxT(panelTitleLocked)
 
+	// deliberately not using the GUIState wave
 	headstage = GetSliderPositionIndex(panelTitleLocked, "slider_DataAcq_ActiveHeadstage")
 	P_SaveUserSelectedHeadstage(panelTitleLocked, headstage)
 
