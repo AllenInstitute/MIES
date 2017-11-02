@@ -976,8 +976,10 @@ static Function AI_UpdateAmpView(panelTitle, headStage, [ctrl])
 
 		if(StringMatch(ctrl, "setvar_*"))
 			SetSetVariable(panelTitle, ctrl, value)
+			DAP_UpdateControlInGuiStateWv(panelTitle, ctrl, val = value)
 		elseif(StringMatch(ctrl, "check_*"))
 			SetCheckBoxState(panelTitle, ctrl, value)
+			DAP_UpdateControlInGuiStateWv(panelTitle, ctrl, val = value)
 		else
 			ASSERT(0, "Unhandled control")
 		endif
