@@ -8234,12 +8234,12 @@ Function DAP_AllChanDASettings(panelTitle, headStage)
 
 	if(GuiState[headStage][%HSmode] == V_CLAMP_MODE)
 		scalar = DAP_GetValueFromNumStateWave(panelTitle, GetPanelControl(CHANNEL_INDEX_ALL_V_CLAMP,CHANNEL_TYPE_DAC,CHANNEL_CONTROL_SCALE))
-		index = GetPopupMenuIndex(panelTitle, GetPanelControl(CHANNEL_INDEX_ALL_V_CLAMP,CHANNEL_TYPE_DAC,CHANNEL_CONTROL_WAVE))
-		indexEnd = GetPopupMenuIndex(panelTitle, GetPanelControl(CHANNEL_INDEX_ALL_V_CLAMP,CHANNEL_TYPE_DAC,CHANNEL_CONTROL_INDEX_END))
+		index = DAP_GetValueFromNumStateWave(panelTitle, GetPanelControl(CHANNEL_INDEX_ALL_V_CLAMP,CHANNEL_TYPE_DAC,CHANNEL_CONTROL_WAVE))
+		indexEnd = DAP_GetValueFromNumStateWave(panelTitle, GetPanelControl(CHANNEL_INDEX_ALL_V_CLAMP,CHANNEL_TYPE_DAC,CHANNEL_CONTROL_INDEX_END))
 	elseif(GuiState[headStage][%HSmode] == I_CLAMP_MODE)
 		scalar = DAP_GetValueFromNumStateWave(panelTitle, GetPanelControl(CHANNEL_INDEX_ALL_I_CLAMP,CHANNEL_TYPE_DAC,CHANNEL_CONTROL_SCALE))
-		index = GetPopupMenuIndex(panelTitle, GetPanelControl(CHANNEL_INDEX_ALL_I_CLAMP,CHANNEL_TYPE_DAC,CHANNEL_CONTROL_WAVE))
-		indexEnd = GetPopupMenuIndex(panelTitle, GetPanelControl(CHANNEL_INDEX_ALL_I_CLAMP,CHANNEL_TYPE_DAC,CHANNEL_CONTROL_INDEX_END))
+		index = DAP_GetValueFromNumStateWave(panelTitle, GetPanelControl(CHANNEL_INDEX_ALL_I_CLAMP,CHANNEL_TYPE_DAC,CHANNEL_CONTROL_WAVE))
+		indexEnd = DAP_GetValueFromNumStateWave(panelTitle, GetPanelControl(CHANNEL_INDEX_ALL_I_CLAMP,CHANNEL_TYPE_DAC,CHANNEL_CONTROL_INDEX_END))
 	endif
 	// update the scalar
 	ctrl = GetPanelControl(headStage, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_SCALE)

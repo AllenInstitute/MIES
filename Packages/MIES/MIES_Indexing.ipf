@@ -411,6 +411,7 @@ static Function/S IDX_GetSetsInRange(panelTitle, channel, channelType, lockedInd
 	lastCtrl = GetPanelControl(channel, channelType, CHANNEL_CONTROL_INDEX_END)
 	list     = GetUserData(panelTitle, waveCtrl, "menuexp")
 
+	// deliberately not using the gui state wave
 	first = GetPopupMenuIndex(panelTitle, waveCtrl) - ListOffset
 
 	if(lockedIndexing)
@@ -418,6 +419,7 @@ static Function/S IDX_GetSetsInRange(panelTitle, channel, channelType, lockedInd
 	endif
 
 	if(DAP_GetValueFromNumStateWave(panelTitle, "Check_DataAcq_Indexing"))
+		// deliberately not using the gui state wave
 		last = GetPopupMenuIndex(panelTitle, lastCtrl) - 1
 		if(last < 0) // - None - is selected
 			last = first
