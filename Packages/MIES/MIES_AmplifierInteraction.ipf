@@ -946,7 +946,7 @@ static Function AI_UpdateAmpView(panelTitle, headStage, [ctrl])
 	string ctrl
 
 	string lbl, list
-	variable i, numEntries
+	variable i, numEntries, value
 
 	DAP_AbortIfUnlocked(panelTitle)
 
@@ -972,10 +972,12 @@ static Function AI_UpdateAmpView(panelTitle, headStage, [ctrl])
 			continue
 		endif
 
+		value = AmpStorageWave[%$lbl][0][headStage]
+
 		if(StringMatch(ctrl, "setvar_*"))
-			SetSetVariable(panelTitle, ctrl, AmpStorageWave[%$lbl][0][headStage])
+			SetSetVariable(panelTitle, ctrl, value)
 		elseif(StringMatch(ctrl, "check_*"))
-			SetCheckBoxState(panelTitle, ctrl, AmpStorageWave[%$lbl][0][headStage])
+			SetCheckBoxState(panelTitle, ctrl, value)
 		else
 			ASSERT(0, "Unhandled control")
 		endif
