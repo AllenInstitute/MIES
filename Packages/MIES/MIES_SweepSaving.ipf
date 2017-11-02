@@ -21,7 +21,7 @@ Function SWS_SaveAndScaleITCData(panelTitle, [forcedStop])
 
 	forcedStop = ParamIsDefault(forcedStop) ? 0 : !!forcedStop
 
-	sweepNo = GetSetVariable(panelTitle, "SetVar_Sweep")
+	sweepNo = DAP_GetValueFromNumStateWave(panelTitle, "SetVar_Sweep")
 
 	NVAR stopCollectionPoint = $GetStopCollectionPoint(panelTitle)
 	SCOPE_UpdateOscilloscopeData(panelTitle, DATA_ACQUISITION_MODE, fifoPos=stopCollectionPoint)
@@ -143,7 +143,7 @@ Function SWS_DeleteDataWaves(panelTitle)
 	string list, path, name
 	variable i, numItems, waveSweepNo, sweepNo
 
-	sweepNo   = GetSetVariable(panelTitle, "SetVar_Sweep")
+	sweepNo   = DAP_GetValueFromNumStateWave(panelTitle, "SetVar_Sweep")
 	path      = GetDeviceDataPathAsString(panelTitle)
 	DFREF dfr = GetDeviceDataPath(panelTitle)
 	list      = GetListOfObjects(dfr, DATA_SWEEP_REGEXP, waveProperty="MINCOLS:2")

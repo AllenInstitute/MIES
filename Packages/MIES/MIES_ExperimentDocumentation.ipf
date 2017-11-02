@@ -692,7 +692,7 @@ Function ED_TPDocumentation(panelTitle)
 	TPKeyWave[1][10] = ""
 	TPKeyWave[1][11] = ""
 
-	RTolerance = GetSetVariable(panelTitle, "setvar_Settings_TP_RTolerance")
+	RTolerance = DAP_GetValueFromNumStateWave(panelTitle, "setvar_Settings_TP_RTolerance")
 	TPKeyWave[2][0]  = "1" // Assume a tolerance of 1 mV for V rest
 	TPKeyWave[2][1]  = "50" // Assume a tolerance of 50pA for I rest
 	TPKeyWave[2][2]  = num2str(RTolerance) // applies the same R tolerance for the instantaneous and steady state resistance

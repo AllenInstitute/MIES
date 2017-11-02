@@ -864,7 +864,7 @@ Function P_UpdatePressureDataStorageWv(panelTitle) /// @todo Needs to be reworke
 	PressureDataWv[settingHS][%TTL_A]          = idx == 0 ? NaN : --idx
 	idx = GetPopupMenuIndex(panelTitle, "Popup_Settings_Pressure_TTLB")
 	PressureDataWv[settingHS][%TTL_B]          = idx == 0 ? NaN : --idx
-	PressureDataWv[userHS][%ManSSPressure]     = GetSetVariable(panelTitle, "setvar_DataAcq_SSPressure")
+	PressureDataWv[userHS][%ManSSPressure]     = DAP_GetValueFromNumStateWave(panelTitle, "setvar_DataAcq_SSPressure")
 	PressureDataWv[][%PSI_air]                 = GetSetVariable(panelTitle, "setvar_Settings_InAirP")
 	PressureDataWv[][%PSI_solution]            = GetSetVariable(panelTitle, "setvar_Settings_InBathP")
 	PressureDataWv[][%PSI_slice]               = GetSetVariable(panelTitle, "setvar_Settings_InSliceP")
@@ -1744,7 +1744,7 @@ Function P_UpdatePressureModeTabs(panelTitle, headStage)
 		TabControl tab_DataAcq_Pressure win=$panelTitle, tabLabel(1) = "Manual"
 	endif
 
-	SetSetVariable(panelTitle, "setvar_DataAcq_SSPressure", pressureWave[headStage][%ManSSPressure])
+	PGC_SetAndActivateControl(panelTitle, "setvar_DataAcq_SSPressure", val = pressureWave[headStage][%ManSSPressure])
 End
 
 
@@ -2068,7 +2068,7 @@ Function P_SetPressureMode(panelTitle, headStage, pressureMode, [pressure])
 	if(!paramIsDefault(pressure) && pressureMode == PRESSURE_METHOD_MANUAL)
 		ASSERT(pressure > MIN_REGULATOR_PRESSURE && pressure < MAX_REGULATOR_PRESSURE, "Use pressure value greater than -10 psi and less than 10 psi")
 		if(UserSelectedHS == headStage)
-			SetSetVariable(panelTitle, "setvar_DataAcq_SSPressure", pressure)
+			PGC_SetAndActivateControl(panelTitle, "setvar_DataAcq_SSPressure", val = pressure)
 		endif
 		PressureDataWv[headStage][%ManSSPressure] = pressure
 	endif

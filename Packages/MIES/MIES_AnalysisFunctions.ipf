@@ -68,7 +68,7 @@ Function TestAnalysisFunction_V1(panelTitle, eventType, ITCDataWave, headStage)
 	variable headstage
 
 	printf "Analysis function version 1 called: device %s, eventType \"%s\", headstage %d\r", panelTitle, StringFromList(eventType, EVENT_NAME_LIST), headStage
-	printf "Next sweep: %d\r", GetSetVariable(panelTitle, "SetVar_Sweep")
+	printf "Next sweep: %d\r", DAP_GetValueFromNumStateWave(panelTitle, "SetVar_Sweep")
 End
 
 Function TestAnalysisFunction_V2(panelTitle, eventType, ITCDataWave, headStage, realDataLength)
@@ -964,7 +964,7 @@ Function PatchSeqSubThreshold(panelTitle, eventType, ITCDataWave, headStage, rea
 				return 1
 			endif
 
-			val = GetSetVariable(panelTitle, "setvar_DataAcq_AutoBiasV")
+			val = DAP_GetValueFromNumStateWave(panelTitle, "setvar_DataAcq_AutoBiasV")
 
 			if(!IsFinite(val) || CheckIfSmall(val, tol = 1e-12))
 				printf "(%s): Autobias value is zero or non-finite\r", panelTitle
@@ -1065,7 +1065,7 @@ Function PatchSeqSubThreshold(panelTitle, eventType, ITCDataWave, headStage, rea
 	WAVE numericalValues = GetLBNumericalValues(panelTitle)
 
 	// we can't use AFH_GetLastSweepAcquired as the sweep is not yet acquired
-	sweepNo = GetSetVariable(panelTitle, "SetVar_Sweep")
+	sweepNo = DAP_GetValueFromNumStateWave(panelTitle, "SetVar_Sweep")
 	sweepPassed = GetLastSettingIndep(numericalValues, sweepNo, LABNOTEBOOK_USER_PREFIX + PATCHSEQ_ST_LBN_SWEEP_PASS, UNKNOWN_MODE, defValue = 0)
 
 	if(sweepPassed) // already done
@@ -1076,7 +1076,7 @@ Function PatchSeqSubThreshold(panelTitle, eventType, ITCDataWave, headStage, rea
 	WAVE OscilloscopeData = GetOscilloscopeWave(panelTitle)
 	lastFifoPos = GetNumberFromWaveNote(OscilloscopeData, "lastFifoPos") - 1
 
-	totalOnsetDelay = GetSetVariable(panelTitle, "setvar_DataAcq_OnsetDelayUser") \
+	totalOnsetDelay = DAP_GetValueFromNumStateWave(panelTitle, "setvar_DataAcq_OnsetDelayUser") \
 					  + GetValDisplayAsNum(panelTitle, "valdisp_DataAcq_OnsetDelayAuto")
 
 	fifoInStimsetPoint = lastFifoPos - totalOnsetDelay / DimDelta(OscilloscopeData, ROWS)
@@ -1215,7 +1215,7 @@ static Function EvaluateBaselineProperties(panelTitle, sweepNo, chunk, fifoInSti
 	Make/FREE/N = (LABNOTEBOOK_LAYER_COUNT) avgVoltage     = NaN
 	Make/FREE/N = (LABNOTEBOOK_LAYER_COUNT) targetVPassed  = NaN
 
-	targetV = GetSetVariable(panelTitle, "setvar_DataAcq_AutoBiasV")
+	targetV = DAP_GetValueFromNumStateWave(panelTitle, "setvar_DataAcq_AutoBiasV")
 
 	WAVE statusHS = DAP_ControlStatusWaveCache(panelTitle, CHANNEL_TYPE_HEADSTAGE)
 
@@ -1401,7 +1401,7 @@ static Function GetNumberOfChunks(panelTitle)
 
 	WAVE OscilloscopeData    = GetOscilloscopeWave(panelTitle)
 	NVAR stopCollectionPoint = $GetStopCollectionPoint(panelTitle)
-	totalOnsetDelay = GetSetVariable(panelTitle, "setvar_DataAcq_OnsetDelayUser") \
+	totalOnsetDelay = DAP_GetValueFromNumStateWave(panelTitle, "setvar_DataAcq_OnsetDelayUser") \
 					  + GetValDisplayAsNum(panelTitle, "valdisp_DataAcq_OnsetDelayAuto")
 
 	length = stopCollectionPoint * DimDelta(OscilloscopeData, ROWS)

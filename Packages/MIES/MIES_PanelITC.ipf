@@ -4827,7 +4827,7 @@ Function DAP_UpdateITIAcrossSets(panelTitle)
 	DEBUGPRINT("Maximum ITI across sets=", var=maxITI)
 
 	if(DAP_GetValueFromNumStateWave(panelTitle, "Check_DataAcq_Get_Set_ITI"))
-		SetSetVariable(panelTitle, "SetVar_DataAcq_ITI", maxITI)
+		PGC_SetAndActivateControl(panelTitle, "SetVar_DataAcq_ITI", val = maxITI)
 	elseif(maxITI == 0 && numActiveDAChannels > 0)
 		PGC_SetAndActivateControl(panelTitle, "Check_DataAcq_Get_Set_ITI", val = CHECKBOX_UNSELECTED)
 	endif
@@ -4967,7 +4967,7 @@ static Function DAP_UpdateSweepLimitsAndDisplay(panelTitle)
 	panelList = GetListofLeaderAndPossFollower(panelTitle)
 
 	if(DAP_DeviceIsLeader(panelTitle))
-		sweep = GetSetVariable(panelTitle, "SetVar_Sweep")
+		sweep = DAP_GetValueFromNumStateWave(panelTitle, "SetVar_Sweep")
 	else
 		sweep = NaN
 	endif
@@ -5027,7 +5027,7 @@ Function DAP_UpdateSweepSetVariables(panelTitle)
 	variable numSetRepeats
 
 	if(DAP_GetValueFromNumStateWave(panelTitle, "Check_DataAcq1_RepeatAcq"))
-		numSetRepeats = GetSetVariable(panelTitle, "SetVar_DataAcq_SetRepeats")
+		numSetRepeats = DAP_GetValueFromNumStateWave(panelTitle, "SetVar_DataAcq_SetRepeats")
 
 		if(DAP_GetValueFromNumStateWave(panelTitle, "Check_DataAcq1_IndexingLocked"))
 			numSetRepeats *= IDX_MaxSweepsLockedIndexing(panelTitle)
@@ -5565,7 +5565,7 @@ Function DAP_CheckSettings(panelTitle, mode)
 			endif
 		endfor
 
-		if(GetSetVariable(panelTitle, "SetVar_DataAcq_TPDuration") <= 0)
+		if(DAP_GetValueFromNumStateWave(panelTitle, "SetVar_DataAcq_TPDuration") <= 0)
 			print "The testpulse duration must be greater than 0 ms"
 			ControlWindowToFront()
 			return 1
@@ -5592,7 +5592,7 @@ static Function DAP_CheckHeadStage(panelTitle, headStage, mode)
 	string panelTitle
 	variable headStage, mode
 
-	string ctrl, dacWave, endWave, unit, func, info, str, ADUnit, DAUnit
+	string dacWave, endWave, unit, func, info, str, ADUnit, DAUnit
 	variable DACchannel, ADCchannel, DAheadstage, ADheadstage, DAGain, ADGain, realMode
 	variable gain, scale, clampMode, i, valid_f1, valid_f2, ampConnState, needResetting
 	variable DAGainMCC, ADGainMCC
@@ -5716,7 +5716,7 @@ static Function DAP_CheckHeadStage(panelTitle, headStage, mode)
 		return 1
 	endif
 
-	ctrl = GetPanelControl(DACchannel, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_UNIT)
+	string ctrl = GetPanelControl(DACchannel, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_UNIT)
 	unit = GetSetVariableString(panelTitle, ctrl)
 	if(isEmpty(unit))
 		printf "(%s) The unit for DACchannel %d is empty.\r", panelTitle, DACchannel
@@ -5730,8 +5730,7 @@ static Function DAP_CheckHeadStage(panelTitle, headStage, mode)
 		return 1
 	endif
 
-	ctrl = GetPanelControl(DACchannel, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_GAIN)
-	gain = GetSetVariable(panelTitle, ctrl)
+	gain = DAP_GetValueFromNumStateWave(panelTitle, GetSpecialControlLabel(CHANNEL_TYPE_DAC, CHANNEL_CONTROL_GAIN), index = DACchannel)
 	if(!isFinite(gain) || gain == 0)
 		printf "(%s) The gain for DACchannel %d must be finite and non-zero.\r", panelTitle, DACchannel
 		ControlWindowToFront()
@@ -5745,8 +5744,8 @@ static Function DAP_CheckHeadStage(panelTitle, headStage, mode)
 	endif
 
 	// we allow the scale being zero
-	ctrl = GetPanelControl(DACchannel, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_SCALE)
-	scale = GetSetVariable(panelTitle, ctrl)
+	scale = DAP_GetValueFromNumStateWave(panelTitle, GetSpecialControlLabel(CHANNEL_TYPE_DAC, CHANNEL_CONTROL_SCALE), index = DACchannel)
+	scale = DAP_GetValueFromNumStateWave(panelTitle, ctrl)
 	if(!isFinite(scale))
 		printf "(%s) The scale for DACchannel %d must be finite.\r", panelTitle, DACchannel
 		ControlWindowToFront()
@@ -5767,8 +5766,7 @@ static Function DAP_CheckHeadStage(panelTitle, headStage, mode)
 		return 1
 	endif
 
-	ctrl = GetPanelControl(ADCchannel, CHANNEL_TYPE_ADC, CHANNEL_CONTROL_GAIN)
-	gain = GetSetVariable(panelTitle, ctrl)
+	gain = DAP_GetValueFromNumStateWave(panelTitle, GetSpecialControlLabel(CHANNEL_TYPE_ADC, CHANNEL_CONTROL_GAIN), index = ADCchannel)
 	if(!isFinite(gain) || gain == 0)
 		printf "(%s) The gain for ADCchannel %d must be finite and non-zero.\r", panelTitle, ADCchannel
 		ControlWindowToFront()
@@ -6843,8 +6841,8 @@ Function DAP_UpdateOnsetDelay(panelTitle)
 	variable testPulseDurWithBL
 
 	if(DAP_GetValueFromNumStateWave(panelTitle, "Check_Settings_InsertTP"))
-		pulseDuration = GetSetVariable(panelTitle, "SetVar_DataAcq_TPDuration")
-		baselineFrac = GetSetVariable(panelTitle, "SetVar_DataAcq_TPBaselinePerc") / 100
+		pulseDuration = DAP_GetValueFromNumStateWave(panelTitle, "SetVar_DataAcq_TPDuration")
+		baselineFrac = DAP_GetValueFromNumStateWave(panelTitle, "SetVar_DataAcq_TPBaselinePerc") / 100
 		testPulseDurWithBL = TP_CalculateTestPulseLength(pulseDuration, baselineFrac)
 	else
 		testPulseDurWithBL = 0
@@ -8235,11 +8233,11 @@ Function DAP_AllChanDASettings(panelTitle, headStage)
 	endif
 
 	if(GuiState[headStage][%HSmode] == V_CLAMP_MODE)
-		scalar = GetSetVariable(panelTitle, GetPanelControl(CHANNEL_INDEX_ALL_V_CLAMP,CHANNEL_TYPE_DAC,CHANNEL_CONTROL_SCALE))
+		scalar = DAP_GetValueFromNumStateWave(panelTitle, GetPanelControl(CHANNEL_INDEX_ALL_V_CLAMP,CHANNEL_TYPE_DAC,CHANNEL_CONTROL_SCALE))
 		index = GetPopupMenuIndex(panelTitle, GetPanelControl(CHANNEL_INDEX_ALL_V_CLAMP,CHANNEL_TYPE_DAC,CHANNEL_CONTROL_WAVE))
 		indexEnd = GetPopupMenuIndex(panelTitle, GetPanelControl(CHANNEL_INDEX_ALL_V_CLAMP,CHANNEL_TYPE_DAC,CHANNEL_CONTROL_INDEX_END))
 	elseif(GuiState[headStage][%HSmode] == I_CLAMP_MODE)
-		scalar = GetSetVariable(panelTitle, GetPanelControl(CHANNEL_INDEX_ALL_I_CLAMP,CHANNEL_TYPE_DAC,CHANNEL_CONTROL_SCALE))
+		scalar = DAP_GetValueFromNumStateWave(panelTitle, GetPanelControl(CHANNEL_INDEX_ALL_I_CLAMP,CHANNEL_TYPE_DAC,CHANNEL_CONTROL_SCALE))
 		index = GetPopupMenuIndex(panelTitle, GetPanelControl(CHANNEL_INDEX_ALL_I_CLAMP,CHANNEL_TYPE_DAC,CHANNEL_CONTROL_WAVE))
 		indexEnd = GetPopupMenuIndex(panelTitle, GetPanelControl(CHANNEL_INDEX_ALL_I_CLAMP,CHANNEL_TYPE_DAC,CHANNEL_CONTROL_INDEX_END))
 	endif
@@ -8343,7 +8341,7 @@ End
 Function DAP_CheckSkipAhead(panelTitle)
 	string panelTitle
 
-	variable activeSkipAhead = getSetVariable(panelTitle, "SetVar_DataAcq_skipAhead")
+	variable activeSkipAhead = DAP_GetValueFromNumStateWave(panelTitle, "SetVar_DataAcq_skipAhead")
 	variable filteredSkipAhead = DAP_getFilteredSkipAhead(panelTitle, activeSkipAhead)
 	if(activeSkipAhead > filteredSkipAhead)
 		printf "Skip ahead value exceeds allowed limit for new selection and has been set to %d \r", filteredSkipAhead

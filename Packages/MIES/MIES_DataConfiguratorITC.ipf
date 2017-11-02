@@ -42,17 +42,17 @@ static Function DC_UpdateGlobals(panelTitle, dataAcqOrTP)
 	// can change due to indexing, etc.
 	AFM_UpdateAnalysisFunctionWave(panelTitle)
 
-	pulseDuration = GetSetVariable(panelTitle, "SetVar_DataAcq_TPDuration")
+	pulseDuration = DAP_GetValueFromNumStateWave(panelTitle, "SetVar_DataAcq_TPDuration")
 	duration = pulseDuration / (DAP_GetITCSampInt(panelTitle, TEST_PULSE_MODE) / 1000)
-	baselineFrac = GetSetVariable(panelTitle, "SetVar_DataAcq_TPBaselinePerc") / 100
+	baselineFrac = DAP_GetValueFromNumStateWave(panelTitle, "SetVar_DataAcq_TPBaselinePerc") / 100
 
 	// need to deal with units here to ensure that resistance is calculated correctly
-	AmplitudeVC = GetSetVariable(panelTitle, "SetVar_DataAcq_TPAmplitude")
-	AmplitudeIC = GetSetVariable(panelTitle, "SetVar_DataAcq_TPAmplitudeIC")
+	AmplitudeVC = DAP_GetValueFromNumStateWave(panelTitle, "SetVar_DataAcq_TPAmplitude")
+	AmplitudeIC = DAP_GetValueFromNumStateWave(panelTitle, "SetVar_DataAcq_TPAmplitudeIC")
 
 	NVAR n = $GetTPBufferSizeGlobal(panelTitle)
 	// n determines the number of TP cycles to average
-	n = GetSetVariable(panelTitle, "setvar_Settings_TPBuffer")
+	n = DAP_GetValueFromNumStateWave(panelTitle, "setvar_Settings_TPBuffer")
 
 	SVAR panelTitleG = $GetPanelTitleGlobal()
 	panelTitleG = panelTitle
@@ -618,11 +618,11 @@ static Function DC_PlaceDataInITCDataWave(panelTitle, numActiveChannels, dataAcq
 	indexing              = DAP_GetValueFromNumStateWave(panelTitle, "Check_DataAcq_Indexing")
 	distributedDAQ        = DAP_GetValueFromNumStateWave(panelTitle, "Check_DataAcq1_DistribDaq")
 	distributedDAQOptOv   = DAP_GetValueFromNumStateWave(panelTitle, "Check_DataAcq1_dDAQOptOv")
-	distributedDAQOptPre  = GetSetVariable(panelTitle, "Setvar_DataAcq_dDAQOptOvPre")
-	distributedDAQOptPost = GetSetVariable(panelTitle, "Setvar_DataAcq_dDAQOptOvPost")
-	distributedDAQOptRes  = GetSetVariable(panelTitle, "Setvar_DataAcq_dDAQOptOvRes")
-	TPAmpVClamp           = GetSetVariable(panelTitle, "SetVar_DataAcq_TPAmplitude")
-	TPAmpIClamp           = GetSetVariable(panelTitle, "SetVar_DataAcq_TPAmplitudeIC")
+	distributedDAQOptPre  = DAP_GetValueFromNumStateWave(panelTitle, "Setvar_DataAcq_dDAQOptOvPre")
+	distributedDAQOptPost = DAP_GetValueFromNumStateWave(panelTitle, "Setvar_DataAcq_dDAQOptOvPost")
+	distributedDAQOptRes  = DAP_GetValueFromNumStateWave(panelTitle, "Setvar_DataAcq_dDAQOptOvRes")
+	TPAmpVClamp           = DAP_GetValueFromNumStateWave(panelTitle, "SetVar_DataAcq_TPAmplitude")
+	TPAmpIClamp           = DAP_GetValueFromNumStateWave(panelTitle, "SetVar_DataAcq_TPAmplitudeIC")
 	powerSpectrum         = DAP_GetValueFromNumStateWave(panelTitle, "check_settings_show_power")
 	decimationFactor      = DC_GetDecimationFactor(panelTitle, dataAcqOrTP)
 	minSamplingInterval   = DAP_GetITCSampInt(panelTitle, dataAcqOrTP)
@@ -683,8 +683,8 @@ static Function DC_PlaceDataInITCDataWave(panelTitle, numActiveChannels, dataAcq
 			ASSERT(0, "Unknown clamp mode")
 		endif
 
-		ctrl = GetPanelControl(i, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_SCALE)
-		DAScale[activeColumn] = GetSetVariable(panelTitle, ctrl)
+		ctrl = GetSpecialControlLabel(CHANNEL_TYPE_DAC, CHANNEL_CONTROL_SCALE)
+		DAScale[activeColumn] = DAP_GetValueFromNumStateWave(panelTitle, ctrl, index = i)
 
 		// DAScale tuning for special cases
 		if(dataAcqOrTP == DATA_ACQUISITION_MODE)
@@ -708,8 +708,8 @@ static Function DC_PlaceDataInITCDataWave(panelTitle, numActiveChannels, dataAcq
 
 		DC_DocumentChannelProperty(panelTitle, "DAC", headstageDAC[activeColumn], i, var=i)
 
-		ctrl = GetPanelControl(i, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_GAIN)
-		val = GetSetVariable(panelTitle, ctrl)
+		ctrl = GetSpecialControlLabel(CHANNEL_TYPE_DAC, CHANNEL_CONTROL_GAIN)
+		val = DAP_GetValueFromNumStateWave(panelTitle, ctrl, index = i)
 		DAGain[activeColumn] = HARDWARE_ITC_BITS_PER_VOLT / val
 
 		DC_DocumentChannelProperty(panelTitle, "DA GAIN", headstageDAC[activeColumn], i, var=val)
@@ -837,19 +837,19 @@ static Function DC_PlaceDataInITCDataWave(panelTitle, numActiveChannels, dataAcq
 	DC_DocumentChannelProperty(panelTitle, "Sampling interval multiplier", INDEP_HEADSTAGE, NaN, var=multiplier)
 	DC_DocumentChannelProperty(panelTitle, "Minimum sampling interval", INDEP_HEADSTAGE, NaN, var=SI_CalculateMinSampInterval(panelTitle, dataAcqOrTP) * 1e-3)
 
-	DC_DocumentChannelProperty(panelTitle, "Inter-trial interval", INDEP_HEADSTAGE, NaN, var=GetSetVariable(panelTitle, "SetVar_DataAcq_ITI"))
-	DC_DocumentChannelProperty(panelTitle, "Delay onset user", INDEP_HEADSTAGE, NaN, var=GetSetVariable(panelTitle, "setvar_DataAcq_OnsetDelayUser"))
+	DC_DocumentChannelProperty(panelTitle, "Inter-trial interval", INDEP_HEADSTAGE, NaN, var=DAP_GetValueFromNumStateWave(panelTitle, "SetVar_DataAcq_ITI"))
+	DC_DocumentChannelProperty(panelTitle, "Delay onset user", INDEP_HEADSTAGE, NaN, var=DAP_GetValueFromNumStateWave(panelTitle, "setvar_DataAcq_OnsetDelayUser"))
 	DC_DocumentChannelProperty(panelTitle, "Delay onset auto", INDEP_HEADSTAGE, NaN, var=GetValDisplayAsNum(panelTitle, "valdisp_DataAcq_OnsetDelayAuto"))
-	DC_DocumentChannelProperty(panelTitle, "Delay termination", INDEP_HEADSTAGE, NaN, var=GetSetVariable(panelTitle, "setvar_DataAcq_TerminationDelay"))
-	DC_DocumentChannelProperty(panelTitle, "Delay distributed DAQ", INDEP_HEADSTAGE, NaN, var=GetSetVariable(panelTitle, "setvar_DataAcq_dDAQDelay"))
-	DC_DocumentChannelProperty(panelTitle, "oodDAQ Pre Feature", INDEP_HEADSTAGE, NaN, var=GetSetVariable(panelTitle, "Setvar_DataAcq_dDAQOptOvPre"))
-	DC_DocumentChannelProperty(panelTitle, "oodDAQ Post Feature", INDEP_HEADSTAGE, NaN, var=GetSetVariable(panelTitle, "Setvar_DataAcq_dDAQOptOvPost"))
-	DC_DocumentChannelProperty(panelTitle, "oodDAQ Resolution", INDEP_HEADSTAGE, NaN, var=GetSetVariable(panelTitle, "setvar_DataAcq_dDAQOptOvRes"))
+	DC_DocumentChannelProperty(panelTitle, "Delay termination", INDEP_HEADSTAGE, NaN, var=DAP_GetValueFromNumStateWave(panelTitle, "setvar_DataAcq_TerminationDelay"))
+	DC_DocumentChannelProperty(panelTitle, "Delay distributed DAQ", INDEP_HEADSTAGE, NaN, var=DAP_GetValueFromNumStateWave(panelTitle, "setvar_DataAcq_dDAQDelay"))
+	DC_DocumentChannelProperty(panelTitle, "oodDAQ Pre Feature", INDEP_HEADSTAGE, NaN, var=DAP_GetValueFromNumStateWave(panelTitle, "Setvar_DataAcq_dDAQOptOvPre"))
+	DC_DocumentChannelProperty(panelTitle, "oodDAQ Post Feature", INDEP_HEADSTAGE, NaN, var=DAP_GetValueFromNumStateWave(panelTitle, "Setvar_DataAcq_dDAQOptOvPost"))
+	DC_DocumentChannelProperty(panelTitle, "oodDAQ Resolution", INDEP_HEADSTAGE, NaN, var=DAP_GetValueFromNumStateWave(panelTitle, "setvar_DataAcq_dDAQOptOvRes"))
 
 	DC_DocumentChannelProperty(panelTitle, "TP Insert Checkbox", INDEP_HEADSTAGE, NaN, var=GlobalTPInsert)
 	DC_DocumentChannelProperty(panelTitle, "Distributed DAQ", INDEP_HEADSTAGE, NaN, var=distributedDAQ)
 	DC_DocumentChannelProperty(panelTitle, "Optimized Overlap dDAQ", INDEP_HEADSTAGE, NaN, var=distributedDAQOptOv)
-	DC_DocumentChannelProperty(panelTitle, "Repeat Sets", INDEP_HEADSTAGE, NaN, var=GetSetVariable(panelTitle, "SetVar_DataAcq_SetRepeats"))
+	DC_DocumentChannelProperty(panelTitle, "Repeat Sets", INDEP_HEADSTAGE, NaN, var=DAP_GetValueFromNumStateWave(panelTitle, "SetVar_DataAcq_SetRepeats"))
 	DC_DocumentChannelProperty(panelTitle, "Scaling zero", INDEP_HEADSTAGE, NaN, var=scalingZero)
 	DC_DocumentChannelProperty(panelTitle, "Indexing", INDEP_HEADSTAGE, NaN, var=indexing)
 	DC_DocumentChannelProperty(panelTitle, "Locked indexing", INDEP_HEADSTAGE, NaN, var=indexingLocked)
@@ -886,7 +886,7 @@ static Function DC_PlaceDataInITCDataWave(panelTitle, numActiveChannels, dataAcq
 		DC_DocumentChannelProperty(panelTitle, "ADC", headstage, i, var=i)
 
 		ctrl = GetPanelControl(i, CHANNEL_TYPE_ADC, CHANNEL_CONTROL_GAIN)
-		DC_DocumentChannelProperty(panelTitle, "AD Gain", headstage, i, var=GetSetVariable(panelTitle, ctrl))
+		DC_DocumentChannelProperty(panelTitle, "AD Gain", headstage, i, var=DAP_GetValueFromNumStateWave(panelTitle, ctrl))
 
 		ctrl = GetPanelControl(i, CHANNEL_TYPE_ADC, CHANNEL_CONTROL_UNIT)
 		DC_DocumentChannelProperty(panelTitle, "AD Unit", headstage, i, str=GetSetVariableString(panelTitle, ctrl))
@@ -1185,10 +1185,10 @@ static Function DC_ReturnTotalLengthIncrease(panelTitle, [onsetDelayUser, onsetD
 	numActiveDACs          = DC_NoOfChannelsSelected(panelTitle, CHANNEL_TYPE_DAC)
 	minSamplingInterval    = DAP_GetITCSampInt(panelTitle, DATA_ACQUISITION_MODE)
 	distributedDAQ         = DAP_GetValueFromNumStateWave(panelTitle, "Check_DataAcq1_DistribDaq")
-	onsetDelayUserVal      = round(GetSetVariable(panelTitle, "setvar_DataAcq_OnsetDelayUser") / (minSamplingInterval / 1000))
+	onsetDelayUserVal      = round(DAP_GetValueFromNumStateWave(panelTitle, "setvar_DataAcq_OnsetDelayUser") / (minSamplingInterval / 1000))
 	onsetDelayAutoVal      = round(GetValDisplayAsNum(panelTitle, "valdisp_DataAcq_OnsetDelayAuto") / (minSamplingInterval / 1000))
-	terminationDelayVal    = round(GetSetVariable(panelTitle, "setvar_DataAcq_TerminationDelay") / (minSamplingInterval / 1000))
-	distributedDAQDelayVal = round(GetSetVariable(panelTitle, "setvar_DataAcq_dDAQDelay") / (minSamplingInterval / 1000))
+	terminationDelayVal    = round(DAP_GetValueFromNumStateWave(panelTitle, "setvar_DataAcq_TerminationDelay") / (minSamplingInterval / 1000))
+	distributedDAQDelayVal = round(DAP_GetValueFromNumStateWave(panelTitle, "setvar_DataAcq_dDAQDelay") / (minSamplingInterval / 1000))
 
 	if(!ParamIsDefault(onsetDelayUser))
 		onsetDelayUser = onsetDelayUserVal

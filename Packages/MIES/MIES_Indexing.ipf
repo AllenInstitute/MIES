@@ -703,7 +703,7 @@ Function IDX_CalculcateActiveSetCount(panelTitle)
 	variable value
 
 	value  = GetValDisplayAsNum(panelTitle, "valdisp_DataAcq_SweepsActiveSet")
-	value *= GetSetVariable(panelTitle, "SetVar_DataAcq_SetRepeats")
+	value *= DAP_GetValueFromNumStateWave(panelTitle, "SetVar_DataAcq_SetRepeats")
 
 	return value
 End
