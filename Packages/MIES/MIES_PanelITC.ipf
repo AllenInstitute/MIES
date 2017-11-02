@@ -7905,6 +7905,9 @@ Function DAP_LockDevice(panelTitle)
 	DAP_UnlockCommentNotebook(panelTitleLocked)
 	DAP_ToggleAcquisitionButton(panelTitleLocked, DATA_ACQ_BUTTON_TO_DAQ)
 	SI_CalculateMinSampInterval(panelTitleLocked, DATA_ACQUISITION_MODE)
+
+	// initial fill of the GUI state wave
+	// all other changes are propagated immediately to the GUI state waves
 	DAP_RecordGuiStateNum(panelTitleLocked)
 	DAP_RecordGuiStateTxT(panelTitleLocked)
 
