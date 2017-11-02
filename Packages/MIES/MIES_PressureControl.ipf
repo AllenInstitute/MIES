@@ -932,6 +932,7 @@ static Function P_UpdatePopupITCdev(panelTitle, headStageNo)
 	// only compare saved and selected device if a device was saved
 	if(isFinite(PressureDataWv[headStageNo][%DAC_List_Index]))
 		string SavedITCdev = PressureDataTxtWv[headStageNo][0]
+		// deliberately not using the GUI state wave
 		string PopUpMenuString = GetPopupMenuString(panelTitle, control)
 
 		// compare saved and selected device to verify that they match. Non

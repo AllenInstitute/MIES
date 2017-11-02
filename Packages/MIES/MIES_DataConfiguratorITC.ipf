@@ -626,7 +626,7 @@ static Function DC_PlaceDataInITCDataWave(panelTitle, numActiveChannels, dataAcq
 	powerSpectrum         = DAP_GetValueFromNumStateWave(panelTitle, "check_settings_show_power")
 	decimationFactor      = DC_GetDecimationFactor(panelTitle, dataAcqOrTP)
 	minSamplingInterval   = DAP_GetITCSampInt(panelTitle, dataAcqOrTP)
-	multiplier            = str2num(GetPopupMenuString(panelTitle, "Popup_Settings_SampIntMult"))
+	multiplier            = str2num(DAP_GetValueFromTxTStateWave(panelTitle, "Popup_Settings_SampIntMult"))
 	testPulseLength       = TP_GetTestPulseLengthInPoints(panelTitle) / multiplier
 	setNameList           = DC_PopMenuStringList(panelTitle, CHANNEL_TYPE_DAC)
 	DC_ReturnTotalLengthIncrease(panelTitle, onsetdelayUser=onsetDelayUser, onsetDelayAuto=onsetDelayAuto, distributedDAQDelay=distributedDAQDelay)

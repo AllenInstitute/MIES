@@ -5010,7 +5010,7 @@ Function DAP_GetITCSampInt(panelTitle, dataAcqOrTP)
 	variable multiplier
 
 	if(dataAcqOrTP == DATA_ACQUISITION_MODE)
-		multiplier = str2num(GetPopupMenuString(panelTitle, "Popup_Settings_SampIntMult"))
+		multiplier = str2num(DAP_GetValueFromTxTStateWave(panelTitle, "Popup_Settings_SampIntMult"))
 	elseif(dataAcqOrTP == TEST_PULSE_MODE)
 		multiplier = 1
 	else
@@ -5424,8 +5424,7 @@ Function DAP_CheckSettings(panelTitle, mode)
 					continue
 				endif
 
-				ctrl = GetPanelControl(i, CHANNEL_TYPE_TTL, CHANNEL_CONTROL_WAVE)
-				ttlWave = GetPopupMenuString(panelTitle, ctrl)
+				ttlWave = DAP_GetValueFromTxtStateWave(panelTitle, GetSpecialControlLabel(CHANNEL_TYPE_TTL, CHANNEL_CONTROL_WAVE), index = i)
 				if(!CmpStr(ttlWave, NONE))
 					printf "(%s) Please select a valid wave for TTL channel %d\r", panelTitle, i
 					ControlWindowToFront()
@@ -5433,8 +5432,7 @@ Function DAP_CheckSettings(panelTitle, mode)
 				endif
 
 				if(indexingEnabled)
-					ctrl = GetPanelControl(i, CHANNEL_TYPE_TTL, CHANNEL_CONTROL_INDEX_END)
-					endWave = GetPopupMenuString(panelTitle, ctrl)
+					endWave = DAP_GetValueFromTxtStateWave(panelTitle, GetSpecialControlLabel(CHANNEL_TYPE_TTL, CHANNEL_CONTROL_INDEX_END), index = i)
 					if(!CmpStr(endWave, NONE))
 						printf "(%s) Please select a valid indexing end wave for TTL channel %d\r", panelTitle, i
 						ControlWindowToFront()
@@ -5486,8 +5484,7 @@ Function DAP_CheckSettings(panelTitle, mode)
 						continue
 					endif
 
-					ctrl = GetPanelControl(i, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_WAVE)
-					dacWave = GetPopupMenuString(panelTitle, ctrl)
+					dacWave = DAP_GetValueFromTxtStateWave(panelTitle, GetSpecialControlLabel(CHANNEL_TYPE_DAC, CHANNEL_CONTROL_WAVE), index = i)
 					if(isEmpty(refDacWave))
 						refDacWave = dacWave
 					elseif(CmpStr(refDacWave, dacWave))
@@ -5780,8 +5777,7 @@ static Function DAP_CheckHeadStage(panelTitle, headStage, mode)
 	endif
 
 	if(mode == DATA_ACQUISITION_MODE)
-		ctrl = GetPanelControl(DACchannel, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_WAVE)
-		dacWave = GetPopupMenuString(panelTitle, ctrl)
+		dacWave = DAP_GetValueFromTxtStateWave(panelTitle, GetSpecialControlLabel(CHANNEL_TYPE_DAC, CHANNEL_CONTROL_WAVE), index = DACchannel)
 		if(!CmpStr(dacWave, NONE))
 			printf "(%s) Please select a stimulus set for DA channel %d referenced by Headstage %d\r", panelTitle, DACchannel, headStage
 			ControlWindowToFront()
@@ -5847,8 +5843,7 @@ static Function DAP_CheckHeadStage(panelTitle, headStage, mode)
 		endif
 
 		if(DAP_GetValueFromNumStateWave(panelTitle, "Check_DataAcq_Indexing"))
-			ctrl = GetPanelControl(DACchannel, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_INDEX_END)
-			endWave = GetPopupMenuString(panelTitle, ctrl)
+			endWave = DAP_GetValueFromTxtStateWave(panelTitle, GetSpecialControlLabel(CHANNEL_TYPE_DAC, CHANNEL_CONTROL_INDEX_END), index = DACchannel)
 			if(!CmpStr(endWave, NONE))
 				printf "(%s) Please select a valid indexing end wave for DA channel %d referenced by HeadStage %d\r", panelTitle, DACchannel, headStage
 				ControlWindowToFront()
