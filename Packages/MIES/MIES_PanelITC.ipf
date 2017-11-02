@@ -5713,8 +5713,15 @@ static Function DAP_CheckHeadStage(panelTitle, headStage, mode)
 		return 1
 	endif
 
+<<<<<<< HEAD
 	string ctrl = GetPanelControl(DACchannel, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_UNIT)
 	unit = GetSetVariableString(panelTitle, ctrl)
+||||||| parent of 314f4dba... DA_Ephys: Replace GetSetVariableString with DAP_GetValueFromTxTStateWave
+	ctrl = GetPanelControl(DACchannel, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_UNIT)
+	unit = GetSetVariableString(panelTitle, ctrl)
+=======
+	unit = DAP_GetValueFromTxTStateWave(panelTitle, GetSpecialControlLabel(CHANNEL_TYPE_DAC, CHANNEL_CONTROL_UNIT), index = DACchannel)
+>>>>>>> 314f4dba... DA_Ephys: Replace GetSetVariableString with DAP_GetValueFromTxTStateWave
 	if(isEmpty(unit))
 		printf "(%s) The unit for DACchannel %d is empty.\r", panelTitle, DACchannel
 		ControlWindowToFront()
@@ -5742,15 +5749,13 @@ static Function DAP_CheckHeadStage(panelTitle, headStage, mode)
 
 	// we allow the scale being zero
 	scale = DAP_GetValueFromNumStateWave(panelTitle, GetSpecialControlLabel(CHANNEL_TYPE_DAC, CHANNEL_CONTROL_SCALE), index = DACchannel)
-	scale = DAP_GetValueFromNumStateWave(panelTitle, ctrl)
 	if(!isFinite(scale))
 		printf "(%s) The scale for DACchannel %d must be finite.\r", panelTitle, DACchannel
 		ControlWindowToFront()
 		return 1
 	endif
 
-	ctrl = GetPanelControl(ADCchannel, CHANNEL_TYPE_ADC, CHANNEL_CONTROL_UNIT)
-	unit = GetSetVariableString(panelTitle, ctrl)
+	unit = DAP_GetValueFromTxTStateWave(panelTitle, GetSpecialControlLabel(CHANNEL_TYPE_ADC, CHANNEL_CONTROL_UNIT), index = ADCchannel)
 	if(isEmpty(unit))
 		printf "(%s) The unit for ADCchannel %d is empty.\r", panelTitle, ADCchannel
 		ControlWindowToFront()
@@ -5897,6 +5902,7 @@ static Function DAP_ApplyClmpModeSavdSettngs(panelTitle, headStage, clampMode)
 	Wave ChannelClampMode    = GetChannelClampMode(panelTitle)
 	Wave/T ChanAmpAssignUnit = GetChanAmpAssignUnit(panelTitle)
 	WAVE GuiState            = GetDA_EphysGuiStateNum(panelTitle)
+	WAVE/T GuiStateTxT       = GetDA_EphysGuiStateTxT(panelTitle)
 
 	if(clampMode == V_CLAMP_MODE)
 		DACchannel = ChanAmpAssign[%VC_DA][headStage]
@@ -5924,9 +5930,11 @@ static Function DAP_ApplyClmpModeSavdSettngs(panelTitle, headStage, clampMode)
 	GuiState[DACchannel][%$GetSpecialControlLabel(CHANNEL_TYPE_DAC, CHANNEL_CONTROL_CHECK)] = CHECKBOX_SELECTED
 	ctrl = GetPanelControl(DACchannel, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_GAIN)
 	SetSetVariable(panelTitle, ctrl, DaGain)
+	GuiState[DACchannel][%$GetSpecialControlLabel(CHANNEL_TYPE_DAC, CHANNEL_CONTROL_GAIN)] = DAGain
 	ctrl = GetPanelControl(DACchannel, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_UNIT)
 	SetSetVariableString(panelTitle, ctrl, DaUnit)
 	ChannelClampMode[DACchannel][%DAC] = clampMode
+	GuiStateTxT[ADCchannel][%$GetSpecialControlLabel(CHANNEL_TYPE_DAC, CHANNEL_CONTROL_UNIT)] = DAUnit
 
 	// ADC channels
 	ctrl = GetPanelControl(ADCchannel, CHANNEL_TYPE_ADC, CHANNEL_CONTROL_CHECK)
@@ -5934,8 +5942,10 @@ static Function DAP_ApplyClmpModeSavdSettngs(panelTitle, headStage, clampMode)
 	GuiState[ADCchannel][%$GetSpecialControlLabel(CHANNEL_TYPE_ADC, CHANNEL_CONTROL_CHECK)] = CHECKBOX_SELECTED
 	ctrl = GetPanelControl(ADCchannel, CHANNEL_TYPE_ADC, CHANNEL_CONTROL_GAIN)
 	SetSetVariable(panelTitle, ctrl, ADGain)
+	GuiState[ADCchannel][%$GetSpecialControlLabel(CHANNEL_TYPE_ADC, CHANNEL_CONTROL_GAIN)] = ADGain
 	ctrl = GetPanelControl(ADCchannel, CHANNEL_TYPE_ADC, CHANNEL_CONTROL_UNIT)
 	SetSetVariableString(panelTitle, ctrl, ADUnit)
+	GuiStateTxT[ADCchannel][%$GetSpecialControlLabel(CHANNEL_TYPE_ADC, CHANNEL_CONTROL_UNIT)] = ADUnit
 	ChannelClampMode[ADCchannel][%ADC] = clampMode
 End
 
@@ -7060,7 +7070,7 @@ Function DAP_AddUserComment(panelTitle)
 	DAP_OpenCommentPanel(panelTitle)
 
 	sweepNo = AFH_GetLastSweepAcquired(panelTitle)
-	comment = GetSetVariableString(panelTitle, "SetVar_DataAcq_Comment")
+	comment = DAP_GetValueFromTxTStateWave(panelTitle, "SetVar_DataAcq_Comment")
 
 	if(isEmpty(comment))
 		return NaN
@@ -7074,7 +7084,7 @@ Function DAP_AddUserComment(panelTitle)
 
 	// after writing the user comment, clear it
 	ED_WriteUserCommentToLabNB(panelTitle, comment, sweepNo)
-	SetSetVariableString(panelTitle, "SetVar_DataAcq_Comment", "")
+	PGC_SetAndActivateControl(panelTitle, "SetVar_DataAcq_Comment", str = "")
 End
 
 /// @brief Make the comment notebook read-only

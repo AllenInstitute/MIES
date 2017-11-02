@@ -678,8 +678,7 @@ static Function SetDAScale(panelTitle, headstage, DAScale)
 	DAC = AFH_GetDACFromHeadstage(panelTitle, headstage)
 	ASSERT(IsFinite(DAC), "This analysis function does not work with unassociated DA channels")
 
-	ctrl = GetPanelControl(DAC, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_UNIT)
-	DAUnit = GetSetVariableString(panelTitle, ctrl)
+	DAUnit = DAP_GetValueFromTxTStateWave(panelTitle, GetSpecialControlLabel(CHANNEL_TYPE_DAC, CHANNEL_CONTROL_UNIT), index = DAC)
 
 	// check for correct units
 	ASSERT(!cmpstr(DAunit, "pA"), "Unexpected DA Unit")
@@ -1229,8 +1228,7 @@ static Function EvaluateBaselineProperties(panelTitle, sweepNo, chunk, fifoInSti
 		ASSERT(IsFinite(ADC), "This analysis function does not work with unassociated AD channels")
 		ADcol = AFH_GetITCDataColumn(config, ADC, ITC_XOP_CHANNEL_TYPE_ADC)
 
-		ctrl   = GetPanelControl(ADC, CHANNEL_TYPE_ADC, CHANNEL_CONTROL_UNIT)
-		ADUnit = GetSetVariableString(panelTitle, ctrl)
+		ADunit = DAP_GetValueFromTxTStateWave(panelTitle, GetSpecialControlLabel(CHANNEL_TYPE_ADC, CHANNEL_CONTROL_UNIT), index = ADC)
 
 		// assuming millivolts
 		ASSERT(!cmpstr(ADunit, "mV"), "Unexpected AD Unit")

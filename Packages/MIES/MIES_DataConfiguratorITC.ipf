@@ -501,6 +501,8 @@ static Function DC_PlaceDataInITCChanConfigWave(panelTitle, dataAcqOrTP)
 	// query DA properties
 	WAVE channelStatus = DAP_ControlStatusWaveCache(panelTitle, CHANNEL_TYPE_DAC)
 
+	ctrl = GetSpecialControlLabel(CHANNEL_TYPE_DAC, CHANNEL_CONTROL_UNIT)
+
 	numEntries = DimSize(channelStatus, ROWS)
 	for(i = 0; i < numEntries; i += 1)
 
@@ -510,13 +512,14 @@ static Function DC_PlaceDataInITCChanConfigWave(panelTitle, dataAcqOrTP)
 
 		ITCChanConfigWave[j][0] = ITC_XOP_CHANNEL_TYPE_DAC
 		ITCChanConfigWave[j][1] = i
-		ctrl = GetPanelControl(i, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_UNIT)
-		unitList = AddListItem(GetSetVariableString(panelTitle, ctrl), unitList, ";", Inf)
+		unitList = AddListItem(DAP_GetValueFromTxTStateWave(panelTitle, ctrl, index = i), unitList, ";", Inf)
 		j += 1
 	endfor
 
 	// query AD properties
 	WAVE channelStatus = DAP_ControlStatusWaveCache(panelTitle, CHANNEL_TYPE_ADC)
+
+	ctrl = GetSpecialControlLabel(CHANNEL_TYPE_ADC, CHANNEL_CONTROL_UNIT)
 
 	numEntries = DimSize(channelStatus, ROWS)
 	for(i = 0; i < numEntries; i += 1)
@@ -527,8 +530,7 @@ static Function DC_PlaceDataInITCChanConfigWave(panelTitle, dataAcqOrTP)
 
 		ITCChanConfigWave[j][0] = ITC_XOP_CHANNEL_TYPE_ADC
 		ITCChanConfigWave[j][1] = i
-		ctrl = GetPanelControl(i, CHANNEL_TYPE_ADC, CHANNEL_CONTROL_UNIT)
-		unitList = AddListItem(GetSetVariableString(panelTitle, ctrl), unitList, ";", Inf)
+		unitList = AddListItem(DAP_GetValueFromTxTStateWave(panelTitle, ctrl, index = i), unitList, ";", Inf)
 		j += 1
 	endfor
 
@@ -722,8 +724,8 @@ static Function DC_PlaceDataInITCDataWave(panelTitle, numActiveChannels, dataAcq
 			DC_DocumentChannelProperty(panelTitle, colLabel, headstageDAC[activeColumn], i, str=func)
 		endfor
 
-		ctrl = GetPanelControl(i, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_UNIT)
-		DC_DocumentChannelProperty(panelTitle, "DA Unit", headstageDAC[activeColumn], i, str=GetSetVariableString(panelTitle, ctrl))
+		ctrl = GetSpecialControlLabel(CHANNEL_TYPE_DAC, CHANNEL_CONTROL_UNIT)
+		DC_DocumentChannelProperty(panelTitle, "DA Unit", headstageDAC[activeColumn], i, str=DAP_GetValueFromTxTStateWave(panelTitle, ctrl, index = i))
 
 		DC_DocumentChannelProperty(panelTitle, "Stim Scale Factor", headstageDAC[activeColumn], i, var=DAScale[activeColumn])
 		DC_DocumentChannelProperty(panelTitle, "Set Sweep Count", headstageDAC[activeColumn], i, var=setColumn[activeColumn])
@@ -885,11 +887,11 @@ static Function DC_PlaceDataInITCDataWave(panelTitle, numActiveChannels, dataAcq
 
 		DC_DocumentChannelProperty(panelTitle, "ADC", headstage, i, var=i)
 
-		ctrl = GetPanelControl(i, CHANNEL_TYPE_ADC, CHANNEL_CONTROL_GAIN)
-		DC_DocumentChannelProperty(panelTitle, "AD Gain", headstage, i, var=DAP_GetValueFromNumStateWave(panelTitle, ctrl))
+		ctrl = GetSpecialControlLabel(CHANNEL_TYPE_ADC, CHANNEL_CONTROL_GAIN)
+		DC_DocumentChannelProperty(panelTitle, "AD Gain", headstage, i, var=DAP_GetValueFromNumStateWave(panelTitle, ctrl, index = i))
 
-		ctrl = GetPanelControl(i, CHANNEL_TYPE_ADC, CHANNEL_CONTROL_UNIT)
-		DC_DocumentChannelProperty(panelTitle, "AD Unit", headstage, i, str=GetSetVariableString(panelTitle, ctrl))
+		ctrl = GetSpecialControlLabel(CHANNEL_TYPE_ADC, CHANNEL_CONTROL_UNIT)
+		DC_DocumentChannelProperty(panelTitle, "AD Unit", headstage, i, str=DAP_GetValueFromTxTStateWave(panelTitle, ctrl, index = i))
 
 		activeColumn += 1
 	endfor
