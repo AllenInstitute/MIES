@@ -40,7 +40,7 @@ Function SWS_SaveAndScaleITCData(panelTitle, [forcedStop])
 	// Add labnotebook entries for the acquired sweep
 	ED_createWaveNoteTags(panelTitle, sweepNo)
 
-	if(GetCheckBoxState(panelTitle, "Check_Settings_NwbExport"))
+	if(DAP_GetValueFromNumStateWave(panelTitle, "Check_Settings_NwbExport"))
 		NWB_AppendSweep(panelTitle, dataWave, configWave, sweepNo)
 	endif
 
@@ -170,5 +170,5 @@ End
 static Function SWS_GetRawDataFPType(panelTitle)
 	string panelTitle
 
-	return GetCheckboxState(panelTitle, "Check_Settings_UseDoublePrec") ? IGOR_TYPE_64BIT_FLOAT : IGOR_TYPE_32BIT_FLOAT
+	return DAP_GetValueFromNumStateWave(panelTitle, "Check_Settings_UseDoublePrec") ? IGOR_TYPE_64BIT_FLOAT : IGOR_TYPE_32BIT_FLOAT
 End

@@ -612,18 +612,18 @@ static Function DC_PlaceDataInITCDataWave(panelTitle, numActiveChannels, dataAcq
 	variable multiplier, j, powerSpectrum, distributedDAQOptOv, distributedDAQOptPre, distributedDAQOptPost, distributedDAQOptRes, headstage
 	variable/C ret
 
-	globalTPInsert        = GetCheckboxState(panelTitle, "Check_Settings_InsertTP")
-	scalingZero           = GetCheckboxState(panelTitle,  "check_Settings_ScalingZero")
-	indexingLocked        = GetCheckboxState(panelTitle, "Check_DataAcq1_IndexingLocked")
-	indexing              = GetCheckboxState(panelTitle, "Check_DataAcq_Indexing")
-	distributedDAQ        = GetCheckboxState(panelTitle, "Check_DataAcq1_DistribDaq")
-	distributedDAQOptOv   = GetCheckboxState(panelTitle, "Check_DataAcq1_dDAQOptOv")
+	globalTPInsert        = DAP_GetValueFromNumStateWave(panelTitle, "Check_Settings_InsertTP")
+	scalingZero           = DAP_GetValueFromNumStateWave(panelTitle,  "check_Settings_ScalingZero")
+	indexingLocked        = DAP_GetValueFromNumStateWave(panelTitle, "Check_DataAcq1_IndexingLocked")
+	indexing              = DAP_GetValueFromNumStateWave(panelTitle, "Check_DataAcq_Indexing")
+	distributedDAQ        = DAP_GetValueFromNumStateWave(panelTitle, "Check_DataAcq1_DistribDaq")
+	distributedDAQOptOv   = DAP_GetValueFromNumStateWave(panelTitle, "Check_DataAcq1_dDAQOptOv")
 	distributedDAQOptPre  = GetSetVariable(panelTitle, "Setvar_DataAcq_dDAQOptOvPre")
 	distributedDAQOptPost = GetSetVariable(panelTitle, "Setvar_DataAcq_dDAQOptOvPost")
 	distributedDAQOptRes  = GetSetVariable(panelTitle, "Setvar_DataAcq_dDAQOptOvRes")
 	TPAmpVClamp           = GetSetVariable(panelTitle, "SetVar_DataAcq_TPAmplitude")
 	TPAmpIClamp           = GetSetVariable(panelTitle, "SetVar_DataAcq_TPAmplitudeIC")
-	powerSpectrum         = GetCheckboxState(panelTitle, "check_settings_show_power")
+	powerSpectrum         = DAP_GetValueFromNumStateWave(panelTitle, "check_settings_show_power")
 	decimationFactor      = DC_GetDecimationFactor(panelTitle, dataAcqOrTP)
 	minSamplingInterval   = DAP_GetITCSampInt(panelTitle, dataAcqOrTP)
 	multiplier            = str2num(GetPopupMenuString(panelTitle, "Popup_Settings_SampIntMult"))
@@ -853,8 +853,8 @@ static Function DC_PlaceDataInITCDataWave(panelTitle, numActiveChannels, dataAcq
 	DC_DocumentChannelProperty(panelTitle, "Scaling zero", INDEP_HEADSTAGE, NaN, var=scalingZero)
 	DC_DocumentChannelProperty(panelTitle, "Indexing", INDEP_HEADSTAGE, NaN, var=indexing)
 	DC_DocumentChannelProperty(panelTitle, "Locked indexing", INDEP_HEADSTAGE, NaN, var=indexingLocked)
-	DC_DocumentChannelProperty(panelTitle, "Repeated Acquisition", INDEP_HEADSTAGE, NaN, var=GetCheckboxState(panelTitle, "Check_DataAcq1_RepeatAcq"))
-	DC_DocumentChannelProperty(panelTitle, "Random Repeated Acquisition", INDEP_HEADSTAGE, NaN, var=GetCheckboxState(panelTitle, "check_DataAcq_RepAcqRandom"))
+	DC_DocumentChannelProperty(panelTitle, "Repeated Acquisition", INDEP_HEADSTAGE, NaN, var=DAP_GetValueFromNumStateWave(panelTitle, "Check_DataAcq1_RepeatAcq"))
+	DC_DocumentChannelProperty(panelTitle, "Random Repeated Acquisition", INDEP_HEADSTAGE, NaN, var=DAP_GetValueFromNumStateWave(panelTitle, "check_DataAcq_RepAcqRandom"))
 
 	NVAR raCycleID = $GetRepeatedAcquisitionCycleID(panelTitle)
 	if(dataAcqOrTP == DATA_ACQUISITION_MODE)
@@ -1097,7 +1097,7 @@ static Function/C DC_CalculateChannelColumnNo(panelTitle, SetName, channelNo, ch
 	string sequenceWaveName
 	variable skipAhead = DAP_GetskipAhead(panelTitle)
 
-	repAcqRandom = GetCheckboxState(panelTitle, "check_DataAcq_RepAcqRandom")
+	repAcqRandom = DAP_GetValueFromNumStateWave(panelTitle, "check_DataAcq_RepAcqRandom")
 
 	DFREF devicePath = GetDevicePath(panelTitle)
 
@@ -1108,12 +1108,12 @@ static Function/C DC_CalculateChannelColumnNo(panelTitle, SetName, channelNo, ch
 	// Below code calculates the variable local count which is then used to determine what column to select from a particular set
 	if(!RA_IsFirstSweep(panelTitle))
 		//thus the vairable "count" is used to determine if acquisition is on the first cycle
-		if(!GetCheckboxState(panelTitle, "Check_DataAcq_Indexing"))
+		if(!DAP_GetValueFromNumStateWave(panelTitle, "Check_DataAcq_Indexing"))
 			localCount = count
 			cycleCount = 0
 		else // The local count is now set length dependent
 			// check locked status. locked = popup menus on channels idex in lock - step
-			if(GetCheckboxState(panelTitle, "Check_DataAcq1_IndexingLocked"))
+			if(DAP_GetValueFromNumStateWave(panelTitle, "Check_DataAcq1_IndexingLocked"))
 				/// @todo this code here is different compared to what RA_BckgTPwithCallToRACounterMD and RA_CounterMD do
 				NVAR activeSetCount = $GetActiveSetCount(panelTitle)
 				localCount = IDX_CalculcateActiveSetCount(panelTitle) - activeSetCount
@@ -1184,7 +1184,7 @@ static Function DC_ReturnTotalLengthIncrease(panelTitle, [onsetDelayUser, onsetD
 
 	numActiveDACs          = DC_NoOfChannelsSelected(panelTitle, CHANNEL_TYPE_DAC)
 	minSamplingInterval    = DAP_GetITCSampInt(panelTitle, DATA_ACQUISITION_MODE)
-	distributedDAQ         = GetCheckboxState(panelTitle, "Check_DataAcq1_DistribDaq")
+	distributedDAQ         = DAP_GetValueFromNumStateWave(panelTitle, "Check_DataAcq1_DistribDaq")
 	onsetDelayUserVal      = round(GetSetVariable(panelTitle, "setvar_DataAcq_OnsetDelayUser") / (minSamplingInterval / 1000))
 	onsetDelayAutoVal      = round(GetValDisplayAsNum(panelTitle, "valdisp_DataAcq_OnsetDelayAuto") / (minSamplingInterval / 1000))
 	terminationDelayVal    = round(GetSetVariable(panelTitle, "setvar_DataAcq_TerminationDelay") / (minSamplingInterval / 1000))
@@ -1227,9 +1227,9 @@ static Function DC_GetStopCollectionPoint(panelTitle, dataAcqOrTP, setLengths)
 		totalIncrease = DC_ReturnTotalLengthIncrease(panelTitle)
 		TTLlength     = DC_CalculateLongestSweep(panelTitle, DATA_ACQUISITION_MODE, CHANNEL_TYPE_TTL)
 
-		if(GetCheckBoxState(panelTitle, "Check_DataAcq1_dDAQOptOv"))
+		if(DAP_GetValueFromNumStateWave(panelTitle, "Check_DataAcq1_dDAQOptOv"))
 			DAClength = WaveMax(setLengths)
-		elseif(GetCheckBoxState(panelTitle, "Check_DataAcq1_DistribDaq"))
+		elseif(DAP_GetValueFromNumStateWave(panelTitle, "Check_DataAcq1_DistribDaq"))
 			DAClength *= DC_NoOfChannelsSelected(panelTitle, CHANNEL_TYPE_DAC)
 		endif
 

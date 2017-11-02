@@ -4401,7 +4401,7 @@ Function DAP_CheckProc_Channel_All(cba) : CheckBoxControl
 
 			for(i = 0; i < numEntries; i += 1)
 				control = GetPanelControl(i, channelType, CHANNEL_CONTROL_CHECK)
-				checked = GetCheckBoxState(panelTitle, control)
+				checked = DAP_GetValueFromNumStateWave(panelTitle, control)
 
 				if(checked == allChecked)
 					continue
@@ -4519,12 +4519,12 @@ static Function DAP_AdaptAssocHeadstageState(panelTitle, checkboxCtrl)
 
 	headStageCheckBox = GetPanelControl(headstage, CHANNEL_TYPE_HEADSTAGE, CHANNEL_CONTROL_CHECK)
 
-	if(GetCheckBoxState(panelTitle, checkboxCtrl) == GetCheckBoxState(panelTitle, headStageCheckBox))
+	if(DAP_GetValueFromNumStateWave(panelTitle, checkboxCtrl) == DAP_GetValueFromNumStateWave(panelTitle, headStageCheckBox))
 		// nothing to do
 		return NaN
 	endif
 
-	PGC_SetAndActivateControl(panelTitle, headStageCheckBox, val=!GetCheckBoxState(panelTitle, headStageCheckBox))
+	PGC_SetAndActivateControl(panelTitle, headStageCheckBox, val=!DAP_GetValueFromNumStateWave(panelTitle, headStageCheckBox))
 End
 
 /// @brief Return the repeated acquisition cycle ID for the given devide.
@@ -4569,7 +4569,7 @@ Function DAP_OneTimeCallBeforeDAQ(panelTitle, runMode)
 	NVAR raCycleID = $GetRepeatedAcquisitionCycleID(panelTitle)
 	raCycleID = DAP_GetRAAcquisitionCycleID(panelTitle)
 
-	if(GetCheckBoxState(panelTitle, "Check_DataAcq_Indexing"))
+	if(DAP_GetValueFromNumStateWave(panelTitle, "Check_DataAcq_Indexing"))
 		IDX_StoreStartFinishForIndexing(panelTitle)
 	endif
 
@@ -4613,7 +4613,7 @@ Function DAP_OneTimeCallBeforeDAQ(panelTitle, runMode)
 	DisableControls(panelTitle, CONTROLS_DISABLE_DURING_DAQ_TP)
 
 	// turn off active pressure control modes
-	if(GetCheckboxState(panelTitle, "check_Settings_DisablePressure"))
+	if(DAP_GetValueFromNumStateWave(panelTitle, "check_Settings_DisablePressure"))
 		P_SetAllHStoAtmospheric(panelTitle)
 	endif
 
@@ -4686,13 +4686,13 @@ Function DAP_OneTimeCallAfterDAQ(panelTitle, [forcedStop])
 	raCycleID = NaN // invalidate
 
 	// restore the selected sets before DAQ
-	if(GetCheckBoxState(panelTitle, "Check_DataAcq_Indexing"))
+	if(DAP_GetValueFromNumStateWave(panelTitle, "Check_DataAcq_Indexing"))
 		IDX_ResetStartFinishForIndexing(panelTitle)
 	endif
 
 	DAP_UpdateSweepSetVariables(panelTitle)
 
-	if(!GetCheckBoxState(panelTitle, "check_Settings_TPAfterDAQ"))
+	if(!DAP_GetValueFromNumStateWave(panelTitle, "check_Settings_TPAfterDAQ"))
 		return NaN
 	endif
 
@@ -4700,7 +4700,7 @@ Function DAP_OneTimeCallAfterDAQ(panelTitle, [forcedStop])
 	// 1: is the current function
 	ASSERT(ItemsInList(ListMatch(GetRTStackInfo(0), GetRTStackInfo(1))) == 1 , "Recursion detected, aborting")
 
-	if(GetCheckBoxState(panelTitle, "check_Settings_MD"))
+	if(DAP_GetValueFromNumStateWave(panelTitle, "check_Settings_MD"))
 		TPM_StartTestPulseMultiDevice(panelTitle)
 	else
 		TPS_StartTestPulseSingleDevice(panelTitle)
@@ -4718,7 +4718,7 @@ Function DAP_ButtonProc_AcquireData(ba) : ButtonControl
 
 			DAP_AbortIfUnlocked(panelTitle)
 
-			if(GetCheckBoxState(panelTitle, "check_Settings_MD"))
+			if(DAP_GetValueFromNumStateWave(panelTitle, "check_Settings_MD"))
 				DQM_StartDAQMultiDevice(panelTitle)
 			else
 				DQS_StartDAQSingleDevice(panelTitle)
@@ -4826,7 +4826,7 @@ Function DAP_UpdateITIAcrossSets(panelTitle)
 	maxITI = IDX_LongestITI(panelTitle, numActiveDAChannels)
 	DEBUGPRINT("Maximum ITI across sets=", var=maxITI)
 
-	if(GetCheckBoxState(panelTitle, "Check_DataAcq_Get_Set_ITI"))
+	if(DAP_GetValueFromNumStateWave(panelTitle, "Check_DataAcq_Get_Set_ITI"))
 		SetSetVariable(panelTitle, "SetVar_DataAcq_ITI", maxITI)
 	elseif(maxITI == 0 && numActiveDAChannels > 0)
 		PGC_SetAndActivateControl(panelTitle, "Check_DataAcq_Get_Set_ITI", val = CHECKBOX_UNSELECTED)
@@ -4842,7 +4842,7 @@ Function DAP_PopMenuChkProc_StimSetList(pa) : PopupMenuControl
 	STRUCT WMPopupAction& pa
 
 	string ctrl, list
-	string panelTitle, stimSet, checkCtrl
+	string panelTitle, stimSet
 	variable channelIndex, channelType, channelControl, isAllControl, indexing
 	variable i, numEntries, idx, dataAcqRunMode, headstage, activeChannel
 
@@ -4856,11 +4856,10 @@ Function DAP_PopMenuChkProc_StimSetList(pa) : PopupMenuControl
 			DAP_AbortIfUnlocked(panelTitle)
 			ASSERT(!DAP_ParsePanelControl(ctrl, channelIndex, channelType, channelControl), "Invalid control format")
 
-			checkCtrl     = GetPanelControl(channelIndex, channelType, CHANNEL_CONTROL_CHECK)
-			indexing      = GetCheckBoxState(panelTitle, "Check_DataAcq_Indexing")
+			indexing      = DAP_GetValueFromNumStateWave(panelTitle, "Check_DataAcq_Indexing")
 			isAllControl  = DAP_IsAllControl(channelIndex)
 			activeChannel = isAllControl                                       \
-			                || (GetCheckBoxState(panelTitle, checkCtrl)        \
+							|| (DAP_GetValueFromNumStateWave(panelTitle, GetSpecialControlLabel(channelType, CHANNEL_CONTROL_CHECK), index = channelIndex)        \
 			                   && (channelControl == CHANNEL_CONTROL_WAVE      \
 			                   || (channelControl == CHANNEL_CONTROL_INDEX_END \
 			                   && indexing)))
@@ -4892,6 +4891,7 @@ Function DAP_PopMenuChkProc_StimSetList(pa) : PopupMenuControl
 					endif
 
 					SetPopupMenuIndex(panelTitle, ctrl, idx - 1)
+					DAP_UpdateControlInGuiStateWv(pa.win, ctrl, val = idx - 1, str = pa.popStr)
 				endfor
 			endif
 
@@ -5026,10 +5026,10 @@ Function DAP_UpdateSweepSetVariables(panelTitle)
 
 	variable numSetRepeats
 
-	if(GetCheckBoxState(panelTitle, "Check_DataAcq1_RepeatAcq"))
+	if(DAP_GetValueFromNumStateWave(panelTitle, "Check_DataAcq1_RepeatAcq"))
 		numSetRepeats = GetSetVariable(panelTitle, "SetVar_DataAcq_SetRepeats")
 
-		if(GetCheckBoxState(panelTitle, "Check_DataAcq1_IndexingLocked"))
+		if(DAP_GetValueFromNumStateWave(panelTitle, "Check_DataAcq1_IndexingLocked"))
 			numSetRepeats *= IDX_MaxSweepsLockedIndexing(panelTitle)
 		else
 			numSetRepeats *= IDX_MaxNoOfSweeps(panelTitle, 0)
@@ -5346,7 +5346,7 @@ Function DAP_CheckSettings(panelTitle, mode)
 	endif
 
 	// check that if multiple devices are locked we are in multi device mode
-	if(ItemsInList(GetListOfLockedDevices()) > 1 && !GetCheckBoxState(panelTitle, "check_Settings_MD"))
+	if(ItemsInList(GetListOfLockedDevices()) > 1 && !DAP_GetValueFromNumStateWave(panelTitle, "check_Settings_MD"))
 		print "If multiple devices are locked, DAQ/TP is only possible in multi device mode"
 		ControlWindowToFront()
 		return 1
@@ -5416,7 +5416,7 @@ Function DAP_CheckSettings(panelTitle, mode)
 
 		if(mode == DATA_ACQUISITION_MODE)
 			// check all selected TTLs
-			indexingEnabled = GetCheckBoxState(panelTitle, "Check_DataAcq_Indexing")
+			indexingEnabled = DAP_GetValueFromNumStateWave(panelTitle, "Check_DataAcq_Indexing")
 			Wave statusTTL = DAP_ControlStatusWaveCache(panelTitle, CHANNEL_TYPE_TTL)
 			numEntries = DimSize(statusTTL, ROWS)
 			for(i=0; i < numEntries; i+=1)
@@ -5447,21 +5447,21 @@ Function DAP_CheckSettings(panelTitle, mode)
 				endif
 			endfor
 
-			if(GetCheckBoxState(panelTitle, "Check_DataAcq1_RepeatAcq") && GetCheckBoxState(panelTitle, "check_DataAcq_RepAcqRandom") && indexingEnabled)
+			if(DAP_GetValueFromNumStateWave(panelTitle, "Check_DataAcq1_RepeatAcq") && DAP_GetValueFromNumStateWave(panelTitle, "check_DataAcq_RepAcqRandom") && indexingEnabled)
 				printf "(%s) Repeated random acquisition can not be combined with indexing.\r", panelTitle
 				printf "(%s) If you need this feature please contact the MIES developers.\r", panelTitle
 				ControlWindowToFront()
 				return 1
 			endif
 
-			if(GetCheckBoxState(panelTitle, "Check_DataAcq1_RepeatAcq") && !GetCheckBoxState(panelTitle, "Check_Settings_BackgrndDataAcq"))
+			if(DAP_GetValueFromNumStateWave(panelTitle, "Check_DataAcq1_RepeatAcq") && !DAP_GetValueFromNumStateWave(panelTitle, "Check_Settings_BackgrndDataAcq"))
 				printf "(%s) Repeated random acquisition with foregound DAQ is currently brocken.\r", panelTitle
 				printf "(%s) If you need this feature please contact the MIES developers.\r", panelTitle
 				ControlWindowToFront()
 				return 1
 			endif
 
-			if(GetCheckBoxState(panelTitle, "Check_DataAcq1_DistribDaq") && GetCheckBoxState(panelTitle, "Check_DataAcq1_dDAQOptOv"))
+			if(DAP_GetValueFromNumStateWave(panelTitle, "Check_DataAcq1_DistribDaq") && DAP_GetValueFromNumStateWave(panelTitle, "Check_DataAcq1_dDAQOptOv"))
 				printf "(%s) Only one of distributed DAQ and optimized overlap distributed DAQ can be checked.\r", panelTitle
 				ControlWindowToFront()
 				return 1
@@ -5469,7 +5469,7 @@ Function DAP_CheckSettings(panelTitle, mode)
 
 			// classic distributed acquisition requires that all stim sets are the same
 			// oodDAQ allows different stim sets
-			if(GetCheckBoxState(panelTitle, "Check_DataAcq1_DistribDaq") || GetCheckBoxState(panelTitle, "Check_DataAcq1_dDAQOptOv"))
+			if(DAP_GetValueFromNumStateWave(panelTitle, "Check_DataAcq1_DistribDaq") || DAP_GetValueFromNumStateWave(panelTitle, "Check_DataAcq1_dDAQOptOv"))
 				numEntries = DimSize(statusDA, ROWS)
 				for(i=0; i < numEntries; i+=1)
 					if(!DC_ChannelIsActive(panelTitle, mode, CHANNEL_TYPE_DAC, i, statusDA, statusHS))
@@ -5482,7 +5482,7 @@ Function DAP_CheckSettings(panelTitle, mode)
 						return 1
 					endif
 
-					if(GetCheckBoxState(panelTitle, "Check_DataAcq1_dDAQOptOv"))
+					if(DAP_GetValueFromNumStateWave(panelTitle, "Check_DataAcq1_dDAQOptOv"))
 						continue
 					endif
 
@@ -5580,7 +5580,7 @@ Function DAP_CheckSettings(panelTitle, mode)
 		endif
 	endfor
 
-	if(GetCheckBoxState(panelTitle, "Check_Settings_NwbExport"))
+	if(DAP_GetValueFromNumStateWave(panelTitle, "Check_Settings_NwbExport"))
 		NWB_PrepareExport()
 	endif
 
@@ -5812,7 +5812,7 @@ static Function DAP_CheckHeadStage(panelTitle, headStage, mode)
 			SetScale/P x 0, HARDWARE_ITC_MIN_SAMPINT, "ms", stimSet
 		endif
 
-		if(!GetCheckBoxState(panelTitle, "Check_Settings_SkipAnalysFuncs"))
+		if(!DAP_GetValueFromNumStateWave(panelTitle, "Check_Settings_SkipAnalysFuncs"))
 			for(i = 0; i < TOTAL_NUM_EVENTS; i += 1)
 				func = ExtractAnalysisFuncFromStimSet(stimSet, i)
 
@@ -5840,7 +5840,7 @@ static Function DAP_CheckHeadStage(panelTitle, headStage, mode)
 					return 1
 				endif
 
-				if(i == MID_SWEEP_EVENT && !GetCheckBoxState(panelTitle, "Check_Settings_BackgrndDataAcq"))
+				if(i == MID_SWEEP_EVENT && !DAP_GetValueFromNumStateWave(panelTitle, "Check_Settings_BackgrndDataAcq"))
 					printf "(%s) The event type \"%s\" for stim set %s can not be used together with foreground DAQ\r", panelTitle, StringFromList(i, EVENT_NAME_LIST), dacWave
 					ControlWindowToFront()
 					return 1
@@ -5848,7 +5848,7 @@ static Function DAP_CheckHeadStage(panelTitle, headStage, mode)
 			endfor
 		endif
 
-		if(GetCheckBoxState(panelTitle, "Check_DataAcq_Indexing"))
+		if(DAP_GetValueFromNumStateWave(panelTitle, "Check_DataAcq_Indexing"))
 			ctrl = GetPanelControl(DACchannel, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_INDEX_END)
 			endWave = GetPopupMenuString(panelTitle, ctrl)
 			if(!CmpStr(endWave, NONE))
@@ -5862,7 +5862,7 @@ static Function DAP_CheckHeadStage(panelTitle, headStage, mode)
 		endif
 	endif
 
-	if(GetCheckBoxState(panelTitle, "check_Settings_RequireAmpConn") && ampConnState != AMPLIFIER_CONNECTION_SUCCESS || ampConnState == AMPLIFIER_CONNECTION_MCC_FAILED)
+	if(DAP_GetValueFromNumStateWave(panelTitle, "check_Settings_RequireAmpConn") && ampConnState != AMPLIFIER_CONNECTION_SUCCESS || ampConnState == AMPLIFIER_CONNECTION_MCC_FAILED)
 		printf "(%s) The amplifier of the headstage %d can not be selected, please call \"Query connected Amps\" from the Hardware Tab\r", panelTitle, headStage
 		printf " and ensure that the \"Multiclamp 700B Commander\" application is open.\r"
 		ControlWindowToFront()
@@ -6080,6 +6080,7 @@ static Function DAP_GetInfoFromControl(panelTitle, ctrl, mode, headStage)
 
 		mode = V_CLAMP_MODE // safe default
 
+		// deliberately not using the GUI state wave
 		if(GetCheckBoxState(panelTitle, VCctrl))
 			mode = V_CLAMP_MODE
 		elseif(GetCheckBoxState(panelTitle, ICctrl))
@@ -6208,10 +6209,10 @@ Function DAP_ChangeHeadStageMode(panelTitle, clampMode, headstage, mccMiesSyncOv
 			DAP_SetAmpModeControls(panelTitle, i, clampMode)
 			DAP_SetHeadstageChanControls(panelTitle, i, clampMode)
 			DAP_ConditionallySetAmpGui(panelTitle, i, clampMode, sliderPos, mccMiesSyncOverride)
-		elseif(!getCheckboxState(panelTitle, "check_Settings_RequireAmpConn"))
+		elseif(!DAP_GetValueFromNumStateWave(panelTitle, "check_Settings_RequireAmpConn"))
 			DAP_SetAmpModeControls(panelTitle, i, clampMode)
 			DAP_SetHeadstageChanControls(panelTitle, i, clampMode)
-		elseif(getCheckboxState(panelTitle, "check_Settings_RequireAmpConn"))
+		elseif(DAP_GetValueFromNumStateWave(panelTitle, "check_Settings_RequireAmpConn"))
 			DAP_SetAmpModeControls(panelTitle, i, clampMode)
 		endif
 	endfor
@@ -6237,7 +6238,7 @@ static Function DAP_IZeroSetClampMode(panelTitle, headstage, clampMode)
 	variable headstage
 	variable clampMode
 			
-	if(GetCheckBoxState(panelTitle, "check_Settings_AmpIEQZstep") && (clampMode == I_CLAMP_MODE || clampMode == V_CLAMP_MODE))
+	if(DAP_GetValueFromNumStateWave(panelTitle, "check_Settings_AmpIEQZstep") && (clampMode == I_CLAMP_MODE || clampMode == V_CLAMP_MODE))
 		AI_SetClampMode(panelTitle, headstage, I_EQUAL_ZERO_MODE)
 		Sleep/Q/T/C=-1 6
 	endif
@@ -6317,7 +6318,7 @@ static Function DAP_UpdateClampmodeTabs(panelTitle, headStage, clampMode, mccMie
 	AI_SyncAmpStorageToGUI(panelTitle, headStage)
 	PGC_SetAndActivateControl(panelTitle, "tab_DataAcq_Amp", val = clampMode)
 
-	if(GetCheckBoxState(panelTitle, "check_Settings_SyncMiesToMCC") && mccMiesSyncOverride == DO_MCC_MIES_SYNCING)
+	if(DAP_GetValueFromNumStateWave(panelTitle, "check_Settings_SyncMiesToMCC") && mccMiesSyncOverride == DO_MCC_MIES_SYNCING)
 		AI_SyncGUIToAmpStorageAndMCCApp(panelTitle, headStage, clampMode)
 	endif
 
@@ -6372,7 +6373,8 @@ static Function DAP_ChangeHeadstageState(panelTitle, headStageCtrl, enabled)
 		VCctrl    = DAP_GetClampModeControl(V_CLAMP_MODE, i)
 		ICctrl    = DAP_GetClampModeControl(I_CLAMP_MODE, i)
 		IZeroCtrl = DAP_GetClampModeControl(I_EQUAL_ZERO_MODE, i)
-	
+
+		// deliberately not using the GUI state wave
 		VCstate    = GetCheckBoxState(panelTitle, VCctrl)
 		ICstate    = GetCheckBoxState(panelTitle, ICctrl)
 		IZeroState = GetCheckBoxState(panelTitle, IZeroCtrl)
@@ -6380,7 +6382,7 @@ static Function DAP_ChangeHeadstageState(panelTitle, headStageCtrl, enabled)
 		if(VCstate + ICstate + IZeroState != 1) // someone messed up the radio button logic, reset to V_CLAMP_MODE
 			PGC_SetAndActivateControl(panelTitle, VCctrl, val=CHECKBOX_SELECTED)
 		else
-			if(enabled && GetCheckBoxState(panelTitle, "check_Settings_SyncMiesToMCC"))
+			if(enabled && DAP_GetValueFromNumStateWave(panelTitle, "check_Settings_SyncMiesToMCC"))
 				PGC_SetAndActivateControl(panelTitle, DAP_GetClampModeControl(clampMode, i), val=CHECKBOX_SELECTED)
 			endif
 		endif
@@ -6800,9 +6802,9 @@ static Function DAP_SwitchSingleMultiMode(panelTitle, useMultiDevice)
 	variable checkedState
 
 	if(useMultiDevice)
-		checkedState = GetCheckBoxState(panelTitle, "Check_Settings_BkgTP")
+		checkedState = DAP_GetValueFromNumStateWave(panelTitle, "Check_Settings_BkgTP")
 		SetControlUserData(panelTitle, "Check_Settings_BkgTP", "oldState", num2str(checkedState))
-		checkedState = GetCheckBoxState(panelTitle, "Check_Settings_BackgrndDataAcq")
+		checkedState = DAP_GetValueFromNumStateWave(panelTitle, "Check_Settings_BackgrndDataAcq")
 		SetControlUserData(panelTitle, "Check_Settings_BackgrndDataAcq", "oldState", num2str(checkedState))
 
 		PGC_SetAndActivateControl(panelTitle, "Check_Settings_BkgTP", val = CHECKBOX_SELECTED)
@@ -6825,8 +6827,8 @@ Function DAP_CheckProc_InsertTP(cba) : CheckBoxControl
 
 	switch(cba.eventCode)
 		case 2:
-			DAP_UpdateOnsetDelay(cba.win)
 			DAP_UpdateControlInGuiStateWv(cba.win, cba.ctrlName, val = cba.checked)
+			DAP_UpdateOnsetDelay(cba.win)
 		break
 	endswitch
 
@@ -6840,7 +6842,7 @@ Function DAP_UpdateOnsetDelay(panelTitle)
 	variable pulseDuration, baselineFrac
 	variable testPulseDurWithBL
 
-	if(GetCheckBoxState(panelTitle, "Check_Settings_InsertTP"))
+	if(DAP_GetValueFromNumStateWave(panelTitle, "Check_Settings_InsertTP"))
 		pulseDuration = GetSetVariable(panelTitle, "SetVar_DataAcq_TPDuration")
 		baselineFrac = GetSetVariable(panelTitle, "SetVar_DataAcq_TPBaselinePerc") / 100
 		testPulseDurWithBL = TP_CalculateTestPulseLength(pulseDuration, baselineFrac)
@@ -6960,7 +6962,7 @@ Function DAP_ButtonProc_TestPulse(ba) : ButtonControl
 			// ends DAQ
 			if(dataAcqRunMode == DAQ_NOT_RUNNING && TP_CheckIfTestpulseIsRunning(panelTitle))
 				TP_StopTestPulse(panelTitle)
-			elseif(GetCheckBoxState(panelTitle, "check_Settings_MD"))
+			elseif(DAP_GetValueFromNumStateWave(panelTitle, "check_Settings_MD"))
 				TPM_StartTestPulseMultiDevice(panelTitle)
 			else
 				TPS_StartTestPulseSingleDevice(panelTitle)
@@ -7235,7 +7237,7 @@ static Function/Wave DAP_ControlStatusWave(panelTitle, type)
 
 	for(i = 0; i < numEntries; i += 1)
 		ctrl = GetPanelControl(i, type, CHANNEL_CONTROL_CHECK)
-		wv[i] = GetCheckboxState(panelTitle, ctrl)
+		wv[i] = GetCheckBoxState(panelTitle, ctrl)
 	endfor
 
 	return wv
@@ -7530,7 +7532,7 @@ Function DAP_CheckProc_LockedLogic(cba) : CheckBoxControl
 		case 2: // mouse up
 			string checkBoxPartener = SelectString(cmpstr(cba.ctrlName, "check_Settings_Option_3"),"check_Settings_SetOption_5","check_Settings_Option_3")
 			ToggleCheckBoxes(cba.win, cba.ctrlName, checkBoxPartener, cba.checked)
-			EqualizeCheckBoxes(cba.win, "check_Settings_Option_3", "Check_DataAcq1_IndexingLocked", getCheckBoxState(cba.win, "check_Settings_Option_3"))
+			EqualizeCheckBoxes(cba.win, "check_Settings_Option_3", "Check_DataAcq1_IndexingLocked", DAP_GetValueFromNumStateWave(cba.win, "check_Settings_Option_3"))
 			if(cmpstr(cba.win, "check_Settings_Option_3") == 0 && cba.checked)
 				PGC_SetAndActivateControl(cba.win, "Check_DataAcq_Indexing", val = 1)
 			endif
@@ -7982,7 +7984,7 @@ static Function DAP_UnlockDevice(panelTitle)
 
 	// we need to turn off TP after DAQ as this could prevent stopping the TP,
 	// especially for foreground TP
-	state = GetCheckBoxState(panelTitle, "check_Settings_TPAfterDAQ")
+	state = DAP_GetValueFromNumStateWave(panelTitle, "check_Settings_TPAfterDAQ")
 	PGC_SetAndActivateControl(panelTitle, "check_Settings_TPAfterDAQ", val = CHECKBOX_UNSELECTED)
 	DQ_StopDAQ(panelTitle)
 	TP_StopTestPulse(panelTitle)
@@ -8228,7 +8230,7 @@ Function DAP_AllChanDASettings(panelTitle, headStage)
 	WAVE GuiState = GetDA_EphysGuiStateNum(panelTitle)
 
 	variable scalar, index, indexEnd
-	if(!GetCheckboxState(panelTitle, "check_DA_applyOnModeSwitch"))
+	if(!DAP_GetValueFromNumStateWave(panelTitle, "check_DA_applyOnModeSwitch"))
 		return NaN
 	endif
 
@@ -8380,7 +8382,7 @@ Function DAP_SupportSystemAlarm(Channel, Measurement, MeasurementTitle, panelTit
 	variable paramMin, paramMax
 
 	checkCtrl = GetPanelControl(channel, CHANNEL_TYPE_ALARM, CHANNEL_CONTROL_CHECK)
-	if(GetCheckBoxState(panelTitle, checkCtrl))
+	if(DAP_GetValueFromNumStateWave(panelTitle, checkCtrl))
 		minCtrl = GetPanelControl(channel, CHANNEL_TYPE_ASYNC, CHANNEL_CONTROL_ALARM_MIN)
 		paramMin = GetSetVariable(panelTitle, minCtrl)
 		maxCtrl = GetPanelControl(channel, CHANNEL_TYPE_ASYNC, CHANNEL_CONTROL_ALARM_MAX)

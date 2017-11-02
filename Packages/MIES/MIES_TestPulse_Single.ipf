@@ -85,7 +85,7 @@ Function TPS_StartTestPulseSingleDevice(panelTitle)
 	endif
 
 	try
-		if(GetCheckBoxState(panelTitle, "Check_Settings_BkgTP"))
+		if(DAP_GetValueFromNumStateWave(panelTitle, "Check_Settings_BkgTP"))
 
 			TP_Setup(panelTitle, TEST_PULSE_BG_SINGLE_DEVICE)
 

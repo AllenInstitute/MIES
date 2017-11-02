@@ -416,7 +416,7 @@ static Function TP_ResetTPStorage(panelTitle)
 	string name
 
 	if(count > 0)
-		if(GetCheckBoxState(panelTitle, "check_Settings_TP_SaveTPRecord"))
+		if(DAP_GetValueFromNumStateWave(panelTitle, "check_Settings_TP_SaveTPRecord"))
 			dfref dfr = GetDeviceTestPulse(panelTitle)
 			Redimension/N=(count, -1, -1, -1) TPStorage
 			name = NameOfWave(TPStorage)

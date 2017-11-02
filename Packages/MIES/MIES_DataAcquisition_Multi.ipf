@@ -195,7 +195,7 @@ Function DQM_StartDAQMultiDeviceLowLevel(panelTitle, [initialSetupReq])
 		DQM_BkrdDataAcq(followerPanelTitle, triggerMode=HARDWARE_DAC_EXTERNAL_TRIGGER)
 	endfor
 
-	if(GetCheckBoxState(panelTitle, "Check_DataAcq1_RepeatAcq"))
+	if(DAP_GetValueFromNumStateWave(panelTitle, "Check_DataAcq1_RepeatAcq"))
 		DQ_StartITCDeviceTimer(panelTitle)
 	endif
 
@@ -304,7 +304,7 @@ static Function DQM_StopDataAcq(panelTitle, ITCDeviceIDGlobal)
 
 	SWS_SaveAndScaleITCData(panelTitle)
 	if(RA_IsFirstSweep(panelTitle))
-		if(GetCheckboxState(panelTitle, "Check_DataAcq1_RepeatAcq"))
+		if(DAP_GetValueFromNumStateWave(panelTitle, "Check_DataAcq1_RepeatAcq"))
 			RA_YokedRAStartMD(panelTitle)
 		else
 			DAP_OneTimeCallAfterDAQ(panelTitle)
@@ -328,7 +328,7 @@ static Function DQM_BkrdDataAcq(panelTitle, [triggerMode])
 
 	HW_SelectDevice(HARDWARE_ITC_DAC, ITCDeviceIDGlobal, flags=HARDWARE_ABORT_ON_ERROR)
 
-	if(triggerMode == HARDWARE_DAC_DEFAULT_TRIGGER && GetCheckBoxState(panelTitle, "Check_DataAcq1_RepeatAcq"))
+	if(triggerMode == HARDWARE_DAC_DEFAULT_TRIGGER && DAP_GetValueFromNumStateWave(panelTitle, "Check_DataAcq1_RepeatAcq"))
 		DQ_StartITCDeviceTimer(panelTitle)
 	endif
 

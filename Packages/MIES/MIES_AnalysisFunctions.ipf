@@ -950,15 +950,15 @@ Function PatchSeqSubThreshold(panelTitle, eventType, ITCDataWave, headStage, rea
 		case PRE_DAQ_EVENT:
 			DAScalesIndex[headstage] = 0
 
-			if(!GetCheckBoxState(panelTitle, "check_Settings_ITITP"))
+			if(!DAP_GetValueFromNumStateWave(panelTitle, "check_Settings_ITITP"))
 				printf "(%s): TP during ITI must be checked\r", panelTitle
 				ControlWindowToFront()
 				return 1
-			elseif(!GetCheckBoxState(panelTitle, "check_DataAcq_AutoBias"))
+			elseif(!DAP_GetValueFromNumStateWave(panelTitle, "check_DataAcq_AutoBias"))
 				printf "(%s): Auto Bias must be checked\r", panelTitle
 				ControlWindowToFront()
 				return 1
-			elseif(!GetCheckBoxState(panelTitle, "check_Settings_MD"))
+			elseif(!DAP_GetValueFromNumStateWave(panelTitle, "check_Settings_MD"))
 				printf "(%s): Please check \"Multi Device\" mode.\r", panelTitle
 				ControlWindowToFront()
 				return 1

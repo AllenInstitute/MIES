@@ -674,7 +674,7 @@ Function AI_UpdateAmpModel(panelTitle, ctrl, headStage, [value, sendToAll, check
 
 	if(ParamIsDefault(sendToAll))
 		if(headstage == selectedHeadstage)
-			sendToAll = GetCheckBoxState(panelTitle, "Check_DataAcq_SendToAllAmp")
+			sendToAll = DAP_GetValueFromNumStateWave(panelTitle, "Check_DataAcq_SendToAllAmp")
 		else
 			sendToAll = 0
 		endif
@@ -810,7 +810,7 @@ Function AI_UpdateAmpModel(panelTitle, ctrl, headStage, [value, sendToAll, check
 					AI_UpdateAmpView(panelTitle, i, ctrl=ctrlToCallOpposite)
 					DAP_ChangeHeadStageMode(panelTitle, clampMode, i, SKIP_MCC_MIES_SYNCING)
 				catch
-					if(GetCheckBoxState(panelTitle, "check_Settings_SyncMiesToMCC"))
+					if(DAP_GetValueFromNumStateWave(panelTitle, "check_Settings_SyncMiesToMCC"))
 						printf "(%s) The pipette offset for %s of headstage %d is invalid.\r", panelTitle, ConvertAmplifierModeToString(oppositeMode), i
 					endif
 					// do nothing

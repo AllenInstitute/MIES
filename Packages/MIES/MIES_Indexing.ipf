@@ -353,7 +353,7 @@ Function IDX_LongestITI(panelTitle, numActiveDAChannels)
 		if(i == 0) // this is either the lead panel or the first and only panel
 			numActiveDAChannels = sum(DAChannelStatus)
 			if(numActiveDAChannels > 1)
-				lockedIndexing = GetCheckBoxState(panelTitle, "Check_DataAcq1_IndexingLocked")
+				lockedIndexing = DAP_GetValueFromNumStateWave(panelTitle, "Check_DataAcq1_IndexingLocked")
 			else // With only a single channel, locked and unlocked indexing are equivalent.
 				lockedIndexing = 1
 			endif
@@ -417,7 +417,7 @@ static Function/S IDX_GetSetsInRange(panelTitle, channel, channelType, lockedInd
 		return DEBUGPRINTs(StringFromList(first, list))
 	endif
 
-	if(GetCheckBoxState(panelTitle, "Check_DataAcq_Indexing"))
+	if(DAP_GetValueFromNumStateWave(panelTitle, "Check_DataAcq_Indexing"))
 		last = GetPopupMenuIndex(panelTitle, lastCtrl) - 1
 		if(last < 0) // - None - is selected
 			last = first

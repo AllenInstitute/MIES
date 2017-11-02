@@ -70,7 +70,7 @@ Function P_PressureControl(panelTitle)
 	variable headStage, manPressureAll
 	WAVE PressureDataWv = P_GetPressureDataWaveRef(panelTitle)
 
-	manPressureAll = GetCheckBoxState(panelTitle, "check_DataAcq_ManPressureAll")
+	manPressureAll = DAP_GetValueFromNumStateWave(panelTitle, "check_DataAcq_ManPressureAll")
 
 	for(headStage = 0; headStage < NUM_HEADSTAGES; headStage += 1)
 		// are headstage settings valid AND is the ITC device inactive (avoids ITC commands while pressure pulse is ongoing)
@@ -374,7 +374,7 @@ static Function P_ApplyNegV(panelTitle, headStage)
 	variable vCom 			= SEAL_POTENTIAL
 	variable	lastVcom = PressureDataWv[headStage][%LastVcom]
 
-	if(getCheckBoxstate(panelTitle, "Check_DataAcq_SendToAllAmp")) // ensure that vCom is being updated on headstage associated amplifier (not all amplifiers).
+	if(DAP_GetValueFromNumStateWave(panelTitle, "Check_DataAcq_SendToAllAmp")) // ensure that vCom is being updated on headstage associated amplifier (not all amplifiers).
 		PGC_SetAndActivateControl(panelTitle, "Check_DataAcq_SendToAllAmp",val = CHECKBOX_UNSELECTED)
 	endif
 
@@ -875,8 +875,8 @@ Function P_UpdatePressureDataStorageWv(panelTitle) /// @todo Needs to be reworke
 	PressureDataWv[][%sliceZaxis]              = GetSetVariable(panelTitle, "setvar_Settings_SliceSurfHeight")
 	PressureDataWv[][%ManPPPressure]           = GetSetVariable(panelTitle, "setvar_DataAcq_PPPressure")
 	PressureDataWv[][%ManPPDuration]           = GetSetVariable(panelTitle, "setvar_DataAcq_PPDuration")
-	PressureDataWv[][%ApproachNear]            = GetCheckBoxState(panelTitle, "check_DatAcq_ApproachNear")
-	PressureDataWv[][%SealAtm]                 = GetCheckBoxState(panelTitle, "check_DatAcq_SealAtm")
+	PressureDataWv[][%ApproachNear]            = DAP_GetValueFromNumStateWave(panelTitle, "check_DatAcq_ApproachNear")
+	PressureDataWv[][%SealAtm]                 = DAP_GetValueFromNumStateWave(panelTitle, "check_DatAcq_SealAtm")
 
 	WAVE/T PressureDataTxtWv = P_PressureDataTxtWaveRef(panelTitle)
 
@@ -1556,11 +1556,11 @@ static Function P_CheckAll(panelTitle, pressureMode, SavedPressureMode)
 	variable headStage
 	WAVE PressureDataWv = P_GetPressureDataWaveRef(panelTitle)
 	if(pressureMode == savedPressureMode) // un clicking button
-		if(getCheckboxState(panelTitle, StringFromList(savedPressureMode, PRESSURE_CONTROL_CHECKBOX_LIST)))
+		if(DAP_GetValueFromNumStateWave(panelTitle, StringFromList(savedPressureMode, PRESSURE_CONTROL_CHECKBOX_LIST)))
 			PressureDataWv[][%Approach_Seal_BrkIn_Clear] = PRESSURE_METHOD_ATM
 		endif
 	else
-		if(getCheckboxState(panelTitle, StringFromList(pressureMode, PRESSURE_CONTROL_CHECKBOX_LIST)))
+		if(DAP_GetValueFromNumStateWave(panelTitle, StringFromList(pressureMode, PRESSURE_CONTROL_CHECKBOX_LIST)))
 			for(headStage = 0; headStage < NUM_HEADSTAGES; headStage += 1)
 				if(P_ValidatePressureSetHeadstage(panelTitle, headStage))
 					if(pressureMode && TP_CheckIfTestpulseIsRunning(panelTitle) && P_IsHSActiveAndInVClamp(panelTitle, headStage))
@@ -1706,7 +1706,7 @@ static Function P_EnableButtonsIfValid(panelTitle, headStageNo)
 	SetControlTitleColors(panelTitle, PRESSURE_CONTROLS_BUTTON_LIST, 0, 0, 0)
 
 	if(TP_CheckIfTestpulseIsRunning(panelTitle) && P_IsHSActiveAndInVClamp(panelTitle, headStageNo))
-		if(getCheckBoxState(panelTitle, StringFromList(PRESSURE_METHOD_CLEAR, PRESSURE_CONTROL_CHECKBOX_LIST)))
+		if(DAP_GetValueFromNumStateWave(panelTitle, StringFromList(PRESSURE_METHOD_CLEAR, PRESSURE_CONTROL_CHECKBOX_LIST)))
 			EnableControls(panelTitle, PRESSURE_CONTROLS_BUTTON_LIST)
 		else
 			DisableControls(panelTitle, PRESSURE_CONTROLS_BUTTON_subset)
