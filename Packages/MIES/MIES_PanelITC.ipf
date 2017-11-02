@@ -4330,6 +4330,8 @@ Function DAP_SetVarProc_Channel_Search(sva) : SetVariableControl
 				ctrl = GetPanelControl(i, channelType, CHANNEL_CONTROL_SEARCH)
 				SetSetVariableString(panelTitle, ctrl, SelectString(isCustomSearchString, "", searchString))
 			endfor
+
+			DAP_UpdateControlInGuiStateWv(sva.win, sva.ctrlName, val = sva.dval, str = sva.sval)
 			break
 	endswitch
 
@@ -4387,6 +4389,8 @@ Function DAP_CheckProc_Channel_All(cba) : CheckBoxControl
 
 				PGC_SetAndActivateControl(panelTitle, control, val=allChecked)
 			endfor
+
+			DAP_UpdateControlInGuiStateWv(cba.win, cba.ctrlName, val = cba.checked)
 			break
 	endswitch
 
@@ -4868,6 +4872,7 @@ Function DAP_PopMenuChkProc_StimSetList(pa) : PopupMenuControl
 			endif
 
 			DAP_UpdateDAQControls(panelTitle, REASON_STIMSET_CHANGE)
+			DAP_UpdateControlInGuiStateWv(pa.win, pa.ctrlName, val = pa.popNum - 1, str = pa.popStr)
 
 			if(activeChannel)
 				DQ_RestartDAQ(panelTitle, dataAcqRunMode)
@@ -4905,7 +4910,9 @@ Function DAP_SetVarProc_DA_Scale(sva) : SetVariableControl
 				endif
 
 				SetSetVariable(panelTitle, ctrl, val)
+				DAP_UpdateControlInGuiStateWv(sva.win, ctrl, val = sva.dval, str = sva.sval)
 			endfor
+
 			break
 	endswitch
 
@@ -5144,6 +5151,8 @@ Function DAP_PopMenuProc_Headstage(pa) : PopupMenuControl
 			headStage  = str2num(pa.popStr)
 
 			DAP_SyncDeviceAssocSettToGUI(panelTitle, headStage)
+			DAP_UpdateControlInGuiStateWv(pa.win, pa.ctrlName, val = pa.popNum - 1, str = pa.popStr)
+
 			break
 	endswitch
 
@@ -5181,7 +5190,6 @@ Function DAP_SetVarProc_CAA(sva) : SetVariableControl
 
 			DAP_UpdateChanAmpAssignStorWv(panelTitle)
 			P_UpdatePressureDataStorageWv(panelTitle)
-			DAP_UpdateControlInGuiStateWv(sva.win, sva.ctrlName, val = sva.dval)
 			break
 	endswitch
 
@@ -6102,6 +6110,8 @@ Function DAP_CheckProc_HedstgeChck(cba) : CheckBoxControl
 				SetCheckBoxState(panelTitle, control, !checked)
 				Abort
 			endtry
+
+			DAP_UpdateControlInGuiStateWv(cba.win, cba.ctrlName, val = cba.checked)
 			break
 	endswitch
 
@@ -7720,7 +7730,7 @@ Function DAP_SetVar_UpdateGuiState(sva) : SetVariableControl
 		case 1: // mouse up
 		case 2: // Enter key
 		case 3: // Live update
-			DAP_UpdateControlInGuiStateWv(sva.win, sva.ctrlName, val = sva.dval)
+			DAP_UpdateControlInGuiStateWv(sva.win, sva.ctrlName, val = sva.dval, str = sva.sval)
 			break
 	endswitch
 
@@ -8358,4 +8368,16 @@ Function DAP_SupportSystemAlarm(Channel, Measurement, MeasurementTitle, panelTit
 			beep
 		endif
 	endif
+End
+
+Function DAP_PopMenuProc_UpdateGuiState(pa) : PopupMenuControl
+	STRUCT WMPopupAction &pa
+
+	switch(pa.eventCode)
+		case 2: // mouse up
+			DAP_UpdateControlInGuiStateWv(pa.win, pa.ctrlName, val = pa.popNum - 1, str = pa.popStr)
+			break
+	endswitch
+
+	return 0
 End
