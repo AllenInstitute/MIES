@@ -6,6 +6,9 @@
 #pragma ModuleName=MIES_RA
 #endif
 
+/// comment in to enable repeated acquisition performance measurement code
+// #define PERFING_RA
+
 /// @file MIES_RepeatedAcquisition.ipf
 /// @brief __RA__ Repated acquisition functionality
 
@@ -163,6 +166,10 @@ Function RA_Start(panelTitle)
 	NVAR count = $GetCount(panelTitle)
 	NVAR activeSetCount = $GetActiveSetCount(panelTitle)
 
+#ifdef PERFING_RA
+	RA_PerfInitialize(panelTitle)
+#endif
+
 	activeSetCount = IDX_CalculcateActiveSetCount(panelTitle)
 	totTrials = RA_GetTotalNumberOfTrials(panelTitle)
 
@@ -186,6 +193,10 @@ Function RA_Counter(panelTitle)
 
 	count += 1
 	activeSetCount -= 1
+
+#ifdef PERFING_RA
+	RA_PerfAddMark(panelTitle, count)
+#endif
 
 	numSets        = RA_GetTotalNumberOfSets(panelTitle)
 	totTrials      = RA_GetTotalNumberOfTrials(panelTitle)
@@ -236,6 +247,10 @@ static Function RA_FinishAcquisition(panelTitle)
 
 	DQ_StopITCDeviceTimer(panelTitle)
 
+#ifdef PERFING_RA
+	RA_PerfFinish(panelTitle)
+#endif
+
 	list = GetListofLeaderAndPossFollower(panelTitle)
 
 	numEntries = ItemsInList(list)
@@ -266,6 +281,10 @@ static Function RA_StartMD(panelTitle)
 	string followerPanelTitle
 	NVAR count = $GetCount(panelTitle)
 	NVAR activeSetCount = $GetActiveSetCount(panelTitle)
+
+#ifdef PERFING_RA
+	RA_PerfInitialize(panelTitle)
+#endif
 
 	activeSetCount = IDX_CalculcateActiveSetCount(panelTitle)
 
@@ -304,6 +323,10 @@ Function RA_CounterMD(panelTitle)
 
 	Count += 1
 	ActiveSetCount -= 1
+
+#ifdef PERFING_RA
+	RA_PerfAddMark(panelTitle, count)
+#endif
 
 	numSets        = RA_GetTotalNumberOfSets(panelTitle)
 	totTrials      = RA_GetTotalNumberOfTrials(panelTitle)
@@ -501,4 +524,46 @@ static Function RA_SkipSweepCalc(panelTitle, skipCount)
 	else 
 		return 0
 	endif
+End
+
+Function RA_PerfInitialize(panelTitle)
+	string panelTitle
+
+	KillOrMoveToTrash(wv = GetRAPerfWave(panelTitle))
+	WAVE perfWave = GetRAPerfWave(panelTitle)
+
+	perfWave[0] = RelativeNowHighPrec()
+End
+
+Function RA_PerfAddMark(panelTitle, idx)
+	string panelTitle
+	variable idx
+
+	WAVE perfWave = GetRAPerfWave(panelTitle)
+
+	EnsureLargeEnoughWave(perfWave, minimumSize = idx, initialValue = NaN)
+	perfWave[idx] = RelativeNowHighPrec()
+End
+
+Function RA_PerfFinish(panelTitle)
+	string panelTitle
+
+	WAVE perfWave = GetRAPerfWave(panelTitle)
+
+	NVAR count = $GetCount(panelTitle)
+
+	Redimension/N=(count + 1) perfWave
+
+	if(count <= 1)
+		// nothing to do
+		return NaN
+	endif
+
+	perfWave[1, Dimsize(perfWave, ROWS) - 1] = perfWave[p] - perfWave[0]
+	perfWave[0] = 0
+	perfWave[1] = NaN
+
+	DFREF dfr = GetWavesDataFolderDFR(perfWave)
+
+	Duplicate perfWave, dfr:$UniqueWaveName(dfr, NameOfWave(perfWave) + "_finished")
 End
