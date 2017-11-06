@@ -1504,24 +1504,52 @@ static Function NumPassesInSet(panelTitle, sweepNo)
 	return sum(passes)
 End
 
-/// CreateOverrideResults("ITC18USB_DEV_0", 0)
+Constant PATCHSEQ_SUB_THRESHOLD = 0x1
+Constant PATCHSEQ_SQUARE_PULSE  = 0x2
+
+/// CreateOverrideResults("ITC18USB_DEV_0", 0, $type) where type is either #PATCHSEQ_SUB_THRESHOLD or #PATCHSEQ_SQUARE_PULSE
+///
+/// PATCHSEQ_SUB_THRESHOLD:
 ///
 /// Rows:
-/// - chunks
+/// - chunk indizes: 1 if the chunk passes, 0 if not
 ///
 /// Cols:
 /// - sweeps/steps
-Function/WAVE CreateOverrideResults(panelTitle, headstage)
+///
+/// PATCHSEQ_SQUARE_PULSE:
+///
+/// Rows:
+/// - x position in ms where the spike is in each sweep/step
+///   For convenience the values `0` always means no spike and `1` spike detected (at the appropriate position).
+Function/WAVE CreateOverrideResults(panelTitle, headstage, type)
 	string panelTitle
-	variable headstage
+	variable headstage, type
 
-	variable DAC = AFH_GetDACFromHeadstage(panelTitle, headstage)
-	string stimset = AFH_GetStimSetName(panelTitle, DAC, CHANNEL_TYPE_DAC)
-	WAVE wv = WB_CreateAndGetStimSet(stimset)
+	variable DAC, numCols, numRows, wvType
+	string stimset
 
-	Make/O/B/N=(GetNumberOfChunks(panelTitle), IDX_NumberOfTrialsInSet(stimset)) root:overrideResults/WAVE=overrideResults
+	DAC = AFH_GetDACFromHeadstage(panelTitle, headstage)
+	stimset = AFH_GetStimSetName(panelTitle, DAC, CHANNEL_TYPE_DAC)
+	WAVE/Z wv = WB_CreateAndGetStimSet(stimset)
+	ASSERT(WaveExists(wv), "Stimset does not exist")
 
-	overrideResults = 0
+	switch(type)
+		case PATCHSEQ_SUB_THRESHOLD:
+			numRows = GetNumberOfChunks(panelTitle)
+			numCols = IDX_NumberOfTrialsInSet(stimset)
+			wvType  = IGOR_TYPE_8BIT_INT
+		break
+		case PATCHSEQ_SQUARE_PULSE:
+			numRows = IDX_NumberOfTrialsInSet(stimset)
+			numCols = 0
+			wvType  = IGOR_TYPE_64BIT_FLOAT
+		break
+		default:
+			ASSERT(0, "invalid type")
+	endswitch
+
+	Make/Y=(wvType)/O/N=(numRows, numCols) root:overrideResults/Wave=overrideResults = 0
 
 	return overrideResults
 End
