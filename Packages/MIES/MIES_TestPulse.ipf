@@ -40,7 +40,7 @@ Function TP_GetTestPulseLengthInPoints(panelTitle)
 End
 
 /// @brief Store the full test pulse wave for later inspection
-Function TP_StoreFullWave(panelTitle)
+static Function TP_StoreFullWave(panelTitle)
 	string panelTitle
 
 	variable index
