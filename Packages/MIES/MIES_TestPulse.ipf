@@ -53,6 +53,7 @@ static Function TP_StoreFullWave(panelTitle)
 	index = GetNumberFromWaveNote(storedTP, NOTE_INDEX)
 	EnsureLargeEnoughWave(storedTP, minimumSize = index)
 	Duplicate/FREE/R=[][startOfADColumns,] OscilloscopeData, tmp
+	Note/K tmp, "TimeStamp: " + GetISO8601TimeStamp(numFracSecondsDigits = 3)
 	storedTP[index++] = tmp
 	WaveClear tmp
 
