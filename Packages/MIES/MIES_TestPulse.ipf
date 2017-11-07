@@ -43,14 +43,16 @@ End
 static Function TP_StoreFullWave(panelTitle)
 	string panelTitle
 
-	variable index
+	variable index, startOfADColumns
 
 	WAVE OscilloscopeData = GetOscilloscopeWave(panelTitle)
+	WAVE config = GetITCChanConfigWave(panelTitle)
+	startOfADColumns = DimSize(GetDACListFromConfig(config), ROWS)
 	WAVE/WAVE storedTP = GetStoredTestPulseWave(panelTitle)
 
 	index = GetNumberFromWaveNote(storedTP, NOTE_INDEX)
 	EnsureLargeEnoughWave(storedTP, minimumSize = index)
-	Duplicate/FREE OscilloscopeData, tmp
+	Duplicate/FREE/R=[][startOfADColumns,] OscilloscopeData, tmp
 	storedTP[index++] = tmp
 	WaveClear tmp
 
