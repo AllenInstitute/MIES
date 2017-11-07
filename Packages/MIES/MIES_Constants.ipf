@@ -482,7 +482,7 @@ Constant WAVEBUILDER_PANEL_VERSION  = 3
 /// - Changed names of entries
 /// - Changed units or meaning of entries
 /// - New/Changed layers of entries
-Constant LABNOTEBOOK_VERSION = 12
+Constant LABNOTEBOOK_VERSION = 13
 
 /// @name The channel numbers for the different ITC devices used for accesssing
 ///       the TTLs
