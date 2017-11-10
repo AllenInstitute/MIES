@@ -16,11 +16,19 @@ static StrConstant AMPLIFIER_CONTROLS_IC = "setvar_DataAcq_Hold_IC;check_DatAcq_
 static Constant MAX_PIPETTEOFFSET = 150 // mV
 static Constant MIN_PIPETTEOFFSET = -150
 
-/// @returns AD gain of selected Amplifier in current clamp mode
-/// Gain is returned in V/pA for V_CLAMP_MODE, V/mV for I_CLAMP_MODE/I_EQUAL_ZERO_MODE
-static Function AI_RetrieveADGain(panelTitle, headstage)
+/// @brief Return the DA/AD gains and the current clampmode of the selected amplifier
+///
+/// Gain is returned in mV/V for #V_CLAMP_MODE and V/mV for #I_CLAMP_MODE/#I_EQUAL_ZERO_MODE
+///
+/// @param      panelTitle device
+/// @param      headstage  headstage [0, NUM_HEADSTAGES[
+/// @param[out] clampMode  clamp mode (expected)
+/// @param[out] ADGain     ADC gain
+/// @param[out] DAGain     DAC gain
+static Function AI_RetrieveGains(panelTitle, headstage, clampMode, ADGain, DAGain)
 	string panelTitle
-	variable headstage
+	variable headstage,clampMode
+	variable &ADGain, &DAGain
 
 	variable axonSerial = AI_GetAmpAxonSerial(panelTitle, headstage)
 	variable channel    = AI_GetAmpChannel(panelTitle, headStage)
@@ -29,26 +37,15 @@ static Function AI_RetrieveADGain(panelTitle, headstage)
 	AI_InitAxonTelegraphStruct(tds)
 	AxonTelegraphGetDataStruct(axonSerial, channel, 1, tds)
 
-	return tds.ScaleFactor * tds.Alpha / 1000
-End
+	ASSERT(clampMode == tds.OperatingMode, "Non matching clamp mode from MCC application")
 
-/// @returns DA gain of selected Amplifier in current clamp mode
-/// Gain is returned in mV/V for V_CLAMP_MODE and V/mV for I_CLAMP_MODE/I_EQUAL_ZERO_MODE
-static Function AI_RetrieveDAGain(panelTitle, headstage)
-	string panelTitle
-	variable headstage
-
-	variable axonSerial = AI_GetAmpAxonSerial(panelTitle, headstage)
-	variable channel    = AI_GetAmpChannel(panelTitle, headStage)
-
-	STRUCT AxonTelegraph_DataStruct tds
-	AI_InitAxonTelegraphStruct(tds)
-	AxonTelegraphGetDataStruct(axonSerial, channel, 1, tds)
+	ADGain    = tds.ScaleFactor * tds.Alpha / 1000
+	clampMode = tds.OperatingMode
 
 	if(tds.OperatingMode == V_CLAMP_MODE)
-		return tds.ExtCmdSens * 1000
+		DAGain = tds.ExtCmdSens * 1000
 	elseif(tds.OperatingMode == I_CLAMP_MODE || tds.OperatingMode == I_EQUAL_ZERO_MODE)
-		return tds.ExtCmdSens * 1e12
+		DAGain =tds.ExtCmdSens * 1e12
 	endif
 End
 
@@ -1456,10 +1453,7 @@ Function AI_QueryGainsUnitsForClampMode(panelTitle, headstage, clampMode, DAGain
 		return NaN
 	endif
 
-	ASSERT(clampMode == MCC_GetMode(), "Non matching clamp mode from MCC application")
-
-	DAGain = AI_RetrieveDAGain(panelTitle, headStage)
-	ADGain = AI_RetrieveADGain(panelTitle, headStage)
+	AI_RetrieveGains(panelTitle, headstage, clampMode, ADGain, DAGain)
 
 	if(clampMode == V_CLAMP_MODE)
 		DAUnit = "mV"
