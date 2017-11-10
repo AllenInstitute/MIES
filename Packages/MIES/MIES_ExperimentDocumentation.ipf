@@ -624,11 +624,9 @@ static Function ED_createAsyncWaveNoteTags(panelTitle, sweepCount)
 
 			ctrl = GetPanelControl(asyncVariablesCounter, CHANNEL_TYPE_ASYNC, CHANNEL_CONTROL_UNIT)
 			string unitStringValue = GetSetVariableString(panelTitle, ctrl)
-			string adUnitStringValue
-			sprintf adUnitStringValue, "Async AD %d: %s" asyncVariablesCounter, unitStringValue
-			asyncSettingsTxtWave[0][asyncVariablesCounter + 8][,;step] = adUnitStringValue
+			asyncSettingsTxtWave[0][asyncVariablesCounter + 8][,;step] = unitStringValue
 			// add the unit value into numericalKeys
-			asyncMeasurementKey[%Units][asyncVariablesCounter][,;step] = adUnitStringValue
+			asyncMeasurementKey[%Units][asyncVariablesCounter][,;step] = unitStringValue
 		endif
 	endfor
 
