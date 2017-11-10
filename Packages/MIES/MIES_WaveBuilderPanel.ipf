@@ -1050,6 +1050,11 @@ static Function WBP_DisplaySetInPanel()
 	maxYValue = WaveMax(displayData)
 	minYValue = WaveMin(displayData)
 
+	if(maxYValue == minYValue)
+		maxYValue = 1e-12
+		minYValue = 1e-12
+	endif
+
 	epochHLBeginRight = maxYValue
 	epochHLBeginLeft  = maxYValue
 
