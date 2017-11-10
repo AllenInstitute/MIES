@@ -2,14 +2,56 @@
 #pragma rtGlobals=3		// Use modern global access method and strict wave access.
 #pragma ModuleName=PatchSeqTest
 
-StrConstant DEVICE = "ITC18USB_DEV_0"
-Constant HEADSTAGE = 0
+static Constant HEADSTAGE = 0
 
-Function CLEANUP_IGNORE()
-	SetSetVariable(DEVICE, "SetVar_Sweep", 0)
-	SWS_DeleteDataWaves(DEVICE)
+/// @brief Acquire data with the given DAQSettings
+static Function AcquireData(s)
+	STRUCT DAQSettings& s
 
-	KillOrMoveToTrash(dfr=GetDevSpecLabNBFolder(DEVICE))
+	Initialize_IGNORE()
+
+	string unlockedPanelTitle = DAP_CreateDAEphysPanel()
+
+	PGC_SetAndActivateControl(unlockedPanelTitle, "popup_MoreSettings_DeviceType", val=5)
+	PGC_SetAndActivateControl(unlockedPanelTitle, "button_SettingsPlus_LockDevice")
+
+	REQUIRE(WindowExists(DEVICE))
+
+	PGC_SetAndActivateControl(DEVICE, "ADC", val=0)
+	DoUpdate/W=$DEVICE
+
+	PGC_SetAndActivateControl(DEVICE, "check_DataAcq_AutoBias", val = 1)
+	PGC_SetAndActivateControl(DEVICE, "setvar_DataAcq_AutoBiasV", val = 70)
+	PGC_SetAndActivateControl(DEVICE, GetPanelControl(0, CHANNEL_TYPE_HEADSTAGE, CHANNEL_CONTROL_CHECK), val=1)
+	PGC_SetAndActivateControl(DEVICE, GetPanelControl(0, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_WAVE), val = GetStimSet("PatchSeqSubThres_DA_0") + 1)
+
+	WAVE ampMCC = GetAmplifierMultiClamps()
+	WAVE ampTel = GetAmplifierTelegraphServers()
+
+	CHECK_EQUAL_VAR(DimSize(ampMCC, ROWS), 2)
+	CHECK_EQUAL_VAR(DimSize(ampTel, ROWS), 2)
+
+	// HS 0 with Amp
+	PGC_SetAndActivateControl(DEVICE, "Popup_Settings_HeadStage", val = HEADSTAGE)
+	PGC_SetAndActivateControl(DEVICE, "popup_Settings_Amplifier", val = 1)
+
+	PGC_SetAndActivateControl(DEVICE, DAP_GetClampModeControl(I_CLAMP_MODE, HEADSTAGE), val=1)
+	DoUpdate/W=$DEVICE
+
+	PGC_SetAndActivateControl(DEVICE, "button_Hardware_AutoGainAndUnit")
+
+	PGC_SetAndActivateControl(DEVICE, "check_Settings_MD", val = s.MD)
+	PGC_SetAndActivateControl(DEVICE, "Check_DataAcq1_RepeatAcq", val = s.RA)
+	PGC_SetAndActivateControl(DEVICE, "Check_DataAcq_Indexing", val = s.IDX)
+	PGC_SetAndActivateControl(DEVICE, "Check_DataAcq1_IndexingLocked", val = s.LIDX)
+	PGC_SetAndActivateControl(DEVICE, "Check_Settings_BackgrndDataAcq", val = s.BKG_DAQ)
+	PGC_SetAndActivateControl(DEVICE, "SetVar_DataAcq_SetRepeats", val = s.RES)
+	PGC_SetAndActivateControl(DEVICE, "Check_Settings_SkipAnalysFuncs", val = 0)
+
+	DoUpdate/W=$DEVICE
+
+	CtrlNamedBackGround DAQWatchdog, start, period=120, proc=WaitUntilDAQDone_IGNORE
+	PGC_SetAndActivateControl(DEVICE, "DataAcquireButton")
 End
 
 Function/WAVE GetSweepResults_IGNORE(sweepNo)
@@ -24,40 +66,15 @@ Function/WAVE GetSweepResults_IGNORE(sweepNo)
 	return sweepPassed
 End
 
-Function WaitUntilDAQDone(s)
-	STRUCT WMBackgroundStruct &s
-
-	NVAR dataAcqRunMode = $GetDataAcqRunMode(DEVICE)
-
-	if(dataAcqRunMode == DAQ_NOT_RUNNING)
-		SVAR testCase = root:testCase
-		Execute/P/Q "runtest(\"PatchSeqSubThreshold-Testing.ipf\", testCase=\"" + testCase + "\")"
-		return 1
-	endif
-
-	return 0
-End
-
-static Function SetupTestFunction(testFuncName)
-	string testFuncName
-
-	string/G root:testCase = testFuncName
-
-	CtrlNamedBackGround DAQWatchdog, start, period=120, proc=WaitUntilDAQDone
-End
-
 Function Run1()
 
-	CLEANUP_IGNORE()
+	STRUCT DAQSettings s
+	InitDAQSettingsFromString(s, "DAQ_MD1_RA1_IDX0_LIDX0_BKG_1")
+	AcquireData(s)
 
 	WAVE wv = CreateOverrideResults(DEVICE, HEADSTAGE)
 	// all tests fail
 	wv = 0
-
-	SetupTestFunction("Test1")
-
-	PASS()
-	PGC_SetAndActivateControl(DEVICE, "DataAcquireButton")
 End
 
 Function Test1()
@@ -80,17 +97,14 @@ End
 
 Function Run2()
 
-	CLEANUP_IGNORE()
+	STRUCT DAQSettings s
+	InitDAQSettingsFromString(s, "DAQ_MD1_RA1_IDX0_LIDX0_BKG_1")
+	AcquireData(s)
 
 	WAVE wv = CreateOverrideResults(DEVICE, HEADSTAGE)
 	// only pre pulse chunk pass, others fail
 	wv[]    = 0
 	wv[0][] = 1
-
-	SetupTestFunction("Test2")
-
-	PASS()
-	PGC_SetAndActivateControl(DEVICE, "DataAcquireButton")
 End
 
 Function Test2()
@@ -113,18 +127,15 @@ End
 
 Function Run3()
 
-	CLEANUP_IGNORE()
+	STRUCT DAQSettings s
+	InitDAQSettingsFromString(s, "DAQ_MD1_RA1_IDX0_LIDX0_BKG_1")
+	AcquireData(s)
 
 	WAVE wv = CreateOverrideResults(DEVICE, HEADSTAGE)
 	// pre pulse chunk pass
 	// first post pulse chunk pass
 	wv[]      = 0
 	wv[0,1][] = 1
-
-	SetupTestFunction("Test3")
-
-	PASS()
-	PGC_SetAndActivateControl(DEVICE, "DataAcquireButton")
 End
 
 Function Test3()
@@ -147,7 +158,9 @@ End
 
 Function Run4()
 
-	CLEANUP_IGNORE()
+	STRUCT DAQSettings s
+	InitDAQSettingsFromString(s, "DAQ_MD1_RA1_IDX0_LIDX0_BKG_1")
+	AcquireData(s)
 
 	WAVE wv = CreateOverrideResults(DEVICE, HEADSTAGE)
 	// pre pulse chunk pass
@@ -155,11 +168,6 @@ Function Run4()
 	wv[] = 0
 	wv[0][] = 1
 	wv[DimSize(wv, ROWS) - 1][] = 1
-
-	SetupTestFunction("Test4")
-
-	PASS()
-	PGC_SetAndActivateControl(DEVICE, "DataAcquireButton")
 End
 
 Function Test4()
@@ -182,18 +190,15 @@ End
 
 Function Run5()
 
-	CLEANUP_IGNORE()
+	STRUCT DAQSettings s
+	InitDAQSettingsFromString(s, "DAQ_MD1_RA1_IDX0_LIDX0_BKG_1")
+	AcquireData(s)
 
 	WAVE wv = CreateOverrideResults(DEVICE, HEADSTAGE)
 	// pre pulse chunk fails
 	// all post pulse chunk pass
 	wv[]    = 1
 	wv[0][] = 0
-
-	SetupTestFunction("Test5")
-
-	PASS()
-	PGC_SetAndActivateControl(DEVICE, "DataAcquireButton")
 End
 
 Function Test5()
@@ -211,12 +216,14 @@ Function Test5()
 	CHECK_EQUAL_VAR(setPassed, 0)
 
 	WAVE/Z sweepPassed = GetSweepResults_IGNORE(sweepNo)
-		CHECK_EQUAL_WAVES(sweepPassed, {0, 0, 0, 0, 0, 0, 0})
+	CHECK_EQUAL_WAVES(sweepPassed, {0, 0, 0, 0, 0, 0, 0})
 End
 
 Function Run6()
 
-	CLEANUP_IGNORE()
+	STRUCT DAQSettings s
+	InitDAQSettingsFromString(s, "DAQ_MD1_RA1_IDX0_LIDX0_BKG_1")
+	AcquireData(s)
 
 	WAVE wv = CreateOverrideResults(DEVICE, HEADSTAGE)
 	// pre pulse chunk pass
@@ -224,11 +231,6 @@ Function Run6()
 	wv[]    = 0
 	wv[0][] = 1
 	wv[2][] = 1
-
-	SetupTestFunction("Test6")
-
-	PASS()
-	PGC_SetAndActivateControl(DEVICE, "DataAcquireButton")
 End
 
 Function Test6()
@@ -246,12 +248,14 @@ Function Test6()
 	CHECK_EQUAL_VAR(setPassed, 1)
 
 	WAVE/Z sweepPassed = GetSweepResults_IGNORE(sweepNo)
-		CHECK_EQUAL_WAVES(sweepPassed, {1, 1, 1})
+	CHECK_EQUAL_WAVES(sweepPassed, {1, 1, 1})
 End
 
 Function Run7()
 
-	CLEANUP_IGNORE()
+	STRUCT DAQSettings s
+	InitDAQSettingsFromString(s, "DAQ_MD1_RA1_IDX0_LIDX0_BKG_1")
+	AcquireData(s)
 
 	WAVE wv = CreateOverrideResults(DEVICE, HEADSTAGE)
 	// pre pulse chunk pass
@@ -259,11 +263,6 @@ Function Run7()
 	// of sweeps 2-4
 	wv[]          = 0
 	wv[0, 1][2,4] = 1
-
-	SetupTestFunction("Test7")
-
-	PASS()
-	PGC_SetAndActivateControl(DEVICE, "DataAcquireButton")
 End
 
 Function Test7()
@@ -281,12 +280,14 @@ Function Test7()
 	CHECK_EQUAL_VAR(setPassed, 1)
 
 	WAVE/Z sweepPassed = GetSweepResults_IGNORE(sweepNo)
-		CHECK_EQUAL_WAVES(sweepPassed, {0, 0, 1, 1, 1})
+	CHECK_EQUAL_WAVES(sweepPassed, {0, 0, 1, 1, 1})
 End
 
 Function Run8()
 
-	CLEANUP_IGNORE()
+	STRUCT DAQSettings s
+	InitDAQSettingsFromString(s, "DAQ_MD1_RA1_IDX0_LIDX0_BKG_1")
+	AcquireData(s)
 
 	WAVE wv = CreateOverrideResults(DEVICE, HEADSTAGE)
 	// pre pulse chunk pass
@@ -296,11 +297,6 @@ Function Run8()
 	wv[0, 1][0] = 1
 	wv[0, 1][3] = 1
 	wv[0, 1][7] = 1
-
-	SetupTestFunction("Test8")
-
-	PASS()
-	PGC_SetAndActivateControl(DEVICE, "DataAcquireButton")
 End
 
 Function Test8()
@@ -318,5 +314,5 @@ Function Test8()
 	CHECK_EQUAL_VAR(setPassed, 1)
 
 	WAVE/Z sweepPassed = GetSweepResults_IGNORE(sweepNo)
-		CHECK_EQUAL_WAVES(sweepPassed, {1, 0, 0, 1, 0, 0, 0, 1})
+	CHECK_EQUAL_WAVES(sweepPassed, {1, 0, 0, 1, 0, 0, 0, 1})
 End

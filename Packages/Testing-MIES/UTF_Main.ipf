@@ -18,4 +18,8 @@ Function run()
 	procList += "UTF_Utils.ipf;UTF_Labnotebook.ipf;UTF_WaveBuilder.ipf"
 
 	RunTest(procList, enableJU = 1)
+
+	if(GetAutorunMode() == AUTORUN_PLAIN)
+		Execute/P/Q "Quit/N"
+	endif
 End
