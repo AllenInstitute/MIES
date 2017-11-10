@@ -180,7 +180,11 @@ Function DQS_StopBackgroundFifoMonitor()
 	CtrlNamedBackground ITC_FIFOMonitor, stop
 End
 
-/// @brief Start the background timer used for ITI tracking
+/// @brief Start the background timer for the inter trial interval (ITI)
+///
+/// @param panelTitle device
+/// @param runTime    left over time to wait in seconds
+/// @param funcList   list of functions to execute at the end of the ITI
 Function DQS_StartBackgroundTimer(panelTitle, runTime, funcList)
 	string panelTitle, funcList
 	variable runTime
@@ -192,8 +196,8 @@ Function DQS_StartBackgroundTimer(panelTitle, runTime, funcList)
 	NVAR repeatedAcqStart    = $GetRepeatedAcquisitionStart()
 
 	repeatedAcqFuncList = funcList
-	repeatedAcqStart    = ticks
-	repeatedAcqDuration = runTime / TICKS_TO_SECONDS
+	repeatedAcqStart    = RelativeNowHighPrec()
+	repeatedAcqDuration = runTime
 
 	CtrlNamedBackground ITC_Timer, period = 5, proc = DQS_Timer, start
 End
@@ -216,8 +220,8 @@ Function DQS_Timer(s)
 	NVAR repeatedAcqDuration = $GetRepeatedAcquisitionDuration()
 	SVAR panelTitleG         = $GetPanelTitleGlobal()
 
-	elapsedTime = ticks - repeatedAcqStart
-	timeLeft    = max((repeatedAcqDuration - elapsedTime) * TICKS_TO_SECONDS, 0)
+	elapsedTime = RelativeNowHighPrec() - repeatedAcqStart
+	timeLeft    = max(repeatedAcqDuration - elapsedTime, 0)
 
 	SetValDisplay(panelTitleG, "valdisp_DataAcq_ITICountdown", var = timeLeft)
 

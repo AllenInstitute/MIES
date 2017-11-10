@@ -215,19 +215,24 @@ Function DQM_CallFuncForDevicesYoked(panelTitle, func)
 	CallFunctionForEachListItem(func, list)
 End
 
-/// @brief Start the background timer used for ITI tracking
+/// @brief Start the background timer for the inter trial interval (ITI)
+///
+/// Multi device variant
+///
+/// @param panelTitle device
+/// @param runTime    left over time to wait in seconds
+/// @param funcList   list of functions to execute at the end of the ITI
 Function DQM_StartBackgroundTimer(panelTitle, runTime, funcList)
 	string panelTitle, funcList
 	variable runTime
 
 	ASSERT(!isEmpty(funcList), "Empty funcList does not makse sense")
 
-	variable StartTicks    = ticks
-	variable DurationTicks = runTime / TICKS_TO_SECONDS
-	variable EndTimeTicks  = StartTicks + DurationTicks
+	variable startTime    = RelativeNowHighPrec()
+	variable durationTime = runTime
+	variable endTime      = startTime + durationTime
 
-	DQM_MakeOrUpdateTimerParamWave(panelTitle, funcList, StartTicks, DurationTicks, EndTimeTicks, 1)
-
+	DQM_MakeOrUpdateTimerParamWave(panelTitle, funcList, startTime, durationTime, endTime, 1)
 	if(!IsBackgroundTaskRunning("ITC_TimerMD"))
 		CtrlNamedBackground ITC_TimerMD, period = 6, proc = DQM_Timer, start
 	endif
@@ -261,11 +266,11 @@ Function DQM_Timer(s)
 	variable TimeLeft
 
 	for(i = 0; i < DimSize(ActiveDevTimeParam, ROWS); i += 1)
-		ActiveDevTimeParam[i][4] = (ticks - ActiveDevTimeParam[i][1])
+		ActiveDevTimeParam[i][4] = (RelativeNowHighPrec() - ActiveDevTimeParam[i][1])
 		timeLeft = max(ActiveDevTimeParam[i][2] - ActiveDevTimeParam[i][4], 0)
 		panelTitle = TimerFunctionListWave[i][0]
 
-		SetValDisplay(panelTitle, "valdisp_DataAcq_ITICountdown", var = timeLeft * TICKS_TO_SECONDS)
+		SetValDisplay(panelTitle, "valdisp_DataAcq_ITICountdown", var = timeLeft)
 
 		if(timeLeft == 0)
 			ExecuteListOfFunctions(TimerFunctionListWave[i][1])
