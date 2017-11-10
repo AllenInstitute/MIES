@@ -93,6 +93,11 @@ static Function BeforeExperimentSaveHook(rN, fileName, path, type, creator, kind
 	Variable rN, kind
 	String fileName, path, type, creator
 
+	// don't try cleaning up if the user never used MIES
+	if(!DataFolderExists(GetMiesPathAsString()))
+		return NaN
+	endif
+
 	IH_SerAllCommentNBsWrapper()
 	IH_KillTemporaries()
 	NWB_Flush()
