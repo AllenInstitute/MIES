@@ -962,7 +962,6 @@ static Function WBP_AddEpochHLTraces(dfr, epochHLType, epoch, numEpochs)
 		// we highlight the range 0, 1, ..., epoch - 1
 		first = epochID[0][%timeBegin]
 		last  = epochID[epoch - 1][%timeEnd]
-		SetScale/I x, first, last, "ms", waveBegin, waveEnd
 	elseif(epochHLType == EPOCH_HL_TYPE_RIGHT)
 		nameBegin = "epochHLBeginRight"
 		nameEnd   = "epochHLEndRight"
@@ -979,8 +978,14 @@ static Function WBP_AddEpochHLTraces(dfr, epochHLType, epoch, numEpochs)
 		// and the range epoch + 1, ...,  lastEpoch
 		first = epochID[epoch + 1][%timeBegin]
 		last  = epochID[numEpochs - 1][%timeEnd]
-		SetScale/I x, first, last, "ms", waveBegin, waveEnd
 	endif
+
+	if(first == last)
+		// don't try to highlight empty epochs
+		return NaN
+	endif
+
+	SetScale/I x, first, last, "ms", waveBegin, waveEnd
 
 	AppendToGraph/W=$waveBuilderGraph waveBegin
 	ModifyGraph/W=$waveBuilderGraph hbFill($nameBegin)=5
@@ -1044,6 +1049,11 @@ static Function WBP_DisplaySetInPanel()
 
 	maxYValue = WaveMax(displayData)
 	minYValue = WaveMin(displayData)
+
+	if(maxYValue == minYValue)
+		maxYValue = 1e-12
+		minYValue = 1e-12
+	endif
 
 	epochHLBeginRight = maxYValue
 	epochHLBeginLeft  = maxYValue
