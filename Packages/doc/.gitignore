@@ -5,6 +5,8 @@ xml
 readme.rst
 file
 filelist.rst
+group
+grouplist.rst
 struct
 structlist.rst
 namespace

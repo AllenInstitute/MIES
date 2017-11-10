@@ -16,7 +16,7 @@ static Function RA_RecalculateITI(panelTitle)
 	variable ITI
 
 	NVAR repurposedTime = $GetRepurposedSweepTime(panelTitle)
-	ITI = GetSetVariable(panelTitle, "SetVar_DataAcq_ITI") - ITC_StopITCDeviceTimer(panelTitle) + repurposedTime
+	ITI = GetSetVariable(panelTitle, "SetVar_DataAcq_ITI") - DQ_StopITCDeviceTimer(panelTitle) + repurposedTime
 	repurposedTime = 0
 
 	return ITI
@@ -40,15 +40,15 @@ static Function RA_HandleITI_MD(panelTitle)
 			return NaN
 		endif
 
-		ITC_StartBackgroundTimerMD(panelTitle, ITI, funcList)
+		DQM_StartBackgroundTimer(panelTitle, ITI, funcList)
 
 		return NaN
 	endif
 
-	ITC_StartTestPulseMultiDevice(panelTitle, runModifier=TEST_PULSE_DURING_RA_MOD)
+	TPM_StartTPMultiDeviceLow(panelTitle, runModifier=TEST_PULSE_DURING_RA_MOD)
 
-	funcList = "ITC_StopTestPulseMultiDevice(\"" + panelTitle + "\")" + ";" + "RA_CounterMD(\"" + panelTitle + "\")"
-	ITC_StartBackgroundTimerMD(panelTitle, ITI, funcList)
+	funcList = "TPM_StopTestPulseMultiDevice(\"" + panelTitle + "\")" + ";" + "RA_CounterMD(\"" + panelTitle + "\")"
+	DQM_StartBackgroundTimer(panelTitle, ITI, funcList)
 End
 
 static Function RA_HandleITI(panelTitle)
@@ -69,16 +69,16 @@ static Function RA_HandleITI(panelTitle)
 			return NaN
 		endif
 
-		ITC_StartBackgroundTimer(panelTitle, ITI, funcList)
+		DQS_StartBackgroundTimer(panelTitle, ITI, funcList)
 
 		return NaN
 	endif
 
 	TP_Setup(panelTitle, TEST_PULSE_BG_SINGLE_DEVICE | TEST_PULSE_DURING_RA_MOD)
-	ITC_StartBackgroundTestPulse(panelTitle)
+	TPS_StartBackgroundTestPulse(panelTitle)
 
-	funcList = "ITC_STOPTestPulseSingleDevice(\"" + panelTitle + "\")" + ";" + "RA_Counter(\"" + panelTitle + "\")"
-	ITC_StartBackgroundTimer(panelTitle, ITI, funcList)
+	funcList = "TPS_StopTestPulseSingleDevice(\"" + panelTitle + "\")" + ";" + "RA_Counter(\"" + panelTitle + "\")"
+	DQS_StartBackgroundTimer(panelTitle, ITI, funcList)
 End
 
 /// @brief Return the total number of sets
@@ -222,7 +222,7 @@ Function RA_Counter(panelTitle)
 		endtry
 
 		ASSERT(GetCheckBoxState(panelTitle, "Check_Settings_BackgrndDataAcq"), "Only background DAQ can be used with RA")
-		ITC_BkrdDataAcq(panelTitle)
+		DQS_BkrdDataAcq(panelTitle)
 	else
 		RA_FinishAcquisition(panelTitle)
 	endif
@@ -234,7 +234,7 @@ static Function RA_FinishAcquisition(panelTitle)
 	string list
 	variable numEntries, i
 
-	ITC_StopITCDeviceTimer(panelTitle)
+	DQ_StopITCDeviceTimer(panelTitle)
 
 	list = GetListofLeaderAndPossFollower(panelTitle)
 
@@ -364,7 +364,7 @@ Function RA_CounterMD(panelTitle)
 	endif
 
 	if(count < totTrials)
-		ITC_StartDAQMultiDeviceLowLevel(panelTitle, initialSetupReq=0)
+		DQM_StartDAQMultiDeviceLowLevel(panelTitle, initialSetupReq=0)
 	endif
 End
 

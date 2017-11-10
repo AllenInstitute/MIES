@@ -39,57 +39,6 @@ Function TP_GetTestPulseLengthInPoints(panelTitle)
 	return trunc(TP_CalculateTestPulseLength(duration, baselineFrac))
 End
 
-/// @brief Start a single device test pulse, either in background
-/// or in foreground mode depending on the settings
-Function TP_StartTestPulseSingleDevice(panelTitle)
-	string panelTitle
-
-	AbortOnValue DAP_CheckSettings(panelTitle, TEST_PULSE_MODE),1
-
-	DAP_StopOngoingDataAcquisition(panelTitle)
-
-	// stop early as "TP after DAQ" might be already running
-	if(TP_CheckIfTestpulseIsRunning(panelTitle))
-		return NaN
-	endif
-
-	try
-		if(GetCheckBoxState(panelTitle, "Check_Settings_BkgTP"))
-
-			TP_Setup(panelTitle, TEST_PULSE_BG_SINGLE_DEVICE)
-
-			ITC_StartBackgroundTestPulse(panelTitle)
-
-			P_InitBeforeTP(panelTitle)
-		else
-			TP_Setup(panelTitle, TEST_PULSE_FG_SINGLE_DEVICE)
-			ITC_StartTestPulse(panelTitle)
-			TP_Teardown(panelTitle)
-		endif
-	catch
-		TP_Teardown(panelTitle)
-		return NaN
-	endtry
-End
-
-/// @brief Start a multi device test pulse, always done in background mode
-Function TP_StartTestPulseMultiDevice(panelTitle)
-	string panelTitle
-
-	AbortOnValue DAP_CheckSettings(panelTitle, TEST_PULSE_MODE),1
-
-	ITC_StopOngoingDAQMultiDevice(panelTitle)
-
-	// stop early as "TP after DAQ" might be already running
-	if(TP_CheckIfTestpulseIsRunning(panelTitle))
-		return NaN
-	endif
-
-	ITC_StartTestPulseMultiDevice(panelTitle)
-
-	P_InitBeforeTP(panelTitle)
-End
-
 /// @brief Store the full test pulse wave for later inspection
 Function TP_StoreFullWave(panelTitle)
 	string panelTitle
@@ -276,7 +225,7 @@ Function TP_Delta(panelTitle)
 
 	variable numADCs = columns
 	TP_RecordTP(panelTitle, BaselineSSAvg, InstResistance, SSResistance, numADCs)
-	ITC_ApplyAutoBias(panelTitle, BaselineSSAvg, SSResistance)
+	DQ_ApplyAutoBias(panelTitle, BaselineSSAvg, SSResistance)
 
 	DEBUGPRINT_ELAPSED(referenceTime)
 End
@@ -532,10 +481,10 @@ Function TP_StopTestPulse(panelTitle)
 	runMode = runMode & ~TEST_PULSE_DURING_RA_MOD
 
 	if(runMode == TEST_PULSE_BG_SINGLE_DEVICE)
-		ITC_StopTestPulseSingleDevice(panelTitle)
+		TPS_StopTestPulseSingleDevice(panelTitle)
 		return runMode
 	elseif(runMode == TEST_PULSE_BG_MULTI_DEVICE)
-		ITC_StopTestPulseMultiDevice(panelTitle)
+		TPM_StopTestPulseMultiDevice(panelTitle)
 		return runMode
 	elseif(runMode == TEST_PULSE_FG_SINGLE_DEVICE)
 		// can not be stopped
@@ -554,10 +503,10 @@ Function TP_RestartTestPulse(panelTitle, testPulseMode)
 		case TEST_PULSE_NOT_RUNNING:
 			break // nothing to do
 		case TEST_PULSE_BG_SINGLE_DEVICE:
-			TP_StartTestPulseSingleDevice(panelTitle)
+			TPS_StartTestPulseSingleDevice(panelTitle)
 			break
 		case TEST_PULSE_BG_MULTI_DEVICE:
-			TP_StartTestPulseMultiDevice(panelTitle)
+			TPM_StartTestPulseMultiDevice(panelTitle)
 			break
 		default:
 			DEBUGPRINT("Ignoring unknown value:", var=testPulseMode)

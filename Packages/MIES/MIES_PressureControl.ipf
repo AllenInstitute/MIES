@@ -1061,7 +1061,9 @@ static Function P_DataAcq(panelTitle, headStage)
 	endif
 End
 
-// @brief Background function that monitors the device FIFO and terminates acquisition when sufficient data has been collected
+/// @brief Monitor the device FIFO and terminates acquisition when sufficient data has been collected
+///
+/// @ingroup BackgroundFunctions
 Function P_ITC_FIFOMonitorProc(s)
 	STRUCT WMBackgroundStruct &s
 

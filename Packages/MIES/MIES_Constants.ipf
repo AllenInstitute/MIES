@@ -9,6 +9,8 @@
 /// @file MIES_Constants.ipf
 /// @brief Global constants
 
+/// @defgroup BackgroundFunctions All background functions
+
 /// @name Constans for the number of channels
 /// @anchor NUM_CHANNELS_CONSTANTS
 /// @{
@@ -767,3 +769,6 @@ StrConstant PATCHSEQ_LBN_CHUNK_PASSED_FMT = "Sub Thres Chunk %d QC"
 Constant NWB_EXPORT_DATA     = 0x1
 Constant NWB_EXPORT_STIMSETS = 0x2
 /// @}
+
+/// Maximum number of microsecond timers in Igor Pro
+Constant MAX_NUM_MS_TIMERS = 10

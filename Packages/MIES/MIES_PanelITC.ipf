@@ -4650,9 +4650,9 @@ Function DAP_OneTimeCallAfterDAQ(panelTitle, [forcedStop])
 	ASSERT(ItemsInList(ListMatch(GetRTStackInfo(0), GetRTStackInfo(1))) == 1 , "Recursion detected, aborting")
 
 	if(GetCheckBoxState(panelTitle, "check_Settings_MD"))
-		TP_StartTestPulseMultiDevice(panelTitle)
+		TPM_StartTestPulseMultiDevice(panelTitle)
 	else
-		TP_StartTestPulseSingleDevice(panelTitle)
+		TPS_StartTestPulseSingleDevice(panelTitle)
 	endif
 End
 
@@ -4668,9 +4668,9 @@ Function DAP_ButtonProc_AcquireData(ba) : ButtonControl
 			DAP_AbortIfUnlocked(panelTitle)
 
 			if(GetCheckBoxState(panelTitle, "check_Settings_MD"))
-				ITC_StartDAQMultiDevice(panelTitle)
+				DQM_StartDAQMultiDevice(panelTitle)
 			else
-				ITC_StartDAQSingleDevice(panelTitle)
+				DQS_StartDAQSingleDevice(panelTitle)
 			endif
 		break
 	endswitch
@@ -4814,7 +4814,7 @@ Function DAP_PopMenuChkProc_StimSetList(pa) : PopupMenuControl
 			                   && indexing)))
 
 			if(activeChannel)
-				dataAcqRunMode = ITC_StopDAQ(panelTitle)
+				dataAcqRunMode = DQ_StopDAQ(panelTitle)
 
 				// stopping DAQ will reset the stimset popupmenu to its initial value
 				// so we have to set the now old value again
@@ -4846,7 +4846,7 @@ Function DAP_PopMenuChkProc_StimSetList(pa) : PopupMenuControl
 			DAP_UpdateDAQControls(panelTitle, REASON_STIMSET_CHANGE)
 
 			if(activeChannel)
-				ITC_RestartDAQ(panelTitle, dataAcqRunMode)
+				DQ_RestartDAQ(panelTitle, dataAcqRunMode)
 			endif
 
 			break
@@ -6331,56 +6331,6 @@ static Function DAP_ChangeHeadstageState(panelTitle, headStageCtrl, enabled)
 	endif
 End
 
-/// @brief Stop the testpulse and data acquisition
-///
-/// Should be used if `Multi Device Support` is not checked
-Function DAP_StopOngoingDataAcquisition(panelTitle)
-	string panelTitle
-
-	variable needsOTCAfterDAQ = 0
-	variable discardData      = 0
-
-	if(IsDeviceActiveWithBGTask(panelTitle, "Testpulse"))
-		ITC_StopTestPulseSingleDevice(panelTitle)
-
-		needsOTCAfterDAQ = needsOTCAfterDAQ | 0
-		discardData      = discardData      | 1
-	endif
-
-	if(IsDeviceActiveWithBGTask(panelTitle, "ITC_Timer"))
-		ITC_StopBackgroundTimerTask()
-
-		needsOTCAfterDAQ = needsOTCAfterDAQ | 1
-		discardData      = discardData      | 1
-	endif
-
-	if(IsDeviceActiveWithBGTask(panelTitle, "ITC_FIFOMonitor"))
-		ITC_STOPFifoMonitor()
-		ITC_StopITCDeviceTimer(panelTitle)
-
-		NVAR ITCDeviceIDGlobal = $GetITCDeviceIDGlobal(panelTitle)
-		HW_SelectDevice(HARDWARE_ITC_DAC, ITCDeviceIDGlobal)
-		HW_StopAcq(HARDWARE_ITC_DAC, ITCDeviceIDGlobal, zeroDAC = 1)
-
-		if(!discardData)
-			SWS_SaveAndScaleITCData(panelTitle, forcedStop = 1)
-		endif
-
-		needsOTCAfterDAQ = needsOTCAfterDAQ | 1
-	else
-		// force a stop if invoked during a 'down' time, with nothing happening.
-		if(!RA_IsFirstSweep(panelTitle))
-			NVAR count = $GetCount(panelTitle)
-			count = GetValDisplayAsNum(panelTitle, "valdisp_DataAcq_SweepsInSet")
-			needsOTCAfterDAQ = needsOTCAfterDAQ | 1
-		endif
-	endif
-
-	if(needsOTCAfterDAQ)
-		DAP_OneTimeCallAfterDAQ(panelTitle, forcedStop = 1)
-	endif
-End
-
 /// @brief Set the acquisition button text
 ///
 /// @param panelTitle device
@@ -6942,9 +6892,9 @@ Function DAP_ButtonProc_TestPulse(ba) : ButtonControl
 			if(dataAcqRunMode == DAQ_NOT_RUNNING && TP_CheckIfTestpulseIsRunning(panelTitle))
 				TP_StopTestPulse(panelTitle)
 			elseif(GetCheckBoxState(panelTitle, "check_Settings_MD"))
-				TP_StartTestPulseMultiDevice(panelTitle)
+				TPM_StartTestPulseMultiDevice(panelTitle)
 			else
-				TP_StartTestPulseSingleDevice(panelTitle)
+				TPS_StartTestPulseSingleDevice(panelTitle)
 			endif
 			break
 	endswitch
@@ -7837,7 +7787,7 @@ static Function DAP_UnlockDevice(panelTitle)
 	// especially for foreground TP
 	state = GetCheckBoxState(panelTitle, "check_Settings_TPAfterDAQ")
 	SetCheckBoxState(panelTitle, "check_Settings_TPAfterDAQ", CHECKBOX_UNSELECTED)
-	ITC_StopDAQ(panelTitle)
+	DQ_StopDAQ(panelTitle)
 	TP_StopTestPulse(panelTitle)
 	SetCheckBoxState(panelTitle, "check_Settings_TPAfterDAQ", state)
 
@@ -8234,4 +8184,28 @@ Function DAP_GetHighestActiveHeadstage(panelTitle)
 	Make/FREE/N=(NUM_HEADSTAGES) activeHS = statusHS[p] * p
 
 	return WaveMax(activeHS)
+End
+
+/// @brief Print a warning message if the measured value of the given asyn
+///        value exceeds the limits
+Function DAP_SupportSystemAlarm(Channel, Measurement, MeasurementTitle, panelTitle)
+	variable Channel, Measurement
+	string MeasurementTitle, panelTitle
+
+	string minCtrl, maxCtrl, checkCtrl
+	variable paramMin, paramMax
+
+	checkCtrl = GetPanelControl(channel, CHANNEL_TYPE_ALARM, CHANNEL_CONTROL_CHECK)
+	if(GetCheckBoxState(panelTitle, checkCtrl))
+		minCtrl = GetPanelControl(channel, CHANNEL_TYPE_ASYNC, CHANNEL_CONTROL_ALARM_MIN)
+		paramMin = GetSetVariable(panelTitle, minCtrl)
+		maxCtrl = GetPanelControl(channel, CHANNEL_TYPE_ASYNC, CHANNEL_CONTROL_ALARM_MAX)
+		paramMax = GetSetVariable(panelTitle, maxCtrl)
+		if(Measurement >= ParamMax || Measurement <= ParamMin)
+			beep
+			print time() + " !!!!!!!!!!!!! " + MeasurementTitle + " has exceeded max/min settings" + " !!!!!!!!!!!!!"
+			ControlWindowToFront()
+			beep
+		endif
+	endif
 End

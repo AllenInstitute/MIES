@@ -517,7 +517,7 @@ Function TI_runBaselineCheckQC(headstage, [cmdID])
 		
 		// Check to see if Test Pulse is already running...if not running, turn it on...
 		if(!IsDeviceActiveWithBGTask(currentPanel, "TestPulse"))
-			TP_StartTestPulseSingleDevice(currentPanel)
+			TPS_StartTestPulseSingleDevice(currentPanel)
 		endif
 
 		// and now hit the Auto pipette offset
@@ -549,6 +549,7 @@ End
 
 /// @brief Complete the Baseline QC check in the background
 ///
+/// @ingroup BackgroundFunctions
 Function TI_finishBaselineQCCheck(s)
 	STRUCT WMBackgroundStruct &s
 
@@ -596,7 +597,7 @@ Function TI_finishBaselineQCCheck(s)
 
 	// See if we pass the baseline QC
 	if (abs(baselineAverage) < 100.0)
-		ITC_StartDAQSingleDevice(currentPanel)
+		DQS_StartDAQSingleDevice(currentPanel)
 		qcResult = baselineAverage
 	endif
 	
@@ -715,7 +716,7 @@ Function TI_runElectrodeDriftQC(headstage, expTime, [cmdID])
 		
 		// Check to see if Test Pulse is already running...if not running, turn it on...
 		if (!(IsDeviceActiveWithBGTask(currentPanel, "TestPulse")))
-			TP_StartTestPulseSingleDevice(currentPanel)
+			TPS_StartTestPulseSingleDevice(currentPanel)
 		endif
 
 		// and grab the initial resistance avg value again
@@ -770,7 +771,7 @@ Function TI_runElectrodeDriftQC(headstage, expTime, [cmdID])
 		// now start the sweep process
 		print "pushing the start button..."
 		// now start the sweep process
-		ITC_StartDAQSingleDevice(currentPanel)
+		DQS_StartDAQSingleDevice(currentPanel)
 	endfor
 	
 	// determine if the cmdID was provided
@@ -855,7 +856,7 @@ Function TI_runInitAccessResisQC(headstage, [cmdID])
 
 		// Check to see if Test Pulse is already running...if not running, turn it on...
 		if(!(IsBackgroundTaskRunning("TestPulse")))
-			TP_StartTestPulseSingleDevice(currentPanel)
+			TPS_StartTestPulseSingleDevice(currentPanel)
 		endif
 
 		// Set up the QC Wave so the background task can get the information it needs
@@ -887,6 +888,7 @@ End
 
 /// @brief Complete the Baseline QC check in the background
 ///
+/// @ingroup BackgroundFunctions
 Function TI_finishInitAccessQCCheck(s)
 	STRUCT WMBackgroundStruct &s
 
@@ -943,7 +945,7 @@ Function TI_finishInitAccessQCCheck(s)
 	endif
 
 	// and now run the EXTPBREAKN wave so that things are saved into the data record
-	ITC_StartDAQSingleDevice(currentPanel)
+	DQS_StartDAQSingleDevice(currentPanel)
 
 	print "qcResult: ", qcResult
 
@@ -1085,7 +1087,7 @@ Function/S TI_runAdaptiveStim(stimWaveName, initScaleFactor, scaleFactor, thresh
 		// put the init Scale factor where it needs to go
 		SetSetVariable(currentPanel, scaleWidgetName, initScaleFactor)
 
-		ITC_StartDAQSingleDevice(currentPanel)
+		DQS_StartDAQSingleDevice(currentPanel)
 	endfor
 
 	// determine if the cmdID was provided
@@ -1160,7 +1162,7 @@ Function TI_runGigOhmSealQC(headstage, [cmdID])
 		
 		// Check to see if Test Pulse is already running...if not running, turn it on...
 		if (!(IsDeviceActiveWithBGTask(currentPanel, "TestPulse")))
-			TP_StartTestPulseSingleDevice(currentPanel)
+			TPS_StartTestPulseSingleDevice(currentPanel)
 		endif
 		
 		// Set up the QC Wave so the background task can get the information it needs
@@ -1187,7 +1189,9 @@ Function TI_StartBckgrdGigOhmSealQCCheck()
 	CtrlNamedBackground TI_finishGigOhmSealQCCheck, start
 End
 
-///@brief finish the Gig Ohm Seal QC in the background
+/// @brief finish the Gig Ohm Seal QC in the background
+///
+/// @ingroup BackgroundFunctions
 Function TI_finishGigOhmSealQCCheck(s)
 	STRUCT WMBackgroundStruct &s
 
@@ -1236,7 +1240,7 @@ Function TI_finishGigOhmSealQCCheck(s)
 	try
 		if(ssResistanceVal > 1000)  // ssResistance value is in MOhms
 			// and now run the EXTPCIIATT wave so that things are saved into the data record	
-			ITC_StartDAQSingleDevice(currentPanel)
+			DQS_StartDAQSingleDevice(currentPanel)
 			qcResult = ssResistanceVal
 		else
 			print "Below QC threshold...will repeat QC test..."
@@ -1251,7 +1255,7 @@ Function TI_finishGigOhmSealQCCheck(s)
 			qcResult = ssResistanceVal
 		endif
 
-		ITC_StartDAQSingleDevice(currentPanel) // Run the EXTPCIIATT wave so that things are saved into the data record
+		DQS_StartDAQSingleDevice(currentPanel) // Run the EXTPCIIATT wave so that things are saved into the data record
 	endtry
 	
 	print "qcResult: ", qcResult
@@ -1388,7 +1392,7 @@ Function/S TI_runBracketingFunction(stimWaveName, coarseScaleFactor, fineScaleFa
 		// make sure the analysisResult is set to 0
 		analysisSettingsWave[headstage][%PSAResult] = "0"
 
-		ITC_StartDAQSingleDevice(currentPanel)
+		DQS_StartDAQSingleDevice(currentPanel)
 	endfor
 	
 	// determine if the cmdID was provided
@@ -1454,7 +1458,7 @@ Function TI_runStimWave(stimWaveName, scaleFactor, headstage, [cmdID])
 		
 		// put the scale in the right place 
 		SetSetVariable(currentPanel, scaleWidgetName, scaleFactor)
-		ITC_StartDAQSingleDevice(currentPanel)
+		DQS_StartDAQSingleDevice(currentPanel)
 	endfor
 	
 	// determine if the cmdID was provided
@@ -1520,11 +1524,11 @@ Function TI_runTestPulse(tpCmd, [cmdID])
 		
 		if(tpCmd == 1)	// Turn on the test pulse
 
-			TP_StartTestPulseSingleDevice(currentPanel)
+			TPS_StartTestPulseSingleDevice(currentPanel)
 
 			returnValue = 0
 		elseif(tpCmd == 0) // Turn off the test pulse
-			ITC_StopTestPulseSingleDevice(currentPanel)
+			TPS_StopTestPulseSingleDevice(currentPanel)
 			returnValue = 0
 		else
 			returnValue = -1
@@ -1556,7 +1560,7 @@ Function TI_runStopStart([cmdID])
 
 		// pop the itc panel window to the front
 		DoWindow /F $currentPanel
-		ITC_StartDAQSingleDevice(currentPanel)
+		DQS_StartDAQSingleDevice(currentPanel)
 	endfor
 
 	// determine if the cmdID was provided

@@ -635,7 +635,7 @@ static Function ED_createAsyncWaveNoteTags(panelTitle, sweepCount)
 	ED_AddEntriesToLabnotebook(asyncSettingsTxtWave, asyncSettingsTxtKey, sweepCount, panelTitle, DATA_ACQUISITION_MODE)
 	ED_AddEntriesToLabnotebook(asyncSettingsWave, asyncSettingsKey, SweepCount, panelTitle, DATA_ACQUISITION_MODE)
 
-	ITC_ADDataBasedWaveNotes(asyncMeasurementWave, panelTitle)
+	ED_ADDataBasedWaveNotes(asyncMeasurementWave, panelTitle)
 	ED_AddEntriesToLabnotebook(asyncMeasurementWave, asyncMeasurementKey, SweepCount, panelTitle, DATA_ACQUISITION_MODE)
 End
 
@@ -783,4 +783,41 @@ static Function ED_TPSettingsDocumentation(panelTitle, sweepNo, entrySourceType)
 	TPSettingsWave[0][3][INDEP_HEADSTAGE] = pulseDuration
 
 	ED_AddEntriesToLabnotebook(TPSettingsWave, TPKeyWave, sweepNo, panelTitle, entrySourceType)
+End
+
+static Function ED_ADDataBasedWaveNotes(asyncMeasurementWave, panelTitle)
+	WAVE asyncMeasurementWave
+	string panelTitle
+
+	// This function takes about 0.9 seconds to run
+	// this is the wave that the note gets appended to. The note contains the async ad channel value and info
+	variable i, numEntries, rawChannelValue, gain, deviceChannelOffset
+	string setvarTitle, setvarGain, title
+
+	NVAR ITCDeviceIDGlobal = $GetITCDeviceIDGlobal(panelTitle)
+
+	WAVE asyncChannelState = DAP_ControlStatusWaveCache(panelTitle, CHANNEL_TYPE_ASYNC)
+	deviceChannelOffset = HW_ITC_CalculateDevChannelOff(panelTitle)
+
+	numEntries = DimSize(asyncChannelState, ROWS)
+	for(i = 0; i < numEntries; i += 1)
+
+		if(!asyncChannelState[i])
+			continue
+		endif
+
+		// Async channels start at channel 16 on ITC 1600, needs to be a diff value constant for ITC18
+		rawChannelValue = HW_ReadADC(HARDWARE_ITC_DAC, ITCDeviceIDGlobal, i + deviceChannelOffset)
+
+		sprintf setvarTitle, "SetVar_AsyncAD_Title_%02d", i
+		setvarGain= GetPanelControl(i, CHANNEL_TYPE_ASYNC, CHANNEL_CONTROL_GAIN)
+
+		title = GetSetVariableString(panelTitle, setvarTitle)
+		gain  = GetSetVariable(panelTitle, setvarGain)
+
+		// put the measurement value into the async settings wave for creation of wave notes
+		asyncMeasurementWave[0][i][,;LABNOTEBOOK_LAYER_COUNT - 1] = rawChannelValue / gain
+
+		DAP_SupportSystemAlarm(i, asyncMeasurementWave[0][i], title, panelTitle)
+	endfor
 End
