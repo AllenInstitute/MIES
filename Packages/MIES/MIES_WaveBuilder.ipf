@@ -40,7 +40,7 @@ Function/Wave WB_CreateAndGetStimSet(setName)
 
 	if(!WaveExists(stimSet))
 		needToCreateStimSet = 1
-	elseif(WaveExists(stimSet) && WB_StimsetNeedsUpdate(setName))
+	elseif(WB_StimsetNeedsUpdate(setName))
 		needToCreateStimSet = 1
 	else
 		needToCreateStimSet = 0
