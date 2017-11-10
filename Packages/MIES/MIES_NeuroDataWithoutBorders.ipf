@@ -226,15 +226,21 @@ static Function/S NWB_GenerateDeviceDescription(panelTitle)
 	return desc
 End
 
-static Function NWB_AddDeviceSpecificData(locationID, panelTitle, [chunkedLayout])
+static Function NWB_AddDeviceSpecificData(locationID, panelTitle, [chunkedLayout, writeStoredTestPulses])
 	variable locationID
 	string panelTitle
-	variable chunkedLayout
+	variable chunkedLayout, writeStoredTestPulses
 
 	variable groupID, i, numEntries, refTime
 	string path, list, name, contents
 
 	refTime = DEBUG_TIMER_START()
+
+	if(ParamIsDefault(writeStoredTestPulses))
+		writeStoredTestPulses = 0
+	else
+		writeStoredTestPulses = !!writeStoredTestPulses
+	endif
 
 	chunkedLayout = ParamIsDefault(chunkedLayout) ? 0 : !!chunkedLayout
 
@@ -283,12 +289,17 @@ static Function NWB_AddDeviceSpecificData(locationID, panelTitle, [chunkedLayout
 		IPNWB#H5_WriteDataset(groupID, name, wv=wv, writeIgorAttr=1, overwrite=1, chunkedLayout=chunkedLayout)
 	endfor
 
+	if(writeStoredTestPulses)
+		NWB_AppendStoredTestPulses(panelTitle, groupID)
+	endif
+
 	HDF5CloseGroup/Z groupID
 	DEBUGPRINT_ELAPSED(refTime)
 End
 
-Function NWB_ExportAllData([overrideFilePath])
+Function NWB_ExportAllData([overrideFilePath, writeStoredTestPulses])
 	string overrideFilePath
+	variable writeStoredTestPulses
 
 	string devicesWithContent, panelTitle, list, name
 	variable i, j, numEntries, locationID, sweep, numWaves, firstCall
@@ -300,6 +311,12 @@ Function NWB_ExportAllData([overrideFilePath])
 		print "No devices with acquired content found for NWB export"
 		ControlWindowToFront()
 		return NaN
+	endif
+
+	if(ParamIsDefault(writeStoredTestPulses))
+		writeStoredTestPulses = 0
+	else
+		writeStoredTestPulses = !!writeStoredTestPulses
 	endif
 
 	if(!ParamIsDefault(overrideFilePath))
@@ -321,7 +338,7 @@ Function NWB_ExportAllData([overrideFilePath])
 	numEntries = ItemsInList(devicesWithContent)
 	for(i = 0; i < numEntries; i += 1)
 		panelTitle = StringFromList(i, devicesWithContent)
-		NWB_AddDeviceSpecificData(locationID, panelTitle, chunkedLayout=1)
+		NWB_AddDeviceSpecificData(locationID, panelTitle, chunkedLayout=1, writeStoredTestPulses = writeStoredTestPulses)
 
 		DFREF dfr = GetDeviceDataPath(panelTitle)
 		list = GetListOfObjects(dfr, DATA_SWEEP_REGEXP)
@@ -420,7 +437,7 @@ Function NWB_ExportWithDialog(exportType)
 	DeleteFile/Z S_filename
 
 	if(exportType == NWB_EXPORT_DATA)
-		NWB_ExportAllData(overrideFilePath=S_filename)
+		NWB_ExportAllData(overrideFilePath=S_filename, writeStoredTestPulses = 1)
 	elseif(exportType == NWB_EXPORT_STIMSETS)
 		NWB_ExportAllStimsets(overrideFilePath=S_filename)
 	else
@@ -428,6 +445,28 @@ Function NWB_ExportWithDialog(exportType)
 	endif
 
 	CloseNWBFile()
+End
+
+/// @brief Write the stored test pulses to the NWB file
+static Function NWB_AppendStoredTestPulses(panelTitle, locationID)
+	string panelTitle
+	variable locationID
+
+	variable index, numZeros, i
+	string name
+
+	WAVE/WAVE storedTP = GetStoredTestPulseWave(panelTitle)
+	index = GetNumberFromWaveNote(storedTP, NOTE_INDEX)
+
+	if(!index)
+		// nothing to store
+		return NaN
+	endif
+
+	for(i = 0; i < index; i += 1)
+		sprintf name, "StoredTestPulses_%d", i
+		IPNWB#H5_WriteDataset(locationID, name, wv = storedTP[i], chunkedLayout = 1, overwrite = 1, writeIgorAttr = 1)
+	endfor
 End
 
 /// @brief Export given stimsets to NWB file

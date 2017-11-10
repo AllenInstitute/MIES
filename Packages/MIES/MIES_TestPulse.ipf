@@ -40,17 +40,20 @@ Function TP_GetTestPulseLengthInPoints(panelTitle)
 End
 
 /// @brief Store the full test pulse wave for later inspection
-Function TP_StoreFullWave(panelTitle)
+static Function TP_StoreFullWave(panelTitle)
 	string panelTitle
 
-	variable index
+	variable index, startOfADColumns
 
 	WAVE OscilloscopeData = GetOscilloscopeWave(panelTitle)
+	WAVE config = GetITCChanConfigWave(panelTitle)
+	startOfADColumns = DimSize(GetDACListFromConfig(config), ROWS)
 	WAVE/WAVE storedTP = GetStoredTestPulseWave(panelTitle)
 
 	index = GetNumberFromWaveNote(storedTP, NOTE_INDEX)
 	EnsureLargeEnoughWave(storedTP, minimumSize = index)
-	Duplicate/FREE OscilloscopeData, tmp
+	Duplicate/FREE/R=[][startOfADColumns,] OscilloscopeData, tmp
+	Note/K tmp, "TimeStamp: " + GetISO8601TimeStamp(numFracSecondsDigits = 3)
 	storedTP[index++] = tmp
 	WaveClear tmp
 
