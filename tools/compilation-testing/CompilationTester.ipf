@@ -86,6 +86,12 @@ Function EvaluateResult()
 		case "MIES_Downsample":
 			CHECK_EQUAL_VAR(compilationState, 0x4) // "MIES_Downsample"
 			break
+		case "UTF_Main":
+			CHECK_EQUAL_VAR(compilationState, 0x4) // "UTF_Main"
+			break
+		case "UTF_HardwareMain":
+			CHECK_EQUAL_VAR(compilationState, 0x4) // "UTF_HardwareMain"
+			break
 		default:
 			CHECK_EQUAL_VAR(compilationState, 0x4) // "unknown"
 			FAIL()
