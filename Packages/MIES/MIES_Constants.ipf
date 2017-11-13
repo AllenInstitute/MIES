@@ -772,3 +772,12 @@ Constant NWB_EXPORT_STIMSETS = 0x2
 
 /// Maximum number of microsecond timers in Igor Pro
 Constant MAX_NUM_MS_TIMERS = 10
+
+Constant PATCHSEQ_SP_INIT_AMP_m50    = -50e-12
+Constant PATCHSEQ_SP_INIT_AMP_p100   = +100e-12
+Constant PATCHSEQ_SP_INIT_AMP_p10    = +10e-12
+Constant PATCHSEQ_SP_SPIKE_LEVEL     = 10 // mV
+
+StrConstant PATCHSEQ_SP_LBN_STEPSIZE      = "SP step size"
+StrConstant PATCHSEQ_SP_LBN_SPIKE_DETECT  = "SP spike detected"
+StrConstant PATCHSEQ_SP_LBN_FINAL_SCALE   = "SP final DAScale"

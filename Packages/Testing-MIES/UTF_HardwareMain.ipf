@@ -7,7 +7,8 @@
 #include "UTF_VeryBasicHardwareTests"
 #include "UTF_TestingWithHardware"
 #include "UTF_BasicHardwareTests"
-#include "UTF_PatchSeqSubthreshold"
+#include "UTF_PatchSeqSubThreshold"
+#include "UTF_PatchSeqSquarePulse"
 
 Function run()
 //	DisableDebugOutput()
@@ -51,6 +52,17 @@ Function run()
 	list = AddListItem("PS_ST_Test6", list, ";", INF)
 	list = AddListItem("PS_ST_Run7", list, ";", INF)
 	list = AddListItem("PS_ST_Test7", list, ";", INF)
+
+	list = AddListItem("PS_SP_Run1", list, ";", INF)
+	list = AddListItem("PS_SP_Test1", list, ";", INF)
+	list = AddListItem("PS_SP_Run2", list, ";", INF)
+	list = AddListItem("PS_SP_Test2", list, ";", INF)
+	list = AddListItem("PS_SP_Run3", list, ";", INF)
+	list = AddListItem("PS_SP_Test3", list, ";", INF)
+	list = AddListItem("PS_SP_Run4", list, ";", INF)
+	list = AddListItem("PS_SP_Test4", list, ";", INF)
+	list = AddListItem("PS_SP_Run5", list, ";", INF)
+	list = AddListItem("PS_SP_Test5", list, ";", INF)
 
 	SetupTestCases_IGNORE(list)
 	ExecuteNextTestCase_IGNORE()

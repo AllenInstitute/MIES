@@ -52,7 +52,7 @@ Function ExecuteNextTestCase_IGNORE()
 		return NaN
 	endif
 
-	Execute/P/Q "runtest(\"UTF_BasicHardwareTests.ipf;UTF_PatchSeqSubThreshold.ipf\", testCase=\"" + testCases[testCaseIndex] + "\", enableJU = 1)"
+	Execute/P/Q "runtest(\"UTF_BasicHardwareTests.ipf;UTF_PatchSeqSubThreshold.ipf;UTF_PatchSeqSquarePulse.ipf\", testCase=\"" + testCases[testCaseIndex] + "\", enableJU = 1)"
 
 	testCaseIndex += 1
 End

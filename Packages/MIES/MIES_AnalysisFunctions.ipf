@@ -1583,3 +1583,167 @@ Function preDAQ_MP_ChirpBlowout(panelTitle, eventType, ITCDataWave, headStage, r
 	
 	PGC_SetAndActivateControl(panelTitle, "Check_DataAcq1_RepeatAcq", val = 1)
 End
+
+/// @brief Store the current step size in the labnotebook
+static Function StoreStepSizeInLBN(panelTitle, sweepNo, stepsize)
+	string panelTitle
+	variable sweepNo, stepsize
+
+	Make/FREE/D/N=(LABNOTEBOOK_LAYER_COUNT) values = NaN
+	values[INDEP_HEADSTAGE] = stepsize
+	ED_AddEntryToLabnotebook(panelTitle, PATCHSEQ_SP_LBN_STEPSIZE, values, overrideSweepNo = sweepNo)
+End
+
+/// @brief Analysis function to find the smallest DAScale where the cell spikes
+///
+/// Prerequisites:
+/// - This stimset must have this analysis function set for the "Pre DAQ" and "Post Sweep" Event
+/// - Does only work for one headstage
+/// - Assumes that the stimset has a pulse
+///
+/// Testing:
+/// For testing the spike detection logic, the results can be defined in the wave
+/// root:overrideResults. @see CreateOverrideResults()
+///
+/// The following labnotebook keys are stored (all have the #LABNOTEBOOK_USER_PREFIX):
+/// - #PATCHSEQ_SP_LBN_SPIKE_DETECT: Spike was detected on the given headstage
+/// - #PATCHSEQ_SP_LBN_STEPSIZE:     Current DAScale step size (independent headstage setting)
+/// - #PATCHSEQ_SP_LBN_FINAL_SCALE:  Final DAScale of the given headstage, only set on success
+///
+/// Query the standard "Stim Scale Factor" entry from labnotebook for getting the DAScale
+///
+/// @verbatim
+///
+/// Sketch of a stimset with pre pulse baseline (-), pulse (*), and post pulse baseline (-).
+///
+///    *******
+///    |     |
+///    |     |
+///    |     |
+///    |     |
+///    |     |
+///    |     |
+///    |     |
+///    |     |
+///    |     |
+///    |     |
+///    |     |
+///    |     |
+/// ---|     |--------------------------------------------
+///
+/// @endverbatim
+Function PatchSeqSquarePulse(panelTitle, eventType, ITCDataWave, headStage, realDataLength)
+	string panelTitle
+	variable eventType
+	Wave ITCDataWave
+	variable headstage, realDataLength
+
+	variable sweepNo, stepsize, DAScale
+	variable offset, first, last, level, overrideValue
+
+	WAVE numericalValues = GetLBNumericalValues(panelTitle)
+	WAVE textualValues   = GetLBTextualValues(panelTitle)
+
+	WAVE statusHS = DAP_ControlStatusWaveCache(panelTitle, CHANNEL_TYPE_HEADSTAGE)
+
+	ASSERT(sum(statusHS) == 1, "Analysis function only supports one headstage")
+
+	switch(eventType)
+		case PRE_DAQ_EVENT:
+			if(!GetCheckBoxState(panelTitle, "check_Settings_MD"))
+				printf "(%s): Please check \"Multi Device\" mode.\r", panelTitle
+				ControlWindowToFront()
+				return 1
+			endif
+
+			PGC_SetAndActivateControl(panelTitle, "check_Settings_ITITP", val = 0)
+			PGC_SetAndActivateControl(panelTitle, "Check_Settings_InsertTP", val = 0)
+			PGC_SetAndActivateControl(panelTitle, "Check_DataAcq_Get_Set_ITI", val = 1)
+
+			if(DAP_MIESHeadstageMode(panelTitle, headstage) != I_CLAMP_MODE)
+				printf "(%s) Clamp mode must be current clamp.\r", panelTitle
+				ControlWindowToFront()
+				return 1
+			endif
+
+			sweepNo = GetSetVariable(panelTitle, "SetVar_Sweep")
+			StoreStepSizeInLBN(panelTitle, sweepNo, PATCHSEQ_SP_INIT_AMP_p100)
+			SetDAScale(panelTitle, headstage, PATCHSEQ_SP_INIT_AMP_p100)
+
+			return 0
+
+			break
+		case POST_SWEEP_EVENT:
+
+			sweepNo = AFH_GetLastSweepAcquired(panelTitle)
+			WAVE sweepWave = GetSweepWave(panelTitle, sweepNo)
+
+			Make/FREE/D/N=(LABNOTEBOOK_LAYER_COUNT) spikeDetection = 0
+
+			WAVE singleDA = AFH_ExtractOneDimDataFromSweep(panelTitle, sweepWave, headstage, ITC_XOP_CHANNEL_TYPE_DAC)
+			level = WaveMin(singleDA) + 0.1 * (WaveMax(singleDA) - WaveMin(singleDA))
+			Make/FREE/D levels
+			FindLevels/Q/N=2/DEST=levels singleDA, level
+			ASSERT(V_LevelsFound == 2, "Could not find two levels")
+			first = levels[0]
+			last  = inf
+
+			WAVE singleAD = AFH_ExtractOneDimDataFromSweep(panelTitle, sweepWave, headstage, ITC_XOP_CHANNEL_TYPE_ADC)
+			ASSERT(!cmpstr(WaveUnits(singleAD, -1), "mV"), "Unexpected AD Unit")
+
+			WAVE/Z/SDFR=root: overrideResults
+			if(WaveExists(overrideResults))
+				NVAR count = $GetCount(panelTitle)
+				overrideValue = overrideResults[count]
+				printf "TEST OVERRIDE ACTIVE: \"Sweep %d has %g\"\r", count, overrideValue
+
+				if(overrideValue == 0 || overrideValue == 1)
+					spikeDetection[headstage] = overrideValue
+				else
+					spikeDetection[headstage] = overrideValue >= first && overrideValue <= last
+				endif
+			else
+				// search the spike from the rising edge till the end of the wave
+				spikeDetection[headstage] = WaveMax(singleAD, first, last) >= PATCHSEQ_SP_SPIKE_LEVEL
+			endif
+
+			ED_AddEntryToLabnotebook(panelTitle, PATCHSEQ_SP_LBN_SPIKE_DETECT, spikeDetection)
+
+			stepSize = GetLastSettingIndepRAC(numericalValues, sweepNo, LABNOTEBOOK_USER_PREFIX + PATCHSEQ_SP_LBN_STEPSIZE, UNKNOWN_MODE)
+			DAScale  = GetLastSetting(numericalValues, sweepNo, "Stim Scale Factor", DATA_ACQUISITION_MODE)[headstage] * 1e-12
+
+			if(spikeDetection[headstage]) // headstage spiked
+				if(CheckIfClose(stepSize, PATCHSEQ_SP_INIT_AMP_m50))
+					SetDAScale(panelTitle, headstage, DAScale + stepsize)
+				elseif(CheckIfClose(stepSize, PATCHSEQ_SP_INIT_AMP_p10))
+					Make/FREE/D/N=(LABNOTEBOOK_LAYER_COUNT) value = 0
+					value[headstage] = DAScale
+					ED_AddEntryToLabnotebook(panelTitle, PATCHSEQ_SP_LBN_FINAL_SCALE, value)
+					RA_SkipSweeps(panelTitle, inf)
+				elseif(CheckIfClose(stepSize, PATCHSEQ_SP_INIT_AMP_p100))
+					StoreStepSizeInLBN(panelTitle, sweepNo, PATCHSEQ_SP_INIT_AMP_m50)
+					stepsize = PATCHSEQ_SP_INIT_AMP_m50
+					SetDAScale(panelTitle, headstage, DAScale + stepsize)
+				else
+					ASSERT(0, "Unknown stepsize")
+				endif
+			else // headstage did not spike
+				if(CheckIfClose(stepSize, PATCHSEQ_SP_INIT_AMP_m50))
+					StoreStepSizeInLBN(panelTitle, sweepNo, PATCHSEQ_SP_INIT_AMP_p10)
+					stepsize = PATCHSEQ_SP_INIT_AMP_p10
+				elseif(CheckIfClose(stepSize, PATCHSEQ_SP_INIT_AMP_p10))
+					// do nothing
+				elseif(CheckIfClose(stepSize, PATCHSEQ_SP_INIT_AMP_p100))
+					// do nothing
+				else
+					ASSERT(0, "Unknown stepsize")
+				endif
+
+				SetDAScale(panelTitle, headstage, DAScale + stepsize)
+			endif
+
+			break
+	endswitch
+
+	return NaN
+End
