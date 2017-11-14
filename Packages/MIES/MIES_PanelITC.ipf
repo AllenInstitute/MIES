@@ -4202,10 +4202,7 @@ End
 static Function DAP_DeviceIsLeader(panelTitle)
 	string panelTitle
 
-	ControlInfo/W=$panelTitle setvar_Hardware_Status
-	ASSERT(V_flag != 0, "Non-existing control or window")
-
-	return cmpstr(S_value,LEADER) == 0
+	return cmpstr(DAP_GetValueFromTxtStateWave(panelTitle, "setvar_Hardware_Status"),LEADER) == 0
 End
 
 /// @brief Updates the yoking controls on all locked/unlocked panels
@@ -6456,7 +6453,7 @@ Function DAP_ButtonProc_Lead(ba) : ButtonControl
 
 			EnableControls(panelTitle,"button_Hardware_Independent;button_Hardware_AddFollower;title_hardware_Follow;popup_Hardware_AvailITC1600s")
 			DisableControl(panelTitle,"button_Hardware_Lead1600")
-			SetVariable setvar_Hardware_Status Win = $panelTitle, value= _STR:LEADER
+			PGC_SetAndActivateControl(panelTitle, "setvar_Hardware_Status", str = LEADER)
 			createDFWithAllParents("root:ImageHardware:Arduino")
 			break
 	endswitch
@@ -6475,7 +6472,7 @@ Function DAP_ButtonProc_Independent(ba) : ButtonControl
 
 			DisableControls(panelTitle,"button_Hardware_Independent;button_Hardware_AddFollower;popup_Hardware_YokedDACs;button_Hardware_RemoveYoke;title_hardware_Follow;title_hardware_Release;popup_Hardware_AvailITC1600s")
 			EnableControl(panelTitle,"button_Hardware_Lead1600")
-			SetVariable setvar_Hardware_Status Win = $panelTitle, value= _STR:"Independent"
+			PGC_SetAndActivateControl(panelTitle, "setvar_Hardware_Status", str = "Independent")
 
 			DAP_RemoveAllYokedDACs(panelTitle)
 			DAP_UpdateAllYokeControls()
@@ -6604,16 +6601,16 @@ Function DAP_RemoveYokedDAC(panelToDeYoke)
 		DisableControl(leadPanel,"button_Hardware_RemoveYoke")
 		str = "No Yoked Devices"
 	endif
-	SetVariable setvar_Hardware_YokeList Win=$leadPanel, value=_STR:str
 
-	SetVariable setvar_Hardware_Status   Win=$panelToDeYoke, value=_STR:"Independent"
+	PGC_SetAndActivateControl(leadPanel, "setvar_Hardware_YokeList", str = str)
+	PGC_SetAndActivateControl(panelToDeYoke, "setvar_Hardware_Status", str = "Independent")
 
 	DisableControl(panelToDeYoke,"setvar_Hardware_YokeList")
 	EnableControls(panelToDeYoke, YOKE_CONTROLS_DISABLE)
 	EnableControls(panelToDeYoke, YOKE_CONTROLS_DISABLE_AND_LINK)
 	DAP_UpdateITIAcrossSets(panelToDeYoke)
 
-	SetVariable setvar_Hardware_YokeList Win=$panelToDeYoke, value=_STR:"None"
+	PGC_SetAndActivateControl(panelToDeYoke, "setvar_Hardware_YokeList", str = "None")
 
 	NVAR followerITCDeviceIDGlobal = $GetITCDeviceIDGlobal(panelToDeYoke)
 	HW_SelectDevice(HARDWARE_ITC_DAC, followerITCDeviceIDGlobal)
@@ -6647,10 +6644,11 @@ End
 /// Sets the lists and buttons on the follower device actively being yoked
 Function DAP_UpdateFollowerControls(panelTitle, panelToYoke)
 	string panelTitle, panelToYoke
-	
-	SetVariable setvar_Hardware_Status win = $panelToYoke, value = _STR:FOLLOWER
+
+	PGC_SetAndActivateControl(panelToYoke, "setvar_Hardware_Status", str = FOLLOWER)
+
 	EnableControl(panelToYoke,"setvar_Hardware_YokeList")
-	SetVariable setvar_Hardware_YokeList  win=$panelToYoke, value = _STR:"Lead device = " + panelTitle
+	PGC_SetAndActivateControl(panelToYoke, "setvar_Hardware_YokeList", str = "Lead device = " + panelTitle)
 	DAP_UpdateYokeControls(panelToYoke)
 End
 
