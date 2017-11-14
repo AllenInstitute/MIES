@@ -737,6 +737,7 @@ Function DAP_SetVarProc_Channel_Search(sva) : SetVariableControl
 			varstr     = sva.sval
 
 			ASSERT(!DAP_ParsePanelControl(ctrl, channelIndex, channelType, channelControl), "Invalid control format")
+			DAG_Update(sva.win, sva.ctrlName, val = sva.dval, str = sva.sval)
 
 			DFREF saveDFR = GetDataFolderDFR()
 			SetDataFolder GetSetFolder(channelType)
@@ -775,8 +776,6 @@ Function DAP_SetVarProc_Channel_Search(sva) : SetVariableControl
 				ctrl = GetPanelControl(i, channelType, CHANNEL_CONTROL_SEARCH)
 				PGC_SetAndActivateControl(panelTitle, ctrl, str = SelectString(isCustomSearchString, "", searchString))
 			endfor
-
-			DAG_Update(sva.win, sva.ctrlName, val = sva.dval, str = sva.sval)
 			break
 	endswitch
 
@@ -793,13 +792,14 @@ Function DAP_DAorTTLCheckProc(cba) : CheckBoxControl
 			try
 				paneltitle = cba.win
 				control    = cba.ctrlName
+				DAG_Update(cba.win, cba.ctrlName, val = cba.checked)
 				DAP_AdaptAssocHeadstageState(panelTitle, control)
 			catch
 				SetCheckBoxState(panelTitle, control, !cba.checked)
+				DAG_Update(cba.win, cba.ctrlName, val = !cba.checked)
 				Abort
 			endtry
 
-			DAG_Update(cba.win, cba.ctrlName, val = cba.checked)
 			break
 	endswitch
 End
@@ -817,6 +817,7 @@ Function DAP_CheckProc_Channel_All(cba) : CheckBoxControl
 			ASSERT(!DAP_ParsePanelControl(cba.ctrlName, channelIndex, channelType, controlType), "Invalid control format")
 			ASSERT(controlType  == CHANNEL_CONTROL_CHECK, "Invalid control type")
 			ASSERT(DAP_ISAllControl(channelIndex), "Invalid channel index")
+			DAG_Update(cba.win, cba.ctrlName, val = cba.checked)
 
 			numEntries = GetNumberFromType(var=channelType)
 
@@ -836,8 +837,6 @@ Function DAP_CheckProc_Channel_All(cba) : CheckBoxControl
 				control = GetPanelControl(i, channelType, CHANNEL_CONTROL_CHECK)
 				PGC_SetAndActivateControl(panelTitle, control, val=allChecked)
 			endfor
-
-			DAG_Update(cba.win, cba.ctrlName, val = cba.checked)
 			break
 	endswitch
 
@@ -898,13 +897,14 @@ Function DAP_CheckProc_AD(cba) : CheckBoxControl
 			try
 				paneltitle = cba.win
 				control    = cba.ctrlName
+
+				DAG_Update(cba.win, cba.ctrlName, val = cba.checked)
 				DAP_AdaptAssocHeadstageState(panelTitle, control)
 			catch
 				SetCheckBoxState(panelTitle, control, !cba.checked)
+				DAG_Update(cba.win, cba.ctrlName, val = !cba.checked)
 				Abort
 			endtry
-
-			DAG_Update(cba.win, cba.ctrlName, val = cba.checked)
 
 			break
 	endswitch
@@ -1166,6 +1166,7 @@ Function DAP_CheckProc_IndexingState(cba) : CheckBoxControl
 		case 2: // mouse up
 
 			panelTitle = cba.win
+			DAG_Update(cba.win, cba.ctrlName, val = cba.checked)
 			DAP_UpdateDAQControls(panelTitle, REASON_STIMSET_CHANGE)
 
 			if(cmpstr(cba.ctrlname, "Check_DataAcq1_IndexingLocked") == 0)
@@ -1173,7 +1174,6 @@ Function DAP_CheckProc_IndexingState(cba) : CheckBoxControl
 				EqualizeCheckBoxes(panelTitle, "Check_DataAcq1_IndexingLocked", "check_Settings_Option_3", cba.checked)
 			endif
 
-			DAG_Update(cba.win, cba.ctrlName, val = cba.checked)
 
 			break
 	endswitch
@@ -1190,14 +1190,13 @@ Function DAP_CheckProc_ShowScopeWin(cba) : CheckBoxControl
 		case 2: // mouse up
 			panelTitle = cba.win
 
+			DAG_Update(cba.win, cba.ctrlName, val = cba.checked)
+
 			if(cba.checked)
 				SCOPE_OpenScopeWindow(panelTitle)
 			else
 				SCOPE_KillScopeWindowIfRequest(panelTitle)
 			endif
-
-			DAG_Update(cba.win, cba.ctrlName, val = cba.checked)
-
 			break
 	endswitch
 
@@ -1283,6 +1282,7 @@ Function DAP_PopMenuChkProc_StimSetList(pa) : PopupMenuControl
 
 			DAP_AbortIfUnlocked(panelTitle)
 			ASSERT(!DAP_ParsePanelControl(ctrl, channelIndex, channelType, channelControl), "Invalid control format")
+			DAG_Update(pa.win, pa.ctrlName, val = pa.popNum - 1, str = pa.popStr)
 
 			indexing      = DAG_GetNumericalValue(panelTitle, "Check_DataAcq_Indexing")
 			isAllControl  = DAP_IsAllControl(channelIndex)
@@ -1324,7 +1324,6 @@ Function DAP_PopMenuChkProc_StimSetList(pa) : PopupMenuControl
 			endif
 
 			DAP_UpdateDAQControls(panelTitle, REASON_STIMSET_CHANGE)
-			DAG_Update(pa.win, pa.ctrlName, val = pa.popNum - 1, str = pa.popStr)
 
 			if(activeChannel)
 				DQ_RestartDAQ(panelTitle, dataAcqRunMode)
@@ -1351,6 +1350,7 @@ Function DAP_SetVarProc_DA_Scale(sva) : SetVariableControl
 
 			ASSERT(!DAP_ParsePanelControl(ctrl, channelIndex, channelType, controlType), "Invalid control format")
 			ASSERT(DAP_IsAllControl(channelIndex), "Unexpected channel index")
+			DAG_Update(sva.win, ctrl, val = sva.dval, str = sva.sval)
 
 			numEntries = GetNumberFromType(var=channelType)
 
@@ -1378,8 +1378,8 @@ Function DAP_SetVarProc_NextSweepLimit(sva) : SetVariableControl
 		case 1:
 		case 2:
 		case 3:
-			DAP_UpdateSweepLimitsAndDisplay(sva.win)
 			DAG_Update(sva.win, sva.ctrlName, val = sva.dval)
+			DAP_UpdateSweepLimitsAndDisplay(sva.win)
 			break
 	endswitch
 
@@ -1481,9 +1481,9 @@ Function DAP_SetVarProc_TotSweepCount(sva) : SetVariableControl
 		case 2:
 		case 3:
 			panelTitle = sva.win
+			DAG_Update(sva.win, sva.ctrlName, val = sva.dval)
 			DAP_UpdateSweepSetVariables(panelTitle)
 			DAP_SyncGuiFromLeaderToFollower(panelTitle)
-			DAG_Update(sva.win, sva.ctrlName, val = sva.dval)
 			break
 	endswitch
 
@@ -1516,13 +1516,13 @@ Function DAP_CheckProc_GetSet_ITI(cba) : CheckBoxControl
 
 	switch(cba.eventCode)
 		case 2: // mouse up
+			DAG_Update(cba.win, cba.ctrlName, val = cba.checked)
+
 			if(cba.checked)
 				DAP_UpdateITIAcrossSets(cba.win)
 			else
 				DAP_SyncGuiFromLeaderToFollower(cba.win)
 			endif
-
-			DAG_Update(cba.win, cba.ctrlName, val = cba.checked)
 
 			break
 	endswitch
@@ -1602,8 +1602,8 @@ Function DAP_PopMenuProc_Headstage(pa) : PopupMenuControl
 			panelTitle = pa.win
 			headStage  = str2num(pa.popStr)
 
-			DAP_SyncDeviceAssocSettToGUI(panelTitle, headStage)
 			DAG_Update(pa.win, pa.ctrlName, val = pa.popNum - 1, str = pa.popStr)
+			DAP_SyncDeviceAssocSettToGUI(panelTitle, headStage)
 
 			break
 	endswitch
@@ -3115,8 +3115,8 @@ Function DAP_SliderProc_MIESHeadStage(sc) : SliderControl
 	// eventCode is a bitmask as opposed to a plain value
 	// compared to other controls
 	if(sc.eventCode > 0 && sc.eventCode & 0x1)
-		DAP_Slider(sc.win, sc.curVal)
 		DAG_Update(sc.win, sc.ctrlName, val = sc.curval)
+		DAP_Slider(sc.win, sc.curVal)
 	endif
 
 	return 0
@@ -3154,9 +3154,9 @@ Function DAP_SetVarProc_AmpCntrls(sva) : SetVariableControl
 		case 2: // Enter key
 			panelTitle = sva.win
 			ctrl       = sva.ctrlName
+			DAG_Update(sva.win, sva.ctrlName, val = sva.dval)
 			headStage = DAG_GetNumericalValue(panelTitle, "slider_DataAcq_ActiveHeadstage")
 			AI_UpdateAmpModel(panelTitle, ctrl, headStage)
-			DAG_Update(sva.win, sva.ctrlName, val = sva.dval)
 			break
 	endswitch
 
@@ -3193,9 +3193,9 @@ Function DAP_CheckProc_AmpCntrls(cba) : CheckBoxControl
 			panelTitle = cba.win
 			ctrl       = cba.ctrlName
 
+			DAG_Update(cba.win, cba.ctrlName, val = cba.checked)
 			headStage = DAG_GetNumericalValue(panelTitle, "slider_DataAcq_ActiveHeadstage")
 			AI_UpdateAmpModel(panelTitle, ctrl, headStage)
-			DAG_Update(cba.win, cba.ctrlName, val = cba.checked)
 			break
 	endswitch
 
@@ -3208,8 +3208,8 @@ Function DAP_CheckProc_MDEnable(cba) : CheckBoxControl
 
 	switch(cba.eventCode)
 		case 2: // mouse up
-			DAP_SwitchSingleMultiMode(cba.win, cba.checked)
 			DAG_Update(cba.win, cba.ctrlName, val = cba.checked)
+			DAP_SwitchSingleMultiMode(cba.win, cba.checked)
 			break
 	endswitch
 
@@ -3289,8 +3289,8 @@ Function DAP_SetVarProc_TestPulseSett(sva) : SetVariableControl
 		case 2: // Enter key
 		case 3: // Live update
 			panelTitle = sva.win
-			DAG_Update(sva.win, sva.ctrlName, val = sva.dval)
 			DAP_AbortIfUnlocked(panelTitle)
+			DAG_Update(sva.win, sva.ctrlName, val = sva.dval)
 
 			// don't stop the testpulse if we are currently doing DAQ
 			NVAR dataAcqRunMode = $GetDataAcqRunMode(panelTitle)
@@ -3332,9 +3332,9 @@ Function DAP_CheckProc_RepeatedAcq(cba) : CheckBoxControl
 
 	switch(cba.eventCode)
 		case 2: // mouse up
+			DAG_Update(cba.win, cba.ctrlName, val = cba.checked)
 			DAP_UpdateSweepSetVariables(cba.win)
 			DAP_SyncGuiFromLeaderToFollower(cba.win)
-			DAG_Update(cba.win, cba.ctrlName, val = cba.checked)
 			break
 	endswitch
 
@@ -3346,8 +3346,8 @@ Function DAP_CheckProc_SyncCtrl(cba) : CheckBoxControl
 
 	switch(cba.eventCode)
 		case 2: // mouse up
-			DAP_SyncGuiFromLeaderToFollower(cba.win)
 			DAG_Update(cba.win, cba.ctrlName, val = cba.checked)
+			DAP_SyncGuiFromLeaderToFollower(cba.win)
 			break
 	endswitch
 
@@ -3361,8 +3361,8 @@ Function DAP_SetVarProc_SyncCtrl(sva) : SetVariableControl
 		case 1: // mouse up
 		case 2: // Enter key
 		case 3: // Live update
-			DAP_SyncGuiFromLeaderToFollower(sva.win)
 			DAG_Update(sva.win, sva.ctrlName, val = sva.dval)
+			DAP_SyncGuiFromLeaderToFollower(sva.win)
 			break
 	endswitch
 
@@ -3626,6 +3626,7 @@ Function DAP_SetVarProc_TPAmp(sva) : SetVariableControl
 		case 3: // Live update
 
 			panelTitle = sva.win
+			DAG_Update(sva.win, sva.ctrlName, val = sva.dval)
 
 			// don't stop the testpulse if we are currently doing DAQ
 			NVAR dataAcqRunMode = $GetDataAcqRunMode(panelTitle)
@@ -3636,7 +3637,6 @@ Function DAP_SetVarProc_TPAmp(sva) : SetVariableControl
 			TPState = TP_StopTestPulse(panelTitle)
 			TP_RestartTestPulse(panelTitle, TPState)
 
-			DAG_Update(sva.win, sva.ctrlName, val = sva.dval)
 			break
 	endswitch
 
@@ -3664,13 +3664,13 @@ Function DAP_CheckProc_LockedLogic(cba) : CheckBoxControl
 
 	switch( cba.eventCode )
 		case 2: // mouse up
+			DAG_Update(cba.win, cba.ctrlName, val = cba.checked)
 			string checkBoxPartener = SelectString(cmpstr(cba.ctrlName, "check_Settings_Option_3"),"check_Settings_SetOption_5","check_Settings_Option_3")
 			ToggleCheckBoxes(cba.win, cba.ctrlName, checkBoxPartener, cba.checked)
 			EqualizeCheckBoxes(cba.win, "check_Settings_Option_3", "Check_DataAcq1_IndexingLocked", DAG_GetNumericalValue(cba.win, "check_Settings_Option_3"))
 			if(cmpstr(cba.win, "check_Settings_Option_3") == 0 && cba.checked)
 				PGC_SetAndActivateControl(cba.win, "Check_DataAcq_Indexing", val = 1)
 			endif
-			DAG_Update(cba.win, cba.ctrlName, val = cba.checked)
 			break
 	endswitch
 
@@ -3864,16 +3864,15 @@ Function DAP_CheckProc_Settings_PUser(cba) : CheckBoxControl
 	switch( cba.eventCode )
 		case 2: // mouse up
 			DAP_AbortIfUnlocked(cba.win)
+			DAG_Update(cba.win, cba.ctrlName, val = cba.checked)
 			WAVE pressureDataWv = P_GetPressureDataWaveRef(cba.win)
 			WAVE GUIState = GetDA_EphysGuiStateNum(cba.win)
-			DAG_Update(cba.win, cba.ctrlName, val = cba.checked)
 			P_RunP_ControlIfTPOFF(cba.win)
 			if(P_ValidatePressureSetHeadstage(cba.win, PressureDataWv[0][%UserSelectedHeadStage]))
 				P_SetPressureValves(cba.win, PressureDataWv[0][%UserSelectedHeadStage], P_GetUserAccess(cba.win, PressureDataWv[0][%UserSelectedHeadStage],PressureDataWv[PressureDataWv[0][%UserSelectedHeadStage]][%Approach_Seal_BrkIn_Clear]))
 			endif
 			P_GetPressureType(cba.win)
 
-			DAG_Update(cba.win, cba.ctrlName, val = cba.checked)
 			break
 	endswitch
 
@@ -4412,8 +4411,8 @@ Function DAP_SetVarProc_skipAhead(sva) : SetVariableControl
 		case 1:
 		case 2:
 		case 3:
-			DAP_setSkipAheadLimit(sva.win,  IDX_MinNoOfSweeps(sva.win) - 1)
 			DAG_Update(sva.win, sva.ctrlName, val = sva.dval)
+			DAP_setSkipAheadLimit(sva.win,  IDX_MinNoOfSweeps(sva.win) - 1)
 			break
 	endswitch
 
@@ -4425,13 +4424,13 @@ Function DAP_CheckProc_RandomRA(cba) : CheckBoxControl
 
 	switch( cba.eventCode )
 		case 2:
+			DAG_Update(cba.win, cba.ctrlName, val = cba.checked)
 			if(cba.checked)
 				disableControl(cba.win, "SetVar_DataAcq_skipAhead")
 				PGC_SetAndActivateControl(cba.win, "SetVar_DataAcq_skipAhead", val=0)
 			else
 				enableControl(cba.win, "SetVar_DataAcq_skipAhead")
 			endif
-			DAG_Update(cba.win, cba.ctrlName, val = cba.checked)
 			break
 	endswitch
 

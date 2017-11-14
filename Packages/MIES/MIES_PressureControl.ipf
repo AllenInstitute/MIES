@@ -2170,6 +2170,8 @@ Function CheckProc_ClearEnable(cba) : CheckBoxControl
 	switch(cba.eventCode)
 		case 2: // mouse up
 			Variable checked = cba.checked
+			DAG_Update(cba.win, cba.ctrlName, val = cba.checked)
+
 			if(checked)
 				if(TP_CheckIfTestpulseIsRunning(cba.win) && P_IsHSActiveAndInVClamp(cba.win, DAG_GetNumericalValue(cba.win, "slider_DataAcq_ActiveHeadstage")))
 					EnableControl(cba.win, "button_DataAcq_Clear")
@@ -2177,8 +2179,6 @@ Function CheckProc_ClearEnable(cba) : CheckBoxControl
 			else
 				DisableControl(cba.win, "button_DataAcq_Clear")
 			endif
-
-			DAG_Update(cba.win, cba.ctrlName, val = cba.checked)
 			break
 	endswitch
 
@@ -2263,9 +2263,9 @@ Function P_Check_ApproachNear(cba) : CheckBoxControl
 	switch(cba.eventCode)
 		case 2: // mouse up
 			DAP_AbortIfUnlocked(cba.win)
+			DAG_Update(cba.win, cba.ctrlName, val = cba.checked)
 			P_UpdatePressureDataStorageWv(cba.win)
 			P_RunP_ControlIfTPOFF(cba.win)
-			DAG_Update(cba.win, cba.ctrlName, val = cba.checked)
 			break
 	endswitch
 
@@ -2278,8 +2278,8 @@ Function P_Check_SealAtm(cba) : CheckBoxControl
 	switch(cba.eventCode)
 		case 2: // mouse up
 			DAP_AbortIfUnlocked(cba.win)
-			P_UpdatePressureDataStorageWv(cba.win)
 			DAG_Update(cba.win, cba.ctrlName, val = cba.checked)
+			P_UpdatePressureDataStorageWv(cba.win)
 			break
 	endswitch
 
