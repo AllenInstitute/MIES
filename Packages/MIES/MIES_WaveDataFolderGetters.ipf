@@ -4223,7 +4223,7 @@ Function/Wave GetDA_EphysGuiStateNum(panelTitle)
 	p.name    = "DA_EphysGuiState"
 	p.newName = newName
 
-	WAVE/Z wv = UpgradeWaveLocationAndGetIt(p)
+	WAVE/Z/D wv = UpgradeWaveLocationAndGetIt(p)
 
 	if(ExistsWithCorrectLayoutVersion(wv, DA_EPHYS_PANEL_VERSION))
 		return wv
@@ -4232,12 +4232,12 @@ Function/Wave GetDA_EphysGuiStateNum(panelTitle)
 		// the extended dimensions are initialized with zero
 		uniqueCtrlList = GetUniqueSpecCtrlTypeListNum(panelTitle)
 		uniqueCtrlCount = itemsInList(uniqueCtrlList)
-		Redimension/N=(NUM_MAX_CHANNELS, COMMON_CONTROL_GROUP_COUNT_NUM + uniqueCtrlCount, -1, -1) wv
+		Redimension/D/N=(NUM_MAX_CHANNELS, COMMON_CONTROL_GROUP_COUNT_NUM + uniqueCtrlCount, -1, -1) wv
 		wv = Nan
 	else
 		uniqueCtrlList = GetUniqueSpecCtrlTypeListNum(panelTitle)
 		uniqueCtrlCount = itemsInList(uniqueCtrlList)
-		Make/N=(NUM_MAX_CHANNELS, COMMON_CONTROL_GROUP_COUNT_NUM + uniqueCtrlCount) dfr:DA_EphysGuiStateNum/Wave=wv
+		Make/N=(NUM_MAX_CHANNELS, COMMON_CONTROL_GROUP_COUNT_NUM + uniqueCtrlCount)/D dfr:DA_EphysGuiStateNum/Wave=wv
 		wv = Nan
 	endif
 
