@@ -16,7 +16,7 @@ static Function RA_RecalculateITI(panelTitle)
 	variable ITI
 
 	NVAR repurposedTime = $GetRepurposedSweepTime(panelTitle)
-	ITI = DAP_GetValueFromNumStateWave(panelTitle, "SetVar_DataAcq_ITI") - DQ_StopITCDeviceTimer(panelTitle) + repurposedTime
+	ITI = DAG_GetNumericalValue(panelTitle, "SetVar_DataAcq_ITI") - DQ_StopITCDeviceTimer(panelTitle) + repurposedTime
 	repurposedTime = 0
 
 	return ITI
@@ -31,7 +31,7 @@ static Function RA_HandleITI_MD(panelTitle)
 	AFM_CallAnalysisFunctions(panelTitle, POST_SET_EVENT)
 	ITI = RA_RecalculateITI(panelTitle)
 
-	if(!DAP_GetValueFromNumStateWave(panelTitle, "check_Settings_ITITP") || ITI <= 0)
+	if(!DAG_GetNumericalValue(panelTitle, "check_Settings_ITITP") || ITI <= 0)
 
 		funcList = "RA_CounterMD(\"" + panelTitle + "\")"
 
@@ -60,7 +60,7 @@ static Function RA_HandleITI(panelTitle)
 	AFM_CallAnalysisFunctions(panelTitle, POST_SET_EVENT)
 	ITI = RA_RecalculateITI(panelTitle)
 
-	if(!DAP_GetValueFromNumStateWave(panelTitle, "check_Settings_ITITP") || ITI <= 0)
+	if(!DAG_GetNumericalValue(panelTitle, "check_Settings_ITITP") || ITI <= 0)
 
 		funcList = "RA_Counter(\"" + panelTitle + "\")"
 
@@ -111,7 +111,7 @@ End
 static Function RA_GetTotalNumberOfTrialsLowLev(panelTitle)
 	string panelTitle
 
-	if(DAP_GetValueFromNumStateWave(panelTitle, "Check_DataAcq_Indexing"))
+	if(DAG_GetNumericalValue(panelTitle, "Check_DataAcq_Indexing"))
 		return GetValDisplayAsNum(panelTitle, "valdisp_DataAcq_SweepsInSet")
 	else
 		return IDX_CalculcateActiveSetCount(panelTitle)
@@ -144,7 +144,7 @@ End
 Function RA_StepSweepsRemaining(panelTitle)
 	string panelTitle
 
-	if(DAP_GetValueFromNumStateWave(panelTitle, "Check_DataAcq1_RepeatAcq"))
+	if(DAG_GetNumericalValue(panelTitle, "Check_DataAcq1_RepeatAcq"))
 		variable totTrials = RA_GetTotalNumberOfTrials(panelTitle)
 		NVAR count = $GetCount(panelTitle)
 
@@ -189,8 +189,8 @@ Function RA_Counter(panelTitle)
 
 	numSets        = RA_GetTotalNumberOfSets(panelTitle)
 	totTrials      = RA_GetTotalNumberOfTrials(panelTitle)
-	indexing       = DAP_GetValueFromNumStateWave(panelTitle, "Check_DataAcq_Indexing")
-	indexingLocked = DAP_GetValueFromNumStateWave(panelTitle, "Check_DataAcq1_IndexingLocked")
+	indexing       = DAG_GetNumericalValue(panelTitle, "Check_DataAcq_Indexing")
+	indexingLocked = DAG_GetNumericalValue(panelTitle, "Check_DataAcq1_IndexingLocked")
 
 
 	sprintf str, "count=%d, activeSetCount=%d\r" count, activeSetCount
@@ -221,7 +221,7 @@ Function RA_Counter(panelTitle)
 			RA_FinishAcquisition(panelTitle)
 		endtry
 
-		ASSERT(DAP_GetValueFromNumStateWave(panelTitle, "Check_Settings_BackgrndDataAcq"), "Only background DAQ can be used with RA")
+		ASSERT(DAG_GetNumericalValue(panelTitle, "Check_Settings_BackgrndDataAcq"), "Only background DAQ can be used with RA")
 		DQS_BkrdDataAcq(panelTitle)
 	else
 		RA_FinishAcquisition(panelTitle)
@@ -307,8 +307,8 @@ Function RA_CounterMD(panelTitle)
 
 	numSets        = RA_GetTotalNumberOfSets(panelTitle)
 	totTrials      = RA_GetTotalNumberOfTrials(panelTitle)
-	indexing       = DAP_GetValueFromNumStateWave(panelTitle, "Check_DataAcq_Indexing")
-	indexingLocked = DAP_GetValueFromNumStateWave(panelTitle, "Check_DataAcq1_IndexingLocked")
+	indexing       = DAG_GetNumericalValue(panelTitle, "Check_DataAcq_Indexing")
+	indexingLocked = DAG_GetNumericalValue(panelTitle, "Check_DataAcq1_IndexingLocked")
 
 	sprintf str, "count=%d, activeSetCount=%d\r" count, activeSetCount
 	DEBUGPRINT(str)
@@ -493,7 +493,7 @@ static Function RA_SkipSweepCalc(panelTitle, skipCount)
 
 	variable totSweeps = RA_GetTotalNumberOfTrials(panelTitle)
 	NVAR count = $GetCount(panelTitle)
-	if(DAP_GetValueFromNumStateWave(panelTitle, "Check_DataAcq1_RepeatAcq"))
+	if(DAG_GetNumericalValue(panelTitle, "Check_DataAcq1_RepeatAcq"))
 		// RA_counter and RA_counterMD increment count at initialization, -1 accounts for this and allows a skipping back to sweep 0
 		return min(totSweeps - 1, max(count + skipCount, -1))
 	else 

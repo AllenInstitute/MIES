@@ -70,7 +70,7 @@ Function P_PressureControl(panelTitle)
 	variable headStage, manPressureAll
 	WAVE PressureDataWv = P_GetPressureDataWaveRef(panelTitle)
 
-	manPressureAll = DAP_GetValueFromNumStateWave(panelTitle, "check_DataAcq_ManPressureAll")
+	manPressureAll = DAG_GetNumericalValue(panelTitle, "check_DataAcq_ManPressureAll")
 
 	for(headStage = 0; headStage < NUM_HEADSTAGES; headStage += 1)
 		// are headstage settings valid AND is the ITC device inactive (avoids ITC commands while pressure pulse is ongoing)
@@ -374,7 +374,7 @@ static Function P_ApplyNegV(panelTitle, headStage)
 	variable vCom 			= SEAL_POTENTIAL
 	variable	lastVcom = PressureDataWv[headStage][%LastVcom]
 
-	if(DAP_GetValueFromNumStateWave(panelTitle, "Check_DataAcq_SendToAllAmp")) // ensure that vCom is being updated on headstage associated amplifier (not all amplifiers).
+	if(DAG_GetNumericalValue(panelTitle, "Check_DataAcq_SendToAllAmp")) // ensure that vCom is being updated on headstage associated amplifier (not all amplifiers).
 		PGC_SetAndActivateControl(panelTitle, "Check_DataAcq_SendToAllAmp",val = CHECKBOX_UNSELECTED)
 	endif
 
@@ -864,7 +864,7 @@ Function P_UpdatePressureDataStorageWv(panelTitle) /// @todo Needs to be reworke
 	PressureDataWv[settingHS][%TTL_A]          = idx == 0 ? NaN : --idx
 	idx = GetPopupMenuIndex(panelTitle, "Popup_Settings_Pressure_TTLB")
 	PressureDataWv[settingHS][%TTL_B]          = idx == 0 ? NaN : --idx
-	PressureDataWv[userHS][%ManSSPressure]     = DAP_GetValueFromNumStateWave(panelTitle, "setvar_DataAcq_SSPressure")
+	PressureDataWv[userHS][%ManSSPressure]     = DAG_GetNumericalValue(panelTitle, "setvar_DataAcq_SSPressure")
 	PressureDataWv[][%PSI_air]                 = GetSetVariable(panelTitle, "setvar_Settings_InAirP")
 	PressureDataWv[][%PSI_solution]            = GetSetVariable(panelTitle, "setvar_Settings_InBathP")
 	PressureDataWv[][%PSI_slice]               = GetSetVariable(panelTitle, "setvar_Settings_InSliceP")
@@ -875,8 +875,8 @@ Function P_UpdatePressureDataStorageWv(panelTitle) /// @todo Needs to be reworke
 	PressureDataWv[][%sliceZaxis]              = GetSetVariable(panelTitle, "setvar_Settings_SliceSurfHeight")
 	PressureDataWv[][%ManPPPressure]           = GetSetVariable(panelTitle, "setvar_DataAcq_PPPressure")
 	PressureDataWv[][%ManPPDuration]           = GetSetVariable(panelTitle, "setvar_DataAcq_PPDuration")
-	PressureDataWv[][%ApproachNear]            = DAP_GetValueFromNumStateWave(panelTitle, "check_DatAcq_ApproachNear")
-	PressureDataWv[][%SealAtm]                 = DAP_GetValueFromNumStateWave(panelTitle, "check_DatAcq_SealAtm")
+	PressureDataWv[][%ApproachNear]            = DAG_GetNumericalValue(panelTitle, "check_DatAcq_ApproachNear")
+	PressureDataWv[][%SealAtm]                 = DAG_GetNumericalValue(panelTitle, "check_DatAcq_SealAtm")
 
 	WAVE/T PressureDataTxtWv = P_PressureDataTxtWaveRef(panelTitle)
 
@@ -1557,11 +1557,11 @@ static Function P_CheckAll(panelTitle, pressureMode, SavedPressureMode)
 	variable headStage
 	WAVE PressureDataWv = P_GetPressureDataWaveRef(panelTitle)
 	if(pressureMode == savedPressureMode) // un clicking button
-		if(DAP_GetValueFromNumStateWave(panelTitle, StringFromList(savedPressureMode, PRESSURE_CONTROL_CHECKBOX_LIST)))
+		if(DAG_GetNumericalValue(panelTitle, StringFromList(savedPressureMode, PRESSURE_CONTROL_CHECKBOX_LIST)))
 			PressureDataWv[][%Approach_Seal_BrkIn_Clear] = PRESSURE_METHOD_ATM
 		endif
 	else
-		if(DAP_GetValueFromNumStateWave(panelTitle, StringFromList(pressureMode, PRESSURE_CONTROL_CHECKBOX_LIST)))
+		if(DAG_GetNumericalValue(panelTitle, StringFromList(pressureMode, PRESSURE_CONTROL_CHECKBOX_LIST)))
 			for(headStage = 0; headStage < NUM_HEADSTAGES; headStage += 1)
 				if(P_ValidatePressureSetHeadstage(panelTitle, headStage))
 					if(pressureMode && TP_CheckIfTestpulseIsRunning(panelTitle) && P_IsHSActiveAndInVClamp(panelTitle, headStage))
@@ -1707,7 +1707,7 @@ static Function P_EnableButtonsIfValid(panelTitle, headStageNo)
 	SetControlTitleColors(panelTitle, PRESSURE_CONTROLS_BUTTON_LIST, 0, 0, 0)
 
 	if(TP_CheckIfTestpulseIsRunning(panelTitle) && P_IsHSActiveAndInVClamp(panelTitle, headStageNo))
-		if(DAP_GetValueFromNumStateWave(panelTitle, StringFromList(PRESSURE_METHOD_CLEAR, PRESSURE_CONTROL_CHECKBOX_LIST)))
+		if(DAG_GetNumericalValue(panelTitle, StringFromList(PRESSURE_METHOD_CLEAR, PRESSURE_CONTROL_CHECKBOX_LIST)))
 			EnableControls(panelTitle, PRESSURE_CONTROLS_BUTTON_LIST)
 		else
 			DisableControls(panelTitle, PRESSURE_CONTROLS_BUTTON_subset)
@@ -1853,7 +1853,7 @@ static Function P_IsHSActiveAndInVClamp(panelTitle, headStage)
 	string panelTitle
 	variable headStage
 
-	if(!DAP_MIESHeadstageMode(panelTitle, headStage) && DAP_GetHSState(panelTitle, headStage))
+	if(!DAG_GetHeadstageMode(panelTitle, headStage) && DAG_GetHeadstageState(panelTitle, headStage))
 		return 1
 	endif
 
@@ -1936,7 +1936,7 @@ static Function P_Enable()
 			EnableControl(lockedDevice, "button_Hardware_P_Disable")
 			EnableControls(lockedDevice, PRESSURE_CONTROL_CHECKBOX_LIST)
 
-			headStage = DAP_GetValueFromNumStateWave(lockedDevice, "slider_DataAcq_ActiveHeadstage")
+			headStage = DAG_GetNumericalValue(lockedDevice, "slider_DataAcq_ActiveHeadstage")
 			P_SaveUserSelectedHeadstage(lockedDevice, headstage)
 
 			P_LoadPressureButtonState(lockedDevice)
@@ -2171,14 +2171,14 @@ Function CheckProc_ClearEnable(cba) : CheckBoxControl
 		case 2: // mouse up
 			Variable checked = cba.checked
 			if(checked)
-				if(TP_CheckIfTestpulseIsRunning(cba.win) && P_IsHSActiveAndInVClamp(cba.win, DAP_GetValueFromNumStateWave(cba.win, "slider_DataAcq_ActiveHeadstage")))
+				if(TP_CheckIfTestpulseIsRunning(cba.win) && P_IsHSActiveAndInVClamp(cba.win, DAG_GetNumericalValue(cba.win, "slider_DataAcq_ActiveHeadstage")))
 					EnableControl(cba.win, "button_DataAcq_Clear")
 				endif
 			else
 				DisableControl(cba.win, "button_DataAcq_Clear")
 			endif
 
-			DAP_UpdateControlInGuiStateWv(cba.win, cba.ctrlName, val = cba.checked)
+			DAG_Update(cba.win, cba.ctrlName, val = cba.checked)
 			break
 	endswitch
 
@@ -2249,7 +2249,7 @@ Function ButtonProc_ManPP(ba) : ButtonControl
 
 	switch(ba.eventCode)
 		case 2: // mouse up
-			variable headStage = DAP_GetValueFromNumStateWave(ba.win, "slider_DataAcq_ActiveHeadstage")
+			variable headStage = DAG_GetNumericalValue(ba.win, "slider_DataAcq_ActiveHeadstage")
 			P_ManPressurePulse(ba.win, headStage)
 			break
 	endswitch
@@ -2265,7 +2265,7 @@ Function P_Check_ApproachNear(cba) : CheckBoxControl
 			DAP_AbortIfUnlocked(cba.win)
 			P_UpdatePressureDataStorageWv(cba.win)
 			P_RunP_ControlIfTPOFF(cba.win)
-			DAP_UpdateControlInGuiStateWv(cba.win, cba.ctrlName, val = cba.checked)
+			DAG_Update(cba.win, cba.ctrlName, val = cba.checked)
 			break
 	endswitch
 
@@ -2279,7 +2279,7 @@ Function P_Check_SealAtm(cba) : CheckBoxControl
 		case 2: // mouse up
 			DAP_AbortIfUnlocked(cba.win)
 			P_UpdatePressureDataStorageWv(cba.win)
-			DAP_UpdateControlInGuiStateWv(cba.win, cba.ctrlName, val = cba.checked)
+			DAG_Update(cba.win, cba.ctrlName, val = cba.checked)
 			break
 	endswitch
 

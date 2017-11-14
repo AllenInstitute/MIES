@@ -416,7 +416,7 @@ static Function TP_ResetTPStorage(panelTitle)
 	string name
 
 	if(count > 0)
-		if(DAP_GetValueFromNumStateWave(panelTitle, "check_Settings_TP_SaveTPRecord"))
+		if(DAG_GetNumericalValue(panelTitle, "check_Settings_TP_SaveTPRecord"))
 			dfref dfr = GetDeviceTestPulse(panelTitle)
 			Redimension/N=(count, -1, -1, -1) TPStorage
 			name = NameOfWave(TPStorage)
@@ -611,7 +611,7 @@ Function TP_UpdateHoldCmdInTPStorage(panelTitle, headStage)
 		return NaN
 	endif
 
-	clampMode = DAP_MIESHeadstageMode(panelTitle, headStage)
+	clampMode = DAG_GetHeadstageMode(panelTitle, headStage)
 
 	WAVE TPStorage = GetTPStorage(panelTitle)
 	count = GetNumberFromWaveNote(TPStorage, TP_CYLCE_COUNT_KEY)

@@ -257,7 +257,7 @@ Function AM_PSA_sweepLevelQC(panelTitle, headStage)
 	postStimMean=mean(sweepSegment)
 
 	// check the Voltage Stability -- things have to have been run in current clamp mode to get the voltage value
-	currentClampState=DAP_MIESHeadstageMode(panelTitle, headStage)
+	currentClampState=DAG_GetHeadstageMode(panelTitle, headStage)
 	if(currentClampState == V_CLAMP_MODE)
 		print "Must be in current clamp mode...please set and try again..."
 		analysisSettingsWave[headStage][%PSAResult] = "0"
@@ -424,7 +424,7 @@ Function AM_PAA_adjustScaleFactor(panelTitle, headStage)
 	if(analysisResult == 0)	// action potential did not fire
 		scaleFactor = scaleFactor + incValue
 		print "New scaleFactor: ", scaleFactor
-		SetSetVariable(panelTitle, scaleControlName, scaleFactor)
+		PGC_SetAndActivateControl(panelTitle, scaleControlName, val = scaleFactor)
 		return 0
 	else		
 		// stop the ongoing acquisition
@@ -453,7 +453,7 @@ Function AM_PAA_adjustScaleFactor(panelTitle, headStage)
 		KillWaves asynRespWave
 		
 		// Now put the scale factor back to 1.0
-		SetSetVariable(panelTitle, scaleControlName, 1.0)	
+		PGC_SetAndActivateControl(panelTitle, scaleControlName, val = 1.0)
 		return 1
 	endif
 End
@@ -489,7 +489,7 @@ Function AM_PAA_bracketScaleFactor(panelTitle, headStage)
 	   && (actionScaleSettingsWave[headStage][%fineTuneUse] == 0))
 		// action potential did not fire while using coarse tune
 		scaleFactor = scaleFactor + actionScaleSettingsWave[headStage][%coarseScaleValue]
-		SetSetVariable(panelTitle, scaleControlName, scaleFactor)
+		PGC_SetAndActivateControl(panelTitle, scaleControlName, val = scaleFactor)
 		return 0
 	elseif((analysisResult == 1)                                        \
 		   && (actionScaleSettingsWave[headStage][%coarseTuneUse] == 1) \
@@ -497,7 +497,7 @@ Function AM_PAA_bracketScaleFactor(panelTitle, headStage)
 		   // action potential fired on the coarse tuning
 		print "switching to fine factor..."
 		// bump the scale back one step of the coarse incValue
-		SetSetVariable(panelTitle, scaleControlName, (scaleFactor - actionScaleSettingsWave[headStage][%coarseScaleValue]))
+		PGC_SetAndActivateControl(panelTitle, scaleControlName, val = (scaleFactor - actionScaleSettingsWave[headStage][%coarseScaleValue]))
 		
 		// turn off the coarseTuneUse
 		actionScaleSettingsWave[headStage][%coarseTuneUse] = 0
@@ -513,7 +513,7 @@ Function AM_PAA_bracketScaleFactor(panelTitle, headStage)
 		// bump up the scale factor by the fine Scale adjustment
 		scaleFactor = scaleFactor + actionScaleSettingsWave[headStage][% fineScaleValue]
 		
-		SetSetVariable(panelTitle, scaleControlName, scaleFactor)
+		PGC_SetAndActivateControl(panelTitle, scaleControlName, val = scaleFactor)
 		return 0
 	elseif((analysisResult == 1)                                        \
 		   && (actionScaleSettingsWave[headStage][%coarseTuneUse] == 0) \
@@ -550,7 +550,7 @@ Function AM_PAA_bracketScaleFactor(panelTitle, headStage)
 		KillWaves asynRespWave
 		
 		// Now put the scale factor back to 1.0
-		SetSetVariable(panelTitle, scaleControlName, 1.0)			
+		PGC_SetAndActivateControl(panelTitle, scaleControlName, val = 1.0)
 		return 1
 	endif
 End

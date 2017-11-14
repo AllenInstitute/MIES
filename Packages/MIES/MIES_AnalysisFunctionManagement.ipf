@@ -27,7 +27,7 @@ Function AFM_CallAnalysisFunctions(panelTitle, eventType)
 
 	NVAR count = $GetCount(panelTitle)
 	NVAR stopCollectionPoint = $GetStopCollectionPoint(panelTitle)
-	WAVE statusHS = DAP_ControlStatusWaveCache(panelTitle, CHANNEL_TYPE_HEADSTAGE)
+	WAVE statusHS = DAG_GetChannelState(panelTitle, CHANNEL_TYPE_HEADSTAGE)
 
 	WAVE/T analysisFunctions = GetAnalysisFunctionStorage(panelTitle)
 
@@ -114,7 +114,7 @@ Function AFM_UpdateAnalysisFunctionWave(panelTitle)
 	variable i, j, DAC
 	string ctrl, setName
 
-	WAVE statusHS            = DAP_ControlStatusWaveCache(panelTitle, CHANNEL_TYPE_HEADSTAGE)
+	WAVE statusHS            = DAG_GetChannelState(panelTitle, CHANNEL_TYPE_HEADSTAGE)
 	WAVE/T analysisFunctions = GetAnalysisFunctionStorage(panelTitle)
 
 	analysisFunctions = ""

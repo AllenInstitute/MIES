@@ -18,6 +18,9 @@
 static Constant NUM_COLUMNS_LIST_WAVE   = 11
 static StrConstant WAVE_NOTE_LAYOUT_KEY = "WAVE_LAYOUT_VERSION"
 
+static Constant WAVE_TYPE_NUMERICAL = 0x1
+static Constant WAVE_TYPE_TEXTUAL   = 0x2
+
 /// @brief Return a wave reference to the channel <-> amplifier relation wave (numeric part)
 ///
 /// Rows:
@@ -4230,12 +4233,12 @@ Function/Wave GetDA_EphysGuiStateNum(panelTitle)
 	elseif(WaveExists(wv)) // handle upgrade
 		// change the required dimensions and leave all others untouched with -1
 		// the extended dimensions are initialized with zero
-		uniqueCtrlList = GetUniqueSpecCtrlTypeListNum(panelTitle)
+		uniqueCtrlList = GetUniqueSpecCtrlTypeListWrp(panelTitle, WAVE_TYPE_NUMERICAL)
 		uniqueCtrlCount = itemsInList(uniqueCtrlList)
 		Redimension/D/N=(NUM_MAX_CHANNELS, COMMON_CONTROL_GROUP_COUNT_NUM + uniqueCtrlCount, -1, -1) wv
 		wv = Nan
 	else
-		uniqueCtrlList = GetUniqueSpecCtrlTypeListNum(panelTitle)
+		uniqueCtrlList = GetUniqueSpecCtrlTypeListWrp(panelTitle, WAVE_TYPE_NUMERICAL)
 		uniqueCtrlCount = itemsInList(uniqueCtrlList)
 		Make/N=(NUM_MAX_CHANNELS, COMMON_CONTROL_GROUP_COUNT_NUM + uniqueCtrlCount)/D dfr:DA_EphysGuiStateNum/Wave=wv
 		wv = Nan
@@ -4262,7 +4265,7 @@ Function/Wave GetDA_EphysGuiStateNum(panelTitle)
 	SetWaveDimLabel(wv, uniqueCtrlList, COLS, startPos = COMMON_CONTROL_GROUP_COUNT_NUM)
 	SetWaveVersion(wv, DA_EPHYS_PANEL_VERSION)
 	// needs to be called after setting the wave version in order to avoid infinite recursion
-	RecordGuiStateNumWrapper(panelTitle, wv)
+	RecordGuiStateWrapper(panelTitle, WAVE_TYPE_NUMERICAL, wv)
 	return wv
 End
 
@@ -4296,12 +4299,12 @@ Function/Wave GetDA_EphysGuiStateTxT(panelTitle)
 	elseif(WaveExists(wv)) // handle upgrade
 		// change the required dimensions and leave all others untouched with -1
 		// the extended dimensions are initialized with zero
-		uniqueCtrlList = GetUniqueSpecCtrlTypeListTxT(panelTitle)
+		uniqueCtrlList = GetUniqueSpecCtrlTypeListWrp(panelTitle, WAVE_TYPE_TEXTUAL)
 		uniqueCtrlCount = itemsInList(uniqueCtrlList)
 		Redimension/N=(NUM_MAX_CHANNELS, COMMON_CONTROL_GROUP_COUNT_TXT + uniqueCtrlCount, -1, -1) wv
 		wv = ""
 	else
-		uniqueCtrlList = GetUniqueSpecCtrlTypeListTxT(panelTitle)
+		uniqueCtrlList = GetUniqueSpecCtrlTypeListWrp(panelTitle, WAVE_TYPE_TEXTUAL)
 		uniqueCtrlCount = itemsInList(uniqueCtrlList)
 		Make/T/N=(NUM_MAX_CHANNELS, COMMON_CONTROL_GROUP_COUNT_TXT + uniqueCtrlCount) dfr:DA_EphysGuiStateTxT/Wave=wv
 		wv = ""
@@ -4321,35 +4324,55 @@ Function/Wave GetDA_EphysGuiStateTxT(panelTitle)
 	SetWaveDimLabel(wv, uniqueCtrlList, COLS, startPos = COMMON_CONTROL_GROUP_COUNT_TXT)
 	SetWaveVersion(wv, DA_EPHYS_PANEL_VERSION)
 	// needs to be called after setting the wave version in order to avoid infinite recursion
-	RecordGuiStateTxTWrapper(panelTitle, wv)
+	RecordGuiStateWrapper(panelTitle, WAVE_TYPE_TEXTUAL, wv)
 	return wv
 End
 
-/// @brief Return the dimension label for the special, aka non-unique, controls
-Function/S GetSpecialControlLabel(channelType, controlType)
-	variable channelType, controlType
+static Function/S GetUniqueSpecCtrlTypeListWrp(panelTitle, type)
+	string panelTitle
+	variable type
 
-	return RemoveEnding(GetPanelControl(0, channelType, controlType), "_00")
+	switch(type)
+		case WAVE_TYPE_NUMERICAL:
+			FUNCREF GetUniqueSpecCtrlTypeListProto f = $"DAG_GetUniqueSpecCtrlListNum"
+			break
+		case WAVE_TYPE_TEXTUAL:
+			FUNCREF GetUniqueSpecCtrlTypeListProto f = $"DAG_GetUniqueSpecCtrlListTxT"
+			break
+		default:
+			ASSERT(0, "Unknown type")
+			break
+	endswitch
+
+	return f(panelTitle)
 End
 
-/// @brief Calls DAP_RecordGuiStateNum() if it can be found,
+Function/S GetUniqueSpecCtrlTypeListProto(panelTitle)
+	string panelTitle
+
+	ASSERT(0, "Prototype function can not be called")
+End
+
+/// @brief Calls DAG_RecordGuiStateNum()/DAG_RecordGuiStateTxT if it can be found,
 /// otherwise calls RecordGuiStateProto() which aborts.
-static Function RecordGuiStateNumWrapper(str, wv)
+static Function RecordGuiStateWrapper(str, type, wv)
 	string str
+	variable type
 	WAVE wv
 
-	FUNCREF RecordGuiStateProto f = $"DAP_RecordGuiStateNum"
-	f(str, GUISTATE=wv)
-End
+	switch(type)
+		case WAVE_TYPE_NUMERICAL:
+			FUNCREF RecordGuiStateProto f = $"DAG_RecordGuiStateNum"
+			break
+		case WAVE_TYPE_TEXTUAL:
+			FUNCREF RecordGuiStateProto f = $"DAG_RecordGuiStateTxT"
+			break
+		default:
+			ASSERT(0, "Unknown type")
+			break
+	endswitch
 
-/// @brief Calls DAP_RecordGuiStateTxT() if it can be found,
-/// otherwise calls RecordGuiStateProto)() which aborts.
-static Function RecordGuiStateTxTWrapper(str, wv)
-	string str
-	WAVE wv
-
-	FUNCREF RecordGuiStateProto f = $"DAP_RecordGuiStateTxT"
-	f(str, GUISTATE=wv)
+	f(str, GUISTATE = wv)
 End
 
 Function RecordGuiStateProto(str, [GUISTATE])
@@ -4357,139 +4380,6 @@ Function RecordGuiStateProto(str, [GUISTATE])
 	WAVE GUISTATE
 
 	ASSERT(0, "Prototype function can not be called")
-End
-
-Function ParsePanelControlWrapper(ctrl, channelIndex, channelType, controlType)
-	string ctrl
-	variable channelIndex, channelType, controlType
-
-	FUNCREF ParsePanelControlProto f = $"DAP_ParsePanelControl"
-	f(ctrl, channelIndex, channelType, controlType)
-End
-
-Function ParsePanelControlProto(ctrl, channelIndex, channelType, controlType)
-	string ctrl
-	variable channelIndex, channelType, controlType
-
-	ASSERT(0, "Prototype function can not be called")
-End
-
-/// @brief Returns a list of unique and type specific controls
-///
-Function/S GetUniqueSpecCtrlTypeListNum(panelTitle)
-	string panelTitle
-
-	return GetSpecificCtrlTypesNum(panelTitle, GetUniqueCtrlList(panelTitle))
-End
-
-/// @brief Returns a list of unique and type specific controls with textual values
-Function/S GetUniqueSpecCtrlTypeListTxT(panelTitle)
-	string panelTitle
-
-	return GetSpecificCtrlTypesTxT(panelTitle, GetUniqueCtrlList(panelTitle))
-End
-
-/// @brief Parses a list of controls in the panelTitle and returns a list of unique controls
-Function/S GetUniqueCtrlList(paneltitle)
-	string panelTitle
-
-	string prunedList = ""
-	string list, ctrlToRemove, ctrl
-	variable i, channelIndex, channelType, controlType, numEntries
-
-	list = ControlNameList(panelTitle)
-
-	// remove special controls (1)
-	ctrlToRemove = "Radio_ClampMode_*;ValDisp_DataAcq_P_*"
-	numEntries = ItemsInlist(ctrlToRemove)
-	for(i = 0; i < numEntries ; i += 1)
-		prunedList = ListMatch(list, StringFromList(i, ctrlToRemove))
-		list = RemoveFromList(prunedList, list)
-	endfor
-
-	// remove special controls (2)
-	numEntries = ItemsInlist(list)
-	for(i = 0;i < numEntries ;i += 1)
-		ctrl = StringFromList(i, list)
-		if(!ParsePanelControlWrapper(ctrl,  channelIndex, channelType, controlType) && channelIndex >= 0)
-			// special control already handled, but only for non-All controls
-			continue
-		endif
-		prunedList = AddListItem(ctrl, prunedList, ";", inf)
-	endfor
-
-	// remove controls which are too complicate to handle
-	ctrlToRemove = "Popup_Settings_VC_DA;setvar_Settings_VC_DAgain;SetVar_Hardware_VC_DA_Unit;Popup_Settings_VC_AD;setvar_Settings_VC_ADgain;SetVar_Hardware_VC_AD_Unit;Popup_Settings_IC_DA;setvar_Settings_IC_DAgain;SetVar_Hardware_IC_DA_Unit;Popup_Settings_IC_AD;setvar_Settings_IC_ADgain;SetVar_Hardware_IC_AD_Unit;popup_Settings_Pressure_dev;Popup_Settings_Pressure_DA;Popup_Settings_Pressure_AD;setvar_Settings_Pressure_DAgain;setvar_Settings_Pressure_ADgain,;SetVar_Hardware_Pressur_DA_Unit;SetVar_Hardware_Pressur_AD_Unit;Popup_Settings_Pressure_TTLA;Popup_Settings_Pressure_TTLB"
-
-	prunedList = RemoveFromList(ctrlToRemove, prunedList)
-
-	return prunedList
-End
-
-/// @brief Parses a list of controls and returns numeric checkBox, valDisplay, setVariable, popUpMenu, and slider controls
-static Function/S GetSpecificCtrlTypesNum(panelTitle,list)
-	string panelTitle
-	string list
-
-	string subtypeCtrlList = ""
-	variable i, numEntries
-	string controlName
-
-	numEntries = itemsinlist(list)
-	for(i = 0; i < numEntries; i += 1)
-		controlName = StringFromList(i, list)
-		controlInfo/W=$panelTitle $controlName
-		switch(abs(V_flag))
-			case CONTROL_TYPE_CHECKBOX:
-			case CONTROL_TYPE_POPUPMENU:
-			case CONTROL_TYPE_SLIDER: // fallthrough by design
-				subtypeCtrlList = AddListItem(controlName, subtypeCtrlList)
-				break
-			case CONTROL_TYPE_VALDISPLAY:
-			case CONTROL_TYPE_SETVARIABLE:  // fallthrough by design
-				if(!DoesControlHaveInternalString(panelTitle, controlName))
-					subtypeCtrlList = AddListItem(controlName, subtypeCtrlList)
-				endif
-				break
-			default:
-				// do nothing
-				break
-		endswitch
-	endfor
-
-	return subtypeCtrlList
-End
-
-/// @brief Parses a list of controls and returns textual valDisplay, setVariable and popUpMenu controls
-static Function/S GetSpecificCtrlTypesTxT(panelTitle,list)
-	string panelTitle
-	string list
-
-	string subtypeCtrlList = ""
-	variable i, numEntries
-	string controlName
-
-	numEntries = itemsinlist(list)
-	for(i = 0; i < numEntries; i += 1)
-		controlName = StringFromList(i, list)
-		controlInfo/W=$panelTitle $controlName
-		switch(abs(V_flag))
-			case CONTROL_TYPE_POPUPMENU:
-				subtypeCtrlList = AddListItem(controlName, subtypeCtrlList)
-				break
-			case CONTROL_TYPE_VALDISPLAY:
-			case CONTROL_TYPE_SETVARIABLE:  // fallthrough by design
-				if(DoesControlHaveInternalString(panelTitle, controlName))
-					subtypeCtrlList = AddListItem(controlName, subtypeCtrlList)
-				endif
-				break
-			default:
-				// do nothing
-				break
-		endswitch
-	endfor
-
-	return subtypeCtrlList
 End
 
 /// @brief Return the datafolder reference to the NeuroDataWithoutBorders folder,

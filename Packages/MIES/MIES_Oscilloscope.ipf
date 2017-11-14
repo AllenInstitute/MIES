@@ -173,9 +173,9 @@ static Function SCOPE_GetCheckBoxesForAddons(panelTitle, showSteadyStateResistan
 	string panelTitle
 	variable &showSteadyStateResistance, &showPeakResistance, &showPowerSpectrum
 
-	showPeakResistance        = DAP_GetValueFromNumStateWave(panelTitle, "check_settings_TP_show_peak")
-	showSteadyStateResistance = DAP_GetValueFromNumStateWave(panelTitle, "check_settings_TP_show_steady")
-	showPowerSpectrum         = DAP_GetValueFromNumStateWave(panelTitle, "check_settings_show_power")
+	showPeakResistance        = DAG_GetNumericalValue(panelTitle, "check_settings_TP_show_peak")
+	showSteadyStateResistance = DAG_GetNumericalValue(panelTitle, "check_settings_TP_show_steady")
+	showPowerSpectrum         = DAG_GetNumericalValue(panelTitle, "check_settings_show_power")
 End
 
 Function SCOPE_CreateGraph(panelTitle, dataAcqOrTP)
@@ -404,7 +404,7 @@ Function SCOPE_SetADAxisLabel(panelTitle,activeHeadStage)
 				style = ""
 			endif
 
-			if(DAP_GetValueFromNumStateWave(panelTitle, "check_settings_show_power"))
+			if(DAG_GetNumericalValue(panelTitle, "check_settings_show_power"))
 				unit = "a. u."
 			else
 				// extracts unit from string list that contains units in same sequence as columns in the ITCDatawave

@@ -481,7 +481,7 @@ Function ED_createWaveNoteTags(panelTitle, sweepCount)
 	numKeys[1][1] =  ""
 	numKeys[2][1] =  LABNOTEBOOK_NO_TOLERANCE
 
-	WAVE statusHS = DAP_ControlStatusWaveCache(panelTitle, CHANNEL_TYPE_HEADSTAGE)
+	WAVE statusHS = DAG_GetChannelState(panelTitle, CHANNEL_TYPE_HEADSTAGE)
 
 	Make/FREE/N=(1, 2, LABNOTEBOOK_LAYER_COUNT) numSettings = NaN
 	numSettings[0][0][0,7] = statusHS[r]
@@ -530,13 +530,13 @@ Function ED_createWaveNoteTags(panelTitle, sweepCount)
 
 	ED_AddEntriesToLabnotebook(values, keys, SweepCount, panelTitle, DATA_ACQUISITION_MODE)
 
-	if(DAP_GetValueFromNumStateWave(panelTitle, "check_Settings_SaveAmpSettings"))
+	if(DAG_GetNumericalValue(panelTitle, "check_Settings_SaveAmpSettings"))
 		AI_FillAndSendAmpliferSettings(panelTitle, sweepCount)
 		// function for debugging
 		// AI_createDummySettingsWave(panelTitle, SweepNo)
 	endif
 
-	if(DAP_GetValueFromNumStateWave(panelTitle, "Check_Settings_Append"))
+	if(DAG_GetNumericalValue(panelTitle, "Check_Settings_Append"))
 		ED_createAsyncWaveNoteTags(panelTitle, sweepCount)
 	endif
 
@@ -589,7 +589,7 @@ static Function ED_createAsyncWaveNoteTags(panelTitle, sweepCount)
 
 	ctrlTitle = GetSpecialControlLabel(CHANNEL_TYPE_ASYNC, CHANNEL_CONTROL_TITLE)
 	ctrlUnit  = GetSpecialControlLabel(CHANNEL_TYPE_ASYNC, CHANNEL_CONTROL_UNIT)
-	WAVE statusAsync = DAP_ControlStatusWaveCache(panelTitle, CHANNEL_TYPE_ASYNC)
+	WAVE statusAsync = DAG_GetChannelState(panelTitle, CHANNEL_TYPE_ASYNC)
 
 	for(i = 0; i < NUM_ASYNC_CHANNELS ; i += 1)
 
@@ -599,25 +599,25 @@ static Function ED_createAsyncWaveNoteTags(panelTitle, sweepCount)
 
 		asyncSettingsWave[0][i][,;step] = CHECKBOX_SELECTED
 
-		asyncSettingsWave[0][i + 8][,;step]  = DAP_GetValueFromNumStateWave(panelTitle, GetSpecialControlLabel(CHANNEL_TYPE_ASYNC, CHANNEL_CONTROL_GAIN), index = i)
-		asyncSettingsWave[0][i + 16][,;step] = DAP_GetValueFromNumStateWave(panelTitle, GetSpecialControlLabel(CHANNEL_TYPE_ASYNC, CHANNEL_CONTROL_CHECK), index = i)
+		asyncSettingsWave[0][i + 8][,;step]  = DAG_GetNumericalValue(panelTitle, GetSpecialControlLabel(CHANNEL_TYPE_ASYNC, CHANNEL_CONTROL_GAIN), index = i)
+		asyncSettingsWave[0][i + 16][,;step] = DAG_GetNumericalValue(panelTitle, GetSpecialControlLabel(CHANNEL_TYPE_ASYNC, CHANNEL_CONTROL_CHECK), index = i)
 
-		minSettingValue = DAP_GetValueFromNumStateWave(panelTitle, GetSpecialControlLabel(CHANNEL_TYPE_ASYNC, CHANNEL_CONTROL_ALARM_MIN), index = i)
+		minSettingValue = DAG_GetNumericalValue(panelTitle, GetSpecialControlLabel(CHANNEL_TYPE_ASYNC, CHANNEL_CONTROL_ALARM_MIN), index = i)
 		asyncSettingsWave[0][i + 24][,;step] = minSettingValue
 
-		maxSettingValue = DAP_GetValueFromNumStateWave(panelTitle, GetSpecialControlLabel(CHANNEL_TYPE_ASYNC, CHANNEL_CONTROL_ALARM_MAX), index = i)
+		maxSettingValue = DAG_GetNumericalValue(panelTitle, GetSpecialControlLabel(CHANNEL_TYPE_ASYNC, CHANNEL_CONTROL_ALARM_MAX), index = i)
 		asyncSettingsWave[0][i + 32][,;step] = maxSettingValue
 
 		// Take the Min and Max values and use them for setting the tolerance value in the measurement key wave
 		asyncMeasurementKey[%Tolerance][i][,;step] = num2str(abs((maxSettingValue - minSettingValue)/2))
 
-		title = DAP_GetValueFromTxTStateWave(panelTitle, ctrlTitle, index = i)
+		title = DAG_GetTextualValue(panelTitle, ctrlTitle, index = i)
 		asyncSettingsTxtWave[0][i][,;step] = title
 
 		sprintf str, "Async AD %d: %s" i, title
 		asyncMeasurementKey[%Parameter][i][,;step] = str
 
-		unit = DAP_GetValueFromTxTStateWave(panelTitle, ctrlUnit, index = i)
+		unit = DAG_GetTextualValue(panelTitle, ctrlUnit, index = i)
 		asyncSettingsTxtWave[0][i + 8][,;step] = unit
 
 		// add the unit value into numericalKeys
@@ -648,7 +648,7 @@ Function ED_TPDocumentation(panelTitle)
 		return NaN
 	endif
 
-	WAVE statusHS = DAP_ControlStatusWaveCache(panelTitle, CHANNEL_TYPE_HEADSTAGE)
+	WAVE statusHS = DAG_GetChannelState(panelTitle, CHANNEL_TYPE_HEADSTAGE)
 	numActiveHS = Sum(statusHS)
 
 	if(DimSize(BaselineSSAvg, COLS) != numActiveHS || DimSize(InstResistance, COLS) != numActiveHS || DimSize(SSResistance, COLS) != numActiveHS)
@@ -686,7 +686,7 @@ Function ED_TPDocumentation(panelTitle)
 	TPKeyWave[1][10] = ""
 	TPKeyWave[1][11] = ""
 
-	RTolerance = DAP_GetValueFromNumStateWave(panelTitle, "setvar_Settings_TP_RTolerance")
+	RTolerance = DAG_GetNumericalValue(panelTitle, "setvar_Settings_TP_RTolerance")
 	TPKeyWave[2][0]  = "1" // Assume a tolerance of 1 mV for V rest
 	TPKeyWave[2][1]  = "50" // Assume a tolerance of 50pA for I rest
 	TPKeyWave[2][2]  = num2str(RTolerance) // applies the same R tolerance for the instantaneous and steady state resistance
@@ -788,7 +788,7 @@ static Function ED_ADDataBasedWaveNotes(asyncMeasurementWave, panelTitle)
 
 	NVAR ITCDeviceIDGlobal = $GetITCDeviceIDGlobal(panelTitle)
 
-	WAVE asyncChannelState = DAP_ControlStatusWaveCache(panelTitle, CHANNEL_TYPE_ASYNC)
+	WAVE asyncChannelState = DAG_GetChannelState(panelTitle, CHANNEL_TYPE_ASYNC)
 	deviceChannelOffset = HW_ITC_CalculateDevChannelOff(panelTitle)
 
 	numEntries = DimSize(asyncChannelState, ROWS)

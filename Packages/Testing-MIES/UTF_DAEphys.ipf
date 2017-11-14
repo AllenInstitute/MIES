@@ -21,7 +21,7 @@ Function CheckIfAllControlsReferStateWv()
 
 	list  = ControlNameList(panelTitle, ";")
 
-	uniqueControls = GetUniqueCtrlList(panelTitle)
+	uniqueControls = MIES_DAG#DAG_GetUniqueCtrlList(panelTitle)
 
 	numEntries = ItemsInList(list)
 	CHECK(numEntries > 0)
@@ -68,7 +68,7 @@ Function CheckIfAllControlsReferStateWv()
 				endtry
 
 				CHECK_EQUAL_VAR(GetCheckBoxState(panelTitle, ctrl), val)
-				CHECK_EQUAL_VAR(DAP_GetValueFromNumStateWave(panelTitle, lbl, index = index), val)
+				CHECK_EQUAL_VAR(DAG_GetNumericalValue(panelTitle, lbl, index = index), val)
 				// undo
 				PGC_SetAndActivateControl(panelTitle, ctrl, val = oldVal)
 				break
@@ -86,7 +86,7 @@ Function CheckIfAllControlsReferStateWv()
 					// if the gui state wave exists we wrote into it
 					WAVE/Z/SDFR=GetDevicePath(panelTitle) DA_EphysGuiStateTxT
 					CHECK_WAVE(DA_EphysGuiStateTxT, TEXT_WAVE)
-					expected = DAP_GetValueFromTxTStateWave(panelTitle, lbl, index = index)
+					expected = DAG_GetTextualValue(panelTitle, lbl, index = index)
 					CHECK_EQUAL_STR(expected, str)
 				else
 					val = 0
@@ -124,7 +124,7 @@ Function CheckIfAllControlsReferStateWv()
 				// if the gui state wave exists we wrote into it
 				WAVE/Z/SDFR=GetDevicePath(panelTitle) DA_EphysGuiStateNum
 				CHECK_WAVE(DA_EphysGuiStateNum, NUMERIC_WAVE)
-				CHECK_EQUAL_VAR(DAP_GetValueFromNumStateWave(panelTitle, lbl, index = index), val)
+				CHECK_EQUAL_VAR(DAG_GetNumericalValue(panelTitle, lbl, index = index), val)
 
 				break
 			case CONTROL_TYPE_POPUPMENU:
@@ -148,9 +148,9 @@ Function CheckIfAllControlsReferStateWv()
 				WAVE/Z/SDFR=GetDevicePath(panelTitle) DA_EphysGuiStateTxT
 				CHECK_WAVE(DA_EphysGuiStateTxT, TEXT_WAVE)
 
-				CHECK_EQUAL_VAR(DAP_GetValueFromNumStateWave(panelTitle, lbl, index = index), val)
+				CHECK_EQUAL_VAR(DAG_GetNumericalValue(panelTitle, lbl, index = index), val)
 
-				expected = DAP_GetValueFromTxTStateWave(panelTitle, lbl, index = index)
+				expected = DAG_GetTextualValue(panelTitle, lbl, index = index)
 				CHECK_EQUAL_STR(expected, str)
 				// undo
 				PGC_SetAndActivateControl(panelTitle, ctrl, val = oldVal)

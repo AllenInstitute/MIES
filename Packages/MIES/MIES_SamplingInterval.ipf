@@ -294,9 +294,9 @@ static Function SI_FillActiveChannelsStruct(panelTitle, ac)
 	ASSERT(mod(NUM_DA_TTL_CHANNELS, 2) == 0, "Expected even number of DA/TTL channels")
 	ASSERT(mod(NUM_AD_CHANNELS, 2) == 0, "Expected even number of AD channels")
 
-	WAVE statusDA  = DAP_ControlStatusWaveCache(panelTitle, CHANNEL_TYPE_DAC)
-	WAVE statusAD  = DAP_ControlStatusWaveCache(panelTitle, CHANNEL_TYPE_ADC)
-	WAVE statusTTL = DAP_ControlStatusWaveCache(panelTitle, CHANNEL_TYPE_TTL)
+	WAVE statusDA  = DAG_GetChannelState(panelTitle, CHANNEL_TYPE_DAC)
+	WAVE statusAD  = DAG_GetChannelState(panelTitle, CHANNEL_TYPE_ADC)
+	WAVE statusTTL = DAG_GetChannelState(panelTitle, CHANNEL_TYPE_TTL)
 
 	ac.numDARack1 = sum(statusDA, 0, NUM_DA_TTL_CHANNELS/2 - 1)
 	ac.numDARack2 = sum(statusDA, NUM_DA_TTL_CHANNELS/2, inf)
