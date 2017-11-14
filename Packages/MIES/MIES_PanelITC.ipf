@@ -7283,6 +7283,27 @@ Function/Wave DAP_ControlStatusWaveCache(panelTitle, type)
 	return wv
 End
 
+/// @brief Return a free wave of the popup menu strings specified by
+///        channelType, uses GetDA_EphysGuiStateTxT() instead of GUI queries.
+///
+/// @param panelTitle  panel title
+/// @param channelType one of the channel type constants from @ref ChannelTypeAndControlConstants
+/// @param controlType one of the control type constants from @ref ChannelTypeAndControlConstants
+Function/Wave DAP_ControlTxTWaveCache(panelTitle, channelType, controlType)
+	string panelTitle
+	variable channelType, controlType
+
+	variable numEntries
+
+	WAVE/T GUIState = GetDA_EphysGuiStateTxT(panelTitle)
+
+	numEntries = GetNumberFromType(var=channelType)
+
+	Make/FREE/T/N=(numEntries) wv = GUIState[p][%$GetSpecialControlLabel(channelType, controlType)]
+
+	return wv
+End
+
 /// @brief Records the state of the DA_ephys panel into the numerical GUI state wave
 Function DAP_RecordGuiStateNum(panelTitle, [GUIState])
 	string panelTitle

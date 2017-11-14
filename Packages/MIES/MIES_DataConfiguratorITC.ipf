@@ -260,28 +260,6 @@ static Function DC_AreTTLsInRackChecked(RackNo, panelTitle)
 	return 0
 End
 
-/// @brief Returns the list of selected waves in pop up menus
-///
-/// @param channelType channel type, one of @ref ChannelTypeAndControlConstants
-/// @param panelTitle  device
-static Function/s DC_PopMenuStringList(panelTitle, channelType)
-	string panelTitle
-	variable channelType
-
-	string ControlWaveList = ""
-	string ctrl
-	variable i, numEntries
-
-	numEntries = GetNumberFromType(var=channelType)
-	for(i = 0; i < numEntries; i += 1)
-		ctrl = GetPanelControl(i, channelType, CHANNEL_CONTROL_WAVE)
-		ControlInfo/W=$panelTitle $ctrl
-		ControlWaveList = AddlistItem(s_value, ControlWaveList, ";", i)
-	endfor
-
-	return ControlWaveList
-End
-
 /// @brief Returns the number of points in the longest stimset
 ///
 /// @param panelTitle  device
@@ -292,10 +270,10 @@ static Function DC_LongestOutputWave(panelTitle, dataAcqOrTP, channelType)
 	variable dataAcqOrTP, channelType
 
 	variable maxNumRows, i, numEntries
-	string channelTypeWaveList = DC_PopMenuStringList(panelTitle, channelType)
 
 	WAVE statusChannel = DAP_ControlStatusWaveCache(panelTitle, channelType)
 	WAVE statusHS      = DAP_ControlStatusWaveCache(panelTitle, CHANNEL_TYPE_HEADSTAGE)
+	WAVE/T stimsets    = DAP_ControlTxTWaveCache(panelTitle, channelType, CHANNEL_CONTROL_WAVE)
 
 	numEntries = DimSize(statusChannel, ROWS)
 	for(i = 0; i < numEntries; i += 1)
@@ -305,7 +283,7 @@ static Function DC_LongestOutputWave(panelTitle, dataAcqOrTP, channelType)
 		endif
 
 		if(dataAcqOrTP == DATA_ACQUISITION_MODE)
-			WAVE/Z wv = WB_CreateAndGetStimSet(StringFromList(i, channelTypeWaveList))
+			WAVE/Z wv = WB_CreateAndGetStimSet(stimsets[i])
 		elseif(dataAcqOrTP == TEST_PULSE_MODE)
 			WAVE/Z wv = GetTestPulse()
 		else
@@ -602,7 +580,6 @@ static Function DC_PlaceDataInITCDataWave(panelTitle, numActiveChannels, dataAcq
 	variable numActiveChannels, dataAcqOrTP, multiDevice
 
 	variable i, activeColumn, numEntries
-	string setNameList
 	string ctrl, str, list, func, colLabel
 	variable oneFullCycle, val, singleSetLength, singleInsertStart, minSamplingInterval
 	variable channelMode, TPAmpVClamp, TPAmpIClamp, testPulseLength, maxStimSetLength
@@ -627,7 +604,7 @@ static Function DC_PlaceDataInITCDataWave(panelTitle, numActiveChannels, dataAcq
 	minSamplingInterval   = DAP_GetITCSampInt(panelTitle, dataAcqOrTP)
 	multiplier            = str2num(DAP_GetValueFromTxTStateWave(panelTitle, "Popup_Settings_SampIntMult"))
 	testPulseLength       = TP_GetTestPulseLengthInPoints(panelTitle) / multiplier
-	setNameList           = DC_PopMenuStringList(panelTitle, CHANNEL_TYPE_DAC)
+	WAVE/T allSetNames    = DAP_ControlTxTWaveCache(panelTitle, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_WAVE)
 	DC_ReturnTotalLengthIncrease(panelTitle, onsetdelayUser=onsetDelayUser, onsetDelayAuto=onsetDelayAuto, distributedDAQDelay=distributedDAQDelay)
 	onsetDelay            = onsetDelayUser + onsetDelayAuto
 
@@ -655,7 +632,7 @@ static Function DC_PlaceDataInITCDataWave(panelTitle, numActiveChannels, dataAcq
 		headstageDAC[activeColumn] = AFH_GetheadstageFromDAC(panelTitle, i)
 
 		if(dataAcqOrTP == DATA_ACQUISITION_MODE)
-			setName[activeColumn] = StringFromList(i, setNameList)
+			setName[activeColumn] = allSetNames[i]
 			stimSet[activeColumn] = WB_CreateAndGetStimSet(setName[activeColumn])
 		elseif(dataAcqOrTP == TEST_PULSE_MODE)
 			setName[activeColumn] = "testpulse"
@@ -1028,7 +1005,7 @@ static Function DC_MakeITCTTLWave(panelTitle, rackNo)
 	WAVE statusTTL = DAP_ControlStatusWaveCache(panelTitle, CHANNEL_TYPE_TTL)
 	WAVE statusHS = DAP_ControlStatusWaveCache(panelTitle, CHANNEL_TYPE_HEADSTAGE)
 
-	string TTLWaveList = DC_PopMenuStringList(panelTitle, CHANNEL_TYPE_TTL)
+	WAVE/T allSetNames = DAP_ControlTxTWaveCache(panelTitle, CHANNEL_TYPE_TTL, CHANNEL_CONTROL_WAVE)
 	DFREF deviceDFR = GetDevicePath(panelTitle)
 
 	WAVE sweepDataLNB      = GetSweepSettingsWave(panelTitle)
@@ -1043,7 +1020,7 @@ static Function DC_MakeITCTTLWave(panelTitle, rackNo)
 			continue
 		endif
 
-		set = StringFromList(i, TTLWaveList)
+		set = allSetNames[i]
 		WAVE wv = WB_CreateAndGetStimSet(set)
 		maxRows = max(maxRows, DimSize(wv, ROWS))
 		bits += 2^(i)
@@ -1069,7 +1046,7 @@ static Function DC_MakeITCTTLWave(panelTitle, rackNo)
 			continue
 		endif
 
-		set = StringFromList(i, TTLWaveList)
+		set = allSetNames[i]
 		WAVE TTLStimSet = WB_CreateAndGetStimSet(set)
 		col = DC_CalculateChannelColumnNo(panelTitle, set, i, CHANNEL_TYPE_TTL)
 		lastIdx = DimSize(TTLStimSet, ROWS) - 1
