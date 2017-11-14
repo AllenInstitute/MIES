@@ -865,17 +865,8 @@ End
 ///    WAVE numericalValues = GetLBNumericalValues(panelTitle)
 ///
 ///    // set properties
-///    variable i, numEntries
-///    WAVE/Z sweeps = AFH_GetSweepsFromSameRACycle(numericalValues, sweepNo)
-///    ASSERT(WaveExists(sweeps), "Missing RA cycle information, maybe the sweep is too old?")
 ///
-///    numEntries = DimSize(sweeps, ROWS)
-///    for(i = 0; i < numEntries; i += 1)
-///         setPassed = GetLastSettingIndep(numericalValues, sweeps[i], LABNOTEBOOK_USER_PREFIX + PATCHSEQ_ST_LBN_SET_PASSED, UNKNOWN_MODE)
-///         if(isFinite(setPassed))
-///         	break
-///         endif
-///    endfor
+///    setPassed = GetLastSettingIndepRAC(numericalValues, sweepNo, LABNOTEBOOK_USER_PREFIX + PATCHSEQ_ST_LBN_SET_PASSED, UNKNOWN_MODE)
 ///
 ///    if(setPassed)
 ///      // set passed
@@ -896,13 +887,8 @@ End
 ///    targetVPassed  = GetLastSettingIndep(numericalValues, sweepNo, LABNOTEBOOK_USER_PREFIX + PATCHSEQ_ST_LBN_TARGETV_PASSED, UNKNOWN_MODE)
 ///
 ///    // get fitted resistance from last passing sweep
-///    variable lastSweepNo
-///    WAVE/Z sweeps = AFH_GetSweepsFromSameRACycle(numericalValues, sweepNo)
-///    ASSERT(WaveExists(sweeps), "Missing RA cycle information, maybe the sweep is too old?")
-///    lastSweepNo = sweeps[DimSize(sweeps, ROWS) - 1]
-///    WAVE/Z resistanceFitted = GetLastSetting(numericalValues, lastSweepNo, LABNOTEBOOK_USER_PREFIX + "ResistanceFromFit", UNKNOWN_MODE)
-///	   ASSERT(WaveExists(resistanceFitted), "Expected fitted resistance data")
 ///	   // resistance for the first headstage can be found in resistanceFitted[0]
+///    WAVE/Z resistanceFitted = GetLastSettingRAC(numericalValues, sweepNo, LABNOTEBOOK_USER_PREFIX + "ResistanceFromFit", UNKNOWN_MODE)
 /// \endrst
 ///
 /// Decision logic flowchart:
