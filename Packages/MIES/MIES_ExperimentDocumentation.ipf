@@ -530,13 +530,13 @@ Function ED_createWaveNoteTags(panelTitle, sweepCount)
 
 	ED_AddEntriesToLabnotebook(values, keys, SweepCount, panelTitle, DATA_ACQUISITION_MODE)
 
-	if(GetCheckboxState(panelTitle, "check_Settings_SaveAmpSettings"))
+	if(DAP_GetValueFromNumStateWave(panelTitle, "check_Settings_SaveAmpSettings"))
 		AI_FillAndSendAmpliferSettings(panelTitle, sweepCount)
 		// function for debugging
 		// AI_createDummySettingsWave(panelTitle, SweepNo)
 	endif
 
-	if(GetCheckboxState(panelTitle, "Check_Settings_Append"))
+	if(DAP_GetValueFromNumStateWave(panelTitle, "Check_Settings_Append"))
 		ED_createAsyncWaveNoteTags(panelTitle, sweepCount)
 	endif
 
@@ -572,8 +572,8 @@ static Function ED_createAsyncWaveNoteTags(panelTitle, sweepCount)
 	string panelTitle
 	Variable sweepCount
 
-	string ctrl
-	variable minSettingValue, maxSettingValue, step
+	string ctrlCheck, ctrlTitle, ctrlUnit, title, unit, str
+	variable minSettingValue, maxSettingValue, step, i
 
 	Wave asyncSettingsWave = GetAsyncSettingsWave()
 	Wave/T asyncSettingsKey = GetAsyncSettingsKeyWave()
@@ -587,47 +587,41 @@ static Function ED_createAsyncWaveNoteTags(panelTitle, sweepCount)
 	step = LABNOTEBOOK_LAYER_COUNT - 1
 	ASSERT(step > 0, "Unexpected step size")
 
-	variable asyncVariablesCounter
-	for(asyncVariablesCounter = 0;asyncVariablesCounter < NUM_ASYNC_CHANNELS ;asyncVariablesCounter += 1)
-		ctrl = GetPanelControl(asyncVariablesCounter, CHANNEL_TYPE_ASYNC, CHANNEL_CONTROL_CHECK)
+	ctrlTitle = GetSpecialControlLabel(CHANNEL_TYPE_ASYNC, CHANNEL_CONTROL_TITLE)
+	ctrlUnit  = GetSpecialControlLabel(CHANNEL_TYPE_ASYNC, CHANNEL_CONTROL_UNIT)
+	WAVE statusAsync = DAP_ControlStatusWaveCache(panelTitle, CHANNEL_TYPE_ASYNC)
 
-		if (GetCheckBoxState(panelTitle, ctrl))
-			asyncSettingsWave[0][asyncVariablesCounter][,;step] = CHECKBOX_SELECTED
+	for(i = 0; i < NUM_ASYNC_CHANNELS ; i += 1)
 
-			ctrl = GetPanelControl(asyncVariablesCounter, CHANNEL_TYPE_ASYNC, CHANNEL_CONTROL_GAIN)
-			asyncSettingsWave[0][asyncVariablesCounter + 8][,;step] = GetSetVariable(panelTitle, ctrl)
-
-			ctrl = GetPanelControl(asyncVariablesCounter, CHANNEL_TYPE_ALARM, CHANNEL_CONTROL_CHECK)
-			minSettingValue = GetCheckBoxState(panelTitle, ctrl)
-			asyncSettingsWave[0][asyncVariablesCounter + 16][,;step] = minSettingValue
-			
-			ctrl = GetPanelControl(asyncVariablesCounter, CHANNEL_TYPE_ASYNC, CHANNEL_CONTROL_ALARM_MIN)
-			maxSettingValue = GetSetVariable(panelTitle, ctrl)
-			asyncSettingsWave[0][asyncVariablesCounter + 24][,;step] = maxSettingValue
-			
-			ctrl = GetPanelControl(asyncVariablesCounter, CHANNEL_TYPE_ASYNC, CHANNEL_CONTROL_ALARM_MAX)
-			minSettingValue = GetSetVariable(panelTitle, ctrl)
-			asyncSettingsWave[0][asyncVariablesCounter + 32][,;step] = minSettingValue
-	
-			// Take the Min and Max values and use them for setting the tolerance value in the measurement key wave
-			asyncMeasurementKey[%Tolerance][asyncVariablesCounter] = num2str(abs((maxSettingValue - minSettingValue)/2))
-	
-			//Now do the text stuff...
-			// Async Title
-			ctrl = GetPanelControl(asyncVariablesCounter, CHANNEL_TYPE_ASYNC, CHANNEL_CONTROL_TITLE)
-			string titleStringValue = GetSetVariableString(panelTitle, ctrl)
-			string adTitleStringValue 
-			sprintf adTitleStringValue, "Async AD %d: %s" asyncVariablesCounter, titleStringValue
-			asyncSettingsTxtWave[0][asyncVariablesCounter][,;step] = titleStringValue
-			// add the text unit value into the measurementKey Wave
-			asyncMeasurementKey[%Parameter][asyncVariablesCounter] = adTitleStringValue
-
-			ctrl = GetPanelControl(asyncVariablesCounter, CHANNEL_TYPE_ASYNC, CHANNEL_CONTROL_UNIT)
-			string unitStringValue = GetSetVariableString(panelTitle, ctrl)
-			asyncSettingsTxtWave[0][asyncVariablesCounter + 8][,;step] = unitStringValue
-			// add the unit value into numericalKeys
-			asyncMeasurementKey[%Units][asyncVariablesCounter][,;step] = unitStringValue
+		if(!statusAsync[i])
+			continue
 		endif
+
+		asyncSettingsWave[0][i][,;step] = CHECKBOX_SELECTED
+
+		asyncSettingsWave[0][i + 8][,;step]  = DAP_GetValueFromNumStateWave(panelTitle, GetSpecialControlLabel(CHANNEL_TYPE_ASYNC, CHANNEL_CONTROL_GAIN), index = i)
+		asyncSettingsWave[0][i + 16][,;step] = DAP_GetValueFromNumStateWave(panelTitle, GetSpecialControlLabel(CHANNEL_TYPE_ASYNC, CHANNEL_CONTROL_CHECK), index = i)
+
+		minSettingValue = DAP_GetValueFromNumStateWave(panelTitle, GetSpecialControlLabel(CHANNEL_TYPE_ASYNC, CHANNEL_CONTROL_ALARM_MIN), index = i)
+		asyncSettingsWave[0][i + 24][,;step] = minSettingValue
+
+		maxSettingValue = DAP_GetValueFromNumStateWave(panelTitle, GetSpecialControlLabel(CHANNEL_TYPE_ASYNC, CHANNEL_CONTROL_ALARM_MAX), index = i)
+		asyncSettingsWave[0][i + 32][,;step] = maxSettingValue
+
+		// Take the Min and Max values and use them for setting the tolerance value in the measurement key wave
+		asyncMeasurementKey[%Tolerance][i][,;step] = num2str(abs((maxSettingValue - minSettingValue)/2))
+
+		title = DAP_GetValueFromTxTStateWave(panelTitle, ctrlTitle, index = i)
+		asyncSettingsTxtWave[0][i][,;step] = title
+
+		sprintf str, "Async AD %d: %s" i, title
+		asyncMeasurementKey[%Parameter][i][,;step] = str
+
+		unit = DAP_GetValueFromTxTStateWave(panelTitle, ctrlUnit, index = i)
+		asyncSettingsTxtWave[0][i + 8][,;step] = unit
+
+		// add the unit value into numericalKeys
+		asyncMeasurementKey[%Units][i][,;step] = unit
 	endfor
 
 	ED_AddEntriesToLabnotebook(asyncSettingsTxtWave, asyncSettingsTxtKey, sweepCount, panelTitle, DATA_ACQUISITION_MODE)
