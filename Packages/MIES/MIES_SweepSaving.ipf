@@ -35,7 +35,10 @@ Function SWS_SaveAndScaleITCData(panelTitle, [forcedStop])
 
 	Duplicate/O GetITCChanConfigWave(panelTitle), dfr:$("Config_Sweep_" + num2str(sweepNo))/Wave=configWave
 
-	SetVariable SetVar_Sweep, Value = _NUM:(sweepNo + 1), limits={0, sweepNo + 1, 1}, win = $panelTitle
+	SetSetVariableLimits(panelTitle, "SetVar_Sweep", 0, sweepNo + 1, 1)
+	// SetVar_Sweep currently disabled so we have to write manually in the GUIStateWave
+	SetSetVariable(panelTitle, "SetVar_Sweep", sweepNo + 1)
+	DAP_UpdateControlInGuiStateWv(panelTitle, "SetVar_Sweep", val = sweepNo + 1)
 
 	// Add labnotebook entries for the acquired sweep
 	ED_createWaveNoteTags(panelTitle, sweepNo)

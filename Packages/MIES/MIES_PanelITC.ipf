@@ -4979,7 +4979,7 @@ static Function DAP_UpdateSweepLimitsAndDisplay(panelTitle)
 		panelTitle = StringFromList(i, panelList)
 
 		if(IsFinite(sweep) && DeviceIsFollower(panelTitle))
-			SetSetVariable(panelTitle, "SetVar_Sweep", sweep)
+			PGC_SetAndActivateControl(panelTitle, "SetVar_Sweep", val = sweep)
 		endif
 
 		nextSweep = AFH_GetLastSweepAcquired(panelTitle) + 1
