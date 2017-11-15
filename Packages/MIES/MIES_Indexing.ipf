@@ -117,43 +117,26 @@ static Function IDX_IndexSingleChannel(panelTitle, channelType, i)
 	variable channelType, i
 
 	variable popIdx
-	WAVE DACIndexingStorageWave = GetDACIndexingStorageWave(panelTitle)
-	WAVE TTLIndexingStorageWave = GetTTLIndexingStorageWave(panelTitle)
+
+	WAVE indexingStorageWave = GetIndexingStorageWave(panelTitle, channelType)
 	string ctrl
 
 	ctrl = GetPanelControl(i, channelType, CHANNEL_CONTROL_WAVE)
 	ControlInfo/W=$panelTitle $ctrl
 	popIdx = V_Value
-	if(channelType == CHANNEL_TYPE_DAC)
-		if(DACIndexingStorageWave[1][i] > DACIndexingStorageWave[0][i])
-			if(popIdx < DACIndexingStorageWave[1][i])
-				PopUpMenu $ctrl win = $panelTitle, mode = (popIdx + 1)
-			else
-				PopUpMenu $ctrl win = $panelTitle, mode = DACIndexingStorageWave[0][i]
-			endif
-		elseif(DACIndexingStorageWave[1][i] < DACIndexingStorageWave[0][i])
-			if(popIdx > DACIndexingStorageWave[1][i])
-				PopUpMenu $ctrl win = $panelTitle, mode = (popIdx - 1)
-			else
-				PopUpMenu $ctrl win = $panelTitle, mode = DACIndexingStorageWave[0][i]
-			endif
+
+	if(indexingStorageWave[1][i] > indexingStorageWave[0][i])
+		if(popIdx < indexingStorageWave[1][i])
+			PopUpMenu $ctrl win = $panelTitle, mode = (popIdx + 1)
+		else
+			PopUpMenu $ctrl win = $panelTitle, mode = indexingStorageWave[0][i]
 		endif
-	elseif(channelType == CHANNEL_TYPE_TTL)
-		if(TTLIndexingStorageWave[1][i] > TTLIndexingStorageWave[0][i])
-			if(popIdx < TTLIndexingStorageWave[1][i])
-				PopUpMenu $ctrl win = $panelTitle, mode = (popIdx + 1)
-			else
-				PopUpMenu $ctrl win = $panelTitle, mode = TTLIndexingStorageWave[0][i]
-			endif
-		elseif(TTLIndexingStorageWave[1][i] < TTLIndexingStorageWave[0][i])
-			if(popIdx > TTLIndexingStorageWave[1][i])
-				PopUpMenu $ctrl win = $panelTitle, mode = (popIdx - 1)
-			else
-				PopUpMenu $ctrl win = $panelTitle, mode = TTLIndexingStorageWave[0][i]
-			endif
+	elseif(indexingStorageWave[1][i] < indexingStorageWave[0][i])
+		if(popIdx > indexingStorageWave[1][i])
+			PopUpMenu $ctrl win = $panelTitle, mode = (popIdx - 1)
+		else
+			PopUpMenu $ctrl win = $panelTitle, mode = indexingStorageWave[0][i]
 		endif
-	else
-		ASSERT(0, "invalid channel type")
 	endif
 
 	DAP_UpdateITIAcrossSets(panelTitle)
