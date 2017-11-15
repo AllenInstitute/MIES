@@ -60,52 +60,11 @@ End
 Function IDX_IndexingDoIt(panelTitle)
 	string panelTitle
 
-	WAVE DACIndexingStorageWave = GetDACIndexingStorageWave(panelTitle)
-	WAVE TTLIndexingStorageWave = GetTTLIndexingStorageWave(panelTitle)
 	variable i
-	string ctrl
 
 	for(i = 0; i < NUM_DA_TTL_CHANNELS; i += 1)
-		ctrl = GetPanelControl(i, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_WAVE)
-
-		if(DACIndexingStorageWave[1][i] > DACIndexingStorageWave[0][i])
-			ControlInfo/W=$panelTitle $ctrl
-			if(v_value < DACIndexingStorageWave[1][i])
-				PopUpMenu $ctrl win = $panelTitle, mode = (v_value + 1)
-			else
-				PopUpMenu $ctrl win = $panelTitle, mode = DACIndexingStorageWave[0][i]
-			endif
-		elseif(DACIndexingStorageWave[1][i] < DACIndexingStorageWave[0][i])
-			ControlInfo/W=$panelTitle $ctrl
-			if(v_value > DACIndexingStorageWave[1][i])
-				PopUpMenu $ctrl win = $panelTitle, mode = (v_value - 1)
-			else
-				PopUpMenu $ctrl win = $panelTitle, mode = DACIndexingStorageWave[0][i]
-			endif
-		else
-			// do nothing
-		endif
-	endfor
-
-	for(i = 0; i < NUM_DA_TTL_CHANNELS; i += 1)
-		ctrl = GetPanelControl(i, CHANNEL_TYPE_TTL, CHANNEL_CONTROL_WAVE)
-		if(TTLIndexingStorageWave[1][i] > TTLIndexingStorageWave[0][i])
-			ControlInfo /w = $panelTitle $ctrl
-			if(v_value < TTLIndexingStorageWave[1][i])
-				PopUpMenu $ctrl win = $panelTitle, mode = (v_value + 1)
-			else
-				PopUpMenu $ctrl win = $panelTitle, mode = TTLIndexingStorageWave[0][i]
-			endif
-		elseif(TTLIndexingStorageWave[1][i] < TTLIndexingStorageWave[0][i])
-			ControlInfo /w = $panelTitle $ctrl
-			if(v_value > TTLIndexingStorageWave[1][i])
-				PopUpMenu $ctrl win = $panelTitle, mode = (v_value - 1)
-			else
-				PopUpMenu $ctrl win = $panelTitle, mode = TTLIndexingStorageWave[0][i]
-			endif
-		else
-			// do nothing
-		endif
+		IDX_IndexSingleChannel(panelTitle, CHANNEL_TYPE_DAC, i, update = 0)
+		IDX_IndexSingleChannel(panelTitle, CHANNEL_TYPE_TTL, i, update = 0)
 	endfor
 
 	DAP_UpdateITIAcrossSets(panelTitle)
