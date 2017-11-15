@@ -127,23 +127,24 @@ static Function IDX_IndexSingleChannel(panelTitle, channelType, i, [update])
 
 	WAVE indexingStorageWave = GetIndexingStorageWave(panelTitle, channelType)
 
-	ctrl = GetPanelControl(i, channelType, CHANNEL_CONTROL_WAVE)
-	ControlInfo/W=$panelTitle $ctrl
-	popIdx = V_Value
+	ctrl   = GetPanelControl(i, channelType, CHANNEL_CONTROL_WAVE)
+	popIdx = GetPopupMenuIndex(panelTitle, ctrl) + 1
 
 	if(indexingStorageWave[1][i] > indexingStorageWave[0][i])
 		if(popIdx < indexingStorageWave[1][i])
-			PopUpMenu $ctrl win = $panelTitle, mode = (popIdx + 1)
+			popIdx += 1
 		else
-			PopUpMenu $ctrl win = $panelTitle, mode = indexingStorageWave[0][i]
+			popIdx  = indexingStorageWave[0][i]
 		endif
 	elseif(indexingStorageWave[1][i] < indexingStorageWave[0][i])
 		if(popIdx > indexingStorageWave[1][i])
-			PopUpMenu $ctrl win = $panelTitle, mode = (popIdx - 1)
+			popIdx -= 1
 		else
-			PopUpMenu $ctrl win = $panelTitle, mode = indexingStorageWave[0][i]
+			popIdx  = indexingStorageWave[0][i]
 		endif
 	endif
+
+	SetPopupMenuIndex(panelTitle, ctrl, popIdx - 1)
 
 	if(update)
 		DAP_UpdateITIAcrossSets(panelTitle)
