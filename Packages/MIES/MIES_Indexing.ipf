@@ -112,14 +112,20 @@ Function IDX_IndexingDoIt(panelTitle)
 End
 
 /// @brief Indexes a single channel - used when indexing is unlocked
-static Function IDX_IndexSingleChannel(panelTitle, channelType, i)
+static Function IDX_IndexSingleChannel(panelTitle, channelType, i, [update])
 	string panelTitle
-	variable channelType, i
+	variable channelType, i, update
 
 	variable popIdx
+	string ctrl
+
+	if(ParamIsDefault(update))
+		update = 1
+	else
+		update = !!update
+	endif
 
 	WAVE indexingStorageWave = GetIndexingStorageWave(panelTitle, channelType)
-	string ctrl
 
 	ctrl = GetPanelControl(i, channelType, CHANNEL_CONTROL_WAVE)
 	ControlInfo/W=$panelTitle $ctrl
@@ -139,7 +145,9 @@ static Function IDX_IndexSingleChannel(panelTitle, channelType, i)
 		endif
 	endif
 
-	DAP_UpdateITIAcrossSets(panelTitle)
+	if(update)
+		DAP_UpdateITIAcrossSets(panelTitle)
+	endif
 End
 
 /// @brief Sum of the largest sets for each indexing step
