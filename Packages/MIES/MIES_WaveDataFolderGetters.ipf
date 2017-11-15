@@ -4038,6 +4038,21 @@ Function/S GetDevSpecAsynRspWaveAS(panelTitle)
 	return GetDevSpecLabNBFolderAsString(panelTitle) + ":cmdID"
 End
 
+/// @brief Return the indexing storage wave for the given channel type
+Function/WAVE GetIndexingStorageWave(panelTitle, channelType)
+	string panelTitle
+	variable channelType
+
+	switch(channelType)
+		case CHANNEL_TYPE_DAC:
+			return GetDACIndexingStorageWave(panelTitle)
+		case CHANNEL_TYPE_TTL:
+			return GetTTLIndexingStorageWave(panelTitle)
+		default:
+			ASSERT(0, "Unknown channelType")
+	endswitch
+End
+
 /// @brief Return the TTL indexing storage wave
 ///
 /// Rows:
