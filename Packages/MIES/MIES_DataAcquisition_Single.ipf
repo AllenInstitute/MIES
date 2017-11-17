@@ -109,24 +109,24 @@ Function DQS_BkrdDataAcq(panelTitle)
 	DQS_StartBackgroundFifoMonitor()
 End
 
-static Function DQS_StopDataAcq()
+static Function DQS_StopDataAcq(panelTitle)
+	string panelTitle
 
-	SVAR panelTitleG = $GetPanelTitleGlobal()
-	NVAR ITCDeviceIDGlobal = $GetITCDeviceIDGlobal(panelTitleG)
+	NVAR ITCDeviceIDGlobal = $GetITCDeviceIDGlobal(panelTitle)
 
 	HW_SelectDevice(HARDWARE_ITC_DAC, ITCDeviceIDGlobal)
 	HW_StopAcq(HARDWARE_ITC_DAC, ITCDeviceIDGlobal, prepareForDAQ=1, zeroDAC = 1)
 
-	SWS_SaveAndScaleITCData(panelTitleG)
+	SWS_SaveAndScaleITCData(panelTitle)
 
-	if(RA_IsFirstSweep(panelTitleG))
-		if(DAG_GetNumericalValue(panelTitleG, "Check_DataAcq1_RepeatAcq"))
-			RA_Start(PanelTitleG)
+	if(RA_IsFirstSweep(panelTitle))
+		if(DAG_GetNumericalValue(panelTitle, "Check_DataAcq1_RepeatAcq"))
+			RA_Start(PanelTitle)
 		else
-			DAP_OneTimeCallAfterDAQ(panelTitleG)
+			DAP_OneTimeCallAfterDAQ(panelTitle)
 		endif
 	else
-		RA_BckgTPwithCallToRACounter(panelTitleG)
+		RA_BckgTPwithCallToRACounter(panelTitle)
 	endif
 END
 
@@ -169,7 +169,7 @@ Function DQS_FIFOMonitor(s)
 
 	if(!moreData)
 		DQS_STOPBackgroundFifoMonitor()
-		DQS_StopDataAcq()
+		DQS_StopDataAcq(panelTitleG)
 		return 1
 	endif
 
