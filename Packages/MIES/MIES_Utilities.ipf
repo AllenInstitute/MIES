@@ -3385,3 +3385,19 @@ End
 Function RelativeNowHighPrec()
 	return stopmstimer(-2)/1e6
 End
+
+/// @brief High precision version of the builtin Sleep command
+///
+/// @param var time in seconds to busy-sleep (current precision is around 0.1ms)
+Function SleepHighPrecision(var)
+	variable var
+
+	ASSERT(var >= 0, "Invalid duration")
+
+	variable refTime = RelativeNowHighPrec() + var
+	for(;;)
+		if(abs(RelativeNowHighPrec() - refTime) < 100e-6)
+			break
+		endif
+	endfor
+End
