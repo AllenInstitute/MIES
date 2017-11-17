@@ -103,12 +103,23 @@ Function TPS_StartTestPulseSingleDevice(panelTitle)
 	endtry
 End
 
-/// @brief Low level implementation for starting the single device foreground test pulse
-static Function TPS_StartTestPulseForeground(panelTitle)
+/// @brief Start the single device foreground test pulse
+///
+/// @param panelTitle  device
+/// @param elapsedTime [defaults to infinity] allow to run the testpulse for the given amount
+///                                           of seconds only.
+Function TPS_StartTestPulseForeground(panelTitle, [elapsedTime])
 	string panelTitle
+	variable elapsedTime
 
-	variable i
+	variable i, refTime
 	string oscilloscopeSubwindow
+
+	if(ParamIsDefault(elapsedTime))
+		refTime = NaN
+	else
+		refTime = RelativeNowHighPrec()
+	endif
 
 	oscilloscopeSubwindow = SCOPE_GetGraph(panelTitle)
 	NVAR ITCDeviceIDGlobal = $GetITCDeviceIDGlobal(panelTitle)
@@ -131,6 +142,10 @@ static Function TPS_StartTestPulseForeground(panelTitle)
 		endif
 
 		DoUpdate/W=$oscilloscopeSubwindow
+
+		if(IsFinite(refTime) && abs(RelativeNowHighPrec() - (refTime + elapsedTime)) < 100e-6)
+			break
+		endif
 
 		i += 1
 	while(!(GetKeyState(0) & ESCAPE_KEY))
