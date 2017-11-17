@@ -10,3 +10,6 @@
 [submodule "Packages/ITCXOP2"]
 	path = Packages/ITCXOP2
 	url = https://github.com/AllenInstitute/ITCXOP2
+[submodule "Packages/doc/doxygen-filter-ipf"]
+	path = Packages/doc/doxygen-filter-ipf
+	url = https://github.com/t-b/doxygen-filter-ipf
