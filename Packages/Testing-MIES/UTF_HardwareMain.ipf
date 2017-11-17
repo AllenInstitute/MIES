@@ -65,6 +65,9 @@ Function run()
 	list = AddListItem("PS_SP_Run5", list, ";", INF)
 	list = AddListItem("PS_SP_Test5", list, ";", INF)
 
+	// initialize everything
+	CtrlNamedBackGround DAQWatchdog, stop, period=120, proc=WaitUntilDAQDone_IGNORE
+	Initialize_IGNORE()
 	SetupTestCases_IGNORE(list)
 	ExecuteNextTestCase_IGNORE()
 End
