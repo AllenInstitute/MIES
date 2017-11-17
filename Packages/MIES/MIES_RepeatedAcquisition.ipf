@@ -54,34 +54,76 @@ static Function RA_HandleITI_MD(panelTitle)
 	DQM_StartBackgroundTimer(panelTitle, ITI, funcList)
 End
 
+static Function RA_WaitUntiIITIDone(panelTitle, elapsedTime)
+	string panelTitle
+	variable elapsedTime
+
+	variable reftime, timeLeft
+	string oscilloscopeSubwindow
+
+	refTime = RelativeNowHighPrec()
+	oscilloscopeSubwindow = SCOPE_GetGraph(panelTitle)
+
+	do
+		timeLeft = max((refTime + elapsedTime) - RelativeNowHighPrec(), 0)
+		SetValDisplay(panelTitle, "valdisp_DataAcq_ITICountdown", var = timeLeft)
+
+		DoUpdate/W=$oscilloscopeSubwindow
+
+		if(timeLeft == 0)
+			return 0
+		endif
+	while(!(GetKeyState(0) & ESCAPE_KEY))
+
+	return 1
+End
+
 static Function RA_HandleITI(panelTitle)
 	string panelTitle
 
-	variable ITI
+	variable ITI, refTime, background, aborted
 	string funcList
 
 	AFM_CallAnalysisFunctions(panelTitle, POST_SET_EVENT)
 	ITI = RA_RecalculateITI(panelTitle)
+	background = DAG_GetNumericalValue(panelTitle, "Check_Settings_BackgrndDataAcq")
+	funcList = "RA_Counter(\"" + panelTitle + "\")"
 
 	if(!DAG_GetNumericalValue(panelTitle, "check_Settings_ITITP") || ITI <= 0)
 
-		funcList = "RA_Counter(\"" + panelTitle + "\")"
-
 		if(ITI <= 0)
 			ExecuteListOfFunctions(funcList)
-			return NaN
-		endif
+		elseif(background)
+			DQS_StartBackgroundTimer(panelTitle, ITI, funcList)
+		else
+			RA_WaitUntiIITIDone(panelTitle, ITI)
 
-		DQS_StartBackgroundTimer(panelTitle, ITI, funcList)
+			if(aborted)
+				RA_FinishAcquisition(panelTitle)
+			else
+				ExecuteListOfFunctions(funcList)
+			endif
+		endif
 
 		return NaN
 	endif
 
-	TP_Setup(panelTitle, TEST_PULSE_BG_SINGLE_DEVICE | TEST_PULSE_DURING_RA_MOD)
-	TPS_StartBackgroundTestPulse(panelTitle)
+	if(background)
+		TP_Setup(panelTitle, TEST_PULSE_BG_SINGLE_DEVICE | TEST_PULSE_DURING_RA_MOD)
+		TPS_StartBackgroundTestPulse(panelTitle)
+		funcList = "TPS_StopTestPulseSingleDevice(\"" + panelTitle + "\")" + ";" + "RA_Counter(\"" + panelTitle + "\")"
+		DQS_StartBackgroundTimer(panelTitle, ITI, funcList)
+	else
+		TP_Setup(panelTitle, TEST_PULSE_FG_SINGLE_DEVICE | TEST_PULSE_DURING_RA_MOD)
+		aborted = TPS_StartTestPulseForeground(panelTitle, elapsedTime = ITI)
+		TP_Teardown(panelTitle)
 
-	funcList = "TPS_StopTestPulseSingleDevice(\"" + panelTitle + "\")" + ";" + "RA_Counter(\"" + panelTitle + "\")"
-	DQS_StartBackgroundTimer(panelTitle, ITI, funcList)
+		if(aborted)
+			RA_FinishAcquisition(panelTitle)
+		else
+			ExecuteListOfFunctions(funcList)
+		endif
+	endif
 End
 
 /// @brief Return the total number of sets
@@ -228,12 +270,15 @@ Function RA_Counter(panelTitle)
 	if(Count < TotTrials)
 		try
 			DC_ConfigureDataForITC(panelTitle, DATA_ACQUISITION_MODE)
+
+			if(DAG_GetNumericalValue(panelTitle, "Check_Settings_BackgrndDataAcq"))
+				DQS_BkrdDataAcq(panelTitle)
+			else
+				DQS_DataAcq(panelTitle)
+			endif
 		catch
 			RA_FinishAcquisition(panelTitle)
 		endtry
-
-		ASSERT(DAG_GetNumericalValue(panelTitle, "Check_Settings_BackgrndDataAcq"), "Only background DAQ can be used with RA")
-		DQS_BkrdDataAcq(panelTitle)
 	else
 		RA_FinishAcquisition(panelTitle)
 	endif

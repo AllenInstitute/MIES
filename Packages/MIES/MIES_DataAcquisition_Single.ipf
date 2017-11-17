@@ -44,22 +44,17 @@ Function DQS_StartDAQSingleDevice(panelTitle, [useBackground])
 			return NaN
 		endtry
 
-		if(!useBackground)
-			DQS_DataAcq(panelTitle)
-			if(DAG_GetNumericalValue(panelTitle, "Check_DataAcq1_RepeatAcq"))
-				RA_Start(panelTitle)
-			else
-				DAP_OneTimeCallAfterDAQ(panelTitle)
-			endif
-		else
+		if(useBackground)
 			DQS_BkrdDataAcq(panelTitle)
+		else
+			DQS_DataAcq(panelTitle)
 		endif
 	else
 		DQ_StopDAQ(panelTitle)
 	endif
 End
 
-static Function DQS_DataAcq(panelTitle)
+Function DQS_DataAcq(panelTitle)
 	string panelTitle
 
 	variable fifoPos
@@ -81,11 +76,14 @@ static Function DQS_DataAcq(panelTitle)
 		DoXOPIdle
 		SCOPE_UpdateOscilloscopeData(panelTitle, DATA_ACQUISITION_MODE, fifoPos=fifoPos)
 		DoUpdate/W=$oscilloscopeSubwindow
+
+		if(GetKeyState(0) & ESCAPE_KEY)
+			DQS_StopDataAcq(panelTitle, forcedStop = 1)
+			return NaN
+		endif
 	while(HW_ITC_MoreData(ITCDeviceIDGlobal, fifoPos=fifoPos))
 
-	HW_StopAcq(HARDWARE_ITC_DAC, ITCDeviceIDGlobal, prepareForDAQ=1)
-
-	SWS_SaveAndScaleITCData(panelTitle)
+	DQS_StopDataAcq(panelTitle)
 End
 
 /// @brief Fifo monitor for DAQ Single Device

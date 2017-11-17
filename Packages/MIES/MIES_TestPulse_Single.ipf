@@ -101,11 +101,12 @@ End
 /// @param panelTitle  device
 /// @param elapsedTime [defaults to infinity] allow to run the testpulse for the given amount
 ///                                           of seconds only.
+/// @return zero if time elapsed, one if the Testpulse was manually stopped
 Function TPS_StartTestPulseForeground(panelTitle, [elapsedTime])
 	string panelTitle
 	variable elapsedTime
 
-	variable i, refTime
+	variable i, refTime, timeLeft
 	string oscilloscopeSubwindow
 
 	if(ParamIsDefault(elapsedTime))
@@ -134,12 +135,21 @@ Function TPS_StartTestPulseForeground(panelTitle, [elapsedTime])
 			SCOPE_UpdateGraph(panelTitle)
 		endif
 
-		DoUpdate/W=$oscilloscopeSubwindow
+		if(IsFinite(refTime))
+			timeLeft = max((refTime + elapsedTime) - RelativeNowHighPrec(), 0)
+			SetValDisplay(panelTitle, "valdisp_DataAcq_ITICountdown", var = timeLeft)
 
-		if(IsFinite(refTime) && abs(RelativeNowHighPrec() - (refTime + elapsedTime)) < 100e-6)
-			break
+			DoUpdate/W=$oscilloscopeSubwindow
+
+			if(timeLeft == 0)
+				return 0
+			endif
+		else
+			DoUpdate/W=$oscilloscopeSubwindow
 		endif
 
 		i += 1
 	while(!(GetKeyState(0) & ESCAPE_KEY))
-END
+
+	return 1
+End
