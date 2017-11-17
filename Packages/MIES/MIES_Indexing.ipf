@@ -133,10 +133,8 @@ static Function IDX_StepsInSetWithMaxSweeps(panelTitle,IndexNo)
 	variable MaxSteps = 0, SetSteps
 	variable ListStartNo, ListEndNo, ListLength, Index
 	string setName
-	string SetList
-	variable i = 0
-	variable ListOffset = 2
 	string popMenuIndexStartName, popMenuIndexEndName
+	variable i = 0
 
 	WAVE statusDA = DAP_ControlStatusWaveCache(panelTitle, CHANNEL_TYPE_DAC)
 
@@ -162,10 +160,8 @@ static Function IDX_StepsInSetWithMaxSweeps(panelTitle,IndexNo)
 			index *= -1
 		endif
 
-		SetList = getuserdata(panelTitle, popMenuIndexStartName, "menuexp")
-		SetName = stringfromlist((ListStartNo+index-listoffset), SetList,";")
-		ASSERT(!IsEmpty(SetName), "Unexpected empty set")
-		SetSteps = IDX_NumberOfTrialsInSet(SetName)
+		WAVE stimsets = IDX_GetStimsets(panelTitle, i, CHANNEL_TYPE_DAC)
+		SetSteps = IDX_NumberOfTrialsInSet(IDX_GetSingleStimset(stimsets, ListStartNo + index))
 		MaxSteps = max(MaxSteps, SetSteps)
 	endfor
 
@@ -185,19 +181,17 @@ static Function IDX_StepsInSetWithMaxSweeps(panelTitle,IndexNo)
 		ListEndNo = v_value
 		ListLength = abs(ListStartNo - ListEndNo) + 1
 		index = indexNo
-	
+
 		if(listLength <= IndexNo)
 			Index = mod(IndexNo, ListLength)
 		endif
-		
+
 		if((ListStartNo - ListEndNo) > 0)
 			index *= -1
 		endif
 
-		SetList = getuserdata(panelTitle, popMenuIndexStartName, "menuexp")
-		SetName = stringfromlist((ListStartNo + index - listoffset), SetList, ";")
-		ASSERT(!IsEmpty(SetName), "Unexpected empty set")
-		SetSteps = IDX_NumberOfTrialsInSet(SetName)
+		WAVE stimsets = IDX_GetStimsets(panelTitle, i, CHANNEL_TYPE_TTL)
+		SetSteps = IDX_NumberOfTrialsInSet(IDX_GetSingleStimset(stimsets, ListStartNo + index))
 		MaxSteps = max(MaxSteps, SetSteps)
 	endfor
 	
@@ -516,49 +510,42 @@ static Function IDX_TotalIndexingListSteps(panelTitle, ChannelNumber, DAorTTL)
 	variable TotalListSteps
 	WAVE DAIndexingStorageWave = GetDACIndexingStorageWave(panelTitle)
 	WAVE TTLIndexingStorageWave = GetTTLIndexingStorageWave(panelTitle)
-	string PopUpMenuList, ChannelPopUpMenuName, setName
+	string setName
 	variable i
-	variable ListOffset = 2
-	
-	ChannelPopUpMenuName = GetPanelControl(channelNumber, DAorTTL, CHANNEL_CONTROL_WAVE)
-	PopUpMenuList=getuserdata(panelTitle, ChannelPopUpMenuName, "MenuExp")// returns list of waves - does not include none
-	
+
+	WAVE stimsets = IDX_GetStimsets(panelTitle, channelNumber, DAorTTL)
+
+	// the do-while loops adjust count based on the number of times the list of sets has cycled
+
 	if(DAIndexingStorageWave[0][ChannelNumber]<DAIndexingStorageWave[1][ChannelNumber])
 		if(DAorTTL==0)
-			do // this do-while loop adjust count based on the number of times the list of sets has cycled
-				setName = StringFromList((DAIndexingStorageWave[0][ChannelNumber]+i-ListOffset),PopUpMenuList,";")
-				ASSERT(!IsEmpty(setName), "Unexpected empty set")
-				TotalListSteps += IDX_NumberOfTrialsInSet(setName)
+			do
+				totalListSteps += IDX_NumberOfTrialsInSet(IDX_GetSingleStimset(stimsets, DAIndexingStorageWave[0][channelNumber] + i))
 				i+=1
 			while( (i + DAIndexingStorageWave[0][ChannelNumber]) <= DAIndexingStorageWave[1][ChannelNumber] )
 		endif
 		
 		if(DAorTTL==1)
-			do // this do-while loop adjust count based on the number of times the list of sets has cycled
-				setName = StringFromList((TTLIndexingStorageWave[0][ChannelNumber]+i-ListOffset),PopUpMenuList,";")
-				ASSERT(!IsEmpty(setName), "Unexpected empty set")
-				TotalListSteps += IDX_NumberOfTrialsInSet(setName)
+			do
+				totalListSteps += IDX_NumberOfTrialsInSet(IDX_GetSingleStimset(stimsets, TTLIndexingStorageWave[0][channelNumber] + i))
 				i+=1
 			while( (i + TTLIndexingStorageWave[0][ChannelNumber]) <= TTLIndexingStorageWave[1][ChannelNumber] )
 		endif
 	endif
 	i=0
-	
-	if(DAIndexingStorageWave[0][ChannelNumber]>DAIndexingStorageWave[1][ChannelNumber])// end index wave is before start index wave in wave list of popup menu
+
+	// end index wave is before start index wave in wave list of popup menu
+	if(DAIndexingStorageWave[0][ChannelNumber]>DAIndexingStorageWave[1][ChannelNumber])
 		if(DAorTTL==0)
-			do // this do-while loop adjust count based on the number of times the list of sets has cycled
-				setName = StringFromList((DAIndexingStorageWave[1][ChannelNumber]+i-ListOffset),PopUpMenuList,";")
-				ASSERT(!IsEmpty(setName), "Unexpected empty set")
-				TotalListSteps += IDX_NumberOfTrialsInSet(setName)
+			do
+				totalListSteps += IDX_NumberOfTrialsInSet(IDX_GetSingleStimset(stimsets, DAIndexingStorageWave[0][channelNumber] + i))
 				i+=1
 			while( (i + DAIndexingStorageWave[1][ChannelNumber]) <= DAIndexingStorageWave[0][ChannelNumber] )
 		endif
 
 		if(DAorTTL==1)
-			do // this do-while loop adjust count based on the number of times the list of sets has cycled
-				setName = StringFromList((TTLIndexingStorageWave[1][ChannelNumber]+i-ListOffset),PopUpMenuList,";")
-				ASSERT(!IsEmpty(setName), "Unexpected empty set")
-				TotalListSteps += IDX_NumberOfTrialsInSet(setName)
+			do
+				totalListSteps += IDX_NumberOfTrialsInSet(IDX_GetSingleStimset(stimsets, TTLIndexingStorageWave[0][channelNumber] + i))
 				i+=1
 			while( (i + TTLIndexingStorageWave[1][ChannelNumber]) <= TTLIndexingStorageWave[0][ChannelNumber] )
 		endif
@@ -571,47 +558,41 @@ Function IDX_UnlockedIndexingStepNo(panelTitle, channelNo, DAorTTL, count)
 	string paneltitle
 	variable channelNo, DAorTTL, count
 	variable column, i, StepsInSummedSets, totalListSteps
-	string setName, PopUpMenuList, ChannelPopUpMenuName
-	variable listOffSet = 2
+	string setName
 
 	WAVE DAIndexingStorageWave = GetDACIndexingStorageWave(panelTitle)
 	WAVE TTLIndexingStorageWave = GetTTLIndexingStorageWave(panelTitle)
 
-	TotalListSteps = IDX_TotalIndexingListSteps(panelTitle, channelNo, DAorTTL)// Total List steps is all the columns in all the waves defined by the start index and end index waves
+	WAVE stimsets = IDX_GetStimsets(panelTitle, channelNo, DAorTTL)
+
+	// Total List steps is all the columns in all the waves defined by the start index and end index waves
+	TotalListSteps = IDX_TotalIndexingListSteps(panelTitle, channelNo, DAorTTL)
+
 	do // do loop resets count if the the count has cycled through the total list steps
 		if(count >= TotalListSteps)
 		count -= totalListsteps
 		endif
 	while(count >= totalListSteps)
 
-	ChannelPopUpMenuName = GetPanelControl(channelNo, DAorTTL, CHANNEL_CONTROL_WAVE)
-	PopUpMenuList = getuserdata(panelTitle, ChannelPopUpMenuName, "MenuExp")// returns list of waves - does not include none or testpulse
 	i = 0
 	
 	if((DAIndexingStorageWave[0][channelNo]) < (DAIndexingStorageWave[1][channelNo]))
 		if(DAorTTL == 0)//DA channel
 			do
-				setName = StringFromList((DAIndexingStorageWave[0][channelNo] + i - ListOffset), PopUpMenuList,";")
-				ASSERT(!IsEmpty(setName), "Unexpected empty set")
-				StepsInSummedSets += IDX_NumberOfTrialsInSet(setName)
+				StepsInSummedSets += IDX_NumberOfTrialsInSet(IDX_GetSingleStimset(stimsets, DAIndexingStorageWave[0][channelNo] + i))
 				i += 1
 			while(StepsInSummedSets<=Count)
 			i-=1
-			setName = StringFromList((DAIndexingStorageWave[0][channelNo] + i - ListOffset),PopUpMenuList,";")
-			StepsInSummedSets -= IDX_NumberOfTrialsInSet(setName)
+			StepsInSummedSets -= IDX_NumberOfTrialsInSet(IDX_GetSingleStimset(stimsets, DAIndexingStorageWave[0][channelNo] + i))
 		endif
 
 		if(DAorTTL==1)//TTL channel
 			do
-				setName = StringFromList((TTLIndexingStorageWave[0][channelNo]+i-ListOffset),PopUpMenuList,";")
-				ASSERT(!IsEmpty(setName), "Unexpected empty set")
-				StepsInSummedSets += IDX_NumberOfTrialsInSet(setName)
+				StepsInSummedSets += IDX_NumberOfTrialsInSet(IDX_GetSingleStimset(stimsets, TTLIndexingStorageWave[0][channelNo] + i))
 				i+=1
 			while(StepsInSummedSets<=Count)
 			i-=1
-			setName = StringFromList((TTLIndexingStorageWave[0][channelNo]+i-ListOffset),PopUpMenuList,";")
-			ASSERT(!IsEmpty(setName), "Unexpected empty set")
-			StepsInSummedSets -= IDX_NumberOfTrialsInSet(setName)
+			StepsInSummedSets -= IDX_NumberOfTrialsInSet(IDX_GetSingleStimset(stimsets, TTLIndexingStorageWave[0][channelNo] + i))
 		endif
 	endif
 
@@ -619,28 +600,20 @@ Function IDX_UnlockedIndexingStepNo(panelTitle, channelNo, DAorTTL, count)
 	if(DAIndexingStorageWave[0][channelNo] > DAIndexingStorageWave[1][channelNo])//  handels the situation where the start set is after the end set on the index list
 		if(DAorTTL==0)//DA channel
 			do
-				setName = Stringfromlist((DAIndexingStorageWave[0][channelNo]+i-ListOffset),PopUpMenuList,";")
-				ASSERT(!IsEmpty(setName), "Unexpected empty set")
-				StepsInSummedSets += IDX_NumberOfTrialsInSet(setName)
+				StepsInSummedSets += IDX_NumberOfTrialsInSet(IDX_GetSingleStimset(stimsets, DAIndexingStorageWave[0][channelNo] + i))
 				i-=1
 			while(StepsInSummedSets<=Count)
 			i+=1
-			setName = StringFromList((DAIndexingStorageWave[0][channelNo]+i-ListOffset),PopUpMenuList,";")
-			ASSERT(!IsEmpty(setName), "Unexpected empty set")
-			StepsInSummedSets -= IDX_NumberOfTrialsInSet(setName)
+			StepsInSummedSets -= IDX_NumberOfTrialsInSet(IDX_GetSingleStimset(stimsets, DAIndexingStorageWave[0][channelNo] + i))
 		endif
 
 		if(DAorTTL==1)//TTL channel
 			do
-				setName = StringFromList((TTLIndexingStorageWave[0][channelNo]+i-ListOffset),PopUpMenuList,";")
-				ASSERT(!IsEmpty(setName), "Unexpected empty set")
-				StepsInSummedSets += IDX_NumberOfTrialsInSet(setName)
+				StepsInSummedSets += IDX_NumberOfTrialsInSet(IDX_GetSingleStimset(stimsets, TTLIndexingStorageWave[0][channelNo] + i))
 				i-=1
 			while(StepsInSummedSets<=Count)
 			i+=1
-			setName = StringFromList((TTLIndexingStorageWave[0][channelNo]+i-ListOffset),PopUpMenuList,";")
-			ASSERT(!IsEmpty(setName), "Unexpected empty set")
-			StepsInSummedSets -= IDX_NumberOfTrialsInSet(setName)
+			StepsInSummedSets -= IDX_NumberOfTrialsInSet(IDX_GetSingleStimset(stimsets, TTLIndexingStorageWave[0][channelNo] + i))
 		endif
 	endif
 
@@ -651,16 +624,14 @@ end
 static Function IDX_DetIfCountIsAtSetBorder(panelTitle, count, channelNumber, DAorTTL)
 	string panelTitle
 	variable count, channelNumber, DAorTTL
-	variable AtSetBorder=0
+
 	WAVE DAIndexingStorageWave = GetDACIndexingStorageWave(panelTitle)
 	WAVE TTLIndexingStorageWave = GetTTLIndexingStorageWave(panelTitle)
-	string listOfWaveInPopup, PopUpMenuList, ChannelPopUpMenuName, setName
+	string setName
 	variable i, StepsInSummedSets, TotalListSteps
-	variable listOffset = 2
 
-	ChannelPopUpMenuName = GetPanelControl(channelNumber, DAorTTL, CHANNEL_CONTROL_WAVE)
-	PopUpMenuList=getuserdata(panelTitle, ChannelPopUpMenuName, "MenuExp")// returns list of waves - does not include none or testpulse
-	TotalListSteps=IDX_TotalIndexingListSteps(panelTitle, ChannelNumber, DAorTTL)
+	WAVE stimsets = IDX_GetStimsets(panelTitle, channelNumber, DAorTTL)
+	TotalListSteps = IDX_TotalIndexingListSteps(panelTitle, ChannelNumber, DAorTTL)
 		
 	do
 		if(count>TotalListSteps)
@@ -672,12 +643,9 @@ static Function IDX_DetIfCountIsAtSetBorder(panelTitle, count, channelNumber, DA
 		i=0
 		if(DAorTTL==0)//DA channel
 			do
-				setName = StringFromList((DAIndexingStorageWave[0][ChannelNumber]+i-ListOffset),PopUpMenuList,";")
-				ASSERT(!IsEmpty(setName), "Unexpected empty set")
-				StepsInSummedSets += IDX_NumberOfTrialsInSet(setName)
-				if(StepsInSummedSets==Count)
-					AtSetBorder=1
-					return AtSetBorder
+				StepsInSummedSets += IDX_NumberOfTrialsInSet(IDX_GetSingleStimset(stimsets, DAIndexingStorageWave[0][ChannelNumber] + i))
+				if(StepsInSummedSets == Count)
+					return 1
 				endif
 			i+=1
 			while(StepsInSummedSets<=Count)
@@ -688,13 +656,10 @@ static Function IDX_DetIfCountIsAtSetBorder(panelTitle, count, channelNumber, DA
 	if(TTLIndexingStorageWave[0][ChannelNumber]<TTLIndexingStorageWave[1][ChannelNumber])
 		if(DAorTTL==1)// TTL channel
 			do
-				setName = StringFromList((TTLIndexingStorageWave[0][ChannelNumber]+i-ListOffset),PopUpMenuList,";")
-				ASSERT(!IsEmpty(setName), "Unexpected empty set")
-				StepsInSummedSets += IDX_NumberOfTrialsInSet(setName)
+				StepsInSummedSets += IDX_NumberOfTrialsInSet(IDX_GetSingleStimset(stimsets, TTLIndexingStorageWave[0][ChannelNumber] + i))
 
-				if(StepsInSummedSets==Count)
-					AtSetBorder=1
-					return AtSetBorder
+				if(StepsInSummedSets == Count)
+					return 1
 				endif
 			i+=1
 			while(StepsInSummedSets<=Count)
@@ -705,12 +670,9 @@ static Function IDX_DetIfCountIsAtSetBorder(panelTitle, count, channelNumber, DA
 		i=0
 		if(DAorTTL==0)//DA channel
 			do
-				setName = StringFromList((DAIndexingStorageWave[0][ChannelNumber]+i-ListOffset),PopUpMenuList,";")
-				ASSERT(!IsEmpty(setName), "Unexpected empty set")
-				StepsInSummedSets += IDX_NumberOfTrialsInSet(setName)
-				if(StepsInSummedSets==Count)
-					AtSetBorder=1
-					return AtSetBorder
+				StepsInSummedSets += IDX_NumberOfTrialsInSet(IDX_GetSingleStimset(stimsets, DAIndexingStorageWave[0][ChannelNumber] + i))
+				if(StepsInSummedSets == Count)
+					return 1
 				endif
 			i-=1
 			while(StepsInSummedSets<=Count)
@@ -721,20 +683,17 @@ static Function IDX_DetIfCountIsAtSetBorder(panelTitle, count, channelNumber, DA
 	if(TTLIndexingStorageWave[0][ChannelNumber]>TTLIndexingStorageWave[1][ChannelNumber])
 		if(DAorTTL==1)// TTL channel
 			do
-				setName = StringFromList((TTLIndexingStorageWave[0][ChannelNumber]+i-ListOffset),PopUpMenuList,";")
-				ASSERT(!IsEmpty(setName), "Unexpected empty set")
-				StepsInSummedSets += IDX_NumberOfTrialsInSet(setName)
+				StepsInSummedSets += IDX_NumberOfTrialsInSet(IDX_GetSingleStimset(stimsets, TTLIndexingStorageWave[0][ChannelNumber] + i))
 
-				if(StepsInSummedSets==Count)
-					AtSetBorder=1
-					return AtSetBorder
+				if(StepsInSummedSets == Count)
+					return 1
 				endif
 			i-=1
 			while(StepsInSummedSets<=Count)
 		endif
 	endif
 
-	return AtSetBorder
+	return 0
 End
 
 /// @brief Calculate the active set count
@@ -747,4 +706,32 @@ Function IDX_CalculcateActiveSetCount(panelTitle)
 	value *= GetSetVariable(panelTitle, "SetVar_DataAcq_SetRepeats")
 
 	return value
+End
+
+/// @brief Extract the list of stimsets from the control user data
+static Function/WAVE IDX_GetStimsets(panelTitle, channelIdx, channelType)
+	string panelTitle
+	variable channelIdx, channelType
+
+	string ctrl, list
+
+	ctrl = GetPanelControl(channelIdx, channelType, CHANNEL_CONTROL_WAVE)
+	// does not include - None -
+	list = GetUserData(panelTitle, ctrl, "MenuExp")
+	WAVE/T stimsets = ListToTextWave(list, ";")
+
+	return stimsets
+End
+
+static Function/S IDX_GetSingleStimset(listWave, idx)
+	WAVE/T listWave
+	variable idx
+
+	// 2 because:
+	// none is not part of MenuExp
+	// and idx is 1-based
+	string setName = listWave[idx - 2]
+	ASSERT(!IsEmpty(setName), "Unexpected empty set")
+
+	return setName
 End
