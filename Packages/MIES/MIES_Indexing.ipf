@@ -41,18 +41,38 @@ End
 Function IDX_ResetStartFinishForIndexing(panelTitle)
 	string panelTitle
 
-	variable i
-	string ctrl
+	variable i, idx
+	string ctrl, setName
 
 	WAVE DACIndexingStorageWave = GetDACIndexingStorageWave(panelTitle)
 	WAVE TTLIndexingStorageWave = GetTTLIndexingStorageWave(panelTitle)
 
 	for(i = 0; i < NUM_DA_TTL_CHANNELS; i += 1)
 		ctrl = GetPanelControl(i, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_WAVE)
-		SetPopupMenuIndex(paneltitle, ctrl, DACIndexingStorageWave[0][i] - 1)
+		idx = DACIndexingStorageWave[0][i]
+		SetPopupMenuIndex(paneltitle, ctrl, idx - 1)
+
+		// IDX_GetSingleStimset does not support, on purpose NONE, so we need to handle it here
+
+		WAVE stimsets = IDX_GetStimsets(panelTitle, i, CHANNEL_TYPE_DAC)
+		if(idx < 2)
+			setName = NONE
+		else
+			setName = IDX_GetSingleStimset(stimsets, idx)
+		endif
+		DAG_Update(panelTitle, ctrl, val = idx, str = setName)
 
 		ctrl = GetPanelControl(i, CHANNEL_TYPE_TTL, CHANNEL_CONTROL_WAVE)
-		SetPopupMenuIndex(paneltitle, ctrl, TTLIndexingStorageWave[0][i] - 1)
+		idx = TTLIndexingStorageWave[0][i]
+		SetPopupMenuIndex(paneltitle, ctrl, idx - 1)
+
+		WAVE stimsets = IDX_GetStimsets(panelTitle, i, CHANNEL_TYPE_TTL)
+		if(idx < 2)
+			setName = NONE
+		else
+			setName = IDX_GetSingleStimset(stimsets, idx)
+		endif
+		DAG_Update(panelTitle, ctrl, val = idx, str = setName)
 	endfor
 End
 
@@ -104,6 +124,8 @@ static Function IDX_IndexSingleChannel(panelTitle, channelType, i, [update])
 	endif
 
 	SetPopupMenuIndex(panelTitle, ctrl, popIdx - 1)
+	WAVE stimsets = IDX_GetStimsets(panelTitle, i, channelType)
+	DAG_Update(panelTitle, ctrl, val = popIdx - 1, str = IDX_GetSingleStimset(stimsets, popIdx))
 
 	if(update)
 		DAP_UpdateITIAcrossSets(panelTitle)
