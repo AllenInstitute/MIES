@@ -240,3 +240,39 @@ Function/WAVE AFH_GetSweepsFromSameRACycle(numericalValues, sweepNo)
 
 	return sweeps
 End
+
+/// @brief Return a free 1D wave from the given sweep
+///
+/// @param panelTitle  device
+/// @param sweep       sweep wave
+/// @param headstage   headstage [0, NUM_HEADSTAGES[
+/// @param channelType One of @ref ITC_XOP_CHANNEL_CONSTANTS (currently only AD/DA types are supported)
+/// @param config      [optional, defaults to config wave of the sweep returned by GetConfigWave()] config wave
+Function/WAVE AFH_ExtractOneDimDataFromSweep(panelTitle, sweep, headstage, channelType, [config])
+	string panelTitle
+	WAVE sweep
+	variable headstage, channelType
+	WAVE config
+
+	variable channelNum, col
+
+	if(ParamIsDefault(config))
+		WAVE config = GetConfigWave(sweep)
+	endif
+
+	switch(channelType)
+		case ITC_XOP_CHANNEL_TYPE_DAC:
+			channelNum = AFH_GetDACFromHeadstage(panelTitle, headStage)
+			break
+		case ITC_XOP_CHANNEL_TYPE_ADC:
+			channelNum = AFH_GetADCFromHeadstage(panelTitle, headStage)
+			break
+		default:
+			ASSERT(0, "Invalid channeltype")
+	endswitch
+
+	col = AFH_GetITCDataColumn(config, channelNum, channelType)
+	ASSERT(IsFinite(col), "invalid headstage and/or channelType")
+
+	return ExtractOneDimDataFromSweep(config, sweep, col)
+End

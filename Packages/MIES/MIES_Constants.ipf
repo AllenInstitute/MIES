@@ -752,18 +752,18 @@ Constant OVS_SWEEP_SELECTION_INDEX   = 0x0
 Constant OVS_SWEEP_SELECTION_SWEEPNO = 0x1
 /// @}
 
-Constant PATCHSEQ_NUM_SWEEPS_PASSED       = 3
-Constant PATCHSEQ_BL_EVAL_RANGE_MS        = 500
-Constant PATCHSEQ_PULSE_DUR               = 1000
-Constant PATCHSEQ_RMS_SHORT_THRESHOLD     = 0.07 // mV
-Constant PATCHSEQ_RMS_LONG_THRESHOLD      = 0.5  // mV
-Constant PATCHSEQ_TARGETV_THRESHOLD       = 1    // mV
-StrConstant PATCHSEQ_LBN_SET_PASSED       = "Sub Thres Set QC"
-StrConstant PATCHSEQ_LBN_SWEEP_PASSED     = "Sub Thres Sweep QC"
-StrConstant PATCHSEQ_LBN_RMS_SHORT_PASSED = "Sub Thres Short RMS QC"
-StrConstant PATCHSEQ_LBN_RMS_LONG_PASSED  = "Sub Thres Long RMS QC"
-StrConstant PATCHSEQ_LBN_TargetV_PASSED   = "Sub Thres Target V QC"
-StrConstant PATCHSEQ_LBN_CHUNK_PASSED_FMT = "Sub Thres Chunk %d QC"
+Constant PATCHSEQ_ST_NUM_SWEEPS_PASS       = 3
+Constant PATCHSEQ_ST_BL_EVAL_RANGE_MS      = 500
+Constant PATCHSEQ_ST_PULSE_DUR             = 1000
+Constant PATCHSEQ_ST_RMS_SHORT_THRESHOLD   = 0.07 // mV
+Constant PATCHSEQ_ST_RMS_LONG_THRESHOLD    = 0.5  // mV
+Constant PATCHSEQ_ST_TARGETV_THRESHOLD     = 1    // mV
+StrConstant PATCHSEQ_ST_LBN_SET_PASS       = "Sub Thres Set QC"
+StrConstant PATCHSEQ_ST_LBN_SWEEP_PASS     = "Sub Thres Sweep QC"
+StrConstant PATCHSEQ_ST_LBN_RMS_SHORT_PASS = "Sub Thres Short RMS QC"
+StrConstant PATCHSEQ_ST_LBN_RMS_LONG_PASS  = "Sub Thres Long RMS QC"
+StrConstant PATCHSEQ_ST_LBN_TargetV_PASS   = "Sub Thres Target V QC"
+StrConstant PATCHSEQ_ST_LBN_CHUNK_PASS_FMT = "Sub Thres Chunk %d QC"
 
 /// Export type parameters for NWB_ExportWithDialog()
 /// @{
@@ -773,3 +773,12 @@ Constant NWB_EXPORT_STIMSETS = 0x2
 
 /// Maximum number of microsecond timers in Igor Pro
 Constant MAX_NUM_MS_TIMERS = 10
+
+Constant PATCHSEQ_SP_INIT_AMP_m50    = -50e-12
+Constant PATCHSEQ_SP_INIT_AMP_p100   = +100e-12
+Constant PATCHSEQ_SP_INIT_AMP_p10    = +10e-12
+Constant PATCHSEQ_SP_SPIKE_LEVEL     = 10 // mV
+
+StrConstant PATCHSEQ_SP_LBN_STEPSIZE      = "SP step size"
+StrConstant PATCHSEQ_SP_LBN_SPIKE_DETECT  = "SP spike detected"
+StrConstant PATCHSEQ_SP_LBN_FINAL_SCALE   = "SP final DAScale"

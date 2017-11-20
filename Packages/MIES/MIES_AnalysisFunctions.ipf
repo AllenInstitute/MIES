@@ -850,13 +850,12 @@ End
 ///   Sweep", "Post Sweep" and "Post Set" Event
 /// - A sweep passes if all tests on all headstages pass
 /// - Assumes that the number of sets in all stimsets are equal
-/// - Assumes that the stimset has 500ms of pre pulse baseline, a 1000ms (#PATCHSEQ_PULSE_DUR) pulse and at least 1000ms post pulse baseline.
-/// - Each 500ms (#PATCHSEQ_BL_EVAL_RANGE_MS) of the baseline is a chunk
+/// - Assumes that the stimset has 500ms of pre pulse baseline, a 1000ms (#PATCHSEQ_ST_PULSE_DUR) pulse and at least 1000ms post pulse baseline.
+/// - Each 500ms (#PATCHSEQ_ST_BL_EVAL_RANGE_MS) of the baseline is a chunk
 ///
 /// Testing:
-/// For testing the sweep/set passing/fail logic define the wave
-/// root:overrideResults with as many rows as sweeps in the stimset.  Each
-/// entry in that wave determines if the sweep passes (1) or failed (0).
+/// For testing the sweep/set passing/fail logic can be defined in the wave
+/// root:overrideResults. @see CreateOverrideResults()
 ///
 /// Reading the results from the labnotebook:
 ///
@@ -866,17 +865,8 @@ End
 ///    WAVE numericalValues = GetLBNumericalValues(panelTitle)
 ///
 ///    // set properties
-///    variable i, numEntries
-///    WAVE/Z sweeps = AFH_GetSweepsFromSameRACycle(numericalValues, sweepNo)
-///    ASSERT(WaveExists(sweeps), "Missing RA cycle information, maybe the sweep is too old?")
 ///
-///    numEntries = DimSize(sweeps, ROWS)
-///    for(i = 0; i < numEntries; i += 1)
-///         setPassed = GetLastSettingIndep(numericalValues, sweeps[i], LABNOTEBOOK_USER_PREFIX + PATCHSEQ_LBN_SET_PASSED, UNKNOWN_MODE)
-///         if(isFinite(setPassed))
-///         	break
-///         endif
-///    endfor
+///    setPassed = GetLastSettingIndepRAC(numericalValues, sweepNo, LABNOTEBOOK_USER_PREFIX + PATCHSEQ_ST_LBN_SET_PASSED, UNKNOWN_MODE)
 ///
 ///    if(setPassed)
 ///      // set passed
@@ -885,25 +875,20 @@ End
 ///    endif
 ///
 ///    // single sweep properties
-///    sweepPassed = GetLastSettingIndep(numericalValues, sweepNo, LABNOTEBOOK_USER_PREFIX + PATCHSEQ_LBN_SWEEP_PASSED, UNKNOWN_MODE)
+///    sweepPassed = GetLastSettingIndep(numericalValues, sweepNo, LABNOTEBOOK_USER_PREFIX + PATCHSEQ_ST_LBN_SWEEP_PASSED, UNKNOWN_MODE)
 ///
 ///    // chunk (500ms portions of the baseline) properties
-///    sprintf key, PATCHSEQ_LBN_CHUNK_PASSED_FMT, chunk
+///    sprintf key, PATCHSEQ_ST_LBN_CHUNK_PASSED_FMT, chunk
 ///    chunkPassed = GetLastSettingIndep(numericalValues, sweepNo, LABNOTEBOOK_USER_PREFIX + key, UNKNOWN_MODE)
 ///
 ///    // single test properties (currently not set/queryable per chunk)
-///    rmsShortPassed = GetLastSettingIndep(numericalValues, sweepNo, LABNOTEBOOK_USER_PREFIX + PATCHSEQ_LBN_RMS_SHORT_PASSED, UNKNOWN_MODE)
-///    rmsLongPassed  = GetLastSettingIndep(numericalValues, sweepNo, LABNOTEBOOK_USER_PREFIX + PATCHSEQ_LBN_RMS_LONG_PASSED, UNKNOWN_MODE)
-///    targetVPassed  = GetLastSettingIndep(numericalValues, sweepNo, LABNOTEBOOK_USER_PREFIX + PATCHSEQ_LBN_TARGETV_PASSED, UNKNOWN_MODE)
+///    rmsShortPassed = GetLastSettingIndep(numericalValues, sweepNo, LABNOTEBOOK_USER_PREFIX + PATCHSEQ_ST_LBN_RMS_SHORT_PASSED, UNKNOWN_MODE)
+///    rmsLongPassed  = GetLastSettingIndep(numericalValues, sweepNo, LABNOTEBOOK_USER_PREFIX + PATCHSEQ_ST_LBN_RMS_LONG_PASSED, UNKNOWN_MODE)
+///    targetVPassed  = GetLastSettingIndep(numericalValues, sweepNo, LABNOTEBOOK_USER_PREFIX + PATCHSEQ_ST_LBN_TARGETV_PASSED, UNKNOWN_MODE)
 ///
 ///    // get fitted resistance from last passing sweep
-///    variable lastSweepNo
-///    WAVE/Z sweeps = AFH_GetSweepsFromSameRACycle(numericalValues, sweepNo)
-///    ASSERT(WaveExists(sweeps), "Missing RA cycle information, maybe the sweep is too old?")
-///    lastSweepNo = sweeps[DimSize(sweeps, ROWS) - 1]
-///    WAVE/Z resistanceFitted = GetLastSetting(numericalValues, lastSweepNo, LABNOTEBOOK_USER_PREFIX + "ResistanceFromFit", UNKNOWN_MODE)
-///	   ASSERT(WaveExists(resistanceFitted), "Expected fitted resistance data")
 ///	   // resistance for the first headstage can be found in resistanceFitted[0]
+///    WAVE/Z resistanceFitted = GetLastSettingRAC(numericalValues, sweepNo, LABNOTEBOOK_USER_PREFIX + "ResistanceFromFit", UNKNOWN_MODE)
 /// \endrst
 ///
 /// Decision logic flowchart:
@@ -993,7 +978,7 @@ Function PatchSeqSubThreshold(panelTitle, eventType, ITCDataWave, headStage, rea
 			WAVE numericalValues = GetLBNumericalValues(panelTitle)
 			WAVE textualValues   = GetLBTextualValues(panelTitle)
 
-			sweepPassed = GetLastSettingIndep(numericalValues, sweepNo, LABNOTEBOOK_USER_PREFIX + PATCHSEQ_LBN_SWEEP_PASSED, UNKNOWN_MODE)
+			sweepPassed = GetLastSettingIndep(numericalValues, sweepNo, LABNOTEBOOK_USER_PREFIX + PATCHSEQ_ST_LBN_SWEEP_PASS, UNKNOWN_MODE)
 			ASSERT(IsFinite(sweepPassed), "Could not find the sweep passed labnotebook entry")
 
 			WAVE/T stimsets = GetLastSettingText(textualValues, sweepNo, STIM_WAVE_NAME_KEY, DATA_ACQUISITION_MODE)
@@ -1005,7 +990,7 @@ Function PatchSeqSubThreshold(panelTitle, eventType, ITCDataWave, headStage, rea
 
 			if(!sweepPassed)
 				// not enough sweeps left to pass the set
-				skipToEnd = (sweepsInSet - acquiredSweepsInSet) < (PATCHSEQ_NUM_SWEEPS_PASSED - passesInSet)
+				skipToEnd = (sweepsInSet - acquiredSweepsInSet) < (PATCHSEQ_ST_NUM_SWEEPS_PASS - passesInSet)
 			else
 				// sweep passed
 
@@ -1023,7 +1008,7 @@ Function PatchSeqSubThreshold(panelTitle, eventType, ITCDataWave, headStage, rea
 
 				PlotResistanceGraph(panelTitle)
 
-				if(passesInSet >= PATCHSEQ_NUM_SWEEPS_PASSED)
+				if(passesInSet >= PATCHSEQ_ST_NUM_SWEEPS_PASS)
 					skipToEnd = 1
 				else
 					// set next DAScale value
@@ -1042,14 +1027,14 @@ Function PatchSeqSubThreshold(panelTitle, eventType, ITCDataWave, headStage, rea
 			break
 		case POST_SET_EVENT:
 			sweepNo = AFH_GetLastSweepAcquired(panelTitle)
-			setPassed = NumPassesInSet(panelTitle, sweepNo) >= PATCHSEQ_NUM_SWEEPS_PASSED
+			setPassed = NumPassesInSet(panelTitle, sweepNo) >= PATCHSEQ_ST_NUM_SWEEPS_PASS
 
 			sprintf msg, "Set has %s\r", SelectString(setPassed, "failed", "passed")
 			DEBUGPRINT(msg)
 
 			Make/FREE/N=(LABNOTEBOOK_LAYER_COUNT) result = NaN
 			result[INDEP_HEADSTAGE] = setPassed
-			ED_AddEntryToLabnotebook(panelTitle, PATCHSEQ_LBN_SET_PASSED, result, unit = "On/Off")
+			ED_AddEntryToLabnotebook(panelTitle, PATCHSEQ_ST_LBN_SET_PASS, result, unit = "On/Off")
 
 			return NaN
 			break
@@ -1081,7 +1066,7 @@ Function PatchSeqSubThreshold(panelTitle, eventType, ITCDataWave, headStage, rea
 
 	// we can't use AFH_GetLastSweepAcquired as the sweep is not yet acquired
 	sweepNo = GetSetVariable(panelTitle, "SetVar_Sweep")
-	sweepPassed = GetLastSettingIndep(numericalValues, sweepNo, LABNOTEBOOK_USER_PREFIX + PATCHSEQ_LBN_SWEEP_PASSED, UNKNOWN_MODE, defValue = 0)
+	sweepPassed = GetLastSettingIndep(numericalValues, sweepNo, LABNOTEBOOK_USER_PREFIX + PATCHSEQ_ST_LBN_SWEEP_PASS, UNKNOWN_MODE, defValue = 0)
 
 	if(sweepPassed) // already done
 		return NaN
@@ -1148,17 +1133,17 @@ Function PatchSeqSubThreshold(panelTitle, eventType, ITCDataWave, headStage, rea
 	Make/FREE/N=(LABNOTEBOOK_LAYER_COUNT) result = NaN
 	result[INDEP_HEADSTAGE] = sweepPassed
 
-	ED_AddEntryToLabnotebook(panelTitle, PATCHSEQ_LBN_SWEEP_PASSED, result, unit = "On/Off", overrideSweepNo = sweepNo)
+	ED_AddEntryToLabnotebook(panelTitle, PATCHSEQ_ST_LBN_SWEEP_PASS, result, unit = "On/Off", overrideSweepNo = sweepNo)
 
 	return sweepPassed ? ANALYSIS_FUNC_RET_EARLY_STOP : ret
 End
 
-static Constant PATCHSEQ_BL_PRE_PULSE   = 0x0
-static Constant PATCHSEQ_BL_POST_PULSE  = 0x1
+static Constant PATCHSEQ_ST_BL_PRE_PULSE   = 0x0
+static Constant PATCHSEQ_ST_BL_POST_PULSE  = 0x1
 
-static Constant PATCHSEQ_RMS_SHORT_TEST = 0x0
-static Constant PATCHSEQ_RMS_LONG_TEST  = 0x1
-static Constant PATCHSEQ_TARGETV_TEST   = 0x2
+static Constant PATCHSEQ_ST_RMS_SHORT_TEST = 0x0
+static Constant PATCHSEQ_ST_RMS_LONG_TEST  = 0x1
+static Constant PATCHSEQ_ST_TARGETV_TEST   = 0x2
 
 /// @brief Evaluate one chunk of the baseline.
 ///
@@ -1177,22 +1162,22 @@ static Function EvaluateBaselineProperties(panelTitle, sweepNo, chunk, fifoInSti
 
 	if(chunk == 0) // pre pulse baseline
 		chunkStartTime = totalOnsetDelay
-		baselineType   = PATCHSEQ_BL_PRE_PULSE
+		baselineType   = PATCHSEQ_ST_BL_PRE_PULSE
 	else // post pulse baseline
 		 // skip: onset delay, the pulse itself and one chunk of post pulse baseline
-		chunkStartTime = (totalOnsetDelay + PATCHSEQ_PULSE_DUR + PATCHSEQ_BL_EVAL_RANGE_MS) + chunk * PATCHSEQ_BL_EVAL_RANGE_MS
-		baselineType   = PATCHSEQ_BL_POST_PULSE
+		chunkStartTime = (totalOnsetDelay + PATCHSEQ_ST_PULSE_DUR + PATCHSEQ_ST_BL_EVAL_RANGE_MS) + chunk * PATCHSEQ_ST_BL_EVAL_RANGE_MS
+		baselineType   = PATCHSEQ_ST_BL_POST_PULSE
 	endif
 
 	// not enough data to evaluate
-	if(fifoInStimsetTime < chunkStartTime + PATCHSEQ_BL_EVAL_RANGE_MS)
+	if(fifoInStimsetTime < chunkStartTime + PATCHSEQ_ST_BL_EVAL_RANGE_MS)
 		return NaN
 	endif
 
 	WAVE numericalValues = GetLBNumericalValues(panelTitle)
 	WAVE textualValues   = GetLBTextualValues(panelTitle)
 
-	sprintf key, PATCHSEQ_LBN_CHUNK_PASSED_FMT, chunk
+	sprintf key, PATCHSEQ_ST_LBN_CHUNK_PASS_FMT, chunk
 	chunkPassed = GetLastSettingIndep(numericalValues, sweepNo, LABNOTEBOOK_USER_PREFIX + key, UNKNOWN_MODE, defValue = NaN)
 
 	if(IsFinite(chunkPassed)) // already evaluated
@@ -1213,12 +1198,12 @@ static Function EvaluateBaselineProperties(panelTitle, sweepNo, chunk, fifoInSti
 	//  1: perform test
 	Make/FREE/N=(2, 3) testMatrix
 
-	testMatrix[PATCHSEQ_BL_PRE_PULSE][] = 1 // all tests
-	testMatrix[PATCHSEQ_BL_POST_PULSE][PATCHSEQ_TARGETV_TEST] = 1
+	testMatrix[PATCHSEQ_ST_BL_PRE_PULSE][] = 1 // all tests
+	testMatrix[PATCHSEQ_ST_BL_POST_PULSE][PATCHSEQ_ST_TARGETV_TEST] = 1
 
 	WAVE OscilloscopeData = GetOscilloscopeWave(panelTitle)
 
-	sprintf msg, "We have some data to evaluate in chunk %d [%g, %g]:  %gms\r", chunk, chunkStartTime, chunkStartTime + PATCHSEQ_BL_EVAL_RANGE_MS, fifoInStimsetTime
+	sprintf msg, "We have some data to evaluate in chunk %d [%g, %g]:  %gms\r", chunk, chunkStartTime, chunkStartTime + PATCHSEQ_ST_BL_EVAL_RANGE_MS, fifoInStimsetTime
 	DEBUGPRINT(msg)
 
 	WAVE config = GetITCChanConfigWave(panelTitle)
@@ -1250,14 +1235,14 @@ static Function EvaluateBaselineProperties(panelTitle, sweepNo, chunk, fifoInSti
 		// assuming millivolts
 		ASSERT(!cmpstr(ADunit, "mV"), "Unexpected AD Unit")
 
-		if(testMatrix[baselineType][PATCHSEQ_RMS_SHORT_TEST])
+		if(testMatrix[baselineType][PATCHSEQ_ST_RMS_SHORT_TEST])
 
-			evalStartTime = chunkStartTime + PATCHSEQ_BL_EVAL_RANGE_MS - 1.5
+			evalStartTime = chunkStartTime + PATCHSEQ_ST_BL_EVAL_RANGE_MS - 1.5
 			evalRangeTime = 1.5
 
 			// check 1: RMS of the last 1.5ms of the baseline should be below 0.07mV
 			rmsShort[i]       = CalculateRMS(OscilloscopeData, ADCol, evalStartTime, evalRangeTime)
-			rmsShortPassed[i] = rmsShort[i] < PATCHSEQ_RMS_SHORT_THRESHOLD
+			rmsShortPassed[i] = rmsShort[i] < PATCHSEQ_ST_RMS_SHORT_THRESHOLD
 
 			sprintf msg, "RMS noise short: %g (%s)\r", rmsShort[i], SelectString(rmsShortPassed[i], "failed", "passed")
 			DEBUGPRINT(msg)
@@ -1271,14 +1256,14 @@ static Function EvaluateBaselineProperties(panelTitle, sweepNo, chunk, fifoInSti
 			continue
 		endif
 
-		if(testMatrix[baselineType][PATCHSEQ_RMS_LONG_TEST])
+		if(testMatrix[baselineType][PATCHSEQ_ST_RMS_LONG_TEST])
 
 			evalStartTime = chunkStartTime
-			evalRangeTime = PATCHSEQ_BL_EVAL_RANGE_MS
+			evalRangeTime = PATCHSEQ_ST_BL_EVAL_RANGE_MS
 
 			// check 2: RMS of the last 500ms of the baseline should be below 0.50mV
 			rmsLong[i]       = CalculateRMS(OscilloscopeData, ADCol, evalStartTime, evalRangeTime)
-			rmsLongPassed[i] = rmsLong[i] < PATCHSEQ_RMS_LONG_THRESHOLD
+			rmsLongPassed[i] = rmsLong[i] < PATCHSEQ_ST_RMS_LONG_THRESHOLD
 
 			sprintf msg, "RMS noise long: %g (%s)", rmsLong[i], SelectString(rmsLongPassed[i], "failed", "passed")
 			DEBUGPRINT(msg)
@@ -1292,14 +1277,14 @@ static Function EvaluateBaselineProperties(panelTitle, sweepNo, chunk, fifoInSti
 			continue
 		endif
 
-		if(testMatrix[baselineType][PATCHSEQ_TARGETV_TEST])
+		if(testMatrix[baselineType][PATCHSEQ_ST_TARGETV_TEST])
 
 			evalStartTime = chunkStartTime
-			evalRangeTime = PATCHSEQ_BL_EVAL_RANGE_MS
+			evalRangeTime = PATCHSEQ_ST_BL_EVAL_RANGE_MS
 
 			// check 3: Average voltage within 1mV of auto bias target voltage
 			avgVoltage[i]    = CalculateAvg(OscilloscopeData, ADCol, evalStartTime, evalRangeTime)
-			targetVPassed[i] = abs(avgVoltage[i] - targetV) <= PATCHSEQ_TARGETV_THRESHOLD
+			targetVPassed[i] = abs(avgVoltage[i] - targetV) <= PATCHSEQ_ST_TARGETV_THRESHOLD
 
 			sprintf msg, "Average voltage of %gms: %g (%s)", evalRangeTime, avgVoltage[i], SelectString(targetVPassed[i], "failed", "passed")
 			DEBUGPRINT(msg)
@@ -1317,23 +1302,23 @@ static Function EvaluateBaselineProperties(panelTitle, sweepNo, chunk, fifoInSti
 	endfor
 
 	// document results per headstage
-	ED_AddEntryToLabnotebook(panelTitle, PATCHSEQ_LBN_RMS_SHORT_PASSED, rmsShortPassed, unit = "On/Off", overrideSweepNo = sweepNo)
-	ED_AddEntryToLabnotebook(panelTitle, PATCHSEQ_LBN_RMS_LONG_PASSED, rmsLongPassed, unit = "On/Off", overrideSweepNo = sweepNo)
-	ED_AddEntryToLabnotebook(panelTitle, PATCHSEQ_LBN_TARGETV_PASSED, targetVPassed, unit = "On/Off", overrideSweepNo = sweepNo)
+	ED_AddEntryToLabnotebook(panelTitle, PATCHSEQ_ST_LBN_RMS_SHORT_PASS, rmsShortPassed, unit = "On/Off", overrideSweepNo = sweepNo)
+	ED_AddEntryToLabnotebook(panelTitle, PATCHSEQ_ST_LBN_RMS_LONG_PASS, rmsLongPassed, unit = "On/Off", overrideSweepNo = sweepNo)
+	ED_AddEntryToLabnotebook(panelTitle, PATCHSEQ_ST_LBN_TARGETV_PASS, targetVPassed, unit = "On/Off", overrideSweepNo = sweepNo)
 
-	if(testMatrix[baselineType][PATCHSEQ_RMS_SHORT_TEST])
+	if(testMatrix[baselineType][PATCHSEQ_ST_RMS_SHORT_TEST])
 		rmsShortPassedAll = WaveMin(rmsShortPassed) == 1
 	else
 		rmsShortPassedAll = -1
 	endif
 
-	if(testMatrix[baselineType][PATCHSEQ_RMS_LONG_TEST])
+	if(testMatrix[baselineType][PATCHSEQ_ST_RMS_LONG_TEST])
 		rmsLongPassedAll = WaveMin(rmsLongPassed) == 1
 	else
 		rmsLongPassedAll = -1
 	endif
 
-	if(testMatrix[baselineType][PATCHSEQ_TARGETV_TEST])
+	if(testMatrix[baselineType][PATCHSEQ_ST_TARGETV_TEST])
 		targetVPassedAll = WaveMin(targetVPassed) == 1
 	else
 		targetVPassedAll = -1
@@ -1361,17 +1346,17 @@ static Function EvaluateBaselineProperties(panelTitle, sweepNo, chunk, fifoInSti
 	// document chunk results
 	Make/FREE/N=(LABNOTEBOOK_LAYER_COUNT) result = NaN
 	result[INDEP_HEADSTAGE] = chunkPassed
-	sprintf key, PATCHSEQ_LBN_CHUNK_PASSED_FMT, chunk
+	sprintf key, PATCHSEQ_ST_LBN_CHUNK_PASS_FMT, chunk
 	ED_AddEntryToLabnotebook(panelTitle, key, result, unit = "On/Off", overrideSweepNo = sweepNo)
 
 	if(testOverrideActive)
-		if(baselineType == PATCHSEQ_BL_PRE_PULSE)
+		if(baselineType == PATCHSEQ_ST_BL_PRE_PULSE)
 			if(!chunkPassed)
 				return ANALYSIS_FUNC_RET_EARLY_STOP
 			else
 				return 0
 			endif
-		elseif(baselineType == PATCHSEQ_BL_POST_PULSE)
+		elseif(baselineType == PATCHSEQ_ST_BL_POST_PULSE)
 			if(!chunkPassed)
 				return NaN
 			else
@@ -1382,7 +1367,7 @@ static Function EvaluateBaselineProperties(panelTitle, sweepNo, chunk, fifoInSti
 		endif
 	endif
 
-	if(baselineType == PATCHSEQ_BL_PRE_PULSE)
+	if(baselineType == PATCHSEQ_ST_BL_PRE_PULSE)
 		if(!rmsShortPassedAll)
 			return ANALYSIS_FUNC_RET_EARLY_STOP
 		elseif(!rmsLongPassedAll)
@@ -1395,7 +1380,7 @@ static Function EvaluateBaselineProperties(panelTitle, sweepNo, chunk, fifoInSti
 			ASSERT(chunkPassed, "logic error")
 			return 0
 		endif
-	elseif(baselineType == PATCHSEQ_BL_POST_PULSE)
+	elseif(baselineType == PATCHSEQ_ST_BL_POST_PULSE)
 		if(chunkPassed)
 			return 0
 		else
@@ -1408,7 +1393,7 @@ End
 
 /// @brief Return the number of chunks
 ///
-/// A chunk is #PATCHSEQ_BL_EVAL_RANGE_MS [ms] of baseline
+/// A chunk is #PATCHSEQ_ST_BL_EVAL_RANGE_MS [ms] of baseline
 static Function GetNumberOfChunks(panelTitle)
 	string panelTitle
 
@@ -1420,9 +1405,9 @@ static Function GetNumberOfChunks(panelTitle)
 					  + GetValDisplayAsNum(panelTitle, "valdisp_DataAcq_OnsetDelayAuto")
 
 	length = stopCollectionPoint * DimDelta(OscilloscopeData, ROWS)
-	nonBL  = totalOnsetDelay + PATCHSEQ_PULSE_DUR + PATCHSEQ_BL_EVAL_RANGE_MS
+	nonBL  = totalOnsetDelay + PATCHSEQ_ST_PULSE_DUR + PATCHSEQ_ST_BL_EVAL_RANGE_MS
 
-	return floor((length - nonBL) / PATCHSEQ_BL_EVAL_RANGE_MS)
+	return floor((length - nonBL) / PATCHSEQ_ST_BL_EVAL_RANGE_MS)
 End
 
 // @brief Calculate the average from `startTime` spanning
@@ -1499,29 +1484,57 @@ static Function NumPassesInSet(panelTitle, sweepNo)
 	endif
 
 	Make/FREE/N=(DimSize(sweeps, ROWS)) passes
-	passes[] = GetLastSettingIndep(numericalValues, sweeps[p], LABNOTEBOOK_USER_PREFIX + PATCHSEQ_LBN_SWEEP_PASSED, UNKNOWN_MODE)
+	passes[] = GetLastSettingIndep(numericalValues, sweeps[p], LABNOTEBOOK_USER_PREFIX + PATCHSEQ_ST_LBN_SWEEP_PASS, UNKNOWN_MODE)
 
 	return sum(passes)
 End
 
-/// CreateOverrideResults("ITC18USB_DEV_0", 0)
+Constant PATCHSEQ_SUB_THRESHOLD = 0x1
+Constant PATCHSEQ_SQUARE_PULSE  = 0x2
+
+/// CreateOverrideResults("ITC18USB_DEV_0", 0, $type) where type is either #PATCHSEQ_SUB_THRESHOLD or #PATCHSEQ_SQUARE_PULSE
+///
+/// PATCHSEQ_SUB_THRESHOLD:
 ///
 /// Rows:
-/// - chunks
+/// - chunk indizes: 1 if the chunk passes, 0 if not
 ///
 /// Cols:
 /// - sweeps/steps
-Function/WAVE CreateOverrideResults(panelTitle, headstage)
+///
+/// PATCHSEQ_SQUARE_PULSE:
+///
+/// Rows:
+/// - x position in ms where the spike is in each sweep/step
+///   For convenience the values `0` always means no spike and `1` spike detected (at the appropriate position).
+Function/WAVE CreateOverrideResults(panelTitle, headstage, type)
 	string panelTitle
-	variable headstage
+	variable headstage, type
 
-	variable DAC = AFH_GetDACFromHeadstage(panelTitle, headstage)
-	string stimset = AFH_GetStimSetName(panelTitle, DAC, CHANNEL_TYPE_DAC)
-	WAVE wv = WB_CreateAndGetStimSet(stimset)
+	variable DAC, numCols, numRows, wvType
+	string stimset
 
-	Make/O/B/N=(GetNumberOfChunks(panelTitle), IDX_NumberOfTrialsInSet(stimset)) root:overrideResults/WAVE=overrideResults
+	DAC = AFH_GetDACFromHeadstage(panelTitle, headstage)
+	stimset = AFH_GetStimSetName(panelTitle, DAC, CHANNEL_TYPE_DAC)
+	WAVE/Z wv = WB_CreateAndGetStimSet(stimset)
+	ASSERT(WaveExists(wv), "Stimset does not exist")
 
-	overrideResults = 0
+	switch(type)
+		case PATCHSEQ_SUB_THRESHOLD:
+			numRows = GetNumberOfChunks(panelTitle)
+			numCols = IDX_NumberOfTrialsInSet(stimset)
+			wvType  = IGOR_TYPE_8BIT_INT
+		break
+		case PATCHSEQ_SQUARE_PULSE:
+			numRows = IDX_NumberOfTrialsInSet(stimset)
+			numCols = 0
+			wvType  = IGOR_TYPE_64BIT_FLOAT
+		break
+		default:
+			ASSERT(0, "invalid type")
+	endswitch
+
+	Make/Y=(wvType)/O/N=(numRows, numCols) root:overrideResults/Wave=overrideResults = 0
 
 	return overrideResults
 End
@@ -1569,4 +1582,168 @@ Function preDAQ_MP_ChirpBlowout(panelTitle, eventType, ITCDataWave, headStage, r
 	PGC_SetAndActivateControl(panelTitle,"Check_DataAcq1_dDAQOptOv", val = 0)
 	
 	PGC_SetAndActivateControl(panelTitle, "Check_DataAcq1_RepeatAcq", val = 1)
+End
+
+/// @brief Store the current step size in the labnotebook
+static Function StoreStepSizeInLBN(panelTitle, sweepNo, stepsize)
+	string panelTitle
+	variable sweepNo, stepsize
+
+	Make/FREE/D/N=(LABNOTEBOOK_LAYER_COUNT) values = NaN
+	values[INDEP_HEADSTAGE] = stepsize
+	ED_AddEntryToLabnotebook(panelTitle, PATCHSEQ_SP_LBN_STEPSIZE, values, overrideSweepNo = sweepNo)
+End
+
+/// @brief Analysis function to find the smallest DAScale where the cell spikes
+///
+/// Prerequisites:
+/// - This stimset must have this analysis function set for the "Pre DAQ" and "Post Sweep" Event
+/// - Does only work for one headstage
+/// - Assumes that the stimset has a pulse
+///
+/// Testing:
+/// For testing the spike detection logic, the results can be defined in the wave
+/// root:overrideResults. @see CreateOverrideResults()
+///
+/// The following labnotebook keys are stored (all have the #LABNOTEBOOK_USER_PREFIX):
+/// - #PATCHSEQ_SP_LBN_SPIKE_DETECT: Spike was detected on the given headstage
+/// - #PATCHSEQ_SP_LBN_STEPSIZE:     Current DAScale step size (independent headstage setting)
+/// - #PATCHSEQ_SP_LBN_FINAL_SCALE:  Final DAScale of the given headstage, only set on success
+///
+/// Query the standard "Stim Scale Factor" entry from labnotebook for getting the DAScale
+///
+/// @verbatim
+///
+/// Sketch of a stimset with pre pulse baseline (-), pulse (*), and post pulse baseline (-).
+///
+///    *******
+///    |     |
+///    |     |
+///    |     |
+///    |     |
+///    |     |
+///    |     |
+///    |     |
+///    |     |
+///    |     |
+///    |     |
+///    |     |
+///    |     |
+/// ---|     |--------------------------------------------
+///
+/// @endverbatim
+Function PatchSeqSquarePulse(panelTitle, eventType, ITCDataWave, headStage, realDataLength)
+	string panelTitle
+	variable eventType
+	Wave ITCDataWave
+	variable headstage, realDataLength
+
+	variable sweepNo, stepsize, DAScale
+	variable offset, first, last, level, overrideValue
+
+	WAVE numericalValues = GetLBNumericalValues(panelTitle)
+	WAVE textualValues   = GetLBTextualValues(panelTitle)
+
+	WAVE statusHS = DAP_ControlStatusWaveCache(panelTitle, CHANNEL_TYPE_HEADSTAGE)
+
+	ASSERT(sum(statusHS) == 1, "Analysis function only supports one headstage")
+
+	switch(eventType)
+		case PRE_DAQ_EVENT:
+			if(!GetCheckBoxState(panelTitle, "check_Settings_MD"))
+				printf "(%s): Please check \"Multi Device\" mode.\r", panelTitle
+				ControlWindowToFront()
+				return 1
+			endif
+
+			PGC_SetAndActivateControl(panelTitle, "check_Settings_ITITP", val = 0)
+			PGC_SetAndActivateControl(panelTitle, "Check_Settings_InsertTP", val = 0)
+			PGC_SetAndActivateControl(panelTitle, "Check_DataAcq_Get_Set_ITI", val = 1)
+
+			if(DAP_MIESHeadstageMode(panelTitle, headstage) != I_CLAMP_MODE)
+				printf "(%s) Clamp mode must be current clamp.\r", panelTitle
+				ControlWindowToFront()
+				return 1
+			endif
+
+			sweepNo = GetSetVariable(panelTitle, "SetVar_Sweep")
+			StoreStepSizeInLBN(panelTitle, sweepNo, PATCHSEQ_SP_INIT_AMP_p100)
+			SetDAScale(panelTitle, headstage, PATCHSEQ_SP_INIT_AMP_p100)
+
+			return 0
+
+			break
+		case POST_SWEEP_EVENT:
+
+			sweepNo = AFH_GetLastSweepAcquired(panelTitle)
+			WAVE sweepWave = GetSweepWave(panelTitle, sweepNo)
+
+			Make/FREE/D/N=(LABNOTEBOOK_LAYER_COUNT) spikeDetection = 0
+
+			WAVE singleDA = AFH_ExtractOneDimDataFromSweep(panelTitle, sweepWave, headstage, ITC_XOP_CHANNEL_TYPE_DAC)
+			level = WaveMin(singleDA) + 0.1 * (WaveMax(singleDA) - WaveMin(singleDA))
+			Make/FREE/D levels
+			FindLevels/Q/N=2/DEST=levels singleDA, level
+			ASSERT(V_LevelsFound == 2, "Could not find two levels")
+			first = levels[0]
+			last  = inf
+
+			WAVE singleAD = AFH_ExtractOneDimDataFromSweep(panelTitle, sweepWave, headstage, ITC_XOP_CHANNEL_TYPE_ADC)
+			ASSERT(!cmpstr(WaveUnits(singleAD, -1), "mV"), "Unexpected AD Unit")
+
+			WAVE/Z/SDFR=root: overrideResults
+			if(WaveExists(overrideResults))
+				NVAR count = $GetCount(panelTitle)
+				overrideValue = overrideResults[count]
+				printf "TEST OVERRIDE ACTIVE: \"Sweep %d has %g\"\r", count, overrideValue
+
+				if(overrideValue == 0 || overrideValue == 1)
+					spikeDetection[headstage] = overrideValue
+				else
+					spikeDetection[headstage] = overrideValue >= first && overrideValue <= last
+				endif
+			else
+				// search the spike from the rising edge till the end of the wave
+				spikeDetection[headstage] = WaveMax(singleAD, first, last) >= PATCHSEQ_SP_SPIKE_LEVEL
+			endif
+
+			ED_AddEntryToLabnotebook(panelTitle, PATCHSEQ_SP_LBN_SPIKE_DETECT, spikeDetection)
+
+			stepSize = GetLastSettingIndepRAC(numericalValues, sweepNo, LABNOTEBOOK_USER_PREFIX + PATCHSEQ_SP_LBN_STEPSIZE, UNKNOWN_MODE)
+			DAScale  = GetLastSetting(numericalValues, sweepNo, "Stim Scale Factor", DATA_ACQUISITION_MODE)[headstage] * 1e-12
+
+			if(spikeDetection[headstage]) // headstage spiked
+				if(CheckIfClose(stepSize, PATCHSEQ_SP_INIT_AMP_m50))
+					SetDAScale(panelTitle, headstage, DAScale + stepsize)
+				elseif(CheckIfClose(stepSize, PATCHSEQ_SP_INIT_AMP_p10))
+					Make/FREE/D/N=(LABNOTEBOOK_LAYER_COUNT) value = 0
+					value[headstage] = DAScale
+					ED_AddEntryToLabnotebook(panelTitle, PATCHSEQ_SP_LBN_FINAL_SCALE, value)
+					RA_SkipSweeps(panelTitle, inf)
+				elseif(CheckIfClose(stepSize, PATCHSEQ_SP_INIT_AMP_p100))
+					StoreStepSizeInLBN(panelTitle, sweepNo, PATCHSEQ_SP_INIT_AMP_m50)
+					stepsize = PATCHSEQ_SP_INIT_AMP_m50
+					SetDAScale(panelTitle, headstage, DAScale + stepsize)
+				else
+					ASSERT(0, "Unknown stepsize")
+				endif
+			else // headstage did not spike
+				if(CheckIfClose(stepSize, PATCHSEQ_SP_INIT_AMP_m50))
+					StoreStepSizeInLBN(panelTitle, sweepNo, PATCHSEQ_SP_INIT_AMP_p10)
+					stepsize = PATCHSEQ_SP_INIT_AMP_p10
+				elseif(CheckIfClose(stepSize, PATCHSEQ_SP_INIT_AMP_p10))
+					// do nothing
+				elseif(CheckIfClose(stepSize, PATCHSEQ_SP_INIT_AMP_p100))
+					// do nothing
+				else
+					ASSERT(0, "Unknown stepsize")
+				endif
+
+				SetDAScale(panelTitle, headstage, DAScale + stepsize)
+			endif
+
+			break
+	endswitch
+
+	return NaN
 End

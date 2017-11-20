@@ -94,11 +94,10 @@ End
 Function AM_MSA_midSweepFindAP(panelTitle, headStage)
 	string panelTitle
 	variable headStage
-	
-	variable adc, col
+
 	Variable apLevelValue
 	variable xPoint
-	
+
 	Wave/SDFR=GetDevicePath(panelTitle) currentCompleteDataWave = ITCDataWave
 	
 	Wave actionScaleSettingsWave =  GetActionScaleSettingsWaveRef(panelTitle)	
@@ -106,11 +105,8 @@ Function AM_MSA_midSweepFindAP(panelTitle, headStage)
 	if(!WaveExists(sweep))
 		DoAbortNow("***Error getting current sweep wave...")
 	endif
-	
-	Wave config = GetConfigWave(sweep)
-	adc = AFH_GetADCFromHeadstage(panelTitle, headStage)
-	col = AFH_GetITCDataColumn(config, adc, ITC_XOP_CHANNEL_TYPE_ADC)
-	WAVE singleAD = ExtractOneDimDataFromSweep(config, sweep, col)
+
+	WAVE singleAD = AFH_ExtractOneDimDataFromSweep(panelTitle, sweep, headstage, ITC_XOP_CHANNEL_TYPE_ADC)
 
 	apLevelValue = actionScaleSettingsWave[headStage][%apThreshold]
 	FindLevel/P/Q/EDGE=1 SingleAD, apLevelValue
@@ -128,7 +124,6 @@ Function AM_PSA_sweepLevelQC(panelTitle, headStage)
 	variable headStage
 
 	variable sweepNo
-	variable adc, col
 	variable numDACs
 	variable idx
 	variable tracePeakValue
@@ -161,10 +156,7 @@ Function AM_PSA_sweepLevelQC(panelTitle, headStage)
 		DoAbortNow("Error getting most recent sweepWave wave...")
 	endif
 
-	Wave config = GetConfigWave(sweepWave)
-	adc = AFH_GetADCFromHeadstage(panelTitle, headStage)
-	col = AFH_GetITCDataColumn(config, adc, ITC_XOP_CHANNEL_TYPE_ADC)
-	WAVE singleAD = ExtractOneDimDataFromSweep(config, sweepWave, col)
+	WAVE singleAD = AFH_ExtractOneDimDataFromSweep(panelTitle, sweepWave, headstage, ITC_XOP_CHANNEL_TYPE_ADC)
 
 	// check that the bridge balance is less than 20MOhms....will also need to check that its 15% of Rinput...
 	bridgeBalance = str2num(GetGuiControlValue(panelTitle, "setVar_DataAcq_BB"))
@@ -377,9 +369,8 @@ Function AM_PSA_returnActionPotential(panelTitle, headStage)
 	string panelTitle
 	variable headStage
 
-	variable adc, col
 	variable tracePeakValue
-	
+
 	Wave/SDFR=GetDevicePath(panelTitle) currentCompleteDataWave = ITCDataWave	
 	Wave/T analysisSettingsWave = GetAnalysisSettingsWaveRef(panelTitle)
 	Wave actionScaleSettingsWave =  GetActionScaleSettingsWaveRef(panelTitle)	
@@ -388,10 +379,7 @@ Function AM_PSA_returnActionPotential(panelTitle, headStage)
 		DoAbortNow("Error getting current sweep wave...")
 	endif
 
-	Wave config = GetConfigWave(sweep)
-	adc = AFH_GetADCFromHeadstage(panelTitle, headStage)
-	col = AFH_GetITCDataColumn(config, adc, ITC_XOP_CHANNEL_TYPE_ADC)
-	WAVE singleAD = ExtractOneDimDataFromSweep(config, sweep, col)
+	WAVE singleAD = AFH_ExtractOneDimDataFromSweep(panelTitle, sweep, headstage, ITC_XOP_CHANNEL_TYPE_ADC)
 
 	tracePeakValue = WaveMax(singleAD)	
 

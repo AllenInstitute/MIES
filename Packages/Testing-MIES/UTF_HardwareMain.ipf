@@ -7,7 +7,8 @@
 #include "UTF_VeryBasicHardwareTests"
 #include "UTF_TestingWithHardware"
 #include "UTF_BasicHardwareTests"
-#include "UTF_PatchSeqSubthreshold"
+#include "UTF_PatchSeqSubThreshold"
+#include "UTF_PatchSeqSquarePulse"
 
 Function run()
 //	DisableDebugOutput()
@@ -36,20 +37,32 @@ Function run()
 	list = AddListItem("Test_RepeatSets_2", list, ";", INF)
 	list = AddListItem("DAQ_RepeatSets_3", list, ";", INF)
 	list = AddListItem("Test_RepeatSets_3", list, ";", INF)
-	list = AddListItem("Run1", list, ";", INF)
-	list = AddListItem("Test1", list, ";", INF)
-	list = AddListItem("Run2", list, ";", INF)
-	list = AddListItem("Test2", list, ";", INF)
-	list = AddListItem("Run3", list, ";", INF)
-	list = AddListItem("Test3", list, ";", INF)
-	list = AddListItem("Run4", list, ";", INF)
-	list = AddListItem("Test4", list, ";", INF)
-	list = AddListItem("Run5", list, ";", INF)
-	list = AddListItem("Test5", list, ";", INF)
-	list = AddListItem("Run6", list, ";", INF)
-	list = AddListItem("Test6", list, ";", INF)
-	list = AddListItem("Run7", list, ";", INF)
-	list = AddListItem("Test7", list, ";", INF)
+
+	list = AddListItem("PS_ST_Run1", list, ";", INF)
+	list = AddListItem("PS_ST_Test1", list, ";", INF)
+	list = AddListItem("PS_ST_Run2", list, ";", INF)
+	list = AddListItem("PS_ST_Test2", list, ";", INF)
+	list = AddListItem("PS_ST_Run3", list, ";", INF)
+	list = AddListItem("PS_ST_Test3", list, ";", INF)
+	list = AddListItem("PS_ST_Run4", list, ";", INF)
+	list = AddListItem("PS_ST_Test4", list, ";", INF)
+	list = AddListItem("PS_ST_Run5", list, ";", INF)
+	list = AddListItem("PS_ST_Test5", list, ";", INF)
+	list = AddListItem("PS_ST_Run6", list, ";", INF)
+	list = AddListItem("PS_ST_Test6", list, ";", INF)
+	list = AddListItem("PS_ST_Run7", list, ";", INF)
+	list = AddListItem("PS_ST_Test7", list, ";", INF)
+
+	list = AddListItem("PS_SP_Run1", list, ";", INF)
+	list = AddListItem("PS_SP_Test1", list, ";", INF)
+	list = AddListItem("PS_SP_Run2", list, ";", INF)
+	list = AddListItem("PS_SP_Test2", list, ";", INF)
+	list = AddListItem("PS_SP_Run3", list, ";", INF)
+	list = AddListItem("PS_SP_Test3", list, ";", INF)
+	list = AddListItem("PS_SP_Run4", list, ";", INF)
+	list = AddListItem("PS_SP_Test4", list, ";", INF)
+	list = AddListItem("PS_SP_Run5", list, ";", INF)
+	list = AddListItem("PS_SP_Test5", list, ";", INF)
 
 	SetupTestCases_IGNORE(list)
 	ExecuteNextTestCase_IGNORE()

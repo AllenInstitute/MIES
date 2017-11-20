@@ -437,6 +437,54 @@ Function/S GetLastSettingTextIndep(textualValues, sweepNo, setting, entrySourceT
 	endif
 End
 
+/// @brief Return a headstage independent setting from the numerical
+///        labnotebook of the sweeps in the same RA cycle
+///
+/// @return the headstage independent setting or `defValue`
+Function GetLastSettingIndepRAC(numericalValues, sweepNo, setting, entrySourceType, [defValue])
+	Wave numericalValues
+	variable sweepNo
+	string setting
+	variable defValue, entrySourceType
+
+	if(ParamIsDefault(defValue))
+		defValue = NaN
+	endif
+
+	WAVE/Z settings = GetLastSettingRAC(numericalValues, sweepNo, setting, entrySourceType)
+
+	if(WaveExists(settings))
+		return settings[GetIndexForHeadstageIndepData(numericalValues)]
+	else
+		DEBUGPRINT("Missing setting in labnotebook", str=setting)
+		return defValue
+	endif
+End
+
+/// @brief Return a headstage independent setting from the numerical
+///        labnotebook of the sweeps in the same RA cycle
+///
+/// @return the headstage independent setting or `defValue`
+Function/S GetLastSettingTextIndepRAC(textualValues, sweepNo, setting, entrySourceType, [defValue])
+	Wave/T textualValues
+	variable sweepNo
+	string setting, defValue
+	variable entrySourceType
+
+	if(ParamIsDefault(defValue))
+		defValue = ""
+	endif
+
+	WAVE/T/Z settings = GetLastSettingTextRAC(textualValues, sweepNo, setting, entrySourceType)
+
+	if(WaveExists(settings))
+		return settings[GetIndexForHeadstageIndepData(textualValues)]
+	else
+		DEBUGPRINT("Missing setting in labnotebook", str=setting)
+		return defValue
+	endif
+End
+
 /// @brief Returns a wave with the latest value of a setting from the history wave
 /// for a given sweep number.
 ///
@@ -704,6 +752,62 @@ Function/WAVE GetLastSettingText(textualValues, sweepNo, setting, entrySourceTyp
 		// return if we have at least one non-empty entry
 		if(Sum(lengths) > 0)
 			return status
+		endif
+	endfor
+
+	return $""
+End
+
+/// @brief Return the last textual value of the sweeps in the same RA cycle
+///
+/// @see GetLastSettingText
+Function/WAVE GetLastSettingTextRAC(textualValues, sweepNo, setting, entrySourceType)
+	WAVE textualValues
+	variable sweepNo
+	string setting
+	variable entrySourceType
+
+	variable i, numSweeps
+
+	WAVE/Z sweeps = AFH_GetSweepsFromSameRACycle(textualValues, sweepNo)
+	if(!WaveExists(sweeps) || DimSize(sweeps, ROWS) == 0)
+		return $""
+	endif
+
+	numSweeps = DimSize(sweeps, ROWS)
+	for(i = numSweeps - 1; i >= 0; i += 1)
+		WAVE/Z settings = GetLastSettingText(textualValues, sweeps[i], setting, entrySourceType)
+
+		if(WaveExists(settings))
+			return settings
+		endif
+	endfor
+
+	return $""
+End
+
+/// @brief Return the last numerical value of the sweeps in the same RA cycle
+///
+/// @see GetLastSetting
+Function/WAVE GetLastSettingRAC(numericalValues, sweepNo, setting, entrySourceType)
+	WAVE numericalValues
+	variable sweepNo
+	string setting
+	variable entrySourceType
+
+	variable i, numSweeps
+
+	WAVE/Z sweeps = AFH_GetSweepsFromSameRACycle(numericalValues, sweepNo)
+	if(!WaveExists(sweeps) || DimSize(sweeps, ROWS) == 0)
+		return $""
+	endif
+
+	numSweeps = DimSize(sweeps, ROWS)
+	for(i = numSweeps - 1; i >= 0; i -= 1)
+		WAVE/Z settings = GetLastSetting(numericalValues, sweeps[i], setting, entrySourceType)
+
+		if(WaveExists(settings))
+			return settings
 		endif
 	endfor
 
