@@ -236,6 +236,18 @@ static Function RA_FinishAcquisition(panelTitle)
 
 	DQ_StopITCDeviceTimer(panelTitle)
 
+	NVAR count = $GetCount(panelTitle)
+
+	WAVE/SDFR=root: data
+	Redimension/N=(count + 1) data
+
+	data[1,Dimsize(data, ROWS) - 1] = (data[p] - data[0]) / 1e6
+	data[0] = 0
+	data[1] = NaN
+
+	Duplicate/O data, wave0rel
+
+
 	list = GetListofLeaderAndPossFollower(panelTitle)
 
 	numEntries = ItemsInList(list)
@@ -266,6 +278,10 @@ static Function RA_StartMD(panelTitle)
 	string followerPanelTitle
 	NVAR count = $GetCount(panelTitle)
 	NVAR activeSetCount = $GetActiveSetCount(panelTitle)
+
+	Make/O/D root:data/WAVE=data = 0
+
+	data[0] = stopmstimer(-2)
 
 	activeSetCount = IDX_CalculcateActiveSetCount(panelTitle)
 
@@ -304,6 +320,9 @@ Function RA_CounterMD(panelTitle)
 
 	Count += 1
 	ActiveSetCount -= 1
+
+	WAVE/SDFR=root: data
+	data[count] = stopmstimer(-2)
 
 	numSets        = RA_GetTotalNumberOfSets(panelTitle)
 	totTrials      = RA_GetTotalNumberOfTrials(panelTitle)
