@@ -852,7 +852,7 @@ Function TI_runInitAccessResisQC(headstage, [cmdID])
 		tpBufferSetting = GetSetVariable(currentPanel,"setvar_Settings_TPBuffer")
 
 		// set the test pulse buffer up to a higher value to account for noise...using 5 for now
-		SetSetVariable(currentPanel,"setvar_Settings_TPBuffer", 5)
+		PGC_SetAndActivateControl(currentPanel,"setvar_Settings_TPBuffer", val = 5)
 
 		// Check to see if Test Pulse is already running...if not running, turn it on...
 		if(!(IsBackgroundTaskRunning("TestPulse")))
@@ -950,7 +950,7 @@ Function TI_finishInitAccessQCCheck(s)
 	print "qcResult: ", qcResult
 
 	// set the test pulse buffer back to 1
-	SetSetVariable(currentPanel,"setvar_Settings_TPBuffer", tpBufferSetting)
+	PGC_SetAndActivateControl(currentPanel,"setvar_Settings_TPBuffer", val = tpBufferSetting)
 
 	// determine if the cmdID was provided
 	if(stringmatch(cmdID,"foobar") != 1)
@@ -1071,9 +1071,9 @@ Function/S TI_runAdaptiveStim(stimWaveName, initScaleFactor, scaleFactor, thresh
 		// and put the full psa function into the analysisSettingsWave...putting it as the correct item into the popmenu widget doesn't push it into wave
 		analysisSettingsWave[headstage][%PSAType] = "returnActionPotential"
 		analysisSettingsWave[headstage][%PAAType] = "adjustScaleFactor"
-		
+
 		// turn on the repeated acquisition
-		SetCheckBoxState(currentPanel, "Check_DataAcq1_RepeatAcq", 1)
+		PGC_SetAndActivateControl(currentPanel, "Check_DataAcq1_RepeatAcq", val = 1)
 		
 		// put the delta in the right place 
 		actionScaleSettingsWave[headstage][%coarseScaleValue] = scaleFactor
@@ -1085,7 +1085,7 @@ Function/S TI_runAdaptiveStim(stimWaveName, initScaleFactor, scaleFactor, thresh
 		analysisSettingsWave[headstage][%PSAResult] = "0"
 
 		// put the init Scale factor where it needs to go
-		SetSetVariable(currentPanel, scaleWidgetName, initScaleFactor)
+		PGC_SetAndActivateControl(currentPanel, scaleWidgetName, val = initScaleFactor)
 
 		DQS_StartDAQSingleDevice(currentPanel)
 	endfor
@@ -1387,8 +1387,8 @@ Function/S TI_runBracketingFunction(stimWaveName, coarseScaleFactor, fineScaleFa
 		analysisSettingsWave[headstage][%PAAType] = "bracketScaleFactor"
 		
 		// turn on the repeated acquisition
-		SetCheckBoxState(currentPanel, "Check_DataAcq1_RepeatAcq", 1)
-		
+		PGC_SetAndActivateControl(currentPanel, "Check_DataAcq1_RepeatAcq", val = 1)
+
 		// make sure the analysisResult is set to 0
 		analysisSettingsWave[headstage][%PSAResult] = "0"
 
@@ -1457,7 +1457,7 @@ Function TI_runStimWave(stimWaveName, scaleFactor, headstage, [cmdID])
 		PGC_SetAndActivateControl(currentPanel, waveSelect, val=incomingWaveIndex + 1)
 		
 		// put the scale in the right place 
-		SetSetVariable(currentPanel, scaleWidgetName, scaleFactor)
+		PGC_SetAndActivateControl(currentPanel, scaleWidgetName, val = scaleFactor)
 		DQS_StartDAQSingleDevice(currentPanel)
 	endfor
 	

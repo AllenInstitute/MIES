@@ -614,7 +614,7 @@ static Function ED_createAsyncWaveNoteTags(panelTitle, sweepCount)
 	
 			//Now do the text stuff...
 			// Async Title
-			sprintf ctrl, "SetVar_AsyncAD_Title_0%d" asyncVariablesCounter
+			ctrl = GetPanelControl(asyncVariablesCounter, CHANNEL_TYPE_ASYNC, CHANNEL_CONTROL_TITLE)
 			string titleStringValue = GetSetVariableString(panelTitle, ctrl)
 			string adTitleStringValue 
 			sprintf adTitleStringValue, "Async AD %d: %s" asyncVariablesCounter, titleStringValue
@@ -807,8 +807,8 @@ static Function ED_ADDataBasedWaveNotes(asyncMeasurementWave, panelTitle)
 		// Async channels start at channel 16 on ITC 1600, needs to be a diff value constant for ITC18
 		rawChannelValue = HW_ReadADC(HARDWARE_ITC_DAC, ITCDeviceIDGlobal, i + deviceChannelOffset)
 
-		sprintf setvarTitle, "SetVar_AsyncAD_Title_%02d", i
-		setvarGain= GetPanelControl(i, CHANNEL_TYPE_ASYNC, CHANNEL_CONTROL_GAIN)
+		setvarTitle = GetPanelControl(i, CHANNEL_TYPE_ASYNC, CHANNEL_CONTROL_TITLE)
+		setvarGain  = GetPanelControl(i, CHANNEL_TYPE_ASYNC, CHANNEL_CONTROL_GAIN)
 
 		title = GetSetVariableString(panelTitle, setvarTitle)
 		gain  = GetSetVariable(panelTitle, setvarGain)

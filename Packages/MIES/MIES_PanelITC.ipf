@@ -781,7 +781,7 @@ Window DA_Ephys() : Panel
 	CheckBox Check_Settings_UseDoublePrec,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	CheckBox Check_Settings_UseDoublePrec,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
 	CheckBox Check_Settings_UseDoublePrec,value= 0
-	CheckBox Check_Settings_SkipAnalysFuncs,pos={243.00,268.00},size={155.00,15.00},disable=1,proc=DAP_CheckProc_RecordInGuiState,title="Skip analysis function calls"
+	CheckBox Check_Settings_SkipAnalysFuncs,pos={243.00,268.00},size={155.00,15.00},disable=1,proc=DAP_CheckProc_UpdateGuiState,title="Skip analysis function calls"
 	CheckBox Check_Settings_SkipAnalysFuncs,help={"Should the analysis functions defined in the stim sets not be called?"}
 	CheckBox Check_Settings_SkipAnalysFuncs,userdata(tabnum)=  "5"
 	CheckBox Check_Settings_SkipAnalysFuncs,userdata(tabcontrol)=  "ADC"
@@ -789,49 +789,49 @@ Window DA_Ephys() : Panel
 	CheckBox Check_Settings_SkipAnalysFuncs,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	CheckBox Check_Settings_SkipAnalysFuncs,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
 	CheckBox Check_Settings_SkipAnalysFuncs,value= 0
-	CheckBox Check_AsyncAD_00,pos={172.00,46.00},size={40.00,15.00},disable=1,proc=DAP_CheckProc_RecordInGuiState,title="AD 0"
+	CheckBox Check_AsyncAD_00,pos={172.00,46.00},size={40.00,15.00},disable=1,proc=DAP_CheckProc_UpdateGuiState,title="AD 0"
 	CheckBox Check_AsyncAD_00,userdata(tabnum)=  "4",userdata(tabcontrol)=  "ADC"
 	CheckBox Check_AsyncAD_00,userdata(ResizeControlsInfo)= A"!!,G<!!#>F!!#>.!!#<(z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	CheckBox Check_AsyncAD_00,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	CheckBox Check_AsyncAD_00,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
 	CheckBox Check_AsyncAD_00,value= 0
-	CheckBox Check_AsyncAD_01,pos={171.00,97.00},size={40.00,15.00},disable=1,proc=DAP_CheckProc_RecordInGuiState,title="AD 1"
+	CheckBox Check_AsyncAD_01,pos={171.00,97.00},size={40.00,15.00},disable=1,proc=DAP_CheckProc_UpdateGuiState,title="AD 1"
 	CheckBox Check_AsyncAD_01,userdata(tabnum)=  "4",userdata(tabcontrol)=  "ADC"
 	CheckBox Check_AsyncAD_01,userdata(ResizeControlsInfo)= A"!!,G;!!#@&!!#>.!!#<(z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	CheckBox Check_AsyncAD_01,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	CheckBox Check_AsyncAD_01,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
 	CheckBox Check_AsyncAD_01,value= 0
-	CheckBox Check_AsyncAD_02,pos={171.00,148.00},size={40.00,15.00},disable=1,proc=DAP_CheckProc_RecordInGuiState,title="AD 2"
+	CheckBox Check_AsyncAD_02,pos={171.00,148.00},size={40.00,15.00},disable=1,proc=DAP_CheckProc_UpdateGuiState,title="AD 2"
 	CheckBox Check_AsyncAD_02,userdata(tabnum)=  "4",userdata(tabcontrol)=  "ADC"
 	CheckBox Check_AsyncAD_02,userdata(ResizeControlsInfo)= A"!!,G;!!#A#!!#>.!!#<(z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	CheckBox Check_AsyncAD_02,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	CheckBox Check_AsyncAD_02,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
 	CheckBox Check_AsyncAD_02,value= 0
-	CheckBox Check_AsyncAD_03,pos={171.00,199.00},size={40.00,15.00},disable=1,proc=DAP_CheckProc_RecordInGuiState,title="AD 3"
+	CheckBox Check_AsyncAD_03,pos={171.00,199.00},size={40.00,15.00},disable=1,proc=DAP_CheckProc_UpdateGuiState,title="AD 3"
 	CheckBox Check_AsyncAD_03,userdata(tabnum)=  "4",userdata(tabcontrol)=  "ADC"
 	CheckBox Check_AsyncAD_03,userdata(ResizeControlsInfo)= A"!!,G;!!#AV!!#>.!!#<(z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	CheckBox Check_AsyncAD_03,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	CheckBox Check_AsyncAD_03,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
 	CheckBox Check_AsyncAD_03,value= 0
-	CheckBox Check_AsyncAD_04,pos={171.00,250.00},size={40.00,15.00},disable=1,proc=DAP_CheckProc_RecordInGuiState,title="AD 4"
+	CheckBox Check_AsyncAD_04,pos={171.00,250.00},size={40.00,15.00},disable=1,proc=DAP_CheckProc_UpdateGuiState,title="AD 4"
 	CheckBox Check_AsyncAD_04,userdata(tabnum)=  "4",userdata(tabcontrol)=  "ADC"
 	CheckBox Check_AsyncAD_04,userdata(ResizeControlsInfo)= A"!!,G;!!#B4!!#>.!!#<(z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	CheckBox Check_AsyncAD_04,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	CheckBox Check_AsyncAD_04,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
 	CheckBox Check_AsyncAD_04,value= 0
-	CheckBox Check_AsyncAD_05,pos={171.00,301.00},size={40.00,15.00},disable=1,proc=DAP_CheckProc_RecordInGuiState,title="AD 5"
+	CheckBox Check_AsyncAD_05,pos={171.00,301.00},size={40.00,15.00},disable=1,proc=DAP_CheckProc_UpdateGuiState,title="AD 5"
 	CheckBox Check_AsyncAD_05,userdata(tabnum)=  "4",userdata(tabcontrol)=  "ADC"
 	CheckBox Check_AsyncAD_05,userdata(ResizeControlsInfo)= A"!!,G;!!#BPJ,hnY!!#<(z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	CheckBox Check_AsyncAD_05,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	CheckBox Check_AsyncAD_05,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
 	CheckBox Check_AsyncAD_05,value= 0
-	CheckBox Check_AsyncAD_06,pos={171.00,352.00},size={40.00,15.00},disable=1,proc=DAP_CheckProc_RecordInGuiState,title="AD 6"
+	CheckBox Check_AsyncAD_06,pos={171.00,352.00},size={40.00,15.00},disable=1,proc=DAP_CheckProc_UpdateGuiState,title="AD 6"
 	CheckBox Check_AsyncAD_06,userdata(tabnum)=  "4",userdata(tabcontrol)=  "ADC"
 	CheckBox Check_AsyncAD_06,userdata(ResizeControlsInfo)= A"!!,G;!!#Bj!!#>.!!#<(z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	CheckBox Check_AsyncAD_06,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	CheckBox Check_AsyncAD_06,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
 	CheckBox Check_AsyncAD_06,value= 0
-	CheckBox Check_AsyncAD_07,pos={171.00,404.00},size={40.00,15.00},disable=1,proc=DAP_CheckProc_RecordInGuiState,title="AD 7"
+	CheckBox Check_AsyncAD_07,pos={171.00,404.00},size={40.00,15.00},disable=1,proc=DAP_CheckProc_UpdateGuiState,title="AD 7"
 	CheckBox Check_AsyncAD_07,userdata(tabnum)=  "4",userdata(tabcontrol)=  "ADC"
 	CheckBox Check_AsyncAD_07,userdata(ResizeControlsInfo)= A"!!,G;!!#C/!!#>.!!#<(z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	CheckBox Check_AsyncAD_07,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
@@ -885,62 +885,62 @@ Window DA_Ephys() : Panel
 	SetVariable Gain_AsyncAD_07,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	SetVariable Gain_AsyncAD_07,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
 	SetVariable Gain_AsyncAD_07,limits={0,inf,1},value= _NUM:1
-	SetVariable SetVar_AsyncAD_Title_00,pos={14.00,44.00},size={150.00,18.00},disable=1,title="Title"
-	SetVariable SetVar_AsyncAD_Title_00,userdata(tabnum)=  "4"
-	SetVariable SetVar_AsyncAD_Title_00,userdata(tabcontrol)=  "ADC"
-	SetVariable SetVar_AsyncAD_Title_00,userdata(ResizeControlsInfo)= A"!!,An!!#>>!!#A%!!#<Hz!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
-	SetVariable SetVar_AsyncAD_Title_00,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
-	SetVariable SetVar_AsyncAD_Title_00,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
-	SetVariable SetVar_AsyncAD_Title_00,value= _STR:""
-	SetVariable SetVar_AsyncAD_Title_01,pos={14.00,95.00},size={150.00,18.00},disable=1,title="Title"
-	SetVariable SetVar_AsyncAD_Title_01,userdata(tabnum)=  "4"
-	SetVariable SetVar_AsyncAD_Title_01,userdata(tabcontrol)=  "ADC"
-	SetVariable SetVar_AsyncAD_Title_01,userdata(ResizeControlsInfo)= A"!!,An!!#@\"!!#A%!!#<Hz!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
-	SetVariable SetVar_AsyncAD_Title_01,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
-	SetVariable SetVar_AsyncAD_Title_01,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
-	SetVariable SetVar_AsyncAD_Title_01,value= _STR:""
-	SetVariable SetVar_AsyncAD_Title_02,pos={14.00,146.00},size={150.00,18.00},disable=1,title="Title"
-	SetVariable SetVar_AsyncAD_Title_02,userdata(tabnum)=  "4"
-	SetVariable SetVar_AsyncAD_Title_02,userdata(tabcontrol)=  "ADC"
-	SetVariable SetVar_AsyncAD_Title_02,userdata(ResizeControlsInfo)= A"!!,An!!#A!!!#A%!!#<Hz!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
-	SetVariable SetVar_AsyncAD_Title_02,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
-	SetVariable SetVar_AsyncAD_Title_02,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
-	SetVariable SetVar_AsyncAD_Title_02,value= _STR:""
-	SetVariable SetVar_AsyncAD_Title_03,pos={14.00,197.00},size={150.00,18.00},disable=1,title="Title"
-	SetVariable SetVar_AsyncAD_Title_03,userdata(tabnum)=  "4"
-	SetVariable SetVar_AsyncAD_Title_03,userdata(tabcontrol)=  "ADC"
-	SetVariable SetVar_AsyncAD_Title_03,userdata(ResizeControlsInfo)= A"!!,An!!#AT!!#A%!!#<Hz!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
-	SetVariable SetVar_AsyncAD_Title_03,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
-	SetVariable SetVar_AsyncAD_Title_03,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
-	SetVariable SetVar_AsyncAD_Title_03,value= _STR:""
-	SetVariable SetVar_AsyncAD_Title_04,pos={11.00,248.00},size={150.00,18.00},disable=1,title="Title"
-	SetVariable SetVar_AsyncAD_Title_04,userdata(tabnum)=  "4"
-	SetVariable SetVar_AsyncAD_Title_04,userdata(tabcontrol)=  "ADC"
-	SetVariable SetVar_AsyncAD_Title_04,userdata(ResizeControlsInfo)= A"!!,A>!!#B2!!#A%!!#<Hz!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
-	SetVariable SetVar_AsyncAD_Title_04,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
-	SetVariable SetVar_AsyncAD_Title_04,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
-	SetVariable SetVar_AsyncAD_Title_04,value= _STR:""
-	SetVariable SetVar_AsyncAD_Title_05,pos={14.00,299.00},size={150.00,18.00},disable=1,title="Title"
-	SetVariable SetVar_AsyncAD_Title_05,userdata(tabnum)=  "4"
-	SetVariable SetVar_AsyncAD_Title_05,userdata(tabcontrol)=  "ADC"
-	SetVariable SetVar_AsyncAD_Title_05,userdata(ResizeControlsInfo)= A"!!,An!!#BOJ,hqP!!#<Hz!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
-	SetVariable SetVar_AsyncAD_Title_05,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
-	SetVariable SetVar_AsyncAD_Title_05,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
-	SetVariable SetVar_AsyncAD_Title_05,value= _STR:""
-	SetVariable SetVar_AsyncAD_Title_06,pos={14.00,350.00},size={150.00,18.00},disable=1,title="Title"
-	SetVariable SetVar_AsyncAD_Title_06,userdata(tabnum)=  "4"
-	SetVariable SetVar_AsyncAD_Title_06,userdata(tabcontrol)=  "ADC"
-	SetVariable SetVar_AsyncAD_Title_06,userdata(ResizeControlsInfo)= A"!!,An!!#Bi!!#A%!!#<Hz!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
-	SetVariable SetVar_AsyncAD_Title_06,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
-	SetVariable SetVar_AsyncAD_Title_06,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
-	SetVariable SetVar_AsyncAD_Title_06,value= _STR:""
-	SetVariable SetVar_AsyncAD_Title_07,pos={14.00,402.00},size={150.00,18.00},disable=1,title="Title"
-	SetVariable SetVar_AsyncAD_Title_07,userdata(tabnum)=  "4"
-	SetVariable SetVar_AsyncAD_Title_07,userdata(tabcontrol)=  "ADC"
-	SetVariable SetVar_AsyncAD_Title_07,userdata(ResizeControlsInfo)= A"!!,An!!#C.!!#A%!!#<Hz!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
-	SetVariable SetVar_AsyncAD_Title_07,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
-	SetVariable SetVar_AsyncAD_Title_07,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
-	SetVariable SetVar_AsyncAD_Title_07,value= _STR:""
+	SetVariable Title_AsyncAD_00,pos={14.00,44.00},size={150.00,18.00},disable=1,title="Title"
+	SetVariable Title_AsyncAD_00,userdata(tabnum)=  "4"
+	SetVariable Title_AsyncAD_00,userdata(tabcontrol)=  "ADC"
+	SetVariable Title_AsyncAD_00,userdata(ResizeControlsInfo)= A"!!,An!!#>>!!#A%!!#<Hz!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
+	SetVariable Title_AsyncAD_00,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
+	SetVariable Title_AsyncAD_00,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
+	SetVariable Title_AsyncAD_00,value= _STR:""
+	SetVariable Title_AsyncAD_01,pos={14.00,95.00},size={150.00,18.00},disable=1,title="Title"
+	SetVariable Title_AsyncAD_01,userdata(tabnum)=  "4"
+	SetVariable Title_AsyncAD_01,userdata(tabcontrol)=  "ADC"
+	SetVariable Title_AsyncAD_01,userdata(ResizeControlsInfo)= A"!!,An!!#@\"!!#A%!!#<Hz!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
+	SetVariable Title_AsyncAD_01,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
+	SetVariable Title_AsyncAD_01,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
+	SetVariable Title_AsyncAD_01,value= _STR:""
+	SetVariable Title_AsyncAD_02,pos={14.00,146.00},size={150.00,18.00},disable=1,title="Title"
+	SetVariable Title_AsyncAD_02,userdata(tabnum)=  "4"
+	SetVariable Title_AsyncAD_02,userdata(tabcontrol)=  "ADC"
+	SetVariable Title_AsyncAD_02,userdata(ResizeControlsInfo)= A"!!,An!!#A!!!#A%!!#<Hz!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
+	SetVariable Title_AsyncAD_02,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
+	SetVariable Title_AsyncAD_02,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
+	SetVariable Title_AsyncAD_02,value= _STR:""
+	SetVariable Title_AsyncAD_03,pos={14.00,197.00},size={150.00,18.00},disable=1,title="Title"
+	SetVariable Title_AsyncAD_03,userdata(tabnum)=  "4"
+	SetVariable Title_AsyncAD_03,userdata(tabcontrol)=  "ADC"
+	SetVariable Title_AsyncAD_03,userdata(ResizeControlsInfo)= A"!!,An!!#AT!!#A%!!#<Hz!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
+	SetVariable Title_AsyncAD_03,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
+	SetVariable Title_AsyncAD_03,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
+	SetVariable Title_AsyncAD_03,value= _STR:""
+	SetVariable Title_AsyncAD_04,pos={11.00,248.00},size={150.00,18.00},disable=1,title="Title"
+	SetVariable Title_AsyncAD_04,userdata(tabnum)=  "4"
+	SetVariable Title_AsyncAD_04,userdata(tabcontrol)=  "ADC"
+	SetVariable Title_AsyncAD_04,userdata(ResizeControlsInfo)= A"!!,A>!!#B2!!#A%!!#<Hz!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
+	SetVariable Title_AsyncAD_04,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
+	SetVariable Title_AsyncAD_04,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
+	SetVariable Title_AsyncAD_04,value= _STR:""
+	SetVariable Title_AsyncAD_05,pos={14.00,299.00},size={150.00,18.00},disable=1,title="Title"
+	SetVariable Title_AsyncAD_05,userdata(tabnum)=  "4"
+	SetVariable Title_AsyncAD_05,userdata(tabcontrol)=  "ADC"
+	SetVariable Title_AsyncAD_05,userdata(ResizeControlsInfo)= A"!!,An!!#BOJ,hqP!!#<Hz!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
+	SetVariable Title_AsyncAD_05,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
+	SetVariable Title_AsyncAD_05,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
+	SetVariable Title_AsyncAD_05,value= _STR:""
+	SetVariable Title_AsyncAD_06,pos={14.00,350.00},size={150.00,18.00},disable=1,title="Title"
+	SetVariable Title_AsyncAD_06,userdata(tabnum)=  "4"
+	SetVariable Title_AsyncAD_06,userdata(tabcontrol)=  "ADC"
+	SetVariable Title_AsyncAD_06,userdata(ResizeControlsInfo)= A"!!,An!!#Bi!!#A%!!#<Hz!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
+	SetVariable Title_AsyncAD_06,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
+	SetVariable Title_AsyncAD_06,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
+	SetVariable Title_AsyncAD_06,value= _STR:""
+	SetVariable Title_AsyncAD_07,pos={14.00,402.00},size={150.00,18.00},disable=1,title="Title"
+	SetVariable Title_AsyncAD_07,userdata(tabnum)=  "4"
+	SetVariable Title_AsyncAD_07,userdata(tabcontrol)=  "ADC"
+	SetVariable Title_AsyncAD_07,userdata(ResizeControlsInfo)= A"!!,An!!#C.!!#A%!!#<Hz!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
+	SetVariable Title_AsyncAD_07,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
+	SetVariable Title_AsyncAD_07,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
+	SetVariable Title_AsyncAD_07,value= _STR:""
 	SetVariable Unit_AsyncAD_00,pos={315.00,44.00},size={75.00,18.00},disable=1,title="Unit"
 	SetVariable Unit_AsyncAD_00,userdata(tabnum)=  "4",userdata(tabcontrol)=  "ADC"
 	SetVariable Unit_AsyncAD_00,userdata(ResizeControlsInfo)= A"!!,HXJ,hni!!#?O!!#<Hz!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
@@ -1611,7 +1611,7 @@ Window DA_Ephys() : Panel
 	SetVariable max_AsyncAD_00,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	SetVariable max_AsyncAD_00,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
 	SetVariable max_AsyncAD_00,value= _NUM:0
-	CheckBox check_AsyncAlarm_00,pos={50.00,68.00},size={47.00,15.00},disable=1,proc=DAP_CheckProc_RecordInGuiState,title="Alarm"
+	CheckBox check_AsyncAlarm_00,pos={50.00,68.00},size={47.00,15.00},disable=1,proc=DAP_CheckProc_UpdateGuiState,title="Alarm"
 	CheckBox check_AsyncAlarm_00,userdata(tabnum)=  "4",userdata(tabcontrol)=  "ADC"
 	CheckBox check_AsyncAlarm_00,userdata(ResizeControlsInfo)= A"!!,DW!!#?A!!#>J!!#<(z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	CheckBox check_AsyncAlarm_00,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
@@ -1629,7 +1629,7 @@ Window DA_Ephys() : Panel
 	SetVariable max_AsyncAD_01,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	SetVariable max_AsyncAD_01,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
 	SetVariable max_AsyncAD_01,value= _NUM:0
-	CheckBox check_AsyncAlarm_01,pos={50.00,119.00},size={47.00,15.00},disable=1,proc=DAP_CheckProc_RecordInGuiState,title="Alarm"
+	CheckBox check_AsyncAlarm_01,pos={50.00,119.00},size={47.00,15.00},disable=1,proc=DAP_CheckProc_UpdateGuiState,title="Alarm"
 	CheckBox check_AsyncAlarm_01,userdata(tabnum)=  "4",userdata(tabcontrol)=  "ADC"
 	CheckBox check_AsyncAlarm_01,userdata(ResizeControlsInfo)= A"!!,DW!!#@R!!#>J!!#<(z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	CheckBox check_AsyncAlarm_01,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
@@ -1647,7 +1647,7 @@ Window DA_Ephys() : Panel
 	SetVariable max_AsyncAD_02,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	SetVariable max_AsyncAD_02,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
 	SetVariable max_AsyncAD_02,value= _NUM:0
-	CheckBox check_AsyncAlarm_02,pos={50.00,171.00},size={47.00,15.00},disable=1,proc=DAP_CheckProc_RecordInGuiState,title="Alarm"
+	CheckBox check_AsyncAlarm_02,pos={50.00,171.00},size={47.00,15.00},disable=1,proc=DAP_CheckProc_UpdateGuiState,title="Alarm"
 	CheckBox check_AsyncAlarm_02,userdata(tabnum)=  "4",userdata(tabcontrol)=  "ADC"
 	CheckBox check_AsyncAlarm_02,userdata(ResizeControlsInfo)= A"!!,DW!!#A:!!#>J!!#<(z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	CheckBox check_AsyncAlarm_02,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
@@ -1665,7 +1665,7 @@ Window DA_Ephys() : Panel
 	SetVariable max_AsyncAD_03,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	SetVariable max_AsyncAD_03,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
 	SetVariable max_AsyncAD_03,value= _NUM:0
-	CheckBox check_AsyncAlarm_03,pos={50.00,222.00},size={47.00,15.00},disable=1,proc=DAP_CheckProc_RecordInGuiState,title="Alarm"
+	CheckBox check_AsyncAlarm_03,pos={50.00,222.00},size={47.00,15.00},disable=1,proc=DAP_CheckProc_UpdateGuiState,title="Alarm"
 	CheckBox check_AsyncAlarm_03,userdata(tabnum)=  "4",userdata(tabcontrol)=  "ADC"
 	CheckBox check_AsyncAlarm_03,userdata(ResizeControlsInfo)= A"!!,DW!!#Am!!#>J!!#<(z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	CheckBox check_AsyncAlarm_03,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
@@ -1683,7 +1683,7 @@ Window DA_Ephys() : Panel
 	SetVariable max_AsyncAD_04,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	SetVariable max_AsyncAD_04,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
 	SetVariable max_AsyncAD_04,value= _NUM:0
-	CheckBox check_AsyncAlarm_04,pos={50.00,274.00},size={47.00,15.00},disable=1,proc=DAP_CheckProc_RecordInGuiState,title="Alarm"
+	CheckBox check_AsyncAlarm_04,pos={50.00,274.00},size={47.00,15.00},disable=1,proc=DAP_CheckProc_UpdateGuiState,title="Alarm"
 	CheckBox check_AsyncAlarm_04,userdata(tabnum)=  "4",userdata(tabcontrol)=  "ADC"
 	CheckBox check_AsyncAlarm_04,userdata(ResizeControlsInfo)= A"!!,DW!!#BC!!#>J!!#<(z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	CheckBox check_AsyncAlarm_04,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
@@ -1701,7 +1701,7 @@ Window DA_Ephys() : Panel
 	SetVariable max_AsyncAD_05,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	SetVariable max_AsyncAD_05,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
 	SetVariable max_AsyncAD_05,value= _NUM:0
-	CheckBox check_AsyncAlarm_05,pos={50.00,325.00},size={47.00,15.00},disable=1,proc=DAP_CheckProc_RecordInGuiState,title="Alarm"
+	CheckBox check_AsyncAlarm_05,pos={50.00,325.00},size={47.00,15.00},disable=1,proc=DAP_CheckProc_UpdateGuiState,title="Alarm"
 	CheckBox check_AsyncAlarm_05,userdata(tabnum)=  "4",userdata(tabcontrol)=  "ADC"
 	CheckBox check_AsyncAlarm_05,userdata(ResizeControlsInfo)= A"!!,DW!!#B\\J,hnu!!#<(z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	CheckBox check_AsyncAlarm_05,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
@@ -1719,7 +1719,7 @@ Window DA_Ephys() : Panel
 	SetVariable max_AsyncAD_06,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	SetVariable max_AsyncAD_06,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
 	SetVariable max_AsyncAD_06,value= _NUM:0
-	CheckBox check_AsyncAlarm_06,pos={50.00,378.00},size={47.00,15.00},disable=1,proc=DAP_CheckProc_RecordInGuiState,title="Alarm"
+	CheckBox check_AsyncAlarm_06,pos={50.00,378.00},size={47.00,15.00},disable=1,proc=DAP_CheckProc_UpdateGuiState,title="Alarm"
 	CheckBox check_AsyncAlarm_06,userdata(tabnum)=  "4",userdata(tabcontrol)=  "ADC"
 	CheckBox check_AsyncAlarm_06,userdata(ResizeControlsInfo)= A"!!,DW!!#C\"!!#>J!!#<(z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	CheckBox check_AsyncAlarm_06,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
@@ -1737,7 +1737,7 @@ Window DA_Ephys() : Panel
 	SetVariable max_AsyncAD_07,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	SetVariable max_AsyncAD_07,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
 	SetVariable max_AsyncAD_07,value= _NUM:0
-	CheckBox check_AsyncAlarm_07,pos={50.00,429.00},size={47.00,15.00},disable=1,proc=DAP_CheckProc_RecordInGuiState,title="Alarm"
+	CheckBox check_AsyncAlarm_07,pos={50.00,429.00},size={47.00,15.00},disable=1,proc=DAP_CheckProc_UpdateGuiState,title="Alarm"
 	CheckBox check_AsyncAlarm_07,userdata(tabnum)=  "4",userdata(tabcontrol)=  "ADC"
 	CheckBox check_AsyncAlarm_07,userdata(ResizeControlsInfo)= A"!!,DW!!#C;J,hnu!!#<(z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	CheckBox check_AsyncAlarm_07,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
@@ -3788,14 +3788,14 @@ Function DAP_EphysPanelStartUpSettings()
 	SetVariable Gain_AsyncAD_06 WIN = $panelTitle,value= _NUM:1
 	SetVariable Gain_AsyncAD_07 WIN = $panelTitle,value= _NUM:1
 	
-	SetVariable SetVar_AsyncAD_Title_00 WIN = $panelTitle,value= _STR:""
-	SetVariable SetVar_AsyncAD_Title_01 WIN = $panelTitle,value= _STR:""
-	SetVariable SetVar_AsyncAD_Title_02 WIN = $panelTitle,value= _STR:""
-	SetVariable SetVar_AsyncAD_Title_03 WIN = $panelTitle,value= _STR:""
-	SetVariable SetVar_AsyncAD_Title_04 WIN = $panelTitle,value= _STR:""
-	SetVariable SetVar_AsyncAD_Title_05 WIN = $panelTitle,value= _STR:""
-	SetVariable SetVar_AsyncAD_Title_06 WIN = $panelTitle,value= _STR:""
-	SetVariable SetVar_AsyncAD_Title_07 WIN = $panelTitle,value= _STR:""
+	SetVariable Title_AsyncAD_00 WIN = $panelTitle,value= _STR:""
+	SetVariable Title_AsyncAD_01 WIN = $panelTitle,value= _STR:""
+	SetVariable Title_AsyncAD_02 WIN = $panelTitle,value= _STR:""
+	SetVariable Title_AsyncAD_03 WIN = $panelTitle,value= _STR:""
+	SetVariable Title_AsyncAD_04 WIN = $panelTitle,value= _STR:""
+	SetVariable Title_AsyncAD_05 WIN = $panelTitle,value= _STR:""
+	SetVariable Title_AsyncAD_06 WIN = $panelTitle,value= _STR:""
+	SetVariable Title_AsyncAD_07 WIN = $panelTitle,value= _STR:""
 	
 	SetVariable Unit_AsyncAD_00 WIN = $panelTitle,value= _STR:""
 	SetVariable Unit_AsyncAD_01 WIN = $panelTitle,value= _STR:""
@@ -4054,7 +4054,6 @@ Function DAP_EphysPanelStartUpSettings()
 	CheckBox check_DatAcq_BBEnable WIN = $panelTitle,value= 0
 	CheckBox check_Settings_MD WIN = $panelTitle,value= 0
 
-	DAP_SwitchSingleMultiMode(panelTitle, 0)
 	SetControlUserData(panelTitle, "Check_Settings_BkgTP", "oldState", "")
 	SetControlUserData(panelTitle, "Check_Settings_BackgrndDataAcq", "oldState", "")
 
@@ -4300,7 +4299,7 @@ Function DAP_SetVarProc_Channel_Search(sva) : SetVariableControl
 			ctrl       = sva.ctrlName
 			varstr     = sva.sval
 
-			DAP_ParsePanelControl(ctrl, channelIndex, channelType, channelControl)
+			ASSERT(!DAP_ParsePanelControl(ctrl, channelIndex, channelType, channelControl), "Invalid control format")
 
 			DFREF saveDFR = GetDataFolderDFR()
 			SetDataFolder GetSetFolder(channelType)
@@ -4376,7 +4375,7 @@ Function DAP_CheckProc_Channel_All(cba) : CheckBoxControl
 		case 2: // mouse up
 			paneltitle = cba.win
 			allChecked = cba.checked
-			DAP_ParsePanelControl(cba.ctrlName, channelIndex, channelType, controlType)
+			ASSERT(!DAP_ParsePanelControl(cba.ctrlName, channelIndex, channelType, controlType), "Invalid control format")
 			ASSERT(controlType  == CHANNEL_CONTROL_CHECK, "Invalid control type")
 			ASSERT(DAP_ISAllControl(channelIndex), "Invalid channel index")
 
@@ -4481,7 +4480,7 @@ static Function DAP_AdaptAssocHeadstageState(panelTitle, checkboxCtrl)
 
 	DAP_AbortIfUnlocked(panelTitle)
 
-	DAP_ParsePanelControl(checkboxCtrl, idx, channelType, controlType)
+	ASSERT(!DAP_ParsePanelControl(checkboxCtrl, idx, channelType, controlType), "Invalid control format")
 	ASSERT(CHANNEL_CONTROL_CHECK == controlType, "Not a valid control type")
 
 	if(channelType == CHANNEL_TYPE_DAC)
@@ -4537,7 +4536,7 @@ Function DAP_OneTimeCallBeforeDAQ(panelTitle, runMode)
 	string panelTitle
 	variable runMode
 
-	variable numHS, i
+	variable numHS, i, DAC, ADC
 
 	ASSERT(runMode != DAQ_NOT_RUNNING, "Invalid running mode")
 
@@ -4569,6 +4568,20 @@ Function DAP_OneTimeCallBeforeDAQ(panelTitle, runMode)
 		DisableControl(panelTitle, DAP_GetClampModeControl(I_CLAMP_MODE, i))
 		DisableControl(panelTitle, DAP_GetClampModeControl(V_CLAMP_MODE, i))
 		DisableControl(panelTitle, DAP_GetClampModeControl(I_EQUAL_ZERO_MODE, i))
+
+		DAC = AFH_GetDACFromHeadstage(paneltitle, i)
+
+		// DA controls
+		DisableControl(panelTitle, GetPanelControl(DAC, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_CHECK))
+		DisableControl(panelTitle, GetPanelControl(DAC, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_GAIN))
+		DisableControl(panelTitle, GetPanelControl(DAC, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_UNIT))
+
+		ADC = AFH_GetDACFromHeadstage(paneltitle, i)
+
+		// AD controls
+		DisableControl(panelTitle, GetPanelControl(ADC, CHANNEL_TYPE_ADC, CHANNEL_CONTROL_CHECK))
+		DisableControl(panelTitle, GetPanelControl(ADC, CHANNEL_TYPE_ADC, CHANNEL_CONTROL_GAIN))
+		DisableControl(panelTitle, GetPanelControl(ADC, CHANNEL_TYPE_ADC, CHANNEL_CONTROL_UNIT))
 	endfor
 
 	DisableControls(panelTitle, CONTROLS_DISABLE_DURING_DAQ)
@@ -4591,13 +4604,31 @@ End
 Function DAP_ResetGUIAfterDAQ(panelTitle)
 	string panelTitle
 
-	variable i
+	variable i, ADC, DAC
 
 	for(i = 0; i < NUM_HEADSTAGES; i += 1)
 		EnableControl(panelTitle, GetPanelControl(i, CHANNEL_TYPE_HEADSTAGE, CHANNEL_CONTROL_CHECK))
 		EnableControl(panelTitle, DAP_GetClampModeControl(I_CLAMP_MODE, i))
 		EnableControl(panelTitle, DAP_GetClampModeControl(V_CLAMP_MODE, i))
 		EnableControl(panelTitle, DAP_GetClampModeControl(I_EQUAL_ZERO_MODE, i))
+
+		DAC = AFH_GetDACFromHeadstage(paneltitle, i)
+
+		// DA controls
+		if(IsFinite(DAC))
+			EnableControl(panelTitle, GetPanelControl(DAC, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_CHECK))
+			EnableControl(panelTitle, GetPanelControl(DAC, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_GAIN))
+			EnableControl(panelTitle, GetPanelControl(DAC, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_UNIT))
+		endif
+
+		ADC = AFH_GetDACFromHeadstage(paneltitle, i)
+
+		// AD controls
+		if(IsFinite(ADC))
+			EnableControl(panelTitle, GetPanelControl(ADC, CHANNEL_TYPE_ADC, CHANNEL_CONTROL_CHECK))
+			EnableControl(panelTitle, GetPanelControl(ADC, CHANNEL_TYPE_ADC, CHANNEL_CONTROL_GAIN))
+			EnableControl(panelTitle, GetPanelControl(ADC, CHANNEL_TYPE_ADC, CHANNEL_CONTROL_UNIT))
+		endif
 	endfor
 
 	EnableControls(panelTitle, CONTROLS_DISABLE_DURING_DAQ)
@@ -4738,7 +4769,7 @@ static Function DAP_TurnOffAllChannels(panelTitle, channelType)
 	// the checkbox to unselected here
 	if(channelType == CHANNEL_TYPE_ADC || channelType == CHANNEL_TYPE_DAC || channelType == CHANNEL_TYPE_TTL)
 		ctrl = GetPanelControl(CHANNEL_INDEX_ALL, channelType, CHANNEL_CONTROL_CHECK)
-		SetCheckBoxState(panelTitle, ctrl, CHECKBOX_UNSELECTED)
+		PGC_SetAndActivateControl(panelTitle, ctrl, val=CHECKBOX_UNSELECTED)
 	endif
 End
 
@@ -4774,10 +4805,7 @@ Function DAP_UpdateITIAcrossSets(panelTitle)
 	if(GetCheckBoxState(panelTitle, "Check_DataAcq_Get_Set_ITI"))
 		SetSetVariable(panelTitle, "SetVar_DataAcq_ITI", maxITI)
 	elseif(maxITI == 0 && numActiveDAChannels > 0)
-		ControlInfo/W=$panelTitle Check_DataAcq_Get_Set_ITI
-		if(V_flag != 0)
-			SetCheckBoxState(panelTitle, "Check_DataAcq_Get_Set_ITI", CHECKBOX_UNSELECTED)
-		endif
+		PGC_SetAndActivateControl(panelTitle, "Check_DataAcq_Get_Set_ITI", val = CHECKBOX_UNSELECTED)
 	endif
 
 	if(DAP_DeviceIsLeader(panelTitle))
@@ -4802,7 +4830,7 @@ Function DAP_PopMenuChkProc_StimSetList(pa) : PopupMenuControl
 			idx        = pa.popNum
 
 			DAP_AbortIfUnlocked(panelTitle)
-			DAP_ParsePanelControl(ctrl, channelIndex, channelType, channelControl)
+			ASSERT(!DAP_ParsePanelControl(ctrl, channelIndex, channelType, channelControl), "Invalid control format")
 
 			checkCtrl     = GetPanelControl(channelIndex, channelType, CHANNEL_CONTROL_CHECK)
 			indexing      = GetCheckBoxState(panelTitle, "Check_DataAcq_Indexing")
@@ -4868,7 +4896,7 @@ Function DAP_SetVarProc_DA_Scale(sva) : SetVariableControl
 			ctrl       = sva.ctrlName
 			panelTitle = sva.win
 
-			DAP_ParsePanelControl(ctrl, channelIndex, channelType, controlType)
+			ASSERT(!DAP_ParsePanelControl(ctrl, channelIndex, channelType, controlType), "Invalid control format")
 			ASSERT(DAP_IsAllControl(channelIndex), "Unexpected channel index")
 
 			numEntries = GetNumberFromType(var=channelType)
@@ -6275,7 +6303,7 @@ static Function DAP_ChangeHeadstageState(panelTitle, headStageCtrl, enabled)
 
 	WAVE GUIState = GetDA_EphysGuiStateNum(panelTitle)
 
-	DAP_ParsePanelControl(headStageCtrl, headstage, channelType, controlType)
+	ASSERT(!DAP_ParsePanelControl(headStageCtrl, headstage, channelType, controlType), "Invalid control format")
 	ASSERT(channelType == CHANNEL_TYPE_HEADSTAGE && controlType == CHANNEL_CONTROL_CHECK, "Expected headstage checkbox control")
 
 	TPState = TP_StopTestPulse(panelTitle)
@@ -6448,9 +6476,8 @@ Function DAP_ButtonProc_Follow(ba) : ButtonControl
 
 			DAP_SetITCDACasFollower(leadPanel, panelToYoke)
 			DAP_UpdateFollowerControls(leadPanel, panelToYoke)
-			DAP_SwitchSingleMultiMode(leadpanel, 1)
-			DAP_SwitchSingleMultiMode(panelToYoke, 1)
-
+			PGC_SetAndActivateControl(leadPanel, "check_Settings_MD", val = 1)
+			PGC_SetAndActivateControl(panelToYoke, "check_Settings_MD", val = 1)
 			DAP_UpdateITIAcrossSets(leadPanel)
 			DisableControls(panelToYoke, YOKE_CONTROLS_DISABLE)
 			DisableControls(panelToYoke, YOKE_CONTROLS_DISABLE_AND_LINK)
@@ -6734,23 +6761,21 @@ static Function DAP_SwitchSingleMultiMode(panelTitle, useMultiDevice)
 	variable checkedState
 
 	if(useMultiDevice)
-		DisableControls(panelTitle, "Check_Settings_BkgTP;Check_Settings_BackgrndDataAcq")
 		checkedState = GetCheckBoxState(panelTitle, "Check_Settings_BkgTP")
 		SetControlUserData(panelTitle, "Check_Settings_BkgTP", "oldState", num2str(checkedState))
 		checkedState = GetCheckBoxState(panelTitle, "Check_Settings_BackgrndDataAcq")
 		SetControlUserData(panelTitle, "Check_Settings_BackgrndDataAcq", "oldState", num2str(checkedState))
 
-		SetCheckBoxState(panelTitle, "Check_Settings_BkgTP", CHECKBOX_SELECTED)
-		SetCheckBoxState(panelTitle, "Check_Settings_BackgrndDataAcq", CHECKBOX_SELECTED)
+		PGC_SetAndActivateControl(panelTitle, "Check_Settings_BkgTP", val = CHECKBOX_SELECTED)
+		PGC_SetAndActivateControl(panelTitle, "Check_Settings_BackgrndDataAcq", val = CHECKBOX_SELECTED)
+		DisableControls(panelTitle, "Check_Settings_BkgTP;Check_Settings_BackgrndDataAcq")
 	else
 		EnableControls(panelTitle, "Check_Settings_BkgTP;Check_Settings_BackgrndDataAcq")
 		checkedState = str2num(GetUserData(panelTitle, "Check_Settings_BkgTP", "oldState"))
-		SetCheckBoxState(panelTitle, "Check_Settings_BkgTP", checkedState)
+		PGC_SetAndActivateControl(panelTitle, "Check_Settings_BkgTP", val = checkedState)
 		checkedState = str2num(GetUserData(panelTitle, "Check_Settings_BackgrndDataAcq", "oldState"))
-		SetCheckBoxState(panelTitle, "Check_Settings_BackgrndDataAcq", checkedState)
+		PGC_SetAndActivateControl(panelTitle, "Check_Settings_BackgrndDataAcq", val = checkedState)
 	endif
-
-	SetCheckBoxState(panelTitle, "check_Settings_MD", useMultiDevice)
 End
 
 /// @brief Controls TP Insertion into set sweeps before the sweep begins
@@ -7358,7 +7383,7 @@ Function DAP_CheckProc_LockedLogic(cba) : CheckBoxControl
 			ToggleCheckBoxes(cba.win, cba.ctrlName, checkBoxPartener, cba.checked)
 			EqualizeCheckBoxes(cba.win, "check_Settings_Option_3", "Check_DataAcq1_IndexingLocked", getCheckBoxState(cba.win, "check_Settings_Option_3"))
 			if(cmpstr(cba.win, "check_Settings_Option_3") == 0 && cba.checked)
-				SetCheckBoxState(cba.win, "Check_DataAcq_Indexing", 1)
+				PGC_SetAndActivateControl(cba.win, "Check_DataAcq_Indexing", val = 1)
 			endif
 			break
 	endswitch
@@ -7369,6 +7394,8 @@ End
 /// @brief Extracts `channelType`, `controlType` and `channelIndex` from `ctrl`
 ///
 /// Counterpart to GetPanelControl()
+///
+/// @return 0 if the control name could be parsed, one otherwise
 Function DAP_ParsePanelControl(ctrl, channelIndex, channelType, controlType)
 	string ctrl
 	variable &channelIndex, &channelType, &controlType
@@ -7380,9 +7407,14 @@ Function DAP_ParsePanelControl(ctrl, channelIndex, channelType, controlType)
 	channelType  = NaN
 	controlType  = NaN
 
-	ASSERT(!isEmpty(ctrl), "Empty control")
+	if(isEmpty(ctrl))
+		return 1
+	endif
+
 	numUnderlines = ItemsInList(ctrl, "_")
-	ASSERT(numUnderlines >= 2, "Unexpected control naming scheme")
+	if(numUnderlines < 2)
+		return 1
+	endif
 
 	elem0 = StringFromList(0, ctrl, "_")
 	elem1 = StringFromList(1, ctrl, "_")
@@ -7416,8 +7448,14 @@ Function DAP_ParsePanelControl(ctrl, channelIndex, channelType, controlType)
 		case "Search":
 			controlType = CHANNEL_CONTROL_SEARCH
 			break
+		case "Title":
+			controlType = CHANNEL_CONTROL_TITLE
+			break
 		default:
-			ASSERT(0, "Invalid controlType")
+			channelIndex = NaN
+			channelType  = NaN
+			controlType  = NaN
+			return 1
 			break
 	endswitch
 
@@ -7441,7 +7479,10 @@ Function DAP_ParsePanelControl(ctrl, channelIndex, channelType, controlType)
 			channelType = CHANNEL_TYPE_ASYNC
 			break
 		default:
-			ASSERT(0, "Invalid channelType")
+			channelIndex = NaN
+			channelType  = NaN
+			controlType  = NaN
+			return 1
 			break
 	endswitch
 
@@ -7456,10 +7497,17 @@ Function DAP_ParsePanelControl(ctrl, channelIndex, channelType, controlType)
 			channelIndex = CHANNEL_INDEX_ALL_I_CLAMP
 			break
 		default:
-			channelIndex = str2num(elem2)
-			ASSERT(IsFinite(channelIndex), "Invalid channelIndex")
+			channelIndex = str2numSafe(elem2)
+			if(!IsFinite(channelIndex))
+				channelIndex = NaN
+				channelType  = NaN
+				controlType  = NaN
+				return 1
+			endif
 			break
 	endswitch
+
+	return 0
 End
 
 /// @brief Update the list of available pressure devices on all locked device panels
@@ -7539,14 +7587,14 @@ Function DAP_UpdateControlInGuiStateWv(panelTitle, controlName, state)
 	endif
 End
 
+/// @brief GUI procedure which has the only purpose
+///        of storing the control state in the GUI state wave
 Function DAP_CheckProc_UpdateGuiState(cba) : CheckBoxControl
 	STRUCT WMCheckboxAction &cba
 
 	switch( cba.eventCode )
 		case 2: // mouse up
-			Variable checked = cba.checked
 			DAP_UpdateControlInGuiStateWv(cba.win, cba.ctrlName, cba.checked)
-			P_RunP_ControlIfTPOFF(cba.win)
 			break
 	endswitch
 
@@ -7786,10 +7834,10 @@ static Function DAP_UnlockDevice(panelTitle)
 	// we need to turn off TP after DAQ as this could prevent stopping the TP,
 	// especially for foreground TP
 	state = GetCheckBoxState(panelTitle, "check_Settings_TPAfterDAQ")
-	SetCheckBoxState(panelTitle, "check_Settings_TPAfterDAQ", CHECKBOX_UNSELECTED)
+	PGC_SetAndActivateControl(panelTitle, "check_Settings_TPAfterDAQ", val = CHECKBOX_UNSELECTED)
 	DQ_StopDAQ(panelTitle)
 	TP_StopTestPulse(panelTitle)
-	SetCheckBoxState(panelTitle, "check_Settings_TPAfterDAQ", state)
+	PGC_SetAndActivateControl(panelTitle, "check_Settings_TPAfterDAQ", val = state)
 
 	DAP_SerializeCommentNotebook(panelTitle)
 	DAP_LockCommentNotebook(panelTitle)
@@ -8073,20 +8121,6 @@ Function DAP_ButtonProc_skipBack(ba) : ButtonControl
 	switch( ba.eventCode )
 		case 2:
 			RA_SkipSweeps(ba.win, -1)
-			break
-	endswitch
-
-	return 0
-End
-
-/// @brief GUI procedure which has the only purpose
-///        of storing the control state in the GUI state wave
-Function DAP_CheckProc_RecordInGuiState(cba) : CheckBoxControl
-	STRUCT WMCheckboxAction &cba
-
-	switch(cba.eventCode)
-		case 2: // mouse up
-			DAP_UpdateControlInGuiStateWv(cba.win, cba.ctrlName, cba.checked)
 			break
 	endswitch
 

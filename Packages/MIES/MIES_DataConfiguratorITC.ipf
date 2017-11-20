@@ -1092,9 +1092,11 @@ static Function/C DC_CalculateChannelColumnNo(panelTitle, SetName, channelNo, ch
 	variable ColumnsInSet = IDX_NumberOfTrialsInSet(SetName)
 	variable column
 	variable CycleCount // when cycleCount = 1 the set has already cycled once.
-	variable localCount
+	variable localCount, repAcqRandom
 	string sequenceWaveName
 	variable skipAhead = DAP_GetskipAhead(panelTitle)
+
+	repAcqRandom = GetCheckboxState(panelTitle, "check_DataAcq_RepAcqRandom")
 
 	DFREF devicePath = GetDevicePath(panelTitle)
 
@@ -1105,13 +1107,12 @@ static Function/C DC_CalculateChannelColumnNo(panelTitle, SetName, channelNo, ch
 	// Below code calculates the variable local count which is then used to determine what column to select from a particular set
 	if(!RA_IsFirstSweep(panelTitle))
 		//thus the vairable "count" is used to determine if acquisition is on the first cycle
-		ControlInfo/W=$panelTitle Check_DataAcq_Indexing // check indexing status
-		if(v_value == 0)// if indexing is off...
+		if(!GetCheckboxState(panelTitle, "Check_DataAcq_Indexing"))
 			localCount = count
 			cycleCount = 0
-		else // else is used when indexing is on. The local count is now set length dependent
-			ControlInfo/W=$panelTitle Check_DataAcq1_IndexingLocked // check locked status. locked = popup menus on channels idex in lock - step
-			if(v_value == 1)
+		else // The local count is now set length dependent
+			// check locked status. locked = popup menus on channels idex in lock - step
+			if(GetCheckboxState(panelTitle, "Check_DataAcq1_IndexingLocked"))
 				/// @todo this code here is different compared to what RA_BckgTPwithCallToRACounterMD and RA_CounterMD do
 				NVAR activeSetCount = $GetActiveSetCount(panelTitle)
 				localCount = IDX_CalculcateActiveSetCount(panelTitle) - activeSetCount
@@ -1123,11 +1124,10 @@ static Function/C DC_CalculateChannelColumnNo(panelTitle, SetName, channelNo, ch
 
 		//Below code uses local count to determine  what step to use from the set based on the sweeps in cycle and sweeps in active set
 		if(((localCount) / ColumnsInSet) < 1 || (localCount) == 0) // if remainder is less than 1, count is on 1st cycle
-			ControlInfo/W=$panelTitle check_DataAcq_RepAcqRandom
-			if(v_value == 0) // set step sequence is not random
+			if(!repAcqRandom)
 				column = localCount
 				cycleCount = 0
-			else // set step sequence is random
+			else
 				if(localCount == 0)
 					InPlaceRandomShuffle(WorkingSequenceWave)
 				endif
@@ -1135,8 +1135,7 @@ static Function/C DC_CalculateChannelColumnNo(panelTitle, SetName, channelNo, ch
 				cycleCount = 0
 			endif
 		else
-			ControlInfo/W=$panelTitle check_DataAcq_RepAcqRandom
-			if(v_value == 0) // set step sequence is not random
+			if(!repAcqRandom)
 				column = mod((localCount), columnsInSet) // set has been cyled through once or more, uses remainder to determine correct column
 				cycleCount = 1
 			else
@@ -1148,8 +1147,7 @@ static Function/C DC_CalculateChannelColumnNo(panelTitle, SetName, channelNo, ch
 			endif
 		endif
 	else // first sweep
-		ControlInfo/W=$panelTitle check_DataAcq_RepAcqRandom
-		if(v_value == 0) // set step sequence is not random
+		if(!repAcqRandom)
 			count += skipAhead
 			column = count
 			DAP_ResetSkipAhead(panelTitle)
