@@ -134,14 +134,14 @@ End
 /// - `val` is mandatory and 0-based.
 /// - `str` must be supplied if the GUI control procedure requires it.
 ///
-/// @return 1 if val was modified by control limits, 0 if val was unmodified
+/// @return 1 if val was modified by control limits, 0 if val was unmodified (only relevant for SetVariable controls)
 Function PGC_SetAndActivateControl(win, control, [val, str])
 	string win, control
 	variable val
 	string str
 
 	string procedure
-	variable paramType, controlType, variableType, inputWasModified
+	variable paramType, controlType, variableType, inputWasModified, limitedVal
 
 	if(IsControlDisabled(win, control))
 		DEBUGPRINT("Can't click a disabled control (or better should not)")
@@ -239,7 +239,8 @@ Function PGC_SetAndActivateControl(win, control, [val, str])
 			endif
 
 			if(variableType == SET_VARIABLE_BUILTIN_NUM)
-				inputWasModified = SetSetVariable(win, control, val, respectLimits = 1) != val
+				limitedVal       = SetSetVariable(win, control, val, respectLimits = 1)
+				inputWasModified = limitedVal != val
 			elseif(variableType == SET_VARIABLE_BUILTIN_STR)
 				SetSetVariableString(win, control, str)
 			else
@@ -255,7 +256,7 @@ Function PGC_SetAndActivateControl(win, control, [val, str])
 			sva.win       = win
 			sva.eventCode = 2
 			sva.sval      = str
-			sva.dval      = val
+			sva.dval      = limitedVal
 			sva.isStr     = (variableType == SET_VARIABLE_BUILTIN_STR)
 
 			FUNCREF PGC_SetVariableControlProcedure SetVariableProc = $procedure
