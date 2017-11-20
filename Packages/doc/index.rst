@@ -12,7 +12,6 @@ Table of Contents
   structlist
   namespacelist
   IPNWB
-  misc
   ZeroMQ-XOP-Readme
 
 Introduction
