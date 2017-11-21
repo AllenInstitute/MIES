@@ -99,7 +99,7 @@ End
 
 /// @brief Return the datafolder reference to the folder storing the listbox and selection wave
 ///
-/// Requires the user data `OVS_FOLDER` of the external overlay sweeps panel.
+/// Requires the user data `PANEL_FOLDER` of the BrowserSettings panel
 ///
 /// @return a valid DFREF or an invalid one in case the external panel could not be found
 Function/DF OVS_GetFolder(win)
@@ -109,7 +109,7 @@ Function/DF OVS_GetFolder(win)
 		return $""
 	endif
 
-	return BSP_GetFolder(win, MIES_BSP_OVS_FOLDER)
+	return BSP_GetFolder(win, MIES_BSP_PANEL_FOLDER)
 End
 
 /// @brief Update the overlay sweep waves
@@ -406,16 +406,6 @@ Function/WAVE OVS_ParseIgnoreList(win, highlightSweep, [sweepNo, index])
 	endfor
 
 	return activeHS
-End
-
-/// @brief Set the basefolder for the current device
-///
-/// Must be called if the source device of the sweeps changed.
-Function OVS_SetFolder(win, dfr)
-	string win
-	DFREF dfr
-
-	BSP_SetFolder(win, dfr, MIES_BSP_OVS_FOLDER)
 End
 
 Function OVS_CheckBoxProc_HS_Select(cba) : CheckBoxControl

@@ -305,11 +305,8 @@ Constant MIES_BSP_PA  = 3
 /// @name Possible values for MIES_BSP_FOLDER_TYPE in #BSP_GetFolder
 /// @{
 strConstant MIES_BSP_DEVICE = "DEVICE"
-strConstant MIES_BSP_DEVICE_FOLDER = "DEVICE_FOLDER"
 strConstant MIES_BSP_DATA_FOLDER = "DATA_FOLDER"
-strConstant MIES_BSP_CS_FOLDER = "CS_FOLDER"
-strConstant MIES_BSP_OVS_FOLDER = "OVS_FOLDER"
-strConstant MIES_BSP_AR_FOLDER = "AR_FOLDER"
+strConstant MIES_BSP_PANEL_FOLDER = "PANEL_FOLDER"
 strConstant MIES_BSP_AR_SWEEPFOLDER = "AR_SWEEPFOLDER"
 /// @}
 

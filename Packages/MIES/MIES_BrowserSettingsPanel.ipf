@@ -73,7 +73,7 @@ static Function BSP_DynamicStartupSettings(mainPanel)
 	else
 		SetControlProcedure(extPanel, "check_BrowserSettings_OVS", "SB_CheckboxProc_OverlaySweeps")
 	endif
-	DFREF dfr = BSP_GetFolder(mainPanel, MIES_BSP_OVS_FOLDER)
+	DFREF dfr = BSP_GetFolder(mainPanel, MIES_BSP_PANEL_FOLDER)
 	WAVE/T listBoxWave        = GetOverlaySweepsListWave(dfr)
 	WAVE listBoxSelWave       = GetOverlaySweepsListSelWave(dfr)
 	WAVE/WAVE sweepSelChoices = GetOverlaySweepSelectionChoices(dfr)
@@ -83,7 +83,6 @@ static Function BSP_DynamicStartupSettings(mainPanel)
 	PopupMenu popup_overlaySweeps_select,value= #("OVS_GetSweepSelectionChoices(\"" + extPanel + "\")")
 
 	// artefact removal
-	DFREF dfr = BSP_GetFolder(mainPanel, MIES_BSP_AR_FOLDER)
 	WAVE/T listBoxWave = GetArtefactRemovalListWave(dfr)
 	ListBox list_of_ranges1, listWave=listBoxWave
 
@@ -108,7 +107,7 @@ End
 Function/WAVE BSP_GetChannelSelectionWave(panelName)
 	string panelName
 
-	DFREF dfr = BSP_GetFolder(panelName, MIES_BSP_CS_FOLDER)
+	DFREF dfr = BSP_GetFolder(panelName, MIES_BSP_PANEL_FOLDER)
 	WAVE wv = GetChannelSelectionWave(dfr)
 
 	return wv

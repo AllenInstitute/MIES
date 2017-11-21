@@ -161,15 +161,10 @@ static Function DB_SetUserData(panelTitle, device)
 	endif
 
 	DFREF dfr = GetDeviceDataBrowserPath(device)
-	BSP_SetFolder(panelTitle, dfr, MIES_BSP_DEVICE_FOLDER)
+	BSP_SetFolder(panelTitle, dfr, MIES_BSP_PANEL_FOLDER)
 
 	DFREF dfr = GetDeviceDataPath(device)
 	BSP_SetFolder(panelTitle, dfr, MIES_BSP_DATA_FOLDER)
-
-	DFREF dfr = GetDeviceDataBrowserPath(device)
-	BSP_SetFolder(panelTitle, dfr, MIES_BSP_OVS_FOLDER)
-	BSP_SetFolder(panelTitle, dfr, MIES_BSP_AR_FOLDER)
-	BSP_SetFolder(panelTitle, dfr, MIES_BSP_CS_FOLDER)
 End
 
 static Function/S DB_GetPlainSweepList(panelTitle)
@@ -945,7 +940,7 @@ Function DB_CheckboxProc_OverlaySweeps(cba) : CheckBoxControl
 			BSP_SetOVSControlStatus(panelTitle)
 
 			if(BSP_HasBoundDevice(panelTitle))
-				DFREF dfr = BSP_GetFolder(panelTitle, MIES_BSP_OVS_FOLDER)
+				DFREF dfr = BSP_GetFolder(panelTitle, MIES_BSP_PANEL_FOLDER)
 				WAVE/T listBoxWave        = GetOverlaySweepsListWave(dfr)
 				WAVE listBoxSelWave       = GetOverlaySweepsListSelWave(dfr)
 				WAVE/WAVE sweepSelChoices = GetOverlaySweepSelectionChoices(dfr)

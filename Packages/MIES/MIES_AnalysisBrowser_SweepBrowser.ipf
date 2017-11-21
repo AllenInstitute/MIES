@@ -54,7 +54,7 @@ End
 Function/DF SB_GetSweepBrowserFolder(graph)
 	string graph
 
-	return BSP_GetFolder(graph, MIES_BSP_DATA_FOLDER)
+	return BSP_GetFolder(graph, MIES_BSP_PANEL_FOLDER)
 End
 
 static Function/DF SB_GetSweepDataPathFromIndex(sweepBrowserDFR, mapIndex)
@@ -149,10 +149,7 @@ static Function SB_SetUserData(win)
 	SetWindow $win, userdata = ""
 
 	DFREF dfr = UniqueDataFolder(root:, "sweepBrowser")
-	BSP_SetFolder(win, dfr, MIES_BSP_DATA_FOLDER)
-	BSP_SetFolder(win, dfr, MIES_BSP_CS_FOLDER)
-	OVS_SetFolder(win, dfr)
-	AR_SetFolder(win, dfr)
+	BSP_SetFolder(win, dfr, MIES_BSP_PANEL_FOLDER)
 End
 
 static Function SB_InitPostPlotSettings(graph, pps)
@@ -544,7 +541,7 @@ Function/DF SB_OpenSweepBrowser()
 	SB_SetUserData(win)
 	SB_PanelUpdate(win)
 
-	DFREF sweepBrowserDFR = BSP_GetFolder(win, MIES_BSP_DATA_FOLDER)
+	DFREF sweepBrowserDFR = BSP_GetFolder(win, MIES_BSP_PANEL_FOLDER)
 	SB_GetSweepBrowserMap(sweepBrowserDFR)
 
 	panelTitleNew = UniqueName("SweepBrowser", 9, 1)

@@ -285,7 +285,7 @@ End
 
 /// @brief Return the datafolder reference to the folder storing the listbox wave and the artefact data wave
 ///
-/// Requires the user data `AR_FOLDER` of the external artefact removal panel.
+/// Requires the user data `PANEL_FOLDER` of the external artefact removal panel.
 Function/DF AR_GetFolder(panelTitle)
 	string panelTitle
 
@@ -293,17 +293,7 @@ Function/DF AR_GetFolder(panelTitle)
 		return $""
 	endif
 
-	return BSP_GetFolder(panelTitle, MIES_BSP_AR_FOLDER)
-End
-
-/// @brief Set the datafolder reference to the folder storing the listbox wave and the artefact data wave
-///
-/// Updates the `AR_SWEEPFOLDER` user data of the artefact removal panel
-Function AR_SetFolder(win, dfr)
-	string win
-	DFREF dfr
-
-	BSP_SetFolder(win, dfr, MIES_BSP_AR_FOLDER)
+	return BSP_GetFolder(panelTitle, MIES_BSP_PANEL_FOLDER)
 End
 
 /// @brief Return the datafolder reference to the folder storing the single 1D sweep waves
