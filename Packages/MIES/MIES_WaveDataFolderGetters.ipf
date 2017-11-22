@@ -1489,20 +1489,21 @@ End
 /// - 16: ClampMode
 /// - 17: UserPressure (place holder)
 /// - 18: PressureMethod (see PressureModeConstants)
+/// - 19: ValidState (true if the entry is considered valid, false otherwise)
 Function/Wave GetTPStorage(panelTitle)
 	string 	panelTitle
 
 	dfref dfr = GetDeviceTestPulse(panelTitle)
-	variable versionOfNewWave = 5
+	variable versionOfNewWave = 6
 
 	WAVE/Z/SDFR=dfr/D wv = TPStorage
 
 	if(ExistsWithCorrectLayoutVersion(wv, versionOfNewWave))
 		return wv
 	elseif(WaveExists(wv))
-		Redimension/N=(-1, -1, 19)/D wv
+		Redimension/N=(-1, -1, 20)/D wv
 	else
-		Make/N=(MINIMUM_WAVE_SIZE, NUM_AD_CHANNELS, 19)/D dfr:TPStorage/Wave=wv
+		Make/N=(MINIMUM_WAVE_SIZE, NUM_AD_CHANNELS, 20)/D dfr:TPStorage/Wave=wv
 	endif
 
 	wv = NaN
@@ -1528,6 +1529,7 @@ Function/Wave GetTPStorage(panelTitle)
 	SetDimLabel LAYERS, 16, ClampMode                 , wv
 	SetDimLabel LAYERS, 17, UserPressure              , wv
 	SetDimLabel LAYERS, 18, PressureMethod            , wv
+	SetDimLabel LAYERS, 19, ValidState                , wv
 
 	SetNumberInWaveNote(wv, TP_CYLCE_COUNT_KEY, 0)
 	SetNumberInWaveNote(wv, AUTOBIAS_LAST_INVOCATION_KEY, 0)

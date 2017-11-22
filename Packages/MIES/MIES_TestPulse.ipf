@@ -321,6 +321,8 @@ static Function TP_RecordTP(panelTitle, BaselineSSAvg, InstResistance, SSResista
 
 		TPStorage[count][][%PeakResistance]             = min(InstResistance[0][q][0], TP_MAX_VALID_RESISTANCE)
 		TPStorage[count][][%SteadyStateResistance]      = min(SSResistance[0][q][0], TP_MAX_VALID_RESISTANCE)
+		TPStorage[count][][%ValidState]                 = TPStorage[count][q][%PeakResistance] < TP_MAX_VALID_RESISTANCE \
+		                                                  && TPStorage[count][q][%SteadyStateResistance] < TP_MAX_VALID_RESISTANCE
 		TPStorage[count][][%TimeInSeconds]              = now
 		TPStorage[count][][%TimeStamp]                  = DateTime
 		TPStorage[count][][%TimeStampSinceIgorEpochUTC] = DateTimeInUTC()
