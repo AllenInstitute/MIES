@@ -38,6 +38,11 @@ Function run()
 	list = AddListItem("DAQ_RepeatSets_3", list, ";", INF)
 	list = AddListItem("Test_RepeatSets_3", list, ";", INF)
 
+	list = AddListItem("DAQ_SkipSweepsDuringITI_SD", list, ";", INF)
+	list = AddListItem("Test_SkipSweepsDuringITI_SD", list, ";", INF)
+	list = AddListItem("DAQ_SkipSweepsDuringITI_MD", list, ";", INF)
+	list = AddListItem("Test_SkipSweepsDuringITI_MD", list, ";", INF)
+
 	list = AddListItem("PS_ST_Run1", list, ";", INF)
 	list = AddListItem("PS_ST_Test1", list, ";", INF)
 	list = AddListItem("PS_ST_Run2", list, ";", INF)

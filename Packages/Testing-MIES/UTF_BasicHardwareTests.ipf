@@ -343,3 +343,54 @@ Function Test_RepeatSets_3()
 
 	AllTests(t)
 End
+
+Function ExecuteDuringITI_IGNORE(s)
+	STRUCT WMBackgroundStruct &s
+
+	NVAR runMode = $GetTestpulseRunMode(DEVICE)
+
+	if(runMode & TEST_PULSE_DURING_RA_MOD)
+		RA_SkipSweeps(DEVICE, inf)
+		return 1
+	endif
+
+	return 0
+End
+
+Function DAQ_SkipSweepsDuringITI_SD()
+
+	STRUCT DAQSettings s
+	InitDAQSettingsFromString(s, "DAQ_MD0_RA1_IDX0_LIDX0_BKG_1_RES_5")
+	AcquireData(s)
+
+	CtrlNamedBackGround ExecuteDuringITI, start, period=30, proc=ExecuteDuringITI_IGNORE
+
+	PGC_SetAndActivateControl(DEVICE, "Check_DataAcq_Get_Set_ITI", val = 0)
+	PGC_SetAndActivateControl(DEVICE, "SetVar_DataAcq_ITI", val = 5)
+End
+
+Function Test_SkipSweepsDuringITI_SD()
+
+	NVAR runMode = $GetDataAcqRunMode(DEVICE)
+
+	CHECK_EQUAL_VAR(runMode, DAQ_NOT_RUNNING)
+End
+
+Function DAQ_SkipSweepsDuringITI_MD()
+
+	STRUCT DAQSettings s
+	InitDAQSettingsFromString(s, "DAQ_MD1_RA1_IDX0_LIDX0_BKG_1_RES_5")
+	AcquireData(s)
+
+	CtrlNamedBackGround ExecuteDuringITI, start, period=30, proc=ExecuteDuringITI_IGNORE
+
+	PGC_SetAndActivateControl(DEVICE, "Check_DataAcq_Get_Set_ITI", val = 0)
+	PGC_SetAndActivateControl(DEVICE, "SetVar_DataAcq_ITI", val = 5)
+End
+
+Function Test_SkipSweepsDuringITI_MD()
+
+	NVAR runMode = $GetDataAcqRunMode(DEVICE)
+
+	CHECK_EQUAL_VAR(runMode, DAQ_NOT_RUNNING)
+End

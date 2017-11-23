@@ -365,6 +365,8 @@ Function RA_CounterMD(panelTitle)
 
 	if(count < totTrials)
 		DQM_StartDAQMultiDeviceLowLevel(panelTitle, initialSetupReq=0)
+	else
+		RA_FinishAcquisition(panelTitle)
 	endif
 End
 
