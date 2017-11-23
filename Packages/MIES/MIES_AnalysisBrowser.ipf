@@ -2424,3 +2424,44 @@ Function AB_ButtonProc_OpenCommentNB(ba) : ButtonControl
 
 	return 0
 End
+
+/// @brief Load dropped NWB files into the analysis browser
+static Function BeforeFileOpenHook(refNum, file, pathName, type, creator, kind)
+	variable refNum, kind
+	string file, pathName, type, creator
+
+	string baseFolder, fileSuffix
+
+	fileSuffix = GetFileSuffix(file)
+	if(cmpstr(fileSuffix, "nwb"))
+		return 0
+	endif
+
+	Pathinfo $pathName
+	baseFolder = S_path
+
+	AB_OpenAnalysisBrowser()
+	// we can not add files to the map if some entries are collapsed
+	// so we have to expand all first.
+	PGC_SetAndActivateControl("AnalysisBrowser", "button_expand_all", val = 1)
+
+	if(AB_AddFile(basefolder, basefolder + file))
+		// already loaded or error
+		return 1
+	endif
+
+	// redimension to maximum size (all expanded)
+	WAVE expBrowserList = GetExperimentBrowserGUIList()
+	WAVE expBrowserSel  = GetExperimentBrowserGUISel()
+
+	variable numEntries = GetNumberFromWaveNote(expBrowserList, NOTE_INDEX)
+	Redimension/N=(numEntries, -1, -1, -1) expBrowserList, expBrowserSel
+
+	AB_ResetSelectionWave()
+
+	// backup initial state
+	WAVE/T expBrowserSelBak = CreateBackupWave(expBrowserSel, forceCreation=1)
+	WAVE/T expBrowserListBak = CreateBackupWave(expBrowserList, forceCreation=1)
+
+	return 1
+End
