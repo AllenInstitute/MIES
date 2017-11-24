@@ -3380,7 +3380,7 @@ Function StopAllMSTimers()
 	endfor
 End
 
-/// @brief Return a time with high precision, microsecond resolution, using an
+/// @brief Return a time in seconds with high precision, microsecond resolution, using an
 ///        arbitrary zero point.
 Function RelativeNowHighPrec()
 	return stopmstimer(-2)/1e6
