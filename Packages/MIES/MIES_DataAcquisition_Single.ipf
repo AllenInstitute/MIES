@@ -109,17 +109,27 @@ Function DQS_BkrdDataAcq(panelTitle)
 	DQS_StartBackgroundFifoMonitor()
 End
 
-static Function DQS_StopDataAcq(panelTitle)
+/// @brief Stop single device data acquisition
+static Function DQS_StopDataAcq(panelTitle, [forcedStop])
 	string panelTitle
+	variable forcedStop
+
+	if(ParamIsDefault(forcedStop))
+		forcedStop = 0
+	else
+		forcedStop = !!forcedStop
+	endif
 
 	NVAR ITCDeviceIDGlobal = $GetITCDeviceIDGlobal(panelTitle)
 
 	HW_SelectDevice(HARDWARE_ITC_DAC, ITCDeviceIDGlobal)
 	HW_StopAcq(HARDWARE_ITC_DAC, ITCDeviceIDGlobal, prepareForDAQ=1, zeroDAC = 1)
 
-	SWS_SaveAndScaleITCData(panelTitle)
+	SWS_SaveAndScaleITCData(panelTitle, forcedStop = forcedStop)
 
-	if(RA_IsFirstSweep(panelTitle))
+	if(forcedStop)
+		DQ_StopOngoingDAQ(panelTitle)
+	elseif(RA_IsFirstSweep(panelTitle))
 		if(DAG_GetNumericalValue(panelTitle, "Check_DataAcq1_RepeatAcq"))
 			RA_Start(PanelTitle)
 		else
@@ -128,7 +138,7 @@ static Function DQS_StopDataAcq(panelTitle)
 	else
 		RA_BckgTPwithCallToRACounter(panelTitle)
 	endif
-END
+End
 
 Function DQS_StartBackgroundFifoMonitor()
 	CtrlNamedBackground ITC_FIFOMonitor, period = 5, proc = DQS_FIFOMonitor
