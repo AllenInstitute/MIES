@@ -5113,7 +5113,7 @@ End
 Function/WAVE GetAnalysisFunctionStorage(panelTitle)
 	string panelTitle
 
-	variable versionOfWave = 0
+	variable versionOfWave = 1
 	DFREF dfr = GetDevicePath(panelTitle)
 	WAVE/T/Z/SDFR=dfr wv = analysisFunctions
 
@@ -5124,6 +5124,8 @@ Function/WAVE GetAnalysisFunctionStorage(panelTitle)
 	else
 		Make/T/N=(NUM_HEADSTAGES, TOTAL_NUM_EVENTS) dfr:analysisFunctions/WAVE=wv
 	endif
+
+	SetWaveVersion(wv, versionOfWave)
 
 	return wv
 End
