@@ -180,6 +180,31 @@ Function Test_MD1_RA0_IDX0_LIDX0_BKG_1()
 	AllTests(t)
 End
 
+Function DAQ_MD0_RA1_IDX0_LIDX0_BKG_0()
+
+	STRUCT DAQSettings s
+	InitSettings(s)
+	AcquireData(s)
+End
+
+Function Test_MD0_RA1_IDX0_LIDX0_BKG_0()
+
+	STRUCT TestSettings t
+
+	t.numSweeps              = 3
+	t.sweepWaveType          = FLOAT_WAVE
+
+	InitTestStructure(t)
+
+	t.acquiredStimSets_HS0[] = "StimulusSetA_DA_0"
+	t.sweepCount_HS0         = {0, 1, 2}
+
+	t.acquiredStimSets_HS1[] = "StimulusSetC_DA_0"
+	t.sweepCount_HS1[]       = {0, 1, 0}
+
+	AllTests(t)
+End
+
 Function DAQ_MD1_RA1_IDX0_LIDX0_BKG_1()
 
 	STRUCT DAQSettings s
@@ -233,6 +258,34 @@ Function Test_MD1_RA1_IDX1_LIDX0_BKG_1()
 	AllTests(t)
 End
 
+Function DAQ_MD0_RA1_IDX1_LIDX0_BKG_0()
+
+	STRUCT DAQSettings s
+	InitSettings(s)
+	AcquireData(s)
+End
+
+Function Test_MD0_RA1_IDX1_LIDX0_BKG_0()
+
+	STRUCT TestSettings t
+
+	t.numSweeps     = 5
+	t.sweepWaveType = FLOAT_WAVE
+
+	InitTestStructure(t)
+
+	t.acquiredStimSets_HS0[0,2] = "StimulusSetA_DA_0"
+	t.acquiredStimSets_HS0[3]   = "StimulusSetB_DA_0"
+	t.acquiredStimSets_HS0[4]   = "StimulusSetA_DA_0"
+	t.sweepCount_HS0            = {0, 1, 2, 0, 0}
+
+	t.acquiredStimSets_HS1[0,1] = "StimulusSetC_DA_0"
+	t.acquiredStimSets_HS1[2,4] = "StimulusSetD_DA_0"
+	t.sweepCount_HS1            = {0, 1, 0, 1, 2}
+
+	AllTests(t)
+End
+
 Function DAQ_MD1_RA1_IDX1_LIDX1_BKG_1()
 
 	STRUCT DAQSettings s
@@ -241,6 +294,33 @@ Function DAQ_MD1_RA1_IDX1_LIDX1_BKG_1()
 End
 
 Function Test_MD1_RA1_IDX1_LIDX1_BKG_1()
+
+	STRUCT TestSettings t
+
+	t.numSweeps     = 6
+	t.sweepWaveType = FLOAT_WAVE
+
+	InitTestStructure(t)
+
+	t.acquiredStimSets_HS0[0,2] = "StimulusSetA_DA_0"
+	t.acquiredStimSets_HS0[3,5] = "StimulusSetB_DA_0"
+	t.sweepCount_HS0            = {0, 1, 2, 0, 0, 0}
+
+	t.acquiredStimSets_HS1[0,2] = "StimulusSetC_DA_0"
+	t.acquiredStimSets_HS1[3,5] = "StimulusSetD_DA_0"
+	t.sweepCount_HS1            = {0, 1, 0, 0, 1, 2}
+
+	AllTests(t)
+End
+
+Function DAQ_MD0_RA1_IDX1_LIDX1_BKG_0()
+
+	STRUCT DAQSettings s
+	InitSettings(s)
+	AcquireData(s)
+End
+
+Function Test_MD0_RA1_IDX1_LIDX1_BKG_0()
 
 	STRUCT TestSettings t
 
