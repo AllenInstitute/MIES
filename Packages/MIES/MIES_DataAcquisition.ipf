@@ -26,6 +26,7 @@ static Function DQ_StopOngoingDAQHelper(panelTitle)
 
 	variable needsOTCAfterDAQ = 0
 	variable discardData      = 0
+	variable stopDeviceTimer  = 0
 
 	if(IsDeviceActiveWithBGTask(panelTitle, "Testpulse"))
 		TPS_StopTestPulseSingleDevice(panelTitle)
@@ -53,7 +54,6 @@ static Function DQ_StopOngoingDAQHelper(panelTitle)
 
 	if(IsDeviceActiveWithBGTask(panelTitle, "ITC_FIFOMonitor"))
 		DQS_StopBackgroundFifoMonitor()
-		DQ_StopITCDeviceTimer(panelTitle)
 
 		NVAR ITCDeviceIDGlobal = $GetITCDeviceIDGlobal(panelTitle)
 		HW_SelectDevice(HARDWARE_ITC_DAC, ITCDeviceIDGlobal)
@@ -63,15 +63,16 @@ static Function DQ_StopOngoingDAQHelper(panelTitle)
 			SWS_SaveAndScaleITCData(panelTitle, forcedStop = 1)
 		endif
 
+		stopDeviceTimer  = stopDeviceTimer | 1
 		needsOTCAfterDAQ = needsOTCAfterDAQ | 1
 	elseif(IsDeviceActiveWithBGTask(panelTitle, "ITC_FIFOMonitorMD"))
 		DQM_TerminateOngoingDAQHelper(panelTitle)
-		DQ_StopITCDeviceTimer(panelTitle)
 
 		if(!discardData)
 			SWS_SaveAndScaleITCData(panelTitle, forcedStop = 1)
 		endif
 
+		stopDeviceTimer  = stopDeviceTimer | 1
 		needsOTCAfterDAQ = needsOTCAfterDAQ | 1
 	else
 		// force a stop if invoked during a 'down' time, with nothing happening.
@@ -86,6 +87,10 @@ static Function DQ_StopOngoingDAQHelper(panelTitle)
 
 	if(dataAcqRunMode != DAQ_NOT_RUNNING)
 		needsOTCAfterDAQ = needsOTCAfterDAQ | 1
+	endif
+
+	if(stopDeviceTimer)
+		DQ_StopITCDeviceTimer(panelTitle)
 	endif
 
 	if(needsOTCAfterDAQ)
