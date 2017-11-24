@@ -79,6 +79,8 @@ static Function DQ_StopOngoingDAQHelper(panelTitle)
 		if(!RA_IsFirstSweep(panelTitle))
 			NVAR count = $GetCount(panelTitle)
 			count = GetValDisplayAsNum(panelTitle, "valdisp_DataAcq_SweepsInSet")
+
+			stopDeviceTimer  = stopDeviceTimer | 1
 			needsOTCAfterDAQ = needsOTCAfterDAQ | 1
 		endif
 	endif
@@ -86,6 +88,7 @@ static Function DQ_StopOngoingDAQHelper(panelTitle)
 	NVAR dataAcqRunMode = $GetDataAcqRunMode(panelTitle)
 
 	if(dataAcqRunMode != DAQ_NOT_RUNNING)
+		stopDeviceTimer  = stopDeviceTimer | 1
 		needsOTCAfterDAQ = needsOTCAfterDAQ | 1
 	endif
 
