@@ -45,7 +45,6 @@ Menu "Mies Panels", dynamic
 End
 
 Function DB_OpenDataBrowser()
-
 	string win, device, devicesWithData
 
 	Execute "DataBrowser()"
