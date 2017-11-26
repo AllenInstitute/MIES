@@ -22,31 +22,31 @@ Function/S BSP_GetPanel(mainPanel)
 	return GetMainWindow(mainPanel) + "#" + EXT_PANEL_SUBWINDOW
 End
 
-/// @brief open/close side Panel
+/// @brief open BrowserSettings side Panel
 ///
 /// @param mainPanel 	mainWindow panel name
-Function BSP_TogglePanel(mainPanel)
+Function BSP_OpenPanel(mainPanel)
 	string mainPanel
 
-	variable openSidePanel
+	string extPanel
 
 	mainPanel = GetMainWindow(mainPanel)
 	if(BSP_MainPanelNeedsUpdate(mainPanel))
 		Abort "Can not display data. The main panel is too old to be usable. Please close it and open a new one."
 	endif
 
-	openSidePanel = TogglePanel(mainPanel, EXT_PANEL_SUBWINDOW)
-
+	extPanel = BSP_GetPanel(mainPanel)
 	if(BSP_PanelNeedsUpdate(mainPanel))
-		KillWindow/Z $BSP_GetPanel(mainPanel)
-		openSidePanel = 1
+		KillWindow/Z $extPanel
 	endif
 
-	if(!openSidePanel)
+	if(windowExists(extPanel))
+		SetWindow $extPanel hide=0, needUpdate=1
+		BSP_MainPanelButtonToggle(mainPanel, 0)
 		return 1
 	endif
 
-	ASSERT(WindowExists(mainPanel), "HOST panel does not exist")
+	ASSERT(windowExists(mainPanel), "HOST panel does not exist")
 	NewPanel/HOST=$mainPanel/EXT=1/W=(260,0,0,600)/N=$EXT_PANEL_SUBWINDOW  as " "
 	Execute "DataBrowserPanel()"
 	BSP_DynamicStartupSettings(mainPanel)
@@ -312,20 +312,23 @@ Function BSP_ClosePanelHook(s)
 	STRUCT WMWinHookStruct &s
 
 	string mainPanel, extPanel, panelButton
+	variable hookResult = 0
 
 	switch(s.eventCode)
-		case 2: // kill
+		case 17: // killVote
 			mainPanel = GetMainWindow(s.winName)
 			extPanel = BSP_GetPanel(mainPanel)
 
 			ASSERT(!cmpstr(s.winName, extPanel), "this hook is only available for BSP panel.")
 
+			SetWindow $extPanel hide=1
 			BSP_MainPanelButtonToggle(mainPanel, 1)
 
+			hookResult = 2 // don't kill window
 			break
 	endswitch
 
-	return 0
+	return hookResult
 End
 
 /// @brief window macro for side panel
@@ -595,7 +598,7 @@ Function BSP_CheckBoxProc_PerPulseAver(cba) : CheckBoxControl
 	return 0
 End
 
-/// @brief procedure for the open/close button of the side panel
+/// @brief procedure for the open button of the side panel
 Function BSP_ButtonProc_Panel(ba) : ButtonControl
 	STRUCT WMButtonAction &ba
 
@@ -604,7 +607,7 @@ Function BSP_ButtonProc_Panel(ba) : ButtonControl
 	switch(ba.eventcode)
 		case 2: // mouse up
 			win = GetMainWindow(ba.win)
-			BSP_TogglePanel(win)
+			BSP_OpenPanel(win)
 			break
 	endswitch
 

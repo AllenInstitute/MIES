@@ -552,7 +552,7 @@ Function/DF SB_OpenSweepBrowser()
 	PopupMenu popup_sweepBrowser_tAlignMaster win=$extPanel, value = #("SB_GetAllTraces(\"" + panelTitleNew + "\")")
 	PopupMenu popup_sweep_selector win=$extPanel, value= #("SB_GetSweepList(\"" + panelTitleNew + "\")")
 
-	BSP_TogglePanel(panelTitleNew)
+	BSP_OpenPanel(panelTitleNew)
 	return sweepBrowserDFR
 End
 
