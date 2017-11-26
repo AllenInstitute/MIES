@@ -62,12 +62,6 @@ Function DB_OpenDataBrowser()
 	// window name (win) changes by popup_DB_lockedDevices: proc
 End
 
-static Function/DF DB_GetDataPath(panelTitle)
-	string panelTitle
-
-	return BSP_GetFolder(panelTitle, MIES_BSP_DATA_FOLDER)
-End
-
 static Function/S DB_GetNotebookSubWindow(panelTitle)
 	string panelTitle
 
@@ -162,21 +156,20 @@ static Function DB_SetUserData(panelTitle, device)
 
 	DFREF dfr = GetDeviceDataBrowserPath(device)
 	BSP_SetFolder(panelTitle, dfr, MIES_BSP_PANEL_FOLDER)
-
-	DFREF dfr = GetDeviceDataPath(device)
-	BSP_SetFolder(panelTitle, dfr, MIES_BSP_DATA_FOLDER)
 End
 
 static Function/S DB_GetPlainSweepList(panelTitle)
 	string panelTitle
 
+	string device
 	DFREF dfr
 
 	if(!BSP_HasBoundDevice(panelTitle))
 		return ""
 	endif
 
-	dfr = DB_GetDataPath(panelTitle)
+	device = BSP_GetDevice(panelTitle)
+	dfr = GetDeviceDataPath(device)
 	return GetListOfObjects(dfr, DATA_SWEEP_REGEXP, waveProperty="MINCOLS:2")
 End
 
@@ -254,6 +247,7 @@ Function DB_UpdateSweepPlot(panelTitle, [dummyArg])
 	if(!BSP_HasBoundDevice(panelTitle))
 		return NaN
 	endif
+	device = BSP_GetDevice(panelTitle)
 
 	WAVE numericalValues = DB_GetNumericalValues(panelTitle)
 	WAVE textualValues   = DB_GetTextualValues(panelTitle)
@@ -276,7 +270,7 @@ Function DB_UpdateSweepPlot(panelTitle, [dummyArg])
 	endif
 
 	WAVE axisLabelCache = GetAxisLabelCacheWave()
-	DFREF dfr = DB_GetDataPath(panelTitle)
+	DFREF dfr = GetDeviceDataPath(device)
 	numEntries = DimSize(sweepsToOverlay, ROWS)
 	for(i = 0; i < numEntries; i += 1)
 		sweepNo = sweepsToOverlay[i]
@@ -312,7 +306,6 @@ Function DB_UpdateSweepPlot(panelTitle, [dummyArg])
 	endif
 
 	Struct PostPlotSettings pps
-	device = GetPopupMenuString(panelTitle, "popup_DB_lockedDevices")
 	pps.averageDataFolder = GetDeviceDataBrowserPath(device)
 	pps.averageTraces     = GetCheckboxState(panelTitle, "check_DataBrowser_AverageTraces")
 	pps.zeroTraces        = GetCheckBoxState(panelTitle, "check_DataBrowser_ZeroTraces")
