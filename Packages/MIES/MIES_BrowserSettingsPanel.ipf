@@ -987,6 +987,47 @@ Function BSP_SliderProc_ChangedSetting(spa) : SliderControl
 	return 0
 End
 
+/// @brief update controls in scPanel and change to new sweep
+///
+/// @param win 		  name of external panel or main window
+/// @param ctrl       name of the button that was pressed and is initiating the update
+/// @param firstSweep first available sweep(DB) or index(SB)
+/// @param lastSweep  first available sweep(DB) or index(SB)
+/// @returns the new sweep number in case of DB or the index for SB
+Function BSP_UpdateSweepControls(win, ctrl, firstSweep, lastSweep)
+	string win, ctrl
+	variable firstSweep, lastSweep
+
+	string graph, scPanel
+	variable currentSweep, newSweep, step, direction
+
+	graph   = GetMainWindow(win)
+	scPanel = BSP_GetSweepControlsPanel(graph)
+
+	if(BSP_MainPanelNeedsUpdate(graph))
+		DoAbortNow("The main panel is too old to be usable. Please close it and open a new one.")
+	endif
+
+	currentSweep = GetSetVariable(scPanel, "setvar_SweepControl_SweepNo")
+	step = GetSetVariable(scPanel, "setvar_SweepControl_SweepStep")
+	if(!cmpstr(ctrl, "button_SweepControl_PrevSweep"))
+		direction = -1
+	elseif(!cmpstr(ctrl, "button_SweepControl_NextSweep"))
+		direction = +1
+	else
+		ASSERT(0, "unhandled control name")
+	endif
+
+	newSweep = currentSweep + direction * step
+	newSweep = limit(newSweep, firstSweep, lastSweep)
+
+	SetSetVariable(scPanel, "setvar_SweepControl_SweepNo", newSweep)
+	SetSetVariableLimits(scPanel, "setvar_SweepControl_SweepNo", firstSweep, lastSweep, step)
+	SetValDisplay(scPanel, "valdisp_SweepControl_LastSweep", var = lastSweep)
+
+	return newSweep
+End
+
 /// @brief check the DataBrowser or SweepBrowser panel if it has the required version
 ///
 /// @param win 		name of external panel or main window

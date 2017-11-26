@@ -680,44 +680,22 @@ End
 Function SB_ButtonProc_ChangeSweep(ba) : ButtonControl
 	STRUCT WMButtonAction &ba
 
-	string graph, scPanel, ctrl
-	variable currentSweep, newSweep, direction, step, totalNumSweeps
+	string graph
+	variable firstSweep, lastSweep, index
 
-	graph   = GetMainWindow(ba.win)
-	scPanel = BSP_GetSweepControlsPanel(graph)
+	graph = GetMainWindow(ba.win)
 
 	switch(ba.eventCode)
 		case 2: // mouse up
-			ctrl = ba.ctrlName
-
-			if(BSP_MainPanelNeedsUpdate(graph))
-				DoAbortNow("The main panel is too old to be usable. Please close it and open a new one.")
-			endif
-
-			currentSweep = GetPopupMenuIndex(scPanel, "popup_SweepControl_Selector")
-
-			if(!cmpstr(ctrl, "button_SweepControl_PrevSweep"))
-				direction = -1
-			elseif(!cmpstr(ctrl, "button_SweepControl_NextSweep"))
-				direction = +1
-			else
-				ASSERT(0, "unhandled control name")
-			endif
-
-			step = GetSetVariable(scPanel, "setvar_SweepControl_SweepStep")
-			newSweep = currentSweep + direction * step
-			totalNumSweeps = ItemsInList(SB_GetSweepList(graph)) - 1
-			newSweep = limit(newSweep, 0, totalNumSweeps)
-
-			SetSetVariable(scPanel, "setvar_SweepControl_SweepNo", newSweep)
-			SetSetVariableLimits(scPanel, "setvar_SweepControl_SweepNo", 0, totalNumSweeps, 1)
-			SetValDisplay(scPanel, "valdisp_SweepControl_LastSweep", var = totalNumSweeps)
+			firstSweep = 0
+			lastSweep = ItemsInList(SB_GetSweepList(graph)) - 1
+			index = BSP_UpdateSweepControls(graph, ba.ctrlName, firstSweep, lastSweep)
 
 			if(OVS_IsActive(graph))
-				OVS_ChangeSweepSelectionState(graph, CHECKBOX_SELECTED, index=newSweep)
+				OVS_ChangeSweepSelectionState(graph, CHECKBOX_SELECTED, index=index)
 			endif
 
-			SB_UpdateSweepPlot(graph, newSweep=newSweep)
+			SB_UpdateSweepPlot(graph, newSweep=index)
 			break
 	endswitch
 

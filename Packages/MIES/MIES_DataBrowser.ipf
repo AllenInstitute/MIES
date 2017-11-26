@@ -232,21 +232,6 @@ static Function DB_UpdateLastSweepControls(win, first, last)
 	endif
 End
 
-static Function DB_ClipSweepNumber(win, sweepNo)
-	string win
-	variable sweepNo
-
-	variable firstSweep, lastSweep
-	string scPanel = BSP_GetSweepControlsPanel(win)
-
-	DB_FirstAndLastSweepAcquired(scPanel, firstSweep, lastSweep)
-	DB_UpdateLastSweepControls(scPanel, firstSweep, lastSweep)
-
-	// handles situation where data sweep number starts at a value greater than the controls number
-	// usually occurs after locking when control is set to zero
-	return limit(sweepNo, firstSweep, lastSweep)
-End
-
 /// @brief Update the sweep plotting facility
 ///
 /// Only outside callers are generic external panels which must update the graph.
@@ -635,36 +620,26 @@ End
 Function DB_ButtonProc_ChangeSweep(ba) : ButtonControl
 	STRUCT WMButtonAction &ba
 
-	string win, mainPanel, scPanel, ctrl
-	variable step, sweepNo, currentSweep
+	string graph, scPanel
+	variable firstSweep, lastSweep, formerLast, sweepNo
 
-	win = ba.win
-	mainPanel = GetMainWindow(win)
-	scPanel   = BSP_GetSweepControlsPanel(win)
+	graph = GetMainWindow(ba.win)
+	scPanel = BSP_GetSweepControlsPanel(graph)
 
 	switch(ba.eventcode)
 		case 2: // mouse up
-			ctrl = ba.ctrlName
+			DB_FirstAndLastSweepAcquired(scPanel, firstSweep, lastSweep)
 
-			if(BSP_MainPanelNeedsUpdate(win))
-				DoAbortNow("The main panel is too old to be usable. Please close it and open a new one.")
+			/// @todo this was called from DB_UpdateLastSweepControls. Is it really necessary?
+			formerLast = GetValDisplayAsNum(scPanel, "valdisp_SweepControl_LastSweep")
+			if(formerLast != lastSweep)
+				DB_UpdateOverlaySweepWaves(graph)
 			endif
 
-			currentSweep = GetSetVariable(scPanel, "setvar_SweepControl_SweepNo")
-			step = GetSetVariable(scPanel, "setvar_SweepControl_SweepStep")
+			sweepNo = BSP_UpdateSweepControls(graph, ba.ctrlName, firstSweep, lastSweep)
 
-			if(!cmpstr(ctrl, "button_SweepControl_PrevSweep"))
-				sweepNo = currentSweep - step
-			elseif(!cmpstr(ctrl, "button_SweepControl_NextSweep"))
-				sweepNo = currentSweep + step
-			else
-				ASSERT(0, "unhandled control name")
-			endif
-
-			sweepNo = DB_ClipSweepNumber(win, sweepNo)
-			SetSetVariable(scPanel, "setvar_SweepControl_SweepNo", sweepNo)
-			OVS_ChangeSweepSelectionState(win, CHECKBOX_SELECTED, sweepNO=sweepNo)
-			DB_UpdateSweepPlot(win)
+			OVS_ChangeSweepSelectionState(graph, CHECKBOX_SELECTED, sweepNO=sweepNo)
+			DB_UpdateSweepPlot(graph)
 			break
 	endswitch
 
