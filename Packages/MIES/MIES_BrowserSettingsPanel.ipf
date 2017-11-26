@@ -136,7 +136,7 @@ End
 /// @brief set a FOLDER property at the specified panel
 ///
 /// @param panelName 				name of external panel or main window
-/// @param dfr 						DataFolder Reference to th folder
+/// @param dfr 						DataFolder Reference to the folder
 /// @param MIES_BSP_FOLDER_TYPE 	see the FOLDER constants in this file
 Function BSP_SetFolder(panelName, dfr, MIES_BSP_FOLDER_TYPE)
 	string panelName, MIES_BSP_FOLDER_TYPE
