@@ -24,12 +24,6 @@ Function TEST_BEGIN_OVERRIDE(name)
 	interactiveMode = 0
 End
 
-Function TEST_CASE_BEGIN_OVERRIDE(name)
-	string name
-
-	ITCCloseAll2
-End
-
 Function SetupTestCases_IGNORE(testCaseList)
 	string testCaseList
 
@@ -75,6 +69,8 @@ Function Initialize_IGNORE()
 	GetMiesPath()
 	DuplicateDataFolder	root:WaveBuilder, root:MIES:WaveBuilder
 	REQUIRE(DataFolderExists("root:MIES:WaveBuilder:SavedStimulusSetParameters:DA"))
+
+	ITCCLoseAll2
 End
 
 /// @brief Background function to wait until DAQ is finished.
