@@ -101,7 +101,7 @@ End
 /// Indexing (IDX: 1/0)
 /// Locked Indexing (LIDX: 1/0)
 /// Background Data acquisition (BKG_DAQ: 1/0)
-/// Repeat Sets (RES: 1/0)
+/// Repeat Sets (RES: [1, inf])
 Structure DAQSettings
 	variable MD, RA, IDX, LIDX, BKG_DAQ, RES
 EndStructure
@@ -121,7 +121,7 @@ Function InitDAQSettingsFromString(s, str)
 	s.idx       = idx
 	s.lidx      = lidx
 	s.bkg_daq   = bkg_daq
-	s.res       = res
+	s.res       = limit(res, 1, inf)
 End
 
 /// @brief Similiar to InitDAQSettingsFromString() but uses the function name of the caller

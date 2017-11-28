@@ -68,7 +68,7 @@ Function TestAnalysisFunction_V1(panelTitle, eventType, ITCDataWave, headStage)
 	variable headstage
 
 	printf "Analysis function version 1 called: device %s, eventType \"%s\", headstage %d\r", panelTitle, StringFromList(eventType, EVENT_NAME_LIST), headStage
-	printf "Next sweep: %d\r", GetSetVariable(panelTitle, "SetVar_Sweep")
+	printf "Next sweep: %d\r", DAG_GetNumericalValue(panelTitle, "SetVar_Sweep")
 End
 
 Function TestAnalysisFunction_V2(panelTitle, eventType, ITCDataWave, headStage, realDataLength)
@@ -247,7 +247,7 @@ Function setHolding(Vm1)
 	variable Vm1
 
 	variable i
-	WAVE statusHS = DAP_ControlStatusWaveCache(DEFAULT_DEVICE, CHANNEL_TYPE_HEADSTAGE)
+	WAVE statusHS = DAG_GetChannelState(DEFAULT_DEVICE, CHANNEL_TYPE_HEADSTAGE)
 
 	for(i=0; i<NUM_HEADSTAGES; i+=1)
 		if (statusHS[i] == 1)
@@ -263,7 +263,7 @@ Function setVClampMode()
 
 	variable i
 	string ctrl
-	WAVE statusHS = DAP_ControlStatusWaveCache(DEFAULT_DEVICE, CHANNEL_TYPE_HEADSTAGE)
+	WAVE statusHS = DAG_GetChannelState(DEFAULT_DEVICE, CHANNEL_TYPE_HEADSTAGE)
 
 	for(i=0; i<NUM_HEADSTAGES; i+=1)
 		if(statusHS[i])
@@ -280,7 +280,7 @@ Function setIClampMode()
 	variable i
 	string ctrl
 
-	WAVE statusHS = DAP_ControlStatusWaveCache(DEFAULT_DEVICE, CHANNEL_TYPE_HEADSTAGE)
+	WAVE statusHS = DAG_GetChannelState(DEFAULT_DEVICE, CHANNEL_TYPE_HEADSTAGE)
 
 	for(i=0; i<NUM_HEADSTAGES; i+=1)
 		if(statusHS[i])
@@ -311,7 +311,7 @@ Function switchHolding(Vm2)
 	endif
 
 	switchSweep = floor(numSweeps/2)
-	WAVE statusHS = DAP_ControlStatusWaveCache(DEFAULT_DEVICE, CHANNEL_TYPE_HEADSTAGE)
+	WAVE statusHS = DAG_GetChannelState(DEFAULT_DEVICE, CHANNEL_TYPE_HEADSTAGE)
 
     if(SweepsRemaining == switchSweep)
         for(i=0; i<NUM_HEADSTAGES; i+=1)
@@ -373,7 +373,7 @@ Function LastStimSetRun()
 	
 	WAVE /T textualValues = GetLBTextualValues(DEFAULT_DEVICE)
 	WAVE  numericalValues = GetLBNumericalValues(DEFAULT_DEVICE)
-	WAVE statusHS = DAP_ControlStatusWaveCache(DEFAULT_DEVICE, CHANNEL_TYPE_HEADSTAGE)
+	WAVE statusHS = DAG_GetChannelState(DEFAULT_DEVICE, CHANNEL_TYPE_HEADSTAGE)
 	LastSweep = AFH_GetLastSweepAcquired(DEFAULT_DEVICE)
 
 	if (!isInteger(LastSweep))
@@ -487,7 +487,7 @@ Function AdjustDAScale(panelTitle, eventType, ITCDataWave, headStage, realDataLe
 	index = DAScalesIndex[headstage]
 	if(index < DimSize(DAScales, ROWS))
 		ctrl = GetPanelControl(DAC, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_SCALE)
-		SetSetVariable(panelTitle, ctrl, DAScales[index])
+		PGC_SetAndActivateControl(panelTitle, ctrl, val = DAScales[index])
 	endif
 
 	sprintf msg, "(%s, %d): DAScale = %g", panelTitle, headstage, (index < DimSize(DAScales, ROWS) ? DAScales[index] : NaN)
@@ -552,7 +552,7 @@ Function PlotResistanceGraph(panelTitle)
 		return NaN
 	endif
 
-	WAVE statusHS = DAP_ControlStatusWaveCache(panelTitle, CHANNEL_TYPE_HEADSTAGE)
+	WAVE statusHS = DAG_GetChannelState(panelTitle, CHANNEL_TYPE_HEADSTAGE)
 
 	WAVE storageDeltaI = GetAnalysisFuncDAScaleDeltaI(panelTitle)
 	WAVE storageDeltaV = GetAnalysisFuncDAScaleDeltaV(panelTitle)
@@ -632,7 +632,7 @@ Function PlotResistanceGraph(panelTitle)
 	KillOrMoveToTrash(wv=W_sigma)
 	KillOrMoveToTrash(wv=fitWave)
 
-	WAVE statusHS = DAP_ControlStatusWaveCache(panelTitle, CHANNEL_TYPE_HEADSTAGE)
+	WAVE statusHS = DAG_GetChannelState(panelTitle, CHANNEL_TYPE_HEADSTAGE)
 
 	if(!WindowExists(RESISTANCE_GRAPH))
 		Display/K=1/N=$RESISTANCE_GRAPH
@@ -678,15 +678,14 @@ static Function SetDAScale(panelTitle, headstage, DAScale)
 	DAC = AFH_GetDACFromHeadstage(panelTitle, headstage)
 	ASSERT(IsFinite(DAC), "This analysis function does not work with unassociated DA channels")
 
-	ctrl = GetPanelControl(DAC, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_UNIT)
-	DAUnit = GetSetVariableString(panelTitle, ctrl)
+	DAUnit = DAG_GetTextualValue(panelTitle, GetSpecialControlLabel(CHANNEL_TYPE_DAC, CHANNEL_CONTROL_UNIT), index = DAC)
 
 	// check for correct units
 	ASSERT(!cmpstr(DAunit, "pA"), "Unexpected DA Unit")
 
 	amps = DAScale / 1e-12
 	ctrl = GetPanelControl(DAC, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_SCALE)
-	SetSetVariable(panelTitle, ctrl, amps)
+	PGC_SetAndActivateControl(panelTitle, ctrl, val = amps)
 
 	return 0
 End
@@ -718,7 +717,7 @@ Function ReachTargetVoltage(panelTitle, eventType, ITCDataWave, headStage, realD
 
 	WAVE targetVoltagesIndex = GetAnalysisFuncIndexingHelper(panelTitle)
 	
-	WAVE statusHS = DAP_ControlStatusWaveCache(panelTitle, CHANNEL_TYPE_HEADSTAGE)
+	WAVE statusHS = DAG_GetChannelState(panelTitle, CHANNEL_TYPE_HEADSTAGE)
 	
 	WAVE ampParam = GetAmplifierParamStorageWave(panelTitle)
 
@@ -726,7 +725,7 @@ Function ReachTargetVoltage(panelTitle, eventType, ITCDataWave, headStage, realD
 		case PRE_DAQ_EVENT:
 			targetVoltagesIndex[headstage] = -1
 
-			if(DAP_MIESHeadstageMode(panelTitle, headstage) != I_CLAMP_MODE)
+			if(DAG_GetHeadstageMode(panelTitle, headstage) != I_CLAMP_MODE)
 				printf "(%s) The analysis function %s does only work in clamp mode.\r", panelTitle, GetRTStackInfo(1)
 				ControlWindowToFront()
 				return 1
@@ -944,27 +943,27 @@ Function PatchSeqSubThreshold(panelTitle, eventType, ITCDataWave, headStage, rea
 
 	WAVE DAScalesIndex = GetAnalysisFuncIndexingHelper(panelTitle)
 
-	WAVE statusHS = DAP_ControlStatusWaveCache(panelTitle, CHANNEL_TYPE_HEADSTAGE)
+	WAVE statusHS = DAG_GetChannelState(panelTitle, CHANNEL_TYPE_HEADSTAGE)
 
 	switch(eventType)
 		case PRE_DAQ_EVENT:
 			DAScalesIndex[headstage] = 0
 
-			if(!GetCheckBoxState(panelTitle, "check_Settings_ITITP"))
+			if(!DAG_GetNumericalValue(panelTitle, "check_Settings_ITITP"))
 				printf "(%s): TP during ITI must be checked\r", panelTitle
 				ControlWindowToFront()
 				return 1
-			elseif(!GetCheckBoxState(panelTitle, "check_DataAcq_AutoBias"))
+			elseif(!DAG_GetNumericalValue(panelTitle, "check_DataAcq_AutoBias"))
 				printf "(%s): Auto Bias must be checked\r", panelTitle
 				ControlWindowToFront()
 				return 1
-			elseif(!GetCheckBoxState(panelTitle, "check_Settings_MD"))
+			elseif(!DAG_GetNumericalValue(panelTitle, "check_Settings_MD"))
 				printf "(%s): Please check \"Multi Device\" mode.\r", panelTitle
 				ControlWindowToFront()
 				return 1
 			endif
 
-			val = GetSetVariable(panelTitle, "setvar_DataAcq_AutoBiasV")
+			val = DAG_GetNumericalValue(panelTitle, "setvar_DataAcq_AutoBiasV")
 
 			if(!IsFinite(val) || CheckIfSmall(val, tol = 1e-12))
 				printf "(%s): Autobias value is zero or non-finite\r", panelTitle
@@ -1065,7 +1064,7 @@ Function PatchSeqSubThreshold(panelTitle, eventType, ITCDataWave, headStage, rea
 	WAVE numericalValues = GetLBNumericalValues(panelTitle)
 
 	// we can't use AFH_GetLastSweepAcquired as the sweep is not yet acquired
-	sweepNo = GetSetVariable(panelTitle, "SetVar_Sweep")
+	sweepNo = DAG_GetNumericalValue(panelTitle, "SetVar_Sweep")
 	sweepPassed = GetLastSettingIndep(numericalValues, sweepNo, LABNOTEBOOK_USER_PREFIX + PATCHSEQ_ST_LBN_SWEEP_PASS, UNKNOWN_MODE, defValue = 0)
 
 	if(sweepPassed) // already done
@@ -1076,7 +1075,7 @@ Function PatchSeqSubThreshold(panelTitle, eventType, ITCDataWave, headStage, rea
 	WAVE OscilloscopeData = GetOscilloscopeWave(panelTitle)
 	lastFifoPos = GetNumberFromWaveNote(OscilloscopeData, "lastFifoPos") - 1
 
-	totalOnsetDelay = GetSetVariable(panelTitle, "setvar_DataAcq_OnsetDelayUser") \
+	totalOnsetDelay = DAG_GetNumericalValue(panelTitle, "setvar_DataAcq_OnsetDelayUser") \
 					  + GetValDisplayAsNum(panelTitle, "valdisp_DataAcq_OnsetDelayAuto")
 
 	fifoInStimsetPoint = lastFifoPos - totalOnsetDelay / DimDelta(OscilloscopeData, ROWS)
@@ -1215,9 +1214,9 @@ static Function EvaluateBaselineProperties(panelTitle, sweepNo, chunk, fifoInSti
 	Make/FREE/N = (LABNOTEBOOK_LAYER_COUNT) avgVoltage     = NaN
 	Make/FREE/N = (LABNOTEBOOK_LAYER_COUNT) targetVPassed  = NaN
 
-	targetV = GetSetVariable(panelTitle, "setvar_DataAcq_AutoBiasV")
+	targetV = DAG_GetNumericalValue(panelTitle, "setvar_DataAcq_AutoBiasV")
 
-	WAVE statusHS = DAP_ControlStatusWaveCache(panelTitle, CHANNEL_TYPE_HEADSTAGE)
+	WAVE statusHS = DAG_GetChannelState(panelTitle, CHANNEL_TYPE_HEADSTAGE)
 
 	for(i = 0; i < NUM_HEADSTAGES; i += 1)
 
@@ -1229,8 +1228,7 @@ static Function EvaluateBaselineProperties(panelTitle, sweepNo, chunk, fifoInSti
 		ASSERT(IsFinite(ADC), "This analysis function does not work with unassociated AD channels")
 		ADcol = AFH_GetITCDataColumn(config, ADC, ITC_XOP_CHANNEL_TYPE_ADC)
 
-		ctrl   = GetPanelControl(ADC, CHANNEL_TYPE_ADC, CHANNEL_CONTROL_UNIT)
-		ADUnit = GetSetVariableString(panelTitle, ctrl)
+		ADunit = DAG_GetTextualValue(panelTitle, GetSpecialControlLabel(CHANNEL_TYPE_ADC, CHANNEL_CONTROL_UNIT), index = ADC)
 
 		// assuming millivolts
 		ASSERT(!cmpstr(ADunit, "mV"), "Unexpected AD Unit")
@@ -1401,7 +1399,7 @@ static Function GetNumberOfChunks(panelTitle)
 
 	WAVE OscilloscopeData    = GetOscilloscopeWave(panelTitle)
 	NVAR stopCollectionPoint = $GetStopCollectionPoint(panelTitle)
-	totalOnsetDelay = GetSetVariable(panelTitle, "setvar_DataAcq_OnsetDelayUser") \
+	totalOnsetDelay = DAG_GetNumericalValue(panelTitle, "setvar_DataAcq_OnsetDelayUser") \
 					  + GetValDisplayAsNum(panelTitle, "valdisp_DataAcq_OnsetDelayAuto")
 
 	length = stopCollectionPoint * DimDelta(OscilloscopeData, ROWS)
@@ -1644,7 +1642,7 @@ Function PatchSeqSquarePulse(panelTitle, eventType, ITCDataWave, headStage, real
 	WAVE numericalValues = GetLBNumericalValues(panelTitle)
 	WAVE textualValues   = GetLBTextualValues(panelTitle)
 
-	WAVE statusHS = DAP_ControlStatusWaveCache(panelTitle, CHANNEL_TYPE_HEADSTAGE)
+	WAVE statusHS = DAG_GetChannelState(panelTitle, CHANNEL_TYPE_HEADSTAGE)
 
 	ASSERT(sum(statusHS) == 1, "Analysis function only supports one headstage")
 
@@ -1660,7 +1658,7 @@ Function PatchSeqSquarePulse(panelTitle, eventType, ITCDataWave, headStage, real
 			PGC_SetAndActivateControl(panelTitle, "Check_Settings_InsertTP", val = 0)
 			PGC_SetAndActivateControl(panelTitle, "Check_DataAcq_Get_Set_ITI", val = 1)
 
-			if(DAP_MIESHeadstageMode(panelTitle, headstage) != I_CLAMP_MODE)
+			if(DAG_GetHeadstageMode(panelTitle, headstage) != I_CLAMP_MODE)
 				printf "(%s) Clamp mode must be current clamp.\r", panelTitle
 				ControlWindowToFront()
 				return 1

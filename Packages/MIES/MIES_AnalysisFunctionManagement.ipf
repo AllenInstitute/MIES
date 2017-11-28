@@ -27,7 +27,7 @@ Function AFM_CallAnalysisFunctions(panelTitle, eventType)
 
 	NVAR count = $GetCount(panelTitle)
 	NVAR stopCollectionPoint = $GetStopCollectionPoint(panelTitle)
-	WAVE statusHS = DAP_ControlStatusWaveCache(panelTitle, CHANNEL_TYPE_HEADSTAGE)
+	WAVE statusHS = DAG_GetChannelState(panelTitle, CHANNEL_TYPE_HEADSTAGE)
 
 	WAVE/T analysisFunctions = GetAnalysisFunctionStorage(panelTitle)
 
@@ -54,6 +54,7 @@ Function AFM_CallAnalysisFunctions(panelTitle, eventType)
 				DAC = AFH_GetDACFromHeadstage(panelTitle, i)
 
 				ctrl    = GetPanelControl(DAC, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_WAVE)
+				// deliberately not using the GUI state wave
 				setName = GetPopupMenuString(panelTitle, ctrl)
 
 				if(mod(count + 1, IDX_NumberOfTrialsInSet(setName)) != 0)
@@ -113,7 +114,7 @@ Function AFM_UpdateAnalysisFunctionWave(panelTitle)
 	variable i, j, DAC
 	string ctrl, setName
 
-	WAVE statusHS            = DAP_ControlStatusWaveCache(panelTitle, CHANNEL_TYPE_HEADSTAGE)
+	WAVE statusHS            = DAG_GetChannelState(panelTitle, CHANNEL_TYPE_HEADSTAGE)
 	WAVE/T analysisFunctions = GetAnalysisFunctionStorage(panelTitle)
 
 	analysisFunctions = ""
@@ -131,7 +132,8 @@ Function AFM_UpdateAnalysisFunctionWave(panelTitle)
 			continue
 		endif
 
-		ctrl    = GetPanelControl(DAC, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_WAVE)
+		ctrl = GetPanelControl(DAC, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_WAVE)
+		// deliberately not using the GUI state wave
 		setName = GetPopupMenuString(panelTitle, ctrl)
 
 		WAVE/Z stimSet = WB_CreateAndGetStimSet(setName)

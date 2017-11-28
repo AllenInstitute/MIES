@@ -180,7 +180,7 @@ End
 
 /// @brief Return a wave with all active channels
 ///
-/// @todo change to return a 0/1 wave with constant size a la DAP_ControlStatusWaveCache
+/// @todo change to return a 0/1 wave with constant size a la DAG_GetChannelState
 ///
 /// @param config       ITCChanConfigWave as passed to the ITC XOP
 /// @param channelType  DA/AD/TTL constants, see @ref ChannelTypeAndControlConstants
@@ -208,6 +208,13 @@ static Function/WAVE GetChanneListFromITCConfig(config, channelType)
 	Redimension/N=(j) activeChannels
 
 	return activeChannels
+End
+
+/// @brief Return the dimension label for the special, aka non-unique, controls
+Function/S GetSpecialControlLabel(channelType, controlType)
+	variable channelType, controlType
+
+	return RemoveEnding(GetPanelControl(0, channelType, controlType), "_00")
 End
 
 /// @brief Returns the name of a control from the DA_EPHYS panel
@@ -2152,7 +2159,7 @@ Function SaveExperimentSpecial(mode)
 		killFunc(path)
 
 		if(windowExists(device) && zeroSweepCounter)
-			SetSetVariable(device, "SetVar_Sweep", 0)
+			PGC_SetAndActivateControl(device, "SetVar_Sweep", val = 0)
 		endif
 	endfor
 
@@ -3194,7 +3201,7 @@ Function/S GetWaveBuilderParameterTypeName(type)
 End
 
 /// @brief Returns the mode of all setVars in the DA_Ephys panel of a controlType
-Function/Wave GetAllDAEphysSetVar(panelTitle, channelType, controlType)
+Function/Wave GetAllDAEphysSetVarNum(panelTitle, channelType, controlType)
 	string panelTitle
 	variable channelType, controlType
 	
@@ -3205,6 +3212,22 @@ Function/Wave GetAllDAEphysSetVar(panelTitle, channelType, controlType)
 	for(i = 0; i < CtrlNum; i+=1)
 		ctrl = GetPanelControl(i, channelType, controlType)
 		wv[i] = GetSetVariable(panelTitle, ctrl)
+	endfor
+	return wv
+End
+
+/// @brief Returns the mode of all setVars in the DA_Ephys panel of a controlType
+Function/Wave GetAllDAEphysSetVarTxT(panelTitle, channelType, controlType)
+	string panelTitle
+	variable channelType, controlType
+
+	variable CtrlNum = GetNumberFromType(var=channelType)
+	string ctrl
+	make/FREE/n=(CtrlNum)/T Wv
+	variable i
+	for(i = 0; i < CtrlNum; i+=1)
+		ctrl = GetPanelControl(i, channelType, controlType)
+		wv[i] = GetSetVariableString(panelTitle, ctrl)
 	endfor
 	return wv
 End
@@ -3221,6 +3244,22 @@ Function/Wave GetAllDAEphysPopMenuIndex(panelTitle, channelType, controlType)
 	for(i = 0; i < CtrlNum; i+=1)
 		ctrl = GetPanelControl(i, channelType, controlType)
 		wv[i] = GetPopupMenuIndex(panelTitle, ctrl)
+	endfor
+	return wv
+End
+
+/// @brief Returns the string contents of all popupmenus in the DA_Ephys panel of a controlType
+Function/Wave GetAllDAEphysPopMenuString(panelTitle, channelType, controlType)
+	string panelTitle
+	variable channelType, controlType
+
+	variable CtrlNum = GetNumberFromType(var=channelType)
+	string ctrl
+	make/FREE/n=(CtrlNum)/T Wv
+	variable i
+	for(i = 0; i < CtrlNum; i+=1)
+		ctrl = GetPanelControl(i, channelType, controlType)
+		wv[i] = GetPopupMenuString(panelTitle, ctrl)
 	endfor
 	return wv
 End

@@ -452,7 +452,8 @@ Constant INDEP_HEADSTAGE = 8
 StrConstant UNKNOWN_MIES_VERSION = "unknown version"
 
 /// Number of common control groups in the DA_EPHYS panel
-Constant COMMON_CONTROL_GROUP_COUNT = 18
+Constant COMMON_CONTROL_GROUP_COUNT_NUM = 18
+Constant COMMON_CONTROL_GROUP_COUNT_TXT = 10
 
 /// Equals 2^5 from `GetKeyState`
 Constant ESCAPE_KEY = 32
@@ -473,7 +474,7 @@ Constant HARDWARE_DAC_EXTERNAL_TRIGGER = 0x1
 /// @}
 
 /// Used to upgrade the GuiStateWave as well as the DA Ephys panel
-Constant DA_EPHYS_PANEL_VERSION     = 22
+Constant DA_EPHYS_PANEL_VERSION     = 25
 Constant DATABROWSER_PANEL_VERSION  = 6
 Constant SWEEPBROWSER_PANEL_VERSION = 0
 Constant WAVEBUILDER_PANEL_VERSION  = 3

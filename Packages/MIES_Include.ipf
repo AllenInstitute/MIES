@@ -40,6 +40,9 @@
 #include "MIES_CheckInstallation"
 #include "MIES_Constants"
 #include "MIES_DAC-Hardware"
+#include "MIES_DAEphys"
+#include "MIES_DAEphys_Macro"
+#include "MIES_DAEphys_GuiState"
 #include "MIES_DataBrowser" menus=0
 #include "MIES_DataAcquisition"
 #include "MIES_DataAcquisition_Single"
@@ -64,7 +67,6 @@
 #include "MIES_OptimzedOverlapDistributedAcquisition"
 #include "MIES_Oscilloscope"
 #include "MIES_OverlaySweeps"
-#include "MIES_PanelITC"
 #include "MIES_PressureControl"
 #include "MIES_ProgrammaticGuiControl"
 #include "MIES_PulseAveraging"

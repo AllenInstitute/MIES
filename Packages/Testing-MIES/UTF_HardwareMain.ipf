@@ -6,6 +6,7 @@
 
 #include "UTF_VeryBasicHardwareTests"
 #include "UTF_TestingWithHardware"
+#include "UTF_DAEphys"
 #include "UTF_BasicHardwareTests"
 #include "UTF_PatchSeqSubThreshold"
 #include "UTF_PatchSeqSquarePulse"
@@ -18,7 +19,7 @@ Function run()
 	KillDataFolder/Z root:WaveBuilder
 	DuplicateDataFolder	root:MIES:WaveBuilder, root:WaveBuilder
 
-	RunTest("UTF_VeryBasicHardwareTests.ipf", enableJU = 1)
+	RunTest("UTF_VeryBasicHardwareTests.ipf;UTF_DAEphys.ipf", enableJU = 1)
 
 	string list = ""
 	list = AddListItem("DAQ_MD0_RA0_IDX0_LIDX0_BKG_0", list, ";", INF)
@@ -64,6 +65,9 @@ Function run()
 	list = AddListItem("PS_SP_Run5", list, ";", INF)
 	list = AddListItem("PS_SP_Test5", list, ";", INF)
 
+	// initialize everything
+	CtrlNamedBackGround DAQWatchdog, stop, period=120, proc=WaitUntilDAQDone_IGNORE
+	Initialize_IGNORE()
 	SetupTestCases_IGNORE(list)
 	ExecuteNextTestCase_IGNORE()
 End

@@ -173,9 +173,9 @@ static Function SCOPE_GetCheckBoxesForAddons(panelTitle, showSteadyStateResistan
 	string panelTitle
 	variable &showSteadyStateResistance, &showPeakResistance, &showPowerSpectrum
 
-	showPeakResistance        = GetCheckboxState(panelTitle, "check_settings_TP_show_peak")
-	showSteadyStateResistance = GetCheckboxState(panelTitle, "check_settings_TP_show_steady")
-	showPowerSpectrum         = GetCheckboxState(panelTitle, "check_settings_show_power")
+	showPeakResistance        = DAG_GetNumericalValue(panelTitle, "check_settings_TP_show_peak")
+	showSteadyStateResistance = DAG_GetNumericalValue(panelTitle, "check_settings_TP_show_steady")
+	showPowerSpectrum         = DAG_GetNumericalValue(panelTitle, "check_settings_show_power")
 End
 
 Function SCOPE_CreateGraph(panelTitle, dataAcqOrTP)
@@ -404,7 +404,7 @@ Function SCOPE_SetADAxisLabel(panelTitle,activeHeadStage)
 				style = ""
 			endif
 
-			if(GetCheckboxState(panelTitle, "check_settings_show_power"))
+			if(DAG_GetNumericalValue(panelTitle, "check_settings_show_power"))
 				unit = "a. u."
 			else
 				// extracts unit from string list that contains units in same sequence as columns in the ITCDatawave
@@ -440,7 +440,7 @@ Function SCOPE_UpdateOscilloscopeData(panelTitle, dataAcqOrTP, [chunk, fifoPos])
 	numEntries = DimSize(ADCs, ROWS)
 
 	//do the AD scaling here manually so that is can be as fast as possible
-	Make/FREE/N=(numEntries) gain = DA_EphysGuiState[ADCs[p]][%ADGain] * HARDWARE_ITC_BITS_PER_VOLT
+	Make/FREE/N=(numEntries) gain = DA_EphysGuiState[ADCs[p]][%$GetSpecialControlLabel(CHANNEL_TYPE_ADC, CHANNEL_CONTROL_GAIN)] * HARDWARE_ITC_BITS_PER_VOLT
 
 	if(dataAcqOrTP == TEST_PULSE_MODE)
 		if(ParamIsDefault(chunk))

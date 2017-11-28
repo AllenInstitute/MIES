@@ -18,6 +18,9 @@
 static Constant NUM_COLUMNS_LIST_WAVE   = 11
 static StrConstant WAVE_NOTE_LAYOUT_KEY = "WAVE_LAYOUT_VERSION"
 
+static Constant WAVE_TYPE_NUMERICAL = 0x1
+static Constant WAVE_TYPE_TEXTUAL   = 0x2
+
 /// @brief Return a wave reference to the channel <-> amplifier relation wave (numeric part)
 ///
 /// Rows:
@@ -4185,35 +4188,109 @@ End
 /// - Column specific GUI control settings usually associated with control name number
 ///
 /// Columns:
-/// - 0: HSState State of control Check_DataAcqHS_RowNum. 0 = UnChecked, 1 = Checked
-/// - 1: HSMode Clamp mode of HS number that matches Row number. 0 = VC, 1 = IC, 2 = NC.
-/// - 2: DAState State of control Check_DA_RowNum. 0 = UnChecked, 1 = Checked
-/// - 3: DAGain Internal number stored in control Gain_DA_RowNum. Gain is user/hardware defined.
-/// - 4: DAScale Internal number stored in setvar:Scale_DA_RowNum. Scalar is user defined.
-/// - 5: DAStartIndex PopupMenu Index of popupMenu:Wave_DA_RowNum. Stores index
+/// - 0: State of control Check_DataAcqHS_RowNum. 0 = UnChecked, 1 = Checked
+/// - 1: Clamp mode of HS number that matches Row number. 0 = VC, 1 = IC, 2 = NC.
+/// - 2: State of control Check_DA_RowNum. 0 = UnChecked, 1 = Checked
+/// - 3: Internal number stored in control Gain_DA_RowNum. Gain is user/hardware defined.
+/// - 4: Internal number stored in setvar:Scale_DA_RowNum. Scalar is user defined.
+/// - 5: PopupMenu Index of popupMenu:Wave_DA_RowNum. Stores index
 ///  	 of active DA stimulus set during data acquisition. Stores index of next DA
 ///      stimulus set when data acquistion is not active.
-/// - 6: DAEndIndex PopupMenu Index of popupMenu:IndexEnd_DA_RowNum. Stores the
+/// - 6: PopupMenu Index of popupMenu:IndexEnd_DA_RowNum. Stores the
 ///      index of the last DA stimulus set used in indexed aquisition mode.
-/// - 7: ADState State of checkbox control Check_AD_RowNum. 0 = UnChecked, 1 = Checked
-/// - 8: ADGain Internal number stored in Gain_AD_RowNum. Gain is user/hardware defined.
-/// - 9: TTLState State of checkbox control Check_TTL_RowNum.  0 = UnChecked, 1 = Checked
-/// - 10: TTLStartIndex PopupMenu Index of popupMenu:Wave_TTL_RowNum. Stores
+/// - 7: State of checkbox control Check_AD_RowNum. 0 = UnChecked, 1 = Checked
+/// - 8: Internal number stored in Gain_AD_RowNum. Gain is user/hardware defined.
+/// - 9: State of checkbox control Check_TTL_RowNum.  0 = UnChecked, 1 = Checked
+/// - 10: PopupMenu Index of popupMenu:Wave_TTL_RowNum. Stores
 ///       index of active TTL stimulus set during data acquisition. Stores index of
 ///       next TTL stimulus set when data acquistion is not active.
-/// - 11: TTLEndIndex PopupMenu Index of popupMenu:IndexEnd_TTL_RowNum. Stores
+/// - 11: PopupMenu Index of popupMenu:IndexEnd_TTL_RowNum. Stores
 ///       the index of the last TTL stimulus set used in indexed aquisition mode.
-/// - 12: AsyncState State of control Check_AsyncAD_RowNum. 0 = UnChecked, 1 = Checked
-/// - 13: AsyncGain Internal number stored in control SetVar_AsyncAD_Gain_RowNum. Gain is user/hardware defined.
-/// - 14: AlarmState State of control check_AsyncAlarm_RowNum. 0 = UnChecked, 1 = Checked
-/// - 15: AlarmMin Internal number stored in control min_AsyncAD__RowNum. The minium value alarm trigger.
-/// - 16: AlarmMax Internal number stored in control max_AsyncAD_RowNum. The max value alarm trigger.
+/// - 12: State of control Check_AsyncAD_RowNum. 0 = UnChecked, 1 = Checked
+/// - 13: Internal number stored in control SetVar_AsyncAD_Gain_RowNum. Gain is user/hardware defined.
+/// - 14: State of control check_AsyncAlarm_RowNum. 0 = UnChecked, 1 = Checked
+/// - 15: Internal number stored in control min_AsyncAD__RowNum. The minium value alarm trigger.
+/// - 16: Internal number stored in control max_AsyncAD_RowNum. The max value alarm trigger.
 /// - 17+: Unique controls
 Function/Wave GetDA_EphysGuiStateNum(panelTitle)
 	string panelTitle
 
+	variable uniqueCtrlCount
+	string uniqueCtrlList, newName
+
+	DFREF dfr = GetDevicePath(panelTitle)
+	newName = "DA_EphysGuiStateNum"
+
+	STRUCT WaveLocationMod p
+	p.dfr     = dfr
+	p.name    = "DA_EphysGuiState"
+	p.newName = newName
+
+	WAVE/Z/D wv = UpgradeWaveLocationAndGetIt(p)
+
+	if(ExistsWithCorrectLayoutVersion(wv, DA_EPHYS_PANEL_VERSION))
+		return wv
+	elseif(WaveExists(wv)) // handle upgrade
+		// change the required dimensions and leave all others untouched with -1
+		// the extended dimensions are initialized with zero
+		uniqueCtrlList = GetUniqueSpecCtrlTypeListWrp(panelTitle, WAVE_TYPE_NUMERICAL)
+		uniqueCtrlCount = itemsInList(uniqueCtrlList)
+		Redimension/D/N=(NUM_MAX_CHANNELS, COMMON_CONTROL_GROUP_COUNT_NUM + uniqueCtrlCount, -1, -1) wv
+		wv = Nan
+	else
+		uniqueCtrlList = GetUniqueSpecCtrlTypeListWrp(panelTitle, WAVE_TYPE_NUMERICAL)
+		uniqueCtrlCount = itemsInList(uniqueCtrlList)
+		Make/N=(NUM_MAX_CHANNELS, COMMON_CONTROL_GROUP_COUNT_NUM + uniqueCtrlCount)/D dfr:DA_EphysGuiStateNum/Wave=wv
+		wv = Nan
+	endif
+
+	SetDimLabel COLS,  0, $GetSpecialControlLabel(CHANNEL_TYPE_HEADSTAGE, CHANNEL_CONTROL_CHECK), wv
+	SetDimLabel COLS,  1, HSMode, wv
+	SetDimLabel COLS,  2, $GetSpecialControlLabel(CHANNEL_TYPE_DAC, CHANNEL_CONTROL_CHECK), wv
+	SetDimLabel COLS,  3, $GetSpecialControlLabel(CHANNEL_TYPE_DAC, CHANNEL_CONTROL_GAIN), wv
+	SetDimLabel COLS,  4, $GetSpecialControlLabel(CHANNEL_TYPE_DAC, CHANNEL_CONTROL_SCALE), wv
+	SetDimLabel COLS,  5, $GetSpecialControlLabel(CHANNEL_TYPE_DAC, CHANNEL_CONTROL_WAVE), wv
+	SetDimLabel COLS,  6, $GetSpecialControlLabel(CHANNEL_TYPE_DAC, CHANNEL_CONTROL_INDEX_END), wv
+	SetDimLabel COLS,  7, $GetSpecialControlLabel(CHANNEL_TYPE_ADC, CHANNEL_CONTROL_CHECK), wv
+	SetDimLabel COLS,  8, $GetSpecialControlLabel(CHANNEL_TYPE_ADC, CHANNEL_CONTROL_GAIN), wv
+	SetDimLabel COLS,  9, $GetSpecialControlLabel(CHANNEL_TYPE_TTL, CHANNEL_CONTROL_CHECK), wv
+	SetDimLabel COLS, 10, $GetSpecialControlLabel(CHANNEL_TYPE_TTL, CHANNEL_CONTROL_WAVE), wv
+	SetDimLabel COLS, 11, $GetSpecialControlLabel(CHANNEL_TYPE_TTL, CHANNEL_CONTROL_INDEX_END), wv
+	SetDimLabel COLS, 12, $GetSpecialControlLabel(CHANNEL_TYPE_ASYNC, CHANNEL_CONTROL_CHECK), wv
+	SetDimLabel COLS, 13, $GetSpecialControlLabel(CHANNEL_TYPE_ASYNC, CHANNEL_CONTROL_GAIN), wv
+	SetDimLabel COLS, 14, $GetSpecialControlLabel(CHANNEL_TYPE_ALARM, CHANNEL_CONTROL_CHECK), wv
+	SetDimLabel COLS, 15, $GetSpecialControlLabel(CHANNEL_TYPE_ASYNC, CHANNEL_CONTROL_ALARM_MIN), wv
+	SetDimLabel COLS, 16, $GetSpecialControlLabel(CHANNEL_TYPE_ASYNC, CHANNEL_CONTROL_ALARM_MAX), wv
+
+	SetWaveDimLabel(wv, uniqueCtrlList, COLS, startPos = COMMON_CONTROL_GROUP_COUNT_NUM)
+	SetWaveVersion(wv, DA_EPHYS_PANEL_VERSION)
+	// needs to be called after setting the wave version in order to avoid infinite recursion
+	RecordGuiStateWrapper(panelTitle, WAVE_TYPE_NUMERICAL, wv)
+	return wv
+End
+
+/// @brief Return a wave reference to the textual GUI state wave
+///
+/// Rows:
+/// - Column specific GUI control settings usually associated with control name number
+///
+/// Columns:
+/// - 0: (DA)  First stimset name
+/// - 1: (DA)  Last stimset name
+/// - 2: (DA)  Unit
+/// - 3: (DA)  Search string
+/// - 4: (AD)  Unit
+/// - 5: (TTL) First stimset name
+/// - 6: (TTL) Last stimset name
+/// - 7: (TTL) Search string
+/// - 8: (Async) Title
+/// - 9: (Async) Unit
+/// - 10+: Unique controls (SetVariable and PopupMenu only)
+Function/Wave GetDA_EphysGuiStateTxT(panelTitle)
+	string panelTitle
+
 	DFREF dfr= GetDevicePath(panelTitle)
-	Wave/Z/SDFR=dfr wv = DA_EphysGuiState
+	Wave/Z/T/SDFR=dfr wv = DA_EphysGuiStateTxT
 	variable uniqueCtrlCount
 	string uniqueCtrlList
 
@@ -4222,122 +4299,87 @@ Function/Wave GetDA_EphysGuiStateNum(panelTitle)
 	elseif(WaveExists(wv)) // handle upgrade
 		// change the required dimensions and leave all others untouched with -1
 		// the extended dimensions are initialized with zero
-		uniqueCtrlList = GetUniqueSpecCtrlTypeList(panelTitle)
+		uniqueCtrlList = GetUniqueSpecCtrlTypeListWrp(panelTitle, WAVE_TYPE_TEXTUAL)
 		uniqueCtrlCount = itemsInList(uniqueCtrlList)
-		Redimension/N=(NUM_MAX_CHANNELS, COMMON_CONTROL_GROUP_COUNT + uniqueCtrlCount, -1, -1) wv
-		wv = Nan
+		Redimension/N=(NUM_MAX_CHANNELS, COMMON_CONTROL_GROUP_COUNT_TXT + uniqueCtrlCount, -1, -1) wv
+		wv = ""
 	else
-		uniqueCtrlList = GetUniqueSpecCtrlTypeList(panelTitle)
+		uniqueCtrlList = GetUniqueSpecCtrlTypeListWrp(panelTitle, WAVE_TYPE_TEXTUAL)
 		uniqueCtrlCount = itemsInList(uniqueCtrlList)
-		Make/N=(NUM_MAX_CHANNELS, COMMON_CONTROL_GROUP_COUNT + uniqueCtrlCount) dfr:DA_EphysGuiState/Wave=wv
-		wv = Nan
+		Make/T/N=(NUM_MAX_CHANNELS, COMMON_CONTROL_GROUP_COUNT_TXT + uniqueCtrlCount) dfr:DA_EphysGuiStateTxT/Wave=wv
+		wv = ""
 	endif
 
-	SetDimLabel COLS,  0, HSState, wv
-	SetDimLabel COLS,  1, HSMode, wv
-	SetDimLabel COLS,  2, DAState, wv
-	SetDimLabel COLS,  3, DAGain, wv
-	SetDimLabel COLS,  4, DAScale, wv
-	SetDimLabel COLS,  5, DAStartIndex, wv
-	SetDimLabel COLS,  6, DAEndIndex, wv
-	SetDimLabel COLS,  7, ADState, wv
-	SetDimLabel COLS,  8, ADGain, wv
-	SetDimLabel COLS,  9, TTLState, wv
-	SetDimLabel COLS, 10, TTLStartIndex, wv
-	SetDimLabel COLS, 11, TTLEndIndex, wv
-	SetDimLabel COLS, 12, AsyncState, wv
-	SetDimLabel COLS, 13, AsyncGain, wv
-	SetDimLabel COLS, 14, AlarmState, wv
-	SetDimLabel COLS, 15, AlarmMin, wv
-	SetDimLabel COLS, 16, AlarmMax, wv
+	SetDimLabel COLS,  0, $GetSpecialControlLabel(CHANNEL_TYPE_DAC, CHANNEL_CONTROL_WAVE), wv
+	SetDimLabel COLS,  1, $GetSpecialControlLabel(CHANNEL_TYPE_DAC, CHANNEL_CONTROL_INDEX_END), wv
+	SetDimLabel COLS,  2, $GetSpecialControlLabel(CHANNEL_TYPE_DAC, CHANNEL_CONTROL_UNIT), wv
+	SetDimLabel COLS,  3, $GetSpecialControlLabel(CHANNEL_TYPE_DAC, CHANNEL_CONTROL_SEARCH), wv
+	SetDimLabel COLS,  4, $GetSpecialControlLabel(CHANNEL_TYPE_ADC, CHANNEL_CONTROL_UNIT), wv
+	SetDimLabel COLS,  5, $GetSpecialControlLabel(CHANNEL_TYPE_TTL, CHANNEL_CONTROL_WAVE), wv
+	SetDimLabel COLS,  6, $GetSpecialControlLabel(CHANNEL_TYPE_TTL, CHANNEL_CONTROL_INDEX_END), wv
+	SetDimLabel COLS,  7, $GetSpecialControlLabel(CHANNEL_TYPE_TTL, CHANNEL_CONTROL_SEARCH), wv
+	SetDimLabel COLS,  8, $GetSpecialControlLabel(CHANNEL_TYPE_ASYNC, CHANNEL_CONTROL_TITLE), wv
+	SetDimLabel COLS,  9, $GetSpecialControlLabel(CHANNEL_TYPE_ASYNC, CHANNEL_CONTROL_UNIT), wv
 
-	SetWaveDimLabel(wv, uniqueCtrlList, COLS, startPos = COMMON_CONTROL_GROUP_COUNT)
+	SetWaveDimLabel(wv, uniqueCtrlList, COLS, startPos = COMMON_CONTROL_GROUP_COUNT_TXT)
 	SetWaveVersion(wv, DA_EPHYS_PANEL_VERSION)
 	// needs to be called after setting the wave version in order to avoid infinite recursion
-	RecordDA_EphysGuiStateWrapper(panelTitle, wv)
+	RecordGuiStateWrapper(panelTitle, WAVE_TYPE_TEXTUAL, wv)
 	return wv
 End
 
-/// @brief Calls `DAP_RecordDA_EphysGuiState` if it can be found,
-/// otherwise calls `RecordDA_EphysGuiStateProto` which aborts.
-static Function RecordDA_EphysGuiStateWrapper(str, wv)
-	string str
-	WAVE wv
+static Function/S GetUniqueSpecCtrlTypeListWrp(panelTitle, type)
+	string panelTitle
+	variable type
 
-	FUNCREF RecordDA_EphysGuiStateProto f = $"DAP_RecordDA_EphysGuiState"
-	f(str, GUISTATE=wv)
+	switch(type)
+		case WAVE_TYPE_NUMERICAL:
+			FUNCREF GetUniqueSpecCtrlTypeListProto f = $"DAG_GetUniqueSpecCtrlListNum"
+			break
+		case WAVE_TYPE_TEXTUAL:
+			FUNCREF GetUniqueSpecCtrlTypeListProto f = $"DAG_GetUniqueSpecCtrlListTxT"
+			break
+		default:
+			ASSERT(0, "Unknown type")
+			break
+	endswitch
+
+	return f(panelTitle)
 End
 
-Function RecordDA_EphysGuiStateProto(str, [GUISTATE])
-	string str
-	WAVE GUISTATE
+Function/S GetUniqueSpecCtrlTypeListProto(panelTitle)
+	string panelTitle
 
 	ASSERT(0, "Prototype function can not be called")
 End
 
-/// @brief Returns a list of unique and type specific controls
-///
-Function/S GetUniqueSpecCtrlTypeList(panelTitle)
-	string panelTitle
+/// @brief Calls DAG_RecordGuiStateNum()/DAG_RecordGuiStateTxT if it can be found,
+/// otherwise calls RecordGuiStateProto() which aborts.
+static Function RecordGuiStateWrapper(str, type, wv)
+	string str
+	variable type
+	WAVE wv
 
-	return GetSpecificCtrlTypes(panelTitle, GetUniqueCtrlList(panelTitle))
+	switch(type)
+		case WAVE_TYPE_NUMERICAL:
+			FUNCREF RecordGuiStateProto f = $"DAG_RecordGuiStateNum"
+			break
+		case WAVE_TYPE_TEXTUAL:
+			FUNCREF RecordGuiStateProto f = $"DAG_RecordGuiStateTxT"
+			break
+		default:
+			ASSERT(0, "Unknown type")
+			break
+	endswitch
+
+	f(str, GUISTATE = wv)
 End
 
-/// @brief Parses a list of controls in the panelTitle and returns a list of unique controls
-///
-Function/S GetUniqueCtrlList(panelTitle)
-	string panelTitle
+Function RecordGuiStateProto(str, [GUISTATE])
+	string str
+	WAVE GUISTATE
 
-	string list = controlNameList(panelTitle)
-	string relatedSetVar   = "Gain_*;Scale_*;Unit_*;Min_*;Max_*;Search_DA_*;Search_TTL_*;"
-	string relatedCheckBox = "Check_AD_*;Check_DA_*;Check_TTL_*;Check_AsyncAlarm_*;Check_AsyncAD_*;Check_DataAcqHS_*;Radio_ClampMode_*;"
-	string relatedPopUp    = "IndexEnd_*;Wave_*;"
-	string relatedValDisp  = "ValDisp_DataAcq_P_*;"
-	string ctrlToRemove    = relatedSetVar + relatedCheckBox + relatedPopUp + relatedValDisp
-	string prunedList
-	variable i,j
-
-	for(i=0;i<itemsinlist(ctrlToRemove);i+=1)
-		prunedList = ListMatch(list, stringfromlist(i, ctrlToRemove))
-		list = removefromlist(prunedList, list)
-	endfor
-
-	return list
-End
-
-/// @brief Parses a list of controls and returns numeric checkBox, valDisplay, setVariable, popUpMenu, and slider controls
-///
-Function/S GetSpecificCtrlTypes(panelTitle,list)
-	string panelTitle
-	string list
-
-	string subtypeCtrlList = ""
-	variable i, type
-	string controlName
-
-	for(i=0;i<itemsinlist(list);i+=1)
-		controlName = stringfromlist(i, list)
-		controlInfo/W=$panelTitle $controlName
-		type = abs(V_flag)
-		switch(type)
-			case CONTROL_TYPE_CHECKBOX:
-			case CONTROL_TYPE_POPUPMENU:
-			case CONTROL_TYPE_SLIDER: // fallthrough by design
-				subtypeCtrlList = AddListItem(controlName, subtypeCtrlList)
-				break
-			case CONTROL_TYPE_VALDISPLAY:
-			case CONTROL_TYPE_SETVARIABLE:  // fallthrough by design
-				if(!DoesControlHaveInternalString(panelTitle, controlName))
-					subtypeCtrlList = AddListItem(controlName, subtypeCtrlList)
-				endif
-				break
-			default:
-				// do nothing
-				break
-		endswitch
-	endfor
-
-	return subtypeCtrlList
+	ASSERT(0, "Prototype function can not be called")
 End
 
 /// @brief Return the datafolder reference to the NeuroDataWithoutBorders folder,

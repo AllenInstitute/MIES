@@ -21,7 +21,7 @@ Function SWS_SaveAndScaleITCData(panelTitle, [forcedStop])
 
 	forcedStop = ParamIsDefault(forcedStop) ? 0 : !!forcedStop
 
-	sweepNo = GetSetVariable(panelTitle, "SetVar_Sweep")
+	sweepNo = DAG_GetNumericalValue(panelTitle, "SetVar_Sweep")
 
 	NVAR stopCollectionPoint = $GetStopCollectionPoint(panelTitle)
 	SCOPE_UpdateOscilloscopeData(panelTitle, DATA_ACQUISITION_MODE, fifoPos=stopCollectionPoint)
@@ -35,12 +35,15 @@ Function SWS_SaveAndScaleITCData(panelTitle, [forcedStop])
 
 	Duplicate/O GetITCChanConfigWave(panelTitle), dfr:$("Config_Sweep_" + num2str(sweepNo))/Wave=configWave
 
-	SetVariable SetVar_Sweep, Value = _NUM:(sweepNo + 1), limits={0, sweepNo + 1, 1}, win = $panelTitle
+	SetSetVariableLimits(panelTitle, "SetVar_Sweep", 0, sweepNo + 1, 1)
+	// SetVar_Sweep currently disabled so we have to write manually in the GUIStateWave
+	SetSetVariable(panelTitle, "SetVar_Sweep", sweepNo + 1)
+	DAG_Update(panelTitle, "SetVar_Sweep", val = sweepNo + 1)
 
 	// Add labnotebook entries for the acquired sweep
 	ED_createWaveNoteTags(panelTitle, sweepNo)
 
-	if(GetCheckBoxState(panelTitle, "Check_Settings_NwbExport"))
+	if(DAG_GetNumericalValue(panelTitle, "Check_Settings_NwbExport"))
 		NWB_AppendSweep(panelTitle, dataWave, configWave, sweepNo)
 	endif
 
@@ -113,12 +116,12 @@ static Function/WAVE SWS_StoreITCDataWaveScaled(panelTitle, dfr, sweepNo)
 
 	// DA: w' = w / (s / g)
 	if(numDACs > 0)
-		gain[0, numDACs - 1] = HARDWARE_ITC_BITS_PER_VOLT / DA_EphysGuiState[DACs[p]][%DAGain]
+		gain[0, numDACs - 1] = HARDWARE_ITC_BITS_PER_VOLT / DA_EphysGuiState[DACs[p]][%$GetSpecialControlLabel(CHANNEL_TYPE_DAC, CHANNEL_CONTROL_GAIN)]
 	endif
 
 	// AD: w' = w  / (g * s)
 	if(numADCs > 0)
-		gain[numDACs, numDACs + numADCs - 1] = DA_EphysGuiState[ADCs[p - numDACs]][%ADGain] * HARDWARE_ITC_BITS_PER_VOLT
+		gain[numDACs, numDACs + numADCs - 1] = DA_EphysGuiState[ADCs[p - numDACs]][%$GetSpecialControlLabel(CHANNEL_TYPE_ADC, CHANNEL_CONTROL_GAIN)] * HARDWARE_ITC_BITS_PER_VOLT
 	endif
 
 	// no scaling done for TTL
@@ -143,7 +146,7 @@ Function SWS_DeleteDataWaves(panelTitle)
 	string list, path, name
 	variable i, numItems, waveSweepNo, sweepNo
 
-	sweepNo   = GetSetVariable(panelTitle, "SetVar_Sweep")
+	sweepNo   = DAG_GetNumericalValue(panelTitle, "SetVar_Sweep")
 	path      = GetDeviceDataPathAsString(panelTitle)
 	DFREF dfr = GetDeviceDataPath(panelTitle)
 	list      = GetListOfObjects(dfr, DATA_SWEEP_REGEXP, waveProperty="MINCOLS:2")
@@ -170,5 +173,5 @@ End
 static Function SWS_GetRawDataFPType(panelTitle)
 	string panelTitle
 
-	return GetCheckboxState(panelTitle, "Check_Settings_UseDoublePrec") ? IGOR_TYPE_64BIT_FLOAT : IGOR_TYPE_32BIT_FLOAT
+	return DAG_GetNumericalValue(panelTitle, "Check_Settings_UseDoublePrec") ? IGOR_TYPE_64BIT_FLOAT : IGOR_TYPE_32BIT_FLOAT
 End

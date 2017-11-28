@@ -29,7 +29,7 @@ Function DQS_StartDAQSingleDevice(panelTitle, [useBackground])
 		TP_StopTestPulse(panelTitle)
 
 		if(ParamIsDefault(useBackground))
-			useBackground = GetCheckBoxState(panelTitle, "Check_Settings_BackgrndDataAcq")
+			useBackground = DAG_GetNumericalValue(panelTitle, "Check_Settings_BackgrndDataAcq")
 		else
 			useBackground = !!useBackground
 		endif
@@ -46,7 +46,7 @@ Function DQS_StartDAQSingleDevice(panelTitle, [useBackground])
 
 		if(!useBackground)
 			DQS_DataAcq(panelTitle)
-			if(GetCheckBoxState(panelTitle, "Check_DataAcq1_RepeatAcq"))
+			if(DAG_GetNumericalValue(panelTitle, "Check_DataAcq1_RepeatAcq"))
 				RA_Start(panelTitle)
 			else
 				DAP_OneTimeCallAfterDAQ(panelTitle)
@@ -70,7 +70,7 @@ static Function DQS_DataAcq(panelTitle)
 	HW_SelectDevice(HARDWARE_ITC_DAC, ITCDeviceIDGlobal, flags=HARDWARE_ABORT_ON_ERROR)
 	HW_ITC_PrepareAcq(ITCDeviceIDGlobal)
 
-	if(GetCheckBoxState(panelTitle, "Check_DataAcq1_RepeatAcq"))
+	if(DAG_GetNumericalValue(panelTitle, "Check_DataAcq1_RepeatAcq"))
 		DQ_StartITCDeviceTimer(panelTitle) // starts a timer for each ITC device. Timer is used to do real time ITI timing.
 	endif
 
@@ -99,7 +99,7 @@ Function DQS_BkrdDataAcq(panelTitle)
 	HW_SelectDevice(HARDWARE_ITC_DAC, ITCDeviceIDGlobal, flags=HARDWARE_ABORT_ON_ERROR)
 	HW_ITC_PrepareAcq(ITCDeviceIDGlobal)
 
-	if(GetCheckboxState(panelTitle, "Check_DataAcq1_RepeatAcq"))
+	if(DAG_GetNumericalValue(panelTitle, "Check_DataAcq1_RepeatAcq"))
 		DQ_StartITCDeviceTimer(panelTitle) // starts a timer for each ITC device. Timer is used to do real time ITI timing.
 	endif
 
@@ -120,7 +120,7 @@ static Function DQS_StopDataAcq()
 	SWS_SaveAndScaleITCData(panelTitleG)
 
 	if(RA_IsFirstSweep(panelTitleG))
-		if(GetCheckboxState(panelTitleG, "Check_DataAcq1_RepeatAcq"))
+		if(DAG_GetNumericalValue(panelTitleG, "Check_DataAcq1_RepeatAcq"))
 			RA_Start(PanelTitleG)
 		else
 			DAP_OneTimeCallAfterDAQ(panelTitleG)

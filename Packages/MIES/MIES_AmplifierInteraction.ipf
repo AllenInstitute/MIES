@@ -267,7 +267,7 @@ Function AI_SendToAmp(panelTitle, headStage, mode, func, value, [checkBeforeWrit
 		scale = 1
 	endif
 
-	headstageMode = DAP_MIESHeadstageMode(panelTitle, headStage)
+	headstageMode = DAG_GetHeadstageMode(panelTitle, headStage)
 
 	if(headstageMode != mode)
 		return NaN
@@ -558,7 +558,7 @@ Function AI_MIESHeadstageMatchesMCCMode(panelTitle, headStage)
 	STRUCT AxonTelegraph_DataStruct tds
 	AI_InitAxonTelegraphStruct(tds)
 	AxonTelegraphGetDataStruct(serial, channel, 1, tds)
-	storedMode = DAP_MIESHeadstageMode(panelTitle, headStage)
+	storedMode = DAG_GetHeadstageMode(panelTitle, headStage)
 	setMode    = tds.operatingMode
 	equalModes = (setMode == storedMode)
 
@@ -662,7 +662,7 @@ Function AI_UpdateAmpModel(panelTitle, ctrl, headStage, [value, sendToAll, check
 
 	DAP_AbortIfUnlocked(panelTitle)
 
-	selectedHeadstage = GetSliderPositionIndex(panelTitle, "slider_DataAcq_ActiveHeadstage")
+	selectedHeadstage = DAG_GetNumericalValue(panelTitle, "slider_DataAcq_ActiveHeadstage")
 
 	if(ParamIsDefault(value))
 		ASSERT(headstage == selectedHeadstage, "Supply the optional argument value if setting values of other headstages than the current one")
@@ -674,7 +674,7 @@ Function AI_UpdateAmpModel(panelTitle, ctrl, headStage, [value, sendToAll, check
 
 	if(ParamIsDefault(sendToAll))
 		if(headstage == selectedHeadstage)
-			sendToAll = GetCheckBoxState(panelTitle, "Check_DataAcq_SendToAllAmp")
+			sendToAll = DAG_GetNumericalValue(panelTitle, "Check_DataAcq_SendToAllAmp")
 		else
 			sendToAll = 0
 		endif
@@ -684,7 +684,7 @@ Function AI_UpdateAmpModel(panelTitle, ctrl, headStage, [value, sendToAll, check
 
 	WAVE AmpStoragewave = GetAmplifierParamStorageWave(panelTitle)
 
-	WAVE statusHS = DAP_ControlStatusWaveCache(panelTitle, CHANNEL_TYPE_HEADSTAGE)
+	WAVE statusHS = DAG_GetChannelState(panelTitle, CHANNEL_TYPE_HEADSTAGE)
 	if(!sendToAll)
 		statusHS[] = (p == headStage ? 1 : 0)
 	endif
@@ -783,7 +783,7 @@ Function AI_UpdateAmpModel(panelTitle, ctrl, headStage, [value, sendToAll, check
 				break
 			case "button_DataAcq_AutoPipOffset_IC":
 			case "button_DataAcq_AutoPipOffset_VC":
-				clampMode = DAP_MIESHeadstageMode(panelTitle, i)
+				clampMode = DAG_GetHeadstageMode(panelTitle, i)
 
 				if(clampMode == V_CLAMP_MODE)
 					ctrlToCall         = "setvar_DataAcq_PipetteOffset_VC"
@@ -810,7 +810,7 @@ Function AI_UpdateAmpModel(panelTitle, ctrl, headStage, [value, sendToAll, check
 					AI_UpdateAmpView(panelTitle, i, ctrl=ctrlToCallOpposite)
 					DAP_ChangeHeadStageMode(panelTitle, clampMode, i, SKIP_MCC_MIES_SYNCING)
 				catch
-					if(GetCheckBoxState(panelTitle, "check_Settings_SyncMiesToMCC"))
+					if(DAG_GetNumericalValue(panelTitle, "check_Settings_SyncMiesToMCC"))
 						printf "(%s) The pipette offset for %s of headstage %d is invalid.\r", panelTitle, ConvertAmplifierModeToString(oppositeMode), i
 					endif
 					// do nothing
@@ -909,7 +909,7 @@ Function AI_SyncGUIToAmpStorageAndMCCApp(panelTitle, headStage, clampMode)
 
 	DAP_AbortIfUnlocked(panelTitle)
 
-	if(GetSliderPositionIndex(panelTitle, "slider_DataAcq_ActiveHeadstage") != headStage)
+	if(DAG_GetNumericalValue(panelTitle, "slider_DataAcq_ActiveHeadstage") != headStage)
 		return NaN
 	elseif(!AI_MIESHeadstageMatchesMCCMode(panelTitle, headStage))
 		return NaN
@@ -951,7 +951,7 @@ static Function AI_UpdateAmpView(panelTitle, headStage, [ctrl])
 	DAP_AbortIfUnlocked(panelTitle)
 
 	// only update view if headstage is selected
-	if(GetSliderPositionIndex(panelTitle, "slider_DataAcq_ActiveHeadstage") != headStage)
+	if(DAG_GetNumericalValue(panelTitle, "slider_DataAcq_ActiveHeadstage") != headStage)
 		return NaN
 	endif
 
@@ -976,8 +976,10 @@ static Function AI_UpdateAmpView(panelTitle, headStage, [ctrl])
 
 		if(StringMatch(ctrl, "setvar_*"))
 			SetSetVariable(panelTitle, ctrl, value)
+			DAG_Update(panelTitle, ctrl, val = value)
 		elseif(StringMatch(ctrl, "check_*"))
 			SetCheckBoxState(panelTitle, ctrl, value)
+			DAG_Update(panelTitle, ctrl, val = value)
 		else
 			ASSERT(0, "Unhandled control")
 		endif
@@ -1079,7 +1081,7 @@ Function AI_FillAndSendAmpliferSettings(panelTitle, sweepNo)
 	string mccSerial
 
 	WAVE channelClampMode      = GetChannelClampMode(panelTitle)
-	WAVE statusHS              = DAP_ControlStatusWaveCache(panelTitle, CHANNEL_TYPE_HEADSTAGE)
+	WAVE statusHS              = DAG_GetChannelState(panelTitle, CHANNEL_TYPE_HEADSTAGE)
 	WAVE ampSettingsWave       = GetAmplifierSettingsWave()
 	WAVE/T ampSettingsKey      = GetAmplifierSettingsKeyWave()
 	WAVE/T ampSettingsTextWave = GetAmplifierSettingsTextWave()
@@ -1359,7 +1361,7 @@ Function AI_SetMIESHeadstage(panelTitle, [headstage, increment])
 	endif
 	
 	if(!ParamIsDefault(increment))
-		headstage = GetSliderPositionIndex(panelTitle, "slider_DataAcq_ActiveHeadstage") + increment
+		headstage = DAG_GetNumericalValue(panelTitle, "slider_DataAcq_ActiveHeadstage") + increment
 	endif
 
 	if(headstage >= 0 && headstage < NUM_HEADSTAGES)	
@@ -1386,7 +1388,7 @@ Function AI_ZeroAmps(panelTitle, [headStage])
 				AI_MIESAutoPipetteOffset(panelTitle, headStage)
 			endif
 		else
-			WAVE statusHS = DAP_ControlStatusWaveCache(panelTitle, CHANNEL_TYPE_HEADSTAGE)
+			WAVE statusHS = DAG_GetChannelState(panelTitle, CHANNEL_TYPE_HEADSTAGE)
 			for(i = 0; i < NUM_HEADSTAGES; i += 1)
 		
 				if(!statusHS[i])
@@ -1420,7 +1422,7 @@ Function AI_MIESAutoPipetteOffset(panelTitle, headStage)
 		return NaN
 	endif
 
-	clampMode = DAP_MIESHeadstageMode(panelTitle, headStage)
+	clampMode = DAG_GetHeadstageMode(panelTitle, headStage)
 
 	ASSERT(clampMode == V_CLAMP_MODE || clampMode == I_CLAMP_MODE, "Headstage must be in VC/IC mode to use this function")
 	column =TP_GetTPResultsColOfHS(panelTitle, headstage)
