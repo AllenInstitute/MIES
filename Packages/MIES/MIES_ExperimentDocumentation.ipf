@@ -789,6 +789,9 @@ static Function ED_ADDataBasedWaveNotes(asyncMeasurementWave, panelTitle)
 	WAVE asyncChannelState = DAG_GetChannelState(panelTitle, CHANNEL_TYPE_ASYNC)
 	deviceChannelOffset = HW_ITC_CalculateDevChannelOff(panelTitle)
 
+	setvarTitle = GetSpecialControlLabel(CHANNEL_TYPE_ASYNC, CHANNEL_CONTROL_TITLE)
+	setvarGain  = GetSpecialControlLabel(CHANNEL_TYPE_ASYNC, CHANNEL_CONTROL_GAIN)
+
 	numEntries = DimSize(asyncChannelState, ROWS)
 	for(i = 0; i < numEntries; i += 1)
 
@@ -799,11 +802,8 @@ static Function ED_ADDataBasedWaveNotes(asyncMeasurementWave, panelTitle)
 		// Async channels start at channel 16 on ITC 1600, needs to be a diff value constant for ITC18
 		rawChannelValue = HW_ReadADC(HARDWARE_ITC_DAC, ITCDeviceIDGlobal, i + deviceChannelOffset)
 
-		setvarTitle = GetPanelControl(i, CHANNEL_TYPE_ASYNC, CHANNEL_CONTROL_TITLE)
-		setvarGain  = GetPanelControl(i, CHANNEL_TYPE_ASYNC, CHANNEL_CONTROL_GAIN)
-
-		title = GetSetVariableString(panelTitle, setvarTitle)
-		gain  = GetSetVariable(panelTitle, setvarGain)
+		title = DAG_GetTextualValue(panelTitle, setvarTitle, index = i)
+		gain  = DAG_GetNumericalValue(panelTitle, setvarGain, index = i)
 
 		// put the measurement value into the async settings wave for creation of wave notes
 		asyncMeasurementWave[0][i][,;LABNOTEBOOK_LAYER_COUNT - 1] = rawChannelValue / gain
