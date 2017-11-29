@@ -4478,12 +4478,15 @@ Function DAP_SupportSystemAlarm(Channel, Measurement, MeasurementTitle, panelTit
 	string minCtrl, maxCtrl, checkCtrl
 	variable paramMin, paramMax
 
-	checkCtrl = GetPanelControl(channel, CHANNEL_TYPE_ALARM, CHANNEL_CONTROL_CHECK)
-	if(DAG_GetNumericalValue(panelTitle, checkCtrl))
-		minCtrl = GetPanelControl(channel, CHANNEL_TYPE_ASYNC, CHANNEL_CONTROL_ALARM_MIN)
-		paramMin = GetSetVariable(panelTitle, minCtrl)
-		maxCtrl = GetPanelControl(channel, CHANNEL_TYPE_ASYNC, CHANNEL_CONTROL_ALARM_MAX)
-		paramMax = GetSetVariable(panelTitle, maxCtrl)
+	checkCtrl = GetSpecialControlLabel(CHANNEL_TYPE_ALARM, CHANNEL_CONTROL_CHECK)
+	minCtrl   = GetSpecialControlLabel(CHANNEL_TYPE_ASYNC, CHANNEL_CONTROL_ALARM_MIN)
+	maxCtrl   = GetSpecialControlLabel(CHANNEL_TYPE_ASYNC, CHANNEL_CONTROL_ALARM_MAX)
+
+	if(DAG_GetNumericalValue(panelTitle, checkCtrl, index = channel))
+
+		paramMin = DAG_GetNumericalValue(panelTitle, minCtrl, index = channel)
+		paramMax = DAG_GetNumericalValue(panelTitle, maxCtrl, index = channel)
+
 		if(Measurement >= ParamMax || Measurement <= ParamMin)
 			beep
 			print time() + " !!!!!!!!!!!!! " + MeasurementTitle + " has exceeded max/min settings" + " !!!!!!!!!!!!!"
