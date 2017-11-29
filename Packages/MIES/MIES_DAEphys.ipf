@@ -4478,8 +4478,8 @@ Function DAP_SupportSystemAlarm(Channel, Measurement, MeasurementTitle, panelTit
 	string minCtrl, maxCtrl, checkCtrl
 	variable paramMin, paramMax
 
-	checkCtrl = GetPanelControl(channel, CHANNEL_TYPE_ALARM, CHANNEL_CONTROL_CHECK)
-	if(DAG_GetNumericalValue(panelTitle, checkCtrl))
+	checkCtrl = GetSpecialControlLabel(CHANNEL_TYPE_ALARM, CHANNEL_CONTROL_CHECK)
+	if(DAG_GetNumericalValue(panelTitle, checkCtrl, index = channel))
 		minCtrl = GetPanelControl(channel, CHANNEL_TYPE_ASYNC, CHANNEL_CONTROL_ALARM_MIN)
 		paramMin = GetSetVariable(panelTitle, minCtrl)
 		maxCtrl = GetPanelControl(channel, CHANNEL_TYPE_ASYNC, CHANNEL_CONTROL_ALARM_MAX)
