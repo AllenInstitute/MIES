@@ -781,8 +781,6 @@ static Function ED_ADDataBasedWaveNotes(asyncMeasurementWave, panelTitle)
 	WAVE asyncMeasurementWave
 	string panelTitle
 
-	// This function takes about 0.9 seconds to run
-	// this is the wave that the note gets appended to. The note contains the async ad channel value and info
 	variable i, numEntries, rawChannelValue, gain, deviceChannelOffset
 	string setvarTitle, setvarGain, title
 
