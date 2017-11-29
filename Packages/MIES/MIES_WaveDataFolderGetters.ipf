@@ -5113,7 +5113,7 @@ End
 Function/WAVE GetAnalysisFunctionStorage(panelTitle)
 	string panelTitle
 
-	variable versionOfWave = 0
+	variable versionOfWave = 1
 	DFREF dfr = GetDevicePath(panelTitle)
 	WAVE/T/Z/SDFR=dfr wv = analysisFunctions
 
@@ -5125,5 +5125,33 @@ Function/WAVE GetAnalysisFunctionStorage(panelTitle)
 		Make/T/N=(NUM_HEADSTAGES, TOTAL_NUM_EVENTS) dfr:analysisFunctions/WAVE=wv
 	endif
 
+	SetWaveVersion(wv, versionOfWave)
+
 	return wv
+End
+
+/// @brief Return the wave for storing timestamps for perf testing repeated
+///        acquisition
+Function/WAVE GetRAPerfWave(panelTitle)
+	string panelTitle
+
+	variable versionOfWave = 1
+	DFREF dfr = GetDevicePath(panelTitle)
+	WAVE/D/Z/SDFR=dfr wv = perfingRA
+
+	if(ExistsWithCorrectLayoutVersion(wv, versionOfWave))
+		return wv
+	elseif(WaveExists(wv))
+		 // handle upgrade
+	else
+		Make/D/N=(MINIMUM_WAVE_SIZE) dfr:perfingRA/WAVE=wv
+	endif
+
+	wv = NaN
+	SetScale d, 0, inf, "s", wv
+
+	SetWaveVersion(wv, versionOfWave)
+
+	return wv
+
 End
