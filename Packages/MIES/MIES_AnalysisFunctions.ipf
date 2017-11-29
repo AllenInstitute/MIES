@@ -1610,6 +1610,12 @@ End
 ///
 /// Query the standard "Stim Scale Factor" entry from labnotebook for getting the DAScale
 ///
+/// Decision logic flowchart:
+///
+/// \rst
+///	.. graphviz:: ../patch-seq-squarepulse.dot
+/// \endrst
+///
 /// @verbatim
 ///
 /// Sketch of a stimset with pre pulse baseline (-), pulse (*), and post pulse baseline (-).

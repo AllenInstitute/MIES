@@ -1,0 +1,64 @@
+digraph G {
+    fontname="sans-serif";
+    compound="true";
+    ratio="0,01";
+    center="true";
+    penwidth="0.1";
+    edge [comment="Wildcard edge",
+          fontname="sans-serif",
+          fontsize=10,
+          colorscheme="blues3",
+          color=2,
+          fontcolor=3];
+    node [fontname="serif",
+          fontsize=13,
+          fillcolor="1",
+          colorscheme="blues4",
+          color="2",
+          fontcolor="4",
+          style="filled"];
+    "Start DAQ/RA";
+    "Prepare DAQ Event";
+    "Start DAQ/RA" -> "Prepare DAQ Event";
+    "Post Sweep Event";
+    "Start DAQ/RA" -> "Post Sweep Event";
+    "Check if \"Multidevice DAQ\" is enabled";
+    "Prepare DAQ Event" -> "Check if mode is IC";
+    "Prepare DAQ Event" -> "Set \"TP inserting\" to disabled";
+    "Prepare DAQ Event" -> "Set \"TP during ITI\" to disabled";
+    "Prepare DAQ Event" -> "Set \"ITI\" to 100ms";
+    "Prepare DAQ Event" -> "Check if \"Multidevice DAQ\" is enabled";
+    "All checks passed";
+    "Check if mode is IC" -> "All checks passed";
+    "Check if \"Multidevice DAQ\" is enabled" -> "All checks passed";
+    "Set \"TP during ITI\" to disabled";
+    "Spike detected?\n(x range: pulse onset to end of sweep\ny condition: max above 10mV)\nStore result in labnotebook";
+    "Post Sweep Event" -> "Spike detected?\n(x range: pulse onset to end of sweep\ny condition: max above 10mV)\nStore result in labnotebook";
+    "All checks passed" -> "Set DAScale to 100pA"  [label="Yes"];
+    "Write initial stepsize of 100pA into labnotebook";
+    "Set DAScale to 100pA" -> "Write initial stepsize of 100pA into labnotebook";
+    "Abort";
+    "All checks passed" -> "Abort"  [label="No"];
+    "Spike detected?\n(x range: pulse onset to end of sweep\ny condition: max above 10mV)\nStore result in labnotebook" -> "Step size from labnotebook?"  [label="Yes"];
+    "Step size from labnotebook?" -> "Store DAScale in labnotebook"  [label="+10pA"];
+    "Store DAScale in labnotebook" -> "Skip to end";
+    "Skip to end";
+    "Offset DAScale by -50pA";
+    "Step size from labnotebook?" -> "Offset DAScale by -50pA"  [label="-50pA"];
+    "Write step size of -50pA to labnotebook";
+    "Step size from labnotebook?" -> "Write step size of -50pA to labnotebook"  [label="+100pA"];
+    "Write step size of -50pA to labnotebook" -> "Offset DAScale by -50pA";
+    "Step size from labnotebook?";
+    "Step Size from labnotebook?";
+    "Spike detected?\n(x range: pulse onset to end of sweep\ny condition: max above 10mV)\nStore result in labnotebook" -> "Step Size from labnotebook?"  [label="No"];
+    "Write step size of +10pA to labnotebook";
+    "Offset DAScale by +10pA";
+    "Offset DAScale by +100pA";
+    "Step Size from labnotebook?" -> "Offset DAScale by +10pA"  [label="+10pA"];
+    "Step Size from labnotebook?" -> "Write step size of +10pA to labnotebook"  [label="-50pA"];
+    "Step Size from labnotebook?" -> "Offset DAScale by +100pA"  [label="+100pA"];
+    "Write step size of +10pA to labnotebook" -> "Offset DAScale by +10pA";
+    "Check if only one headstage is active";
+    "Check if only one headstage is active" -> "All checks passed";
+    "Prepare DAQ Event" -> "Check if only one headstage is active";
+}
