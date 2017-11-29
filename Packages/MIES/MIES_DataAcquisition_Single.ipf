@@ -44,22 +44,17 @@ Function DQS_StartDAQSingleDevice(panelTitle, [useBackground])
 			return NaN
 		endtry
 
-		if(!useBackground)
-			DQS_DataAcq(panelTitle)
-			if(DAG_GetNumericalValue(panelTitle, "Check_DataAcq1_RepeatAcq"))
-				RA_Start(panelTitle)
-			else
-				DAP_OneTimeCallAfterDAQ(panelTitle)
-			endif
-		else
+		if(useBackground)
 			DQS_BkrdDataAcq(panelTitle)
+		else
+			DQS_DataAcq(panelTitle)
 		endif
 	else
 		DQ_StopDAQ(panelTitle)
 	endif
 End
 
-static Function DQS_DataAcq(panelTitle)
+Function DQS_DataAcq(panelTitle)
 	string panelTitle
 
 	variable fifoPos
@@ -81,11 +76,14 @@ static Function DQS_DataAcq(panelTitle)
 		DoXOPIdle
 		SCOPE_UpdateOscilloscopeData(panelTitle, DATA_ACQUISITION_MODE, fifoPos=fifoPos)
 		DoUpdate/W=$oscilloscopeSubwindow
+
+		if(GetKeyState(0) & ESCAPE_KEY)
+			DQS_StopDataAcq(panelTitle, forcedStop = 1)
+			return NaN
+		endif
 	while(HW_ITC_MoreData(ITCDeviceIDGlobal, fifoPos=fifoPos))
 
-	HW_StopAcq(HARDWARE_ITC_DAC, ITCDeviceIDGlobal, prepareForDAQ=1)
-
-	SWS_SaveAndScaleITCData(panelTitle)
+	DQS_StopDataAcq(panelTitle)
 End
 
 /// @brief Fifo monitor for DAQ Single Device
@@ -109,26 +107,36 @@ Function DQS_BkrdDataAcq(panelTitle)
 	DQS_StartBackgroundFifoMonitor()
 End
 
-static Function DQS_StopDataAcq()
+/// @brief Stop single device data acquisition
+static Function DQS_StopDataAcq(panelTitle, [forcedStop])
+	string panelTitle
+	variable forcedStop
 
-	SVAR panelTitleG = $GetPanelTitleGlobal()
-	NVAR ITCDeviceIDGlobal = $GetITCDeviceIDGlobal(panelTitleG)
+	if(ParamIsDefault(forcedStop))
+		forcedStop = 0
+	else
+		forcedStop = !!forcedStop
+	endif
+
+	NVAR ITCDeviceIDGlobal = $GetITCDeviceIDGlobal(panelTitle)
 
 	HW_SelectDevice(HARDWARE_ITC_DAC, ITCDeviceIDGlobal)
 	HW_StopAcq(HARDWARE_ITC_DAC, ITCDeviceIDGlobal, prepareForDAQ=1, zeroDAC = 1)
 
-	SWS_SaveAndScaleITCData(panelTitleG)
+	SWS_SaveAndScaleITCData(panelTitle, forcedStop = forcedStop)
 
-	if(RA_IsFirstSweep(panelTitleG))
-		if(DAG_GetNumericalValue(panelTitleG, "Check_DataAcq1_RepeatAcq"))
-			RA_Start(PanelTitleG)
+	if(forcedStop)
+		DQ_StopOngoingDAQ(panelTitle)
+	elseif(RA_IsFirstSweep(panelTitle))
+		if(DAG_GetNumericalValue(panelTitle, "Check_DataAcq1_RepeatAcq"))
+			RA_Start(PanelTitle)
 		else
-			DAP_OneTimeCallAfterDAQ(panelTitleG)
+			DAP_OneTimeCallAfterDAQ(panelTitle)
 		endif
 	else
-		RA_BckgTPwithCallToRACounter(panelTitleG)
+		RA_BckgTPwithCallToRACounter(panelTitle)
 	endif
-END
+End
 
 Function DQS_StartBackgroundFifoMonitor()
 	CtrlNamedBackground ITC_FIFOMonitor, period = 5, proc = DQS_FIFOMonitor
@@ -169,7 +177,7 @@ Function DQS_FIFOMonitor(s)
 
 	if(!moreData)
 		DQS_STOPBackgroundFifoMonitor()
-		DQS_StopDataAcq()
+		DQS_StopDataAcq(panelTitleG)
 		return 1
 	endif
 

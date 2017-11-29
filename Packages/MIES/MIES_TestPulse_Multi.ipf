@@ -186,16 +186,6 @@ Function TPM_BkrdTPFuncMD(s)
 		if(mod(s.count, TEST_PULSE_LIVE_UPDATE_INTERVAL) == 0)
 			SCOPE_UpdateGraph(panelTitle)
 		endif
-
-		if(RA_IsFirstSweep(panelTitle))
-			if(GetKeyState(0) & ESCAPE_KEY)
-				// only stop the currently active device
-				if(!cmpstr(panelTitle,GetMainWindow(GetCurrentWindow())))
-					beep
-					TPM_StopTestPulseMultiDevice(panelTitle)
-				endif
-			endif
-		endif
 	endfor
 
 	return 0

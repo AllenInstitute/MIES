@@ -60,13 +60,6 @@ Function TPS_TestPulseFunc(s)
 		SCOPE_UpdateGraph(panelTitle)
 	endif
 
-	if(RA_IsFirstSweep(panelTitle))
-		if(GetKeyState(0) & ESCAPE_KEY)
-			beep
-			TPS_StopTestPulseSingleDevice(panelTitle)
-		endif
-	endif
-
 	return 0
 End
 
@@ -103,12 +96,24 @@ Function TPS_StartTestPulseSingleDevice(panelTitle)
 	endtry
 End
 
-/// @brief Low level implementation for starting the single device foreground test pulse
-static Function TPS_StartTestPulseForeground(panelTitle)
+/// @brief Start the single device foreground test pulse
+///
+/// @param panelTitle  device
+/// @param elapsedTime [defaults to infinity] allow to run the testpulse for the given amount
+///                                           of seconds only.
+/// @return zero if time elapsed, one if the Testpulse was manually stopped
+Function TPS_StartTestPulseForeground(panelTitle, [elapsedTime])
 	string panelTitle
+	variable elapsedTime
 
-	variable i
+	variable i, refTime, timeLeft
 	string oscilloscopeSubwindow
+
+	if(ParamIsDefault(elapsedTime))
+		refTime = NaN
+	else
+		refTime = RelativeNowHighPrec()
+	endif
 
 	oscilloscopeSubwindow = SCOPE_GetGraph(panelTitle)
 	NVAR ITCDeviceIDGlobal = $GetITCDeviceIDGlobal(panelTitle)
@@ -130,8 +135,21 @@ static Function TPS_StartTestPulseForeground(panelTitle)
 			SCOPE_UpdateGraph(panelTitle)
 		endif
 
-		DoUpdate/W=$oscilloscopeSubwindow
+		if(IsFinite(refTime))
+			timeLeft = max((refTime + elapsedTime) - RelativeNowHighPrec(), 0)
+			SetValDisplay(panelTitle, "valdisp_DataAcq_ITICountdown", var = timeLeft)
+
+			DoUpdate/W=$oscilloscopeSubwindow
+
+			if(timeLeft == 0)
+				return 0
+			endif
+		else
+			DoUpdate/W=$oscilloscopeSubwindow
+		endif
 
 		i += 1
 	while(!(GetKeyState(0) & ESCAPE_KEY))
-END
+
+	return 1
+End
