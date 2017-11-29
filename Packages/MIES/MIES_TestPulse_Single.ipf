@@ -60,13 +60,6 @@ Function TPS_TestPulseFunc(s)
 		SCOPE_UpdateGraph(panelTitle)
 	endif
 
-	if(RA_IsFirstSweep(panelTitle))
-		if(GetKeyState(0) & ESCAPE_KEY)
-			beep
-			TPS_StopTestPulseSingleDevice(panelTitle)
-		endif
-	endif
-
 	return 0
 End
 
