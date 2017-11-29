@@ -2354,7 +2354,7 @@ static Function DAP_ApplyClmpModeSavdSettngs(panelTitle, headStage, clampMode)
 	ctrl = GetPanelControl(DACchannel, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_UNIT)
 	SetSetVariableString(panelTitle, ctrl, DaUnit)
 	ChannelClampMode[DACchannel][%DAC] = clampMode
-	GuiStateTxT[ADCchannel][%$GetSpecialControlLabel(CHANNEL_TYPE_DAC, CHANNEL_CONTROL_UNIT)] = DAUnit
+	GuiStateTxT[DACchannel][%$GetSpecialControlLabel(CHANNEL_TYPE_DAC, CHANNEL_CONTROL_UNIT)] = DAUnit
 
 	// ADC channels
 	ctrl = GetPanelControl(ADCchannel, CHANNEL_TYPE_ADC, CHANNEL_CONTROL_CHECK)
