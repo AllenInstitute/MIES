@@ -53,13 +53,13 @@ static Function/S PGC_GetPopupMenuList(win, control)
 	return str
 End
 
-static Function/S PGC_GetProcAndCheckParamType(win, control)
-	string win, control
+static Function/S PGC_GetProcAndCheckParamType(recMacro)
+	string recMacro
 
-	string procedure
 	variable paramType
+	string procedure
 
-	procedure = GetControlProcedure(win, control)
+	procedure = GetControlProcedureFromRecMacro(recMacro)
 	if(isEmpty(procedure))
 		return ""
 	endif
@@ -143,17 +143,18 @@ Function PGC_SetAndActivateControl(win, control, [val, str])
 	string procedure
 	variable paramType, controlType, variableType, inputWasModified, limitedVal
 
-	if(IsControlDisabled(win, control))
+	// call only once
+	ControlInfo/W=$win $control
+	ASSERT(V_flag != 0, "Non-existing control or window")
+	controlType = abs(V_flag)
+
+	if(V_disable & DISABLE_CONTROL_BIT)
 		DEBUGPRINT("Can't click a disabled control (or better should not)")
 		return NaN
 	endif
 
-	procedure = PGC_GetProcAndCheckParamType(win, control)
+	procedure = PGC_GetProcAndCheckParamType(S_recreation)
 
-	ControlInfo/W=$win $control
-	ASSERT(V_flag != 0, "Non-existing control or window")
-	controlType = abs(V_flag)
-	
 	switch(controlType)
 		case CONTROL_TYPE_BUTTON:
 
