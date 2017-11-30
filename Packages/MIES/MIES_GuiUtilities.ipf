@@ -9,8 +9,6 @@
 /// @file MIES_GuiUtilities.ipf
 /// @brief Helper functions related to GUI controls
 
-static constant DISABLE_CONTROL_BIT = 2
-static constant HIDDEN_CONTROL_BIT  = 1
 static StrConstant PROCEDURE_START  = "proc="
  
 /// @brief Show a GUI control in the given window
