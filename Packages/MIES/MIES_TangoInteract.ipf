@@ -516,9 +516,12 @@ Function TI_runBaselineCheckQC(headstage, [cmdID])
 		PGC_SetAndActivateControl(currentPanel, waveSelect, val=incomingWaveIndex + 1)
 		
 		// Check to see if Test Pulse is already running...if not running, turn it on...
-		if(!IsDeviceActiveWithBGTask(currentPanel, "TestPulse"))
-			TPS_StartTestPulseSingleDevice(currentPanel)
-		endif
+		// New way to do this...added 11-30-2017
+		NVAR TPRunMode = $GetTestpulseRunMode(panelTitle)
+		
+		if(TPRunMode == TEST_PULSE_NOT_RUNNING)
+      		PGC_SetAndActivateControl(panelTitle,"StartTestPulseButton")
+      	endif
 
 		// and now hit the Auto pipette offset
 		AI_UpdateAmpModel(currentPanel, "button_DataAcq_AutoPipOffset_VC", headStage)
