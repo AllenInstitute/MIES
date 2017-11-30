@@ -172,7 +172,8 @@ Function PGC_SetAndActivateControl(win, control, [val, str])
 			break
 		case CONTROL_TYPE_POPUPMENU:
 			ASSERT(!ParamIsDefault(val), "Needs a variable argument")
-			SetPopupMenuIndex(win, control, val)
+			ASSERT(val >= 0,"Invalid index")
+			PopupMenu $control win=$win, mode=(val + 1)
 
 			if(isEmpty(procedure))
 				break
@@ -195,7 +196,9 @@ Function PGC_SetAndActivateControl(win, control, [val, str])
 			break
 		case CONTROL_TYPE_CHECKBOX:
 			ASSERT(!ParamIsDefault(val), "Needs a variable argument")
-			SetCheckboxState(win, control, val)
+
+			val = !!val
+			CheckBox $control, win=$win, value=(val == CHECKBOX_SELECTED)
 
 			if(isEmpty(procedure))
 				break
@@ -270,7 +273,7 @@ Function PGC_SetAndActivateControl(win, control, [val, str])
 			break
 		case CONTROL_TYPE_SLIDER:
 			ASSERT(!ParamIsDefault(val), "Needs a variable argument")
-			SetSliderPositionIndex(win, control, val)
+			Slider $control win=$win, value = val
 
 			if(isEmpty(procedure))
 				break
