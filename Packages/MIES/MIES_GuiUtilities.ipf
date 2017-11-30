@@ -338,11 +338,9 @@ Function SetSetVariable(win,Control, newValue, [respectLimits])
 	ControlInfo/W=$win $control
 	ASSERT(V_flag != 0, "Non-existing control or window")
 	ASSERT(abs(V_flag) == CONTROL_TYPE_SETVARIABLE, "Control is not a setvariable")
-	
+
 	if(respectLimits)
-		if(!CheckIfValueIsInsideLimits(win, control, newValue))
-			newValue = GetLimitConstrainedSetVar(win, control, newValue)	
-		endif	
+		newValue = GetLimitConstrainedSetVar(win, control, newValue)
 	endif
 
 	if(newValue != v_value)
