@@ -1115,20 +1115,27 @@ End
 Function/S GetControlProcedure(win, control)
 	string win, control
 
+	ControlInfo/W=$win $control
+	ASSERT(V_flag != 0, "invalid or non existing control")
+
+	return GetControlProcedureFromRecMacro(S_recreation)
+End
+
+Function/S GetControlProcedureFromRecMacro(recMacro)
+	string recMacro
+
 	variable last, first
 	variable comma, cr
 	string procedure
 
-	ControlInfo/W=$win $control
-	ASSERT(V_flag != 0, "invalid or non existing control")
-	first = strsearch(S_recreation, "proc=", 0)
+	first = strsearch(recMacro, "proc=", 0)
 
 	if(first == -1)
 		return ""
 	endif
 
-	comma = strsearch(S_recreation, ",", first + 1)
-	cr    = strsearch(S_recreation, "\r", first + 1)
+	comma = strsearch(recMacro, ",", first + 1)
+	cr    = strsearch(recMacro, "\r", first + 1)
 
 	if(comma > 0 && cr > 0)
 		last = min(comma, cr)
@@ -1140,7 +1147,7 @@ Function/S GetControlProcedure(win, control)
 		ASSERT(0, "impossible case")
 	endif
 
-	procedure = S_recreation[first + strlen(PROCEDURE_START), last - 1]
+	procedure = recMacro[first + strlen(PROCEDURE_START), last - 1]
 
 	return procedure
 End
