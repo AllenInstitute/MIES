@@ -6,6 +6,41 @@
 #pragma ModuleName=MIES_PGC
 #endif
 
+/// @brief Bring all tabs which hold the control to the front (recursively).
+///
+/// Requires that these are managed by `ACL_TabUtilities.ipf`.
+static Function PGC_ShowControlInTab(win, control)
+	string win, control
+
+	variable idx ,numEntries, i
+	string tabnum, tabctrl
+
+	Make/FREE/N=(2, MINIMUM_WAVE_SIZE)/T tabs
+
+	for(;;)
+		tabnum  = GetUserData(win, control, "tabnum")
+		tabctrl = GetUserData(win, control, "tabcontrol")
+
+		if(IsEmpty(tabnum) || IsEmpty(tabctrl))
+			break
+		endif
+
+		EnsureLargeEnoughWave(tabs, minimumSize = idx)
+		tabs[idx][0] = tabnum
+		tabs[idx][1] = tabctrl
+
+		idx += 1
+
+		// search parent tab recursively
+		control = tabctrl
+	endfor
+
+	numEntries = idx
+	for(i = numEntries - 1; i >= 0 ; i -= 1)
+		PGC_SetAndActivateControl(win, tabs[i][1], val = str2num(tabs[i][0]), switchTab = 0)
+	endfor
+End
+
 /// @file MIES_ProgrammaticGUIControl.ipf
 /// @brief __PGC__ Control GUI controls from code
 
@@ -134,14 +169,22 @@ End
 /// - `val` is mandatory and 0-based.
 /// - `str` must be supplied if the GUI control procedure requires it.
 ///
+/// `switchTab` [optional, defaults to false] Switches tabs so that the control is shown.
+///
 /// @return 1 if val was modified by control limits, 0 if val was unmodified (only relevant for SetVariable controls)
-Function PGC_SetAndActivateControl(win, control, [val, str])
+Function PGC_SetAndActivateControl(win, control, [val, str, switchTab])
 	string win, control
-	variable val
+	variable val, switchTab
 	string str
 
 	string procedure
 	variable paramType, controlType, variableType, inputWasModified, limitedVal
+
+	if(ParamIsDefault(switchTab))
+		switchTab = 0
+	else
+		switchTab = !!switchTab
+	endif
 
 	// call only once
 	ControlInfo/W=$win $control
@@ -293,5 +336,9 @@ Function PGC_SetAndActivateControl(win, control, [val, str])
 			break
 	endswitch
 	
+	if(switchTab)
+		PGC_ShowControlInTab(win, control)
+	endif
+
 	return inputWasModified
 End
