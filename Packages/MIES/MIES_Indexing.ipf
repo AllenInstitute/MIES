@@ -42,7 +42,7 @@ Function IDX_ResetStartFinishForIndexing(panelTitle)
 	string panelTitle
 
 	variable i, idx
-	string ctrl, setName
+	string ctrl
 
 	WAVE DACIndexingStorageWave = GetDACIndexingStorageWave(panelTitle)
 	WAVE TTLIndexingStorageWave = GetTTLIndexingStorageWave(panelTitle)
@@ -52,27 +52,15 @@ Function IDX_ResetStartFinishForIndexing(panelTitle)
 		idx = DACIndexingStorageWave[0][i]
 		SetPopupMenuIndex(paneltitle, ctrl, idx - 1)
 
-		// IDX_GetSingleStimset does not support, on purpose NONE, so we need to handle it here
-
 		WAVE stimsets = IDX_GetStimsets(panelTitle, i, CHANNEL_TYPE_DAC)
-		if(idx < 2)
-			setName = NONE
-		else
-			setName = IDX_GetSingleStimset(stimsets, idx)
-		endif
-		DAG_Update(panelTitle, ctrl, val = idx, str = setName)
+		DAG_Update(panelTitle, ctrl, val = idx, str = IDX_GetSingleStimset(stimsets, idx, allowNone = 1))
 
 		ctrl = GetPanelControl(i, CHANNEL_TYPE_TTL, CHANNEL_CONTROL_WAVE)
 		idx = TTLIndexingStorageWave[0][i]
 		SetPopupMenuIndex(paneltitle, ctrl, idx - 1)
 
 		WAVE stimsets = IDX_GetStimsets(panelTitle, i, CHANNEL_TYPE_TTL)
-		if(idx < 2)
-			setName = NONE
-		else
-			setName = IDX_GetSingleStimset(stimsets, idx)
-		endif
-		DAG_Update(panelTitle, ctrl, val = idx, str = setName)
+		DAG_Update(panelTitle, ctrl, val = idx, str = IDX_GetSingleStimset(stimsets, idx, allowNone = 1))
 	endfor
 End
 
@@ -747,9 +735,26 @@ static Function/WAVE IDX_GetStimsets(panelTitle, channelIdx, channelType)
 	return stimsets
 End
 
-static Function/S IDX_GetSingleStimset(listWave, idx)
+/// @brief Return the stimset from the list of stimsets
+///        returned by IDX_GetStimsets()
+///
+/// @param listWave  list of stim sets returned by IDX_GetStimsets()
+/// @param idx       1-based index
+/// @param allowNone [optional, defaults to false] Return the `NONE` stimset for idx `1`.
+///                  Not allowed during DAQ.
+static Function/S IDX_GetSingleStimset(listWave, idx, [allowNone])
 	WAVE/T listWave
-	variable idx
+	variable idx, allowNone
+
+	if(ParamIsDefault(allowNone))
+		allowNone = 0
+	else
+		allowNone = !!allowNone
+	endif
+
+	if(allowNone && idx == 1)
+		return NONE
+	endif
 
 	// 2 because:
 	// none is not part of MenuExp
