@@ -92,6 +92,12 @@ static Function IDX_IndexSingleChannel(panelTitle, channelType, i, [update])
 		update = !!update
 	endif
 
+	ctrl = GetSpecialControlLabel(channelType, CHANNEL_CONTROL_CHECK)
+
+	if(!DAG_GetNumericalValue(panelTitle, ctrl, index = i))
+		return NaN
+	endif
+
 	WAVE indexingStorageWave = GetIndexingStorageWave(panelTitle, channelType)
 
 	ctrl   = GetPanelControl(i, channelType, CHANNEL_CONTROL_WAVE)
