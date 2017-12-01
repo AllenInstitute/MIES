@@ -418,6 +418,9 @@ Constant SET_VARIABLE_BUILTIN_STR = 0x02
 Constant SET_VARIABLE_GLOBAL      = 0x04
 /// @}
 
+Constant DISABLE_CONTROL_BIT = 2
+Constant HIDDEN_CONTROL_BIT  = 1
+
 /// Event types for analysis functions
 /// @anchor EVENT_TYPE_ANALYSIS_FUNCTIONS
 /// @{

@@ -6,6 +6,41 @@
 #pragma ModuleName=MIES_PGC
 #endif
 
+/// @brief Bring all tabs which hold the control to the front (recursively).
+///
+/// Requires that these are managed by `ACL_TabUtilities.ipf`.
+static Function PGC_ShowControlInTab(win, control)
+	string win, control
+
+	variable idx ,numEntries, i
+	string tabnum, tabctrl
+
+	Make/FREE/N=(2, MINIMUM_WAVE_SIZE)/T tabs
+
+	for(;;)
+		tabnum  = GetUserData(win, control, "tabnum")
+		tabctrl = GetUserData(win, control, "tabcontrol")
+
+		if(IsEmpty(tabnum) || IsEmpty(tabctrl))
+			break
+		endif
+
+		EnsureLargeEnoughWave(tabs, minimumSize = idx)
+		tabs[idx][0] = tabnum
+		tabs[idx][1] = tabctrl
+
+		idx += 1
+
+		// search parent tab recursively
+		control = tabctrl
+	endfor
+
+	numEntries = idx
+	for(i = numEntries - 1; i >= 0 ; i -= 1)
+		PGC_SetAndActivateControl(win, tabs[i][1], val = str2num(tabs[i][0]), switchTab = 0)
+	endfor
+End
+
 /// @file MIES_ProgrammaticGUIControl.ipf
 /// @brief __PGC__ Control GUI controls from code
 
@@ -53,13 +88,13 @@ static Function/S PGC_GetPopupMenuList(win, control)
 	return str
 End
 
-static Function/S PGC_GetProcAndCheckParamType(win, control)
-	string win, control
+static Function/S PGC_GetProcAndCheckParamType(recMacro)
+	string recMacro
 
-	string procedure
 	variable paramType
+	string procedure
 
-	procedure = GetControlProcedure(win, control)
+	procedure = GetControlProcedureFromRecMacro(recMacro)
 	if(isEmpty(procedure))
 		return ""
 	endif
@@ -134,26 +169,35 @@ End
 /// - `val` is mandatory and 0-based.
 /// - `str` must be supplied if the GUI control procedure requires it.
 ///
+/// `switchTab` [optional, defaults to false] Switches tabs so that the control is shown.
+///
 /// @return 1 if val was modified by control limits, 0 if val was unmodified (only relevant for SetVariable controls)
-Function PGC_SetAndActivateControl(win, control, [val, str])
+Function PGC_SetAndActivateControl(win, control, [val, str, switchTab])
 	string win, control
-	variable val
+	variable val, switchTab
 	string str
 
 	string procedure
 	variable paramType, controlType, variableType, inputWasModified, limitedVal
 
-	if(IsControlDisabled(win, control))
+	if(ParamIsDefault(switchTab))
+		switchTab = 0
+	else
+		switchTab = !!switchTab
+	endif
+
+	// call only once
+	ControlInfo/W=$win $control
+	ASSERT(V_flag != 0, "Non-existing control or window")
+	controlType = abs(V_flag)
+
+	if(V_disable & DISABLE_CONTROL_BIT)
 		DEBUGPRINT("Can't click a disabled control (or better should not)")
 		return NaN
 	endif
 
-	procedure = PGC_GetProcAndCheckParamType(win, control)
+	procedure = PGC_GetProcAndCheckParamType(S_recreation)
 
-	ControlInfo/W=$win $control
-	ASSERT(V_flag != 0, "Non-existing control or window")
-	controlType = abs(V_flag)
-	
 	switch(controlType)
 		case CONTROL_TYPE_BUTTON:
 
@@ -171,7 +215,8 @@ Function PGC_SetAndActivateControl(win, control, [val, str])
 			break
 		case CONTROL_TYPE_POPUPMENU:
 			ASSERT(!ParamIsDefault(val), "Needs a variable argument")
-			SetPopupMenuIndex(win, control, val)
+			ASSERT(val >= 0,"Invalid index")
+			PopupMenu $control win=$win, mode=(val + 1)
 
 			if(isEmpty(procedure))
 				break
@@ -194,7 +239,9 @@ Function PGC_SetAndActivateControl(win, control, [val, str])
 			break
 		case CONTROL_TYPE_CHECKBOX:
 			ASSERT(!ParamIsDefault(val), "Needs a variable argument")
-			SetCheckboxState(win, control, val)
+
+			val = !!val
+			CheckBox $control, win=$win, value=(val == CHECKBOX_SELECTED)
 
 			if(isEmpty(procedure))
 				break
@@ -269,7 +316,7 @@ Function PGC_SetAndActivateControl(win, control, [val, str])
 			break
 		case CONTROL_TYPE_SLIDER:
 			ASSERT(!ParamIsDefault(val), "Needs a variable argument")
-			SetSliderPositionIndex(win, control, val)
+			Slider $control win=$win, value = val
 
 			if(isEmpty(procedure))
 				break
@@ -289,5 +336,9 @@ Function PGC_SetAndActivateControl(win, control, [val, str])
 			break
 	endswitch
 	
+	if(switchTab)
+		PGC_ShowControlInTab(win, control)
+	endif
+
 	return inputWasModified
 End

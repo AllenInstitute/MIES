@@ -9,8 +9,6 @@
 /// @file MIES_GuiUtilities.ipf
 /// @brief Helper functions related to GUI controls
 
-static constant DISABLE_CONTROL_BIT = 2
-static constant HIDDEN_CONTROL_BIT  = 1
 static StrConstant PROCEDURE_START  = "proc="
  
 /// @brief Show a GUI control in the given window
@@ -340,11 +338,9 @@ Function SetSetVariable(win,Control, newValue, [respectLimits])
 	ControlInfo/W=$win $control
 	ASSERT(V_flag != 0, "Non-existing control or window")
 	ASSERT(abs(V_flag) == CONTROL_TYPE_SETVARIABLE, "Control is not a setvariable")
-	
+
 	if(respectLimits)
-		if(!CheckIfValueIsInsideLimits(win, control, newValue))
-			newValue = GetLimitConstrainedSetVar(win, control, newValue)	
-		endif	
+		newValue = GetLimitConstrainedSetVar(win, control, newValue)
 	endif
 
 	if(newValue != v_value)
@@ -1119,20 +1115,27 @@ End
 Function/S GetControlProcedure(win, control)
 	string win, control
 
+	ControlInfo/W=$win $control
+	ASSERT(V_flag != 0, "invalid or non existing control")
+
+	return GetControlProcedureFromRecMacro(S_recreation)
+End
+
+Function/S GetControlProcedureFromRecMacro(recMacro)
+	string recMacro
+
 	variable last, first
 	variable comma, cr
 	string procedure
 
-	ControlInfo/W=$win $control
-	ASSERT(V_flag != 0, "invalid or non existing control")
-	first = strsearch(S_recreation, "proc=", 0)
+	first = strsearch(recMacro, "proc=", 0)
 
 	if(first == -1)
 		return ""
 	endif
 
-	comma = strsearch(S_recreation, ",", first + 1)
-	cr    = strsearch(S_recreation, "\r", first + 1)
+	comma = strsearch(recMacro, ",", first + 1)
+	cr    = strsearch(recMacro, "\r", first + 1)
 
 	if(comma > 0 && cr > 0)
 		last = min(comma, cr)
@@ -1144,7 +1147,7 @@ Function/S GetControlProcedure(win, control)
 		ASSERT(0, "impossible case")
 	endif
 
-	procedure = S_recreation[first + strlen(PROCEDURE_START), last - 1]
+	procedure = recMacro[first + strlen(PROCEDURE_START), last - 1]
 
 	return procedure
 End
