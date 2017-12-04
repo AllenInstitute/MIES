@@ -50,15 +50,12 @@ End
 /// the function referenced therein.
 ///
 /// Does not work with builtin popup menu lists like `*COLORPOP*`.
-static Function/S PGC_GetPopupMenuList(win, control)
-	string win, control
+static Function/S PGC_GetPopupMenuList(recMacro)
+	string recMacro
 
 	string listOrFunc, path, cmd
 
-	ControlInfo/W=$win $control
-	ASSERT(V_flag != 0, "invalid or non existing control")
-
-	SplitString/E="\\s*,\\s*value\\s*=\\s*(.*)$" S_recreation, listOrFunc
+	SplitString/E="\\s*,\\s*value\\s*=\\s*(.*)$" recMacro, listOrFunc
 	if(V_Flag != 1)
 		Bug("Could not find popupmenu \"value\" entry")
 		return ""
@@ -229,7 +226,7 @@ Function PGC_SetAndActivateControl(win, control, [val, str, switchTab])
 			pa.popNum    = val + 1
 
 			if(ParamIsDefault(str))
-				pa.popStr = StringFromList(val, PGC_GetPopupMenuList(win, control))
+				pa.popStr = StringFromList(val, PGC_GetPopupMenuList(recMacro))
 			else
 				pa.popStr = str
 			endif
