@@ -3,61 +3,105 @@
 
 /// @file UTF_BasicHardWareTests.ipf Implement some basic tests using the ITC hardware.
 
+/// @brief Return the list of active devices
+Function/S GetDevices()
+
+#ifdef TESTS_WITH_YOKING
+	return DEVICES_YOKED
+#else
+	return DEVICE
+#endif
+End
+
+Function/S GetSingleDevice()
+
+#ifdef TESTS_WITH_YOKING
+	return StringFromList(0, DEVICES_YOKED)
+#else
+	return DEVICE
+#endif
+End
+
 /// @brief Acquire data with the given DAQSettings
 static Function AcquireData(s)
 	STRUCT DAQSettings& s
 
+	string unlockedPanelTitle, devices, device
+	variable i, numEntries
+
 	Initialize_IGNORE()
 
-	string unlockedPanelTitle = DAP_CreateDAEphysPanel()
+	devices = GetDevices()
 
-	PGC_SetAndActivateControl(unlockedPanelTitle, "popup_MoreSettings_DeviceType", val=5)
-	PGC_SetAndActivateControl(unlockedPanelTitle, "button_SettingsPlus_LockDevice")
+	numEntries = ItemsInList(devices)
+	for(i = 0; i < numEntries; i += 1)
+		device = StringFromList(i, devices)
 
-	REQUIRE(WindowExists(DEVICE))
+		unlockedPanelTitle = DAP_CreateDAEphysPanel()
 
-	PGC_SetAndActivateControl(DEVICE, "ADC", val=0)
+#ifdef TESTS_WITH_YOKING
+		PGC_SetAndActivateControl(unlockedPanelTitle, "popup_MoreSettings_DeviceType", val=2)
+		PGC_SetAndActivateControl(unlockedPanelTitle, "popup_moreSettings_DeviceNo", val=i)
+#else
+		PGC_SetAndActivateControl(unlockedPanelTitle, "popup_MoreSettings_DeviceType", val=5)
+#endif
+		PGC_SetAndActivateControl(unlockedPanelTitle, "button_SettingsPlus_LockDevice")
 
-	PGC_SetAndActivateControl(DEVICE, GetPanelControl(0, CHANNEL_TYPE_HEADSTAGE, CHANNEL_CONTROL_CHECK), val=1)
-	PGC_SetAndActivateControl(DEVICE, GetPanelControl(1, CHANNEL_TYPE_HEADSTAGE, CHANNEL_CONTROL_CHECK), val=1)
+		REQUIRE(WindowExists(device))
 
-	PGC_SetAndActivateControl(DEVICE, GetPanelControl(0, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_WAVE), val = GetStimSet("StimulusSetA_DA_0") + 1)
-	PGC_SetAndActivateControl(DEVICE, GetPanelControl(0, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_Index_End), val = GetStimSet("StimulusSetB_DA_0") + 1)
-	PGC_SetAndActivateControl(DEVICE, GetPanelControl(1, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_WAVE), val = GetStimSet("StimulusSetC_DA_0") + 1)
-	PGC_SetAndActivateControl(DEVICE, GetPanelControl(1, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_Index_End), val = GetStimSet("StimulusSetD_DA_0") + 1)
+		PGC_SetAndActivateControl(device, GetPanelControl(0, CHANNEL_TYPE_HEADSTAGE, CHANNEL_CONTROL_CHECK), val=1, switchTab = 1)
+		PGC_SetAndActivateControl(device, GetPanelControl(1, CHANNEL_TYPE_HEADSTAGE, CHANNEL_CONTROL_CHECK), val=1)
 
-	WAVE ampMCC = GetAmplifierMultiClamps()
-	WAVE ampTel = GetAmplifierTelegraphServers()
+		PGC_SetAndActivateControl(device, GetPanelControl(0, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_WAVE), val = GetStimSet("StimulusSetA_DA_0") + 1)
+		PGC_SetAndActivateControl(device, GetPanelControl(0, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_Index_End), val = GetStimSet("StimulusSetB_DA_0") + 1)
+		PGC_SetAndActivateControl(device, GetPanelControl(1, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_WAVE), val = GetStimSet("StimulusSetC_DA_0") + 1)
+		PGC_SetAndActivateControl(device, GetPanelControl(1, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_Index_End), val = GetStimSet("StimulusSetD_DA_0") + 1)
 
-	CHECK_EQUAL_VAR(DimSize(ampMCC, ROWS), 2)
-	CHECK_EQUAL_VAR(DimSize(ampTel, ROWS), 2)
+		WAVE ampMCC = GetAmplifierMultiClamps()
+		WAVE ampTel = GetAmplifierTelegraphServers()
 
-	// HS 0 with Amp
-	PGC_SetAndActivateControl(DEVICE, "Popup_Settings_HeadStage", val = 0)
-	PGC_SetAndActivateControl(DEVICE, "popup_Settings_Amplifier", val = 1)
+		CHECK_EQUAL_VAR(DimSize(ampMCC, ROWS), 2)
+		CHECK_EQUAL_VAR(DimSize(ampTel, ROWS), 2)
 
-	// HS 1 with Amp
-	PGC_SetAndActivateControl(DEVICE, "Popup_Settings_HeadStage", val = 1)
-	PGC_SetAndActivateControl(DEVICE, "popup_Settings_Amplifier", val = 2)
+		// HS 0 with Amp
+		PGC_SetAndActivateControl(device, "Popup_Settings_HeadStage", val = 0)
+		PGC_SetAndActivateControl(device, "popup_Settings_Amplifier", val = 1)
 
-	PGC_SetAndActivateControl(DEVICE, DAP_GetClampModeControl(V_CLAMP_MODE, 0), val=1)
-	PGC_SetAndActivateControl(DEVICE, DAP_GetClampModeControl(V_CLAMP_MODE, 1), val=1)
-	DoUpdate/W=$DEVICE
+		// HS 1 with Amp
+		PGC_SetAndActivateControl(device, "Popup_Settings_HeadStage", val = 1)
+		PGC_SetAndActivateControl(device, "popup_Settings_Amplifier", val = 2)
 
-	PGC_SetAndActivateControl(DEVICE, "button_Hardware_AutoGainAndUnit")
+		PGC_SetAndActivateControl(device, DAP_GetClampModeControl(V_CLAMP_MODE, 0), val=1)
+		PGC_SetAndActivateControl(device, DAP_GetClampModeControl(V_CLAMP_MODE, 1), val=1)
+		DoUpdate/W=$device
 
-	PGC_SetAndActivateControl(DEVICE, "check_Settings_MD", val = s.MD)
-	PGC_SetAndActivateControl(DEVICE, "Check_DataAcq1_RepeatAcq", val = s.RA)
-	PGC_SetAndActivateControl(DEVICE, "Check_DataAcq_Indexing", val = s.IDX)
-	PGC_SetAndActivateControl(DEVICE, "Check_DataAcq1_IndexingLocked", val = s.LIDX)
-	PGC_SetAndActivateControl(DEVICE, "Check_Settings_BackgrndDataAcq", val = s.BKG_DAQ)
+		PGC_SetAndActivateControl(device, "button_Hardware_AutoGainAndUnit")
 
-	PGC_SetAndActivateControl(DEVICE, "SetVar_DataAcq_SetRepeats", val = s.RES)
+		PGC_SetAndActivateControl(device, "check_Settings_MD", val = s.MD)
+		PGC_SetAndActivateControl(device, "Check_DataAcq1_RepeatAcq", val = s.RA)
+		PGC_SetAndActivateControl(device, "Check_DataAcq_Indexing", val = s.IDX)
+		PGC_SetAndActivateControl(device, "Check_DataAcq1_IndexingLocked", val = s.LIDX)
+		PGC_SetAndActivateControl(device, "Check_Settings_BackgrndDataAcq", val = s.BKG_DAQ)
 
-	PASS()
+		PGC_SetAndActivateControl(device, "SetVar_DataAcq_SetRepeats", val = s.RES)
 
-	CtrlNamedBackGround DAQWatchdog, start, period=120, proc=WaitUntilDAQDone_IGNORE
-	PGC_SetAndActivateControl(DEVICE, "DataAcquireButton")
+		PASS()
+
+		CtrlNamedBackGround DAQWatchdog, start, period=120, proc=WaitUntilDAQDone_IGNORE
+	endfor
+
+	device = GetSingleDevice()
+
+#ifdef TESTS_WITH_YOKING
+	PGC_SetAndActivateControl(device, "button_Hardware_Lead1600")
+	PGC_SetAndActivateControl(device, "popup_Hardware_AvailITC1600s", val=0)
+	PGC_SetAndActivateControl(device, "button_Hardware_AddFollower")
+
+	ARDLaunchSeqPanel()
+	PGC_SetAndActivateControl("ArduinoSeq_Panel", "SendSequenceButton")
+#endif
+
+	PGC_SetAndActivateControl(device, "DataAcquireButton")
 End
 
 Structure TestSettings
@@ -78,55 +122,62 @@ End
 Function AllTests(t)
 	STRUCT TestSettings &t
 
-	string sweeps, configs, stimset, foundStimSet
-	variable i, sweepNo
+	string sweeps, configs, stimset, foundStimSet, devices, device
+	variable i, j, sweepNo, numEntries
 
-	CHECK_EQUAL_VAR(GetSetVariable(DEVICE, "SetVar_Sweep"), t.numSweeps)
-	sweeps  = GetListOfObjects(GetDeviceDataPath(DEVICE), DATA_SWEEP_REGEXP, fullPath = 1)
-	configs = GetListOfObjects(GetDeviceDataPath(DEVICE), DATA_CONFIG_REGEXP, fullPath = 1)
+	devices = GetDevices()
 
-	CHECK_EQUAL_VAR(ItemsInList(sweeps), t.numSweeps)
-	CHECK_EQUAL_VAR(ItemsInList(configs), t.numSweeps)
+	numEntries = ItemsInList(devices)
+	for(i = 0; i < numEntries; i += 1)
+		device = StringFromList(i, devices)
 
-	WAVE/T textualValues   = GetLBTextualValues(DEVICE)
-	WAVE   numericalValues = GetLBNumericalValues(DEVICE)
+		CHECK_EQUAL_VAR(GetSetVariable(device, "SetVar_Sweep"), t.numSweeps)
+		sweeps  = GetListOfObjects(GetDeviceDataPath(device), DATA_SWEEP_REGEXP, fullPath = 1)
+		configs = GetListOfObjects(GetDeviceDataPath(device), DATA_CONFIG_REGEXP, fullPath = 1)
 
-	for(i = 0; i < t.numSweeps; i += 1)
-		WAVE/Z sweep  = $StringFromList(i, sweeps)
-		CHECK_WAVE(sweep, NUMERIC_WAVE, minorType = t.sweepWaveType)
+		CHECK_EQUAL_VAR(ItemsInList(sweeps), t.numSweeps)
+		CHECK_EQUAL_VAR(ItemsInList(configs), t.numSweeps)
 
-		WAVE/Z config = $StringFromList(i, configs)
-		CHECK_WAVE(config, NUMERIC_WAVE)
+		WAVE/T textualValues   = GetLBTextualValues(device)
+		WAVE   numericalValues = GetLBNumericalValues(device)
 
-		CHECK_EQUAL_VAR(DimSize(config, ROWS), DimSize(sweep, COLS))
+		for(j = 0; j < t.numSweeps; j += 1)
+			WAVE/Z sweep  = $StringFromList(j, sweeps)
+			CHECK_WAVE(sweep, NUMERIC_WAVE, minorType = t.sweepWaveType)
 
-		CHECK_EQUAL_VAR(DimSize(config, ROWS), 4)
+			WAVE/Z config = $StringFromList(j, configs)
+			CHECK_WAVE(config, NUMERIC_WAVE)
 
-		// check channel types
-		CHECK_EQUAL_VAR(config[0][0], ITC_XOP_CHANNEL_TYPE_DAC)
-		CHECK_EQUAL_VAR(config[1][0], ITC_XOP_CHANNEL_TYPE_DAC)
-		CHECK_EQUAL_VAR(config[2][0], ITC_XOP_CHANNEL_TYPE_ADC)
-		CHECK_EQUAL_VAR(config[3][0], ITC_XOP_CHANNEL_TYPE_ADC)
+			CHECK_EQUAL_VAR(DimSize(config, ROWS), DimSize(sweep, COLS))
 
-		sweepNo = ExtractSweepNumber(NameOfWave(sweep))
-		CHECK(sweepNo >= 0)
-		WAVE/T/Z foundStimSets = GetLastSettingText(textualValues, sweepNo, STIM_WAVE_NAME_KEY, DATA_ACQUISITION_MODE)
-		REQUIRE_WAVE(foundStimSets, TEXT_WAVE)
+			CHECK_EQUAL_VAR(DimSize(config, ROWS), 4)
 
-		// HS 0
-		foundStimSet = foundStimSets[0]
-		stimSet      = t.acquiredStimSets_HS0[i]
-		CHECK_EQUAL_STR(foundStimSet, stimSet)
+			// check channel types
+			CHECK_EQUAL_VAR(config[0][0], ITC_XOP_CHANNEL_TYPE_DAC)
+			CHECK_EQUAL_VAR(config[1][0], ITC_XOP_CHANNEL_TYPE_DAC)
+			CHECK_EQUAL_VAR(config[2][0], ITC_XOP_CHANNEL_TYPE_ADC)
+			CHECK_EQUAL_VAR(config[3][0], ITC_XOP_CHANNEL_TYPE_ADC)
 
-		// HS 1
-		foundStimSet = foundStimSets[1]
-		stimSet      = t.acquiredStimSets_HS1[i]
-		CHECK_EQUAL_STR(foundStimSet, stimSet)
+			sweepNo = ExtractSweepNumber(NameOfWave(sweep))
+			CHECK(sweepNo >= 0)
+			WAVE/T/Z foundStimSets = GetLastSettingText(textualValues, sweepNo, STIM_WAVE_NAME_KEY, DATA_ACQUISITION_MODE)
+			REQUIRE_WAVE(foundStimSets, TEXT_WAVE)
 
-		WAVE/Z sweepCounts = GetLastSetting(numericalValues, sweepNo, "Set Sweep Count", DATA_ACQUISITION_MODE)
-		REQUIRE_WAVE(sweepCounts, NUMERIC_WAVE)
-		CHECK_EQUAL_VAR(sweepCounts[0], t.sweepCount_HS0[i])
-		CHECK_EQUAL_VAR(sweepCounts[1], t.sweepCount_HS1[i])
+			// HS 0
+			foundStimSet = foundStimSets[0]
+			stimSet      = t.acquiredStimSets_HS0[j]
+			CHECK_EQUAL_STR(foundStimSet, stimSet)
+
+			// HS 1
+			foundStimSet = foundStimSets[1]
+			stimSet      = t.acquiredStimSets_HS1[j]
+			CHECK_EQUAL_STR(foundStimSet, stimSet)
+
+			WAVE/Z sweepCounts = GetLastSetting(numericalValues, sweepNo, "Set Sweep Count", DATA_ACQUISITION_MODE)
+			REQUIRE_WAVE(sweepCounts, NUMERIC_WAVE)
+			CHECK_EQUAL_VAR(sweepCounts[0], t.sweepCount_HS0[j])
+			CHECK_EQUAL_VAR(sweepCounts[1], t.sweepCount_HS1[j])
+		endfor
 	endfor
 End
 
@@ -427,10 +478,12 @@ End
 Function ExecuteDuringITI_IGNORE(s)
 	STRUCT WMBackgroundStruct &s
 
-	NVAR runMode = $GetTestpulseRunMode(DEVICE)
+	string device = GetSingleDevice()
+
+	NVAR runMode = $GetTestpulseRunMode(device)
 
 	if(runMode & TEST_PULSE_DURING_RA_MOD)
-		RA_SkipSweeps(DEVICE, inf)
+		RA_SkipSweeps(device, inf)
 		return 1
 	endif
 
@@ -439,49 +492,77 @@ End
 
 Function DAQ_SkipSweepsDuringITI_SD()
 
+	string device
+
 	STRUCT DAQSettings s
 	InitDAQSettingsFromString(s, "DAQ_MD0_RA1_IDX0_LIDX0_BKG_1_RES_5")
 	AcquireData(s)
 
+	device = GetSingleDevice()
+
 	CtrlNamedBackGround ExecuteDuringITI, start, period=30, proc=ExecuteDuringITI_IGNORE
 
-	PGC_SetAndActivateControl(DEVICE, "Check_DataAcq_Get_Set_ITI", val = 0)
-	PGC_SetAndActivateControl(DEVICE, "SetVar_DataAcq_ITI", val = 5)
+	PGC_SetAndActivateControl(device, "Check_DataAcq_Get_Set_ITI", val = 0)
+	PGC_SetAndActivateControl(device, "SetVar_DataAcq_ITI", val = 5)
 End
 
 Function Test_SkipSweepsDuringITI_SD()
 
-	NVAR runMode = $GetDataAcqRunMode(DEVICE)
+	string devices, device
+	variable numEntries, i
 
-	CHECK_EQUAL_VAR(runMode, DAQ_NOT_RUNNING)
+	devices = GetDevices()
+
+	numEntries = ItemsInList(devices)
+	for(i = 0; i < numEntries; i += 1)
+		device = StringFromList(i, devices)
+		NVAR runMode = $GetDataAcqRunMode(device)
+
+		CHECK_EQUAL_VAR(runMode, DAQ_NOT_RUNNING)
+	endfor
 End
 
 Function DAQ_SkipSweepsDuringITI_MD()
+
+	string device
 
 	STRUCT DAQSettings s
 	InitDAQSettingsFromString(s, "DAQ_MD1_RA1_IDX0_LIDX0_BKG_1_RES_5")
 	AcquireData(s)
 
+	device = GetSingleDevice()
+
 	CtrlNamedBackGround ExecuteDuringITI, start, period=30, proc=ExecuteDuringITI_IGNORE
 
-	PGC_SetAndActivateControl(DEVICE, "Check_DataAcq_Get_Set_ITI", val = 0)
-	PGC_SetAndActivateControl(DEVICE, "SetVar_DataAcq_ITI", val = 5)
+	PGC_SetAndActivateControl(device, "Check_DataAcq_Get_Set_ITI", val = 0)
+	PGC_SetAndActivateControl(device, "SetVar_DataAcq_ITI", val = 5)
 End
 
 Function Test_SkipSweepsDuringITI_MD()
 
-	NVAR runMode = $GetDataAcqRunMode(DEVICE)
+	string devices, device
+	variable numEntries, i
 
-	CHECK_EQUAL_VAR(runMode, DAQ_NOT_RUNNING)
+	devices = GetDevices()
+
+	numEntries = ItemsInList(devices)
+	for(i = 0; i < numEntries; i += 1)
+		device = StringFromList(i, devices)
+		NVAR runMode = $GetDataAcqRunMode(device)
+
+		CHECK_EQUAL_VAR(runMode, DAQ_NOT_RUNNING)
+	endfor
 End
 
 Function StartTPDuringITI_IGNORE(s)
 	STRUCT WMBackgroundStruct &s
 
-	NVAR runMode = $GetTestpulseRunMode(DEVICE)
+	string device = GetSingleDevice()
+
+	NVAR runMode = $GetTestpulseRunMode(device)
 
 	if(runMode & TEST_PULSE_DURING_RA_MOD)
-		PGC_SetAndActivateControl(DEVICE, "StartTestPulseButton")
+		PGC_SetAndActivateControl(device, "StartTestPulseButton")
 		return 1
 	endif
 
@@ -490,101 +571,160 @@ End
 
 Function DAQ_Abort_ITI_PressTP_SD()
 
+	string device
+
 	STRUCT DAQSettings s
 	InitDAQSettingsFromString(s, "DAQ_MD0_RA1_IDX0_LIDX0_BKG_1_RES_5")
 	AcquireData(s)
 
+	device = GetSingleDevice()
+
 	CtrlNamedBackGround Abort_ITI_PressTP, start, period=30, proc=StartTPDuringITI_IGNORE
 
-	PGC_SetAndActivateControl(DEVICE, "Check_DataAcq_Get_Set_ITI", val = 0)
-	PGC_SetAndActivateControl(DEVICE, "SetVar_DataAcq_ITI", val = 5)
+	PGC_SetAndActivateControl(device, "Check_DataAcq_Get_Set_ITI", val = 0)
+	PGC_SetAndActivateControl(device, "SetVar_DataAcq_ITI", val = 5)
 End
 
 Function Test_Abort_ITI_PressTP_SD()
 
-	NVAR runModeDAQ = $GetDataAcqRunMode(DEVICE)
-	CHECK_EQUAL_VAR(runModeDAQ, DAQ_NOT_RUNNING)
+	string devices, device
+	variable numEntries, i
 
-	NVAR runModeTP = $GetTestpulseRunMode(DEVICE)
-	CHECK(runModeTP != TEST_PULSE_NOT_RUNNING)
-	CHECK(!(runModeTP & TEST_PULSE_DURING_RA_MOD))
+	devices = GetDevices()
+
+	numEntries = ItemsInList(devices)
+	for(i = 0; i < numEntries; i += 1)
+		device = StringFromList(i, devices)
+
+		NVAR runModeDAQ = $GetDataAcqRunMode(device)
+		CHECK_EQUAL_VAR(runModeDAQ, DAQ_NOT_RUNNING)
+
+		NVAR runModeTP = $GetTestpulseRunMode(device)
+		CHECK(runModeTP != TEST_PULSE_NOT_RUNNING)
+		CHECK(!(runModeTP & TEST_PULSE_DURING_RA_MOD))
+	endfor
 End
 
 Function DAQ_Abort_ITI_PressTP_MD()
+
+	string device
 
 	STRUCT DAQSettings s
 	InitDAQSettingsFromString(s, "DAQ_MD1_RA1_IDX0_LIDX0_BKG_1_RES_5")
 	AcquireData(s)
 
+	device = GetSingleDevice()
+
 	CtrlNamedBackGround Abort_ITI_PressTP, start, period=30, proc=StartTPDuringITI_IGNORE
 
-	PGC_SetAndActivateControl(DEVICE, "Check_DataAcq_Get_Set_ITI", val = 0)
-	PGC_SetAndActivateControl(DEVICE, "SetVar_DataAcq_ITI", val = 5)
+	PGC_SetAndActivateControl(device, "Check_DataAcq_Get_Set_ITI", val = 0)
+	PGC_SetAndActivateControl(device, "SetVar_DataAcq_ITI", val = 5)
 End
 
 Function Test_Abort_ITI_PressTP_MD()
 
-	NVAR runModeDAQ = $GetDataAcqRunMode(DEVICE)
-	CHECK_EQUAL_VAR(runModeDAQ, DAQ_NOT_RUNNING)
+	string devices, device
+	variable numEntries, i
 
-	NVAR runModeTP = $GetTestpulseRunMode(DEVICE)
-	CHECK(runModeTP != TEST_PULSE_NOT_RUNNING)
-	CHECK(!(runModeTP & TEST_PULSE_DURING_RA_MOD))
+	devices = GetDevices()
+
+	numEntries = ItemsInList(devices)
+	for(i = 0; i < numEntries; i += 1)
+		device = StringFromList(i, devices)
+
+		NVAR runModeDAQ = $GetDataAcqRunMode(device)
+		CHECK_EQUAL_VAR(runModeDAQ, DAQ_NOT_RUNNING)
+
+		NVAR runModeTP = $GetTestpulseRunMode(device)
+		CHECK(runModeTP != TEST_PULSE_NOT_RUNNING)
+		CHECK(!(runModeTP & TEST_PULSE_DURING_RA_MOD))
+	endfor
 End
 
 Function DAQ_Abort_ITI_TP_A_PressTP_SD()
+
+	string device
 
 	STRUCT DAQSettings s
 	InitDAQSettingsFromString(s, "DAQ_MD0_RA1_IDX0_LIDX0_BKG_1_RES_5")
 	AcquireData(s)
 
+	device = GetSingleDevice()
+
 	CtrlNamedBackGround Abort_ITI_PressTP, start, period=30, proc=StartTPDuringITI_IGNORE
 
-	PGC_SetAndActivateControl(DEVICE, "Check_DataAcq_Get_Set_ITI", val = 0)
-	PGC_SetAndActivateControl(DEVICE, "SetVar_DataAcq_ITI", val = 5)
-	PGC_SetAndActivateControl(DEVICE, "check_Settings_TPAfterDAQ", val = 1)
+	PGC_SetAndActivateControl(device, "Check_DataAcq_Get_Set_ITI", val = 0)
+	PGC_SetAndActivateControl(device, "SetVar_DataAcq_ITI", val = 5)
+	PGC_SetAndActivateControl(device, "check_Settings_TPAfterDAQ", val = 1)
 End
 
 Function Test_Abort_ITI_TP_A_PressTP_SD()
 
-	NVAR runModeDAQ = $GetDataAcqRunMode(DEVICE)
-	CHECK_EQUAL_VAR(runModeDAQ, DAQ_NOT_RUNNING)
+	string devices, device
+	variable numEntries, i
 
-	NVAR runModeTP = $GetTestpulseRunMode(DEVICE)
-	CHECK(runModeTP != TEST_PULSE_NOT_RUNNING)
-	CHECK(!(runModeTP & TEST_PULSE_DURING_RA_MOD))
+	devices = GetDevices()
+
+	numEntries = ItemsInList(devices)
+	for(i = 0; i < numEntries; i += 1)
+		device = StringFromList(i, devices)
+
+		NVAR runModeDAQ = $GetDataAcqRunMode(device)
+
+		CHECK_EQUAL_VAR(runModeDAQ, DAQ_NOT_RUNNING)
+
+		NVAR runModeTP = $GetTestpulseRunMode(device)
+		CHECK(runModeTP != TEST_PULSE_NOT_RUNNING)
+		CHECK(!(runModeTP & TEST_PULSE_DURING_RA_MOD))
+	endfor
 End
 
 Function DAQ_Abort_ITI_TP_A_PressTP_MD()
+
+	string device
 
 	STRUCT DAQSettings s
 	InitDAQSettingsFromString(s, "DAQ_MD1_RA1_IDX0_LIDX0_BKG_1_RES_5")
 	AcquireData(s)
 
+	device = GetSingleDevice()
+
 	CtrlNamedBackGround Abort_ITI_PressTP, start, period=30, proc=StartTPDuringITI_IGNORE
 
-	PGC_SetAndActivateControl(DEVICE, "Check_DataAcq_Get_Set_ITI", val = 0)
-	PGC_SetAndActivateControl(DEVICE, "SetVar_DataAcq_ITI", val = 5)
-	PGC_SetAndActivateControl(DEVICE, "check_Settings_TPAfterDAQ", val = 1)
+	PGC_SetAndActivateControl(device, "Check_DataAcq_Get_Set_ITI", val = 0)
+	PGC_SetAndActivateControl(device, "SetVar_DataAcq_ITI", val = 5)
+	PGC_SetAndActivateControl(device, "check_Settings_TPAfterDAQ", val = 1)
 End
 
 Function Test_Abort_ITI_TP_A_PressTP_MD()
 
-	NVAR runModeDAQ = $GetDataAcqRunMode(DEVICE)
-	CHECK_EQUAL_VAR(runModeDAQ, DAQ_NOT_RUNNING)
+	string devices, device
+	variable numEntries, i
 
-	NVAR runModeTP = $GetTestpulseRunMode(DEVICE)
-	CHECK(runModeTP != TEST_PULSE_NOT_RUNNING)
-	CHECK(!(runModeTP & TEST_PULSE_DURING_RA_MOD))
+	devices = GetDevices()
+
+	numEntries = ItemsInList(devices)
+	for(i = 0; i < numEntries; i += 1)
+		device = StringFromList(i, devices)
+
+		NVAR runModeDAQ = $GetDataAcqRunMode(device)
+
+		CHECK_EQUAL_VAR(runModeDAQ, DAQ_NOT_RUNNING)
+
+		NVAR runModeTP = $GetTestpulseRunMode(device)
+		CHECK(runModeTP != TEST_PULSE_NOT_RUNNING)
+		CHECK(!(runModeTP & TEST_PULSE_DURING_RA_MOD))
+	endfor
 End
 
 Function StopAcqDuringITI_IGNORE(s)
 	STRUCT WMBackgroundStruct &s
 
-	NVAR runMode = $GetTestpulseRunMode(DEVICE)
+	string device = GetSingleDevice()
+	NVAR runMode = $GetTestpulseRunMode(device)
 
 	if(runMode & TEST_PULSE_DURING_RA_MOD)
-		PGC_SetAndActivateControl(DEVICE, "DataAcquireButton")
+		PGC_SetAndActivateControl(device, "DataAcquireButton")
 		return 1
 	endif
 
@@ -593,88 +733,146 @@ End
 
 Function DAQ_Abort_ITI_PressAcq_SD()
 
+	string device
+
 	STRUCT DAQSettings s
 	InitDAQSettingsFromString(s, "DAQ_MD0_RA1_IDX0_LIDX0_BKG_1_RES_5")
 	AcquireData(s)
 
+	device = GetSingleDevice()
+
 	CtrlNamedBackGround Abort_ITI_PressAcq, start, period=30, proc=StopAcqDuringITI_IGNORE
 
-	PGC_SetAndActivateControl(DEVICE, "Check_DataAcq_Get_Set_ITI", val = 0)
-	PGC_SetAndActivateControl(DEVICE, "SetVar_DataAcq_ITI", val = 5)
+	PGC_SetAndActivateControl(device, "Check_DataAcq_Get_Set_ITI", val = 0)
+	PGC_SetAndActivateControl(device, "SetVar_DataAcq_ITI", val = 5)
 End
 
 Function Test_Abort_ITI_PressAcq_SD()
 
-	NVAR runModeDAQ = $GetDataAcqRunMode(DEVICE)
-	CHECK_EQUAL_VAR(runModeDAQ, DAQ_NOT_RUNNING)
+	string devices, device
+	variable numEntries, i
 
-	NVAR runModeTP = $GetTestpulseRunMode(DEVICE)
-	CHECK_EQUAL_VAR(runModeTP, TEST_PULSE_NOT_RUNNING)
+	devices = GetDevices()
+
+	numEntries = ItemsInList(devices)
+	for(i = 0; i < numEntries; i += 1)
+		device = StringFromList(i, devices)
+
+		NVAR runModeDAQ = $GetDataAcqRunMode(device)
+		CHECK_EQUAL_VAR(runModeDAQ, DAQ_NOT_RUNNING)
+
+		NVAR runModeTP = $GetTestpulseRunMode(device)
+		CHECK_EQUAL_VAR(runModeTP, TEST_PULSE_NOT_RUNNING)
+	endfor
 End
 
 Function DAQ_Abort_ITI_PressAcq_MD()
+
+	string device
 
 	STRUCT DAQSettings s
 	InitDAQSettingsFromString(s, "DAQ_MD1_RA1_IDX0_LIDX0_BKG_1_RES_5")
 	AcquireData(s)
 
+	device = GetSingleDevice()
+
 	CtrlNamedBackGround Abort_ITI_PressAcq, start, period=30, proc=StopAcqDuringITI_IGNORE
 
-	PGC_SetAndActivateControl(DEVICE, "Check_DataAcq_Get_Set_ITI", val = 0)
-	PGC_SetAndActivateControl(DEVICE, "SetVar_DataAcq_ITI", val = 5)
+	PGC_SetAndActivateControl(device, "Check_DataAcq_Get_Set_ITI", val = 0)
+	PGC_SetAndActivateControl(device, "SetVar_DataAcq_ITI", val = 5)
 End
 
 Function Test_Abort_ITI_PressAcq_MD()
 
-	NVAR runModeDAQ = $GetDataAcqRunMode(DEVICE)
-	CHECK_EQUAL_VAR(runModeDAQ, DAQ_NOT_RUNNING)
+	string devices, device
+	variable numEntries, i
 
-	NVAR runModeTP = $GetTestpulseRunMode(DEVICE)
-	CHECK_EQUAL_VAR(runModeTP, TEST_PULSE_NOT_RUNNING)
+	devices = GetDevices()
+
+	numEntries = ItemsInList(devices)
+	for(i = 0; i < numEntries; i += 1)
+		device = StringFromList(i, devices)
+
+		NVAR runModeDAQ = $GetDataAcqRunMode(device)
+		CHECK_EQUAL_VAR(runModeDAQ, DAQ_NOT_RUNNING)
+
+		NVAR runModeTP = $GetTestpulseRunMode(device)
+		CHECK_EQUAL_VAR(runModeTP, TEST_PULSE_NOT_RUNNING)
+	endfor
 End
 
 Function DAQ_Abort_ITI_TP_A_PressAcq_SD()
+
+	string device
 
 	STRUCT DAQSettings s
 	InitDAQSettingsFromString(s, "DAQ_MD0_RA1_IDX0_LIDX0_BKG_1_RES_5")
 	AcquireData(s)
 
+	device = GetSingleDevice()
+
 	CtrlNamedBackGround Abort_ITI_PressAcq, start, period=30, proc=StopAcqDuringITI_IGNORE
 
-	PGC_SetAndActivateControl(DEVICE, "Check_DataAcq_Get_Set_ITI", val = 0)
-	PGC_SetAndActivateControl(DEVICE, "SetVar_DataAcq_ITI", val = 5)
-	PGC_SetAndActivateControl(DEVICE, "check_Settings_TPAfterDAQ", val = 1)
+	PGC_SetAndActivateControl(device, "Check_DataAcq_Get_Set_ITI", val = 0)
+	PGC_SetAndActivateControl(device, "SetVar_DataAcq_ITI", val = 5)
+	PGC_SetAndActivateControl(device, "check_Settings_TPAfterDAQ", val = 1)
 End
 
 Function Test_Abort_ITI_TP_A_PressAcq_SD()
 
-	NVAR runModeDAQ = $GetDataAcqRunMode(DEVICE)
-	CHECK_EQUAL_VAR(runModeDAQ, DAQ_NOT_RUNNING)
+	string devices, device
+	variable numEntries, i
 
-	NVAR runModeTP = $GetTestpulseRunMode(DEVICE)
-	CHECK(runModeTP != TEST_PULSE_NOT_RUNNING)
-	CHECK(!(runModeTP & TEST_PULSE_DURING_RA_MOD))
+	devices = GetDevices()
+
+	numEntries = ItemsInList(devices)
+	for(i = 0; i < numEntries; i += 1)
+		device = StringFromList(i, devices)
+
+		NVAR runModeDAQ = $GetDataAcqRunMode(device)
+
+		CHECK_EQUAL_VAR(runModeDAQ, DAQ_NOT_RUNNING)
+
+		NVAR runModeTP = $GetTestpulseRunMode(device)
+		CHECK(runModeTP != TEST_PULSE_NOT_RUNNING)
+		CHECK(!(runModeTP & TEST_PULSE_DURING_RA_MOD))
+	endfor
 End
 
 Function DAQ_Abort_ITI_TP_A_PressAcq_MD()
+
+	string device
 
 	STRUCT DAQSettings s
 	InitDAQSettingsFromString(s, "DAQ_MD1_RA1_IDX0_LIDX0_BKG_1_RES_5")
 	AcquireData(s)
 
+	device = GetSingleDevice()
+
 	CtrlNamedBackGround Abort_ITI_PressAcq, start, period=30, proc=StopAcqDuringITI_IGNORE
 
-	PGC_SetAndActivateControl(DEVICE, "Check_DataAcq_Get_Set_ITI", val = 0)
-	PGC_SetAndActivateControl(DEVICE, "SetVar_DataAcq_ITI", val = 5)
-	PGC_SetAndActivateControl(DEVICE, "check_Settings_TPAfterDAQ", val = 1)
+	PGC_SetAndActivateControl(device, "Check_DataAcq_Get_Set_ITI", val = 0)
+	PGC_SetAndActivateControl(device, "SetVar_DataAcq_ITI", val = 5)
+	PGC_SetAndActivateControl(device, "check_Settings_TPAfterDAQ", val = 1)
 End
 
 Function Test_Abort_ITI_TP_A_PressAcq_MD()
 
-	NVAR runModeDAQ = $GetDataAcqRunMode(DEVICE)
-	CHECK_EQUAL_VAR(runModeDAQ, DAQ_NOT_RUNNING)
+	string devices, device
+	variable numEntries, i
 
-	NVAR runModeTP = $GetTestpulseRunMode(DEVICE)
-	CHECK(runModeTP != TEST_PULSE_NOT_RUNNING)
-	CHECK(!(runModeTP & TEST_PULSE_DURING_RA_MOD))
+	devices = GetDevices()
+
+	numEntries = ItemsInList(devices)
+	for(i = 0; i < numEntries; i += 1)
+		device = StringFromList(i, devices)
+
+		NVAR runModeDAQ = $GetDataAcqRunMode(device)
+
+		CHECK_EQUAL_VAR(runModeDAQ, DAQ_NOT_RUNNING)
+
+		NVAR runModeTP = $GetTestpulseRunMode(device)
+		CHECK(runModeTP != TEST_PULSE_NOT_RUNNING)
+		CHECK(!(runModeTP & TEST_PULSE_DURING_RA_MOD))
+	endfor
 End

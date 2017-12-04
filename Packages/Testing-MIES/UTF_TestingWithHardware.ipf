@@ -15,7 +15,8 @@
 /// Call SetupTestCases_IGNORE() with a list of testcases. The testcase which
 /// acquire data and testcases which test the results should be interleaved.
 
-StrConstant DEVICE = "ITC18USB_dev_0"
+StrConstant DEVICE        = "ITC18USB_dev_0"
+StrConstant DEVICES_YOKED = "ITC1600_dev_0;ITC1600_dev_1"
 
 Function TEST_BEGIN_OVERRIDE(name)
 	string name
@@ -75,19 +76,29 @@ End
 
 /// @brief Background function to wait until DAQ is finished.
 ///
-/// If it is finished prepares the next two, one DAQ and the corresponding `Test`, testcases to the queue
+/// If it is finished pushes the next two, one DAQ and the corresponding `Test`, testcases to the queue
 Function WaitUntilDAQDone_IGNORE(s)
 	STRUCT WMBackgroundStruct &s
 
-	NVAR dataAcqRunMode = $GetDataAcqRunMode(DEVICE)
+	string devices, dev
+	variable numEntries, i
 
-	if(dataAcqRunMode == DAQ_NOT_RUNNING)
-		ExecuteNextTestCase_IGNORE()
-		ExecuteNextTestCase_IGNORE()
-		return 1
-	endif
+	devices = GetDevices()
 
-	return 0
+	numEntries = ItemsInList(devices)
+	for(i = 0; i < numEntries; i += 1)
+		dev = StringFromList(i, devices)
+
+		NVAR dataAcqRunMode = $GetDataAcqRunMode(dev)
+
+		if(dataAcqRunMode != DAQ_NOT_RUNNING)
+			return 0
+		endif
+	endfor
+
+	ExecuteNextTestCase_IGNORE()
+	ExecuteNextTestCase_IGNORE()
+	return 1
 End
 
 /// @brief Structure to hold various common DAQ DAQSettings
