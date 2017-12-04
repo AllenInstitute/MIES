@@ -457,6 +457,30 @@ Function SetPopupMenuVal(win, control, List)
 	PopupMenu $control win=$win, value = #outputList
 End	
 
+/// @brief Sets the popupmenu string
+///
+/// @param win     target window
+/// @param control target control
+/// @param str     popupmenu string to select. Supports wildcard character(*)
+///
+/// @return set string with wildcard expanded
+Function/S SetPopupMenuString(win, control, str)
+	string win, control
+	string str
+
+	string result
+
+	ControlInfo/W=$win $control
+	ASSERT(V_flag != 0, "Non-existing control or window")
+	ASSERT(abs(V_flag) == CONTROL_TYPE_POPUPMENU, "Control is not a popupmenu")
+	PopupMenu $control win=$win, popmatch = str
+
+	result = GetPopupMenuString(win, control)
+	ASSERT(stringMatch(result, str), "str is not in the popupmenu list")
+
+	return result
+End
+
 /// @brief Returns the contents of a ValDisplay
 Function/S GetValDisplayAsString(win, control)
 	string win, control
