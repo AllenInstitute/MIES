@@ -831,14 +831,13 @@ static Function P_UpdateSSRSlopeAndSSR(panelTitle)
 
 	Duplicate/FREE/R=[lastValidEntry][*][FindDimLabel(TPStorageWave, LAYERS, "ValidState")] TPStorageWave, validStateEntries
 
-	if((DimSize(TPStorageWave, COLS) - Sum(validStateEntries)) >= 2)
-		// at least two AD channels has invalid data, stop and wait for better data
-		print "Encountered invalid data in the TPStorageWave. Ignoring that and waiting for better times."
-		return NaN
-	endif
-
 	variable i
 	for(i = 0; i < ColumnsInTPStorageWave; i += 1)
+		
+		if(!validStateEntries[i])
+			continue
+		endif
+
 		Row = AFH_GetHeadstageFromADC(panelTitle, ADCs[i])
 		PressureDataWv[Row][%PeakR] = TPStorageWave[lastValidEntry][i][1] // update the peak resistance value
 		PressureDataWv[Row][%LastResistanceValue] = TPStorageWave[lastValidEntry][i][%SteadyStateResistance]	// update the steady state resistance value
