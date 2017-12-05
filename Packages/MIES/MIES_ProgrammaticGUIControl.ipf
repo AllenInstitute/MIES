@@ -50,15 +50,12 @@ End
 /// the function referenced therein.
 ///
 /// Does not work with builtin popup menu lists like `*COLORPOP*`.
-static Function/S PGC_GetPopupMenuList(win, control)
-	string win, control
+static Function/S PGC_GetPopupMenuList(recMacro)
+	string recMacro
 
 	string listOrFunc, path, cmd
 
-	ControlInfo/W=$win $control
-	ASSERT(V_flag != 0, "invalid or non existing control")
-
-	SplitString/E="\\s*,\\s*value\\s*=\\s*(.*)$" S_recreation, listOrFunc
+	SplitString/E="\\s*,\\s*value\\s*=\\s*(.*)$" recMacro, listOrFunc
 	if(V_Flag != 1)
 		Bug("Could not find popupmenu \"value\" entry")
 		return ""
@@ -166,8 +163,9 @@ End
 /// `val` and `string` are ignored for unappropriate controls.
 ///
 /// PopupMenus:
+/// - Only one of `val` or `str` must be supplied.
 /// - `val` is mandatory and 0-based.
-/// - `str` must be supplied if the GUI control procedure requires it.
+/// - `str` must be the name of an entry, can include `*` using wildcard syntax.
 ///
 /// `switchTab` [optional, defaults to false] Switches tabs so that the control is shown.
 ///
@@ -214,9 +212,14 @@ Function PGC_SetAndActivateControl(win, control, [val, str, switchTab])
 			ButtonProc(ba)
 			break
 		case CONTROL_TYPE_POPUPMENU:
-			ASSERT(!ParamIsDefault(val), "Needs a variable argument")
-			ASSERT(val >= 0,"Invalid index")
-			PopupMenu $control win=$win, mode=(val + 1)
+			ASSERT(ParamIsDefault(val) + ParamIsDefault(str) == 1, "Needs an argument")
+
+			if(!ParamIsDefault(val))
+				ASSERT(val >= 0,"Invalid index")
+				PopupMenu $control win=$win, mode=(val + 1)
+			elseif(!ParamIsDefault(str))
+				str = SetPopupMenuString(win, control, str)
+			endif
 
 			if(isEmpty(procedure))
 				break
@@ -226,11 +229,12 @@ Function PGC_SetAndActivateControl(win, control, [val, str, switchTab])
 			pa.ctrlName  = control
 			pa.win       = win
 			pa.eventCode = 2
-			pa.popNum    = val + 1
 
-			if(ParamIsDefault(str))
-				pa.popStr = StringFromList(val, PGC_GetPopupMenuList(win, control))
-			else
+			if(!ParamIsDefault(val))
+				pa.popNum = val + 1
+				pa.popStr = StringFromList(val, PGC_GetPopupMenuList(S_recreation))
+			elseif(!ParamIsDefault(str))
+				pa.popNum = WhichListItem(str, PGC_GetPopupMenuList(S_recreation)) + 1
 				pa.popStr = str
 			endif
 

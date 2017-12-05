@@ -5,17 +5,18 @@
 #include "unit-testing"
 
 #include "UTF_AnalysisFunctionHelpers"
-#include "UTF_WaveVersioning"
+#include "UTF_PGCSetAndActivateControl"
 #include "UTF_UpgradeWaveLocationAndGetIt"
 #include "UTF_Utils"
 #include "UTF_Labnotebook"
 #include "UTF_WaveBuilder"
+#include "UTF_WaveVersioning"
 
 Function run()
 	DisableDebugOutput()
 	string procList = ""
 	procList += "UTF_AnalysisFunctionHelpers.ipf;UTF_WaveVersioning.ipf;UTF_UpgradeWaveLocationAndGetIt.ipf;"
-	procList += "UTF_Utils.ipf;UTF_Labnotebook.ipf;UTF_WaveBuilder.ipf"
+	procList += "UTF_Utils.ipf;UTF_Labnotebook.ipf;UTF_WaveBuilder.ipf;UTF_PGCSetAndActivateControl.ipf"
 
 	RunTest(procList, enableJU = 1)
 
