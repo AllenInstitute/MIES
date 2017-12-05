@@ -2058,10 +2058,7 @@ static Function DAP_CheckHeadStage(panelTitle, headStage, mode)
 
 	if(ampConnState == AMPLIFIER_CONNECTION_SUCCESS)
 
-		if(AI_MIESHeadstageMatchesMCCMode(panelTitle, headStage) == 0)
-			return 1
-		endif
-
+		AI_EnsureCorrectMode(panelTitle, headStage)
 		AI_QueryGainsUnitsForClampMode(panelTitle, headStage, clampMode, DAGainMCC, ADGainMCC, DAUnitMCC, ADUnitMCC)
 
 		if(cmpstr(DAUnit, DAUnitMCC))
