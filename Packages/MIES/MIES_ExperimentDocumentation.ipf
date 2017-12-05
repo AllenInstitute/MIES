@@ -170,6 +170,7 @@ Function ED_AddEntryToLabnotebook(panelTitle, key, values, [unit, tolerance, ove
 	ASSERT(DimSize(values, ROWS) == LABNOTEBOOK_LAYER_COUNT, "wv has the wrong number of rows")
 	ASSERT(DimSize(values, COLS) == 0, "wv must be 1D")
 	ASSERT(IsTextWave(values) || ((WaveType(values) & (IGOR_TYPE_32BIT_FLOAT | IGOR_TYPE_64BIT_FLOAT)) != 0), "Wave must be text or floating point")
+	ASSERT(strsearch(key, LABNOTEBOOK_USER_PREFIX, 0, 2) != 0, "Don't prefix key with LABNOTEBOOK_USER_PREFIX")
 
 	if(ParamIsDefault(unit))
 		unit = ""

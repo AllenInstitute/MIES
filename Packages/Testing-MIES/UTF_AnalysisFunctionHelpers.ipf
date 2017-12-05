@@ -77,6 +77,17 @@ Function AE_ThrowsWithTooLongKey()
 	endtry
 End
 
+Function AE_ThrowsWithDupPrefix()
+
+	try
+		Make/FREE/N=(LABNOTEBOOK_LAYER_COUNT) values
+		ED_AddEntryToLabnotebook(device, LABNOTEBOOK_USER_PREFIX + "myKey" , values)
+		FAIL()
+	catch
+		PASS()
+	endtry
+End
+
 Function AE_Works1()
 
 	variable row, col
