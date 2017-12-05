@@ -908,6 +908,7 @@ Function AI_SyncGUIToAmpStorageAndMCCApp(panelTitle, headStage, clampMode)
 	variable i, numEntries
 
 	DAP_AbortIfUnlocked(panelTitle)
+	AI_AssertOnInvalidClampMode(clampMode)
 
 	if(DAG_GetNumericalValue(panelTitle, "slider_DataAcq_ActiveHeadstage") != headStage)
 		return NaN
@@ -915,7 +916,6 @@ Function AI_SyncGUIToAmpStorageAndMCCApp(panelTitle, headStage, clampMode)
 		return NaN
 	endif
 
-	AI_AssertOnInvalidClampMode(clampMode)
 
 	if(clampMode == V_CLAMP_MODE)
 		list = AMPLIFIER_CONTROLS_VC
