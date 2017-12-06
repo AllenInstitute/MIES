@@ -55,7 +55,7 @@ Function AE_ThrowsWithInvalidNumRows1()
 	endtry
 End
 
-Function AE_ThrowsWithInvalidNumRows2()
+Function AE_ThrowsWithInvalidNumCols()
 
 	try
 		Make/D/FREE/N=(LABNOTEBOOK_LAYER_COUNT, 1) values
@@ -69,8 +69,19 @@ End
 Function AE_ThrowsWithTooLongKey()
 
 	try
-		Make/FREE/N=(LABNOTEBOOK_LAYER_COUNT, 1) values
+		Make/FREE/N=(LABNOTEBOOK_LAYER_COUNT) values
 		ED_AddEntryToLabnotebook(device, "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa" , values)
+		FAIL()
+	catch
+		PASS()
+	endtry
+End
+
+Function AE_ThrowsWithDupPrefix()
+
+	try
+		Make/FREE/N=(LABNOTEBOOK_LAYER_COUNT) values
+		ED_AddEntryToLabnotebook(device, LABNOTEBOOK_USER_PREFIX + "myKey" , values)
 		FAIL()
 	catch
 		PASS()
