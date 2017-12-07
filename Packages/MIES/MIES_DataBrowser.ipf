@@ -138,7 +138,7 @@ static Function DB_LockDBPanel(win, device)
 	PopupMenu popup_LBTextualKeys, win=$win, value=#("DB_GetLBTextualKeys(\"" + win + "\")")
 
 	DB_FirstAndLastSweepAcquired(win, first, last)
-	DB_UpdateSweepControls(win, first, last)
+	DB_UpdateLastSweepControls(win, first, last)
 	DB_UpdateSweepPlot(win)
 End
 
@@ -188,7 +188,7 @@ static Function DB_FirstAndLastSweepAcquired(win, first, last)
 	endif
 End
 
-static Function DB_UpdateSweepControls(win, first, last)
+static Function DB_UpdateLastSweepControls(win, first, last)
 	string win
 	variable first, last
 
@@ -213,7 +213,7 @@ static Function DB_ClipSweepNumber(win, sweepNo)
 	variable firstSweep, lastSweep
 
 	DB_FirstAndLastSweepAcquired(win, firstSweep, lastSweep)
-	DB_UpdateSweepControls(win, firstSweep, lastSweep)
+	DB_UpdateLastSweepControls(win, firstSweep, lastSweep)
 
 	// handles situation where data sweep number starts at a value greater than the controls number
 	// usually occurs after locking when control is set to zero
@@ -398,7 +398,7 @@ Function DB_UpdateToLastSweep(win)
 	endif
 
 	DB_FirstAndLastSweepAcquired(win, first, last)
-	DB_UpdateSweepControls(win, first, last)
+	DB_UpdateLastSweepControls(win, first, last)
 	SetSetVariable(mainPanel, "setvar_DataBrowser_SweepNo", last)
 
 	if(OVS_IsActive(win) && GetCheckBoxState(bsPanel, "check_overlaySweeps_non_commula"))
