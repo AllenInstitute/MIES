@@ -638,7 +638,10 @@ Function DB_ButtonProc_ChangeSweep(ba) : ButtonControl
 
 			sweepNo = BSP_UpdateSweepControls(graph, ba.ctrlName, firstSweep, lastSweep)
 
-			OVS_ChangeSweepSelectionState(graph, CHECKBOX_SELECTED, sweepNO=sweepNo)
+			if(OVS_IsActive(graph))
+				OVS_ChangeSweepSelectionState(graph, CHECKBOX_SELECTED, sweepNO=sweepNo)
+			endif
+
 			DB_UpdateSweepPlot(graph)
 			break
 	endswitch
