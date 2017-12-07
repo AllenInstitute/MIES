@@ -780,19 +780,6 @@ Function DB_ButtonProc_SwitchXAxis(ba) : ButtonControl
 	return 0
 End
 
-Function DB_SliderProc_ChangedSetting(spa) : SliderControl
-	STRUCT WMSliderAction &spa
-
-	string win
-
-	if(spa.eventCode > 0 && spa.eventCode & 0x1)
-		win = spa.win
-		DB_UpdateSweepPlot(win)
-	endif
-
-	return 0
-End
-
 Function DB_CheckProc_ChangedSetting(cba) : CheckBoxControl
 	STRUCT WMCheckboxAction &cba
 

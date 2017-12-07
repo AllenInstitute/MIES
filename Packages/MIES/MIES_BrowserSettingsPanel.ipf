@@ -93,6 +93,7 @@ static Function BSP_DynamicStartupSettings(mainPanel)
 	SetControlProcedure(bsPanel, "button_Calculation_RestoreData", BSP_AddBrowserPrefix(mainPanel, "ButtonProc_RestoreData"))
 	SetControlProcedure(bsPanel, "check_Display_VisibleXrange", BSP_AddBrowserPrefix(mainPanel, "CheckProc_ScaleAxes"))
 	SetControlProcedures(bsPanel, "button_SweepControl_PrevSweep;button_SweepControl_NextSweep", BSP_AddBrowserPrefix(mainPanel, "ButtonProc_ChangeSweep"))
+	SetControlProcedures(bsPanel, "slider_BrowserSettings_dDAQ;", "BSP_SliderProc_ChangedSetting")
 
 	// SB/DB specific controls
 	controlsSB = "popup_SweepControl_Selector;check_BrowserSettings_splitTTL;check_BrowserSettings_TA;check_Display_EqualYrange;check_Display_EqualYignore;"
@@ -722,7 +723,7 @@ Window BrowserSettingsPanel() : Panel
 	GroupBox group_timealignment,pos={12.00,139.00},size={210.00,98.00},title="Time Alignment"
 	GroupBox group_timealignment,userdata(tabnum)=  "0"
 	GroupBox group_timealignment,userdata(tabcontrol)=  "Settings"
-	Slider slider_BrowserSettings_dDAQ,pos={12.00,84.00},size={210.00,54.00},disable=2
+	Slider slider_BrowserSettings_dDAQ,pos={12.00,84.00},size={210.00,54.00},disable=2,proc=BSP_SliderProc_ChangedSetting
 	Slider slider_BrowserSettings_dDAQ,help={"Allows to view only regions from the selected headstage (oodDAQ) resp. the selected headstage (dDAQ). Choose -1 to display all."}
 	Slider slider_BrowserSettings_dDAQ,userdata(tabnum)=  "0"
 	Slider slider_BrowserSettings_dDAQ,userdata(tabcontrol)=  "Settings"
@@ -821,6 +822,19 @@ Function BSP_ButtonProc_Panel(ba) : ButtonControl
 			BSP_OpenPanel(win)
 			break
 	endswitch
+
+	return 0
+End
+
+Function BSP_SliderProc_ChangedSetting(spa) : SliderControl
+	STRUCT WMSliderAction &spa
+
+	string win
+
+	if(spa.eventCode > 0 && spa.eventCode & 0x1)
+		win = spa.win
+		UpdateSweepPlot(win)
+	endif
 
 	return 0
 End

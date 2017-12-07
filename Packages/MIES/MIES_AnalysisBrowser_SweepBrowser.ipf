@@ -900,20 +900,6 @@ Function SB_ButtonProc_FindMinis(ba) : ButtonControl
 	return 0
 End
 
-Function SB_PopMenuProc_ChangedSettings(pa) : PopupMenuControl
-	STRUCT WMPopupAction &pa
-
-	string graph = GetMainWindow(pa.win)
-
-	switch(pa.eventCode)
-		case 2: // mouse up
-			SB_UpdateSweepPlot(graph)
-		break
-	endswitch
-
-	return 0
-End
-
 Function SB_CheckProc_ChangedSetting(cba) : CheckBoxControl
 	STRUCT WMCheckBoxAction &cba
 
