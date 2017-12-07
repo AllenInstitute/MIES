@@ -788,32 +788,37 @@ Function ARDPortBBitCheckProc(ctrlName,checked) : CheckBoxControl
 	ARDStoreEpochValues()
 End
 
-Function ARDSeqButtonProc(ctrlName) : ButtonControl
-	String ctrlName
-	Variable ShowHide
-	if (stringmatch(ctrlName, "LoadSeqButton") ==1)
-		ARDLoadSeqWave()
-	elseif (stringmatch(ctrlName, "SaveSeqButton") ==1)
-		ARDSaveCurrentSeqWave()
-	elseif (stringmatch(ctrlName, "ArduinoStartButton") ==1)
-		ARDStartSequence()
-	elseif (stringmatch(ctrlName, "ArduinoStopButton") ==1)
-		ARDEndSequence()
-	elseif (stringmatch(ctrlname, "SendSequenceButton") == 1)
-		if (ARDSendEpochs() >=0)	// then no errors
-			ShowHide = 1
-	
-		else
-			ShowHide = 0
-			
-		endif
-		ARDToggleButtons(ShowHide)
-		
-	endif
+Function ARDSeqButtonProc(ba) : ButtonControl
+	STRUCT WMButtonAction &ba
 
+	switch(ba.eventCode)
+		case 2: // mouse up
+			strswitch(ba.ctrlName)
+				case "LoadSeqButton":
+					ARDLoadSeqWave()
+					break
+				case "SaveSeqButton":
+					ARDSaveCurrentSeqWave()
+					break
+				case "ArduinoStartButton":
+					ARDStartSequence()
+					break
+				case "ArduinoStopButton":
+					ARDEndSequence()
+					break
+				case "SendSequenceButton":
+					if(ARDSendEpochs() >= 0) // then no errors
+						ARDToggleButtons(1)
+					else
+						ARDToggleButtons(0)
+					endif
+					break
+			endswitch
+			break
+	endswitch
+
+	return 0
 End
-
-
 
 Function ARDLoadProtocolPopMenuProc(ctrlName,popNum,popStr) : PopupMenuControl
 	String ctrlName
