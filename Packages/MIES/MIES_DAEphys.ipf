@@ -1640,6 +1640,14 @@ Function DAP_SetVarProc_CAA(sva) : SetVariableControl
 			panelTitle = sva.win
 			DAP_AbortIfUnlocked(panelTitle)
 
+			strswitch(sva.ctrlName)
+				case "setvar_DataAcq_SSPressure":
+				case "setvar_DataAcq_PPPressure":
+				case "setvar_DataAcq_PPDuration":
+					DAG_Update(sva.win, sva.ctrlName, val = sva.dval)
+					break
+			endswitch
+
 			DAP_UpdateChanAmpAssignStorWv(panelTitle)
 			P_UpdatePressureDataStorageWv(panelTitle)
 			break
