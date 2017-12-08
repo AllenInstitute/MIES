@@ -120,6 +120,8 @@ End
 ///
 /// Uses plain FindLevels after the onset delay using 10% of the full range
 /// above the minimum as threshold
+///
+/// @return wave with pulse starting times, or an invalid wave reference if none could be found.
 static Function/WAVE PA_CalculatePulseStartTimes(DA, totalOnsetDelay)
 	WAVE DA
 	variable totalOnsetDelay
@@ -132,6 +134,10 @@ static Function/WAVE PA_CalculatePulseStartTimes(DA, totalOnsetDelay)
 
 	MAKE/FREE/D levels
 	FindLevels/Q/R=(totalOnsetDelay, inf)/EDGE=1/DEST=levels DA, level
+
+	if(DimSize(levels, ROWS) == 0)
+		return $""
+	endif
 
 	delta = DimDelta(DA, ROWS)
 
@@ -369,9 +375,9 @@ Function/WAVE PA_GetPulseStartTimes(traceData, idx, region, channelTypeStr, [rem
 	WAVE DACs = GetLastSetting(numericalValues, sweepNo, "DAC", DATA_ACQUISITION_MODE)
 	WAVE DA = GetITCDataSingleColumnWave(singleSweepFolder, ITC_XOP_CHANNEL_TYPE_DAC, DACs[region])
 
-	WAVE pulseStartTimes = PA_CalculatePulseStartTimes(DA, totalOnsetDelay)
+	WAVE/Z pulseStartTimes = PA_CalculatePulseStartTimes(DA, totalOnsetDelay)
 
-	if(DimSize(pulseStartTimes, ROWS) == 0)
+	if(!WaveExists(pulseStartTimes))
 		return $""
 	endif
 
