@@ -2568,7 +2568,7 @@ Function DAP_ChangeHeadStageMode(panelTitle, clampMode, headstage, mccMiesSyncOv
 	variable headstage, clampMode, mccMiesSyncOverride
 
 	string iZeroCtrl, VCctrl, ICctrl, headstageCtrl, ctrl
-	variable activeHS, testPulseMode, oppositeMode, DAC, ADC, i, loopMax, sliderPos, oldTab
+	variable activeHS, testPulseMode, oppositeMode, DAC, ADC, i, oldTab, oldState, newSliderPos
 
 	AI_AssertOnInvalidClampMode(clampMode)
 	DAP_AbortIfUnlocked(panelTitle)
@@ -2587,15 +2587,12 @@ Function DAP_ChangeHeadStageMode(panelTitle, clampMode, headstage, mccMiesSyncOv
 	if(headstage < 0)
 		changeHS[] = 1
 		DAP_SetAmpModeControls(panelTitle, headstage, clampMode)
+		newSliderPos = DAG_GetNumericalValue(panelTitle, "slider_DataAcq_ActiveHeadstage")
 	else
 		changeHS[headstage] = 1
 		activeHS = DAG_GetHeadstageState(panelTitle, headstage)
-		DAP_Slider(panelTitle, headstage)
-		SetSliderPositionIndex(panelTitle, "slider_DataAcq_ActiveHeadstage", headstage)
-		DAG_Update(panelTitle, "slider_DataAcq_ActiveHeadstage", val = headstage)
+		newSliderPos = headstage
 	endif
-
-	sliderPos = DAG_GetNumericalValue(panelTitle, "slider_DataAcq_ActiveHeadstage")
 
 	if(activeHS || headstage < 0)
 		testPulseMode = TP_StopTestPulse(panelTitle)
@@ -2623,11 +2620,23 @@ Function DAP_ChangeHeadStageMode(panelTitle, clampMode, headstage, mccMiesSyncOv
 
 		DAP_SetAmpModeControls(panelTitle, i, clampMode)
 		DAP_SetHeadstageChanControls(panelTitle, i, clampMode)
-
-		if(isFinite(DAP_IZeroSetClampMode(panelTitle, i, clampMode)) && i == sliderPos)
-			DAP_UpdateClampmodeTabs(panelTitle, i, clampMode, mccMiesSyncOverride)
-		endif
+		DAP_IZeroSetClampMode(panelTitle, i, clampMode)
 	endfor
+
+	if(mccMiesSyncOverride == SKIP_MCC_MIES_SYNCING)
+		// turn off miesToMCC syncing before moving the slider as we don't want to sync implicitly
+		// as the control procedure of the headstage slider does
+		oldState = DAG_GetNumericalValue(panelTitle, "check_Settings_SyncMiesToMCC")
+		DAG_Update(panelTitle, "check_Settings_SyncMiesToMCC", val = CHECKBOX_UNSELECTED)
+
+		PGC_SetAndActivateControl(panelTitle, "slider_DataAcq_ActiveHeadstage", val = newSliderPos)
+
+		DAG_Update(panelTitle, "check_Settings_SyncMiesToMCC", val = oldState)
+	elseif(mccMiesSyncOverride == DO_MCC_MIES_SYNCING)
+		PGC_SetAndActivateControl(panelTitle, "slider_DataAcq_ActiveHeadstage", val = newSliderPos)
+	else
+		ASSERT(0, "Unsupported mcc mies syncing mode")
+	endif
 
 	DAP_UpdateDAQControls(panelTitle, REASON_HEADSTAGE_CHANGE)
 
