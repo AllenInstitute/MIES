@@ -64,7 +64,7 @@ digraph G {
     "Grab next completely acquired chunk (500ms) of stimset baseline" -> "Chunk already evaluated?"  [label="Have one"];
     "Grab next completely acquired chunk (500ms) of stimset baseline" -> "Last chunk?"  [label="None left"];
     "Last chunk?" -> "Mark Sweep as failed"  [label="Yes"];
-    "Chunk already evaluated?" -> "Grab next completely chunk (500ms) of stimset baseline"  [label="Yes"];
+    "Chunk already evaluated?" -> "Grab next completely acquired chunk (500ms) of stimset baseline"  [label="Yes"];
     "Chunk already evaluated?" -> "Baseline chunk type"  [label="No"];
     "Check RMS short";
     "Check RMS long";
