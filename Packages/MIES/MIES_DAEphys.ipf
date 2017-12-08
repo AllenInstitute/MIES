@@ -2618,16 +2618,14 @@ Function DAP_ChangeHeadStageMode(panelTitle, clampMode, headstage, mccMiesSyncOv
 			printf "(%s) Could not switch the clamp mode to %s as no DA and/or AD channels are associated with headstage %d.\r", panelTitle, ConvertAmplifierModeToString(clampMode), headstage
 			continue
 		endif
+
 		GuiState[i][%HSmode] = clampMode
+
+		DAP_SetAmpModeControls(panelTitle, i, clampMode)
+		DAP_SetHeadstageChanControls(panelTitle, i, clampMode)
+
 		if(isFinite(DAP_IZeroSetClampMode(panelTitle, i, clampMode)))
-			DAP_SetAmpModeControls(panelTitle, i, clampMode)
-			DAP_SetHeadstageChanControls(panelTitle, i, clampMode)
 			DAP_ConditionallySetAmpGui(panelTitle, i, clampMode, sliderPos, mccMiesSyncOverride)
-		elseif(!DAG_GetNumericalValue(panelTitle, "check_Settings_RequireAmpConn"))
-			DAP_SetAmpModeControls(panelTitle, i, clampMode)
-			DAP_SetHeadstageChanControls(panelTitle, i, clampMode)
-		else
-			DAP_SetAmpModeControls(panelTitle, i, clampMode)
 		endif
 	endfor
 
