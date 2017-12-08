@@ -2626,7 +2626,7 @@ Function DAP_ChangeHeadStageMode(panelTitle, clampMode, headstage, mccMiesSyncOv
 		elseif(!DAG_GetNumericalValue(panelTitle, "check_Settings_RequireAmpConn"))
 			DAP_SetAmpModeControls(panelTitle, i, clampMode)
 			DAP_SetHeadstageChanControls(panelTitle, i, clampMode)
-		elseif(DAG_GetNumericalValue(panelTitle, "check_Settings_RequireAmpConn"))
+		else
 			DAP_SetAmpModeControls(panelTitle, i, clampMode)
 		endif
 	endfor
