@@ -2624,8 +2624,8 @@ Function DAP_ChangeHeadStageMode(panelTitle, clampMode, headstage, mccMiesSyncOv
 		DAP_SetAmpModeControls(panelTitle, i, clampMode)
 		DAP_SetHeadstageChanControls(panelTitle, i, clampMode)
 
-		if(isFinite(DAP_IZeroSetClampMode(panelTitle, i, clampMode)))
-			DAP_ConditionallySetAmpGui(panelTitle, i, clampMode, sliderPos, mccMiesSyncOverride)
+		if(isFinite(DAP_IZeroSetClampMode(panelTitle, i, clampMode)) && i == sliderPos)
+			DAP_UpdateClampmodeTabs(panelTitle, i, clampMode, mccMiesSyncOverride)
 		endif
 	endfor
 
@@ -2695,26 +2695,6 @@ static Function DAP_SetHeadstageChanControls(panelTitle, headstage, clampMode)
 		DAP_RemoveClampModeSettings(panelTitle, headstage, oppositeMode)
 		DAP_ApplyClmpModeSavdSettngs(panelTitle, headstage, clampMode)
 		DAP_AllChanDASettings(panelTitle, headStage)
-	endif
-End
-
-///@brief Sets the amp GUI (updates the selected tab according to the clamp mode) if the headstage being set and the user selected headstage are the same.
-///@param	panelTitle 	Device (used for data acquisition)
-///@param	headstage		channels associated with headstage are set
-///@param	clampMode		clamp mode to activate
-///@param	sliderPos		index of the slider control: slider_DataAcq_ActiveHeadstage
-///@param	mccMiesSyncOverride should be zero for normal callers, 1 for callers which
-///                            are doing a auto MCC function and need to change the clamp mode temporarily.
-///                            Use one of @ref MCCSyncOverrides for better readability.
-static Function DAP_ConditionallySetAmpGui(panelTitle, headstage, clampMode, sliderPos, mccMiesSyncOverride)
-	string panelTitle
-	variable headstage
-	variable clampMode
-	variable sliderPos
-	variable mccMiesSyncOverride
-
-	if(sliderPos == headstage)
-		DAP_UpdateClampmodeTabs(panelTitle, headstage, clampMode, mccMiesSyncOverride)
 	endif
 End
 
