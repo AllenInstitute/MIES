@@ -3089,35 +3089,30 @@ End
 Function DAP_SliderProc_MIESHeadStage(sc) : SliderControl
 	struct WMSliderAction &sc
 
+	variable mode, headstage
+	string panelTitle
+
 	// eventCode is a bitmask as opposed to a plain value
 	// compared to other controls
 	if(sc.eventCode > 0 && sc.eventCode & 0x1)
-		DAG_Update(sc.win, sc.ctrlName, val = sc.curval)
-		DAP_Slider(sc.win, sc.curVal)
+		headstage  = sc.curval
+		panelTitle = sc.win
+		DAG_Update(panelTitle, sc.ctrlName, val = headstage)
+
+		DAP_AbortIfUnlocked(panelTitle)
+		mode = DAG_GetHeadstageMode(panelTitle, headStage)
+		P_PressureDisplayHighlite(panelTitle, 0)
+		P_SaveUserSelectedHeadstage(panelTitle, headStage)
+		P_GetAutoUserOff(panelTitle)
+		P_GetPressureType(panelTitle)
+		P_LoadPressureButtonState(panelTitle)
+		P_UpdatePressureModeTabs(panelTitle, headStage)
+		DAP_UpdateClampmodeTabs(panelTitle, headStage, mode, DO_MCC_MIES_SYNCING)
+		SCOPE_SetADAxisLabel(panelTitle,HeadStage)
+		P_RunP_ControlIfTPOFF(panelTitle)
 	endif
 
 	return 0
-End
-
-///@brief User selected headstage function calls
-///@param panelTitle Device
-///@param headstage Headstage [0, 8[
-Function DAP_Slider(panelTitle, headstage)
-	string panelTitle
-	variable headstage
-
-	variable mode
-	DAP_AbortIfUnlocked(panelTitle)
-	mode = DAG_GetHeadstageMode(panelTitle, headStage)
-	P_PressureDisplayHighlite(panelTitle, 0)
-	P_SaveUserSelectedHeadstage(panelTitle, headStage)
-	P_GetAutoUserOff(panelTitle)
-	P_GetPressureType(panelTitle)
-	P_LoadPressureButtonState(panelTitle)
-	P_UpdatePressureModeTabs(panelTitle, headStage)
-	DAP_UpdateClampmodeTabs(panelTitle, headStage, mode, DO_MCC_MIES_SYNCING)
-	SCOPE_SetADAxisLabel(panelTitle,HeadStage)
-	P_RunP_ControlIfTPOFF(panelTitle)
 End
 
 Function DAP_SetVarProc_AmpCntrls(sva) : SetVariableControl
