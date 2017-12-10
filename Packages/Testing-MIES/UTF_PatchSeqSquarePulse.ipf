@@ -57,13 +57,11 @@ End
 static Function/WAVE GetSpikeResults_IGNORE(sweepNo)
 	variable sweepNo
 
+	string key
+
 	WAVE numericalValues = GetLBNumericalValues(DEVICE)
-	WAVE/Z sweeps = AFH_GetSweepsFromSameRACycle(numericalValues, sweepNo)
-	CHECK_WAVE(sweeps, NUMERIC_WAVE)
-
-	Make/D/FREE/N=(DimSize(sweeps, ROWS)) spikeDetected = GetLastSetting(numericalValues, sweeps[p], LABNOTEBOOK_USER_PREFIX + PATCHSEQ_SP_LBN_SPIKE_DETECT, UNKNOWN_MODE)[HEADSTAGE]
-
-	return spikeDetected
+	key = PSQ_CreateLBNKey(PSQ_SQUARE_PULSE, PSQ_FMT_LBN_SPIKE_DETECT, query = 1)
+	return GetLastSettingEachRAC(numericalValues, sweepNo, key, HEADSTAGE, UNKNOWN_MODE)
 End
 
 static Function PS_SP_Run1()
@@ -72,7 +70,7 @@ static Function PS_SP_Run1()
 	InitDAQSettingsFromString(s, "DAQ_MD1_RA1_IDX0_LIDX0_BKG_1")
 	AcquireData(s)
 
-	WAVE wv = CreateOverrideResults(DEVICE, HEADSTAGE, PATCHSEQ_SQUARE_PULSE)
+	WAVE wv = PSQ_CreateOverrideResults(DEVICE, HEADSTAGE, PSQ_SQUARE_PULSE)
 	// all tests fail
 	wv = 0
 End
@@ -88,10 +86,10 @@ static Function PS_SP_Test1()
 
 	WAVE numericalValues = GetLBNumericalValues(DEVICE)
 
-	spikeDetected = GetLastSetting(numericalValues, sweepNo, LABNOTEBOOK_USER_PREFIX + PATCHSEQ_SP_LBN_SPIKE_DETECT, UNKNOWN_MODE)[HEADSTAGE]
+	spikeDetected = GetLastSetting(numericalValues, sweepNo, PSQ_CreateLBNKey(PSQ_SQUARE_PULSE, PSQ_FMT_LBN_SPIKE_DETECT, query = 1), UNKNOWN_MODE)[HEADSTAGE]
 	CHECK_EQUAL_VAR(spikeDetected, 0)
 
-	WAVE/Z result = GetLastSetting(numericalValues, sweepNo, LABNOTEBOOK_USER_PREFIX + PATCHSEQ_SP_LBN_FINAL_SCALE, UNKNOWN_MODE)
+	WAVE/Z result = GetLastSetting(numericalValues, sweepNo, PSQ_CreateLBNKey(PSQ_SQUARE_PULSE, PSQ_FMT_LBN_FINAL_SCALE, query = 1), UNKNOWN_MODE)
 	CHECK(!WaveExists(result))
 
 	WAVE/Z spikeDetectionWave = GetSpikeResults_IGNORE(sweepNo)
@@ -112,7 +110,7 @@ static Function PS_SP_Run2()
 	InitDAQSettingsFromString(s, "DAQ_MD1_RA1_IDX0_LIDX0_BKG_1")
 	AcquireData(s)
 
-	WAVE wv = CreateOverrideResults(DEVICE, HEADSTAGE, PATCHSEQ_SQUARE_PULSE)
+	WAVE wv = PSQ_CreateOverrideResults(DEVICE, HEADSTAGE, PSQ_SQUARE_PULSE)
 	// all tests fail
 	// spike before pulse, does not count
 	wv = 2.5
@@ -129,10 +127,10 @@ static Function PS_SP_Test2()
 
 	WAVE numericalValues = GetLBNumericalValues(DEVICE)
 
-	spikeDetected = GetLastSetting(numericalValues, sweepNo, LABNOTEBOOK_USER_PREFIX + PATCHSEQ_SP_LBN_SPIKE_DETECT, UNKNOWN_MODE)[HEADSTAGE]
+	spikeDetected = GetLastSetting(numericalValues, sweepNo, PSQ_CreateLBNKey(PSQ_SQUARE_PULSE, PSQ_FMT_LBN_SPIKE_DETECT, query = 1), UNKNOWN_MODE)[HEADSTAGE]
 	CHECK_EQUAL_VAR(spikeDetected, 0)
 
-	WAVE/Z result = GetLastSetting(numericalValues, sweepNo, LABNOTEBOOK_USER_PREFIX + PATCHSEQ_SP_LBN_FINAL_SCALE, UNKNOWN_MODE)
+	WAVE/Z result = GetLastSetting(numericalValues, sweepNo, PSQ_CreateLBNKey(PSQ_SQUARE_PULSE, PSQ_FMT_LBN_FINAL_SCALE, query = 1), UNKNOWN_MODE)
 	CHECK(!WaveExists(result))
 
 	WAVE/Z spikeDetectionWave = GetSpikeResults_IGNORE(sweepNo)
@@ -153,7 +151,7 @@ static Function PS_SP_Run3()
 	InitDAQSettingsFromString(s, "DAQ_MD1_RA1_IDX0_LIDX0_BKG_1")
 	AcquireData(s)
 
-	WAVE wv = CreateOverrideResults(DEVICE, HEADSTAGE, PATCHSEQ_SQUARE_PULSE)
+	WAVE wv = PSQ_CreateOverrideResults(DEVICE, HEADSTAGE, PSQ_SQUARE_PULSE)
 	// spike detected on second sweep, but never again
 	wv[]  = 0
 	wv[1] = 1
@@ -170,10 +168,10 @@ static Function PS_SP_Test3()
 
 	WAVE numericalValues = GetLBNumericalValues(DEVICE)
 
-	spikeDetected = GetLastSetting(numericalValues, sweepNo, LABNOTEBOOK_USER_PREFIX + PATCHSEQ_SP_LBN_SPIKE_DETECT, UNKNOWN_MODE)[HEADSTAGE]
+	spikeDetected = GetLastSetting(numericalValues, sweepNo, PSQ_CreateLBNKey(PSQ_SQUARE_PULSE, PSQ_FMT_LBN_SPIKE_DETECT, query = 1), UNKNOWN_MODE)[HEADSTAGE]
 	CHECK_EQUAL_VAR(spikeDetected, 0)
 
-	WAVE/Z result = GetLastSetting(numericalValues, sweepNo, LABNOTEBOOK_USER_PREFIX + PATCHSEQ_SP_LBN_FINAL_SCALE, UNKNOWN_MODE)
+	WAVE/Z result = GetLastSetting(numericalValues, sweepNo, PSQ_CreateLBNKey(PSQ_SQUARE_PULSE, PSQ_FMT_LBN_FINAL_SCALE, query = 1), UNKNOWN_MODE)
 	CHECK(!WaveExists(result))
 
 	WAVE/Z spikeDetectionWave = GetSpikeResults_IGNORE(sweepNo)
@@ -194,7 +192,7 @@ static Function PS_SP_Run4()
 	InitDAQSettingsFromString(s, "DAQ_MD1_RA1_IDX0_LIDX0_BKG_1")
 	AcquireData(s)
 
-	WAVE wv = CreateOverrideResults(DEVICE, HEADSTAGE, PATCHSEQ_SQUARE_PULSE)
+	WAVE wv = PSQ_CreateOverrideResults(DEVICE, HEADSTAGE, PSQ_SQUARE_PULSE)
 	// spike detected on second and third sweep, but never again
 	wv[]    = 0
 	wv[1,2] = 1
@@ -211,10 +209,10 @@ static Function PS_SP_Test4()
 
 	WAVE numericalValues = GetLBNumericalValues(DEVICE)
 
-	spikeDetected = GetLastSetting(numericalValues, sweepNo, LABNOTEBOOK_USER_PREFIX + PATCHSEQ_SP_LBN_SPIKE_DETECT, UNKNOWN_MODE)[HEADSTAGE]
+	spikeDetected = GetLastSetting(numericalValues, sweepNo, PSQ_CreateLBNKey(PSQ_SQUARE_PULSE, PSQ_FMT_LBN_SPIKE_DETECT, query = 1), UNKNOWN_MODE)[HEADSTAGE]
 	CHECK_EQUAL_VAR(spikeDetected, 0)
 
-	WAVE/Z result = GetLastSetting(numericalValues, sweepNo, LABNOTEBOOK_USER_PREFIX + PATCHSEQ_SP_LBN_FINAL_SCALE, UNKNOWN_MODE)
+	WAVE/Z result = GetLastSetting(numericalValues, sweepNo, PSQ_CreateLBNKey(PSQ_SQUARE_PULSE, PSQ_FMT_LBN_FINAL_SCALE, query = 1), UNKNOWN_MODE)
 	CHECK(!WaveExists(result))
 
 	WAVE/Z spikeDetectionWave = GetSpikeResults_IGNORE(sweepNo)
@@ -235,7 +233,7 @@ static Function PS_SP_Run5()
 	InitDAQSettingsFromString(s, "DAQ_MD1_RA1_IDX0_LIDX0_BKG_1")
 	AcquireData(s)
 
-	WAVE wv = CreateOverrideResults(DEVICE, HEADSTAGE, PATCHSEQ_SQUARE_PULSE)
+	WAVE wv = PSQ_CreateOverrideResults(DEVICE, HEADSTAGE, PSQ_SQUARE_PULSE)
 	// spike detected on first and third sweep -> success
 	wv[]  = 0
 	wv[1] = 1
@@ -244,7 +242,7 @@ End
 
 static Function PS_SP_Test5()
 
-	variable sweepNo, spikeDetected, numEntries, i
+	variable sweepNo, spikeDetected, numEntries, result, i
 
 	CHECK_EQUAL_VAR(GetSetVariable(DEVICE, "SetVar_Sweep"), 4)
 
@@ -253,15 +251,14 @@ static Function PS_SP_Test5()
 
 	WAVE numericalValues = GetLBNumericalValues(DEVICE)
 
-	spikeDetected = GetLastSetting(numericalValues, sweepNo, LABNOTEBOOK_USER_PREFIX + PATCHSEQ_SP_LBN_SPIKE_DETECT, UNKNOWN_MODE)[HEADSTAGE]
+	spikeDetected = GetLastSetting(numericalValues, sweepNo, PSQ_CreateLBNKey(PSQ_SQUARE_PULSE, PSQ_FMT_LBN_SPIKE_DETECT, query = 1), UNKNOWN_MODE)[HEADSTAGE]
 	CHECK_EQUAL_VAR(spikeDetected, 1)
 
 	WAVE/Z spikeDetectionWave = GetSpikeResults_IGNORE(sweepNo)
 	CHECK_EQUAL_WAVES(spikeDetectionWave, {0, 1, 0, 1}, mode = WAVE_DATA)
 
-	WAVE result = GetLastSetting(numericalValues, sweepNo, LABNOTEBOOK_USER_PREFIX + PATCHSEQ_SP_LBN_FINAL_SCALE, UNKNOWN_MODE)
-	CHECK_WAVE(result, NUMERIC_WAVE)
-	CHECK_EQUAL_VAR(result[HEADSTAGE], 160e-12)
+	result = GetLastSettingIndep(numericalValues, sweepNo, PSQ_CreateLBNKey(PSQ_SQUARE_PULSE, PSQ_FMT_LBN_FINAL_SCALE, query = 1), UNKNOWN_MODE)
+	CHECK_EQUAL_VAR(result, 160e-12)
 
 	WAVE/Z sweeps = AFH_GetSweepsFromSameRACycle(numericalValues, sweepNo)
 	CHECK_WAVE(sweeps, NUMERIC_WAVE)

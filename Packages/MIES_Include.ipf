@@ -30,6 +30,7 @@
 #include "MIES_AnalysisBrowser_SweepBrowser_Export"
 #include "MIES_AnalysisFunctionHelpers"
 #include "MIES_AnalysisFunctionManagement"
+#include "MIES_AnalysisFunctions_PatchSeq"
 #include "MIES_AnalysisFunctionPrototypes"
 #include "MIES_AnalysisFunctions"
 #include "MIES_AnalysisMaster"
