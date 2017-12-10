@@ -18,6 +18,7 @@ static Constant PSQ_TARGETV_TEST   = 0x2
 
 static StrConstant PSQ_SP_LBN_PREFIX = "Squ. Pul."
 static StrConstant PSQ_ST_LBN_PREFIX = "Sub Th."
+static StrConstant PSQ_RB_LBN_PREFIX = "Rheobase"
 
 /// The Patch Seq analysis functions store various results in the labnotebook.
 ///
@@ -29,16 +30,17 @@ static StrConstant PSQ_ST_LBN_PREFIX = "Sub Th."
 /// ===============             ========================================================= ================= =====================  =====================
 /// Naming constant             Description                                               Analysis function Per Chunk?             Headstage dependent?
 /// ===============             ========================================================= ================= =====================  =====================
-/// PSQ_FMT_LBN_SPIKE_DETECT    Spike was detected on the sweep                           SP                No                     Yes
+/// PSQ_FMT_LBN_SPIKE_DETECT    Spike was detected on the sweep                           SP, RB            No                     Yes
 /// PSQ_FMT_LBN_STEPSIZE        Current DAScale step size                                 SP                No                     Yes
-/// PSQ_FMT_LBN_FINAL_SCALE     Final DAScale of the given headstage, only set on success SP                No                     No
-/// PSQ_FMT_LBN_RMS_SHORT_PASS  Short RMS baseline QC result                              ST                Yes                    Yes
-/// PSQ_FMT_LBN_RMS_LONG_PASS   Long RMS baseline QC result                               ST                Yes                    Yes
-/// PSQ_FMT_LBN_TARGETV_PASS    Target voltage baseline QC result                         ST                Yes                    Yes
-/// PSQ_FMT_LBN_CHUNK_PASS      Which chunk passed/failed baseline QC                     ST                Yes                    Yes
-/// PSQ_FMT_LBN_BL_QC_PASS      Pass/fail state of the complete baseline                  ST                No                     Yes
+/// PSQ_FMT_LBN_FINAL_SCALE     Final DAScale of the given headstage, only set on success SP, RB            No                     No
+/// PSQ_FMT_LBN_INITIAL_SCALE   Initial DAScale                                           RB                No                     No
+/// PSQ_FMT_LBN_RMS_SHORT_PASS  Short RMS baseline QC result                              ST, RB            Yes                    Yes
+/// PSQ_FMT_LBN_RMS_LONG_PASS   Long RMS baseline QC result                               ST, RB            Yes                    Yes
+/// PSQ_FMT_LBN_TARGETV_PASS    Target voltage baseline QC result                         ST, RB            Yes                    Yes
+/// PSQ_FMT_LBN_CHUNK_PASS      Which chunk passed/failed baseline QC                     ST, RB            Yes                    Yes
+/// PSQ_FMT_LBN_BL_QC_PASS      Pass/fail state of the complete baseline                  ST, RB            No                     Yes
 /// PSQ_FMT_LBN_SWEEP_PASS      Pass/fail state of the complete sweep                     ST, SP            No                     No
-/// PSQ_FMT_LBN_SET_PASS        Pass/fail state of the complete set                       ST                No                     No
+/// PSQ_FMT_LBN_SET_PASS        Pass/fail state of the complete set                       ST, RB            No                     No
 ///
 /// \endrst
 ///
@@ -59,6 +61,9 @@ Function/S PSQ_CreateLBNKey(type, formatString, [chunk, query])
 	switch(type)
 		case PSQ_SUB_THRESHOLD:
 			prefix = PSQ_ST_LBN_PREFIX
+			break
+		case PSQ_RHEOBASE:
+			prefix = PSQ_RB_LBN_PREFIX
 			break
 		case PSQ_SQUARE_PULSE:
 			prefix = PSQ_SP_LBN_PREFIX
@@ -104,6 +109,11 @@ static Function PSQ_GetPulseSettingsForType(type, s)
 			s.prePulseChunkLength  = PSQ_ST_BL_EVAL_RANGE_MS
 			s.postPulseChunkLength = PSQ_ST_BL_EVAL_RANGE_MS
 			s.pulseDuration        = PSQ_ST_PULSE_DUR
+			break
+		case PSQ_RHEOBASE:
+			s.prePulseChunkLength  = PSQ_RB_PRE_BL_EVAL_RANGE
+			s.postPulseChunkLength = PSQ_RB_POST_BL_EVAL_RANGE
+			s.pulseDuration        = PSQ_RB_PULSE_DUR
 			break
 		default:
 			ASSERT(0, "unsupported type")
@@ -387,6 +397,10 @@ static Function PSQ_GetNumberOfChunks(panelTitle, type)
 			nonBL = totalOnsetDelay + PSQ_ST_PULSE_DUR + PSQ_ST_BL_EVAL_RANGE_MS
 			return floor((length - nonBL) / PSQ_ST_BL_EVAL_RANGE_MS)
 			break
+		case PSQ_RHEOBASE:
+			nonBL = totalOnsetDelay + PSQ_RB_PULSE_DUR + PSQ_RB_POST_BL_EVAL_RANGE
+			return floor((length - nonBL - PSQ_RB_PRE_BL_EVAL_RANGE) / PSQ_RB_POST_BL_EVAL_RANGE) + 1
+			break
 		default:
 			ASSERT(0, "unsupported type")
 	endswitch
@@ -515,6 +529,8 @@ Function/WAVE PSQ_CreateOverrideResults(panelTitle, headstage, type)
 	ASSERT(WaveExists(wv), "Stimset does not exist")
 
 	switch(type)
+		case PSQ_RHEOBASE:
+			numLayers = 2
 		case PSQ_SUB_THRESHOLD:
 			numRows = PSQ_GetNumberOfChunks(panelTitle, type)
 			numCols = IDX_NumberOfTrialsInSet(stimset)
@@ -580,6 +596,9 @@ static Function/WAVE PSQ_SearchForSpikes(panelTitle, type, sweepWave, headstage)
 		NVAR count = $GetCount(panelTitle)
 
 		switch(type)
+			case PSQ_RHEOBASE:
+				overrideValue = overrideResults[0][count][1]
+				break
 			case PSQ_SQUARE_PULSE:
 				overrideValue = overrideResults[count]
 				break
@@ -1045,4 +1064,294 @@ Function PSQ_SquarePulse(panelTitle, eventType, ITCDataWave, headStage, realData
 	endswitch
 
 	return NaN
+End
+
+/// @brief Analysis function for finding the exact DAScale value between spiking and non-spiking
+///
+/// Prerequisites:
+/// - This stimset must have this analysis function set for the "Pre DAQ", "Mid Sweep", "Post Sweep", "Post Set" Event
+/// - Does only work for one headstage
+/// - Assumes that the stimset has a pulse
+/// - Pre pulse baseline length is #PSQ_RB_PRE_BL_EVAL_RANGE
+/// - Post pulse baseline length a multiple of #PSQ_RB_POST_BL_EVAL_RANGE
+///
+/// Testing:
+/// For testing the spike detection logic, the results can be defined in the wave
+/// root:overrideResults. @see PSQ_CreateOverrideResults()
+///
+/// Decision logic flowchart:
+///
+/// \rst
+///	.. graphviz:: ../patch-seq-rheobase.dot
+/// \endrst
+///
+/// @verbatim
+///
+/// Sketch of a stimset with pre pulse baseline (-), pulse (*), and post pulse baseline (-).
+///
+///    *******
+///    |     |
+///    |     |
+///    |     |
+///    |     |
+///    |     |
+///    |     |
+///    |     |
+///    |     |
+///    |     |
+///    |     |
+///    |     |
+///    |     |
+/// ---|     |--------------------------------------------
+///
+/// @endverbatim
+Function PSQ_Rheobase(panelTitle, eventType, ITCDataWave, headStage, realDataLength)
+	string panelTitle
+	variable eventType
+	Wave ITCDataWave
+	variable headstage, realDataLength
+
+	variable sweepNo, stepsize, DAScale, val, numSweeps, currentSweepHasSpike, setPassed
+	variable offset, first, last, level, overrideValue, baselineQCPassed, finalDAScale, initialDAScale
+	variable numBaselineChunks, lastFifoPos, totalOnsetDelay, fifoInStimsetPoint, fifoInStimsetTime
+	variable i, ret, numSweepsWithSpikeDetection
+	string key, msg
+
+	WAVE statusHS = DAG_GetChannelState(panelTitle, CHANNEL_TYPE_HEADSTAGE)
+
+	ASSERT(sum(statusHS) == 1, "Analysis function only supports one headstage")
+
+	WAVE numericalValues = GetLBNumericalValues(panelTitle)
+
+	switch(eventType)
+		case PRE_DAQ_EVENT:
+			if(DAG_GetHeadstageMode(panelTitle, headstage) != I_CLAMP_MODE)
+				printf "(%s) Clamp mode must be current clamp.\r", panelTitle
+				ControlWindowToFront()
+				return 1
+			elseif(!DAG_GetNumericalValue(panelTitle, "check_DataAcq_AutoBias"))
+				printf "(%s): Auto Bias must be checked\r", panelTitle
+				ControlWindowToFront()
+				return 1
+			elseif(!DAG_GetNumericalValue(panelTitle, "check_Settings_MD"))
+				printf "(%s): Please check \"Multi Device\" mode.\r", panelTitle
+				ControlWindowToFront()
+				return 1
+			endif
+
+			val = DAG_GetNumericalValue(panelTitle, "setvar_DataAcq_AutoBiasV")
+
+			if(!IsFinite(val) || CheckIfSmall(val, tol = 1e-12))
+				printf "(%s): Autobias value is zero or non-finite\r", panelTitle
+				ControlWindowToFront()
+				return 1
+			endif
+
+			val = DAG_GetNumericalValue(panelTitle, "SetVar_DataAcq_ITI")
+
+			if(!CheckIfClose(val, 4))
+				printf "(%s): ITI must be 4s.\r", panelTitle
+				ControlWindowToFront()
+				return 1
+			endif
+
+			val = DAG_GetNumericalValue(panelTitle, "SetVar_DataAcq_SetRepeats")
+
+			if(!CheckIfClose(val, 1))
+				printf "(%s): Repeat Sets must be 1.\r", panelTitle
+				ControlWindowToFront()
+				return 1
+			endif
+
+			PGC_SetAndActivateControl(panelTitle, "check_Settings_ITITP", val = 1)
+			PGC_SetAndActivateControl(panelTitle, "Check_Settings_InsertTP", val = 1)
+
+			key = PSQ_CreateLBNKey(PSQ_SQUARE_PULSE, PSQ_FMT_LBN_FINAL_SCALE, query = 1)
+			sweepNo = AFH_GetLastSweepAcquired(panelTitle)
+			finalDAScale = GetLastSettingIndepRAC(numericalValues, sweepNo, key, UNKNOWN_MODE)
+
+			if(!IsFinite(finalDAScale))
+				printf "(%s): Could not find final DAScale value from previous analysis function.\r", panelTitle
+				if(PSQ_TestOverrideActive())
+					finalDASCale = PSQ_RB_FINALSCALE_FAKE
+				else
+					ControlWindowToFront()
+					return 1
+				endif
+			endif
+
+			SetDAScale(panelTitle, headstage, finalDAScale)
+
+			return 0
+
+			break
+		case POST_SWEEP_EVENT:
+			sweepNo = AFH_GetLastSweepAcquired(panelTitle)
+			WAVE sweeps = AFH_GetSweepsFromSameRACycle(numericalValues, sweepNo)
+
+			numSweeps = DimSize(sweeps, ROWS)
+
+			if(numSweeps == 1)
+				// query the initial DA scale from the previous sweep (which is from a different RAC)
+				key = PSQ_CreateLBNKey(PSQ_SQUARE_PULSE, PSQ_FMT_LBN_FINAL_SCALE, query = 1)
+				finalDAScale = GetLastSettingIndepRAC(numericalValues, sweepNo - 1, key, UNKNOWN_MODE)
+				if(PSQ_TestOverrideActive())
+					finalDAScale = PSQ_RB_FINALSCALE_FAKE
+				endif
+				ASSERT(IsFinite(finalDAScale), "Could not find final DAScale value from previous analysis function")
+
+				// and set it as the initial DAScale for this RAC
+				Make/FREE/D/N=(LABNOTEBOOK_LAYER_COUNT) result = NaN
+				result[INDEP_HEADSTAGE] = finalDAScale
+				key = PSQ_CreateLBNKey(PSQ_RHEOBASE, PSQ_FMT_LBN_INITIAL_SCALE)
+				ED_AddEntryToLabnotebook(panelTitle, key, result)
+			endif
+
+			key = PSQ_CreateLBNKey(PSQ_RHEOBASE, PSQ_FMT_LBN_BL_QC_PASS, query = 1)
+			WAVE/Z baselineQCPassedWave = GetLastSetting(numericalValues, sweepNo, key, UNKNOWN_MODE)
+
+			baselineQCPassed = WaveExists(baselineQCPassedWave) && baselineQCPassedWave[headstage]
+
+			if(!baselineQCPassed)
+				break
+			endif
+
+			// search for spike and store result
+			WAVE sweepWave = GetSweepWave(panelTitle, sweepNo)
+			WAVE spikeDetection = PSQ_SearchForSpikes(panelTitle, PSQ_RHEOBASE, sweepWave, headstage)
+			key = PSQ_CreateLBNKey(PSQ_RHEOBASE, PSQ_FMT_LBN_SPIKE_DETECT)
+			ED_AddEntryToLabnotebook(panelTitle, key, spikeDetection, unit = "On/Off")
+
+			key = PSQ_CreateLBNKey(PSQ_RHEOBASE, PSQ_FMT_LBN_SPIKE_DETECT, query = 1)
+			WAVE spikeDetectionRA = GetLastSettingEachRAC(numericalValues, sweepNo, key, headstage, UNKNOWN_MODE)
+
+			numSweepsWithSpikeDetection = DimSize(spikeDetectionRA, ROWS)
+			currentSweepHasSpike        = spikeDetectionRA[numSweepsWithSpikeDetection - 1]
+
+			if(numSweepsWithSpikeDetection >= 2 && currentSweepHasSpike != spikeDetectionRA[numSweepsWithSpikeDetection - 2])
+				// mark the set as passed
+				// we can't mark each sweep as passed/failed as it is not possible
+				// to add LBN entries to other sweeps than the last one
+				Make/FREE/D/N=(LABNOTEBOOK_LAYER_COUNT) result = NaN
+				key = PSQ_CreateLBNKey(PSQ_RHEOBASE, PSQ_FMT_LBN_SET_PASS)
+				result[INDEP_HEADSTAGE] = 1
+				ED_AddEntryToLabnotebook(panelTitle, key, result, unit = "On/Off")
+				RA_SkipSweeps(panelTitle, inf)
+				break
+			endif
+
+			DAScale = GetLastSetting(numericalValues, sweepNo, "Stim Scale Factor", DATA_ACQUISITION_MODE)[headstage] * 1e-12
+			if(currentSweepHasSpike)
+				DAScale -= PSQ_RB_DASCALE_STEP
+			else
+				DAScale += PSQ_RB_DASCALE_STEP
+			endif
+
+			key = PSQ_CreateLBNKey(PSQ_RHEOBASE, PSQ_FMT_LBN_INITIAL_SCALE, query = 1)
+			initialDAScale = GetLastSettingIndepRAC(numericalValues, sweepNo, key, UNKNOWN_MODE)
+
+			if(abs(DAScale - initialDAScale) >= PSQ_RB_MAX_DASCALE_DIFF)
+				// mark set as failure
+				Make/FREE/D/N=(LABNOTEBOOK_LAYER_COUNT) result = NaN
+				key = PSQ_CreateLBNKey(PSQ_RHEOBASE, PSQ_FMT_LBN_SET_PASS)
+				result[INDEP_HEADSTAGE] = 0
+				ED_AddEntryToLabnotebook(panelTitle, key, result, unit = "On/Off")
+				RA_SkipSweeps(panelTitle, inf)
+				break
+			endif
+
+			SetDAScale(panelTitle, headstage, DAScale)
+			break
+		case POST_SET_EVENT:
+			key = PSQ_CreateLBNKey(PSQ_RHEOBASE, PSQ_FMT_LBN_SET_PASS, query = 1)
+			setPassed = GetLastSettingIndepRAC(numericalValues, sweepNo, key, UNKNOWN_MODE)
+
+			// if we don't have an entry yet for the set passing, it has failed
+			if(!IsFinite(setPassed))
+				key = PSQ_CreateLBNKey(PSQ_RHEOBASE, PSQ_FMT_LBN_SET_PASS)
+				Make/FREE/D/N=(LABNOTEBOOK_LAYER_COUNT) result = NaN
+				result[INDEP_HEADSTAGE] = 0
+				ED_AddEntryToLabnotebook(panelTitle, key, result, unit = "On/Off")
+			endif
+			break
+	endswitch
+
+	if(eventType != MID_SWEEP_EVENT)
+		return NaN
+	endif
+
+	// we can't use AFH_GetLastSweepAcquired as the sweep is not yet acquired
+	sweepNo = DAG_GetNumericalValue(panelTitle, "SetVar_Sweep")
+	key = PSQ_CreateLBNKey(PSQ_RHEOBASE, PSQ_FMT_LBN_BL_QC_PASS, query = 1)
+	baselineQCPassed = GetLastSettingIndep(numericalValues, sweepNo, key, UNKNOWN_MODE, defValue = 0)
+
+	if(baselineQCPassed)
+		return NaN
+	endif
+
+	// oscilloscope data holds scaled data already
+	WAVE OscilloscopeData = GetOscilloscopeWave(panelTitle)
+	lastFifoPos = GetNumberFromWaveNote(OscilloscopeData, "lastFifoPos") - 1
+
+	totalOnsetDelay = DAG_GetNumericalValue(panelTitle, "setvar_DataAcq_OnsetDelayUser") \
+					  + GetValDisplayAsNum(panelTitle, "valdisp_DataAcq_OnsetDelayAuto")
+
+	fifoInStimsetPoint = lastFifoPos - totalOnsetDelay / DimDelta(OscilloscopeData, ROWS)
+	fifoInStimsetTime  = fifoInStimsetPoint * DimDelta(OscilloscopeData, ROWS)
+
+	numBaselineChunks = PSQ_GetNumberOfChunks(panelTitle, PSQ_RHEOBASE)
+
+	for(i = 0; i < numBaselineChunks; i += 1)
+
+		ret = PSQ_EvaluateBaselineProperties(panelTitle, PSQ_RHEOBASE, sweepNo, i, fifoInStimsetTime, totalOnsetDelay)
+
+		if(IsNaN(ret))
+			// NaN: not enough data for check
+			//
+			// not last chunk: retry on next invocation
+			// last chunk: mark sweep as failed
+			if(i == numBaselineChunks - 1)
+				ret = 1
+				break
+			else
+				return NaN
+			endif
+		elseif(ret)
+			// != 0: failed with special mid sweep return value (on first failure)
+			if(i == 0)
+				// pre pulse baseline
+				// fail sweep
+				break
+			else
+				// post pulse baseline
+				// try next chunk
+				continue
+			endif
+		else
+			// 0: passed
+			if(i == 0)
+				// pre pulse baseline
+				// try next chunks
+				continue
+			else
+				// post baseline
+				// we're done!
+				break
+			endif
+		endif
+	endfor
+
+	baselineQCPassed = (ret == 0)
+
+	sprintf msg, "Baseline QC %s, last evaluated chunk %d returned with %g\r", SelectString(baselineQCPassed, "failed", "passed"), i, ret
+	DEBUGPRINT(msg)
+
+	// document BL QC results
+	Make/FREE/D/N=(LABNOTEBOOK_LAYER_COUNT) result = NaN
+	result[headstage] = baselineQCPassed
+
+	key = PSQ_CreateLBNKey(PSQ_RHEOBASE, PSQ_FMT_LBN_BL_QC_PASS)
+	ED_AddEntryToLabnotebook(panelTitle, key, result, unit = "On/Off", overrideSweepNo = sweepNo)
+
+	return 0
 End

@@ -805,4 +805,12 @@ StrConstant PSQ_FMT_LBN_SET_PASS       = "%s Set QC"
 /// @{
 Constant PSQ_SUB_THRESHOLD = 0x1
 Constant PSQ_SQUARE_PULSE  = 0x2
+Constant PSQ_RHEOBASE      = 0x4
+/// @}
+
+/// PatchSeq Rheobase
+/// @{
+Constant PSQ_RB_MAX_DASCALE_DIFF = 60e-12
+Constant PSQ_RB_DASCALE_STEP     = 10e-12
+Constant PSQ_RB_FINALSCALE_FAKE  = 42e-12
 /// @}
