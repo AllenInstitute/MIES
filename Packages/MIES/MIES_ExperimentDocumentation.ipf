@@ -197,7 +197,7 @@ Function ED_AddEntryToLabnotebook(panelTitle, key, values, [unit, tolerance, ove
 	keys[1] = unit
 	keys[2] = toleranceStr
 
-	ASSERT(strlen(keys[0]) < MAX_OBJECT_NAME_LENGTH_IN_BYTES, "key is too long")
+	ASSERT(strlen(keys[0]) < MAX_OBJECT_NAME_LENGTH_IN_BYTES, "key is too long: \"" + keys[0] + "\"")
 
 	ED_AddEntriesToLabnotebook(valuesReshaped, keys, sweepNo, panelTitle, UNKNOWN_MODE)
 End
