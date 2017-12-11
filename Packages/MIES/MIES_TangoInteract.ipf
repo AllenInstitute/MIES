@@ -516,12 +516,9 @@ Function TI_runBaselineCheckQC(headstage, [cmdID])
 		PGC_SetAndActivateControl(currentPanel, waveSelect, val=incomingWaveIndex + 1)
 		
 		// Check to see if Test Pulse is already running...if not running, turn it on...
-		// New way to do this...added 11-30-2017
-		NVAR TPRunMode = $GetTestpulseRunMode(panelTitle)
-		
-		if(TPRunMode == TEST_PULSE_NOT_RUNNING)
-      		PGC_SetAndActivateControl(panelTitle,"StartTestPulseButton")
-      	endif
+		if(!TP_CheckIfTestpulseIsRunning(currentPanel))
+			PGC_SetAndActivateControl(currentPanel,"StartTestPulseButton")
+		endif
 
 		// and now hit the Auto pipette offset
 		AI_UpdateAmpModel(currentPanel, "button_DataAcq_AutoPipOffset_VC", headStage)
@@ -718,8 +715,8 @@ Function TI_runElectrodeDriftQC(headstage, expTime, [cmdID])
 		startInstResistanceVal = InstResistance[0][adChannel]
 		
 		// Check to see if Test Pulse is already running...if not running, turn it on...
-		if (!(IsDeviceActiveWithBGTask(currentPanel, "TestPulse")))
-			TPS_StartTestPulseSingleDevice(currentPanel)
+		if(!TP_CheckIfTestpulseIsRunning(currentPanel))
+			PGC_SetAndActivateControl(currentPanel,"StartTestPulseButton")
 		endif
 
 		// and grab the initial resistance avg value again
@@ -858,8 +855,8 @@ Function TI_runInitAccessResisQC(headstage, [cmdID])
 		PGC_SetAndActivateControl(currentPanel,"setvar_Settings_TPBuffer", val = 5)
 
 		// Check to see if Test Pulse is already running...if not running, turn it on...
-		if(!(IsBackgroundTaskRunning("TestPulse")))
-			TPS_StartTestPulseSingleDevice(currentPanel)
+		if(!TP_CheckIfTestpulseIsRunning(currentPanel))
+			PGC_SetAndActivateControl(currentPanel,"StartTestPulseButton")
 		endif
 
 		// Set up the QC Wave so the background task can get the information it needs
@@ -1164,8 +1161,8 @@ Function TI_runGigOhmSealQC(headstage, [cmdID])
 		PGC_SetAndActivateControl(currentPanel, waveSelect, val=incomingWaveIndex + 1)
 		
 		// Check to see if Test Pulse is already running...if not running, turn it on...
-		if (!(IsDeviceActiveWithBGTask(currentPanel, "TestPulse")))
-			TPS_StartTestPulseSingleDevice(currentPanel)
+		if(!TP_CheckIfTestpulseIsRunning(currentPanel))
+			PGC_SetAndActivateControl(currentPanel,"StartTestPulseButton")
 		endif
 		
 		// Set up the QC Wave so the background task can get the information it needs
