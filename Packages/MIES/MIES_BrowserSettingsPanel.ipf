@@ -151,25 +151,14 @@ static Function BSP_DynamicStartupSettings(mainPanel)
 	SetWindow $bsPanel, hook(main)=BSP_ClosePanelHook
 	AddVersionToPanel(bsPanel, BROWSERSETTINGS_PANEL_VERSION)
 
-	// overlay sweeps
 	SetControlProcedure(bsPanel, "check_BrowserSettings_OVS", BSP_AddBrowserPrefix(mainPanel, "CheckProc_OverlaySweeps"))
-	DFREF dfr = BSP_GetFolder(mainPanel, MIES_BSP_PANEL_FOLDER)
-	WAVE/T listBoxWave        = GetOverlaySweepsListWave(dfr)
-	WAVE listBoxSelWave       = GetOverlaySweepsListSelWave(dfr)
-	WAVE/WAVE sweepSelChoices = GetOverlaySweepSelectionChoices(dfr)
-	ListBox list_of_ranges, listWave=listBoxWave
-	ListBox list_of_ranges, selWave=listBoxSelWave
-	WaveClear listBoxWave
 	PopupMenu popup_overlaySweeps_select,value= #("OVS_GetSweepSelectionChoices(\"" + bsPanel + "\")")
 
-	// artefact removal
-	WAVE/T listBoxWave = GetArtefactRemovalListWave(dfr)
-	ListBox list_of_ranges1, listWave=listBoxWave
-
-	// bind the channel selection wave to the user controls of the external panel
-	WAVE channelSelection = BSP_GetChannelSelectionWave(mainPanel)
-	ChannelSelectionWaveToGUI(mainPanel, channelSelection)
 	BSP_SetCSButtonProc(bsPanel, BSP_AddBrowserPrefix(mainPanel, "CheckProc_ChangedSetting"))
+
+	if(!BSP_IsDataBrowser(mainPanel) || BSP_HasBoundDevice(mainPanel))
+		BSP_BindListBoxWaves(mainPanel)
+	endif
 
 	// settings tab
 	controls = "check_BrowserSettings_DAC;check_BrowserSettings_ADC;check_BrowserSettings_TTL;check_BrowserSettings_splitTTL;check_BrowserSettings_OChan;check_BrowserSettings_dDAQ;check_Calculation_AverageTraces;check_Calculation_ZeroTraces;"
@@ -185,7 +174,9 @@ static Function BSP_DynamicStartupSettings(mainPanel)
 	if(IsDataBrowser(mainPanel))
 		EnableControls(bsPanel, controlsDB)
 		DisableControls(bsPanel, controlsSB)
-		SetPopupMenuString(bsPanel, "popup_DB_lockedDevices", BSP_GetDevice(mainPanel))
+		if(BSP_HasBoundDevice(mainPanel))
+			SetPopupMenuString(bsPanel, "popup_DB_lockedDevices", BSP_GetDevice(mainPanel))
+		endif
 	else
 		EnableControls(bsPanel, controlsSB)
 		DisableControls(bsPanel, controlsDB)
@@ -195,6 +186,34 @@ static Function BSP_DynamicStartupSettings(mainPanel)
 	BSP_InitMainCheckboxes(bsPanel)
 
 	PGC_SetAndActivateControl(bsPanel, "Settings", val = 0)
+End
+
+Function BSP_BindListBoxWaves(win)
+	string win
+
+	string mainPanel, bsPanel
+
+	ASSERT(BSP_IsDataBrowser(win) && BSP_HasBoundDevice(win) || !BSP_IsDataBrowser(win), "DataBrowser needs bound device to bind listBox waves.")
+
+	mainPanel = GetMainWindow(win)
+	bsPanel = BSP_GetPanel(win)
+
+	// overlay sweeps
+	DFREF dfr = BSP_GetFolder(mainPanel, MIES_BSP_PANEL_FOLDER)
+	WAVE/T listBoxWave        = GetOverlaySweepsListWave(dfr)
+	WAVE listBoxSelWave       = GetOverlaySweepsListSelWave(dfr)
+	WAVE/WAVE sweepSelChoices = GetOverlaySweepSelectionChoices(dfr)
+	ListBox list_of_ranges, win=$bsPanel, listWave=listBoxWave
+	ListBox list_of_ranges, win=$bsPanel, selWave=listBoxSelWave
+	WaveClear listBoxWave
+
+	// artefact removal
+	WAVE/T listBoxWave = GetArtefactRemovalListWave(dfr)
+	ListBox list_of_ranges1, win=$bsPanel, listWave=listBoxWave
+
+	// channel selection
+	WAVE channelSelection = BSP_GetChannelSelectionWave(mainPanel)
+	ChannelSelectionWaveToGUI(bsPanel, channelSelection)
 End
 
 /// @brief add SB_* or DB_* prefix to the input string depending on current window
@@ -288,9 +307,10 @@ Function/S BSP_SetDevice(win, device)
 
 	string mainPanel
 
-	mainPanel = GetMainWindow(win)
-	ASSERT(WindowExists(mainPanel), "specified panel does not exist.")
+	ASSERT(WindowExists(win), "specified panel does not exist.")
+	ASSERT(BSP_IsDataBrowser(win), "device property only relevant in DB context")
 
+	mainPanel = GetMainWindow(win)
 	SetWindow $mainPanel, userdata($MIES_BSP_DEVICE) = device
 End
 

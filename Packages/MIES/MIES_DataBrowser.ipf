@@ -55,15 +55,15 @@ Function DB_OpenDataBrowser()
 	AddVersionToPanel(win, DATABROWSER_PANEL_VERSION)
 	BSP_SetDataBrowser(win)
 
+	BSP_OpenPanel(win)
+	DB_OpenSettingsHistory(win)
+
 	// immediately lock if we have only data from one device
 	devicesWithData = ListMatch(DB_GetAllDevicesWithData(), "!" + NONE)
 	if(ItemsInList(devicesWithData) == 1)
 		device = StringFromList(0, devicesWithData)
 		DB_LockDBPanel(win, device)
 	endif
-
-	BSP_OpenPanel(win)
-	DB_OpenSettingsHistory(win)
 End
 
 Function/S DB_GetMainGraph(win)
@@ -137,32 +137,29 @@ static Function DB_LockDBPanel(win, device)
 	string renameWin
 	variable first, last
 
-	if(!CmpStr(device,NONE))
+	renameWin = "DB_" + device
+	if(!cmpstr(device, NONE))
+		renameWin = "DataBrowser"
 		print "Please choose a device assignment for the data browser"
 		ControlWindowToFront()
-
-		renameWin = "DataBrowser"
-		if(windowExists(renameWin))
-			renameWin = UniqueName("DataBrowser", 9, 1)
-		endif
-		DoWindow/W=$win/C $renameWin
-		win = renameWin
-
-		DB_SetUserData(win, device)
-		DB_DynamicSettingsHistory(win)
-		DB_UpdateSweepPlot(win)
-		return NaN
 	endif
 
-	renameWin = UniqueName("DB_" + device, 9, 0)
+	if(windowExists(renameWin))
+		renameWin = UniqueName("DataBrowser", 9, 1)
+	endif
 	DoWindow/W=$win/C $renameWin
 	win = renameWin
 
 	DB_SetUserData(win, device)
+	if(windowExists(BSP_GetPanel(win)) && BSP_HasBoundDevice(win))
+		BSP_BindListBoxWaves(win)
+	endif
 
 	DB_DynamicSettingsHistory(win)
 	DB_FirstAndLastSweepAcquired(win, first, last)
 	DB_UpdateLastSweepControls(win, first, last)
+
+	DB_UpdateSweepPlot(win)
 End
 
 static Function DB_SetUserData(win, device)
