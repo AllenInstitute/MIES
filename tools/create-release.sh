@@ -76,5 +76,6 @@ version_file=$top_level/version.txt
 "$zip_exe" -qd $output_file "Packages/ZeroMQ/help/*" > /dev/null
 "$zip_exe" -qd $output_file "Packages/ZeroMQ/examples/*" > /dev/null
 "$zip_exe" -qd $output_file "Packages/ZeroMQ/xop-stub-generator/*" > /dev/null
+"$zip_exe" -qd $output_file "Packages/doc/*" > /dev/null
 
 exit 0
