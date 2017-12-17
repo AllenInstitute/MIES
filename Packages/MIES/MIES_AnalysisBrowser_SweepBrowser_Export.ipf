@@ -168,7 +168,7 @@ End
 /// @brief Return a list of possible source graphs for the export panel
 Function/S SBE_ListOfSweepGraphs()
 
-	return WinList("SweepBrowser*", ";", "WIN:1")
+	return WinList("SweepBrowser*", ";", "WIN:1") + WinList("DB_*", ";", "WIN:1")
 End
 
 /// @brief Return a list of all AD traces from the selected target graph
