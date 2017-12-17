@@ -12,17 +12,24 @@
 static StrConstant OPTIONAL_TANGO_INCLUDE = "MIES_TangoInteract"
 
 Menu "Mies Panels", dynamic
-	"Configure MIES/1"				, /Q, ExpConfig_ConfigureMIES()
-	"DA_Ephys"                      , /Q, DAP_CreateDAEphysPanel()
-	"WaveBuilder"                   , /Q, WBP_CreateWaveBuilderPanel()
-	"Data Browser"                  , /Q, DB_OpenDataBrowser()
-	"Analysis Browser"              , /Q, AB_OpenAnalysisBrowser()
-	"Labnotebook Browser"           , /Q, LBN_OpenLabnotebookBrowser()
-	"TPStorage Browser"             , /Q, LBN_OpenTPStorageBrowser()
-	"Save and Clear Experiment"     , /Q, SaveExperimentSpecial(SAVE_AND_CLEAR)
-	"Close Mies"                    , /Q, CloseMies()
-	"Open Downsample Panel"         , /Q, CreateDownsamplePanel()
-	"Open AnalysisMaster Panel"     , /Q, analysisMaster()
+	"Generate stimulus sets (WB)"			, /Q, WBP_CreateWaveBuilderPanel()
+	"Acquire data (DA_Ephys)"				, /Q, DAP_CreateDAEphysPanel()
+	"Browse data (DB)"						, /Q, DB_OpenDataBrowser()
+	"-"
+	SubMenu "Analysis"
+		"Analysis Browser"              , /Q, AB_OpenAnalysisBrowser()
+		"Labnotebook Browser"           , /Q, LBN_OpenLabnotebookBrowser()
+		"TPStorage Browser"             , /Q, LBN_OpenTPStorageBrowser()
+		"Open Downsample Panel"         , /Q, CreateDownsamplePanel()
+	End
+	"-"
+	SubMenu "Automation"
+		"Configure MIES/1"					, /Q, ExpConfig_ConfigureMIES()
+		"Blowout/8"								, /Q, BWO_SelectDevice()
+		"Save and Clear Experiment"     , /Q, SaveExperimentSpecial(SAVE_AND_CLEAR)
+		"Close Mies"                    , /Q, CloseMies()
+		"Open AnalysisMaster Panel"     , /Q, analysisMaster()
+	End
 	"-"
 	SubMenu "Neurodata Without Borders (NWB)"
 		"Export all data into NWB"      , /Q, NWB_ExportWithDialog(NWB_EXPORT_DATA)
@@ -38,7 +45,7 @@ Menu "Mies Panels", dynamic
 		"Open debug panel"                          , /Q, DP_OpenDebugPanel()
 		"Check Installation"                        , /Q, CHI_CheckInstallation()
 		"Start Background Task watcher panel"       , /Q, BkgWatcher#BW_StartPanel()
-		"Allow to edit files in Independent Modules", /Q, SetIgorOption IndependentModuleDev=1
+		"Enable Independent Module editing", /Q, SetIgorOption IndependentModuleDev=1
 		"Reset and store current DA_EPHYS panel"    , /Q, DAP_EphysPanelStartUpSettings()
 		"Check GUI control procedures of top panel" , /Q, SearchForInvalidControlProcs(GetCurrentWindow())
 		"Flush Cache"                               , /Q, CA_FlushCache()
