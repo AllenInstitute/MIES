@@ -1945,7 +1945,7 @@ Function AddTraceToLBGraph(graph, keys, values, key)
 
 	for(i = 0; i < numEntries; i += 1)
 
-		trace = CleanupName(lbl + " (" + num2str(i + 1) + ")", 1) // +1 because the headstage number is 1-based
+		trace = CleanupName(lbl[0, MAX_OBJECT_NAME_LENGTH_IN_BYTES - 5] + " (" + num2str(i + 1) + ")", 1) // +1 because the headstage number is 1-based
 		traceList = AddListItem(trace, traceList, ";", inf)
 
 		if(isTextData)
