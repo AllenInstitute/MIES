@@ -2885,7 +2885,7 @@ Function EqualizeVerticalAxesRanges(graph, [ignoreAxesWithLevelCrossing, level, 
 				maxYRange = range
 			endif
 
-			if(range > maxYRangeClampMode[clampMode])
+			if(rangePerClampMode && range > maxYRangeClampMode[clampMode])
 				maxYRangeClampMode[clampMode] = range
 			endif
 		endfor
