@@ -1600,30 +1600,6 @@ Function/WAVE ConvertListToTextWave(list, [listSepString])
 	return ListToTextWave(list, listSepString)
 End
 
-/// @brief Convert text wave to list
-///
-/// @return list without trailing listSepString
-Function/S ConvertTextWaveToList(wv, [listSepString])
-	wave/T wv
-	string listSepString
-	if(ParamIsDefault(listSepString))
-		listSepString = ";"
-	endif
-
-	variable i, numRows
-	string list = ""
-
-	numRows = DimSize(wv, ROWS)
-	for(i = numRows; i > 0; i -= 1)
-		list = AddListItem(wv[(i-1)], list, listSepString)
-	endfor
-
-	// remove trailing list Separator, added by AddListItem
-	list = list[0, strsearch(list,listSepString,Inf,1) -1]
-
-	return list
-End
-
 /// @brief return a subset of the input list
 ///
 /// @param list       input list
