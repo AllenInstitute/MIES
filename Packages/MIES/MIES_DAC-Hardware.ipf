@@ -842,7 +842,7 @@ Function HW_ITC_OpenDevice(deviceType, deviceNumber, [flags])
 	DEBUGPRINTSTACKINFO()
 
 	do
-			ITCOpenDevice2/DTN=(deviceType) deviceNumber
+		ITCOpenDevice2/DTN=(deviceType)/Z=(flags & HARDWARE_PREVENT_ERROR_POPUP) deviceNumber
 	while(V_ITCXOPError == SLOT_LOCKED_TO_OTHER_THREAD && V_ITCError == 0)
 
 	HW_ITC_HandleReturnValues(flags, V_ITCError, V_ITCXOPError)
