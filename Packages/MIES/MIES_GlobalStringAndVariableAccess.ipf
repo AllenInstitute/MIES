@@ -298,7 +298,7 @@ End
 /// By default MIES operates in interactive mode (1). The user can change
 /// that to non-interactive mode where all dialog/popups etc. are avoided
 /// and replaced with sensible defaults.
-Function/S GetInteractiveMode()
+threadsafe Function/S GetInteractiveMode()
 
 	return GetNVARAsString(GetMiesPath(), "interactiveMode", initialValue=1)
 End
