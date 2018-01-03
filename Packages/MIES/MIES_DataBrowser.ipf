@@ -46,7 +46,7 @@ End
 
 Function DB_OpenDataBrowser()
 
-	string win, device, devicesWithData, panelTitle
+	string win, devicesWithData, panelTitle
 
 	Execute "DataBrowser()"
 	win = GetCurrentWindow()
@@ -55,8 +55,7 @@ Function DB_OpenDataBrowser()
 	// immediately lock if we have only data from one device
 	devicesWithData = ListMatch(DB_GetAllDevicesWithData(), "!" + NONE)
 	if(ItemsInList(devicesWithData) == 1)
-		device = StringFromList(0, devicesWithData)
-		PGC_SetAndActivateControl(win, "popup_DB_lockedDevices", val=1, str=device)
+		PGC_SetAndActivateControl(win, "popup_DB_lockedDevices", val=1)
 	endif
 
 	// window name (win) changes by popup_DB_lockedDevices: proc
