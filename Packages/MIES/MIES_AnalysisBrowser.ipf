@@ -1630,7 +1630,7 @@ Function AB_SortConfigSweeps(config)
 	MultiThread config[][] = config_temp[valindex[p]][q]
 	units[] = units_temp[valindex[p]]
 
-	Note/K config, ConvertTextWaveToList(units)
+	Note/K config, TextWaveToList(units, ";")
 End
 
 /// @brief Load specified device/sweep combination from Igor experiment file to sweepDFR
