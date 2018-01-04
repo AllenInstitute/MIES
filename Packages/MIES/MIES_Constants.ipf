@@ -305,11 +305,7 @@ Constant MIES_BSP_PA  = 3
 /// @name Possible values for MIES_BSP_FOLDER_TYPE in #BSP_GetFolder
 /// @{
 strConstant MIES_BSP_DEVICE = "DEVICE"
-strConstant MIES_BSP_DEVICE_FOLDER = "DEVICE_FOLDER"
-strConstant MIES_BSP_DATA_FOLDER = "DATA_FOLDER"
-strConstant MIES_BSP_CS_FOLDER = "CS_FOLDER"
-strConstant MIES_BSP_OVS_FOLDER = "OVS_FOLDER"
-strConstant MIES_BSP_AR_FOLDER = "AR_FOLDER"
+strConstant MIES_BSP_PANEL_FOLDER = "PANEL_FOLDER"
 strConstant MIES_BSP_AR_SWEEPFOLDER = "AR_SWEEPFOLDER"
 /// @}
 
@@ -479,7 +475,7 @@ Constant HARDWARE_DAC_EXTERNAL_TRIGGER = 0x1
 /// Used to upgrade the GuiStateWave as well as the DA Ephys panel
 Constant DA_EPHYS_PANEL_VERSION     = 25
 Constant DATABROWSER_PANEL_VERSION  = 6
-Constant SWEEPBROWSER_PANEL_VERSION = 0
+Constant SWEEPBROWSER_PANEL_VERSION = 2
 Constant WAVEBUILDER_PANEL_VERSION  = 3
 
 /// Version of the labnotebooks (numerical and textual)

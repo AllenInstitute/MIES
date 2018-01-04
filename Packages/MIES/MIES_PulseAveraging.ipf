@@ -8,17 +8,6 @@
 
 static StrConstant PULSE_AVERAGE_GRAPH_PREFIX = "PulseAverage"
 static StrConstant SOURCE_WAVE_TIMESTAMP      = "SOURCE_WAVE_TS"
-static StrConstant EXT_PANEL_SUBWINDOW        = "perPulseAverage"
-
-static Function/S PA_GetExtPanel(win)
-	string win
-
-	if(IsDataBrowser(win))
-		return BSP_GetPanel(win)
-	endif
-
-	return GetMainWindow(win) + "#" + EXT_PANEL_SUBWINDOW
-End
 
 /// @brief Return a list of all average graphs
 static Function/S PA_GetAverageGraphs()
@@ -131,6 +120,8 @@ End
 ///
 /// Uses plain FindLevels after the onset delay using 10% of the full range
 /// above the minimum as threshold
+///
+/// @return wave with pulse starting times, or an invalid wave reference if none could be found.
 static Function/WAVE PA_CalculatePulseStartTimes(DA, totalOnsetDelay)
 	WAVE DA
 	variable totalOnsetDelay
@@ -143,6 +134,10 @@ static Function/WAVE PA_CalculatePulseStartTimes(DA, totalOnsetDelay)
 
 	MAKE/FREE/D levels
 	FindLevels/Q/R=(totalOnsetDelay, inf)/EDGE=1/DEST=levels DA, level
+
+	if(DimSize(levels, ROWS) == 0)
+		return $""
+	endif
 
 	delta = DimDelta(DA, ROWS)
 
@@ -380,9 +375,9 @@ Function/WAVE PA_GetPulseStartTimes(traceData, idx, region, channelTypeStr, [rem
 	WAVE DACs = GetLastSetting(numericalValues, sweepNo, "DAC", DATA_ACQUISITION_MODE)
 	WAVE DA = GetITCDataSingleColumnWave(singleSweepFolder, ITC_XOP_CHANNEL_TYPE_DAC, DACs[region])
 
-	WAVE pulseStartTimes = PA_CalculatePulseStartTimes(DA, totalOnsetDelay)
+	WAVE/Z pulseStartTimes = PA_CalculatePulseStartTimes(DA, totalOnsetDelay)
 
-	if(DimSize(pulseStartTimes, ROWS) == 0)
+	if(!WaveExists(pulseStartTimes))
 		return $""
 	endif
 
@@ -473,38 +468,6 @@ static Function/WAVE PA_CreateAndFillPulseWaveIfReq(wv, singleSweepFolder, chann
 	return singlePulseWave
 End
 
-/// @brief Toggle the external panel with the settings on and off
-Function PA_TogglePanel(win)
-	string win
-
-	variable createPanel
-
-	win = GetMainWindow(win)
-
-	createPanel = TogglePanel(win, EXT_PANEL_SUBWINDOW)
-	if(!createPanel)
-		return 1
-	endif
-
-	NewPanel/HOST=$win/EXT=1/W=(150, 75, 0, 130)/N=$EXT_PANEL_SUBWINDOW as " "
-	SetVariable setvar_pulseAver_fallbackLength,pos={1.00,109.00},size={137.00,18.00},bodyWidth=50,proc=PA_SetVarProc_Common,title="Fallback Length"
-	SetVariable setvar_pulseAver_fallbackLength,help={"Pulse To Pulse Length in ms for edge cases which can not be computed."}
-	SetVariable setvar_pulseAver_fallbackLength,value= _NUM:100
-	SetVariable setvar_pulseAver_endPulse,pos={16.00,86.00},size={122.00,18.00},bodyWidth=50,proc=PA_SetVarProc_Common,title="Ending Pulse"
-	SetVariable setvar_pulseAver_endPulse,value= _NUM:inf
-	SetVariable setvar_pulseAver_startPulse,pos={12.00,64.00},size={126.00,18.00},bodyWidth=50,proc=PA_SetVarProc_Common,title="Starting Pulse"
-	SetVariable setvar_pulseAver_startPulse,value= _NUM:0
-	CheckBox check_pulseAver_multGraphs,pos={6.00,44.00},size={120.00,15.00},proc=PA_CheckProc_Common,title="Use multiple graphs"
-	CheckBox check_pulseAver_multGraphs,help={"Show the single pulses in multiple graphs or only one graph with mutiple axis."}
-	CheckBox check_pulseAver_multGraphs,value= 0
-	CheckBox check_pulseAver_showAver,pos={6.00,23.00},size={117.00,15.00},proc=PA_CheckProc_Common,title="Show average trace"
-	CheckBox check_pulseAver_showAver,value= 0, help={"Show the average trace"}
-	CheckBox check_pulseAver_indTraces,pos={6.00,2.00},size={133.00,15.00},proc=PA_CheckProc_Common,title="Show individual traces"
-	CheckBox check_pulseAver_indTraces,value= 1, help={"Show the individual traces"}
-
-	return 0
-End
-
 /// @brief Populates pps.pulseAverSett with the user selection from the panel
 Function PA_GatherSettings(win, pps)
 	string win
@@ -513,7 +476,7 @@ Function PA_GatherSettings(win, pps)
 	string extPanel, sbPanel
 
 	win      = GetMainWindow(win)
-	extPanel = PA_GetExtPanel(win)
+	extPanel = BSP_GetPanel(win)
 	sbPanel  = win + "#P0"
 
 	if(!PA_IsActive(win))
@@ -799,43 +762,9 @@ Function PA_SetVarProc_Common(sva) : SetVariableControl
 	return 0
 End
 
-Function PA_MainWindowHook(s)
-	STRUCT WMWinHookStruct &s
-
-	string win, mainWindow, ctrl
-
-	switch(s.eventCode)
-		case 2: // kill
-			mainWindow = GetMainWindow(s.winName)
-
-			if(IsDataBrowser(mainWindow))
-				ctrl = "check_DataBrowser_PulseAvg"
-				win  = mainWindow
-			else
-				ctrl = "check_SweepBrowser_PulseAvg"
-				win  = mainWindow + "#P0"
-			endif
-
-			PGC_SetAndActivateControl(win, ctrl, val=CHECKBOX_UNSELECTED)
-			break
-	endswitch
-
-	return 0
-End
-
-/// checks if PA is active.
-static Function PA_IsActive(win)
+/// @brief checks if PA is active.
+Function PA_IsActive(win)
 	string win
-
-	// keep for SweepBrowser
-	string extPanel = PA_GetExtPanel(win)
-	if(!IsDataBrowser(extPanel))
-		if(!WindowExists(extPanel))
-			return 0
-		else
-			return 1
-		endif
-	endif
 
 	return BSP_IsActive(win, MIES_BSP_PA)
 End

@@ -1257,7 +1257,7 @@ Function AB_LoadFromFile(AB_LoadType, [sweepBrowserDFR])
 	string dataFolder, fileName, discLocation, fileType, device
 
 	if(AB_LoadType == AB_LOAD_SWEEP)
-		ASSERT(!ParamIsDefault(sweepBrowserDFR), "create sweepBrowser DataFolder with SB_CreateNewSweepBrowser() prior")
+		ASSERT(!ParamIsDefault(sweepBrowserDFR), "create sweepBrowser DataFolder with SB_OpenSweepBrowser() prior")
 		ASSERT(DataFolderRefStatus(sweepBrowserDFR) == 1, "sweepBrowser DataFolder does not exist")
 	endif
 
@@ -2202,7 +2202,7 @@ Function AB_ButtonProc_LoadSweeps(ba) : ButtonControl
 
 	switch(ba.eventcode)
 		case 2:
-			DFREF dfr = SB_CreateNewSweepBrowser()
+			DFREF dfr = SB_OpenSweepBrowser()
 			oneValidSweep = AB_LoadFromFile(AB_LOAD_SWEEP, sweepBrowserDFR = dfr)
 			SVAR/SDFR=dfr graph
 			if(oneValidSweep)

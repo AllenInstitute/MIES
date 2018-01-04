@@ -217,7 +217,7 @@ static Function SBE_ExportSweepBrowser(sett)
 		return NaN
 	endif
 
-	DFREF sweepBrowserDFR = $SB_GetSweepBrowserFolder(sett.sourceGraph)
+	DFREF sweepBrowserDFR = SB_GetSweepBrowserFolder(sett.sourceGraph)
 
 	if(doCreateNewGraph)
 		newPrefix = GetDataFolder(1, UniqueDataFolder($"root:", sett.dataFolder))

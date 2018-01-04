@@ -22,34 +22,31 @@ Function/S BSP_GetPanel(mainPanel)
 	return GetMainWindow(mainPanel) + "#" + EXT_PANEL_SUBWINDOW
 End
 
-/// @brief open/close side Panel
+/// @brief open BrowserSettings side Panel
 ///
 /// @param mainPanel 	mainWindow panel name
-Function BSP_TogglePanel(mainPanel)
+Function BSP_OpenPanel(mainPanel)
 	string mainPanel
 
-	variable openSidePanel
+	string extPanel
 
+	mainPanel = GetMainWindow(mainPanel)
 	if(BSP_MainPanelNeedsUpdate(mainPanel))
 		Abort "Can not display data. The main panel is too old to be usable. Please close it and open a new one."
 	endif
 
-	openSidePanel = TogglePanel(mainPanel, EXT_PANEL_SUBWINDOW)
-
+	extPanel = BSP_GetPanel(mainPanel)
 	if(BSP_PanelNeedsUpdate(mainPanel))
-		KillWindow/Z $BSP_GetPanel(mainPanel)
-		openSidePanel = 1
+		KillWindow/Z $extPanel
 	endif
 
-	if(!openSidePanel)
+	if(windowExists(extPanel))
+		SetWindow $extPanel hide=0, needUpdate=1
+		BSP_MainPanelButtonToggle(mainPanel, 0)
 		return 1
 	endif
 
-	if(!BSP_HasBoundDevice(mainPanel))
-		return 0
-	endif
-
-	ASSERT(WindowExists(mainPanel), "HOST panel does not exist")
+	ASSERT(windowExists(mainPanel), "HOST panel does not exist")
 	NewPanel/HOST=$mainPanel/EXT=1/W=(260,0,0,600)/N=$EXT_PANEL_SUBWINDOW  as " "
 	Execute "DataBrowserPanel()"
 	BSP_DynamicStartupSettings(mainPanel)
@@ -63,7 +60,7 @@ static Function BSP_DynamicStartupSettings(mainPanel)
 	string mainPanel
 
 	variable sweepNo
-	string extPanel, device
+	string extPanel
 
 	extPanel = BSP_GetPanel(mainPanel)
 
@@ -71,32 +68,36 @@ static Function BSP_DynamicStartupSettings(mainPanel)
 	AddVersionToPanel(extPanel, BROWSERSETTINGS_PANEL_VERSION)
 
 	// overlay sweeps
-	SetControlProcedure(extPanel, "check_BrowserSettings_OVS", "DB_CheckBoxProc_OverlaySweeps")
-	DFREF dfr = BSP_GetFolder(mainPanel, MIES_BSP_OVS_FOLDER)
+	if(IsDataBrowser(mainPanel))
+		SetControlProcedure(extPanel, "check_BrowserSettings_OVS", "DB_CheckBoxProc_OverlaySweeps")
+	else
+		SetControlProcedure(extPanel, "check_BrowserSettings_OVS", "SB_CheckboxProc_OverlaySweeps")
+	endif
+	DFREF dfr = BSP_GetFolder(mainPanel, MIES_BSP_PANEL_FOLDER)
 	WAVE/T listBoxWave        = GetOverlaySweepsListWave(dfr)
 	WAVE listBoxSelWave       = GetOverlaySweepsListSelWave(dfr)
 	WAVE/WAVE sweepSelChoices = GetOverlaySweepSelectionChoices(dfr)
 	ListBox list_of_ranges, listWave=listBoxWave
 	ListBox list_of_ranges, selWave=listBoxSelWave
-	sweepNo = GetSetVariable(mainPanel, "setvar_DataBrowser_SweepNo")
-	OVS_ChangeSweepSelectionState(mainPanel, CHECKBOX_SELECTED, sweepNO=sweepNo)
 	WaveClear listBoxWave
 	PopupMenu popup_overlaySweeps_select,value= #("OVS_GetSweepSelectionChoices(\"" + extPanel + "\")")
 
 	// artefact removal
-	DFREF dfr = BSP_GetFolder(mainPanel, MIES_BSP_AR_FOLDER)
 	WAVE/T listBoxWave = GetArtefactRemovalListWave(dfr)
 	ListBox list_of_ranges1, listWave=listBoxWave
 
 	// bind the channel selection wave to the user controls of the external panel
 	WAVE channelSelection = BSP_GetChannelSelectionWave(mainPanel)
 	ChannelSelectionWaveToGUI(mainPanel, channelSelection)
+	if(IsDataBrowser(mainPanel))
+		BSP_SetCSButtonProc(extPanel, "DB_CheckProc_ChangedSetting")
+	else
+		BSP_SetCSButtonProc(extPanel, "SB_CheckProc_ChangedSetting")
+	endif
 
-	BSP_SetMainCheckboxes(extPanel, 0)
-	BSP_SetCSButtonProc(extPanel, "DB_CheckProc_ChangedSetting")
+	BSP_InitMainCheckboxes(extPanel)
 
 	PGC_SetAndActivateControl(extPanel, "Settings", val = MIES_BSP_OVS)
-	UpdateSweepPlot(mainPanel)
 End
 
 /// @brief get the channel selection wave stored in main window property CSW_FOLDER
@@ -106,7 +107,7 @@ End
 Function/WAVE BSP_GetChannelSelectionWave(panelName)
 	string panelName
 
-	DFREF dfr = BSP_GetFolder(panelName, MIES_BSP_CS_FOLDER)
+	DFREF dfr = BSP_GetFolder(panelName, MIES_BSP_PANEL_FOLDER)
 	WAVE wv = GetChannelSelectionWave(dfr)
 
 	return wv
@@ -121,7 +122,10 @@ End
 Function/DF BSP_GetFolder(panelName, MIES_BSP_FOLDER_TYPE)
 	string panelName, MIES_BSP_FOLDER_TYPE
 
-	// since BSP-side-panel all properties are stored in main panel
+	if(BSP_MainPanelNeedsUpdate(panelName))
+		DoAbortNow("The main panel is too old to be usable. Please close it and open a new one.")
+	endif
+
 	panelName = GetMainWindow(panelName)
 	ASSERT(WindowExists(panelName), "specified panel does not exist.")
 
@@ -134,7 +138,7 @@ End
 /// @brief set a FOLDER property at the specified panel
 ///
 /// @param panelName 				name of external panel or main window
-/// @param dfr 						DataFolder Reference to th folder
+/// @param dfr 						DataFolder Reference to the folder
 /// @param MIES_BSP_FOLDER_TYPE 	see the FOLDER constants in this file
 Function BSP_SetFolder(panelName, dfr, MIES_BSP_FOLDER_TYPE)
 	string panelName, MIES_BSP_FOLDER_TYPE
@@ -161,6 +165,16 @@ Function/S BSP_GetDevice(panelName)
 	return GetUserData(panelName, "", MIES_BSP_DEVICE)
 End
 
+/// @brief set DEVICE property to the userdata of the specified panel
+///
+/// @param panelName                name of external panel or main window
+/// @param device                   bound device as string
+Function/S BSP_SetDevice(panelName, device)
+	string panelName, device
+
+	SetWindow $panelName, userdata($MIES_BSP_DEVICE) = device
+End
+
 /// @brief check if the DEVICE property has a not nullstring property
 ///
 /// @param panelName 				name of external panel or main window
@@ -173,29 +187,22 @@ Function BSP_HasBoundDevice(panelName)
 	return !(IsEmpty(device) || !cmpstr(device, NONE))
 End
 
-/// @brief control the state of the enable/disable buttons on top of the extPanel tabcontrol
+/// @brief set the initial state of the enable/disable buttons
 ///
 /// @param panelName 		name of external panel or main window
-/// @param checkBoxState 	boolean set value of checkboxes
-static Function BSP_SetMainCheckboxes(panelName, checkBoxState)
+static Function BSP_InitMainCheckboxes(panelName)
 	string panelName
-	variable checkBoxState
 
-	string extPanel, control
-
-	checkBoxState = !!checkBoxState ? CHECKBOX_SELECTED : CHECKBOX_UNSELECTED
+	string extPanel
 
 	extPanel = BSP_GetPanel(panelName)
 	if(!windowExists(extPanel))
 		return NaN
 	endif
 
-	control = "check_BrowserSettings_OVS"
-	PGC_SetAndActivateControl(extPanel, control, val = checkBoxState)
-	control = "check_BrowserSettings_AR"
-	PGC_SetAndActivateControl(extPanel, control, val = checkBoxState)
-	control = "check_BrowserSettings_PA"
-	PGC_SetAndActivateControl(extPanel, control, val = checkBoxState)
+	BSP_SetOVSControlStatus(extPanel)
+	BSP_SetARControlStatus(extPanel)
+	BSP_SetPAControlStatus(extPanel)
 
 	return 1
 End
@@ -219,6 +226,65 @@ static Function BSP_SetCSButtonProc(panelName, procedure)
 	endfor
 
 	SetControlProcedures(extPanel, controlList, procedure)
+	if(IsEmpty(procedure))
+		DisableControls(extPanel, controlList)
+	endif
+End
+
+/// @brief enable/disable the OVS buttons
+///
+/// @param panelName specify mainPanel or extPanel with OVS controls
+Function BSP_SetOVSControlStatus(panelName)
+	string panelName
+
+	string controlList = "group_properties_sweeps;popup_overlaySweeps_select;setvar_overlaySweeps_offset;setvar_overlaySweeps_step;check_overlaySweeps_disableHS;check_overlaySweeps_non_commula;list_of_ranges"
+
+	BSP_SetControlStatus(panelName, controlList, OVS_IsActive(panelName))
+End
+
+/// @brief enable/disable the AR buttons
+///
+/// @param panelName specify mainPanel or extPanel with OVS controls
+Function BSP_SetARControlStatus(panelName)
+	string panelName
+
+	string controlList = "group_properties_artefact;setvar_cutoff_length_before;setvar_cutoff_length_after;button_RemoveRanges;check_auto_remove;check_highlightRanges;list_of_ranges1;"
+
+	BSP_SetControlStatus(panelName, controlList, AR_IsActive(panelName))
+End
+
+/// @brief enable/disable the PA buttons
+///
+/// @param panelName specify mainPanel or extPanel with OVS controls
+Function BSP_SetPAControlStatus(panelName)
+	string panelName
+
+	string controlList = "group_properties_pulse;check_pulseAver_indTraces;check_pulseAver_showAver;check_pulseAver_multGraphs;setvar_pulseAver_startPulse;setvar_pulseAver_endPulse;setvar_pulseAver_fallbackLength;"
+
+	BSP_SetControlStatus(panelName, controlList, PA_IsActive(panelName))
+End
+
+/// @brief enable/disable a list of controls
+///
+/// @param panelName    specify mainPanel or extPanel with OVS controls
+/// @param controlList  list of controls
+/// @param status       1: enable; 0: disable
+Function BSP_SetControlStatus(panelName, controlList, status)
+	string panelName, controlList
+	variable status
+
+	string extPanel
+
+	status = !!status
+
+	extPanel = BSP_GetPanel(panelName)
+	ASSERT(windowExists(extPanel), "BrowserSettingsPanel does not exist.")
+
+	if(status)
+		EnableControls(extPanel, controlList)
+	else
+		DisableControls(extPanel, controlList)
+	endif
 End
 
 /// @brief action for button in mainPanel
@@ -233,11 +299,7 @@ static Function BSP_MainPanelButtonToggle(mainPanel, visible)
 
 	visible = !!visible ? 1 : 0
 
-	if(!IsDataBrowser(mainPanel))
-		return NaN
-	endif
-
-	panelButton = "button_DataBrowser_extPanel"
+	panelButton = "button_BSP_open"
 	if(!ControlExists(mainPanel, panelButton))
 		return 0
 	endif
@@ -253,21 +315,23 @@ Function BSP_ClosePanelHook(s)
 	STRUCT WMWinHookStruct &s
 
 	string mainPanel, extPanel, panelButton
+	variable hookResult = 0
 
 	switch(s.eventCode)
-		case 2: // kill
+		case 17: // killVote
 			mainPanel = GetMainWindow(s.winName)
 			extPanel = BSP_GetPanel(mainPanel)
 
 			ASSERT(!cmpstr(s.winName, extPanel), "this hook is only available for BSP panel.")
 
-			BSP_SetMainCheckboxes(extPanel, 0)
+			SetWindow $extPanel hide=1
 			BSP_MainPanelButtonToggle(mainPanel, 1)
 
+			hookResult = 2 // don't kill window
 			break
 	endswitch
 
-	return 0
+	return hookResult
 End
 
 /// @brief window macro for side panel
@@ -507,22 +571,12 @@ EndMacro
 Function BSP_CheckBoxProc_ArtRemoval(cba) : CheckBoxControl
 	STRUCT WMCheckBoxAction &cba
 
-	string mainPanel, extPanel, device
-	string controlList = "group_properties_artefact;setvar_cutoff_length_before;setvar_cutoff_length_after;button_RemoveRanges;check_auto_remove;check_highlightRanges;list_of_ranges1;"
+	string mainPanel
 
 	switch(cba.eventCode)
 		case 2: // mouse up
 			mainPanel = GetMainWindow(cba.win)
-			extPanel = BSP_GetPanel(mainPanel)
-
-			ASSERT(windowExists(extPanel), "BrowserSettingsPanel does not exist.")
-
-			if(cba.checked && BSP_HasBoundDevice(mainPanel))
-				EnableControls(extPanel, controlList)
-			else
-				DisableControls(extPanel, controlList)
-			endif
-
+			BSP_SetARControlStatus(mainPanel)
 			UpdateSweepPlot(mainPanel)
 			break
 	endswitch
@@ -534,23 +588,29 @@ End
 Function BSP_CheckBoxProc_PerPulseAver(cba) : CheckBoxControl
 	STRUCT WMCheckBoxAction &cba
 
-	string mainPanel, extPanel
-	string controlList = "group_properties_pulse;check_pulseAver_indTraces;check_pulseAver_showAver;check_pulseAver_multGraphs;setvar_pulseAver_startPulse;setvar_pulseAver_endPulse;setvar_pulseAver_fallbackLength;"
+	string mainPanel
 
 	switch(cba.eventCode)
 		case 2: // mouse up
 			mainPanel = GetMainWindow(cba.win)
-			extPanel = BSP_GetPanel(mainPanel)
-
-			ASSERT(windowExists(extPanel), "BrowserSettingsPanel does not exist.")
-
-			if(cba.checked && BSP_HasBoundDevice(mainPanel))
-				EnableControls(extPanel, controlList)
-			else
-				DisableControls(extPanel, controlList)
-			endif
-
+			BSP_SetPAControlStatus(mainPanel)
 			UpdateSweepPlot(mainPanel)
+			break
+	endswitch
+
+	return 0
+End
+
+/// @brief procedure for the open button of the side panel
+Function BSP_ButtonProc_Panel(ba) : ButtonControl
+	STRUCT WMButtonAction &ba
+
+	string win
+
+	switch(ba.eventcode)
+		case 2: // mouse up
+			win = GetMainWindow(ba.win)
+			BSP_OpenPanel(win)
 			break
 	endswitch
 

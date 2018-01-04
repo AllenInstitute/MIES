@@ -21,13 +21,13 @@ End
 static Function/Wave SB_GetSweepBrowserMapFromGraph(graph)
 	string graph
 
-	return SB_GetSweepBrowserMap($SB_GetSweepBrowserFolder(graph))
+	return SB_GetSweepBrowserMap(SB_GetSweepBrowserFolder(graph))
 End
 
 static Function/Wave SB_GetSweepBrowserMap(sweepBrowser)
 	DFREF sweepBrowser
 
-	ASSERT(DataFolderExistsDFR(sweepBrowser), "Missing sweepBrowser DFR")
+	ASSERT(DataFolderExistsDFR(sweepBrowser), "Missing SweepBrowser DFR")
 
 	Variable versionOfWave = 1
 
@@ -51,14 +51,10 @@ static Function/Wave SB_GetSweepBrowserMap(sweepBrowser)
 	return wv
 End
 
-Function/S SB_GetSweepBrowserFolder(graph)
+Function/DF SB_GetSweepBrowserFolder(graph)
 	string graph
 
-	ASSERT(windowExists(graph), "Window must exist")
-	string folder = GetUserData(graph, "", "folder")
-	ASSERT(DataFolderExists(folder), "Datafolder of the sweep browser could not be found")
-
-	return folder
+	return BSP_GetFolder(graph, MIES_BSP_PANEL_FOLDER)
 End
 
 static Function/DF SB_GetSweepDataPathFromIndex(sweepBrowserDFR, mapIndex)
@@ -92,7 +88,7 @@ Function SB_GetIndexFromSweepDataPath(graph, dataDFR)
 	variable mapIndex, sweepNo
 	string device, expFolder, sweepFolder
 
-	DFREF sweepBrowserDFR = $SB_GetSweepBrowserFolder(graph)
+	DFREF sweepBrowserDFR = SB_GetSweepBrowserFolder(graph)
 	WAVE/T sweepMap = SB_GetSweepBrowserMap(sweepBrowserDFR)
 
 	SplitSTring/E="root:MIES:Analysis:([^:]+):([^:]+):sweep:([^:]+):" GetDataFolder(1, dataDFR), expFolder, device, sweepFolder
@@ -127,21 +123,33 @@ static Function SB_PanelUpdate(graphOrPanel)
 	panel = SB_GetSweepBrowserLeftPanel(graph)
 
 	if(GetCheckBoxState(panel, "check_SweepBrowser_TimeAlign"))
-		EnableControls(panel, "popup_sweepBrowser_tAlignMode;setvar_sweepBrowser_tAlignLevel;popup_sweepBrowser_tAlignMaster;button_SweepBrowser_DoTimeAlign")
+		EnableControls(panel, "popup_SweepBrowser_tAlignMode;setvar_SweepBrowser_tAlignLevel;popup_SweepBrowser_tAlignMaster;button_SweepBrowser_DoTimeAlign")
 
-		alignMode = GetPopupMenuIndex(panel, "popup_sweepBrowser_tAlignMode")
+		alignMode = GetPopupMenuIndex(panel, "popup_SweepBrowser_tAlignMode")
 		if(alignMode == TIME_ALIGNMENT_LEVEL_RISING || alignMode == TIME_ALIGNMENT_LEVEL_FALLING)
-			EnableControl(panel, "setvar_sweepBrowser_tAlignLevel")
+			EnableControl(panel, "setvar_SweepBrowser_tAlignLevel")
 		else
-			DisableControl(panel, "setvar_sweepBrowser_tAlignLevel")
+			DisableControl(panel, "setvar_SweepBrowser_tAlignLevel")
 		endif
 	else
-		DisableControls(panel, "popup_sweepBrowser_tAlignMode;setvar_sweepBrowser_tAlignLevel;popup_sweepBrowser_tAlignMaster;button_SweepBrowser_DoTimeAlign")
+		DisableControls(panel, "popup_SweepBrowser_tAlignMode;setvar_SweepBrowser_tAlignLevel;popup_SweepBrowser_tAlignMaster;button_SweepBrowser_DoTimeAlign")
 	endif
 
 	SB_HandleCursorDisplay(graph)
 	SB_ScaleAxes(graph)
-	ControlUpdate/W=$panel popup_sweepBrowser_tAlignMaster
+	ControlUpdate/W=$panel popup_SweepBrowser_tAlignMaster
+End
+
+/// @brief set graph userdata similar to DB_SetUserData()
+///
+/// @param win SweepBrowser Graph name
+static Function SB_SetUserData(win)
+	string win
+
+	SetWindow $win, userdata = ""
+
+	DFREF dfr = UniqueDataFolder(root:, "sweepBrowser")
+	BSP_SetFolder(win, dfr, MIES_BSP_PANEL_FOLDER)
 End
 
 static Function SB_InitPostPlotSettings(graph, pps)
@@ -149,14 +157,13 @@ static Function SB_InitPostPlotSettings(graph, pps)
 	STRUCT PostPlotSettings &pps
 
 	string panel    = SB_GetSweepBrowserLeftPanel(graph)
-	string extPanel = AR_GetExtPaneL(panel)
 
-	pps.averageDataFolder = $SB_GetSweepBrowserFolder(graph)
+	pps.averageDataFolder = SB_GetSweepBrowserFolder(graph)
 	pps.averageTraces     = GetCheckboxState(panel, "check_SweepBrowser_AveragTraces")
 	pps.zeroTraces        = GetCheckBoxState(panel, "check_SweepBrowser_ZeroTraces")
-	pps.timeAlignMode     = GetPopupMenuIndex(panel, "popup_sweepBrowser_tAlignMode")
-	pps.timeAlignLevel    = GetSetVariable(panel, "setvar_sweepBrowser_tAlignLevel")
-	pps.timeAlignRefTrace = GetPopupMenuString(panel, "popup_sweepBrowser_tAlignMaster")
+	pps.timeAlignMode     = GetPopupMenuIndex(panel, "popup_SweepBrowser_tAlignMode")
+	pps.timeAlignLevel    = GetSetVariable(panel, "setvar_SweepBrowser_tAlignLevel")
+	pps.timeAlignRefTrace = GetPopupMenuString(panel, "popup_SweepBrowser_tAlignMaster")
 	pps.hideSweep         = GetCheckBoxState(panel, "check_SweepBrowser_HideSweep")
 
 	PA_GatherSettings(graph, pps)
@@ -179,7 +186,7 @@ static Function/WAVE SB_GetSweepPropertyFromNumLBN(graph, mapIndex, key)
 	string device, expFolder
 	variable sweep
 
-	DFREF sweepBrowserDFR = $SB_GetSweepBrowserFolder(graph)
+	DFREF sweepBrowserDFR = SB_GetSweepBrowserFolder(graph)
 	WAVE/T sweepMap = SB_GetSweepBrowserMap(sweepBrowserDFR)
 
 	if(!IsFinite(mapIndex) || mapIndex < 0 || mapIndex >= DimSize(sweepMap, ROWS))
@@ -202,7 +209,7 @@ End
 Function/S SB_GetListOfExperiments(graph)
 	string graph
 
-	DFREF sweepBrowserDFR = $SB_GetSweepBrowserFolder(graph)
+	DFREF sweepBrowserDFR = SB_GetSweepBrowserFolder(graph)
 	WAVE/T sweepMap = SB_GetSweepBrowserMap(sweepBrowserDFR)
 
 	variable numEntries, i
@@ -261,7 +268,7 @@ Function/WAVE SB_GetChannelInfoFromGraph(graph, channel, [experiment])
 
 	ASSERT(FindListitem(channel, ITC_CHANNEL_NAMES) != -1, "Given channel could not be found in ITC_CHANNEL_NAMES")
 
-	DFREF sweepBrowserDFR = $SB_GetSweepBrowserFolder(graph)
+	DFREF sweepBrowserDFR = SB_GetSweepBrowserFolder(graph)
 	WAVE/T sweepMap = SB_GetSweepBrowserMap(sweepBrowserDFR)
 
 	Make/FREE/T/N=(MINIMUM_WAVE_SIZE, 3) channelMap
@@ -338,7 +345,7 @@ Function SB_UpdateSweepPlot(graph, [newSweep])
 	if(!HasPanelLatestVersion(graph, SWEEPBROWSER_PANEL_VERSION))
 		Abort "Can not display data. The SweepBrowser Graph is too old to be usable. Please close it and open a new one."
 	endif
-	DFREF sweepBrowserDFR = $SB_GetSweepBrowserFolder(graph)
+	DFREF sweepBrowserDFR = SB_GetSweepBrowserFolder(graph)
 	ASSERT(DataFolderExistsDFR(sweepBrowserDFR), "sweepBrowserDFR must exist")
 
 	extPanel = SB_GetSweepBrowserLeftPanel(graph)
@@ -348,13 +355,13 @@ Function SB_UpdateSweepPlot(graph, [newSweep])
 	endif
 
 	STRUCT TiledGraphSettings tgs
+	tgs.overlaySweep 	= OVS_IsActive(extPanel)
 	tgs.displayDAC      = GetCheckBoxState(extPanel, "check_SweepBrowser_DisplayDAC")
-	tgs.overlaySweep    = GetCheckBoxState(extPanel, "check_SweepBrowser_SweepOverlay")
 	tgs.displayADC      = GetCheckBoxState(extPanel, "check_SweepBrowser_DisplayADC")
 	tgs.displayTTL      = GetCheckBoxState(extPanel, "check_SweepBrowser_DisplayTTL")
-	tgs.overlayChannels = GetCheckBoxState(extPanel, "check_sweepbrowser_OverlayChan")
+	tgs.overlayChannels = GetCheckBoxState(extPanel, "check_SweepBrowser_OverlayChan")
 	tgs.splitTTLBits    = GetCheckBoxState(extPanel, "check_SweepBrowser_SplitTTL")
-	tgs.dDAQDisplayMode = GetCheckBoxState(extPanel, "check_sweepbrowser_dDAQ")
+	tgs.dDAQDisplayMode = GetCheckBoxState(extPanel, "check_SweepBrowser_dDAQ")
 	tgs.dDAQHeadstageRegions = str2num(GetPopupMenuString(extPanel, "popup_dDAQ_regions"))
 	tgs.hideSweep       = GetCheckBoxState(extPanel, "check_SweepBrowser_HideSweep")
 
@@ -484,17 +491,17 @@ End
 Function SB_SweepBrowserWindowHook(s)
 	STRUCT WMWinHookStruct &s
 
-	string folder, graph, extPanel, ctrl
+	string graph, extPanel, ctrl
 	variable hookResult
 
 	switch(s.eventCode)
 		case 2:	 // Kill
 			graph = s.winName
 
-			folder = SB_GetSweepBrowserFolder(graph)
+			DFREF sweepBrowserDFR = SB_GetSweepBrowserFolder(graph)
 
 			KillWindow $graph
-			KillOrMoveToTrashPath(folder)
+			KillOrMoveToTrash(dfr = sweepBrowserDFR)
 
 			hookResult = 1
 			break
@@ -521,40 +528,55 @@ Function SB_SweepBrowserWindowHook(s)
 	return hookResult // 0 if nothing done, else 1
 End
 
-Function/DF SB_CreateNewSweepBrowser()
+Function/DF SB_OpenSweepBrowser()
 
-	string panel
-	DFREF dfr = $"root:"
-	DFREF sweepBrowserDFR = UniqueDataFolder(dfr, "sweepBrowser")
+	string win, panelTitleNew, extPanel
 
+	Execute "SweepBrowser()"
+	win = GetCurrentWindow()
+	win = GetMainWindow(win)
+	AddVersionToPanel(win, SWEEPBROWSER_PANEL_VERSION)
+
+	SetWindow $win, hook(cleanup)=SB_SweepBrowserWindowHook
+	SB_SetUserData(win)
+	SB_PanelUpdate(win)
+
+	DFREF sweepBrowserDFR = BSP_GetFolder(win, MIES_BSP_PANEL_FOLDER)
 	SB_GetSweepBrowserMap(sweepBrowserDFR)
 
-	Display /W=(169.5,269,603,574.25)/K=1/N=$UniqueName("SweepBrowser", 9, 1)
-	string/G sweepBrowserDFR:graph = S_name
-	SVAR/SDFR=sweepBrowserDFR graph
+	panelTitleNew = UniqueName("SweepBrowser", 9, 1)
+	DoWindow/W=$win/C $panelTitleNew
+	string/G sweepBrowserDFR:graph = panelTitleNew
 
-	SetWindow $graph, hook(cleanup)=SB_SweepBrowserWindowHook, userdata(folder)=GetDataFolder(1, sweepBrowserDFR)
+	extPanel = SB_GetSweepBrowserLeftPanel(panelTitleNew)
+	PopupMenu popup_sweepBrowser_tAlignMaster win=$extPanel, value = #("SB_GetAllTraces(\"" + panelTitleNew + "\")")
+	PopupMenu popup_sweep_selector win=$extPanel, value= #("SB_GetSweepList(\"" + panelTitleNew + "\")")
 
+	BSP_OpenPanel(panelTitleNew)
+	return sweepBrowserDFR
+End
+
+Window SweepBrowser() : Graph
+	Display /W=(169.5,269,603,574.25)/K=1 as "SweepBrowser"
+	Button button_BSP_open,pos={5.00,5.00},size={25.00,25.00},proc=BSP_ButtonProc_Panel,title="<<"
+	Button button_BSP_open,help={"Open Side Panel"}
 	NewPanel/HOST=#/EXT=1/W=(156,0,0,407)
 	ModifyPanel fixedSize=0
-	CheckBox check_SweepBrowser_DisplayDAC,pos={13.00,6.00},size={31.00,15.00},proc=SB_CheckboxChangedSettings,title="DA"
+	CheckBox check_SweepBrowser_DisplayDAC,pos={13.00,6.00},size={31.00,15.00},proc=SB_CheckProc_ChangedSetting,title="DA"
 	CheckBox check_SweepBrowser_DisplayDAC,help={"Display the DA channel data"}
 	CheckBox check_SweepBrowser_DisplayDAC,value= 0
-	CheckBox check_SweepBrowser_DisplayADC,pos={57.00,6.00},size={31.00,15.00},proc=SB_CheckboxChangedSettings,title="AD"
+	CheckBox check_SweepBrowser_DisplayADC,pos={57.00,6.00},size={31.00,15.00},proc=SB_CheckProc_ChangedSetting,title="AD"
 	CheckBox check_SweepBrowser_DisplayADC,help={"Display the AD channels"},value= 1
-	CheckBox check_SweepBrowser_DisplayTTL,pos={98.00,6.00},size={35.00,15.00},proc=SB_CheckboxChangedSettings,title="TTL"
+	CheckBox check_SweepBrowser_DisplayTTL,pos={98.00,6.00},size={35.00,15.00},proc=SB_CheckProc_ChangedSetting,title="TTL"
 	CheckBox check_SweepBrowser_DisplayTTL,help={"Display the TTL channels"}
 	CheckBox check_SweepBrowser_DisplayTTL,value= 0
-	CheckBox check_SweepBrowser_splitTTL,pos={138.00,7.00},size={13.00,13.00},proc=SB_CheckboxChangedSettings,title=""
+	CheckBox check_SweepBrowser_splitTTL,pos={138.00,7.00},size={13.00,13.00},proc=SB_CheckProc_ChangedSetting,title=""
 	CheckBox check_SweepBrowser_splitTTL,help={"Display the TTL channel data as single traces for each TTL bit"}
 	CheckBox check_SweepBrowser_splitTTL,value= 0
-	CheckBox check_SweepBrowser_OpenArtRem,pos={17.00,295.00},size={103.00,15.00},proc=SB_CheckboxChangedSettings,title="Artefact removal"
-	CheckBox check_SweepBrowser_OpenArtRem,help={"Open the \"Artefact Removal\" panel"}
-	CheckBox check_SweepBrowser_OpenArtRem,value= 0
-	CheckBox check_SweepBrowser_ZeroTraces,pos={17.00,278.00},size={76.00,15.00},proc=SB_CheckboxChangedSettings,title="Zero Traces"
+	CheckBox check_SweepBrowser_ZeroTraces,pos={17.00,278.00},size={76.00,15.00},proc=SB_CheckProc_ChangedSetting,title="Zero Traces"
 	CheckBox check_SweepBrowser_ZeroTraces,help={"Remove the offset of all traces"}
 	CheckBox check_SweepBrowser_ZeroTraces,value= 0
-	CheckBox check_SweepBrowser_AveragTraces,pos={17.00,262.00},size={95.00,15.00},proc=SB_CheckboxChangedSettings,title="Average Traces"
+	CheckBox check_SweepBrowser_AveragTraces,pos={17.00,262.00},size={95.00,15.00},proc=SB_CheckProc_ChangedSetting,title="Average Traces"
 	CheckBox check_SweepBrowser_AveragTraces,help={"Average all traces which belong to the same y axis"}
 	CheckBox check_SweepBrowser_AveragTraces,value= 0
 	Button button_SweepBrowser_RestData,pos={100.00,277.00},size={51.00,20.00},proc=SB_ButtonProc_RestoreData,title="Restore"
@@ -562,37 +584,28 @@ Function/DF SB_CreateNewSweepBrowser()
 	SetVariable setvar_SweepBrowser_SweepStep,pos={68.00,141.00},size={64.00,18.00},title="Step"
 	SetVariable setvar_SweepBrowser_SweepStep,help={"Number of sweeps to step for each Previous/Next click or mouse wheel turn"}
 	SetVariable setvar_SweepBrowser_SweepStep,limits={1,inf,1},value= _NUM:1
-	CheckBox check_sweepbrowser_OverlayChan,pos={13.00,50.00},size={64.00,15.00},proc=SB_CheckboxChangedSettings,title="Channels"
-	CheckBox check_sweepbrowser_OverlayChan,help={"Overlay the data from multiple channels in one graph"}
-	CheckBox check_sweepbrowser_OverlayChan,value= 0
-	CheckBox check_SweepBrowser_SweepOverlay,pos={13.00,30.00},size={54.00,15.00},proc=SB_CheckboxProc_OverlaySweeps,title="Sweeps"
-	CheckBox check_SweepBrowser_SweepOverlay,help={"Add the data from all visited sweeps instead of clearing the graph every time"}
-	CheckBox check_SweepBrowser_SweepOverlay,value= 0
+	CheckBox check_SweepBrowser_OverlayChan,pos={13.00,50.00},size={64.00,15.00},proc=SB_CheckProc_ChangedSetting,title="Channels"
+	CheckBox check_SweepBrowser_OverlayChan,help={"Overlay the data from multiple channels in one graph"}
+	CheckBox check_SweepBrowser_OverlayChan,value= 0
 	Button button_SweepBrowser_NextSweep,pos={81.00,117.00},size={60.00,20.00},proc=SB_ButtonProc_ChangeSweep,title="Next"
 	Button button_SweepBrowser_NextSweep,help={"Select the previous sweep"}
 	Button button_SweepBrowser_PrevSweep,pos={11.00,117.00},size={60.00,20.00},proc=SB_ButtonProc_ChangeSweep,title="Previous"
 	Button button_SweepBrowser_PrevSweep,help={"Select the next sweep"}
 	CheckBox check_SweepBrowser_TimeAlign,pos={12.00,176.00},size={101.00,15.00},proc=SB_TimeAlignmentProc,title="Time Alignment"
 	CheckBox check_SweepBrowser_TimeAlign,help={"Activate time alignment"},value= 0
-	PopupMenu popup_sweepBrowser_tAlignMode,pos={0.00,195.00},size={143.00,19.00},bodyWidth=50,disable=2,proc=SB_TimeAlignmentPopup,title="Alignment Mode"
-	PopupMenu popup_sweepBrowser_tAlignMode,help={"Select the alignment mode"}
-	PopupMenu popup_sweepBrowser_tAlignMode,mode=1,popvalue="Level (Raising)",value= #"\"Level (Raising);Level (Falling);Min;Max\""
-	SetVariable setvar_sweepBrowser_tAlignLevel,pos={61.00,219.00},size={80.00,18.00},disable=2,proc=SB_TimeAlignmentLevel,title="Level"
-	SetVariable setvar_sweepBrowser_tAlignLevel,help={"Select the level (for rising and falling alignment mode) at which traces are aligned"}
-	SetVariable setvar_sweepBrowser_tAlignLevel,limits={-inf,inf,0},value= _NUM:0
-	PopupMenu popup_sweepBrowser_tAlignMaster,pos={7.00,239.00},size={134.00,19.00},bodyWidth=50,disable=2,proc=SB_TimeAlignmentPopup,title="Reference trace"
-	PopupMenu popup_sweepBrowser_tAlignMaster,help={"Select the reference trace to which all other traces should be aligned to"}
-	PopupMenu popup_sweepBrowser_tAlignMaster,mode=1,popvalue="AD0",value= #("SB_GetAllTraces(\"" + graph + "\")")
+	PopupMenu popup_SweepBrowser_tAlignMode,pos={0.00,195.00},size={143.00,19.00},bodyWidth=50,disable=2,proc=SB_TimeAlignmentPopup,title="Alignment Mode"
+	PopupMenu popup_SweepBrowser_tAlignMode,help={"Select the alignment mode"}
+	PopupMenu popup_SweepBrowser_tAlignMode,mode=1,popvalue="Level (Raising)",value= #"\"Level (Raising);Level (Falling);Min;Max\""
+	SetVariable setvar_SweepBrowser_tAlignLevel,pos={61.00,219.00},size={80.00,18.00},disable=2,proc=SB_TimeAlignmentLevel,title="Level"
+	SetVariable setvar_SweepBrowser_tAlignLevel,help={"Select the level (for rising and falling alignment mode) at which traces are aligned"}
+	SetVariable setvar_SweepBrowser_tAlignLevel,limits={-inf,inf,0},value= _NUM:0
+	PopupMenu popup_SweepBrowser_tAlignMaster,pos={7.00,239.00},size={134.00,19.00},bodyWidth=50,disable=2,proc=SB_TimeAlignmentPopup,title="Reference trace"
+	PopupMenu popup_SweepBrowser_tAlignMaster,help={"Select the reference trace to which all other traces should be aligned to"}
+	PopupMenu popup_SweepBrowser_tAlignMaster,mode=1,popvalue="AD0"
 	Button button_SweepBrowser_DoTimeAlign,pos={117.00,174.00},size={30.00,20.00},disable=2,proc=SB_DoTimeAlignment,title="Do!"
 	Button button_SweepBrowser_DoTimeAlign,help={"Perform the time alignment, needs the cursors A and B to have a selected feature"}
 	PopupMenu popup_sweep_selector,pos={13.00,91.00},size={127.00,19.00},bodyWidth=127,proc=SB_PopupMenuSelectSweep
 	PopupMenu popup_sweep_selector,help={"List of sweeps in this sweep browser"}
-	PopupMenu popup_sweep_selector,value= #("SB_GetSweepList(\"" + graph + "\")")
-	Button button_SweepBrowser_OpenChanSel,pos={71.00,25.00},size={40.00,20.00},proc=SB_OpenChannelSelectionPanel,title="Chan"
-	Button button_SweepBrowser_OpenChanSel,help={"Open the channel selection dialog, allows to disable single channels and headstages"}
-	CheckBox check_SweepBrowser_PulseAvg,pos={114.00,26.00},size={37.00,15.00},proc=SB_CheckboxChangedSettings,title="PPA"
-	CheckBox check_SweepBrowser_PulseAvg,help={"Display per pulse averaged data"}
-	CheckBox check_SweepBrowser_PulseAvg,value= 0
 	GroupBox group_SB_axes_scaling,pos={11.00,310.00},size={133.00,60.00},title="Axes Scaling"
 	CheckBox check_SB_visibleXRange,pos={19.00,329.00},size={40.00,15.00},proc=SB_AxisScaling,title="Vis X"
 	CheckBox check_SB_visibleXRange,help={"Scale the y axis to the visible x data range"}
@@ -609,23 +622,20 @@ Function/DF SB_CreateNewSweepBrowser()
 	Button button_SweepBrowser_ExportGraph,pos={28.00,375.00},size={100.00,25.00},proc=SB_ButtonProc_ExportTraces,title="Export Traces"
 	Button button_SweepBrowser_ExportGraph,help={"Export the traces for further processing"}
 	GroupBox group_sweep,pos={6.00,71.00},size={139.00,98.00},title="Sweep"
-	CheckBox check_sweepbrowser_dDAQ,pos={97.00,50.00},size={47.00,15.00},proc=SB_CheckboxChangedSettings,title="dDAQ"
-	CheckBox check_sweepbrowser_dDAQ,help={"Enable dedicated support for viewing distributed DAQ data"}
-	CheckBox check_sweepbrowser_dDAQ,value= 0
+	CheckBox check_SweepBrowser_dDAQ,pos={97.00,50.00},size={47.00,15.00},proc=SB_CheckProc_ChangedSetting,title="dDAQ"
+	CheckBox check_SweepBrowser_dDAQ,help={"Enable dedicated support for viewing distributed DAQ data"}
+	CheckBox check_SweepBrowser_dDAQ,value= 0
 	PopupMenu popup_dDAQ_regions,pos={96.00,67.00},size={35.00,19.00},bodyWidth=35,disable=2,proc=SB_PopMenuProc_ChangedSettings
 	PopupMenu popup_dDAQ_regions,help={"Allows to view only oodDAQ regions from the selected headstage. Choose -1 to display all."}
 	PopupMenu popup_dDAQ_regions,mode=1,popvalue="-1",value= #"\"-1;0;1;2;3;4;5;6;7\""
-	CheckBox check_SweepBrowser_HideSweep,pos={20.00,143.00},size={50.00,15.00},proc=SB_CheckboxChangedSettings,title="Hide"
+	CheckBox check_SweepBrowser_HideSweep,pos={20.00,143.00},size={50.00,15.00},proc=SB_CheckProc_ChangedSetting,title="Hide"
 	CheckBox check_SweepBrowser_HideSweep,help={"Hide sweep traces. Usually combined with \"Average traces\"."}
 	CheckBox check_SweepBrowser_HideSweep,value= 0
+	SetDrawLayer UserBack
+	DrawLine 15,34,145,34
 	RenameWindow #,P0
 	SetActiveSubwindow ##
-
-	AddVersionToPanel(graph, SWEEPBROWSER_PANEL_VERSION)
-	SB_PanelUpdate(graph)
-
-	return sweepBrowserDFR
-End
+EndMacro
 
 Function/S SB_GetSweepList(graph)
 	string graph
@@ -770,7 +780,7 @@ static Function SB_HandleCursorDisplay(graph)
 	if(GetCheckBoxState(panel, "check_SweepBrowser_TimeAlign"))
 
 		// ensure that trace is really on the graph
-		trace = GetPopupMenuString(panel, "popup_sweepBrowser_tAlignMaster")
+		trace = GetPopupMenuString(panel, "popup_SweepBrowser_tAlignMaster")
 		if(FindListItem(trace, traceList) == -1)
 			trace = StringFromList(0, traceList)
 		endif
@@ -889,23 +899,6 @@ Function SB_AxisScalingLevelCross(sva) : SetVariableControl
 	return 0
 End
 
-Function SB_OpenChannelSelectionPanel(ba) : ButtonControl
-	STRUCT WMButtonAction &ba
-
-	string graph
-	switch(ba.eventCode)
-		case 2: // mouse up
-			graph = GetMainWindow(ba.win)
-
-			DFREF sweepBrowserDFR = $SB_GetSweepBrowserFolder(graph)
-			WAVE channelSel = GetChannelSelectionWave(sweepBrowserDFR)
-			ToggleChannelSelectionPanel(graph, channelSel, "SB_CheckboxChangedSettings")
-			break
-	endswitch
-
-	return 0
-End
-
 Function SB_ButtonProc_ExportTraces(ba) : ButtonControl
 	STRUCT WMButtonAction &ba
 
@@ -933,7 +926,7 @@ Function SB_ButtonProc_FindMinis(ba) : ButtonControl
 			first = min(first, last)
 			last  = max(first, last)
 
-			DFREF workDFR = UniqueDataFolder($SB_GetSweepBrowserFolder(graph), "findminis")
+			DFREF workDFR = UniqueDataFolder(SB_GetSweepBrowserFolder(graph), "findminis")
 
 			numTraces = ItemsInList(list)
 			for(i = 0; i < numTraces; i += 1)
@@ -968,7 +961,7 @@ Function SB_PopMenuProc_ChangedSettings(pa) : PopupMenuControl
 	return 0
 End
 
-Function SB_CheckboxChangedSettings(cba) : CheckBoxControl
+Function SB_CheckProc_ChangedSetting(cba) : CheckBoxControl
 	STRUCT WMCheckBoxAction &cba
 
 	string graph, win, ctrl, channelType, device
@@ -982,24 +975,24 @@ Function SB_CheckboxChangedSettings(cba) : CheckBoxControl
 			win     = SB_GetSweepBrowserLeftPanel(cba.win)
 			graph   = GetMainWindow(win)
 			idx     = GetPopupMenuIndex(win, "popup_sweep_selector")
-			DFREF dfr = $SB_GetSweepBrowserFolder(graph)
+			DFREF dfr = SB_GetSweepBrowserFolder(graph)
 
-			if(!cmpstr(ctrl, "check_sweepbrowser_dDAQ"))
-				if(checked)
-					EnableControl(win, "popup_dDAQ_regions")
-				else
-					DisableControl(win, "popup_dDAQ_regions")
-				endif
-			elseif(StringMatch(ctrl, "check_channelSel_*"))
-				WAVE channelSel = GetChannelSelectionWave(dfr)
-				ParseChannelSelectionControl(cba.ctrlName, channelType, channelNum)
-				channelSel[channelNum][%$channelType] = checked
-			elseif(!cmpstr(ctrl, "check_SweepBrowser_OpenArtRem"))
-				WAVE listBoxWave = GetArtefactRemovalListWave(dfr)
-				AR_TogglePanel(win, listBoxWave)
-			elseif(!cmpstr(ctrl, "check_SweepBrowser_PulseAvg"))
-				PA_TogglePanel(win)
-			endif
+			strswitch(ctrl)
+				case "check_SweepBrowser_dDAQ":
+					if(checked)
+						EnableControl(win, "popup_dDAQ_regions")
+					else
+						DisableControl(win, "popup_dDAQ_regions")
+					endif
+					break
+				default:
+					if(StringMatch(ctrl, "check_channelSel_*"))
+						WAVE channelSel = GetChannelSelectionWave(dfr)
+						ParseChannelSelectionControl(cba.ctrlName, channelType, channelNum)
+						channelSel[channelNum][%$channelType] = checked
+					endif
+					break
+			endswitch
 
 			SB_UpdateSweepPlot(graph)
 			break
@@ -1011,7 +1004,7 @@ End
 Function SB_ButtonProc_RestoreData(ba) : ButtonControl
 	STRUCT WMButtonAction &ba
 
-	string win, graph, traceList, artefactRemovalExtPanel
+	string win, graph, traceList, extPanel
 	variable autoRemoveOldState
 
 	switch(ba.eventCode)
@@ -1021,14 +1014,14 @@ Function SB_ButtonProc_RestoreData(ba) : ButtonControl
 			traceList = GetAllSweepTraces(graph)
 			ReplaceAllWavesWithBackup(graph, traceList)
 
-			artefactRemovalExtPanel = AR_GetExtPanel(win)
-			if(!WindowExists(artefactRemovalExtPanel))
+			if(!AR_IsActive(graph))
 				SB_UpdateSweepPlot(win)
 			else
-				autoRemoveOldState = GetCheckBoxState(artefactRemovalExtPanel, "check_auto_remove")
-				SetCheckBoxState(artefactRemovalExtPanel, "check_auto_remove", CHECKBOX_UNSELECTED)
+				extPanel = BSP_GetPanel(win)
+				autoRemoveOldState = GetCheckBoxState(extPanel, "check_auto_remove")
+				SetCheckBoxState(extPanel, "check_auto_remove", CHECKBOX_UNSELECTED)
 				SB_UpdateSweepPlot(win)
-				SetCheckBoxState(artefactRemovalExtPanel, "check_auto_remove", autoRemoveOldState)
+				SetCheckBoxState(extPanel, "check_auto_remove", autoRemoveOldState)
 			endif
 			break
 	endswitch
@@ -1047,7 +1040,9 @@ Function SB_CheckboxProc_OverlaySweeps(cba) : CheckBoxControl
 			graph    = GetMainWindow(cba.win)
 			extPanel = SB_GetSweepBrowserLeftPanel(graph)
 
-			DFREF dfr = $SB_GetSweepBrowserFolder(graph)
+			BSP_SetOVSControlStatus(extPanel)
+
+			DFREF dfr = SB_GetSweepBrowserFolder(graph)
 			WAVE/T listBoxWave        = GetOverlaySweepsListWave(dfr)
 			WAVE listBoxSelWave       = GetOverlaySweepsListSelWave(dfr)
 			WAVE/WAVE sweepSelChoices = GetOverlaySweepSelectionChoices(dfr)
@@ -1057,7 +1052,6 @@ Function SB_CheckboxProc_OverlaySweeps(cba) : CheckBoxControl
 
 			sweepWaveList = SB_GetPlainSweepList(graph)
 			OVS_UpdatePanel(graph, listBoxWave, listBoxSelWave, sweepSelChoices, sweepWaveList, allTextualValues=allTextualValues, allNumericalValues=allNumericalValues)
-			OVS_TogglePanel(graph, listBoxWave, listBoxSelWave)
 			if(OVS_IsActive(graph))
 				index = GetPopupMenuIndex(extPanel, "popup_sweep_selector")
 				OVS_ChangeSweepSelectionState(extPanel, CHECKBOX_SELECTED, index=index)
