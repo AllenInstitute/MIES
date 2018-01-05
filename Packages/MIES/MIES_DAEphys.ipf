@@ -1083,6 +1083,9 @@ Function DAP_ResetGUIAfterDAQ(panelTitle)
 
 	DAP_ToggleAcquisitionButton(panelTitle, DATA_ACQ_BUTTON_TO_DAQ)
 	EnableControls(panelTitle, CONTROLS_DISABLE_DURING_DAQ_TP)
+
+	// fix multi device mode dependent checkbox disabling
+	DAP_SwitchSingleMultiMode(panelTitle)
 End
 
 /// @brief One time cleaning up after data acquisition
