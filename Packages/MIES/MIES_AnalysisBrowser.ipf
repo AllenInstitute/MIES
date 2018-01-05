@@ -107,7 +107,7 @@ static Function AB_ClearAnalysisFolder()
 End
 
 /// @brief Create relation (map) between file on disk and datafolder in current experiment
-/// @return total number of files mapped
+/// @return index into mapping wave of the newly added entry
 static Function AB_AddMapEntry(baseFolder, discLocation)
 	string baseFolder, discLocation
 
