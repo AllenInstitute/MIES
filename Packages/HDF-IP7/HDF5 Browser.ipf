@@ -19,7 +19,10 @@
 // of the HDF5 library. This version of this procedure file requires
 // HDF5XOP 1.15 or later.
 
-#pragma version = 1.20
+// Version 1.21, December 14, 2017: Fixed scaling of browser panel coordinates
+// in SetPrefWindowCoords to fix issue on Windows where browser window size was incorrect.
+
+#pragma version = 1.21
 
 #include <WaveSelectorWidget>
 
@@ -2635,9 +2638,21 @@ Function HDF5ResizeBrowser(browserName)
 
 	String win = browserName
 
-	GetWindow $browserName wsizeDC
+	if (PanelResolution(browserName) == 72)
+		GetWindow $browserName wsizeDC				// Igor6 compatibility mode (or running on Macintosh) - we need pixels, not points
+	else
+		GetWindow $browserName wsize					// HR, 2017-12-14, 1.21: We need points, not pixels, if not in compatibility mode
+	endif
+
 	Variable winLeft=V_left, winTop=V_top, winRight=V_right, winBottom=V_bottom
 	Variable winWidth = winRight - winLeft, winHeight = winBottom - winTop
+
+	// This is for debugging only
+	#if 0
+		String title
+		sprintf title, "%s (%d, %d)", browserName, winWidth, winHeight
+		DoWindow/T $browserName, title
+	#endif
 
 	if (winWidth<600 || winHeight<500)
 		return 0						// Too small.
@@ -2654,8 +2669,8 @@ Function HDF5ResizeBrowser(browserName)
 	ControlInfo/W=$browserName GroupsList
 	listsTop = V_top
 	
-	Variable hSpaceForLists = winRight - winLeft - leftBorder - hSpaceBetweenLists - rightBorder
-	Variable vSpaceForLists = winBottom - listsTop - vSpaceBetweenLists - bottomBorder
+	Variable hSpaceForLists = winWidth - leftBorder - hSpaceBetweenLists - rightBorder
+	Variable vSpaceForLists = winHeight - listsTop - vSpaceBetweenLists - bottomBorder
 	
 	Variable groupListsWidth = .4 * hSpaceForLists
 	Variable datasetListsWidth = .6 * hSpaceForLists
@@ -2678,13 +2693,18 @@ Function HDF5ResizeBrowser(browserName)
 	top -= 20
 	TitleBox GroupAttributesTitle, win=$browserName, pos={left, top}
 
-	// Remember where DatasetsList is. it is used to position other control.
+	// Remember where DatasetsList is. It is used to position other control.
 	ControlInfo/W=$browserName DatasetsList
 	Variable oldDatasetsListRight = V_Left + V_Width
+
+	// Remember where PreviewOptions groupbox is. It is used to reposition it and other control.
+	ControlInfo/W=$browserName PreviewOptions
+	Variable oldPreviewOptionsRight = V_Left + V_Width
 	
 	// Set Datasets list coordinates
 	left = leftBorder + groupListsWidth + hSpaceBetweenLists
 	top = listsTop
+	Variable newDatasetsListRight = left + datasetListsWidth
 	ListBox DatasetsList, win=$browserName, pos={left, top}, size={datasetListsWidth, groupListsHeight}
 	
 	// Determine how DatasetsList right edge changed. This is used to position other control.
@@ -2713,12 +2733,14 @@ Function HDF5ResizeBrowser(browserName)
 	TitleBox DatasetAttributesTitle, win=$browserName, pos={left, top}
 
 	// Set Preview Options
+	Variable newPreviewOptionsRight = newDatasetsListRight
+	Variable changeInPreviewOptionsRight = newPreviewOptionsRight - oldPreviewOptionsRight
 	String list = "PreviewOptions;Graph;Table;Dump;ShowAttributesInDump;ShowDataInDump;"
-	OffsetControls(browserName, list, changeInDatsetsListRight, 0)
+	OffsetControls(browserName, list, changeInPreviewOptionsRight, 0)
 
 	// Set Load Dataset Options
 	list = "LoadDatasetOptions;DisplayInTable;DisplayInGraph;"
-	OffsetControls(browserName, list, changeInDatsetsListRight, 0)
+	OffsetControls(browserName, list, changeInPreviewOptionsRight, 0)
 	
 	statusCode=1
 
@@ -2934,7 +2956,7 @@ static Function SetPrefWindowCoords(windowName)
 	// NewPanel uses device coordinates. We therefore need to scale from
 	// points (returned by GetWindow) to device units for windows created
 	// by NewPanel.
-	Variable scale = PanelResolution(windowName) / 72
+	Variable scale = ScreenResolution / PanelResolution(windowName)	// HR, 2017-12-14, 1.21: Fixed scaling issue on Windows
 	
 	strswitch(windowName)
 		case "HDF5BrowserGraph":
