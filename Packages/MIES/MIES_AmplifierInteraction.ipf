@@ -271,9 +271,9 @@ Function AI_SendToAmp(panelTitle, headStage, mode, func, value, [checkBeforeWrit
 
 	if(headstageMode != mode)
 		return NaN
-	elseif(AI_MIESHeadstageMatchesMCCMode(panelTitle, headStage) == 0)
-		return NaN
 	endif
+
+	AI_EnsureCorrectMode(panelTitle, headStage)
 
 	sprintf str, "headStage=%d, mode=%d, func=%d, value(passed)=%g, scale=%g\r", headStage, mode, func, value, scale
 	DEBUGPRINT(str)
@@ -538,18 +538,15 @@ Function AI_SendToAmp(panelTitle, headStage, mode, func, value, [checkBeforeWrit
 	return ret * scale
 End
 
-/// @returns 1 if the MIES headstage mode matches the associated MCC mode, zero if not and NaN
-/// if the headstage has no amplifier connected
-Function AI_MIESHeadstageMatchesMCCMode(panelTitle, headStage)
+/// @brief Set the clamp mode in the MCC app to the
+///        same clamp mode as MIES has stored.
+Function AI_EnsureCorrectMode(panelTitle, headStage)
 	string panelTitle
 	variable headStage
 
-	// if these are out of sync the user needs to intervene unless MCC monitoring is enabled
-	// (at the time of writing this comment, monitoring has not been implemented)
-
 	variable serial  = AI_GetAmpAxonSerial(panelTitle, headStage)
 	variable channel = AI_GetAmpChannel(panelTitle, headStage)
-	variable equalModes, storedMode, setMode
+	variable storedMode, setMode
 
 	if(!AI_IsValidSerialAndChannel(channel=channel, axonSerial=serial))
 		return NaN
@@ -560,13 +557,11 @@ Function AI_MIESHeadstageMatchesMCCMode(panelTitle, headStage)
 	AxonTelegraphGetDataStruct(serial, channel, 1, tds)
 	storedMode = DAG_GetHeadstageMode(panelTitle, headStage)
 	setMode    = tds.operatingMode
-	equalModes = (setMode == storedMode)
 
-	if(!equalModes)
-		printf "(%s) Headstage %d has different modes stored (%s) and set (%s)\r", panelTitle, headstage, ConvertAmplifierModeToString(storedMode), ConvertAmplifierModeToString(setMode)
+	if(setMode != storedMode)
+		print "There was a mismatch in clamp mode between MIES and the MCC. The MCC mode was switched to match the mode specified by MIES."
+		AI_SetClampMode(panelTitle, headStage, storedMode)
 	endif
-
-	return equalModes
 End
 
 /// @brief Return the unit prefixes used by MIES in comparison to the MCC app
@@ -908,14 +903,13 @@ Function AI_SyncGUIToAmpStorageAndMCCApp(panelTitle, headStage, clampMode)
 	variable i, numEntries
 
 	DAP_AbortIfUnlocked(panelTitle)
+	AI_AssertOnInvalidClampMode(clampMode)
 
 	if(DAG_GetNumericalValue(panelTitle, "slider_DataAcq_ActiveHeadstage") != headStage)
 		return NaN
-	elseif(!AI_MIESHeadstageMatchesMCCMode(panelTitle, headStage))
-		return NaN
 	endif
 
-	AI_AssertOnInvalidClampMode(clampMode)
+	AI_EnsureCorrectMode(panelTitle, headStage)
 
 	if(clampMode == V_CLAMP_MODE)
 		list = AMPLIFIER_CONTROLS_VC

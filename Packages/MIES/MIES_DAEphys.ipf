@@ -2058,10 +2058,7 @@ static Function DAP_CheckHeadStage(panelTitle, headStage, mode)
 
 	if(ampConnState == AMPLIFIER_CONNECTION_SUCCESS)
 
-		if(AI_MIESHeadstageMatchesMCCMode(panelTitle, headStage) == 0)
-			return 1
-		endif
-
+		AI_EnsureCorrectMode(panelTitle, headStage)
 		AI_QueryGainsUnitsForClampMode(panelTitle, headStage, clampMode, DAGainMCC, ADGainMCC, DAUnitMCC, ADUnitMCC)
 
 		if(cmpstr(DAUnit, DAUnitMCC))
@@ -2571,7 +2568,7 @@ Function DAP_ChangeHeadStageMode(panelTitle, clampMode, headstage, mccMiesSyncOv
 	variable headstage, clampMode, mccMiesSyncOverride
 
 	string iZeroCtrl, VCctrl, ICctrl, headstageCtrl, ctrl
-	variable activeHS, testPulseMode, oppositeMode, DAC, ADC, i, loopMax, sliderPos, oldTab
+	variable activeHS, testPulseMode, oppositeMode, DAC, ADC, i, oldTab, oldState, newSliderPos
 
 	AI_AssertOnInvalidClampMode(clampMode)
 	DAP_AbortIfUnlocked(panelTitle)
@@ -2590,15 +2587,12 @@ Function DAP_ChangeHeadStageMode(panelTitle, clampMode, headstage, mccMiesSyncOv
 	if(headstage < 0)
 		changeHS[] = 1
 		DAP_SetAmpModeControls(panelTitle, headstage, clampMode)
+		newSliderPos = DAG_GetNumericalValue(panelTitle, "slider_DataAcq_ActiveHeadstage")
 	else
 		changeHS[headstage] = 1
 		activeHS = DAG_GetHeadstageState(panelTitle, headstage)
-		DAP_Slider(panelTitle, headstage)
-		SetSliderPositionIndex(panelTitle, "slider_DataAcq_ActiveHeadstage", headstage)
-		DAG_Update(panelTitle, "slider_DataAcq_ActiveHeadstage", val = headstage)
+		newSliderPos = headstage
 	endif
-
-	sliderPos = DAG_GetNumericalValue(panelTitle, "slider_DataAcq_ActiveHeadstage")
 
 	if(activeHS || headstage < 0)
 		testPulseMode = TP_StopTestPulse(panelTitle)
@@ -2621,18 +2615,28 @@ Function DAP_ChangeHeadStageMode(panelTitle, clampMode, headstage, mccMiesSyncOv
 			printf "(%s) Could not switch the clamp mode to %s as no DA and/or AD channels are associated with headstage %d.\r", panelTitle, ConvertAmplifierModeToString(clampMode), headstage
 			continue
 		endif
+
 		GuiState[i][%HSmode] = clampMode
-		if(isFinite(DAP_IZeroSetClampMode(panelTitle, i, clampMode)))
-			DAP_SetAmpModeControls(panelTitle, i, clampMode)
-			DAP_SetHeadstageChanControls(panelTitle, i, clampMode)
-			DAP_ConditionallySetAmpGui(panelTitle, i, clampMode, sliderPos, mccMiesSyncOverride)
-		elseif(!DAG_GetNumericalValue(panelTitle, "check_Settings_RequireAmpConn"))
-			DAP_SetAmpModeControls(panelTitle, i, clampMode)
-			DAP_SetHeadstageChanControls(panelTitle, i, clampMode)
-		elseif(DAG_GetNumericalValue(panelTitle, "check_Settings_RequireAmpConn"))
-			DAP_SetAmpModeControls(panelTitle, i, clampMode)
-		endif
+
+		DAP_SetAmpModeControls(panelTitle, i, clampMode)
+		DAP_SetHeadstageChanControls(panelTitle, i, clampMode)
+		DAP_IZeroSetClampMode(panelTitle, i, clampMode)
 	endfor
+
+	if(mccMiesSyncOverride == SKIP_MCC_MIES_SYNCING)
+		// turn off miesToMCC syncing before moving the slider as we don't want to sync implicitly
+		// as the control procedure of the headstage slider does
+		oldState = DAG_GetNumericalValue(panelTitle, "check_Settings_SyncMiesToMCC")
+		DAG_Update(panelTitle, "check_Settings_SyncMiesToMCC", val = CHECKBOX_UNSELECTED)
+
+		PGC_SetAndActivateControl(panelTitle, "slider_DataAcq_ActiveHeadstage", val = newSliderPos)
+
+		DAG_Update(panelTitle, "check_Settings_SyncMiesToMCC", val = oldState)
+	elseif(mccMiesSyncOverride == DO_MCC_MIES_SYNCING)
+		PGC_SetAndActivateControl(panelTitle, "slider_DataAcq_ActiveHeadstage", val = newSliderPos)
+	else
+		ASSERT(0, "Unsupported mcc mies syncing mode")
+	endif
 
 	DAP_UpdateDAQControls(panelTitle, REASON_HEADSTAGE_CHANGE)
 
@@ -2700,26 +2704,6 @@ static Function DAP_SetHeadstageChanControls(panelTitle, headstage, clampMode)
 		DAP_RemoveClampModeSettings(panelTitle, headstage, oppositeMode)
 		DAP_ApplyClmpModeSavdSettngs(panelTitle, headstage, clampMode)
 		DAP_AllChanDASettings(panelTitle, headStage)
-	endif
-End
-
-///@brief Sets the amp GUI (updates the selected tab according to the clamp mode) if the headstage being set and the user selected headstage are the same.
-///@param	panelTitle 	Device (used for data acquisition)
-///@param	headstage		channels associated with headstage are set
-///@param	clampMode		clamp mode to activate
-///@param	sliderPos		index of the slider control: slider_DataAcq_ActiveHeadstage
-///@param	mccMiesSyncOverride should be zero for normal callers, 1 for callers which
-///                            are doing a auto MCC function and need to change the clamp mode temporarily.
-///                            Use one of @ref MCCSyncOverrides for better readability.
-static Function DAP_ConditionallySetAmpGui(panelTitle, headstage, clampMode, sliderPos, mccMiesSyncOverride)
-	string panelTitle
-	variable headstage
-	variable clampMode
-	variable sliderPos
-	variable mccMiesSyncOverride
-
-	if(sliderPos == headstage)
-		DAP_UpdateClampmodeTabs(panelTitle, headstage, clampMode, mccMiesSyncOverride)
 	endif
 End
 
@@ -3105,35 +3089,30 @@ End
 Function DAP_SliderProc_MIESHeadStage(sc) : SliderControl
 	struct WMSliderAction &sc
 
+	variable mode, headstage
+	string panelTitle
+
 	// eventCode is a bitmask as opposed to a plain value
 	// compared to other controls
 	if(sc.eventCode > 0 && sc.eventCode & 0x1)
-		DAG_Update(sc.win, sc.ctrlName, val = sc.curval)
-		DAP_Slider(sc.win, sc.curVal)
+		headstage  = sc.curval
+		panelTitle = sc.win
+		DAG_Update(panelTitle, sc.ctrlName, val = headstage)
+
+		DAP_AbortIfUnlocked(panelTitle)
+		mode = DAG_GetHeadstageMode(panelTitle, headStage)
+		P_PressureDisplayHighlite(panelTitle, 0)
+		P_SaveUserSelectedHeadstage(panelTitle, headStage)
+		P_GetAutoUserOff(panelTitle)
+		P_GetPressureType(panelTitle)
+		P_LoadPressureButtonState(panelTitle)
+		P_UpdatePressureModeTabs(panelTitle, headStage)
+		DAP_UpdateClampmodeTabs(panelTitle, headStage, mode, DO_MCC_MIES_SYNCING)
+		SCOPE_SetADAxisLabel(panelTitle,HeadStage)
+		P_RunP_ControlIfTPOFF(panelTitle)
 	endif
 
 	return 0
-End
-
-///@brief User selected headstage function calls
-///@param panelTitle Device
-///@param headstage Headstage [0, 8[
-Function DAP_Slider(panelTitle, headstage)
-	string panelTitle
-	variable headstage
-
-	variable mode
-	DAP_AbortIfUnlocked(panelTitle)
-	mode = DAG_GetHeadstageMode(panelTitle, headStage)
-	P_PressureDisplayHighlite(panelTitle, 0)
-	P_SaveUserSelectedHeadstage(panelTitle, headStage)
-	P_GetAutoUserOff(panelTitle)
-	P_GetPressureType(panelTitle)
-	P_LoadPressureButtonState(panelTitle)
-	P_UpdatePressureModeTabs(panelTitle, headStage)
-	DAP_UpdateClampmodeTabs(panelTitle, headStage, mode, DO_MCC_MIES_SYNCING)
-	SCOPE_SetADAxisLabel(panelTitle,HeadStage)
-	P_RunP_ControlIfTPOFF(panelTitle)
 End
 
 Function DAP_SetVarProc_AmpCntrls(sva) : SetVariableControl
