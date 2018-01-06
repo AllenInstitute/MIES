@@ -107,13 +107,22 @@ static Function AB_ClearAnalysisFolder()
 End
 
 /// @brief Create relation (map) between file on disk and datafolder in current experiment
-/// @return total number of files mapped
+///
+/// @return index into mapping wave of the newly added entry or -1 if the file
+///         is already in the map
 static Function AB_AddMapEntry(baseFolder, discLocation)
 	string baseFolder, discLocation
 
 	variable index
 	string dataFolder, fileType, relativePath, extension
 	WAVE/T map = GetAnalysisBrowserMap()
+
+	WAVE/Z indizes = FindIndizes(map, colLabel="DiscLocation", str = discLocation)
+
+	if(WaveExists(indizes))
+		DEBUGPRINT("Skipping duplicated file: ", str = discLocation)
+		return -1
+	endif
 
 	index = GetNumberFromWaveNote(map, NOTE_INDEX)
 	EnsureLargeEnoughWave(map, minimumSize=index, dimension=ROWS)
@@ -214,6 +223,9 @@ Function/Wave AB_SaveDeviceList(deviceList, dataFolder)
 End
 
 /// @brief general loader for pxp, uxp and nwb files
+///
+/// @return 0 if the file was loaded, or 1 if not (usually due to an error
+///         or because it was already loaded)
 static Function AB_AddFile(baseFolder, discLocation)
 	string baseFolder, discLocation
 
@@ -224,6 +236,10 @@ static Function AB_AddFile(baseFolder, discLocation)
 
 	mapIndex = AB_AddMapEntry(baseFolder, discLocation)
 
+	if(mapIndex < 0)
+		return 1
+	endif
+
 	firstMapped = GetNumberFromWaveNote(list, NOTE_INDEX)
 	AB_LoadFile(discLocation)
 	lastMapped = GetNumberFromWaveNote(list, NOTE_INDEX) - 1
@@ -232,7 +248,10 @@ static Function AB_AddFile(baseFolder, discLocation)
 		list[firstMapped, lastMapped][%experiment][1] = num2str(mapIndex)
 	else // experiment could not be loaded
 		AB_RemoveMapEntry(mapIndex)
+		return 1
 	endif
+
+	return 0
 End
 
 /// @brief function tries to load Data From discLocation.
@@ -2404,4 +2423,45 @@ Function AB_ButtonProc_OpenCommentNB(ba) : ButtonControl
 	endswitch
 
 	return 0
+End
+
+/// @brief Load dropped NWB files into the analysis browser
+static Function BeforeFileOpenHook(refNum, file, pathName, type, creator, kind)
+	variable refNum, kind
+	string file, pathName, type, creator
+
+	string baseFolder, fileSuffix
+
+	fileSuffix = GetFileSuffix(file)
+	if(cmpstr(fileSuffix, "nwb"))
+		return 0
+	endif
+
+	Pathinfo $pathName
+	baseFolder = S_path
+
+	AB_OpenAnalysisBrowser()
+	// we can not add files to the map if some entries are collapsed
+	// so we have to expand all first.
+	PGC_SetAndActivateControl("AnalysisBrowser", "button_expand_all", val = 1)
+
+	if(AB_AddFile(basefolder, basefolder + file))
+		// already loaded or error
+		return 1
+	endif
+
+	// redimension to maximum size (all expanded)
+	WAVE expBrowserList = GetExperimentBrowserGUIList()
+	WAVE expBrowserSel  = GetExperimentBrowserGUISel()
+
+	variable numEntries = GetNumberFromWaveNote(expBrowserList, NOTE_INDEX)
+	Redimension/N=(numEntries, -1, -1, -1) expBrowserList, expBrowserSel
+
+	AB_ResetSelectionWave()
+
+	// backup initial state
+	WAVE/T expBrowserSelBak = CreateBackupWave(expBrowserSel, forceCreation=1)
+	WAVE/T expBrowserListBak = CreateBackupWave(expBrowserList, forceCreation=1)
+
+	return 1
 End
