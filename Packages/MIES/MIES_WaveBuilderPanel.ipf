@@ -1558,6 +1558,7 @@ static Function WBP_ChangeWaveType()
 	list  = "SetVar_WaveBuilder_P3;SetVar_WaveBuilder_P4;SetVar_WaveBuilder_P5;"
 	list += "SetVar_WaveBuilder_P4_OD00;SetVar_WaveBuilder_P4_OD01;SetVar_WaveBuilder_P4_OD02;SetVar_WaveBuilder_P4_OD03;SetVar_WaveBuilder_P4_OD04;"
 	list += "SetVar_WaveBuilder_P5_DD02;SetVar_WaveBuilder_P5_DD03;SetVar_WaveBuilder_P5_DD04;SetVar_WaveBuilder_P5_DD05;SetVar_WaveBuilder_P5_DD06;"
+	list += "popup_af_preDAQEvent_S1;popup_af_midSweep_S2;popup_af_postSweep_S3;popup_af_postSet_S4;popup_af_postDAQEvent_S5;button_af_jump_to_proc"
 
 	stimulusType = WBP_GetStimulusType()
 
