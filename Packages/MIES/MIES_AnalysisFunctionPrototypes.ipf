@@ -42,6 +42,5 @@ Function AF_PROTO_ANALYSIS_FUNC_V2(panelTitle, eventType, ITCDataWave, headStage
 	Wave ITCDataWave
 	variable headstage, realDataLength
 
-	// return value currently only honoured for `Pre DAQ` event
 	return 0
 End
