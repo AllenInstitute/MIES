@@ -2229,6 +2229,11 @@ static Function WBP_AnaFuncsToWPT()
 
 	string func
 
+	if(WBP_GetStimulusType() == STIMULUS_TYPE_TLL)
+		// don't store analysis functions for TTL
+		return NaN
+	endif
+
 	WAVE/T WPT = GetWaveBuilderWaveTextParam()
 
 	func = GetPopupMenuString(panel, "popup_af_preDAQEvent_S1")
