@@ -2225,7 +2225,7 @@ Function WBP_PopupMenu_AnalysisFunctions(pa) : PopupMenuControl
 	return 0
 End
 
-Function WBP_AnaFuncsToWPT()
+static Function WBP_AnaFuncsToWPT()
 
 	string func
 
