@@ -872,8 +872,8 @@ Function P_UpdatePressureDataStorageWv(panelTitle) /// @todo Needs to be reworke
 	PressureDataWv[][%PSI_SealMax]             = GetSetVariable(panelTitle, "setvar_Settings_SealMaxP")
 	PressureDataWv[][%solutionZaxis]           = GetSetVariable(panelTitle, "setvar_Settings_SurfaceHeight")
 	PressureDataWv[][%sliceZaxis]              = GetSetVariable(panelTitle, "setvar_Settings_SliceSurfHeight")
-	PressureDataWv[][%ManPPPressure]           = GetSetVariable(panelTitle, "setvar_DataAcq_PPPressure")
-	PressureDataWv[][%ManPPDuration]           = GetSetVariable(panelTitle, "setvar_DataAcq_PPDuration")
+	PressureDataWv[][%ManPPPressure]           = DAG_GetNumericalValue(panelTitle, "setvar_DataAcq_PPPressure")
+	PressureDataWv[][%ManPPDuration]           = DAG_GetNumericalValue(panelTitle, "setvar_DataAcq_PPDuration")
 	PressureDataWv[][%ApproachNear]            = DAG_GetNumericalValue(panelTitle, "check_DatAcq_ApproachNear")
 	PressureDataWv[][%SealAtm]                 = DAG_GetNumericalValue(panelTitle, "check_DatAcq_SealAtm")
 
