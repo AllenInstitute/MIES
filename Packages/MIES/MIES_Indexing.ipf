@@ -284,7 +284,7 @@ Function IDX_MaxNoOfSweeps(panelTitle, IndexOverRide)
 			continue
 		endif
 
-		MaxNoOfSweeps = max(MaxNoOfSweeps, IDX_NumberOfTrialsAcrossSets(panelTitle, i, 0, IndexOverRide))
+		MaxNoOfSweeps = max(MaxNoOfSweeps, IDX_NumberOfSweepsAcrossSets(panelTitle, i, 0, IndexOverRide))
 	endfor
 
 	WAVE statusTTL = DAG_GetChannelState(panelTitle, CHANNEL_TYPE_TTL)
@@ -295,7 +295,7 @@ Function IDX_MaxNoOfSweeps(panelTitle, IndexOverRide)
 			continue
 		endif
 
-		MaxNoOfSweeps = max(MaxNoOfSweeps, IDX_NumberOfTrialsAcrossSets(panelTitle, i, 1, IndexOverRide))
+		MaxNoOfSweeps = max(MaxNoOfSweeps, IDX_NumberOfSweepsAcrossSets(panelTitle, i, 1, IndexOverRide))
 	endfor
 
 	return DEBUGPRINTv(MaxNoOfSweeps)
@@ -318,7 +318,7 @@ Function IDX_MinNoOfSweeps(panelTitle)
 			continue
 		endif
 
-		MinNoOfSweeps = min(MinNoOfSweeps, IDX_NumberOfTrialsAcrossSets(panelTitle, i, 0, 1))
+		MinNoOfSweeps = min(MinNoOfSweeps, IDX_NumberOfSweepsAcrossSets(panelTitle, i, 0, 1))
 	endfor
 
 	WAVE statusTTL = DAG_GetChannelState(panelTitle, CHANNEL_TYPE_TTL)
@@ -329,7 +329,7 @@ Function IDX_MinNoOfSweeps(panelTitle)
 			continue
 		endif
 
-		MinNoOfSweeps = min(MinNoOfSweeps, IDX_NumberOfTrialsAcrossSets(panelTitle, i, 1, 1))
+		MinNoOfSweeps = min(MinNoOfSweeps, IDX_NumberOfSweepsAcrossSets(panelTitle, i, 1, 1))
 	endfor
 
 	return MinNoOfSweeps == inf ? 0 : MinNoOfSweeps
@@ -459,12 +459,12 @@ static Function/S IDX_GetSetsInRange(panelTitle, channel, channelType, lockedInd
 	endif
 End
 
-/// @brief Determine the number of trials for a DA or TTL channel
-static Function IDX_NumberOfTrialsAcrossSets(panelTitle, channel, channelType, lockedIndexing)
+/// @brief Determine the number of sweeps for a DA or TTL channel
+static Function IDX_NumberOfSweepsAcrossSets(panelTitle, channel, channelType, lockedIndexing)
 	string panelTitle
 	variable channel, channelType, lockedIndexing
 
-	variable numTrials, numEntries, i
+	variable numSweeps, numEntries, i
 	string setList, set
 
 	setList = IDX_GetSetsInRange(panelTitle, channel, channelType, lockedIndexing)
@@ -472,10 +472,10 @@ static Function IDX_NumberOfTrialsAcrossSets(panelTitle, channel, channelType, l
 	numEntries = ItemsInList(setList)
 	for(i = 0; i < numEntries; i += 1)
 		set = StringFromList(i, setList)
-		numTrials += IDX_NumberOfSweepsInSet(set)
+		numSweeps += IDX_NumberOfSweepsInSet(set)
 	endfor
 
-	return DEBUGPRINTv(numTrials)
+	return DEBUGPRINTv(numSweeps)
 End
 
 /// @brief Return the number of sweeps
