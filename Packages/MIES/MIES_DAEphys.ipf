@@ -1083,6 +1083,9 @@ Function DAP_ResetGUIAfterDAQ(panelTitle)
 
 	DAP_ToggleAcquisitionButton(panelTitle, DATA_ACQ_BUTTON_TO_DAQ)
 	EnableControls(panelTitle, CONTROLS_DISABLE_DURING_DAQ_TP)
+
+	// fix multi device mode dependent checkbox disabling
+	DAP_SwitchSingleMultiMode(panelTitle)
 End
 
 /// @brief One time cleaning up after data acquisition
@@ -3189,7 +3192,7 @@ Function DAP_CheckProc_MDEnable(cba) : CheckBoxControl
 	switch(cba.eventCode)
 		case 2: // mouse up
 			DAG_Update(cba.win, cba.ctrlName, val = cba.checked)
-			DAP_SwitchSingleMultiMode(cba.win, cba.checked)
+			DAP_SwitchSingleMultiMode(cba.win, stateChange = 1)
 			break
 	endswitch
 
@@ -3198,29 +3201,43 @@ End
 
 /// @brief Enable/Disable the related controls for single and multi device DAQ
 ///
-/// @param panelTitle     device
-/// @param useMultiDevice disable(0) or enable(1) the multi device support
-static Function DAP_SwitchSingleMultiMode(panelTitle, useMultiDevice)
+/// @param panelTitle  device
+/// @param stateChange [optional, defaults to false] multi device support has been changed from being
+///                                                  enabled/disabled or vice versa.
+Function DAP_SwitchSingleMultiMode(panelTitle, [stateChange])
 	string panelTitle
-	variable useMultiDevice
+	variable stateChange
 
-	variable checkedState
+	variable checkedState, useMultiDevice
+
+	if(ParamIsDefault(stateChange))
+		stateChange = 0
+	else
+		stateChange = !!stateChange
+	endif
+
+	useMultiDevice = DAG_GetNumericalValue(panelTitle, "check_Settings_MD")
 
 	if(useMultiDevice)
-		checkedState = DAG_GetNumericalValue(panelTitle, "Check_Settings_BkgTP")
-		SetControlUserData(panelTitle, "Check_Settings_BkgTP", "oldState", num2str(checkedState))
-		checkedState = DAG_GetNumericalValue(panelTitle, "Check_Settings_BackgrndDataAcq")
-		SetControlUserData(panelTitle, "Check_Settings_BackgrndDataAcq", "oldState", num2str(checkedState))
+		if(stateChange)
+			checkedState = DAG_GetNumericalValue(panelTitle, "Check_Settings_BkgTP")
+			SetControlUserData(panelTitle, "Check_Settings_BkgTP", "oldState", num2str(checkedState))
+			checkedState = DAG_GetNumericalValue(panelTitle, "Check_Settings_BackgrndDataAcq")
+			SetControlUserData(panelTitle, "Check_Settings_BackgrndDataAcq", "oldState", num2str(checkedState))
+		endif
 
 		PGC_SetAndActivateControl(panelTitle, "Check_Settings_BkgTP", val = CHECKBOX_SELECTED)
 		PGC_SetAndActivateControl(panelTitle, "Check_Settings_BackgrndDataAcq", val = CHECKBOX_SELECTED)
 		DisableControls(panelTitle, "Check_Settings_BkgTP;Check_Settings_BackgrndDataAcq")
 	else
 		EnableControls(panelTitle, "Check_Settings_BkgTP;Check_Settings_BackgrndDataAcq")
-		checkedState = str2num(GetUserData(panelTitle, "Check_Settings_BkgTP", "oldState"))
-		PGC_SetAndActivateControl(panelTitle, "Check_Settings_BkgTP", val = checkedState)
-		checkedState = str2num(GetUserData(panelTitle, "Check_Settings_BackgrndDataAcq", "oldState"))
-		PGC_SetAndActivateControl(panelTitle, "Check_Settings_BackgrndDataAcq", val = checkedState)
+
+		if(stateChange)
+			checkedState = str2num(GetUserData(panelTitle, "Check_Settings_BkgTP", "oldState"))
+			PGC_SetAndActivateControl(panelTitle, "Check_Settings_BkgTP", val = checkedState)
+			checkedState = str2num(GetUserData(panelTitle, "Check_Settings_BackgrndDataAcq", "oldState"))
+			PGC_SetAndActivateControl(panelTitle, "Check_Settings_BackgrndDataAcq", val = checkedState)
+		endif
 	endif
 End
 
