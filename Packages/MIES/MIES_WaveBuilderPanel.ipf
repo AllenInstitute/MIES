@@ -1547,17 +1547,19 @@ static Function WBP_HighPassDeltaLimits()
 	endif
 End
 
-static Function WBP_ChangeWaveType(stimulusType)
+static Function WBP_ChangeWaveType()
+
 	variable stimulusType
+	string list
 
 	WAVE SegWvType = GetSegmentTypeWave()
 	WAVE WP = GetWaveBuilderWaveParam()
 
-	string list
-
 	list  = "SetVar_WaveBuilder_P3;SetVar_WaveBuilder_P4;SetVar_WaveBuilder_P5;"
 	list += "SetVar_WaveBuilder_P4_OD00;SetVar_WaveBuilder_P4_OD01;SetVar_WaveBuilder_P4_OD02;SetVar_WaveBuilder_P4_OD03;SetVar_WaveBuilder_P4_OD04;"
 	list += "SetVar_WaveBuilder_P5_DD02;SetVar_WaveBuilder_P5_DD03;SetVar_WaveBuilder_P5_DD04;SetVar_WaveBuilder_P5_DD05;SetVar_WaveBuilder_P5_DD06;"
+
+	stimulusType = WBP_GetStimulusType()
 
 	if(stimulusType == STIMULUS_TYPE_TLL)
 		// recreate SegWvType with its defaults
@@ -1582,16 +1584,27 @@ static Function WBP_ChangeWaveType(stimulusType)
 	WBP_UpdatePanelIfAllowed()
 End
 
+static Function WBP_GetStimulusType()
+
+	strswitch(GetPopupMenuString(panel, "popup_WaveBuilder_OutputType"))
+		case "TTL":
+			return STIMULUS_TYPE_TLL
+			break
+		case "DA":
+			return STIMULUS_TYPE_DA
+			break
+		default:
+			ASSERT(0, "unknown stimulus type")
+			break
+	endswitch
+End
+
 Function WBP_PopMenuProc_WaveType(pa) : PopupMenuControl
 	STRUCT WMPopupAction& pa
 
 	switch(pa.eventCode)
 		case 2:
-			if(!cmpstr(pa.popStr,"TTL"))
-				WBP_ChangeWaveType(STIMULUS_TYPE_TLL)
-			else
-				WBP_ChangeWaveType(STIMULUS_TYPE_DA)
-			endif
+			WBP_ChangeWaveType()
 			break
 	endswitch
 
