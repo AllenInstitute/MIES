@@ -611,10 +611,10 @@ Function/WAVE PSQ_CreateOverrideResults(panelTitle, headstage, type)
 			numLayers = 2
 		case PSQ_SUB_THRESHOLD:
 			numRows = PSQ_GetNumberOfChunks(panelTitle, 0, headstage, type)
-			numCols = IDX_NumberOfTrialsInSet(stimset)
+			numCols = IDX_NumberOfSweepsInSet(stimset)
 			break
 		case PSQ_SQUARE_PULSE:
-			numRows = IDX_NumberOfTrialsInSet(stimset)
+			numRows = IDX_NumberOfSweepsInSet(stimset)
 			numCols = 0
 			break
 		default:
@@ -866,7 +866,7 @@ Function PSQ_SubThreshold(panelTitle, eventType, ITCDataWave, headStage, realDat
 			WAVE/T stimsets = GetLastSettingText(textualValues, sweepNo, STIM_WAVE_NAME_KEY, DATA_ACQUISITION_MODE)
 			stimset = stimsets[headstage]
 
-			sweepsInSet         = IDX_NumberOfTrialsInSet(stimset)
+			sweepsInSet         = IDX_NumberOfSweepsInSet(stimset)
 			passesInSet         = PSQ_NumPassesInSet(panelTitle, PSQ_SUB_THRESHOLD, sweepNo)
 			acquiredSweepsInSet = PSQ_NumAcquiredSweepsInSet(panelTitle, sweepNo)
 

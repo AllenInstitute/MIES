@@ -177,7 +177,7 @@ static Function IDX_StepsInSetWithMaxSweeps(panelTitle,IndexNo)
 		endif
 
 		WAVE stimsets = IDX_GetStimsets(panelTitle, i, CHANNEL_TYPE_DAC)
-		SetSteps = IDX_NumberOfTrialsInSet(IDX_GetSingleStimset(stimsets, ListStartNo + index))
+		SetSteps = IDX_NumberOfSweepsInSet(IDX_GetSingleStimset(stimsets, ListStartNo + index))
 		MaxSteps = max(MaxSteps, SetSteps)
 	endfor
 
@@ -207,7 +207,7 @@ static Function IDX_StepsInSetWithMaxSweeps(panelTitle,IndexNo)
 		endif
 
 		WAVE stimsets = IDX_GetStimsets(panelTitle, i, CHANNEL_TYPE_TTL)
-		SetSteps = IDX_NumberOfTrialsInSet(IDX_GetSingleStimset(stimsets, ListStartNo + index))
+		SetSteps = IDX_NumberOfSweepsInSet(IDX_GetSingleStimset(stimsets, ListStartNo + index))
 		MaxSteps = max(MaxSteps, SetSteps)
 	endfor
 	
@@ -472,14 +472,14 @@ static Function IDX_NumberOfTrialsAcrossSets(panelTitle, channel, channelType, l
 	numEntries = ItemsInList(setList)
 	for(i = 0; i < numEntries; i += 1)
 		set = StringFromList(i, setList)
-		numTrials += IDX_NumberOfTrialsInSet(set)
+		numTrials += IDX_NumberOfSweepsInSet(set)
 	endfor
 
 	return DEBUGPRINTv(numTrials)
 End
 
-/// @brief Return the number of trials
-Function IDX_NumberOfTrialsInSet(setName)
+/// @brief Return the number of sweeps
+Function IDX_NumberOfSweepsInSet(setName)
 	string setName
 
 	if(isEmpty(setName))
@@ -538,14 +538,14 @@ static Function IDX_TotalIndexingListSteps(panelTitle, ChannelNumber, DAorTTL)
 	if(DAIndexingStorageWave[0][ChannelNumber]<DAIndexingStorageWave[1][ChannelNumber])
 		if(DAorTTL==0)
 			do
-				totalListSteps += IDX_NumberOfTrialsInSet(IDX_GetSingleStimset(stimsets, DAIndexingStorageWave[0][channelNumber] + i))
+				totalListSteps += IDX_NumberOfSweepsInSet(IDX_GetSingleStimset(stimsets, DAIndexingStorageWave[0][channelNumber] + i))
 				i+=1
 			while( (i + DAIndexingStorageWave[0][ChannelNumber]) <= DAIndexingStorageWave[1][ChannelNumber] )
 		endif
 		
 		if(DAorTTL==1)
 			do
-				totalListSteps += IDX_NumberOfTrialsInSet(IDX_GetSingleStimset(stimsets, TTLIndexingStorageWave[0][channelNumber] + i))
+				totalListSteps += IDX_NumberOfSweepsInSet(IDX_GetSingleStimset(stimsets, TTLIndexingStorageWave[0][channelNumber] + i))
 				i+=1
 			while( (i + TTLIndexingStorageWave[0][ChannelNumber]) <= TTLIndexingStorageWave[1][ChannelNumber] )
 		endif
@@ -556,14 +556,14 @@ static Function IDX_TotalIndexingListSteps(panelTitle, ChannelNumber, DAorTTL)
 	if(DAIndexingStorageWave[0][ChannelNumber]>DAIndexingStorageWave[1][ChannelNumber])
 		if(DAorTTL==0)
 			do
-				totalListSteps += IDX_NumberOfTrialsInSet(IDX_GetSingleStimset(stimsets, DAIndexingStorageWave[0][channelNumber] + i))
+				totalListSteps += IDX_NumberOfSweepsInSet(IDX_GetSingleStimset(stimsets, DAIndexingStorageWave[0][channelNumber] + i))
 				i+=1
 			while( (i + DAIndexingStorageWave[1][ChannelNumber]) <= DAIndexingStorageWave[0][ChannelNumber] )
 		endif
 
 		if(DAorTTL==1)
 			do
-				totalListSteps += IDX_NumberOfTrialsInSet(IDX_GetSingleStimset(stimsets, TTLIndexingStorageWave[0][channelNumber] + i))
+				totalListSteps += IDX_NumberOfSweepsInSet(IDX_GetSingleStimset(stimsets, TTLIndexingStorageWave[0][channelNumber] + i))
 				i+=1
 			while( (i + TTLIndexingStorageWave[1][ChannelNumber]) <= TTLIndexingStorageWave[0][ChannelNumber] )
 		endif
@@ -596,20 +596,20 @@ Function IDX_UnlockedIndexingStepNo(panelTitle, channelNo, DAorTTL, count)
 	if((DAIndexingStorageWave[0][channelNo]) < (DAIndexingStorageWave[1][channelNo]))
 		if(DAorTTL == 0)//DA channel
 			do
-				StepsInSummedSets += IDX_NumberOfTrialsInSet(IDX_GetSingleStimset(stimsets, DAIndexingStorageWave[0][channelNo] + i))
+				StepsInSummedSets += IDX_NumberOfSweepsInSet(IDX_GetSingleStimset(stimsets, DAIndexingStorageWave[0][channelNo] + i))
 				i += 1
 			while(StepsInSummedSets<=Count)
 			i-=1
-			StepsInSummedSets -= IDX_NumberOfTrialsInSet(IDX_GetSingleStimset(stimsets, DAIndexingStorageWave[0][channelNo] + i))
+			StepsInSummedSets -= IDX_NumberOfSweepsInSet(IDX_GetSingleStimset(stimsets, DAIndexingStorageWave[0][channelNo] + i))
 		endif
 
 		if(DAorTTL==1)//TTL channel
 			do
-				StepsInSummedSets += IDX_NumberOfTrialsInSet(IDX_GetSingleStimset(stimsets, TTLIndexingStorageWave[0][channelNo] + i))
+				StepsInSummedSets += IDX_NumberOfSweepsInSet(IDX_GetSingleStimset(stimsets, TTLIndexingStorageWave[0][channelNo] + i))
 				i+=1
 			while(StepsInSummedSets<=Count)
 			i-=1
-			StepsInSummedSets -= IDX_NumberOfTrialsInSet(IDX_GetSingleStimset(stimsets, TTLIndexingStorageWave[0][channelNo] + i))
+			StepsInSummedSets -= IDX_NumberOfSweepsInSet(IDX_GetSingleStimset(stimsets, TTLIndexingStorageWave[0][channelNo] + i))
 		endif
 	endif
 
@@ -617,20 +617,20 @@ Function IDX_UnlockedIndexingStepNo(panelTitle, channelNo, DAorTTL, count)
 	if(DAIndexingStorageWave[0][channelNo] > DAIndexingStorageWave[1][channelNo])//  handels the situation where the start set is after the end set on the index list
 		if(DAorTTL==0)//DA channel
 			do
-				StepsInSummedSets += IDX_NumberOfTrialsInSet(IDX_GetSingleStimset(stimsets, DAIndexingStorageWave[0][channelNo] + i))
+				StepsInSummedSets += IDX_NumberOfSweepsInSet(IDX_GetSingleStimset(stimsets, DAIndexingStorageWave[0][channelNo] + i))
 				i-=1
 			while(StepsInSummedSets<=Count)
 			i+=1
-			StepsInSummedSets -= IDX_NumberOfTrialsInSet(IDX_GetSingleStimset(stimsets, DAIndexingStorageWave[0][channelNo] + i))
+			StepsInSummedSets -= IDX_NumberOfSweepsInSet(IDX_GetSingleStimset(stimsets, DAIndexingStorageWave[0][channelNo] + i))
 		endif
 
 		if(DAorTTL==1)//TTL channel
 			do
-				StepsInSummedSets += IDX_NumberOfTrialsInSet(IDX_GetSingleStimset(stimsets, TTLIndexingStorageWave[0][channelNo] + i))
+				StepsInSummedSets += IDX_NumberOfSweepsInSet(IDX_GetSingleStimset(stimsets, TTLIndexingStorageWave[0][channelNo] + i))
 				i-=1
 			while(StepsInSummedSets<=Count)
 			i+=1
-			StepsInSummedSets -= IDX_NumberOfTrialsInSet(IDX_GetSingleStimset(stimsets, TTLIndexingStorageWave[0][channelNo] + i))
+			StepsInSummedSets -= IDX_NumberOfSweepsInSet(IDX_GetSingleStimset(stimsets, TTLIndexingStorageWave[0][channelNo] + i))
 		endif
 	endif
 
@@ -661,7 +661,7 @@ static Function IDX_DetIfCountIsAtSetBorder(panelTitle, count, channelNumber, DA
 		i=0
 		if(DAorTTL==0)//DA channel
 			do
-				StepsInSummedSets += IDX_NumberOfTrialsInSet(IDX_GetSingleStimset(stimsets, DAIndexingStorageWave[0][ChannelNumber] + i))
+				StepsInSummedSets += IDX_NumberOfSweepsInSet(IDX_GetSingleStimset(stimsets, DAIndexingStorageWave[0][ChannelNumber] + i))
 				if(StepsInSummedSets == Count)
 					return 1
 				endif
@@ -674,7 +674,7 @@ static Function IDX_DetIfCountIsAtSetBorder(panelTitle, count, channelNumber, DA
 	if(TTLIndexingStorageWave[0][ChannelNumber]<TTLIndexingStorageWave[1][ChannelNumber])
 		if(DAorTTL==1)// TTL channel
 			do
-				StepsInSummedSets += IDX_NumberOfTrialsInSet(IDX_GetSingleStimset(stimsets, TTLIndexingStorageWave[0][ChannelNumber] + i))
+				StepsInSummedSets += IDX_NumberOfSweepsInSet(IDX_GetSingleStimset(stimsets, TTLIndexingStorageWave[0][ChannelNumber] + i))
 
 				if(StepsInSummedSets == Count)
 					return 1
@@ -688,7 +688,7 @@ static Function IDX_DetIfCountIsAtSetBorder(panelTitle, count, channelNumber, DA
 		i=0
 		if(DAorTTL==0)//DA channel
 			do
-				StepsInSummedSets += IDX_NumberOfTrialsInSet(IDX_GetSingleStimset(stimsets, DAIndexingStorageWave[0][ChannelNumber] + i))
+				StepsInSummedSets += IDX_NumberOfSweepsInSet(IDX_GetSingleStimset(stimsets, DAIndexingStorageWave[0][ChannelNumber] + i))
 				if(StepsInSummedSets == Count)
 					return 1
 				endif
@@ -701,7 +701,7 @@ static Function IDX_DetIfCountIsAtSetBorder(panelTitle, count, channelNumber, DA
 	if(TTLIndexingStorageWave[0][ChannelNumber]>TTLIndexingStorageWave[1][ChannelNumber])
 		if(DAorTTL==1)// TTL channel
 			do
-				StepsInSummedSets += IDX_NumberOfTrialsInSet(IDX_GetSingleStimset(stimsets, TTLIndexingStorageWave[0][ChannelNumber] + i))
+				StepsInSummedSets += IDX_NumberOfSweepsInSet(IDX_GetSingleStimset(stimsets, TTLIndexingStorageWave[0][ChannelNumber] + i))
 
 				if(StepsInSummedSets == Count)
 					return 1
