@@ -135,6 +135,9 @@ static Function PS_RB_Test1()
 	sweepLengths[] -= onsetDelay / DimDelta(GetSweepWave(DEVICE, sweeps[p]), ROWS)
 
 	CHECK_EQUAL_WAVES(stimSetLengths, sweepLengths, mode = WAVE_DATA)
+
+	WAVE/Z durations = GetLastSetting(numericalValues, sweeps[0], PSQ_CreateLBNKey(PSQ_RHEOBASE, PSQ_FMT_LBN_PULSE_DUR, query = 1), UNKNOWN_MODE)
+	CHECK_EQUAL_WAVES(durations, {3, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN}, mode = WAVE_DATA, tol = 0.01)
 End
 
 // we don't test the BL QC code path here anymore
@@ -188,6 +191,9 @@ static Function PS_RB_Test2()
 	Make/FREE/D/N=(numEntries) stimScaleRef = (p * PSQ_RB_DASCALE_STEP + PSQ_RB_FINALSCALE_FAKE) * 1e12
 
 	CHECK_EQUAL_WAVES(stimScale, stimScaleRef, mode = WAVE_DATA, tol = 1e-14)
+
+	WAVE/Z durations = GetLastSetting(numericalValues, sweeps[0], PSQ_CreateLBNKey(PSQ_RHEOBASE, PSQ_FMT_LBN_PULSE_DUR, query = 1), UNKNOWN_MODE)
+	CHECK_EQUAL_WAVES(durations, {3, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN}, mode = WAVE_DATA, tol = 0.01)
 End
 
 static Function PS_RB_Run3()
@@ -239,6 +245,9 @@ static Function PS_RB_Test3()
 	Make/FREE/D/N=(numEntries) stimScaleRef = (PSQ_RB_FINALSCALE_FAKE - p * PSQ_RB_DASCALE_STEP) * 1e12
 
 	CHECK_EQUAL_WAVES(stimScale, stimScaleRef, mode = WAVE_DATA, tol = 1e-14)
+
+	WAVE/Z durations = GetLastSetting(numericalValues, sweeps[0], PSQ_CreateLBNKey(PSQ_RHEOBASE, PSQ_FMT_LBN_PULSE_DUR, query = 1), UNKNOWN_MODE)
+	CHECK_EQUAL_WAVES(durations, {3, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN}, mode = WAVE_DATA, tol = 0.01)
 End
 
 static Function PS_RB_Run4()
@@ -290,6 +299,9 @@ static Function PS_RB_Test4()
 	Make/FREE/D/N=(numEntries) stimScaleRef = (PSQ_RB_FINALSCALE_FAKE - p * PSQ_RB_DASCALE_STEP) * 1e12
 
 	CHECK_EQUAL_WAVES(stimScale, stimScaleRef, mode = WAVE_DATA, tol = 1e-14)
+
+	WAVE/Z durations = GetLastSetting(numericalValues, sweeps[0], PSQ_CreateLBNKey(PSQ_RHEOBASE, PSQ_FMT_LBN_PULSE_DUR, query = 1), UNKNOWN_MODE)
+	CHECK_EQUAL_WAVES(durations, {3, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN}, mode = WAVE_DATA, tol = 0.01)
 End
 
 static Function PS_RB_Run5()
@@ -341,6 +353,9 @@ static Function PS_RB_Test5()
 	Make/FREE/D/N=(numEntries) stimScaleRef = (PSQ_RB_FINALSCALE_FAKE + p * PSQ_RB_DASCALE_STEP) * 1e12
 
 	CHECK_EQUAL_WAVES(stimScale, stimScaleRef, mode = WAVE_DATA, tol = 1e-14)
+
+	WAVE/Z durations = GetLastSetting(numericalValues, sweeps[0], PSQ_CreateLBNKey(PSQ_RHEOBASE, PSQ_FMT_LBN_PULSE_DUR, query = 1), UNKNOWN_MODE)
+	CHECK_EQUAL_WAVES(durations, {3, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN}, mode = WAVE_DATA, tol = 0.01)
 End
 
 static Function PS_RB_Run6()
@@ -392,4 +407,7 @@ static Function PS_RB_Test6()
 	Make/FREE/D/N=(numEntries) stimScaleRef = (PSQ_RB_FINALSCALE_FAKE + p * PSQ_RB_DASCALE_STEP) * 1e12
 
 	CHECK_EQUAL_WAVES(stimScale, stimScaleRef, mode = WAVE_DATA, tol = 1e-14)
+
+	WAVE/Z durations = GetLastSetting(numericalValues, sweeps[0], PSQ_CreateLBNKey(PSQ_RHEOBASE, PSQ_FMT_LBN_PULSE_DUR, query = 1), UNKNOWN_MODE)
+	CHECK_EQUAL_WAVES(durations, {3, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN}, mode = WAVE_DATA, tol = 0.01)
 End

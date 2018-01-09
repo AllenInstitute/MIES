@@ -41,6 +41,7 @@ static StrConstant PSQ_RB_LBN_PREFIX = "Rheobase"
 /// PSQ_FMT_LBN_BL_QC_PASS      Pass/fail state of the complete baseline                  ST, RB            No                     Yes
 /// PSQ_FMT_LBN_SWEEP_PASS      Pass/fail state of the complete sweep                     ST, SP            No                     No
 /// PSQ_FMT_LBN_SET_PASS        Pass/fail state of the complete set                       ST, RB            No                     No
+/// PSQ_FMT_LBN_PULSE_DUR       Pulse duration as determined experimentally               RB                No                     Yes
 ///
 /// \endrst
 ///
@@ -113,12 +114,77 @@ static Function PSQ_GetPulseSettingsForType(type, s)
 		case PSQ_RHEOBASE:
 			s.prePulseChunkLength  = PSQ_RB_PRE_BL_EVAL_RANGE
 			s.postPulseChunkLength = PSQ_RB_POST_BL_EVAL_RANGE
-			s.pulseDuration        = PSQ_RB_PULSE_DUR
+			s.pulseDuration        = NaN
 			break
 		default:
 			ASSERT(0, "unsupported type")
 			break
 	endswitch
+End
+
+/// Return the pulse durations from the labnotebook or calculate them before if required.
+/// For convenience unused headstages will have 0 instead of NaN in the returned wave.
+static Function/WAVE PSQ_GetPulseDurations(panelTitle, sweepNo, totalOnsetDelay)
+	string panelTitle
+	variable sweepNo, totalOnsetDelay
+
+	string key
+
+	WAVE numericalValues = GetLBNumericalValues(panelTitle)
+
+	key = PSQ_CreateLBNKey(PSQ_RHEOBASE, PSQ_FMT_LBN_PULSE_DUR, query = 1)
+	WAVE/Z durations = GetLastSetting(numericalValues, sweepNo, key, UNKNOWN_MODE)
+
+	if(!WaveExists(durations))
+		WAVE durations = PSQ_DeterminePulseDuration(panelTitle, sweepNo, totalOnsetDelay)
+
+		key = PSQ_CreateLBNKey(PSQ_RHEOBASE, PSQ_FMT_LBN_PULSE_DUR)
+		ED_AddEntryToLabnotebook(panelTitle, key, durations, unit = "ms", overrideSweepNo = sweepNo)
+	endif
+
+	durations[] = IsNaN(durations[p]) ? 0 : durations[p]
+
+	return durations
+End
+
+/// @brief Determine the pulse duration on each headstage
+///
+/// Returns the labnotebook wave as well.
+static Function/WAVE PSQ_DeterminePulseDuration(panelTitle, sweepNo, totalOnsetDelay)
+	string panelTitle
+	variable sweepNo, totalOnsetDelay
+
+	variable i, level
+	string key
+
+	WAVE/Z sweepWave = GetSweepWave(panelTitle, sweepNo)
+
+	if(!WaveExists(sweepWave))
+		WAVE sweepWave = GetITCDataWave(panelTitle)
+		WAVE config    = GetITCChanConfigWave(panelTitle)
+	else
+		WAVE config = GetConfigWave(sweepWave)
+	endif
+
+	WAVE statusHS = DAG_GetChannelState(panelTitle, CHANNEL_TYPE_HEADSTAGE)
+	MAKE/FREE/D/N=(LABNOTEBOOK_LAYER_COUNT) durations = NaN
+
+	for(i = 0; i < NUM_HEADSTAGES; i += 1)
+
+		if(!statusHS[i])
+			continue
+		endif
+
+		WAVE singleDA = AFH_ExtractOneDimDataFromSweep(panelTitle, sweepWave, i, ITC_XOP_CHANNEL_TYPE_DAC, config = config)
+		level = WaveMin(singleDA, totalOnsetDelay, inf) + 0.1 * (WaveMax(singleDA, totalOnsetDelay, inf) - WaveMin(singleDA, totalOnsetDelay, inf))
+		Make/FREE/D levels
+		FindLevels/Q/N=2/DEST=levels/R=(totalOnsetDelay, inf) singleDA, level
+		ASSERT(DimSize(levels, ROWS) == 2, "Unexpected number of levels")
+
+		durations[i] = levels[1] - levels[0] - DimDelta(singleDA, ROWS)
+	endfor
+
+	return durations
 End
 
 /// @brief Evaluate one chunk of the baseline.
@@ -134,7 +200,7 @@ static Function PSQ_EvaluateBaselineProperties(panelTitle, type, sweepNo, chunk,
 	variable type, sweepNo, chunk, fifoInStimsetTime, totalOnsetDelay
 
 	variable , evalStartTime, evalRangeTime
-	variable i, ADC, ADcol, chunkStartTime
+	variable i, ADC, ADcol, chunkStartTimeMax, chunkStartTime
 	variable targetV, index
 	variable rmsShortPassedAll, rmsLongPassedAll, chunkPassed
 	variable targetVPassedAll, baselineType, chunkLengthTime
@@ -144,18 +210,20 @@ static Function PSQ_EvaluateBaselineProperties(panelTitle, type, sweepNo, chunk,
 	PSQ_GetPulseSettingsForType(type, s)
 
 	if(chunk == 0) // pre pulse baseline
-		chunkStartTime  = totalOnsetDelay
-		chunkLengthTime = s.prePulseChunkLength
-		baselineType    = PSQ_BL_PRE_PULSE
+		chunkStartTimeMax  = totalOnsetDelay
+		chunkLengthTime    = s.prePulseChunkLength
+		baselineType       = PSQ_BL_PRE_PULSE
 	else // post pulse baseline
+		WAVE settings = PSQ_GetPulseDurations(panelTitle, sweepNo, totalOnsetDelay)
 		 // skip: onset delay, the pulse itself and one chunk of post pulse baseline
-		chunkStartTime  = (totalOnsetDelay + s.prePulseChunkLength + s.pulseDuration) + chunk * s.postPulseChunkLength
-		chunkLengthTime = s.postPulseChunkLength
-		baselineType    = PSQ_BL_POST_PULSE
+		 WAVE durations   = PSQ_GetPulseDurations(panelTitle, sweepNo, totalOnsetDelay)
+		chunkStartTimeMax = (totalOnsetDelay + s.prePulseChunkLength + WaveMax(durations)) + chunk * s.postPulseChunkLength
+		chunkLengthTime   = s.postPulseChunkLength
+		baselineType      = PSQ_BL_POST_PULSE
 	endif
 
 	// not enough data to evaluate
-	if(fifoInStimsetTime < chunkStartTime + chunkLengthTime)
+	if(fifoInStimsetTime < chunkStartTimeMax + chunkLengthTime)
 		return NaN
 	endif
 
@@ -188,7 +256,7 @@ static Function PSQ_EvaluateBaselineProperties(panelTitle, type, sweepNo, chunk,
 
 	WAVE OscilloscopeData = GetOscilloscopeWave(panelTitle)
 
-	sprintf msg, "We have some data to evaluate in chunk %d [%g, %g]:  %gms\r", chunk, chunkStartTime, chunkStartTime + chunkLengthTime, fifoInStimsetTime
+	sprintf msg, "We have some data to evaluate in chunk %d [%g, %g]:  %gms\r", chunk, chunkStartTimeMax, chunkStartTimeMax + chunkLengthTime, fifoInStimsetTime
 	DEBUGPRINT(msg)
 
 	WAVE config = GetITCChanConfigWave(panelTitle)
@@ -208,6 +276,13 @@ static Function PSQ_EvaluateBaselineProperties(panelTitle, type, sweepNo, chunk,
 
 		if(!statusHS[i])
 			continue
+		endif
+
+		if(chunk == 0) // pre pulse baseline
+			chunkStartTime = totalOnsetDelay
+		else
+			ASSERT(durations[i] != 0, "Invalid calculated durations")
+			chunkStartTime = (totalOnsetDelay + s.prePulseChunkLength + durations[i]) + chunk * s.postPulseChunkLength
 		endif
 
 		ADC = AFH_GetADCFromHeadstage(panelTitle, i)
@@ -379,9 +454,9 @@ End
 /// @brief Return the number of chunks
 ///
 /// A chunk is #PSQ_ST_BL_EVAL_RANGE_MS/#PSQ_RB_POST_BL_EVAL_RANGE/#PSQ_RB_PRE_BL_EVAL_RANGE [ms] of baseline
-static Function PSQ_GetNumberOfChunks(panelTitle, type)
+static Function PSQ_GetNumberOfChunks(panelTitle, sweepNo, headstage, type)
 	string panelTitle
-	variable type
+	variable type, sweepNo, headstage
 
 	variable length, nonBL, totalOnsetDelay
 
@@ -398,7 +473,9 @@ static Function PSQ_GetNumberOfChunks(panelTitle, type)
 			return floor((length - nonBL) / PSQ_ST_BL_EVAL_RANGE_MS)
 			break
 		case PSQ_RHEOBASE:
-			nonBL = totalOnsetDelay + PSQ_RB_PULSE_DUR + PSQ_RB_POST_BL_EVAL_RANGE
+			WAVE durations = PSQ_GetPulseDurations(panelTitle, sweepNo, totalOnsetDelay)
+			ASSERT(durations[headstage] != 0, "Pulse duration can not be zero")
+			nonBL = totalOnsetDelay + durations[headstage] + PSQ_RB_POST_BL_EVAL_RANGE
 			return floor((length - nonBL - PSQ_RB_PRE_BL_EVAL_RANGE) / PSQ_RB_POST_BL_EVAL_RANGE) + 1
 			break
 		default:
@@ -532,7 +609,7 @@ Function/WAVE PSQ_CreateOverrideResults(panelTitle, headstage, type)
 		case PSQ_RHEOBASE:
 			numLayers = 2
 		case PSQ_SUB_THRESHOLD:
-			numRows = PSQ_GetNumberOfChunks(panelTitle, type)
+			numRows = PSQ_GetNumberOfChunks(panelTitle, 0, headstage, type)
 			numCols = IDX_NumberOfTrialsInSet(stimset)
 			break
 		case PSQ_SQUARE_PULSE:
@@ -881,7 +958,7 @@ Function PSQ_SubThreshold(panelTitle, eventType, ITCDataWave, headStage, realDat
 	fifoInStimsetPoint = lastFifoPos - totalOnsetDelay / DimDelta(OscilloscopeData, ROWS)
 	fifoInStimsetTime  = fifoInStimsetPoint * DimDelta(OscilloscopeData, ROWS)
 
-	numBaselineChunks = PSQ_GetNumberOfChunks(panelTitle, PSQ_SUB_THRESHOLD)
+	numBaselineChunks = PSQ_GetNumberOfChunks(panelTitle, sweepNo, headstage, PSQ_SUB_THRESHOLD)
 
 	for(i = 0; i < numBaselineChunks; i += 1)
 
@@ -1071,7 +1148,7 @@ End
 /// Prerequisites:
 /// - This stimset must have this analysis function set for the "Pre DAQ", "Mid Sweep", "Post Sweep", "Post Set" Event
 /// - Does only work for one headstage
-/// - Assumes that the stimset has a pulse
+/// - Assumes that the stimset has a pulse of non-zero and arbitrary length
 /// - Pre pulse baseline length is #PSQ_RB_PRE_BL_EVAL_RANGE
 /// - Post pulse baseline length a multiple of #PSQ_RB_POST_BL_EVAL_RANGE
 ///
@@ -1299,7 +1376,7 @@ Function PSQ_Rheobase(panelTitle, eventType, ITCDataWave, headStage, realDataLen
 	fifoInStimsetPoint = lastFifoPos - totalOnsetDelay / DimDelta(OscilloscopeData, ROWS)
 	fifoInStimsetTime  = fifoInStimsetPoint * DimDelta(OscilloscopeData, ROWS)
 
-	numBaselineChunks = PSQ_GetNumberOfChunks(panelTitle, PSQ_RHEOBASE)
+	numBaselineChunks = PSQ_GetNumberOfChunks(panelTitle, sweepNo, headstage, PSQ_RHEOBASE)
 
 	for(i = 0; i < numBaselineChunks; i += 1)
 

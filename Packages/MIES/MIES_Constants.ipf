@@ -769,7 +769,6 @@ Constant PSQ_SP_INIT_AMP_p10    = +10e-12
 
 Constant PSQ_RB_PRE_BL_EVAL_RANGE  = 500
 Constant PSQ_RB_POST_BL_EVAL_RANGE = 50
-Constant PSQ_RB_PULSE_DUR          = 3
 
 Constant PSQ_ST_NUM_SWEEPS_PASS  = 3
 Constant PSQ_ST_BL_EVAL_RANGE_MS = 500
@@ -798,6 +797,7 @@ StrConstant PSQ_FMT_LBN_CHUNK_PASS     = "%s Chk%d BL QC"
 StrConstant PSQ_FMT_LBN_BL_QC_PASS     = "%s BL QC"
 StrConstant PSQ_FMT_LBN_SWEEP_PASS     = "%s Sweep QC"
 StrConstant PSQ_FMT_LBN_SET_PASS       = "%s Set QC"
+StrConstant PSQ_FMT_LBN_PULSE_DUR      = "%s Pulse duration"
 /// @}
 
 /// PatchSeq types of analysis functions
