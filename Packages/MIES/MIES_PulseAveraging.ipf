@@ -473,11 +473,10 @@ Function PA_GatherSettings(win, pps)
 	string win
 	STRUCT PostPlotSettings &pps
 
-	string extPanel, sbPanel
+	string extPanel
 
 	win      = GetMainWindow(win)
 	extPanel = BSP_GetPanel(win)
-	sbPanel  = win + "#P0"
 
 	if(!PA_IsActive(win))
 		InitPulseAverageSettings(pps.pulseAverSett)
@@ -490,17 +489,7 @@ Function PA_GatherSettings(win, pps)
 	pps.pulseAverSett.startingPulse        = GetSetVariable(extPanel, "setvar_pulseAver_startPulse")
 	pps.pulseAverSett.endingPulse          = GetSetVariable(extPanel, "setvar_pulseAver_endPulse")
 	pps.pulseAverSett.fallbackPulseLength  = GetSetVariable(extPanel, "setvar_pulseAver_fallbackLength")
-	pps.pulseAverSett.regionSlider         = -1 // save default
-
-	if(ControlExists(win, "slider_dDAQ_regions")) // databrowser
-		if(GetCheckboxState(win, "check_databrowser_dDAQMode"))
-			pps.pulseAverSett.regionSlider = GetSliderPositionIndex(win, "slider_dDAQ_regions")
-		endif
-	else
-		if(GetCheckboxState(sbPanel, "check_sweepbrowser_dDAQ"))
-			pps.pulseAverSett.regionSlider = str2num(GetPopupMenuString(sbPanel, "popup_dDAQ_regions"))
-		endif
-	endif
+	pps.pulseAverSett.regionSlider         = BSP_GetDDAQ(win)
 End
 
 Function PA_ShowPulses(win, dfr, pa)
@@ -508,7 +497,7 @@ Function PA_ShowPulses(win, dfr, pa)
 	DFREF dfr
 	STRUCT PulseAverageSettings &pa
 
-	string sourceGraph, graph, trace, preExistingGraphs
+	string graph, trace, preExistingGraphs
 	string averageWaveName, pulseTrace, channelTypeStr, str, traceList, traceFullPath
 	variable numChannels, i, j, k, l, idx, numTraces, sweepNo, headstage, numPulsesTotal, numPulses
 	variable first, numEntries, startingPulse, endingPulse, numGraphs
@@ -535,8 +524,7 @@ Function PA_ShowPulses(win, dfr, pa)
 		endingPulseSett = pa.endingPulse
 	endif
 
-	sourceGraph        = GetSweepGraph(win)
-	WAVE/T/Z traceData = PA_GetTraceInfos(sourceGraph)
+	WAVE/T/Z traceData = PA_GetTraceInfos(win)
 
 	if(!WaveExists(traceData)) // no traces
 		KillWindows(preExistingGraphs)

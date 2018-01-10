@@ -325,7 +325,7 @@ Function AR_MainListBoxProc(lba) : ListBoxControl
 	switch(lba.eventCode)
 		case 4: // cell selection
 		case 5: // cell selection plus shift key
-			graph = GetSweepGraph(lba.win)
+			graph = GetMainWindow(lba.win)
 			AR_HighlightArtefactsEntry(graph)
 			break
 	endswitch
@@ -343,7 +343,7 @@ Function AR_SetVarProcCutoffLength(sva) : SetVariableControl
 		case 2: // Enter key
 		case 3: // Live update
 			panelTitle = GetMainWindow(sva.win)
-			graph = GetSweepGraph(panelTitle)
+			graph = GetMainWindow(panelTitle)
 			AR_UpdateListBoxWave(panelTitle)
 			AR_HandleRanges(graph)
 			break
@@ -360,7 +360,7 @@ Function AR_ButtonProc_RemoveRanges(ba) : ButtonControl
 	switch(ba.eventCode)
 		case 2: // mouse up
 			win = ba.win
-			graph = GetSweepGraph(win)
+			graph = GetMainWindow(win)
 			SetCheckBoxState(win, "check_auto_remove", CHECKBOX_SELECTED)
 			UpdateSweepPlot(graph)
 			SetCheckBoxState(win, "check_auto_remove", CHECKBOX_UNSELECTED)

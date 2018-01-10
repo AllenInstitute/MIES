@@ -296,14 +296,15 @@ Constant IGOR_TYPE_STRUCT_PARAMETER = 0x200
 
 /// @name TabControl values in Browser Settings Panel
 /// @{
-Constant MIES_BSP_OVS = 0
-Constant MIES_BSP_CS  = 1
-Constant MIES_BSP_AR  = 2
-Constant MIES_BSP_PA  = 3
+Constant MIES_BSP_OVS = 1
+Constant MIES_BSP_CS  = 2
+Constant MIES_BSP_AR  = 3
+Constant MIES_BSP_PA  = 4
 /// @}
 
-/// @name Possible values for MIES_BSP_FOLDER_TYPE in #BSP_GetFolder
+/// @name values for BrowserSettings UserData
 /// @{
+strConstant MIES_BSP_BROWSER = "BROWSER"
 strConstant MIES_BSP_DEVICE = "DEVICE"
 strConstant MIES_BSP_PANEL_FOLDER = "PANEL_FOLDER"
 strConstant MIES_BSP_AR_SWEEPFOLDER = "AR_SWEEPFOLDER"
@@ -473,9 +474,9 @@ Constant HARDWARE_DAC_EXTERNAL_TRIGGER = 0x1
 /// @}
 
 /// Used to upgrade the GuiStateWave as well as the DA Ephys panel
-Constant DA_EPHYS_PANEL_VERSION     = 26
-Constant DATABROWSER_PANEL_VERSION  = 6
-Constant SWEEPBROWSER_PANEL_VERSION = 2
+Constant DA_EPHYS_PANEL_VERSION     = 27
+Constant DATABROWSER_PANEL_VERSION  = 7
+Constant SWEEPBROWSER_PANEL_VERSION = 3
 Constant WAVEBUILDER_PANEL_VERSION  = 3
 
 /// Version of the labnotebooks (numerical and textual)

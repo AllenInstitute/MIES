@@ -11,7 +11,12 @@
 /// @brief __BSP__ Panel for __DB__ and __AB__ (SweepBrowser) that combines different settings in a tabcontrol.
 
 static strConstant EXT_PANEL_SUBWINDOW = "BrowserSettingsPanel"
-static Constant BROWSERSETTINGS_PANEL_VERSION = 1
+static strConstant EXT_PANEL_SWEEPCONTROL = "SweepControl"
+
+static Constant BROWSERSETTINGS_PANEL_VERSION = 2
+
+static strConstant BROWSERTYPE_DATABROWSER  = "D"
+static strConstant BROWSERTYPE_SWEEPBROWSER = "S"
 
 /// @brief return the name of the external panel depending on main window name
 ///
@@ -22,35 +27,114 @@ Function/S BSP_GetPanel(mainPanel)
 	return GetMainWindow(mainPanel) + "#" + EXT_PANEL_SUBWINDOW
 End
 
+/// @brief return the name of the WaveNote Display inside BSP
+Function/S BSP_GetNotebookSubWindow(win)
+	string win
+
+	return BSP_GetPanel(win) + "#WaveNoteDisplay"
+End
+
+/// @brief return the name of the bottom Panel
+///
+/// @param mainPanel 	mainWindow panel name
+Function/S BSP_GetSweepControlsPanel(mainPanel)
+	string mainPanel
+
+	return GetMainWindow(mainPanel) + "#" + EXT_PANEL_SWEEPCONTROL
+End
+
 /// @brief open BrowserSettings side Panel
 ///
 /// @param mainPanel 	mainWindow panel name
 Function BSP_OpenPanel(mainPanel)
 	string mainPanel
 
-	string extPanel
+	BSP_OpenSweepControls(mainPanel)
+	BSP_OpenSettingsPanel(mainPanel)
+
+	BSP_MainPanelButtonToggle(mainPanel, 0)
+End
+
+Function BSP_OpenSettingsPanel(mainPanel)
+	string mainPanel
+
+	string bsPanel
 
 	mainPanel = GetMainWindow(mainPanel)
 	if(BSP_MainPanelNeedsUpdate(mainPanel))
 		Abort "Can not display data. The main panel is too old to be usable. Please close it and open a new one."
 	endif
 
-	extPanel = BSP_GetPanel(mainPanel)
+	bsPanel = BSP_GetPanel(mainPanel)
 	if(BSP_PanelNeedsUpdate(mainPanel))
-		KillWindow/Z $extPanel
+		KillWindow/Z $bsPanel
 	endif
 
-	if(windowExists(extPanel))
-		SetWindow $extPanel hide=0, needUpdate=1
-		BSP_MainPanelButtonToggle(mainPanel, 0)
+	if(windowExists(bsPanel))
+		SetWindow $bsPanel hide=0, needUpdate=1
 		return 1
 	endif
 
 	ASSERT(windowExists(mainPanel), "HOST panel does not exist")
-	NewPanel/HOST=$mainPanel/EXT=1/W=(260,0,0,600)/N=$EXT_PANEL_SUBWINDOW  as " "
-	Execute "DataBrowserPanel()"
+	NewPanel/HOST=$mainPanel/EXT=1/W=(280,0,0,410)/N=$EXT_PANEL_SUBWINDOW  as " "
+	Execute "BrowserSettingsPanel()"
 	BSP_DynamicStartupSettings(mainPanel)
-	BSP_MainPanelButtonToggle(mainPanel, 0)
+End
+
+/// @brief open bottom Panel
+///
+/// @param mainPanel 	mainWindow panel name
+Function BSP_OpenSweepControls(mainPanel)
+	string mainPanel
+
+	string scPanel
+
+	mainPanel = GetMainWindow(mainPanel)
+	ASSERT(WindowExists(mainPanel), "HOST panel does not exist")
+
+	scPanel = BSP_GetSweepControlsPanel(mainPanel)
+	if(WindowExists(scPanel))
+		SetWindow $scPanel hide=0, needUpdate=1
+		return 1
+	endif
+
+	NewPanel/HOST=$mainPanel/EXT=2/W=(0,0,580,66)/N=$EXT_PANEL_SWEEPCONTROL as "Sweep Control"
+	Execute "SweepControlPanel()"
+	BSP_DynamicSweepControls(mainPanel)
+End
+
+/// @brief dynamic settings for bottom panel at initialization
+///
+/// @param mainPanel 	mainWindow panel name
+static Function BSP_DynamicSweepControls(mainPanel)
+	string mainPanel
+
+	string scPanel, controlsDB, controlsSB
+
+	scPanel = BSP_GetSweepControlsPanel(mainPanel)
+	ASSERT(WindowExists(scPanel), "external SweepControl Panel not found")
+
+	SetWindow $scPanel, hook(main)=BSP_ClosePanelHook
+
+	SetControlProcedures(scPanel, "button_SweepControl_PrevSweep;button_SweepControl_NextSweep", BSP_AddBrowserPrefix(mainPanel, "ButtonProc_ChangeSweep"))
+
+	SetSetVariable(scPanel, "setvar_SweepControl_SweepNo", 0)
+	SetSetVariableLimits(scPanel, "setvar_SweepControl_SweepNo", 0, 0, 1)
+	SetValDisplay(scPanel, "valdisp_SweepControl_LastSweep", var=0)
+	SetSetVariable(scPanel, "setvar_SweepControl_SweepStep", 1)
+
+	controlsDB = "check_SweepControl_AutoUpdate;setvar_SweepControl_SweepNo;"
+	controlsSB = "popup_SweepControl_Selector;"
+	if(IsDataBrowser(mainPanel))
+		SetControlProcedures(scPanel, "setvar_SweepControl_SweepNo;", "DB_SetVarProc_SweepNo")
+		EnableControls(scPanel, controlsDB)
+		DisableControls(scPanel, controlsSB)
+	else
+		PopupMenu popup_SweepControl_Selector win=$scPanel, value= #("SB_GetSweepList(\"" + mainPanel + "\")")
+		SetControlProcedures(scPanel, "popup_SweepControl_Selector;", "SB_PopupMenuSelectSweep")
+		EnableControls(scPanel, controlsSB)
+		DisableControls(scPanel, controlsDB)
+	endif
 End
 
 /// @brief dynamic settings for panel initialization
@@ -60,54 +144,97 @@ static Function BSP_DynamicStartupSettings(mainPanel)
 	string mainPanel
 
 	variable sweepNo
-	string extPanel
+	string bsPanel, controls, controlsDB, controlsSB
 
-	extPanel = BSP_GetPanel(mainPanel)
+	bsPanel = BSP_GetPanel(mainPanel)
 
-	SetWindow $extPanel, hook(main)=BSP_ClosePanelHook
-	AddVersionToPanel(extPanel, BROWSERSETTINGS_PANEL_VERSION)
+	SetWindow $bsPanel, hook(main)=BSP_ClosePanelHook
+	AddVersionToPanel(bsPanel, BROWSERSETTINGS_PANEL_VERSION)
+
+	SetControlProcedure(bsPanel, "check_BrowserSettings_OVS", BSP_AddBrowserPrefix(mainPanel, "CheckProc_OverlaySweeps"))
+	PopupMenu popup_overlaySweeps_select,value= #("OVS_GetSweepSelectionChoices(\"" + bsPanel + "\")")
+
+	BSP_SetCSButtonProc(bsPanel, BSP_AddBrowserPrefix(mainPanel, "CheckProc_ChangedSetting"))
+
+	if(!BSP_IsDataBrowser(mainPanel) || BSP_HasBoundDevice(mainPanel))
+		BSP_BindListBoxWaves(mainPanel)
+	endif
+
+	// settings tab
+	controls = "check_BrowserSettings_DAC;check_BrowserSettings_ADC;check_BrowserSettings_TTL;check_BrowserSettings_splitTTL;check_BrowserSettings_OChan;check_BrowserSettings_dDAQ;check_Calculation_AverageTraces;check_Calculation_ZeroTraces;"
+	SetControlProcedures(bsPanel, controls, BSP_AddBrowserPrefix(mainPanel, "CheckProc_ChangedSetting"))
+	SetControlProcedure(bsPanel, "button_Calculation_RestoreData", BSP_AddBrowserPrefix(mainPanel, "ButtonProc_RestoreData"))
+	SetControlProcedure(bsPanel, "check_Display_VisibleXrange", BSP_AddBrowserPrefix(mainPanel, "CheckProc_ScaleAxes"))
+	SetControlProcedures(bsPanel, "check_SweepControl_HideSweep;", BSP_AddBrowserPrefix(mainPanel, "CheckProc_ChangedSetting"))
+	SetControlProcedures(bsPanel, "slider_BrowserSettings_dDAQ;", "BSP_SliderProc_ChangedSetting")
+
+	// SB/DB specific controls
+	controlsSB = "check_BrowserSettings_splitTTL;check_BrowserSettings_TA;check_Display_EqualYrange;check_Display_EqualYignore;"
+	controlsDB = "popup_DB_lockedDevices;"
+	if(IsDataBrowser(mainPanel))
+		EnableControls(bsPanel, controlsDB)
+		DisableControls(bsPanel, controlsSB)
+		if(BSP_HasBoundDevice(mainPanel))
+			SetPopupMenuString(bsPanel, "popup_DB_lockedDevices", BSP_GetDevice(mainPanel))
+		endif
+	else
+		EnableControls(bsPanel, controlsSB)
+		DisableControls(bsPanel, controlsDB)
+		PopupMenu popup_TimeAlignment_Master win=$bsPanel, value = #("SB_GetAllTraces(\"" + mainPanel + "\")")
+	endif
+
+	BSP_InitMainCheckboxes(bsPanel)
+
+	PGC_SetAndActivateControl(bsPanel, "Settings", val = 0)
+End
+
+Function BSP_BindListBoxWaves(win)
+	string win
+
+	string mainPanel, bsPanel
+
+	ASSERT(BSP_IsDataBrowser(win) && BSP_HasBoundDevice(win) || !BSP_IsDataBrowser(win), "DataBrowser needs bound device to bind listBox waves.")
+
+	mainPanel = GetMainWindow(win)
+	bsPanel = BSP_GetPanel(win)
 
 	// overlay sweeps
-	if(IsDataBrowser(mainPanel))
-		SetControlProcedure(extPanel, "check_BrowserSettings_OVS", "DB_CheckBoxProc_OverlaySweeps")
-	else
-		SetControlProcedure(extPanel, "check_BrowserSettings_OVS", "SB_CheckboxProc_OverlaySweeps")
-	endif
 	DFREF dfr = BSP_GetFolder(mainPanel, MIES_BSP_PANEL_FOLDER)
 	WAVE/T listBoxWave        = GetOverlaySweepsListWave(dfr)
 	WAVE listBoxSelWave       = GetOverlaySweepsListSelWave(dfr)
 	WAVE/WAVE sweepSelChoices = GetOverlaySweepSelectionChoices(dfr)
-	ListBox list_of_ranges, listWave=listBoxWave
-	ListBox list_of_ranges, selWave=listBoxSelWave
+	ListBox list_of_ranges, win=$bsPanel, listWave=listBoxWave
+	ListBox list_of_ranges, win=$bsPanel, selWave=listBoxSelWave
 	WaveClear listBoxWave
-	PopupMenu popup_overlaySweeps_select,value= #("OVS_GetSweepSelectionChoices(\"" + extPanel + "\")")
 
 	// artefact removal
 	WAVE/T listBoxWave = GetArtefactRemovalListWave(dfr)
-	ListBox list_of_ranges1, listWave=listBoxWave
+	ListBox list_of_ranges1, win=$bsPanel, listWave=listBoxWave
 
-	// bind the channel selection wave to the user controls of the external panel
+	// channel selection
 	WAVE channelSelection = BSP_GetChannelSelectionWave(mainPanel)
-	ChannelSelectionWaveToGUI(mainPanel, channelSelection)
-	if(IsDataBrowser(mainPanel))
-		BSP_SetCSButtonProc(extPanel, "DB_CheckProc_ChangedSetting")
+	ChannelSelectionWaveToGUI(bsPanel, channelSelection)
+End
+
+/// @brief add SB_* or DB_* prefix to the input string depending on current window
+Function/S BSP_AddBrowserPrefix(win, str)
+	string win, str
+
+	if(IsDataBrowser(win))
+		return "DB_" + str
 	else
-		BSP_SetCSButtonProc(extPanel, "SB_CheckProc_ChangedSetting")
+		return "SB_" + str
 	endif
-
-	BSP_InitMainCheckboxes(extPanel)
-
-	PGC_SetAndActivateControl(extPanel, "Settings", val = MIES_BSP_OVS)
 End
 
 /// @brief get the channel selection wave stored in main window property CSW_FOLDER
 ///
-/// @param panelName 	name of external panel or main window
+/// @param win 	name of external panel or main window
 /// @returns channel selection wave
-Function/WAVE BSP_GetChannelSelectionWave(panelName)
-	string panelName
+Function/WAVE BSP_GetChannelSelectionWave(win)
+	string win
 
-	DFREF dfr = BSP_GetFolder(panelName, MIES_BSP_PANEL_FOLDER)
+	DFREF dfr = BSP_GetFolder(win, MIES_BSP_PANEL_FOLDER)
 	WAVE wv = GetChannelSelectionWave(dfr)
 
 	return wv
@@ -115,21 +242,23 @@ End
 
 /// @brief get a FOLDER property from the specified panel
 ///
-/// @param panelName 				name of external panel or main window
+/// @param win 						name of external panel or main window
 /// @param MIES_BSP_FOLDER_TYPE 	see the FOLDER constants in this file
 ///
 /// @return DFR to specified folder. No check for invalid folders
-Function/DF BSP_GetFolder(panelName, MIES_BSP_FOLDER_TYPE)
-	string panelName, MIES_BSP_FOLDER_TYPE
+Function/DF BSP_GetFolder(win, MIES_BSP_FOLDER_TYPE)
+	string win, MIES_BSP_FOLDER_TYPE
 
-	if(BSP_MainPanelNeedsUpdate(panelName))
+	string mainPanel
+
+	if(BSP_MainPanelNeedsUpdate(win))
 		DoAbortNow("The main panel is too old to be usable. Please close it and open a new one.")
 	endif
 
-	panelName = GetMainWindow(panelName)
-	ASSERT(WindowExists(panelName), "specified panel does not exist.")
+	mainPanel = GetMainWindow(win)
+	ASSERT(WindowExists(mainPanel), "specified panel does not exist.")
 
-	DFREF dfr = $GetUserData(panelName, "", MIES_BSP_FOLDER_TYPE)
+	DFREF dfr = $GetUserData(mainPanel, "", MIES_BSP_FOLDER_TYPE)
 	ASSERT(DataFolderExistsDFR(dfr), "DataFolder does not exist. Probably check device assignment.")
 
 	return dfr
@@ -137,85 +266,192 @@ End
 
 /// @brief set a FOLDER property at the specified panel
 ///
-/// @param panelName 				name of external panel or main window
+/// @param win 						name of external panel or main window
 /// @param dfr 						DataFolder Reference to the folder
 /// @param MIES_BSP_FOLDER_TYPE 	see the FOLDER constants in this file
-Function BSP_SetFolder(panelName, dfr, MIES_BSP_FOLDER_TYPE)
-	string panelName, MIES_BSP_FOLDER_TYPE
+Function BSP_SetFolder(win, dfr, MIES_BSP_FOLDER_TYPE)
+	string win, MIES_BSP_FOLDER_TYPE
 	DFREF dfr
 
-	panelName = GetMainWindow(panelName)
+	string mainPanel
+
+	mainPanel = GetMainWindow(win)
+	ASSERT(WindowExists(mainPanel), "specified panel does not exist.")
 
 	ASSERT(DataFolderExistsDFR(dfr), "Missing dfr")
-	SetWindow $panelName, userData($MIES_BSP_FOLDER_TYPE) = GetDataFolder(1, dfr)
+	SetWindow $mainPanel, userData($MIES_BSP_FOLDER_TYPE) = GetDataFolder(1, dfr)
 End
 
-/// @brief get a the assigned DEVICE property from the specified panel
+/// @brief get the assigned DEVICE property from the main panel
 ///
-/// @param panelName 				name of external panel or main window
+/// @param win 	name of external panel or main window
 ///
 /// @return device as string
-Function/S BSP_GetDevice(panelName)
-	string panelName
+Function/S BSP_GetDevice(win)
+	string win
 
-	// since BSP-side-panel all properties are stored in main panel
-	panelName = GetMainWindow(panelName)
-	ASSERT(WindowExists(panelName), "specified panel does not exist.")
+	string mainPanel
 
-	return GetUserData(panelName, "", MIES_BSP_DEVICE)
+	mainPanel = GetMainWindow(win)
+	ASSERT(WindowExists(mainPanel), "specified panel does not exist.")
+
+	return GetUserData(mainPanel, "", MIES_BSP_DEVICE)
 End
 
-/// @brief set DEVICE property to the userdata of the specified panel
+/// @brief set DEVICE property to the userdata of the main panel
 ///
-/// @param panelName                name of external panel or main window
+/// @param win                      name of external panel or main window
 /// @param device                   bound device as string
-Function/S BSP_SetDevice(panelName, device)
-	string panelName, device
+Function/S BSP_SetDevice(win, device)
+	string win, device
 
-	SetWindow $panelName, userdata($MIES_BSP_DEVICE) = device
+	string mainPanel
+
+	ASSERT(WindowExists(win), "specified panel does not exist.")
+	ASSERT(BSP_IsDataBrowser(win), "device property only relevant in DB context")
+
+	mainPanel = GetMainWindow(win)
+	SetWindow $mainPanel, userdata($MIES_BSP_DEVICE) = device
+End
+
+/// @brief get the MIES Browser Type
+///
+/// @param win 	name of external panel or main window
+///
+/// @return D for DataBrowser or S for SweepBrowser
+static Function/S BSP_GetBrowserType(win)
+	string win
+
+	string mainPanel
+
+	mainPanel = GetMainWindow(win)
+	ASSERT(WindowExists(mainPanel), "specified panel does not exist.")
+
+	return GetUserData(mainPanel, "", MIES_BSP_BROWSER)
+End
+
+/// @brief set DEVICE property to the userdata of the main panel
+///
+/// @param win 	name of external panel or main window
+/// @param type One of #BROWSERTYPE_DATABROWSER or #BROWSERTYPE_SWEEPBROWSER
+static Function/S BSP_SetBrowserType(win, type)
+	string win, type
+
+	string mainPanel
+
+	mainPanel = GetMainWindow(win)
+	ASSERT(WindowExists(mainPanel), "specified panel does not exist.")
+
+	SetWindow $mainPanel, userdata($MIES_BSP_BROWSER) = type
+End
+
+/// @brief wrapper function for external calls
+Function BSP_SetDataBrowser(win)
+	string win
+
+	BSP_SetBrowserType(win, BROWSERTYPE_DATABROWSER)
+End
+
+/// @brief wrapper function for external calls
+Function BSP_SetSweepBrowser(win)
+	string win
+
+	BSP_SetBrowserType(win, BROWSERTYPE_SWEEPBROWSER)
+End
+
+/// @brief wrapper function for external calls
+Function BSP_IsDataBrowser(win)
+	string win
+
+	return !cmpstr(BSP_GetBrowserType(win), BROWSERTYPE_DATABROWSER)
 End
 
 /// @brief check if the DEVICE property has a not nullstring property
 ///
-/// @param panelName 				name of external panel or main window
+/// @param win 	name of external panel or main window
 /// @return 1 if device is assigned and 0 otherwise. does not check if device is valid.
-Function BSP_HasBoundDevice(panelName)
-	string panelName
+Function BSP_HasBoundDevice(win)
+	string win
 
-	string device = BSP_GetDevice(panelName)
+	string device = BSP_GetDevice(win)
 
 	return !(IsEmpty(device) || !cmpstr(device, NONE))
 End
 
+/// @brief get the selected headstage from the slider position
+///
+/// if the slider is at position -1, all headstages are selected
+/// this equals to dDAQ checkbox beeing deactivated
+///
+/// @param win 	name of external panel or main window
+/// @returns the headstage number if active and -1 if the headstage slider was not found or is deactivated
+Function BSP_GetDDAQ(win)
+	string win
+
+	string bsPanel, ctrl
+
+	ctrl = "slider_BrowserSettings_dDAQ"
+	bsPanel = BSP_GetPanel(win)
+
+	if(!ControlExists(bsPanel, ctrl))
+		return -1
+	endif
+
+	if(!BSP_DDAQisActive(win))
+		return -1
+	endif
+
+	return GetSliderPositionIndex(bsPanel, ctrl)
+End
+
+/// @brief get the status of the dDAQ control
+///
+/// @param win 	name of external panel or main window
+/// @returns the status of the checkbox control "dDAQ" in the BrowserSettings Panel
+static Function BSP_DDAQisActive(win)
+	string win
+
+	string bsPanel, ctrl
+
+	ctrl = "check_BrowserSettings_dDAQ"
+	bsPanel = BSP_GetPanel(win)
+
+	if(!ControlExists(bsPanel, ctrl))
+		return 0
+	endif
+
+	return GetCheckboxState(bsPanel, ctrl)
+End
+
 /// @brief set the initial state of the enable/disable buttons
 ///
-/// @param panelName 		name of external panel or main window
-static Function BSP_InitMainCheckboxes(panelName)
-	string panelName
+/// @param win 		name of external panel or main window
+static Function BSP_InitMainCheckboxes(win)
+	string win
 
-	string extPanel
+	string bsPanel
 
-	extPanel = BSP_GetPanel(panelName)
-	if(!windowExists(extPanel))
+	bsPanel = BSP_GetPanel(win)
+	if(!WindowExists(bsPanel))
 		return NaN
 	endif
 
-	BSP_SetOVSControlStatus(extPanel)
-	BSP_SetARControlStatus(extPanel)
-	BSP_SetPAControlStatus(extPanel)
+	BSP_SetOVSControlStatus(bsPanel)
+	BSP_SetARControlStatus(bsPanel)
+	BSP_SetPAControlStatus(bsPanel)
 
 	return 1
 End
 
 /// @brief overwrite the control action of all Channel Selection Buttons
-static Function BSP_SetCSButtonProc(panelName, procedure)
-	string panelName, procedure
+static Function BSP_SetCSButtonProc(win, procedure)
+	string win, procedure
 
-	string extPanel
+	string bsPanel
 	variable i
 	string controlList = ""
 
-	extPanel = BSP_GetPanel(panelName)
+	bsPanel = BSP_GetPanel(win)
 
 	for(i = 0; i < 8; i += 1)
 		controlList += "check_channelSel_HEADSTAGE_" + num2str(i) + ";"
@@ -225,65 +461,64 @@ static Function BSP_SetCSButtonProc(panelName, procedure)
 		controlList += "check_channelSel_AD_" + num2str(i) + ";"
 	endfor
 
-	SetControlProcedures(extPanel, controlList, procedure)
+	SetControlProcedures(bsPanel, controlList, procedure)
 	if(IsEmpty(procedure))
-		DisableControls(extPanel, controlList)
+		DisableControls(bsPanel, controlList)
 	endif
 End
 
 /// @brief enable/disable the OVS buttons
 ///
-/// @param panelName specify mainPanel or extPanel with OVS controls
-Function BSP_SetOVSControlStatus(panelName)
-	string panelName
+/// @param win 	specify mainPanel or bsPanel with OVS controls
+Function BSP_SetOVSControlStatus(win)
+	string win
 
 	string controlList = "group_properties_sweeps;popup_overlaySweeps_select;setvar_overlaySweeps_offset;setvar_overlaySweeps_step;check_overlaySweeps_disableHS;check_overlaySweeps_non_commula;list_of_ranges"
 
-	BSP_SetControlStatus(panelName, controlList, OVS_IsActive(panelName))
+	BSP_SetControlStatus(win, controlList, OVS_IsActive(win))
 End
 
 /// @brief enable/disable the AR buttons
 ///
-/// @param panelName specify mainPanel or extPanel with OVS controls
-Function BSP_SetARControlStatus(panelName)
-	string panelName
+/// @param win 	specify mainPanel or bsPanel with OVS controls
+Function BSP_SetARControlStatus(win)
+	string win
 
 	string controlList = "group_properties_artefact;setvar_cutoff_length_before;setvar_cutoff_length_after;button_RemoveRanges;check_auto_remove;check_highlightRanges;list_of_ranges1;"
 
-	BSP_SetControlStatus(panelName, controlList, AR_IsActive(panelName))
+	BSP_SetControlStatus(win, controlList, AR_IsActive(win))
 End
 
 /// @brief enable/disable the PA buttons
 ///
-/// @param panelName specify mainPanel or extPanel with OVS controls
-Function BSP_SetPAControlStatus(panelName)
-	string panelName
+/// @param win 	specify mainPanel or bsPanel with OVS controls
+Function BSP_SetPAControlStatus(win)
+	string win
 
 	string controlList = "group_properties_pulse;check_pulseAver_indTraces;check_pulseAver_showAver;check_pulseAver_multGraphs;setvar_pulseAver_startPulse;setvar_pulseAver_endPulse;setvar_pulseAver_fallbackLength;"
 
-	BSP_SetControlStatus(panelName, controlList, PA_IsActive(panelName))
+	BSP_SetControlStatus(win, controlList, PA_IsActive(win))
 End
 
 /// @brief enable/disable a list of controls
 ///
-/// @param panelName    specify mainPanel or extPanel with OVS controls
+/// @param win    		specify mainPanel or bsPanel with OVS controls
 /// @param controlList  list of controls
 /// @param status       1: enable; 0: disable
-Function BSP_SetControlStatus(panelName, controlList, status)
-	string panelName, controlList
+Function BSP_SetControlStatus(win, controlList, status)
+	string win, controlList
 	variable status
 
-	string extPanel
+	string bsPanel
 
 	status = !!status
 
-	extPanel = BSP_GetPanel(panelName)
-	ASSERT(windowExists(extPanel), "BrowserSettingsPanel does not exist.")
-
+	bsPanel = BSP_GetPanel(win)
+	ASSERT(windowExists(bsPanel), "BrowserSettingsPanel does not exist.")
 	if(status)
-		EnableControls(extPanel, controlList)
+		EnableControls(bsPanel, controlList)
 	else
-		DisableControls(extPanel, controlList)
+		DisableControls(bsPanel, controlList)
 	endif
 End
 
@@ -291,7 +526,7 @@ End
 ///
 /// @param mainPanel 	main Panel window
 /// @param visible 		set status of external Panel (opened: visible = 1)
-static Function BSP_MainPanelButtonToggle(mainPanel, visible)
+Function BSP_MainPanelButtonToggle(mainPanel, visible)
 	string mainPanel
 	variable visible
 
@@ -314,17 +549,20 @@ End
 Function BSP_ClosePanelHook(s)
 	STRUCT WMWinHookStruct &s
 
-	string mainPanel, extPanel, panelButton
+	string mainPanel, panelButton
+	string panels = ""
 	variable hookResult = 0
 
 	switch(s.eventCode)
 		case 17: // killVote
 			mainPanel = GetMainWindow(s.winName)
-			extPanel = BSP_GetPanel(mainPanel)
+			panels = AddListItem(BSP_GetPanel(mainPanel), panels)
+			panels = AddListItem(BSP_GetSweepControlsPanel(mainPanel), panels)
 
-			ASSERT(!cmpstr(s.winName, extPanel), "this hook is only available for BSP panel.")
+			ASSERT(FindListItem(s.winName, panels) >= 0, "this hook is only available for specific BSP panel.")
 
-			SetWindow $extPanel hide=1
+			SetWindow $s.winName hide=1
+
 			BSP_MainPanelButtonToggle(mainPanel, 1)
 
 			hookResult = 2 // don't kill window
@@ -334,237 +572,376 @@ Function BSP_ClosePanelHook(s)
 	return hookResult
 End
 
-/// @brief window macro for side panel
-Window DataBrowserPanel() : Panel // no dynamic changes here
-	TabControl Settings,pos={2.00,2.00},size={255.00,19.00},proc=ACL_DisplayTab
-	TabControl Settings,userdata(currenttab)=  "1",tabLabel(0)="Sweeps"
-	TabControl Settings,tabLabel(1)="Channels",tabLabel(2)="Artefact"
-	TabControl Settings,tabLabel(3)="Pulse",value= 0
+/// @brief window macro for bottom panel
+Window SweepControlPanel() : Panel
+	PauseUpdate; Silent 1		// building window...
+	//NewPanel /W=(459,529,1042,593) as "Sweep Control"
+	Button button_SweepControl_NextSweep,pos={335.00,0.00},size={150.00,37.00},title="Next  \\W649"
+	Button button_SweepControl_NextSweep,help={"Displays the next sweep (sweep no. = last sweep number + step)"}
+	Button button_SweepControl_NextSweep,fSize=20
+	ValDisplay valdisp_SweepControl_LastSweep,pos={240.00,3.00},size={89.00,34.00},bodyWidth=60,title="of"
+	ValDisplay valdisp_SweepControl_LastSweep,help={"The number of the last sweep acquired for the device assigned to the data browser"}
+	ValDisplay valdisp_SweepControl_LastSweep,fSize=24,frame=2,fStyle=1
+	ValDisplay valdisp_SweepControl_LastSweep,limits={0,0,0},barmisc={0,1000}
+	ValDisplay valdisp_SweepControl_LastSweep,value= #"0"
+	ValDisplay valdisp_SweepControl_LastSweep,barBackColor= (56576,56576,56576)
+	SetVariable setvar_SweepControl_SweepNo,pos={155.00,2.00},size={74.00,35.00}
+	SetVariable setvar_SweepControl_SweepNo,help={"Sweep number of last sweep plotted"}
+	SetVariable setvar_SweepControl_SweepNo,userdata(lastSweep)=  "NaN",fSize=24
+	SetVariable setvar_SweepControl_SweepNo,limits={0,0,1},value= _NUM:0,live= 1
+	SetVariable setvar_SweepControl_SweepStep,pos={488.00,2.00},size={92.00,35.00},bodyWidth=40,title="Step"
+	SetVariable setvar_SweepControl_SweepStep,help={"Set the increment between sweeps"}
+	SetVariable setvar_SweepControl_SweepStep,userdata(lastSweep)=  "0",fSize=24
+	SetVariable setvar_SweepControl_SweepStep,limits={1,inf,1},value= _NUM:1
+	Button button_SweepControl_PrevSweep,pos={0.00,0.00},size={150.00,37.00},title="\\W646 Previous"
+	Button button_SweepControl_PrevSweep,help={"Displays the previous sweep (sweep no. = last sweep number - step)"}
+	Button button_SweepControl_PrevSweep,fSize=20
+	PopupMenu Popup_SweepControl_Selector,pos={155.00,41.00},size={175.00,19.00},bodyWidth=175
+	PopupMenu Popup_SweepControl_Selector,help={"List of sweeps in this sweep browser"}
+	PopupMenu Popup_SweepControl_Selector,userdata(tabnum)=  "0"
+	PopupMenu Popup_SweepControl_Selector,userdata(tabcontrol)=  "Settings"
+	PopupMenu Popup_SweepControl_Selector,mode=1,popvalue=" ",value= #"\" \""
+	CheckBox check_SweepControl_AutoUpdate,pos={345.00,44.00},size={159.00,15.00},disable=2,title="Display last sweep acquired"
+	CheckBox check_SweepControl_AutoUpdate,help={"Displays the last sweep acquired when data acquistion is ongoing"}
+	CheckBox check_SweepControl_AutoUpdate,value= 0
+EndMacro
 
-	ListBox list_of_ranges,pos={27.00,206.00},size={186.00,381.00},disable=1,proc=OVS_MainListBoxProc
+/// @brief window macro for side panel
+Window BrowserSettingsPanel() : Panel
+	PauseUpdate; Silent 1		// building window...
+	//NewPanel /W=(202,80,484,492) as " "
+	GroupBox group_calc,pos={12.00,195.00},size={210.00,50.00}
+	GroupBox group_calc,userdata(tabnum)=  "0",userdata(tabcontrol)=  "Settings"
+	TabControl Settings,pos={2.00,2.00},size={280.00,19.00},proc=ACL_DisplayTab
+	TabControl Settings,userdata(currenttab)=  "0",tabLabel(0)="Settings"
+	TabControl Settings,tabLabel(1)="OVS",tabLabel(2)="CS",tabLabel(3)="AR"
+	TabControl Settings,tabLabel(4)="PA",tabLabel(5)="Note",value= 0
+	ListBox list_of_ranges,pos={27.00,206.00},size={186.00,200.00},disable=1,proc=OVS_MainListBoxProc
 	ListBox list_of_ranges,help={"Select sweeps for overlay; The second column (\"Headstages\") allows to ignore some headstages for the graphing. Syntax is a semicolon \";\" separated list of subranges, e.g. \"0\", \"0,2\", \"1;4;2\""}
-	ListBox list_of_ranges,userdata(tabnum)=  "0",userdata(tabcontrol)=  "Settings"
+	ListBox list_of_ranges,userdata(tabnum)=  "1",userdata(tabcontrol)=  "Settings"
 	ListBox list_of_ranges,widths={50,50}
 	PopupMenu popup_overlaySweeps_select,pos={56.00,99.00},size={143.00,19.00},bodyWidth=109,disable=1,proc=OVS_PopMenuProc_Select,title="Select"
 	PopupMenu popup_overlaySweeps_select,help={"Select sweeps according to various properties"}
-	PopupMenu popup_overlaySweeps_select,userdata(tabnum)=  "0"
+	PopupMenu popup_overlaySweeps_select,userdata(tabnum)=  "1"
 	PopupMenu popup_overlaySweeps_select,userdata(tabcontrol)=  "Settings"
 	PopupMenu popup_overlaySweeps_select,mode=1,popvalue="- none -"
 	CheckBox check_overlaySweeps_disableHS,pos={43.00,160.00},size={120.00,15.00},disable=1,proc=OVS_CheckBoxProc_HS_Select,title="Headstage Removal"
 	CheckBox check_overlaySweeps_disableHS,help={"Toggle headstage removal"}
-	CheckBox check_overlaySweeps_disableHS,userdata(tabnum)=  "0"
+	CheckBox check_overlaySweeps_disableHS,userdata(tabnum)=  "1"
 	CheckBox check_overlaySweeps_disableHS,userdata(tabcontrol)=  "Settings"
 	CheckBox check_overlaySweeps_disableHS,value= 0
-	CheckBox check_overlaySweeps_non_commula,pos={42.00,180.00},size={153.00,15.00},title="Non-commulative update"
+	CheckBox check_overlaySweeps_non_commula,pos={42.00,180.00},size={153.00,15.00},disable=1,title="Non-commulative update"
 	CheckBox check_overlaySweeps_non_commula,help={"If \"Display Last sweep acquired\" is checked, this checkbox here allows to only add the newly acquired sweep and will remove the currently added last sweep."}
-	CheckBox check_overlaySweeps_non_commula,value= 0
 	CheckBox check_overlaySweeps_non_commula,userdata(tabcontrol)=  "Settings"
-	CheckBox check_overlaySweeps_non_commula,userdata(tabnum)=  "0"
+	CheckBox check_overlaySweeps_non_commula,userdata(tabnum)=  "1",value= 0
 	SetVariable setvar_overlaySweeps_offset,pos={41.00,126.00},size={81.00,18.00},bodyWidth=45,disable=1,proc=OVS_SetVarProc_SelectionRange,title="Offset"
 	SetVariable setvar_overlaySweeps_offset,help={"Offsets the first selected sweep from the selection menu"}
-	SetVariable setvar_overlaySweeps_offset,userdata(tabnum)=  "0"
+	SetVariable setvar_overlaySweeps_offset,userdata(tabnum)=  "1"
 	SetVariable setvar_overlaySweeps_offset,userdata(tabcontrol)=  "Settings"
 	SetVariable setvar_overlaySweeps_offset,limits={0,inf,1},value= _NUM:0
 	SetVariable setvar_overlaySweeps_step,pos={128.00,126.00},size={72.00,18.00},bodyWidth=45,disable=1,proc=OVS_SetVarProc_SelectionRange,title="Step"
 	SetVariable setvar_overlaySweeps_step,help={"Selects every `step` sweep from the selection menu"}
-	SetVariable setvar_overlaySweeps_step,userdata(tabnum)=  "0"
+	SetVariable setvar_overlaySweeps_step,userdata(tabnum)=  "1"
 	SetVariable setvar_overlaySweeps_step,userdata(tabcontrol)=  "Settings"
 	SetVariable setvar_overlaySweeps_step,limits={1,inf,1},value= _NUM:1
-
-	GroupBox group_enable_sweeps,pos={4.00,27.00},size={252.00,53.00},disable=1,title="Overlay Sweeps"
-	GroupBox group_enable_sweeps,userdata(tabnum)=  "0"
+	GroupBox group_enable_sweeps,pos={4.00,27.00},size={230.00,53.00},disable=1,title="Overlay Sweeps"
+	GroupBox group_enable_sweeps,userdata(tabnum)=  "1"
 	GroupBox group_enable_sweeps,userdata(tabcontrol)=  "Settings"
-	GroupBox group_enable_channels,pos={4.00,27.00},size={252.00,53.00},disable=1,title="Channel Selection"
-	GroupBox group_enable_channels,userdata(tabnum)=  "1"
+	GroupBox group_enable_channels,pos={4.00,27.00},size={230.00,383.00},disable=1,title="Channel Selection"
+	GroupBox group_enable_channels,userdata(tabnum)=  "2"
 	GroupBox group_enable_channels,userdata(tabcontrol)=  "Settings"
-	GroupBox group_enable_artifact,pos={4.00,27.00},size={252.00,53.00},title="Artefact Removal"
-	GroupBox group_enable_artifact,userdata(tabnum)=  "2"
+	GroupBox group_enable_artifact,pos={4.00,27.00},size={230.00,53.00},disable=1,title="Artefact Removal"
+	GroupBox group_enable_artifact,userdata(tabnum)=  "3"
 	GroupBox group_enable_artifact,userdata(tabcontrol)=  "Settings"
-	GroupBox group_properties_sweeps,pos={4.00,86.00},size={252.00,508.00},disable=1
-	GroupBox group_properties_sweeps,userdata(tabnum)=  "0"
+	GroupBox group_properties_sweeps,pos={4.00,86.00},size={230.00,325.00},disable=1
+	GroupBox group_properties_sweeps,userdata(tabnum)=  "1"
 	GroupBox group_properties_sweeps,userdata(tabcontrol)=  "Settings"
-	GroupBox group_properties_channels,pos={4.00,86.00},size={252.00,508.00},disable=1
-	GroupBox group_properties_channels,userdata(tabnum)=  "1"
-	GroupBox group_properties_channels,userdata(tabcontrol)=  "Settings"
-	GroupBox group_properties_artefact,pos={4.00,86.00},size={252.00,508.00}
-	GroupBox group_properties_artefact,userdata(tabnum)=  "2"
+	GroupBox group_properties_artefact,pos={4.00,86.00},size={230.00,325.00},disable=1
+	GroupBox group_properties_artefact,userdata(tabnum)=  "3"
 	GroupBox group_properties_artefact,userdata(tabcontrol)=  "Settings"
-	GroupBox group_channelSel_DA,pos={105.00,104.00},size={44.00,199.00},title="DA"
-	GroupBox group_channelSel_DA,userdata(tabnum)=  "1"
+	GroupBox group_channelSel_DA,pos={95.00,44.00},size={44.00,199.00},disable=1,title="DA"
+	GroupBox group_channelSel_DA,userdata(tabnum)=  "2"
 	GroupBox group_channelSel_DA,userdata(tabcontrol)=  "Settings"
-	GroupBox group_properties_pulse,pos={4.00,86.00},size={252.00,508.00},disable=1
-	GroupBox group_properties_pulse,userdata(tabnum)=  "3"
+	GroupBox group_properties_pulse,pos={4.00,86.00},size={230.00,325.00},disable=1
+	GroupBox group_properties_pulse,userdata(tabnum)=  "4"
 	GroupBox group_properties_pulse,userdata(tabcontrol)=  "Settings"
-	GroupBox group_enable_pulse,pos={4.00,27.00},size={252.00,53.00},disable=1,title="Pulse Averaging"
-	GroupBox group_enable_pulse,userdata(tabnum)=  "3"
+	GroupBox group_enable_pulse,pos={4.00,27.00},size={230.00,53.00},disable=1,title="Pulse Averaging"
+	GroupBox group_enable_pulse,userdata(tabnum)=  "4"
 	GroupBox group_enable_pulse,userdata(tabcontrol)=  "Settings"
-
-	CheckBox check_channelSel_DA_0,pos={115.00,120.00},size={21.00,15.00},title="0"
-	CheckBox check_channelSel_DA_0,userdata(tabnum)=  "1"
+	CheckBox check_channelSel_DA_0,pos={105.00,60.00},size={21.00,15.00},disable=1,title="0"
+	CheckBox check_channelSel_DA_0,userdata(tabnum)=  "2"
 	CheckBox check_channelSel_DA_0,userdata(tabcontrol)=  "Settings",value= 1
-	CheckBox check_channelSel_DA_1,pos={115.00,141.00},size={21.00,15.00},title="1"
-	CheckBox check_channelSel_DA_1,userdata(tabnum)=  "1"
+	CheckBox check_channelSel_DA_1,pos={105.00,81.00},size={21.00,15.00},disable=1,title="1"
+	CheckBox check_channelSel_DA_1,userdata(tabnum)=  "2"
 	CheckBox check_channelSel_DA_1,userdata(tabcontrol)=  "Settings",value= 1
-	CheckBox check_channelSel_DA_2,pos={115.00,162.00},size={21.00,15.00},title="2"
-	CheckBox check_channelSel_DA_2,userdata(tabnum)=  "1"
+	CheckBox check_channelSel_DA_2,pos={105.00,102.00},size={21.00,15.00},disable=1,title="2"
+	CheckBox check_channelSel_DA_2,userdata(tabnum)=  "2"
 	CheckBox check_channelSel_DA_2,userdata(tabcontrol)=  "Settings",value= 1
-	CheckBox check_channelSel_DA_3,pos={115.00,183.00},size={21.00,15.00},title="3"
-	CheckBox check_channelSel_DA_3,userdata(tabnum)=  "1"
+	CheckBox check_channelSel_DA_3,pos={105.00,123.00},size={21.00,15.00},disable=1,title="3"
+	CheckBox check_channelSel_DA_3,userdata(tabnum)=  "2"
 	CheckBox check_channelSel_DA_3,userdata(tabcontrol)=  "Settings",value= 1
-	CheckBox check_channelSel_DA_4,pos={115.00,204.00},size={21.00,15.00},title="4"
-	CheckBox check_channelSel_DA_4,userdata(tabnum)=  "1"
+	CheckBox check_channelSel_DA_4,pos={105.00,144.00},size={21.00,15.00},disable=1,title="4"
+	CheckBox check_channelSel_DA_4,userdata(tabnum)=  "2"
 	CheckBox check_channelSel_DA_4,userdata(tabcontrol)=  "Settings",value= 1
-	CheckBox check_channelSel_DA_5,pos={115.00,225.00},size={21.00,15.00},title="5"
-	CheckBox check_channelSel_DA_5,userdata(tabnum)=  "1"
+	CheckBox check_channelSel_DA_5,pos={105.00,165.00},size={21.00,15.00},disable=1,title="5"
+	CheckBox check_channelSel_DA_5,userdata(tabnum)=  "2"
 	CheckBox check_channelSel_DA_5,userdata(tabcontrol)=  "Settings",value= 1
-	CheckBox check_channelSel_DA_6,pos={115.00,246.00},size={21.00,15.00},title="6"
-	CheckBox check_channelSel_DA_6,userdata(tabnum)=  "1"
+	CheckBox check_channelSel_DA_6,pos={105.00,186.00},size={21.00,15.00},disable=1,title="6"
+	CheckBox check_channelSel_DA_6,userdata(tabnum)=  "2"
 	CheckBox check_channelSel_DA_6,userdata(tabcontrol)=  "Settings",value= 1
-	CheckBox check_channelSel_DA_7,pos={115.00,267.00},size={21.00,15.00},title="7"
-	CheckBox check_channelSel_DA_7,userdata(tabnum)=  "1"
+	CheckBox check_channelSel_DA_7,pos={105.00,207.00},size={21.00,15.00},disable=1,title="7"
+	CheckBox check_channelSel_DA_7,userdata(tabnum)=  "2"
 	CheckBox check_channelSel_DA_7,userdata(tabcontrol)=  "Settings",value= 1
-	GroupBox group_channelSel_HEADSTAGE,pos={43.00,104.00},size={44.00,199.00},title="HS"
-	GroupBox group_channelSel_HEADSTAGE,userdata(tabnum)=  "1"
+	GroupBox group_channelSel_HEADSTAGE,pos={33.00,44.00},size={44.00,199.00},disable=1,title="HS"
+	GroupBox group_channelSel_HEADSTAGE,userdata(tabnum)=  "2"
 	GroupBox group_channelSel_HEADSTAGE,userdata(tabcontrol)=  "Settings"
-	CheckBox check_channelSel_HEADSTAGE_0,pos={53.00,120.00},size={21.00,15.00},title="0"
-	CheckBox check_channelSel_HEADSTAGE_0,userdata(tabnum)=  "1"
+	CheckBox check_channelSel_HEADSTAGE_0,pos={43.00,60.00},size={21.00,15.00},disable=1,title="0"
+	CheckBox check_channelSel_HEADSTAGE_0,userdata(tabnum)=  "2"
 	CheckBox check_channelSel_HEADSTAGE_0,userdata(tabcontrol)=  "Settings",value= 1
-	CheckBox check_channelSel_HEADSTAGE_1,pos={53.00,141.00},size={21.00,15.00},title="1"
-	CheckBox check_channelSel_HEADSTAGE_1,userdata(tabnum)=  "1"
+	CheckBox check_channelSel_HEADSTAGE_1,pos={43.00,81.00},size={21.00,15.00},disable=1,title="1"
+	CheckBox check_channelSel_HEADSTAGE_1,userdata(tabnum)=  "2"
 	CheckBox check_channelSel_HEADSTAGE_1,userdata(tabcontrol)=  "Settings",value= 1
-	CheckBox check_channelSel_HEADSTAGE_2,pos={53.00,162.00},size={21.00,15.00},title="2"
-	CheckBox check_channelSel_HEADSTAGE_2,userdata(tabnum)=  "1"
+	CheckBox check_channelSel_HEADSTAGE_2,pos={43.00,102.00},size={21.00,15.00},disable=1,title="2"
+	CheckBox check_channelSel_HEADSTAGE_2,userdata(tabnum)=  "2"
 	CheckBox check_channelSel_HEADSTAGE_2,userdata(tabcontrol)=  "Settings",value= 1
-	CheckBox check_channelSel_HEADSTAGE_3,pos={53.00,183.00},size={21.00,15.00},title="3"
-	CheckBox check_channelSel_HEADSTAGE_3,userdata(tabnum)=  "1"
+	CheckBox check_channelSel_HEADSTAGE_3,pos={43.00,123.00},size={21.00,15.00},disable=1,title="3"
+	CheckBox check_channelSel_HEADSTAGE_3,userdata(tabnum)=  "2"
 	CheckBox check_channelSel_HEADSTAGE_3,userdata(tabcontrol)=  "Settings",value= 1
-	CheckBox check_channelSel_HEADSTAGE_4,pos={53.00,204.00},size={21.00,15.00},title="4"
-	CheckBox check_channelSel_HEADSTAGE_4,userdata(tabnum)=  "1"
+	CheckBox check_channelSel_HEADSTAGE_4,pos={43.00,144.00},size={21.00,15.00},disable=1,title="4"
+	CheckBox check_channelSel_HEADSTAGE_4,userdata(tabnum)=  "2"
 	CheckBox check_channelSel_HEADSTAGE_4,userdata(tabcontrol)=  "Settings",value= 1
-	CheckBox check_channelSel_HEADSTAGE_5,pos={53.00,225.00},size={21.00,15.00},title="5"
-	CheckBox check_channelSel_HEADSTAGE_5,userdata(tabnum)=  "1"
+	CheckBox check_channelSel_HEADSTAGE_5,pos={43.00,165.00},size={21.00,15.00},disable=1,title="5"
+	CheckBox check_channelSel_HEADSTAGE_5,userdata(tabnum)=  "2"
 	CheckBox check_channelSel_HEADSTAGE_5,userdata(tabcontrol)=  "Settings",value= 1
-	CheckBox check_channelSel_HEADSTAGE_6,pos={53.00,246.00},size={21.00,15.00},title="6"
-	CheckBox check_channelSel_HEADSTAGE_6,userdata(tabnum)=  "1"
+	CheckBox check_channelSel_HEADSTAGE_6,pos={43.00,186.00},size={21.00,15.00},disable=1,title="6"
+	CheckBox check_channelSel_HEADSTAGE_6,userdata(tabnum)=  "2"
 	CheckBox check_channelSel_HEADSTAGE_6,userdata(tabcontrol)=  "Settings",value= 1
-	CheckBox check_channelSel_HEADSTAGE_7,pos={53.00,267.00},size={21.00,15.00},title="7"
-	CheckBox check_channelSel_HEADSTAGE_7,userdata(tabnum)=  "1"
+	CheckBox check_channelSel_HEADSTAGE_7,pos={43.00,207.00},size={21.00,15.00},disable=1,title="7"
+	CheckBox check_channelSel_HEADSTAGE_7,userdata(tabnum)=  "2"
 	CheckBox check_channelSel_HEADSTAGE_7,userdata(tabcontrol)=  "Settings",value= 1
-	GroupBox group_channelSel_AD,pos={166.00,104.00},size={45.00,360.00},title="AD"
-	GroupBox group_channelSel_AD,userdata(tabnum)=  "1"
+	GroupBox group_channelSel_AD,pos={156.00,44.00},size={45.00,360.00},disable=1,title="AD"
+	GroupBox group_channelSel_AD,userdata(tabnum)=  "2"
 	GroupBox group_channelSel_AD,userdata(tabcontrol)=  "Settings"
-	CheckBox check_channelSel_AD_0,pos={174.00,120.00},size={21.00,15.00},title="0"
-	CheckBox check_channelSel_AD_0,userdata(tabnum)=  "1"
+	CheckBox check_channelSel_AD_0,pos={164.00,60.00},size={21.00,15.00},disable=1,title="0"
+	CheckBox check_channelSel_AD_0,userdata(tabnum)=  "2"
 	CheckBox check_channelSel_AD_0,userdata(tabcontrol)=  "Settings",value= 1
-	CheckBox check_channelSel_AD_1,pos={174.00,141.00},size={21.00,15.00},title="1"
-	CheckBox check_channelSel_AD_1,userdata(tabnum)=  "1"
+	CheckBox check_channelSel_AD_1,pos={164.00,81.00},size={21.00,15.00},disable=1,title="1"
+	CheckBox check_channelSel_AD_1,userdata(tabnum)=  "2"
 	CheckBox check_channelSel_AD_1,userdata(tabcontrol)=  "Settings",value= 1
-	CheckBox check_channelSel_AD_2,pos={174.00,162.00},size={21.00,15.00},title="2"
-	CheckBox check_channelSel_AD_2,userdata(tabnum)=  "1"
+	CheckBox check_channelSel_AD_2,pos={164.00,102.00},size={21.00,15.00},disable=1,title="2"
+	CheckBox check_channelSel_AD_2,userdata(tabnum)=  "2"
 	CheckBox check_channelSel_AD_2,userdata(tabcontrol)=  "Settings",value= 1
-	CheckBox check_channelSel_AD_3,pos={174.00,183.00},size={21.00,15.00},title="3"
-	CheckBox check_channelSel_AD_3,userdata(tabnum)=  "1"
+	CheckBox check_channelSel_AD_3,pos={164.00,123.00},size={21.00,15.00},disable=1,title="3"
+	CheckBox check_channelSel_AD_3,userdata(tabnum)=  "2"
 	CheckBox check_channelSel_AD_3,userdata(tabcontrol)=  "Settings",value= 1
-	CheckBox check_channelSel_AD_4,pos={174.00,204.00},size={21.00,15.00},title="4"
-	CheckBox check_channelSel_AD_4,userdata(tabnum)=  "1"
+	CheckBox check_channelSel_AD_4,pos={164.00,144.00},size={21.00,15.00},disable=1,title="4"
+	CheckBox check_channelSel_AD_4,userdata(tabnum)=  "2"
 	CheckBox check_channelSel_AD_4,userdata(tabcontrol)=  "Settings",value= 1
-	CheckBox check_channelSel_AD_5,pos={174.00,225.00},size={21.00,15.00},title="5"
-	CheckBox check_channelSel_AD_5,userdata(tabnum)=  "1"
+	CheckBox check_channelSel_AD_5,pos={164.00,165.00},size={21.00,15.00},disable=1,title="5"
+	CheckBox check_channelSel_AD_5,userdata(tabnum)=  "2"
 	CheckBox check_channelSel_AD_5,userdata(tabcontrol)=  "Settings",value= 1
-	CheckBox check_channelSel_AD_6,pos={174.00,246.00},size={21.00,15.00},title="6"
-	CheckBox check_channelSel_AD_6,userdata(tabnum)=  "1"
+	CheckBox check_channelSel_AD_6,pos={164.00,186.00},size={21.00,15.00},disable=1,title="6"
+	CheckBox check_channelSel_AD_6,userdata(tabnum)=  "2"
 	CheckBox check_channelSel_AD_6,userdata(tabcontrol)=  "Settings",value= 1
-	CheckBox check_channelSel_AD_7,pos={174.00,267.00},size={21.00,15.00},title="7"
-	CheckBox check_channelSel_AD_7,userdata(tabnum)=  "1"
+	CheckBox check_channelSel_AD_7,pos={164.00,207.00},size={21.00,15.00},disable=1,title="7"
+	CheckBox check_channelSel_AD_7,userdata(tabnum)=  "2"
 	CheckBox check_channelSel_AD_7,userdata(tabcontrol)=  "Settings",value= 1
-	CheckBox check_channelSel_AD_8,pos={174.00,289.00},size={21.00,15.00},title="8"
-	CheckBox check_channelSel_AD_8,userdata(tabnum)=  "1"
+	CheckBox check_channelSel_AD_8,pos={164.00,229.00},size={21.00,15.00},disable=1,title="8"
+	CheckBox check_channelSel_AD_8,userdata(tabnum)=  "2"
 	CheckBox check_channelSel_AD_8,userdata(tabcontrol)=  "Settings",value= 1
-	CheckBox check_channelSel_AD_9,pos={174.00,310.00},size={21.00,15.00},title="9"
-	CheckBox check_channelSel_AD_9,userdata(tabnum)=  "1"
+	CheckBox check_channelSel_AD_9,pos={164.00,250.00},size={21.00,15.00},disable=1,title="9"
+	CheckBox check_channelSel_AD_9,userdata(tabnum)=  "2"
 	CheckBox check_channelSel_AD_9,userdata(tabcontrol)=  "Settings",value= 1
-	CheckBox check_channelSel_AD_10,pos={174.00,331.00},size={27.00,15.00},title="10"
-	CheckBox check_channelSel_AD_10,userdata(tabnum)=  "1"
+	CheckBox check_channelSel_AD_10,pos={164.00,271.00},size={27.00,15.00},disable=1,title="10"
+	CheckBox check_channelSel_AD_10,userdata(tabnum)=  "2"
 	CheckBox check_channelSel_AD_10,userdata(tabcontrol)=  "Settings",value= 1
-	CheckBox check_channelSel_AD_11,pos={174.00,352.00},size={27.00,15.00},title="11"
-	CheckBox check_channelSel_AD_11,userdata(tabnum)=  "1"
+	CheckBox check_channelSel_AD_11,pos={164.00,292.00},size={27.00,15.00},disable=1,title="11"
+	CheckBox check_channelSel_AD_11,userdata(tabnum)=  "2"
 	CheckBox check_channelSel_AD_11,userdata(tabcontrol)=  "Settings",value= 1
-	CheckBox check_channelSel_AD_12,pos={174.00,373.00},size={27.00,15.00},title="12"
-	CheckBox check_channelSel_AD_12,userdata(tabnum)=  "1"
+	CheckBox check_channelSel_AD_12,pos={164.00,313.00},size={27.00,15.00},disable=1,title="12"
+	CheckBox check_channelSel_AD_12,userdata(tabnum)=  "2"
 	CheckBox check_channelSel_AD_12,userdata(tabcontrol)=  "Settings",value= 1
-	CheckBox check_channelSel_AD_13,pos={174.00,394.00},size={27.00,15.00},title="13"
-	CheckBox check_channelSel_AD_13,userdata(tabnum)=  "1"
+	CheckBox check_channelSel_AD_13,pos={164.00,334.00},size={27.00,15.00},disable=1,title="13"
+	CheckBox check_channelSel_AD_13,userdata(tabnum)=  "2"
 	CheckBox check_channelSel_AD_13,userdata(tabcontrol)=  "Settings",value= 1
-	CheckBox check_channelSel_AD_14,pos={174.00,415.00},size={27.00,15.00},title="14"
-	CheckBox check_channelSel_AD_14,userdata(tabnum)=  "1"
+	CheckBox check_channelSel_AD_14,pos={164.00,355.00},size={27.00,15.00},disable=1,title="14"
+	CheckBox check_channelSel_AD_14,userdata(tabnum)=  "2"
 	CheckBox check_channelSel_AD_14,userdata(tabcontrol)=  "Settings",value= 1
-	CheckBox check_channelSel_AD_15,pos={174.00,437.00},size={27.00,15.00},title="15"
-	CheckBox check_channelSel_AD_15,userdata(tabnum)=  "1"
+	CheckBox check_channelSel_AD_15,pos={164.00,377.00},size={27.00,15.00},disable=1,title="15"
+	CheckBox check_channelSel_AD_15,userdata(tabnum)=  "2"
 	CheckBox check_channelSel_AD_15,userdata(tabcontrol)=  "Settings",value= 1
-	ListBox list_of_ranges1,pos={27.00,163.00},size={198.00,330.00},disable=1,proc=AR_MainListBoxProc
-	ListBox list_of_ranges1,userdata(tabnum)=  "2",userdata(tabcontrol)=  "Settings"
+	ListBox list_of_ranges1,pos={17.00,157.00},size={198.00,240.00},disable=1,proc=AR_MainListBoxProc
+	ListBox list_of_ranges1,userdata(tabnum)=  "3",userdata(tabcontrol)=  "Settings"
 	ListBox list_of_ranges1,mode= 1,selRow= 0,widths={54,50,66}
-	Button button_RemoveRanges,pos={26.00,132.00},size={55.00,22.00},disable=1,proc=AR_ButtonProc_RemoveRanges,title="Remove"
-	Button button_RemoveRanges,userdata(tabnum)=  "2"
+	Button button_RemoveRanges,pos={16.00,126.00},size={55.00,22.00},disable=1,proc=AR_ButtonProc_RemoveRanges,title="Remove"
+	Button button_RemoveRanges,userdata(tabnum)=  "3"
 	Button button_RemoveRanges,userdata(tabcontrol)=  "Settings"
-	SetVariable setvar_cutoff_length_after,pos={182.00,102.00},size={45.00,18.00},disable=1,proc=AR_SetVarProcCutoffLength
+	SetVariable setvar_cutoff_length_after,pos={172.00,96.00},size={45.00,18.00},disable=1,proc=AR_SetVarProcCutoffLength
 	SetVariable setvar_cutoff_length_after,help={"Time in ms which should be cutoff *after* the artefact."}
-	SetVariable setvar_cutoff_length_after,userdata(tabnum)=  "2"
+	SetVariable setvar_cutoff_length_after,userdata(tabnum)=  "3"
 	SetVariable setvar_cutoff_length_after,userdata(tabcontrol)=  "Settings"
 	SetVariable setvar_cutoff_length_after,limits={0,inf,0.1},value= _NUM:0.2
-	SetVariable setvar_cutoff_length_before,pos={28.00,102.00},size={150.00,18.00},disable=1,proc=AR_SetVarProcCutoffLength,title="Cutoff length [ms]:"
+	SetVariable setvar_cutoff_length_before,pos={18.00,96.00},size={150.00,18.00},disable=1,proc=AR_SetVarProcCutoffLength,title="Cutoff length [ms]:"
 	SetVariable setvar_cutoff_length_before,help={"Time in ms which should be cutoff *before* the artefact."}
-	SetVariable setvar_cutoff_length_before,userdata(tabnum)=  "2"
+	SetVariable setvar_cutoff_length_before,userdata(tabnum)=  "3"
 	SetVariable setvar_cutoff_length_before,userdata(tabcontrol)=  "Settings"
 	SetVariable setvar_cutoff_length_before,limits={0,inf,0.1},value= _NUM:0.1
-	CheckBox check_auto_remove,pos={96.00,136.00},size={84.00,15.00},disable=1,proc=AR_CheckProc_Update,title="Auto remove"
+	CheckBox check_auto_remove,pos={86.00,130.00},size={84.00,15.00},disable=1,proc=AR_CheckProc_Update,title="Auto remove"
 	CheckBox check_auto_remove,help={"Automatically remove the found ranges on sweep plotting"}
-	CheckBox check_auto_remove,userdata(tabnum)=  "2"
+	CheckBox check_auto_remove,userdata(tabnum)=  "3"
 	CheckBox check_auto_remove,userdata(tabcontrol)=  "Settings",value= 0
-	CheckBox check_highlightRanges,pos={195.00,136.00},size={30.00,15.00},disable=1,proc=AR_CheckProc_Update,title="HL"
+	CheckBox check_highlightRanges,pos={185.00,130.00},size={30.00,15.00},disable=1,proc=AR_CheckProc_Update,title="HL"
 	CheckBox check_highlightRanges,help={"Visualize the found ranges in the graph (*might* slowdown graphing)"}
-	CheckBox check_highlightRanges,userdata(tabnum)=  "2"
+	CheckBox check_highlightRanges,userdata(tabnum)=  "3"
 	CheckBox check_highlightRanges,userdata(tabcontrol)=  "Settings",value= 0
-	SetVariable setvar_pulseAver_fallbackLength,pos={55.00,207.00},size={137.00,18.00},bodyWidth=50,disable=1,proc=PA_SetVarProc_Common,title="Fallback Length"
+	SetVariable setvar_pulseAver_fallbackLength,pos={45.00,207.00},size={137.00,18.00},bodyWidth=50,disable=3,proc=PA_SetVarProc_Common,title="Fallback Length"
 	SetVariable setvar_pulseAver_fallbackLength,help={"Pulse To Pulse Length in ms for edge cases which can not be computed."}
-	SetVariable setvar_pulseAver_fallbackLength,userdata(tabnum)=  "3"
+	SetVariable setvar_pulseAver_fallbackLength,userdata(tabnum)=  "4"
 	SetVariable setvar_pulseAver_fallbackLength,userdata(tabcontrol)=  "Settings"
 	SetVariable setvar_pulseAver_fallbackLength,value= _NUM:100
-	SetVariable setvar_pulseAver_endPulse,pos={70.00,184.00},size={122.00,18.00},bodyWidth=50,disable=1,proc=PA_SetVarProc_Common,title="Ending Pulse"
-	SetVariable setvar_pulseAver_endPulse,userdata(tabnum)=  "3"
+	SetVariable setvar_pulseAver_endPulse,pos={60.00,184.00},size={122.00,18.00},bodyWidth=50,disable=3,proc=PA_SetVarProc_Common,title="Ending Pulse"
+	SetVariable setvar_pulseAver_endPulse,userdata(tabnum)=  "4"
 	SetVariable setvar_pulseAver_endPulse,userdata(tabcontrol)=  "Settings"
 	SetVariable setvar_pulseAver_endPulse,value= _NUM:inf
-	SetVariable setvar_pulseAver_startPulse,pos={66.00,162.00},size={126.00,18.00},bodyWidth=50,disable=1,proc=PA_SetVarProc_Common,title="Starting Pulse"
-	SetVariable setvar_pulseAver_startPulse,userdata(tabnum)=  "3"
+	SetVariable setvar_pulseAver_startPulse,pos={56.00,162.00},size={126.00,18.00},bodyWidth=50,disable=3,proc=PA_SetVarProc_Common,title="Starting Pulse"
+	SetVariable setvar_pulseAver_startPulse,userdata(tabnum)=  "4"
 	SetVariable setvar_pulseAver_startPulse,userdata(tabcontrol)=  "Settings"
 	SetVariable setvar_pulseAver_startPulse,value= _NUM:0
-	CheckBox check_pulseAver_multGraphs,pos={60.00,142.00},size={120.00,15.00},disable=1,proc=PA_CheckProc_Common,title="Use multiple graphs"
+	CheckBox check_pulseAver_multGraphs,pos={50.00,142.00},size={120.00,15.00},disable=3,proc=PA_CheckProc_Common,title="Use multiple graphs"
 	CheckBox check_pulseAver_multGraphs,help={"Show the single pulses in multiple graphs or only one graph with mutiple axis."}
-	CheckBox check_pulseAver_multGraphs,userdata(tabnum)=  "3"
+	CheckBox check_pulseAver_multGraphs,userdata(tabnum)=  "4"
 	CheckBox check_pulseAver_multGraphs,userdata(tabcontrol)=  "Settings",value= 0
-	CheckBox check_pulseAver_showAver,pos={60.00,121.00},size={117.00,15.00},disable=1,proc=PA_CheckProc_Common,title="Show average trace"
+	CheckBox check_pulseAver_showAver,pos={50.00,121.00},size={117.00,15.00},disable=3,proc=PA_CheckProc_Common,title="Show average trace"
 	CheckBox check_pulseAver_showAver,help={"Show the average trace"}
-	CheckBox check_pulseAver_showAver,userdata(tabnum)=  "3"
+	CheckBox check_pulseAver_showAver,userdata(tabnum)=  "4"
 	CheckBox check_pulseAver_showAver,userdata(tabcontrol)=  "Settings",value= 0
-	CheckBox check_pulseAver_indTraces,pos={60.00,100.00},size={133.00,15.00},disable=1,proc=PA_CheckProc_Common,title="Show individual traces"
+	CheckBox check_pulseAver_indTraces,pos={50.00,100.00},size={133.00,15.00},disable=3,proc=PA_CheckProc_Common,title="Show individual traces"
 	CheckBox check_pulseAver_indTraces,help={"Show the individual traces"}
-	CheckBox check_pulseAver_indTraces,userdata(tabnum)=  "3"
+	CheckBox check_pulseAver_indTraces,userdata(tabnum)=  "4"
 	CheckBox check_pulseAver_indTraces,userdata(tabcontrol)=  "Settings",value= 1
-	CheckBox check_BrowserSettings_OVS,pos={100.00,50.00},size={97.00,15.00},disable=1,title="enable"
-	CheckBox check_BrowserSettings_OVS,value= 0
+	CheckBox check_BrowserSettings_OVS,pos={100.00,50.00},size={50.00,15.00},disable=1,title="enable"
 	CheckBox check_BrowserSettings_OVS,help={"Adds unplotted sweep to graph. Removes plotted sweep from graph."}
-	CheckBox check_BrowserSettings_OVS,userdata(tabnum)=  "0"
-	CheckBox check_BrowserSettings_OVS,userdata(tabcontrol)=  "Settings"
-	CheckBox check_BrowserSettings_AR,pos={100.00,50.00},size={106.00,15.00},disable=1,proc=BSP_CheckBoxProc_ArtRemoval,title="enable"
-	CheckBox check_BrowserSettings_AR,value= 0
+	CheckBox check_BrowserSettings_OVS,userdata(tabnum)=  "1"
+	CheckBox check_BrowserSettings_OVS,userdata(tabcontrol)=  "Settings",value= 0
+	CheckBox check_BrowserSettings_AR,pos={100.00,50.00},size={50.00,15.00},disable=1,proc=BSP_CheckBoxProc_ArtRemoval,title="enable"
 	CheckBox check_BrowserSettings_AR,help={"Open the artefact removal dialog"}
-	CheckBox check_BrowserSettings_AR,userdata(tabnum)=  "2"
-	CheckBox check_BrowserSettings_AR,userdata(tabcontrol)=  "Settings"
-	CheckBox check_BrowserSettings_PA,pos={100.00,50.00},size={100.00,15.00},disable=1,proc=BSP_CheckBoxProc_PerPulseAver,title="enable"
-	CheckBox check_BrowserSettings_PA,value= 0
+	CheckBox check_BrowserSettings_AR,userdata(tabnum)=  "3"
+	CheckBox check_BrowserSettings_AR,userdata(tabcontrol)=  "Settings",value= 0
+	CheckBox check_BrowserSettings_PA,pos={100.00,50.00},size={50.00,15.00},disable=1,proc=BSP_CheckBoxProc_PerPulseAver,title="enable"
 	CheckBox check_BrowserSettings_PA,help={"Allows to average multiple pulses from pulse train epochs"}
-	CheckBox check_BrowserSettings_PA,userdata(tabnum)=  "3"
-	CheckBox check_BrowserSettings_PA,userdata(tabcontrol)=  "Settings"
+	CheckBox check_BrowserSettings_PA,userdata(tabnum)=  "4"
+	CheckBox check_BrowserSettings_PA,userdata(tabcontrol)=  "Settings",value= 0
+	CheckBox check_BrowserSettings_DAC,pos={13.00,36.00},size={31.00,15.00},proc=SB_CheckProc_ChangedSetting,title="DA"
+	CheckBox check_BrowserSettings_DAC,help={"Display the DA channel data"}
+	CheckBox check_BrowserSettings_DAC,userdata(tabnum)=  "0"
+	CheckBox check_BrowserSettings_DAC,userdata(tabcontrol)=  "Settings",value= 0
+	CheckBox check_BrowserSettings_ADC,pos={57.00,36.00},size={31.00,15.00},proc=SB_CheckProc_ChangedSetting,title="AD"
+	CheckBox check_BrowserSettings_ADC,help={"Display the AD channels"}
+	CheckBox check_BrowserSettings_ADC,userdata(tabnum)=  "0"
+	CheckBox check_BrowserSettings_ADC,userdata(tabcontrol)=  "Settings",value= 1
+	CheckBox check_BrowserSettings_TTL,pos={97.00,36.00},size={35.00,15.00},proc=SB_CheckProc_ChangedSetting,title="TTL"
+	CheckBox check_BrowserSettings_TTL,help={"Display the TTL channels"}
+	CheckBox check_BrowserSettings_TTL,userdata(tabnum)=  "0"
+	CheckBox check_BrowserSettings_TTL,userdata(tabcontrol)=  "Settings",value= 0
+	CheckBox check_BrowserSettings_OChan,pos={13.00,60.00},size={64.00,15.00},proc=SB_CheckProc_ChangedSetting,title="Channels"
+	CheckBox check_BrowserSettings_OChan,help={"Overlay the data from multiple channels in one graph"}
+	CheckBox check_BrowserSettings_OChan,userdata(tabnum)=  "0"
+	CheckBox check_BrowserSettings_OChan,userdata(tabcontrol)=  "Settings",value= 0
+	CheckBox check_BrowserSettings_dDAQ,pos={97.00,60.00},size={47.00,15.00},proc=SB_CheckProc_ChangedSetting,title="dDAQ"
+	CheckBox check_BrowserSettings_dDAQ,help={"Enable dedicated support for viewing distributed DAQ data"}
+	CheckBox check_BrowserSettings_dDAQ,userdata(tabnum)=  "0"
+	CheckBox check_BrowserSettings_dDAQ,userdata(tabcontrol)=  "Settings",value= 0
+	CheckBox check_Calculation_ZeroTraces,pos={25.00,220.00},size={76.00,15.00},proc=SB_CheckProc_ChangedSetting,title="Zero Traces"
+	CheckBox check_Calculation_ZeroTraces,help={"Remove the offset of all traces"}
+	CheckBox check_Calculation_ZeroTraces,userdata(tabnum)=  "0"
+	CheckBox check_Calculation_ZeroTraces,userdata(tabcontrol)=  "Settings",value= 0
+	CheckBox check_Calculation_AverageTraces,pos={25.00,200.00},size={95.00,15.00},proc=SB_CheckProc_ChangedSetting,title="Average Traces"
+	CheckBox check_Calculation_AverageTraces,help={"Average all traces which belong to the same y axis"}
+	CheckBox check_Calculation_AverageTraces,userdata(tabnum)=  "0"
+	CheckBox check_Calculation_AverageTraces,userdata(tabcontrol)=  "Settings"
+	CheckBox check_Calculation_AverageTraces,value= 0
+	CheckBox check_BrowserSettings_TA,pos={90.00,112.00},size={50.00,15.00},proc=SB_TimeAlignmentProc,title="enable"
+	CheckBox check_BrowserSettings_TA,help={"Activate time alignment"}
+	CheckBox check_BrowserSettings_TA,userdata(tabnum)=  "0"
+	CheckBox check_BrowserSettings_TA,userdata(tabcontrol)=  "Settings",value= 0
+	PopupMenu popup_TimeAlignment_Mode,pos={19.00,135.00},size={143.00,19.00},bodyWidth=50,disable=2,proc=SB_TimeAlignmentPopup,title="Alignment Mode"
+	PopupMenu popup_TimeAlignment_Mode,help={"Select the alignment mode"}
+	PopupMenu popup_TimeAlignment_Mode,userdata(tabnum)=  "0"
+	PopupMenu popup_TimeAlignment_Mode,userdata(tabcontrol)=  "Settings"
+	PopupMenu popup_TimeAlignment_Mode,mode=1,popvalue="Level (Raising)",value= #"\"Level (Raising);Level (Falling);Min;Max\""
+	SetVariable setvar_TimeAlignment_LevelCross,pos={163.00,136.00},size={50.00,18.00},disable=2,proc=SB_TimeAlignmentLevel,title="Level"
+	SetVariable setvar_TimeAlignment_LevelCross,help={"Select the level (for rising and falling alignment mode) at which traces are aligned"}
+	SetVariable setvar_TimeAlignment_LevelCross,userdata(tabnum)=  "0"
+	SetVariable setvar_TimeAlignment_LevelCross,userdata(tabcontrol)=  "Settings"
+	SetVariable setvar_TimeAlignment_LevelCross,limits={-inf,inf,0},value= _NUM:0
+	Button button_TimeAlignment_Action,pos={183.00,159.00},size={30.00,20.00},disable=2,proc=SB_DoTimeAlignment,title="Do!"
+	Button button_TimeAlignment_Action,help={"Perform the time alignment, needs the cursors A and B to have a selected feature"}
+	Button button_TimeAlignment_Action,userdata(tabnum)=  "0"
+	Button button_TimeAlignment_Action,userdata(tabcontrol)=  "Settings"
+	GroupBox group_SB_axes_scaling,pos={12.00,248.00},size={210.00,50.00},title="Axes Scaling"
+	GroupBox group_SB_axes_scaling,userdata(tabnum)=  "0"
+	GroupBox group_SB_axes_scaling,userdata(tabcontrol)=  "Settings"
+	CheckBox check_Display_VisibleXrange,pos={25.00,272.00},size={40.00,15.00},title="Vis X"
+	CheckBox check_Display_VisibleXrange,help={"Scale the y axis to the visible x data range"}
+	CheckBox check_Display_VisibleXrange,userdata(tabnum)=  "0"
+	CheckBox check_Display_VisibleXrange,userdata(tabcontrol)=  "Settings",value= 0
+	CheckBox check_Display_EqualYrange,pos={79.00,272.00},size={54.00,15.00},title="Equal Y"
+	CheckBox check_Display_EqualYrange,help={"Equalize the vertical axes ranges"}
+	CheckBox check_Display_EqualYrange,userdata(tabnum)=  "0"
+	CheckBox check_Display_EqualYrange,userdata(tabcontrol)=  "Settings",value= 0
+	CheckBox check_Display_EqualYignore,pos={139.00,272.00},size={35.00,15.00},title="ign."
+	CheckBox check_Display_EqualYignore,help={"Equalize the vertical axes ranges but ignore all traces with level crossings"}
+	CheckBox check_Display_EqualYignore,userdata(tabnum)=  "0"
+	CheckBox check_Display_EqualYignore,userdata(tabcontrol)=  "Settings",value= 0
+	SetVariable setvar_Display_EqualYlevel,pos={178.00,270.00},size={25.00,18.00},disable=2,proc=SB_AxisScalingLevelCross
+	SetVariable setvar_Display_EqualYlevel,help={"Crossing level value for 'Equal Y ign.\""}
+	SetVariable setvar_Display_EqualYlevel,userdata(tabnum)=  "0"
+	SetVariable setvar_Display_EqualYlevel,userdata(tabcontrol)=  "Settings"
+	SetVariable setvar_Display_EqualYlevel,limits={-inf,inf,0},value= _NUM:0
+	PopupMenu popup_TimeAlignment_Master,pos={27.00,159.00},size={134.00,19.00},bodyWidth=50,disable=2,proc=SB_TimeAlignmentPopup,title="Reference trace"
+	PopupMenu popup_TimeAlignment_Master,help={"Select the reference trace to which all other traces should be aligned to"}
+	PopupMenu popup_TimeAlignment_Master,userdata(tabnum)=  "0"
+	PopupMenu popup_TimeAlignment_Master,userdata(tabcontrol)=  "Settings"
+	PopupMenu popup_TimeAlignment_Master,mode=1,popvalue="AD0",value= #"\"\""
+	Button button_Calculation_RestoreData,pos={137.00,210.00},size={75.00,25.00},proc=SB_ButtonProc_RestoreData,title="Restore"
+	Button button_Calculation_RestoreData,help={"Duplicate the graph and its trace for further processing"}
+	Button button_Calculation_RestoreData,userdata(tabnum)=  "0"
+	Button button_Calculation_RestoreData,userdata(tabcontrol)=  "Settings"
+	Button button_BrowserSettings_Export,pos={68.00,333.00},size={100.00,25.00},proc=SB_ButtonProc_ExportTraces,title="Export Traces"
+	Button button_BrowserSettings_Export,help={"Export the traces for further processing"}
+	Button button_BrowserSettings_Export,userdata(tabnum)=  "0"
+	Button button_BrowserSettings_Export,userdata(tabcontrol)=  "Settings"
+	GroupBox group_timealignment,pos={12.00,89.00},size={210.00,98.00},title="Time Alignment"
+	GroupBox group_timealignment,userdata(tabnum)=  "0"
+	GroupBox group_timealignment,userdata(tabcontrol)=  "Settings"
+	Slider slider_BrowserSettings_dDAQ,pos={232.00,38.00},size={54.00,300.00},disable=2,proc=BSP_SliderProc_ChangedSetting
+	Slider slider_BrowserSettings_dDAQ,help={"Allows to view only regions from the selected headstage (oodDAQ) resp. the selected headstage (dDAQ). Choose -1 to display all."}
+	Slider slider_BrowserSettings_dDAQ,userdata(tabnum)=  "0"
+	Slider slider_BrowserSettings_dDAQ,userdata(tabcontrol)=  "Settings"
+	Slider slider_BrowserSettings_dDAQ,limits={-1,7,1},value= -1
+	CheckBox check_SweepControl_HideSweep,pos={158.00,60.00},size={40.00,15.00},proc=SB_CheckProc_ChangedSetting,title="Hide"
+	CheckBox check_SweepControl_HideSweep,help={"Hide sweep traces. Usually combined with \"Average traces\"."}
+	CheckBox check_SweepControl_HideSweep,userdata(tabnum)=  "0"
+	CheckBox check_SweepControl_HideSweep,userdata(tabcontrol)=  "Settings",value= 0
+	CheckBox check_BrowserSettings_splitTTL,pos={158.00,36.00},size={59.00,15.00},proc=SB_CheckProc_ChangedSetting,title="sep. TTL"
+	CheckBox check_BrowserSettings_splitTTL,help={"Display the TTL channel data as single traces for each TTL bit"}
+	CheckBox check_BrowserSettings_splitTTL,userdata(tabnum)=  "0"
+	CheckBox check_BrowserSettings_splitTTL,userdata(tabcontrol)=  "Settings"
+	CheckBox check_BrowserSettings_splitTTL,value= 0
+	PopupMenu popup_DB_lockedDevices,pos={13.00,304.00},size={205.00,19.00},bodyWidth=100,proc=DB_PopMenuProc_LockDBtoDevice,title="Device assingment:"
+	PopupMenu popup_DB_lockedDevices,help={"Select a data acquistion device to display data"}
+	PopupMenu popup_DB_lockedDevices,userdata(tabnum)=  "0"
+	PopupMenu popup_DB_lockedDevices,userdata(tabcontrol)=  "Settings"
+	PopupMenu popup_DB_lockedDevices,mode=1,popvalue="- none -",value= #"DB_GetAllDevicesWithData()"
+	NewNotebook /F=1 /N=WaveNoteDisplay /W=(200,24,600,561)/FG=(FL,$"",FR,UGH0) /HOST=# /V=0 /OPTS=10
+	Notebook kwTopWin, defaultTab=36, autoSave= 1, showRuler=0, rulerUnits=1
+	Notebook kwTopWin newRuler=Normal, justification=0, margins={0,0,189}, spacing={0,0,0}, tabs={}, rulerDefaults={"Arial",10,0,(0,0,0)}
+	Notebook kwTopWin, zdata= "GaqDU%ejN7!Z)u^\"(F_BAcgu2S,7dSL]iZ-,W[?i6\"=DG6/B>,7,t^3K>Ff@1GOXc!\"Z\"8'`"
+	Notebook kwTopWin, zdataEnd= 1
+	SetWindow kwTopWin,userdata(tabnum)=  "5"
+	SetWindow kwTopWin,userdata(tabcontrol)=  "Settings"
+	RenameWindow #,WaveNoteDisplay
+	SetActiveSubwindow ##
 EndMacro
 
 /// @brief enable/disable checkbox control for side panel
@@ -617,18 +994,73 @@ Function BSP_ButtonProc_Panel(ba) : ButtonControl
 	return 0
 End
 
+Function BSP_SliderProc_ChangedSetting(spa) : SliderControl
+	STRUCT WMSliderAction &spa
+
+	string win
+
+	if(spa.eventCode > 0 && spa.eventCode & 0x1)
+		win = spa.win
+		UpdateSweepPlot(win)
+	endif
+
+	return 0
+End
+
+/// @brief update controls in scPanel and change to new sweep
+///
+/// @param win 		  name of external panel or main window
+/// @param ctrl       name of the button that was pressed and is initiating the update
+/// @param firstSweep first available sweep(DB) or index(SB)
+/// @param lastSweep  first available sweep(DB) or index(SB)
+/// @returns the new sweep number in case of DB or the index for SB
+Function BSP_UpdateSweepControls(win, ctrl, firstSweep, lastSweep)
+	string win, ctrl
+	variable firstSweep, lastSweep
+
+	string graph, scPanel
+	variable currentSweep, newSweep, step, direction
+
+	graph   = GetMainWindow(win)
+	scPanel = BSP_GetSweepControlsPanel(graph)
+
+	if(BSP_MainPanelNeedsUpdate(graph))
+		DoAbortNow("The main panel is too old to be usable. Please close it and open a new one.")
+	endif
+
+	currentSweep = GetSetVariable(scPanel, "setvar_SweepControl_SweepNo")
+	step = GetSetVariable(scPanel, "setvar_SweepControl_SweepStep")
+	if(!cmpstr(ctrl, "button_SweepControl_PrevSweep"))
+		direction = -1
+	elseif(!cmpstr(ctrl, "button_SweepControl_NextSweep"))
+		direction = +1
+	else
+		ASSERT(0, "unhandled control name")
+	endif
+
+	newSweep = currentSweep + direction * step
+	newSweep = limit(newSweep, firstSweep, lastSweep)
+
+	SetSetVariable(scPanel, "setvar_SweepControl_SweepNo", newSweep)
+	SetSetVariableLimits(scPanel, "setvar_SweepControl_SweepNo", firstSweep, lastSweep, step)
+	SetValDisplay(scPanel, "valdisp_SweepControl_LastSweep", var = lastSweep)
+
+	return newSweep
+End
+
 /// @brief check the DataBrowser or SweepBrowser panel if it has the required version
 ///
-/// @param panelName 		name of external panel or main window
+/// @param win 		name of external panel or main window
 /// @return 0 if panel has latest version and 1 if update is required
-static Function BSP_MainPanelNeedsUpdate(panelName)
-	string panelName
+Function BSP_MainPanelNeedsUpdate(win)
+	string win
 
 	variable panelVersion, version
+	string mainPanel
 
-	panelName = GetMainWindow(panelName)
-	panelVersion = GetPanelVersion(panelName)
-	if(IsDataBrowser(panelName))
+	mainPanel = GetMainWindow(win)
+	panelVersion = GetPanelVersion(mainPanel)
+	if(IsDataBrowser(mainPanel))
 		version = DATABROWSER_PANEL_VERSION
 	else
 		version = SWEEPBROWSER_PANEL_VERSION
@@ -639,41 +1071,41 @@ End
 
 /// @brief check the BrowserSettings Panel if it has the required version
 ///
-/// @param panelName 		name of external panel or main window
+/// @param win 	name of external panel or main window
 /// @return 0 if panel has latest version and 1 if update is required
-static Function BSP_PanelNeedsUpdate(panelName)
-	string panelName
+static Function BSP_PanelNeedsUpdate(win)
+	string win
 
-	string extPanel
+	string bsPanel
 	variable version
 
-	extPanel = BSP_GetPanel(panelName)
-	if(!WindowExists(extPanel))
+	bsPanel = BSP_GetPanel(win)
+	if(!WindowExists(bsPanel))
 		return 0
 	endif
 
-	version = GetPanelVersion(extPanel)
+	version = GetPanelVersion(bsPanel)
 	return version < BROWSERSETTINGS_PANEL_VERSION
 End
 
 /// @brief check if the specified setting is activated
 ///
-/// @param panelName 	name of external panel or main window
+/// @param win 			name of external panel or main window
 /// @param elementID 	one of BROWSERSETTINGS_* constants
 /// @return 1 if setting was activated, 0 otherwise
-Function BSP_IsActive(panelName, elementID)
-	string panelName
+Function BSP_IsActive(win, elementID)
+	string win
 	variable elementID
 
-	string extPanel, control
+	string bsPanel, control
 
-	extPanel = BSP_GetPanel(panelName)
-	if(!WindowExists(extPanel))
+	bsPanel = BSP_GetPanel(win)
+	if(!WindowExists(bsPanel))
 		return 0
 	endif
 
 	// return inactive if panel is outdated
-	if(BSP_MainPanelNeedsUpdate(panelName) || BSP_PanelNeedsUpdate(panelName))
+	if(BSP_MainPanelNeedsUpdate(win) || BSP_PanelNeedsUpdate(win))
 		return 0
 	endif
 
@@ -693,5 +1125,5 @@ Function BSP_IsActive(panelName, elementID)
 			return 0
 	endswitch
 
-	return GetCheckboxState(extPanel, control) == CHECKBOX_SELECTED
+	return GetCheckboxState(bsPanel, control) == CHECKBOX_SELECTED
 End
