@@ -806,10 +806,8 @@ Function PSQ_SubThreshold(panelTitle, eventType, ITCDataWave, headStage, realDat
 	variable sweepsInSet, passesInSet, acquiredSweepsInSet, numBaselineChunks
 	string msg, stimset, key
 
-	// only do something if we are called for the very last headstage
-	if(DAP_GetHighestActiveHeadstage(panelTitle) != headstage)
-		return NaN
-	endif
+	WAVE statusHS = DAG_GetChannelState(panelTitle, CHANNEL_TYPE_HEADSTAGE)
+	ASSERT(sum(statusHS) == 1, "Analysis function only supports one headstage")
 
 	// BEGIN CHANGE ME
 	MAKE/D/FREE DAScales = {-30, -70, -90}
