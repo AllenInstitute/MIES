@@ -1805,6 +1805,10 @@ Function DAP_CheckSettings(panelTitle, mode)
 			printf "(%s) Indexing (locked and unlocked) is currently not usable with yoking.\r", panelTitle
 			ControlWindowToFront()
 			return 1
+		elseif(DAG_GetNumericalValue(panelTitle, "check_Settings_TPAfterDAQ"))
+			printf "(%s) TP after DAQ is currently not usable with yoking.\r", panelTitle
+			ControlWindowToFront()
+			return 1
 		endif
 	endif
 	DEBUGPRINT("Checking the panelTitle list: ", str=list)
