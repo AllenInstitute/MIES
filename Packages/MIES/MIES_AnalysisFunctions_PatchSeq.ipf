@@ -660,6 +660,11 @@ static Function/WAVE PSQ_SearchForSpikes(panelTitle, type, sweepWave, headstage,
 
 	WAVE singleDA = AFH_ExtractOneDimDataFromSweep(panelTitle, sweepWave, headstage, ITC_XOP_CHANNEL_TYPE_DAC)
 	level = WaveMin(singleDA, totalOnsetDelay, inf) + 0.1 * (WaveMax(singleDA, totalOnsetDelay, inf) - WaveMin(singleDA, totalOnsetDelay, inf))
+
+	if(level == 0.0) // DA data is constant zero
+		return spikeDetection
+	endif
+
 	Make/FREE/D levels
 	FindLevels/R=(totalOnsetDelay, inf)/Q/N=2/DEST=levels singleDA, level
 	ASSERT(V_LevelsFound == 2, "Could not find two levels")
