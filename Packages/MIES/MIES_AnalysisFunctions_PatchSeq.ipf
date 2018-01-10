@@ -641,26 +641,27 @@ End
 /// @brief Search the AD channel of the given headstage for spikes from the
 /// pulse onset until the end of the sweep
 ///
-/// @param panelTitle device
-/// @param type       One of @ref PatchSeqAnalysisFunctionTypes
-/// @param sweepWave  sweep wave with acquired data
-/// @param headstage  headstage in the range [0, NUM_HEADSTAGES[
+/// @param panelTitle      device
+/// @param type            One of @ref PatchSeqAnalysisFunctionTypes
+/// @param sweepWave       sweep wave with acquired data
+/// @param totalOnsetDelay total delay in ms until the stimset data starts
+/// @param headstage       headstage in the range [0, NUM_HEADSTAGES[
 ///
 /// @return labnotebook value wave suitable for ED_AddEntryToLabnotebook()
-static Function/WAVE PSQ_SearchForSpikes(panelTitle, type, sweepWave, headstage)
+static Function/WAVE PSQ_SearchForSpikes(panelTitle, type, sweepWave, headstage, totalOnsetDelay)
 	string panelTitle
 	variable type
 	WAVE sweepWave
-	variable headstage
+	variable headstage, totalOnsetDelay
 
 	variable level, first, last, overrideValue
 
 	Make/FREE/D/N=(LABNOTEBOOK_LAYER_COUNT) spikeDetection = 0
 
 	WAVE singleDA = AFH_ExtractOneDimDataFromSweep(panelTitle, sweepWave, headstage, ITC_XOP_CHANNEL_TYPE_DAC)
-	level = WaveMin(singleDA) + 0.1 * (WaveMax(singleDA) - WaveMin(singleDA))
+	level = WaveMin(singleDA, totalOnsetDelay, inf) + 0.1 * (WaveMax(singleDA, totalOnsetDelay, inf) - WaveMin(singleDA, totalOnsetDelay, inf))
 	Make/FREE/D levels
-	FindLevels/Q/N=2/DEST=levels singleDA, level
+	FindLevels/R=(totalOnsetDelay, inf)/Q/N=2/DEST=levels singleDA, level
 	ASSERT(V_LevelsFound == 2, "Could not find two levels")
 	first = levels[0]
 	last  = inf
@@ -1056,7 +1057,7 @@ Function PSQ_SquarePulse(panelTitle, eventType, ITCDataWave, headStage, realData
 	Wave ITCDataWave
 	variable headstage, realDataLength
 
-	variable sweepNo, stepsize, DAScale
+	variable sweepNo, stepsize, DAScale, totalOnsetDelay
 	variable offset, first, last, level, overrideValue
 	string key
 
@@ -1096,7 +1097,12 @@ Function PSQ_SquarePulse(panelTitle, eventType, ITCDataWave, headStage, realData
 
 			sweepNo = AFH_GetLastSweepAcquired(panelTitle)
 			WAVE sweepWave = GetSweepWave(panelTitle, sweepNo)
-			WAVE spikeDetection = PSQ_SearchForSpikes(panelTitle, PSQ_SQUARE_PULSE, sweepWave, headstage)
+			WAVE numericalValues = GetLBNumericalValues(panelTitle)
+
+			totalOnsetDelay = GetLastSettingIndep(numericalValues, sweepNo, "Delay onset auto", DATA_ACQUISITION_MODE) \
+							  + GetLastSettingIndep(numericalValues, sweepNo, "Delay onset user", DATA_ACQUISITION_MODE)
+
+			WAVE spikeDetection = PSQ_SearchForSpikes(panelTitle, PSQ_SQUARE_PULSE, sweepWave, headstage, totalOnsetDelay)
 			key = PSQ_CreateLBNKey(PSQ_SQUARE_PULSE, PSQ_FMT_LBN_SPIKE_DETECT)
 			ED_AddEntryToLabnotebook(panelTitle, key, spikeDetection)
 
@@ -1293,7 +1299,13 @@ Function PSQ_Rheobase(panelTitle, eventType, ITCDataWave, headStage, realDataLen
 
 			// search for spike and store result
 			WAVE sweepWave = GetSweepWave(panelTitle, sweepNo)
-			WAVE spikeDetection = PSQ_SearchForSpikes(panelTitle, PSQ_RHEOBASE, sweepWave, headstage)
+
+			WAVE numericalValues = GetLBNumericalValues(panelTitle)
+
+			totalOnsetDelay = GetLastSettingIndep(numericalValues, sweepNo, "Delay onset auto", DATA_ACQUISITION_MODE)   \
+							  + GetLastSettingIndep(numericalValues, sweepNo, "Delay onset user", DATA_ACQUISITION_MODE)
+
+			WAVE spikeDetection = PSQ_SearchForSpikes(panelTitle, PSQ_RHEOBASE, sweepWave, headstage, totalOnsetDelay)
 			key = PSQ_CreateLBNKey(PSQ_RHEOBASE, PSQ_FMT_LBN_SPIKE_DETECT)
 			ED_AddEntryToLabnotebook(panelTitle, key, spikeDetection, unit = "On/Off")
 
