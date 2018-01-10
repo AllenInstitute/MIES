@@ -1799,6 +1799,13 @@ Function DAP_CheckSettings(panelTitle, mode)
 			return 1
 		endif
 		list = AddListItem(list, listOfFollowerDevices, ";", inf)
+
+		// indexing and locked indexing are currently not implemented correctly for yoked devices
+		if(DAG_GetNumericalValue(panelTitle, "Check_DataAcq_Indexing") || DAG_GetNumericalValue(panelTitle, "Check_DataAcq1_IndexingLocked"))
+			printf "(%s) Indexing (locked and unlocked) is currently not usable with yoking.\r", panelTitle
+			ControlWindowToFront()
+			return 1
+		endif
 	endif
 	DEBUGPRINT("Checking the panelTitle list: ", str=list)
 
