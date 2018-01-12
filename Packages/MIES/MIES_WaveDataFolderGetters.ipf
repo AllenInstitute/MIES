@@ -4980,7 +4980,7 @@ End
 /// @brief Return a wave reference which holds the "Delta V" values
 /// of all sweeps from one repeated acquisition cycle
 ///
-/// Used by AdjustDAScale().
+/// Used by PSQ_AdjustDAScale().
 ///
 /// Rows:
 /// - Sweeps
@@ -5014,7 +5014,7 @@ End
 /// @brief Return a wave reference which holds the "Delta I" values
 /// of all sweeps from one repeated acquisition cycle
 ///
-/// Used by AdjustDAScale().
+/// Used by PSQ_AdjustDAScale().
 ///
 /// Rows:
 /// - Sweeps
@@ -5045,7 +5045,7 @@ End
 
 /// @brief Return a wave reference to the fitted resistance values and its error
 ///
-/// Used by AdjustDAScale().
+/// Used by PSQ_AdjustDAScale().
 ///
 /// Rows:
 /// - Headstages
@@ -5079,7 +5079,7 @@ End
 
 /// @brief Return a wave reference to the fitted resistance wave created by `CurveFit`
 ///
-/// Used by AdjustDAScale().
+/// Used by PSQ_AdjustDAScale().
 Function/WAVE GetAnalysisFuncDAScaleResFit(panelTitle, headstage)
 	string panelTitle
 	variable headstage

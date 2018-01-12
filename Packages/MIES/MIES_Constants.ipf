@@ -753,19 +753,6 @@ Constant OVS_SWEEP_SELECTION_INDEX   = 0x0
 Constant OVS_SWEEP_SELECTION_SWEEPNO = 0x1
 /// @}
 
-Constant PATCHSEQ_ST_NUM_SWEEPS_PASS       = 3
-Constant PATCHSEQ_ST_BL_EVAL_RANGE_MS      = 500
-Constant PATCHSEQ_ST_PULSE_DUR             = 1000
-Constant PATCHSEQ_ST_RMS_SHORT_THRESHOLD   = 0.07 // mV
-Constant PATCHSEQ_ST_RMS_LONG_THRESHOLD    = 0.5  // mV
-Constant PATCHSEQ_ST_TARGETV_THRESHOLD     = 1    // mV
-StrConstant PATCHSEQ_ST_LBN_SET_PASS       = "Sub Thres Set QC"
-StrConstant PATCHSEQ_ST_LBN_SWEEP_PASS     = "Sub Thres Sweep QC"
-StrConstant PATCHSEQ_ST_LBN_RMS_SHORT_PASS = "Sub Thres Short RMS QC"
-StrConstant PATCHSEQ_ST_LBN_RMS_LONG_PASS  = "Sub Thres Long RMS QC"
-StrConstant PATCHSEQ_ST_LBN_TargetV_PASS   = "Sub Thres Target V QC"
-StrConstant PATCHSEQ_ST_LBN_CHUNK_PASS_FMT = "Sub Thres Chunk %d QC"
-
 /// Export type parameters for NWB_ExportWithDialog()
 /// @{
 Constant NWB_EXPORT_DATA     = 0x1
@@ -775,11 +762,56 @@ Constant NWB_EXPORT_STIMSETS = 0x2
 /// Maximum number of microsecond timers in Igor Pro
 Constant MAX_NUM_MS_TIMERS = 10
 
-Constant PATCHSEQ_SP_INIT_AMP_m50    = -50e-12
-Constant PATCHSEQ_SP_INIT_AMP_p100   = +100e-12
-Constant PATCHSEQ_SP_INIT_AMP_p10    = +10e-12
-Constant PATCHSEQ_SP_SPIKE_LEVEL     = 10 // mV
+/// PatchSeq various constants
+/// @{
+Constant PSQ_SP_INIT_AMP_m50    = -50e-12
+Constant PSQ_SP_INIT_AMP_p100   = +100e-12
+Constant PSQ_SP_INIT_AMP_p10    = +10e-12
 
-StrConstant PATCHSEQ_SP_LBN_STEPSIZE      = "SP step size"
-StrConstant PATCHSEQ_SP_LBN_SPIKE_DETECT  = "SP spike detected"
-StrConstant PATCHSEQ_SP_LBN_FINAL_SCALE   = "SP final DAScale"
+Constant PSQ_RB_PRE_BL_EVAL_RANGE  = 500
+Constant PSQ_RB_POST_BL_EVAL_RANGE = 50
+
+Constant PSQ_ST_NUM_SWEEPS_PASS  = 3
+Constant PSQ_ST_BL_EVAL_RANGE_MS = 500
+Constant PSQ_ST_PULSE_DUR        = 1000
+
+Constant PSQ_SPIKE_LEVEL     = 10 // mV
+Constant PSQ_RMS_SHORT_THRESHOLD = 0.07 // mV
+Constant PSQ_RMS_LONG_THRESHOLD  = 0.5  // mV
+Constant PSQ_TARGETV_THRESHOLD   = 1    // mV
+/// @}
+
+/// PatchSeq labnotebook constants
+///
+/// Use with PSQ_PSQ_CreateLBNKey() only.
+///
+/// @anchor PatchSeqLabnotebookFormatStrings
+/// @{
+StrConstant PSQ_FMT_LBN_STEPSIZE      = "%s step size"
+StrConstant PSQ_FMT_LBN_SPIKE_DETECT  = "%s spike detected"
+StrConstant PSQ_FMT_LBN_FINAL_SCALE   = "%s final DAScale"
+StrConstant PSQ_FMT_LBN_INITIAL_SCALE = "%s initial DAScale"
+StrConstant PSQ_FMT_LBN_RMS_SHORT_PASS = "%s Chk%d S-RMS BL QC"
+StrConstant PSQ_FMT_LBN_RMS_LONG_PASS  = "%s Chk%d L-RMS BL QC"
+StrConstant PSQ_FMT_LBN_TARGETV_PASS   = "%s Chk%d T-V BL QC"
+StrConstant PSQ_FMT_LBN_CHUNK_PASS     = "%s Chk%d BL QC"
+StrConstant PSQ_FMT_LBN_BL_QC_PASS     = "%s BL QC"
+StrConstant PSQ_FMT_LBN_SWEEP_PASS     = "%s Sweep QC"
+StrConstant PSQ_FMT_LBN_SET_PASS       = "%s Set QC"
+StrConstant PSQ_FMT_LBN_PULSE_DUR      = "%s Pulse duration"
+/// @}
+
+/// PatchSeq types of analysis functions
+/// @anchor PatchSeqAnalysisFunctionTypes
+/// @{
+Constant PSQ_SUB_THRESHOLD = 0x1
+Constant PSQ_SQUARE_PULSE  = 0x2
+Constant PSQ_RHEOBASE      = 0x4
+/// @}
+
+/// PatchSeq Rheobase
+/// @{
+Constant PSQ_RB_MAX_DASCALE_DIFF = 60e-12
+Constant PSQ_RB_DASCALE_STEP     = 10e-12
+Constant PSQ_RB_FINALSCALE_FAKE  = 42e-12
+/// @}

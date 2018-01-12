@@ -10,6 +10,7 @@
 #include "UTF_BasicHardwareTests"
 #include "UTF_PatchSeqSubThreshold"
 #include "UTF_PatchSeqSquarePulse"
+#include "UTF_PatchSeqRheobase"
 
 Function run()
 //	DisableDebugOutput()
@@ -93,6 +94,19 @@ Function run()
 	list = AddListItem("PS_SP_Test4", list, ";", INF)
 	list = AddListItem("PS_SP_Run5", list, ";", INF)
 	list = AddListItem("PS_SP_Test5", list, ";", INF)
+
+	list = AddListItem("PS_RB_Run1", list, ";", INF)
+	list = AddListItem("PS_RB_Test1", list, ";", INF)
+	list = AddListItem("PS_RB_Run2", list, ";", INF)
+	list = AddListItem("PS_RB_Test2", list, ";", INF)
+	list = AddListItem("PS_RB_Run3", list, ";", INF)
+	list = AddListItem("PS_RB_Test3", list, ";", INF)
+	list = AddListItem("PS_RB_Run4", list, ";", INF)
+	list = AddListItem("PS_RB_Test4", list, ";", INF)
+	list = AddListItem("PS_RB_Run5", list, ";", INF)
+	list = AddListItem("PS_RB_Test5", list, ";", INF)
+	list = AddListItem("PS_RB_Run6", list, ";", INF)
+	list = AddListItem("PS_RB_Test6", list, ";", INF)
 
 	// initialize everything
 	CtrlNamedBackGround DAQWatchdog, stop, period=120, proc=WaitUntilDAQDone_IGNORE
