@@ -661,8 +661,12 @@ static Function NWB_AppendSweepLowLevel(locationID, panelTitle, ITCDataWave, ITC
 			IPNWB#WriteSingleChannel(locationID, path, params, tsp, chunkedLayout=chunkedLayout)
 		endif
 
+		ClearWriteChannelParams(params)
+
 		DEBUGPRINT_ELAPSED(refTime)
 	endfor
+
+	ClearWriteChannelParams(params)
 
 	DEBUGPRINT_ELAPSED(refTime)
 
@@ -678,6 +682,8 @@ static Function NWB_AppendSweepLowLevel(locationID, panelTitle, ITCDataWave, ITC
 		params.clampMode        = NaN
 		params.channelNumber    = i
 		params.channelType      = ITC_XOP_CHANNEL_TYPE_TTL
+		params.electrodeNumber  = NaN
+		params.electrodeName    = ""
 		col                     = AFH_GetITCDataColumn(ITCChanConfigWave, params.channelNumber, params.channelType)
 		writtenDataColumns[col] = 1
 
@@ -698,7 +704,11 @@ static Function NWB_AppendSweepLowLevel(locationID, panelTitle, ITCDataWave, ITC
 			params.groupIndex    = IsFinite(params.groupIndex) ? params.groupIndex : IPNWB#GetNextFreeGroupIndex(locationID, path)
 			IPNWB#WriteSingleChannel(locationID, path, params, tsp, chunkedLayout=chunkedLayout)
 		endfor
+
+		ClearWriteChannelParams(params)
 	endfor
+
+	ClearWriteChannelParams(params)
 
 	DEBUGPRINT_ELAPSED(refTime)
 
@@ -724,9 +734,41 @@ static Function NWB_AppendSweepLowLevel(locationID, panelTitle, ITCDataWave, ITC
 		WAVE params.data       = ExtractOneDimDataFromSweep(ITCChanConfigWave, ITCDataWave, i)
 		params.groupIndex      = IsFinite(params.groupIndex) ? params.groupIndex : IPNWB#GetNextFreeGroupIndex(locationID, path)
 		IPNWB#WriteSingleChannel(locationID, path, params, tsp, chunkedLayout=chunkedLayout)
+		ClearWriteChannelParams(params)
 	endfor
 
 	DEBUGPRINT_ELAPSED(refTime)
+End
+
+/// @brief Clear all entries which are channel specific
+static Function ClearWriteChannelParams(s)
+	STRUCT IPNWB#WriteChannelParams &s
+
+	string device
+	variable sweep, startingTime, samplingRate, groupIndex
+
+	// all entries except device and sweep will be cleared
+	if(strlen(s.device) > 0)
+		device = s.device
+	endif
+
+	sweep        = s.sweep
+	startingTime = s.startingTime
+	samplingRate = s.samplingRate
+	groupIndex   = s.groupIndex
+
+	STRUCT IPNWB#WriteChannelParams defaultValues
+
+	s = defaultValues
+
+	if(strlen(device) > 0)
+		s.device = device
+	endif
+
+	s.sweep        = sweep
+	s.startingTime = startingTime
+	s.samplingRate = samplingRate
+	s.groupIndex   = groupIndex
 End
 
 /// @brief Save Custom Wave (from stimset) in NWB file
