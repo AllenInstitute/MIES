@@ -145,7 +145,7 @@ static Function DB_LockDBPanel(win, device)
 	endif
 
 	if(windowExists(renameWin))
-		renameWin = UniqueName("DataBrowser", 9, 1)
+		renameWin = UniqueName(renameWin, 9, 1)
 	endif
 	DoWindow/W=$win/C $renameWin
 	win = renameWin
