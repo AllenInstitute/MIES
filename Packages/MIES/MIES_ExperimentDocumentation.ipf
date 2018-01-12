@@ -237,17 +237,14 @@ static Function ED_WriteChangedValuesToNote(panelTitle, sweepNo)
 		// 3. invalid -> invalid
 		// 4. invalid -> valid
 
-		// In case 3. we have nothing to do, everyting else needs a closer look
-		// for 2., 4. we create fake data set to NaN
+		// In case 2. and 3. we have nothing to do, everyting else needs a closer look
+		// for 4. we create fake data set to NaN
 		// and 1. needs no special treatment
-		if(!WaveExists(currentSetting) && !WaveExists(lastSetting))
+		if(!WaveExists(currentSetting))
 			continue
 		elseif(!WaveExists(lastSetting))
 			Duplicate/FREE currentSetting, lastSetting
 			lastSetting = NaN
-		elseif(!WaveExists(currentSetting))
-			Duplicate/FREE lastSetting, currentSetting
-			currentSetting = NaN
 		endif
 
 		ASSERT(DimSize(currentSetting, ROWS) == DimSize(lastSetting, ROWS), "last and current settings must have the same size")
@@ -327,17 +324,14 @@ static Function ED_WriteChangedValuesToNoteText(panelTitle, sweepNo)
 		// 3. invalid -> invalid
 		// 4. invalid -> valid
 
-		// In case 3. we have nothing to do, everyting else needs a closer look
-		// for 2., 4. we create fake data set to NaN
+		// In case 2. and 3. we have nothing to do, everyting else needs a closer look
+		// for 4. we create fake data set to NaN
 		// and 1. needs no special treatment
-		if(!WaveExists(currentSetting) && !WaveExists(lastSetting))
+		if(!WaveExists(currentSetting))
 			continue
 		elseif(!WaveExists(lastSetting))
 			Duplicate/T/FREE currentSetting, lastSetting
 			lastSetting = ""
-		elseif(!WaveExists(currentSetting))
-			Duplicate/T/FREE lastSetting, currentSetting
-			currentSetting = ""
 		endif
 
 		ASSERT(DimSize(currentSetting, ROWS) == DimSize(lastSetting, ROWS), "last and current settings must have the same size")
