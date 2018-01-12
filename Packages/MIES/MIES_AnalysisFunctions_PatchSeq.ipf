@@ -816,7 +816,7 @@ Function PSQ_SubThreshold(panelTitle, eventType, ITCDataWave, headStage, realDat
 	ASSERT(sum(statusHS) == 1, "Analysis function only supports one headstage")
 
 	// BEGIN CHANGE ME
-	MAKE/D/FREE DAScales = {-30, -70, -90}
+	MAKE/D/FREE DAScales = {-30, -50, -70, -110, -130}
 	// END CHANGE ME
 
 	WAVE DAScalesIndex = GetAnalysisFuncIndexingHelper(panelTitle)
