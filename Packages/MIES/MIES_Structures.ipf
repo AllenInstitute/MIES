@@ -13,7 +13,8 @@
 
 Structure BackgroundStruct
 	STRUCT WMBackgroundStruct wmbs
-	int32 count ///< Number of invocations of background function
+	int32 count           ///< Number of invocations of background function
+	int32 threadDeadCount ///< TP-MD only: Number of successive tries to get data from the thread
 EndStructure
 
 Function FinalUpdateHookProto(graph)
