@@ -2823,7 +2823,7 @@ Function EqualizeVerticalAxesRanges(graph, [ignoreAxesWithLevelCrossing, level, 
 	axList = AxisList(graph)
 	numAxes = ItemsInList(axList)
 
-	Make/FREE/D/N=(NUM_CLAMP_MODES) maxYRangeClampMode = 0
+	Make/FREE/D/N=(NUM_CLAMP_MODES + 1) maxYRangeClampMode = 0
 	Make/FREE/D/N=(numAxes) axisClampMode = Nan
 	Make/FREE/D/N=(numAxes, 2) YValues = inf
 
@@ -2868,6 +2868,12 @@ Function EqualizeVerticalAxesRanges(graph, [ignoreAxesWithLevelCrossing, level, 
 
 			clampMode = str2num(GetUserData(graph, trace, "clampMode"))
 
+			if(!IsFinite(clampMode))
+				// TTL data has NaN for the clamp mode, map that to something which
+				// can be used as an index into maxYRangeClampMode.
+				clampMode = NUM_CLAMP_MODES
+			endif
+
 			if(!IsFinite(refClampMode))
 				refClampMode = clampMode
 			else
@@ -2883,7 +2889,7 @@ Function EqualizeVerticalAxesRanges(graph, [ignoreAxesWithLevelCrossing, level, 
 				maxYRange = range
 			endif
 
-			if(range > maxYRangeClampMode[clampMode])
+			if(rangePerClampMode && range > maxYRangeClampMode[clampMode])
 				maxYRangeClampMode[clampMode] = range
 			endif
 		endfor
