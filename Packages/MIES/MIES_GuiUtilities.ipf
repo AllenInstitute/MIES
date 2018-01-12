@@ -695,6 +695,10 @@ Function GetTraceColor(index, red, green, blue)
 		case 20:
 			red = 11308; green=13878; blue=5911
 			break
+
+		default:
+			ASSERT(0, "Invalid index")
+			break
 	endswitch
 End
 
