@@ -65,7 +65,7 @@ static Function SWS_AfterSweepDataSaveHook(panelTitle)
 	string panelList, panel
 	variable numPanels, i
 
-	panelList = WinList("DB_*", ";", "WIN:64")
+	panelList = WinList("DB_*", ";", "WIN:1")
 
 	numPanels = ItemsInList(panelList)
 	for(i = 0; i < numPanels; i += 1)

@@ -98,8 +98,8 @@ Function/S DB_ClearAllGraphs()
 	string graph
 	variable i, numEntries
 
-	locked   = WinList("DB_*", ";", "WIN:64")
-	unlocked = WinList("DataBrowser*", ";", "WIN:64")
+	locked   = WinList("DB_*", ";", "WIN:1")
+	unlocked = WinList("DataBrowser*", ";", "WIN:1")
 
 	if(!IsEmpty(locked))
 		listOfPanels = AddListItem(locked, listOfPanels, ";", inf)
