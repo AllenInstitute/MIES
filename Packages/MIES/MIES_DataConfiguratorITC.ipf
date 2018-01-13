@@ -91,10 +91,10 @@ Function DC_ConfigureDataForITC(panelTitle, dataAcqOrTP, [multiDevice])
 	DC_UpdateGlobals(panelTitle, dataAcqOrTP)
 
 	if(dataAcqOrTP == TEST_PULSE_MODE)
-		WAVE TestPulse = GetTestPulse()
 		if(multiDevice)
-			DC_UpdateTestPulseWaveMD(panelTitle, TestPulse)
+			DC_UpdateTestPulseWaveMD(panelTitle)
 		else
+			WAVE TestPulse = GetTestPulse()
 			DC_UpdateTestPulseWave(panelTitle, TestPulse)
 		endif
 	endif
@@ -141,12 +141,14 @@ static Function DC_UpdateTestPulseWave(panelTitle, TestPulse)
 End
 
 /// @brief MD-variant of #DC_UpdateTestPulseWave
-static Function DC_UpdateTestPulseWaveMD(panelTitle, TestPulse)
+static Function DC_UpdateTestPulseWaveMD(panelTitle)
 	string panelTitle
-	WAVE TestPulse
 
 	variable length, numPulses, singlePulseLength, i
 	variable first, last
+
+	WAVE TestPulse = GetTestPulse()
+
 
 	Make/FREE singlePulse
 	DC_UpdateTestPulseWave(panelTitle, singlePulse)
