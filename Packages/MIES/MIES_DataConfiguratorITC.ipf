@@ -971,9 +971,26 @@ static Function DC_CheckIfDataWaveHasBorderVals(ITCDataWave)
 	WAVE ITCDataWave
 
 	ASSERT(WaveType(ITCDataWave) == IGOR_TYPE_16BIT_INT, "Unexpected wave type")
+
+#if (IgorVersion() >= 8.00)
+	FindValue/UOFV/I=(SIGNED_INT_16BIT_MIN) ITCDataWave
+
+	if(V_Value != -1)
+		return 1
+	endif
+
+	FindValue/UOFV/I=(SIGNED_INT_16BIT_MAX) ITCDataWave
+
+	if(V_Value != -1)
+		return 1
+	endif
+
+	return 0
+#else
 	matrixop/FREE result = equal(minval(ITCDataWave), SIGNED_INT_16BIT_MIN) || equal(maxval(ITCDataWave), SIGNED_INT_16BIT_MAX)
 
 	return result[0] > 0
+#endif
 End
 
 /// @brief Document channel properties of DA and AD channels
