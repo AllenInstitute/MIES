@@ -146,9 +146,21 @@ static Function DC_UpdateTestPulseWaveMD(panelTitle)
 
 	variable length, numPulses, singlePulseLength, i
 	variable first, last
+	string key
 
 	WAVE TestPulse = GetTestPulse()
 
+	length = TP_GetTestPulseLengthInPoints(panelTitle)
+	NVAR baselineFraction = $GetTestpulseBaselineFraction(panelTitle)
+
+	key = CA_TestPulseMultiDeviceKey(length, baselineFraction)
+
+	WAVE/Z result = CA_TryFetchingEntryFromCache(key)
+
+	if(WaveExists(result))
+		MoveWaveWithOverwrite(TestPulse, result)
+		return NaN
+	endif
 
 	Make/FREE singlePulse
 	DC_UpdateTestPulseWave(panelTitle, singlePulse)
@@ -164,6 +176,8 @@ static Function DC_UpdateTestPulseWaveMD(panelTitle)
 		last  = (i + 1) * singlePulseLength - 1
 		Multithread TestPulse[first, last] = singlePulse[p - first]
 	endfor
+
+	CA_StoreEntryIntoCache(key, TestPulse)
 End
 
 static Function DC_UpdateActiveHSProperties(panelTitle, ADCs)
