@@ -4281,3 +4281,23 @@ Function CalculateTPLikePropsFromSweep(numericalValues, textualValues, sweep, de
 		DEBUGPRINT(msg)
 	endfor
 End
+
+/// @brief Move the source wave to the location of the given destination wave.
+///        The destination wave must be a permanent wave.
+///
+///        Workaround for `MoveWave` having no `/O` flag.
+///
+/// @param dest permanent wave
+/// @param src  wave (free or permanent)
+Function/WAVE MoveWaveWithOverwrite(dest, src)
+	WAVE dest, src
+
+	string path
+
+	ASSERT(WaveType(dest, 2) == 1, "dest must be a global/permanent wave")
+
+	path = GetWavesDataFolder(dest, 2)
+
+	KillOrMoveToTrash(wv=dest)
+	MoveWave src, $path
+End
