@@ -29,9 +29,6 @@ Function SWS_SaveAndScaleITCData(panelTitle, [forcedStop])
 	DFREf dfr = GetDeviceDataPath(panelTitle)
 
 	WAVE dataWave = SWS_StoreITCDataWaveScaled(panelTitle, dfr, sweepNo)
-	note dataWave, Time()
-	note dataWave, GetExperimentName()  + " - Igor Pro " + num2str(igorVersion())
-	AppendMiesVersionToWaveNote(dataWave)
 
 	Duplicate/O GetITCChanConfigWave(panelTitle), dfr:$("Config_Sweep_" + num2str(sweepNo))/Wave=configWave
 
