@@ -138,8 +138,9 @@ Function TPM_BkrdTPFuncMD(s)
 	WAVE ActiveDeviceList = GetActiveDevicesTPMD()
 
 	if(s.wmbs.started)
-		s.wmbs.started = 0
-		s.count  = 0
+		s.wmbs.started    = 0
+		s.count           = 0
+		s.threadDeadCount = 0
 	else
 		s.count += 1
 	endif
@@ -157,10 +158,19 @@ Function TPM_BkrdTPFuncMD(s)
 
 		// should never be hit
 		if(!WaveExists(result))
-			print "Retrying getting data from thread, keep fingers crossed"
-			ControlWindowToFront()
-			continue
+			if(s.threadDeadCount < TP_MD_THREAD_DEAD_MAX_RETRIES)
+				s.threadDeadCount += 1
+				printf "Retrying getting data from thread, keep fingers crossed (%d/%d)\r", s.threadDeadCount, TP_MD_THREAD_DEAD_MAX_RETRIES
+				ControlWindowToFront()
+				continue
+			endif
+
+			// give up
+			TPM_StopTestPulseMultiDevice(panelTitle)
+			return 0
 		endif
+
+		s.threadDeadCount = 0
 
 		if(IsFinite(result[%startSequence]))
 			ARDStartSequence()
