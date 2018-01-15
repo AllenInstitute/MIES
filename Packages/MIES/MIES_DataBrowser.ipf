@@ -315,7 +315,7 @@ Function DB_UpdateSweepPlot(win, [dummyArg])
 
 	if(WaveExists(sweepWave))
 		Notebook $lbPanel selection={startOfFile, endOfFile} // select entire contents of notebook
-		Notebook $lbPanel text = "Sweep note: \r " + note(sweepWave) // replaces selected notebook content with new wave note.
+		Notebook $lbPanel text = note(sweepWave) // replaces selected notebook content with new wave note.
 	endif
 
 	Struct PostPlotSettings pps

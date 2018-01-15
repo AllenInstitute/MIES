@@ -2420,14 +2420,6 @@ Function GetNumberFromType([var, str, itcVar])
 	endif
 End
 
-/// @brief Append the MIES version to the wave's note
-Function AppendMiesVersionToWaveNote(wv)
-	Wave wv
-
-	SVAR miesVersion = $GetMiesVersion()
-	Note wv, "MiesVersion: " + StringFromList(0, miesVersion, "\r") + " [...]"
-End
-
 /// @brief Extract an one dimensional wave from the given ITC wave and column
 ///
 /// @param config ITC config wave
