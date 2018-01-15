@@ -182,7 +182,7 @@ Function/S GetPopupMenuDeviceListWithData()
 	return list
 End
 
-/// @brief Parse the given popup item string created by @ref GetPopupMenuDeviceListWithData(...)
+/// @brief Parse the given popup item string created by GetPopupMenuDeviceListWithData()
 /// and return the device name, type and possible follower list
 static Function ParsePopupItem(popStr, deviceType, deviceNumber, followerList)
 	string popStr
@@ -205,7 +205,7 @@ End
 
 /// @brief Searches for sweep waves from all devices
 ///
-/// @param list		    ListBox wave, see @ref GetDownsampleListWave(...) for the format
+/// @param list		    ListBox wave, see GetDownsampleListWave() for the format
 /// @param dataRef	    wave with wave references to all data waves
 /// @param rate		    wave with the sampling rates in kHz of all data waves
 /// @param startIndex   first unused index into the passed waves
