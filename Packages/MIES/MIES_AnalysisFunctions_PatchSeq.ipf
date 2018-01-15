@@ -42,6 +42,7 @@ static StrConstant PSQ_RB_LBN_PREFIX = "Rheobase"
 /// PSQ_FMT_LBN_SWEEP_PASS      Pass/fail state of the complete sweep                     ST, SP            No                     No
 /// PSQ_FMT_LBN_SET_PASS        Pass/fail state of the complete set                       ST, RB            No                     No
 /// PSQ_FMT_LBN_PULSE_DUR       Pulse duration as determined experimentally               RB                No                     Yes
+/// ===============             ========================================================= ================= =====================  =====================
 ///
 /// \endrst
 ///
