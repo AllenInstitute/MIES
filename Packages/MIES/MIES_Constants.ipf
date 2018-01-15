@@ -771,7 +771,6 @@ Constant PSQ_SP_INIT_AMP_p10    = +10e-12
 Constant PSQ_RB_PRE_BL_EVAL_RANGE  = 500
 Constant PSQ_RB_POST_BL_EVAL_RANGE = 50
 
-Constant PSQ_ST_NUM_SWEEPS_PASS  = 3
 Constant PSQ_ST_BL_EVAL_RANGE_MS = 500
 Constant PSQ_ST_PULSE_DUR        = 1000
 
