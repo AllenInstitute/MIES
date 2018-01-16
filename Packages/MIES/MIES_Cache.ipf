@@ -117,6 +117,22 @@ Function/S CA_AveragingKey(waveRefs)
 	return CA_WaveCRCs(waveRefs, crcMode=2) + "Version 2"
 End
 
+/// @brief Calculate the CRC of all metadata of a dimension
+static Function CA_WaveScalingCRC(crc, wv, dimension)
+	variable crc
+	WAVE wv
+	variable dimension
+
+	ASSERT(dimension >= ROWS && dimension <= CHUNKS, "Invalid dimension")
+
+	crc = StringCRC(crc, num2str(DimSize(wv, dimension)))
+	crc = StringCRC(crc, num2str(DimOffset(wv, dimension)))
+	crc = StringCRC(crc, num2str(DimDelta(wv, dimension)))
+	crc = StringCRC(crc, WaveUnits(wv, dimension))
+
+	return crc
+End
+
 /// @brief Calculate all CRC values of the waves referenced in waveRefs
 ///
 /// @param waveRefs  wave reference wave
