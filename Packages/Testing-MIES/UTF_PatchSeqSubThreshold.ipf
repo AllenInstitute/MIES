@@ -81,10 +81,10 @@ Function PS_ST_Test1()
 
 	variable sweepNo, setPassed
 
-	CHECK_EQUAL_VAR(GetSetVariable(DEVICE, "SetVar_Sweep"), 7)
+	CHECK_EQUAL_VAR(GetSetVariable(DEVICE, "SetVar_Sweep"), 5)
 
 	sweepNo = AFH_GetLastSweepAcquired(DEVICE)
-	CHECK_EQUAL_VAR(sweepNo, 6)
+	CHECK_EQUAL_VAR(sweepNo, 4)
 
 	WAVE numericalValues = GetLBNumericalValues(DEVICE)
 
@@ -92,7 +92,7 @@ Function PS_ST_Test1()
 	CHECK_EQUAL_VAR(setPassed, 0)
 
 	WAVE/Z sweepPassed = GetSweepResults_IGNORE(sweepNo)
-	CHECK_EQUAL_WAVES(sweepPassed, {0, 0, 0, 0, 0, 0, 0})
+	CHECK_EQUAL_WAVES(sweepPassed, {0, 0, 0, 0, 0})
 End
 
 Function PS_ST_Run2()
@@ -111,10 +111,10 @@ Function PS_ST_Test2()
 
 	variable sweepNo, setPassed
 
-	CHECK_EQUAL_VAR(GetSetVariable(DEVICE, "SetVar_Sweep"), 7)
+	CHECK_EQUAL_VAR(GetSetVariable(DEVICE, "SetVar_Sweep"), 5)
 
 	sweepNo = AFH_GetLastSweepAcquired(DEVICE)
-	CHECK_EQUAL_VAR(sweepNo, 6)
+	CHECK_EQUAL_VAR(sweepNo, 4)
 
 	WAVE numericalValues = GetLBNumericalValues(DEVICE)
 
@@ -122,7 +122,7 @@ Function PS_ST_Test2()
 	CHECK_EQUAL_VAR(setPassed, 0)
 
 	WAVE/Z sweepPassed = GetSweepResults_IGNORE(sweepNo)
-	CHECK_EQUAL_WAVES(sweepPassed, {0, 0, 0, 0, 0, 0, 0})
+	CHECK_EQUAL_WAVES(sweepPassed, {0, 0, 0, 0, 0})
 End
 
 Function PS_ST_Run3()
@@ -142,10 +142,10 @@ Function PS_ST_Test3()
 
 	variable sweepNo, setPassed
 
-	CHECK_EQUAL_VAR(GetSetVariable(DEVICE, "SetVar_Sweep"), 3)
+	CHECK_EQUAL_VAR(GetSetVariable(DEVICE, "SetVar_Sweep"), 5)
 
 	sweepNo = AFH_GetLastSweepAcquired(DEVICE)
-	CHECK_EQUAL_VAR(sweepNo, 2)
+	CHECK_EQUAL_VAR(sweepNo, 4)
 
 	WAVE numericalValues = GetLBNumericalValues(DEVICE)
 
@@ -153,7 +153,7 @@ Function PS_ST_Test3()
 	CHECK_EQUAL_VAR(setPassed, 1)
 
 	WAVE/Z sweepPassed = GetSweepResults_IGNORE(sweepNo)
-	CHECK_EQUAL_WAVES(sweepPassed, {1, 1, 1})
+	CHECK_EQUAL_WAVES(sweepPassed, {1, 1, 1, 1, 1})
 End
 
 Function PS_ST_Run4()
@@ -174,10 +174,10 @@ Function PS_ST_Test4()
 
 	variable sweepNo, setPassed
 
-	CHECK_EQUAL_VAR(GetSetVariable(DEVICE, "SetVar_Sweep"), 3)
+	CHECK_EQUAL_VAR(GetSetVariable(DEVICE, "SetVar_Sweep"), 5)
 
 	sweepNo = AFH_GetLastSweepAcquired(DEVICE)
-	CHECK_EQUAL_VAR(sweepNo, 2)
+	CHECK_EQUAL_VAR(sweepNo, 4)
 
 	WAVE numericalValues = GetLBNumericalValues(DEVICE)
 
@@ -185,7 +185,7 @@ Function PS_ST_Test4()
 	CHECK_EQUAL_VAR(setPassed, 1)
 
 	WAVE/Z sweepPassed = GetSweepResults_IGNORE(sweepNo)
-	CHECK_EQUAL_WAVES(sweepPassed, {1, 1, 1})
+	CHECK_EQUAL_WAVES(sweepPassed, {1, 1, 1, 1, 1})
 End
 
 Function PS_ST_Run5()
@@ -205,10 +205,10 @@ Function PS_ST_Test5()
 
 	variable sweepNo, setPassed
 
-	CHECK_EQUAL_VAR(GetSetVariable(DEVICE, "SetVar_Sweep"), 7)
+	CHECK_EQUAL_VAR(GetSetVariable(DEVICE, "SetVar_Sweep"), 5)
 
 	sweepNo = AFH_GetLastSweepAcquired(DEVICE)
-	CHECK_EQUAL_VAR(sweepNo, 6)
+	CHECK_EQUAL_VAR(sweepNo, 4)
 
 	WAVE numericalValues = GetLBNumericalValues(DEVICE)
 
@@ -216,7 +216,7 @@ Function PS_ST_Test5()
 	CHECK_EQUAL_VAR(setPassed, 0)
 
 	WAVE/Z sweepPassed = GetSweepResults_IGNORE(sweepNo)
-	CHECK_EQUAL_WAVES(sweepPassed, {0, 0, 0, 0, 0, 0, 0})
+	CHECK_EQUAL_WAVES(sweepPassed, {0, 0, 0, 0, 0})
 End
 
 Function PS_ST_Run6()
@@ -237,38 +237,6 @@ Function PS_ST_Test6()
 
 	variable sweepNo, setPassed
 
-	CHECK_EQUAL_VAR(GetSetVariable(DEVICE, "SetVar_Sweep"), 3)
-
-	sweepNo = AFH_GetLastSweepAcquired(DEVICE)
-	CHECK_EQUAL_VAR(sweepNo, 2)
-
-	WAVE numericalValues = GetLBNumericalValues(DEVICE)
-
-	setPassed = GetLastSettingIndep(numericalValues, sweepNo, PSQ_CreateLBNKey(PSQ_SUB_THRESHOLD, PSQ_FMT_LBN_SET_PASS, query = 1), UNKNOWN_MODE)
-	CHECK_EQUAL_VAR(setPassed, 1)
-
-	WAVE/Z sweepPassed = GetSweepResults_IGNORE(sweepNo)
-	CHECK_EQUAL_WAVES(sweepPassed, {1, 1, 1})
-End
-
-Function PS_ST_Run7()
-
-	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "DAQ_MD1_RA1_IDX0_LIDX0_BKG_1")
-	AcquireData(s)
-
-	WAVE wv = PSQ_CreateOverrideResults(DEVICE, HEADSTAGE, PSQ_SUB_THRESHOLD)
-	// pre pulse chunk pass
-	// first post pulse chunk pass
-	// of sweeps 2-4
-	wv[]          = 0
-	wv[0, 1][2,4] = 1
-End
-
-Function PS_ST_Test7()
-
-	variable sweepNo, setPassed
-
 	CHECK_EQUAL_VAR(GetSetVariable(DEVICE, "SetVar_Sweep"), 5)
 
 	sweepNo = AFH_GetLastSweepAcquired(DEVICE)
@@ -280,7 +248,39 @@ Function PS_ST_Test7()
 	CHECK_EQUAL_VAR(setPassed, 1)
 
 	WAVE/Z sweepPassed = GetSweepResults_IGNORE(sweepNo)
-	CHECK_EQUAL_WAVES(sweepPassed, {0, 0, 1, 1, 1})
+	CHECK_EQUAL_WAVES(sweepPassed, {1, 1, 1, 1, 1})
+End
+
+Function PS_ST_Run7()
+
+	STRUCT DAQSettings s
+	InitDAQSettingsFromString(s, "DAQ_MD1_RA1_IDX0_LIDX0_BKG_1")
+	AcquireData(s)
+
+	WAVE wv = PSQ_CreateOverrideResults(DEVICE, HEADSTAGE, PSQ_SUB_THRESHOLD)
+	// pre pulse chunk pass
+	// first post pulse chunk pass
+	// of sweeps 2-6
+	wv[]          = 0
+	wv[0, 1][2,6] = 1
+End
+
+Function PS_ST_Test7()
+
+	variable sweepNo, setPassed
+
+	CHECK_EQUAL_VAR(GetSetVariable(DEVICE, "SetVar_Sweep"), 7)
+
+	sweepNo = AFH_GetLastSweepAcquired(DEVICE)
+	CHECK_EQUAL_VAR(sweepNo, 6)
+
+	WAVE numericalValues = GetLBNumericalValues(DEVICE)
+
+	setPassed = GetLastSettingIndep(numericalValues, sweepNo, PSQ_CreateLBNKey(PSQ_SUB_THRESHOLD, PSQ_FMT_LBN_SET_PASS, query = 1), UNKNOWN_MODE)
+	CHECK_EQUAL_VAR(setPassed, 1)
+
+	WAVE/Z sweepPassed = GetSweepResults_IGNORE(sweepNo)
+	CHECK_EQUAL_WAVES(sweepPassed, {0, 0, 1, 1, 1, 1, 1})
 End
 
 Function PS_ST_Run8()
@@ -292,21 +292,23 @@ Function PS_ST_Run8()
 	WAVE wv = PSQ_CreateOverrideResults(DEVICE, HEADSTAGE, PSQ_SUB_THRESHOLD)
 	// pre pulse chunk pass
 	// first post pulse chunk pass
-	// of sweep 0, 3, 7
+	// of sweep 0, 3, 6, 7 , 8
 	wv[]        = 0
 	wv[0, 1][0] = 1
 	wv[0, 1][3] = 1
+	wv[0, 1][6] = 1
 	wv[0, 1][7] = 1
+	wv[0, 1][8] = 1
 End
 
 Function PS_ST_Test8()
 
 	variable sweepNo, setPassed
 
-	CHECK_EQUAL_VAR(GetSetVariable(DEVICE, "SetVar_Sweep"), 8)
+	CHECK_EQUAL_VAR(GetSetVariable(DEVICE, "SetVar_Sweep"), 9)
 
 	sweepNo = AFH_GetLastSweepAcquired(DEVICE)
-	CHECK_EQUAL_VAR(sweepNo, 7)
+	CHECK_EQUAL_VAR(sweepNo, 8)
 
 	WAVE numericalValues = GetLBNumericalValues(DEVICE)
 
@@ -314,5 +316,5 @@ Function PS_ST_Test8()
 	CHECK_EQUAL_VAR(setPassed, 1)
 
 	WAVE/Z sweepPassed = GetSweepResults_IGNORE(sweepNo)
-	CHECK_EQUAL_WAVES(sweepPassed, {1, 0, 0, 1, 0, 0, 0, 1})
+	CHECK_EQUAL_WAVES(sweepPassed, {1, 0, 0, 1, 0, 0, 1, 1, 1})
 End

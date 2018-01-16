@@ -42,6 +42,7 @@ static StrConstant PSQ_RB_LBN_PREFIX = "Rheobase"
 /// PSQ_FMT_LBN_SWEEP_PASS      Pass/fail state of the complete sweep                     ST, SP            No                     No
 /// PSQ_FMT_LBN_SET_PASS        Pass/fail state of the complete set                       ST, RB            No                     No
 /// PSQ_FMT_LBN_PULSE_DUR       Pulse duration as determined experimentally               RB                No                     Yes
+/// ===============             ========================================================= ================= =====================  =====================
 ///
 /// \endrst
 ///
@@ -808,7 +809,7 @@ Function PSQ_SubThreshold(panelTitle, eventType, ITCDataWave, headStage, realDat
 	variable val, totalOnsetDelay, lastFifoPos
 	variable i, sweepNo, fifoInStimsetPoint, fifoInStimsetTime
 	variable index, skipToEnd, ret
-	variable sweepPassed, setPassed
+	variable sweepPassed, setPassed, numSweepsPass
 	variable sweepsInSet, passesInSet, acquiredSweepsInSet, numBaselineChunks
 	string msg, stimset, key
 
@@ -818,6 +819,9 @@ Function PSQ_SubThreshold(panelTitle, eventType, ITCDataWave, headStage, realDat
 	// BEGIN CHANGE ME
 	MAKE/D/FREE DAScales = {-30, -50, -70, -110, -130}
 	// END CHANGE ME
+
+	numSweepsPass = DimSize(DAScales, ROWS)
+	ASSERT(numSweepsPass > 0, "Invalid number of entries in DAScales")
 
 	WAVE DAScalesIndex = GetAnalysisFuncIndexingHelper(panelTitle)
 
@@ -868,7 +872,7 @@ Function PSQ_SubThreshold(panelTitle, eventType, ITCDataWave, headStage, realDat
 
 			if(!sweepPassed)
 				// not enough sweeps left to pass the set
-				skipToEnd = (sweepsInSet - acquiredSweepsInSet) < (PSQ_ST_NUM_SWEEPS_PASS - passesInSet)
+				skipToEnd = (sweepsInSet - acquiredSweepsInSet) < (numSweepsPass - passesInSet)
 			else
 				// sweep passed
 
@@ -886,7 +890,7 @@ Function PSQ_SubThreshold(panelTitle, eventType, ITCDataWave, headStage, realDat
 
 				PlotResistanceGraph(panelTitle)
 
-				if(passesInSet >= PSQ_ST_NUM_SWEEPS_PASS)
+				if(passesInSet >= numSweepsPass)
 					skipToEnd = 1
 				else
 					// set next DAScale value
@@ -905,7 +909,7 @@ Function PSQ_SubThreshold(panelTitle, eventType, ITCDataWave, headStage, realDat
 			break
 		case POST_SET_EVENT:
 			sweepNo = AFH_GetLastSweepAcquired(panelTitle)
-			setPassed = PSQ_NumPassesInSet(panelTitle, PSQ_SUB_THRESHOLD, sweepNo) >= PSQ_ST_NUM_SWEEPS_PASS
+			setPassed = PSQ_NumPassesInSet(panelTitle, PSQ_SUB_THRESHOLD, sweepNo) >= numSweepsPass
 
 			sprintf msg, "Set has %s\r", SelectString(setPassed, "failed", "passed")
 			DEBUGPRINT(msg)
