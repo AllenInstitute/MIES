@@ -83,6 +83,8 @@ Function run()
 	list = AddListItem("PS_ST_Test6", list, ";", INF)
 	list = AddListItem("PS_ST_Run7", list, ";", INF)
 	list = AddListItem("PS_ST_Test7", list, ";", INF)
+	list = AddListItem("PS_ST_Run8", list, ";", INF)
+	list = AddListItem("PS_ST_Test8", list, ";", INF)
 
 	list = AddListItem("PS_SP_Run1", list, ";", INF)
 	list = AddListItem("PS_SP_Test1", list, ";", INF)
