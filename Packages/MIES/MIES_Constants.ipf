@@ -816,3 +816,6 @@ Constant PSQ_RB_FINALSCALE_FAKE  = 42e-12
 /// @}
 
 Constant TP_MD_THREAD_DEAD_MAX_RETRIES = 10
+
+/// @todo: IP8 convert all call sites to use MultiThread/T=
+Constant NUM_ENTRIES_FOR_MULTITHREAD = 16

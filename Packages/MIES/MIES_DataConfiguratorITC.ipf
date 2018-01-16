@@ -91,10 +91,10 @@ Function DC_ConfigureDataForITC(panelTitle, dataAcqOrTP, [multiDevice])
 	DC_UpdateGlobals(panelTitle, dataAcqOrTP)
 
 	if(dataAcqOrTP == TEST_PULSE_MODE)
-		WAVE TestPulse = GetTestPulse()
 		if(multiDevice)
-			DC_UpdateTestPulseWaveMD(panelTitle, TestPulse)
+			DC_UpdateTestPulseWaveMD(panelTitle)
 		else
+			WAVE TestPulse = GetTestPulse()
 			DC_UpdateTestPulseWave(panelTitle, TestPulse)
 		endif
 	endif
@@ -141,12 +141,26 @@ static Function DC_UpdateTestPulseWave(panelTitle, TestPulse)
 End
 
 /// @brief MD-variant of #DC_UpdateTestPulseWave
-static Function DC_UpdateTestPulseWaveMD(panelTitle, TestPulse)
+static Function DC_UpdateTestPulseWaveMD(panelTitle)
 	string panelTitle
-	WAVE TestPulse
 
 	variable length, numPulses, singlePulseLength, i
 	variable first, last
+	string key
+
+	WAVE TestPulse = GetTestPulse()
+
+	length = TP_GetTestPulseLengthInPoints(panelTitle)
+	NVAR baselineFraction = $GetTestpulseBaselineFraction(panelTitle)
+
+	key = CA_TestPulseMultiDeviceKey(length, baselineFraction)
+
+	WAVE/Z result = CA_TryFetchingEntryFromCache(key)
+
+	if(WaveExists(result))
+		MoveWaveWithOverwrite(TestPulse, result)
+		return NaN
+	endif
 
 	Make/FREE singlePulse
 	DC_UpdateTestPulseWave(panelTitle, singlePulse)
@@ -162,6 +176,8 @@ static Function DC_UpdateTestPulseWaveMD(panelTitle, TestPulse)
 		last  = (i + 1) * singlePulseLength - 1
 		Multithread TestPulse[first, last] = singlePulse[p - first]
 	endfor
+
+	CA_StoreEntryIntoCache(key, TestPulse)
 End
 
 static Function DC_UpdateActiveHSProperties(panelTitle, ADCs)
@@ -755,13 +771,29 @@ static Function DC_PlaceDataInITCDataWave(panelTitle, numActiveChannels, dataAcq
 		singleSetLength = setLength[0]
 		ASSERT(DimSize(singleStimSet, COLS) <= 1, "Expected a 1D testpulse wave")
 		if(multiDevice)
-			Multithread ITCDataWave[][0, numEntries - 1] =                            \
-			  limit(                                                                  \
-				(DAGain[q] * DAScale[q]) * singleStimSet[mod(p, singleSetLength)][0], \
-				SIGNED_INT_16BIT_MIN,                                                 \
-				SIGNED_INT_16BIT_MAX)
-			cutOff = mod(DimSize(ITCDataWave, ROWS), singleSetLength)
-			ITCDataWave[DimSize(ITCDataWave, ROWS) - cutoff, *][0, numEntries - 1] = 0
+			// ITCDataWave depends on
+			// DAGain
+			// DAScale
+			// singlestimset
+			// ITCDataWave dimension properties of ROWS and COLS
+			string key = CA_ITCDataWaveTestPulseMD({DAGain, DAScale, singleStimSet}, ITCDataWave)
+
+			WAVE/Z result = CA_TryFetchingEntryFromCache(key)
+
+			if(WaveExists(result))
+				MoveWaveWithOverwrite(ITCDataWave, result)
+				WAVE ITCDataWave = GetITCDataWave(panelTitle)
+			else
+				Multithread ITCDataWave[][0, numEntries - 1] =                            \
+				  limit(                                                                  \
+					(DAGain[q] * DAScale[q]) * singleStimSet[mod(p, singleSetLength)][0], \
+					SIGNED_INT_16BIT_MIN,                                                 \
+					SIGNED_INT_16BIT_MAX)
+				cutOff = mod(DimSize(ITCDataWave, ROWS), singleSetLength)
+				ITCDataWave[DimSize(ITCDataWave, ROWS) - cutoff, *][0, numEntries - 1] = 0
+
+				CA_StoreEntryIntoCache(key, ITCDataWave)
+			endif
 		else
 			Multithread ITCDataWave[0, setLength[0] - 1][0, numEntries - 1] =      \
 		      limit(                                                               \

@@ -98,11 +98,52 @@ Function/S CA_ArtefactRemovalRangesKey(singleSweepDFR, sweepNo)
 	return num2istr(crc) + "Version 1"
 End
 
+/// @brief Cache key generator for testpulse waves
+Function/S CA_TestPulseMultiDeviceKey(testpulseLengthInPoints, baselineFraction)
+	variable testpulseLengthInPoints, baselineFraction
+
+	variable crc
+
+	crc = StringCRC(crc, num2str(testpulseLengthInPoints))
+	crc = StringCRC(crc, num2str(baselineFraction))
+
+	return num2istr(crc) + "Version 1"
+End
+
+/// @brief Cache key generator for multi device testpulse ITCDataWave
+Function/S CA_ITCDataWaveTestPulseMD(waveRefs, ITCDataWave)
+	WAVE/WAVE waveRefs
+	WAVE ITCDataWave
+
+	variable crc
+
+	crc = CA_WaveScalingCRC(crc, ITCDataWave, ROWS)
+	crc = CA_WaveScalingCRC(crc, ITCDataWave, COLS)
+
+	return CA_WaveCRCs(waveRefs) + num2istr(crc) + "Version 1"
+End
+
 /// @brief Cache key generator for averaging
 Function/S CA_AveragingKey(waveRefs)
 	WAVE/WAVE waveRefs
 
 	return CA_WaveCRCs(waveRefs, crcMode=2) + "Version 2"
+End
+
+/// @brief Calculate the CRC of all metadata of a dimension
+static Function CA_WaveScalingCRC(crc, wv, dimension)
+	variable crc
+	WAVE wv
+	variable dimension
+
+	ASSERT(dimension >= ROWS && dimension <= CHUNKS, "Invalid dimension")
+
+	crc = StringCRC(crc, num2str(DimSize(wv, dimension)))
+	crc = StringCRC(crc, num2str(DimOffset(wv, dimension)))
+	crc = StringCRC(crc, num2str(DimDelta(wv, dimension)))
+	crc = StringCRC(crc, WaveUnits(wv, dimension))
+
+	return crc
 End
 
 /// @brief Calculate all CRC values of the waves referenced in waveRefs
@@ -122,9 +163,13 @@ static Function/S CA_WaveCRCs(waveRefs, [crcMode])
 	rows = DimSize(waveRefs, ROWS)
 	ASSERT(rows > 0, "Unexpected number of entries")
 
-	Make/D/FREE/N=(rows) crc
+	if(rows < NUM_ENTRIES_FOR_MULTITHREAD)
+		Make/D/FREE/N=(rows) crc = WaveCRC(0, waveRefs[p], crcMode)
+	else
 
-	MultiThread crc[] = WaveCRC(0, waveRefs[p], crcMode)
+		Make/D/FREE/N=(rows) crc
+		MultiThread crc[] = WaveCRC(0, waveRefs[p], crcMode)
+	endif
 
 	return NumericWaveToList(crc, ";", format = "%d")
 End
