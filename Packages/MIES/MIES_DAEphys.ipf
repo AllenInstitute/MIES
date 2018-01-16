@@ -1694,15 +1694,23 @@ static Function DAP_CheckSettingsAcrossYoked(listOfFollowerDevices, mode)
 	variable i, j, numEntries, numCtrls
 
 	if(!WindowExists("ArduinoSeq_Panel"))
-		printf "(%s) The Arduino sequencer panel does not exist. Please open it and load the default sequence.\r", ITC1600_FIRST_DEVICE
-		ControlWindowToFront()
-		return 1
+		ARDLaunchSeqPanel()
+
+		if(!WindowExists("ArduinoSeq_Panel"))
+			printf "(%s) The Arduino sequencer panel does not exist. Please open it and load the default sequence.\r", ITC1600_FIRST_DEVICE
+			ControlWindowToFront()
+			return 1
+		endif
 	endif
 
 	if(IsControlDisabled("ArduinoSeq_Panel", "ArduinoStartButton"))
-		printf "(%s) The Arduino sequencer panel has a disabled \"Start\" button. Is it connected? Have you loaded the default sequence?\r", ITC1600_FIRST_DEVICE
-		ControlWindowToFront()
-		return 1
+		PGC_SetAndActivateControl("ArduinoSeq_Panel", "SendSequenceButton")
+
+		if(IsControlDisabled("ArduinoSeq_Panel", "ArduinoStartButton"))
+			printf "(%s) The Arduino sequencer panel has a disabled \"Start\" button. Is it connected? Have you loaded the default sequence?\r", ITC1600_FIRST_DEVICE
+			ControlWindowToFront()
+			return 1
+		endif
 	endif
 
 	if(mode == TEST_PULSE_MODE)
@@ -1799,6 +1807,17 @@ Function DAP_CheckSettings(panelTitle, mode)
 			return 1
 		endif
 		list = AddListItem(list, listOfFollowerDevices, ";", inf)
+
+		// indexing and locked indexing are currently not implemented correctly for yoked devices
+		if(DAG_GetNumericalValue(panelTitle, "Check_DataAcq_Indexing") || DAG_GetNumericalValue(panelTitle, "Check_DataAcq1_IndexingLocked"))
+			printf "(%s) Indexing (locked and unlocked) is currently not usable with yoking.\r", panelTitle
+			ControlWindowToFront()
+			return 1
+		elseif(DAG_GetNumericalValue(panelTitle, "check_Settings_TPAfterDAQ"))
+			printf "(%s) TP after DAQ is currently not usable with yoking.\r", panelTitle
+			ControlWindowToFront()
+			return 1
+		endif
 	endif
 	DEBUGPRINT("Checking the panelTitle list: ", str=list)
 

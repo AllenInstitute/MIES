@@ -1124,6 +1124,7 @@ static Function/C DC_CalculateChannelColumnNo(panelTitle, SetName, channelNo, ch
 			if(DAG_GetNumericalValue(panelTitle, "Check_DataAcq1_IndexingLocked"))
 				/// @todo this code here is different compared to what RA_BckgTPwithCallToRACounterMD and RA_CounterMD do
 				NVAR activeSetCount = $GetActiveSetCount(panelTitle)
+				ASSERT(IsFinite(activeSetCount), "activeSetCount has to be finite")
 				localCount = IDX_CalculcateActiveSetCount(panelTitle) - activeSetCount
 			else
 				// calculate where in list global count is

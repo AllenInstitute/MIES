@@ -360,7 +360,7 @@ End
 Function RA_CounterMD(panelTitle)
 	string panelTitle
 
-	variable totTrials, numSets, recalcActiveSetCount
+	variable totTrials, numSets, recalcActiveSetCount, activeSetCountMax
 	NVAR count = $GetCount(panelTitle)
 	NVAR activeSetCount = $GetActiveSetCount(panelTitle)
 	variable i, indexing, indexingLocked, numFollower, followerActiveSetCount
@@ -403,6 +403,9 @@ Function RA_CounterMD(panelTitle)
 	endif
 
 	if(DeviceHasFollower(panelTitle))
+
+		activeSetCountMax = activeSetCount
+
 		SVAR listOfFollowerDevices = $GetFollowerList(panelTitle)
 		numFollower = ItemsInList(listOfFollowerDevices)
 		for(i = 0; i < numFollower; i += 1)
@@ -419,7 +422,7 @@ Function RA_CounterMD(panelTitle)
 					endif
 					SetValDisplay(followerPanelTitle, "valdisp_DataAcq_SweepsActiveSet", var=numSets)
 					followerActiveSetCount = IDX_CalculcateActiveSetCount(followerPanelTitle)
-					activeSetCount = max(activeSetCount, followerActiveSetCount)
+					activeSetCountMax = max(activeSetCountMax, followerActiveSetCount)
 				endif
 
 				if(!indexingLocked)
@@ -429,6 +432,19 @@ Function RA_CounterMD(panelTitle)
 				endif
 			endif
 		endfor
+
+		if(indexing)
+			// set maximum on leader and all followers
+			NVAR activeSetCount = $GetActiveSetCount(panelTitle)
+			activeSetCount = activeSetCountMax
+
+			for(i = 0; i < numFollower; i += 1)
+				followerPanelTitle = StringFromList(i, listOfFollowerDevices)
+
+				NVAR activeSetCount = $GetActiveSetCount(followerPanelTitle)
+				activeSetCount = activeSetCountMax
+			endfor
+		endif
 	endif
 
 	if(count < totTrials)

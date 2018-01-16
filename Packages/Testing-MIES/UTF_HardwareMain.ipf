@@ -23,51 +23,84 @@ Function run()
 	RunTest("UTF_VeryBasicHardwareTests.ipf;UTF_DAEphys.ipf", enableJU = 1)
 
 	string list = ""
+
+#ifndef TESTS_WITH_YOKING
+
 	list = AddListItem("DAQ_MD0_RA0_IDX0_LIDX0_BKG_0", list, ";", INF)
 	list = AddListItem("Test_MD0_RA0_IDX0_LIDX0_BKG_0", list, ";", INF)
 	list = AddListItem("DAQ_MD0_RA1_IDX0_LIDX0_BKG_0", list, ";", INF)
 	list = AddListItem("Test_MD0_RA1_IDX0_LIDX0_BKG_0", list, ";", INF)
+	list = AddListItem("DAQ_MD0_RA1_IDX1_LIDX0_BKG_0", list, ";", INF)
+	list = AddListItem("Test_MD0_RA1_IDX1_LIDX0_BKG_0", list, ";", INF)
+	list = AddListItem("DAQ_MD0_RA1_IDX1_LIDX1_BKG_0", list, ";", INF)
+	list = AddListItem("Test_MD0_RA1_IDX1_LIDX1_BKG_0", list, ";", INF)
+
+#endif
+
 	list = AddListItem("DAQ_MD1_RA0_IDX0_LIDX0_BKG_1", list, ";", INF)
 	list = AddListItem("Test_MD1_RA0_IDX0_LIDX0_BKG_1", list, ";", INF)
 	list = AddListItem("DAQ_MD1_RA1_IDX0_LIDX0_BKG_1", list, ";", INF)
 	list = AddListItem("Test_MD1_RA1_IDX0_LIDX0_BKG_1", list, ";", INF)
-	list = AddListItem("DAQ_MD0_RA1_IDX1_LIDX0_BKG_0", list, ";", INF)
-	list = AddListItem("Test_MD0_RA1_IDX1_LIDX0_BKG_0", list, ";", INF)
+
+#ifndef TESTS_WITH_YOKING
+
 	list = AddListItem("DAQ_MD1_RA1_IDX1_LIDX0_BKG_1", list, ";", INF)
 	list = AddListItem("Test_MD1_RA1_IDX1_LIDX0_BKG_1", list, ";", INF)
 	list = AddListItem("DAQ_MD1_RA1_IDX1_LIDX1_BKG_1", list, ";", INF)
 	list = AddListItem("Test_MD1_RA1_IDX1_LIDX1_BKG_1", list, ";", INF)
-	list = AddListItem("DAQ_MD0_RA1_IDX1_LIDX1_BKG_0", list, ";", INF)
-	list = AddListItem("Test_MD0_RA1_IDX1_LIDX1_BKG_0", list, ";", INF)
+
+#endif
+
 	list = AddListItem("DAQ_RepeatSets_1", list, ";", INF)
 	list = AddListItem("Test_RepeatSets_1", list, ";", INF)
+
+#ifndef TESTS_WITH_YOKING
+
 	list = AddListItem("DAQ_RepeatSets_2", list, ";", INF)
 	list = AddListItem("Test_RepeatSets_2", list, ";", INF)
 	list = AddListItem("DAQ_RepeatSets_3", list, ";", INF)
 	list = AddListItem("Test_RepeatSets_3", list, ";", INF)
 
+#endif
+
+#ifndef TESTS_WITH_YOKING
+
 	list = AddListItem("DAQ_SkipSweepsDuringITI_SD", list, ";", INF)
 	list = AddListItem("Test_SkipSweepsDuringITI_SD", list, ";", INF)
+
+#endif
+
 	list = AddListItem("DAQ_SkipSweepsDuringITI_MD", list, ";", INF)
 	list = AddListItem("Test_SkipSweepsDuringITI_MD", list, ";", INF)
 
-	list = AddListItem("DAQ_Abort_ITI_PressTP_SD", list, ";", INF)
-	list = AddListItem("Test_Abort_ITI_PressTP_SD", list, ";", INF)
-	list = AddListItem("DAQ_Abort_ITI_PressTP_MD", list, ";", INF)
-	list = AddListItem("Test_Abort_ITI_PressTP_MD", list, ";", INF)
-	list = AddListItem("DAQ_Abort_ITI_TP_A_PressTP_SD", list, ";", INF)
-	list = AddListItem("Test_Abort_ITI_TP_A_PressTP_SD", list, ";", INF)
-	list = AddListItem("DAQ_Abort_ITI_TP_A_PressTP_MD", list, ";", INF)
-	list = AddListItem("Test_Abort_ITI_TP_A_PressTP_MD", list, ";", INF)
+#ifndef TESTS_WITH_YOKING
 
 	list = AddListItem("DAQ_Abort_ITI_PressAcq_SD", list, ";", INF)
 	list = AddListItem("Test_Abort_ITI_PressAcq_SD", list, ";", INF)
-	list = AddListItem("DAQ_Abort_ITI_PressAcq_MD", list, ";", INF)
-	list = AddListItem("Test_Abort_ITI_PressAcq_MD", list, ";", INF)
+	list = AddListItem("DAQ_Abort_ITI_PressTP_SD", list, ";", INF)
+	list = AddListItem("Test_Abort_ITI_PressTP_SD", list, ";", INF)
 	list = AddListItem("DAQ_Abort_ITI_TP_A_PressAcq_SD", list, ";", INF)
 	list = AddListItem("Test_Abort_ITI_TP_A_PressAcq_SD", list, ";", INF)
+	list = AddListItem("DAQ_Abort_ITI_TP_A_PressTP_SD", list, ";", INF)
+	list = AddListItem("Test_Abort_ITI_TP_A_PressTP_SD", list, ";", INF)
+
+#endif
+
+	list = AddListItem("DAQ_Abort_ITI_PressAcq_MD", list, ";", INF)
+	list = AddListItem("Test_Abort_ITI_PressAcq_MD", list, ";", INF)
+	list = AddListItem("DAQ_Abort_ITI_PressTP_MD", list, ";", INF)
+	list = AddListItem("Test_Abort_ITI_PressTP_MD", list, ";", INF)
+
+#ifndef TESTS_WITH_YOKING
+
 	list = AddListItem("DAQ_Abort_ITI_TP_A_PressAcq_MD", list, ";", INF)
 	list = AddListItem("Test_Abort_ITI_TP_A_PressAcq_MD", list, ";", INF)
+	list = AddListItem("DAQ_Abort_ITI_TP_A_PressTP_MD", list, ";", INF)
+	list = AddListItem("Test_Abort_ITI_TP_A_PressTP_MD", list, ";", INF)
+
+#endif
+
+#ifndef TESTS_WITH_YOKING
 
 	list = AddListItem("PS_ST_Run1", list, ";", INF)
 	list = AddListItem("PS_ST_Test1", list, ";", INF)
@@ -109,6 +142,8 @@ Function run()
 	list = AddListItem("PS_RB_Test5", list, ";", INF)
 	list = AddListItem("PS_RB_Run6", list, ";", INF)
 	list = AddListItem("PS_RB_Test6", list, ";", INF)
+
+#endif
 
 	// initialize everything
 	CtrlNamedBackGround DAQWatchdog, stop, period=120, proc=WaitUntilDAQDone_IGNORE
