@@ -62,7 +62,7 @@ Function DB_OpenDataBrowser()
 	devicesWithData = ListMatch(DB_GetAllDevicesWithData(), "!" + NONE)
 	if(ItemsInList(devicesWithData) == 1)
 		device = StringFromList(0, devicesWithData)
-		DB_LockDBPanel(win, device)
+		DB_LockToDevice(win, device)
 	endif
 End
 
@@ -98,8 +98,8 @@ Function/S DB_ClearAllGraphs()
 	string graph
 	variable i, numEntries
 
-	locked   = WinList("DB_*", ";", "WIN:64")
-	unlocked = WinList("DataBrowser*", ";", "WIN:64")
+	locked   = WinList("DB_*", ";", "WIN:1")
+	unlocked = WinList("DataBrowser*", ";", "WIN:1")
 
 	if(!IsEmpty(locked))
 		listOfPanels = AddListItem(locked, listOfPanels, ";", inf)
@@ -131,7 +131,7 @@ static Function/S DB_GetLabNoteBookGraph(win)
 	return DB_GetSettingsHistoryPanel(win) + "#Labnotebook"
 End
 
-static Function DB_LockDBPanel(win, device)
+static Function DB_LockToDevice(win, device)
 	string &win, device
 
 	string renameWin
@@ -145,7 +145,7 @@ static Function DB_LockDBPanel(win, device)
 	endif
 
 	if(windowExists(renameWin))
-		renameWin = UniqueName("DataBrowser", 9, 1)
+		renameWin = UniqueName(renameWin, 9, 1)
 	endif
 	DoWindow/W=$win/C $renameWin
 	win = renameWin
@@ -328,7 +328,7 @@ Function DB_UpdateSweepPlot(win, [dummyArg])
 
 	PA_GatherSettings(win, pps)
 
-	FUNCREF FinalUpdateHookProto pps.finalUpdateHook = DB_PanelUpdate
+	FUNCREF FinalUpdateHookProto pps.finalUpdateHook = DB_GraphUpdate
 
 	PostPlotTransformations(graph, pps)
 	SetAxesRanges(graph, axesRanges)
@@ -448,7 +448,7 @@ static Function DB_UpdateOverlaySweepWaves(win)
 	OVS_UpdatePanel(win, listBoxWave, listBoxSelWave, sweepSelChoices, sweepWaveList, textualValues=textualValues, numericalValues=numericalValues)
 End
 
-Window DataBrowser() : Panel
+Window DataBrowser() : Graph
 	PauseUpdate; Silent 1		// building window...
 	Display /W=(850.5,168.5,1284,473.75)/K=1  as "DataBrowser"
 	SetWindow kwTopWin,userdata(panelVersion)=  "7"
@@ -674,7 +674,7 @@ Function DB_PopMenuProc_LockDBtoDevice(pa) : PopupMenuControl
 
 	switch(pa.eventcode)
 		case 2: // mouse up
-			DB_LockDBPanel(mainPanel, pa.popStr)
+			DB_LockToDevice(mainPanel, pa.popStr)
 			DB_UpdateSweepPlot(mainPanel)
 			break
 	endswitch
@@ -856,19 +856,7 @@ Function DB_CheckProc_ChangedSetting(cba) : CheckBoxControl
 	return 0
 End
 
-Function DB_CheckProc_ScaleAxes(cba) : CheckBoxControl
-	STRUCT WMCheckboxAction &cba
-
-	switch(cba.eventCode)
-		case 2: // mouse up
-			DB_PanelUpdate(cba.win)
-			break
-	endswitch
-
-	return 0
-End
-
-static Function DB_PanelUpdate(win)
+static Function DB_GraphUpdate(win)
 	string win
 
 	string bsPanel, graph
