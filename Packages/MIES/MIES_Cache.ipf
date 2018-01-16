@@ -134,9 +134,13 @@ static Function/S CA_WaveCRCs(waveRefs, [crcMode])
 	rows = DimSize(waveRefs, ROWS)
 	ASSERT(rows > 0, "Unexpected number of entries")
 
-	Make/D/FREE/N=(rows) crc
+	if(rows < NUM_ENTRIES_FOR_MULTITHREAD)
+		Make/D/FREE/N=(rows) crc = WaveCRC(0, waveRefs[p], crcMode)
+	else
 
-	MultiThread crc[] = WaveCRC(0, waveRefs[p], crcMode)
+		Make/D/FREE/N=(rows) crc
+		MultiThread crc[] = WaveCRC(0, waveRefs[p], crcMode)
+	endif
 
 	return NumericWaveToList(crc, ";", format = "%d")
 End
