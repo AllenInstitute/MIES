@@ -23,7 +23,6 @@
 .git*                 export-ignore
 *.sh                  export-ignore
 tools                 export-ignore
-Packages/doc          export-ignore
 Packages/Testing-MIES export-ignore
 NIDAQmx.XOP           export-ignore
 NIDAQmx64.XOP         export-ignore

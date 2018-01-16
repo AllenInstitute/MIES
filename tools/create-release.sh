@@ -1,4 +1,13 @@
-#!/bin/sh
+#!/bin/bash
+
+function finish
+{
+  cd "$oldcwd"
+}
+
+trap finish exit
+
+oldcwd=$(pwd)
 
 git --version > /dev/null
 if [ $? -ne 0 ]
@@ -14,6 +23,8 @@ then
   echo "This is not a git repository"
   exit 1
 fi
+
+cd $top_level
 
 if [ -z "$(git tag)" ]
 then
@@ -65,5 +76,6 @@ version_file=$top_level/version.txt
 "$zip_exe" -qd $output_file "Packages/ZeroMQ/help/*" > /dev/null
 "$zip_exe" -qd $output_file "Packages/ZeroMQ/examples/*" > /dev/null
 "$zip_exe" -qd $output_file "Packages/ZeroMQ/xop-stub-generator/*" > /dev/null
+"$zip_exe" -qd $output_file "Packages/doc/*" > /dev/null
 
 exit 0
