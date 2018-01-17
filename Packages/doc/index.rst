@@ -5,8 +5,8 @@ Table of Contents
   :maxdepth: 1
 
   Installation instructions <readme>
-  Reporting Bugs <reportingbugs>
-  Release Notes <releasenotes>
+  reportingbugs
+  releasenotes
   grouplist
   filelist
   structlist

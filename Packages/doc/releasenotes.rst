@@ -1,3 +1,8 @@
+Release notes
+*************
+
+.. toctree::
+
 Release 1.5
 ===========
 
