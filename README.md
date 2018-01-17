@@ -1,4 +1,4 @@
-# General
+# Readme
 
 Our Coding Conventions can be found
 [here](http://www.igorexchange.com/project/CodingConventions). Contributions
@@ -6,87 +6,30 @@ following these are especially welcome.
 
 ## Getting MIES
 
-### Latest development version
+### Latest development version from master branch
 
 * `git clone --recurse-submodules --jobs 2 http://stash.corp.alleninstitute.org/scm/eng/mies-igor.git`
 
-### Latest released version
+## Installation
 
-* Download from [bamboo](http://bamboo.corp.alleninstitute.org/browse/MIES-RELEASE/latestSuccessful) in the "Artifacts" menu.
-
-## Supported versions
-
-* master
-* 1.4
-* 1.5
-
-For supported versions we fix all critical bugs.
-
-## Bug reporting
-
-Please have a look at ReportingBugs.md.
-
-## Full Installation
+Select the installer for the latest release in the next section (Support
+statement). For manual installation instructions see ManualInstallation.md.
 
 Pressure control may be implemented with ITC and/or NIDAQ hardware. For NIDAQ
 hardware, install the [NIDAQ Tool MX](https://www.wavemetrics.com/products/nidaqtools/nidaqtools.htm)
 package from Wavemetrics.
 
-Install the [Visual C++ Redistributable for Visual Studio 2015](https://www.microsoft.com/en-us/download/details.aspx?id=48145)
-packages both for 32bit(x86) and 64bit(x64) in English.
+## Support statement
 
-### Igor Pro 7.0.4 or later (64bit only)
+The following versions receive fixes for all critical bugs.
 
-* Quit Igor Pro
-* Create the following shortcuts in "C:\Users\$username\Documents\WaveMetrics\Igor Pro 7 User Files"
-  * In "User Procedures" a shortcut pointing to
-    * "Packages\Arduino"
-    * "Packages\HDF-IP7"
-    * "Packages\IPNWB"
-    * "Packages\MIES"
-    * "Packages\Tango"
-  * In "Igor Procedures" a shortcut pointing to Packages\MIES_Include.ipf
-  * In "Igor Extensions (64-bit)" a shortcut pointing to
-    * "XOPs-IP7-64bit"
-    * "XOP-tango-64bit"
-  * In "Igor Help Files" a shortcut pointing to HelpFiles-IP7
-* Start Igor Pro
+* [1.5](http://bamboo.corp.alleninstitute.org/browse/MIES-RELEASE/latestSuccessful/artifact)
+* [1.4](http://bamboo.corp.alleninstitute.org/browse/MIES-CRV1/latestSuccessful/artifact)
+* [master](http://bamboo.corp.alleninstitute.org/browse/MIES-CM/latestSuccessful/artifact) intended for developer use
 
-## Partial Installation without hardware dependencies
-* There are currently four packages located in "Packages\MIES" which can be installed on demand.
+## Bug reporting
 
-### Analysis Browser
-* Quit Igor Pro
-* Create the following shortcuts in "C:\Users\$username\Documents\WaveMetrics\Igor Pro 7 User Files"
-  * In "User Procedures" a shortcut pointing to
-    * "Packages\HDF-IP7"
-    * "Packages\IPNWB"
-  * In "Igor Procedures" a shortcut pointing to
-    * "Packages\MIES\MIES_AnalysisBrowser.ipf"
-  * In "Igor Extensions (64-bit)" a shortcut pointing to
-    * "XOPs-IP7-64bit\HDF5-64.xop"
-* Restart Igor Pro
-
-### Data Browser
-* Quit Igor Pro
-* Create the following shortcuts in "C:\Users\$username\Documents\WaveMetrics\Igor Pro 7 User Files"
-  * In "Igor Procedures" a shortcut pointing to
-    * "Packages\MIES\MIES_DataBrowser.ipf"
-* Restart Igor Pro
-
-### Wave Builder
-* Quit Igor Pro
-* Create the following shortcuts in "C:\Users\$username\Documents\WaveMetrics\Igor Pro 7 User Files"
-  * In "Igor Procedures" a shortcut pointing to
-    * "Packages\MIES\MIES_WaveBuilderPanel.ipf"
-* Restart Igor Pro
-
-### Downsample
-* Quit Igor Pro
-* Create the following shortcuts in "C:\Users\$username\Documents\WaveMetrics\Igor Pro 7 User Files"
-  * In "Igor Procedures" a shortcut pointing to
-    * "Packages\MIES\MIES_Downsample.ipf"
-* Restart Igor Pro
+Please have a look at ReportingBugs.md.
 
 ## Arduino
 

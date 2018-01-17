@@ -32,6 +32,7 @@ if hash pandoc 2>/dev/null; then
 
   pandoc -f markdown_strict+fenced_code_blocks "$top_level/README.md" -o readme.rst
   pandoc -f markdown_strict+fenced_code_blocks "$top_level/ReportingBugs.md" -o reportingbugs.rst
+  pandoc -f markdown_strict+fenced_code_blocks "$top_level/ManualInstallation.md" -o manualinstallation.rst
 
 else
   echo "Errors building the documentation" 1>&2

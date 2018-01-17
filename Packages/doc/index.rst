@@ -4,7 +4,8 @@ Table of Contents
 .. toctree::
   :maxdepth: 1
 
-  Installation instructions <readme>
+  readme
+  manualinstallation
   reportingbugs
   releasenotes
   grouplist
