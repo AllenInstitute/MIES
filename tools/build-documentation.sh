@@ -17,7 +17,7 @@ echo "Start building the documentation"
 
 cd "$top_level/Packages/doc"
 
-output=$( (cat Doxyfile ; echo "HAVE_DOT = NO" ; echo "GENERATE_HTML = NO") | doxygen - 2>&1 >/dev/null)
+output=$( (cat Doxyfile ; echo "HAVE_DOT = NO" ; echo "GENERATE_HTML = NO") | doxygen - 2>&1  >/dev/null | grep -v "warning: ignoring unsupported tag" )
 
 if [ ! -z  "$output" ]
 then
