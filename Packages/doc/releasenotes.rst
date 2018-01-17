@@ -1,3 +1,166 @@
+Release notes
+*************
+
+.. toctree::
+
+Release 1.5
+===========
+
+AnalysisBrowser
+---------------
+
+- Accept dropped NWB files
+- Make initial scanning of NWB files much faster
+
+DataBrowser
+-----------
+
+- Default to sweeps axis type for labnotebook browsing
+- Make "Export Traces" work
+
+DataBrowser/SweepBrowser
+------------------------
+
+- Artefact removal: Handle no AD channels in graph gracefully
+- Rework and unify UI
+- Use correct trace color for unassociated channels
+
+DA\_Ephys
+---------
+
+- Don't stop and restart TP if DAQ is ongoing
+- Oscilloscope resistance values: Use sub MOhm for < 10MOhm
+- Fix error on stopping single device DAQ during repeated acquisition
+- Stop single device DAQ properly if aborted during ITI
+- Zero ITC channels if DAQ is stopped during ITI
+- Enable analysis functions by default
+- Properly support "TP after DAQ" when aborting currently running DAQ
+- Unify stopping for single/multi device
+- Make DAQ faster for short stimsets (100ms) with less overhead
+- Store only the AD data when storing the full testpulses
+- Store nearly all GUI controls value in a numerical/textual GUI state
+  immediately on change. This allows much faster querying and makes RA faster by around 100ms.
+- Fix skipping sweeps when called during ITI
+- Implement foreground single device RA. This gives a more accurate ITI for short (< 100ms) stimsets.
+- Add automated blowout feature
+- Amplifier: Set stored clamp mode instead of complaining only if the stored and the one active in the MCC panel differ
+- Avoid endless loop in case the monitoring thread dies for multi device testpulse
+- Cache used waves for multi device test pulse
+- Open Arduino panel and initialize it for yoked DAQ automatically
+
+ExperimentConfig
+----------------
+None
+
+Downsample
+----------
+None
+
+Analysis Functions
+------------------
+
+- Add central storage wave to make calling them faster
+- Add `PSQ_Rheobase <http://10.128.24.29/master/file/_m_i_e_s___analysis_functions___patch_seq_8ipf.html?highlight=rheobase#_CPPv212PSQ_Rheobase6string8variable4wave8variable8variable>`__ with tests, documentation and flow chart
+- Add `PSQ_SquarePulse <http://10.128.24.29/master/file/_m_i_e_s___analysis_functions___patch_seq_8ipf.html?highlight=square%20pulse#_CPPv215PSQ_SquarePulse6string8variable4wave8variable8variable>`__ with tests, documentation and flow chart
+
+Foreign Function interface
+--------------------------
+None
+
+General
+-------
+
+- Reorganize the MIES menu entries
+- Enhance the mies version information to include submodule information as well
+- Add many more labnotebook querying functions which respects RA cycle ID
+- PGC_SetAndActivateControl: Send the limited val for SetVariable controls
+- TPStorageWave: Store the validity of the entries
+- Add windows installer based on NSIS
+- Adapt sweep wave note layout
+- Add manual tests for yoked DAQ
+- Disable Indexing and "TP after DAQ" for yoked DAQ as it is currently broken
+
+ITC XOP 2
+----------
+None
+
+ZeroMQ XOP
+----------
+None
+
+Labnotebook
+-----------
+- Textual Labnotebook: Normalize EOLs in entries to `\n`
+- The new analysis functions write some labnotebook entries. See their
+documentation for details.
+
+New numerical keys
+~~~~~~~~~~~~~~~~~~
+None
+
+New textual keys
+~~~~~~~~~~~~~~~~
+
+- "Igor Pro version": Igor Pro version
+- "High precision sweep start": ISO8601 timestamp of the sweep start with sub-second precision
+
+Changed numerical entries
+~~~~~~~~~~~~~~~~~~~~~~~~~
+None
+
+Changed textual entries
+~~~~~~~~~~~~~~~~~~~~~~~
+
+- "Async Unit": The textual entry for the "Async Unit" should be the plain unit
+  instead of "Async AD *: *". Same for the unit of the async entry itself.
+- "Timestamp": Store sub-second precision in Timestamp columns
+
+NWB/IPNWB
+---------
+
+- Add option to export all stimsets into NWB on interactive export
+- Use labnotebook high precision timestamp for starting_time calculation
+- Fix NWB export naming and metadata for unassociated channels and TTL channels
+- Export full testpulses into NWB on interactive export
+
+File format
+~~~~~~~~~~~
+- Unassociatetd channels now neither have a channel suffix (`_$num`) for the
+  group name if TTL channels are present.
+
+Pressure Control
+----------------
+None
+
+WaveBuilder
+-----------
+
+- Introduce builtin stimset concepts: All stimsets starting with `MIES_` are
+  considered to be builtin and should not be created by users.
+- Fix epoch selection by mouse for really short epochs
+
+Work Sequencing Engine
+----------------------
+More general check for test pulse running in QC functions
+
+Internal
+--------
+
+- Reorganize repository: Move all separate projects into their own repository
+  and include them via git submodules.
+- Add automated testing with hardware on windows
+- Enhance wording of failed assertions. It now also includes a backtrace and the MIES version.
+- Reorganized procedure files to enhance function grouping and naming
+- Make PGC_SetAndActivateControl faster
+- PGC_SetAndActivateControl: Allow to switch tabs
+- PGC_SetAndActivateControl: Allow setting popup menues by string
+- HW ITC: Support interactive mode
+- Upgrade documentation generation toolchain to latest versions
+
+Tango
+-----
+None
+
 Release 1.4
 ===========
 

@@ -8,18 +8,7 @@
 
 /// @file MIES_AnalysisFunctions_PatchSeq.ipf
 /// @brief __PSQ__ Analysis functions for patch sequence
-
-static Constant PSQ_BL_PRE_PULSE   = 0x0
-static Constant PSQ_BL_POST_PULSE  = 0x1
-
-static Constant PSQ_RMS_SHORT_TEST = 0x0
-static Constant PSQ_RMS_LONG_TEST  = 0x1
-static Constant PSQ_TARGETV_TEST   = 0x2
-
-static StrConstant PSQ_SP_LBN_PREFIX = "Squ. Pul."
-static StrConstant PSQ_ST_LBN_PREFIX = "Sub Th."
-static StrConstant PSQ_RB_LBN_PREFIX = "Rheobase"
-
+///
 /// The Patch Seq analysis functions store various results in the labnotebook.
 ///
 /// For orientation the following table shows their relation. All labnotebook
@@ -27,9 +16,9 @@ static StrConstant PSQ_RB_LBN_PREFIX = "Rheobase"
 ///
 /// \rst
 ///
-/// ===============             ========================================================= ================= =====================  =====================
+/// =========================== ========================================================= ================= =====================  =====================
 /// Naming constant             Description                                               Analysis function Per Chunk?             Headstage dependent?
-/// ===============             ========================================================= ================= =====================  =====================
+/// =========================== ========================================================= ================= =====================  =====================
 /// PSQ_FMT_LBN_SPIKE_DETECT    Spike was detected on the sweep                           SP, RB            No                     Yes
 /// PSQ_FMT_LBN_STEPSIZE        Current DAScale step size                                 SP                No                     Yes
 /// PSQ_FMT_LBN_FINAL_SCALE     Final DAScale of the given headstage, only set on success SP, RB            No                     No
@@ -42,11 +31,22 @@ static StrConstant PSQ_RB_LBN_PREFIX = "Rheobase"
 /// PSQ_FMT_LBN_SWEEP_PASS      Pass/fail state of the complete sweep                     ST, SP            No                     No
 /// PSQ_FMT_LBN_SET_PASS        Pass/fail state of the complete set                       ST, RB            No                     No
 /// PSQ_FMT_LBN_PULSE_DUR       Pulse duration as determined experimentally               RB                No                     Yes
-/// ===============             ========================================================= ================= =====================  =====================
+/// =========================== ========================================================= ================= =====================  =====================
 ///
 /// \endrst
 ///
 /// Query the standard "Stim Scale Factor" entry from labnotebook for getting the DAScale.
+
+static Constant PSQ_BL_PRE_PULSE   = 0x0
+static Constant PSQ_BL_POST_PULSE  = 0x1
+
+static Constant PSQ_RMS_SHORT_TEST = 0x0
+static Constant PSQ_RMS_LONG_TEST  = 0x1
+static Constant PSQ_TARGETV_TEST   = 0x2
+
+static StrConstant PSQ_SP_LBN_PREFIX = "Squ. Pul."
+static StrConstant PSQ_ST_LBN_PREFIX = "Sub Th."
+static StrConstant PSQ_RB_LBN_PREFIX = "Rheobase"
 
 /// @brief Return labnotebook keys for patch seq analysis functions
 ///

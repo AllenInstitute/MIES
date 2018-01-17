@@ -4,9 +4,10 @@ Table of Contents
 .. toctree::
   :maxdepth: 1
 
-  Installation instructions <readme>
-  Reporting Bugs <reportingbugs>
-  Release Notes <releasenotes>
+  readme
+  manualinstallation
+  reportingbugs
+  releasenotes
   grouplist
   filelist
   structlist
