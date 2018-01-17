@@ -195,13 +195,15 @@ static Function BWO_CheckAndClearPipettes(panelTitle)
 			pressurePulseTime = ticks - pressurePulseStartTime
 			if(pressurePulseTime >= TWO_SECONDS)
 				PGC_SetAndActivateControl(panelTitle, "setvar_DataAcq_SSPressure", val = PressureTracking[i])
-				PressureTracking[i] += 1
+				if(PressureTracking[i] <= MAX_REGULATOR_PRESSURE) // only increase pressure if less than or equal to max pressure
+					PressureTracking[i] += 1
+				endif
 				PressureTracking[i] = min(PressureTracking[i], MAX_REGULATOR_PRESSURE)
 				pressurePulseStartTime = ticks
 			endif
 			TPM_BkrdTPFuncMD(s)
 			DoUpdate/W=$SCOPE_GetPanel(panelTitle)
-		while(SSResistance[0][col] > BWO_MAX_RESISTANCE && PressureTracking[i] <= MAX_REGULATOR_PRESSURE && ticks - startTime < FIFTEEN_SECONDS)
+		while(SSResistance[0][col] > BWO_MAX_RESISTANCE && ticks - startTime < FIFTEEN_SECONDS) // continue if the pipette is not clear AND the timeout hasn't been exceeded
 
 		PGC_SetAndActivateControl(panelTitle, "button_DataAcq_SSSetPressureMan") // turn off manual pressure
 		PGC_SetAndActivateControl(panelTitle, "setvar_DataAcq_SSPressure", val = 0)
