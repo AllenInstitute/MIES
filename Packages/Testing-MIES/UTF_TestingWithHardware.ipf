@@ -164,6 +164,15 @@ Function ExecuteDuringITI_IGNORE(s)
 	return 0
 End
 
+Function StopAcq_IGNORE(s)
+	STRUCT WMBackgroundStruct &s
+
+	string device = GetSingleDevice()
+	PGC_SetAndActivateControl(device, "DataAcquireButton")
+
+	return 1
+End
+
 /// @brief Structure to hold various common DAQ DAQSettings
 ///
 /// MultiDevice (MD: 1/0)
