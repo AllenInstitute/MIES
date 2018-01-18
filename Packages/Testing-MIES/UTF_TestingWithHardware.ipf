@@ -53,6 +53,7 @@ Function ExecuteNextTestCase_IGNORE()
 	list = AddListItem("UTF_PatchSeqSubThreshold.ipf", list, ";", Inf)
 	list = AddListItem("UTF_PatchSeqSquarePulse.ipf", list, ";", Inf)
 	list = AddListItem("UTF_PatchSeqRheobase.ipf", list, ";", Inf)
+	list = AddListItem("UTF_AnalysisFunctionManagement.ipf", list, ";", Inf)
 
 	Execute/P/Q "runtest(\"" + list + "\", testCase=\"" + testCases[testCaseIndex] + "\", enableJU = 1)"
 
