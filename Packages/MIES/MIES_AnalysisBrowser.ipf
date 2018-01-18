@@ -24,7 +24,7 @@
 #include ":..:IPNWB:IPNWB_Include"
 #include ":MIES_NeuroDataWithoutBorders"
 #include ":MIES_WaveBuilder"
-#include ":MIES_WaveBuilderPanel" menus=0
+#include ":MIES_WaveBuilderPanel"
 
 // ZeroMQ procedures
 #include ":..:ZeroMQ:procedures:ZeroMQ_Interop"
