@@ -62,7 +62,6 @@ Menu "Mies Panels"
 	"Analysis Browser"        , /Q, AB_OpenAnalysisBrowser()
 	"Labnotebook Browser"     , /Q, LBN_OpenLabnotebookBrowser()
 	"TPStorage Browser"       , /Q, LBN_OpenTPStorageBrowser()
-	"Load Stimsets from NWB"  , /Q, NWB_LoadAllStimsets()
 End
 
 static Function AB_ResetSelectionWave()
