@@ -276,3 +276,39 @@ Function/WAVE AFH_ExtractOneDimDataFromSweep(panelTitle, sweep, headstage, chann
 
 	return ExtractOneDimDataFromSweep(config, sweep, col)
 End
+
+/// @brief Get list of possible analysis functions
+///
+/// @param versionBitMask bitmask of different analysis function versions which should be returned, one
+///                       of @ref AnalysisFunctionVersions
+Function/S AFH_GetAnalysisFunctions(versionBitMask)
+	variable versionBitMask
+
+	string funcList, func
+	string funcListClean = ""
+	variable numEntries, i, valid_f1, valid_f2
+
+	funcList  = FunctionList("*", ";", "KIND:2,WIN:MIES_AnalysisFunctions.ipf")
+	funcList += FunctionList("*", ";", "KIND:2,WIN:MIES_AnalysisFunctions_PatchSeq.ipf")
+	funcList += FunctionList("*", ";", "KIND:2,WIN:UserAnalysisFunctions.ipf")
+
+	numEntries = ItemsInList(funcList)
+	for(i = 0; i < numEntries; i += 1)
+		func = StringFromList(i, funcList)
+
+		// assign each function to the function reference of type AF_PROTO_ANALYSIS_FUNC_V*
+		// this allows to check if the signature of func is the same as the one of AF_PROTO_ANALYSIS_FUNC_V*
+		FUNCREF AF_PROTO_ANALYSIS_FUNC_V1 f1 = $func
+		FUNCREF AF_PROTO_ANALYSIS_FUNC_V2 f2 = $func
+
+		valid_f1 = FuncRefIsAssigned(FuncRefInfo(f1))
+		valid_f2 = FuncRefIsAssigned(FuncRefInfo(f2))
+
+		if((valid_f1 && (versionBitMask & ANALYSIS_FUNCTION_VERSION_V1))    \
+		   || (valid_f2 && (versionBitMask & ANALYSIS_FUNCTION_VERSION_V2)))
+			funcListClean = AddListItem(func, funcListClean, ";", Inf)
+		endif
+	endfor
+
+	return funcListClean
+End
