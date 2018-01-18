@@ -2255,8 +2255,8 @@ Function/S WBP_GetAnalysisFunctions()
 	string funcListClean = NONE
 	variable numEntries, i, valid_f1, valid_f2
 
-	funcList  = FunctionList("!AF_PROTO_ANALYSIS_FUNC*", ";", "KIND:2,WIN:MIES_AnalysisFunctions.ipf")
-	funcList += FunctionList("!AF_PROTO_ANALYSIS_FUNC*", ";", "KIND:2,WIN:MIES_AnalysisFunctions_PatchSeq.ipf")
+	funcList  = FunctionList("*", ";", "KIND:2,WIN:MIES_AnalysisFunctions.ipf")
+	funcList += FunctionList("*", ";", "KIND:2,WIN:MIES_AnalysisFunctions_PatchSeq.ipf")
 	funcList += FunctionList("*", ";", "KIND:2,WIN:UserAnalysisFunctions.ipf")
 
 	numEntries = ItemsInList(funcList)
