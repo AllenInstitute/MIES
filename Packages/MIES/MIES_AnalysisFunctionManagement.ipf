@@ -57,7 +57,7 @@ Function AFM_CallAnalysisFunctions(panelTitle, eventType)
 				// deliberately not using the GUI state wave
 				setName = GetPopupMenuString(panelTitle, ctrl)
 
-				if(mod(count + 1, IDX_NumberOfTrialsInSet(setName)) != 0)
+				if(mod(count + 1, IDX_NumberOfSweepsInSet(setName)) != 0)
 					continue
 				endif
 				break

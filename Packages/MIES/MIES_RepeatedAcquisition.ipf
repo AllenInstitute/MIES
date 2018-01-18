@@ -150,10 +150,10 @@ static Function RA_GetTotalNumberOfSets(panelTitle)
 	return numSets
 End
 
-/// @brief Calculate the total number of trials for repeated acquisition
+/// @brief Calculate the total number of sweeps for repeated acquisition
 ///
 /// Helper function for plain calculation without lead and follower logic
-static Function RA_GetTotalNumberOfTrialsLowLev(panelTitle)
+static Function RA_GetTotalNumberOfSweepsLowLev(panelTitle)
 	string panelTitle
 
 	if(DAG_GetNumericalValue(panelTitle, "Check_DataAcq_Indexing"))
@@ -163,14 +163,14 @@ static Function RA_GetTotalNumberOfTrialsLowLev(panelTitle)
 	endif
 End
 
-/// @brief Calculate the total number of trials for repeated acquisition
-static Function RA_GetTotalNumberOfTrials(panelTitle)
+/// @brief Calculate the total number of sweeps for repeated acquisition
+static Function RA_GetTotalNumberOfSweeps(panelTitle)
 	string panelTitle
 
-	variable i, numFollower, totTrials
+	variable i, numFollower, numTotalSweeps
 	string followerPanelTitle
 
-	totTrials = RA_GetTotalNumberOfTrialsLowLev(panelTitle)
+	numTotalSweeps = RA_GetTotalNumberOfSweepsLowLev(panelTitle)
 
 	if(DeviceHasFollower(panelTitle))
 		SVAR listOfFollowerDevices = $GetFollowerList(panelTitle)
@@ -178,11 +178,11 @@ static Function RA_GetTotalNumberOfTrials(panelTitle)
 		for(i = 0; i < numFollower; i += 1)
 			followerPanelTitle = StringFromList(i, listOfFollowerDevices)
 
-			totTrials = max(totTrials, RA_GetTotalNumberOfTrialsLowLev(followerPanelTitle))
+			numTotalSweeps = max(numTotalSweeps, RA_GetTotalNumberOfSweepsLowLev(followerPanelTitle))
 		endfor
 	endif
 
-	return totTrials
+	return numTotalSweeps
 End
 
 /// @brief Update the "Sweeps remaining" control
@@ -190,21 +190,21 @@ Function RA_StepSweepsRemaining(panelTitle)
 	string panelTitle
 
 	if(DAG_GetNumericalValue(panelTitle, "Check_DataAcq1_RepeatAcq"))
-		variable totTrials = RA_GetTotalNumberOfTrials(panelTitle)
+		variable numTotalSweeps = RA_GetTotalNumberOfSweeps(panelTitle)
 		NVAR count = $GetCount(panelTitle)
 
-		SetValDisplay(panelTitle, "valdisp_DataAcq_TrialsCountdown", var = totTrials - count - 1)
+		SetValDisplay(panelTitle, "valdisp_DataAcq_TrialsCountdown", var = numTotalSweeps - count - 1)
 	else
 		SetValDisplay(panelTitle, "valdisp_DataAcq_TrialsCountdown", var = 0)
 	endif
 End
 
-/// @brief Function gets called after the first trial is already
+/// @brief Function gets called after the first sweep is already
 /// acquired and if repeated acquisition is on
 Function RA_Start(panelTitle)
 	string panelTitle
 	
-	variable totTrials
+	variable numTotalSweeps
 	NVAR count = $GetCount(panelTitle)
 	NVAR activeSetCount = $GetActiveSetCount(panelTitle)
 
@@ -213,9 +213,9 @@ Function RA_Start(panelTitle)
 #endif
 
 	activeSetCount = IDX_CalculcateActiveSetCount(panelTitle)
-	totTrials = RA_GetTotalNumberOfTrials(panelTitle)
+	numTotalSweeps = RA_GetTotalNumberOfSweeps(panelTitle)
 
-	if(totTrials == 1)
+	if(numTotalSweeps == 1)
 		return RA_FinishAcquisition(panelTitle)
 	endif
 
@@ -226,7 +226,7 @@ End
 Function RA_Counter(panelTitle)
 	string panelTitle
 
-	variable totTrials, indexing, indexingLocked
+	variable numTotalSweeps, indexing, indexingLocked
 	variable numSets
 	string str
 
@@ -241,7 +241,7 @@ Function RA_Counter(panelTitle)
 #endif
 
 	numSets        = RA_GetTotalNumberOfSets(panelTitle)
-	totTrials      = RA_GetTotalNumberOfTrials(panelTitle)
+	numTotalSweeps = RA_GetTotalNumberOfSweeps(panelTitle)
 	indexing       = DAG_GetNumericalValue(panelTitle, "Check_DataAcq_Indexing")
 	indexingLocked = DAG_GetNumericalValue(panelTitle, "Check_DataAcq1_IndexingLocked")
 
@@ -267,7 +267,7 @@ Function RA_Counter(panelTitle)
 		endif
 	endif
 
-	if(Count < TotTrials)
+	if(Count < numTotalSweeps)
 		try
 			DC_ConfigureDataForITC(panelTitle, DATA_ACQUISITION_MODE)
 
@@ -307,12 +307,12 @@ End
 Function RA_BckgTPwithCallToRACounter(panelTitle)
 	string panelTitle
 
-	variable totTrials
+	variable numTotalSweeps
 	NVAR count = $GetCount(panelTitle)
 
-	totTrials = RA_GetTotalNumberOfTrials(panelTitle)
+	numTotalSweeps = RA_GetTotalNumberOfSweeps(panelTitle)
 
-	if(Count < (totTrials - 1))
+	if(Count < (numTotalSweeps - 1))
 		RA_HandleITI(panelTitle)
 	else
 		RA_FinishAcquisition(panelTitle)
@@ -322,7 +322,7 @@ End
 static Function RA_StartMD(panelTitle)
 	string panelTitle
 
-	variable i, numFollower, totTrials
+	variable i, numFollower, numTotalSweeps
 	string followerPanelTitle
 	NVAR count = $GetCount(panelTitle)
 	NVAR activeSetCount = $GetActiveSetCount(panelTitle)
@@ -335,9 +335,9 @@ static Function RA_StartMD(panelTitle)
 
 	RA_StepSweepsRemaining(panelTitle)
 
-	totTrials = RA_GetTotalNumberOfTrials(panelTitle)
+	numTotalSweeps = RA_GetTotalNumberOfSweeps(panelTitle)
 
-	if(totTrials == 1)
+	if(numTotalSweeps == 1)
 		return RA_FinishAcquisition(panelTitle)
 	endif
 
@@ -360,7 +360,7 @@ End
 Function RA_CounterMD(panelTitle)
 	string panelTitle
 
-	variable totTrials, numSets, recalcActiveSetCount, activeSetCountMax
+	variable numTotalSweeps, numSets, recalcActiveSetCount, activeSetCountMax
 	NVAR count = $GetCount(panelTitle)
 	NVAR activeSetCount = $GetActiveSetCount(panelTitle)
 	variable i, indexing, indexingLocked, numFollower, followerActiveSetCount
@@ -374,7 +374,7 @@ Function RA_CounterMD(panelTitle)
 #endif
 
 	numSets        = RA_GetTotalNumberOfSets(panelTitle)
-	totTrials      = RA_GetTotalNumberOfTrials(panelTitle)
+	numTotalSweeps = RA_GetTotalNumberOfSweeps(panelTitle)
 	indexing       = DAG_GetNumericalValue(panelTitle, "Check_DataAcq_Indexing")
 	indexingLocked = DAG_GetNumericalValue(panelTitle, "Check_DataAcq1_IndexingLocked")
 
@@ -447,7 +447,7 @@ Function RA_CounterMD(panelTitle)
 		endif
 	endif
 
-	if(count < totTrials)
+	if(count < numTotalSweeps)
 		DQM_StartDAQMultiDeviceLowLevel(panelTitle, initialSetupReq=0)
 	else
 		RA_FinishAcquisition(panelTitle)
@@ -457,12 +457,12 @@ End
 static Function RA_BckgTPwithCallToRACounterMD(panelTitle)
 	string panelTitle
 
-	variable totTrials
+	variable numTotalSweeps
 	NVAR count = $GetCount(panelTitle)
 
-	totTrials = RA_GetTotalNumberOfTrials(panelTitle)
+	numTotalSweeps = RA_GetTotalNumberOfSweeps(panelTitle)
 
-	if(count < (totTrials - 1))
+	if(count < (numTotalSweeps - 1))
 		RA_HandleITI_MD(panelTitle)
 	else
 		RA_FinishAcquisition(panelTitle)
@@ -577,7 +577,7 @@ static Function RA_SkipSweepCalc(panelTitle, skipCount)
 	string panelTitle
 	variable skipCount
 
-	variable totSweeps = RA_GetTotalNumberOfTrials(panelTitle)
+	variable totSweeps = RA_GetTotalNumberOfSweeps(panelTitle)
 	NVAR count = $GetCount(panelTitle)
 	if(DAG_GetNumericalValue(panelTitle, "Check_DataAcq1_RepeatAcq"))
 		// RA_counter and RA_counterMD increment count at initialization, -1 accounts for this and allows a skipping back to sweep 0

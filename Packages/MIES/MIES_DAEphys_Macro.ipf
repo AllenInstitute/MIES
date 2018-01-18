@@ -1741,7 +1741,7 @@ Window DA_Ephys() : Panel
 	TitleBox Title_TTL_Channel,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
 	TitleBox Title_TTL_Channel,frame=0,fStyle=1
 	CheckBox check_DataAcq_RepAcqRandom,pos={66.00,660.00},size={60.00,15.00},disable=1,proc=DAP_CheckProc_RandomRA,title="Random"
-	CheckBox check_DataAcq_RepAcqRandom,help={"Randomly selects wave from set selected for DAC channel on each trial. Doesn't repeat waves."}
+	CheckBox check_DataAcq_RepAcqRandom,help={"Randomly selects wave from set selected for DAC channel on each sweep. Doesn't repeat waves."}
 	CheckBox check_DataAcq_RepAcqRandom,userdata(tabnum)=  "0"
 	CheckBox check_DataAcq_RepAcqRandom,userdata(tabcontrol)=  "ADC"
 	CheckBox check_DataAcq_RepAcqRandom,userdata(ResizeControlsInfo)= A"!!,E>!!#D5!!#?)!!#<(z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
@@ -1937,7 +1937,7 @@ Window DA_Ephys() : Panel
 	SetVariable SetVar_DataAcq_ListRepeats,fColor=(65280,43520,0)
 	SetVariable SetVar_DataAcq_ListRepeats,limits={1,inf,1},value= _NUM:1
 	CheckBox check_DataAcq_IndexRandom,pos={220.00,697.00},size={60.00,15.00},disable=1,proc=DAP_CheckProc_UpdateGuiState,title="Random"
-	CheckBox check_DataAcq_IndexRandom,help={"Randomly selects wave from set selected for DAC channel on each trial. Doesn't repeat waves."}
+	CheckBox check_DataAcq_IndexRandom,help={"Randomly selects wave from set selected for DAC channel on each sweep. Doesn't repeat waves."}
 	CheckBox check_DataAcq_IndexRandom,userdata(tabnum)=  "0"
 	CheckBox check_DataAcq_IndexRandom,userdata(tabcontrol)=  "ADC"
 	CheckBox check_DataAcq_IndexRandom,userdata(ResizeControlsInfo)= A"!!,Gb!!#D>5QF,i!!#<(z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
