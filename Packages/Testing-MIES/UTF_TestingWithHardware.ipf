@@ -36,6 +36,8 @@ End
 
 Function ExecuteNextTestCase_IGNORE()
 
+	string list = ""
+
 	NVAR/SDFR=root: testCaseIndex
 	WAVE/T/SDFR=root: testCases
 
@@ -47,7 +49,12 @@ Function ExecuteNextTestCase_IGNORE()
 		return NaN
 	endif
 
-	Execute/P/Q "runtest(\"UTF_BasicHardwareTests.ipf;UTF_PatchSeqSubThreshold.ipf;UTF_PatchSeqSquarePulse.ipf;UTF_PatchSeqRheobase.ipf\", testCase=\"" + testCases[testCaseIndex] + "\", enableJU = 1)"
+	list = AddListItem("UTF_BasicHardwareTests.ipf", list, ";", Inf)
+	list = AddListItem("UTF_PatchSeqSubThreshold.ipf", list, ";", Inf)
+	list = AddListItem("UTF_PatchSeqSquarePulse.ipf", list, ";", Inf)
+	list = AddListItem("UTF_PatchSeqRheobase.ipf", list, ";", Inf)
+
+	Execute/P/Q "runtest(\"" + list + "\", testCase=\"" + testCases[testCaseIndex] + "\", enableJU = 1)"
 
 	testCaseIndex += 1
 End
