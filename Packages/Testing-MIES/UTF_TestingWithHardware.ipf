@@ -74,6 +74,25 @@ Function Initialize_IGNORE()
 	ITCCLoseAll2
 End
 
+/// @brief Return the list of active devices
+Function/S GetDevices()
+
+#ifdef TESTS_WITH_YOKING
+	return DEVICES_YOKED
+#else
+	return DEVICE
+#endif
+End
+
+Function/S GetSingleDevice()
+
+#ifdef TESTS_WITH_YOKING
+	return StringFromList(0, DEVICES_YOKED)
+#else
+	return DEVICE
+#endif
+End
+
 /// @brief Background function to wait until DAQ is finished.
 ///
 /// If it is finished pushes the next two, one DAQ and the corresponding `Test`, testcases to the queue
@@ -99,6 +118,50 @@ Function WaitUntilDAQDone_IGNORE(s)
 	ExecuteNextTestCase_IGNORE()
 	ExecuteNextTestCase_IGNORE()
 	return 1
+End
+
+Function StopAcqDuringITI_IGNORE(s)
+	STRUCT WMBackgroundStruct &s
+
+	string device = GetSingleDevice()
+	NVAR runMode = $GetTestpulseRunMode(device)
+
+	if(runMode & TEST_PULSE_DURING_RA_MOD)
+		PGC_SetAndActivateControl(device, "DataAcquireButton")
+		return 1
+	endif
+
+	return 0
+End
+
+Function StartTPDuringITI_IGNORE(s)
+	STRUCT WMBackgroundStruct &s
+
+	string device = GetSingleDevice()
+
+	NVAR runMode = $GetTestpulseRunMode(device)
+
+	if(runMode & TEST_PULSE_DURING_RA_MOD)
+		PGC_SetAndActivateControl(device, "StartTestPulseButton")
+		return 1
+	endif
+
+	return 0
+End
+
+Function ExecuteDuringITI_IGNORE(s)
+	STRUCT WMBackgroundStruct &s
+
+	string device = GetSingleDevice()
+
+	NVAR runMode = $GetTestpulseRunMode(device)
+
+	if(runMode & TEST_PULSE_DURING_RA_MOD)
+		RA_SkipSweeps(device, inf)
+		return 1
+	endif
+
+	return 0
 End
 
 /// @brief Structure to hold various common DAQ DAQSettings
