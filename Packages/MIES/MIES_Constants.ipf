@@ -434,6 +434,9 @@ Constant TOTAL_NUM_EVENTS   = 5
 /// Human readable names for @ref EVENT_TYPE_ANALYSIS_FUNCTIONS
 StrConstant EVENT_NAME_LIST = "Pre DAQ;Mid Sweep;Post Sweep;Post Set;Post DAQ"
 
+/// Labnotebook entries
+StrConstant EVENT_NAME_LIST_LBN = "Pre DAQ function;Mid Sweep function;Post Sweep function;Post Set function;Post DAQ function"
+
 /// Special return values for analysis functions. See also @ref
 /// AnalysisFunctionReturnTypes.
 ///
@@ -494,7 +497,7 @@ Constant WAVEBUILDER_PANEL_VERSION  = 3
 /// - Changed names of entries
 /// - Changed units or meaning of entries
 /// - New/Changed layers of entries
-Constant LABNOTEBOOK_VERSION = 13
+Constant LABNOTEBOOK_VERSION = 14
 
 /// @name The channel numbers for the different ITC devices used for accesssing
 ///       the TTLs

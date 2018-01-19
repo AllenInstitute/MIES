@@ -1061,20 +1061,20 @@ End
 static Function SetSweepSettingsTextDimLabels(wv)
 	WAVE wv
 
-	SetDimLabel COLS,  0, $STIM_WAVE_NAME_KEY       , wv
-	SetDimLabel COLS,  1, $"DA unit"                , wv
-	SetDimLabel COLS,  2, $"AD unit"                , wv
-	SetDimLabel COLS,  3, $"TTL rack zero stim sets", wv
-	SetDimLabel COLS,  4, $"TTL rack one stim sets" , wv
-	SetDimLabel COLS,  5, $"Pre DAQ function"       , wv
-	SetDimLabel COLS,  6, $"Mid sweep function"     , wv
-	SetDimLabel COLS,  7, $"Post sweep function"    , wv
-	SetDimLabel COLS,  8, $"Post set function"      , wv
-	SetDimLabel COLS,  9, $"Post DAQ function"      , wv
-	SetDimLabel COLS, 10, $"oodDAQ regions"         , wv
-	SetDimLabel COLS, 11, $"Electrode"              , wv
-	SetDimLabel COLS, 12, $PULSE_START_TIMES_KEY    , wv
-	SetDimLabel COLS, 13, $HIGH_PREC_SWEEP_START_KEY, wv
+	SetDimLabel COLS, 0 , $STIM_WAVE_NAME_KEY                                   , wv
+	SetDimLabel COLS, 1 , $"DA unit"                                            , wv
+	SetDimLabel COLS, 2 , $"AD unit"                                            , wv
+	SetDimLabel COLS, 3 , $"TTL rack zero stim sets"                            , wv
+	SetDimLabel COLS, 4 , $"TTL rack one stim sets"                             , wv
+	SetDimLabel COLS, 5 , $StringFromList(PRE_DAQ_EVENT, EVENT_NAME_LIST_LBN)   , wv
+	SetDimLabel COLS, 6 , $StringFromList(MID_SWEEP_EVENT, EVENT_NAME_LIST_LBN) , wv
+	SetDimLabel COLS, 7 , $StringFromList(POST_SWEEP_EVENT, EVENT_NAME_LIST_LBN), wv
+	SetDimLabel COLS, 8 , $StringFromList(POST_SET_EVENT, EVENT_NAME_LIST_LBN)  , wv
+	SetDimLabel COLS, 9 , $StringFromList(POST_DAQ_EVENT, EVENT_NAME_LIST_LBN)  , wv
+	SetDimLabel COLS, 10, $"oodDAQ regions"                                     , wv
+	SetDimLabel COLS, 11, $"Electrode"                                          , wv
+	SetDimLabel COLS, 12, $PULSE_START_TIMES_KEY                                , wv
+	SetDimLabel COLS, 13, $HIGH_PREC_SWEEP_START_KEY                            , wv
 End
 
 /// @brief Returns a wave reference to the sweepSettingsWave
@@ -1358,7 +1358,7 @@ End
 Function/Wave GetSweepSettingsTextWave(panelTitle)
 	string panelTitle
 
-	variable versionOfNewWave = 11
+	variable versionOfNewWave = 12
 	string newName = "sweepSettingsTextValues"
 	DFREF newDFR = GetDevSpecLabNBTempFolder(panelTitle)
 
@@ -1415,7 +1415,7 @@ End
 Function/Wave GetSweepSettingsTextKeyWave(panelTitle)
 	string panelTitle
 
-	variable versionOfNewWave = 11
+	variable versionOfNewWave = 12
 	string newName = "sweepSettingsTextKeys"
 	DFREF newDFR = GetDevSpecLabNBTempFolder(panelTitle)
 
@@ -1442,11 +1442,11 @@ Function/Wave GetSweepSettingsTextKeyWave(panelTitle)
 	wv[0][2]  = "AD unit"
 	wv[0][3]  = "TTL rack zero stim sets"
 	wv[0][4]  = "TTL rack one stim sets"
-	wv[0][5]  = "Pre DAQ function"
-	wv[0][6]  = "Mid sweep function"
-	wv[0][7]  = "Post sweep function"
-	wv[0][8]  = "Post set function"
-	wv[0][9]  = "Post DAQ function"
+	wv[0][5]  = StringFromList(PRE_DAQ_EVENT, EVENT_NAME_LIST_LBN)
+	wv[0][6]  = StringFromList(MID_SWEEP_EVENT, EVENT_NAME_LIST_LBN)
+	wv[0][7]  = StringFromList(POST_SWEEP_EVENT, EVENT_NAME_LIST_LBN)
+	wv[0][8]  = StringFromList(POST_SET_EVENT, EVENT_NAME_LIST_LBN)
+	wv[0][9]  = StringFromList(POST_DAQ_EVENT, EVENT_NAME_LIST_LBN)
 	wv[0][10] = "oodDAQ regions"
 	wv[0][11] = "Electrode"
 	wv[0][12] = PULSE_START_TIMES_KEY
