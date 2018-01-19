@@ -18,13 +18,13 @@ Function run()
 //	DisableDebugOutput()
 //	EnableDebugoutput()
 
+	string list = ""
+
 	NWB_LoadAllStimsets(filename = GetFolder(FunctionPath("")) + "_2017_09_01_192934-compressed.nwb", overwrite = 1)
 	KillDataFolder/Z root:WaveBuilder
 	DuplicateDataFolder	root:MIES:WaveBuilder, root:WaveBuilder
 
 	RunTest("UTF_VeryBasicHardwareTests.ipf;UTF_DAEphys.ipf", enableJU = 1)
-
-	string list = ""
 
 #ifndef TESTS_WITH_YOKING
 
