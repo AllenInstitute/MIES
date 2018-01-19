@@ -596,7 +596,7 @@ static Function DC_PlaceDataInITCDataWave(panelTitle, numActiveChannels, dataAcq
 	variable numActiveChannels, dataAcqOrTP, multiDevice
 
 	variable i, activeColumn, numEntries
-	string ctrl, str, list, func, colLabel
+	string ctrl, str, list, func
 	variable oneFullCycle, val, singleSetLength, singleInsertStart, minSamplingInterval
 	variable channelMode, TPAmpVClamp, TPAmpIClamp, testPulseLength, maxStimSetLength
 	variable GlobalTPInsert, scalingZero, indexingLocked, indexing, distributedDAQ, pulseToPulseLength
@@ -709,9 +709,8 @@ static Function DC_PlaceDataInITCDataWave(panelTitle, numActiveChannels, dataAcq
 		DC_DocumentChannelProperty(panelTitle, STIM_WAVE_NAME_KEY, headstageDAC[activeColumn], i, str=setName[activeColumn])
 
 		for(j = 0; j < TOTAL_NUM_EVENTS; j += 1)
-			func     = ExtractAnalysisFuncFromStimSet(stimSet[activeColumn], j)
-			colLabel = GetDimLabel(sweepDataTxTLNB, COLS, 5 + j)
-			DC_DocumentChannelProperty(panelTitle, colLabel, headstageDAC[activeColumn], i, str=func)
+			func = ExtractAnalysisFuncFromStimSet(stimSet[activeColumn], j)
+			DC_DocumentChannelProperty(panelTitle, StringFromList(j, EVENT_NAME_LIST_LBN), headstageDAC[activeColumn], i, str=func)
 		endfor
 
 		ctrl = GetSpecialControlLabel(CHANNEL_TYPE_DAC, CHANNEL_CONTROL_UNIT)
