@@ -72,9 +72,7 @@ Function AFM_CallAnalysisFunctions(panelTitle, eventType)
 		valid_f1 = FuncRefIsAssigned(FuncRefInfo(f1))
 		valid_f2 = FuncRefIsAssigned(FuncRefInfo(f2))
 
-		if(!valid_f1 && !valid_f2) // not a valid analysis function
-			continue
-		endif
+		// all functions are valid
 
 		WAVE ITCDataWave = GetITCDataWave(panelTitle)
 		SetWaveLock 1, ITCDataWave
@@ -112,12 +110,13 @@ Function AFM_UpdateAnalysisFunctionWave(panelTitle)
 	string panelTitle
 
 	variable i, j, DAC
-	string ctrl, setName
+	string ctrl, setName, possibleFunctions, func
 
 	WAVE statusHS            = DAG_GetChannelState(panelTitle, CHANNEL_TYPE_HEADSTAGE)
 	WAVE/T analysisFunctions = GetAnalysisFunctionStorage(panelTitle)
 
 	analysisFunctions = ""
+	possibleFunctions = AFH_GetAnalysisFunctions(ANALYSIS_FUNCTION_VERSION_ALL)
 
 	for(i = 0; i < NUM_HEADSTAGES; i += 1)
 
@@ -142,6 +141,14 @@ Function AFM_UpdateAnalysisFunctionWave(panelTitle)
 			continue
 		endif
 
-		analysisFunctions[i][] = ExtractAnalysisFuncFromStimSet(stimSet, q)
+		for(j = 0; j < TOTAL_NUM_EVENTS; j += 1)
+			func = ExtractAnalysisFuncFromStimSet(stimSet, j)
+
+			if(WhichListItem(func, possibleFunctions) == -1) // not valid
+				continue
+			endif
+
+			analysisFunctions[i][j] = func
+		endfor
 	endfor
 End

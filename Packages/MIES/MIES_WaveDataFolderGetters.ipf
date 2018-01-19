@@ -5110,10 +5110,14 @@ End
 /// @}
 
 /// @brief Return the storage wave for the analysis functions
+///
+/// Only contains *valid* functions. An analysis function is valid if it has
+/// a compatible signature and can be found with in the locations searched by
+/// AFH_GetAnalysisFunctions().
 Function/WAVE GetAnalysisFunctionStorage(panelTitle)
 	string panelTitle
 
-	variable versionOfWave = 1
+	variable versionOfWave = 2
 	DFREF dfr = GetDevicePath(panelTitle)
 	WAVE/T/Z/SDFR=dfr wv = analysisFunctions
 

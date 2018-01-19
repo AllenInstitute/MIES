@@ -632,6 +632,7 @@ static Function DC_PlaceDataInITCDataWave(panelTitle, numActiveChannels, dataAcq
 	WAVE sweepDataLNB         = GetSweepSettingsWave(panelTitle)
 	WAVE/T sweepDataTxTLNB    = GetSweepSettingsTextWave(panelTitle)
 	WAVE/T cellElectrodeNames = GetCellElectrodeNames(panelTitle)
+	WAVE/T analysisFunctions  = GetAnalysisFunctionStorage(panelTitle)
 
 	numEntries = DimSize(statusDA, ROWS)
 	Make/D/FREE/N=(numEntries) DAGain, DAScale, insertStart, setLength, testPulseAmplitude, setColumn, headstageDAC, DAC
@@ -709,7 +710,7 @@ static Function DC_PlaceDataInITCDataWave(panelTitle, numActiveChannels, dataAcq
 		DC_DocumentChannelProperty(panelTitle, STIM_WAVE_NAME_KEY, headstageDAC[activeColumn], i, str=setName[activeColumn])
 
 		for(j = 0; j < TOTAL_NUM_EVENTS; j += 1)
-			func = ExtractAnalysisFuncFromStimSet(stimSet[activeColumn], j)
+			func = analysisFunctions[headstageDAC[activeColumn]][j]
 			DC_DocumentChannelProperty(panelTitle, StringFromList(j, EVENT_NAME_LIST_LBN), headstageDAC[activeColumn], i, str=func)
 		endfor
 
