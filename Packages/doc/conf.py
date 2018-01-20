@@ -1,6 +1,9 @@
 # imports
 from subprocess import Popen, PIPE
 
+def setup(app):
+    app.add_stylesheet('custom.css')
+
 # functions
 def get_version():
     """
