@@ -956,15 +956,14 @@ Function PSQ_SubThreshold(panelTitle, eventType, ITCDataWave, headStage, realDat
 		return NaN
 	endif
 
-	// oscilloscope data holds scaled data already
-	WAVE OscilloscopeData = GetOscilloscopeWave(panelTitle)
-	lastFifoPos = GetNumberFromWaveNote(OscilloscopeData, "lastFifoPos") - 1
+	NVAR fifoPos = $GetFifoPosition(panelTitle)
+	lastFifoPos = fifoPos - 1
 
 	totalOnsetDelay = DAG_GetNumericalValue(panelTitle, "setvar_DataAcq_OnsetDelayUser") \
 					  + GetValDisplayAsNum(panelTitle, "valdisp_DataAcq_OnsetDelayAuto")
 
-	fifoInStimsetPoint = lastFifoPos - totalOnsetDelay / DimDelta(OscilloscopeData, ROWS)
-	fifoInStimsetTime  = fifoInStimsetPoint * DimDelta(OscilloscopeData, ROWS)
+	fifoInStimsetPoint = lastFifoPos - totalOnsetDelay / DimDelta(ITCDataWave, ROWS)
+	fifoInStimsetTime  = fifoInStimsetPoint * DimDelta(ITCDataWave, ROWS)
 
 	numBaselineChunks = PSQ_GetNumberOfChunks(panelTitle, sweepNo, headstage, PSQ_SUB_THRESHOLD)
 
@@ -1385,15 +1384,14 @@ Function PSQ_Rheobase(panelTitle, eventType, ITCDataWave, headStage, realDataLen
 		return NaN
 	endif
 
-	// oscilloscope data holds scaled data already
-	WAVE OscilloscopeData = GetOscilloscopeWave(panelTitle)
-	lastFifoPos = GetNumberFromWaveNote(OscilloscopeData, "lastFifoPos") - 1
+	NVAR fifoPos = $GetFifoPosition(panelTitle)
+	lastFifoPos = fifoPos - 1
 
 	totalOnsetDelay = DAG_GetNumericalValue(panelTitle, "setvar_DataAcq_OnsetDelayUser") \
 					  + GetValDisplayAsNum(panelTitle, "valdisp_DataAcq_OnsetDelayAuto")
 
-	fifoInStimsetPoint = lastFifoPos - totalOnsetDelay / DimDelta(OscilloscopeData, ROWS)
-	fifoInStimsetTime  = fifoInStimsetPoint * DimDelta(OscilloscopeData, ROWS)
+	fifoInStimsetPoint = lastFifoPos - totalOnsetDelay / DimDelta(ITCDataWave, ROWS)
+	fifoInStimsetTime  = fifoInStimsetPoint * DimDelta(ITCDataWave, ROWS)
 
 	numBaselineChunks = PSQ_GetNumberOfChunks(panelTitle, sweepNo, headstage, PSQ_RHEOBASE)
 

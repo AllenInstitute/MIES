@@ -997,6 +997,9 @@ Function DAP_OneTimeCallBeforeDAQ(panelTitle, runMode)
 	NVAR raCycleID = $GetRepeatedAcquisitionCycleID(panelTitle)
 	raCycleID = DAP_GetRAAcquisitionCycleID(panelTitle)
 
+	NVAR fifoPosition = $GetFifoPosition(panelTitle)
+	fifoPosition = NaN
+
 	if(DAG_GetNumericalValue(panelTitle, "Check_DataAcq_Indexing"))
 		IDX_StoreStartFinishForIndexing(panelTitle)
 	endif
@@ -1115,6 +1118,9 @@ Function DAP_OneTimeCallAfterDAQ(panelTitle, [forcedStop])
 
 	NVAR raCycleID = $GetRepeatedAcquisitionCycleID(panelTitle)
 	raCycleID = NaN // invalidate
+
+	NVAR fifoPosition = $GetFifoPosition(panelTitle)
+	fifoPosition = NaN
 
 	// restore the selected sets before DAQ
 	if(DAG_GetNumericalValue(panelTitle, "Check_DataAcq_Indexing"))

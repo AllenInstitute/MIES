@@ -422,8 +422,6 @@ static Function DC_MakeOscilloscopeWave(panelTitle, numActiveChannels, dataAcqOr
 	SetScale/P x, 0, DimDelta(ITCDataWave, ROWS), "ms", OscilloscopeData
 	// 0/0 equals NaN, this is not accepted directly
 	WaveTransform/O/V=(0/0) setConstant OscilloscopeData
-
-	SetNumberInWaveNote(OscilloscopeData, "lastFifoPos", 0)
 End
 
 /// @brief Check if the given channel is active
@@ -753,6 +751,9 @@ static Function DC_PlaceDataInITCDataWave(panelTitle, numActiveChannels, dataAcq
 
 	DC_MakeITCDataWave(panelTitle, numActiveChannels, minSamplingInterval, dataAcqOrTP)
 	DC_MakeOscilloscopeWave(panelTitle, numActiveChannels, dataAcqOrTP)
+
+	NVAR fifoPosition = $GetFifoPosition(panelTitle)
+	fifoPosition = 0
 
 	WAVE ITCDataWave = GetITCDataWave(panelTitle)
 
