@@ -41,7 +41,8 @@
 #include ":MIES_WaveBuilder"
 
 Menu "Mies Panels", dynamic
-		"WaveBuilder", /Q,  WBP_CreateWaveBuilderPanel()
+	"WaveBuilder",            /Q, WBP_CreateWaveBuilderPanel()
+	"Load Stimsets from NWB", /Q, NWB_LoadAllStimsets()
 End
 
 static StrConstant panel                     = "WaveBuilder"

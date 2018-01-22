@@ -24,7 +24,7 @@
 #include ":..:IPNWB:IPNWB_Include"
 #include ":MIES_NeuroDataWithoutBorders"
 #include ":MIES_WaveBuilder"
-#include ":MIES_WaveBuilderPanel" menus=0
+#include ":MIES_WaveBuilderPanel"
 
 // ZeroMQ procedures
 #include ":..:ZeroMQ:procedures:ZeroMQ_Interop"
@@ -62,8 +62,6 @@ Menu "Mies Panels"
 	"Analysis Browser"        , /Q, AB_OpenAnalysisBrowser()
 	"Labnotebook Browser"     , /Q, LBN_OpenLabnotebookBrowser()
 	"TPStorage Browser"       , /Q, LBN_OpenTPStorageBrowser()
-	"Export all data into NWB", /Q, NWB_ExportWithDialog()
-	"Load Stimsets from NWB"  , /Q, NWB_LoadAllStimsets()
 End
 
 static Function AB_ResetSelectionWave()
