@@ -2,6 +2,69 @@
 #pragma rtGlobals=3		// Use modern global access method and strict wave access.
 #pragma ModuleName=AnalysisFunctionTesting
 
+static Function ChangeAnalysisFunctions()
+
+	WAVE/T wv = root:MIES:WaveBuilder:SavedStimulusSetParameters:DA:WPT_AnaFuncValid1_DA_0
+
+	wv[][%Set] = ""
+	wv[%$"Analysis pre DAQ function"][%Set]    = "ValidFunc_V1"
+	wv[%$"Analysis mid sweep function"][%Set]  = "ValidFunc_V1"
+	wv[%$"Analysis post sweep function"][%Set] = "ValidFunc_V1"
+	wv[%$"Analysis post set function"][%Set]   = "ValidFunc_V1"
+	wv[%$"Analysis post DAQ function"][%Set]   = "ValidFunc_V1"
+
+	WAVE/T wv = root:MIES:WaveBuilder:SavedStimulusSetParameters:DA:WPT_AnaFuncValid2_DA_0
+
+	wv[][%Set] = ""
+	wv[%$"Analysis pre DAQ function"][%Set]    = "ValidFunc_V2"
+	wv[%$"Analysis mid sweep function"][%Set]  = "ValidFunc_V2"
+	wv[%$"Analysis post sweep function"][%Set] = "ValidFunc_V2"
+	wv[%$"Analysis post set function"][%Set]   = "ValidFunc_V2"
+	wv[%$"Analysis post DAQ function"][%Set]   = "ValidFunc_V2"
+
+	WAVE/T wv = root:MIES:WaveBuilder:SavedStimulusSetParameters:DA:WPT_AnaFuncValidMult_DA_0
+
+	wv[][%Set] = ""
+	wv[%$"Analysis pre DAQ function"][%Set]    = "ValidMultHS_V1"
+	wv[%$"Analysis mid sweep function"][%Set]  = "ValidMultHS_V1"
+	wv[%$"Analysis post sweep function"][%Set] = "ValidMultHS_V1"
+	wv[%$"Analysis post set function"][%Set]   = "ValidMultHS_V1"
+	wv[%$"Analysis post DAQ function"][%Set]   = "ValidMultHS_V1"
+
+	WAVE/T wv = root:MIES:WaveBuilder:SavedStimulusSetParameters:TTL:WPT_NotCalledAsTTL_TTL_0
+
+	wv[][%Set] = ""
+	wv[%$"Analysis pre DAQ function"][%Set]    = "NotCalled_V1"
+	wv[%$"Analysis mid sweep function"][%Set]  = "NotCalled_V1"
+	wv[%$"Analysis post sweep function"][%Set] = "NotCalled_V1"
+	wv[%$"Analysis post set function"][%Set]   = "NotCalled_V1"
+	wv[%$"Analysis post DAQ function"][%Set]   = "NotCalled_V1"
+
+	WAVE/T wv = root:MIES:WaveBuilder:SavedStimulusSetParameters:DA:WPT_MissingAnaFunc_DA_0
+
+	wv[][%Set] = ""
+	wv[%$"Analysis pre DAQ function"][%Set]    = "IDontExist"
+	wv[%$"Analysis mid sweep function"][%Set]  = "IDontExist"
+	wv[%$"Analysis post sweep function"][%Set] = "IDontExist"
+	wv[%$"Analysis post set function"][%Set]   = "IDontExist"
+	wv[%$"Analysis post DAQ function"][%Set]   = "IDontExist"
+
+	WAVE/T wv = root:MIES:WaveBuilder:SavedStimulusSetParameters:DA:WPT_AnaFuncDiff_DA_0
+
+	wv[][%Set] = ""
+	wv[%$"Analysis pre DAQ function"][%Set]    = "preDAQ"
+	wv[%$"Analysis mid sweep function"][%Set]  = "midSweep"
+	wv[%$"Analysis post sweep function"][%Set] = "postSweep"
+	wv[%$"Analysis post set function"][%Set]   = "postSet"
+	wv[%$"Analysis post DAQ function"][%Set]   = "postDAQ"
+End
+
+Function RewriteAnalysisFunctions()
+	LoadStimsets()
+	ChangeAnalysisFunctions()
+	SaveStimsets()
+End
+
 Function/WAVE TrackAnalysisFunctionCalls([numHeadstages])
 	variable numHeadstages
 

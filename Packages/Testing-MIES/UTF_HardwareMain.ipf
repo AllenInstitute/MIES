@@ -14,6 +14,16 @@
 #include "UTF_PatchSeqSquarePulse"
 #include "UTF_PatchSeqRheobase"
 
+Function LoadStimsets()
+	string filename = GetFolder(FunctionPath("")) + "_2017_09_01_192934-compressed.nwb"
+	NWB_LoadAllStimsets(filename = filename, overwrite = 1)
+End
+
+Function SaveStimsets()
+	string filename = GetFolder(FunctionPath("")) + "_2017_09_01_192934-compressed.nwb"
+	NWB_ExportAllStimsets(overrideFilePath = filename)
+End
+
 Function run()
 //	DisableDebugOutput()
 //	EnableDebugoutput()
