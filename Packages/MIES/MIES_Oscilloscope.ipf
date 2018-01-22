@@ -457,13 +457,13 @@ Function SCOPE_UpdateOscilloscopeData(panelTitle, dataAcqOrTP, [chunk, fifoPos])
 #ifdef DEBUGGING_ENABLED
 		if(DP_DebuggingEnabledForFile(GetFile(FunctionPath(""))))
 
-		ITCDataWave[0][0] += 0
-		if(!WindowExists("ITCDataWaveTPMD"))
-			Display/N=ITCDataWaveTPMD ITCDataWave[][1]
-		endif
+			ITCDataWave[0][0] += 0
+			if(!WindowExists("ITCDataWaveTPMD"))
+				Display/N=ITCDataWaveTPMD ITCDataWave[][1]
+			endif
 
-		Cursor/W=ITCDataWaveTPMD/H=2/P A ITCDataWave first
-		Cursor/W=ITCDataWaveTPMD/H=2/P B ITCDataWave last
+			Cursor/W=ITCDataWaveTPMD/H=2/P A ITCDataWave first
+			Cursor/W=ITCDataWaveTPMD/H=2/P B ITCDataWave last
 		endif
 #endif
 
