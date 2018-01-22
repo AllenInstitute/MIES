@@ -32,7 +32,10 @@
 ///
 /// Some event types support a range of different return types which let the
 /// user decide what should happen next. See also @ref
-/// AnalysisFuncReturnTypesConstants.
+/// AnalysisFuncReturnTypesConstants. The first analysis function returning
+/// with a special value requesting a DAQ stop or preventing it from starting
+/// will immediately do so, thus subsequent analysis functions for other active
+/// headstage will not run.
 ///
 /// Value                             | Event Types | Action
 /// ----------------------------------|-------------|-------
