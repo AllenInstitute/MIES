@@ -3,25 +3,6 @@
 
 /// @file UTF_BasicHardWareTests.ipf Implement some basic tests using the ITC hardware.
 
-/// @brief Return the list of active devices
-Function/S GetDevices()
-
-#ifdef TESTS_WITH_YOKING
-	return DEVICES_YOKED
-#else
-	return DEVICE
-#endif
-End
-
-Function/S GetSingleDevice()
-
-#ifdef TESTS_WITH_YOKING
-	return StringFromList(0, DEVICES_YOKED)
-#else
-	return DEVICE
-#endif
-End
-
 /// @brief Acquire data with the given DAQSettings
 static Function AcquireData(s)
 	STRUCT DAQSettings& s
@@ -104,14 +85,14 @@ static Function AcquireData(s)
 	PGC_SetAndActivateControl(device, "DataAcquireButton")
 End
 
-Structure TestSettings
+static Structure TestSettings
 	variable numSweeps
 	variable sweepWaveType
 	WAVE/T   acquiredStimSets_HS0, acquiredStimSets_HS1 // including repetitions
 	WAVE sweepCount_HS0, sweepCount_HS1
 EndStructure
 
-Function InitTestStructure(t)
+static Function InitTestStructure(t)
 	STRUCT TestSettings &t
 
 	REQUIRE(t.numSweeps > 0)
@@ -119,7 +100,7 @@ Function InitTestStructure(t)
 	Make/FREE/N=(t.numSweeps) t.sweepCount_HS0, t.sweepCount_HS1
 End
 
-Function AllTests(t)
+static Function AllTests(t)
 	STRUCT TestSettings &t
 
 	string sweeps, configs, stimset, foundStimSet, devices, device
@@ -475,21 +456,6 @@ Function Test_RepeatSets_3()
 	AllTests(t)
 End
 
-Function ExecuteDuringITI_IGNORE(s)
-	STRUCT WMBackgroundStruct &s
-
-	string device = GetSingleDevice()
-
-	NVAR runMode = $GetTestpulseRunMode(device)
-
-	if(runMode & TEST_PULSE_DURING_RA_MOD)
-		RA_SkipSweeps(device, inf)
-		return 1
-	endif
-
-	return 0
-End
-
 Function DAQ_SkipSweepsDuringITI_SD()
 
 	string device
@@ -552,21 +518,6 @@ Function Test_SkipSweepsDuringITI_MD()
 
 		CHECK_EQUAL_VAR(runMode, DAQ_NOT_RUNNING)
 	endfor
-End
-
-Function StartTPDuringITI_IGNORE(s)
-	STRUCT WMBackgroundStruct &s
-
-	string device = GetSingleDevice()
-
-	NVAR runMode = $GetTestpulseRunMode(device)
-
-	if(runMode & TEST_PULSE_DURING_RA_MOD)
-		PGC_SetAndActivateControl(device, "StartTestPulseButton")
-		return 1
-	endif
-
-	return 0
 End
 
 Function DAQ_Abort_ITI_PressTP_SD()
@@ -715,20 +666,6 @@ Function Test_Abort_ITI_TP_A_PressTP_MD()
 		CHECK(runModeTP != TEST_PULSE_NOT_RUNNING)
 		CHECK(!(runModeTP & TEST_PULSE_DURING_RA_MOD))
 	endfor
-End
-
-Function StopAcqDuringITI_IGNORE(s)
-	STRUCT WMBackgroundStruct &s
-
-	string device = GetSingleDevice()
-	NVAR runMode = $GetTestpulseRunMode(device)
-
-	if(runMode & TEST_PULSE_DURING_RA_MOD)
-		PGC_SetAndActivateControl(device, "DataAcquireButton")
-		return 1
-	endif
-
-	return 0
 End
 
 Function DAQ_Abort_ITI_PressAcq_SD()

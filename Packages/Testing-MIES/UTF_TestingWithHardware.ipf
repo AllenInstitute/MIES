@@ -36,6 +36,8 @@ End
 
 Function ExecuteNextTestCase_IGNORE()
 
+	string list = ""
+
 	NVAR/SDFR=root: testCaseIndex
 	WAVE/T/SDFR=root: testCases
 
@@ -47,7 +49,13 @@ Function ExecuteNextTestCase_IGNORE()
 		return NaN
 	endif
 
-	Execute/P/Q "runtest(\"UTF_BasicHardwareTests.ipf;UTF_PatchSeqSubThreshold.ipf;UTF_PatchSeqSquarePulse.ipf;UTF_PatchSeqRheobase.ipf\", testCase=\"" + testCases[testCaseIndex] + "\", enableJU = 1)"
+	list = AddListItem("UTF_BasicHardwareTests.ipf", list, ";", Inf)
+	list = AddListItem("UTF_PatchSeqSubThreshold.ipf", list, ";", Inf)
+	list = AddListItem("UTF_PatchSeqSquarePulse.ipf", list, ";", Inf)
+	list = AddListItem("UTF_PatchSeqRheobase.ipf", list, ";", Inf)
+	list = AddListItem("UTF_AnalysisFunctionManagement.ipf", list, ";", Inf)
+
+	Execute/P/Q "runtest(\"" + list + "\", testCase=\"" + testCases[testCaseIndex] + "\", enableJU = 1)"
 
 	testCaseIndex += 1
 End
@@ -74,6 +82,25 @@ Function Initialize_IGNORE()
 	ITCCLoseAll2
 End
 
+/// @brief Return the list of active devices
+Function/S GetDevices()
+
+#ifdef TESTS_WITH_YOKING
+	return DEVICES_YOKED
+#else
+	return DEVICE
+#endif
+End
+
+Function/S GetSingleDevice()
+
+#ifdef TESTS_WITH_YOKING
+	return StringFromList(0, DEVICES_YOKED)
+#else
+	return DEVICE
+#endif
+End
+
 /// @brief Background function to wait until DAQ is finished.
 ///
 /// If it is finished pushes the next two, one DAQ and the corresponding `Test`, testcases to the queue
@@ -98,6 +125,59 @@ Function WaitUntilDAQDone_IGNORE(s)
 
 	ExecuteNextTestCase_IGNORE()
 	ExecuteNextTestCase_IGNORE()
+	return 1
+End
+
+Function StopAcqDuringITI_IGNORE(s)
+	STRUCT WMBackgroundStruct &s
+
+	string device = GetSingleDevice()
+	NVAR runMode = $GetTestpulseRunMode(device)
+
+	if(runMode & TEST_PULSE_DURING_RA_MOD)
+		PGC_SetAndActivateControl(device, "DataAcquireButton")
+		return 1
+	endif
+
+	return 0
+End
+
+Function StartTPDuringITI_IGNORE(s)
+	STRUCT WMBackgroundStruct &s
+
+	string device = GetSingleDevice()
+
+	NVAR runMode = $GetTestpulseRunMode(device)
+
+	if(runMode & TEST_PULSE_DURING_RA_MOD)
+		PGC_SetAndActivateControl(device, "StartTestPulseButton")
+		return 1
+	endif
+
+	return 0
+End
+
+Function ExecuteDuringITI_IGNORE(s)
+	STRUCT WMBackgroundStruct &s
+
+	string device = GetSingleDevice()
+
+	NVAR runMode = $GetTestpulseRunMode(device)
+
+	if(runMode & TEST_PULSE_DURING_RA_MOD)
+		RA_SkipSweeps(device, inf)
+		return 1
+	endif
+
+	return 0
+End
+
+Function StopAcq_IGNORE(s)
+	STRUCT WMBackgroundStruct &s
+
+	string device = GetSingleDevice()
+	PGC_SetAndActivateControl(device, "DataAcquireButton")
+
 	return 1
 End
 

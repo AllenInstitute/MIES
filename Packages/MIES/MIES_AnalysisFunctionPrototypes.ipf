@@ -33,7 +33,7 @@ End
 /// @param ITCDataWave    data wave (locked to prevent changes using `SetWaveLock`)
 /// @param headStage      active headstage index
 /// @param realDataLength number of rows in `ITCDataWave` with data, the total number of rows in `ITCDataWave` might be
-///                       higher due to alignment requirements of the data acquisition hardware
+///                       higher due to alignment requirements of the data acquisition hardware. `NaN` for #PRE_DAQ_EVENT events.
 ///
 /// @return see @ref AnalysisFunctionEventDescriptionTable
 Function AF_PROTO_ANALYSIS_FUNC_V2(panelTitle, eventType, ITCDataWave, headStage, realDataLength)
@@ -42,6 +42,5 @@ Function AF_PROTO_ANALYSIS_FUNC_V2(panelTitle, eventType, ITCDataWave, headStage
 	Wave ITCDataWave
 	variable headstage, realDataLength
 
-	// return value currently only honoured for `Pre DAQ` event
 	return 0
 End

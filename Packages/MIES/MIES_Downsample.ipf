@@ -29,6 +29,7 @@
 #include ":..:ZeroMQ:procedures:ZeroMQ_Interop"
 
 // our includes
+#include ":MIES_AnalysisFunctionProtoTypes"
 #include ":MIES_AnalysisFunctionHelpers"
 #include ":MIES_ArtefactRemoval"
 #include ":MIES_BrowserSettingsPanel"

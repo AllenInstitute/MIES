@@ -2040,9 +2040,9 @@ static Function DAP_CheckHeadStage(panelTitle, headStage, mode)
 	string panelTitle
 	variable headStage, mode
 
-	string dacWave, endWave, unit, func, info, str, ADUnit, DAUnit
+	string dacWave, endWave, unit, func, info, str, ADUnit, DAUnit, listOfAnalysisFunctions
 	variable DACchannel, ADCchannel, DAheadstage, ADheadstage, DAGain, ADGain, realMode
-	variable gain, scale, clampMode, i, valid_f1, valid_f2, ampConnState, needResetting
+	variable gain, scale, clampMode, i, ampConnState, needResetting
 	variable DAGainMCC, ADGainMCC
 	string DAUnitMCC, ADUnitMCC
 
@@ -2251,6 +2251,8 @@ static Function DAP_CheckHeadStage(panelTitle, headStage, mode)
 			SetScale/P x 0, HARDWARE_ITC_MIN_SAMPINT, "ms", stimSet
 		endif
 
+		listOfAnalysisFunctions = AFH_GetAnalysisFunctions(ANALYSIS_FUNCTION_VERSION_ALL)
+
 		if(!DAG_GetNumericalValue(panelTitle, "Check_Settings_SkipAnalysFuncs"))
 			for(i = 0; i < TOTAL_NUM_EVENTS; i += 1)
 				func = ExtractAnalysisFuncFromStimSet(stimSet, i)
@@ -2267,14 +2269,8 @@ static Function DAP_CheckHeadStage(panelTitle, headStage, mode)
 					continue
 				endif
 
-				FUNCREF AF_PROTO_ANALYSIS_FUNC_V1 f1 = $func
-				FUNCREF AF_PROTO_ANALYSIS_FUNC_V2 f2 = $func
-
-				valid_f1 = FuncRefIsAssigned(FuncRefInfo(f1))
-				valid_f2 = FuncRefIsAssigned(FuncRefInfo(f2))
-
-				if(!valid_f1 && !valid_f2) // not a valid analysis function
-					printf "(%s) The analysis function %s for stim set %s and event type \"%s\" has an invalid signature\r", panelTitle, func, dacWave, StringFromList(i, EVENT_NAME_LIST)
+				if(WhichListItem(func, listOfAnalysisFunctions) == -1) // not a valid analysis function
+					printf "(%s) The analysis function %s for stim set %s and event type \"%s\" has an invalid signature or is in an unlisted location\r", panelTitle, func, dacWave, StringFromList(i, EVENT_NAME_LIST)
 					ControlWindowToFront()
 					return 1
 				endif

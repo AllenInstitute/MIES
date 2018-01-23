@@ -741,7 +741,7 @@ End
 ///
 ///    // set properties
 ///
-///    key = PSQ_CreateLBNKey(PSQ_SUB_THRESHOLD, PSQ_FMT_LBN_SET_PASSED)
+///    key = PSQ_CreateLBNKey(PSQ_SUB_THRESHOLD, PSQ_FMT_LBN_SET_PASSED, query = 1)
 ///    setPassed = GetLastSettingIndepRAC(numericalValues, sweepNo, key, UNKNOWN_MODE)
 ///
 ///    if(setPassed)
@@ -751,19 +751,19 @@ End
 ///    endif
 ///
 ///    // single sweep properties
-///    key = PSQ_CreateLBNKey(PSQ_SUB_THRESHOLD, PSQ_FMT_LBN_SWEEP_PASS)
+///    key = PSQ_CreateLBNKey(PSQ_SUB_THRESHOLD, PSQ_FMT_LBN_SWEEP_PASS, query = 1)
 ///    sweepPassed = GetLastSettingIndep(numericalValues, sweepNo, key, UNKNOWN_MODE)
 ///
 ///    // chunk (500ms portions of the baseline) properties
-///    key = PSQ_CreateLBNKey(PSQ_SUB_THRESHOLD, PSQ_FMT_LBN_CHUNK_PASS, chunk = chunk)
+///    key = PSQ_CreateLBNKey(PSQ_SUB_THRESHOLD, PSQ_FMT_LBN_CHUNK_PASS, chunk = chunk, query = 1)
 ///    chunkPassed = GetLastSettingIndep(numericalValues, sweepNo, key, UNKNOWN_MODE)
 ///
-///    // single test properties (currently not set/queryable per chunk)
-///    key = PSQ_CreateLBNKey(PSQ_SUB_THRESHOLD, PSQ_FMT_LBN_RMS_SHORT_PASS, chunk = chunk)
+///    // single test properties
+///    key = PSQ_CreateLBNKey(PSQ_SUB_THRESHOLD, PSQ_FMT_LBN_RMS_SHORT_PASS, chunk = chunk, query = 1)
 ///    rmsShortPassed = GetLastSettingIndep(numericalValues, sweepNo, key, UNKNOWN_MODE)
-///    key = PSQ_CreateLBNKey(PSQ_SUB_THRESHOLD, PSQ_FMT_LBN_RMS_LONG_PASS, chunk = chunk)
+///    key = PSQ_CreateLBNKey(PSQ_SUB_THRESHOLD, PSQ_FMT_LBN_RMS_LONG_PASS, chunk = chunk, query = 1)
 ///    rmsLongPassed  = GetLastSettingIndep(numericalValues, sweepNo, key, UNKNOWN_MODE)
-///    key = PSQ_CreateLBNKey(PSQ_SUB_THRESHOLD, PSQ_FMT_LBN_TARGETV_PASS, chunk = chunk)
+///    key = PSQ_CreateLBNKey(PSQ_SUB_THRESHOLD, PSQ_FMT_LBN_TARGETV_PASS, chunk = chunk, query = 1)
 ///    targetVPassed  = GetLastSettingIndep(numericalValues, sweepNo, key, UNKNOWN_MODE)
 ///
 ///    // get fitted resistance from last passing sweep

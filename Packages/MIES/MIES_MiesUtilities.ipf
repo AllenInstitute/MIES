@@ -396,9 +396,49 @@ Function GetSweepColumn(labnotebookValues)
 	return 0
 End
 
+/// @defgroup LabnotebookQueryFunctions Labnotebook Query Functions
+///
+/// The labnotebook querying functions can be categorized into the following categories:
+///
+/// Return the stored settings of a *single* sweep. The functions return a
+/// wave with #LABNOTEBOOK_LAYER_COUNT rows, where the first #NUM_HEADSTAGES
+/// hold headstage dependent data and the row returned by GetIndexForHeadstageIndepData()
+/// the headstage independent data.
+/// - GetLastSetting()
+/// - GetLastSettingText()
+///
+/// Return the *headstage independent* data of a single sweep. Trimmed down
+/// versions of GetLastSetting() and GetLastSettingText() which allow to return
+/// a special default value in case the setting could not be found.
+/// - GetLastSettingIndep()
+/// - GetLastSettingTextIndep()
+///
+/// Return the data of *one* of the sweeps of a repeated acquistion cycle
+/// (RAC). The functions return only the *first* valid setting searching the
+/// sweeps from the end to the begin of the RAC.
+/// - GetLastSettingTextRAC()
+/// - GetLastSettingTextIndepRAC()
+/// - GetLastSettingIndepRAC()
+/// - GetLastSettingRAC()
+///
+/// Return the data of *all* sweeps of a repeated acquistion cycle (RAC) with the following functions:
+/// - GetLastSettingTextEachRAC()
+/// - GetLastSettingTextIndepEachRAC()
+/// - GetLastSettingIndepEachRAC()
+/// - GetLastSettingEachRAC()
+///
+/// All the above functions are concerned with querying data from the
+/// labnotebook where the sweep number is known. In case you are looking for
+/// data from an arbitrary sweep use one of the following functions:
+/// - GetLastSweepWithSetting()
+/// - GetLastSweepWithSettingText()
+
 /// @brief Return a headstage independent setting from the numerical labnotebook
 ///
 /// @return the headstage independent setting or `defValue`
+///
+/// @ingroup LabnotebookQueryFunctions
+/// @sa GetLastSetting()
 Function GetLastSettingIndep(numericalValues, sweepNo, setting, entrySourceType, [defValue])
 	Wave numericalValues
 	variable sweepNo
@@ -422,6 +462,9 @@ End
 /// @brief Return a headstage independent setting from the textual labnotebook
 ///
 /// @return the headstage independent setting or `defValue`
+///
+/// @ingroup LabnotebookQueryFunctions
+/// @sa GetLastSettingText()
 Function/S GetLastSettingTextIndep(textualValues, sweepNo, setting, entrySourceType, [defValue])
 	Wave/T textualValues
 	variable sweepNo
@@ -446,6 +489,9 @@ End
 ///        labnotebook of the sweeps in the same RA cycle
 ///
 /// @return the headstage independent setting or `defValue`
+///
+/// @ingroup LabnotebookQueryFunctions
+/// @sa GetLastSetting()
 Function GetLastSettingIndepRAC(numericalValues, sweepNo, setting, entrySourceType, [defValue])
 	Wave numericalValues
 	variable sweepNo
@@ -470,6 +516,9 @@ End
 ///        labnotebook of the sweeps in the same RA cycle
 ///
 /// @return the headstage independent setting or `defValue`
+///
+/// @ingroup LabnotebookQueryFunctions
+/// @sa GetLastSettingText()
 Function/S GetLastSettingTextIndepRAC(textualValues, sweepNo, setting, entrySourceType, [defValue])
 	Wave/T textualValues
 	variable sweepNo
@@ -490,8 +539,8 @@ Function/S GetLastSettingTextIndepRAC(textualValues, sweepNo, setting, entrySour
 	endif
 End
 
-/// @brief Returns a wave with the latest value of a setting from the history wave
-/// for a given sweep number.
+/// @brief Return a numeric wave with the latest value of a setting from the numerical
+/// labnotebook for the given sweep number.
 ///
 /// @param numericalValues numerical labnotebook
 /// @param sweepNo         sweep number
@@ -506,6 +555,9 @@ End
 ///
 /// @return a free wave with #LABNOTEBOOK_LAYER_COUNT rows. In case
 /// the setting could not be found an invalid wave reference is returned.
+///
+/// @ingroup LabnotebookQueryFunctions
+/// @sa GetLastSettingText()
 Function/WAVE GetLastSetting(numericalValues, sweepNo, setting, entrySourceType, [first, last])
 	Wave numericalValues
 	variable sweepNo
@@ -656,10 +708,8 @@ Function/WAVE GetLastSetting(numericalValues, sweepNo, setting, entrySourceType,
 	return $""
 End
 
-/// @brief Returns a wave with latest value of a setting from the textualValues wave
-/// for a given sweep number.
-///
-/// Text wave version of GetLastSetting().
+/// @brief Return a text wave with the latest value of a setting from the textual
+/// labnotebook for the given sweep number.
 ///
 /// @param textualValues   textual labnotebook
 /// @param sweepNo         sweep number
@@ -674,6 +724,9 @@ End
 ///
 /// @return a free wave with #LABNOTEBOOK_LAYER_COUNT rows. In case
 /// the setting could not be found an invalid wave reference is returned.
+///
+/// @ingroup LabnotebookQueryFunctions
+/// @sa GetLastSetting()
 Function/WAVE GetLastSettingText(textualValues, sweepNo, setting, entrySourceType, [first, last])
 	Wave/T textualValues
 	variable sweepNo
@@ -765,7 +818,8 @@ End
 
 /// @brief Return the last textual value of the sweeps in the same RA cycle
 ///
-/// @see GetLastSettingText
+/// @ingroup LabnotebookQueryFunctions
+/// @sa GetLastSettingText()
 Function/WAVE GetLastSettingTextRAC(textualValues, sweepNo, setting, entrySourceType)
 	WAVE textualValues
 	variable sweepNo
@@ -793,7 +847,8 @@ End
 
 /// @brief Return the last numerical value of the sweeps in the same RA cycle
 ///
-/// @see GetLastSetting
+/// @ingroup LabnotebookQueryFunctions
+/// @sa GetLastSetting()
 Function/WAVE GetLastSettingRAC(numericalValues, sweepNo, setting, entrySourceType)
 	WAVE numericalValues
 	variable sweepNo
@@ -819,9 +874,10 @@ Function/WAVE GetLastSettingRAC(numericalValues, sweepNo, setting, entrySourceTy
 	return $""
 End
 
-/// @brief Return the last numerical value for the given setting of *each* sweeps for a given headstage in the same RA cycle.
+/// @brief Return the last numerical value for the given setting of *each* sweeps in the same RA cycle.
 ///
-/// @see GetLastSetting
+/// @ingroup LabnotebookQueryFunctions
+/// @sa GetLastSetting()
 Function/WAVE GetLastSettingIndepEachRAC(numericalValues, sweepNo, setting, entrySourceType, [defValue])
 	WAVE numericalValues
 	variable sweepNo
@@ -844,9 +900,10 @@ Function/WAVE GetLastSettingIndepEachRAC(numericalValues, sweepNo, setting, entr
 	return result
 End
 
-/// @brief Return the last textual value for the given setting of *each* sweeps for a given headstage in the same RA cycle.
+/// @brief Return the last textual value for the given setting of *each* sweeps in the same RA cycle.
 ///
-/// @see GetLastSetting
+/// @ingroup LabnotebookQueryFunctions
+/// @sa GetLastSetting()
 Function/WAVE GetLastSettingTextIndepEachRAC(numericalValues, sweepNo, setting, entrySourceType, [defValue])
 	WAVE numericalValues
 	variable sweepNo
@@ -872,7 +929,8 @@ End
 
 /// @brief Return the last numerical value for the given setting of *each* sweeps for a given headstage in the same RA cycle.
 ///
-/// @see GetLastSetting
+/// @ingroup LabnotebookQueryFunctions
+/// @sa GetLastSetting
 Function/WAVE GetLastSettingEachRAC(numericalValues, sweepNo, setting, headstage, entrySourceType)
 	WAVE numericalValues
 	variable sweepNo
@@ -904,7 +962,8 @@ End
 
 /// @brief Return the last textual value for the given setting of *each* sweeps for a given headstage in the same RA cycle.
 ///
-/// @see GetLastSetting
+/// @ingroup LabnotebookQueryFunctions
+/// @sa GetLastSetting()
 Function/WAVE GetLastSettingTextEachRAC(numericalValues, sweepNo, setting, headstage, entrySourceType)
 	WAVE numericalValues
 	variable sweepNo
@@ -943,6 +1002,8 @@ End
 ///
 /// @return a free wave with #LABNOTEBOOK_LAYER_COUNT rows. In case
 /// the setting could not be found an invalid wave reference is returned.
+///
+/// @ingroup LabnotebookQueryFunctions
 Function/WAVE GetLastSweepWithSetting(numericalValues, setting, sweepNo)
 	WAVE numericalValues
 	string setting
@@ -980,6 +1041,8 @@ End
 ///
 /// @return a free wave with #LABNOTEBOOK_LAYER_COUNT rows. In case
 /// the setting could not be found an invalid wave reference is returned.
+///
+/// @ingroup LabnotebookQueryFunctions
 Function/WAVE GetLastSweepWithSettingText(textualValues, setting, sweepNo)
 	WAVE/T textualValues
 	string setting

@@ -1548,17 +1548,20 @@ static Function WBP_HighPassDeltaLimits()
 	endif
 End
 
-static Function WBP_ChangeWaveType(stimulusType)
+static Function WBP_ChangeWaveType()
+
 	variable stimulusType
+	string list
 
 	WAVE SegWvType = GetSegmentTypeWave()
 	WAVE WP = GetWaveBuilderWaveParam()
 
-	string list
-
 	list  = "SetVar_WaveBuilder_P3;SetVar_WaveBuilder_P4;SetVar_WaveBuilder_P5;"
 	list += "SetVar_WaveBuilder_P4_OD00;SetVar_WaveBuilder_P4_OD01;SetVar_WaveBuilder_P4_OD02;SetVar_WaveBuilder_P4_OD03;SetVar_WaveBuilder_P4_OD04;"
 	list += "SetVar_WaveBuilder_P5_DD02;SetVar_WaveBuilder_P5_DD03;SetVar_WaveBuilder_P5_DD04;SetVar_WaveBuilder_P5_DD05;SetVar_WaveBuilder_P5_DD06;"
+	list += "popup_af_preDAQEvent_S1;popup_af_midSweep_S2;popup_af_postSweep_S3;popup_af_postSet_S4;popup_af_postDAQEvent_S5;button_af_jump_to_proc"
+
+	stimulusType = WBP_GetStimulusType()
 
 	if(stimulusType == STIMULUS_TYPE_TLL)
 		// recreate SegWvType with its defaults
@@ -1583,16 +1586,27 @@ static Function WBP_ChangeWaveType(stimulusType)
 	WBP_UpdatePanelIfAllowed()
 End
 
+static Function WBP_GetStimulusType()
+
+	strswitch(GetPopupMenuString(panel, "popup_WaveBuilder_OutputType"))
+		case "TTL":
+			return STIMULUS_TYPE_TLL
+			break
+		case "DA":
+			return STIMULUS_TYPE_DA
+			break
+		default:
+			ASSERT(0, "unknown stimulus type")
+			break
+	endswitch
+End
+
 Function WBP_PopMenuProc_WaveType(pa) : PopupMenuControl
 	STRUCT WMPopupAction& pa
 
 	switch(pa.eventCode)
 		case 2:
-			if(!cmpstr(pa.popStr,"TTL"))
-				WBP_ChangeWaveType(STIMULUS_TYPE_TLL)
-			else
-				WBP_ChangeWaveType(STIMULUS_TYPE_DA)
-			endif
+			WBP_ChangeWaveType()
 			break
 	endswitch
 
@@ -2212,9 +2226,14 @@ Function WBP_PopupMenu_AnalysisFunctions(pa) : PopupMenuControl
 	return 0
 End
 
-Function WBP_AnaFuncsToWPT()
+static Function WBP_AnaFuncsToWPT()
 
 	string func
+
+	if(WBP_GetStimulusType() == STIMULUS_TYPE_TLL)
+		// don't store analysis functions for TTL
+		return NaN
+	endif
 
 	WAVE/T WPT = GetWaveBuilderWaveTextParam()
 
@@ -2233,32 +2252,7 @@ End
 /// @brief Return a list of analysis functions including NONE, usable for popup menues
 Function/S WBP_GetAnalysisFunctions()
 
-	string funcList, func
-	string funcListClean = NONE
-	variable numEntries, i, valid_f1, valid_f2
-
-	funcList  = FunctionList("!AF_PROTO_ANALYSIS_FUNC*", ";", "KIND:2,WIN:MIES_AnalysisFunctions.ipf")
-	funcList += FunctionList("!AF_PROTO_ANALYSIS_FUNC*", ";", "KIND:2,WIN:MIES_AnalysisFunctions_PatchSeq.ipf")
-	funcList += FunctionList("*", ";", "KIND:2,WIN:UserAnalysisFunctions.ipf")
-
-	numEntries = ItemsInList(funcList)
-	for(i = 0; i < numEntries; i += 1)
-		func = StringFromList(i, funcList)
-
-		// assign each function to the function reference of type AF_PROTO_ANALYSIS_FUNC_V*
-		// this allows to check if the signature of func is the same as the one of AF_PROTO_ANALYSIS_FUNC_V*
-		FUNCREF AF_PROTO_ANALYSIS_FUNC_V1 f1 = $func
-		FUNCREF AF_PROTO_ANALYSIS_FUNC_V2 f2 = $func
-
-		valid_f1 = FuncRefIsAssigned(FuncRefInfo(f1))
-		valid_f2 = FuncRefIsAssigned(FuncRefInfo(f2))
-
-		if(valid_f1 || valid_f2)
-			funcListClean = AddListItem(func, funcListClean, ";", Inf)
-		endif
-	endfor
-
-	return funcListClean
+	return AddListItem(NONE, AFH_GetAnalysisFunctions(ANALYSIS_FUNCTION_VERSION_ALL))
 End
 
 /// @brief Return a list of noise types, usable for popup menues
