@@ -3515,6 +3515,33 @@ Function/Wave GetQCWaveRef(panelTitle)
 	return wv
 End
 
+///@brief Returns a wave reference to the CoreStim Wave.  Used for completing PatchSeq functions background tasks
+///
+/// Rows:
+/// - 0: Headstage
+/// - 1: cmdID passed in from WSE
+/// - 2: tpBuffer, used to hold previous tp settings. Setting will be restored upon completion of qc function.
+///
+Function/Wave GetCoreStimWaveRef(panelTitle)
+	string panelTitle
+
+	DFREF dfr =GetDevSpecLabNBTempFolder(panelTitle)
+
+	Wave/Z/T/SDFR=dfr wv = CoreStimWave
+
+	if(WaveExists(wv))
+		return wv
+	endif
+
+	Make/T/N=(3) dfr:CoreStimWave/Wave=wv
+
+	SetDimLabel 0, 0, headstage, wv
+	SetDimLabel 0, 1, cmdID, wv
+	SetDimLabel 0, 2, tpBuffer, wv
+
+	return wv
+End
+
 /// @brief Return the data folder reference to the device specific lab notebook folder for temporary waves
 Function/DF GetDevSpecLabNBTempFolder(panelTitle)
 	   string panelTitle
