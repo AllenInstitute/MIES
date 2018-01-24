@@ -1649,6 +1649,8 @@ End
 
 /// @brief calculates the relative complement of list2 in list1
 ///
+/// Every list item of `list1` must be in `list2`.
+///
 /// also called the set-theoretic difference of list1 and list2
 /// @returns difference as list
 Function/S GetListDifference(list1, list2)
