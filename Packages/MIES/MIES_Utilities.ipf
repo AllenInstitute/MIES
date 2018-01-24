@@ -2219,9 +2219,13 @@ End
 Function FuncRefIsAssigned(funcInfo)
 	string funcInfo
 
-	ASSERT(!isEmpty(funcInfo), "Empty function info")
+	variable result
 
-	return NumberByKey("ISPROTO", funcInfo) == 0
+	ASSERT(!isEmpty(funcInfo), "Empty function info")
+	result = NumberByKey("ISPROTO", funcInfo)
+	ASSERT(IsFinite(result), "funcInfo does not look like a FuncRefInfo string")
+
+	return result == 0
 End
 
 /// @brief Return the seconds, including fractional part, since Igor Pro epoch (1/1/1904) in UTC time zone
