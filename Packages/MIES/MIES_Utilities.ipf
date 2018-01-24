@@ -905,16 +905,19 @@ Function AddEntryIntoWaveNoteAsList(wv, key, [var, str, appendCR, replaceEntry, 
 
 	ASSERT(WaveExists(wv), "missing wave")
 	ASSERT(!IsEmpty(key), "empty key")
+	ASSERT(strsearch(key, ";", 0) == -1, "key can not contain a semicolon")
 
 	if(ParamIsDefault(format))
 		formatString = "%s = %g;"
 	else
+		ASSERT(strsearch(format, ";", 0) == -1, "format can not contain a semicolon")
 		formatString = "%s = " + format + ";"
 	endif
 
 	if(!ParamIsDefault(var))
 		sprintf formattedString, formatString, key, var
 	elseif(!ParamIsDefault(str))
+		ASSERT(strsearch(str, ";", 0) == -1, "str can not contain a semicolon")
 		formattedString = key + " = " + str + ";"
 	else
 		formattedString = key + ";"
