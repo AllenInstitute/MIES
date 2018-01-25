@@ -21,6 +21,7 @@ End
 
 Function SaveStimsets()
 	string filename = GetFolder(FunctionPath("")) + "_2017_09_01_192934-compressed.nwb"
+	DeleteFile filename
 	NWB_ExportAllStimsets(overrideFilePath = filename)
 End
 
