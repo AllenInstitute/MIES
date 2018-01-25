@@ -17,6 +17,7 @@ Function AFM_CallAnalysisFunctions(panelTitle, eventType)
 	variable eventType
 
 	variable error, i, valid_f1, valid_f2, ret, DAC
+	variable realDataLength
 	string func, setName, ctrl
 
 	WAVE GuiState = GetDA_EphysGuiStateNum(panelTitle)
@@ -30,6 +31,12 @@ Function AFM_CallAnalysisFunctions(panelTitle, eventType)
 	WAVE statusHS = DAG_GetChannelState(panelTitle, CHANNEL_TYPE_HEADSTAGE)
 
 	WAVE/T analysisFunctions = GetAnalysisFunctionStorage(panelTitle)
+
+	if(eventType == PRE_DAQ_EVENT)
+		realDataLength = NaN
+	else
+		realDataLength = stopCollectionPoint
+	endif
 
 	for(i = 0; i < NUM_HEADSTAGES; i += 1)
 
@@ -82,7 +89,7 @@ Function AFM_CallAnalysisFunctions(panelTitle, eventType)
 			if(valid_f1)
 				ret = f1(panelTitle, eventType, ITCDataWave, i); AbortOnRTE
 			elseif(valid_f2)
-				ret = f2(panelTitle, eventType, ITCDataWave, i, stopCollectionPoint - 1); AbortOnRTE
+				ret = f2(panelTitle, eventType, ITCDataWave, i, realDataLength); AbortOnRTE
 			else
 				ASSERT(0, "impossible case")
 			endif
