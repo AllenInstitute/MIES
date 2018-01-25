@@ -2406,7 +2406,8 @@ End
 /// @brief Return the parameter text wave for the wave builder panel
 ///
 /// Rows:
-/// - 0: name of the custom wave loaded
+/// - 0: Name of the custom wave for #EPOCH_TYPE_CUSTOM (legacy format: wave
+///      name only, current format: absolute path including the wave name)
 /// - 1: Analysis function, pre daq
 /// - 2: Analysis function, mid sweep
 /// - 3: Analysis function, post sweep
