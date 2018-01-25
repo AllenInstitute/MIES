@@ -4,6 +4,52 @@
 
 static Function ChangeAnalysisFunctions()
 
+	WAVE/T wv = root:MIES:WaveBuilder:SavedStimulusSetParameters:DA:WPT_AnaFuncAbortPre_DA_0
+
+	wv[][%Set] = ""
+	wv[%$"Analysis pre DAQ function"][%Set]    = "AbortPreDAQ"
+
+	WAVE/T wv = root:MIES:WaveBuilder:SavedStimulusSetParameters:DA:WPT_AnaFuncDiff_DA_0
+
+	wv[][%Set] = ""
+	wv[%$"Analysis pre DAQ function"][%Set]    = "preDAQ"
+	wv[%$"Analysis mid sweep function"][%Set]  = "midSweep"
+	wv[%$"Analysis post sweep function"][%Set] = "postSweep"
+	wv[%$"Analysis post set function"][%Set]   = "postSet"
+	wv[%$"Analysis post DAQ function"][%Set]   = "postDAQ"
+
+	WAVE/T wv = root:MIES:WaveBuilder:SavedStimulusSetParameters:DA:WPT_AnaFuncInvalid1_DA_0
+
+	wv[][%Set] = ""
+	wv[%$"Analysis pre DAQ function"][%Set]    = "InvalidSignatureAndReturnType"
+	wv[%$"Analysis mid sweep function"][%Set]  = "InvalidReturnTypeAndValidSig_V1"
+	wv[%$"Analysis post sweep function"][%Set] = "InvalidSignatureAndReturnType"
+	wv[%$"Analysis post set function"][%Set]   = "InvalidSignature"
+	wv[%$"Analysis post DAQ function"][%Set]   = "InvalidSignatureAndReturnType"
+
+	WAVE/T wv = root:MIES:WaveBuilder:SavedStimulusSetParameters:DA:WPT_AnaFuncInvalid2_DA_0
+
+	wv[][%Set] = ""
+	wv[%$"Analysis pre DAQ function"][%Set]    = "InvalidSignatureAndReturnType"
+	wv[%$"Analysis mid sweep function"][%Set]  = "InvalidReturnTypeAndValidSig_V2"
+	wv[%$"Analysis post sweep function"][%Set] = "InvalidSignatureAndReturnType"
+	wv[%$"Analysis post set function"][%Set]   = "InvalidSignature"
+	wv[%$"Analysis post DAQ function"][%Set]   = "InvalidSignatureAndReturnType"
+
+	WAVE/T wv = root:MIES:WaveBuilder:SavedStimulusSetParameters:DA:WPT_AnaFuncStopMid_DA_0
+
+	wv[][%Set] = ""
+	wv[%$"Analysis mid sweep function"][%Set]  = "StopMidSweep"
+
+	WAVE/T wv = root:MIES:WaveBuilder:SavedStimulusSetParameters:DA:WPT_AnaFuncValidMult_DA_0
+
+	wv[][%Set] = ""
+	wv[%$"Analysis pre DAQ function"][%Set]    = "ValidMultHS_V1"
+	wv[%$"Analysis mid sweep function"][%Set]  = "ValidMultHS_V1"
+	wv[%$"Analysis post sweep function"][%Set] = "ValidMultHS_V1"
+	wv[%$"Analysis post set function"][%Set]   = "ValidMultHS_V1"
+	wv[%$"Analysis post DAQ function"][%Set]   = "ValidMultHS_V1"
+
 	WAVE/T wv = root:MIES:WaveBuilder:SavedStimulusSetParameters:DA:WPT_AnaFuncValid1_DA_0
 
 	wv[][%Set] = ""
@@ -22,16 +68,7 @@ static Function ChangeAnalysisFunctions()
 	wv[%$"Analysis post set function"][%Set]   = "ValidFunc_V2"
 	wv[%$"Analysis post DAQ function"][%Set]   = "ValidFunc_V2"
 
-	WAVE/T wv = root:MIES:WaveBuilder:SavedStimulusSetParameters:DA:WPT_AnaFuncValidMult_DA_0
-
-	wv[][%Set] = ""
-	wv[%$"Analysis pre DAQ function"][%Set]    = "ValidMultHS_V1"
-	wv[%$"Analysis mid sweep function"][%Set]  = "ValidMultHS_V1"
-	wv[%$"Analysis post sweep function"][%Set] = "ValidMultHS_V1"
-	wv[%$"Analysis post set function"][%Set]   = "ValidMultHS_V1"
-	wv[%$"Analysis post DAQ function"][%Set]   = "ValidMultHS_V1"
-
-	WAVE/T wv = root:MIES:WaveBuilder:SavedStimulusSetParameters:TTL:WPT_NotCalledAsTTL_TTL_0
+	WAVE/T wv = root:MIES:WaveBuilder:SavedStimulusSetParameters:TTL:WPT_AnaFuncTTLNot_TTL_0
 
 	wv[][%Set] = ""
 	wv[%$"Analysis pre DAQ function"][%Set]    = "NotCalled_V1"
@@ -40,7 +77,7 @@ static Function ChangeAnalysisFunctions()
 	wv[%$"Analysis post set function"][%Set]   = "NotCalled_V1"
 	wv[%$"Analysis post DAQ function"][%Set]   = "NotCalled_V1"
 
-	WAVE/T wv = root:MIES:WaveBuilder:SavedStimulusSetParameters:DA:WPT_MissingAnaFunc_DA_0
+	WAVE/T wv = root:MIES:WaveBuilder:SavedStimulusSetParameters:DA:WPT_AnaFuncMissing_DA_0
 
 	wv[][%Set] = ""
 	wv[%$"Analysis pre DAQ function"][%Set]    = "IDontExist"
@@ -48,15 +85,6 @@ static Function ChangeAnalysisFunctions()
 	wv[%$"Analysis post sweep function"][%Set] = "IDontExist"
 	wv[%$"Analysis post set function"][%Set]   = "IDontExist"
 	wv[%$"Analysis post DAQ function"][%Set]   = "IDontExist"
-
-	WAVE/T wv = root:MIES:WaveBuilder:SavedStimulusSetParameters:DA:WPT_AnaFuncDiff_DA_0
-
-	wv[][%Set] = ""
-	wv[%$"Analysis pre DAQ function"][%Set]    = "preDAQ"
-	wv[%$"Analysis mid sweep function"][%Set]  = "midSweep"
-	wv[%$"Analysis post sweep function"][%Set] = "postSweep"
-	wv[%$"Analysis post set function"][%Set]   = "postSet"
-	wv[%$"Analysis post DAQ function"][%Set]   = "postDAQ"
 End
 
 Function RewriteAnalysisFunctions()
@@ -533,7 +561,7 @@ static Function AFT_DAQ8()
 	STRUCT DAQSettings s
 	InitDAQSettingsFromString(s, "DAQ_MD1_RA1_IDX0_LIDX0_BKG_1")
 
-	AcquireData(s, "StimulusSetA_DA*", TTLstimset = "NotCalledAsTTL_TTL_*")
+	AcquireData(s, "StimulusSetA_DA*", TTLstimset = "AnaFuncTTLNot_TTL_*")
 End
 
 static Function AFT_Test8()
@@ -631,7 +659,7 @@ static Function AFT_DAQ10()
 	STRUCT DAQSettings s
 	InitDAQSettingsFromString(s, "DAQ_MD1_RA0_IDX0_LIDX0_BKG_1")
 
-	AcquireData(s, "MissingAnaFunc_DA*")
+	AcquireData(s, "AnaFuncMissing_DA*")
 End
 
 static Function AFT_Test10()
