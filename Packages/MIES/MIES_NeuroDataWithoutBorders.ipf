@@ -391,6 +391,7 @@ Function NWB_ExportAllStimsets([overrideFilePath])
 	ControlWindowToFront()
 
 	NWB_AppendStimset(locationID, stimsets)
+	CloseNWBFile()
 End
 
 /// @brief Export all data into NWB using compression
