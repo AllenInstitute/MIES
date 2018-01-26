@@ -153,7 +153,7 @@ static Function DB_LockToDevice(win, device)
 
 	DB_SetUserData(win, device)
 	if(windowExists(BSP_GetPanel(win)) && BSP_HasBoundDevice(win))
-		BSP_BindListBoxWaves(win)
+		BSP_DynamicStartupSettings(win)
 	endif
 
 	DB_DynamicSettingsHistory(win)
