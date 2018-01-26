@@ -69,6 +69,7 @@ Function DQS_DataAcq(panelTitle)
 		DQ_StartITCDeviceTimer(panelTitle) // starts a timer for each ITC device. Timer is used to do real time ITI timing.
 	endif
 
+	AFM_CallAnalysisFunctions(panelTitle, PRE_SWEEP_EVENT)
 	HW_StartAcq(HARDWARE_ITC_DAC, ITCDeviceIDGlobal, flags=HARDWARE_ABORT_ON_ERROR)
 	ED_MarkSweepStart(panelTitle)
 
@@ -101,6 +102,7 @@ Function DQS_BkrdDataAcq(panelTitle)
 		DQ_StartITCDeviceTimer(panelTitle) // starts a timer for each ITC device. Timer is used to do real time ITI timing.
 	endif
 
+	AFM_CallAnalysisFunctions(panelTitle, PRE_SWEEP_EVENT)
 	HW_StartAcq(HARDWARE_ITC_DAC, ITCDeviceIDGlobal, flags=HARDWARE_ABORT_ON_ERROR)
 	ED_MarkSweepStart(panelTitle)
 

@@ -11,7 +11,7 @@
 ///
 /// @sa MIES_AnalysisFunctions.ipf
 
-/// @deprecated Use AF_PROTO_ANALYSIS_FUNC_V2() instead
+/// @deprecated Use AF_PROTO_ANALYSIS_FUNC_V3() instead
 ///
 /// @param panelTitle  device
 /// @param eventType   eventType, one of @ref EVENT_TYPE_ANALYSIS_FUNCTIONS,
@@ -27,6 +27,8 @@ Function AF_PROTO_ANALYSIS_FUNC_V1(panelTitle, eventType, ITCDataWave, headStage
 	variable headstage
 End
 
+/// @deprecated Use AF_PROTO_ANALYSIS_FUNC_V3() instead
+///
 /// @param panelTitle     device
 /// @param eventType      eventType, one of @ref EVENT_TYPE_ANALYSIS_FUNCTIONS,
 ///                       always compare `eventType` with the constants, never use the current numerical value directly
@@ -35,7 +37,7 @@ End
 /// @param realDataLength number of rows in `ITCDataWave` with data, the total number of rows in `ITCDataWave` might be
 ///                       higher due to alignment requirements of the data acquisition hardware. `NaN` for #PRE_DAQ_EVENT events.
 ///
-/// @return see @ref AnalysisFunctionEventDescriptionTable
+/// @return see @ref AnalysisFunction_V3DescriptionTable
 Function AF_PROTO_ANALYSIS_FUNC_V2(panelTitle, eventType, ITCDataWave, headStage, realDataLength)
 	string panelTitle
 	variable eventType
@@ -43,4 +45,21 @@ Function AF_PROTO_ANALYSIS_FUNC_V2(panelTitle, eventType, ITCDataWave, headStage
 	variable headstage, realDataLength
 
 	return 0
+End
+
+/// @param panelTitle device
+/// @param s          analysis event structure
+///
+/// @return see @ref AnalysisFunction_V3DescriptionTable
+Function AF_PROTO_ANALYSIS_FUNC_V3(panelTitle, s)
+	string panelTitle
+	STRUCT AnalysisFunction_V3 &s
+
+	return 0
+End
+
+/// @brief Prototype function for the user supplied parameter getter functions
+///
+Function/S AF_PROTO_PARAM_GETTER_V3()
+
 End

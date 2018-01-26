@@ -2050,7 +2050,7 @@ static Function DAP_CheckHeadStage(panelTitle, headStage, mode)
 	variable DACchannel, ADCchannel, DAheadstage, ADheadstage, DAGain, ADGain, realMode
 	variable gain, scale, clampMode, i, ampConnState, needResetting
 	variable DAGainMCC, ADGainMCC
-	string DAUnitMCC, ADUnitMCC
+	string DAUnitMCC, ADUnitMCC, params, names, requestedNames, diff
 
 	if(DAP_DeviceIsUnlocked(panelTitle))
 		printf "(%s) Device is unlocked. Please lock the device.\r", panelTitle
@@ -2285,6 +2285,19 @@ static Function DAP_CheckHeadStage(panelTitle, headStage, mode)
 					printf "(%s) The event type \"%s\" for stim set %s can not be used together with foreground DAQ\r", panelTitle, StringFromList(i, EVENT_NAME_LIST), dacWave
 					ControlWindowToFront()
 					return 1
+				elseif(i == GENERIC_EVENT)
+					// check that all required user parameters are supplied
+					requestedNames = AFH_GetListOfReqAnalysisParams(func)
+					if(!IsEmpty(requestedNames))
+						params = ExtractAnalysisFunctionParams(stimSet)
+						names = AFH_GetListOfAnalysisParamNames(params)
+						diff = GetListDifference(requestedNames, names)
+						if(!IsEmpty(diff))
+							printf "(%s) The required analysis parameters requested by %s for stim set %s were not all supplied (missing are: %s)\r", panelTitle, func, dacWave, diff
+							ControlWindowToFront()
+							return 1
+						endif
+					endif
 				endif
 			endfor
 		endif
