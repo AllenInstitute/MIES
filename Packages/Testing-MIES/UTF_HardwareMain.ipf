@@ -6,6 +6,7 @@
 
 #include "UTF_AnalysisFunctionManagement"
 #include "UserAnalysisFunctions"
+#include "UTF_AnalysisFunctionParameters"
 #include "UTF_VeryBasicHardwareTests"
 #include "UTF_TestingWithHardware"
 #include "UTF_DAEphys"
@@ -35,7 +36,7 @@ Function run()
 	KillDataFolder/Z root:WaveBuilder
 	DuplicateDataFolder	root:MIES:WaveBuilder, root:WaveBuilder
 
-	RunTest("UTF_VeryBasicHardwareTests.ipf;UTF_DAEphys.ipf", enableJU = 1)
+	RunTest("UTF_VeryBasicHardwareTests.ipf;UTF_DAEphys.ipf;UTF_AnalysisFunctionParameters.ipf", enableJU = 1)
 
 #ifndef TESTS_WITH_YOKING
 
@@ -168,6 +169,10 @@ Function run()
 	list = AddListItem("AFT_Test5", list, ";", INF)
 	list = AddListItem("AFT_DAQ6", list, ";", INF)
 	list = AddListItem("AFT_Test6", list, ";", INF)
+	list = AddListItem("AFT_DAQ6a", list, ";", INF)
+	list = AddListItem("AFT_Test6a", list, ";", INF)
+	list = AddListItem("AFT_DAQ6b", list, ";", INF)
+	list = AddListItem("AFT_Test6b", list, ";", INF)
 	list = AddListItem("AFT_DAQ7", list, ";", INF)
 	list = AddListItem("AFT_Test7", list, ";", INF)
 	list = AddListItem("AFT_DAQ8", list, ";", INF)
@@ -182,6 +187,8 @@ Function run()
 	list = AddListItem("AFT_Test12", list, ";", INF)
 	list = AddListItem("AFT_DAQ13", list, ";", INF)
 	list = AddListItem("AFT_Test13", list, ";", INF)
+	list = AddListItem("AFT_DAQ14", list, ";", INF)
+	list = AddListItem("AFT_Test14", list, ";", INF)
 #endif
 
 	// initialize everything

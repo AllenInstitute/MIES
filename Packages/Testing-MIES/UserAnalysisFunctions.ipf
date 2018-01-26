@@ -113,6 +113,18 @@ Function preDAQ(panelTitle, eventType, ITCDataWave, headStage, realDataLength)
 	anaFuncTracker[eventType][headstage] += 1
 End
 
+Function preSweep(panelTitle, eventType, ITCDataWave, headStage, realDataLength)
+	string panelTitle
+	variable eventType
+	Wave ITCDataWave
+	variable headstage, realDataLength
+
+	WAVE anaFuncTracker = TrackAnalysisFunctionCalls()
+
+	CHECK(eventType >= 0 && eventType < DimSize(anaFuncTracker, ROWS))
+	anaFuncTracker[eventType][headstage] += 1
+End
+
 Function midSweep(panelTitle, eventType, ITCDataWave, headStage, realDataLength)
 	string panelTitle
 	variable eventType
@@ -188,4 +200,82 @@ Function StopMidSweep(panelTitle, eventType, ITCDataWave, headStage, realDataLen
 	anaFuncTracker[eventType][headstage] += 1
 
 	return ANALYSIS_FUNC_RET_REPURP_TIME
+End
+
+Function ValidFunc_V3(panelTitle, s)
+	string panelTitle
+	STRUCT AnalysisFunction_V3& s
+
+	CHECK_NON_EMPTY_STR(panelTitle)
+	CHECK_WAVE(s.rawDACWave, NUMERIC_WAVE)
+	CHECK_EQUAL_VAR(NumberByKey("LOCK", WaveInfo(s.rawDACWAVE, 0)), 1)
+	CHECK_EQUAL_VAR(s.headstage, 0)
+	CHECK_EQUAL_VAR(numType(s.sweepNo), 0)
+	CHECK_EQUAL_VAR(numType(s.sweepsInSet), 0)
+	CHECK_EQUAL_VAR(strlen(s.params), 0)
+
+	if(s.eventType == PRE_DAQ_EVENT)
+		CHECK_EQUAL_VAR(numType(s.lastValidRowIndex), 2)
+	else
+		CHECK(s.lastValidRowIndex >= 0 && s.lastValidRowIndex < DimSize(s.rawDACWAVE, ROWS))
+	endif
+
+	WAVE anaFuncTracker = TrackAnalysisFunctionCalls()
+
+	// check sweep number
+	switch(s.eventType)
+		case PRE_DAQ_EVENT:
+			CHECK_EQUAL_VAR(s.sweepNo, 0)
+			CHECK(!WaveExists(GetSweepWave(panelTitle, s.sweepNo)))
+			break
+		case PRE_SWEEP_EVENT:
+		case MID_SWEEP_EVENT:
+			CHECK_EQUAL_VAR(s.sweepNo, anaFuncTracker[POST_SWEEP_EVENT])
+			CHECK(!WaveExists(GetSweepWave(panelTitle, s.sweepNo)))
+			break
+		case POST_SWEEP_EVENT:
+			CHECK_EQUAL_VAR(s.sweepNo, anaFuncTracker[POST_SWEEP_EVENT])
+			CHECK_WAVE(GetSweepWave(panelTitle, s.sweepNo), NUMERIC_WAVE)
+			break
+		case POST_SET_EVENT:
+			CHECK_EQUAL_VAR(s.sweepNo, anaFuncTracker[POST_SWEEP_EVENT] - 1)
+			CHECK_WAVE(GetSweepWave(panelTitle, s.sweepNo), NUMERIC_WAVE)
+			break
+		case POST_DAQ_EVENT:
+			CHECK_EQUAL_VAR(s.sweepNo, anaFuncTracker[POST_SWEEP_EVENT] - 1)
+			CHECK_WAVE(GetSweepWave(panelTitle, s.sweepNo), NUMERIC_WAVE)
+			break
+	endswitch
+
+	// the next sweep can not exist
+	CHECK(!WaveExists(GetSweepWave(panelTitle, s.sweepNo + 1)))
+
+	// the generic event is never sent to analysis functions
+	CHECK(s.eventType >= 0 && s.eventType < TOTAL_NUM_EVENTS - 1)
+	CHECK(s.eventType >= 0 && s.eventType < DimSize(anaFuncTracker, ROWS))
+	anaFuncTracker[s.eventType] += 1
+End
+
+Function/S Params1_V3_GetParams()
+	return "MyStr;MyVar;MyWave;MyTextWave"
+End
+
+Function Params1_V3(panelTitle, s)
+	string panelTitle
+	STRUCT AnalysisFunction_V3& s
+
+	string presentParams = AFH_GetListOfAnalysisParamNames(s.params)
+	string reqParams     = AFH_GetListOfReqAnalysisParams("Params1_V3")
+
+	presentParams = SortList(presentParams)
+	reqParams = SortList(reqParams)
+
+	CHECK_EQUAL_STR(presentParams, reqParams)
+
+	WAVE anaFuncTracker = TrackAnalysisFunctionCalls()
+
+	// the generic event is never sent to analysis functions
+	CHECK(s.eventType >= 0 && s.eventType < TOTAL_NUM_EVENTS - 1)
+	CHECK(s.eventType >= 0 && s.eventType < DimSize(anaFuncTracker, ROWS))
+	anaFuncTracker[s.eventType] += 1
 End
