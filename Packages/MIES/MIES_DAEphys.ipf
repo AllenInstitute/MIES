@@ -1004,8 +1004,6 @@ Function DAP_OneTimeCallBeforeDAQ(panelTitle, runMode)
 		IDX_StoreStartFinishForIndexing(panelTitle)
 	endif
 
-	SWS_DeleteDataWaves(panelTitle)
-
 	// disable the clamp mode checkboxes of all active headstages
 	WAVE statusHS = DAG_GetChannelState(panelTitle, CHANNEL_TYPE_HEADSTAGE)
 
@@ -1791,6 +1789,8 @@ Function DAP_CheckSettings(panelTitle, mode)
 		ControlWindowToFront()
 		return 1
 	endif
+
+	SWS_DeleteDataWaves(panelTitle)
 
 	if(mode == DATA_ACQUISITION_MODE && AFM_CallAnalysisFunctions(panelTitle, PRE_DAQ_EVENT))
 		printf "%s: Pre DAQ analysis function requested an abort\r", panelTitle
