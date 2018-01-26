@@ -857,6 +857,18 @@ Function DB_CheckProc_ChangedSetting(cba) : CheckBoxControl
 	return 0
 End
 
+Function DB_CheckProc_ScaleAxes(cba) : CheckBoxControl
+	STRUCT WMCheckboxAction &cba
+
+	switch(cba.eventCode)
+		case 2: // mouse up
+			DB_GraphUpdate(cba.win)
+			break
+	endswitch
+
+	return 0
+End
+
 static Function DB_GraphUpdate(win)
 	string win
 
