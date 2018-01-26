@@ -524,6 +524,12 @@ Function/S GetSingleSweepFolderAsString(dfr, sweepNo)
 End
 
 /// @brief Return the ITC data wave
+///
+/// Rows:
+/// - data
+///
+/// Columns:
+/// - one for each active DA, AD, TTL channel (in that order)
 Function/Wave GetITCDataWave(panelTitle)
 	string panelTitle
 
