@@ -962,9 +962,10 @@ Function TI_finishInitAccessQCCheck(s)
 	return 1
 End
 
-/// @brief run the Core1 StimSet1 from the WSE, as part of the PatchSeq experiment.  
-Function TI_runCore1StimSet1(headstage, [cmdID])
+/// @brief run the Core StimSet Waves from the WSE, as part of the PatchSeq experiment.  
+Function TI_runCoreStimSet(headstage, stimName, [cmdID])
 	variable headstage
+	string stimName
 	
 	string cmdID
 	string lockedDevList
@@ -1002,7 +1003,7 @@ Function TI_runCore1StimSet1(headstage, [cmdID])
 		ListOfWavesInFolder = ReturnListOfAllStimSets(0, CHANNEL_DA_SEARCH_STRING)
 		
 		// build up the name of the stim wave
-		sprintf stimWaveName,  "PS_SubThresh_DA_%d", headstage // the wave name has the headstage appended to the end
+		sprintf stimWaveName,  "%s_%d", stimName, headstage // the wave name has the headstage appended to the end
 		
 		// find the stim wave that matches PS_SubThresh_DA_*headstageNumber*...
 		foundStimWave = ListMatch(ListOfWavesInFolder, stimWaveName)
@@ -1011,11 +1012,11 @@ Function TI_runCore1StimSet1(headstage, [cmdID])
 		
 		// make sure that PS_SubThresh_DA_* is a valid wave name
 		if(FindListItem(attStimWave, ListOfWavesInFolder) == -1)
-			print " PS_SubThresh_DA_* wave not loaded...please load and try again..."
+			print "Requested wave not loaded...please load and try again..."
 			if(!ParamIsDefault(cmdID))
 				TI_WriteAck(cmdID, 1)
 				// build up the response string
-				sprintf responseString, "core1StimSet1Result:%f", core1StimSet1Result
+				sprintf responseString, "coreStimSetResult:%f", core1StimSet1Result
 				TI_WriteAsyncResponse(cmdID, responseString)
 			endif
 			return 0
@@ -1051,21 +1052,21 @@ Function TI_runCore1StimSet1(headstage, [cmdID])
 		DQS_StartDAQSingleDevice(currentPanel)
 		
 		// start the background task
-		TI_StartBckgrdRunCore1StimSet1()
+		TI_StartBckgrdRunCoreStimSet()
 	endfor
 End
 
 /// @brief Complete the Gig Ohm Seal QC check in the background
 
-Function TI_StartBckgrdRunCore1StimSet1()
-	CtrlNamedBackground TI_finishRunCore1StimSet1, period=30, proc=TI_finishRunCore1StimSet1
-	CtrlNamedBackground TI_finishRunCore1StimSet1, start
+Function TI_StartBckgrdRunCoreStimSet()
+	CtrlNamedBackground TI_finishRunCoreStimSet, period=30, proc=TI_finishRunCoreStimSet
+	CtrlNamedBackground TI_finishRunCoreStimSet, start
 End
 
-/// @brief finish the RunCore1StimSet1 in the background
+/// @brief finish the RunCoreStimSet in the background
 ///
 /// @ingroup BackgroundFunctions
-Function TI_finishRunCore1StimSet1(s)
+Function TI_finishRunCoreStimSet(s)
 	STRUCT WMBackgroundStruct &s
 
 	string currentPanel
@@ -1104,7 +1105,11 @@ Function TI_finishRunCore1StimSet1(s)
 	
 	key = PSQ_CreateLBNKey(PSQ_SUB_THRESHOLD, PSQ_FMT_LBN_SET_PASS, query = 1)
 	setPassed = GetLastSettingIndepRAC(numericalValues, sweepNo, key, UNKNOWN_MODE)
-	print "Set Passed Value: ", setPassed
+	if (setPassed == 1)
+		print "Set Passed"
+	else
+		print "Set Failed"
+	endif
 	
 	// determine if the cmdID was provided
 	if(stringmatch(cmdID,"foobar") != 1)
