@@ -982,6 +982,7 @@ Function TI_runCoreStimSet(headstage, stimName, [cmdID])
 	variable ssResistanceVal
 	variable core1StimSet1Result
 	variable adChannel
+	variable err
 	string responseString
 
 	// get the da_ephys panel names
@@ -999,35 +1000,21 @@ Function TI_runCoreStimSet(headstage, stimName, [cmdID])
 		// first, build up the control name by using the headstage value		
 		waveSelect = GetPanelControl(headstage, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_WAVE)
 		
-		// build up the list of available wave sets
-		ListOfWavesInFolder = ReturnListOfAllStimSets(0, CHANNEL_DA_SEARCH_STRING)
-		
-		// build up the name of the stim wave
-		sprintf stimWaveName,  "%s_%d", stimName, headstage // the wave name has the headstage appended to the end
-		
-		// find the stim wave that matches PS_SubThresh_DA_*headstageNumber*...
-		foundStimWave = ListMatch(ListOfWavesInFolder, stimWaveName)
-		
-		attStimWave = ReplaceString(";", foundStimWave, "")
-		
-		// make sure that PS_SubThresh_DA_* is a valid wave name
-		if(FindListItem(attStimWave, ListOfWavesInFolder) == -1)
+		try
+			PGC_SetAndActivateControl(currentPanel, waveSelect, str = stimName + "*"); AbortOnRTE
+		catch
+			err = GetRTError(1)
 			print "Requested wave not loaded...please load and try again..."
+
 			if(!ParamIsDefault(cmdID))
 				TI_WriteAck(cmdID, 1)
 				// build up the response string
 				sprintf responseString, "coreStimSetResult:%f", core1StimSet1Result
 				TI_WriteAsyncResponse(cmdID, responseString)
 			endif
-			return 0
-		endif
 
-		// now find the index of the selected incoming wave in that list
-		incomingWaveIndex = WhichListItem(attStimWave, ListOfWavesInFolder, ";")
-		
-		// and now set the wave popup menu to that index
-		// have to add 1 since the pulldown always has -none- as option
-		PGC_SetAndActivateControl(currentPanel, waveSelect, val=incomingWaveIndex + 1)
+			return 0
+		endtry
 		
 		// Check to see if Test Pulse is already running...if not running, turn it on...
 		if(!TP_CheckIfTestpulseIsRunning(currentPanel))
@@ -1056,7 +1043,7 @@ Function TI_runCoreStimSet(headstage, stimName, [cmdID])
 	endfor
 End
 
-/// @brief Complete the Gig Ohm Seal QC check in the background
+/// @brief Complete the RunCoreStimSet in the background
 
 Function TI_StartBckgrdRunCoreStimSet()
 	CtrlNamedBackground TI_finishRunCoreStimSet, period=30, proc=TI_finishRunCoreStimSet
@@ -1112,7 +1099,7 @@ Function TI_finishRunCoreStimSet(s)
 	endif
 	
 	// determine if the cmdID was provided
-	if(stringmatch(cmdID,"foobar") != 1)
+	if(cmpstr(cmdID,"foobar") != 0)
 		// build up the response string
 		sprintf responseString, "setPassed:%f", setPassed
 		TI_WriteAsyncResponse(cmdID, responseString)
