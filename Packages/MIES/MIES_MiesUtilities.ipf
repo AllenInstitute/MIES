@@ -432,6 +432,8 @@ End
 /// data from an arbitrary sweep use one of the following functions:
 /// - GetLastSweepWithSetting()
 /// - GetLastSweepWithSettingText()
+/// - GetLastSweepWithSettingTextI()
+/// - GetLastSweepWithSettingIndep()
 
 /// @brief Return a headstage independent setting from the numerical labnotebook
 ///
@@ -1032,6 +1034,36 @@ Function/WAVE GetLastSweepWithSetting(numericalValues, setting, sweepNo)
 	return data
 End
 
+/// @brief Return the last numerical value of a headstage independent
+///        setting from the labnotebook and the sweep it was set.
+///
+/// @param[in]  numericalValues  numerical labnotebook
+/// @param[in]  setting          name of the value to search
+/// @param[out] sweepNo          sweep number the value was last set
+/// @param[in]  defValue         [optional, defaults to `NaN`] value
+///                              to return in case nothing could be found
+///
+/// @ingroup LabnotebookQueryFunctions
+Function GetLastSweepWithSettingIndep(numericalValues, setting, sweepNo, [defValue])
+	WAVE numericalValues
+	string setting
+	variable &sweepNo
+	variable defValue
+
+	if(ParamIsDefault(defValue))
+		defValue = NaN
+	endif
+
+	WAVE/Z settings = GetLastSweepWithSetting(numericalValues, setting, sweepNo)
+
+	if(WaveExists(settings))
+		return settings[GetIndexForHeadstageIndepData(numericalValues)]
+	else
+		DEBUGPRINT("Missing setting in labnotebook", str=setting)
+		return defValue
+	endif
+End
+
 /// @brief Return the last textual value of a setting from the labnotebook
 ///        and the sweep it was set.
 ///
@@ -1069,6 +1101,36 @@ Function/WAVE GetLastSweepWithSettingText(textualValues, setting, sweepNo)
 	sweepNo = str2num(textualValues[idx][GetSweepColumn(textualValues)][0])
 
 	return data
+End
+
+/// @brief Return the last textual value of a headstage independent
+///        setting from the labnotebook and the sweep it was set.
+///
+/// @param[in]  numericalValues  numerical labnotebook
+/// @param[in]  setting          name of the value to search
+/// @param[out] sweepNo          sweep number the value was last set
+/// @param[in]  defValue         [optional, defaults to an empty string] value
+///                              to return in case nothing could be found
+///
+/// @ingroup LabnotebookQueryFunctions
+Function/S GetLastSweepWithSettingTextI(numericalValues, setting, sweepNo, [defValue])
+	WAVE numericalValues
+	string setting
+	variable &sweepNo
+	string defValue
+
+	if(ParamIsDefault(defValue))
+		defValue = ""
+	endif
+
+	WAVE/T/Z settings = GetLastSweepWithSettingText(numericalValues, setting, sweepNo)
+
+	if(WaveExists(settings))
+		return settings[GetIndexForHeadstageIndepData(numericalValues)]
+	else
+		DEBUGPRINT("Missing setting in labnotebook", str=setting)
+		return defValue
+	endif
 End
 
 /// @brief Returns a list of all devices, e.g. "ITC18USB_Dev_0;..."
