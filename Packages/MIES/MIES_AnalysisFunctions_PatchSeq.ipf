@@ -1192,7 +1192,7 @@ Function PSQ_Rheobase(panelTitle, s)
 	variable DAScale, val, numSweeps, currentSweepHasSpike, setPassed
 	variable baselineQCPassed, finalDAScale, initialDAScale
 	variable numBaselineChunks, lastFifoPos, totalOnsetDelay, fifoInStimsetPoint, fifoInStimsetTime
-	variable i, ret, numSweepsWithSpikeDetection
+	variable i, ret, numSweepsWithSpikeDetection, sweepNoFound
 	string key, msg
 
 	switch(s.eventType)
@@ -1247,10 +1247,10 @@ Function PSQ_Rheobase(panelTitle, s)
 
 			WAVE numericalValues = GetLBNumericalValues(panelTitle)
 			key = PSQ_CreateLBNKey(PSQ_SQUARE_PULSE, PSQ_FMT_LBN_FINAL_SCALE, query = 1)
-			finalDAScale = GetLastSettingIndepRAC(numericalValues, s.sweepNo, key, UNKNOWN_MODE)
+			finalDAScale = GetLastSweepWithSettingIndep(numericalValues, key, sweepNoFound)
 
-			if(!IsFinite(finalDAScale))
-				printf "(%s): Could not find final DAScale value from previous analysis function.\r", panelTitle
+			if(!IsFinite(finalDAScale) || !IsValidSweepNumber(sweepNoFound))
+				printf "(%s): Could not find final DAScale value from one of the previous analysis functions.\r", panelTitle
 				if(PSQ_TestOverrideActive())
 					finalDASCale = PSQ_RB_FINALSCALE_FAKE
 				else
@@ -1273,11 +1273,12 @@ Function PSQ_Rheobase(panelTitle, s)
 			if(numSweeps == 1)
 				// query the initial DA scale from the previous sweep (which is from a different RAC)
 				key = PSQ_CreateLBNKey(PSQ_SQUARE_PULSE, PSQ_FMT_LBN_FINAL_SCALE, query = 1)
-				finalDAScale = GetLastSettingIndepRAC(numericalValues, s.sweepNo - 1, key, UNKNOWN_MODE)
+				finalDAScale = GetLastSweepWithSettingIndep(numericalValues, key, sweepNoFound)
 				if(PSQ_TestOverrideActive())
 					finalDAScale = PSQ_RB_FINALSCALE_FAKE
+				else
+					ASSERT(IsFinite(finalDAScale) && IsValidSweepNumber(sweepNoFound), "Could not find final DAScale value from previous analysis function")
 				endif
-				ASSERT(IsFinite(finalDAScale), "Could not find final DAScale value from previous analysis function")
 
 				// and set it as the initial DAScale for this RAC
 				Make/FREE/D/N=(LABNOTEBOOK_LAYER_COUNT) result = NaN
