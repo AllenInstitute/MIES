@@ -962,7 +962,9 @@ Function TI_finishInitAccessQCCheck(s)
 	return 1
 End
 
-/// @brief run the Core StimSet Waves from the WSE, as part of the PatchSeq experiment.  
+///@brief run the Core StimSet Waves from the WSE, as part of the PatchSeq experiment.
+///@param headstage		headstage to be used
+///@param stimName 		coreSetWave to be run
 Function TI_runCoreStimSet(headstage, stimName, [cmdID])
 	variable headstage
 	string stimName
@@ -980,7 +982,6 @@ Function TI_runCoreStimSet(headstage, stimName, [cmdID])
 	string ListOfWavesInFolder
 	variable incomingWaveIndex
 	variable ssResistanceVal
-	variable core1StimSet1Result
 	variable adChannel
 	variable err
 	string responseString
@@ -1008,9 +1009,7 @@ Function TI_runCoreStimSet(headstage, stimName, [cmdID])
 
 			if(!ParamIsDefault(cmdID))
 				TI_WriteAck(cmdID, 1)
-				// build up the response string
-				sprintf responseString, "coreStimSetResult:%f", core1StimSet1Result
-				TI_WriteAsyncResponse(cmdID, responseString)
+				TI_WriteAsyncResponse(cmdID, "coreStimSetResult:0")
 			endif
 
 			return 0
@@ -1036,7 +1035,7 @@ Function TI_runCoreStimSet(headstage, stimName, [cmdID])
 		endif
 		
 		// run the wave
-		DQS_StartDAQSingleDevice(currentPanel)
+		PGC_SetAndActivateControl(currentPanel,"DataAcquireButton")
 		
 		// start the background task
 		TI_StartBckgrdRunCoreStimSet()
@@ -1101,7 +1100,7 @@ Function TI_finishRunCoreStimSet(s)
 	// determine if the cmdID was provided
 	if(cmpstr(cmdID,"foobar") != 0)
 		// build up the response string
-		sprintf responseString, "setPassed:%f", setPassed
+		sprintf responseString, "coreStimSetResult:%f", setPassed
 		TI_WriteAsyncResponse(cmdID, responseString)
 	endif
 
