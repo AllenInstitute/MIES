@@ -965,6 +965,7 @@ End
 ///@brief run the Core StimSet Waves from the WSE, as part of the PatchSeq experiment.
 ///@param headstage		headstage to be used
 ///@param stimName 		coreSetWave to be run
+///@param cmdID        optional parameter...if being called from WSE, this will be present.
 Function TI_runCoreStimSet(headstage, stimName, [cmdID])
 	variable headstage
 	string stimName
