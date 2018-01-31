@@ -22,15 +22,14 @@ digraph G {
     "Start DAQ/RA" -> "Prepare DAQ Event";
     "Post Sweep Event";
     "Start DAQ/RA" -> "Post Sweep Event";
-    "Check if \"Multidevice DAQ\" is enabled";
+    "Enable \"Multidevice DAQ\"";
     "Prepare DAQ Event" -> "Check if mode is IC";
     "Prepare DAQ Event" -> "Set \"TP inserting\" to disabled";
     "Prepare DAQ Event" -> "Set \"TP during ITI\" to disabled";
     "Prepare DAQ Event" -> "Set \"ITI\" to 100ms";
-    "Prepare DAQ Event" -> "Check if \"Multidevice DAQ\" is enabled";
+    "Prepare DAQ Event" -> "Enable \"Multidevice DAQ\"";
     "All checks passed";
     "Check if mode is IC" -> "All checks passed";
-    "Check if \"Multidevice DAQ\" is enabled" -> "All checks passed";
     "Set \"TP during ITI\" to disabled";
     "Spike detected?\n(x range: pulse onset to end of sweep\ny condition: max above 10mV)\nStore result in labnotebook";
     "Post Sweep Event" -> "Spike detected?\n(x range: pulse onset to end of sweep\ny condition: max above 10mV)\nStore result in labnotebook";

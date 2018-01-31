@@ -27,16 +27,14 @@ digraph G {
     "Start DAQ/RA" -> "Post Set Event";
     "Start DAQ/RA" -> "Post Sweep Event";
     "Set \"TP during ITI\"";
-    "Check if Autobias is enabled";
-    "Check if \"Multidevice DAQ\" is enabled";
+    "Enable \"Autobias\"";
+    "Enable \"Multidevice DAQ\"";
     "Valid Autobias voltage (finite and non-zero)";
-    "Prepare DAQ Event" -> "Check if Autobias is enabled";
+    "Prepare DAQ Event" -> "Enable \"Autobias\"";
     "Prepare DAQ Event" -> "Set \"TP during ITI\"";
     "Prepare DAQ Event" -> "Valid Autobias voltage (finite and non-zero)";
-    "Prepare DAQ Event" -> "Check if \"Multidevice DAQ\" is enabled";
+    "Prepare DAQ Event" -> "Enable \"Multidevice DAQ\"";
     "All checks passed";
-    "Check if Autobias is enabled" -> "All checks passed";
-    "Check if \"Multidevice DAQ\" is enabled" -> "All checks passed";
     "Set \"TP during ITI\"";
     "Valid Autobias voltage (finite and non-zero)" -> "All checks passed";
     "Mark set as failed if it has not yet passed";
@@ -74,9 +72,8 @@ digraph G {
     "Check target voltage [2]" -> "Mark chunk as passed/failed [2]";
     "Mark chunk as passed/failed [2]" -> "Grab next completely acquired chunk\n (500ms pre/50ms post) of stimset baseline"  [label="Failed"];
     "Mark chunk as passed/failed [2]" -> "Mark BL QC as passed"  [label="Passed"];
-    "Check if \"ITI\" is 4s";
-    "Check if \"ITI\" is 4s" -> "All checks passed";
-    "Prepare DAQ Event" -> "Check if \"ITI\" is 4s";
+    "Set \"ITI\" to 4s";
+    "Prepare DAQ Event" -> "Set \"ITI\" to 4s";
     "Search for final DAScale in one of the existing sweeps";
     "Prepare DAQ Event" -> "Search for final DAScale in one of the existing sweeps";
     "Search for final DAScale in one of the existing sweeps" -> "Abort"  [label="Not found"];
@@ -95,7 +92,6 @@ digraph G {
     "Difference to initial DAScale larger than 60pA?" -> "Mark set as failed"  [label="Yes"];
     "Mark set as failed" -> "Skip to end of Set";
     "Store final DAScale of last sweep\n from previous RAC as initial DAScale" -> "BL QC passed? [2]";
-    "Check if \"Repeat Sets\" is 1";
-    "Prepare DAQ Event" -> "Check if \"Repeat Sets\" is 1";
-    "Check if \"Repeat Sets\" is 1" -> "All checks passed";
+    "Set \"Repeat Sets\" to 1";
+    "Prepare DAQ Event" -> "Set \"Repeat Sets\" to 1";
 }

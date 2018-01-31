@@ -825,19 +825,9 @@ Function PSQ_SubThreshold(panelTitle, s)
 		case PRE_DAQ_EVENT:
 			DAScalesIndex[s.headstage] = 0
 
-			if(!DAG_GetNumericalValue(panelTitle, "check_Settings_ITITP"))
-				printf "(%s): TP during ITI must be checked\r", panelTitle
-				ControlWindowToFront()
-				return 1
-			elseif(!DAG_GetNumericalValue(panelTitle, "check_DataAcq_AutoBias"))
-				printf "(%s): Auto Bias must be checked\r", panelTitle
-				ControlWindowToFront()
-				return 1
-			elseif(!DAG_GetNumericalValue(panelTitle, "check_Settings_MD"))
-				printf "(%s): Please check \"Multi Device\" mode.\r", panelTitle
-				ControlWindowToFront()
-				return 1
-			endif
+			PGC_SetAndActivateControl(panelTitle, "check_DataAcq_AutoBias", val = 1)
+			PGC_SetAndActivateControl(panelTitle, "check_Settings_ITITP", val = 1)
+			PGC_SetAndActivateControl(panelTitle, "check_Settings_MD", val = 1)
 
 			WAVE statusHS = DAG_GetChannelState(panelTitle, CHANNEL_TYPE_HEADSTAGE)
 			if(sum(statusHS) != 1)
@@ -1063,12 +1053,6 @@ Function PSQ_SquarePulse(panelTitle, s)
 
 	switch(s.eventType)
 		case PRE_DAQ_EVENT:
-			if(!GetCheckBoxState(panelTitle, "check_Settings_MD"))
-				printf "(%s): Please check \"Multi Device\" mode.\r", panelTitle
-				ControlWindowToFront()
-				return 1
-			endif
-
 			WAVE statusHS = DAG_GetChannelState(panelTitle, CHANNEL_TYPE_HEADSTAGE)
 			if(sum(statusHS) != 1)
 				printf "(%s) Analysis function only supports one headstage.\r", panelTitle
@@ -1076,6 +1060,7 @@ Function PSQ_SquarePulse(panelTitle, s)
 				return 1
 			endif
 
+			PGC_SetAndActivateControl(panelTitle, "check_Settings_MD", val = 1)
 			PGC_SetAndActivateControl(panelTitle, "check_Settings_ITITP", val = 0)
 			PGC_SetAndActivateControl(panelTitle, "Check_Settings_InsertTP", val = 0)
 			PGC_SetAndActivateControl(panelTitle, "Check_DataAcq_Get_Set_ITI", val = 1)
@@ -1197,16 +1182,15 @@ Function PSQ_Rheobase(panelTitle, s)
 
 	switch(s.eventType)
 		case PRE_DAQ_EVENT:
+			PGC_SetAndActivateControl(panelTitle, "SetVar_DataAcq_ITI", val = 4)
+			PGC_SetAndActivateControl(panelTitle, "SetVar_DataAcq_SetRepeats", val = 1)
+			PGC_SetAndActivateControl(panelTitle, "check_DataAcq_AutoBias", val = 1)
+			PGC_SetAndActivateControl(panelTitle, "check_Settings_MD", val = 1)
+			PGC_SetAndActivateControl(panelTitle, "check_Settings_ITITP", val = 1)
+			PGC_SetAndActivateControl(panelTitle, "Check_Settings_InsertTP", val = 1)
+
 			if(DAG_GetHeadstageMode(panelTitle, s.headstage) != I_CLAMP_MODE)
 				printf "(%s) Clamp mode must be current clamp.\r", panelTitle
-				ControlWindowToFront()
-				return 1
-			elseif(!DAG_GetNumericalValue(panelTitle, "check_DataAcq_AutoBias"))
-				printf "(%s): Auto Bias must be checked\r", panelTitle
-				ControlWindowToFront()
-				return 1
-			elseif(!DAG_GetNumericalValue(panelTitle, "check_Settings_MD"))
-				printf "(%s): Please check \"Multi Device\" mode.\r", panelTitle
 				ControlWindowToFront()
 				return 1
 			endif
@@ -1225,25 +1209,6 @@ Function PSQ_Rheobase(panelTitle, s)
 				ControlWindowToFront()
 				return 1
 			endif
-
-			val = DAG_GetNumericalValue(panelTitle, "SetVar_DataAcq_ITI")
-
-			if(!CheckIfClose(val, 4))
-				printf "(%s): ITI must be 4s.\r", panelTitle
-				ControlWindowToFront()
-				return 1
-			endif
-
-			val = DAG_GetNumericalValue(panelTitle, "SetVar_DataAcq_SetRepeats")
-
-			if(!CheckIfClose(val, 1))
-				printf "(%s): Repeat Sets must be 1.\r", panelTitle
-				ControlWindowToFront()
-				return 1
-			endif
-
-			PGC_SetAndActivateControl(panelTitle, "check_Settings_ITITP", val = 1)
-			PGC_SetAndActivateControl(panelTitle, "Check_Settings_InsertTP", val = 1)
 
 			WAVE numericalValues = GetLBNumericalValues(panelTitle)
 			key = PSQ_CreateLBNKey(PSQ_SQUARE_PULSE, PSQ_FMT_LBN_FINAL_SCALE, query = 1)
