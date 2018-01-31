@@ -79,6 +79,11 @@ Function/S OVS_GetSweepSelectionChoices(win)
 	string win
 
 	DFREF dfr = OVS_GetFolder(win)
+
+	if(!DataFolderExistsDFR(dfr))
+		return NONE
+	endif
+
 	WAVE/T sweepSelChoices = GetOverlaySweepSelectionChoices(dfr)
 
 	Duplicate/FREE/R=[][][0]/T sweepSelChoices, sweepSelectionChoicesStimSets

@@ -140,7 +140,7 @@ End
 /// @brief dynamic settings for panel initialization
 ///
 /// @param mainPanel 	mainWindow panel name
-static Function BSP_DynamicStartupSettings(mainPanel)
+Function BSP_DynamicStartupSettings(mainPanel)
 	string mainPanel
 
 	variable sweepNo

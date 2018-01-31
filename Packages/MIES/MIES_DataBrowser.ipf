@@ -153,7 +153,7 @@ static Function DB_LockToDevice(win, device)
 
 	DB_SetUserData(win, device)
 	if(windowExists(BSP_GetPanel(win)) && BSP_HasBoundDevice(win))
-		BSP_BindListBoxWaves(win)
+		BSP_DynamicStartupSettings(win)
 	endif
 
 	DB_DynamicSettingsHistory(win)
@@ -851,6 +851,18 @@ Function DB_CheckProc_ChangedSetting(cba) : CheckBoxControl
 			endswitch
 
 			DB_UpdateSweepPlot(win)
+			break
+	endswitch
+
+	return 0
+End
+
+Function DB_CheckProc_ScaleAxes(cba) : CheckBoxControl
+	STRUCT WMCheckboxAction &cba
+
+	switch(cba.eventCode)
+		case 2: // mouse up
+			DB_GraphUpdate(cba.win)
 			break
 	endswitch
 
