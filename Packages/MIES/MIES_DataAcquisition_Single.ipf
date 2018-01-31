@@ -20,37 +20,29 @@ Function DQS_StartDAQSingleDevice(panelTitle, [useBackground])
 	string panelTitle
 	variable useBackground
 
-	NVAR dataAcqRunMode = $GetDataAcqRunMode(panelTitle)
+	ASSERT(WhichListItem(GetRTStackInfo(2), DAQ_ALLOWED_FUNCTIONS) != -1, \
+		"Calling this function directly is not supported, please use PGC_SetAndActivateControl.")
 
-	if(dataAcqRunMode == DAQ_NOT_RUNNING)
-
-		AbortOnValue DAP_CheckSettings(panelTitle, DATA_ACQUISITION_MODE),1
-
-		TP_StopTestPulse(panelTitle)
-
-		if(ParamIsDefault(useBackground))
-			useBackground = DAG_GetNumericalValue(panelTitle, "Check_Settings_BackgrndDataAcq")
-		else
-			useBackground = !!useBackground
-		endif
-
-		DAP_OneTimeCallBeforeDAQ(panelTitle, useBackground == 1 ? DAQ_BG_SINGLE_DEVICE : DAQ_FG_SINGLE_DEVICE)
-
-		try
-			DC_ConfigureDataForITC(panelTitle, DATA_ACQUISITION_MODE)
-		catch
-			// we need to undo the earlier one time call only
-			DAP_OneTimeCallAfterDAQ(panelTitle, forcedStop = 1)
-			return NaN
-		endtry
-
-		if(useBackground)
-			DQS_BkrdDataAcq(panelTitle)
-		else
-			DQS_DataAcq(panelTitle)
-		endif
+	if(ParamIsDefault(useBackground))
+		useBackground = DAG_GetNumericalValue(panelTitle, "Check_Settings_BackgrndDataAcq")
 	else
-		DQ_StopDAQ(panelTitle)
+		useBackground = !!useBackground
+	endif
+
+	DAP_OneTimeCallBeforeDAQ(panelTitle, useBackground == 1 ? DAQ_BG_SINGLE_DEVICE : DAQ_FG_SINGLE_DEVICE)
+
+	try
+		DC_ConfigureDataForITC(panelTitle, DATA_ACQUISITION_MODE)
+	catch
+		// we need to undo the earlier one time call only
+		DAP_OneTimeCallAfterDAQ(panelTitle, forcedStop = 1)
+		return NaN
+	endtry
+
+	if(useBackground)
+		DQS_BkrdDataAcq(panelTitle)
+	else
+		DQS_DataAcq(panelTitle)
 	endif
 End
 
