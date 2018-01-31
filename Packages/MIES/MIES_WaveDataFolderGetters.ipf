@@ -1060,6 +1060,14 @@ static Function SetSweepSettingsDimLabels(wv)
 	SetDimLabel COLS, 31, $PULSE_TO_PULSE_LENGTH_KEY     , wv
 	SetDimLabel COLS, 32, $RA_ACQ_CYCLE_ID_KEY           , wv
 	SetDimLabel COLS, 33, $"Stim Wave Checksum"          , wv
+	SetDimLabel COLS, 34, $"Multi Device mode"           , wv
+	SetDimLabel COLS, 35, $"Background Testpulse"        , wv
+	SetDimLabel COLS, 36, $"Background DAQ"              , wv
+	SetDimLabel COLS, 37, $"Sampling interval multiplier", wv
+	SetDimLabel COLS, 38, $"TP buffer size"              , wv
+	SetDimLabel COLS, 39, $"TP during ITI"               , wv
+	SetDimLabel COLS, 40, $"Amplifier change via I=0"    , wv
+	SetDimLabel COLS, 41, $"Skip analysis functions"     , wv
 End
 
 /// @brief Set dimension labels for GetSweepSettingsTextKeyWave() and
@@ -1105,7 +1113,7 @@ End
 Function/Wave GetSweepSettingsWave(panelTitle)
 	string panelTitle
 
-	variable versionOfNewWave = 10
+	variable versionOfNewWave = 11
 	string newName = "sweepSettingsNumericValues"
 	DFREF newDFR = GetDevSpecLabNBTempFolder(panelTitle)
 
@@ -1120,9 +1128,9 @@ Function/Wave GetSweepSettingsWave(panelTitle)
 	if(ExistsWithCorrectLayoutVersion(wv, versionOfNewWave))
 		return wv
 	elseif(WaveExists(wv))
-		Redimension/N=(-1, 34, LABNOTEBOOK_LAYER_COUNT) wv
+		Redimension/N=(-1, 42, LABNOTEBOOK_LAYER_COUNT) wv
 	else
-		Make/N=(1, 34, LABNOTEBOOK_LAYER_COUNT) newDFR:$newName/Wave=wv
+		Make/N=(1, 42, LABNOTEBOOK_LAYER_COUNT) newDFR:$newName/Wave=wv
 	endif
 
 	wv = NaN
@@ -1180,6 +1188,14 @@ End
 /// - 33: Stim Wave checksum (can be used to disambiguate cases
 ///                           where two stimsets are named the same
 ///                           but have different contents)
+/// - 34: Multi Device mode
+/// - 35: Background Testpulse
+/// - 36: Background DAQ
+/// - 37: Sampling interval multiplier
+/// - 38: TP buffer size
+/// - 39: TP during ITI
+/// - 40: Amplifier change via I=0
+/// - 41: Skip analysis functions
 Function/Wave GetSweepSettingsKeyWave(panelTitle)
 	string panelTitle
 
@@ -1198,9 +1214,9 @@ Function/Wave GetSweepSettingsKeyWave(panelTitle)
 	if(ExistsWithCorrectLayoutVersion(wv, versionOfNewWave))
 		return wv
 	elseif(WaveExists(wv))
-		Redimension/N=(-1, 34) wv
+		Redimension/N=(-1, 42) wv
 	else
-		Make/T/N=(3, 34) newDFR:$newName/Wave=wv
+		Make/T/N=(3, 42) newDFR:$newName/Wave=wv
 	endif
 
 	wv = ""
@@ -1344,6 +1360,38 @@ Function/Wave GetSweepSettingsKeyWave(panelTitle)
 	wv[%Parameter][33] = "Stim Wave checksum"
 	wv[%Units][33]     = ""
 	wv[%Tolerance][33] = "1"
+
+	wv[%Parameter][34] = "Multi Device mode"
+	wv[%Units][34]     = "On/Off"
+	wv[%Tolerance][34] = LABNOTEBOOK_NO_TOLERANCE
+
+	wv[%Parameter][35] = "Background Testpulse"
+	wv[%Units][35]     = "On/Off"
+	wv[%Tolerance][35] = LABNOTEBOOK_NO_TOLERANCE
+
+	wv[%Parameter][36] = "Background DAQ"
+	wv[%Units][36]     = "On/Off"
+	wv[%Tolerance][36] = LABNOTEBOOK_NO_TOLERANCE
+
+	wv[%Parameter][37] = "Sampling interval multiplier"
+	wv[%Units][37]     = "a. u."
+	wv[%Tolerance][37] = "1"
+
+	wv[%Parameter][38] = "TP buffer size"
+	wv[%Units][38]     = "a. u."
+	wv[%Tolerance][38] = "1"
+
+	wv[%Parameter][39] = "TP during ITI"
+	wv[%Units][39]     = "On/Off"
+	wv[%Tolerance][39] = LABNOTEBOOK_NO_TOLERANCE
+
+	wv[%Parameter][40] = "Amplifier change via I=0"
+	wv[%Units][40]     = "On/Off"
+	wv[%Tolerance][40] = LABNOTEBOOK_NO_TOLERANCE
+
+	wv[%Parameter][41] = "Skip analysis functions"
+	wv[%Units][41]     = "On/Off"
+	wv[%Tolerance][41] = LABNOTEBOOK_NO_TOLERANCE
 
 	SetSweepSettingsDimLabels(wv)
 	SetWaveVersion(wv, versionOfNewWave)
