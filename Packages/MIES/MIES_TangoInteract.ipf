@@ -597,7 +597,7 @@ Function TI_finishBaselineQCCheck(s)
 
 	// See if we pass the baseline QC
 	if (abs(baselineAverage) < 100.0)
-		DQS_StartDAQSingleDevice(currentPanel)
+		PGC_SetAndActivateControl(currentPanel, "DataAcquireButton")
 		qcResult = baselineAverage
 	endif
 	
@@ -771,7 +771,7 @@ Function TI_runElectrodeDriftQC(headstage, expTime, [cmdID])
 		// now start the sweep process
 		print "pushing the start button..."
 		// now start the sweep process
-		DQS_StartDAQSingleDevice(currentPanel)
+		PGC_SetAndActivateControl(currentPanel, "DataAcquireButton")
 	endfor
 	
 	// determine if the cmdID was provided
@@ -945,7 +945,7 @@ Function TI_finishInitAccessQCCheck(s)
 	endif
 
 	// and now run the EXTPBREAKN wave so that things are saved into the data record
-	DQS_StartDAQSingleDevice(currentPanel)
+	PGC_SetAndActivateControl(currentPanel, "DataAcquireButton")
 
 	print "qcResult: ", qcResult
 
@@ -1233,7 +1233,7 @@ Function/S TI_runAdaptiveStim(stimWaveName, initScaleFactor, scaleFactor, thresh
 		// put the init Scale factor where it needs to go
 		PGC_SetAndActivateControl(currentPanel, scaleWidgetName, val = initScaleFactor)
 
-		DQS_StartDAQSingleDevice(currentPanel)
+		PGC_SetAndActivateControl(currentPanel, "DataAcquireButton")
 	endfor
 
 	// determine if the cmdID was provided
@@ -1386,7 +1386,7 @@ Function TI_finishGigOhmSealQCCheck(s)
 	try
 		if(ssResistanceVal > 1000)  // ssResistance value is in MOhms
 			// and now run the EXTPCIIATT wave so that things are saved into the data record	
-			DQS_StartDAQSingleDevice(currentPanel)
+			PGC_SetAndActivateControl(currentPanel, "DataAcquireButton")
 			qcResult = ssResistanceVal
 		else
 			print "Below QC threshold...will repeat QC test..."
@@ -1401,7 +1401,7 @@ Function TI_finishGigOhmSealQCCheck(s)
 			qcResult = ssResistanceVal
 		endif
 
-		DQS_StartDAQSingleDevice(currentPanel) // Run the EXTPCIIATT wave so that things are saved into the data record
+		PGC_SetAndActivateControl(currentPanel, "DataAcquireButton") // Run the EXTPCIIATT wave so that things are saved into the data record
 	endtry
 	
 	print "qcResult: ", qcResult
@@ -1538,7 +1538,7 @@ Function/S TI_runBracketingFunction(stimWaveName, coarseScaleFactor, fineScaleFa
 		// make sure the analysisResult is set to 0
 		analysisSettingsWave[headstage][%PSAResult] = "0"
 
-		DQS_StartDAQSingleDevice(currentPanel)
+		PGC_SetAndActivateControl(currentPanel, "DataAcquireButton")
 	endfor
 	
 	// determine if the cmdID was provided
@@ -1604,7 +1604,7 @@ Function TI_runStimWave(stimWaveName, scaleFactor, headstage, [cmdID])
 		
 		// put the scale in the right place 
 		PGC_SetAndActivateControl(currentPanel, scaleWidgetName, val = scaleFactor)
-		DQS_StartDAQSingleDevice(currentPanel)
+		PGC_SetAndActivateControl(currentPanel, "DataAcquireButton")
 	endfor
 	
 	// determine if the cmdID was provided
@@ -1706,7 +1706,7 @@ Function TI_runStopStart([cmdID])
 
 		// pop the itc panel window to the front
 		DoWindow /F $currentPanel
-		DQS_StartDAQSingleDevice(currentPanel)
+		PGC_SetAndActivateControl(currentPanel, "DataAcquireButton")
 	endfor
 
 	// determine if the cmdID was provided
