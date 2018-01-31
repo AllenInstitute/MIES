@@ -4,13 +4,18 @@
 /// @file UTF_BasicHardWareTests.ipf Implement some basic tests using the ITC hardware.
 
 /// @brief Acquire data with the given DAQSettings
-static Function AcquireData(s)
+static Function AcquireData(s, [postInitializeFunc])
 	STRUCT DAQSettings& s
+	FUNCREF CALLABLE_PROTO postInitializeFunc
 
 	string unlockedPanelTitle, devices, device
 	variable i, numEntries
 
 	Initialize_IGNORE()
+
+	if(!ParamIsDefault(postInitializeFunc))
+		postInitializeFunc()
+	endif
 
 	devices = GetDevices()
 
@@ -812,4 +817,57 @@ Function Test_Abort_ITI_TP_A_PressAcq_MD()
 		CHECK(runModeTP != TEST_PULSE_NOT_RUNNING)
 		CHECK(!(runModeTP & TEST_PULSE_DURING_RA_MOD))
 	endfor
+End
+
+static Function SetSingleDeviceDAQ_IGNORE()
+	WAVE/T wv = root:MIES:WaveBuilder:SavedStimulusSetParameters:DA:WPT_StimulusSetA_DA_0
+	wv[][%Set] = ""
+	wv[%$"Analysis pre DAQ function"][%Set] = "ChangeToSingleDeviceDAQ"
+End
+
+Function DAQ_ChangeToSingleDeviceDAQ()
+
+	STRUCT DAQSettings s
+	InitDAQSettingsFromString(s, "DAQ_MD1_RA0_IDX0_LIDX0_BKG_1_RES_1")
+	AcquireData(s, postInitializeFunc=SetSingleDeviceDAQ_IGNORE)
+End
+
+Function Test_ChangeToSingleDeviceDAQ()
+	string device
+	variable sweepNo, multiDeviceMode
+
+	device = GetSingleDevice()
+
+	CHECK_EQUAL_VAR(GetCheckBoxState(device, "check_Settings_MD"), CHECKBOX_UNSELECTED)
+
+	sweepNo = AFH_GetLastSweepAcquired(device)
+	WAVE numericalValues = GetLBNumericalValues(device)
+	multiDeviceMode = GetLastSettingIndep(numericalValues, sweepNo, "Multi device mode", DATA_ACQUISITION_MODE)
+	CHECK_EQUAL_VAR(multiDeviceMode, 0)
+End
+
+static Function SetMultiDeviceDAQ_IGNORE()
+	WAVE/T wv = root:MIES:WaveBuilder:SavedStimulusSetParameters:DA:WPT_StimulusSetA_DA_0
+	wv[][%Set] = ""
+	wv[%$"Analysis pre DAQ function"][%Set] = "ChangeToMultiDeviceDAQ"
+End
+
+Function DAQ_ChangeToMultiDeviceDAQ()
+	STRUCT DAQSettings s
+	InitDAQSettingsFromString(s, "DAQ_MD0_RA0_IDX0_LIDX0_BKG_1_RES_1")
+	AcquireData(s, postInitializeFunc=SetMultiDeviceDAQ_IGNORE)
+End
+
+Function Test_ChangeToMultiDeviceDAQ()
+	string device
+	variable sweepNo, multiDeviceMode
+
+	device = GetSingleDevice()
+
+	CHECK_EQUAL_VAR(GetCheckBoxState(device, "check_Settings_MD"), CHECKBOX_SELECTED)
+
+	sweepNo = AFH_GetLastSweepAcquired(device)
+	WAVE numericalValues = GetLBNumericalValues(device)
+	multiDeviceMode = GetLastSettingIndep(numericalValues, sweepNo, "Multi device mode", DATA_ACQUISITION_MODE)
+	CHECK_EQUAL_VAR(multiDeviceMode, 1)
 End
