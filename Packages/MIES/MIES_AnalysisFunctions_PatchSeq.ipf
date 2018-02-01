@@ -657,7 +657,7 @@ static Function/WAVE PSQ_SearchForSpikes(panelTitle, type, sweepWave, headstage,
 
 	variable level, first, last, overrideValue
 
-	Make/FREE/D/N=(LABNOTEBOOK_LAYER_COUNT) spikeDetection = 0
+	Make/FREE/D/N=(LABNOTEBOOK_LAYER_COUNT) spikeDetection = (p == headstage ? 0 : NaN)
 
 	WAVE singleDA = AFH_ExtractOneDimDataFromSweep(panelTitle, sweepWave, headstage, ITC_XOP_CHANNEL_TYPE_DAC)
 	level = WaveMin(singleDA, totalOnsetDelay, inf) + 0.1 * (WaveMax(singleDA, totalOnsetDelay, inf) - WaveMin(singleDA, totalOnsetDelay, inf))
