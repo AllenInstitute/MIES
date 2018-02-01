@@ -1154,8 +1154,8 @@ Function DAP_ButtonProc_AcquireData(ba) : ButtonControl
 			NVAR dataAcqRunMode = $GetDataAcqRunMode(panelTitle)
 
 			if(dataAcqRunMode == DAQ_NOT_RUNNING)
-				AbortOnValue DAP_CheckSettings(panelTitle, DATA_ACQUISITION_MODE), 1
 				TP_StopTestPulse(panelTitle)
+				AbortOnValue DAP_CheckSettings(panelTitle, DATA_ACQUISITION_MODE), 1
 
 				if(DAG_GetNumericalValue(panelTitle, "check_Settings_MD"))
 					DQM_StartDAQMultiDevice(panelTitle)
