@@ -962,6 +962,152 @@ Function TI_finishInitAccessQCCheck(s)
 	return 1
 End
 
+///@brief run the Core StimSet Waves from the WSE, as part of the PatchSeq experiment.
+///@param headstage		headstage to be used
+///@param stimName 		coreSetWave to be run
+///@param cmdID        optional parameter...if being called from WSE, this will be present.
+Function TI_runCoreStimSet(headstage, stimName, [cmdID])
+	variable headstage
+	string stimName
+	
+	string cmdID
+	string lockedDevList
+	variable noLockedDevs
+	variable n
+	string currentPanel
+	string waveSelect 
+	string stimWaveName		
+	string foundStimWave
+	string attStimWave
+	variable baselineValue
+	string ListOfWavesInFolder
+	variable incomingWaveIndex
+	variable ssResistanceVal
+	variable adChannel
+	variable err
+	string responseString
+
+	// get the da_ephys panel names
+	lockedDevList = GetListOfLockedDevices()
+	noLockedDevs = ItemsInList(lockedDevList)
+	
+	for(n = 0; n<noLockedDevs; n+= 1)
+		currentPanel = StringFromList(n, lockedDevList)
+		DFREF dfr = GetDeviceTestPulse(currentPanel)
+		
+		// pop the itc panel window to the front
+		DoWindow /F $currentPanel
+		
+		// push the waveSet to the ephys panel
+		// first, build up the control name by using the headstage value		
+		waveSelect = GetPanelControl(headstage, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_WAVE)
+		
+		try
+			PGC_SetAndActivateControl(currentPanel, waveSelect, str = stimName + "*"); AbortOnRTE
+		catch
+			err = GetRTError(1)
+			print "Requested wave not loaded...please load and try again..."
+
+			if(!ParamIsDefault(cmdID))
+				TI_WriteAck(cmdID, 1)
+				TI_WriteAsyncResponse(cmdID, "coreStimSetResult:0")
+			endif
+
+			return 0
+		endtry
+		
+		// Check to see if Test Pulse is already running...if not running, turn it on...
+		if(!TP_CheckIfTestpulseIsRunning(currentPanel))
+			PGC_SetAndActivateControl(currentPanel,"StartTestPulseButton")
+		endif
+		
+		// Set up the QC Wave so the background task can get the information it needs
+		Wave/T CoreStimWave = GetCoreStimWaveRef(currentPanel)
+		CoreStimWave[%headstage] = num2str(headstage)
+		
+		if(!ParamIsDefault(cmdID))
+			CoreStimWave[%cmdID] = cmdID
+		else
+			CoreStimWave[%cmdID] = "foobar"
+		endif
+
+		if(!ParamIsDefault(cmdID))
+			TI_WriteAck(cmdID, 1)
+		endif
+		
+		// run the wave
+		PGC_SetAndActivateControl(currentPanel,"DataAcquireButton")
+		
+		// start the background task
+		TI_StartBckgrdRunCoreStimSet()
+	endfor
+End
+
+/// @brief Complete the RunCoreStimSet in the background
+
+Function TI_StartBckgrdRunCoreStimSet()
+	CtrlNamedBackground TI_finishRunCoreStimSet, period=30, proc=TI_finishRunCoreStimSet
+	CtrlNamedBackground TI_finishRunCoreStimSet, start
+End
+
+/// @brief finish the RunCoreStimSet in the background
+///
+/// @ingroup BackgroundFunctions
+Function TI_finishRunCoreStimSet(s)
+	STRUCT WMBackgroundStruct &s
+
+	string currentPanel
+	variable headstage
+	string cmdID
+	string lockedDevList
+	variable noLockedDevs
+	variable sweepNo
+	string key
+
+	variable setPassed
+	string responseString
+
+	// get the da_ephys panel names
+	lockedDevList = GetListOfLockedDevices()
+	noLockedDevs = ItemsInList(lockedDevList)
+
+	//this is a hack, but we know that for using this QC function we only have one locked device
+	currentPanel = StringFromList(0, lockedDevList)
+
+	Wave/T CoreStimWave = GetCoreStimWaveRef(currentPanel)
+	headstage = str2num(CoreStimWave[%headstage])
+	cmdID =  CoreStimWave[%cmdID]
+
+	// check that data acquisition is not running
+	NVAR dataAcqRunMode = $GetDataAcqRunMode(currentPanel)
+	if(dataAcqRunMode != DAQ_NOT_RUNNING)
+		printf "Data Acquisition ongoing on %s \r" currentPanel
+		return 0
+	endif
+
+	// set up the references to get the Set passed result
+	WAVE numericalValues = GetLBNumericalValues(currentPanel)
+
+	sweepNo = AFH_GetLastSweepAcquired(currentPanel)
+	
+	key = PSQ_CreateLBNKey(PSQ_SUB_THRESHOLD, PSQ_FMT_LBN_SET_PASS, query = 1)
+	setPassed = GetLastSettingIndepRAC(numericalValues, sweepNo, key, UNKNOWN_MODE)
+	if (setPassed == 1)
+		print "Set Passed"
+	else
+		print "Set Failed"
+	endif
+	
+	// determine if the cmdID was provided
+	if(cmpstr(cmdID,"foobar") != 0)
+		// build up the response string
+		sprintf responseString, "coreStimSetResult:%f", setPassed
+		TI_WriteAsyncResponse(cmdID, responseString)
+	endif
+
+	return 1
+End
+
 ///@brief routine to be called from the WSE to use a one step scale adjustment to find the scale factor that causes and AP firing
 ///@param stimWaveName		stimWaveName to be used
 ///@param initScaleFactor			initial scale factor to start with
