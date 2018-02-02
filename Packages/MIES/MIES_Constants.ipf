@@ -755,6 +755,7 @@ Constant SIGNED_INT_16BIT_MAX =  32767
 Constant MAX_OBJECT_NAME_LENGTH_IN_BYTES = 31
 
 StrConstant LABNOTEBOOK_NO_TOLERANCE = "-"
+StrConstant LABNOTEBOOK_BINARY_UNIT  = "On/Off"
 
 /// `Key` prefix for runtime added labnotebooks by ED_AddEntryToLabnotebook()
 StrConstant LABNOTEBOOK_USER_PREFIX = "USER_"
