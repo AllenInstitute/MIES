@@ -13,25 +13,6 @@
 // Execute "ITCInitialize /M = 1"
 // Execute "ITCStartAcq 1, 256"
 
-/// @brief Start data acquisition using multi device mode
-///
-/// This is the high level function usable for all external users.
-Function DQM_StartDAQMultiDevice(panelTitle)
-	string panelTitle
-
-	NVAR dataAcqRunMode = $GetDataAcqRunMode(panelTitle)
-
-	if(dataAcqRunMode == DAQ_NOT_RUNNING)
-
-		AbortOnValue DAP_CheckSettings(panelTitle, DATA_ACQUISITION_MODE), 1
-
-		TP_StopTestPulse(panelTitle)
-		DQM_StartDAQMultiDeviceLowLevel(panelTitle)
-	else // data acquistion is ongoing, stop data acq
-		DQ_StopOngoingDAQ(panelTitle)
-	endif
-End
-
 /// @brief Fifo monitor for DAQ Multi Device
 ///
 /// @ingroup BackgroundFunctions
@@ -110,12 +91,15 @@ END
 /// @param panelTitle      device
 /// @param initialSetupReq [optional, defaults to true] performs initialization routines
 ///                        at the very beginning of DAQ, turn off for RA
-Function DQM_StartDAQMultiDeviceLowLevel(panelTitle, [initialSetupReq])
+Function DQM_StartDAQMultiDevice(panelTitle, [initialSetupReq])
 	string panelTitle
 	variable initialSetupReq
 
 	variable numFollower, i
 	string followerPanelTitle
+
+	ASSERT(WhichListItem(GetRTStackInfo(2), DAQ_ALLOWED_FUNCTIONS) != -1, \
+		"Calling this function directly is not supported, please use PGC_SetAndActivateControl.")
 
 	if(ParamIsDefault(initialSetupReq))
 		initialSetupReq = 1

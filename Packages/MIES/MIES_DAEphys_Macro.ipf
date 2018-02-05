@@ -2743,7 +2743,7 @@ Window DA_Ephys() : Panel
 	CheckBox check_Settings_SaveAmpSettings,userdata(ResizeControlsInfo) += A"zzz!!#u:Duafnzzzzzzzzzzzzzz!!!"
 	CheckBox check_Settings_SaveAmpSettings,value= 1
 	SetVariable setvar_Settings_TP_RTolerance,pos={305.00,84.00},size={145.00,18.00},bodyWidth=50,disable=1,proc=DAP_SetVar_UpdateGuiState,title="Min delta R (MΩ)"
-	SetVariable setvar_Settings_TP_RTolerance,help={"Sets the minimum delta required forTP resistance values to be appended as a wave note to the data sweep. TP resistance values are always documented in the Lab Note Book."}
+	SetVariable setvar_Settings_TP_RTolerance,help={"Sets the minimum delta required for TP resistance values to be appended as a wave note to the data sweep. TP resistance values are always documented in the Lab Note Book."}
 	SetVariable setvar_Settings_TP_RTolerance,userdata(tabnum)=  "5"
 	SetVariable setvar_Settings_TP_RTolerance,userdata(tabcontrol)=  "ADC"
 	SetVariable setvar_Settings_TP_RTolerance,userdata(ResizeControlsInfo)= A"!!,HSJ,hp7!!#@u!!#<Hz!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"

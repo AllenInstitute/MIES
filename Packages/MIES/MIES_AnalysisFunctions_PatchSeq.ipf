@@ -363,11 +363,11 @@ static Function PSQ_EvaluateBaselineProperties(panelTitle, type, sweepNo, chunk,
 
 	// document results per headstage and chunk
 	key = PSQ_CreateLBNKey(type, PSQ_FMT_LBN_RMS_SHORT_PASS, chunk = chunk)
-	ED_AddEntryToLabnotebook(panelTitle, key, rmsShortPassed, unit = "On/Off", overrideSweepNo = sweepNo)
+	ED_AddEntryToLabnotebook(panelTitle, key, rmsShortPassed, unit = LABNOTEBOOK_BINARY_UNIT, overrideSweepNo = sweepNo)
 	key = PSQ_CreateLBNKey(type, PSQ_FMT_LBN_RMS_LONG_PASS, chunk = chunk)
-	ED_AddEntryToLabnotebook(panelTitle, key, rmsLongPassed, unit = "On/Off", overrideSweepNo = sweepNo)
+	ED_AddEntryToLabnotebook(panelTitle, key, rmsLongPassed, unit = LABNOTEBOOK_BINARY_UNIT, overrideSweepNo = sweepNo)
 	key = PSQ_CreateLBNKey(type, PSQ_FMT_LBN_TARGETV_PASS, chunk = chunk)
-	ED_AddEntryToLabnotebook(panelTitle, key, targetVPassed, unit = "On/Off", overrideSweepNo = sweepNo)
+	ED_AddEntryToLabnotebook(panelTitle, key, targetVPassed, unit = LABNOTEBOOK_BINARY_UNIT, overrideSweepNo = sweepNo)
 
 	if(testMatrix[baselineType][PSQ_RMS_SHORT_TEST])
 		rmsShortPassedAll = WaveMin(rmsShortPassed) == 1
@@ -409,7 +409,7 @@ static Function PSQ_EvaluateBaselineProperties(panelTitle, type, sweepNo, chunk,
 	Make/FREE/N=(LABNOTEBOOK_LAYER_COUNT) result = NaN
 	result[INDEP_HEADSTAGE] = chunkPassed
 	key = PSQ_CreateLBNKey(type, PSQ_FMT_LBN_CHUNK_PASS, chunk = chunk)
-	ED_AddEntryToLabnotebook(panelTitle, key, result, unit = "On/Off", overrideSweepNo = sweepNo)
+	ED_AddEntryToLabnotebook(panelTitle, key, result, unit = LABNOTEBOOK_BINARY_UNIT, overrideSweepNo = sweepNo)
 
 	if(PSQ_TestOverrideActive())
 		if(baselineType == PSQ_BL_PRE_PULSE)
@@ -657,7 +657,7 @@ static Function/WAVE PSQ_SearchForSpikes(panelTitle, type, sweepWave, headstage,
 
 	variable level, first, last, overrideValue
 
-	Make/FREE/D/N=(LABNOTEBOOK_LAYER_COUNT) spikeDetection = 0
+	Make/FREE/D/N=(LABNOTEBOOK_LAYER_COUNT) spikeDetection = (p == headstage ? 0 : NaN)
 
 	WAVE singleDA = AFH_ExtractOneDimDataFromSweep(panelTitle, sweepWave, headstage, ITC_XOP_CHANNEL_TYPE_DAC)
 	level = WaveMin(singleDA, totalOnsetDelay, inf) + 0.1 * (WaveMax(singleDA, totalOnsetDelay, inf) - WaveMin(singleDA, totalOnsetDelay, inf))
@@ -825,19 +825,11 @@ Function PSQ_SubThreshold(panelTitle, s)
 		case PRE_DAQ_EVENT:
 			DAScalesIndex[s.headstage] = 0
 
-			if(!DAG_GetNumericalValue(panelTitle, "check_Settings_ITITP"))
-				printf "(%s): TP during ITI must be checked\r", panelTitle
-				ControlWindowToFront()
-				return 1
-			elseif(!DAG_GetNumericalValue(panelTitle, "check_DataAcq_AutoBias"))
-				printf "(%s): Auto Bias must be checked\r", panelTitle
-				ControlWindowToFront()
-				return 1
-			elseif(!DAG_GetNumericalValue(panelTitle, "check_Settings_MD"))
-				printf "(%s): Please check \"Multi Device\" mode.\r", panelTitle
-				ControlWindowToFront()
-				return 1
-			endif
+			PGC_SetAndActivateControl(panelTitle, "check_DataAcq_AutoBias", val = 1)
+			PGC_SetAndActivateControl(panelTitle, "check_Settings_ITITP", val = 1)
+			PGC_SetAndActivateControl(panelTitle, "check_Settings_MD", val = 1)
+			PGC_SetAndActivateControl(panelTitle, "Check_DataAcq1_DistribDaq", val = 0)
+			PGC_SetAndActivateControl(panelTitle, "Check_DataAcq1_dDAQOptOv", val = 0)
 
 			WAVE statusHS = DAG_GetChannelState(panelTitle, CHANNEL_TYPE_HEADSTAGE)
 			if(sum(statusHS) != 1)
@@ -853,6 +845,11 @@ Function PSQ_SubThreshold(panelTitle, s)
 				ControlWindowToFront()
 				return 1
 			endif
+
+			KillOrMoveToTrash(wv = GetAnalysisFuncDAScaleDeltaI(panelTitle))
+			KillOrMoveToTrash(wv = GetAnalysisFuncDAScaleDeltaV(panelTitle))
+			KillOrMoveToTrash(wv = GetAnalysisFuncDAScaleRes(panelTitle))
+			KillWindow/Z $RESISTANCE_GRAPH
 
 			break
 		case POST_SWEEP_EVENT:
@@ -916,7 +913,7 @@ Function PSQ_SubThreshold(panelTitle, s)
 			Make/FREE/N=(LABNOTEBOOK_LAYER_COUNT) result = NaN
 			result[INDEP_HEADSTAGE] = setPassed
 			key = PSQ_CreateLBNKey(PSQ_SUB_THRESHOLD, PSQ_FMT_LBN_SET_PASS)
-			ED_AddEntryToLabnotebook(panelTitle, key, result, unit = "On/Off")
+			ED_AddEntryToLabnotebook(panelTitle, key, result, unit = LABNOTEBOOK_BINARY_UNIT)
 
 			return NaN
 			break
@@ -1013,7 +1010,7 @@ Function PSQ_SubThreshold(panelTitle, s)
 	result[INDEP_HEADSTAGE] = sweepPassed
 
 	key = PSQ_CreateLBNKey(PSQ_SUB_THRESHOLD, PSQ_FMT_LBN_SWEEP_PASS)
-	ED_AddEntryToLabnotebook(panelTitle, key, result, unit = "On/Off", overrideSweepNo = s.sweepNo)
+	ED_AddEntryToLabnotebook(panelTitle, key, result, unit = LABNOTEBOOK_BINARY_UNIT, overrideSweepNo = s.sweepNo)
 
 	return sweepPassed ? ANALYSIS_FUNC_RET_EARLY_STOP : ret
 End
@@ -1063,12 +1060,6 @@ Function PSQ_SquarePulse(panelTitle, s)
 
 	switch(s.eventType)
 		case PRE_DAQ_EVENT:
-			if(!GetCheckBoxState(panelTitle, "check_Settings_MD"))
-				printf "(%s): Please check \"Multi Device\" mode.\r", panelTitle
-				ControlWindowToFront()
-				return 1
-			endif
-
 			WAVE statusHS = DAG_GetChannelState(panelTitle, CHANNEL_TYPE_HEADSTAGE)
 			if(sum(statusHS) != 1)
 				printf "(%s) Analysis function only supports one headstage.\r", panelTitle
@@ -1076,9 +1067,12 @@ Function PSQ_SquarePulse(panelTitle, s)
 				return 1
 			endif
 
+			PGC_SetAndActivateControl(panelTitle, "check_Settings_MD", val = 1)
 			PGC_SetAndActivateControl(panelTitle, "check_Settings_ITITP", val = 0)
 			PGC_SetAndActivateControl(panelTitle, "Check_Settings_InsertTP", val = 0)
 			PGC_SetAndActivateControl(panelTitle, "Check_DataAcq_Get_Set_ITI", val = 1)
+			PGC_SetAndActivateControl(panelTitle, "Check_DataAcq1_DistribDaq", val = 0)
+			PGC_SetAndActivateControl(panelTitle, "Check_DataAcq1_dDAQOptOv", val = 0)
 
 			if(DAG_GetHeadstageMode(panelTitle, s.headstage) != I_CLAMP_MODE)
 				printf "(%s) Clamp mode must be current clamp.\r", panelTitle
@@ -1197,16 +1191,17 @@ Function PSQ_Rheobase(panelTitle, s)
 
 	switch(s.eventType)
 		case PRE_DAQ_EVENT:
+			PGC_SetAndActivateControl(panelTitle, "SetVar_DataAcq_ITI", val = 4)
+			PGC_SetAndActivateControl(panelTitle, "SetVar_DataAcq_SetRepeats", val = 1)
+			PGC_SetAndActivateControl(panelTitle, "check_DataAcq_AutoBias", val = 1)
+			PGC_SetAndActivateControl(panelTitle, "check_Settings_MD", val = 1)
+			PGC_SetAndActivateControl(panelTitle, "check_Settings_ITITP", val = 1)
+			PGC_SetAndActivateControl(panelTitle, "Check_Settings_InsertTP", val = 1)
+			PGC_SetAndActivateControl(panelTitle, "Check_DataAcq1_DistribDaq", val = 0)
+			PGC_SetAndActivateControl(panelTitle, "Check_DataAcq1_dDAQOptOv", val = 0)
+
 			if(DAG_GetHeadstageMode(panelTitle, s.headstage) != I_CLAMP_MODE)
 				printf "(%s) Clamp mode must be current clamp.\r", panelTitle
-				ControlWindowToFront()
-				return 1
-			elseif(!DAG_GetNumericalValue(panelTitle, "check_DataAcq_AutoBias"))
-				printf "(%s): Auto Bias must be checked\r", panelTitle
-				ControlWindowToFront()
-				return 1
-			elseif(!DAG_GetNumericalValue(panelTitle, "check_Settings_MD"))
-				printf "(%s): Please check \"Multi Device\" mode.\r", panelTitle
 				ControlWindowToFront()
 				return 1
 			endif
@@ -1225,25 +1220,6 @@ Function PSQ_Rheobase(panelTitle, s)
 				ControlWindowToFront()
 				return 1
 			endif
-
-			val = DAG_GetNumericalValue(panelTitle, "SetVar_DataAcq_ITI")
-
-			if(!CheckIfClose(val, 4))
-				printf "(%s): ITI must be 4s.\r", panelTitle
-				ControlWindowToFront()
-				return 1
-			endif
-
-			val = DAG_GetNumericalValue(panelTitle, "SetVar_DataAcq_SetRepeats")
-
-			if(!CheckIfClose(val, 1))
-				printf "(%s): Repeat Sets must be 1.\r", panelTitle
-				ControlWindowToFront()
-				return 1
-			endif
-
-			PGC_SetAndActivateControl(panelTitle, "check_Settings_ITITP", val = 1)
-			PGC_SetAndActivateControl(panelTitle, "Check_Settings_InsertTP", val = 1)
 
 			WAVE numericalValues = GetLBNumericalValues(panelTitle)
 			key = PSQ_CreateLBNKey(PSQ_SQUARE_PULSE, PSQ_FMT_LBN_FINAL_SCALE, query = 1)
@@ -1305,7 +1281,7 @@ Function PSQ_Rheobase(panelTitle, s)
 
 			WAVE spikeDetection = PSQ_SearchForSpikes(panelTitle, PSQ_RHEOBASE, sweepWave, s.headstage, totalOnsetDelay)
 			key = PSQ_CreateLBNKey(PSQ_RHEOBASE, PSQ_FMT_LBN_SPIKE_DETECT)
-			ED_AddEntryToLabnotebook(panelTitle, key, spikeDetection, unit = "On/Off")
+			ED_AddEntryToLabnotebook(panelTitle, key, spikeDetection, unit = LABNOTEBOOK_BINARY_UNIT)
 
 			key = PSQ_CreateLBNKey(PSQ_RHEOBASE, PSQ_FMT_LBN_SPIKE_DETECT, query = 1)
 			WAVE spikeDetectionRA = GetLastSettingEachRAC(numericalValues, s.sweepNo, key, s.headstage, UNKNOWN_MODE)
@@ -1320,7 +1296,7 @@ Function PSQ_Rheobase(panelTitle, s)
 				Make/FREE/D/N=(LABNOTEBOOK_LAYER_COUNT) result = NaN
 				key = PSQ_CreateLBNKey(PSQ_RHEOBASE, PSQ_FMT_LBN_SET_PASS)
 				result[INDEP_HEADSTAGE] = 1
-				ED_AddEntryToLabnotebook(panelTitle, key, result, unit = "On/Off")
+				ED_AddEntryToLabnotebook(panelTitle, key, result, unit = LABNOTEBOOK_BINARY_UNIT)
 				RA_SkipSweeps(panelTitle, inf)
 				break
 			endif
@@ -1340,7 +1316,7 @@ Function PSQ_Rheobase(panelTitle, s)
 				Make/FREE/D/N=(LABNOTEBOOK_LAYER_COUNT) result = NaN
 				key = PSQ_CreateLBNKey(PSQ_RHEOBASE, PSQ_FMT_LBN_SET_PASS)
 				result[INDEP_HEADSTAGE] = 0
-				ED_AddEntryToLabnotebook(panelTitle, key, result, unit = "On/Off")
+				ED_AddEntryToLabnotebook(panelTitle, key, result, unit = LABNOTEBOOK_BINARY_UNIT)
 				RA_SkipSweeps(panelTitle, inf)
 				break
 			endif
@@ -1357,7 +1333,7 @@ Function PSQ_Rheobase(panelTitle, s)
 				key = PSQ_CreateLBNKey(PSQ_RHEOBASE, PSQ_FMT_LBN_SET_PASS)
 				Make/FREE/D/N=(LABNOTEBOOK_LAYER_COUNT) result = NaN
 				result[INDEP_HEADSTAGE] = 0
-				ED_AddEntryToLabnotebook(panelTitle, key, result, unit = "On/Off")
+				ED_AddEntryToLabnotebook(panelTitle, key, result, unit = LABNOTEBOOK_BINARY_UNIT)
 			endif
 			break
 	endswitch
@@ -1432,7 +1408,7 @@ Function PSQ_Rheobase(panelTitle, s)
 	result[s.headstage] = baselineQCPassed
 
 	key = PSQ_CreateLBNKey(PSQ_RHEOBASE, PSQ_FMT_LBN_BL_QC_PASS)
-	ED_AddEntryToLabnotebook(panelTitle, key, result, unit = "On/Off", overrideSweepNo = s.sweepNo)
+	ED_AddEntryToLabnotebook(panelTitle, key, result, unit = LABNOTEBOOK_BINARY_UNIT, overrideSweepNo = s.sweepNo)
 
 	return 0
 End

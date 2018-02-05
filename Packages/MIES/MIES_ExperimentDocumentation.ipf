@@ -204,7 +204,7 @@ End
 
 /// @brief Record changed labnotebook entries compared to the last sweep to the sweep wave note
 ///
-/// Honours tolerances defined in the keywave and "On/Off" values
+/// Honours tolerances defined in the keywave and LABNOTEBOOK_BINARY_UNIT values
 static Function ED_WriteChangedValuesToNote(panelTitle, sweepNo)
 	string panelTitle
 	variable sweepNo
@@ -293,7 +293,7 @@ End
 ///
 /// Textual version.
 ///
-/// Honours tolerances defined in the keywave and "On/Off" values
+/// Honours tolerances defined in the keywave and LABNOTEBOOK_BINARY_UNIT values
 static Function ED_WriteChangedValuesToNoteText(panelTitle, sweepNo)
 	string panelTitle
 	variable sweepNo
@@ -469,7 +469,7 @@ Function ED_createWaveNoteTags(panelTitle, sweepCount)
 	numKeys = ""
 
 	numKeys[0][0] =  "Headstage Active"
-	numKeys[1][0] =  "On/Off"
+	numKeys[1][0] =  LABNOTEBOOK_BINARY_UNIT
 	numKeys[2][0] =  LABNOTEBOOK_NO_TOLERANCE
 
 	numKeys[0][1] =  "Clamp Mode"
@@ -499,11 +499,11 @@ Function ED_createWaveNoteTags(panelTitle, sweepCount)
 	keys = ""
 
 	keys[0][0] = "Follower Device"
-	keys[1][0] = "On/Off"
+	keys[1][0] = LABNOTEBOOK_BINARY_UNIT
 	keys[2][0] = LABNOTEBOOK_NO_TOLERANCE
 
 	keys[0][1] = "MIES version"
-	keys[1][1] = "On/Off"
+	keys[1][1] = LABNOTEBOOK_BINARY_UNIT
 	keys[2][1] = LABNOTEBOOK_NO_TOLERANCE
 
 	keys[0][2] = "Igor Pro version"
@@ -676,7 +676,7 @@ Function ED_TPDocumentation(panelTitle)
 	TPKeyWave[1][5]  = "F"
 	TPKeyWave[1][6]  = "s"
 	TPKeyWave[1][7]  = "s"
-	TPKeyWave[1][8]  = "On/Off"
+	TPKeyWave[1][8]  = LABNOTEBOOK_BINARY_UNIT
 	TPKeyWave[1][9]  = ""
 	TPKeyWave[1][10] = ""
 	TPKeyWave[1][11] = ""

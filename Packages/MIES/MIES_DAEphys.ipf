@@ -1151,14 +1151,21 @@ Function DAP_ButtonProc_AcquireData(ba) : ButtonControl
 		case 2: // mouse up
 			panelTitle = ba.win
 
-			DAP_AbortIfUnlocked(panelTitle)
+			NVAR dataAcqRunMode = $GetDataAcqRunMode(panelTitle)
 
-			if(DAG_GetNumericalValue(panelTitle, "check_Settings_MD"))
-				DQM_StartDAQMultiDevice(panelTitle)
-			else
-				DQS_StartDAQSingleDevice(panelTitle)
+			if(dataAcqRunMode == DAQ_NOT_RUNNING)
+				TP_StopTestPulse(panelTitle)
+				AbortOnValue DAP_CheckSettings(panelTitle, DATA_ACQUISITION_MODE), 1
+
+				if(DAG_GetNumericalValue(panelTitle, "check_Settings_MD"))
+					DQM_StartDAQMultiDevice(panelTitle)
+				else
+					DQS_StartDAQSingleDevice(panelTitle)
+				endif
+			else // data acquistion is ongoing, stop data acq
+				DQ_StopDAQ(panelTitle)
 			endif
-		break
+			break
 	endswitch
 
 	return 0

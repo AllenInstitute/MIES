@@ -79,8 +79,6 @@ static Constant POST_DELAY = 150									 ///< Delay after stimulation event in 
 static Constant RESOLUTION = 25									 ///< Resolution of oodDAQ protocol in ms
 ///@}
 
-static StrConstant RESISTANCE_GRAPH = "AnalysisFuncResistanceGraph"
-
 Function TestAnalysisFunction_V1(panelTitle, eventType, ITCDataWave, headStage)
 	string panelTitle
 	variable eventType

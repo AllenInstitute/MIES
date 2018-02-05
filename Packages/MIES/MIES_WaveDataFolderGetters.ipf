@@ -1060,6 +1060,14 @@ static Function SetSweepSettingsDimLabels(wv)
 	SetDimLabel COLS, 31, $PULSE_TO_PULSE_LENGTH_KEY     , wv
 	SetDimLabel COLS, 32, $RA_ACQ_CYCLE_ID_KEY           , wv
 	SetDimLabel COLS, 33, $"Stim Wave Checksum"          , wv
+	SetDimLabel COLS, 34, $"Multi Device mode"           , wv
+	SetDimLabel COLS, 35, $"Background Testpulse"        , wv
+	SetDimLabel COLS, 36, $"Background DAQ"              , wv
+	SetDimLabel COLS, 37, $"Sampling interval multiplier", wv
+	SetDimLabel COLS, 38, $"TP buffer size"              , wv
+	SetDimLabel COLS, 39, $"TP during ITI"               , wv
+	SetDimLabel COLS, 40, $"Amplifier change via I=0"    , wv
+	SetDimLabel COLS, 41, $"Skip analysis functions"     , wv
 End
 
 /// @brief Set dimension labels for GetSweepSettingsTextKeyWave() and
@@ -1105,7 +1113,7 @@ End
 Function/Wave GetSweepSettingsWave(panelTitle)
 	string panelTitle
 
-	variable versionOfNewWave = 10
+	variable versionOfNewWave = 11
 	string newName = "sweepSettingsNumericValues"
 	DFREF newDFR = GetDevSpecLabNBTempFolder(panelTitle)
 
@@ -1120,9 +1128,9 @@ Function/Wave GetSweepSettingsWave(panelTitle)
 	if(ExistsWithCorrectLayoutVersion(wv, versionOfNewWave))
 		return wv
 	elseif(WaveExists(wv))
-		Redimension/N=(-1, 34, LABNOTEBOOK_LAYER_COUNT) wv
+		Redimension/N=(-1, 42, LABNOTEBOOK_LAYER_COUNT) wv
 	else
-		Make/N=(1, 34, LABNOTEBOOK_LAYER_COUNT) newDFR:$newName/Wave=wv
+		Make/N=(1, 42, LABNOTEBOOK_LAYER_COUNT) newDFR:$newName/Wave=wv
 	endif
 
 	wv = NaN
@@ -1180,6 +1188,14 @@ End
 /// - 33: Stim Wave checksum (can be used to disambiguate cases
 ///                           where two stimsets are named the same
 ///                           but have different contents)
+/// - 34: Multi Device mode
+/// - 35: Background Testpulse
+/// - 36: Background DAQ
+/// - 37: Sampling interval multiplier
+/// - 38: TP buffer size
+/// - 39: TP during ITI
+/// - 40: Amplifier change via I=0
+/// - 41: Skip analysis functions
 Function/Wave GetSweepSettingsKeyWave(panelTitle)
 	string panelTitle
 
@@ -1198,9 +1214,9 @@ Function/Wave GetSweepSettingsKeyWave(panelTitle)
 	if(ExistsWithCorrectLayoutVersion(wv, versionOfNewWave))
 		return wv
 	elseif(WaveExists(wv))
-		Redimension/N=(-1, 34) wv
+		Redimension/N=(-1, 42) wv
 	else
-		Make/T/N=(3, 34) newDFR:$newName/Wave=wv
+		Make/T/N=(3, 42) newDFR:$newName/Wave=wv
 	endif
 
 	wv = ""
@@ -1234,7 +1250,7 @@ Function/Wave GetSweepSettingsKeyWave(panelTitle)
 	wv[%Tolerance][5] = ".0001"
 	
 	wv[%Parameter][6] = "TP Insert Checkbox"
-	wv[%Units][6]     = "On/Off"
+	wv[%Units][6]     = LABNOTEBOOK_BINARY_UNIT
 	wv[%Tolerance][6] = LABNOTEBOOK_NO_TOLERANCE
 
 	wv[%Parameter][7] = "Inter-trial interval"
@@ -1274,7 +1290,7 @@ Function/Wave GetSweepSettingsKeyWave(panelTitle)
 	wv[%Tolerance][15] = "1"
 
 	wv[%Parameter][16] = "Distributed DAQ"
-	wv[%Units][16]     = "On/Off"
+	wv[%Units][16]     = LABNOTEBOOK_BINARY_UNIT
 	wv[%Tolerance][16] = LABNOTEBOOK_NO_TOLERANCE
 
 	wv[%Parameter][17] = "Repeat Sets"
@@ -1282,23 +1298,23 @@ Function/Wave GetSweepSettingsKeyWave(panelTitle)
 	wv[%Tolerance][17] = ".0001"
 
 	wv[%Parameter][18] = "Scaling zero"
-	wv[%Units][18]     = "On/Off"
+	wv[%Units][18]     = LABNOTEBOOK_BINARY_UNIT
 	wv[%Tolerance][18] = LABNOTEBOOK_NO_TOLERANCE
 
 	wv[%Parameter][19] = "Indexing"
-	wv[%Units][19]     = "On/Off"
+	wv[%Units][19]     = LABNOTEBOOK_BINARY_UNIT
 	wv[%Tolerance][19] = LABNOTEBOOK_NO_TOLERANCE
 
 	wv[%Parameter][20] = "Locked indexing"
-	wv[%Units][20]     = "On/Off"
+	wv[%Units][20]     = LABNOTEBOOK_BINARY_UNIT
 	wv[%Tolerance][20] = LABNOTEBOOK_NO_TOLERANCE
 
 	wv[%Parameter][21] = "Repeated Acquisition"
-	wv[%Units][21]     = "On/Off"
+	wv[%Units][21]     = LABNOTEBOOK_BINARY_UNIT
 	wv[%Tolerance][21] = LABNOTEBOOK_NO_TOLERANCE
 
 	wv[%Parameter][22] = "Random Repeated Acquisition"
-	wv[%Units][22]     = "On/Off"
+	wv[%Units][22]     = LABNOTEBOOK_BINARY_UNIT
 	wv[%Tolerance][22] = LABNOTEBOOK_NO_TOLERANCE
 
 	wv[%Parameter][23] = "Minimum Sampling interval"
@@ -1326,7 +1342,7 @@ Function/Wave GetSweepSettingsKeyWave(panelTitle)
 	wv[%Tolerance][28] = "1"
 
 	wv[%Parameter][29] = "Optimized Overlap dDAQ"
-	wv[%Units][29]     = "On/Off"
+	wv[%Units][29]     = LABNOTEBOOK_BINARY_UNIT
 	wv[%Tolerance][29] = LABNOTEBOOK_NO_TOLERANCE
 
 	wv[%Parameter][30] = "Delay onset oodDAQ"
@@ -1344,6 +1360,38 @@ Function/Wave GetSweepSettingsKeyWave(panelTitle)
 	wv[%Parameter][33] = "Stim Wave checksum"
 	wv[%Units][33]     = ""
 	wv[%Tolerance][33] = "1"
+
+	wv[%Parameter][34] = "Multi Device mode"
+	wv[%Units][34]     = LABNOTEBOOK_BINARY_UNIT
+	wv[%Tolerance][34] = LABNOTEBOOK_NO_TOLERANCE
+
+	wv[%Parameter][35] = "Background Testpulse"
+	wv[%Units][35]     = LABNOTEBOOK_BINARY_UNIT
+	wv[%Tolerance][35] = LABNOTEBOOK_NO_TOLERANCE
+
+	wv[%Parameter][36] = "Background DAQ"
+	wv[%Units][36]     = LABNOTEBOOK_BINARY_UNIT
+	wv[%Tolerance][36] = LABNOTEBOOK_NO_TOLERANCE
+
+	wv[%Parameter][37] = "Sampling interval multiplier"
+	wv[%Units][37]     = "a. u."
+	wv[%Tolerance][37] = "1"
+
+	wv[%Parameter][38] = "TP buffer size"
+	wv[%Units][38]     = "a. u."
+	wv[%Tolerance][38] = "1"
+
+	wv[%Parameter][39] = "TP during ITI"
+	wv[%Units][39]     = LABNOTEBOOK_BINARY_UNIT
+	wv[%Tolerance][39] = LABNOTEBOOK_NO_TOLERANCE
+
+	wv[%Parameter][40] = "Amplifier change via I=0"
+	wv[%Units][40]     = LABNOTEBOOK_BINARY_UNIT
+	wv[%Tolerance][40] = LABNOTEBOOK_NO_TOLERANCE
+
+	wv[%Parameter][41] = "Skip analysis functions"
+	wv[%Units][41]     = LABNOTEBOOK_BINARY_UNIT
+	wv[%Tolerance][41] = LABNOTEBOOK_NO_TOLERANCE
 
 	SetSweepSettingsDimLabels(wv)
 	SetWaveVersion(wv, versionOfNewWave)
@@ -1819,7 +1867,7 @@ Function/WAVE GetAmplifierSettingsKeyWave()
 	SetDimLabel ROWS, 2, Tolerance, wv
 
 	wv[0][0] = "V-Clamp Holding Enable"
-	wv[1][0] = "On/Off"
+	wv[1][0] = LABNOTEBOOK_BINARY_UNIT
 	wv[2][0] = LABNOTEBOOK_NO_TOLERANCE
 
 	wv[0][1] =  "V-Clamp Holding Level"
@@ -1827,7 +1875,7 @@ Function/WAVE GetAmplifierSettingsKeyWave()
 	wv[2][1] = "0.9"
 
 	wv[0][2] =  "Osc Killer Enable"
-	wv[1][2] =  "On/Off"
+	wv[1][2] =  LABNOTEBOOK_BINARY_UNIT
 	wv[2][2] =  LABNOTEBOOK_NO_TOLERANCE
 
 	wv[0][3] =  "RsComp Bandwidth"
@@ -1839,7 +1887,7 @@ Function/WAVE GetAmplifierSettingsKeyWave()
 	wv[2][4] =  "0.9"
 
 	wv[0][5] =  "RsComp Enable"
-	wv[1][5] =  "On/Off"
+	wv[1][5] =  LABNOTEBOOK_BINARY_UNIT
 	wv[2][5] =  LABNOTEBOOK_NO_TOLERANCE
 
 	wv[0][6] =  "RsComp Prediction"
@@ -1847,7 +1895,7 @@ Function/WAVE GetAmplifierSettingsKeyWave()
 	wv[2][6] =  "0.9"
 
 	wv[0][7] =  "Whole Cell Comp Enable"
-	wv[1][7] =  "On/Off"
+	wv[1][7] =  LABNOTEBOOK_BINARY_UNIT
 	wv[2][7] =  LABNOTEBOOK_NO_TOLERANCE
 
 	wv[0][8] =  "Whole Cell Comp Cap"
@@ -1859,7 +1907,7 @@ Function/WAVE GetAmplifierSettingsKeyWave()
 	wv[2][9] =  "0.9"
 
 	wv[0][10] =  "I-Clamp Holding Enable"
-	wv[1][10] =  "On/Off"
+	wv[1][10] =  LABNOTEBOOK_BINARY_UNIT
 	wv[2][10] =  LABNOTEBOOK_NO_TOLERANCE
 
 	wv[0][11] =  "I-Clamp Holding Level"
@@ -1867,7 +1915,7 @@ Function/WAVE GetAmplifierSettingsKeyWave()
 	wv[2][11] =  "0.9"
 
 	wv[0][12] =  "Neut Cap Enabled"
-	wv[1][12] =  "On/Off"
+	wv[1][12] =  LABNOTEBOOK_BINARY_UNIT
 	wv[2][12] =  LABNOTEBOOK_NO_TOLERANCE
 
 	wv[0][13] =  "Neut Cap Value"
@@ -1875,7 +1923,7 @@ Function/WAVE GetAmplifierSettingsKeyWave()
 	wv[2][13] =  "0.9"
 
 	wv[0][14] =  "Bridge Bal Enable"
-	wv[1][14] =  "On/Off"
+	wv[1][14] =  LABNOTEBOOK_BINARY_UNIT
 	wv[2][14] =  LABNOTEBOOK_NO_TOLERANCE
 
 	wv[0][15] =  "Bridge Bal Value"
@@ -1965,7 +2013,7 @@ Function/WAVE GetAmplifierSettingsKeyWave()
 	wv[2][35] =  ""
 
 	wv[0][36] =  "Slow current injection"
-	wv[1][36] =  "On/Off"
+	wv[1][36] =  LABNOTEBOOK_BINARY_UNIT
 	wv[2][36] =  LABNOTEBOOK_NO_TOLERANCE
 
 	wv[0][37] =  "Slow current injection level"
@@ -2856,35 +2904,35 @@ Function/Wave GetAsyncSettingsKeyWave()
 	SetDimLabel 0, 2, Tolerance, wv
 
 	wv[%Parameter][0] = "Async 0 On/Off"
-	wv[%Units][0]     = "On/Off"
+	wv[%Units][0]     = LABNOTEBOOK_BINARY_UNIT
 	wv[%Tolerance][0] = LABNOTEBOOK_NO_TOLERANCE
 	
 	wv[%Parameter][1] = "Async 1 On/Off"
-	wv[%Units][1]     = "On/Off"
+	wv[%Units][1]     = LABNOTEBOOK_BINARY_UNIT
 	wv[%Tolerance][1] = LABNOTEBOOK_NO_TOLERANCE
 	
 	wv[%Parameter][2] = "Async 2 On/Off"
-	wv[%Units][2]     = "On/Off"
+	wv[%Units][2]     = LABNOTEBOOK_BINARY_UNIT
 	wv[%Tolerance][2] = LABNOTEBOOK_NO_TOLERANCE
 	
 	wv[%Parameter][3] = "Async 3 On/Off"
-	wv[%Units][3]     = "On/Off"
+	wv[%Units][3]     = LABNOTEBOOK_BINARY_UNIT
 	wv[%Tolerance][3] = LABNOTEBOOK_NO_TOLERANCE
 	
 	wv[%Parameter][4] = "Async 4 On/Off"
-	wv[%Units][4]     = "On/Off"
+	wv[%Units][4]     = LABNOTEBOOK_BINARY_UNIT
 	wv[%Tolerance][4] = LABNOTEBOOK_NO_TOLERANCE
 	
 	wv[%Parameter][5] = "Async 5 On/Off"
-	wv[%Units][5]     = "On/Off"
+	wv[%Units][5]     = LABNOTEBOOK_BINARY_UNIT
 	wv[%Tolerance][5] = LABNOTEBOOK_NO_TOLERANCE
 	
 	wv[%Parameter][6] = "Async 6 On/Off"
-	wv[%Units][6]     = "On/Off"
+	wv[%Units][6]     = LABNOTEBOOK_BINARY_UNIT
 	wv[%Tolerance][6] = LABNOTEBOOK_NO_TOLERANCE
 	
 	wv[%Parameter][7] = "Async 7 On/Off"
-	wv[%Units][7]     = "On/Off"
+	wv[%Units][7]     = LABNOTEBOOK_BINARY_UNIT
 	wv[%Tolerance][7] = LABNOTEBOOK_NO_TOLERANCE
 
 	wv[%Parameter][8] = "Async 0 Gain"
@@ -2920,35 +2968,35 @@ Function/Wave GetAsyncSettingsKeyWave()
 	wv[%Tolerance][15] = ".001"
 
 	wv[%Parameter][16] = "Async Alarm 0 On/Off"
-	wv[%Units][16]     = "On/Off"
+	wv[%Units][16]     = LABNOTEBOOK_BINARY_UNIT
 	wv[%Tolerance][16] = LABNOTEBOOK_NO_TOLERANCE
 	
 	wv[%Parameter][17] = "Async Alarm 1 On/Off"
-	wv[%Units][17]     = "On/Off"
+	wv[%Units][17]     = LABNOTEBOOK_BINARY_UNIT
 	wv[%Tolerance][17] = LABNOTEBOOK_NO_TOLERANCE
 	
 	wv[%Parameter][18] = "Async Alarm 2 On/Off"
-	wv[%Units][18]     = "On/Off"
+	wv[%Units][18]     = LABNOTEBOOK_BINARY_UNIT
 	wv[%Tolerance][18] = LABNOTEBOOK_NO_TOLERANCE
 	
 	wv[%Parameter][19] = "Async Alarm 3 On/Off"
-	wv[%Units][19]     = "On/Off"
+	wv[%Units][19]     = LABNOTEBOOK_BINARY_UNIT
 	wv[%Tolerance][19] = LABNOTEBOOK_NO_TOLERANCE
 	
 	wv[%Parameter][20] = "Async Alarm 4 On/Off"
-	wv[%Units][20]     = "On/Off"
+	wv[%Units][20]     = LABNOTEBOOK_BINARY_UNIT
 	wv[%Tolerance][20] = LABNOTEBOOK_NO_TOLERANCE
 	
 	wv[%Parameter][21] = "Async Alarm 5 On/Off"
-	wv[%Units][21]     = "On/Off"
+	wv[%Units][21]     = LABNOTEBOOK_BINARY_UNIT
 	wv[%Tolerance][21] = LABNOTEBOOK_NO_TOLERANCE
 	
 	wv[%Parameter][22] = "Async Alarm 6 On/Off"
-	wv[%Units][22]     = "On/Off"
+	wv[%Units][22]     = LABNOTEBOOK_BINARY_UNIT
 	wv[%Tolerance][22] = LABNOTEBOOK_NO_TOLERANCE
 	
 	wv[%Parameter][23] = "Async Alarm 7 On/Off"
-	wv[%Units][23]     = "On/Off"
+	wv[%Units][23]     = LABNOTEBOOK_BINARY_UNIT
 	wv[%Tolerance][23] = LABNOTEBOOK_NO_TOLERANCE
 
 	wv[%Parameter][24] = "Async Alarm 0 Min"

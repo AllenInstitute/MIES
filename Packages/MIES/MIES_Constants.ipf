@@ -755,6 +755,7 @@ Constant SIGNED_INT_16BIT_MAX =  32767
 Constant MAX_OBJECT_NAME_LENGTH_IN_BYTES = 31
 
 StrConstant LABNOTEBOOK_NO_TOLERANCE = "-"
+StrConstant LABNOTEBOOK_BINARY_UNIT  = "On/Off"
 
 /// `Key` prefix for runtime added labnotebooks by ED_AddEntryToLabnotebook()
 StrConstant LABNOTEBOOK_USER_PREFIX = "USER_"
@@ -845,3 +846,9 @@ Constant TP_MD_THREAD_DEAD_MAX_RETRIES = 10
 
 /// @todo: IP8 convert all call sites to use MultiThread/T=
 Constant NUM_ENTRIES_FOR_MULTITHREAD = 16
+
+/// Exclusive list of functions which are allowed to call
+/// DQS_StartDAQSingleDevice()/DQM_StartDAQMultiDevice()
+StrConstant DAQ_ALLOWED_FUNCTIONS = "DQ_RestartDAQ;DAP_ButtonProc_AcquireData;RA_CounterMD"
+
+StrConstant RESISTANCE_GRAPH = "AnalysisFuncResistanceGraph"

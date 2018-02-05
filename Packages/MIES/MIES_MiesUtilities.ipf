@@ -2255,6 +2255,10 @@ Function AddTraceToLBGraph(graph, keys, values, key)
 	ModifyGraph/W=$graph mode = 3
 	ModifyGraph/W=$graph nticks(bottom) = 10, manTick(bottom) = {0,1,0,0}, manMinor(bottom) = {0,50}
 
+	if(!cmpstr(unit, LABNOTEBOOK_BINARY_UNIT))
+		ModifyGraph/W=$graph manTick($axis)={0,1,0,0}, manMinor($axis)={0,50}, zapTZ($axis)=1
+	endif
+
 	SetLabNotebookBottomLabel(graph, isTimeAxis)
 	EquallySpaceAxis(graph, axisRegExp=VERT_AXIS_BASE_NAME + ".*")
 	UpdateLBGraphLegend(graph, traceList=traceList)

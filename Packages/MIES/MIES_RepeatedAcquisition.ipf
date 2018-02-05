@@ -448,7 +448,7 @@ Function RA_CounterMD(panelTitle)
 	endif
 
 	if(count < numTotalSweeps)
-		DQM_StartDAQMultiDeviceLowLevel(panelTitle, initialSetupReq=0)
+		DQM_StartDAQMultiDevice(panelTitle, initialSetupReq=0)
 	else
 		RA_FinishAcquisition(panelTitle)
 	endif

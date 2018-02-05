@@ -279,3 +279,23 @@ Function Params1_V3(panelTitle, s)
 	CHECK(s.eventType >= 0 && s.eventType < DimSize(anaFuncTracker, ROWS))
 	anaFuncTracker[s.eventType] += 1
 End
+
+Function ChangeToSingleDeviceDAQ(panelTitle, eventType, ITCDataWave, headStage, realDataLength)
+	string panelTitle
+	variable eventType
+	Wave ITCDataWave
+	variable headstage, realDataLength
+
+	PGC_SetAndActivateControl(panelTitle, "check_Settings_MD", val = CHECKBOX_UNSELECTED)
+	return 0
+End
+
+Function ChangeToMultiDeviceDAQ(panelTitle, eventType, ITCDataWave, headStage, realDataLength)
+	string panelTitle
+	variable eventType
+	Wave ITCDataWave
+	variable headstage, realDataLength
+
+	PGC_SetAndActivateControl(panelTitle, "check_Settings_MD", val = CHECKBOX_SELECTED)
+	return 0
+End
