@@ -426,16 +426,30 @@ Constant MID_SWEEP_EVENT  = 1
 Constant POST_SWEEP_EVENT = 2
 Constant POST_SET_EVENT   = 3
 Constant POST_DAQ_EVENT   = 4
+Constant PRE_SWEEP_EVENT  = 5
 /// @}
 
+Constant GENERIC_EVENT = 6 ///< Only used for internal bookkeeping. Never
+                           ///  send to analysis functions.
+
 /// Number of @ref EVENT_TYPE_ANALYSIS_FUNCTIONS
-Constant TOTAL_NUM_EVENTS   = 5
+Constant TOTAL_NUM_EVENTS   = 7
+
+/// Column for GetAnalysisFunctionStorage(). Same value as #TOTAL_NUM_EVENTS
+/// but more readable.
+Constant ANALYSIS_FUNCTION_PARAMS = 7
+
+StrConstant ANALYSIS_FUNCTION_PARAMS_LBN = "Function params"
 
 /// Human readable names for @ref EVENT_TYPE_ANALYSIS_FUNCTIONS
-StrConstant EVENT_NAME_LIST = "Pre DAQ;Mid Sweep;Post Sweep;Post Set;Post DAQ"
+StrConstant EVENT_NAME_LIST = "Pre DAQ;Mid Sweep;Post Sweep;Post Set;Post DAQ;Pre Sweep;Generic"
 
 /// Labnotebook entries
-StrConstant EVENT_NAME_LIST_LBN = "Pre DAQ function;Mid Sweep function;Post Sweep function;Post Set function;Post DAQ function"
+StrConstant EVENT_NAME_LIST_LBN = "Pre DAQ function;Mid Sweep function;Post Sweep function;Post Set function;Post DAQ function;Pre Sweep function;Generic function"
+
+/// List of valid analysis function types
+/// @anchor AnalysisFunctionParameterTypes
+StrConstant ANALYSIS_FUNCTION_PARAMS_TYPES = "variable;string;wave;textwave"
 
 /// Special return values for analysis functions. See also @ref
 /// AnalysisFunctionReturnTypes.
@@ -451,6 +465,7 @@ Constant ANALYSIS_FUNC_RET_EARLY_STOP  = -101
 /// @{
 Constant ANALYSIS_FUNCTION_VERSION_V1  = 0x0001
 Constant ANALYSIS_FUNCTION_VERSION_V2  = 0x0002
+Constant ANALYSIS_FUNCTION_VERSION_V3  = 0x0004
 Constant ANALYSIS_FUNCTION_VERSION_ALL = 0xFFFF
 /// @}
 
@@ -488,7 +503,7 @@ Constant HARDWARE_DAC_EXTERNAL_TRIGGER = 0x1
 Constant DA_EPHYS_PANEL_VERSION     = 27
 Constant DATABROWSER_PANEL_VERSION  = 7
 Constant SWEEPBROWSER_PANEL_VERSION = 3
-Constant WAVEBUILDER_PANEL_VERSION  = 3
+Constant WAVEBUILDER_PANEL_VERSION  = 4
 
 /// Version of the labnotebooks (numerical and textual)
 ///
@@ -497,7 +512,7 @@ Constant WAVEBUILDER_PANEL_VERSION  = 3
 /// - Changed names of entries
 /// - Changed units or meaning of entries
 /// - New/Changed layers of entries
-Constant LABNOTEBOOK_VERSION = 14
+Constant LABNOTEBOOK_VERSION = 15
 
 /// @name The channel numbers for the different ITC devices used for accesssing
 ///       the TTLs

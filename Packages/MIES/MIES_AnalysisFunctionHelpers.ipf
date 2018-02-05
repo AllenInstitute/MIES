@@ -286,7 +286,7 @@ Function/S AFH_GetAnalysisFunctions(versionBitMask)
 
 	string funcList, func
 	string funcListClean = ""
-	variable numEntries, i, valid_f1, valid_f2
+	variable numEntries, i, valid_f1, valid_f2, valid_f3
 
 	funcList  = FunctionList("*", ";", "KIND:2,WIN:MIES_AnalysisFunctions.ipf")
 	funcList += FunctionList("*", ";", "KIND:2,WIN:MIES_AnalysisFunctions_PatchSeq.ipf")
@@ -300,15 +300,126 @@ Function/S AFH_GetAnalysisFunctions(versionBitMask)
 		// this allows to check if the signature of func is the same as the one of AF_PROTO_ANALYSIS_FUNC_V*
 		FUNCREF AF_PROTO_ANALYSIS_FUNC_V1 f1 = $func
 		FUNCREF AF_PROTO_ANALYSIS_FUNC_V2 f2 = $func
+		FUNCREF AF_PROTO_ANALYSIS_FUNC_V3 f3 = $func
 
 		valid_f1 = FuncRefIsAssigned(FuncRefInfo(f1))
 		valid_f2 = FuncRefIsAssigned(FuncRefInfo(f2))
+		valid_f3 = FuncRefIsAssigned(FuncRefInfo(f3))
 
 		if((valid_f1 && (versionBitMask & ANALYSIS_FUNCTION_VERSION_V1))    \
-		   || (valid_f2 && (versionBitMask & ANALYSIS_FUNCTION_VERSION_V2)))
+		   || (valid_f2 && (versionBitMask & ANALYSIS_FUNCTION_VERSION_V2)) \
+		   || (valid_f3 && (versionBitMask & ANALYSIS_FUNCTION_VERSION_V3)))
 			funcListClean = AddListItem(func, funcListClean, ";", Inf)
 		endif
 	endfor
 
 	return funcListClean
+End
+
+/// @brief Return the list of required analysis function
+/// parameters as specified by the function `$func_GetParams`
+///
+/// @param func Analysis function `V3` which must be valid and existing
+Function/S AFH_GetListOfReqAnalysisParams(func)
+	string func
+
+	FUNCREF AF_PROTO_PARAM_GETTER_V3 f = $(func + "_GetParams")
+
+	if(!FuncRefIsAssigned(FuncRefInfo(f))) // no such getter functions
+		return ""
+	endif
+
+	return f()
+End
+
+/// @defgroup AnalysisFunctionParameterHelpers Analysis Helper functions for dealing with user parameters
+
+/// @brief Return a semicolon separated list of user parameters
+///
+/// @ingroup AnalysisFunctionParameterHelpers
+/// @param params serialized parameters, usually just #AnalysisFunction_V3.params
+Function/S AFH_GetListOfAnalysisParamNames(params)
+	string params
+
+	string entry, name
+	string list = ""
+	variable i, numEntries, pos
+
+	numEntries = ItemsInList(params, ",")
+	for(i = 0; i < numEntries; i += 1)
+		entry = StringFromList(i, params, ",")
+		pos  = strsearch(entry, ":", 0)
+		ASSERT(pos != -1, "Invalid params format")
+		name = entry[0, pos - 1]
+		list = AddListItem(name, list, ";", Inf)
+	endfor
+
+	return list
+End
+
+/// @brief Return the type of the user parameter
+///
+/// @param name   parameter name
+/// @param params serialized parameters, usually just #AnalysisFunction_V3.params
+///
+/// @ingroup AnalysisFunctionParameterHelpers
+/// @return one of @ref AnalysisFunctionParameterTypes
+Function/S AFH_GetAnalysisParamType(name, params)
+	string name, params
+
+	string typeAndValue, type
+	variable pos
+
+	typeAndValue = StringByKey(name , params, ":", ",", 0)
+
+	pos = strsearch(typeAndValue, "=", 0)
+	ASSERT(pos != -1, "Invalid params format")
+	type = typeAndValue[0, pos - 1]
+	ASSERT(!IsEmpty(type) && WhichListItem(type, ANALYSIS_FUNCTION_PARAMS_TYPES) != -1, "Invalid type")
+
+	return typeAndValue[0, pos - 1]
+End
+
+/// @brief Return a numerical user parameter
+///
+/// @param name   parameter name
+/// @param params serialized parameters, usually just #AnalysisFunction_V3.params
+/// @ingroup AnalysisFunctionParameterHelpers
+Function AFH_GetAnalysisParamNumerical(name, params)
+	string name, params
+
+	return NumberByKey(name + ":variable", params, "=", ",", 0)
+End
+
+/// @brief Return a textual user parameter
+///
+/// @param name   parameter name
+/// @param params serialized parameters, usually just #AnalysisFunction_V3.params
+/// @ingroup AnalysisFunctionParameterHelpers
+Function/S AFH_GetAnalysisParamTextual(name, params)
+	string name, params
+
+	return StringByKey(name + ":string", params, "=", ",", 0)
+End
+
+/// @brief Return a numerical wave user parameter
+///
+/// @param name   parameter name
+/// @param params serialized parameters, usually just #AnalysisFunction_V3.params
+/// @ingroup AnalysisFunctionParameterHelpers
+Function/WAVE AFH_GetAnalysisParamWave(name, params)
+	string name, params
+
+	return ListToNumericWave(StringByKey(name + ":wave", params, "=", ",", 0), "|")
+End
+
+/// @brief Return a textual wave user parameter
+///
+/// @param name   parameter name
+/// @param params serialized parameters, usually just #AnalysisFunction_V3.params
+/// @ingroup AnalysisFunctionParameterHelpers
+Function/WAVE AFH_GetAnalysisParamTextWave(name, params)
+	string name, params
+
+	return ListToTextWave(StringByKey(name + ":textwave", params, "=", ",", 0), "|")
 End

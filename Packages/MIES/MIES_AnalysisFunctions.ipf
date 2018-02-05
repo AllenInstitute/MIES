@@ -12,19 +12,20 @@
 /// @sa MIES_AnalysisFunctionPrototypes.ipf
 ///
 /// Users can implement functions which are called at certain events for each
-/// data acquisition cycle. These functions should *never* abort, error out with a runtime error, or open dialogs!
+/// data acquisition cycle. See TestAnalysisFunction_V3() for an example.
 ///
-/// Useful helper functions are defined in MIES_AnalysisFunctionHelpers.ipf.
-///
-/// @anchor AnalysisFunctionEventDescriptionTable
+/// @anchor AnalysisFunction_V3DescriptionTable
 ///
 /// Event      | Description                                  | Specialities
 /// -----------|----------------------------------------------|---------------------------------------------------------------
 /// Pre DAQ    | Before any DAQ occurs                        | Called before the settings are validated
 /// Mid Sweep  | Each time when new data is polled            | Available for background DAQ only
+/// Pre Sweep  | Immediately before the sweep starts          | None
 /// Post Sweep | After each sweep (before possible ITI pause) | None
 /// Post Set   | After a *full* set has been acquired         | This event is not always reached as the user might not acquire all steps of a set
 /// Post DAQ   | After all DAQ has been finished              | None
+///
+/// Useful helper functions are defined in MIES_AnalysisFunctionHelpers.ipf.
 ///
 /// The Post Sweep/Set/DAQ functions are *not* executed if a currently running sweep is aborted.
 ///
@@ -44,6 +45,22 @@
 /// 1                                 | Pre DAQ     | DAQ is prevented to start
 /// #ANALYSIS_FUNC_RET_REPURP_TIME    | Mid Sweep   | Current sweep is immediately stopped. Left over time is repurposed for ITI.
 /// #ANALYSIS_FUNC_RET_EARLY_STOP     | Mid Sweep   | Current sweep is immediately stopped without honouring the left over time in a special way.
+///
+/// @anchor AnalysisFunctionParameters Analayis function user parameters (V3 only)
+///
+/// For some analysis functions it is beneficial to send in additional data
+/// depending on the stimset. This is supported by adding parameters and their
+/// values via WBP_AddAnalysisParameter() to the stimset and then querying them
+/// with the help of @ref AnalysisFunctionParameterHelpers. The parameters are
+/// stored serialized in the `WPT` wave, see GetWaveBuilderWaveTextParam() for
+/// the exact format. See TestAnalysisFunction_V3() for an example
+/// implementation.
+///
+/// If you want to enforce a list of parameters which must be present, define
+/// an additional function named like your analysis function but suffixed with
+/// `_GetParams` and return a semicolon separated list of required names. This
+/// is then checked before DAQ, and if not all required parameters are supplied
+/// DAQ is not started.
 
 /// @name Initial parameters for stimulation
 ///@{
@@ -81,6 +98,76 @@ Function TestAnalysisFunction_V2(panelTitle, eventType, ITCDataWave, headStage, 
 	variable headstage, realDataLength
 
 	printf "Analysis function version 2 called: device %s, eventType \"%s\", headstage %d\r", panelTitle, StringFromList(eventType, EVENT_NAME_LIST), headStage
+
+	return 0
+End
+
+Function TestAnalysisFunction_V3(panelTitle, s)
+	string panelTitle
+	STRUCT AnalysisFunction_V3& s
+
+	string names, name, type
+	variable numEntries, i
+
+	/// Query parameters
+	printf "User parameters: "
+	print s.params
+
+	names = AFH_GetListOfAnalysisParamNames(s.params)
+
+	numEntries = ItemsInList(names)
+	for(i = 0; i < numEntries; i += 1)
+		name = Stringfromlist(i, names)
+		type = AFH_GetAnalysisParamType(name, s.params)
+		strswitch(type)
+			case "string":
+				print AFH_GetAnalysisParamTextual(name, s.params)
+				break
+			case "variable":
+				print AFH_GetAnalysisParamTextual(name, s.params)
+				break
+			case "wave":
+				WAVE/Z wv = AFH_GetAnalysisParamWave(name, s.params)
+				print wv
+			case "wave":
+				WAVE/T/Z wvText = AFH_GetAnalysisParamTextWave(name, s.params)
+				print wvText
+				break
+			default:
+				printf "Unsupported parameter type %s\r", type
+				break
+		endswitch
+	endfor
+
+	switch(s.eventType)
+		case PRE_DAQ_EVENT:
+			// code
+			// can also return with != 0, see @ref AnalysisFunction_V3DescriptionTable
+			break
+		case PRE_SWEEP_EVENT:
+			// code
+			break
+		case MID_SWEEP_EVENT:
+			// code
+			// can also return with != 0, see @ref AnalysisFunction_V3DescriptionTable
+			break
+		case POST_SWEEP_EVENT:
+			// code
+			break
+		case POST_SET_EVENT:
+			// code
+			break
+		case POST_DAQ_EVENT:
+			// code
+			break
+		default:
+			printf "Unsupported event type %d\r", s.eventType
+			break
+	endswitch
+
+	printf "Analysis function version 3 called: device %s, eventType \"%s\", headstage %d\r", panelTitle, StringFromList(s.eventType, EVENT_NAME_LIST), s.headStage
+
+	return 0
 End
 
 Function Enforce_VC(panelTitle, eventType, ITCDataWave, headStage, realDataLength)

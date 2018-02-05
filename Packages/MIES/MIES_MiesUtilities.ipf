@@ -3455,6 +3455,15 @@ Function/S ExtractAnalysisFuncFromStimSet(stimSet, eventType)
 	return StringByKey(eventName, wvnote, "=", ";")
 End
 
+/// @brief Return the analysis function parameters as comma (`,`) separated list
+///
+/// @sa WBP_AddAnalysisParameter() for the exact format.
+Function/S ExtractAnalysisFunctionParams(stimSet)
+	WAVE stimSet
+
+	return GetStringFromWaveNote(stimSet, ANALYSIS_FUNCTION_PARAMS_LBN, keySep = "=", listSep = ";")
+End
+
 /// @brief Split TTL data into a single wave for each channel
 /// @param data       1D channel data extracted by #ExtractOneDimDataFromSweep
 /// @param ttlBits    bit mask of the active TTL channels form e.g. #GetTTLBits

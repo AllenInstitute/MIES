@@ -905,16 +905,19 @@ Function AddEntryIntoWaveNoteAsList(wv, key, [var, str, appendCR, replaceEntry, 
 
 	ASSERT(WaveExists(wv), "missing wave")
 	ASSERT(!IsEmpty(key), "empty key")
+	ASSERT(strsearch(key, ";", 0) == -1, "key can not contain a semicolon")
 
 	if(ParamIsDefault(format))
 		formatString = "%s = %g;"
 	else
+		ASSERT(strsearch(format, ";", 0) == -1, "format can not contain a semicolon")
 		formatString = "%s = " + format + ";"
 	endif
 
 	if(!ParamIsDefault(var))
 		sprintf formattedString, formatString, key, var
 	elseif(!ParamIsDefault(str))
+		ASSERT(strsearch(str, ";", 0) == -1, "str can not contain a semicolon")
 		formattedString = key + " = " + str + ";"
 	else
 		formattedString = key + ";"
@@ -1646,6 +1649,8 @@ End
 
 /// @brief calculates the relative complement of list2 in list1
 ///
+/// Every list item of `list1` must be in `list2`.
+///
 /// also called the set-theoretic difference of list1 and list2
 /// @returns difference as list
 Function/S GetListDifference(list1, list2)
@@ -2214,9 +2219,13 @@ End
 Function FuncRefIsAssigned(funcInfo)
 	string funcInfo
 
-	ASSERT(!isEmpty(funcInfo), "Empty function info")
+	variable result
 
-	return NumberByKey("ISPROTO", funcInfo) == 0
+	ASSERT(!isEmpty(funcInfo), "Empty function info")
+	result = NumberByKey("ISPROTO", funcInfo)
+	ASSERT(IsFinite(result), "funcInfo does not look like a FuncRefInfo string")
+
+	return result == 0
 End
 
 /// @brief Return the seconds, including fractional part, since Igor Pro epoch (1/1/1904) in UTC time zone

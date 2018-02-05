@@ -154,3 +154,39 @@ Structure OOdDAQParams
 	                           ///< the smeared regions in units of time of the ITCDataWave. @sa OOD_ExtractFeatureRegions()
 	///@}
 EndStructure
+
+/// @brief The structure passed into `V3` and later analysis functions
+Structure AnalysisFunction_V3
+	/// one of @ref EVENT_TYPE_ANALYSIS_FUNCTIONS
+	variable eventType
+
+	/// raw data wave for interacting with the DAC hardware (locked to prevent
+	/// changes using `SetWaveLock`). The exact wave format depends on the hardware.
+	///
+	/// ITC Hardware: ITCDataWave, see GetITCDataWave()
+	WAVE rawDACWave
+
+	/// active headstage index, `[0, NUM_HEADSTAGES[`
+	variable headStage
+
+	/// number of rows in `rawDACWave` which will be filled with data at the
+	/// end of DAQ. The total number of rows in `rawDACWave` might be higher
+	/// due to alignment requirements of the data acquisition hardware.
+	///
+	/// Always `NaN` for #PRE_DAQ_EVENT events.
+	variable lastValidRowIndex
+
+	/// number of rows in `rawDACWave` with already acquired data
+	variable lastKnownRowIndex
+
+	/// Potential *future* number of the sweep. Once the sweep is finished it will be
+	/// saved with this number. Use GetSweepWave() to query the sweep itself.
+	variable sweepNo
+
+	/// Number of sweeps in the currently acquired stimset of the passed headstage
+	variable sweepsInSet
+
+	/// Analysis function parameters set in the stimset's textual parameter
+	/// wave. Settable via WBP_AddAnalysisParameter().
+	string params
+EndStructure

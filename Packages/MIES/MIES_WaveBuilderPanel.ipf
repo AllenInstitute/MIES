@@ -85,16 +85,16 @@ End
 
 Window WaveBuilder() : Panel
 	PauseUpdate; Silent 1		// building window...
-	NewPanel /K=1 /W=(97,418,1104,1054)
+	NewPanel /K=1 /W=(115,441,1122,1077)
 	SetDrawLayer UserBack
 	SetDrawEnv fname= "MS Sans Serif",fsize= 16,fstyle= 1
 	DrawText 32,25,"Set Parameters"
-	TabControl WBP_WaveType,pos={187.00,3.00},size={686.00,205.00},proc=ACL_DisplayTab
+	TabControl WBP_WaveType,pos={187.00,3.00},size={686.00,240.00},proc=ACL_DisplayTab
 	TabControl WBP_WaveType,userdata(tabcontrol)=  "WBP_WaveType"
 	TabControl WBP_WaveType,userdata(currenttab)=  "0"
 	TabControl WBP_WaveType,userdata(initialhook)=  "WBP_InitialTabHook"
 	TabControl WBP_WaveType,userdata(finalhook)=  "WBP_FinalTabHook"
-	TabControl WBP_WaveType,userdata(ResizeControlsInfo)= A"!!,GK!!#8L!!#D;J,hr2z!!#](Aon\"Qzzzzzzzzzzzzzz!!#o2B4uAezz"
+	TabControl WBP_WaveType,userdata(ResizeControlsInfo)= A"!!,GK!!#8L!!#D;J,hrUz!!#](Aon\"Qzzzzzzzzzzzzzz!!#o2B4uAezz"
 	TabControl WBP_WaveType,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	TabControl WBP_WaveType,userdata(ResizeControlsInfo) += A"zzz!!#N3Bk1ct<C]S7zzzzzzzzzzzzz!!!"
 	TabControl WBP_WaveType,tabLabel(0)="Square pulse",tabLabel(1)="Ramp"
@@ -102,10 +102,10 @@ Window WaveBuilder() : Panel
 	TabControl WBP_WaveType,tabLabel(4)="Saw tooth",tabLabel(5)="Pulse train"
 	TabControl WBP_WaveType,tabLabel(6)="PSC",tabLabel(7)="Load"
 	TabControl WBP_WaveType,tabLabel(8)="Combine",value= 0
-	TabControl WBP_Set_Parameters,pos={3.00,29.00},size={182.00,174.00},proc=ACL_DisplayTab
+	TabControl WBP_Set_Parameters,pos={3.00,31.00},size={177.00,205.00},proc=ACL_DisplayTab
 	TabControl WBP_Set_Parameters,userdata(finalhook)=  "WBP_FinalTabHook"
 	TabControl WBP_Set_Parameters,userdata(currenttab)=  "0"
-	TabControl WBP_Set_Parameters,userdata(ResizeControlsInfo)= A"!!,>M!!#=K!!#AE!!#A=z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
+	TabControl WBP_Set_Parameters,userdata(ResizeControlsInfo)= A"!!,>M!!#=K!!#AE!!#A`z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	TabControl WBP_Set_Parameters,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Duafnzzzzzzzzzzz"
 	TabControl WBP_Set_Parameters,userdata(ResizeControlsInfo) += A"zzz!!#N3Bk1ct<C]S7zzzzzzzzzzzzz!!!"
 	TabControl WBP_Set_Parameters,labelBack=(60928,60928,60928),tabLabel(0)="Basic"
@@ -700,50 +700,11 @@ Window WaveBuilder() : Panel
 	CheckBox check_FlipEpoch_S98,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Duafnzzzzzzzzzzz"
 	CheckBox check_FlipEpoch_S98,userdata(ResizeControlsInfo) += A"zzz!!#u:Duafnzzzzzzzzzzzzzz!!!"
 	CheckBox check_FlipEpoch_S98,value= 0
-	PopupMenu popup_af_postSweep_S3,pos={4.00,102.00},size={173.00,19.00},bodyWidth=110,disable=1,proc=WBP_PopupMenu_AnalysisFunctions,title="Post Sweep"
-	PopupMenu popup_af_postSweep_S3,help={"After each sweep"},userdata(tabnum)=  "1"
-	PopupMenu popup_af_postSweep_S3,userdata(tabcontrol)=  "WBP_Set_Parameters"
-	PopupMenu popup_af_postSweep_S3,userdata(ResizeControlsInfo)= A"!!,?8!!#@0!!#A<!!#<Pz!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
-	PopupMenu popup_af_postSweep_S3,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Duafnzzzzzzzzzzz"
-	PopupMenu popup_af_postSweep_S3,userdata(ResizeControlsInfo) += A"zzz!!#u:Duafnzzzzzzzzzzzzzz!!!"
-	PopupMenu popup_af_postSweep_S3,mode=1,popvalue="- none -",value= #"WBP_GetAnalysisFunctions()"
-	PopupMenu popup_af_postSet_S4,pos={22.00,128.00},size={155.00,19.00},bodyWidth=110,disable=1,proc=WBP_PopupMenu_AnalysisFunctions,title="Post Set"
-	PopupMenu popup_af_postSet_S4,help={"After a *full* set has been acquired (This event is not always reached as the user might not acquire all sweeps of a set)"}
-	PopupMenu popup_af_postSet_S4,userdata(tabnum)=  "1"
-	PopupMenu popup_af_postSet_S4,userdata(tabcontrol)=  "WBP_Set_Parameters"
-	PopupMenu popup_af_postSet_S4,userdata(ResizeControlsInfo)= A"!!,Bi!!#@d!!#A*!!#<Pz!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
-	PopupMenu popup_af_postSet_S4,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Duafnzzzzzzzzzzz"
-	PopupMenu popup_af_postSet_S4,userdata(ResizeControlsInfo) += A"zzz!!#u:Duafnzzzzzzzzzzzzzz!!!"
-	PopupMenu popup_af_postSet_S4,mode=1,popvalue="- none -",value= #"WBP_GetAnalysisFunctions()"
-	PopupMenu popup_af_preDAQEvent_S1,pos={19.00,50.00},size={158.00,19.00},bodyWidth=110,disable=1,proc=WBP_PopupMenu_AnalysisFunctions,title="Pre DAQ"
-	PopupMenu popup_af_preDAQEvent_S1,help={"Immediately before any DAQ occurs"}
-	PopupMenu popup_af_preDAQEvent_S1,userdata(tabnum)=  "1"
-	PopupMenu popup_af_preDAQEvent_S1,userdata(tabcontrol)=  "WBP_Set_Parameters"
-	PopupMenu popup_af_preDAQEvent_S1,userdata(ResizeControlsInfo)= A"!!,BQ!!#>V!!#A-!!#<Pz!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
-	PopupMenu popup_af_preDAQEvent_S1,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Duafnzzzzzzzzzzz"
-	PopupMenu popup_af_preDAQEvent_S1,userdata(ResizeControlsInfo) += A"zzz!!#u:Duafnzzzzzzzzzzzzzz!!!"
-	PopupMenu popup_af_preDAQEvent_S1,mode=1,popvalue="- none -",value= #"WBP_GetAnalysisFunctions()"
-	PopupMenu popup_af_midSweep_S2,pos={7.00,76.00},size={170.00,19.00},bodyWidth=110,disable=1,proc=WBP_PopupMenu_AnalysisFunctions,title="Mid sweep"
-	PopupMenu popup_af_midSweep_S2,help={"Each time when new data is polled (available for background DAQ only)"}
-	PopupMenu popup_af_midSweep_S2,userdata(tabnum)=  "1"
-	PopupMenu popup_af_midSweep_S2,userdata(tabcontrol)=  "WBP_Set_Parameters"
-	PopupMenu popup_af_midSweep_S2,userdata(ResizeControlsInfo)= A"!!,@C!!#?Q!!#A9!!#<Pz!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
-	PopupMenu popup_af_midSweep_S2,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Duafnzzzzzzzzzzz"
-	PopupMenu popup_af_midSweep_S2,userdata(ResizeControlsInfo) += A"zzz!!#u:Duafnzzzzzzzzzzzzzz!!!"
-	PopupMenu popup_af_midSweep_S2,mode=1,popvalue="- none -",value= #"WBP_GetAnalysisFunctions()"
-	PopupMenu popup_af_postDAQEvent_S5,pos={13.00,154.00},size={164.00,19.00},bodyWidth=110,disable=1,proc=WBP_PopupMenu_AnalysisFunctions,title="Post DAQ"
-	PopupMenu popup_af_postDAQEvent_S5,help={"After all DAQ has been finished"}
-	PopupMenu popup_af_postDAQEvent_S5,userdata(tabnum)=  "1"
-	PopupMenu popup_af_postDAQEvent_S5,userdata(tabcontrol)=  "WBP_Set_Parameters"
-	PopupMenu popup_af_postDAQEvent_S5,userdata(ResizeControlsInfo)= A"!!,A^!!#A)!!#A3!!#<Pz!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
-	PopupMenu popup_af_postDAQEvent_S5,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Duafnzzzzzzzzzzz"
-	PopupMenu popup_af_postDAQEvent_S5,userdata(ResizeControlsInfo) += A"zzz!!#u:Duafnzzzzzzzzzzzzzz!!!"
-	PopupMenu popup_af_postDAQEvent_S5,mode=1,popvalue="- none -",value= #"WBP_GetAnalysisFunctions()"
-	Button button_af_jump_to_proc,pos={66.00,179.00},size={113.00,21.00},disable=1,proc=WBP_ButtonProc_OpenAnaFuncs,title="Open procedure file"
+	Button button_af_jump_to_proc,pos={21.00,211.00},size={125.00,20.00},disable=1,proc=WBP_ButtonProc_OpenAnaFuncs,title="Open procedure file"
 	Button button_af_jump_to_proc,help={"Open the procedure where the analysis functions have to be defined"}
 	Button button_af_jump_to_proc,userdata(tabnum)=  "1"
 	Button button_af_jump_to_proc,userdata(tabcontrol)=  "WBP_Set_Parameters"
-	Button button_af_jump_to_proc,userdata(ResizeControlsInfo)= A"!!,E>!!#AB!!#@F!!#<`z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
+	Button button_af_jump_to_proc,userdata(ResizeControlsInfo)= A"!!,E:!!#Ab!!#@F!!#<`z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	Button button_af_jump_to_proc,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Duafnzzzzzzzzzzz"
 	Button button_af_jump_to_proc,userdata(ResizeControlsInfo) += A"zzz!!#u:Duafnzzzzzzzzzzzzzz!!!"
 	PopupMenu popup_WaveBuilder_trig_type_P53,pos={413.00,127.00},size={38.00,19.00},disable=1,proc=WBP_PopupMenu
@@ -874,24 +835,32 @@ Window WaveBuilder() : Panel
 	CheckBox check_allow_saving_builtin_nam,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Duafnzzzzzzzzzzz"
 	CheckBox check_allow_saving_builtin_nam,userdata(ResizeControlsInfo) += A"zzz!!#u:Duafnzzzzzzzzzzzzzz!!!"
 	CheckBox check_allow_saving_builtin_nam,value= 0
-	DefineGuide UGH1={FT,206},UGH0={UGH1,0.902778,FB}
+	PopupMenu popup_af_generic_S9,pos={14.00,56.00},size={153.00,19.00},bodyWidth=110,disable=1,proc=WBP_PopupMenu_AnalysisFunctions,title="Generic"
+	PopupMenu popup_af_generic_S9,help={"Generic analysis function (V3 and above only) which will be called for all events"}
+	PopupMenu popup_af_generic_S9,userdata(tabnum)=  "1"
+	PopupMenu popup_af_generic_S9,userdata(tabcontrol)=  "WBP_Set_Parameters"
+	PopupMenu popup_af_generic_S9,userdata(ResizeControlsInfo)= A"!!,C$!!#>b!!#A(!!#<Pz!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
+	PopupMenu popup_af_generic_S9,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Duafnzzzzzzzzzzz"
+	PopupMenu popup_af_generic_S9,userdata(ResizeControlsInfo) += A"zzz!!#u:Duafnzzzzzzzzzzzzzz!!!"
+	PopupMenu popup_af_generic_S9,mode=1,popvalue="- none -",value= #"WBP_GetAnalysisFunctions_V3()"
+	DefineGuide UGH1={FT,241},UGH0={UGH1,0.902778,FB}
 	SetWindow kwTopWin,hook(main)=WBP_MainWindowHook
 	SetWindow kwTopWin,hook(ResizeControls)=ResizeControls#ResizeControlsHook
 	SetWindow kwTopWin,userdata(ResizeControlsInfo)= A"!!*'\"z!!#E6^]6bEzzzzzzzzzzzzzzzzzzzzz"
 	SetWindow kwTopWin,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzzzzzzzzzzzzzzz"
 	SetWindow kwTopWin,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzzzzzzzzz!!!"
 	SetWindow kwTopWin,userdata(ResizeControlsGuides)=  "UGH1;UGH0;"
-	SetWindow kwTopWin,userdata(ResizeControlsInfoUGH0)= A":-hTC3`S[@0KW?-:-)HbG%F!_Bl%<kE][6':dmEFF(KAR85E,T>#.mm5tj<o4&A^O8Q88W:-(6m1bLI94%E:B6q&gk<C]S74%E:B6q&jl7RB1778-NR;b9q[:JNr)/ibU@2`E]X"
-	SetWindow kwTopWin,userdata(ResizeControlsInfoUGH1)= A":-hTC3`S[@0frH.:-)HbG%F!_Bl%<kE][6':dmEFF(KAR85E,T>#.mm5tj<o4&A^O8Q88W:-(-a2D-[;4%E:B6q&gk7T;H><CoSI1-.Kp78-NR;b9q[:JNr+0K(u"
+	SetWindow kwTopWin,userdata(ResizeControlsInfoUGH0)=  "NAME:UGH0;WIN:WaveBuilder;TYPE:User;HORIZONTAL:1;POSITION:598.00;GUIDE1:UGH1;GUIDE2:FB;RELPOSITION:0.902778;"
+	SetWindow kwTopWin,userdata(ResizeControlsInfoUGH1)=  "NAME:UGH1;WIN:WaveBuilder;TYPE:User;HORIZONTAL:1;POSITION:241.00;GUIDE1:FT;GUIDE2:;RELPOSITION:241;"
 	SetWindow kwTopWin,userdata(panelVersion)=  "3"
 	Execute/Q/Z "SetWindow kwTopWin sizeLimit={755.25,477,inf,inf}" // sizeLimit requires Igor 7 or later
-	Display/W=(0,286,1068,487)/FG=($"",UGH1,FR,UGH0)/HOST=#
+	Display/W=(0,242,1068,487)/FG=($"",$"",FR,UGH0)/HOST=#
 	SetWindow kwTopWin,hook(ResizeControls)=ResizeControls#ResizeControlsHook
 	SetWindow kwTopWin,userdata(ResizeControlsInfo)= A"!!,Ct!!#A/!!#E!5QF0#!!!!\"zzzzzzzzzzzzzzzzzzzz"
 	SetWindow kwTopWin,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzzzzzzzzzzzzzzz"
 	SetWindow kwTopWin,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzzzzzzzzz!!!"
 	SetWindow kwTopWin,userdata(ResizeControlsGuides)=  "UGH0;"
-	SetWindow kwTopWin,userdata(ResizeControlsInfoUGH0)= A":-hTC3`S[@0KW?-:-)HbG%F!_Bl%<kE][6':dmEFF(KAR85E,T>#.mm5tj<o4&A^O8Q88W:-(6j2*4<.8OQ!%3^uFt7o`,K75?nc;FO8U:K'ha8P`)B/Mo4E"
+	SetWindow kwTopWin,userdata(ResizeControlsInfoUGH0)=  "NAME:UGH0;WIN:WaveBuilder;TYPE:User;HORIZONTAL:1;POSITION:565;GUIDE1:FB;GUIDE2:;RELPOSITION:-42;"
 	RenameWindow #,WaveBuilderGraph
 	SetActiveSubwindow ##
 EndMacro
@@ -1044,7 +1013,7 @@ static Function WBP_DisplaySetInPanel()
 	for(i = 0; i < numSweeps; i += 1)
 		trace = NameOfWave(displayData) + "_S" + num2str(i)
 		AppendToGraph/W=$waveBuilderGraph displayData[][i]/TN=$trace
-		GetSweepColor(i, red, green, blue)
+		WBP_GetSweepColor(i, red, green, blue)
 		ModifyGraph/W=$waveBuilderGraph rgb($trace) = (red, green, blue)
 	endfor
 
@@ -1410,12 +1379,7 @@ Function WBP_ButtonProc_SaveSet(ba) : ButtonControl
 
 			SetSetVariableString(panel, "setvar_WaveBuilder_baseName", DEFAULT_SET_PREFIX)
 			ControlUpdate/W=$panel popup_WaveBuilder_SetList
-
-			SetPopupMenuIndex(panel, "popup_af_preDAQEvent_S1",  0)
-			SetPopupMenuIndex(panel, "popup_af_MidSweep_S2",     0)
-			SetPopupMenuIndex(panel, "popup_af_PostSweep_S3",    0)
-			SetPopupMenuIndex(panel, "popup_af_PostSet_S4",      0)
-			SetPopupMenuIndex(panel, "popup_af_postDAQEvent_S5", 0)
+			SetPopupMenuIndex(panel, "popup_af_generic_S9", 0)
 			WBP_AnaFuncsToWPT()
 			break
 	endswitch
@@ -1559,7 +1523,7 @@ static Function WBP_ChangeWaveType()
 	list  = "SetVar_WaveBuilder_P3;SetVar_WaveBuilder_P4;SetVar_WaveBuilder_P5;"
 	list += "SetVar_WaveBuilder_P4_OD00;SetVar_WaveBuilder_P4_OD01;SetVar_WaveBuilder_P4_OD02;SetVar_WaveBuilder_P4_OD03;SetVar_WaveBuilder_P4_OD04;"
 	list += "SetVar_WaveBuilder_P5_DD02;SetVar_WaveBuilder_P5_DD03;SetVar_WaveBuilder_P5_DD04;SetVar_WaveBuilder_P5_DD05;SetVar_WaveBuilder_P5_DD06;"
-	list += "popup_af_preDAQEvent_S1;popup_af_midSweep_S2;popup_af_postSweep_S3;popup_af_postSet_S4;popup_af_postDAQEvent_S5;button_af_jump_to_proc"
+	list += "popup_af_generic_S9;button_af_jump_to_proc"
 
 	stimulusType = WBP_GetStimulusType()
 
@@ -1849,13 +1813,8 @@ static Function WBP_LoadSet(setName)
 	SetSetVariableString(panel, "setvar_WaveBuilder_baseName", setPrefix)
 	SetSetVariable(panel, "setvar_WaveBuilder_SetNumber", setNumber)
 
-	funcList = WBP_GetAnalysisFunctions()
-	SetAnalysisFunctionIfFuncExists(panel, "popup_af_preDAQEvent_S1", setName, funcList, WPT[1][99])
-	SetAnalysisFunctionIfFuncExists(panel, "popup_af_midSweep_S2", setName, funcList, WPT[2][99])
-	SetAnalysisFunctionIfFuncExists(panel, "popup_af_postSweep_S3", setName, funcList, WPT[3][99])
-	SetAnalysisFunctionIfFuncExists(panel, "popup_af_postSet_S4", setName, funcList, WPT[4][99])
-	SetAnalysisFunctionIfFuncExists(panel, "popup_af_postDAQEvent_S5", setName, funcList, WPT[5][99])
-
+	funcList = WBP_GetAnalysisFunctions_V3()
+	SetAnalysisFunctionIfFuncExists(panel, "popup_af_generic_S9", setName, funcList, WPT[9][99])
 	WBP_AnaFuncsToWPT()
 
 	ASSERT(SegWvType[100] <= SEGMENT_TYPE_WAVE_LAST_IDX, "Only supports up to different SEGMENT_TYPE_WAVE_LAST_IDX epochs")
@@ -1870,21 +1829,21 @@ End
 static Function SetAnalysisFunctionIfFuncExists(win, ctrl, stimset, funcList, func)
 	string win, ctrl, stimset, funcList, func
 
-	variable idx
+	string entry
 
 	if(IsEmpty(func))
-		idx = 0
+		entry = NONE
 	else
-		idx = WhichListItem(func, funcList)
-
-		if(idx == -1)
+		if(WhichListItem(func, funcList) != -1)
+			entry = func
+		else
 			printf "The analysis function \"%s\" referenced in the stimset \"%s\" could not be found.\r", func, stimset
 			ControlWindowToFront()
-			idx = 0 // selects NONE
+			entry = NONE
 		endif
 	endif
 
-	SetPopupMenuIndex(win, ctrl, idx)
+	SetPopupMenuString(win, ctrl, entry)
 End
 
 static Function WBP_DeleteSet()
@@ -2237,23 +2196,27 @@ static Function WBP_AnaFuncsToWPT()
 
 	WAVE/T WPT = GetWaveBuilderWaveTextParam()
 
-	func = GetPopupMenuString(panel, "popup_af_preDAQEvent_S1")
-	WPT[1][99] = SelectString(cmpstr(func, NONE), "", func)
-	func = GetPopupMenuString(panel, "popup_af_MidSweep_S2")
-	WPT[2][99] = SelectString(cmpstr(func, NONE), "", func)
-	func = GetPopupMenuString(panel, "popup_af_PostSweep_S3")
-	WPT[3][99] = SelectString(cmpstr(func, NONE), "", func)
-	func = GetPopupMenuString(panel, "popup_af_PostSet_S4")
-	WPT[4][99] = SelectString(cmpstr(func, NONE), "", func)
-	func = GetPopupMenuString(panel, "popup_af_postDAQEvent_S5")
-	WPT[5][99] = SelectString(cmpstr(func, NONE), "", func)
+	func = GetPopupMenuString(panel, "popup_af_generic_S9")
+	WPT[9][99] = SelectString(cmpstr(func, NONE), "", func)
 End
+
+/// Wrapper functions to be used in GUI recreation macros
+/// This avoids having to hardcode the parameter values.
+/// @{
+Function/S WBP_GetAnalysisFunctions_V3()
+	return WBP_GetAnalysisFunctions(ANALYSIS_FUNCTION_VERSION_V3)
+End
+/// @}
 
 /// @brief Return a list of analysis functions including NONE, usable for popup menues
-Function/S WBP_GetAnalysisFunctions()
+///
+/// @sa AFM_GetAnalysisFunctions
+Function/S WBP_GetAnalysisFunctions(versionBitMask)
+	variable versionBitMask
 
-	return AddListItem(NONE, AFH_GetAnalysisFunctions(ANALYSIS_FUNCTION_VERSION_ALL))
+	return AddListItem(NONE, AFH_GetAnalysisFunctions(versionBitMask))
 End
+
 
 /// @brief Return a list of noise types, usable for popup menues
 Function/S WBP_GetNoiseTypes()
@@ -2505,7 +2468,7 @@ Function WBP_ShowFFTSpectrumIfReq(segmentWave, sweep)
 	ModifyGraph/W=$graphPhase log(bottom)=1
 	ModifyGraph/W=$graphPhase mode=4
 
-	GetSweepColor(sweep, red, green, blue)
+	WBP_GetSweepColor(sweep, red, green, blue)
 	ModifyGraph/W=$graphMag rgb($trace)   = (red, green, blue)
 	ModifyGraph/W=$graphPhase rgb($trace) = (red, green, blue)
 
@@ -2522,8 +2485,63 @@ End
 /// @brief Return distinct colors the sweeps of the wavebuilder
 ///
 /// These are backwards compared to the trace colors
-static Function GetSweepColor(sweep, red, green, blue)
+static Function WBP_GetSweepColor(sweep, red, green, blue)
 	variable sweep, &red, &green, &blue
 
 	return GetTraceColor(20 - sweep, red, green, blue)
+End
+
+/// @brief Add an analysis function parameter to the given stimset
+///
+/// This function adds the parameter to the `WPT` wave and checks that it is valid.
+///
+/// Exactly one of `var`/`str`/`wv` must be given.
+///
+/// @param stimset stimset name
+/// @param name    name of the parameter
+/// @param var     [optional] numeric parameter
+/// @param str     [optional] string parameter
+/// @param wv      [optional] wave parameter can be numeric or text
+Function WBP_AddAnalysisParameter(stimset, name, [var, str, wv])
+	string stimset, name
+	variable var
+	string str
+	WAVE wv
+
+	string type, value, formattedString, params
+
+	WAVE/T/Z WPT = WB_GetWaveTextParamForSet(stimset)
+	ASSERT(WaveExists(WPT), "Missing stimset")
+
+	ASSERT(ParamIsDefault(var) + ParamIsDefault(str) + ParamIsDefault(wv) == 2, "Expected one of var, str or wv")
+
+	if(!ParamIsDefault(var))
+		type = "variable"
+		value = num2str(var)
+	elseif(!ParamIsDefault(str))
+		type = "string"
+		value = str
+	elseif(!ParamIsDefault(wv))
+		if(IsTextWave(wv))
+			type  = "textwave"
+			FindValue/TEXT="|" wv
+			ASSERT(V_Value == -1, "textwave can not hold \"|\" character")
+			value = TextWaveToList(wv, "|")
+		else
+			type = "wave"
+			value = NumericWaveToList(wv, "|", format = "%.15g")
+		endif
+	endif
+
+	ASSERT(!cmpstr(CleanupName(name, 0), name), "Name is not a legal non-liberal igor object name")
+	ASSERT(!GrepString(value, "[=:,;]+"), "Written entry contains invalid characters (one of `=:,;`)")
+	ASSERT(!IsEmpty(type) && WhichListItem(type, ANALYSIS_FUNCTION_PARAMS_TYPES) != -1, "Invalid type")
+
+	params = WPT[10][%Set]
+
+	if(WhichListItem(name, AFH_GetListOfAnalysisParamNames(params)) != -1)
+		print "Parameter \"s\" is already present and will be overwritten!"
+	endif
+
+	WPT[10][%Set] = ReplaceStringByKey(name, params , type + "=" + value, ":", ",", 0)
 End
