@@ -443,19 +443,38 @@ End
 /// @param name   parameter name
 /// @param params serialized parameters, usually just #AnalysisFunction_V3.params
 /// @ingroup AnalysisFunctionParameterHelpers
+///
+/// @return wave reference to free numeric wave, or invalid wave ref in case the
+/// parameter could not be found.
 Function/WAVE AFH_GetAnalysisParamWave(name, params)
 	string name, params
 
-	return ListToNumericWave(StringByKey(name + ":wave", params, "=", ",", 0), "|")
+	string contents = StringByKey(name + ":wave", params, "=", ",", 0)
+
+	if(IsEmpty(contents))
+		return $""
+	endif
+
+	return ListToNumericWave(contents, "|")
 End
 
 /// @brief Return a textual wave user parameter
 ///
 /// @param name   parameter name
 /// @param params serialized parameters, usually just #AnalysisFunction_V3.params
+///
 /// @ingroup AnalysisFunctionParameterHelpers
+///
+/// @return wave reference to free text wave, or invalid wave ref in case the
+/// parameter could not be found.
 Function/WAVE AFH_GetAnalysisParamTextWave(name, params)
 	string name, params
 
-	return ListToTextWave(StringByKey(name + ":textwave", params, "=", ",", 0), "|")
+	string contents = StringByKey(name + ":textwave", params, "=", ",", 0)
+
+	if(IsEmpty(contents))
+		return $""
+	endif
+
+	return ListToTextWave(contents, "|")
 End
