@@ -846,6 +846,11 @@ Function PSQ_SubThreshold(panelTitle, s)
 				return 1
 			endif
 
+			KillOrMoveToTrash(wv = GetAnalysisFuncDAScaleDeltaI(panelTitle))
+			KillOrMoveToTrash(wv = GetAnalysisFuncDAScaleDeltaV(panelTitle))
+			KillOrMoveToTrash(wv = GetAnalysisFuncDAScaleRes(panelTitle))
+			KillWindow/Z $RESISTANCE_GRAPH
+
 			break
 		case POST_SWEEP_EVENT:
 			WAVE numericalValues = GetLBNumericalValues(panelTitle)
