@@ -23,13 +23,13 @@
 /// PSQ_FMT_LBN_STEPSIZE        Current DAScale step size                                 SP                No                     Yes
 /// PSQ_FMT_LBN_FINAL_SCALE     Final DAScale of the given headstage, only set on success SP, RB            No                     No
 /// PSQ_FMT_LBN_INITIAL_SCALE   Initial DAScale                                           RB                No                     No
-/// PSQ_FMT_LBN_RMS_SHORT_PASS  Short RMS baseline QC result                              ST, RB            Yes                    Yes
-/// PSQ_FMT_LBN_RMS_LONG_PASS   Long RMS baseline QC result                               ST, RB            Yes                    Yes
-/// PSQ_FMT_LBN_TARGETV_PASS    Target voltage baseline QC result                         ST, RB            Yes                    Yes
-/// PSQ_FMT_LBN_CHUNK_PASS      Which chunk passed/failed baseline QC                     ST, RB            Yes                    Yes
-/// PSQ_FMT_LBN_BL_QC_PASS      Pass/fail state of the complete baseline                  ST, RB            No                     Yes
-/// PSQ_FMT_LBN_SWEEP_PASS      Pass/fail state of the complete sweep                     ST, SP            No                     No
-/// PSQ_FMT_LBN_SET_PASS        Pass/fail state of the complete set                       ST, RB            No                     No
+/// PSQ_FMT_LBN_RMS_SHORT_PASS  Short RMS baseline QC result                              DA, RB            Yes                    Yes
+/// PSQ_FMT_LBN_RMS_LONG_PASS   Long RMS baseline QC result                               DA, RB            Yes                    Yes
+/// PSQ_FMT_LBN_TARGETV_PASS    Target voltage baseline QC result                         DA, RB            Yes                    Yes
+/// PSQ_FMT_LBN_CHUNK_PASS      Which chunk passed/failed baseline QC                     DA, RB            Yes                    Yes
+/// PSQ_FMT_LBN_BL_QC_PASS      Pass/fail state of the complete baseline                  DA, RB            No                     Yes
+/// PSQ_FMT_LBN_SWEEP_PASS      Pass/fail state of the complete sweep                     DA, SP            No                     No
+/// PSQ_FMT_LBN_SET_PASS        Pass/fail state of the complete set                       DA, RB            No                     No
 /// PSQ_FMT_LBN_PULSE_DUR       Pulse duration as determined experimentally               RB                No                     Yes
 /// =========================== ========================================================= ================= =====================  =====================
 ///
@@ -45,7 +45,7 @@ static Constant PSQ_RMS_LONG_TEST  = 0x1
 static Constant PSQ_TARGETV_TEST   = 0x2
 
 static StrConstant PSQ_SP_LBN_PREFIX = "Squ. Pul."
-static StrConstant PSQ_ST_LBN_PREFIX = "Sub Th."
+static StrConstant PSQ_DS_LBN_PREFIX = "DA Scale"
 static StrConstant PSQ_RB_LBN_PREFIX = "Rheobase"
 
 /// @brief Return labnotebook keys for patch seq analysis functions
@@ -61,8 +61,8 @@ Function/S PSQ_CreateLBNKey(type, formatString, [chunk, query])
 	string str, prefix
 
 	switch(type)
-		case PSQ_SUB_THRESHOLD:
-			prefix = PSQ_ST_LBN_PREFIX
+		case PSQ_DA_SCALE:
+			prefix = PSQ_DS_LBN_PREFIX
 			break
 		case PSQ_RHEOBASE:
 			prefix = PSQ_RB_LBN_PREFIX
@@ -107,10 +107,10 @@ static Function PSQ_GetPulseSettingsForType(type, s)
 	struct PSQ_PulseSettings &s
 
 	switch(type)
-		case PSQ_SUB_THRESHOLD:
-			s.prePulseChunkLength  = PSQ_ST_BL_EVAL_RANGE_MS
-			s.postPulseChunkLength = PSQ_ST_BL_EVAL_RANGE_MS
-			s.pulseDuration        = PSQ_ST_PULSE_DUR
+		case PSQ_DA_SCALE:
+			s.prePulseChunkLength  = PSQ_DS_BL_EVAL_RANGE_MS
+			s.postPulseChunkLength = PSQ_DS_BL_EVAL_RANGE_MS
+			s.pulseDuration        = PSQ_DS_PULSE_DUR
 			break
 		case PSQ_RHEOBASE:
 			s.prePulseChunkLength  = PSQ_RB_PRE_BL_EVAL_RANGE
@@ -454,7 +454,7 @@ End
 
 /// @brief Return the number of chunks
 ///
-/// A chunk is #PSQ_ST_BL_EVAL_RANGE_MS/#PSQ_RB_POST_BL_EVAL_RANGE/#PSQ_RB_PRE_BL_EVAL_RANGE [ms] of baseline
+/// A chunk is #PSQ_DS_BL_EVAL_RANGE_MS/#PSQ_RB_POST_BL_EVAL_RANGE/#PSQ_RB_PRE_BL_EVAL_RANGE [ms] of baseline
 static Function PSQ_GetNumberOfChunks(panelTitle, sweepNo, headstage, type)
 	string panelTitle
 	variable type, sweepNo, headstage
@@ -469,9 +469,9 @@ static Function PSQ_GetNumberOfChunks(panelTitle, sweepNo, headstage, type)
 	length = stopCollectionPoint * DimDelta(OscilloscopeData, ROWS)
 
 	switch(type)
-		case PSQ_SUB_THRESHOLD:
-			nonBL = totalOnsetDelay + PSQ_ST_PULSE_DUR + PSQ_ST_BL_EVAL_RANGE_MS
-			return floor((length - nonBL) / PSQ_ST_BL_EVAL_RANGE_MS)
+		case PSQ_DA_SCALE:
+			nonBL = totalOnsetDelay + PSQ_DS_PULSE_DUR + PSQ_DS_BL_EVAL_RANGE_MS
+			return floor((length - nonBL) / PSQ_DS_BL_EVAL_RANGE_MS)
 			break
 		case PSQ_RHEOBASE:
 			WAVE durations = PSQ_GetPulseDurations(panelTitle, sweepNo, totalOnsetDelay)
@@ -589,7 +589,7 @@ End
 
 /// PSQ_PSQ_CreateOverrideResults("ITC18USB_DEV_0", 0, $type) where type is one of:
 ///
-/// #PSQ_SUB_THRESHOLD:
+/// #PSQ_DA_SCALE:
 ///
 /// Rows:
 /// - chunk indizes: 1 if the chunk passes, 0 if not
@@ -630,7 +630,7 @@ Function/WAVE PSQ_CreateOverrideResults(panelTitle, headstage, type)
 	switch(type)
 		case PSQ_RHEOBASE:
 			numLayers = 2
-		case PSQ_SUB_THRESHOLD:
+		case PSQ_DA_SCALE:
 			numRows = PSQ_GetNumberOfChunks(panelTitle, 0, headstage, type)
 			numCols = IDX_NumberOfSweepsInSet(stimset)
 			break
@@ -744,12 +744,12 @@ Function/S PSQ_SubThreshold_GetParams()
 	return "DAScales"
 End
 
-/// @brief Patch Seq Analysis function for sub threshold stimsets
+/// @brief Patch Seq Analysis function to find a suitable DAScale
 ///
 /// Prerequisites:
 /// - Does only work for one headstage
-/// - Assumes that the stimset has 500ms of pre pulse baseline, a 1000ms (#PSQ_ST_PULSE_DUR) pulse and at least 1000ms post pulse baseline.
-/// - Each 500ms (#PSQ_ST_BL_EVAL_RANGE_MS) of the baseline is a chunk
+/// - Assumes that the stimset has 500ms of pre pulse baseline, a 1000ms (#PSQ_DS_PULSE_DUR) pulse and at least 1000ms post pulse baseline.
+/// - Each 500ms (#PSQ_DS_BL_EVAL_RANGE_MS) of the baseline is a chunk
 ///
 /// Testing:
 /// For testing the sweep/set passing/fail logic can be defined in the wave
@@ -764,7 +764,7 @@ End
 ///
 ///    // set properties
 ///
-///    key = PSQ_CreateLBNKey(PSQ_SUB_THRESHOLD, PSQ_FMT_LBN_SET_PASSED, query = 1)
+///    key = PSQ_CreateLBNKey(PSQ_DA_SCALE, PSQ_FMT_LBN_SET_PASSED, query = 1)
 ///    setPassed = GetLastSettingIndepRAC(numericalValues, sweepNo, key, UNKNOWN_MODE)
 ///
 ///    if(setPassed)
@@ -774,19 +774,19 @@ End
 ///    endif
 ///
 ///    // single sweep properties
-///    key = PSQ_CreateLBNKey(PSQ_SUB_THRESHOLD, PSQ_FMT_LBN_SWEEP_PASS, query = 1)
+///    key = PSQ_CreateLBNKey(PSQ_DA_SCALE, PSQ_FMT_LBN_SWEEP_PASS, query = 1)
 ///    sweepPassed = GetLastSettingIndep(numericalValues, sweepNo, key, UNKNOWN_MODE)
 ///
 ///    // chunk (500ms portions of the baseline) properties
-///    key = PSQ_CreateLBNKey(PSQ_SUB_THRESHOLD, PSQ_FMT_LBN_CHUNK_PASS, chunk = chunk, query = 1)
+///    key = PSQ_CreateLBNKey(PSQ_DA_SCALE, PSQ_FMT_LBN_CHUNK_PASS, chunk = chunk, query = 1)
 ///    chunkPassed = GetLastSettingIndep(numericalValues, sweepNo, key, UNKNOWN_MODE)
 ///
 ///    // single test properties
-///    key = PSQ_CreateLBNKey(PSQ_SUB_THRESHOLD, PSQ_FMT_LBN_RMS_SHORT_PASS, chunk = chunk, query = 1)
+///    key = PSQ_CreateLBNKey(PSQ_DA_SCALE, PSQ_FMT_LBN_RMS_SHORT_PASS, chunk = chunk, query = 1)
 ///    rmsShortPassed = GetLastSettingIndep(numericalValues, sweepNo, key, UNKNOWN_MODE)
-///    key = PSQ_CreateLBNKey(PSQ_SUB_THRESHOLD, PSQ_FMT_LBN_RMS_LONG_PASS, chunk = chunk, query = 1)
+///    key = PSQ_CreateLBNKey(PSQ_DA_SCALE, PSQ_FMT_LBN_RMS_LONG_PASS, chunk = chunk, query = 1)
 ///    rmsLongPassed  = GetLastSettingIndep(numericalValues, sweepNo, key, UNKNOWN_MODE)
-///    key = PSQ_CreateLBNKey(PSQ_SUB_THRESHOLD, PSQ_FMT_LBN_TARGETV_PASS, chunk = chunk, query = 1)
+///    key = PSQ_CreateLBNKey(PSQ_DA_SCALE, PSQ_FMT_LBN_TARGETV_PASS, chunk = chunk, query = 1)
 ///    targetVPassed  = GetLastSettingIndep(numericalValues, sweepNo, key, UNKNOWN_MODE)
 ///
 ///    // get fitted resistance from last passing sweep
@@ -797,7 +797,7 @@ End
 /// Decision logic flowchart:
 ///
 /// \rst
-///	.. graphviz:: ../patch-seq-subthreshold.dot
+///	.. graphviz:: ../patch-seq-dascale.dot
 /// \endrst
 ///
 /// @verbatim
@@ -823,7 +823,7 @@ End
 ///
 /// @endverbatim
 ///
-Function PSQ_SubThreshold(panelTitle, s)
+Function PSQ_DAScale(panelTitle, s)
 	string panelTitle
 	STRUCT AnalysisFunction_V3 &s
 
@@ -860,7 +860,7 @@ Function PSQ_SubThreshold(panelTitle, s)
 			endif
 
 			length = PSQ_GetDAStimsetLength(panelTitle, s.headstage)
-			minLength = PSQ_ST_PULSE_DUR + 3 * PSQ_ST_BL_EVAL_RANGE_MS
+			minLength = PSQ_DS_PULSE_DUR + 3 * PSQ_DS_BL_EVAL_RANGE_MS
 			if(length < minLength)
 				printf "(%s) Stimset of headstage %d is too short, it must be at least %g ms long.\r", panelTitle, s.headstage, minLength
 				ControlWindowToFront()
@@ -885,7 +885,7 @@ Function PSQ_SubThreshold(panelTitle, s)
 			WAVE numericalValues = GetLBNumericalValues(panelTitle)
 			WAVE textualValues   = GetLBTextualValues(panelTitle)
 
-			key = PSQ_CreateLBNKey(PSQ_SUB_THRESHOLD, PSQ_FMT_LBN_SWEEP_PASS, query = 1)
+			key = PSQ_CreateLBNKey(PSQ_DA_SCALE, PSQ_FMT_LBN_SWEEP_PASS, query = 1)
 			sweepPassed = GetLastSettingIndep(numericalValues, s.sweepNo, key, UNKNOWN_MODE)
 			ASSERT(IsFinite(sweepPassed), "Could not find the sweep passed labnotebook entry")
 
@@ -893,7 +893,7 @@ Function PSQ_SubThreshold(panelTitle, s)
 			stimset = stimsets[s.headstage]
 
 			sweepsInSet         = IDX_NumberOfSweepsInSet(stimset)
-			passesInSet         = PSQ_NumPassesInSet(panelTitle, PSQ_SUB_THRESHOLD, s.sweepNo)
+			passesInSet         = PSQ_NumPassesInSet(panelTitle, PSQ_DA_SCALE, s.sweepNo)
 			acquiredSweepsInSet = PSQ_NumAcquiredSweepsInSet(panelTitle, s.sweepNo)
 
 			if(!sweepPassed)
@@ -934,14 +934,14 @@ Function PSQ_SubThreshold(panelTitle, s)
 
 			break
 		case POST_SET_EVENT:
-			setPassed = PSQ_NumPassesInSet(panelTitle, PSQ_SUB_THRESHOLD, s.sweepNo) >= numSweepsPass
+			setPassed = PSQ_NumPassesInSet(panelTitle, PSQ_DA_SCALE, s.sweepNo) >= numSweepsPass
 
 			sprintf msg, "Set has %s\r", SelectString(setPassed, "failed", "passed")
 			DEBUGPRINT(msg)
 
 			Make/FREE/N=(LABNOTEBOOK_LAYER_COUNT) result = NaN
 			result[INDEP_HEADSTAGE] = setPassed
-			key = PSQ_CreateLBNKey(PSQ_SUB_THRESHOLD, PSQ_FMT_LBN_SET_PASS)
+			key = PSQ_CreateLBNKey(PSQ_DA_SCALE, PSQ_FMT_LBN_SET_PASS)
 			ED_AddEntryToLabnotebook(panelTitle, key, result, unit = LABNOTEBOOK_BINARY_UNIT)
 
 			return NaN
@@ -974,7 +974,7 @@ Function PSQ_SubThreshold(panelTitle, s)
 
 	WAVE numericalValues = GetLBNumericalValues(panelTitle)
 
-	key = PSQ_CreateLBNKey(PSQ_SUB_THRESHOLD, PSQ_FMT_LBN_SWEEP_PASS, query = 1)
+	key = PSQ_CreateLBNKey(PSQ_DA_SCALE, PSQ_FMT_LBN_SWEEP_PASS, query = 1)
 	sweepPassed = GetLastSettingIndep(numericalValues, s.sweepNo, key, UNKNOWN_MODE, defValue = 0)
 
 	if(sweepPassed) // already done
@@ -987,11 +987,11 @@ Function PSQ_SubThreshold(panelTitle, s)
 	fifoInStimsetPoint = s.lastKnownRowIndex - totalOnsetDelay / DimDelta(s.rawDACWAVE, ROWS)
 	fifoInStimsetTime  = fifoInStimsetPoint * DimDelta(s.rawDACWAVE, ROWS)
 
-	numBaselineChunks = PSQ_GetNumberOfChunks(panelTitle, s.sweepNo, s.headstage, PSQ_SUB_THRESHOLD)
+	numBaselineChunks = PSQ_GetNumberOfChunks(panelTitle, s.sweepNo, s.headstage, PSQ_DA_SCALE)
 
 	for(i = 0; i < numBaselineChunks; i += 1)
 
-		ret = PSQ_EvaluateBaselineProperties(panelTitle, PSQ_SUB_THRESHOLD, s.sweepNo, i, fifoInStimsetTime, totalOnsetDelay)
+		ret = PSQ_EvaluateBaselineProperties(panelTitle, PSQ_DA_SCALE, s.sweepNo, i, fifoInStimsetTime, totalOnsetDelay)
 
 		if(IsNaN(ret))
 			// NaN: not enough data for check
@@ -1038,7 +1038,7 @@ Function PSQ_SubThreshold(panelTitle, s)
 	Make/FREE/N=(LABNOTEBOOK_LAYER_COUNT) result = NaN
 	result[INDEP_HEADSTAGE] = sweepPassed
 
-	key = PSQ_CreateLBNKey(PSQ_SUB_THRESHOLD, PSQ_FMT_LBN_SWEEP_PASS)
+	key = PSQ_CreateLBNKey(PSQ_DA_SCALE, PSQ_FMT_LBN_SWEEP_PASS)
 	ED_AddEntryToLabnotebook(panelTitle, key, result, unit = LABNOTEBOOK_BINARY_UNIT, overrideSweepNo = s.sweepNo)
 
 	return sweepPassed ? ANALYSIS_FUNC_RET_EARLY_STOP : ret

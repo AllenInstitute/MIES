@@ -798,8 +798,8 @@ Constant PSQ_SP_INIT_AMP_p10    = +10e-12
 Constant PSQ_RB_PRE_BL_EVAL_RANGE  = 500
 Constant PSQ_RB_POST_BL_EVAL_RANGE = 50
 
-Constant PSQ_ST_BL_EVAL_RANGE_MS = 500
-Constant PSQ_ST_PULSE_DUR        = 1000
+Constant PSQ_DS_BL_EVAL_RANGE_MS = 500
+Constant PSQ_DS_PULSE_DUR        = 1000
 
 Constant PSQ_SPIKE_LEVEL     = 10 // mV
 Constant PSQ_RMS_SHORT_THRESHOLD = 0.07 // mV
@@ -830,9 +830,9 @@ StrConstant PSQ_FMT_LBN_PULSE_DUR      = "%s Pulse duration"
 /// PatchSeq types of analysis functions
 /// @anchor PatchSeqAnalysisFunctionTypes
 /// @{
-Constant PSQ_SUB_THRESHOLD = 0x1
-Constant PSQ_SQUARE_PULSE  = 0x2
-Constant PSQ_RHEOBASE      = 0x4
+Constant PSQ_DA_SCALE     = 0x1
+Constant PSQ_SQUARE_PULSE = 0x2
+Constant PSQ_RHEOBASE     = 0x4
 /// @}
 
 /// PatchSeq Rheobase

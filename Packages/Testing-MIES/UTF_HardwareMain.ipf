@@ -11,7 +11,7 @@
 #include "UTF_TestingWithHardware"
 #include "UTF_DAEphys"
 #include "UTF_BasicHardwareTests"
-#include "UTF_PatchSeqSubThreshold"
+#include "UTF_PatchSeqDAScale"
 #include "UTF_PatchSeqSquarePulse"
 #include "UTF_PatchSeqRheobase"
 
@@ -127,22 +127,22 @@ Function run()
 
 #ifndef TESTS_WITH_YOKING
 
-	list = AddListItem("PS_ST_Run1", list, ";", INF)
-	list = AddListItem("PS_ST_Test1", list, ";", INF)
-	list = AddListItem("PS_ST_Run2", list, ";", INF)
-	list = AddListItem("PS_ST_Test2", list, ";", INF)
-	list = AddListItem("PS_ST_Run3", list, ";", INF)
-	list = AddListItem("PS_ST_Test3", list, ";", INF)
-	list = AddListItem("PS_ST_Run4", list, ";", INF)
-	list = AddListItem("PS_ST_Test4", list, ";", INF)
-	list = AddListItem("PS_ST_Run5", list, ";", INF)
-	list = AddListItem("PS_ST_Test5", list, ";", INF)
-	list = AddListItem("PS_ST_Run6", list, ";", INF)
-	list = AddListItem("PS_ST_Test6", list, ";", INF)
-	list = AddListItem("PS_ST_Run7", list, ";", INF)
-	list = AddListItem("PS_ST_Test7", list, ";", INF)
-	list = AddListItem("PS_ST_Run8", list, ";", INF)
-	list = AddListItem("PS_ST_Test8", list, ";", INF)
+	list = AddListItem("PS_DS_Run1", list, ";", INF)
+	list = AddListItem("PS_DS_Test1", list, ";", INF)
+	list = AddListItem("PS_DS_Run2", list, ";", INF)
+	list = AddListItem("PS_DS_Test2", list, ";", INF)
+	list = AddListItem("PS_DS_Run3", list, ";", INF)
+	list = AddListItem("PS_DS_Test3", list, ";", INF)
+	list = AddListItem("PS_DS_Run4", list, ";", INF)
+	list = AddListItem("PS_DS_Test4", list, ";", INF)
+	list = AddListItem("PS_DS_Run5", list, ";", INF)
+	list = AddListItem("PS_DS_Test5", list, ";", INF)
+	list = AddListItem("PS_DS_Run6", list, ";", INF)
+	list = AddListItem("PS_DS_Test6", list, ";", INF)
+	list = AddListItem("PS_DS_Run7", list, ";", INF)
+	list = AddListItem("PS_DS_Test7", list, ";", INF)
+	list = AddListItem("PS_DS_Run8", list, ";", INF)
+	list = AddListItem("PS_DS_Test8", list, ";", INF)
 
 	list = AddListItem("PS_SP_Run1", list, ";", INF)
 	list = AddListItem("PS_SP_Test1", list, ";", INF)

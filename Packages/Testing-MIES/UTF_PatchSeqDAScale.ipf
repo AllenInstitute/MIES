@@ -1,6 +1,6 @@
 ﻿#pragma TextEncoding = "UTF-8"
 #pragma rtGlobals=3		// Use modern global access method and strict wave access.
-#pragma ModuleName=PatchSeqTestSubThreshold
+#pragma ModuleName=PatchSeqTestDAScale
 
 static Constant HEADSTAGE = 0
 
@@ -23,7 +23,7 @@ static Function AcquireData(s)
 	PGC_SetAndActivateControl(DEVICE, "check_DataAcq_AutoBias", val = 1)
 	PGC_SetAndActivateControl(DEVICE, "setvar_DataAcq_AutoBiasV", val = 70)
 	PGC_SetAndActivateControl(DEVICE, GetPanelControl(0, CHANNEL_TYPE_HEADSTAGE, CHANNEL_CONTROL_CHECK), val=1)
-	PGC_SetAndActivateControl(DEVICE, GetPanelControl(0, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_WAVE), val = GetStimSet("PatchSeqSubThres_DA_0") + 1)
+	PGC_SetAndActivateControl(DEVICE, GetPanelControl(0, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_WAVE), val = GetStimSet("PatchSeqDAScale_DA_0") + 1)
 
 	WAVE ampMCC = GetAmplifierMultiClamps()
 	WAVE ampTel = GetAmplifierTelegraphServers()
@@ -61,23 +61,23 @@ Function/WAVE GetSweepResults_IGNORE(sweepNo)
 	WAVE/Z sweeps = AFH_GetSweepsFromSameRACycle(numericalValues, sweepNo)
 	CHECK_WAVE(sweeps, NUMERIC_WAVE)
 
-	Make/FREE/N=(DimSize(sweeps, ROWS)) sweepPassed = GetLastSettingIndep(numericalValues, sweeps[p], PSQ_CreateLBNKey(PSQ_SUB_THRESHOLD, PSQ_FMT_LBN_SWEEP_PASS, query = 1), UNKNOWN_MODE)
+	Make/FREE/N=(DimSize(sweeps, ROWS)) sweepPassed = GetLastSettingIndep(numericalValues, sweeps[p], PSQ_CreateLBNKey(PSQ_DA_SCALE, PSQ_FMT_LBN_SWEEP_PASS, query = 1), UNKNOWN_MODE)
 
 	return sweepPassed
 End
 
-Function PS_ST_Run1()
+Function PS_DS_Run1()
 
 	STRUCT DAQSettings s
 	InitDAQSettingsFromString(s, "DAQ_MD1_RA1_IDX0_LIDX0_BKG_1")
 	AcquireData(s)
 
-	WAVE wv = PSQ_CreateOverrideResults(DEVICE, HEADSTAGE, PSQ_SUB_THRESHOLD)
+	WAVE wv = PSQ_CreateOverrideResults(DEVICE, HEADSTAGE, PSQ_DA_SCALE)
 	// all tests fail
 	wv = 0
 End
 
-Function PS_ST_Test1()
+Function PS_DS_Test1()
 
 	variable sweepNo, setPassed
 
@@ -88,26 +88,26 @@ Function PS_ST_Test1()
 
 	WAVE numericalValues = GetLBNumericalValues(DEVICE)
 
-	setPassed = GetLastSettingIndep(numericalValues, sweepNo, PSQ_CreateLBNKey(PSQ_SUB_THRESHOLD, PSQ_FMT_LBN_SET_PASS, query = 1), UNKNOWN_MODE)
+	setPassed = GetLastSettingIndep(numericalValues, sweepNo, PSQ_CreateLBNKey(PSQ_DA_SCALE, PSQ_FMT_LBN_SET_PASS, query = 1), UNKNOWN_MODE)
 	CHECK_EQUAL_VAR(setPassed, 0)
 
 	WAVE/Z sweepPassed = GetSweepResults_IGNORE(sweepNo)
 	CHECK_EQUAL_WAVES(sweepPassed, {0, 0, 0, 0, 0})
 End
 
-Function PS_ST_Run2()
+Function PS_DS_Run2()
 
 	STRUCT DAQSettings s
 	InitDAQSettingsFromString(s, "DAQ_MD1_RA1_IDX0_LIDX0_BKG_1")
 	AcquireData(s)
 
-	WAVE wv = PSQ_CreateOverrideResults(DEVICE, HEADSTAGE, PSQ_SUB_THRESHOLD)
+	WAVE wv = PSQ_CreateOverrideResults(DEVICE, HEADSTAGE, PSQ_DA_SCALE)
 	// only pre pulse chunk pass, others fail
 	wv[]    = 0
 	wv[0][] = 1
 End
 
-Function PS_ST_Test2()
+Function PS_DS_Test2()
 
 	variable sweepNo, setPassed
 
@@ -118,27 +118,27 @@ Function PS_ST_Test2()
 
 	WAVE numericalValues = GetLBNumericalValues(DEVICE)
 
-	setPassed = GetLastSettingIndep(numericalValues, sweepNo, PSQ_CreateLBNKey(PSQ_SUB_THRESHOLD, PSQ_FMT_LBN_SET_PASS, query = 1), UNKNOWN_MODE)
+	setPassed = GetLastSettingIndep(numericalValues, sweepNo, PSQ_CreateLBNKey(PSQ_DA_SCALE, PSQ_FMT_LBN_SET_PASS, query = 1), UNKNOWN_MODE)
 	CHECK_EQUAL_VAR(setPassed, 0)
 
 	WAVE/Z sweepPassed = GetSweepResults_IGNORE(sweepNo)
 	CHECK_EQUAL_WAVES(sweepPassed, {0, 0, 0, 0, 0})
 End
 
-Function PS_ST_Run3()
+Function PS_DS_Run3()
 
 	STRUCT DAQSettings s
 	InitDAQSettingsFromString(s, "DAQ_MD1_RA1_IDX0_LIDX0_BKG_1")
 	AcquireData(s)
 
-	WAVE wv = PSQ_CreateOverrideResults(DEVICE, HEADSTAGE, PSQ_SUB_THRESHOLD)
+	WAVE wv = PSQ_CreateOverrideResults(DEVICE, HEADSTAGE, PSQ_DA_SCALE)
 	// pre pulse chunk pass
 	// first post pulse chunk pass
 	wv[]      = 0
 	wv[0,1][] = 1
 End
 
-Function PS_ST_Test3()
+Function PS_DS_Test3()
 
 	variable sweepNo, setPassed
 
@@ -149,20 +149,20 @@ Function PS_ST_Test3()
 
 	WAVE numericalValues = GetLBNumericalValues(DEVICE)
 
-	setPassed = GetLastSettingIndep(numericalValues, sweepNo, PSQ_CreateLBNKey(PSQ_SUB_THRESHOLD, PSQ_FMT_LBN_SET_PASS, query = 1), UNKNOWN_MODE)
+	setPassed = GetLastSettingIndep(numericalValues, sweepNo, PSQ_CreateLBNKey(PSQ_DA_SCALE, PSQ_FMT_LBN_SET_PASS, query = 1), UNKNOWN_MODE)
 	CHECK_EQUAL_VAR(setPassed, 1)
 
 	WAVE/Z sweepPassed = GetSweepResults_IGNORE(sweepNo)
 	CHECK_EQUAL_WAVES(sweepPassed, {1, 1, 1, 1, 1})
 End
 
-Function PS_ST_Run4()
+Function PS_DS_Run4()
 
 	STRUCT DAQSettings s
 	InitDAQSettingsFromString(s, "DAQ_MD1_RA1_IDX0_LIDX0_BKG_1")
 	AcquireData(s)
 
-	WAVE wv = PSQ_CreateOverrideResults(DEVICE, HEADSTAGE, PSQ_SUB_THRESHOLD)
+	WAVE wv = PSQ_CreateOverrideResults(DEVICE, HEADSTAGE, PSQ_DA_SCALE)
 	// pre pulse chunk pass
 	// last post pulse chunk pass
 	wv[] = 0
@@ -170,7 +170,7 @@ Function PS_ST_Run4()
 	wv[DimSize(wv, ROWS) - 1][] = 1
 End
 
-Function PS_ST_Test4()
+Function PS_DS_Test4()
 
 	variable sweepNo, setPassed
 
@@ -181,27 +181,27 @@ Function PS_ST_Test4()
 
 	WAVE numericalValues = GetLBNumericalValues(DEVICE)
 
-	setPassed = GetLastSettingIndep(numericalValues, sweepNo, PSQ_CreateLBNKey(PSQ_SUB_THRESHOLD, PSQ_FMT_LBN_SET_PASS, query = 1), UNKNOWN_MODE)
+	setPassed = GetLastSettingIndep(numericalValues, sweepNo, PSQ_CreateLBNKey(PSQ_DA_SCALE, PSQ_FMT_LBN_SET_PASS, query = 1), UNKNOWN_MODE)
 	CHECK_EQUAL_VAR(setPassed, 1)
 
 	WAVE/Z sweepPassed = GetSweepResults_IGNORE(sweepNo)
 	CHECK_EQUAL_WAVES(sweepPassed, {1, 1, 1, 1, 1})
 End
 
-Function PS_ST_Run5()
+Function PS_DS_Run5()
 
 	STRUCT DAQSettings s
 	InitDAQSettingsFromString(s, "DAQ_MD1_RA1_IDX0_LIDX0_BKG_1")
 	AcquireData(s)
 
-	WAVE wv = PSQ_CreateOverrideResults(DEVICE, HEADSTAGE, PSQ_SUB_THRESHOLD)
+	WAVE wv = PSQ_CreateOverrideResults(DEVICE, HEADSTAGE, PSQ_DA_SCALE)
 	// pre pulse chunk fails
 	// all post pulse chunk pass
 	wv[]    = 1
 	wv[0][] = 0
 End
 
-Function PS_ST_Test5()
+Function PS_DS_Test5()
 
 	variable sweepNo, setPassed
 
@@ -212,20 +212,20 @@ Function PS_ST_Test5()
 
 	WAVE numericalValues = GetLBNumericalValues(DEVICE)
 
-	setPassed = GetLastSettingIndep(numericalValues, sweepNo, PSQ_CreateLBNKey(PSQ_SUB_THRESHOLD, PSQ_FMT_LBN_SET_PASS, query = 1), UNKNOWN_MODE)
+	setPassed = GetLastSettingIndep(numericalValues, sweepNo, PSQ_CreateLBNKey(PSQ_DA_SCALE, PSQ_FMT_LBN_SET_PASS, query = 1), UNKNOWN_MODE)
 	CHECK_EQUAL_VAR(setPassed, 0)
 
 	WAVE/Z sweepPassed = GetSweepResults_IGNORE(sweepNo)
 	CHECK_EQUAL_WAVES(sweepPassed, {0, 0, 0, 0, 0})
 End
 
-Function PS_ST_Run6()
+Function PS_DS_Run6()
 
 	STRUCT DAQSettings s
 	InitDAQSettingsFromString(s, "DAQ_MD1_RA1_IDX0_LIDX0_BKG_1")
 	AcquireData(s)
 
-	WAVE wv = PSQ_CreateOverrideResults(DEVICE, HEADSTAGE, PSQ_SUB_THRESHOLD)
+	WAVE wv = PSQ_CreateOverrideResults(DEVICE, HEADSTAGE, PSQ_DA_SCALE)
 	// pre pulse chunk pass
 	// second post pulse chunk pass
 	wv[]    = 0
@@ -233,7 +233,7 @@ Function PS_ST_Run6()
 	wv[2][] = 1
 End
 
-Function PS_ST_Test6()
+Function PS_DS_Test6()
 
 	variable sweepNo, setPassed
 
@@ -244,20 +244,20 @@ Function PS_ST_Test6()
 
 	WAVE numericalValues = GetLBNumericalValues(DEVICE)
 
-	setPassed = GetLastSettingIndep(numericalValues, sweepNo, PSQ_CreateLBNKey(PSQ_SUB_THRESHOLD, PSQ_FMT_LBN_SET_PASS, query = 1), UNKNOWN_MODE)
+	setPassed = GetLastSettingIndep(numericalValues, sweepNo, PSQ_CreateLBNKey(PSQ_DA_SCALE, PSQ_FMT_LBN_SET_PASS, query = 1), UNKNOWN_MODE)
 	CHECK_EQUAL_VAR(setPassed, 1)
 
 	WAVE/Z sweepPassed = GetSweepResults_IGNORE(sweepNo)
 	CHECK_EQUAL_WAVES(sweepPassed, {1, 1, 1, 1, 1})
 End
 
-Function PS_ST_Run7()
+Function PS_DS_Run7()
 
 	STRUCT DAQSettings s
 	InitDAQSettingsFromString(s, "DAQ_MD1_RA1_IDX0_LIDX0_BKG_1")
 	AcquireData(s)
 
-	WAVE wv = PSQ_CreateOverrideResults(DEVICE, HEADSTAGE, PSQ_SUB_THRESHOLD)
+	WAVE wv = PSQ_CreateOverrideResults(DEVICE, HEADSTAGE, PSQ_DA_SCALE)
 	// pre pulse chunk pass
 	// first post pulse chunk pass
 	// of sweeps 2-6
@@ -265,7 +265,7 @@ Function PS_ST_Run7()
 	wv[0, 1][2,6] = 1
 End
 
-Function PS_ST_Test7()
+Function PS_DS_Test7()
 
 	variable sweepNo, setPassed
 
@@ -276,20 +276,20 @@ Function PS_ST_Test7()
 
 	WAVE numericalValues = GetLBNumericalValues(DEVICE)
 
-	setPassed = GetLastSettingIndep(numericalValues, sweepNo, PSQ_CreateLBNKey(PSQ_SUB_THRESHOLD, PSQ_FMT_LBN_SET_PASS, query = 1), UNKNOWN_MODE)
+	setPassed = GetLastSettingIndep(numericalValues, sweepNo, PSQ_CreateLBNKey(PSQ_DA_SCALE, PSQ_FMT_LBN_SET_PASS, query = 1), UNKNOWN_MODE)
 	CHECK_EQUAL_VAR(setPassed, 1)
 
 	WAVE/Z sweepPassed = GetSweepResults_IGNORE(sweepNo)
 	CHECK_EQUAL_WAVES(sweepPassed, {0, 0, 1, 1, 1, 1, 1})
 End
 
-Function PS_ST_Run8()
+Function PS_DS_Run8()
 
 	STRUCT DAQSettings s
 	InitDAQSettingsFromString(s, "DAQ_MD1_RA1_IDX0_LIDX0_BKG_1")
 	AcquireData(s)
 
-	WAVE wv = PSQ_CreateOverrideResults(DEVICE, HEADSTAGE, PSQ_SUB_THRESHOLD)
+	WAVE wv = PSQ_CreateOverrideResults(DEVICE, HEADSTAGE, PSQ_DA_SCALE)
 	// pre pulse chunk pass
 	// first post pulse chunk pass
 	// of sweep 0, 3, 6, 7 , 8
@@ -301,7 +301,7 @@ Function PS_ST_Run8()
 	wv[0, 1][8] = 1
 End
 
-Function PS_ST_Test8()
+Function PS_DS_Test8()
 
 	variable sweepNo, setPassed
 
@@ -312,7 +312,7 @@ Function PS_ST_Test8()
 
 	WAVE numericalValues = GetLBNumericalValues(DEVICE)
 
-	setPassed = GetLastSettingIndep(numericalValues, sweepNo, PSQ_CreateLBNKey(PSQ_SUB_THRESHOLD, PSQ_FMT_LBN_SET_PASS, query = 1), UNKNOWN_MODE)
+	setPassed = GetLastSettingIndep(numericalValues, sweepNo, PSQ_CreateLBNKey(PSQ_DA_SCALE, PSQ_FMT_LBN_SET_PASS, query = 1), UNKNOWN_MODE)
 	CHECK_EQUAL_VAR(setPassed, 1)
 
 	WAVE/Z sweepPassed = GetSweepResults_IGNORE(sweepNo)

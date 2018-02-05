@@ -1090,7 +1090,7 @@ Function TI_finishRunCoreStimSet(s)
 
 	sweepNo = AFH_GetLastSweepAcquired(currentPanel)
 	
-	key = PSQ_CreateLBNKey(PSQ_SUB_THRESHOLD, PSQ_FMT_LBN_SET_PASS, query = 1)
+	key = PSQ_CreateLBNKey(PSQ_DA_SCALE, PSQ_FMT_LBN_SET_PASS, query = 1)
 	setPassed = GetLastSettingIndepRAC(numericalValues, sweepNo, key, UNKNOWN_MODE)
 	if (setPassed == 1)
 		print "Set Passed"
