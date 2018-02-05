@@ -77,9 +77,9 @@ digraph G {
     "Check if \"ITI\" is 4s";
     "Check if \"ITI\" is 4s" -> "All checks passed";
     "Prepare DAQ Event" -> "Check if \"ITI\" is 4s";
-    "Search for final DAScale of last sweep\n from previous RAC";
-    "Prepare DAQ Event" -> "Search for final DAScale of last sweep\n from previous RAC";
-    "Search for final DAScale of last sweep\n from previous RAC" -> "Abort"  [label="Not found"];
+    "Search for final DAScale in one of the existing sweeps";
+    "Prepare DAQ Event" -> "Search for final DAScale in one of the existing sweeps";
+    "Search for final DAScale in one of the existing sweeps" -> "Abort"  [label="Not found"];
     "First Sweep?";
     "First Sweep?" -> "Store final DAScale of last sweep\n from previous RAC as initial DAScale"  [label="Yes"];
     "Post Sweep Event" -> "First Sweep?";

@@ -5016,7 +5016,7 @@ End
 /// @name AnalysisFunctionGetters Getters used by analysis functions
 /// @{
 
-/// @brief Return a wave reference which holds an headstage-dependet index
+/// @brief Return a wave reference which holds an headstage-dependent index
 ///
 /// Can be used by analysis function to count the number of invocations.
 Function/WAVE GetAnalysisFuncIndexingHelper(panelTitle)

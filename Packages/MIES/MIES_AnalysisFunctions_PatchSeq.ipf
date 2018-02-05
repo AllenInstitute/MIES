@@ -718,13 +718,15 @@ static Function PSQ_TestOverrideActive()
 	return 0
 End
 
+/// @brief Require DAScales parameter from stimset
+Function/S PSQ_SubThreshold_GetParams()
+	return "DAScales"
+End
+
 /// @brief Patch Seq Analysis function for sub threshold stimsets
 ///
 /// Prerequisites:
-/// - This stimset must have this analysis function set for the "Pre DAQ", "Mid
-///   Sweep", "Post Sweep" and "Post Set" Event
-/// - A sweep passes if all tests on all headstages pass
-/// - Assumes that the number of sets in all stimsets are equal
+/// - Does only work for one headstage
 /// - Assumes that the stimset has 500ms of pre pulse baseline, a 1000ms (#PSQ_ST_PULSE_DUR) pulse and at least 1000ms post pulse baseline.
 /// - Each 500ms (#PSQ_ST_BL_EVAL_RANGE_MS) of the baseline is a chunk
 ///
@@ -800,36 +802,28 @@ End
 ///
 /// @endverbatim
 ///
-Function PSQ_SubThreshold(panelTitle, eventType, ITCDataWave, headStage, realDataLength)
+Function PSQ_SubThreshold(panelTitle, s)
 	string panelTitle
-	variable eventType
-	Wave ITCDataWave
-	variable headstage, realDataLength
+	STRUCT AnalysisFunction_V3 &s
 
-	variable val, totalOnsetDelay, lastFifoPos
-	variable i, sweepNo, fifoInStimsetPoint, fifoInStimsetTime
+	variable val, totalOnsetDelay
+	variable i, fifoInStimsetPoint, fifoInStimsetTime
 	variable index, skipToEnd, ret
 	variable sweepPassed, setPassed, numSweepsPass
 	variable sweepsInSet, passesInSet, acquiredSweepsInSet, numBaselineChunks
 	string msg, stimset, key
 
-	WAVE statusHS = DAG_GetChannelState(panelTitle, CHANNEL_TYPE_HEADSTAGE)
-	ASSERT(sum(statusHS) == 1, "Analysis function only supports one headstage")
-
-	// BEGIN CHANGE ME
-	MAKE/D/FREE DAScales = {-30, -50, -70, -110, -130}
-	// END CHANGE ME
+	WAVE/D/Z DAScales = AFH_GetAnalysisParamWave("DAScales", s.params)
+	ASSERT(WaveExists(DAScales), "Missing DAScale parameter")
 
 	numSweepsPass = DimSize(DAScales, ROWS)
 	ASSERT(numSweepsPass > 0, "Invalid number of entries in DAScales")
 
 	WAVE DAScalesIndex = GetAnalysisFuncIndexingHelper(panelTitle)
 
-	WAVE statusHS = DAG_GetChannelState(panelTitle, CHANNEL_TYPE_HEADSTAGE)
-
-	switch(eventType)
+	switch(s.eventType)
 		case PRE_DAQ_EVENT:
-			DAScalesIndex[headstage] = 0
+			DAScalesIndex[s.headstage] = 0
 
 			if(!DAG_GetNumericalValue(panelTitle, "check_Settings_ITITP"))
 				printf "(%s): TP during ITI must be checked\r", panelTitle
@@ -845,6 +839,13 @@ Function PSQ_SubThreshold(panelTitle, eventType, ITCDataWave, headStage, realDat
 				return 1
 			endif
 
+			WAVE statusHS = DAG_GetChannelState(panelTitle, CHANNEL_TYPE_HEADSTAGE)
+			if(sum(statusHS) != 1)
+				printf "(%s) Analysis function only supports one headstage.\r", panelTitle
+				ControlWindowToFront()
+				return 1
+			endif
+
 			val = DAG_GetNumericalValue(panelTitle, "setvar_DataAcq_AutoBiasV")
 
 			if(!IsFinite(val) || CheckIfSmall(val, tol = 1e-12))
@@ -855,20 +856,19 @@ Function PSQ_SubThreshold(panelTitle, eventType, ITCDataWave, headStage, realDat
 
 			break
 		case POST_SWEEP_EVENT:
-			sweepNo              = AFH_GetLastSweepAcquired(panelTitle)
 			WAVE numericalValues = GetLBNumericalValues(panelTitle)
 			WAVE textualValues   = GetLBTextualValues(panelTitle)
 
 			key = PSQ_CreateLBNKey(PSQ_SUB_THRESHOLD, PSQ_FMT_LBN_SWEEP_PASS, query = 1)
-			sweepPassed = GetLastSettingIndep(numericalValues, sweepNo, key, UNKNOWN_MODE)
+			sweepPassed = GetLastSettingIndep(numericalValues, s.sweepNo, key, UNKNOWN_MODE)
 			ASSERT(IsFinite(sweepPassed), "Could not find the sweep passed labnotebook entry")
 
-			WAVE/T stimsets = GetLastSettingText(textualValues, sweepNo, STIM_WAVE_NAME_KEY, DATA_ACQUISITION_MODE)
-			stimset = stimsets[headstage]
+			WAVE/T stimsets = GetLastSettingText(textualValues, s.sweepNo, STIM_WAVE_NAME_KEY, DATA_ACQUISITION_MODE)
+			stimset = stimsets[s.headstage]
 
 			sweepsInSet         = IDX_NumberOfSweepsInSet(stimset)
-			passesInSet         = PSQ_NumPassesInSet(panelTitle, PSQ_SUB_THRESHOLD, sweepNo)
-			acquiredSweepsInSet = PSQ_NumAcquiredSweepsInSet(panelTitle, sweepNo)
+			passesInSet         = PSQ_NumPassesInSet(panelTitle, PSQ_SUB_THRESHOLD, s.sweepNo)
+			acquiredSweepsInSet = PSQ_NumAcquiredSweepsInSet(panelTitle, s.sweepNo)
 
 			if(!sweepPassed)
 				// not enough sweeps left to pass the set
@@ -876,7 +876,7 @@ Function PSQ_SubThreshold(panelTitle, eventType, ITCDataWave, headStage, realDat
 			else
 				// sweep passed
 
-				WAVE/Z sweep = GetSweepWave(panelTitle, sweepNo)
+				WAVE/Z sweep = GetSweepWave(panelTitle, s.sweepNo)
 				ASSERT(WaveExists(sweep), "Expected a sweep for evaluation")
 
 				Make/D/FREE/N=(LABNOTEBOOK_LAYER_COUNT) deltaV     = NaN
@@ -894,11 +894,11 @@ Function PSQ_SubThreshold(panelTitle, eventType, ITCDataWave, headStage, realDat
 					skipToEnd = 1
 				else
 					// set next DAScale value
-					DAScalesIndex[headstage] += 1
+					DAScalesIndex[s.headstage] += 1
 				endif
 			endif
 
-			sprintf msg, "Sweep %s, total sweeps %d, acquired sweeps %d, passed sweeps %d, skipToEnd %s, DAScalesIndex %d\r", SelectString(sweepPassed, "failed", "passed"), sweepsInSet, acquiredSweepsInSet, passesInSet, SelectString(skiptoEnd, "false", "true"), DAScalesIndex[headstage]
+			sprintf msg, "Sweep %s, total sweeps %d, acquired sweeps %d, passed sweeps %d, skipToEnd %s, DAScalesIndex %d\r", SelectString(sweepPassed, "failed", "passed"), sweepsInSet, acquiredSweepsInSet, passesInSet, SelectString(skiptoEnd, "false", "true"), DAScalesIndex[s.headstage]
 			DEBUGPRINT(msg)
 
 			if(skiptoEnd)
@@ -908,8 +908,7 @@ Function PSQ_SubThreshold(panelTitle, eventType, ITCDataWave, headStage, realDat
 
 			break
 		case POST_SET_EVENT:
-			sweepNo = AFH_GetLastSweepAcquired(panelTitle)
-			setPassed = PSQ_NumPassesInSet(panelTitle, PSQ_SUB_THRESHOLD, sweepNo) >= numSweepsPass
+			setPassed = PSQ_NumPassesInSet(panelTitle, PSQ_SUB_THRESHOLD, s.sweepNo) >= numSweepsPass
 
 			sprintf msg, "Set has %s\r", SelectString(setPassed, "failed", "passed")
 			DEBUGPRINT(msg)
@@ -923,7 +922,9 @@ Function PSQ_SubThreshold(panelTitle, eventType, ITCDataWave, headStage, realDat
 			break
 	endswitch
 
-	if(eventType == PRE_DAQ_EVENT || eventType == POST_SWEEP_EVENT)
+	if(s.eventType == PRE_DAQ_EVENT || s.eventType == POST_SWEEP_EVENT)
+		WAVE statusHS = DAG_GetChannelState(panelTitle, CHANNEL_TYPE_HEADSTAGE)
+
 		for(i = 0; i < NUM_HEADSTAGES; i += 1)
 			if(!statusHS[i])
 				continue
@@ -941,35 +942,30 @@ Function PSQ_SubThreshold(panelTitle, eventType, ITCDataWave, headStage, realDat
 		endfor
 	endif
 
-	if(eventType != MID_SWEEP_EVENT)
+	if(s.eventType != MID_SWEEP_EVENT)
 		return NaN
 	endif
 
 	WAVE numericalValues = GetLBNumericalValues(panelTitle)
 
-	// we can't use AFH_GetLastSweepAcquired as the sweep is not yet acquired
-	sweepNo = DAG_GetNumericalValue(panelTitle, "SetVar_Sweep")
 	key = PSQ_CreateLBNKey(PSQ_SUB_THRESHOLD, PSQ_FMT_LBN_SWEEP_PASS, query = 1)
-	sweepPassed = GetLastSettingIndep(numericalValues, sweepNo, key, UNKNOWN_MODE, defValue = 0)
+	sweepPassed = GetLastSettingIndep(numericalValues, s.sweepNo, key, UNKNOWN_MODE, defValue = 0)
 
 	if(sweepPassed) // already done
 		return NaN
 	endif
 
-	NVAR fifoPos = $GetFifoPosition(panelTitle)
-	lastFifoPos = fifoPos - 1
-
 	totalOnsetDelay = DAG_GetNumericalValue(panelTitle, "setvar_DataAcq_OnsetDelayUser") \
 					  + GetValDisplayAsNum(panelTitle, "valdisp_DataAcq_OnsetDelayAuto")
 
-	fifoInStimsetPoint = lastFifoPos - totalOnsetDelay / DimDelta(ITCDataWave, ROWS)
-	fifoInStimsetTime  = fifoInStimsetPoint * DimDelta(ITCDataWave, ROWS)
+	fifoInStimsetPoint = s.lastKnownRowIndex - totalOnsetDelay / DimDelta(s.rawDACWAVE, ROWS)
+	fifoInStimsetTime  = fifoInStimsetPoint * DimDelta(s.rawDACWAVE, ROWS)
 
-	numBaselineChunks = PSQ_GetNumberOfChunks(panelTitle, sweepNo, headstage, PSQ_SUB_THRESHOLD)
+	numBaselineChunks = PSQ_GetNumberOfChunks(panelTitle, s.sweepNo, s.headstage, PSQ_SUB_THRESHOLD)
 
 	for(i = 0; i < numBaselineChunks; i += 1)
 
-		ret = PSQ_EvaluateBaselineProperties(panelTitle, PSQ_SUB_THRESHOLD, sweepNo, i, fifoInStimsetTime, totalOnsetDelay)
+		ret = PSQ_EvaluateBaselineProperties(panelTitle, PSQ_SUB_THRESHOLD, s.sweepNo, i, fifoInStimsetTime, totalOnsetDelay)
 
 		if(IsNaN(ret))
 			// NaN: not enough data for check
@@ -1017,7 +1013,7 @@ Function PSQ_SubThreshold(panelTitle, eventType, ITCDataWave, headStage, realDat
 	result[INDEP_HEADSTAGE] = sweepPassed
 
 	key = PSQ_CreateLBNKey(PSQ_SUB_THRESHOLD, PSQ_FMT_LBN_SWEEP_PASS)
-	ED_AddEntryToLabnotebook(panelTitle, key, result, unit = "On/Off", overrideSweepNo = sweepNo)
+	ED_AddEntryToLabnotebook(panelTitle, key, result, unit = "On/Off", overrideSweepNo = s.sweepNo)
 
 	return sweepPassed ? ANALYSIS_FUNC_RET_EARLY_STOP : ret
 End
@@ -1025,7 +1021,6 @@ End
 /// @brief Analysis function to find the smallest DAScale where the cell spikes
 ///
 /// Prerequisites:
-/// - This stimset must have this analysis function set for the "Pre DAQ" and "Post Sweep" Event
 /// - Does only work for one headstage
 /// - Assumes that the stimset has a pulse
 ///
@@ -1059,27 +1054,24 @@ End
 /// ---|     |--------------------------------------------
 ///
 /// @endverbatim
-Function PSQ_SquarePulse(panelTitle, eventType, ITCDataWave, headStage, realDataLength)
+Function PSQ_SquarePulse(panelTitle, s)
 	string panelTitle
-	variable eventType
-	Wave ITCDataWave
-	variable headstage, realDataLength
+	STRUCT AnalysisFunction_V3 &s
 
-	variable sweepNo, stepsize, DAScale, totalOnsetDelay
-	variable offset, first, last, level, overrideValue
+	variable stepsize, DAScale, totalOnsetDelay
 	string key
 
-	WAVE numericalValues = GetLBNumericalValues(panelTitle)
-	WAVE textualValues   = GetLBTextualValues(panelTitle)
-
-	WAVE statusHS = DAG_GetChannelState(panelTitle, CHANNEL_TYPE_HEADSTAGE)
-
-	ASSERT(sum(statusHS) == 1, "Analysis function only supports one headstage")
-
-	switch(eventType)
+	switch(s.eventType)
 		case PRE_DAQ_EVENT:
 			if(!GetCheckBoxState(panelTitle, "check_Settings_MD"))
 				printf "(%s): Please check \"Multi Device\" mode.\r", panelTitle
+				ControlWindowToFront()
+				return 1
+			endif
+
+			WAVE statusHS = DAG_GetChannelState(panelTitle, CHANNEL_TYPE_HEADSTAGE)
+			if(sum(statusHS) != 1)
+				printf "(%s) Analysis function only supports one headstage.\r", panelTitle
 				ControlWindowToFront()
 				return 1
 			endif
@@ -1088,39 +1080,36 @@ Function PSQ_SquarePulse(panelTitle, eventType, ITCDataWave, headStage, realData
 			PGC_SetAndActivateControl(panelTitle, "Check_Settings_InsertTP", val = 0)
 			PGC_SetAndActivateControl(panelTitle, "Check_DataAcq_Get_Set_ITI", val = 1)
 
-			if(DAG_GetHeadstageMode(panelTitle, headstage) != I_CLAMP_MODE)
+			if(DAG_GetHeadstageMode(panelTitle, s.headstage) != I_CLAMP_MODE)
 				printf "(%s) Clamp mode must be current clamp.\r", panelTitle
 				ControlWindowToFront()
 				return 1
 			endif
 
-			sweepNo = GetSetVariable(panelTitle, "SetVar_Sweep")
-			PSQ_StoreStepSizeInLBN(panelTitle, sweepNo, PSQ_SP_INIT_AMP_p100)
-			SetDAScale(panelTitle, headstage, PSQ_SP_INIT_AMP_p100)
+			PSQ_StoreStepSizeInLBN(panelTitle, s.sweepNo, PSQ_SP_INIT_AMP_p100)
+			SetDAScale(panelTitle, s.headstage, PSQ_SP_INIT_AMP_p100)
 
 			return 0
 
 			break
 		case POST_SWEEP_EVENT:
-
-			sweepNo = AFH_GetLastSweepAcquired(panelTitle)
-			WAVE sweepWave = GetSweepWave(panelTitle, sweepNo)
+			WAVE sweepWave = GetSweepWave(panelTitle, s.sweepNo)
 			WAVE numericalValues = GetLBNumericalValues(panelTitle)
 
-			totalOnsetDelay = GetLastSettingIndep(numericalValues, sweepNo, "Delay onset auto", DATA_ACQUISITION_MODE) \
-							  + GetLastSettingIndep(numericalValues, sweepNo, "Delay onset user", DATA_ACQUISITION_MODE)
+			totalOnsetDelay = GetLastSettingIndep(numericalValues, s.sweepNo, "Delay onset auto", DATA_ACQUISITION_MODE) \
+							  + GetLastSettingIndep(numericalValues, s.sweepNo, "Delay onset user", DATA_ACQUISITION_MODE)
 
-			WAVE spikeDetection = PSQ_SearchForSpikes(panelTitle, PSQ_SQUARE_PULSE, sweepWave, headstage, totalOnsetDelay)
+			WAVE spikeDetection = PSQ_SearchForSpikes(panelTitle, PSQ_SQUARE_PULSE, sweepWave, s.headstage, totalOnsetDelay)
 			key = PSQ_CreateLBNKey(PSQ_SQUARE_PULSE, PSQ_FMT_LBN_SPIKE_DETECT)
 			ED_AddEntryToLabnotebook(panelTitle, key, spikeDetection)
 
 			key = PSQ_CreateLBNKey(PSQ_SQUARE_PULSE, PSQ_FMT_LBN_STEPSIZE, query = 1)
-			stepSize = GetLastSettingIndepRAC(numericalValues, sweepNo, key, UNKNOWN_MODE)
-			DAScale  = GetLastSetting(numericalValues, sweepNo, "Stim Scale Factor", DATA_ACQUISITION_MODE)[headstage] * 1e-12
+			stepSize = GetLastSettingIndepRAC(numericalValues, s.sweepNo, key, UNKNOWN_MODE)
+			DAScale  = GetLastSetting(numericalValues, s.sweepNo, "Stim Scale Factor", DATA_ACQUISITION_MODE)[s.headstage] * 1e-12
 
-			if(spikeDetection[headstage]) // headstage spiked
+			if(spikeDetection[s.headstage]) // headstage spiked
 				if(CheckIfClose(stepSize, PSQ_SP_INIT_AMP_m50))
-					SetDAScale(panelTitle, headstage, DAScale + stepsize)
+					SetDAScale(panelTitle, s.headstage, DAScale + stepsize)
 				elseif(CheckIfClose(stepSize, PSQ_SP_INIT_AMP_p10))
 					Make/FREE/D/N=(LABNOTEBOOK_LAYER_COUNT) value = 0
 					value[INDEP_HEADSTAGE] = DAScale
@@ -1128,15 +1117,15 @@ Function PSQ_SquarePulse(panelTitle, eventType, ITCDataWave, headStage, realData
 					ED_AddEntryToLabnotebook(panelTitle, key, value)
 					RA_SkipSweeps(panelTitle, inf)
 				elseif(CheckIfClose(stepSize, PSQ_SP_INIT_AMP_p100))
-					PSQ_StoreStepSizeInLBN(panelTitle, sweepNo, PSQ_SP_INIT_AMP_m50)
+					PSQ_StoreStepSizeInLBN(panelTitle, s.sweepNo, PSQ_SP_INIT_AMP_m50)
 					stepsize = PSQ_SP_INIT_AMP_m50
-					SetDAScale(panelTitle, headstage, DAScale + stepsize)
+					SetDAScale(panelTitle, s.headstage, DAScale + stepsize)
 				else
 					ASSERT(0, "Unknown stepsize")
 				endif
 			else // headstage did not spike
 				if(CheckIfClose(stepSize, PSQ_SP_INIT_AMP_m50))
-					PSQ_StoreStepSizeInLBN(panelTitle, sweepNo, PSQ_SP_INIT_AMP_p10)
+					PSQ_StoreStepSizeInLBN(panelTitle, s.sweepNo, PSQ_SP_INIT_AMP_p10)
 					stepsize = PSQ_SP_INIT_AMP_p10
 				elseif(CheckIfClose(stepSize, PSQ_SP_INIT_AMP_p10))
 					// do nothing
@@ -1146,9 +1135,12 @@ Function PSQ_SquarePulse(panelTitle, eventType, ITCDataWave, headStage, realData
 					ASSERT(0, "Unknown stepsize")
 				endif
 
-				SetDAScale(panelTitle, headstage, DAScale + stepsize)
+				SetDAScale(panelTitle, s.headstage, DAScale + stepsize)
 			endif
 
+			break
+		default:
+			// do nothing
 			break
 	endswitch
 
@@ -1158,7 +1150,6 @@ End
 /// @brief Analysis function for finding the exact DAScale value between spiking and non-spiking
 ///
 /// Prerequisites:
-/// - This stimset must have this analysis function set for the "Pre DAQ", "Mid Sweep", "Post Sweep", "Post Set" Event
 /// - Does only work for one headstage
 /// - Assumes that the stimset has a pulse of non-zero and arbitrary length
 /// - Pre pulse baseline length is #PSQ_RB_PRE_BL_EVAL_RANGE
@@ -1194,27 +1185,19 @@ End
 /// ---|     |--------------------------------------------
 ///
 /// @endverbatim
-Function PSQ_Rheobase(panelTitle, eventType, ITCDataWave, headStage, realDataLength)
+Function PSQ_Rheobase(panelTitle, s)
 	string panelTitle
-	variable eventType
-	Wave ITCDataWave
-	variable headstage, realDataLength
+	STRUCT AnalysisFunction_V3 &s
 
-	variable sweepNo, stepsize, DAScale, val, numSweeps, currentSweepHasSpike, setPassed
-	variable offset, first, last, level, overrideValue, baselineQCPassed, finalDAScale, initialDAScale
+	variable DAScale, val, numSweeps, currentSweepHasSpike, setPassed
+	variable baselineQCPassed, finalDAScale, initialDAScale
 	variable numBaselineChunks, lastFifoPos, totalOnsetDelay, fifoInStimsetPoint, fifoInStimsetTime
-	variable i, ret, numSweepsWithSpikeDetection
+	variable i, ret, numSweepsWithSpikeDetection, sweepNoFound
 	string key, msg
 
-	WAVE statusHS = DAG_GetChannelState(panelTitle, CHANNEL_TYPE_HEADSTAGE)
-
-	ASSERT(sum(statusHS) == 1, "Analysis function only supports one headstage")
-
-	WAVE numericalValues = GetLBNumericalValues(panelTitle)
-
-	switch(eventType)
+	switch(s.eventType)
 		case PRE_DAQ_EVENT:
-			if(DAG_GetHeadstageMode(panelTitle, headstage) != I_CLAMP_MODE)
+			if(DAG_GetHeadstageMode(panelTitle, s.headstage) != I_CLAMP_MODE)
 				printf "(%s) Clamp mode must be current clamp.\r", panelTitle
 				ControlWindowToFront()
 				return 1
@@ -1224,6 +1207,13 @@ Function PSQ_Rheobase(panelTitle, eventType, ITCDataWave, headStage, realDataLen
 				return 1
 			elseif(!DAG_GetNumericalValue(panelTitle, "check_Settings_MD"))
 				printf "(%s): Please check \"Multi Device\" mode.\r", panelTitle
+				ControlWindowToFront()
+				return 1
+			endif
+
+			WAVE statusHS = DAG_GetChannelState(panelTitle, CHANNEL_TYPE_HEADSTAGE)
+			if(sum(statusHS) != 1)
+				printf "(%s) Analysis function only supports one headstage.\r", panelTitle
 				ControlWindowToFront()
 				return 1
 			endif
@@ -1255,12 +1245,12 @@ Function PSQ_Rheobase(panelTitle, eventType, ITCDataWave, headStage, realDataLen
 			PGC_SetAndActivateControl(panelTitle, "check_Settings_ITITP", val = 1)
 			PGC_SetAndActivateControl(panelTitle, "Check_Settings_InsertTP", val = 1)
 
+			WAVE numericalValues = GetLBNumericalValues(panelTitle)
 			key = PSQ_CreateLBNKey(PSQ_SQUARE_PULSE, PSQ_FMT_LBN_FINAL_SCALE, query = 1)
-			sweepNo = AFH_GetLastSweepAcquired(panelTitle)
-			finalDAScale = GetLastSettingIndepRAC(numericalValues, sweepNo, key, UNKNOWN_MODE)
+			finalDAScale = GetLastSweepWithSettingIndep(numericalValues, key, sweepNoFound)
 
-			if(!IsFinite(finalDAScale))
-				printf "(%s): Could not find final DAScale value from previous analysis function.\r", panelTitle
+			if(!IsFinite(finalDAScale) || !IsValidSweepNumber(sweepNoFound))
+				printf "(%s): Could not find final DAScale value from one of the previous analysis functions.\r", panelTitle
 				if(PSQ_TestOverrideActive())
 					finalDASCale = PSQ_RB_FINALSCALE_FAKE
 				else
@@ -1269,25 +1259,26 @@ Function PSQ_Rheobase(panelTitle, eventType, ITCDataWave, headStage, realDataLen
 				endif
 			endif
 
-			SetDAScale(panelTitle, headstage, finalDAScale)
+			SetDAScale(panelTitle, s.headstage, finalDAScale)
 
 			return 0
 
 			break
 		case POST_SWEEP_EVENT:
-			sweepNo = AFH_GetLastSweepAcquired(panelTitle)
-			WAVE sweeps = AFH_GetSweepsFromSameRACycle(numericalValues, sweepNo)
+			WAVE numericalValues = GetLBNumericalValues(panelTitle)
+			WAVE sweeps = AFH_GetSweepsFromSameRACycle(numericalValues, s.sweepNo)
 
 			numSweeps = DimSize(sweeps, ROWS)
 
 			if(numSweeps == 1)
 				// query the initial DA scale from the previous sweep (which is from a different RAC)
 				key = PSQ_CreateLBNKey(PSQ_SQUARE_PULSE, PSQ_FMT_LBN_FINAL_SCALE, query = 1)
-				finalDAScale = GetLastSettingIndepRAC(numericalValues, sweepNo - 1, key, UNKNOWN_MODE)
+				finalDAScale = GetLastSweepWithSettingIndep(numericalValues, key, sweepNoFound)
 				if(PSQ_TestOverrideActive())
 					finalDAScale = PSQ_RB_FINALSCALE_FAKE
+				else
+					ASSERT(IsFinite(finalDAScale) && IsValidSweepNumber(sweepNoFound), "Could not find final DAScale value from previous analysis function")
 				endif
-				ASSERT(IsFinite(finalDAScale), "Could not find final DAScale value from previous analysis function")
 
 				// and set it as the initial DAScale for this RAC
 				Make/FREE/D/N=(LABNOTEBOOK_LAYER_COUNT) result = NaN
@@ -1297,28 +1288,27 @@ Function PSQ_Rheobase(panelTitle, eventType, ITCDataWave, headStage, realDataLen
 			endif
 
 			key = PSQ_CreateLBNKey(PSQ_RHEOBASE, PSQ_FMT_LBN_BL_QC_PASS, query = 1)
-			WAVE/Z baselineQCPassedWave = GetLastSetting(numericalValues, sweepNo, key, UNKNOWN_MODE)
+			WAVE/Z baselineQCPassedWave = GetLastSetting(numericalValues, s.sweepNo, key, UNKNOWN_MODE)
 
-			baselineQCPassed = WaveExists(baselineQCPassedWave) && baselineQCPassedWave[headstage]
+			baselineQCPassed = WaveExists(baselineQCPassedWave) && baselineQCPassedWave[s.headstage]
 
 			if(!baselineQCPassed)
 				break
 			endif
 
 			// search for spike and store result
-			WAVE sweepWave = GetSweepWave(panelTitle, sweepNo)
-
+			WAVE sweepWave = GetSweepWave(panelTitle, s.sweepNo)
 			WAVE numericalValues = GetLBNumericalValues(panelTitle)
 
-			totalOnsetDelay = GetLastSettingIndep(numericalValues, sweepNo, "Delay onset auto", DATA_ACQUISITION_MODE)   \
-							  + GetLastSettingIndep(numericalValues, sweepNo, "Delay onset user", DATA_ACQUISITION_MODE)
+			totalOnsetDelay = GetLastSettingIndep(numericalValues, s.sweepNo, "Delay onset auto", DATA_ACQUISITION_MODE)   \
+							  + GetLastSettingIndep(numericalValues, s.sweepNo, "Delay onset user", DATA_ACQUISITION_MODE)
 
-			WAVE spikeDetection = PSQ_SearchForSpikes(panelTitle, PSQ_RHEOBASE, sweepWave, headstage, totalOnsetDelay)
+			WAVE spikeDetection = PSQ_SearchForSpikes(panelTitle, PSQ_RHEOBASE, sweepWave, s.headstage, totalOnsetDelay)
 			key = PSQ_CreateLBNKey(PSQ_RHEOBASE, PSQ_FMT_LBN_SPIKE_DETECT)
 			ED_AddEntryToLabnotebook(panelTitle, key, spikeDetection, unit = "On/Off")
 
 			key = PSQ_CreateLBNKey(PSQ_RHEOBASE, PSQ_FMT_LBN_SPIKE_DETECT, query = 1)
-			WAVE spikeDetectionRA = GetLastSettingEachRAC(numericalValues, sweepNo, key, headstage, UNKNOWN_MODE)
+			WAVE spikeDetectionRA = GetLastSettingEachRAC(numericalValues, s.sweepNo, key, s.headstage, UNKNOWN_MODE)
 
 			numSweepsWithSpikeDetection = DimSize(spikeDetectionRA, ROWS)
 			currentSweepHasSpike        = spikeDetectionRA[numSweepsWithSpikeDetection - 1]
@@ -1335,7 +1325,7 @@ Function PSQ_Rheobase(panelTitle, eventType, ITCDataWave, headStage, realDataLen
 				break
 			endif
 
-			DAScale = GetLastSetting(numericalValues, sweepNo, "Stim Scale Factor", DATA_ACQUISITION_MODE)[headstage] * 1e-12
+			DAScale = GetLastSetting(numericalValues, s.sweepNo, "Stim Scale Factor", DATA_ACQUISITION_MODE)[s.headstage] * 1e-12
 			if(currentSweepHasSpike)
 				DAScale -= PSQ_RB_DASCALE_STEP
 			else
@@ -1343,7 +1333,7 @@ Function PSQ_Rheobase(panelTitle, eventType, ITCDataWave, headStage, realDataLen
 			endif
 
 			key = PSQ_CreateLBNKey(PSQ_RHEOBASE, PSQ_FMT_LBN_INITIAL_SCALE, query = 1)
-			initialDAScale = GetLastSettingIndepRAC(numericalValues, sweepNo, key, UNKNOWN_MODE)
+			initialDAScale = GetLastSettingIndepRAC(numericalValues, s.sweepNo, key, UNKNOWN_MODE)
 
 			if(abs(DAScale - initialDAScale) >= PSQ_RB_MAX_DASCALE_DIFF)
 				// mark set as failure
@@ -1355,11 +1345,12 @@ Function PSQ_Rheobase(panelTitle, eventType, ITCDataWave, headStage, realDataLen
 				break
 			endif
 
-			SetDAScale(panelTitle, headstage, DAScale)
+			SetDAScale(panelTitle, s.headstage, DAScale)
 			break
 		case POST_SET_EVENT:
+			WAVE numericalValues = GetLBNumericalValues(panelTitle)
 			key = PSQ_CreateLBNKey(PSQ_RHEOBASE, PSQ_FMT_LBN_SET_PASS, query = 1)
-			setPassed = GetLastSettingIndepRAC(numericalValues, sweepNo, key, UNKNOWN_MODE)
+			setPassed = GetLastSettingIndepRAC(numericalValues, s.sweepNo, key, UNKNOWN_MODE)
 
 			// if we don't have an entry yet for the set passing, it has failed
 			if(!IsFinite(setPassed))
@@ -1371,33 +1362,29 @@ Function PSQ_Rheobase(panelTitle, eventType, ITCDataWave, headStage, realDataLen
 			break
 	endswitch
 
-	if(eventType != MID_SWEEP_EVENT)
+	if(s.eventType != MID_SWEEP_EVENT)
 		return NaN
 	endif
 
-	// we can't use AFH_GetLastSweepAcquired as the sweep is not yet acquired
-	sweepNo = DAG_GetNumericalValue(panelTitle, "SetVar_Sweep")
+	WAVE numericalValues = GetLBNumericalValues(panelTitle)
 	key = PSQ_CreateLBNKey(PSQ_RHEOBASE, PSQ_FMT_LBN_BL_QC_PASS, query = 1)
-	baselineQCPassed = GetLastSettingIndep(numericalValues, sweepNo, key, UNKNOWN_MODE, defValue = 0)
+	baselineQCPassed = GetLastSettingIndep(numericalValues, s.sweepNo, key, UNKNOWN_MODE, defValue = 0)
 
 	if(baselineQCPassed)
 		return NaN
 	endif
 
-	NVAR fifoPos = $GetFifoPosition(panelTitle)
-	lastFifoPos = fifoPos - 1
-
 	totalOnsetDelay = DAG_GetNumericalValue(panelTitle, "setvar_DataAcq_OnsetDelayUser") \
 					  + GetValDisplayAsNum(panelTitle, "valdisp_DataAcq_OnsetDelayAuto")
 
-	fifoInStimsetPoint = lastFifoPos - totalOnsetDelay / DimDelta(ITCDataWave, ROWS)
-	fifoInStimsetTime  = fifoInStimsetPoint * DimDelta(ITCDataWave, ROWS)
+	fifoInStimsetPoint = s.lastKnownRowIndex - totalOnsetDelay / DimDelta(s.rawDACWAVE, ROWS)
+	fifoInStimsetTime  = fifoInStimsetPoint * DimDelta(s.rawDACWAVE, ROWS)
 
-	numBaselineChunks = PSQ_GetNumberOfChunks(panelTitle, sweepNo, headstage, PSQ_RHEOBASE)
+	numBaselineChunks = PSQ_GetNumberOfChunks(panelTitle, s.sweepNo, s.headstage, PSQ_RHEOBASE)
 
 	for(i = 0; i < numBaselineChunks; i += 1)
 
-		ret = PSQ_EvaluateBaselineProperties(panelTitle, PSQ_RHEOBASE, sweepNo, i, fifoInStimsetTime, totalOnsetDelay)
+		ret = PSQ_EvaluateBaselineProperties(panelTitle, PSQ_RHEOBASE, s.sweepNo, i, fifoInStimsetTime, totalOnsetDelay)
 
 		if(IsNaN(ret))
 			// NaN: not enough data for check
@@ -1442,10 +1429,10 @@ Function PSQ_Rheobase(panelTitle, eventType, ITCDataWave, headStage, realDataLen
 
 	// document BL QC results
 	Make/FREE/D/N=(LABNOTEBOOK_LAYER_COUNT) result = NaN
-	result[headstage] = baselineQCPassed
+	result[s.headstage] = baselineQCPassed
 
 	key = PSQ_CreateLBNKey(PSQ_RHEOBASE, PSQ_FMT_LBN_BL_QC_PASS)
-	ED_AddEntryToLabnotebook(panelTitle, key, result, unit = "On/Off", overrideSweepNo = sweepNo)
+	ED_AddEntryToLabnotebook(panelTitle, key, result, unit = "On/Off", overrideSweepNo = s.sweepNo)
 
 	return 0
 End
