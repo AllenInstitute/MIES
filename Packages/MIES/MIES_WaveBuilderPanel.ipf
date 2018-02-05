@@ -300,7 +300,7 @@ Window WaveBuilder() : Panel
 	PopupMenu popup_WaveBuilder_SetList,userdata(ResizeControlsInfo)= A"!!,J<J,htR^]6_;!!#<Pz!!#o2B4uAezzzzzzzzzzzzzz!!#o2B4uAezz"
 	PopupMenu popup_WaveBuilder_SetList,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#?(FEDG<zzzzzzzzzzz"
 	PopupMenu popup_WaveBuilder_SetList,userdata(ResizeControlsInfo) += A"zzz!!#?(FEDG<zzzzzzzzzzzzzz!!!"
-	PopupMenu popup_WaveBuilder_SetList,mode=1,popvalue="- none -",value= #"\"- none -;\"+ WBP_ReturnListSavedSets(\"DA\") + WBP_ReturnListSavedSets(\"TTL\")"
+	PopupMenu popup_WaveBuilder_SetList,mode=1,popvalue="- none -",value= #"WBP_ReturnListSavedSets()"
 	Button button_WaveBuilder_KillSet,pos={839.00,606.00},size={152.00,23.00},proc=WBP_ButtonProc_DeleteSet,title="Delete Set"
 	Button button_WaveBuilder_KillSet,help={"Delete stimulus set selected in popup menu on the left."}
 	Button button_WaveBuilder_KillSet,userdata(tabcontrol)=  "WBP_WaveType"
@@ -1698,24 +1698,18 @@ Function WBP_GetOutputType()
 	return outputType
 End
 
-/// @brief Return a list of all stim sets for the given type
-/// @param setType One of `DA` or `TTL`
-Function/S WBP_ReturnListSavedSets(setType)
-	string setType
+/// @brief Return a sorted list of all stim sets created by the wavebuilder
+Function/S WBP_ReturnListSavedSets()
 
-	string path, list, stimSetList
-	variable numWaves, i
-	path= GetWBSvdStimSetParamPathAS() + ":" + setType
+	string list = ""
 
-	list = GetListOfObjects($path, "WP_.*" + setType + ".*")
-	stimSetList = ""
+	DFREF dfr = GetSetParamFolder(CHANNEL_TYPE_DAC)
+	list += GetListOfObjects(dfr, "WP_.*")
 
-	numWaves = ItemsInList(list)
-	for(i = 0; i < numWaves; i += 1)
-		stimSetList = AddListItem(RemovePrefix(StringFromList(i, list), startStr="WP_"), stimSetList, ";", Inf)
-	endfor
+	DFREF dfr = GetSetParamFolder(CHANNEL_TYPE_TTL)
+	list += GetListOfObjects(dfr, "WP_.*")
 
-	return SortList(stimSetList, ";", 16)
+	return SortList(RemovePrefixFromListItem("WP_", list), ";", 16)
 end
 
 /// @brief Return true if the given stimset is a builtin, false otherwise
