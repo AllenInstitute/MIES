@@ -689,7 +689,7 @@ Function PA_ShowPulses(win, dfr, pa)
 					GetTraceColor(NUM_HEADSTAGES + 1, red, green, blue)
 					AppendToGraph/Q/W=$graph/L=$vertAxis/B=$horizAxis/C=(red, green, blue) averageWave
 
-					AddEntryIntoWaveNoteAsList(averageWave, "SourceWavesForAverage", str=listOfWaves)
+					AddEntryIntoWaveNoteAsList(averageWave, "SourceWavesForAverage", str=ReplaceString(";", listOfWaves, "|"))
 					listOfWavesPerChannel[channelNumber] = ""
 				endif
 
