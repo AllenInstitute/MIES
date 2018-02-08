@@ -2858,7 +2858,7 @@ Function/WAVE CalculateAverage(listOfWaves, averageDataFolder, averageWaveName)
 	MoveWave averageWave, averageDataFolder:$wvName
 
 	SetNumberInWaveNote(averageWave, "DataCRC", crc)
-	AddEntryIntoWaveNoteAsList(averageWave, "SourceWavesForAverage", str=listOfWaves)
+	AddEntryIntoWaveNoteAsList(averageWave, "SourceWavesForAverage", str=ReplaceString(";", listOfWaves, "|"))
 	CA_StoreEntryIntoCache(key, averageWave)
 
 	return averageWave
