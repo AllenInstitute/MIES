@@ -294,6 +294,8 @@ Function FindRange(wv, col, val, forwardORBackward, entrySourceType, first, last
 	first = NaN
 	last  = NaN
 
+	// still correct without startLayer/endLayer coordinates
+	// as we always have sweepNumber/etc. in the first layer
 	if(IsNaN(val))
 		WAVE/Z indizesSetting = FindIndizes(wv, col=col, prop=PROP_EMPTY)
 	else
@@ -1005,7 +1007,8 @@ static Function/WAVE GetNonEmptyLBNRows(labnotebookValues, setting)
 	   return $""
    endif
 
-   return FindIndizes(labnotebookValues, col = col, prop = PROP_NON_EMPTY)
+   return FindIndizes(labnotebookValues, col = col, prop = PROP_NON_EMPTY, \
+					  startLayer = 0, endLayer = DimSize(labnotebookValues, LAYERS) - 1)
 End
 
 /// @brief Return the last numerical value of a setting from the labnotebook
