@@ -1131,6 +1131,8 @@ Function/Wave FindIndizes(numericOrTextWave, [col, colLabel, var, str, prop, sta
 		ASSERT(col >= 0, "invalid column label")
 	endif
 
+	ASSERT(col == 0 || (col > 0 && col < numCols), "Invalid column")
+
 	if(IsTextWave(numericOrTextWave))
 		WAVE/T wvText = numericOrTextWave
 		WAVE/Z wv     = $""
@@ -1155,6 +1157,8 @@ Function/Wave FindIndizes(numericOrTextWave, [col, colLabel, var, str, prop, sta
 
 	if(ParamIsDefault(startRow))
 		startRow = 0
+	else
+		ASSERT(startRow >= 0 && startRow < numRows, "Invalid startRow")
 	endif
 
 	if(ParamIsDefault(endRow))
@@ -1163,8 +1167,6 @@ Function/Wave FindIndizes(numericOrTextWave, [col, colLabel, var, str, prop, sta
 		ASSERT(endRow >= 0 && endRow < numRows, "Invalid endRow")
 	endif
 
-	ASSERT(col == 0 || (col > 0 && col < numCols), "Invalid column")
-	ASSERT(startRow >= 0 && startRow < numRows, "Invalid startRow")
 	ASSERT(startRow <= endRow, "endRow must be larger than startRow")
 
 	Make/FREE/R/N=(numRows) matches = NaN
