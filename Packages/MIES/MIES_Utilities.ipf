@@ -1087,7 +1087,9 @@ End
 /// Allows to search only the specified column for a value
 /// and returns all matching row indizes in a wave.
 ///
-/// Exactly one of `var`/`str`/`prop` has to be given.
+/// Exactly one of `var`/`str`/`prop` has to be given except for
+/// `prop == PROP_MATCHES_VAR_BIT_MASK` and `prop == PROP_NOT_MATCHES_VAR_BIT_MASK`
+/// which requires a `var`/`str` parameter as well.
 ///
 /// Exactly one of `col`/`colLabel` has to be given.
 ///
@@ -1111,12 +1113,11 @@ Function/Wave FindIndizes(numericOrTextWave, [col, colLabel, var, str, prop, sta
 	variable numCols, numRows, err
 
 	ASSERT(ParamIsDefault(col) + ParamIsDefault(colLabel) == 1, "Expected exactly one col/colLabel argument")
-
 	ASSERT(ParamIsDefault(prop) + ParamIsDefault(var) + ParamIsDefault(str) == 2              \
 		   || (!ParamIsDefault(prop)                                                          \
 			  && (prop == PROP_MATCHES_VAR_BIT_MASK || prop == PROP_NOT_MATCHES_VAR_BIT_MASK) \
-			  && !ParamIsDefault(var) && ParamIsDefault(str)),                                \
-			  "Expected exactly one optional var/str/prop argument")
+			  && (ParamIsDefault(var) + ParamIsDefault(str)) == 1),                           \
+			  "Invalid combination of var/str/prop arguments")
 
 	ASSERT(WaveExists(numericOrTextWave), "numericOrTextWave does not exist")
 
@@ -1141,18 +1142,24 @@ Function/Wave FindIndizes(numericOrTextWave, [col, colLabel, var, str, prop, sta
 		WAVE wv         = numericOrTextWave
 	endif
 
-	if(ParamIsDefault(var))
-		var = str2numSafe(str)
-	elseif(ParamIsDefault(str))
-		str = num2str(var)
-	endif
-
 	if(!ParamIsDefault(prop))
 		ASSERT(prop == PROP_NON_EMPTY                    \
 			   || prop == PROP_EMPTY                     \
 			   || prop == PROP_MATCHES_VAR_BIT_MASK      \
 			   || prop == PROP_NOT_MATCHES_VAR_BIT_MASK, \
 			   "Invalid property")
+
+		if(prop == PROP_MATCHES_VAR_BIT_MASK || prop == PROP_NOT_MATCHES_VAR_BIT_MASK)
+			if(ParamIsDefault(var))
+				var = str2numSafe(str)
+			elseif(ParamIsDefault(str))
+				str = num2str(var)
+			endif
+		endif
+	elseif(!ParamIsDefault(var))
+		str = num2str(var)
+	elseif(!ParamIsDefault(str))
+		var = str2numSafe(str)
 	endif
 
 	if(ParamIsDefault(startRow))

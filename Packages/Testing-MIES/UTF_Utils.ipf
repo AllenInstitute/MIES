@@ -840,7 +840,7 @@ Function FI_TextSearchWithColAndProp3()
 	DFREF dfr = root:FindIndizes
 	WAVE/SDFR=dfr text
 
-	WAVE/Z indizes = FindIndizes(text, col = 1, var = 2, prop = PROP_MATCHES_VAR_BIT_MASK)
+	WAVE/Z indizes = FindIndizes(text, col = 1, str = "2", prop = PROP_MATCHES_VAR_BIT_MASK)
 	CHECK_EQUAL_WAVES(indizes, {1, 2, 3, 4}, mode = WAVE_DATA)
 End
 
@@ -848,7 +848,7 @@ Function FI_TextSearchWithColAndProp4()
 	DFREF dfr = root:FindIndizes
 	WAVE/SDFR=dfr text
 
-	WAVE/Z indizes = FindIndizes(text, col = 1, var = 2, prop = PROP_NOT_MATCHES_VAR_BIT_MASK)
+	WAVE/Z indizes = FindIndizes(text, col = 1, str = "2", prop = PROP_NOT_MATCHES_VAR_BIT_MASK)
 	CHECK_EQUAL_WAVES(indizes, {0}, mode = WAVE_DATA)
 End
 
