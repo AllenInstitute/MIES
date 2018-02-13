@@ -1085,7 +1085,8 @@ End
 /// @brief Extended version of `FindValue`
 ///
 /// Allows to search only the specified column for a value
-/// and returns all matching row indizes in a wave.
+/// and returns all matching row indizes in a wave. By defaults only looks into the first layer
+/// for backward compatibility reasons.
 ///
 /// Exactly one of `var`/`str`/`prop` has to be given except for
 /// `prop == PROP_MATCHES_VAR_BIT_MASK` and `prop == PROP_NOT_MATCHES_VAR_BIT_MASK`
@@ -1101,16 +1102,19 @@ End
 /// @param prop [optional]     property to search, see @ref FindIndizesProps
 /// @param startRow [optional] starting row to restrict the search to
 /// @param endRow [optional]   ending row to restrict the search to
+/// @param startLayer [optional, defaults to zero] starting layer to restrict search to
+/// @param endLayer [optional, defaults to zero] ending layer to restrict search to
 ///
 /// @returns A wave with the row indizes of the found values. An invalid wave reference if the
 /// value could not be found.
-Function/Wave FindIndizes(numericOrTextWave, [col, colLabel, var, str, prop, startRow, endRow])
+Function/Wave FindIndizes(numericOrTextWave, [col, colLabel, var, str, prop, startRow, endRow, startLayer, endLayer])
 	WAVE numericOrTextWave
 	variable col, var, prop
 	string str, colLabel
 	variable startRow, endRow
+	variable startLayer, endLayer
 
-	variable numCols, numRows, err
+	variable numCols, numRows, numLayers
 
 	ASSERT(ParamIsDefault(col) + ParamIsDefault(colLabel) == 1, "Expected exactly one col/colLabel argument")
 	ASSERT(ParamIsDefault(prop) + ParamIsDefault(var) + ParamIsDefault(str) == 2              \
@@ -1125,8 +1129,11 @@ Function/Wave FindIndizes(numericOrTextWave, [col, colLabel, var, str, prop, sta
 		return $""
 	endif
 
-	numCols = DimSize(numericOrTextWave, COLS)
-	numRows = DimSize(numericOrTextWave, ROWS)
+	numRows   = DimSize(numericOrTextWave, ROWS)
+	numCols   = DimSize(numericOrTextWave, COLS)
+	numLayers = DimSize(numericOrTextWave, LAYERS)
+	ASSERT(DimSize(numericOrTextWave, CHUNKS) <= 1, "No support for chunks")
+
 	if(!ParamIsDefault(colLabel))
 		col = FindDimLabel(numericOrTextWave, COLS, colLabel)
 		ASSERT(col >= 0, "invalid column label")
@@ -1176,46 +1183,70 @@ Function/Wave FindIndizes(numericOrTextWave, [col, colLabel, var, str, prop, sta
 
 	ASSERT(startRow <= endRow, "endRow must be larger than startRow")
 
-	Make/FREE/R/N=(numRows) matches = NaN
+	if(ParamIsDefault(startLayer))
+		startLayer = 0
+	else
+		ASSERT(startLayer >= 0 && (numLayers == 0 || startLayer < numLayers), "Invalid startLayer")
+	endif
+
+	if(ParamIsDefault(endLayer))
+		// only look in the first layer by default
+		endLayer = 0
+	else
+		ASSERT(endLayer >= 0 && (numLayers == 0 || endLayer < numLayers), "Invalid endLayer")
+	endif
+
+	ASSERT(startLayer <= endLayer, "endLayer must be larger than startLayer")
+
+	// Algorithm:
+	// * The matches wave has the same size as one column of the input wave
+	// * -1 means no match, every value larger or equal than zero is the row index of the match
+	// * There is no distinction between different layers matching
+	// * After the matches have been calculated we take the maximum of the transposed matches
+	//   wave in each colum transpose back and replace -1 with NaN
+	// * This gives a 1D wave with NaN in the rows with no match, and the row index of the match otherwise
+	// * Delete all NaNs in the wave and return it
+	Make/FREE/R/N=(numRows, numLayers) matches = -1
 
 	if(WaveExists(wv))
 		if(!ParamIsDefault(prop))
 			if(prop == PROP_EMPTY)
-				MultiThread matches[startRow, endRow] = (numtype(wv[p][col]) == 2 ? p : NaN)
+				MultiThread matches[startRow, endRow][startLayer, endLayer] = (numtype(wv[p][col][q]) == 2 ? p : -1)
 			elseif(prop == PROP_NON_EMPTY)
-				MultiThread matches[startRow, endRow] = (numtype(wv[p][col]) != 2 ? p : NaN)
+				MultiThread matches[startRow, endRow][startLayer, endLayer] = (numtype(wv[p][col][q]) != 2 ? p : -1)
 			elseif(prop == PROP_MATCHES_VAR_BIT_MASK)
-				MultiThread matches[startRow, endRow] = (wv[p][col] & var ? p : NaN)
+				MultiThread matches[startRow, endRow][startLayer, endLayer] = (wv[p][col][q] & var ? p : -1)
 			elseif(prop == PROP_NOT_MATCHES_VAR_BIT_MASK)
-				MultiThread matches[startRow, endRow] = (!(wv[p][col] & var) ? p : NaN)
+				MultiThread matches[startRow, endRow][startLayer, endLayer] = (!(wv[p][col][q] & var) ? p : -1)
 			endif
 		else
 			ASSERT(!IsNaN(var), "Use PROP_EMPTY to search for NaN")
-			MultiThread matches[startRow, endRow] = ((wv[p][col] == var) ? p : NaN)
+			MultiThread matches[startRow, endRow][startLayer, endLayer] = ((wv[p][col][q] == var) ? p : -1)
 		endif
 	else
 		if(!ParamIsDefault(prop))
 			if(prop == PROP_EMPTY)
-				MultiThread matches[startRow, endRow] = (!cmpstr(wvText[p][col], "") ? p : NaN)
+				MultiThread matches[startRow, endRow][startLayer, endLayer] = (!cmpstr(wvText[p][col][q], "") ? p : -1)
 			elseif(prop == PROP_NON_EMPTY)
-				MultiThread matches[startRow, endRow] = (cmpstr(wvText[p][col], "") ? p : NaN)
+				MultiThread matches[startRow, endRow][startLayer, endLayer] = (cmpstr(wvText[p][col][q], "") ? p : -1)
 			elseif(prop == PROP_MATCHES_VAR_BIT_MASK)
-				MultiThread matches[startRow, endRow] = (str2num(wvText[p][col]) & var ? p : NaN)
+				MultiThread matches[startRow, endRow][startLayer, endLayer] = (str2num(wvText[p][col][q]) & var ? p : -1)
 			elseif(prop == PROP_NOT_MATCHES_VAR_BIT_MASK)
-				MultiThread matches[startRow, endRow] = (!(str2num(wvText[p][col]) & var) ? p : NaN)
+				MultiThread matches[startRow, endRow][startLayer, endLayer] = (!(str2num(wvText[p][col][q]) & var) ? p : -1)
 			endif
 		else
-			MultiThread matches[startRow, endRow] = (!cmpstr(wvText[p][col], str) ? p : NaN)
+			MultiThread matches[startRow, endRow][startLayer, endLayer] = (!cmpstr(wvText[p][col][q], str) ? p : -1)
 		endif
 	endif
 
-	WaveTransform/O zapNaNs, matches
+	MatrixOp/Free result = replace(maxCols(matches^t)^t, -1, NaN)
+	WaveTransform/O zapNaNs, result
 
-	if(DimSize(matches, ROWS) == 0)
+	if(DimSize(result, ROWS) == 0)
 		return $""
 	endif
 
-	return matches
+	return result
 End
 
 /// @brief Returns a reference to a newly created datafolder
