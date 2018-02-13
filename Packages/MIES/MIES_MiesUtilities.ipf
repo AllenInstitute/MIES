@@ -992,6 +992,22 @@ Function/WAVE GetLastSettingTextEachRAC(numericalValues, sweepNo, setting, heads
 	return result
 End
 
+/// @brief Return a wave with all labnotebook rows which have a non-empty entry for setting
+static Function/WAVE GetNonEmptyLBNRows(labnotebookValues, setting)
+   WAVE labnotebookValues
+   string setting
+
+   variable col
+
+   col = FindDimLabel(labnotebookValues, COLS, setting)
+
+   if(col < 0)
+	   return $""
+   endif
+
+   return FindIndizes(labnotebookValues, col = col, prop = PROP_NON_EMPTY)
+End
+
 /// @brief Return the last numerical value of a setting from the labnotebook
 ///        and the sweep it was set.
 ///
@@ -1008,18 +1024,12 @@ Function/WAVE GetLastSweepWithSetting(numericalValues, setting, sweepNo)
 	string setting
 	variable &sweepNo
 
-	variable idx, col
+	variable idx
 
 	sweepNo = NaN
 	ASSERT(WaveType(numericalValues), "Can only work with numeric waves")
 
-	col = FindDimLabel(numericalValues, COLS, setting)
-
-	if(col < 0)
-		return $""
-	endif
-
-	WAVE/Z indizes = FindIndizes(numericalValues, col = col, prop=PROP_NON_EMPTY)
+	WAVE/Z indizes = GetNonEmptyLBNRows(numericalValues, setting)
 	if(!WaveExists(indizes))
 		return $""
 	endif
@@ -1077,18 +1087,12 @@ Function/WAVE GetLastSweepWithSettingText(textualValues, setting, sweepNo)
 	string setting
 	variable &sweepNo
 
-	variable idx, col
+	variable idx
 
 	sweepNo = NaN
 	ASSERT(!WaveType(textualValues), "Can only work with text waves")
 
-	col = FindDimLabel(textualValues, COLS, setting)
-
-	if(col < 0)
-		return $""
-	endif
-
-	WAVE/Z indizes = FindIndizes(textualValues, col = col, prop=PROP_NON_EMPTY)
+	WAVE/Z indizes = GetNonEmptyLBNRows(textualValues, setting)
 	if(!WaveExists(indizes))
 		return $""
 	endif
