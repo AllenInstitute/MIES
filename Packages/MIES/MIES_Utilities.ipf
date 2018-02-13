@@ -1142,7 +1142,7 @@ Function/Wave FindIndizes(numericOrTextWave, [col, colLabel, var, str, prop, sta
 	endif
 
 	if(ParamIsDefault(var))
-		var = str2num(str); err = GetRTError(1)
+		var = str2numSafe(str)
 	elseif(ParamIsDefault(str))
 		str = num2str(var)
 	endif
