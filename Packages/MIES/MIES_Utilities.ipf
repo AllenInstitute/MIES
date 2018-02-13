@@ -1181,6 +1181,7 @@ Function/Wave FindIndizes(numericOrTextWave, [col, colLabel, var, str, prop, sta
 				MultiThread matches[startRow, endRow] = (!(wv[p][col] & var) ? p : NaN)
 			endif
 		else
+			ASSERT(!IsNaN(var), "Use PROP_EMPTY to search for NaN")
 			MultiThread matches[startRow, endRow] = ((wv[p][col] == var) ? p : NaN)
 		endif
 	else

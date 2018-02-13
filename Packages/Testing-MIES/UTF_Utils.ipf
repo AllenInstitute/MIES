@@ -944,6 +944,30 @@ Function FI_AbortsWithInvalidParams7()
 	endtry
 End
 
+Function FI_AbortsWithInvalidParams8()
+	DFREF dfr = root:FindIndizes
+	WAVE/SDFR=dfr numeric
+
+	try
+		WAVE/Z indizes = FindIndizes(numeric, col = 0, var = NaN)
+		FAIL()
+	catch
+		PASS()
+	endtry
+End
+
+Function FI_AbortsWithInvalidParams9()
+	DFREF dfr = root:FindIndizes
+	WAVE/SDFR=dfr numeric
+
+	try
+		WAVE/Z indizes = FindIndizes(numeric, col = 0, str = "NaN")
+		FAIL()
+	catch
+		PASS()
+	endtry
+End
+
 Function FI_AbortsWithInvalidWave()
 
 	try
