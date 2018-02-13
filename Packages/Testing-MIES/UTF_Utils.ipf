@@ -944,4 +944,14 @@ Function FI_AbortsWithInvalidParams7()
 	endtry
 End
 
+Function FI_AbortsWithInvalidWave()
+
+	try
+		FindIndizes($"", col = 0, var = 0)
+		FAIL()
+	catch
+		PASS()
+	endtry
+End
+
 /// @}

@@ -1118,6 +1118,8 @@ Function/Wave FindIndizes(numericOrTextWave, [col, colLabel, var, str, prop, sta
 			  && !ParamIsDefault(var) && ParamIsDefault(str)),                                \
 			  "Expected exactly one optional var/str/prop argument")
 
+	ASSERT(WaveExists(numericOrTextWave), "numericOrTextWave does not exist")
+
 	if(DimSize(numericOrTextWave, ROWS) == 0)
 		return $""
 	endif
