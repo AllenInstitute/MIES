@@ -258,7 +258,7 @@ Function/WAVE AFH_GetSweepsFromSameRACycle(numericalValues, sweepNo)
 	WAVE numericalValues
 	variable sweepNo
 
-	variable sweepCol, col, raCycleID
+	variable sweepCol, raCycleID
 
 	raCycleID = GetLastSettingIndep(numericalValues, sweepNo, RA_ACQ_CYCLE_ID_KEY, DATA_ACQUISITION_MODE, defValue = NaN)
 
@@ -266,9 +266,8 @@ Function/WAVE AFH_GetSweepsFromSameRACycle(numericalValues, sweepNo)
 		return $""
 	endif
 
-	col = FindDimLabel(numericalValues, COLS, RA_ACQ_CYCLE_ID_KEY)
-	Duplicate/FREE/R=[][col][INDEP_HEADSTAGE] numericalValues, singleColLayer
-	WAVE/Z indizes = FindIndizes(singleColLayer, col = 0, var = raCycleID)
+	WAVE/Z indizes = FindIndizes(numericalValues, colLabel = RA_ACQ_CYCLE_ID_KEY, var = raCycleID, \
+								 startLayer = INDEP_HEADSTAGE, endLayer = INDEP_HEADSTAGE)
 	ASSERT(WaveExists(indizes), "Expected at least one match")
 
 	sweepCol = GetSweepColumn(numericalValues)
