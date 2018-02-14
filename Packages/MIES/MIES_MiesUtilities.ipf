@@ -4323,7 +4323,7 @@ Function UpdateLeftOverSweepTime(panelTitle, fifoPos)
 	NVAR repurposedTime      = $GetRepurposedSweepTime(panelTitle)
 	NVAR stopCollectionPoint = $GetStopCollectionPoint(panelTitle)
 
-	repurposedTime += IndexToScale(ITCDataWave, stopCollectionPoint - fifoPos, ROWS) / 1e3
+	repurposedTime += max(0, IndexToScale(ITCDataWave, stopCollectionPoint - fifoPos, ROWS)) / 1e3
 
 	sprintf msg, "Repurposed time in seconds due to premature sweep stopping: %g\r", repurposedTime
 	DEBUGPRINT(msg)
