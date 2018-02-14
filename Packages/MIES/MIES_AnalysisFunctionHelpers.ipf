@@ -230,7 +230,7 @@ Function/WAVE AFH_GetLastSweepWaveAcquired(panelTitle)
 	return GetSweepWave(panelTitle, AFH_GetLastSweepAcquired(panelTitle))
 End
 
-/// @brief Return the stimset for the given DA channel
+/// @brief Return the stimset for the given channel
 ///
 /// @param panelTitle device
 /// @param chanNo	channel number (0-based)
