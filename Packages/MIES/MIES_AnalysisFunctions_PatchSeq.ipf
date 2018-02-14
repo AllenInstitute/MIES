@@ -1410,5 +1410,5 @@ Function PSQ_Rheobase(panelTitle, s)
 	key = PSQ_CreateLBNKey(PSQ_RHEOBASE, PSQ_FMT_LBN_BL_QC_PASS)
 	ED_AddEntryToLabnotebook(panelTitle, key, result, unit = LABNOTEBOOK_BINARY_UNIT, overrideSweepNo = s.sweepNo)
 
-	return 0
+	return baselineQCPassed ? ANALYSIS_FUNC_RET_EARLY_STOP : ret
 End

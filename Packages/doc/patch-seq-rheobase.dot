@@ -96,4 +96,6 @@ digraph G {
     "Store final DAScale of last sweep\n from previous RAC as initial DAScale" -> "BL QC passed? [2]";
     "Set \"Repeat Sets\" to 1";
     "Prepare DAQ Event" -> "Set \"Repeat Sets\" to 1";
+    "Early sweep stop";
+    "Mark BL QC as passed" -> "Early sweep stop";
 }
