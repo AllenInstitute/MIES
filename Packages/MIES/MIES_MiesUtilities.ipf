@@ -433,6 +433,7 @@ End
 /// - GetLastSweepWithSettingText()
 /// - GetLastSweepWithSettingTextI()
 /// - GetLastSweepWithSettingIndep()
+/// - GetSweepsWithSetting()
 
 /// @brief Return a headstage independent setting from the numerical labnotebook
 ///
@@ -1009,6 +1010,36 @@ static Function/WAVE GetNonEmptyLBNRows(labnotebookValues, setting)
 
    return FindIndizes(labnotebookValues, col = col, prop = PROP_NON_EMPTY, \
 					  startLayer = 0, endLayer = DimSize(labnotebookValues, LAYERS) - 1)
+End
+
+/// @brief Return a wave with all sweep numbers which have a non-empty entry for setting
+///
+/// @param labnotebookValues numerical/textual labnotebook
+/// @param setting           name of the value to search
+///
+/// @return a 1D free wave with the matching sweep numbers. In case
+/// the setting could not be found an invalid wave reference is returned.
+///
+/// @ingroup LabnotebookQueryFunctions
+Function/WAVE GetSweepsWithSetting(labnotebookValues, setting)
+	WAVE labnotebookValues
+	string setting
+
+	variable sweepCol
+
+	WAVE/Z indizes = GetNonEmptyLBNRows(labnotebookValues, setting)
+	if(!WaveExists(indizes))
+		return $""
+	endif
+
+	sweepCol = GetSweepColumn(labnotebookValues)
+
+	Make/FREE/N=(DimSize(indizes, ROWS)) sweeps = labnotebookValues[indizes[p]][sweepCol][0]
+
+	Make/N=0/FREE unique
+	FindDuplicates/RN=unique sweeps
+
+	return unique
 End
 
 /// @brief Return the last numerical value of a setting from the labnotebook
