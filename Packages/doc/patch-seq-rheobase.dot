@@ -98,4 +98,7 @@ digraph G {
     "Prepare DAQ Event" -> "Set \"Repeat Sets\" to 1";
     "Early sweep stop";
     "Mark BL QC as passed" -> "Early sweep stop";
+    "Stimset is large enough";
+    "Prepare DAQ Event" -> "Stimset is large enough";
+    "Stimset is large enough" -> "All checks passed";
 }

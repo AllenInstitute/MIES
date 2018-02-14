@@ -566,6 +566,27 @@ static Function PSQ_NumPassesInSet(panelTitle, type, sweepNo)
 	return sum(passes)
 End
 
+/// @brief Return the DA stimset length in ms of the given headstage
+///
+/// @return stimset length or -1 on error
+static Function PSQ_GetDAStimsetLength(panelTitle, headstage)
+	string panelTitle
+	variable headstage
+
+	string setName
+	variable DAC
+
+	DAC = AFH_GetDACFromHeadstage(panelTitle, headstage)
+	setName = AFH_GetStimSetName(panelTitle, DAC, CHANNEL_TYPE_DAC)
+
+	WAVE/Z stimset = WB_CreateAndGetStimSet(setName)
+	if(!WaveExists(stimset))
+		return -1
+	endif
+
+	return DimSize(stimset, ROWS) * DimDelta(stimset, ROWS)
+End
+
 /// PSQ_PSQ_CreateOverrideResults("ITC18USB_DEV_0", 0, $type) where type is one of:
 ///
 /// #PSQ_SUB_THRESHOLD:
@@ -809,7 +830,7 @@ Function PSQ_SubThreshold(panelTitle, s)
 	variable val, totalOnsetDelay
 	variable i, fifoInStimsetPoint, fifoInStimsetTime
 	variable index, skipToEnd, ret
-	variable sweepPassed, setPassed, numSweepsPass
+	variable sweepPassed, setPassed, numSweepsPass, length, minLength
 	variable sweepsInSet, passesInSet, acquiredSweepsInSet, numBaselineChunks
 	string msg, stimset, key
 
@@ -834,6 +855,14 @@ Function PSQ_SubThreshold(panelTitle, s)
 			WAVE statusHS = DAG_GetChannelState(panelTitle, CHANNEL_TYPE_HEADSTAGE)
 			if(sum(statusHS) != 1)
 				printf "(%s) Analysis function only supports one headstage.\r", panelTitle
+				ControlWindowToFront()
+				return 1
+			endif
+
+			length = PSQ_GetDAStimsetLength(panelTitle, s.headstage)
+			minLength = PSQ_ST_PULSE_DUR + 3 * PSQ_ST_BL_EVAL_RANGE_MS
+			if(length < minLength)
+				printf "(%s) Stimset of headstage %d is too short, it must be at least %g ms long.\r", panelTitle, s.headstage, minLength
 				ControlWindowToFront()
 				return 1
 			endif
@@ -1186,7 +1215,7 @@ Function PSQ_Rheobase(panelTitle, s)
 	variable DAScale, val, numSweeps, currentSweepHasSpike, setPassed
 	variable baselineQCPassed, finalDAScale, initialDAScale
 	variable numBaselineChunks, lastFifoPos, totalOnsetDelay, fifoInStimsetPoint, fifoInStimsetTime
-	variable i, ret, numSweepsWithSpikeDetection, sweepNoFound
+	variable i, ret, numSweepsWithSpikeDetection, sweepNoFound, length, minLength
 	string key, msg
 
 	switch(s.eventType)
@@ -1209,6 +1238,14 @@ Function PSQ_Rheobase(panelTitle, s)
 			WAVE statusHS = DAG_GetChannelState(panelTitle, CHANNEL_TYPE_HEADSTAGE)
 			if(sum(statusHS) != 1)
 				printf "(%s) Analysis function only supports one headstage.\r", panelTitle
+				ControlWindowToFront()
+				return 1
+			endif
+
+			length = PSQ_GetDAStimsetLength(panelTitle, s.headstage)
+			minLength = PSQ_RB_PRE_BL_EVAL_RANGE + PSQ_RB_POST_BL_EVAL_RANGE
+			if(length < minLength)
+				printf "(%s) Stimset of headstage %d is too short, it must be at least %g ms long.\r", panelTitle, s.headstage, minLength
 				ControlWindowToFront()
 				return 1
 			endif

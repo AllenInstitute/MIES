@@ -87,4 +87,7 @@ digraph G {
     "Mark chunk as passed/failed [2]" -> "Mark Sweep as passed"  [label="Passed"];
     "Mark Sweep as passed" -> "Early Sweep stop";
     "Mark Sweep as failed" -> "Early Sweep stop";
+    "Stimset is large enough";
+    "Prepare DAQ Event" -> "Stimset is large enough";
+    "Stimset is large enough" -> "All checks passed";
 }
