@@ -143,12 +143,12 @@ Function CALLABLE_PROTO()
 End
 
 /// @brief Acquire data with the given DAQSettings
-static Function AcquireData(s, stimset, [numHeadstages, TTLStimset, postInitializeFunc])
+static Function AcquireData(s, stimset, [numHeadstages, TTLStimset, postInitializeFunc, preAcquireFunc])
 	STRUCT DAQSettings& s
 	string stimset
 	variable numHeadstages
 	string TTLStimset
-	FUNCREF CALLABLE_PROTO postInitializeFunc
+	FUNCREF CALLABLE_PROTO postInitializeFunc, preAcquireFunc
 
 	variable i
 
@@ -211,6 +211,10 @@ static Function AcquireData(s, stimset, [numHeadstages, TTLStimset, postInitiali
 	PGC_SetAndActivateControl(DEVICE, "Check_Settings_SkipAnalysFuncs", val = 0)
 
 	DoUpdate/W=$DEVICE
+
+	if(!ParamIsDefault(preAcquireFunc))
+		preAcquireFunc()
+	endif
 
 	CtrlNamedBackGround DAQWatchdog, start, period=120, proc=WaitUntilDAQDone_IGNORE
 	PGC_SetAndActivateControl(DEVICE, "DataAcquireButton")
