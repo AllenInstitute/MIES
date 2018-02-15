@@ -843,6 +843,13 @@ Constant PSQ_RB_DASCALE_STEP     = 10e-12
 Constant PSQ_RB_FINALSCALE_FAKE  = 42e-12
 /// @}
 
+/// PatchSeq DAScale
+/// @{
+Constant PSQ_DS_OFFSETSCALE_FAKE = 23 // pA
+StrConstant PSQ_DS_SUB           = "Sub"
+StrConstant PSQ_DS_SUPRA         = "Supra"
+/// @}
+
 Constant TP_MD_THREAD_DEAD_MAX_RETRIES = 10
 
 /// @todo: IP8 convert all call sites to use MultiThread/T=

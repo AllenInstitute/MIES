@@ -5,8 +5,9 @@
 static Constant HEADSTAGE = 0
 
 /// @brief Acquire data with the given DAQSettings
-static Function AcquireData(s)
+static Function AcquireData(s, stimset)
 	STRUCT DAQSettings& s
+	string stimset
 
 	Initialize_IGNORE()
 
@@ -23,7 +24,7 @@ static Function AcquireData(s)
 	PGC_SetAndActivateControl(DEVICE, "check_DataAcq_AutoBias", val = 1)
 	PGC_SetAndActivateControl(DEVICE, "setvar_DataAcq_AutoBiasV", val = 70)
 	PGC_SetAndActivateControl(DEVICE, GetPanelControl(0, CHANNEL_TYPE_HEADSTAGE, CHANNEL_CONTROL_CHECK), val=1)
-	PGC_SetAndActivateControl(DEVICE, GetPanelControl(0, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_WAVE), val = GetStimSet("PatchSeqDAScale_DA_0") + 1)
+	PGC_SetAndActivateControl(DEVICE, GetPanelControl(0, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_WAVE), str = stimset)
 
 	WAVE ampMCC = GetAmplifierMultiClamps()
 	WAVE ampTel = GetAmplifierTelegraphServers()
@@ -66,18 +67,18 @@ Function/WAVE GetSweepResults_IGNORE(sweepNo)
 	return sweepPassed
 End
 
-Function PS_DS_Run1()
+Function PS_DS_Sub_Run1()
 
 	STRUCT DAQSettings s
 	InitDAQSettingsFromString(s, "DAQ_MD1_RA1_IDX0_LIDX0_BKG_1")
-	AcquireData(s)
+	AcquireData(s, "PSQ_DaScale_Sub_DA_0")
 
 	WAVE wv = PSQ_CreateOverrideResults(DEVICE, HEADSTAGE, PSQ_DA_SCALE)
 	// all tests fail
 	wv = 0
 End
 
-Function PS_DS_Test1()
+Function PS_DS_Sub_Test1()
 
 	variable sweepNo, setPassed
 
@@ -95,11 +96,11 @@ Function PS_DS_Test1()
 	CHECK_EQUAL_WAVES(sweepPassed, {0, 0, 0, 0, 0})
 End
 
-Function PS_DS_Run2()
+Function PS_DS_Sub_Run2()
 
 	STRUCT DAQSettings s
 	InitDAQSettingsFromString(s, "DAQ_MD1_RA1_IDX0_LIDX0_BKG_1")
-	AcquireData(s)
+	AcquireData(s, "PSQ_DaScale_Sub_DA_0")
 
 	WAVE wv = PSQ_CreateOverrideResults(DEVICE, HEADSTAGE, PSQ_DA_SCALE)
 	// only pre pulse chunk pass, others fail
@@ -107,7 +108,7 @@ Function PS_DS_Run2()
 	wv[0][] = 1
 End
 
-Function PS_DS_Test2()
+Function PS_DS_Sub_Test2()
 
 	variable sweepNo, setPassed
 
@@ -125,11 +126,11 @@ Function PS_DS_Test2()
 	CHECK_EQUAL_WAVES(sweepPassed, {0, 0, 0, 0, 0})
 End
 
-Function PS_DS_Run3()
+Function PS_DS_Sub_Run3()
 
 	STRUCT DAQSettings s
 	InitDAQSettingsFromString(s, "DAQ_MD1_RA1_IDX0_LIDX0_BKG_1")
-	AcquireData(s)
+	AcquireData(s, "PSQ_DaScale_Sub_DA_0")
 
 	WAVE wv = PSQ_CreateOverrideResults(DEVICE, HEADSTAGE, PSQ_DA_SCALE)
 	// pre pulse chunk pass
@@ -138,7 +139,7 @@ Function PS_DS_Run3()
 	wv[0,1][] = 1
 End
 
-Function PS_DS_Test3()
+Function PS_DS_Sub_Test3()
 
 	variable sweepNo, setPassed
 
@@ -156,11 +157,11 @@ Function PS_DS_Test3()
 	CHECK_EQUAL_WAVES(sweepPassed, {1, 1, 1, 1, 1})
 End
 
-Function PS_DS_Run4()
+Function PS_DS_Sub_Run4()
 
 	STRUCT DAQSettings s
 	InitDAQSettingsFromString(s, "DAQ_MD1_RA1_IDX0_LIDX0_BKG_1")
-	AcquireData(s)
+	AcquireData(s, "PSQ_DaScale_Sub_DA_0")
 
 	WAVE wv = PSQ_CreateOverrideResults(DEVICE, HEADSTAGE, PSQ_DA_SCALE)
 	// pre pulse chunk pass
@@ -170,7 +171,7 @@ Function PS_DS_Run4()
 	wv[DimSize(wv, ROWS) - 1][] = 1
 End
 
-Function PS_DS_Test4()
+Function PS_DS_Sub_Test4()
 
 	variable sweepNo, setPassed
 
@@ -188,11 +189,11 @@ Function PS_DS_Test4()
 	CHECK_EQUAL_WAVES(sweepPassed, {1, 1, 1, 1, 1})
 End
 
-Function PS_DS_Run5()
+Function PS_DS_Sub_Run5()
 
 	STRUCT DAQSettings s
 	InitDAQSettingsFromString(s, "DAQ_MD1_RA1_IDX0_LIDX0_BKG_1")
-	AcquireData(s)
+	AcquireData(s, "PSQ_DaScale_Sub_DA_0")
 
 	WAVE wv = PSQ_CreateOverrideResults(DEVICE, HEADSTAGE, PSQ_DA_SCALE)
 	// pre pulse chunk fails
@@ -201,7 +202,7 @@ Function PS_DS_Run5()
 	wv[0][] = 0
 End
 
-Function PS_DS_Test5()
+Function PS_DS_Sub_Test5()
 
 	variable sweepNo, setPassed
 
@@ -219,11 +220,11 @@ Function PS_DS_Test5()
 	CHECK_EQUAL_WAVES(sweepPassed, {0, 0, 0, 0, 0})
 End
 
-Function PS_DS_Run6()
+Function PS_DS_Sub_Run6()
 
 	STRUCT DAQSettings s
 	InitDAQSettingsFromString(s, "DAQ_MD1_RA1_IDX0_LIDX0_BKG_1")
-	AcquireData(s)
+	AcquireData(s, "PSQ_DaScale_Sub_DA_0")
 
 	WAVE wv = PSQ_CreateOverrideResults(DEVICE, HEADSTAGE, PSQ_DA_SCALE)
 	// pre pulse chunk pass
@@ -233,7 +234,7 @@ Function PS_DS_Run6()
 	wv[2][] = 1
 End
 
-Function PS_DS_Test6()
+Function PS_DS_Sub_Test6()
 
 	variable sweepNo, setPassed
 
@@ -251,11 +252,11 @@ Function PS_DS_Test6()
 	CHECK_EQUAL_WAVES(sweepPassed, {1, 1, 1, 1, 1})
 End
 
-Function PS_DS_Run7()
+Function PS_DS_Sub_Run7()
 
 	STRUCT DAQSettings s
 	InitDAQSettingsFromString(s, "DAQ_MD1_RA1_IDX0_LIDX0_BKG_1")
-	AcquireData(s)
+	AcquireData(s, "PSQ_DaScale_Sub_DA_0")
 
 	WAVE wv = PSQ_CreateOverrideResults(DEVICE, HEADSTAGE, PSQ_DA_SCALE)
 	// pre pulse chunk pass
@@ -265,7 +266,7 @@ Function PS_DS_Run7()
 	wv[0, 1][2,6] = 1
 End
 
-Function PS_DS_Test7()
+Function PS_DS_Sub_Test7()
 
 	variable sweepNo, setPassed
 
@@ -283,11 +284,11 @@ Function PS_DS_Test7()
 	CHECK_EQUAL_WAVES(sweepPassed, {0, 0, 1, 1, 1, 1, 1})
 End
 
-Function PS_DS_Run8()
+Function PS_DS_Sub_Run8()
 
 	STRUCT DAQSettings s
 	InitDAQSettingsFromString(s, "DAQ_MD1_RA1_IDX0_LIDX0_BKG_1")
-	AcquireData(s)
+	AcquireData(s, "PSQ_DaScale_Sub_DA_0")
 
 	WAVE wv = PSQ_CreateOverrideResults(DEVICE, HEADSTAGE, PSQ_DA_SCALE)
 	// pre pulse chunk pass
@@ -301,7 +302,7 @@ Function PS_DS_Run8()
 	wv[0, 1][8] = 1
 End
 
-Function PS_DS_Test8()
+Function PS_DS_Sub_Test8()
 
 	variable sweepNo, setPassed
 

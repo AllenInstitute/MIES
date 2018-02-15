@@ -739,9 +739,85 @@ static Function PSQ_TestOverrideActive()
 	return 0
 End
 
-/// @brief Require DAScales parameter from stimset
+/// @brief Return a sweep number of an existing sweep matching the following conditions
+///
+/// - Acquired with Rheobase analysis function
+/// - Sweep set was passing
+/// - Pulse duration was longer than 500ms
+///
+/// And as usual we want the *last* matching sweep.
+///
+/// @return existing sweep number or -1 in case no such sweep could be found
+Function PSQ_GetLastPassingLongRHSweep(panelTitle, headstage)
+	string panelTitle
+	variable headstage
+
+	string key
+	variable i, numEntries, sweepNo, sweepCol
+
+	WAVE numericalValues = GetLBNumericalValues(panelTitle)
+
+	// rheobase sweeps passing
+	key = PSQ_CreateLBNKey(PSQ_RHEOBASE, PSQ_FMT_LBN_SET_PASS, query = 1)
+	WAVE/Z sweeps = GetSweepsWithSetting(numericalValues, key)
+
+	if(!WaveExists(sweeps))
+		return -1
+	endif
+
+	// pulse duration
+	key = PSQ_CreateLBNKey(PSQ_RHEOBASE, PSQ_FMT_LBN_PULSE_DUR, query = 1)
+
+	numEntries = DimSize(sweeps, ROWS)
+	for(i = numEntries - 1; i >= 0; i -= 1)
+		sweepNo = sweeps[i]
+		WAVE/Z setting = GetLastSettingRAC(numericalValues, sweepNo, key, UNKNOWN_MODE)
+
+		if(WaveExists(setting) && setting[headstage] > 500)
+			return sweepNo
+		endif
+	endfor
+
+	return -1
+End
+
+/// @brief Return the DAScale offset for PSQ_DaScale()
+///
+/// @return DAScale value in pA or NaN on error
+Function PSQ_DS_GetDAScaleOffset(panelTitle, headstage, opMode)
+	string panelTitle, opMode
+	variable headstage
+
+	variable sweepNo
+
+	if(!cmpstr(opMode, PSQ_DS_SUPRA))
+		if(PSQ_TestOverrideActive())
+			return PSQ_DS_OFFSETSCALE_FAKE
+		endif
+
+		sweepNo = PSQ_GetLastPassingLongRHSweep(panelTitle, sweepNo)
+		if(!IsValidSweepNumber(sweepNo))
+			return NaN
+		endif
+
+		WAVE numericalValues = GetLBNumericalValues(panelTitle)
+		WAVE/Z setting = GetLastSetting(numericalValues, sweepNo, STIMSET_SCALE_FACTOR_KEY, DATA_ACQUISITION_MODE)
+		ASSERT(WaveExists(setting), "Could not find DAScale value of matching rheobase sweep")
+		return setting[headstage]
+	elseif(!cmpstr(opMode, PSQ_DS_SUB))
+		return 0
+	else
+		ASSERT(0, "unknown opMode")
+	endif
+End
+
+/// @brief Require parameters from stimset
+///
+/// - DAScales (Numeric wave): DA Scale Factors in pA
+/// - OperationMode (String):  Operation mode of the analayis function. Can be
+///                            either #PSQ_DS_SUB or #PSQ_DS_SUPRA.
 Function/S PSQ_SubThreshold_GetParams()
-	return "DAScales"
+	return "DAScales;OperationMode"
 End
 
 /// @brief Patch Seq Analysis function to find a suitable DAScale
@@ -832,10 +908,14 @@ Function PSQ_DAScale(panelTitle, s)
 	variable index, skipToEnd, ret
 	variable sweepPassed, setPassed, numSweepsPass, length, minLength
 	variable sweepsInSet, passesInSet, acquiredSweepsInSet, numBaselineChunks
-	string msg, stimset, key
+	string msg, stimset, key, opMode
+	variable daScaleOffset = NaN
 
 	WAVE/D/Z DAScales = AFH_GetAnalysisParamWave("DAScales", s.params)
 	ASSERT(WaveExists(DAScales), "Missing DAScale parameter")
+
+	opMode = AFH_GetAnalysisParamTextual("OperationMode", s.params)
+	ASSERT(!cmpstr(opMode, PSQ_DS_SUB) || !cmpstr(opMode, PSQ_DS_SUPRA), "Invalid opMode")
 
 	numSweepsPass = DimSize(DAScales, ROWS)
 	ASSERT(numSweepsPass > 0, "Invalid number of entries in DAScales")
@@ -875,6 +955,13 @@ Function PSQ_DAScale(panelTitle, s)
 				return 1
 			endif
 
+			daScaleOffset = PSQ_DS_GetDAScaleOffset(panelTitle, s.headstage, opMode)
+			if(!IsFinite(daScaleOffset))
+				printf "(%s): Could not find a valid DAScale threshold value from previous rheobase runs with long pulses.\r", panelTitle
+				ControlWindowToFront()
+				return 1
+			endif
+
 			KillOrMoveToTrash(wv = GetAnalysisFuncDAScaleDeltaI(panelTitle))
 			KillOrMoveToTrash(wv = GetAnalysisFuncDAScaleDeltaV(panelTitle))
 			KillOrMoveToTrash(wv = GetAnalysisFuncDAScaleRes(panelTitle))
@@ -884,6 +971,8 @@ Function PSQ_DAScale(panelTitle, s)
 		case POST_SWEEP_EVENT:
 			WAVE numericalValues = GetLBNumericalValues(panelTitle)
 			WAVE textualValues   = GetLBTextualValues(panelTitle)
+
+			daScaleOffset = PSQ_DS_GetDAScaleOffset(panelTitle, s.headstage, opMode)
 
 			key = PSQ_CreateLBNKey(PSQ_DA_SCALE, PSQ_FMT_LBN_SWEEP_PASS, query = 1)
 			sweepPassed = GetLastSettingIndep(numericalValues, s.sweepNo, key, UNKNOWN_MODE)
@@ -963,7 +1052,8 @@ Function PSQ_DAScale(panelTitle, s)
 				printf "(%s): The stimset has too many sweeps, increase the size of DAScales.\r", GetRTStackInfo(1)
 				continue
 			elseif(index < DimSize(DAScales, ROWS))
-				SetDAScale(panelTitle, i, DAScales[index] * 1e-12)
+				ASSERT(isFinite(daScaleOffset), "DAScale offset is non-finite")
+				SetDAScale(panelTitle, i, (DAScales[index] + daScaleOffset) * 1e-12)
 			endif
 		endfor
 	endif
