@@ -35,7 +35,7 @@
 ///
 /// \endrst
 ///
-/// Query the standard "Stim Scale Factor" entry from labnotebook for getting the DAScale.
+/// Query the standard STIMSET_SCALE_FACTOR_KEY entry from labnotebook for getting the DAScale.
 
 static Constant PSQ_BL_PRE_PULSE   = 0x0
 static Constant PSQ_BL_POST_PULSE  = 0x1
@@ -1128,7 +1128,7 @@ Function PSQ_SquarePulse(panelTitle, s)
 
 			key = PSQ_CreateLBNKey(PSQ_SQUARE_PULSE, PSQ_FMT_LBN_STEPSIZE, query = 1)
 			stepSize = GetLastSettingIndepRAC(numericalValues, s.sweepNo, key, UNKNOWN_MODE)
-			DAScale  = GetLastSetting(numericalValues, s.sweepNo, "Stim Scale Factor", DATA_ACQUISITION_MODE)[s.headstage] * 1e-12
+			DAScale  = GetLastSetting(numericalValues, s.sweepNo, STIMSET_SCALE_FACTOR_KEY, DATA_ACQUISITION_MODE)[s.headstage] * 1e-12
 
 			if(spikeDetection[s.headstage]) // headstage spiked
 				if(CheckIfClose(stepSize, PSQ_SP_INIT_AMP_m50))
@@ -1338,7 +1338,7 @@ Function PSQ_Rheobase(panelTitle, s)
 				break
 			endif
 
-			DAScale = GetLastSetting(numericalValues, s.sweepNo, "Stim Scale Factor", DATA_ACQUISITION_MODE)[s.headstage] * 1e-12
+			DAScale = GetLastSetting(numericalValues, s.sweepNo, STIMSET_SCALE_FACTOR_KEY, DATA_ACQUISITION_MODE)[s.headstage] * 1e-12
 			if(currentSweepHasSpike)
 				DAScale -= PSQ_RB_DASCALE_STEP
 			else
