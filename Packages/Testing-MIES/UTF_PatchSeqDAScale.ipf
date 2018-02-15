@@ -80,7 +80,7 @@ End
 
 Function PS_DS_Sub_Test1()
 
-	variable sweepNo, setPassed
+	variable sweepNo, setPassed, numEntries
 
 	CHECK_EQUAL_VAR(GetSetVariable(DEVICE, "SetVar_Sweep"), 5)
 
@@ -94,6 +94,17 @@ Function PS_DS_Sub_Test1()
 
 	WAVE/Z sweepPassed = GetSweepResults_IGNORE(sweepNo)
 	CHECK_EQUAL_WAVES(sweepPassed, {0, 0, 0, 0, 0})
+
+	WAVE/Z sweeps = AFH_GetSweepsFromSameRACycle(numericalValues, sweepNo)
+	CHECK_WAVE(sweeps, NUMERIC_WAVE)
+	numEntries = DimSize(sweeps, ROWS)
+	CHECK_EQUAL_VAR(numEntries, 5)
+
+	numEntries = DimSize(sweepPassed, ROWS)
+	Make/FREE/D/N=(numEntries) stimScale = GetLastSetting(numericalValues, sweeps[p], STIMSET_SCALE_FACTOR_KEY, DATA_ACQUISITION_MODE)[HEADSTAGE]
+	Make/FREE/D/N=(numEntries) stimScaleRef = -30
+
+	CHECK_EQUAL_WAVES(stimScale, stimScaleRef, mode = WAVE_DATA, tol = 1e-14)
 End
 
 Function PS_DS_Sub_Run2()
@@ -110,7 +121,7 @@ End
 
 Function PS_DS_Sub_Test2()
 
-	variable sweepNo, setPassed
+	variable sweepNo, setPassed, numEntries
 
 	CHECK_EQUAL_VAR(GetSetVariable(DEVICE, "SetVar_Sweep"), 5)
 
@@ -124,6 +135,17 @@ Function PS_DS_Sub_Test2()
 
 	WAVE/Z sweepPassed = GetSweepResults_IGNORE(sweepNo)
 	CHECK_EQUAL_WAVES(sweepPassed, {0, 0, 0, 0, 0})
+
+	WAVE/Z sweeps = AFH_GetSweepsFromSameRACycle(numericalValues, sweepNo)
+	CHECK_WAVE(sweeps, NUMERIC_WAVE)
+	numEntries = DimSize(sweeps, ROWS)
+	CHECK_EQUAL_VAR(numEntries, 5)
+
+	numEntries = DimSize(sweepPassed, ROWS)
+	Make/FREE/D/N=(numEntries) stimScale = GetLastSetting(numericalValues, sweeps[p], STIMSET_SCALE_FACTOR_KEY, DATA_ACQUISITION_MODE)[HEADSTAGE]
+	Make/FREE/D/N=(numEntries) stimScaleRef = -30
+
+	CHECK_EQUAL_WAVES(stimScale, stimScaleRef, mode = WAVE_DATA, tol = 1e-14)
 End
 
 Function PS_DS_Sub_Run3()
@@ -141,7 +163,7 @@ End
 
 Function PS_DS_Sub_Test3()
 
-	variable sweepNo, setPassed
+	variable sweepNo, setPassed, numEntries
 
 	CHECK_EQUAL_VAR(GetSetVariable(DEVICE, "SetVar_Sweep"), 5)
 
@@ -155,6 +177,17 @@ Function PS_DS_Sub_Test3()
 
 	WAVE/Z sweepPassed = GetSweepResults_IGNORE(sweepNo)
 	CHECK_EQUAL_WAVES(sweepPassed, {1, 1, 1, 1, 1})
+
+	WAVE/Z sweeps = AFH_GetSweepsFromSameRACycle(numericalValues, sweepNo)
+	CHECK_WAVE(sweeps, NUMERIC_WAVE)
+	numEntries = DimSize(sweeps, ROWS)
+	CHECK_EQUAL_VAR(numEntries, 5)
+
+	numEntries = DimSize(sweepPassed, ROWS)
+	Make/FREE/D/N=(numEntries) stimScale = GetLastSetting(numericalValues, sweeps[p], STIMSET_SCALE_FACTOR_KEY, DATA_ACQUISITION_MODE)[HEADSTAGE]
+	Make/FREE/D/N=(numEntries) stimScaleRef = {-30, -50, -70, -110, -130}
+
+	CHECK_EQUAL_WAVES(stimScale, stimScaleRef, mode = WAVE_DATA, tol = 1e-14)
 End
 
 Function PS_DS_Sub_Run4()
@@ -173,7 +206,7 @@ End
 
 Function PS_DS_Sub_Test4()
 
-	variable sweepNo, setPassed
+	variable sweepNo, setPassed, numEntries
 
 	CHECK_EQUAL_VAR(GetSetVariable(DEVICE, "SetVar_Sweep"), 5)
 
@@ -187,6 +220,17 @@ Function PS_DS_Sub_Test4()
 
 	WAVE/Z sweepPassed = GetSweepResults_IGNORE(sweepNo)
 	CHECK_EQUAL_WAVES(sweepPassed, {1, 1, 1, 1, 1})
+
+	WAVE/Z sweeps = AFH_GetSweepsFromSameRACycle(numericalValues, sweepNo)
+	CHECK_WAVE(sweeps, NUMERIC_WAVE)
+	numEntries = DimSize(sweeps, ROWS)
+	CHECK_EQUAL_VAR(numEntries, 5)
+
+	numEntries = DimSize(sweepPassed, ROWS)
+	Make/FREE/D/N=(numEntries) stimScale = GetLastSetting(numericalValues, sweeps[p], STIMSET_SCALE_FACTOR_KEY, DATA_ACQUISITION_MODE)[HEADSTAGE]
+	Make/FREE/D/N=(numEntries) stimScaleRef = {-30, -50, -70, -110, -130}
+
+	CHECK_EQUAL_WAVES(stimScale, stimScaleRef, mode = WAVE_DATA, tol = 1e-14)
 End
 
 Function PS_DS_Sub_Run5()
@@ -204,7 +248,7 @@ End
 
 Function PS_DS_Sub_Test5()
 
-	variable sweepNo, setPassed
+	variable sweepNo, setPassed, numEntries
 
 	CHECK_EQUAL_VAR(GetSetVariable(DEVICE, "SetVar_Sweep"), 5)
 
@@ -218,6 +262,17 @@ Function PS_DS_Sub_Test5()
 
 	WAVE/Z sweepPassed = GetSweepResults_IGNORE(sweepNo)
 	CHECK_EQUAL_WAVES(sweepPassed, {0, 0, 0, 0, 0})
+
+	WAVE/Z sweeps = AFH_GetSweepsFromSameRACycle(numericalValues, sweepNo)
+	CHECK_WAVE(sweeps, NUMERIC_WAVE)
+	numEntries = DimSize(sweeps, ROWS)
+	CHECK_EQUAL_VAR(numEntries, 5)
+
+	numEntries = DimSize(sweepPassed, ROWS)
+	Make/FREE/D/N=(numEntries) stimScale = GetLastSetting(numericalValues, sweeps[p], STIMSET_SCALE_FACTOR_KEY, DATA_ACQUISITION_MODE)[HEADSTAGE]
+	Make/FREE/D/N=(numEntries) stimScaleRef = -30
+
+	CHECK_EQUAL_WAVES(stimScale, stimScaleRef, mode = WAVE_DATA, tol = 1e-14)
 End
 
 Function PS_DS_Sub_Run6()
@@ -236,7 +291,7 @@ End
 
 Function PS_DS_Sub_Test6()
 
-	variable sweepNo, setPassed
+	variable sweepNo, setPassed, numEntries
 
 	CHECK_EQUAL_VAR(GetSetVariable(DEVICE, "SetVar_Sweep"), 5)
 
@@ -250,6 +305,17 @@ Function PS_DS_Sub_Test6()
 
 	WAVE/Z sweepPassed = GetSweepResults_IGNORE(sweepNo)
 	CHECK_EQUAL_WAVES(sweepPassed, {1, 1, 1, 1, 1})
+
+	WAVE/Z sweeps = AFH_GetSweepsFromSameRACycle(numericalValues, sweepNo)
+	CHECK_WAVE(sweeps, NUMERIC_WAVE)
+	numEntries = DimSize(sweeps, ROWS)
+	CHECK_EQUAL_VAR(numEntries, 5)
+
+	numEntries = DimSize(sweepPassed, ROWS)
+	Make/FREE/D/N=(numEntries) stimScale = GetLastSetting(numericalValues, sweeps[p], STIMSET_SCALE_FACTOR_KEY, DATA_ACQUISITION_MODE)[HEADSTAGE]
+	Make/FREE/D/N=(numEntries) stimScaleRef = {-30, -50, -70, -110, -130}
+
+	CHECK_EQUAL_WAVES(stimScale, stimScaleRef, mode = WAVE_DATA, tol = 1e-14)
 End
 
 Function PS_DS_Sub_Run7()
@@ -268,7 +334,7 @@ End
 
 Function PS_DS_Sub_Test7()
 
-	variable sweepNo, setPassed
+	variable sweepNo, setPassed, numEntries
 
 	CHECK_EQUAL_VAR(GetSetVariable(DEVICE, "SetVar_Sweep"), 7)
 
@@ -282,6 +348,17 @@ Function PS_DS_Sub_Test7()
 
 	WAVE/Z sweepPassed = GetSweepResults_IGNORE(sweepNo)
 	CHECK_EQUAL_WAVES(sweepPassed, {0, 0, 1, 1, 1, 1, 1})
+
+	WAVE/Z sweeps = AFH_GetSweepsFromSameRACycle(numericalValues, sweepNo)
+	CHECK_WAVE(sweeps, NUMERIC_WAVE)
+	numEntries = DimSize(sweeps, ROWS)
+	CHECK_EQUAL_VAR(numEntries, 7)
+
+	numEntries = DimSize(sweepPassed, ROWS)
+	Make/FREE/D/N=(numEntries) stimScale = GetLastSetting(numericalValues, sweeps[p], STIMSET_SCALE_FACTOR_KEY, DATA_ACQUISITION_MODE)[HEADSTAGE]
+	Make/FREE/D/N=(numEntries) stimScaleRef = {-30, -30, -30, -50, -70, -110, -130}
+
+	CHECK_EQUAL_WAVES(stimScale, stimScaleRef, mode = WAVE_DATA, tol = 1e-14)
 End
 
 Function PS_DS_Sub_Run8()
@@ -304,7 +381,7 @@ End
 
 Function PS_DS_Sub_Test8()
 
-	variable sweepNo, setPassed
+	variable sweepNo, setPassed, numEntries
 
 	CHECK_EQUAL_VAR(GetSetVariable(DEVICE, "SetVar_Sweep"), 9)
 
@@ -318,4 +395,15 @@ Function PS_DS_Sub_Test8()
 
 	WAVE/Z sweepPassed = GetSweepResults_IGNORE(sweepNo)
 	CHECK_EQUAL_WAVES(sweepPassed, {1, 0, 0, 1, 0, 0, 1, 1, 1})
+
+	WAVE/Z sweeps = AFH_GetSweepsFromSameRACycle(numericalValues, sweepNo)
+	CHECK_WAVE(sweeps, NUMERIC_WAVE)
+	numEntries = DimSize(sweeps, ROWS)
+	CHECK_EQUAL_VAR(numEntries, 9)
+
+	numEntries = DimSize(sweepPassed, ROWS)
+	Make/FREE/D/N=(numEntries) stimScale = GetLastSetting(numericalValues, sweeps[p], STIMSET_SCALE_FACTOR_KEY, DATA_ACQUISITION_MODE)[HEADSTAGE]
+	Make/FREE/D/N=(numEntries) stimScaleRef = {-30, -50, -50, -50, -70, -70, -70, -110, -130}
+
+	CHECK_EQUAL_WAVES(stimScale, stimScaleRef, mode = WAVE_DATA, tol = 1e-14)
 End
