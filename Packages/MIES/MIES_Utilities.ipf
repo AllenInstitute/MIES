@@ -356,42 +356,12 @@ Function ConvertFromBytesToMiB(var)
 	return var / 1024 / 1024
 End
 
-/// The size in bytes of a wave with zero points. Experimentally determined in Igor Pro 6.34 under windows.
-static Constant PROPRIETARY_HEADER_SIZE = 320
-
-/// @brief Returns the size of the wave in bytes. Currently ignores dimension labels.
+/// @brief Returns the size of the wave in bytes.
 Function GetWaveSize(wv)
 	Wave wv
 
-	ASSERT(WaveExists(wv),"missing wave")
-	return PROPRIETARY_HEADER_SIZE + GetSizeOfType(WaveType(wv)) * numpnts(wv) + strlen(note(wv))
-End
-
-/// @brief Return the size in bytes of a given type
-///
-/// Inspired by http://www.igorexchange.com/node/1845
-Function GetSizeOfType(type)
-	variable type
-
-	variable size=1
-
-	if(type & 0x01)
-		size*=2
-	endif
-
-	if(type & 0x02)
-		size*=4
-	elseif(type & 0x04)
-		size*=8
-	elseif(type & 0x10)
-		size*=2
-	elseif(type & 0x20)
-		size*=4
-	else
-		size=nan
-	endif
-
-	return size
+	ASSERT(WaveExists(wv), "missing wave")
+	return NumberByKey("SizeInBytes", WaveInfo(wv, 0))
 End
 
 /// @brief Convert the sampling interval in microseconds (1e-6s) to the rate in kHz
