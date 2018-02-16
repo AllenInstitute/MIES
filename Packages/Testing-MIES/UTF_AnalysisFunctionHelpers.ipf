@@ -22,10 +22,16 @@ End
 /// BEGIN ED_AddEntryToLabnotebook
 /// @{
 
+Function/WAVE AE_GenerateValidNum_IGNORE()
+
+	Make/D/FREE/N=(LABNOTEBOOK_LAYER_COUNT) values = (p == 0 ? 0 : NaN)
+	return values
+End
+
 Function AE_ThrowsWithWrongWaveType()
 
 	try
-		Make/I/FREE/N=(LABNOTEBOOK_LAYER_COUNT) values
+		Make/I/FREE/N=(LABNOTEBOOK_LAYER_COUNT) values = (p == 0 ? 0 : NaN)
 		ED_AddEntryToLabnotebook(device, "a", values)
 		FAIL()
 	catch
@@ -36,7 +42,7 @@ End
 Function AE_ThrowsWithEmptyKey()
 
 	try
-		Make/D/FREE/N=(LABNOTEBOOK_LAYER_COUNT) values
+		WAVE values = AE_GenerateValidNum_IGNORE()
 		ED_AddEntryToLabnotebook(device, "", values)
 		FAIL()
 	catch
@@ -58,7 +64,7 @@ End
 Function AE_ThrowsWithInvalidNumCols()
 
 	try
-		Make/D/FREE/N=(LABNOTEBOOK_LAYER_COUNT, 1) values
+		Make/D/FREE/N=(LABNOTEBOOK_LAYER_COUNT,1) values
 		ED_AddEntryToLabnotebook(device, "a", values)
 		FAIL()
 	catch
@@ -69,7 +75,7 @@ End
 Function AE_ThrowsWithTooLongKey()
 
 	try
-		Make/FREE/N=(LABNOTEBOOK_LAYER_COUNT) values
+		WAVE values = AE_GenerateValidNum_IGNORE()
 		ED_AddEntryToLabnotebook(device, "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa" , values)
 		FAIL()
 	catch
@@ -80,12 +86,42 @@ End
 Function AE_ThrowsWithDupPrefix()
 
 	try
-		Make/FREE/N=(LABNOTEBOOK_LAYER_COUNT) values
+		WAVE values = AE_GenerateValidNum_IGNORE()
 		ED_AddEntryToLabnotebook(device, LABNOTEBOOK_USER_PREFIX + "myKey" , values)
 		FAIL()
 	catch
 		PASS()
 	endtry
+End
+
+Function AE_ThrowsWithInvalidInput1()
+
+	try
+		Make/FREE/N=(LABNOTEBOOK_LAYER_COUNT) values = 0
+		ED_AddEntryToLabnotebook(device, "myKey" , values)
+		FAIL()
+	catch
+		PASS()
+	endtry
+End
+
+Function AE_ThrowsWithInvalidInput2()
+
+	try
+		Make/FREE/N=(LABNOTEBOOK_LAYER_COUNT) values = NaN
+		values[LABNOTEBOOK_LAYER_COUNT - 1] = 0
+		values[0] = 0
+		ED_AddEntryToLabnotebook(device, "myKey" , values)
+		FAIL()
+	catch
+		PASS()
+	endtry
+End
+
+Function AE_WorksWithValidInput()
+
+	Make/FREE/N=(LABNOTEBOOK_LAYER_COUNT) values = NaN
+	ED_AddEntryToLabnotebook(device, "myKey" , values)
 End
 
 Function AE_Works1()
@@ -263,7 +299,7 @@ Function AE_WorksMultiValues()
 	toleranceRef = LABNOTEBOOK_NO_TOLERANCE
 
 	Make/D/FREE/N=(LABNOTEBOOK_LAYER_COUNT) values = NaN
-	values[] = p^2
+	values[0, NUM_HEADSTAGES - 1] = p^2
 	ED_AddEntryToLabnotebook(device, key, values)
 
 	WAVE/T numericalKeys   = root:MIES:LabNoteBook:ITC18USB:Device0:numericalKeys
@@ -463,7 +499,7 @@ Function AE_TextWorksIndepHeadstage()
 	toleranceRef = LABNOTEBOOK_NO_TOLERANCE
 
 	Make/T/FREE/N=(LABNOTEBOOK_LAYER_COUNT) values
-	strRef    = "4711"
+	strRef = "4711"
 	values[LABNOTEBOOK_LAYER_COUNT - 1] = strRef
 	ED_AddEntryToLabnotebook(device, key, values)
 
