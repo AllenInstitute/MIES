@@ -583,7 +583,7 @@ static Function ED_createAsyncWaveNoteTags(panelTitle, sweepCount)
 	Variable sweepCount
 
 	string ctrlCheck, ctrlTitle, ctrlUnit, title, unit, str
-	variable minSettingValue, maxSettingValue, step, i
+	variable minSettingValue, maxSettingValue, step, i, scaledValue
 
 	Wave asyncSettingsWave = GetAsyncSettingsWave()
 	Wave/T asyncSettingsKey = GetAsyncSettingsKeyWave()
@@ -632,12 +632,22 @@ static Function ED_createAsyncWaveNoteTags(panelTitle, sweepCount)
 
 		// add the unit value into numericalKeys
 		asyncMeasurementKey[%Units][i][,;step] = unit
+
+		scaledValue = ASD_ReadChannel(panelTitle, i)
+
+		// put the measurement value into the async settings wave for creation of wave notes
+		asyncMeasurementWave[0][i][,;LABNOTEBOOK_LAYER_COUNT - 1] = scaledValue
+
+		if(ASD_CheckAsynAlarmState(panelTitle, i, scaledValue))
+			beep
+			print time() + " !!!!!!!!!!!!! " + title + " has exceeded max/min settings" + " !!!!!!!!!!!!!"
+			ControlWindowToFront()
+			beep
+		endif
 	endfor
 
 	ED_AddEntriesToLabnotebook(asyncSettingsTxtWave, asyncSettingsTxtKey, sweepCount, panelTitle, DATA_ACQUISITION_MODE)
 	ED_AddEntriesToLabnotebook(asyncSettingsWave, asyncSettingsKey, SweepCount, panelTitle, DATA_ACQUISITION_MODE)
-
-	ED_ADDataBasedWaveNotes(asyncMeasurementWave, panelTitle)
 	ED_AddEntriesToLabnotebook(asyncMeasurementWave, asyncMeasurementKey, SweepCount, panelTitle, DATA_ACQUISITION_MODE)
 End
 
@@ -785,38 +795,4 @@ static Function ED_TPSettingsDocumentation(panelTitle, sweepNo, entrySourceType)
 	TPSettingsWave[0][3][INDEP_HEADSTAGE] = pulseDuration
 
 	ED_AddEntriesToLabnotebook(TPSettingsWave, TPKeyWave, sweepNo, panelTitle, entrySourceType)
-End
-
-static Function ED_ADDataBasedWaveNotes(asyncMeasurementWave, panelTitle)
-	WAVE asyncMeasurementWave
-	string panelTitle
-
-	variable i, numEntries
-	variable scaledValue
-	string setvarTitle, title
-
-	WAVE asyncChannelState = DAG_GetChannelState(panelTitle, CHANNEL_TYPE_ASYNC)
-
-	setvarTitle = GetSpecialControlLabel(CHANNEL_TYPE_ASYNC, CHANNEL_CONTROL_TITLE)
-
-	numEntries = DimSize(asyncChannelState, ROWS)
-	for(i = 0; i < numEntries; i += 1)
-
-		if(!asyncChannelState[i])
-			continue
-		endif
-
-		scaledValue = ASD_ReadChannel(panelTitle, i)
-
-		// put the measurement value into the async settings wave for creation of wave notes
-		asyncMeasurementWave[0][i][,;LABNOTEBOOK_LAYER_COUNT - 1] = scaledValue
-
-		if(ASD_CheckAsynAlarmState(panelTitle, i, scaledValue))
-			beep
-			title = DAG_GetTextualValue(panelTitle, setvarTitle, index = i)
-			print time() + " !!!!!!!!!!!!! " + title + " has exceeded max/min settings" + " !!!!!!!!!!!!!"
-			ControlWindowToFront()
-			beep
-		endif
-	endfor
 End
