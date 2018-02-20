@@ -11,6 +11,10 @@
 ///
 /// Naming scheme of the functions is `HW_$TYPE_$Suffix` where `$TYPE` is one of `ITC` or `NI`.
 
+#if exists("ITCSelectDevice2")
+#define ITC_XOP_PRESENT
+#endif
+
 /// @name Error codes for the ITC XOP2
 /// @anchor ITCXOP2Errors
 /// @{
@@ -572,6 +576,8 @@ End
 /// @name ITC
 /// @{
 
+#ifdef ITC_XOP_PRESENT
+
 /// @brief Return a list of all open ITC devices
 Function/S HW_ITC_ListOfOpenDevices()
 
@@ -824,21 +830,6 @@ threadsafe static Function/S HW_ITC_GetXOPErrorMessage(errCode)
 			return "Unknown error code: " + num2str(errCode)
 			break
 	endswitch
-End
-
-/// @brief Construct the /Z flag value for the ITC operations.
-///
-/// Takes interactiveMode into account for automated testing.
-threadsafe static Function HW_ITC_GetZValue(flags)
-	variable flags
-
-	NVAR interactiveMode = $GetInteractiveMode()
-
-	if(interactiveMode)
-		return flags & HARDWARE_PREVENT_ERROR_POPUP
-	else
-		return flags | HARDWARE_PREVENT_ERROR_POPUP
-	endif
 End
 
 /// @brief Open a ITC device
@@ -1255,26 +1246,6 @@ Function HW_ITC_DebugMode(state, [flags])
 	ITCSetGlobals2/D=(state)/Z=(HW_ITC_GetZValue(flags))
 End
 
-Function/Wave HW_WAVE_GETTER_PROTOTYPE(str)
-	string str
-end
-
-threadsafe Function/WAVE HW_ITC_TransposeAndToDouble(wv)
-	WAVE wv
-
-	MatrixOp/FREE wv_t = fp64(wv^t)
-
-	return wv_t
-End
-
-Function/WAVE HW_ITC_TransposeAndToInt(wv)
-	WAVE wv
-
-	MatrixOp/FREE wv_t = int32(wv^t)
-
-	return wv_t
-End
-
 /// @brief Prepare for data acquisition
 ///
 /// @param deviceID    device identifier
@@ -1437,6 +1408,243 @@ Function HW_ITC_MoreData(deviceID, [ADChannelToMonitor, stopCollectionPoint, con
 	endif
 
 	return fifoPosValue < stopCollectionPoint
+End
+
+#else
+
+Function/S HW_ITC_ListOfOpenDevices()
+
+	DEBUGPRINT("Unimplemented")
+End
+
+Function/S HW_ITC_ListDevices()
+
+	DEBUGPRINT("Unimplemented")
+End
+
+threadsafe Function HW_ITC_HandleReturnValues_TS(flags, ITCError, ITCXOPError)
+	variable flags, ITCError, ITCXOPError
+
+	DEBUGPRINT_TS("Unimplemented")
+End
+
+Function HW_ITC_HandleReturnValues(flags, ITCError, ITCXOPError)
+	variable flags, ITCError, ITCXOPError
+
+	DEBUGPRINT("Unimplemented")
+End
+
+threadsafe static Function/S HW_ITC_GetXOPErrorMessage(errCode)
+	variable errCode
+
+	DEBUGPRINT_TS("Unimplemented")
+End
+
+Function HW_ITC_OpenDevice(deviceType, deviceNumber, [flags])
+	variable deviceType, deviceNumber
+	variable flags
+
+	DEBUGPRINT("Unimplemented")
+End
+
+Function HW_ITC_CloseAllDevices([flags])
+	variable flags
+
+	DEBUGPRINT("Unimplemented")
+End
+
+Function HW_ITC_CloseDevice([flags])
+	variable flags
+
+	DEBUGPRINT("Unimplemented")
+End
+
+Function HW_ITC_SelectDevice(deviceID, [flags])
+	variable deviceID, flags
+
+	DEBUGPRINT("Unimplemented")
+End
+
+Function HW_ITC_EnableYoking([flags])
+	variable flags
+
+	DEBUGPRINT("Unimplemented")
+End
+
+Function HW_ITC_DisableYoking([flags])
+	variable flags
+
+	DEBUGPRINT("Unimplemented")
+End
+
+threadsafe Function HW_ITC_StopAcq_TS(deviceID, [prepareForDAQ, flags])
+	variable deviceID, prepareForDAQ, flags
+
+	DEBUGPRINT_TS("Unimplemented")
+End
+
+Function HW_ITC_StopAcq(deviceID, [config, configFunc, prepareForDAQ, zeroDAC, flags])
+	variable deviceID, prepareForDAQ, zeroDAC, flags
+	WAVE/Z config
+	FUNCREF HW_WAVE_GETTER_PROTOTYPE configFunc
+
+	DEBUGPRINT("Unimplemented")
+End
+
+Function HW_ITC_GetCurrentDevice([flags])
+	variable flags
+
+	DEBUGPRINT("Unimplemented")
+End
+
+threadsafe static Function/WAVE HW_ITC_GetFifoPosFromConfig(config_t)
+	WAVE config_t
+
+	DEBUGPRINT_TS("Unimplemented")
+End
+
+threadsafe Function HW_ITC_ResetFifo_TS(deviceID, config, [flags])
+	variable deviceID
+	WAVE config
+	variable flags
+
+	DEBUGPRINT_TS("Unimplemented")
+End
+
+Function HW_ITC_ResetFifo(deviceID, [config, configFunc, flags])
+	variable deviceID
+	WAVE/Z config
+	FUNCREF HW_WAVE_GETTER_PROTOTYPE configFunc
+	variable  flags
+
+	DEBUGPRINT("Unimplemented")
+End
+
+threadsafe Function HW_ITC_StartAcq_TS(deviceID, triggerMode, [flags])
+	variable deviceID, triggerMode, flags
+
+	DEBUGPRINT_TS("Unimplemented")
+End
+
+Function HW_ITC_StartAcq(triggerMode, [flags])
+	variable triggerMode, flags
+
+	DEBUGPRINT("Unimplemented")
+End
+
+Function HW_ITC_IsRunning([flags])
+	variable flags
+
+	DEBUGPRINT("Unimplemented")
+End
+
+Function/WAVE HW_ITC_GetState([flags])
+	variable flags
+
+	DEBUGPRINT("Unimplemented")
+End
+
+Function HW_ITC_ReadADC(deviceID, channel, [flags])
+	variable deviceID, channel, flags
+
+	DEBUGPRINT("Unimplemented")
+End
+
+Function HW_ITC_WriteDAC(deviceID, channel, value, [flags])
+	variable deviceID, channel, value, flags
+
+	DEBUGPRINT("Unimplemented")
+End
+
+Function HW_ITC_ReadDigital(deviceID, xopChannel, [flags])
+	variable deviceID, xopChannel, flags
+
+	DEBUGPRINT("Unimplemented")
+End
+
+Function HW_ITC_WriteDigital(deviceID, xopChannel, value, [flags])
+	variable deviceID, xopChannel, value, flags
+
+	DEBUGPRINT("Unimplemented")
+End
+
+threadsafe Function HW_ITC_DebugMode_TS(state, [flags])
+	variable state, flags
+
+	DEBUGPRINT_TS("Unimplemented")
+End
+
+Function HW_ITC_DebugMode(state, [flags])
+	variable state, flags
+
+	DEBUGPRINT("Unimplemented")
+End
+
+Function HW_ITC_PrepareAcq(deviceID, [data, dataFunc, config, configFunc, flags])
+	variable deviceID
+	WAVE/Z data, config
+	FUNCREF HW_WAVE_GETTER_PROTOTYPE dataFunc, configFunc
+	variable flags
+
+	DEBUGPRINT("Unimplemented")
+End
+
+threadsafe Function HW_ITC_MoreData_TS(deviceID, ADChannelToMonitor, stopCollectionPoint, config, [fifoPos, flags])
+	variable deviceID
+	variable ADChannelToMonitor, stopCollectionPoint
+	WAVE config
+	variable &fifoPos
+	variable flags
+
+	DEBUGPRINT_TS("Unimplemented")
+End
+
+Function HW_ITC_MoreData(deviceID, [ADChannelToMonitor, stopCollectionPoint, config, configFunc, fifoPos, flags])
+	variable deviceID
+	variable ADChannelToMonitor, stopCollectionPoint
+	WAVE/Z config
+	FUNCREF HW_WAVE_GETTER_PROTOTYPE configFunc
+	variable &fifoPos
+	variable flags
+
+	DEBUGPRINT("Unimplemented")
+End
+
+#endif
+
+/// @brief Construct the /Z flag value for the ITC operations.
+///
+/// Takes interactiveMode into account for automated testing.
+threadsafe static Function HW_ITC_GetZValue(flags)
+	variable flags
+
+	NVAR interactiveMode = $GetInteractiveMode()
+
+	if(interactiveMode)
+		return flags & HARDWARE_PREVENT_ERROR_POPUP
+	else
+		return flags | HARDWARE_PREVENT_ERROR_POPUP
+	endif
+End
+
+Function/Wave HW_WAVE_GETTER_PROTOTYPE(str)
+	string str
+end
+
+threadsafe Function/WAVE HW_ITC_TransposeAndToDouble(wv)
+	WAVE wv
+
+	MatrixOp/FREE wv_t = fp64(wv^t)
+
+	return wv_t
+End
+
+Function/WAVE HW_ITC_TransposeAndToInt(wv)
+	WAVE wv
+
+	MatrixOp/FREE wv_t = int32(wv^t)
+
+	return wv_t
 End
 
 /// @name Utility functions not interacting with hardware
