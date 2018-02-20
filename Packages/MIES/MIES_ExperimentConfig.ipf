@@ -482,11 +482,9 @@ Function ExpConfig_MCC_MidExp(panelTitle, headStage, UserSettings)
 	
 	PGC_SetAndActivateControl(panelTitle,"ADC", val = DA_EPHYS_PANEL_DATA_ACQUISITION)
 	PGC_SetAndActivateControl(panelTitle,"slider_DataAcq_ActiveHeadstage", val = headStage)
-	
-	AI_SelectMultiClamp(panelTitle, headStage)
-	
-	clampMode = MCC_GetMode()
-	
+
+	clampMode = AI_GetMode(panelTitle, headstage)
+
 	if(clampMode == V_CLAMP_MODE)
 		
 		DAP_ChangeHeadStageMode(panelTitle, V_CLAMP_MODE, headStage, SKIP_MCC_MIES_SYNCING)

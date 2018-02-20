@@ -1495,3 +1495,21 @@ Function AI_GetHoldingCommand(panelTitle, headstage)
 
 	return MCC_GetHoldingEnable() ? MCC_GetHolding() * AI_GetMCCScale(MCC_GetMode(), MCC_GETHOLDING_FUNC) : 0
 End
+
+/// @brief Return the clamp mode of the headstage as returned by the amplifier
+///
+/// Should only be used during the setup phase when you don't know if the
+/// clamp mode in MIES matches already. It is always better to prefer
+/// DAP_ChangeHeadStageMode() if possible.
+///
+/// @brief One of @ref AmplifierClampModes or NaN if no amplifier is connected
+Function AI_GetMode(panelTitle, headstage)
+	string panelTitle
+	variable headstage
+
+	if(AI_SelectMultiClamp(panelTitle, headstage) != AMPLIFIER_CONNECTION_SUCCESS)
+		return NaN
+	endif
+
+	return MCC_GetMode()
+End
