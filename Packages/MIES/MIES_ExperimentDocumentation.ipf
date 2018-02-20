@@ -792,6 +792,7 @@ static Function ED_ADDataBasedWaveNotes(asyncMeasurementWave, panelTitle)
 	string panelTitle
 
 	variable i, numEntries, rawChannelValue, gain, deviceChannelOffset
+	variable scaledValue
 	string setvarTitle, setvarGain, title
 
 	NVAR ITCDeviceIDGlobal = $GetITCDeviceIDGlobal(panelTitle)
@@ -815,9 +816,16 @@ static Function ED_ADDataBasedWaveNotes(asyncMeasurementWave, panelTitle)
 		title = DAG_GetTextualValue(panelTitle, setvarTitle, index = i)
 		gain  = DAG_GetNumericalValue(panelTitle, setvarGain, index = i)
 
-		// put the measurement value into the async settings wave for creation of wave notes
-		asyncMeasurementWave[0][i][,;LABNOTEBOOK_LAYER_COUNT - 1] = rawChannelValue / gain
+		scaledValue = rawChannelValue / gain
 
-		DAP_SupportSystemAlarm(i, asyncMeasurementWave[0][i], title, panelTitle)
+		// put the measurement value into the async settings wave for creation of wave notes
+		asyncMeasurementWave[0][i][,;LABNOTEBOOK_LAYER_COUNT - 1] = scaledValue
+
+		if(ASD_CheckAsynAlarmState(panelTitle, i, scaledValue))
+			beep
+			print time() + " !!!!!!!!!!!!! " + title + " has exceeded max/min settings" + " !!!!!!!!!!!!!"
+			ControlWindowToFront()
+			beep
+		endif
 	endfor
 End

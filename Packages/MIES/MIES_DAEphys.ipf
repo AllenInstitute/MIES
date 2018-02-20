@@ -4509,33 +4509,6 @@ Function DAP_GetHighestActiveHeadstage(panelTitle)
 	return WaveMax(activeHS)
 End
 
-/// @brief Print a warning message if the measured value of the given asyn
-///        value exceeds the limits
-Function DAP_SupportSystemAlarm(Channel, Measurement, MeasurementTitle, panelTitle)
-	variable Channel, Measurement
-	string MeasurementTitle, panelTitle
-
-	string minCtrl, maxCtrl, checkCtrl
-	variable paramMin, paramMax
-
-	checkCtrl = GetSpecialControlLabel(CHANNEL_TYPE_ALARM, CHANNEL_CONTROL_CHECK)
-	minCtrl   = GetSpecialControlLabel(CHANNEL_TYPE_ASYNC, CHANNEL_CONTROL_ALARM_MIN)
-	maxCtrl   = GetSpecialControlLabel(CHANNEL_TYPE_ASYNC, CHANNEL_CONTROL_ALARM_MAX)
-
-	if(DAG_GetNumericalValue(panelTitle, checkCtrl, index = channel))
-
-		paramMin = DAG_GetNumericalValue(panelTitle, minCtrl, index = channel)
-		paramMax = DAG_GetNumericalValue(panelTitle, maxCtrl, index = channel)
-
-		if(Measurement >= ParamMax || Measurement <= ParamMin)
-			beep
-			print time() + " !!!!!!!!!!!!! " + MeasurementTitle + " has exceeded max/min settings" + " !!!!!!!!!!!!!"
-			ControlWindowToFront()
-			beep
-		endif
-	endif
-End
-
 Function DAP_PopMenuProc_UpdateGuiState(pa) : PopupMenuControl
 	STRUCT WMPopupAction &pa
 
