@@ -148,90 +148,6 @@ Function HW_CloseDevice(hardwareType, deviceID, [flags])
 	endswitch
 End
 
-/// @brief Return a list of all open ITC devices
-Function/S HW_ITC_ListOfOpenDevices()
-
-	variable i
-	string device, type, number
-	string list = ""
-
-	DEBUGPRINTSTACKINFO()
-
-	for(i = 0; i < HARDWARE_MAX_DEVICES; i += 1)
-		if(HW_ITC_SelectDevice(i))
-			continue
-		endif
-
-		// device could be selected
-		// get the device type
-		do
-			ITCGetDeviceInfo2/FREE DevInfo
-		while(V_ITCXOPError == SLOT_LOCKED_TO_OTHER_THREAD && V_ITCError == 0)
-
-		HW_ITC_HandleReturnValues(0, V_ITCError, V_ITCXOPError)
-
-		type   = StringFromList(DevInfo[0], DEVICE_TYPES)
-		number = StringFromList(DevInfo[1], DEVICE_NUMBERS)
-		device = BuildDeviceString(type, number)
-		list   = AddListItem(device, list, ";", Inf)
-	endfor
-
-	KillOrMoveToTrash(wv=DevInfo)
-
-	return list
-End
-
-///@brief Return a list of all ITC devices which can be opened
-///
-///**Warning! This heavily interacts with the ITC* controllers, don't call
-///during data/test pulse/whatever acquisition.**
-///
-///@returns A list of panelTitles with ITC devices which can be opened.
-///         Does not include devices which are already open.
-Function/S HW_ITC_ListDevices()
-
-	variable i, j, deviceID
-	string type, number, msg, device
-	string list = ""
-
-	DEBUGPRINTSTACKINFO()
-
-	for(i=0; i < ItemsInList(DEVICE_TYPES); i+=1)
-		type = StringFromList(i, DEVICE_TYPES)
-
-		if(CmpStr(type,"ITC00") == 0) // don't test the virtual device
-			continue
-		endif
-
-		do
-			ITCGetDevices2/Z=1/DTS=type
-		while(V_ITCXOPError == SLOT_LOCKED_TO_OTHER_THREAD && V_ITCError == 0)
-
-
-		if(V_Value > 0)
-			for(j=0; j < ItemsInList(DEVICE_NUMBERS); j+=1)
-				number = StringFromList(j, DEVICE_NUMBERS)
-				device = BuildDeviceString(type,number)
-
-				do
-					ITCOpenDevice2/Z=1/DTS=type str2num(number)
-				while(V_ITCXOPError == SLOT_LOCKED_TO_OTHER_THREAD && V_ITCError == 0)
-
-				deviceID = V_Value
-				if(V_ITCError == 0 && V_ITCXOPError == 0 && deviceID >= 0)
-					sprintf msg, "Found device type %s with number %s", type, number
-					DEBUGPRINT(msg)
-					HW_ITC_SelectDevice(deviceID)
-					HW_ITC_CloseDevice()
-					list = AddListItem(device, list, ";", inf)
-				endif
-			endfor
-		endif
-	endfor
-
-	return list
-End
-
 /// @brief Write a value to a DA/AO channel
 ///
 /// @param hardwareType One of @ref HardwareDACTypeConstants
@@ -655,6 +571,90 @@ End
 
 /// @name ITC
 /// @{
+
+/// @brief Return a list of all open ITC devices
+Function/S HW_ITC_ListOfOpenDevices()
+
+	variable i
+	string device, type, number
+	string list = ""
+
+	DEBUGPRINTSTACKINFO()
+
+	for(i = 0; i < HARDWARE_MAX_DEVICES; i += 1)
+		if(HW_ITC_SelectDevice(i))
+			continue
+		endif
+
+		// device could be selected
+		// get the device type
+		do
+			ITCGetDeviceInfo2/FREE DevInfo
+		while(V_ITCXOPError == SLOT_LOCKED_TO_OTHER_THREAD && V_ITCError == 0)
+
+		HW_ITC_HandleReturnValues(0, V_ITCError, V_ITCXOPError)
+
+		type   = StringFromList(DevInfo[0], DEVICE_TYPES)
+		number = StringFromList(DevInfo[1], DEVICE_NUMBERS)
+		device = BuildDeviceString(type, number)
+		list   = AddListItem(device, list, ";", Inf)
+	endfor
+
+	KillOrMoveToTrash(wv=DevInfo)
+
+	return list
+End
+
+///@brief Return a list of all ITC devices which can be opened
+///
+///**Warning! This heavily interacts with the ITC* controllers, don't call
+///during data/test pulse/whatever acquisition.**
+///
+///@returns A list of panelTitles with ITC devices which can be opened.
+///         Does not include devices which are already open.
+Function/S HW_ITC_ListDevices()
+
+	variable i, j, deviceID
+	string type, number, msg, device
+	string list = ""
+
+	DEBUGPRINTSTACKINFO()
+
+	for(i=0; i < ItemsInList(DEVICE_TYPES); i+=1)
+		type = StringFromList(i, DEVICE_TYPES)
+
+		if(CmpStr(type,"ITC00") == 0) // don't test the virtual device
+			continue
+		endif
+
+		do
+			ITCGetDevices2/Z=1/DTS=type
+		while(V_ITCXOPError == SLOT_LOCKED_TO_OTHER_THREAD && V_ITCError == 0)
+
+
+		if(V_Value > 0)
+			for(j=0; j < ItemsInList(DEVICE_NUMBERS); j+=1)
+				number = StringFromList(j, DEVICE_NUMBERS)
+				device = BuildDeviceString(type,number)
+
+				do
+					ITCOpenDevice2/Z=1/DTS=type str2num(number)
+				while(V_ITCXOPError == SLOT_LOCKED_TO_OTHER_THREAD && V_ITCError == 0)
+
+				deviceID = V_Value
+				if(V_ITCError == 0 && V_ITCXOPError == 0 && deviceID >= 0)
+					sprintf msg, "Found device type %s with number %s", type, number
+					DEBUGPRINT(msg)
+					HW_ITC_SelectDevice(deviceID)
+					HW_ITC_CloseDevice()
+					list = AddListItem(device, list, ";", inf)
+				endif
+			endfor
+		endif
+	endfor
+
+	return list
+End
 
 /// @brief Output an informative error message for the ITC XOP2 operations (threadsafe variant)
 ///
