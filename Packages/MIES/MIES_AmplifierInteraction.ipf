@@ -186,7 +186,7 @@ Function AI_SetClampMode(panelTitle, headStage, mode)
 	string panelTitle
 	variable headStage
 	variable mode
-	
+
 	AI_AssertOnInvalidClampMode(mode)
 
 	if(AI_SelectMultiClamp(panelTitle, headStage) != AMPLIFIER_CONNECTION_SUCCESS)
@@ -1169,16 +1169,16 @@ End
 Function AI_SetMIESHeadstage(panelTitle, [headstage, increment])
 	string panelTitle
 	variable headstage, increment
-	
+
 	if(ParamIsDefault(headstage) && ParamIsDefault(increment))
 		return Nan
 	endif
-	
+
 	if(!ParamIsDefault(increment))
 		headstage = DAG_GetNumericalValue(panelTitle, "slider_DataAcq_ActiveHeadstage") + increment
 	endif
 
-	if(headstage >= 0 && headstage < NUM_HEADSTAGES)	
+	if(headstage >= 0 && headstage < NUM_HEADSTAGES)
 		PGC_SetAndActivateControl(panelTitle, "slider_DataAcq_ActiveHeadstage", val=headstage)
 	endif
 End
@@ -1190,7 +1190,7 @@ End
 Function AI_ZeroAmps(panelTitle, [headStage])
 	string panelTitle
 	variable headstage
-	
+
 	variable i, col
 	// Ensure that data in BaselineSSAvg is up to date by verifying that TP is active
 	if(IsDeviceActiveWithBGTask(panelTitle, "TestPulse") || IsDeviceActiveWithBGTask(panelTitle, "TestPulseMD"))
@@ -1204,7 +1204,7 @@ Function AI_ZeroAmps(panelTitle, [headStage])
 		else
 			WAVE statusHS = DAG_GetChannelState(panelTitle, CHANNEL_TYPE_HEADSTAGE)
 			for(i = 0; i < NUM_HEADSTAGES; i += 1)
-		
+
 				if(!statusHS[i])
 					continue
 				endif
@@ -1429,16 +1429,16 @@ Function AI_OpenMCCs(ampSerialNumList, [ampTitleList, maxAttempts])
 				failedToOpenCount += 1
 			endif
 		endfor
-		
+
 		if(failedToOpenCount > 0)
 			printf "%g MCCs failed to open on attempt count %g\r" failedTOopenCount, j
 			ControlWindowToFront()
 		endif
-		
-		j += 1		
+
+		j += 1
 	while(failedToOpenCount != 0 && j < maxAttempts)
-	
-	return failedToOpenCount == 0	
+
+	return failedToOpenCount == 0
 End
 
 /// @brief Gets the serial numbers of all open MCCs
