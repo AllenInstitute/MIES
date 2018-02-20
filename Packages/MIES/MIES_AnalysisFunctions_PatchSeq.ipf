@@ -1105,7 +1105,7 @@ Function PSQ_SquarePulse(panelTitle, s)
 				if(CheckIfClose(stepSize, PSQ_SP_INIT_AMP_m50))
 					SetDAScale(panelTitle, s.headstage, DAScale + stepsize)
 				elseif(CheckIfClose(stepSize, PSQ_SP_INIT_AMP_p10))
-					Make/FREE/D/N=(LABNOTEBOOK_LAYER_COUNT) value = 0
+					Make/FREE/D/N=(LABNOTEBOOK_LAYER_COUNT) value = NaN
 					value[INDEP_HEADSTAGE] = DAScale
 					key = PSQ_CreateLBNKey(PSQ_SQUARE_PULSE, PSQ_FMT_LBN_FINAL_SCALE)
 					ED_AddEntryToLabnotebook(panelTitle, key, value)
