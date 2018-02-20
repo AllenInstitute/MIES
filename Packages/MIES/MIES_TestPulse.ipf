@@ -618,8 +618,8 @@ Function TP_UpdateHoldCmdInTPStorage(panelTitle, headStage)
 	EnsureLargeEnoughWave(TPStorage, minimumSize=count, dimension=ROWS, initialValue=NaN)
 
 	if(clampMode == V_CLAMP_MODE)
-		TPStorage[count][col][%HoldingCmd_VC] = GetHoldingCommand(panelTitle, headStage)
+		TPStorage[count][col][%HoldingCmd_VC] = AI_GetHoldingCommand(panelTitle, headStage)
 	else
-		TPStorage[count][col][%HoldingCmd_IC] = GetHoldingCommand(panelTitle, headStage)
+		TPStorage[count][col][%HoldingCmd_IC] = AI_GetHoldingCommand(panelTitle, headStage)
 	endif
 End

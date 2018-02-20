@@ -1485,7 +1485,7 @@ static Function/S AI_GetMCCWinFilePath()
 End
 
 ///@brief Returns the holding command of the amplifier
-Function GetHoldingCommand(panelTitle, headstage)
+Function AI_GetHoldingCommand(panelTitle, headstage)
 	string panelTitle
 	variable headstage
 
