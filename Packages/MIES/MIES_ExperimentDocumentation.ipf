@@ -584,6 +584,7 @@ static Function ED_createAsyncWaveNoteTags(panelTitle, sweepCount)
 
 	string ctrlCheck, ctrlTitle, ctrlUnit, title, unit, str
 	variable minSettingValue, maxSettingValue, step, i, scaledValue
+	variable redoLastSweep
 
 	Wave asyncSettingsWave = GetAsyncSettingsWave()
 	Wave/T asyncSettingsKey = GetAsyncSettingsKeyWave()
@@ -643,12 +644,17 @@ static Function ED_createAsyncWaveNoteTags(panelTitle, sweepCount)
 			print time() + " !!!!!!!!!!!!! " + title + " has exceeded max/min settings" + " !!!!!!!!!!!!!"
 			ControlWindowToFront()
 			beep
+			redoLastSweep = 1
 		endif
 	endfor
 
 	ED_AddEntriesToLabnotebook(asyncSettingsTxtWave, asyncSettingsTxtKey, sweepCount, panelTitle, DATA_ACQUISITION_MODE)
 	ED_AddEntriesToLabnotebook(asyncSettingsWave, asyncSettingsKey, SweepCount, panelTitle, DATA_ACQUISITION_MODE)
 	ED_AddEntriesToLabnotebook(asyncMeasurementWave, asyncMeasurementKey, SweepCount, panelTitle, DATA_ACQUISITION_MODE)
+
+	if(redoLastSweep && DAG_GetNumericalValue(panelTitle, "Check_Settings_AlarmAutoRepeat"))
+		RA_SkipSweeps(panelTitle, -1)
+	endif
 End
 
 /// @brief Stores test pulse related data in the labnotebook
