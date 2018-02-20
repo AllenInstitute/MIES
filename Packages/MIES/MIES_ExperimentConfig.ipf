@@ -13,6 +13,10 @@
 /// - Interactions with MCCs
 /// - DAEphys panel settings
 
+#if exists("MCC_GetMode") && exists("AxonTelegraphGetDataStruct")
+#define AMPLIFIER_XOPS_PRESENT
+#endif
+
 /// @brief Configure MIES for experiments
 ///
 /// @param middleOfExperiment [optional, defaults to false] Allows MIES config in the middle of experiment. Instead of setting MCC parameters they are pulled from actively recording MCCs to configure MIES]
@@ -424,6 +428,8 @@ static Function ExpConfig_DAEphysSettings(panelTitle, UserSettings)
 	
 End
 
+#ifdef AMPLIFIER_XOPS_PRESENT
+
 /// @brief Intiate MCC parameters for active headstages
 ///
 /// @param panelTitle	ITC device panel
@@ -431,7 +437,6 @@ End
 static Function ExpConfig_MCC_InitParams(panelTitle, headStage)
 	string panelTitle
 	variable headStage
-	
 	
 	// Set initial parameters within MCC itself.
 
@@ -470,8 +475,20 @@ static Function ExpConfig_MCC_InitParams(panelTitle, headStage)
 
 	//Set mode back to V-clamp
 	DAP_ChangeHeadStageMode(panelTitle, V_CLAMP_MODE, headStage, DO_MCC_MIES_SYNCING)
-
 End
+
+#else
+
+static Function ExpConfig_MCC_InitParams(panelTitle, headStage)
+	string panelTitle
+	variable headStage
+
+	DEBUGPRINT("Unimplemented")
+
+	return NaN
+End
+
+#endif
 
 Function ExpConfig_MCC_MidExp(panelTitle, headStage, UserSettings)
 	string panelTitle
