@@ -32,3 +32,22 @@ Function ASD_CheckAsynAlarmState(panelTitle, channel, value)
 
 	return value >= ParamMax || value <= ParamMin
 End
+
+/// @brief Read the given asynchronous channel and return the scaled value
+Function ASD_ReadChannel(panelTitle, channel)
+	string panelTitle
+	variable channel
+
+	string ctrl
+	variable gain, deviceChannelOffset, rawChannelValue
+
+	NVAR ITCDeviceIDGlobal = $GetITCDeviceIDGlobal(panelTitle)
+	deviceChannelOffset = HW_ITC_CalculateDevChannelOff(panelTitle)
+
+	rawChannelValue = HW_ReadADC(HARDWARE_ITC_DAC, ITCDeviceIDGlobal, channel + deviceChannelOffset)
+
+	ctrl = GetSpecialControlLabel(CHANNEL_TYPE_ASYNC, CHANNEL_CONTROL_GAIN)
+	gain = DAG_GetNumericalValue(panelTitle, ctrl, index = channel)
+
+	return rawChannelValue / gain
+End

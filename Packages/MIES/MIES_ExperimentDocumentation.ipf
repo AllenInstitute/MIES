@@ -791,17 +791,13 @@ static Function ED_ADDataBasedWaveNotes(asyncMeasurementWave, panelTitle)
 	WAVE asyncMeasurementWave
 	string panelTitle
 
-	variable i, numEntries, rawChannelValue, gain, deviceChannelOffset
+	variable i, numEntries
 	variable scaledValue
-	string setvarTitle, setvarGain, title
-
-	NVAR ITCDeviceIDGlobal = $GetITCDeviceIDGlobal(panelTitle)
+	string setvarTitle, title
 
 	WAVE asyncChannelState = DAG_GetChannelState(panelTitle, CHANNEL_TYPE_ASYNC)
-	deviceChannelOffset = HW_ITC_CalculateDevChannelOff(panelTitle)
 
 	setvarTitle = GetSpecialControlLabel(CHANNEL_TYPE_ASYNC, CHANNEL_CONTROL_TITLE)
-	setvarGain  = GetSpecialControlLabel(CHANNEL_TYPE_ASYNC, CHANNEL_CONTROL_GAIN)
 
 	numEntries = DimSize(asyncChannelState, ROWS)
 	for(i = 0; i < numEntries; i += 1)
@@ -810,19 +806,14 @@ static Function ED_ADDataBasedWaveNotes(asyncMeasurementWave, panelTitle)
 			continue
 		endif
 
-		// Async channels start at channel 16 on ITC 1600, needs to be a diff value constant for ITC18
-		rawChannelValue = HW_ReadADC(HARDWARE_ITC_DAC, ITCDeviceIDGlobal, i + deviceChannelOffset)
-
-		title = DAG_GetTextualValue(panelTitle, setvarTitle, index = i)
-		gain  = DAG_GetNumericalValue(panelTitle, setvarGain, index = i)
-
-		scaledValue = rawChannelValue / gain
+		scaledValue = ASD_ReadChannel(panelTitle, i)
 
 		// put the measurement value into the async settings wave for creation of wave notes
 		asyncMeasurementWave[0][i][,;LABNOTEBOOK_LAYER_COUNT - 1] = scaledValue
 
 		if(ASD_CheckAsynAlarmState(panelTitle, i, scaledValue))
 			beep
+			title = DAG_GetTextualValue(panelTitle, setvarTitle, index = i)
 			print time() + " !!!!!!!!!!!!! " + title + " has exceeded max/min settings" + " !!!!!!!!!!!!!"
 			ControlWindowToFront()
 			beep
