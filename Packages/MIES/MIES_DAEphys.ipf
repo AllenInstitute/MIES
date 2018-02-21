@@ -4108,6 +4108,7 @@ static Function DAP_UnlockDevice(panelTitle)
 	string panelTitle
 
 	variable flags, state
+	string lockedDevices
 
 	if(!windowExists(panelTitle))
 		DEBUGPRINT("Can not unlock the non-existing panel", str=panelTitle)
@@ -4174,8 +4175,8 @@ static Function DAP_UnlockDevice(panelTitle)
 	NVAR runMode = $GetTestpulseRunMode(panelTitle)
 	runMode = TEST_PULSE_NOT_RUNNING
 
-	SVAR/SDFR=GetITCDevicesFolder() ITCPanelTitleList
-	if(!cmpstr(ITCPanelTitleList, ""))
+	lockedDevices = GetListOfLockedDevices()
+	if(IsEmpty(lockedDevices))
 		CloseNWBFile()
 
 		WAVE ActiveDevicesTPMD = GetActiveDevicesTPMD()
