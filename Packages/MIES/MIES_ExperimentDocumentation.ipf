@@ -134,6 +134,8 @@ End
 /// from stock MIES entries.
 ///
 /// The index of the entry in `values` determines the headstage to which the setting applies.
+/// You can not set both headstage dependent and independent values at the same time as this
+/// does not make sense.
 ///
 /// Sample invocation:
 /// @code
@@ -171,6 +173,19 @@ Function ED_AddEntryToLabnotebook(panelTitle, key, values, [unit, tolerance, ove
 	ASSERT(DimSize(values, COLS) == 0, "wv must be 1D")
 	ASSERT(IsTextWave(values) || ((WaveType(values) & (IGOR_TYPE_32BIT_FLOAT | IGOR_TYPE_64BIT_FLOAT)) != 0), "Wave must be text or floating point")
 	ASSERT(strsearch(key, LABNOTEBOOK_USER_PREFIX, 0, 2) != 0, "Don't prefix key with LABNOTEBOOK_USER_PREFIX")
+
+	// check input
+	if(IsTextWave(values))
+		WAVE/T valuesText = values
+		Make/FREE/N=(LABNOTEBOOK_LAYER_COUNT) stats = strlen(valuesText[p]) == 0 ? NaN : 1
+	else
+		Wave stats = values
+	endif
+
+	// either INDEP_HEADSTAGE is set or one of the headstage entries but never both
+	WaveStats/Q/M=1 stats
+	ASSERT((IsFinite(stats[INDEP_HEADSTAGE]) && V_numNaNs == NUM_HEADSTAGES) || !IsFinite(stats[INDEP_HEADSTAGE]), \
+	  "The independent headstage entry can not be combined with headstage dependent entries.")
 
 	if(ParamIsDefault(unit))
 		unit = ""
