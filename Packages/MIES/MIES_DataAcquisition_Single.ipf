@@ -175,6 +175,11 @@ Function DQS_FIFOMonitor(s)
 		return 1
 	endif
 
+	if(GetKeyState(0) & ESCAPE_KEY)
+		DQ_StopOngoingDAQ(panelTitleG, startTPAfterDAQ = 0)
+		return 1
+	endif
+
 	return 0
 End
 
