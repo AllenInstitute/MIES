@@ -656,6 +656,12 @@ static Function DC_PlaceDataInITCDataWave(panelTitle, numActiveChannels, dataAcq
 			ASSERT(0, "unknown mode")
 		endif
 
+		// restarting DAQ via the stimset popup menues does not call DAP_CheckSettings()
+		// so the stimest must not exist here
+		if(!WaveExists(stimSet[activeColumn]))
+			Abort
+		endif
+
 		if(dataAcqOrTP == TEST_PULSE_MODE)
 			setColumn[activeColumn] = 0
 		else
