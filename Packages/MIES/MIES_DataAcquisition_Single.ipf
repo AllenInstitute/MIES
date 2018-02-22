@@ -137,7 +137,7 @@ Function DQS_StartBackgroundFifoMonitor()
 	CtrlNamedBackground ITC_FIFOMonitor, start
 End
 
-/// @brief Helper background task for debugging
+/// @brief Fifo monitor for DAQ Single Device
 ///
 /// @ingroup BackgroundFunctions
 Function DQS_FIFOMonitor(s)
