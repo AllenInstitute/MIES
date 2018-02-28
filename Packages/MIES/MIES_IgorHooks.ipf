@@ -125,6 +125,7 @@ static Function IH_Cleanup()
 		IH_RemoveAmplifierConnWaves(); AbortOnRTE
 		IH_KillTemporaries(); AbortOnRTE
 		IH_KillStimSets(); AbortOnRTE
+		CA_FlushCache(); AbortOnRTE
 	catch
 		error = GetRTError(1)
 		DEBUGPRINT("Caught runtime error or assertion")
