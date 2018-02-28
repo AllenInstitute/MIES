@@ -1091,13 +1091,15 @@ End
 
 /// @brief One time cleaning up after data acquisition
 ///
-/// @param panelTitle device
-/// @param forcedStop [optional, defaults to false] if DAQ was aborted (true) or stopped by itself (false)
-Function DAP_OneTimeCallAfterDAQ(panelTitle, [forcedStop])
+/// @param panelTitle      device
+/// @param forcedStop      [optional, defaults to false] if DAQ was aborted (true) or stopped by itself (false)
+/// @param startTPAfterDAQ [optional, defaults to true]  start "TP after DAQ" if enabled at the end
+Function DAP_OneTimeCallAfterDAQ(panelTitle, [forcedStop, startTPAfterDAQ])
 	string panelTitle
-	variable forcedStop
+	variable forcedStop, startTPAfterDAQ
 
-	forcedStop = ParamIsDefault(forcedStop) ? 0 : !!forcedStop
+	forcedStop      = ParamIsDefault(forcedStop)      ? 0 : !!forcedStop
+	startTPAfterDAQ = ParamIsDefault(startTPAfterDAQ) ? 1 : !!startTPAfterDAQ
 
 	DAP_ResetGUIAfterDAQ(panelTitle)
 
@@ -1127,7 +1129,7 @@ Function DAP_OneTimeCallAfterDAQ(panelTitle, [forcedStop])
 
 	DAP_UpdateSweepSetVariables(panelTitle)
 
-	if(!DAG_GetNumericalValue(panelTitle, "check_Settings_TPAfterDAQ"))
+	if(!DAG_GetNumericalValue(panelTitle, "check_Settings_TPAfterDAQ") || !startTPAfterDAQ)
 		return NaN
 	endif
 
