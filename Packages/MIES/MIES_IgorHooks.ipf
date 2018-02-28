@@ -33,7 +33,6 @@ static Function IH_KillTemporaries()
 	endfor
 
 	RemoveEmptyDataFolder(dfr)
-	IH_KillStimSets()
 
 	DFREF dfr = GetWaveBuilderDataPath()
 	list = GetListOfObjects(dfr, SEGMENTWAVE_SPECTRUM_PREFIX + ".*", fullPath=1)
@@ -100,6 +99,9 @@ static Function BeforeExperimentSaveHook(rN, fileName, path, type, creator, kind
 
 	IH_SerAllCommentNBsWrapper()
 	IH_KillTemporaries()
+#if !defined(IGOR64)
+	IH_KillStimSets()
+#endif
 	NWB_Flush()
 End
 
@@ -122,6 +124,7 @@ static Function IH_Cleanup()
 		IH_UnlockAllDevicesWrapper(); AbortOnRTE
 		IH_RemoveAmplifierConnWaves(); AbortOnRTE
 		IH_KillTemporaries(); AbortOnRTE
+		IH_KillStimSets(); AbortOnRTE
 	catch
 		error = GetRTError(1)
 		DEBUGPRINT("Caught runtime error or assertion")
