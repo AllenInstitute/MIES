@@ -1309,7 +1309,7 @@ Function DAP_PopMenuChkProc_StimSetList(pa) : PopupMenuControl
 			                   && indexing)))
 
 			if(activeChannel)
-				dataAcqRunMode = DQ_StopDAQ(panelTitle)
+				dataAcqRunMode = DQ_StopDAQ(panelTitle, startTPAfterDAQ = 0)
 
 				// stopping DAQ will reset the stimset popupmenu to its initial value
 				// so we have to set the now old value again
