@@ -1709,7 +1709,7 @@ Function/S WBP_ReturnListSavedSets()
 	DFREF dfr = GetSetParamFolder(CHANNEL_TYPE_TTL)
 	list += GetListOfObjects(dfr, "WP_.*")
 
-	return SortList(RemovePrefixFromListItem("WP_", list), ";", 16)
+	return NONE + ";" + SortList(RemovePrefixFromListItem("WP_", list), ";", 16)
 end
 
 /// @brief Return true if the given stimset is a builtin, false otherwise
