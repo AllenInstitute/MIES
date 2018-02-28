@@ -1174,7 +1174,7 @@ Function/WAVE HW_ITC_GetState([flags])
 	DEBUGPRINTSTACKINFO()
 
 	do
-		ITCGetState2/R/O/C/E/FREE/Z=(HW_ITC_GetZValue(flags)) state
+		ITCGetState2/ALL/FREE/Z=(HW_ITC_GetZValue(flags)) state
 	while(V_ITCXOPError == SLOT_LOCKED_TO_OTHER_THREAD && V_ITCError == 0)
 
 
