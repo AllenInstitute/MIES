@@ -181,6 +181,19 @@ Function StopAcq_IGNORE(s)
 	return 1
 End
 
+Function ChangeStimSet_IGNORE(s)
+	STRUCT WMBackgroundStruct &s
+
+	string device, ctrl
+
+	device = GetSingleDevice()
+	ctrl   = GetPanelControl(0, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_WAVE)
+
+	PGC_SetAndActivateControl(device, ctrl, val = GetPopupMenuIndex(device, ctrl) + 1)
+
+	return 1
+End
+
 /// @brief Structure to hold various common DAQ DAQSettings
 ///
 /// MultiDevice (MD: 1/0)
