@@ -996,20 +996,21 @@ Function PSQ_DAScale(panelTitle, s)
 				skipToEnd = (sweepsInSet - acquiredSweepsInSet) < (numSweepsPass - passesInSet)
 			else
 				// sweep passed
+				if(!cmpstr(opMode, PSQ_DS_SUB))
+					WAVE/Z sweep = GetSweepWave(panelTitle, s.sweepNo)
+					ASSERT(WaveExists(sweep), "Expected a sweep for evaluation")
 
-				WAVE/Z sweep = GetSweepWave(panelTitle, s.sweepNo)
-				ASSERT(WaveExists(sweep), "Expected a sweep for evaluation")
+					Make/D/FREE/N=(LABNOTEBOOK_LAYER_COUNT) deltaV     = NaN
+					Make/D/FREE/N=(LABNOTEBOOK_LAYER_COUNT) deltaI     = NaN
+					Make/D/FREE/N=(LABNOTEBOOK_LAYER_COUNT) resistance = NaN
 
-				Make/D/FREE/N=(LABNOTEBOOK_LAYER_COUNT) deltaV     = NaN
-				Make/D/FREE/N=(LABNOTEBOOK_LAYER_COUNT) deltaI     = NaN
-				Make/D/FREE/N=(LABNOTEBOOK_LAYER_COUNT) resistance = NaN
+					CalculateTPLikePropsFromSweep(numericalValues, textualValues, sweep, deltaI, deltaV, resistance)
 
-				CalculateTPLikePropsFromSweep(numericalValues, textualValues, sweep, deltaI, deltaV, resistance)
+					ED_AddEntryToLabnotebook(panelTitle, "Delta I", deltaI, unit = "I")
+					ED_AddEntryToLabnotebook(panelTitle, "Delta V", deltaV, unit = "V")
 
-				ED_AddEntryToLabnotebook(panelTitle, "Delta I", deltaI, unit = "I")
-				ED_AddEntryToLabnotebook(panelTitle, "Delta V", deltaV, unit = "V")
-
-				PlotResistanceGraph(panelTitle)
+					PlotResistanceGraph(panelTitle)
+				endif
 
 				if(passesInSet >= numSweepsPass)
 					skipToEnd = 1
