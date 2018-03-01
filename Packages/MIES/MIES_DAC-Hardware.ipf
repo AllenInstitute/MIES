@@ -73,6 +73,8 @@ Constant R_FLAG_REQUIRES_ITC1600     = 10023
 Constant THREAD_DEVICE_ID_NOT_SET    = 10024
 /// @}
 
+static Constant HW_ITC_RUNNING_STATE = 0x10
+
 /// @name Wrapper functions redirecting to the correct internal implementations depending on #HARDWARE_DAC_TYPES
 /// @{
 
@@ -1162,7 +1164,7 @@ Function HW_ITC_IsRunning([flags])
 		return 0
 	endif
 
-	return state[0]
+	return (state[0] & HW_ITC_RUNNING_STATE) == HW_ITC_RUNNING_STATE
 End
 
 /// @brief Query the ITC device state
@@ -1174,7 +1176,7 @@ Function/WAVE HW_ITC_GetState([flags])
 	DEBUGPRINTSTACKINFO()
 
 	do
-		ITCGetState2/R/O/C/E/FREE/Z=(HW_ITC_GetZValue(flags)) state
+		ITCGetState2/ALL/FREE/Z=(HW_ITC_GetZValue(flags)) state
 	while(V_ITCXOPError == SLOT_LOCKED_TO_OTHER_THREAD && V_ITCError == 0)
 
 

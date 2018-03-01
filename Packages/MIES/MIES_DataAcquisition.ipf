@@ -14,19 +14,46 @@ static Constant DQ_DEFAULT_MAXAUTOBIASCURRENT = 1500e-12 /// Unit: Amps
 /// @brief Stop the DAQ and testpulse
 ///
 /// Works with single/multi device mode and on yoked devices simultaneously.
-Function DQ_StopOngoingDAQ(panelTitle)
+///
+/// @param panelTitle      device
+/// @param startTPAfterDAQ [optional, defaults to true]  start "TP after DAQ" if enabled
+Function DQ_StopOngoingDAQ(panelTitle, [startTPAfterDAQ])
+	string panelTitle
+	variable startTPAfterDAQ
+
+	startTPAfterDAQ = ParamIsDefault(startTPAfterDAQ) ? 1 : !!startTPAfterDAQ
+
+	if(startTPAfterDAQ)
+		DQM_CallFuncForDevicesYoked(panelTitle, DQ_StopOngoingDAQHelperWithTPA)
+	else
+		DQM_CallFuncForDevicesYoked(panelTitle, DQ_StopOngoingDAQHelperNoTPA)
+	endif
+End
+
+/// @brief Helper function for DQ_StopOngoingDAQHelper() with CallFunctionForEachListItem() compatible signature
+static Function DQ_StopOngoingDAQHelperWithTPA(panelTitle)
 	string panelTitle
 
-	DQM_CallFuncForDevicesYoked(panelTitle, DQ_StopOngoingDAQHelper)
+	DQ_StopOngoingDAQHelper(panelTitle, startTPAfterDAQ = 1)
+End
+
+/// @brief Helper function for DQ_StopOngoingDAQHelper() with CallFunctionForEachListItem() compatible signature
+static Function DQ_StopOngoingDAQHelperNoTPA(panelTitle)
+	string panelTitle
+
+	DQ_StopOngoingDAQHelper(panelTitle, startTPAfterDAQ = 0)
 End
 
 /// @brief Stop the testpulse and data acquisition
-static Function DQ_StopOngoingDAQHelper(panelTitle)
+static Function DQ_StopOngoingDAQHelper(panelTitle, [startTPAfterDAQ])
 	string panelTitle
+	variable startTPAfterDAQ
 
 	variable needsOTCAfterDAQ = 0
 	variable discardData      = 0
 	variable stopDeviceTimer  = 0
+
+	startTPAfterDAQ = ParamIsDefault(startTPAfterDAQ) ? 1 : !!startTPAfterDAQ
 
 	if(IsDeviceActiveWithBGTask(panelTitle, "Testpulse"))
 		TPS_StopTestPulseSingleDevice(panelTitle)
@@ -97,7 +124,7 @@ static Function DQ_StopOngoingDAQHelper(panelTitle)
 	endif
 
 	if(needsOTCAfterDAQ)
-		DAP_OneTimeCallAfterDAQ(panelTitle, forcedStop = 1)
+		DAP_OneTimeCallAfterDAQ(panelTitle, forcedStop = 1, startTPAfterDAQ = startTPAfterDAQ)
 	endif
 End
 
@@ -157,10 +184,13 @@ End
 ///
 /// Assumes that single device and multi device do not run at the same time.
 /// @return One of @ref DAQRunModes
-Function DQ_StopDAQ(panelTitle)
+Function DQ_StopDAQ(panelTitle, [startTPAfterDAQ])
 	string panelTitle
+	variable startTPAfterDAQ
 
 	variable runMode
+
+	startTPAfterDAQ = ParamIsDefault(startTPAfterDAQ) ? 1 : !!startTPAfterDAQ
 
 	NVAR dataAcqRunMode = $GetDataAcqRunMode(panelTitle)
 
@@ -174,7 +204,7 @@ Function DQ_StopDAQ(panelTitle)
 			return runMode
 		case DAQ_BG_SINGLE_DEVICE:
 		case DAQ_BG_MULTI_DEVICE:
-			DQ_StopOngoingDAQ(panelTitle)
+			DQ_StopOngoingDAQ(panelTitle, startTPAfterDAQ = startTPAfterDAQ)
 			return runMode
 	endswitch
 

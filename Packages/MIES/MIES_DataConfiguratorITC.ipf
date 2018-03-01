@@ -387,6 +387,10 @@ static Function DC_MakeITCDataWave(panelTitle, numActiveChannels, minSamplingInt
 
 	variable numRows
 
+	// prevent crash in ITC XOP as it must not run if we resize the ITCDataWave
+	NVAR ITCDeviceIDGlobal = $GetITCDeviceIDGlobal(panelTitle)
+	ASSERT(!HW_IsRunning(HARDWARE_ITC_DAC, ITCDeviceIDGlobal), "Hardware is still running and it shouldn't. Please report that as a bug.")
+
 	DFREF dfr = GetDevicePath(panelTitle)
 	numRows   = DC_CalculateITCDataWaveLength(panelTitle, dataAcqOrTP)
 
@@ -654,6 +658,12 @@ static Function DC_PlaceDataInITCDataWave(panelTitle, numActiveChannels, dataAcq
 			stimSet[activeColumn] = GetTestPulse()
 		else
 			ASSERT(0, "unknown mode")
+		endif
+
+		// restarting DAQ via the stimset popup menues does not call DAP_CheckSettings()
+		// so the stimest must not exist here
+		if(!WaveExists(stimSet[activeColumn]))
+			Abort
 		endif
 
 		if(dataAcqOrTP == TEST_PULSE_MODE)

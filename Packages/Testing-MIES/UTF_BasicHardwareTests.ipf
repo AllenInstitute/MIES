@@ -871,3 +871,36 @@ Function Test_ChangeToMultiDeviceDAQ()
 	multiDeviceMode = GetLastSettingIndep(numericalValues, sweepNo, "Multi device mode", DATA_ACQUISITION_MODE)
 	CHECK_EQUAL_VAR(multiDeviceMode, 1)
 End
+
+Function DAQ_ChangeStimSetDuringDAQ()
+
+	string device
+
+	STRUCT DAQSettings s
+	InitDAQSettingsFromString(s, "DAQ_MD1_RA1_IDX0_LIDX0_BKG_1_RES_1")
+	AcquireData(s)
+
+	device = GetSingleDevice()
+
+	CtrlNamedBackGround ChangeStimsetDuringDAQ, start=180, period=30, proc=ChangeStimSet_IGNORE
+	PGC_SetAndActivateControl(device, "check_Settings_TPAfterDAQ", val = 1)
+End
+
+Function Test_ChangeStimSetDuringDAQ()
+
+	string devices, device
+	variable numEntries, i
+
+	devices = GetDevices()
+
+	numEntries = ItemsInList(devices)
+	for(i = 0; i < numEntries; i += 1)
+		device = StringFromList(i, devices)
+
+		NVAR runModeDAQ = $GetDataAcqRunMode(device)
+		CHECK_EQUAL_VAR(runModeDAQ, DAQ_NOT_RUNNING)
+
+		NVAR runModeTP = $GetTestpulseRunMode(device)
+		CHECK_EQUAL_VAR(runModeTP, TEST_PULSE_BG_MULTI_DEVICE)
+	endfor
+End

@@ -104,6 +104,9 @@ Function run()
 	list = AddListItem("Test_Abort_ITI_PressAcq_MD", list, ";", INF)
 	list = AddListItem("DAQ_Abort_ITI_PressTP_MD", list, ";", INF)
 	list = AddListItem("Test_Abort_ITI_PressTP_MD", list, ";", INF)
+	list = AddListItem("DAQ_ChangeStimSetDuringDAQ", list, ";", INF)
+	list = AddListItem("Test_ChangeStimSetDuringDAQ", list, ";", INF)
+
 
 #ifndef TESTS_WITH_YOKING
 
