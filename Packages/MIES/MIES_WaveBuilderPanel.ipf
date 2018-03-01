@@ -1709,7 +1709,7 @@ Function/S WBP_ReturnListSavedSets()
 	DFREF dfr = GetSetParamFolder(CHANNEL_TYPE_TTL)
 	list += GetListOfObjects(dfr, "WP_.*")
 
-	return SortList(RemovePrefixFromListItem("WP_", list), ";", 16)
+	return NONE + ";" + SortList(RemovePrefixFromListItem("WP_", list), ";", 16)
 end
 
 /// @brief Return true if the given stimset is a builtin, false otherwise
@@ -1814,6 +1814,7 @@ static Function WBP_LoadSet(setName)
 	ASSERT(SegWvType[100] <= SEGMENT_TYPE_WAVE_LAST_IDX, "Only supports up to different SEGMENT_TYPE_WAVE_LAST_IDX epochs")
 
 	WBP_UpdateEpochControls()
+	PGC_SetAndActivateControl(panel, "setvar_WaveBuilder_CurrentEpoch", val = 0)
 
 	// reset old state of checkbox and update panel
 	SetCheckBoxState(panel, "check_PreventUpdate", preventUpdate)
