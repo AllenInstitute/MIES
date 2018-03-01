@@ -102,4 +102,7 @@ digraph G {
     "Look for an existing and passing rheobase sweep\n within a passing set and\n a pulse duration of more than 500ms" -> "Use the DAScale value of that sweep\n as offset to the DAScale values from the analysis parameters"  [label="Found"];
     "Use the DAScale values from the analysis parameters";
     "Get OperationMode" -> "Use the DAScale values from the analysis parameters"  [label="Sub"];
+    "Check if mode is IC";
+    "Prepare DAQ Event" -> "Check if mode is IC";
+    "Check if mode is IC" -> "All checks passed";
 }

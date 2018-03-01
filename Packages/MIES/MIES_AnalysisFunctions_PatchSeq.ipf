@@ -939,6 +939,12 @@ Function PSQ_DAScale(panelTitle, s)
 				return 1
 			endif
 
+			if(DAG_GetHeadstageMode(panelTitle, s.headstage) != I_CLAMP_MODE)
+				printf "(%s) Clamp mode must be current clamp.\r", panelTitle
+				ControlWindowToFront()
+				return 1
+			endif
+
 			length = PSQ_GetDAStimsetLength(panelTitle, s.headstage)
 			minLength = PSQ_DS_PULSE_DUR + 3 * PSQ_DS_BL_EVAL_RANGE_MS
 			if(length < minLength)
