@@ -1051,8 +1051,8 @@ End
 
 /// @brief Load all stimsets from specified HDF5 file.
 ///
-/// @param fileName		[optional] provide full file name/path for loading stimset
-/// @param overwrite   [optional] indicate if the stored stimset should be deleted before the load.
+/// @param fileName    [optional, shows a dialog on default] provide full file name/path for loading stimset
+/// @param overwrite   [optional, defaults to false] indicate if the stored stimset should be deleted before the load.
 /// @return 1 on error and 0 on success
 Function NWB_LoadAllStimsets([overwrite, fileName])
 	variable overwrite
