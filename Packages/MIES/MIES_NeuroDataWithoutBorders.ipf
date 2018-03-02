@@ -1060,6 +1060,7 @@ Function NWB_LoadAllStimsets([overwrite, fileName])
 
 	variable fileID, groupID, error, numStimsets, i, refNum
 	string stimsets, stimset, suffix, fullPath
+	string loadedStimsets = ""
 
 	if(ParamIsDefault(overwrite))
 		overwrite = 0
@@ -1110,9 +1111,13 @@ Function NWB_LoadAllStimsets([overwrite, fileName])
 		if(NWB_LoadStimset(groupID, stimset, overwrite, verbose = 1))
 			printf "error loading stimset %s\r", stimset
 			error = 1
+			continue
 		endif
+
+		loadedStimsets = AddListItem(stimset, loadedStimsets)
 	endfor
-	NWB_LoadCustomWaves(groupID, stimsets, overwrite)
+
+	NWB_LoadCustomWaves(groupID, loadedStimsets, overwrite)
 	HDF5CloseGroup/Z groupID
 	IPNWB#H5_CloseFile(fileID)
 	return error
