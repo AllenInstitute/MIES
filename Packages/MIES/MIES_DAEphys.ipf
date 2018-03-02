@@ -4067,6 +4067,33 @@ Function DAP_LockDevice(panelTitle)
 	DAP_UpdateOnsetDelay(panelTitleLocked)
 
 	HW_RegisterDevice(panelTitleLocked, HARDWARE_ITC_DAC, ITCDeviceIDGlobal)
+	if(ItemsInList(GetListOfLockedDevices()) == 1)
+		DAP_LoadBuiltinStimsets()
+	endif
+End
+
+static Function DAP_LoadBuiltinStimsets()
+
+	string symbPath, stimset, files, filename
+	variable i, numEntries
+
+	symbPath = GetUniqueSymbolicPath()
+	NewPath/Q $symbPath, GetFolder(FunctionPath("")) + "..:Stimsets"
+
+	PathInfo $symbPath
+	if(!V_flag)
+		KillPath $symbPath
+		return NaN
+	endif
+
+	files = GetAllFilesRecursivelyFromPath(symbPath, extension = ".nwb")
+	numEntries = ItemsInList(files, "|")
+	for(i = 0; i < numEntries; i += 1)
+		filename = StringFromList(i, files, "|")
+		NWB_LoadAllStimsets(filename = filename, overwrite = 1, loadOnlyBuiltins = 1)
+	endfor
+
+	KillPath $symbPath
 End
 
 /// @brief Returns the device type as string, readout from the popup menu in the Hardware tab
