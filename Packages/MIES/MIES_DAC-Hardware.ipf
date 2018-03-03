@@ -11,6 +11,10 @@
 ///
 /// Naming scheme of the functions is `HW_$TYPE_$Suffix` where `$TYPE` is one of `ITC` or `NI`.
 
+#if exists("ITCSelectDevice2")
+#define ITC_XOP_PRESENT
+#endif
+
 /// @name Error codes for the ITC XOP2
 /// @anchor ITCXOP2Errors
 /// @{
@@ -148,90 +152,6 @@ Function HW_CloseDevice(hardwareType, deviceID, [flags])
 			// nothing do be done
 			break
 	endswitch
-End
-
-/// @brief Return a list of all open ITC devices
-Function/S HW_ITC_ListOfOpenDevices()
-
-	variable i
-	string device, type, number
-	string list = ""
-
-	DEBUGPRINTSTACKINFO()
-
-	for(i = 0; i < HARDWARE_MAX_DEVICES; i += 1)
-		if(HW_ITC_SelectDevice(i))
-			continue
-		endif
-
-		// device could be selected
-		// get the device type
-		do
-			ITCGetDeviceInfo2/FREE DevInfo
-		while(V_ITCXOPError == SLOT_LOCKED_TO_OTHER_THREAD && V_ITCError == 0)
-
-		HW_ITC_HandleReturnValues(0, V_ITCError, V_ITCXOPError)
-
-		type   = StringFromList(DevInfo[0], DEVICE_TYPES)
-		number = StringFromList(DevInfo[1], DEVICE_NUMBERS)
-		device = BuildDeviceString(type, number)
-		list   = AddListItem(device, list, ";", Inf)
-	endfor
-
-	KillOrMoveToTrash(wv=DevInfo)
-
-	return list
-End
-
-///@brief Return a list of all ITC devices which can be opened
-///
-///**Warning! This heavily interacts with the ITC* controllers, don't call
-///during data/test pulse/whatever acquisition.**
-///
-///@returns A list of panelTitles with ITC devices which can be opened.
-///         Does not include devices which are already open.
-Function/S HW_ITC_ListDevices()
-
-	variable i, j, deviceID
-	string type, number, msg, device
-	string list = ""
-
-	DEBUGPRINTSTACKINFO()
-
-	for(i=0; i < ItemsInList(DEVICE_TYPES); i+=1)
-		type = StringFromList(i, DEVICE_TYPES)
-
-		if(CmpStr(type,"ITC00") == 0) // don't test the virtual device
-			continue
-		endif
-
-		do
-			ITCGetDevices2/Z=1/DTS=type
-		while(V_ITCXOPError == SLOT_LOCKED_TO_OTHER_THREAD && V_ITCError == 0)
-
-
-		if(V_Value > 0)
-			for(j=0; j < ItemsInList(DEVICE_NUMBERS); j+=1)
-				number = StringFromList(j, DEVICE_NUMBERS)
-				device = BuildDeviceString(type,number)
-
-				do
-					ITCOpenDevice2/Z=1/DTS=type str2num(number)
-				while(V_ITCXOPError == SLOT_LOCKED_TO_OTHER_THREAD && V_ITCError == 0)
-
-				deviceID = V_Value
-				if(V_ITCError == 0 && V_ITCXOPError == 0 && deviceID >= 0)
-					sprintf msg, "Found device type %s with number %s", type, number
-					DEBUGPRINT(msg)
-					HW_ITC_SelectDevice(deviceID)
-					HW_ITC_CloseDevice()
-					list = AddListItem(device, list, ";", inf)
-				endif
-			endfor
-		endif
-	endfor
-
-	return list
 End
 
 /// @brief Write a value to a DA/AO channel
@@ -658,6 +578,92 @@ End
 /// @name ITC
 /// @{
 
+#ifdef ITC_XOP_PRESENT
+
+/// @brief Return a list of all open ITC devices
+Function/S HW_ITC_ListOfOpenDevices()
+
+	variable i
+	string device, type, number
+	string list = ""
+
+	DEBUGPRINTSTACKINFO()
+
+	for(i = 0; i < HARDWARE_MAX_DEVICES; i += 1)
+		if(HW_ITC_SelectDevice(i))
+			continue
+		endif
+
+		// device could be selected
+		// get the device type
+		do
+			ITCGetDeviceInfo2/FREE DevInfo
+		while(V_ITCXOPError == SLOT_LOCKED_TO_OTHER_THREAD && V_ITCError == 0)
+
+		HW_ITC_HandleReturnValues(0, V_ITCError, V_ITCXOPError)
+
+		type   = StringFromList(DevInfo[0], DEVICE_TYPES)
+		number = StringFromList(DevInfo[1], DEVICE_NUMBERS)
+		device = BuildDeviceString(type, number)
+		list   = AddListItem(device, list, ";", Inf)
+	endfor
+
+	KillOrMoveToTrash(wv=DevInfo)
+
+	return list
+End
+
+///@brief Return a list of all ITC devices which can be opened
+///
+///**Warning! This heavily interacts with the ITC* controllers, don't call
+///during data/test pulse/whatever acquisition.**
+///
+///@returns A list of panelTitles with ITC devices which can be opened.
+///         Does not include devices which are already open.
+Function/S HW_ITC_ListDevices()
+
+	variable i, j, deviceID
+	string type, number, msg, device
+	string list = ""
+
+	DEBUGPRINTSTACKINFO()
+
+	for(i=0; i < ItemsInList(DEVICE_TYPES); i+=1)
+		type = StringFromList(i, DEVICE_TYPES)
+
+		if(CmpStr(type,"ITC00") == 0) // don't test the virtual device
+			continue
+		endif
+
+		do
+			ITCGetDevices2/Z=1/DTS=type
+		while(V_ITCXOPError == SLOT_LOCKED_TO_OTHER_THREAD && V_ITCError == 0)
+
+
+		if(V_Value > 0)
+			for(j=0; j < ItemsInList(DEVICE_NUMBERS); j+=1)
+				number = StringFromList(j, DEVICE_NUMBERS)
+				device = BuildDeviceString(type,number)
+
+				do
+					ITCOpenDevice2/Z=1/DTS=type str2num(number)
+				while(V_ITCXOPError == SLOT_LOCKED_TO_OTHER_THREAD && V_ITCError == 0)
+
+				deviceID = V_Value
+				if(V_ITCError == 0 && V_ITCXOPError == 0 && deviceID >= 0)
+					sprintf msg, "Found device type %s with number %s", type, number
+					DEBUGPRINT(msg)
+					HW_ITC_SelectDevice(deviceID)
+					HW_ITC_CloseDevice()
+					list = AddListItem(device, list, ";", inf)
+				endif
+			endfor
+		endif
+	endfor
+
+	return list
+End
+
 /// @brief Output an informative error message for the ITC XOP2 operations (threadsafe variant)
 ///
 /// @return 0 on success, 1 otherwise
@@ -826,21 +832,6 @@ threadsafe static Function/S HW_ITC_GetXOPErrorMessage(errCode)
 			return "Unknown error code: " + num2str(errCode)
 			break
 	endswitch
-End
-
-/// @brief Construct the /Z flag value for the ITC operations.
-///
-/// Takes interactiveMode into account for automated testing.
-threadsafe static Function HW_ITC_GetZValue(flags)
-	variable flags
-
-	NVAR interactiveMode = $GetInteractiveMode()
-
-	if(interactiveMode)
-		return flags & HARDWARE_PREVENT_ERROR_POPUP
-	else
-		return flags | HARDWARE_PREVENT_ERROR_POPUP
-	endif
 End
 
 /// @brief Open a ITC device
@@ -1257,26 +1248,6 @@ Function HW_ITC_DebugMode(state, [flags])
 	ITCSetGlobals2/D=(state)/Z=(HW_ITC_GetZValue(flags))
 End
 
-Function/Wave HW_WAVE_GETTER_PROTOTYPE(str)
-	string str
-end
-
-threadsafe Function/WAVE HW_ITC_TransposeAndToDouble(wv)
-	WAVE wv
-
-	MatrixOp/FREE wv_t = fp64(wv^t)
-
-	return wv_t
-End
-
-Function/WAVE HW_ITC_TransposeAndToInt(wv)
-	WAVE wv
-
-	MatrixOp/FREE wv_t = int32(wv^t)
-
-	return wv_t
-End
-
 /// @brief Prepare for data acquisition
 ///
 /// @param deviceID    device identifier
@@ -1439,6 +1410,243 @@ Function HW_ITC_MoreData(deviceID, [ADChannelToMonitor, stopCollectionPoint, con
 	endif
 
 	return fifoPosValue < stopCollectionPoint
+End
+
+#else
+
+Function/S HW_ITC_ListOfOpenDevices()
+
+	DEBUGPRINT("Unimplemented")
+End
+
+Function/S HW_ITC_ListDevices()
+
+	DEBUGPRINT("Unimplemented")
+End
+
+threadsafe Function HW_ITC_HandleReturnValues_TS(flags, ITCError, ITCXOPError)
+	variable flags, ITCError, ITCXOPError
+
+	DEBUGPRINT_TS("Unimplemented")
+End
+
+Function HW_ITC_HandleReturnValues(flags, ITCError, ITCXOPError)
+	variable flags, ITCError, ITCXOPError
+
+	DEBUGPRINT("Unimplemented")
+End
+
+threadsafe static Function/S HW_ITC_GetXOPErrorMessage(errCode)
+	variable errCode
+
+	DEBUGPRINT_TS("Unimplemented")
+End
+
+Function HW_ITC_OpenDevice(deviceType, deviceNumber, [flags])
+	variable deviceType, deviceNumber
+	variable flags
+
+	DEBUGPRINT("Unimplemented")
+End
+
+Function HW_ITC_CloseAllDevices([flags])
+	variable flags
+
+	DEBUGPRINT("Unimplemented")
+End
+
+Function HW_ITC_CloseDevice([flags])
+	variable flags
+
+	DEBUGPRINT("Unimplemented")
+End
+
+Function HW_ITC_SelectDevice(deviceID, [flags])
+	variable deviceID, flags
+
+	DEBUGPRINT("Unimplemented")
+End
+
+Function HW_ITC_EnableYoking([flags])
+	variable flags
+
+	DEBUGPRINT("Unimplemented")
+End
+
+Function HW_ITC_DisableYoking([flags])
+	variable flags
+
+	DEBUGPRINT("Unimplemented")
+End
+
+threadsafe Function HW_ITC_StopAcq_TS(deviceID, [prepareForDAQ, flags])
+	variable deviceID, prepareForDAQ, flags
+
+	DEBUGPRINT_TS("Unimplemented")
+End
+
+Function HW_ITC_StopAcq(deviceID, [config, configFunc, prepareForDAQ, zeroDAC, flags])
+	variable deviceID, prepareForDAQ, zeroDAC, flags
+	WAVE/Z config
+	FUNCREF HW_WAVE_GETTER_PROTOTYPE configFunc
+
+	DEBUGPRINT("Unimplemented")
+End
+
+Function HW_ITC_GetCurrentDevice([flags])
+	variable flags
+
+	DEBUGPRINT("Unimplemented")
+End
+
+threadsafe static Function/WAVE HW_ITC_GetFifoPosFromConfig(config_t)
+	WAVE config_t
+
+	DEBUGPRINT_TS("Unimplemented")
+End
+
+threadsafe Function HW_ITC_ResetFifo_TS(deviceID, config, [flags])
+	variable deviceID
+	WAVE config
+	variable flags
+
+	DEBUGPRINT_TS("Unimplemented")
+End
+
+Function HW_ITC_ResetFifo(deviceID, [config, configFunc, flags])
+	variable deviceID
+	WAVE/Z config
+	FUNCREF HW_WAVE_GETTER_PROTOTYPE configFunc
+	variable  flags
+
+	DEBUGPRINT("Unimplemented")
+End
+
+threadsafe Function HW_ITC_StartAcq_TS(deviceID, triggerMode, [flags])
+	variable deviceID, triggerMode, flags
+
+	DEBUGPRINT_TS("Unimplemented")
+End
+
+Function HW_ITC_StartAcq(triggerMode, [flags])
+	variable triggerMode, flags
+
+	DEBUGPRINT("Unimplemented")
+End
+
+Function HW_ITC_IsRunning([flags])
+	variable flags
+
+	DEBUGPRINT("Unimplemented")
+End
+
+Function/WAVE HW_ITC_GetState([flags])
+	variable flags
+
+	DEBUGPRINT("Unimplemented")
+End
+
+Function HW_ITC_ReadADC(deviceID, channel, [flags])
+	variable deviceID, channel, flags
+
+	DEBUGPRINT("Unimplemented")
+End
+
+Function HW_ITC_WriteDAC(deviceID, channel, value, [flags])
+	variable deviceID, channel, value, flags
+
+	DEBUGPRINT("Unimplemented")
+End
+
+Function HW_ITC_ReadDigital(deviceID, xopChannel, [flags])
+	variable deviceID, xopChannel, flags
+
+	DEBUGPRINT("Unimplemented")
+End
+
+Function HW_ITC_WriteDigital(deviceID, xopChannel, value, [flags])
+	variable deviceID, xopChannel, value, flags
+
+	DEBUGPRINT("Unimplemented")
+End
+
+threadsafe Function HW_ITC_DebugMode_TS(state, [flags])
+	variable state, flags
+
+	DEBUGPRINT_TS("Unimplemented")
+End
+
+Function HW_ITC_DebugMode(state, [flags])
+	variable state, flags
+
+	DEBUGPRINT("Unimplemented")
+End
+
+Function HW_ITC_PrepareAcq(deviceID, [data, dataFunc, config, configFunc, flags])
+	variable deviceID
+	WAVE/Z data, config
+	FUNCREF HW_WAVE_GETTER_PROTOTYPE dataFunc, configFunc
+	variable flags
+
+	DEBUGPRINT("Unimplemented")
+End
+
+threadsafe Function HW_ITC_MoreData_TS(deviceID, ADChannelToMonitor, stopCollectionPoint, config, [fifoPos, flags])
+	variable deviceID
+	variable ADChannelToMonitor, stopCollectionPoint
+	WAVE config
+	variable &fifoPos
+	variable flags
+
+	DEBUGPRINT_TS("Unimplemented")
+End
+
+Function HW_ITC_MoreData(deviceID, [ADChannelToMonitor, stopCollectionPoint, config, configFunc, fifoPos, flags])
+	variable deviceID
+	variable ADChannelToMonitor, stopCollectionPoint
+	WAVE/Z config
+	FUNCREF HW_WAVE_GETTER_PROTOTYPE configFunc
+	variable &fifoPos
+	variable flags
+
+	DEBUGPRINT("Unimplemented")
+End
+
+#endif
+
+/// @brief Construct the /Z flag value for the ITC operations.
+///
+/// Takes interactiveMode into account for automated testing.
+threadsafe static Function HW_ITC_GetZValue(flags)
+	variable flags
+
+	NVAR interactiveMode = $GetInteractiveMode()
+
+	if(interactiveMode)
+		return flags & HARDWARE_PREVENT_ERROR_POPUP
+	else
+		return flags | HARDWARE_PREVENT_ERROR_POPUP
+	endif
+End
+
+Function/Wave HW_WAVE_GETTER_PROTOTYPE(str)
+	string str
+end
+
+threadsafe Function/WAVE HW_ITC_TransposeAndToDouble(wv)
+	WAVE wv
+
+	MatrixOp/FREE wv_t = fp64(wv^t)
+
+	return wv_t
+End
+
+Function/WAVE HW_ITC_TransposeAndToInt(wv)
+	WAVE wv
+
+	MatrixOp/FREE wv_t = int32(wv^t)
+
+	return wv_t
 End
 
 /// @name Utility functions not interacting with hardware

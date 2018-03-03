@@ -10,6 +10,10 @@
 ///
 /// @brief __SI__ Routines for calculating and handling the minimum sampling interval
 
+#if exists("ITCSelectDevice2")
+#define ITC_XOP_PRESENT
+#endif
+
 /// The consecutive check in #SI_TestSampInt enforces not only one sucessfull sampling
 /// interval but also the multiples 2^x where x ranges from 1 to MIN_CONSECUTIVE_SAMPINT
 /// Set to 0 to deactivate
@@ -112,69 +116,6 @@ static Function SI_FillITCConfigWithPerms(wv, start, value, channelType)
 		endif
 		value = trunc(value / 2^1) // shift one to the right
 	while(value > 0)
-End
-
-/// @brief Test the preset sampling interval
-static Function SI_TestSampInt(panelTitle)
-	string panelTitle
-
-	variable i, sampInt, ret, sampIntRead, numChannels, sampIntRef, iLast
-	variable numConsecutive = -1
-	variable numTries = 1001
-
-	WAVE ITCDataWave = GetITCDataWave(panelTitle)
-	WAVE ITCChanConfigWave = GetITCChanConfigWave(panelTitle)
-	numChannels = DimSize(ITCChanConfigWave, ROWS)
-
-	Make/I/FREE/N=(2, numChannels) ReqWave
-	ReqWave[0][] = ITCChanConfigWave[q][0]
-	ReqWave[1][] = ITCChanConfigWave[q][1]
-	Make/D/FREE/N=(20, numChannels) ResultWave
-
-	for(i=1; i < numTries; i += 1)
-		if(numConsecutive == -1)
-			sampInt  = HARDWARE_ITC_MIN_SAMPINT * i * 1000
-		else
-			sampInt *= 2
-		endif
-
-		ITCChanConfigWave[][2] = sampInt
-		ITCConfigAllChannels2/Z ITCChanConfigWave, ITCDataWave
-
-		if(!ret)
-			// we could set the sampling interval
-			// so we try to read it back and check if it is the same
-			ITCConfigChannelUpload2
-			HW_ITC_HandleReturnValues(HARDWARE_ABORT_ON_ERROR, V_ITCError, V_ITCXOPError)
-
-			ITCGetAllChannelsConfig2/O ReqWave, ResultWave
-			HW_ITC_HandleReturnValues(HARDWARE_ABORT_ON_ERROR, V_ITCError, V_ITCXOPError)
-
-			WaveStats/Q/R=[12,12] ResultWave
-			ASSERT(V_min == V_max, "Unexpected differing sampling interval")
-			// ITCGetAllChannelsConfig2 returns the sampling interval in Hz
-			// but we want it in microseconds
-			sampIntRead = 1/V_min * 1e6
-
-			if(sampIntRead == sampInt)
-				if(numConsecutive == -1)
-					sampIntRef     = sampIntRead
-					numConsecutive = 0
-					iLast          = i
-				endif
-
-				if(numConsecutive == MIN_CONSECUTIVE_SAMPINT)
-					return sampIntRef
-				else
-					ASSERT(numConsecutive == 0 || iLast == i - 1, "Expected consecutive hits")
-					iLast = i
-					numConsecutive += 1
-				endif
-			endif
-		endif
-	endfor
-
-	return NaN
 End
 
 /// @brief Removes invalid and duplicated entries from the
@@ -309,6 +250,8 @@ static Function SI_FillActiveChannelsStruct(panelTitle, ac)
 
 	return sum(statusDA) + sum(statusAD) + sum(statusTTL)
 End
+
+#ifdef ITC_XOP_PRESENT
 
 /// @brief Creates a sampling interval lookup wave by brute forcing all possible combinations
 /// The setting `ignoreChannelOrder = 1` reduces the search space from `2^(a + b + c)` to
@@ -474,6 +417,86 @@ Function SI_CreateLookupWave(panelTitle, [ignoreChannelOrder])
 
 	SI_CompressWave(results)
 End
+
+/// @brief Test the preset sampling interval
+static Function SI_TestSampInt(panelTitle)
+	string panelTitle
+
+	variable i, sampInt, ret, sampIntRead, numChannels, sampIntRef, iLast
+	variable numConsecutive = -1
+	variable numTries = 1001
+
+	WAVE ITCDataWave = GetITCDataWave(panelTitle)
+	WAVE ITCChanConfigWave = GetITCChanConfigWave(panelTitle)
+	numChannels = DimSize(ITCChanConfigWave, ROWS)
+
+	Make/I/FREE/N=(2, numChannels) ReqWave
+	ReqWave[0][] = ITCChanConfigWave[q][0]
+	ReqWave[1][] = ITCChanConfigWave[q][1]
+	Make/D/FREE/N=(20, numChannels) ResultWave
+
+	for(i=1; i < numTries; i += 1)
+		if(numConsecutive == -1)
+			sampInt  = HARDWARE_ITC_MIN_SAMPINT * i * 1000
+		else
+			sampInt *= 2
+		endif
+
+		ITCChanConfigWave[][2] = sampInt
+		ITCConfigAllChannels2/Z ITCChanConfigWave, ITCDataWave
+
+		if(!ret)
+			// we could set the sampling interval
+			// so we try to read it back and check if it is the same
+			ITCConfigChannelUpload2
+			HW_ITC_HandleReturnValues(HARDWARE_ABORT_ON_ERROR, V_ITCError, V_ITCXOPError)
+
+			ITCGetAllChannelsConfig2/O ReqWave, ResultWave
+			HW_ITC_HandleReturnValues(HARDWARE_ABORT_ON_ERROR, V_ITCError, V_ITCXOPError)
+
+			WaveStats/Q/R=[12,12] ResultWave
+			ASSERT(V_min == V_max, "Unexpected differing sampling interval")
+			// ITCGetAllChannelsConfig2 returns the sampling interval in Hz
+			// but we want it in microseconds
+			sampIntRead = 1/V_min * 1e6
+
+			if(sampIntRead == sampInt)
+				if(numConsecutive == -1)
+					sampIntRef     = sampIntRead
+					numConsecutive = 0
+					iLast          = i
+				endif
+
+				if(numConsecutive == MIN_CONSECUTIVE_SAMPINT)
+					return sampIntRef
+				else
+					ASSERT(numConsecutive == 0 || iLast == i - 1, "Expected consecutive hits")
+					iLast = i
+					numConsecutive += 1
+				endif
+			endif
+		endif
+	endfor
+
+	return NaN
+End
+
+#else
+
+Function SI_CreateLookupWave(panelTitle, [ignoreChannelOrder])
+	string panelTitle
+	variable ignoreChannelOrder
+
+	DEBUGPRINT("Unimplemented")
+End
+
+static Function SI_TestSampInt(panelTitle)
+	string panelTitle
+
+	DEBUGPRINT("Unimplemented")
+End
+
+#endif
 
 /// @brief Calculate the minimum sampling interval using the lookup waves on disk
 ///

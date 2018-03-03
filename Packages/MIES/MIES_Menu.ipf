@@ -49,7 +49,6 @@ Menu "Mies Panels", dynamic
 		"Reset and store current DA_EPHYS panel"    , /Q, DAP_EphysPanelStartUpSettings()
 		"Check GUI control procedures of top panel" , /Q, SearchForInvalidControlProcs(GetCurrentWindow())
 		"Flush Cache"                               , /Q, CA_FlushCache()
-		GetOptTangoIncludeMenuTitle()               , /Q, HandleTangoOptionalInclude()
 	End
 End
 
@@ -64,36 +63,6 @@ Menu "HDF5 Tools"
 	"Save Configuration"       , /Q, HD_SaveConfiguration()
 	"Load Configuration"       , /Q, HD_LoadConfigSet()
 	"Load Sweep Data"          , /Q, HD_LoadDataSet()
-End
-
-///@returns 1 if the optional include is loaded, 0 otherwise
-static Function OptTangoIncludeLoaded()
-
-	string procList = WinList(OPTIONAL_TANGO_INCLUDE + ".ipf",";","")
-
-	return !isEmpty(procList)
-End
-
-///@brief Returns the title of the tango load/unload menu entry
-Function/S GetOptTangoIncludeMenuTitle()
-
-	if(OptTangoIncludeLoaded())
-		return "Unload Tango Tools"
-	else
-		return "Load Tango Tools"
-	endif
-End
-
-///@brief Load/Unload the optional tango include
-Function HandleTangoOptionalInclude()
-
-	if(!OptTangoIncludeLoaded())
-		Execute/P/Q/Z "INSERTINCLUDE \"" + OPTIONAL_TANGO_INCLUDE + "\""
-	else
-		Execute/P/Q/Z "DELETEINCLUDE \"" + OPTIONAL_TANGO_INCLUDE + "\""
-	endif
-
-	Execute/P/Q/Z "COMPILEPROCEDURES "
 End
 
 Function CloseMies()

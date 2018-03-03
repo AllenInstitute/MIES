@@ -144,6 +144,7 @@ Function AM_PSA_sweepLevelQC(panelTitle, headStage)
 	variable currentClampState
 	variable upIdx
 	variable downIdx
+	variable clampMode
 
 	Make/D/FREE upVals, downVals
 
@@ -167,9 +168,9 @@ Function AM_PSA_sweepLevelQC(panelTitle, headStage)
 	endif
 
 	// check that the bias current injection is less than +/100 pA
-	// use the MCC_GetHolding() function to get the value directly from the Amp instead of querying the GUI control
-	biasCurrent = MCC_GetHolding()
-	if(abs(biasCurrent)>100e-12) // since we are now getting values directly from the Amp, need to have the exponent value
+	clampMode = DAG_GetHeadstageMode(panelTitle, headstage)
+	biasCurrent = AI_SendToAmp(panelTitle, headStage, clampMode, MCC_GETHOLDING_FUNC, NaN)
+	if(abs(biasCurrent) > 100)
 		print "Bias Current Check failed..."
 		analysisSettingsWave[headStage][%PSAResult] = "0"
 		return 0

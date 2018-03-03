@@ -1,5 +1,6 @@
 #pragma rtGlobals=1		// Use modern global access method.
 
+#if exists("VDTGetPortList2")
 
 Menu "Arduino"
 		"Open Arduino Sequencer", ARDLaunchSeqPanel()
@@ -1479,4 +1480,16 @@ End
 //
 //End
 
+#else
 
+Function ARDLaunchSeqPanel()
+
+	DEBUGPRINT("Unimplemented")
+End
+
+Function ARDStartSequence()
+
+	DEBUGPRINT("Unimplemented")
+End
+
+#endif
