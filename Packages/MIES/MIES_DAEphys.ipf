@@ -1787,7 +1787,7 @@ Function DAP_CheckSettings(panelTitle, mode)
 	variable mode
 
 	variable numDACs, numADCs, numHS, numEntries, i, indexingEnabled, clampMode
-	variable ampSerial, ampChannelID
+	variable ampSerial, ampChannelID, minValue, maxValue
 	string ctrl, endWave, ttlWave, dacWave, refDacWave
 	string list
 
@@ -1960,6 +1960,61 @@ Function DAP_CheckSettings(panelTitle, mode)
 					endif
 				endfor
 			endif
+
+			WAVE statusAsync = DAG_GetChannelState(panelTitle, CHANNEL_TYPE_ASYNC)
+
+			for(i = 0; i < NUM_ASYNC_CHANNELS ; i += 1)
+
+				if(!statusAsync[i])
+					continue
+				endif
+
+				// active async channel
+
+				ctrl = GetSpecialControlLabel(CHANNEL_TYPE_ASYNC, CHANNEL_CONTROL_GAIN)
+				if(!IsFinite(DAG_GetNumericalValue(panelTitle, ctrl, index = i)))
+					printf "(%s) Please select a finite gain value for async channel %d\r", panelTitle, i
+					ControlWindowToFront()
+					return 1
+				endif
+
+				ctrl = GetSpecialControlLabel(CHANNEL_TYPE_ALARM, CHANNEL_CONTROL_CHECK)
+				if(!DAG_GetNumericalValue(panelTitle, ctrl, index = i))
+					continue
+				endif
+
+				// with alarm enabled
+
+				ctrl = GetSpecialControlLabel(CHANNEL_TYPE_ASYNC, CHANNEL_CONTROL_ALARM_MIN)
+				minValue = DAG_GetNumericalValue(panelTitle, ctrl, index = i)
+				if(!IsFinite(minValue))
+					printf "(%s) Please select a finite minimum value for async channel %d\r", panelTitle, i
+					ControlWindowToFront()
+					return 1
+				endif
+
+				ctrl = GetSpecialControlLabel(CHANNEL_TYPE_ASYNC, CHANNEL_CONTROL_ALARM_MAX)
+				maxValue = DAG_GetNumericalValue(panelTitle, ctrl, index = i)
+				if(!IsFinite(maxValue))
+					printf "(%s) Please select a finite maximum value for async channel %d\r", panelTitle, i
+					ControlWindowToFront()
+					return 1
+				endif
+
+				if(!(minValue < maxValue))
+					printf "(%s) Please select a minimum value which is strictly smaller than the maximum value for async channel %d\r", panelTitle, i
+					ControlWindowToFront()
+					return 1
+				endif
+
+				if(DAG_GetNumericalValue(panelTitle, "Check_Settings_AlarmAutoRepeat"))
+					if(!DAG_GetNumericalValue(panelTitle, "Check_DataAcq1_RepeatAcq"))
+						printf "(%s) Repeat sweep on async alarm can only be used with repeated acquisition enabled\r", panelTitle
+						ControlWindowToFront()
+						return 1
+					endif
+				endif
+			endfor
 		endif
 
 		// avoid having different headstages reference the same amplifiers
@@ -4535,33 +4590,6 @@ Function DAP_GetHighestActiveHeadstage(panelTitle)
 	Make/FREE/N=(NUM_HEADSTAGES) activeHS = statusHS[p] * p
 
 	return WaveMax(activeHS)
-End
-
-/// @brief Print a warning message if the measured value of the given asyn
-///        value exceeds the limits
-Function DAP_SupportSystemAlarm(Channel, Measurement, MeasurementTitle, panelTitle)
-	variable Channel, Measurement
-	string MeasurementTitle, panelTitle
-
-	string minCtrl, maxCtrl, checkCtrl
-	variable paramMin, paramMax
-
-	checkCtrl = GetSpecialControlLabel(CHANNEL_TYPE_ALARM, CHANNEL_CONTROL_CHECK)
-	minCtrl   = GetSpecialControlLabel(CHANNEL_TYPE_ASYNC, CHANNEL_CONTROL_ALARM_MIN)
-	maxCtrl   = GetSpecialControlLabel(CHANNEL_TYPE_ASYNC, CHANNEL_CONTROL_ALARM_MAX)
-
-	if(DAG_GetNumericalValue(panelTitle, checkCtrl, index = channel))
-
-		paramMin = DAG_GetNumericalValue(panelTitle, minCtrl, index = channel)
-		paramMax = DAG_GetNumericalValue(panelTitle, maxCtrl, index = channel)
-
-		if(Measurement >= ParamMax || Measurement <= ParamMin)
-			beep
-			print time() + " !!!!!!!!!!!!! " + MeasurementTitle + " has exceeded max/min settings" + " !!!!!!!!!!!!!"
-			ControlWindowToFront()
-			beep
-		endif
-	endif
 End
 
 Function DAP_PopMenuProc_UpdateGuiState(pa) : PopupMenuControl

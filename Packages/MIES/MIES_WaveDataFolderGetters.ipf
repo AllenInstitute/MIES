@@ -1068,6 +1068,7 @@ static Function SetSweepSettingsDimLabels(wv)
 	SetDimLabel COLS, 39, $"TP during ITI"               , wv
 	SetDimLabel COLS, 40, $"Amplifier change via I=0"    , wv
 	SetDimLabel COLS, 41, $"Skip analysis functions"     , wv
+	SetDimLabel COLS, 42, $"Repeat sweep on async alarm" , wv
 End
 
 /// @brief Set dimension labels for GetSweepSettingsTextKeyWave() and
@@ -1113,7 +1114,7 @@ End
 Function/Wave GetSweepSettingsWave(panelTitle)
 	string panelTitle
 
-	variable versionOfNewWave = 11
+	variable versionOfNewWave = 12
 	string newName = "sweepSettingsNumericValues"
 	DFREF newDFR = GetDevSpecLabNBTempFolder(panelTitle)
 
@@ -1128,9 +1129,9 @@ Function/Wave GetSweepSettingsWave(panelTitle)
 	if(ExistsWithCorrectLayoutVersion(wv, versionOfNewWave))
 		return wv
 	elseif(WaveExists(wv))
-		Redimension/N=(-1, 42, LABNOTEBOOK_LAYER_COUNT) wv
+		Redimension/N=(-1, 43, LABNOTEBOOK_LAYER_COUNT) wv
 	else
-		Make/N=(1, 42, LABNOTEBOOK_LAYER_COUNT) newDFR:$newName/Wave=wv
+		Make/N=(1, 43, LABNOTEBOOK_LAYER_COUNT) newDFR:$newName/Wave=wv
 	endif
 
 	wv = NaN
@@ -1196,10 +1197,11 @@ End
 /// - 39: TP during ITI
 /// - 40: Amplifier change via I=0
 /// - 41: Skip analysis functions
+/// - 42: Repeat sweep on async alarm
 Function/Wave GetSweepSettingsKeyWave(panelTitle)
 	string panelTitle
 
-	variable versionOfNewWave = 12
+	variable versionOfNewWave = 13
 	string newName = "sweepSettingsNumericKeys"
 	DFREF newDFR = GetDevSpecLabNBTempFolder(panelTitle)
 
@@ -1214,9 +1216,9 @@ Function/Wave GetSweepSettingsKeyWave(panelTitle)
 	if(ExistsWithCorrectLayoutVersion(wv, versionOfNewWave))
 		return wv
 	elseif(WaveExists(wv))
-		Redimension/N=(-1, 42) wv
+		Redimension/N=(-1, 43) wv
 	else
-		Make/T/N=(3, 42) newDFR:$newName/Wave=wv
+		Make/T/N=(3, 43) newDFR:$newName/Wave=wv
 	endif
 
 	wv = ""
@@ -1392,6 +1394,10 @@ Function/Wave GetSweepSettingsKeyWave(panelTitle)
 	wv[%Parameter][41] = "Skip analysis functions"
 	wv[%Units][41]     = LABNOTEBOOK_BINARY_UNIT
 	wv[%Tolerance][41] = LABNOTEBOOK_NO_TOLERANCE
+
+	wv[%Parameter][42] = "Repeat sweep on async alarm"
+	wv[%Units][42]     = LABNOTEBOOK_BINARY_UNIT
+	wv[%Tolerance][42] = LABNOTEBOOK_NO_TOLERANCE
 
 	SetSweepSettingsDimLabels(wv)
 	SetWaveVersion(wv, versionOfNewWave)

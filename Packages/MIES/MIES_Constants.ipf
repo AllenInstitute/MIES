@@ -500,7 +500,7 @@ Constant HARDWARE_DAC_EXTERNAL_TRIGGER = 0x1
 /// @}
 
 /// Used to upgrade the GuiStateWave as well as the DA Ephys panel
-Constant DA_EPHYS_PANEL_VERSION     = 27
+Constant DA_EPHYS_PANEL_VERSION     = 28
 Constant DATABROWSER_PANEL_VERSION  = 7
 Constant SWEEPBROWSER_PANEL_VERSION = 3
 Constant WAVEBUILDER_PANEL_VERSION  = 4
@@ -512,7 +512,7 @@ Constant WAVEBUILDER_PANEL_VERSION  = 4
 /// - Changed names of entries
 /// - Changed units or meaning of entries
 /// - New/Changed layers of entries
-Constant LABNOTEBOOK_VERSION = 15
+Constant LABNOTEBOOK_VERSION = 16
 
 /// @name The channel numbers for the different ITC devices used for accesssing
 ///       the TTLs

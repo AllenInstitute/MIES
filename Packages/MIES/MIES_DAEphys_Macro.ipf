@@ -974,7 +974,7 @@ Window DA_Ephys() : Panel
 	CheckBox Check_Settings_Append,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	CheckBox Check_Settings_Append,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
 	CheckBox Check_Settings_Append,value= 0
-	CheckBox Check_Settings_BkgTP,pos={34.00,86.00},size={96.00,15.00},disable=1,proc=DAP_CheckProc_UpdateGuiState,title="Background TP"
+	CheckBox Check_Settings_BkgTP,pos={34.00,86.00},size={96.00,15.00},disable=3,proc=DAP_CheckProc_UpdateGuiState,title="Background TP"
 	CheckBox Check_Settings_BkgTP,help={"Perform testpulse in the background, keeping the GUI responsive."}
 	CheckBox Check_Settings_BkgTP,userdata(tabnum)=  "5"
 	CheckBox Check_Settings_BkgTP,userdata(tabcontrol)=  "ADC"
@@ -982,7 +982,7 @@ Window DA_Ephys() : Panel
 	CheckBox Check_Settings_BkgTP,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	CheckBox Check_Settings_BkgTP,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
 	CheckBox Check_Settings_BkgTP,value= 1
-	CheckBox Check_Settings_BackgrndDataAcq,pos={34.00,193.00},size={169.00,15.00},disable=1,proc=DAP_CheckProc_UpdateGuiState,title="Background Data Acquisition"
+	CheckBox Check_Settings_BackgrndDataAcq,pos={34.00,193.00},size={169.00,15.00},disable=3,proc=DAP_CheckProc_UpdateGuiState,title="Background Data Acquisition"
 	CheckBox Check_Settings_BackgrndDataAcq,help={"Perform data acquisition in the background, keeping the GUI responsive."}
 	CheckBox Check_Settings_BackgrndDataAcq,userdata(tabnum)=  "5"
 	CheckBox Check_Settings_BackgrndDataAcq,userdata(tabcontrol)=  "ADC"
@@ -2329,7 +2329,7 @@ Window DA_Ephys() : Panel
 	Button button_Hardware_Lead1600,userdata(ResizeControlsInfo)= A"!!,CL!!#AR!!#?Y!!#<`z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	Button button_Hardware_Lead1600,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Duafnzzzzzzzzzzz"
 	Button button_Hardware_Lead1600,userdata(ResizeControlsInfo) += A"zzz!!#u:Duafnzzzzzzzzzzzzzz!!!"
-	PopupMenu popup_Hardware_AvailITC1600s,pos={29.00,240.00},size={110.00,19.00},bodyWidth=110,disable=3,title="Locked ITC1600s"
+	PopupMenu popup_Hardware_AvailITC1600s,pos={0.00,240.00},size={201.00,19.00},bodyWidth=110,disable=3,title="Locked ITC1600s"
 	PopupMenu popup_Hardware_AvailITC1600s,userdata(tabnum)=  "6"
 	PopupMenu popup_Hardware_AvailITC1600s,userdata(tabcontrol)=  "ADC"
 	PopupMenu popup_Hardware_AvailITC1600s,userdata(ResizeControlsInfo)= A"!!,CL!!#B*!!#@@!!#<Pz!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
@@ -2662,14 +2662,14 @@ Window DA_Ephys() : Panel
 	CheckBox Check_Settings_AlarmPauseAcq,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Duafnzzzzzzzzzzz"
 	CheckBox Check_Settings_AlarmPauseAcq,userdata(ResizeControlsInfo) += A"zzz!!#u:Duafnzzzzzzzzzzzzzz!!!"
 	CheckBox Check_Settings_AlarmPauseAcq,fColor=(65280,43520,0),value= 0
-	CheckBox Check_Settings_AlarmAutoRepeat,pos={34.00,495.00},size={274.00,15.00},disable=1,proc=DAP_CheckProc_UpdateGuiState,title="\\JCAuto repeat last sweep until alarm state is cleared"
-	CheckBox Check_Settings_AlarmAutoRepeat,help={"Turns on TTL pulse at onset of sweep"}
+	CheckBox Check_Settings_AlarmAutoRepeat,pos={34.00,495.00},size={274.00,15.00},disable=1,proc=DAP_CheckProc_UpdateGuiState,title="Auto repeat last sweep until alarm state is cleared"
+	CheckBox Check_Settings_AlarmAutoRepeat,help={"Repeat the last sweep if one of the asynchronous channels is in alarm state"}
 	CheckBox Check_Settings_AlarmAutoRepeat,userdata(tabnum)=  "5"
 	CheckBox Check_Settings_AlarmAutoRepeat,userdata(tabcontrol)=  "ADC"
 	CheckBox Check_Settings_AlarmAutoRepeat,userdata(ResizeControlsInfo)= A"!!,Cl!!#C\\J,hrn!!#<(z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	CheckBox Check_Settings_AlarmAutoRepeat,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Duafnzzzzzzzzzzz"
 	CheckBox Check_Settings_AlarmAutoRepeat,userdata(ResizeControlsInfo) += A"zzz!!#u:Duafnzzzzzzzzzzzzzz!!!"
-	CheckBox Check_Settings_AlarmAutoRepeat,fColor=(65280,43520,0),value= 0
+	CheckBox Check_Settings_AlarmAutoRepeat,value= 0
 	GroupBox group_Settings_Amplifier,pos={21.00,574.00},size={444.00,100.00},disable=1,title="Amplifier"
 	GroupBox group_Settings_Amplifier,userdata(tabnum)=  "5"
 	GroupBox group_Settings_Amplifier,userdata(tabcontrol)=  "ADC"
@@ -3580,7 +3580,7 @@ Window DA_Ephys() : Panel
 	SetWindow kwTopWin,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzzzzzzzzzzzzzzz"
 	SetWindow kwTopWin,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzzzzzzzzz!!!"
 	SetWindow kwTopWin,userdata(ResizeControlsGuides)=  "UGV0;UGH0;UGV1;"
-	SetWindow kwTopWin,userdata(ResizeControlsInfoUGV0)= A":-hTC3`S[N0KW?-:-(sG6SUJQ0OI4ZG$cpb<*<$d3`U64E]Zff;Ft%f:/jMQ3\\WWl:K'ha8P`)B1c79G0JGRY<CoSI0fhd%4%E:B6q&jl4&SL@:et\"]<(Tk\\3\\<*E3r"
-	SetWindow kwTopWin,userdata(ResizeControlsInfoUGH0)= A":-hTC3`S[@0KW?-:-(sG6SUJQ0OI4ZG$cpb<*<$d3`U64E]Zff;Ft%f:/jMQ3\\`]m:K'ha8P`)B3&NNF0JGRY<CoSI0fhcj4%E:B6q&jl4&SL@:et\"]<(Tk\\3\\<*G3r"
-	SetWindow kwTopWin,userdata(ResizeControlsInfoUGV1)= A":-hTC3`S[N0frH.:-(sG6SUJQ0OI4ZG$cpb<*<$d3`U64E]Zff;Ft%f:/jMQ3\\WWl:K'ha8P`)B1cR3B0JGRY<CoSI0fhct4%E:B6q&jl4&SL@:et\"]<(Tk\\3]&fN3r"
+	SetWindow kwTopWin,userdata(ResizeControlsInfoUGV0)=  "NAME:UGV0;WIN:ITC1600_Dev_0;TYPE:User;HORIZONTAL:0;POSITION:459.00;GUIDE1:FR;GUIDE2:;RELPOSITION:-25;"
+	SetWindow kwTopWin,userdata(ResizeControlsInfoUGH0)=  "NAME:UGH0;WIN:ITC1600_Dev_0;TYPE:User;HORIZONTAL:1;POSITION:854.00;GUIDE1:FB;GUIDE2:;RELPOSITION:-27;"
+	SetWindow kwTopWin,userdata(ResizeControlsInfoUGV1)=  "NAME:UGV1;WIN:ITC1600_Dev_0;TYPE:User;HORIZONTAL:0;POSITION:481.00;GUIDE1:FL;GUIDE2:;RELPOSITION:481;"
 EndMacro
