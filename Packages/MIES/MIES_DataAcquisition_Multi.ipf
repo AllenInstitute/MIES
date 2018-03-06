@@ -52,6 +52,11 @@ Function DQM_FIFOMonitor(s)
 			i = 0
 			continue
 		endif
+
+		if(GetKeyState(0) & ESCAPE_KEY)
+			DQ_StopOngoingDAQ(panelTitle, startTPAfterDAQ = 0)
+			return 1
+		endif
 	endfor
 
 	if(DimSize(ActiveDeviceList, ROWS) == 0)

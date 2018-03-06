@@ -60,6 +60,11 @@ Function TPS_TestPulseFunc(s)
 		SCOPE_UpdateGraph(panelTitle)
 	endif
 
+	if(GetKeyState(0) & ESCAPE_KEY)
+		DQ_StopOngoingDAQ(panelTitle)
+		return 1
+	endif
+
 	return 0
 End
 

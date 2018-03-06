@@ -137,7 +137,7 @@ Function DQS_StartBackgroundFifoMonitor()
 	CtrlNamedBackground ITC_FIFOMonitor, start
 End
 
-/// @brief Helper background task for debugging
+/// @brief Fifo monitor for DAQ Single Device
 ///
 /// @ingroup BackgroundFunctions
 Function DQS_FIFOMonitor(s)
@@ -172,6 +172,11 @@ Function DQS_FIFOMonitor(s)
 	if(!moreData)
 		DQS_STOPBackgroundFifoMonitor()
 		DQS_StopDataAcq(panelTitleG)
+		return 1
+	endif
+
+	if(GetKeyState(0) & ESCAPE_KEY)
+		DQ_StopOngoingDAQ(panelTitleG, startTPAfterDAQ = 0)
 		return 1
 	endif
 

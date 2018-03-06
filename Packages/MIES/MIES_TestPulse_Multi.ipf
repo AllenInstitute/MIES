@@ -196,6 +196,11 @@ Function TPM_BkrdTPFuncMD(s)
 		if(mod(s.count, TEST_PULSE_LIVE_UPDATE_INTERVAL) == 0)
 			SCOPE_UpdateGraph(panelTitle)
 		endif
+
+		if(GetKeyState(0) & ESCAPE_KEY)
+			DQ_StopOngoingDAQ(panelTitle)
+			return 1
+		endif
 	endfor
 
 	return 0
