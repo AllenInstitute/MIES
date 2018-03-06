@@ -1222,7 +1222,7 @@ End
 Function WBP_ButtonProc_DeleteSet(ba) : ButtonControl
 	STRUCT WMButtonAction &ba
 
-	string DAorTTL, setWaveToDelete, panelTitle
+	string DAorTTL, setWaveToDelete, panelTitle, lockedDevices
 	string popupMenuSelectedItemsStart, popupMenuSelectedItemsEnd
 	variable i, numPanels, channelType
 
@@ -1237,11 +1237,11 @@ Function WBP_ButtonProc_DeleteSet(ba) : ButtonControl
 				break
 			endif
 
-			SVAR/Z/SDFR=GetITCDevicesFolder() ITCPanelTitleList
-			if(SVAR_Exists(ITCPanelTitleList) && cmpstr(ITCPanelTitleList, ""))
-				numPanels = ItemsInList(ITCPanelTitleList)
+			lockedDevices = GetListOfLockedDevices()
+			if(!IsEmpty(lockedDevices))
+				numPanels = ItemsInList(lockedDevices)
 				for(i = 0; i < numPanels; i += 1)
-					panelTitle = StringFromList(i, ITCPanelTitleList)
+					panelTitle = StringFromList(i, lockedDevices)
 					if(StringMatch(SetWaveToDelete, CHANNEL_DA_SEARCH_STRING))
 						channelType = CHANNEL_TYPE_DAC
 					else
@@ -2026,11 +2026,11 @@ Function WBP_UpdateITCPanelPopUps([panelTitle])
 	string ctrlWave, ctrlIndexEnd, DAlist, TTLlist, listOfPanels
 
 	if(ParamIsDefault(panelTitle))
-		SVAR/Z/SDFR=GetITCDevicesFolder() ITCPanelTitleList
-		if(!SVAR_Exists(ITCPanelTitleList))
+		listOfPanels = GetListOfLockedDevices()
+
+		if(isEmpty(listOfPanels))
 			return NaN
 		endif
-		listOfPanels = ITCPanelTitleList
 	else
 		listOfPanels = panelTitle
 	endif

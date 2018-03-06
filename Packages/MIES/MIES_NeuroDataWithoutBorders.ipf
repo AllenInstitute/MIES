@@ -1051,22 +1051,31 @@ End
 
 /// @brief Load all stimsets from specified HDF5 file.
 ///
-/// @param fileName		[optional] provide full file name/path for loading stimset
-/// @param overwrite   [optional] indicate if the stored stimset should be deleted before the load.
+/// @param fileName         [optional, shows a dialog on default] provide full file name/path for loading stimset
+/// @param overwrite        [optional, defaults to false] indicate if the stored stimset should be deleted before the load.
+/// @param loadOnlyBuiltins [optional, defaults to false] load only builtin stimsets
 /// @return 1 on error and 0 on success
-Function NWB_LoadAllStimsets([overwrite, fileName])
+Function NWB_LoadAllStimsets([overwrite, fileName, loadOnlyBuiltins])
 	variable overwrite
 	string fileName
+	variable loadOnlyBuiltins
 
 	variable fileID, groupID, error, numStimsets, i, refNum
 	string stimsets, stimset, suffix, fullPath
+	string loadedStimsets = ""
 
 	if(ParamIsDefault(overwrite))
 		overwrite = 0
 	else
 		overwrite = !!overwrite
 	endif
-	
+
+	if(ParamIsDefault(loadOnlyBuiltins))
+		loadOnlyBuiltins = 0
+	else
+		loadOnlyBuiltins = !!loadOnlyBuiltins
+	endif
+
 	if(ParamIsDefault(fileName))
 		Open/D/R/M="Load all stimulus sets"/F="NWB Files:*.nwb;All Files:.*;" refNum
 
@@ -1107,12 +1116,21 @@ Function NWB_LoadAllStimsets([overwrite, fileName])
 	numStimsets = ItemsInList(stimsets)
 	for(i = 0; i < numStimsets; i += 1)
 		stimset = StringFromList(i, stimsets)
+
+		if(loadOnlyBuiltins && !WBP_IsBuiltinStimset(stimset))
+			continue
+		endif
+
 		if(NWB_LoadStimset(groupID, stimset, overwrite, verbose = 1))
 			printf "error loading stimset %s\r", stimset
 			error = 1
+			continue
 		endif
+
+		loadedStimsets = AddListItem(stimset, loadedStimsets)
 	endfor
-	NWB_LoadCustomWaves(groupID, stimsets, overwrite)
+
+	NWB_LoadCustomWaves(groupID, loadedStimsets, overwrite)
 	HDF5CloseGroup/Z groupID
 	IPNWB#H5_CloseFile(fileID)
 	return error
