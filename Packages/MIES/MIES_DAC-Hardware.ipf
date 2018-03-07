@@ -992,7 +992,7 @@ Function HW_ITC_StopAcq(deviceID, [config, configFunc, prepareForDAQ, zeroDAC, f
 
 		numEntries = WaveExists(DACs) ? DimSize(DACs, ROWS) : 0
 		for(i = 0; i < DimSize(DACs, ROWS); i += 1)
-			HW_ITC_WriteDAC(deviceID, DACs[i], 0)
+			HW_ITC_WriteDAC(deviceID, DACs[i], 0, flags = flags)
 		endfor
 	endif
 
