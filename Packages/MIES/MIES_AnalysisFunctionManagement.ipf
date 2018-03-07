@@ -18,7 +18,7 @@ Function AFM_CallAnalysisFunctions(panelTitle, eventType)
 
 	variable error, i, valid_f1, valid_f2, valid_f3, ret, DAC, sweepsInSet
 	variable realDataLength, sweepNo
-	string func, setName, ctrl
+	string func, setName, ctrl, msg
 	struct AnalysisFunction_V3 s
 
 	WAVE GuiState = GetDA_EphysGuiStateNum(panelTitle)
@@ -118,8 +118,9 @@ Function AFM_CallAnalysisFunctions(panelTitle, eventType)
 				ASSERT(0, "impossible case")
 			endif
 		catch
+			msg   = GetRTErrMessage()
 			error = GetRTError(1)
-			printf "The analysis function %s aborted, this is dangerous and must *not* happen!\r", func
+			printf "The analysis function %s aborted with error \"%s\", this is dangerous and must *not* happen!\r", func, msg
 		endtry
 
 		SetWaveLock 0, ITCDataWave
