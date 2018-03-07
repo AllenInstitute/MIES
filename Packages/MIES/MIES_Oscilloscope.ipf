@@ -378,41 +378,44 @@ Function SCOPE_SetADAxisLabel(panelTitle,activeHeadStage)
 	string adcStr, leftAxis, style, color, unit
 	string graph = SCOPE_GetGraph(panelTitle)
 	string unitWaveNote = note(ITCChanConfigWave)
-	if(windowExists(graph))
-		string axList = AxisList(graph)
 
-		for(i = 0; i < numADChannels; i += 1)
-			adc    = ADCs[i]
-			adcStr = num2str(adc)
-			leftAxis = "AD" + adcStr
-
-			if(WhichListItem(leftAxis, axList) == -1)
-				continue
-			endif
-
-			headStage = AFH_GetHeadstageFromADC(panelTitle, adc)
-			if(isFinite(headStage))
-				GetTraceColor(headStage, red, green, blue)
-			else
-				GetTraceColor(NUM_HEADSTAGES, red, green, blue)
-			endif
-
-			sprintf color, "\K(%d,%d,%d)" red, green, blue
-			if(activeHeadStage == headStage)
-				style = "\f05"
-			else
-				style = ""
-			endif
-
-			if(DAG_GetNumericalValue(panelTitle, "check_settings_show_power"))
-				unit = "a. u."
-			else
-				// extracts unit from string list that contains units in same sequence as columns in the ITCDatawave
-				unit = StringFromList(numActiveDACs + i, unitWaveNote)
-			endif
-			Label/W=$Graph $leftAxis, style + color + leftAxis + " (" + unit + ")"
-		endfor
+	if(!windowExists(graph))
+		return NaN
 	endif
+
+	string axList = AxisList(graph)
+
+	for(i = 0; i < numADChannels; i += 1)
+		adc    = ADCs[i]
+		adcStr = num2str(adc)
+		leftAxis = "AD" + adcStr
+
+		if(WhichListItem(leftAxis, axList) == -1)
+			continue
+		endif
+
+		headStage = AFH_GetHeadstageFromADC(panelTitle, adc)
+		if(isFinite(headStage))
+			GetTraceColor(headStage, red, green, blue)
+		else
+			GetTraceColor(NUM_HEADSTAGES, red, green, blue)
+		endif
+
+		sprintf color, "\K(%d,%d,%d)" red, green, blue
+		if(activeHeadStage == headStage)
+			style = "\f05"
+		else
+			style = ""
+		endif
+
+		if(DAG_GetNumericalValue(panelTitle, "check_settings_show_power"))
+			unit = "a. u."
+		else
+			// extracts unit from string list that contains units in same sequence as columns in the ITCDatawave
+			unit = StringFromList(numActiveDACs + i, unitWaveNote)
+		endif
+		Label/W=$Graph $leftAxis, style + color + leftAxis + " (" + unit + ")"
+	endfor
 End
 
 /// @brief Prepares a subset/copy of `ITCDataWave` for displaying it in the
