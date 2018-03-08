@@ -1357,12 +1357,13 @@ End
 Function GetSamplingInterval(config)
 	Wave config
 
+	ASSERT(IsValidConfigWave(config), "Expected a valid config wave")
+
 	// from ITCConfigAllChannels help file:
 	// Third Column  = SamplingInterval:  integer value for sampling interval in microseconds (minimum value - 5 us)
 	Duplicate/D/R=[][2]/FREE config samplingInterval
 
 	// The sampling interval is the same for all channels
-	ASSERT(numpnts(samplingInterval),"Expected non-empty wave")
 	ASSERT(WaveMax(samplingInterval) == WaveMin(samplingInterval),"Expected constant sample interval for all channels")
 	return samplingInterval[0]
 End
