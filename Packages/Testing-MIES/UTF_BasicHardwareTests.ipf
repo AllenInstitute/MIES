@@ -108,7 +108,7 @@ End
 static Function AllTests(t)
 	STRUCT TestSettings &t
 
-	string sweeps, configs, stimset, foundStimSet, devices, device
+	string sweeps, configs, stimset, foundStimSet, devices, device, unit
 	variable i, j, sweepNo, numEntries
 
 	devices = GetDevices()
@@ -143,6 +143,29 @@ static Function AllTests(t)
 			CHECK_EQUAL_VAR(config[1][0], ITC_XOP_CHANNEL_TYPE_DAC)
 			CHECK_EQUAL_VAR(config[2][0], ITC_XOP_CHANNEL_TYPE_ADC)
 			CHECK_EQUAL_VAR(config[3][0], ITC_XOP_CHANNEL_TYPE_ADC)
+
+			// check channel numbers
+			WAVE DACs = GetDACListFromConfig(config)
+			CHECK_EQUAL_WAVES(DACs, {0, 1}, mode = WAVE_DATA)
+
+			WAVE ADCs = GetADCListFromConfig(config)
+			CHECK_EQUAL_WAVES(ADCs, {0, 1}, mode = WAVE_DATA)
+
+			WAVE TTLs = GetTTLListFromConfig(config)
+			CHECK_EQUAL_VAR(DimSize(TTLs, ROWS), 0)
+
+			// check channel units
+			unit = AFH_GetChannelUnit(config, 0, ITC_XOP_CHANNEL_TYPE_DAC)
+			CHECK_PROPER_STR(unit)
+
+			unit = AFH_GetChannelUnit(config, 1, ITC_XOP_CHANNEL_TYPE_DAC)
+			CHECK_PROPER_STR(unit)
+
+			unit = AFH_GetChannelUnit(config, 0, ITC_XOP_CHANNEL_TYPE_ADC)
+			CHECK_PROPER_STR(unit)
+
+			unit = AFH_GetChannelUnit(config, 1, ITC_XOP_CHANNEL_TYPE_ADC)
+			CHECK_PROPER_STR(unit)
 
 			sweepNo = ExtractSweepNumber(NameOfWave(sweep))
 			CHECK(sweepNo >= 0)
