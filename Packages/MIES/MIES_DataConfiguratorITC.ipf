@@ -368,9 +368,10 @@ static Function DC_MakeITCConfigAllConfigWave(panelTitle, numActiveChannels)
 	string panelTitle
 	variable numActiveChannels
 
-	DFREF dfr = GetDevicePath(panelTitle)
-	Make/I/O/N=(numActiveChannels, 4) dfr:ITCChanConfigWave/Wave=wv
-	wv = 0
+	WAVE config = GetITCChanConfigWave(panelTitle)
+
+	Redimension/N=(numActiveChannels, -1) config
+	FastOp config = 0
 End
 
 /// @brief Creates ITCDataWave; The wave that the ITC device takes DA and TTL data from and passes AD data to for all channels.
@@ -503,9 +504,9 @@ static Function DC_PlaceDataInITCChanConfigWave(panelTitle, dataAcqOrTP)
 			continue
 		endif
 
-		ITCChanConfigWave[j][0] = ITC_XOP_CHANNEL_TYPE_DAC
-		ITCChanConfigWave[j][1] = i
-		unitList = AddListItem(DAG_GetTextualValue(panelTitle, ctrl, index = i), unitList, ";", Inf)
+		ITCChanConfigWave[j][%ChannelType]   = ITC_XOP_CHANNEL_TYPE_DAC
+		ITCChanConfigWave[j][%ChannelNumber] = i
+		unitList = AddListItem(DAG_GetTextualValue(panelTitle, ctrl, index = i), unitList, ",", Inf)
 		j += 1
 	endfor
 
@@ -521,35 +522,36 @@ static Function DC_PlaceDataInITCChanConfigWave(panelTitle, dataAcqOrTP)
 			continue
 		endif
 
-		ITCChanConfigWave[j][0] = ITC_XOP_CHANNEL_TYPE_ADC
-		ITCChanConfigWave[j][1] = i
-		unitList = AddListItem(DAG_GetTextualValue(panelTitle, ctrl, index = i), unitList, ";", Inf)
+		ITCChanConfigWave[j][%ChannelType]   = ITC_XOP_CHANNEL_TYPE_ADC
+		ITCChanConfigWave[j][%ChannelNumber] = i
+		unitList = AddListItem(DAG_GetTextualValue(panelTitle, ctrl, index = i), unitList, ",", Inf)
 		j += 1
 	endfor
 
-	Note ITCChanConfigWave, unitList
+	AddEntryIntoWaveNoteAsList(ITCChanConfigWave, CHANNEL_UNIT_KEY, str = unitList, replaceEntry = 1)
 
-	ITCChanConfigWave[][2] = DAP_GetITCSampInt(panelTitle, dataAcqOrTP)
-	ITCChanConfigWave[][3] = 0
+	ITCChanConfigWave[][%SamplingInterval] = DAP_GetITCSampInt(panelTitle, dataAcqOrTP)
+	ITCChanConfigWave[][%DecimationMode]   = 0
+	ITCChanConfigWave[][%Offset]           = 0
 
 	if(dataAcqOrTP == DATA_ACQUISITION_MODE)
 		WAVE sweepDataLNB = GetSweepSettingsWave(panelTitle)
 
 		if(DC_AreTTLsInRackChecked(RACK_ZERO, panelTitle))
-			ITCChanConfigWave[j][0] = ITC_XOP_CHANNEL_TYPE_TTL
+			ITCChanConfigWave[j][%ChannelType] = ITC_XOP_CHANNEL_TYPE_TTL
 
 			channel = HW_ITC_GetITCXOPChannelForRack(panelTitle, RACK_ZERO)
-			ITCChanConfigWave[j][1] = channel
+			ITCChanConfigWave[j][%ChannelNumber] = channel
 			sweepDataLNB[0][10][INDEP_HEADSTAGE] = channel
 
 			j += 1
 		endif
 
 		if(DC_AreTTLsInRackChecked(RACK_ONE, panelTitle))
-			ITCChanConfigWave[j][0] = ITC_XOP_CHANNEL_TYPE_TTL
+			ITCChanConfigWave[j][%ChannelType] = ITC_XOP_CHANNEL_TYPE_TTL
 
 			channel = HW_ITC_GetITCXOPChannelForRack(panelTitle, RACK_ONE)
-			ITCChanConfigWave[j][1] = channel
+			ITCChanConfigWave[j][%ChannelNumber] = channel
 			sweepDataLNB[0][11][INDEP_HEADSTAGE] = channel
 		endif
 	endif

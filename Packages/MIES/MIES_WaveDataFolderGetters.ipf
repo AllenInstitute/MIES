@@ -546,7 +546,37 @@ Function/Wave GetITCDataWave(panelTitle)
 	return wv
 End
 
+static Constant ITC_CONFIG_WAVE_VERSION = 1
+
+/// @brief Check if the given ITC config wave is the latest version
+Function IsLatestConfigWaveVersion(wv)
+	WAVE wv
+
+	return ExistsWithCorrectLayoutVersion(wv, ITC_CONFIG_WAVE_VERSION)
+End
+
 /// @brief Return the ITC channel config wave
+///
+/// Rows:
+/// - One for each channel, the order is DA, AD, TTL (same as in the ITCDataWave)
+///
+/// Columns:
+/// - channel type, one of @ref ITC_XOP_CHANNEL_CONSTANTS
+/// - channel number (0-based)
+/// - sampling interval in microseconds (1e-6)
+/// - decimation mode (always zero)
+/// - data offset
+///
+/// The wave note holds a list of channel units. The order
+/// is the same as the rows. TTL channels don't have units. Querying the
+/// channel unit should always be done via AFH_GetChannelUnit()/AFH_GetChannelUnits().
+///
+/// Version 1 changes:
+/// - Columns now have dimension labels
+/// - One more column with the channel data offset
+/// - Due to the wave versioning the channel unit is now stored with the
+///   #CHANNEL_UNIT_KEY as key and it is now separated not with semicolon
+///   anymore but a comma.
 Function/Wave GetITCChanConfigWave(panelTitle)
 	string panelTitle
 
@@ -554,11 +584,25 @@ Function/Wave GetITCChanConfigWave(panelTitle)
 
 	WAVE/I/Z/SDFR=dfr wv = ITCChanConfigWave
 
-	if(WaveExists(wv))
+	if(ExistsWithCorrectLayoutVersion(wv, ITC_CONFIG_WAVE_VERSION))
 		return wv
+	elseif(WaveExists(wv))
+		Redimension/I/N=(-1, 5) wv
+		// offset
+		wv[][4] = 0
+		Note/K wv
+	else
+		Make/I/N=(2, 5) dfr:ITCChanConfigWave/Wave=wv
 	endif
 
-	Make/I/N=(2, 4) dfr:ITCChanConfigWave/Wave=wv
+	SetDimLabel COLS, 0, ChannelType, wv
+	SetDimLabel COLS, 1, ChannelNumber, wv
+	SetDimLabel COLS, 2, SamplingInterval, wv
+	SetDimLabel COLS, 3, DecimationMode, wv
+	SetDimLabel COLS, 4, Offset, wv
+
+	SetWaveVersion(wv, ITC_CONFIG_WAVE_VERSION)
+	AddEntryIntoWaveNoteAsList(wv, CHANNEL_UNIT_KEY, str = "")
 
 	return wv
 End

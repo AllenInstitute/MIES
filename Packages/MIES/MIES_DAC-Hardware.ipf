@@ -1255,12 +1255,13 @@ End
 /// @param dataFunc    [optional, defaults to GetITCDataWave()] override wave getter for the ITC data wave
 /// @param config      ITC config wave
 /// @param configFunc  [optional, defaults to GetITCChanConfigWave()] override wave getter for the ITC config wave
+/// @param offset      [optional, defaults to zero] offset into the data wave in points
 /// @param flags       [optional, default none] One or multiple flags from @ref HardwareInteractionFlags
-Function HW_ITC_PrepareAcq(deviceID, [data, dataFunc, config, configFunc, flags])
+Function HW_ITC_PrepareAcq(deviceID, [data, dataFunc, config, configFunc, flags, offset])
 	variable deviceID
 	WAVE/Z data, config
 	FUNCREF HW_WAVE_GETTER_PROTOTYPE dataFunc, configFunc
-	variable flags
+	variable flags, offset
 
 	string panelTitle
 
@@ -1282,6 +1283,10 @@ Function HW_ITC_PrepareAcq(deviceID, [data, dataFunc, config, configFunc, flags]
 		else
 			WAVE config = configFunc(panelTitle)
 		endif
+	endif
+
+	if(!ParamIsDefault(offset))
+		config[][%Offset] = offset
 	endif
 
 	WAVE config_t = HW_ITC_TransposeAndToDouble(config)

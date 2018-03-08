@@ -1368,6 +1368,19 @@ Function GetSamplingInterval(config)
 	return samplingInterval[0]
 End
 
+/// @brief Returns the data offset of the sweep in points
+Function GetDataOffset(config)
+	Wave config
+
+	ASSERT(IsValidConfigWave(config),"Expected a valid config wave")
+
+	Duplicate/D/R=[][4]/FREE config, offsets
+
+	// The data offset is the same for all channels
+	ASSERT(WaveMax(offsets) == WaveMin(offsets), "Expected constant data offset for all channels")
+	return offsets[0]
+End
+
 /// @brief Write the given property to the config wave
 ///
 /// @note Please add new properties as required
