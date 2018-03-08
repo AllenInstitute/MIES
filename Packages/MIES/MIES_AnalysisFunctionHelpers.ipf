@@ -158,6 +158,37 @@ Function AFH_GetITCDataColumn(ITCChanConfigWave, channelNumber, channelType)
 	return NaN
 End
 
+/// @brief Return all channel units as free text wave
+///
+/// @param ITCChanConfigWave ITC configuration wave, most users need to call
+///                          `GetITCChanConfigWave(panelTitle)` to get that wave.
+Function/WAVE AFH_GetChannelUnits(ITCChanConfigWave)
+	WAVE ITCChanConfigWave
+
+	string units
+
+		units = note(ITCChanConfigWave)
+		return ListToTextWave(units, ";")
+End
+
+/// @brief Return the channel unit
+///
+/// @param ITCChanConfigWave ITC configuration wave, most users need to call
+///                          `GetITCChanConfigWave(panelTitle)` to get that wave.
+/// @param channelNumber     channel number (0-based)
+/// @param channelType       channel type, one of @ref ITC_XOP_CHANNEL_CONSTANTS
+Function/S AFH_GetChannelUnit(ITCChanConfigWave, channelNumber, channelType)
+	WAVE ITCChanConfigWave
+	variable channelNumber, channelType
+
+	variable idx
+
+	idx = AFH_GetITCDataColumn(ITCChanConfigWave, channelNumber, channelType)
+	WAVE/T units = AFH_GetChannelUnits(ITCChanConfigWave)
+
+	return units[idx]
+End
+
 /// @brief Return the sweep number of the last acquired sweep
 ///
 /// Handles sweep number rollback properly.
