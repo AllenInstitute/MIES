@@ -2557,7 +2557,10 @@ Function/Wave ExtractOneDimDataFromSweep(config, sweep, column)
 
 	MatrixOP/FREE data = col(sweep, column)
 	SetScale/P x, DimOffset(sweep, ROWS), DimDelta(sweep, ROWS), WaveUnits(sweep, ROWS), data
-	SetScale d, 0, 0, StringFromList(column, note(config)), data
+	WAVE/T units = AFH_GetChannelUnits(config)
+	if(column < DimSize(units, ROWS))
+		SetScale d, 0, 0, units[column], data
+	endif
 
 	Note data, note(sweep)
 
