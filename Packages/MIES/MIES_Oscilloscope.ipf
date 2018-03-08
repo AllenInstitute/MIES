@@ -355,8 +355,6 @@ Function SCOPE_CreateGraph(panelTitle, dataAcqOrTP)
 			NVAR baselineFrac = $GetTestpulseBaselineFraction(panelTitle)
 			cutOff = max(0, baseLineFrac * testPulseLength - duration/2 * sampInt)
 			SetAxis/W=$graph bottom cutOff, testPulseLength - cutOff
-		else
-
 		endif
 	else
 		Label/W=$graph bottom "Time (\\U)"
