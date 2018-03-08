@@ -1629,7 +1629,7 @@ Function AB_SortConfigSweeps(config)
 	variable numRows = DimSize(config, ROWS)
 
 	ASSERT(ItemsInList(wavenote) == numRows, "Size of Config Wave differs from stored Wave Units")
-	ASSERT(DimSize(config, COLS) == 4, "Incorrect Column Size for Config Wave")
+	ASSERT(IsValidConfigWave(config), "Invalid config wave")
 	ASSERT(FindDimLabel(config, COLS, "type") != -2, "Config Wave has no column labels")
 	ASSERT(FindDimLabel(config, COLS, "number") != -2, "Config Wave has no column labels")
 
@@ -2030,7 +2030,7 @@ static Function AB_SplitSweepIntoComponents(expFolder, device, sweep, sweepWave)
 	DFREF sweepFolder = GetAnalysisSweepDataPath(expFolder, device, sweep)
 	Wave configSweep  = GetAnalysisConfigWave(expFolder, device, sweep)
 
-	if(DimSize(configSweep, ROWS) != DimSize(sweepWave, COLS))
+	if(!IsValidSweepAndConfig(sweepWave, configSweep))
 		printf "The sweep %d of device %s in experiment %s does not match its configuration data. Therefore we ignore it.\r", sweep, device, expFolder
 		return 1
 	endif

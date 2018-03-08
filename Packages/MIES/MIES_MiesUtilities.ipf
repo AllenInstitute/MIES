@@ -186,14 +186,11 @@ static Function/WAVE GetChanneListFromITCConfig(config, channelType)
 	WAVE config
 	variable channelType
 
-	variable numRows, numCols, itcChan, i, j
+	variable numRows, i, j
+
+	ASSERT(IsValidConfigWave(config), "Invalid config wave")
 
 	numRows = DimSize(config, ROWS)
-	numCols = DimSize(config, COLS)
-
-	ASSERT(numRows > 0, "Can not handle wave with zero rows")
-	ASSERT(numCols == 4, "Expected a wave with 4 columns")
-
 	Make/U/B/FREE/N=(numRows) activeChannels
 
 	for(i = 0; i < numRows; i += 1)
@@ -1333,7 +1330,8 @@ Function/Wave GetConfigWave(sweepWave)
 
 	string name = "Config_" + NameOfWave(sweepWave)
 	Wave/SDFR=GetWavesDataFolderDFR(sweepWave) config = $name
-	ASSERT(DimSize(config,COLS)==4,"Unexpected number of columns")
+	ASSERT(IsValidConfigWave(config),"Invalid config wave")
+
 	return config
 End
 
@@ -2561,7 +2559,7 @@ Function/Wave ExtractOneDimDataFromSweep(config, sweep, column)
 	WAVE sweep
 	variable column
 
-	ASSERT(DimSize(config, ROWS) == DimSize(sweep, COLS), "Sweep and config wave differ in the number of channels")
+	ASSERT(IsValidSweepAndConfig(sweep, config), "Sweep and config are not compatible")
 	ASSERT(column < DimSize(sweep, COLS), "The column is out of range")
 
 	MatrixOP/FREE data = col(sweep, column)
@@ -4154,7 +4152,7 @@ Function SplitSweepIntoComponents(numericalValues, sweep, sweepWave, configWave,
 
 	ASSERT(DataFolderExistsDFR(targetDFR), "targetDFR must exist")
 	ASSERT(IsFinite(sweep), "Sweep number must be finite")
-	ASSERT(DimSize(configWave, ROWS) == DimSize(sweepWave, COLS), "Sweep and config wave differ in the number of channels")
+	ASSERT(IsValidSweepAndConfig(sweepWave, configWave), "Sweep and config waves are not compatible")
 
 	numRows = DimSize(configWave, ROWS)
 	for(i = 0; i < numRows; i += 1)
@@ -4442,4 +4440,31 @@ Function/WAVE MoveWaveWithOverwrite(dest, src)
 
 	KillOrMoveToTrash(wv=dest)
 	MoveWave src, $path
+End
+
+/// @brief Check if the given wave is a valid ITCConfigWave
+Function IsValidConfigWave(config)
+	WAVE/Z config
+
+	return WaveExists(config) &&        \
+		   DimSize(config, ROWS) > 0 && \
+		   DimSize(config, COLS) >= 4
+End
+
+/// @brief Check if the given wave is a valid ITCDataWave
+Function IsValidSweepWave(sweep)
+	WAVE/Z sweep
+
+	return WaveExists(sweep) &&        \
+		   DimSize(sweep, COLS) > 0 && \
+		   DimSize(sweep, ROWS) > 0
+End
+
+/// @brief Check if the two waves are valid and compatible
+Function IsValidSweepAndConfig(sweep, config)
+	WAVE/Z sweep, config
+
+	return IsValidConfigWave(config) &&                  \
+		   IsValidSweepWave(sweep) &&                    \
+		   DimSize(sweep, COLS) == DimSize(config, ROWS)
 End
