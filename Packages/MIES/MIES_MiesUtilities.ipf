@@ -1445,8 +1445,8 @@ Function CreateTiledChannelGraph(graph, config, sweepNo, numericalValues,  textu
 	WAVE/Z channelSelWave
 
 	variable red, green, blue, axisIndex, numChannels, offset
-	variable numDACs, numADCs, numTTLs, i, j, k, channelOffset, hasPhysUnit, slotMult
-	variable moreData, low, high, step, spacePerSlot, chan, numSlots, numHorizWaves, numVertWaves, idx, configIdx
+	variable numDACs, numADCs, numTTLs, i, j, k, hasPhysUnit, slotMult
+	variable moreData, low, high, step, spacePerSlot, chan, numSlots, numHorizWaves, numVertWaves, idx
 	variable numTTLBits, colorIndex, totalVertBlocks, headstage
 	variable delayOnsetUser, delayOnsetAuto, delayTermination, delaydDAQ, dDAQEnabled, oodDAQEnabled
 	variable stimSetLength, samplingInt, xRangeStart, xRangeEnd, first, last, count
@@ -1454,7 +1454,7 @@ Function CreateTiledChannelGraph(graph, config, sweepNo, numericalValues,  textu
 	variable totalXRange = NaN
 
 	string trace, traceType, channelID, axisLabel, entry, range
-	string unit, configNote, name, str, vertAxis, oodDAQRegionsAll, dDAQActiveHeadstageAll, horizAxis
+	string unit, name, str, vertAxis, oodDAQRegionsAll, dDAQActiveHeadstageAll, horizAxis
 
 	ASSERT(!isEmpty(graph), "Empty graph")
 	ASSERT(IsFinite(sweepNo), "Non-finite sweepNo")
@@ -1462,7 +1462,6 @@ Function CreateTiledChannelGraph(graph, config, sweepNo, numericalValues,  textu
 	WAVE ADCs = GetADCListFromConfig(config)
 	WAVE DACs = GetDACListFromConfig(config)
 	WAVE TTLs = GetTTLListFromConfig(config)
-	configNote = note(config)
 
 	Duplicate/FREE ADCs, ADCsOriginal
 	Duplicate/FREE DACs, DACsOriginal
@@ -1471,7 +1470,7 @@ Function CreateTiledChannelGraph(graph, config, sweepNo, numericalValues,  textu
 	numADCsOriginal = DimSize(ADCs, ROWS)
 	numTTLsOriginal = DimSize(TTLs, ROWS)
 
-	RemoveDisabledChannels(channelSelWave, ADCs, DACs, numericalValues, sweepNo, configNote)
+	RemoveDisabledChannels(channelSelWave, ADCs, DACs, numericalValues, sweepNo)
 	numDACs = DimSize(DACs, ROWS)
 	numADCs = DimSize(ADCs, ROWS)
 	numTTLs = DimSize(TTLs, ROWS)
@@ -1660,7 +1659,6 @@ Function CreateTiledChannelGraph(graph, config, sweepNo, numericalValues,  textu
 					WAVE/Z status    = statusDAC
 					WAVE channelList = DACs
 					channelID        = "DA"
-					channelOffset    = 0
 					hasPhysUnit      = 1
 					slotMult         = 1
 					numHorizWaves    = tgs.dDAQDisplayMode ? numRegions : 1
@@ -1675,7 +1673,6 @@ Function CreateTiledChannelGraph(graph, config, sweepNo, numericalValues,  textu
 					WAVE/Z status    = statusADC
 					WAVE channelList = ADCs
 					channelID        = "AD"
-					channelOffset    = numDACs
 					hasPhysUnit      = 1
 					slotMult         = ADC_SLOT_MULTIPLIER
 					numHorizWaves    = tgs.dDAQDisplayMode ? numRegions : 1
@@ -1690,7 +1687,6 @@ Function CreateTiledChannelGraph(graph, config, sweepNo, numericalValues,  textu
 					WAVE/Z status    = $""
 					WAVE channelList = TTLs
 					channelID        = "TTL"
-					channelOffset    = numDACs + numADCs
 					hasPhysUnit      = 0
 					slotMult         = 1
 					numHorizWaves    = 1
@@ -1822,10 +1818,7 @@ Function CreateTiledChannelGraph(graph, config, sweepNo, numericalValues,  textu
 
 					if(k == 0) // first column, add labels
 						if(hasPhysUnit)
-							// for removed channels their units are also removed from the
-							// config note, so we can just take total channel number here
-							configIdx = activeChanCount[i] + channelOffset
-							unit = StringFromList(configIdx, configNote)
+							unit = AFH_GetChannelUnit(config, chan, channelTypes[i])
 						else
 							unit = "a.u."
 						endif
@@ -4038,11 +4031,10 @@ Function ChannelSelectionWaveToGUI(panel, channelSel)
 End
 
 /// @brief Removes the disabled channels and headstages from `ADCs` and `DACs`
-Function RemoveDisabledChannels(channelSel, ADCs, DACs, numericalValues, sweepNo, configNote)
+Function RemoveDisabledChannels(channelSel, ADCs, DACs, numericalValues, sweepNo)
 	WAVE/Z channelSel
 	WAVE ADCs, DACs, numericalValues
 	variable sweepNo
-	string &configNote
 
 	variable numADCs, numDACs, i
 
@@ -4072,14 +4064,12 @@ Function RemoveDisabledChannels(channelSel, ADCs, DACs, numericalValues, sweepNo
 	for(i = numADCs - 1; i >= 0; i -= 1)
 		if(!channelSelMod[ADCs[i]][%AD])
 			DeletePoints/M=(ROWS) i, 1, ADCs
-			configNote = RemoveListItem(numDACs + i, configNote)
 		endif
 	endfor
 
 	for(i = numDACs - 1; i >= 0; i -= 1)
 		if(!channelSelMod[DACs[i]][%DA])
 			DeletePoints/M=(ROWS) i, 1, DACs
-			configNote = RemoveListItem(i, configNote)
 		endif
 	endfor
 End
