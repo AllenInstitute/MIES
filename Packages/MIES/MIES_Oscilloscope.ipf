@@ -372,7 +372,7 @@ Function SCOPE_SetADAxisLabel(panelTitle,activeHeadStage)
 	WAVE ADCs = GetADCListFromConfig(ITCChanConfigWave)
 	variable adc, i, headStage, red, green, blue
 	variable numADChannels = DimSize(ADCs, ROWS)
-	string adcStr, leftAxis, style, color, unit
+	string leftAxis, style, color, unit
 	string graph = SCOPE_GetGraph(panelTitle)
 
 	if(!windowExists(graph))
@@ -383,8 +383,7 @@ Function SCOPE_SetADAxisLabel(panelTitle,activeHeadStage)
 
 	for(i = 0; i < numADChannels; i += 1)
 		adc    = ADCs[i]
-		adcStr = num2str(adc)
-		leftAxis = "AD" + adcStr
+		leftAxis = "AD" + num2str(adc)
 
 		if(WhichListItem(leftAxis, axList) == -1)
 			continue
