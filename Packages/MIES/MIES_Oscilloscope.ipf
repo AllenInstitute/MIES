@@ -372,10 +372,8 @@ Function SCOPE_SetADAxisLabel(panelTitle,activeHeadStage)
 	WAVE ADCs = GetADCListFromConfig(ITCChanConfigWave)
 	variable adc, i, headStage, red, green, blue
 	variable numADChannels = DimSize(ADCs, ROWS)
-	variable numActiveDACs = DimSize(GetDACListFromConfig(ITCChanConfigWave), ROWS)
 	string adcStr, leftAxis, style, color, unit
 	string graph = SCOPE_GetGraph(panelTitle)
-	string unitWaveNote = note(ITCChanConfigWave)
 
 	if(!windowExists(graph))
 		return NaN
@@ -409,8 +407,7 @@ Function SCOPE_SetADAxisLabel(panelTitle,activeHeadStage)
 		if(DAG_GetNumericalValue(panelTitle, "check_settings_show_power"))
 			unit = "a. u."
 		else
-			// extracts unit from string list that contains units in same sequence as columns in the ITCDatawave
-			unit = StringFromList(numActiveDACs + i, unitWaveNote)
+			unit = AFH_GetChannelUnit(ITCChanConfigWave, adc, ITC_XOP_CHANNEL_TYPE_ADC)
 		endif
 		Label/W=$Graph $leftAxis, style + color + leftAxis + " (" + unit + ")"
 	endfor
