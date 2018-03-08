@@ -1628,12 +1628,11 @@ Function AB_SortConfigSweeps(config)
 	string wavenote = Note(config)
 	variable numRows = DimSize(config, ROWS)
 
-	ASSERT(ItemsInList(wavenote) == numRows, "Size of Config Wave differs from stored Wave Units")
 	ASSERT(IsValidConfigWave(config), "Invalid config wave")
 	ASSERT(FindDimLabel(config, COLS, "type") != -2, "Config Wave has no column labels")
 	ASSERT(FindDimLabel(config, COLS, "number") != -2, "Config Wave has no column labels")
 
-	wave/T units = ConvertListToTextWave(Note(config))
+	WAVE/T units = AFH_GetChannelUnits(config)
 	Make/I/Free/N=(numRows) keyPrimary, keySecondary
 	Make/Free/N=(numRows)/I/U valindex = p
 
