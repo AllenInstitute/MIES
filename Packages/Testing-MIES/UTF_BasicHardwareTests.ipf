@@ -4,9 +4,9 @@
 /// @file UTF_BasicHardWareTests.ipf Implement some basic tests using the ITC hardware.
 
 /// @brief Acquire data with the given DAQSettings
-static Function AcquireData(s, [postInitializeFunc])
+static Function AcquireData(s, [postInitializeFunc, preAcquireFunc])
 	STRUCT DAQSettings& s
-	FUNCREF CALLABLE_PROTO postInitializeFunc
+	FUNCREF CALLABLE_PROTO postInitializeFunc, preAcquireFunc
 
 	string unlockedPanelTitle, devices, device
 	variable i, numEntries
@@ -86,6 +86,10 @@ static Function AcquireData(s, [postInitializeFunc])
 	ARDLaunchSeqPanel()
 	PGC_SetAndActivateControl("ArduinoSeq_Panel", "SendSequenceButton")
 #endif
+
+	if(!ParamIsDefault(preAcquireFunc))
+		preAcquireFunc()
+	endif
 
 	PGC_SetAndActivateControl(device, "DataAcquireButton")
 End
