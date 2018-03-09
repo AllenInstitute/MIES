@@ -908,3 +908,95 @@ Function Test_ChangeStimSetDuringDAQ()
 		CHECK_EQUAL_VAR(runModeTP, TEST_PULSE_BG_MULTI_DEVICE)
 	endfor
 End
+
+Function EnableUnassocChannels_IGNORE()
+
+	string device = GetSingleDevice()
+
+	// enable HS2 with associated DA/AD channels
+	PGC_SetAndActivateControl(device, GetPanelControl(2, CHANNEL_TYPE_HEADSTAGE, CHANNEL_CONTROL_CHECK), val=1)
+
+	// cut assocication
+	PGC_SetAndActivateControl(device, "Popup_Settings_HeadStage", str = "2")
+	PGC_SetAndActivateControl(device, "button_Hardware_ClearChanConn")
+
+	// disable HS2
+	PGC_SetAndActivateControl(device, GetPanelControl(2, CHANNEL_TYPE_HEADSTAGE, CHANNEL_CONTROL_CHECK), val=0)
+
+	PGC_SetAndActivateControl(device, GetPanelControl(2, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_WAVE), str = "StimulusSetA*")
+
+	// enable TTL1
+	PGC_SetAndActivateControl(device, GetPanelControl(1, CHANNEL_TYPE_TTL, CHANNEL_CONTROL_CHECK), val=1)
+	PGC_SetAndActivateControl(device, GetPanelControl(1, CHANNEL_TYPE_TTL, CHANNEL_CONTROL_WAVE), str="StimulusSetA*")
+
+	// enable TTL3
+	PGC_SetAndActivateControl(device, GetPanelControl(3, CHANNEL_TYPE_TTL, CHANNEL_CONTROL_CHECK), val=1)
+	PGC_SetAndActivateControl(device, GetPanelControl(3, CHANNEL_TYPE_TTL, CHANNEL_CONTROL_WAVE), str="StimulusSetB*")
+End
+
+// Using unassociated channels works
+Function DAQ_UnassociatedChannels()
+
+	string device
+
+	STRUCT DAQSettings s
+	InitDAQSettingsFromString(s, "DAQ_MD1_RA0_IDX0_LIDX0_BKG_1_RES_1")
+	AcquireData(s, preAcquireFunc = EnableUnassocChannels_IGNORE)
+
+	device = GetSingleDevice()
+End
+
+Function Test_UnassociatedChannels()
+
+	string devices, device, sweeps, configs, unit
+	variable numEntries, i, j, numSweeps
+
+	numSweeps = 1
+	devices = GetDevices()
+
+	numEntries = ItemsInList(devices)
+	for(i = 0; i < numEntries; i += 1)
+		device = StringFromList(i, devices)
+
+		CHECK_EQUAL_VAR(GetSetVariable(device, "SetVar_Sweep"), numSweeps)
+		sweeps  = GetListOfObjects(GetDeviceDataPath(device), DATA_SWEEP_REGEXP, fullPath = 1)
+		configs = GetListOfObjects(GetDeviceDataPath(device), DATA_CONFIG_REGEXP, fullPath = 1)
+
+		CHECK_EQUAL_VAR(ItemsInList(sweeps), numSweeps)
+		CHECK_EQUAL_VAR(ItemsInList(configs), numSweeps)
+
+		WAVE/T textualValues   = GetLBTextualValues(device)
+		WAVE   numericalValues = GetLBNumericalValues(device)
+
+		for(j = 0; j < numSweeps; j += 1)
+			WAVE/Z sweep  = $StringFromList(j, sweeps)
+			CHECK_WAVE(sweep, NUMERIC_WAVE, minorType = IGOR_TYPE_32bit_FLOAT)
+
+			WAVE/Z config = $StringFromList(j, configs)
+			CHECK_WAVE(config, NUMERIC_WAVE)
+
+			CHECK_EQUAL_VAR(DimSize(config, ROWS), DimSize(sweep, COLS))
+
+			CHECK_EQUAL_VAR(DimSize(config, ROWS), 7)
+
+			// check channel types
+			CHECK_EQUAL_VAR(config[0][0], ITC_XOP_CHANNEL_TYPE_DAC)
+			CHECK_EQUAL_VAR(config[1][0], ITC_XOP_CHANNEL_TYPE_DAC)
+			CHECK_EQUAL_VAR(config[2][0], ITC_XOP_CHANNEL_TYPE_DAC)
+			CHECK_EQUAL_VAR(config[3][0], ITC_XOP_CHANNEL_TYPE_ADC)
+			CHECK_EQUAL_VAR(config[4][0], ITC_XOP_CHANNEL_TYPE_ADC)
+			CHECK_EQUAL_VAR(config[5][0], ITC_XOP_CHANNEL_TYPE_ADC)
+			CHECK_EQUAL_VAR(config[6][0], ITC_XOP_CHANNEL_TYPE_TTL)
+
+			// check channel numbers
+			WAVE DACs = GetDACListFromConfig(config)
+			CHECK_EQUAL_WAVES(DACs, {0, 1, 2}, mode = WAVE_DATA)
+
+			WAVE ADCs = GetADCListFromConfig(config)
+			CHECK_EQUAL_WAVES(ADCs, {0, 1, 2}, mode = WAVE_DATA)
+
+			WAVE TTLs = GetTTLListFromConfig(config)
+			CHECK_EQUAL_WAVES(TTLs, {HW_ITC_GetITCXOPChannelForRack(device, RACK_ZERO)}, mode = WAVE_DATA)
+		endfor
+	endfor
+End
