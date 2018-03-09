@@ -1037,6 +1037,7 @@ static Function DC_DocumentChannelProperty(panelTitle, entry, headstage, channel
 		if(!ParamIsDefault(var))
 			numCols = DimSize(sweepDataLNB, COLS)
 			Redimension/N=(-1, numCols + 1, -1) sweepDataLNB, sweepDataLNBKey
+			sweepDataLNB[][numCols][] = NaN
 			SetDimLabel COLS, numCols, $ua_entry, sweepDataLNB, sweepDataLNBKey
 			sweepDataLNBKey[0][%$ua_entry]   = ua_entry
 			sweepDataLNBKey[1,2][%$ua_entry] = sweepDataLNBKey[p][%$entry]
