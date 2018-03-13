@@ -215,8 +215,13 @@ static Function PSQ_EvaluateBaselineProperties(panelTitle, type, sweepNo, chunk,
 		chunkLengthTime    = s.prePulseChunkLength
 		baselineType       = PSQ_BL_PRE_PULSE
 	else // post pulse baseline
+		 if(type == PSQ_RHEOBASE)
+			 WAVE durations = PSQ_GetPulseDurations(panelTitle, type, sweepNo, totalOnsetDelay)
+		 else
+			 Make/FREE/N=(LABNOTEBOOK_LAYER_COUNT) durations = s.pulseDuration
+		 endif
+
 		 // skip: onset delay, the pulse itself and one chunk of post pulse baseline
-		 WAVE durations   = PSQ_GetPulseDurations(panelTitle, type, sweepNo, totalOnsetDelay)
 		chunkStartTimeMax = (totalOnsetDelay + s.prePulseChunkLength + WaveMax(durations)) + chunk * s.postPulseChunkLength
 		chunkLengthTime   = s.postPulseChunkLength
 		baselineType      = PSQ_BL_POST_PULSE
