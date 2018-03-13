@@ -125,21 +125,21 @@ End
 
 /// Return the pulse durations from the labnotebook or calculate them before if required.
 /// For convenience unused headstages will have 0 instead of NaN in the returned wave.
-static Function/WAVE PSQ_GetPulseDurations(panelTitle, sweepNo, totalOnsetDelay)
+static Function/WAVE PSQ_GetPulseDurations(panelTitle, type, sweepNo, totalOnsetDelay)
 	string panelTitle
-	variable sweepNo, totalOnsetDelay
+	variable type, sweepNo, totalOnsetDelay
 
 	string key
 
 	WAVE numericalValues = GetLBNumericalValues(panelTitle)
 
-	key = PSQ_CreateLBNKey(PSQ_RHEOBASE, PSQ_FMT_LBN_PULSE_DUR, query = 1)
+	key = PSQ_CreateLBNKey(type, PSQ_FMT_LBN_PULSE_DUR, query = 1)
 	WAVE/Z durations = GetLastSetting(numericalValues, sweepNo, key, UNKNOWN_MODE)
 
 	if(!WaveExists(durations))
 		WAVE durations = PSQ_DeterminePulseDuration(panelTitle, sweepNo, totalOnsetDelay)
 
-		key = PSQ_CreateLBNKey(PSQ_RHEOBASE, PSQ_FMT_LBN_PULSE_DUR)
+		key = PSQ_CreateLBNKey(type, PSQ_FMT_LBN_PULSE_DUR)
 		ED_AddEntryToLabnotebook(panelTitle, key, durations, unit = "ms", overrideSweepNo = sweepNo)
 	endif
 
@@ -216,7 +216,7 @@ static Function PSQ_EvaluateBaselineProperties(panelTitle, type, sweepNo, chunk,
 		baselineType       = PSQ_BL_PRE_PULSE
 	else // post pulse baseline
 		 // skip: onset delay, the pulse itself and one chunk of post pulse baseline
-		 WAVE durations   = PSQ_GetPulseDurations(panelTitle, sweepNo, totalOnsetDelay)
+		 WAVE durations   = PSQ_GetPulseDurations(panelTitle, type, sweepNo, totalOnsetDelay)
 		chunkStartTimeMax = (totalOnsetDelay + s.prePulseChunkLength + WaveMax(durations)) + chunk * s.postPulseChunkLength
 		chunkLengthTime   = s.postPulseChunkLength
 		baselineType      = PSQ_BL_POST_PULSE
@@ -473,7 +473,7 @@ static Function PSQ_GetNumberOfChunks(panelTitle, sweepNo, headstage, type)
 			return floor((length - nonBL) / PSQ_DS_BL_EVAL_RANGE_MS)
 			break
 		case PSQ_RHEOBASE:
-			WAVE durations = PSQ_GetPulseDurations(panelTitle, sweepNo, totalOnsetDelay)
+			WAVE durations = PSQ_GetPulseDurations(panelTitle, PSQ_RHEOBASE, sweepNo, totalOnsetDelay)
 			ASSERT(durations[headstage] != 0, "Pulse duration can not be zero")
 			nonBL = totalOnsetDelay + durations[headstage] + PSQ_RB_POST_BL_EVAL_RANGE
 			return floor((length - nonBL - PSQ_RB_PRE_BL_EVAL_RANGE) / PSQ_RB_POST_BL_EVAL_RANGE) + 1
