@@ -355,8 +355,6 @@ Function SCOPE_CreateGraph(panelTitle, dataAcqOrTP)
 			NVAR baselineFrac = $GetTestpulseBaselineFraction(panelTitle)
 			cutOff = max(0, baseLineFrac * testPulseLength - duration/2 * sampInt)
 			SetAxis/W=$graph bottom cutOff, testPulseLength - cutOff
-		else
-
 		endif
 	else
 		Label/W=$graph bottom "Time (\\U)"
@@ -374,45 +372,44 @@ Function SCOPE_SetADAxisLabel(panelTitle,activeHeadStage)
 	WAVE ADCs = GetADCListFromConfig(ITCChanConfigWave)
 	variable adc, i, headStage, red, green, blue
 	variable numADChannels = DimSize(ADCs, ROWS)
-	variable numActiveDACs = DimSize(GetDACListFromConfig(ITCChanConfigWave), ROWS)
-	string adcStr, leftAxis, style, color, unit
+	string leftAxis, style, color, unit
 	string graph = SCOPE_GetGraph(panelTitle)
-	string unitWaveNote = note(ITCChanConfigWave)
-	if(windowExists(graph))
-		string axList = AxisList(graph)
 
-		for(i = 0; i < numADChannels; i += 1)
-			adc    = ADCs[i]
-			adcStr = num2str(adc)
-			leftAxis = "AD" + adcStr
-
-			if(WhichListItem(leftAxis, axList) == -1)
-				continue
-			endif
-
-			headStage = AFH_GetHeadstageFromADC(panelTitle, adc)
-			if(isFinite(headStage))
-				GetTraceColor(headStage, red, green, blue)
-			else
-				GetTraceColor(NUM_HEADSTAGES, red, green, blue)
-			endif
-
-			sprintf color, "\K(%d,%d,%d)" red, green, blue
-			if(activeHeadStage == headStage)
-				style = "\f05"
-			else
-				style = ""
-			endif
-
-			if(DAG_GetNumericalValue(panelTitle, "check_settings_show_power"))
-				unit = "a. u."
-			else
-				// extracts unit from string list that contains units in same sequence as columns in the ITCDatawave
-				unit = StringFromList(numActiveDACs + i, unitWaveNote)
-			endif
-			Label/W=$Graph $leftAxis, style + color + leftAxis + " (" + unit + ")"
-		endfor
+	if(!windowExists(graph))
+		return NaN
 	endif
+
+	string axList = AxisList(graph)
+
+	for(i = 0; i < numADChannels; i += 1)
+		adc    = ADCs[i]
+		leftAxis = "AD" + num2str(adc)
+
+		if(WhichListItem(leftAxis, axList) == -1)
+			continue
+		endif
+
+		headStage = AFH_GetHeadstageFromADC(panelTitle, adc)
+		if(isFinite(headStage))
+			GetTraceColor(headStage, red, green, blue)
+		else
+			GetTraceColor(NUM_HEADSTAGES, red, green, blue)
+		endif
+
+		sprintf color, "\K(%d,%d,%d)" red, green, blue
+		if(activeHeadStage == headStage)
+			style = "\f05"
+		else
+			style = ""
+		endif
+
+		if(DAG_GetNumericalValue(panelTitle, "check_settings_show_power"))
+			unit = "a. u."
+		else
+			unit = AFH_GetChannelUnit(ITCChanConfigWave, adc, ITC_XOP_CHANNEL_TYPE_ADC)
+		endif
+		Label/W=$Graph $leftAxis, style + color + leftAxis + " (" + unit + ")"
+	endfor
 End
 
 /// @brief Prepares a subset/copy of `ITCDataWave` for displaying it in the
@@ -482,6 +479,8 @@ Function SCOPE_UpdateOscilloscopeData(panelTitle, dataAcqOrTP, [chunk, fifoPos])
 		ASSERT(EqualWaves(ITCDataWave, OscilloscopeData, 512), "ITCDataWave and OscilloscopeData have differing dimensions")
 
 		ASSERT(!ParamIsDefault(fifoPos), "optional parameter fifoPos missing")
+
+		fifoPos += GetDataOffset(ITCChanConfigWave)
 
 		if(fifoPos == 0 || !IsFinite(fifoPos))
 			// nothing to do

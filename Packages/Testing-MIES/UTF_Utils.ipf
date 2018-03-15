@@ -605,3 +605,86 @@ Function SFD_Works()
 End
 
 /// @}
+
+/// ITCConfig Wave querying
+/// @{
+
+Function ITCC_WorksLegacy()
+
+	variable type, i
+	string actual, expected
+
+	WAVE/SDFR=root:ITCWaves config = ITCChanConfigWave_legacy
+	CHECK(IsValidConfigWave(config))
+
+	WAVE/T/Z units = AFH_GetChannelUnits(config)
+	CHECK(WaveExists(units))
+	// we have one TTL channel which does not have a unit
+	CHECK_EQUAL_VAR(DimSize(units, ROWS) + 1, DimSize(config, ROWS))
+	CHECK_EQUAL_TEXTWAVES(units, {"DA0", "DA1", "DA2", "AD0", "AD1", "AD2"})
+
+	for(i = 0; i < 3; i += 1)
+		type = ITC_XOP_CHANNEL_TYPE_DAC
+		expected = StringFromList(type, ITC_CHANNEL_NAMES) + num2str(i)
+		actual   = AFH_GetChannelUnit(config, i, type)
+		CHECK_EQUAL_STR(expected, actual)
+
+		type = ITC_XOP_CHANNEL_TYPE_ADC
+		expected = StringFromList(type, ITC_CHANNEL_NAMES) + num2str(i)
+		actual   = AFH_GetChannelUnit(config, i, type)
+		CHECK_EQUAL_STR(expected, actual)
+	endfor
+
+	WAVE/Z DACs = GetDACListFromConfig(config)
+	CHECK_WAVE(DACs, NUMERIC_WAVE)
+	CHECK_EQUAL_WAVES(DACs, {0, 1, 2}, mode = WAVE_DATA)
+
+	WAVE/Z ADCs = GetADCListFromConfig(config)
+	CHECK_WAVE(ADCs, NUMERIC_WAVE)
+	CHECK_EQUAL_WAVES(ADCs, {0, 1, 2}, mode = WAVE_DATA)
+
+	WAVE/Z TTLs = GetTTLListFromConfig(config)
+	CHECK_WAVE(TTLs, NUMERIC_WAVE)
+	CHECK_EQUAL_WAVES(TTLS, {1}, mode = WAVE_DATA)
+End
+
+Function ITCC_WorksVersion1()
+
+	variable type, i
+	string actual, expected
+
+	WAVE/SDFR=root:ITCWaves config = ITCChanConfigWave_Version1
+	CHECK(IsValidConfigWave(config))
+
+	WAVE/T/Z units = AFH_GetChannelUnits(config)
+	CHECK(WaveExists(units))
+	// we have one TTL channel which does not have a unit
+	CHECK_EQUAL_VAR(DimSize(units, ROWS) + 1, DimSize(config, ROWS))
+	CHECK_EQUAL_TEXTWAVES(units, {"DA0", "DA1", "DA2", "AD0", "AD1", "AD2"})
+
+	for(i = 0; i < 3; i += 1)
+		type = ITC_XOP_CHANNEL_TYPE_DAC
+		expected = StringFromList(type, ITC_CHANNEL_NAMES) + num2str(i)
+		actual   = AFH_GetChannelUnit(config, i, type)
+		CHECK_EQUAL_STR(expected, actual)
+
+		type = ITC_XOP_CHANNEL_TYPE_ADC
+		expected = StringFromList(type, ITC_CHANNEL_NAMES) + num2str(i)
+		actual   = AFH_GetChannelUnit(config, i, type)
+		CHECK_EQUAL_STR(expected, actual)
+	endfor
+
+	WAVE/Z DACs = GetDACListFromConfig(config)
+	CHECK_WAVE(DACs, NUMERIC_WAVE)
+	CHECK_EQUAL_WAVES(DACs, {0, 1, 2}, mode = WAVE_DATA)
+
+	WAVE/Z ADCs = GetADCListFromConfig(config)
+	CHECK_WAVE(ADCs, NUMERIC_WAVE)
+	CHECK_EQUAL_WAVES(ADCs, {0, 1, 2}, mode = WAVE_DATA)
+
+	WAVE/Z TTLs = GetTTLListFromConfig(config)
+	CHECK_WAVE(TTLs, NUMERIC_WAVE)
+	CHECK_EQUAL_WAVES(TTLS, {1}, mode = WAVE_DATA)
+End
+
+/// @}

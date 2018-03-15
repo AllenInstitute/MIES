@@ -186,14 +186,11 @@ static Function/WAVE GetChanneListFromITCConfig(config, channelType)
 	WAVE config
 	variable channelType
 
-	variable numRows, numCols, itcChan, i, j
+	variable numRows, i, j
+
+	ASSERT(IsValidConfigWave(config), "Invalid config wave")
 
 	numRows = DimSize(config, ROWS)
-	numCols = DimSize(config, COLS)
-
-	ASSERT(numRows > 0, "Can not handle wave with zero rows")
-	ASSERT(numCols == 4, "Expected a wave with 4 columns")
-
 	Make/U/B/FREE/N=(numRows) activeChannels
 
 	for(i = 0; i < numRows; i += 1)
@@ -1333,7 +1330,8 @@ Function/Wave GetConfigWave(sweepWave)
 
 	string name = "Config_" + NameOfWave(sweepWave)
 	Wave/SDFR=GetWavesDataFolderDFR(sweepWave) config = $name
-	ASSERT(DimSize(config,COLS)==4,"Unexpected number of columns")
+	ASSERT(IsValidConfigWave(config),"Invalid config wave")
+
 	return config
 End
 
@@ -1359,14 +1357,28 @@ End
 Function GetSamplingInterval(config)
 	Wave config
 
+	ASSERT(IsValidConfigWave(config), "Expected a valid config wave")
+
 	// from ITCConfigAllChannels help file:
 	// Third Column  = SamplingInterval:  integer value for sampling interval in microseconds (minimum value - 5 us)
 	Duplicate/D/R=[][2]/FREE config samplingInterval
 
 	// The sampling interval is the same for all channels
-	ASSERT(numpnts(samplingInterval),"Expected non-empty wave")
 	ASSERT(WaveMax(samplingInterval) == WaveMin(samplingInterval),"Expected constant sample interval for all channels")
 	return samplingInterval[0]
+End
+
+/// @brief Returns the data offset of the sweep in points
+Function GetDataOffset(config)
+	Wave config
+
+	ASSERT(IsValidConfigWave(config),"Expected a valid config wave")
+
+	Duplicate/D/R=[][4]/FREE config, offsets
+
+	// The data offset is the same for all channels
+	ASSERT(WaveMax(offsets) == WaveMin(offsets), "Expected constant data offset for all channels")
+	return offsets[0]
 End
 
 /// @brief Write the given property to the config wave
@@ -1447,8 +1459,8 @@ Function CreateTiledChannelGraph(graph, config, sweepNo, numericalValues,  textu
 	WAVE/Z channelSelWave
 
 	variable red, green, blue, axisIndex, numChannels, offset
-	variable numDACs, numADCs, numTTLs, i, j, k, channelOffset, hasPhysUnit, slotMult
-	variable moreData, low, high, step, spacePerSlot, chan, numSlots, numHorizWaves, numVertWaves, idx, configIdx
+	variable numDACs, numADCs, numTTLs, i, j, k, hasPhysUnit, slotMult
+	variable moreData, low, high, step, spacePerSlot, chan, numSlots, numHorizWaves, numVertWaves, idx
 	variable numTTLBits, colorIndex, totalVertBlocks, headstage
 	variable delayOnsetUser, delayOnsetAuto, delayTermination, delaydDAQ, dDAQEnabled, oodDAQEnabled
 	variable stimSetLength, samplingInt, xRangeStart, xRangeEnd, first, last, count
@@ -1456,7 +1468,7 @@ Function CreateTiledChannelGraph(graph, config, sweepNo, numericalValues,  textu
 	variable totalXRange = NaN
 
 	string trace, traceType, channelID, axisLabel, entry, range
-	string unit, configNote, name, str, vertAxis, oodDAQRegionsAll, dDAQActiveHeadstageAll, horizAxis
+	string unit, name, str, vertAxis, oodDAQRegionsAll, dDAQActiveHeadstageAll, horizAxis
 
 	ASSERT(!isEmpty(graph), "Empty graph")
 	ASSERT(IsFinite(sweepNo), "Non-finite sweepNo")
@@ -1464,7 +1476,6 @@ Function CreateTiledChannelGraph(graph, config, sweepNo, numericalValues,  textu
 	WAVE ADCs = GetADCListFromConfig(config)
 	WAVE DACs = GetDACListFromConfig(config)
 	WAVE TTLs = GetTTLListFromConfig(config)
-	configNote = note(config)
 
 	Duplicate/FREE ADCs, ADCsOriginal
 	Duplicate/FREE DACs, DACsOriginal
@@ -1473,7 +1484,7 @@ Function CreateTiledChannelGraph(graph, config, sweepNo, numericalValues,  textu
 	numADCsOriginal = DimSize(ADCs, ROWS)
 	numTTLsOriginal = DimSize(TTLs, ROWS)
 
-	RemoveDisabledChannels(channelSelWave, ADCs, DACs, numericalValues, sweepNo, configNote)
+	RemoveDisabledChannels(channelSelWave, ADCs, DACs, numericalValues, sweepNo)
 	numDACs = DimSize(DACs, ROWS)
 	numADCs = DimSize(ADCs, ROWS)
 	numTTLs = DimSize(TTLs, ROWS)
@@ -1662,7 +1673,6 @@ Function CreateTiledChannelGraph(graph, config, sweepNo, numericalValues,  textu
 					WAVE/Z status    = statusDAC
 					WAVE channelList = DACs
 					channelID        = "DA"
-					channelOffset    = 0
 					hasPhysUnit      = 1
 					slotMult         = 1
 					numHorizWaves    = tgs.dDAQDisplayMode ? numRegions : 1
@@ -1677,7 +1687,6 @@ Function CreateTiledChannelGraph(graph, config, sweepNo, numericalValues,  textu
 					WAVE/Z status    = statusADC
 					WAVE channelList = ADCs
 					channelID        = "AD"
-					channelOffset    = numDACs
 					hasPhysUnit      = 1
 					slotMult         = ADC_SLOT_MULTIPLIER
 					numHorizWaves    = tgs.dDAQDisplayMode ? numRegions : 1
@@ -1692,7 +1701,6 @@ Function CreateTiledChannelGraph(graph, config, sweepNo, numericalValues,  textu
 					WAVE/Z status    = $""
 					WAVE channelList = TTLs
 					channelID        = "TTL"
-					channelOffset    = numDACs + numADCs
 					hasPhysUnit      = 0
 					slotMult         = 1
 					numHorizWaves    = 1
@@ -1824,10 +1832,7 @@ Function CreateTiledChannelGraph(graph, config, sweepNo, numericalValues,  textu
 
 					if(k == 0) // first column, add labels
 						if(hasPhysUnit)
-							// for removed channels their units are also removed from the
-							// config note, so we can just take total channel number here
-							configIdx = activeChanCount[i] + channelOffset
-							unit = StringFromList(configIdx, configNote)
+							unit = AFH_GetChannelUnit(config, chan, channelTypes[i])
 						else
 							unit = "a.u."
 						endif
@@ -2561,12 +2566,15 @@ Function/Wave ExtractOneDimDataFromSweep(config, sweep, column)
 	WAVE sweep
 	variable column
 
-	ASSERT(DimSize(config, ROWS) == DimSize(sweep, COLS), "Sweep and config wave differ in the number of channels")
+	ASSERT(IsValidSweepAndConfig(sweep, config), "Sweep and config are not compatible")
 	ASSERT(column < DimSize(sweep, COLS), "The column is out of range")
 
 	MatrixOP/FREE data = col(sweep, column)
 	SetScale/P x, DimOffset(sweep, ROWS), DimDelta(sweep, ROWS), WaveUnits(sweep, ROWS), data
-	SetScale d, 0, 0, StringFromList(column, note(config)), data
+	WAVE/T units = AFH_GetChannelUnits(config)
+	if(column < DimSize(units, ROWS))
+		SetScale d, 0, 0, units[column], data
+	endif
 
 	Note data, note(sweep)
 
@@ -4040,11 +4048,10 @@ Function ChannelSelectionWaveToGUI(panel, channelSel)
 End
 
 /// @brief Removes the disabled channels and headstages from `ADCs` and `DACs`
-Function RemoveDisabledChannels(channelSel, ADCs, DACs, numericalValues, sweepNo, configNote)
+Function RemoveDisabledChannels(channelSel, ADCs, DACs, numericalValues, sweepNo)
 	WAVE/Z channelSel
 	WAVE ADCs, DACs, numericalValues
 	variable sweepNo
-	string &configNote
 
 	variable numADCs, numDACs, i
 
@@ -4074,14 +4081,12 @@ Function RemoveDisabledChannels(channelSel, ADCs, DACs, numericalValues, sweepNo
 	for(i = numADCs - 1; i >= 0; i -= 1)
 		if(!channelSelMod[ADCs[i]][%AD])
 			DeletePoints/M=(ROWS) i, 1, ADCs
-			configNote = RemoveListItem(numDACs + i, configNote)
 		endif
 	endfor
 
 	for(i = numDACs - 1; i >= 0; i -= 1)
 		if(!channelSelMod[DACs[i]][%DA])
 			DeletePoints/M=(ROWS) i, 1, DACs
-			configNote = RemoveListItem(i, configNote)
 		endif
 	endfor
 End
@@ -4154,7 +4159,7 @@ Function SplitSweepIntoComponents(numericalValues, sweep, sweepWave, configWave,
 
 	ASSERT(DataFolderExistsDFR(targetDFR), "targetDFR must exist")
 	ASSERT(IsFinite(sweep), "Sweep number must be finite")
-	ASSERT(DimSize(configWave, ROWS) == DimSize(sweepWave, COLS), "Sweep and config wave differ in the number of channels")
+	ASSERT(IsValidSweepAndConfig(sweepWave, configWave), "Sweep and config waves are not compatible")
 
 	numRows = DimSize(configWave, ROWS)
 	for(i = 0; i < numRows; i += 1)
@@ -4442,4 +4447,31 @@ Function/WAVE MoveWaveWithOverwrite(dest, src)
 
 	KillOrMoveToTrash(wv=dest)
 	MoveWave src, $path
+End
+
+/// @brief Check if the given wave is a valid ITCConfigWave
+Function IsValidConfigWave(config)
+	WAVE/Z config
+
+	return WaveExists(config) &&        \
+		   DimSize(config, ROWS) > 0 && \
+		   DimSize(config, COLS) >= 4
+End
+
+/// @brief Check if the given wave is a valid ITCDataWave
+Function IsValidSweepWave(sweep)
+	WAVE/Z sweep
+
+	return WaveExists(sweep) &&        \
+		   DimSize(sweep, COLS) > 0 && \
+		   DimSize(sweep, ROWS) > 0
+End
+
+/// @brief Check if the two waves are valid and compatible
+Function IsValidSweepAndConfig(sweep, config)
+	WAVE/Z sweep, config
+
+	return IsValidConfigWave(config) &&                  \
+		   IsValidSweepWave(sweep) &&                    \
+		   DimSize(sweep, COLS) == DimSize(config, ROWS)
 End

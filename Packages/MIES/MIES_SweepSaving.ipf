@@ -94,7 +94,7 @@ static Function/WAVE SWS_StoreITCDataWaveScaled(panelTitle, dfr, sweepNo)
 	WAVE ITCDataWave = GetITCDataWave(panelTitle)
 	WAVE ITCChanConfigWave = GetITCChanConfigWave(panelTitle)
 
-	ASSERT(DimSize(ITCChanConfigWave, ROWS) == DimSize(ITCDataWave, COLS), "ITC Data and config wave differ in the number of channels, this must NOT happen!")
+	ASSERT(IsValidSweepAndConfig(ITCDataWave, ITCChanConfigWave), "ITC Data and config wave are not compatible")
 
 	WAVE DA_EphysGuiState = GetDA_EphysGuiStateNum(panelTitle)
 	WAVE ADCs = GetADCListFromConfig(ITCChanConfigWave)

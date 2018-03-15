@@ -852,3 +852,5 @@ Constant NUM_ENTRIES_FOR_MULTITHREAD = 16
 StrConstant DAQ_ALLOWED_FUNCTIONS = "DQ_RestartDAQ;DAP_ButtonProc_AcquireData;RA_CounterMD"
 
 StrConstant RESISTANCE_GRAPH = "AnalysisFuncResistanceGraph"
+
+StrConstant CHANNEL_UNIT_KEY = "ChannelUnit"
