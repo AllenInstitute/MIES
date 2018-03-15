@@ -1186,7 +1186,7 @@ End
 /// - 30: Delay onset oodDAQ
 /// - 31: Pulse To Pulse Length for pulse Train stimsets
 /// - 32: Repeated Acquisition Cycle ID
-/// - 33: Stim Wave checksum (can be used to disambiguate cases
+/// - 33: Stim Wave Checksum (can be used to disambiguate cases
 ///                           where two stimsets are named the same
 ///                           but have different contents)
 /// - 34: Multi Device mode
@@ -1359,7 +1359,7 @@ Function/Wave GetSweepSettingsKeyWave(panelTitle)
 	wv[%Units][32]     = ""
 	wv[%Tolerance][32] = "1"
 
-	wv[%Parameter][33] = "Stim Wave checksum"
+	wv[%Parameter][33] = "Stim Wave Checksum"
 	wv[%Units][33]     = ""
 	wv[%Tolerance][33] = "1"
 

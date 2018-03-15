@@ -718,11 +718,21 @@ static Function DC_PlaceDataInITCDataWave(panelTitle, numActiveChannels, dataAcq
 		DC_DocumentChannelProperty(panelTitle, STIM_WAVE_NAME_KEY, headstageDAC[activeColumn], i, str=setName[activeColumn])
 
 		for(j = 0; j < TOTAL_NUM_EVENTS; j += 1)
-			func = analysisFunctions[headstageDAC[activeColumn]][j]
+			if(IsFinite(headstageDAC[activeColumn])) // associated channel
+				func = analysisFunctions[headstageDAC[activeColumn]][j]
+			else
+				func = ""
+			endif
+
 			DC_DocumentChannelProperty(panelTitle, StringFromList(j, EVENT_NAME_LIST_LBN), headstageDAC[activeColumn], i, str=func)
 		endfor
 
-		str = analysisFunctions[headstageDAC[activeColumn]][ANALYSIS_FUNCTION_PARAMS]
+		if(IsFinite(headstageDAC[activeColumn])) // associated channel
+			str = analysisFunctions[headstageDAC[activeColumn]][ANALYSIS_FUNCTION_PARAMS]
+		else
+			str = ""
+		endif
+
 		DC_DocumentChannelProperty(panelTitle, ANALYSIS_FUNCTION_PARAMS_LBN, headstageDAC[activeColumn], i, str=str)
 
 		ctrl = GetSpecialControlLabel(CHANNEL_TYPE_DAC, CHANNEL_CONTROL_UNIT)
@@ -1027,6 +1037,7 @@ static Function DC_DocumentChannelProperty(panelTitle, entry, headstage, channel
 		if(!ParamIsDefault(var))
 			numCols = DimSize(sweepDataLNB, COLS)
 			Redimension/N=(-1, numCols + 1, -1) sweepDataLNB, sweepDataLNBKey
+			sweepDataLNB[][numCols][] = NaN
 			SetDimLabel COLS, numCols, $ua_entry, sweepDataLNB, sweepDataLNBKey
 			sweepDataLNBKey[0][%$ua_entry]   = ua_entry
 			sweepDataLNBKey[1,2][%$ua_entry] = sweepDataLNBKey[p][%$entry]

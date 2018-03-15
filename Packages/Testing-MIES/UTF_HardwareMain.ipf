@@ -122,6 +122,9 @@ Function run()
 	list = AddListItem("DAQ_ChangeToMultiDeviceDAQ", list, ";", INF)
 	list = AddListItem("Test_ChangeToMultiDeviceDAQ", list, ";", INF)
 
+	list = AddListItem("DAQ_UnassociatedChannels", list, ";", INF)
+	list = AddListItem("Test_UnassociatedChannels", list, ";", INF)
+
 #ifndef TESTS_WITH_YOKING
 
 	list = AddListItem("PS_ST_Run1", list, ";", INF)
