@@ -3405,3 +3405,27 @@ Function SleepHighPrecision(var)
 		endif
 	endfor
 End
+
+/// @brief Return the machine epsilon for the given wave type
+///
+/// Experimentally determined with Igor Pro 7.08
+Function GetMachineEpsilon(type)
+	variable type
+
+	type = ClearBit(type, IGOR_TYPE_UNSIGNED)
+	ASSERT((type & IGOR_TYPE_COMPLEX) == 0, "Complex waves are not supported")
+
+	switch(type)
+		case IGOR_TYPE_64BIT_FLOAT:
+			return 2^-52
+		case IGOR_TYPE_32BIT_FLOAT:
+			return 2^-23
+		case IGOR_TYPE_64BIT_INT:
+		case IGOR_TYPE_32BIT_INT:
+		case IGOR_TYPE_16BIT_INT:
+		case IGOR_TYPE_8BIT_INT:
+			return 1
+		default:
+			ASSERT(0, "Unsupported wave type")
+	endswitch
+End
