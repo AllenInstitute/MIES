@@ -177,7 +177,8 @@ static Function/WAVE PSQ_DeterminePulseDuration(panelTitle, sweepNo, totalOnsetD
 		endif
 
 		WAVE singleDA = AFH_ExtractOneDimDataFromSweep(panelTitle, sweepWave, i, ITC_XOP_CHANNEL_TYPE_DAC, config = config)
-		level = WaveMin(singleDA, totalOnsetDelay, inf) + 0.1 * (WaveMax(singleDA, totalOnsetDelay, inf) - WaveMin(singleDA, totalOnsetDelay, inf))
+		level = WaveMin(singleDA, totalOnsetDelay, inf) + GetMachineEpsilon(WaveType(singleDA))
+
 		Make/FREE/D levels
 		FindLevels/Q/N=2/DEST=levels/R=(totalOnsetDelay, inf) singleDA, level
 		ASSERT(DimSize(levels, ROWS) == 2, "Unexpected number of levels")
