@@ -695,7 +695,13 @@ static Function/WAVE PSQ_SearchForSpikes(panelTitle, type, sweepWave, headstage,
 
 	Make/FREE/D/N=(LABNOTEBOOK_LAYER_COUNT) spikeDetection = (p == headstage ? 0 : NaN)
 
-	WAVE singleDA = AFH_ExtractOneDimDataFromSweep(panelTitle, sweepWave, headstage, ITC_XOP_CHANNEL_TYPE_DAC)
+	if(WaveRefsEqual(sweepWave, GetITCDataWave(panelTitle)))
+		WAVE config = GetITCChanConfigWave(panelTitle)
+	else
+		WAVE config = GetConfigWave(sweepWave)
+	endif
+
+	WAVE singleDA = AFH_ExtractOneDimDataFromSweep(panelTitle, sweepWave, headstage, ITC_XOP_CHANNEL_TYPE_DAC, config = config)
 	level = WaveMin(singleDA, totalOnsetDelay, inf) + 0.1 * (WaveMax(singleDA, totalOnsetDelay, inf) - WaveMin(singleDA, totalOnsetDelay, inf))
 
 	if(level == 0.0) // DA data is constant zero
@@ -708,7 +714,7 @@ static Function/WAVE PSQ_SearchForSpikes(panelTitle, type, sweepWave, headstage,
 	first = levels[0]
 	last  = inf
 
-	WAVE singleAD = AFH_ExtractOneDimDataFromSweep(panelTitle, sweepWave, headstage, ITC_XOP_CHANNEL_TYPE_ADC)
+	WAVE singleAD = AFH_ExtractOneDimDataFromSweep(panelTitle, sweepWave, headstage, ITC_XOP_CHANNEL_TYPE_ADC, config = config)
 	ASSERT(!cmpstr(WaveUnits(singleAD, -1), "mV"), "Unexpected AD Unit")
 
 	if(PSQ_TestOverrideActive())
