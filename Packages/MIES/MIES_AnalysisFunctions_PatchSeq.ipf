@@ -19,17 +19,18 @@
 /// =========================== ========================================================= ================= =====================  =====================
 /// Naming constant             Description                                               Analysis function Per Chunk?             Headstage dependent?
 /// =========================== ========================================================= ================= =====================  =====================
-/// PSQ_FMT_LBN_SPIKE_DETECT    Spike was detected on the sweep                           SP, RB            No                     Yes
+/// PSQ_FMT_LBN_SPIKE_DETECT    Spike was detected on the sweep                           SP, RB, RA        No                     Yes
+/// PSQ_FMT_LBN_SPIKE_POSITION  Spike position in ms                                      RA                No                     Yes
 /// PSQ_FMT_LBN_STEPSIZE        Current DAScale step size                                 SP                No                     Yes
 /// PSQ_FMT_LBN_FINAL_SCALE     Final DAScale of the given headstage, only set on success SP, RB            No                     No
 /// PSQ_FMT_LBN_INITIAL_SCALE   Initial DAScale                                           RB                No                     No
-/// PSQ_FMT_LBN_RMS_SHORT_PASS  Short RMS baseline QC result                              DA, RB            Yes                    Yes
-/// PSQ_FMT_LBN_RMS_LONG_PASS   Long RMS baseline QC result                               DA, RB            Yes                    Yes
-/// PSQ_FMT_LBN_TARGETV_PASS    Target voltage baseline QC result                         DA, RB            Yes                    Yes
-/// PSQ_FMT_LBN_CHUNK_PASS      Which chunk passed/failed baseline QC                     DA, RB            Yes                    Yes
-/// PSQ_FMT_LBN_BL_QC_PASS      Pass/fail state of the complete baseline                  DA, RB            No                     Yes
-/// PSQ_FMT_LBN_SWEEP_PASS      Pass/fail state of the complete sweep                     DA, SP            No                     No
-/// PSQ_FMT_LBN_SET_PASS        Pass/fail state of the complete set                       DA, RB            No                     No
+/// PSQ_FMT_LBN_RMS_SHORT_PASS  Short RMS baseline QC result                              DA, RB, RA        Yes                    Yes
+/// PSQ_FMT_LBN_RMS_LONG_PASS   Long RMS baseline QC result                               DA, RB, RA        Yes                    Yes
+/// PSQ_FMT_LBN_TARGETV_PASS    Target voltage baseline QC result                         DA, RB, RA        Yes                    Yes
+/// PSQ_FMT_LBN_CHUNK_PASS      Which chunk passed/failed baseline QC                     DA, RB, RA        Yes                    Yes
+/// PSQ_FMT_LBN_BL_QC_PASS      Pass/fail state of the complete baseline                  DA, RB, RA        No                     Yes
+/// PSQ_FMT_LBN_SWEEP_PASS      Pass/fail state of the complete sweep                     DA, SP, RA        No                     No
+/// PSQ_FMT_LBN_SET_PASS        Pass/fail state of the complete set                       DA, RB, RA        No                     No
 /// PSQ_FMT_LBN_PULSE_DUR       Pulse duration as determined experimentally               RB                No                     Yes
 /// =========================== ========================================================= ================= =====================  =====================
 ///
@@ -47,6 +48,7 @@ static Constant PSQ_TARGETV_TEST   = 0x2
 static StrConstant PSQ_SP_LBN_PREFIX = "Squ. Pul."
 static StrConstant PSQ_DS_LBN_PREFIX = "DA Scale"
 static StrConstant PSQ_RB_LBN_PREFIX = "Rheobase"
+static StrConstant PSQ_RA_LBN_PREFIX = "Ramp"
 
 /// @brief Return labnotebook keys for patch seq analysis functions
 ///
@@ -69,6 +71,9 @@ Function/S PSQ_CreateLBNKey(type, formatString, [chunk, query])
 			break
 		case PSQ_SQUARE_PULSE:
 			prefix = PSQ_SP_LBN_PREFIX
+			break
+		case PSQ_RAMP:
+			prefix = PSQ_RA_LBN_PREFIX
 			break
 		default:
 			ASSERT(0, "unsupported type")
@@ -115,6 +120,11 @@ static Function PSQ_GetPulseSettingsForType(type, s)
 		case PSQ_RHEOBASE:
 			s.prePulseChunkLength  = PSQ_RB_PRE_BL_EVAL_RANGE
 			s.postPulseChunkLength = PSQ_RB_POST_BL_EVAL_RANGE
+			s.pulseDuration        = NaN
+			break
+		case PSQ_RAMP:
+			s.prePulseChunkLength  = PSQ_RA_BL_EVAL_RANGE
+			s.postPulseChunkLength = PSQ_RA_BL_EVAL_RANGE
 			s.pulseDuration        = NaN
 			break
 		default:
@@ -226,7 +236,7 @@ static Function PSQ_EvaluateBaselineProperties(panelTitle, type, sweepNo, chunk,
 		chunkLengthTime    = s.prePulseChunkLength
 		baselineType       = PSQ_BL_PRE_PULSE
 	else // post pulse baseline
-		 if(type == PSQ_RHEOBASE)
+		 if(type == PSQ_RHEOBASE || type == PSQ_RAMP)
 			 WAVE durations = PSQ_GetPulseDurations(panelTitle, type, sweepNo, totalOnsetDelay)
 		 else
 			 Make/FREE/N=(LABNOTEBOOK_LAYER_COUNT) durations = s.pulseDuration
@@ -469,7 +479,7 @@ End
 
 /// @brief Return the number of chunks
 ///
-/// A chunk is #PSQ_DS_BL_EVAL_RANGE_MS/#PSQ_RB_POST_BL_EVAL_RANGE/#PSQ_RB_PRE_BL_EVAL_RANGE [ms] of baseline
+/// A chunk is #PSQ_DS_BL_EVAL_RANGE_MS/#PSQ_RB_POST_BL_EVAL_RANGE/#PSQ_RB_PRE_BL_EVAL_RANGE/#PSQ_RA_BL_EVAL_RANGE [ms] of baseline
 static Function PSQ_GetNumberOfChunks(panelTitle, sweepNo, headstage, type)
 	string panelTitle
 	variable type, sweepNo, headstage
@@ -493,6 +503,12 @@ static Function PSQ_GetNumberOfChunks(panelTitle, sweepNo, headstage, type)
 			ASSERT(durations[headstage] != 0, "Pulse duration can not be zero")
 			nonBL = totalOnsetDelay + durations[headstage] + PSQ_RB_POST_BL_EVAL_RANGE
 			return floor((length - nonBL - PSQ_RB_PRE_BL_EVAL_RANGE) / PSQ_RB_POST_BL_EVAL_RANGE) + 1
+			break
+		case PSQ_RAMP:
+			WAVE durations = PSQ_GetPulseDurations(panelTitle, PSQ_RAMP, sweepNo, totalOnsetDelay)
+			ASSERT(durations[headstage] != 0, "Pulse duration can not be zero")
+			nonBL = totalOnsetDelay + durations[headstage] + PSQ_RA_BL_EVAL_RANGE
+			return floor((length - nonBL - PSQ_RA_BL_EVAL_RANGE) / PSQ_RA_BL_EVAL_RANGE) + 1
 			break
 		default:
 			ASSERT(0, "unsupported type")
@@ -618,7 +634,7 @@ End
 /// - x position in ms where the spike is in each sweep/step
 ///   For convenience the values `0` always means no spike and `1` spike detected (at the appropriate position).
 ///
-/// #PSQ_RHEOBASE:
+/// #PSQ_RHEOBASE/#PSQ_RAMP:
 ///
 /// Rows:
 /// - chunk indizes
@@ -643,6 +659,7 @@ Function/WAVE PSQ_CreateOverrideResults(panelTitle, headstage, type)
 	ASSERT(WaveExists(wv), "Stimset does not exist")
 
 	switch(type)
+		case PSQ_RAMP:
 		case PSQ_RHEOBASE:
 			numLayers = 2
 		case PSQ_DA_SCALE:
@@ -734,6 +751,9 @@ static Function/WAVE PSQ_SearchForSpikes(panelTitle, type, sweepWave, headstage,
 			case PSQ_SQUARE_PULSE:
 				overrideValue = overrideResults[count]
 				break
+			case PSQ_RAMP:
+				overrideValue = overrideResults[0][count][1]
+				break
 			default:
 				ASSERT(0, "unsupported type")
 		endswitch
@@ -750,8 +770,15 @@ static Function/WAVE PSQ_SearchForSpikes(panelTitle, type, sweepWave, headstage,
 			spikePosition = overrideValue
 		endif
 	else
+		if(type == PSQ_RAMP) // during midsweep
+			// use the first active AD channel
+			level = PSQ_SPIKE_LEVEL * SWS_GetChannelGains(panelTitle)[1]
+		else
+			level = PSQ_SPIKE_LEVEL
+		endif
+
 		// search the spike from the rising edge till the end of the wave
-		FindLevel/Q/R=(first, last) singleAD, PSQ_SPIKE_LEVEL
+		FindLevel/Q/R=(first, last) singleAD, level
 		spikeDetection[headstage] = !V_flag
 
 		if(!ParamIsDefault(spikePosition))
@@ -845,6 +872,28 @@ Function PSQ_DS_GetDAScaleOffset(panelTitle, headstage, opMode)
 	else
 		ASSERT(0, "unknown opMode")
 	endif
+End
+
+/// @brief Check if the given sweep has at least one "spike detected" entry in
+///        the labnotebook
+///
+/// @return 1 if found at least one, zero if none and `NaN` if no such entry
+/// could be found
+Function PSQ_FoundAtLeastOneSpike(panelTitle, sweepNo)
+	string panelTitle
+	variable sweepNo
+
+	string key
+
+	WAVE numericalValues = GetLBNumericalValues(panelTitle)
+	key = PSQ_CreateLBNKey(PSQ_RAMP, PSQ_FMT_LBN_SPIKE_DETECT, query = 1)
+	WAVE/Z settings = GetLastSetting(numericalValues, sweepNo, key, UNKNOWN_MODE)
+
+	if(!WaveExists(settings))
+		return NaN
+	endif
+
+	return Sum(settings) > 0
 End
 
 /// @brief Require parameters from stimset
@@ -1605,4 +1654,326 @@ Function PSQ_Rheobase(panelTitle, s)
 	ED_AddEntryToLabnotebook(panelTitle, key, result, unit = LABNOTEBOOK_BINARY_UNIT, overrideSweepNo = s.sweepNo)
 
 	return baselineQCPassed ? ANALYSIS_FUNC_RET_EARLY_STOP : ret
+End
+
+/// @brief Analysis function for applying a ramp stim set and finding the position were it spikes.
+///
+/// Prerequisites:
+/// - Does only work for one headstage
+/// - Assumes that the stimset has a ramp of non-zero and arbitrary length
+/// - Pre pulse baseline length is #PSQ_RA_BL_EVAL_RANGE
+/// - Post pulse baseline length is at least two times #PSQ_RA_BL_EVAL_RANGE
+///
+/// Testing:
+/// For testing the spike detection logic, the results can be defined in the wave
+/// root:overrideResults. @see PSQ_CreateOverrideResults()
+///
+/// Decision logic flowchart:
+///
+/// \rst
+///	.. graphviz:: ../patch-seq-ramp.dot
+/// \endrst
+///
+/// @verbatim
+///
+/// Sketch of a stimset with pre pulse baseline (-), ramp (/|), and post pulse baseline (-).
+///
+///                 /|
+///                / |
+///               /  |
+///              /   |
+///             /    |
+///            /     |
+///           /      |
+///          /       |
+///         /        |
+///        /         |
+///       /          |
+///      /           |
+///     /            |
+/// ---/             |--------------------------------------------
+///
+/// @endverbatim
+Function PSQ_Ramp(panelTitle, s)
+	string panelTitle
+	STRUCT AnalysisFunction_V3 &s
+
+	variable DAScale, val, numSweeps, currentSweepHasSpike, setPassed
+	variable baselineQCPassed, finalDAScale, initialDAScale, spikePos
+	variable numBaselineChunks, lastFifoPos, totalOnsetDelay, fifoInStimsetPoint, fifoInStimsetTime
+	variable i, ret, numSweepsWithSpikeDetection, sweepNoFound, length, minLength
+	variable DAC, sweepPassed, sweepsInSet, passesInSet, acquiredSweepsInSet, skipToEnd, spikeFound
+	variable pulseStart, pulseDuration, fifoPos, fifoOffset
+	string key, msg, stimset
+
+	switch(s.eventType)
+		case PRE_DAQ_EVENT:
+			PGC_SetAndActivateControl(panelTitle, "SetVar_DataAcq_ITI", val = 0)
+			PGC_SetAndActivateControl(panelTitle, "check_DataAcq_AutoBias", val = 1)
+			PGC_SetAndActivateControl(panelTitle, "check_Settings_MD", val = 1)
+			PGC_SetAndActivateControl(panelTitle, "check_Settings_ITITP", val = 1)
+			PGC_SetAndActivateControl(panelTitle, "Check_Settings_InsertTP", val = 1)
+			PGC_SetAndActivateControl(panelTitle, "Check_DataAcq1_DistribDaq", val = 0)
+			PGC_SetAndActivateControl(panelTitle, "Check_DataAcq1_dDAQOptOv", val = 0)
+			PGC_SetAndActivateControl(panelTitle, "Check_DataAcq1_RepeatAcq", val = 1)
+
+			if(DAG_GetHeadstageMode(panelTitle, s.headstage) != I_CLAMP_MODE)
+				printf "(%s) Clamp mode must be current clamp.\r", panelTitle
+				ControlWindowToFront()
+				return 1
+			endif
+
+			WAVE statusHS = DAG_GetChannelState(panelTitle, CHANNEL_TYPE_HEADSTAGE)
+			if(sum(statusHS) != 1)
+				printf "(%s) Analysis function only supports one headstage.\r", panelTitle
+				ControlWindowToFront()
+				return 1
+			endif
+
+			WAVE statusTTL = DAG_GetChannelState(panelTitle, CHANNEL_TYPE_TTL)
+			if(sum(statusTTL) != 0)
+				printf "(%s) Analysis function does not support TTL channels.\r", panelTitle
+				ControlWindowToFront()
+				return 1
+			endif
+
+			length = PSQ_GetDAStimsetLength(panelTitle, s.headstage)
+			minLength = 3 * PSQ_RA_BL_EVAL_RANGE
+			if(length < minLength)
+				printf "(%s) Stimset of headstage %d is too short, it must be at least %g ms long.\r", panelTitle, s.headstage, minLength
+				ControlWindowToFront()
+				return 1
+			endif
+
+			val = DAG_GetNumericalValue(panelTitle, "setvar_DataAcq_AutoBiasV")
+
+			if(!IsFinite(val) || CheckIfSmall(val, tol = 1e-12))
+				printf "(%s): Autobias value is zero or non-finite\r", panelTitle
+				ControlWindowToFront()
+				return 1
+			endif
+
+			DAC = AFH_GetDACFromHeadstage(panelTitle, s.headstage)
+			stimset = AFH_GetStimSetName(panelTitle, DAC, CHANNEL_TYPE_DAC)
+			if(IDX_NumberOfSweepsInSet(stimset) <= PSQ_RA_NUM_SWEEPS_PASS)
+				printf "(%s): The stimset must have at least %d sweeps\r", panelTitle, PSQ_RA_NUM_SWEEPS_PASS
+				ControlWindowToFront()
+				return 1
+			endif
+
+			SetDAScale(panelTitle, s.headstage, PSQ_RA_DASCALE_DEFAULT * 1e-12)
+
+			return 0
+
+			break
+		case POST_SWEEP_EVENT:
+			WAVE numericalValues = GetLBNumericalValues(panelTitle)
+			WAVE textualValues   = GetLBTextualValues(panelTitle)
+
+			key = PSQ_CreateLBNKey(PSQ_RAMP, PSQ_FMT_LBN_SWEEP_PASS, query = 1)
+			sweepPassed = GetLastSettingIndep(numericalValues, s.sweepNo, key, UNKNOWN_MODE)
+			ASSERT(IsFinite(sweepPassed), "Could not find the sweep passed labnotebook entry")
+
+			WAVE/T stimsets = GetLastSettingText(textualValues, s.sweepNo, STIM_WAVE_NAME_KEY, DATA_ACQUISITION_MODE)
+			stimset = stimsets[s.headstage]
+
+			sweepsInSet         = IDX_NumberOfSweepsInSet(stimset)
+			passesInSet         = PSQ_NumPassesInSet(panelTitle, PSQ_RAMP, s.sweepNo)
+			acquiredSweepsInSet = PSQ_NumAcquiredSweepsInSet(panelTitle, s.sweepNo)
+
+			if(!sweepPassed)
+				// not enough sweeps left to pass the set
+				skipToEnd = (sweepsInSet - acquiredSweepsInSet) < (PSQ_RA_NUM_SWEEPS_PASS - passesInSet)
+			else
+				if(passesInSet >= PSQ_RA_NUM_SWEEPS_PASS)
+					skipToEnd = 1
+				endif
+			endif
+
+			sprintf msg, "Sweep %s, total sweeps %d, acquired sweeps %d, passed sweeps %d, skipToEnd %s\r", SelectString(sweepPassed, "failed", "passed"), sweepsInSet, acquiredSweepsInSet, passesInSet, SelectString(skiptoEnd, "false", "true")
+			DEBUGPRINT(msg)
+
+			if(skiptoEnd)
+				RA_SkipSweeps(panelTitle, inf)
+			endif
+
+			break
+		case POST_SET_EVENT:
+			setPassed = PSQ_NumPassesInSet(panelTitle, PSQ_RAMP, s.sweepNo) >= PSQ_RA_NUM_SWEEPS_PASS
+
+			sprintf msg, "Set has %s\r", SelectString(setPassed, "failed", "passed")
+			DEBUGPRINT(msg)
+
+			Make/FREE/N=(LABNOTEBOOK_LAYER_COUNT) result = NaN
+			result[INDEP_HEADSTAGE] = setPassed
+			key = PSQ_CreateLBNKey(PSQ_RAMP, PSQ_FMT_LBN_SET_PASS)
+			ED_AddEntryToLabnotebook(panelTitle, key, result, unit = LABNOTEBOOK_BINARY_UNIT)
+			break
+	endswitch
+
+	if(s.eventType != MID_SWEEP_EVENT)
+		return NaN
+	endif
+
+	WAVE numericalValues = GetLBNumericalValues(panelTitle)
+	key = PSQ_CreateLBNKey(PSQ_RAMP, PSQ_FMT_LBN_BL_QC_PASS, query = 1)
+	baselineQCPassed = GetLastSettingIndep(numericalValues, s.sweepNo, key, UNKNOWN_MODE, defValue = 0)
+
+	spikeFound = PSQ_FoundAtLeastOneSpike(panelTitle, s.sweepNo)
+
+	if(IsFinite(spikeFound) && baselineQCPassed) // spike already found/definitly not found and baseline QC passed
+		return NaN
+	endif
+
+	totalOnsetDelay = DAG_GetNumericalValue(panelTitle, "setvar_DataAcq_OnsetDelayUser") \
+					  + GetValDisplayAsNum(panelTitle, "valdisp_DataAcq_OnsetDelayAuto")
+
+	fifoInStimsetPoint = s.lastKnownRowIndex - totalOnsetDelay / DimDelta(s.rawDACWAVE, ROWS)
+	fifoInStimsetTime  = fifoInStimsetPoint * DimDelta(s.rawDACWAVE, ROWS)
+
+	numBaselineChunks = PSQ_GetNumberOfChunks(panelTitle, s.sweepNo, s.headstage, PSQ_RAMP)
+
+	WAVE durations = PSQ_GetPulseDurations(panelTitle, PSQ_RAMP, s.sweepNo, totalOnsetDelay)
+	pulseStart     = PSQ_RA_BL_EVAL_RANGE
+	pulseDuration  = durations[s.headstage]
+
+	if(IsNaN(spikeFound) && fifoInStimsetTime >= pulseStart) // spike search was inconclusive up to now
+							                                 // and we after the pulse onset
+
+		WAVE spikeDetection = PSQ_SearchForSpikes(panelTitle, PSQ_RAMP, s.rawDACWave, s.headstage, totalOnsetDelay, spikePosition = spikePos)
+
+		if(spikeDetection[s.headstage] && ((PSQ_TestOverrideActive() && (fifoInStimsetTime > spikePos)) || !PSQ_TestOverrideActive()))
+			spikeFound = spikeDetection[s.headstage]
+
+			key = PSQ_CreateLBNKey(PSQ_RAMP, PSQ_FMT_LBN_SPIKE_DETECT)
+			ED_AddEntryToLabnotebook(panelTitle, key, spikeDetection, overrideSweepNo = s.sweepNo)
+
+			Make/FREE/N=(LABNOTEBOOK_LAYER_COUNT) result = NaN
+			result[s.headstage] = spikePos
+			key = PSQ_CreateLBNKey(PSQ_RAMP, PSQ_FMT_LBN_SPIKE_POSITION)
+			ED_AddEntryToLabnotebook(panelTitle, key, result, overrideSweepNo = s.sweepNo, unit = "ms")
+
+			// stop DAQ, set DA to zero from now to the end and start DAQ again
+			NVAR ITCDeviceIDGlobal = $GetITCDeviceIDGlobal(panelTitle)
+			NVAR ADChannelToMonitor = $GetADChannelToMonitor(panelTitle)
+
+			// fetch the very last fifo position immediately before we stop it
+			NVAR tgID = $GetThreadGroupIDFIFO(panelTitle)
+			fifoOffset = TS_GetNewestFromThreadQueue(tgID, "fifoPos")
+			TFH_StopFIFODaemon(HARDWARE_ITC_DAC, ITCDeviceIDGlobal)
+			HW_StopAcq(HARDWARE_ITC_DAC, ITCDeviceIDGlobal)
+			HW_ITC_PrepareAcq(ITCDeviceIDGlobal, offset=fifoOffset)
+
+			WAVE wv = s.rawDACWave
+
+			sprintf msg, "DA black out: [%g, %g]\r", fifoOffset, inf
+			DEBUGPRINT(msg)
+
+			SetWaveLock 0, wv
+			Multithread wv[fifoOffset, inf][0, ADChannelToMonitor - 1] = 0
+			SetWaveLock 1, wv
+
+			HW_StartAcq(HARDWARE_ITC_DAC, ITCDeviceIDGlobal)
+			TFH_StartFIFOStopDaemon(HARDWARE_ITC_DAC, ITCDeviceIDGlobal)
+
+			// fetch newest fifo position, blocks until it gets a valid value
+			// its zero is now fifoOffset
+			NVAR tgID = $GetThreadGroupIDFIFO(panelTitle)
+			fifoPos = TS_GetNewestFromThreadQueue(tgID, "fifoPos")
+			ASSERT(fifoPos > 0, "Invalid fifo position, has the thread died?")
+
+			// wait until the hardware is finished with writing this chunk
+			// this is to avoid that two threads write simultaneously into the ITCDataWave
+			for(;;)
+				val = TS_GetNewestFromThreadQueue(tgID, "fifoPos")
+
+				if(val > fifoPos)
+					break
+				endif
+			endfor
+
+			sprintf msg, "AD black out: [%g, %g]\r", fifoOffset, (fifoOffset + fifoPos)
+			DEBUGPRINT(msg)
+
+			SetWaveLock 0, wv
+			Multithread wv[fifoOffset, fifoOffset + fifoPos][ADChannelToMonitor, inf] = 0
+			SetWaveLock 1, wv
+
+			// recalculate pulse duration
+			PSQ_GetPulseDurations(panelTitle, PSQ_RAMP, s.sweepNo, totalOnsetDelay, forceRecalculation = 1)
+		elseif(fifoInStimsetTime > pulseStart + pulseDuration)
+			// we are past the pulse and have not found a spike
+			// write the results into the LBN
+			key = PSQ_CreateLBNKey(PSQ_RAMP, PSQ_FMT_LBN_SPIKE_DETECT)
+			ED_AddEntryToLabnotebook(panelTitle, key, spikeDetection, overrideSweepNo = s.sweepNo)
+		endif
+	endif
+
+	if(!baselineQCPassed)
+		for(i = 0; i < numBaselineChunks; i += 1)
+
+			ret = PSQ_EvaluateBaselineProperties(panelTitle, PSQ_RAMP, s.sweepNo, i, fifoInStimsetTime, totalOnsetDelay)
+
+			if(IsNaN(ret))
+				// NaN: not enough data for check
+				//
+				// not last chunk: retry on next invocation
+				// last chunk: mark sweep as failed
+				if(i == numBaselineChunks - 1)
+					ret = 1
+				endif
+
+				break
+			elseif(ret)
+				// != 0: failed with special mid sweep return value (on first failure)
+				if(i == 0)
+					// pre pulse baseline
+					// fail sweep
+					break
+				else
+					// post pulse baseline
+					// try next chunk
+					continue
+				endif
+			else
+				// 0: passed
+				if(i == 0)
+					// pre pulse baseline
+					// try next chunks
+					continue
+				else
+					// post baseline
+					// we're done!
+					break
+				endif
+			endif
+		endfor
+
+		if(IsFinite(ret))
+			baselineQCPassed = (ret == 0)
+
+			sprintf msg, "Baseline QC %s, last evaluated chunk %d returned with %g\r", SelectString(baselineQCPassed, "failed", "passed"), i, ret
+			DEBUGPRINT(msg)
+
+			// document BL QC results
+			Make/FREE/N=(LABNOTEBOOK_LAYER_COUNT) result = NaN
+			result[s.headstage] = baselineQCPassed
+
+			key = PSQ_CreateLBNKey(PSQ_RAMP, PSQ_FMT_LBN_BL_QC_PASS)
+			ED_AddEntryToLabnotebook(panelTitle, key, result, unit = LABNOTEBOOK_BINARY_UNIT, overrideSweepNo = s.sweepNo)
+
+			result[] = NaN
+			result[INDEP_HEADSTAGE] = baselineQCPassed
+			key = PSQ_CreateLBNKey(PSQ_RAMP, PSQ_FMT_LBN_SWEEP_PASS)
+			ED_AddEntryToLabnotebook(panelTitle, key, result, unit = LABNOTEBOOK_BINARY_UNIT, overrideSweepNo = s.sweepNo)
+
+			// we can return here as we either:
+			// - failed pre pulse BL QC and we don't need to search for a spike
+			// - or passed post pulse BL QC and already searched for a spike
+			spikeFound = PSQ_FoundAtLeastOneSpike(panelTitle, s.sweepNo)
+
+			ASSERT(!baselineQCPassed || (baselineQCPassed && isFinite(spikeFound)), "We missed searching for a spike")
+			return baselineQCPassed ? ANALYSIS_FUNC_RET_EARLY_STOP : ret
+		endif
+	endif
 End

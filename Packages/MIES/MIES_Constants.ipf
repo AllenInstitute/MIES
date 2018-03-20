@@ -803,6 +803,8 @@ Constant PSQ_RB_POST_BL_EVAL_RANGE = 50
 Constant PSQ_DS_BL_EVAL_RANGE_MS = 500
 Constant PSQ_DS_PULSE_DUR        = 1000
 
+Constant PSQ_RA_BL_EVAL_RANGE = 500
+
 Constant PSQ_SPIKE_LEVEL     = 10 // mV
 Constant PSQ_RMS_SHORT_THRESHOLD = 0.07 // mV
 Constant PSQ_RMS_LONG_THRESHOLD  = 0.5  // mV
@@ -815,10 +817,11 @@ Constant PSQ_TARGETV_THRESHOLD   = 1    // mV
 ///
 /// @anchor PatchSeqLabnotebookFormatStrings
 /// @{
-StrConstant PSQ_FMT_LBN_STEPSIZE      = "%s step size"
-StrConstant PSQ_FMT_LBN_SPIKE_DETECT  = "%s spike detected"
-StrConstant PSQ_FMT_LBN_FINAL_SCALE   = "%s final DAScale"
-StrConstant PSQ_FMT_LBN_INITIAL_SCALE = "%s initial DAScale"
+StrConstant PSQ_FMT_LBN_STEPSIZE       = "%s step size"
+StrConstant PSQ_FMT_LBN_SPIKE_DETECT   = "%s spike detected"
+StrConstant PSQ_FMT_LBN_SPIKE_POSITION = "%s spike position"
+StrConstant PSQ_FMT_LBN_FINAL_SCALE    = "%s final DAScale"
+StrConstant PSQ_FMT_LBN_INITIAL_SCALE  = "%s initial DAScale"
 StrConstant PSQ_FMT_LBN_RMS_SHORT_PASS = "%s Chk%d S-RMS BL QC"
 StrConstant PSQ_FMT_LBN_RMS_LONG_PASS  = "%s Chk%d L-RMS BL QC"
 StrConstant PSQ_FMT_LBN_TARGETV_PASS   = "%s Chk%d T-V BL QC"
@@ -835,6 +838,7 @@ StrConstant PSQ_FMT_LBN_PULSE_DUR      = "%s Pulse duration"
 Constant PSQ_DA_SCALE     = 0x1
 Constant PSQ_SQUARE_PULSE = 0x2
 Constant PSQ_RHEOBASE     = 0x4
+Constant PSQ_RAMP         = 0x8
 /// @}
 
 /// PatchSeq Rheobase
@@ -849,6 +853,12 @@ Constant PSQ_RB_FINALSCALE_FAKE  = 42e-12
 Constant PSQ_DS_OFFSETSCALE_FAKE = 23 // pA
 StrConstant PSQ_DS_SUB           = "Sub"
 StrConstant PSQ_DS_SUPRA         = "Supra"
+/// @}
+
+/// PatchSeq Ramp
+/// @{
+Constant PSQ_RA_DASCALE_DEFAULT = 1 // pA
+Constant PSQ_RA_NUM_SWEEPS_PASS = 3
 /// @}
 
 Constant TP_MD_THREAD_DEAD_MAX_RETRIES = 10
