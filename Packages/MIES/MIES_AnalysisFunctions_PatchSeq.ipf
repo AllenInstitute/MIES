@@ -678,18 +678,20 @@ End
 /// @brief Search the AD channel of the given headstage for spikes from the
 /// pulse onset until the end of the sweep
 ///
-/// @param panelTitle      device
-/// @param type            One of @ref PatchSeqAnalysisFunctionTypes
-/// @param sweepWave       sweep wave with acquired data
-/// @param totalOnsetDelay total delay in ms until the stimset data starts
-/// @param headstage       headstage in the range [0, NUM_HEADSTAGES[
+/// @param[in] panelTitle      device
+/// @param[in] type            One of @ref PatchSeqAnalysisFunctionTypes
+/// @param[in] sweepWave       sweep wave with acquired data
+/// @param[in] headstage       headstage in the range [0, NUM_HEADSTAGES[
+/// @param[in] totalOnsetDelay total delay in ms until the stimset data starts
+/// @param[out] spikePosition  [optional] returns the first spike's position in ms
 ///
 /// @return labnotebook value wave suitable for ED_AddEntryToLabnotebook()
-static Function/WAVE PSQ_SearchForSpikes(panelTitle, type, sweepWave, headstage, totalOnsetDelay)
+static Function/WAVE PSQ_SearchForSpikes(panelTitle, type, sweepWave, headstage, totalOnsetDelay, [spikePosition])
 	string panelTitle
 	variable type
 	WAVE sweepWave
 	variable headstage, totalOnsetDelay
+	variable &spikePosition
 
 	variable level, first, last, overrideValue
 	variable minVal, maxVal
@@ -743,9 +745,18 @@ static Function/WAVE PSQ_SearchForSpikes(panelTitle, type, sweepWave, headstage,
 		else
 			spikeDetection[headstage] = overrideValue >= first && overrideValue <= last
 		endif
+
+		if(!ParamIsDefault(spikePosition))
+			spikePosition = overrideValue
+		endif
 	else
 		// search the spike from the rising edge till the end of the wave
-		spikeDetection[headstage] = WaveMax(singleAD, first, last) >= PSQ_SPIKE_LEVEL
+		FindLevel/Q/R=(first, last) singleAD, PSQ_SPIKE_LEVEL
+		spikeDetection[headstage] = !V_flag
+
+		if(!ParamIsDefault(spikePosition))
+			spikePosition = V_LevelX
+		endif
 	endif
 
 	return spikeDetection
