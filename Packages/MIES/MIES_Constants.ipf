@@ -719,6 +719,7 @@ StrConstant TP_BASELINE				= "Baseline %"
 StrConstant PULSE_START_TIMES_KEY     = "Pulse Train Pulses"
 StrConstant PULSE_TO_PULSE_LENGTH_KEY = "Pulse To Pulse Length"
 StrConstant HIGH_PREC_SWEEP_START_KEY = "High precision sweep start"
+StrConstant STIMSET_SCALE_FACTOR_KEY  = "Stim Scale Factor"
 
 /// DA_Ephys controls which should be disabled during DAQ
 StrConstant CONTROLS_DISABLE_DURING_DAQ = "Check_DataAcqHS_All;Radio_ClampMode_AllIClamp;Radio_ClampMode_AllVClamp;Radio_ClampMode_AllIZero;SetVar_Sweep;Check_DataAcq1_DistribDaq;Check_DataAcq1_dDAQOptOv;Check_DataAcq_Indexing;check_DataAcq_IndexRandom;Check_DataAcq1_IndexingLocked;SetVar_DataAcq_ListRepeats;check_DataAcq_RepAcqRandom;Check_DataAcq1_RepeatAcq"
@@ -798,8 +799,8 @@ Constant PSQ_SP_INIT_AMP_p10    = +10e-12
 Constant PSQ_RB_PRE_BL_EVAL_RANGE  = 500
 Constant PSQ_RB_POST_BL_EVAL_RANGE = 50
 
-Constant PSQ_ST_BL_EVAL_RANGE_MS = 500
-Constant PSQ_ST_PULSE_DUR        = 1000
+Constant PSQ_DS_BL_EVAL_RANGE_MS = 500
+Constant PSQ_DS_PULSE_DUR        = 1000
 
 Constant PSQ_SPIKE_LEVEL     = 10 // mV
 Constant PSQ_RMS_SHORT_THRESHOLD = 0.07 // mV
@@ -830,9 +831,9 @@ StrConstant PSQ_FMT_LBN_PULSE_DUR      = "%s Pulse duration"
 /// PatchSeq types of analysis functions
 /// @anchor PatchSeqAnalysisFunctionTypes
 /// @{
-Constant PSQ_SUB_THRESHOLD = 0x1
-Constant PSQ_SQUARE_PULSE  = 0x2
-Constant PSQ_RHEOBASE      = 0x4
+Constant PSQ_DA_SCALE     = 0x1
+Constant PSQ_SQUARE_PULSE = 0x2
+Constant PSQ_RHEOBASE     = 0x4
 /// @}
 
 /// PatchSeq Rheobase
@@ -840,6 +841,13 @@ Constant PSQ_RHEOBASE      = 0x4
 Constant PSQ_RB_MAX_DASCALE_DIFF = 60e-12
 Constant PSQ_RB_DASCALE_STEP     = 10e-12
 Constant PSQ_RB_FINALSCALE_FAKE  = 42e-12
+/// @}
+
+/// PatchSeq DAScale
+/// @{
+Constant PSQ_DS_OFFSETSCALE_FAKE = 23 // pA
+StrConstant PSQ_DS_SUB           = "Sub"
+StrConstant PSQ_DS_SUPRA         = "Supra"
 /// @}
 
 Constant TP_MD_THREAD_DEAD_MAX_RETRIES = 10

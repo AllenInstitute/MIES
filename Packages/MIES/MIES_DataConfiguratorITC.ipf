@@ -740,7 +740,7 @@ static Function DC_PlaceDataInITCDataWave(panelTitle, numActiveChannels, dataAcq
 		ctrl = GetSpecialControlLabel(CHANNEL_TYPE_DAC, CHANNEL_CONTROL_UNIT)
 		DC_DocumentChannelProperty(panelTitle, "DA Unit", headstageDAC[activeColumn], i, str=DAG_GetTextualValue(panelTitle, ctrl, index = i))
 
-		DC_DocumentChannelProperty(panelTitle, "Stim Scale Factor", headstageDAC[activeColumn], i, var=DAScale[activeColumn])
+		DC_DocumentChannelProperty(panelTitle, STIMSET_SCALE_FACTOR_KEY, headstageDAC[activeColumn], i, var=DAScale[activeColumn])
 		DC_DocumentChannelProperty(panelTitle, "Set Sweep Count", headstageDAC[activeColumn], i, var=setColumn[activeColumn])
 		DC_DocumentChannelProperty(panelTitle, "Electrode", headstageDAC[activeColumn], i, str=cellElectrodeNames[headstageDAC[activeColumn]])
 

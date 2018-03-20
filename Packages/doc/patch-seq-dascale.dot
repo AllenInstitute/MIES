@@ -87,4 +87,22 @@ digraph G {
     "Mark chunk as passed/failed [2]" -> "Mark Sweep as passed"  [label="Passed"];
     "Mark Sweep as passed" -> "Early Sweep stop";
     "Mark Sweep as failed" -> "Early Sweep stop";
+    "Stimset is large enough";
+    "Prepare DAQ Event" -> "Stimset is large enough";
+    "Stimset is large enough" -> "All checks passed";
+    "All required analysis parameters present?\n DAScale : numeric wave\n OperationMode: string";
+    "Prepare DAQ Event" -> "All required analysis parameters present?\n DAScale : numeric wave\n OperationMode: string";
+    "All required analysis parameters present?\n DAScale : numeric wave\n OperationMode: string" -> "All checks passed";
+    "Get OperationMode";
+    "All required analysis parameters present?\n DAScale : numeric wave\n OperationMode: string" -> "Get OperationMode";
+    "Look for an existing and passing rheobase sweep\n within a passing set and\n a pulse duration of more than 500ms";
+    "Get OperationMode" -> "Look for an existing and passing rheobase sweep\n within a passing set and\n a pulse duration of more than 500ms"  [label="Supra"];
+    "Look for an existing and passing rheobase sweep\n within a passing set and\n a pulse duration of more than 500ms" -> "Abort"  [label="Not found"];
+    "Use the DAScale value of that sweep\n as offset to the DAScale values from the analysis parameters";
+    "Look for an existing and passing rheobase sweep\n within a passing set and\n a pulse duration of more than 500ms" -> "Use the DAScale value of that sweep\n as offset to the DAScale values from the analysis parameters"  [label="Found"];
+    "Use the DAScale values from the analysis parameters";
+    "Get OperationMode" -> "Use the DAScale values from the analysis parameters"  [label="Sub"];
+    "Check if mode is IC";
+    "Prepare DAQ Event" -> "Check if mode is IC";
+    "Check if mode is IC" -> "All checks passed";
 }

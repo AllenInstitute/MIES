@@ -35,15 +35,13 @@ Function DQM_FIFOMonitor(s)
 
 		SCOPE_UpdateOscilloscopeData(panelTitle, DATA_ACQUISITION_MODE, fifoPos=fifoPos)
 
-		if(!isFinished)
-			result = AFM_CallAnalysisFunctions(panelTitle, MID_SWEEP_EVENT)
+		result = AFM_CallAnalysisFunctions(panelTitle, MID_SWEEP_EVENT)
 
-			if(result == ANALYSIS_FUNC_RET_REPURP_TIME)
-				UpdateLeftOverSweepTime(panelTitle, fifoPos)
-				isFinished = 1
-			elseif(result == ANALYSIS_FUNC_RET_EARLY_STOP)
-				isFinished = 1
-			endif
+		if(result == ANALYSIS_FUNC_RET_REPURP_TIME)
+			UpdateLeftOverSweepTime(panelTitle, fifoPos)
+			isFinished = 1
+		elseif(result == ANALYSIS_FUNC_RET_EARLY_STOP)
+			isFinished = 1
 		endif
 
 		if(isFinished)

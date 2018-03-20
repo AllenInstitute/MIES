@@ -411,3 +411,18 @@ static Function ReplacesDuplicateEntries()
 	val       = AFH_GetAnalysisParamTextual("a2", params)
 	CHECK_EQUAL_STR(refString, val)
 End
+
+static Function ReturnsInvalidWaveRef()
+
+	string params
+	string stimSet = "AnaFuncParams1_DA_0"
+
+	WAVE/T/Z WPT = WB_GetWaveTextParamForSet(stimSet)
+	CHECK_WAVE(WPT, TEXT_WAVE)
+
+	params = WPT[10][%Set]
+	CHECK_EMPTY_STR(params)
+
+	CHECK(!WaveExists(AFH_GetAnalysisParamWave("I_DONT_EXIST", params)))
+	CHECK(!WaveExists(AFH_GetAnalysisParamTextWave("I_DONT_EXIST", params)))
+End

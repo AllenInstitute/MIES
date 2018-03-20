@@ -158,15 +158,13 @@ Function DQS_FIFOMonitor(s)
 
 	AM_analysisMasterMidSweep(panelTitleG)
 
-	if(moreData)
-		result = AFM_CallAnalysisFunctions(panelTitleG, MID_SWEEP_EVENT)
+	result = AFM_CallAnalysisFunctions(panelTitleG, MID_SWEEP_EVENT)
 
-		if(result == ANALYSIS_FUNC_RET_REPURP_TIME)
-			UpdateLeftOverSweepTime(panelTitleG, fifoPos)
-			moreData = 0
-		elseif(result == ANALYSIS_FUNC_RET_EARLY_STOP)
-			moreData = 0
-		endif
+	if(result == ANALYSIS_FUNC_RET_REPURP_TIME)
+		UpdateLeftOverSweepTime(panelTitleG, fifoPos)
+		moreData = 0
+	elseif(result == ANALYSIS_FUNC_RET_EARLY_STOP)
+		moreData = 0
 	endif
 
 	if(!moreData)

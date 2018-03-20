@@ -11,7 +11,7 @@
 #include "UTF_TestingWithHardware"
 #include "UTF_DAEphys"
 #include "UTF_BasicHardwareTests"
-#include "UTF_PatchSeqSubThreshold"
+#include "UTF_PatchSeqDAScale"
 #include "UTF_PatchSeqSquarePulse"
 #include "UTF_PatchSeqRheobase"
 
@@ -127,22 +127,24 @@ Function run()
 
 #ifndef TESTS_WITH_YOKING
 
-	list = AddListItem("PS_ST_Run1", list, ";", INF)
-	list = AddListItem("PS_ST_Test1", list, ";", INF)
-	list = AddListItem("PS_ST_Run2", list, ";", INF)
-	list = AddListItem("PS_ST_Test2", list, ";", INF)
-	list = AddListItem("PS_ST_Run3", list, ";", INF)
-	list = AddListItem("PS_ST_Test3", list, ";", INF)
-	list = AddListItem("PS_ST_Run4", list, ";", INF)
-	list = AddListItem("PS_ST_Test4", list, ";", INF)
-	list = AddListItem("PS_ST_Run5", list, ";", INF)
-	list = AddListItem("PS_ST_Test5", list, ";", INF)
-	list = AddListItem("PS_ST_Run6", list, ";", INF)
-	list = AddListItem("PS_ST_Test6", list, ";", INF)
-	list = AddListItem("PS_ST_Run7", list, ";", INF)
-	list = AddListItem("PS_ST_Test7", list, ";", INF)
-	list = AddListItem("PS_ST_Run8", list, ";", INF)
-	list = AddListItem("PS_ST_Test8", list, ";", INF)
+	list = AddListItem("PS_DS_Sub_Run1", list, ";", INF)
+	list = AddListItem("PS_DS_Sub_Test1", list, ";", INF)
+	list = AddListItem("PS_DS_Sub_Run2", list, ";", INF)
+	list = AddListItem("PS_DS_Sub_Test2", list, ";", INF)
+	list = AddListItem("PS_DS_Sub_Run3", list, ";", INF)
+	list = AddListItem("PS_DS_Sub_Test3", list, ";", INF)
+	list = AddListItem("PS_DS_Sub_Run4", list, ";", INF)
+	list = AddListItem("PS_DS_Sub_Test4", list, ";", INF)
+	list = AddListItem("PS_DS_Sub_Run5", list, ";", INF)
+	list = AddListItem("PS_DS_Sub_Test5", list, ";", INF)
+	list = AddListItem("PS_DS_Sub_Run6", list, ";", INF)
+	list = AddListItem("PS_DS_Sub_Test6", list, ";", INF)
+	list = AddListItem("PS_DS_Sub_Run7", list, ";", INF)
+	list = AddListItem("PS_DS_Sub_Test7", list, ";", INF)
+	list = AddListItem("PS_DS_Sub_Run8", list, ";", INF)
+	list = AddListItem("PS_DS_Sub_Test8", list, ";", INF)
+	list = AddListItem("PS_DS_Supra_Run1", list, ";", INF)
+	list = AddListItem("PS_DS_Supra_Test1", list, ";", INF)
 
 	list = AddListItem("PS_SP_Run1", list, ";", INF)
 	list = AddListItem("PS_SP_Test1", list, ";", INF)
@@ -200,6 +202,10 @@ Function run()
 	list = AddListItem("AFT_Test13", list, ";", INF)
 	list = AddListItem("AFT_DAQ14", list, ";", INF)
 	list = AddListItem("AFT_Test14", list, ";", INF)
+	list = AddListItem("AFT_DAQ15", list, ";", INF)
+	list = AddListItem("AFT_Test15", list, ";", INF)
+	list = AddListItem("AFT_DAQ16", list, ";", INF)
+	list = AddListItem("AFT_Test16", list, ";", INF)
 #endif
 
 	// initialize everything

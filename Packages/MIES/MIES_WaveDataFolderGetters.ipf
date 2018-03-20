@@ -1070,7 +1070,7 @@ End
 static Function SetSweepSettingsDimLabels(wv)
 	WAVE wv
 
-	SetDimLabel COLS, 0 , $"Stim Scale Factor"           , wv
+	SetDimLabel COLS, 0 , $STIMSET_SCALE_FACTOR_KEY      , wv
 	SetDimLabel COLS, 1 , $"DAC"                         , wv
 	SetDimLabel COLS, 2 , $"ADC"                         , wv
 	SetDimLabel COLS, 3 , $"DA Gain"                     , wv
@@ -1271,7 +1271,7 @@ Function/Wave GetSweepSettingsKeyWave(panelTitle)
 	SetDimLabel 0, 1, Units, wv
 	SetDimLabel 0, 2, Tolerance, wv
 
-	wv[%Parameter][0] = "Stim Scale Factor"
+	wv[%Parameter][0] = STIMSET_SCALE_FACTOR_KEY
 	wv[%Units][0]     = ""
 	wv[%Tolerance][0] = ".0001"
 

@@ -115,6 +115,11 @@ static Function ChangeAnalysisFunctions()
 	wv[%$"Analysis post sweep function"][%Set] = "IDontExist"
 	wv[%$"Analysis post set function"][%Set]   = "IDontExist"
 	wv[%$"Analysis post DAQ function"][%Set]   = "IDontExist"
+
+	WAVE/T wv = root:MIES:WaveBuilder:SavedStimulusSetParameters:DA:WPT_AnaFuncVeryShort_DA_0
+
+	wv[][%Set] = ""
+	wv[%$"Analysis function (generic)"][%Set]  = "ValidFunc_V3"
 End
 
 Function RewriteAnalysisFunctions()
@@ -143,12 +148,12 @@ Function CALLABLE_PROTO()
 End
 
 /// @brief Acquire data with the given DAQSettings
-static Function AcquireData(s, stimset, [numHeadstages, TTLStimset, postInitializeFunc])
+static Function AcquireData(s, stimset, [numHeadstages, TTLStimset, postInitializeFunc, preAcquireFunc])
 	STRUCT DAQSettings& s
 	string stimset
 	variable numHeadstages
 	string TTLStimset
-	FUNCREF CALLABLE_PROTO postInitializeFunc
+	FUNCREF CALLABLE_PROTO postInitializeFunc, preAcquireFunc
 
 	variable i
 
@@ -211,6 +216,10 @@ static Function AcquireData(s, stimset, [numHeadstages, TTLStimset, postInitiali
 	PGC_SetAndActivateControl(DEVICE, "Check_Settings_SkipAnalysFuncs", val = 0)
 
 	DoUpdate/W=$DEVICE
+
+	if(!ParamIsDefault(preAcquireFunc))
+		preAcquireFunc()
+	endif
 
 	CtrlNamedBackGround DAQWatchdog, start, period=120, proc=WaitUntilDAQDone_IGNORE
 	PGC_SetAndActivateControl(DEVICE, "DataAcquireButton")
@@ -1227,4 +1236,68 @@ static Function AFT_Test14()
 	key = ANALYSIS_FUNCTION_PARAMS_LBN
 	WAVE/T/Z anaFuncParams = GetLastSettingText(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
 	CHECK_WAVE(anaFuncParams, TEXT_WAVE)
+End
+
+static Function DisableInsertTP_IGNORE()
+	PGC_SetAndActivateControl(DEVICE, "Check_Settings_InsertTP", val = 0)
+End
+
+// MD: mid sweep event is also called for very short stimsets
+static Function AFT_DAQ15()
+
+	STRUCT DAQSettings s
+	InitDAQSettingsFromString(s, "DAQ_MD1_RA0_IDX0_LIDX0_BKG_1")
+
+	AcquireData(s, "AnaFuncVeryShort*", preAcquireFunc=DisableInsertTP_IGNORE)
+End
+
+static Function AFT_Test15()
+
+	variable sweepNo
+	string key
+
+	CHECK_EQUAL_VAR(GetSetVariable(DEVICE, "SetVar_Sweep"), 1)
+
+	sweepNo = AFH_GetLastSweepAcquired(DEVICE)
+	CHECK_EQUAL_VAR(sweepNo, 0)
+
+	WAVE anaFuncTracker = TrackAnalysisFunctionCalls()
+
+	CHECK_EQUAL_VAR(anaFuncTracker[PRE_DAQ_EVENT], 1)
+	CHECK_EQUAL_VAR(anaFuncTracker[PRE_SWEEP_EVENT], 1)
+	CHECK(anaFuncTracker[MID_SWEEP_EVENT] >= 1)
+	CHECK_EQUAL_VAR(anaFuncTracker[POST_SWEEP_EVENT], 1)
+	CHECK_EQUAL_VAR(anaFuncTracker[POST_SET_EVENT], 1)
+	CHECK_EQUAL_VAR(anaFuncTracker[POST_DAQ_EVENT], 1)
+	CHECK_EQUAL_VAR(anaFuncTracker[GENERIC_EVENT], 0)
+End
+
+// SD: mid sweep event is also called for very short stimsets
+static Function AFT_DAQ16()
+
+	STRUCT DAQSettings s
+	InitDAQSettingsFromString(s, "DAQ_MD0_RA0_IDX0_LIDX0_BKG_1")
+
+	AcquireData(s, "AnaFuncVeryShort*", preAcquireFunc=DisableInsertTP_IGNORE)
+End
+
+static Function AFT_Test16()
+
+	variable sweepNo
+	string key
+
+	CHECK_EQUAL_VAR(GetSetVariable(DEVICE, "SetVar_Sweep"), 1)
+
+	sweepNo = AFH_GetLastSweepAcquired(DEVICE)
+	CHECK_EQUAL_VAR(sweepNo, 0)
+
+	WAVE anaFuncTracker = TrackAnalysisFunctionCalls()
+
+	CHECK_EQUAL_VAR(anaFuncTracker[PRE_DAQ_EVENT], 1)
+	CHECK_EQUAL_VAR(anaFuncTracker[PRE_SWEEP_EVENT], 1)
+	CHECK(anaFuncTracker[MID_SWEEP_EVENT] >= 1)
+	CHECK_EQUAL_VAR(anaFuncTracker[POST_SWEEP_EVENT], 1)
+	CHECK_EQUAL_VAR(anaFuncTracker[POST_SET_EVENT], 1)
+	CHECK_EQUAL_VAR(anaFuncTracker[POST_DAQ_EVENT], 1)
+	CHECK_EQUAL_VAR(anaFuncTracker[GENERIC_EVENT], 0)
 End

@@ -19,7 +19,9 @@
 /// Event      | Description                                  | Specialities
 /// -----------|----------------------------------------------|---------------------------------------------------------------
 /// Pre DAQ    | Before any DAQ occurs                        | Called before the settings are validated
-/// Mid Sweep  | Each time when new data is polled            | Available for background DAQ only
+/// Mid Sweep  | Each time when new data is polled            | Available for background DAQ only.
+///            |                                              | Will always be called at least once and
+///            |                                              | also with the full stimset acquired.
 /// Pre Sweep  | Immediately before the sweep starts          | None
 /// Post Sweep | After each sweep (before possible ITI pause) | None
 /// Post Set   | After a *full* set has been acquired         | This event is not always reached as the user might not acquire all steps of a set

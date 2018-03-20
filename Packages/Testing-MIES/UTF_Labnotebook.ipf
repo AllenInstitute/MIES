@@ -301,3 +301,39 @@ Function GetLastSettingTextWorks()
 End
 
 /// @}
+
+/// GetLastSweepWithSetting
+/// @{
+Function GetLastSWSWorksWithIndep()
+
+	DFREF dfr = root:Labnotebook_misc
+	WAVE/SDFR=dfr numericalValues_large
+
+	variable sweepNo
+
+	WAVE/Z settings = GetLastSweepWithSetting(numericalValues_large, "TP Pulse Duration", sweepNo)
+	CHECK_WAVE(settings, NUMERIC_WAVE)
+	CHECK(IsValidSweepNumber(sweepNo))
+	CHECK_EQUAL_VAR(settings[INDEP_HEADSTAGE], 104)
+End
+
+/// @}
+
+/// GetLastSweepWithSettingText
+/// @{
+Function GetLastSWSTextWorksWithIndep()
+
+	DFREF dfr = root:Labnotebook_misc
+	WAVE/SDFR=dfr textualValues
+
+	variable sweepNo
+	string miesVersion
+
+	WAVE/Z/T settings = GetLastSweepWithSettingText(textualValues, "MIES Version", sweepNo)
+	CHECK_WAVE(settings, TEXT_WAVE)
+	CHECK(IsValidSweepNumber(sweepNo))
+	miesVersion = settings[INDEP_HEADSTAGE]
+	CHECK_PROPER_STR(miesVersion)
+End
+
+/// @}

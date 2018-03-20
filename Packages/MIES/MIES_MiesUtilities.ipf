@@ -294,6 +294,8 @@ Function FindRange(wv, col, val, forwardORBackward, entrySourceType, first, last
 	first = NaN
 	last  = NaN
 
+	// still correct without startLayer/endLayer coordinates
+	// as we always have sweepNumber/etc. in the first layer
 	if(IsNaN(val))
 		WAVE/Z indizesSetting = FindIndizes(wv, col=col, prop=PROP_EMPTY)
 	else
@@ -431,6 +433,7 @@ End
 /// - GetLastSweepWithSettingText()
 /// - GetLastSweepWithSettingTextI()
 /// - GetLastSweepWithSettingIndep()
+/// - GetSweepsWithSetting()
 
 /// @brief Return a headstage independent setting from the numerical labnotebook
 ///
@@ -992,6 +995,53 @@ Function/WAVE GetLastSettingTextEachRAC(numericalValues, sweepNo, setting, heads
 	return result
 End
 
+/// @brief Return a wave with all labnotebook rows which have a non-empty entry for setting
+static Function/WAVE GetNonEmptyLBNRows(labnotebookValues, setting)
+   WAVE labnotebookValues
+   string setting
+
+   variable col
+
+   col = FindDimLabel(labnotebookValues, COLS, setting)
+
+   if(col < 0)
+	   return $""
+   endif
+
+   return FindIndizes(labnotebookValues, col = col, prop = PROP_NON_EMPTY, \
+					  startLayer = 0, endLayer = DimSize(labnotebookValues, LAYERS) - 1)
+End
+
+/// @brief Return a wave with all sweep numbers which have a non-empty entry for setting
+///
+/// @param labnotebookValues numerical/textual labnotebook
+/// @param setting           name of the value to search
+///
+/// @return a 1D free wave with the matching sweep numbers. In case
+/// the setting could not be found an invalid wave reference is returned.
+///
+/// @ingroup LabnotebookQueryFunctions
+Function/WAVE GetSweepsWithSetting(labnotebookValues, setting)
+	WAVE labnotebookValues
+	string setting
+
+	variable sweepCol
+
+	WAVE/Z indizes = GetNonEmptyLBNRows(labnotebookValues, setting)
+	if(!WaveExists(indizes))
+		return $""
+	endif
+
+	sweepCol = GetSweepColumn(labnotebookValues)
+
+	Make/FREE/N=(DimSize(indizes, ROWS)) sweeps = labnotebookValues[indizes[p]][sweepCol][0]
+
+	Make/N=0/FREE unique
+	FindDuplicates/RN=unique sweeps
+
+	return unique
+End
+
 /// @brief Return the last numerical value of a setting from the labnotebook
 ///        and the sweep it was set.
 ///
@@ -1008,18 +1058,12 @@ Function/WAVE GetLastSweepWithSetting(numericalValues, setting, sweepNo)
 	string setting
 	variable &sweepNo
 
-	variable idx, col
+	variable idx
 
 	sweepNo = NaN
 	ASSERT(WaveType(numericalValues), "Can only work with numeric waves")
 
-	col = FindDimLabel(numericalValues, COLS, setting)
-
-	if(col < 0)
-		return $""
-	endif
-
-	WAVE/Z indizes = FindIndizes(numericalValues, col = col, prop=PROP_NON_EMPTY)
+	WAVE/Z indizes = GetNonEmptyLBNRows(numericalValues, setting)
 	if(!WaveExists(indizes))
 		return $""
 	endif
@@ -1077,18 +1121,12 @@ Function/WAVE GetLastSweepWithSettingText(textualValues, setting, sweepNo)
 	string setting
 	variable &sweepNo
 
-	variable idx, col
+	variable idx
 
 	sweepNo = NaN
 	ASSERT(!WaveType(textualValues), "Can only work with text waves")
 
-	col = FindDimLabel(textualValues, COLS, setting)
-
-	if(col < 0)
-		return $""
-	endif
-
-	WAVE/Z indizes = FindIndizes(textualValues, col = col, prop=PROP_NON_EMPTY)
+	WAVE/Z indizes = GetNonEmptyLBNRows(textualValues, setting)
 	if(!WaveExists(indizes))
 		return $""
 	endif
@@ -4323,7 +4361,7 @@ Function UpdateLeftOverSweepTime(panelTitle, fifoPos)
 	NVAR repurposedTime      = $GetRepurposedSweepTime(panelTitle)
 	NVAR stopCollectionPoint = $GetStopCollectionPoint(panelTitle)
 
-	repurposedTime += IndexToScale(ITCDataWave, stopCollectionPoint - fifoPos, ROWS) / 1e3
+	repurposedTime += max(0, IndexToScale(ITCDataWave, stopCollectionPoint - fifoPos, ROWS)) / 1e3
 
 	sprintf msg, "Repurposed time in seconds due to premature sweep stopping: %g\r", repurposedTime
 	DEBUGPRINT(msg)
