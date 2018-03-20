@@ -886,7 +886,7 @@ Function/WAVE GetLastSettingIndepEachRAC(numericalValues, sweepNo, setting, entr
 	string setting
 	variable entrySourceType, defValue
 
-	variable settings
+	variable settings, numSweeps
 
 	if(ParamIsDefault(defValue))
 		defValue = NaN
@@ -897,7 +897,14 @@ Function/WAVE GetLastSettingIndepEachRAC(numericalValues, sweepNo, setting, entr
 		return $""
 	endif
 
-	Make/FREE/D/N=(DimSize(sweeps, ROWS)) result = GetLastSettingIndep(numericalValues, sweeps[p], setting, entrySourceType, defValue = defValue)
+	numSweeps = DimSize(sweeps, ROWS)
+
+	Make/FREE/D/N=(numSweeps) result = GetLastSettingIndep(numericalValues, sweeps[p], setting, entrySourceType, defValue = defValue)
+
+	WaveStats/Q/M=1 result
+	if(V_numNaNs == numSweeps)
+		return $""
+	endif
 
 	return result
 End
@@ -913,7 +920,7 @@ Function/WAVE GetLastSettingTextIndepEachRAC(numericalValues, sweepNo, setting, 
 	variable entrySourceType
 	string defValue
 
-	variable settings
+	variable settings, numSweeps
 
 	if(ParamIsDefault(defValue))
 		defValue = ""
@@ -924,7 +931,13 @@ Function/WAVE GetLastSettingTextIndepEachRAC(numericalValues, sweepNo, setting, 
 		return $""
 	endif
 
-	Make/FREE/T/N=(DimSize(sweeps, ROWS)) result = GetLastSettingTextIndep(numericalValues, sweeps[p], setting, entrySourceType, defValue = defValue)
+	numSweeps = DimSize(sweeps, ROWS)
+	Make/FREE/T/N=(numSweeps) result = GetLastSettingTextIndep(numericalValues, sweeps[p], setting, entrySourceType, defValue = defValue)
+
+	Make/N=(numSweeps) lengths = strlen(result[p])
+	if(Sum(lengths) == 0)
+		return $""
+	endif
 
 	return result
 End
@@ -959,6 +972,11 @@ Function/WAVE GetLastSettingEachRAC(numericalValues, sweepNo, setting, headstage
 		endif
 	endfor
 
+	WaveStats/Q/M=1 result
+	if(V_numNaNs == numSweeps)
+		return $""
+	endif
+
 	return result
 End
 
@@ -991,6 +1009,11 @@ Function/WAVE GetLastSettingTextEachRAC(numericalValues, sweepNo, setting, heads
 			result[i] = settings[headstage]
 		endif
 	endfor
+
+	Make/N=(numSweeps) lengths = strlen(result[p])
+	if(Sum(lengths) == 0)
+		return $""
+	endif
 
 	return result
 End
