@@ -125,18 +125,24 @@ End
 
 /// Return the pulse durations from the labnotebook or calculate them before if required.
 /// For convenience unused headstages will have 0 instead of NaN in the returned wave.
-static Function/WAVE PSQ_GetPulseDurations(panelTitle, type, sweepNo, totalOnsetDelay)
+static Function/WAVE PSQ_GetPulseDurations(panelTitle, type, sweepNo, totalOnsetDelay, [forceRecalculation])
 	string panelTitle
-	variable type, sweepNo, totalOnsetDelay
+	variable type, sweepNo, totalOnsetDelay, forceRecalculation
 
 	string key
+
+	if(ParamIsDefault(forceRecalculation))
+		forceRecalculation = 0
+	else
+		forceRecalculation = !!forceRecalculation
+	endif
 
 	WAVE numericalValues = GetLBNumericalValues(panelTitle)
 
 	key = PSQ_CreateLBNKey(type, PSQ_FMT_LBN_PULSE_DUR, query = 1)
 	WAVE/Z durations = GetLastSetting(numericalValues, sweepNo, key, UNKNOWN_MODE)
 
-	if(!WaveExists(durations))
+	if(!WaveExists(durations) || forceRecalculation)
 		WAVE durations = PSQ_DeterminePulseDuration(panelTitle, sweepNo, totalOnsetDelay)
 
 		key = PSQ_CreateLBNKey(type, PSQ_FMT_LBN_PULSE_DUR)
