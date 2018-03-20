@@ -836,7 +836,7 @@ Function/WAVE GetLastSettingTextRAC(textualValues, sweepNo, setting, entrySource
 	endif
 
 	numSweeps = DimSize(sweeps, ROWS)
-	for(i = numSweeps - 1; i >= 0; i += 1)
+	for(i = numSweeps - 1; i >= 0; i -= 1)
 		WAVE/Z settings = GetLastSettingText(textualValues, sweeps[i], setting, entrySourceType)
 
 		if(WaveExists(settings))
