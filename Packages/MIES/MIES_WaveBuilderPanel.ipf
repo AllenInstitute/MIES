@@ -10,41 +10,6 @@
 /// @file MIES_WaveBuilderPanel.ipf
 /// @brief __WBP__ Panel for creating stimulus sets
 
-// stock igor
-#include <Resize Controls>
-#include <Readback ModifyStr>
-
-// third party includes
-#include ":ACL_TabUtilities"
-#include ":ACL_UserdataEditor"
-
-// ZeroMQ procedures
-#include ":..:ZeroMQ:procedures:ZeroMQ_Interop"
-
-// our includes
-#include ":MIES_AnalysisFunctionHelpers"
-#include ":MIES_AnalysisFunctionPrototypes"
-#include ":MIES_ArtefactRemoval"
-#include ":MIES_BrowserSettingsPanel"
-#include ":MIES_Cache"
-#include ":MIES_Constants"
-#include ":MIES_Debugging"
-#include ":MIES_EnhancedWMRoutines"
-#include ":MIES_GlobalStringAndVariableAccess"
-#include ":MIES_GuiUtilities"
-#include ":MIES_MiesUtilities"
-#include ":MIES_ProgrammaticGUIControl"
-#include ":MIES_PulseAveraging"
-#include ":MIES_Utilities"
-#include ":MIES_Structures"
-#include ":MIES_WaveDataFolderGetters"
-#include ":MIES_WaveBuilder"
-
-Menu "Mies Panels", dynamic
-	"WaveBuilder",            /Q, WBP_CreateWaveBuilderPanel()
-	"Load Stimsets from NWB", /Q, NWB_LoadAllStimsets()
-End
-
 static StrConstant panel                     = "WaveBuilder"
 static StrConstant WaveBuilderGraph          = "WaveBuilder#WaveBuilderGraph"
 static StrConstant AnalysisParamGUI          = "WaveBuilder#AnalysisParamGUI"

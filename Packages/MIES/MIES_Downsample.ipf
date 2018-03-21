@@ -18,38 +18,6 @@
 /// Wave         |  $dataPath:rateWave        | Holds all rates in kHz for each wave.                                  | GetDownsampleRateWave()
 /// Wave         |  $dataPath:sweepProperties | Used by the list box to show the properties of each sweep              | GetDownsampleListWave()
 
-// stock igor
-#include <Readback ModifyStr>
-
-// third party includes
-#include ":ACL_TabUtilities"
-#include ":ACL_UserdataEditor"
-
-// ZeroMQ procedures
-#include ":..:ZeroMQ:procedures:ZeroMQ_Interop"
-
-// our includes
-#include ":MIES_AnalysisFunctionProtoTypes"
-#include ":MIES_AnalysisFunctionHelpers"
-#include ":MIES_ArtefactRemoval"
-#include ":MIES_BrowserSettingsPanel"
-#include ":MIES_Cache"
-#include ":MIES_Constants"
-#include ":MIES_Debugging"
-#include ":MIES_EnhancedWMRoutines"
-#include ":MIES_GlobalStringAndVariableAccess"
-#include ":MIES_GuiUtilities"
-#include ":MIES_MiesUtilities"
-#include ":MIES_ProgrammaticGUIControl"
-#include ":MIES_PulseAveraging"
-#include ":MIES_Utilities"
-#include ":MIES_Structures"
-#include ":MIES_WaveDataFolderGetters"
-
-Menu "Mies Panels", dynamic
-	"Open Downsample Panel", /Q, CreateDownsamplePanel()
-End
-
 static StrConstant checkbox_equalize      = "checkbox_equalize_id"
 static StrConstant checkbox_downsample    = "checkbox_downsample_id"
 static StrConstant popup_targetrate       = "popup_targetrate_id"
