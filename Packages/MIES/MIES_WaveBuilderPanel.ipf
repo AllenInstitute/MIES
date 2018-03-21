@@ -2528,9 +2528,9 @@ Function WBP_AddAnalysisParameter(stimset, name, [var, str, wv])
 		endif
 	endif
 
-	ASSERT(!cmpstr(CleanupName(name, 0), name), "Name is not a legal non-liberal igor object name")
+	ASSERT(AFH_IsValidAnalysisParameter(name), "Name is not a legal non-liberal igor object name")
 	ASSERT(!GrepString(value, "[=:,;]+"), "Written entry contains invalid characters (one of `=:,;`)")
-	ASSERT(!IsEmpty(type) && WhichListItem(type, ANALYSIS_FUNCTION_PARAMS_TYPES) != -1, "Invalid type")
+	ASSERT(AFH_IsValidAnalysisParamType(type), "Invalid type")
 
 	params = WPT[10][%Set]
 

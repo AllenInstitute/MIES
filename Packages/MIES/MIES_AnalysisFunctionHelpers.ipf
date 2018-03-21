@@ -423,6 +423,7 @@ End
 Function AFH_GetAnalysisParamNumerical(name, params)
 	string name, params
 
+	ASSERT(AFH_IsValidAnalysisParameter(name), "Name is not a legal non-liberal igor object name")
 	return NumberByKey(name + ":variable", params, "=", ",", 0)
 End
 
@@ -434,6 +435,7 @@ End
 Function/S AFH_GetAnalysisParamTextual(name, params)
 	string name, params
 
+	ASSERT(AFH_IsValidAnalysisParameter(name), "Name is not a legal non-liberal igor object name")
 	return StringByKey(name + ":string", params, "=", ",", 0)
 End
 
@@ -448,6 +450,7 @@ End
 Function/WAVE AFH_GetAnalysisParamWave(name, params)
 	string name, params
 
+	ASSERT(AFH_IsValidAnalysisParameter(name), "Name is not a legal non-liberal igor object name")
 	string contents = StringByKey(name + ":wave", params, "=", ",", 0)
 
 	if(IsEmpty(contents))
@@ -469,6 +472,7 @@ End
 Function/WAVE AFH_GetAnalysisParamTextWave(name, params)
 	string name, params
 
+	ASSERT(AFH_IsValidAnalysisParameter(name), "Name is not a legal non-liberal igor object name")
 	string contents = StringByKey(name + ":textwave", params, "=", ",", 0)
 
 	if(IsEmpty(contents))
@@ -476,4 +480,22 @@ Function/WAVE AFH_GetAnalysisParamTextWave(name, params)
 	endif
 
 	return ListToTextWave(contents, "|")
+End
+
+/// @brief Check if the given name is a valid user parameter name
+///
+/// @ingroup AnalysisFunctionParameterHelpers
+Function AFH_IsValidAnalysisParameter(name)
+	string name
+
+	return !IsEmpty(name) && !cmpstr(CleanupName(name, 0), name)
+End
+
+/// @brief Check if the given type is a valid user parameter type
+///
+/// @ingroup AnalysisFunctionParameterHelpers
+Function AFH_IsValidAnalysisParamType(type)
+	string type
+
+	return !IsEmpty(type) && WhichListItem(type, ANALYSIS_FUNCTION_PARAMS_TYPES) != -1
 End
