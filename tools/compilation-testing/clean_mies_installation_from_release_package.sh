@@ -5,6 +5,13 @@
 
 set -e
 
+if [ "$#" -gt 0 -a "$1" = "skipHardwareXOPs" ]
+then
+  installHWXOPs=0
+else
+  installHWXOPs=1
+fi
+
 git --version > /dev/null
 if [ $? -ne 0 ]
 then
@@ -40,7 +47,6 @@ xops_help="$IGOR_USER_FILES/Igor Help Files"
 
 mkdir -p "$user_proc"
 mkdir -p "$igor_proc"
-mkdir -p "$xops"
 mkdir -p "$xops_help"
 
 # install unit-testing package
@@ -63,9 +69,17 @@ rm -rf $folder
 
 rm -rf "$folder"/Packages/doc/html
 cp -r  "$folder"/Packages/*  "$user_proc"
-cp -r  "$folder"/XOPs-IP7-64bit/*  "$xops"
-cp -r  "$folder"/XOP-tango-IP7-64bit/* "$xops"
 cp -r  "$folder"/HelpFiles-IP7/* "$xops_help"
 cp "$folder"/version.txt "$IGOR_USER_FILES"
+
+mkdir -p "$xops"
+
+if [ "$installHWXOPs" = "1" ]
+then
+  cp -r  "$folder"/XOPs-IP7-64bit/*  "$xops"
+  cp -r  "$folder"/XOP-tango-IP7-64bit/*  "$xops"
+else
+  cp -r  "$folder"/XOPs-IP7-64bit/HDF5*  "$xops"
+fi
 
 exit 0
