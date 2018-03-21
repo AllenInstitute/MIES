@@ -514,3 +514,18 @@ Function/S AFH_GetAnalysisParameter(name, params)
 
 	return StringByKey(name + ":" + type, params, "=", ",", 0)
 End
+
+/// @brief Delete the given user parameter name
+///
+/// @param name   parameter name
+/// @param params serialized parameters, usually just #AnalysisFunction_V3.params
+///
+/// @ingroup AnalysisFunctionParameterHelpers
+///
+/// @return serialized parameters with `name` removed
+Function/S AFH_RemoveAnalysisParameter(name, params)
+	string name, params
+
+	ASSERT(AFH_IsValidAnalysisParameter(name), "Name is not a valid analysis parameter")
+	return GrepList(params, "(?i)\\Q" + name + "\\E" + ":.*", 1, ",")
+End
