@@ -898,6 +898,8 @@ Function WBP_StartupSettings()
 
 	WBP_LoadSet(NONE)
 
+	PGC_SetAndActivateControl(panel, "WBP_Set_Parameters", val = 0)
+
 	Execute/P/Q/Z "DoWindow/R " + panel
 	Execute/P/Q/Z "COMPILEPROCEDURES "
 End
