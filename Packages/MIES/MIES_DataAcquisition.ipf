@@ -83,7 +83,6 @@ static Function DQ_StopOngoingDAQHelper(panelTitle, [startTPAfterDAQ])
 		DQS_StopBackgroundFifoMonitor()
 
 		NVAR ITCDeviceIDGlobal = $GetITCDeviceIDGlobal(panelTitle)
-		HW_SelectDevice(HARDWARE_ITC_DAC, ITCDeviceIDGlobal)
 		HW_StopAcq(HARDWARE_ITC_DAC, ITCDeviceIDGlobal, zeroDAC = 1)
 
 		if(!discardData)

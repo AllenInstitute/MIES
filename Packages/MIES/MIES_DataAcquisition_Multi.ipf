@@ -74,8 +74,7 @@ Function DQM_TerminateOngoingDAQHelper(panelTitle)
 	WAVE/T/SDFR=GetActiveITCDevicesFolder() ActiveDeviceList
 
 	TFH_StopFIFODaemon(HARDWARE_ITC_DAC, ITCDeviceIDGlobal)
-	HW_SelectDevice(HARDWARE_ITC_DAC, ITCDeviceIDGlobal, flags=HARDWARE_ABORT_ON_ERROR)
-	HW_StopAcq(HARDWARE_ITC_DAC, ITCDeviceIDGlobal, zeroDAC = 1)
+	HW_StopAcq(HARDWARE_ITC_DAC, ITCDeviceIDGlobal, zeroDAC = 1, flags=HARDWARE_ABORT_ON_ERROR)
 
 	// remove device passed in from active device lists
 	DQM_MakeOrUpdateActivDevLstWave(panelTitle, ITCDeviceIDGlobal, 0, 0, -1)
@@ -128,8 +127,7 @@ Function DQM_StartDAQMultiDevice(panelTitle, [initialSetupReq])
 
 	// configure passed device
 	NVAR ITCDeviceIDGlobal = $GetITCDeviceIDGlobal(panelTitle)
-	HW_SelectDevice(HARDWARE_ITC_DAC, ITCDeviceIDGlobal, flags=HARDWARE_ABORT_ON_ERROR)
-	HW_ITC_PrepareAcq(ITCDeviceIDGlobal)
+	HW_ITC_PrepareAcq(ITCDeviceIDGlobal, flags=HARDWARE_ABORT_ON_ERROR)
 
 	if(!DeviceHasFollower(panelTitle))
 		DQM_BkrdDataAcq(panelTitle)
@@ -169,8 +167,7 @@ Function DQM_StartDAQMultiDevice(panelTitle, [initialSetupReq])
 		followerPanelTitle = StringFromList(i, listOfFollowerDevices)
 
 		NVAR ITCDeviceIDGlobal = $GetITCDeviceIDGlobal(followerPanelTitle)
-		HW_SelectDevice(HARDWARE_ITC_DAC, ITCDeviceIDGlobal, flags=HARDWARE_ABORT_ON_ERROR)
-		HW_ITC_PrepareAcq(ITCDeviceIDGlobal)
+		HW_ITC_PrepareAcq(ITCDeviceIDGlobal, flags=HARDWARE_ABORT_ON_ERROR)
 	endfor
 
 	// start lead device
@@ -286,8 +283,7 @@ static Function DQM_StopDataAcq(panelTitle, ITCDeviceIDGlobal)
 	Variable ITCDeviceIDGlobal
 
 	TFH_StopFIFODaemon(HARDWARE_ITC_DAC, ITCDeviceIDGlobal)
-	HW_SelectDevice(HARDWARE_ITC_DAC, ITCDeviceIDGlobal, flags=HARDWARE_ABORT_ON_ERROR)
-	HW_StopAcq(HARDWARE_ITC_DAC, ITCDeviceIDGlobal, prepareForDAQ=1, zeroDAC = 1)
+	HW_StopAcq(HARDWARE_ITC_DAC, ITCDeviceIDGlobal, prepareForDAQ=1, zeroDAC = 1, flags=HARDWARE_ABORT_ON_ERROR)
 
 	SWS_SaveAndScaleITCData(panelTitle)
 	if(RA_IsFirstSweep(panelTitle))
@@ -312,8 +308,6 @@ static Function DQM_BkrdDataAcq(panelTitle, [triggerMode])
 	NVAR stopCollectionPoint = $GetStopCollectionPoint(panelTitle)
 	NVAR ADChannelToMonitor  = $GetADChannelToMonitor(panelTitle)
 	NVAR ITCDeviceIDGlobal   = $GetITCDeviceIDGlobal(panelTitle)
-
-	HW_SelectDevice(HARDWARE_ITC_DAC, ITCDeviceIDGlobal, flags=HARDWARE_ABORT_ON_ERROR)
 
 	if(triggerMode == HARDWARE_DAC_DEFAULT_TRIGGER && DAG_GetNumericalValue(panelTitle, "Check_DataAcq1_RepeatAcq"))
 		DQ_StartITCDeviceTimer(panelTitle)

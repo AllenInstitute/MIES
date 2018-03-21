@@ -608,8 +608,7 @@ Function P_SetAndGetPressure(panelTitle, headStage, psi)
 	sprintf msg, "panelTitle=%s, hwtype=%d, deviceID=%d, channel=%d, headstage=%d, psi=%g\r", panelTitle, hwType, deviceID, channel, headStage, psi
 	DEBUGPRINT(msg)
 
-	HW_SelectDevice(hwType, deviceID, flags=HARDWARE_ABORT_ON_ERROR)
-	HW_WriteDAC(hwType, deviceID, channel, psi / scale + PRESSURE_OFFSET)
+	HW_WriteDAC(hwType, deviceID, channel, psi / scale + PRESSURE_OFFSET, flags=HARDWARE_ABORT_ON_ERROR)
 
 	return psi
 End
@@ -741,8 +740,6 @@ Function P_UpdateTTLstate(panelTitle, headStage, ONorOFFA, ONorOFFB)
 	ASSERT(IsFinite(ttlBitA), "TTL A must be finite")
 
 	if(hwType == HARDWARE_ITC_DAC)
-		HW_SelectDevice(hwType, deviceID, flags=HARDWARE_ABORT_ON_ERROR)
-
 		if(IsFinite(ttlBitB))
 			ASSERT(HW_ITC_GetRackForTTLBit(panelTitle, ttlBitA) == HW_ITC_GetRackForTTLBit(panelTitle, ttlBitB), "Both TTLbits have to be on the same rack")
 		endif
@@ -752,7 +749,7 @@ Function P_UpdateTTLstate(panelTitle, headStage, ONorOFFA, ONorOFFB)
 		// sending
 		channel = ttlBitA
 
-		val = HW_ReadDigital(hwType, deviceID, channel)
+		val = HW_ReadDigital(hwType, deviceID, channel, flags=HARDWARE_ABORT_ON_ERROR)
 
 		WAVE binary = P_DecToBinary(val)
 
@@ -783,23 +780,23 @@ Function P_UpdateTTLstate(panelTitle, headStage, ONorOFFA, ONorOFFB)
 				endif
 			endif
 
-			HW_WriteDigital(hwType, deviceID, channel, outputDecimal)
+			HW_WriteDigital(hwType, deviceID, channel, outputDecimal, flags=HARDWARE_ABORT_ON_ERROR)
 		endif
 
 	elseif(hwType == HARDWARE_NI_DAC)
 
 		channel = 0
-		val = HW_ReadDigital(hwType, deviceID, channel, line=ttlBitA)
+		val = HW_ReadDigital(hwType, deviceID, channel, line=ttlBitA, flags=HARDWARE_ABORT_ON_ERROR)
 
 		if(ONorOFFA != val)
-			HW_WriteDigital(hwType, deviceID, channel, ONorOFFA, line=ttlBitA)
+			HW_WriteDigital(hwType, deviceID, channel, ONorOFFA, line=ttlBitA, flags=HARDWARE_ABORT_ON_ERROR)
 		endif
 
 		if(IsFinite(ttlBitB))
-			val = HW_ReadDigital(hwType, deviceID, channel, line=ttlBitB)
+			val = HW_ReadDigital(hwType, deviceID, channel, line=ttlBitB, flags=HARDWARE_ABORT_ON_ERROR)
 
 			if(ONorOFFB != val)
-				HW_WriteDigital(hwType, deviceID, channel, ONorOFFB, line=ttlBitB)
+				HW_WriteDigital(hwType, deviceID, channel, ONorOFFB, line=ttlBitB, flags=HARDWARE_ABORT_ON_ERROR)
 			endif
 		endif
 	endif
@@ -1009,8 +1006,7 @@ static Function P_DataAcq(panelTitle, headStage)
 	DAC      = pressureDataWv[headStage][%DAC]
 	ADC      = pressureDataWv[headStage][%ADC]
 
-	HW_SelectDevice(hwType, deviceID, flags=HARDWARE_ABORT_ON_ERROR)
-	HW_StopAcq(hwType, deviceID)
+	HW_StopAcq(hwType, deviceID, flags=HARDWARE_ABORT_ON_ERROR)
 
 	// record onset of data acquisition
 	pressureDataWv[][%OngoingPessurePulse]          = 0 // ensure that only one headstage is recorded as having an ongoing pressure pulse
@@ -1089,8 +1085,7 @@ Function P_ITC_FIFOMonitorProc(s)
 	hwType   = pressureDataWv[headStage][%HW_DAC_Type]
 	deviceID = pressureDataWv[headStage][%DAC_DevID]
 
-	HW_SelectDevice(hwType, deviceID, flags=HARDWARE_ABORT_ON_ERROR)
-	moreData = HW_ITC_MoreData(deviceID, ADChannelToMonitor=1, stopCollectionPoint=350 / HARDWARE_ITC_MIN_SAMPINT)
+	moreData = HW_ITC_MoreData(deviceID, ADChannelToMonitor=1, stopCollectionPoint=350 / HARDWARE_ITC_MIN_SAMPINT, flags=HARDWARE_ABORT_ON_ERROR)
 
 	if(!moreData)
 		HW_StopAcq(hwType, deviceID)
@@ -1426,9 +1421,6 @@ static Function P_TTLforPpulse(panelTitle, headStage)
 
 	ASSERT(IsFinite(TTL), "TTL A must be finite")
 
-	rack = HW_ITC_GetRackForTTLBit(pressureDevice, TTL)
-	HW_SelectDevice(hwType, deviceID, flags=HARDWARE_ABORT_ON_ERROR)
-
 	ret = ParseDeviceString(panelTitle, deviceType, deviceNumber)
 	if(!cmpstr(deviceType, "ITC1600"))
 		// request TTL bit definitly in rack zero
@@ -1442,6 +1434,7 @@ static Function P_TTLforPpulse(panelTitle, headStage)
 		ASSERT(0, "does currently not work with the ITC18USB as DI/DO channels are different")
 	endif
 
+	rack = HW_ITC_GetRackForTTLBit(pressureDevice, TTL)
 	if(rack == RACK_ZERO)
 		rackZeroState = P_UpdateTTLdecimal(pressureDevice, rackZeroState, TTL, 1)
 		ITCData[PRESSURE_TTL_HIGH_START, PRESSURE_PULSE_ENDpt][%TTL_R0] = rackZeroState
@@ -1841,7 +1834,6 @@ static Function P_DACIsCollectingData(panelTitle, headStage)
 	hwType   = pressureDataWv[headStage][%HW_DAC_Type]
 	deviceID = pressureDataWv[headStage][%DAC_DevID]
 
-	HW_SelectDevice(hwType, deviceID, flags=HARDWARE_ABORT_ON_ERROR)
 	return HW_IsRunning(hwType, deviceID)
 End
 

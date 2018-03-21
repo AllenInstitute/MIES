@@ -282,7 +282,6 @@ Function SI_CreateLookupWave(panelTitle, [ignoreChannelOrder])
 	WAVE ITCChanConfigWave = GetITCChanConfigWave(panelTitle)
 
 	NVAR ITCDeviceIDGlobal = $GetITCDeviceIDGlobal(panelTitle)
-	HW_SelectDevice(HARDWARE_ITC_DAC, ITCDeviceIDGlobal, flags=HARDWARE_ABORT_ON_ERROR)
 
 	ret = ParseDeviceString(panelTitle, deviceType, deviceNumber)
 	ASSERT(ret, "Could not parse panelTitle")
