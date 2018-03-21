@@ -499,3 +499,18 @@ Function AFH_IsValidAnalysisParamType(type)
 
 	return !IsEmpty(type) && WhichListItem(type, ANALYSIS_FUNCTION_PARAMS_TYPES) != -1
 End
+
+/// @brief Return an user parameter as string
+///
+/// @param name   parameter name
+/// @param params serialized parameters, usually just #AnalysisFunction_V3.params
+///
+/// @ingroup AnalysisFunctionParameterHelpers
+Function/S AFH_GetAnalysisParameter(name, params)
+	string name, params
+
+	string type = AFH_GetAnalysisParamType(name, params)
+	ASSERT(AFH_IsValidAnalysisParamType(type), "Invalid type")
+
+	return StringByKey(name + ":" + type, params, "=", ",", 0)
+End
