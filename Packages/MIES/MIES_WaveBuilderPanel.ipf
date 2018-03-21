@@ -2537,7 +2537,7 @@ Function WBP_AddAnalysisParameter(stimset, name, [var, str, wv])
 	params = WPT[10][%Set]
 
 	if(WhichListItem(name, AFH_GetListOfAnalysisParamNames(params)) != -1)
-		print "Parameter \"s\" is already present and will be overwritten!"
+		printf "Parameter \"%s\" is already present and will be overwritten!\r", name
 	endif
 
 	WPT[10][%Set] = ReplaceStringByKey(name, params , type + "=" + value, ":", ",", 0)
