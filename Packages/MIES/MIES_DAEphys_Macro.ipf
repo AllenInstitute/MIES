@@ -11,7 +11,7 @@
 
 Window DA_Ephys() : Panel
 	PauseUpdate; Silent 1		// building window...
-	NewPanel /K=1 /W=(104,273,608,1153)
+	NewPanel /K=1 /W=(112,166,616,1046)
 	ValDisplay valdisp_DataAcq_P_LED_Clear,pos={366.00,298.00},size={86.00,29.00},disable=1
 	ValDisplay valdisp_DataAcq_P_LED_Clear,help={"red:user"},userdata(tabnum)=  "0"
 	ValDisplay valdisp_DataAcq_P_LED_Clear,userdata(tabcontrol)=  "tab_DataAcq_Pressure"
@@ -2503,7 +2503,7 @@ Window DA_Ephys() : Panel
 	SetVariable setvar_DataAcq_IbiasMax,userdata(ResizeControlsInfo)= A"!!,HP!!#B+!!#@l!!#<Xz!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	SetVariable setvar_DataAcq_IbiasMax,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Duafnzzzzzzzzzzz"
 	SetVariable setvar_DataAcq_IbiasMax,userdata(ResizeControlsInfo) += A"zzz!!#u:Duafnzzzzzzzzzzzzzz!!!"
-	SetVariable setvar_DataAcq_IbiasMax,value= _NUM:200
+	SetVariable setvar_DataAcq_IbiasMax,limits={1,1500,1},value= _NUM:200
 	SetVariable setvar_DataAcq_AutoBiasVrange,pos={392.00,218.00},size={62.00,18.00},bodyWidth=50,disable=1,proc=DAP_SetVarProc_AmpCntrls,title="±"
 	SetVariable setvar_DataAcq_AutoBiasVrange,userdata(tabcontrol)=  "tab_DataAcq_Amp"
 	SetVariable setvar_DataAcq_AutoBiasVrange,userdata(tabnum)=  "1"
@@ -3554,11 +3554,11 @@ Window DA_Ephys() : Panel
 	Button Button_DataAcq_SkipBackwards,labelBack=(0,0,0),fStyle=1
 	Button Button_DataAcq_SkipBackwards,fColor=(4369,4369,4369)
 	Button Button_DataAcq_SkipBackwards,valueColor=(65535,65535,65535)
-	SetVariable SetVar_DataAcq_skipAhead,pos={44.00,721.00},size={96.00,33.00},bodyWidth=35,disable=3,proc=DAP_SetVarProc_skipAhead,title="Skip ahead\r(sweeps)"
+	SetVariable SetVar_DataAcq_skipAhead,pos={44.00,721.00},size={96.00,33.00},bodyWidth=35,disable=1,proc=DAP_SetVarProc_skipAhead,title="Skip ahead\r(sweeps)"
 	SetVariable SetVar_DataAcq_skipAhead,help={"Skip sweeps in selected stimulus set(s) on data acquisition initialization."}
 	SetVariable SetVar_DataAcq_skipAhead,userdata(tabnum)=  "0"
 	SetVariable SetVar_DataAcq_skipAhead,userdata(tabcontrol)=  "ADC"
-	SetVariable SetVar_DataAcq_skipAhead,limits={0,0,1},value= _NUM:0
+	SetVariable SetVar_DataAcq_skipAhead,limits={0,3,1},value= _NUM:0
 	CheckBox check_DA_applyOnModeSwitch,pos={347.00,692.00},size={134.00,15.00},disable=1,proc=DAP_CheckProc_UpdateGuiState,title="Apply on mode switch"
 	CheckBox check_DA_applyOnModeSwitch,help={"Apply clamp mode all-channel DA settings on mode switch"}
 	CheckBox check_DA_applyOnModeSwitch,userdata(tabnum)=  "1"

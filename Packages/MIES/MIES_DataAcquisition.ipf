@@ -9,8 +9,6 @@
 /// @file MIES_DataAcquisition.ipf
 /// @brief __DQ__ Routines for Data acquisition
 
-static Constant DQ_DEFAULT_MAXAUTOBIASCURRENT = 1500e-12 /// Unit: Amps
-
 /// @brief Stop the DAQ and testpulse
 ///
 /// Works with single/multi device mode and on yoked devices simultaneously.
@@ -292,11 +290,6 @@ Function DQ_ApplyAutoBias(panelTitle, BaselineSSAvg, SSResistance)
 		DEBUGPRINT("current clamp mode set in headstage", var=headStage)
 
 		maximumAutoBiasCurrent = abs(ampSettings[%AutoBiasIbiasmax][0][headStage] * 1e-12)
-		if(maximumAutoBiasCurrent == 0 || maximumAutoBiasCurrent > DQ_DEFAULT_MAXAUTOBIASCURRENT)
-			printf "Warning for headStage %d: replacing invalid maximum auto bias currrent of %g with %g\r", headStage, maximumAutoBiasCurrent, DQ_DEFAULT_MAXAUTOBIASCURRENT
-			maximumAutoBiasCurrent = DQ_DEFAULT_MAXAUTOBIASCURRENT
-		endif
-
 		DEBUGPRINT("maximumAutoBiasCurrent=", var=maximumAutoBiasCurrent)
 
 		/// all variables holding physical units use plain values without prefixes
