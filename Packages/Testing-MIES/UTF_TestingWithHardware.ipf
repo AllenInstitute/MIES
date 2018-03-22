@@ -79,7 +79,7 @@ Function Initialize_IGNORE()
 	DuplicateDataFolder	root:WaveBuilder, root:MIES:WaveBuilder
 	REQUIRE(DataFolderExists("root:MIES:WaveBuilder:SavedStimulusSetParameters:DA"))
 
-	ITCCLoseAll2
+	HW_ITC_CloseAllDevices()
 End
 
 /// @brief Return the list of active devices
