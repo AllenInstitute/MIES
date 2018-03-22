@@ -820,7 +820,7 @@ End
 /// - DAScales (Numeric wave): DA Scale Factors in pA
 /// - OperationMode (String):  Operation mode of the analayis function. Can be
 ///                            either #PSQ_DS_SUB or #PSQ_DS_SUPRA.
-Function/S PSQ_SubThreshold_GetParams()
+Function/S PSQ_DAScale_GetParams()
 	return "DAScales;OperationMode"
 End
 
