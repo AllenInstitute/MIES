@@ -867,13 +867,19 @@ End
 Function HW_ITC_CloseAllDevices([flags])
 	variable flags
 
-	variable deviceID
+	variable i
 
 	DEBUGPRINTSTACKINFO()
 
-	if(HW_ITC_IsRunning(deviceID, flags=flags))
-		HW_ITC_StopAcq(deviceID, flags=flags)
-	endif
+	for(i = 0; i < HARDWARE_MAX_DEVICES; i += 1)
+		if(HW_SelectDevice(HARDWARE_ITC_DAC, i, flags = HARDWARE_PREVENT_ERROR_MESSAGE | HARDWARE_PREVENT_ERROR_POPUP))
+			continue // can not select device
+		endif
+
+		if(HW_ITC_IsRunning(i, flags=flags))
+			HW_ITC_StopAcq(i, flags=flags)
+		endif
+	endfor
 
 	ITCCloseAll2/Z=(HW_ITC_GetZValue(flags))
 End
