@@ -39,6 +39,7 @@ digraph G {
         "Enable \"Autobias\"";
         "Enable \"Multidevice DAQ\"";
         "Disable \"dDAQ\"/\"oodDAQ\"";
+        "Enable \"Repeated Acquisition\"";
         "Valid Autobias voltage (finite and non-zero)";
         "Prepare DAQ Event" -> "Enable \"Autobias\"";
         "Prepare DAQ Event" -> "Set \"TP during ITI\"";
@@ -51,6 +52,7 @@ digraph G {
         "All checks passed" -> "Abort"  [label="No"];
         "Prepare DAQ Event" -> "Set \"ITI\" to 4s";
         "Prepare DAQ Event" -> "Search for final DAScale in one of the existing sweeps";
+        "Prepare DAQ Event" -> "Enable \"Repeated Acquisition\"";
     }
 
     "Mark set as failed if it has not yet passed";

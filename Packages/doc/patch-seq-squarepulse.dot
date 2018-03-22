@@ -24,12 +24,14 @@ digraph G {
     "Start DAQ/RA" -> "Post Sweep Event";
     "Enable \"Multidevice DAQ\"";
     "Disable \"dDAQ\"/\"oodDAQ\"";
+    "Enable \"Repeated Acquisition\"";
     "Prepare DAQ Event" -> "Check if mode is IC";
     "Prepare DAQ Event" -> "Set \"TP inserting\" to disabled";
     "Prepare DAQ Event" -> "Set \"TP during ITI\" to disabled";
     "Prepare DAQ Event" -> "Set \"ITI\" to 100ms";
     "Prepare DAQ Event" -> "Enable \"Multidevice DAQ\"";
     "Prepare DAQ Event" -> "Disable \"dDAQ\"/\"oodDAQ\"";
+    "Prepare DAQ Event" -> "Enable \"Repeated Acquisition\"";
     "All checks passed";
     "Check if mode is IC" -> "All checks passed";
     "Set \"TP during ITI\" to disabled";

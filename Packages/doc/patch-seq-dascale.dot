@@ -31,11 +31,13 @@ digraph G {
     "Enable \"Multidevice DAQ\"";
     "Valid Autobias voltage (finite and non-zero)";
     "Disable \"dDAQ\"/\"oodDAQ\"";
+    "Enable \"Repeated Acquisition\"";
     "Prepare DAQ Event" -> "Enable \"Autobias\"";
     "Prepare DAQ Event" -> "Enable \"TP during ITI\"";
     "Prepare DAQ Event" -> "Valid Autobias voltage (finite and non-zero)";
     "Prepare DAQ Event" -> "Enable \"Multidevice DAQ\"";
     "Prepare DAQ Event" -> "Disable \"dDAQ\"/\"oodDAQ\"";
+    "Prepare DAQ Event" -> "Enable \"Repeated Acquisition\"";
     "All checks passed";
     "Valid Autobias voltage (finite and non-zero)" -> "All checks passed";
     "Mark set as passed if $NUM_DA_SCALES sweeps passed, as failure otherwise";
