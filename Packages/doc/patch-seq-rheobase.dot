@@ -41,14 +41,17 @@ digraph G {
         "Disable \"dDAQ\"/\"oodDAQ\"";
         "Enable \"Repeated Acquisition\"";
         "Valid Autobias voltage (finite and non-zero)";
+        "Check if no TTL channels are active";
         "Prepare DAQ Event" -> "Enable \"Autobias\"";
         "Prepare DAQ Event" -> "Set \"TP during ITI\"";
         "Prepare DAQ Event" -> "Valid Autobias voltage (finite and non-zero)";
         "Prepare DAQ Event" -> "Enable \"Multidevice DAQ\"";
         "Prepare DAQ Event" -> "Disable \"dDAQ\"/\"oodDAQ\"";
+        "Prepare DAQ Event" -> "Check if no TTL channels are active";
         "All checks passed";
         "Set \"TP during ITI\"";
         "Valid Autobias voltage (finite and non-zero)" -> "All checks passed";
+        "Check if no TTL channels are active" -> "All checks passed";
         "All checks passed" -> "Abort"  [label="No"];
         "Prepare DAQ Event" -> "Set \"ITI\" to 4s";
         "Prepare DAQ Event" -> "Search for final DAScale in one of the existing sweeps";

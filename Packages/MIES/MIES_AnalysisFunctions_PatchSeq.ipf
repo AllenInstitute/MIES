@@ -976,6 +976,13 @@ Function PSQ_DAScale(panelTitle, s)
 				return 1
 			endif
 
+			WAVE statusTTL = DAG_GetChannelState(panelTitle, CHANNEL_TYPE_TTL)
+			if(sum(statusTTL) != 0)
+				printf "(%s) Analysis function does not support TTL channels.\r", panelTitle
+				ControlWindowToFront()
+				return 1
+			endif
+
 			if(DAG_GetHeadstageMode(panelTitle, s.headstage) != I_CLAMP_MODE)
 				printf "(%s) Clamp mode must be current clamp.\r", panelTitle
 				ControlWindowToFront()
@@ -1230,6 +1237,13 @@ Function PSQ_SquarePulse(panelTitle, s)
 				return 1
 			endif
 
+			WAVE statusTTL = DAG_GetChannelState(panelTitle, CHANNEL_TYPE_TTL)
+			if(sum(statusTTL) != 0)
+				printf "(%s) Analysis function does not support TTL channels.\r", panelTitle
+				ControlWindowToFront()
+				return 1
+			endif
+
 			PGC_SetAndActivateControl(panelTitle, "check_Settings_MD", val = 1)
 			PGC_SetAndActivateControl(panelTitle, "check_Settings_ITITP", val = 0)
 			PGC_SetAndActivateControl(panelTitle, "Check_Settings_InsertTP", val = 0)
@@ -1374,6 +1388,13 @@ Function PSQ_Rheobase(panelTitle, s)
 			WAVE statusHS = DAG_GetChannelState(panelTitle, CHANNEL_TYPE_HEADSTAGE)
 			if(sum(statusHS) != 1)
 				printf "(%s) Analysis function only supports one headstage.\r", panelTitle
+				ControlWindowToFront()
+				return 1
+			endif
+
+			WAVE statusTTL = DAG_GetChannelState(panelTitle, CHANNEL_TYPE_TTL)
+			if(sum(statusTTL) != 0)
+				printf "(%s) Analysis function does not support TTL channels.\r", panelTitle
 				ControlWindowToFront()
 				return 1
 			endif
