@@ -185,16 +185,20 @@ static Function CA_MakeSpaceForNewEntry()
 
 	WAVE/T keys      = GetCacheKeyWave()
 	WAVE/WAVE values = GetCacheValueWave()
+	WAVE stats       = GetCacheStatsWave()
 
 	index = GetNumberFromWaveNote(keys, NOTE_INDEX)
 	ASSERT(index == GetNumberFromWaveNote(values, NOTE_INDEX), "Mismatched indizes in key and value waves")
 
 	EnsureLargeEnoughWave(keys, dimension=ROWS, minimumSize=index)
 	EnsureLargeEnoughWave(values, dimension=ROWS, minimumSize=index)
+	EnsureLargeEnoughWave(stats, dimension=ROWS, minimumSize=index, initialValue = NaN)
 	ASSERT(DimSize(keys, ROWS) == DimSize(values, ROWS), "Mismatched row sizes")
+	ASSERT(DimSize(stats, ROWS) == DimSize(values, ROWS), "Mismatched row sizes")
 
 	SetNumberInWaveNote(keys, NOTE_INDEX, index + 1)
 	SetNumberInWaveNote(values, NOTE_INDEX, index + 1)
+	SetNumberInWaveNote(stats, NOTE_INDEX, index + 1)
 
 	return index
 End
@@ -212,6 +216,7 @@ Function CA_StoreEntryIntoCache(key, val)
 
 	WAVE/T keys      = GetCacheKeyWave()
 	WAVE/WAVE values = GetCacheValueWave()
+	WAVE stats       = GetCacheStatsWave()
 
 	FindValue/TEXT=key/TXOP=4 keys
 	if(V_Value == -1)
@@ -224,6 +229,11 @@ Function CA_StoreEntryIntoCache(key, val)
 
 	values[index] = valCopy
 	keys[index]   = key
+
+	stats[index][]                       = 0
+	stats[index][%Misses]               += 1
+	stats[index][%Size]                  = GetWaveSize(val)
+	stats[index][%ModificationTimestamp] = DateTimeInUTC()
 End
 
 /// @brief Return the index of the entry `key`
@@ -251,6 +261,7 @@ Function/WAVE CA_TryFetchingEntryFromCache(key)
 
 	WAVE/T keys      = GetCacheKeyWave()
 	WAVE/WAVE values = GetCacheValueWave()
+	WAVE stats       = GetCacheStatsWave()
 
 	if(!IsFinite(index))
 		DEBUGPRINT("Could not find a cache entry for key=", str=key)
@@ -266,6 +277,7 @@ Function/WAVE CA_TryFetchingEntryFromCache(key)
 			keys[index] = ""
 			return $""
 		endif
+		stats[index][%Hits] += 1
 
 		Duplicate/FREE cache, wv
 		DEBUGPRINT("Found cache entry for key=", str=key)
@@ -283,6 +295,7 @@ Function CA_DeleteCacheEntry(key)
 
 	WAVE/T keys      = GetCacheKeyWave()
 	WAVE/WAVE values = GetCacheValueWave()
+	WAVE stats       = GetCacheStatsWave()
 
 	if(!IsFinite(index))
 		return 0
@@ -291,6 +304,7 @@ Function CA_DeleteCacheEntry(key)
 		// does currently not reset `NOTE_INDEX`
 		keys[index]   = ""
 		values[index] = $""
+		stats[index]  = NaN
 		return 1
 	endif
 End
@@ -300,4 +314,26 @@ Function CA_FlushCache()
 
 	KillOrMoveToTrash(wv=GetCacheKeyWave())
 	KillOrMoveToTrash(wv=GetCacheValueWave())
+	KillOrMoveToTrash(wv=GetCacheStatsWave())
+End
+
+/// @brief Output cache statistics
+Function CA_OutputCacheStatistics()
+
+	variable index, i
+
+	WAVE stats = GetCacheStatsWave()
+	index = GetNumberFromWaveNote(stats, NOTE_INDEX)
+
+	printf "\r"
+	printf "%s   | %s | %s | %s (MB)\r",  GetDimLabel(stats, COLS, 0), GetDimLabel(stats, COLS, 1), GetDimLabel(stats, COLS, 2), GetDimLabel(stats, COLS, 3)
+	printf "---------------------------------------------------\r"
+
+	for(i = 0; i < index; i += 1)
+		printf "%6d | %6d | %s  | %6d\r", stats[i][%Hits] , stats[i][%Misses], GetISO8601TimeStamp(secondsSinceIgorEpoch=stats[i][%ModificationTimestamp]), stats[i][%Size] / 1024 / 1024
+	endfor
+
+	printf "\r"
+
+	ControlWindowToFront()
 End
