@@ -191,6 +191,10 @@ Function/S AFH_GetChannelUnit(ITCChanConfigWave, channelNumber, channelType)
 	idx = AFH_GetITCDataColumn(ITCChanConfigWave, channelNumber, channelType)
 	WAVE/T units = AFH_GetChannelUnits(ITCChanConfigWave)
 
+	if(idx >= DimSize(units, ROWS))
+		return ""
+	endif
+
 	return units[idx]
 End
 
