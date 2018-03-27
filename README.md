@@ -173,6 +173,7 @@ The documentation for the master and the latest release branch,
 * Copy the scripts `tools/start*.sh` to `/home/john`.
 * Open a ssh terminal, execute `~/start_x11vnc.sh` and try connecting to the remote X session using e.g.
   TightVNC and `localhost:5900` as destination address.
+* Install Multi Clamp Commander from [here](http://mdc.custhelp.com/app/answers/detail/a_id/20059/session/L2F2LzIvdGltZS8xNTIyMTU1MzY1L3NpZC9jc3NxKkZJbg%3D%3D) via `env WINEPREFIX=$HOME/.wine-igor wine MultiClamp_2_2_2.exe`
 
 #### Install required software
 * (Relevant for Linux Mint 17 Qiana only) Add a file with the following sources in `/etc/apt/sources.list.d/`:
