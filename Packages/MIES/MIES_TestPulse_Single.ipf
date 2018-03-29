@@ -44,8 +44,7 @@ Function TPS_TestPulseFunc(s)
 		s.count += 1
 	endif
 
-	HW_SelectDevice(HARDWARE_ITC_DAC, ITCDeviceIDGlobal, flags=HARDWARE_ABORT_ON_ERROR)
-	HW_ITC_ResetFifo(ITCDeviceIDGlobal)
+	HW_ITC_ResetFifo(ITCDeviceIDGlobal, flags=HARDWARE_ABORT_ON_ERROR)
 	HW_StartAcq(HARDWARE_ITC_DAC, ITCDeviceIDGlobal, flags=HARDWARE_ABORT_ON_ERROR)
 
 	do

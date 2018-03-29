@@ -3130,7 +3130,6 @@ Function DAP_RemoveYokedDAC(panelToDeYoke)
 	PGC_SetAndActivateControl(panelToDeYoke, "setvar_Hardware_YokeList", str = "None")
 
 	NVAR followerITCDeviceIDGlobal = $GetITCDeviceIDGlobal(panelToDeYoke)
-	HW_SelectDevice(HARDWARE_ITC_DAC, followerITCDeviceIDGlobal)
 	HW_DisableYoking(HARDWARE_ITC_DAC, followerITCDeviceIDGlobal)
 End
 
@@ -4241,7 +4240,6 @@ static Function DAP_UnlockDevice(panelTitle)
 	TFH_StopFIFODaemon(HARDWARE_ITC_DAC, ITCDeviceIDGlobal)
 
 	flags = HARDWARE_PREVENT_ERROR_POPUP | HARDWARE_PREVENT_ERROR_MESSAGE
-	HW_SelectDevice(HARDWARE_ITC_DAC, ITCDeviceIDGlobal, flags=flags)
 	HW_CloseDevice(HARDWARE_ITC_DAC, ITCDeviceIDGlobal, flags=flags)
 	HW_DeRegisterDevice(HARDWARE_ITC_DAC, ITCDeviceIDGlobal, flags=flags)
 
@@ -4407,7 +4405,6 @@ static Function DAP_SetITCDACasFollower(leadDAC, followerDAC)
 
 	if(WhichListItem(followerDAC, listOfFollowerDevices) == -1)
 		listOfFollowerDevices = AddListItem(followerDAC, listOfFollowerDevices,";",inf)
-		HW_SelectDevice(HARDWARE_ITC_DAC, followerITCDeviceIDGlobal)
 		HW_EnableYoking(HARDWARE_ITC_DAC, followerITCDeviceIDGlobal)
 		setvariable setvar_Hardware_YokeList Win = $leadDAC, value= _STR:listOfFollowerDevices, disable = 0
 	endif
