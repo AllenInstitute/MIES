@@ -78,32 +78,25 @@ static Function SWS_AfterSweepDataSaveHook(panelTitle)
 	endfor
 End
 
-/// @brief Create a sweep wave holding the scaled contents of ITCDataWave
+/// @brief Return a free wave with all channel gains
 ///
-/// Only the x-range up to `stopCollectionPoint` is stored.
-static Function/WAVE SWS_StoreITCDataWaveScaled(panelTitle, dfr, sweepNo)
+/// Rows:
+///  - Active channels only (same as ITCChanConfigWave)
+///
+/// Can be used to convert the ITCDataWave contents from bits to mv/pA
+Function/WAVE SWS_GetChannelGains(panelTitle)
 	string panelTitle
-	DFREF dfr
-	variable sweepNo
 
-	variable numEntries, numDACs, numADCs, numTTLs
-	variable numRows, numCols
-	string sweepWaveName
+	variable numDACs, numADCs, numTTLs
+	variable numCols
 
-	NVAR stopCollectionPoint = $GetStopCollectionPoint(panelTitle)
-	WAVE ITCDataWave = GetITCDataWave(panelTitle)
 	WAVE ITCChanConfigWave = GetITCChanConfigWave(panelTitle)
-
-	ASSERT(IsValidSweepAndConfig(ITCDataWave, ITCChanConfigWave), "ITC Data and config wave are not compatible")
+	numCols = DimSize(ITCChanConfigWave, ROWS)
 
 	WAVE DA_EphysGuiState = GetDA_EphysGuiStateNum(panelTitle)
 	WAVE ADCs = GetADCListFromConfig(ITCChanConfigWave)
 	WAVE DACs = GetDACListFromConfig(ITCChanConfigWave)
 	WAVE TTLs = GetTTLListFromConfig(ITCChanConfigWave)
-
-	numRows = stopCollectionPoint
-	numCols = DimSize(ITCDataWave, COLS)
-	ASSERT(numCols > 0, "Expected at least one channel")
 
 	numADCs = DimSize(ADCs, ROWS)
 	numDACs = DimSize(DACs, ROWS)
@@ -126,8 +119,35 @@ static Function/WAVE SWS_StoreITCDataWaveScaled(panelTitle, dfr, sweepNo)
 		gain[numDACs + numADCs, *] = 1
 	endif
 
+	return gain
+End
+
+/// @brief Create a sweep wave holding the scaled contents of ITCDataWave
+///
+/// Only the x-range up to `stopCollectionPoint` is stored.
+static Function/WAVE SWS_StoreITCDataWaveScaled(panelTitle, dfr, sweepNo)
+	string panelTitle
+	DFREF dfr
+	variable sweepNo
+
+	variable numEntries, numDACs, numADCs, numTTLs
+	variable numRows, numCols
+	string sweepWaveName
+
+	NVAR stopCollectionPoint = $GetStopCollectionPoint(panelTitle)
+	WAVE ITCDataWave = GetITCDataWave(panelTitle)
+	WAVE ITCChanConfigWave = GetITCChanConfigWave(panelTitle)
+
+	ASSERT(IsValidSweepAndConfig(ITCDataWave, ITCChanConfigWave), "ITC Data and config wave are not compatible")
+
+	numRows = stopCollectionPoint
+	numCols = DimSize(ITCDataWave, COLS)
+	ASSERT(numCols > 0, "Expected at least one channel")
+
 	sweepWaveName = "Sweep_" +  num2str(sweepNo)
 	Make/O/N=(numRows, numCols)/Y=(SWS_GetRawDataFPType(panelTitle)) dfr:$sweepWaveName/Wave=sweepWave
+
+	WAVE gain = SWS_GetChannelGains(paneltitle)
 
 	MultiThread sweepWave[][] = ITCDataWave[p][q] / gain[q]
 	CopyScales/P ITCDataWave, sweepWave
