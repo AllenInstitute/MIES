@@ -109,7 +109,7 @@ static Function/WAVE SWS_StoreITCDataWaveScaled(panelTitle, dfr, sweepNo)
 	numDACs = DimSize(DACs, ROWS)
 	numTTLs = DimSize(TTLs, ROWS)
 
-	Make/FREE/N=(numCols) gain
+	Make/D/FREE/N=(numCols) gain
 
 	// DA: w' = w / (s / g)
 	if(numDACs > 0)
