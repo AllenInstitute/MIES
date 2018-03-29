@@ -4606,7 +4606,7 @@ End
 
 /// @brief Return the wave reference wave holding the cached data
 ///
-/// Dimension sizes and `NOTE_INDEX` value must coincide with GetCacheKeyWave().
+/// Dimension sizes and `NOTE_INDEX` value must coincide with other two cache waves.
 Function/Wave GetCacheValueWave()
 
 	DFREF dfr = GetCacheFolder()
@@ -4626,7 +4626,7 @@ End
 
 /// @brief Return the wave reference wave holding the cache keys
 ///
-/// Dimension sizes and `NOTE_INDEX` value must coincide with GetCacheValueWave().
+/// Dimension sizes and `NOTE_INDEX` value must coincide with other two cache waves.
 Function/Wave GetCacheKeyWave()
 
 	DFREF dfr = GetCacheFolder()
@@ -4640,6 +4640,44 @@ Function/Wave GetCacheKeyWave()
 	endif
 
 	SetNumberInWaveNote(wv, NOTE_INDEX, 0)
+
+	return wv
+End
+
+/// @brief Return the wave reference wave holding the cache stats
+///
+/// Rows:
+/// - One for each cache entry
+///
+/// Cols:
+/// - 0: Number of cache hits   (Incremented for every read)
+/// - 1: Number of cache misses (Increment for every failed lookup)
+/// - 2: Modification timestamp (Updated on write)
+/// - 3: Size in bytes (Updated on write)
+///
+/// Dimension sizes and `NOTE_INDEX` value must coincide with other two cache waves.
+Function/Wave GetCacheStatsWave()
+
+	variable versionOfNewWave = 1
+	DFREF dfr = GetCacheFolder()
+
+	WAVE/D/Z/SDFR=dfr wv = stats
+
+	if(ExistsWithCorrectLayoutVersion(wv, versionOfNewWave))
+		return wv
+	else
+		Make/O/D/N=(MINIMUM_WAVE_SIZE, 4) dfr:stats/Wave=wv
+	endif
+
+	wv = NaN
+
+	SetNumberInWaveNote(wv, NOTE_INDEX, 0)
+	SetWaveVersion(wv, versionOfNewWave)
+
+	SetDimLabel COLS, 0, Hits, wv
+	SetDimLabel COLS, 1, Misses, wv
+	SetDimLabel COLS, 2, ModificationTimestamp, wv
+	SetDimLabel COLS, 3, Size, wv
 
 	return wv
 End

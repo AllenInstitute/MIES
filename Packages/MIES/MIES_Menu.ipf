@@ -49,6 +49,7 @@ Menu "Mies Panels", dynamic
 		"Reset and store current DA_EPHYS panel"    , /Q, DAP_EphysPanelStartUpSettings()
 		"Check GUI control procedures of top panel" , /Q, SearchForInvalidControlProcs(GetCurrentWindow())
 		"Flush Cache"                               , /Q, CA_FlushCache()
+		"Output Cache statistics"                   , /Q, CA_OutputCacheStatistics()
 	End
 End
 
