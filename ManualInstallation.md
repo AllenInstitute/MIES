@@ -24,7 +24,7 @@ packages both for 32bit(x86) and 64bit(x64) in English.
     * "XOP-tango-64bit"
   * In "Igor Extensions" a shortcut pointing to
     * "XOPs-IP7"
-    * "XOP-tango-IP7"
+    * "XOP-tango"
   * In "Igor Help Files" a shortcut pointing to HelpFiles-IP7
 * Start Igor Pro
 
