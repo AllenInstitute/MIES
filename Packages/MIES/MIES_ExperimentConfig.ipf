@@ -567,7 +567,7 @@ Function ExpConfig_Position_MCC_Win(serialNum, winTitle, winPosition)
 		return 0
 	endif
 	
-	fullPath = GetFolder(FunctionPath("")) + "..:..:nircmd.exe"
+	fullPath = GetFolder(FunctionPath("")) + "..:..:tools:nircmd:nircmd.exe"
 	GetFileFolderInfo /Q/Z fullPath
 	cmdPath = S_Creator
 	if(V_flag != 0)
