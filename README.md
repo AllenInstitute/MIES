@@ -10,6 +10,11 @@ following these are especially welcome.
 
 * `git clone --recurse-submodules --jobs 2 http://stash.corp.alleninstitute.org/scm/eng/mies-igor.git`
 
+In case you have an existing checkout without submodules or forgot to pass the
+`--recurse-submodules` option you can fetch and checkout the submodules with:
+* `git submodule init`
+* `git submodule update --remote --checkout`
+
 ## Installation
 
 Select the installer for the latest release in the next section (Support
