@@ -14,6 +14,7 @@ Table of Contents
   namespacelist
   IPNWB
   ZeroMQ-XOP-Readme
+  labnotebook-docs
 
 Introduction
 ============
