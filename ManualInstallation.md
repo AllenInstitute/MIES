@@ -14,7 +14,6 @@ packages both for 32bit(x86) and 64bit(x64) in English.
 * Create the following shortcuts in "C:\Users\$username\Documents\WaveMetrics\Igor Pro 7 User Files"
   * In "User Procedures" a shortcut pointing to
     * "Packages\Arduino"
-    * "Packages\HDF-IP7"
     * "Packages\IPNWB"
     * "Packages\MIES"
     * "Packages\Tango"
@@ -34,7 +33,6 @@ packages both for 32bit(x86) and 64bit(x64) in English.
 * Create the following shortcuts in "C:\Users\$username\Documents\WaveMetrics\Igor Pro 8 User Files"
   * In "User Procedures" a shortcut pointing to
     * "Packages\Arduino"
-    * "Packages\HDF-IP8"
     * "Packages\IPNWB"
     * "Packages\MIES"
     * "Packages\Tango"
@@ -59,7 +57,6 @@ you can also install MIES without any hardware related XOPs present.
 * Create the following shortcuts in "C:\Users\$username\Documents\WaveMetrics\Igor Pro 7 User Files" (Or "7" -> "8" for IP8)
   * In "User Procedures" a shortcut pointing to
     * "Packages\Arduino"
-    * "Packages\HDF-IP7" (Or "7" -> "8" for IP8)
     * "Packages\IPNWB"
     * "Packages\MIES"
     * "Packages\Tango"

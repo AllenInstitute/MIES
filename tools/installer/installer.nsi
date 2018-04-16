@@ -34,10 +34,10 @@
 !define IGOR764XOPSOURCETEMPL "XOPs-IP7-64bit"
 !define IGOR864XOPSOURCETEMPL "XOPs-IP8-64bit"
 # source file names for HDF for installation without XOPs
-!define IGOR732HDFXOPSOURCETEMPL "HDF5.xop"
-!define IGOR832HDFXOPSOURCETEMPL "HDF5.xop"
-!define IGOR764HDFXOPSOURCETEMPL "HDF5-64.xop"
-!define IGOR864HDFXOPSOURCETEMPL "HDF5-64.xop"
+!define IGOR732HDFXOPSOURCETEMPL "HDF5.xop - Shortcut"
+!define IGOR832HDFXOPSOURCETEMPL "HDF5.xop - Shortcut"
+!define IGOR764HDFXOPSOURCETEMPL "HDF5-64.xop - Shortcut"
+!define IGOR864HDFXOPSOURCETEMPL "HDF5-64.xop - Shortcut"
 # source folder name for tango for installation with XOPs
 !define IGOR732TANGOXOPSOURCETEMPL "XOP-tango"
 !define IGOR764TANGOXOPSOURCETEMPL "XOP-tango-IP7-64bit"
