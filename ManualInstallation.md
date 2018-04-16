@@ -1,9 +1,9 @@
 # Manual installation instructions
 
-## Full Installation
-
 The manual installation instructions are here for historical/compatibility
 reasons. Whenever possible users should install via the Installer package.
+
+## Full Installation
 
 Install the [Visual C++ Redistributable for Visual Studio 2015](https://www.microsoft.com/en-us/download/details.aspx?id=48145)
 packages both for 32bit(x86) and 64bit(x64) in English.
