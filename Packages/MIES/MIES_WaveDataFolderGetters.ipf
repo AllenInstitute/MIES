@@ -5363,3 +5363,43 @@ Function/WAVE GetRAPerfWave(panelTitle)
 	return wv
 
 End
+
+/// @brief Return the list wave for the analysis parameter GUI
+Function/WAVE WBP_GetAnalysisParamGUIListWave()
+
+	variable versionOfWave = 1
+	DFREF dfr = GetWaveBuilderDataPath()
+	WAVE/T/Z/SDFR=dfr wv = analysisGUIListWave
+
+	if(ExistsWithCorrectLayoutVersion(wv, versionOfWave))
+		return wv
+	endif
+
+	Make/T/N=(0, 3) dfr:analysisGUIListWave/WAVE=wv
+
+	SetDimLabel COLS, 0, Name, wv
+	SetDimLabel COLS, 1, Type, wv
+	SetDimLabel COLS, 2, Value, wv
+
+	SetWaveVersion(wv, versionOfWave)
+
+	return wv
+End
+
+/// @brief Return the selection wave for the analysis parameter GUI
+Function/WAVE WBP_GetAnalysisParamGUISelWave()
+
+	variable versionOfWave = 1
+	DFREF dfr = GetWaveBuilderDataPath()
+	WAVE/B/Z/SDFR=dfr wv = analysisGUISelWave
+
+	if(ExistsWithCorrectLayoutVersion(wv, versionOfWave))
+		return wv
+	endif
+
+	Make/B/N=(0) dfr:analysisGUISelWave/WAVE=wv
+
+	SetWaveVersion(wv, versionOfWave)
+
+	return wv
+End

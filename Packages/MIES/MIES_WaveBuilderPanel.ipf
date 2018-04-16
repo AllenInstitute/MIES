@@ -47,6 +47,7 @@ End
 
 static StrConstant panel                     = "WaveBuilder"
 static StrConstant WaveBuilderGraph          = "WaveBuilder#WaveBuilderGraph"
+static StrConstant AnalysisParamGUI          = "WaveBuilder#AnalysisParamGUI"
 static StrConstant DEFAULT_SET_PREFIX        = "StimulusSetA"
 
 // Equal to the indizes of the Wave Type popup menu
@@ -700,11 +701,11 @@ Window WaveBuilder() : Panel
 	CheckBox check_FlipEpoch_S98,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Duafnzzzzzzzzzzz"
 	CheckBox check_FlipEpoch_S98,userdata(ResizeControlsInfo) += A"zzz!!#u:Duafnzzzzzzzzzzzzzz!!!"
 	CheckBox check_FlipEpoch_S98,value= 0
-	Button button_af_jump_to_proc,pos={21.00,211.00},size={125.00,20.00},disable=1,proc=WBP_ButtonProc_OpenAnaFuncs,title="Open procedure file"
+	Button button_af_jump_to_proc,pos={21.00,207.00},size={135.00,25.00},disable=1,proc=WBP_ButtonProc_OpenAnaFuncs,title="Open procedure file"
 	Button button_af_jump_to_proc,help={"Open the procedure where the analysis functions have to be defined"}
 	Button button_af_jump_to_proc,userdata(tabnum)=  "1"
 	Button button_af_jump_to_proc,userdata(tabcontrol)=  "WBP_Set_Parameters"
-	Button button_af_jump_to_proc,userdata(ResizeControlsInfo)= A"!!,E:!!#Ab!!#@F!!#<`z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
+	Button button_af_jump_to_proc,userdata(ResizeControlsInfo)= A"!!,Bi!!#A^!!#@f!!#=+z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	Button button_af_jump_to_proc,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Duafnzzzzzzzzzzz"
 	Button button_af_jump_to_proc,userdata(ResizeControlsInfo) += A"zzz!!#u:Duafnzzzzzzzzzzzzzz!!!"
 	PopupMenu popup_WaveBuilder_trig_type_P53,pos={413.00,127.00},size={38.00,19.00},disable=1,proc=WBP_PopupMenu
@@ -843,6 +844,12 @@ Window WaveBuilder() : Panel
 	PopupMenu popup_af_generic_S9,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Duafnzzzzzzzzzzz"
 	PopupMenu popup_af_generic_S9,userdata(ResizeControlsInfo) += A"zzz!!#u:Duafnzzzzzzzzzzzzzz!!!"
 	PopupMenu popup_af_generic_S9,mode=1,popvalue="- none -",value= #"WBP_GetAnalysisFunctions_V3()"
+	Button button_toggle_params,pos={21.00,179.00},size={135.00,25.00},disable=1,proc=WBP_ButtonProc_OpenAnaParamGUI,title="Open parameters panel"
+	Button button_toggle_params,userdata(tabnum)=  "1"
+	Button button_toggle_params,userdata(tabcontrol)=  "WBP_Set_Parameters"
+	Button button_toggle_params,userdata(ResizeControlsInfo)= A"!!,Ba!!#AB!!#@f!!#=+z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
+	Button button_toggle_params,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Duafnzzzzzzzzzzz"
+	Button button_toggle_params,userdata(ResizeControlsInfo) += A"zzz!!#u:Duafnzzzzzzzzzzzzzz!!!"
 	DefineGuide UGH1={FT,241},UGH0={UGH1,0.902778,FB}
 	SetWindow kwTopWin,hook(main)=WBP_MainWindowHook
 	SetWindow kwTopWin,hook(ResizeControls)=ResizeControls#ResizeControlsHook
@@ -852,7 +859,7 @@ Window WaveBuilder() : Panel
 	SetWindow kwTopWin,userdata(ResizeControlsGuides)=  "UGH1;UGH0;"
 	SetWindow kwTopWin,userdata(ResizeControlsInfoUGH0)=  "NAME:UGH0;WIN:WaveBuilder;TYPE:User;HORIZONTAL:1;POSITION:598.00;GUIDE1:UGH1;GUIDE2:FB;RELPOSITION:0.902778;"
 	SetWindow kwTopWin,userdata(ResizeControlsInfoUGH1)=  "NAME:UGH1;WIN:WaveBuilder;TYPE:User;HORIZONTAL:1;POSITION:241.00;GUIDE1:FT;GUIDE2:;RELPOSITION:241;"
-	SetWindow kwTopWin,userdata(panelVersion)=  "3"
+	SetWindow kwTopWin,userdata(panelVersion)=  "5"
 	Execute/Q/Z "SetWindow kwTopWin sizeLimit={755.25,477,inf,inf}" // sizeLimit requires Igor 7 or later
 	Display/W=(0,242,1068,487)/FG=($"",$"",FR,UGH0)/HOST=#
 	SetWindow kwTopWin,hook(ResizeControls)=ResizeControls#ResizeControlsHook
@@ -897,6 +904,12 @@ Function WBP_StartupSettings()
 	SetCheckBoxState(panel, "check_allow_saving_builtin_nam", CHECKBOX_UNSELECTED)
 
 	WBP_LoadSet(NONE)
+
+	PGC_SetAndActivateControl(panel, "WBP_Set_Parameters", val = 0)
+
+	if(WindowExists(AnalysisParamGUI))
+		PGC_SetAndActivateControl(panel, "button_toggle_params")
+	endif
 
 	Execute/P/Q/Z "DoWindow/R " + panel
 	Execute/P/Q/Z "COMPILEPROCEDURES "
@@ -1819,6 +1832,8 @@ static Function WBP_LoadSet(setName)
 	// reset old state of checkbox and update panel
 	SetCheckBoxState(panel, "check_PreventUpdate", preventUpdate)
 	WBP_UpdatePanelIfAllowed()
+
+	WBP_UpdateParameterWave()
 End
 
 static Function SetAnalysisFunctionIfFuncExists(win, ctrl, stimset, funcList, func)
@@ -2528,15 +2543,306 @@ Function WBP_AddAnalysisParameter(stimset, name, [var, str, wv])
 		endif
 	endif
 
-	ASSERT(!cmpstr(CleanupName(name, 0), name), "Name is not a legal non-liberal igor object name")
+	ASSERT(AFH_IsValidAnalysisParameter(name), "Name is not a legal non-liberal igor object name")
 	ASSERT(!GrepString(value, "[=:,;]+"), "Written entry contains invalid characters (one of `=:,;`)")
-	ASSERT(!IsEmpty(type) && WhichListItem(type, ANALYSIS_FUNCTION_PARAMS_TYPES) != -1, "Invalid type")
+	ASSERT(AFH_IsValidAnalysisParamType(type), "Invalid type")
 
 	params = WPT[10][%Set]
 
 	if(WhichListItem(name, AFH_GetListOfAnalysisParamNames(params)) != -1)
-		print "Parameter \"s\" is already present and will be overwritten!"
+		printf "Parameter \"%s\" is already present and will be overwritten!\r", name
 	endif
 
 	WPT[10][%Set] = ReplaceStringByKey(name, params , type + "=" + value, ":", ",", 0)
+End
+
+/// @brief Delete the given analysis parameter from the stimset
+///
+/// @param stimset stimset name
+/// @param name    name of the parameter
+Function WBP_DeleteAnalysisParameter(stimset, name)
+	string stimset, name
+
+	string params
+
+	WAVE/T/Z WPT = WB_GetWaveTextParamForSet(stimset)
+	ASSERT(WaveExists(WPT), "Missing stimset")
+
+	params = WPT[%$"Analysis function params"][%Set]
+	params = AFH_RemoveAnalysisParameter(name, params)
+	WPT[%$"Analysis function params"][%Set] = params
+End
+
+/// @brief Return a list of all possible analysis parameter types
+Function/S WBP_GetParameterTypes()
+
+	return ANALYSIS_FUNCTION_PARAMS_TYPES
+End
+
+/// @brief Return the analysis parameters for the currently
+///        selected stimset
+Function/S WBP_GetAnalysisParameters()
+
+	string stimset
+
+	stimset = GetPopupMenuString(panel, "popup_WaveBuilder_SetList")
+
+	WAVE/T/Z WPT = WB_GetWaveTextParamForSet(stimset)
+
+	if(!WaveExists(WPT))
+		return ""
+	endif
+
+	return WPT[%$"Analysis function params"][%Set]
+End
+
+/// @brief Return the analysis parameter names for the currently
+///        selected stimset
+Function/S WBP_GetAnalysisParameterNames()
+
+	string params = WBP_GetAnalysisParameters()
+
+	if(IsEmpty(params))
+		return NONE
+	endif
+
+	return NONE + ";" + AFH_GetListOfAnalysisParamNames(params)
+End
+
+/// @brief Fill the listwave from the stimset analysis
+///        parameters extracted from its WPT
+static Function WBP_UpdateParameterWave()
+
+	string params, names, name, type, genericFunc, reqParams
+	string stimset, missingParams
+	variable i, numEntries, offset
+
+	Wave/T listWave = WBP_GetAnalysisParamGUIListWave()
+	WAVE   selWave  = WBP_GetAnalysisParamGUISelWave()
+
+	stimset = GetPopupMenuString(panel, "popup_WaveBuilder_SetList")
+	WAVE/T/Z WPT = WB_GetWaveTextParamForSet(stimset)
+
+	genericFunc = WPT[%$("Analysis function (generic)")][%Set]
+	reqParams = AFH_GetListOfReqAnalysisParams(genericFunc)
+
+	params = WBP_GetAnalysisParameters()
+	names  = AFH_GetListOfAnalysisParamNames(params)
+
+	numEntries = ItemsInList(names)
+	Redimension/N=(numEntries, -1) listWave, selWave
+
+	for(i = 0; i < numEntries; i += 1)
+		name = StringFromList(i, names)
+		listWave[i][%Name]  = name
+		listWave[i][%Type]  = AFH_GetAnalysisParamType(name, params)
+		listWave[i][%Value] = AFH_GetAnalysisParameter(name, params)
+	endfor
+
+	offset = DimSize(listWave, ROWS)
+
+	missingParams = GetListDifference(reqParams, names)
+	numEntries = ItemsInList(missingParams)
+	Redimension/N=(offset + numEntries, -1) listWave, selWave
+
+	for(i = 0; i < numEntries; i += 1)
+		name = StringFromList(i, missingParams)
+		listWave[offset + i][%Name] = name
+	endfor
+End
+
+/// @brief Toggle the analysis parameter GUI
+///
+/// @return one if the panel was killed, zero if it was created
+static Function WBP_ToggleAnalysisParamGUI()
+
+	if(WindowExists(AnalysisParamGUI))
+		KillWindow $AnalysisParamGUI
+		return 1
+	endif
+
+	Wave/T listWave = WBP_GetAnalysisParamGUIListWave()
+	WAVE   selWave  = WBP_GetAnalysisParamGUISelWave()
+
+	NewPanel/EXT=2/HOST=WaveBuilder/N=AnalysisParamGUI/W=(0,0,670,200)/K=2 as " "
+	GroupBox group_main,pos={36.00,19.00},size={135.00,113.00},win=AnalysisParamGUI
+	Button button_delete_parameter,pos={73.00,139.00},size={60.00,25.00},proc=WBP_ButtonProc_DeleteParam,title="Delete",win=AnalysisParamGUI
+	Button button_delete_parameter,win=AnalysisParamGUI,help={"Delete the selected parameter"}
+	Button button_add_parameter,pos={73.00,99.00},size={60.00,25.00},proc=WBP_ButtonProc_AddParam,title="Add",win=AnalysisParamGUI
+	Button button_add_parameter,win=AnalysisParamGUI,help={"Add the parameter with type and value to the stimset"}
+	PopupMenu popup_param_types,pos={45.00,52.00},size={102.00,19.00},bodyWidth=70,title="Type:",win=AnalysisParamGUI
+	PopupMenu popup_param_types,mode=4,popvalue="variable",value= #"WBP_GetParameterTypes()",win=AnalysisParamGUI
+	PopupMenu popup_param_types,help={"Choose the parameter type"},win=AnalysisParamGUI
+	SetVariable setvar_param_value,pos={43.00,76.00},size={120.00,18.00},bodyWidth=120,win=AnalysisParamGUI
+	SetVariable setvar_param_value,limits={-inf,inf,0},value= _STR:"",win=AnalysisParamGUI
+	SetVariable setvar_param_value,help={"Input the parameter value as string. For wave/textwave entries separate the entries with \";\""},win=AnalysisParamGUI
+	SetVariable setvar_param_name,pos={43.00,27.00},size={120.00,18.00},bodyWidth=120,value= _STR:"",win=AnalysisParamGUI
+	SetVariable setvar_param_name,help={"The parameter name"}
+	ListBox list_params,pos={174.00,19.00},size={453.00,175.00},win=AnalysisParamGUI
+	ListBox list_params,listWave=listWave,win=AnalysisParamGUI
+	ListBox list_params,selWave=selWave,mode=4,proc=WBP_ListBoxProc_AnalysisParams,win=AnalysisParamGUI
+	ListBox list_params,widths={25,15,60},win=AnalysisParamGUI,help={"Visualization of all parameters with types and values"}
+
+	WBP_UpdateParameterWave()
+
+	return 0
+End
+
+Function WBP_ButtonProc_DeleteParam(ba) : ButtonControl
+	STRUCT WMButtonAction &ba
+
+	string stimset
+	variable numEntries, i
+
+	switch(ba.eventCode)
+		case 2: // mouse up
+			Wave/T listWave = WBP_GetAnalysisParamGUIListWave()
+			WAVE selWave    = WBP_GetAnalysisParamGUISelWave()
+
+			WAVE/Z indizes = FindIndizes(selWave, var = LISTBOX_SELECTED, col = 0, prop = PROP_MATCHES_VAR_BIT_MASK)
+			if(!WaveExists(indizes))
+				break
+			endif
+
+			numEntries = DimSize(indizes, ROWS)
+
+			// map to names which are stable even after deletion
+			Make/T/FREE/N=(numEntries) names = listWave[indizes[p]][%Name]
+
+			stimset = GetPopupMenuString(panel, "popup_WaveBuilder_SetList")
+
+			for(i = 0; i < numEntries; i += 1)
+				WBP_DeleteAnalysisParameter(stimset, names[i])
+			endfor
+
+			WBP_UpdateParameterWave()
+			break
+	endswitch
+
+	return 0
+End
+
+Function WBP_ButtonProc_AddParam(ba) : ButtonControl
+	STRUCT WMButtonAction &ba
+
+	string win, name, type, stimset
+	string value
+
+	switch(ba.eventCode)
+		case 2: // mouse up
+			win  = ba.win
+			name = GetSetVariableString(win, "setvar_param_name")
+			if(!AFH_IsValidAnalysisParameter(name))
+				printf "The parameter name \"%s\" is not valid.\r", name
+				ControlWindowToFront()
+				break
+			endif
+
+			stimset = GetPopupMenuString(panel, "popup_WaveBuilder_SetList")
+			type    = GetPopupMenuString(win, "popup_param_types")
+			value   = GetSetVariableString(win, "setvar_param_value")
+
+			strswitch(type)
+				case "variable":
+					WBP_AddAnalysisParameter(stimset, name, var = str2numSafe(value))
+					break
+				case "string":
+					WBP_AddAnalysisParameter(stimset, name, str = value)
+					break
+				case "wave":
+					WBP_AddAnalysisParameter(stimset, name, wv = ListToNumericWave(value, ";"))
+					break
+				case "textwave":
+					WBP_AddAnalysisParameter(stimset, name, wv = ListToTextWave(value, ";"))
+					break
+				default:
+					ASSERT(0, "invalid type")
+					break
+			endswitch
+
+			WBP_UpdateParameterWave()
+			SetSetVariableString(win, "setvar_param_name", "")
+			SetSetVariableString(win, "setvar_param_value", "")
+			break
+	endswitch
+
+	return 0
+End
+
+Function WBP_ButtonProc_OpenAnaParamGUI(ba) : ButtonControl
+	STRUCT WMButtonAction &ba
+
+	switch(ba.eventCode)
+		case 2: // mouse up
+			if(WBP_ToggleAnalysisParamGUI())
+				SetControlTitle(panel, "button_toggle_params","Open parameters panel")
+			else
+				SetControlTitle(panel, "button_toggle_params","Close parameters panel")
+			endif
+			break
+	endswitch
+
+	return 0
+End
+
+Function WBP_ListBoxProc_AnalysisParams(lba) : ListBoxControl
+	STRUCT WMListboxAction &lba
+
+	string stimset, win, name, value, params
+	string type
+	variable row, col
+
+	switch(lba.eventCode)
+		case 1: // mouse down
+		case 3: // double click
+		case 4: // cell selection
+		case 5: // cell selection plus shift key
+
+			win = lba.win
+			row = lba.row
+			col = lba.col
+			WAVE/T/Z listWave = lba.listWave
+			WAVE/Z selWave = lba.selWave
+
+			if(row < 0 || row >= DimSize(listWave, ROWS))
+				break
+			endif
+
+			params = WBP_GetAnalysisParameters()
+			name   = listWave[row][%Name]
+
+			value = listWave[row][%Value]
+			type  = listWave[row][%Type]
+			if(!IsEmpty(type))
+				// the parameter is present and not a required placeholder parameter
+				// need to serialize the value properly
+
+				strswitch(type)
+					case "variable":
+						value = num2str(AFH_GetAnalysisParamNumerical(name, params))
+						break
+					case "string":
+						value = AFH_GetAnalysisParamTextual(name, params)
+						break
+					case "wave":
+						value = NumericWaveToList(AFH_GetAnalysisParamWave(name, params), ";")
+						break
+					case "textwave":
+						value = TextWaveToList(AFH_GetAnalysisParamTextWave(name, params), ";")
+						break
+					default:
+						ASSERT(0, "invalid type")
+						break
+				endswitch
+
+				SetPopupMenuString(win, "popup_param_types", type)
+			endif
+
+			SetSetVariableString(win, "setvar_param_name", name)
+			SetSetVariableString(win, "setvar_param_value", value)
+
+			break
+	endswitch
+
+	return 0
 End
