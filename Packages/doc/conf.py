@@ -1,5 +1,6 @@
 # imports
 from subprocess import Popen, PIPE
+import sys
 
 def setup(app):
     app.add_stylesheet('custom.css')
@@ -13,7 +14,11 @@ def get_version():
     branchString = Popen('git rev-parse --abbrev-ref HEAD', stdout = PIPE, shell = True).stdout.read().rstrip()
     revString    = Popen('git describe --always --tags',    stdout = PIPE, shell = True).stdout.read().rstrip()
 
-    return "({branch}) {version}".format(branch=branchString, version=revString)
+    if sys.version_info[0] > 2:
+        return "({branch}) {version}".format(branch=branchString.decode('ascii'), version=revString.decode('ascii'))
+    else:
+        return "({branch}) {version}".format(branch=branchString, version=revString)
+
 
 # sphinx config
 extensions = ['sphinx.ext.imgmath', 'sphinx.ext.todo', 'breathe', 'sphinxcontrib.fulltoc', 'sphinx.ext.graphviz']
