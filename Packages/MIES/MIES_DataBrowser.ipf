@@ -480,7 +480,6 @@ Window SettingsHistoryPanel() : Panel
 	SetWindow kwTopWin,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzzzzzzzzz!!!"
 	SetWindow kwTopWin,userdata(ResizeControlsGuides)=  "UGV0;"
 	SetWindow kwTopWin,userdata(ResizeControlsInfoUGV0)= A":-hTC3`S[N0KW?-:-)<bFED57B6-UXF*)>@Grnu.:dmEFF(KAR85E,T>#.mm5tj<n4&A^O8Q88W:-(0k2D-[;4%E:B6q&gk7T)<<<CoSI1-.Kp78-NR;b9q[:JNr&0fV*R"
-	Execute/Q/Z "SetWindow kwTopWin sizeLimit={437.25,110.25,inf,inf}" // sizeLimit requires Igor 7 or later
 	Display/W=(200,187,395,501)/FG=(FL,FT,UGV0,FB)/HOST=#
 	ModifyGraph margin(right)=74
 	TextBox/C/N=text0/F=0/B=1/X=0.50/Y=2.02/E=2 ""
