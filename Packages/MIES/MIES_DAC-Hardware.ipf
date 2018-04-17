@@ -1593,11 +1593,11 @@ Function HW_ITC_DebugMode(state, [flags])
 	DEBUGPRINT("Unimplemented")
 End
 
-Function HW_ITC_PrepareAcq(deviceID, [data, dataFunc, config, configFunc, flags])
+Function HW_ITC_PrepareAcq(deviceID, [data, dataFunc, config, configFunc, flags, offset])
 	variable deviceID
 	WAVE/Z data, config
 	FUNCREF HW_WAVE_GETTER_PROTOTYPE dataFunc, configFunc
-	variable flags
+	variable flags, offset
 
 	DEBUGPRINT("Unimplemented")
 End
