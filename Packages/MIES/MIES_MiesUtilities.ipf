@@ -1059,10 +1059,7 @@ Function/WAVE GetSweepsWithSetting(labnotebookValues, setting)
 
 	Make/FREE/N=(DimSize(indizes, ROWS)) sweeps = labnotebookValues[indizes[p]][sweepCol][0]
 
-	Make/N=0/FREE unique
-	FindDuplicates/RN=unique sweeps
-
-	return unique
+	return DeleteDuplicates(sweeps)
 End
 
 /// @brief Return the last numerical value of a setting from the labnotebook
