@@ -1,9 +1,9 @@
 digraph G {
     fontname="sans-serif";
-    penwidth="0.1";
+    compound="true";
     ratio="0,01";
     center="true";
-    compound="true";
+    penwidth="0.1";
     edge [comment="Wildcard edge",
           fontname="sans-serif",
           fontsize=10,
@@ -19,32 +19,49 @@ digraph G {
           style="filled"];
     "Start DAQ/RA";
     "Mid Sweep Event";
-    "Start DAQ/RA" -> "Mid Sweep Event";
-    "Prepare DAQ Event";
-    "Start DAQ/RA" -> "Prepare DAQ Event";
     "Post Set Event";
     "Post Sweep Event";
+    "Prepare DAQ Event";
+    "Start DAQ/RA" -> "Mid Sweep Event";
+    "Start DAQ/RA" -> "Prepare DAQ Event";
     "Start DAQ/RA" -> "Post Set Event";
     "Start DAQ/RA" -> "Post Sweep Event";
-    "Set \"TP during ITI\"";
-    "Enable \"Autobias\"";
-    "Enable \"Multidevice DAQ\"";
-    "Disable \"dDAQ\"/\"oodDAQ\"";
-    "Valid Autobias voltage (finite and non-zero)";
-    "Prepare DAQ Event" -> "Enable \"Autobias\"";
-    "Prepare DAQ Event" -> "Set \"TP during ITI\"";
-    "Prepare DAQ Event" -> "Valid Autobias voltage (finite and non-zero)";
-    "Prepare DAQ Event" -> "Enable \"Multidevice DAQ\"";
-    "Prepare DAQ Event" -> "Disable \"dDAQ\"/\"oodDAQ\"";
-    "All checks passed";
-    "Set \"TP during ITI\"";
-    "Valid Autobias voltage (finite and non-zero)" -> "All checks passed";
+    subgraph cluster_preDAQ {
+        color="invis";
+        edge [comment="Wildcard node added automatic in EG."];
+        node [comment="Wildcard node added automatic in EG."];
+        "Prepare DAQ Event" -> "Set \"Repeat Sets\" to 1";
+        "Prepare DAQ Event" -> "Stimset is large enough";
+        "Abort";
+        "Stimset is large enough";
+        "Stimset is large enough" -> "All checks passed";
+        "Set \"TP during ITI\"";
+        "Enable \"Autobias\"";
+        "Enable \"Multidevice DAQ\"";
+        "Disable \"dDAQ\"/\"oodDAQ\"";
+        "Enable \"Repeated Acquisition\"";
+        "Valid Autobias voltage (finite and non-zero)";
+        "Check if no TTL channels are active";
+        "Prepare DAQ Event" -> "Enable \"Autobias\"";
+        "Prepare DAQ Event" -> "Set \"TP during ITI\"";
+        "Prepare DAQ Event" -> "Valid Autobias voltage (finite and non-zero)";
+        "Prepare DAQ Event" -> "Enable \"Multidevice DAQ\"";
+        "Prepare DAQ Event" -> "Disable \"dDAQ\"/\"oodDAQ\"";
+        "Prepare DAQ Event" -> "Check if no TTL channels are active";
+        "All checks passed";
+        "Set \"TP during ITI\"";
+        "Valid Autobias voltage (finite and non-zero)" -> "All checks passed";
+        "Check if no TTL channels are active" -> "All checks passed";
+        "All checks passed" -> "Abort"  [label="No"];
+        "Prepare DAQ Event" -> "Set \"ITI\" to 4s";
+        "Prepare DAQ Event" -> "Search for final DAScale in one of the existing sweeps";
+        "Prepare DAQ Event" -> "Enable \"Repeated Acquisition\"";
+    }
+
     "Mark set as failed if it has not yet passed";
     "Post Set Event" -> "Mark set as failed if it has not yet passed";
     "BL QC passed? [2]";
     "Skip to end of Set";
-    "Abort";
-    "All checks passed" -> "Abort"  [label="No"];
     "BL QC passed? [1]";
     "Mid Sweep Event" -> "BL QC passed? [1]";
     "Grab next completely acquired chunk\n (500ms pre/50ms post) of stimset baseline";
@@ -75,9 +92,7 @@ digraph G {
     "Mark chunk as passed/failed [2]" -> "Grab next completely acquired chunk\n (500ms pre/50ms post) of stimset baseline"  [label="Failed"];
     "Mark chunk as passed/failed [2]" -> "Mark BL QC as passed"  [label="Passed"];
     "Set \"ITI\" to 4s";
-    "Prepare DAQ Event" -> "Set \"ITI\" to 4s";
     "Search for final DAScale in one of the existing sweeps";
-    "Prepare DAQ Event" -> "Search for final DAScale in one of the existing sweeps";
     "Search for final DAScale in one of the existing sweeps" -> "Abort"  [label="Not found"];
     "First Sweep?";
     "First Sweep?" -> "Store final DAScale of last sweep\n from previous RAC as initial DAScale"  [label="Yes"];
@@ -95,10 +110,7 @@ digraph G {
     "Mark set as failed" -> "Skip to end of Set";
     "Store final DAScale of last sweep\n from previous RAC as initial DAScale" -> "BL QC passed? [2]";
     "Set \"Repeat Sets\" to 1";
-    "Prepare DAQ Event" -> "Set \"Repeat Sets\" to 1";
     "Early sweep stop";
     "Mark BL QC as passed" -> "Early sweep stop";
-    "Stimset is large enough";
-    "Prepare DAQ Event" -> "Stimset is large enough";
-    "Stimset is large enough" -> "All checks passed";
+    "Mark BL QC as failed" -> "Early sweep stop";
 }

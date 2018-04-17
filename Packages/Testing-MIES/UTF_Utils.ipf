@@ -1046,3 +1046,39 @@ Function FI_AbortsWithInvalidWave()
 End
 
 /// @}
+
+/// @{
+/// GetMachineEpsilon
+
+Function EPS_WorksWithDouble()
+
+	variable eps, type
+
+	type = IGOR_TYPE_64BIT_FLOAT
+	eps  = GetMachineEpsilon(type)
+	Make/FREE/Y=(type)/N=1 ref = 1
+	Make/FREE/Y=(type)/N=1 val
+
+	val = ref[0] + eps
+	CHECK_NEQ_VAR(ref[0], val[0])
+
+	val = ref[0] + eps/2.0
+	CHECK_EQUAL_VAR(ref[0], val[0])
+End
+
+Function EPS_WorksWithFloat()
+
+	variable eps, type
+
+	type = IGOR_TYPE_32BIT_FLOAT
+	eps  = GetMachineEpsilon(type)
+	Make/FREE/Y=(type)/N=1 ref = 1
+	Make/FREE/Y=(type)/N=1 val
+
+	val = ref[0] + eps
+	CHECK_NEQ_VAR(ref[0], val[0])
+
+	val = ref[0] + eps/2.0
+	CHECK_EQUAL_VAR(ref[0], val[0])
+End
+/// @}

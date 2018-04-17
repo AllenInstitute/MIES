@@ -14,6 +14,7 @@
 #include "UTF_PatchSeqDAScale"
 #include "UTF_PatchSeqSquarePulse"
 #include "UTF_PatchSeqRheobase"
+#include "UTF_PatchSeqRamp"
 
 Function LoadStimsets()
 	string filename = GetFolder(FunctionPath("")) + "_2017_09_01_192934-compressed.nwb"
@@ -169,6 +170,19 @@ Function run()
 	list = AddListItem("PS_RB_Test5", list, ";", INF)
 	list = AddListItem("PS_RB_Run6", list, ";", INF)
 	list = AddListItem("PS_RB_Test6", list, ";", INF)
+
+	list = AddListItem("PS_RA_Run1", list, ";", INF)
+	list = AddListItem("PS_RA_Test1", list, ";", INF)
+	list = AddListItem("PS_RA_Run2", list, ";", INF)
+	list = AddListItem("PS_RA_Test2", list, ";", INF)
+	list = AddListItem("PS_RA_Run3", list, ";", INF)
+	list = AddListItem("PS_RA_Test3", list, ";", INF)
+	list = AddListItem("PS_RA_Run4", list, ";", INF)
+	list = AddListItem("PS_RA_Test4", list, ";", INF)
+	list = AddListItem("PS_RA_Run5", list, ";", INF)
+	list = AddListItem("PS_RA_Test5", list, ";", INF)
+	list = AddListItem("PS_RA_Run6", list, ";", INF)
+	list = AddListItem("PS_RA_Test6", list, ";", INF)
 
 	list = AddListItem("AFT_DAQ1", list, ";", INF)
 	list = AddListItem("AFT_Test1", list, ";", INF)

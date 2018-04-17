@@ -1333,7 +1333,7 @@ End
 /// @param[in] ADChannelToMonitor  first AD channel
 /// @param[in] stopCollectionPoint number of points to acquire
 /// @param[in] config              ITC config wave
-/// @param[out] fifoPos            allows to query the current fifo position
+/// @param[out] fifoPos            allows to query the current fifo position (ADC)
 /// @param flags                   [optional, default none] One or multiple flags from @ref HardwareInteractionFlags
 ///
 /// @return 1 if more data needs to be acquired, 0 if done
@@ -1370,7 +1370,7 @@ End
 /// @param[in] stopCollectionPoint [optional, defaults to GetStopCollectionPoint()] number of points to acquire
 /// @param[in] config              [optional] ITC config wave
 /// @param[in] configFunc          [optional, defaults to GetITCChanConfigWave()] override wave getter for the ITC config wave
-/// @param[out] fifoPos            [optional] allows to query the current fifo position
+/// @param[out] fifoPos            [optional] allows to query the current fifo position (ADC)
 /// @param flags                   [optional, default none] One or multiple flags from @ref HardwareInteractionFlags
 ///
 /// @return 1 if more data needs to be acquired, 0 if done
@@ -1593,11 +1593,11 @@ Function HW_ITC_DebugMode(state, [flags])
 	DEBUGPRINT("Unimplemented")
 End
 
-Function HW_ITC_PrepareAcq(deviceID, [data, dataFunc, config, configFunc, flags])
+Function HW_ITC_PrepareAcq(deviceID, [data, dataFunc, config, configFunc, flags, offset])
 	variable deviceID
 	WAVE/Z data, config
 	FUNCREF HW_WAVE_GETTER_PROTOTYPE dataFunc, configFunc
-	variable flags
+	variable flags, offset
 
 	DEBUGPRINT("Unimplemented")
 End

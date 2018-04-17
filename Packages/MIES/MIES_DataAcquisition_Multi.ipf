@@ -274,7 +274,7 @@ Function DQM_Timer(s)
 End
 
 static Function DQM_StartBckrdFIFOMonitor()
-	CtrlNamedBackground ITC_FIFOMonitorMD, period = 5, proc = DQM_FIFOMonitor
+	CtrlNamedBackground ITC_FIFOMonitorMD, period = 1, proc = DQM_FIFOMonitor
 	CtrlNamedBackground ITC_FIFOMonitorMD, start
 End
 
