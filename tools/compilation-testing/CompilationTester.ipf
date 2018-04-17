@@ -74,18 +74,6 @@ Function EvaluateResult()
 		case "MIES_Include":
 			CHECK_EQUAL_VAR(compilationState, 0x4) // "MIES_Include"
 			break
-		case "MIES_AnalysisBrowser":
-			CHECK_EQUAL_VAR(compilationState, 0x4) // "MIES_AnalysisBrowser"
-			break
-		case "MIES_DataBrowser":
-			CHECK_EQUAL_VAR(compilationState, 0x4) // "MIES_DataBrowser"
-			break
-		case "MIES_WaveBuilderPanel":
-			CHECK_EQUAL_VAR(compilationState, 0x4) // "MIES_WaveBuilderPanel"
-			break
-		case "MIES_Downsample":
-			CHECK_EQUAL_VAR(compilationState, 0x4) // "MIES_Downsample"
-			break
 		case "UTF_Main":
 			CHECK_EQUAL_VAR(compilationState, 0x4) // "UTF_Main"
 			break

@@ -10,42 +10,7 @@
 /// @file MIES_DataBrowser.ipf
 /// @brief __DB__ Panel for browsing acquired data during acquisition
 
-// stock igor
-#include <Resize Controls>
-#include <Readback ModifyStr>
-
-// third party includes
-#include ":ACL_TabUtilities"
-#include ":ACL_UserdataEditor"
-
-// ZeroMQ procedures
-#include ":..:ZeroMQ:procedures:ZeroMQ_Interop"
-
-// our includes
-#include ":MIES_AnalysisFunctionProtoTypes"
-#include ":MIES_AnalysisFunctionHelpers"
-#include ":MIES_ArtefactRemoval"
-#include ":MIES_BrowserSettingsPanel"
-#include ":MIES_Cache"
-#include ":MIES_Constants"
-#include ":MIES_Debugging"
-#include ":MIES_EnhancedWMRoutines"
-#include ":MIES_GlobalStringAndVariableAccess"
-#include ":MIES_GuiUtilities"
-#include ":MIES_MiesUtilities"
-#include ":MIES_OverlaySweeps"
-#include ":MIES_ProgrammaticGuiControl"
-#include ":MIES_PulseAveraging"
-#include ":MIES_Utilities"
-#include ":MIES_Structures"
-#include ":MIES_Cache"
-#include ":MIES_WaveDataFolderGetters"
-
 static strConstant EXT_PANEL_SETTINGSHISTORY = "SettingsHistoryPanel"
-
-Menu "Mies Panels", dynamic
-	"Data Browser", /Q, DB_OpenDataBrowser()
-End
 
 Function DB_OpenDataBrowser()
 	string win, device, devicesWithData

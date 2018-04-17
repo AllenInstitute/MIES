@@ -6,6 +6,13 @@
 
 set -e
 
+if [ "$#" -gt 0 -a "$1" = "skipHardwareXOPs" ]
+then
+  installHWXOPs=0
+else
+  installHWXOPs=1
+fi
+
 git --version > /dev/null
 if [ $? -ne 0 ]
 then
@@ -36,13 +43,21 @@ user_proc="$IGOR_USER_FILES/User Procedures"
 xops="$IGOR_USER_FILES/Igor Extensions (64-bit)"
 
 mkdir -p "$user_proc"
-mkdir -p "$xops"
 
 rm -rf "$top_level"/Packages/doc/html
 cp -r  "$top_level"/Packages/*  "$user_proc"
-cp -r  "$top_level"/XOPs-IP7-64bit/*  "$xops"
-cp -r  "$top_level"/XOP-tango-IP7-64bit/* "$xops"
-rm -f  "$xops"/NIDAQmx64.*
+
+mkdir -p "$xops"
+
+if [ "$installHWXOPs" = "1" ]
+then
+  cp -r  "$top_level"/XOPs-IP7-64bit/*  "$xops"
+  cp -r  "$top_level"/XOP-tango-IP7-64bit/* "$xops"
+  rm -f  "$xops"/NIDAQmx64.*
+else
+  cp -r  "$top_level"/XOPs-IP7-64bit/HDF5*  "$xops"
+fi
+
 echo "Release: FAKE MIES VERSION" > "$IGOR_USER_FILES"/version.txt
 
 exit 0

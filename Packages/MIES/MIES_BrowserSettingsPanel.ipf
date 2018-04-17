@@ -3,10 +3,6 @@
 #pragma rtFunctionErrors=1
 #pragma IgorVersion=7.04
 
-#include ":MIES_OverlaySweeps"
-#include ":MIES_PulseAveraging"
-#include ":MIES_ArtefactRemoval"
-
 /// @file MIES_BrowserSettingsPanel.ipf
 /// @brief __BSP__ Panel for __DB__ and __AB__ (SweepBrowser) that combines different settings in a tabcontrol.
 

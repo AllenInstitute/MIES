@@ -867,13 +867,19 @@ End
 Function HW_ITC_CloseAllDevices([flags])
 	variable flags
 
-	variable deviceID
+	variable i
 
 	DEBUGPRINTSTACKINFO()
 
-	if(HW_ITC_IsRunning(deviceID, flags=flags))
-		HW_ITC_StopAcq(deviceID, flags=flags)
-	endif
+	for(i = 0; i < HARDWARE_MAX_DEVICES; i += 1)
+		if(HW_SelectDevice(HARDWARE_ITC_DAC, i, flags = HARDWARE_PREVENT_ERROR_MESSAGE | HARDWARE_PREVENT_ERROR_POPUP))
+			continue // can not select device
+		endif
+
+		if(HW_ITC_IsRunning(i, flags=flags))
+			HW_ITC_StopAcq(i, flags=flags)
+		endif
+	endfor
 
 	ITCCloseAll2/Z=(HW_ITC_GetZValue(flags))
 End
@@ -1460,8 +1466,8 @@ Function HW_ITC_CloseAllDevices([flags])
 	DEBUGPRINT("Unimplemented")
 End
 
-Function HW_ITC_CloseDevice([flags])
-	variable flags
+Function HW_ITC_CloseDevice(deviceID, [flags])
+	variable deviceID, flags
 
 	DEBUGPRINT("Unimplemented")
 End
@@ -1472,14 +1478,14 @@ Function HW_ITC_SelectDevice(deviceID, [flags])
 	DEBUGPRINT("Unimplemented")
 End
 
-Function HW_ITC_EnableYoking([flags])
-	variable flags
+Function HW_ITC_EnableYoking(deviceID, [flags])
+	variable deviceID, flags
 
 	DEBUGPRINT("Unimplemented")
 End
 
-Function HW_ITC_DisableYoking([flags])
-	variable flags
+Function HW_ITC_DisableYoking(deviceID, [flags])
+	variable deviceID, flags
 
 	DEBUGPRINT("Unimplemented")
 End
@@ -1533,20 +1539,20 @@ threadsafe Function HW_ITC_StartAcq_TS(deviceID, triggerMode, [flags])
 	DEBUGPRINT_TS("Unimplemented")
 End
 
-Function HW_ITC_StartAcq(triggerMode, [flags])
-	variable triggerMode, flags
+Function HW_ITC_StartAcq(deviceID, triggerMode, [flags])
+	variable deviceID, triggerMode, flags
 
 	DEBUGPRINT("Unimplemented")
 End
 
-Function HW_ITC_IsRunning([flags])
-	variable flags
+Function HW_ITC_IsRunning(deviceID, [flags])
+	variable deviceID, flags
 
 	DEBUGPRINT("Unimplemented")
 End
 
-Function/WAVE HW_ITC_GetState([flags])
-	variable flags
+Function/WAVE HW_ITC_GetState(deviceID, [flags])
+	variable deviceID, flags
 
 	DEBUGPRINT("Unimplemented")
 End

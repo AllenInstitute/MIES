@@ -12,57 +12,10 @@
 ///
 /// Has no dependencies on any hardware related functions.
 
-// stock igor
-#include <Resize Controls>
-#include <Readback ModifyStr>
-
-// third party includes
-#include ":ACL_TabUtilities"
-#include ":ACL_UserdataEditor"
-
-// NWB includes
-#include ":..:IPNWB:IPNWB_Include"
-#include ":MIES_NeuroDataWithoutBorders"
-#include ":MIES_WaveBuilder"
-#include ":MIES_WaveBuilderPanel"
-
-// ZeroMQ procedures
-#include ":..:ZeroMQ:procedures:ZeroMQ_Interop"
-
-// our includes
-#include ":MIES_AnalysisFunctionHelpers"
-#include ":MIES_ArtefactRemoval"
-#include ":MIES_BrowserSettingsPanel"
-#include ":MIES_Cache"
-#include ":MIES_Constants"
-#include ":MIES_Debugging"
-#include ":MIES_EnhancedWMRoutines"
-#include ":MIES_EventDetectionCode"
-#include ":MIES_GlobalStringAndVariableAccess"
-#include ":MIES_GuiUtilities"
-#include ":MIES_IgorHooks"
-#include ":MIES_MiesUtilities"
-#include ":MIES_OverlaySweeps"
-#include ":MIES_ProgrammaticGuiControl"
-#include ":MIES_PulseAveraging"
-#include ":MIES_Structures"
-#include ":MIES_Utilities"
-#include ":MIES_WaveDataFolderGetters"
-
-#include ":MIES_AnalysisBrowser_LabNotebookTPStorageBrowser"
-#include ":MIES_AnalysisBrowser_SweepBrowser"
-#include ":MIES_AnalysisBrowser_SweepBrowser_Export"
-
 static Constant EXPERIMENT_TREEVIEW_COLUMN = 0
 static Constant DEVICE_TREEVIEW_COLUMN     = 2
 static Constant AB_LOAD_SWEEP = 0
 static Constant AB_LOAD_STIMSET = 1
-
-Menu "Mies Panels"
-	"Analysis Browser"        , /Q, AB_OpenAnalysisBrowser()
-	"Labnotebook Browser"     , /Q, LBN_OpenLabnotebookBrowser()
-	"TPStorage Browser"       , /Q, LBN_OpenTPStorageBrowser()
-End
 
 static Function AB_ResetSelectionWave()
 

@@ -3,7 +3,7 @@
 #pragma rtFunctionErrors=1
 
 #ifdef AUTOMATED_TESTING
-#pragma ModuleName=MIES_XXX
+#pragma ModuleName=MIES_BWO
 #endif
 
 /// @file MIES_Blowout.ipf
