@@ -2439,11 +2439,12 @@ Function/S ResolveAlias(pathName, path)
 
 	return path
 End
+
 /// @brief Return a text or numeric free wave with all duplicates deleted, might change the
 /// relative order of the entries
 Function/WAVE DeleteDuplicates(Wv)
 	WAVE wv
-	
+
 	switch(WaveType(wv, 1))
 		case 1: 
 			return DeleteDuplicatesNum(wv)
@@ -2453,7 +2454,7 @@ Function/WAVE DeleteDuplicates(Wv)
 			break
 		default:
 			ASSERT(0, "Can not work with this wave type")
-		endswitch
+	endswitch
 End
 
 /// @brief Return a text free wave with all duplicates removed, might change the
