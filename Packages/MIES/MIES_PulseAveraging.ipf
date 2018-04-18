@@ -633,7 +633,6 @@ Function PA_ShowPulses(win, dfr, pa)
 
 					if(!WaveExists(plotWave))
 						printf "Not adding pulse %d of region %d from sweep %d because it could not be extracted due to invalid coordinates.\r", l, region, sweepNo
-						ControlWindowToFront()
 						continue
 					endif
 
