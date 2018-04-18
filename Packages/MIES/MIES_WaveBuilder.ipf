@@ -1480,12 +1480,14 @@ Function WB_ParseCombinerFormula(formula, sweep, fp)
 	// look for shorthand-like strings not referring to existing stimsets
 	if(GrepString(trans.formula, "\\b[A-Z][0-9]*\\b"))
 		printf "WBP_ParseCombinerFormula: Parse error in the formula \"%s\": Non-existing shorthand found\r", formula
+		ControlWindowToFront()
 		return 1
 	endif
 
 	// Do not allow questionmarks as part of the formula
 	if(CountSubstrings(formula, "?") > 0)
 		printf "WBP_ParseCombinerFormula: Quenstionmark char not allowed in formula.\r"
+		ControlWindowToFront()
 		return 1
 	endif
 
@@ -1501,6 +1503,7 @@ Function WB_ParseCombinerFormula(formula, sweep, fp)
 
 	if(sweep >= trans.numCols)
 		printf "WBP_ParseCombinerFormula: Requested step %d is larger than the minimum number of sweeps in the referenced stim sets\r", sweep
+		ControlWindowToFront()
 		return 1
 	endif
 
@@ -1508,6 +1511,7 @@ Function WB_ParseCombinerFormula(formula, sweep, fp)
 
 	if(strlen(trans.formula) >= MAX_COMMANDLINE_LENGTH)
 		printf "WBP_ParseCombinerFormula: Parsed formula is too long to be executed in one step. Please shorten it and perform the desired task in two steps.\r"
+		ControlWindowToFront()
 		return 1
 	endif
 
