@@ -724,7 +724,7 @@ Function DAP_SetVarProc_Channel_Search(sva) : SetVariableControl
 
 	variable channelIndex, channelType, channelControl
 	variable i, isCustomSearchString, first, last
-	string ctrl, searchString
+	string ctrl, searchString, str
 	string popupValue, listOfWaves
 	string panelTitle, varstr
 
@@ -758,13 +758,20 @@ Function DAP_SetVarProc_Channel_Search(sva) : SetVariableControl
 				last  = GetNumberFromType(var=channelType)
 			else
 				first = channelIndex
-				last  = channelIndex
+				last  = channelIndex + 1
 			endif
 
 			for(i = first; i < last; i+= 1)
 
-				if(!DAP_DACHasExpectedClampMode(panelTitle, channelIndex, i, channelType))
-					continue
+				if(DAP_IsAllControl(channelIndex))
+					if(!DAP_DACHasExpectedClampMode(panelTitle, channelIndex, i, channelType))
+						continue
+					endif
+
+					ctrl = GetPanelControl(i, channelType, CHANNEL_CONTROL_SEARCH)
+					str = SelectString(isCustomSearchString, "", searchString)
+					PGC_SetAndActivateControl(panelTitle, ctrl, str = str)
+					DAG_Update(panelTitle, ctrl, str = str)
 				endif
 
 				ctrl = GetPanelControl(i, channelType, CHANNEL_CONTROL_WAVE)
@@ -772,9 +779,6 @@ Function DAP_SetVarProc_Channel_Search(sva) : SetVariableControl
 
 				ctrl = GetPanelControl(i, channelType, CHANNEL_CONTROL_INDEX_END)
 				PopupMenu $ctrl win=$panelTitle, value=#popupValue
-
-				ctrl = GetPanelControl(i, channelType, CHANNEL_CONTROL_SEARCH)
-				PGC_SetAndActivateControl(panelTitle, ctrl, str = SelectString(isCustomSearchString, "", searchString))
 			endfor
 			break
 	endswitch
