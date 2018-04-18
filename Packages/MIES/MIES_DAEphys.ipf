@@ -3439,13 +3439,39 @@ Function DAP_CheckProc_RepeatedAcq(cba) : CheckBoxControl
 	return 0
 End
 
+/// @brief Allows two checkboxes to be treated
+///        as a group where only one can be checked at a time.
+///
+/// Write into the GUI state wave as well
+static Function DAP_ToggleCheckBoxes(win, ctrl, list, checked)
+	string win, ctrl, list
+	variable checked
+
+	string partner
+
+	ASSERT(!IsEmpty(ctrl), "Expected non empty control")
+	ASSERT(ItemsInList(list) == 2, "Expected a list of two")
+
+	partner = StringFromList(mod(WhichListItem(ctrl, list) + 1, 2), list)
+	ASSERT(!IsEmpty(partner), "Invalid ctrl or list")
+
+	DAG_Update(win, partner, val = !checked)
+	SetCheckBoxState(win, partner, !checked)
+End
+
 Function DAP_CheckProc_SyncCtrl(cba) : CheckBoxControl
 	STRUCT WMCheckboxAction &cba
 
 	switch(cba.eventCode)
 		case 2: // mouse up
+
+			if(cba.checked)
+				DAP_ToggleCheckBoxes(cba.win, cba.ctrlName, "Check_DataAcq1_DistribDaq;Check_DataAcq1_dDAQOptOv", cba.checked)
+			endif
+
 			DAG_Update(cba.win, cba.ctrlName, val = cba.checked)
 			DAP_SyncGuiFromLeaderToFollower(cba.win)
+
 			break
 	endswitch
 
