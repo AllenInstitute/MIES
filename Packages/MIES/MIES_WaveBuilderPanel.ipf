@@ -2463,7 +2463,7 @@ End
 static Function WBP_GetSweepColor(sweep, red, green, blue)
 	variable sweep, &red, &green, &blue
 
-	return GetTraceColor(20 - sweep, red, green, blue)
+	return GetTraceColor(20 - mod(sweep, 20), red, green, blue)
 End
 
 /// @brief Add an analysis function parameter to the given stimset
