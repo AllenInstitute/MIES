@@ -33,6 +33,7 @@ digraph G {
     "Disable \"dDAQ\"/\"oodDAQ\"";
     "Enable \"Repeated Acquisition\"";
     "Check if no TTL channels are active";
+    "Check that the default sampling multiplier is 4";
     "Prepare DAQ Event" -> "Enable \"Autobias\"";
     "Prepare DAQ Event" -> "Enable \"TP during ITI\"";
     "Prepare DAQ Event" -> "Valid Autobias voltage (finite and non-zero)";
@@ -43,6 +44,7 @@ digraph G {
     "All checks passed";
     "Valid Autobias voltage (finite and non-zero)" -> "All checks passed";
     "Check if no TTL channels are active" -> "All checks passed";
+    "Check that the default sampling multiplier is 4" -> "All checks passed";
     "Mark set as passed if $NUM_DA_SCALES sweeps passed, as failure otherwise";
     "Post Set Event" -> "Mark set as passed if $NUM_DA_SCALES sweeps passed, as failure otherwise";
     "Last Sweep passed?";

@@ -50,6 +50,8 @@ static StrConstant PSQ_DS_LBN_PREFIX = "DA Scale"
 static StrConstant PSQ_RB_LBN_PREFIX = "Rheobase"
 static StrConstant PSQ_RA_LBN_PREFIX = "Ramp"
 
+static Constant PSQ_DEFAULT_SAMPLING_MULTIPLIER = 4
+
 /// @brief Return labnotebook keys for patch seq analysis functions
 ///
 /// @param type                                One of @ref PatchSeqAnalysisFunctionTypes
@@ -1057,6 +1059,12 @@ Function PSQ_DAScale(panelTitle, s)
 				return 1
 			endif
 
+			if(str2num(DAG_GetTextualValue(panelTitle, "Popup_Settings_SampIntMult")) != PSQ_DEFAULT_SAMPLING_MULTIPLIER)
+				printf "(%s): The default sampling multiplier must be %d.\r", panelTitle, PSQ_DEFAULT_SAMPLING_MULTIPLIER
+				ControlWindowToFront()
+				return 1
+			endif
+
 			daScaleOffset = PSQ_DS_GetDAScaleOffset(panelTitle, s.headstage, opMode)
 			if(!IsFinite(daScaleOffset))
 				printf "(%s): Could not find a valid DAScale threshold value from previous rheobase runs with long pulses.\r", panelTitle
@@ -1310,6 +1318,12 @@ Function PSQ_SquarePulse(panelTitle, s)
 				return 1
 			endif
 
+			if(str2num(DAG_GetTextualValue(panelTitle, "Popup_Settings_SampIntMult")) != PSQ_DEFAULT_SAMPLING_MULTIPLIER)
+				printf "(%s): The default sampling multiplier must be %d.\r", panelTitle, PSQ_DEFAULT_SAMPLING_MULTIPLIER
+				ControlWindowToFront()
+				return 1
+			endif
+
 			PSQ_StoreStepSizeInLBN(panelTitle, s.sweepNo, PSQ_SP_INIT_AMP_p100)
 			SetDAScale(panelTitle, s.headstage, PSQ_SP_INIT_AMP_p100)
 
@@ -1463,6 +1477,12 @@ Function PSQ_Rheobase(panelTitle, s)
 
 			if(!IsFinite(val) || CheckIfSmall(val, tol = 1e-12))
 				printf "(%s): Autobias value is zero or non-finite\r", panelTitle
+				ControlWindowToFront()
+				return 1
+			endif
+
+			if(str2num(DAG_GetTextualValue(panelTitle, "Popup_Settings_SampIntMult")) != PSQ_DEFAULT_SAMPLING_MULTIPLIER)
+				printf "(%s): The default sampling multiplier must be %d.\r", panelTitle, PSQ_DEFAULT_SAMPLING_MULTIPLIER
 				ControlWindowToFront()
 				return 1
 			endif
@@ -1752,6 +1772,12 @@ Function PSQ_Ramp(panelTitle, s)
 
 			if(!IsFinite(val) || CheckIfSmall(val, tol = 1e-12))
 				printf "(%s): Autobias value is zero or non-finite\r", panelTitle
+				ControlWindowToFront()
+				return 1
+			endif
+
+			if(str2num(DAG_GetTextualValue(panelTitle, "Popup_Settings_SampIntMult")) != PSQ_DEFAULT_SAMPLING_MULTIPLIER)
+				printf "(%s): The default sampling multiplier must be %d.\r", panelTitle, PSQ_DEFAULT_SAMPLING_MULTIPLIER
 				ControlWindowToFront()
 				return 1
 			endif

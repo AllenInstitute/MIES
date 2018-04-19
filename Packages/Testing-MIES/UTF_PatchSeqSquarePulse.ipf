@@ -47,6 +47,7 @@ static Function AcquireData(s)
 	PGC_SetAndActivateControl(DEVICE, "Check_Settings_BackgrndDataAcq", val = s.BKG_DAQ)
 	PGC_SetAndActivateControl(DEVICE, "SetVar_DataAcq_SetRepeats", val = s.RES)
 	PGC_SetAndActivateControl(DEVICE, "Check_Settings_SkipAnalysFuncs", val = 0)
+	PGC_SetAndActivateControl(DEVICE, "Popup_Settings_SampIntMult", str = "4")
 
 	DoUpdate/W=$DEVICE
 
