@@ -171,7 +171,7 @@ static Function/WAVE PSQ_DeterminePulseDuration(panelTitle, sweepNo, totalOnsetD
 	string panelTitle
 	variable sweepNo, totalOnsetDelay
 
-	variable i, level, first, last
+	variable i, level, first, last, duration
 	string key
 
 	WAVE/Z sweepWave = GetSweepWave(panelTitle, sweepNo)
@@ -203,7 +203,10 @@ static Function/WAVE PSQ_DeterminePulseDuration(panelTitle, sweepNo, totalOnsetD
 		ASSERT(!V_Flag, "Could not find a falling edge")
 		last = V_LevelX
 
-		durations[i] = last - first - DimDelta(singleDA, ROWS)
+		duration = last - first - DimDelta(singleDA, ROWS)
+		ASSERT(duration > 0, "Duration must be strictly positive")
+
+		durations[i] = duration
 	endfor
 
 	return durations
