@@ -196,11 +196,11 @@ static Function/WAVE PSQ_DeterminePulseDuration(panelTitle, sweepNo, totalOnsetD
 		level = WaveMin(singleDA, totalOnsetDelay, inf) + GetMachineEpsilon(WaveType(singleDA))
 
 		FindLevel/Q/R=(totalOnsetDelay, inf)/EDGE=1 singleDA, level
-		ASSERT(!V_Flag, "Could not find a rising level")
+		ASSERT(!V_Flag, "Could not find a rising edge")
 		first = V_LevelX
 
 		FindLevel/Q/R=(totalOnsetDelay, inf)/EDGE=2 singleDA, level
-		ASSERT(!V_Flag, "Could not find a rising level")
+		ASSERT(!V_Flag, "Could not find a falling edge")
 		last = V_LevelX
 
 		durations[i] = last - first - DimDelta(singleDA, ROWS)
