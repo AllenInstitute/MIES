@@ -1325,7 +1325,7 @@ Function PSQ_SquarePulse(panelTitle, s)
 
 			WAVE spikeDetection = PSQ_SearchForSpikes(panelTitle, PSQ_SQUARE_PULSE, sweepWave, s.headstage, totalOnsetDelay)
 			key = PSQ_CreateLBNKey(PSQ_SQUARE_PULSE, PSQ_FMT_LBN_SPIKE_DETECT)
-			ED_AddEntryToLabnotebook(panelTitle, key, spikeDetection)
+			ED_AddEntryToLabnotebook(panelTitle, key, spikeDetection, unit = LABNOTEBOOK_BINARY_UNIT)
 
 			key = PSQ_CreateLBNKey(PSQ_SQUARE_PULSE, PSQ_FMT_LBN_STEPSIZE, query = 1)
 			stepSize = GetLastSettingIndepRAC(numericalValues, s.sweepNo, key, UNKNOWN_MODE)
@@ -1849,7 +1849,7 @@ Function PSQ_Ramp(panelTitle, s)
 			spikeFound = spikeDetection[s.headstage]
 
 			key = PSQ_CreateLBNKey(PSQ_RAMP, PSQ_FMT_LBN_SPIKE_DETECT)
-			ED_AddEntryToLabnotebook(panelTitle, key, spikeDetection, overrideSweepNo = s.sweepNo)
+			ED_AddEntryToLabnotebook(panelTitle, key, spikeDetection, overrideSweepNo = s.sweepNo, unit = LABNOTEBOOK_BINARY_UNIT)
 
 			Make/FREE/N=(LABNOTEBOOK_LAYER_COUNT) result = NaN
 			result[s.headstage] = spikePos
@@ -1908,7 +1908,7 @@ Function PSQ_Ramp(panelTitle, s)
 			// we are past the pulse and have not found a spike
 			// write the results into the LBN
 			key = PSQ_CreateLBNKey(PSQ_RAMP, PSQ_FMT_LBN_SPIKE_DETECT)
-			ED_AddEntryToLabnotebook(panelTitle, key, spikeDetection, overrideSweepNo = s.sweepNo)
+			ED_AddEntryToLabnotebook(panelTitle, key, spikeDetection, overrideSweepNo = s.sweepNo, unit = LABNOTEBOOK_BINARY_UNIT)
 		endif
 	endif
 
