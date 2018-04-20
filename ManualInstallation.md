@@ -8,7 +8,7 @@ reasons. Whenever possible users should install via the Installer package.
 Install the [Visual C++ Redistributable for Visual Studio 2015](https://www.microsoft.com/en-us/download/details.aspx?id=48145)
 packages both for 32bit(x86) and 64bit(x64) in English.
 
-### Igor Pro 7.0.4 or later
+### Igor Pro 7.0.8 or later
 
 * Quit Igor Pro
 * Create the following shortcuts in "C:\Users\$username\Documents\WaveMetrics\Igor Pro 7 User Files"
@@ -51,7 +51,7 @@ packages both for 32bit(x86) and 64bit(x64) in English.
 In case you don't have the hardware connected/available a certain XOP requires
 you can also install MIES without any hardware related XOPs present.
 
-### Igor Pro 7.0.4 or later
+### Igor Pro 7.0.8 or later
 
 * Quit Igor Pro
 * Create the following shortcuts in "C:\Users\$username\Documents\WaveMetrics\Igor Pro 7 User Files" (Or "7" -> "8" for IP8)
