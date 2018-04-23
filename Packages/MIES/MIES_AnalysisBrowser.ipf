@@ -2168,6 +2168,7 @@ Function AB_ButtonProc_LoadSweeps(ba) : ButtonControl
 	STRUCT WMButtonAction &ba
 
 	variable oneValidSweep
+	string panel
 
 	switch(ba.eventcode)
 		case 2:
@@ -2175,7 +2176,8 @@ Function AB_ButtonProc_LoadSweeps(ba) : ButtonControl
 			oneValidSweep = AB_LoadFromFile(AB_LOAD_SWEEP, sweepBrowserDFR = dfr)
 			SVAR/SDFR=dfr graph
 			if(oneValidSweep)
-				SB_UpdateSweepPlot(graph, newSweep=0)
+				panel = BSP_GetSweepControlsPanel(graph)
+				PGC_SetAndActivateControl(panel, "button_SweepControl_PrevSweep")
 			else
 				KillWindow $graph
 			endif
