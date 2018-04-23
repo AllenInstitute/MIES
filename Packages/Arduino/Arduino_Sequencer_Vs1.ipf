@@ -1,5 +1,8 @@
 #pragma rtGlobals=1		// Use modern global access method.
 
+// This file was created by "Nicholas Hartell <nh88 (at) leicester dot ac dot uk>".
+// With minor modifications by "Thomas Braun <thomas dot braun (at) byte minus physics dot de>".
+
 #if exists("VDTGetPortList2")
 
 Menu "Arduino"
