@@ -282,15 +282,33 @@ End
 
 /// @brief Return a free 1D wave from the given sweep
 ///
-/// @param panelTitle  device
-/// @param sweep       sweep wave
-/// @param headstage   headstage [0, NUM_HEADSTAGES[
-/// @param channelType One of @ref ITC_XOP_CHANNEL_CONSTANTS (currently only AD/DA types are supported)
-/// @param config      [optional, defaults to config wave of the sweep returned by GetConfigWave()] config wave
-Function/WAVE AFH_ExtractOneDimDataFromSweep(panelTitle, sweep, headstage, channelType, [config])
+/// Extract the AD channel data from headstage 1:
+///
+/// @code
+/// variable sweepNo = 5
+/// WAVE sweep = GetSweepWave(panelTitle, sweepNo)
+/// variable headstage = 1
+/// WAVE data = AFH_ExtractOneDimDataFromSweep(panelTitle, sweep, headstage, ITC_XOP_CHANNEL_TYPE_ADC)
+/// @endcode
+///
+/// Extract the TTL channel 1:
+///
+/// @code
+/// variable sweepNo = 6
+/// WAVE sweep = GetSweepWave(panelTitle, sweepNo)
+/// variable ttlChannel = 1
+/// WAVE data = AFH_ExtractOneDimDataFromSweep(panelTitle, sweep, ttlChannel, ITC_XOP_CHANNEL_TYPE_TTL)
+/// @endcode
+///
+/// @param panelTitle            device
+/// @param sweep                 sweep wave
+/// @param headstageOrChannelNum headstage [0, NUM_HEADSTAGES[ or channel number for TTL channels [0, NUM_DA_TTL_CHANNELS]
+/// @param channelType           One of @ref ITC_XOP_CHANNEL_CONSTANTS
+/// @param config                [optional, defaults to config wave of the sweep returned by GetConfigWave()] config wave
+Function/WAVE AFH_ExtractOneDimDataFromSweep(panelTitle, sweep, headstageOrChannelNum, channelType, [config])
 	string panelTitle
 	WAVE sweep
-	variable headstage, channelType
+	variable headstageOrChannelNum, channelType
 	WAVE config
 
 	variable channelNum, col
@@ -301,10 +319,13 @@ Function/WAVE AFH_ExtractOneDimDataFromSweep(panelTitle, sweep, headstage, chann
 
 	switch(channelType)
 		case ITC_XOP_CHANNEL_TYPE_DAC:
-			channelNum = AFH_GetDACFromHeadstage(panelTitle, headStage)
+			channelNum = AFH_GetDACFromHeadstage(panelTitle, headstageOrChannelNum)
 			break
 		case ITC_XOP_CHANNEL_TYPE_ADC:
-			channelNum = AFH_GetADCFromHeadstage(panelTitle, headStage)
+			channelNum = AFH_GetADCFromHeadstage(panelTitle, headstageOrChannelNum)
+			break
+		case ITC_XOP_CHANNEL_TYPE_TTL:
+			channelNum = headstageOrChannelNum
 			break
 		default:
 			ASSERT(0, "Invalid channeltype")
