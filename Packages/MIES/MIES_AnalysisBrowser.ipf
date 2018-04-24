@@ -808,8 +808,15 @@ static Function/S AB_LoadLabNotebookFromNWB(discLocation)
 
 	Wave/T nwb = AB_GetMap(discLocation)
 
-	h5_fileID = IPNWB#H5_OpenFile(nwb[%DiscLocation])
-	if (!IPNWB#CheckIntegrity(h5_fileID))
+	try
+		h5_fileID = IPNWB#H5_OpenFile(nwb[%DiscLocation])
+	catch
+		printf "Could not open the NWB file %s.\r", nwb[%DiscLocation]
+		IPNWB#H5_CloseFile(h5_fileID)
+		return ""
+	endtry
+
+	if(!IPNWB#CheckIntegrity(h5_fileID))
 		IPNWB#H5_CloseFile(h5_fileID)
 		return ""
 	endif
