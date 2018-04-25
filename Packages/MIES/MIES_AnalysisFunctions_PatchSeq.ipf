@@ -19,8 +19,8 @@
 /// =========================== ========================================================= ================= =====================  =====================
 /// Naming constant             Description                                               Analysis function Per Chunk?             Headstage dependent?
 /// =========================== ========================================================= ================= =====================  =====================
-/// PSQ_FMT_LBN_SPIKE_DETECT    Spike was detected on the sweep                           SP, RB, RA        No                     Yes
-/// PSQ_FMT_LBN_SPIKE_POSITION  Spike position in ms                                      RA                No                     Yes
+/// PSQ_FMT_LBN_SPIKE_DETECT    The required number of spikes were detected on the sweep  SP, RB, RA        No                     Yes
+/// PSQ_FMT_LBN_SPIKE_POSITIONS Spike positions in ms                                     RA                No                     Yes
 /// PSQ_FMT_LBN_STEPSIZE        Current DAScale step size                                 SP                No                     Yes
 /// PSQ_FMT_LBN_FINAL_SCALE     Final DAScale of the given headstage, only set on success SP, RB            No                     No
 /// PSQ_FMT_LBN_INITIAL_SCALE   Initial DAScale                                           RB                No                     No
@@ -710,15 +710,17 @@ End
 /// @param[in] sweepWave       sweep wave with acquired data
 /// @param[in] headstage       headstage in the range [0, NUM_HEADSTAGES[
 /// @param[in] totalOnsetDelay total delay in ms until the stimset data starts
-/// @param[out] spikePosition  [optional] returns the first spike's position in ms
+/// @param[in] numberOfSpikes  [optional, defaults to one] number of spikes to look for
+/// @param[out] spikePositions [optional] returns the position of the first `numberOfSpikes` found on success in ms
 ///
 /// @return labnotebook value wave suitable for ED_AddEntryToLabnotebook()
-static Function/WAVE PSQ_SearchForSpikes(panelTitle, type, sweepWave, headstage, totalOnsetDelay, [spikePosition])
+static Function/WAVE PSQ_SearchForSpikes(panelTitle, type, sweepWave, headstage, totalOnsetDelay, [numberOfSpikes, spikePositions])
 	string panelTitle
 	variable type
 	WAVE sweepWave
 	variable headstage, totalOnsetDelay
-	variable &spikePosition
+	variable numberOfSpikes
+	WAVE spikePositions
 
 	variable level, first, last, overrideValue
 	variable minVal, maxVal
@@ -729,6 +731,12 @@ static Function/WAVE PSQ_SearchForSpikes(panelTitle, type, sweepWave, headstage,
 		WAVE config = GetITCChanConfigWave(panelTitle)
 	else
 		WAVE config = GetConfigWave(sweepWave)
+	endif
+
+	if(ParamIsDefault(numberOfSpikes))
+		numberOfSpikes = 1
+	else
+		numberOfSpikes = trunc(numberOfSpikes)
 	endif
 
 	WAVE singleDA = AFH_ExtractOneDimDataFromSweep(panelTitle, sweepWave, headstage, ITC_XOP_CHANNEL_TYPE_DAC, config = config)
@@ -776,8 +784,10 @@ static Function/WAVE PSQ_SearchForSpikes(panelTitle, type, sweepWave, headstage,
 			spikeDetection[headstage] = overrideValue >= first && overrideValue <= last
 		endif
 
-		if(!ParamIsDefault(spikePosition))
-			spikePosition = overrideValue
+		if(!ParamIsDefault(spikePositions))
+		ASSERT(WaveExists(spikePositions), "Wave spikePositions must exist")
+			Redimension/D/N=(numberOfSpikes) spikePositions
+			spikePositions[] = overrideValue
 		endif
 	else
 		if(type == PSQ_RAMP) // during midsweep
@@ -787,12 +797,28 @@ static Function/WAVE PSQ_SearchForSpikes(panelTitle, type, sweepWave, headstage,
 			level = PSQ_SPIKE_LEVEL
 		endif
 
-		// search the spike from the rising edge till the end of the wave
-		FindLevel/Q/R=(first, last) singleAD, level
-		spikeDetection[headstage] = !V_flag
+		if(numberOfSpikes == 1)
+			// search the spike from the rising edge till the end of the wave
+			FindLevel/Q/R=(first, last) singleAD, level
+			spikeDetection[headstage] = !V_flag
 
-		if(!ParamIsDefault(spikePosition))
-			spikePosition = V_LevelX
+			if(!ParamIsDefault(spikePositions))
+				ASSERT(WaveExists(spikePositions), "Wave spikePositions must exist")
+				Redimension/D/N=(numberOfSpikes) spikePositions
+				spikePositions[0] = V_LevelX
+			endif
+		elseif(numberOfSpikes > 1)
+			Make/D/FREE/N=0 crossings
+			FindLevels/Q/R=(first, last)/N=(numberOfSpikes)/DEST=crossings/EDGE=1 singleAD, level
+			spikeDetection[headstage] = !V_flag
+
+			if(!ParamIsDefault(spikePositions))
+				ASSERT(WaveExists(spikePositions), "Wave spikePositions must exist")
+				Redimension/D/N=(numberOfSpikes) spikePositions
+				spikePositions[] = crossings[p]
+			endif
+		else
+			ASSERT(0, "Invalid number of spikes value")
 		endif
 	endif
 
@@ -1684,6 +1710,15 @@ Function PSQ_Rheobase(panelTitle, s)
 	return baselineQCPassed ? ANALYSIS_FUNC_RET_EARLY_STOP : ret
 End
 
+/// @brief Return a list of required parameters for PSQ_Ramp()
+///
+/// - NumberOfSpikes (variable): Number of spikes required to be found after
+///                              the pulse onset in order to label the cell
+///                              as having "spiked".
+Function/S PSQ_Ramp_GetParams()
+	return "NumberOfSpikes;"
+End
+
 /// @brief Analysis function for applying a ramp stim set and finding the position were it spikes.
 ///
 /// Prerequisites:
@@ -1727,12 +1762,15 @@ Function PSQ_Ramp(panelTitle, s)
 	STRUCT AnalysisFunction_V3 &s
 
 	variable DAScale, val, numSweeps, currentSweepHasSpike, setPassed
-	variable baselineQCPassed, finalDAScale, initialDAScale, spikePos
+	variable baselineQCPassed, finalDAScale, initialDAScale
 	variable numBaselineChunks, lastFifoPos, totalOnsetDelay, fifoInStimsetPoint, fifoInStimsetTime
 	variable i, ret, numSweepsWithSpikeDetection, sweepNoFound, length, minLength
-	variable DAC, sweepPassed, sweepsInSet, passesInSet, acquiredSweepsInSet, skipToEnd, spikeFound
-	variable pulseStart, pulseDuration, fifoPos, fifoOffset
+	variable DAC, sweepPassed, sweepsInSet, passesInSet, acquiredSweepsInSet, skipToEnd, enoughSpikesFound
+	variable pulseStart, pulseDuration, fifoPos, fifoOffset, numberOfSpikes
 	string key, msg, stimset
+
+	numberOfSpikes = AFH_GetAnalysisParamNumerical("NumberOfSpikes", s.params)
+	ASSERT(numberOfSpikes > 0, "Missing or non-positive NumberOfSpikes parameter.")
 
 	switch(s.eventType)
 		case PRE_DAQ_EVENT:
@@ -1853,9 +1891,9 @@ Function PSQ_Ramp(panelTitle, s)
 	key = PSQ_CreateLBNKey(PSQ_RAMP, PSQ_FMT_LBN_BL_QC_PASS, query = 1)
 	baselineQCPassed = GetLastSettingIndep(numericalValues, s.sweepNo, key, UNKNOWN_MODE, defValue = 0)
 
-	spikeFound = PSQ_FoundAtLeastOneSpike(panelTitle, s.sweepNo)
+	enoughSpikesFound = PSQ_FoundAtLeastOneSpike(panelTitle, s.sweepNo)
 
-	if(IsFinite(spikeFound) && baselineQCPassed) // spike already found/definitly not found and baseline QC passed
+	if(IsFinite(enoughSpikesFound) && baselineQCPassed) // spike already found/definitly not found and baseline QC passed
 		return NaN
 	endif
 
@@ -1871,21 +1909,25 @@ Function PSQ_Ramp(panelTitle, s)
 	pulseStart     = PSQ_RA_BL_EVAL_RANGE
 	pulseDuration  = durations[s.headstage]
 
-	if(IsNaN(spikeFound) && fifoInStimsetTime >= pulseStart) // spike search was inconclusive up to now
-							                                 // and we after the pulse onset
+	if(IsNaN(enoughSpikesFound) && fifoInStimsetTime >= pulseStart) // spike search was inconclusive up to now
+																	// and we are after the pulse onset
 
-		WAVE spikeDetection = PSQ_SearchForSpikes(panelTitle, PSQ_RAMP, s.rawDACWave, s.headstage, totalOnsetDelay, spikePosition = spikePos)
+		Make/FREE/D spikePos
+		WAVE spikeDetection = PSQ_SearchForSpikes(panelTitle, PSQ_RAMP, s.rawDACWave, s.headstage, \
+												  totalOnsetDelay, spikePositions = spikePos, numberOfSpikes = numberOfSpikes)
 
-		if(spikeDetection[s.headstage] && ((PSQ_TestOverrideActive() && (fifoInStimsetTime > spikePos)) || !PSQ_TestOverrideActive()))
-			spikeFound = spikeDetection[s.headstage]
+		if(spikeDetection[s.headstage] \
+		   && ((PSQ_TestOverrideActive() && (fifoInStimsetTime > WaveMax(spikePos))) || !PSQ_TestOverrideActive()))
+
+			enoughSpikesFound = 1
 
 			key = PSQ_CreateLBNKey(PSQ_RAMP, PSQ_FMT_LBN_SPIKE_DETECT)
 			ED_AddEntryToLabnotebook(panelTitle, key, spikeDetection, overrideSweepNo = s.sweepNo, unit = LABNOTEBOOK_BINARY_UNIT)
 
-			Make/FREE/N=(LABNOTEBOOK_LAYER_COUNT) result = NaN
-			result[s.headstage] = spikePos
-			key = PSQ_CreateLBNKey(PSQ_RAMP, PSQ_FMT_LBN_SPIKE_POSITION)
-			ED_AddEntryToLabnotebook(panelTitle, key, result, overrideSweepNo = s.sweepNo, unit = "ms")
+			Make/FREE/T/N=(LABNOTEBOOK_LAYER_COUNT) resultTxT
+			resultTxT[s.headstage] = NumericWaveToList(spikePos, ";")
+			key = PSQ_CreateLBNKey(PSQ_RAMP, PSQ_FMT_LBN_SPIKE_POSITIONS)
+			ED_AddEntryToLabnotebook(panelTitle, key, resultTxT, overrideSweepNo = s.sweepNo, unit = "ms")
 
 			// stop DAQ, set DA to zero from now to the end and start DAQ again
 			NVAR ITCDeviceIDGlobal = $GetITCDeviceIDGlobal(panelTitle)
@@ -2004,9 +2046,9 @@ Function PSQ_Ramp(panelTitle, s)
 			// we can return here as we either:
 			// - failed pre pulse BL QC and we don't need to search for a spike
 			// - or passed post pulse BL QC and already searched for a spike
-			spikeFound = PSQ_FoundAtLeastOneSpike(panelTitle, s.sweepNo)
+			enoughSpikesFound = PSQ_FoundAtLeastOneSpike(panelTitle, s.sweepNo)
 
-			ASSERT(!baselineQCPassed || (baselineQCPassed && isFinite(spikeFound)), "We missed searching for a spike")
+			ASSERT(!baselineQCPassed || (baselineQCPassed && isFinite(enoughSpikesFound)), "We missed searching for a spike")
 			return baselineQCPassed ? ANALYSIS_FUNC_RET_EARLY_STOP : ret
 		endif
 	endif
