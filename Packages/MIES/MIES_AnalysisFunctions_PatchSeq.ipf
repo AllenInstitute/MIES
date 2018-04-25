@@ -1827,7 +1827,7 @@ Function PSQ_Ramp(panelTitle, s)
 
 			DAC = AFH_GetDACFromHeadstage(panelTitle, s.headstage)
 			stimset = AFH_GetStimSetName(panelTitle, DAC, CHANNEL_TYPE_DAC)
-			if(IDX_NumberOfSweepsInSet(stimset) <= PSQ_RA_NUM_SWEEPS_PASS)
+			if(IDX_NumberOfSweepsInSet(stimset) < PSQ_RA_NUM_SWEEPS_PASS)
 				printf "(%s): The stimset must have at least %d sweeps\r", panelTitle, PSQ_RA_NUM_SWEEPS_PASS
 				ControlWindowToFront()
 				return 1
