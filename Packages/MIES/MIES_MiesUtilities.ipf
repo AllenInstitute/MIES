@@ -521,8 +521,9 @@ End
 ///
 /// @ingroup LabnotebookQueryFunctions
 /// @sa GetLastSettingText()
-Function/S GetLastSettingTextIndepRAC(textualValues, sweepNo, setting, entrySourceType, [defValue])
-	Wave/T textualValues
+Function/S GetLastSettingTextIndepRAC(numericalValues, textualValues, sweepNo, setting, entrySourceType, [defValue])
+	WAVE numericalValues
+	wAVE/T textualValues
 	variable sweepNo
 	string setting, defValue
 	variable entrySourceType
@@ -531,7 +532,7 @@ Function/S GetLastSettingTextIndepRAC(textualValues, sweepNo, setting, entrySour
 		defValue = ""
 	endif
 
-	WAVE/T/Z settings = GetLastSettingTextRAC(textualValues, sweepNo, setting, entrySourceType)
+	WAVE/T/Z settings = GetLastSettingTextRAC(numericalValues, textualValues, sweepNo, setting, entrySourceType)
 
 	if(WaveExists(settings))
 		return settings[GetIndexForHeadstageIndepData(textualValues)]
@@ -822,15 +823,16 @@ End
 ///
 /// @ingroup LabnotebookQueryFunctions
 /// @sa GetLastSettingText()
-Function/WAVE GetLastSettingTextRAC(textualValues, sweepNo, setting, entrySourceType)
-	WAVE textualValues
+Function/WAVE GetLastSettingTextRAC(numericalValues, textualValues, sweepNo, setting, entrySourceType)
+	WAVE numericalValues
+	WAVE/T textualValues
 	variable sweepNo
 	string setting
 	variable entrySourceType
 
 	variable i, numSweeps
 
-	WAVE/Z sweeps = AFH_GetSweepsFromSameRACycle(textualValues, sweepNo)
+	WAVE/Z sweeps = AFH_GetSweepsFromSameRACycle(numericalValues, sweepNo)
 	if(!WaveExists(sweeps) || DimSize(sweeps, ROWS) == 0)
 		return $""
 	endif
@@ -913,8 +915,9 @@ End
 ///
 /// @ingroup LabnotebookQueryFunctions
 /// @sa GetLastSetting()
-Function/WAVE GetLastSettingTextIndepEachRAC(numericalValues, sweepNo, setting, entrySourceType, [defValue])
+Function/WAVE GetLastSettingTextIndepEachRAC(numericalValues, textualValues, sweepNo, setting, entrySourceType, [defValue])
 	WAVE numericalValues
+	WAVE/T textualValues
 	variable sweepNo
 	string setting
 	variable entrySourceType
@@ -932,7 +935,7 @@ Function/WAVE GetLastSettingTextIndepEachRAC(numericalValues, sweepNo, setting, 
 	endif
 
 	numSweeps = DimSize(sweeps, ROWS)
-	Make/FREE/T/N=(numSweeps) result = GetLastSettingTextIndep(numericalValues, sweeps[p], setting, entrySourceType, defValue = defValue)
+	Make/FREE/T/N=(numSweeps) result = GetLastSettingTextIndep(textualValues, sweeps[p], setting, entrySourceType, defValue = defValue)
 
 	Make/N=(numSweeps) lengths = strlen(result[p])
 	if(Sum(lengths) == 0)
@@ -984,8 +987,9 @@ End
 ///
 /// @ingroup LabnotebookQueryFunctions
 /// @sa GetLastSetting()
-Function/WAVE GetLastSettingTextEachRAC(numericalValues, sweepNo, setting, headstage, entrySourceType)
+Function/WAVE GetLastSettingTextEachRAC(numericalValues, textualValues, sweepNo, setting, headstage, entrySourceType)
 	WAVE numericalValues
+	WAVE/T textualValues
 	variable sweepNo
 	string setting
 	variable headstage, entrySourceType
@@ -1003,7 +1007,7 @@ Function/WAVE GetLastSettingTextEachRAC(numericalValues, sweepNo, setting, heads
 	Make/FREE/T/N=(numSweeps) result
 
 	for(i = 0; i < numSweeps; i += 1)
-		WAVE/Z/T settings = GetLastSettingText(numericalValues, sweeps[i], setting, entrySourceType)
+		WAVE/Z/T settings = GetLastSettingText(textualValues, sweeps[i], setting, entrySourceType)
 
 		if(WaveExists(settings))
 			result[i] = settings[headstage]
