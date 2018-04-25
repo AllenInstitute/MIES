@@ -124,12 +124,12 @@ digraph G {
     "Mid Sweep Event" -> "Search spike result in labnotebook";
     "After pulse onset";
     "Get pulse duration from labnotebook (calculate if not present)" -> "After pulse onset";
-    "Spike detected?\n(x range: pulse onset to end of sweep\ny condition: max above 10mV)";
-    "Spike detected?\n(x range: pulse onset to end of sweep\ny condition: max above 10mV)" -> "After pulse"  [label="No"];
+    "Spike detected?\n(x range: pulse onset to end of sweep\ny condition: max above 0.01mV)";
+    "Spike detected?\n(x range: pulse onset to end of sweep\ny condition: max above 0.01mV)" -> "After pulse"  [label="No"];
     "After pulse" -> "Write spike result \"failed\" into LBN"  [label="Yes"];
-    "After pulse onset" -> "Spike detected?\n(x range: pulse onset to end of sweep\ny condition: max above 10mV)"  [label="Yes"];
+    "After pulse onset" -> "Spike detected?\n(x range: pulse onset to end of sweep\ny condition: max above 0.01mV)"  [label="Yes"];
     "Write spike result (true/false) into labnotebook";
-    "Spike detected?\n(x range: pulse onset to end of sweep\ny condition: max above 10mV)" -> "Write spike result (true/false) into labnotebook"  [label="Yes"];
+    "Spike detected?\n(x range: pulse onset to end of sweep\ny condition: max above 0.01mV)" -> "Write spike result (true/false) into labnotebook"  [label="Yes"];
     "Write spike position in ms into labnotebook";
     "Set DA channel to zero from here to the end\n(implies DAQ restart)";
     "Write spike position in ms into labnotebook" -> "Set DA channel to zero from here to the end\n(implies DAQ restart)";

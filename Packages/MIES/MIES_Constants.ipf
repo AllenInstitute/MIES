@@ -805,7 +805,7 @@ Constant PSQ_DS_PULSE_DUR        = 1000
 
 Constant PSQ_RA_BL_EVAL_RANGE = 500
 
-Constant PSQ_SPIKE_LEVEL     = 10 // mV
+Constant PSQ_SPIKE_LEVEL         = 0.01 // mV
 Constant PSQ_RMS_SHORT_THRESHOLD = 0.07 // mV
 Constant PSQ_RMS_LONG_THRESHOLD  = 0.5  // mV
 Constant PSQ_TARGETV_THRESHOLD   = 1    // mV
