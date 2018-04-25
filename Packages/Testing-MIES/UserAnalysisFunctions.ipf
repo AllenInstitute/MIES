@@ -101,6 +101,22 @@ Function NotCalled_V1(panelTitle, eventType, ITCDataWave, headStage)
 	FAIL()
 End
 
+Function preDAQHardAbort(panelTitle, eventType, ITCDataWave, headStage, realDataLength)
+	string panelTitle
+	variable eventType
+	Wave ITCDataWave
+	variable headstage, realDataLength
+
+	WAVE anaFuncTracker = TrackAnalysisFunctionCalls()
+
+	CHECK(eventType >= 0 && eventType < DimSize(anaFuncTracker, ROWS))
+	anaFuncTracker[eventType][headstage] += 1
+
+	if(eventType == PRE_DAQ_EVENT)
+		Abort
+	endif
+End
+
 Function preDAQ(panelTitle, eventType, ITCDataWave, headStage, realDataLength)
 	string panelTitle
 	variable eventType
