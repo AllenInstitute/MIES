@@ -22,9 +22,11 @@ digraph G {
     "Mid Sweep Event";
     "Post Set Event";
     "Post Sweep Event";
+    "Post DAQ Event";
     "Start DAQ/RA" -> "Prepare DAQ Event";
     "Start DAQ/RA" -> "Post Set Event";
     "Start DAQ/RA" -> "Post Sweep Event";
+    "Start DAQ/RA" -> "Post DAQ Event";
     subgraph cluster_preDAQ {
         color="invis";
         edge [comment="Wildcard node added automatic in EG."];
@@ -72,6 +74,7 @@ digraph G {
         "Check if no TTL channels are active" -> "All checks passed";
         "Check that the default sampling multiplier is 4" -> "All checks passed";
         "All checks passed" -> "Abort"  [label="No"];
+        "Post DAQ Event" -> "Update Dashboard";
     }
 
     "Start DAQ/RA" -> "Mid Sweep Event";

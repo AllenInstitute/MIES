@@ -20,6 +20,9 @@ digraph G {
     "Start DAQ/RA";
     "Mid Sweep Event";
     "Start DAQ/RA" -> "Mid Sweep Event";
+    "Post DAQ Event";
+    "Start DAQ/RA" -> "Post DAQ Event";
+    "Post DAQ Event" -> "Update Dashboard";
     "Prepare DAQ Event";
     "Start DAQ/RA" -> "Prepare DAQ Event";
     "Post Set Event";

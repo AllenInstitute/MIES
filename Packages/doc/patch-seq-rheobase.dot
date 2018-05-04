@@ -22,10 +22,12 @@ digraph G {
     "Post Set Event";
     "Post Sweep Event";
     "Prepare DAQ Event";
+    "Post DAQ Event";
     "Start DAQ/RA" -> "Mid Sweep Event";
     "Start DAQ/RA" -> "Prepare DAQ Event";
     "Start DAQ/RA" -> "Post Set Event";
     "Start DAQ/RA" -> "Post Sweep Event";
+    "Start DAQ/RA" -> "Post DAQ Event";
     subgraph cluster_preDAQ {
         color="invis";
         edge [comment="Wildcard node added automatic in EG."];
@@ -58,6 +60,7 @@ digraph G {
         "Prepare DAQ Event" -> "Set \"ITI\" to 4s";
         "Prepare DAQ Event" -> "Search for final DAScale in one of the existing sweeps";
         "Prepare DAQ Event" -> "Enable \"Repeated Acquisition\"";
+        "Post DAQ Event" -> "Update Dashboard";
     }
 
     "Mark set as failed if it has not yet passed";

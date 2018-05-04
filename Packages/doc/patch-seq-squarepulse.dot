@@ -22,6 +22,9 @@ digraph G {
     "Start DAQ/RA" -> "Prepare DAQ Event";
     "Post Sweep Event";
     "Start DAQ/RA" -> "Post Sweep Event";
+    "Post DAQ Event";
+    "Start DAQ/RA" -> "Post DAQ Event";
+    "Post DAQ Event" -> "Update Dashboard";
     "Enable \"Multidevice DAQ\"";
     "Disable \"dDAQ\"/\"oodDAQ\"";
     "Enable \"Repeated Acquisition\"";

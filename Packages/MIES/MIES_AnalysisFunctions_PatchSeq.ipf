@@ -1178,6 +1178,9 @@ Function PSQ_DAScale(panelTitle, s)
 
 			return NaN
 			break
+		case POST_DAQ_EVENT:
+			AD_UpdateAllDatabrowser()
+			break
 	endswitch
 
 	if(s.eventType == PRE_DAQ_EVENT || s.eventType == POST_SWEEP_EVENT)
@@ -1432,6 +1435,9 @@ Function PSQ_SquarePulse(panelTitle, s)
 			key = PSQ_CreateLBNKey(PSQ_SQUARE_PULSE, PSQ_FMT_LBN_SET_PASS)
 			ED_AddEntryToLabnotebook(panelTitle, key, result, unit = LABNOTEBOOK_BINARY_UNIT)
 			break
+		case POST_DAQ_EVENT:
+			AD_UpdateAllDatabrowser()
+			break
 		default:
 			// do nothing
 			break
@@ -1673,6 +1679,9 @@ Function PSQ_Rheobase(panelTitle, s)
 				key = PSQ_CreateLBNKey(PSQ_RHEOBASE, PSQ_FMT_LBN_RB_DASCALE_EXC)
 				ED_AddEntryToLabnotebook(panelTitle, key, result, unit = LABNOTEBOOK_BINARY_UNIT)
 			endif
+			break
+		case POST_DAQ_EVENT:
+			AD_UpdateAllDatabrowser()
 			break
 	endswitch
 
@@ -1923,6 +1932,9 @@ Function PSQ_Ramp(panelTitle, s)
 			result[INDEP_HEADSTAGE] = setPassed
 			key = PSQ_CreateLBNKey(PSQ_RAMP, PSQ_FMT_LBN_SET_PASS)
 			ED_AddEntryToLabnotebook(panelTitle, key, result, unit = LABNOTEBOOK_BINARY_UNIT)
+			break
+		case POST_DAQ_EVENT:
+			AD_UpdateAllDatabrowser()
 			break
 	endswitch
 
