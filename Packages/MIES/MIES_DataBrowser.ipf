@@ -757,7 +757,12 @@ End
 
 Function/S DB_GetAllDevicesWithData()
 
-	return AddListItem(NONE, GetAllDevicesWithContent(), ";", 0)
+	string list
+
+	list = AddListItem(NONE, GetAllDevicesWithContent(), ";", 0)
+	list = AddListItem(RemoveEnding(list, ";"), GetListOfLockedDevices(), ";", inf)
+
+	return TextWaveToList(GetUniqueEntries(ListToTextWave(list, ";")), ";")
 End
 
 Function DB_ButtonProc_SwitchXAxis(ba) : ButtonControl
