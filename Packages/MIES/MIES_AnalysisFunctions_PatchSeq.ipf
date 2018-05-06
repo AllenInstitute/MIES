@@ -30,7 +30,7 @@
 /// PSQ_FMT_LBN_CHUNK_PASS      Which chunk passed/failed baseline QC                     DA, RB, RA        Yes                    Yes
 /// PSQ_FMT_LBN_BL_QC_PASS      Pass/fail state of the complete baseline                  DA, RB, RA        No                     Yes
 /// PSQ_FMT_LBN_SWEEP_PASS      Pass/fail state of the complete sweep                     DA, SP, RA        No                     No
-/// PSQ_FMT_LBN_SET_PASS        Pass/fail state of the complete set                       DA, RB, RA        No                     No
+/// PSQ_FMT_LBN_SET_PASS        Pass/fail state of the complete set                       DA, RB, RA, SP    No                     No
 /// PSQ_FMT_LBN_PULSE_DUR       Pulse duration as determined experimentally               RB                No                     Yes
 /// =========================== ========================================================= ================= =====================  =====================
 ///
@@ -1316,8 +1316,8 @@ Function PSQ_SquarePulse(panelTitle, s)
 	string panelTitle
 	STRUCT AnalysisFunction_V3 &s
 
-	variable stepsize, DAScale, totalOnsetDelay
-	string key
+	variable stepsize, DAScale, totalOnsetDelay, setPassed, sweepPassed
+	string key, msg
 
 	switch(s.eventType)
 		case PRE_DAQ_EVENT:
@@ -1376,6 +1376,8 @@ Function PSQ_SquarePulse(panelTitle, s)
 			stepSize = GetLastSettingIndepRAC(numericalValues, s.sweepNo, key, UNKNOWN_MODE)
 			DAScale  = GetLastSetting(numericalValues, s.sweepNo, STIMSET_SCALE_FACTOR_KEY, DATA_ACQUISITION_MODE)[s.headstage] * 1e-12
 
+			sweepPassed = 0
+
 			if(spikeDetection[s.headstage]) // headstage spiked
 				if(CheckIfClose(stepSize, PSQ_SP_INIT_AMP_m50))
 					SetDAScale(panelTitle, s.headstage, DAScale + stepsize)
@@ -1384,6 +1386,9 @@ Function PSQ_SquarePulse(panelTitle, s)
 					value[INDEP_HEADSTAGE] = DAScale
 					key = PSQ_CreateLBNKey(PSQ_SQUARE_PULSE, PSQ_FMT_LBN_FINAL_SCALE)
 					ED_AddEntryToLabnotebook(panelTitle, key, value)
+
+					sweepPassed = 1
+
 					RA_SkipSweeps(panelTitle, inf)
 				elseif(CheckIfClose(stepSize, PSQ_SP_INIT_AMP_p100))
 					PSQ_StoreStepSizeInLBN(panelTitle, s.sweepNo, PSQ_SP_INIT_AMP_m50)
@@ -1407,6 +1412,24 @@ Function PSQ_SquarePulse(panelTitle, s)
 				SetDAScale(panelTitle, s.headstage, DAScale + stepsize)
 			endif
 
+			Make/FREE/D/N=(LABNOTEBOOK_LAYER_COUNT) value = NaN
+			value[INDEP_HEADSTAGE] = sweepPassed
+			key = PSQ_CreateLBNKey(PSQ_SQUARE_PULSE, PSQ_FMT_LBN_SWEEP_PASS)
+			ED_AddEntryToLabnotebook(panelTitle, key, value, unit = LABNOTEBOOK_BINARY_UNIT)
+
+			break
+		case POST_SET_EVENT:
+			WAVE numericalValues = GetLBNumericalValues(panelTitle)
+
+			setPassed = PSQ_NumPassesInSet(numericalValues, PSQ_SQUARE_PULSE, s.sweepNo) >= 1
+
+			sprintf msg, "Set has %s\r", SelectString(setPassed, "failed", "passed")
+			DEBUGPRINT(msg)
+
+			Make/FREE/N=(LABNOTEBOOK_LAYER_COUNT) result = NaN
+			result[INDEP_HEADSTAGE] = setPassed
+			key = PSQ_CreateLBNKey(PSQ_SQUARE_PULSE, PSQ_FMT_LBN_SET_PASS)
+			ED_AddEntryToLabnotebook(panelTitle, key, result, unit = LABNOTEBOOK_BINARY_UNIT)
 			break
 		default:
 			// do nothing
