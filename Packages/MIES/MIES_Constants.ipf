@@ -819,6 +819,7 @@ Constant PSQ_TARGETV_THRESHOLD   = 1    // mV
 ///
 /// @anchor PatchSeqLabnotebookFormatStrings
 /// @{
+StrConstant PSQ_FMT_LBN_RB_DASCALE_EXC    = "%s DAScale exceeded"
 StrConstant PSQ_FMT_LBN_STEPSIZE          = "%s step size"
 StrConstant PSQ_FMT_LBN_SPIKE_DETECT      = "%s spike detected"
 StrConstant PSQ_FMT_LBN_SPIKE_POSITIONS   = "%s spike positions"

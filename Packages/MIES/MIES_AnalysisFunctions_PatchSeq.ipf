@@ -22,6 +22,7 @@
 /// PSQ_FMT_LBN_SPIKE_DETECT    The required number of spikes were detected on the sweep  SP, RB, RA        No                     Yes
 /// PSQ_FMT_LBN_SPIKE_POSITIONS Spike positions in ms                                     RA                No                     Yes
 /// PSQ_FMT_LBN_STEPSIZE        Current DAScale step size                                 SP                No                     Yes
+/// PSQ_FMT_LBN_RB_DASCALE_EXC  Range for valid DAScale values is exceedd                 RB                No                     Yes
 /// PSQ_FMT_LBN_FINAL_SCALE     Final DAScale of the given headstage, only set on success SP, RB            No                     No
 /// PSQ_FMT_LBN_INITIAL_SCALE   Initial DAScale                                           RB                No                     No
 /// PSQ_FMT_LBN_RMS_SHORT_PASS  Short RMS baseline QC result                              DA, RB, RA        Yes                    Yes
@@ -1637,6 +1638,13 @@ Function PSQ_Rheobase(panelTitle, s)
 				key = PSQ_CreateLBNKey(PSQ_RHEOBASE, PSQ_FMT_LBN_SET_PASS)
 				result[INDEP_HEADSTAGE] = 0
 				ED_AddEntryToLabnotebook(panelTitle, key, result, unit = LABNOTEBOOK_BINARY_UNIT)
+
+				result              = NaN
+				result[s.headstage] = 1
+
+				key = PSQ_CreateLBNKey(PSQ_RHEOBASE, PSQ_FMT_LBN_RB_DASCALE_EXC)
+				ED_AddEntryToLabnotebook(panelTitle, key, result, unit = LABNOTEBOOK_BINARY_UNIT)
+
 				RA_SkipSweeps(panelTitle, inf)
 				break
 			endif
@@ -1653,6 +1661,16 @@ Function PSQ_Rheobase(panelTitle, s)
 				key = PSQ_CreateLBNKey(PSQ_RHEOBASE, PSQ_FMT_LBN_SET_PASS)
 				Make/FREE/D/N=(LABNOTEBOOK_LAYER_COUNT) result = NaN
 				result[INDEP_HEADSTAGE] = 0
+				ED_AddEntryToLabnotebook(panelTitle, key, result, unit = LABNOTEBOOK_BINARY_UNIT)
+			endif
+
+			key = PSQ_CreateLBNKey(PSQ_RHEOBASE, PSQ_FMT_LBN_RB_DASCALE_EXC, query = 1)
+			WAVE/Z rangeExceeded = GetLastSettingRAC(numericalValues, s.sweepNo, key, UNKNOWN_MODE)
+
+			if(!WaveExists(rangeExceeded))
+				Make/FREE/D/N=(LABNOTEBOOK_LAYER_COUNT) result = NaN
+				result[s.headstage] = 0
+				key = PSQ_CreateLBNKey(PSQ_RHEOBASE, PSQ_FMT_LBN_RB_DASCALE_EXC)
 				ED_AddEntryToLabnotebook(panelTitle, key, result, unit = LABNOTEBOOK_BINARY_UNIT)
 			endif
 			break
