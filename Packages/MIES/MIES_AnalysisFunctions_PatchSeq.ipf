@@ -576,13 +576,11 @@ End
 
 /// @brief Return the number of passed sweeps in all sweeps from the given
 ///        repeated acquisition cycle.
-static Function PSQ_NumPassesInSet(panelTitle, type, sweepNo)
-	string panelTitle
+Function PSQ_NumPassesInSet(numericalValues, type, sweepNo)
+	WAVE numericalValues
 	variable type, sweepNo
 
 	string key
-
-	WAVE numericalValues = GetLBNumericalValues(panelTitle)
 
 	WAVE/Z sweeps = AFH_GetSweepsFromSameRACycle(numericalValues, sweepNo)
 
@@ -1081,7 +1079,7 @@ Function PSQ_DAScale(panelTitle, s)
 			stimset = stimsets[s.headstage]
 
 			sweepsInSet         = IDX_NumberOfSweepsInSet(stimset)
-			passesInSet         = PSQ_NumPassesInSet(panelTitle, PSQ_DA_SCALE, s.sweepNo)
+			passesInSet         = PSQ_NumPassesInSet(numericalValues, PSQ_DA_SCALE, s.sweepNo)
 			acquiredSweepsInSet = PSQ_NumAcquiredSweepsInSet(panelTitle, s.sweepNo)
 
 			if(!sweepPassed)
@@ -1123,7 +1121,9 @@ Function PSQ_DAScale(panelTitle, s)
 
 			break
 		case POST_SET_EVENT:
-			setPassed = PSQ_NumPassesInSet(panelTitle, PSQ_DA_SCALE, s.sweepNo) >= numSweepsPass
+			WAVE numericalValues = GetLBNumericalValues(panelTitle)
+
+			setPassed = PSQ_NumPassesInSet(numericalValues, PSQ_DA_SCALE, s.sweepNo) >= numSweepsPass
 
 			sprintf msg, "Set has %s\r", SelectString(setPassed, "failed", "passed")
 			DEBUGPRINT(msg)
@@ -1778,7 +1778,7 @@ Function PSQ_Ramp(panelTitle, s)
 			stimset = stimsets[s.headstage]
 
 			sweepsInSet         = IDX_NumberOfSweepsInSet(stimset)
-			passesInSet         = PSQ_NumPassesInSet(panelTitle, PSQ_RAMP, s.sweepNo)
+			passesInSet         = PSQ_NumPassesInSet(numericalValues, PSQ_RAMP, s.sweepNo)
 			acquiredSweepsInSet = PSQ_NumAcquiredSweepsInSet(panelTitle, s.sweepNo)
 
 			if(!sweepPassed)
@@ -1799,7 +1799,9 @@ Function PSQ_Ramp(panelTitle, s)
 
 			break
 		case POST_SET_EVENT:
-			setPassed = PSQ_NumPassesInSet(panelTitle, PSQ_RAMP, s.sweepNo) >= PSQ_RA_NUM_SWEEPS_PASS
+			WAVE numericalValues = GetLBNumericalValues(panelTitle)
+
+			setPassed = PSQ_NumPassesInSet(numericalValues, PSQ_RAMP, s.sweepNo) >= PSQ_RA_NUM_SWEEPS_PASS
 
 			sprintf msg, "Set has %s\r", SelectString(setPassed, "failed", "passed")
 			DEBUGPRINT(msg)
