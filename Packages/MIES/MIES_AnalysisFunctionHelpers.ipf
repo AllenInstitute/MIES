@@ -255,7 +255,8 @@ Function/S AFH_GetStimSetName(panelTitle, chanNo, channelType)
 	return stimset
 End
 
-/// @brief Return a free wave with all sweep numbers which belong to the same RA cycle
+/// @brief Return a free wave with all sweep numbers (in ascending order) which
+///        belong to the same RA cycle
 ///
 /// Return an invalid wave reference if not all required labnotebook entries are available
 Function/WAVE AFH_GetSweepsFromSameRACycle(numericalValues, sweepNo)
