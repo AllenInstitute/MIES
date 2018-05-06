@@ -31,7 +31,7 @@ Function/S DB_OpenDataBrowser()
 		DB_LockToDevice(win, device)
 	endif
 
-	return win
+	return GetMainWindow(GetCurrentWindow())
 End
 
 Function/S DB_GetMainGraph(win)
