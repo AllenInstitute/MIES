@@ -148,7 +148,7 @@ Function BSP_DynamicStartupSettings(mainPanel)
 	AddVersionToPanel(bsPanel, BROWSERSETTINGS_PANEL_VERSION)
 
 	SetControlProcedure(bsPanel, "check_BrowserSettings_OVS", BSP_AddBrowserPrefix(mainPanel, "CheckProc_OverlaySweeps"))
-	PopupMenu popup_overlaySweeps_select,value= #("OVS_GetSweepSelectionChoices(\"" + bsPanel + "\")")
+	PopupMenu popup_overlaySweeps_select, win=$bsPanel, value= #("OVS_GetSweepSelectionChoices(\"" + bsPanel + "\")")
 
 	BSP_SetCSButtonProc(bsPanel, BSP_AddBrowserPrefix(mainPanel, "CheckProc_ChangedSetting"))
 
