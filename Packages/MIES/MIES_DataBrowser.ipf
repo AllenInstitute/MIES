@@ -194,6 +194,7 @@ static Function DB_UpdateLastSweepControls(win, first, last)
 	if(formerLast != last)
 		SetValDisplay(scPanel, "valdisp_SweepControl_LastSweep", var=last)
 		DB_UpdateOverlaySweepWaves(win)
+		AD_Update(win)
 	endif
 End
 

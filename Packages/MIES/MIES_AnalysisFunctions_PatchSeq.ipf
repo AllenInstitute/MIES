@@ -2096,3 +2096,23 @@ Function PSQ_Ramp(panelTitle, s)
 		endif
 	endif
 End
+
+/// @brief Map from analysis function name to numeric constant
+///
+/// @return One of @ref PatchSeqAnalysisFunctionTypes
+Function PSQ_MapFunctionToConstant(anaFunc)
+	string anaFunc
+
+	strswitch(anaFunc)
+		case "PSQ_Ramp":
+			return PSQ_RAMP
+		case "PSQ_DaScale":
+			return PSQ_DA_SCALE
+		case "PSQ_Rheobase":
+			return PSQ_RHEOBASE
+		case "PSQ_SquarePulse":
+			return PSQ_SQUARE_PULSE
+		default:
+			return NaN
+	endswitch
+End
