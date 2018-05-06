@@ -12,7 +12,7 @@
 
 static strConstant EXT_PANEL_SETTINGSHISTORY = "SettingsHistoryPanel"
 
-Function DB_OpenDataBrowser()
+Function/S DB_OpenDataBrowser()
 	string win, device, devicesWithData
 
 	Execute "DataBrowser()"
@@ -30,6 +30,8 @@ Function DB_OpenDataBrowser()
 		device = StringFromList(0, devicesWithData)
 		DB_LockToDevice(win, device)
 	endif
+
+	return win
 End
 
 Function/S DB_GetMainGraph(win)
