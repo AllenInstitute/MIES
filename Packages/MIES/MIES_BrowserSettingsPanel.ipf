@@ -194,10 +194,9 @@ Function BSP_BindListBoxWaves(win)
 	DFREF dfr = BSP_GetFolder(mainPanel, MIES_BSP_PANEL_FOLDER)
 	WAVE/T listBoxWave        = GetOverlaySweepsListWave(dfr)
 	WAVE listBoxSelWave       = GetOverlaySweepsListSelWave(dfr)
-	WAVE/WAVE sweepSelChoices = GetOverlaySweepSelectionChoices(dfr)
 	ListBox list_of_ranges, win=$bsPanel, listWave=listBoxWave
 	ListBox list_of_ranges, win=$bsPanel, selWave=listBoxSelWave
-	WaveClear listBoxWave
+	WaveClear listBoxWave, listBoxSelWave
 
 	// artefact removal
 	WAVE/T listBoxWave = GetArtefactRemovalListWave(dfr)
