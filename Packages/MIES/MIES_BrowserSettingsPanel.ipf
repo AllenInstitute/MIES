@@ -170,9 +170,6 @@ Function BSP_DynamicStartupSettings(mainPanel)
 	if(IsDataBrowser(mainPanel))
 		EnableControls(bsPanel, controlsDB)
 		DisableControls(bsPanel, controlsSB)
-		if(BSP_HasBoundDevice(mainPanel))
-			SetPopupMenuString(bsPanel, "popup_DB_lockedDevices", BSP_GetDevice(mainPanel))
-		endif
 	else
 		EnableControls(bsPanel, controlsSB)
 		DisableControls(bsPanel, controlsDB)

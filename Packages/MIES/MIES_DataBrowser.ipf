@@ -13,7 +13,7 @@
 static strConstant EXT_PANEL_SETTINGSHISTORY = "SettingsHistoryPanel"
 
 Function/S DB_OpenDataBrowser()
-	string win, device, devicesWithData
+	string win, device, devicesWithData, bsPanel
 
 	Execute "DataBrowser()"
 	win = GetCurrentWindow()
@@ -28,7 +28,8 @@ Function/S DB_OpenDataBrowser()
 	devicesWithData = ListMatch(DB_GetAllDevicesWithData(), "!" + NONE)
 	if(ItemsInList(devicesWithData) == 1)
 		device = StringFromList(0, devicesWithData)
-		DB_LockToDevice(win, device)
+		bsPanel = BSP_GetPanel(win)
+		PGC_SetAndActivateControl(bsPanel, "popup_DB_lockedDevices", val = 0)
 	endif
 
 	return GetMainWindow(GetCurrentWindow())
