@@ -1394,7 +1394,7 @@ End
 Function DAP_SetVarProc_NextSweepLimit(sva) : SetVariableControl
 	STRUCT WMSetVariableAction &sva
 
-	switch( sva.eventCode )
+	switch(sva.eventCode)
 		case 1:
 		case 2:
 		case 3:
