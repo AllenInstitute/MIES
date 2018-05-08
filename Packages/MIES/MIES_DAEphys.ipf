@@ -1394,12 +1394,26 @@ End
 Function DAP_SetVarProc_NextSweepLimit(sva) : SetVariableControl
 	STRUCT WMSetVariableAction &sva
 
+	string panelTitle
+	variable sweepNo
+
 	switch(sva.eventCode)
 		case 1:
 		case 2:
 		case 3:
 			DAG_Update(sva.win, sva.ctrlName, val = sva.dval)
 			DAP_UpdateSweepLimitsAndDisplay(sva.win)
+
+			panelTitle = sva.win
+			sweepNo = AFH_GetLastSweepAcquired(panelTitle)
+
+			Make/FREE/N=(1, 1, LABNOTEBOOK_LAYER_COUNT) vals = NaN
+			vals[0][0][INDEP_HEADSTAGE] = sva.dval
+			Make/T/FREE/N=(3, 1) keys
+			keys[0] = "Sweep Rollback"
+			keys[1] = "a. u."
+			keys[2] = LABNOTEBOOK_NO_TOLERANCE
+			ED_AddEntriesToLabnotebook(vals, keys, sweepNo, panelTitle, UNKNOWN_MODE)
 			break
 	endswitch
 
