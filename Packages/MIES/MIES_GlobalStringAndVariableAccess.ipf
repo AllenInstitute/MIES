@@ -104,6 +104,7 @@ End
 ///
 /// @verbatim
 /// Release_1.4_20170929-16-g497e7aa8
+/// Date and time of last commit: 2018-05-08T14:42:50+02:00
 /// Submodule status:
 /// 160000 6c47163858d99986b27c70f6226e8fca894ed5f7 0	Packages/IPNWB
 /// 160000 ed7e824a6e065e383ae31bb304383e13d7c7ccb5 0	Packages/ITCXOP2
@@ -147,6 +148,16 @@ Function/S CreateMiesVersion()
 				// explanation:
 				// cmd /C "<full path to git.exe> --git-dir=<mies repository .git> describe <options> redirect everything into <mies respository>/version.txt"
 				sprintf cmd "cmd.exe /C \"\"%s\" --git-dir=\"%s\" describe --always --tags > \"%sversion.txt\" 2>&1\"", gitPath, gitDir, topDir
+				DEBUGPRINT("Cmd to execute: ", str=cmd)
+				ExecuteScriptText/B/Z cmd
+				ASSERT(!V_flag, "We have git installed but could not regenerate version.txt")
+
+				sprintf cmd "cmd.exe /C \"echo | set /p=\"Date and time of last commit: \" >> \"%sversion.txt\" 2>&1\"", topDir
+				DEBUGPRINT("Cmd to execute: ", str=cmd)
+				ExecuteScriptText/B/Z cmd
+				ASSERT(!V_flag, "We have git installed but could not regenerate version.txt")
+
+				sprintf cmd "cmd.exe /C \"\"%s\" --git-dir=\"%s\" log -1 --pretty=format:%%cI%%n >> \"%sversion.txt\" 2>&1\"", gitPath, gitDir, topDir
 				DEBUGPRINT("Cmd to execute: ", str=cmd)
 				ExecuteScriptText/B/Z cmd
 				ASSERT(!V_flag, "We have git installed but could not regenerate version.txt")
