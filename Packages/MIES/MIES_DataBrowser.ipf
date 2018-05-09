@@ -12,8 +12,8 @@
 
 static strConstant EXT_PANEL_SETTINGSHISTORY = "SettingsHistoryPanel"
 
-Function DB_OpenDataBrowser()
-	string win, device, devicesWithData
+Function/S DB_OpenDataBrowser()
+	string win, device, devicesWithData, bsPanel
 
 	Execute "DataBrowser()"
 	win = GetCurrentWindow()
@@ -28,8 +28,11 @@ Function DB_OpenDataBrowser()
 	devicesWithData = ListMatch(DB_GetAllDevicesWithData(), "!" + NONE)
 	if(ItemsInList(devicesWithData) == 1)
 		device = StringFromList(0, devicesWithData)
-		DB_LockToDevice(win, device)
+		bsPanel = BSP_GetPanel(win)
+		PGC_SetAndActivateControl(bsPanel, "popup_DB_lockedDevices", val = 0)
 	endif
+
+	return GetMainWindow(GetCurrentWindow())
 End
 
 Function/S DB_GetMainGraph(win)
@@ -757,7 +760,12 @@ End
 
 Function/S DB_GetAllDevicesWithData()
 
-	return AddListItem(NONE, GetAllDevicesWithContent(), ";", 0)
+	string list
+
+	list = AddListItem(NONE, GetAllDevicesWithContent(), ";", 0)
+	list = AddListItem(RemoveEnding(list, ";"), GetListOfLockedDevices(), ";", inf)
+
+	return TextWaveToList(GetUniqueEntries(ListToTextWave(list, ";")), ";")
 End
 
 Function DB_ButtonProc_SwitchXAxis(ba) : ButtonControl

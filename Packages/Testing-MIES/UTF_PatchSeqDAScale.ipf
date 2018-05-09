@@ -53,6 +53,7 @@ static Function AcquireData(s, stimset)
 
 	CtrlNamedBackGround DAQWatchdog, start, period=120, proc=WaitUntilDAQDone_IGNORE
 	PGC_SetAndActivateControl(DEVICE, "DataAcquireButton")
+	OpenDatabrowser()
 End
 
 Function/WAVE GetSweepResults_IGNORE(sweepNo)

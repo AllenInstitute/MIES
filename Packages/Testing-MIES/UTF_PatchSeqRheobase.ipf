@@ -55,6 +55,7 @@ static Function AcquireData(s)
 
 	CtrlNamedBackGround DAQWatchdog, start, period=120, proc=WaitUntilDAQDone_IGNORE
 	PGC_SetAndActivateControl(DEVICE, "DataAcquireButton")
+	OpenDatabrowser()
 End
 
 static Function/WAVE GetSpikeResults_IGNORE(sweepNo)
