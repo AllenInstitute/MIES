@@ -1,7 +1,6 @@
 #pragma TextEncoding = "UTF-8"
 #pragma rtGlobals=3
 #pragma rtFunctionErrors=1
-#pragma IgorVersion=7.04
 
 #ifdef AUTOMATED_TESTING
 #pragma ModuleName=MIES_DOWN
