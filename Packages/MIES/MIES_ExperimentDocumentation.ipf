@@ -330,6 +330,10 @@ static Function ED_WriteChangedValuesToNoteText(panelTitle, sweepNo)
 	for (j = INITIAL_KEY_WAVE_COL_COUNT + 1; j < numCols; j += 1)
 		key = textualKeys[0][j]
 
+		if(!cmpstr(key, "MIES version"))
+			continue
+		endif
+
 		Wave/Z/T currentSetting = GetLastSettingText(textualValues, sweepNo, key, UNKNOWN_MODE, first=firstCurrent, last=lastCurrent)
 		Wave/Z/T lastSetting    = GetLastSettingText(textualValues, sweepNo - 1, key, UNKNOWN_MODE, first=firstPrevious, last=lastPrevious)
 
