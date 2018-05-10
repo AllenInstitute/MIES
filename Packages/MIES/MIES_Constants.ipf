@@ -815,6 +815,8 @@ Constant PSQ_TARGETV_THRESHOLD   = 1    // mV
 ///
 /// Use with PSQ_PSQ_CreateLBNKey() only.
 ///
+/// The longest key must be tested in CheckLength().
+///
 /// @anchor PatchSeqLabnotebookFormatStrings
 /// @{
 StrConstant PSQ_FMT_LBN_STEPSIZE          = "%s step size"
@@ -839,6 +841,8 @@ Constant PSQ_DA_SCALE     = 0x1
 Constant PSQ_SQUARE_PULSE = 0x2
 Constant PSQ_RHEOBASE     = 0x4
 Constant PSQ_RAMP         = 0x8
+/// List of analysis function types
+StrConstant PSQ_LIST_OF_TYPES = "0x1;0x2;0x4;0x8"
 /// @}
 
 /// PatchSeq Rheobase
