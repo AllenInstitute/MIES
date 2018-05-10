@@ -2496,10 +2496,10 @@ Function SaveExperimentSpecial(mode)
 			list = GetListOfObjects(dfr, "TPStorage_*", fullPath=1)
 			CallFunctionForEachListItem(killFunc, list)
 
-			RemoveTracesFromGraph(GetScopeGraphWrapper(device))
+			RemoveTracesFromGraph(SCOPE_GetGraph(device))
 		endfor
 
-		ClearDataBrowserGraphsWrapper()
+		DB_ClearAllGraphs()
 	endif
 
 	SaveExperiment
@@ -2522,28 +2522,6 @@ Function/S CleanupExperimentName(expName)
 	expName  = RemoveEnding(expName, SIBLING_FILENAME_SUFFIX)
 
 	return expName
-End
-
-Function ClearDataBrowserGraphsProto()
-
-End
-
-static Function ClearDataBrowserGraphsWrapper()
-
-	FUNCREF ClearDataBrowserGraphsProto f = $"DB_ClearAllGraphs"
-	f()
-End
-
-Function/S GetScopeGraphProto(panelTitle)
-	string panelTitle
-
-End
-
-static Function/S GetScopeGraphWrapper(panelTitle)
-	string panelTitle
-
-	FUNCREF GetScopeGraphProto f = $"SCOPE_GetGraph"
-	return f(panelTitle)
 End
 
 /// @brief Return the maximum count of the given type
@@ -4352,22 +4330,6 @@ Function/S ConvertAmplifierModeToString(mode)
 			return "Unknown mode (" + num2str(mode) + ")"
 			break
 	endswitch
-End
-
-/// @brief Prototype function for DAP_UpdateDAQControls
-Function UpdateDAQControlsProto(panelTitle, updateFlag)
-	string panelTitle
-	variable updateFlag
-End
-
-/// @brief Prototype function for DAP_UpdateDAQControls
-Function UpdateDAQControlsWrapper(panelTitle, updateFlag)
-	string panelTitle
-	variable updateFlag
-
-	FUNCREF UpdateDAQControlsProto f = $"DAP_UpdateDAQControls"
-
-	f(panelTitle, updateFlag)
 End
 
 /// @brief Update the repurposed sweep time global variable

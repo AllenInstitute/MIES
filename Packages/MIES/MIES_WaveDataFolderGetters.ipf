@@ -4391,12 +4391,12 @@ Function/Wave GetDA_EphysGuiStateNum(panelTitle)
 	elseif(WaveExists(wv)) // handle upgrade
 		// change the required dimensions and leave all others untouched with -1
 		// the extended dimensions are initialized with zero
-		uniqueCtrlList = GetUniqueSpecCtrlTypeListWrp(panelTitle, WAVE_TYPE_NUMERICAL)
+		uniqueCtrlList = DAG_GetUniqueSpecCtrlListNum(panelTitle)
 		uniqueCtrlCount = itemsInList(uniqueCtrlList)
 		Redimension/D/N=(NUM_MAX_CHANNELS, COMMON_CONTROL_GROUP_COUNT_NUM + uniqueCtrlCount, -1, -1) wv
 		wv = Nan
 	else
-		uniqueCtrlList = GetUniqueSpecCtrlTypeListWrp(panelTitle, WAVE_TYPE_NUMERICAL)
+		uniqueCtrlList = DAG_GetUniqueSpecCtrlListNum(panelTitle)
 		uniqueCtrlCount = itemsInList(uniqueCtrlList)
 		Make/N=(NUM_MAX_CHANNELS, COMMON_CONTROL_GROUP_COUNT_NUM + uniqueCtrlCount)/D dfr:DA_EphysGuiStateNum/Wave=wv
 		wv = Nan
@@ -4423,7 +4423,7 @@ Function/Wave GetDA_EphysGuiStateNum(panelTitle)
 	SetWaveDimLabel(wv, uniqueCtrlList, COLS, startPos = COMMON_CONTROL_GROUP_COUNT_NUM)
 	SetWaveVersion(wv, DA_EPHYS_PANEL_VERSION)
 	// needs to be called after setting the wave version in order to avoid infinite recursion
-	RecordGuiStateWrapper(panelTitle, WAVE_TYPE_NUMERICAL, wv)
+	DAG_RecordGuiStateNum(panelTitle, GuiState = wv)
 	return wv
 End
 
@@ -4457,12 +4457,12 @@ Function/Wave GetDA_EphysGuiStateTxT(panelTitle)
 	elseif(WaveExists(wv)) // handle upgrade
 		// change the required dimensions and leave all others untouched with -1
 		// the extended dimensions are initialized with zero
-		uniqueCtrlList = GetUniqueSpecCtrlTypeListWrp(panelTitle, WAVE_TYPE_TEXTUAL)
+		uniqueCtrlList = DAG_GetUniqueSpecCtrlListTxt(panelTitle)
 		uniqueCtrlCount = itemsInList(uniqueCtrlList)
 		Redimension/N=(NUM_MAX_CHANNELS, COMMON_CONTROL_GROUP_COUNT_TXT + uniqueCtrlCount, -1, -1) wv
 		wv = ""
 	else
-		uniqueCtrlList = GetUniqueSpecCtrlTypeListWrp(panelTitle, WAVE_TYPE_TEXTUAL)
+		uniqueCtrlList = DAG_GetUniqueSpecCtrlListTxt(panelTitle)
 		uniqueCtrlCount = itemsInList(uniqueCtrlList)
 		Make/T/N=(NUM_MAX_CHANNELS, COMMON_CONTROL_GROUP_COUNT_TXT + uniqueCtrlCount) dfr:DA_EphysGuiStateTxT/Wave=wv
 		wv = ""
@@ -4482,62 +4482,8 @@ Function/Wave GetDA_EphysGuiStateTxT(panelTitle)
 	SetWaveDimLabel(wv, uniqueCtrlList, COLS, startPos = COMMON_CONTROL_GROUP_COUNT_TXT)
 	SetWaveVersion(wv, DA_EPHYS_PANEL_VERSION)
 	// needs to be called after setting the wave version in order to avoid infinite recursion
-	RecordGuiStateWrapper(panelTitle, WAVE_TYPE_TEXTUAL, wv)
+	DAG_RecordGuiStateTxT(panelTitle, Guistate = wv)
 	return wv
-End
-
-static Function/S GetUniqueSpecCtrlTypeListWrp(panelTitle, type)
-	string panelTitle
-	variable type
-
-	switch(type)
-		case WAVE_TYPE_NUMERICAL:
-			FUNCREF GetUniqueSpecCtrlTypeListProto f = $"DAG_GetUniqueSpecCtrlListNum"
-			break
-		case WAVE_TYPE_TEXTUAL:
-			FUNCREF GetUniqueSpecCtrlTypeListProto f = $"DAG_GetUniqueSpecCtrlListTxT"
-			break
-		default:
-			ASSERT(0, "Unknown type")
-			break
-	endswitch
-
-	return f(panelTitle)
-End
-
-Function/S GetUniqueSpecCtrlTypeListProto(panelTitle)
-	string panelTitle
-
-	ASSERT(0, "Prototype function can not be called")
-End
-
-/// @brief Calls DAG_RecordGuiStateNum()/DAG_RecordGuiStateTxT if it can be found,
-/// otherwise calls RecordGuiStateProto() which aborts.
-static Function RecordGuiStateWrapper(str, type, wv)
-	string str
-	variable type
-	WAVE wv
-
-	switch(type)
-		case WAVE_TYPE_NUMERICAL:
-			FUNCREF RecordGuiStateProto f = $"DAG_RecordGuiStateNum"
-			break
-		case WAVE_TYPE_TEXTUAL:
-			FUNCREF RecordGuiStateProto f = $"DAG_RecordGuiStateTxT"
-			break
-		default:
-			ASSERT(0, "Unknown type")
-			break
-	endswitch
-
-	f(str, GUISTATE = wv)
-End
-
-Function RecordGuiStateProto(str, [GUISTATE])
-	string str
-	WAVE GUISTATE
-
-	ASSERT(0, "Prototype function can not be called")
 End
 
 /// @brief Return the datafolder reference to the NeuroDataWithoutBorders folder,

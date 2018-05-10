@@ -49,27 +49,11 @@ Function OVS_IgnoreHeadstageInOverlay()
 	if(!IsEmpty(folder))
 		WAVE traceWave     = TraceNameToWaveRef(graph, trace)
 		DFREF sweepDataDFR = GetWavesDataFolderDFR(traceWave)
-		index = OVS_GetIndexFromSweepDataPathW(graph, sweepDataDFR)
+		index = SB_GetIndexFromSweepDataPath(graph, sweepDataDFR)
 		OVS_AddToIgnoreList(extPanel, headstage, index=index)
 	else
 		OVS_AddToIgnoreList(extPanel, headstage, sweepNo=sweepNo)
 	endif
-End
-
-Function OVS_GetIndexFromSweepDataPathP(graph, dataDFR)
-	string graph
-	DFREF dataDFR
-
-	ASSERT(0, "Can't call prototype function")
-End
-
-Function OVS_GetIndexFromSweepDataPathW(graph, dataDFR)
-	string graph
-	DFREF dataDFR
-
-	FUNCREF OVS_GetIndexFromSweepDataPathP f = $"SB_GetIndexFromSweepDataPath"
-
-	return f(graph, dataDFR)
 End
 
 /// @brief Return a list of choices for the sweep selection popup

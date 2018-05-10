@@ -62,32 +62,6 @@ Function IH_KillStimSets()
 	CallFunctionForEachListItem(KillOrMoveToTrashPath, list)
 End
 
-/// @brief Prototype function for #IH_UnlockAllDevicesWrapper
-Function IH_UnlockAllDevicesProto()
-
-End
-
-/// @brief Prototype function for #IH_SerAllCommentNBsWrapper
-Function IH_SerAllCommentNBsProto()
-
-End
-
-/// @brief Calls `DAP_UnlockAllDevices` if it can be found,
-/// otherwise calls `IH_UnlockAllDevicesProto` which does nothing.
-static Function IH_UnlockAllDevicesWrapper()
-
-	FUNCREF IH_UnlockAllDevicesProto f = $"DAP_UnlockAllDevices"
-	f()
-End
-
-/// @brief Calls #DAP_SerializeAllCommentNBs if it can be found,
-/// otherwise calls #IH_SerAllCommentNBsProto which does nothing.
-static Function IH_SerAllCommentNBsWrapper()
-
-	FUNCREF IH_SerAllCommentNBsProto f = $"DAP_SerializeAllCommentNBs"
-	f()
-End
-
 static Function BeforeExperimentSaveHook(rN, fileName, path, type, creator, kind)
 	Variable rN, kind
 	String fileName, path, type, creator
@@ -97,7 +71,7 @@ static Function BeforeExperimentSaveHook(rN, fileName, path, type, creator, kind
 		return NaN
 	endif
 
-	IH_SerAllCommentNBsWrapper()
+	DAP_SerializeAllCommentNBs()
 	IH_KillTemporaries()
 #if !defined(IGOR64)
 	IH_KillStimSets()
@@ -121,7 +95,7 @@ static Function IH_Cleanup()
 	debuggerState = DisableDebugger()
 
 	try
-		IH_UnlockAllDevicesWrapper(); AbortOnRTE
+		DAP_UnlockAllDevices(); AbortOnRTE
 		IH_RemoveAmplifierConnWaves(); AbortOnRTE
 		IH_KillTemporaries(); AbortOnRTE
 		IH_KillStimSets(); AbortOnRTE
