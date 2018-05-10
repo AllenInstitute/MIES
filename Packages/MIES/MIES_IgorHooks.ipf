@@ -150,7 +150,20 @@ End
 static Function IgorBeforeNewHook(igorApplicationNameStr)
 	string igorApplicationNameStr
 
+	variable modifiedBefore, modifiedAfter
+
+	ExperimentModified
+	modifiedBefore = V_flag
+
 	IH_Cleanup()
+
+	ExperimentModified
+	modifiedAfter = V_flag
+
+	if(!modifiedBefore && modifiedAfter && cmpstr(UNTITLED_EXPERIMENT, GetExperimentName()))
+		SaveExperiment
+	endif
+
 	StartZeroMQMessageHandler()
 
 	return 0
