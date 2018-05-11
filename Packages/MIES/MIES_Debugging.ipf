@@ -155,7 +155,7 @@ Function DEBUGPRINT(msg, [var, str, format])
 
 	FindFirstOutsideCaller(func, line, file)
 
-	if(!IsEmpty(file) && !DebuggingEnabledForFileWrapper(file))
+	if(!IsEmpty(file) && !DP_DebuggingEnabledForFile(file))
 		return NaN
 	endif
 
@@ -248,7 +248,7 @@ Function DEBUGPRINTSTACKINFO()
 
 	FindFirstOutsideCaller(func, line, file)
 
-	if(!IsEmpty(file) && !DebuggingEnabledForFileWrapper(file))
+	if(!IsEmpty(file) && !DP_DebuggingEnabledForFile(file))
 		return NaN
 	endif
 
@@ -423,22 +423,6 @@ End
 Function DisableEvilMode()
 	Execute/P/Q "SetIgorOption poundUnDefine=EVIL_KITTEN_EATING_MODE"
 	Execute/P/Q "COMPILEPROCEDURES "
-End
-
-/// @brief Prototype for DebuggingEnabledForFileWrapper()
-Function DebuggingEnabledForFileSimple(file)
-	string file
-
-	return 1
-End
-
-/// @brief Wrapper for DP_DebuggingEnabledForFile()
-Function DebuggingEnabledForFileWrapper(file)
-	string file
-
-	FUNCREF DebuggingEnabledForFileSimple f = $"DP_DebuggingEnabledForFile"
-
-	return f(file)
 End
 
 /// @brief Complain and ask the user to report the error
