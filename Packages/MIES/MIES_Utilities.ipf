@@ -284,6 +284,7 @@ Function EnsureLargeEnoughWave(wv, [minimumSize, dimension, initialValue])
 
 	ASSERT(dimension == ROWS || dimension == COLS || dimension == LAYERS || dimension == CHUNKS, "Invalid dimension")
 	ASSERT(WaveExists(wv), "Wave does not exist")
+	ASSERT(IsFinite(minimumSize), "Invalid minimum size")
 
 	if(ParamIsDefault(minimumSize))
 		minimumSize = MINIMUM_WAVE_SIZE - 1
@@ -306,6 +307,7 @@ Function EnsureLargeEnoughWave(wv, [minimumSize, dimension, initialValue])
 	Redimension/N=(targetSizes[ROWS], targetSizes[COLS], targetSizes[LAYERS], targetSizes[CHUNKS]) wv
 
 	if(!ParamIsDefault(initialValue))
+		ASSERT(ValueCanBeWritten(wv, initialValue), "initialValue can not be stored in wv")
 		switch(dimension)
 			case ROWS:
 				wv[oldSizes[ROWS],][][][] = initialValue
@@ -321,6 +323,34 @@ Function EnsureLargeEnoughWave(wv, [minimumSize, dimension, initialValue])
 			break
 		endswitch
 	endif
+End
+
+/// @brief Check that the given value can be stored in the wave
+///
+/// Does currently ignore floating point precision and ranges for integer waves
+Function ValueCanBeWritten(wv, value)
+	WAVE/Z wv
+	variable value
+
+	variable type
+
+	if(!WaveExists(wv))
+		return 0
+	endif
+
+	// non-numeric wave
+	if(WaveType(wv, 1) != 1)
+		return 0
+	endif
+
+	type = WaveType(wv)
+
+	// non-finite values must have a float wave
+	if(!IsFinite(value))
+		return (type & IGOR_TYPE_32BIT_FLOAT) || (type & IGOR_TYPE_64BIT_FLOAT)
+	endif
+
+	return 1
 End
 
 /// @brief Resize the number of rows to maximumSize if it is larger than that
