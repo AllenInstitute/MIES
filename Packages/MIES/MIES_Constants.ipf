@@ -815,6 +815,8 @@ Constant PSQ_TARGETV_THRESHOLD   = 1    // mV
 ///
 /// Use with PSQ_PSQ_CreateLBNKey() only.
 ///
+/// The longest key must be tested in CheckLength().
+///
 /// @anchor PatchSeqLabnotebookFormatStrings
 /// @{
 StrConstant PSQ_FMT_LBN_STEPSIZE          = "%s step size"
@@ -822,8 +824,8 @@ StrConstant PSQ_FMT_LBN_SPIKE_DETECT      = "%s spike detected"
 StrConstant PSQ_FMT_LBN_SPIKE_POSITIONS   = "%s spike positions"
 StrConstant PSQ_FMT_LBN_FINAL_SCALE       = "%s final DAScale"
 StrConstant PSQ_FMT_LBN_INITIAL_SCALE     = "%s initial DAScale"
-StrConstant PSQ_FMT_LBN_RMS_SHORT_PASS    = "%s Chk%d S-RMS BL QC"
-StrConstant PSQ_FMT_LBN_RMS_LONG_PASS     = "%s Chk%d L-RMS BL QC"
+StrConstant PSQ_FMT_LBN_RMS_SHORT_PASS    = "%s Chk%d S-RMS QC"
+StrConstant PSQ_FMT_LBN_RMS_LONG_PASS     = "%s Chk%d L-RMS QC"
 StrConstant PSQ_FMT_LBN_TARGETV_PASS      = "%s Chk%d T-V BL QC"
 StrConstant PSQ_FMT_LBN_CHUNK_PASS        = "%s Chk%d BL QC"
 StrConstant PSQ_FMT_LBN_BL_QC_PASS        = "%s BL QC"
@@ -839,6 +841,8 @@ Constant PSQ_DA_SCALE     = 0x1
 Constant PSQ_SQUARE_PULSE = 0x2
 Constant PSQ_RHEOBASE     = 0x4
 Constant PSQ_RAMP         = 0x8
+/// List of analysis function types
+StrConstant PSQ_LIST_OF_TYPES = "0x1;0x2;0x4;0x8"
 /// @}
 
 /// PatchSeq Rheobase
