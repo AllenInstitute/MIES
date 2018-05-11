@@ -26,6 +26,7 @@ digraph G {
     "Disable \"dDAQ\"/\"oodDAQ\"";
     "Enable \"Repeated Acquisition\"";
     "Check if no TTL channels are active";
+    "Check that the default sampling multiplier is 4";
     "Prepare DAQ Event" -> "Check if mode is IC";
     "Prepare DAQ Event" -> "Set \"TP inserting\" to disabled";
     "Prepare DAQ Event" -> "Set \"TP during ITI\" to disabled";
@@ -37,15 +38,16 @@ digraph G {
     "All checks passed";
     "Check if mode is IC" -> "All checks passed";
     "Check if no TTL channels are active" -> "All checks passed";
+    "Check that the default sampling multiplier is 4" -> "All checks passed";
     "Set \"TP during ITI\" to disabled";
-    "Spike detected?\n(x range: pulse onset to end of sweep\ny condition: max above 10mV)\nStore result in labnotebook";
-    "Post Sweep Event" -> "Spike detected?\n(x range: pulse onset to end of sweep\ny condition: max above 10mV)\nStore result in labnotebook";
+    "Spike detected?\n(x range: pulse onset to end of sweep\ny condition: max above 0.01mV)\nStore result in labnotebook";
+    "Post Sweep Event" -> "Spike detected?\n(x range: pulse onset to end of sweep\ny condition: max above 0.01mV)\nStore result in labnotebook";
     "All checks passed" -> "Set DAScale to 100pA"  [label="Yes"];
     "Write initial stepsize of 100pA into labnotebook";
     "Set DAScale to 100pA" -> "Write initial stepsize of 100pA into labnotebook";
     "Abort";
     "All checks passed" -> "Abort"  [label="No"];
-    "Spike detected?\n(x range: pulse onset to end of sweep\ny condition: max above 10mV)\nStore result in labnotebook" -> "Step size from labnotebook?"  [label="Yes"];
+    "Spike detected?\n(x range: pulse onset to end of sweep\ny condition: max above 0.01mV)\nStore result in labnotebook" -> "Step size from labnotebook?"  [label="Yes"];
     "Step size from labnotebook?" -> "Store DAScale in labnotebook"  [label="+10pA"];
     "Store DAScale in labnotebook" -> "Skip to end";
     "Skip to end";
@@ -56,7 +58,7 @@ digraph G {
     "Write step size of -50pA to labnotebook" -> "Offset DAScale by -50pA";
     "Step size from labnotebook?";
     "Step Size from labnotebook?";
-    "Spike detected?\n(x range: pulse onset to end of sweep\ny condition: max above 10mV)\nStore result in labnotebook" -> "Step Size from labnotebook?"  [label="No"];
+    "Spike detected?\n(x range: pulse onset to end of sweep\ny condition: max above 0.01mV)\nStore result in labnotebook" -> "Step Size from labnotebook?"  [label="No"];
     "Write step size of +10pA to labnotebook";
     "Offset DAScale by +10pA";
     "Offset DAScale by +100pA";

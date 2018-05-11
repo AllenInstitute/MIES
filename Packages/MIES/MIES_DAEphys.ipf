@@ -3393,6 +3393,7 @@ Function DAP_SetVarProc_TestPulseSett(sva) : SetVariableControl
 			// don't stop the testpulse if we are currently doing DAQ
 			NVAR dataAcqRunMode = $GetDataAcqRunMode(panelTitle)
 			if(dataAcqRunMode != DAQ_NOT_RUNNING)
+				DAP_UpdateOnsetDelay(panelTitle)
 				break
 			endif
 

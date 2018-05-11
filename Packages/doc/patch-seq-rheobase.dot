@@ -42,6 +42,7 @@ digraph G {
         "Enable \"Repeated Acquisition\"";
         "Valid Autobias voltage (finite and non-zero)";
         "Check if no TTL channels are active";
+        "Check that the default sampling multiplier is 4";
         "Prepare DAQ Event" -> "Enable \"Autobias\"";
         "Prepare DAQ Event" -> "Set \"TP during ITI\"";
         "Prepare DAQ Event" -> "Valid Autobias voltage (finite and non-zero)";
@@ -52,6 +53,7 @@ digraph G {
         "Set \"TP during ITI\"";
         "Valid Autobias voltage (finite and non-zero)" -> "All checks passed";
         "Check if no TTL channels are active" -> "All checks passed";
+        "Check that the default sampling multiplier is 4" -> "All checks passed";
         "All checks passed" -> "Abort"  [label="No"];
         "Prepare DAQ Event" -> "Set \"ITI\" to 4s";
         "Prepare DAQ Event" -> "Search for final DAScale in one of the existing sweeps";
@@ -97,8 +99,8 @@ digraph G {
     "First Sweep?";
     "First Sweep?" -> "Store final DAScale of last sweep\n from previous RAC as initial DAScale"  [label="Yes"];
     "Post Sweep Event" -> "First Sweep?";
-    "BL QC passed? [2]" -> "Spike detected?\n(x range: pulse onset to end of sweep\ny condition: max above 10mV)\nStore result in labnotebook"  [label="Yes"];
-    "Spike detected?\n(x range: pulse onset to end of sweep\ny condition: max above 10mV)\nStore result in labnotebook" -> "Previous sweep has opposite spike result";
+    "BL QC passed? [2]" -> "Spike detected?\n(x range: pulse onset to end of sweep\ny condition: max above 0.01mV)\nStore result in labnotebook"  [label="Yes"];
+    "Spike detected?\n(x range: pulse onset to end of sweep\ny condition: max above 0.01mV)\nStore result in labnotebook" -> "Previous sweep has opposite spike result";
     "Previous sweep has opposite spike result" -> "Mark set as passed"  [label="Yes"];
     "Mark set as passed" -> "Skip to end of Set";
     "Previous sweep has opposite spike result" -> "Spike detected? (queried from labnotebook)"  [label="No"];

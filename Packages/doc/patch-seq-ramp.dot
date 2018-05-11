@@ -45,6 +45,7 @@ digraph G {
         "Check if mode is IC";
         "Enable \"Repeated Acquisition\"";
         "Check if no TTL channels are active";
+        "Check that the default sampling multiplier is 4";
         "All checks passed";
         "Abort";
         "Prepare DAQ Event" -> "Enable \"Autobias\"";
@@ -69,6 +70,7 @@ digraph G {
         "Stimset is large enough" -> "All checks passed";
         "Check if mode is IC" -> "All checks passed";
         "Check if no TTL channels are active" -> "All checks passed";
+        "Check that the default sampling multiplier is 4" -> "All checks passed";
         "All checks passed" -> "Abort"  [label="No"];
     }
 
@@ -122,12 +124,12 @@ digraph G {
     "Mid Sweep Event" -> "Search spike result in labnotebook";
     "After pulse onset";
     "Get pulse duration from labnotebook (calculate if not present)" -> "After pulse onset";
-    "Spike detected?\n(x range: pulse onset to end of sweep\ny condition: max above 10mV)";
-    "Spike detected?\n(x range: pulse onset to end of sweep\ny condition: max above 10mV)" -> "After pulse"  [label="No"];
+    "Requested number of spikes detected?\n(x range: pulse onset to end of sweep\ny condition: max above 0.01mV)";
+    "Requested number of spikes detected?\n(x range: pulse onset to end of sweep\ny condition: max above 0.01mV)" -> "After pulse"  [label="No"];
     "After pulse" -> "Write spike result \"failed\" into LBN"  [label="Yes"];
-    "After pulse onset" -> "Spike detected?\n(x range: pulse onset to end of sweep\ny condition: max above 10mV)"  [label="Yes"];
+    "After pulse onset" -> "Requested number of spikes detected?\n(x range: pulse onset to end of sweep\ny condition: max above 0.01mV)"  [label="Yes"];
     "Write spike result (true/false) into labnotebook";
-    "Spike detected?\n(x range: pulse onset to end of sweep\ny condition: max above 10mV)" -> "Write spike result (true/false) into labnotebook"  [label="Yes"];
+    "Requested number of spikes detected?\n(x range: pulse onset to end of sweep\ny condition: max above 0.01mV)" -> "Write spike result (true/false) into labnotebook"  [label="Yes"];
     "Write spike position in ms into labnotebook";
     "Set DA channel to zero from here to the end\n(implies DAQ restart)";
     "Write spike position in ms into labnotebook" -> "Set DA channel to zero from here to the end\n(implies DAQ restart)";

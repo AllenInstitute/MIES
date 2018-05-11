@@ -121,6 +121,11 @@ Function AFM_CallAnalysisFunctions(panelTitle, eventType)
 			msg   = GetRTErrMessage()
 			error = GetRTError(1)
 			printf "The analysis function %s aborted with error \"%s\", this is dangerous and must *not* happen!\r", func, msg
+
+			// abort early
+			if(eventType == PRE_DAQ_EVENT)
+				ret = 1
+			endif
 		endtry
 
 		SetWaveLock 0, ITCDataWave

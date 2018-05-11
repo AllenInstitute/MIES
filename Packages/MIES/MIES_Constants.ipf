@@ -805,7 +805,7 @@ Constant PSQ_DS_PULSE_DUR        = 1000
 
 Constant PSQ_RA_BL_EVAL_RANGE = 500
 
-Constant PSQ_SPIKE_LEVEL     = 10 // mV
+Constant PSQ_SPIKE_LEVEL         = 0.01 // mV
 Constant PSQ_RMS_SHORT_THRESHOLD = 0.07 // mV
 Constant PSQ_RMS_LONG_THRESHOLD  = 0.5  // mV
 Constant PSQ_TARGETV_THRESHOLD   = 1    // mV
@@ -817,19 +817,19 @@ Constant PSQ_TARGETV_THRESHOLD   = 1    // mV
 ///
 /// @anchor PatchSeqLabnotebookFormatStrings
 /// @{
-StrConstant PSQ_FMT_LBN_STEPSIZE       = "%s step size"
-StrConstant PSQ_FMT_LBN_SPIKE_DETECT   = "%s spike detected"
-StrConstant PSQ_FMT_LBN_SPIKE_POSITION = "%s spike position"
-StrConstant PSQ_FMT_LBN_FINAL_SCALE    = "%s final DAScale"
-StrConstant PSQ_FMT_LBN_INITIAL_SCALE  = "%s initial DAScale"
-StrConstant PSQ_FMT_LBN_RMS_SHORT_PASS = "%s Chk%d S-RMS BL QC"
-StrConstant PSQ_FMT_LBN_RMS_LONG_PASS  = "%s Chk%d L-RMS BL QC"
-StrConstant PSQ_FMT_LBN_TARGETV_PASS   = "%s Chk%d T-V BL QC"
-StrConstant PSQ_FMT_LBN_CHUNK_PASS     = "%s Chk%d BL QC"
-StrConstant PSQ_FMT_LBN_BL_QC_PASS     = "%s BL QC"
-StrConstant PSQ_FMT_LBN_SWEEP_PASS     = "%s Sweep QC"
-StrConstant PSQ_FMT_LBN_SET_PASS       = "%s Set QC"
-StrConstant PSQ_FMT_LBN_PULSE_DUR      = "%s Pulse duration"
+StrConstant PSQ_FMT_LBN_STEPSIZE          = "%s step size"
+StrConstant PSQ_FMT_LBN_SPIKE_DETECT      = "%s spike detected"
+StrConstant PSQ_FMT_LBN_SPIKE_POSITIONS   = "%s spike positions"
+StrConstant PSQ_FMT_LBN_FINAL_SCALE       = "%s final DAScale"
+StrConstant PSQ_FMT_LBN_INITIAL_SCALE     = "%s initial DAScale"
+StrConstant PSQ_FMT_LBN_RMS_SHORT_PASS    = "%s Chk%d S-RMS BL QC"
+StrConstant PSQ_FMT_LBN_RMS_LONG_PASS     = "%s Chk%d L-RMS BL QC"
+StrConstant PSQ_FMT_LBN_TARGETV_PASS      = "%s Chk%d T-V BL QC"
+StrConstant PSQ_FMT_LBN_CHUNK_PASS        = "%s Chk%d BL QC"
+StrConstant PSQ_FMT_LBN_BL_QC_PASS        = "%s BL QC"
+StrConstant PSQ_FMT_LBN_SWEEP_PASS        = "%s Sweep QC"
+StrConstant PSQ_FMT_LBN_SET_PASS          = "%s Set QC"
+StrConstant PSQ_FMT_LBN_PULSE_DUR         = "%s Pulse duration"
 /// @}
 
 /// PatchSeq types of analysis functions

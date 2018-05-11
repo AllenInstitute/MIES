@@ -50,6 +50,7 @@ static Function AcquireData(s)
 	PGC_SetAndActivateControl(DEVICE, "Check_Settings_BackgrndDataAcq", val = s.BKG_DAQ)
 	PGC_SetAndActivateControl(DEVICE, "SetVar_DataAcq_SetRepeats", val = s.RES)
 	PGC_SetAndActivateControl(DEVICE, "Check_Settings_SkipAnalysFuncs", val = 0)
+	PGC_SetAndActivateControl(DEVICE, "Popup_Settings_SampIntMult", str = "4")
 
 	DoUpdate/W=$DEVICE
 
@@ -63,9 +64,11 @@ static Function/WAVE GetSpikePosition_IGNORE(sweepNo)
 
 	string key
 
+	WAVE textualValues   = GetLBTextualValues(DEVICE)
 	WAVE numericalValues = GetLBNumericalValues(DEVICE)
-	key = PSQ_CreateLBNKey(PSQ_RAMP, PSQ_FMT_LBN_SPIKE_POSITION, query = 1)
-	return GetLastSettingEachRAC(numericalValues, sweepNo, key, HEADSTAGE, UNKNOWN_MODE)
+
+	key = PSQ_CreateLBNKey(PSQ_RAMP, PSQ_FMT_LBN_SPIKE_POSITIONS, query = 1)
+	return GetLastSettingTextEachRAC(numericalValues, textualValues, sweepNo, key, HEADSTAGE, UNKNOWN_MODE)
 End
 
 static Function/WAVE GetSpikeResults_IGNORE(sweepNo)
@@ -254,7 +257,7 @@ static Function PS_RA_Test3()
 	CHECK_EQUAL_WAVES(spikeDetectionWave, {1, 1, 1}, mode = WAVE_DATA)
 
 	WAVE/Z spikePositionWave = GetSpikePosition_IGNORE(sweepNo)
-	CHECK_EQUAL_WAVES(spikePositionWave, {10000, 10000, 10000}, mode = WAVE_DATA)
+	CHECK_EQUAL_TEXTWAVES(spikePositionWave, {"10000;", "10000;", "10000;"}, mode = WAVE_DATA)
 
 	WAVE/Z sweeps = AFH_GetSweepsFromSameRACycle(numericalValues, sweepNo)
 	CHECK_WAVE(sweeps, NUMERIC_WAVE)
@@ -311,7 +314,7 @@ static Function PS_RA_Test4()
 	CHECK_EQUAL_WAVES(spikeDetectionWave, {1, 0, 0}, mode = WAVE_DATA)
 
 	WAVE/Z spikePositionWave = GetSpikePosition_IGNORE(sweepNo)
-	CHECK_EQUAL_WAVES(spikePositionWave, {10000, NaN, NaN}, mode = WAVE_DATA)
+	CHECK_EQUAL_TEXTWAVES(spikePositionWave, {"10000;", "", ""}, mode = WAVE_DATA)
 
 	WAVE/Z sweeps = AFH_GetSweepsFromSameRACycle(numericalValues, sweepNo)
 	CHECK_WAVE(sweeps, NUMERIC_WAVE)
@@ -362,7 +365,7 @@ static Function PS_RA_Test5()
 	CHECK_EQUAL_WAVES(spikeDetectionWave, {0, 1, 1}, mode = WAVE_DATA)
 
 	WAVE/Z spikePositionWave = GetSpikePosition_IGNORE(sweepNo)
-	CHECK_EQUAL_WAVES(spikePositionWave, {NaN, 10000, 10000}, mode = WAVE_DATA)
+	CHECK_EQUAL_TEXTWAVES(spikePositionWave, {"", "10000;", "10000;"}, mode = WAVE_DATA)
 
 	WAVE/Z sweeps = AFH_GetSweepsFromSameRACycle(numericalValues, sweepNo)
 	CHECK_WAVE(sweeps, NUMERIC_WAVE)
@@ -419,7 +422,7 @@ static Function PS_RA_Test6()
 	CHECK_EQUAL_WAVES(spikeDetectionWave, {0, 0, 1}, mode = WAVE_DATA)
 
 	WAVE/Z spikePositionWave = GetSpikePosition_IGNORE(sweepNo)
-	CHECK_EQUAL_WAVES(spikePositionWave, {NaN, NaN, 10000}, mode = WAVE_DATA)
+	CHECK_EQUAL_TEXTWAVES(spikePositionWave, {"", "", "10000;"}, mode = WAVE_DATA)
 
 	WAVE/Z sweeps = AFH_GetSweepsFromSameRACycle(numericalValues, sweepNo)
 	CHECK_WAVE(sweeps, NUMERIC_WAVE)
