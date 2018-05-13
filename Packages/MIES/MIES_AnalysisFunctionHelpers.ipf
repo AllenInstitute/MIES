@@ -438,7 +438,7 @@ Function/S AFH_GetAnalysisParamType(name, params)
 	type = typeAndValue[0, pos - 1]
 	ASSERT(!IsEmpty(type) && WhichListItem(type, ANALYSIS_FUNCTION_PARAMS_TYPES) != -1, "Invalid type")
 
-	return typeAndValue[0, pos - 1]
+	return type
 End
 
 /// @brief Return a numerical user parameter
