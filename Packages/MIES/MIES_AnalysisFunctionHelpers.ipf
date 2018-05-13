@@ -425,23 +425,39 @@ End
 
 /// @brief Return the type of the user parameter
 ///
-/// @param name   parameter name
-/// @param params serialized parameters, usually just #AnalysisFunction_V3.params
+/// @param name      parameter name
+/// @param params    serialized parameters, usually just #AnalysisFunction_V3.params
+/// @param typeCheck [optional, defaults to false] Check with an assertion that
+///                  the readout type is one of @ref ANALYSIS_FUNCTION_PARAMS_TYPES
 ///
 /// @ingroup AnalysisFunctionParameterHelpers
-/// @return one of @ref AnalysisFunctionParameterTypes
-Function/S AFH_GetAnalysisParamType(name, params)
+/// @return one of @ref AnalysisFunctionParameterTypes or an empty string
+Function/S AFH_GetAnalysisParamType(name, params, [typeCheck])
 	string name, params
+	variable typeCheck
 
-	string typeAndValue, type
+	string typeAndValue
+	string type = ""
 	variable pos
 
-	typeAndValue = StringByKey(name , params, ":", ",", 0)
+	if(ParamIsDefault(typeCheck))
+		typeCheck = 1
+	else
+		typeCheck = !!typeCheck
+	endif
+
+	typeAndValue = StringByKey(name, params, ":", ",", 0)
 
 	pos = strsearch(typeAndValue, "=", 0)
-	ASSERT(pos != -1, "Invalid params format")
-	type = typeAndValue[0, pos - 1]
-	ASSERT(AFH_IsValidAnalysisParamType(type), "Invalid type")
+	if(pos != -1)
+		type = typeAndValue[0, pos - 1]
+	else
+		type = typeAndValue
+	endif
+
+	if(typeCheck)
+		ASSERT(AFH_IsValidAnalysisParamType(type), "Invalid type")
+	endif
 
 	return type
 End
