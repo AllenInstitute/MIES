@@ -273,20 +273,60 @@ Function ValidFunc_V3(panelTitle, s)
 End
 
 Function/S Params1_V3_GetParams()
-	return "MyStr;MyVar;MyWave;MyTextWave"
+	return "MyStr,MyVar,MyWave,MyTextWave"
 End
 
 Function Params1_V3(panelTitle, s)
 	string panelTitle
 	STRUCT AnalysisFunction_V3& s
 
-	string presentParams = AFH_GetListOfAnalysisParamNames(s.params)
-	string reqParams     = AFH_GetListOfReqAnalysisParams("Params1_V3")
+	WAVE anaFuncTracker = TrackAnalysisFunctionCalls()
 
-	presentParams = SortList(presentParams)
-	reqParams = SortList(reqParams)
+	// the generic event is never sent to analysis functions
+	CHECK(s.eventType >= 0 && s.eventType < TOTAL_NUM_EVENTS - 1)
+	CHECK(s.eventType >= 0 && s.eventType < DimSize(anaFuncTracker, ROWS))
+	anaFuncTracker[s.eventType] += 1
+End
 
-	CHECK_EQUAL_STR(presentParams, reqParams)
+Function/S Params2_V3_GetParams()
+	return "MyStr:string,MyVar"
+End
+
+Function Params2_V3(panelTitle, s)
+	string panelTitle
+	STRUCT AnalysisFunction_V3& s
+
+	WAVE anaFuncTracker = TrackAnalysisFunctionCalls()
+
+	// the generic event is never sent to analysis functions
+	CHECK(s.eventType >= 0 && s.eventType < TOTAL_NUM_EVENTS - 1)
+	CHECK(s.eventType >= 0 && s.eventType < DimSize(anaFuncTracker, ROWS))
+	anaFuncTracker[s.eventType] += 1
+End
+
+Function/S Params3_V3_GetParams()
+	return "MyStr:invalidType"
+End
+
+Function Params3_V3(panelTitle, s)
+	string panelTitle
+	STRUCT AnalysisFunction_V3& s
+
+	WAVE anaFuncTracker = TrackAnalysisFunctionCalls()
+
+	// the generic event is never sent to analysis functions
+	CHECK(s.eventType >= 0 && s.eventType < TOTAL_NUM_EVENTS - 1)
+	CHECK(s.eventType >= 0 && s.eventType < DimSize(anaFuncTracker, ROWS))
+	anaFuncTracker[s.eventType] += 1
+End
+
+Function/S Params4_V3_GetParams()
+	return "MyStr:variable" // wrong type
+End
+
+Function Params4_V3(panelTitle, s)
+	string panelTitle
+	STRUCT AnalysisFunction_V3& s
 
 	WAVE anaFuncTracker = TrackAnalysisFunctionCalls()
 
