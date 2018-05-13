@@ -378,11 +378,13 @@ Function/S AFH_GetAnalysisFunctions(versionBitMask)
 End
 
 /// @brief Return the list of required analysis function
-/// parameters as specified by the function `$func_GetParams`
+/// parameters, possibly including the type, as specified by the function `$func_GetParams`
 ///
 /// @param func Analysis function `V3` which must be valid and existing
 Function/S AFH_GetListOfReqAnalysisParams(func)
 	string func
+
+	string params
 
 	FUNCREF AF_PROTO_PARAM_GETTER_V3 f = $(func + "_GetParams")
 
@@ -390,7 +392,11 @@ Function/S AFH_GetListOfReqAnalysisParams(func)
 		return ""
 	endif
 
-	return f()
+	params = f()
+
+	ASSERT(strsearch(params, ";", 0) == -1, "Entries must be separated with ,")
+
+	return params
 End
 
 /// @defgroup AnalysisFunctionParameterHelpers Analysis Helper functions for dealing with user parameters

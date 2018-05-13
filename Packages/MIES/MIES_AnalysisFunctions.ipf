@@ -60,9 +60,9 @@
 ///
 /// If you want to enforce a list of parameters which must be present, define
 /// an additional function named like your analysis function but suffixed with
-/// `_GetParams` and return a semicolon separated list of required names. This
-/// is then checked before DAQ, and if not all required parameters are supplied
-/// DAQ is not started.
+/// `_GetParams` and return a comma separated list of required names. Adding the
+/// type is also possible via `$name:$type` syntax. The list of parameter names and types
+/// is then checked before DAQ.
 
 /// @name Initial parameters for stimulation
 ///@{

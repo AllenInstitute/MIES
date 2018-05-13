@@ -2586,7 +2586,7 @@ End
 static Function WBP_UpdateParameterWave()
 
 	string params, names, name, type, genericFunc, reqParams
-	string missingParams
+	string missingParams, reqNames
 	variable i, numEntries, offset
 
 	Wave/T listWave = WBP_GetAnalysisParamGUIListWave()
@@ -2596,6 +2596,7 @@ static Function WBP_UpdateParameterWave()
 
 	genericFunc = WPT[%$("Analysis function (generic)")][%Set]
 	reqParams = AFH_GetListOfReqAnalysisParams(genericFunc)
+	reqNames  = AFH_GetListOfAnalysisParamNames(reqParams)
 
 	params = WBP_GetAnalysisParameters()
 	names  = AFH_GetListOfAnalysisParamNames(params)
@@ -2612,7 +2613,7 @@ static Function WBP_UpdateParameterWave()
 
 	offset = DimSize(listWave, ROWS)
 
-	missingParams = GetListDifference(reqParams, names)
+	missingParams = GetListDifference(reqNames, names)
 	numEntries = ItemsInList(missingParams)
 	Redimension/N=(offset + numEntries, -1) listWave, selWave
 
