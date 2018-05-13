@@ -436,7 +436,7 @@ Function/S AFH_GetAnalysisParamType(name, params)
 	pos = strsearch(typeAndValue, "=", 0)
 	ASSERT(pos != -1, "Invalid params format")
 	type = typeAndValue[0, pos - 1]
-	ASSERT(!IsEmpty(type) && WhichListItem(type, ANALYSIS_FUNCTION_PARAMS_TYPES) != -1, "Invalid type")
+	ASSERT(AFH_IsValidAnalysisParamType(type), "Invalid type")
 
 	return type
 End
