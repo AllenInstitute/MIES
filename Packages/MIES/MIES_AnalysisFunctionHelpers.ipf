@@ -409,9 +409,14 @@ Function/S AFH_GetListOfAnalysisParamNames(params)
 	numEntries = ItemsInList(params, ",")
 	for(i = 0; i < numEntries; i += 1)
 		entry = StringFromList(i, params, ",")
-		pos  = strsearch(entry, ":", 0)
-		ASSERT(pos != -1, "Invalid params format")
-		name = entry[0, pos - 1]
+
+		pos = strsearch(entry, ":", 0)
+		if(pos != -1)
+			name = entry[0, pos - 1]
+		else
+			name = entry
+		endif
+
 		list = AddListItem(name, list, ";", Inf)
 	endfor
 
