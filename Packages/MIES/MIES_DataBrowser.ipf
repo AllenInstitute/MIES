@@ -371,10 +371,6 @@ Function DB_UpdateToLastSweep(win)
 		return NaN
 	endif
 
-	if(!GetCheckBoxState(scPanel, "check_SweepControl_AutoUpdate"))
-		return NaN
-	endif
-
 	device = BSP_GetDevice(win)
 
 	if(!cmpstr(device, NONE))
