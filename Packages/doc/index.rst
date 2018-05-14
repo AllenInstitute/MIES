@@ -15,6 +15,7 @@ Table of Contents
   IPNWB
   ZeroMQ-XOP-Readme
   labnotebook-docs
+  mies-concepts
 
 Introduction
 ============
