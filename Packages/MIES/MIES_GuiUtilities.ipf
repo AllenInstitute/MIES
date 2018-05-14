@@ -9,8 +9,6 @@
 /// @file MIES_GuiUtilities.ipf
 /// @brief Helper functions related to GUI controls
 
-static StrConstant PROCEDURE_START  = "proc="
- 
 /// @brief Show a GUI control in the given window
 Function ShowControl(win, control)
 	string win, control
@@ -1146,17 +1144,35 @@ Function/S GetControlProcedure(win, control)
 	ControlInfo/W=$win $control
 	ASSERT(V_flag != 0, "invalid or non existing control")
 
-	return GetControlProcedureFromRecMacro(S_recreation)
+	return GetValueFromRecMacro(REC_MACRO_PROCEDURE, S_recreation)
 End
 
-Function/S GetControlProcedureFromRecMacro(recMacro)
-	string recMacro
+/// @brief Return an entry from the given recreation macro
+///
+/// The recreation macro of a single GUI control looks like:
+/// \rst
+/// .. code-block: igorpro
+///
+///		PopupMenu popup_ctrl,pos={1.00,1.00},size={55.00,19.00},proc=PGCT_PopMenuProc
+///		PopupMenu popup_ctrl,mode=1,popvalue="Entry1",value= #"\"Entry1;Entry2;Entry3\""
+/// \endrst
+///
+/// This function allows to extract key/value pairs from it.
+///
+/// @param key      non-empty string (must be followed by `=` in the recreation macro)
+/// @param recMacro GUI control recreation macro as returned by `ControlInfo`
+Function/S GetValueFromRecMacro(key, recMacro)
+	string key, recMacro
 
 	variable last, first
 	variable comma, cr
 	string procedure
 
-	first = strsearch(recMacro, "proc=", 0)
+	ASSERT(!IsEmpty(key), "Invalid key")
+
+	key += "="
+
+	first = strsearch(recMacro, key, 0)
 
 	if(first == -1)
 		return ""
@@ -1175,7 +1191,7 @@ Function/S GetControlProcedureFromRecMacro(recMacro)
 		ASSERT(0, "impossible case")
 	endif
 
-	procedure = recMacro[first + strlen(PROCEDURE_START), last - 1]
+	procedure = recMacro[first + strlen(key), last - 1]
 
 	return procedure
 End

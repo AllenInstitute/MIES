@@ -885,3 +885,5 @@ StrConstant CHANNEL_UNIT_KEY = "ChannelUnit"
 
 /// Maximum length of a sweep in the wavebuilder
 Constant MAX_SWEEP_DURATION_IN_MS = 1.8e6 // 30 minutes
+
+StrConstant REC_MACRO_PROCEDURE = "proc"

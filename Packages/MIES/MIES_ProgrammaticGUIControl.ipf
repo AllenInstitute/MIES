@@ -91,7 +91,7 @@ static Function/S PGC_GetProcAndCheckParamType(recMacro)
 	variable paramType
 	string procedure
 
-	procedure = GetControlProcedureFromRecMacro(recMacro)
+	procedure = GetValueFromRecMacro(REC_MACRO_PROCEDURE, recMacro)
 	if(isEmpty(procedure))
 		return ""
 	endif
