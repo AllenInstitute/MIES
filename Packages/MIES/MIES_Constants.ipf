@@ -887,3 +887,4 @@ StrConstant CHANNEL_UNIT_KEY = "ChannelUnit"
 Constant MAX_SWEEP_DURATION_IN_MS = 1.8e6 // 30 minutes
 
 StrConstant REC_MACRO_PROCEDURE = "proc"
+StrConstant REC_MACRO_MODE      = "mode"

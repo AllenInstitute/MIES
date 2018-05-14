@@ -321,6 +321,26 @@ static Function PGCT_CheckboxWorks1()
 	CHECK_EQUAL_VAR(refState, state)
 End
 
+static Function PGCT_CheckboxWorks2()
+
+	variable refState, state
+
+	SVAR/SDFR=root: panel
+
+	PGC_SetAndActivateControl(panel, "checkbox_ctrl_mode_checkbox", val = 0)
+
+	// does nothing if already in the same state
+	DoUpdate
+	ControlInfo/W=$panel checkbox_ctrl_mode_checkbox
+	state = V_Value
+
+	NVAR/Z checkedSVAR = checked
+	CHECK(!NVAR_Exists(checkedSVAR))
+
+	refState = 0
+	CHECK_EQUAL_VAR(refState, state)
+End
+
 Function PGCT_CheckProc(cba) : CheckBoxControl
 	STRUCT WMCheckboxAction &cba
 

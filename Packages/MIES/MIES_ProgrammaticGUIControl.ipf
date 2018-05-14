@@ -180,6 +180,7 @@ Function PGC_SetAndActivateControl(win, control, [val, str, switchTab])
 
 	string procedure
 	variable paramType, controlType, variableType, inputWasModified, limitedVal
+	variable isCheckbox, mode
 
 	if(ParamIsDefault(switchTab))
 		switchTab = 0
@@ -248,6 +249,15 @@ Function PGC_SetAndActivateControl(win, control, [val, str, switchTab])
 			ASSERT(!ParamIsDefault(val), "Needs a variable argument")
 
 			val = !!val
+
+			mode = str2numSafe(GetValueFromRecMacro(REC_MACRO_MODE, S_recreation))
+			isCheckBox = IsNan(mode) || mode == 1
+
+			 // emulate the real user experience and do nothing
+			if(isCheckBox && val == V_Value)
+				break
+			endif
+
 			CheckBox $control, win=$win, value=(val == CHECKBOX_SELECTED)
 
 			if(isEmpty(procedure))
