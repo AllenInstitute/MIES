@@ -268,6 +268,25 @@ End
 /// @brief Redimension the wave to at least the given size.
 ///
 /// The redimensioning is only done if it is required.
+///
+/// Can be used to fill a wave one at a time with the minimum number of
+/// redimensions.
+///
+/// \rst
+/// .. code-block:: igorpro
+/// 	Make/FREE/N=(MINIMUM_WAVE_SIZE) data
+/// 	SetNumberInWaveNote(data, NOTE_INDEX, 0)
+/// 	// ...
+/// 	for(...)
+/// 		index = GetNumberFromWaveNote(data, NOTE_INDEX)
+/// 		// ...
+/// 		EnsureLargeEnoughWave(data, dimension = ROWS, minimumSize = index)
+/// 		data[index] = ...
+/// 		// ...
+/// 	    SetNumberInWaveNote(data, NOTE_INDEX, ++index)
+/// 	endfor
+/// \endrst
+///
 /// @param wv		 	wave to redimension
 /// @param minimumSize 	the minimum size of the wave. Defaults to @ref MINIMUM_WAVE_SIZE.
 ///                     The actual size of the wave after the function returns might be larger.
