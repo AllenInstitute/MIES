@@ -145,30 +145,32 @@ End
 ///
 /// In order to enable smooth upgrades between old and new wave layouts
 /// the following code pattern can be used:
-/// @code
-/// Function/Wave GetMyWave(panelTitle)
-/// 	string panelTitle
+/// \rst
+/// .. code-block:: igorpro
 ///
-/// 	DFREF dfr = GetMyPath(panelTitle)
-/// 	variable versionOfNewWave = 1
+/// 	Function/Wave GetMyWave(panelTitle)
+/// 		string panelTitle
 ///
-/// 	Wave/Z/SDFR=dfr wv = myWave
+/// 		DFREF dfr = GetMyPath(panelTitle)
+/// 		variable versionOfNewWave = 1
 ///
-/// 	if(ExistsWithCorrectLayoutVersion(wv, versionOfNewWave))
+/// 		Wave/Z/SDFR=dfr wv = myWave
+///
+/// 		if(ExistsWithCorrectLayoutVersion(wv, versionOfNewWave))
+/// 			return wv
+/// 		elseif(WaveExists(wv)) // handle upgrade
+/// 		    // change the required dimensions and leave all others untouched with -1
+/// 		    // the extended dimensions are initialized with zero
+/// 			Redimension/N=(10, -1, -1, -1) wv
+/// 		else
+/// 			Make/N=(10, 2) dfr:myWave/Wave=wv
+/// 		end
+///
+/// 		SetWaveVersion(wv, versionOfNewWave)
+///
 /// 		return wv
-/// 	elseif(WaveExists(wv)) // handle upgrade
-/// 	    // change the required dimensions and leave all others untouched with -1
-/// 	    // the extended dimensions are initialized with zero
-/// 		Redimension/N=(10, -1, -1, -1) wv
-/// 	else
-/// 		Make/N=(10, 2) dfr:myWave/Wave=wv
-/// 	end
-///
-/// 	SetWaveVersion(wv, versionOfNewWave)
-///
-/// 	return wv
-/// End
-/// @endcode
+/// 	End
+/// \endrst
 ///
 /// Now everytime the layout of `myWave` changes, raise `versionOfNewWave` by 1 and
 /// adapt the `Make` and `Redimension` calls. When `GetMyWave` is called the first time,
@@ -240,36 +242,37 @@ End
 /// The function is idempotent (i.e. it can be called also on already relocated
 /// waves). Cases where new == old are also handled gracefully.
 ///
-/// Example
-/// @code
-/// Function/WAVE GetMyWave(panelTitle)
-///     string panelTitle
+/// \rst
+/// .. code-block:: igorpro
 ///
-///     variable versionOfNewWave = 1
-///     string newName = "newAndNiceName"
-///     DFREF newDFR = GetNewAndFancyFolder(panelTitle)
+///		Function/WAVE GetMyWave(panelTitle)
+///			string panelTitle
 ///
-///     STRUCT WaveLocationMod p
-///     p.dfr     = $(GetSomeFolder(panelTitle) + ":oldSubFolder")
-///     p.newDFR  = newDFR
-///     p.name    = "oldAndUglyName"
-///     p.newName = newName
+///			variable versionOfNewWave = 1
+///			string newName = "newAndNiceName"
+///			DFREF newDFR = GetNewAndFancyFolder(panelTitle)
 ///
-///     WAVE/Z wv = UpgradeWaveLocationAndGetIt(p)
+///			STRUCT WaveLocationMod p
+///			p.dfr     = $(GetSomeFolder(panelTitle) + ":oldSubFolder")
+///			p.newDFR  = newDFR
+///			p.name    = "oldAndUglyName"
+///			p.newName = newName
 ///
-/// 	if(ExistsWithCorrectLayoutVersion(wv, versionOfNewWave))
-/// 		return wv
-/// 	elseif(WaveExists(wv))
-/// 	    // handle upgrade
-/// 	else
-/// 		Make/N=(10, 2) newDFR:newName/Wave=wv
-/// 	end
+///			WAVE/Z wv = UpgradeWaveLocationAndGetIt(p)
 ///
-/// 	SetWaveVersion(wv, versionOfNewWave)
+///			if(ExistsWithCorrectLayoutVersion(wv, versionOfNewWave))
+///				return wv
+///			elseif(WaveExists(wv))
+///				// handle upgrade
+///			else
+///				Make/N=(10, 2) newDFR:newName/Wave=wv
+///			end
 ///
-/// 	return wv
-/// End
-/// @endcode
+///			SetWaveVersion(wv, versionOfNewWave)
+///
+///			return wv
+///		End
+/// \endrst
 ///
 /// @returns wave reference to the wave in the new location, an invalid one if the wave does
 /// not exist at the specified former location

@@ -138,16 +138,20 @@ End
 /// does not make sense.
 ///
 /// Sample invocation:
-/// @code
-/// Make/D/FREE/N=(LABNOTEBOOK_LAYER_COUNT) values = NaN
-/// values[0] = 4711 // setting of the first headstage
-/// ED_AddEntryToLabnotebook(device, "SomeSetting", values)
-/// @endcode
+/// \rst
+/// .. code-block:: igorpro
+///
+/// 	Make/D/FREE/N=(LABNOTEBOOK_LAYER_COUNT) values = NaN
+/// 	values[0] = 4711 // setting of the first headstage
+/// 	ED_AddEntryToLabnotebook(device, "SomeSetting", values)
+/// \endrst
 ///
 /// The later on the labnotebook can be queried with:
-/// @code
-///	WAVE/Z settings = GetLastSetting(numericalValues, NaN, LABNOTEBOOK_USER_PREFIX + key, UNKNOWN_MODE)
-/// @endcode
+/// \rst
+/// .. code-block:: igorpro
+///
+///		WAVE/Z settings = GetLastSetting(numericalValues, NaN, LABNOTEBOOK_USER_PREFIX + key, UNKNOWN_MODE)
+/// \endrst
 ///
 /// @param panelTitle      device
 /// @param key             name under which to store the entry.

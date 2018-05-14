@@ -285,21 +285,25 @@ End
 ///
 /// Extract the AD channel data from headstage 1:
 ///
-/// @code
-/// variable sweepNo = 5
-/// WAVE sweep = GetSweepWave(panelTitle, sweepNo)
-/// variable headstage = 1
-/// WAVE data = AFH_ExtractOneDimDataFromSweep(panelTitle, sweep, headstage, ITC_XOP_CHANNEL_TYPE_ADC)
-/// @endcode
+/// \rst
+/// .. code-block:: igorpro
+///
+/// 	variable sweepNo = 5
+/// 	WAVE sweep = GetSweepWave(panelTitle, sweepNo)
+/// 	variable headstage = 1
+/// 	WAVE data = AFH_ExtractOneDimDataFromSweep(panelTitle, sweep, headstage, ITC_XOP_CHANNEL_TYPE_ADC)
+/// \endrst
 ///
 /// Extract the TTL channel 1:
 ///
-/// @code
-/// variable sweepNo = 6
-/// WAVE sweep = GetSweepWave(panelTitle, sweepNo)
-/// variable ttlChannel = 1
-/// WAVE data = AFH_ExtractOneDimDataFromSweep(panelTitle, sweep, ttlChannel, ITC_XOP_CHANNEL_TYPE_TTL)
-/// @endcode
+/// \rst
+/// .. code-block:: igorpro
+///
+/// 	variable sweepNo = 6
+/// 	WAVE sweep = GetSweepWave(panelTitle, sweepNo)
+/// 	variable ttlChannel = 1
+/// 	WAVE data = AFH_ExtractOneDimDataFromSweep(panelTitle, sweep, ttlChannel, ITC_XOP_CHANNEL_TYPE_TTL)
+/// \endrst
 ///
 /// @param panelTitle            device
 /// @param sweep                 sweep wave

@@ -1490,13 +1490,15 @@ End
 /// @brief Create a vertically tiled graph for displaying AD and DA channels
 ///
 /// For preservering the axis scaling callers should do the following:
-/// @code
-/// WAVE ranges = GetAxesRanges(graph)
+/// \rst
+/// .. code-block:: igorpro
 ///
-/// CreateTiledChannelGraph()
+/// 	WAVE ranges = GetAxesRanges(graph)
 ///
-///	SetAxesRanges(graph, ranges)
-///	@endcode
+/// 	CreateTiledChannelGraph()
+///
+///		SetAxesRanges(graph, ranges)
+///	\endrst
 ///
 /// @param graph           window
 /// @param config          ITC config wave

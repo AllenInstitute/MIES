@@ -240,22 +240,23 @@ End
 /// - 1: absolute path to the wave
 /// - 2: headstage
 ///
-/// Example usage:
-/// @code
-/// variable channelNumber, headstage, numWaves, i
-/// string graph   = "SweepBrowser1" // name of an existing sweep browser graph
-/// string channel = "DA"
-/// WAVE/T wv =  SB_GetChannelInfoFromGraph(graph, channel)
+/// \rst
+/// .. code-block:: igorpro
 ///
-/// numWaves = DimSize(wv, ROWS)
-/// for(i = 0; i < numWaves; i += 1)
-/// 	WAVE data     = $(wv[i][%path])
-/// 	channelNumber = str2num(wv[i][%channel])
-/// 	headstage     = str2num(wv[i][%headstage])
+///		variable channelNumber, headstage, numWaves, i
+///		string graph   = "SweepBrowser1" // name of an existing sweep browser graph
+///		string channel = "DA"
+///		WAVE/T wv =  SB_GetChannelInfoFromGraph(graph, channel)
 ///
-/// 	printf "Channel %d acquired by headstage %d is stored in %s\r", channelNumber, headstage, NameOfWave(data)
-/// endfor
-/// @endcode
+///		numWaves = DimSize(wv, ROWS)
+///		for(i = 0; i < numWaves; i += 1)
+///			WAVE data     = $(wv[i][%path])
+///			channelNumber = str2num(wv[i][%channel])
+///			headstage     = str2num(wv[i][%headstage])
+///
+///			printf "Channel %d acquired by headstage %d is stored in %s\r", channelNumber, headstage, NameOfWave(data)
+///		endfor
+/// \endrst
 ///
 /// @param graph                                  name of main window or external subwindow in SweepBrowser
 /// @param channel                                type of the channel, one of #ITC_CHANNEL_NAMES
