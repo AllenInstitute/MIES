@@ -11,8 +11,10 @@ static Function TEST_CASE_BEGIN_OVERRIDE(testCase)
 	String/G root:panel = S_name
 
 	PopupMenu popup_ctrl proc=PGCT_PopMenuProc,value=#("\"" + PGCT_POPUPMENU_ENTRIES + "\""), mode = 1
+	CheckBox checkbox_ctrl_mode_checkbox,pos={66.00,1.00},size={39.00,15.00},proc=PGCT_CheckProc
+	CheckBox checkbox_ctrl_mode_checkbox,value= 0
 
-	KillVariables/Z popNum
+	KillVariables/Z popNum, checked
 	KillStrings/Z popStr
 End
 
@@ -242,6 +244,89 @@ Function PGCT_PopMenuProc(pa) : PopupMenuControl
 		case 2: // mouse up
 			Variable/G popNum = pa.popNum
 			String/G popStr   = pa.popStr
+			break
+	endswitch
+
+	return 0
+End
+
+static Function PGCT_CheckboxAborts1()
+
+	variable refState, state
+
+	SVAR/SDFR=root: panel
+
+	try
+		PGC_SetAndActivateControl(panel, "checkbox_ctrl_mode_checkbox")
+		FAIL()
+	catch
+		PASS()
+	endtry
+
+	// no changes
+	DoUpdate
+	ControlInfo/W=$panel checkbox_ctrl_mode_checkbox
+	state = V_Value
+
+	NVAR/Z checkedSVAR = checked
+	CHECK(!NVAR_Exists(checkedSVAR))
+
+	refState = 0
+	CHECK_EQUAL_VAR(refState, state)
+End
+
+static Function PGCT_CheckboxAborts2()
+
+	variable refState, state
+
+	SVAR/SDFR=root: panel
+
+	try
+		PGC_SetAndActivateControl(panel, "checkbox_ctrl_mode_checkbox", str = "invalid")
+		FAIL()
+	catch
+		PASS()
+	endtry
+
+	// no changes
+	DoUpdate
+	ControlInfo/W=$panel checkbox_ctrl_mode_checkbox
+	state = V_Value
+
+	NVAR/Z checkedSVAR = checked
+	CHECK(!NVAR_Exists(checkedSVAR))
+
+	refState = 0
+	CHECK_EQUAL_VAR(refState, state)
+End
+
+static Function PGCT_CheckboxWorks1()
+
+	variable refState, state
+
+	SVAR/SDFR=root: panel
+
+	PGC_SetAndActivateControl(panel, "checkbox_ctrl_mode_checkbox", val = 1)
+
+	// checked
+	DoUpdate
+	ControlInfo/W=$panel checkbox_ctrl_mode_checkbox
+	state = V_Value
+
+	NVAR/Z checkedSVAR = checked
+	CHECK(NVAR_Exists(checkedSVAR))
+
+	refState = 1
+	CHECK_EQUAL_VAR(refState, checkedSVAR)
+	CHECK_EQUAL_VAR(refState, state)
+End
+
+Function PGCT_CheckProc(cba) : CheckBoxControl
+	STRUCT WMCheckboxAction &cba
+
+	switch(cba.eventCode)
+		case 2: // mouse up
+			Variable/G checked = cba.checked
 			break
 	endswitch
 
