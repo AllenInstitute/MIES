@@ -194,6 +194,7 @@ static Function DB_UpdateLastSweepControls(win, first, last)
 	if(formerLast != last)
 		SetValDisplay(scPanel, "valdisp_SweepControl_LastSweep", var=last)
 		DB_UpdateOverlaySweepWaves(win)
+		AD_Update(win)
 	endif
 End
 
@@ -368,10 +369,6 @@ Function DB_UpdateToLastSweep(win)
 	if(!HasPanelLatestVersion(mainPanel, DATABROWSER_PANEL_VERSION))
 		print "Can not display data. The Databrowser panel is too old to be usable. Please close it and open a new one."
 		ControlWindowToFront()
-		return NaN
-	endif
-
-	if(!GetCheckBoxState(scPanel, "check_SweepControl_AutoUpdate"))
 		return NaN
 	endif
 

@@ -513,7 +513,7 @@ Constant WAVEBUILDER_PANEL_VERSION  = 5
 /// - Changed names of entries
 /// - Changed units or meaning of entries
 /// - New/Changed layers of entries
-Constant LABNOTEBOOK_VERSION = 18
+Constant LABNOTEBOOK_VERSION = 20
 
 /// @name The channel numbers for the different ITC devices used for accesssing
 ///       the TTLs
@@ -819,6 +819,7 @@ Constant PSQ_TARGETV_THRESHOLD   = 1    // mV
 ///
 /// @anchor PatchSeqLabnotebookFormatStrings
 /// @{
+StrConstant PSQ_FMT_LBN_RB_DASCALE_EXC    = "%s DAScale exceeded"
 StrConstant PSQ_FMT_LBN_STEPSIZE          = "%s step size"
 StrConstant PSQ_FMT_LBN_SPIKE_DETECT      = "%s spike detected"
 StrConstant PSQ_FMT_LBN_SPIKE_POSITIONS   = "%s spike positions"

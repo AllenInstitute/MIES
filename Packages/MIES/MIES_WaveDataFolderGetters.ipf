@@ -5349,3 +5349,109 @@ Function/WAVE WBP_GetAnalysisParamGUISelWave()
 
 	return wv
 End
+
+/// @brief Return the analysis function dashboard listbox wave for the
+///        databrowser or the sweepbrowser
+Function/WAVE GetAnaFuncDashboardListWave(dfr)
+	DFREF dfr
+
+	variable versionOfNewWave = 1
+
+	ASSERT(DataFolderExistsDFR(dfr), "Invalid dfr")
+	WAVE/T/Z/SDFR=dfr wv = dashboardListWave
+
+	if(ExistsWithCorrectLayoutVersion(wv, versionOfNewWave))
+		return wv
+	elseif(WaveExists(wv))
+		// handle upgrade
+	else
+		Make/T/N=(MINIMUM_WAVE_SIZE, 3) dfr:dashboardListWave/Wave=wv
+	endif
+
+	SetDimLabel COLS, 0, $"Stimset", wv
+	SetDimLabel COLS, 1, $"Analysis function", wv
+	SetDimLabel COLS, 2, $"Result", wv
+
+	SetWaveVersion(wv, versionOfNewWave)
+	SetNumberInWaveNote(wv, NOTE_INDEX, 0)
+
+	return wv
+End
+
+/// @brief Return the analysis function dashboard info wave for the
+///        databrowser or the sweepbrowser
+Function/WAVE GetAnaFuncDashboardInfoWave(dfr)
+	DFREF dfr
+
+	variable versionOfNewWave = 1
+
+	ASSERT(DataFolderExistsDFR(dfr), "Invalid dfr")
+	WAVE/T/Z/SDFR=dfr wv = dashboardInfoWave
+
+	if(ExistsWithCorrectLayoutVersion(wv, versionOfNewWave))
+		return wv
+	elseif(WaveExists(wv))
+		// handle upgrade
+	else
+		Make/T/N=(MINIMUM_WAVE_SIZE, 3) dfr:dashboardInfoWave/Wave=wv
+	endif
+
+	SetDimLabel COLS, 0, $RA_ACQ_CYCLE_ID_KEY, wv
+	SetDimLabel COLS, 1, $"Passing Sweeps", wv
+	SetDimLabel COLS, 2, $"Failing Sweeps", wv
+
+	SetWaveVersion(wv, versionOfNewWave)
+
+	return wv
+End
+
+/// @brief Return the analysis function dashboard listbox selection wave for the
+///        databrowser or the sweepbrowser
+Function/WAVE GetAnaFuncDashboardSelWave(dfr)
+	DFREF dfr
+
+	variable versionOfNewWave = 1
+
+	ASSERT(DataFolderExistsDFR(dfr), "Invalid dfr")
+	WAVE/B/Z/SDFR=dfr wv = dashboardSelWave
+
+	if(ExistsWithCorrectLayoutVersion(wv, versionOfNewWave))
+		return wv
+	elseif(WaveExists(wv))
+		// handle upgrade
+	else
+		Make/B/N=(MINIMUM_WAVE_SIZE, 3, 2) dfr:dashboardSelWave/Wave=wv
+	endif
+
+	SetDimLabel LAYERS, 1, foreColors, wv
+	SetWaveVersion(wv, versionOfNewWave)
+
+	return wv
+End
+
+/// @brief Return the analysis function dashboard listbox color wave for the
+///        databrowser or the sweepbrowser
+Function/WAVE GetAnaFuncDashboardColorWave(dfr)
+	DFREF dfr
+
+	variable versionOfNewWave = 1
+
+	ASSERT(DataFolderExistsDFR(dfr), "Invalid dfr")
+	WAVE/W/U/Z/SDFR=dfr wv = dashboardColorWave
+
+	if(ExistsWithCorrectLayoutVersion(wv, versionOfNewWave))
+		return wv
+	elseif(WaveExists(wv))
+		// handle upgrade
+	else
+		Make/W/U/N=(3, 3) dfr:dashboardColorWave/Wave=wv
+	endif
+
+	wv[0][0]= {0, 65535, 0}
+	wv[0][1]= {0, 0,     35000}
+	wv[0][2]= {0, 0,     0}
+
+	SetWaveVersion(wv, versionOfNewWave)
+
+	return wv
+End

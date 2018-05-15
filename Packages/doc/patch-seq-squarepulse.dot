@@ -22,6 +22,9 @@ digraph G {
     "Start DAQ/RA" -> "Prepare DAQ Event";
     "Post Sweep Event";
     "Start DAQ/RA" -> "Post Sweep Event";
+    "Post DAQ Event";
+    "Start DAQ/RA" -> "Post DAQ Event";
+    "Post DAQ Event" -> "Update Dashboard";
     "Enable \"Multidevice DAQ\"";
     "Disable \"dDAQ\"/\"oodDAQ\"";
     "Enable \"Repeated Acquisition\"";
@@ -49,7 +52,6 @@ digraph G {
     "All checks passed" -> "Abort"  [label="No"];
     "Spike detected?\n(x range: pulse onset to end of sweep\ny condition: max above 0.01mV)\nStore result in labnotebook" -> "Step size from labnotebook?"  [label="Yes"];
     "Step size from labnotebook?" -> "Store DAScale in labnotebook"  [label="+10pA"];
-    "Store DAScale in labnotebook" -> "Skip to end";
     "Skip to end";
     "Offset DAScale by -50pA";
     "Step size from labnotebook?" -> "Offset DAScale by -50pA"  [label="-50pA"];
@@ -69,4 +71,13 @@ digraph G {
     "Check if only one headstage is active";
     "Check if only one headstage is active" -> "All checks passed";
     "Prepare DAQ Event" -> "Check if only one headstage is active";
+    "Mark sweep as passed";
+    "Mark sweep as passed" -> "Skip to end";
+    "Store DAScale in labnotebook" -> "Mark sweep as passed";
+    "Mark sweep as failed";
+    "Offset DAScale by -50pA" -> "Mark sweep as failed";
+    "Offset DAScale by +10pA" -> "Mark sweep as failed";
+    "Offset DAScale by +100pA" -> "Mark sweep as failed";
+    "Start DAQ/RA" -> "Post Set Event";
+    "Post Set Event" -> "Mark set as passed if 1 sweep passed, as failure otherwise";
 }

@@ -71,7 +71,7 @@ Function BSP_OpenSettingsPanel(mainPanel)
 	endif
 
 	ASSERT(windowExists(mainPanel), "HOST panel does not exist")
-	NewPanel/HOST=$mainPanel/EXT=1/W=(280,0,0,410)/N=$EXT_PANEL_SUBWINDOW  as " "
+	NewPanel/HOST=$mainPanel/EXT=1/W=(366,0,0,407)/N=$EXT_PANEL_SUBWINDOW  as " "
 	Execute "BrowserSettingsPanel()"
 	BSP_DynamicStartupSettings(mainPanel)
 End
@@ -172,6 +172,7 @@ Function BSP_DynamicStartupSettings(mainPanel)
 	else
 		EnableControls(bsPanel, controlsSB)
 		DisableControls(bsPanel, controlsDB)
+		DisableControls(bsPanel, "list_dashboard;check_BrowserSettings_DB_Failed;check_BrowserSettings_DB_Passed")
 		PopupMenu popup_TimeAlignment_Master win=$bsPanel, value = #("SB_GetAllTraces(\"" + mainPanel + "\")")
 	endif
 
@@ -194,10 +195,9 @@ Function BSP_BindListBoxWaves(win)
 	DFREF dfr = BSP_GetFolder(mainPanel, MIES_BSP_PANEL_FOLDER)
 	WAVE/T listBoxWave        = GetOverlaySweepsListWave(dfr)
 	WAVE listBoxSelWave       = GetOverlaySweepsListSelWave(dfr)
-	WAVE/WAVE sweepSelChoices = GetOverlaySweepSelectionChoices(dfr)
 	ListBox list_of_ranges, win=$bsPanel, listWave=listBoxWave
 	ListBox list_of_ranges, win=$bsPanel, selWave=listBoxSelWave
-	WaveClear listBoxWave
+	WaveClear listBoxWave, listBoxSelWave
 
 	// artefact removal
 	WAVE/T listBoxWave = GetArtefactRemovalListWave(dfr)
@@ -206,6 +206,12 @@ Function BSP_BindListBoxWaves(win)
 	// channel selection
 	WAVE channelSelection = BSP_GetChannelSelectionWave(mainPanel)
 	ChannelSelectionWaveToGUI(bsPanel, channelSelection)
+
+	// dashboard
+	WAVE listBoxColorWave = GetAnaFuncDashboardColorWave(dfr)
+	WAVE listBoxSelWave   = GetAnaFuncDashboardselWave(dfr)
+	WAVE/T listBoxWave    = GetAnaFuncDashboardListWave(dfr)
+	ListBox list_dashboard, win=$bsPanel, listWave=listBoxWave, colorWave=listBoxColorWave, selWave=listBoxSelWave
 End
 
 /// @brief add SB_* or DB_* prefix to the input string depending on current window
@@ -602,286 +608,287 @@ EndMacro
 Window BrowserSettingsPanel() : Panel
 	PauseUpdate; Silent 1		// building window...
 	//NewPanel /W=(202,80,484,492) as " "
-	GroupBox group_calc,pos={12.00,195.00},size={210.00,50.00}
+	GroupBox group_calc,pos={12.00,196.00},size={288.00,51.00}
 	GroupBox group_calc,userdata(tabnum)=  "0",userdata(tabcontrol)=  "Settings"
-	TabControl Settings,pos={2.00,2.00},size={280.00,19.00},proc=ACL_DisplayTab
+	TabControl Settings,pos={2.00,2.00},size={362.00,22.00},proc=ACL_DisplayTab
 	TabControl Settings,userdata(currenttab)=  "0",tabLabel(0)="Settings"
 	TabControl Settings,tabLabel(1)="OVS",tabLabel(2)="CS",tabLabel(3)="AR"
-	TabControl Settings,tabLabel(4)="PA",tabLabel(5)="Note",value= 0
-	ListBox list_of_ranges,pos={27.00,206.00},size={186.00,200.00},disable=1,proc=OVS_MainListBoxProc
+	TabControl Settings,tabLabel(4)="PA",tabLabel(5)="Note",tabLabel(6)="Dashboard"
+	TabControl Settings,value= 0
+	ListBox list_of_ranges,pos={83.00,199.00},size={186.00,200.00},disable=3,proc=OVS_MainListBoxProc
 	ListBox list_of_ranges,help={"Select sweeps for overlay; The second column (\"Headstages\") allows to ignore some headstages for the graphing. Syntax is a semicolon \";\" separated list of subranges, e.g. \"0\", \"0,2\", \"1;4;2\""}
 	ListBox list_of_ranges,userdata(tabnum)=  "1",userdata(tabcontrol)=  "Settings"
 	ListBox list_of_ranges,widths={50,50}
-	PopupMenu popup_overlaySweeps_select,pos={56.00,99.00},size={143.00,19.00},bodyWidth=109,disable=1,proc=OVS_PopMenuProc_Select,title="Select"
+	PopupMenu popup_overlaySweeps_select,pos={112.00,99.00},size={143.00,19.00},bodyWidth=109,disable=3,proc=OVS_PopMenuProc_Select,title="Select"
 	PopupMenu popup_overlaySweeps_select,help={"Select sweeps according to various properties"}
 	PopupMenu popup_overlaySweeps_select,userdata(tabnum)=  "1"
 	PopupMenu popup_overlaySweeps_select,userdata(tabcontrol)=  "Settings"
-	PopupMenu popup_overlaySweeps_select,mode=1,popvalue="- none -"
-	CheckBox check_overlaySweeps_disableHS,pos={43.00,160.00},size={120.00,15.00},disable=1,proc=OVS_CheckBoxProc_HS_Select,title="Headstage Removal"
+	PopupMenu popup_overlaySweeps_select,mode=1,popvalue="- none -",value= #"OVS_GetSweepSelectionChoices(\"DB_ITC18USB_Dev_0#BrowserSettingsPanel\")"
+	CheckBox check_overlaySweeps_disableHS,pos={99.00,160.00},size={120.00,15.00},disable=3,proc=OVS_CheckBoxProc_HS_Select,title="Headstage Removal"
 	CheckBox check_overlaySweeps_disableHS,help={"Toggle headstage removal"}
 	CheckBox check_overlaySweeps_disableHS,userdata(tabnum)=  "1"
 	CheckBox check_overlaySweeps_disableHS,userdata(tabcontrol)=  "Settings"
 	CheckBox check_overlaySweeps_disableHS,value= 0
-	CheckBox check_overlaySweeps_non_commula,pos={42.00,180.00},size={153.00,15.00},disable=1,title="Non-commulative update"
+	CheckBox check_overlaySweeps_non_commula,pos={98.00,180.00},size={153.00,15.00},disable=3,title="Non-commulative update"
 	CheckBox check_overlaySweeps_non_commula,help={"If \"Display Last sweep acquired\" is checked, this checkbox here allows to only add the newly acquired sweep and will remove the currently added last sweep."}
 	CheckBox check_overlaySweeps_non_commula,userdata(tabcontrol)=  "Settings"
 	CheckBox check_overlaySweeps_non_commula,userdata(tabnum)=  "1",value= 0
-	SetVariable setvar_overlaySweeps_offset,pos={41.00,126.00},size={81.00,18.00},bodyWidth=45,disable=1,proc=OVS_SetVarProc_SelectionRange,title="Offset"
+	SetVariable setvar_overlaySweeps_offset,pos={97.00,126.00},size={81.00,18.00},bodyWidth=45,disable=3,proc=OVS_SetVarProc_SelectionRange,title="Offset"
 	SetVariable setvar_overlaySweeps_offset,help={"Offsets the first selected sweep from the selection menu"}
 	SetVariable setvar_overlaySweeps_offset,userdata(tabnum)=  "1"
 	SetVariable setvar_overlaySweeps_offset,userdata(tabcontrol)=  "Settings"
 	SetVariable setvar_overlaySweeps_offset,limits={0,inf,1},value= _NUM:0
-	SetVariable setvar_overlaySweeps_step,pos={128.00,126.00},size={72.00,18.00},bodyWidth=45,disable=1,proc=OVS_SetVarProc_SelectionRange,title="Step"
+	SetVariable setvar_overlaySweeps_step,pos={184.00,126.00},size={72.00,18.00},bodyWidth=45,disable=3,proc=OVS_SetVarProc_SelectionRange,title="Step"
 	SetVariable setvar_overlaySweeps_step,help={"Selects every `step` sweep from the selection menu"}
 	SetVariable setvar_overlaySweeps_step,userdata(tabnum)=  "1"
 	SetVariable setvar_overlaySweeps_step,userdata(tabcontrol)=  "Settings"
 	SetVariable setvar_overlaySweeps_step,limits={1,inf,1},value= _NUM:1
-	GroupBox group_enable_sweeps,pos={4.00,27.00},size={230.00,53.00},disable=1,title="Overlay Sweeps"
+	GroupBox group_enable_sweeps,pos={4.00,30.00},size={354.00,53.00},disable=1,title="Overlay Sweeps"
 	GroupBox group_enable_sweeps,userdata(tabnum)=  "1"
 	GroupBox group_enable_sweeps,userdata(tabcontrol)=  "Settings"
-	GroupBox group_enable_channels,pos={4.00,27.00},size={230.00,383.00},disable=1,title="Channel Selection"
+	GroupBox group_enable_channels,pos={6.00,25.00},size={352.00,383.00},disable=1,title="Channel Selection"
 	GroupBox group_enable_channels,userdata(tabnum)=  "2"
 	GroupBox group_enable_channels,userdata(tabcontrol)=  "Settings"
-	GroupBox group_enable_artifact,pos={4.00,27.00},size={230.00,53.00},disable=1,title="Artefact Removal"
+	GroupBox group_enable_artifact,pos={4.00,27.00},size={354.00,54.00},disable=1,title="Artefact Removal"
 	GroupBox group_enable_artifact,userdata(tabnum)=  "3"
 	GroupBox group_enable_artifact,userdata(tabcontrol)=  "Settings"
-	GroupBox group_properties_sweeps,pos={4.00,86.00},size={230.00,325.00},disable=1
+	GroupBox group_properties_sweeps,pos={5.00,94.00},size={354.00,310.00},disable=3
 	GroupBox group_properties_sweeps,userdata(tabnum)=  "1"
 	GroupBox group_properties_sweeps,userdata(tabcontrol)=  "Settings"
-	GroupBox group_properties_artefact,pos={4.00,86.00},size={230.00,325.00},disable=1
+	GroupBox group_properties_artefact,pos={5.00,84.00},size={354.00,321.00},disable=3
 	GroupBox group_properties_artefact,userdata(tabnum)=  "3"
 	GroupBox group_properties_artefact,userdata(tabcontrol)=  "Settings"
 	GroupBox group_channelSel_DA,pos={95.00,44.00},size={44.00,199.00},disable=1,title="DA"
 	GroupBox group_channelSel_DA,userdata(tabnum)=  "2"
 	GroupBox group_channelSel_DA,userdata(tabcontrol)=  "Settings"
-	GroupBox group_properties_pulse,pos={4.00,86.00},size={230.00,325.00},disable=1
+	GroupBox group_properties_pulse,pos={4.00,89.00},size={355.00,317.00},disable=3
 	GroupBox group_properties_pulse,userdata(tabnum)=  "4"
 	GroupBox group_properties_pulse,userdata(tabcontrol)=  "Settings"
-	GroupBox group_enable_pulse,pos={4.00,27.00},size={230.00,53.00},disable=1,title="Pulse Averaging"
+	GroupBox group_enable_pulse,pos={4.00,27.00},size={355.00,57.00},disable=1,title="Pulse Averaging"
 	GroupBox group_enable_pulse,userdata(tabnum)=  "4"
 	GroupBox group_enable_pulse,userdata(tabcontrol)=  "Settings"
-	CheckBox check_channelSel_DA_0,pos={105.00,60.00},size={21.00,15.00},disable=1,title="0"
+	CheckBox check_channelSel_DA_0,pos={105.00,60.00},size={21.00,15.00},disable=1,proc=DB_CheckProc_ChangedSetting,title="0"
 	CheckBox check_channelSel_DA_0,userdata(tabnum)=  "2"
 	CheckBox check_channelSel_DA_0,userdata(tabcontrol)=  "Settings",value= 1
-	CheckBox check_channelSel_DA_1,pos={105.00,81.00},size={21.00,15.00},disable=1,title="1"
+	CheckBox check_channelSel_DA_1,pos={105.00,81.00},size={21.00,15.00},disable=1,proc=DB_CheckProc_ChangedSetting,title="1"
 	CheckBox check_channelSel_DA_1,userdata(tabnum)=  "2"
 	CheckBox check_channelSel_DA_1,userdata(tabcontrol)=  "Settings",value= 1
-	CheckBox check_channelSel_DA_2,pos={105.00,102.00},size={21.00,15.00},disable=1,title="2"
+	CheckBox check_channelSel_DA_2,pos={105.00,102.00},size={21.00,15.00},disable=1,proc=DB_CheckProc_ChangedSetting,title="2"
 	CheckBox check_channelSel_DA_2,userdata(tabnum)=  "2"
 	CheckBox check_channelSel_DA_2,userdata(tabcontrol)=  "Settings",value= 1
-	CheckBox check_channelSel_DA_3,pos={105.00,123.00},size={21.00,15.00},disable=1,title="3"
+	CheckBox check_channelSel_DA_3,pos={105.00,123.00},size={21.00,15.00},disable=1,proc=DB_CheckProc_ChangedSetting,title="3"
 	CheckBox check_channelSel_DA_3,userdata(tabnum)=  "2"
 	CheckBox check_channelSel_DA_3,userdata(tabcontrol)=  "Settings",value= 1
-	CheckBox check_channelSel_DA_4,pos={105.00,144.00},size={21.00,15.00},disable=1,title="4"
+	CheckBox check_channelSel_DA_4,pos={105.00,144.00},size={21.00,15.00},disable=1,proc=DB_CheckProc_ChangedSetting,title="4"
 	CheckBox check_channelSel_DA_4,userdata(tabnum)=  "2"
 	CheckBox check_channelSel_DA_4,userdata(tabcontrol)=  "Settings",value= 1
-	CheckBox check_channelSel_DA_5,pos={105.00,165.00},size={21.00,15.00},disable=1,title="5"
+	CheckBox check_channelSel_DA_5,pos={105.00,165.00},size={21.00,15.00},disable=1,proc=DB_CheckProc_ChangedSetting,title="5"
 	CheckBox check_channelSel_DA_5,userdata(tabnum)=  "2"
 	CheckBox check_channelSel_DA_5,userdata(tabcontrol)=  "Settings",value= 1
-	CheckBox check_channelSel_DA_6,pos={105.00,186.00},size={21.00,15.00},disable=1,title="6"
+	CheckBox check_channelSel_DA_6,pos={105.00,186.00},size={21.00,15.00},disable=1,proc=DB_CheckProc_ChangedSetting,title="6"
 	CheckBox check_channelSel_DA_6,userdata(tabnum)=  "2"
 	CheckBox check_channelSel_DA_6,userdata(tabcontrol)=  "Settings",value= 1
-	CheckBox check_channelSel_DA_7,pos={105.00,207.00},size={21.00,15.00},disable=1,title="7"
+	CheckBox check_channelSel_DA_7,pos={105.00,207.00},size={21.00,15.00},disable=1,proc=DB_CheckProc_ChangedSetting,title="7"
 	CheckBox check_channelSel_DA_7,userdata(tabnum)=  "2"
 	CheckBox check_channelSel_DA_7,userdata(tabcontrol)=  "Settings",value= 1
 	GroupBox group_channelSel_HEADSTAGE,pos={33.00,44.00},size={44.00,199.00},disable=1,title="HS"
 	GroupBox group_channelSel_HEADSTAGE,userdata(tabnum)=  "2"
 	GroupBox group_channelSel_HEADSTAGE,userdata(tabcontrol)=  "Settings"
-	CheckBox check_channelSel_HEADSTAGE_0,pos={43.00,60.00},size={21.00,15.00},disable=1,title="0"
+	CheckBox check_channelSel_HEADSTAGE_0,pos={43.00,60.00},size={21.00,15.00},disable=1,proc=DB_CheckProc_ChangedSetting,title="0"
 	CheckBox check_channelSel_HEADSTAGE_0,userdata(tabnum)=  "2"
 	CheckBox check_channelSel_HEADSTAGE_0,userdata(tabcontrol)=  "Settings",value= 1
-	CheckBox check_channelSel_HEADSTAGE_1,pos={43.00,81.00},size={21.00,15.00},disable=1,title="1"
+	CheckBox check_channelSel_HEADSTAGE_1,pos={43.00,81.00},size={21.00,15.00},disable=1,proc=DB_CheckProc_ChangedSetting,title="1"
 	CheckBox check_channelSel_HEADSTAGE_1,userdata(tabnum)=  "2"
 	CheckBox check_channelSel_HEADSTAGE_1,userdata(tabcontrol)=  "Settings",value= 1
-	CheckBox check_channelSel_HEADSTAGE_2,pos={43.00,102.00},size={21.00,15.00},disable=1,title="2"
+	CheckBox check_channelSel_HEADSTAGE_2,pos={43.00,102.00},size={21.00,15.00},disable=1,proc=DB_CheckProc_ChangedSetting,title="2"
 	CheckBox check_channelSel_HEADSTAGE_2,userdata(tabnum)=  "2"
 	CheckBox check_channelSel_HEADSTAGE_2,userdata(tabcontrol)=  "Settings",value= 1
-	CheckBox check_channelSel_HEADSTAGE_3,pos={43.00,123.00},size={21.00,15.00},disable=1,title="3"
+	CheckBox check_channelSel_HEADSTAGE_3,pos={43.00,123.00},size={21.00,15.00},disable=1,proc=DB_CheckProc_ChangedSetting,title="3"
 	CheckBox check_channelSel_HEADSTAGE_3,userdata(tabnum)=  "2"
 	CheckBox check_channelSel_HEADSTAGE_3,userdata(tabcontrol)=  "Settings",value= 1
-	CheckBox check_channelSel_HEADSTAGE_4,pos={43.00,144.00},size={21.00,15.00},disable=1,title="4"
+	CheckBox check_channelSel_HEADSTAGE_4,pos={43.00,144.00},size={21.00,15.00},disable=1,proc=DB_CheckProc_ChangedSetting,title="4"
 	CheckBox check_channelSel_HEADSTAGE_4,userdata(tabnum)=  "2"
 	CheckBox check_channelSel_HEADSTAGE_4,userdata(tabcontrol)=  "Settings",value= 1
-	CheckBox check_channelSel_HEADSTAGE_5,pos={43.00,165.00},size={21.00,15.00},disable=1,title="5"
+	CheckBox check_channelSel_HEADSTAGE_5,pos={43.00,165.00},size={21.00,15.00},disable=1,proc=DB_CheckProc_ChangedSetting,title="5"
 	CheckBox check_channelSel_HEADSTAGE_5,userdata(tabnum)=  "2"
 	CheckBox check_channelSel_HEADSTAGE_5,userdata(tabcontrol)=  "Settings",value= 1
-	CheckBox check_channelSel_HEADSTAGE_6,pos={43.00,186.00},size={21.00,15.00},disable=1,title="6"
+	CheckBox check_channelSel_HEADSTAGE_6,pos={43.00,186.00},size={21.00,15.00},disable=1,proc=DB_CheckProc_ChangedSetting,title="6"
 	CheckBox check_channelSel_HEADSTAGE_6,userdata(tabnum)=  "2"
 	CheckBox check_channelSel_HEADSTAGE_6,userdata(tabcontrol)=  "Settings",value= 1
-	CheckBox check_channelSel_HEADSTAGE_7,pos={43.00,207.00},size={21.00,15.00},disable=1,title="7"
+	CheckBox check_channelSel_HEADSTAGE_7,pos={43.00,207.00},size={21.00,15.00},disable=1,proc=DB_CheckProc_ChangedSetting,title="7"
 	CheckBox check_channelSel_HEADSTAGE_7,userdata(tabnum)=  "2"
 	CheckBox check_channelSel_HEADSTAGE_7,userdata(tabcontrol)=  "Settings",value= 1
 	GroupBox group_channelSel_AD,pos={156.00,44.00},size={45.00,360.00},disable=1,title="AD"
 	GroupBox group_channelSel_AD,userdata(tabnum)=  "2"
 	GroupBox group_channelSel_AD,userdata(tabcontrol)=  "Settings"
-	CheckBox check_channelSel_AD_0,pos={164.00,60.00},size={21.00,15.00},disable=1,title="0"
+	CheckBox check_channelSel_AD_0,pos={164.00,60.00},size={21.00,15.00},disable=1,proc=DB_CheckProc_ChangedSetting,title="0"
 	CheckBox check_channelSel_AD_0,userdata(tabnum)=  "2"
 	CheckBox check_channelSel_AD_0,userdata(tabcontrol)=  "Settings",value= 1
-	CheckBox check_channelSel_AD_1,pos={164.00,81.00},size={21.00,15.00},disable=1,title="1"
+	CheckBox check_channelSel_AD_1,pos={164.00,81.00},size={21.00,15.00},disable=1,proc=DB_CheckProc_ChangedSetting,title="1"
 	CheckBox check_channelSel_AD_1,userdata(tabnum)=  "2"
 	CheckBox check_channelSel_AD_1,userdata(tabcontrol)=  "Settings",value= 1
-	CheckBox check_channelSel_AD_2,pos={164.00,102.00},size={21.00,15.00},disable=1,title="2"
+	CheckBox check_channelSel_AD_2,pos={164.00,102.00},size={21.00,15.00},disable=1,proc=DB_CheckProc_ChangedSetting,title="2"
 	CheckBox check_channelSel_AD_2,userdata(tabnum)=  "2"
 	CheckBox check_channelSel_AD_2,userdata(tabcontrol)=  "Settings",value= 1
-	CheckBox check_channelSel_AD_3,pos={164.00,123.00},size={21.00,15.00},disable=1,title="3"
+	CheckBox check_channelSel_AD_3,pos={164.00,123.00},size={21.00,15.00},disable=1,proc=DB_CheckProc_ChangedSetting,title="3"
 	CheckBox check_channelSel_AD_3,userdata(tabnum)=  "2"
 	CheckBox check_channelSel_AD_3,userdata(tabcontrol)=  "Settings",value= 1
-	CheckBox check_channelSel_AD_4,pos={164.00,144.00},size={21.00,15.00},disable=1,title="4"
+	CheckBox check_channelSel_AD_4,pos={164.00,144.00},size={21.00,15.00},disable=1,proc=DB_CheckProc_ChangedSetting,title="4"
 	CheckBox check_channelSel_AD_4,userdata(tabnum)=  "2"
 	CheckBox check_channelSel_AD_4,userdata(tabcontrol)=  "Settings",value= 1
-	CheckBox check_channelSel_AD_5,pos={164.00,165.00},size={21.00,15.00},disable=1,title="5"
+	CheckBox check_channelSel_AD_5,pos={164.00,165.00},size={21.00,15.00},disable=1,proc=DB_CheckProc_ChangedSetting,title="5"
 	CheckBox check_channelSel_AD_5,userdata(tabnum)=  "2"
 	CheckBox check_channelSel_AD_5,userdata(tabcontrol)=  "Settings",value= 1
-	CheckBox check_channelSel_AD_6,pos={164.00,186.00},size={21.00,15.00},disable=1,title="6"
+	CheckBox check_channelSel_AD_6,pos={164.00,186.00},size={21.00,15.00},disable=1,proc=DB_CheckProc_ChangedSetting,title="6"
 	CheckBox check_channelSel_AD_6,userdata(tabnum)=  "2"
 	CheckBox check_channelSel_AD_6,userdata(tabcontrol)=  "Settings",value= 1
-	CheckBox check_channelSel_AD_7,pos={164.00,207.00},size={21.00,15.00},disable=1,title="7"
+	CheckBox check_channelSel_AD_7,pos={164.00,207.00},size={21.00,15.00},disable=1,proc=DB_CheckProc_ChangedSetting,title="7"
 	CheckBox check_channelSel_AD_7,userdata(tabnum)=  "2"
 	CheckBox check_channelSel_AD_7,userdata(tabcontrol)=  "Settings",value= 1
-	CheckBox check_channelSel_AD_8,pos={164.00,229.00},size={21.00,15.00},disable=1,title="8"
+	CheckBox check_channelSel_AD_8,pos={164.00,229.00},size={21.00,15.00},disable=1,proc=DB_CheckProc_ChangedSetting,title="8"
 	CheckBox check_channelSel_AD_8,userdata(tabnum)=  "2"
 	CheckBox check_channelSel_AD_8,userdata(tabcontrol)=  "Settings",value= 1
-	CheckBox check_channelSel_AD_9,pos={164.00,250.00},size={21.00,15.00},disable=1,title="9"
+	CheckBox check_channelSel_AD_9,pos={164.00,250.00},size={21.00,15.00},disable=1,proc=DB_CheckProc_ChangedSetting,title="9"
 	CheckBox check_channelSel_AD_9,userdata(tabnum)=  "2"
 	CheckBox check_channelSel_AD_9,userdata(tabcontrol)=  "Settings",value= 1
-	CheckBox check_channelSel_AD_10,pos={164.00,271.00},size={27.00,15.00},disable=1,title="10"
+	CheckBox check_channelSel_AD_10,pos={164.00,271.00},size={27.00,15.00},disable=1,proc=DB_CheckProc_ChangedSetting,title="10"
 	CheckBox check_channelSel_AD_10,userdata(tabnum)=  "2"
 	CheckBox check_channelSel_AD_10,userdata(tabcontrol)=  "Settings",value= 1
-	CheckBox check_channelSel_AD_11,pos={164.00,292.00},size={27.00,15.00},disable=1,title="11"
+	CheckBox check_channelSel_AD_11,pos={164.00,292.00},size={27.00,15.00},disable=1,proc=DB_CheckProc_ChangedSetting,title="11"
 	CheckBox check_channelSel_AD_11,userdata(tabnum)=  "2"
 	CheckBox check_channelSel_AD_11,userdata(tabcontrol)=  "Settings",value= 1
-	CheckBox check_channelSel_AD_12,pos={164.00,313.00},size={27.00,15.00},disable=1,title="12"
+	CheckBox check_channelSel_AD_12,pos={164.00,313.00},size={27.00,15.00},disable=1,proc=DB_CheckProc_ChangedSetting,title="12"
 	CheckBox check_channelSel_AD_12,userdata(tabnum)=  "2"
 	CheckBox check_channelSel_AD_12,userdata(tabcontrol)=  "Settings",value= 1
-	CheckBox check_channelSel_AD_13,pos={164.00,334.00},size={27.00,15.00},disable=1,title="13"
+	CheckBox check_channelSel_AD_13,pos={164.00,334.00},size={27.00,15.00},disable=1,proc=DB_CheckProc_ChangedSetting,title="13"
 	CheckBox check_channelSel_AD_13,userdata(tabnum)=  "2"
 	CheckBox check_channelSel_AD_13,userdata(tabcontrol)=  "Settings",value= 1
-	CheckBox check_channelSel_AD_14,pos={164.00,355.00},size={27.00,15.00},disable=1,title="14"
+	CheckBox check_channelSel_AD_14,pos={164.00,355.00},size={27.00,15.00},disable=1,proc=DB_CheckProc_ChangedSetting,title="14"
 	CheckBox check_channelSel_AD_14,userdata(tabnum)=  "2"
 	CheckBox check_channelSel_AD_14,userdata(tabcontrol)=  "Settings",value= 1
-	CheckBox check_channelSel_AD_15,pos={164.00,377.00},size={27.00,15.00},disable=1,title="15"
+	CheckBox check_channelSel_AD_15,pos={164.00,377.00},size={27.00,15.00},disable=1,proc=DB_CheckProc_ChangedSetting,title="15"
 	CheckBox check_channelSel_AD_15,userdata(tabnum)=  "2"
 	CheckBox check_channelSel_AD_15,userdata(tabcontrol)=  "Settings",value= 1
-	ListBox list_of_ranges1,pos={17.00,157.00},size={198.00,240.00},disable=1,proc=AR_MainListBoxProc
+	ListBox list_of_ranges1,pos={77.00,157.00},size={198.00,240.00},disable=3,proc=AR_MainListBoxProc
 	ListBox list_of_ranges1,userdata(tabnum)=  "3",userdata(tabcontrol)=  "Settings"
 	ListBox list_of_ranges1,mode= 1,selRow= 0,widths={54,50,66}
-	Button button_RemoveRanges,pos={16.00,126.00},size={55.00,22.00},disable=1,proc=AR_ButtonProc_RemoveRanges,title="Remove"
+	Button button_RemoveRanges,pos={76.00,126.00},size={55.00,22.00},disable=3,proc=AR_ButtonProc_RemoveRanges,title="Remove"
 	Button button_RemoveRanges,userdata(tabnum)=  "3"
 	Button button_RemoveRanges,userdata(tabcontrol)=  "Settings"
-	SetVariable setvar_cutoff_length_after,pos={172.00,96.00},size={45.00,18.00},disable=1,proc=AR_SetVarProcCutoffLength
+	SetVariable setvar_cutoff_length_after,pos={233.00,96.00},size={45.00,18.00},disable=3,proc=AR_SetVarProcCutoffLength
 	SetVariable setvar_cutoff_length_after,help={"Time in ms which should be cutoff *after* the artefact."}
 	SetVariable setvar_cutoff_length_after,userdata(tabnum)=  "3"
 	SetVariable setvar_cutoff_length_after,userdata(tabcontrol)=  "Settings"
 	SetVariable setvar_cutoff_length_after,limits={0,inf,0.1},value= _NUM:0.2
-	SetVariable setvar_cutoff_length_before,pos={18.00,96.00},size={150.00,18.00},disable=1,proc=AR_SetVarProcCutoffLength,title="Cutoff length [ms]:"
+	SetVariable setvar_cutoff_length_before,pos={79.00,96.00},size={150.00,18.00},disable=3,proc=AR_SetVarProcCutoffLength,title="Cutoff length [ms]:"
 	SetVariable setvar_cutoff_length_before,help={"Time in ms which should be cutoff *before* the artefact."}
 	SetVariable setvar_cutoff_length_before,userdata(tabnum)=  "3"
 	SetVariable setvar_cutoff_length_before,userdata(tabcontrol)=  "Settings"
 	SetVariable setvar_cutoff_length_before,limits={0,inf,0.1},value= _NUM:0.1
-	CheckBox check_auto_remove,pos={86.00,130.00},size={84.00,15.00},disable=1,proc=AR_CheckProc_Update,title="Auto remove"
+	CheckBox check_auto_remove,pos={146.00,130.00},size={84.00,15.00},disable=3,proc=AR_CheckProc_Update,title="Auto remove"
 	CheckBox check_auto_remove,help={"Automatically remove the found ranges on sweep plotting"}
 	CheckBox check_auto_remove,userdata(tabnum)=  "3"
 	CheckBox check_auto_remove,userdata(tabcontrol)=  "Settings",value= 0
-	CheckBox check_highlightRanges,pos={185.00,130.00},size={30.00,15.00},disable=1,proc=AR_CheckProc_Update,title="HL"
+	CheckBox check_highlightRanges,pos={246.00,130.00},size={30.00,15.00},disable=3,proc=AR_CheckProc_Update,title="HL"
 	CheckBox check_highlightRanges,help={"Visualize the found ranges in the graph (*might* slowdown graphing)"}
 	CheckBox check_highlightRanges,userdata(tabnum)=  "3"
 	CheckBox check_highlightRanges,userdata(tabcontrol)=  "Settings",value= 0
-	SetVariable setvar_pulseAver_fallbackLength,pos={45.00,207.00},size={137.00,18.00},bodyWidth=50,disable=3,proc=PA_SetVarProc_Common,title="Fallback Length"
+	SetVariable setvar_pulseAver_fallbackLength,pos={105.00,207.00},size={137.00,18.00},bodyWidth=50,disable=3,proc=PA_SetVarProc_Common,title="Fallback Length"
 	SetVariable setvar_pulseAver_fallbackLength,help={"Pulse To Pulse Length in ms for edge cases which can not be computed."}
 	SetVariable setvar_pulseAver_fallbackLength,userdata(tabnum)=  "4"
 	SetVariable setvar_pulseAver_fallbackLength,userdata(tabcontrol)=  "Settings"
 	SetVariable setvar_pulseAver_fallbackLength,value= _NUM:100
-	SetVariable setvar_pulseAver_endPulse,pos={60.00,184.00},size={122.00,18.00},bodyWidth=50,disable=3,proc=PA_SetVarProc_Common,title="Ending Pulse"
+	SetVariable setvar_pulseAver_endPulse,pos={120.00,184.00},size={122.00,18.00},bodyWidth=50,disable=3,proc=PA_SetVarProc_Common,title="Ending Pulse"
 	SetVariable setvar_pulseAver_endPulse,userdata(tabnum)=  "4"
 	SetVariable setvar_pulseAver_endPulse,userdata(tabcontrol)=  "Settings"
 	SetVariable setvar_pulseAver_endPulse,value= _NUM:inf
-	SetVariable setvar_pulseAver_startPulse,pos={56.00,162.00},size={126.00,18.00},bodyWidth=50,disable=3,proc=PA_SetVarProc_Common,title="Starting Pulse"
+	SetVariable setvar_pulseAver_startPulse,pos={116.00,162.00},size={126.00,18.00},bodyWidth=50,disable=3,proc=PA_SetVarProc_Common,title="Starting Pulse"
 	SetVariable setvar_pulseAver_startPulse,userdata(tabnum)=  "4"
 	SetVariable setvar_pulseAver_startPulse,userdata(tabcontrol)=  "Settings"
 	SetVariable setvar_pulseAver_startPulse,value= _NUM:0
-	CheckBox check_pulseAver_multGraphs,pos={50.00,142.00},size={120.00,15.00},disable=3,proc=PA_CheckProc_Common,title="Use multiple graphs"
+	CheckBox check_pulseAver_multGraphs,pos={110.00,142.00},size={120.00,15.00},disable=3,proc=PA_CheckProc_Common,title="Use multiple graphs"
 	CheckBox check_pulseAver_multGraphs,help={"Show the single pulses in multiple graphs or only one graph with mutiple axis."}
 	CheckBox check_pulseAver_multGraphs,userdata(tabnum)=  "4"
 	CheckBox check_pulseAver_multGraphs,userdata(tabcontrol)=  "Settings",value= 0
-	CheckBox check_pulseAver_showAver,pos={50.00,121.00},size={117.00,15.00},disable=3,proc=PA_CheckProc_Common,title="Show average trace"
+	CheckBox check_pulseAver_showAver,pos={110.00,121.00},size={117.00,15.00},disable=3,proc=PA_CheckProc_Common,title="Show average trace"
 	CheckBox check_pulseAver_showAver,help={"Show the average trace"}
 	CheckBox check_pulseAver_showAver,userdata(tabnum)=  "4"
 	CheckBox check_pulseAver_showAver,userdata(tabcontrol)=  "Settings",value= 0
-	CheckBox check_pulseAver_indTraces,pos={50.00,100.00},size={133.00,15.00},disable=3,proc=PA_CheckProc_Common,title="Show individual traces"
+	CheckBox check_pulseAver_indTraces,pos={110.00,100.00},size={133.00,15.00},disable=3,proc=PA_CheckProc_Common,title="Show individual traces"
 	CheckBox check_pulseAver_indTraces,help={"Show the individual traces"}
 	CheckBox check_pulseAver_indTraces,userdata(tabnum)=  "4"
 	CheckBox check_pulseAver_indTraces,userdata(tabcontrol)=  "Settings",value= 1
-	CheckBox check_BrowserSettings_OVS,pos={100.00,50.00},size={50.00,15.00},disable=1,title="enable"
+	CheckBox check_BrowserSettings_OVS,pos={156.00,50.00},size={50.00,15.00},disable=1,proc=DB_CheckProc_OverlaySweeps,title="enable"
 	CheckBox check_BrowserSettings_OVS,help={"Adds unplotted sweep to graph. Removes plotted sweep from graph."}
 	CheckBox check_BrowserSettings_OVS,userdata(tabnum)=  "1"
 	CheckBox check_BrowserSettings_OVS,userdata(tabcontrol)=  "Settings",value= 0
-	CheckBox check_BrowserSettings_AR,pos={100.00,50.00},size={50.00,15.00},disable=1,proc=BSP_CheckBoxProc_ArtRemoval,title="enable"
+	CheckBox check_BrowserSettings_AR,pos={151.00,50.00},size={50.00,15.00},disable=1,proc=BSP_CheckBoxProc_ArtRemoval,title="enable"
 	CheckBox check_BrowserSettings_AR,help={"Open the artefact removal dialog"}
 	CheckBox check_BrowserSettings_AR,userdata(tabnum)=  "3"
 	CheckBox check_BrowserSettings_AR,userdata(tabcontrol)=  "Settings",value= 0
-	CheckBox check_BrowserSettings_PA,pos={100.00,50.00},size={50.00,15.00},disable=1,proc=BSP_CheckBoxProc_PerPulseAver,title="enable"
+	CheckBox check_BrowserSettings_PA,pos={150.00,50.00},size={50.00,15.00},disable=1,proc=BSP_CheckBoxProc_PerPulseAver,title="enable"
 	CheckBox check_BrowserSettings_PA,help={"Allows to average multiple pulses from pulse train epochs"}
 	CheckBox check_BrowserSettings_PA,userdata(tabnum)=  "4"
 	CheckBox check_BrowserSettings_PA,userdata(tabcontrol)=  "Settings",value= 0
-	CheckBox check_BrowserSettings_DAC,pos={13.00,36.00},size={31.00,15.00},proc=SB_CheckProc_ChangedSetting,title="DA"
+	CheckBox check_BrowserSettings_DAC,pos={13.00,36.00},size={31.00,15.00},proc=DB_CheckProc_ChangedSetting,title="DA"
 	CheckBox check_BrowserSettings_DAC,help={"Display the DA channel data"}
 	CheckBox check_BrowserSettings_DAC,userdata(tabnum)=  "0"
 	CheckBox check_BrowserSettings_DAC,userdata(tabcontrol)=  "Settings",value= 0
-	CheckBox check_BrowserSettings_ADC,pos={57.00,36.00},size={31.00,15.00},proc=SB_CheckProc_ChangedSetting,title="AD"
+	CheckBox check_BrowserSettings_ADC,pos={75.00,36.00},size={31.00,15.00},proc=DB_CheckProc_ChangedSetting,title="AD"
 	CheckBox check_BrowserSettings_ADC,help={"Display the AD channels"}
 	CheckBox check_BrowserSettings_ADC,userdata(tabnum)=  "0"
 	CheckBox check_BrowserSettings_ADC,userdata(tabcontrol)=  "Settings",value= 1
-	CheckBox check_BrowserSettings_TTL,pos={97.00,36.00},size={35.00,15.00},proc=SB_CheckProc_ChangedSetting,title="TTL"
+	CheckBox check_BrowserSettings_TTL,pos={132.00,36.00},size={35.00,15.00},proc=DB_CheckProc_ChangedSetting,title="TTL"
 	CheckBox check_BrowserSettings_TTL,help={"Display the TTL channels"}
 	CheckBox check_BrowserSettings_TTL,userdata(tabnum)=  "0"
 	CheckBox check_BrowserSettings_TTL,userdata(tabcontrol)=  "Settings",value= 0
-	CheckBox check_BrowserSettings_OChan,pos={13.00,60.00},size={64.00,15.00},proc=SB_CheckProc_ChangedSetting,title="Channels"
+	CheckBox check_BrowserSettings_OChan,pos={13.00,62.00},size={64.00,15.00},proc=DB_CheckProc_ChangedSetting,title="Channels"
 	CheckBox check_BrowserSettings_OChan,help={"Overlay the data from multiple channels in one graph"}
 	CheckBox check_BrowserSettings_OChan,userdata(tabnum)=  "0"
 	CheckBox check_BrowserSettings_OChan,userdata(tabcontrol)=  "Settings",value= 0
-	CheckBox check_BrowserSettings_dDAQ,pos={97.00,60.00},size={47.00,15.00},proc=SB_CheckProc_ChangedSetting,title="dDAQ"
+	CheckBox check_BrowserSettings_dDAQ,pos={132.00,62.00},size={47.00,15.00},proc=DB_CheckProc_ChangedSetting,title="dDAQ"
 	CheckBox check_BrowserSettings_dDAQ,help={"Enable dedicated support for viewing distributed DAQ data"}
 	CheckBox check_BrowserSettings_dDAQ,userdata(tabnum)=  "0"
 	CheckBox check_BrowserSettings_dDAQ,userdata(tabcontrol)=  "Settings",value= 0
-	CheckBox check_Calculation_ZeroTraces,pos={25.00,220.00},size={76.00,15.00},proc=SB_CheckProc_ChangedSetting,title="Zero Traces"
+	CheckBox check_Calculation_ZeroTraces,pos={25.00,220.00},size={76.00,15.00},proc=DB_CheckProc_ChangedSetting,title="Zero Traces"
 	CheckBox check_Calculation_ZeroTraces,help={"Remove the offset of all traces"}
 	CheckBox check_Calculation_ZeroTraces,userdata(tabnum)=  "0"
 	CheckBox check_Calculation_ZeroTraces,userdata(tabcontrol)=  "Settings",value= 0
-	CheckBox check_Calculation_AverageTraces,pos={25.00,200.00},size={95.00,15.00},proc=SB_CheckProc_ChangedSetting,title="Average Traces"
+	CheckBox check_Calculation_AverageTraces,pos={25.00,200.00},size={95.00,15.00},proc=DB_CheckProc_ChangedSetting,title="Average Traces"
 	CheckBox check_Calculation_AverageTraces,help={"Average all traces which belong to the same y axis"}
 	CheckBox check_Calculation_AverageTraces,userdata(tabnum)=  "0"
 	CheckBox check_Calculation_AverageTraces,userdata(tabcontrol)=  "Settings"
 	CheckBox check_Calculation_AverageTraces,value= 0
-	CheckBox check_BrowserSettings_TA,pos={90.00,112.00},size={50.00,15.00},proc=SB_TimeAlignmentProc,title="enable"
+	CheckBox check_BrowserSettings_TA,pos={139.00,112.00},size={50.00,15.00},disable=2,proc=SB_TimeAlignmentProc,title="enable"
 	CheckBox check_BrowserSettings_TA,help={"Activate time alignment"}
 	CheckBox check_BrowserSettings_TA,userdata(tabnum)=  "0"
 	CheckBox check_BrowserSettings_TA,userdata(tabcontrol)=  "Settings",value= 0
-	PopupMenu popup_TimeAlignment_Mode,pos={19.00,135.00},size={143.00,19.00},bodyWidth=50,disable=2,proc=SB_TimeAlignmentPopup,title="Alignment Mode"
+	PopupMenu popup_TimeAlignment_Mode,pos={24.00,135.00},size={143.00,19.00},bodyWidth=50,disable=2,proc=SB_TimeAlignmentPopup,title="Alignment Mode"
 	PopupMenu popup_TimeAlignment_Mode,help={"Select the alignment mode"}
 	PopupMenu popup_TimeAlignment_Mode,userdata(tabnum)=  "0"
 	PopupMenu popup_TimeAlignment_Mode,userdata(tabcontrol)=  "Settings"
 	PopupMenu popup_TimeAlignment_Mode,mode=1,popvalue="Level (Raising)",value= #"\"Level (Raising);Level (Falling);Min;Max\""
-	SetVariable setvar_TimeAlignment_LevelCross,pos={163.00,136.00},size={50.00,18.00},disable=2,proc=SB_TimeAlignmentLevel,title="Level"
+	SetVariable setvar_TimeAlignment_LevelCross,pos={173.00,136.00},size={50.00,18.00},disable=2,proc=SB_TimeAlignmentLevel,title="Level"
 	SetVariable setvar_TimeAlignment_LevelCross,help={"Select the level (for rising and falling alignment mode) at which traces are aligned"}
 	SetVariable setvar_TimeAlignment_LevelCross,userdata(tabnum)=  "0"
 	SetVariable setvar_TimeAlignment_LevelCross,userdata(tabcontrol)=  "Settings"
 	SetVariable setvar_TimeAlignment_LevelCross,limits={-inf,inf,0},value= _NUM:0
-	Button button_TimeAlignment_Action,pos={183.00,159.00},size={30.00,20.00},disable=2,proc=SB_DoTimeAlignment,title="Do!"
+	Button button_TimeAlignment_Action,pos={193.00,159.00},size={30.00,20.00},disable=2,proc=SB_DoTimeAlignment,title="Do!"
 	Button button_TimeAlignment_Action,help={"Perform the time alignment, needs the cursors A and B to have a selected feature"}
 	Button button_TimeAlignment_Action,userdata(tabnum)=  "0"
 	Button button_TimeAlignment_Action,userdata(tabcontrol)=  "Settings"
-	GroupBox group_SB_axes_scaling,pos={12.00,248.00},size={210.00,50.00},title="Axes Scaling"
+	GroupBox group_SB_axes_scaling,pos={12.00,248.00},size={286.00,52.00},title="Axes Scaling"
 	GroupBox group_SB_axes_scaling,userdata(tabnum)=  "0"
 	GroupBox group_SB_axes_scaling,userdata(tabcontrol)=  "Settings"
-	CheckBox check_Display_VisibleXrange,pos={25.00,272.00},size={40.00,15.00},title="Vis X"
+	CheckBox check_Display_VisibleXrange,pos={25.00,272.00},size={40.00,15.00},proc=DB_CheckProc_ScaleAxes,title="Vis X"
 	CheckBox check_Display_VisibleXrange,help={"Scale the y axis to the visible x data range"}
 	CheckBox check_Display_VisibleXrange,userdata(tabnum)=  "0"
 	CheckBox check_Display_VisibleXrange,userdata(tabcontrol)=  "Settings",value= 0
-	CheckBox check_Display_EqualYrange,pos={79.00,272.00},size={54.00,15.00},title="Equal Y"
+	CheckBox check_Display_EqualYrange,pos={79.00,272.00},size={54.00,15.00},disable=2,title="Equal Y"
 	CheckBox check_Display_EqualYrange,help={"Equalize the vertical axes ranges"}
 	CheckBox check_Display_EqualYrange,userdata(tabnum)=  "0"
 	CheckBox check_Display_EqualYrange,userdata(tabcontrol)=  "Settings",value= 0
-	CheckBox check_Display_EqualYignore,pos={139.00,272.00},size={35.00,15.00},title="ign."
+	CheckBox check_Display_EqualYignore,pos={139.00,272.00},size={35.00,15.00},disable=2,title="ign."
 	CheckBox check_Display_EqualYignore,help={"Equalize the vertical axes ranges but ignore all traces with level crossings"}
 	CheckBox check_Display_EqualYignore,userdata(tabnum)=  "0"
 	CheckBox check_Display_EqualYignore,userdata(tabcontrol)=  "Settings",value= 0
@@ -890,12 +897,12 @@ Window BrowserSettingsPanel() : Panel
 	SetVariable setvar_Display_EqualYlevel,userdata(tabnum)=  "0"
 	SetVariable setvar_Display_EqualYlevel,userdata(tabcontrol)=  "Settings"
 	SetVariable setvar_Display_EqualYlevel,limits={-inf,inf,0},value= _NUM:0
-	PopupMenu popup_TimeAlignment_Master,pos={27.00,159.00},size={134.00,19.00},bodyWidth=50,disable=2,proc=SB_TimeAlignmentPopup,title="Reference trace"
+	PopupMenu popup_TimeAlignment_Master,pos={32.00,159.00},size={134.00,19.00},bodyWidth=50,disable=2,proc=SB_TimeAlignmentPopup,title="Reference trace"
 	PopupMenu popup_TimeAlignment_Master,help={"Select the reference trace to which all other traces should be aligned to"}
 	PopupMenu popup_TimeAlignment_Master,userdata(tabnum)=  "0"
 	PopupMenu popup_TimeAlignment_Master,userdata(tabcontrol)=  "Settings"
 	PopupMenu popup_TimeAlignment_Master,mode=1,popvalue="AD0",value= #"\"\""
-	Button button_Calculation_RestoreData,pos={137.00,210.00},size={75.00,25.00},proc=SB_ButtonProc_RestoreData,title="Restore"
+	Button button_Calculation_RestoreData,pos={137.00,210.00},size={75.00,25.00},proc=DB_ButtonProc_RestoreData,title="Restore"
 	Button button_Calculation_RestoreData,help={"Duplicate the graph and its trace for further processing"}
 	Button button_Calculation_RestoreData,userdata(tabnum)=  "0"
 	Button button_Calculation_RestoreData,userdata(tabcontrol)=  "Settings"
@@ -903,19 +910,19 @@ Window BrowserSettingsPanel() : Panel
 	Button button_BrowserSettings_Export,help={"Export the traces for further processing"}
 	Button button_BrowserSettings_Export,userdata(tabnum)=  "0"
 	Button button_BrowserSettings_Export,userdata(tabcontrol)=  "Settings"
-	GroupBox group_timealignment,pos={12.00,89.00},size={210.00,98.00},title="Time Alignment"
+	GroupBox group_timealignment,pos={12.00,89.00},size={286.00,101.00},title="Time Alignment"
 	GroupBox group_timealignment,userdata(tabnum)=  "0"
 	GroupBox group_timealignment,userdata(tabcontrol)=  "Settings"
-	Slider slider_BrowserSettings_dDAQ,pos={232.00,38.00},size={54.00,300.00},disable=2,proc=BSP_SliderProc_ChangedSetting
+	Slider slider_BrowserSettings_dDAQ,pos={302.00,38.00},size={54.00,300.00},disable=2,proc=BSP_SliderProc_ChangedSetting
 	Slider slider_BrowserSettings_dDAQ,help={"Allows to view only regions from the selected headstage (oodDAQ) resp. the selected headstage (dDAQ). Choose -1 to display all."}
 	Slider slider_BrowserSettings_dDAQ,userdata(tabnum)=  "0"
 	Slider slider_BrowserSettings_dDAQ,userdata(tabcontrol)=  "Settings"
 	Slider slider_BrowserSettings_dDAQ,limits={-1,7,1},value= -1
-	CheckBox check_SweepControl_HideSweep,pos={158.00,60.00},size={40.00,15.00},proc=SB_CheckProc_ChangedSetting,title="Hide"
+	CheckBox check_SweepControl_HideSweep,pos={238.00,62.00},size={40.00,15.00},proc=DB_CheckProc_ChangedSetting,title="Hide"
 	CheckBox check_SweepControl_HideSweep,help={"Hide sweep traces. Usually combined with \"Average traces\"."}
 	CheckBox check_SweepControl_HideSweep,userdata(tabnum)=  "0"
 	CheckBox check_SweepControl_HideSweep,userdata(tabcontrol)=  "Settings",value= 0
-	CheckBox check_BrowserSettings_splitTTL,pos={158.00,36.00},size={59.00,15.00},proc=SB_CheckProc_ChangedSetting,title="sep. TTL"
+	CheckBox check_BrowserSettings_splitTTL,pos={238.00,36.00},size={59.00,15.00},disable=2,proc=DB_CheckProc_ChangedSetting,title="sep. TTL"
 	CheckBox check_BrowserSettings_splitTTL,help={"Display the TTL channel data as single traces for each TTL bit"}
 	CheckBox check_BrowserSettings_splitTTL,userdata(tabnum)=  "0"
 	CheckBox check_BrowserSettings_splitTTL,userdata(tabcontrol)=  "Settings"
@@ -924,12 +931,29 @@ Window BrowserSettingsPanel() : Panel
 	PopupMenu popup_DB_lockedDevices,help={"Select a data acquistion device to display data"}
 	PopupMenu popup_DB_lockedDevices,userdata(tabnum)=  "0"
 	PopupMenu popup_DB_lockedDevices,userdata(tabcontrol)=  "Settings"
-	PopupMenu popup_DB_lockedDevices,mode=1,popvalue="- none -",value= #"DB_GetAllDevicesWithData()"
+	PopupMenu popup_DB_lockedDevices,mode=1,popvalue="ITC18USB_Dev_0",value= #"DB_GetAllDevicesWithData()"
+	ListBox list_dashboard,pos={4.00,90.00},size={353.00,311.00},proc=AD_ListBoxProc
+	ListBox list_dashboard,userdata(tabnum)=  "6",userdata(tabcontrol)=  "Settings"
+	ListBox list_dashboard,fSize=12
+	ListBox list_dashboard,mode= 1,selRow= -1,widths={141,109,500}
+	ListBox list_dashboard,userColumnResize= 1
+	GroupBox group_enable_dashboard,pos={4.00,27.00},size={355.00,57.00}
+	GroupBox group_enable_dashboard,userdata(tabnum)=  "6",userdata(tabcontrol)=  "Settings"
+	CheckBox check_BrowserSettings_DB_Passed,pos={160.00,40.00},size={51.00,15.00},title="Passed"
+	CheckBox check_BrowserSettings_DB_Passed,help={"Show passed sweeps on double click into ListBox "}
+	CheckBox check_BrowserSettings_DB_Passed,value= 0
+	CheckBox check_BrowserSettings_DB_Passed, proc=AD_CheckProc_PassedSweeps
+	CheckBox check_BrowserSettings_DB_Passed,userdata(tabnum)=  "6",userdata(tabcontrol)=  "Settings"
+	CheckBox check_BrowserSettings_DB_Failed,pos={160.00,60.00},size={46.00,15.00},title="Failed"
+	CheckBox check_BrowserSettings_DB_Failed,help={"Show failed sweeps on double click into ListBox "}
+	CheckBox check_BrowserSettings_DB_Failed,value= 0
+	CheckBox check_BrowserSettings_DB_Failed,userdata(tabnum)=  "6",userdata(tabcontrol)=  "Settings"
+	CheckBox check_BrowserSettings_DB_Failed,proc=AD_CheckProc_FailedSweeps
+	SetWindow kwTopWin,hook(main)=BSP_ClosePanelHook
+	SetWindow kwTopWin,userdata(panelVersion)=  "2"
 	NewNotebook /F=1 /N=WaveNoteDisplay /W=(200,24,600,561)/FG=(FL,$"",FR,UGH0) /HOST=# /V=0 /OPTS=10
 	Notebook kwTopWin, defaultTab=36, autoSave= 1, showRuler=0, rulerUnits=1
-	Notebook kwTopWin newRuler=Normal, justification=0, margins={0,0,189}, spacing={0,0,0}, tabs={}, rulerDefaults={"Arial",10,0,(0,0,0)}
-	Notebook kwTopWin, zdata= "GaqDU%ejN7!Z)u^\"(F_BAcgu2S,7dSL]iZ-,W[?i6\"=DG6/B>,7,t^3K>Ff@1GOXc!\"Z\"8'`"
-	Notebook kwTopWin, zdataEnd= 1
+	Notebook kwTopWin newRuler=Normal, justification=0, margins={0,0,252}, spacing={0,0,0}, tabs={}, rulerDefaults={"Arial",10,0,(0,0,0)}
 	SetWindow kwTopWin,userdata(tabnum)=  "5"
 	SetWindow kwTopWin,userdata(tabcontrol)=  "Settings"
 	RenameWindow #,WaveNoteDisplay

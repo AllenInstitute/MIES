@@ -59,7 +59,7 @@ End
 static Function SWS_AfterSweepDataSaveHook(panelTitle)
 	string panelTitle
 
-	string panelList, panel
+	string panelList, panel, scPanel
 	variable numPanels, i
 
 	panelList = WinList("DB_*", ";", "WIN:1")
@@ -73,7 +73,11 @@ static Function SWS_AfterSweepDataSaveHook(panelTitle)
 		endif
 
 		if(!cmpstr(panelTitle, BSP_GetDevice(panel)))
-			DB_UpdateToLastSweep(panel)
+			scPanel = BSP_GetSweepControlsPanel(panel)
+
+			if(GetCheckBoxState(scPanel, "check_SweepControl_AutoUpdate"))
+				DB_UpdateToLastSweep(panel)
+			endif
 		endif
 	endfor
 End

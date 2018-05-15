@@ -22,6 +22,7 @@
 /// PSQ_FMT_LBN_SPIKE_DETECT    The required number of spikes were detected on the sweep  SP, RB, RA        No                     Yes
 /// PSQ_FMT_LBN_SPIKE_POSITIONS Spike positions in ms                                     RA                No                     Yes
 /// PSQ_FMT_LBN_STEPSIZE        Current DAScale step size                                 SP                No                     Yes
+/// PSQ_FMT_LBN_RB_DASCALE_EXC  Range for valid DAScale values is exceedd                 RB                No                     Yes
 /// PSQ_FMT_LBN_FINAL_SCALE     Final DAScale of the given headstage, only set on success SP, RB            No                     No
 /// PSQ_FMT_LBN_INITIAL_SCALE   Initial DAScale                                           RB                No                     No
 /// PSQ_FMT_LBN_RMS_SHORT_PASS  Short RMS baseline QC result                              DA, RB, RA        Yes                    Yes
@@ -30,7 +31,7 @@
 /// PSQ_FMT_LBN_CHUNK_PASS      Which chunk passed/failed baseline QC                     DA, RB, RA        Yes                    Yes
 /// PSQ_FMT_LBN_BL_QC_PASS      Pass/fail state of the complete baseline                  DA, RB, RA        No                     Yes
 /// PSQ_FMT_LBN_SWEEP_PASS      Pass/fail state of the complete sweep                     DA, SP, RA        No                     No
-/// PSQ_FMT_LBN_SET_PASS        Pass/fail state of the complete set                       DA, RB, RA        No                     No
+/// PSQ_FMT_LBN_SET_PASS        Pass/fail state of the complete set                       DA, RB, RA, SP    No                     No
 /// PSQ_FMT_LBN_PULSE_DUR       Pulse duration as determined experimentally               RB                No                     Yes
 /// =========================== ========================================================= ================= =====================  =====================
 ///
@@ -1177,6 +1178,9 @@ Function PSQ_DAScale(panelTitle, s)
 
 			return NaN
 			break
+		case POST_DAQ_EVENT:
+			AD_UpdateAllDatabrowser()
+			break
 	endswitch
 
 	if(s.eventType == PRE_DAQ_EVENT || s.eventType == POST_SWEEP_EVENT)
@@ -1316,8 +1320,8 @@ Function PSQ_SquarePulse(panelTitle, s)
 	string panelTitle
 	STRUCT AnalysisFunction_V3 &s
 
-	variable stepsize, DAScale, totalOnsetDelay
-	string key
+	variable stepsize, DAScale, totalOnsetDelay, setPassed, sweepPassed
+	string key, msg
 
 	switch(s.eventType)
 		case PRE_DAQ_EVENT:
@@ -1376,6 +1380,8 @@ Function PSQ_SquarePulse(panelTitle, s)
 			stepSize = GetLastSettingIndepRAC(numericalValues, s.sweepNo, key, UNKNOWN_MODE)
 			DAScale  = GetLastSetting(numericalValues, s.sweepNo, STIMSET_SCALE_FACTOR_KEY, DATA_ACQUISITION_MODE)[s.headstage] * 1e-12
 
+			sweepPassed = 0
+
 			if(spikeDetection[s.headstage]) // headstage spiked
 				if(CheckIfClose(stepSize, PSQ_SP_INIT_AMP_m50))
 					SetDAScale(panelTitle, s.headstage, DAScale + stepsize)
@@ -1384,6 +1390,9 @@ Function PSQ_SquarePulse(panelTitle, s)
 					value[INDEP_HEADSTAGE] = DAScale
 					key = PSQ_CreateLBNKey(PSQ_SQUARE_PULSE, PSQ_FMT_LBN_FINAL_SCALE)
 					ED_AddEntryToLabnotebook(panelTitle, key, value)
+
+					sweepPassed = 1
+
 					RA_SkipSweeps(panelTitle, inf)
 				elseif(CheckIfClose(stepSize, PSQ_SP_INIT_AMP_p100))
 					PSQ_StoreStepSizeInLBN(panelTitle, s.sweepNo, PSQ_SP_INIT_AMP_m50)
@@ -1407,6 +1416,27 @@ Function PSQ_SquarePulse(panelTitle, s)
 				SetDAScale(panelTitle, s.headstage, DAScale + stepsize)
 			endif
 
+			Make/FREE/D/N=(LABNOTEBOOK_LAYER_COUNT) value = NaN
+			value[INDEP_HEADSTAGE] = sweepPassed
+			key = PSQ_CreateLBNKey(PSQ_SQUARE_PULSE, PSQ_FMT_LBN_SWEEP_PASS)
+			ED_AddEntryToLabnotebook(panelTitle, key, value, unit = LABNOTEBOOK_BINARY_UNIT)
+
+			break
+		case POST_SET_EVENT:
+			WAVE numericalValues = GetLBNumericalValues(panelTitle)
+
+			setPassed = PSQ_NumPassesInSet(numericalValues, PSQ_SQUARE_PULSE, s.sweepNo) >= 1
+
+			sprintf msg, "Set has %s\r", SelectString(setPassed, "failed", "passed")
+			DEBUGPRINT(msg)
+
+			Make/FREE/N=(LABNOTEBOOK_LAYER_COUNT) result = NaN
+			result[INDEP_HEADSTAGE] = setPassed
+			key = PSQ_CreateLBNKey(PSQ_SQUARE_PULSE, PSQ_FMT_LBN_SET_PASS)
+			ED_AddEntryToLabnotebook(panelTitle, key, result, unit = LABNOTEBOOK_BINARY_UNIT)
+			break
+		case POST_DAQ_EVENT:
+			AD_UpdateAllDatabrowser()
 			break
 		default:
 			// do nothing
@@ -1614,6 +1644,13 @@ Function PSQ_Rheobase(panelTitle, s)
 				key = PSQ_CreateLBNKey(PSQ_RHEOBASE, PSQ_FMT_LBN_SET_PASS)
 				result[INDEP_HEADSTAGE] = 0
 				ED_AddEntryToLabnotebook(panelTitle, key, result, unit = LABNOTEBOOK_BINARY_UNIT)
+
+				result              = NaN
+				result[s.headstage] = 1
+
+				key = PSQ_CreateLBNKey(PSQ_RHEOBASE, PSQ_FMT_LBN_RB_DASCALE_EXC)
+				ED_AddEntryToLabnotebook(panelTitle, key, result, unit = LABNOTEBOOK_BINARY_UNIT)
+
 				RA_SkipSweeps(panelTitle, inf)
 				break
 			endif
@@ -1632,6 +1669,19 @@ Function PSQ_Rheobase(panelTitle, s)
 				result[INDEP_HEADSTAGE] = 0
 				ED_AddEntryToLabnotebook(panelTitle, key, result, unit = LABNOTEBOOK_BINARY_UNIT)
 			endif
+
+			key = PSQ_CreateLBNKey(PSQ_RHEOBASE, PSQ_FMT_LBN_RB_DASCALE_EXC, query = 1)
+			WAVE/Z rangeExceeded = GetLastSettingRAC(numericalValues, s.sweepNo, key, UNKNOWN_MODE)
+
+			if(!WaveExists(rangeExceeded))
+				Make/FREE/D/N=(LABNOTEBOOK_LAYER_COUNT) result = NaN
+				result[s.headstage] = 0
+				key = PSQ_CreateLBNKey(PSQ_RHEOBASE, PSQ_FMT_LBN_RB_DASCALE_EXC)
+				ED_AddEntryToLabnotebook(panelTitle, key, result, unit = LABNOTEBOOK_BINARY_UNIT)
+			endif
+			break
+		case POST_DAQ_EVENT:
+			AD_UpdateAllDatabrowser()
 			break
 	endswitch
 
@@ -1883,6 +1933,9 @@ Function PSQ_Ramp(panelTitle, s)
 			key = PSQ_CreateLBNKey(PSQ_RAMP, PSQ_FMT_LBN_SET_PASS)
 			ED_AddEntryToLabnotebook(panelTitle, key, result, unit = LABNOTEBOOK_BINARY_UNIT)
 			break
+		case POST_DAQ_EVENT:
+			AD_UpdateAllDatabrowser()
+			break
 	endswitch
 
 	if(s.eventType != MID_SWEEP_EVENT)
@@ -2054,4 +2107,24 @@ Function PSQ_Ramp(panelTitle, s)
 			return baselineQCPassed ? ANALYSIS_FUNC_RET_EARLY_STOP : ret
 		endif
 	endif
+End
+
+/// @brief Map from analysis function name to numeric constant
+///
+/// @return One of @ref PatchSeqAnalysisFunctionTypes
+Function PSQ_MapFunctionToConstant(anaFunc)
+	string anaFunc
+
+	strswitch(anaFunc)
+		case "PSQ_Ramp":
+			return PSQ_RAMP
+		case "PSQ_DaScale":
+			return PSQ_DA_SCALE
+		case "PSQ_Rheobase":
+			return PSQ_RHEOBASE
+		case "PSQ_SquarePulse":
+			return PSQ_SQUARE_PULSE
+		default:
+			return NaN
+	endswitch
 End

@@ -22,10 +22,12 @@ digraph G {
     "Post Set Event";
     "Post Sweep Event";
     "Prepare DAQ Event";
+    "Post DAQ Event";
     "Start DAQ/RA" -> "Mid Sweep Event";
     "Start DAQ/RA" -> "Prepare DAQ Event";
     "Start DAQ/RA" -> "Post Set Event";
     "Start DAQ/RA" -> "Post Sweep Event";
+    "Start DAQ/RA" -> "Post DAQ Event";
     subgraph cluster_preDAQ {
         color="invis";
         edge [comment="Wildcard node added automatic in EG."];
@@ -58,6 +60,7 @@ digraph G {
         "Prepare DAQ Event" -> "Set \"ITI\" to 4s";
         "Prepare DAQ Event" -> "Search for final DAScale in one of the existing sweeps";
         "Prepare DAQ Event" -> "Enable \"Repeated Acquisition\"";
+        "Post DAQ Event" -> "Update Dashboard";
     }
 
     "Mark set as failed if it has not yet passed";
@@ -108,11 +111,13 @@ digraph G {
     "Offset DAScale by +10pA" -> "Difference to initial DAScale larger than 60pA?";
     "Spike detected? (queried from labnotebook)" -> "Offset DAScale by +10pA"  [label="No"];
     "Offset DAScale by -10pA" -> "Difference to initial DAScale larger than 60pA?";
-    "Difference to initial DAScale larger than 60pA?" -> "Mark set as failed"  [label="Yes"];
     "Mark set as failed" -> "Skip to end of Set";
     "Store final DAScale of last sweep\n from previous RAC as initial DAScale" -> "BL QC passed? [2]";
     "Set \"Repeat Sets\" to 1";
     "Early sweep stop";
     "Mark BL QC as passed" -> "Early sweep stop";
     "Mark BL QC as failed" -> "Early sweep stop";
+    "Set \"range exceeded\" labnotebook entry to true for sweep";
+    "Difference to initial DAScale larger than 60pA?" -> "Set \"range exceeded\" labnotebook entry to true for sweep"  [label="Yes"];
+    "Set \"range exceeded\" labnotebook entry to true for sweep" -> "Mark set as failed";
 }
