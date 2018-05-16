@@ -718,6 +718,7 @@ static Function DC_PlaceDataInITCDataWave(panelTitle, numActiveChannels, dataAcq
 		DC_DocumentChannelProperty(panelTitle, "DA GAIN", headstageDAC[activeColumn], i, var=val)
 
 		DC_DocumentChannelProperty(panelTitle, STIM_WAVE_NAME_KEY, headstageDAC[activeColumn], i, str=setName[activeColumn])
+		DC_DocumentChannelProperty(panelTitle, STIMSET_WAVE_NOTE_KEY, headstageDAC[activeColumn], i, str=RemoveEnding(note(stimSet[activeColumn]), "\r"))
 
 		for(j = 0; j < TOTAL_NUM_EVENTS; j += 1)
 			if(IsFinite(headstageDAC[activeColumn])) // associated channel

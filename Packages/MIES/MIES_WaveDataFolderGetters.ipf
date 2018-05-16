@@ -1137,6 +1137,7 @@ static Function SetSweepSettingsTextDimLabels(wv)
 	SetDimLabel COLS, 14, $"Electrode"                                          , wv
 	SetDimLabel COLS, 15, $PULSE_START_TIMES_KEY                                , wv
 	SetDimLabel COLS, 16, $HIGH_PREC_SWEEP_START_KEY                            , wv
+	SetDimLabel COLS, 17, $STIMSET_WAVE_NOTE_KEY                                , wv
 End
 
 /// @brief Returns a wave reference to the sweepSettingsWave
@@ -1465,7 +1466,7 @@ End
 Function/Wave GetSweepSettingsTextWave(panelTitle)
 	string panelTitle
 
-	variable versionOfNewWave = 12
+	variable versionOfNewWave = 13
 	string newName = "sweepSettingsTextValues"
 	DFREF newDFR = GetDevSpecLabNBTempFolder(panelTitle)
 
@@ -1480,9 +1481,9 @@ Function/Wave GetSweepSettingsTextWave(panelTitle)
 	if(ExistsWithCorrectLayoutVersion(wv, versionOfNewWave))
 		return wv
 	elseif(WaveExists(wv))
-		Redimension/N=(-1, 17, LABNOTEBOOK_LAYER_COUNT) wv
+		Redimension/N=(-1, 18, LABNOTEBOOK_LAYER_COUNT) wv
 	else
-		Make/T/N=(1, 17, LABNOTEBOOK_LAYER_COUNT) newDFR:$newName/Wave=wv
+		Make/T/N=(1, 18, LABNOTEBOOK_LAYER_COUNT) newDFR:$newName/Wave=wv
 	endif
 
 	wv = ""
@@ -1522,10 +1523,11 @@ End
 ///      - Format: `$begin1;$begin2;...`.
 ///      - Unit: `sweep ms`.
 /// -16: High precision sweep start timestamp in ISO8601 format
+/// -17: Stimset wave note
 Function/Wave GetSweepSettingsTextKeyWave(panelTitle)
 	string panelTitle
 
-	variable versionOfNewWave = 13
+	variable versionOfNewWave = 14
 	string newName = "sweepSettingsTextKeys"
 	DFREF newDFR = GetDevSpecLabNBTempFolder(panelTitle)
 
@@ -1540,9 +1542,9 @@ Function/Wave GetSweepSettingsTextKeyWave(panelTitle)
 	if(ExistsWithCorrectLayoutVersion(wv, versionOfNewWave))
 		return wv
 	elseif(WaveExists(wv))
-		Redimension/N=(-1, 17, 0) wv
+		Redimension/N=(-1, 18, 0) wv
 	else
-		Make/T/N=(1, 17) newDFR:$newName/Wave=wv
+		Make/T/N=(1, 18) newDFR:$newName/Wave=wv
 	endif
 
 	wv = ""
@@ -1564,6 +1566,7 @@ Function/Wave GetSweepSettingsTextKeyWave(panelTitle)
 	wv[0][14] = "Electrode"
 	wv[0][15] = PULSE_START_TIMES_KEY
 	wv[0][16] = HIGH_PREC_SWEEP_START_KEY
+	wv[0][17] = STIMSET_WAVE_NOTE_KEY
 
 	SetSweepSettingsTextDimLabels(wv)
 	SetWaveVersion(wv, versionOfNewWave)
