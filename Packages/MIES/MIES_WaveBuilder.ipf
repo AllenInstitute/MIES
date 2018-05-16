@@ -515,6 +515,10 @@ static Function/WAVE WB_MakeWaveBuilderWave(WP, WPT, SegWvType, stepCount, numEp
 	variable i, j, type, accumulatedDuration, pulseToPulseLength
 	STRUCT SegmentParameters params
 
+	if(stepCount == 0)
+		AddEntryIntoWaveNoteAsList(WaveBuilderWave, "Version", var=STIMSET_NOTE_VERSION, appendCR = 1)
+	endif
+
 	for(i=0; i < numEpochs; i+=1)
 		type = SegWvType[i]
 
