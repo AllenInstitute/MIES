@@ -53,7 +53,7 @@ SetCompressor /SOLID lzma
 InstallDir "$PROGRAMFILES64\${APPNAME}"
 
 # rtf or txt file - remember if it is txt, it must be in the DOS text format (\r\n)
-#LicenseData "license.txt"
+LicenseData "..\..\LICENSE"
 # This will be in the installer/uninstaller's title bar
 Name "${COMPANYNAME} - ${APPNAME}"
 Icon "${APPICON}"
@@ -61,7 +61,7 @@ UninstallIcon "${APPICON}"
 !include "${NSISOUTFILE}"
 XPStyle on
 
-#Page license
+Page license
 Page custom DialogAllCur
 Page custom DialogXOP
 Page custom DialogInstallFor78
