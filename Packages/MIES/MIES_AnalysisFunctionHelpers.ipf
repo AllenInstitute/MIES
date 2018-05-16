@@ -378,11 +378,13 @@ Function/S AFH_GetAnalysisFunctions(versionBitMask)
 End
 
 /// @brief Return the list of required analysis function
-/// parameters as specified by the function `$func_GetParams`
+/// parameters, possibly including the type, as specified by the function `$func_GetParams`
 ///
 /// @param func Analysis function `V3` which must be valid and existing
 Function/S AFH_GetListOfReqAnalysisParams(func)
 	string func
+
+	string params
 
 	FUNCREF AF_PROTO_PARAM_GETTER_V3 f = $(func + "_GetParams")
 
@@ -390,7 +392,11 @@ Function/S AFH_GetListOfReqAnalysisParams(func)
 		return ""
 	endif
 
-	return f()
+	params = f()
+
+	ASSERT(strsearch(params, ";", 0) == -1, "Entries must be separated with ,")
+
+	return params
 End
 
 /// @defgroup AnalysisFunctionParameterHelpers Analysis Helper functions for dealing with user parameters
@@ -409,9 +415,14 @@ Function/S AFH_GetListOfAnalysisParamNames(params)
 	numEntries = ItemsInList(params, ",")
 	for(i = 0; i < numEntries; i += 1)
 		entry = StringFromList(i, params, ",")
-		pos  = strsearch(entry, ":", 0)
-		ASSERT(pos != -1, "Invalid params format")
-		name = entry[0, pos - 1]
+
+		pos = strsearch(entry, ":", 0)
+		if(pos != -1)
+			name = entry[0, pos - 1]
+		else
+			name = entry
+		endif
+
 		list = AddListItem(name, list, ";", Inf)
 	endfor
 
@@ -420,25 +431,41 @@ End
 
 /// @brief Return the type of the user parameter
 ///
-/// @param name   parameter name
-/// @param params serialized parameters, usually just #AnalysisFunction_V3.params
+/// @param name      parameter name
+/// @param params    serialized parameters, usually just #AnalysisFunction_V3.params
+/// @param typeCheck [optional, defaults to false] Check with an assertion that
+///                  the readout type is one of @ref ANALYSIS_FUNCTION_PARAMS_TYPES
 ///
 /// @ingroup AnalysisFunctionParameterHelpers
-/// @return one of @ref AnalysisFunctionParameterTypes
-Function/S AFH_GetAnalysisParamType(name, params)
+/// @return one of @ref AnalysisFunctionParameterTypes or an empty string
+Function/S AFH_GetAnalysisParamType(name, params, [typeCheck])
 	string name, params
+	variable typeCheck
 
-	string typeAndValue, type
+	string typeAndValue
+	string type = ""
 	variable pos
 
-	typeAndValue = StringByKey(name , params, ":", ",", 0)
+	if(ParamIsDefault(typeCheck))
+		typeCheck = 1
+	else
+		typeCheck = !!typeCheck
+	endif
+
+	typeAndValue = StringByKey(name, params, ":", ",", 0)
 
 	pos = strsearch(typeAndValue, "=", 0)
-	ASSERT(pos != -1, "Invalid params format")
-	type = typeAndValue[0, pos - 1]
-	ASSERT(!IsEmpty(type) && WhichListItem(type, ANALYSIS_FUNCTION_PARAMS_TYPES) != -1, "Invalid type")
+	if(pos != -1)
+		type = typeAndValue[0, pos - 1]
+	else
+		type = typeAndValue
+	endif
 
-	return typeAndValue[0, pos - 1]
+	if(typeCheck)
+		ASSERT(AFH_IsValidAnalysisParamType(type), "Invalid type")
+	endif
+
+	return type
 End
 
 /// @brief Return a numerical user parameter

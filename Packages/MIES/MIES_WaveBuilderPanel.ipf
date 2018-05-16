@@ -2482,10 +2482,28 @@ Function WBP_AddAnalysisParameter(stimset, name, [var, str, wv])
 	string str
 	WAVE wv
 
-	string type, value, formattedString, params
-
 	WAVE/T/Z WPT = WB_GetWaveTextParamForSet(stimset)
 	ASSERT(WaveExists(WPT), "Missing stimset")
+
+	ASSERT(ParamIsDefault(var) + ParamIsDefault(str) + ParamIsDefault(wv) == 2, "Expected one of var, str or wv")
+
+	if(!ParamIsDefault(var))
+		return WBP_AddAnalysisParameterIntoWPT(WPT, name, var = var)
+	elseif(!ParamIsDefault(str))
+		return WBP_AddAnalysisParameterIntoWPT(WPT, name, str = str)
+	elseif(!ParamIsDefault(wv))
+		return WBP_AddAnalysisParameterIntoWPT(WPT, name, wv = wv)
+	endif
+End
+
+static Function WBP_AddAnalysisParameterIntoWPT(WPT, name, [var, str, wv])
+	WAVE/T WPT
+	string name
+	variable var
+	string str
+	WAVE wv
+
+	string type, value, formattedString, params
 
 	ASSERT(ParamIsDefault(var) + ParamIsDefault(str) + ParamIsDefault(wv) == 2, "Expected one of var, str or wv")
 
@@ -2520,17 +2538,16 @@ Function WBP_AddAnalysisParameter(stimset, name, [var, str, wv])
 	WPT[10][%Set] = ReplaceStringByKey(name, params , type + "=" + value, ":", ",", 0)
 End
 
-/// @brief Delete the given analysis parameter from the stimset
+
+/// @brief Delete the given analysis parameter
 ///
-/// @param stimset stimset name
 /// @param name    name of the parameter
-Function WBP_DeleteAnalysisParameter(stimset, name)
-	string stimset, name
+static Function WBP_DeleteAnalysisParameter(name)
+	string name
 
 	string params
 
-	WAVE/T/Z WPT = WB_GetWaveTextParamForSet(stimset)
-	ASSERT(WaveExists(WPT), "Missing stimset")
+	WAVE/T WPT = GetWaveBuilderWaveTextParam()
 
 	params = WPT[%$"Analysis function params"][%Set]
 	params = AFH_RemoveAnalysisParameter(name, params)
@@ -2543,19 +2560,10 @@ Function/S WBP_GetParameterTypes()
 	return ANALYSIS_FUNCTION_PARAMS_TYPES
 End
 
-/// @brief Return the analysis parameters for the currently
-///        selected stimset
+/// @brief Return the analysis parameters
 Function/S WBP_GetAnalysisParameters()
 
-	string stimset
-
-	stimset = GetPopupMenuString(panel, "popup_WaveBuilder_SetList")
-
-	WAVE/T/Z WPT = WB_GetWaveTextParamForSet(stimset)
-
-	if(!WaveExists(WPT))
-		return ""
-	endif
+	WAVE/T WPT = GetWaveBuilderWaveTextParam()
 
 	return WPT[%$"Analysis function params"][%Set]
 End
@@ -2578,17 +2586,17 @@ End
 static Function WBP_UpdateParameterWave()
 
 	string params, names, name, type, genericFunc, reqParams
-	string stimset, missingParams
+	string missingParams, reqNames
 	variable i, numEntries, offset
 
 	Wave/T listWave = WBP_GetAnalysisParamGUIListWave()
 	WAVE   selWave  = WBP_GetAnalysisParamGUISelWave()
 
-	stimset = GetPopupMenuString(panel, "popup_WaveBuilder_SetList")
-	WAVE/T/Z WPT = WB_GetWaveTextParamForSet(stimset)
+	WAVE/T WPT = GetWaveBuilderWaveTextParam()
 
 	genericFunc = WPT[%$("Analysis function (generic)")][%Set]
 	reqParams = AFH_GetListOfReqAnalysisParams(genericFunc)
+	reqNames  = AFH_GetListOfAnalysisParamNames(reqParams)
 
 	params = WBP_GetAnalysisParameters()
 	names  = AFH_GetListOfAnalysisParamNames(params)
@@ -2605,7 +2613,7 @@ static Function WBP_UpdateParameterWave()
 
 	offset = DimSize(listWave, ROWS)
 
-	missingParams = GetListDifference(reqParams, names)
+	missingParams = GetListDifference(reqNames, names)
 	numEntries = ItemsInList(missingParams)
 	Redimension/N=(offset + numEntries, -1) listWave, selWave
 
@@ -2655,7 +2663,6 @@ End
 Function WBP_ButtonProc_DeleteParam(ba) : ButtonControl
 	STRUCT WMButtonAction &ba
 
-	string stimset
 	variable numEntries, i
 
 	switch(ba.eventCode)
@@ -2673,10 +2680,8 @@ Function WBP_ButtonProc_DeleteParam(ba) : ButtonControl
 			// map to names which are stable even after deletion
 			Make/T/FREE/N=(numEntries) names = listWave[indizes[p]][%Name]
 
-			stimset = GetPopupMenuString(panel, "popup_WaveBuilder_SetList")
-
 			for(i = 0; i < numEntries; i += 1)
-				WBP_DeleteAnalysisParameter(stimset, names[i])
+				WBP_DeleteAnalysisParameter(names[i])
 			endfor
 
 			WBP_UpdateParameterWave()
@@ -2689,7 +2694,7 @@ End
 Function WBP_ButtonProc_AddParam(ba) : ButtonControl
 	STRUCT WMButtonAction &ba
 
-	string win, name, type, stimset
+	string win, name, type
 	string value
 
 	switch(ba.eventCode)
@@ -2702,22 +2707,22 @@ Function WBP_ButtonProc_AddParam(ba) : ButtonControl
 				break
 			endif
 
-			stimset = GetPopupMenuString(panel, "popup_WaveBuilder_SetList")
-			type    = GetPopupMenuString(win, "popup_param_types")
-			value   = GetSetVariableString(win, "setvar_param_value")
+			WAVE/T WPT = GetWaveBuilderWaveTextParam()
+			type       = GetPopupMenuString(win, "popup_param_types")
+			value      = GetSetVariableString(win, "setvar_param_value")
 
 			strswitch(type)
 				case "variable":
-					WBP_AddAnalysisParameter(stimset, name, var = str2numSafe(value))
+					WBP_AddAnalysisParameterIntoWPT(WPT, name, var = str2numSafe(value))
 					break
 				case "string":
-					WBP_AddAnalysisParameter(stimset, name, str = value)
+					WBP_AddAnalysisParameterIntoWPT(WPT, name, str = value)
 					break
 				case "wave":
-					WBP_AddAnalysisParameter(stimset, name, wv = ListToNumericWave(value, ";"))
+					WBP_AddAnalysisParameterIntoWPT(WPT, name, wv = ListToNumericWave(value, ";"))
 					break
 				case "textwave":
-					WBP_AddAnalysisParameter(stimset, name, wv = ListToTextWave(value, ";"))
+					WBP_AddAnalysisParameterIntoWPT(WPT, name, wv = ListToTextWave(value, ";"))
 					break
 				default:
 					ASSERT(0, "invalid type")

@@ -937,7 +937,7 @@ End
 /// - OperationMode (String):  Operation mode of the analayis function. Can be
 ///                            either #PSQ_DS_SUB or #PSQ_DS_SUPRA.
 Function/S PSQ_DAScale_GetParams()
-	return "DAScales;OperationMode"
+	return "DAScales:wave,OperationMode:string"
 End
 
 /// @brief Patch Seq Analysis function to find a suitable DAScale
@@ -1766,7 +1766,7 @@ End
 ///                              the pulse onset in order to label the cell
 ///                              as having "spiked".
 Function/S PSQ_Ramp_GetParams()
-	return "NumberOfSpikes;"
+	return "NumberOfSpikes:variable"
 End
 
 /// @brief Analysis function for applying a ramp stim set and finding the position were it spikes.

@@ -1165,7 +1165,7 @@ Function/WAVE WB_GetPulsesFromPulseTrains(stimset, sweep, pulseToPulseLength)
 		WAVE/Z/D startTimes = ListToNumericWave(startTimesList, ",")
 		ASSERT(WaveExists(startTimes) && DimSize(startTimes, ROWS) > 0, "Found no starting times")
 
-		FindValue/V=(NaN) startTimes
+		FindValue/FNAN startTimes
 		ASSERT(V_Value == -1, "Unexpected NaN found in starting times")
 
 		if(flipping)

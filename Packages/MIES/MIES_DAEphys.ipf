@@ -1806,7 +1806,7 @@ Function DAP_CheckSettings(panelTitle, mode)
 
 	variable numDACs, numADCs, numHS, numEntries, i, indexingEnabled, clampMode
 	variable ampSerial, ampChannelID, minValue, maxValue
-	string ctrl, endWave, ttlWave, dacWave, refDacWave
+	string ctrl, endWave, ttlWave, dacWave, refDacWave, reqParams
 	string list
 
 	ASSERT(mode == DATA_ACQUISITION_MODE || mode == TEST_PULSE_MODE, "Invalid mode")
@@ -2130,9 +2130,10 @@ static Function DAP_CheckHeadStage(panelTitle, headStage, mode)
 
 	string dacWave, endWave, unit, func, info, str, ADUnit, DAUnit, listOfAnalysisFunctions
 	variable DACchannel, ADCchannel, DAheadstage, ADheadstage, DAGain, ADGain, realMode
-	variable gain, scale, clampMode, i, ampConnState, needResetting
-	variable DAGainMCC, ADGainMCC
-	string DAUnitMCC, ADUnitMCC, params, names, requestedNames, diff
+	variable gain, scale, clampMode, i, j, ampConnState, needResetting
+	variable DAGainMCC, ADGainMCC, numEntries
+	string DAUnitMCC, ADUnitMCC, suppParams, suppName, suppType, reqParams, reqNames, reqName
+	string diff, name, type, suppNames, reqType
 
 	if(DAP_DeviceIsUnlocked(panelTitle))
 		printf "(%s) Device is unlocked. Please lock the device.\r", panelTitle
@@ -2369,16 +2370,42 @@ static Function DAP_CheckHeadStage(panelTitle, headStage, mode)
 					return 1
 				elseif(i == GENERIC_EVENT)
 					// check that all required user parameters are supplied
-					requestedNames = AFH_GetListOfReqAnalysisParams(func)
-					if(!IsEmpty(requestedNames))
-						params = ExtractAnalysisFunctionParams(stimSet)
-						names = AFH_GetListOfAnalysisParamNames(params)
-						diff = GetListDifference(requestedNames, names)
+					reqParams = AFH_GetListOfReqAnalysisParams(func)
+					if(!IsEmpty(reqParams))
+						reqNames   = AFH_GetListOfAnalysisParamNames(reqParams)
+						suppParams = ExtractAnalysisFunctionParams(stimSet)
+						suppNames  = AFH_GetListOfAnalysisParamNames(suppParams)
+						diff = GetListDifference(reqNames, suppNames)
 						if(!IsEmpty(diff))
 							printf "(%s) The required analysis parameters requested by %s for stim set %s were not all supplied (missing are: %s)\r", panelTitle, func, dacWave, diff
 							ControlWindowToFront()
 							return 1
 						endif
+
+						numEntries = ItemsInList(reqNames, ",")
+						for(j = 0; i < numEntries; j += 1)
+							reqName = StringFromList(i, reqNames, ",")
+							reqType = AFH_GetAnalysisParamType(reqName, reqParams, typeCheck = 0)
+							// no type specification is allowed
+							if(IsEmpty(reqType))
+								continue
+							endif
+
+							// invalid types are not allowed
+							if(WhichListItem(reqType, ANALYSIS_FUNCTION_PARAMS_TYPES) == -1)
+								printf "(%s) The analysis parameter %s for %s in stim set %s has type %s which is unknown.\r", panelTitle, name, func, dacWave, type
+								ControlWindowToFront()
+								return 1
+							endif
+
+							// non matching type
+							suppType = AFH_GetAnalysisParamType(reqName, suppParams, typeCheck = 0)
+							if(cmpstr(reqType, suppType))
+								printf "(%s) The analysis parameter %s for %s in stim set %s has type %s but the required type is %s which is unknown.\r", panelTitle, name, func, dacWave, suppType, reqType
+								ControlWindowToFront()
+								return 1
+							endif
+						endfor
 					endif
 				endif
 			endfor

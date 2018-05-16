@@ -79,11 +79,25 @@ static Function ChangeAnalysisFunctions()
 	wv[][%Set] = ""
 	wv[%$"Analysis function (generic)"][%Set]  = "ValidFunc_V3"
 
-
 	WAVE/T wv = root:MIES:WaveBuilder:SavedStimulusSetParameters:DA:WPT_AnaFuncParams1_DA_0
 
 	wv[][%Set] = ""
 	wv[%$"Analysis function (generic)"][%Set]  = "Params1_V3"
+
+	WAVE/T wv = root:MIES:WaveBuilder:SavedStimulusSetParameters:DA:WPT_AnaFuncParams2_DA_0
+
+	wv[][%Set] = ""
+	wv[%$"Analysis function (generic)"][%Set]  = "Params2_V3"
+
+	WAVE/T wv = root:MIES:WaveBuilder:SavedStimulusSetParameters:DA:WPT_AnaFuncParams3_DA_0
+
+	wv[][%Set] = ""
+	wv[%$"Analysis function (generic)"][%Set]  = "Params3_V3"
+
+	WAVE/T wv = root:MIES:WaveBuilder:SavedStimulusSetParameters:DA:WPT_AnaFuncParams4_DA_0
+
+	wv[][%Set] = ""
+	wv[%$"Analysis function (generic)"][%Set]  = "Params4_V3"
 
 	WAVE/T wv = root:MIES:WaveBuilder:SavedStimulusSetParameters:DA:WPT_AnaFuncGeneric_DA_0
 
@@ -1172,7 +1186,7 @@ static Function AFT_Test13()
 	CHECK(!WaveExists(anaFuncs))
 End
 
-static Function SetParams_IGNORE()
+static Function SetParams1_IGNORE()
 
 	string stimSet = "AnaFuncParams1_DA_0"
 	WBP_AddAnalysisParameter(stimSet, "MyVar", str = "abcd")
@@ -1183,12 +1197,14 @@ static Function SetParams_IGNORE()
 End
 
 // test parameter handling
+// tests also that no type parameters
+// in Params1_V3_GetParams() are okay
 static Function AFT_DAQ14()
 
 	STRUCT DAQSettings s
 	InitDAQSettingsFromString(s, "DAQ_MD1_RA0_IDX0_LIDX0_BKG_1")
 
-	FUNCREF CALLABLE_PROTO f = SetParams_IGNORE
+	FUNCREF CALLABLE_PROTO f = SetParams1_IGNORE
 	AcquireData(s, "AnaFuncParams1_DA_0", postInitializeFunc = f)
 End
 
@@ -1246,6 +1262,118 @@ static Function AFT_Test14()
 	key = ANALYSIS_FUNCTION_PARAMS_LBN
 	WAVE/T/Z anaFuncParams = GetLastSettingText(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
 	CHECK_WAVE(anaFuncParams, TEXT_WAVE)
+End
+
+static Function SetParams2_IGNORE()
+
+	string stimSet = "AnaFuncParams2_DA_0"
+	WBP_AddAnalysisParameter(stimSet, "MyStr", str = "abcd")
+	WBP_AddAnalysisParameter(stimSet, "MyVar", str = "abcd")
+End
+
+// test parameter handling with valid type string
+static Function AFT_DAQ14a()
+
+	STRUCT DAQSettings s
+	InitDAQSettingsFromString(s, "DAQ_MD1_RA0_IDX0_LIDX0_BKG_1")
+
+	FUNCREF CALLABLE_PROTO f = SetParams2_IGNORE
+	AcquireData(s, "AnaFuncParams2_DA_0", postInitializeFunc = f)
+End
+
+static Function AFT_Test14a()
+
+	variable sweepNo
+	string key
+
+	CHECK_EQUAL_VAR(GetSetVariable(DEVICE, "SetVar_Sweep"), 1)
+
+	sweepNo = AFH_GetLastSweepAcquired(DEVICE)
+	CHECK_EQUAL_VAR(sweepNo, 0)
+
+	WAVE anaFuncTracker = TrackAnalysisFunctionCalls()
+
+	CHECK_EQUAL_VAR(anaFuncTracker[PRE_DAQ_EVENT], 1)
+	CHECK_EQUAL_VAR(anaFuncTracker[PRE_SWEEP_EVENT], 1)
+	CHECK(anaFuncTracker[MID_SWEEP_EVENT] >= 1)
+	CHECK_EQUAL_VAR(anaFuncTracker[POST_SWEEP_EVENT], 1)
+	CHECK_EQUAL_VAR(anaFuncTracker[POST_SET_EVENT], 0)
+	CHECK_EQUAL_VAR(anaFuncTracker[POST_DAQ_EVENT], 1)
+	CHECK_EQUAL_VAR(anaFuncTracker[GENERIC_EVENT], 0)
+End
+
+static Function SetParams3_IGNORE()
+
+	string stimSet = "AnaFuncParams3_DA_0"
+	WBP_AddAnalysisParameter(stimSet, "MyStr", str = "abcd")
+End
+
+// test parameter handling with non-matching type string
+static Function AFT_DAQ14b()
+
+	STRUCT DAQSettings s
+	InitDAQSettingsFromString(s, "DAQ_MD1_RA0_IDX0_LIDX0_BKG_1")
+
+	FUNCREF CALLABLE_PROTO f = SetParams3_IGNORE
+	AcquireData(s, "AnaFuncParams3_DA_0", postInitializeFunc = f)
+End
+
+static Function AFT_Test14b()
+
+	variable sweepNo
+	string key
+
+	CHECK_EQUAL_VAR(GetSetVariable(DEVICE, "SetVar_Sweep"), 1)
+
+	sweepNo = AFH_GetLastSweepAcquired(DEVICE)
+	CHECK_EQUAL_VAR(sweepNo, 0)
+
+	WAVE anaFuncTracker = TrackAnalysisFunctionCalls()
+
+	CHECK_EQUAL_VAR(anaFuncTracker[PRE_DAQ_EVENT], 1)
+	CHECK_EQUAL_VAR(anaFuncTracker[PRE_SWEEP_EVENT], 1)
+	CHECK(anaFuncTracker[MID_SWEEP_EVENT] >= 1)
+	CHECK_EQUAL_VAR(anaFuncTracker[POST_SWEEP_EVENT], 1)
+	CHECK_EQUAL_VAR(anaFuncTracker[POST_SET_EVENT], 0)
+	CHECK_EQUAL_VAR(anaFuncTracker[POST_DAQ_EVENT], 1)
+	CHECK_EQUAL_VAR(anaFuncTracker[GENERIC_EVENT], 0)
+End
+
+static Function SetParams4_IGNORE()
+
+	string stimSet = "AnaFuncParams4_DA_0"
+	WBP_AddAnalysisParameter(stimSet, "MyStr", str = "abcd")
+End
+
+// test parameter handling with invalid type string
+static Function AFT_DAQ14c()
+
+	STRUCT DAQSettings s
+	InitDAQSettingsFromString(s, "DAQ_MD1_RA0_IDX0_LIDX0_BKG_1")
+
+	FUNCREF CALLABLE_PROTO f = SetParams4_IGNORE
+	AcquireData(s, "AnaFuncParams4_DA_0", postInitializeFunc = f)
+End
+
+static Function AFT_Test14c()
+
+	variable sweepNo
+	string key
+
+	CHECK_EQUAL_VAR(GetSetVariable(DEVICE, "SetVar_Sweep"), 1)
+
+	sweepNo = AFH_GetLastSweepAcquired(DEVICE)
+	CHECK_EQUAL_VAR(sweepNo, 0)
+
+	WAVE anaFuncTracker = TrackAnalysisFunctionCalls()
+
+	CHECK_EQUAL_VAR(anaFuncTracker[PRE_DAQ_EVENT], 1)
+	CHECK_EQUAL_VAR(anaFuncTracker[PRE_SWEEP_EVENT], 1)
+	CHECK(anaFuncTracker[MID_SWEEP_EVENT] >= 1)
+	CHECK_EQUAL_VAR(anaFuncTracker[POST_SWEEP_EVENT], 1)
+	CHECK_EQUAL_VAR(anaFuncTracker[POST_SET_EVENT], 0)
+	CHECK_EQUAL_VAR(anaFuncTracker[POST_DAQ_EVENT], 1)
+	CHECK_EQUAL_VAR(anaFuncTracker[GENERIC_EVENT], 0)
 End
 
 static Function DisableInsertTP_IGNORE()
