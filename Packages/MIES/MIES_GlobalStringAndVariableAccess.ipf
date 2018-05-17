@@ -15,19 +15,23 @@
 ///
 /// Instead if you have a global variable named `iceCreamCounter` in `root:myfood` you
 /// would write in this file here a function like
-/// @code
-/// Function/S GetIceCreamCounterAsVariable()
-/// 	return GetNVARAsString(createDFWithAllParents("root:myfood"), "iceCreamCounter")
-/// End
-/// @endcode
-///  and then use it in your code as
-/// @code
-/// Function doStuff()
-/// 	NVAR iceCreamCounter = $GetIceCreamCounterAsVariable()
+/// \rst
+/// .. code-block:: igorpro
 ///
-/// 	iceCreamCounter += 1
-/// End
-/// @endcode
+/// 	Function/S GetIceCreamCounterAsVariable()
+/// 		return GetNVARAsString(createDFWithAllParents("root:myfood"), "iceCreamCounter")
+/// 	End
+/// \endrst
+///  and then use it in your code as
+/// \rst
+/// .. code-block:: igorpro
+///
+/// 	Function doStuff()
+/// 		NVAR iceCreamCounter = $GetIceCreamCounterAsVariable()
+///
+/// 		iceCreamCounter += 1
+/// 	End
+/// \endrst
 
 /// @brief Returns the full path to a global variable
 ///
@@ -369,12 +373,14 @@ End
 ///
 /// Typical sequence:
 ///
-/// @code
-/// NVAR rngSeed = $GetRNGSeed(device)
-/// SetRandomSeed/BETR=1 rngSeed
-/// rngSeed += 1
-/// variable val = GetReproducibleRandonNumber()
-/// @endcode
+/// \rst
+/// .. code-block:: igorpro
+///
+/// 	NVAR rngSeed = $GetRNGSeed(device)
+/// 	SetRandomSeed/BETR=1 rngSeed
+/// 	rngSeed += 1
+/// 	variable val = GetReproducibleRandonNumber()
+/// \endrst
 Function/S GetRNGSeed(panelTitle)
 	string panelTitle
 

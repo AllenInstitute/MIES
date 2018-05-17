@@ -47,12 +47,15 @@ static StrConstant functionReturnMessage = "return value"
 /// Debug function especially designed for usage in return statements.
 ///
 /// For example calling the following function
-/// @code
-/// Function doStuff()
-///  variable var = 1 + 2
-///  return DEBUGPRINTv(var)
-/// End
-/// @endcode
+/// \rst
+/// .. code-block:: igorpro
+///
+/// 	Function doStuff()
+/// 		variable var = 1 + 2
+/// 		return DEBUGPRINTv(var)
+/// 	End
+/// \endrst
+///
 /// will output
 /// @verbatim DEBUG doStuff(...)#L5: return value 3 @endverbatim
 /// to the history.
@@ -80,12 +83,14 @@ End
 /// Debug function especially designed for usage in return statements.
 ///
 /// For example calling the following function
-/// @code
-/// Function/s doStuff()
-///  variable str= "a" + "b"
-///  return DEBUGPRINTs(str)
-/// End
-/// @endcode
+/// \rst
+/// .. code-block:: igorpro
+///
+/// 	Function/s doStuff()
+/// 		variable str= "a" + "b"
+/// 		return DEBUGPRINTs(str)
+/// 	End
+/// \endrst
 /// will output
 /// @verbatim DEBUG doStuff(...)#L5: return value ab @endverbatim
 /// to the history.
@@ -111,13 +116,15 @@ End
 ///
 /// Outputs variables and strings with optional format argument.
 ///
-///Examples:
-/// @code
-/// DEBUGPRINT("before a possible crash")
-/// DEBUGPRINT("some variable", var=myVariable)
-/// DEBUGPRINT("my string", str=myString)
-/// DEBUGPRINT("Current state", var=state, format="%.5f")
-/// @endcode
+/// Examples:
+/// \rst
+/// .. code-block:: igorpro
+///
+/// 	DEBUGPRINT("before a possible crash")
+/// 	DEBUGPRINT("some variable", var=myVariable)
+/// 	DEBUGPRINT("my string", str=myString)
+/// 	DEBUGPRINT("Current state", var=state, format="%.5f")
+/// \endrst
 ///
 /// @hidecallgraph
 /// @hidecallergraph
@@ -184,13 +191,15 @@ End
 ///
 /// Outputs variables and strings with optional format argument.
 ///
-///Examples:
-///@code
-///DEBUGPRINT("before a possible crash")
-///DEBUGPRINT("some variable", var=myVariable)
-///DEBUGPRINT("my string", str=myString)
-///DEBUGPRINT("Current state", var=state, format="%.5f")
-///@endcode
+/// Examples:
+/// \rst
+/// .. code-block:: igorpro
+///
+///		DEBUGPRINT("before a possible crash")
+///		DEBUGPRINT("some variable", var=myVariable)
+///		DEBUGPRINT("my string", str=myString)
+///		DEBUGPRINT("Current state", var=state, format="%.5f")
+/// \endrst
 ///
 /// @hidecallgraph
 /// @hidecallergraph
@@ -297,13 +306,15 @@ End
 /// @brief Start a timer for performance measurements
 ///
 /// Usage:
-/// @code
-/// variable referenceTime = DEBUG_TIMER_START()
-/// // part one to benchmark
-/// DEBUGPRINT_ELAPSED(referenceTime)
-/// // part two to benchmark
-/// DEBUGPRINT_ELAPSED(referenceTime)
-/// @endcode
+/// \rst
+/// .. code-block:: igorpro
+///
+/// 	variable referenceTime = DEBUG_TIMER_START()
+/// 	// part one to benchmark
+/// 	DEBUGPRINT_ELAPSED(referenceTime)
+/// 	// part two to benchmark
+/// 	DEBUGPRINT_ELAPSED(referenceTime)
+/// \endrst
 Function DEBUG_TIMER_START()
 
 	return stopmstimer(-2)

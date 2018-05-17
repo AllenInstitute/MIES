@@ -60,11 +60,13 @@ End
 /// @param errorMsg error message to output in failure case
 ///
 /// Example usage:
-/// @code
-/// ControlInfo/W = $panelTitle popup_MoreSettings_DeviceType
-/// ASSERT(V_flag > 0, "Non-existing control or window")
-/// do something with S_value
-/// @endcode
+/// \rst
+/// .. code-block:: igorpro
+///
+/// 	ControlInfo/W = $panelTitle popup_MoreSettings_DeviceType
+/// 	ASSERT(V_flag > 0, "Non-existing control or window")
+/// 	do something with S_value
+/// \endrst
 ///
 /// @hidecallgraph
 /// @hidecallergraph
@@ -109,10 +111,12 @@ End
 /// @param errorMsg error message to output in failure case
 ///
 /// Example usage:
-///@code
-///	ASSERT(DataFolderExistsDFR(dfr), "MyFunc: dfr does not exist")
-///	do something with dfr
-///@endcode
+/// \rst
+///  .. code-block:: igorpro
+///
+///		ASSERT(DataFolderExistsDFR(dfr), "MyFunc: dfr does not exist")
+///		do something with dfr
+/// \endrst
 ///
 /// Unlike ASSERT() this function does not print a stacktrace or jumps into the debugger. The reasons are Igor Pro limitations.
 /// Therefore it is advised to prefix `errorMsg` with the current function name.
@@ -268,6 +272,26 @@ End
 /// @brief Redimension the wave to at least the given size.
 ///
 /// The redimensioning is only done if it is required.
+///
+/// Can be used to fill a wave one at a time with the minimum number of
+/// redimensions.
+///
+/// \rst
+/// .. code-block:: igorpro
+///
+/// 	Make/FREE/N=(MINIMUM_WAVE_SIZE) data
+/// 	SetNumberInWaveNote(data, NOTE_INDEX, 0)
+/// 	// ...
+/// 	for(...)
+/// 		index = GetNumberFromWaveNote(data, NOTE_INDEX)
+/// 		// ...
+/// 		EnsureLargeEnoughWave(data, dimension = ROWS, minimumSize = index)
+/// 		data[index] = ...
+/// 		// ...
+/// 	    SetNumberInWaveNote(data, NOTE_INDEX, ++index)
+/// 	endfor
+/// \endrst
+///
 /// @param wv		 	wave to redimension
 /// @param minimumSize 	the minimum size of the wave. Defaults to @ref MINIMUM_WAVE_SIZE.
 ///                     The actual size of the wave after the function returns might be larger.
@@ -710,12 +734,14 @@ End
 /// @brief Reset the debugger to the given state
 ///
 /// Useful in conjunction with DisableDebugger() to temporarily disable the debugger
-/// @code
-///  variable debuggerState = DisableDebugger()
-///  // code which might trigger the debugger, e.g. CurveFit
-///  ResetDebuggerState(debuggerState)
-///  // now the debugger is in the same state as before
-/// @endcode
+/// \rst
+/// .. code-block:: igorpro
+///
+/// 	variable debuggerState = DisableDebugger()
+/// 	// code which might trigger the debugger, e.g. CurveFit
+/// 	ResetDebuggerState(debuggerState)
+/// 	// now the debugger is in the same state as before
+/// \endrst
 Function ResetDebuggerState(debuggerState)
 	variable debuggerState
 
@@ -1879,16 +1905,18 @@ End
 /// @param[out] suffix (optional) string succeeding word.
 ///
 /// example of the usage of SearchStringBase (basically the same as WM GrepString())
-/// @code
-/// Function SearchString(str, substring)
-/// 	string str, substring
+/// \rst
+/// .. code-block:: igorpro
 ///
-/// 	ASSERT(strlen(substring) > 0, "supplied substring has zero length")
-/// 	WAVE/Z/T wv = SearchStringBase(str, "(.*)\\Q" + substring + "\\E(.*)")
+/// 	Function SearchString(str, substring)
+/// 		string str, substring
 ///
-/// 	return WaveExists(wv)
-/// End
-/// @endcode
+/// 		ASSERT(strlen(substring) > 0, "supplied substring has zero length")
+/// 		WAVE/Z/T wv = SearchStringBase(str, "(.*)\\Q" + substring + "\\E(.*)")
+///
+/// 		return WaveExists(wv)
+/// 	End
+/// \endrst
 ///
 /// @return 1 if word was found in str and word was not "". 0 if not.
 Function SearchWordInString(str, word, [prefix, suffix])
@@ -2507,10 +2535,12 @@ End
 
 /// @brief Return a unique symbolic path name
 ///
-/// @code
-///	string symbPath = GetUniqueSymbolicPath()
-///	NewPath/Q/O $symbPath, "C:"
-/// @endcode
+/// \rst
+/// .. code-block:: igorpro
+///
+///		string symbPath = GetUniqueSymbolicPath()
+///		NewPath/Q/O $symbPath, "C:"
+/// \endrst
 Function/S GetUniqueSymbolicPath([prefix])
 	string prefix
 
@@ -2809,9 +2839,11 @@ End
 /// See also DisplayHelpTopic "Subrange Display"
 ///
 /// Example invocations:
-/// @code
-/// Wave ranges = ExtractFromSubrange("[3,4]_[*]_[1, *;4]_[]_[5][]", 0)
-/// @endcode
+/// \rst
+/// .. code-block:: igorpro
+///
+/// 	wAVE ranges = ExtractFromSubrange("[3,4]_[*]_[1, *;4]_[]_[5][]", 0)
+/// \endrst
 ///
 /// @param listOfRanges list of subrange specifications separated by **_**
 /// @param dim          dimension to extract

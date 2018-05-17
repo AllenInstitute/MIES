@@ -170,6 +170,9 @@ End
 /// `switchTab` [optional, defaults to false] Switches tabs so that the control is shown.
 ///
 /// @return 1 if val was modified by control limits, 0 if val was unmodified (only relevant for SetVariable controls)
+///
+/// @hidecallgraph
+/// @hidecallergraph
 Function PGC_SetAndActivateControl(win, control, [val, str, switchTab])
 	string win, control
 	variable val, switchTab

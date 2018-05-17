@@ -1,9 +1,5 @@
 # Readme
 
-Our Coding Conventions can be found
-[here](http://www.igorexchange.com/project/CodingConventions). Contributions
-following these are especially welcome.
-
 ## Getting MIES
 
 ### Latest development version from master branch

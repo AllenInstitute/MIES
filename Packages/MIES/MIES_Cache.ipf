@@ -17,38 +17,44 @@
 ///   The parameters to CA_GenKey() must completely determine the wave you will later store.
 ///   The appended version string to the key allows you to invalidate old keys
 ///   if the algorithm creating the wave changes, but all input stays the same.
-/// @code
-/// Function/S CA_GenKey(input)
-///     variable input
 ///
-///     return stringCRC(0, num2str(input)) + "Version 1"
-/// End
-/// @endcode
+/// \rst
+/// .. code-block:: igorpro
+///
+/// 	Function/S CA_GenKey(input)
+/// 	    variable input
+///
+/// 	    return stringCRC(0, num2str(input)) + "Version 1"
+/// 	End
+/// \endrst
 ///
 /// * Write your main function as in the following example. The first time
 ///   MyFancyCalculation(input) is called you get a cache miss and result has to
 ///   be created from scratch, but all subsequent calls are fast as the entry is
 ///   fetched from  the cache.
-/// @code
-/// Function/WAVE MyFancyCalculation(input)
-///     variable input
 ///
-///     string key = CA_GenKey(input)
+/// \rst
+/// .. code-block:: igorpro
 ///
-///     WAVE/Z result = CA_TryFetchingEntryFromCache(key)
+/// 	Function/WAVE MyFancyCalculation(input)
+/// 	    variable input
 ///
-///     if(WaveExists(result))
-///         return result
-///     endif
+/// 	    string key = CA_GenKey(input)
 ///
-///     // create result from scratch
-///     // ...
+/// 	    WAVE/Z result = CA_TryFetchingEntryFromCache(key)
 ///
-///     CA_StoreEntryIntoCache(key, result)
+/// 	    if(WaveExists(result))
+/// 	        return result
+/// 	    endif
 ///
-///     return result
-/// End
-/// @endcode
+/// 	    // create result from scratch
+/// 	    // ...
+///
+/// 	    CA_StoreEntryIntoCache(key, result)
+///
+/// 	    return result
+/// 	End
+/// \endrst
 ///
 /// * Deleting cache entries has to be done *manually* via CA_DeleteCacheEntry().
 ///   The cache is also stored in a packed experiment.
