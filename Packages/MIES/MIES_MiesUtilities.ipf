@@ -878,7 +878,8 @@ Function/WAVE GetLastSettingRAC(numericalValues, sweepNo, setting, entrySourceTy
 	return $""
 End
 
-/// @brief Return the last numerical value for the given setting of *each* sweeps in the same RA cycle.
+/// @brief Return the last numerical value for the given setting of *each*
+///        sweep in the same RA cycle.
 ///
 /// @ingroup LabnotebookQueryFunctions
 /// @sa GetLastSetting()
@@ -911,7 +912,8 @@ Function/WAVE GetLastSettingIndepEachRAC(numericalValues, sweepNo, setting, entr
 	return result
 End
 
-/// @brief Return the last textual value for the given setting of *each* sweeps in the same RA cycle.
+/// @brief Return the last textual value for the given setting of *each* sweep
+///        in the same RA cycle.
 ///
 /// @ingroup LabnotebookQueryFunctions
 /// @sa GetLastSetting()
@@ -945,7 +947,8 @@ Function/WAVE GetLastSettingTextIndepEachRAC(numericalValues, textualValues, swe
 	return result
 End
 
-/// @brief Return the last numerical value for the given setting of *each* sweeps for a given headstage in the same RA cycle.
+/// @brief Return the last numerical value for the given setting of *each*
+///        sweep for a given headstage in the same RA cycle.
 ///
 /// @ingroup LabnotebookQueryFunctions
 /// @sa GetLastSetting
@@ -983,7 +986,8 @@ Function/WAVE GetLastSettingEachRAC(numericalValues, sweepNo, setting, headstage
 	return result
 End
 
-/// @brief Return the last textual value for the given setting of *each* sweeps for a given headstage in the same RA cycle.
+/// @brief Return the last textual value for the given setting of *each* sweep
+///        for a given headstage in the same RA cycle.
 ///
 /// @ingroup LabnotebookQueryFunctions
 /// @sa GetLastSetting()
