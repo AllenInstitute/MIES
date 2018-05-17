@@ -47,7 +47,6 @@ digraph G {
         "Check if mode is IC";
         "Enable \"Repeated Acquisition\"";
         "Check if no TTL channels are active";
-        "Check that the default sampling multiplier is 4";
         "All checks passed";
         "Abort";
         "Prepare DAQ Event" -> "Enable \"Autobias\"";
@@ -72,9 +71,11 @@ digraph G {
         "Stimset is large enough" -> "All checks passed";
         "Check if mode is IC" -> "All checks passed";
         "Check if no TTL channels are active" -> "All checks passed";
-        "Check that the default sampling multiplier is 4" -> "All checks passed";
         "All checks passed" -> "Abort"  [label="No"];
         "Post DAQ Event" -> "Update Dashboard";
+        "All required analysis parameters present?\nSamplingMultiplier: variable";
+        "Prepare DAQ Event" -> "All required analysis parameters present?\nSamplingMultiplier: variable";
+        "All required analysis parameters present?\nSamplingMultiplier: variable" -> "All checks passed";
     }
 
     "Start DAQ/RA" -> "Mid Sweep Event";
