@@ -1513,7 +1513,7 @@ Function PSQ_Rheobase(panelTitle, s)
 	string panelTitle
 	STRUCT AnalysisFunction_V3 &s
 
-	variable DAScale, val, numSweeps, currentSweepHasSpike, setPassed
+	variable DAScale, val, numSweeps, currentSweepHasSpike, lastSweepHasSpike, setPassed
 	variable baselineQCPassed, finalDAScale, initialDAScale
 	variable numBaselineChunks, lastFifoPos, totalOnsetDelay, fifoInStimsetPoint, fifoInStimsetTime
 	variable i, ret, numSweepsWithSpikeDetection, sweepNoFound, length, minLength, multiplier
@@ -1646,16 +1646,21 @@ Function PSQ_Rheobase(panelTitle, s)
 			numSweepsWithSpikeDetection = DimSize(spikeDetectionRA, ROWS)
 			currentSweepHasSpike        = spikeDetectionRA[numSweepsWithSpikeDetection - 1]
 
-			if(numSweepsWithSpikeDetection >= 2 && currentSweepHasSpike != spikeDetectionRA[numSweepsWithSpikeDetection - 2])
-				// mark the set as passed
-				// we can't mark each sweep as passed/failed as it is not possible
-				// to add LBN entries to other sweeps than the last one
-				Make/FREE/D/N=(LABNOTEBOOK_LAYER_COUNT) result = NaN
-				key = PSQ_CreateLBNKey(PSQ_RHEOBASE, PSQ_FMT_LBN_SET_PASS)
-				result[INDEP_HEADSTAGE] = 1
-				ED_AddEntryToLabnotebook(panelTitle, key, result, unit = LABNOTEBOOK_BINARY_UNIT)
-				RA_SkipSweeps(panelTitle, inf, limitToSetBorder = 1)
-				break
+			if(numSweepsWithSpikeDetection >= 2)
+				lastSweepHasSpike = spikeDetectionRA[numSweepsWithSpikeDetection - 2]
+
+				if(IsFinite(currentSweepHasSpike) && IsFinite(lastSweepHasSpike) \
+				   && (currentSweepHasSpike != lastSweepHasSpike))
+					// mark the set as passed
+					// we can't mark each sweep as passed/failed as it is not possible
+					// to add LBN entries to other sweeps than the last one
+					Make/FREE/D/N=(LABNOTEBOOK_LAYER_COUNT) result = NaN
+					key = PSQ_CreateLBNKey(PSQ_RHEOBASE, PSQ_FMT_LBN_SET_PASS)
+					result[INDEP_HEADSTAGE] = 1
+					ED_AddEntryToLabnotebook(panelTitle, key, result, unit = LABNOTEBOOK_BINARY_UNIT)
+					RA_SkipSweeps(panelTitle, inf, limitToSetBorder = 1)
+					break
+				endif
 			endif
 
 			DAScale = GetLastSetting(numericalValues, s.sweepNo, STIMSET_SCALE_FACTOR_KEY, DATA_ACQUISITION_MODE)[s.headstage] * 1e-12
