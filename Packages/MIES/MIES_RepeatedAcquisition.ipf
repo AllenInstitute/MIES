@@ -205,7 +205,6 @@ Function RA_Start(panelTitle)
 	string panelTitle
 	
 	variable numTotalSweeps
-	NVAR count = $GetCount(panelTitle)
 
 #ifdef PERFING_RA
 	RA_PerfInitialize(panelTitle)
@@ -322,7 +321,6 @@ static Function RA_StartMD(panelTitle)
 
 	variable i, numFollower, numTotalSweeps
 	string followerPanelTitle
-	NVAR count = $GetCount(panelTitle)
 
 #ifdef PERFING_RA
 	RA_PerfInitialize(panelTitle)
