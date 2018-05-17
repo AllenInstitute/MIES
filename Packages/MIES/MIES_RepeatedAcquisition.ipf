@@ -529,15 +529,19 @@ Function RA_IsFirstSweep(panelTitle)
 	return !count
 End
 
-///@brief Allows skipping forward or backwards the sweep count during data acquistion
+/// @brief Allows skipping forward or backwards the sweep count during data acquistion
 ///
-///@param panelTitle device
-///@param skipCount The number of sweeps to skip (forward or backwards) during repeated acquisition
-Function RA_SkipSweeps(panelTitle, skipCount)
+/// @param panelTitle       device
+/// @param skipCount        The number of sweeps to skip (forward or backwards)
+///                         during repeated acquisition
+/// @param limitToSetBorder [optional, defaults to false] Limits skipCount so
+///                         that we don't skip further than after the last sweep of the
+///                         stimset with the most number of sweeps.
+Function RA_SkipSweeps(panelTitle, skipCount, [limitToSetBorder])
 	string panelTitle
-	variable skipCount
+	variable skipCount, limitToSetBorder
 
-	variable numFollower, i
+	variable numFollower, i, sweepsInSet
 	string followerPanelTitle
 	NVAR count = $GetCount(panelTitle)
 	NVAR dataAcqRunMode = $GetDataAcqRunMode(panelTitle)
@@ -545,6 +549,17 @@ Function RA_SkipSweeps(panelTitle, skipCount)
 	//Skip sweeps if, and only if, data acquisition is ongoing.
 	if(dataAcqRunMode == DAQ_NOT_RUNNING)
 		return NaN
+	endif
+
+	if(ParamIsDefault(limitToSetBorder))
+		limitToSetBorder = 0
+	else
+		limitToSetBorder = !!limitToSetBorder
+	endif
+
+	if(limitToSetBorder)
+		NVAR activeSetCount = $GetActiveSetCount(panelTitle)
+		skipCount = sign(skipCount) * limit(abs(skipCount), 0, activeSetCount - 1)
 	endif
 
 	count = RA_SkipSweepCalc(panelTitle, skipCount)
