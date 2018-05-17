@@ -206,13 +206,11 @@ Function RA_Start(panelTitle)
 	
 	variable numTotalSweeps
 	NVAR count = $GetCount(panelTitle)
-	NVAR activeSetCount = $GetActiveSetCount(panelTitle)
 
 #ifdef PERFING_RA
 	RA_PerfInitialize(panelTitle)
 #endif
 
-	activeSetCount = IDX_CalculcateActiveSetCount(panelTitle)
 	numTotalSweeps = RA_GetTotalNumberOfSweeps(panelTitle)
 
 	if(numTotalSweeps == 1)
@@ -325,13 +323,10 @@ static Function RA_StartMD(panelTitle)
 	variable i, numFollower, numTotalSweeps
 	string followerPanelTitle
 	NVAR count = $GetCount(panelTitle)
-	NVAR activeSetCount = $GetActiveSetCount(panelTitle)
 
 #ifdef PERFING_RA
 	RA_PerfInitialize(panelTitle)
 #endif
-
-	activeSetCount = IDX_CalculcateActiveSetCount(panelTitle)
 
 	RA_StepSweepsRemaining(panelTitle)
 

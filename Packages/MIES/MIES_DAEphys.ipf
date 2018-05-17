@@ -995,6 +995,9 @@ Function DAP_OneTimeCallBeforeDAQ(panelTitle, runMode)
 	NVAR count = $GetCount(panelTitle)
 	count = 0
 
+	NVAR activeSetCount = $GetActiveSetCount(panelTitle)
+	activeSetCount = IDX_CalculcateActiveSetCount(panelTitle)
+
 	NVAR repurposeTime = $GetRepurposedSweepTime(panelTitle)
 	repurposeTime = 0
 
@@ -1117,6 +1120,9 @@ Function DAP_OneTimeCallAfterDAQ(panelTitle, [forcedStop, startTPAfterDAQ])
 
 	NVAR count = $GetCount(panelTitle)
 	count = 0
+
+	NVAR activeSetCount = $GetActiveSetCount(panelTitle)
+	activeSetCount = NaN
 
 	SetValDisplay(panelTitle, "valdisp_DataAcq_ITICountdown", var = 0)
 
