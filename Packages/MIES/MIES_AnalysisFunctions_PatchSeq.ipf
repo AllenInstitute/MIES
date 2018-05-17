@@ -821,6 +821,8 @@ static Function/WAVE PSQ_SearchForSpikes(panelTitle, type, sweepWave, headstage,
 		endif
 	endif
 
+	ASSERT(IsFinite(spikeDetection[headstage]), "Expected finite result")
+
 	return spikeDetection
 End
 
