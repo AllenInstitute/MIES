@@ -881,6 +881,9 @@ End
 /// @brief Return the last numerical value for the given setting of *each*
 ///        sweep in the same RA cycle.
 ///
+/// The returned wave will have `NaN` for sweeps which do not have that entry.
+/// This is done in order to keep the indizes intact.
+///
 /// @ingroup LabnotebookQueryFunctions
 /// @sa GetLastSetting()
 Function/WAVE GetLastSettingIndepEachRAC(numericalValues, sweepNo, setting, entrySourceType, [defValue])
@@ -914,6 +917,9 @@ End
 
 /// @brief Return the last textual value for the given setting of *each* sweep
 ///        in the same RA cycle.
+///
+/// The returned wave will have `NaN` for sweeps which do not have that entry.
+/// This is done in order to keep the indizes intact.
 ///
 /// @ingroup LabnotebookQueryFunctions
 /// @sa GetLastSetting()
@@ -949,6 +955,9 @@ End
 
 /// @brief Return the last numerical value for the given setting of *each*
 ///        sweep for a given headstage in the same RA cycle.
+///
+/// The returned wave will have `NaN` for sweeps which do not have that entry.
+/// This is done in order to keep the indizes intact.
 ///
 /// @ingroup LabnotebookQueryFunctions
 /// @sa GetLastSetting
@@ -988,6 +997,9 @@ End
 
 /// @brief Return the last textual value for the given setting of *each* sweep
 ///        for a given headstage in the same RA cycle.
+///
+/// The returned wave will have `NaN` for sweeps which do not have that entry.
+/// This is done in order to keep the indizes intact.
 ///
 /// @ingroup LabnotebookQueryFunctions
 /// @sa GetLastSetting()
