@@ -1164,7 +1164,7 @@ Function PSQ_DAScale(panelTitle, s)
 			DEBUGPRINT(msg)
 
 			if(skiptoEnd)
-				RA_SkipSweeps(panelTitle, inf)
+				RA_SkipSweeps(panelTitle, inf, limitToSetBorder = 1)
 				return NaN
 			endif
 
@@ -1411,7 +1411,7 @@ Function PSQ_SquarePulse(panelTitle, s)
 
 					sweepPassed = 1
 
-					RA_SkipSweeps(panelTitle, inf)
+					RA_SkipSweeps(panelTitle, inf, limitToSetBorder = 1)
 				elseif(CheckIfClose(stepSize, PSQ_SP_INIT_AMP_p100))
 					PSQ_StoreStepSizeInLBN(panelTitle, s.sweepNo, PSQ_SP_INIT_AMP_m50)
 					stepsize = PSQ_SP_INIT_AMP_m50
@@ -1654,7 +1654,7 @@ Function PSQ_Rheobase(panelTitle, s)
 				key = PSQ_CreateLBNKey(PSQ_RHEOBASE, PSQ_FMT_LBN_SET_PASS)
 				result[INDEP_HEADSTAGE] = 1
 				ED_AddEntryToLabnotebook(panelTitle, key, result, unit = LABNOTEBOOK_BINARY_UNIT)
-				RA_SkipSweeps(panelTitle, inf)
+				RA_SkipSweeps(panelTitle, inf, limitToSetBorder = 1)
 				break
 			endif
 
@@ -1681,7 +1681,7 @@ Function PSQ_Rheobase(panelTitle, s)
 				key = PSQ_CreateLBNKey(PSQ_RHEOBASE, PSQ_FMT_LBN_RB_DASCALE_EXC)
 				ED_AddEntryToLabnotebook(panelTitle, key, result, unit = LABNOTEBOOK_BINARY_UNIT)
 
-				RA_SkipSweeps(panelTitle, inf)
+				RA_SkipSweeps(panelTitle, inf, limitToSetBorder = 1)
 				break
 			endif
 
@@ -1952,7 +1952,7 @@ Function PSQ_Ramp(panelTitle, s)
 			DEBUGPRINT(msg)
 
 			if(skiptoEnd)
-				RA_SkipSweeps(panelTitle, inf)
+				RA_SkipSweeps(panelTitle, inf, limitToSetBorder = 1)
 			endif
 
 			break
