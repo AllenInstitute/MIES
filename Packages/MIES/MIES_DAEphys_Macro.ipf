@@ -3215,7 +3215,7 @@ Window DA_Ephys() : Panel
 	PopupMenu Popup_Settings_SampIntMult,userdata(ResizeControlsInfo)= A"!!,Go!!#B)!!#AL!!#<Pz!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	PopupMenu Popup_Settings_SampIntMult,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	PopupMenu Popup_Settings_SampIntMult,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
-	PopupMenu Popup_Settings_SampIntMult,mode=1,popvalue="1",value= #"\"1;2;4;8;16;32;64\""
+	PopupMenu Popup_Settings_SampIntMult,mode=1,popvalue="1",value= #"DAP_GetSamplingMultiplier()"
 	CheckBox Check_Settings_NwbExport,pos={34.00,216.00},size={102.00,15.00},disable=1,proc=DAP_CheckProc_UpdateGuiState,title="Export into NWB"
 	CheckBox Check_Settings_NwbExport,help={"Export all data including sweeps into a file in the NeurodataWithoutBorders fornat,"}
 	CheckBox Check_Settings_NwbExport,userdata(tabnum)=  "5"
@@ -3558,7 +3558,7 @@ Window DA_Ephys() : Panel
 	SetVariable SetVar_DataAcq_skipAhead,help={"Skip sweeps in selected stimulus set(s) on data acquisition initialization."}
 	SetVariable SetVar_DataAcq_skipAhead,userdata(tabnum)=  "0"
 	SetVariable SetVar_DataAcq_skipAhead,userdata(tabcontrol)=  "ADC"
-	SetVariable SetVar_DataAcq_skipAhead,limits={0,3,1},value= _NUM:0
+	SetVariable SetVar_DataAcq_skipAhead,limits={0,0,1},value= _NUM:0
 	CheckBox check_DA_applyOnModeSwitch,pos={347.00,692.00},size={134.00,15.00},disable=1,proc=DAP_CheckProc_UpdateGuiState,title="Apply on mode switch"
 	CheckBox check_DA_applyOnModeSwitch,help={"Apply clamp mode all-channel DA settings on mode switch"}
 	CheckBox check_DA_applyOnModeSwitch,userdata(tabnum)=  "1"

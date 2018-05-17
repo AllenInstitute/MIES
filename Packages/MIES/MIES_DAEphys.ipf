@@ -4672,3 +4672,11 @@ Function DAP_PopMenuProc_UpdateGuiState(pa) : PopupMenuControl
 
 	return 0
 End
+
+/// @brief Return the list of available sampling multipliers
+///
+/// Has no `NONE` element as `1` means no multiplier.
+Function/S DAP_GetSamplingMultiplier()
+
+	return "1;2;4;8;16;32;64"
+End
