@@ -514,6 +514,10 @@ static Function/WAVE WB_MakeWaveBuilderWave(WP, WPT, SegWvType, stepCount, numEp
 	variable i, j, type, accumulatedDuration, pulseToPulseLength
 	STRUCT SegmentParameters params
 
+	if(stepCount == 0)
+		AddEntryIntoWaveNoteAsList(WaveBuilderWave, "Version", var=STIMSET_NOTE_VERSION, appendCR = 1)
+	endif
+
 	for(i=0; i < numEpochs; i+=1)
 		type = SegWvType[i]
 
@@ -733,6 +737,8 @@ static Function/WAVE WB_MakeWaveBuilderWave(WP, WPT, SegWvType, stepCount, numEp
 	// add stimset entries at last step
 	if(stepCount + 1 == SegWvType[101])
 		AddEntryIntoWaveNoteAsList(WaveBuilderWave, "Stimset")
+		AddEntryIntoWaveNoteAsList(WaveBuilderWave, "Sweep Count", var=SegWvType[101])
+		AddEntryIntoWaveNoteAsList(WaveBuilderWave, "Epoch Count" , var=numEpochs)
 		AddEntryIntoWaveNoteAsList(WaveBuilderWave, "ITI", var=SegWvType[99])
 		AddEntryIntoWaveNoteAsList(WaveBuilderWave, StringFromList(PRE_DAQ_EVENT, EVENT_NAME_LIST), str=WPT[1][99])
 		AddEntryIntoWaveNoteAsList(WaveBuilderWave, StringFromList(MID_SWEEP_EVENT, EVENT_NAME_LIST), str=WPT[2][99])

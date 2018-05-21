@@ -2172,6 +2172,12 @@ static Function WBP_AnaFuncsToWPT()
 
 	func = GetPopupMenuString(panel, "popup_af_generic_S9")
 	WPT[9][99] = SelectString(cmpstr(func, NONE), "", func)
+
+	// clear deprecated entries for single analysis function events
+	if(cmpstr(func, NONE))
+		WPT[1, 5][99] = ""
+		WPT[8][99]    = ""
+	endif
 End
 
 /// Wrapper functions to be used in GUI recreation macros
