@@ -15,8 +15,8 @@
 /// Mainly useful for temporaries which you want to recreate on initialization
 static Function IH_KillTemporaries()
 
-	string trashFolders, path, allFolders, list
-	variable numFolders, i
+	string trashFolders, path, allFolders, list, panelTitle
+	variable numFolders, i, numEntries
 
 	DFREF dfr = GetMiesPath()
 
@@ -37,6 +37,16 @@ static Function IH_KillTemporaries()
 	DFREF dfr = GetWaveBuilderDataPath()
 	list = GetListOfObjects(dfr, SEGMENTWAVE_SPECTRUM_PREFIX + ".*", fullPath=1)
 	CallFunctionForEachListItem(KillOrMoveToTrashPath, list)
+
+	KillOrMoveToTrash(wv=GetTestPulse())
+
+	list = GetAllDevicesWithContent()
+	numEntries = ItemsInList(list)
+	for(i = 0; i < numEntries; i += 1)
+		panelTitle = StringFromList(i, list)
+		KillOrMoveToTrash(wv=GetITCDataWave(panelTitle))
+		KillOrMoveToTrash(wv=P_GetITCData(panelTitle))
+	endfor
 End
 
 /// @brief Remove the amplifier connection waves
@@ -124,7 +134,20 @@ End
 static Function IgorBeforeNewHook(igorApplicationNameStr)
 	string igorApplicationNameStr
 
+	variable modifiedBefore, modifiedAfter
+
+	ExperimentModified
+	modifiedBefore = V_flag
+
 	IH_Cleanup()
+
+	ExperimentModified
+	modifiedAfter = V_flag
+
+	if(!modifiedBefore && modifiedAfter && cmpstr(UNTITLED_EXPERIMENT, GetExperimentName()))
+		SaveExperiment
+	endif
+
 	StartZeroMQMessageHandler()
 
 	return 0

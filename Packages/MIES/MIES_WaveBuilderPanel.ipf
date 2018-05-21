@@ -2304,6 +2304,9 @@ Function WBP_MainWindowHook(s)
 	variable numEntries, i, loc
 
 	switch(s.eventCode)
+		case 2:
+			KillOrMoveToTrash(dfr = GetWaveBuilderDataPath())
+			break
 		case 5:
 
 		win = s.winName

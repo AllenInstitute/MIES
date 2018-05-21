@@ -2690,6 +2690,36 @@ Function/WAVE GetWBEpochCombineList()
 
 	return wv
 End
+
+/// @brief Returns the segment wave which stores the stimulus set of one segment/epoch
+/// @param duration time of the stimulus in ms
+Function/Wave GetSegmentWave([duration])
+	variable duration
+
+	DFREF dfr = GetWaveBuilderDataPath()
+	variable numPoints = duration / HARDWARE_ITC_MIN_SAMPINT
+	Wave/Z/SDFR=dfr SegmentWave
+
+	if(ParamIsDefault(duration))
+		return segmentWave
+	endif
+
+	if(duration > MAX_SWEEP_DURATION_IN_MS)
+		DoAbortNow("Sweeps are currently limited to 30 minutes in duration.\rAdjust MAX_SWEEP_DURATION_IN_MS to change that!")
+	endif
+
+	// optimization: recreate the wave only if necessary or just resize it
+	if(!WaveExists(SegmentWave))
+		Make/N=(numPoints) dfr:SegmentWave/Wave=SegmentWave
+	elseif(numPoints != DimSize(SegmentWave, ROWS))
+		Redimension/N=(numPoints) SegmentWave
+	endif
+
+	SetScale/P x 0, HARDWARE_ITC_MIN_SAMPINT, "ms", SegmentWave
+
+	return SegmentWave
+End
+
 /// @}
 
 /// @name Asynchronous Measurements
