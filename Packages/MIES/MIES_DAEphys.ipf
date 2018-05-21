@@ -995,6 +995,9 @@ Function DAP_OneTimeCallBeforeDAQ(panelTitle, runMode)
 	NVAR count = $GetCount(panelTitle)
 	count = 0
 
+	NVAR activeSetCount = $GetActiveSetCount(panelTitle)
+	activeSetCount = IDX_CalculcateActiveSetCount(panelTitle)
+
 	NVAR repurposeTime = $GetRepurposedSweepTime(panelTitle)
 	repurposeTime = 0
 
@@ -1117,6 +1120,9 @@ Function DAP_OneTimeCallAfterDAQ(panelTitle, [forcedStop, startTPAfterDAQ])
 
 	NVAR count = $GetCount(panelTitle)
 	count = 0
+
+	NVAR activeSetCount = $GetActiveSetCount(panelTitle)
+	activeSetCount = NaN
 
 	SetValDisplay(panelTitle, "valdisp_DataAcq_ITICountdown", var = 0)
 
@@ -4671,4 +4677,12 @@ Function DAP_PopMenuProc_UpdateGuiState(pa) : PopupMenuControl
 	endswitch
 
 	return 0
+End
+
+/// @brief Return the list of available sampling multipliers
+///
+/// Has no `NONE` element as `1` means no multiplier.
+Function/S DAP_GetSamplingMultiplier()
+
+	return "1;2;4;8;16;32;64"
 End

@@ -1,9 +1,9 @@
 digraph G {
     fontname="sans-serif";
-    compound="true";
+    penwidth="0.1";
     ratio="0,01";
     center="true";
-    penwidth="0.1";
+    compound="true";
     edge [comment="Wildcard edge",
           fontname="sans-serif",
           fontsize=10,
@@ -36,7 +36,6 @@ digraph G {
     "Disable \"dDAQ\"/\"oodDAQ\"";
     "Enable \"Repeated Acquisition\"";
     "Check if no TTL channels are active";
-    "Check that the default sampling multiplier is 4";
     "Prepare DAQ Event" -> "Enable \"Autobias\"";
     "Prepare DAQ Event" -> "Enable \"TP during ITI\"";
     "Prepare DAQ Event" -> "Valid Autobias voltage (finite and non-zero)";
@@ -47,7 +46,6 @@ digraph G {
     "All checks passed";
     "Valid Autobias voltage (finite and non-zero)" -> "All checks passed";
     "Check if no TTL channels are active" -> "All checks passed";
-    "Check that the default sampling multiplier is 4" -> "All checks passed";
     "Mark set as passed if $NUM_DA_SCALES sweeps passed, as failure otherwise";
     "Post Set Event" -> "Mark set as passed if $NUM_DA_SCALES sweeps passed, as failure otherwise";
     "Last Sweep passed?";
@@ -100,11 +98,11 @@ digraph G {
     "Stimset is large enough";
     "Prepare DAQ Event" -> "Stimset is large enough";
     "Stimset is large enough" -> "All checks passed";
-    "All required analysis parameters present?\n DAScale : numeric wave\n OperationMode: string";
-    "Prepare DAQ Event" -> "All required analysis parameters present?\n DAScale : numeric wave\n OperationMode: string";
-    "All required analysis parameters present?\n DAScale : numeric wave\n OperationMode: string" -> "All checks passed";
+    "All required analysis parameters present?\n DAScale : numeric wave\n OperationMode: string\nSamplingMultiplier: variable";
+    "Prepare DAQ Event" -> "All required analysis parameters present?\n DAScale : numeric wave\n OperationMode: string\nSamplingMultiplier: variable";
+    "All required analysis parameters present?\n DAScale : numeric wave\n OperationMode: string\nSamplingMultiplier: variable" -> "All checks passed";
     "Get OperationMode";
-    "All required analysis parameters present?\n DAScale : numeric wave\n OperationMode: string" -> "Get OperationMode";
+    "All required analysis parameters present?\n DAScale : numeric wave\n OperationMode: string\nSamplingMultiplier: variable" -> "Get OperationMode";
     "Look for an existing and passing rheobase sweep\n within a passing set and\n a pulse duration of more than 500ms";
     "Get OperationMode" -> "Look for an existing and passing rheobase sweep\n within a passing set and\n a pulse duration of more than 500ms"  [label="Supra"];
     "Look for an existing and passing rheobase sweep\n within a passing set and\n a pulse duration of more than 500ms" -> "Abort"  [label="Not found"];

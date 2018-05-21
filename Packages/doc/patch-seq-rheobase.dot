@@ -44,7 +44,6 @@ digraph G {
         "Enable \"Repeated Acquisition\"";
         "Valid Autobias voltage (finite and non-zero)";
         "Check if no TTL channels are active";
-        "Check that the default sampling multiplier is 4";
         "Prepare DAQ Event" -> "Enable \"Autobias\"";
         "Prepare DAQ Event" -> "Set \"TP during ITI\"";
         "Prepare DAQ Event" -> "Valid Autobias voltage (finite and non-zero)";
@@ -55,12 +54,14 @@ digraph G {
         "Set \"TP during ITI\"";
         "Valid Autobias voltage (finite and non-zero)" -> "All checks passed";
         "Check if no TTL channels are active" -> "All checks passed";
-        "Check that the default sampling multiplier is 4" -> "All checks passed";
         "All checks passed" -> "Abort"  [label="No"];
         "Prepare DAQ Event" -> "Set \"ITI\" to 4s";
         "Prepare DAQ Event" -> "Search for final DAScale in one of the existing sweeps";
         "Prepare DAQ Event" -> "Enable \"Repeated Acquisition\"";
         "Post DAQ Event" -> "Update Dashboard";
+        "All required analysis parameters present?\nSamplingMultiplier: variable";
+        "Prepare DAQ Event" -> "All required analysis parameters present?\nSamplingMultiplier: variable";
+        "All required analysis parameters present?\nSamplingMultiplier: variable" -> "All checks passed";
     }
 
     "Mark set as failed if it has not yet passed";

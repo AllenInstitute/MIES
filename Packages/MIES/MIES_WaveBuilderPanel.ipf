@@ -2620,6 +2620,7 @@ static Function WBP_UpdateParameterWave()
 	for(i = 0; i < numEntries; i += 1)
 		name = StringFromList(i, missingParams)
 		listWave[offset + i][%Name] = name
+		listWave[offset + i][%Type] = AFH_GetAnalysisParamType(name, reqParams, typeCheck = 0)
 	endfor
 End
 

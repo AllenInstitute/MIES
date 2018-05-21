@@ -29,7 +29,6 @@ digraph G {
     "Disable \"dDAQ\"/\"oodDAQ\"";
     "Enable \"Repeated Acquisition\"";
     "Check if no TTL channels are active";
-    "Check that the default sampling multiplier is 4";
     "Prepare DAQ Event" -> "Check if mode is IC";
     "Prepare DAQ Event" -> "Set \"TP inserting\" to disabled";
     "Prepare DAQ Event" -> "Set \"TP during ITI\" to disabled";
@@ -41,7 +40,6 @@ digraph G {
     "All checks passed";
     "Check if mode is IC" -> "All checks passed";
     "Check if no TTL channels are active" -> "All checks passed";
-    "Check that the default sampling multiplier is 4" -> "All checks passed";
     "Set \"TP during ITI\" to disabled";
     "Spike detected?\n(x range: pulse onset to end of sweep\ny condition: max above 0.01mV)\nStore result in labnotebook";
     "Post Sweep Event" -> "Spike detected?\n(x range: pulse onset to end of sweep\ny condition: max above 0.01mV)\nStore result in labnotebook";
@@ -80,4 +78,7 @@ digraph G {
     "Offset DAScale by +100pA" -> "Mark sweep as failed";
     "Start DAQ/RA" -> "Post Set Event";
     "Post Set Event" -> "Mark set as passed if 1 sweep passed, as failure otherwise";
+    "All required analysis parameters present?\nSamplingMultiplier: variable";
+    "Prepare DAQ Event" -> "All required analysis parameters present?\nSamplingMultiplier: variable";
+    "All required analysis parameters present?\nSamplingMultiplier: variable" -> "All checks passed";
 }

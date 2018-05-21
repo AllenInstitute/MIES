@@ -301,7 +301,8 @@ End
 /// @brief Return the active set count
 ///
 /// Active set count keeps track of how many steps of the largest currently
-/// selected set on all active channels has been taken
+/// selected set on all active channels still have to be done. Not counting the
+/// currently acquiring sweep.
 Function/S GetActiveSetCount(panelTitle)
 	string panelTitle
 
