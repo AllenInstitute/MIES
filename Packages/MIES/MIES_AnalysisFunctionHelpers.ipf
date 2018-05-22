@@ -17,8 +17,7 @@
 /// GetDACListFromConfig()        | Free wave with all active DA channels as entries
 /// GetLBNumericalValues()        | Wave reference to the labnotebook (numerical version)
 /// GetLBTextualValues()          | Wave reference to the labnotebook (textual version)
-/// GetLastSetting()              | Last documented numerical value for headstages of a specific setting in the labnotebook for a given sweep number.
-/// GetLastSettingText()          | Last documented textual value for headstages of a specific setting in the labnotebook for a given sweep number.
+/// GetLastSetting()              | Last documented value for headstages of a specific setting in the labnotebook for a given sweep number.
 /// GetLastSweepWithSetting()     | Last documented numerical value for headstages of a specific setting in the labnotebook and the sweep number it was set last.
 /// GetLastSweepWithSettingText() | Last documented textual value for headstages of a specific setting in the labnotebook and the sweep number it was set last.
 /// ED_AddEntryToLabnotebook()    | Add a user entry to the numerical/textual labnotebook

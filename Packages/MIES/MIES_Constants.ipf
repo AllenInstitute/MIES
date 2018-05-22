@@ -778,7 +778,7 @@ Constant REASON_HEADSTAGE_CHANGE       = 0x02
 Constant REASON_STIMSET_CHANGE_DUR_DAQ = 0x04
 /// @}
 
-/// Parameters for GetLastSetting()/GetLastSettingText() for using the row caching
+/// Parameters for GetLastSetting() for using the row caching
 /// mechanism.
 Constant LABNOTEBOOK_GET_RANGE = -1
 

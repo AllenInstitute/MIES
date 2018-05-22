@@ -330,7 +330,7 @@ static Function AB_FillListWave(fileName, device, dataFolder, sweepNums)
 			list[index][%'#headstages'][0] = "unknown"
 		endif
 
-		WAVE/T/Z settingsText = GetLastSettingText(textualValues, sweepNo, "Stim Wave Name", DATA_ACQUISITION_MODE)
+		WAVE/T/Z settingsText = GetLastSetting(textualValues, sweepNo, "Stim Wave Name", DATA_ACQUISITION_MODE)
 		numRows = WaveExists(settingsText) ? NUM_HEADSTAGES : 0
 
 		WAVE/Z settings = GetLastSetting(numericalValues, sweepNo, "Set Sweep Count", DATA_ACQUISITION_MODE)

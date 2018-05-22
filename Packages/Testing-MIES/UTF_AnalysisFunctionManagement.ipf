@@ -275,31 +275,31 @@ static Function AFT_Test1()
 
 	WAVE/T textualValues = GetLBTextualValues(DEVICE)
 	key = StringFromList(PRE_DAQ_EVENT, EVENT_NAME_LIST_LBN)
-	WAVE/T/Z anaFuncs = GetLastSettingText(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
+	WAVE/T/Z anaFuncs = GetLastSetting(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
 	CHECK(!WaveExists(anaFuncs))
 
 	key = StringFromList(PRE_SWEEP_EVENT, EVENT_NAME_LIST_LBN)
-	WAVE/T/Z anaFuncs = GetLastSettingText(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
+	WAVE/T/Z anaFuncs = GetLastSetting(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
 	CHECK(!WaveExists(anaFuncs))
 
 	key = StringFromList(MID_SWEEP_EVENT, EVENT_NAME_LIST_LBN)
-	WAVE/T/Z anaFuncs = GetLastSettingText(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
+	WAVE/T/Z anaFuncs = GetLastSetting(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
 	CHECK(!WaveExists(anaFuncs))
 
 	key = StringFromList(POST_SWEEP_EVENT, EVENT_NAME_LIST_LBN)
-	WAVE/T/Z anaFuncs = GetLastSettingText(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
+	WAVE/T/Z anaFuncs = GetLastSetting(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
 	CHECK(!WaveExists(anaFuncs))
 
 	key = StringFromList(POST_SET_EVENT, EVENT_NAME_LIST_LBN)
-	WAVE/T/Z anaFuncs = GetLastSettingText(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
+	WAVE/T/Z anaFuncs = GetLastSetting(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
 	CHECK(!WaveExists(anaFuncs))
 
 	key = StringFromList(POST_DAQ_EVENT, EVENT_NAME_LIST_LBN)
-	WAVE/T/Z anaFuncs = GetLastSettingText(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
+	WAVE/T/Z anaFuncs = GetLastSetting(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
 	CHECK(!WaveExists(anaFuncs))
 
 	key = StringFromList(GENERIC_EVENT, EVENT_NAME_LIST_LBN)
-	WAVE/T/Z anaFuncs = GetLastSettingText(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
+	WAVE/T/Z anaFuncs = GetLastSetting(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
 	CHECK(!WaveExists(anaFuncs))
 End
 
@@ -331,31 +331,31 @@ static Function AFT_Test2()
 
 	WAVE/T textualValues = GetLBTextualValues(DEVICE)
 	key = StringFromList(PRE_DAQ_EVENT, EVENT_NAME_LIST_LBN)
-	WAVE/T/Z anaFuncs = GetLastSettingText(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
+	WAVE/T/Z anaFuncs = GetLastSetting(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
 	CHECK(!WaveExists(anaFuncs))
 
 	key = StringFromList(PRE_SWEEP_EVENT, EVENT_NAME_LIST_LBN)
-	WAVE/T/Z anaFuncs = GetLastSettingText(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
+	WAVE/T/Z anaFuncs = GetLastSetting(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
 	CHECK(!WaveExists(anaFuncs))
 
 	key = StringFromList(MID_SWEEP_EVENT, EVENT_NAME_LIST_LBN)
-	WAVE/T/Z anaFuncs = GetLastSettingText(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
+	WAVE/T/Z anaFuncs = GetLastSetting(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
 	CHECK(!WaveExists(anaFuncs))
 
 	key = StringFromList(POST_SWEEP_EVENT, EVENT_NAME_LIST_LBN)
-	WAVE/T/Z anaFuncs = GetLastSettingText(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
+	WAVE/T/Z anaFuncs = GetLastSetting(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
 	CHECK(!WaveExists(anaFuncs))
 
 	key = StringFromList(POST_SET_EVENT, EVENT_NAME_LIST_LBN)
-	WAVE/T/Z anaFuncs = GetLastSettingText(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
+	WAVE/T/Z anaFuncs = GetLastSetting(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
 	CHECK(!WaveExists(anaFuncs))
 
 	key = StringFromList(POST_DAQ_EVENT, EVENT_NAME_LIST_LBN)
-	WAVE/T/Z anaFuncs = GetLastSettingText(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
+	WAVE/T/Z anaFuncs = GetLastSetting(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
 	CHECK(!WaveExists(anaFuncs))
 
 	key = StringFromList(GENERIC_EVENT, EVENT_NAME_LIST_LBN)
-	WAVE/T/Z anaFuncs = GetLastSettingText(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
+	WAVE/T/Z anaFuncs = GetLastSetting(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
 	CHECK(!WaveExists(anaFuncs))
 End
 
@@ -391,37 +391,37 @@ static Function AFT_Test3()
 
 	WAVE/T textualValues = GetLBTextualValues(DEVICE)
 	key = StringFromList(PRE_DAQ_EVENT, EVENT_NAME_LIST_LBN)
-	WAVE/T/Z anaFuncs = GetLastSettingText(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
+	WAVE/T/Z anaFuncs = GetLastSetting(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
 	CHECK_WAVE(anaFuncs, TEXT_WAVE)
 	CHECK_EQUAL_TEXTWAVES(anaFuncs, {"ValidFunc_V1", "", "", "", "", "", "", "", ""})
 
 	key = StringFromList(PRE_SWEEP_EVENT, EVENT_NAME_LIST_LBN)
-	WAVE/T/Z anaFuncs = GetLastSettingText(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
+	WAVE/T/Z anaFuncs = GetLastSetting(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
 	CHECK_WAVE(anaFuncs, TEXT_WAVE)
 	CHECK_EQUAL_TEXTWAVES(anaFuncs, {"ValidFunc_V1", "", "", "", "", "", "", "", ""})
 
 	key = StringFromList(MID_SWEEP_EVENT, EVENT_NAME_LIST_LBN)
-	WAVE/T/Z anaFuncs = GetLastSettingText(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
+	WAVE/T/Z anaFuncs = GetLastSetting(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
 	CHECK_WAVE(anaFuncs, TEXT_WAVE)
 	CHECK_EQUAL_TEXTWAVES(anaFuncs, {"ValidFunc_V1", "", "", "", "", "", "", "", ""})
 
 	key = StringFromList(POST_SWEEP_EVENT, EVENT_NAME_LIST_LBN)
-	WAVE/T/Z anaFuncs = GetLastSettingText(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
+	WAVE/T/Z anaFuncs = GetLastSetting(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
 	CHECK_WAVE(anaFuncs, TEXT_WAVE)
 	CHECK_EQUAL_TEXTWAVES(anaFuncs, {"ValidFunc_V1", "", "", "", "", "", "", "", ""})
 
 	key = StringFromList(POST_SET_EVENT, EVENT_NAME_LIST_LBN)
-	WAVE/T/Z anaFuncs = GetLastSettingText(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
+	WAVE/T/Z anaFuncs = GetLastSetting(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
 	CHECK_WAVE(anaFuncs, TEXT_WAVE)
 	CHECK_EQUAL_TEXTWAVES(anaFuncs, {"ValidFunc_V1", "", "", "", "", "", "", "", ""})
 
 	key = StringFromList(POST_DAQ_EVENT, EVENT_NAME_LIST_LBN)
-	WAVE/T/Z anaFuncs = GetLastSettingText(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
+	WAVE/T/Z anaFuncs = GetLastSetting(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
 	CHECK_WAVE(anaFuncs, TEXT_WAVE)
 	CHECK_EQUAL_TEXTWAVES(anaFuncs, {"ValidFunc_V1", "", "", "", "", "", "", "", ""})
 
 	key = StringFromList(GENERIC_EVENT, EVENT_NAME_LIST_LBN)
-	WAVE/T/Z anaFuncs = GetLastSettingText(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
+	WAVE/T/Z anaFuncs = GetLastSetting(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
 	CHECK(!WaveExists(anaFuncs))
 End
 
@@ -457,37 +457,37 @@ static Function AFT_Test4()
 
 	WAVE/T textualValues = GetLBTextualValues(DEVICE)
 	key = StringFromList(PRE_DAQ_EVENT, EVENT_NAME_LIST_LBN)
-	WAVE/T/Z anaFuncs = GetLastSettingText(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
+	WAVE/T/Z anaFuncs = GetLastSetting(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
 	CHECK_WAVE(anaFuncs, TEXT_WAVE)
 	CHECK_EQUAL_TEXTWAVES(anaFuncs, {"ValidFunc_V1", "", "", "", "", "", "", "", ""})
 
 	key = StringFromList(PRE_SWEEP_EVENT, EVENT_NAME_LIST_LBN)
-	WAVE/T/Z anaFuncs = GetLastSettingText(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
+	WAVE/T/Z anaFuncs = GetLastSetting(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
 	CHECK_WAVE(anaFuncs, TEXT_WAVE)
 	CHECK_EQUAL_TEXTWAVES(anaFuncs, {"ValidFunc_V1", "", "", "", "", "", "", "", ""})
 
 	key = StringFromList(MID_SWEEP_EVENT, EVENT_NAME_LIST_LBN)
-	WAVE/T/Z anaFuncs = GetLastSettingText(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
+	WAVE/T/Z anaFuncs = GetLastSetting(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
 	CHECK_WAVE(anaFuncs, TEXT_WAVE)
 	CHECK_EQUAL_TEXTWAVES(anaFuncs, {"ValidFunc_V1", "", "", "", "", "", "", "", ""})
 
 	key = StringFromList(POST_SWEEP_EVENT, EVENT_NAME_LIST_LBN)
-	WAVE/T/Z anaFuncs = GetLastSettingText(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
+	WAVE/T/Z anaFuncs = GetLastSetting(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
 	CHECK_WAVE(anaFuncs, TEXT_WAVE)
 	CHECK_EQUAL_TEXTWAVES(anaFuncs, {"ValidFunc_V1", "", "", "", "", "", "", "", ""})
 
 	key = StringFromList(POST_SET_EVENT, EVENT_NAME_LIST_LBN)
-	WAVE/T/Z anaFuncs = GetLastSettingText(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
+	WAVE/T/Z anaFuncs = GetLastSetting(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
 	CHECK_WAVE(anaFuncs, TEXT_WAVE)
 	CHECK_EQUAL_TEXTWAVES(anaFuncs, {"ValidFunc_V1", "", "", "", "", "", "", "", ""})
 
 	key = StringFromList(POST_DAQ_EVENT, EVENT_NAME_LIST_LBN)
-	WAVE/T/Z anaFuncs = GetLastSettingText(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
+	WAVE/T/Z anaFuncs = GetLastSetting(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
 	CHECK_WAVE(anaFuncs, TEXT_WAVE)
 	CHECK_EQUAL_TEXTWAVES(anaFuncs, {"ValidFunc_V1", "", "", "", "", "", "", "", ""})
 
 	key = StringFromList(GENERIC_EVENT, EVENT_NAME_LIST_LBN)
-	WAVE/T/Z anaFuncs = GetLastSettingText(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
+	WAVE/T/Z anaFuncs = GetLastSetting(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
 	CHECK(!WaveExists(anaFuncs))
 End
 
@@ -523,32 +523,32 @@ static Function AFT_Test5()
 
 	WAVE/T textualValues = GetLBTextualValues(DEVICE)
 	key = StringFromList(PRE_DAQ_EVENT, EVENT_NAME_LIST_LBN)
-	WAVE/T/Z anaFuncs = GetLastSettingText(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
+	WAVE/T/Z anaFuncs = GetLastSetting(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
 	CHECK_WAVE(anaFuncs, TEXT_WAVE)
 	CHECK_EQUAL_TEXTWAVES(anaFuncs, {"ValidFunc_V2", "", "", "", "", "", "", "", ""})
 
 	key = StringFromList(PRE_SWEEP_EVENT, EVENT_NAME_LIST_LBN)
-	WAVE/T/Z anaFuncs = GetLastSettingText(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
+	WAVE/T/Z anaFuncs = GetLastSetting(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
 	CHECK_WAVE(anaFuncs, TEXT_WAVE)
 	CHECK_EQUAL_TEXTWAVES(anaFuncs, {"ValidFunc_V2", "", "", "", "", "", "", "", ""})
 
 	key = StringFromList(MID_SWEEP_EVENT, EVENT_NAME_LIST_LBN)
-	WAVE/T/Z anaFuncs = GetLastSettingText(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
+	WAVE/T/Z anaFuncs = GetLastSetting(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
 	CHECK_WAVE(anaFuncs, TEXT_WAVE)
 	CHECK_EQUAL_TEXTWAVES(anaFuncs, {"ValidFunc_V2", "", "", "", "", "", "", "", ""})
 
 	key = StringFromList(POST_SWEEP_EVENT, EVENT_NAME_LIST_LBN)
-	WAVE/T/Z anaFuncs = GetLastSettingText(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
+	WAVE/T/Z anaFuncs = GetLastSetting(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
 	CHECK_WAVE(anaFuncs, TEXT_WAVE)
 	CHECK_EQUAL_TEXTWAVES(anaFuncs, {"ValidFunc_V2", "", "", "", "", "", "", "", ""})
 
 	key = StringFromList(POST_SET_EVENT, EVENT_NAME_LIST_LBN)
-	WAVE/T/Z anaFuncs = GetLastSettingText(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
+	WAVE/T/Z anaFuncs = GetLastSetting(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
 	CHECK_WAVE(anaFuncs, TEXT_WAVE)
 	CHECK_EQUAL_TEXTWAVES(anaFuncs, {"ValidFunc_V2", "", "", "", "", "", "", "", ""})
 
 	key = StringFromList(POST_DAQ_EVENT, EVENT_NAME_LIST_LBN)
-	WAVE/T/Z anaFuncs = GetLastSettingText(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
+	WAVE/T/Z anaFuncs = GetLastSetting(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
 	CHECK_WAVE(anaFuncs, TEXT_WAVE)
 	CHECK_EQUAL_TEXTWAVES(anaFuncs, {"ValidFunc_V2", "", "", "", "", "", "", "", ""})
 End
@@ -585,37 +585,37 @@ static Function AFT_Test6()
 
 	WAVE/T textualValues = GetLBTextualValues(DEVICE)
 	key = StringFromList(PRE_DAQ_EVENT, EVENT_NAME_LIST_LBN)
-	WAVE/T/Z anaFuncs = GetLastSettingText(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
+	WAVE/T/Z anaFuncs = GetLastSetting(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
 	CHECK_WAVE(anaFuncs, TEXT_WAVE)
 	CHECK_EQUAL_TEXTWAVES(anaFuncs, {"ValidFunc_V2", "", "", "", "", "", "", "", ""})
 
 	key = StringFromList(PRE_SWEEP_EVENT, EVENT_NAME_LIST_LBN)
-	WAVE/T/Z anaFuncs = GetLastSettingText(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
+	WAVE/T/Z anaFuncs = GetLastSetting(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
 	CHECK_WAVE(anaFuncs, TEXT_WAVE)
 	CHECK_EQUAL_TEXTWAVES(anaFuncs, {"ValidFunc_V2", "", "", "", "", "", "", "", ""})
 
 	key = StringFromList(MID_SWEEP_EVENT, EVENT_NAME_LIST_LBN)
-	WAVE/T/Z anaFuncs = GetLastSettingText(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
+	WAVE/T/Z anaFuncs = GetLastSetting(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
 	CHECK_WAVE(anaFuncs, TEXT_WAVE)
 	CHECK_EQUAL_TEXTWAVES(anaFuncs, {"ValidFunc_V2", "", "", "", "", "", "", "", ""})
 
 	key = StringFromList(POST_SWEEP_EVENT, EVENT_NAME_LIST_LBN)
-	WAVE/T/Z anaFuncs = GetLastSettingText(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
+	WAVE/T/Z anaFuncs = GetLastSetting(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
 	CHECK_WAVE(anaFuncs, TEXT_WAVE)
 	CHECK_EQUAL_TEXTWAVES(anaFuncs, {"ValidFunc_V2", "", "", "", "", "", "", "", ""})
 
 	key = StringFromList(POST_SET_EVENT, EVENT_NAME_LIST_LBN)
-	WAVE/T/Z anaFuncs = GetLastSettingText(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
+	WAVE/T/Z anaFuncs = GetLastSetting(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
 	CHECK_WAVE(anaFuncs, TEXT_WAVE)
 	CHECK_EQUAL_TEXTWAVES(anaFuncs, {"ValidFunc_V2", "", "", "", "", "", "", "", ""})
 
 	key = StringFromList(POST_DAQ_EVENT, EVENT_NAME_LIST_LBN)
-	WAVE/T/Z anaFuncs = GetLastSettingText(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
+	WAVE/T/Z anaFuncs = GetLastSetting(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
 	CHECK_WAVE(anaFuncs, TEXT_WAVE)
 	CHECK_EQUAL_TEXTWAVES(anaFuncs, {"ValidFunc_V2", "", "", "", "", "", "", "", ""})
 
 	key = StringFromList(GENERIC_EVENT, EVENT_NAME_LIST_LBN)
-	WAVE/T/Z anaFuncs = GetLastSettingText(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
+	WAVE/T/Z anaFuncs = GetLastSetting(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
 	CHECK(!WaveExists(anaFuncs))
 End
 
@@ -651,31 +651,31 @@ static Function AFT_Test6a()
 
 	WAVE/T textualValues = GetLBTextualValues(DEVICE)
 	key = StringFromList(PRE_DAQ_EVENT, EVENT_NAME_LIST_LBN)
-	WAVE/T/Z anaFuncs = GetLastSettingText(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
+	WAVE/T/Z anaFuncs = GetLastSetting(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
 	CHECK(!WaveExists(anaFuncs))
 
 	key = StringFromList(PRE_SWEEP_EVENT, EVENT_NAME_LIST_LBN)
-	WAVE/T/Z anaFuncs = GetLastSettingText(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
+	WAVE/T/Z anaFuncs = GetLastSetting(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
 	CHECK(!WaveExists(anaFuncs))
 
 	key = StringFromList(MID_SWEEP_EVENT, EVENT_NAME_LIST_LBN)
-	WAVE/T/Z anaFuncs = GetLastSettingText(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
+	WAVE/T/Z anaFuncs = GetLastSetting(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
 	CHECK(!WaveExists(anaFuncs))
 
 	key = StringFromList(POST_SWEEP_EVENT, EVENT_NAME_LIST_LBN)
-	WAVE/T/Z anaFuncs = GetLastSettingText(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
+	WAVE/T/Z anaFuncs = GetLastSetting(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
 	CHECK(!WaveExists(anaFuncs))
 
 	key = StringFromList(POST_SET_EVENT, EVENT_NAME_LIST_LBN)
-	WAVE/T/Z anaFuncs = GetLastSettingText(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
+	WAVE/T/Z anaFuncs = GetLastSetting(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
 	CHECK(!WaveExists(anaFuncs))
 
 	key = StringFromList(POST_DAQ_EVENT, EVENT_NAME_LIST_LBN)
-	WAVE/T/Z anaFuncs = GetLastSettingText(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
+	WAVE/T/Z anaFuncs = GetLastSetting(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
 	CHECK(!WaveExists(anaFuncs))
 
 	key = StringFromList(GENERIC_EVENT, EVENT_NAME_LIST_LBN)
-	WAVE/T/Z anaFuncs = GetLastSettingText(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
+	WAVE/T/Z anaFuncs = GetLastSetting(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
 	CHECK_WAVE(anaFuncs, TEXT_WAVE)
 	CHECK_EQUAL_TEXTWAVES(anaFuncs, {"ValidFunc_V3", "", "", "", "", "", "", "", ""})
 End
@@ -714,37 +714,37 @@ static Function AFT_Test6b()
 
 	WAVE/T textualValues = GetLBTextualValues(DEVICE)
 	key = StringFromList(PRE_DAQ_EVENT, EVENT_NAME_LIST_LBN)
-	WAVE/T/Z anaFuncs = GetLastSettingText(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
+	WAVE/T/Z anaFuncs = GetLastSetting(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
 	CHECK_WAVE(anaFuncs, TEXT_WAVE)
 	CHECK_EQUAL_TEXTWAVES(anaFuncs, {"NotCalled_V1", "", "", "", "", "", "", "", ""})
 
 	key = StringFromList(PRE_SWEEP_EVENT, EVENT_NAME_LIST_LBN)
-	WAVE/T/Z anaFuncs = GetLastSettingText(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
+	WAVE/T/Z anaFuncs = GetLastSetting(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
 	CHECK_WAVE(anaFuncs, TEXT_WAVE)
 	CHECK_EQUAL_TEXTWAVES(anaFuncs, {"NotCalled_V1", "", "", "", "", "", "", "", ""})
 
 	key = StringFromList(MID_SWEEP_EVENT, EVENT_NAME_LIST_LBN)
-	WAVE/T/Z anaFuncs = GetLastSettingText(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
+	WAVE/T/Z anaFuncs = GetLastSetting(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
 	CHECK_WAVE(anaFuncs, TEXT_WAVE)
 	CHECK_EQUAL_TEXTWAVES(anaFuncs, {"NotCalled_V1", "", "", "", "", "", "", "", ""})
 
 	key = StringFromList(POST_SWEEP_EVENT, EVENT_NAME_LIST_LBN)
-	WAVE/T/Z anaFuncs = GetLastSettingText(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
+	WAVE/T/Z anaFuncs = GetLastSetting(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
 	CHECK_WAVE(anaFuncs, TEXT_WAVE)
 	CHECK_EQUAL_TEXTWAVES(anaFuncs, {"NotCalled_V1", "", "", "", "", "", "", "", ""})
 
 	key = StringFromList(POST_SET_EVENT, EVENT_NAME_LIST_LBN)
-	WAVE/T/Z anaFuncs = GetLastSettingText(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
+	WAVE/T/Z anaFuncs = GetLastSetting(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
 	CHECK_WAVE(anaFuncs, TEXT_WAVE)
 	CHECK_EQUAL_TEXTWAVES(anaFuncs, {"NotCalled_V1", "", "", "", "", "", "", "", ""})
 
 	key = StringFromList(POST_DAQ_EVENT, EVENT_NAME_LIST_LBN)
-	WAVE/T/Z anaFuncs = GetLastSettingText(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
+	WAVE/T/Z anaFuncs = GetLastSetting(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
 	CHECK_WAVE(anaFuncs, TEXT_WAVE)
 	CHECK_EQUAL_TEXTWAVES(anaFuncs, {"NotCalled_V1", "", "", "", "", "", "", "", ""})
 
 	key = StringFromList(GENERIC_EVENT, EVENT_NAME_LIST_LBN)
-	WAVE/T/Z anaFuncs = GetLastSettingText(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
+	WAVE/T/Z anaFuncs = GetLastSetting(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
 	CHECK_WAVE(anaFuncs, TEXT_WAVE)
 	CHECK_EQUAL_TEXTWAVES(anaFuncs, {"ValidFunc_V3", "", "", "", "", "", "", "", ""})
 End
@@ -791,37 +791,37 @@ static Function AFT_Test7()
 
 	WAVE/T textualValues = GetLBTextualValues(DEVICE)
 	key = StringFromList(PRE_DAQ_EVENT, EVENT_NAME_LIST_LBN)
-	WAVE/T/Z anaFuncs = GetLastSettingText(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
+	WAVE/T/Z anaFuncs = GetLastSetting(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
 	CHECK_WAVE(anaFuncs, TEXT_WAVE)
 	CHECK_EQUAL_TEXTWAVES(anaFuncs, {"ValidMultHS_V1", "ValidMultHS_V1", "", "", "", "", "", "", ""})
 
 	key = StringFromList(PRE_SWEEP_EVENT, EVENT_NAME_LIST_LBN)
-	WAVE/T/Z anaFuncs = GetLastSettingText(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
+	WAVE/T/Z anaFuncs = GetLastSetting(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
 	CHECK_WAVE(anaFuncs, TEXT_WAVE)
 	CHECK_EQUAL_TEXTWAVES(anaFuncs, {"ValidMultHS_V1", "ValidMultHS_V1", "", "", "", "", "", "", ""})
 
 	key = StringFromList(MID_SWEEP_EVENT, EVENT_NAME_LIST_LBN)
-	WAVE/T/Z anaFuncs = GetLastSettingText(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
+	WAVE/T/Z anaFuncs = GetLastSetting(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
 	CHECK_WAVE(anaFuncs, TEXT_WAVE)
 	CHECK_EQUAL_TEXTWAVES(anaFuncs, {"ValidMultHS_V1", "ValidMultHS_V1", "", "", "", "", "", "", ""})
 
 	key = StringFromList(POST_SWEEP_EVENT, EVENT_NAME_LIST_LBN)
-	WAVE/T/Z anaFuncs = GetLastSettingText(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
+	WAVE/T/Z anaFuncs = GetLastSetting(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
 	CHECK_WAVE(anaFuncs, TEXT_WAVE)
 	CHECK_EQUAL_TEXTWAVES(anaFuncs, {"ValidMultHS_V1", "ValidMultHS_V1", "", "", "", "", "", "", ""})
 
 	key = StringFromList(POST_SET_EVENT, EVENT_NAME_LIST_LBN)
-	WAVE/T/Z anaFuncs = GetLastSettingText(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
+	WAVE/T/Z anaFuncs = GetLastSetting(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
 	CHECK_WAVE(anaFuncs, TEXT_WAVE)
 	CHECK_EQUAL_TEXTWAVES(anaFuncs, {"ValidMultHS_V1", "ValidMultHS_V1", "", "", "", "", "", "", ""})
 
 	key = StringFromList(POST_DAQ_EVENT, EVENT_NAME_LIST_LBN)
-	WAVE/T/Z anaFuncs = GetLastSettingText(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
+	WAVE/T/Z anaFuncs = GetLastSetting(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
 	CHECK_WAVE(anaFuncs, TEXT_WAVE)
 	CHECK_EQUAL_TEXTWAVES(anaFuncs, {"ValidMultHS_V1", "ValidMultHS_V1", "", "", "", "", "", "", ""})
 
 	key = StringFromList(GENERIC_EVENT, EVENT_NAME_LIST_LBN)
-	WAVE/T/Z anaFuncs = GetLastSettingText(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
+	WAVE/T/Z anaFuncs = GetLastSetting(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
 	CHECK(!WaveExists(anaFuncs))
 End
 
@@ -848,31 +848,31 @@ static Function AFT_Test8()
 
 	WAVE/T textualValues = GetLBTextualValues(DEVICE)
 	key = StringFromList(PRE_DAQ_EVENT, EVENT_NAME_LIST_LBN)
-	WAVE/T/Z anaFuncs = GetLastSettingText(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
+	WAVE/T/Z anaFuncs = GetLastSetting(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
 	CHECK(!WaveExists(anaFuncs))
 
 	key = StringFromList(PRE_SWEEP_EVENT, EVENT_NAME_LIST_LBN)
-	WAVE/T/Z anaFuncs = GetLastSettingText(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
+	WAVE/T/Z anaFuncs = GetLastSetting(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
 	CHECK(!WaveExists(anaFuncs))
 
 	key = StringFromList(MID_SWEEP_EVENT, EVENT_NAME_LIST_LBN)
-	WAVE/T/Z anaFuncs = GetLastSettingText(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
+	WAVE/T/Z anaFuncs = GetLastSetting(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
 	CHECK(!WaveExists(anaFuncs))
 
 	key = StringFromList(POST_SWEEP_EVENT, EVENT_NAME_LIST_LBN)
-	WAVE/T/Z anaFuncs = GetLastSettingText(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
+	WAVE/T/Z anaFuncs = GetLastSetting(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
 	CHECK(!WaveExists(anaFuncs))
 
 	key = StringFromList(POST_SET_EVENT, EVENT_NAME_LIST_LBN)
-	WAVE/T/Z anaFuncs = GetLastSettingText(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
+	WAVE/T/Z anaFuncs = GetLastSetting(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
 	CHECK(!WaveExists(anaFuncs))
 
 	key = StringFromList(POST_DAQ_EVENT, EVENT_NAME_LIST_LBN)
-	WAVE/T/Z anaFuncs = GetLastSettingText(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
+	WAVE/T/Z anaFuncs = GetLastSetting(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
 	CHECK(!WaveExists(anaFuncs))
 
 	key = StringFromList(GENERIC_EVENT, EVENT_NAME_LIST_LBN)
-	WAVE/T/Z anaFuncs = GetLastSettingText(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
+	WAVE/T/Z anaFuncs = GetLastSetting(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
 	CHECK(!WaveExists(anaFuncs))
 End
 
@@ -910,37 +910,37 @@ static Function AFT_Test9()
 
 	WAVE/T textualValues = GetLBTextualValues(DEVICE)
 	key = StringFromList(PRE_DAQ_EVENT, EVENT_NAME_LIST_LBN)
-	WAVE/T/Z anaFuncs = GetLastSettingText(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
+	WAVE/T/Z anaFuncs = GetLastSetting(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
 	CHECK_WAVE(anaFuncs, TEXT_WAVE)
 	CHECK_EQUAL_TEXTWAVES(anaFuncs, {"ValidFunc_V2", "", "", "", "", "", "", "", ""})
 
 	key = StringFromList(PRE_SWEEP_EVENT, EVENT_NAME_LIST_LBN)
-	WAVE/T/Z anaFuncs = GetLastSettingText(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
+	WAVE/T/Z anaFuncs = GetLastSetting(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
 	CHECK_WAVE(anaFuncs, TEXT_WAVE)
 	CHECK_EQUAL_TEXTWAVES(anaFuncs, {"ValidFunc_V2", "", "", "", "", "", "", "", ""})
 
 	key = StringFromList(MID_SWEEP_EVENT, EVENT_NAME_LIST_LBN)
-	WAVE/T/Z anaFuncs = GetLastSettingText(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
+	WAVE/T/Z anaFuncs = GetLastSetting(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
 	CHECK_WAVE(anaFuncs, TEXT_WAVE)
 	CHECK_EQUAL_TEXTWAVES(anaFuncs, {"ValidFunc_V2", "", "", "", "", "", "", "", ""})
 
 	key = StringFromList(POST_SWEEP_EVENT, EVENT_NAME_LIST_LBN)
-	WAVE/T/Z anaFuncs = GetLastSettingText(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
+	WAVE/T/Z anaFuncs = GetLastSetting(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
 	CHECK_WAVE(anaFuncs, TEXT_WAVE)
 	CHECK_EQUAL_TEXTWAVES(anaFuncs, {"ValidFunc_V2", "", "", "", "", "", "", "", ""})
 
 	key = StringFromList(POST_SET_EVENT, EVENT_NAME_LIST_LBN)
-	WAVE/T/Z anaFuncs = GetLastSettingText(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
+	WAVE/T/Z anaFuncs = GetLastSetting(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
 	CHECK_WAVE(anaFuncs, TEXT_WAVE)
 	CHECK_EQUAL_TEXTWAVES(anaFuncs, {"ValidFunc_V2", "", "", "", "", "", "", "", ""})
 
 	key = StringFromList(POST_DAQ_EVENT, EVENT_NAME_LIST_LBN)
-	WAVE/T/Z anaFuncs = GetLastSettingText(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
+	WAVE/T/Z anaFuncs = GetLastSetting(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
 	CHECK_WAVE(anaFuncs, TEXT_WAVE)
 	CHECK_EQUAL_TEXTWAVES(anaFuncs, {"ValidFunc_V2", "", "", "", "", "", "", "", ""})
 
 	key = StringFromList(GENERIC_EVENT, EVENT_NAME_LIST_LBN)
-	WAVE/T/Z anaFuncs = GetLastSettingText(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
+	WAVE/T/Z anaFuncs = GetLastSetting(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
 	CHECK(!WaveExists(anaFuncs))
 End
 
@@ -965,31 +965,31 @@ static Function AFT_Test10()
 
 	WAVE/T textualValues = GetLBTextualValues(DEVICE)
 	key = StringFromList(PRE_DAQ_EVENT, EVENT_NAME_LIST_LBN)
-	WAVE/T/Z anaFuncs = GetLastSettingText(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
+	WAVE/T/Z anaFuncs = GetLastSetting(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
 	CHECK(!WaveExists(anaFuncs))
 
 	key = StringFromList(PRE_SWEEP_EVENT, EVENT_NAME_LIST_LBN)
-	WAVE/T/Z anaFuncs = GetLastSettingText(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
+	WAVE/T/Z anaFuncs = GetLastSetting(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
 	CHECK(!WaveExists(anaFuncs))
 
 	key = StringFromList(MID_SWEEP_EVENT, EVENT_NAME_LIST_LBN)
-	WAVE/T/Z anaFuncs = GetLastSettingText(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
+	WAVE/T/Z anaFuncs = GetLastSetting(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
 	CHECK(!WaveExists(anaFuncs))
 
 	key = StringFromList(POST_SWEEP_EVENT, EVENT_NAME_LIST_LBN)
-	WAVE/T/Z anaFuncs = GetLastSettingText(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
+	WAVE/T/Z anaFuncs = GetLastSetting(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
 	CHECK(!WaveExists(anaFuncs))
 
 	key = StringFromList(POST_SET_EVENT, EVENT_NAME_LIST_LBN)
-	WAVE/T/Z anaFuncs = GetLastSettingText(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
+	WAVE/T/Z anaFuncs = GetLastSetting(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
 	CHECK(!WaveExists(anaFuncs))
 
 	key = StringFromList(POST_DAQ_EVENT, EVENT_NAME_LIST_LBN)
-	WAVE/T/Z anaFuncs = GetLastSettingText(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
+	WAVE/T/Z anaFuncs = GetLastSetting(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
 	CHECK(!WaveExists(anaFuncs))
 
 	key = StringFromList(GENERIC_EVENT, EVENT_NAME_LIST_LBN)
-	WAVE/T/Z anaFuncs = GetLastSettingText(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
+	WAVE/T/Z anaFuncs = GetLastSetting(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
 	CHECK(!WaveExists(anaFuncs))
 End
 
@@ -1024,37 +1024,37 @@ static Function AFT_Test11()
 
 	WAVE/T textualValues = GetLBTextualValues(DEVICE)
 	key = StringFromList(PRE_DAQ_EVENT, EVENT_NAME_LIST_LBN)
-	WAVE/T/Z anaFuncs = GetLastSettingText(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
+	WAVE/T/Z anaFuncs = GetLastSetting(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
 	CHECK_WAVE(anaFuncs, TEXT_WAVE)
 	CHECK_EQUAL_TEXTWAVES(anaFuncs, {"preDAQ", "", "", "", "", "", "", "", ""})
 
 	key = StringFromList(PRE_SWEEP_EVENT, EVENT_NAME_LIST_LBN)
-	WAVE/T/Z anaFuncs = GetLastSettingText(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
+	WAVE/T/Z anaFuncs = GetLastSetting(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
 	CHECK_WAVE(anaFuncs, TEXT_WAVE)
 	CHECK_EQUAL_TEXTWAVES(anaFuncs, {"preSweep", "", "", "", "", "", "", "", ""})
 
 	key = StringFromList(MID_SWEEP_EVENT, EVENT_NAME_LIST_LBN)
-	WAVE/T/Z anaFuncs = GetLastSettingText(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
+	WAVE/T/Z anaFuncs = GetLastSetting(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
 	CHECK_WAVE(anaFuncs, TEXT_WAVE)
 	CHECK_EQUAL_TEXTWAVES(anaFuncs, {"midSweep", "", "", "", "", "", "", "", ""})
 
 	key = StringFromList(POST_SWEEP_EVENT, EVENT_NAME_LIST_LBN)
-	WAVE/T/Z anaFuncs = GetLastSettingText(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
+	WAVE/T/Z anaFuncs = GetLastSetting(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
 	CHECK_WAVE(anaFuncs, TEXT_WAVE)
 	CHECK_EQUAL_TEXTWAVES(anaFuncs, {"postSweep", "", "", "", "", "", "", "", ""})
 
 	key = StringFromList(POST_SET_EVENT, EVENT_NAME_LIST_LBN)
-	WAVE/T/Z anaFuncs = GetLastSettingText(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
+	WAVE/T/Z anaFuncs = GetLastSetting(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
 	CHECK_WAVE(anaFuncs, TEXT_WAVE)
 	CHECK_EQUAL_TEXTWAVES(anaFuncs, {"postSet", "", "", "", "", "", "", "", ""})
 
 	key = StringFromList(POST_DAQ_EVENT, EVENT_NAME_LIST_LBN)
-	WAVE/T/Z anaFuncs = GetLastSettingText(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
+	WAVE/T/Z anaFuncs = GetLastSetting(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
 	CHECK_WAVE(anaFuncs, TEXT_WAVE)
 	CHECK_EQUAL_TEXTWAVES(anaFuncs, {"postDAQ", "", "", "", "", "", "", "", ""})
 
 	key = StringFromList(GENERIC_EVENT, EVENT_NAME_LIST_LBN)
-	WAVE/T/Z anaFuncs = GetLastSettingText(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
+	WAVE/T/Z anaFuncs = GetLastSetting(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
 	CHECK(!WaveExists(anaFuncs))
 End
 
@@ -1096,31 +1096,31 @@ static Function AFT_Test12()
 	WAVE/T textualValues = GetLBTextualValues(DEVICE)
 
 	key = StringFromList(PRE_DAQ_EVENT, EVENT_NAME_LIST_LBN)
-	WAVE/T/Z anaFuncs = GetLastSettingText(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
+	WAVE/T/Z anaFuncs = GetLastSetting(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
 	CHECK(!WaveExists(anaFuncs))
 
 	key = StringFromList(PRE_SWEEP_EVENT, EVENT_NAME_LIST_LBN)
-	WAVE/T/Z anaFuncs = GetLastSettingText(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
+	WAVE/T/Z anaFuncs = GetLastSetting(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
 	CHECK(!WaveExists(anaFuncs))
 
 	key = StringFromList(MID_SWEEP_EVENT, EVENT_NAME_LIST_LBN)
-	WAVE/T/Z anaFuncs = GetLastSettingText(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
+	WAVE/T/Z anaFuncs = GetLastSetting(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
 	CHECK(!WaveExists(anaFuncs))
 
 	key = StringFromList(POST_SWEEP_EVENT, EVENT_NAME_LIST_LBN)
-	WAVE/T/Z anaFuncs = GetLastSettingText(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
+	WAVE/T/Z anaFuncs = GetLastSetting(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
 	CHECK(!WaveExists(anaFuncs))
 
 	key = StringFromList(POST_SET_EVENT, EVENT_NAME_LIST_LBN)
-	WAVE/T/Z anaFuncs = GetLastSettingText(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
+	WAVE/T/Z anaFuncs = GetLastSetting(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
 	CHECK(!WaveExists(anaFuncs))
 
 	key = StringFromList(POST_DAQ_EVENT, EVENT_NAME_LIST_LBN)
-	WAVE/T/Z anaFuncs = GetLastSettingText(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
+	WAVE/T/Z anaFuncs = GetLastSetting(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
 	CHECK(!WaveExists(anaFuncs))
 
 	key = StringFromList(GENERIC_EVENT, EVENT_NAME_LIST_LBN)
-	WAVE/T/Z anaFuncs = GetLastSettingText(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
+	WAVE/T/Z anaFuncs = GetLastSetting(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
 	CHECK(!WaveExists(anaFuncs))
 End
 
@@ -1157,32 +1157,32 @@ static Function AFT_Test13()
 	WAVE/T textualValues = GetLBTextualValues(DEVICE)
 
 	key = StringFromList(PRE_DAQ_EVENT, EVENT_NAME_LIST_LBN)
-	WAVE/T/Z anaFuncs = GetLastSettingText(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
+	WAVE/T/Z anaFuncs = GetLastSetting(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
 	CHECK(!WaveExists(anaFuncs))
 
 	key = StringFromList(PRE_SWEEP_EVENT, EVENT_NAME_LIST_LBN)
-	WAVE/T/Z anaFuncs = GetLastSettingText(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
+	WAVE/T/Z anaFuncs = GetLastSetting(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
 	CHECK(!WaveExists(anaFuncs))
 
 	key = StringFromList(MID_SWEEP_EVENT, EVENT_NAME_LIST_LBN)
-	WAVE/T/Z anaFuncs = GetLastSettingText(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
+	WAVE/T/Z anaFuncs = GetLastSetting(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
 	CHECK_WAVE(anaFuncs, TEXT_WAVE)
 	CHECK_EQUAL_TEXTWAVES(anaFuncs, {"StopMidSweep", "StopMidSweep", "", "", "", "", "", "", ""})
 
 	key = StringFromList(POST_SWEEP_EVENT, EVENT_NAME_LIST_LBN)
-	WAVE/T/Z anaFuncs = GetLastSettingText(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
+	WAVE/T/Z anaFuncs = GetLastSetting(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
 	CHECK(!WaveExists(anaFuncs))
 
 	key = StringFromList(POST_SET_EVENT, EVENT_NAME_LIST_LBN)
-	WAVE/T/Z anaFuncs = GetLastSettingText(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
+	WAVE/T/Z anaFuncs = GetLastSetting(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
 	CHECK(!WaveExists(anaFuncs))
 
 	key = StringFromList(POST_DAQ_EVENT, EVENT_NAME_LIST_LBN)
-	WAVE/T/Z anaFuncs = GetLastSettingText(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
+	WAVE/T/Z anaFuncs = GetLastSetting(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
 	CHECK(!WaveExists(anaFuncs))
 
 	key = StringFromList(GENERIC_EVENT, EVENT_NAME_LIST_LBN)
-	WAVE/T/Z anaFuncs = GetLastSettingText(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
+	WAVE/T/Z anaFuncs = GetLastSetting(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
 	CHECK(!WaveExists(anaFuncs))
 End
 
@@ -1231,36 +1231,36 @@ static Function AFT_Test14()
 	WAVE/T textualValues = GetLBTextualValues(DEVICE)
 
 	key = StringFromList(PRE_DAQ_EVENT, EVENT_NAME_LIST_LBN)
-	WAVE/T/Z anaFuncs = GetLastSettingText(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
+	WAVE/T/Z anaFuncs = GetLastSetting(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
 	CHECK(!WaveExists(anaFuncs))
 
 	key = StringFromList(PRE_SWEEP_EVENT, EVENT_NAME_LIST_LBN)
-	WAVE/T/Z anaFuncs = GetLastSettingText(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
+	WAVE/T/Z anaFuncs = GetLastSetting(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
 	CHECK(!WaveExists(anaFuncs))
 
 	key = StringFromList(MID_SWEEP_EVENT, EVENT_NAME_LIST_LBN)
-	WAVE/T/Z anaFuncs = GetLastSettingText(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
+	WAVE/T/Z anaFuncs = GetLastSetting(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
 	CHECK(!WaveExists(anaFuncs))
 
 	key = StringFromList(POST_SWEEP_EVENT, EVENT_NAME_LIST_LBN)
-	WAVE/T/Z anaFuncs = GetLastSettingText(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
+	WAVE/T/Z anaFuncs = GetLastSetting(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
 	CHECK(!WaveExists(anaFuncs))
 
 	key = StringFromList(POST_SET_EVENT, EVENT_NAME_LIST_LBN)
-	WAVE/T/Z anaFuncs = GetLastSettingText(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
+	WAVE/T/Z anaFuncs = GetLastSetting(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
 	CHECK(!WaveExists(anaFuncs))
 
 	key = StringFromList(POST_DAQ_EVENT, EVENT_NAME_LIST_LBN)
-	WAVE/T/Z anaFuncs = GetLastSettingText(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
+	WAVE/T/Z anaFuncs = GetLastSetting(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
 	CHECK(!WaveExists(anaFuncs))
 
 	key = StringFromList(GENERIC_EVENT, EVENT_NAME_LIST_LBN)
-	WAVE/T/Z anaFuncs = GetLastSettingText(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
+	WAVE/T/Z anaFuncs = GetLastSetting(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
 	CHECK_WAVE(anaFuncs, TEXT_WAVE)
 	CHECK_EQUAL_TEXTWAVES(anaFuncs, {"Params1_V3", "", "", "", "", "", "", "", ""})
 
 	key = ANALYSIS_FUNCTION_PARAMS_LBN
-	WAVE/T/Z anaFuncParams = GetLastSettingText(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
+	WAVE/T/Z anaFuncParams = GetLastSetting(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
 	CHECK_WAVE(anaFuncParams, TEXT_WAVE)
 End
 

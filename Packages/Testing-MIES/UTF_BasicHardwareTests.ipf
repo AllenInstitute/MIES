@@ -176,7 +176,7 @@ static Function AllTests(t)
 
 			sweepNo = ExtractSweepNumber(NameOfWave(sweep))
 			CHECK(sweepNo >= 0)
-			WAVE/T/Z foundStimSets = GetLastSettingText(textualValues, sweepNo, STIM_WAVE_NAME_KEY, DATA_ACQUISITION_MODE)
+			WAVE/T/Z foundStimSets = GetLastSetting(textualValues, sweepNo, STIM_WAVE_NAME_KEY, DATA_ACQUISITION_MODE)
 			REQUIRE_WAVE(foundStimSets, TEXT_WAVE)
 
 			// HS 0

@@ -338,8 +338,8 @@ static Function ED_WriteChangedValuesToNoteText(panelTitle, sweepNo)
 			continue
 		endif
 
-		Wave/Z/T currentSetting = GetLastSettingText(textualValues, sweepNo, key, UNKNOWN_MODE, first=firstCurrent, last=lastCurrent)
-		Wave/Z/T lastSetting    = GetLastSettingText(textualValues, sweepNo - 1, key, UNKNOWN_MODE, first=firstPrevious, last=lastPrevious)
+		Wave/Z/T currentSetting = GetLastSetting(textualValues, sweepNo, key, UNKNOWN_MODE, first=firstCurrent, last=lastCurrent)
+		Wave/Z/T lastSetting    = GetLastSetting(textualValues, sweepNo - 1, key, UNKNOWN_MODE, first=firstPrevious, last=lastPrevious)
 
 		// We have four combinations for the current and the last setting:
 		// 1. valid -> valid

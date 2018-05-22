@@ -179,7 +179,7 @@ Function GetLastSettingWorks()
 End
 /// @}
 
-/// GetLastSettingText
+/// GetLastSetting
 /// @{
 Function GetLastSettingTextAbortsOnNum()
 
@@ -187,7 +187,7 @@ Function GetLastSettingTextAbortsOnNum()
 	WAVE/SDFR=dfr numericalValues
 
 	try
-		GetLastSettingText(numericalValues, NaN, "My Key", UNKNOWN_MODE)
+		GetLastSetting(numericalValues, NaN, "My Key", UNKNOWN_MODE)
 		FAIL()
 	catch
 		PASS()
@@ -202,7 +202,7 @@ Function GetLastSettingTextAborts1()
 	variable first = LABNOTEBOOK_GET_RANGE
 
 	try
-		GetLastSettingText(textualValues, NaN, "My Key", UNKNOWN_MODE, first = first)
+		GetLastSetting(textualValues, NaN, "My Key", UNKNOWN_MODE, first = first)
 		FAIL()
 	catch
 		PASS()
@@ -217,7 +217,7 @@ Function GetLastSettingTextAborts2()
 	variable last = LABNOTEBOOK_GET_RANGE
 
 	try
-		GetLastSettingText(textualValues, NaN, "My Key", UNKNOWN_MODE, last = last)
+		GetLastSetting(textualValues, NaN, "My Key", UNKNOWN_MODE, last = last)
 		FAIL()
 	catch
 		PASS()
@@ -233,7 +233,7 @@ Function GetLastSettingTextAborts3()
 	variable last  = -10
 
 	try
-		GetLastSettingText(textualValues, NaN, "My Key", UNKNOWN_MODE, first = first, last = last)
+		GetLastSetting(textualValues, NaN, "My Key", UNKNOWN_MODE, first = first, last = last)
 		FAIL()
 	catch
 		PASS()
@@ -247,12 +247,12 @@ Function GetLastSettingTextEmptyUnknown()
 	DFREF dfr = root:Labnotebook_misc:
 	WAVE/SDFR=dfr textualValues
 
-	WAVE/Z settings = GetLastSettingText(textualValues, NaN, "I DONT EXIST", UNKNOWN_MODE)
+	WAVE/Z settings = GetLastSetting(textualValues, NaN, "I DONT EXIST", UNKNOWN_MODE)
 	CHECK(!WaveExists(settings))
 
 	first = LABNOTEBOOK_GET_RANGE
 	last  = LABNOTEBOOK_GET_RANGE
-	WAVE/Z settings = GetLastSettingText(textualValues, NaN, "I DONT EXIST", UNKNOWN_MODE, first = first , last = last)
+	WAVE/Z settings = GetLastSetting(textualValues, NaN, "I DONT EXIST", UNKNOWN_MODE, first = first , last = last)
 	CHECK(!WaveExists(settings))
 	CHECK_EQUAL_VAR(first, -1)
 	CHECK_EQUAL_VAR(last, -1)
@@ -268,7 +268,7 @@ Function GetLastSettingTextQueryWoMatch()
 	first = LABNOTEBOOK_GET_RANGE
 	last  = LABNOTEBOOK_GET_RANGE
 	// sweep is unknown
-	WAVE/Z settings = GetLastSettingText(textualValues, 100, "DA unit", DATA_ACQUISITION_MODE, first = first, last = last)
+	WAVE/Z settings = GetLastSetting(textualValues, 100, "DA unit", DATA_ACQUISITION_MODE, first = first, last = last)
 	CHECK(!WaveExists(settings))
 	CHECK_EQUAL_VAR(first, -1)
 	CHECK_EQUAL_VAR(last, -1)
@@ -282,19 +282,19 @@ Function GetLastSettingTextWorks()
 	DFREF dfr = root:Labnotebook_misc:
 	WAVE/SDFR=dfr textualValues
 
-	WAVE/Z settings = GetLastSettingText(textualValues, 1, "DA unit", DATA_ACQUISITION_MODE)
+	WAVE/Z settings = GetLastSetting(textualValues, 1, "DA unit", DATA_ACQUISITION_MODE)
 	CHECK(WaveExists(settings))
 
 	first = LABNOTEBOOK_GET_RANGE
 	last  = LABNOTEBOOK_GET_RANGE
-	WAVE/Z settings = GetLastSettingText(textualValues, 1, "DA unit", DATA_ACQUISITION_MODE, first = first, last = last)
+	WAVE/Z settings = GetLastSetting(textualValues, 1, "DA unit", DATA_ACQUISITION_MODE, first = first, last = last)
 	CHECK(WaveExists(settings))
 	CHECK(first >= 0)
 	CHECK(last  >= 0)
 
 	firstAgain = first
 	lastAgain  = last
-	WAVE/Z settingsAgain = GetLastSettingText(textualValues, 1, "DA unit", DATA_ACQUISITION_MODE, first = firstAgain, last = lastAgain)
+	WAVE/Z settingsAgain = GetLastSetting(textualValues, 1, "DA unit", DATA_ACQUISITION_MODE, first = firstAgain, last = lastAgain)
 	CHECK_EQUAL_WAVES(settings, settingsAgain, mode = WAVE_DATA)
 	CHECK_EQUAL_VAR(first, firstAgain)
 	CHECK_EQUAL_VAR(last, lastAgain)
