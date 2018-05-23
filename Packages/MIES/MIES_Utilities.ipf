@@ -3498,3 +3498,17 @@ Function IsFreeWave(wv)
 
 	return WaveType(wv, 2) == 2
 End
+
+/// @brief Return the modification count of the (permanent) wave
+Function WaveModCountWrapper(wv)
+	Wave wv
+
+	ASSERT(!IsFreeWave(wv), "Can not work with free waves")
+
+#if (IgorVersion() >= 8.00)
+	return WaveModCount(wv)
+#else
+	return MU_WaveModCount(wv)
+#endif
+
+End
