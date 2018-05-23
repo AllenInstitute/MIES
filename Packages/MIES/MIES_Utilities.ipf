@@ -3491,3 +3491,10 @@ Function GetMachineEpsilon(type)
 			ASSERT(0, "Unsupported wave type")
 	endswitch
 End
+
+/// @brief Return true if wv is a free wave, false otherwise
+Function IsFreeWave(wv)
+	Wave wv
+
+	return WaveType(wv, 2) == 2
+End
