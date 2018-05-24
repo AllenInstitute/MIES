@@ -67,7 +67,8 @@ digraph G {
     "Mark set as failed if it has not yet passed";
     "Post Set Event" -> "Mark set as failed if it has not yet passed";
     "BL QC passed? [2]";
-    "Skip to end of Set";
+    "Skip to end of active set";
+    "Skip to end";
     "BL QC passed? [1]";
     "Mid Sweep Event" -> "BL QC passed? [1]";
     "Grab next completely acquired chunk\n (500ms pre/50ms post) of stimset baseline";
@@ -106,13 +107,13 @@ digraph G {
     "BL QC passed? [2]" -> "Spike detected?\n(x range: pulse onset to end of sweep\ny condition: max above 0.01mV)\nStore result in labnotebook"  [label="Yes"];
     "Spike detected?\n(x range: pulse onset to end of sweep\ny condition: max above 0.01mV)\nStore result in labnotebook" -> "Previous sweep has opposite spike result";
     "Previous sweep has opposite spike result" -> "Mark set as passed"  [label="Yes"];
-    "Mark set as passed" -> "Skip to end of Set";
+    "Mark set as passed" -> "Skip to end of active set";
     "Previous sweep has opposite spike result" -> "Spike detected? (queried from labnotebook)"  [label="No"];
     "Spike detected? (queried from labnotebook)" -> "Offset DAScale by -10pA"  [label="Yes"];
     "Offset DAScale by +10pA" -> "Difference to initial DAScale larger than 60pA?";
     "Spike detected? (queried from labnotebook)" -> "Offset DAScale by +10pA"  [label="No"];
     "Offset DAScale by -10pA" -> "Difference to initial DAScale larger than 60pA?";
-    "Mark set as failed" -> "Skip to end of Set";
+    "Mark set as failed" -> "Skip to end";
     "Store final DAScale of last sweep\n from previous RAC as initial DAScale" -> "BL QC passed? [2]";
     "Set \"Repeat Sets\" to 1";
     "Early sweep stop";

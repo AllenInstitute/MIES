@@ -1028,7 +1028,7 @@ Function PSQ_DAScale(panelTitle, s)
 
 	variable val, totalOnsetDelay
 	variable i, fifoInStimsetPoint, fifoInStimsetTime
-	variable index, skipToEnd, ret
+	variable index, ret
 	variable sweepPassed, setPassed, numSweepsPass, length, minLength
 	variable sweepsInSet, passesInSet, acquiredSweepsInSet, numBaselineChunks, multiplier
 	string msg, stimset, key, opMode
@@ -1133,9 +1133,15 @@ Function PSQ_DAScale(panelTitle, s)
 			passesInSet         = PSQ_NumPassesInSet(numericalValues, PSQ_DA_SCALE, s.sweepNo)
 			acquiredSweepsInSet = PSQ_NumAcquiredSweepsInSet(panelTitle, s.sweepNo)
 
+			sprintf msg, "Sweep %s, total sweeps %d, acquired sweeps %d, passed sweeps %d, DAScalesIndex %d\r", SelectString(sweepPassed, "failed", "passed"), sweepsInSet, acquiredSweepsInSet, passesInSet, DAScalesIndex[s.headstage]
+			DEBUGPRINT(msg)
+
 			if(!sweepPassed)
 				// not enough sweeps left to pass the set
-				skipToEnd = (sweepsInSet - acquiredSweepsInSet) < (numSweepsPass - passesInSet)
+				if((sweepsInSet - acquiredSweepsInSet) < (numSweepsPass - passesInSet))
+					RA_SkipSweeps(panelTitle, inf)
+					return NaN
+				endif
 			else
 				// sweep passed
 				if(!cmpstr(opMode, PSQ_DS_SUB))
@@ -1155,19 +1161,12 @@ Function PSQ_DAScale(panelTitle, s)
 				endif
 
 				if(passesInSet >= numSweepsPass)
-					skipToEnd = 1
+					RA_SkipSweeps(panelTitle, inf, limitToSetBorder = 1)
+					return NaN
 				else
 					// set next DAScale value
 					DAScalesIndex[s.headstage] += 1
 				endif
-			endif
-
-			sprintf msg, "Sweep %s, total sweeps %d, acquired sweeps %d, passed sweeps %d, skipToEnd %s, DAScalesIndex %d\r", SelectString(sweepPassed, "failed", "passed"), sweepsInSet, acquiredSweepsInSet, passesInSet, SelectString(skiptoEnd, "false", "true"), DAScalesIndex[s.headstage]
-			DEBUGPRINT(msg)
-
-			if(skiptoEnd)
-				RA_SkipSweeps(panelTitle, inf, limitToSetBorder = 1)
-				return NaN
 			endif
 
 			break
@@ -1688,7 +1687,7 @@ Function PSQ_Rheobase(panelTitle, s)
 				key = PSQ_CreateLBNKey(PSQ_RHEOBASE, PSQ_FMT_LBN_RB_DASCALE_EXC)
 				ED_AddEntryToLabnotebook(panelTitle, key, result, unit = LABNOTEBOOK_BINARY_UNIT)
 
-				RA_SkipSweeps(panelTitle, inf, limitToSetBorder = 1)
+				RA_SkipSweeps(panelTitle, inf)
 				break
 			endif
 
@@ -1853,7 +1852,7 @@ Function PSQ_Ramp(panelTitle, s)
 	variable baselineQCPassed, finalDAScale, initialDAScale
 	variable numBaselineChunks, lastFifoPos, totalOnsetDelay, fifoInStimsetPoint, fifoInStimsetTime
 	variable i, ret, numSweepsWithSpikeDetection, sweepNoFound, length, minLength
-	variable DAC, sweepPassed, sweepsInSet, passesInSet, acquiredSweepsInSet, skipToEnd, enoughSpikesFound
+	variable DAC, sweepPassed, sweepsInSet, passesInSet, acquiredSweepsInSet, enoughSpikesFound
 	variable pulseStart, pulseDuration, fifoPos, fifoOffset, numberOfSpikes, multiplier
 	string key, msg, stimset
 
@@ -1948,19 +1947,17 @@ Function PSQ_Ramp(panelTitle, s)
 
 			if(!sweepPassed)
 				// not enough sweeps left to pass the set
-				skipToEnd = (sweepsInSet - acquiredSweepsInSet) < (PSQ_RA_NUM_SWEEPS_PASS - passesInSet)
+				if((sweepsInSet - acquiredSweepsInSet) < (PSQ_RA_NUM_SWEEPS_PASS - passesInSet))
+					RA_SkipSweeps(panelTitle, inf)
+				endif
 			else
 				if(passesInSet >= PSQ_RA_NUM_SWEEPS_PASS)
-					skipToEnd = 1
+					RA_SkipSweeps(panelTitle, inf, limitToSetBorder = 1)
 				endif
 			endif
 
-			sprintf msg, "Sweep %s, total sweeps %d, acquired sweeps %d, passed sweeps %d, skipToEnd %s\r", SelectString(sweepPassed, "failed", "passed"), sweepsInSet, acquiredSweepsInSet, passesInSet, SelectString(skiptoEnd, "false", "true")
+			sprintf msg, "Sweep %s, total sweeps %d, acquired sweeps %d, passed sweeps %d\r", SelectString(sweepPassed, "failed", "passed"), sweepsInSet, acquiredSweepsInSet, passesInSet
 			DEBUGPRINT(msg)
-
-			if(skiptoEnd)
-				RA_SkipSweeps(panelTitle, inf, limitToSetBorder = 1)
-			endif
 
 			break
 		case POST_SET_EVENT:

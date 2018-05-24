@@ -83,13 +83,14 @@ digraph G {
     "Post Set Event" -> "Mark set as passed if 3 sweeps passed, as failure otherwise";
     "Last Sweep passed?";
     "Check if 3 sweeps passed from RA cycle";
-    "Skip to end of Set";
+    "Skip to end of active set";
+    "Skip to end";
     "Post Sweep Event" -> "Last Sweep passed?";
     "Last Sweep passed?" -> "Check if 3 sweeps passed from RA cycle"  [label="Yes"];
-    "Check if 3 sweeps passed from RA cycle" -> "Skip to end of Set"  [label="Yes"];
+    "Check if 3 sweeps passed from RA cycle" -> "Skip to end of active set"  [label="Yes"];
     "Check if the Set can still pass";
     "Last Sweep passed?" -> "Check if the Set can still pass"  [label="No"];
-    "Check if the Set can still pass" -> "Skip to end of Set"  [label="No"];
+    "Check if the Set can still pass" -> "Skip to end"  [label="No"];
     "BL QC passed?";
     "Mid Sweep Event" -> "BL QC passed?";
     "Grab next completely acquired chunk (500ms) of stimset baseline";
