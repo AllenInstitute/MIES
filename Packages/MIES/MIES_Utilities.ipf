@@ -316,10 +316,7 @@ Function EnsureLargeEnoughWave(wv, [minimumSize, dimension, initialValue])
 		minimumSize = max(MINIMUM_WAVE_SIZE - 1, minimumSize)
 	endif
 
-	Make/FREE/L/N=(MAX_DIMENSION_COUNT) oldSizes
-	oldSizes[] = DimSize(wv,p)
-
-	if(minimumSize < oldSizes[dimension])
+	if(minimumSize < DimSize(wv, dimension))
 		return NaN
 	endif
 
@@ -327,6 +324,8 @@ Function EnsureLargeEnoughWave(wv, [minimumSize, dimension, initialValue])
 
 	Make/FREE/L/N=(MAX_DIMENSION_COUNT) targetSizes = -1
 	targetSizes[dimension] = minimumSize
+
+	Make/FREE/L/N=(MAX_DIMENSION_COUNT) oldSizes = DimSize(wv,p)
 
 	Redimension/N=(targetSizes[ROWS], targetSizes[COLS], targetSizes[LAYERS], targetSizes[CHUNKS]) wv
 
