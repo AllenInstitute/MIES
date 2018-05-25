@@ -25,8 +25,8 @@ package from Wavemetrics.
 
 The following versions receive fixes for all critical bugs.
 
-* [1.5](http://bamboo.corp.alleninstitute.org/browse/MIES-RELEASE/latestSuccessful/artifact)
-* [1.4](http://bamboo.corp.alleninstitute.org/browse/MIES-CRV1/latestSuccessful/artifact)
+* [1.6](http://bamboo.corp.alleninstitute.org/browse/MIES-RELEASE/latestSuccessful/artifact)
+* [1.5](http://bamboo.corp.alleninstitute.org/browse/MIES-CRV1/latestSuccessful/artifact)
 * [master](http://bamboo.corp.alleninstitute.org/browse/MIES-CM/latestSuccessful/artifact) intended for developer use
 
 ## Bug reporting
