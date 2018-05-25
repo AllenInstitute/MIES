@@ -3,6 +3,240 @@ Release notes
 
 .. toctree::
 
+Release 1.6
+===========
+
+AnalysisBrowser
+---------------
+
+- Use try/catch for opening the HDF5 file. This allows us to continue on
+  corrupt HDF5 files.
+- Properly update all sweep controls on sweep loading
+
+DataBrowser
+-----------
+
+- Auto assign locked devices as well on panel creation
+- Add dashboard for inspecting analysis function results
+
+DataBrowser/SweepBrowser
+------------------------
+
+- Enhance vertical axis ticks for on/off entries
+- Don't plot anything if no sweeps are selected with OVS
+
+DA\_Ephys
+---------
+
+- Update the calculated onset delay during DAQ
+- Allow only one of dDAQ/oodDAQ being checked at a time
+- Fix the stimset search controls for single channel controls
+- Load builtin stimsets on first device locking
+- Implement "Repeat sweep on async alarm" checkbox
+- Allow stopping DAQ with ESC
+- Allow stopping the testpulse always with ESC
+- Fix DAQ restart logic when changing the stimset and TP after DAQ is enabled
+
+ExperimentConfig
+----------------
+
+None
+
+Downsample
+----------
+
+None
+
+Analysis Functions
+------------------
+
+- Patch Seq:
+
+  - Skip only to the end of the currently active set
+  - PSQ_Rheobase: Add labnotebook entry if the DAScale range was exceeded
+  - Make the sampling multiplier a required analysis parameter
+  - PSQ_SquarePulse: Add sweep/set pass/fail entries
+  - Shorten overlong keys
+  - PSQ_SPIKE_LEVEL: Change to 0.01mV
+  - PSQ_DeterminePulseDuration: Handle pulses with negative amplitude properly
+  - Disallow TTL channels
+  - Force RA to true
+  - PSQ_DAScale: Only calculate/store/display resistance in sub threshold mode
+  - PSQ_DAScale: Enforce I-Clamp mode
+  - PSQ_DAScale: Add test for supra mode
+  - PSQ_DAScale: Check also the DAScale values
+  - PSQ_DaScale: Add new operation mode
+  - Force dDAQ/oodDAQ to off
+  - Force settings instead of complaining if possible
+  - Rename SubThreshold to DAScale
+  - Enfore minimum stimset length in PRE_DAQ_EVENT
+  - PSQ_Rheobase: Stop the sweep early if baseline QC passed
+  - PSQ_Rheobase: Handle failing baseline QC properly
+  - Add `PSQ_Ramp <http://10.128.24.29/master/file/_m_i_e_s___analysis_functions___patch_seq_8ipf.html?highlight=psq_ramp#_CPPv28PSQ_Ramp6stringP19AnalysisFunction_V3>`__ with tests, documentation and flow chart
+  - Port to V3 API
+
+- Introduce Analysis functions V3. All new analysis functions should use this format.
+- Add support for analysis parameters which can be attached to stimsets and are passed into the analysis function.
+- Set realDataLength to NaN for PRE_DAQ_EVENT
+- Explain behaviour on early aborting
+- Allow switching multi device/single device in PRE_DAQ_EVENT
+- Don't start DAQ if Abort happened during PRE_DAQ_EVENT
+- Ensure that MID_SWEEP_EVENT is always reached
+- Analysis parameters: Add method to request the types as well
+  A breaking change is that the names now must be separated with commas
+  (,) as that is more in line who we store the entries in the stimset.
+
+Foreign Function interface
+--------------------------
+
+None
+
+General
+-------
+
+- Readd 32-bit support. Users should *always* prefer 64-bit as we *will* phase out 32-bit support.
+- Add support for Igor Pro 8
+- PGC_SetAndActivateControl: Do nothing if the checkbox is already in the desired state
+- Stimset wave note: Store sweep and epoch count as well
+- Add document explaining some MIES coding concepts for new developers
+- IgorBeforeNewHook: Save experiment after cleaning up
+- AFH_ExtractOneDimDataFromSweep: More documentation and add support for TTL channels
+- All hardware dependent XOPs are now not a compilation requirement anymore
+- Reorganize menu
+
+Installer
+---------
+- Add 32bit support, auto uninstall, add support for installing without hardware XOPs instead of modules
+- Remove module support
+
+ITC XOP 2
+----------
+
+- Modularize the repository and use submodules
+- ITCConfigAllChannels2/ITCConfigChannel2: Add possibility to offset into data
+  wave. This changes the ITCChanConfigWave format.
+- Add matching PDBs
+
+ZeroMQ XOP
+----------
+
+- Modularize the repository and use submodules
+- Fix a crash with long function names from Igor Pro 8 (XOP is still compiled
+  without long name support)
+
+MCC XOP
+-------
+
+- The XOP now searches the AxMultiClampMsg.dll in the default installation
+  folder. So we don't need to ship it.
+
+Labnotebook
+-----------
+
+- GetLastSetting*: Return an invalid wave reference if nothing could be found
+- Fix labnotebook getter for text entries using RAC logic
+- Enhance documentation of the labnotebook querying functions
+- Add documentation for developers on how to use the labnotebook
+- DC_DocumentChannelProperty: Initialize sweep settings wave properly for
+  unassociated channels The labnotebook entries for in these cases does not
+  follow our standard scheme as zeros where used as placeholders instead of
+  NaNs.
+
+  Detecting invalid data entries:
+
+  - Only labnotebook entries with UNASSOC in the name are concerned.
+  - These labnotebook entries never have entries in the headstage
+    dependent layers so these layers can alywas be ignored.
+  - The only valid entry is in the INDEP_HEADSTAGE (9th) layer.
+  - Write only valid analysis functions into the labnotebook
+
+New numerical keys
+~~~~~~~~~~~~~~~~~~
+
+- "Sweep Rollback": Documents the sweep where the user used sweep rollback
+- "Multi Device mode": On/Off
+- "Background Testpulse": On/Off
+- "Background DAQ": On/Off
+- "Sampling interval multiplier": (Integer value) Factor used for reducing the sampling rate
+- "TP buffer size": (Integer value) Size of the TP buffer used for averaging
+- "TP during ITI": On/Off
+- "Amplifier change via I=0": On/Off
+- "Skip analysis functions": On/Off
+- "Repeat sweep on async alarm": On/Off
+- "Autobias Vcom": Voltage [mV]
+- "Autobias Vcom variance": Voltage variance [mV]
+- "Autobias Ibias max": Maximum current [pA]
+- "Autobias": On/Off
+
+New textual keys
+~~~~~~~~~~~~~~~~
+
+- "Stim Wave Note": The stimset wave note, useful for querying epoch specific settings
+
+Changed numerical entries
+~~~~~~~~~~~~~~~~~~~~~~~~~
+
+- Fix casing of "Stim Wave Checksum"
+- Nearly all patch seq entries were fine tuned.
+
+Changed textual entries
+~~~~~~~~~~~~~~~~~~~~~~~
+
+- Nearly all patch seq entries were fine tuned.
+- The analysis function entries now have consistent casing:
+
+  - "Pre DAQ function"
+  - "Mid Sweep function"
+  - "Post Sweep function"
+  - "Post Set function"
+  - "Post DAQ function"
+
+NWB/IPNWB
+---------
+
+None
+
+File format
+~~~~~~~~~~~
+
+None
+
+Pressure Control
+----------------
+
+- MAX/MIN_REGULATOR_PRESSURE: Unify constants
+
+WaveBuilder
+-----------
+
+- Remove deprecated analysis functions if possible on stimset saving
+- Delete intermediate waves on panel close
+- Support stimsets with more than 20 sweeps
+- Add GUI for handling analysis parameters
+- Sort the list of shown stimsets across channel types
+- Add stimset checksum to the stimset wavenote
+
+Work Sequencing Engine
+----------------------
+
+- Added support for WSE to interact with patchSeq Wave Set
+
+Internal
+--------
+
+- Add cache statistics
+- FindIndizes: Support input waves with layers
+- AFH_GetChannelUnit/AFH_GetChannelUnits: Add functions for querying the channel units from the ITCChanConfigWave
+- DAP_CheckSettings: Add checks for asynchronous acquisition
+- Mies Version: Add date and time of last commit
+- Remove stale wrapper functions
+- Removed stock XOPs/Procedures/HelpFiles with shortcuts to their original location
+
+Tango
+-----
+
+- Add upstream license file
+
 Release 1.5
 ===========
 
