@@ -272,7 +272,13 @@ Function DialogAllCur
     ${NSD_Check} $NSD_AC_RB1
   ${NSD_OnClick} $NSD_AC_RB1 ClickedCurrentUser
 
-  ${NSD_CreateRadioButton} 95u 48u 100% 13u "All Users"
+  StrCpy $1 "All Users"
+  UserInfo::GetAccountType
+  pop $0
+  ${If} $0 != "admin"
+    StrCpy $1 "All Users (admin rights required)"
+  ${EndIf}
+  ${NSD_CreateRadioButton} 95u 48u 100% 13u $1
   Pop $NSD_AC_RB2
   IntCmp $ALLUSER 0 +2
     ${NSD_Check} $NSD_AC_RB2
