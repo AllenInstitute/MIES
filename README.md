@@ -8,6 +8,7 @@
 
 In case you have an existing checkout without submodules or forgot to pass the
 `--recurse-submodules` option you can fetch and checkout the submodules with:
+
 * `git submodule init`
 * `git submodule update --remote --checkout`
 
