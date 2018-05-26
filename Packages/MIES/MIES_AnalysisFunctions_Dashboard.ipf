@@ -75,9 +75,9 @@ static Function AD_FillWaves(panelTitle, list, info)
 		raCycleID = GetLastSettingIndep(numericalValues, i, RA_ACQ_CYCLE_ID_KEY, DATA_ACQUISITION_MODE, defValue = NaN)
 		ASSERT(IsFinite(raCycleID), "Unexpected invalid RA cycle ID")
 
-		WAVE/Z indizes = FindIndizes(info, col = 0, var = raCycleID)
-
-		if(WaveExists(indizes)) // already included
+		/// @todo use RMD for IP8
+		FindValue/TXOP=4/TEXT=num2str(raCycleID) info
+		if(V_Value >= 0 && floor(V_Value / DimSize(info, ROWS)) == 0) // already included
 			continue
 		endif
 
