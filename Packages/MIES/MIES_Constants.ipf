@@ -890,3 +890,13 @@ Constant MAX_SWEEP_DURATION_IN_MS = 1.8e6 // 30 minutes
 
 StrConstant REC_MACRO_PROCEDURE = "proc"
 StrConstant REC_MACRO_MODE      = "mode"
+
+/// @name Constants for the wave cache
+/// @{
+
+/// @anchor CacheFetchOptions
+///
+/// Don't return a duplicate of the cached wave, but return the wave itself.
+/// Useful if you use the wave cache as an alternative storage.
+Constant CA_OPTS_NO_DUPLICATE = 0x1
+/// @}
