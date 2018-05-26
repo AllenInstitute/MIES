@@ -258,37 +258,42 @@ End
 
 /// @brief Try to fetch the wave stored under key from the cache
 ///
+/// @param key string which uniquely identifies the cached wave
+///
 /// @return A wave reference with the stored data or a invalid wave reference
 /// if nothing could be found.
 Function/WAVE CA_TryFetchingEntryFromCache(key)
 	string key
 
-	variable index = CA_GetCacheIndex(key)
+	variable index
+
+	index = CA_GetCacheIndex(key)
+
+	if(!IsFinite(index))
+		DEBUGPRINT("Could not find a cache entry for key=", str=key)
+		return $""
+	endif
 
 	WAVE/T keys      = GetCacheKeyWave()
 	WAVE/WAVE values = GetCacheValueWave()
 	WAVE stats       = GetCacheStatsWave()
 
-	if(!IsFinite(index))
-		DEBUGPRINT("Could not find a cache entry for key=", str=key)
+	ASSERT(index < DimSize(values, ROWS), "Invalid index")
+	WAVE/Z cache = values[index]
+
+	if(!WaveExists(cache))
+		DEBUGPRINT("Could not find a valid wave for key=", str=key)
+		// invalidate cache entry due to non existent wave,
+		// this can happen for unpacked experiments which don't store free waves
+		keys[index] = ""
 		return $""
-	else
-		ASSERT(index < DimSize(values, ROWS), "Invalid index")
-		WAVE/Z cache = values[index]
-
-		if(!WaveExists(cache))
-			DEBUGPRINT("Could not find a valid wave for key=", str=key)
-			// invalidate cache entry due to non existent wave,
-			// this can happen for unpacked experiments which don't store free waves
-			keys[index] = ""
-			return $""
-		endif
-		stats[index][%Hits] += 1
-
-		Duplicate/FREE cache, wv
-		DEBUGPRINT("Found cache entry for key=", str=key)
-		return wv
 	endif
+
+	stats[index][%Hits] += 1
+	DEBUGPRINT("Found cache entry for key=", str=key)
+	Duplicate/FREE cache, wv
+
+	return wv
 End
 
 /// @brief Try to delete a cache entry
