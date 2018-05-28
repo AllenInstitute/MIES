@@ -1350,14 +1350,12 @@ Function WBP_ButtonProc_SaveSet(ba) : ButtonControl
 				break
 			endif
 
-			RemoveTracesFromGraph(WaveBuilderGraph)
+			// propagate the existence of the new set
 			WBP_UpdateITCPanelPopUps()
 			WB_UpdateEpochCombineList(WBP_GetOutputType())
 
 			SetSetVariableString(panel, "setvar_WaveBuilder_baseName", DEFAULT_SET_PREFIX)
-			ControlUpdate/W=$panel popup_WaveBuilder_SetList
-			SetPopupMenuIndex(panel, "popup_af_generic_S9", 0)
-			WBP_AnaFuncsToWPT()
+			WBP_LoadSet(NONE)
 			break
 	endswitch
 End
