@@ -308,7 +308,7 @@ Function EnsureLargeEnoughWave(wv, [minimumSize, dimension, initialValue])
 
 	ASSERT(dimension == ROWS || dimension == COLS || dimension == LAYERS || dimension == CHUNKS, "Invalid dimension")
 	ASSERT(WaveExists(wv), "Wave does not exist")
-	ASSERT(IsFinite(minimumSize), "Invalid minimum size")
+	ASSERT(IsFinite(minimumSize) && minimumSize >= 0, "Invalid minimum size")
 
 	if(ParamIsDefault(minimumSize))
 		minimumSize = MINIMUM_WAVE_SIZE - 1
