@@ -566,8 +566,95 @@ Function/S GetLastSettingTextIndepRAC(numericalValues, textualValues, sweepNo, s
 	endif
 End
 
+/// @brief Return a numeric/textual wave with the latest value of a setting
+///        from the numerical/labnotebook labnotebook for the given sweep number.
+///
+/// @param values          numerical/textual labnotebook
+/// @param sweepNo         sweep number
+/// @param setting         name of the setting to query
+/// @param entrySourceType type of the labnotebook entry, one of @ref DataAcqModes.
+///                        If you don't care about the entry source type pass #UNKNOWN_MODE.
+///
+/// @return a free wave with #LABNOTEBOOK_LAYER_COUNT rows. In case
+/// the setting could not be found an invalid wave reference is returned.
+///
+/// @ingroup LabnotebookQueryFunctions
+Function/WAVE GetLastSetting(values, sweepNo, setting, entrySourceType)
+	wAVE values
+	variable sweepNo
+	string setting
+	variable entrySourceType
+
+	variable first, last, rowIndex, entrySourceTypeIndex, settingCol
+
+	// entries before the first sweep have sweepNo == NaN
+	// we can't cache that
+	if(IsNaN(sweepNo))
+		return GetLastSettingNoCache(values, sweepNo, setting, entrySourceType)
+	elseif(!IsValidSweepNumber(sweepNo))
+		return $""
+	endif
+
+	settingCol = FindDimLabel(values, COLS, setting)
+
+	if(settingCol < 0)
+		return $""
+	endif
+
+	entrySourceTypeIndex = EntrySourceTypeMapper(entrySourceType)
+
+	if(entrySourceTypeIndex >= NUMBER_OF_LBN_DAQ_MODES)
+		return $""
+	endif
+
+	WAVE indexWave = GetLBIndexCache(values)
+
+	EnsureLargeEnoughWave(indexWave, minimumSize = sweepNo, dimension = ROWS, initialValue = LABNOTEBOOK_UNCACHED_VALUE)
+	EnsureLargeEnoughWave(indexWave, minimumSize = settingCol, dimension = COLS, initialValue = LABNOTEBOOK_UNCACHED_VALUE)
+	rowIndex = indexWave[sweepNo][settingCol][entrySourceTypeIndex]
+
+	if(rowIndex >= 0) // entry available and present
+		if(IsTextWave(values))
+			WAVE/T valuesText = values
+			Make/T/FREE/N=(DimSize(values, LAYERS)) statusText = valuesText[rowIndex][settingCol][p]
+			return statusText
+		else
+			Make/D/FREE/N=(DimSize(values, LAYERS)) status = values[rowIndex][settingCol][p]
+			return status
+		endif
+	elseif(rowIndex == LABNOTEBOOK_UNCACHED_VALUE)
+		// need to search for it
+		WAVE rowCache = GetLBRowCache(values)
+		EnsureLargeEnoughWave(rowCache, minimumSize = sweepNo, dimension = ROWS, initialValue = LABNOTEBOOK_GET_RANGE)
+
+		first = rowCache[sweepNo][%first][entrySourceTypeIndex]
+		last  = rowCache[sweepNo][%last][entrySourceTypeIndex]
+
+		WAVE/Z settings = GetLastSettingNoCache(values, sweepNo, setting, entrySourceType, \
+												first = first, last = last, rowIndex = rowIndex)
+
+		if(WaveExists(settings))
+			ASSERT(first >= 0 && last >= 0 && rowIndex >= 0, "invalid return combination from GetLastSettingNoCache")
+			rowCache[sweepNo][%first][entrySourceTypeIndex] = first
+			rowCache[sweepNo][%last][entrySourceTypeIndex]  = last
+
+			indexWave[sweepNo][settingCol][entrySourceTypeIndex] = rowIndex
+		else
+			ASSERT(first < 0 || last < 0 || rowIndex < 0, "invalid return combination from GetLastSettingNoCache")
+			indexWave[sweepNo][settingCol][entrySourceTypeIndex] = LABNOTEBOOK_MISSING_VALUE
+		endif
+
+		return settings
+	elseif(rowIndex == LABNOTEBOOK_MISSING_VALUE)
+		return $""
+	endif
+
+	ASSERT(0, "Unexpected type")
+End
+
 /// @brief Return a wave with the latest value of a setting from the
-/// numerical/textual labnotebook for the given sweep number.
+///        numerical/textual labnotebook for the given sweep number.
+///        Uncached version, general users should prefer GetLastSetting().
 ///
 /// @param values          numerical/textual labnotebook
 /// @param sweepNo         sweep number
@@ -578,21 +665,28 @@ End
 ///                        Passing #LABNOTEBOOK_GET_RANGE will set the calculated values of `first` and `last` after the function returns.
 ///                        Passing a value greater or equal zero will use these values instead.
 /// @param[in, out] last   [optional] see `first`
+/// @param[out] rowIndex   [optional] return the row where the setting could be
+///                        found, otherwise it is set to #LABNOTEBOOK_MISSING_VALUE
+///
 /// @return a free wave with #LABNOTEBOOK_LAYER_COUNT rows. In case
 /// the setting could not be found an invalid wave reference is returned.
 ///
 /// @ingroup LabnotebookQueryFunctions
-Function/WAVE GetLastSetting(values, sweepNo, setting, entrySourceType, [first, last])
+Function/WAVE GetLastSettingNoCache(values, sweepNo, setting, entrySourceType, [first, last, rowIndex])
 	Wave values
 	variable sweepNo
 	string setting
 	variable entrySourceType
-	variable &first, &last
+	variable &first, &last, &rowIndex
 
 	variable settingCol, numLayers, i, sweepCol, numEntries
 	variable firstValue, lastValue, sourceTypeCol, peakResistanceCol, pulseDurationCol
 	variable testpulseBlockLength, blockType, hasValidTPPulseDurationEntry
 	variable mode
+
+	if(!ParamIsDefault(rowIndex))
+		rowIndex = LABNOTEBOOK_MISSING_VALUE
+	endif
 
 	if(ParamIsDefault(first) && ParamIsDefault(last))
 		mode = GET_LB_MODE_NONE
@@ -608,7 +702,6 @@ Function/WAVE GetLastSetting(values, sweepNo, setting, entrySourceType, [first, 
 		ASSERT(0, "Invalid params")
 	endif
 
-	ASSERT(!IsTextWave(values), "Can only work with numeric waves")
 	numLayers = DimSize(values, LAYERS)
 	settingCol = FindDimLabel(values, COLS, setting)
 
@@ -665,6 +758,10 @@ Function/WAVE GetLastSetting(values, sweepNo, setting, entrySourceType, [first, 
 
 			// return if we have at least one non-empty entry
 			if(Sum(lengths) > 0)
+				if(!ParamIsDefault(rowIndex))
+					rowIndex = i
+				endif
+
 				return statusText
 			endif
 		endfor
@@ -759,6 +856,10 @@ Function/WAVE GetLastSetting(values, sweepNo, setting, entrySourceType, [first, 
 
 			// return if at least one entry is not NaN
 			if(V_numNaNs != numLayers)
+				if(!ParamIsDefault(rowIndex))
+					rowIndex = i
+				endif
+
 				return status
 			endif
 		endfor
@@ -4696,4 +4797,12 @@ Function GetNextRandomNumberForDevice(panelTitle)
 
 	// scale to the available mantissa bits in a single precision variable
 	return trunc(GetReproducibleRandom() * 2^23)
+End
+
+/// @brief Maps the labnotebook entry source type, one of @ref DataAcqModes, to
+///        a valid wave index.
+Function EntrySourceTypeMapper(entrySourceType)
+	variable entrySourceType
+
+	return IsFinite(entrySourceType) ? ++entrySourceType : 0
 End

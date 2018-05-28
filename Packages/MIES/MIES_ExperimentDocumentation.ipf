@@ -232,12 +232,6 @@ static Function ED_WriteChangedValuesToNote(panelTitle, sweepNo)
 	string str = ""
 	variable tolerance, i, j, numRows, numCols, err
 
-	// GetLastSetting will overwrite that on the first call
-	variable firstCurrent  = LABNOTEBOOK_GET_RANGE
-	variable lastCurrent   = LABNOTEBOOK_GET_RANGE
-	variable firstPrevious = LABNOTEBOOK_GET_RANGE
-	variable lastPrevious  = LABNOTEBOOK_GET_RANGE
-
 	WAVE/T numericalKeys = GetLBNumericalKeys(panelTitle)
 	WAVE numericalValues = GetLBNumericalValues(panelTitle)
 
@@ -247,8 +241,8 @@ static Function ED_WriteChangedValuesToNote(panelTitle, sweepNo)
 		unit   = numericalKeys[1][j]
 		factor = numericalKeys[2][j]
 
-		Wave/Z currentSetting = GetLastSetting(numericalValues, sweepNo, key, UNKNOWN_MODE, first=firstCurrent, last=lastCurrent)
-		Wave/Z lastSetting = GetLastSetting(numericalValues, sweepNo - 1, key, UNKNOWN_MODE, first=firstPrevious, last=lastPrevious)
+		Wave/Z currentSetting = GetLastSetting(numericalValues, sweepNo, key, UNKNOWN_MODE)
+		Wave/Z lastSetting = GetLastSetting(numericalValues, sweepNo - 1, key, UNKNOWN_MODE)
 
 		// We have four combinations for the current and the last setting:
 		// 1. valid -> valid
@@ -338,8 +332,8 @@ static Function ED_WriteChangedValuesToNoteText(panelTitle, sweepNo)
 			continue
 		endif
 
-		Wave/Z/T currentSetting = GetLastSetting(textualValues, sweepNo, key, UNKNOWN_MODE, first=firstCurrent, last=lastCurrent)
-		Wave/Z/T lastSetting    = GetLastSetting(textualValues, sweepNo - 1, key, UNKNOWN_MODE, first=firstPrevious, last=lastPrevious)
+		Wave/Z/T currentSetting = GetLastSetting(textualValues, sweepNo, key, UNKNOWN_MODE)
+		Wave/Z/T lastSetting    = GetLastSetting(textualValues, sweepNo - 1, key, UNKNOWN_MODE)
 
 		// We have four combinations for the current and the last setting:
 		// 1. valid -> valid

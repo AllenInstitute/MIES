@@ -84,6 +84,8 @@ Function Initialize_IGNORE()
 	interactiveMode = 0
 
 	HW_ITC_CloseAllDevices()
+
+	CA_FlushCache()
 End
 
 /// @brief Return the list of active devices

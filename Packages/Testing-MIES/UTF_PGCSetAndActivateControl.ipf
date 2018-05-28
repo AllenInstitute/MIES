@@ -16,6 +16,8 @@ static Function TEST_CASE_BEGIN_OVERRIDE(testCase)
 
 	KillVariables/Z popNum, checked
 	KillStrings/Z popStr
+
+	CA_FlushCache()
 End
 
 static Function TEST_CASE_END_OVERRIDE(testCase)

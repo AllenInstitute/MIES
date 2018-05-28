@@ -1097,6 +1097,106 @@ Function/Wave GetLBNumericalValues(panelTitle)
 	return wv
 End
 
+/// @brief Return the labnotebook cache wave holding the first and last rows
+///		into `values` of each sweep number.
+///
+/// Uses the `values` wave modification count to reset itself upon a change.
+///
+/// The stored information is the returned `first`/`last` parameter from
+/// GetLastSettingNoCache().
+///
+/// Rows:
+/// - Rows into `values`
+///
+/// Cols:
+/// - 0: First row
+/// - 1: Last row
+///
+/// Layers:
+/// - One for each entrySourceType, mapped via EntrySourceTypeMapper()
+Function/WAVE GetLBRowCache(values)
+	WAVE values
+
+	variable actual
+	string key, name
+
+	variable versionOfNewWave = 1
+
+	actual = WaveModCountWrapper(values)
+	name   = GetWavesDataFolder(values, 2)
+	ASSERT(!isEmpty(name), "Invalid path to wave, free waves won't work.")
+
+	key = name + "_RowCache"
+
+	WAVE/Z/D wv = CA_TryFetchingEntryFromCache(key, options = CA_OPTS_NO_DUPLICATE)
+
+	if(ExistsWithCorrectLayoutVersion(wv, versionOfNewWave))
+		if(actual == GetNumberFromWaveNote(wv, LABNOTEBOOK_MOD_COUNT))
+			return wv
+		endif
+	else
+		Make/N=(256, 2, NUMBER_OF_LBN_DAQ_MODES)/D/FREE wv
+		CA_StoreEntryIntoCache(key, wv, options = CA_OPTS_NO_DUPLICATE)
+	endif
+
+	Multithread wv = LABNOTEBOOK_GET_RANGE
+
+	SetDimLabel COLS, 0, first, wv
+	SetDimLabel COLS, 1, last,  wv
+
+	SetNumberInWaveNote(wv, LABNOTEBOOK_MOD_COUNT, actual)
+	SetWaveVersion(wv, versionOfNewWave)
+
+	return wv
+End
+
+/// @brief Index wave which serves as a labnotebook cache.
+///
+/// Rows:
+/// - One for each sweep number
+///
+/// Cols:
+/// - One for each LBN key
+///
+/// Layers:
+/// - One for each entrySourceType, mapped via EntrySourceTypeMapper()
+///
+/// The wave can be indexed with sweepNumber, settings column and
+/// entrySourceType to return the row index of the labnotebok wave where the
+/// desired value can be found.
+Function/WAVE GetLBIndexCache(values)
+	WAVE values
+
+	variable actual
+	string key, name
+
+	variable versionOfNewWave = 1
+
+	actual = WaveModCountWrapper(values)
+	name   = GetWavesDataFolder(values, 2)
+	ASSERT(!isEmpty(name), "Invalid path to wave, free waves won't work.")
+
+	key = name + "_IndexCache"
+
+	WAVE/Z/D wv = CA_TryFetchingEntryFromCache(key, options = CA_OPTS_NO_DUPLICATE)
+
+	if(ExistsWithCorrectLayoutVersion(wv, versionOfNewWave))
+		if(actual == GetNumberFromWaveNote(wv, LABNOTEBOOK_MOD_COUNT))
+			return wv
+		endif
+	else
+		Make/FREE/N=(256, 256, NUMBER_OF_LBN_DAQ_MODES)/D wv
+		CA_StoreEntryIntoCache(key, wv, options = CA_OPTS_NO_DUPLICATE)
+	endif
+
+	Multithread wv = LABNOTEBOOK_UNCACHED_VALUE
+
+	SetNumberInWaveNote(wv, LABNOTEBOOK_MOD_COUNT, actual)
+	SetWaveVersion(wv, versionOfNewWave)
+
+	return wv
+End
+
 /// @brief Set dimension labels for GetSweepSettingsKeyWave() and
 /// GetSweepSettingsWave()
 static Function SetSweepSettingsDimLabels(wv)

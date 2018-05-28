@@ -2,7 +2,13 @@
 #pragma rtGlobals=3		// Use modern global access method and strict wave access.
 #pragma ModuleName=LBNEntrySourceTypeHandling
 
-/// GetLastSetting
+static Function TEST_CASE_BEGIN_OVERRIDE(testCase)
+	string testCase
+
+	CA_FlushCache()
+End
+
+/// GetLastSetting with numeric wave
 /// @{
 Function GetLastSettingEntrySourceTypes()
 
@@ -48,18 +54,6 @@ Function GetLastSettingEntrySourceTypes()
 	CHECK_EQUAL_WAVES(TPSettings,  {1,NaN,NaN,NaN,NaN,NaN,NaN,NaN,NaN}, mode = WAVE_DATA)
 End
 
-Function GetLastSettingAbortsOnTextWave()
-
-	Make/T/Free wv
-
-	try
-		GetLastSetting(wv, NaN, "My Key", UNKNOWN_MODE)
-		FAIL()
-	catch
-		PASS()
-	endtry
-End
-
 Function GetLastSettingAbortsInvalid1()
 
 	DFREF dfr = root:Labnotebook_misc:
@@ -68,7 +62,7 @@ Function GetLastSettingAbortsInvalid1()
 	variable first = LABNOTEBOOK_GET_RANGE
 
 	try
-		GetLastSetting(numericalValues, NaN, "My Key", UNKNOWN_MODE, first = first)
+		MIES_MIESUTILS#GetLastSettingNoCache(numericalValues, NaN, "My Key", UNKNOWN_MODE, first = first)
 		FAIL()
 	catch
 		PASS()
@@ -83,7 +77,7 @@ Function GetLastSettingAbortsInvalid2()
 	variable last = LABNOTEBOOK_GET_RANGE
 
 	try
-		GetLastSetting(numericalValues, NaN, "My Key", UNKNOWN_MODE, last = last)
+		MIES_MIESUTILS#GetLastSettingNoCache(numericalValues, NaN, "My Key", UNKNOWN_MODE, last = last)
 		FAIL()
 	catch
 		PASS()
@@ -99,7 +93,7 @@ Function GetLastSettingAbortsInvalid3()
 	variable last  = -10
 
 	try
-		GetLastSetting(numericalValues, NaN, "My Key", UNKNOWN_MODE, first = first, last = last)
+		MIES_MIESUTILS#GetLastSettingNoCache(numericalValues, NaN, "My Key", UNKNOWN_MODE, first = first, last = last)
 		FAIL()
 	catch
 		PASS()
@@ -118,7 +112,7 @@ Function GetLastSettingEmptyUnknown()
 
 	first = LABNOTEBOOK_GET_RANGE
 	last  = LABNOTEBOOK_GET_RANGE
-	WAVE/Z settings = GetLastSetting(numericalValues, NaN, "I DONT EXIST", UNKNOWN_MODE, first = first , last = last)
+	WAVE/Z settings = MIES_MIESUTILS#GetLastSettingNoCache(numericalValues, NaN, "I DONT EXIST", UNKNOWN_MODE, first = first , last = last)
 	CHECK(!WaveExists(settings))
 	CHECK_EQUAL_VAR(first, -1)
 	CHECK_EQUAL_VAR(last, -1)
@@ -146,7 +140,7 @@ Function GetLastSettingQueryWoMatch()
 	first = LABNOTEBOOK_GET_RANGE
 	last  = LABNOTEBOOK_GET_RANGE
 	// sweep is unknown
-	WAVE/Z settings = GetLastSetting(numericalValues, 100, "DA unit", DATA_ACQUISITION_MODE, first = first, last = last)
+	WAVE/Z settings = MIES_MIESUTILS#GetLastSettingNoCache(numericalValues, 100, "DA unit", DATA_ACQUISITION_MODE, first = first, last = last)
 	CHECK(!WaveExists(settings))
 	CHECK_EQUAL_VAR(first, -1)
 	CHECK_EQUAL_VAR(last, -1)
@@ -165,34 +159,22 @@ Function GetLastSettingWorks()
 
 	first = LABNOTEBOOK_GET_RANGE
 	last  = LABNOTEBOOK_GET_RANGE
-	WAVE/Z settings = GetLastSetting(numericalValues, 10, "DAC", DATA_ACQUISITION_MODE, first = first, last = last)
+	WAVE/Z settings = MIES_MIESUTILS#GetLastSettingNoCache(numericalValues, 10, "DAC", DATA_ACQUISITION_MODE, first = first, last = last)
 	CHECK(WaveExists(settings))
 	CHECK(first >= 0)
 	CHECK(last  >= 0)
 
 	firstAgain = first
 	lastAgain  = last
-	WAVE/Z settingsAgain = GetLastSetting(numericalValues, 10, "DAC", DATA_ACQUISITION_MODE, first = firstAgain, last = lastAgain)
+	WAVE/Z settingsAgain = MIES_MIESUTILS#GetLastSettingNoCache(numericalValues, 10, "DAC", DATA_ACQUISITION_MODE, first = firstAgain, last = lastAgain)
 	CHECK_EQUAL_WAVES(settings, settingsAgain, mode = WAVE_DATA)
 	CHECK_EQUAL_VAR(first, firstAgain)
 	CHECK_EQUAL_VAR(last, lastAgain)
 End
 /// @}
 
-/// GetLastSetting
+/// GetLastSetting with textual wave
 /// @{
-Function GetLastSettingTextAbortsOnNum()
-
-	DFREF dfr = root:Labnotebook_misc:
-	WAVE/SDFR=dfr numericalValues
-
-	try
-		GetLastSetting(numericalValues, NaN, "My Key", UNKNOWN_MODE)
-		FAIL()
-	catch
-		PASS()
-	endtry
-End
 
 Function GetLastSettingTextAborts1()
 
@@ -202,7 +184,7 @@ Function GetLastSettingTextAborts1()
 	variable first = LABNOTEBOOK_GET_RANGE
 
 	try
-		GetLastSetting(textualValues, NaN, "My Key", UNKNOWN_MODE, first = first)
+		MIES_MIESUTILS#GetLastSettingNoCache(textualValues, NaN, "My Key", UNKNOWN_MODE, first = first)
 		FAIL()
 	catch
 		PASS()
@@ -217,7 +199,7 @@ Function GetLastSettingTextAborts2()
 	variable last = LABNOTEBOOK_GET_RANGE
 
 	try
-		GetLastSetting(textualValues, NaN, "My Key", UNKNOWN_MODE, last = last)
+		MIES_MIESUTILS#GetLastSettingNoCache(textualValues, NaN, "My Key", UNKNOWN_MODE, last = last)
 		FAIL()
 	catch
 		PASS()
@@ -233,7 +215,7 @@ Function GetLastSettingTextAborts3()
 	variable last  = -10
 
 	try
-		GetLastSetting(textualValues, NaN, "My Key", UNKNOWN_MODE, first = first, last = last)
+		MIES_MIESUTILS#GetLastSettingNoCache(textualValues, NaN, "My Key", UNKNOWN_MODE, first = first, last = last)
 		FAIL()
 	catch
 		PASS()
@@ -252,7 +234,7 @@ Function GetLastSettingTextEmptyUnknown()
 
 	first = LABNOTEBOOK_GET_RANGE
 	last  = LABNOTEBOOK_GET_RANGE
-	WAVE/Z settings = GetLastSetting(textualValues, NaN, "I DONT EXIST", UNKNOWN_MODE, first = first , last = last)
+	WAVE/Z settings = MIES_MIESUTILS#GetLastSettingNoCache(textualValues, NaN, "I DONT EXIST", UNKNOWN_MODE, first = first , last = last)
 	CHECK(!WaveExists(settings))
 	CHECK_EQUAL_VAR(first, -1)
 	CHECK_EQUAL_VAR(last, -1)
@@ -268,7 +250,7 @@ Function GetLastSettingTextQueryWoMatch()
 	first = LABNOTEBOOK_GET_RANGE
 	last  = LABNOTEBOOK_GET_RANGE
 	// sweep is unknown
-	WAVE/Z settings = GetLastSetting(textualValues, 100, "DA unit", DATA_ACQUISITION_MODE, first = first, last = last)
+	WAVE/Z settings = MIES_MIESUTILS#GetLastSettingNoCache(textualValues, 100, "DA unit", DATA_ACQUISITION_MODE, first = first, last = last)
 	CHECK(!WaveExists(settings))
 	CHECK_EQUAL_VAR(first, -1)
 	CHECK_EQUAL_VAR(last, -1)
@@ -287,14 +269,14 @@ Function GetLastSettingTextWorks()
 
 	first = LABNOTEBOOK_GET_RANGE
 	last  = LABNOTEBOOK_GET_RANGE
-	WAVE/Z settings = GetLastSetting(textualValues, 1, "DA unit", DATA_ACQUISITION_MODE, first = first, last = last)
+	WAVE/Z settings = MIES_MIESUTILS#GetLastSettingNoCache(textualValues, 1, "DA unit", DATA_ACQUISITION_MODE, first = first, last = last)
 	CHECK(WaveExists(settings))
 	CHECK(first >= 0)
 	CHECK(last  >= 0)
 
 	firstAgain = first
 	lastAgain  = last
-	WAVE/Z settingsAgain = GetLastSetting(textualValues, 1, "DA unit", DATA_ACQUISITION_MODE, first = firstAgain, last = lastAgain)
+	WAVE/Z settingsAgain = MIES_MIESUTILS#GetLastSettingNoCache(textualValues, 1, "DA unit", DATA_ACQUISITION_MODE, first = firstAgain, last = lastAgain)
 	CHECK_EQUAL_WAVES(settings, settingsAgain, mode = WAVE_DATA)
 	CHECK_EQUAL_VAR(first, firstAgain)
 	CHECK_EQUAL_VAR(last, lastAgain)
@@ -351,5 +333,180 @@ Function CheckLength()
 		type = str2num(StringFromList(i, PSQ_LIST_OF_TYPES))
 		key = PSQ_CreateLBNKey(type, PSQ_FMT_LBN_RMS_SHORT_PASS, chunk = 99, query = 1)
 		CHECK(strlen(key) < MAX_OBJECT_NAME_LENGTH_IN_BYTES)
+	endfor
+End
+
+Function LBNCache_InvalidSweep()
+
+	variable sweepNo = 1000
+	WAVE numericalValues = root:Labnotebook_CacheTest:numericalValues
+
+	WAVE/Z settings = GetLastSetting(numericalValues, sweepNo, "DAC", DATA_ACQUISITION_MODE)
+	CHECK(!WaveExists(settings))
+
+	WAVE indexWave = GetLBIndexCache(numericalValues)
+	CHECK_EQUAL_VAR(indexWave[sweepNo][FindDimLabel(numericalValues, COLS, "DAC")][EntrySourceTypeMapper(DATA_ACQUISITION_MODE)], LABNOTEBOOK_MISSING_VALUE)
+End
+
+Function LBNCache_InvalidKey()
+
+	variable sweepNo = 10
+	WAVE numericalValues = root:Labnotebook_CacheTest:numericalValues
+
+	WAVE/Z settings = GetLastSetting(numericalValues, sweepNo, "I DONT EXIST", DATA_ACQUISITION_MODE)
+	CHECK(!WaveExists(settings))
+End
+
+Function LBN_CacheCorrectSourceTypes1()
+
+	variable index
+	variable sweepNo = 1
+
+	WAVE numericalValues = root:Labnotebook_CacheTest:numericalValues
+	index = FindDimlabel(numericalValues, COLS, "DAC")
+
+	WAVE indexWave = GetLBIndexCache(numericalValues)
+	WAVE rowWave   = GetLBRowCache(numericalValues)
+
+	Duplicate/FREE indexWave, indexWavePlain
+	Duplicate/FREE rowWave, rowWavePlain
+
+	matrixop/FREE indexWavePlain = replace(indexWave, LABNOTEBOOK_UNCACHED_VALUE, NaN)
+	WaveStats/Q/M=1 indexWavePlain
+	CHECK_EQUAL_VAR(V_npnts, 0)
+
+	matrixop/FREE rowWavePlain = replace(rowWavePlain, LABNOTEBOOK_GET_RANGE, NaN)
+	WaveStats/Q/M=1 rowWavePlain
+	CHECK_EQUAL_VAR(V_npnts, 0)
+
+	Make/FREE/D ref = {LABNOTEBOOK_UNCACHED_VALUE, LABNOTEBOOK_UNCACHED_VALUE, LABNOTEBOOK_UNCACHED_VALUE}
+	Make/FREE/N=3/D actual = indexWave[sweepNo][index][p]
+	CHECK_EQUAL_WAVES(ref, actual)
+
+	Make/N=(2, 3)/D/FREE ref = {{LABNOTEBOOK_GET_RANGE, LABNOTEBOOK_GET_RANGE},{LABNOTEBOOK_GET_RANGE, LABNOTEBOOK_GET_RANGE}, {LABNOTEBOOK_GET_RANGE, LABNOTEBOOK_GET_RANGE}}
+	Make/N=(2, 3)/D/FREE actual = rowWave[sweepNo][p][q]
+	CHECK_EQUAL_WAVES(ref, actual)
+
+	WAVE settings = GetLastSetting(numericalValues, sweepNo, "DAC", DATA_ACQUISITION_MODE)
+	CHECK_WAVE(settings, NUMERIC_WAVE)
+
+	Make/FREE/D ref = {LABNOTEBOOK_UNCACHED_VALUE, 9, LABNOTEBOOK_UNCACHED_VALUE}
+	Make/FREE/N=3/D actual = indexWave[sweepNo][index][p]
+	CHECK_EQUAL_WAVES(ref, actual)
+
+	Make/N=(2, 3)/D/FREE ref = {{LABNOTEBOOK_GET_RANGE, LABNOTEBOOK_GET_RANGE},{9, 12}, {LABNOTEBOOK_GET_RANGE, LABNOTEBOOK_GET_RANGE}}
+	Make/N=(2, 3)/D/FREE actual = rowWave[sweepNo][p][q]
+	CHECK_EQUAL_WAVES(ref, actual, tol=1)
+
+	Duplicate/FREE indexWave, indexWavePlain
+	Duplicate/FREE rowWave, rowWavePlain
+
+	matrixop/FREE indexWavePlain = replace(indexWave, LABNOTEBOOK_UNCACHED_VALUE, NaN)
+	WaveStats/Q/M=1 indexWavePlain
+	CHECK_EQUAL_VAR(V_npnts, 1)
+
+	matrixop/FREE rowWavePlain = replace(rowWavePlain, LABNOTEBOOK_GET_RANGE, NaN)
+	WaveStats/Q/M=1 rowWavePlain
+	CHECK_EQUAL_VAR(V_npnts, 2)
+End
+
+Function LBN_CacheCorrectSourceTypes2()
+
+	variable index
+	variable sweepNo = 1
+
+	WAVE numericalValues = root:Labnotebook_CacheTest:numericalValues
+	index = FindDimlabel(numericalValues, COLS, "DAC")
+
+	WAVE indexWave = GetLBIndexCache(numericalValues)
+	WAVE rowWave   = GetLBRowCache(numericalValues)
+
+	Duplicate/FREE indexWave, indexWavePlain
+	Duplicate/FREE rowWave, rowWavePlain
+
+	matrixop/FREE indexWavePlain = replace(indexWave, LABNOTEBOOK_UNCACHED_VALUE, NaN)
+	WaveStats/Q/M=1 indexWavePlain
+	CHECK_EQUAL_VAR(V_npnts, 0)
+
+	matrixop/FREE rowWavePlain = replace(rowWavePlain, LABNOTEBOOK_GET_RANGE, NaN)
+	WaveStats/Q/M=1 rowWavePlain
+	CHECK_EQUAL_VAR(V_npnts, 0)
+
+	Make/FREE/D ref = {LABNOTEBOOK_UNCACHED_VALUE, LABNOTEBOOK_UNCACHED_VALUE, LABNOTEBOOK_UNCACHED_VALUE}
+	Make/FREE/N=3/D actual = indexWave[sweepNo][index][p]
+	CHECK_EQUAL_WAVES(ref, actual)
+
+	Make/N=(2, 3)/D/FREE ref = {{LABNOTEBOOK_GET_RANGE, LABNOTEBOOK_GET_RANGE},{LABNOTEBOOK_GET_RANGE, LABNOTEBOOK_GET_RANGE}, {LABNOTEBOOK_GET_RANGE, LABNOTEBOOK_GET_RANGE}}
+	Make/N=(2, 3)/D/FREE actual = rowWave[sweepNo][p][q]
+	CHECK_EQUAL_WAVES(ref, actual)
+
+	WAVE settings = GetLastSetting(numericalValues, sweepNo, "DAC", UNKNOWN_MODE)
+	CHECK_WAVE(settings, NUMERIC_WAVE)
+
+	Make/FREE/D ref = {9, LABNOTEBOOK_UNCACHED_VALUE, LABNOTEBOOK_UNCACHED_VALUE}
+	Make/FREE/N=3/D actual = indexWave[sweepNo][index][p]
+	CHECK_EQUAL_WAVES(ref, actual)
+
+	Make/N=(2, 3)/D/FREE ref = {{9, 22}, {LABNOTEBOOK_GET_RANGE, LABNOTEBOOK_GET_RANGE}, {LABNOTEBOOK_GET_RANGE, LABNOTEBOOK_GET_RANGE}}
+	Make/N=(2, 3)/D/FREE actual = rowWave[sweepNo][p][q]
+	CHECK_EQUAL_WAVES(ref, actual)
+
+	Duplicate/FREE indexWave, indexWavePlain
+	Duplicate/FREE rowWave, rowWavePlain
+
+	matrixop/FREE indexWavePlain = replace(indexWave, LABNOTEBOOK_UNCACHED_VALUE, NaN)
+	WaveStats/Q/M=1 indexWavePlain
+	CHECK_EQUAL_VAR(V_npnts, 1)
+
+	matrixop/FREE rowWavePlain = replace(rowWavePlain, LABNOTEBOOK_GET_RANGE, NaN)
+	WaveStats/Q/M=1 rowWavePlain
+	CHECK_EQUAL_VAR(V_npnts, 2)
+End
+
+/// Check that the cache returns the same entries
+Function LBNCache_Reliable()
+
+	variable i, j, numKeys
+	string key
+	variable numSweeps = 100
+
+	WAVE numericalValues = root:Labnotebook_CacheTest:numericalValues
+	WAVE/T numericalKeys = root:Labnotebook_CacheTest:numericalKeys
+
+	numKeys = DimSize(numericalKeys, COLS)
+	for(i = 1; i < numSweeps; i += 1)
+		for(j = 4; j < numKeys; j += 1) // don't ask for the four always present
+
+			key = numericalKeys[0][j]
+			WAVE/Z settingsNoCache = MIES_MIESUTILS#GetLastSettingNoCache(numericalValues, i, key, DATA_ACQUISITION_MODE)
+			WAVE/Z settings        = GetLastSetting(numericalValues, i, key, DATA_ACQUISITION_MODE)
+
+			if(WaveExists(settingsNoCache) && WaveExists(settings))
+				CHECK_EQUAL_WAVES(settingsNoCache, settings)
+			else
+				CHECK(!WaveExists(settings))
+				CHECK(!WaveExists(settingsNoCache))
+			endif
+		endfor
+	endfor
+
+	WAVE/T textualValues = root:Labnotebook_CacheTest:textualValues
+	WAVE/T textualKeys = root:Labnotebook_CacheTest:textualKeys
+
+	numKeys = DimSize(textualKeys, COLS)
+	for(i = 1; i < numSweeps; i += 1)
+		for(j = 4; j < numKeys; j += 1) // don't ask for the four always present
+
+			key = textualKeys[0][j]
+			WAVE/Z settingsNoCache = MIES_MIESUTILS#GetLastSettingNoCache(textualValues, i, key, DATA_ACQUISITION_MODE)
+			WAVE/Z settings        = GetLastSetting(textualValues, i, key, DATA_ACQUISITION_MODE)
+
+			if(WaveExists(settingsNoCache) && WaveExists(settings))
+				CHECK_EQUAL_WAVES(settingsNoCache, settings)
+			else
+				CHECK(!WaveExists(settings))
+				CHECK(!WaveExists(settingsNoCache))
+			endif
+		endfor
 	endfor
 End
