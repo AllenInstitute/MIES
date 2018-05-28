@@ -510,3 +510,83 @@ Function LBNCache_Reliable()
 		endfor
 	endfor
 End
+
+/// Check that the cache returns the same entries
+Function RACid_Reliable()
+
+	variable i, j
+	string key
+	variable numSweeps = 100
+
+	WAVE numericalValues = root:Labnotebook_misc:numericalValues_large
+
+	for(i = 1; i < numSweeps; i += 1)
+		WAVE/Z settingsNoCache = MIES_AFH#AFH_GetSweepsFromSameRACycleNC(numericalValues, i)
+		WAVE/Z settings        = AFH_GetSweepsFromSameRACycle(numericalValues, i)
+
+		if(WaveExists(settingsNoCache) && WaveExists(settings))
+			CHECK_EQUAL_WAVES(settingsNoCache, settings)
+		else
+			CHECK(!WaveExists(settings))
+			CHECK(!WaveExists(settingsNoCache))
+		endif
+	endfor
+End
+
+Function RACid_InvalidWaveRef()
+
+	variable sweepNo = 1000
+
+	WAVE numericalValues = root:Labnotebook_misc:numericalValues_large
+
+	WAVE/Z settingsNoCache = MIES_AFH#AFH_GetSweepsFromSameRACycleNC(numericalValues, sweepNo)
+	WAVE/Z settings        = AFH_GetSweepsFromSameRACycle(numericalValues, sweepNo)
+	CHECK(!WaveExists(settings))
+	CHECK(!WaveExists(settingsNoCache))
+
+	// try the cached version again
+
+	WAVE/Z settings  = AFH_GetSweepsFromSameRACycle(numericalValues, sweepNo)
+	CHECK(!WaveExists(settings))
+End
+
+/// Check that the cache returns the same entries
+Function SCid_Reliable()
+
+	variable i, j
+	string key
+	variable numSweeps = 100
+
+	WAVE numericalValues = root:Labnotebook_CacheTest:second:numericalValues
+
+	for(i = 1; i < numSweeps; i += 1)
+		for(j = 1; j < 2; j += 1)
+			WAVE/Z settingsNoCache = MIES_AFH#AFH_GetSweepsFromSameSCINC(numericalValues, i, j)
+			WAVE/Z settings        = AFH_GetSweepsFromSameSCI(numericalValues, i, j)
+
+			if(WaveExists(settingsNoCache) && WaveExists(settings))
+				CHECK_EQUAL_WAVES(settingsNoCache, settings)
+			else
+				CHECK(!WaveExists(settings))
+				CHECK(!WaveExists(settingsNoCache))
+			endif
+		endfor
+	endfor
+End
+
+Function SCid_InvalidWaveRef()
+
+	variable sweepNo = 1000
+
+	WAVE numericalValues = root:Labnotebook_CacheTest:second:numericalValues
+
+	WAVE/Z settingsNoCache = MIES_AFH#AFH_GetSweepsFromSameSCINC(numericalValues, sweepNo, 0)
+	WAVE/Z settings        = AFH_GetSweepsFromSameSCI(numericalValues, sweepNo, 0)
+	CHECK(!WaveExists(settings))
+	CHECK(!WaveExists(settingsNoCache))
+
+	// try the cached version again
+
+	WAVE/Z settings  = AFH_GetSweepsFromSameRACycle(numericalValues, sweepNo)
+	CHECK(!WaveExists(settings))
+End

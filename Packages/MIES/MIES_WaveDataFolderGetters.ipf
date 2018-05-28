@@ -1197,6 +1197,60 @@ Function/WAVE GetLBIndexCache(values)
 	return wv
 End
 
+/// @brief Free wave to cache the sweeps of one RAC/SCI ID
+///
+/// Type of content:
+/// - valid wave
+/// - invalid wave reference (uncached entry)
+/// - wave of size zero (non-existant entry)
+///
+/// Rows:
+/// - One for each sweep number
+///
+/// Cols:
+/// - RAC (repeated acquisition cycle IDs) sweeps
+/// - SCI (simset cycle IDs) sweeps
+///
+Function/WAVE GetLBNidCache(numericalValues)
+	WAVE numericalValues
+
+	variable actual
+	string key, name
+
+	variable versionOfNewWave = 1
+
+	ASSERT(!IsTextWave(numericalValues), "Expected numerical labnotebook")
+
+	actual = WaveModCountWrapper(numericalValues)
+	name   = GetWavesDataFolder(numericalValues, 2)
+	ASSERT(!isEmpty(name), "Invalid path to wave, free waves won't work.")
+
+	key = name + "_RACidCache"
+
+	WAVE/Z/WAVE wv = CA_TryFetchingEntryFromCache(key, options = CA_OPTS_NO_DUPLICATE)
+
+	if(ExistsWithCorrectLayoutVersion(wv, versionOfNewWave))
+		if(actual == GetNumberFromWaveNote(wv, LABNOTEBOOK_MOD_COUNT))
+			return wv
+		endif
+	elseif(WaveExists(wv))
+		// handle upgrade
+	else
+		Make/FREE/N=(256, 2, NUM_HEADSTAGES)/WAVE wv
+		CA_StoreEntryIntoCache(key, wv, options = CA_OPTS_NO_DUPLICATE)
+	endif
+
+	wv = $""
+
+	SetNumberInWaveNote(wv, LABNOTEBOOK_MOD_COUNT, actual)
+	SetWaveVersion(wv, versionOfNewWave)
+
+	SetDimLabel COLS, 0, $RA_ACQ_CYCLE_ID_KEY     , wv
+	SetDimLabel COLS, 1, $STIMSET_ACQ_CYCLE_ID_KEY, wv
+
+	return wv
+End
+
 /// @brief Set dimension labels for GetSweepSettingsKeyWave() and
 /// GetSweepSettingsWave()
 static Function SetSweepSettingsDimLabels(wv)
