@@ -1368,6 +1368,7 @@ Function AI_FillAndSendAmpliferSettings(panelTitle, sweepNo)
 	WAVE/T ampSettingsKey      = GetAmplifierSettingsKeyWave()
 	WAVE/T ampSettingsTextWave = GetAmplifierSettingsTextWave()
 	WAVE/T ampSettingsTextKey  = GetAmplifierSettingsTextKeyWave()
+	WAVE ampParamStorage       = GetAmplifierParamStorageWave(panelTitle)
 
 	ampSettingsWave = NaN
 
@@ -1413,6 +1414,12 @@ Function AI_FillAndSendAmpliferSettings(panelTitle, sweepNo)
 			ampSettingsWave[0][36][i] = MCC_GetSlowCurrentInjEnable()
 			ampSettingsWave[0][37][i] = MCC_GetSlowCurrentInjLevel()
 			ampSettingsWave[0][38][i] = MCC_GetSlowCurrentInjSetlTime()
+
+			// parameters exclusively on the MIES amplifier panel
+			ampSettingsWave[0][43][i] = ampParamStorage[%AutoBiasVcom][0][i]
+			ampSettingsWave[0][44][i] = ampParamStorage[%AutoBiasVcomVariance][0][i]
+			ampSettingsWave[0][45][i] = ampParamStorage[%AutoBiasIbiasmax][0][i]
+			ampSettingsWave[0][46][i] = ampParamStorage[%AutoBiasEnable][0][i]
 		endif
 
 		STRUCT AxonTelegraph_DataStruct tds
