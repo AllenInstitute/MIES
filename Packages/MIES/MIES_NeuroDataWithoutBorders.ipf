@@ -301,9 +301,9 @@ static Function NWB_AddDeviceSpecificData(locationID, panelTitle, [chunkedLayout
 	DEBUGPRINT_ELAPSED(refTime)
 End
 
-Function NWB_ExportAllData([overrideFilePath, writeStoredTestPulses])
+Function NWB_ExportAllData([overrideFilePath, writeStoredTestPulses, writeIgorHistory])
 	string overrideFilePath
-	variable writeStoredTestPulses
+	variable writeStoredTestPulses, writeIgorHistory
 
 	string devicesWithContent, panelTitle, list, name
 	variable i, j, numEntries, locationID, sweep, numWaves, firstCall
@@ -321,6 +321,12 @@ Function NWB_ExportAllData([overrideFilePath, writeStoredTestPulses])
 		writeStoredTestPulses = 0
 	else
 		writeStoredTestPulses = !!writeStoredTestPulses
+	endif
+
+	if(ParamIsDefault(writeIgorHistory))
+		writeIgorHistory = 0
+	else
+		writeIgorHistory = !!writeIgorHistory
 	endif
 
 	if(!ParamIsDefault(overrideFilePath))
@@ -363,6 +369,10 @@ Function NWB_ExportAllData([overrideFilePath, writeStoredTestPulses])
 	endfor
 
 	NWB_AppendStimset(locationID, stimsetList)
+
+	if(writeIgorHistory)
+		NWB_AppendIgorHistory(locationID)
+	endif
 End
 
 Function NWB_ExportAllStimsets([overrideFilePath])
@@ -442,7 +452,7 @@ Function NWB_ExportWithDialog(exportType)
 	DeleteFile/Z S_filename
 
 	if(exportType == NWB_EXPORT_DATA)
-		NWB_ExportAllData(overrideFilePath=S_filename, writeStoredTestPulses = 1)
+		NWB_ExportAllData(overrideFilePath=S_filename, writeStoredTestPulses = 1, writeIgorHistory = 1)
 	elseif(exportType == NWB_EXPORT_STIMSETS)
 		NWB_ExportAllStimsets(overrideFilePath=S_filename)
 	else
@@ -1325,4 +1335,27 @@ Function NWB_Flush()
 	endif
 
 	fileIDExport = IPNWB#H5_FlushFile(fileIDExport, filePathExport, write = 1)
+End
+
+static Function NWB_AppendIgorHistory(locationID)
+	variable locationID
+
+	variable groupID
+	string history, name
+
+	NVAR refnum = $GetHistoryRefNumber()
+
+	if(IsNan(refnum))
+		// nothing to do
+		return NaN
+	endif
+
+	name = "history"
+
+	IPNWB#H5_CreateGroupsRecursively(locationID, "/general", groupID=groupID)
+	history = NormalizeToEOL(CaptureHistory(refnum, 0), "\n")
+	IPNWB#H5_WriteTextDataset(groupID, name, str=history, chunkedLayout=1, overwrite=1, writeIgorAttr=0)
+	IPNWB#MarkAsCustomEntry(groupID, name)
+
+	HDF5CloseGroup/Z groupID
 End
