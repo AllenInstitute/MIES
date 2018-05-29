@@ -12,8 +12,8 @@ echo MIES_Include >> input.txt
 if [ "$#" -gt 0 -a "$1" = "all" ]
 then
 
-echo UTF_Main         >> input.txt
-echo UTF_HardwareMain >> input.txt
+  echo UTF_Main         >> input.txt
+  echo UTF_HardwareMain >> input.txt
 
 fi
 
