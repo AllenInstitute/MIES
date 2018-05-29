@@ -199,7 +199,7 @@ static Function NWB_AddGeneratorString(fileID)
 
 	props[3][0] = "Package Version"
 	SVAR miesVersion = $GetMiesVersion()
-	props[3][1] = miesVersion
+	props[3][1] = NormalizeToEOL(miesVersion, "\n")
 
 	props[4][0] = "Labnotebook Version"
 	props[4][1] = num2str(LABNOTEBOOK_VERSION)
