@@ -4,14 +4,30 @@
 /// @brief Load the contents of the given file into data
 ///
 /// @param filePath absolute path to a text file
-Function/S LoadTextFile(filePath)
+/// @param required [optional, defaults to false] decides if we abort on a
+///                 failure to load the file (true) or return an empty string
+Function/S LoadTextFile(filePath, [required])
 	string filePath
+	variable required
 
 	variable refnum
 	string data
 
+	if(ParamIsDefault(required))
+		required = 1
+	else
+		required = !!required
+	endif
+
 	Open/Z/R/P=home refnum as filePath
-	AbortOnValue V_Flag, 1
+
+	if(V_flag) // error opening file
+		if(required)
+			Abort
+		else
+			return ""
+		endif
+	endif
 
 	FStatus refnum
 	data = PadString("", V_logEOF, 0)
@@ -71,4 +87,16 @@ Function IsProcGlobalCompiled()
 
 	string funcInfo = FunctionInfo("ProcGlobal#NON_EXISTING_FUNCTION")
 	return !cmpstr(funcInfo, "")
+End
+
+/// @brief Returns one if str is empty or null, zero otherwise.
+/// @param str must not be a SVAR
+///
+/// @hidecallgraph
+/// @hidecallergraph
+threadsafe Function IsEmpty(str)
+	string& str
+
+	variable len = strlen(str)
+	return numtype(len) == 2 || len <= 0
 End
