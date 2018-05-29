@@ -17,6 +17,8 @@ then
 
 fi
 
+echo DEBUGGING_ENABLED >> define.txt
+
 ./autorun-test.sh
 
 exit 0
