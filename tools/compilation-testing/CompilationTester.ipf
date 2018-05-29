@@ -16,6 +16,9 @@
 ///    the Igor Pro "User Procedure".
 ///  - For each include file use the unit-testing framework to report the
 ///    success/failure of the compilation check.
+///  - An optional file `define.txt` is loaded. If found the compilation testing is
+///    done twice once with the symbol defined (using `poundDefine` from SetIgorOption)
+//     and once undefined.
 
 /// @brief Perform compilation testing
 ///
@@ -24,7 +27,7 @@
 Function TestCompilation()
 	variable i, numEntries
 
-	string data, includeFile
+	string data, includeFile, define
 
 	string/G root:includeFile = ""
 
@@ -39,24 +42,47 @@ Function TestCompilation()
 
 	compilationState = 0x1
 
+	define = LoadTextFile("define.txt", required = 0)
+
 	numEntries = DimSize(includeFileList, 0)
 	REQUIRE(numEntries > 0)
 	for(i = 0; i < numEntries; i += 1)
 		includeFile = trimstring(includeFileList[i])
 		CHECK_PROPER_STR(includeFile)
-		TestCompilationOnFile(includeFile)
+		TestCompilationOnFile(includeFile, define = define)
+
+		if(!IsEmpty(define))
+			TestCompilationOnFile(includeFile, define = define, useDefine = 1)
+		endif
 	endfor
 End
 
-Function TestCompilationOnFile(includeFile)
+Function TestCompilationOnFile(includeFile, [useDefine, define])
 	string includeFile
+	variable useDefine
+	string define
 
 	NVAR compilationState = $GetCompilationState()
 	compilationState = 0x1
 
+	if(ParamIsDefault(useDefine))
+		useDefine = 0
+	else
+		useDefine = !!useDefine
+	endif
+
 	Execute/P "root:includeFile = " + "\"" + includeFile + "\""
 	Execute/P "INSERTINCLUDE \"" + includeFile + "\""
 	Execute/P "compilationState = 0x2"
+
+	if(!ParamIsDefault(define) && !IsEmpty(define))
+		if(useDefine)
+			Execute/P "SetIgorOption poundDefine=" + define
+		else
+			Execute/P "SetIgorOption poundUnDefine=" + define
+		endif
+	endif
+
 	Execute/P "COMPILEPROCEDURES "
 	Execute/P "root:compilationState = CompilationTester#IsProcGlobalCompiled() ? 0x4 : 0x8"
 	Execute/P "DELETEINCLUDE \"" + includeFile + "\""
