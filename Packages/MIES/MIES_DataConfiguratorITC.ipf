@@ -860,7 +860,7 @@ static Function DC_PlaceDataInITCDataWave(panelTitle, numActiveChannels, dataAcq
 		DC_DocumentChannelProperty(panelTitle, "Stim set length", headstageDAC[i], DAC[i], var=setLength[i])
 		DC_DocumentChannelProperty(panelTitle, "Delay onset oodDAQ", headstageDAC[i], DAC[i], var=offsets[i])
 		DC_DocumentChannelProperty(panelTitle, "oodDAQ regions", headstageDAC[i], DAC[i], str=regions[i])
-		DC_DocumentChannelProperty(panelTitle, "Stim Wave Checksum", headstageDAC[i], DAC[i], var=WB_GetStimsetChecksum(setName[i], dataAcqOrTP))
+		DC_DocumentChannelProperty(panelTitle, "Stim Wave Checksum", headstageDAC[i], DAC[i], var=WB_GetStimsetChecksum(stimSet[i], setName[i], dataAcqOrTP))
 
 		WAVE pulses = WB_GetPulsesFromPulseTrains(stimSet[i], setColumn[i], pulseToPulseLength)
 		// pulse positions are in ms, but not yet offsetted for the onset delays
