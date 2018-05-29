@@ -226,8 +226,9 @@ End
 
 /// @brief Return a checksum of the stimsets and its parameter waves.
 ///
-/// Return NaN for the testpulse.
-Function WB_GetStimsetChecksum(setName, dataAcqOrTP)
+/// Uses the entry from the stimset wave note if available.
+Function WB_GetStimsetChecksum(stimset, setName, dataAcqOrTP)
+	WAVE stimset
 	string setName
 	variable dataAcqOrTP
 
@@ -237,9 +238,24 @@ Function WB_GetStimsetChecksum(setName, dataAcqOrTP)
 		return NaN
 	endif
 
-	WAVE/Z wv = WB_CreateAndGetStimSet(setName)
-	ASSERT(WaveExists(wv), "Missing stimset")
-	crc = WaveCRC(crc, wv)
+	crc = NumberByKey("Checksum", note(stimset), " = ", ";")
+
+	if(IsFinite(crc))
+		return crc
+	endif
+
+	// old stimsets without the wave note entry
+	return WB_CalculateStimsetChecksum(stimset, setName)
+End
+
+/// @brief Calculcate the checksum of the stimsets and its parameter waves.
+static Function WB_CalculateStimsetChecksum(stimset, setName)
+	WAVE stimset
+	string setName
+
+	variable crc
+
+	crc = WaveCRC(crc, stimset)
 
 	WAVE/Z WP        = WB_GetWaveParamForSet(setName)
 	WAVE/Z/T WPT     = WB_GetWaveTextParamForSet(setName)
@@ -378,6 +394,10 @@ Function/Wave WB_GetStimSet([setName])
 			Multithread stimSetFlipped[][i] = singleSweep[p]
 		endfor
 		WAVE stimset = stimsetFlipped
+	endif
+
+	if(!isEmpty(setName))
+		AddEntryIntoWaveNoteAsList(stimset, "Checksum", var=WB_CalculateStimsetChecksum(stimset, setName), format = "%d", appendCR=1)
 	endif
 
 	DEBUGPRINT_ELAPSED(referenceTime)
@@ -749,7 +769,7 @@ static Function/WAVE WB_MakeWaveBuilderWave(WP, WPT, SegWvType, stepCount, numEp
 		AddEntryIntoWaveNoteAsList(WaveBuilderWave, StringFromList(GENERIC_EVENT, EVENT_NAME_LIST), str=WPT[9][99])
 		AddEntryIntoWaveNoteAsList(WaveBuilderWave, ANALYSIS_FUNCTION_PARAMS_LBN, str=WPT[10][99])
 		AddEntryIntoWaveNoteAsList(WaveBuilderWave, "Flip", var=SegWvType[98])
-		AddEntryIntoWaveNoteAsList(WaveBuilderWave, "Random Seed", var=SegWvType[97], appendCR=1)
+		AddEntryIntoWaveNoteAsList(WaveBuilderWave, "Random Seed", var=SegWvType[97])
 	endif
 
 	return WaveBuilderWave
