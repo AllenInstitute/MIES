@@ -11,6 +11,9 @@
 *.rc  eol=crlf
 *.rc  whitespace=cr-at-eol
 
+LICENSE eol=crlf
+LICENSE whitespace=cr-at-eol
+
 *.md  eol=lf
 *.ipf eol=lf
 *.c   eol=lf
