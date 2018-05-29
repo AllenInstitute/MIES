@@ -1839,14 +1839,14 @@ Function/Wave GetAmplifierParamStorageWave(panelTitle)
 	// wave's name is like ITC18USB_Dev_0
 	p.name = panelTitle
 
-	WAVE/Z wv = UpgradeWaveLocationAndGetIt(p)
+	WAVE/Z/D wv = UpgradeWaveLocationAndGetIt(p)
 
 	if(ExistsWithCorrectLayoutVersion(wv, versionOfNewWave))
 		return wv
 	elseif(WaveExists(wv))
 		// nothing to do
 	else
-		Make/N=(31, 1, NUM_HEADSTAGES) newDFR:$panelTitle/Wave=wv
+		Make/N=(31, 1, NUM_HEADSTAGES)/D newDFR:$panelTitle/Wave=wv
 	endif
 
 	SetDimLabel LAYERS, -1, Headstage             , wv
@@ -1900,7 +1900,7 @@ End
 /// - 8: headstage independent data
 Function/WAVE GetAmplifierSettingsWave()
 
-	Make/FREE/N=(1, 43, LABNOTEBOOK_LAYER_COUNT) wv
+	Make/FREE/N=(1, 47, LABNOTEBOOK_LAYER_COUNT)/D wv
 
 	return wv
 End
@@ -1916,7 +1916,7 @@ End
 /// - Various settings
 Function/WAVE GetAmplifierSettingsKeyWave()
 
-	Make/FREE/T/N=(3, 43) wv
+	Make/FREE/T/N=(3, 47) wv
 
 	SetDimLabel ROWS, 0, Parameter, wv
 	SetDimLabel ROWS, 1, Units    , wv
@@ -2095,6 +2095,22 @@ Function/WAVE GetAmplifierSettingsKeyWave()
 	wv[0][42] =  "Slow compensation time"
 	wv[1][42] =  "s"
 	wv[2][42] =  ""
+
+	wv[0][43] =  "Autobias Vcom"
+	wv[1][43] =  "mV"
+	wv[2][43] =  "0.1"
+
+	wv[0][44] =  "Autobias Vcom variance"
+	wv[1][44] =  "mV"
+	wv[2][44] =  "0.1"
+
+	wv[0][45] =  "Autobias Ibias max"
+	wv[1][45] =  "pA"
+	wv[2][45] =  "0.1"
+
+	wv[0][46] =  "Autobias"
+	wv[1][46] =  LABNOTEBOOK_BINARY_UNIT
+	wv[2][46] =  LABNOTEBOOK_NO_TOLERANCE
 
 	return wv
 End
