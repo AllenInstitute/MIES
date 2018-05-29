@@ -88,3 +88,15 @@ Function IsProcGlobalCompiled()
 	string funcInfo = FunctionInfo("ProcGlobal#NON_EXISTING_FUNCTION")
 	return !cmpstr(funcInfo, "")
 End
+
+/// @brief Returns one if str is empty or null, zero otherwise.
+/// @param str must not be a SVAR
+///
+/// @hidecallgraph
+/// @hidecallergraph
+threadsafe Function IsEmpty(str)
+	string& str
+
+	variable len = strlen(str)
+	return numtype(len) == 2 || len <= 0
+End
