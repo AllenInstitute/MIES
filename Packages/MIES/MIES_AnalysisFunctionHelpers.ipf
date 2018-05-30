@@ -281,6 +281,33 @@ Function/WAVE AFH_GetSweepsFromSameRACycle(numericalValues, sweepNo)
 	return sweeps
 End
 
+/// @brief Return a free wave with all sweep numbers (in ascending order) which
+///        belong to the same stimset cycle id
+///
+/// Return an invalid wave reference if not all required labnotebook entries are available
+Function/WAVE AFH_GetSweepsFromSameSCI(numericalValues, sweepNo, headstage)
+	WAVE numericalValues
+	variable sweepNo
+	variable headstage
+
+	variable sweepCol
+
+	WAVE/Z stimsetCycleIDs = GetLastSetting(numericalValues, sweepNo, STIMSET_ACQ_CYCLE_ID_KEY, DATA_ACQUISITION_MODE)
+
+	if(!WaveExists(stimsetCycleIDs))
+		return $""
+	endif
+
+	WAVE/Z indizes = FindIndizes(numericalValues, colLabel = STIMSET_ACQ_CYCLE_ID_KEY, var = stimsetCycleIDs[headstage], \
+								 startLayer = headstage, endLayer = headstage)
+	ASSERT(WaveExists(indizes), "Expected at least one match")
+
+	sweepCol = GetSweepColumn(numericalValues)
+	Make/FREE/D/N=(DimSize(indizes, ROWS)) sweeps = numericalValues[indizes[p]][sweepCol][0]
+
+	return sweeps
+End
+
 /// @brief Return a free 1D wave from the given sweep
 ///
 /// Extract the AD channel data from headstage 1:
