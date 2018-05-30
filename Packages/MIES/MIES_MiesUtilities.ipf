@@ -945,7 +945,7 @@ Function/WAVE GetLastSettingTextIndepEachRAC(numericalValues, textualValues, swe
 	numSweeps = DimSize(sweeps, ROWS)
 	Make/FREE/T/N=(numSweeps) result = GetLastSettingTextIndep(textualValues, sweeps[p], setting, entrySourceType, defValue = defValue)
 
-	Make/N=(numSweeps) lengths = strlen(result[p])
+	Make/N=(numSweeps)/FREE lengths = strlen(result[p])
 	if(Sum(lengths) == 0)
 		return $""
 	endif
@@ -1030,7 +1030,7 @@ Function/WAVE GetLastSettingTextEachRAC(numericalValues, textualValues, sweepNo,
 		endif
 	endfor
 
-	Make/N=(numSweeps) lengths = strlen(result[p])
+	Make/N=(numSweeps)/FREE lengths = strlen(result[p])
 	if(Sum(lengths) == 0)
 		return $""
 	endif
