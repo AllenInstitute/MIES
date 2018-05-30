@@ -744,6 +744,7 @@ static Function DC_PlaceDataInITCDataWave(panelTitle, numActiveChannels, dataAcq
 		DC_DocumentChannelProperty(panelTitle, STIMSET_SCALE_FACTOR_KEY, headstageDAC[activeColumn], i, var=DAScale[activeColumn])
 		DC_DocumentChannelProperty(panelTitle, "Set Sweep Count", headstageDAC[activeColumn], i, var=setColumn[activeColumn])
 		DC_DocumentChannelProperty(panelTitle, "Electrode", headstageDAC[activeColumn], i, str=cellElectrodeNames[headstageDAC[activeColumn]])
+		DC_DocumentChannelProperty(panelTitle, "Set Cycle Count", headstageDAC[activeColumn], i, var=setCycleCount)
 
 		activeColumn += 1
 	endfor

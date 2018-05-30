@@ -1116,6 +1116,7 @@ static Function SetSweepSettingsDimLabels(wv)
 	SetDimLabel COLS, 40, $"Amplifier change via I=0"    , wv
 	SetDimLabel COLS, 41, $"Skip analysis functions"     , wv
 	SetDimLabel COLS, 42, $"Repeat sweep on async alarm" , wv
+	SetDimLabel COLS, 43, $"Set Cycle Count"             , wv
 End
 
 /// @brief Set dimension labels for GetSweepSettingsTextKeyWave() and
@@ -1162,7 +1163,7 @@ End
 Function/Wave GetSweepSettingsWave(panelTitle)
 	string panelTitle
 
-	variable versionOfNewWave = 12
+	variable versionOfNewWave = 13
 	string newName = "sweepSettingsNumericValues"
 	DFREF newDFR = GetDevSpecLabNBTempFolder(panelTitle)
 
@@ -1177,9 +1178,9 @@ Function/Wave GetSweepSettingsWave(panelTitle)
 	if(ExistsWithCorrectLayoutVersion(wv, versionOfNewWave))
 		return wv
 	elseif(WaveExists(wv))
-		Redimension/N=(-1, 43, LABNOTEBOOK_LAYER_COUNT) wv
+		Redimension/N=(-1, 44, LABNOTEBOOK_LAYER_COUNT) wv
 	else
-		Make/N=(1, 43, LABNOTEBOOK_LAYER_COUNT) newDFR:$newName/Wave=wv
+		Make/N=(1, 44, LABNOTEBOOK_LAYER_COUNT) newDFR:$newName/Wave=wv
 	endif
 
 	wv = NaN
@@ -1246,10 +1247,11 @@ End
 /// - 40: Amplifier change via I=0
 /// - 41: Skip analysis functions
 /// - 42: Repeat sweep on async alarm
+/// - 43: Set Cycle Count
 Function/Wave GetSweepSettingsKeyWave(panelTitle)
 	string panelTitle
 
-	variable versionOfNewWave = 13
+	variable versionOfNewWave = 14
 	string newName = "sweepSettingsNumericKeys"
 	DFREF newDFR = GetDevSpecLabNBTempFolder(panelTitle)
 
@@ -1264,9 +1266,9 @@ Function/Wave GetSweepSettingsKeyWave(panelTitle)
 	if(ExistsWithCorrectLayoutVersion(wv, versionOfNewWave))
 		return wv
 	elseif(WaveExists(wv))
-		Redimension/N=(-1, 43) wv
+		Redimension/N=(-1, 44) wv
 	else
-		Make/T/N=(3, 43) newDFR:$newName/Wave=wv
+		Make/T/N=(3, 44) newDFR:$newName/Wave=wv
 	endif
 
 	wv = ""
@@ -1446,6 +1448,10 @@ Function/Wave GetSweepSettingsKeyWave(panelTitle)
 	wv[%Parameter][42] = "Repeat sweep on async alarm"
 	wv[%Units][42]     = LABNOTEBOOK_BINARY_UNIT
 	wv[%Tolerance][42] = LABNOTEBOOK_NO_TOLERANCE
+
+	wv[%Parameter][43] = "Set Cycle Count"
+	wv[%Units][43]     = "a. u."
+	wv[%Tolerance][43] = "1"
 
 	SetSweepSettingsDimLabels(wv)
 	SetWaveVersion(wv, versionOfNewWave)
