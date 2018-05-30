@@ -643,6 +643,13 @@ static Function DC_PlaceDataInITCDataWave(panelTitle, numActiveChannels, dataAcq
 	Make/T/FREE/N=(numEntries) setName
 	Make/WAVE/FREE/N=(numEntries) stimSet
 
+	NVAR raCycleID = $GetRepeatedAcquisitionCycleID(panelTitle)
+	if(dataAcqOrTP == DATA_ACQUISITION_MODE)
+		ASSERT(IsFinite(raCycleID), "Uninitialized raCycleID detected")
+	endif
+
+	DC_DocumentChannelProperty(panelTitle, RA_ACQ_CYCLE_ID_KEY, INDEP_HEADSTAGE, NaN, var=raCycleID)
+
 	for(i = 0; i < numEntries; i += 1)
 
 		if(!DC_ChannelIsActive(panelTitle, dataAcqOrTP, CHANNEL_TYPE_DAC, i, statusDA, statusHS))
@@ -900,14 +907,6 @@ static Function DC_PlaceDataInITCDataWave(panelTitle, numActiveChannels, dataAcq
 	DC_DocumentChannelProperty(panelTitle, "Amplifier change via I=0", INDEP_HEADSTAGE, NaN, var=DAG_GetNumericalValue(panelTitle, "check_Settings_AmpIEQZstep"))
 	DC_DocumentChannelProperty(panelTitle, "Skip analysis functions", INDEP_HEADSTAGE, NaN, var=DAG_GetNumericalValue(panelTitle, "Check_Settings_SkipAnalysFuncs"))
 	DC_DocumentChannelProperty(panelTitle, "Repeat sweep on async alarm", INDEP_HEADSTAGE, NaN, var=DAG_GetNumericalValue(panelTitle, "Check_Settings_AlarmAutoRepeat"))
-
-	NVAR raCycleID = $GetRepeatedAcquisitionCycleID(panelTitle)
-	if(dataAcqOrTP == DATA_ACQUISITION_MODE)
-		ASSERT(IsFinite(raCycleID), "Uninitialized raCycleID detected")
-	endif
-
-	DC_DocumentChannelProperty(panelTitle, RA_ACQ_CYCLE_ID_KEY, INDEP_HEADSTAGE, NaN, var=raCycleID)
-	NVAR/Z raCycleID = $""
 
 	if(distributedDAQ)
 		// dDAQ requires that all stimsets have the same length, so store the stim set length
