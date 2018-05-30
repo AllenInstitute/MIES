@@ -62,6 +62,8 @@ Function IDX_ResetStartFinishForIndexing(panelTitle)
 		WAVE stimsets = IDX_GetStimsets(panelTitle, i, CHANNEL_TYPE_TTL)
 		DAG_Update(panelTitle, ctrl, val = idx, str = IDX_GetSingleStimset(stimsets, idx, allowNone = 1))
 	endfor
+
+	DAP_UpdateDAQControls(panelTitle, REASON_STIMSET_CHANGE_DUR_DAQ)
 End
 
 /// @brief Locked indexing, indexes all active channels at once
@@ -75,10 +77,12 @@ Function IDX_IndexingDoIt(panelTitle)
 		IDX_IndexSingleChannel(panelTitle, CHANNEL_TYPE_TTL, i)
 	endfor
 
-	DAP_UpdateITIAcrossSets(panelTitle)
+	DAP_UpdateDAQControls(panelTitle, REASON_STIMSET_CHANGE_DUR_DAQ)
 End
 
 /// @brief Indexes a single channel - used when indexing is unlocked
+///
+/// Callers need to call DAP_UpdateDAQControls() with #REASON_STIMSET_CHANGE_DUR_DAQ.
 static Function IDX_IndexSingleChannel(panelTitle, channelType, i)
 	string panelTitle
 	variable channelType, i
@@ -512,7 +516,7 @@ Function IDX_ApplyUnLockedIndexing(panelTitle, count, DAorTTL)
 	endfor
 
 	if(update)
-		DAP_UpdateITIAcrossSets(panelTitle)
+		DAP_UpdateDAQControls(panelTitle, REASON_STIMSET_CHANGE_DUR_DAQ)
 	endif
 End
 
