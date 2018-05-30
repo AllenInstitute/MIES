@@ -773,8 +773,9 @@ StrConstant STIMSET_ACQ_CYCLE_ID_KEY = "Stimset Acq Cycle ID"
 ///
 /// @anchor UpdateControlsFlags
 /// @{
-Constant REASON_STIMSET_CHANGE   = 0x01
-Constant REASON_HEADSTAGE_CHANGE = 0x02
+Constant REASON_STIMSET_CHANGE         = 0x01
+Constant REASON_HEADSTAGE_CHANGE       = 0x02
+Constant REASON_STIMSET_CHANGE_DUR_DAQ = 0x04
 /// @}
 
 /// Parameters for GetLastSetting()/GetLastSettingText() for using the row caching
