@@ -4517,3 +4517,16 @@ Function IsValidSweepAndConfig(sweep, config)
 		   IsValidSweepWave(sweep) &&                    \
 		   DimSize(sweep, COLS) == DimSize(config, ROWS)
 End
+
+/// @brief Return the next random number using the device specific RNG seed
+Function GetNextRandomNumberForDevice(panelTitle)
+	string panelTitle
+
+	NVAR rngSeed = $GetRNGSeed(panelTitle)
+	ASSERT(IsFinite(rngSeed), "Invalid rngSeed")
+	SetRandomSeed/BETR=1 rngSeed
+	rngSeed += 1
+
+	// scale to the available mantissa bits in a single precision variable
+	return trunc(GetReproducibleRandom() * 2^23)
+End
