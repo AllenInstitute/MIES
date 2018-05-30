@@ -627,6 +627,35 @@ Function/Wave GetTTLWave(panelTitle)
 	return wv
 End
 
+/// @brief Return the stimset acquistion cycle ID helper wave
+///
+/// Only valid during DAQ.
+///
+/// Rows:
+/// - NUM_DA_TTL_CHANNELS
+///
+/// Columns:
+/// - 0: Stimset fingerprint of the previous sweep
+/// - 1: Current stimset acquisition cycle ID
+Function/Wave GetStimsetAcqIDHelperWave(panelTitle)
+	string panelTitle
+
+	DFREF dfr = GetDevicePath(panelTitle)
+
+	WAVE/D/Z/SDFR=dfr wv = stimsetAcqIDHelper
+
+	if(WaveExists(wv))
+		return wv
+	endif
+
+	Make/D/N=(NUM_DA_TTL_CHANNELS, 2) dfr:stimsetAcqIDHelper/Wave=wv
+
+	SetDimLabel COLS, 0, fingerprint, wv
+	SetDimLabel COLS, 1, id         , wv
+
+	return wv
+End
+
 /// @name Experiment Documentation
 /// @{
 
@@ -1117,6 +1146,7 @@ static Function SetSweepSettingsDimLabels(wv)
 	SetDimLabel COLS, 41, $"Skip analysis functions"     , wv
 	SetDimLabel COLS, 42, $"Repeat sweep on async alarm" , wv
 	SetDimLabel COLS, 43, $"Set Cycle Count"             , wv
+	SetDimLabel COLS, 44, $STIMSET_ACQ_CYCLE_ID_KEY      , wv
 End
 
 /// @brief Set dimension labels for GetSweepSettingsTextKeyWave() and
@@ -1163,7 +1193,7 @@ End
 Function/Wave GetSweepSettingsWave(panelTitle)
 	string panelTitle
 
-	variable versionOfNewWave = 13
+	variable versionOfNewWave = 14
 	string newName = "sweepSettingsNumericValues"
 	DFREF newDFR = GetDevSpecLabNBTempFolder(panelTitle)
 
@@ -1178,9 +1208,9 @@ Function/Wave GetSweepSettingsWave(panelTitle)
 	if(ExistsWithCorrectLayoutVersion(wv, versionOfNewWave))
 		return wv
 	elseif(WaveExists(wv))
-		Redimension/N=(-1, 44, LABNOTEBOOK_LAYER_COUNT) wv
+		Redimension/N=(-1, 45, LABNOTEBOOK_LAYER_COUNT) wv
 	else
-		Make/N=(1, 44, LABNOTEBOOK_LAYER_COUNT) newDFR:$newName/Wave=wv
+		Make/N=(1, 45, LABNOTEBOOK_LAYER_COUNT) newDFR:$newName/Wave=wv
 	endif
 
 	wv = NaN
@@ -1248,10 +1278,11 @@ End
 /// - 41: Skip analysis functions
 /// - 42: Repeat sweep on async alarm
 /// - 43: Set Cycle Count
+/// - 44: Stimset cycle ID
 Function/Wave GetSweepSettingsKeyWave(panelTitle)
 	string panelTitle
 
-	variable versionOfNewWave = 14
+	variable versionOfNewWave = 15
 	string newName = "sweepSettingsNumericKeys"
 	DFREF newDFR = GetDevSpecLabNBTempFolder(panelTitle)
 
@@ -1266,9 +1297,9 @@ Function/Wave GetSweepSettingsKeyWave(panelTitle)
 	if(ExistsWithCorrectLayoutVersion(wv, versionOfNewWave))
 		return wv
 	elseif(WaveExists(wv))
-		Redimension/N=(-1, 44) wv
+		Redimension/N=(-1, 45) wv
 	else
-		Make/T/N=(3, 44) newDFR:$newName/Wave=wv
+		Make/T/N=(3, 45) newDFR:$newName/Wave=wv
 	endif
 
 	wv = ""
@@ -1452,6 +1483,10 @@ Function/Wave GetSweepSettingsKeyWave(panelTitle)
 	wv[%Parameter][43] = "Set Cycle Count"
 	wv[%Units][43]     = "a. u."
 	wv[%Tolerance][43] = "1"
+
+	wv[%Parameter][44] = STIMSET_ACQ_CYCLE_ID_KEY
+	wv[%Units][44]     = "a. u."
+	wv[%Tolerance][44] = "1"
 
 	SetSweepSettingsDimLabels(wv)
 	SetWaveVersion(wv, versionOfNewWave)

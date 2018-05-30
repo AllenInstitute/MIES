@@ -599,7 +599,7 @@ static Function DC_PlaceDataInITCDataWave(panelTitle, numActiveChannels, dataAcq
 	string panelTitle
 	variable numActiveChannels, dataAcqOrTP, multiDevice
 
-	variable i, activeColumn, numEntries, setChecksum
+	variable i, activeColumn, numEntries, setChecksum, stimsetCycleID, fingerprint
 	string ctrl, str, list, func
 	variable setCycleCount, val, singleSetLength, singleInsertStart, minSamplingInterval
 	variable channelMode, TPAmpVClamp, TPAmpIClamp, testPulseLength, maxStimSetLength
@@ -755,6 +755,12 @@ static Function DC_PlaceDataInITCDataWave(panelTitle, numActiveChannels, dataAcq
 
 		setChecksum = WB_GetStimsetChecksum(stimSet[activeColumn], setName[activeColumn], dataAcqOrTP)
 		DC_DocumentChannelProperty(panelTitle, "Stim Wave Checksum", headstageDAC[activeColumn], i, var=setChecksum)
+
+		if(dataAcqOrTP == DATA_ACQUISITION_MODE)
+			fingerprint = DC_GenerateStimsetFingerprint(raCycleID, setName[activeColumn], setCycleCount, setChecksum, dataAcqOrTP)
+			stimsetCycleID = DC_GetStimsetAcqCycleID(panelTitle, fingerprint, i)
+			DC_DocumentChannelProperty(panelTitle, STIMSET_ACQ_CYCLE_ID_KEY, headstageDAC[activeColumn], i, var=stimsetCycleID)
+		endif
 
 		activeColumn += 1
 	endfor
@@ -968,6 +974,67 @@ static Function DC_PlaceDataInITCDataWave(panelTitle, numActiveChannels, dataAcq
 		ControlWindowToFront()
 		Abort
 	endif
+End
+
+/// @brief Return the stimset acquisition cycle ID
+///
+/// @param panelTitle  device
+/// @param fingerprint fingerprint as returned by DC_GenerateStimsetFingerprint()
+/// @param DAC         DA channel
+static Function DC_GetStimsetAcqCycleID(panelTitle, fingerprint, DAC)
+	string panelTitle
+	variable fingerprint, DAC
+
+	WAVE stimsetAcqIDHelper = GetStimsetAcqIDHelperWave(panelTitle)
+
+	if(!IsFinite(fingerprint))
+		return NaN
+	endif
+
+	if(fingerprint == stimsetAcqIDHelper[DAC][%fingerprint])
+		return stimsetAcqIDHelper[DAC][%id]
+	endif
+
+	stimsetAcqIDHelper[DAC][%fingerprint] = fingerprint
+	stimsetAcqIDHelper[DAC][%id] = GetNextRandomNumberForDevice(panelTitle)
+
+	return stimsetAcqIDHelper[DAC][%id]
+End
+
+/// @brief Generate the stimset fingerprint
+///
+/// This fingerprint is unique for the combination of the following properties:
+/// - Repeated acqusition cycle ID
+/// - stimset name
+/// - stimset checksum
+/// - set cycle count
+///
+/// Always then this fingerprint changes, a new stimset acquisition cycle ID has
+/// to be generated.
+///
+/// Returns NaN for the testpulse.
+static Function DC_GenerateStimsetFingerprint(raCycleID, setName, setCycleCount, setChecksum, dataAcqOrTP)
+	variable raCycleID
+	string setName
+	variable setChecksum, setCycleCount, dataAcqOrTP
+
+	variable crc
+
+	if(dataAcqOrTP == TEST_PULSE_MODE)
+		return NaN
+	endif
+
+	ASSERT(IsInteger(raCycleID) && raCycleID > 0, "Invalid raCycleID")
+	ASSERT(IsInteger(setCycleCount), "Invalid setCycleCount")
+	ASSERT(IsInteger(setChecksum) && setChecksum > 0, "Invalid stimset checksum")
+	ASSERT(!IsEmpty(setName) && !cmpstr(setName, trimstring(setName)) , "Invalid setName")
+
+	crc = StringCRC(crc, num2str(raCycleID))
+	crc = StringCRC(crc, num2str(setCycleCount))
+	crc = StringCRC(crc, num2str(setChecksum))
+	crc = StringCRC(crc, setName)
+
+	return crc
 End
 
 static Function DC_CheckIfDataWaveHasBorderVals(ITCDataWave)

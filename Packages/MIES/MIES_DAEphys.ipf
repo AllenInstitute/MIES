@@ -1002,6 +1002,9 @@ Function DAP_OneTimeCallBeforeDAQ(panelTitle, runMode)
 	NVAR fifoPosition = $GetFifoPosition(panelTitle)
 	fifoPosition = NaN
 
+	WAVE stimsetAcqIDHelper = GetStimsetAcqIDHelperWave(panelTitle)
+	stimsetAcqIDHelper = NaN
+
 	if(DAG_GetNumericalValue(panelTitle, "Check_DataAcq_Indexing"))
 		IDX_StoreStartFinishForIndexing(panelTitle)
 	endif
