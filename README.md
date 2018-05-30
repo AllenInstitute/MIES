@@ -8,6 +8,7 @@
 
 In case you have an existing checkout without submodules or forgot to pass the
 `--recurse-submodules` option you can fetch and checkout the submodules with:
+
 * `git submodule init`
 * `git submodule update --remote --checkout`
 
@@ -24,8 +25,8 @@ package from Wavemetrics.
 
 The following versions receive fixes for all critical bugs.
 
-* [1.5](http://bamboo.corp.alleninstitute.org/browse/MIES-RELEASE/latestSuccessful/artifact)
-* [1.4](http://bamboo.corp.alleninstitute.org/browse/MIES-CRV1/latestSuccessful/artifact)
+* [1.6](http://bamboo.corp.alleninstitute.org/browse/MIES-RELEASE/latestSuccessful/artifact)
+* [1.5](http://bamboo.corp.alleninstitute.org/browse/MIES-CRV1/latestSuccessful/artifact)
 * [master](http://bamboo.corp.alleninstitute.org/browse/MIES-CM/latestSuccessful/artifact) intended for developer use
 
 ## Bug reporting
@@ -81,7 +82,7 @@ If guidelines are not followed, the MIES version will be unknown, and data acqui
 
 ### Cutting a new release
 * Checkout the master branch
-* Check that main MIES and all separate modules compile
+* Check that MIES compiles
 * Check that doxygen/sphinx/breathe returns neither errors nor warnings
 * Paste the contents of `Packages\doc\releasenotes_template.rst` to the top of `Packages\doc\releasenotes.rst`
 * Call `tools\create-changelog.sh` which generate a raw changelog and fill `releasenotes.rst` with a cleaned up version of it.
