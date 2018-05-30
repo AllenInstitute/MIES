@@ -5476,7 +5476,7 @@ End
 Function/WAVE GetAnaFuncDashboardInfoWave(dfr)
 	DFREF dfr
 
-	variable versionOfNewWave = 1
+	variable versionOfNewWave = 2
 
 	ASSERT(DataFolderExistsDFR(dfr), "Invalid dfr")
 	WAVE/T/Z/SDFR=dfr wv = dashboardInfoWave
@@ -5489,7 +5489,7 @@ Function/WAVE GetAnaFuncDashboardInfoWave(dfr)
 		Make/T/N=(MINIMUM_WAVE_SIZE, 3) dfr:dashboardInfoWave/Wave=wv
 	endif
 
-	SetDimLabel COLS, 0, $RA_ACQ_CYCLE_ID_KEY, wv
+	SetDimLabel COLS, 0, $STIMSET_ACQ_CYCLE_ID_KEY, wv
 	SetDimLabel COLS, 1, $"Passing Sweeps", wv
 	SetDimLabel COLS, 2, $"Failing Sweeps", wv
 
