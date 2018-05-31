@@ -1474,3 +1474,50 @@ static Function AFT_Test17()
 	CHECK_EQUAL_VAR(anaFuncTracker[POST_DAQ_EVENT], 0)
 	CHECK_EQUAL_VAR(anaFuncTracker[GENERIC_EVENT], 0)
 End
+
+static Function SetIndexingEnd()
+
+	PGC_SetAndActivateControl(DEVICE, GetPanelControl(0, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_INDEX_END), str = "AnaFuncIdx2_DA_0")
+End
+
+// Analysis functions work properly with indexing
+// We index from AnaFuncIdx1_DA_0 to AnaFuncIdx2_DA_0
+// but only the second one has a analysis function set
+static Function AFT_DAQ18()
+
+	STRUCT DAQSettings s
+	InitDAQSettingsFromString(s, "DAQ_MD1_RA1_IDX1_LIDX0_BKG_1_RES_2")
+
+	AcquireData(s, "AnaFuncIdx1_DA_0", preAcquireFunc = SetIndexingEnd)
+End
+
+static Function AFT_Test18()
+
+	variable sweepNo
+	string key
+
+	CHECK_EQUAL_VAR(GetSetVariable(DEVICE, "SetVar_Sweep"), 4)
+
+	sweepNo = AFH_GetLastSweepAcquired(DEVICE)
+	CHECK_EQUAL_VAR(sweepNo, 3)
+
+	WAVE anaFuncTracker = TrackAnalysisFunctionCalls()
+
+	CHECK_EQUAL_VAR(anaFuncTracker[PRE_DAQ_EVENT], 0)
+	CHECK_EQUAL_VAR(anaFuncTracker[PRE_SWEEP_EVENT], 2)
+	CHECK(anaFuncTracker[MID_SWEEP_EVENT] >= 1)
+	CHECK_EQUAL_VAR(anaFuncTracker[POST_SWEEP_EVENT], 2)
+	CHECK_EQUAL_VAR(anaFuncTracker[POST_SET_EVENT], 2)
+	CHECK_EQUAL_VAR(anaFuncTracker[POST_DAQ_EVENT], 1)
+	CHECK_EQUAL_VAR(anaFuncTracker[GENERIC_EVENT], 0)
+
+	// analysis function storage was must be correct
+	// even after indexing
+	WAVE analysisFunctions = GetAnalysisFunctionStorage(DEVICE)
+	Duplicate/FREE analysisFunctions, analysisFunctionsBefore
+
+	AFM_UpdateAnalysisFunctionWave(DEVICE)
+
+	WAVE analysisFunctionsAfter = GetAnalysisFunctionStorage(DEVICE)
+	CHECK_EQUAL_WAVES(analysisFunctionsBefore, analysisFunctionsAfter)
+End
