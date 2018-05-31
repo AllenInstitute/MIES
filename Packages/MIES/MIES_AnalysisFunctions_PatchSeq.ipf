@@ -1058,6 +1058,8 @@ Function PSQ_DAScale(panelTitle, s)
 			PGC_SetAndActivateControl(panelTitle, "Check_DataAcq1_DistribDaq", val = 0)
 			PGC_SetAndActivateControl(panelTitle, "Check_DataAcq1_dDAQOptOv", val = 0)
 			PGC_SetAndActivateControl(panelTitle, "Check_DataAcq1_RepeatAcq", val = 1)
+			PGC_SetAndActivateControl(panelTitle, "Check_DataAcq_Indexing", val = 0)
+			PGC_SetAndActivateControl(panelTitle, "Check_DataAcq1_IndexingLocked", val = 0)
 
 			WAVE statusHS = DAG_GetChannelState(panelTitle, CHANNEL_TYPE_HEADSTAGE)
 			if(sum(statusHS) != 1)
@@ -1363,6 +1365,8 @@ Function PSQ_SquarePulse(panelTitle, s)
 			PGC_SetAndActivateControl(panelTitle, "Check_DataAcq1_DistribDaq", val = 0)
 			PGC_SetAndActivateControl(panelTitle, "Check_DataAcq1_dDAQOptOv", val = 0)
 			PGC_SetAndActivateControl(panelTitle, "Check_DataAcq1_RepeatAcq", val = 1)
+			PGC_SetAndActivateControl(panelTitle, "Check_DataAcq_Indexing", val = 0)
+			PGC_SetAndActivateControl(panelTitle, "Check_DataAcq1_IndexingLocked", val = 0)
 
 			if(DAG_GetHeadstageMode(panelTitle, s.headstage) != I_CLAMP_MODE)
 				printf "(%s) Clamp mode must be current clamp.\r", panelTitle
@@ -1534,6 +1538,8 @@ Function PSQ_Rheobase(panelTitle, s)
 			PGC_SetAndActivateControl(panelTitle, "Check_DataAcq1_DistribDaq", val = 0)
 			PGC_SetAndActivateControl(panelTitle, "Check_DataAcq1_dDAQOptOv", val = 0)
 			PGC_SetAndActivateControl(panelTitle, "Check_DataAcq1_RepeatAcq", val = 1)
+			PGC_SetAndActivateControl(panelTitle, "Check_DataAcq_Indexing", val = 0)
+			PGC_SetAndActivateControl(panelTitle, "Check_DataAcq1_IndexingLocked", val = 0)
 
 			if(DAG_GetHeadstageMode(panelTitle, s.headstage) != I_CLAMP_MODE)
 				printf "(%s) Clamp mode must be current clamp.\r", panelTitle
@@ -1872,6 +1878,8 @@ Function PSQ_Ramp(panelTitle, s)
 			PGC_SetAndActivateControl(panelTitle, "Check_DataAcq1_DistribDaq", val = 0)
 			PGC_SetAndActivateControl(panelTitle, "Check_DataAcq1_dDAQOptOv", val = 0)
 			PGC_SetAndActivateControl(panelTitle, "Check_DataAcq1_RepeatAcq", val = 1)
+			PGC_SetAndActivateControl(panelTitle, "Check_DataAcq_Indexing", val = 0)
+			PGC_SetAndActivateControl(panelTitle, "Check_DataAcq1_IndexingLocked", val = 0)
 
 			if(DAG_GetHeadstageMode(panelTitle, s.headstage) != I_CLAMP_MODE)
 				printf "(%s) Clamp mode must be current clamp.\r", panelTitle
