@@ -1266,7 +1266,7 @@ Function DAP_ButtonProc_AllChanOff(ba) : ButtonControl
 	endswitch
 End
 
-Function DAP_UpdateITIAcrossSets(panelTitle)
+static Function DAP_UpdateITIAcrossSets(panelTitle)
 	string panelTitle
 
 	variable numActiveDAChannels, maxITI
@@ -4501,6 +4501,9 @@ Function DAP_UpdateDAQControls(panelTitle, updateFlag)
 	if(updateFlag & REASON_STIMSET_CHANGE)
 		DAP_UpdateITIAcrossSets(panelTitle)
 		DAP_UpdateSweepSetVariables(panelTitle)
+		AFM_UpdateAnalysisFunctionWave(panelTitle)
+	elseif(updateFlag & REASON_STIMSET_CHANGE_DUR_DAQ)
+		DAP_UpdateITIAcrossSets(panelTitle)
 		AFM_UpdateAnalysisFunctionWave(panelTitle)
 	endif
 

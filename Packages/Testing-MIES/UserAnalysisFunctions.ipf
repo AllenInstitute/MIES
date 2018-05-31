@@ -355,3 +355,15 @@ Function ChangeToMultiDeviceDAQ(panelTitle, eventType, ITCDataWave, headStage, r
 	PGC_SetAndActivateControl(panelTitle, "check_Settings_MD", val = CHECKBOX_SELECTED)
 	return 0
 End
+
+Function Indexing_V3(panelTitle, s)
+	string panelTitle
+	STRUCT AnalysisFunction_V3& s
+
+	WAVE anaFuncTracker = TrackAnalysisFunctionCalls()
+
+	// the generic event is never sent to analysis functions
+	CHECK(s.eventType >= 0 && s.eventType < TOTAL_NUM_EVENTS - 1)
+	CHECK(s.eventType >= 0 && s.eventType < DimSize(anaFuncTracker, ROWS))
+	anaFuncTracker[s.eventType] += 1
+End

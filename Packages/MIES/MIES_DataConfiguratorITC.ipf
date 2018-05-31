@@ -37,6 +37,7 @@ static Function DC_UpdateGlobals(panelTitle, dataAcqOrTP)
 
 	// we need to update the list of analysis functions here as the stimset
 	// can change due to indexing, etc.
+	// @todo investigate if this is really required here
 	AFM_UpdateAnalysisFunctionWave(panelTitle)
 
 	pulseDuration = DAG_GetNumericalValue(panelTitle, "SetVar_DataAcq_TPDuration")

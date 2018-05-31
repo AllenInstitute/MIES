@@ -62,6 +62,8 @@ Function IDX_ResetStartFinishForIndexing(panelTitle)
 		WAVE stimsets = IDX_GetStimsets(panelTitle, i, CHANNEL_TYPE_TTL)
 		DAG_Update(panelTitle, ctrl, val = idx, str = IDX_GetSingleStimset(stimsets, idx, allowNone = 1))
 	endfor
+
+	DAP_UpdateDAQControls(panelTitle, REASON_STIMSET_CHANGE_DUR_DAQ)
 End
 
 /// @brief Locked indexing, indexes all active channels at once
@@ -71,26 +73,22 @@ Function IDX_IndexingDoIt(panelTitle)
 	variable i
 
 	for(i = 0; i < NUM_DA_TTL_CHANNELS; i += 1)
-		IDX_IndexSingleChannel(panelTitle, CHANNEL_TYPE_DAC, i, update = 0)
-		IDX_IndexSingleChannel(panelTitle, CHANNEL_TYPE_TTL, i, update = 0)
+		IDX_IndexSingleChannel(panelTitle, CHANNEL_TYPE_DAC, i)
+		IDX_IndexSingleChannel(panelTitle, CHANNEL_TYPE_TTL, i)
 	endfor
 
-	DAP_UpdateITIAcrossSets(panelTitle)
+	DAP_UpdateDAQControls(panelTitle, REASON_STIMSET_CHANGE_DUR_DAQ)
 End
 
 /// @brief Indexes a single channel - used when indexing is unlocked
-static Function IDX_IndexSingleChannel(panelTitle, channelType, i, [update])
+///
+/// Callers need to call DAP_UpdateDAQControls() with #REASON_STIMSET_CHANGE_DUR_DAQ.
+static Function IDX_IndexSingleChannel(panelTitle, channelType, i)
 	string panelTitle
-	variable channelType, i, update
+	variable channelType, i
 
 	variable popIdx
 	string ctrl
-
-	if(ParamIsDefault(update))
-		update = 1
-	else
-		update = !!update
-	endif
 
 	ctrl = GetSpecialControlLabel(channelType, CHANNEL_CONTROL_CHECK)
 
@@ -120,10 +118,6 @@ static Function IDX_IndexSingleChannel(panelTitle, channelType, i, [update])
 	SetPopupMenuIndex(panelTitle, ctrl, popIdx - 1)
 	WAVE stimsets = IDX_GetStimsets(panelTitle, i, channelType)
 	DAG_Update(panelTitle, ctrl, val = popIdx - 1, str = IDX_GetSingleStimset(stimsets, popIdx))
-
-	if(update)
-		DAP_UpdateITIAcrossSets(panelTitle)
-	endif
 End
 
 /// @brief Sum of the largest sets for each indexing step
@@ -499,7 +493,7 @@ Function IDX_ApplyUnLockedIndexing(panelTitle, count, DAorTTL)
 	string panelTitle
 	variable count, DAorTTL
 
-	variable i
+	variable i, update
 
 	if(DAorTTL == 0)
 		WAVE status = DAG_GetChannelState(panelTitle, CHANNEL_TYPE_DAC)
@@ -516,9 +510,14 @@ Function IDX_ApplyUnLockedIndexing(panelTitle, count, DAorTTL)
 		endif
 
 		if(IDX_DetIfCountIsAtSetBorder(panelTitle, count, i, DAorTTL) == 1)
+			update = 1
 			IDX_IndexSingleChannel(panelTitle, DAorTTL, i)
 		endif
 	endfor
+
+	if(update)
+		DAP_UpdateDAQControls(panelTitle, REASON_STIMSET_CHANGE_DUR_DAQ)
+	endif
 End
 
 static Function IDX_TotalIndexingListSteps(panelTitle, ChannelNumber, DAorTTL)
