@@ -75,6 +75,11 @@ Function AFM_CallAnalysisFunctions(panelTitle, eventType)
 				sweepNo = DAG_GetNumericalValue(panelTitle, "SetVar_Sweep") - 1
 				break
 			case POST_SET_EVENT:
+				if(DAG_GetNumericalValue(panelTitle, "Check_DataAcq_Indexing") \
+				   || DAG_GetNumericalValue(panelTitle, "Check_DataAcq1_IndexingLocked"))
+					BUG("POST_SET_EVENT is currently broken with indexing. Stay tuned for fixes.")
+				endif
+
 				if(mod(count + 1, sweepsInSet) != 0)
 					continue
 				endif
