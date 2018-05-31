@@ -1446,7 +1446,12 @@ static Function AFT_DAQ17()
 	STRUCT DAQSettings s
 	InitDAQSettingsFromString(s, "DAQ_MD0_RA0_IDX0_LIDX0_BKG_1")
 
-	AcquireData(s, "AnaFuncPreDAQHar_DA_0")
+	try
+		AcquireData(s, "AnaFuncPreDAQHar_DA_0"); AbortOnRTE
+		FAIL()
+	catch
+		PASS()
+	endtry
 End
 
 static Function AFT_Test17()

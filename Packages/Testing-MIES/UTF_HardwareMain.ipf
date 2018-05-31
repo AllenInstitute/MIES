@@ -226,6 +226,8 @@ Function run()
 	list = AddListItem("AFT_Test15", list, ";", INF)
 	list = AddListItem("AFT_DAQ16", list, ";", INF)
 	list = AddListItem("AFT_Test16", list, ";", INF)
+	list = AddListItem("AFT_DAQ17", list, ";", INF)
+	list = AddListItem("AFT_Test17", list, ";", INF)
 #endif
 
 	// initialize everything
