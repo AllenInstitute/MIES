@@ -84,6 +84,11 @@ Function Initialize_IGNORE()
 	interactiveMode = 0
 
 	HW_ITC_CloseAllDevices()
+
+	CA_FlushCache()
+
+	NVAR errorCounter = $GetAnalysisFuncErrorCounter(DEVICE)
+	errorCounter = 0
 End
 
 /// @brief Return the list of active devices
@@ -240,4 +245,11 @@ Function OpenDatabrowser()
 	string win = DB_OpenDataBrowser()
 	string panel = BSP_GetSweepControlsPanel(win)
 	PGC_SetAndActivateControl(panel, "check_SweepControl_AutoUpdate", val = 1)
+End
+
+Function EnsureNoAnaFuncErrors()
+
+	NVAR errorCounter = $GetAnalysisFuncErrorCounter(DEVICE)
+
+	CHECK_EQUAL_VAR(errorCounter, 0)
 End

@@ -56,6 +56,7 @@ then
   rm -f  "$xops"/NIDAQmx64.*
 else
   cp -r  "$top_level"/XOPs-IP7-64bit/HDF5*  "$xops"
+  cp -r  "$top_level"/XOPs-IP7-64bit/MIESUtils*  "$xops"
 fi
 
 echo "Release: FAKE MIES VERSION" > "$IGOR_USER_FILES"/version.txt

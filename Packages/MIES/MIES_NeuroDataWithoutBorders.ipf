@@ -603,7 +603,7 @@ static Function/S NWB_GetStimsetFromSweepGeneric(sweep, numericalValues, textual
 	string ttlList, name
 	string stimsetList = ""
 
-	WAVE/Z/T stimsets = GetLastSettingText(textualValues, sweep, STIM_WAVE_NAME_KEY, DATA_ACQUISITION_MODE)
+	WAVE/Z/T stimsets = GetLastSetting(textualValues, sweep, STIM_WAVE_NAME_KEY, DATA_ACQUISITION_MODE)
 	if(!WaveExists(stimsets))
 		return ""
 	endif
@@ -686,11 +686,11 @@ static Function NWB_AppendSweepLowLevel(locationID, panelTitle, ITCDataWave, ITC
 	endif
 
 	// 296097c2 (Changes to Tango Interact, 2014-09-03)
-	WAVE/T stimSets = GetLastSettingText(textualValues, sweep, STIM_WAVE_NAME_KEY, DATA_ACQUISITION_MODE)
+	WAVE/T stimSets = GetLastSetting(textualValues, sweep, STIM_WAVE_NAME_KEY, DATA_ACQUISITION_MODE)
 	ASSERT(WaveExists(stimSets), "Labnotebook is too old for NWB export.")
 
 	// 95402da6 (NWB: Allow documenting the physical electrode, 2016-08-05)
-	WAVE/Z/T electrodeNames = GetLastSettingText(textualValues, sweep, "Electrode", DATA_ACQUISITION_MODE)
+	WAVE/Z/T electrodeNames = GetLastSetting(textualValues, sweep, "Electrode", DATA_ACQUISITION_MODE)
 	if(!WaveExists(electrodeNames))
 		Make/FREE/T/N=(NUM_HEADSTAGES) electrodeNames = GetDefaultElectrodeName(p)
 	else

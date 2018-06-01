@@ -55,7 +55,7 @@ static Function AD_FillWaves(panelTitle, list, info)
 	string panelTitle
 	WAVE/T list, info
 
-	variable lastSweep, i, first, last, headstage, passed
+	variable lastSweep, i, headstage, passed
 	variable index, anaFuncType, stimsetCycleID, firstValid, lastValid
 	string key, anaFunc, stimset, msg
 
@@ -92,11 +92,8 @@ static Function AD_FillWaves(panelTitle, list, info)
 			continue
 		endif
 
-		first = LABNOTEBOOK_GET_RANGE
-		last  = LABNOTEBOOK_GET_RANGE
-
 		key = StringFromList(GENERIC_EVENT, EVENT_NAME_LIST_LBN)
-		WAVE/Z/T anaFuncs = GetLastSettingText(textualValues, i, key, DATA_ACQUISITION_MODE, first=first, last=last)
+		WAVE/Z/T anaFuncs = GetLastSetting(textualValues, i, key, DATA_ACQUISITION_MODE)
 
 		if(!WaveExists(anaFuncs))
 			continue
@@ -109,7 +106,7 @@ static Function AD_FillWaves(panelTitle, list, info)
 			continue
 		endif
 
-		WAVE/Z/T stimsets = GetLastSettingText(textualValues, i, STIM_WAVE_NAME_KEY, DATA_ACQUISITION_MODE, first=first, last=last)
+		WAVE/Z/T stimsets = GetLastSetting(textualValues, i, STIM_WAVE_NAME_KEY, DATA_ACQUISITION_MODE)
 		ASSERT(WaveExists(stimsets), "No stimsets found")
 
 		stimset = stimsets[headstage]

@@ -17,8 +17,7 @@
 /// GetDACListFromConfig()        | Free wave with all active DA channels as entries
 /// GetLBNumericalValues()        | Wave reference to the labnotebook (numerical version)
 /// GetLBTextualValues()          | Wave reference to the labnotebook (textual version)
-/// GetLastSetting()              | Last documented numerical value for headstages of a specific setting in the labnotebook for a given sweep number.
-/// GetLastSettingText()          | Last documented textual value for headstages of a specific setting in the labnotebook for a given sweep number.
+/// GetLastSetting()              | Last documented value for headstages of a specific setting in the labnotebook for a given sweep number.
 /// GetLastSweepWithSetting()     | Last documented numerical value for headstages of a specific setting in the labnotebook and the sweep number it was set last.
 /// GetLastSweepWithSettingText() | Last documented textual value for headstages of a specific setting in the labnotebook and the sweep number it was set last.
 /// ED_AddEntryToLabnotebook()    | Add a user entry to the numerical/textual labnotebook
@@ -256,10 +255,11 @@ Function/S AFH_GetStimSetName(panelTitle, chanNo, channelType)
 End
 
 /// @brief Return a free wave with all sweep numbers (in ascending order) which
-///        belong to the same RA cycle
+///        belong to the same RA cycle. Uncached version, general users should prefer
+///        AFH_GetSweepsFromSameRACycle().
 ///
 /// Return an invalid wave reference if not all required labnotebook entries are available
-Function/WAVE AFH_GetSweepsFromSameRACycle(numericalValues, sweepNo)
+static Function/WAVE AFH_GetSweepsFromSameRACycleNC(numericalValues, sweepNo)
 	WAVE numericalValues
 	variable sweepNo
 
@@ -282,10 +282,85 @@ Function/WAVE AFH_GetSweepsFromSameRACycle(numericalValues, sweepNo)
 End
 
 /// @brief Return a free wave with all sweep numbers (in ascending order) which
-///        belong to the same stimset cycle id
+///        belong to the same RA cycle
+///
+/// Return an invalid wave reference if not all required labnotebook entries are available
+Function/WAVE AFH_GetSweepsFromSameRACycle(numericalValues, sweepNo)
+	WAVE numericalValues
+	variable sweepNo
+
+	if(!IsValidSweepNumber(sweepNo))
+		return $""
+	endif
+
+	WAVE/WAVE cache = GetLBNidCache(numericalValues)
+	EnsureLargeEnoughWave(cache, minimumSize = sweepNo, dimension = ROWS)
+
+	WAVE/Z sweeps = cache[sweepNo][%$RA_ACQ_CYCLE_ID_KEY][0]
+	if(WaveExists(sweeps))
+		if(DimSize(sweeps, ROWS) > 0) // valid cached entry
+			return sweeps
+		else // non-existant entry
+			return $""
+		endif
+	endif
+
+	// uncached entry
+	WAVE/Z sweeps = AFH_GetSweepsFromSameRACycleNC(numericalValues, sweepNo)
+
+	if(WaveExists(sweeps))
+		cache[sweepNo][%$RA_ACQ_CYCLE_ID_KEY][0] = sweeps
+	else // non-existant entry
+		Make/FREE/N=0 empty
+		cache[sweepNo][%$RA_ACQ_CYCLE_ID_KEY][0] = empty
+	endif
+
+	return sweeps
+End
+
+/// @brief Return a free wave with all sweep numbers (in ascending order) which
+///        belong to the same stimset cycle
 ///
 /// Return an invalid wave reference if not all required labnotebook entries are available
 Function/WAVE AFH_GetSweepsFromSameSCI(numericalValues, sweepNo, headstage)
+	WAVE numericalValues
+	variable sweepNo, headstage
+
+	if(!IsValidSweepNumber(sweepNo))
+		return $""
+	endif
+
+	WAVE/WAVE cache = GetLBNidCache(numericalValues)
+	EnsureLargeEnoughWave(cache, minimumSize = sweepNo, dimension = ROWS)
+
+	WAVE/Z sweeps = cache[sweepNo][%$STIMSET_ACQ_CYCLE_ID_KEY][headstage]
+	if(WaveExists(sweeps))
+		if(DimSize(sweeps, ROWS) > 0) // valid cached entry
+			return sweeps
+		else // non-existant entry
+			return $""
+		endif
+	endif
+
+	// uncached entry
+	WAVE/Z sweeps = AFH_GetSweepsFromSameSCINC(numericalValues, sweepNo, headstage)
+
+	if(WaveExists(sweeps))
+		cache[sweepNo][%$STIMSET_ACQ_CYCLE_ID_KEY][headstage] = sweeps
+	else // non-existant entry
+		Make/FREE/N=0 empty
+		cache[sweepNo][%$STIMSET_ACQ_CYCLE_ID_KEY][headstage] = empty
+	endif
+
+	return sweeps
+End
+
+/// @brief Return a free wave with all sweep numbers (in ascending order) which
+///        belong to the same stimset cycle id. Uncached version, general users should prefer
+///        AFH_GetSweepsFromSameSCI().
+///
+/// Return an invalid wave reference if not all required labnotebook entries are available
+static Function/WAVE AFH_GetSweepsFromSameSCINC(numericalValues, sweepNo, headstage)
 	WAVE numericalValues
 	variable sweepNo
 	variable headstage

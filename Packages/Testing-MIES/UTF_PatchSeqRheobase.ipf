@@ -140,6 +140,7 @@ static Function PS_RB_Test1()
 
 	WAVE/Z durations = GetLastSetting(numericalValues, sweeps[0], PSQ_CreateLBNKey(PSQ_RHEOBASE, PSQ_FMT_LBN_PULSE_DUR, query = 1), UNKNOWN_MODE)
 	CHECK_EQUAL_WAVES(durations, {3, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN}, mode = WAVE_DATA, tol = 0.01)
+	EnsureNoAnaFuncErrors()
 End
 
 // we don't test the BL QC code path here anymore
@@ -196,6 +197,7 @@ static Function PS_RB_Test2()
 
 	WAVE/Z durations = GetLastSetting(numericalValues, sweeps[0], PSQ_CreateLBNKey(PSQ_RHEOBASE, PSQ_FMT_LBN_PULSE_DUR, query = 1), UNKNOWN_MODE)
 	CHECK_EQUAL_WAVES(durations, {3, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN}, mode = WAVE_DATA, tol = 0.01)
+	EnsureNoAnaFuncErrors()
 End
 
 static Function PS_RB_Run3()
@@ -250,6 +252,7 @@ static Function PS_RB_Test3()
 
 	WAVE/Z durations = GetLastSetting(numericalValues, sweeps[0], PSQ_CreateLBNKey(PSQ_RHEOBASE, PSQ_FMT_LBN_PULSE_DUR, query = 1), UNKNOWN_MODE)
 	CHECK_EQUAL_WAVES(durations, {3, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN}, mode = WAVE_DATA, tol = 0.01)
+	EnsureNoAnaFuncErrors()
 End
 
 static Function PS_RB_Run4()
@@ -304,6 +307,7 @@ static Function PS_RB_Test4()
 
 	WAVE/Z durations = GetLastSetting(numericalValues, sweeps[0], PSQ_CreateLBNKey(PSQ_RHEOBASE, PSQ_FMT_LBN_PULSE_DUR, query = 1), UNKNOWN_MODE)
 	CHECK_EQUAL_WAVES(durations, {3, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN}, mode = WAVE_DATA, tol = 0.01)
+	EnsureNoAnaFuncErrors()
 End
 
 static Function PS_RB_Run5()
@@ -358,6 +362,7 @@ static Function PS_RB_Test5()
 
 	WAVE/Z durations = GetLastSetting(numericalValues, sweeps[0], PSQ_CreateLBNKey(PSQ_RHEOBASE, PSQ_FMT_LBN_PULSE_DUR, query = 1), UNKNOWN_MODE)
 	CHECK_EQUAL_WAVES(durations, {3, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN}, mode = WAVE_DATA, tol = 0.01)
+	EnsureNoAnaFuncErrors()
 End
 
 static Function PS_RB_Run6()
@@ -412,6 +417,7 @@ static Function PS_RB_Test6()
 
 	WAVE/Z durations = GetLastSetting(numericalValues, sweeps[0], PSQ_CreateLBNKey(PSQ_RHEOBASE, PSQ_FMT_LBN_PULSE_DUR, query = 1), UNKNOWN_MODE)
 	CHECK_EQUAL_WAVES(durations, {3, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN}, mode = WAVE_DATA, tol = 0.01)
+	EnsureNoAnaFuncErrors()
 End
 
 static Function PS_RB_Run7()
@@ -469,4 +475,5 @@ static Function PS_RB_Test7()
 
 	WAVE/Z durations = GetLastSetting(numericalValues, sweeps[0], PSQ_CreateLBNKey(PSQ_RHEOBASE, PSQ_FMT_LBN_PULSE_DUR, query = 1), UNKNOWN_MODE)
 	CHECK_EQUAL_WAVES(durations, {3, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN}, mode = WAVE_DATA, tol = 0.01)
+	EnsureNoAnaFuncErrors()
 End

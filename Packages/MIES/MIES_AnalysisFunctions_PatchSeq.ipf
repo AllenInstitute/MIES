@@ -813,8 +813,11 @@ static Function/WAVE PSQ_SearchForSpikes(panelTitle, type, sweepWave, headstage,
 
 			if(!ParamIsDefault(spikePositions))
 				ASSERT(WaveExists(spikePositions), "Wave spikePositions must exist")
-				Redimension/D/N=(numberOfSpikes) spikePositions
-				spikePositions[] = crossings[p]
+				Redimension/D/N=(V_LevelsFound) spikePositions
+
+				if(!V_flag && V_LevelsFound > 0)
+					spikePositions[] = crossings[p]
+				endif
 			endif
 		else
 			ASSERT(0, "Invalid number of spikes value")
@@ -1128,7 +1131,7 @@ Function PSQ_DAScale(panelTitle, s)
 			sweepPassed = GetLastSettingIndep(numericalValues, s.sweepNo, key, UNKNOWN_MODE)
 			ASSERT(IsFinite(sweepPassed), "Could not find the sweep passed labnotebook entry")
 
-			WAVE/T stimsets = GetLastSettingText(textualValues, s.sweepNo, STIM_WAVE_NAME_KEY, DATA_ACQUISITION_MODE)
+			WAVE/T stimsets = GetLastSetting(textualValues, s.sweepNo, STIM_WAVE_NAME_KEY, DATA_ACQUISITION_MODE)
 			stimset = stimsets[s.headstage]
 
 			sweepsInSet         = IDX_NumberOfSweepsInSet(stimset)
@@ -1946,7 +1949,7 @@ Function PSQ_Ramp(panelTitle, s)
 			sweepPassed = GetLastSettingIndep(numericalValues, s.sweepNo, key, UNKNOWN_MODE)
 			ASSERT(IsFinite(sweepPassed), "Could not find the sweep passed labnotebook entry")
 
-			WAVE/T stimsets = GetLastSettingText(textualValues, s.sweepNo, STIM_WAVE_NAME_KEY, DATA_ACQUISITION_MODE)
+			WAVE/T stimsets = GetLastSetting(textualValues, s.sweepNo, STIM_WAVE_NAME_KEY, DATA_ACQUISITION_MODE)
 			stimset = stimsets[s.headstage]
 
 			sweepsInSet         = IDX_NumberOfSweepsInSet(stimset)

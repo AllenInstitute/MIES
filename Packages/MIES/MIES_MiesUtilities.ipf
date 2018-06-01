@@ -404,10 +404,8 @@ End
 /// hold headstage dependent data and the row returned by GetIndexForHeadstageIndepData()
 /// the headstage independent data.
 /// - GetLastSetting()
-/// - GetLastSettingText()
 ///
 /// Return the *headstage independent* data of a single sweep. Trimmed down
-/// versions of GetLastSetting() and GetLastSettingText() which allow to return
 /// a special default value in case the setting could not be found.
 /// - GetLastSettingIndep()
 /// - GetLastSettingTextIndep()
@@ -466,7 +464,7 @@ End
 /// @return the headstage independent setting or `defValue`
 ///
 /// @ingroup LabnotebookQueryFunctions
-/// @sa GetLastSettingText()
+/// @sa GetLastSetting()
 Function/S GetLastSettingTextIndep(textualValues, sweepNo, setting, entrySourceType, [defValue])
 	Wave/T textualValues
 	variable sweepNo
@@ -477,7 +475,7 @@ Function/S GetLastSettingTextIndep(textualValues, sweepNo, setting, entrySourceT
 		defValue = ""
 	endif
 
-	WAVE/T/Z settings = GetLastSettingText(textualValues, sweepNo, setting, entrySourceType)
+	WAVE/T/Z settings = GetLastSetting(textualValues, sweepNo, setting, entrySourceType)
 
 	if(WaveExists(settings))
 		return settings[GetIndexForHeadstageIndepData(textualValues)]
@@ -547,7 +545,6 @@ End
 /// @return the headstage independent setting or `defValue`
 ///
 /// @ingroup LabnotebookQueryFunctions
-/// @sa GetLastSettingText()
 Function/S GetLastSettingTextIndepRAC(numericalValues, textualValues, sweepNo, setting, entrySourceType, [defValue])
 	WAVE numericalValues
 	wAVE/T textualValues
@@ -569,37 +566,128 @@ Function/S GetLastSettingTextIndepRAC(numericalValues, textualValues, sweepNo, s
 	endif
 End
 
-/// @brief Return a numeric wave with the latest value of a setting from the numerical
-/// labnotebook for the given sweep number.
+/// @brief Return a numeric/textual wave with the latest value of a setting
+///        from the numerical/labnotebook labnotebook for the given sweep number.
 ///
-/// @param numericalValues numerical labnotebook
+/// @param values          numerical/textual labnotebook
 /// @param sweepNo         sweep number
 /// @param setting         name of the setting to query
-/// @param entrySourceType type of the labnotebook entry, one of @ref DataAcqModes
-/// @param[in, out] first  [optional] Can be used to query
-///                        and return the labnotebook row range. Useful for routines which must make a
-///                        lot of queries to the same sweep and want to avoid the overhead of calculating `first` and `last`.
-///                        Passing #LABNOTEBOOK_GET_RANGE will set the calculated values of `first` and `last` after the function returns.
-///                        Passing a value greater or equal zero will use these values instead.
-/// @param[in, out] last   [optional] see `first`
+/// @param entrySourceType type of the labnotebook entry, one of @ref DataAcqModes.
+///                        If you don't care about the entry source type pass #UNKNOWN_MODE.
 ///
 /// @return a free wave with #LABNOTEBOOK_LAYER_COUNT rows. In case
 /// the setting could not be found an invalid wave reference is returned.
 ///
 /// @ingroup LabnotebookQueryFunctions
-/// @sa GetLastSettingText()
-Function/WAVE GetLastSetting(numericalValues, sweepNo, setting, entrySourceType, [first, last])
-	Wave numericalValues
+Function/WAVE GetLastSetting(values, sweepNo, setting, entrySourceType)
+	wAVE values
 	variable sweepNo
 	string setting
 	variable entrySourceType
-	variable &first, &last
+
+	variable first, last, rowIndex, entrySourceTypeIndex, settingCol
+
+	// entries before the first sweep have sweepNo == NaN
+	// we can't cache that
+	if(IsNaN(sweepNo))
+		return GetLastSettingNoCache(values, sweepNo, setting, entrySourceType)
+	elseif(!IsValidSweepNumber(sweepNo))
+		return $""
+	endif
+
+	settingCol = FindDimLabel(values, COLS, setting)
+
+	if(settingCol < 0)
+		return $""
+	endif
+
+	entrySourceTypeIndex = EntrySourceTypeMapper(entrySourceType)
+
+	if(entrySourceTypeIndex >= NUMBER_OF_LBN_DAQ_MODES)
+		return $""
+	endif
+
+	WAVE indexWave = GetLBIndexCache(values)
+
+	EnsureLargeEnoughWave(indexWave, minimumSize = sweepNo, dimension = ROWS, initialValue = LABNOTEBOOK_UNCACHED_VALUE)
+	EnsureLargeEnoughWave(indexWave, minimumSize = settingCol, dimension = COLS, initialValue = LABNOTEBOOK_UNCACHED_VALUE)
+	rowIndex = indexWave[sweepNo][settingCol][entrySourceTypeIndex]
+
+	if(rowIndex >= 0) // entry available and present
+		if(IsTextWave(values))
+			WAVE/T valuesText = values
+			Make/T/FREE/N=(DimSize(values, LAYERS)) statusText = valuesText[rowIndex][settingCol][p]
+			return statusText
+		else
+			Make/D/FREE/N=(DimSize(values, LAYERS)) status = values[rowIndex][settingCol][p]
+			return status
+		endif
+	elseif(rowIndex == LABNOTEBOOK_UNCACHED_VALUE)
+		// need to search for it
+		WAVE rowCache = GetLBRowCache(values)
+		EnsureLargeEnoughWave(rowCache, minimumSize = sweepNo, dimension = ROWS, initialValue = LABNOTEBOOK_GET_RANGE)
+
+		first = rowCache[sweepNo][%first][entrySourceTypeIndex]
+		last  = rowCache[sweepNo][%last][entrySourceTypeIndex]
+
+		WAVE/Z settings = GetLastSettingNoCache(values, sweepNo, setting, entrySourceType, \
+												first = first, last = last, rowIndex = rowIndex)
+
+		if(WaveExists(settings))
+			ASSERT(first >= 0 && last >= 0 && rowIndex >= 0, "invalid return combination from GetLastSettingNoCache")
+			rowCache[sweepNo][%first][entrySourceTypeIndex] = first
+			rowCache[sweepNo][%last][entrySourceTypeIndex]  = last
+
+			indexWave[sweepNo][settingCol][entrySourceTypeIndex] = rowIndex
+		else
+			ASSERT(first < 0 || last < 0 || rowIndex < 0, "invalid return combination from GetLastSettingNoCache")
+			indexWave[sweepNo][settingCol][entrySourceTypeIndex] = LABNOTEBOOK_MISSING_VALUE
+		endif
+
+		return settings
+	elseif(rowIndex == LABNOTEBOOK_MISSING_VALUE)
+		return $""
+	endif
+
+	ASSERT(0, "Unexpected type")
+End
+
+/// @brief Return a wave with the latest value of a setting from the
+///        numerical/textual labnotebook for the given sweep number.
+///        Uncached version, general users should prefer GetLastSetting().
+///
+/// @param values          numerical/textual labnotebook
+/// @param sweepNo         sweep number
+/// @param setting         name of the setting to query
+/// @param entrySourceType type of the labnotebook entry, one of @ref DataAcqModes
+/// @param[in, out] first  [optional] Can be used to query and return the labnotebook row range. Useful for routines which must make a
+///                        lot of queries to the same sweep and want to avoid the overhead of calculating `first` and `last`.
+///                        Passing #LABNOTEBOOK_GET_RANGE will set the calculated values of `first` and `last` after the function returns.
+///                        Passing a value greater or equal zero will use these values instead.
+/// @param[in, out] last   [optional] see `first`
+/// @param[out] rowIndex   [optional] return the row where the setting could be
+///                        found, otherwise it is set to #LABNOTEBOOK_MISSING_VALUE
+///
+/// @return a free wave with #LABNOTEBOOK_LAYER_COUNT rows. In case
+/// the setting could not be found an invalid wave reference is returned.
+///
+/// @ingroup LabnotebookQueryFunctions
+Function/WAVE GetLastSettingNoCache(values, sweepNo, setting, entrySourceType, [first, last, rowIndex])
+	Wave values
+	variable sweepNo
+	string setting
+	variable entrySourceType
+	variable &first, &last, &rowIndex
 
 	variable settingCol, numLayers, i, sweepCol, numEntries
 	variable firstValue, lastValue, sourceTypeCol, peakResistanceCol, pulseDurationCol
 	variable testpulseBlockLength, blockType, hasValidTPPulseDurationEntry
 	variable mode
 
+	if(!ParamIsDefault(rowIndex))
+		rowIndex = LABNOTEBOOK_MISSING_VALUE
+	endif
+
 	if(ParamIsDefault(first) && ParamIsDefault(last))
 		mode = GET_LB_MODE_NONE
 	elseif(!ParamIsDefault(first) && !ParamIsDefault(last))
@@ -614,9 +702,8 @@ Function/WAVE GetLastSetting(numericalValues, sweepNo, setting, entrySourceType,
 		ASSERT(0, "Invalid params")
 	endif
 
-	ASSERT(!IsTextWave(numericalValues), "Can only work with numeric waves")
-	numLayers = DimSize(numericalValues, LAYERS)
-	settingCol = FindDimLabel(numericalValues, COLS, setting)
+	numLayers = DimSize(values, LAYERS)
+	settingCol = FindDimLabel(values, COLS, setting)
 
 	if(settingCol <= 0)
 		DEBUGPRINT("Could not find the setting", str=setting)
@@ -624,8 +711,8 @@ Function/WAVE GetLastSetting(numericalValues, sweepNo, setting, entrySourceType,
 	endif
 
 	if(mode == GET_LB_MODE_NONE || mode == GET_LB_MODE_WRITE)
-		sweepCol = GetSweepColumn(numericalValues)
-		FindRange(numericalValues, sweepCol, sweepNo, 0, entrySourceType, firstValue, lastValue)
+		sweepCol = GetSweepColumn(values)
+		FindRange(values, sweepCol, sweepNo, 0, entrySourceType, firstValue, lastValue)
 
 		if(!IsFinite(firstValue) && !IsFinite(lastValue)) // sweep number is unknown
 			return $""
@@ -642,206 +729,141 @@ Function/WAVE GetLastSetting(numericalValues, sweepNo, setting, entrySourceType,
 		last  = lastValue
 	endif
 
-	Make/D/FREE/N=(numLayers) status
+	if(IsTextWave(values))
+		WAVE/T textualValues = values
+		Make/FREE/N=(numLayers)/T statusText
+		Make/FREE/N=(numLayers) lengths
 
-	for(i = lastValue; i >= firstValue; i -= 1)
-
-		if(IsFinite(entrySourceType))
-			if(!sourceTypeCol)
-				sourceTypeCol = FindDimLabel(numericalValues, COLS, "EntrySourceType")
-			endif
-
-			if(sourceTypeCol < 0 || !IsFinite(numericalValues[i][sourceTypeCol][0]))
-				// no source type information available but it is requested
-				// use a heuristic
-				//
-				// Since 60f4a9d9 (TP documenting is implemented using David
-				// Reid's documenting functions, 2014-07-28) we have one
-				// row for the testpulse which holds "TP Peak Resistance".
-				// Since dd49bf47 (Document the testpulse settings in the
-				// labnotebook, 2015-07-28) we have two rows; starting with
-				// "TP Peak Resistance" and ending with "TP Pulse Duration".
-				if(!pulseDurationCol)
-					pulseDurationCol = FindDimLabel(numericalValues, COLS, "TP Pulse Duration")
+		for(i = lastValue; i >= firstValue; i -= 1)
+			if(IsFinite(entrySourceType))
+				if(!sourceTypeCol)
+					sourceTypeCol = FindDimLabel(textualValues, COLS, "EntrySourceType")
 				endif
 
-				if(!peakResistanceCol)
-					peakResistanceCol = FindDimLabel(numericalValues, COLS, "TP Peak Resistance")
-				endif
-
-				blockType = UNKNOWN_MODE
-
-				if(pulseDurationCol > 0)
-					status[] = numericalValues[i][pulseDurationCol][p]
-					WaveStats/Q/M=1 status
-					hasValidTPPulseDurationEntry = (V_numNaNs != numLayers)
-				else
-					hasValidTPPulseDurationEntry = 0
-				endif
-
-				// Since dd49bf47 (Document the testpulse settings in the
-				// labnotebook, 2015-07-28) we can have a "TP Pulse Duration"
-				// entry but no "TP Peak Resistance" entry iff the user only
-				// acquired sweep data but never TP.
-				if(peakResistanceCol < 0)
-					blockType = DATA_ACQUISITION_MODE
-				elseif(hasValidTPPulseDurationEntry)
-					// if the previous row has a "TP Peak Resistance" entry we know that this is a testpulse block
-					status[] = numericalValues[i - 1][peakResistanceCol][p]
-					WaveStats/Q/M=1 status
-					if(V_numNaNs != numLayers)
-						blockType = TEST_PULSE_MODE
-						testpulseBlockLength = 1
-					else
-						blockType = DATA_ACQUISITION_MODE
+				if(sourceTypeCol < 0 || !IsFinite(str2num(textualValues[i][sourceTypeCol][0])))
+					// before the sourceType entries we never had any testpulse
+					// entries in the textualValues labnotebook wave
+					if(entrySourceType == TEST_PULSE_MODE)
+						return $""
 					endif
-				else // no match, maybe old format
-					status[] = numericalValues[i][peakResistanceCol][p]
-					WaveStats/Q/M=1 status
-					if(V_numNaNs != numLayers)
-						blockType = TEST_PULSE_MODE
-						testpulseBlockLength = 0
-					else
-						blockType = DATA_ACQUISITION_MODE
-					endif
-				endif
-
-				if(entrySourceType == DATA_ACQUISITION_MODE && blockType == TEST_PULSE_MODE)
-					// testpulse block starts but DAQ was requested
-					// two row long testpulse block, skip it
-					i -= testpulseBlockLength
-					DEBUGPRINT("Skipping the testpulse block as DAQ is requested, testpulseBlockLength:", var=testPulseBlockLength)
+				elseif(entrySourceType != str2num(textualValues[i][sourceTypeCol][0]))
+					// labnotebook has entrySourceType and it is not matching
+					DEBUGPRINT("Skipping the given row as sourceType is available and not matching: ", var=i)
 					continue
-				elseif(entrySourceType == TEST_PULSE_MODE && blockType == DATA_ACQUISITION_MODE)
-					// sweep block starts but TP was requested
-					// as the sweep block occupies always the first blocks
-					// we now know that we did not find the entries
-					DEBUGPRINT("Skipping the DAQ block as testpulse is requested, as this is the last block, we can also return.")
-					return $""
 				endif
-			elseif(entrySourceType != numericalValues[i][sourceTypeCol][0])
-				// labnotebook has entrySourceType and it is not matching
-				DEBUGPRINT("Skipping the given row as sourceType is available and not matching: ", var=i)
-				continue
 			endif
-		endif
 
-		status[] = numericalValues[i][settingCol][p]
-		WaveStats/Q/M=1 status
+			statusText[] = textualValues[i][settingCol][p]
+			lengths[]	= strlen(statusTexT[p])
 
-		// return if at least one entry is not NaN
-		if(V_numNaNs != numLayers)
-			return status
-		endif
-	endfor
+			// return if we have at least one non-empty entry
+			if(Sum(lengths) > 0)
+				if(!ParamIsDefault(rowIndex))
+					rowIndex = i
+				endif
 
-	return $""
-End
-
-/// @brief Return a text wave with the latest value of a setting from the textual
-/// labnotebook for the given sweep number.
-///
-/// @param textualValues   textual labnotebook
-/// @param sweepNo         sweep number
-/// @param setting         name of the setting to query
-/// @param entrySourceType type of the labnotebook entry, one of @ref DataAcqModes
-/// @param[in, out] first  [optional] Can be used to query
-///                        and return the labnotebook row range. Useful for routines which must make a
-///                        lot of queries to the same sweep and want to avoid the overhead of calculating `first` and `last`.
-///                        Passing #LABNOTEBOOK_GET_RANGE will set the calculated values of `first` and `last` after the function returns.
-///                        Passing a value greater or equal zero will use these values instead.
-/// @param[in, out] last   [optional] see `first`
-///
-/// @return a free wave with #LABNOTEBOOK_LAYER_COUNT rows. In case
-/// the setting could not be found an invalid wave reference is returned.
-///
-/// @ingroup LabnotebookQueryFunctions
-/// @sa GetLastSetting()
-Function/WAVE GetLastSettingText(textualValues, sweepNo, setting, entrySourceType, [first, last])
-	Wave/T textualValues
-	variable sweepNo
-	string setting
-	variable entrySourceType
-	variable &first
-	variable &last
-
-	variable settingCol, numLayers, i, sweepCol, mode
-	variable firstValue, lastValue, sourceTypeCol
-
-	if(ParamIsDefault(first) && ParamIsDefault(last))
-		mode = GET_LB_MODE_NONE
-	elseif(!ParamIsDefault(first) && !ParamIsDefault(last))
-		if(first == LABNOTEBOOK_GET_RANGE && last == LABNOTEBOOK_GET_RANGE)
-			mode = GET_LB_MODE_WRITE
-		elseif(first >= 0 && last >= 0)
-			mode = GET_LB_MODE_READ
-			firstValue = first
-			lastValue  = last
-		else
-			ASSERT(0, "Invalid params")
-		endif
+				return statusText
+			endif
+		endfor
 	else
-		ASSERT(0, "Invalid params")
-	endif
+		WAVE numericalValues = values
+		Make/D/FREE/N=(numLayers) status
 
-	ASSERT(IsTextWave(textualValues), "Can only work with textual waves")
-	numLayers = DimSize(textualValues, LAYERS)
-	settingCol = FindDimLabel(textualValues, COLS, setting)
+		for(i = lastValue; i >= firstValue; i -= 1)
 
-	if(settingCol <= 0)
-		DEBUGPRINT("Could not find the setting", str=setting)
-		return $""
-	endif
-
-	if(mode == GET_LB_MODE_NONE || mode == GET_LB_MODE_WRITE)
-		sweepCol = GetSweepColumn(textualValues)
-		FindRange(textualValues, sweepCol, sweepNo, 0, entrySourceType, firstValue, lastValue)
-
-		if(!IsFinite(firstValue) && !IsFinite(lastValue)) // sweep number is unknown
-			return $""
-		endif
-	elseif(mode == GET_LB_MODE_READ)
-		firstValue = first
-		lastValue  = last
-	endif
-
-	ASSERT(firstValue <= lastValue, "Invalid value range")
-
-	if(mode == GET_LB_MODE_WRITE)
-		first = firstValue
-		last  = lastValue
-	endif
-
-	Make/FREE/N=(numLayers)/T status
-	Make/FREE/N=(numLayers) lengths
-
-	for(i = lastValue; i >= firstValue; i -= 1)
-		if(IsFinite(entrySourceType))
-			if(!sourceTypeCol)
-				sourceTypeCol = FindDimLabel(textualValues, COLS, "EntrySourceType")
-			endif
-
-			if(sourceTypeCol < 0 || !IsFinite(str2num(textualValues[i][sourceTypeCol][0])))
-				// before the sourceType entries we never had any testpulse
-				// entries in the textualValues labnotebook wave
-				if(entrySourceType == TEST_PULSE_MODE)
-					return $""
+			if(IsFinite(entrySourceType))
+				if(!sourceTypeCol)
+					sourceTypeCol = FindDimLabel(numericalValues, COLS, "EntrySourceType")
 				endif
-			elseif(entrySourceType != str2num(textualValues[i][sourceTypeCol][0]))
-				// labnotebook has entrySourceType and it is not matching
-				DEBUGPRINT("Skipping the given row as sourceType is available and not matching: ", var=i)
-				continue
+
+				if(sourceTypeCol < 0 || !IsFinite(numericalValues[i][sourceTypeCol][0]))
+					// no source type information available but it is requested
+					// use a heuristic
+					//
+					// Since 60f4a9d9 (TP documenting is implemented using David
+					// Reid's documenting functions, 2014-07-28) we have one
+					// row for the testpulse which holds "TP Peak Resistance".
+					// Since dd49bf47 (Document the testpulse settings in the
+					// labnotebook, 2015-07-28) we have two rows; starting with
+					// "TP Peak Resistance" and ending with "TP Pulse Duration".
+					if(!pulseDurationCol)
+						pulseDurationCol = FindDimLabel(numericalValues, COLS, "TP Pulse Duration")
+					endif
+
+					if(!peakResistanceCol)
+						peakResistanceCol = FindDimLabel(numericalValues, COLS, "TP Peak Resistance")
+					endif
+
+					blockType = UNKNOWN_MODE
+
+					if(pulseDurationCol > 0)
+						status[] = numericalValues[i][pulseDurationCol][p]
+						WaveStats/Q/M=1 status
+						hasValidTPPulseDurationEntry = (V_numNaNs != numLayers)
+					else
+						hasValidTPPulseDurationEntry = 0
+					endif
+
+					// Since dd49bf47 (Document the testpulse settings in the
+					// labnotebook, 2015-07-28) we can have a "TP Pulse Duration"
+					// entry but no "TP Peak Resistance" entry iff the user only
+					// acquired sweep data but never TP.
+					if(peakResistanceCol < 0)
+						blockType = DATA_ACQUISITION_MODE
+					elseif(hasValidTPPulseDurationEntry)
+						// if the previous row has a "TP Peak Resistance" entry we know that this is a testpulse block
+						status[] = numericalValues[i - 1][peakResistanceCol][p]
+						WaveStats/Q/M=1 status
+						if(V_numNaNs != numLayers)
+							blockType = TEST_PULSE_MODE
+							testpulseBlockLength = 1
+						else
+							blockType = DATA_ACQUISITION_MODE
+						endif
+					else // no match, maybe old format
+						status[] = numericalValues[i][peakResistanceCol][p]
+						WaveStats/Q/M=1 status
+						if(V_numNaNs != numLayers)
+							blockType = TEST_PULSE_MODE
+							testpulseBlockLength = 0
+						else
+							blockType = DATA_ACQUISITION_MODE
+						endif
+					endif
+
+					if(entrySourceType == DATA_ACQUISITION_MODE && blockType == TEST_PULSE_MODE)
+						// testpulse block starts but DAQ was requested
+						// two row long testpulse block, skip it
+						i -= testpulseBlockLength
+						DEBUGPRINT("Skipping the testpulse block as DAQ is requested, testpulseBlockLength:", var=testPulseBlockLength)
+						continue
+					elseif(entrySourceType == TEST_PULSE_MODE && blockType == DATA_ACQUISITION_MODE)
+						// sweep block starts but TP was requested
+						// as the sweep block occupies always the first blocks
+						// we now know that we did not find the entries
+						DEBUGPRINT("Skipping the DAQ block as testpulse is requested, as this is the last block, we can also return.")
+						return $""
+					endif
+				elseif(entrySourceType != numericalValues[i][sourceTypeCol][0])
+					// labnotebook has entrySourceType and it is not matching
+					DEBUGPRINT("Skipping the given row as sourceType is available and not matching: ", var=i)
+					continue
+				endif
 			endif
-		endif
 
-		status[] = textualValues[i][settingCol][p]
-		lengths[] = strlen(status[p])
+			status[] = numericalValues[i][settingCol][p]
+			WaveStats/Q/M=1 status
 
-		// return if we have at least one non-empty entry
-		if(Sum(lengths) > 0)
-			return status
-		endif
-	endfor
+			// return if at least one entry is not NaN
+			if(V_numNaNs != numLayers)
+				if(!ParamIsDefault(rowIndex))
+					rowIndex = i
+				endif
+
+				return status
+			endif
+		endfor
+	endif
 
 	return $""
 End
@@ -849,7 +871,7 @@ End
 /// @brief Return the last textual value of the sweeps in the same RA cycle
 ///
 /// @ingroup LabnotebookQueryFunctions
-/// @sa GetLastSettingText()
+/// @sa GetLastSetting()
 Function/WAVE GetLastSettingTextRAC(numericalValues, textualValues, sweepNo, setting, entrySourceType)
 	WAVE numericalValues
 	WAVE/T textualValues
@@ -866,7 +888,7 @@ Function/WAVE GetLastSettingTextRAC(numericalValues, textualValues, sweepNo, set
 
 	numSweeps = DimSize(sweeps, ROWS)
 	for(i = numSweeps - 1; i >= 0; i -= 1)
-		WAVE/Z settings = GetLastSettingText(textualValues, sweeps[i], setting, entrySourceType)
+		WAVE/Z settings = GetLastSetting(textualValues, sweeps[i], setting, entrySourceType)
 
 		if(WaveExists(settings))
 			return settings
@@ -1050,7 +1072,7 @@ Function/WAVE GetLastSettingTextEachRAC(numericalValues, textualValues, sweepNo,
 	Make/FREE/T/N=(numSweeps) result
 
 	for(i = 0; i < numSweeps; i += 1)
-		WAVE/Z/T settings = GetLastSettingText(textualValues, sweeps[i], setting, entrySourceType)
+		WAVE/Z/T settings = GetLastSetting(textualValues, sweeps[i], setting, entrySourceType)
 
 		if(WaveExists(settings))
 			result[i] = settings[headstage]
@@ -1068,7 +1090,7 @@ End
 /// @brief Return the last textual value of the sweeps in the same stimset cycle
 ///
 /// @ingroup LabnotebookQueryFunctions
-/// @sa GetLastSettingText()
+/// @sa GetLastSetting()
 Function/WAVE GetLastSettingTextSCI(numericalValues, textualValues, sweepNo, setting, headstage, entrySourceType)
 	WAVE numericalValues
 	WAVE/T textualValues
@@ -1085,7 +1107,7 @@ Function/WAVE GetLastSettingTextSCI(numericalValues, textualValues, sweepNo, set
 
 	numSweeps = DimSize(sweeps, ROWS)
 	for(i = numSweeps - 1; i >= 0; i -= 1)
-		WAVE/Z settings = GetLastSettingText(textualValues, sweeps[i], setting, entrySourceType)
+		WAVE/Z settings = GetLastSetting(textualValues, sweeps[i], setting, entrySourceType)
 
 		if(WaveExists(settings))
 			return settings
@@ -1269,7 +1291,7 @@ Function/WAVE GetLastSettingTextEachSCI(numericalValues, textualValues, sweepNo,
 	Make/FREE/T/N=(numSweeps) result
 
 	for(i = 0; i < numSweeps; i += 1)
-		WAVE/Z/T settings = GetLastSettingText(textualValues, sweeps[i], setting, entrySourceType)
+		WAVE/Z/T settings = GetLastSetting(textualValues, sweeps[i], setting, entrySourceType)
 
 		if(WaveExists(settings))
 			result[i] = settings[headstage]
@@ -1902,7 +1924,7 @@ Function CreateTiledChannelGraph(graph, config, sweepNo, numericalValues,  textu
 		tgs.dDAQDisplayMode = 0
 	endif
 
-	WAVE/Z/T oodDAQRegions = GetLastSettingText(textualValues, sweepNo, "oodDAQ regions", DATA_ACQUISITION_MODE)
+	WAVE/Z/T oodDAQRegions = GetLastSetting(textualValues, sweepNo, "oodDAQ regions", DATA_ACQUISITION_MODE)
 
 	if(tgs.dDAQDisplayMode && oodDAQEnabled && !WaveExists(oodDAQRegions))
 		printf "Distributed DAQ display mode turned off as no oodDAQ regions could be found in the labnotebook.\r"
@@ -3653,9 +3675,9 @@ Function/S GetTTLStimSets(numericalValues, textualValues, sweep, channel)
 	WAVE/Z ttlRackOneChannel  = GetLastSetting(numericalValues, sweep, "TTL rack one channel", DATA_ACQUISITION_MODE)
 
 	if(WaveExists(ttlRackZeroChannel) && ttlRackZeroChannel[index] == channel)
-		WAVE/T ttlStimsets = GetLastSettingText(textualValues, sweep, "TTL rack zero stim sets", DATA_ACQUISITION_MODE)
+		WAVE/T ttlStimsets = GetLastSetting(textualValues, sweep, "TTL rack zero stim sets", DATA_ACQUISITION_MODE)
 	elseif(WaveExists(ttlRackOneChannel) && ttlRackOneChannel[index] == channel)
-		WAVE/T ttlStimsets = GetLastSettingText(textualValues, sweep, "TTL rack one stim sets", DATA_ACQUISITION_MODE)
+		WAVE/T ttlStimsets = GetLastSetting(textualValues, sweep, "TTL rack one stim sets", DATA_ACQUISITION_MODE)
 	else
 		return ""
 	endif
@@ -4637,8 +4659,8 @@ Function CalculateTPLikePropsFromSweep(numericalValues, textualValues, sweep, de
 	WAVE ADCs = GetLastSetting(numericalValues, sweepNo, "ADC", DATA_ACQUISITION_MODE)
 	WAVE DACs = GetLastSetting(numericalValues, sweepNo, "DAC", DATA_ACQUISITION_MODE)
 
-	WAVE/T ADunit = GetLastSettingText(textualValues, sweepNo, "AD Unit", DATA_ACQUISITION_MODE)
-	WAVE/T DAunit = GetLastSettingText(textualValues, sweepNo, "DA Unit", DATA_ACQUISITION_MODE)
+	WAVE/T ADunit = GetLastSetting(textualValues, sweepNo, "AD Unit", DATA_ACQUISITION_MODE)
+	WAVE/T DAunit = GetLastSetting(textualValues, sweepNo, "DA Unit", DATA_ACQUISITION_MODE)
 
 	WAVE statusHS = GetLastSetting(numericalValues, sweepNo, "Headstage Active", DATA_ACQUISITION_MODE)
 
@@ -4775,4 +4797,12 @@ Function GetNextRandomNumberForDevice(panelTitle)
 
 	// scale to the available mantissa bits in a single precision variable
 	return trunc(GetReproducibleRandom() * 2^23)
+End
+
+/// @brief Maps the labnotebook entry source type, one of @ref DataAcqModes, to
+///        a valid wave index.
+Function EntrySourceTypeMapper(entrySourceType)
+	variable entrySourceType
+
+	return IsFinite(entrySourceType) ? ++entrySourceType : 0
 End

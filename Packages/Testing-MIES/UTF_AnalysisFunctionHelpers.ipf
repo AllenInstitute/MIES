@@ -17,6 +17,8 @@ static Function TEST_CASE_BEGIN_OVERRIDE(testCase)
 	DFREF dfr = GetDeviceDataPath(device)
 	Make/N=(2, 2) dfr:Sweep_0
 	Make/N=(2, 2) dfr:Config_0
+
+	CA_FlushCache()
 End
 
 /// BEGIN ED_AddEntryToLabnotebook

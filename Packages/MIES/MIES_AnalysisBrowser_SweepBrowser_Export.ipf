@@ -377,7 +377,7 @@ static Function SBE_ExportSweepBrowser(sett)
 			headstage = str2num(GetUserData(sett.sourceGraph, trace, "headstage"))
 			sweep = str2num(GetUserData(sett.sourceGraph, trace, "sweepNumber"))
 
-			WAVE/T stimSets = GetLastSettingText(textualValues, sweep, STIM_WAVE_NAME_KEY, DATA_ACQUISITION_MODE)
+			WAVE/T stimSets = GetLastSetting(textualValues, sweep, STIM_WAVE_NAME_KEY, DATA_ACQUISITION_MODE)
 
 			listOfStimSets = AddListItem(stimSets[headstage], listOfStimSets, ";", Inf)
 		endfor

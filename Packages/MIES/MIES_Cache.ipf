@@ -211,12 +211,24 @@ End
 
 /// @brief Add a new entry into the cache
 ///
+/// @param key     string which uniquely identifies the cached wave
+/// @param val     wave to store
+/// @param options [optional, defaults to none] One or multiple constants from
+///                @ref CacheFetchOptions
+///
 /// Existing entries with the same key are overwritten.
-Function CA_StoreEntryIntoCache(key, val)
+Function CA_StoreEntryIntoCache(key, val, [options])
 	string key
 	WAVE val
+	variable options
 
-	variable index
+	variable index, storeDuplicate
+
+	if(ParamIsDefault(options))
+		storeDuplicate = 1
+	else
+		storeDuplicate = !(options & CA_OPTS_NO_DUPLICATE)
+	endif
 
 	ASSERT(!IsEmpty(key), "Key must not be empty")
 
@@ -231,9 +243,13 @@ Function CA_StoreEntryIntoCache(key, val)
 		index = V_Value
 	endif
 
-	Duplicate/FREE val, valCopy
+	if(storeDuplicate)
+		Duplicate/FREE val, waveToStore
+	else
+		WAVE waveToStore = val
+	endif
 
-	values[index] = valCopy
+	values[index] = waveToStore
 	keys[index]   = key
 
 	stats[index][]                       = 0
@@ -258,37 +274,56 @@ End
 
 /// @brief Try to fetch the wave stored under key from the cache
 ///
+/// @param key     string which uniquely identifies the cached wave
+/// @param options [optional, defaults to none] One or multiple constants from
+///                @ref CacheFetchOptions
+///
 /// @return A wave reference with the stored data or a invalid wave reference
 /// if nothing could be found.
-Function/WAVE CA_TryFetchingEntryFromCache(key)
+Function/WAVE CA_TryFetchingEntryFromCache(key, [options])
 	string key
+	variable options
 
-	variable index = CA_GetCacheIndex(key)
+	variable index, returnDuplicate
+
+	if(ParamIsDefault(options))
+		returnDuplicate = 1
+	else
+		returnDuplicate = !(options & CA_OPTS_NO_DUPLICATE)
+	endif
+
+	index = CA_GetCacheIndex(key)
+
+	if(!IsFinite(index))
+		DEBUGPRINT("Could not find a cache entry for key=", str=key)
+		return $""
+	endif
 
 	WAVE/T keys      = GetCacheKeyWave()
 	WAVE/WAVE values = GetCacheValueWave()
 	WAVE stats       = GetCacheStatsWave()
 
-	if(!IsFinite(index))
-		DEBUGPRINT("Could not find a cache entry for key=", str=key)
+	ASSERT(index < DimSize(values, ROWS), "Invalid index")
+	WAVE/Z cache = values[index]
+
+	if(!WaveExists(cache))
+		DEBUGPRINT("Could not find a valid wave for key=", str=key)
+		// invalidate cache entry due to non existent wave,
+		// this can happen for unpacked experiments which don't store free waves
+		keys[index] = ""
 		return $""
-	else
-		ASSERT(index < DimSize(values, ROWS), "Invalid index")
-		WAVE/Z cache = values[index]
-
-		if(!WaveExists(cache))
-			DEBUGPRINT("Could not find a valid wave for key=", str=key)
-			// invalidate cache entry due to non existent wave,
-			// this can happen for unpacked experiments which don't store free waves
-			keys[index] = ""
-			return $""
-		endif
-		stats[index][%Hits] += 1
-
-		Duplicate/FREE cache, wv
-		DEBUGPRINT("Found cache entry for key=", str=key)
-		return wv
 	endif
+
+	stats[index][%Hits] += 1
+	DEBUGPRINT("Found cache entry for key=", str=key)
+
+	if(returnDuplicate)
+		Duplicate/FREE cache, wv
+	else
+		WAVE wv = cache
+	endif
+
+	return wv
 End
 
 /// @brief Try to delete a cache entry

@@ -108,7 +108,7 @@ static Function/WAVE PA_GetPulseStartTimesFromLB(textualValues, sweepNo, headsta
 	WAVE/T textualValues
 	variable sweepNo, headstage
 
-	WAVE/Z/T pulseStartTimes = GetLastSettingText(textualValues, sweepNo, PULSE_START_TIMES_KEY, DATA_ACQUISITION_MODE)
+	WAVE/Z/T pulseStartTimes = GetLastSetting(textualValues, sweepNo, PULSE_START_TIMES_KEY, DATA_ACQUISITION_MODE)
 	if(!WaveExists(pulseStartTimes))
 		return $""
 	endif

@@ -80,6 +80,7 @@ then
   cp -r  "$folder"/XOP-tango-IP7-64bit/*  "$xops"
 else
   cp -r  "$folder"/XOPs-IP7-64bit/HDF5*  "$xops"
+  cp -r  "$folder"/XOPs-IP7-64bit/MIESUtils*  "$xops"
 fi
 
 exit 0

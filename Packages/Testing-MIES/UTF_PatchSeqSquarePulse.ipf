@@ -104,6 +104,7 @@ static Function PS_SP_Test1()
 
 	Make/D/FREE/N=(numEntries) stimScale = GetLastSetting(numericalValues, sweeps[p], STIMSET_SCALE_FACTOR_KEY, DATA_ACQUISITION_MODE)[HEADSTAGE]
 	CHECK_EQUAL_WAVES(stimScale, {100, 200, 300, 400, 500, 600, 700, 800, 900, 1000, 1100, 1200, 1300, 1400, 1500, 1600, 1700, 1800, 1900, 2000}, mode = WAVE_DATA)
+	EnsureNoAnaFuncErrors()
 End
 
 static Function PS_SP_Run2()
@@ -145,6 +146,7 @@ static Function PS_SP_Test2()
 
 	Make/D/FREE/N=(numEntries) stimScale = GetLastSetting(numericalValues, sweeps[p], STIMSET_SCALE_FACTOR_KEY, DATA_ACQUISITION_MODE)[HEADSTAGE]
 	CHECK_EQUAL_WAVES(stimScale, {100, 200, 300, 400, 500, 600, 700, 800, 900, 1000, 1100, 1200, 1300, 1400, 1500, 1600, 1700, 1800, 1900, 2000}, mode = WAVE_DATA)
+	EnsureNoAnaFuncErrors()
 End
 
 static Function PS_SP_Run3()
@@ -186,6 +188,7 @@ static Function PS_SP_Test3()
 
 	Make/D/FREE/N=(numEntries) stimScale = GetLastSetting(numericalValues, sweeps[p], STIMSET_SCALE_FACTOR_KEY, DATA_ACQUISITION_MODE)[HEADSTAGE]
 	CHECK_EQUAL_WAVES(stimScale, {100, 200, 150, 160, 170, 180, 190, 200, 210, 220, 230, 240, 250, 260, 270, 280, 290, 300, 310, 320}, mode = WAVE_DATA)
+	EnsureNoAnaFuncErrors()
 End
 
 static Function PS_SP_Run4()
@@ -227,6 +230,7 @@ static Function PS_SP_Test4()
 
 	Make/D/FREE/N=(numEntries) stimScale = GetLastSetting(numericalValues, sweeps[p], STIMSET_SCALE_FACTOR_KEY, DATA_ACQUISITION_MODE)[HEADSTAGE]
 	CHECK_EQUAL_WAVES(stimScale, {100,200,150,100,110,120,130,140,150,160,170,180,190,200,210,220,230,240,250,260}, mode = WAVE_DATA)
+	EnsureNoAnaFuncErrors()
 End
 
 static Function PS_SP_Run5()
@@ -269,4 +273,5 @@ static Function PS_SP_Test5()
 
 	Make/D/FREE/N=(numEntries) stimScale = GetLastSetting(numericalValues, sweeps[p], STIMSET_SCALE_FACTOR_KEY, DATA_ACQUISITION_MODE)[HEADSTAGE]
 	CHECK_EQUAL_WAVES(stimScale, {100, 200, 150, 160}, mode = WAVE_DATA)
+	EnsureNoAnaFuncErrors()
 End

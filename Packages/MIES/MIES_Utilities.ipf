@@ -308,7 +308,7 @@ Function EnsureLargeEnoughWave(wv, [minimumSize, dimension, initialValue])
 
 	ASSERT(dimension == ROWS || dimension == COLS || dimension == LAYERS || dimension == CHUNKS, "Invalid dimension")
 	ASSERT(WaveExists(wv), "Wave does not exist")
-	ASSERT(IsFinite(minimumSize), "Invalid minimum size")
+	ASSERT(IsFinite(minimumSize) && minimumSize >= 0, "Invalid minimum size")
 
 	if(ParamIsDefault(minimumSize))
 		minimumSize = MINIMUM_WAVE_SIZE - 1
@@ -316,10 +316,7 @@ Function EnsureLargeEnoughWave(wv, [minimumSize, dimension, initialValue])
 		minimumSize = max(MINIMUM_WAVE_SIZE - 1, minimumSize)
 	endif
 
-	Make/FREE/L/N=(MAX_DIMENSION_COUNT) oldSizes
-	oldSizes[] = DimSize(wv,p)
-
-	if(minimumSize < oldSizes[dimension])
+	if(minimumSize < DimSize(wv, dimension))
 		return NaN
 	endif
 
@@ -327,6 +324,8 @@ Function EnsureLargeEnoughWave(wv, [minimumSize, dimension, initialValue])
 
 	Make/FREE/L/N=(MAX_DIMENSION_COUNT) targetSizes = -1
 	targetSizes[dimension] = minimumSize
+
+	Make/FREE/L/N=(MAX_DIMENSION_COUNT) oldSizes = DimSize(wv,p)
 
 	Redimension/N=(targetSizes[ROWS], targetSizes[COLS], targetSizes[LAYERS], targetSizes[CHUNKS]) wv
 
@@ -3491,4 +3490,25 @@ Function GetMachineEpsilon(type)
 		default:
 			ASSERT(0, "Unsupported wave type")
 	endswitch
+End
+
+/// @brief Return true if wv is a free wave, false otherwise
+Function IsFreeWave(wv)
+	Wave wv
+
+	return WaveType(wv, 2) == 2
+End
+
+/// @brief Return the modification count of the (permanent) wave
+Function WaveModCountWrapper(wv)
+	Wave wv
+
+	ASSERT(!IsFreeWave(wv), "Can not work with free waves")
+
+#if (IgorVersion() >= 8.00)
+	return WaveModCount(wv)
+#else
+	return MU_WaveModCount(wv)
+#endif
+
 End

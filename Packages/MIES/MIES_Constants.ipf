@@ -200,9 +200,10 @@ Constant SAVE_AND_SPLIT            = 0x02
 /// @name Constants for data acquisition modes
 /// @anchor DataAcqModes
 /// @{
-Constant UNKNOWN_MODE          = NaN
-Constant DATA_ACQUISITION_MODE = 0
-Constant TEST_PULSE_MODE       = 1
+Constant UNKNOWN_MODE            = NaN
+Constant DATA_ACQUISITION_MODE   = 0
+Constant TEST_PULSE_MODE         = 1
+Constant NUMBER_OF_LBN_DAQ_MODES = 3
 /// @}
 
 /// @name Constants for three Amplifier modes
@@ -778,7 +779,7 @@ Constant REASON_HEADSTAGE_CHANGE       = 0x02
 Constant REASON_STIMSET_CHANGE_DUR_DAQ = 0x04
 /// @}
 
-/// Parameters for GetLastSetting()/GetLastSettingText() for using the row caching
+/// Parameters for GetLastSetting() for using the row caching
 /// mechanism.
 Constant LABNOTEBOOK_GET_RANGE = -1
 
@@ -890,3 +891,17 @@ Constant MAX_SWEEP_DURATION_IN_MS = 1.8e6 // 30 minutes
 
 StrConstant REC_MACRO_PROCEDURE = "proc"
 StrConstant REC_MACRO_MODE      = "mode"
+
+/// @name Constants for the wave cache
+/// @{
+
+/// @anchor CacheFetchOptions
+///
+/// Don't return a duplicate of the cached wave, but return the wave itself.
+/// Useful if you use the wave cache as an alternative storage.
+Constant CA_OPTS_NO_DUPLICATE = 0x1
+/// @}
+
+Constant LABNOTEBOOK_MISSING_VALUE  = -1
+Constant LABNOTEBOOK_UNCACHED_VALUE = -2
+StrConstant LABNOTEBOOK_MOD_COUNT   = "Labnotebook modification count"

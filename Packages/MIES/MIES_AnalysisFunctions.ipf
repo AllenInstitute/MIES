@@ -472,7 +472,7 @@ Function LastStimSetRun()
 		return LastSweep
 	endif
 
-	WAVE /T StimSet = GetLastSettingText(textualValues, LastSweep, "Stim Wave Name", DATA_ACQUISITION_MODE)
+	WAVE /T StimSet = GetLastSetting(textualValues, LastSweep, "Stim Wave Name", DATA_ACQUISITION_MODE)
 	WAVE clampHS = GetLastSetting(numericalValues, LastSweep, "Clamp Mode", DATA_ACQUISITION_MODE)
 	WAVE /Z holdingVC = GetLastSetting(numericalValues, LastSweep, "V-Clamp Holding Level", DATA_ACQUISITION_MODE)
 	WAVE /Z holdingIC = GetLastSetting(numericalValues, LastSweep, "I-Clamp Holding Level", DATA_ACQUISITION_MODE)
