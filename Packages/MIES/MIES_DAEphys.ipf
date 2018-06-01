@@ -3825,6 +3825,12 @@ Function/S DAP_CreateDAEphysPanel()
 	SCOPE_OpenScopeWindow(panel)
 	AddVersionToPanel(panel, DA_EPHYS_PANEL_VERSION)
 
+	NVAR refnum = $GetHistoryRefNumber()
+
+	if(isNaN(refnum))
+		refnum = CaptureHistoryStart()
+	endif
+
 	return panel
 End
 

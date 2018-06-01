@@ -428,3 +428,11 @@ Function/S GetFifoPosition(panelTitle)
 
 	return GetNVARAsString(GetDevicePath(panelTitle), "fifoPosition", initialValue = NaN)
 End
+
+/// @brief Return history capture reference number
+///
+/// Used for storing the igor history in NWB
+Function/S GetHistoryRefNumber()
+
+	return GetNVARAsString(GetNWBFolder(), "histRefNumber", initialValue = NaN)
+End
