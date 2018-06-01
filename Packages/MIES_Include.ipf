@@ -9,6 +9,7 @@
 // stock igor
 #include <Resize Controls>
 #include <ZoomBrowser>
+#include <FunctionProfiling>
 #include <Readback ModifyStr>
 
 // third party includes

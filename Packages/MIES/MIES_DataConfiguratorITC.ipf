@@ -600,9 +600,9 @@ static Function DC_PlaceDataInITCDataWave(panelTitle, numActiveChannels, dataAcq
 	string panelTitle
 	variable numActiveChannels, dataAcqOrTP, multiDevice
 
-	variable i, activeColumn, numEntries
+	variable i, activeColumn, numEntries, setChecksum, stimsetCycleID, fingerprint
 	string ctrl, str, list, func
-	variable oneFullCycle, val, singleSetLength, singleInsertStart, minSamplingInterval
+	variable setCycleCount, val, singleSetLength, singleInsertStart, minSamplingInterval
 	variable channelMode, TPAmpVClamp, TPAmpIClamp, testPulseLength, maxStimSetLength
 	variable GlobalTPInsert, scalingZero, indexingLocked, indexing, distributedDAQ, pulseToPulseLength
 	variable distributedDAQDelay, onSetDelay, onsetDelayAuto, onsetDelayUser, decimationFactor, cutoff
@@ -644,6 +644,13 @@ static Function DC_PlaceDataInITCDataWave(panelTitle, numActiveChannels, dataAcq
 	Make/T/FREE/N=(numEntries) setName
 	Make/WAVE/FREE/N=(numEntries) stimSet
 
+	NVAR raCycleID = $GetRepeatedAcquisitionCycleID(panelTitle)
+	if(dataAcqOrTP == DATA_ACQUISITION_MODE)
+		ASSERT(IsFinite(raCycleID), "Uninitialized raCycleID detected")
+	endif
+
+	DC_DocumentChannelProperty(panelTitle, RA_ACQ_CYCLE_ID_KEY, INDEP_HEADSTAGE, NaN, var=raCycleID)
+
 	for(i = 0; i < numEntries; i += 1)
 
 		if(!DC_ChannelIsActive(panelTitle, dataAcqOrTP, CHANNEL_TYPE_DAC, i, statusDA, statusHS))
@@ -674,7 +681,7 @@ static Function DC_PlaceDataInITCDataWave(panelTitle, numActiveChannels, dataAcq
 		else
 			// only call DC_CalculateChannelColumnNo for real data acquisition
 			ret = DC_CalculateChannelColumnNo(panelTitle, setName[activeColumn], i, CHANNEL_TYPE_DAC)
-			oneFullCycle = imag(ret)
+			setCycleCount = imag(ret)
 			setColumn[activeColumn] = real(ret)
 		endif
 
@@ -693,7 +700,7 @@ static Function DC_PlaceDataInITCDataWave(panelTitle, numActiveChannels, dataAcq
 		// DAScale tuning for special cases
 		if(dataAcqOrTP == DATA_ACQUISITION_MODE)
 			// checks if user wants to set scaling to 0 on sets that have already cycled once
-			if(scalingZero && (indexingLocked || !indexing) && oneFullCycle)
+			if(scalingZero && (indexingLocked || !indexing) && setCycleCount > 0)
 				DAScale[activeColumn] = 0
 			endif
 
@@ -745,6 +752,16 @@ static Function DC_PlaceDataInITCDataWave(panelTitle, numActiveChannels, dataAcq
 		DC_DocumentChannelProperty(panelTitle, STIMSET_SCALE_FACTOR_KEY, headstageDAC[activeColumn], i, var=DAScale[activeColumn])
 		DC_DocumentChannelProperty(panelTitle, "Set Sweep Count", headstageDAC[activeColumn], i, var=setColumn[activeColumn])
 		DC_DocumentChannelProperty(panelTitle, "Electrode", headstageDAC[activeColumn], i, str=cellElectrodeNames[headstageDAC[activeColumn]])
+		DC_DocumentChannelProperty(panelTitle, "Set Cycle Count", headstageDAC[activeColumn], i, var=setCycleCount)
+
+		setChecksum = WB_GetStimsetChecksum(stimSet[activeColumn], setName[activeColumn], dataAcqOrTP)
+		DC_DocumentChannelProperty(panelTitle, "Stim Wave Checksum", headstageDAC[activeColumn], i, var=setChecksum)
+
+		if(dataAcqOrTP == DATA_ACQUISITION_MODE)
+			fingerprint = DC_GenerateStimsetFingerprint(raCycleID, setName[activeColumn], setCycleCount, setChecksum, dataAcqOrTP)
+			stimsetCycleID = DC_GetStimsetAcqCycleID(panelTitle, fingerprint, i)
+			DC_DocumentChannelProperty(panelTitle, STIMSET_ACQ_CYCLE_ID_KEY, headstageDAC[activeColumn], i, var=stimsetCycleID)
+		endif
 
 		activeColumn += 1
 	endfor
@@ -861,7 +878,6 @@ static Function DC_PlaceDataInITCDataWave(panelTitle, numActiveChannels, dataAcq
 		DC_DocumentChannelProperty(panelTitle, "Stim set length", headstageDAC[i], DAC[i], var=setLength[i])
 		DC_DocumentChannelProperty(panelTitle, "Delay onset oodDAQ", headstageDAC[i], DAC[i], var=offsets[i])
 		DC_DocumentChannelProperty(panelTitle, "oodDAQ regions", headstageDAC[i], DAC[i], str=regions[i])
-		DC_DocumentChannelProperty(panelTitle, "Stim Wave Checksum", headstageDAC[i], DAC[i], var=WB_GetStimsetChecksum(stimSet[i], setName[i], dataAcqOrTP))
 
 		WAVE pulses = WB_GetPulsesFromPulseTrains(stimSet[i], setColumn[i], pulseToPulseLength)
 		// pulse positions are in ms, but not yet offsetted for the onset delays
@@ -900,14 +916,6 @@ static Function DC_PlaceDataInITCDataWave(panelTitle, numActiveChannels, dataAcq
 	DC_DocumentChannelProperty(panelTitle, "Amplifier change via I=0", INDEP_HEADSTAGE, NaN, var=DAG_GetNumericalValue(panelTitle, "check_Settings_AmpIEQZstep"))
 	DC_DocumentChannelProperty(panelTitle, "Skip analysis functions", INDEP_HEADSTAGE, NaN, var=DAG_GetNumericalValue(panelTitle, "Check_Settings_SkipAnalysFuncs"))
 	DC_DocumentChannelProperty(panelTitle, "Repeat sweep on async alarm", INDEP_HEADSTAGE, NaN, var=DAG_GetNumericalValue(panelTitle, "Check_Settings_AlarmAutoRepeat"))
-
-	NVAR raCycleID = $GetRepeatedAcquisitionCycleID(panelTitle)
-	if(dataAcqOrTP == DATA_ACQUISITION_MODE)
-		ASSERT(IsFinite(raCycleID), "Uninitialized raCycleID detected")
-	endif
-
-	DC_DocumentChannelProperty(panelTitle, RA_ACQ_CYCLE_ID_KEY, INDEP_HEADSTAGE, NaN, var=raCycleID)
-	NVAR/Z raCycleID = $""
 
 	if(distributedDAQ)
 		// dDAQ requires that all stimsets have the same length, so store the stim set length
@@ -967,6 +975,67 @@ static Function DC_PlaceDataInITCDataWave(panelTitle, numActiveChannels, dataAcq
 		ControlWindowToFront()
 		Abort
 	endif
+End
+
+/// @brief Return the stimset acquisition cycle ID
+///
+/// @param panelTitle  device
+/// @param fingerprint fingerprint as returned by DC_GenerateStimsetFingerprint()
+/// @param DAC         DA channel
+static Function DC_GetStimsetAcqCycleID(panelTitle, fingerprint, DAC)
+	string panelTitle
+	variable fingerprint, DAC
+
+	WAVE stimsetAcqIDHelper = GetStimsetAcqIDHelperWave(panelTitle)
+
+	if(!IsFinite(fingerprint))
+		return NaN
+	endif
+
+	if(fingerprint == stimsetAcqIDHelper[DAC][%fingerprint])
+		return stimsetAcqIDHelper[DAC][%id]
+	endif
+
+	stimsetAcqIDHelper[DAC][%fingerprint] = fingerprint
+	stimsetAcqIDHelper[DAC][%id] = GetNextRandomNumberForDevice(panelTitle)
+
+	return stimsetAcqIDHelper[DAC][%id]
+End
+
+/// @brief Generate the stimset fingerprint
+///
+/// This fingerprint is unique for the combination of the following properties:
+/// - Repeated acqusition cycle ID
+/// - stimset name
+/// - stimset checksum
+/// - set cycle count
+///
+/// Always then this fingerprint changes, a new stimset acquisition cycle ID has
+/// to be generated.
+///
+/// Returns NaN for the testpulse.
+static Function DC_GenerateStimsetFingerprint(raCycleID, setName, setCycleCount, setChecksum, dataAcqOrTP)
+	variable raCycleID
+	string setName
+	variable setChecksum, setCycleCount, dataAcqOrTP
+
+	variable crc
+
+	if(dataAcqOrTP == TEST_PULSE_MODE)
+		return NaN
+	endif
+
+	ASSERT(IsInteger(raCycleID) && raCycleID > 0, "Invalid raCycleID")
+	ASSERT(IsInteger(setCycleCount), "Invalid setCycleCount")
+	ASSERT(IsInteger(setChecksum) && setChecksum > 0, "Invalid stimset checksum")
+	ASSERT(!IsEmpty(setName) && !cmpstr(setName, trimstring(setName)) , "Invalid setName")
+
+	crc = StringCRC(crc, num2str(raCycleID))
+	crc = StringCRC(crc, num2str(setCycleCount))
+	crc = StringCRC(crc, num2str(setChecksum))
+	crc = StringCRC(crc, setName)
+
+	return crc
 End
 
 static Function DC_CheckIfDataWaveHasBorderVals(ITCDataWave)
@@ -1149,13 +1218,16 @@ End
 /// @param SetName       name of the stimulus set
 /// @param channelNo     channel number
 /// @param channelType   channel type, one of @ref CHANNEL_TYPE_DAC or @ref CHANNEL_TYPE_TTL
+///
+/// @return complex number with real part equals the stimset column and the
+///         imaginary part the set cycle count
 static Function/C DC_CalculateChannelColumnNo(panelTitle, SetName, channelNo, channelType)
 	string panelTitle, SetName
 	variable ChannelNo, channelType
 
 	variable ColumnsInSet = IDX_NumberOfSweepsInSet(SetName)
 	variable column
-	variable CycleCount // when cycleCount = 1 the set has already cycled once.
+	variable setCycleCount
 	variable localCount, repAcqRandom
 	string sequenceWaveName
 	variable skipAhead = DAP_GetskipAhead(panelTitle)
@@ -1173,7 +1245,6 @@ static Function/C DC_CalculateChannelColumnNo(panelTitle, SetName, channelNo, ch
 		//thus the vairable "count" is used to determine if acquisition is on the first cycle
 		if(!DAG_GetNumericalValue(panelTitle, "Check_DataAcq_Indexing"))
 			localCount = count
-			cycleCount = 0
 		else // The local count is now set length dependent
 			// check locked status. locked = popup menus on channels idex in lock - step
 			if(DAG_GetNumericalValue(panelTitle, "Check_DataAcq1_IndexingLocked"))
@@ -1187,28 +1258,26 @@ static Function/C DC_CalculateChannelColumnNo(panelTitle, SetName, channelNo, ch
 			endif
 		endif
 
+		setCycleCount = trunc(localCount / ColumnsInSet)
+
 		//Below code uses local count to determine  what step to use from the set based on the sweeps in cycle and sweeps in active set
-		if(((localCount) / ColumnsInSet) < 1 || (localCount) == 0) // if remainder is less than 1, count is on 1st cycle
+		if(setCycleCount == 0)
 			if(!repAcqRandom)
 				column = localCount
-				cycleCount = 0
 			else
 				if(localCount == 0)
 					InPlaceRandomShuffle(WorkingSequenceWave)
 				endif
 				column = WorkingSequenceWave[localcount]
-				cycleCount = 0
 			endif
 		else
 			if(!repAcqRandom)
 				column = mod((localCount), columnsInSet) // set has been cyled through once or more, uses remainder to determine correct column
-				cycleCount = 1
 			else
 				if(mod((localCount), columnsInSet) == 0)
 					InPlaceRandomShuffle(WorkingSequenceWave) // added to handle 1 channel, unlocked indexing
 				endif
 				column = WorkingSequenceWave[mod((localCount), columnsInSet)]
-				cycleCount = 1
 			endif
 		endif
 	else // first sweep
@@ -1226,7 +1295,7 @@ static Function/C DC_CalculateChannelColumnNo(panelTitle, SetName, channelNo, ch
 
 	ASSERT(IsFinite(column), "column has to be finite")
 
-	return cmplx(column, cycleCount)
+	return cmplx(column, setCycleCount)
 End
 
 /// @brief Returns the length increase of the ITCDataWave following onset/termination delay insertion and

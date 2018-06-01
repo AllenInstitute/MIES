@@ -513,7 +513,7 @@ Constant WAVEBUILDER_PANEL_VERSION  = 5
 /// - Changed names of entries
 /// - Changed units or meaning of entries
 /// - New/Changed layers of entries
-Constant LABNOTEBOOK_VERSION = 21
+Constant LABNOTEBOOK_VERSION = 23
 
 /// Version of the stimset wave note
 Constant STIMSET_NOTE_VERSION = 1
@@ -766,7 +766,8 @@ StrConstant LABNOTEBOOK_BINARY_UNIT  = "On/Off"
 /// `Key` prefix for runtime added labnotebooks by ED_AddEntryToLabnotebook()
 StrConstant LABNOTEBOOK_USER_PREFIX = "USER_"
 
-StrConstant RA_ACQ_CYCLE_ID_KEY = "Repeated Acq Cycle ID"
+StrConstant RA_ACQ_CYCLE_ID_KEY      = "Repeated Acq Cycle ID"
+StrConstant STIMSET_ACQ_CYCLE_ID_KEY = "Stimset Acq Cycle ID"
 
 /// @name Update flags for DAP_UpdateDAQControls()
 ///

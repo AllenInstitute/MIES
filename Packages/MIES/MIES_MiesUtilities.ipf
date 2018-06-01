@@ -520,6 +520,33 @@ End
 /// @return the headstage independent setting or `defValue`
 ///
 /// @ingroup LabnotebookQueryFunctions
+/// @sa GetLastSetting()
+Function GetLastSettingIndepSCI(numericalValues, sweepNo, setting, headstage, entrySourceType, [defValue])
+	Wave numericalValues
+	variable sweepNo
+	string setting
+	variable defValue, headstage, entrySourceType
+
+	if(ParamIsDefault(defValue))
+		defValue = NaN
+	endif
+
+	WAVE/Z settings = GetLastSettingSCI(numericalValues, sweepNo, setting, headstage, entrySourceType)
+
+	if(WaveExists(settings))
+		return settings[GetIndexForHeadstageIndepData(numericalValues)]
+	else
+		DEBUGPRINT("Missing setting in labnotebook", str=setting)
+		return defValue
+	endif
+End
+
+/// @brief Return a headstage independent setting from the numerical
+///        labnotebook of the sweeps in the same RA cycle
+///
+/// @return the headstage independent setting or `defValue`
+///
+/// @ingroup LabnotebookQueryFunctions
 /// @sa GetLastSettingText()
 Function/S GetLastSettingTextIndepRAC(numericalValues, textualValues, sweepNo, setting, entrySourceType, [defValue])
 	WAVE numericalValues
@@ -878,7 +905,11 @@ Function/WAVE GetLastSettingRAC(numericalValues, sweepNo, setting, entrySourceTy
 	return $""
 End
 
-/// @brief Return the last numerical value for the given setting of *each* sweeps in the same RA cycle.
+/// @brief Return the last numerical value for the given setting of *each*
+///        sweep in the same RA cycle.
+///
+/// The returned wave will have `NaN` for sweeps which do not have that entry.
+/// This is done in order to keep the indizes intact.
 ///
 /// @ingroup LabnotebookQueryFunctions
 /// @sa GetLastSetting()
@@ -911,7 +942,11 @@ Function/WAVE GetLastSettingIndepEachRAC(numericalValues, sweepNo, setting, entr
 	return result
 End
 
-/// @brief Return the last textual value for the given setting of *each* sweeps in the same RA cycle.
+/// @brief Return the last textual value for the given setting of *each* sweep
+///        in the same RA cycle.
+///
+/// The returned wave will have `NaN` for sweeps which do not have that entry.
+/// This is done in order to keep the indizes intact.
 ///
 /// @ingroup LabnotebookQueryFunctions
 /// @sa GetLastSetting()
@@ -937,7 +972,7 @@ Function/WAVE GetLastSettingTextIndepEachRAC(numericalValues, textualValues, swe
 	numSweeps = DimSize(sweeps, ROWS)
 	Make/FREE/T/N=(numSweeps) result = GetLastSettingTextIndep(textualValues, sweeps[p], setting, entrySourceType, defValue = defValue)
 
-	Make/N=(numSweeps) lengths = strlen(result[p])
+	Make/N=(numSweeps)/FREE lengths = strlen(result[p])
 	if(Sum(lengths) == 0)
 		return $""
 	endif
@@ -945,7 +980,11 @@ Function/WAVE GetLastSettingTextIndepEachRAC(numericalValues, textualValues, swe
 	return result
 End
 
-/// @brief Return the last numerical value for the given setting of *each* sweeps for a given headstage in the same RA cycle.
+/// @brief Return the last numerical value for the given setting of *each*
+///        sweep for a given headstage in the same RA cycle.
+///
+/// The returned wave will have `NaN` for sweeps which do not have that entry.
+/// This is done in order to keep the indizes intact.
 ///
 /// @ingroup LabnotebookQueryFunctions
 /// @sa GetLastSetting
@@ -983,7 +1022,11 @@ Function/WAVE GetLastSettingEachRAC(numericalValues, sweepNo, setting, headstage
 	return result
 End
 
-/// @brief Return the last textual value for the given setting of *each* sweeps for a given headstage in the same RA cycle.
+/// @brief Return the last textual value for the given setting of *each* sweep
+///        for a given headstage in the same RA cycle.
+///
+/// The returned wave will have `NaN` for sweeps which do not have that entry.
+/// This is done in order to keep the indizes intact.
 ///
 /// @ingroup LabnotebookQueryFunctions
 /// @sa GetLastSetting()
@@ -1014,7 +1057,226 @@ Function/WAVE GetLastSettingTextEachRAC(numericalValues, textualValues, sweepNo,
 		endif
 	endfor
 
-	Make/N=(numSweeps) lengths = strlen(result[p])
+	Make/N=(numSweeps)/FREE lengths = strlen(result[p])
+	if(Sum(lengths) == 0)
+		return $""
+	endif
+
+	return result
+End
+
+/// @brief Return the last textual value of the sweeps in the same stimset cycle
+///
+/// @ingroup LabnotebookQueryFunctions
+/// @sa GetLastSettingText()
+Function/WAVE GetLastSettingTextSCI(numericalValues, textualValues, sweepNo, setting, headstage, entrySourceType)
+	WAVE numericalValues
+	WAVE/T textualValues
+	variable sweepNo
+	string setting
+	variable headstage, entrySourceType
+
+	variable i, numSweeps
+
+	WAVE/Z sweeps = AFH_GetSweepsFromSameSCI(numericalValues, sweepNo, headstage)
+	if(!WaveExists(sweeps) || DimSize(sweeps, ROWS) == 0)
+		return $""
+	endif
+
+	numSweeps = DimSize(sweeps, ROWS)
+	for(i = numSweeps - 1; i >= 0; i -= 1)
+		WAVE/Z settings = GetLastSettingText(textualValues, sweeps[i], setting, entrySourceType)
+
+		if(WaveExists(settings))
+			return settings
+		endif
+	endfor
+
+	return $""
+End
+
+/// @brief Return the last numerical value of the sweeps in the same stimset cycle
+///
+/// @ingroup LabnotebookQueryFunctions
+/// @sa GetLastSetting()
+Function/WAVE GetLastSettingSCI(numericalValues, sweepNo, setting, headstage, entrySourceType)
+	WAVE numericalValues
+	variable sweepNo
+	string setting
+	variable headstage, entrySourceType
+
+	variable i, numSweeps
+
+	WAVE/Z sweeps = AFH_GetSweepsFromSameSCI(numericalValues, sweepNo, headstage)
+	if(!WaveExists(sweeps) || DimSize(sweeps, ROWS) == 0)
+		return $""
+	endif
+
+	numSweeps = DimSize(sweeps, ROWS)
+	for(i = numSweeps - 1; i >= 0; i -= 1)
+		WAVE/Z settings = GetLastSetting(numericalValues, sweeps[i], setting, entrySourceType)
+
+		if(WaveExists(settings))
+			return settings
+		endif
+	endfor
+
+	return $""
+End
+
+/// @brief Return the last numerical value for the given setting of *each*
+///        sweep in the same stimset cycle.
+///
+/// The returned wave will have `NaN` for sweeps which do not have that entry.
+/// This is done in order to keep the indizes intact.
+///
+/// @ingroup LabnotebookQueryFunctions
+/// @sa GetLastSetting()
+Function/WAVE GetLastSettingIndepEachSCI(numericalValues, sweepNo, setting, headstage, entrySourceType, [defValue])
+	WAVE numericalValues
+	variable sweepNo
+	string setting
+	variable headstage, entrySourceType, defValue
+
+	variable settings, numSweeps
+
+	if(ParamIsDefault(defValue))
+		defValue = NaN
+	endif
+
+	WAVE/Z sweeps = AFH_GetSweepsFromSameSCI(numericalValues, sweepNo, headstage)
+	if(!WaveExists(sweeps) || DimSize(sweeps, ROWS) == 0)
+		return $""
+	endif
+
+	numSweeps = DimSize(sweeps, ROWS)
+
+	Make/FREE/D/N=(numSweeps) result = GetLastSettingIndep(numericalValues, sweeps[p], setting, entrySourceType, defValue = defValue)
+
+	WaveStats/Q/M=1 result
+	if(V_numNaNs == numSweeps)
+		return $""
+	endif
+
+	return result
+End
+
+/// @brief Return the last textual value for the given setting of *each* sweep
+///        in the same stimset cycle.
+///
+/// The returned wave will have `NaN` for sweeps which do not have that entry.
+/// This is done in order to keep the indizes intact.
+///
+/// @ingroup LabnotebookQueryFunctions
+/// @sa GetLastSetting()
+Function/WAVE GetLastSettingTextIndepEachSCI(numericalValues, textualValues, sweepNo, headstage, setting, entrySourceType, [defValue])
+	WAVE numericalValues
+	WAVE/T textualValues
+	variable sweepNo
+	string setting
+	variable headstage, entrySourceType
+	string defValue
+
+	variable settings, numSweeps
+
+	if(ParamIsDefault(defValue))
+		defValue = ""
+	endif
+
+	WAVE/Z sweeps = AFH_GetSweepsFromSameSCI(numericalValues, sweepNo, headstage)
+	if(!WaveExists(sweeps) || DimSize(sweeps, ROWS) == 0)
+		return $""
+	endif
+
+	numSweeps = DimSize(sweeps, ROWS)
+	Make/FREE/T/N=(numSweeps) result = GetLastSettingTextIndep(textualValues, sweeps[p], setting, entrySourceType, defValue = defValue)
+
+	Make/N=(numSweeps)/FREE lengths = strlen(result[p])
+	if(Sum(lengths) == 0)
+		return $""
+	endif
+
+	return result
+End
+
+/// @brief Return the last numerical value for the given setting of *each*
+///        sweep for a given headstage in the same stimset cycle.
+///
+/// The returned wave will have `NaN` for sweeps which do not have that entry.
+/// This is done in order to keep the indizes intact.
+///
+/// @ingroup LabnotebookQueryFunctions
+/// @sa GetLastSetting
+Function/WAVE GetLastSettingEachSCI(numericalValues, sweepNo, setting, headstage, entrySourceType)
+	WAVE numericalValues
+	variable sweepNo
+	string setting
+	variable headstage, entrySourceType
+
+	variable i, numSweeps
+
+	ASSERT(headstage >= 0 && headstage < NUM_HEADSTAGES, "Invalid headstage")
+
+	WAVE/Z sweeps = AFH_GetSweepsFromSameSCI(numericalValues, sweepNo, headstage)
+	if(!WaveExists(sweeps) || DimSize(sweeps, ROWS) == 0)
+		return $""
+	endif
+
+	numSweeps = DimSize(sweeps, ROWS)
+	Make/FREE/D/N=(numSweeps) result = NaN
+
+	for(i = 0; i < numSweeps; i += 1)
+		WAVE/Z settings = GetLastSetting(numericalValues, sweeps[i], setting, entrySourceType)
+
+		if(WaveExists(settings))
+			result[i] = settings[headstage]
+		endif
+	endfor
+
+	WaveStats/Q/M=1 result
+	if(V_numNaNs == numSweeps)
+		return $""
+	endif
+
+	return result
+End
+
+/// @brief Return the last textual value for the given setting of *each* sweep
+///        for a given headstage in the same stimset cycle.
+///
+/// The returned wave will have `NaN` for sweeps which do not have that entry.
+/// This is done in order to keep the indizes intact.
+///
+/// @ingroup LabnotebookQueryFunctions
+/// @sa GetLastSetting()
+Function/WAVE GetLastSettingTextEachSCI(numericalValues, textualValues, sweepNo, setting, headstage, entrySourceType)
+	WAVE numericalValues
+	WAVE/T textualValues
+	variable sweepNo
+	string setting
+	variable headstage, entrySourceType
+
+	variable i, numSweeps
+
+	ASSERT(headstage >= 0 && headstage < NUM_HEADSTAGES, "Invalid headstage")
+
+	WAVE/Z sweeps = AFH_GetSweepsFromSameSCI(numericalValues, sweepNo, headstage)
+	if(!WaveExists(sweeps) || DimSize(sweeps, ROWS) == 0)
+		return $""
+	endif
+
+	numSweeps = DimSize(sweeps, ROWS)
+	Make/FREE/T/N=(numSweeps) result
+
+	for(i = 0; i < numSweeps; i += 1)
+		WAVE/Z/T settings = GetLastSettingText(textualValues, sweeps[i], setting, entrySourceType)
+
+		if(WaveExists(settings))
+			result[i] = settings[headstage]
+		endif
+	endfor
+
+	Make/N=(numSweeps)/FREE lengths = strlen(result[p])
 	if(Sum(lengths) == 0)
 		return $""
 	endif
@@ -4500,4 +4762,17 @@ Function IsValidSweepAndConfig(sweep, config)
 	return IsValidConfigWave(config) &&                  \
 		   IsValidSweepWave(sweep) &&                    \
 		   DimSize(sweep, COLS) == DimSize(config, ROWS)
+End
+
+/// @brief Return the next random number using the device specific RNG seed
+Function GetNextRandomNumberForDevice(panelTitle)
+	string panelTitle
+
+	NVAR rngSeed = $GetRNGSeed(panelTitle)
+	ASSERT(IsFinite(rngSeed), "Invalid rngSeed")
+	SetRandomSeed/BETR=1 rngSeed
+	rngSeed += 1
+
+	// scale to the available mantissa bits in a single precision variable
+	return trunc(GetReproducibleRandom() * 2^23)
 End

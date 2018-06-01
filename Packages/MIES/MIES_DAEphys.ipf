@@ -971,12 +971,7 @@ static Function DAP_GetRAAcquisitionCycleID(panelTitle)
 		NVAR raCycleIDLead = $GetRepeatedAcquisitionCycleID(ITC1600_FIRST_DEVICE)
 		return raCycleIDLead
 	else
-		NVAR rngSeed = $GetRNGSeed(panelTitle)
-		ASSERT(IsFinite(rngSeed), "Invalid rngSeed")
-		SetRandomSeed/BETR=1 rngSeed
-		rngSeed += 1
-		// scale to the available mantissa bits in a single precision variable
-		return trunc(GetReproducibleRandom() * 2^23)
+		return GetNextRandomNumberForDevice(panelTitle)
 	endif
 End
 
@@ -1006,6 +1001,9 @@ Function DAP_OneTimeCallBeforeDAQ(panelTitle, runMode)
 
 	NVAR fifoPosition = $GetFifoPosition(panelTitle)
 	fifoPosition = NaN
+
+	WAVE stimsetAcqIDHelper = GetStimsetAcqIDHelperWave(panelTitle)
+	stimsetAcqIDHelper = NaN
 
 	if(DAG_GetNumericalValue(panelTitle, "Check_DataAcq_Indexing"))
 		IDX_StoreStartFinishForIndexing(panelTitle)

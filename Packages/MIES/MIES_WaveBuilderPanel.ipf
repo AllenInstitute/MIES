@@ -2767,6 +2767,7 @@ End
 Function WBP_ListBoxProc_AnalysisParams(lba) : ListBoxControl
 	STRUCT WMListboxAction &lba
 
+	variable numericValue
 	string stimset, win, name, value, params
 	string type
 	variable row, col
@@ -2793,21 +2794,27 @@ Function WBP_ListBoxProc_AnalysisParams(lba) : ListBoxControl
 			value = listWave[row][%Value]
 			type  = listWave[row][%Type]
 			if(!IsEmpty(type))
-				// the parameter is present and not a required placeholder parameter
-				// need to serialize the value properly
-
 				strswitch(type)
 					case "variable":
-						value = num2str(AFH_GetAnalysisParamNumerical(name, params))
+						numericValue = AFH_GetAnalysisParamNumerical(name, params)
+						if(!IsNan(numericValue))
+							value = num2str(numericValue)
+						endif
 						break
 					case "string":
 						value = AFH_GetAnalysisParamTextual(name, params)
 						break
 					case "wave":
-						value = NumericWaveToList(AFH_GetAnalysisParamWave(name, params), ";")
+						WAVE/Z wv = AFH_GetAnalysisParamWave(name, params)
+						if(WaveExists(wv))
+							value = NumericWaveToList(wv, ";")
+						endif
 						break
 					case "textwave":
-						value = TextWaveToList(AFH_GetAnalysisParamTextWave(name, params), ";")
+						WAVE/Z wv = AFH_GetAnalysisParamTextWave(name, params)
+						if(WaveExists(wv))
+							value = TextWaveToList(wv, ";")
+						endif
 						break
 					default:
 						ASSERT(0, "invalid type")

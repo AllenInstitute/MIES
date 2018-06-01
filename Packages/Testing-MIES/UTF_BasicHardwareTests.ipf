@@ -99,6 +99,8 @@ static Structure TestSettings
 	variable sweepWaveType
 	WAVE/T   acquiredStimSets_HS0, acquiredStimSets_HS1 // including repetitions
 	WAVE sweepCount_HS0, sweepCount_HS1
+	WAVE setCycleCount_HS0, setCycleCount_HS1
+	WAVE stimsetCycleID_HS0, stimsetCycleID_HS1
 EndStructure
 
 static Function InitTestStructure(t)
@@ -107,8 +109,9 @@ static Function InitTestStructure(t)
 	REQUIRE(t.numSweeps > 0)
 	Make/T/FREE/N=(t.numSweeps) t.acquiredStimSets_HS0, t.acquiredStimSets_HS1
 	Make/FREE/N=(t.numSweeps) t.sweepCount_HS0, t.sweepCount_HS1
+	Make/FREE/N=(t.numSweeps) t.setCycleCount_HS0, t.setCycleCount_HS1
+	Make/FREE/N=(t.numSweeps) t.stimsetCycleID_HS0, t.stimsetCycleID_HS1
 End
-
 static Function AllTests(t)
 	STRUCT TestSettings &t
 
@@ -190,6 +193,19 @@ static Function AllTests(t)
 			REQUIRE_WAVE(sweepCounts, NUMERIC_WAVE)
 			CHECK_EQUAL_VAR(sweepCounts[0], t.sweepCount_HS0[j])
 			CHECK_EQUAL_VAR(sweepCounts[1], t.sweepCount_HS1[j])
+
+			WAVE/Z setCycleCounts = GetLastSetting(numericalValues, sweepNo, "Set Cycle Count", DATA_ACQUISITION_MODE)
+			REQUIRE_WAVE(setCycleCounts, NUMERIC_WAVE)
+			CHECK_EQUAL_VAR(setCycleCounts[0], t.setCycleCount_HS0[j])
+			CHECK_EQUAL_VAR(setCycleCounts[1], t.setCycleCount_HS1[j])
+
+			WAVE sciSweeps = AFH_GetSweepsFromSameSCI(numericalValues, j, 0)
+			Extract/FREE/INDX t.stimsetCycleID_HS0, indizes, t.stimsetCycleID_HS0 == t.stimsetCycleID_HS0[j]
+			CHECK_EQUAL_WAVES(sciSweeps, indizes, mode = WAVE_DATA)
+
+			WAVE sciSweeps = AFH_GetSweepsFromSameSCI(numericalValues, j, 1)
+			Extract/FREE/INDX t.stimsetCycleID_HS1, indizes, t.stimsetCycleID_HS1 == t.stimsetCycleID_HS1[j]
+			CHECK_EQUAL_WAVES(sciSweeps, indizes, mode = WAVE_DATA)
 		endfor
 	endfor
 End
@@ -212,9 +228,13 @@ Function Test_MD0_RA0_IDX0_LIDX0_BKG_0()
 
 	t.acquiredStimSets_HS0[] = "StimulusSetA_DA_0"
 	t.sweepCount_HS0[]       = 0
+	t.setCycleCount_HS0[]    = 0
+	t.stimsetCycleID_HS0[]   = 0
 
 	t.acquiredStimSets_HS1[] = "StimulusSetC_DA_0"
 	t.sweepCount_HS1[]       = 0
+	t.setCycleCount_HS1[]    = 0
+	t.stimsetCycleID_HS1[]   = 0
 
 	AllTests(t)
 End
@@ -237,9 +257,13 @@ Function Test_MD1_RA0_IDX0_LIDX0_BKG_1()
 
 	t.acquiredStimSets_HS0[] = "StimulusSetA_DA_0"
 	t.sweepCount_HS0[]       = 0
+	t.setCycleCount_HS0[]    = 0
+	t.stimsetCycleID_HS0[]   = 0
 
 	t.acquiredStimSets_HS1[] = "StimulusSetC_DA_0"
 	t.sweepCount_HS1[]       = 0
+	t.setCycleCount_HS1[]    = 0
+	t.stimsetCycleID_HS1[]   = 0
 
 	AllTests(t)
 End
@@ -262,9 +286,13 @@ Function Test_MD0_RA1_IDX0_LIDX0_BKG_0()
 
 	t.acquiredStimSets_HS0[] = "StimulusSetA_DA_0"
 	t.sweepCount_HS0         = {0, 1, 2}
+	t.setCycleCount_HS0[]    = 0
+	t.stimsetCycleID_HS0[]   = 0
 
 	t.acquiredStimSets_HS1[] = "StimulusSetC_DA_0"
 	t.sweepCount_HS1[]       = {0, 1, 0}
+	t.setCycleCount_HS1[]    = {0, 0, 1}
+	t.stimsetCycleID_HS1[]   = {0, 0, 1}
 
 	AllTests(t)
 End
@@ -287,9 +315,13 @@ Function Test_MD1_RA1_IDX0_LIDX0_BKG_1()
 
 	t.acquiredStimSets_HS0[] = "StimulusSetA_DA_0"
 	t.sweepCount_HS0         = {0, 1, 2}
+	t.setCycleCount_HS0[]    = 0
+	t.stimsetCycleID_HS0[]   = 0
 
 	t.acquiredStimSets_HS1[] = "StimulusSetC_DA_0"
 	t.sweepCount_HS1[]       = {0, 1, 0}
+	t.setCycleCount_HS1[]    = {0, 0, 1}
+	t.stimsetCycleID_HS1[]   = {0, 0, 1}
 
 	AllTests(t)
 End
@@ -314,10 +346,14 @@ Function Test_MD1_RA1_IDX1_LIDX0_BKG_1()
 	t.acquiredStimSets_HS0[3]   = "StimulusSetB_DA_0"
 	t.acquiredStimSets_HS0[4]   = "StimulusSetA_DA_0"
 	t.sweepCount_HS0            = {0, 1, 2, 0, 0}
+	t.setCycleCount_HS0         = 0
+	t.stimsetCycleID_HS0[]      = {0, 0, 0, 1, 2}
 
 	t.acquiredStimSets_HS1[0,1] = "StimulusSetC_DA_0"
 	t.acquiredStimSets_HS1[2,4] = "StimulusSetD_DA_0"
 	t.sweepCount_HS1            = {0, 1, 0, 1, 2}
+	t.setCycleCount_HS1         = 0
+	t.stimsetCycleID_HS1[]      = {0, 0, 1, 1, 1}
 
 	AllTests(t)
 End
@@ -342,10 +378,14 @@ Function Test_MD0_RA1_IDX1_LIDX0_BKG_0()
 	t.acquiredStimSets_HS0[3]   = "StimulusSetB_DA_0"
 	t.acquiredStimSets_HS0[4]   = "StimulusSetA_DA_0"
 	t.sweepCount_HS0            = {0, 1, 2, 0, 0}
+	t.setCycleCount_HS0         = 0
+	t.stimsetCycleID_HS0[]      = {0, 0, 0, 1, 2}
 
 	t.acquiredStimSets_HS1[0,1] = "StimulusSetC_DA_0"
 	t.acquiredStimSets_HS1[2,4] = "StimulusSetD_DA_0"
 	t.sweepCount_HS1            = {0, 1, 0, 1, 2}
+	t.setCycleCount_HS1         = 0
+	t.stimsetCycleID_HS1[]      = {0, 0, 1, 1, 1}
 
 	AllTests(t)
 End
@@ -369,10 +409,14 @@ Function Test_MD1_RA1_IDX1_LIDX1_BKG_1()
 	t.acquiredStimSets_HS0[0,2] = "StimulusSetA_DA_0"
 	t.acquiredStimSets_HS0[3,5] = "StimulusSetB_DA_0"
 	t.sweepCount_HS0            = {0, 1, 2, 0, 0, 0}
+	t.setCycleCount_HS0         = {0, 0, 0, 0, 1, 2}
+	t.stimsetCycleID_HS0[]      = {0, 0, 0, 1, 2, 3}
 
 	t.acquiredStimSets_HS1[0,2] = "StimulusSetC_DA_0"
 	t.acquiredStimSets_HS1[3,5] = "StimulusSetD_DA_0"
 	t.sweepCount_HS1            = {0, 1, 0, 0, 1, 2}
+	t.setCycleCount_HS1         = {0, 0, 1, 0, 0, 0}
+	t.stimsetCycleID_HS1[]      = {0, 0, 1, 2, 2, 2}
 
 	AllTests(t)
 End
@@ -396,10 +440,14 @@ Function Test_MD0_RA1_IDX1_LIDX1_BKG_0()
 	t.acquiredStimSets_HS0[0,2] = "StimulusSetA_DA_0"
 	t.acquiredStimSets_HS0[3,5] = "StimulusSetB_DA_0"
 	t.sweepCount_HS0            = {0, 1, 2, 0, 0, 0}
+	t.setCycleCount_HS0         = {0, 0, 0, 0, 1, 2}
+	t.stimsetCycleID_HS0[]      = {0, 0, 0, 1, 2, 3}
 
 	t.acquiredStimSets_HS1[0,2] = "StimulusSetC_DA_0"
 	t.acquiredStimSets_HS1[3,5] = "StimulusSetD_DA_0"
 	t.sweepCount_HS1            = {0, 1, 0, 0, 1, 2}
+	t.setCycleCount_HS1         = {0, 0, 1, 0, 0, 0}
+	t.stimsetCycleID_HS1[]      = {0, 0, 1, 2, 2, 2}
 
 	AllTests(t)
 End
@@ -422,9 +470,13 @@ Function Test_RepeatSets_1()
 
 	t.acquiredStimSets_HS0[] = "StimulusSetA_DA_0"
 	t.sweepCount_HS0         = {0, 1, 2, 0, 1, 2}
+	t.setCycleCount_HS0      = {0, 0, 0, 1, 1, 1}
+	t.stimsetCycleID_HS0[]   = {0, 0, 0, 1, 1, 1}
 
 	t.acquiredStimSets_HS1[] = "StimulusSetC_DA_0"
 	t.sweepCount_HS1         = {0, 1, 0, 1, 0, 1}
+	t.setCycleCount_HS1      = {0, 0, 1, 1, 2, 2}
+	t.stimsetCycleID_HS1[]   = {0, 0, 1, 1, 2, 2}
 
 	AllTests(t)
 End
@@ -451,12 +503,16 @@ Function Test_RepeatSets_2()
 	t.acquiredStimSets_HS0[7]   = "StimulusSetB_DA_0"
 	t.acquiredStimSets_HS0[8,9] = "StimulusSetA_DA_0"
 	t.sweepCount_HS0            = {0, 1, 2, 0, 0, 1, 2, 0, 0, 1}
+	t.setCycleCount_HS0         = 0
+	t.stimsetCycleID_HS0[]      = {0, 0, 0, 1, 2, 2, 2, 3, 4, 4}
 
 	t.acquiredStimSets_HS1[0,1] = "StimulusSetC_DA_0"
 	t.acquiredStimSets_HS1[2,4] = "StimulusSetD_DA_0"
 	t.acquiredStimSets_HS1[5,6] = "StimulusSetC_DA_0"
 	t.acquiredStimSets_HS1[7,9] = "StimulusSetD_DA_0"
 	t.sweepCount_HS1            = {0, 1, 0, 1, 2, 0, 1, 0, 1, 2}
+	t.setCycleCount_HS1         = 0
+	t.stimsetCycleID_HS1[]      = {0, 0, 1, 1, 1, 2, 2, 3, 3, 3}
 
 	AllTests(t)
 End
@@ -480,10 +536,14 @@ Function Test_RepeatSets_3()
 	t.acquiredStimSets_HS0[0,5]  = "StimulusSetA_DA_0"
 	t.acquiredStimSets_HS0[6,11] = "StimulusSetB_DA_0"
 	t.sweepCount_HS0             = {0, 1, 2, 0, 1, 2, 0, 0, 0, 0, 0, 0}
+	t.setCycleCount_HS0          = {0, 0, 0, 1, 1, 1, 0, 1, 2, 3, 4, 5}
+	t.stimsetCycleID_HS0[]       = {0, 0, 0, 1, 1, 1, 2, 3, 4, 5, 6, 7}
 
 	t.acquiredStimSets_HS1[0,5]  = "StimulusSetC_DA_0"
 	t.acquiredStimSets_HS1[6,11] = "StimulusSetD_DA_0"
 	t.sweepCount_HS1             = {0, 1, 0, 1, 0, 1, 0, 1, 2, 0, 1, 2}
+	t.setCycleCount_HS1          = {0, 0, 1, 1, 2, 2, 0, 0, 0, 1, 1, 1}
+	t.stimsetCycleID_HS1[]       = {0, 0, 1, 1, 2, 2, 3, 3, 3, 4, 4, 4}
 
 	AllTests(t)
 End

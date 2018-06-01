@@ -50,7 +50,7 @@ digraph G {
     "All checks passed" -> "Abort"  [label="No"];
     "Spike detected?\n(x range: pulse onset to end of sweep\ny condition: max above 0.01mV)\nStore result in labnotebook" -> "Step size from labnotebook?"  [label="Yes"];
     "Step size from labnotebook?" -> "Store DAScale in labnotebook"  [label="+10pA"];
-    "Skip to end";
+    "Skip to end of active set";
     "Offset DAScale by -50pA";
     "Step size from labnotebook?" -> "Offset DAScale by -50pA"  [label="-50pA"];
     "Write step size of -50pA to labnotebook";
@@ -70,7 +70,7 @@ digraph G {
     "Check if only one headstage is active" -> "All checks passed";
     "Prepare DAQ Event" -> "Check if only one headstage is active";
     "Mark sweep as passed";
-    "Mark sweep as passed" -> "Skip to end";
+    "Mark sweep as passed" -> "Skip to end of active set";
     "Store DAScale in labnotebook" -> "Mark sweep as passed";
     "Mark sweep as failed";
     "Offset DAScale by -50pA" -> "Mark sweep as failed";

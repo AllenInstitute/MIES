@@ -570,13 +570,13 @@ End
 
 /// @brief Return the number of already acquired sweeps from the given
 ///        repeated acquisition cycle.
-static Function PSQ_NumAcquiredSweepsInSet(panelTitle, sweepNo)
+static Function PSQ_NumAcquiredSweepsInSet(panelTitle, sweepNo, headstage)
 	string panelTitle
-	variable sweepNo
+	variable sweepNo, headstage
 
 	WAVE numericalValues = GetLBNumericalValues(panelTitle)
 
-	WAVE/Z sweeps = AFH_GetSweepsFromSameRACycle(numericalValues, sweepNo)
+	WAVE/Z sweeps = AFH_GetSweepsFromSameSCI(numericalValues, sweepNo, headstage)
 
 	if(!WaveExists(sweeps)) // very unlikely
 		return 0
@@ -587,13 +587,13 @@ End
 
 /// @brief Return the number of passed sweeps in all sweeps from the given
 ///        repeated acquisition cycle.
-Function PSQ_NumPassesInSet(numericalValues, type, sweepNo)
+Function PSQ_NumPassesInSet(numericalValues, type, sweepNo, headstage)
 	WAVE numericalValues
-	variable type, sweepNo
+	variable type, sweepNo, headstage
 
 	string key
 
-	WAVE/Z sweeps = AFH_GetSweepsFromSameRACycle(numericalValues, sweepNo)
+	WAVE/Z sweeps = AFH_GetSweepsFromSameSCI(numericalValues, sweepNo, headstage)
 
 	if(!WaveExists(sweeps)) // very unlikely
 		return NaN
@@ -821,6 +821,8 @@ static Function/WAVE PSQ_SearchForSpikes(panelTitle, type, sweepWave, headstage,
 		endif
 	endif
 
+	ASSERT(IsFinite(spikeDetection[headstage]), "Expected finite result")
+
 	return spikeDetection
 End
 
@@ -869,7 +871,7 @@ Function PSQ_GetLastPassingLongRHSweep(panelTitle, headstage)
 	numEntries = DimSize(sweeps, ROWS)
 	for(i = numEntries - 1; i >= 0; i -= 1)
 		sweepNo = sweeps[i]
-		WAVE/Z setting = GetLastSettingRAC(numericalValues, sweepNo, key, UNKNOWN_MODE)
+		WAVE/Z setting = GetLastSettingSCI(numericalValues, sweepNo, key, headstage, UNKNOWN_MODE)
 
 		if(WaveExists(setting) && setting[headstage] > 500)
 			return sweepNo
@@ -962,7 +964,7 @@ End
 ///    // set properties
 ///
 ///    key = PSQ_CreateLBNKey(PSQ_DA_SCALE, PSQ_FMT_LBN_SET_PASSED, query = 1)
-///    setPassed = GetLastSettingIndepRAC(numericalValues, sweepNo, key, UNKNOWN_MODE)
+///    setPassed = GetLastSettingIndepSCI(numericalValues, sweepNo, key, headstage, UNKNOWN_MODE)
 ///
 ///    if(setPassed)
 ///      // set passed
@@ -988,7 +990,7 @@ End
 ///
 ///    // get fitted resistance from last passing sweep
 ///	   // resistance for the first headstage can be found in resistanceFitted[0]
-///    WAVE/Z resistanceFitted = GetLastSettingRAC(numericalValues, sweepNo, LABNOTEBOOK_USER_PREFIX + "ResistanceFromFit", UNKNOWN_MODE)
+///    WAVE/Z resistanceFitted = GetLastSettingSCI(numericalValues, sweepNo, LABNOTEBOOK_USER_PREFIX + "ResistanceFromFit", headstage, UNKNOWN_MODE)
 /// \endrst
 ///
 /// Decision logic flowchart:
@@ -1026,7 +1028,7 @@ Function PSQ_DAScale(panelTitle, s)
 
 	variable val, totalOnsetDelay
 	variable i, fifoInStimsetPoint, fifoInStimsetTime
-	variable index, skipToEnd, ret
+	variable index, ret
 	variable sweepPassed, setPassed, numSweepsPass, length, minLength
 	variable sweepsInSet, passesInSet, acquiredSweepsInSet, numBaselineChunks, multiplier
 	string msg, stimset, key, opMode
@@ -1056,6 +1058,8 @@ Function PSQ_DAScale(panelTitle, s)
 			PGC_SetAndActivateControl(panelTitle, "Check_DataAcq1_DistribDaq", val = 0)
 			PGC_SetAndActivateControl(panelTitle, "Check_DataAcq1_dDAQOptOv", val = 0)
 			PGC_SetAndActivateControl(panelTitle, "Check_DataAcq1_RepeatAcq", val = 1)
+			PGC_SetAndActivateControl(panelTitle, "Check_DataAcq_Indexing", val = 0)
+			PGC_SetAndActivateControl(panelTitle, "Check_DataAcq1_IndexingLocked", val = 0)
 
 			WAVE statusHS = DAG_GetChannelState(panelTitle, CHANNEL_TYPE_HEADSTAGE)
 			if(sum(statusHS) != 1)
@@ -1128,12 +1132,18 @@ Function PSQ_DAScale(panelTitle, s)
 			stimset = stimsets[s.headstage]
 
 			sweepsInSet         = IDX_NumberOfSweepsInSet(stimset)
-			passesInSet         = PSQ_NumPassesInSet(numericalValues, PSQ_DA_SCALE, s.sweepNo)
-			acquiredSweepsInSet = PSQ_NumAcquiredSweepsInSet(panelTitle, s.sweepNo)
+			passesInSet         = PSQ_NumPassesInSet(numericalValues, PSQ_DA_SCALE, s.sweepNo, s.headstage)
+			acquiredSweepsInSet = PSQ_NumAcquiredSweepsInSet(panelTitle, s.sweepNo, s.headstage)
+
+			sprintf msg, "Sweep %s, total sweeps %d, acquired sweeps %d, passed sweeps %d, DAScalesIndex %d\r", SelectString(sweepPassed, "failed", "passed"), sweepsInSet, acquiredSweepsInSet, passesInSet, DAScalesIndex[s.headstage]
+			DEBUGPRINT(msg)
 
 			if(!sweepPassed)
 				// not enough sweeps left to pass the set
-				skipToEnd = (sweepsInSet - acquiredSweepsInSet) < (numSweepsPass - passesInSet)
+				if((sweepsInSet - acquiredSweepsInSet) < (numSweepsPass - passesInSet))
+					RA_SkipSweeps(panelTitle, inf)
+					return NaN
+				endif
 			else
 				// sweep passed
 				if(!cmpstr(opMode, PSQ_DS_SUB))
@@ -1153,26 +1163,19 @@ Function PSQ_DAScale(panelTitle, s)
 				endif
 
 				if(passesInSet >= numSweepsPass)
-					skipToEnd = 1
+					RA_SkipSweeps(panelTitle, inf, limitToSetBorder = 1)
+					return NaN
 				else
 					// set next DAScale value
 					DAScalesIndex[s.headstage] += 1
 				endif
 			endif
 
-			sprintf msg, "Sweep %s, total sweeps %d, acquired sweeps %d, passed sweeps %d, skipToEnd %s, DAScalesIndex %d\r", SelectString(sweepPassed, "failed", "passed"), sweepsInSet, acquiredSweepsInSet, passesInSet, SelectString(skiptoEnd, "false", "true"), DAScalesIndex[s.headstage]
-			DEBUGPRINT(msg)
-
-			if(skiptoEnd)
-				RA_SkipSweeps(panelTitle, inf, limitToSetBorder = 1)
-				return NaN
-			endif
-
 			break
 		case POST_SET_EVENT:
 			WAVE numericalValues = GetLBNumericalValues(panelTitle)
 
-			setPassed = PSQ_NumPassesInSet(numericalValues, PSQ_DA_SCALE, s.sweepNo) >= numSweepsPass
+			setPassed = PSQ_NumPassesInSet(numericalValues, PSQ_DA_SCALE, s.sweepNo, s.headstage) >= numSweepsPass
 
 			sprintf msg, "Set has %s\r", SelectString(setPassed, "failed", "passed")
 			DEBUGPRINT(msg)
@@ -1362,6 +1365,8 @@ Function PSQ_SquarePulse(panelTitle, s)
 			PGC_SetAndActivateControl(panelTitle, "Check_DataAcq1_DistribDaq", val = 0)
 			PGC_SetAndActivateControl(panelTitle, "Check_DataAcq1_dDAQOptOv", val = 0)
 			PGC_SetAndActivateControl(panelTitle, "Check_DataAcq1_RepeatAcq", val = 1)
+			PGC_SetAndActivateControl(panelTitle, "Check_DataAcq_Indexing", val = 0)
+			PGC_SetAndActivateControl(panelTitle, "Check_DataAcq1_IndexingLocked", val = 0)
 
 			if(DAG_GetHeadstageMode(panelTitle, s.headstage) != I_CLAMP_MODE)
 				printf "(%s) Clamp mode must be current clamp.\r", panelTitle
@@ -1395,7 +1400,7 @@ Function PSQ_SquarePulse(panelTitle, s)
 			ED_AddEntryToLabnotebook(panelTitle, key, spikeDetection, unit = LABNOTEBOOK_BINARY_UNIT)
 
 			key = PSQ_CreateLBNKey(PSQ_SQUARE_PULSE, PSQ_FMT_LBN_STEPSIZE, query = 1)
-			stepSize = GetLastSettingIndepRAC(numericalValues, s.sweepNo, key, UNKNOWN_MODE)
+			stepSize = GetLastSettingIndepSCI(numericalValues, s.sweepNo, key, s.headstage, UNKNOWN_MODE)
 			DAScale  = GetLastSetting(numericalValues, s.sweepNo, STIMSET_SCALE_FACTOR_KEY, DATA_ACQUISITION_MODE)[s.headstage] * 1e-12
 
 			sweepPassed = 0
@@ -1443,7 +1448,7 @@ Function PSQ_SquarePulse(panelTitle, s)
 		case POST_SET_EVENT:
 			WAVE numericalValues = GetLBNumericalValues(panelTitle)
 
-			setPassed = PSQ_NumPassesInSet(numericalValues, PSQ_SQUARE_PULSE, s.sweepNo) >= 1
+			setPassed = PSQ_NumPassesInSet(numericalValues, PSQ_SQUARE_PULSE, s.sweepNo, s.headstage) >= 1
 
 			sprintf msg, "Set has %s\r", SelectString(setPassed, "failed", "passed")
 			DEBUGPRINT(msg)
@@ -1513,7 +1518,7 @@ Function PSQ_Rheobase(panelTitle, s)
 	string panelTitle
 	STRUCT AnalysisFunction_V3 &s
 
-	variable DAScale, val, numSweeps, currentSweepHasSpike, setPassed
+	variable DAScale, val, numSweeps, currentSweepHasSpike, lastSweepHasSpike, setPassed
 	variable baselineQCPassed, finalDAScale, initialDAScale
 	variable numBaselineChunks, lastFifoPos, totalOnsetDelay, fifoInStimsetPoint, fifoInStimsetTime
 	variable i, ret, numSweepsWithSpikeDetection, sweepNoFound, length, minLength, multiplier
@@ -1533,6 +1538,8 @@ Function PSQ_Rheobase(panelTitle, s)
 			PGC_SetAndActivateControl(panelTitle, "Check_DataAcq1_DistribDaq", val = 0)
 			PGC_SetAndActivateControl(panelTitle, "Check_DataAcq1_dDAQOptOv", val = 0)
 			PGC_SetAndActivateControl(panelTitle, "Check_DataAcq1_RepeatAcq", val = 1)
+			PGC_SetAndActivateControl(panelTitle, "Check_DataAcq_Indexing", val = 0)
+			PGC_SetAndActivateControl(panelTitle, "Check_DataAcq1_IndexingLocked", val = 0)
 
 			if(DAG_GetHeadstageMode(panelTitle, s.headstage) != I_CLAMP_MODE)
 				printf "(%s) Clamp mode must be current clamp.\r", panelTitle
@@ -1599,7 +1606,7 @@ Function PSQ_Rheobase(panelTitle, s)
 			break
 		case POST_SWEEP_EVENT:
 			WAVE numericalValues = GetLBNumericalValues(panelTitle)
-			WAVE sweeps = AFH_GetSweepsFromSameRACycle(numericalValues, s.sweepNo)
+			WAVE sweeps = AFH_GetSweepsFromSameSCI(numericalValues, s.sweepNo, s.headstage)
 
 			numSweeps = DimSize(sweeps, ROWS)
 
@@ -1613,7 +1620,7 @@ Function PSQ_Rheobase(panelTitle, s)
 					ASSERT(IsFinite(finalDAScale) && IsValidSweepNumber(sweepNoFound), "Could not find final DAScale value from previous analysis function")
 				endif
 
-				// and set it as the initial DAScale for this RAC
+				// and set it as the initial DAScale for this SCI
 				Make/FREE/D/N=(LABNOTEBOOK_LAYER_COUNT) result = NaN
 				result[INDEP_HEADSTAGE] = finalDAScale
 				key = PSQ_CreateLBNKey(PSQ_RHEOBASE, PSQ_FMT_LBN_INITIAL_SCALE)
@@ -1641,21 +1648,26 @@ Function PSQ_Rheobase(panelTitle, s)
 			ED_AddEntryToLabnotebook(panelTitle, key, spikeDetection, unit = LABNOTEBOOK_BINARY_UNIT)
 
 			key = PSQ_CreateLBNKey(PSQ_RHEOBASE, PSQ_FMT_LBN_SPIKE_DETECT, query = 1)
-			WAVE spikeDetectionRA = GetLastSettingEachRAC(numericalValues, s.sweepNo, key, s.headstage, UNKNOWN_MODE)
+			WAVE spikeDetectionRA = GetLastSettingEachSCI(numericalValues, s.sweepNo, key, s.headstage, UNKNOWN_MODE)
 
 			numSweepsWithSpikeDetection = DimSize(spikeDetectionRA, ROWS)
 			currentSweepHasSpike        = spikeDetectionRA[numSweepsWithSpikeDetection - 1]
 
-			if(numSweepsWithSpikeDetection >= 2 && currentSweepHasSpike != spikeDetectionRA[numSweepsWithSpikeDetection - 2])
-				// mark the set as passed
-				// we can't mark each sweep as passed/failed as it is not possible
-				// to add LBN entries to other sweeps than the last one
-				Make/FREE/D/N=(LABNOTEBOOK_LAYER_COUNT) result = NaN
-				key = PSQ_CreateLBNKey(PSQ_RHEOBASE, PSQ_FMT_LBN_SET_PASS)
-				result[INDEP_HEADSTAGE] = 1
-				ED_AddEntryToLabnotebook(panelTitle, key, result, unit = LABNOTEBOOK_BINARY_UNIT)
-				RA_SkipSweeps(panelTitle, inf, limitToSetBorder = 1)
-				break
+			if(numSweepsWithSpikeDetection >= 2)
+				lastSweepHasSpike = spikeDetectionRA[numSweepsWithSpikeDetection - 2]
+
+				if(IsFinite(currentSweepHasSpike) && IsFinite(lastSweepHasSpike) \
+				   && (currentSweepHasSpike != lastSweepHasSpike))
+					// mark the set as passed
+					// we can't mark each sweep as passed/failed as it is not possible
+					// to add LBN entries to other sweeps than the last one
+					Make/FREE/D/N=(LABNOTEBOOK_LAYER_COUNT) result = NaN
+					key = PSQ_CreateLBNKey(PSQ_RHEOBASE, PSQ_FMT_LBN_SET_PASS)
+					result[INDEP_HEADSTAGE] = 1
+					ED_AddEntryToLabnotebook(panelTitle, key, result, unit = LABNOTEBOOK_BINARY_UNIT)
+					RA_SkipSweeps(panelTitle, inf, limitToSetBorder = 1)
+					break
+				endif
 			endif
 
 			DAScale = GetLastSetting(numericalValues, s.sweepNo, STIMSET_SCALE_FACTOR_KEY, DATA_ACQUISITION_MODE)[s.headstage] * 1e-12
@@ -1666,7 +1678,7 @@ Function PSQ_Rheobase(panelTitle, s)
 			endif
 
 			key = PSQ_CreateLBNKey(PSQ_RHEOBASE, PSQ_FMT_LBN_INITIAL_SCALE, query = 1)
-			initialDAScale = GetLastSettingIndepRAC(numericalValues, s.sweepNo, key, UNKNOWN_MODE)
+			initialDAScale = GetLastSettingIndepSCI(numericalValues, s.sweepNo, key, s.headstage, UNKNOWN_MODE)
 
 			if(abs(DAScale - initialDAScale) >= PSQ_RB_MAX_DASCALE_DIFF)
 				// mark set as failure
@@ -1681,7 +1693,7 @@ Function PSQ_Rheobase(panelTitle, s)
 				key = PSQ_CreateLBNKey(PSQ_RHEOBASE, PSQ_FMT_LBN_RB_DASCALE_EXC)
 				ED_AddEntryToLabnotebook(panelTitle, key, result, unit = LABNOTEBOOK_BINARY_UNIT)
 
-				RA_SkipSweeps(panelTitle, inf, limitToSetBorder = 1)
+				RA_SkipSweeps(panelTitle, inf)
 				break
 			endif
 
@@ -1690,7 +1702,7 @@ Function PSQ_Rheobase(panelTitle, s)
 		case POST_SET_EVENT:
 			WAVE numericalValues = GetLBNumericalValues(panelTitle)
 			key = PSQ_CreateLBNKey(PSQ_RHEOBASE, PSQ_FMT_LBN_SET_PASS, query = 1)
-			setPassed = GetLastSettingIndepRAC(numericalValues, s.sweepNo, key, UNKNOWN_MODE)
+			setPassed = GetLastSettingIndepSCI(numericalValues, s.sweepNo, key, s.headstage, UNKNOWN_MODE)
 
 			// if we don't have an entry yet for the set passing, it has failed
 			if(!IsFinite(setPassed))
@@ -1701,7 +1713,7 @@ Function PSQ_Rheobase(panelTitle, s)
 			endif
 
 			key = PSQ_CreateLBNKey(PSQ_RHEOBASE, PSQ_FMT_LBN_RB_DASCALE_EXC, query = 1)
-			WAVE/Z rangeExceeded = GetLastSettingRAC(numericalValues, s.sweepNo, key, UNKNOWN_MODE)
+			WAVE/Z rangeExceeded = GetLastSettingSCI(numericalValues, s.sweepNo, key, s.headstage, UNKNOWN_MODE)
 
 			if(!WaveExists(rangeExceeded))
 				Make/FREE/D/N=(LABNOTEBOOK_LAYER_COUNT) result = NaN
@@ -1846,7 +1858,7 @@ Function PSQ_Ramp(panelTitle, s)
 	variable baselineQCPassed, finalDAScale, initialDAScale
 	variable numBaselineChunks, lastFifoPos, totalOnsetDelay, fifoInStimsetPoint, fifoInStimsetTime
 	variable i, ret, numSweepsWithSpikeDetection, sweepNoFound, length, minLength
-	variable DAC, sweepPassed, sweepsInSet, passesInSet, acquiredSweepsInSet, skipToEnd, enoughSpikesFound
+	variable DAC, sweepPassed, sweepsInSet, passesInSet, acquiredSweepsInSet, enoughSpikesFound
 	variable pulseStart, pulseDuration, fifoPos, fifoOffset, numberOfSpikes, multiplier
 	string key, msg, stimset
 
@@ -1866,6 +1878,8 @@ Function PSQ_Ramp(panelTitle, s)
 			PGC_SetAndActivateControl(panelTitle, "Check_DataAcq1_DistribDaq", val = 0)
 			PGC_SetAndActivateControl(panelTitle, "Check_DataAcq1_dDAQOptOv", val = 0)
 			PGC_SetAndActivateControl(panelTitle, "Check_DataAcq1_RepeatAcq", val = 1)
+			PGC_SetAndActivateControl(panelTitle, "Check_DataAcq_Indexing", val = 0)
+			PGC_SetAndActivateControl(panelTitle, "Check_DataAcq1_IndexingLocked", val = 0)
 
 			if(DAG_GetHeadstageMode(panelTitle, s.headstage) != I_CLAMP_MODE)
 				printf "(%s) Clamp mode must be current clamp.\r", panelTitle
@@ -1936,30 +1950,28 @@ Function PSQ_Ramp(panelTitle, s)
 			stimset = stimsets[s.headstage]
 
 			sweepsInSet         = IDX_NumberOfSweepsInSet(stimset)
-			passesInSet         = PSQ_NumPassesInSet(numericalValues, PSQ_RAMP, s.sweepNo)
-			acquiredSweepsInSet = PSQ_NumAcquiredSweepsInSet(panelTitle, s.sweepNo)
+			passesInSet         = PSQ_NumPassesInSet(numericalValues, PSQ_RAMP, s.sweepNo, s.headstage)
+			acquiredSweepsInSet = PSQ_NumAcquiredSweepsInSet(panelTitle, s.sweepNo, s.headstage)
 
 			if(!sweepPassed)
 				// not enough sweeps left to pass the set
-				skipToEnd = (sweepsInSet - acquiredSweepsInSet) < (PSQ_RA_NUM_SWEEPS_PASS - passesInSet)
+				if((sweepsInSet - acquiredSweepsInSet) < (PSQ_RA_NUM_SWEEPS_PASS - passesInSet))
+					RA_SkipSweeps(panelTitle, inf)
+				endif
 			else
 				if(passesInSet >= PSQ_RA_NUM_SWEEPS_PASS)
-					skipToEnd = 1
+					RA_SkipSweeps(panelTitle, inf, limitToSetBorder = 1)
 				endif
 			endif
 
-			sprintf msg, "Sweep %s, total sweeps %d, acquired sweeps %d, passed sweeps %d, skipToEnd %s\r", SelectString(sweepPassed, "failed", "passed"), sweepsInSet, acquiredSweepsInSet, passesInSet, SelectString(skiptoEnd, "false", "true")
+			sprintf msg, "Sweep %s, total sweeps %d, acquired sweeps %d, passed sweeps %d\r", SelectString(sweepPassed, "failed", "passed"), sweepsInSet, acquiredSweepsInSet, passesInSet
 			DEBUGPRINT(msg)
-
-			if(skiptoEnd)
-				RA_SkipSweeps(panelTitle, inf, limitToSetBorder = 1)
-			endif
 
 			break
 		case POST_SET_EVENT:
 			WAVE numericalValues = GetLBNumericalValues(panelTitle)
 
-			setPassed = PSQ_NumPassesInSet(numericalValues, PSQ_RAMP, s.sweepNo) >= PSQ_RA_NUM_SWEEPS_PASS
+			setPassed = PSQ_NumPassesInSet(numericalValues, PSQ_RAMP, s.sweepNo, s.headstage) >= PSQ_RA_NUM_SWEEPS_PASS
 
 			sprintf msg, "Set has %s\r", SelectString(setPassed, "failed", "passed")
 			DEBUGPRINT(msg)

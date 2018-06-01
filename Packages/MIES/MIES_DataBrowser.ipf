@@ -248,7 +248,11 @@ Function DB_UpdateSweepPlot(win, [dummyArg])
 	WAVE/Z sweepsToOverlay = OVS_GetSelectedSweeps(win, OVS_SWEEP_SELECTION_SWEEPNO)
 
 	if(!WaveExists(sweepsToOverlay))
-		Make/FREE/N=1 sweepsToOverlay = GetSetVariable(scPanel, "setvar_SweepControl_SweepNo")
+		if(GetCheckBoxState(bsPanel, "check_BrowserSettings_OVS"))
+			return NaN
+		else
+			Make/FREE/N=1 sweepsToOverlay = GetSetVariable(scPanel, "setvar_SweepControl_SweepNo")
+		endif
 	endif
 
 	WAVE axisLabelCache = GetAxisLabelCacheWave()
