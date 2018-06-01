@@ -813,8 +813,11 @@ static Function/WAVE PSQ_SearchForSpikes(panelTitle, type, sweepWave, headstage,
 
 			if(!ParamIsDefault(spikePositions))
 				ASSERT(WaveExists(spikePositions), "Wave spikePositions must exist")
-				Redimension/D/N=(numberOfSpikes) spikePositions
-				spikePositions[] = crossings[p]
+				Redimension/D/N=(V_LevelsFound) spikePositions
+
+				if(!V_flag && V_LevelsFound > 0)
+					spikePositions[] = crossings[p]
+				endif
 			endif
 		else
 			ASSERT(0, "Invalid number of spikes value")
