@@ -163,6 +163,7 @@ static Function PS_RA_Test1()
 	key = PSQ_CreateLBNKey(PSQ_RAMP, PSQ_FMT_LBN_PULSE_DUR, query = 1)
 	WAVE/Z durations = GetLastSetting(numericalValues, sweeps[0], key, UNKNOWN_MODE)
 	CHECK_EQUAL_WAVES(durations, {15000, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN}, mode = WAVE_DATA, tol = 1)
+	EnsureNoAnaFuncErrors()
 End
 
 // we don't test the BL QC code path here anymore
@@ -216,6 +217,7 @@ static Function PS_RA_Test2()
 	key = PSQ_CreateLBNKey(PSQ_RAMP, PSQ_FMT_LBN_PULSE_DUR, query = 1)
 	WAVE/Z durations = GetLastSetting(numericalValues, sweeps[0], key, UNKNOWN_MODE)
 	CHECK_EQUAL_WAVES(durations, {15000, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN}, mode = WAVE_DATA, tol = 1)
+	EnsureNoAnaFuncErrors()
 End
 
 static Function PS_RA_Run3()
@@ -273,6 +275,7 @@ static Function PS_RA_Test3()
 
 	WAVE durations = GetLastSetting(numericalValues, sweeps[2], key, UNKNOWN_MODE)
 	CHECK(durations[0] > 10000 - PSQ_RA_BL_EVAL_RANGE && durations[0] < 10000)
+	EnsureNoAnaFuncErrors()
 End
 
 static Function PS_RA_Run4()
@@ -324,6 +327,7 @@ static Function PS_RA_Test4()
 	key = PSQ_CreateLBNKey(PSQ_RAMP, PSQ_FMT_LBN_PULSE_DUR, query = 1)
 	WAVE durations = GetLastSetting(numericalValues, sweeps[0], key, UNKNOWN_MODE)
 	CHECK(durations[0] > 10000 - PSQ_RA_BL_EVAL_RANGE && durations[0] < 10000)
+	EnsureNoAnaFuncErrors()
 End
 
 static Function PS_RA_Run5()
@@ -381,6 +385,7 @@ static Function PS_RA_Test5()
 
 	WAVE durations = GetLastSetting(numericalValues, sweeps[2], key, UNKNOWN_MODE)
 	CHECK(durations[0] > 10000 - PSQ_RA_BL_EVAL_RANGE && durations[0] < 10000)
+	EnsureNoAnaFuncErrors()
 End
 
 static Function PS_RA_Run6()
@@ -438,4 +443,5 @@ static Function PS_RA_Test6()
 
 	WAVE durations = GetLastSetting(numericalValues, sweeps[2], key, UNKNOWN_MODE)
 	CHECK(durations[0] > 10000 - PSQ_RA_BL_EVAL_RANGE && durations[0] < 10000)
+	EnsureNoAnaFuncErrors()
 End

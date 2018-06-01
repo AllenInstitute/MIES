@@ -127,6 +127,9 @@ Function AFM_CallAnalysisFunctions(panelTitle, eventType)
 			error = GetRTError(1)
 			printf "The analysis function %s aborted with error \"%s\", this is dangerous and must *not* happen!\r", func, msg
 
+			NVAR errorCounter = $GetAnalysisFuncErrorCounter(panelTitle)
+			errorCounter += 1
+
 			// abort early
 			if(eventType == PRE_DAQ_EVENT)
 				ret = 1

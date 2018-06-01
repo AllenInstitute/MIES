@@ -436,3 +436,12 @@ Function/S GetHistoryRefNumber()
 
 	return GetNVARAsString(GetNWBFolder(), "histRefNumber", initialValue = NaN)
 End
+
+/// @brief Return the error counter for the analysis function management
+///
+/// Mainly used during testing to ensure that no RTE was thrown.
+Function/S GetAnalysisFuncErrorCounter(panelTitle)
+	string panelTitle
+
+	return GetNVARAsString(GetDevicePath(panelTitle), "analysisFunctionErrorCounter", initialValue = 0)
+End
