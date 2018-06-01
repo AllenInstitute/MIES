@@ -595,11 +595,7 @@ Function IDX_UnlockedIndexingStepNo(panelTitle, channelNo, DAorTTL, count)
 	TotalListSteps = IDX_TotalIndexingListSteps(panelTitle, channelNo, DAorTTL)
 	ASSERT(TotalListSteps > 0, "Expected strictly positive value")
 
-	do // do loop resets count if the the count has cycled through the total list steps
-		if(count >= TotalListSteps)
-		count -= totalListsteps
-		endif
-	while(count >= totalListSteps)
+	count = mod(count, totalListSTeps)
 
 	i = 0
 	
@@ -660,13 +656,9 @@ static Function IDX_DetIfCountIsAtSetBorder(panelTitle, count, channelNumber, DA
 	WAVE stimsets = IDX_GetStimsets(panelTitle, channelNumber, DAorTTL)
 	TotalListSteps = IDX_TotalIndexingListSteps(panelTitle, ChannelNumber, DAorTTL)
 	ASSERT(TotalListSteps > 0, "Expected strictly positive value")
-		
-	do
-		if(count>TotalListSteps)
-			count-=totalListsteps
-		endif
-	while(count>totalListSteps)
-		
+
+	count = (mod(count, totalListSteps) == 0 ? totalListSteps : mod(count, totalListSTeps))
+
 	if(DAIndexingStorageWave[0][ChannelNumber]<DAIndexingStorageWave[1][ChannelNumber])
 		i=0
 		if(DAorTTL==0)//DA channel
