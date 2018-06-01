@@ -75,6 +75,10 @@ Function run()
 	list = AddListItem("Test_RepeatSets_2", list, ";", INF)
 	list = AddListItem("DAQ_RepeatSets_3", list, ";", INF)
 	list = AddListItem("Test_RepeatSets_3", list, ";", INF)
+	list = AddListItem("DAQ_RepeatSets_4", list, ";", INF)
+	list = AddListItem("Test_RepeatSets_4", list, ";", INF)
+	list = AddListItem("DAQ_RepeatSets_5", list, ";", INF)
+	list = AddListItem("Test_RepeatSets_5", list, ";", INF)
 
 #endif
 
