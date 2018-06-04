@@ -232,8 +232,7 @@ Function RA_Counter(panelTitle)
 		endif
 
 		if(!indexingLocked)
-			IDX_ApplyUnLockedIndexing(panelTitle, count, 0)
-			IDX_ApplyUnLockedIndexing(panelTitle, count, 1)
+			IDX_ApplyUnLockedIndexing(panelTitle, count)
 		endif
 	endif
 
@@ -361,8 +360,7 @@ Function RA_CounterMD(panelTitle)
 
 		if(!indexingLocked)
 			// indexing is not locked = channel indexes when set has completed all its steps
-			IDX_ApplyUnLockedIndexing(panelTitle, count, 0)
-			IDX_ApplyUnLockedIndexing(panelTitle, count, 1)
+			IDX_ApplyUnLockedIndexing(panelTitle, count)
 		endif
 	endif
 
@@ -390,8 +388,7 @@ Function RA_CounterMD(panelTitle)
 
 				if(!indexingLocked)
 					// channel indexes when set has completed all its steps
-					IDX_ApplyUnLockedIndexing(followerPanelTitle, count, 0)
-					IDX_ApplyUnLockedIndexing(followerPanelTitle, count, 1)
+					IDX_ApplyUnLockedIndexing(followerPanelTitle, count)
 				endif
 			endif
 		endfor

@@ -500,29 +500,36 @@ Function IDX_NumberOfSweepsInSet(setName)
 	return max(1, DimSize(wv, COLS))
 End
 
-Function IDX_ApplyUnLockedIndexing(panelTitle, count, DAorTTL)
+Function IDX_ApplyUnLockedIndexing(panelTitle, count)
 	string panelTitle
-	variable count, DAorTTL
+	variable count
 
 	variable i, update
 
-	if(DAorTTL == 0)
-		WAVE status = DAG_GetChannelState(panelTitle, CHANNEL_TYPE_DAC)
-	elseif(DAorTTL == 1)
-		WAVE status = DAG_GetChannelState(panelTitle, CHANNEL_TYPE_TTL)
-	else
-		ASSERT(0, "Invalid value")
-	endif
+	WAVE statusDA = DAG_GetChannelState(panelTitle, CHANNEL_TYPE_DAC)
+	WAVE statusTTL = DAG_GetChannelState(panelTitle, CHANNEL_TYPE_TTL)
 
 	for(i = 0; i < NUM_DA_TTL_CHANNELS; i += 1)
 
-		if(!status[i])
+		if(!statusDA[i])
 			continue
 		endif
 
-		if(IDX_DetIfCountIsAtSetBorder(panelTitle, count, i, DAorTTL) == 1)
+		if(IDX_DetIfCountIsAtSetBorder(panelTitle, count, i, CHANNEL_TYPE_DAC) == 1)
 			update = 1
-			IDX_IndexSingleChannel(panelTitle, DAorTTL, i)
+			IDX_IndexSingleChannel(panelTitle, CHANNEL_TYPE_DAC, i)
+		endif
+	endfor
+
+	for(i = 0; i < NUM_DA_TTL_CHANNELS; i += 1)
+
+		if(!statusTTL[i])
+			continue
+		endif
+
+		if(IDX_DetIfCountIsAtSetBorder(panelTitle, count, i, CHANNEL_TYPE_TTL) == 1)
+			update = 1
+			IDX_IndexSingleChannel(panelTitle, CHANNEL_TYPE_TTL, i)
 		endif
 	endfor
 
