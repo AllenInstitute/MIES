@@ -2538,7 +2538,7 @@ Function AddTraceToLBGraph(graph, keys, values, key)
 		ModifyGraph/W=$graph userData($trace)={key, 0, key}
 
 		GetTraceColor(i, red, green, blue)
-		ModifyGraph/W=$graph rgb($trace)=(red, green, blue)
+		ModifyGraph/W=$graph rgb($trace)=(red, green, blue), marker($trace)=i
 		SetAxis/W=$graph/A=2 $axis
 	endfor
 
