@@ -112,6 +112,7 @@ static Function InitTestStructure(t)
 	Make/FREE/N=(t.numSweeps) t.setCycleCount_HS0, t.setCycleCount_HS1
 	Make/FREE/N=(t.numSweeps) t.stimsetCycleID_HS0, t.stimsetCycleID_HS1
 End
+
 static Function AllTests(t)
 	STRUCT TestSettings &t
 
@@ -544,6 +545,81 @@ Function Test_RepeatSets_3()
 	t.sweepCount_HS1             = {0, 1, 0, 1, 0, 1, 0, 1, 2, 0, 1, 2}
 	t.setCycleCount_HS1          = {0, 0, 1, 1, 2, 2, 0, 0, 0, 1, 1, 1}
 	t.stimsetCycleID_HS1[]       = {0, 0, 1, 1, 2, 2, 3, 3, 3, 4, 4, 4}
+
+	AllTests(t)
+End
+
+Function SwitchIndexingOrder()
+	PGC_SetAndActivateControl(DEVICE, GetPanelControl(0, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_Index_End), val = GetStimSet("StimulusSetA_DA_0") + 1)
+	PGC_SetAndActivateControl(DEVICE, GetPanelControl(0, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_Wave), val = GetStimSet("StimulusSetB_DA_0") + 1)
+	PGC_SetAndActivateControl(DEVICE, GetPanelControl(1, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_Index_End), val = GetStimSet("StimulusSetC_DA_0") + 1)
+	PGC_SetAndActivateControl(DEVICE, GetPanelControl(1, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_Wave), val = GetStimSet("StimulusSetD_DA_0") + 1)
+End
+
+Function DAQ_RepeatSets_4()
+
+	STRUCT DAQSettings s
+	InitDAQSettingsFromString(s, "DAQ_MD1_RA1_IDX1_LIDX1_BKG_1_RES_2")
+	AcquireData(s, preAcquireFunc = SwitchIndexingOrder)
+End
+
+Function Test_RepeatSets_4()
+
+	STRUCT TestSettings t
+
+	t.numSweeps     = 12
+	t.sweepWaveType = FLOAT_WAVE
+
+	InitTestStructure(t)
+
+	t.acquiredStimSets_HS0[0,5]  = "StimulusSetB_DA_0"
+	t.acquiredStimSets_HS0[6,11] = "StimulusSetA_DA_0"
+	t.sweepCount_HS0             = {0, 0, 0, 0, 0, 0, 0, 1, 2, 0, 1, 2}
+	t.setCycleCount_HS0          = {0, 1, 2, 3, 4, 5, 0, 0, 0, 1, 1, 1}
+	t.stimsetCycleID_HS0         = {2, 3, 4, 5, 6, 7, 0, 0, 0, 1, 1, 1}
+
+	t.acquiredStimSets_HS1[0,5]  = "StimulusSetD_DA_0"
+	t.acquiredStimSets_HS1[6,11] = "StimulusSetC_DA_0"
+	t.sweepCount_HS1             = {0, 1, 2, 0, 1, 2, 0, 1, 0, 1, 0, 1}
+	t.setCycleCount_HS1          = {0, 0, 0, 1, 1, 1, 0, 0, 1, 1, 2, 2}
+	t.stimsetCycleID_HS1         = {3, 3, 3, 4, 4, 4, 0, 0, 1, 1, 2, 2}
+
+	AllTests(t)
+End
+
+Function DAQ_RepeatSets_5()
+
+	STRUCT DAQSettings s
+	InitDAQSettingsFromString(s, "DAQ_MD1_RA1_IDX1_LIDX0_BKG_1_RES_2")
+	AcquireData(s, preAcquireFunc = SwitchIndexingOrder)
+End
+
+Function Test_RepeatSets_5()
+
+	STRUCT TestSettings t
+
+	t.numSweeps     = 10
+	t.sweepWaveType = FLOAT_WAVE
+
+	InitTestStructure(t)
+
+	t.acquiredStimSets_HS0[0]   = "StimulusSetB_DA_0"
+	t.acquiredStimSets_HS0[1,3] = "StimulusSetA_DA_0"
+	t.acquiredStimSets_HS0[4]   = "StimulusSetB_DA_0"
+	t.acquiredStimSets_HS0[5,7] = "StimulusSetA_DA_0"
+	t.acquiredStimSets_HS0[8]   = "StimulusSetB_DA_0"
+	t.acquiredStimSets_HS0[9]   = "StimulusSetA_DA_0"
+	t.sweepCount_HS0            = {0, 0, 1, 2, 0, 0, 1, 2, 0, 0}
+	t.setCycleCount_HS0         = 0
+	t.stimsetCycleID_HS0[]      = {0, 1, 1, 1, 2, 3, 3, 3, 4, 5}
+
+	t.acquiredStimSets_HS1[0,2] = "StimulusSetD_DA_0"
+	t.acquiredStimSets_HS1[3,4] = "StimulusSetC_DA_0"
+	t.acquiredStimSets_HS1[5,7] = "StimulusSetD_DA_0"
+	t.acquiredStimSets_HS1[8,9] = "StimulusSetC_DA_0"
+	t.sweepCount_HS1            = {0, 1, 2, 0, 1, 0, 1, 2, 0, 1}
+	t.setCycleCount_HS1         = 0
+	t.stimsetCycleID_HS1[]      = {0, 0, 0, 1, 1, 2, 2, 2, 3, 3}
 
 	AllTests(t)
 End
