@@ -2572,7 +2572,7 @@ Function AddTraceToLBGraph(graph, keys, values, key)
 				continue
 			endif
 
-			Tag/W=$graph/F=0/L=0/X=0.00/Y=0.00 $trace, i, RemoveEnding(tagString, "\r")
+			Tag/W=$graph/F=0/L=0/X=0.00/Y=0.00/O=90 $trace, i, RemoveEnding(tagString, "\r")
 		endfor
 	endif
 
