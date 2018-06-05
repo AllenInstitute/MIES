@@ -555,14 +555,14 @@ static Function IDX_TotalIndexingListSteps(panelTitle, ChannelNumber, DAorTTL)
 	if(DAIndexingStorageWave[0][ChannelNumber]>DAIndexingStorageWave[1][ChannelNumber])
 		if(DAorTTL==0)
 			do
-				totalListSteps += IDX_NumberOfSweepsInSet(IDX_GetSingleStimset(stimsets, DAIndexingStorageWave[0][channelNumber] + i))
+				totalListSteps += IDX_NumberOfSweepsInSet(IDX_GetSingleStimset(stimsets, DAIndexingStorageWave[1][channelNumber] + i))
 				i+=1
 			while( (i + DAIndexingStorageWave[1][ChannelNumber]) <= DAIndexingStorageWave[0][ChannelNumber] )
 		endif
 
 		if(DAorTTL==1)
 			do
-				totalListSteps += IDX_NumberOfSweepsInSet(IDX_GetSingleStimset(stimsets, TTLIndexingStorageWave[0][channelNumber] + i))
+				totalListSteps += IDX_NumberOfSweepsInSet(IDX_GetSingleStimset(stimsets, TTLIndexingStorageWave[1][channelNumber] + i))
 				i+=1
 			while( (i + TTLIndexingStorageWave[1][ChannelNumber]) <= TTLIndexingStorageWave[0][ChannelNumber] )
 		endif
