@@ -266,8 +266,7 @@ Function ValidFunc_V3(panelTitle, s)
 	// the next sweep can not exist
 	CHECK(!WaveExists(GetSweepWave(panelTitle, s.sweepNo + 1)))
 
-	// the generic event is never sent to analysis functions
-	CHECK(s.eventType >= 0 && s.eventType < TOTAL_NUM_EVENTS - 1)
+	CHECK(s.eventType >= 0 && s.eventType < TOTAL_NUM_EVENTS && s.eventType != GENERIC_EVENT)
 	CHECK(s.eventType >= 0 && s.eventType < DimSize(anaFuncTracker, ROWS))
 	anaFuncTracker[s.eventType] += 1
 End
@@ -282,8 +281,7 @@ Function Params1_V3(panelTitle, s)
 
 	WAVE anaFuncTracker = TrackAnalysisFunctionCalls()
 
-	// the generic event is never sent to analysis functions
-	CHECK(s.eventType >= 0 && s.eventType < TOTAL_NUM_EVENTS - 1)
+	CHECK(s.eventType >= 0 && s.eventType < TOTAL_NUM_EVENTS && s.eventType != GENERIC_EVENT)
 	CHECK(s.eventType >= 0 && s.eventType < DimSize(anaFuncTracker, ROWS))
 	anaFuncTracker[s.eventType] += 1
 End
@@ -298,8 +296,7 @@ Function Params2_V3(panelTitle, s)
 
 	WAVE anaFuncTracker = TrackAnalysisFunctionCalls()
 
-	// the generic event is never sent to analysis functions
-	CHECK(s.eventType >= 0 && s.eventType < TOTAL_NUM_EVENTS - 1)
+	CHECK(s.eventType >= 0 && s.eventType < TOTAL_NUM_EVENTS && s.eventType != GENERIC_EVENT)
 	CHECK(s.eventType >= 0 && s.eventType < DimSize(anaFuncTracker, ROWS))
 	anaFuncTracker[s.eventType] += 1
 End
@@ -314,8 +311,7 @@ Function Params3_V3(panelTitle, s)
 
 	WAVE anaFuncTracker = TrackAnalysisFunctionCalls()
 
-	// the generic event is never sent to analysis functions
-	CHECK(s.eventType >= 0 && s.eventType < TOTAL_NUM_EVENTS - 1)
+	CHECK(s.eventType >= 0 && s.eventType < TOTAL_NUM_EVENTS && s.eventType != GENERIC_EVENT)
 	CHECK(s.eventType >= 0 && s.eventType < DimSize(anaFuncTracker, ROWS))
 	anaFuncTracker[s.eventType] += 1
 End
@@ -330,8 +326,7 @@ Function Params4_V3(panelTitle, s)
 
 	WAVE anaFuncTracker = TrackAnalysisFunctionCalls()
 
-	// the generic event is never sent to analysis functions
-	CHECK(s.eventType >= 0 && s.eventType < TOTAL_NUM_EVENTS - 1)
+	CHECK(s.eventType >= 0 && s.eventType < TOTAL_NUM_EVENTS && s.eventType != GENERIC_EVENT)
 	CHECK(s.eventType >= 0 && s.eventType < DimSize(anaFuncTracker, ROWS))
 	anaFuncTracker[s.eventType] += 1
 End
