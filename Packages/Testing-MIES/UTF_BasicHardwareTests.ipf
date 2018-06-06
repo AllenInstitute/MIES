@@ -3,18 +3,54 @@
 
 /// @file UTF_BasicHardWareTests.ipf Implement some basic tests using the ITC hardware.
 
+static Function SetAnalysisFunctions_IGNORE()
+
+	WAVE/T wv = root:MIES:WaveBuilder:SavedStimulusSetParameters:DA:WPT_StimulusSetA_DA_0
+
+	wv[][%Set] = ""
+	wv[%$"Analysis function (generic)"][%Set] = "TrackSweepCount_V3"
+
+	WAVE/T wv = root:MIES:WaveBuilder:SavedStimulusSetParameters:DA:WPT_StimulusSetB_DA_0
+
+	wv[][%Set] = ""
+	wv[%$"Analysis function (generic)"][%Set] = "TrackSweepCount_V3"
+
+	WAVE/T wv = root:MIES:WaveBuilder:SavedStimulusSetParameters:DA:WPT_StimulusSetC_DA_0
+
+	wv[][%Set] = ""
+	wv[%$"Analysis function (generic)"][%Set] = "TrackSweepCount_V3"
+
+	WAVE/T wv = root:MIES:WaveBuilder:SavedStimulusSetParameters:DA:WPT_StimulusSetD_DA_0
+
+	wv[][%Set] = ""
+	wv[%$"Analysis function (generic)"][%Set] = "TrackSweepCount_V3"
+End
+
 /// @brief Acquire data with the given DAQSettings
-static Function AcquireData(s, [postInitializeFunc, preAcquireFunc])
+static Function AcquireData(s, [postInitializeFunc, preAcquireFunc, setAnalysisFuncs])
 	STRUCT DAQSettings& s
 	FUNCREF CALLABLE_PROTO postInitializeFunc, preAcquireFunc
+	variable setAnalysisFuncs
 
 	string unlockedPanelTitle, devices, device
 	variable i, numEntries
+
+	KillOrMoveToTrash(wv = GetTrackSweepCounts())
 
 	Initialize_IGNORE()
 
 	if(!ParamIsDefault(postInitializeFunc))
 		postInitializeFunc()
+	endif
+
+	if(ParamIsDefault(setAnalysisFuncs))
+		setAnalysisFuncs = 0
+	else
+		setAnalysisFuncs = !!setAnalysisFuncs
+	endif
+
+	if(setAnalysisFuncs)
+		SetAnalysisFunctions_IGNORE()
 	endif
 
 	devices = GetDevices()
@@ -101,6 +137,8 @@ static Structure TestSettings
 	WAVE sweepCount_HS0, sweepCount_HS1
 	WAVE setCycleCount_HS0, setCycleCount_HS1
 	WAVE stimsetCycleID_HS0, stimsetCycleID_HS1
+	// store the sweep count where a event was fired
+	WAVE events_HS0, events_HS1
 EndStructure
 
 static Function InitTestStructure(t)
@@ -111,6 +149,7 @@ static Function InitTestStructure(t)
 	Make/FREE/N=(t.numSweeps) t.sweepCount_HS0, t.sweepCount_HS1
 	Make/FREE/N=(t.numSweeps) t.setCycleCount_HS0, t.setCycleCount_HS1
 	Make/FREE/N=(t.numSweeps) t.stimsetCycleID_HS0, t.stimsetCycleID_HS1
+	Make/FREE/N=(t.numSweeps, TOTAL_NUM_EVENTS) t.events_HS0 = NaN, t.events_HS1 = NaN
 End
 
 static Function AllTests(t)
@@ -134,6 +173,7 @@ static Function AllTests(t)
 
 		WAVE/T textualValues   = GetLBTextualValues(device)
 		WAVE   numericalValues = GetLBNumericalValues(device)
+		WAVE anaFuncSweepTracker = GetTrackSweepCounts()
 
 		for(j = 0; j < t.numSweeps; j += 1)
 			WAVE/Z sweep  = $StringFromList(j, sweeps)
@@ -207,15 +247,84 @@ static Function AllTests(t)
 			WAVE sciSweeps = AFH_GetSweepsFromSameSCI(numericalValues, j, 1)
 			Extract/FREE/INDX t.stimsetCycleID_HS1, indizes, t.stimsetCycleID_HS1 == t.stimsetCycleID_HS1[j]
 			CHECK_EQUAL_WAVES(sciSweeps, indizes, mode = WAVE_DATA)
+
+			Duplicate/FREE/RMD=[j][][0] anaFuncSweepTracker, actualEvents_HS0
+			Duplicate/FREE/RMD=[j][] t.events_HS0, refEvents_HS0
+			Redimension/E=1/N=(TOTAL_NUM_EVENTS) refEvents_HS0, actualEvents_HS0
+
+			CHECK_EQUAL_WAVES(refEvents_HS0, actualEvents_HS0, mode = WAVE_DATA)
+
+			Duplicate/FREE/RMD=[j][][1] anaFuncSweepTracker, actualEvents_HS1
+			Duplicate/FREE/RMD=[j][] t.events_HS1, refEvents_HS1
+			Redimension/E=1/N=(TOTAL_NUM_EVENTS) refEvents_HS1, actualEvents_HS1
+
+			CHECK_EQUAL_WAVES(refEvents_HS1, actualEvents_HS1, mode = WAVE_DATA)
 		endfor
 	endfor
+End
+
+/// @brief Track at which sweep count an analysis function was called.
+Function/WAVE GetTrackSweepCounts()
+
+	variable i
+
+	DFREF dfr = root:
+	WAVE/Z/SDFR=dfr wv = anaFuncSweepTracker
+
+	if(WaveExists(wv))
+		return wv
+	else
+		Make/N=(100, TOTAL_NUM_EVENTS, 2) dfr:anaFuncSweepTracker/WAVE=wv
+	endif
+
+	for(i = 0; i < TOTAL_NUM_EVENTS; i += 1)
+		SetDimLabel COLS, i, $StringFromList(i, EVENT_NAME_LIST), wv
+	endfor
+
+	wv = NaN
+
+	return wv
+End
+
+Function Events_Common(t)
+	STRUCT TestSettings &t
+
+	// pre DAQ at sweep 0
+	t.events_HS0[0][PRE_DAQ_EVENT] = 0
+	t.events_HS1[0][PRE_DAQ_EVENT] = 0
+
+	// post DAQ at the last sweep
+	t.events_HS0[t.numSweeps - 1][POST_DAQ_EVENT] = t.numSweeps - 1
+	t.events_HS1[t.numSweeps - 1][POST_DAQ_EVENT] = t.numSweeps - 1
+
+	// pre/post sweep always
+	t.events_HS0[][PRE_SWEEP_EVENT] = p
+	t.events_HS1[][PRE_SWEEP_EVENT] = p
+
+	t.events_HS0[][POST_SWEEP_EVENT] = p
+	t.events_HS1[][POST_SWEEP_EVENT] = p
+End
+
+Function Events_MD0_RA0_IDX0_LIDX0_BKG_0(t)
+	STRUCT TestSettings &t
+
+	variable sweepNo
+
+	Events_Common(t)
+
+	sweepNo = 0
+	t.events_HS0[sweepNo][PRE_SET_EVENT]    = sweepNo
+	t.events_HS0[sweepNo][POST_SET_EVENT]   = NaN
+
+	t.events_HS1[sweepNo][PRE_SET_EVENT]    = sweepNo
+	t.events_HS1[sweepNo][POST_SET_EVENT]   = NaN
 End
 
 Function DAQ_MD0_RA0_IDX0_LIDX0_BKG_0()
 
 	STRUCT DAQSettings s
 	InitSettings(s)
-	AcquireData(s)
+	AcquireData(s, setAnalysisFuncs = 1)
 End
 
 Function Test_MD0_RA0_IDX0_LIDX0_BKG_0()
@@ -226,6 +335,7 @@ Function Test_MD0_RA0_IDX0_LIDX0_BKG_0()
 	t.sweepWaveType    = FLOAT_WAVE
 
 	InitTestStructure(t)
+	Events_MD0_RA0_IDX0_LIDX0_BKG_0(t)
 
 	t.acquiredStimSets_HS0[] = "StimulusSetA_DA_0"
 	t.sweepCount_HS0[]       = 0
@@ -240,11 +350,17 @@ Function Test_MD0_RA0_IDX0_LIDX0_BKG_0()
 	AllTests(t)
 End
 
+Function Events_MD1_RA0_IDX0_LIDX0_BKG_1(t)
+	STRUCT TestSettings &t
+
+	Events_MD0_RA0_IDX0_LIDX0_BKG_0(t)
+End
+
 Function DAQ_MD1_RA0_IDX0_LIDX0_BKG_1()
 
 	STRUCT DAQSettings s
 	InitSettings(s)
-	AcquireData(s)
+	AcquireData(s, setAnalysisFuncs = 1)
 End
 
 Function Test_MD1_RA0_IDX0_LIDX0_BKG_1()
@@ -255,6 +371,7 @@ Function Test_MD1_RA0_IDX0_LIDX0_BKG_1()
 	t.sweepWaveType = FLOAT_WAVE
 
 	InitTestStructure(t)
+	Events_MD1_RA0_IDX0_LIDX0_BKG_1(t)
 
 	t.acquiredStimSets_HS0[] = "StimulusSetA_DA_0"
 	t.sweepCount_HS0[]       = 0
@@ -269,11 +386,40 @@ Function Test_MD1_RA0_IDX0_LIDX0_BKG_1()
 	AllTests(t)
 End
 
+Function Events_MD0_RA1_IDX0_LIDX0_BKG_1(t)
+	STRUCT TestSettings &t
+
+	variable sweepNo
+
+	Events_Common(t)
+
+	sweepNo = 0
+	t.events_HS0[sweepNo][PRE_SET_EVENT]  = sweepNo
+	t.events_HS0[sweepNo][POST_SET_EVENT] = NaN
+
+	t.events_HS1[sweepNo][PRE_SET_EVENT]  = sweepNo
+	t.events_HS1[sweepNo][POST_SET_EVENT] = NaN
+
+	sweepNo = 1
+	t.events_HS0[sweepNo][PRE_SET_EVENT]  = NaN
+	t.events_HS0[sweepNo][POST_SET_EVENT] = NaN
+
+	t.events_HS1[sweepNo][PRE_SET_EVENT]  = NaN
+	t.events_HS1[sweepNo][POST_SET_EVENT] = sweepNo
+
+	sweepNo = 2
+	t.events_HS0[sweepNo][PRE_SET_EVENT]  = NaN
+	t.events_HS0[sweepNo][POST_SET_EVENT] = sweepNo
+
+	t.events_HS1[sweepNo][PRE_SET_EVENT]  = sweepNo
+	t.events_HS1[sweepNo][POST_SET_EVENT] = NaN
+End
+
 Function DAQ_MD0_RA1_IDX0_LIDX0_BKG_0()
 
 	STRUCT DAQSettings s
 	InitSettings(s)
-	AcquireData(s)
+	AcquireData(s, setAnalysisFuncs = 1)
 End
 
 Function Test_MD0_RA1_IDX0_LIDX0_BKG_0()
@@ -284,6 +430,7 @@ Function Test_MD0_RA1_IDX0_LIDX0_BKG_0()
 	t.sweepWaveType          = FLOAT_WAVE
 
 	InitTestStructure(t)
+	Events_MD0_RA1_IDX0_LIDX0_BKG_1(t)
 
 	t.acquiredStimSets_HS0[] = "StimulusSetA_DA_0"
 	t.sweepCount_HS0         = {0, 1, 2}
@@ -298,11 +445,17 @@ Function Test_MD0_RA1_IDX0_LIDX0_BKG_0()
 	AllTests(t)
 End
 
+Function Events_MD1_RA1_IDX0_LIDX0_BKG_1(t)
+	STRUCT TestSettings &t
+
+	Events_MD0_RA1_IDX0_LIDX0_BKG_1(t)
+End
+
 Function DAQ_MD1_RA1_IDX0_LIDX0_BKG_1()
 
 	STRUCT DAQSettings s
 	InitSettings(s)
-	AcquireData(s)
+	AcquireData(s, setAnalysisFuncs = 1)
 End
 
 Function Test_MD1_RA1_IDX0_LIDX0_BKG_1()
@@ -313,6 +466,7 @@ Function Test_MD1_RA1_IDX0_LIDX0_BKG_1()
 	t.sweepWaveType          = FLOAT_WAVE
 
 	InitTestStructure(t)
+	Events_MD1_RA1_IDX0_LIDX0_BKG_1(t)
 
 	t.acquiredStimSets_HS0[] = "StimulusSetA_DA_0"
 	t.sweepCount_HS0         = {0, 1, 2}
@@ -327,11 +481,54 @@ Function Test_MD1_RA1_IDX0_LIDX0_BKG_1()
 	AllTests(t)
 End
 
+Function Events_MD1_RA1_IDX1_LIDX0_BKG_1(t)
+	STRUCT TestSettings &t
+
+	variable sweepNo
+
+	Events_Common(t)
+
+	sweepNo = 0
+	t.events_HS0[sweepNo][PRE_SET_EVENT]  = sweepNo
+	t.events_HS0[sweepNo][POST_SET_EVENT] = NaN
+
+	t.events_HS1[sweepNo][PRE_SET_EVENT]  = sweepNo
+	t.events_HS1[sweepNo][POST_SET_EVENT] = NaN
+
+	sweepNo = 1
+	t.events_HS0[sweepNo][PRE_SET_EVENT]  = NaN
+	t.events_HS0[sweepNo][POST_SET_EVENT] = NaN
+
+	t.events_HS1[sweepNo][PRE_SET_EVENT]  = NaN
+	t.events_HS1[sweepNo][POST_SET_EVENT] = sweepNo
+
+	sweepNo = 2
+	t.events_HS0[sweepNo][PRE_SET_EVENT]  = NaN
+	t.events_HS0[sweepNo][POST_SET_EVENT] = sweepNo
+
+	t.events_HS1[sweepNo][PRE_SET_EVENT]  = sweepNo
+	t.events_HS1[sweepNo][POST_SET_EVENT] = NaN
+
+	sweepNo = 3
+	t.events_HS0[sweepNo][PRE_SET_EVENT]  = sweepNo
+	t.events_HS0[sweepNo][POST_SET_EVENT] = sweepNo
+
+	t.events_HS1[sweepNo][PRE_SET_EVENT]  = NaN
+	t.events_HS1[sweepNo][POST_SET_EVENT] = NaN
+
+	sweepNo = 4
+	t.events_HS0[sweepNo][PRE_SET_EVENT]  = sweepNo
+	t.events_HS0[sweepNo][POST_SET_EVENT] = NaN
+
+	t.events_HS1[sweepNo][PRE_SET_EVENT]  = NaN
+	t.events_HS1[sweepNo][POST_SET_EVENT] = sweepNo
+End
+
 Function DAQ_MD1_RA1_IDX1_LIDX0_BKG_1()
 
 	STRUCT DAQSettings s
 	InitSettings(s)
-	AcquireData(s)
+	AcquireData(s, setAnalysisFuncs = 1)
 End
 
 Function Test_MD1_RA1_IDX1_LIDX0_BKG_1()
@@ -342,6 +539,7 @@ Function Test_MD1_RA1_IDX1_LIDX0_BKG_1()
 	t.sweepWaveType = FLOAT_WAVE
 
 	InitTestStructure(t)
+	Events_MD1_RA1_IDX1_LIDX0_BKG_1(t)
 
 	t.acquiredStimSets_HS0[0,2] = "StimulusSetA_DA_0"
 	t.acquiredStimSets_HS0[3]   = "StimulusSetB_DA_0"
@@ -359,11 +557,17 @@ Function Test_MD1_RA1_IDX1_LIDX0_BKG_1()
 	AllTests(t)
 End
 
+Function Events_MD0_RA1_IDX1_LIDX0_BKG_0(t)
+	STRUCT TestSettings &t
+
+	Events_MD1_RA1_IDX1_LIDX0_BKG_1(t)
+End
+
 Function DAQ_MD0_RA1_IDX1_LIDX0_BKG_0()
 
 	STRUCT DAQSettings s
 	InitSettings(s)
-	AcquireData(s)
+	AcquireData(s, setAnalysisFuncs = 1)
 End
 
 Function Test_MD0_RA1_IDX1_LIDX0_BKG_0()
@@ -374,6 +578,7 @@ Function Test_MD0_RA1_IDX1_LIDX0_BKG_0()
 	t.sweepWaveType = FLOAT_WAVE
 
 	InitTestStructure(t)
+	Events_MD0_RA1_IDX1_LIDX0_BKG_0(t)
 
 	t.acquiredStimSets_HS0[0,2] = "StimulusSetA_DA_0"
 	t.acquiredStimSets_HS0[3]   = "StimulusSetB_DA_0"
@@ -391,11 +596,61 @@ Function Test_MD0_RA1_IDX1_LIDX0_BKG_0()
 	AllTests(t)
 End
 
+Function Events_MD1_RA1_IDX1_LIDX1_BKG_1(t)
+	STRUCT TestSettings &t
+
+	variable sweepNo
+
+	Events_Common(t)
+
+	sweepNo = 0
+	t.events_HS0[sweepNo][PRE_SET_EVENT]  = sweepNo
+	t.events_HS0[sweepNo][POST_SET_EVENT] = NaN
+
+	t.events_HS1[sweepNo][PRE_SET_EVENT]  = sweepNo
+	t.events_HS1[sweepNo][POST_SET_EVENT] = NaN
+
+	sweepNo = 1
+	t.events_HS0[sweepNo][PRE_SET_EVENT]  = NaN
+	t.events_HS0[sweepNo][POST_SET_EVENT] = NaN
+
+	t.events_HS1[sweepNo][PRE_SET_EVENT]  = NaN
+	t.events_HS1[sweepNo][POST_SET_EVENT] = sweepNo
+
+	sweepNo = 2
+	t.events_HS0[sweepNo][PRE_SET_EVENT]  = NaN
+	t.events_HS0[sweepNo][POST_SET_EVENT] = sweepNo
+
+	t.events_HS1[sweepNo][PRE_SET_EVENT]  = sweepNo
+	t.events_HS1[sweepNo][POST_SET_EVENT] = NaN
+
+	sweepNo = 3
+	t.events_HS0[sweepNo][PRE_SET_EVENT]  = sweepNo
+	t.events_HS0[sweepNo][POST_SET_EVENT] = sweepNo
+
+	t.events_HS1[sweepNo][PRE_SET_EVENT]  = sweepNo
+	t.events_HS1[sweepNo][POST_SET_EVENT] = NaN
+
+	sweepNo = 4
+	t.events_HS0[sweepNo][PRE_SET_EVENT]  = sweepNo
+	t.events_HS0[sweepNo][POST_SET_EVENT] = sweepNo
+
+	t.events_HS1[sweepNo][PRE_SET_EVENT]  = NaN
+	t.events_HS1[sweepNo][POST_SET_EVENT] = NaN
+
+	sweepNo = 5
+	t.events_HS0[sweepNo][PRE_SET_EVENT]  = sweepNo
+	t.events_HS0[sweepNo][POST_SET_EVENT] = sweepNo
+
+	t.events_HS1[sweepNo][PRE_SET_EVENT]  = NaN
+	t.events_HS1[sweepNo][POST_SET_EVENT] = sweepNo
+End
+
 Function DAQ_MD1_RA1_IDX1_LIDX1_BKG_1()
 
 	STRUCT DAQSettings s
 	InitSettings(s)
-	AcquireData(s)
+	AcquireData(s, setAnalysisFuncs = 1)
 End
 
 Function Test_MD1_RA1_IDX1_LIDX1_BKG_1()
@@ -406,6 +661,7 @@ Function Test_MD1_RA1_IDX1_LIDX1_BKG_1()
 	t.sweepWaveType = FLOAT_WAVE
 
 	InitTestStructure(t)
+	Events_MD1_RA1_IDX1_LIDX1_BKG_1(t)
 
 	t.acquiredStimSets_HS0[0,2] = "StimulusSetA_DA_0"
 	t.acquiredStimSets_HS0[3,5] = "StimulusSetB_DA_0"
@@ -422,11 +678,17 @@ Function Test_MD1_RA1_IDX1_LIDX1_BKG_1()
 	AllTests(t)
 End
 
+Function Events_MD0_RA1_IDX1_LIDX1_BKG_0(t)
+	STRUCT TestSettings &t
+
+	Events_MD1_RA1_IDX1_LIDX1_BKG_1(t)
+End
+
 Function DAQ_MD0_RA1_IDX1_LIDX1_BKG_0()
 
 	STRUCT DAQSettings s
 	InitSettings(s)
-	AcquireData(s)
+	AcquireData(s, setAnalysisFuncs = 1)
 End
 
 Function Test_MD0_RA1_IDX1_LIDX1_BKG_0()
@@ -437,6 +699,7 @@ Function Test_MD0_RA1_IDX1_LIDX1_BKG_0()
 	t.sweepWaveType = FLOAT_WAVE
 
 	InitTestStructure(t)
+	Events_MD0_RA1_IDX1_LIDX1_BKG_0(t)
 
 	t.acquiredStimSets_HS0[0,2] = "StimulusSetA_DA_0"
 	t.acquiredStimSets_HS0[3,5] = "StimulusSetB_DA_0"
@@ -453,11 +716,61 @@ Function Test_MD0_RA1_IDX1_LIDX1_BKG_0()
 	AllTests(t)
 End
 
+Function Events_RepeatSets_1(t)
+	STRUCT TestSettings &t
+
+	variable sweepNo
+
+	Events_Common(t)
+
+	sweepNo = 0
+	t.events_HS0[sweepNo][PRE_SET_EVENT]  = sweepNo
+	t.events_HS0[sweepNo][POST_SET_EVENT] = NaN
+
+	t.events_HS1[sweepNo][PRE_SET_EVENT]  = sweepNo
+	t.events_HS1[sweepNo][POST_SET_EVENT] = NaN
+
+	sweepNo = 1
+	t.events_HS0[sweepNo][PRE_SET_EVENT]  = NaN
+	t.events_HS0[sweepNo][POST_SET_EVENT] = NaN
+
+	t.events_HS1[sweepNo][PRE_SET_EVENT]  = NaN
+	t.events_HS1[sweepNo][POST_SET_EVENT] = sweepNo
+
+	sweepNo = 2
+	t.events_HS0[sweepNo][PRE_SET_EVENT]  = NaN
+	t.events_HS0[sweepNo][POST_SET_EVENT] = sweepNo
+
+	t.events_HS1[sweepNo][PRE_SET_EVENT]  = sweepNo
+	t.events_HS1[sweepNo][POST_SET_EVENT] = NaN
+
+	sweepNo = 3
+	t.events_HS0[sweepNo][PRE_SET_EVENT]  = sweepNo
+	t.events_HS0[sweepNo][POST_SET_EVENT] = NaN
+
+	t.events_HS1[sweepNo][PRE_SET_EVENT]  = NaN
+	t.events_HS1[sweepNo][POST_SET_EVENT] = sweepNo
+
+	sweepNo = 4
+	t.events_HS0[sweepNo][PRE_SET_EVENT]  = NaN
+	t.events_HS0[sweepNo][POST_SET_EVENT] = NaN
+
+	t.events_HS1[sweepNo][PRE_SET_EVENT]  = sweepNo
+	t.events_HS1[sweepNo][POST_SET_EVENT] = NaN
+
+	sweepNo = 5
+	t.events_HS0[sweepNo][PRE_SET_EVENT]  = NaN
+	t.events_HS0[sweepNo][POST_SET_EVENT] = sweepNo
+
+	t.events_HS1[sweepNo][PRE_SET_EVENT]  = NaN
+	t.events_HS1[sweepNo][POST_SET_EVENT] = sweepNo
+End
+
 Function DAQ_RepeatSets_1()
 
 	STRUCT DAQSettings s
 	InitDAQSettingsFromString(s, "DAQ_MD1_RA1_IDX0_LIDX0_BKG_1_RES_2")
-	AcquireData(s)
+	AcquireData(s, setAnalysisFuncs = 1)
 End
 
 Function Test_RepeatSets_1()
@@ -468,6 +781,7 @@ Function Test_RepeatSets_1()
 	t.sweepWaveType = FLOAT_WAVE
 
 	InitTestStructure(t)
+	Events_RepeatSets_1(t)
 
 	t.acquiredStimSets_HS0[] = "StimulusSetA_DA_0"
 	t.sweepCount_HS0         = {0, 1, 2, 0, 1, 2}
@@ -482,11 +796,89 @@ Function Test_RepeatSets_1()
 	AllTests(t)
 End
 
+Function Events_RepeatSets_2(t)
+	STRUCT TestSettings &t
+
+	variable sweepNo
+
+	Events_Common(t)
+
+	sweepNo = 0
+	t.events_HS0[sweepNo][PRE_SET_EVENT]  = sweepNo
+	t.events_HS0[sweepNo][POST_SET_EVENT] = NaN
+
+	t.events_HS1[sweepNo][PRE_SET_EVENT]  = sweepNo
+	t.events_HS1[sweepNo][POST_SET_EVENT] = NaN
+
+	sweepNo = 1
+	t.events_HS0[sweepNo][PRE_SET_EVENT]  = NaN
+	t.events_HS0[sweepNo][POST_SET_EVENT] = NaN
+
+	t.events_HS1[sweepNo][PRE_SET_EVENT]  = NaN
+	t.events_HS1[sweepNo][POST_SET_EVENT] = sweepNo
+
+	sweepNo = 2
+	t.events_HS0[sweepNo][PRE_SET_EVENT]  = NaN
+	t.events_HS0[sweepNo][POST_SET_EVENT] = sweepNo
+
+	t.events_HS1[sweepNo][PRE_SET_EVENT]  = sweepNo
+	t.events_HS1[sweepNo][POST_SET_EVENT] = NaN
+
+	sweepNo = 3
+	t.events_HS0[sweepNo][PRE_SET_EVENT]  = sweepNo
+	t.events_HS0[sweepNo][POST_SET_EVENT] = sweepNo
+
+	t.events_HS1[sweepNo][PRE_SET_EVENT]  = NaN
+	t.events_HS1[sweepNo][POST_SET_EVENT] = NaN
+
+	sweepNo = 4
+	t.events_HS0[sweepNo][PRE_SET_EVENT]  = sweepNo
+	t.events_HS0[sweepNo][POST_SET_EVENT] = NaN
+
+	t.events_HS1[sweepNo][PRE_SET_EVENT]  = NaN
+	t.events_HS1[sweepNo][POST_SET_EVENT] = sweepNo
+
+	sweepNo = 5
+	t.events_HS0[sweepNo][PRE_SET_EVENT]  = NaN
+	t.events_HS0[sweepNo][POST_SET_EVENT] = NaN
+
+	t.events_HS1[sweepNo][PRE_SET_EVENT]  = sweepNo
+	t.events_HS1[sweepNo][POST_SET_EVENT] = NaN
+
+	sweepNo = 6
+	t.events_HS0[sweepNo][PRE_SET_EVENT]  = NaN
+	t.events_HS0[sweepNo][POST_SET_EVENT] = sweepNo
+
+	t.events_HS1[sweepNo][PRE_SET_EVENT]  = NaN
+	t.events_HS1[sweepNo][POST_SET_EVENT] = sweepNo
+
+	sweepNo = 7
+	t.events_HS0[sweepNo][PRE_SET_EVENT]  = sweepNo
+	t.events_HS0[sweepNo][POST_SET_EVENT] = sweepNo
+
+	t.events_HS1[sweepNo][PRE_SET_EVENT]  = sweepNo
+	t.events_HS1[sweepNo][POST_SET_EVENT] = NaN
+
+	sweepNo = 8
+	t.events_HS0[sweepNo][PRE_SET_EVENT]  = sweepNo
+	t.events_HS0[sweepNo][POST_SET_EVENT] = NaN
+
+	t.events_HS1[sweepNo][PRE_SET_EVENT]  = NaN
+	t.events_HS1[sweepNo][POST_SET_EVENT] = NaN
+
+	sweepNo = 9
+	t.events_HS0[sweepNo][PRE_SET_EVENT]  = NaN
+	t.events_HS0[sweepNo][POST_SET_EVENT] = NaN
+
+	t.events_HS1[sweepNo][PRE_SET_EVENT]  = NaN
+	t.events_HS1[sweepNo][POST_SET_EVENT] = sweepNo
+End
+
 Function DAQ_RepeatSets_2()
 
 	STRUCT DAQSettings s
 	InitDAQSettingsFromString(s, "DAQ_MD1_RA1_IDX1_LIDX0_BKG_1_RES_2")
-	AcquireData(s)
+	AcquireData(s, setAnalysisFuncs = 1)
 End
 
 Function Test_RepeatSets_2()
@@ -497,6 +889,7 @@ Function Test_RepeatSets_2()
 	t.sweepWaveType = FLOAT_WAVE
 
 	InitTestStructure(t)
+	Events_RepeatSets_2(t)
 
 	t.acquiredStimSets_HS0[0,2] = "StimulusSetA_DA_0"
 	t.acquiredStimSets_HS0[3]   = "StimulusSetB_DA_0"
@@ -518,11 +911,103 @@ Function Test_RepeatSets_2()
 	AllTests(t)
 End
 
+Function Events_RepeatSets_3(t)
+	STRUCT TestSettings &t
+
+	variable sweepNo
+
+	Events_Common(t)
+
+	sweepNo = 0
+	t.events_HS0[sweepNo][PRE_SET_EVENT]  = sweepNo
+	t.events_HS0[sweepNo][POST_SET_EVENT] = NaN
+
+	t.events_HS1[sweepNo][PRE_SET_EVENT]  = sweepNo
+	t.events_HS1[sweepNo][POST_SET_EVENT] = NaN
+
+	sweepNo = 1
+	t.events_HS0[sweepNo][PRE_SET_EVENT]  = NaN
+	t.events_HS0[sweepNo][POST_SET_EVENT] = NaN
+
+	t.events_HS1[sweepNo][PRE_SET_EVENT]  = NaN
+	t.events_HS1[sweepNo][POST_SET_EVENT] = sweepNo
+
+	sweepNo = 2
+	t.events_HS0[sweepNo][PRE_SET_EVENT]  = NaN
+	t.events_HS0[sweepNo][POST_SET_EVENT] = sweepNo
+
+	t.events_HS1[sweepNo][PRE_SET_EVENT]  = sweepNo
+	t.events_HS1[sweepNo][POST_SET_EVENT] = NaN
+
+	sweepNo = 3
+	t.events_HS0[sweepNo][PRE_SET_EVENT]  = sweepNo
+	t.events_HS0[sweepNo][POST_SET_EVENT] = NaN
+
+	t.events_HS1[sweepNo][PRE_SET_EVENT]  = NaN
+	t.events_HS1[sweepNo][POST_SET_EVENT] = sweepNo
+
+	sweepNo = 4
+	t.events_HS0[sweepNo][PRE_SET_EVENT]  = NaN
+	t.events_HS0[sweepNo][POST_SET_EVENT] = NaN
+
+	t.events_HS1[sweepNo][PRE_SET_EVENT]  = sweepNo
+	t.events_HS1[sweepNo][POST_SET_EVENT] = NaN
+
+	sweepNo = 5
+	t.events_HS0[sweepNo][PRE_SET_EVENT]  = NaN
+	t.events_HS0[sweepNo][POST_SET_EVENT] = sweepNo
+
+	t.events_HS1[sweepNo][PRE_SET_EVENT]  = NaN
+	t.events_HS1[sweepNo][POST_SET_EVENT] = sweepNo
+
+	sweepNo = 6
+	t.events_HS0[sweepNo][PRE_SET_EVENT]  = sweepNo
+	t.events_HS0[sweepNo][POST_SET_EVENT] = sweepNo
+
+	t.events_HS1[sweepNo][PRE_SET_EVENT]  = sweepNo
+	t.events_HS1[sweepNo][POST_SET_EVENT] = NaN
+
+	sweepNo = 7
+	t.events_HS0[sweepNo][PRE_SET_EVENT]  = sweepNo
+	t.events_HS0[sweepNo][POST_SET_EVENT] = sweepNo
+
+	t.events_HS1[sweepNo][PRE_SET_EVENT]  = NaN
+	t.events_HS1[sweepNo][POST_SET_EVENT] = NaN
+
+	sweepNo = 8
+	t.events_HS0[sweepNo][PRE_SET_EVENT]  = sweepNo
+	t.events_HS0[sweepNo][POST_SET_EVENT] = sweepNo
+
+	t.events_HS1[sweepNo][PRE_SET_EVENT]  = NaN
+	t.events_HS1[sweepNo][POST_SET_EVENT] = sweepNo
+
+	sweepNo = 9
+	t.events_HS0[sweepNo][PRE_SET_EVENT]  = sweepNo
+	t.events_HS0[sweepNo][POST_SET_EVENT] = sweepNo
+
+	t.events_HS1[sweepNo][PRE_SET_EVENT]  = sweepNo
+	t.events_HS1[sweepNo][POST_SET_EVENT] = NaN
+
+	sweepNo = 10
+	t.events_HS0[sweepNo][PRE_SET_EVENT]  = sweepNo
+	t.events_HS0[sweepNo][POST_SET_EVENT] = sweepNo
+
+	t.events_HS1[sweepNo][PRE_SET_EVENT]  = NaN
+	t.events_HS1[sweepNo][POST_SET_EVENT] = NaN
+
+	sweepNo = 11
+	t.events_HS0[sweepNo][PRE_SET_EVENT]  = sweepNo
+	t.events_HS0[sweepNo][POST_SET_EVENT] = sweepNo
+
+	t.events_HS1[sweepNo][PRE_SET_EVENT]  = NaN
+	t.events_HS1[sweepNo][POST_SET_EVENT] = sweepNo
+End
+
 Function DAQ_RepeatSets_3()
 
 	STRUCT DAQSettings s
 	InitDAQSettingsFromString(s, "DAQ_MD1_RA1_IDX1_LIDX1_BKG_1_RES_2")
-	AcquireData(s)
+	AcquireData(s, setAnalysisFuncs = 1)
 End
 
 Function Test_RepeatSets_3()
@@ -533,6 +1018,7 @@ Function Test_RepeatSets_3()
 	t.sweepWaveType = FLOAT_WAVE
 
 	InitTestStructure(t)
+	Events_RepeatSets_3(t)
 
 	t.acquiredStimSets_HS0[0,5]  = "StimulusSetA_DA_0"
 	t.acquiredStimSets_HS0[6,11] = "StimulusSetB_DA_0"
@@ -556,11 +1042,103 @@ Function SwitchIndexingOrder()
 	PGC_SetAndActivateControl(DEVICE, GetPanelControl(1, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_Wave), val = GetStimSet("StimulusSetD_DA_0") + 1)
 End
 
+Function Events_RepeatSets_4(t)
+	STRUCT TestSettings &t
+
+	variable sweepNo
+
+	Events_Common(t)
+
+	sweepNo = 0
+	t.events_HS0[sweepNo][PRE_SET_EVENT]  = sweepNo
+	t.events_HS0[sweepNo][POST_SET_EVENT] = sweepNo
+
+	t.events_HS1[sweepNo][PRE_SET_EVENT]  = sweepNo
+	t.events_HS1[sweepNo][POST_SET_EVENT] = NaN
+
+	sweepNo = 1
+	t.events_HS0[sweepNo][PRE_SET_EVENT]  = sweepNo
+	t.events_HS0[sweepNo][POST_SET_EVENT] = sweepNo
+
+	t.events_HS1[sweepNo][PRE_SET_EVENT]  = NaN
+	t.events_HS1[sweepNo][POST_SET_EVENT] = NaN
+
+	sweepNo = 2
+	t.events_HS0[sweepNo][PRE_SET_EVENT]  = sweepNo
+	t.events_HS0[sweepNo][POST_SET_EVENT] = sweepNo
+
+	t.events_HS1[sweepNo][PRE_SET_EVENT]  = NaN
+	t.events_HS1[sweepNo][POST_SET_EVENT] = sweepNo
+
+	sweepNo = 3
+	t.events_HS0[sweepNo][PRE_SET_EVENT]  = sweepNo
+	t.events_HS0[sweepNo][POST_SET_EVENT] = sweepNo
+
+	t.events_HS1[sweepNo][PRE_SET_EVENT]  = sweepNo
+	t.events_HS1[sweepNo][POST_SET_EVENT] = NaN
+
+	sweepNo = 4
+	t.events_HS0[sweepNo][PRE_SET_EVENT]  = sweepNo
+	t.events_HS0[sweepNo][POST_SET_EVENT] = sweepNo
+
+	t.events_HS1[sweepNo][PRE_SET_EVENT]  = NaN
+	t.events_HS1[sweepNo][POST_SET_EVENT] = NaN
+
+	sweepNo = 5
+	t.events_HS0[sweepNo][PRE_SET_EVENT]  = sweepNo
+	t.events_HS0[sweepNo][POST_SET_EVENT] = sweepNo
+
+	t.events_HS1[sweepNo][PRE_SET_EVENT]  = NaN
+	t.events_HS1[sweepNo][POST_SET_EVENT] = sweepNo
+
+	sweepNo = 6
+	t.events_HS0[sweepNo][PRE_SET_EVENT]  = sweepNo
+	t.events_HS0[sweepNo][POST_SET_EVENT] = NaN
+
+	t.events_HS1[sweepNo][PRE_SET_EVENT]  = sweepNo
+	t.events_HS1[sweepNo][POST_SET_EVENT] = NaN
+
+	sweepNo = 7
+	t.events_HS0[sweepNo][PRE_SET_EVENT]  = NaN
+	t.events_HS0[sweepNo][POST_SET_EVENT] = NaN
+
+	t.events_HS1[sweepNo][PRE_SET_EVENT]  = NaN
+	t.events_HS1[sweepNo][POST_SET_EVENT] = sweepNo
+
+	sweepNo = 8
+	t.events_HS0[sweepNo][PRE_SET_EVENT]  = NaN
+	t.events_HS0[sweepNo][POST_SET_EVENT] = sweepNo
+
+	t.events_HS1[sweepNo][PRE_SET_EVENT]  = sweepNo
+	t.events_HS1[sweepNo][POST_SET_EVENT] = NaN
+
+	sweepNo = 9
+	t.events_HS0[sweepNo][PRE_SET_EVENT]  = sweepNo
+	t.events_HS0[sweepNo][POST_SET_EVENT] = NaN
+
+	t.events_HS1[sweepNo][PRE_SET_EVENT]  = NaN
+	t.events_HS1[sweepNo][POST_SET_EVENT] = sweepNo
+
+	sweepNo = 10
+	t.events_HS0[sweepNo][PRE_SET_EVENT]  = NaN
+	t.events_HS0[sweepNo][POST_SET_EVENT] = NaN
+
+	t.events_HS1[sweepNo][PRE_SET_EVENT]  = sweepNo
+	t.events_HS1[sweepNo][POST_SET_EVENT] = NaN
+
+	sweepNo = 11
+	t.events_HS0[sweepNo][PRE_SET_EVENT]  = NaN
+	t.events_HS0[sweepNo][POST_SET_EVENT] = sweepNo
+
+	t.events_HS1[sweepNo][PRE_SET_EVENT]  = NaN
+	t.events_HS1[sweepNo][POST_SET_EVENT] = sweepNo
+End
+
 Function DAQ_RepeatSets_4()
 
 	STRUCT DAQSettings s
 	InitDAQSettingsFromString(s, "DAQ_MD1_RA1_IDX1_LIDX1_BKG_1_RES_2")
-	AcquireData(s, preAcquireFunc = SwitchIndexingOrder)
+	AcquireData(s, preAcquireFunc = SwitchIndexingOrder, setAnalysisFuncs = 1)
 End
 
 Function Test_RepeatSets_4()
@@ -571,6 +1149,7 @@ Function Test_RepeatSets_4()
 	t.sweepWaveType = FLOAT_WAVE
 
 	InitTestStructure(t)
+	Events_RepeatSets_4(t)
 
 	t.acquiredStimSets_HS0[0,5]  = "StimulusSetB_DA_0"
 	t.acquiredStimSets_HS0[6,11] = "StimulusSetA_DA_0"
@@ -587,11 +1166,89 @@ Function Test_RepeatSets_4()
 	AllTests(t)
 End
 
+Function Events_RepeatSets_5(t)
+	STRUCT TestSettings &t
+
+	variable sweepNo
+
+	Events_Common(t)
+
+	sweepNo = 0
+	t.events_HS0[sweepNo][PRE_SET_EVENT]  = sweepNo
+	t.events_HS0[sweepNo][POST_SET_EVENT] = sweepNo
+
+	t.events_HS1[sweepNo][PRE_SET_EVENT]  = sweepNo
+	t.events_HS1[sweepNo][POST_SET_EVENT] = NaN
+
+	sweepNo = 1
+	t.events_HS0[sweepNo][PRE_SET_EVENT]  = sweepNo
+	t.events_HS0[sweepNo][POST_SET_EVENT] = NaN
+
+	t.events_HS1[sweepNo][PRE_SET_EVENT]  = NaN
+	t.events_HS1[sweepNo][POST_SET_EVENT] = NaN
+
+	sweepNo = 2
+	t.events_HS0[sweepNo][PRE_SET_EVENT]  = NaN
+	t.events_HS0[sweepNo][POST_SET_EVENT] = NaN
+
+	t.events_HS1[sweepNo][PRE_SET_EVENT]  = NaN
+	t.events_HS1[sweepNo][POST_SET_EVENT] = sweepNo
+
+	sweepNo = 3
+	t.events_HS0[sweepNo][PRE_SET_EVENT]  = NaN
+	t.events_HS0[sweepNo][POST_SET_EVENT] = sweepNo
+
+	t.events_HS1[sweepNo][PRE_SET_EVENT]  = sweepNo
+	t.events_HS1[sweepNo][POST_SET_EVENT] = NaN
+
+	sweepNo = 4
+	t.events_HS0[sweepNo][PRE_SET_EVENT]  = sweepNo
+	t.events_HS0[sweepNo][POST_SET_EVENT] = sweepNo
+
+	t.events_HS1[sweepNo][PRE_SET_EVENT]  = NaN
+	t.events_HS1[sweepNo][POST_SET_EVENT] = sweepNo
+
+	sweepNo = 5
+	t.events_HS0[sweepNo][PRE_SET_EVENT]  = sweepNo
+	t.events_HS0[sweepNo][POST_SET_EVENT] = NaN
+
+	t.events_HS1[sweepNo][PRE_SET_EVENT]  = sweepNo
+	t.events_HS1[sweepNo][POST_SET_EVENT] = NaN
+
+	sweepNo = 6
+	t.events_HS0[sweepNo][PRE_SET_EVENT]  = NaN
+	t.events_HS0[sweepNo][POST_SET_EVENT] = NaN
+
+	t.events_HS1[sweepNo][PRE_SET_EVENT]  = NaN
+	t.events_HS1[sweepNo][POST_SET_EVENT] = NaN
+
+	sweepNo = 7
+	t.events_HS0[sweepNo][PRE_SET_EVENT]  = NaN
+	t.events_HS0[sweepNo][POST_SET_EVENT] = sweepNo
+
+	t.events_HS1[sweepNo][PRE_SET_EVENT]  = NaN
+	t.events_HS1[sweepNo][POST_SET_EVENT] = sweepNo
+
+	sweepNo = 8
+	t.events_HS0[sweepNo][PRE_SET_EVENT]  = sweepNo
+	t.events_HS0[sweepNo][POST_SET_EVENT] = sweepNo
+
+	t.events_HS1[sweepNo][PRE_SET_EVENT]  = sweepNo
+	t.events_HS1[sweepNo][POST_SET_EVENT] = NaN
+
+	sweepNo = 9
+	t.events_HS0[sweepNo][PRE_SET_EVENT]  = sweepNo
+	t.events_HS0[sweepNo][POST_SET_EVENT] = NaN
+
+	t.events_HS1[sweepNo][PRE_SET_EVENT]  = NaN
+	t.events_HS1[sweepNo][POST_SET_EVENT] = sweepNo
+End
+
 Function DAQ_RepeatSets_5()
 
 	STRUCT DAQSettings s
 	InitDAQSettingsFromString(s, "DAQ_MD1_RA1_IDX1_LIDX0_BKG_1_RES_2")
-	AcquireData(s, preAcquireFunc = SwitchIndexingOrder)
+	AcquireData(s, preAcquireFunc = SwitchIndexingOrder, setAnalysisFuncs = 1)
 End
 
 Function Test_RepeatSets_5()
@@ -602,6 +1259,7 @@ Function Test_RepeatSets_5()
 	t.sweepWaveType = FLOAT_WAVE
 
 	InitTestStructure(t)
+	Events_RepeatSets_5(t)
 
 	t.acquiredStimSets_HS0[0]   = "StimulusSetB_DA_0"
 	t.acquiredStimSets_HS0[1,3] = "StimulusSetA_DA_0"

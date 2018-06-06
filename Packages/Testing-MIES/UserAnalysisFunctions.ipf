@@ -370,8 +370,27 @@ Function Indexing_V3(panelTitle, s)
 
 	WAVE anaFuncTracker = TrackAnalysisFunctionCalls()
 
-	// the generic event is never sent to analysis functions
-	CHECK(s.eventType >= 0 && s.eventType < TOTAL_NUM_EVENTS - 1)
+	CHECK(s.eventType >= 0 && s.eventType < TOTAL_NUM_EVENTS && s.eventType != GENERIC_EVENT)
 	CHECK(s.eventType >= 0 && s.eventType < DimSize(anaFuncTracker, ROWS))
 	anaFuncTracker[s.eventType] += 1
+End
+
+Function TrackSweepCount_V3(panelTitle, s)
+	string panelTitle
+	STRUCT AnalysisFunction_V3& s
+
+	WAVE anaFuncSweepCounts = GetTrackSweepCounts()
+
+	CHECK(s.eventType >= 0 && s.eventType < TOTAL_NUM_EVENTS && s.eventType != GENERIC_EVENT)
+	CHECK(s.sweepNo >= 0 && s.sweepNo < DimSize(anaFuncSweepCounts, ROWS))
+	CHECK(s.eventType >= 0 && s.eventType < DimSize(anaFuncSweepCounts, COLS))
+	CHECK(s.headstage >= 0 && s.headstage < DimSize(anaFuncSweepCounts, LAYERS))
+
+	if(s.eventType == MID_SWEEP_EVENT)
+		// don't check that here
+		return 0
+	endif
+
+	NVAR count = $GetCount(panelTitle)
+	anaFuncSweepCounts[s.sweepNo][s.eventType][s.headstage] = count
 End
