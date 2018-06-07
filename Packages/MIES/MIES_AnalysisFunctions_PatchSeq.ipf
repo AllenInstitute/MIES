@@ -1100,13 +1100,14 @@ Function PSQ_DAScale(panelTitle, s)
 				return 1
 			endif
 
-			if(WhichListItem(num2str(multiplier), DAP_GetSamplingMultiplier()) == -1)
+			val = WhichListItem(num2str(multiplier), DAP_GetSamplingMultiplier())
+			if(val == -1)
 				printf "(%s): The passed sampling multiplier of %d is invalid.\r", panelTitle, multiplier
 				ControlWindowToFront()
 				return 1
 			endif
 
-			PGC_SetAndActivateControl(panelTitle, "Popup_Settings_SampIntMult", val = multiplier)
+			PGC_SetAndActivateControl(panelTitle, "Popup_Settings_SampIntMult", val = val)
 
 			daScaleOffset = PSQ_DS_GetDAScaleOffset(panelTitle, s.headstage, opMode)
 			if(!IsFinite(daScaleOffset))
@@ -1340,6 +1341,7 @@ Function PSQ_SquarePulse(panelTitle, s)
 	STRUCT AnalysisFunction_V3 &s
 
 	variable stepsize, DAScale, totalOnsetDelay, setPassed, sweepPassed, multiplier
+	variable val
 	string key, msg
 
 	multiplier = AFH_GetAnalysisParamNumerical("SamplingMultiplier", s.params)
@@ -1377,13 +1379,14 @@ Function PSQ_SquarePulse(panelTitle, s)
 				return 1
 			endif
 
-			if(WhichListItem(num2str(multiplier), DAP_GetSamplingMultiplier()) == -1)
+			val = WhichListItem(num2str(multiplier), DAP_GetSamplingMultiplier())
+			if(val == -1)
 				printf "(%s): The passed sampling multiplier of %d is invalid.\r", panelTitle, multiplier
 				ControlWindowToFront()
 				return 1
 			endif
 
-			PGC_SetAndActivateControl(panelTitle, "Popup_Settings_SampIntMult", val = multiplier)
+			PGC_SetAndActivateControl(panelTitle, "Popup_Settings_SampIntMult", val = val)
 
 			PSQ_StoreStepSizeInLBN(panelTitle, s.sweepNo, PSQ_SP_INIT_AMP_p100)
 			SetDAScale(panelTitle, s.headstage, PSQ_SP_INIT_AMP_p100)
@@ -1580,13 +1583,14 @@ Function PSQ_Rheobase(panelTitle, s)
 				return 1
 			endif
 
-			if(WhichListItem(num2str(multiplier), DAP_GetSamplingMultiplier()) == -1)
+			val = WhichListItem(num2str(multiplier), DAP_GetSamplingMultiplier())
+			if(val == -1)
 				printf "(%s): The passed sampling multiplier of %d is invalid.\r", panelTitle, multiplier
 				ControlWindowToFront()
 				return 1
 			endif
 
-			PGC_SetAndActivateControl(panelTitle, "Popup_Settings_SampIntMult", val = multiplier)
+			PGC_SetAndActivateControl(panelTitle, "Popup_Settings_SampIntMult", val = val)
 
 			WAVE numericalValues = GetLBNumericalValues(panelTitle)
 			key = PSQ_CreateLBNKey(PSQ_SQUARE_PULSE, PSQ_FMT_LBN_FINAL_SCALE, query = 1)
@@ -1920,13 +1924,14 @@ Function PSQ_Ramp(panelTitle, s)
 				return 1
 			endif
 
-			if(WhichListItem(num2str(multiplier), DAP_GetSamplingMultiplier()) == -1)
+			val = WhichListItem(num2str(multiplier), DAP_GetSamplingMultiplier())
+			if(val == -1)
 				printf "(%s): The passed sampling multiplier of %d is invalid.\r", panelTitle, multiplier
 				ControlWindowToFront()
 				return 1
 			endif
 
-			PGC_SetAndActivateControl(panelTitle, "Popup_Settings_SampIntMult", val = multiplier)
+			PGC_SetAndActivateControl(panelTitle, "Popup_Settings_SampIntMult", val = val)
 
 			DAC = AFH_GetDACFromHeadstage(panelTitle, s.headstage)
 			stimset = AFH_GetStimSetName(panelTitle, DAC, CHANNEL_TYPE_DAC)
