@@ -85,6 +85,8 @@ Save each TP sweep = No
 
 TP Amplitude in VC = -10
 
+TP Amplitude in IC = -50
+
 Baseline % = 30
 
 ######## Data Saving Settings ######
