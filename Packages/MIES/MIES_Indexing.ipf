@@ -268,7 +268,8 @@ Function IDX_MaxNoOfSweeps(panelTitle, IndexOverRide)
 	variable IndexOverRide
 
 	variable MaxNoOfSweeps
-	variable i
+	variable i, numFollower
+	string followerPanelTitle
 
 	WAVE statusDA = DAG_GetChannelState(panelTitle, CHANNEL_TYPE_DAC)
  
@@ -291,6 +292,16 @@ Function IDX_MaxNoOfSweeps(panelTitle, IndexOverRide)
 
 		MaxNoOfSweeps = max(MaxNoOfSweeps, IDX_NumberOfSweepsAcrossSets(panelTitle, i, 1, IndexOverRide))
 	endfor
+
+	if(DeviceHasFollower(panelTitle))
+		SVAR listOfFollowerDevices = $GetFollowerList(panelTitle)
+		numFollower = ItemsInList(listOfFollowerDevices)
+		for(i = 0; i < numFollower; i += 1)
+			followerPanelTitle = StringFromList(i, listOfFollowerDevices)
+
+			MaxNoOfSweeps = max(MaxNoOfSweeps, IDX_MaxNoOfSweeps(followerPanelTitle, IndexOverRide))
+		endfor
+	endif
 
 	return DEBUGPRINTv(MaxNoOfSweeps)
 End

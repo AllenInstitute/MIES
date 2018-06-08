@@ -126,30 +126,6 @@ static Function RA_HandleITI(panelTitle)
 	endif
 End
 
-/// @brief Return the total number of sets
-///
-/// Takes into account yoking
-static Function RA_GetTotalNumberOfSets(panelTitle)
-	string panelTitle
-
-	variable i, numFollower, numSets
-	string followerPanelTitle
-
-	numSets = IDX_MaxNoOfSweeps(panelTitle, 1)
-
-	if(DeviceHasFollower(panelTitle))
-		SVAR listOfFollowerDevices = $GetFollowerList(panelTitle)
-		numFollower = ItemsInList(listOfFollowerDevices)
-		for(i = 0; i < numFollower; i += 1)
-			followerPanelTitle = StringFromList(i, listOfFollowerDevices)
-
-			numSets = max(numSets, IDX_MaxNoOfSweeps(followerPanelTitle, 1))
-		endfor
-	endif
-
-	return numSets
-End
-
 /// @brief Calculate the total number of sweeps for repeated acquisition
 ///
 /// Helper function for plain calculation without lead and follower logic
@@ -224,7 +200,6 @@ Function RA_Counter(panelTitle)
 	string panelTitle
 
 	variable numTotalSweeps, indexing, indexingLocked
-	variable numSets
 	string str
 
 	NVAR count = $GetCount(panelTitle)
@@ -237,7 +212,6 @@ Function RA_Counter(panelTitle)
 	RA_PerfAddMark(panelTitle, count)
 #endif
 
-	numSets        = RA_GetTotalNumberOfSets(panelTitle)
 	numTotalSweeps = RA_GetTotalNumberOfSweeps(panelTitle)
 	indexing       = DAG_GetNumericalValue(panelTitle, "Check_DataAcq_Indexing")
 	indexingLocked = DAG_GetNumericalValue(panelTitle, "Check_DataAcq1_IndexingLocked")
@@ -254,7 +228,6 @@ Function RA_Counter(panelTitle)
 				IDX_IndexingDoIt(panelTitle)
 			endif
 
-			SetValDisplay(panelTitle, "valdisp_DataAcq_SweepsActiveSet", var=numSets)
 			activeSetCount = IDX_CalculcateActiveSetCount(panelTitle)
 		endif
 
@@ -353,7 +326,7 @@ End
 Function RA_CounterMD(panelTitle)
 	string panelTitle
 
-	variable numTotalSweeps, numSets, recalcActiveSetCount, activeSetCountMax
+	variable numTotalSweeps, recalcActiveSetCount, activeSetCountMax
 	NVAR count = $GetCount(panelTitle)
 	NVAR activeSetCount = $GetActiveSetCount(panelTitle)
 	variable i, indexing, indexingLocked, numFollower, followerActiveSetCount
@@ -366,7 +339,6 @@ Function RA_CounterMD(panelTitle)
 	RA_PerfAddMark(panelTitle, count)
 #endif
 
-	numSets        = RA_GetTotalNumberOfSets(panelTitle)
 	numTotalSweeps = RA_GetTotalNumberOfSweeps(panelTitle)
 	indexing       = DAG_GetNumericalValue(panelTitle, "Check_DataAcq_Indexing")
 	indexingLocked = DAG_GetNumericalValue(panelTitle, "Check_DataAcq1_IndexingLocked")
@@ -384,7 +356,6 @@ Function RA_CounterMD(panelTitle)
 				IDX_IndexingDoIt(panelTitle)
 			endif
 
-			SetValDisplay(panelTitle, "valdisp_DataAcq_SweepsActiveSet", var=numSets)
 			activeSetCount = IDX_CalculcateActiveSetCount(panelTitle)
 		endif
 
@@ -413,7 +384,6 @@ Function RA_CounterMD(panelTitle)
 					if(indexingLocked)
 						IDX_IndexingDoIt(followerPanelTitle)
 					endif
-					SetValDisplay(followerPanelTitle, "valdisp_DataAcq_SweepsActiveSet", var=numSets)
 					followerActiveSetCount = IDX_CalculcateActiveSetCount(followerPanelTitle)
 					activeSetCountMax = max(activeSetCountMax, followerActiveSetCount)
 				endif
