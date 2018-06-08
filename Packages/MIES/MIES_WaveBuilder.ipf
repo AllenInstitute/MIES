@@ -357,7 +357,9 @@ Function/Wave WB_GetStimSet([setName])
 	for(i=0; i < numSweeps; i+=1)
 		data[i] = WB_MakeWaveBuilderWave(WPCopy, WPT, SegWvType, i, numEpochs, channelType, updateEpochIDWave, stimset = setName)
 		lengthOf1DWaves = max(DimSize(data[i], ROWS), lengthOf1DWaves)
-		WB_AddDelta(WPCopy, numEpochs)
+		if(WB_AddDelta(setName, WPCopy, numEpochs))
+			return $""
+		endif
 	endfor
 
 	// copy the random seed value to WP in order to preserve it
@@ -409,9 +411,13 @@ End
 ///
 /// Relies on alternating sequence of parameter and delta's in parameter waves as documented in WB_MakeWaveBuilderWave()
 ///
+/// @param setName    name of the stimset
 /// @param WP         wavebuilder parameter wave (temporary copy)
 /// @param numEpochs  number of epochs
-static Function WB_AddDelta(WP, numEpochs)
+///
+/// @return one on error, zero otherwise
+static Function WB_AddDelta(setName, WP, numEpochs)
+	string setName
 	Wave WP
 	variable numEpochs
 
@@ -466,7 +472,9 @@ static Function WB_AddDelta(WP, numEpochs)
 							WP[i + 1][j][k] *= -1
 							break
 						default:
-							ASSERT(0, "Unkonwn operation")
+							// future proof
+							printf "WB_AddDelta: Stimset %s uses an unknown operation %d and can therefore not be recreated.\r", setName, operation
+							return 1
 							break
 					endswitch
 				endif
@@ -482,6 +490,8 @@ static Function WB_AddDelta(WP, numEpochs)
 			endif
 		endfor
 	endfor
+
+	return 0
 End
 
 static Structure SegmentParameters
