@@ -418,6 +418,8 @@ static Function ExpConfig_DAEphysSettings(panelTitle, UserSettings)
 	PGC_SetAndActivateControl(panelTitle,"check_Settings_UserP_Seal", val = str2numSafe(UserSettings[V_value][%SettingValue]))
 	FindValue /TXOP = 4 /TEXT = TP_AMP_VC UserSettings
 	PGC_SetAndActivateControl(panelTitle,"SetVar_DataAcq_TPAmplitude", val = str2numSafe(UserSettings[V_value][%SettingValue]))
+	FindValue /TXOP = 4 /TEXT = TP_AMP_IC UserSettings
+	PGC_SetAndActivateControl(panelTitle,"SetVar_DataAcq_TPAmplitudeIC", val = str2numSafe(UserSettings[V_value][%SettingValue]))
 	FindValue /TXOP = 4 /TEXT = TP_BASELINE UserSettings
 	PGC_SetAndActivateControl(panelTitle,"SetVar_DataAcq_TPBaselinePerc", val = str2numSafe(UserSettings[V_value][%SettingValue]))
 	FindValue /TXOP = 4 /TEXT = STIM_MODE_SWITCH UserSettings
