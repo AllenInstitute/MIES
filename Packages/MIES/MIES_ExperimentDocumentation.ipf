@@ -328,7 +328,7 @@ static Function ED_WriteChangedValuesToNoteText(panelTitle, sweepNo)
 	for (j = INITIAL_KEY_WAVE_COL_COUNT + 1; j < numCols; j += 1)
 		key = textualKeys[0][j]
 
-		if(!cmpstr(key, "MIES version"))
+		if(!cmpstr(key, "MIES version") || !cmpstr(key, "Igor Pro version") || !cmpstr(key, "Stim Wave Note"))
 			continue
 		endif
 
