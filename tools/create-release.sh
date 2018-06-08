@@ -33,6 +33,13 @@ then
   exit 1
 fi
 
+git submodule update --checkout --force > /dev/null
+if [ $? -ne 0 ]
+then
+  echo "Error updating submodules"
+  exit 1
+fi
+
 git_dir=$(git rev-parse --git-dir)
 superproject_version=$(git --git-dir=$git_dir describe --tags --always)
 submodule_status=$(git --git-dir=$git_dir submodule status)
