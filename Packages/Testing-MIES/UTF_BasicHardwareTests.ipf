@@ -665,6 +665,72 @@ Function Test_RepeatSets_6()
 	AllTests(t)
 End
 
+Function Events_RepeatSets_7(t)
+	STRUCT TestSettings &t
+
+	variable sweepNo
+
+	Events_Common(t)
+
+	sweepNo = 0
+	t.events_HS0[sweepNo][PRE_SET_EVENT]  = sweepNo
+	t.events_HS0[sweepNo][POST_SET_EVENT] = NaN
+
+	t.events_HS1[sweepNo][PRE_SET_EVENT]  = sweepNo
+	t.events_HS1[sweepNo][POST_SET_EVENT] = NaN
+
+	sweepNo = 1
+	t.events_HS0[sweepNo][PRE_SET_EVENT]  = NaN
+	t.events_HS0[sweepNo][POST_SET_EVENT] = NaN
+
+	t.events_HS1[sweepNo][PRE_SET_EVENT]  = NaN
+	t.events_HS1[sweepNo][POST_SET_EVENT] = sweepNo
+
+	sweepNo = 2
+	t.events_HS0[sweepNo][PRE_SET_EVENT]  = NaN
+	t.events_HS0[sweepNo][POST_SET_EVENT] = sweepNo
+
+	t.events_HS1[sweepNo][PRE_SET_EVENT]  = sweepNo
+	t.events_HS1[sweepNo][POST_SET_EVENT] = NaN
+End
+
+static Function RepeatSets7_IGNORE()
+
+	PGC_SetAndActivateControl(device, "SetVar_DataAcq_ITI", val = 3)
+	PGC_SetAndActivateControl(device, "check_Settings_ITITP", val = 1)
+End
+
+// test that all events are fired, even with TP during ITI
+Function DAQ_RepeatSets_7()
+
+	STRUCT DAQSettings s
+	InitDAQSettingsFromString(s, "DAQ_MD1_RA1_IDX0_LIDX0_BKG_1_RES_1")
+	AcquireData(s, setAnalysisFuncs = 1, preAcquireFunc = RepeatSets7_IGNORE)
+End
+
+Function Test_RepeatSets_7()
+
+	STRUCT TestSettings t
+
+	t.numSweeps     = 3
+	t.sweepWaveType = FLOAT_WAVE
+
+	InitTestStructure(t)
+	Events_RepeatSets_7(t)
+
+	t.acquiredStimSets_HS0[] = "StimulusSetA_DA_0"
+	t.sweepCount_HS0         = {0, 1, 2}
+	t.setCycleCount_HS0      = 0
+	t.stimsetCycleID_HS0[]   = {0, 0, 0}
+
+	t.acquiredStimSets_HS1[] = "StimulusSetC_DA_0"
+	t.sweepCount_HS1         = {0, 1, 0}
+	t.setCycleCount_HS1      = {0, 0, 1}
+	t.stimsetCycleID_HS1[]   = {0, 0, 1}
+
+	AllTests(t)
+End
+
 Function DAQ_SkipSweepsDuringITI_SD()
 
 	string device

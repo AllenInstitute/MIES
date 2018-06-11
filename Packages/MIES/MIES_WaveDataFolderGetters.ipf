@@ -1320,12 +1320,13 @@ static Function SetSweepSettingsTextDimLabels(wv)
 	SetDimLabel COLS, 9 , $StringFromList(POST_DAQ_EVENT, EVENT_NAME_LIST_LBN)  , wv
 	SetDimLabel COLS, 10, $StringFromList(PRE_SWEEP_EVENT, EVENT_NAME_LIST_LBN) , wv
 	SetDimLabel COLS, 11, $StringFromList(GENERIC_EVENT, EVENT_NAME_LIST_LBN)   , wv
-	SetDimLabel COLS, 12, $ANALYSIS_FUNCTION_PARAMS_LBN                         , wv
-	SetDimLabel COLS, 13, $"oodDAQ regions"                                     , wv
-	SetDimLabel COLS, 14, $"Electrode"                                          , wv
-	SetDimLabel COLS, 15, $PULSE_START_TIMES_KEY                                , wv
-	SetDimLabel COLS, 16, $HIGH_PREC_SWEEP_START_KEY                            , wv
-	SetDimLabel COLS, 17, $STIMSET_WAVE_NOTE_KEY                                , wv
+	SetDimLabel COLS, 12, $StringFromList(PRE_SET_EVENT, EVENT_NAME_LIST_LBN)   , wv
+	SetDimLabel COLS, 13, $ANALYSIS_FUNCTION_PARAMS_LBN                         , wv
+	SetDimLabel COLS, 14, $"oodDAQ regions"                                     , wv
+	SetDimLabel COLS, 15, $"Electrode"                                          , wv
+	SetDimLabel COLS, 16, $PULSE_START_TIMES_KEY                                , wv
+	SetDimLabel COLS, 17, $HIGH_PREC_SWEEP_START_KEY                            , wv
+	SetDimLabel COLS, 18, $STIMSET_WAVE_NOTE_KEY                                , wv
 End
 
 /// @brief Returns a wave reference to the sweepSettingsWave
@@ -1664,7 +1665,7 @@ End
 Function/Wave GetSweepSettingsTextWave(panelTitle)
 	string panelTitle
 
-	variable versionOfNewWave = 13
+	variable versionOfNewWave = 14
 	string newName = "sweepSettingsTextValues"
 	DFREF newDFR = GetDevSpecLabNBTempFolder(panelTitle)
 
@@ -1679,9 +1680,9 @@ Function/Wave GetSweepSettingsTextWave(panelTitle)
 	if(ExistsWithCorrectLayoutVersion(wv, versionOfNewWave))
 		return wv
 	elseif(WaveExists(wv))
-		Redimension/N=(-1, 18, LABNOTEBOOK_LAYER_COUNT) wv
+		Redimension/N=(-1, 19, LABNOTEBOOK_LAYER_COUNT) wv
 	else
-		Make/T/N=(1, 18, LABNOTEBOOK_LAYER_COUNT) newDFR:$newName/Wave=wv
+		Make/T/N=(1, 19, LABNOTEBOOK_LAYER_COUNT) newDFR:$newName/Wave=wv
 	endif
 
 	wv = ""
@@ -1712,20 +1713,21 @@ End
 /// - 9: Analysis function post daq
 /// -10: Analysis function pre sweep
 /// -11: Analysis function generic
-/// -12: Analysis function parameters
-/// -13: oodDAQ regions list
+/// -12: Analysis function pre set
+/// -13: Analysis function parameters
+/// -14: oodDAQ regions list
 ///      - Format: `$begin1-$end1;$begin2-$end2;...`.
 ///      - Unit: `stimset build ms`.
-/// -13: Electrode
-/// -15: Pulse Train Pulses
+/// -14: Electrode
+/// -16: Pulse Train Pulses
 ///      - Format: `$begin1;$begin2;...`.
 ///      - Unit: `sweep ms`.
-/// -16: High precision sweep start timestamp in ISO8601 format
-/// -17: Stimset wave note
+/// -17: High precision sweep start timestamp in ISO8601 format
+/// -18: Stimset wave note
 Function/Wave GetSweepSettingsTextKeyWave(panelTitle)
 	string panelTitle
 
-	variable versionOfNewWave = 14
+	variable versionOfNewWave = 15
 	string newName = "sweepSettingsTextKeys"
 	DFREF newDFR = GetDevSpecLabNBTempFolder(panelTitle)
 
@@ -1740,9 +1742,9 @@ Function/Wave GetSweepSettingsTextKeyWave(panelTitle)
 	if(ExistsWithCorrectLayoutVersion(wv, versionOfNewWave))
 		return wv
 	elseif(WaveExists(wv))
-		Redimension/N=(-1, 18, 0) wv
+		Redimension/N=(-1, 19, 0) wv
 	else
-		Make/T/N=(1, 18) newDFR:$newName/Wave=wv
+		Make/T/N=(1, 19) newDFR:$newName/Wave=wv
 	endif
 
 	wv = ""
@@ -1759,12 +1761,13 @@ Function/Wave GetSweepSettingsTextKeyWave(panelTitle)
 	wv[0][9]  = StringFromList(POST_DAQ_EVENT, EVENT_NAME_LIST_LBN)
 	wv[0][10] = StringFromList(PRE_SWEEP_EVENT, EVENT_NAME_LIST_LBN)
 	wv[0][11] = StringFromList(GENERIC_EVENT, EVENT_NAME_LIST_LBN)
-	wv[0][12] = ANALYSIS_FUNCTION_PARAMS_LBN
-	wv[0][13] = "oodDAQ regions"
-	wv[0][14] = "Electrode"
-	wv[0][15] = PULSE_START_TIMES_KEY
-	wv[0][16] = HIGH_PREC_SWEEP_START_KEY
-	wv[0][17] = STIMSET_WAVE_NOTE_KEY
+	wv[0][12] = StringFromList(PRE_SET_EVENT, EVENT_NAME_LIST_LBN)
+	wv[0][13] = ANALYSIS_FUNCTION_PARAMS_LBN
+	wv[0][14] = "oodDAQ regions"
+	wv[0][15] = "Electrode"
+	wv[0][16] = PULSE_START_TIMES_KEY
+	wv[0][17] = HIGH_PREC_SWEEP_START_KEY
+	wv[0][18] = STIMSET_WAVE_NOTE_KEY
 
 	SetSweepSettingsTextDimLabels(wv)
 	SetWaveVersion(wv, versionOfNewWave)
@@ -2724,7 +2727,7 @@ Function/WAVE GetWaveBuilderWaveParam()
 	return wv
 End
 
-static Constant WPT_WAVE_LAYOUT_VERSION = 7
+static Constant WPT_WAVE_LAYOUT_VERSION = 8
 
 /// @brief Automated testing helper
 static Function GetWPTVersion()
@@ -2796,6 +2799,7 @@ static Function AddDimLabelsToWPT(wv)
 	SetDimLabel ROWS, 24, $("PT: First Mixed Frequency ldel"), wv
 	SetDimLabel ROWS, 25, $("PT: Last Mixed Frequency ldel") , wv
 	SetDimLabel ROWS, 26, $("Number of pulses ldel")         , wv
+	SetDimLabel ROWS, 27, $("Analysis pre set function")     , wv
 
 	for(i = 0; i <= SEGMENT_TYPE_WAVE_LAST_IDX; i += 1)
 		SetDimLabel COLS, i, $("Epoch " + num2str(i)), wv
@@ -2831,7 +2835,8 @@ End
 /// - 9: Analysis function, generic
 /// -10: Analysis function parameters. See below for a detailed explanation.
 /// -11-26: Explicit delta values. ";" separated list as long as the number of sweeps.
-/// -27: unused
+/// -27: Analysis function, pre set
+/// -28-50: unused
 ///
 /// `Formula` and `Formula Version` are in the #EPOCH_TYPE_COMBINE layer, the
 /// custom wave name is in the #EPOCH_TYPE_CUSTOM layer. 11 to 26 are for all
@@ -5609,7 +5614,7 @@ End
 Function/WAVE GetAnalysisFunctionStorage(panelTitle)
 	string panelTitle
 
-	variable versionOfWave = 3
+	variable versionOfWave = 4
 	DFREF dfr = GetDevicePath(panelTitle)
 	WAVE/T/Z/SDFR=dfr wv = analysisFunctions
 
@@ -5623,6 +5628,38 @@ Function/WAVE GetAnalysisFunctionStorage(panelTitle)
 	endif
 
 	SetWaveVersion(wv, versionOfWave)
+
+	return wv
+End
+
+/// @brief Used for storing a true/false state that the pre and/or post set event
+/// should be fired *after* the sweep which is currently prepared in DC_PlaceDataInITCDataWave().
+///
+/// Rows:
+/// - NUM_DA_TTL_CHANNELS
+///
+/// Cols:
+/// - PRE_SET_EVENT
+/// - POST_SET_EVENT
+Function/WAVE GetSetEventFlag(panelTitle)
+	string panelTitle
+
+	variable versionOfWave = 1
+	DFREF dfr = GetDevicePath(panelTitle)
+	WAVE/D/Z/SDFR=dfr wv = setEventFlag
+
+	if(ExistsWithCorrectLayoutVersion(wv, versionOfWave))
+		return wv
+	elseif(WaveExists(wv))
+		 // handle upgrade
+	else
+		Make/D/N=(NUM_DA_TTL_CHANNELS, 2) dfr:setEventFlag/WAVE=wv
+	endif
+
+	SetWaveVersion(wv, versionOfWave)
+
+	SetDimLabel COLS, 0, PRE_SET_EVENT, wv
+	SetDimLabel COLS, 1, POST_SET_EVENT, wv
 
 	return wv
 End

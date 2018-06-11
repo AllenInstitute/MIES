@@ -429,25 +429,26 @@ Constant POST_SWEEP_EVENT = 2
 Constant POST_SET_EVENT   = 3
 Constant POST_DAQ_EVENT   = 4
 Constant PRE_SWEEP_EVENT  = 5
+Constant PRE_SET_EVENT    = 7
 /// @}
 
 Constant GENERIC_EVENT = 6 ///< Only used for internal bookkeeping. Never
                            ///  send to analysis functions.
 
 /// Number of @ref EVENT_TYPE_ANALYSIS_FUNCTIONS
-Constant TOTAL_NUM_EVENTS   = 7
+Constant TOTAL_NUM_EVENTS   = 8
 
 /// Column for GetAnalysisFunctionStorage(). Same value as #TOTAL_NUM_EVENTS
 /// but more readable.
-Constant ANALYSIS_FUNCTION_PARAMS = 7
+Constant ANALYSIS_FUNCTION_PARAMS = 8
 
 StrConstant ANALYSIS_FUNCTION_PARAMS_LBN = "Function params"
 
 /// Human readable names for @ref EVENT_TYPE_ANALYSIS_FUNCTIONS
-StrConstant EVENT_NAME_LIST = "Pre DAQ;Mid Sweep;Post Sweep;Post Set;Post DAQ;Pre Sweep;Generic"
+StrConstant EVENT_NAME_LIST = "Pre DAQ;Mid Sweep;Post Sweep;Post Set;Post DAQ;Pre Sweep;Generic;Pre Set"
 
 /// Labnotebook entries
-StrConstant EVENT_NAME_LIST_LBN = "Pre DAQ function;Mid Sweep function;Post Sweep function;Post Set function;Post DAQ function;Pre Sweep function;Generic function"
+StrConstant EVENT_NAME_LIST_LBN = "Pre DAQ function;Mid Sweep function;Post Sweep function;Post Set function;Post DAQ function;Pre Sweep function;Generic function;Pre Set function"
 
 /// List of valid analysis function types
 /// @anchor AnalysisFunctionParameterTypes
@@ -514,7 +515,7 @@ Constant WAVEBUILDER_PANEL_VERSION  = 6
 /// - Changed names of entries
 /// - Changed units or meaning of entries
 /// - New/Changed layers of entries
-Constant LABNOTEBOOK_VERSION = 23
+Constant LABNOTEBOOK_VERSION = 24
 
 /// Version of the stimset wave note
 Constant STIMSET_NOTE_VERSION = 1

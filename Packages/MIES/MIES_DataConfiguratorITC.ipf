@@ -84,6 +84,12 @@ Function DC_ConfigureDataForITC(panelTitle, dataAcqOrTP, [multiDevice])
 		SaveExperimentSpecial(SAVE_AND_SPLIT)
 	endif
 
+	if(dataAcqOrTP == DATA_ACQUISITION_MODE)
+		if(AFM_CallAnalysisFunctions(panelTitle, PRE_SET_EVENT))
+			Abort
+		endif
+	endif
+
 	KillOrMoveToTrash(wv=GetSweepSettingsWave(panelTitle))
 	KillOrMoveToTrash(wv=GetSweepSettingsTextWave(panelTitle))
 	KillOrMoveToTrash(wv=GetSweepSettingsKeyWave(panelTitle))
@@ -597,7 +603,7 @@ End
 /// @param panelTitle        panel title
 /// @param numActiveChannels number of active channels as returned by DC_ChanCalcForITCChanConfigWave()
 /// @param dataAcqOrTP       one of #DATA_ACQUISITION_MODE or #TEST_PULSE_MODE
-/// @param multiDevice       [optional: defaults to false] Fine tune data handling for single device (false) or multi device (true)
+/// @param multiDevice       Fine tune data handling for single device (false) or multi device (true)
 ///
 /// @exception Abort configuration failure
 static Function DC_PlaceDataInITCDataWave(panelTitle, numActiveChannels, dataAcqOrTP, multiDevice)
@@ -642,6 +648,11 @@ static Function DC_PlaceDataInITCDataWave(panelTitle, numActiveChannels, dataAcq
 	WAVE/T sweepDataTxTLNB    = GetSweepSettingsTextWave(panelTitle)
 	WAVE/T cellElectrodeNames = GetCellElectrodeNames(panelTitle)
 	WAVE/T analysisFunctions  = GetAnalysisFunctionStorage(panelTitle)
+	WAVE setEventFlag         = GetSetEventFlag(panelTitle)
+
+	if(dataAcqOrTP == DATA_ACQUISITION_MODE)
+		setEventFlag = 0
+	endif
 
 	numEntries = DimSize(statusDA, ROWS)
 	Make/D/FREE/N=(numEntries) DAGain, DAScale, insertStart, setLength, testPulseAmplitude, setColumn, headstageDAC, DAC
@@ -764,6 +775,8 @@ static Function DC_PlaceDataInITCDataWave(panelTitle, numActiveChannels, dataAcq
 		if(dataAcqOrTP == DATA_ACQUISITION_MODE)
 			fingerprint = DC_GenerateStimsetFingerprint(raCycleID, setName[activeColumn], setCycleCount, setChecksum, dataAcqOrTP)
 			stimsetCycleID = DC_GetStimsetAcqCycleID(panelTitle, fingerprint, i)
+
+			setEventFlag[i][] = (setColumn[activeColumn] + 1 == IDX_NumberOfSweepsInSet(setName[activeColumn]))
 			DC_DocumentChannelProperty(panelTitle, STIMSET_ACQ_CYCLE_ID_KEY, headstageDAC[activeColumn], i, var=stimsetCycleID)
 		endif
 

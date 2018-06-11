@@ -1005,6 +1005,9 @@ Function DAP_OneTimeCallBeforeDAQ(panelTitle, runMode)
 	WAVE stimsetAcqIDHelper = GetStimsetAcqIDHelperWave(panelTitle)
 	stimsetAcqIDHelper = NaN
 
+	WAVE setEventFlag = GetSetEventFlag(panelTitle)
+	setEventFlag[][%PRE_SET_EVENT] = 1
+
 	if(DAG_GetNumericalValue(panelTitle, "Check_DataAcq_Indexing"))
 		IDX_StoreStartFinishForIndexing(panelTitle)
 	endif

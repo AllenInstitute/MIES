@@ -77,6 +77,10 @@ Function IDX_IndexingDoIt(panelTitle)
 		IDX_IndexSingleChannel(panelTitle, CHANNEL_TYPE_TTL, i)
 	endfor
 
+	// need to fire pre set event on next occasion
+	WAVE setEventFlag = GetSetEventFlag(panelTitle)
+	setEventFlag[][%PRE_SET_EVENT] = 1
+
 	DAP_UpdateDAQControls(panelTitle, REASON_STIMSET_CHANGE_DUR_DAQ)
 End
 

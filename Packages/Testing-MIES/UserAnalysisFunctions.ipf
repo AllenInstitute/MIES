@@ -63,7 +63,7 @@ Function ValidFunc_V2(panelTitle, eventType, ITCDataWave, headStage, realDataLen
 	CHECK_EQUAL_VAR(NumberByKey("LOCK", WaveInfo(ITCDataWave, 0)), 1)
 	CHECK_EQUAL_VAR(headstage, 0)
 
-	if(eventType == PRE_DAQ_EVENT)
+	if(eventType == PRE_DAQ_EVENT || eventType == PRE_SET_EVENT)
 		CHECK_EQUAL_VAR(numType(realDataLength), 2)
 	else
 		CHECK(realDataLength >= 0 && realDataLength < DimSize(ITCDataWave, ROWS))
@@ -118,6 +118,18 @@ Function preDAQHardAbort(panelTitle, eventType, ITCDataWave, headStage, realData
 End
 
 Function preDAQ(panelTitle, eventType, ITCDataWave, headStage, realDataLength)
+	string panelTitle
+	variable eventType
+	Wave ITCDataWave
+	variable headstage, realDataLength
+
+	WAVE anaFuncTracker = TrackAnalysisFunctionCalls()
+
+	CHECK(eventType >= 0 && eventType < DimSize(anaFuncTracker, ROWS))
+	anaFuncTracker[eventType][headstage] += 1
+End
+
+Function preSet(panelTitle, eventType, ITCDataWave, headStage, realDataLength)
 	string panelTitle
 	variable eventType
 	Wave ITCDataWave
@@ -230,7 +242,7 @@ Function ValidFunc_V3(panelTitle, s)
 	CHECK_EQUAL_VAR(numType(s.sweepsInSet), 0)
 	CHECK_EQUAL_VAR(strlen(s.params), 0)
 
-	if(s.eventType == PRE_DAQ_EVENT)
+	if(s.eventType == PRE_DAQ_EVENT || s.eventType == PRE_SET_EVENT)
 		CHECK_EQUAL_VAR(numType(s.lastValidRowIndex), 2)
 	else
 		CHECK(s.lastValidRowIndex >= 0 && s.lastValidRowIndex < DimSize(s.rawDACWAVE, ROWS))
@@ -245,6 +257,7 @@ Function ValidFunc_V3(panelTitle, s)
 			CHECK(!WaveExists(GetSweepWave(panelTitle, s.sweepNo)))
 			break
 		case PRE_SWEEP_EVENT:
+		case PRE_SET_EVENT:
 		case MID_SWEEP_EVENT:
 			CHECK_EQUAL_VAR(s.sweepNo, anaFuncTracker[POST_SWEEP_EVENT])
 			CHECK(!WaveExists(GetSweepWave(panelTitle, s.sweepNo)))
