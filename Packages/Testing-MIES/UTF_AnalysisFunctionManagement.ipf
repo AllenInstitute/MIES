@@ -5,11 +5,13 @@
 static Function ChangeAnalysisFunctions()
 
 	WAVE/T wv = root:MIES:WaveBuilder:SavedStimulusSetParameters:DA:WPT_AnaFuncAbortPre_DA_0
+	UpgradeWaveTextParam(wv)
 
 	wv[][%Set] = ""
 	wv[%$"Analysis pre DAQ function"][%Set]    = "AbortPreDAQ"
 
 	WAVE/T wv = root:MIES:WaveBuilder:SavedStimulusSetParameters:DA:WPT_AnaFuncDiff_DA_0
+	UpgradeWaveTextParam(wv)
 
 	wv[][%Set] = ""
 	wv[%$"Analysis pre DAQ function"][%Set]    = "preDAQ"
@@ -20,6 +22,7 @@ static Function ChangeAnalysisFunctions()
 	wv[%$"Analysis post DAQ function"][%Set]   = "postDAQ"
 
 	WAVE/T wv = root:MIES:WaveBuilder:SavedStimulusSetParameters:DA:WPT_AnaFuncInvalid1_DA_0
+	UpgradeWaveTextParam(wv)
 
 	wv[][%Set] = ""
 	wv[%$"Analysis pre DAQ function"][%Set]    = "InvalidSignatureAndReturnType"
@@ -30,6 +33,7 @@ static Function ChangeAnalysisFunctions()
 	wv[%$"Analysis post DAQ function"][%Set]   = "InvalidSignatureAndReturnType"
 
 	WAVE/T wv = root:MIES:WaveBuilder:SavedStimulusSetParameters:DA:WPT_AnaFuncInvalid2_DA_0
+	UpgradeWaveTextParam(wv)
 
 	wv[][%Set] = ""
 	wv[%$"Analysis pre DAQ function"][%Set]    = "InvalidSignatureAndReturnType"
@@ -40,11 +44,13 @@ static Function ChangeAnalysisFunctions()
 	wv[%$"Analysis post DAQ function"][%Set]   = "InvalidSignatureAndReturnType"
 
 	WAVE/T wv = root:MIES:WaveBuilder:SavedStimulusSetParameters:DA:WPT_AnaFuncStopMid_DA_0
+	UpgradeWaveTextParam(wv)
 
 	wv[][%Set] = ""
 	wv[%$"Analysis mid sweep function"][%Set]  = "StopMidSweep"
 
 	WAVE/T wv = root:MIES:WaveBuilder:SavedStimulusSetParameters:DA:WPT_AnaFuncValidMult_DA_0
+	UpgradeWaveTextParam(wv)
 
 	wv[][%Set] = ""
 	wv[%$"Analysis pre DAQ function"][%Set]    = "ValidMultHS_V1"
@@ -55,6 +61,7 @@ static Function ChangeAnalysisFunctions()
 	wv[%$"Analysis post DAQ function"][%Set]   = "ValidMultHS_V1"
 
 	WAVE/T wv = root:MIES:WaveBuilder:SavedStimulusSetParameters:DA:WPT_AnaFuncValid1_DA_0
+	UpgradeWaveTextParam(wv)
 
 	wv[][%Set] = ""
 	wv[%$"Analysis pre DAQ function"][%Set]    = "ValidFunc_V1"
@@ -65,6 +72,7 @@ static Function ChangeAnalysisFunctions()
 	wv[%$"Analysis post DAQ function"][%Set]   = "ValidFunc_V1"
 
 	WAVE/T wv = root:MIES:WaveBuilder:SavedStimulusSetParameters:DA:WPT_AnaFuncValid2_DA_0
+	UpgradeWaveTextParam(wv)
 
 	wv[][%Set] = ""
 	wv[%$"Analysis pre DAQ function"][%Set]    = "ValidFunc_V2"
@@ -75,31 +83,37 @@ static Function ChangeAnalysisFunctions()
 	wv[%$"Analysis post DAQ function"][%Set]   = "ValidFunc_V2"
 
 	WAVE/T wv = root:MIES:WaveBuilder:SavedStimulusSetParameters:DA:WPT_AnaFuncValid3_DA_0
+	UpgradeWaveTextParam(wv)
 
 	wv[][%Set] = ""
 	wv[%$"Analysis function (generic)"][%Set]  = "ValidFunc_V3"
 
 	WAVE/T wv = root:MIES:WaveBuilder:SavedStimulusSetParameters:DA:WPT_AnaFuncParams1_DA_0
+	UpgradeWaveTextParam(wv)
 
 	wv[][%Set] = ""
 	wv[%$"Analysis function (generic)"][%Set]  = "Params1_V3"
 
 	WAVE/T wv = root:MIES:WaveBuilder:SavedStimulusSetParameters:DA:WPT_AnaFuncParams2_DA_0
+	UpgradeWaveTextParam(wv)
 
 	wv[][%Set] = ""
 	wv[%$"Analysis function (generic)"][%Set]  = "Params2_V3"
 
 	WAVE/T wv = root:MIES:WaveBuilder:SavedStimulusSetParameters:DA:WPT_AnaFuncParams3_DA_0
+	UpgradeWaveTextParam(wv)
 
 	wv[][%Set] = ""
 	wv[%$"Analysis function (generic)"][%Set]  = "Params3_V3"
 
 	WAVE/T wv = root:MIES:WaveBuilder:SavedStimulusSetParameters:DA:WPT_AnaFuncParams4_DA_0
+	UpgradeWaveTextParam(wv)
 
 	wv[][%Set] = ""
 	wv[%$"Analysis function (generic)"][%Set]  = "Params4_V3"
 
 	WAVE/T wv = root:MIES:WaveBuilder:SavedStimulusSetParameters:DA:WPT_AnaFuncGeneric_DA_0
+	UpgradeWaveTextParam(wv)
 
 	wv[][%Set] = ""
 	wv[%$"Analysis pre DAQ function"][%Set]    = "NotCalled_V1"
@@ -111,6 +125,7 @@ static Function ChangeAnalysisFunctions()
 	wv[%$"Analysis function (generic)"][%Set]  = "ValidFunc_V3"
 
 	WAVE/T wv = root:MIES:WaveBuilder:SavedStimulusSetParameters:TTL:WPT_AnaFuncTTLNot_TTL_0
+	UpgradeWaveTextParam(wv)
 
 	wv[][%Set] = ""
 	wv[%$"Analysis pre DAQ function"][%Set]    = "NotCalled_V1"
@@ -121,6 +136,7 @@ static Function ChangeAnalysisFunctions()
 	wv[%$"Analysis post DAQ function"][%Set]   = "NotCalled_V1"
 
 	WAVE/T wv = root:MIES:WaveBuilder:SavedStimulusSetParameters:DA:WPT_AnaFuncMissing_DA_0
+	UpgradeWaveTextParam(wv)
 
 	wv[][%Set] = ""
 	wv[%$"Analysis pre DAQ function"][%Set]    = "IDontExist"
@@ -131,11 +147,13 @@ static Function ChangeAnalysisFunctions()
 	wv[%$"Analysis post DAQ function"][%Set]   = "IDontExist"
 
 	WAVE/T wv = root:MIES:WaveBuilder:SavedStimulusSetParameters:DA:WPT_AnaFuncVeryShort_DA_0
+	UpgradeWaveTextParam(wv)
 
 	wv[][%Set] = ""
 	wv[%$"Analysis function (generic)"][%Set]  = "ValidFunc_V3"
 
 	WAVE/T wv = root:MIES:WaveBuilder:SavedStimulusSetParameters:DA:WPT_AnaFuncPreDAQHar_DA_0
+	UpgradeWaveTextParam(wv)
 
 	wv[][%Set] = ""
 	wv[%$"Analysis pre DAQ function"][%Set]    = "preDAQHardAbort"
