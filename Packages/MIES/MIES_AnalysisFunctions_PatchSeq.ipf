@@ -1121,6 +1121,8 @@ Function PSQ_DAScale(panelTitle, s)
 			KillOrMoveToTrash(wv = GetAnalysisFuncDAScaleRes(panelTitle))
 			KillWindow/Z $RESISTANCE_GRAPH
 
+			DisableControls(panelTitle, "Button_DataAcq_SkipBackwards;Button_DataAcq_SkipForward")
+
 			break
 		case POST_SWEEP_EVENT:
 			WAVE numericalValues = GetLBNumericalValues(panelTitle)
@@ -1192,6 +1194,7 @@ Function PSQ_DAScale(panelTitle, s)
 			return NaN
 			break
 		case POST_DAQ_EVENT:
+			EnableControls(panelTitle, "Button_DataAcq_SkipBackwards;Button_DataAcq_SkipForward")
 			AD_UpdateAllDatabrowser()
 			break
 	endswitch
@@ -1391,6 +1394,8 @@ Function PSQ_SquarePulse(panelTitle, s)
 			PSQ_StoreStepSizeInLBN(panelTitle, s.sweepNo, PSQ_SP_INIT_AMP_p100)
 			SetDAScale(panelTitle, s.headstage, PSQ_SP_INIT_AMP_p100)
 
+			DisableControls(panelTitle, "Button_DataAcq_SkipBackwards;Button_DataAcq_SkipForward")
+
 			return 0
 
 			break
@@ -1465,6 +1470,7 @@ Function PSQ_SquarePulse(panelTitle, s)
 			ED_AddEntryToLabnotebook(panelTitle, key, result, unit = LABNOTEBOOK_BINARY_UNIT)
 			break
 		case POST_DAQ_EVENT:
+			EnableControls(panelTitle, "Button_DataAcq_SkipBackwards;Button_DataAcq_SkipForward")
 			AD_UpdateAllDatabrowser()
 			break
 		default:
@@ -1608,6 +1614,8 @@ Function PSQ_Rheobase(panelTitle, s)
 
 			SetDAScale(panelTitle, s.headstage, finalDAScale)
 
+			DisableControls(panelTitle, "Button_DataAcq_SkipBackwards;Button_DataAcq_SkipForward")
+
 			return 0
 
 			break
@@ -1730,6 +1738,7 @@ Function PSQ_Rheobase(panelTitle, s)
 			endif
 			break
 		case POST_DAQ_EVENT:
+			EnableControls(panelTitle, "Button_DataAcq_SkipBackwards;Button_DataAcq_SkipForward")
 			AD_UpdateAllDatabrowser()
 			break
 	endswitch
@@ -1943,6 +1952,8 @@ Function PSQ_Ramp(panelTitle, s)
 
 			SetDAScale(panelTitle, s.headstage, PSQ_RA_DASCALE_DEFAULT * 1e-12)
 
+			DisableControls(panelTitle, "Button_DataAcq_SkipBackwards;Button_DataAcq_SkipForward")
+
 			return 0
 
 			break
@@ -1990,6 +2001,7 @@ Function PSQ_Ramp(panelTitle, s)
 			ED_AddEntryToLabnotebook(panelTitle, key, result, unit = LABNOTEBOOK_BINARY_UNIT)
 			break
 		case POST_DAQ_EVENT:
+			EnableControls(panelTitle, "Button_DataAcq_SkipBackwards;Button_DataAcq_SkipForward")
 			AD_UpdateAllDatabrowser()
 			break
 	endswitch
