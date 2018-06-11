@@ -124,6 +124,10 @@ Function DC_ConfigureDataForITC(panelTitle, dataAcqOrTP, [multiDevice])
 	endif
 
 	SCOPE_CreateGraph(panelTitle, dataAcqOrTP)
+
+	if(dataAcqOrTP == DATA_ACQUISITION_MODE)
+		AFM_CallAnalysisFunctions(panelTitle, PRE_SWEEP_EVENT)
+	endif
 End
 
 static Function DC_UpdateTestPulseWave(panelTitle, TestPulse)
