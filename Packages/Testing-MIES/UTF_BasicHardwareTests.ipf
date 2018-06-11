@@ -624,6 +624,47 @@ Function Test_RepeatSets_5()
 	AllTests(t)
 End
 
+Function ChangeStimSets()
+
+	PGC_SetAndActivateControl(DEVICE, GetPanelControl(0, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_Wave), str = "StimulusSetA_DA_0")
+	PGC_SetAndActivateControl(DEVICE, GetPanelControl(0, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_Index_End), str = "StimulusSetB_DA_0")
+	PGC_SetAndActivateControl(DEVICE, GetPanelControl(1, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_Wave), str = "StimulusSetE_DA_0")
+	PGC_SetAndActivateControl(DEVICE, GetPanelControl(1, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_Index_End), str = "StimulusSetF_DA_0")
+End
+
+// test that locked indexing works when the maximum number of sweeps is
+// not in the first stimset
+Function DAQ_RepeatSets_6()
+
+	STRUCT DAQSettings s
+	InitDAQSettingsFromString(s, "DAQ_MD1_RA1_IDX1_LIDX1_BKG_1_RES_1")
+	AcquireData(s, preAcquireFunc = ChangeStimSets)
+End
+
+Function Test_RepeatSets_6()
+
+	STRUCT TestSettings t
+
+	t.numSweeps     = 7
+	t.sweepWaveType = FLOAT_WAVE
+
+	InitTestStructure(t)
+
+	t.acquiredStimSets_HS0[0,2] = "StimulusSetA_DA_0"
+	t.acquiredStimSets_HS0[3,6] = "StimulusSetB_DA_0"
+	t.sweepCount_HS0            = {0, 1, 2, 0, 0, 0, 0}
+	t.setCycleCount_HS0         = {0, 0, 0, 0, 1, 2, 3}
+	t.stimsetCycleID_HS0[]      = {0, 0, 0, 1, 2, 3, 4}
+
+	t.acquiredStimSets_HS1[0,2] = "StimulusSetE_DA_0"
+	t.acquiredStimSets_HS1[3,6] = "StimulusSetF_DA_0"
+	t.sweepCount_HS1            = {0, 1, 0, 0, 1, 2, 3}
+	t.setCycleCount_HS1         = {0, 0, 1, 0, 0, 0, 0}
+	t.stimsetCycleID_HS1[]      = {0, 0, 1, 2, 2, 2, 2}
+
+	AllTests(t)
+End
+
 Function DAQ_SkipSweepsDuringITI_SD()
 
 	string device

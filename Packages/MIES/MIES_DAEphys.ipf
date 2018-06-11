@@ -1486,7 +1486,7 @@ Function DAP_GetITCSampInt(panelTitle, dataAcqOrTP)
 	return SI_CalculateMinSampInterval(panelTitle, dataAcqOrTP) * multiplier
 End
 
-/// @todo display correct values for yoked devices using #RA_GetTotalNumberOfSets
+/// @todo display correct values for yoked devices
 Function DAP_UpdateSweepSetVariables(panelTitle)
 	string panelTitle
 
@@ -4509,6 +4509,7 @@ Function DAP_UpdateDAQControls(panelTitle, updateFlag)
 	elseif(updateFlag & REASON_STIMSET_CHANGE_DUR_DAQ)
 		DAP_UpdateITIAcrossSets(panelTitle)
 		AFM_UpdateAnalysisFunctionWave(panelTitle)
+		SetValDisplay(panelTitle, "valdisp_DataAcq_SweepsActiveSet", var=IDX_MaxNoOfSweeps(panelTitle, 1))
 	endif
 
 	if(updateFlag & REASON_HEADSTAGE_CHANGE)
