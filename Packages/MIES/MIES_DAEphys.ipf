@@ -1109,7 +1109,6 @@ Function DAP_OneTimeCallAfterDAQ(panelTitle, [forcedStop, startTPAfterDAQ])
 	DAP_ResetGUIAfterDAQ(panelTitle)
 
 	if(!forcedStop)
-		AFM_CallAnalysisFunctions(panelTitle, POST_SET_EVENT)
 		AFM_CallAnalysisFunctions(panelTitle, POST_DAQ_EVENT)
 	endif
 

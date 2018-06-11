@@ -31,7 +31,6 @@ static Function RA_HandleITI_MD(panelTitle)
 	variable ITI
 	string funcList
 
-	AFM_CallAnalysisFunctions(panelTitle, POST_SET_EVENT)
 	ITI = RA_RecalculateITI(panelTitle)
 
 	if(!DAG_GetNumericalValue(panelTitle, "check_Settings_ITITP") || ITI <= 0)
@@ -84,7 +83,6 @@ static Function RA_HandleITI(panelTitle)
 	variable ITI, refTime, background, aborted
 	string funcList
 
-	AFM_CallAnalysisFunctions(panelTitle, POST_SET_EVENT)
 	ITI = RA_RecalculateITI(panelTitle)
 	background = DAG_GetNumericalValue(panelTitle, "Check_Settings_BackgrndDataAcq")
 	funcList = "RA_Counter(\"" + panelTitle + "\")"
