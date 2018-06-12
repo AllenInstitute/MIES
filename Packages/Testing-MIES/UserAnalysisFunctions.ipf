@@ -394,3 +394,32 @@ Function TrackSweepCount_V3(panelTitle, s)
 	NVAR count = $GetCount(panelTitle)
 	anaFuncSweepCounts[s.sweepNo][s.eventType][s.headstage] = count
 End
+
+Function AbortPreSet(panelTitle, s)
+	string panelTitle
+	STRUCT AnalysisFunction_V3& s
+
+	WAVE anaFuncTracker = TrackAnalysisFunctionCalls()
+
+	CHECK(s.eventType >= 0 && s.eventType < DimSize(anaFuncTracker, ROWS))
+	anaFuncTracker[s.eventType][s.headstage] += 1
+
+	if(s.eventType == PRE_SET_EVENT)
+		// aborts DAQ
+		return 1
+	else
+		return 0
+	endif
+End
+
+Function TotalOrdering(panelTitle, s)
+	string panelTitle
+	STRUCT AnalysisFunction_V3& s
+
+	WAVE anaFuncOrder = TrackAnalysisFunctionOrder()
+
+	CHECK(s.eventType >= 0 && s.eventType < DimSize(anaFuncOrder, ROWS))
+
+	Sleep/T 2
+	anaFuncOrder[s.eventType][s.headstage] = ticks
+End

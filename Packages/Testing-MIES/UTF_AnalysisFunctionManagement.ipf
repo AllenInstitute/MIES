@@ -172,6 +172,18 @@ static Function ChangeAnalysisFunctions()
 	wv[%$"Analysis post sweep function"][%Set] = "preDAQHardAbort"
 	wv[%$"Analysis post set function"][%Set]   = "preDAQHardAbort"
 	wv[%$"Analysis post DAQ function"][%Set]   = "preDAQHardAbort"
+
+	WAVE/T wv = root:MIES:WaveBuilder:SavedStimulusSetParameters:DA:WPT_AnaFuncPreSetHar_DA_0
+	UpgradeWaveTextParam(wv)
+
+	wv[][%Set] = ""
+	wv[%$"Analysis function (generic)"][%Set]    = "AbortPreSet"
+
+	WAVE/T wv = root:MIES:WaveBuilder:SavedStimulusSetParameters:DA:WPT_AnaFuncOrder_DA_0
+	UpgradeWaveTextParam(wv)
+
+	wv[][%Set] = ""
+	wv[%$"Analysis function (generic)"][%Set]    = "TotalOrdering"
 End
 
 Function RewriteAnalysisFunctions()
@@ -201,6 +213,29 @@ Function/WAVE TrackAnalysisFunctionCalls([numHeadstages])
 	return wv
 End
 
+Function/WAVE TrackAnalysisFunctionOrder([numHeadstages])
+	variable numHeadstages
+
+	variable i
+
+	DFREF dfr = root:
+	WAVE/D/Z/SDFR=dfr wv = anaFuncOrder
+
+	if(WaveExists(wv))
+		return wv
+	else
+		Make/N=(TOTAL_NUM_EVENTS, numHeadstages)/D dfr:anaFuncOrder/WAVE=wv
+	endif
+
+	wv = NaN
+
+	for(i = 0; i < TOTAL_NUM_EVENTS; i += 1)
+		SetDimLabel ROWS, i, $StringFromList(i, EVENT_NAME_LIST), wv
+	endfor
+
+	return wv
+End
+
 Function CALLABLE_PROTO()
 	FAIL()
 End
@@ -221,6 +256,9 @@ static Function AcquireData(s, stimset, [numHeadstages, TTLStimset, postInitiali
 
 	WAVE anaFuncTracker = TrackAnalysisFunctionCalls()
 	KillOrMoveToTrash(wv = anaFuncTracker)
+
+	WAVE anaFuncOrder = TrackAnalysisFunctionOrder()
+	KillOrMoveToTrash(wv = anaFuncOrder)
 
 	WAVE anaFuncTracker = TrackAnalysisFunctionCalls(numHeadstages = numHeadstages)
 
@@ -1633,4 +1671,64 @@ static Function AFT_Test18()
 
 	WAVE analysisFunctionsAfter = GetAnalysisFunctionStorage(DEVICE)
 	CHECK_EQUAL_WAVES(analysisFunctionsBefore, analysisFunctionsAfter)
+End
+
+// check that pre-set-event can abort
+static Function AFT_DAQ19()
+
+	STRUCT DAQSettings s
+	InitDAQSettingsFromString(s, "DAQ_MD1_RA0_IDX0_LIDX0_BKG_1")
+
+	AcquireData(s, "AnaFuncPreSetHar_DA_0")
+End
+
+static Function AFT_Test19()
+
+	variable sweepNo
+	string key
+
+	CHECK_EQUAL_VAR(GetSetVariable(DEVICE, "SetVar_Sweep"), 0)
+
+	sweepNo = AFH_GetLastSweepAcquired(DEVICE)
+	CHECK_EQUAL_VAR(sweepNo, NaN)
+
+	WAVE anaFuncTracker = TrackAnalysisFunctionCalls()
+
+	CHECK_EQUAL_VAR(anaFuncTracker[PRE_DAQ_EVENT], 1)
+	CHECK_EQUAL_VAR(anaFuncTracker[PRE_SET_EVENT], 1)
+	CHECK_EQUAL_VAR(anaFuncTracker[PRE_SWEEP_EVENT], 0)
+	CHECK_EQUAL_VAR(anaFuncTracker[MID_SWEEP_EVENT], 0)
+	CHECK_EQUAL_VAR(anaFuncTracker[POST_SWEEP_EVENT], 0)
+	CHECK_EQUAL_VAR(anaFuncTracker[POST_SET_EVENT], 0)
+	CHECK_EQUAL_VAR(anaFuncTracker[POST_DAQ_EVENT], 0)
+	CHECK_EQUAL_VAR(anaFuncTracker[GENERIC_EVENT], 0)
+End
+
+// check total ordering of events via timestamps
+static Function AFT_DAQ20()
+
+	STRUCT DAQSettings s
+	InitDAQSettingsFromString(s, "DAQ_MD1_RA0_IDX0_LIDX0_BKG_1")
+
+	AcquireData(s, "AnaFuncOrder_DA_0")
+End
+
+static Function AFT_Test20()
+
+	variable sweepNo
+
+	CHECK_EQUAL_VAR(GetSetVariable(DEVICE, "SetVar_Sweep"), 1)
+
+	sweepNo = AFH_GetLastSweepAcquired(DEVICE)
+	CHECK_EQUAL_VAR(sweepNo, 0)
+
+	WAVE anaFuncOrder = TrackAnalysisFunctionOrder()
+
+	Make/FREE indexWave = {PRE_DAQ_EVENT, PRE_SET_EVENT, PRE_SWEEP_EVENT, MID_SWEEP_EVENT, POST_SWEEP_EVENT, POST_SET_EVENT, POST_DAQ_EVENT}
+	Make/FREE/N=(DimSize(indexWave, ROWS)) anaFuncOrderIndex = anaFuncOrder[indexWave[p]]
+
+	Duplicate/FREE anaFuncOrderIndex, anaFuncOrderSorted
+	Sort anaFuncOrderSorted, anaFuncOrderSorted
+
+	CHECK_EQUAL_WAVES(anaFuncOrderIndex, anaFuncOrderSorted)
 End

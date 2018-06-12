@@ -240,6 +240,10 @@ Function run()
 	list = AddListItem("AFT_Test17", list, ";", INF)
 	list = AddListItem("AFT_DAQ18", list, ";", INF)
 	list = AddListItem("AFT_Test18", list, ";", INF)
+	list = AddListItem("AFT_DAQ19", list, ";", INF)
+	list = AddListItem("AFT_Test19", list, ";", INF)
+	list = AddListItem("AFT_DAQ20", list, ";", INF)
+	list = AddListItem("AFT_Test20", list, ";", INF)
 #endif
 
 	// initialize everything
