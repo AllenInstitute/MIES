@@ -1,9 +1,9 @@
 digraph G {
     fontname="sans-serif";
-    penwidth="0.1";
+    compound="true";
     ratio="0,01";
     center="true";
-    compound="true";
+    penwidth="0.1";
     edge [comment="Wildcard edge",
           fontname="sans-serif",
           fontsize=10,
@@ -19,33 +19,59 @@ digraph G {
           style="filled"];
     "Start DAQ/RA";
     "Mid Sweep Event";
-    "Start DAQ/RA" -> "Mid Sweep Event";
     "Post DAQ Event";
-    "Start DAQ/RA" -> "Post DAQ Event";
-    "Post DAQ Event" -> "Update Dashboard";
-    "Prepare DAQ/Pre Set Event";
-    "Start DAQ/RA" -> "Prepare DAQ/Pre Set Event";
     "Post Set Event";
     "Post Sweep Event";
+    "Prepare DAQ/Pre Set Event";
+    "Start DAQ/RA" -> "Mid Sweep Event";
+    "Start DAQ/RA" -> "Post DAQ Event";
+    "Start DAQ/RA" -> "Prepare DAQ/Pre Set Event";
     "Start DAQ/RA" -> "Post Set Event";
     "Start DAQ/RA" -> "Post Sweep Event";
-    "Enable \"TP during ITI\"";
-    "Enable \"Autobias\"";
-    "Enable \"Multidevice DAQ\"";
-    "Valid Autobias voltage (finite and non-zero)";
-    "Disable \"dDAQ\"/\"oodDAQ\"";
-    "Enable \"Repeated Acquisition\"";
-    "Check if no TTL channels are active";
-    "Prepare DAQ/Pre Set Event" -> "Enable \"Autobias\"";
-    "Prepare DAQ/Pre Set Event" -> "Enable \"TP during ITI\"";
-    "Prepare DAQ/Pre Set Event" -> "Valid Autobias voltage (finite and non-zero)";
-    "Prepare DAQ/Pre Set Event" -> "Enable \"Multidevice DAQ\"";
-    "Prepare DAQ/Pre Set Event" -> "Disable \"dDAQ\"/\"oodDAQ\"";
-    "Prepare DAQ/Pre Set Event" -> "Enable \"Repeated Acquisition\"";
-    "Prepare DAQ/Pre Set Event" -> "Check if no TTL channels are active";
-    "All checks passed";
-    "Valid Autobias voltage (finite and non-zero)" -> "All checks passed";
-    "Check if no TTL channels are active" -> "All checks passed";
+    subgraph cluster_preDAQ {
+        color="invis";
+        edge [comment="Wildcard node added automatic in EG."];
+        node [comment="Wildcard node added automatic in EG."];
+        "Enable \"TP during ITI\"";
+        "Enable \"Autobias\"";
+        "Enable \"Multidevice DAQ\"";
+        "Valid Autobias voltage (finite and non-zero)";
+        "Disable \"dDAQ\"/\"oodDAQ\"";
+        "Enable \"Repeated Acquisition\"";
+        "Check if no TTL channels are active";
+        "Prepare DAQ/Pre Set Event" -> "Enable \"Autobias\"";
+        "Prepare DAQ/Pre Set Event" -> "Enable \"TP during ITI\"";
+        "Prepare DAQ/Pre Set Event" -> "Valid Autobias voltage (finite and non-zero)";
+        "Prepare DAQ/Pre Set Event" -> "Enable \"Multidevice DAQ\"";
+        "Prepare DAQ/Pre Set Event" -> "Disable \"dDAQ\"/\"oodDAQ\"";
+        "Prepare DAQ/Pre Set Event" -> "Enable \"Repeated Acquisition\"";
+        "Prepare DAQ/Pre Set Event" -> "Check if no TTL channels are active";
+        "All checks passed";
+        "Valid Autobias voltage (finite and non-zero)" -> "All checks passed";
+        "Check if no TTL channels are active" -> "All checks passed";
+        "All checks passed" -> "Use first DAScale value"  [label="Yes"];
+        "All checks passed" -> "Abort"  [label="No"];
+        "Stimset is large enough";
+        "Prepare DAQ/Pre Set Event" -> "Stimset is large enough";
+        "Stimset is large enough" -> "All checks passed";
+        "Check if mode is IC";
+        "Prepare DAQ/Pre Set Event" -> "Check if mode is IC";
+        "Check if mode is IC" -> "All checks passed";
+        "All required analysis parameters present?\n DAScale : numeric wave\n OperationMode: string\nSamplingMultiplier: variable";
+        "Prepare DAQ/Pre Set Event" -> "All required analysis parameters present?\n DAScale : numeric wave\n OperationMode: string\nSamplingMultiplier: variable";
+        "All required analysis parameters present?\n DAScale : numeric wave\n OperationMode: string\nSamplingMultiplier: variable" -> "All checks passed";
+        "Get OperationMode";
+        "All required analysis parameters present?\n DAScale : numeric wave\n OperationMode: string\nSamplingMultiplier: variable" -> "Get OperationMode";
+        "Look for an existing and passing rheobase sweep\n within a passing set and\n a pulse duration of more than 500ms";
+        "Get OperationMode" -> "Look for an existing and passing rheobase sweep\n within a passing set and\n a pulse duration of more than 500ms"  [label="Supra"];
+        "Look for an existing and passing rheobase sweep\n within a passing set and\n a pulse duration of more than 500ms" -> "Abort"  [label="Not found"];
+        "Use the DAScale value of that sweep\n as offset to the DAScale values from the analysis parameters";
+        "Look for an existing and passing rheobase sweep\n within a passing set and\n a pulse duration of more than 500ms" -> "Use the DAScale value of that sweep\n as offset to the DAScale values from the analysis parameters"  [label="Found"];
+        "Use the DAScale values from the analysis parameters";
+        "Get OperationMode" -> "Use the DAScale values from the analysis parameters"  [label="Sub"];
+    }
+
+    "Post DAQ Event" -> "Update Dashboard";
     "Mark set as passed if $NUM_DA_SCALES sweeps passed, as failure otherwise";
     "Post Set Event" -> "Mark set as passed if $NUM_DA_SCALES sweeps passed, as failure otherwise";
     "Last Sweep passed?";
@@ -60,9 +86,7 @@ digraph G {
     "Check if the Set can still pass";
     "Last Sweep passed?" -> "Check if the Set can still pass"  [label="No"];
     "Check if the Set can still pass" -> "Skip to end"  [label="No"];
-    "All checks passed" -> "Use next DAScale value"  [label="Yes"];
     "Abort";
-    "All checks passed" -> "Abort"  [label="No"];
     "Current Sweep passed?";
     "Mid Sweep Event" -> "Current Sweep passed?";
     "Grab next completely acquired chunk (500ms) of stimset baseline";
@@ -96,22 +120,4 @@ digraph G {
     "Mark chunk as passed/failed [2]" -> "Mark Sweep as passed"  [label="Passed"];
     "Mark Sweep as passed" -> "Early Sweep stop";
     "Mark Sweep as failed" -> "Early Sweep stop";
-    "Stimset is large enough";
-    "Prepare DAQ/Pre Set Event" -> "Stimset is large enough";
-    "Stimset is large enough" -> "All checks passed";
-    "All required analysis parameters present?\n DAScale : numeric wave\n OperationMode: string\nSamplingMultiplier: variable";
-    "Prepare DAQ/Pre Set Event" -> "All required analysis parameters present?\n DAScale : numeric wave\n OperationMode: string\nSamplingMultiplier: variable";
-    "All required analysis parameters present?\n DAScale : numeric wave\n OperationMode: string\nSamplingMultiplier: variable" -> "All checks passed";
-    "Get OperationMode";
-    "All required analysis parameters present?\n DAScale : numeric wave\n OperationMode: string\nSamplingMultiplier: variable" -> "Get OperationMode";
-    "Look for an existing and passing rheobase sweep\n within a passing set and\n a pulse duration of more than 500ms";
-    "Get OperationMode" -> "Look for an existing and passing rheobase sweep\n within a passing set and\n a pulse duration of more than 500ms"  [label="Supra"];
-    "Look for an existing and passing rheobase sweep\n within a passing set and\n a pulse duration of more than 500ms" -> "Abort"  [label="Not found"];
-    "Use the DAScale value of that sweep\n as offset to the DAScale values from the analysis parameters";
-    "Look for an existing and passing rheobase sweep\n within a passing set and\n a pulse duration of more than 500ms" -> "Use the DAScale value of that sweep\n as offset to the DAScale values from the analysis parameters"  [label="Found"];
-    "Use the DAScale values from the analysis parameters";
-    "Get OperationMode" -> "Use the DAScale values from the analysis parameters"  [label="Sub"];
-    "Check if mode is IC";
-    "Prepare DAQ/Pre Set Event" -> "Check if mode is IC";
-    "Check if mode is IC" -> "All checks passed";
 }
