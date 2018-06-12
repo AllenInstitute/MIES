@@ -23,8 +23,8 @@ digraph G {
     "Post DAQ Event";
     "Start DAQ/RA" -> "Post DAQ Event";
     "Post DAQ Event" -> "Update Dashboard";
-    "Prepare DAQ Event";
-    "Start DAQ/RA" -> "Prepare DAQ Event";
+    "Prepare DAQ/Pre Set Event";
+    "Start DAQ/RA" -> "Prepare DAQ/Pre Set Event";
     "Post Set Event";
     "Post Sweep Event";
     "Start DAQ/RA" -> "Post Set Event";
@@ -36,13 +36,13 @@ digraph G {
     "Disable \"dDAQ\"/\"oodDAQ\"";
     "Enable \"Repeated Acquisition\"";
     "Check if no TTL channels are active";
-    "Prepare DAQ Event" -> "Enable \"Autobias\"";
-    "Prepare DAQ Event" -> "Enable \"TP during ITI\"";
-    "Prepare DAQ Event" -> "Valid Autobias voltage (finite and non-zero)";
-    "Prepare DAQ Event" -> "Enable \"Multidevice DAQ\"";
-    "Prepare DAQ Event" -> "Disable \"dDAQ\"/\"oodDAQ\"";
-    "Prepare DAQ Event" -> "Enable \"Repeated Acquisition\"";
-    "Prepare DAQ Event" -> "Check if no TTL channels are active";
+    "Prepare DAQ/Pre Set Event" -> "Enable \"Autobias\"";
+    "Prepare DAQ/Pre Set Event" -> "Enable \"TP during ITI\"";
+    "Prepare DAQ/Pre Set Event" -> "Valid Autobias voltage (finite and non-zero)";
+    "Prepare DAQ/Pre Set Event" -> "Enable \"Multidevice DAQ\"";
+    "Prepare DAQ/Pre Set Event" -> "Disable \"dDAQ\"/\"oodDAQ\"";
+    "Prepare DAQ/Pre Set Event" -> "Enable \"Repeated Acquisition\"";
+    "Prepare DAQ/Pre Set Event" -> "Check if no TTL channels are active";
     "All checks passed";
     "Valid Autobias voltage (finite and non-zero)" -> "All checks passed";
     "Check if no TTL channels are active" -> "All checks passed";
@@ -97,10 +97,10 @@ digraph G {
     "Mark Sweep as passed" -> "Early Sweep stop";
     "Mark Sweep as failed" -> "Early Sweep stop";
     "Stimset is large enough";
-    "Prepare DAQ Event" -> "Stimset is large enough";
+    "Prepare DAQ/Pre Set Event" -> "Stimset is large enough";
     "Stimset is large enough" -> "All checks passed";
     "All required analysis parameters present?\n DAScale : numeric wave\n OperationMode: string\nSamplingMultiplier: variable";
-    "Prepare DAQ Event" -> "All required analysis parameters present?\n DAScale : numeric wave\n OperationMode: string\nSamplingMultiplier: variable";
+    "Prepare DAQ/Pre Set Event" -> "All required analysis parameters present?\n DAScale : numeric wave\n OperationMode: string\nSamplingMultiplier: variable";
     "All required analysis parameters present?\n DAScale : numeric wave\n OperationMode: string\nSamplingMultiplier: variable" -> "All checks passed";
     "Get OperationMode";
     "All required analysis parameters present?\n DAScale : numeric wave\n OperationMode: string\nSamplingMultiplier: variable" -> "Get OperationMode";
@@ -112,6 +112,6 @@ digraph G {
     "Use the DAScale values from the analysis parameters";
     "Get OperationMode" -> "Use the DAScale values from the analysis parameters"  [label="Sub"];
     "Check if mode is IC";
-    "Prepare DAQ Event" -> "Check if mode is IC";
+    "Prepare DAQ/Pre Set Event" -> "Check if mode is IC";
     "Check if mode is IC" -> "All checks passed";
 }

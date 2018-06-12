@@ -18,8 +18,8 @@ digraph G {
           fontcolor="4",
           style="filled"];
     "Start DAQ/RA";
-    "Prepare DAQ Event";
-    "Start DAQ/RA" -> "Prepare DAQ Event";
+    "Prepare DAQ/Pre Set Event";
+    "Start DAQ/RA" -> "Prepare DAQ/Pre Set Event";
     "Post Sweep Event";
     "Start DAQ/RA" -> "Post Sweep Event";
     "Post DAQ Event";
@@ -29,14 +29,14 @@ digraph G {
     "Disable \"dDAQ\"/\"oodDAQ\"";
     "Enable \"Repeated Acquisition\"";
     "Check if no TTL channels are active";
-    "Prepare DAQ Event" -> "Check if mode is IC";
-    "Prepare DAQ Event" -> "Set \"TP inserting\" to disabled";
-    "Prepare DAQ Event" -> "Set \"TP during ITI\" to disabled";
-    "Prepare DAQ Event" -> "Set \"ITI\" to 100ms";
-    "Prepare DAQ Event" -> "Enable \"Multidevice DAQ\"";
-    "Prepare DAQ Event" -> "Disable \"dDAQ\"/\"oodDAQ\"";
-    "Prepare DAQ Event" -> "Enable \"Repeated Acquisition\"";
-    "Prepare DAQ Event" -> "Check if no TTL channels are active";
+    "Prepare DAQ/Pre Set Event" -> "Check if mode is IC";
+    "Prepare DAQ/Pre Set Event" -> "Set \"TP inserting\" to disabled";
+    "Prepare DAQ/Pre Set Event" -> "Set \"TP during ITI\" to disabled";
+    "Prepare DAQ/Pre Set Event" -> "Set \"ITI\" to 100ms";
+    "Prepare DAQ/Pre Set Event" -> "Enable \"Multidevice DAQ\"";
+    "Prepare DAQ/Pre Set Event" -> "Disable \"dDAQ\"/\"oodDAQ\"";
+    "Prepare DAQ/Pre Set Event" -> "Enable \"Repeated Acquisition\"";
+    "Prepare DAQ/Pre Set Event" -> "Check if no TTL channels are active";
     "All checks passed";
     "Check if mode is IC" -> "All checks passed";
     "Check if no TTL channels are active" -> "All checks passed";
@@ -68,7 +68,7 @@ digraph G {
     "Write step size of +10pA to labnotebook" -> "Offset DAScale by +10pA";
     "Check if only one headstage is active";
     "Check if only one headstage is active" -> "All checks passed";
-    "Prepare DAQ Event" -> "Check if only one headstage is active";
+    "Prepare DAQ/Pre Set Event" -> "Check if only one headstage is active";
     "Mark sweep as passed";
     "Mark sweep as passed" -> "Skip to end of active set";
     "Store DAScale in labnotebook" -> "Mark sweep as passed";
@@ -79,6 +79,6 @@ digraph G {
     "Start DAQ/RA" -> "Post Set Event";
     "Post Set Event" -> "Mark set as passed if 1 sweep passed, as failure otherwise";
     "All required analysis parameters present?\nSamplingMultiplier: variable";
-    "Prepare DAQ Event" -> "All required analysis parameters present?\nSamplingMultiplier: variable";
+    "Prepare DAQ/Pre Set Event" -> "All required analysis parameters present?\nSamplingMultiplier: variable";
     "All required analysis parameters present?\nSamplingMultiplier: variable" -> "All checks passed";
 }
