@@ -140,6 +140,21 @@ Function TI_queryAmps(placeHolder, [cmdID])
 		TI_WriteAck(cmdID, 0)
 	endif
 End
+
+/// @brief function for loading UserConfig.txt
+/// @param placeHolder -- a dummy variable needed for making this command work with the TangoCommandInput call from the WSE
+/// @param cmdID					optional parameter...if being called from WSE, this will be present.
+Function TI_loadConfig(placeholder, [cmdID])
+	variable placeHolder
+	string cmdID
+
+	ExpConfig_ConfigureMIES()
+
+	// determine if the cmdID was provided
+	if(!ParamIsDefault(cmdID))
+		TI_WriteAck(cmdID, 0)
+	endif
+End
 		
 /// @brief function for querying the connected amps
 /// @param ampChannel -- amplifier channel to be connected by the WSE 
