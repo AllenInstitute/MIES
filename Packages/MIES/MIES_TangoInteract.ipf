@@ -144,7 +144,7 @@ End
 /// @brief function for loading UserConfig.txt
 /// @param placeHolder -- a dummy variable needed for making this command work with the TangoCommandInput call from the WSE
 /// @param cmdID					optional parameter...if being called from WSE, this will be present.
-Function TI_loadConfig(placeholder, [cmdID])
+Function TI_loadConfig(placeHolder, [cmdID])
 	variable placeHolder
 	string cmdID
 
