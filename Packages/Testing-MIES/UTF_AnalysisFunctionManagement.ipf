@@ -183,6 +183,8 @@ End
 Function/WAVE TrackAnalysisFunctionCalls([numHeadstages])
 	variable numHeadstages
 
+	variable i
+
 	DFREF dfr = root:
 	WAVE/Z/SDFR=dfr wv = anaFuncTracker
 
@@ -191,6 +193,10 @@ Function/WAVE TrackAnalysisFunctionCalls([numHeadstages])
 	else
 		Make/N=(TOTAL_NUM_EVENTS, numHeadstages) dfr:anaFuncTracker/WAVE=wv
 	endif
+
+	for(i = 0; i < TOTAL_NUM_EVENTS; i += 1)
+		SetDimLabel ROWS, i, $StringFromList(i, EVENT_NAME_LIST), wv
+	endfor
 
 	return wv
 End
