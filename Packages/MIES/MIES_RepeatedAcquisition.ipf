@@ -221,15 +221,11 @@ Function RA_Counter(panelTitle)
 	RA_StepSweepsRemaining(panelTitle)
 
 	if(indexing)
-		if(activeSetcount == 0)
-			if(indexingLocked)
-				IDX_IndexingDoIt(panelTitle)
-			endif
+		if(indexingLocked && activeSetcount == 0)
+			IDX_IndexingDoIt(panelTitle)
 
 			activeSetCount = IDX_CalculcateActiveSetCount(panelTitle)
-		endif
-
-		if(!indexingLocked)
+		elseif(!indexingLocked)
 			IDX_ApplyUnLockedIndexing(panelTitle, count)
 		endif
 	endif
@@ -323,7 +319,7 @@ End
 Function RA_CounterMD(panelTitle)
 	string panelTitle
 
-	variable numTotalSweeps, recalcActiveSetCount, activeSetCountMax
+	variable numTotalSweeps, activeSetCountMax
 	NVAR count = $GetCount(panelTitle)
 	NVAR activeSetCount = $GetActiveSetCount(panelTitle)
 	variable i, indexing, indexingLocked, numFollower, followerActiveSetCount
@@ -345,18 +341,12 @@ Function RA_CounterMD(panelTitle)
 
 	RA_StepSweepsRemaining(panelTitle)
 
-	recalcActiveSetCount = (activeSetCount == 0)
-
 	if(indexing)
-		if(recalcActiveSetCount)
-			if(indexingLocked)
-				IDX_IndexingDoIt(panelTitle)
-			endif
+		if(indexingLocked && activeSetCount == 0)
+			IDX_IndexingDoIt(panelTitle)
 
 			activeSetCount = IDX_CalculcateActiveSetCount(panelTitle)
-		endif
-
-		if(!indexingLocked)
+		elseif(!indexingLocked)
 			// indexing is not locked = channel indexes when set has completed all its steps
 			IDX_ApplyUnLockedIndexing(panelTitle, count)
 		endif
@@ -376,15 +366,11 @@ Function RA_CounterMD(panelTitle)
 			RA_StepSweepsRemaining(followerPanelTitle)
 
 			if(indexing)
-				if(recalcActiveSetCount)
-					if(indexingLocked)
-						IDX_IndexingDoIt(followerPanelTitle)
-					endif
+				if(indexingLocked && activeSetCount == 0)
+					IDX_IndexingDoIt(followerPanelTitle)
 					followerActiveSetCount = IDX_CalculcateActiveSetCount(followerPanelTitle)
 					activeSetCountMax = max(activeSetCountMax, followerActiveSetCount)
-				endif
-
-				if(!indexingLocked)
+				elseif(!indexingLocked)
 					// channel indexes when set has completed all its steps
 					IDX_ApplyUnLockedIndexing(followerPanelTitle, count)
 				endif
