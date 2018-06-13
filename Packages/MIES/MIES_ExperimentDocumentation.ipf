@@ -471,11 +471,25 @@ Function ED_createWaveNoteTags(panelTitle, sweepCount)
 	string panelTitle
 	variable sweepCount
 
-	variable i, j
+	variable i, j, refITI, ITI
 
 	WAVE sweepSettingsWave = GetSweepSettingsWave(panelTitle)
 	WAVE/T sweepSettingsKey = GetSweepSettingsKeyWave(panelTitle)
 	ED_AddEntriesToLabnotebook(sweepSettingsWave, sweepSettingsKey, SweepCount, panelTitle, DATA_ACQUISITION_MODE)
+
+	ITI = DAG_GetNumericalValue(panelTitle, "SetVar_DataAcq_ITI")
+	refITI = GetSweepSettingsWave(panelTitle)[0][%$"Inter-trial interval"][INDEP_HEADSTAGE]
+	if(!CheckIfClose(ITI, refITI, tol = 1e-3))
+		Make/FREE/N=(1, 1, LABNOTEBOOK_LAYER_COUNT) vals = NaN
+		vals[0][0][INDEP_HEADSTAGE] = ITI
+
+		Make/T/FREE/N=(3, 1) keys
+		WAVE/T sweepSettingsKeyWave = GetSweepSettingsKeyWave(panelTitle)
+		keys[0] = sweepSettingsKeyWave[0][%$"Inter-trial interval"]
+		keys[1] = sweepSettingsKeyWave[1][%$"Inter-trial interval"]
+		keys[2] = sweepSettingsKeyWave[2][%$"Inter-trial interval"]
+		ED_AddEntriesToLabnotebook(vals, keys, sweepCount, panelTitle, DATA_ACQUISITION_MODE)
+	endif
 
 	WAVE/T sweepSettingsTxtWave = GetSweepSettingsTextWave(panelTitle)
 	WAVE/T sweepSettingsTxtKey = GetSweepSettingsTextKeyWave(panelTitle)
