@@ -1794,8 +1794,6 @@ static Function WBP_LoadSet(setName)
 	// reset old state of checkbox and update panel
 	SetCheckBoxState(panel, "check_PreventUpdate", preventUpdate)
 	WBP_UpdatePanelIfAllowed()
-
-	WBP_UpdateParameterWave()
 End
 
 static Function SetAnalysisFunctionIfFuncExists(win, ctrl, stimset, funcList, func)
@@ -2176,6 +2174,8 @@ static Function WBP_AnaFuncsToWPT()
 		WPT[1, 5][99] = ""
 		WPT[8][99]    = ""
 	endif
+
+	WBP_UpdateParameterWave()
 End
 
 /// Wrapper functions to be used in GUI recreation macros
