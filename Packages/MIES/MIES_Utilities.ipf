@@ -79,6 +79,10 @@ Function ASSERT(var, errorMsg)
 	try
 		AbortOnValue var==0, 1
 	catch
+		print "!!! Assertion FAILED !!!"
+		printf "Message: \"%s\"\r", RemoveEnding(errorMsg, "\r")
+
+#ifndef AUTOMATED_TESTING
 		// hard coding the path here so that we don't depend on GetMiesVersion()
 		// in MIES_GlobalStringAndVariableAccess.ipf
 		SVAR/Z miesVersion = root:MIES:version
@@ -89,8 +93,6 @@ Function ASSERT(var, errorMsg)
 			miesVersionStr = ""
 		endif
 
-		print "!!! Assertion FAILED !!!"
-		printf "Message: \"%s\"\r", RemoveEnding(errorMsg, "\r")
 		print "Please provide the following information if you contact the MIES developers:"
 		print "################################"
 		print GetStackTrace()
@@ -100,6 +102,7 @@ Function ASSERT(var, errorMsg)
 
 		ControlWindowToFront()
 		Debugger
+#endif // AUTOMATED_TESTING
 		Abort
 	endtry
 End
