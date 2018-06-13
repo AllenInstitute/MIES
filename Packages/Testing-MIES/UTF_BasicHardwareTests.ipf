@@ -1465,6 +1465,63 @@ Function Test_RepeatSets_7()
 	AllTests(t)
 End
 
+Function SkipSweepsStimsets()
+
+	WAVE/T wv = root:MIES:WaveBuilder:SavedStimulusSetParameters:DA:WPT_StimulusSetA_DA_0
+
+	wv[][%Set] = ""
+	wv[%$"Analysis function (generic)"][%Set] = "SkipSweeps"
+
+	WAVE/T wv = root:MIES:WaveBuilder:SavedStimulusSetParameters:DA:WPT_StimulusSetB_DA_0
+
+	wv[][%Set] = ""
+	wv[%$"Analysis function (generic)"][%Set] = "SkipSweeps"
+
+	WAVE/T wv = root:MIES:WaveBuilder:SavedStimulusSetParameters:DA:WPT_StimulusSetC_DA_0
+
+	wv[][%Set] = ""
+	wv[%$"Analysis function (generic)"][%Set] = "SkipSweeps"
+
+	WAVE/T wv = root:MIES:WaveBuilder:SavedStimulusSetParameters:DA:WPT_StimulusSetD_DA_0
+
+	wv[][%Set] = ""
+	wv[%$"Analysis function (generic)"][%Set] = "SkipSweeps"
+End
+
+static Function SkipSweepsStimsets_IGNORE()
+
+	PGC_SetAndActivateControl(DEVICE, GetPanelControl(1, CHANNEL_TYPE_HEADSTAGE, CHANNEL_CONTROL_CHECK), val = 0)
+	PGC_SetAndActivateControl(device, GetPanelControl(0, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_WAVE), str = "StimulusSetA_*")
+	PGC_SetAndActivateControl(device, GetPanelControl(0, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_INDEX_END), str = "StimulusSetD_*")
+End
+
+Function DAQ_SweepSkipping()
+
+	STRUCT DAQSettings s
+	InitDAQSettingsFromString(s, "DAQ_MD1_RA1_IDX1_LIDX0_BKG_1")
+	AcquireData(s, postInitializeFunc = SkipSweepsStimsets, preAcquireFunc = SkipSweepsStimsets_IGNORE)
+End
+
+Function Test_SweepSkipping()
+
+	variable numSweeps = 4
+	variable sweepNo   = 0
+	variable headstage = 0
+
+	CHECK_EQUAL_VAR(GetSetVariable(device, "SetVar_Sweep"), numSweeps)
+
+	WAVE/T textualValues   = GetLBTextualValues(device)
+	WAVE   numericalValues = GetLBNumericalValues(device)
+
+	WAVE/T/Z foundStimSets = GetLastSettingTextEachRAC(numericalValues, textualValues, sweepNo, STIM_WAVE_NAME_KEY, headstage, DATA_ACQUISITION_MODE)
+	REQUIRE_WAVE(foundStimSets, TEXT_WAVE)
+	CHECK_EQUAL_TEXTWAVES(foundStimSets, {"StimulusSetA_DA_0", "StimulusSetB_DA_0", "StimulusSetC_DA_0", "StimulusSetD_DA_0"})
+
+	WAVE/Z sweepCounts = GetLastSettingEachRAC(numericalValues, sweepNo, "Set Sweep Count", headstage, DATA_ACQUISITION_MODE)
+	REQUIRE_WAVE(sweepCounts, NUMERIC_WAVE)
+	CHECK_EQUAL_WAVES(sweepCounts, {0, 0, 0, 0}, mode = WAVE_DATA)
+End
+
 Function DAQ_SkipSweepsDuringITI_SD()
 
 	string device

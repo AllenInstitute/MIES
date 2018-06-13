@@ -437,3 +437,19 @@ Function TrackActiveSetCount(panelTitle, s)
 	NVAR activeSetCount = $GetActiveSetCount(panelTitle)
 	anaFuncActiveSetCount[s.sweepNo][s.headstage] = activeSetCount
 End
+
+Function SkipSweeps(panelTitle, s)
+	string panelTitle
+	STRUCT AnalysisFunction_V3& s
+
+	WAVE anaFuncTracker = TrackAnalysisFunctionCalls()
+
+	CHECK(s.eventType >= 0 && s.eventType < DimSize(anaFuncTracker, ROWS))
+	anaFuncTracker[s.eventType][s.headstage] += 1
+
+	if(s.eventType != POST_SWEEP_EVENT)
+		return NaN
+	endif
+
+	RA_SkipSweeps(panelTitle, inf, limitToSetBorder = 1)
+End

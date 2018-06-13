@@ -90,6 +90,8 @@ Function run()
 	list = AddListItem("Test_CheckActiveSetCountU", list, ";", INF)
 	list = AddListItem("DAQ_CheckActiveSetCountL", list, ";", INF)
 	list = AddListItem("Test_CheckActiveSetCountL", list, ";", INF)
+	list = AddListItem("DAQ_SweepSkipping", list, ";", INF)
+	list = AddListItem("Test_SweepSkipping", list, ";", INF)
 
 #endif
 

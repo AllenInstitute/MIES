@@ -509,6 +509,7 @@ Function RA_SkipSweeps(panelTitle, skipCount, [limitToSetBorder])
 	if(limitToSetBorder)
 		NVAR activeSetCount = $GetActiveSetCount(panelTitle)
 		skipCount = sign(skipCount) * limit(abs(skipCount), 0, activeSetCount - 1)
+		activeSetCount = 1
 	endif
 
 	count = RA_SkipSweepCalc(panelTitle, skipCount)
