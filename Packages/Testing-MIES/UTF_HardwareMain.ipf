@@ -28,6 +28,9 @@ Function SaveStimsets()
 End
 
 Function run()
+	// speeds up testing to start with a fresh copy
+	KillWindow/Z HistoryCarbonCopy
+
 //	DisableDebugOutput()
 //	EnableDebugoutput()
 
