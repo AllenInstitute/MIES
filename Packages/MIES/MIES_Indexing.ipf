@@ -82,6 +82,8 @@ Function IDX_IndexingDoIt(panelTitle)
 	setEventFlag[][%PRE_SET_EVENT] = 1
 
 	DAP_UpdateDAQControls(panelTitle, REASON_STIMSET_CHANGE_DUR_DAQ)
+	NVAR activeSetCount = $GetActiveSetCount(panelTitle)
+	activeSetCount = IDX_CalculcateActiveSetCount(panelTitle)
 End
 
 /// @brief Indexes a single channel - used when indexing is unlocked
@@ -539,6 +541,8 @@ Function IDX_ApplyUnLockedIndexing(panelTitle, count)
 
 	if(update)
 		DAP_UpdateDAQControls(panelTitle, REASON_STIMSET_CHANGE_DUR_DAQ)
+		NVAR activeSetCount = $GetActiveSetCount(panelTitle)
+		activeSetCount = IDX_CalculcateActiveSetCount(panelTitle)
 	endif
 End
 

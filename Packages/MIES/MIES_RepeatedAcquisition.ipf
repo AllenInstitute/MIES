@@ -223,8 +223,6 @@ Function RA_Counter(panelTitle)
 	if(indexing)
 		if(indexingLocked && activeSetcount == 0)
 			IDX_IndexingDoIt(panelTitle)
-
-			activeSetCount = IDX_CalculcateActiveSetCount(panelTitle)
 		elseif(!indexingLocked)
 			IDX_ApplyUnLockedIndexing(panelTitle, count)
 		endif
@@ -344,8 +342,6 @@ Function RA_CounterMD(panelTitle)
 	if(indexing)
 		if(indexingLocked && activeSetCount == 0)
 			IDX_IndexingDoIt(panelTitle)
-
-			activeSetCount = IDX_CalculcateActiveSetCount(panelTitle)
 		elseif(!indexingLocked)
 			// indexing is not locked = channel indexes when set has completed all its steps
 			IDX_ApplyUnLockedIndexing(panelTitle, count)
@@ -373,6 +369,8 @@ Function RA_CounterMD(panelTitle)
 				elseif(!indexingLocked)
 					// channel indexes when set has completed all its steps
 					IDX_ApplyUnLockedIndexing(followerPanelTitle, count)
+					followerActiveSetCount = IDX_CalculcateActiveSetCount(followerPanelTitle)
+					activeSetCountMax = max(activeSetCountMax, followerActiveSetCount)
 				endif
 			endif
 		endfor

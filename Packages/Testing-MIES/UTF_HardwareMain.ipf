@@ -86,6 +86,11 @@ Function run()
 	list = AddListItem("Test_RepeatSets_6", list, ";", INF)
 	list = AddListItem("DAQ_RepeatSets_7", list, ";", INF)
 	list = AddListItem("Test_RepeatSets_7", list, ";", INF)
+	list = AddListItem("DAQ_CheckActiveSetCountU", list, ";", INF)
+	list = AddListItem("Test_CheckActiveSetCountU", list, ";", INF)
+	list = AddListItem("DAQ_CheckActiveSetCountL", list, ";", INF)
+	list = AddListItem("Test_CheckActiveSetCountL", list, ";", INF)
+
 #endif
 
 #ifndef TESTS_WITH_YOKING

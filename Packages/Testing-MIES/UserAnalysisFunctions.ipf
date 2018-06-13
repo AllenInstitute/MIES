@@ -423,3 +423,17 @@ Function TotalOrdering(panelTitle, s)
 	Sleep/T 2
 	anaFuncOrder[s.eventType][s.headstage] = ticks
 End
+
+Function TrackActiveSetCount(panelTitle, s)
+	string panelTitle
+	STRUCT AnalysisFunction_V3& s
+
+	if(s.eventType != PRE_SWEEP_EVENT)
+		return NaN
+	endif
+
+	WAVE anaFuncActiveSetCount = GetTrackActiveSetCount()
+
+	NVAR activeSetCount = $GetActiveSetCount(panelTitle)
+	anaFuncActiveSetCount[s.sweepNo][s.headstage] = activeSetCount
+End

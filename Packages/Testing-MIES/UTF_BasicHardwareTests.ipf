@@ -36,7 +36,7 @@ static Function AcquireData(s, [postInitializeFunc, preAcquireFunc, setAnalysisF
 	variable i, numEntries
 
 	KillOrMoveToTrash(wv = GetTrackSweepCounts())
-
+	KillOrMoveToTrash(wv = GetTrackActiveSetCount())
 	Initialize_IGNORE()
 
 	if(!ParamIsDefault(postInitializeFunc))
@@ -261,6 +261,22 @@ static Function AllTests(t)
 			CHECK_EQUAL_WAVES(refEvents_HS1, actualEvents_HS1, mode = WAVE_DATA)
 		endfor
 	endfor
+End
+
+Function/WAVE GetTrackActiveSetCount()
+
+	DFREF dfr = root:
+	WAVE/Z/SDFR=dfr wv = anaFuncActiveSetCount
+
+	if(WaveExists(wv))
+		return wv
+	else
+		Make/N=(100) dfr:anaFuncActiveSetCount/WAVE=wv
+	endif
+
+	wv = NaN
+
+	return wv
 End
 
 /// @brief Track at which sweep count an analysis function was called.
@@ -1321,6 +1337,66 @@ Function Test_RepeatSets_6()
 	t.stimsetCycleID_HS1[]      = {0, 0, 1, 2, 2, 2, 2}
 
 	AllTests(t)
+End
+
+Function ActiveSetCountStimsets()
+
+	WAVE/T wv = root:MIES:WaveBuilder:SavedStimulusSetParameters:DA:WPT_StimulusSetA_DA_0
+
+	wv[][%Set] = ""
+	wv[%$"Analysis function (generic)"][%Set] = "TrackActiveSetCount"
+
+	WAVE/T wv = root:MIES:WaveBuilder:SavedStimulusSetParameters:DA:WPT_StimulusSetB_DA_0
+
+	wv[][%Set] = ""
+	wv[%$"Analysis function (generic)"][%Set] = "TrackActiveSetCount"
+
+	WAVE/T wv = root:MIES:WaveBuilder:SavedStimulusSetParameters:DA:WPT_StimulusSetC_DA_0
+
+	wv[][%Set] = ""
+	wv[%$"Analysis function (generic)"][%Set] = "TrackActiveSetCount"
+
+	WAVE/T wv = root:MIES:WaveBuilder:SavedStimulusSetParameters:DA:WPT_StimulusSetD_DA_0
+
+	wv[][%Set] = ""
+	wv[%$"Analysis function (generic)"][%Set] = "TrackActiveSetCount"
+End
+
+static Function ActiveSetCount_IGNORE()
+
+	PGC_SetAndActivateControl(DEVICE, GetPanelControl(1, CHANNEL_TYPE_HEADSTAGE, CHANNEL_CONTROL_CHECK), val = 0)
+	PGC_SetAndActivateControl(device, GetPanelControl(0, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_WAVE), str = "StimulusSetC*")
+	PGC_SetAndActivateControl(device, GetPanelControl(0, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_INDEX_END), str = "StimulusSetD*")
+End
+
+Function DAQ_CheckActiveSetCountU()
+
+	STRUCT DAQSettings s
+	InitDAQSettingsFromString(s, "DAQ_MD1_RA1_IDX1_LIDX0_BKG_1")
+	AcquireData(s, postInitializeFunc = ActiveSetCountStimsets, preAcquireFunc = ActiveSetCount_IGNORE)
+End
+
+Function Test_CheckActiveSetCountU()
+
+	WAVE anaFuncActiveSetCount = GetTrackActiveSetCount()
+
+	WaveTransform/O zapNans, anaFuncActiveSetCount
+	CHECK_EQUAL_WAVES(anaFuncActiveSetCount, {2, 1, 3, 2, 1})
+End
+
+Function DAQ_CheckActiveSetCountL()
+
+	STRUCT DAQSettings s
+	InitDAQSettingsFromString(s, "DAQ_MD1_RA1_IDX1_LIDX1_BKG_1")
+	AcquireData(s, postInitializeFunc = ActiveSetCountStimsets, preAcquireFunc = ActiveSetCount_IGNORE)
+End
+
+Function Test_CheckActiveSetCountL()
+
+	WAVE anaFuncActiveSetCount = GetTrackActiveSetCount()
+
+	WaveTransform/O zapNans, anaFuncActiveSetCount
+	CHECK_EQUAL_WAVES(anaFuncActiveSetCount, {2, 1, 3, 2, 1})
 End
 
 Function Events_RepeatSets_7(t)
