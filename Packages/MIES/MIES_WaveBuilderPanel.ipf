@@ -1794,6 +1794,15 @@ static Function WBP_LoadSet(setName)
 	// reset old state of checkbox and update panel
 	SetCheckBoxState(panel, "check_PreventUpdate", preventUpdate)
 	WBP_UpdatePanelIfAllowed()
+
+	if(WindowExists(AnalysisParamGUI))
+		Wave/T listWave = WBP_GetAnalysisParamGUIListWave()
+
+		if(DimSize(listWave, ROWS) == 0)
+			PGC_SetAndActivateControl(AnalysisParamGUI, "setvar_param_name", str = "")
+			PGC_SetAndActivateControl(AnalysisParamGUI, "setvar_param_value", str = "")
+		endif
+	endif
 End
 
 static Function SetAnalysisFunctionIfFuncExists(win, ctrl, stimset, funcList, func)
