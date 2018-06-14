@@ -1393,7 +1393,7 @@ End
 /// - 4:  AD Gain
 /// - 5:  Set sweep count
 /// - 6:  Insert TP on/off
-/// - 7:  Inter-trial interval
+/// - 7:  Inter-trial interval (used after the sweep it is documented for)
 /// - 8:  TTL rack zero bits
 /// - 9:  TTL rack one bits
 /// - 10: TTL rack zero channel
