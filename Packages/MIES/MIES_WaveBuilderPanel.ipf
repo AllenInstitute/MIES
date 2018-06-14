@@ -1350,14 +1350,12 @@ Function WBP_ButtonProc_SaveSet(ba) : ButtonControl
 				break
 			endif
 
-			RemoveTracesFromGraph(WaveBuilderGraph)
+			// propagate the existence of the new set
 			WBP_UpdateITCPanelPopUps()
 			WB_UpdateEpochCombineList(WBP_GetOutputType())
 
 			SetSetVariableString(panel, "setvar_WaveBuilder_baseName", DEFAULT_SET_PREFIX)
-			ControlUpdate/W=$panel popup_WaveBuilder_SetList
-			SetPopupMenuIndex(panel, "popup_af_generic_S9", 0)
-			WBP_AnaFuncsToWPT()
+			WBP_LoadSet(NONE)
 			break
 	endswitch
 End
@@ -1797,7 +1795,14 @@ static Function WBP_LoadSet(setName)
 	SetCheckBoxState(panel, "check_PreventUpdate", preventUpdate)
 	WBP_UpdatePanelIfAllowed()
 
-	WBP_UpdateParameterWave()
+	if(WindowExists(AnalysisParamGUI))
+		Wave/T listWave = WBP_GetAnalysisParamGUIListWave()
+
+		if(DimSize(listWave, ROWS) == 0)
+			PGC_SetAndActivateControl(AnalysisParamGUI, "setvar_param_name", str = "")
+			PGC_SetAndActivateControl(AnalysisParamGUI, "setvar_param_value", str = "")
+		endif
+	endif
 End
 
 static Function SetAnalysisFunctionIfFuncExists(win, ctrl, stimset, funcList, func)
@@ -2178,6 +2183,8 @@ static Function WBP_AnaFuncsToWPT()
 		WPT[1, 5][99] = ""
 		WPT[8][99]    = ""
 	endif
+
+	WBP_UpdateParameterWave()
 End
 
 /// Wrapper functions to be used in GUI recreation macros
