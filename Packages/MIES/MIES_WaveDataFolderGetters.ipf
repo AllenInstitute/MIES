@@ -2531,7 +2531,7 @@ Function UpgradeWaveParam(wv)
 		return NaN
 	endif
 
-	Redimension/N=(86, -1, 9) wv
+	Redimension/N=(86, -1, EPOCH_TYPES_TOTAL_NUMBER) wv
 	AddDimLabelsToWP(wv)
 
 	// custom wave offsets special location removed
@@ -2702,7 +2702,7 @@ Function/WAVE GetWaveBuilderWaveParam()
 	if(WaveExists(wv))
 		UpgradeWaveParam(wv)
 	else
-		Make/N=(86, 100, 9) dfr:WP/Wave=wv
+		Make/N=(86, 100, EPOCH_TYPES_TOTAL_NUMBER) dfr:WP/Wave=wv
 
 		// noise low/high pass filter to off
 		wv[20][][EPOCH_TYPE_NOISE] = 0

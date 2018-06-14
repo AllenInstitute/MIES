@@ -611,15 +611,16 @@ StrConstant POPUPMENU_DIVIDER = "\\M1(-"
 /// Numbers are stored in the SegWvType waves, so they are part of our "API".
 /// @anchor WaveBuilderEpochTypes
 /// @{
-Constant EPOCH_TYPE_SQUARE_PULSE = 0
-Constant EPOCH_TYPE_RAMP         = 1
-Constant EPOCH_TYPE_NOISE        = 2
-Constant EPOCH_TYPE_SIN_COS      = 3
-Constant EPOCH_TYPE_SAW_TOOTH    = 4
-Constant EPOCH_TYPE_PULSE_TRAIN  = 5
-Constant EPOCH_TYPE_PSC          = 6
-Constant EPOCH_TYPE_CUSTOM       = 7
-Constant EPOCH_TYPE_COMBINE      = 8
+Constant EPOCH_TYPE_SQUARE_PULSE  = 0
+Constant EPOCH_TYPE_RAMP          = 1
+Constant EPOCH_TYPE_NOISE         = 2
+Constant EPOCH_TYPE_SIN_COS       = 3
+Constant EPOCH_TYPE_SAW_TOOTH     = 4
+Constant EPOCH_TYPE_PULSE_TRAIN   = 5
+Constant EPOCH_TYPE_PSC           = 6
+Constant EPOCH_TYPE_CUSTOM        = 7
+Constant EPOCH_TYPE_COMBINE       = 8
+Constant EPOCH_TYPES_TOTAL_NUMBER = 9
 /// @}
 
 /// @name Parameters for gnoise and enoise
