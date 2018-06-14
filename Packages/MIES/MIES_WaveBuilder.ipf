@@ -481,23 +481,23 @@ static Function WB_AddDelta(setName, WP, numEpochs)
 				WP[%$s.main][j][k] += WP[row][j][k]
 
 				switch(operation)
-					case 0:
+					case DELTA_OPERATION_DEFAULT:
 						// delta is constant
 						break
-					case 1: // Simple factor
+					case DELTA_OPERATION_FACTOR:
 						WP[row][j][k] = WP[row][j][k] * WP[%$s.dme][j][k]
 						break
-					case 2: // Log
+					case DELTA_OPERATION_LOG:
 						// ignore a delta value of exactly zero
 						WP[row][j][k] = WP[row][j][k] == 0 ? 0 : log(WP[row][j][k])
 						break
-					case 3: // Squared
+					case DELTA_OPERATION_SQUARED:
 						WP[row][j][k] = (WP[row][j][k])^2
 						break
-					case 4: // Power
+					case DELTA_OPERATION_POWER:
 						WP[row][j][k] = (WP[row][j][k])^(WP[%$s.dme][j][k])
 						break
-					case 5: // Alternate
+					case DELTA_OPERATION_ALTERNATE:
 						WP[row][j][k] *= -1
 						break
 					default:

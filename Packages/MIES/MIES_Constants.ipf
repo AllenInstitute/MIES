@@ -906,3 +906,15 @@ Constant CA_OPTS_NO_DUPLICATE = 0x1
 Constant LABNOTEBOOK_MISSING_VALUE  = -1
 Constant LABNOTEBOOK_UNCACHED_VALUE = -2
 StrConstant LABNOTEBOOK_MOD_COUNT   = "Labnotebook modification count"
+
+/// @name Constants for the different delta operation modes in the Wavebuilder
+/// @anchor WaveBuilderDeltaOperationModes
+/// @{
+Constant DELTA_OPERATION_DEFAULT   = 0
+Constant DELTA_OPERATION_FACTOR    = 1
+Constant DELTA_OPERATION_LOG       = 2
+Constant DELTA_OPERATION_SQUARED   = 3
+Constant DELTA_OPERATION_POWER     = 4
+Constant DELTA_OPERATION_ALTERNATE = 5
+Constant DELTA_OPERATION_EXPLICIT  = 6
+/// @}
