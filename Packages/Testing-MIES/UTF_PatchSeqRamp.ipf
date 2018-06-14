@@ -9,7 +9,7 @@ static Function AcquireData(s)
 	STRUCT DAQSettings& s
 
 	// create an empty one so that the preDAQ analysis function can find it
-	Make/N=0 root:overrideResults
+	Make/N=0/O root:overrideResults
 
 	Initialize_IGNORE()
 
