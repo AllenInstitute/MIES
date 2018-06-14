@@ -190,3 +190,8 @@ Structure AnalysisFunction_V3
 	/// wave. Settable via WBP_AddAnalysisParameter().
 	string params
 EndStructure
+
+/// @brief Helper structure for WB_GetDeltaDimLabel()
+Structure DeltaControlNames
+	string main, delta, dme, op, ldelta
+EndStructure

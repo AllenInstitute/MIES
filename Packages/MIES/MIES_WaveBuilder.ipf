@@ -407,9 +407,39 @@ Function/Wave WB_GetStimSet([setName])
 	return stimSet
 End
 
+/// @brief Return a free wave with indizes referencing the values with delta values
+///
+/// Indizes are into `WP` and reference the entry with the value itself.
+/// @sa AddDimLabelsToWP()
+static Function/WAVE WB_GetControlWithDeltaIdx()
+
+	Make/FREE/B indizes = {0, 2, 4, 6, 10, 12, 14, 16, 20, 22, 24, 26, 28, 30, 45}
+	return indizes
+End
+
+/// @brief Return the `WP`/`WPT` dimension labels for the related delta controls
+/// given the index into `WP` of the value itself.
+Function WB_GetDeltaDimLabel(WP, index, s)
+	WAVE WP
+	variable index
+	STRUCT DeltaControlNames &s
+
+	string name
+
+	name = GetDimLabel(WP, ROWS, index)
+	ASSERT(!IsEmpty(name), "Invalid empty name")
+
+	s.main   = name
+	s.delta  = name + " delta"
+	s.dme    = name + " dme"
+	s.ldelta = name + " ldel"
+	s.op     = name + " op"
+End
+
 /// @brief Add delta to appropriate parameters
 ///
-/// Relies on alternating sequence of parameter and delta's in parameter waves as documented in WB_MakeWaveBuilderWave()
+/// Relies on alternating sequence of parameter and delta's in parameter waves
+/// as documented in WB_MakeWaveBuilderWave().
 ///
 /// @param setName    name of the stimset
 /// @param WP         wavebuilder parameter wave (temporary copy)
@@ -422,72 +452,61 @@ static Function WB_AddDelta(setName, WP, numEpochs)
 	variable numEpochs
 
 	variable i, j, k
-	variable offsetFactor, durationFactor, amplitudeFactor
-	variable operation, factor
-	variable numEpochTypes
+	variable operation, row
+	variable numEpochTypes, numEntries
+	string list, entry
 
 	numEpochTypes = DimSize(WP, LAYERS)
 
-	for(i = 0; i <= 30; i += 2)
+	WAVE indizes = WB_GetControlWithDeltaIdx()
+	numEntries = DimSize(indizes, ROWS)
+
+	for(i = 0; i < numEntries; i += 1)
+		STRUCT DeltaControlNames s
+		WB_GetDeltaDimLabel(WP, indizes[i], s)
+
 		for(j = 0; j < numEpochs; j += 1)
 			for(k = 0; k < numEpochTypes; k += 1)
 
-				WP[i][j][k] += WP[i + 1][j][k]
-
-				operation = WP[40][j][k]
-				if(operation)
-					durationFactor  = WP[52][j][k]
-					amplitudeFactor = WP[50][j][k]
-					offsetFactor    = WP[51][j][k]
-					switch(i)
-						case 0:
-							factor = durationFactor
-							break
-						case 2:
-							factor = amplitudeFactor
-							break
-						case 4:
-							factor = offsetFactor
-							break
-						default:
-							factor = 1
-							break
-					endswitch
-
-					switch(operation)
-						case 1: // Simple factor
-							WP[i + 1][j][k] = WP[i + 1][j][k] * factor
-							break
-						case 2: // Log
-							// ignore a delta value of exactly zero
-							WP[i + 1][j][k] = WP[i + 1][j][k] == 0 ? 0 : log(WP[i + 1][j][k])
-							break
-						case 3: // Squared
-							WP[i + 1][j][k] = (WP[i + 1][j][k])^2
-							break
-						case 4: // Power
-							WP[i + 1][j][k] = (WP[i + 1][j][k])^factor
-							break
-						case 5: // Alternate
-							WP[i + 1][j][k] *= -1
-							break
-						default:
-							// future proof
-							printf "WB_AddDelta: Stimset %s uses an unknown operation %d and can therefore not be recreated.\r", setName, operation
-							return 1
-							break
-					endswitch
+				// special handling for "Number of pulses"
+				// don't do anything if the number of pulses is calculated
+				// and not entered
+				if(indizes[i] == 45 && !WP[46][j][k])
+					continue
 				endif
-			endfor
-		endfor
-	endfor
 
-	// number of pulses has a non-standard delta position
-	for(j = 0; j < numEpochs; j += 1)
-		for(k = 0; k < numEpochTypes; k += 1)
-			if(WP[46][j][k]) // use pulses checkbox
-				WP[45][j][k] += WP[47][j][k]
-			endif
+				operation = WP[%$s.op][j][k]
+				row       = FindDimlabel(WP, ROWS, s.delta)
+
+				WP[%$s.main][j][k] += WP[row][j][k]
+
+				switch(operation)
+					case 0:
+						// delta is constant
+						break
+					case 1: // Simple factor
+						WP[row][j][k] = WP[row][j][k] * WP[%$s.dme][j][k]
+						break
+					case 2: // Log
+						// ignore a delta value of exactly zero
+						WP[row][j][k] = WP[row][j][k] == 0 ? 0 : log(WP[row][j][k])
+						break
+					case 3: // Squared
+						WP[row][j][k] = (WP[row][j][k])^2
+						break
+					case 4: // Power
+						WP[row][j][k] = (WP[row][j][k])^(WP[%$s.dme][j][k])
+						break
+					case 5: // Alternate
+						WP[row][j][k] *= -1
+						break
+					default:
+						// future proof
+						printf "WB_AddDelta: Stimset %s uses an unknown operation %d and can therefore not be recreated.\r", setName, operation
+						return 1
+						break
+				endswitch
+			endfor
 		endfor
 	endfor
 
