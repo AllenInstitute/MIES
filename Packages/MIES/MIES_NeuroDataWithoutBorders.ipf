@@ -1330,7 +1330,7 @@ Function NWB_Flush()
 	SVAR filePathExport = $GetNWBFilePathExport()
 	NVAR fileIDExport   = $GetNWBFileIDExport()
 
-	if(!IsFinite(fileIDExport))
+	if(!IsFinite(fileIDExport) || !IPNWB#H5_IsFileOpen(fileIDExport))
 		return NaN
 	endif
 
