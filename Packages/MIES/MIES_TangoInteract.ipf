@@ -226,13 +226,8 @@ Function TI_saveNWBFile(nwbFileLocation, [cmdID])
 	print "Saving experiment data in NWB format to ", changeFilePath
 
 	NWB_ExportAllData(overrideFilePath=changeFilePath)
-	
-	//Get the file ID so we can close the HDF5 file
-	NVAR fileIDExport = $GetNWBFileIDExport()
-	
-	//close the file
-	hdf5CloseFile/Z fileIDExport
-	
+	CloseNWBFile()
+
 	// determine if the cmdID was provided
 	if(!ParamIsDefault(cmdID))
 		TI_WriteAck(cmdID, 0)
