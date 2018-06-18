@@ -1783,7 +1783,7 @@ static Function WBP_LoadSet(setName)
 	SetSetVariable(panel, "setvar_WaveBuilder_SetNumber", setNumber)
 
 	funcList = WBP_GetAnalysisFunctions_V3()
-	SetAnalysisFunctionIfFuncExists(panel, "popup_af_generic_S9", setName, funcList, WPT[9][99])
+	SetAnalysisFunctionIfFuncExists(panel, "popup_af_generic_S9", setName, funcList, WPT[9][%Set])
 	WBP_AnaFuncsToWPT()
 
 	ASSERT(SegWvType[100] <= SEGMENT_TYPE_WAVE_LAST_IDX, "Only supports up to different SEGMENT_TYPE_WAVE_LAST_IDX epochs")
@@ -2176,12 +2176,12 @@ static Function WBP_AnaFuncsToWPT()
 	WAVE/T WPT = GetWaveBuilderWaveTextParam()
 
 	func = GetPopupMenuString(panel, "popup_af_generic_S9")
-	WPT[9][99] = SelectString(cmpstr(func, NONE), "", func)
+	WPT[9][%Set] = SelectString(cmpstr(func, NONE), "", func)
 
 	// clear deprecated entries for single analysis function events
 	if(cmpstr(func, NONE))
-		WPT[1, 5][99] = ""
-		WPT[8][99]    = ""
+		WPT[1, 5][%Set] = ""
+		WPT[8][%Set]    = ""
 	endif
 
 	WBP_UpdateParameterWave()
