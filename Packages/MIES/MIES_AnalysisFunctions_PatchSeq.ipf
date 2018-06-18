@@ -1579,7 +1579,7 @@ Function PSQ_Rheobase(panelTitle, s)
 			endif
 
 			length = PSQ_GetDAStimsetLength(panelTitle, s.headstage)
-			minLength = PSQ_RB_PRE_BL_EVAL_RANGE + PSQ_RB_POST_BL_EVAL_RANGE
+			minLength = PSQ_RB_PRE_BL_EVAL_RANGE + 2 * PSQ_RB_POST_BL_EVAL_RANGE
 			if(length < minLength)
 				printf "(%s) Stimset of headstage %d is too short, it must be at least %g ms long.\r", panelTitle, s.headstage, minLength
 				ControlWindowToFront()
