@@ -715,7 +715,7 @@ static Function/WAVE WB_MakeWaveBuilderWave(WP, WPT, SegWvType, stepCount, numEp
 				break
 			case EPOCH_TYPE_CUSTOM:
 				WB_UpgradecustomWaveInWPT(WPT, channelType, i)
-				customWaveName = WPT[0][i]
+				customWaveName = WPT[0][i][EPOCH_TYPE_CUSTOM]
 				WAVE/Z customWave = $customWaveName
 				if(WaveExists(customWave))
 					WB_CustomWaveSegment(params, customWave)
@@ -730,8 +730,8 @@ static Function/WAVE WB_MakeWaveBuilderWave(WP, WPT, SegWvType, stepCount, numEp
 			case EPOCH_TYPE_COMBINE:
 				WAVE segmentWave = GetSegmentWave(duration=0)
 
-				formula         = WPT[6][i]
-				formula_version = WPT[7][i]
+				formula         = WPT[6][i][EPOCH_TYPE_COMBINE]
+				formula_version = WPT[7][i][EPOCH_TYPE_COMBINE]
 
 				if(cmpstr(formula_version, WAVEBUILDER_COMBINE_FORMULA_VER))
 					printf "Stimset %s: Could not create the wave from formula of version %s\r", stimset, WAVEBUILDER_COMBINE_FORMULA_VER
@@ -789,14 +789,14 @@ static Function/WAVE WB_MakeWaveBuilderWave(WP, WPT, SegWvType, stepCount, numEp
 		AddEntryIntoWaveNoteAsList(WaveBuilderWave, "Sweep Count", var=SegWvType[101])
 		AddEntryIntoWaveNoteAsList(WaveBuilderWave, "Epoch Count" , var=numEpochs)
 		AddEntryIntoWaveNoteAsList(WaveBuilderWave, "ITI", var=SegWvType[99])
-		AddEntryIntoWaveNoteAsList(WaveBuilderWave, StringFromList(PRE_DAQ_EVENT, EVENT_NAME_LIST), str=WPT[1][%Set])
-		AddEntryIntoWaveNoteAsList(WaveBuilderWave, StringFromList(MID_SWEEP_EVENT, EVENT_NAME_LIST), str=WPT[2][%Set])
-		AddEntryIntoWaveNoteAsList(WaveBuilderWave, StringFromList(POST_SWEEP_EVENT, EVENT_NAME_LIST), str=WPT[3][%Set])
-		AddEntryIntoWaveNoteAsList(WaveBuilderWave, StringFromList(POST_SET_EVENT, EVENT_NAME_LIST), str=WPT[4][%Set])
-		AddEntryIntoWaveNoteAsList(WaveBuilderWave, StringFromList(POST_DAQ_EVENT, EVENT_NAME_LIST), str=WPT[5][%Set])
-		AddEntryIntoWaveNoteAsList(WaveBuilderWave, StringFromList(PRE_SWEEP_EVENT, EVENT_NAME_LIST), str=WPT[8][%Set])
-		AddEntryIntoWaveNoteAsList(WaveBuilderWave, StringFromList(GENERIC_EVENT, EVENT_NAME_LIST), str=WPT[9][%Set])
-		AddEntryIntoWaveNoteAsList(WaveBuilderWave, ANALYSIS_FUNCTION_PARAMS_LBN, str=WPT[10][%Set])
+		AddEntryIntoWaveNoteAsList(WaveBuilderWave, StringFromList(PRE_DAQ_EVENT, EVENT_NAME_LIST), str=WPT[1][%Set][INDEP_EPOCH_TYPE])
+		AddEntryIntoWaveNoteAsList(WaveBuilderWave, StringFromList(MID_SWEEP_EVENT, EVENT_NAME_LIST), str=WPT[2][%Set][INDEP_EPOCH_TYPE])
+		AddEntryIntoWaveNoteAsList(WaveBuilderWave, StringFromList(POST_SWEEP_EVENT, EVENT_NAME_LIST), str=WPT[3][%Set][INDEP_EPOCH_TYPE])
+		AddEntryIntoWaveNoteAsList(WaveBuilderWave, StringFromList(POST_SET_EVENT, EVENT_NAME_LIST), str=WPT[4][%Set][INDEP_EPOCH_TYPE])
+		AddEntryIntoWaveNoteAsList(WaveBuilderWave, StringFromList(POST_DAQ_EVENT, EVENT_NAME_LIST), str=WPT[5][%Set][INDEP_EPOCH_TYPE])
+		AddEntryIntoWaveNoteAsList(WaveBuilderWave, StringFromList(PRE_SWEEP_EVENT, EVENT_NAME_LIST), str=WPT[8][%Set][INDEP_EPOCH_TYPE])
+		AddEntryIntoWaveNoteAsList(WaveBuilderWave, StringFromList(GENERIC_EVENT, EVENT_NAME_LIST), str=WPT[9][%Set][INDEP_EPOCH_TYPE])
+		AddEntryIntoWaveNoteAsList(WaveBuilderWave, ANALYSIS_FUNCTION_PARAMS_LBN, str=WPT[10][%Set][INDEP_EPOCH_TYPE])
 		AddEntryIntoWaveNoteAsList(WaveBuilderWave, "Flip", var=SegWvType[98])
 		AddEntryIntoWaveNoteAsList(WaveBuilderWave, "Random Seed", var=SegWvType[97])
 	endif
@@ -834,7 +834,7 @@ Function WB_UpgradeCustomWaveInWPT(wv, channelType, i)
 	WAVE/T wv
 	variable channelType, i
 
-	string customWaveName = wv[0][i]
+	string customWaveName = wv[0][i][EPOCH_TYPE_CUSTOM]
 
 	// old style entries with only the wave name
 	if(!isEmpty(customWaveName) && strsearch(customWaveName, ":", 0) == -1)
@@ -852,7 +852,7 @@ Function WB_UpgradeCustomWaveInWPT(wv, channelType, i)
 
 		if(WaveExists(customWave))
 			printf "Upgraded custom wave format successfully.\r"
-			wv[0][i] = GetWavesDataFolder(customWave, 2)
+			wv[0][i][EPOCH_TYPE_CUSTOM] = GetWavesDataFolder(customWave, 2)
 		endif
 	endif
 End
@@ -1707,7 +1707,7 @@ Function/WAVE WB_CustomWavesPathFromStimSet([stimsetList])
 		numEpochs = SegWvType[%'Total number of epochs']
 		for(j = 0; j < numEpochs; j += 1)
 			if(SegWvType[j] == 7)
-				customwaves[k] = WPT[0][j]
+				customwaves[k] = WPT[0][j][EPOCH_TYPE_CUSTOM]
 				k += 1
 			endif
 		endfor
@@ -1800,7 +1800,7 @@ static Function/S WB_StimsetChildren([stimset])
 	// search for stimsets in all formula-epochs by a regex pattern
 	for(i = 0; i < numEpochs; i += 1)
 		if(SegWvType[i] == 8)
-			formula = WPT[6][i]
+			formula = WPT[6][i][EPOCH_TYPE_CUSTOM]
 			numStimsets = CountSubstrings(formula, "?")
 			for(j = 0; j < numStimsets; j += 1)
 				WAVE/T/Z wv = SearchStringBase(formula, "(.*)\\b(\\w+)\\b\\?(.*)")

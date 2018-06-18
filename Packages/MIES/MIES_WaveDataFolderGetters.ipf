@@ -2724,7 +2724,7 @@ Function/WAVE GetWaveBuilderWaveParam()
 	return wv
 End
 
-static Constant WPT_WAVE_LAYOUT_VERSION = 6
+static Constant WPT_WAVE_LAYOUT_VERSION = 7
 
 /// @brief Automated testing helper
 static Function GetWPTVersion()
@@ -2735,14 +2735,29 @@ End
 /// @brief Upgrade the wave layout of `WPT` to the most recent one
 ///        as defined in `WPT_WAVE_LAYOUT_VERSION`
 Function UpgradeWaveTextParam(wv)
-	WAVE wv
+	WAVE/T wv
 
 	if(ExistsWithCorrectLayoutVersion(wv, WPT_WAVE_LAYOUT_VERSION))
 		return NaN
 	endif
 
-	Redimension/N=(51, -1) wv
+	Redimension/N=(51, -1, EPOCH_TYPES_TOTAL_NUMBER) wv
 	AddDimLabelsToWPT(wv)
+
+	// upgrade to wave version 7
+	if(WaveVersionIsSmaller(wv, 7))
+		// move entries into the epoch specific settings
+		// version 6 and lower did only have one layer
+		wv[%$("Custom epoch wave name")][][EPOCH_TYPE_CUSTOM] = wv[%$("Custom epoch wave name")][q][INDEP_EPOCH_TYPE]
+		wv[%$("Custom epoch wave name")][][INDEP_EPOCH_TYPE]  = ""
+
+		wv[%$("Combine epoch formula")][][EPOCH_TYPE_COMBINE] = wv[%$("Combine epoch formula")][q][INDEP_EPOCH_TYPE]
+		wv[%$("Combine epoch formula")][][INDEP_EPOCH_TYPE]   = ""
+
+		wv[%$("Combine epoch formula version")][][EPOCH_TYPE_COMBINE] = wv[%$("Combine epoch formula version")][q][INDEP_EPOCH_TYPE]
+		wv[%$("Combine epoch formula version")][][INDEP_EPOCH_TYPE]   = ""
+	endif
+
 	SetWaveVersion(wv, WPT_WAVE_LAYOUT_VERSION)
 End
 
@@ -2754,23 +2769,50 @@ static Function AddDimLabelsToWPT(wv)
 
 	RemoveAllDimLabels(wv)
 
-	SetDimLabel ROWS,  0, $("Custom epoch wave name")       , wv
-	SetDimLabel ROWS,  1, $("Analysis pre DAQ function")    , wv
-	SetDimLabel ROWS,  2, $("Analysis mid sweep function")  , wv
-	SetDimLabel ROWS,  3, $("Analysis post sweep function") , wv
-	SetDimLabel ROWS,  4, $("Analysis post set function")   , wv
-	SetDimLabel ROWS,  5, $("Analysis post DAQ function")   , wv
-	SetDimLabel ROWS,  6, $("Combine epoch formula")        , wv
-	SetDimLabel ROWS,  7, $("Combine epoch formula version"), wv
-	SetDimLabel ROWS,  8, $("Analysis pre sweep function")  , wv
-	SetDimLabel ROWS,  9, $("Analysis function (generic)")  , wv
-	SetDimLabel ROWS, 10, $("Analysis function params")     , wv
+	SetDimLabel ROWS, 0 , $("Custom epoch wave name")        , wv
+	SetDimLabel ROWS, 1 , $("Analysis pre DAQ function")     , wv
+	SetDimLabel ROWS, 2 , $("Analysis mid sweep function")   , wv
+	SetDimLabel ROWS, 3 , $("Analysis post sweep function")  , wv
+	SetDimLabel ROWS, 4 , $("Analysis post set function")    , wv
+	SetDimLabel ROWS, 5 , $("Analysis post DAQ function")    , wv
+	SetDimLabel ROWS, 6 , $("Combine epoch formula")         , wv
+	SetDimLabel ROWS, 7 , $("Combine epoch formula version") , wv
+	SetDimLabel ROWS, 8 , $("Analysis pre sweep function")   , wv
+	SetDimLabel ROWS, 9 , $("Analysis function (generic)")   , wv
+	SetDimLabel ROWS, 10, $("Analysis function params")      , wv
+	SetDimLabel ROWS, 11, $("Amplitude ldel")                , wv
+	SetDimLabel ROWS, 12, $("Offset ldel")                   , wv
+	SetDimLabel ROWS, 13, $("Duration ldel")                 , wv
+	SetDimLabel ROWS, 14, $("Sin/chirp/saw frequency ldel")  , wv
+	SetDimLabel ROWS, 15, $("Train pulse duration ldel")     , wv
+	SetDimLabel ROWS, 16, $("PSC exp rise time ldel")        , wv
+	SetDimLabel ROWS, 17, $("PSC exp decay time 1/2 ldel")   , wv
+	SetDimLabel ROWS, 18, $("PSC exp decay time 2/2 ldel")   , wv
+	SetDimLabel ROWS, 19, $("PSC ratio decay times ldel")    , wv
+	SetDimLabel ROWS, 20, $("Low pass filter cut off ldel")  , wv
+	SetDimLabel ROWS, 21, $("High pass filter cut off ldel") , wv
+	SetDimLabel ROWS, 22, $("Chirp end frequency ldel")      , wv
+	SetDimLabel ROWS, 23, $("Noise filter order ldel")       , wv
+	SetDimLabel ROWS, 24, $("PT: First Mixed Frequency ldel"), wv
+	SetDimLabel ROWS, 25, $("PT: Last Mixed Frequency ldel") , wv
+	SetDimLabel ROWS, 26, $("Number of pulses ldel")         , wv
 
 	for(i = 0; i <= SEGMENT_TYPE_WAVE_LAST_IDX; i += 1)
 		SetDimLabel COLS, i, $("Epoch " + num2str(i)), wv
 	endfor
 
 	SetDimLabel COLS, DimSize(wv, COLS) - 1, $("Set"), wv
+
+	SetDimLabel LAYERS, -1, $("Epoch type")        , wv
+	SetDimLabel LAYERS,  0, $("Square pulse")      , wv
+	SetDimLabel LAYERS,  1, $("Ramp")              , wv
+	SetDimLabel LAYERS,  2, $("Noise")             , wv
+	SetDimLabel LAYERS,  3, $("Sin")               , wv
+	SetDimLabel LAYERS,  4, $("Saw tooth")         , wv
+	SetDimLabel LAYERS,  5, $("Pulse train")       , wv
+	SetDimLabel LAYERS,  6, $("PSC")               , wv
+	SetDimLabel LAYERS,  7, $("Load custom wave")  , wv
+	SetDimLabel LAYERS,  8, $("Combine")           , wv
 End
 
 /// @brief Return the parameter text wave for the wave builder panel
@@ -2788,11 +2830,28 @@ End
 /// - 8: Analysis function, pre sweep
 /// - 9: Analysis function, generic
 /// -10: Analysis function parameters. See below for a detailed explanation.
-/// -11-50: unused
+/// -11-26: Explicit delta values. ";" separated list as long as the number of sweeps.
+/// -27: unused
+///
+/// `Formula` and `Formula Version` are in the #EPOCH_TYPE_COMBINE layer, the
+/// custom wave name is in the #EPOCH_TYPE_CUSTOM layer. 11 to 26 are for all
+/// epoch types. The rest is layer independent (aka a setting for the full set)
+/// in #INDEP_EPOCH_TYPE.
 ///
 /// Columns:
 /// - Segment/Epoch, the very last index is reserved for
 ///   textual settings for the complete set
+///
+/// Layers hold different stimulus wave form types:
+/// - Square pulse/Set specific settings
+/// - Ramp
+/// - Noise
+/// - Sin
+/// - Saw tooth
+/// - Pulse train
+/// - PSC
+/// - Load custom wave
+/// - Combine
 ///
 /// Analysis function parameters
 ///
@@ -2812,7 +2871,7 @@ Function/WAVE GetWaveBuilderWaveTextParam()
 	if(WaveExists(wv))
 		UpgradeWaveTextParam(wv)
 	else
-		Make/N=(51, 100)/T dfr:WPT/Wave=wv
+		Make/N=(51, 100, EPOCH_TYPES_TOTAL_NUMBER)/T dfr:WPT/Wave=wv
 		AddDimLabelsToWPT(wv)
 		SetWaveVersion(wv, WPT_WAVE_LAYOUT_VERSION)
 	endif

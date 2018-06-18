@@ -1155,12 +1155,12 @@ static Function WBP_ParameterWaveToPanel(stimulusType)
 	for(i = 0; i < numEntries; i += 1)
 		control = StringFromList(i, list)
 		row = WBP_ExtractRowNumberFromControl(control, "T")
-		data = WBP_TranslateControlContents(control, FROM_WAVE_TO_PANEL, WPT[row][segment])
+		data = WBP_TranslateControlContents(control, FROM_WAVE_TO_PANEL, WPT[row][segment][stimulusType])
 		SetSetVariableString(panel, control, data)
 	endfor
 
 	if(stimulusType == EPOCH_TYPE_CUSTOM)
-		customWaveName = WPT[0][segment]
+		customWaveName = WPT[0][segment][EPOCH_TYPE_CUSTOM]
 		WAVE/Z customWave = $customWaveName
 		if(WaveExists(customWave))
 			GroupBox group_WaveBuilder_FolderPath win=$panel, title=GetWavesDataFolder(customWave, 1)
@@ -1602,9 +1602,9 @@ Function WBP_PopMenuProc_WaveToLoad(pa) : PopupMenuControl
 			SegmentNo = GetSetVariable(win, "setvar_WaveBuilder_CurrentEpoch")
 
 			if(WaveExists(customWave))
-				WPT[0][SegmentNo] = GetWavesDataFolder(customWave, 2)
+				WPT[0][SegmentNo][EPOCH_TYPE_CUSTOM] = GetWavesDataFolder(customWave, 2)
 			else
-				WPT[0][SegmentNo] = ""
+				WPT[0][SegmentNo][EPOCH_TYPE_CUSTOM] = ""
 			endif
 
 			WBP_UpdatePanelIfAllowed()
@@ -1783,7 +1783,7 @@ static Function WBP_LoadSet(setName)
 	SetSetVariable(panel, "setvar_WaveBuilder_SetNumber", setNumber)
 
 	funcList = WBP_GetAnalysisFunctions_V3()
-	SetAnalysisFunctionIfFuncExists(panel, "popup_af_generic_S9", setName, funcList, WPT[9][%Set])
+	SetAnalysisFunctionIfFuncExists(panel, "popup_af_generic_S9", setName, funcList, WPT[9][%Set][INDEP_EPOCH_TYPE])
 	WBP_AnaFuncsToWPT()
 
 	ASSERT(SegWvType[100] <= SEGMENT_TYPE_WAVE_LAST_IDX, "Only supports up to different SEGMENT_TYPE_WAVE_LAST_IDX epochs")
@@ -2176,12 +2176,12 @@ static Function WBP_AnaFuncsToWPT()
 	WAVE/T WPT = GetWaveBuilderWaveTextParam()
 
 	func = GetPopupMenuString(panel, "popup_af_generic_S9")
-	WPT[9][%Set] = SelectString(cmpstr(func, NONE), "", func)
+	WPT[9][%Set][INDEP_EPOCH_TYPE] = SelectString(cmpstr(func, NONE), "", func)
 
 	// clear deprecated entries for single analysis function events
 	if(cmpstr(func, NONE))
-		WPT[1, 5][%Set] = ""
-		WPT[8][%Set]    = ""
+		WPT[1, 5][%Set][INDEP_EPOCH_TYPE] = ""
+		WPT[8][%Set][INDEP_EPOCH_TYPE]    = ""
 	endif
 
 	WBP_UpdateParameterWave()
@@ -2269,8 +2269,8 @@ Function WBP_SetVarCombineEpochFormula(sva) : SetVariableControl
 
 			currentEpoch = GetSetVariable(win, "setvar_WaveBuilder_CurrentEpoch")
 
-			WPT[6][currentEpoch] = WBP_TranslateControlContents(sva.ctrlName, FROM_PANEL_TO_WAVE, formula)
-			WPT[7][currentEpoch] = WAVEBUILDER_COMBINE_FORMULA_VER
+			WPT[6][currentEpoch][EPOCH_TYPE_COMBINE] = WBP_TranslateControlContents(sva.ctrlName, FROM_PANEL_TO_WAVE, formula)
+			WPT[7][currentEpoch][EPOCH_TYPE_COMBINE] = WAVEBUILDER_COMBINE_FORMULA_VER
 
 			WBP_UpdatePanelIfAllowed()
 			break
@@ -2545,13 +2545,13 @@ static Function WBP_AddAnalysisParameterIntoWPT(WPT, name, [var, str, wv])
 	ASSERT(!GrepString(value, "[=:,;]+"), "Written entry contains invalid characters (one of `=:,;`)")
 	ASSERT(AFH_IsValidAnalysisParamType(type), "Invalid type")
 
-	params = WPT[10][%Set]
+	params = WPT[10][%Set][INDEP_EPOCH_TYPE]
 
 	if(WhichListItem(name, AFH_GetListOfAnalysisParamNames(params)) != -1)
 		printf "Parameter \"%s\" is already present and will be overwritten!\r", name
 	endif
 
-	WPT[10][%Set] = ReplaceStringByKey(name, params , type + "=" + value, ":", ",", 0)
+	WPT[10][%Set][INDEP_EPOCH_TYPE] = ReplaceStringByKey(name, params , type + "=" + value, ":", ",", 0)
 End
 
 
@@ -2565,9 +2565,9 @@ static Function WBP_DeleteAnalysisParameter(name)
 
 	WAVE/T WPT = GetWaveBuilderWaveTextParam()
 
-	params = WPT[%$"Analysis function params"][%Set]
+	params = WPT[%$"Analysis function params"][%Set][INDEP_EPOCH_TYPE]
 	params = AFH_RemoveAnalysisParameter(name, params)
-	WPT[%$"Analysis function params"][%Set] = params
+	WPT[%$"Analysis function params"][%Set][INDEP_EPOCH_TYPE] = params
 End
 
 /// @brief Return a list of all possible analysis parameter types
@@ -2581,7 +2581,7 @@ Function/S WBP_GetAnalysisParameters()
 
 	WAVE/T WPT = GetWaveBuilderWaveTextParam()
 
-	return WPT[%$"Analysis function params"][%Set]
+	return WPT[%$"Analysis function params"][%Set][INDEP_EPOCH_TYPE]
 End
 
 /// @brief Return the analysis parameter names for the currently
@@ -2610,7 +2610,7 @@ static Function WBP_UpdateParameterWave()
 
 	WAVE/T WPT = GetWaveBuilderWaveTextParam()
 
-	genericFunc = WPT[%$("Analysis function (generic)")][%Set]
+	genericFunc = WPT[%$("Analysis function (generic)")][%Set][INDEP_EPOCH_TYPE]
 	reqParams = AFH_GetListOfReqAnalysisParams(genericFunc)
 	reqNames  = AFH_GetListOfAnalysisParamNames(reqParams)
 

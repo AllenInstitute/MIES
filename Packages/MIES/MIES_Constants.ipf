@@ -623,6 +623,10 @@ Constant EPOCH_TYPE_COMBINE       = 8
 Constant EPOCH_TYPES_TOTAL_NUMBER = 9
 /// @}
 
+/// Used for the textual wavebuilder parameter wave `WPT` as that stores
+/// the set parameters in layer 0. Coincides with `EPOCH_TYPE_SQUARE_PULSE`.
+Constant INDEP_EPOCH_TYPE = 0
+
 /// @name Parameters for gnoise and enoise
 ///@{
 Constant NOISE_GEN_LINEAR_CONGRUENTIAL = 1 ///< Don't use for new code.
