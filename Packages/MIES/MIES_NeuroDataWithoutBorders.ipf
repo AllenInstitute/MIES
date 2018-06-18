@@ -89,34 +89,37 @@ static Function NWB_GetFileForExport([overrideFilePath, createdNewNWBFile])
 	variable fileID, refNum, oldestData
 
 	NVAR fileIDExport = $GetNWBFileIDExport()
-
-	if(IPNWB#H5_IsFileOpen(fileIDExport))
-		return fileIDExport
-	endif
-
 	NVAR sessionStartTimeReadBack = $GetSessionStartTimeReadBack()
 
 	SVAR filePathExport = $GetNWBFilePathExport()
 	filePath = filePathExport
 
-	if(!ParamIsDefault(overrideFilePath))
-		filePath = overrideFilePath
-	elseif(isEmpty(filePath)) // need to derive a new NWB filename
-		expName = GetExperimentName()
-
-		if(!cmpstr(expName, UNTITLED_EXPERIMENT))
-			fileName = "_" + GetTimeStamp() + ".nwb"
-			Open/D/M="Save as NWB file"/F="NWB files (*.nwb):.nwb;" refNum as fileName
-
-			if(isEmpty(S_fileName))
-				return NaN
-			endif
-			filePath = S_fileName
-		else
-			PathInfo home
-			filePath = S_path + CleanupExperimentName(expName) + ".nwb"
+	if(ParamIsDefault(overrideFilePath))
+		if(IPNWB#H5_IsFileOpen(fileIDExport))
+			return fileIDExport
 		endif
+
+		if(isEmpty(filePath)) // need to derive a new NWB filename
+			expName = GetExperimentName()
+
+			if(!cmpstr(expName, UNTITLED_EXPERIMENT))
+				fileName = "_" + GetTimeStamp() + ".nwb"
+				Open/D/M="Save as NWB file"/F="NWB files (*.nwb):.nwb;" refNum as fileName
+
+				if(isEmpty(S_fileName))
+					return NaN
+				endif
+				filePath = S_fileName
+			else
+				PathInfo home
+				filePath = S_path + CleanupExperimentName(expName) + ".nwb"
+			endif
+		endif
+	else
+		filePath = overrideFilePath
 	endif
+
+	ASSERT(!IsEmpty(filePath), "filePath can not be empty")
 
 	GetFileFolderInfo/Q/Z filePath
 	if(!V_flag)
