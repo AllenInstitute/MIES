@@ -68,7 +68,6 @@ Window WaveBuilder() : Panel
 	TabControl WBP_WaveType,tabLabel(6)="PSC",tabLabel(7)="Load"
 	TabControl WBP_WaveType,tabLabel(8)="Combine",value= 0
 	TabControl WBP_Set_Parameters,pos={3.00,31.00},size={177.00,205.00},proc=ACL_DisplayTab
-	TabControl WBP_Set_Parameters,userdata(finalhook)=  "WBP_FinalTabHook"
 	TabControl WBP_Set_Parameters,userdata(currenttab)=  "0"
 	TabControl WBP_Set_Parameters,userdata(ResizeControlsInfo)= A"!!,>M!!#=K!!#AE!!#A`z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	TabControl WBP_Set_Parameters,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Duafnzzzzzzzzzzz"
