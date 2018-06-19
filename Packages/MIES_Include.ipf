@@ -11,6 +11,7 @@
 #include <ZoomBrowser>
 #include <FunctionProfiling>
 #include <Readback ModifyStr>
+#include <HDF5 Browser>
 
 // third party includes
 #include "ACL_TabUtilities"
