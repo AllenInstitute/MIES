@@ -1468,6 +1468,11 @@ Function PSQ_SquarePulse(panelTitle, s)
 
 			setPassed = PSQ_NumPassesInSet(numericalValues, PSQ_SQUARE_PULSE, s.sweepNo, s.headstage) >= 1
 
+			if(!setPassed)
+				PSQ_ForceSetEvent(panelTitle, s.headstage)
+				RA_SkipSweeps(panelTitle, inf)
+			endif
+
 			sprintf msg, "Set has %s\r", SelectString(setPassed, "failed", "passed")
 			DEBUGPRINT(msg)
 
@@ -1739,6 +1744,9 @@ Function PSQ_Rheobase(panelTitle, s)
 				Make/FREE/D/N=(LABNOTEBOOK_LAYER_COUNT) result = NaN
 				result[INDEP_HEADSTAGE] = 0
 				ED_AddEntryToLabnotebook(panelTitle, key, result, unit = LABNOTEBOOK_BINARY_UNIT)
+
+				PSQ_ForceSetEvent(panelTitle, s.headstage)
+				RA_SkipSweeps(panelTitle, inf)
 			endif
 
 			key = PSQ_CreateLBNKey(PSQ_RHEOBASE, PSQ_FMT_LBN_RB_DASCALE_EXC, query = 1)

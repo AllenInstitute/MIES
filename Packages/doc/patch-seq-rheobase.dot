@@ -122,4 +122,5 @@ digraph G {
     "Set \"range exceeded\" labnotebook entry to true for sweep";
     "Difference to initial DAScale larger than 60pA?" -> "Set \"range exceeded\" labnotebook entry to true for sweep"  [label="Yes"];
     "Set \"range exceeded\" labnotebook entry to true for sweep" -> "Mark set as failed";
+    "Mark set as failed if it has not yet passed" -> "Skip to end"  [label="Failure"];
 }

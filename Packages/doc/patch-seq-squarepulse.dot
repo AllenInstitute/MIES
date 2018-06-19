@@ -81,4 +81,5 @@ digraph G {
     "All required analysis parameters present?\nSamplingMultiplier: variable";
     "Prepare DAQ/Pre Set Event" -> "All required analysis parameters present?\nSamplingMultiplier: variable";
     "All required analysis parameters present?\nSamplingMultiplier: variable" -> "All checks passed";
+    "Mark set as passed if 1 sweep passed, as failure otherwise" -> "Skip to end"  [label="Failure"];
 }
