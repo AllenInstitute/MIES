@@ -1056,9 +1056,10 @@ static Function DC_GenerateStimsetFingerprint(raCycleID, setName, setCycleCount,
 End
 
 static Function DC_CheckIfDataWaveHasBorderVals(ITCDataWave)
-	WAVE ITCDataWave
+	WAVE/Z ITCDataWave
 
-	ASSERT(WaveType(ITCDataWave) == IGOR_TYPE_16BIT_INT, "Unexpected wave type")
+	ASSERT(WaveExists(ITCDataWave), "Missing ITCDataWave")
+	ASSERT(WaveType(ITCDataWave) == IGOR_TYPE_16BIT_INT, "Unexpected wave type: " + num2str(WaveType(ITCDataWave)))
 
 #if (IgorVersion() >= 8.00)
 	FindValue/UOFV/I=(SIGNED_INT_16BIT_MIN) ITCDataWave
