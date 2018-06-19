@@ -3431,6 +3431,7 @@ Function DAP_SetVarProc_TestPulseSett(sva) : SetVariableControl
 		case 1: // mouse up
 		case 2: // Enter key
 		case 3: // Live update
+			sva.blockReentry = 1
 			panelTitle = sva.win
 			DAP_AbortIfUnlocked(panelTitle)
 			DAG_Update(sva.win, sva.ctrlName, val = sva.dval)
