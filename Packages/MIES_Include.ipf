@@ -26,7 +26,7 @@
 
 // our includes
 #include "MIES_AmplifierInteraction"
-#include "MIES_AnalysisBrowser" menus=0
+#include "MIES_AnalysisBrowser"
 #include "MIES_AnalysisBrowser_LabNotebookTPStorageBrowser"
 #include "MIES_AnalysisBrowser_SweepBrowser"
 #include "MIES_AnalysisBrowser_SweepBrowser_Export"
@@ -49,14 +49,14 @@
 #include "MIES_DAEphys"
 #include "MIES_DAEphys_Macro"
 #include "MIES_DAEphys_GuiState"
-#include "MIES_DataBrowser" menus=0
+#include "MIES_DataBrowser"
 #include "MIES_DataAcquisition"
 #include "MIES_DataAcquisition_Single"
 #include "MIES_DataAcquisition_Multi"
 #include "MIES_DataConfiguratorITC"
 #include "MIES_Debugging"
 #include "MIES_DebugPanel"
-#include "MIES_Downsample" menus=0
+#include "MIES_Downsample"
 #include "MIES_EnhancedWMRoutines"
 #include "MIES_EventDetectionCode"
 #include "MIES_ExperimentConfig"
@@ -69,7 +69,7 @@
 #include "MIES_Indexing"
 #include "MIES_Menu"
 #include "MIES_MiesUtilities"
-#include "MIES_NeuroDataWithoutBorders" menus=0
+#include "MIES_NeuroDataWithoutBorders"
 #include "MIES_OptimzedOverlapDistributedAcquisition"
 #include "MIES_Oscilloscope"
 #include "MIES_OverlaySweeps"
@@ -88,5 +88,5 @@
 #include "MIES_TestPulse_Multi"
 #include "MIES_Utilities"
 #include "MIES_WaveBuilder"
-#include "MIES_WaveBuilderPanel" menus=0
+#include "MIES_WaveBuilderPanel"
 #include "MIES_WaveDataFolderGetters"
