@@ -9,9 +9,7 @@
 /// @file MIES_Menu.ipf
 /// @brief Definition of the menu items
 
-static StrConstant OPTIONAL_TANGO_INCLUDE = "MIES_TangoInteract"
-
-Menu "Mies Panels", dynamic
+Menu "Mies Panels"
 	"Generate stimulus sets (WB)/2"			, /Q, WBP_CreateWaveBuilderPanel()
 	"Acquire data (DA_Ephys)/3"				, /Q, DAP_CreateDAEphysPanel()
 	"Browse data (DB)/4"				    , /Q, DB_OpenDataBrowser()
