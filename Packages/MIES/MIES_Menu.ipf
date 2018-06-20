@@ -12,9 +12,9 @@
 static StrConstant OPTIONAL_TANGO_INCLUDE = "MIES_TangoInteract"
 
 Menu "Mies Panels", dynamic
-	"Generate stimulus sets (WB)"			, /Q, WBP_CreateWaveBuilderPanel()
-	"Acquire data (DA_Ephys)"				, /Q, DAP_CreateDAEphysPanel()
-	"Browse data (DB)"						, /Q, DB_OpenDataBrowser()
+	"Generate stimulus sets (WB)/2"			, /Q, WBP_CreateWaveBuilderPanel()
+	"Acquire data (DA_Ephys)/3"				, /Q, DAP_CreateDAEphysPanel()
+	"Browse data (DB)/4"				    , /Q, DB_OpenDataBrowser()
 	"-"
 	SubMenu "Analysis"
 		"Analysis Browser"              , /Q, AB_OpenAnalysisBrowser()
