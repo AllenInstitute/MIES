@@ -1145,7 +1145,7 @@ static Function WBP_ParameterWaveToPanel(stimulusType)
 	for(i = 0; i < numEntries; i += 1)
 		control = StringFromList(i, list)
 		row = WBP_ExtractRowNumberFromControl(control, "P")
-		WBP_SetControl(panel, control, WP[row][segment][stimulusType])
+		WBP_SetControl(panel, control, value = WP[row][segment][stimulusType])
 	endfor
 
 	list = GrepList(ControlNameList(panel), ".*_T[[:digit:]]+")
@@ -1172,9 +1172,10 @@ static Function WBP_ParameterWaveToPanel(stimulusType)
 End
 
 /// @brief Generic wrapper for setting a control's value
-static Function WBP_SetControl(win, control, value)
+static Function WBP_SetControl(win, control, [value, str])
 	string win, control
 	variable value
+	string str
 
 	variable controlType
 
@@ -1185,10 +1186,18 @@ static Function WBP_SetControl(win, control, value)
 	if(controlType == 1)
 		// nothing to do
 	elseif(controlType == 2)
+		ASSERT(!ParamIsDefault(value), "Missing value parameter")
 		CheckBox $control, win=$win, value=(value == CHECKBOX_SELECTED)
 	elseif(controlType == 5)
-		SetVariable $control, win=$win, value=_NUM:value
+		if(!ParamIsDefault(value))
+			SetVariable $control, win=$win, value=_NUM:value
+		elseif(!ParamIsDefault(str))
+			SetVariable $control, win=$win, value=_STR:str
+		else
+			ASSERT(0, "Missing optional parameter")
+		endif
 	elseif(controlType == 3)
+		ASSERT(!ParamIsDefault(value), "Missing value parameter")
 		PopupMenu $control, win=$win, mode=value + 1
 	else
 		ASSERT(0, "Unsupported control type")
@@ -1393,7 +1402,7 @@ Function WBP_UpdateControlAndWP(control, value)
 
 	WAVE WP = GetWaveBuilderWaveParam()
 
-	WBP_SetControl(panel, control, value)
+	WBP_SetControl(panel, control, value = value)
 
 	stimulusType = GetTabID(panel, "WBP_WaveType")
 	epoch        = GetSetVariable(panel, "setvar_WaveBuilder_CurrentEpoch")
