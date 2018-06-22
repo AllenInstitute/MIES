@@ -1410,6 +1410,23 @@ Function WBP_UpdateControlAndWP(control, value)
 	WP[paramRow][epoch][stimulusType] = value
 End
 
+/// @brief Update the named control and pass its new value into the parameter wave
+Function WBP_UpdateControlAndWPT(control, str)
+	string control
+	string str
+
+	variable stimulusType, epoch, paramRow
+
+	WAVE/T WPT = GetWaveBuilderWaveTextParam()
+
+	WBP_SetControl(panel, control, str = str)
+
+	stimulusType = GetTabID(panel, "WBP_WaveType")
+	epoch        = GetSetVariable(panel, "setvar_WaveBuilder_CurrentEpoch")
+	paramRow     = WBP_ExtractRowNumberFromControl(control, "T")
+	WPT[paramRow][epoch][stimulusType] = str
+End
+
 Function WBP_SetVarProc_UpdateParam(sva) : SetVariableControl
 	STRUCT WMSetVariableAction &sva
 
@@ -1417,7 +1434,13 @@ Function WBP_SetVarProc_UpdateParam(sva) : SetVariableControl
 		case 1: // mouse up
 		case 2: // Enter key
 		case 3: // Live update
-			WBP_UpdateControlAndWP(sva.ctrlName, sva.dval)
+
+			if(sva.isStr)
+				WBP_UpdateControlAndWPT(sva.ctrlName, sva.sval)
+			else
+				WBP_UpdateControlAndWP(sva.ctrlName, sva.dval)
+			endif
+
 			WBP_UpdatePanelIfAllowed()
 			break
 	endswitch
