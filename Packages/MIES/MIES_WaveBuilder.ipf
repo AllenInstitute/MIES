@@ -16,6 +16,7 @@ static Constant PULSE_TRAIN_MODE_PULSE = 0x02
 static Constant WB_PULSE_TRAIN_TYPE_SQUARE   = 0
 static Constant WB_PULSE_TRAIN_TYPE_TRIANGLE = 1
 
+static Constant DELTA_OPERATION_EXPLICIT  = 6
 /// @brief Return the stim set wave and create it permanently
 /// in the datafolder hierarchy
 /// @return stimset wave ref or an invalid wave ref
@@ -357,8 +358,10 @@ Function/Wave WB_GetStimSet([setName])
 	for(i=0; i < numSweeps; i+=1)
 		data[i] = WB_MakeWaveBuilderWave(WPCopy, WPT, SegWvType, i, numEpochs, channelType, updateEpochIDWave, stimset = setName)
 		lengthOf1DWaves = max(DimSize(data[i], ROWS), lengthOf1DWaves)
-		if(WB_AddDelta(setName, WPCopy, numEpochs))
-			return $""
+		if(i + 1 < numSweeps)
+			if(WB_AddDelta(setName, WPCopy, WP, WPT, numEpochs, i))
+				return $""
+			endif
 		endif
 	endfor
 
@@ -443,18 +446,25 @@ End
 ///
 /// @param setName    name of the stimset
 /// @param WP         wavebuilder parameter wave (temporary copy)
+/// @param WPOrig     wavebuilder parameter wave (original)
+/// @param WPT        wavebuilder text parameter wave
 /// @param numEpochs  number of epochs
-///
-/// @return one on error, zero otherwise
-static Function WB_AddDelta(setName, WP, numEpochs)
+/// @param sweep      sweep number
+static Function WB_AddDelta(setName, WP, WPOrig, WPT, numEpochs, sweep)
 	string setName
-	Wave WP
-	variable numEpochs
+	Wave WP, WPOrig
+	WAVE/T WPT
+	variable numEpochs, sweep
 
 	variable i, j, k
 	variable operation, row
 	variable numEpochTypes, numEntries
 	string list, entry
+	variable value
+
+	if(isEmpty(setName))
+		setName = "Default"
+	endif
 
 	numEpochTypes = DimSize(WP, LAYERS)
 
@@ -478,7 +488,10 @@ static Function WB_AddDelta(setName, WP, numEpochs)
 				operation = WP[%$s.op][j][k]
 				row       = FindDimlabel(WP, ROWS, s.delta)
 
-				WP[%$s.main][j][k] += WP[row][j][k]
+				if(operation != DELTA_OPERATION_EXPLICIT)
+					// add the delta value
+					WP[%$s.main][j][k] += WP[row][j][k]
+				endif
 
 				switch(operation)
 					case DELTA_OPERATION_DEFAULT:
@@ -499,6 +512,23 @@ static Function WB_AddDelta(setName, WP, numEpochs)
 						break
 					case DELTA_OPERATION_ALTERNATE:
 						WP[row][j][k] *= -1
+						break
+					case DELTA_OPERATION_EXPLICIT:
+						list = WPT[%$s.ldelta][j][k]
+						if(sweep >= ItemsInList(list))
+							printf "WB_AddDelta: Stimset \"%s\" has too many sweeps for the explicit delta values list \"%s\" of \"%s\"\r", setName, list, s.main
+							value = 0
+						else
+							entry = StringFromList(sweep, list)
+							value = str2numSafe(entry)
+
+							if(IsNaN(value))
+								printf "WB_AddDelta: Stimset \"%s\" has an invalid entry \"%s\" in the explicit delta values list \"%s\" of \"%s\"\r", setName, entry, list, s.main
+								value = 0
+							endif
+						endif
+
+						WP[%$s.main][j][k] = WPOrig[%$s.main][j][k] + value
 						break
 					default:
 						// future proof
