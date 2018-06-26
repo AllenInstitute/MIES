@@ -9,10 +9,12 @@
 /// @file MIES_WaveBuilderPanel.ipf
 /// @brief __WBP__ Panel for creating stimulus sets
 
-static StrConstant panel                     = "WaveBuilder"
-static StrConstant WaveBuilderGraph          = "WaveBuilder#WaveBuilderGraph"
-static StrConstant AnalysisParamGUI          = "WaveBuilder#AnalysisParamGUI"
-static StrConstant DEFAULT_SET_PREFIX        = "StimulusSetA"
+static StrConstant panel              = "WaveBuilder"
+static StrConstant WaveBuilderGraph   = "WaveBuilder#WaveBuilderGraph"
+static StrConstant AnalysisParamGUI   = "WaveBuilder#AnalysisParamGUI"
+static StrConstant DEFAULT_SET_PREFIX = "StimulusSetA"
+static StrConstant WP_CONTROL_REGEXP  = ".*_P[[:digit:]]+"
+static StrConstant WPT_CONTROL_REGEXP = ".*_T[[:digit:]]+"
 
 // Equal to the indizes of the Wave Type popup menu
 static Constant  STIMULUS_TYPE_DA            = 1
@@ -1371,15 +1373,16 @@ End
 static Function WBP_ParameterWaveToPanel(stimulusType)
 	variable stimulusType
 
-	string list, control, data, customWaveName
+	string list, control, data, customWaveName, allControls
 	variable segment, numEntries, i, row
 
 	WAVE WP    = GetWaveBuilderWaveParam()
 	WAVE/T WPT = GetWaveBuilderWaveTextParam()
 
 	segment = GetSetVariable(panel, "setvar_WaveBuilder_CurrentEpoch")
+	allControls = ControlNameList(panel)
 
-	list = GrepList(ControlNameList(panel), ".*_P[[:digit:]]+")
+	list = GrepList(allControls, WP_CONTROL_REGEXP)
 
 	numEntries = ItemsInList(list)
 	for(i = 0; i < numEntries; i += 1)
@@ -1388,7 +1391,7 @@ static Function WBP_ParameterWaveToPanel(stimulusType)
 		WBP_SetControl(panel, control, value = WP[row][segment][stimulusType])
 	endfor
 
-	list = GrepList(ControlNameList(panel), ".*_T[[:digit:]]+")
+	list = GrepList(allControls, WPT_CONTROL_REGEXP)
 
 	numEntries = ItemsInList(list)
 	for(i = 0; i < numEntries; i += 1)
