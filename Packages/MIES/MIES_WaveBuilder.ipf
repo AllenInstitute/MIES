@@ -1461,6 +1461,11 @@ Function WB_UpdateEpochCombineList(channelType)
 	list = RemoveFromList("TestPulse", list)
 
 	numEntries = ItemsInList(list)
+
+	if(!numEntries)
+		return NaN
+	endif
+
 	Make/D/FREE/N=(numEntries) creationDates
 	Make/T/FREE/N=(numEntries) stimsets = StringFromList(p, list)
 
