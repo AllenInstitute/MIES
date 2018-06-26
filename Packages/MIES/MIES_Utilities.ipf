@@ -2353,14 +2353,14 @@ End
 /// info from `FuncRefInfo` and not the function reference itself.
 ///
 /// @return 1 if pointing to prototype function, 0 otherwise
-Function FuncRefIsAssigned(funcInfo)
+threadsafe Function FuncRefIsAssigned(funcInfo)
 	string funcInfo
 
 	variable result
 
-	ASSERT(!isEmpty(funcInfo), "Empty function info")
+	ASSERT_TS(!isEmpty(funcInfo), "Empty function info")
 	result = NumberByKey("ISPROTO", funcInfo)
-	ASSERT(IsFinite(result), "funcInfo does not look like a FuncRefInfo string")
+	ASSERT_TS(IsFinite(result), "funcInfo does not look like a FuncRefInfo string")
 
 	return result == 0
 End
