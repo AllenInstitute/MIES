@@ -185,7 +185,7 @@ Function SCOPE_CreateGraph(panelTitle, dataAcqOrTP)
 	string graph, tagName, color, style
 	variable i, adc, numActiveDACs, numADChannels, oneTimeInitDone
 	variable showSteadyStateResistance, showPeakResistance, Red, Green, Blue
-	string leftAxis, rightAxis, tagAxis, str, powerSpectrumTrace
+	string leftAxis, rightAxis, tagAxis, str, powerSpectrumTrace, oscilloscopeTrace
 	string tagPeakTrace, tagSteadyStateTrace
 	string steadyStateTrace, peakTrace, adcStr, anchor
 	variable YaxisLow, YaxisHigh, YaxisSpacing, Yoffset, xPos, yPos
@@ -229,7 +229,8 @@ Function SCOPE_CreateGraph(panelTitle, dataAcqOrTP)
 		headStage = AFH_GetHeadstageFromADC(panelTitle, adc)
 
 		if(dataAcqOrTP != TEST_PULSE_MODE || !showPowerSpectrum)
-			AppendToGraph/W=$graph/L=$leftAxis OscilloscopeData[][numActiveDACs + i]
+			oscilloscopeTrace = "osci" + adcStr
+			AppendToGraph/W=$graph/L=$leftAxis OscilloscopeData[][numActiveDACs + i]/TN=$oscilloscopeTrace
 
 			ModifyGraph/W=$graph axisEnab($leftAxis) = {YaxisLow, YaxisHigh}, freepos($leftAxis) = {0, kwFraction}
 
