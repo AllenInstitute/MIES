@@ -420,7 +420,7 @@ Constant SET_VARIABLE_GLOBAL      = 0x04
 Constant DISABLE_CONTROL_BIT = 2
 Constant HIDDEN_CONTROL_BIT  = 1
 
-/// Event types for analysis functions
+/// @name Event types for analysis functions
 /// @anchor EVENT_TYPE_ANALYSIS_FUNCTIONS
 /// @{
 Constant PRE_DAQ_EVENT    = 0
@@ -454,7 +454,7 @@ StrConstant EVENT_NAME_LIST_LBN = "Pre DAQ function;Mid Sweep function;Post Swee
 /// @anchor AnalysisFunctionParameterTypes
 StrConstant ANALYSIS_FUNCTION_PARAMS_TYPES = "variable;string;wave;textwave"
 
-/// Special return values for analysis functions. See also @ref
+/// @name Special return values for analysis functions. See also @ref
 /// AnalysisFunctionReturnTypes.
 ///
 /// @anchor AnalysisFuncReturnTypesConstants
@@ -463,7 +463,7 @@ Constant ANALYSIS_FUNC_RET_REPURP_TIME = -100
 Constant ANALYSIS_FUNC_RET_EARLY_STOP  = -101
 /// @}
 
-/// Constants for differntiating between different analysis function versions
+/// @name Constants for differentiating between different analysis function versions
 /// @anchor AnalysisFunctionVersions
 /// @{
 Constant ANALYSIS_FUNCTION_VERSION_V1  = 0x0001
@@ -790,13 +790,13 @@ Constant REASON_STIMSET_CHANGE_DUR_DAQ = 0x04
 /// mechanism.
 Constant LABNOTEBOOK_GET_RANGE = -1
 
-/// Mode parameters for OVS_GetSelectedSweeps()
+/// @name Mode parameters for OVS_GetSelectedSweeps()
 /// @{
 Constant OVS_SWEEP_SELECTION_INDEX   = 0x0
 Constant OVS_SWEEP_SELECTION_SWEEPNO = 0x1
 /// @}
 
-/// Export type parameters for NWB_ExportWithDialog()
+/// @name Export type parameters for NWB_ExportWithDialog()
 /// @{
 Constant NWB_EXPORT_DATA     = 0x1
 Constant NWB_EXPORT_STIMSETS = 0x2
@@ -805,7 +805,7 @@ Constant NWB_EXPORT_STIMSETS = 0x2
 /// Maximum number of microsecond timers in Igor Pro
 Constant MAX_NUM_MS_TIMERS = 10
 
-/// PatchSeq various constants
+/// @name PatchSeq various constants
 /// @{
 Constant PSQ_SP_INIT_AMP_m50    = -50e-12
 Constant PSQ_SP_INIT_AMP_p100   = +100e-12
@@ -825,7 +825,7 @@ Constant PSQ_RMS_LONG_THRESHOLD  = 0.5  // mV
 Constant PSQ_TARGETV_THRESHOLD   = 1    // mV
 /// @}
 
-/// PatchSeq labnotebook constants
+/// @name PatchSeq labnotebook constants
 ///
 /// Use with PSQ_PSQ_CreateLBNKey() only.
 ///
@@ -849,7 +849,7 @@ StrConstant PSQ_FMT_LBN_SET_PASS          = "%s Set QC"
 StrConstant PSQ_FMT_LBN_PULSE_DUR         = "%s Pulse duration"
 /// @}
 
-/// PatchSeq types of analysis functions
+/// @name PatchSeq types of analysis functions
 /// @anchor PatchSeqAnalysisFunctionTypes
 /// @{
 Constant PSQ_DA_SCALE     = 0x1
@@ -860,21 +860,21 @@ Constant PSQ_RAMP         = 0x8
 StrConstant PSQ_LIST_OF_TYPES = "0x1;0x2;0x4;0x8"
 /// @}
 
-/// PatchSeq Rheobase
+/// @name PatchSeq Rheobase
 /// @{
 Constant PSQ_RB_MAX_DASCALE_DIFF = 60e-12
 Constant PSQ_RB_DASCALE_STEP     = 10e-12
 Constant PSQ_RB_FINALSCALE_FAKE  = 42e-12
 /// @}
 
-/// PatchSeq DAScale
+/// @name PatchSeq DAScale
 /// @{
 Constant PSQ_DS_OFFSETSCALE_FAKE = 23 // pA
 StrConstant PSQ_DS_SUB           = "Sub"
 StrConstant PSQ_DS_SUPRA         = "Supra"
 /// @}
 
-/// PatchSeq Ramp
+/// @name PatchSeq Ramp
 /// @{
 Constant PSQ_RA_DASCALE_DEFAULT = 1 // pA
 Constant PSQ_RA_NUM_SWEEPS_PASS = 3
