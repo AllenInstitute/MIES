@@ -232,8 +232,12 @@ Function SCOPE_CreateGraph(panelTitle, dataAcqOrTP)
 			oscilloscopeTrace = "osci" + adcStr
 			AppendToGraph/W=$graph/L=$leftAxis OscilloscopeData[][numActiveDACs + i]/TN=$oscilloscopeTrace
 
-			ModifyGraph/W=$graph axisEnab($leftAxis) = {YaxisLow, YaxisHigh}, freepos($leftAxis) = {0, kwFraction}
+#if (IgorVersion() >= 8.00)
+			// use fast line drawing
+			ModifyGraph/W=$graph live($oscilloscopeTrace)=(2^1)
+#endif
 
+			ModifyGraph/W=$graph axisEnab($leftAxis) = {YaxisLow, YaxisHigh}, freepos($leftAxis) = {0, kwFraction}
 			ModifyGraph/W=$graph lblPosMode($leftAxis)=4, lblPos($leftAxis) = 50
 		endif
 
