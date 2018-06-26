@@ -1304,6 +1304,73 @@ Function/Wave FindIndizes(numericOrTextWave, [col, colLabel, var, str, prop, sta
 	return result
 End
 
+#if (IgorVersion() >= 8.00)
+
+/// @brief Returns a reference to a newly created datafolder
+///
+/// Basically a datafolder aware version of UniqueName for datafolders
+///
+/// @param dfr 	    datafolder reference where the new datafolder should be created
+/// @param baseName first part of the datafolder, might be shortend due to Igor Pro limitations
+Function/DF UniqueDataFolder(dfr, baseName)
+	dfref dfr
+	string baseName
+
+	string path
+
+	ASSERT(!isEmpty(baseName), "baseName must not be empty" )
+
+	path = UniqueDataFolderName(dfr, basename)
+
+	if(isEmpty(path))
+		return $""
+	endif
+
+	NewDataFolder $path
+	return $path
+End
+
+/// @brief Return a unique data folder name which does not exist in dfr
+///
+/// If you want to have the datafolder created for you and don't need a
+/// threadsafe function, use UniqueDataFolder() instead.
+///
+/// @param dfr      datafolder to search
+/// @param baseName first part of the datafolder, must be a *valid* Igor Pro object name
+threadsafe Function/S UniqueDataFolderName(dfr, baseName)
+	DFREF dfr
+	string baseName
+
+	variable index, numRuns
+	string basePath, path
+
+	ASSERT_TS(!isEmpty(baseName), "baseName must not be empty" )
+	ASSERT_TS(DataFolderExistsDFR(dfr), "dfr does not exist")
+
+	numRuns = 10000
+	// shorten basename so that we can attach some numbers
+	baseName = baseName[0, MAX_OBJECT_NAME_LENGTH_IN_BYTES - (ceil(log(numRuns)) + 1)]
+	baseName = CleanupName(baseName, 0)
+	basePath = GetDataFolder(1, dfr)
+	path = basePath + baseName
+
+	do
+		if(!DataFolderExists(path))
+			return path
+		endif
+
+		path = basePath + baseName + "_" + num2istr(index)
+
+		index += 1
+	while(index < numRuns)
+
+	DEBUGPRINT_TS("Could not find a unique folder with trials:", var = numRuns)
+
+	return ""
+End
+
+#else
+
 /// @brief Returns a reference to a newly created datafolder
 ///
 /// Basically a datafolder aware version of UniqueName for datafolders
@@ -1367,6 +1434,8 @@ threadsafe Function/S UniqueDataFolderName(dfr, baseName)
 
 	return ""
 End
+
+#endif
 
 /// @brief Returns a wave name not used in the given datafolder
 ///
