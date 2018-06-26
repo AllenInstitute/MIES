@@ -2596,6 +2596,54 @@ Function WBP_MainWindowHook(s)
 		case 2:
 			KillOrMoveToTrash(dfr = GetWaveBuilderDataPath())
 			break
+#ifdef DEBUGGING_ENABLED
+		case 4:
+			string controls, ctrl, name
+			variable row, found
+
+			if(DP_DebuggingEnabledForFile(GetFile(FunctionPath(""))))
+				WAVE WP  = GetWaveBuilderWaveParam()
+				WAVE WPT = GetWaveBuilderWaveTextParam()
+
+				controls = ControlNameList(s.winName)
+				numEntries = ItemsInList(controls)
+				for(i = 0; i < numEntries; i += 1)
+					ctrl = StringFromList(i, controls)
+					ControlInfo/W=$s.winName $ctrl
+
+					if(V_disable & HIDDEN_CONTROL_BIT)
+						continue
+					endif
+
+					if(!cmpstr(ctrl, "WBP_WaveType"))
+						continue
+					endif
+
+					if(s.mouseLoc.h >= V_left && s.mouseLoc.h <= V_left + V_width)
+						if(s.mouseLoc.v >= V_top && s.mouseLoc.v <= V_top + V_Height)
+							found = strsearch(ctrl, "_P", 0) != -1
+
+							name = "unknown"
+
+							if(found)
+								row  = WBP_ExtractRowNumberFromControl(ctrl, "P")
+								name = GetDimLabel(WP, ROWS, row)
+							endif
+
+							found = strsearch(ctrl, "_T", 0) != -1
+
+							if(found)
+								row  = WBP_ExtractRowNumberFromControl(ctrl, "T")
+								name = GetDimLabel(WPT, ROWS, row)
+							endif
+
+							printf "%s -> %s\r", ctrl, 	name
+						endif
+					endif
+				endfor
+			endif
+			break
+#endif
 		case 5:
 
 		win = s.winName
