@@ -16,7 +16,7 @@ static Function AbortsWithEmptyName()
 	WAVE/T/Z WPT = WB_GetWaveTextParamForSet(stimSet)
 	CHECK_WAVE(WPT, TEXT_WAVE)
 
-	params = WPT[10][%Set]
+	params = WPT[10][%Set][INDEP_EPOCH_TYPE]
 	CHECK_EMPTY_STR(params)
 
 	try
@@ -26,7 +26,7 @@ static Function AbortsWithEmptyName()
 		PASS()
 	endtry
 
-	params = WPT[10][%Set]
+	params = WPT[10][%Set][INDEP_EPOCH_TYPE]
 	CHECK_EMPTY_STR(params)
 End
 
@@ -38,7 +38,7 @@ static Function AbortsWithInvalidName1()
 	WAVE/T/Z WPT = WB_GetWaveTextParamForSet(stimSet)
 	CHECK_WAVE(WPT, TEXT_WAVE)
 
-	params = WPT[10][%Set]
+	params = WPT[10][%Set][INDEP_EPOCH_TYPE]
 	CHECK_EMPTY_STR(params)
 
 	try
@@ -48,7 +48,7 @@ static Function AbortsWithInvalidName1()
 		PASS()
 	endtry
 
-	params = WPT[10][%Set]
+	params = WPT[10][%Set][INDEP_EPOCH_TYPE]
 	CHECK_EMPTY_STR(params)
 End
 
@@ -60,7 +60,7 @@ static Function AbortsWithInvalidName2()
 	WAVE/T/Z WPT = WB_GetWaveTextParamForSet(stimSet)
 	CHECK_WAVE(WPT, TEXT_WAVE)
 
-	params = WPT[10][%Set]
+	params = WPT[10][%Set][INDEP_EPOCH_TYPE]
 	CHECK_EMPTY_STR(params)
 
 	try
@@ -70,7 +70,7 @@ static Function AbortsWithInvalidName2()
 		PASS()
 	endtry
 
-	params = WPT[10][%Set]
+	params = WPT[10][%Set][INDEP_EPOCH_TYPE]
 	CHECK_EMPTY_STR(params)
 End
 
@@ -82,7 +82,7 @@ static Function AbortsWithNoData()
 	WAVE/T/Z WPT = WB_GetWaveTextParamForSet(stimSet)
 	CHECK_WAVE(WPT, TEXT_WAVE)
 
-	params = WPT[10][%Set]
+	params = WPT[10][%Set][INDEP_EPOCH_TYPE]
 	CHECK_EMPTY_STR(params)
 
 	try
@@ -92,7 +92,7 @@ static Function AbortsWithNoData()
 		PASS()
 	endtry
 
-	params = WPT[10][%Set]
+	params = WPT[10][%Set][INDEP_EPOCH_TYPE]
 	CHECK_EMPTY_STR(params)
 End
 
@@ -104,7 +104,7 @@ static Function AbortsWithInvalidDataComb1()
 	WAVE/T/Z WPT = WB_GetWaveTextParamForSet(stimSet)
 	CHECK_WAVE(WPT, TEXT_WAVE)
 
-	params = WPT[10][%Set]
+	params = WPT[10][%Set][INDEP_EPOCH_TYPE]
 	CHECK_EMPTY_STR(params)
 
 	try
@@ -114,7 +114,7 @@ static Function AbortsWithInvalidDataComb1()
 		PASS()
 	endtry
 
-	params = WPT[10][%Set]
+	params = WPT[10][%Set][INDEP_EPOCH_TYPE]
 	CHECK_EMPTY_STR(params)
 End
 
@@ -126,7 +126,7 @@ static Function AbortsWithInvalidDataComb2()
 	WAVE/T/Z WPT = WB_GetWaveTextParamForSet(stimSet)
 	CHECK_WAVE(WPT, TEXT_WAVE)
 
-	params = WPT[10][%Set]
+	params = WPT[10][%Set][INDEP_EPOCH_TYPE]
 	CHECK_EMPTY_STR(params)
 
 	try
@@ -136,7 +136,7 @@ static Function AbortsWithInvalidDataComb2()
 		PASS()
 	endtry
 
-	params = WPT[10][%Set]
+	params = WPT[10][%Set][INDEP_EPOCH_TYPE]
 	CHECK_EMPTY_STR(params)
 End
 
@@ -148,7 +148,7 @@ static Function AbortsWithInvalidDataComb3()
 	WAVE/T/Z WPT = WB_GetWaveTextParamForSet(stimSet)
 	CHECK_WAVE(WPT, TEXT_WAVE)
 
-	params = WPT[10][%Set]
+	params = WPT[10][%Set][INDEP_EPOCH_TYPE]
 	CHECK_EMPTY_STR(params)
 
 	try
@@ -158,7 +158,7 @@ static Function AbortsWithInvalidDataComb3()
 		PASS()
 	endtry
 
-	params = WPT[10][%Set]
+	params = WPT[10][%Set][INDEP_EPOCH_TYPE]
 	CHECK_EMPTY_STR(params)
 End
 
@@ -170,7 +170,7 @@ static Function AbortsWithInvalidDataComb4()
 	WAVE/T/Z WPT = WB_GetWaveTextParamForSet(stimSet)
 	CHECK_WAVE(WPT, TEXT_WAVE)
 
-	params = WPT[10][%Set]
+	params = WPT[10][%Set][INDEP_EPOCH_TYPE]
 	CHECK_EMPTY_STR(params)
 
 	try
@@ -180,7 +180,7 @@ static Function AbortsWithInvalidDataComb4()
 		PASS()
 	endtry
 
-	params = WPT[10][%Set]
+	params = WPT[10][%Set][INDEP_EPOCH_TYPE]
 	CHECK_EMPTY_STR(params)
 End
 
@@ -192,7 +192,7 @@ static Function AbortsWithInvalidContents()
 	WAVE/T/Z WPT = WB_GetWaveTextParamForSet(stimSet)
 	CHECK_WAVE(WPT, TEXT_WAVE)
 
-	params = WPT[10][%Set]
+	params = WPT[10][%Set][INDEP_EPOCH_TYPE]
 	CHECK_EMPTY_STR(params)
 
 	try
@@ -202,7 +202,7 @@ static Function AbortsWithInvalidContents()
 		PASS()
 	endtry
 
-	params = WPT[10][%Set]
+	params = WPT[10][%Set][INDEP_EPOCH_TYPE]
 	CHECK_EMPTY_STR(params)
 End
 
@@ -214,7 +214,7 @@ static Function AbortsWithInvalidWaveType()
 	WAVE/T/Z WPT = WB_GetWaveTextParamForSet(stimSet)
 	CHECK_WAVE(WPT, TEXT_WAVE)
 
-	params = WPT[10][%Set]
+	params = WPT[10][%Set][INDEP_EPOCH_TYPE]
 	CHECK_EMPTY_STR(params)
 
 	try
@@ -225,7 +225,7 @@ static Function AbortsWithInvalidWaveType()
 		PASS()
 	endtry
 
-	params = WPT[10][%Set]
+	params = WPT[10][%Set][INDEP_EPOCH_TYPE]
 	CHECK_EMPTY_STR(params)
 End
 
@@ -239,7 +239,7 @@ static Function AbortsWithInvalidTextWaveCont()
 	WAVE/T/Z WPT = WB_GetWaveTextParamForSet(stimSet)
 	CHECK_WAVE(WPT, TEXT_WAVE)
 
-	params = WPT[10][%Set]
+	params = WPT[10][%Set][INDEP_EPOCH_TYPE]
 	CHECK_EMPTY_STR(params)
 
 	Make/T/FREE refData = {"1", "2", "3", "|"}
@@ -264,14 +264,14 @@ static Function WorksWithVariable()
 	WAVE/T/Z WPT = WB_GetWaveTextParamForSet(stimSet)
 	CHECK_WAVE(WPT, TEXT_WAVE)
 
-	params = WPT[10][%Set]
+	params = WPT[10][%Set][INDEP_EPOCH_TYPE]
 	CHECK_EMPTY_STR(params)
 
 	refValue = 123
 	refName  = "ab"
 
 	WBP_AddAnalysisParameter(stimSet, refName, var = refValue)
-	params = WPT[10][%Set]
+	params = WPT[10][%Set][INDEP_EPOCH_TYPE]
 
 	refNames = refName + ";"
 	names = AFH_GetListOfAnalysisParamNames(params)
@@ -295,14 +295,14 @@ static Function WorksWithString()
 	WAVE/T/Z WPT = WB_GetWaveTextParamForSet(stimSet)
 	CHECK_WAVE(WPT, TEXT_WAVE)
 
-	params = WPT[10][%Set]
+	params = WPT[10][%Set][INDEP_EPOCH_TYPE]
 	CHECK_EMPTY_STR(params)
 
 	refString = "hi there"
 	refName   = "abc"
 
 	WBP_AddAnalysisParameter(stimSet, refName, str = refString)
-	params = WPT[10][%Set]
+	params = WPT[10][%Set][INDEP_EPOCH_TYPE]
 
 	refNames = refName + ";"
 	names = AFH_GetListOfAnalysisParamNames(params)
@@ -326,14 +326,14 @@ static Function WorksWithNumericWave()
 	WAVE/T/Z WPT = WB_GetWaveTextParamForSet(stimSet)
 	CHECK_WAVE(WPT, TEXT_WAVE)
 
-	params = WPT[10][%Set]
+	params = WPT[10][%Set][INDEP_EPOCH_TYPE]
 	CHECK_EMPTY_STR(params)
 
 	Make/D/FREE refData = {1, 2, 3, 4}
 	refName   = "abcde"
 
 	WBP_AddAnalysisParameter(stimSet, refName, wv = refData)
-	params = WPT[10][%Set]
+	params = WPT[10][%Set][INDEP_EPOCH_TYPE]
 
 	refNames = refName + ";"
 	names = AFH_GetListOfAnalysisParamNames(params)
@@ -358,14 +358,14 @@ static Function WorksWithTextWave()
 	WAVE/T/Z WPT = WB_GetWaveTextParamForSet(stimSet)
 	CHECK_WAVE(WPT, TEXT_WAVE)
 
-	params = WPT[10][%Set]
+	params = WPT[10][%Set][INDEP_EPOCH_TYPE]
 	CHECK_EMPTY_STR(params)
 
 	Make/T/FREE refData = {"1", "2", "3", "hi there"}
 	refName   = "abcdef"
 
 	WBP_AddAnalysisParameter(stimSet, refName, wv = refData)
-	params = WPT[10][%Set]
+	params = WPT[10][%Set][INDEP_EPOCH_TYPE]
 
 	refNames = refName + ";"
 	names = AFH_GetListOfAnalysisParamNames(params)
@@ -390,14 +390,14 @@ static Function ReplacesDuplicateEntries()
 	WAVE/T/Z WPT = WB_GetWaveTextParamForSet(stimSet)
 	CHECK_WAVE(WPT, TEXT_WAVE)
 
-	params = WPT[10][%Set]
+	params = WPT[10][%Set][INDEP_EPOCH_TYPE]
 	CHECK_EMPTY_STR(params)
 
 	WBP_AddAnalysisParameter(stimSet, "a1", str = "a1")
 	WBP_AddAnalysisParameter(stimSet, "a2", str = "a2")
 	WBP_AddAnalysisParameter(stimSet, "a1", str = "a11")
 
-	params = WPT[10][%Set]
+	params = WPT[10][%Set][INDEP_EPOCH_TYPE]
 
 	refNames = "a1;a2;"
 	names = AFH_GetListOfAnalysisParamNames(params)
@@ -420,7 +420,7 @@ static Function ReturnsInvalidWaveRef()
 	WAVE/T/Z WPT = WB_GetWaveTextParamForSet(stimSet)
 	CHECK_WAVE(WPT, TEXT_WAVE)
 
-	params = WPT[10][%Set]
+	params = WPT[10][%Set][INDEP_EPOCH_TYPE]
 	CHECK_EMPTY_STR(params)
 
 	CHECK(!WaveExists(AFH_GetAnalysisParamWave("I_DONT_EXIST", params)))

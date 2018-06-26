@@ -16,6 +16,7 @@ static Constant PULSE_TRAIN_MODE_PULSE = 0x02
 static Constant WB_PULSE_TRAIN_TYPE_SQUARE   = 0
 static Constant WB_PULSE_TRAIN_TYPE_TRIANGLE = 1
 
+static Constant DELTA_OPERATION_EXPLICIT  = 6
 /// @brief Return the stim set wave and create it permanently
 /// in the datafolder hierarchy
 /// @return stimset wave ref or an invalid wave ref
@@ -357,8 +358,10 @@ Function/Wave WB_GetStimSet([setName])
 	for(i=0; i < numSweeps; i+=1)
 		data[i] = WB_MakeWaveBuilderWave(WPCopy, WPT, SegWvType, i, numEpochs, channelType, updateEpochIDWave, stimset = setName)
 		lengthOf1DWaves = max(DimSize(data[i], ROWS), lengthOf1DWaves)
-		if(WB_AddDelta(setName, WPCopy, numEpochs))
-			return $""
+		if(i + 1 < numSweeps)
+			if(WB_AddDelta(setName, WPCopy, WP, WPT, numEpochs, i))
+				return $""
+			endif
 		endif
 	endfor
 
@@ -407,87 +410,133 @@ Function/Wave WB_GetStimSet([setName])
 	return stimSet
 End
 
+/// @brief Return a free wave with indizes referencing the values with delta values
+///
+/// Indizes are into `WP` and reference the entry with the value itself.
+/// @sa AddDimLabelsToWP()
+static Function/WAVE WB_GetControlWithDeltaIdx()
+
+	Make/FREE/B indizes = {0, 2, 4, 6, 10, 12, 14, 16, 20, 22, 24, 26, 28, 30, 45}
+	return indizes
+End
+
+/// @brief Return the `WP`/`WPT` dimension labels for the related delta controls
+/// given the index into `WP` of the value itself.
+Function WB_GetDeltaDimLabel(WP, index, s)
+	WAVE WP
+	variable index
+	STRUCT DeltaControlNames &s
+
+	string name
+
+	name = GetDimLabel(WP, ROWS, index)
+	ASSERT(!IsEmpty(name), "Invalid empty name")
+
+	s.main   = name
+	s.delta  = name + " delta"
+	s.dme    = name + " dme"
+	s.ldelta = name + " ldel"
+	s.op     = name + " op"
+End
+
 /// @brief Add delta to appropriate parameters
 ///
-/// Relies on alternating sequence of parameter and delta's in parameter waves as documented in WB_MakeWaveBuilderWave()
+/// Relies on alternating sequence of parameter and delta's in parameter waves
+/// as documented in WB_MakeWaveBuilderWave().
 ///
 /// @param setName    name of the stimset
 /// @param WP         wavebuilder parameter wave (temporary copy)
+/// @param WPOrig     wavebuilder parameter wave (original)
+/// @param WPT        wavebuilder text parameter wave
 /// @param numEpochs  number of epochs
-///
-/// @return one on error, zero otherwise
-static Function WB_AddDelta(setName, WP, numEpochs)
+/// @param sweep      sweep number
+static Function WB_AddDelta(setName, WP, WPOrig, WPT, numEpochs, sweep)
 	string setName
-	Wave WP
-	variable numEpochs
+	Wave WP, WPOrig
+	WAVE/T WPT
+	variable numEpochs, sweep
 
 	variable i, j, k
-	variable offsetFactor, durationFactor, amplitudeFactor
-	variable operation, factor
-	variable numEpochTypes
+	variable operation, row
+	variable numEpochTypes, numEntries
+	string list, entry
+	variable value
+
+	if(isEmpty(setName))
+		setName = "Default"
+	endif
 
 	numEpochTypes = DimSize(WP, LAYERS)
 
-	for(i = 0; i <= 30; i += 2)
+	WAVE indizes = WB_GetControlWithDeltaIdx()
+	numEntries = DimSize(indizes, ROWS)
+
+	for(i = 0; i < numEntries; i += 1)
+		STRUCT DeltaControlNames s
+		WB_GetDeltaDimLabel(WP, indizes[i], s)
+
 		for(j = 0; j < numEpochs; j += 1)
 			for(k = 0; k < numEpochTypes; k += 1)
 
-				WP[i][j][k] += WP[i + 1][j][k]
-
-				operation = WP[40][j][k]
-				if(operation)
-					durationFactor  = WP[52][j][k]
-					amplitudeFactor = WP[50][j][k]
-					offsetFactor    = WP[51][j][k]
-					switch(i)
-						case 0:
-							factor = durationFactor
-							break
-						case 2:
-							factor = amplitudeFactor
-							break
-						case 4:
-							factor = offsetFactor
-							break
-						default:
-							factor = 1
-							break
-					endswitch
-
-					switch(operation)
-						case 1: // Simple factor
-							WP[i + 1][j][k] = WP[i + 1][j][k] * factor
-							break
-						case 2: // Log
-							// ignore a delta value of exactly zero
-							WP[i + 1][j][k] = WP[i + 1][j][k] == 0 ? 0 : log(WP[i + 1][j][k])
-							break
-						case 3: // Squared
-							WP[i + 1][j][k] = (WP[i + 1][j][k])^2
-							break
-						case 4: // Power
-							WP[i + 1][j][k] = (WP[i + 1][j][k])^factor
-							break
-						case 5: // Alternate
-							WP[i + 1][j][k] *= -1
-							break
-						default:
-							// future proof
-							printf "WB_AddDelta: Stimset %s uses an unknown operation %d and can therefore not be recreated.\r", setName, operation
-							return 1
-							break
-					endswitch
+				// special handling for "Number of pulses"
+				// don't do anything if the number of pulses is calculated
+				// and not entered
+				if(indizes[i] == 45 && !WP[46][j][k])
+					continue
 				endif
-			endfor
-		endfor
-	endfor
 
-	// number of pulses has a non-standard delta position
-	for(j = 0; j < numEpochs; j += 1)
-		for(k = 0; k < numEpochTypes; k += 1)
-			if(WP[46][j][k]) // use pulses checkbox
-				WP[45][j][k] += WP[47][j][k]
-			endif
+				operation = WP[%$s.op][j][k]
+				row       = FindDimlabel(WP, ROWS, s.delta)
+
+				if(operation != DELTA_OPERATION_EXPLICIT)
+					// add the delta value
+					WP[%$s.main][j][k] += WP[row][j][k]
+				endif
+
+				switch(operation)
+					case DELTA_OPERATION_DEFAULT:
+						// delta is constant
+						break
+					case DELTA_OPERATION_FACTOR:
+						WP[row][j][k] = WP[row][j][k] * WP[%$s.dme][j][k]
+						break
+					case DELTA_OPERATION_LOG:
+						// ignore a delta value of exactly zero
+						WP[row][j][k] = WP[row][j][k] == 0 ? 0 : log(WP[row][j][k])
+						break
+					case DELTA_OPERATION_SQUARED:
+						WP[row][j][k] = (WP[row][j][k])^2
+						break
+					case DELTA_OPERATION_POWER:
+						WP[row][j][k] = (WP[row][j][k])^(WP[%$s.dme][j][k])
+						break
+					case DELTA_OPERATION_ALTERNATE:
+						WP[row][j][k] *= -1
+						break
+					case DELTA_OPERATION_EXPLICIT:
+						list = WPT[%$s.ldelta][j][k]
+						if(sweep >= ItemsInList(list))
+							printf "WB_AddDelta: Stimset \"%s\" has too many sweeps for the explicit delta values list \"%s\" of \"%s\"\r", setName, list, s.main
+							value = 0
+						else
+							entry = StringFromList(sweep, list)
+							value = str2numSafe(entry)
+
+							if(IsNaN(value))
+								printf "WB_AddDelta: Stimset \"%s\" has an invalid entry \"%s\" in the explicit delta values list \"%s\" of \"%s\"\r", setName, entry, list, s.main
+								value = 0
+							endif
+						endif
+
+						WP[%$s.main][j][k] = WPOrig[%$s.main][j][k] + value
+						break
+					default:
+						// future proof
+						printf "WB_AddDelta: Stimset %s uses an unknown operation %d and can therefore not be recreated.\r", setName, operation
+						return 1
+						break
+				endswitch
+			endfor
 		endfor
 	endfor
 
@@ -582,7 +631,7 @@ static Function/WAVE WB_MakeWaveBuilderWave(WP, WPT, SegWvType, stepCount, numEp
 		DEBUGPRINT("params", str=debugMsg)
 
 		if(params.duration < 0 || !IsFinite(params.duration))
-			printf "Stimset %s: User input has generated a negative/non-finite epoch duration. Please adjust input. Duration for epoch has been reset to 1 ms.", stimset
+			printf "Stimset %s: User input has generated a negative/non-finite epoch duration. Please adjust input. Duration for epoch has been reset to 1 ms.\r", stimset
 			params.duration = 1
 		elseif(params.duration == 0 && type != EPOCH_TYPE_CUSTOM && type != EPOCH_TYPE_COMBINE && type != EPOCH_TYPE_PULSE_TRAIN)
 			if(updateEpochIDWave && stepCount == 0)
@@ -696,7 +745,7 @@ static Function/WAVE WB_MakeWaveBuilderWave(WP, WPT, SegWvType, stepCount, numEp
 				break
 			case EPOCH_TYPE_CUSTOM:
 				WB_UpgradecustomWaveInWPT(WPT, channelType, i)
-				customWaveName = WPT[0][i]
+				customWaveName = WPT[0][i][EPOCH_TYPE_CUSTOM]
 				WAVE/Z customWave = $customWaveName
 				if(WaveExists(customWave))
 					WB_CustomWaveSegment(params, customWave)
@@ -711,8 +760,8 @@ static Function/WAVE WB_MakeWaveBuilderWave(WP, WPT, SegWvType, stepCount, numEp
 			case EPOCH_TYPE_COMBINE:
 				WAVE segmentWave = GetSegmentWave(duration=0)
 
-				formula         = WPT[6][i]
-				formula_version = WPT[7][i]
+				formula         = WPT[6][i][EPOCH_TYPE_COMBINE]
+				formula_version = WPT[7][i][EPOCH_TYPE_COMBINE]
 
 				if(cmpstr(formula_version, WAVEBUILDER_COMBINE_FORMULA_VER))
 					printf "Stimset %s: Could not create the wave from formula of version %s\r", stimset, WAVEBUILDER_COMBINE_FORMULA_VER
@@ -770,14 +819,14 @@ static Function/WAVE WB_MakeWaveBuilderWave(WP, WPT, SegWvType, stepCount, numEp
 		AddEntryIntoWaveNoteAsList(WaveBuilderWave, "Sweep Count", var=SegWvType[101])
 		AddEntryIntoWaveNoteAsList(WaveBuilderWave, "Epoch Count" , var=numEpochs)
 		AddEntryIntoWaveNoteAsList(WaveBuilderWave, "ITI", var=SegWvType[99])
-		AddEntryIntoWaveNoteAsList(WaveBuilderWave, StringFromList(PRE_DAQ_EVENT, EVENT_NAME_LIST), str=WPT[1][99])
-		AddEntryIntoWaveNoteAsList(WaveBuilderWave, StringFromList(MID_SWEEP_EVENT, EVENT_NAME_LIST), str=WPT[2][99])
-		AddEntryIntoWaveNoteAsList(WaveBuilderWave, StringFromList(POST_SWEEP_EVENT, EVENT_NAME_LIST), str=WPT[3][99])
-		AddEntryIntoWaveNoteAsList(WaveBuilderWave, StringFromList(POST_SET_EVENT, EVENT_NAME_LIST), str=WPT[4][99])
-		AddEntryIntoWaveNoteAsList(WaveBuilderWave, StringFromList(POST_DAQ_EVENT, EVENT_NAME_LIST), str=WPT[5][99])
-		AddEntryIntoWaveNoteAsList(WaveBuilderWave, StringFromList(PRE_SWEEP_EVENT, EVENT_NAME_LIST), str=WPT[8][99])
-		AddEntryIntoWaveNoteAsList(WaveBuilderWave, StringFromList(GENERIC_EVENT, EVENT_NAME_LIST), str=WPT[9][99])
-		AddEntryIntoWaveNoteAsList(WaveBuilderWave, ANALYSIS_FUNCTION_PARAMS_LBN, str=WPT[10][99])
+		AddEntryIntoWaveNoteAsList(WaveBuilderWave, StringFromList(PRE_DAQ_EVENT, EVENT_NAME_LIST), str=WPT[1][%Set][INDEP_EPOCH_TYPE])
+		AddEntryIntoWaveNoteAsList(WaveBuilderWave, StringFromList(MID_SWEEP_EVENT, EVENT_NAME_LIST), str=WPT[2][%Set][INDEP_EPOCH_TYPE])
+		AddEntryIntoWaveNoteAsList(WaveBuilderWave, StringFromList(POST_SWEEP_EVENT, EVENT_NAME_LIST), str=WPT[3][%Set][INDEP_EPOCH_TYPE])
+		AddEntryIntoWaveNoteAsList(WaveBuilderWave, StringFromList(POST_SET_EVENT, EVENT_NAME_LIST), str=WPT[4][%Set][INDEP_EPOCH_TYPE])
+		AddEntryIntoWaveNoteAsList(WaveBuilderWave, StringFromList(POST_DAQ_EVENT, EVENT_NAME_LIST), str=WPT[5][%Set][INDEP_EPOCH_TYPE])
+		AddEntryIntoWaveNoteAsList(WaveBuilderWave, StringFromList(PRE_SWEEP_EVENT, EVENT_NAME_LIST), str=WPT[8][%Set][INDEP_EPOCH_TYPE])
+		AddEntryIntoWaveNoteAsList(WaveBuilderWave, StringFromList(GENERIC_EVENT, EVENT_NAME_LIST), str=WPT[9][%Set][INDEP_EPOCH_TYPE])
+		AddEntryIntoWaveNoteAsList(WaveBuilderWave, ANALYSIS_FUNCTION_PARAMS_LBN, str=WPT[10][%Set][INDEP_EPOCH_TYPE])
 		AddEntryIntoWaveNoteAsList(WaveBuilderWave, "Flip", var=SegWvType[98])
 		AddEntryIntoWaveNoteAsList(WaveBuilderWave, "Random Seed", var=SegWvType[97])
 	endif
@@ -815,7 +864,7 @@ Function WB_UpgradeCustomWaveInWPT(wv, channelType, i)
 	WAVE/T wv
 	variable channelType, i
 
-	string customWaveName = wv[0][i]
+	string customWaveName = wv[0][i][EPOCH_TYPE_CUSTOM]
 
 	// old style entries with only the wave name
 	if(!isEmpty(customWaveName) && strsearch(customWaveName, ":", 0) == -1)
@@ -833,7 +882,7 @@ Function WB_UpgradeCustomWaveInWPT(wv, channelType, i)
 
 		if(WaveExists(customWave))
 			printf "Upgraded custom wave format successfully.\r"
-			wv[0][i] = GetWavesDataFolder(customWave, 2)
+			wv[0][i][EPOCH_TYPE_CUSTOM] = GetWavesDataFolder(customWave, 2)
 		endif
 	endif
 End
@@ -1412,6 +1461,11 @@ Function WB_UpdateEpochCombineList(channelType)
 	list = RemoveFromList("TestPulse", list)
 
 	numEntries = ItemsInList(list)
+
+	if(!numEntries)
+		return NaN
+	endif
+
 	Make/D/FREE/N=(numEntries) creationDates
 	Make/T/FREE/N=(numEntries) stimsets = StringFromList(p, list)
 
@@ -1688,7 +1742,7 @@ Function/WAVE WB_CustomWavesPathFromStimSet([stimsetList])
 		numEpochs = SegWvType[%'Total number of epochs']
 		for(j = 0; j < numEpochs; j += 1)
 			if(SegWvType[j] == 7)
-				customwaves[k] = WPT[0][j]
+				customwaves[k] = WPT[0][j][EPOCH_TYPE_CUSTOM]
 				k += 1
 			endif
 		endfor
@@ -1781,7 +1835,7 @@ static Function/S WB_StimsetChildren([stimset])
 	// search for stimsets in all formula-epochs by a regex pattern
 	for(i = 0; i < numEpochs; i += 1)
 		if(SegWvType[i] == 8)
-			formula = WPT[6][i]
+			formula = WPT[6][i][EPOCH_TYPE_CUSTOM]
 			numStimsets = CountSubstrings(formula, "?")
 			for(j = 0; j < numStimsets; j += 1)
 				WAVE/T/Z wv = SearchStringBase(formula, "(.*)\\b(\\w+)\\b\\?(.*)")

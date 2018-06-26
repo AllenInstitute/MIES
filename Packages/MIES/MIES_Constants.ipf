@@ -505,7 +505,7 @@ Constant HARDWARE_DAC_EXTERNAL_TRIGGER = 0x1
 Constant DA_EPHYS_PANEL_VERSION     = 31
 Constant DATABROWSER_PANEL_VERSION  = 7
 Constant SWEEPBROWSER_PANEL_VERSION = 3
-Constant WAVEBUILDER_PANEL_VERSION  = 5
+Constant WAVEBUILDER_PANEL_VERSION  = 6
 
 /// Version of the labnotebooks (numerical and textual)
 ///
@@ -611,16 +611,21 @@ StrConstant POPUPMENU_DIVIDER = "\\M1(-"
 /// Numbers are stored in the SegWvType waves, so they are part of our "API".
 /// @anchor WaveBuilderEpochTypes
 /// @{
-Constant EPOCH_TYPE_SQUARE_PULSE = 0
-Constant EPOCH_TYPE_RAMP         = 1
-Constant EPOCH_TYPE_NOISE        = 2
-Constant EPOCH_TYPE_SIN_COS      = 3
-Constant EPOCH_TYPE_SAW_TOOTH    = 4
-Constant EPOCH_TYPE_PULSE_TRAIN  = 5
-Constant EPOCH_TYPE_PSC          = 6
-Constant EPOCH_TYPE_CUSTOM       = 7
-Constant EPOCH_TYPE_COMBINE      = 8
+Constant EPOCH_TYPE_SQUARE_PULSE  = 0
+Constant EPOCH_TYPE_RAMP          = 1
+Constant EPOCH_TYPE_NOISE         = 2
+Constant EPOCH_TYPE_SIN_COS       = 3
+Constant EPOCH_TYPE_SAW_TOOTH     = 4
+Constant EPOCH_TYPE_PULSE_TRAIN   = 5
+Constant EPOCH_TYPE_PSC           = 6
+Constant EPOCH_TYPE_CUSTOM        = 7
+Constant EPOCH_TYPE_COMBINE       = 8
+Constant EPOCH_TYPES_TOTAL_NUMBER = 9
 /// @}
+
+/// Used for the textual wavebuilder parameter wave `WPT` as that stores
+/// the set parameters in layer 0. Coincides with `EPOCH_TYPE_SQUARE_PULSE`.
+Constant INDEP_EPOCH_TYPE = 0
 
 /// @name Parameters for gnoise and enoise
 ///@{
@@ -906,3 +911,15 @@ Constant CA_OPTS_NO_DUPLICATE = 0x1
 Constant LABNOTEBOOK_MISSING_VALUE  = -1
 Constant LABNOTEBOOK_UNCACHED_VALUE = -2
 StrConstant LABNOTEBOOK_MOD_COUNT   = "Labnotebook modification count"
+
+/// @name Constants for the different delta operation modes in the Wavebuilder
+/// @anchor WaveBuilderDeltaOperationModes
+/// @{
+Constant DELTA_OPERATION_DEFAULT   = 0
+Constant DELTA_OPERATION_FACTOR    = 1
+Constant DELTA_OPERATION_LOG       = 2
+Constant DELTA_OPERATION_SQUARED   = 3
+Constant DELTA_OPERATION_POWER     = 4
+Constant DELTA_OPERATION_ALTERNATE = 5
+Constant DELTA_OPERATION_EXPLICIT  = 6
+/// @}
