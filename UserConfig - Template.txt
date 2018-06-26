@@ -14,7 +14,7 @@ Name of ITC Device = ITC1600
 
 ITC Device number = 0
 
-Enable multiple ITC devices = No
+Enable multiple ITC devices = Yes
 
 ####### Amplifier and Pressure Settings #######
 
