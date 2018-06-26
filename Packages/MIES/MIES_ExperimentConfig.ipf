@@ -66,6 +66,8 @@ Function ExpConfig_ConfigureMIES([middleOfExperiment])
 		UserConfigNB = winname(0,16)
 		Wave /T KeyTypes = GetExpConfigKeyTypes()
 		Wave /T UserSettings = GetExpUserSettings(UserConfigNB, KeyTypes)
+
+		KillWindow/Z $UserConfigNB
 		
 		FindValue /TXOP = 4 /TEXT = AMP_SERIAL UserSettings
 		AmpSerialLocal = UserSettings[V_value][%SettingValue]
