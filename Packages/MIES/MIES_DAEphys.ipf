@@ -477,7 +477,7 @@ Function DAP_EphysPanelStartUpSettings()
 	CheckBox check_Settings_SyncMiesToMCC WIN = $panelTitle,value= 0
 	CheckBox check_DataAcq_Amp_Chain WIN = $panelTitle,value= 0
 	CheckBox check_DatAcq_BBEnable WIN = $panelTitle,value= 0
-	CheckBox check_Settings_MD WIN = $panelTitle,value= 0
+	CheckBox check_Settings_MD WIN = $panelTitle,value= 1
 	SetVariable setvar_Settings_TP_RTolerance WIN = $panelTitle,value= _NUM:1
 	CheckBox check_Settings_SaveAmpSettings WIN = $panelTitle,value= 0
 	CheckBox check_Settings_AmpIEQZstep WIN = $panelTitle,value= 0
