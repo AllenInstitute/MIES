@@ -65,13 +65,13 @@ Within the Allen Institute, the documentation can be reached at the following lo
 ### Building the documentation
 
 #### Required 3rd party tools
-* [Doxygen](http://doxygen.org) 1.8.12
+* [Doxygen](http://doxygen.org) 1.8.15
 * [Gawk](http://sourceforge.net/projects/ezwinports/files/gawk-4.1.3-w32-bin.zip/download) 4.1.3 or later
 * [Dot](http://www.graphviz.org) 2.38 or later
 * [pandoc](https://github.com/jgm/pandoc/releases) 1.17.1 or later
 * [python](http://www.python.org) 2.7 or later
-* [breathe](https://github.com/michaeljones/breathe) 4.20 or later, via `pip install -U breathe`
-* [sphinx](http://www.sphinx-doc.org/en/stable) 1.4.6 or later, via `pip install -U sphinx`
+* [breathe](https://github.com/michaeljones/breathe) 4.9.1 or later, via `pip install -U breathe`
+* [sphinx](http://www.sphinx-doc.org/en/stable) 1.6.5 or later, via `pip install -U sphinx`
 * [sphinxcontrib-fulltoc](https://sphinxcontrib-fulltoc.readthedocs.io/en/latest/) via `pip install -U sphinxcontrib-fulltoc`
 
 Execute `tools/build-documentation.sh`.
