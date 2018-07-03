@@ -704,13 +704,13 @@ End
 Function DAP_TabControlFinalHook(tca)
 	STRUCT WMTabControlAction &tca
 
+	DAP_UpdateYokeControls(tca.win)
+
 	if(DAP_DeviceIsUnLocked(tca.win))
 		print "Please lock the panel to a DAC in the Hardware tab"
 		ControlWindowToFront()
 		return 0
 	endif
-
-	DAP_UpdateYokeControls(tca.win)
 
 	if(tca.tab == DATA_ACQU_TAB_NUM)
 		DAP_UpdateDAQControls(tca.win, REASON_STIMSET_CHANGE | REASON_HEADSTAGE_CHANGE)
