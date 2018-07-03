@@ -4515,15 +4515,6 @@ Function SplitSweepIntoComponents(numericalValues, sweep, sweepWave, configWave,
 	string/G targetDFR:note = note(sweepWave)
 End
 
-/// @brief Determine if the window/subwindow belongs to our DataBrowser
-///
-/// Useful for databrowser/sweepbrowser code which must know from which panel it is called.
-Function IsDataBrowser(win)
-	string win
-
-	return BSP_IsDataBrowser(win)
-End
-
 /// @brief Add user data "panelVersion" to the panel
 Function AddVersionToPanel(win, version)
 	string win
@@ -4577,7 +4568,7 @@ End
 Function UpdateSweepPlot(win)
 	string win
 
-	if(IsDataBrowser(win))
+	if(BSP_IsDataBrowser(win))
 		FUNCREF UPDATESWEEPPLOT_PROTOTYPE f = $"DB_UpdateSweepPlot"
 	else
 		FUNCREF UPDATESWEEPPLOT_PROTOTYPE f = $"SB_UpdateSweepPlot"

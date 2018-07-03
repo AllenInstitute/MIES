@@ -120,7 +120,7 @@ static Function BSP_DynamicSweepControls(mainPanel)
 
 	controlsDB = "check_SweepControl_AutoUpdate;setvar_SweepControl_SweepNo;"
 	controlsSB = "popup_SweepControl_Selector;"
-	if(IsDataBrowser(mainPanel))
+	if(BSP_IsDataBrowser(mainPanel))
 		SetControlProcedures(scPanel, "setvar_SweepControl_SweepNo;", "DB_SetVarProc_SweepNo")
 		EnableControls(scPanel, controlsDB)
 		DisableControls(scPanel, controlsSB)
@@ -166,7 +166,7 @@ Function BSP_DynamicStartupSettings(mainPanel)
 	// SB/DB specific controls
 	controlsSB = "check_BrowserSettings_splitTTL;check_BrowserSettings_TA;check_Display_EqualYrange;check_Display_EqualYignore;"
 	controlsDB = "popup_DB_lockedDevices;"
-	if(IsDataBrowser(mainPanel))
+	if(BSP_IsDataBrowser(mainPanel))
 		EnableControls(bsPanel, controlsDB)
 		DisableControls(bsPanel, controlsSB)
 	else
@@ -218,7 +218,7 @@ End
 Function/S BSP_AddBrowserPrefix(win, str)
 	string win, str
 
-	if(IsDataBrowser(win))
+	if(BSP_IsDataBrowser(win))
 		return "DB_" + str
 	else
 		return "SB_" + str
@@ -1076,7 +1076,7 @@ Function BSP_MainPanelNeedsUpdate(win)
 
 	mainPanel = GetMainWindow(win)
 	panelVersion = GetPanelVersion(mainPanel)
-	if(IsDataBrowser(mainPanel))
+	if(BSP_IsDataBrowser(mainPanel))
 		version = DATABROWSER_PANEL_VERSION
 	else
 		version = SWEEPBROWSER_PANEL_VERSION
