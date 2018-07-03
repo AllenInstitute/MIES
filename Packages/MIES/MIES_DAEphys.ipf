@@ -630,7 +630,7 @@ static Function DAP_DeviceIsLeader(panelTitle)
 End
 
 /// @brief Updates the yoking controls on all locked/unlocked panels
-Function DAP_UpdateAllYokeControls()
+static Function DAP_UpdateAllYokeControls()
 
 	string   ListOfLockedITC1600    = GetListOfLockedITC1600Devices()
 	variable ListOfLockedITC1600Num = ItemsInList(ListOfLockedITC1600)
