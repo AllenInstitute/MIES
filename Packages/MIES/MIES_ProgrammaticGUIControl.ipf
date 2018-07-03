@@ -15,6 +15,10 @@ static Function PGC_ShowControlInTab(win, control)
 	variable idx ,numEntries, i
 	string tabnum, tabctrl
 
+	if(!WindowExists(win))
+		return NaN
+	endif
+
 	Make/FREE/N=(2, MINIMUM_WAVE_SIZE)/T tabs
 
 	for(;;)
