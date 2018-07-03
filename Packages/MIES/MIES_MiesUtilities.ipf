@@ -2766,6 +2766,8 @@ Function SaveExperimentSpecial(mode)
 		list = GetListOfLockedDevices()
 		CallFunctionForEachListItem(DAP_ClearCommentNotebook, list)
 
+		DB_ClearAllGraphs()
+
 		// remove other waves from active devices
 		activeDevices = GetAllDevices(activeOnly = 1)
 		numDevices = ItemsInList(activeDevices)
@@ -2782,8 +2784,6 @@ Function SaveExperimentSpecial(mode)
 
 			RemoveTracesFromGraph(SCOPE_GetGraph(device))
 		endfor
-
-		DB_ClearAllGraphs()
 	endif
 
 	SaveExperiment
