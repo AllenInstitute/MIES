@@ -24,6 +24,7 @@ DataBrowser/SweepBrowser
 
 - Enhance vertical axis ticks for on/off entries
 - Don't plot anything if no sweeps are selected with OVS
+- Nicify visualization of textual entries
 
 DA\_Ephys
 ---------
@@ -36,11 +37,18 @@ DA\_Ephys
 - Allow stopping DAQ with ESC
 - Allow stopping the testpulse always with ESC
 - Fix DAQ restart logic when changing the stimset and TP after DAQ is enabled
+- Fix forgotten update of stimsets in GUI with unlocked indexing
+- Fix indexing with reversed stimset order
+- Fix locked indexing bug. When the first stimset is not the one with the most
+  sweeps we fail to produce the correct acquisition order.
+- Document the really used ITI when it is changed mid sweep
+- Fix TP settings change if TP is running, no more bugging out
 
 ExperimentConfig
 ----------------
 
-None
+- Add Testpulse amplitude in current clamp (IC) to configuration
+- Close the user config notebook immediately if it is not used anymore
 
 Downsample
 ----------
@@ -74,6 +82,11 @@ Analysis Functions
   - PSQ_Rheobase: Handle failing baseline QC properly
   - Add `PSQ_Ramp <http://10.128.24.29/master/file/_m_i_e_s___analysis_functions___patch_seq_8ipf.html?highlight=psq_ramp#_CPPv28PSQ_Ramp6stringP19AnalysisFunction_V3>`__ with tests, documentation and flow chart
   - Port to V3 API
+  - Fix spike detection logic
+  - Support indexing
+  - PSQ_SearchForSpikes: Fix searching for multiple spikes and finding none
+  - Patch Seq Rheobase: Increase post pulse baseline chunk size to 500ms
+  - PSQ_Rheobase: Fix stimset length check
 
 - Introduce Analysis functions V3. All new analysis functions should use this format.
 - Add support for analysis parameters which can be attached to stimsets and are passed into the analysis function.
@@ -84,7 +97,8 @@ Analysis Functions
 - Ensure that MID_SWEEP_EVENT is always reached
 - Analysis parameters: Add method to request the types as well
   A breaking change is that the names now must be separated with commas
-  (,) as that is more in line who we store the entries in the stimset.
+  (,) as that is more in line how we store the entries in the stimset.
+- Add PRE_SET_EVENT and fix POST_SET_EVENT for indexing
 
 Foreign Function interface
 --------------------------
@@ -103,6 +117,13 @@ General
 - AFH_ExtractOneDimDataFromSweep: More documentation and add support for TTL channels
 - All hardware dependent XOPs are now not a compilation requirement anymore
 - Reorganize menu
+- Add a cache for the labnotebook queries, this speeds up reading out the
+  labnotebook by around two orders of magnitude
+- Add shortcuts to most common MIES panels
+- Use fast line drawing for oscilloscope traces (Igor Pro 8 only)
+- Make Multi Device DAQ the default
+- Let NWB_ExportAllData use the given NWB via overrideFilePath and not use the
+  standard NWB file derived from the experiment name
 
 Installer
 ---------
@@ -167,6 +188,9 @@ New numerical keys
 - "Autobias Vcom variance": Voltage variance [mV]
 - "Autobias Ibias max": Maximum current [pA]
 - "Autobias": On/Off
+- "Set Cycle count": Number of times a stimset was completely acquired in a row
+- "Stimset acquisition cycle ID": Unique identifier which is constant for all
+  sweeps of an RAC with the same stimset and set cycle count.
 
 New textual keys
 ~~~~~~~~~~~~~~~~
@@ -194,7 +218,7 @@ Changed textual entries
 NWB/IPNWB
 ---------
 
-None
+- Store the Igor Pro history in NWB on interactive export
 
 File format
 ~~~~~~~~~~~
@@ -215,6 +239,12 @@ WaveBuilder
 - Add GUI for handling analysis parameters
 - Sort the list of shown stimsets across channel types
 - Add stimset checksum to the stimset wavenote
+- Fail with a good error message on unknown delta modes on stimset creation
+- Upgrade WP/WPT waves to hold per entry delta operations and multipliers
+- WPT now gained layers for epoch type specific data
+- Add a new delta operation named "Explicit delta values" which allows to set
+  the delta value for each sweep
+- Don't error out on the combine epoch tab with no stimsets available
 
 Work Sequencing Engine
 ----------------------
@@ -231,6 +261,10 @@ Internal
 - Mies Version: Add date and time of last commit
 - Remove stale wrapper functions
 - Removed stock XOPs/Procedures/HelpFiles with shortcuts to their original location
+- Add MIESUtils XOP with MU_WaveModCount, WaveModCount is available in IP8
+- Unify GetLastSetting and GetLastSettingText
+- Wave cache: Allow to operate on a non-duplicated wave
+- Enhance indexing documentation, add a human readable description how indexing should work
 
 Tango
 -----
