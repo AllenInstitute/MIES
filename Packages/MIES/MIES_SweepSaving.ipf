@@ -48,6 +48,7 @@ Function SWS_SaveAndScaleITCData(panelTitle, [forcedStop])
 
 	if(!forcedStop)
 		AFM_CallAnalysisFunctions(panelTitle, POST_SWEEP_EVENT)
+		AFM_CallAnalysisFunctions(panelTitle, POST_SET_EVENT)
 	endif
 
 	SWS_AfterSweepDataSaveHook(panelTitle)

@@ -28,6 +28,9 @@ Function SaveStimsets()
 End
 
 Function run()
+	// speeds up testing to start with a fresh copy
+	KillWindow/Z HistoryCarbonCopy
+
 //	DisableDebugOutput()
 //	EnableDebugoutput()
 
@@ -81,6 +84,15 @@ Function run()
 	list = AddListItem("Test_RepeatSets_5", list, ";", INF)
 	list = AddListItem("DAQ_RepeatSets_6", list, ";", INF)
 	list = AddListItem("Test_RepeatSets_6", list, ";", INF)
+	list = AddListItem("DAQ_RepeatSets_7", list, ";", INF)
+	list = AddListItem("Test_RepeatSets_7", list, ";", INF)
+	list = AddListItem("DAQ_CheckActiveSetCountU", list, ";", INF)
+	list = AddListItem("Test_CheckActiveSetCountU", list, ";", INF)
+	list = AddListItem("DAQ_CheckActiveSetCountL", list, ";", INF)
+	list = AddListItem("Test_CheckActiveSetCountL", list, ";", INF)
+	list = AddListItem("DAQ_SweepSkipping", list, ";", INF)
+	list = AddListItem("Test_SweepSkipping", list, ";", INF)
+
 #endif
 
 #ifndef TESTS_WITH_YOKING
@@ -235,6 +247,10 @@ Function run()
 	list = AddListItem("AFT_Test17", list, ";", INF)
 	list = AddListItem("AFT_DAQ18", list, ";", INF)
 	list = AddListItem("AFT_Test18", list, ";", INF)
+	list = AddListItem("AFT_DAQ19", list, ";", INF)
+	list = AddListItem("AFT_Test19", list, ";", INF)
+	list = AddListItem("AFT_DAQ20", list, ";", INF)
+	list = AddListItem("AFT_Test20", list, ";", INF)
 #endif
 
 	// initialize everything

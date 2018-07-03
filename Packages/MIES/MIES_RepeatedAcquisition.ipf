@@ -31,7 +31,6 @@ static Function RA_HandleITI_MD(panelTitle)
 	variable ITI
 	string funcList
 
-	AFM_CallAnalysisFunctions(panelTitle, POST_SET_EVENT)
 	ITI = RA_RecalculateITI(panelTitle)
 
 	if(!DAG_GetNumericalValue(panelTitle, "check_Settings_ITITP") || ITI <= 0)
@@ -84,7 +83,6 @@ static Function RA_HandleITI(panelTitle)
 	variable ITI, refTime, background, aborted
 	string funcList
 
-	AFM_CallAnalysisFunctions(panelTitle, POST_SET_EVENT)
 	ITI = RA_RecalculateITI(panelTitle)
 	background = DAG_GetNumericalValue(panelTitle, "Check_Settings_BackgrndDataAcq")
 	funcList = "RA_Counter(\"" + panelTitle + "\")"
@@ -223,17 +221,10 @@ Function RA_Counter(panelTitle)
 	RA_StepSweepsRemaining(panelTitle)
 
 	if(indexing)
-		if(activeSetcount == 0)
-			if(indexingLocked)
-				IDX_IndexingDoIt(panelTitle)
-			endif
-
-			activeSetCount = IDX_CalculcateActiveSetCount(panelTitle)
-		endif
-
-		if(!indexingLocked)
-			IDX_ApplyUnLockedIndexing(panelTitle, count, 0)
-			IDX_ApplyUnLockedIndexing(panelTitle, count, 1)
+		if(indexingLocked && activeSetcount == 0)
+			IDX_IndexingDoIt(panelTitle)
+		elseif(!indexingLocked)
+			IDX_ApplyUnLockedIndexing(panelTitle, count)
 		endif
 	endif
 
@@ -326,7 +317,7 @@ End
 Function RA_CounterMD(panelTitle)
 	string panelTitle
 
-	variable numTotalSweeps, recalcActiveSetCount, activeSetCountMax
+	variable numTotalSweeps, activeSetCountMax
 	NVAR count = $GetCount(panelTitle)
 	NVAR activeSetCount = $GetActiveSetCount(panelTitle)
 	variable i, indexing, indexingLocked, numFollower, followerActiveSetCount
@@ -348,21 +339,12 @@ Function RA_CounterMD(panelTitle)
 
 	RA_StepSweepsRemaining(panelTitle)
 
-	recalcActiveSetCount = (activeSetCount == 0)
-
 	if(indexing)
-		if(recalcActiveSetCount)
-			if(indexingLocked)
-				IDX_IndexingDoIt(panelTitle)
-			endif
-
-			activeSetCount = IDX_CalculcateActiveSetCount(panelTitle)
-		endif
-
-		if(!indexingLocked)
+		if(indexingLocked && activeSetCount == 0)
+			IDX_IndexingDoIt(panelTitle)
+		elseif(!indexingLocked)
 			// indexing is not locked = channel indexes when set has completed all its steps
-			IDX_ApplyUnLockedIndexing(panelTitle, count, 0)
-			IDX_ApplyUnLockedIndexing(panelTitle, count, 1)
+			IDX_ApplyUnLockedIndexing(panelTitle, count)
 		endif
 	endif
 
@@ -380,18 +362,15 @@ Function RA_CounterMD(panelTitle)
 			RA_StepSweepsRemaining(followerPanelTitle)
 
 			if(indexing)
-				if(recalcActiveSetCount)
-					if(indexingLocked)
-						IDX_IndexingDoIt(followerPanelTitle)
-					endif
+				if(indexingLocked && activeSetCount == 0)
+					IDX_IndexingDoIt(followerPanelTitle)
 					followerActiveSetCount = IDX_CalculcateActiveSetCount(followerPanelTitle)
 					activeSetCountMax = max(activeSetCountMax, followerActiveSetCount)
-				endif
-
-				if(!indexingLocked)
+				elseif(!indexingLocked)
 					// channel indexes when set has completed all its steps
-					IDX_ApplyUnLockedIndexing(followerPanelTitle, count, 0)
-					IDX_ApplyUnLockedIndexing(followerPanelTitle, count, 1)
+					IDX_ApplyUnLockedIndexing(followerPanelTitle, count)
+					followerActiveSetCount = IDX_CalculcateActiveSetCount(followerPanelTitle)
+					activeSetCountMax = max(activeSetCountMax, followerActiveSetCount)
 				endif
 			endif
 		endfor
@@ -530,6 +509,7 @@ Function RA_SkipSweeps(panelTitle, skipCount, [limitToSetBorder])
 	if(limitToSetBorder)
 		NVAR activeSetCount = $GetActiveSetCount(panelTitle)
 		skipCount = sign(skipCount) * limit(abs(skipCount), 0, activeSetCount - 1)
+		activeSetCount = 1
 	endif
 
 	count = RA_SkipSweepCalc(panelTitle, skipCount)

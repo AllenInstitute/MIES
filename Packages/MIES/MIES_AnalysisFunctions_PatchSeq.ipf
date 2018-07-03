@@ -1053,16 +1053,11 @@ Function PSQ_DAScale(panelTitle, s)
 
 	switch(s.eventType)
 		case PRE_DAQ_EVENT:
-			DAScalesIndex[s.headstage] = 0
-
 			PGC_SetAndActivateControl(panelTitle, "check_DataAcq_AutoBias", val = 1)
-			PGC_SetAndActivateControl(panelTitle, "check_Settings_ITITP", val = 1)
 			PGC_SetAndActivateControl(panelTitle, "check_Settings_MD", val = 1)
 			PGC_SetAndActivateControl(panelTitle, "Check_DataAcq1_DistribDaq", val = 0)
 			PGC_SetAndActivateControl(panelTitle, "Check_DataAcq1_dDAQOptOv", val = 0)
 			PGC_SetAndActivateControl(panelTitle, "Check_DataAcq1_RepeatAcq", val = 1)
-			PGC_SetAndActivateControl(panelTitle, "Check_DataAcq_Indexing", val = 0)
-			PGC_SetAndActivateControl(panelTitle, "Check_DataAcq1_IndexingLocked", val = 0)
 
 			WAVE statusHS = DAG_GetChannelState(panelTitle, CHANNEL_TYPE_HEADSTAGE)
 			if(sum(statusHS) != 1)
@@ -1109,12 +1104,20 @@ Function PSQ_DAScale(panelTitle, s)
 
 			PGC_SetAndActivateControl(panelTitle, "Popup_Settings_SampIntMult", val = val)
 
+			DisableControls(panelTitle, "Button_DataAcq_SkipBackwards;Button_DataAcq_SkipForward")
+
+			// fallthrough-by-design
+		case PRE_SET_EVENT:
+			DAScalesIndex[s.headstage] = 0
+
 			daScaleOffset = PSQ_DS_GetDAScaleOffset(panelTitle, s.headstage, opMode)
 			if(!IsFinite(daScaleOffset))
 				printf "(%s): Could not find a valid DAScale threshold value from previous rheobase runs with long pulses.\r", panelTitle
 				ControlWindowToFront()
 				return 1
 			endif
+
+			PGC_SetAndActivateControl(panelTitle, "check_Settings_ITITP", val = 1)
 
 			KillOrMoveToTrash(wv = GetAnalysisFuncDAScaleDeltaI(panelTitle))
 			KillOrMoveToTrash(wv = GetAnalysisFuncDAScaleDeltaV(panelTitle))
@@ -1145,6 +1148,7 @@ Function PSQ_DAScale(panelTitle, s)
 			if(!sweepPassed)
 				// not enough sweeps left to pass the set
 				if((sweepsInSet - acquiredSweepsInSet) < (numSweepsPass - passesInSet))
+					PSQ_ForceSetEvent(panelTitle, s.headstage)
 					RA_SkipSweeps(panelTitle, inf)
 					return NaN
 				endif
@@ -1167,6 +1171,7 @@ Function PSQ_DAScale(panelTitle, s)
 				endif
 
 				if(passesInSet >= numSweepsPass)
+					PSQ_ForceSetEvent(panelTitle, s.headstage)
 					RA_SkipSweeps(panelTitle, inf, limitToSetBorder = 1)
 					return NaN
 				else
@@ -1189,14 +1194,16 @@ Function PSQ_DAScale(panelTitle, s)
 			key = PSQ_CreateLBNKey(PSQ_DA_SCALE, PSQ_FMT_LBN_SET_PASS)
 			ED_AddEntryToLabnotebook(panelTitle, key, result, unit = LABNOTEBOOK_BINARY_UNIT)
 
-			return NaN
+			AD_UpdateAllDatabrowser()
+
 			break
 		case POST_DAQ_EVENT:
+			EnableControls(panelTitle, "Button_DataAcq_SkipBackwards;Button_DataAcq_SkipForward")
 			AD_UpdateAllDatabrowser()
 			break
 	endswitch
 
-	if(s.eventType == PRE_DAQ_EVENT || s.eventType == POST_SWEEP_EVENT)
+	if(s.eventType == PRE_DAQ_EVENT || s.eventType == PRE_SET_EVENT || s.eventType == POST_SWEEP_EVENT)
 		WAVE statusHS = DAG_GetChannelState(panelTitle, CHANNEL_TYPE_HEADSTAGE)
 
 		for(i = 0; i < NUM_HEADSTAGES; i += 1)
@@ -1364,14 +1371,9 @@ Function PSQ_SquarePulse(panelTitle, s)
 			endif
 
 			PGC_SetAndActivateControl(panelTitle, "check_Settings_MD", val = 1)
-			PGC_SetAndActivateControl(panelTitle, "check_Settings_ITITP", val = 0)
-			PGC_SetAndActivateControl(panelTitle, "Check_Settings_InsertTP", val = 0)
-			PGC_SetAndActivateControl(panelTitle, "Check_DataAcq_Get_Set_ITI", val = 1)
 			PGC_SetAndActivateControl(panelTitle, "Check_DataAcq1_DistribDaq", val = 0)
 			PGC_SetAndActivateControl(panelTitle, "Check_DataAcq1_dDAQOptOv", val = 0)
 			PGC_SetAndActivateControl(panelTitle, "Check_DataAcq1_RepeatAcq", val = 1)
-			PGC_SetAndActivateControl(panelTitle, "Check_DataAcq_Indexing", val = 0)
-			PGC_SetAndActivateControl(panelTitle, "Check_DataAcq1_IndexingLocked", val = 0)
 
 			if(DAG_GetHeadstageMode(panelTitle, s.headstage) != I_CLAMP_MODE)
 				printf "(%s) Clamp mode must be current clamp.\r", panelTitle
@@ -1387,6 +1389,15 @@ Function PSQ_SquarePulse(panelTitle, s)
 			endif
 
 			PGC_SetAndActivateControl(panelTitle, "Popup_Settings_SampIntMult", val = val)
+
+			DisableControls(panelTitle, "Button_DataAcq_SkipBackwards;Button_DataAcq_SkipForward")
+
+			// fallthrough-by-design
+		case PRE_SET_EVENT:
+
+			PGC_SetAndActivateControl(panelTitle, "Check_DataAcq_Get_Set_ITI", val = 1)
+			PGC_SetAndActivateControl(panelTitle, "Check_Settings_InsertTP", val = 0)
+			PGC_SetAndActivateControl(panelTitle, "check_Settings_ITITP", val = 0)
 
 			PSQ_StoreStepSizeInLBN(panelTitle, s.sweepNo, PSQ_SP_INIT_AMP_p100)
 			SetDAScale(panelTitle, s.headstage, PSQ_SP_INIT_AMP_p100)
@@ -1422,6 +1433,7 @@ Function PSQ_SquarePulse(panelTitle, s)
 
 					sweepPassed = 1
 
+					PSQ_ForceSetEvent(panelTitle, s.headstage)
 					RA_SkipSweeps(panelTitle, inf, limitToSetBorder = 1)
 				elseif(CheckIfClose(stepSize, PSQ_SP_INIT_AMP_p100))
 					PSQ_StoreStepSizeInLBN(panelTitle, s.sweepNo, PSQ_SP_INIT_AMP_m50)
@@ -1456,6 +1468,11 @@ Function PSQ_SquarePulse(panelTitle, s)
 
 			setPassed = PSQ_NumPassesInSet(numericalValues, PSQ_SQUARE_PULSE, s.sweepNo, s.headstage) >= 1
 
+			if(!setPassed)
+				PSQ_ForceSetEvent(panelTitle, s.headstage)
+				RA_SkipSweeps(panelTitle, inf)
+			endif
+
 			sprintf msg, "Set has %s\r", SelectString(setPassed, "failed", "passed")
 			DEBUGPRINT(msg)
 
@@ -1463,8 +1480,12 @@ Function PSQ_SquarePulse(panelTitle, s)
 			result[INDEP_HEADSTAGE] = setPassed
 			key = PSQ_CreateLBNKey(PSQ_SQUARE_PULSE, PSQ_FMT_LBN_SET_PASS)
 			ED_AddEntryToLabnotebook(panelTitle, key, result, unit = LABNOTEBOOK_BINARY_UNIT)
+
+			AD_UpdateAllDatabrowser()
+
 			break
 		case POST_DAQ_EVENT:
+			EnableControls(panelTitle, "Button_DataAcq_SkipBackwards;Button_DataAcq_SkipForward")
 			AD_UpdateAllDatabrowser()
 			break
 		default:
@@ -1535,17 +1556,12 @@ Function PSQ_Rheobase(panelTitle, s)
 
 	switch(s.eventType)
 		case PRE_DAQ_EVENT:
-			PGC_SetAndActivateControl(panelTitle, "SetVar_DataAcq_ITI", val = 4)
 			PGC_SetAndActivateControl(panelTitle, "SetVar_DataAcq_SetRepeats", val = 1)
 			PGC_SetAndActivateControl(panelTitle, "check_DataAcq_AutoBias", val = 1)
 			PGC_SetAndActivateControl(panelTitle, "check_Settings_MD", val = 1)
-			PGC_SetAndActivateControl(panelTitle, "check_Settings_ITITP", val = 1)
-			PGC_SetAndActivateControl(panelTitle, "Check_Settings_InsertTP", val = 1)
 			PGC_SetAndActivateControl(panelTitle, "Check_DataAcq1_DistribDaq", val = 0)
 			PGC_SetAndActivateControl(panelTitle, "Check_DataAcq1_dDAQOptOv", val = 0)
 			PGC_SetAndActivateControl(panelTitle, "Check_DataAcq1_RepeatAcq", val = 1)
-			PGC_SetAndActivateControl(panelTitle, "Check_DataAcq_Indexing", val = 0)
-			PGC_SetAndActivateControl(panelTitle, "Check_DataAcq1_IndexingLocked", val = 0)
 
 			if(DAG_GetHeadstageMode(panelTitle, s.headstage) != I_CLAMP_MODE)
 				printf "(%s) Clamp mode must be current clamp.\r", panelTitle
@@ -1568,7 +1584,7 @@ Function PSQ_Rheobase(panelTitle, s)
 			endif
 
 			length = PSQ_GetDAStimsetLength(panelTitle, s.headstage)
-			minLength = PSQ_RB_PRE_BL_EVAL_RANGE + PSQ_RB_POST_BL_EVAL_RANGE
+			minLength = PSQ_RB_PRE_BL_EVAL_RANGE + 2 * PSQ_RB_POST_BL_EVAL_RANGE
 			if(length < minLength)
 				printf "(%s) Stimset of headstage %d is too short, it must be at least %g ms long.\r", panelTitle, s.headstage, minLength
 				ControlWindowToFront()
@@ -1591,6 +1607,15 @@ Function PSQ_Rheobase(panelTitle, s)
 			endif
 
 			PGC_SetAndActivateControl(panelTitle, "Popup_Settings_SampIntMult", val = val)
+
+			DisableControls(panelTitle, "Button_DataAcq_SkipBackwards;Button_DataAcq_SkipForward")
+
+			// fallthrough-by-design
+		case PRE_SET_EVENT:
+
+			PGC_SetAndActivateControl(panelTitle, "SetVar_DataAcq_ITI", val = 4)
+			PGC_SetAndActivateControl(panelTitle, "Check_Settings_InsertTP", val = 1)
+			PGC_SetAndActivateControl(panelTitle, "check_Settings_ITITP", val = 1)
 
 			WAVE numericalValues = GetLBNumericalValues(panelTitle)
 			key = PSQ_CreateLBNKey(PSQ_SQUARE_PULSE, PSQ_FMT_LBN_FINAL_SCALE, query = 1)
@@ -1672,6 +1697,7 @@ Function PSQ_Rheobase(panelTitle, s)
 					key = PSQ_CreateLBNKey(PSQ_RHEOBASE, PSQ_FMT_LBN_SET_PASS)
 					result[INDEP_HEADSTAGE] = 1
 					ED_AddEntryToLabnotebook(panelTitle, key, result, unit = LABNOTEBOOK_BINARY_UNIT)
+					PSQ_ForceSetEvent(panelTitle, s.headstage)
 					RA_SkipSweeps(panelTitle, inf, limitToSetBorder = 1)
 					break
 				endif
@@ -1700,6 +1726,7 @@ Function PSQ_Rheobase(panelTitle, s)
 				key = PSQ_CreateLBNKey(PSQ_RHEOBASE, PSQ_FMT_LBN_RB_DASCALE_EXC)
 				ED_AddEntryToLabnotebook(panelTitle, key, result, unit = LABNOTEBOOK_BINARY_UNIT)
 
+				PSQ_ForceSetEvent(panelTitle, s.headstage)
 				RA_SkipSweeps(panelTitle, inf)
 				break
 			endif
@@ -1717,6 +1744,9 @@ Function PSQ_Rheobase(panelTitle, s)
 				Make/FREE/D/N=(LABNOTEBOOK_LAYER_COUNT) result = NaN
 				result[INDEP_HEADSTAGE] = 0
 				ED_AddEntryToLabnotebook(panelTitle, key, result, unit = LABNOTEBOOK_BINARY_UNIT)
+
+				PSQ_ForceSetEvent(panelTitle, s.headstage)
+				RA_SkipSweeps(panelTitle, inf)
 			endif
 
 			key = PSQ_CreateLBNKey(PSQ_RHEOBASE, PSQ_FMT_LBN_RB_DASCALE_EXC, query = 1)
@@ -1728,8 +1758,12 @@ Function PSQ_Rheobase(panelTitle, s)
 				key = PSQ_CreateLBNKey(PSQ_RHEOBASE, PSQ_FMT_LBN_RB_DASCALE_EXC)
 				ED_AddEntryToLabnotebook(panelTitle, key, result, unit = LABNOTEBOOK_BINARY_UNIT)
 			endif
+
+			AD_UpdateAllDatabrowser()
+
 			break
 		case POST_DAQ_EVENT:
+			EnableControls(panelTitle, "Button_DataAcq_SkipBackwards;Button_DataAcq_SkipForward")
 			AD_UpdateAllDatabrowser()
 			break
 	endswitch
@@ -1877,16 +1911,11 @@ Function PSQ_Ramp(panelTitle, s)
 
 	switch(s.eventType)
 		case PRE_DAQ_EVENT:
-			PGC_SetAndActivateControl(panelTitle, "SetVar_DataAcq_ITI", val = 0)
 			PGC_SetAndActivateControl(panelTitle, "check_DataAcq_AutoBias", val = 1)
 			PGC_SetAndActivateControl(panelTitle, "check_Settings_MD", val = 1)
-			PGC_SetAndActivateControl(panelTitle, "check_Settings_ITITP", val = 1)
-			PGC_SetAndActivateControl(panelTitle, "Check_Settings_InsertTP", val = 1)
 			PGC_SetAndActivateControl(panelTitle, "Check_DataAcq1_DistribDaq", val = 0)
 			PGC_SetAndActivateControl(panelTitle, "Check_DataAcq1_dDAQOptOv", val = 0)
 			PGC_SetAndActivateControl(panelTitle, "Check_DataAcq1_RepeatAcq", val = 1)
-			PGC_SetAndActivateControl(panelTitle, "Check_DataAcq_Indexing", val = 0)
-			PGC_SetAndActivateControl(panelTitle, "Check_DataAcq1_IndexingLocked", val = 0)
 
 			if(DAG_GetHeadstageMode(panelTitle, s.headstage) != I_CLAMP_MODE)
 				printf "(%s) Clamp mode must be current clamp.\r", panelTitle
@@ -1941,6 +1970,14 @@ Function PSQ_Ramp(panelTitle, s)
 				return 1
 			endif
 
+			DisableControls(panelTitle, "Button_DataAcq_SkipBackwards;Button_DataAcq_SkipForward")
+
+			// fallthrough-by-design
+		case PRE_SET_EVENT:
+			PGC_SetAndActivateControl(panelTitle, "SetVar_DataAcq_ITI", val = 0)
+			PGC_SetAndActivateControl(panelTitle, "check_Settings_ITITP", val = 1)
+			PGC_SetAndActivateControl(panelTitle, "Check_Settings_InsertTP", val = 1)
+
 			SetDAScale(panelTitle, s.headstage, PSQ_RA_DASCALE_DEFAULT * 1e-12)
 
 			return 0
@@ -1964,10 +2001,12 @@ Function PSQ_Ramp(panelTitle, s)
 			if(!sweepPassed)
 				// not enough sweeps left to pass the set
 				if((sweepsInSet - acquiredSweepsInSet) < (PSQ_RA_NUM_SWEEPS_PASS - passesInSet))
+					PSQ_ForceSetEvent(panelTitle, s.headstage)
 					RA_SkipSweeps(panelTitle, inf)
 				endif
 			else
 				if(passesInSet >= PSQ_RA_NUM_SWEEPS_PASS)
+					PSQ_ForceSetEvent(panelTitle, s.headstage)
 					RA_SkipSweeps(panelTitle, inf, limitToSetBorder = 1)
 				endif
 			endif
@@ -1988,8 +2027,12 @@ Function PSQ_Ramp(panelTitle, s)
 			result[INDEP_HEADSTAGE] = setPassed
 			key = PSQ_CreateLBNKey(PSQ_RAMP, PSQ_FMT_LBN_SET_PASS)
 			ED_AddEntryToLabnotebook(panelTitle, key, result, unit = LABNOTEBOOK_BINARY_UNIT)
+
+			AD_UpdateAllDatabrowser()
+
 			break
 		case POST_DAQ_EVENT:
+			EnableControls(panelTitle, "Button_DataAcq_SkipBackwards;Button_DataAcq_SkipForward")
 			AD_UpdateAllDatabrowser()
 			break
 	endswitch
@@ -2183,4 +2226,21 @@ Function PSQ_MapFunctionToConstant(anaFunc)
 		default:
 			return NaN
 	endswitch
+End
+
+/// @brief Manually force the pre/post set events
+///
+/// Required to do before skipping sweeps.
+/// @todo this hack must go away.
+static Function PSQ_ForceSetEvent(panelTitle, headstage)
+	string panelTitle
+	variable headstage
+
+	variable DAC
+
+	WAVE setEventFlag = GetSetEventFlag(panelTitle)
+	DAC = AFH_GetDACFromHeadstage(panelTitle, headstage)
+
+	setEventFlag[DAC][%PRE_SET_EVENT]  = 1
+	setEventFlag[DAC][%POST_SET_EVENT] = 1
 End

@@ -63,7 +63,7 @@ Function ValidFunc_V2(panelTitle, eventType, ITCDataWave, headStage, realDataLen
 	CHECK_EQUAL_VAR(NumberByKey("LOCK", WaveInfo(ITCDataWave, 0)), 1)
 	CHECK_EQUAL_VAR(headstage, 0)
 
-	if(eventType == PRE_DAQ_EVENT)
+	if(eventType == PRE_DAQ_EVENT || eventType == PRE_SET_EVENT)
 		CHECK_EQUAL_VAR(numType(realDataLength), 2)
 	else
 		CHECK(realDataLength >= 0 && realDataLength < DimSize(ITCDataWave, ROWS))
@@ -118,6 +118,18 @@ Function preDAQHardAbort(panelTitle, eventType, ITCDataWave, headStage, realData
 End
 
 Function preDAQ(panelTitle, eventType, ITCDataWave, headStage, realDataLength)
+	string panelTitle
+	variable eventType
+	Wave ITCDataWave
+	variable headstage, realDataLength
+
+	WAVE anaFuncTracker = TrackAnalysisFunctionCalls()
+
+	CHECK(eventType >= 0 && eventType < DimSize(anaFuncTracker, ROWS))
+	anaFuncTracker[eventType][headstage] += 1
+End
+
+Function preSet(panelTitle, eventType, ITCDataWave, headStage, realDataLength)
 	string panelTitle
 	variable eventType
 	Wave ITCDataWave
@@ -230,7 +242,7 @@ Function ValidFunc_V3(panelTitle, s)
 	CHECK_EQUAL_VAR(numType(s.sweepsInSet), 0)
 	CHECK_EQUAL_VAR(strlen(s.params), 0)
 
-	if(s.eventType == PRE_DAQ_EVENT)
+	if(s.eventType == PRE_DAQ_EVENT || s.eventType == PRE_SET_EVENT)
 		CHECK_EQUAL_VAR(numType(s.lastValidRowIndex), 2)
 	else
 		CHECK(s.lastValidRowIndex >= 0 && s.lastValidRowIndex < DimSize(s.rawDACWAVE, ROWS))
@@ -245,6 +257,7 @@ Function ValidFunc_V3(panelTitle, s)
 			CHECK(!WaveExists(GetSweepWave(panelTitle, s.sweepNo)))
 			break
 		case PRE_SWEEP_EVENT:
+		case PRE_SET_EVENT:
 		case MID_SWEEP_EVENT:
 			CHECK_EQUAL_VAR(s.sweepNo, anaFuncTracker[POST_SWEEP_EVENT])
 			CHECK(!WaveExists(GetSweepWave(panelTitle, s.sweepNo)))
@@ -266,8 +279,7 @@ Function ValidFunc_V3(panelTitle, s)
 	// the next sweep can not exist
 	CHECK(!WaveExists(GetSweepWave(panelTitle, s.sweepNo + 1)))
 
-	// the generic event is never sent to analysis functions
-	CHECK(s.eventType >= 0 && s.eventType < TOTAL_NUM_EVENTS - 1)
+	CHECK(s.eventType >= 0 && s.eventType < TOTAL_NUM_EVENTS && s.eventType != GENERIC_EVENT)
 	CHECK(s.eventType >= 0 && s.eventType < DimSize(anaFuncTracker, ROWS))
 	anaFuncTracker[s.eventType] += 1
 End
@@ -282,8 +294,7 @@ Function Params1_V3(panelTitle, s)
 
 	WAVE anaFuncTracker = TrackAnalysisFunctionCalls()
 
-	// the generic event is never sent to analysis functions
-	CHECK(s.eventType >= 0 && s.eventType < TOTAL_NUM_EVENTS - 1)
+	CHECK(s.eventType >= 0 && s.eventType < TOTAL_NUM_EVENTS && s.eventType != GENERIC_EVENT)
 	CHECK(s.eventType >= 0 && s.eventType < DimSize(anaFuncTracker, ROWS))
 	anaFuncTracker[s.eventType] += 1
 End
@@ -298,8 +309,7 @@ Function Params2_V3(panelTitle, s)
 
 	WAVE anaFuncTracker = TrackAnalysisFunctionCalls()
 
-	// the generic event is never sent to analysis functions
-	CHECK(s.eventType >= 0 && s.eventType < TOTAL_NUM_EVENTS - 1)
+	CHECK(s.eventType >= 0 && s.eventType < TOTAL_NUM_EVENTS && s.eventType != GENERIC_EVENT)
 	CHECK(s.eventType >= 0 && s.eventType < DimSize(anaFuncTracker, ROWS))
 	anaFuncTracker[s.eventType] += 1
 End
@@ -314,8 +324,7 @@ Function Params3_V3(panelTitle, s)
 
 	WAVE anaFuncTracker = TrackAnalysisFunctionCalls()
 
-	// the generic event is never sent to analysis functions
-	CHECK(s.eventType >= 0 && s.eventType < TOTAL_NUM_EVENTS - 1)
+	CHECK(s.eventType >= 0 && s.eventType < TOTAL_NUM_EVENTS && s.eventType != GENERIC_EVENT)
 	CHECK(s.eventType >= 0 && s.eventType < DimSize(anaFuncTracker, ROWS))
 	anaFuncTracker[s.eventType] += 1
 End
@@ -330,8 +339,7 @@ Function Params4_V3(panelTitle, s)
 
 	WAVE anaFuncTracker = TrackAnalysisFunctionCalls()
 
-	// the generic event is never sent to analysis functions
-	CHECK(s.eventType >= 0 && s.eventType < TOTAL_NUM_EVENTS - 1)
+	CHECK(s.eventType >= 0 && s.eventType < TOTAL_NUM_EVENTS && s.eventType != GENERIC_EVENT)
 	CHECK(s.eventType >= 0 && s.eventType < DimSize(anaFuncTracker, ROWS))
 	anaFuncTracker[s.eventType] += 1
 End
@@ -362,8 +370,86 @@ Function Indexing_V3(panelTitle, s)
 
 	WAVE anaFuncTracker = TrackAnalysisFunctionCalls()
 
-	// the generic event is never sent to analysis functions
-	CHECK(s.eventType >= 0 && s.eventType < TOTAL_NUM_EVENTS - 1)
+	CHECK(s.eventType >= 0 && s.eventType < TOTAL_NUM_EVENTS && s.eventType != GENERIC_EVENT)
 	CHECK(s.eventType >= 0 && s.eventType < DimSize(anaFuncTracker, ROWS))
 	anaFuncTracker[s.eventType] += 1
+End
+
+Function TrackSweepCount_V3(panelTitle, s)
+	string panelTitle
+	STRUCT AnalysisFunction_V3& s
+
+	WAVE anaFuncSweepCounts = GetTrackSweepCounts()
+
+	CHECK(s.eventType >= 0 && s.eventType < TOTAL_NUM_EVENTS && s.eventType != GENERIC_EVENT)
+	CHECK(s.sweepNo >= 0 && s.sweepNo < DimSize(anaFuncSweepCounts, ROWS))
+	CHECK(s.eventType >= 0 && s.eventType < DimSize(anaFuncSweepCounts, COLS))
+	CHECK(s.headstage >= 0 && s.headstage < DimSize(anaFuncSweepCounts, LAYERS))
+
+	if(s.eventType == MID_SWEEP_EVENT)
+		// don't check that here
+		return 0
+	endif
+
+	NVAR count = $GetCount(panelTitle)
+	anaFuncSweepCounts[s.sweepNo][s.eventType][s.headstage] = count
+End
+
+Function AbortPreSet(panelTitle, s)
+	string panelTitle
+	STRUCT AnalysisFunction_V3& s
+
+	WAVE anaFuncTracker = TrackAnalysisFunctionCalls()
+
+	CHECK(s.eventType >= 0 && s.eventType < DimSize(anaFuncTracker, ROWS))
+	anaFuncTracker[s.eventType][s.headstage] += 1
+
+	if(s.eventType == PRE_SET_EVENT)
+		// aborts DAQ
+		return 1
+	else
+		return 0
+	endif
+End
+
+Function TotalOrdering(panelTitle, s)
+	string panelTitle
+	STRUCT AnalysisFunction_V3& s
+
+	WAVE anaFuncOrder = TrackAnalysisFunctionOrder()
+
+	CHECK(s.eventType >= 0 && s.eventType < DimSize(anaFuncOrder, ROWS))
+
+	Sleep/T 2
+	anaFuncOrder[s.eventType][s.headstage] = ticks
+End
+
+Function TrackActiveSetCount(panelTitle, s)
+	string panelTitle
+	STRUCT AnalysisFunction_V3& s
+
+	if(s.eventType != PRE_SWEEP_EVENT)
+		return NaN
+	endif
+
+	WAVE anaFuncActiveSetCount = GetTrackActiveSetCount()
+
+	NVAR activeSetCount = $GetActiveSetCount(panelTitle)
+	anaFuncActiveSetCount[s.sweepNo][s.headstage] = activeSetCount
+End
+
+Function SkipSweeps(panelTitle, s)
+	string panelTitle
+	STRUCT AnalysisFunction_V3& s
+
+	WAVE anaFuncTracker = TrackAnalysisFunctionCalls()
+
+	CHECK(s.eventType >= 0 && s.eventType < DimSize(anaFuncTracker, ROWS))
+	anaFuncTracker[s.eventType][s.headstage] += 1
+
+	if(s.eventType != POST_SWEEP_EVENT)
+		return NaN
+	endif
+
+	RA_SkipSweeps(panelTitle, inf, limitToSetBorder = 1)
 End

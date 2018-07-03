@@ -226,13 +226,8 @@ Function TI_saveNWBFile(nwbFileLocation, [cmdID])
 	print "Saving experiment data in NWB format to ", changeFilePath
 
 	NWB_ExportAllData(overrideFilePath=changeFilePath)
-	
-	//Get the file ID so we can close the HDF5 file
-	NVAR fileIDExport = $GetNWBFileIDExport()
-	
-	//close the file
-	hdf5CloseFile/Z fileIDExport
-	
+	CloseNWBFile()
+
 	// determine if the cmdID was provided
 	if(!ParamIsDefault(cmdID))
 		TI_WriteAck(cmdID, 0)
@@ -272,11 +267,18 @@ End
 Function TI_TangoSave(saveFileName, [cmdID])
 	string saveFileName
 	string cmdID
-	
-	//save as packed experiment
-	SaveExperiment/C/F={1,"",2}/P=home as saveFileName + ".pxp"
-	print "Packed Experiment Save Success!"
-	
+
+	variable err
+
+	try
+		SaveExperiment/C/F={1,"",2}/P=home as saveFileName + ".pxp"; AbortOnRTE
+		print "Packed Experiment Save Success!"
+	catch
+		err = GetRTError(1)
+		print "Could not save into packed experiment file. Failure!"
+		printf "Error %d, Message \"%s\"\r", err, GetErrMessage(err)
+	endtry
+
 	// determine if the cmdID was provided
 	if(!ParamIsDefault(cmdID))
 		TI_WriteAck(cmdID, 1)

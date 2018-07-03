@@ -313,7 +313,6 @@ static Function DQM_BkrdDataAcq(panelTitle, [triggerMode])
 		DQ_StartITCDeviceTimer(panelTitle)
 	endif
 
-	AFM_CallAnalysisFunctions(panelTitle, PRE_SWEEP_EVENT)
 	HW_StartAcq(HARDWARE_ITC_DAC, ITCDeviceIDGlobal, triggerMode=triggerMode, flags=HARDWARE_ABORT_ON_ERROR)
 	ED_MarkSweepStart(panelTitle)
 	TFH_StartFIFOStopDaemon(HARDWARE_ITC_DAC, ITCDeviceIDGlobal)

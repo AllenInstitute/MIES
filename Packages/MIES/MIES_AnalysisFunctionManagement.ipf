@@ -18,7 +18,7 @@ Function AFM_CallAnalysisFunctions(panelTitle, eventType)
 
 	variable error, i, valid_f1, valid_f2, valid_f3, ret, DAC, sweepsInSet
 	variable realDataLength, sweepNo
-	string func, setName, ctrl, msg
+	string func, msg
 	struct AnalysisFunction_V3 s
 
 	WAVE GuiState = GetDA_EphysGuiStateNum(panelTitle)
@@ -31,6 +31,7 @@ Function AFM_CallAnalysisFunctions(panelTitle, eventType)
 	NVAR stopCollectionPoint = $GetStopCollectionPoint(panelTitle)
 	NVAR fifoPosition = $GetFifoPosition(panelTitle)
 	WAVE statusHS = DAG_GetChannelState(panelTitle, CHANNEL_TYPE_HEADSTAGE)
+	WAVE setEventFlag = GetSetEventFlag(panelTitle)
 
 	WAVE/T analysisFunctions = GetAnalysisFunctionStorage(panelTitle)
 
@@ -59,30 +60,21 @@ Function AFM_CallAnalysisFunctions(panelTitle, eventType)
 
 		DAC = AFH_GetDACFromHeadstage(panelTitle, i)
 
-		ctrl = GetPanelControl(DAC, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_WAVE)
-		// deliberately not using the GUI state wave
-		setName = GetPopupMenuString(panelTitle, ctrl)
-		sweepsInSet = IDX_NumberOfSweepsInSet(setName)
+		if((eventType == PRE_SET_EVENT && !setEventFlag[DAC][%PRE_SET_EVENT]) \
+		   || (eventType == POST_SET_EVENT && !setEventFlag[DAC][%POST_SET_EVENT]))
+			continue
+		endif
 
 		switch(eventType)
 			case PRE_DAQ_EVENT:
 			case PRE_SWEEP_EVENT:
+			case PRE_SET_EVENT:
 			case MID_SWEEP_EVENT: // fallthrough-by-design
 				sweepNo = DAG_GetNumericalValue(panelTitle, "SetVar_Sweep")
 				break
 			case POST_SWEEP_EVENT:
-			case POST_DAQ_EVENT: // fallthrough-by-design
-				sweepNo = DAG_GetNumericalValue(panelTitle, "SetVar_Sweep") - 1
-				break
 			case POST_SET_EVENT:
-				if(DAG_GetNumericalValue(panelTitle, "Check_DataAcq_Indexing") \
-				   || DAG_GetNumericalValue(panelTitle, "Check_DataAcq1_IndexingLocked"))
-					BUG("POST_SET_EVENT is currently broken with indexing. Stay tuned for fixes.")
-				endif
-
-				if(mod(count + 1, sweepsInSet) != 0)
-					continue
-				endif
+			case POST_DAQ_EVENT: // fallthrough-by-design
 				sweepNo = DAG_GetNumericalValue(panelTitle, "SetVar_Sweep") - 1
 				break
 			default:
@@ -138,7 +130,7 @@ Function AFM_CallAnalysisFunctions(panelTitle, eventType)
 
 		SetWaveLock 0, ITCDataWave
 
-		if(eventType == PRE_DAQ_EVENT && ret == 1)
+		if((eventType == PRE_DAQ_EVENT || eventType == PRE_SET_EVENT) && ret == 1)
 			return ret
 		elseif(eventType == MID_SWEEP_EVENT && (ret == ANALYSIS_FUNC_RET_REPURP_TIME || ret == ANALYSIS_FUNC_RET_EARLY_STOP))
 			return ret

@@ -21,10 +21,10 @@ digraph G {
     "Mid Sweep Event";
     "Post Set Event";
     "Post Sweep Event";
-    "Prepare DAQ Event";
+    "Prepare DAQ/Pre Set Event";
     "Post DAQ Event";
     "Start DAQ/RA" -> "Mid Sweep Event";
-    "Start DAQ/RA" -> "Prepare DAQ Event";
+    "Start DAQ/RA" -> "Prepare DAQ/Pre Set Event";
     "Start DAQ/RA" -> "Post Set Event";
     "Start DAQ/RA" -> "Post Sweep Event";
     "Start DAQ/RA" -> "Post DAQ Event";
@@ -32,8 +32,8 @@ digraph G {
         color="invis";
         edge [comment="Wildcard node added automatic in EG."];
         node [comment="Wildcard node added automatic in EG."];
-        "Prepare DAQ Event" -> "Set \"Repeat Sets\" to 1";
-        "Prepare DAQ Event" -> "Stimset is large enough";
+        "Prepare DAQ/Pre Set Event" -> "Set \"Repeat Sets\" to 1";
+        "Prepare DAQ/Pre Set Event" -> "Stimset is large enough";
         "Abort";
         "Stimset is large enough";
         "Stimset is large enough" -> "All checks passed";
@@ -44,23 +44,23 @@ digraph G {
         "Enable \"Repeated Acquisition\"";
         "Valid Autobias voltage (finite and non-zero)";
         "Check if no TTL channels are active";
-        "Prepare DAQ Event" -> "Enable \"Autobias\"";
-        "Prepare DAQ Event" -> "Set \"TP during ITI\"";
-        "Prepare DAQ Event" -> "Valid Autobias voltage (finite and non-zero)";
-        "Prepare DAQ Event" -> "Enable \"Multidevice DAQ\"";
-        "Prepare DAQ Event" -> "Disable \"dDAQ\"/\"oodDAQ\"";
-        "Prepare DAQ Event" -> "Check if no TTL channels are active";
+        "Prepare DAQ/Pre Set Event" -> "Enable \"Autobias\"";
+        "Prepare DAQ/Pre Set Event" -> "Set \"TP during ITI\"";
+        "Prepare DAQ/Pre Set Event" -> "Valid Autobias voltage (finite and non-zero)";
+        "Prepare DAQ/Pre Set Event" -> "Enable \"Multidevice DAQ\"";
+        "Prepare DAQ/Pre Set Event" -> "Disable \"dDAQ\"/\"oodDAQ\"";
+        "Prepare DAQ/Pre Set Event" -> "Check if no TTL channels are active";
         "All checks passed";
         "Set \"TP during ITI\"";
         "Valid Autobias voltage (finite and non-zero)" -> "All checks passed";
         "Check if no TTL channels are active" -> "All checks passed";
         "All checks passed" -> "Abort"  [label="No"];
-        "Prepare DAQ Event" -> "Set \"ITI\" to 4s";
-        "Prepare DAQ Event" -> "Search for final DAScale in one of the existing sweeps";
-        "Prepare DAQ Event" -> "Enable \"Repeated Acquisition\"";
+        "Prepare DAQ/Pre Set Event" -> "Set \"ITI\" to 4s";
+        "Prepare DAQ/Pre Set Event" -> "Search for final DAScale in one of the existing sweeps";
+        "Prepare DAQ/Pre Set Event" -> "Enable \"Repeated Acquisition\"";
         "Post DAQ Event" -> "Update Dashboard";
         "All required analysis parameters present?\nSamplingMultiplier: variable";
-        "Prepare DAQ Event" -> "All required analysis parameters present?\nSamplingMultiplier: variable";
+        "Prepare DAQ/Pre Set Event" -> "All required analysis parameters present?\nSamplingMultiplier: variable";
         "All required analysis parameters present?\nSamplingMultiplier: variable" -> "All checks passed";
     }
 
@@ -71,14 +71,14 @@ digraph G {
     "Skip to end";
     "BL QC passed? [1]";
     "Mid Sweep Event" -> "BL QC passed? [1]";
-    "Grab next completely acquired chunk\n (500ms pre/50ms post) of stimset baseline";
-    "BL QC passed? [1]" -> "Grab next completely acquired chunk\n (500ms pre/50ms post) of stimset baseline"  [label="No"];
+    "Grab next completely acquired chunk\n (500ms) of stimset baseline";
+    "BL QC passed? [1]" -> "Grab next completely acquired chunk\n (500ms) of stimset baseline"  [label="No"];
     "Baseline chunk type";
     "Chunk already evaluated?";
-    "Grab next completely acquired chunk\n (500ms pre/50ms post) of stimset baseline" -> "Chunk already evaluated?"  [label="Have one"];
-    "Grab next completely acquired chunk\n (500ms pre/50ms post) of stimset baseline" -> "Last chunk?"  [label="None left"];
+    "Grab next completely acquired chunk\n (500ms) of stimset baseline" -> "Chunk already evaluated?"  [label="Have one"];
+    "Grab next completely acquired chunk\n (500ms) of stimset baseline" -> "Last chunk?"  [label="None left"];
     "Last chunk?" -> "Mark BL QC as failed"  [label="Yes"];
-    "Chunk already evaluated?" -> "Grab next completely acquired chunk\n (500ms pre/50ms post) of stimset baseline"  [label="Yes"];
+    "Chunk already evaluated?" -> "Grab next completely acquired chunk\n (500ms) of stimset baseline"  [label="Yes"];
     "Chunk already evaluated?" -> "Baseline chunk type"  [label="No"];
     "Check RMS short";
     "Check RMS long";
@@ -91,12 +91,12 @@ digraph G {
     "Check RMS long" -> "Check target voltage [1]"  [label="Passed"];
     "Mark chunk as passed/failed [1]";
     "Check target voltage [1]" -> "Mark chunk as passed/failed [1]";
-    "Mark chunk as passed/failed [1]" -> "Grab next completely acquired chunk\n (500ms pre/50ms post) of stimset baseline"  [label="Passed"];
+    "Mark chunk as passed/failed [1]" -> "Grab next completely acquired chunk\n (500ms) of stimset baseline"  [label="Passed"];
     "Early sweep stop, repurpose ITI and add 10s to ITI";
     "Mark chunk as passed/failed [1]" -> "Early sweep stop, repurpose ITI and add 10s to ITI"  [label="Failed"];
     "Baseline chunk type" -> "Check target voltage [2]"  [label="post pulse"];
     "Check target voltage [2]" -> "Mark chunk as passed/failed [2]";
-    "Mark chunk as passed/failed [2]" -> "Grab next completely acquired chunk\n (500ms pre/50ms post) of stimset baseline"  [label="Failed"];
+    "Mark chunk as passed/failed [2]" -> "Grab next completely acquired chunk\n (500ms) of stimset baseline"  [label="Failed"];
     "Mark chunk as passed/failed [2]" -> "Mark BL QC as passed"  [label="Passed"];
     "Set \"ITI\" to 4s";
     "Search for final DAScale in one of the existing sweeps";
@@ -122,4 +122,5 @@ digraph G {
     "Set \"range exceeded\" labnotebook entry to true for sweep";
     "Difference to initial DAScale larger than 60pA?" -> "Set \"range exceeded\" labnotebook entry to true for sweep"  [label="Yes"];
     "Set \"range exceeded\" labnotebook entry to true for sweep" -> "Mark set as failed";
+    "Mark set as failed if it has not yet passed" -> "Skip to end"  [label="Failure"];
 }

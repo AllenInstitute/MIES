@@ -336,7 +336,7 @@ static Function/S AD_GetRheobaseFailMsg(numericalValues, sweepNo, headstage)
 	key = PSQ_CreateLBNKey(PSQ_RHEOBASE, PSQ_FMT_LBN_SPIKE_DETECT, query = 1)
 	WAVE/Z spikeDetect = GetLastSettingEachSCI(numericalValues, sweepNo, key, headstage, UNKNOWN_MODE)
 
-	sprintf msg, "Failure as we were not able to find the correct on/off spike pattern (%s)", RemoveEnding(NumericWaveToList(spikeDetect, ", ", format="%d"), ", ")
+	sprintf msg, "Failure as we were not able to find the correct on/off spike pattern (%s)", RemoveEnding(NumericWaveToList(spikeDetect, ", ", format="%g"), ", ")
 	return msg
 End
 

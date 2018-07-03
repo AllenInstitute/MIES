@@ -24,13 +24,15 @@
 ///            |                                              | Will always be called at least once and
 ///            |                                              | also with the full stimset acquired.
 /// Pre Sweep  | Immediately before the sweep starts          | None
+/// Pre Set    | Before a new set starts                      | None
 /// Post Sweep | After each sweep (before possible ITI pause) | None
-/// Post Set   | After a *full* set has been acquired         | This event is not always reached as the user might not acquire all steps of a set
+/// Post Set   | After a *full* set has been acquired         | This event is not always reached as the user might not acquire all steps
+///            |                                              | of a set or indexing on multiple headstages is used.
 /// Post DAQ   | After all DAQ has been finished              | None
 ///
 /// Useful helper functions are defined in MIES_AnalysisFunctionHelpers.ipf.
 ///
-/// The Post Sweep/Set/DAQ functions are *not* executed if a currently running sweep is aborted.
+/// The Post/Pre Sweep/Set/DAQ functions are *not* executed if a currently running sweep is aborted.
 ///
 /// @anchor AnalysisFunctionReturnTypes Analysis function return types
 ///
@@ -46,6 +48,7 @@
 /// NaN                               | All         | Nothing
 /// 0                                 | All         | Nothing
 /// 1                                 | Pre DAQ     | DAQ is prevented to start
+/// 1                                 | Pre Set     | DAQ is stopped
 /// #ANALYSIS_FUNC_RET_REPURP_TIME    | Mid Sweep   | Current sweep is immediately stopped. Left over time is repurposed for ITI.
 /// #ANALYSIS_FUNC_RET_EARLY_STOP     | Mid Sweep   | Current sweep is immediately stopped without honouring the left over time in a special way.
 ///
@@ -146,6 +149,9 @@ Function TestAnalysisFunction_V3(panelTitle, s)
 			// can also return with != 0, see @ref AnalysisFunction_V3DescriptionTable
 			break
 		case PRE_SWEEP_EVENT:
+			// code
+			break
+		case PRE_SET_EVENT:
 			// code
 			break
 		case MID_SWEEP_EVENT:

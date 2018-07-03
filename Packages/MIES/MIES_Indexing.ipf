@@ -77,7 +77,13 @@ Function IDX_IndexingDoIt(panelTitle)
 		IDX_IndexSingleChannel(panelTitle, CHANNEL_TYPE_TTL, i)
 	endfor
 
+	// need to fire pre set event on next occasion
+	WAVE setEventFlag = GetSetEventFlag(panelTitle)
+	setEventFlag[][%PRE_SET_EVENT] = 1
+
 	DAP_UpdateDAQControls(panelTitle, REASON_STIMSET_CHANGE_DUR_DAQ)
+	NVAR activeSetCount = $GetActiveSetCount(panelTitle)
+	activeSetCount = IDX_CalculcateActiveSetCount(panelTitle)
 End
 
 /// @brief Indexes a single channel - used when indexing is unlocked
@@ -500,226 +506,135 @@ Function IDX_NumberOfSweepsInSet(setName)
 	return max(1, DimSize(wv, COLS))
 End
 
-Function IDX_ApplyUnLockedIndexing(panelTitle, count, DAorTTL)
+Function IDX_ApplyUnLockedIndexing(panelTitle, count)
 	string panelTitle
-	variable count, DAorTTL
+	variable count
 
 	variable i, update
 
-	if(DAorTTL == 0)
-		WAVE status = DAG_GetChannelState(panelTitle, CHANNEL_TYPE_DAC)
-	elseif(DAorTTL == 1)
-		WAVE status = DAG_GetChannelState(panelTitle, CHANNEL_TYPE_TTL)
-	else
-		ASSERT(0, "Invalid value")
-	endif
+	WAVE statusDA = DAG_GetChannelState(panelTitle, CHANNEL_TYPE_DAC)
+	WAVE statusTTL = DAG_GetChannelState(panelTitle, CHANNEL_TYPE_TTL)
 
 	for(i = 0; i < NUM_DA_TTL_CHANNELS; i += 1)
 
-		if(!status[i])
+		if(!statusDA[i])
 			continue
 		endif
 
-		if(IDX_DetIfCountIsAtSetBorder(panelTitle, count, i, DAorTTL) == 1)
+		if(IDX_DetIfCountIsAtSetBorder(panelTitle, count, i, CHANNEL_TYPE_DAC) == 1)
 			update = 1
-			IDX_IndexSingleChannel(panelTitle, DAorTTL, i)
+			IDX_IndexSingleChannel(panelTitle, CHANNEL_TYPE_DAC, i)
+		endif
+	endfor
+
+	for(i = 0; i < NUM_DA_TTL_CHANNELS; i += 1)
+
+		if(!statusTTL[i])
+			continue
+		endif
+
+		if(IDX_DetIfCountIsAtSetBorder(panelTitle, count, i, CHANNEL_TYPE_TTL) == 1)
+			update = 1
+			IDX_IndexSingleChannel(panelTitle, CHANNEL_TYPE_TTL, i)
 		endif
 	endfor
 
 	if(update)
 		DAP_UpdateDAQControls(panelTitle, REASON_STIMSET_CHANGE_DUR_DAQ)
+		NVAR activeSetCount = $GetActiveSetCount(panelTitle)
+		activeSetCount = IDX_CalculcateActiveSetCount(panelTitle)
 	endif
 End
 
-static Function IDX_TotalIndexingListSteps(panelTitle, ChannelNumber, DAorTTL)
+static Function IDX_TotalIndexingListSteps(panelTitle, channelNumber, DAorTTL)
 	string panelTitle
-	variable ChannelNumber, DAorTTL
+	variable channelNumber, DAorTTL
 
-	variable TotalListSteps
-	WAVE DAIndexingStorageWave = GetDACIndexingStorageWave(panelTitle)
-	WAVE TTLIndexingStorageWave = GetTTLIndexingStorageWave(panelTitle)
-	string setName
-	variable i
+	variable totalListSteps
+	variable i, first, last
+
+	if(DAOrTTL == CHANNEL_TYPE_DAC)
+		WAVE indexingStorageWave = GetDACindexingStorageWave(panelTitle)
+	elseif(DAOrTTL == CHANNEL_TYPE_TTL)
+		WAVE indexingStorageWave = GetTTLindexingStorageWave(panelTitle)
+	else
+		ASSERT(0, "Invalid value")
+	endif
+
+	ASSERT(indexingStorageWave[0][channelNumber] != indexingStorageWave[1][channelNumber], "Unexpected combo")
+	first = min(indexingStorageWave[0][channelNumber], indexingStorageWave[1][channelNumber])
+	last  = max(indexingStorageWave[0][channelNumber], indexingStorageWave[1][channelNumber])
 
 	WAVE stimsets = IDX_GetStimsets(panelTitle, channelNumber, DAorTTL)
 
-	// the do-while loops adjust count based on the number of times the list of sets has cycled
+	for(i = first; i <= last; i += 1)
+		totalListSteps += IDX_NumberOfSweepsInSet(IDX_GetSingleStimset(stimsets, i))
+	endfor
 
-	if(DAIndexingStorageWave[0][ChannelNumber]<DAIndexingStorageWave[1][ChannelNumber])
-		if(DAorTTL==0)
-			do
-				totalListSteps += IDX_NumberOfSweepsInSet(IDX_GetSingleStimset(stimsets, DAIndexingStorageWave[0][channelNumber] + i))
-				i+=1
-			while( (i + DAIndexingStorageWave[0][ChannelNumber]) <= DAIndexingStorageWave[1][ChannelNumber] )
-		endif
-		
-		if(DAorTTL==1)
-			do
-				totalListSteps += IDX_NumberOfSweepsInSet(IDX_GetSingleStimset(stimsets, TTLIndexingStorageWave[0][channelNumber] + i))
-				i+=1
-			while( (i + TTLIndexingStorageWave[0][ChannelNumber]) <= TTLIndexingStorageWave[1][ChannelNumber] )
-		endif
-	endif
-	i=0
-
-	// end index wave is before start index wave in wave list of popup menu
-	if(DAIndexingStorageWave[0][ChannelNumber]>DAIndexingStorageWave[1][ChannelNumber])
-		if(DAorTTL==0)
-			do
-				totalListSteps += IDX_NumberOfSweepsInSet(IDX_GetSingleStimset(stimsets, DAIndexingStorageWave[1][channelNumber] + i))
-				i+=1
-			while( (i + DAIndexingStorageWave[1][ChannelNumber]) <= DAIndexingStorageWave[0][ChannelNumber] )
-		endif
-
-		if(DAorTTL==1)
-			do
-				totalListSteps += IDX_NumberOfSweepsInSet(IDX_GetSingleStimset(stimsets, TTLIndexingStorageWave[1][channelNumber] + i))
-				i+=1
-			while( (i + TTLIndexingStorageWave[1][ChannelNumber]) <= TTLIndexingStorageWave[0][ChannelNumber] )
-		endif
-	endif
-
-	return TotalListSteps
+	return totalListSteps
 End
 
-Function IDX_UnlockedIndexingStepNo(panelTitle, channelNo, DAorTTL, count)
+Function IDX_UnlockedIndexingStepNo(panelTitle, channelNumber, DAorTTL, count)
 	string paneltitle
-	variable channelNo, DAorTTL, count
-	variable column, i, StepsInSummedSets, totalListSteps
-	string setName
+	variable channelNumber, DAorTTL, count
 
-	WAVE DAIndexingStorageWave = GetDACIndexingStorageWave(panelTitle)
-	WAVE TTLIndexingStorageWave = GetTTLIndexingStorageWave(panelTitle)
+	variable column, i, stepsInSummedSets, totalListSteps, direction
 
-	WAVE stimsets = IDX_GetStimsets(panelTitle, channelNo, DAorTTL)
-	TotalListSteps = IDX_TotalIndexingListSteps(panelTitle, channelNo, DAorTTL)
+	if(DAOrTTL == CHANNEL_TYPE_DAC)
+		WAVE indexingStorageWave = GetDACindexingStorageWave(panelTitle)
+	elseif(DAOrTTL == CHANNEL_TYPE_TTL)
+		WAVE indexingStorageWave = GetTTLindexingStorageWave(panelTitle)
+	else
+		ASSERT(0, "Invalid value")
+	endif
+
+	WAVE stimsets = IDX_GetStimsets(panelTitle, channelNumber, DAorTTL)
+	totalListSteps = IDX_TotalIndexingListSteps(panelTitle, channelNumber, DAorTTL)
 	ASSERT(TotalListSteps > 0, "Expected strictly positive value")
+	ASSERT(indexingStorageWave[0][channelNumber] != indexingStorageWave[1][channelNumber], "Unexpected combo")
 
-	do // do loop resets count if the the count has cycled through the total list steps
-		if(count >= TotalListSteps)
-		count -= totalListsteps
-		endif
-	while(count >= totalListSteps)
+	count     = mod(count, totalListSTeps)
+	direction = indexingStorageWave[0][channelNumber] < indexingStorageWave[1][channelNumber] ? +1 : -1
 
-	i = 0
-	
-	if((DAIndexingStorageWave[0][channelNo]) < (DAIndexingStorageWave[1][channelNo]))
-		if(DAorTTL == 0)//DA channel
-			do
-				StepsInSummedSets += IDX_NumberOfSweepsInSet(IDX_GetSingleStimset(stimsets, DAIndexingStorageWave[0][channelNo] + i))
-				i += 1
-			while(StepsInSummedSets<=Count)
-			i-=1
-			StepsInSummedSets -= IDX_NumberOfSweepsInSet(IDX_GetSingleStimset(stimsets, DAIndexingStorageWave[0][channelNo] + i))
-		endif
+	for(i = 0; stepsInSummedSets <= count; i += direction)
+		stepsInSummedSets += IDX_NumberOfSweepsInSet(IDX_GetSingleStimset(stimsets, indexingStorageWave[0][channelNumber] + i))
+	endfor
+	stepsInSummedSets -= IDX_NumberOfSweepsInSet(IDX_GetSingleStimset(stimsets, indexingStorageWave[0][channelNumber] + i - direction))
 
-		if(DAorTTL==1)//TTL channel
-			do
-				StepsInSummedSets += IDX_NumberOfSweepsInSet(IDX_GetSingleStimset(stimsets, TTLIndexingStorageWave[0][channelNo] + i))
-				i+=1
-			while(StepsInSummedSets<=Count)
-			i-=1
-			StepsInSummedSets -= IDX_NumberOfSweepsInSet(IDX_GetSingleStimset(stimsets, TTLIndexingStorageWave[0][channelNo] + i))
-		endif
-	endif
-
-	i=0
-	if(DAIndexingStorageWave[0][channelNo] > DAIndexingStorageWave[1][channelNo])//  handels the situation where the start set is after the end set on the index list
-		if(DAorTTL==0)//DA channel
-			do
-				StepsInSummedSets += IDX_NumberOfSweepsInSet(IDX_GetSingleStimset(stimsets, DAIndexingStorageWave[0][channelNo] + i))
-				i-=1
-			while(StepsInSummedSets<=Count)
-			i+=1
-			StepsInSummedSets -= IDX_NumberOfSweepsInSet(IDX_GetSingleStimset(stimsets, DAIndexingStorageWave[0][channelNo] + i))
-		endif
-
-		if(DAorTTL==1)//TTL channel
-			do
-				StepsInSummedSets += IDX_NumberOfSweepsInSet(IDX_GetSingleStimset(stimsets, TTLIndexingStorageWave[0][channelNo] + i))
-				i-=1
-			while(StepsInSummedSets<=Count)
-			i+=1
-			StepsInSummedSets -= IDX_NumberOfSweepsInSet(IDX_GetSingleStimset(stimsets, TTLIndexingStorageWave[0][channelNo] + i))
-		endif
-	endif
-
-	column=count-StepsInSummedSets
-	return column
+	return count - StepsInSummedSets
 end
 
 static Function IDX_DetIfCountIsAtSetBorder(panelTitle, count, channelNumber, DAorTTL)
 	string panelTitle
 	variable count, channelNumber, DAorTTL
 
-	WAVE DAIndexingStorageWave = GetDACIndexingStorageWave(panelTitle)
-	WAVE TTLIndexingStorageWave = GetTTLIndexingStorageWave(panelTitle)
-	string setName
-	variable i, StepsInSummedSets, TotalListSteps
+	variable i, stepsInSummedSets, totalListSteps, direction
+
+	if(DAOrTTL == CHANNEL_TYPE_DAC)
+		WAVE indexingStorageWave = GetDACindexingStorageWave(panelTitle)
+	elseif(DAOrTTL == CHANNEL_TYPE_TTL)
+		WAVE indexingStorageWave = GetTTLindexingStorageWave(panelTitle)
+	else
+		ASSERT(0, "Invalid value")
+	endif
 
 	WAVE stimsets = IDX_GetStimsets(panelTitle, channelNumber, DAorTTL)
 	TotalListSteps = IDX_TotalIndexingListSteps(panelTitle, ChannelNumber, DAorTTL)
 	ASSERT(TotalListSteps > 0, "Expected strictly positive value")
-		
-	do
-		if(count>TotalListSteps)
-			count-=totalListsteps
-		endif
-	while(count>totalListSteps)
-		
-	if(DAIndexingStorageWave[0][ChannelNumber]<DAIndexingStorageWave[1][ChannelNumber])
-		i=0
-		if(DAorTTL==0)//DA channel
-			do
-				StepsInSummedSets += IDX_NumberOfSweepsInSet(IDX_GetSingleStimset(stimsets, DAIndexingStorageWave[0][ChannelNumber] + i))
-				if(StepsInSummedSets == Count)
-					return 1
-				endif
-			i+=1
-			while(StepsInSummedSets<=Count)
-		endif
-		i=0
-	endif
+	ASSERT(indexingStorageWave[0][channelNumber] != indexingStorageWave[1][channelNumber], "Unexpected combo")
 
-	if(TTLIndexingStorageWave[0][ChannelNumber]<TTLIndexingStorageWave[1][ChannelNumber])
-		if(DAorTTL==1)// TTL channel
-			do
-				StepsInSummedSets += IDX_NumberOfSweepsInSet(IDX_GetSingleStimset(stimsets, TTLIndexingStorageWave[0][ChannelNumber] + i))
+	count = (mod(count, totalListSteps) == 0 ? totalListSteps : mod(count, totalListSTeps))
 
-				if(StepsInSummedSets == Count)
-					return 1
-				endif
-			i+=1
-			while(StepsInSummedSets<=Count)
+	direction = indexingStorageWave[0][channelNumber] < indexingStorageWave[1][channelNumber] ? +1 : -1
+
+	stepsInSummedSets = 0
+	for(i = 0; stepsInSummedSets <= count; i += direction)
+		stepsInSummedSets += IDX_NumberOfSweepsInSet(IDX_GetSingleStimset(stimsets, indexingStorageWave[0][channelNumber] + i))
+
+		if(stepsInSummedSets == count)
+			return 1
 		endif
-	endif
-
-	if(DAIndexingStorageWave[0][ChannelNumber]>DAIndexingStorageWave[1][ChannelNumber])// handles end index that is in front of start index in the popup menu list
-		i=0
-		if(DAorTTL==0)//DA channel
-			do
-				StepsInSummedSets += IDX_NumberOfSweepsInSet(IDX_GetSingleStimset(stimsets, DAIndexingStorageWave[0][ChannelNumber] + i))
-				if(StepsInSummedSets == Count)
-					return 1
-				endif
-			i-=1
-			while(StepsInSummedSets<=Count)
-		endif
-		i=0
-	endif
-
-	if(TTLIndexingStorageWave[0][ChannelNumber]>TTLIndexingStorageWave[1][ChannelNumber])
-		if(DAorTTL==1)// TTL channel
-			do
-				StepsInSummedSets += IDX_NumberOfSweepsInSet(IDX_GetSingleStimset(stimsets, TTLIndexingStorageWave[0][ChannelNumber] + i))
-
-				if(StepsInSummedSets == Count)
-					return 1
-				endif
-			i-=1
-			while(StepsInSummedSets<=Count)
-		endif
-	endif
+	endfor
 
 	return 0
 End

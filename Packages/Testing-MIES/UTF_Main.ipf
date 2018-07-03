@@ -13,6 +13,9 @@
 #include "UTF_WaveVersioning"
 
 Function run()
+	// speeds up testing to start with a fresh copy
+	KillWindow/Z HistoryCarbonCopy
+
 	DisableDebugOutput()
 	string procList = ""
 	procList += "UTF_AnalysisFunctionHelpers.ipf;UTF_WaveVersioning.ipf;UTF_UpgradeWaveLocationAndGetIt.ipf;"
