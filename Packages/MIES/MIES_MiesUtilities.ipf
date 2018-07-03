@@ -2764,9 +2764,7 @@ Function SaveExperimentSpecial(mode)
 		killFunc(path)
 
 		list = GetListOfLockedDevices()
-		// funcref definition as string
-		// allows to reference the function if it does not exist
-		CallFunctionForEachListItem($"DAP_ClearCommentNotebook", list)
+		CallFunctionForEachListItem(DAP_ClearCommentNotebook, list)
 
 		// remove other waves from active devices
 		activeDevices = GetAllDevices(activeOnly = 1)
