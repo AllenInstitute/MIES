@@ -2763,6 +2763,9 @@ Function SaveExperimentSpecial(mode)
 		path = GetLabNotebookFolderAsString()
 		killFunc(path)
 
+		path = GetCacheFolderAS()
+		killFunc(path)
+
 		list = GetListOfLockedDevices()
 		CallFunctionForEachListItem(DAP_ClearCommentNotebook, list)
 
@@ -2782,6 +2785,9 @@ Function SaveExperimentSpecial(mode)
 			list = GetListOfObjects(dfr, "TPStorage_*", fullPath=1)
 			CallFunctionForEachListItem(killFunc, list)
 
+			path = GetDeviceDataBrowserPathAS(device)
+			killFunc(path)
+
 			RemoveTracesFromGraph(SCOPE_GetGraph(device))
 		endfor
 	endif
@@ -2789,6 +2795,10 @@ Function SaveExperimentSpecial(mode)
 	SaveExperiment
 
 	if(useNewNWBFile)
+		// reset history capturing
+		NVAR historyRefnum = $GetHistoryRefNumber()
+		historyRefnum = NaN
+
 		CloseNWBFile()
 	endif
 End
