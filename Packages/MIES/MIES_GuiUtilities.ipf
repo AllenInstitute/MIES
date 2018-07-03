@@ -451,9 +451,9 @@ Function SetPopupMenuVal(win, control, List)
 	ASSERT(V_flag != 0, "Non-existing control or window")
 	ASSERT(abs(V_flag) == CONTROL_TYPE_POPUPMENU, "Control is not a popupmenu")
 	sprintf outputList, "\"%s\"" List
-	ASSERT(strlen(outputList) < 400, "Popop menu list is greater than 400 characters")
+	ASSERT(strlen(outputList) < MAX_COMMANDLINE_LENGTH, "Popop menu list is greater than MAX_COMMANDLINE_LENGTH characters")
 	PopupMenu $control win=$win, value = #outputList
-End	
+End
 
 /// @brief Sets the popupmenu string
 ///
@@ -1432,30 +1432,6 @@ End
 		endif
 		return control
 	End
-
-///@ brief Returns a wave of formatted control names
-Function/WAVE GetFormattedCtrlNames(win)
-	string win
-
-	string listOfControlNames = sortList(controlNameList(win),";",8)
-	variable ctrlCount = itemsInList(listOfControlNames)
-	variable i
-	string ctrl, ctrlFormatted
-
-	make/T/O/N=(ctrlCount,3) controlNames
-	setDimLabel COLS, 0, unformatted, controlNames
-	setDimLabel COLS, 1, formatted,   controlNames
-	setDimLabel COLS, 2, maxLdiff,    controlNames
-
-	for(i = 0; i < ctrlCount; i +=1)
-		ctrl = stringFromList(i, listOfControlNames)
-		ctrlFormatted = GetFormattedControlName(win, ctrl)
-		controlNames[i][0] = ctrl
-		controlNames[i][1] = ctrlFormatted
-		controlNames[i][2] = num2str(31 - strlen(ctrlFormatted))
-	endfor
-	return controlNames
-End
 
 /// @brief Returns the selected row of the ListBox for some modes
 ///        without selection waves
