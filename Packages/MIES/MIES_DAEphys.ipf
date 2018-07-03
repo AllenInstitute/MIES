@@ -635,7 +635,7 @@ static Function DAP_UpdateAllYokeControls()
 	string   ListOfLockedITC1600    = GetListOfLockedITC1600Devices()
 	variable ListOfLockedITC1600Num = ItemsInList(ListOfLockedITC1600)
 	string   ListOfLockedITC        = GetListOfLockedDevices()
-	variable ListOfLockedITCNum     = ItemsInList(ListOfLockedITC1600)
+	variable ListOfLockedITCNum     = ItemsInList(ListOfLockedITC)
 
 	string panelTitle
 	variable i
