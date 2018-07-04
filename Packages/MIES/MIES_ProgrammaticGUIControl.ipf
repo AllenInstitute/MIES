@@ -12,8 +12,12 @@
 static Function PGC_ShowControlInTab(win, control)
 	string win, control
 
-	variable idx ,numEntries, i
+	variable idx ,numEntries, i, tab
 	string tabnum, tabctrl
+
+	if(!WindowExists(win))
+		return NaN
+	endif
 
 	Make/FREE/N=(2, MINIMUM_WAVE_SIZE)/T tabs
 
@@ -35,9 +39,17 @@ static Function PGC_ShowControlInTab(win, control)
 		control = tabctrl
 	endfor
 
+	// `tabs` has the outer most tab at the end
+
 	numEntries = idx
 	for(i = numEntries - 1; i >= 0 ; i -= 1)
-		PGC_SetAndActivateControl(win, tabs[i][1], val = str2num(tabs[i][0]), switchTab = 0)
+		tab = str2num(tabs[i][0])
+
+		if(GetTabID(win, tabs[i][1]) == tab)
+			continue
+		endif
+
+		PGC_SetAndActivateControl(win, tabs[i][1], val = tab, switchTab = 0)
 	endfor
 End
 

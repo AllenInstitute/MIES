@@ -630,12 +630,12 @@ static Function DAP_DeviceIsLeader(panelTitle)
 End
 
 /// @brief Updates the yoking controls on all locked/unlocked panels
-Function DAP_UpdateAllYokeControls()
+static Function DAP_UpdateAllYokeControls()
 
 	string   ListOfLockedITC1600    = GetListOfLockedITC1600Devices()
 	variable ListOfLockedITC1600Num = ItemsInList(ListOfLockedITC1600)
 	string   ListOfLockedITC        = GetListOfLockedDevices()
-	variable ListOfLockedITCNum     = ItemsInList(ListOfLockedITC1600)
+	variable ListOfLockedITCNum     = ItemsInList(ListOfLockedITC)
 
 	string panelTitle
 	variable i
@@ -704,13 +704,13 @@ End
 Function DAP_TabControlFinalHook(tca)
 	STRUCT WMTabControlAction &tca
 
+	DAP_UpdateYokeControls(tca.win)
+
 	if(DAP_DeviceIsUnLocked(tca.win))
 		print "Please lock the panel to a DAC in the Hardware tab"
 		ControlWindowToFront()
 		return 0
 	endif
-
-	DAP_UpdateYokeControls(tca.win)
 
 	if(tca.tab == DATA_ACQU_TAB_NUM)
 		DAP_UpdateDAQControls(tca.win, REASON_STIMSET_CHANGE | REASON_HEADSTAGE_CHANGE)

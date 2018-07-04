@@ -1623,6 +1623,21 @@ Function CallFunctionForEachListItem(f, list, [sep])
 	endfor
 End
 
+/// @brief Return true if the given absolute path refers to an existing drive letter
+Function IsDriveValid(absPath)
+	string absPath
+
+	string path, drive
+
+	// convert to ":" folder separators
+	path  = ParseFilePath(5, absPath, ":", 0, 0)
+	drive = StringFromList(0, path, ":")
+
+	GetFileFolderInfo/Q/Z drive
+
+	return !V_flag
+End
+
 /// @brief Create a folder recursively on disk given an absolute path
 ///
 /// If you pass windows style paths using backslashes remember to always *double* them.

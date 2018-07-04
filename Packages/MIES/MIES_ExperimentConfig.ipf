@@ -23,6 +23,7 @@ Function ExpConfig_ConfigureMIES([middleOfExperiment])
 	variable middleOfExperiment
 
 	string UserConfigNB, win, filename, ITCDevNum, ITCDevType, fullPath, StimSetPath, activeNotebooks, AmpSerialLocal, AmpTitleLocal, ConfigError, StimSetList
+	string path
 	variable i, load
 //	movewindow /C 1450, 530,-1,-1								// position command window
 	
@@ -143,8 +144,14 @@ Function ExpConfig_ConfigureMIES([middleOfExperiment])
 	
 		filename = GetTimeStamp() + PACKED_FILE_EXPERIMENT_SUFFIX
 		FindValue /TXOP = 4 /TEXT = SAVE_PATH UserSettings
-		NewPath /C/O SavePath, UserSettings[V_value][%SettingValue]
-	
+		path = UserSettings[V_value][%SettingValue]
+
+		if(IsDriveValid(path))
+			CreateFolderOnDisk(path)
+		endif
+
+		NewPath/C/O SavePath, path
+
 		SaveExperiment /P=SavePath as filename
 
 		KillPath/Z SavePath
