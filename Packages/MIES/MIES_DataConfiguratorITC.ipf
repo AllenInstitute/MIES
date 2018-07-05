@@ -852,7 +852,9 @@ static Function DC_PlaceDataInITCDataWave(panelTitle, numActiveChannels, dataAcq
 					SIGNED_INT_16BIT_MIN,                                                 \
 					SIGNED_INT_16BIT_MAX)
 				cutOff = mod(DimSize(ITCDataWave, ROWS), singleSetLength)
-				ITCDataWave[DimSize(ITCDataWave, ROWS) - cutoff, *][0, numEntries - 1] = 0
+				if(cutOff > 0)
+					ITCDataWave[DimSize(ITCDataWave, ROWS) - cutoff, *][0, numEntries - 1] = 0
+				endif
 
 				CA_StoreEntryIntoCache(key, ITCDataWave)
 			endif
