@@ -349,13 +349,7 @@ End
 static Function IDX_GetITIFromWaveNote(wv)
 	Wave wv
 
-	string str
-	str = note(wv)
-	// All spaces and carriage returns are just to make the note human readable
-	// remove them before searching the key
-	str = ReplaceString("\r", str, "")
-	str = ReplaceString(" ", str, "")
-	return NumberByKey("ITI",str,"=",";")
+	return str2num(GetStringFromWaveNote(wv, "ITI", keySep = "="))
 End
 
 /// @brief Calculates the maximum ITI of a lead panel and all its followers, honours indexing
