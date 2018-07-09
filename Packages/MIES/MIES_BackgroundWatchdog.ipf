@@ -22,48 +22,37 @@
 
 static StrConstant PANEL            = "BW_MiesBackgroundWatchPanel"
 static StrConstant TASK             = "BW_BackgroundWatchdog"
-static StrConstant CONTROL_PREFIX   = "valdisp_"
+static StrConstant CONTROL_PREFIX   = "bckrdw"
 static Constant    INVALIDATE_STATE = -1
+static Constant    NUM_TASKS = 15
+static Constant    XGRID = 20
+static Constant    XOFFS = 240
+static Constant    YGRID = 20
 
 Window BW_MiesBackgroundWatchPanel() : Panel
 	PauseUpdate; Silent 1		// building window...
-	NewPanel /K=1 /W=(452,264,718,446) as "MIES Background Watcher Panel"
-	ValDisplay valdisp_TestPulseMD,pos={46.00,45.00},size={93.00,20.00},bodyWidth=20,title="TestPulseMD"
-	ValDisplay valdisp_TestPulseMD,help={"Green = task is running, Red = task is not running, black = background watcher is not running"}
-	ValDisplay valdisp_TestPulseMD,limits={-1,1,0},barmisc={0,0},mode= 1,highColor= (2,39321,1),lowColor= (0,0,0),zeroColor= (65535,0,0)
-	ValDisplay valdisp_TestPulseMD,value= #"0"
-	ValDisplay valdisp_TestPulse,pos={185.00,43.00},size={74.00,20.00},bodyWidth=20,title="TestPulse"
-	ValDisplay valdisp_TestPulse,help={"Green = task is running, Red = task is not running, black = background watcher is not running"}
-	ValDisplay valdisp_TestPulse,limits={-1,1,0},barmisc={0,0},mode= 1,highColor= (2,39321,1),lowColor= (0,0,0),zeroColor= (65535,0,0)
-	ValDisplay valdisp_TestPulse,value= #"0"
-	ValDisplay valdisp_ITC_FIFOMonitorMD,pos={6.00,102.00},size={133.00,20.00},bodyWidth=20,title="ITC_FIFOMonitorMD"
-	ValDisplay valdisp_ITC_FIFOMonitorMD,help={"Green = task is running, Red = task is not running, black = background watcher is not running"}
-	ValDisplay valdisp_ITC_FIFOMonitorMD,limits={-1,1,0},barmisc={0,0},mode= 1,highColor= (2,39321,1),lowColor= (0,0,0),zeroColor= (65535,0,0)
-	ValDisplay valdisp_ITC_FIFOMonitorMD,value= #"0"
-	ValDisplay valdisp_ITC_TimerMD,pos={42.00,74.00},size={97.00,20.00},bodyWidth=20,title="ITC_TimerMD"
-	ValDisplay valdisp_ITC_TimerMD,help={"Green = task is running, Red = task is not running, black = background watcher is not running"}
-	ValDisplay valdisp_ITC_TimerMD,limits={-1,1,0},barmisc={0,0},mode= 1,highColor= (2,39321,1),lowColor= (0,0,0),zeroColor= (65535,0,0)
-	ValDisplay valdisp_ITC_TimerMD,value= #"0"
-	ValDisplay valdisp_ITC_Timer,pos={181.00,73.00},size={78.00,20.00},bodyWidth=20,title="ITC_Timer"
-	ValDisplay valdisp_ITC_Timer,help={"Green = task is running, Red = task is not running, black = background watcher is not running"}
-	ValDisplay valdisp_ITC_Timer,limits={-1,1,0},barmisc={0,0},mode= 1,highColor= (2,39321,1),lowColor= (0,0,0),zeroColor= (65535,0,0)
-	ValDisplay valdisp_ITC_Timer,value= #"0"
-	ValDisplay valdisp_ITC_FIFOMonitor,pos={145.00,103.00},size={114.00,20.00},bodyWidth=20,title="ITC_FIFOMonitor"
-	ValDisplay valdisp_ITC_FIFOMonitor,help={"Green = task is running, Red = task is not running, black = background watcher is not running"}
-	ValDisplay valdisp_ITC_FIFOMonitor,limits={-1,1,0},barmisc={0,0},mode= 1,highColor= (2,39321,1),lowColor= (0,0,0),zeroColor= (65535,0,0)
-	ValDisplay valdisp_ITC_FIFOMonitor,value= #"0"
+	NewPanel /K=1 /W=(400,264,900,600) as "MIES Background Watcher Panel"
+	String base, s
+	variable xoffs = 240
+	variable xgrid = 20
+	variable ygrid = 20
+	variable ypos
+	variable i
+	do
+		ypos = 2 * ygrid + i * ygrid
+		base = "bckrdw" + num2str(i)
+		s = base + "_PERIOD"
+		ValDisplay $s,pos={3 * xgrid + xoffs, ypos},size={50.00,YGRID},title="Period"
+		ValDisplay $s,value= #"0"
+		s = base + "_NEXT"
+		ValDisplay $s,pos={6 * xgrid + xoffs, ypos},size={60.00,YGRID},title="Next"
+		ValDisplay $s,value= #"0"
+		i += 1
+	while(i < 15)
 	Button button_start_bkg,pos={76.00,13.00},size={50.00,20.00},proc=BkgWatcher#BW_ButtonProc_StartTask,title="Start"
 	Button button_start_bkg,help={"Start the background task for updating the traffic light style controls"}
 	Button button_stop_bkg_task,pos={150.00,13.00},size={50.00,20.00},proc=BkgWatcher#BW_ButtonProc_StopTask,title="Stop"
 	Button button_stop_bkg_task,help={"Stop the background task"}
-	ValDisplay valdisp_P_NI_FIFOMonitor,pos={85.00,131.00},size={120.00,20.00},bodyWidth=20,title="P_NI_FIFOMonitor"
-	ValDisplay valdisp_P_NI_FIFOMonitor,help={"Green = task is running, Red = task is not running, black = background watcher is not running"}
-	ValDisplay valdisp_P_NI_FIFOMonitor,limits={-1,1,0},barmisc={0,0},mode= 1,highColor= (2,39321,1),lowColor= (0,0,0),zeroColor= (65535,0,0)
-	ValDisplay valdisp_P_NI_FIFOMonitor,value= #"0"
-	ValDisplay valdisp_P_ITC_FIFOMonitor,pos={80.00,157.00},size={126.00,20.00},bodyWidth=20,title="P_ITC_FIFOMonitor"
-	ValDisplay valdisp_P_ITC_FIFOMonitor,help={"Green = task is running, Red = task is not running, black = background watcher is not running"}
-	ValDisplay valdisp_P_ITC_FIFOMonitor,limits={-1,1,0},barmisc={0,0},mode= 1,highColor= (2,39321,1),lowColor= (0,0,0),zeroColor= (65535,0,0)
-	ValDisplay valdisp_P_ITC_FIFOMonitor,value= #"0"
 	SetWindow kwTopWin,hook(mainHook)=BkgWatcher#BW_WindowHook
 	ModifyPanel fixedSize=1
 EndMacro
@@ -85,20 +74,64 @@ End
 
 Function BW_StopTask()
 	CtrlNamedBackground $TASK, stop
-	BW_InvalidateValDisplays()
+	BW_PanelUpdate()
 End
 
-Function BW_InvalidateValDisplays()
+Function BW_PanelUpdate()
+	String taskinfo, ctrl, base
+	CtrlNamedBackground _all_, status
+	variable state, ypos
+	variable colr, colg, colb
+	variable tasks = min(ItemsInList(S_Info, "\r"), NUM_TASKS)
+	variable i
+	for(i = 0; i < tasks; i += 1)
+		ypos = (2 + i) * YGRID
+		taskinfo = StringFromList(i, S_Info, "\r")
+		base = CONTROL_PREFIX + num2str(i)
 
-	string list, ctrl
-	variable numControls, i
+		if(str2num(StringByKey("RUN", taskinfo)))
+			colr = 0
+			colg = 65535
+			colb = 0
+		else
+			colr = 65535
+			colg = 0
+			colb = 0
+		endif
+		ctrl = base + "_NAME"
+		TitleBox $ctrl win=$PANEL ,pos={0, ypos}, fixedsize=1, size={120, YGRID}, labelBack=(colr, colg, colb), title=StringByKey("NAME", taskinfo)
+		ctrl = base + "_PROCESS"
+		Button $ctrl win=$PANEL ,pos={120, ypos}, size={180, YGRID}, fColor=(colr, colg, colb), title=StringByKey("PROC", taskinfo), proc=BW_ButtonProc_ShowTask
+		state = str2num(StringByKey("PERIOD", taskinfo))
+		ctrl = base + "_PERIOD"
+		SetValDisplay(PANEL, ctrl, var=state)
+		state = str2num(StringByKey("NEXT", taskinfo))
+		ctrl = base + "_NEXT"
+		SetValDisplay(PANEL, ctrl, var=state)
 
-	list = ControlNameList(PANEL, ";", CONTROL_PREFIX + "*")
-	numControls = ItemsInList(list)
+		if(str2num(StringByKey("QUIT", taskinfo)))
+			colr = 0
+			colg = 65535
+			colb = 0
+		else
+			colr = 65535
+			colg = 0
+			colb = 0
+		endif
+		ctrl = base + "_QUIT"
+		Button $ctrl win=$PANEL ,pos={9 * XGRID + XOFFS, ypos}, size={40, YGRID}, fColor=(colr, colg, colb), title="QUIT", proc=BW_ButtonProc_QuitTask
 
-	for(i = 0; i < numControls; i += 1)
-		ctrl = StringFromList(i, list)
-		SetValDisplay(PANEL, ctrl, var=INVALIDATE_STATE)
+		if(str2num(StringByKey("FUNCERR", taskinfo)))
+			colr = 65535
+			colg = 0
+			colb = 0
+		else
+			colr = 32000
+			colg = 32000
+			colb = 32000
+		endif
+		ctrl = base + "_ERROR"
+		TitleBox $ctrl win=$PANEL ,pos={11 * XGRID + XOFFS, ypos}, size={40, YGRID}, labelBack=(colr, colg, colb), title="ERROR"
 	endfor
 End
 
@@ -108,30 +141,60 @@ End
 Function BW_BackgroundWatchdog(s)
 	STRUCT WMBackgroundStruct &s
 
-	variable i, state, numControls
-	string list, ctrl, bkg
-
 	// stop background task if the panel was killed
 	DoWindow $PANEL
 	if(!V_flag)
 		return 1
 	endif
 
-	list = ControlNameList(PANEL, ";", CONTROL_PREFIX + "*")
-	numControls = ItemsInList(list)
+	BW_PanelUpdate()
+	return 0
+End
 
-	// should not happen
-	if(numControls == 0)
-		return 1
-	endif
+Function BW_ButtonProc_ShowTask(ba) : ButtonControl
+	STRUCT WMButtonAction &ba
 
-	for(i = 0; i < numControls; i += 1)
-		ctrl = StringFromList(i, list)
-		bkg  = ctrl[strlen(CONTROL_PREFIX), Inf]
+	switch(ba.eventCode)
+		case 2: // mouse up
+			variable num
+			String numstr
+			numstr = ba.ctrlName
+			numstr = numstr[strlen(CONTROL_PREFIX), Inf]
+			numstr = numstr[0, strsearch(numstr, "_", 0) - 1]
+			num=str2num(numstr)
+			String taskinfo, taskname
+			CtrlNamedBackground _all_, status
+			taskinfo = StringFromList(num, S_Info, "\r")
+			taskname = StringByKey("PROC", taskinfo)
+			if(strsearch(taskinfo, "#", 0) < 0)
+				taskname = "ProcGlobal#" + taskname
+			endif
+			DisplayProcedure taskname
+			break
+	endswitch
 
-		state = IsBackgroundTaskRunning(bkg)
-		SetValDisplay(PANEL, ctrl, var=state)
-	endfor
+	return 0
+End
+
+Function BW_ButtonProc_QuitTask(ba) : ButtonControl
+	STRUCT WMButtonAction &ba
+
+	switch(ba.eventCode)
+		case 2: // mouse up
+			variable num
+			String numstr
+			numstr = ba.ctrlName
+			numstr = numstr[strlen(CONTROL_PREFIX), Inf]
+			numstr = numstr[0, strsearch(numstr, "_", 0) - 1]
+			num=str2num(numstr)
+			String taskinfo, taskname
+			CtrlNamedBackground _all_, status
+			taskinfo = StringFromList(num, S_Info, "\r")
+			taskname = StringByKey("NAME", taskinfo)
+			CtrlNamedBackground $taskname, stop
+			BW_PanelUpdate()
+			break
+	endswitch
 
 	return 0
 End
@@ -144,7 +207,7 @@ Function BW_WindowHook(s)
 	switch(s.eventCode)
 		case 0: // activate
 			if(!IsBackgroundTaskRunning(TASK))
-				BW_InvalidateValDisplays()
+				BW_PanelUpdate()
 			endif
 			break
 		case 2: // kill
