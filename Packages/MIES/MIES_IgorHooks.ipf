@@ -121,6 +121,12 @@ static Function IgorBeforeQuitHook(unsavedExp, unsavedNotebooks, unsavedProcedur
 	return 0
 End
 
+static Function IgorQuitHook(igorApplicationNameStr)
+	string igorApplicationNameStr
+
+	IH_Cleanup()
+End
+
 static Function IgorBeforeNewHook(igorApplicationNameStr)
 	string igorApplicationNameStr
 
