@@ -1058,7 +1058,7 @@ Function DAP_OneTimeCallBeforeDAQ(panelTitle, runMode)
 End
 
 /// @brief Enable all controls which were disabled before DAQ by #DAP_OneTimeCallBeforeDAQ
-Function DAP_ResetGUIAfterDAQ(panelTitle)
+static Function DAP_ResetGUIAfterDAQ(panelTitle)
 	string panelTitle
 
 	variable i, ADC, DAC
