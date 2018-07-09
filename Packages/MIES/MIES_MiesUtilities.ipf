@@ -2763,10 +2763,13 @@ Function SaveExperimentSpecial(mode)
 		path = GetLabNotebookFolderAsString()
 		killFunc(path)
 
+		path = GetCacheFolderAS()
+		killFunc(path)
+
 		list = GetListOfLockedDevices()
-		// funcref definition as string
-		// allows to reference the function if it does not exist
-		CallFunctionForEachListItem($"DAP_ClearCommentNotebook", list)
+		CallFunctionForEachListItem(DAP_ClearCommentNotebook, list)
+
+		DB_ClearAllGraphs()
 
 		// remove other waves from active devices
 		activeDevices = GetAllDevices(activeOnly = 1)
@@ -2782,15 +2785,20 @@ Function SaveExperimentSpecial(mode)
 			list = GetListOfObjects(dfr, "TPStorage_*", fullPath=1)
 			CallFunctionForEachListItem(killFunc, list)
 
+			path = GetDeviceDataBrowserPathAS(device)
+			killFunc(path)
+
 			RemoveTracesFromGraph(SCOPE_GetGraph(device))
 		endfor
-
-		DB_ClearAllGraphs()
 	endif
 
 	SaveExperiment
 
 	if(useNewNWBFile)
+		// reset history capturing
+		NVAR historyRefnum = $GetHistoryRefNumber()
+		historyRefnum = NaN
+
 		CloseNWBFile()
 	endif
 End
@@ -4507,15 +4515,6 @@ Function SplitSweepIntoComponents(numericalValues, sweep, sweepWave, configWave,
 	string/G targetDFR:note = note(sweepWave)
 End
 
-/// @brief Determine if the window/subwindow belongs to our DataBrowser
-///
-/// Useful for databrowser/sweepbrowser code which must know from which panel it is called.
-Function IsDataBrowser(win)
-	string win
-
-	return BSP_IsDataBrowser(win)
-End
-
 /// @brief Add user data "panelVersion" to the panel
 Function AddVersionToPanel(win, version)
 	string win
@@ -4569,7 +4568,7 @@ End
 Function UpdateSweepPlot(win)
 	string win
 
-	if(IsDataBrowser(win))
+	if(BSP_IsDataBrowser(win))
 		FUNCREF UPDATESWEEPPLOT_PROTOTYPE f = $"DB_UpdateSweepPlot"
 	else
 		FUNCREF UPDATESWEEPPLOT_PROTOTYPE f = $"SB_UpdateSweepPlot"

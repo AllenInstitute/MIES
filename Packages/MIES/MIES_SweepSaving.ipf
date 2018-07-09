@@ -69,7 +69,7 @@ static Function SWS_AfterSweepDataSaveHook(panelTitle)
 	for(i = 0; i < numPanels; i += 1)
 		panel = StringFromList(i, panelList)
 
-		if(!IsDataBrowser(panel))
+		if(!BSP_IsDataBrowser(panel))
 			continue
 		endif
 
