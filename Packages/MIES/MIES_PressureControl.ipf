@@ -608,7 +608,7 @@ Function P_SetAndGetPressure(panelTitle, headStage, psi)
 	sprintf msg, "panelTitle=%s, hwtype=%d, deviceID=%d, channel=%d, headstage=%d, psi=%g\r", panelTitle, hwType, deviceID, channel, headStage, CalPsi
 	DEBUGPRINT(msg)
 
-	HW_WriteDAC(hwType, deviceID, channel, CalPsi / scale + PRESSURE_OFFSET, flags=HARDWARE_ABORT_ON_ERROR)
+	HW_WriteDAC(hwType, deviceID, channel, CalPsi / scale + PRESSURE_OFFSET)
 
 	return psi
 End
