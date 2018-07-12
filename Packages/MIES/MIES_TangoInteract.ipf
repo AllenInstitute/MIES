@@ -863,7 +863,7 @@ Function TI_runInitAccessResisQC(headstage, [cmdID])
 
 		// and now set the wave popup menu to that index
 		// have to add 1 since the pulldown always has -none- as option
-		SetPopupMenuIndex(currentPanel, waveSelect, incomingWaveIndex + 1)
+		PGC_SetAndActivateControl(currentPanel, waveSelect, val=incomingWaveIndex + 1)
 
 		// save the current test pulse buffer setting
 		tpBufferSetting = GetSetVariable(currentPanel,"setvar_Settings_TPBuffer")
