@@ -213,7 +213,8 @@ static Function TPM_StopTPMD(panelTitle)
 	TFH_StopFifoDaemon(HARDWARE_ITC_DAC, ITCDeviceIDGlobal)
 
 	// makes sure the device being stopped is actually running
-	if(HW_IsRunning(HARDWARE_ITC_DAC, ITCDeviceIDGlobal, flags=HARDWARE_ABORT_ON_ERROR))
+	if(!HW_SelectDevice(HARDWARE_ITC_DAC, ITCDeviceIDGlobal, flags = HARDWARE_PREVENT_ERROR_MESSAGE | HARDWARE_PREVENT_ERROR_POPUP) \
+	   && HW_IsRunning(HARDWARE_ITC_DAC, ITCDeviceIDGlobal, flags = HARDWARE_ABORT_ON_ERROR))
 		HW_StopAcq(HARDWARE_ITC_DAC, ITCDeviceIDGlobal, zeroDAC = 1)
 
 		TPM_RemoveDevice(panelTitle)

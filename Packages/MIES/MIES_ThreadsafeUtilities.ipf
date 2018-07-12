@@ -23,6 +23,10 @@ Function TS_GetNewestFromThreadQueue(tgID, varName)
 
 	ASSERT_TS(!isEmpty(varName), "varName must not be empty")
 
+	if(IsNaN(tgID))
+		return NaN
+	endif
+
 	for(;;)
 		DFREF dfr = ThreadGroupGetDFR(tgID, TS_GET_REPEAT_TIMEOUT_IN_MS)
 
@@ -62,6 +66,10 @@ Function/WAVE TS_GetNewestFromThreadQueueMult(tgID, varNames)
 
 	ASSERT_TS(DimSize(varNames, COLS) == 0, "Expected a 1D wave")
 	ASSERT_TS(IsTextWave(varNames), "Expected a text wave")
+
+	if(IsNaN(tgID))
+		return $""
+	endif
 
 	numEntries = DimSize(varNames, ROWS)
 	Make/D/N=(numEntries)/FREE result = NaN
