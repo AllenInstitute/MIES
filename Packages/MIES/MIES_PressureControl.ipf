@@ -589,7 +589,7 @@ Function P_SetAndGetPressure(panelTitle, headStage, psi)
 	string panelTitle
 	variable headStage, psi
 
-	variable hwType, deviceID, channel, scale
+	variable hwType, deviceID, channel, scale, CalPsi
 	string msg
 
 	WAVE pressureDataWv = P_GetPressureDataWaveRef(panelTitle)
@@ -600,15 +600,15 @@ Function P_SetAndGetPressure(panelTitle, headStage, psi)
 	// psi offset: 0V = -10 psi, 5V = 0 psi, 10V = 10 psi
 	SetValDisplay(panelTitle, StringFromList(headstage,PRESSURE_CONTROL_PRESSURE_DISP), var=psi, format = "%2.2f")
 	if(psi && isFinite(PressureDataWv[headStage][%PosCalConst]))
-		psi += PressureDataWv[headStage][%PosCalConst]
+		CalPsi = PressureDataWv[headStage][%PosCalConst] + psi
 	elseif(isFinite(PressureDataWv[headStage][%NegCalConst]))
-		psi += PressureDataWv[headStage][%NegCalConst]
+		CalPsi = PressureDataWv[headStage][%NegCalConst] + psi 
 	endif
 
-	sprintf msg, "panelTitle=%s, hwtype=%d, deviceID=%d, channel=%d, headstage=%d, psi=%g\r", panelTitle, hwType, deviceID, channel, headStage, psi
+	sprintf msg, "panelTitle=%s, hwtype=%d, deviceID=%d, channel=%d, headstage=%d, psi=%g\r", panelTitle, hwType, deviceID, channel, headStage, CalPsi
 	DEBUGPRINT(msg)
 
-	HW_WriteDAC(hwType, deviceID, channel, psi / scale + PRESSURE_OFFSET, flags=HARDWARE_ABORT_ON_ERROR)
+	HW_WriteDAC(hwType, deviceID, channel, CalPsi / scale + PRESSURE_OFFSET, flags=HARDWARE_ABORT_ON_ERROR)
 
 	return psi
 End
