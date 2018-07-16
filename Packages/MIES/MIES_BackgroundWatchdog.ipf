@@ -24,38 +24,9 @@ static StrConstant PANEL            = "BW_MiesBackgroundWatchPanel"
 static StrConstant TASK             = "BW_BackgroundWatchdog"
 static StrConstant CONTROL_PREFIX   = "bckrdw"
 static Constant    INVALIDATE_STATE = -1
-static Constant    NUM_TASKS = 15
 static Constant    XGRID = 20
 static Constant    XOFFS = 240
 static Constant    YGRID = 20
-
-Window BW_MiesBackgroundWatchPanel() : Panel
-	PauseUpdate; Silent 1		// building window...
-	NewPanel /K=1 /W=(400,264,900,600) as "MIES Background Watcher Panel"
-	String base, s
-	variable xoffs = 240
-	variable xgrid = 20
-	variable ygrid = 20
-	variable ypos
-	variable i
-	do
-		ypos = 2 * ygrid + i * ygrid
-		base = "bckrdw" + num2str(i)
-		s = base + "_PERIOD"
-		ValDisplay $s,pos={3 * xgrid + xoffs, ypos},size={50.00,YGRID},title="Period"
-		ValDisplay $s,value= #"0"
-		s = base + "_NEXT"
-		ValDisplay $s,pos={6 * xgrid + xoffs, ypos},size={60.00,YGRID},title="Next"
-		ValDisplay $s,value= #"0"
-		i += 1
-	while(i < 15)
-	Button button_start_bkg,pos={76.00,13.00},size={50.00,20.00},proc=BkgWatcher#BW_ButtonProc_StartTask,title="Start"
-	Button button_start_bkg,help={"Start the background task for updating the traffic light style controls"}
-	Button button_stop_bkg_task,pos={150.00,13.00},size={50.00,20.00},proc=BkgWatcher#BW_ButtonProc_StopTask,title="Stop"
-	Button button_stop_bkg_task,help={"Stop the background task"}
-	SetWindow kwTopWin,hook(mainHook)=BkgWatcher#BW_WindowHook
-	ModifyPanel fixedSize=1
-EndMacro
 
 Function BW_StartPanel()
 
@@ -64,75 +35,105 @@ Function BW_StartPanel()
 		return NaN
 	endif
 
-	Execute PANEL + "()"
+	BW_CreatePanel()
 	BW_StartTask()
+End
+
+Function BW_CreatePanel()
+	NewPanel /K=1/N=$PANEL /W=(400, 264, 0, 0) as "MIES Background Watcher Panel"
+	SetWindow kwTopWin,hook(mainHook)=BkgWatcher#BW_WindowHook
+	ModifyPanel fixedSize=1
 End
 
 Function BW_StartTask()
 	CtrlNamedBackground $TASK, period=30, proc=$(GetIndependentModuleName() + "#BW_BackgroundWatchdog"), start
+	Button button_startstop_bkg,pos={0,0},size={14 * XGRID + XOFFS, YGRID},proc=BkgWatcher#BW_ButtonProc_StopTask,title="Stop"
+	Button button_startstop_bkg,help={"Start/Stop the background task for updating the traffic light style controls"}
 End
 
 Function BW_StopTask()
 	CtrlNamedBackground $TASK, stop
 	BW_PanelUpdate()
+	Button button_startstop_bkg,proc=BkgWatcher#BW_ButtonProc_StartTask,title="Start (currently stopped)"
 End
 
 Function BW_PanelUpdate()
-	String taskinfo, ctrl, base
+	String taskinfo, ctrl, base, title, helpstr
+	variable tasks, state, ypos,i, runstate, colr, colg, colb, basecol
+
+	basecol = 65535
 	CtrlNamedBackground _all_, status
-	variable state, ypos
-	variable colr, colg, colb
-	variable tasks = min(ItemsInList(S_Info, "\r"), NUM_TASKS)
-	variable i
+	tasks = ItemsInList(S_Info, "\r")
 	for(i = 0; i < tasks; i += 1)
-		ypos = (2 + i) * YGRID
+		ypos = (1 + i) * YGRID
 		taskinfo = StringFromList(i, S_Info, "\r")
 		base = CONTROL_PREFIX + num2str(i)
 
-		if(str2num(StringByKey("RUN", taskinfo)))
+		runstate = NumberByKey("RUN", taskinfo)
+		if(runstate)
 			colr = 0
-			colg = 65535
+			colg = basecol
 			colb = 0
 		else
-			colr = 65535
-			colg = 0
-			colb = 0
+			colr = basecol
+			colg = basecol * 0.4
+			colb = basecol * 0.4
 		endif
 		ctrl = base + "_NAME"
-		TitleBox $ctrl win=$PANEL ,pos={0, ypos}, fixedsize=1, size={120, YGRID}, labelBack=(colr, colg, colb), title=StringByKey("NAME", taskinfo)
+		TitleBox $ctrl win=$PANEL, pos={0, ypos}, anchor=lc, fixedsize=1, size={6 * XGRID, YGRID}, labelBack=(colr, colg, colb), title=StringByKey("NAME", taskinfo), help={"name of task\rgreen - currently running\rred - stopped"}
 		ctrl = base + "_PROCESS"
-		Button $ctrl win=$PANEL ,pos={120, ypos}, size={180, YGRID}, fColor=(colr, colg, colb), title=StringByKey("PROC", taskinfo), proc=BW_ButtonProc_ShowTask
-		state = str2num(StringByKey("PERIOD", taskinfo))
+		Button $ctrl win=$PANEL, pos={6 * XGRID, ypos}, size={9 * XGRID, YGRID}, fColor=(colr, colg, colb), title=StringByKey("PROC", taskinfo), proc=BW_ButtonProc_ShowTask, help={"function of task\rpress to open code"}
+
+		state = NumberByKey("PERIOD", taskinfo)
 		ctrl = base + "_PERIOD"
+		ValDisplay $ctrl win=$PANEL, format="%1d", pos={3 * xgrid + xoffs, ypos}, size={2.5 * XGRID, YGRID}, title="Period", value= #"0", help={"task is executed every period ticks"}
+
 		SetValDisplay(PANEL, ctrl, var=state)
-		state = str2num(StringByKey("NEXT", taskinfo))
+		state = NumberByKey("NEXT", taskinfo)
 		ctrl = base + "_NEXT"
+		if(runstate)
+			title = "Next in"
+			state -= ticks
+			colr = basecol
+			colg = basecol
+			colb = basecol
+			helpstr = "task is executed in <> ticks"
+		else
+			title = "Last run"
+			colr = basecol * 0.9
+			colg = basecol * 0.9
+			colb = basecol
+			helpstr = "task was last run at <> ticks"
+		endif
+		ValDisplay $ctrl win=$PANEL, format="%1d", pos={6 * xgrid + xoffs, ypos},size={3.5 * XGRID, YGRID}, valueBackColor=(colr, colg, colb), title=title,value= #"0", help={helpstr}
 		SetValDisplay(PANEL, ctrl, var=state)
 
-		if(str2num(StringByKey("QUIT", taskinfo)))
-			colr = 0
-			colg = 65535
-			colb = 0
-		else
-			colr = 65535
+		if(NumberByKey("QUIT", taskinfo))
+			colr = basecol
 			colg = 0
 			colb = 0
+		else
+			colr = basecol * 0.7
+			colg = basecol * 0.7
+			colb = basecol * 0.7
 		endif
 		ctrl = base + "_QUIT"
-		Button $ctrl win=$PANEL ,pos={9 * XGRID + XOFFS, ypos}, size={40, YGRID}, fColor=(colr, colg, colb), title="QUIT", proc=BW_ButtonProc_QuitTask
+		Button $ctrl win=$PANEL ,pos={10 * XGRID + XOFFS, ypos}, size={2 * XGRID, YGRID}, fColor=(colr, colg, colb), title="QUIT", proc=BW_ButtonProc_QuitTask, help={"red - task returned nonzero value\rgrey - task returned zero (OK)"}
 
-		if(str2num(StringByKey("FUNCERR", taskinfo)))
-			colr = 65535
-			colg = 0
-			colb = 0
+		if(NumberByKey("FUNCERR", taskinfo))
+			colr = basecol
+			colg = basecol * 0.4
+			colb = basecol * 0.4
 		else
-			colr = 32000
-			colg = 32000
-			colb = 32000
+			colr = basecol * 0.7
+			colg = basecol * 0.7
+			colb = basecol * 0.7
 		endif
 		ctrl = base + "_ERROR"
-		TitleBox $ctrl win=$PANEL ,pos={11 * XGRID + XOFFS, ypos}, size={40, YGRID}, labelBack=(colr, colg, colb), title="ERROR"
+		TitleBox $ctrl win=$PANEL, anchor=mc, fixedsize=1, pos={12 * XGRID + XOFFS, ypos}, size={2 * XGRID, YGRID}, labelBack=(colr, colg, colb), title="ERROR", help={"red - task function was not or could not be executed\rgrey - task function could be executed"}
 	endfor
+	GetWindow $PANEL wsize
+	MoveWindow /W=$PANEL V_Left, V_Top, V_Left + 14 * XGRID + XOFFS, V_Top + ypos + YGRID
 End
 
 /// @brief Helper background task for debugging
@@ -157,12 +158,11 @@ Function BW_ButtonProc_ShowTask(ba) : ButtonControl
 	switch(ba.eventCode)
 		case 2: // mouse up
 			variable num
-			String numstr
+			String numstr, taskinfo, taskname
 			numstr = ba.ctrlName
 			numstr = numstr[strlen(CONTROL_PREFIX), Inf]
 			numstr = numstr[0, strsearch(numstr, "_", 0) - 1]
 			num=str2num(numstr)
-			String taskinfo, taskname
 			CtrlNamedBackground _all_, status
 			taskinfo = StringFromList(num, S_Info, "\r")
 			taskname = StringByKey("PROC", taskinfo)
@@ -182,12 +182,11 @@ Function BW_ButtonProc_QuitTask(ba) : ButtonControl
 	switch(ba.eventCode)
 		case 2: // mouse up
 			variable num
-			String numstr
+			String numstr, taskinfo, taskname
 			numstr = ba.ctrlName
 			numstr = numstr[strlen(CONTROL_PREFIX), Inf]
 			numstr = numstr[0, strsearch(numstr, "_", 0) - 1]
 			num=str2num(numstr)
-			String taskinfo, taskname
 			CtrlNamedBackground _all_, status
 			taskinfo = StringFromList(num, S_Info, "\r")
 			taskname = StringByKey("NAME", taskinfo)
