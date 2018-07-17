@@ -17,7 +17,7 @@
 #include "tango_monitor"
 
 /// @brief function for recieving the command strings from the WSE
-/// @param cmdString			format is "cmd_id:<id>;<cmd_string>"
+/// @param cmdString			format is "cmd_id:<id>|<cmd_string>"
 Function TI_TangoCommandInput(cmdString)
 	string cmdString
 	
@@ -34,15 +34,15 @@ Function TI_TangoCommandInput(cmdString)
 		abort
 	endif
 	
-	cmdNumber = ItemsInList(cmdString)
+	cmdNumber = ItemsInList(cmdString, "|")
 	
 	// the first portion of the cmdString should be the "cmd_id:<id>"
-	cmdPortion = StringFromList(0, cmdString)
+	cmdPortion = StringFromList(0, cmdString, "|")
 	// now parse out the cmd_id
 	sscanf cmdPortion, "cmd_id:%s", cmdID
 	
 	// the second portion of the cmdString should be the "cmd_string"
-	igorCmd = StringFromList(1, cmdString)
+	igorCmd = StringFromList(1, cmdString, "|")
 	
 	// now strip the trailing ")" off the end of the igorCmd
 	igorCmdPortion = StringFromList(0, igorCmd, ")")
