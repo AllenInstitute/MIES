@@ -1325,6 +1325,7 @@ Function DAP_PopMenuChkProc_StimSetList(pa) : PopupMenuControl
 				// so we have to set the now old value again
 				if(indexing && channelControl == CHANNEL_CONTROL_WAVE)
 					SetPopupMenuIndex(panelTitle, ctrl, idx - 1)
+					DAG_Update(pa.win, pa.ctrlName, val = idx - 1, str = pa.popStr)
 				endif
 			endif
 
