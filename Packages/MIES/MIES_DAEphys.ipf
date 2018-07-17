@@ -4531,7 +4531,7 @@ End
 ///
 /// @param panelTitle device
 /// @param headStage MIES headstage number, must be in the range [0, NUM_HEADSTAGES]
-Function DAP_AllChanDASettings(panelTitle, headStage)
+static Function DAP_AllChanDASettings(panelTitle, headStage)
 	string panelTitle
 	variable headStage
 
