@@ -15,10 +15,9 @@
 static Function FindFirstOutsideCaller(func, line, file)
 	string &func, &line, &file
 
-	string stacktrace, caller, debugFile
+	string stacktrace, caller
 	variable numCallers, i
 
-	debugFile = GetFile(FunctionPath(""))
 	stacktrace = GetRTStackInfo(3)
 	numCallers = ItemsInList(stacktrace)
 
@@ -28,7 +27,7 @@ static Function FindFirstOutsideCaller(func, line, file)
 		file   = StringFromList(1, caller, ",")
 		line   = StringFromList(2, caller, ",")
 
-		if(cmpstr(debugFile, file))
+		if(cmpstr("MIES_DEBUGGING.ipf", file))
 			return NaN
 		endif
 	endfor
