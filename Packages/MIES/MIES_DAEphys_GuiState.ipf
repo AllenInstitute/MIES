@@ -324,6 +324,13 @@ Function DAG_GetHeadstageMode(panelTitle, headStage)
 End
 
 /// @brief Updates the state of a control in the GUIState numeric wave
+///
+/// One or both parameters have to be passed.
+///
+/// @param panelTitle  device
+/// @param controlName control name
+/// @param val         [optional] numerical value, 0-based index for popup menues
+/// @param str         [optional] textual value
 Function DAG_Update(panelTitle, controlName, [val, str])
 	string panelTitle
 	string controlName
