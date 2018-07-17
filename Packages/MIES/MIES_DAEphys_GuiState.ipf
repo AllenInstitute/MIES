@@ -185,10 +185,10 @@ Function DAG_GetNumericalValue(panelTitle, ctrl, [index])
 			string fullCtrl
 			sprintf fullCtrl, "%s_%02d", ctrl, index
 			ControlInfo/W=$panelTitle $fullCtrl
+		endif
 
-			if(abs(V_Flag)  == CONTROL_TYPE_POPUPMENU)
-				V_Value -= 1
-			endif
+		if(abs(V_Flag) == CONTROL_TYPE_POPUPMENU)
+			V_Value -= 1
 		endif
 
 		refValue = GetDA_EphysGuiStateNum(panelTitle)[index][%$ctrl]
