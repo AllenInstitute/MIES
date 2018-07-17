@@ -4536,12 +4536,14 @@ static Function DAP_AllChanDASettings(panelTitle, headStage)
 	variable headStage
 
 	string ctrl
-	WAVE GuiState = GetDA_EphysGuiStateNum(panelTitle)
-
 	variable scalar, index, indexEnd
+
 	if(!DAG_GetNumericalValue(panelTitle, "check_DA_applyOnModeSwitch"))
 		return NaN
 	endif
+
+
+	WAVE GuiState = GetDA_EphysGuiStateNum(panelTitle)
 
 	if(GuiState[headStage][%HSmode] == V_CLAMP_MODE)
 		scalar = DAG_GetNumericalValue(panelTitle, GetPanelControl(CHANNEL_INDEX_ALL_V_CLAMP,CHANNEL_TYPE_DAC,CHANNEL_CONTROL_SCALE))
