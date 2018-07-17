@@ -93,6 +93,11 @@ Function DAG_RecordGuiStateNum(panelTitle, [GUIState])
 		ctrlName = GetDimLabel(GUIState, COLS, i)
 		controlInfo/w=$panelTitle $ctrlName
 		ASSERT(V_flag != 0, "invalid or non existing control")
+
+		if(abs(V_Flag) == CONTROL_TYPE_POPUPMENU)
+			V_Value -= 1
+		endif
+
 		GUIState[0][i] = V_Value
 	endfor
 End
