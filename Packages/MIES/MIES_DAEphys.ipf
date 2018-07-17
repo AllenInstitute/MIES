@@ -1329,11 +1329,13 @@ Function DAP_PopMenuChkProc_StimSetList(pa) : PopupMenuControl
 				endif
 			endif
 
-			// check if this is a third party stim set which
-			// is not yet reflected in the "MenuExp" user data
-			list = GetUserData(panelTitle, ctrl, "MenuExp")
-			if(FindListItem(stimSet, list) == -1)
-				WBP_UpdateITCPanelPopUps()
+			if(!isAllControl)
+				// check if this is a third party stim set which
+				// is not yet reflected in the "MenuExp" user data
+				list = GetUserData(panelTitle, ctrl, "MenuExp")
+				if(FindListItem(stimSet, list) == -1)
+					WBP_UpdateITCPanelPopUps()
+				endif
 			endif
 
 			if(isAllControl)
