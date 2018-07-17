@@ -4536,12 +4536,17 @@ static Function DAP_AllChanDASettings(panelTitle, headStage)
 	variable headStage
 
 	string ctrl
-	variable scalar, index, indexEnd
+	variable scalar, index, indexEnd, DAC
 
 	if(!DAG_GetNumericalValue(panelTitle, "check_DA_applyOnModeSwitch"))
 		return NaN
 	endif
 
+	DAC = AFH_GetDACFromHeadstage(paneltitle, headstage)
+
+	if(IsNan(DAC))
+		return NaN
+	endif
 
 	WAVE GuiState = GetDA_EphysGuiStateNum(panelTitle)
 
@@ -4554,14 +4559,15 @@ static Function DAP_AllChanDASettings(panelTitle, headStage)
 		index = DAG_GetNumericalValue(panelTitle, GetPanelControl(CHANNEL_INDEX_ALL_I_CLAMP,CHANNEL_TYPE_DAC,CHANNEL_CONTROL_WAVE))
 		indexEnd = DAG_GetNumericalValue(panelTitle, GetPanelControl(CHANNEL_INDEX_ALL_I_CLAMP,CHANNEL_TYPE_DAC,CHANNEL_CONTROL_INDEX_END))
 	endif
+
 	// update the scalar
-	ctrl = GetPanelControl(headStage, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_SCALE)
+	ctrl = GetPanelControl(DAC, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_SCALE)
 	PGC_SetAndActivateControl(panelTitle, ctrl, val = scalar)
 	// update the stimulus set
-	ctrl = GetPanelControl(headStage, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_WAVE)
+	ctrl = GetPanelControl(DAC, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_WAVE)
 	PGC_SetAndActivateControl(panelTitle, ctrl, val = index)
 	// update the Index end set
-	ctrl = GetPanelControl(headStage, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_INDEX_END)
+	ctrl = GetPanelControl(DAC, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_INDEX_END)
 	PGC_SetAndActivateControl(panelTitle, ctrl, val = indexEnd)
 End
 
