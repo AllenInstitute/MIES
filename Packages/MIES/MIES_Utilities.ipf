@@ -3133,6 +3133,13 @@ threadsafe Function IsTextWave(wv)
 	return WaveType(wv, 1) == 2
 End
 
+/// @brief Return 1 if the wave is a numeric wave, zero otherwise
+threadsafe Function IsNumericWave(wv)
+	WAVE wv
+
+	return WaveType(wv, 1) == 1
+End
+
 /// @brief Return the user name of the running user
 Function/S GetSystemUserName()
 
