@@ -2495,18 +2495,35 @@ Function GetDecimalMultiplierValue(prefix)
 End
 
 /// @brief Query a numeric option settable with `SetIgorOption`
-Function QuerySetIgorOption(name)
+///
+/// @param name         name of the keyword/setting
+/// @param globalSymbol [optional, defaults to false] `name` refers to a global
+///                     symbol set via `poundDefine`
+Function QuerySetIgorOption(name, [globalSymbol])
 	string name
+	variable globalSymbol
 
 	string cmd
 	variable result
+
+	if(ParamIsDefault(globalSymbol))
+		globalSymbol = 0
+	else
+		globalSymbol = !!globalSymbol
+	endif
 
 	DFREF dfr = GetDataFolderDFR()
 
 	// we remove V_flag as the existence of it determines
 	// if the operation was successfull
 	KillVariables/Z V_Flag
-	sprintf cmd, "SetIgorOption %s=?", name
+
+	if(globalSymbol)
+		sprintf cmd, "SetIgorOption poundDefine=%s?", name
+	else
+		sprintf cmd, "SetIgorOption %s=?", name
+	endif
+
 	Execute/Q/Z cmd
 
 	NVAR/Z/SDFR=dfr flag = V_Flag
