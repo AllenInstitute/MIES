@@ -437,7 +437,6 @@ static Function PSQ_EvaluateBaselineProperties(panelTitle, type, sweepNo, chunk,
 		WAVE/SDFR=root: overrideResults
 		NVAR count = $GetCount(panelTitle)
 		chunkPassed = overrideResults[chunk][count][0]
-		printf "Chunk %d %s\r", chunk, SelectString(chunkPassed, "failed", "passed")
 	endif
 	// END TEST
 
@@ -775,8 +774,6 @@ static Function/WAVE PSQ_SearchForSpikes(panelTitle, type, sweepWave, headstage,
 				ASSERT(0, "unsupported type")
 		endswitch
 
-		printf "Sweep %d has %g\r", count, overrideValue
-
 		if(overrideValue == 0 || overrideValue == 1)
 			spikeDetection[headstage] = overrideValue
 		else
@@ -784,7 +781,7 @@ static Function/WAVE PSQ_SearchForSpikes(panelTitle, type, sweepWave, headstage,
 		endif
 
 		if(!ParamIsDefault(spikePositions))
-		ASSERT(WaveExists(spikePositions), "Wave spikePositions must exist")
+			ASSERT(WaveExists(spikePositions), "Wave spikePositions must exist")
 			Redimension/D/N=(numberOfSpikes) spikePositions
 			spikePositions[] = overrideValue
 		endif
