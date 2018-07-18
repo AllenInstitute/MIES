@@ -419,7 +419,7 @@ static Function TP_ResetTPStorage(panelTitle)
 		if(DAG_GetNumericalValue(panelTitle, "check_Settings_TP_SaveTPRecord"))
 			dfref dfr = GetDeviceTestPulse(panelTitle)
 			name = NameOfWave(TPStorage)
-			Duplicate/RMD=[0, count - 1] TPStorage, dfr:$(name + "_" + num2str(ItemsInList(GetListOfObjects(dfr, "^" + name + "_\d+"))))
+			Duplicate/RMD=[0, count - 1] TPStorage, dfr:$(name + "_" + num2str(ItemsInList(GetListOfObjects(dfr, TP_STORAGE_REGEXP))))
 		endif
 
 		SetNumberInWaveNote(TPStorage, TP_CYLCE_COUNT_KEY, 0)
