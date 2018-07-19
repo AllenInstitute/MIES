@@ -1692,7 +1692,7 @@ Function WBP_InitialTabHook(tca)
 	endif
 
 	idx = GetSetVariable(panel, "setvar_WaveBuilder_CurrentEpoch")
-	ASSERT(idx <= SEGMENT_TYPE_WAVE_LAST_IDX, "Only supports up to different SEGMENT_TYPE_WAVE_LAST_IDX epochs")
+	ASSERT(IsValidEpochNumber(idx), "Invalid number of epochs")
 	SegWvType[idx] = tabnum
 
 	WBP_ParameterWaveToPanel(tabnum)
@@ -2196,7 +2196,7 @@ static Function WBP_LoadSet(setName)
 	SetAnalysisFunctionIfFuncExists(panel, "popup_af_generic_S9", setName, funcList, WPT[9][%Set][INDEP_EPOCH_TYPE])
 	WBP_AnaFuncsToWPT()
 
-	ASSERT(SegWvType[100] <= SEGMENT_TYPE_WAVE_LAST_IDX, "Only supports up to different SEGMENT_TYPE_WAVE_LAST_IDX epochs")
+	ASSERT(IsValidEpochNumber(SegWvType[100]), "Invalid number of epochs")
 
 	WBP_UpdateEpochControls()
 	PGC_SetAndActivateControl(panel, "setvar_WaveBuilder_CurrentEpoch", val = 0)

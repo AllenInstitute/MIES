@@ -1670,6 +1670,13 @@ Function IsValidSweepNumber(sweepNo)
 	return IsInteger(sweepNo) && sweepNo >= 0
 End
 
+/// @brief Check if the given epoch number is valid
+Function IsValidEpochNumber(epochNo)
+	variable epochNo
+
+	return IsInteger(epochNo) && epochNo >= 0 && epochNo <= SEGMENT_TYPE_WAVE_LAST_IDX
+End
+
 /// @brief Returns the config wave for a given sweep wave
 Function/Wave GetConfigWave(sweepWave)
 	Wave sweepWave
