@@ -931,3 +931,12 @@ Constant DELTA_OPERATION_EXPLICIT  = 6
 /// @}
 
 Constant MINIMUM_FREE_DISC_SPACE = 107374182400 // 10GB
+
+/// @name Stimset wave note entry types for WB_GetWaveNoteEntry()
+/// @anchor StimsetWaveNoteEntryTypes
+/// @{
+Constant VERSION_ENTRY = 0x1
+Constant SWEEP_ENTRY   = 0x2
+Constant EPOCH_ENTRY   = 0x4
+Constant STIMSET_ENTRY = 0x8
+/// @}

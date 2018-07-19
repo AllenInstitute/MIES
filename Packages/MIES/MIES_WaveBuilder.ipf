@@ -1168,6 +1168,128 @@ Function WB_ToEpochType(epochTypeStr)
 	endswitch
 End
 
+/// @brief Query stimset wave note entries
+///
+/// \rst
+/// Format of the wave note:
+///
+/// Lines separated by ``\r`` (carriage return) in UTF-8 encoding.
+/// The lines hold Igor Pro style key value pairs in the form ``key = value;``
+/// where value can contain any character except ``;`` (semicolon).
+///
+/// Four types of entries can be distinguished:
+///
+/// - Version: In the very first line (line 1)
+/// - Sweep specific entries have an epoch of ``nan``: (line 2, 7)
+/// - Epoch specific: (line 3 - 6)
+/// - Stimset specific: (line 12)
+///
+/// Example:
+///
+/// .. code-block:: none
+/// 	:linenos:
+///
+/// 	Version = 2;
+/// 	Sweep = 0;Epoch = nan;ITI = 1;
+/// 	Sweep = 0;Epoch = 0;Type = Square pulse;Duration = 500;Amplitude = 0;
+/// 	Sweep = 0;Epoch = 1;Type = Ramp;Duration = 150;Amplitude = 1;Offset = 0;
+/// 	Sweep = 0;Epoch = 2;Type = Square pulse;Duration = 300;Amplitude = 0;
+/// 	Sweep = 0;Epoch = 3;Type = Pulse Train;Duration = 960.005;Amplitude = 1;Offset = 0;Pulse Type = Square;Frequency = 20;Pulse To Pulse Length = 50;Pulse duration = 10;Number of pulses = 20;Mixed frequency = False;First mixed frequency = 0;Last mixed frequency = 0;Poisson distribution = False;Random seed = 0.963638;Pulse Train Pulses = 0,50,100,150,200,250,300,350,400,450,500,550,600,650,700,750,800,850,900,950,;Definition mode = Duration;
+/// 	Sweep = 1;Epoch = nan;ITI = 2;
+/// 	Sweep = 1;Epoch = 0;Type = Square pulse;Duration = 500;Amplitude = 0;
+/// 	Sweep = 1;Epoch = 1;Type = Ramp;Duration = 150;Amplitude = 1;Offset = 0;
+/// 	Sweep = 1;Epoch = 2;Type = Square pulse;Duration = 300;Amplitude = 0;
+/// 	Sweep = 1;Epoch = 3;Type = Pulse Train;Duration = 960.005;Amplitude = 1;Offset = 0;Pulse Type = Square;Frequency = 20;Pulse To Pulse Length = 50;Pulse duration = 10;Number of pulses = 20;Mixed frequency = False;First mixed frequency = 0;Last mixed frequency = 0;Poisson distribution = False;Random seed = 0.963638;Pulse Train Pulses = 0,50,100,150,200,250,300,350,400,450,500,550,600,650,700,750,800,850,900,950,;Definition mode = Duration;
+/// 	Stimset;Sweep Count = 2;Epoch Count = 4;Pre DAQ = ;Mid Sweep = ;Post Sweep = ;Post Set = ;Post DAQ = ;Pre Sweep = ;Generic = PSQ_Ramp;Pre Set = ;Function params = NumberOfSpikes:variable=5,Elements:string=Hidiho,;Flip = 0;Random Seed = 0.963638;Checksum = 65446509;
+/// \endrst
+///
+/// @param stimset   stimulus set
+/// @param entryType one of @ref StimsetWaveNoteEntryTypes
+/// @param key       [optional] named entry to return, not required for #VERSION_ENTRY
+/// @param sweep     [optional] number of the sweep
+/// @param epoch     [optional] number of the epoch
+Function/S WB_GetWaveNoteEntry(stimset, entryType, [key, sweep, epoch])
+	WAVE stimset
+	variable entryType
+	string key
+	variable sweep, epoch
+
+	string match, re
+
+	ASSERT(WaveExists(stimset), "Stimset wave must exist")
+
+	if(!ParamIsDefault(sweep))
+		ASSERT(IsValidSweepNumber(sweep), "Invalid sweep number")
+	endif
+
+	if(!ParamIsDefault(epoch))
+		ASSERT(IsValidEpochNumber(epoch), "Invalid epoch number")
+	endif
+
+	switch(entryType)
+		case VERSION_ENTRY:
+			key = "Version"
+			sprintf re "^%s.*;$", key
+			break
+		case SWEEP_ENTRY:
+			ASSERT(!ParamIsDefault(key) && !IsEmpty(key), "Missing key")
+			sprintf re, "^Sweep = %d;Epoch = nan;", sweep
+			break
+		case EPOCH_ENTRY:
+			ASSERT(!ParamIsDefault(key) && !IsEmpty(key), "Missing key")
+			sprintf re, "^Sweep = %d;Epoch = %d;", sweep, epoch
+			break
+		case STIMSET_ENTRY:
+			ASSERT(!ParamIsDefault(key) && !IsEmpty(key), "Missing key")
+			re = "^Stimset;"
+			break
+	endswitch
+
+	match = GrepList(note(stimset), re, 0, "\r")
+
+	if(IsEmpty(match))
+		return match
+	endif
+
+	ASSERT(ItemsInList(match, "\r") == 1, "Expected only one matching line")
+
+	return ExtractStringFromPair(match, key, keySep = "=")
+End
+
+// @copydoc WB_GetWaveNoteEntry
+Function WB_GetWaveNoteEntryAsNumber(stimset, entryType, [key, sweep, epoch])
+	WAVE stimset
+	variable entryType
+	string key
+	variable sweep, epoch
+
+	string str
+
+	if(ParamIsDefault(key) && ParamIsDefault(sweep) && ParamIsDefault(epoch))
+		str = WB_GetWaveNoteEntry(stimset, entryType)
+	elseif(ParamIsDefault(sweep) && ParamIsDefault(epoch))
+		str = WB_GetWaveNoteEntry(stimset, entryType, key = key)
+	elseif(ParamIsDefault(key) && ParamIsDefault(epoch))
+		str = WB_GetWaveNoteEntry(stimset, entryType, sweep = sweep)
+	elseif(ParamIsDefault(key) && ParamIsDefault(sweep))
+		str = WB_GetWaveNoteEntry(stimset, entryType, epoch = epoch)
+	elseif(ParamIsDefault(key))
+		str = WB_GetWaveNoteEntry(stimset, entryType, sweep = sweep, epoch = epoch)
+	elseif(ParamIsDefault(sweep))
+		str = WB_GetWaveNoteEntry(stimset, entryType, key = key, epoch = epoch)
+	elseif(ParamIsDefault(epoch))
+		str = WB_GetWaveNoteEntry(stimset, entryType, sweep = sweep, key = key)
+	else
+		str = WB_GetWaveNoteEntry(stimset, entryType, key = key, sweep = sweep, epoch = epoch)
+	endif
+
+	if(IsEmpty(str))
+		return NaN
+	endif
+
+	return str2num(str)
+End
+
 /// @brief Extract a list of [begin, end] ranges in `stimset build ms` denoting
 ///        all pulses from all pulse train epochs in that sweep of the stimset
 Function/WAVE WB_GetPulsesFromPulseTrains(stimset, sweep, pulseToPulseLength)
