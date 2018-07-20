@@ -510,7 +510,7 @@ Constant HARDWARE_DAC_EXTERNAL_TRIGGER = 0x1
 Constant DA_EPHYS_PANEL_VERSION     = 31
 Constant DATABROWSER_PANEL_VERSION  = 7
 Constant SWEEPBROWSER_PANEL_VERSION = 3
-Constant WAVEBUILDER_PANEL_VERSION  = 6
+Constant WAVEBUILDER_PANEL_VERSION  = 7
 
 /// Version of the labnotebooks (numerical and textual)
 ///
@@ -522,7 +522,7 @@ Constant WAVEBUILDER_PANEL_VERSION  = 6
 Constant LABNOTEBOOK_VERSION = 25
 
 /// Version of the stimset wave note
-Constant STIMSET_NOTE_VERSION = 1
+Constant STIMSET_NOTE_VERSION = 2
 
 /// @name The channel numbers for the different ITC devices used for accesssing
 ///       the TTLs

@@ -345,8 +345,9 @@ Function/Wave WB_GetStimSet([setName])
 		UpgradeSegWvType(SegWvType)
 	endif
 
-	// WB_AddDelta modifies WP so we pass a copy instead
+	// WB_AddDelta modifies the waves so we pass a copy instead
 	Duplicate/FREE WP, WPCopy
+	Duplicate/FREE SegWvType, SegWvTypeCopy
 
 	numSweeps  = SegWvType[101]
 	numEpochs  = SegWvType[100]
@@ -356,17 +357,18 @@ Function/Wave WB_GetStimSet([setName])
 	MAKE/WAVE/FREE/N=(numSweeps) data
 
 	for(i=0; i < numSweeps; i+=1)
-		data[i] = WB_MakeWaveBuilderWave(WPCopy, WPT, SegWvType, i, numEpochs, channelType, updateEpochIDWave, stimset = setName)
+		data[i] = WB_MakeWaveBuilderWave(WPCopy, WPT, SegWvTypeCopy, i, numEpochs, channelType, updateEpochIDWave, stimset = setName)
 		lengthOf1DWaves = max(DimSize(data[i], ROWS), lengthOf1DWaves)
 		if(i + 1 < numSweeps)
-			if(WB_AddDelta(setName, WPCopy, WP, WPT, SegWvType, i))
+			if(WB_AddDelta(setName, WPCopy, WP, WPT, SegWvTypeCopy, SegWvType, i))
 				return $""
 			endif
 		endif
 	endfor
 
-	// copy the random seed value to WP in order to preserve it
+	// copy the random seed value in order to preserve it
 	WP[48][][] = WPCopy[48][q][r]
+	SegWvType[97] = SegWvTypeCopy[97]
 
 	if(lengthOf1DWaves == 0)
 		return $""
@@ -416,8 +418,18 @@ End
 /// @sa AddDimLabelsToWP()
 static Function/WAVE WB_GetControlWithDeltaIdx()
 
-	Make/FREE/B indizes = {0, 2, 4, 6, 10, 12, 14, 16, 20, 22, 24, 26, 28, 30, 45}
+	Make/FREE/B indizes = {0, 2, 4, 6, 10, 12, 14, 16, 20, 22, 24, 26, 28, 30, 45, 99}
 	return indizes
+End
+
+/// @brief Return a free wave with wave references where the values with delta reside in
+///
+/// @sa AddDimLabelsToWP()
+static Function/WAVE WB_GetControlWithDeltaWvs(WP, SegWvType)
+	WAVE WP, SegWvType
+
+	Make/FREE/WAVE locations = {WP, WP, WP, WP, WP, WP, WP, WP, WP, WP, WP, WP, WP, WP, WP, SegWvType}
+	return locations
 End
 
 /// @brief Return the `WP`/`WPT/SegWvType` dimension labels for the related delta controls
@@ -462,17 +474,18 @@ End
 /// @param WPOrig        wavebuilder parameter wave (original)
 /// @param WPT           wavebuilder text parameter wave
 /// @param SegWvType     segment parameter wave (temporary copy)
+/// @param SegWvTypeOrig segment parameter wave (original)
 /// @param sweep         sweep number
-static Function WB_AddDelta(setName, WP, WPOrig, WPT, SegWvType, sweep)
+static Function WB_AddDelta(setName, WP, WPOrig, WPT, SegWvType, SegWvTypeOrig, sweep)
 	string setName
 	Wave WP, WPOrig
-	WAVE SegWvType
+	WAVE SegWvType, SegWvTypeOrig
 	WAVE/T WPT
 	variable sweep
 
 	variable i, j
-	variable operation, type
-	variable numEntries, numEpochs
+	variable operation
+	variable type, numEntries, numEpochs
 	string entry, ldelta
 	variable value, delta, dme, originalValue, ret
 
@@ -483,11 +496,37 @@ static Function WB_AddDelta(setName, WP, WPOrig, WPT, SegWvType, sweep)
 	numEpochs = SegWvType[%$("Total number of epochs")]
 
 	WAVE indizes = WB_GetControlWithDeltaIdx()
-	numEntries = DimSize(indizes, ROWS)
+	WAVE/WAVE locations = WB_GetControlWithDeltaWvs(WP, SegWvType)
+	ASSERT(DimSize(indizes, ROWS) == DimSize(locations, ROWS), "Unmatched wave sizes")
 
+	numEntries = DimSize(indizes, ROWS)
 	for(i = 0; i < numEntries; i += 1)
+		WAVE loc = locations[i]
+
 		STRUCT DeltaControlNames s
-		WB_GetDeltaDimLabel(WP, indizes[i], s)
+		WB_GetDeltaDimLabel(loc, indizes[i], s)
+
+		if(WaveRefsEqual(loc, SegWvType))
+			operation     = loc[%$s.op]
+			value         = loc[%$s.main]
+			delta         = loc[%$s.delta]
+			dme           = loc[%$s.dme]
+			ldelta        = WPT[%$s.ldelta][%Set][INDEP_EPOCH_TYPE]
+			originalValue = SegWvTypeOrig[%$s.main]
+
+			ret = WB_CalculateParameterWithDelta(operation, value, delta, dme, ldelta, originalValue, sweep, setName, s.main)
+
+			if(ret)
+				return ret
+			endif
+
+			loc[%$s.main]  = value
+			loc[%$s.delta] = delta
+
+			continue
+		endif
+
+		ASSERT(WaveRefsEqual(loc, WP), "Unexpected wave reference")
 
 		for(j = 0; j < numEpochs; j += 1)
 			type = SegWvType[j]
@@ -495,14 +534,14 @@ static Function WB_AddDelta(setName, WP, WPOrig, WPT, SegWvType, sweep)
 			// special handling for "Number of pulses"
 			// don't do anything if the number of pulses is calculated
 			// and not entered
-			if(indizes[i] == 45 && !WP[46][j][type])
+			if(indizes[i] == 45 && !loc[46][j][type])
 				continue
 			endif
 
-			operation     = WP[%$s.op][j][type]
-			value         = WP[%$s.main][j][type]
-			delta         = WP[%$s.delta][j][type]
-			dme           = WP[%$s.dme][j][type]
+			operation     = loc[%$s.op][j][type]
+			value         = loc[%$s.main][j][type]
+			delta         = loc[%$s.delta][j][type]
+			dme           = loc[%$s.dme][j][type]
 			ldelta        = WPT[%$s.ldelta][j][type]
 			originalValue = WPOrig[%$s.main][j][type]
 
@@ -512,8 +551,8 @@ static Function WB_AddDelta(setName, WP, WPOrig, WPT, SegWvType, sweep)
 				return ret
 			endif
 
-			WP[%$s.main][j][type]  = value
-			WP[%$s.delta][j][type] = delta
+			loc[%$s.main][j][type]  = value
+			loc[%$s.delta][j][type] = delta
 		endfor
 	endfor
 
@@ -648,6 +687,10 @@ static Function/WAVE WB_MakeWaveBuilderWave(WP, WPT, SegWvType, stepCount, numEp
 	if(stepCount == 0)
 		AddEntryIntoWaveNoteAsList(WaveBuilderWave, "Version", var=STIMSET_NOTE_VERSION, appendCR = 1)
 	endif
+
+	AddEntryIntoWaveNoteAsList(WaveBuilderWave, "Sweep", var=stepCount)
+	AddEntryIntoWaveNoteAsList(WaveBuilderWave, "Epoch", var=NaN)
+	AddEntryIntoWaveNoteAsList(WaveBuilderWave, "ITI", var=SegWvType[99], appendCR=1)
 
 	for(i=0; i < numEpochs; i+=1)
 		type = SegWvType[i]
@@ -870,7 +913,6 @@ static Function/WAVE WB_MakeWaveBuilderWave(WP, WPT, SegWvType, stepCount, numEp
 		AddEntryIntoWaveNoteAsList(WaveBuilderWave, "Stimset")
 		AddEntryIntoWaveNoteAsList(WaveBuilderWave, "Sweep Count", var=SegWvType[101])
 		AddEntryIntoWaveNoteAsList(WaveBuilderWave, "Epoch Count" , var=numEpochs)
-		AddEntryIntoWaveNoteAsList(WaveBuilderWave, "ITI", var=SegWvType[99])
 		AddEntryIntoWaveNoteAsList(WaveBuilderWave, StringFromList(PRE_DAQ_EVENT, EVENT_NAME_LIST), str=WPT[1][%Set][INDEP_EPOCH_TYPE])
 		AddEntryIntoWaveNoteAsList(WaveBuilderWave, StringFromList(MID_SWEEP_EVENT, EVENT_NAME_LIST), str=WPT[2][%Set][INDEP_EPOCH_TYPE])
 		AddEntryIntoWaveNoteAsList(WaveBuilderWave, StringFromList(POST_SWEEP_EVENT, EVENT_NAME_LIST), str=WPT[3][%Set][INDEP_EPOCH_TYPE])
