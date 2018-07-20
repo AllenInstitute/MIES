@@ -1478,9 +1478,9 @@ static Function WBP_UpdatePanelIfAllowed()
 			endif
 
 			if(GetCheckBoxState(panel,"check_SPT_Poisson_P44") || GetCheckBoxState(panel,"check_SPT_MixedFreqShuffle_P42"))
-				EnableControls(panel, "check_NewSeedForEachSweep_P49_0;button_NewSeed_P48_0")
+				EnableControls(panel, "check_NewSeedForEachSweep_P49_0;button_NewSeed_P48_0;check_UseEpochSeed_P39_0")
 			else
-				DisableControls(panel, "check_NewSeedForEachSweep_P49_0;button_NewSeed_P48_0")
+				DisableControls(panel, "check_NewSeedForEachSweep_P49_0;button_NewSeed_P48_0;check_UseEpochSeed_P39_0")
 			endif
 
 			maxDuration = WBP_ReturnPulseDurationMax()
