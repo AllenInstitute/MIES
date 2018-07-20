@@ -191,6 +191,16 @@ Structure AnalysisFunction_V3
 	string params
 EndStructure
 
+Function InitDeltaControlNames(s)
+	STRUCT DeltaControlNames &s
+
+	s.main   = ""
+	s.delta  = ""
+	s.dme    = ""
+	s.ldelta = ""
+	s.op     = ""
+End
+
 /// @brief Helper structure for WB_GetDeltaDimLabel()
 Structure DeltaControlNames
 	string main, delta, dme, op, ldelta

@@ -420,23 +420,36 @@ static Function/WAVE WB_GetControlWithDeltaIdx()
 	return indizes
 End
 
-/// @brief Return the `WP`/`WPT` dimension labels for the related delta controls
+/// @brief Return the `WP`/`WPT/SegWvType` dimension labels for the related delta controls
 /// given the index into `WP` of the value itself.
-Function WB_GetDeltaDimLabel(WP, index, s)
-	WAVE WP
+///
+/// @return 0 on success, 1 otherwise
+Function WB_GetDeltaDimLabel(wv, index, s)
+	WAVE wv
 	variable index
 	STRUCT DeltaControlNames &s
 
 	string name
 
-	name = GetDimLabel(WP, ROWS, index)
-	ASSERT(!IsEmpty(name), "Invalid empty name")
+	if(index >= DimSize(wv, ROWS))
+		InitDeltaControlNames(s)
+		return 1
+	endif
+
+	name = GetDimLabel(wv, ROWS, index)
+
+	if(IsEmpty(name))
+		InitDeltaControlNames(s)
+		return 1
+	endif
 
 	s.main   = name
 	s.delta  = name + " delta"
 	s.dme    = name + " dme"
 	s.ldelta = name + " ldel"
 	s.op     = name + " op"
+
+	return 0
 End
 
 /// @brief Add delta to appropriate parameters
