@@ -470,9 +470,9 @@ static Function WB_AddDelta(setName, WP, WPOrig, WPT, SegWvType, sweep)
 	WAVE/T WPT
 	variable sweep
 
-	variable i, j, k
-	variable operation
-	variable numEpochTypes, numEntries, numEpochs
+	variable i, j
+	variable operation, type
+	variable numEntries, numEpochs
 	string entry, ldelta
 	variable value, delta, dme, originalValue, ret
 
@@ -481,7 +481,6 @@ static Function WB_AddDelta(setName, WP, WPOrig, WPT, SegWvType, sweep)
 	endif
 
 	numEpochs = SegWvType[%$("Total number of epochs")]
-	numEpochTypes = DimSize(WP, LAYERS)
 
 	WAVE indizes = WB_GetControlWithDeltaIdx()
 	numEntries = DimSize(indizes, ROWS)
@@ -491,31 +490,30 @@ static Function WB_AddDelta(setName, WP, WPOrig, WPT, SegWvType, sweep)
 		WB_GetDeltaDimLabel(WP, indizes[i], s)
 
 		for(j = 0; j < numEpochs; j += 1)
-			for(k = 0; k < numEpochTypes; k += 1)
+			type = SegWvType[j]
 
-				// special handling for "Number of pulses"
-				// don't do anything if the number of pulses is calculated
-				// and not entered
-				if(indizes[i] == 45 && !WP[46][j][k])
-					continue
-				endif
+			// special handling for "Number of pulses"
+			// don't do anything if the number of pulses is calculated
+			// and not entered
+			if(indizes[i] == 45 && !WP[46][j][type])
+				continue
+			endif
 
-				operation     = WP[%$s.op][j][k]
-				value         = WP[%$s.main][j][k]
-				delta         = WP[%$s.delta][j][k]
-				dme           = WP[%$s.dme][j][k]
-				ldelta        = WPT[%$s.ldelta][j][k]
-				originalValue = WPOrig[%$s.main][j][k]
+			operation     = WP[%$s.op][j][type]
+			value         = WP[%$s.main][j][type]
+			delta         = WP[%$s.delta][j][type]
+			dme           = WP[%$s.dme][j][type]
+			ldelta        = WPT[%$s.ldelta][j][type]
+			originalValue = WPOrig[%$s.main][j][type]
 
-				ret = WB_CalculateParameterWithDelta(operation, value, delta, dme, ldelta, originalValue, sweep, setName, s.main)
+			ret = WB_CalculateParameterWithDelta(operation, value, delta, dme, ldelta, originalValue, sweep, setName, s.main)
 
-				if(ret)
-					return ret
-				endif
+			if(ret)
+				return ret
+			endif
 
-				WP[%$s.main][j][k]  = value
-				WP[%$s.delta][j][k] = delta
-			endfor
+			WP[%$s.main][j][type]  = value
+			WP[%$s.delta][j][type] = delta
 		endfor
 	endfor
 
