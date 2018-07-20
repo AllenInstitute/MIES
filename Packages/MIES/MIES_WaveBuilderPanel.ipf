@@ -58,7 +58,7 @@ End
 
 Window WaveBuilder() : Panel
 	PauseUpdate; Silent 1		// building window...
-	NewPanel /K=1 /W=(77,809,1109,1356)
+	NewPanel /K=1 /W=(95,479,1127,1026)
 	SetDrawLayer UserBack
 	SetDrawEnv fname= "MS Sans Serif",fsize= 16,fstyle= 1
 	DrawText 186,27,"Sweep Parameters"
@@ -1167,11 +1167,11 @@ Window WaveBuilder() : Panel
 	PopupMenu popup_WaveBuilder_op_S94,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Duafnzzzzzzzzzzz"
 	PopupMenu popup_WaveBuilder_op_S94,userdata(ResizeControlsInfo) += A"zzz!!#u:Duafnzzzzzzzzzzzzzz!!!"
 	PopupMenu popup_WaveBuilder_op_S94,mode=1,popvalue="None",value= #"\"None;Multiplier;Log;Squared;Power;Alternate;Explicit\""
-	SetVariable setvar_explDeltaValues_T28,pos={209.00,94.00},size={125.00,18.00},disable=2,proc=WBP_SetVarProc_UpdateParam
-	SetVariable setvar_explDeltaValues_T28,userdata(ResizeControlsInfo)= A"!!,Ga!!#?u!!#@^!!#<Hz!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
-	SetVariable setvar_explDeltaValues_T28,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Duafnzzzzzzzzzzz"
-	SetVariable setvar_explDeltaValues_T28,userdata(ResizeControlsInfo) += A"zzz!!#u:Duafnzzzzzzzzzzzzzz!!!"
-	SetVariable setvar_explDeltaValues_T28,value= _STR:""
+	SetVariable setvar_explDeltaValues_T28_ALL,pos={209.00,94.00},size={125.00,18.00},disable=2,proc=WBP_SetVarProc_UpdateParam
+	SetVariable setvar_explDeltaValues_T28_ALL,userdata(ResizeControlsInfo)= A"!!,Ga!!#?u!!#@^!!#<Hz!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
+	SetVariable setvar_explDeltaValues_T28_ALL,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Duafnzzzzzzzzzzz"
+	SetVariable setvar_explDeltaValues_T28_ALL,userdata(ResizeControlsInfo) += A"zzz!!#u:Duafnzzzzzzzzzzzzzz!!!"
+	SetVariable setvar_explDeltaValues_T28_ALL,value= _STR:""
 	SetVariable SetVar_WaveBuilder_S99,pos={195.00,49.00},size={60.00,18.00},proc=WBP_SetVarProc_UpdateParam,title="ITI"
 	SetVariable SetVar_WaveBuilder_S99,help={"Duration (ms) of the epoch being edited."}
 	SetVariable SetVar_WaveBuilder_S99,userdata(ResizeControlsInfo)= A"!!,GS!!#>R!!#?)!!#<Hz!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
@@ -1207,7 +1207,7 @@ Window WaveBuilder() : Panel
 	SetWindow kwTopWin,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzzzzzzzzz!!!"
 	SetWindow kwTopWin,userdata(ResizeControlsGuides)=  "UGH1;UGV0;"
 	SetWindow kwTopWin,userdata(ResizeControlsInfoUGH1)=  "NAME:UGH1;WIN:WaveBuilder;TYPE:User;HORIZONTAL:1;POSITION:237.00;GUIDE1:FT;GUIDE2:;RELPOSITION:237;"
-	SetWindow kwTopWin,userdata(panelVersion)=  "6"
+	SetWindow kwTopWin,userdata(panelVersion)=  "7"
 	SetWindow kwTopWin,userdata(ResizeControlsInfoUGV0)=  "NAME:UGV0;WIN:WaveBuilder;TYPE:User;HORIZONTAL:0;POSITION:187.00;GUIDE1:FL;GUIDE2:;RELPOSITION:187;"
 	Execute/Q/Z "SetWindow kwTopWin sizeLimit={774,410.25,inf,inf}" // sizeLimit requires Igor 7 or later
 	Display/W=(186,270,1030,544)/FG=(UGV0,UGH1,FR,FB)/HOST=#
@@ -1727,12 +1727,21 @@ End
 Function WBP_ButtonProc_SaveSet(ba) : ButtonControl
 	STRUCT WMButtonAction &ba
 
+	string setName
+
 	switch(ba.eventCode)
 		case 2: // mouse up
+			setName = WBP_AssembleSetName()
 
-			if(WBP_SaveSetParam())
+			if(WBP_IsBuiltinStimset(setName) && !GetCheckBoxState(panel, "check_allow_saving_builtin_nam"))
+				printf "The stimset %s can not be saved as it violates the naming scheme "       + \
+					   "for user stimsets. Check the checkbox above if you really want to save " + \
+					   "a builtin stimset.\r", setName
+				ControlWindowToFront()
 				break
 			endif
+
+			WBP_SaveSetParam(setName)
 
 			// propagate the existence of the new set
 			WBP_UpdateITCPanelPopUps()
@@ -2129,21 +2138,11 @@ Function WBP_IsBuiltinStimset(setName)
 End
 
 /// @brief Save the set parameter waves
-///
-/// @return 0 on success, 1 otherwise
-static Function WBP_SaveSetParam()
-	string setName, childStimsets
+static Function WBP_SaveSetParam(setName)
+	string setName
+
+	string childStimsets
 	variable i
-
-	setName = WBP_AssembleSetName()
-
-	if(WBP_IsBuiltinStimset(setName) && !GetCheckBoxState(panel, "check_allow_saving_builtin_nam"))
-		printf "The stimset %s can not be saved as it violates the naming scheme "       + \
-			   "for user stimsets. Check the checkbox above if you really want to save " + \
-			   "a builtin stimset.\r", setName
-		ControlWindowToFront()
-		return 1
-	endif
 
 	WAVE SegWvType = GetSegmentTypeWave()
 	WAVE WP        = GetWaveBuilderWaveParam()
@@ -2164,8 +2163,6 @@ static Function WBP_SaveSetParam()
 	Duplicate/O SegWvType , dfr:$WB_GetParameterWaveName(setName, STIMSET_PARAM_SEGWVTYPE)
 	Duplicate/O WP	      , dfr:$WB_GetParameterWaveName(setName, STIMSET_PARAM_WP)
 	Duplicate/O WPT       , dfr:$WB_GetParameterWaveName(setName, STIMSET_PARAM_WPT)
-
-	return 0
 End
 
 static Function WBP_LoadSet(setName)

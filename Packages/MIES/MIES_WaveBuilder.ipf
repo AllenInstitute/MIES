@@ -501,16 +501,15 @@ static Function WB_AddDelta(setName, WP, WPOrig, WPT, SegWvType, SegWvTypeOrig, 
 
 	numEntries = DimSize(indizes, ROWS)
 	for(i = 0; i < numEntries; i += 1)
-		WAVE loc = locations[i]
 
 		STRUCT DeltaControlNames s
-		WB_GetDeltaDimLabel(loc, indizes[i], s)
+		WB_GetDeltaDimLabel(locations[i], indizes[i], s)
 
-		if(WaveRefsEqual(loc, SegWvType))
-			operation     = loc[%$s.op]
-			value         = loc[%$s.main]
-			delta         = loc[%$s.delta]
-			dme           = loc[%$s.dme]
+		if(WaveRefsEqual(locations[i], SegWvType))
+			operation     = SegWvType[%$s.op]
+			value         = SegWvType[%$s.main]
+			delta         = SegWvType[%$s.delta]
+			dme           = SegWvType[%$s.dme]
 			ldelta        = WPT[%$s.ldelta][%Set][INDEP_EPOCH_TYPE]
 			originalValue = SegWvTypeOrig[%$s.main]
 
@@ -520,13 +519,13 @@ static Function WB_AddDelta(setName, WP, WPOrig, WPT, SegWvType, SegWvTypeOrig, 
 				return ret
 			endif
 
-			loc[%$s.main]  = value
-			loc[%$s.delta] = delta
+			SegWvType[%$s.main]  = value
+			SegWvType[%$s.delta] = delta
 
 			continue
 		endif
 
-		ASSERT(WaveRefsEqual(loc, WP), "Unexpected wave reference")
+		ASSERT(WaveRefsEqual(locations[i], WP), "Unexpected wave reference")
 
 		for(j = 0; j < numEpochs; j += 1)
 			type = SegWvType[j]
@@ -534,14 +533,14 @@ static Function WB_AddDelta(setName, WP, WPOrig, WPT, SegWvType, SegWvTypeOrig, 
 			// special handling for "Number of pulses"
 			// don't do anything if the number of pulses is calculated
 			// and not entered
-			if(indizes[i] == 45 && !loc[46][j][type])
+			if(indizes[i] == 45 && !WP[46][j][type])
 				continue
 			endif
 
-			operation     = loc[%$s.op][j][type]
-			value         = loc[%$s.main][j][type]
-			delta         = loc[%$s.delta][j][type]
-			dme           = loc[%$s.dme][j][type]
+			operation     = WP[%$s.op][j][type]
+			value         = WP[%$s.main][j][type]
+			delta         = WP[%$s.delta][j][type]
+			dme           = WP[%$s.dme][j][type]
 			ldelta        = WPT[%$s.ldelta][j][type]
 			originalValue = WPOrig[%$s.main][j][type]
 
@@ -551,8 +550,8 @@ static Function WB_AddDelta(setName, WP, WPOrig, WPT, SegWvType, SegWvTypeOrig, 
 				return ret
 			endif
 
-			loc[%$s.main][j][type]  = value
-			loc[%$s.delta][j][type] = delta
+			WP[%$s.main][j][type]  = value
+			WP[%$s.delta][j][type] = delta
 		endfor
 	endfor
 
