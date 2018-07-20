@@ -13,8 +13,14 @@ static StrConstant panel              = "WaveBuilder"
 static StrConstant WaveBuilderGraph   = "WaveBuilder#WaveBuilderGraph"
 static StrConstant AnalysisParamGUI   = "WaveBuilder#AnalysisParamGUI"
 static StrConstant DEFAULT_SET_PREFIX = "StimulusSetA"
-static StrConstant WP_CONTROL_REGEXP  = ".*_P[[:digit:]]+"
-static StrConstant WPT_CONTROL_REGEXP = ".*_T[[:digit:]]+"
+
+static StrConstant SEGWVTYPE_CONTROL_REGEXP = ".*_S[[:digit:]]+"
+static StrConstant WP_CONTROL_REGEXP        = ".*_P[[:digit:]]+"
+static StrConstant WPT_CONTROL_REGEXP       = ".*_T[[:digit:]]+"
+
+static Constant WBP_WAVETYPE_WP        = 0x1
+static Constant WBP_WAVETYPE_WPT       = 0x2
+static Constant WBP_WAVETYPE_SEGWVTYPE = 0x4
 
 // Equal to the indizes of the Wave Type popup menu
 static Constant  STIMULUS_TYPE_DA            = 1
@@ -1516,7 +1522,8 @@ static Function WBP_ParameterWaveToPanel(stimulusType)
 	numEntries = ItemsInList(list)
 	for(i = 0; i < numEntries; i += 1)
 		control = StringFromList(i, list)
-		row = WBP_ExtractRowNumberFromControl(control, "P")
+		row = WBP_ExtractRowNumberFromControl(control)
+		ASSERT(IsFinite(row), "Could not find row in: " + control)
 		WBP_SetControl(panel, control, value = WP[row][segment][stimulusType])
 	endfor
 
@@ -1525,7 +1532,8 @@ static Function WBP_ParameterWaveToPanel(stimulusType)
 	numEntries = ItemsInList(list)
 	for(i = 0; i < numEntries; i += 1)
 		control = StringFromList(i, list)
-		row = WBP_ExtractRowNumberFromControl(control, "T")
+		row = WBP_ExtractRowNumberFromControl(control)
+		ASSERT(IsFinite(row), "Could not find row in: " + control)
 		data = WBP_TranslateControlContents(control, FROM_WAVE_TO_PANEL, WPT[row][segment][stimulusType])
 		SetSetVariableString(panel, control, data)
 	endfor
@@ -1747,20 +1755,47 @@ Function WBP_ButtonProc_SaveSet(ba) : ButtonControl
 	endswitch
 End
 
+static Function WBP_GetWaveTypeFromControl(control)
+	string control
+
+	if(GrepString(control, WP_CONTROL_REGEXP))
+		return WBP_WAVETYPE_WP
+	elseif(GrepString(control, SEGWVTYPE_CONTROL_REGEXP))
+		return WBP_WAVETYPE_SEGWVTYPE
+	elseif(GrepString(control, WPT_CONTROL_REGEXP))
+		return WBP_WAVETYPE_WPT
+	else
+		return NaN
+	endif
+End
+
 /// @brief Returns the row index into the parameter wave of the parameter represented by the named control
 ///
 /// @param control name of the control, the expected format is `$str_$sep$row_$suffix` where `$str` may contain any
-/// @param sep single character, either `P` or `T`
 /// characters but `$suffix` is not allowed to include the substring `_$sep`.
-static Function WBP_ExtractRowNumberFromControl(control, sep)
-	string control, sep
+static Function WBP_ExtractRowNumberFromControl(control)
+	string control
 
 	variable start, stop, row
+	string sep
+
+	switch(WBP_GetWaveTypeFromControl(control))
+		case WBP_WAVETYPE_WP:
+			sep = "P"
+			break
+		case WBP_WAVETYPE_WPT:
+			sep = "T"
+			break
+		case WBP_WAVETYPE_SEGWVTYPE:
+			sep = "S"
+			break
+		default:
+			return NaN
+			break
+	endswitch
 
 	start = strsearch(control, "_" + sep, Inf, 1)
-	ASSERT(start != -1, "Could not find the row indicator in the parameter name")
-
-	stop = strsearch(control, "_", start + 2)
+	stop  = strsearch(control, "_", start + 2)
 
 	if(stop == -1)
 		stop = Inf
@@ -1785,7 +1820,7 @@ Function WBP_UpdateControlAndWP(control, value)
 
 	stimulusType = GetTabID(panel, "WBP_WaveType")
 	epoch        = GetSetVariable(panel, "setvar_WaveBuilder_CurrentEpoch")
-	paramRow     = WBP_ExtractRowNumberFromControl(control, "P")
+	paramRow     = WBP_ExtractRowNumberFromControl(control)
 	WP[paramRow][epoch][stimulusType] = value
 End
 
@@ -1802,7 +1837,7 @@ Function WBP_UpdateControlAndWPT(control, str)
 
 	stimulusType = GetTabID(panel, "WBP_WaveType")
 	epoch        = GetSetVariable(panel, "setvar_WaveBuilder_CurrentEpoch")
-	paramRow     = WBP_ExtractRowNumberFromControl(control, "T")
+	paramRow     = WBP_ExtractRowNumberFromControl(control)
 	WPT[paramRow][epoch][stimulusType] = str
 End
 
@@ -2558,7 +2593,7 @@ static Function WBP_AdjustDeltaControls(control)
 	string allControls, op, delta, dme, ldelta
 	string lbl
 
-	row         = WBP_ExtractRowNumberFromControl(control, "P")
+	row         = WBP_ExtractRowNumberFromControl(control)
 	allControls = ControlNameList(panel)
 	WAVE WP     = GetWaveBuilderWaveParam()
 
@@ -2835,9 +2870,6 @@ Function WBP_MainWindowHook(s)
 			variable row, found
 
 			if(DP_DebuggingEnabledForFile(GetFile(FunctionPath(""))))
-				WAVE WP  = GetWaveBuilderWaveParam()
-				WAVE WPT = GetWaveBuilderWaveTextParam()
-
 				controls = ControlNameList(s.winName)
 				numEntries = ItemsInList(controls)
 				for(i = 0; i < numEntries; i += 1)
@@ -2854,21 +2886,26 @@ Function WBP_MainWindowHook(s)
 
 					if(s.mouseLoc.h >= V_left && s.mouseLoc.h <= V_left + V_width)
 						if(s.mouseLoc.v >= V_top && s.mouseLoc.v <= V_top + V_Height)
-							found = strsearch(ctrl, "_P", 0) != -1
 
-							name = "unknown"
+							row = WBP_ExtractRowNumberFromControl(ctrl)
 
-							if(found)
-								row  = WBP_ExtractRowNumberFromControl(ctrl, "P")
-								name = GetDimLabel(WP, ROWS, row)
-							endif
-
-							found = strsearch(ctrl, "_T", 0) != -1
-
-							if(found)
-								row  = WBP_ExtractRowNumberFromControl(ctrl, "T")
-								name = GetDimLabel(WPT, ROWS, row)
-							endif
+							switch(WBP_GetWaveTypeFromControl(ctrl))
+								case WBP_WAVETYPE_WP:
+									WAVE WP = GetWaveBuilderWaveParam()
+									name = GetDimLabel(WP, ROWS, row)
+									break
+								case WBP_WAVETYPE_WPT:
+									WAVE/T WPT = GetWaveBuilderWaveTextParam()
+									name = GetDimLabel(WPT, ROWS, row)
+									break
+								case WBP_WAVETYPE_SEGWVTYPE:
+									WAVE SegWvType = GetSegmentTypeWave()
+									name = GetDimLabel(SegWvType, ROWS, row)
+									break
+								default:
+									name = "unknown type"
+									break
+							endswitch
 
 							printf "%s -> %s\r", ctrl, 	name
 						endif
