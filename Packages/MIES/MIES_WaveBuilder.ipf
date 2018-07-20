@@ -1297,50 +1297,35 @@ Function/WAVE WB_GetPulsesFromPulseTrains(stimset, sweep, pulseToPulseLength)
 	variable sweep
 	variable &pulseToPulseLength
 
-	string str, matches, startTimesList, line, epochTypeStr, pulseToPulseLengthStr
-	variable i, numMatches, epochType, flipping, length, pulseDuration
+	string startTimesList
+	variable i, epochType, flipping, pulseDuration, numEpochs, length
 
 	Make/FREE/D/N=(0) allStartTimes
-
-	str = note(stimset)
-
 	pulseToPulseLength = NaN
 
 	// passed stimset is from the testpulse or third party
-	if(IsEmpty(str) || WB_StimsetIsFromThirdParty(NameOfWave(stimset)))
+	if(!strlen(note(stimset)) || WB_StimsetIsFromThirdParty(NameOfWave(stimset)))
 		return allStartTimes
 	endif
 
-	matches = GrepList(str, "^Stimset;", 0, "\r")
-	ASSERT(!IsEmpty(matches), "Could not find stimset settings entry in note")
-	line = matches
-
-	flipping = NumberByKey("Flip", line, " = ", ";")
+	flipping = WB_GetWaveNoteEntryAsNumber(stimset, STIMSET_ENTRY, key = "Flip")
 	ASSERT(flipping == 0 || flipping == 1, "Invalid flipping value")
 
-	ASSERT(IsInteger(sweep) && sweep >= 0, "Invalid sweep")
-	matches = GrepList(str, "^Sweep = " + num2str(sweep), 0, "\r")
+	numEpochs = WB_GetWaveNoteEntryAsNumber(stimset, STIMSET_ENTRY, key = "Epoch Count")
+	ASSERT(IsValidEpochNumber(numEpochs), "Invalid number of epochs")
 
-	numMatches = ItemsInList(matches, "\r")
-	for(i = 0; i < numMatches; i += 1)
-		line = trimstring(StringFromList(i, matches, "\r"), 1)
-
-		epochTypeStr = StringByKey("Type", line, " = ", ";")
-		epochType = WB_ToEpochType(epochTypeStr)
+	for(i = 0; i < numEpochs; i += 1)
+		epochType = WB_ToEpochType(WB_GetWaveNoteEntry(stimset, EPOCH_ENTRY, sweep = sweep, epoch = i, key = "Type"))
 
 		/// @todo support combine stimsets as soon as mk/save/stimset is merged
 		if(epochType != EPOCH_TYPE_PULSE_TRAIN)
 			continue
 		endif
 
-		startTimesList = StringByKey(PULSE_START_TIMES_KEY, line, " = ", ";")
-		ASSERT(!IsEmpty(startTimesList), "Could not find pulse start times entry")
+		pulseToPulseLength = WB_GetWaveNoteEntryAsNumber(stimset, EPOCH_ENTRY, sweep = sweep, epoch = i, key = PULSE_TO_PULSE_LENGTH_KEY)
+		ASSERT(IsFinite(pulseToPulseLength), "Non-finite " + PULSE_TO_PULSE_LENGTH_KEY)
 
-		pulseToPulseLengthStr = StringByKey(PULSE_TO_PULSE_LENGTH_KEY, line, " = ", ";")
-		ASSERT(!IsEmpty(pulseToPulseLengthStr), "Could not find pulse to pulse lengths")
-
-		pulseToPulseLength = str2num(pulseToPulseLengthStr)
-
+		startTimesList = WB_GetWaveNoteEntry(stimset, EPOCH_ENTRY, sweep = sweep, epoch = i, key = PULSE_START_TIMES_KEY)
 		WAVE/Z/D startTimes = ListToNumericWave(startTimesList, ",")
 		ASSERT(WaveExists(startTimes) && DimSize(startTimes, ROWS) > 0, "Found no starting times")
 
@@ -1348,8 +1333,7 @@ Function/WAVE WB_GetPulsesFromPulseTrains(stimset, sweep, pulseToPulseLength)
 		ASSERT(V_Value == -1, "Unexpected NaN found in starting times")
 
 		if(flipping)
-			pulseDuration = NumberByKey("Pulse Duration", line, " = ", ";")
-			ASSERT(IsFinite(pulseDuration) && pulseDuration > 0, "Invalid pulse duration")
+			pulseDuration = WB_GetWaveNoteEntryAsNumber(stimset, EPOCH_ENTRY, sweep = sweep, epoch = i, key = "Pulse Duration")
 
 			length = rightx(stimset)
 			// mirroring must also move the startTimes by the pulseDuration
