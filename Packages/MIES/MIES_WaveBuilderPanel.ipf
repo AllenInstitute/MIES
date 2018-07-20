@@ -1747,6 +1747,9 @@ Function WBP_ButtonProc_SaveSet(ba) : ButtonControl
 			WBP_UpdateITCPanelPopUps()
 			WB_UpdateEpochCombineList(WBP_GetOutputType())
 
+			WAVE/Z stimset = WB_CreateAndGetStimSet(setName)
+			ASSERT(WaveExists(stimset), "Could not recreate stimset")
+
 			SetSetVariableString(panel, "setvar_WaveBuilder_baseName", DEFAULT_SET_PREFIX)
 			WBP_LoadSet(NONE)
 			break
