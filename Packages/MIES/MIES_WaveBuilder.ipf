@@ -714,7 +714,7 @@ static Function/WAVE WB_MakeWaveBuilderWave(WP, WPT, SegWvType, stepCount, numEp
 					if(windowExists("WaveBuilder")                                              \
 					   && GetTabID("WaveBuilder", "WBP_WaveType") == EPOCH_TYPE_PULSE_TRAIN     \
 					   && GetSetVariable("WaveBuilder", "setvar_WaveBuilder_CurrentEpoch") == i)
-						WBP_UpdateControlAndWP("SetVar_WaveBuilder_P0", params.duration)
+						WBP_UpdateControlAndWave("SetVar_WaveBuilder_P0", var = params.duration)
 					endif
 					defMode = "Pulse"
 				else
@@ -722,7 +722,7 @@ static Function/WAVE WB_MakeWaveBuilderWave(WP, WPT, SegWvType, stepCount, numEp
 					if(windowExists("WaveBuilder")                                              \
 					   && GetTabID("WaveBuilder", "WBP_WaveType") == EPOCH_TYPE_PULSE_TRAIN     \
 					   && GetSetVariable("WaveBuilder", "setvar_WaveBuilder_CurrentEpoch") == i)
-						WBP_UpdateControlAndWP("SetVar_WaveBuilder_P45", params.numberOfPulses)
+						WBP_UpdateControlAndWave("SetVar_WaveBuilder_P45", var = params.numberOfPulses)
 					endif
 					defMode = "Duration"
 				endif

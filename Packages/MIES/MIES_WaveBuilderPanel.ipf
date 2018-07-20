@@ -1413,11 +1413,11 @@ static Function WBP_UpdateDependentControls(checkBoxCtrl, checked)
 			if(!cmpstr(checkBoxCtrl,"check_SPT_Poisson_P44"))
 
 				if(checked)
-					WBP_UpdateControlAndWP("check_SPT_MixedFreq_P41", CHECKBOX_UNSELECTED)
+					WBP_UpdateControlAndWave("check_SPT_MixedFreq_P41", var = CHECKBOX_UNSELECTED)
 
 					val = str2numsafe(GetUserData(panel, "check_SPT_NumPulses_P46", "old_state"))
 					if(IsFinite(val))
-						WBP_UpdateControlAndWP("check_SPT_NumPulses_P46", !!val)
+						WBP_UpdateControlAndWave("check_SPT_NumPulses_P46", var = !!val)
 					endif
 
 					EnableControls(panel,"check_SPT_NumPulses_P46;SetVar_WaveBuilder_P6_FD01;SetVar_WaveBuilder_P7_DD01")
@@ -1426,10 +1426,10 @@ static Function WBP_UpdateDependentControls(checkBoxCtrl, checked)
 			elseif(!cmpstr(checkBoxCtrl,"check_SPT_MixedFreq_P41"))
 
 				if(checked)
-					WBP_UpdateControlAndWP("check_SPT_Poisson_P44", CHECKBOX_UNSELECTED)
+					WBP_UpdateControlAndWave("check_SPT_Poisson_P44", var = CHECKBOX_UNSELECTED)
 					val = GetCheckBoxState(panel,"check_SPT_NumPulses_P46")
 					SetControlUserData(panel, "check_SPT_NumPulses_P46", "old_state", num2str(val))
-					WBP_UpdateControlAndWP("check_SPT_NumPulses_P46", CHECKBOX_SELECTED)
+					WBP_UpdateControlAndWave("check_SPT_NumPulses_P46", var = CHECKBOX_SELECTED)
 					DisableControls(panel,"check_SPT_NumPulses_P46;SetVar_WaveBuilder_P6_FD01;SetVar_WaveBuilder_P7_DD01")
 				else
 					EnableControls(panel,"check_SPT_NumPulses_P46;SetVar_WaveBuilder_P6_FD01;SetVar_WaveBuilder_P7_DD01")
@@ -1673,7 +1673,7 @@ Function WBP_CheckProc(cba) : CheckBoxControl
 		case 2: // mouse up
 
 			WBP_UpdateDependentControls(cba.ctrlName, cba.checked)
-			WBP_UpdateControlAndWP(cba.ctrlName, cba.checked)
+			WBP_UpdateControlAndWave(cba.ctrlName, var = cba.checked)
 			WBP_UpdatePanelIfAllowed()
 			break
 	endswitch
@@ -1808,37 +1808,40 @@ static Function WBP_ExtractRowNumberFromControl(control)
 End
 
 /// @brief Update the named control and pass its new value into the parameter wave
-Function WBP_UpdateControlAndWP(control, value)
+Function WBP_UpdateControlAndWave(control, [var, str])
 	string control
-	variable value
-
-	variable stimulusType, epoch, paramRow
-
-	WAVE WP = GetWaveBuilderWaveParam()
-
-	WBP_SetControl(panel, control, value = value)
-
-	stimulusType = GetTabID(panel, "WBP_WaveType")
-	epoch        = GetSetVariable(panel, "setvar_WaveBuilder_CurrentEpoch")
-	paramRow     = WBP_ExtractRowNumberFromControl(control)
-	WP[paramRow][epoch][stimulusType] = value
-End
-
-/// @brief Update the named control and pass its new value into the parameter wave
-Function WBP_UpdateControlAndWPT(control, str)
-	string control
+	variable var
 	string str
 
 	variable stimulusType, epoch, paramRow
 
-	WAVE/T WPT = GetWaveBuilderWaveTextParam()
+	ASSERT(ParamIsDefault(var) + ParamIsDefault(str) == 1, "Exactly one of var/str must be given")
 
-	WBP_SetControl(panel, control, str = str)
+	if(!ParamIsDefault(var))
+		WBP_SetControl(panel, control, value = var)
+	elseif(!ParamIsDefault(str))
+		WBP_SetControl(panel, control, str = str)
+	endif
 
 	stimulusType = GetTabID(panel, "WBP_WaveType")
 	epoch        = GetSetVariable(panel, "setvar_WaveBuilder_CurrentEpoch")
 	paramRow     = WBP_ExtractRowNumberFromControl(control)
-	WPT[paramRow][epoch][stimulusType] = str
+	ASSERT(IsFinite(paramRow), "Could not find row in: " + control)
+
+	switch(WBP_GetWaveTypeFromControl(control))
+		case WBP_WAVETYPE_WP:
+			WAVE WP = GetWaveBuilderWaveParam()
+			WP[paramRow][epoch][stimulusType] = var
+			break
+		case WBP_WAVETYPE_WPT:
+			WAVE/T WPT = GetWaveBuilderWaveTextParam()
+			WPT[paramRow][epoch][stimulusType] = str
+			break
+		case WBP_WAVETYPE_SEGWVTYPE:
+			WAVE SegWvType = GetSegmentTypeWave()
+			SegWvType[paramRow] = var
+			break
+	endswitch
 End
 
 Function WBP_SetVarProc_UpdateParam(sva) : SetVariableControl
@@ -1850,9 +1853,9 @@ Function WBP_SetVarProc_UpdateParam(sva) : SetVariableControl
 		case 3: // Live update
 
 			if(sva.isStr)
-				WBP_UpdateControlAndWPT(sva.ctrlName, sva.sval)
+				WBP_UpdateControlAndWave(sva.ctrlName, str = sva.sval)
 			else
-				WBP_UpdateControlAndWP(sva.ctrlName, sva.dval)
+				WBP_UpdateControlAndWave(sva.ctrlName, var = sva.dval)
 			endif
 
 			WBP_UpdatePanelIfAllowed()
@@ -1956,10 +1959,10 @@ static Function WBP_ChangeWaveType()
 		SetVariable SetVar_WaveBuilder_P2 win = $panel, limits = {0,1,1}
 		DisableControls(panel, list)
 
-		WBP_UpdateControlAndWP("SetVar_WaveBuilder_P2", 0)
-		WBP_UpdateControlAndWP("SetVar_WaveBuilder_P3", 0)
-		WBP_UpdateControlAndWP("SetVar_WaveBuilder_P4", 0)
-		WBP_UpdateControlAndWP("SetVar_WaveBuilder_P5", 0)
+		WBP_UpdateControlAndWave("SetVar_WaveBuilder_P2", var = 0)
+		WBP_UpdateControlAndWave("SetVar_WaveBuilder_P3", var = 0)
+		WBP_UpdateControlAndWave("SetVar_WaveBuilder_P4", var = 0)
+		WBP_UpdateControlAndWave("SetVar_WaveBuilder_P5", var = 0)
 	elseif(stimulusType == STIMULUS_TYPE_DA)
 		SetVariable SetVar_WaveBuilder_P2 win =$panel, limits = {-inf,inf,1}
 		EnableControls(panel, list)
@@ -2548,7 +2551,7 @@ Function WBP_PopupMenu(pa) : PopupMenuControl
 
 	switch(pa.eventCode)
 		case 2:
-			WBP_UpdateControlAndWP(pa.ctrlName, pa.popNum - 1)
+			WBP_UpdateControlAndWave(pa.ctrlName, var = pa.popNum - 1)
 			WBP_UpdatePanelIfAllowed()
 			if(StringMatch(pa.ctrlName, "popup_WaveBuilder_op_P*"))
 				WBP_AdjustDeltaControls(pa.ctrlName)
@@ -2660,7 +2663,7 @@ Function WBP_ButtonProc_NewEpochSeed(ba) : ButtonControl
 
 	switch(ba.eventCode)
 		case 2: // mouse up
-			WBP_UpdateControlAndWP(ba.ctrlName, GetNonReproducibleRandom())
+			WBP_UpdateControlAndWave(ba.ctrlName, var = GetNonReproducibleRandom())
 			WBP_UpdatePanelIfAllowed()
 			break
 	endswitch
