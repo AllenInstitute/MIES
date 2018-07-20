@@ -359,7 +359,7 @@ Function/Wave WB_GetStimSet([setName])
 		data[i] = WB_MakeWaveBuilderWave(WPCopy, WPT, SegWvType, i, numEpochs, channelType, updateEpochIDWave, stimset = setName)
 		lengthOf1DWaves = max(DimSize(data[i], ROWS), lengthOf1DWaves)
 		if(i + 1 < numSweeps)
-			if(WB_AddDelta(setName, WPCopy, WP, WPT, numEpochs, i))
+			if(WB_AddDelta(setName, WPCopy, WP, WPT, SegWvType, i))
 				return $""
 			endif
 		endif
@@ -457,28 +457,30 @@ End
 /// Relies on alternating sequence of parameter and delta's in parameter waves
 /// as documented in WB_MakeWaveBuilderWave().
 ///
-/// @param setName    name of the stimset
-/// @param WP         wavebuilder parameter wave (temporary copy)
-/// @param WPOrig     wavebuilder parameter wave (original)
-/// @param WPT        wavebuilder text parameter wave
-/// @param numEpochs  number of epochs
-/// @param sweep      sweep number
-static Function WB_AddDelta(setName, WP, WPOrig, WPT, numEpochs, sweep)
+/// @param setName       name of the stimset
+/// @param WP            wavebuilder parameter wave (temporary copy)
+/// @param WPOrig        wavebuilder parameter wave (original)
+/// @param WPT           wavebuilder text parameter wave
+/// @param SegWvType     segment parameter wave (temporary copy)
+/// @param sweep         sweep number
+static Function WB_AddDelta(setName, WP, WPOrig, WPT, SegWvType, sweep)
 	string setName
 	Wave WP, WPOrig
+	WAVE SegWvType
 	WAVE/T WPT
-	variable numEpochs, sweep
+	variable sweep
 
 	variable i, j, k
-	variable operation, row
-	variable numEpochTypes, numEntries
-	string list, entry
-	variable value
+	variable operation
+	variable numEpochTypes, numEntries, numEpochs
+	string entry, ldelta
+	variable value, delta, dme, originalValue, ret
 
 	if(isEmpty(setName))
 		setName = "Default"
 	endif
 
+	numEpochs = SegWvType[%$("Total number of epochs")]
 	numEpochTypes = DimSize(WP, LAYERS)
 
 	WAVE indizes = WB_GetControlWithDeltaIdx()
@@ -498,60 +500,99 @@ static Function WB_AddDelta(setName, WP, WPOrig, WPT, numEpochs, sweep)
 					continue
 				endif
 
-				operation = WP[%$s.op][j][k]
-				row       = FindDimlabel(WP, ROWS, s.delta)
+				operation     = WP[%$s.op][j][k]
+				value         = WP[%$s.main][j][k]
+				delta         = WP[%$s.delta][j][k]
+				dme           = WP[%$s.dme][j][k]
+				ldelta        = WPT[%$s.ldelta][j][k]
+				originalValue = WPOrig[%$s.main][j][k]
 
-				if(operation != DELTA_OPERATION_EXPLICIT)
-					// add the delta value
-					WP[%$s.main][j][k] += WP[row][j][k]
+				ret = WB_CalculateParameterWithDelta(operation, value, delta, dme, ldelta, originalValue, sweep, setName, s.main)
+
+				if(ret)
+					return ret
 				endif
 
-				switch(operation)
-					case DELTA_OPERATION_DEFAULT:
-						// delta is constant
-						break
-					case DELTA_OPERATION_FACTOR:
-						WP[row][j][k] = WP[row][j][k] * WP[%$s.dme][j][k]
-						break
-					case DELTA_OPERATION_LOG:
-						// ignore a delta value of exactly zero
-						WP[row][j][k] = WP[row][j][k] == 0 ? 0 : log(WP[row][j][k])
-						break
-					case DELTA_OPERATION_SQUARED:
-						WP[row][j][k] = (WP[row][j][k])^2
-						break
-					case DELTA_OPERATION_POWER:
-						WP[row][j][k] = (WP[row][j][k])^(WP[%$s.dme][j][k])
-						break
-					case DELTA_OPERATION_ALTERNATE:
-						WP[row][j][k] *= -1
-						break
-					case DELTA_OPERATION_EXPLICIT:
-						list = WPT[%$s.ldelta][j][k]
-						if(sweep >= ItemsInList(list))
-							printf "WB_AddDelta: Stimset \"%s\" has too many sweeps for the explicit delta values list \"%s\" of \"%s\"\r", setName, list, s.main
-							value = 0
-						else
-							entry = StringFromList(sweep, list)
-							value = str2numSafe(entry)
-
-							if(IsNaN(value))
-								printf "WB_AddDelta: Stimset \"%s\" has an invalid entry \"%s\" in the explicit delta values list \"%s\" of \"%s\"\r", setName, entry, list, s.main
-								value = 0
-							endif
-						endif
-
-						WP[%$s.main][j][k] = WPOrig[%$s.main][j][k] + value
-						break
-					default:
-						// future proof
-						printf "WB_AddDelta: Stimset %s uses an unknown operation %d and can therefore not be recreated.\r", setName, operation
-						return 1
-						break
-				endswitch
+				WP[%$s.main][j][k]  = value
+				WP[%$s.delta][j][k] = delta
 			endfor
 		endfor
 	endfor
+
+	return 0
+End
+
+/// @brief Calculate the new value of a parameter taking into account the delta operation
+///
+/// @param[in]      operation     delta operation, one of @ref WaveBuilderDeltaOperationModes
+/// @param[in, out] value         parameter value (might be incremented by former delta application calls)
+/// @param[in, out] delta         delta value
+/// @param[in]      dme           delta multiplier or exponent
+/// @param[in]      ldelta        explicit list of delta values
+/// @param[in]      originalValue unmodified parameter value
+/// @param[in]      sweep         sweep number
+/// @param[in]      setName       name of the stimulus set (used for error reporting)
+/// @param[in]      paramName     name of the parameter (used for error reporting)
+static Function WB_CalculateParameterWithDelta(operation, value, delta, dme, ldelta, originalValue, sweep, setName, paramName)
+	variable operation
+	variable &value
+	variable &delta
+	variable dme
+	string ldelta
+	variable originalValue, sweep
+	string setName, paramName
+
+	string list, entry
+	variable listDelta
+
+	if(operation != DELTA_OPERATION_EXPLICIT)
+		// add the delta value
+		value += delta
+	endif
+
+	switch(operation)
+		case DELTA_OPERATION_DEFAULT:
+			// delta is constant
+			break
+		case DELTA_OPERATION_FACTOR:
+			delta = delta * dme
+			break
+		case DELTA_OPERATION_LOG:
+			// ignore a delta value of exactly zero
+			delta = delta == 0 ? 0 : log(delta)
+			break
+		case DELTA_OPERATION_SQUARED:
+			delta = (delta)^2
+			break
+		case DELTA_OPERATION_POWER:
+			delta = (delta)^(dme)
+			break
+		case DELTA_OPERATION_ALTERNATE:
+			delta *= -1
+			break
+		case DELTA_OPERATION_EXPLICIT:
+			list = ldelta
+			if(sweep >= ItemsInList(ldelta))
+				printf "WB_AddDelta: Stimset \"%s\" has too many sweeps for the explicit delta values list \"%s\" of \"%s\"\r", setName, list, paramName
+				listDelta = 0
+			else
+				entry = StringFromList(sweep, ldelta)
+				listDelta = str2numSafe(entry)
+
+				if(IsNaN(listDelta))
+					printf "WB_AddDelta: Stimset \"%s\" has an invalid entry \"%s\" in the explicit delta values list \"%s\" of \"%s\"\r", setName, entry, list, paramName
+					value = 0
+				endif
+			endif
+
+			value = originalValue + listDelta
+			break
+		default:
+			// future proof
+			printf "WB_AddDelta: Stimset %s uses an unknown operation %d and can therefore not be recreated.\r", setName, operation
+			return 1
+			break
+	endswitch
 
 	return 0
 End
