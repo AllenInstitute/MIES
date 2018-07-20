@@ -2733,7 +2733,7 @@ Function/WAVE GetWaveBuilderWaveParam()
 	return wv
 End
 
-static Constant WPT_WAVE_LAYOUT_VERSION = 8
+static Constant WPT_WAVE_LAYOUT_VERSION = 9
 
 /// @brief Automated testing helper
 static Function GetWPTVersion()
@@ -2806,6 +2806,7 @@ static Function AddDimLabelsToWPT(wv)
 	SetDimLabel ROWS, 25, $("PT: Last Mixed Frequency ldel") , wv
 	SetDimLabel ROWS, 26, $("Number of pulses ldel")         , wv
 	SetDimLabel ROWS, 27, $("Analysis pre set function")     , wv
+	SetDimLabel ROWS, 28, $("Inter trial interval ldel")     , wv
 
 	for(i = 0; i <= SEGMENT_TYPE_WAVE_LAST_IDX; i += 1)
 		SetDimLabel COLS, i, $("Epoch " + num2str(i)), wv
@@ -2842,7 +2843,8 @@ End
 /// -10: Analysis function parameters. See below for a detailed explanation.
 /// -11-26: Explicit delta values. ";" separated list as long as the number of sweeps.
 /// -27: Analysis function, pre set
-/// -28-50: unused
+/// -28: Explicit delta value for "Inter trial interval"
+/// -29-50: unused
 ///
 /// `Formula` and `Formula Version` are in the #EPOCH_TYPE_COMBINE layer, the
 /// custom wave name is in the #EPOCH_TYPE_CUSTOM layer. 11 to 26 are for all
@@ -2890,7 +2892,7 @@ Function/WAVE GetWaveBuilderWaveTextParam()
 	return wv
 End
 
-static Constant SEGWVTYPE_WAVE_LAYOUT_VERSION = 5
+static Constant SEGWVTYPE_WAVE_LAYOUT_VERSION = 6
 
 /// @brief Automated testing helper
 static Function GetSegWvTypeVersion()
@@ -2923,6 +2925,9 @@ static Function AddDimLabelsToSegWvType(wv)
 		SetDimLabel ROWS, i, $("Type of Epoch " + num2str(i)), wv
 	endfor
 
+	SetDimLabel ROWS, 94,  $("Inter trial interval op"), wv
+	SetDimLabel ROWS, 95,  $("Inter trial interval dme"), wv
+	SetDimLabel ROWS, 96,  $("Inter trial interval delta"), wv
 	SetDimLabel ROWS, 97,  $("Stimset global RNG seed"), wv
 	SetDimLabel ROWS, 98,  $("Flip time axis")         , wv
 	SetDimLabel ROWS, 99,  $("Inter trial interval")   , wv
@@ -2934,10 +2939,13 @@ End
 /// Remember to change #SEGMENT_TYPE_WAVE_LAST_IDX if changing the wave layout
 ///
 /// Rows:
-/// - 0 - 96: epoch types using one of @ref WaveBuilderEpochTypes
+/// - 0 - 93: epoch types using one of @ref WaveBuilderEpochTypes
+/// - 94: Inter trial interval delta operation, one of @ref WaveBuilderDeltaOperationModes
+/// - 95: Inter trial interval delta multiplier/exponent [a. u.]
+/// - 96: Inter trial interval delta [s]
 /// - 97: Stimset global RNG seed
 /// - 98: Data flipping (1 or 0)
-/// - 99: set ITI (s)
+/// - 99: Inter trial interval [s]
 /// - 100: total number of segments/epochs
 /// - 101: total number of steps
 Function/Wave GetSegmentTypeWave()
