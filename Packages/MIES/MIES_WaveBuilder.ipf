@@ -949,6 +949,31 @@ static Function WB_UpdateEpochID(epochIndex, epochDuration, accumulatedDuration)
 	accumulatedDuration += epochDuration
 End
 
+/// @brief Query the stimset wave note for the sweep/set specific ITI
+Function WB_GetITI(stimset, sweep)
+	WAVE stimset
+	variable sweep
+
+	variable ITI
+
+	// per sweep ITI
+	ITI = WB_GetWaveNoteEntryAsNumber(stimset, SWEEP_ENTRY, key = "ITI", sweep = sweep)
+
+	if(IsFinite(ITI))
+		return ITI
+	endif
+
+	// per stimset ITI (legacy stimsets, which were not recreated)
+	ITI = WB_GetWaveNoteEntryAsNumber(stimset, STIMSET_ENTRY, key = "ITI")
+
+	if(IsFinite(ITI))
+		return ITI
+	endif
+
+	// third party stimsets with no ITI at all
+	return 0
+End
+
 /// @brief Try to recover a custom wave when in the old format
 ///        (aka with only a wave name and not a full path)
 ///
