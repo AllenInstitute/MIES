@@ -63,7 +63,7 @@ Function IDX_ResetStartFinishForIndexing(panelTitle)
 		DAG_Update(panelTitle, ctrl, val = idx - 1, str = IDX_GetSingleStimset(stimsets, idx, allowNone = 1))
 	endfor
 
-	DAP_UpdateDAQControls(panelTitle, REASON_STIMSET_CHANGE_DUR_DAQ)
+	DAP_UpdateDAQControls(panelTitle, REASON_STIMSET_CHANGE)
 End
 
 /// @brief Locked indexing, indexes all active channels at once

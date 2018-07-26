@@ -1137,8 +1137,6 @@ Function DAP_OneTimeCallAfterDAQ(panelTitle, [forcedStop, startTPAfterDAQ])
 		IDX_ResetStartFinishForIndexing(panelTitle)
 	endif
 
-	DAP_UpdateSweepSetVariables(panelTitle)
-
 	if(!DAG_GetNumericalValue(panelTitle, "check_Settings_TPAfterDAQ") || !startTPAfterDAQ)
 		return NaN
 	endif
