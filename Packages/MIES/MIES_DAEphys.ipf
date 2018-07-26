@@ -4512,6 +4512,8 @@ Function DAP_UpdateDAQControls(panelTitle, updateFlag)
 	string panelTitle
 	variable updateFlag
 
+	DEBUGPRINT("updateFlag", var = updateFlag)
+
 	if(updateFlag & REASON_STIMSET_CHANGE)
 		DAP_UpdateITIAcrossSets(panelTitle)
 		DAP_UpdateSweepSetVariables(panelTitle)
