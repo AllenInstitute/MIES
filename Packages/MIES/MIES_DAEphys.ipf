@@ -712,10 +712,6 @@ Function DAP_TabControlFinalHook(tca)
 		return 0
 	endif
 
-	if(tca.tab == DATA_ACQU_TAB_NUM)
-		DAP_UpdateDAQControls(tca.win, REASON_STIMSET_CHANGE | REASON_HEADSTAGE_CHANGE)
-	endif
-
 	return 0
 End
 
@@ -798,6 +794,7 @@ Function DAP_DAorTTLCheckProc(cba) : CheckBoxControl
 				control    = cba.ctrlName
 				DAG_Update(cba.win, cba.ctrlName, val = cba.checked)
 				DAP_AdaptAssocHeadstageState(panelTitle, control)
+				DAP_UpdateDAQControls(panelTitle, REASON_STIMSET_CHANGE | REASON_HEADSTAGE_CHANGE)
 			catch
 				SetCheckBoxState(panelTitle, control, !cba.checked)
 				DAG_Update(cba.win, cba.ctrlName, val = !cba.checked)
@@ -1499,6 +1496,9 @@ Function DAP_UpdateSweepSetVariables(panelTitle)
 	string panelTitle
 
 	variable numSetRepeats
+
+	NVAR daqRunMode = $GetDataAcqRunMode(panelTitle)
+	ASSERT(daqRunMode == DAQ_NOT_RUNNING, "Invalid call during DAQ")
 
 	if(DAG_GetNumericalValue(panelTitle, "Check_DataAcq1_RepeatAcq"))
 		numSetRepeats = DAG_GetNumericalValue(panelTitle, "SetVar_DataAcq_SetRepeats")
@@ -4180,6 +4180,7 @@ Function DAP_LockDevice(panelTitle)
 	headstage = str2num(GetPopupMenuString(panelTitleLocked, "Popup_Settings_HeadStage"))
 	DAP_SyncDeviceAssocSettToGUI(paneltitleLocked, headstage)
 
+	DAP_UpdateDAQControls(panelTitleLocked, REASON_STIMSET_CHANGE | REASON_HEADSTAGE_CHANGE)
 	DAP_UpdateAllYokeControls()
 	// create the amplifier settings waves
 	GetAmplifierParamStorageWave(panelTitleLocked)
