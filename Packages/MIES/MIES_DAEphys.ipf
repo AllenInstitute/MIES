@@ -1043,6 +1043,10 @@ Function DAP_OneTimeCallBeforeDAQ(panelTitle, runMode)
 
 	DisableControls(panelTitle, CONTROLS_DISABLE_DURING_DAQ)
 
+	if(DAG_GetNumericalvalue(panelTitle, "Check_DataAcq_Indexing"))
+		DisableControls(panelTitle, CONTROLS_DISABLE_DURING_IDX)
+	endif
+
 	NVAR dataAcqRunMode = $GetDataAcqRunMode(panelTitle)
 	dataAcqRunMode = runMode
 
@@ -1089,6 +1093,7 @@ static Function DAP_ResetGUIAfterDAQ(panelTitle)
 	endfor
 
 	EnableControls(panelTitle, CONTROLS_DISABLE_DURING_DAQ)
+	EnableControls(panelTitle, CONTROLS_DISABLE_DURING_IDX)
 
 	DAP_ToggleAcquisitionButton(panelTitle, DATA_ACQ_BUTTON_TO_DAQ)
 	EnableControls(panelTitle, CONTROLS_DISABLE_DURING_DAQ_TP)
