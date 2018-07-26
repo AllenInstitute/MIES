@@ -429,7 +429,10 @@ static Function/S IDX_GetSetsInRange(panelTitle, channel, channelType, lockedInd
 	variable channel, channelType, lockedIndexing
 
 	variable listOffset, first, last, indexStart, indexEnd
-	string waveCtrl, lastCtrl, list
+	string waveCtrl, lastCtrl, list, msg
+
+	sprintf msg, "channel %d, channelType %d, lockedIndexing %d", channel, channelType, lockedIndexing
+	DEBUGPRINT(msg)
 
 	// Additional entries not in menuExp: None
 	listOffset = 1
