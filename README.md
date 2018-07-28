@@ -21,6 +21,11 @@ Pressure control may be implemented with ITC and/or NIDAQ hardware. For NIDAQ
 hardware, install the [NIDAQ Tool MX](https://www.wavemetrics.com/products/nidaqtools/nidaqtools.htm)
 package from Wavemetrics.
 
+Depending on the bitness (64 or 32) of the Igor Pro version you plan to use (64-bit is recommended)
+install either version 2.2.2 of the Multiclamp Commander (64bit) or
+version 2.1.0.16 (32-bit).
+Both can be downloaded from [here](http://mdc.custhelp.com/app/answers/detail/a_id/20059).
+
 ## Support statement
 
 The following versions receive fixes for all critical bugs.

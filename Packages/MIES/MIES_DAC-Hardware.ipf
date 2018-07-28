@@ -652,6 +652,14 @@ Function/S HW_ITC_ListDevices()
 					ITCOpenDevice2/Z=1/DTS=type str2num(number)
 				while(V_ITCXOPError == SLOT_LOCKED_TO_OTHER_THREAD && V_ITCError == 0)
 
+				if(V_ITCError == 0x8D101000)
+					ITCGeterrorString2 V_ITCError
+					printf "Missing ITC initialization due to error \"%s\".\r", S_errorMessage
+					printf "Please run Igor Pro or the ITCDemo application once as administrator to create the required registry keys.\r"
+					ControlWindowToFront()
+					return ""
+				endif
+
 				deviceID = V_Value
 				if(V_ITCError == 0 && V_ITCXOPError == 0 && deviceID >= 0)
 					sprintf msg, "Found device type %s with number %s", type, number
