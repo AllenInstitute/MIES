@@ -1301,6 +1301,7 @@ static Function SetSweepSettingsDimLabels(wv)
 	SetDimLabel COLS, 42, $"Repeat sweep on async alarm" , wv
 	SetDimLabel COLS, 43, $"Set Cycle Count"             , wv
 	SetDimLabel COLS, 44, $STIMSET_ACQ_CYCLE_ID_KEY      , wv
+	SetDimLabel COLS, 45, $"Digitizer Hardware Type"     , wv
 End
 
 /// @brief Set dimension labels for GetSweepSettingsTextKeyWave() and
@@ -1348,7 +1349,7 @@ End
 Function/Wave GetSweepSettingsWave(panelTitle)
 	string panelTitle
 
-	variable versionOfNewWave = 14
+	variable versionOfNewWave = 15
 	string newName = "sweepSettingsNumericValues"
 	DFREF newDFR = GetDevSpecLabNBTempFolder(panelTitle)
 
@@ -1363,9 +1364,9 @@ Function/Wave GetSweepSettingsWave(panelTitle)
 	if(ExistsWithCorrectLayoutVersion(wv, versionOfNewWave))
 		return wv
 	elseif(WaveExists(wv))
-		Redimension/N=(-1, 45, LABNOTEBOOK_LAYER_COUNT) wv
+		Redimension/N=(-1, 46, LABNOTEBOOK_LAYER_COUNT) wv
 	else
-		Make/N=(1, 45, LABNOTEBOOK_LAYER_COUNT) newDFR:$newName/Wave=wv
+		Make/N=(1, 46, LABNOTEBOOK_LAYER_COUNT) newDFR:$newName/Wave=wv
 	endif
 
 	wv = NaN
@@ -1434,10 +1435,11 @@ End
 /// - 42: Repeat sweep on async alarm
 /// - 43: Set Cycle Count
 /// - 44: Stimset cycle ID
+/// - 45: Digitizer Hardware Type, one of @ref HardwareDACTypeConstants
 Function/Wave GetSweepSettingsKeyWave(panelTitle)
 	string panelTitle
 
-	variable versionOfNewWave = 15
+	variable versionOfNewWave = 16
 	string newName = "sweepSettingsNumericKeys"
 	DFREF newDFR = GetDevSpecLabNBTempFolder(panelTitle)
 
@@ -1452,9 +1454,9 @@ Function/Wave GetSweepSettingsKeyWave(panelTitle)
 	if(ExistsWithCorrectLayoutVersion(wv, versionOfNewWave))
 		return wv
 	elseif(WaveExists(wv))
-		Redimension/N=(-1, 45) wv
+		Redimension/N=(-1, 46) wv
 	else
-		Make/T/N=(3, 45) newDFR:$newName/Wave=wv
+		Make/T/N=(3, 46) newDFR:$newName/Wave=wv
 	endif
 
 	wv = ""
@@ -1642,6 +1644,10 @@ Function/Wave GetSweepSettingsKeyWave(panelTitle)
 	wv[%Parameter][44] = STIMSET_ACQ_CYCLE_ID_KEY
 	wv[%Units][44]     = "a. u."
 	wv[%Tolerance][44] = "1"
+
+	wv[%Parameter][45] = "Digitizer Hardware Type"
+	wv[%Units][45]     = "a. u."
+	wv[%Tolerance][45] = "1"
 
 	SetSweepSettingsDimLabels(wv)
 	SetWaveVersion(wv, versionOfNewWave)

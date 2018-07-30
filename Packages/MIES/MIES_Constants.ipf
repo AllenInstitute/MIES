@@ -519,7 +519,7 @@ Constant WAVEBUILDER_PANEL_VERSION  = 6
 /// - Changed names of entries
 /// - Changed units or meaning of entries
 /// - New/Changed layers of entries
-Constant LABNOTEBOOK_VERSION = 24
+Constant LABNOTEBOOK_VERSION = 25
 
 /// Version of the stimset wave note
 Constant STIMSET_NOTE_VERSION = 1
