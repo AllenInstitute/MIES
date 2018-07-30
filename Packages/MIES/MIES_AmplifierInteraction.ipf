@@ -1359,7 +1359,7 @@ Function AI_FillAndSendAmpliferSettings(panelTitle, sweepNo)
 	string panelTitle
 	variable sweepNo
 
-	variable numHS, i, axonSerial, channel, DAC
+	variable numHS, i, axonSerial, channel, DAC, ampConnState
 	string mccSerial
 
 	WAVE channelClampMode      = GetChannelClampMode(panelTitle)
@@ -1382,7 +1382,13 @@ Function AI_FillAndSendAmpliferSettings(panelTitle, sweepNo)
 		axonSerial = AI_GetAmpAxonSerial(panelTitle, i)
 		channel    = AI_GetAmpChannel(panelTitle, i)
 
-		if(AI_SelectMultiClamp(panelTitle, i) != AMPLIFIER_CONNECTION_SUCCESS)
+		ampConnState = AI_SelectMultiClamp(panelTitle, i)
+
+		if(ampConnState != AMPLIFIER_CONNECTION_SUCCESS)
+			if(DAG_GetNumericalValue(panelTitle, "check_Settings_RequireAmpConn"))
+				BUG("The amplifier could not be selected, but that should work, ampConnState = " + num2str(ampConnState))
+				BUG("Please report that as a bug with a description what you did. Thanks!")
+			endif
 			continue
 		endif
 
