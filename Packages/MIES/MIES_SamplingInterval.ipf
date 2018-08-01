@@ -125,8 +125,7 @@ static Function SI_CompressWave(wv)
 
 	variable i, j
 
-	ReplaceWaveWithBackup(wv, nonExistingBackupIsFatal=0)
-	CreateBackupWave(wv)
+	CreateBackupWave(wv, forceCreation = 1)
 	SI_SortWave(wv)
 
 	for(i = 0; i < DimSize(wv, ROWS); i += 1)
