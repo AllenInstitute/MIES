@@ -275,6 +275,9 @@ Function SI_CreateLookupWave(panelTitle, [ignoreChannelOrder])
 		ignoreChannelOrder = !!ignoreChannelOrder
 	endif
 
+	NVAR raCycleID = $GetRepeatedAcquisitionCycleID(panelTitle)
+	raCycleID = 1
+
 	DC_ConfigureDataForITC(panelTitle, DATA_ACQUISITION_MODE)
 
 	WAVE ITCDataWave = GetITCDataWave(panelTitle)
