@@ -573,6 +573,16 @@ static Function/WAVE SI_GetMinSampIntWave(panelTitle)
 
 			return wv
 			break
+		case "ITC16USB":
+		case "ITC16":
+			WAVE/SDFR=dfr/Z wv = SampInt_ITC16USB
+
+			if(!WaveExists(wv))
+				return SI_LoadMinSampIntFromDisk("ITC16USB")
+			endif
+
+			return wv
+			break
 		case "ITC1600":
 			WAVE/SDFR=dfr/Z wv = SampInt_ITC1600
 			if(!WaveExists(wv))
