@@ -41,7 +41,7 @@ html_theme_options = {
         }
 
 # pygments options
-highlight_language = "igor"
+highlight_language = "text"
 pygments_style     = "igor"
 
 # breathe
