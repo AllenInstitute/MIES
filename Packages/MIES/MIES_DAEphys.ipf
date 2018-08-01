@@ -1817,7 +1817,7 @@ Function DAP_CheckSettings(panelTitle, mode)
 	variable mode
 
 	variable numDACs, numADCs, numHS, numEntries, i, indexingEnabled, clampMode
-	variable ampSerial, ampChannelID, minValue, maxValue
+	variable ampSerial, ampChannelID, minValue, maxValue, leftOverBytes
 	string ctrl, endWave, ttlWave, dacWave, refDacWave, reqParams
 	string list
 
@@ -1830,6 +1830,16 @@ Function DAP_CheckSettings(panelTitle, mode)
 	endif
 
 	SWS_DeleteDataWaves(panelTitle)
+
+	PathInfo home
+	if(V_Flag) // saved experiment
+		leftOverBytes = MU_GetFreeDiskSpace(GetWindowsPath(S_path))
+		if(isNaN(leftOverBytes) || leftOverBytes < MINIMUM_FREE_DISC_SPACE)
+			printf "%s: The free disc space is less than %.0W0PB (%.1W0PB).\r", panelTitle, MINIMUM_FREE_DISC_SPACE, leftOverBytes
+			ControlWindowToFront()
+			return 1
+		endif
+	endif
 
 	if(mode == DATA_ACQUISITION_MODE && AFM_CallAnalysisFunctions(panelTitle, PRE_DAQ_EVENT))
 		printf "%s: Pre DAQ analysis function requested an abort\r", panelTitle
