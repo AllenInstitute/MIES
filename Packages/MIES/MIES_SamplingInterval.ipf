@@ -288,7 +288,7 @@ Function SI_CreateLookupWave(panelTitle, [ignoreChannelOrder])
 	ret = ParseDeviceString(panelTitle, deviceType, deviceNumber)
 	ASSERT(ret, "Could not parse panelTitle")
 
-	if(!cmpstr(deviceType, "ITC18USB"))
+	if(!cmpstr(deviceType, "ITC18USB") || !cmpstr(deviceType, "ITC16USB") || !cmpstr(deviceType, "ITC16"))
 		totalNumDA    = 4
 		totalNumAD    = 8
 		totalNumTTL   = 4
