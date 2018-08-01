@@ -1916,6 +1916,13 @@ Function/S GetFile(filePathWithSuffix, [sep])
 	return ParseFilePath(0, filePathWithSuffix, sep, 1, 0)
 End
 
+/// @brief Return the path converted to a windows style path
+Function/S GetWindowsPath(path)
+	string path
+
+	return ParseFilepath(5, path, "\\", 0, 0)
+End
+
 /// @brief Set the given bit mask in var
 threadsafe Function SetBit(var, bit)
 	variable var, bit
