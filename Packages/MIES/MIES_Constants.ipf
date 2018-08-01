@@ -401,7 +401,7 @@ Constant RACK_ONE  = 0x01
 StrConstant STIM_WAVE_NAME_KEY = "Stim Wave Name"
 
 /// Last valid row index for storing epoch types in #GetSegmentTypeWave
-Constant SEGMENT_TYPE_WAVE_LAST_IDX = 96
+Constant SEGMENT_TYPE_WAVE_LAST_IDX = 93
 
 /// Minimum logarithm to base two for the ITCDataWave size
 Constant MINIMUM_ITCDATAWAVE_EXPONENT = 20
@@ -507,10 +507,10 @@ Constant HARDWARE_DAC_EXTERNAL_TRIGGER = 0x1
 /// @}
 
 /// Used to upgrade the GuiStateWave as well as the DA Ephys panel
-Constant DA_EPHYS_PANEL_VERSION     = 31
+Constant DA_EPHYS_PANEL_VERSION     = 32
 Constant DATABROWSER_PANEL_VERSION  = 7
 Constant SWEEPBROWSER_PANEL_VERSION = 3
-Constant WAVEBUILDER_PANEL_VERSION  = 6
+Constant WAVEBUILDER_PANEL_VERSION  = 7
 
 /// Version of the labnotebooks (numerical and textual)
 ///
@@ -522,7 +522,7 @@ Constant WAVEBUILDER_PANEL_VERSION  = 6
 Constant LABNOTEBOOK_VERSION = 25
 
 /// Version of the stimset wave note
-Constant STIMSET_NOTE_VERSION = 1
+Constant STIMSET_NOTE_VERSION = 2
 
 /// @name The channel numbers for the different ITC devices used for accesssing
 ///       the TTLs
@@ -931,3 +931,12 @@ Constant DELTA_OPERATION_EXPLICIT  = 6
 /// @}
 
 Constant MINIMUM_FREE_DISC_SPACE = 107374182400 // 10GB
+
+/// @name Stimset wave note entry types for WB_GetWaveNoteEntry()
+/// @anchor StimsetWaveNoteEntryTypes
+/// @{
+Constant VERSION_ENTRY = 0x1
+Constant SWEEP_ENTRY   = 0x2
+Constant EPOCH_ENTRY   = 0x4
+Constant STIMSET_ENTRY = 0x8
+/// @}

@@ -445,3 +445,12 @@ Function/S GetAnalysisFuncErrorCounter(panelTitle)
 
 	return GetNVARAsString(GetDevicePath(panelTitle), "analysisFunctionErrorCounter", initialValue = 0)
 End
+
+/// @brief Return the maximum ITI of all active sets
+///
+/// Only meaningful after preparing DAQ in DC_ConfigureDataForITC()
+Function/S GetMaxIntertrialInterval(panelTitle)
+	string panelTitle
+
+	return GetNVARAsString(GetDevicePath(panelTitle), "maxIntertrialInterval", initialValue = 0)
+End

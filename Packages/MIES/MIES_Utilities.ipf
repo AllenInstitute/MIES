@@ -855,7 +855,25 @@ Function/S GetStringFromWaveNote(wv, key, [keySep, listSep])
 	Wave wv
 	string key
 	string keySep, listSep
-	string wvNote
+
+	if(ParamIsDefault(keySep) && ParamIsDefault(listSep))
+		return ExtractStringFromPair(note(wv), key)
+	elseif(ParamIsDefault(keySep))
+		return ExtractStringFromPair(note(wv), key, listSep = listSep)
+	elseif(ParamIsDefault(listSep))
+		return ExtractStringFromPair(note(wv), key, keySep = keySep)
+	else
+		return ExtractStringFromPair(note(wv), key, keySep = keySep, listSep = listSep)
+	endif
+End
+
+/// @brief Same functionality as GetStringFromWaveNote() but accepts a string
+///
+/// @sa GetStringFromWaveNote()
+Function/S ExtractStringFromPair(str, key, [keySep, listSep])
+	string str
+	string key
+	string keySep, listSep
 
 	if(ParamIsDefault(keySep))
 		keySep = ":"
@@ -864,14 +882,13 @@ Function/S GetStringFromWaveNote(wv, key, [keySep, listSep])
 		listSep = ";"
 	endif
 
-	ASSERT(WaveExists(wv), "Missing wave")
+	ASSERT(!IsEmpty(str), "Empty string")
 	ASSERT(!IsEmpty(key), "Empty key")
 
-	wvNote = note(wv)
 	// AddEntryIntoWaveNoteAsList creates whitespaces "key = value;"
-	wvNote = ReplaceString(" " + keySep + " ", wvNote, keySep)
+	str = ReplaceString(" " + keySep + " ", str, keySep)
 
-	return StringByKey(key, wvNote, keySep, listSep)
+	return StringByKey(key, str, keySep, listSep)
 End
 
 /// @brief Update the string value of `key` found in the wave note to `str`

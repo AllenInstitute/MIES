@@ -97,7 +97,7 @@ Function DQM_StartDAQMultiDevice(panelTitle, [initialSetupReq])
 	string panelTitle
 	variable initialSetupReq
 
-	variable numFollower, i
+	variable numFollower, acrossYokingMaxITI, i
 	string followerPanelTitle
 
 	ASSERT(WhichListItem(GetRTStackInfo(2), DAQ_ALLOWED_FUNCTIONS) != -1, \
@@ -115,6 +115,7 @@ Function DQM_StartDAQMultiDevice(panelTitle, [initialSetupReq])
 		endif
 
 		DC_ConfigureDataForITC(panelTitle, DATA_ACQUISITION_MODE)
+		NVAR maxITI = $GetMaxIntertrialInterval(panelTitle)
 	catch
 		if(initialSetupReq)
 			DAP_OneTimeCallAfterDAQ(panelTitle, forcedStop = 1)
@@ -130,9 +131,12 @@ Function DQM_StartDAQMultiDevice(panelTitle, [initialSetupReq])
 	HW_ITC_PrepareAcq(ITCDeviceIDGlobal, flags=HARDWARE_ABORT_ON_ERROR)
 
 	if(!DeviceHasFollower(panelTitle))
+		DAP_UpdateITIAcrossSets(panelTitle, maxITI)
 		DQM_BkrdDataAcq(panelTitle)
 		return NaN
 	endif
+
+	acrossYokingMaxITI = maxITI
 
 	SVAR listOfFollowerDevices = $GetFollowerList(panelTitle)
 	numFollower = ItemsInList(listOfFollowerDevices)
@@ -146,6 +150,9 @@ Function DQM_StartDAQMultiDevice(panelTitle, [initialSetupReq])
 			endif
 
 			DC_ConfigureDataForITC(followerPanelTitle, DATA_ACQUISITION_MODE)
+
+			NVAR maxITI = $GetMaxIntertrialInterval(panelTitle)
+			acrossYokingMaxITI = max(maxITI, acrossYokingMaxITI)
 		endfor
 	catch
 		if(initialSetupReq)
@@ -161,6 +168,9 @@ Function DQM_StartDAQMultiDevice(panelTitle, [initialSetupReq])
 
 		return NaN
 	endtry
+
+	// Sync ITI from lead to follower panel
+	DAP_UpdateITIAcrossSets(panelTitle, acrossYokingMaxITI)
 
 	// configure follower devices
 	for(i = 0; i < numFollower; i += 1)

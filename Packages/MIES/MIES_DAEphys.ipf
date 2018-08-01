@@ -1266,23 +1266,18 @@ Function DAP_ButtonProc_AllChanOff(ba) : ButtonControl
 	endswitch
 End
 
-static Function DAP_UpdateITIAcrossSets(panelTitle)
+/// @brief Update the ITI for the given device, takes care of handling yoked devices
+Function DAP_UpdateITIAcrossSets(panelTitle, maxITI)
 	string panelTitle
-
-	variable numActiveDAChannels, maxITI
+	variable maxITI
 
 	if(DeviceIsFollower(panelTitle) && DAP_DeviceIsLeader(ITC1600_FIRST_DEVICE))
-		DAP_UpdateITIAcrossSets(ITC1600_FIRST_DEVICE)
-		return 0
+		DAP_UpdateITIAcrossSets(ITC1600_FIRST_DEVICE, maxITI)
+		return NaN
 	endif
-
-	maxITI = IDX_LongestITI(panelTitle, numActiveDAChannels)
-	DEBUGPRINT("Maximum ITI across sets=", var=maxITI)
 
 	if(DAG_GetNumericalValue(panelTitle, "Check_DataAcq_Get_Set_ITI"))
 		PGC_SetAndActivateControl(panelTitle, "SetVar_DataAcq_ITI", val = maxITI)
-	elseif(maxITI == 0 && numActiveDAChannels > 0)
-		PGC_SetAndActivateControl(panelTitle, "Check_DataAcq_Get_Set_ITI", val = CHECKBOX_UNSELECTED)
 	endif
 
 	if(DAP_DeviceIsLeader(panelTitle))
@@ -1555,25 +1550,6 @@ Function DAP_ButtonCtrlFindConnectedAmps(ba) : ButtonControl
 			AI_FindConnectedAmps()
 			break
 	endswitch
-End
-
-Function DAP_CheckProc_GetSet_ITI(cba) : CheckBoxControl
-	STRUCT WMCheckboxAction &cba
-
-	switch(cba.eventCode)
-		case 2: // mouse up
-			DAG_Update(cba.win, cba.ctrlName, val = cba.checked)
-
-			if(cba.checked)
-				DAP_UpdateITIAcrossSets(cba.win)
-			else
-				DAP_SyncGuiFromLeaderToFollower(cba.win)
-			endif
-
-			break
-	endswitch
-
-	return 0
 End
 
 /// @brief Return a nicely layouted list of amplifier channels
@@ -3100,7 +3076,6 @@ Function DAP_ButtonProc_Follow(ba) : ButtonControl
 			DAP_UpdateFollowerControls(leadPanel, panelToYoke)
 			PGC_SetAndActivateControl(leadPanel, "check_Settings_MD", val = 1)
 			PGC_SetAndActivateControl(panelToYoke, "check_Settings_MD", val = 1)
-			DAP_UpdateITIAcrossSets(leadPanel)
 			DisableControls(panelToYoke, YOKE_CONTROLS_DISABLE)
 			DisableControls(panelToYoke, YOKE_CONTROLS_DISABLE_AND_LINK)
 			EnableControl(leadPanel, "button_Hardware_RemoveYoke")
@@ -3200,7 +3175,6 @@ Function DAP_RemoveYokedDAC(panelToDeYoke)
 	DisableControl(panelToDeYoke,"setvar_Hardware_YokeList")
 	EnableControls(panelToDeYoke, YOKE_CONTROLS_DISABLE)
 	EnableControls(panelToDeYoke, YOKE_CONTROLS_DISABLE_AND_LINK)
-	DAP_UpdateITIAcrossSets(panelToDeYoke)
 
 	PGC_SetAndActivateControl(panelToDeYoke, "setvar_Hardware_YokeList", str = "None")
 
@@ -4533,11 +4507,9 @@ Function DAP_UpdateDAQControls(panelTitle, updateFlag)
 	DEBUGPRINT("updateFlag", var = updateFlag)
 
 	if(updateFlag & REASON_STIMSET_CHANGE)
-		DAP_UpdateITIAcrossSets(panelTitle)
 		DAP_UpdateSweepSetVariables(panelTitle)
 		AFM_UpdateAnalysisFunctionWave(panelTitle)
 	elseif(updateFlag & REASON_STIMSET_CHANGE_DUR_DAQ)
-		DAP_UpdateITIAcrossSets(panelTitle)
 		AFM_UpdateAnalysisFunctionWave(panelTitle)
 		SetValDisplay(panelTitle, "valdisp_DataAcq_SweepsActiveSet", var=IDX_MaxNoOfSweeps(panelTitle, 1))
 	endif
