@@ -2119,6 +2119,14 @@ Function DAP_CheckSettings(panelTitle, mode)
 			return 1
 		endif
 
+		if(mode == DATA_ACQUISITION_MODE)
+			if(GetValDisplayAsNum(panelTitle, "valdisp_DataAcq_SweepsInSet") == 0)
+				printf "(%s) The calculated number of sweeps is zero. This is unexpected and very likely a bug.\r", panelTitle
+				ControlWindowToFront()
+				return 1
+			endif
+		endif
+
 		// unlock ITCDataWave, this happens if user functions error out and we don't catch it
 		WAVE ITCDataWave = GetITCDataWave(panelTitle)
 		if(NumberByKey("LOCK", WaveInfo(ITCDataWave, 0)))
