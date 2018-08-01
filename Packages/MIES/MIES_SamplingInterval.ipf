@@ -423,7 +423,7 @@ End
 static Function SI_TestSampInt(panelTitle)
 	string panelTitle
 
-	variable i, sampInt, ret, sampIntRead, numChannels, sampIntRef, iLast
+	variable i, sampInt, sampIntRead, numChannels, sampIntRef, iLast
 	variable numConsecutive = -1
 	variable numTries = 1001
 
@@ -431,9 +431,6 @@ static Function SI_TestSampInt(panelTitle)
 	WAVE ITCChanConfigWave = GetITCChanConfigWave(panelTitle)
 	numChannels = DimSize(ITCChanConfigWave, ROWS)
 
-	Make/I/FREE/N=(2, numChannels) ReqWave
-	ReqWave[0][] = ITCChanConfigWave[q][0]
-	ReqWave[1][] = ITCChanConfigWave[q][1]
 	Make/D/FREE/N=(20, numChannels) ResultWave
 
 	for(i=1; i < numTries; i += 1)
@@ -444,15 +441,17 @@ static Function SI_TestSampInt(panelTitle)
 		endif
 
 		ITCChanConfigWave[][2] = sampInt
-		ITCConfigAllChannels2/Z ITCChanConfigWave, ITCDataWave
 
-		if(!ret)
+		WAVE config_t = HW_ITC_TransposeAndToDouble(ITCChanConfigWave)
+		ITCConfigAllChannels2/Z config_t, ITCDataWave
+
+		if(!V_ITCError)
 			// we could set the sampling interval
 			// so we try to read it back and check if it is the same
 			ITCConfigChannelUpload2
 			HW_ITC_HandleReturnValues(HARDWARE_ABORT_ON_ERROR, V_ITCError, V_ITCXOPError)
 
-			ITCGetAllChannelsConfig2/O ReqWave, ResultWave
+			ITCGetAllChannelsConfig2/O config_t, ResultWave
 			HW_ITC_HandleReturnValues(HARDWARE_ABORT_ON_ERROR, V_ITCError, V_ITCXOPError)
 
 			WaveStats/Q/R=[12,12] ResultWave
