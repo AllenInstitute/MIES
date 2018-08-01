@@ -592,10 +592,6 @@ StrConstant ANALYSISBROWSER_FILE_TYPE_IGOR = "I"
 StrConstant ANALYSISBROWSER_FILE_TYPE_NWB  = "N"
 /// @}
 
-/// Device restart happens after this number of sweeps with stuck FIFO, used by
-/// TP MD
-Constant NUM_CONSEC_FIFO_STILLSTANDS = 3
-
 /// Convenience definition for functions interacting with threads
 Constant MAIN_THREAD = 0
 
