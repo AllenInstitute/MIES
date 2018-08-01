@@ -938,3 +938,6 @@ Constant STIMSET_ENTRY = 0x8
 /// @}
 /// Especially interesting for PXP consumers like the analysis browser.
 Constant EXPERIMENT_VERSION = 1
+
+/// All experiment versions up to the given value are supported
+Constant ANALYSIS_BROWSER_SUPP_VERSION = 1
