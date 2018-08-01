@@ -37,6 +37,7 @@ Function BW_StartPanel()
 
 	BW_CreatePanel()
 	BW_StartTask()
+	Execute/P/Q "SetIgorOption IndependentModuleDev=1"
 End
 
 Function BW_CreatePanel()
