@@ -205,7 +205,7 @@ static Function AB_AddFile(baseFolder, discLocation)
 End
 
 /// @brief function tries to load Data From discLocation.
-static Function/S AB_LoadFile(discLocation)
+static Function AB_LoadFile(discLocation)
 	string discLocation
 
 	string device, deviceList
@@ -235,8 +235,6 @@ static Function/S AB_LoadFile(discLocation)
 		Wave/I sweeps = GetAnalysisChannelSweepWave(map[%DataFolder], device)
 		AB_FillListWave(map[%FileName], device, map[%DataFolder], sweeps)
 	endfor
-
-	return deviceList
 End
 
 static Function/S AB_GetSettingNumFiniteVals(wv, device, sweepNo, name)
