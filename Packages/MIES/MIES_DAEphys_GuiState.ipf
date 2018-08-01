@@ -93,6 +93,11 @@ Function DAG_RecordGuiStateNum(panelTitle, [GUIState])
 		ctrlName = GetDimLabel(GUIState, COLS, i)
 		controlInfo/w=$panelTitle $ctrlName
 		ASSERT(V_flag != 0, "invalid or non existing control")
+
+		if(abs(V_Flag) == CONTROL_TYPE_POPUPMENU)
+			V_Value -= 1
+		endif
+
 		GUIState[0][i] = V_Value
 	endfor
 End
@@ -185,10 +190,10 @@ Function DAG_GetNumericalValue(panelTitle, ctrl, [index])
 			string fullCtrl
 			sprintf fullCtrl, "%s_%02d", ctrl, index
 			ControlInfo/W=$panelTitle $fullCtrl
+		endif
 
-			if(abs(V_Flag)  == CONTROL_TYPE_POPUPMENU)
-				V_Value -= 1
-			endif
+		if(abs(V_Flag) == CONTROL_TYPE_POPUPMENU)
+			V_Value -= 1
 		endif
 
 		refValue = GetDA_EphysGuiStateNum(panelTitle)[index][%$ctrl]
@@ -324,6 +329,13 @@ Function DAG_GetHeadstageMode(panelTitle, headStage)
 End
 
 /// @brief Updates the state of a control in the GUIState numeric wave
+///
+/// One or both parameters have to be passed.
+///
+/// @param panelTitle  device
+/// @param controlName control name
+/// @param val         [optional] numerical value, 0-based index for popup menues
+/// @param str         [optional] textual value
 Function DAG_Update(panelTitle, controlName, [val, str])
 	string panelTitle
 	string controlName

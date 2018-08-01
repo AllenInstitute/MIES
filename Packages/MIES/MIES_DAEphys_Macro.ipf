@@ -11,7 +11,7 @@
 
 Window DA_Ephys() : Panel
 	PauseUpdate; Silent 1		// building window...
-	NewPanel /K=1 /W=(112,166,616,1046)
+	NewPanel /K=1 /W=(208,158,712,1038)
 	ValDisplay valdisp_DataAcq_P_LED_Clear,pos={366.00,298.00},size={86.00,29.00},disable=1
 	ValDisplay valdisp_DataAcq_P_LED_Clear,help={"red:user"},userdata(tabnum)=  "0"
 	ValDisplay valdisp_DataAcq_P_LED_Clear,userdata(tabcontrol)=  "tab_DataAcq_Pressure"
@@ -974,7 +974,7 @@ Window DA_Ephys() : Panel
 	CheckBox Check_Settings_Append,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	CheckBox Check_Settings_Append,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
 	CheckBox Check_Settings_Append,value= 0
-	CheckBox Check_Settings_BkgTP,pos={34.00,86.00},size={97.00,15.00},disable=1,proc=DAP_CheckProc_UpdateGuiState,title="Background TP"
+	CheckBox Check_Settings_BkgTP,pos={34.00,86.00},size={97.00,15.00},disable=3,proc=DAP_CheckProc_UpdateGuiState,title="Background TP"
 	CheckBox Check_Settings_BkgTP,help={"Perform testpulse in the background, keeping the GUI responsive."}
 	CheckBox Check_Settings_BkgTP,userdata(tabnum)=  "5"
 	CheckBox Check_Settings_BkgTP,userdata(tabcontrol)=  "ADC"
@@ -982,7 +982,7 @@ Window DA_Ephys() : Panel
 	CheckBox Check_Settings_BkgTP,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	CheckBox Check_Settings_BkgTP,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
 	CheckBox Check_Settings_BkgTP,value= 1
-	CheckBox Check_Settings_BackgrndDataAcq,pos={34.00,193.00},size={170.00,15.00},disable=1,proc=DAP_CheckProc_UpdateGuiState,title="Background Data Acquisition"
+	CheckBox Check_Settings_BackgrndDataAcq,pos={34.00,193.00},size={170.00,15.00},disable=3,proc=DAP_CheckProc_UpdateGuiState,title="Background Data Acquisition"
 	CheckBox Check_Settings_BackgrndDataAcq,help={"Perform data acquisition in the background, keeping the GUI responsive."}
 	CheckBox Check_Settings_BackgrndDataAcq,userdata(tabnum)=  "5"
 	CheckBox Check_Settings_BackgrndDataAcq,userdata(tabcontrol)=  "ADC"
@@ -2409,7 +2409,7 @@ Window DA_Ephys() : Panel
 	TabControl tab_DataAcq_Amp,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Duafnzzzzzzzzzzz"
 	TabControl tab_DataAcq_Amp,userdata(ResizeControlsInfo) += A"zzz!!#u:Duafnzzzzzzzzzzzzzz!!!"
 	TabControl tab_DataAcq_Amp,labelBack=(60928,60928,60928),fSize=10
-	TabControl tab_DataAcq_Amp,tabLabel(0)="\f01\Z11V-Clamp",tabLabel(1)="I-Clamp"
+	TabControl tab_DataAcq_Amp,tabLabel(0)="V-Clamp",tabLabel(1)="\f01\Z11I-Clamp"
 	TabControl tab_DataAcq_Amp,tabLabel(2)="I = 0",value= 0
 	TitleBox Title_DataAcq_Hold_IC,pos={97.00,186.00},size={69.00,15.00},disable=1,title="Holding (pA)"
 	TitleBox Title_DataAcq_Hold_IC,userdata(tabnum)=  "1"
@@ -3425,7 +3425,7 @@ Window DA_Ephys() : Panel
 	CheckBox check_DataACq_Pressure_AutoOFF,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	CheckBox check_DataACq_Pressure_AutoOFF,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
 	CheckBox check_DataACq_Pressure_AutoOFF,value= 0
-	GroupBox group_DA_All,pos={11.00,442.00},size={471.00,74.00},disable=1,title="All"
+	GroupBox group_DA_All,pos={12.00,442.00},size={471.00,74.00},disable=1,title="All"
 	GroupBox group_DA_All,userdata(tabnum)=  "1",userdata(tabcontrol)=  "ADC"
 	GroupBox group_DA_All,userdata(ResizeControlsInfo)= A"!!,A>!!#CB!!#CPJ,hp#z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	GroupBox group_DA_All,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
@@ -3464,7 +3464,7 @@ Window DA_Ephys() : Panel
 	PopupMenu IndexEnd_DA_AllVClamp,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	PopupMenu IndexEnd_DA_AllVClamp,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
 	PopupMenu IndexEnd_DA_AllVClamp,mode=1,popvalue="- none -",value= #"\"- none -;\"+ReturnListOfAllStimSets(0,\"*DA*\")"
-	GroupBox group_DA_AllVClamp,pos={11.00,524.00},size={471.00,74.00},disable=1,title="V-Clamp"
+	GroupBox group_DA_AllVClamp,pos={12.00,524.00},size={471.00,74.00},disable=1,title="V-Clamp"
 	GroupBox group_DA_AllVClamp,userdata(tabnum)=  "1",userdata(tabcontrol)=  "ADC"
 	GroupBox group_DA_AllVClamp,userdata(ResizeControlsInfo)= A"!!,A>!!#Ch!!#CPJ,hp#z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	GroupBox group_DA_AllVClamp,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
@@ -3503,7 +3503,7 @@ Window DA_Ephys() : Panel
 	PopupMenu IndexEnd_DA_AllIClamp,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	PopupMenu IndexEnd_DA_AllIClamp,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
 	PopupMenu IndexEnd_DA_AllIClamp,mode=1,popvalue="- none -",value= #"\"- none -;\"+ReturnListOfAllStimSets(0,\"*DA*\")"
-	GroupBox group_DA_AllIClamp,pos={12.00,607.00},size={471.00,74.00},disable=3,title="I-Clamp"
+	GroupBox group_DA_AllIClamp,pos={12.00,607.00},size={471.00,74.00},disable=1,title="I-Clamp"
 	GroupBox group_DA_AllIClamp,userdata(tabnum)=  "1",userdata(tabcontrol)=  "ADC"
 	GroupBox group_DA_AllIClamp,userdata(ResizeControlsInfo)= A"!!,AN!!#D'^]6afJ,hp#z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	GroupBox group_DA_AllIClamp,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"

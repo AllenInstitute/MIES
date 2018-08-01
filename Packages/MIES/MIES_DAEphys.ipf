@@ -712,10 +712,6 @@ Function DAP_TabControlFinalHook(tca)
 		return 0
 	endif
 
-	if(tca.tab == DATA_ACQU_TAB_NUM)
-		DAP_UpdateDAQControls(tca.win, REASON_STIMSET_CHANGE | REASON_HEADSTAGE_CHANGE)
-	endif
-
 	return 0
 End
 
@@ -798,6 +794,7 @@ Function DAP_DAorTTLCheckProc(cba) : CheckBoxControl
 				control    = cba.ctrlName
 				DAG_Update(cba.win, cba.ctrlName, val = cba.checked)
 				DAP_AdaptAssocHeadstageState(panelTitle, control)
+				DAP_UpdateDAQControls(panelTitle, REASON_STIMSET_CHANGE | REASON_HEADSTAGE_CHANGE)
 			catch
 				SetCheckBoxState(panelTitle, control, !cba.checked)
 				DAG_Update(cba.win, cba.ctrlName, val = !cba.checked)
@@ -1043,6 +1040,10 @@ Function DAP_OneTimeCallBeforeDAQ(panelTitle, runMode)
 
 	DisableControls(panelTitle, CONTROLS_DISABLE_DURING_DAQ)
 
+	if(DAG_GetNumericalvalue(panelTitle, "Check_DataAcq_Indexing"))
+		DisableControls(panelTitle, CONTROLS_DISABLE_DURING_IDX)
+	endif
+
 	NVAR dataAcqRunMode = $GetDataAcqRunMode(panelTitle)
 	dataAcqRunMode = runMode
 
@@ -1089,6 +1090,7 @@ static Function DAP_ResetGUIAfterDAQ(panelTitle)
 	endfor
 
 	EnableControls(panelTitle, CONTROLS_DISABLE_DURING_DAQ)
+	EnableControls(panelTitle, CONTROLS_DISABLE_DURING_IDX)
 
 	DAP_ToggleAcquisitionButton(panelTitle, DATA_ACQ_BUTTON_TO_DAQ)
 	EnableControls(panelTitle, CONTROLS_DISABLE_DURING_DAQ_TP)
@@ -1136,8 +1138,6 @@ Function DAP_OneTimeCallAfterDAQ(panelTitle, [forcedStop, startTPAfterDAQ])
 	if(DAG_GetNumericalValue(panelTitle, "Check_DataAcq_Indexing"))
 		IDX_ResetStartFinishForIndexing(panelTitle)
 	endif
-
-	DAP_UpdateSweepSetVariables(panelTitle)
 
 	if(!DAG_GetNumericalValue(panelTitle, "check_Settings_TPAfterDAQ") || !startTPAfterDAQ)
 		return NaN
@@ -1325,14 +1325,17 @@ Function DAP_PopMenuChkProc_StimSetList(pa) : PopupMenuControl
 				// so we have to set the now old value again
 				if(indexing && channelControl == CHANNEL_CONTROL_WAVE)
 					SetPopupMenuIndex(panelTitle, ctrl, idx - 1)
+					DAG_Update(pa.win, pa.ctrlName, val = idx - 1, str = pa.popStr)
 				endif
 			endif
 
-			// check if this is a third party stim set which
-			// is not yet reflected in the "MenuExp" user data
-			list = GetUserData(panelTitle, ctrl, "MenuExp")
-			if(FindListItem(stimSet, list) == -1)
-				WBP_UpdateITCPanelPopUps()
+			if(!isAllControl)
+				// check if this is a third party stim set which
+				// is not yet reflected in the "MenuExp" user data
+				list = GetUserData(panelTitle, ctrl, "MenuExp")
+				if(FindListItem(stimSet, list) == -1)
+					WBP_UpdateITCPanelPopUps()
+				endif
 			endif
 
 			if(isAllControl)
@@ -1493,6 +1496,9 @@ Function DAP_UpdateSweepSetVariables(panelTitle)
 	string panelTitle
 
 	variable numSetRepeats
+
+	NVAR daqRunMode = $GetDataAcqRunMode(panelTitle)
+	ASSERT(daqRunMode == DAQ_NOT_RUNNING, "Invalid call during DAQ")
 
 	if(DAG_GetNumericalValue(panelTitle, "Check_DataAcq1_RepeatAcq"))
 		numSetRepeats = DAG_GetNumericalValue(panelTitle, "SetVar_DataAcq_SetRepeats")
@@ -4174,6 +4180,7 @@ Function DAP_LockDevice(panelTitle)
 	headstage = str2num(GetPopupMenuString(panelTitleLocked, "Popup_Settings_HeadStage"))
 	DAP_SyncDeviceAssocSettToGUI(paneltitleLocked, headstage)
 
+	DAP_UpdateDAQControls(panelTitleLocked, REASON_STIMSET_CHANGE | REASON_HEADSTAGE_CHANGE)
 	DAP_UpdateAllYokeControls()
 	// create the amplifier settings waves
 	GetAmplifierParamStorageWave(panelTitleLocked)
@@ -4505,6 +4512,8 @@ Function DAP_UpdateDAQControls(panelTitle, updateFlag)
 	string panelTitle
 	variable updateFlag
 
+	DEBUGPRINT("updateFlag", var = updateFlag)
+
 	if(updateFlag & REASON_STIMSET_CHANGE)
 		DAP_UpdateITIAcrossSets(panelTitle)
 		DAP_UpdateSweepSetVariables(panelTitle)
@@ -4528,17 +4537,24 @@ End
 ///
 /// @param panelTitle device
 /// @param headStage MIES headstage number, must be in the range [0, NUM_HEADSTAGES]
-Function DAP_AllChanDASettings(panelTitle, headStage)
+static Function DAP_AllChanDASettings(panelTitle, headStage)
 	string panelTitle
 	variable headStage
 
 	string ctrl
-	WAVE GuiState = GetDA_EphysGuiStateNum(panelTitle)
+	variable scalar, index, indexEnd, DAC
 
-	variable scalar, index, indexEnd
 	if(!DAG_GetNumericalValue(panelTitle, "check_DA_applyOnModeSwitch"))
 		return NaN
 	endif
+
+	DAC = AFH_GetDACFromHeadstage(paneltitle, headstage)
+
+	if(IsNan(DAC))
+		return NaN
+	endif
+
+	WAVE GuiState = GetDA_EphysGuiStateNum(panelTitle)
 
 	if(GuiState[headStage][%HSmode] == V_CLAMP_MODE)
 		scalar = DAG_GetNumericalValue(panelTitle, GetPanelControl(CHANNEL_INDEX_ALL_V_CLAMP,CHANNEL_TYPE_DAC,CHANNEL_CONTROL_SCALE))
@@ -4549,14 +4565,15 @@ Function DAP_AllChanDASettings(panelTitle, headStage)
 		index = DAG_GetNumericalValue(panelTitle, GetPanelControl(CHANNEL_INDEX_ALL_I_CLAMP,CHANNEL_TYPE_DAC,CHANNEL_CONTROL_WAVE))
 		indexEnd = DAG_GetNumericalValue(panelTitle, GetPanelControl(CHANNEL_INDEX_ALL_I_CLAMP,CHANNEL_TYPE_DAC,CHANNEL_CONTROL_INDEX_END))
 	endif
+
 	// update the scalar
-	ctrl = GetPanelControl(headStage, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_SCALE)
+	ctrl = GetPanelControl(DAC, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_SCALE)
 	PGC_SetAndActivateControl(panelTitle, ctrl, val = scalar)
 	// update the stimulus set
-	ctrl = GetPanelControl(headStage, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_WAVE)
+	ctrl = GetPanelControl(DAC, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_WAVE)
 	PGC_SetAndActivateControl(panelTitle, ctrl, val = index)
 	// update the Index end set
-	ctrl = GetPanelControl(headStage, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_INDEX_END)
+	ctrl = GetPanelControl(DAC, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_INDEX_END)
 	PGC_SetAndActivateControl(panelTitle, ctrl, val = indexEnd)
 End
 

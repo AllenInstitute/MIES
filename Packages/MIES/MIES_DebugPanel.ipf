@@ -30,6 +30,8 @@ End
 
 Function DP_OpenDebugPanel()
 
+	variable debugMode
+
 	DoWindow/F $PANEL
 	if(V_Flag)
 		return NaN
@@ -42,7 +44,8 @@ Function DP_OpenDebugPanel()
 	WAVE listSelWave = GetDebugPanelListSelWave()
 	ListBox listbox_mies_files win=$PANEL, listWave=listWave, selWave=listSelWave
 
-	SetCheckBoxState(PANEL, "check_debug_mode", QuerySetIgorOption("DEBUGGING_ENABLED") == 1)
+	debugMode = QuerySetIgorOption("DEBUGGING_ENABLED", globalSymbol = 1)
+	SetCheckBoxState(PANEL, "check_debug_mode",  debugMode == 1)
 	// we can't readout the ITC XOP debugging state
 End
 
@@ -74,6 +77,7 @@ Window DP_DebugPanel() : Panel
 	SetWindow kwTopWin,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzzzzzzzzzzzzzzz"
 	SetWindow kwTopWin,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzzzzzzzzz!!!"
 	Execute/Q/Z "SetWindow kwTopWin sizeLimit={296.25,348,inf,inf}" // sizeLimit requires Igor 7 or later
+	SetWindow kwTopWin,hook(MainHook)=DP_WindowHook
 EndMacro
 
 Function DP_FillDebugPanelWaves()
@@ -107,6 +111,19 @@ Function DP_FillDebugPanelWaves()
 
 	listWave[]    = results[p]
 	listSelWave[] = listSelWave[p] | 0x20
+End
+
+Function DP_WindowHook(s)
+	STRUCT WMWinHookStruct &s
+
+	variable debugMode
+
+	strswitch(s.eventName)
+		case "activate":
+			debugMode = QuerySetIgorOption("DEBUGGING_ENABLED", globalSymbol = 1)
+			SetCheckBoxState(PANEL, "check_debug_mode",  debugMode == 1)
+			break
+	endswitch
 End
 
 Function DP_CheckProc_Debug(cba) : CheckBoxControl

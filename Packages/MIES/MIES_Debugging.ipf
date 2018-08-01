@@ -15,10 +15,9 @@
 static Function FindFirstOutsideCaller(func, line, file)
 	string &func, &line, &file
 
-	string stacktrace, caller, debugFile
+	string stacktrace, caller
 	variable numCallers, i
 
-	debugFile = GetFile(FunctionPath(""))
 	stacktrace = GetRTStackInfo(3)
 	numCallers = ItemsInList(stacktrace)
 
@@ -28,7 +27,7 @@ static Function FindFirstOutsideCaller(func, line, file)
 		file   = StringFromList(1, caller, ",")
 		line   = StringFromList(2, caller, ",")
 
-		if(cmpstr(debugFile, file))
+		if(cmpstr("MIES_DEBUGGING.ipf", file))
 			return NaN
 		endif
 	endfor
@@ -76,6 +75,42 @@ Function DEBUGPRINTv(var, [format])
 	endif
 
 	return var
+End
+
+/// @brief Output debug information and return the wave wv.
+///
+/// Debug function especially designed for usage in return statements.
+///
+/// For example calling the following function
+/// \rst
+/// .. code-block:: igorpro
+///
+/// 	Function/WAVE doStuff()
+/// 		Make/D/N=5 data = p
+/// 		return DEBUGPRINTw(data)
+/// 	End
+/// \endrst
+///
+/// will output
+/// @verbatim DEBUG doStuff(...)#L5: return value {0, 1, 2, 3, 4} @endverbatim
+/// to the history.
+///
+/// @hidecallgraph
+/// @hidecallergraph
+///
+///@param wv     wave argument for debug output
+///@param format optional format string to override the default of "%g"
+Function/WAVE DEBUGPRINTw(wv, [format])
+	WAVE/Z wv
+	string format
+
+	if(ParamIsDefault(format))
+		DEBUGPRINT(functionReturnMessage, wv=wv)
+	else
+		DEBUGPRINT(functionReturnMessage, wv=wv, format=format)
+	endif
+
+	return wv
 End
 
 /// @brief Output debug information and return the parameter str
@@ -132,10 +167,12 @@ End
 /// @param msg    descriptive string for the debug message
 /// @param var    variable
 /// @param str    string
+/// @param wv     wave (can be null)
 /// @param format format string overrides the default of "%g" for variables and "%s" for strings
-Function DEBUGPRINT(msg, [var, str, format])
+Function DEBUGPRINT(msg, [var, str, wv, format])
 	string msg
 	variable var
+	WAVE/Z wv
 	string str, format
 
 	string file, line, func, caller, stacktrace, formatted = ""
@@ -147,15 +184,16 @@ Function DEBUGPRINT(msg, [var, str, format])
 	// - str
 	// - var and format
 	// - str and format
-	// - neither var, str, format
-	numSuppliedOptParams = !ParamIsDefault(var) + !ParamIsDefault(str) + !ParamIsDefault(format)
+	// - wv and format
+	// - neither var, str, wv, format
+	numSuppliedOptParams = !ParamIsDefault(var) + !ParamIsDefault(str) + !ParamIsDefault(format) + !ParamIsDefault(wv)
 
 	if(numSuppliedOptParams == 0)
 		// nothing to check
 	elseif(numSuppliedOptParams == 1)
 		ASSERT(ParamIsDefault(format), "Only supplying the \"format\" parameter is not allowed")
 	elseif(numSuppliedOptParams == 2)
-		ASSERT(!ParamIsDefault(format), "You can't supply \"var\" and \"str\" at the same time")
+		ASSERT(!ParamIsDefault(format), "You can't supply \"var\", \"str\" and/or \"wv\" at the same time")
 	else
 		ASSERT(0, "Invalid parameter combination")
 	endif
@@ -176,6 +214,20 @@ Function DEBUGPRINT(msg, [var, str, format])
 			format = "%s"
 		endif
 		sprintf formatted, format, str
+	elseif(!ParamIsDefault(wv))
+		if(!WaveExists(wv))
+			formatted = "{null}"
+		elseif(IsTextWave(wv))
+			formatted = TextWaveToList(wv, ";")
+		elseif(IsNumericWave(wv))
+			if(ParamIsDefault(format))
+				formatted = NumericWaveToList(wv, ";")
+			else
+				formatted = NumericWaveToList(wv, ";", format = format)
+			endif
+		else
+			formatted = "{unsupported type}"
+		endif
 	endif
 
 	msg = RemoveEnding(msg, "\r")
@@ -373,9 +425,19 @@ Function/s DEBUGPRINTs(str, [format])
 	return str
 End
 
-Function DEBUGPRINT(msg, [var, str, format])
+Function/WAVE DEBUGPRINTw(wv, [format])
+	WAVE/Z wv
+	string format
+
+	// do nothing
+
+	return wv
+End
+
+Function DEBUGPRINT(msg, [var, str, wv, format])
 	string msg
 	variable var
+	WAVE/Z wv
 	string str, format
 
 	// do nothing

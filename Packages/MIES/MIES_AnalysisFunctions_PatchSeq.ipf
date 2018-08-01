@@ -114,6 +114,8 @@ static Function PSQ_GetPulseSettingsForType(type, s)
 	variable type
 	struct PSQ_PulseSettings &s
 
+	string msg
+
 	switch(type)
 		case PSQ_DA_SCALE:
 			s.prePulseChunkLength  = PSQ_DS_BL_EVAL_RANGE_MS
@@ -134,6 +136,9 @@ static Function PSQ_GetPulseSettingsForType(type, s)
 			ASSERT(0, "unsupported type")
 			break
 	endswitch
+
+	sprintf msg, "postPulseChunkLength %d, prePulseChunkLength %d, pulseDuration %g", s.postPulseChunkLength, s.prePulseChunkLength, s.pulseDuration
+	DEBUGPRINT(msg)
 End
 
 /// Return the pulse durations from the labnotebook or calculate them before if required.
@@ -437,9 +442,11 @@ static Function PSQ_EvaluateBaselineProperties(panelTitle, type, sweepNo, chunk,
 		WAVE/SDFR=root: overrideResults
 		NVAR count = $GetCount(panelTitle)
 		chunkPassed = overrideResults[chunk][count][0]
-		printf "Chunk %d %s\r", chunk, SelectString(chunkPassed, "failed", "passed")
 	endif
 	// END TEST
+
+	sprintf msg, "Chunk %d %s", chunk, SelectString(chunkPassed, "failed", "passed")
+	DEBUGPRINT(msg)
 
 	// document chunk results
 	Make/FREE/N=(LABNOTEBOOK_LAYER_COUNT) result = NaN
@@ -507,19 +514,19 @@ static Function PSQ_GetNumberOfChunks(panelTitle, sweepNo, headstage, type)
 	switch(type)
 		case PSQ_DA_SCALE:
 			nonBL = totalOnsetDelay + PSQ_DS_PULSE_DUR + PSQ_DS_BL_EVAL_RANGE_MS
-			return floor((length - nonBL) / PSQ_DS_BL_EVAL_RANGE_MS)
+			return DEBUGPRINTv(floor((length - nonBL) / PSQ_DS_BL_EVAL_RANGE_MS))
 			break
 		case PSQ_RHEOBASE:
 			WAVE durations = PSQ_GetPulseDurations(panelTitle, PSQ_RHEOBASE, sweepNo, totalOnsetDelay)
 			ASSERT(durations[headstage] != 0, "Pulse duration can not be zero")
 			nonBL = totalOnsetDelay + durations[headstage] + PSQ_RB_POST_BL_EVAL_RANGE
-			return floor((length - nonBL - PSQ_RB_PRE_BL_EVAL_RANGE) / PSQ_RB_POST_BL_EVAL_RANGE) + 1
+			return DEBUGPRINTv(floor((length - nonBL - PSQ_RB_PRE_BL_EVAL_RANGE) / PSQ_RB_POST_BL_EVAL_RANGE) + 1)
 			break
 		case PSQ_RAMP:
 			WAVE durations = PSQ_GetPulseDurations(panelTitle, PSQ_RAMP, sweepNo, totalOnsetDelay)
 			ASSERT(durations[headstage] != 0, "Pulse duration can not be zero")
 			nonBL = totalOnsetDelay + durations[headstage] + PSQ_RA_BL_EVAL_RANGE
-			return floor((length - nonBL - PSQ_RA_BL_EVAL_RANGE) / PSQ_RA_BL_EVAL_RANGE) + 1
+			return DEBUGPRINTv(floor((length - nonBL - PSQ_RA_BL_EVAL_RANGE) / PSQ_RA_BL_EVAL_RANGE) + 1)
 			break
 		default:
 			ASSERT(0, "unsupported type")
@@ -723,6 +730,7 @@ static Function/WAVE PSQ_SearchForSpikes(panelTitle, type, sweepWave, headstage,
 
 	variable level, first, last, overrideValue
 	variable minVal, maxVal
+	string msg
 
 	Make/FREE/D/N=(LABNOTEBOOK_LAYER_COUNT) spikeDetection = (p == headstage ? 0 : NaN)
 
@@ -737,6 +745,9 @@ static Function/WAVE PSQ_SearchForSpikes(panelTitle, type, sweepWave, headstage,
 	else
 		numberOfSpikes = trunc(numberOfSpikes)
 	endif
+
+	sprintf msg, "Type %d, headstage %d, totalOnsetDelay %g, numberOfSpikes %d", type, headstage, totalOnsetDelay, numberOfSpikes
+	DEBUGPRINT(msg)
 
 	WAVE singleDA = AFH_ExtractOneDimDataFromSweep(panelTitle, sweepWave, headstage, ITC_XOP_CHANNEL_TYPE_DAC, config = config)
 	minVal = WaveMin(singleDA, totalOnsetDelay, inf)
@@ -775,8 +786,6 @@ static Function/WAVE PSQ_SearchForSpikes(panelTitle, type, sweepWave, headstage,
 				ASSERT(0, "unsupported type")
 		endswitch
 
-		printf "Sweep %d has %g\r", count, overrideValue
-
 		if(overrideValue == 0 || overrideValue == 1)
 			spikeDetection[headstage] = overrideValue
 		else
@@ -784,7 +793,7 @@ static Function/WAVE PSQ_SearchForSpikes(panelTitle, type, sweepWave, headstage,
 		endif
 
 		if(!ParamIsDefault(spikePositions))
-		ASSERT(WaveExists(spikePositions), "Wave spikePositions must exist")
+			ASSERT(WaveExists(spikePositions), "Wave spikePositions must exist")
 			Redimension/D/N=(numberOfSpikes) spikePositions
 			spikePositions[] = overrideValue
 		endif
@@ -826,7 +835,7 @@ static Function/WAVE PSQ_SearchForSpikes(panelTitle, type, sweepWave, headstage,
 
 	ASSERT(IsFinite(spikeDetection[headstage]), "Expected finite result")
 
-	return spikeDetection
+	return DEBUGPRINTw(spikeDetection)
 End
 
 /// @brief Return if the analysis function results are overriden for testing purposes
@@ -1142,7 +1151,7 @@ Function PSQ_DAScale(panelTitle, s)
 			passesInSet         = PSQ_NumPassesInSet(numericalValues, PSQ_DA_SCALE, s.sweepNo, s.headstage)
 			acquiredSweepsInSet = PSQ_NumAcquiredSweepsInSet(panelTitle, s.sweepNo, s.headstage)
 
-			sprintf msg, "Sweep %s, total sweeps %d, acquired sweeps %d, passed sweeps %d, DAScalesIndex %d\r", SelectString(sweepPassed, "failed", "passed"), sweepsInSet, acquiredSweepsInSet, passesInSet, DAScalesIndex[s.headstage]
+			sprintf msg, "Sweep %s, total sweeps %d, acquired sweeps %d, passed sweeps %d, required passes %d, DAScalesIndex %d\r", SelectString(sweepPassed, "failed", "passed"), sweepsInSet, acquiredSweepsInSet, passesInSet, numSweepsPass, DAScalesIndex[s.headstage]
 			DEBUGPRINT(msg)
 
 			if(!sweepPassed)
@@ -1422,6 +1431,9 @@ Function PSQ_SquarePulse(panelTitle, s)
 
 			sweepPassed = 0
 
+			sprintf msg, "stepSize %g", stepSize
+			DEBUGPRINT(msg)
+
 			if(spikeDetection[s.headstage]) // headstage spiked
 				if(CheckIfClose(stepSize, PSQ_SP_INIT_AMP_m50))
 					SetDAScale(panelTitle, s.headstage, DAScale + stepsize)
@@ -1456,6 +1468,9 @@ Function PSQ_SquarePulse(panelTitle, s)
 
 				SetDAScale(panelTitle, s.headstage, DAScale + stepsize)
 			endif
+
+			sprintf msg, "Sweep has %s\r", SelectString(sweepPassed, "failed", "passed")
+			DEBUGPRINT(msg)
 
 			Make/FREE/D/N=(LABNOTEBOOK_LAYER_COUNT) value = NaN
 			value[INDEP_HEADSTAGE] = sweepPassed
@@ -1664,6 +1679,9 @@ Function PSQ_Rheobase(panelTitle, s)
 
 			baselineQCPassed = WaveExists(baselineQCPassedWave) && baselineQCPassedWave[s.headstage]
 
+			sprintf msg, "numSweeps %d, baselineQCPassed %d", numSweeps, baselineQCPassed
+			DEBUGPRINT(msg)
+
 			if(!baselineQCPassed)
 				break
 			endif
@@ -1682,6 +1700,8 @@ Function PSQ_Rheobase(panelTitle, s)
 			key = PSQ_CreateLBNKey(PSQ_RHEOBASE, PSQ_FMT_LBN_SPIKE_DETECT, query = 1)
 			WAVE spikeDetectionRA = GetLastSettingEachSCI(numericalValues, s.sweepNo, key, s.headstage, UNKNOWN_MODE)
 
+			DEBUGPRINT("spikeDetectionRA: ", wv = spikeDetectionRA)
+
 			numSweepsWithSpikeDetection = DimSize(spikeDetectionRA, ROWS)
 			currentSweepHasSpike        = spikeDetectionRA[numSweepsWithSpikeDetection - 1]
 
@@ -1699,6 +1719,8 @@ Function PSQ_Rheobase(panelTitle, s)
 					ED_AddEntryToLabnotebook(panelTitle, key, result, unit = LABNOTEBOOK_BINARY_UNIT)
 					PSQ_ForceSetEvent(panelTitle, s.headstage)
 					RA_SkipSweeps(panelTitle, inf, limitToSetBorder = 1)
+
+					DEBUGPRINT("Sweep has passed")
 					break
 				endif
 			endif
@@ -1728,6 +1750,8 @@ Function PSQ_Rheobase(panelTitle, s)
 
 				PSQ_ForceSetEvent(panelTitle, s.headstage)
 				RA_SkipSweeps(panelTitle, inf)
+
+				DEBUGPRINT("Set has failed")
 				break
 			endif
 
@@ -1747,6 +1771,8 @@ Function PSQ_Rheobase(panelTitle, s)
 
 				PSQ_ForceSetEvent(panelTitle, s.headstage)
 				RA_SkipSweeps(panelTitle, inf)
+
+				DEBUGPRINT("Set has failed")
 			endif
 
 			key = PSQ_CreateLBNKey(PSQ_RHEOBASE, PSQ_FMT_LBN_RB_DASCALE_EXC, query = 1)
@@ -2011,7 +2037,7 @@ Function PSQ_Ramp(panelTitle, s)
 				endif
 			endif
 
-			sprintf msg, "Sweep %s, total sweeps %d, acquired sweeps %d, passed sweeps %d\r", SelectString(sweepPassed, "failed", "passed"), sweepsInSet, acquiredSweepsInSet, passesInSet
+			sprintf msg, "Sweep %s, total sweeps %d, acquired sweeps %d, sweeps passed %d, required passes %d\r", SelectString(sweepPassed, "failed", "passed"), sweepsInSet, acquiredSweepsInSet, passesInSet, PSQ_RA_NUM_SWEEPS_PASS
 			DEBUGPRINT(msg)
 
 			break
@@ -2046,6 +2072,9 @@ Function PSQ_Ramp(panelTitle, s)
 	baselineQCPassed = GetLastSettingIndep(numericalValues, s.sweepNo, key, UNKNOWN_MODE, defValue = 0)
 
 	enoughSpikesFound = PSQ_FoundAtLeastOneSpike(panelTitle, s.sweepNo)
+
+	sprintf msg, "enoughSpikesFound %g, baselineQCPassed %d", enoughSpikesFound, baselineQCPassed
+	DEBUGPRINT(msg)
 
 	if(IsFinite(enoughSpikesFound) && baselineQCPassed) // spike already found/definitly not found and baseline QC passed
 		return NaN
@@ -2182,7 +2211,7 @@ Function PSQ_Ramp(panelTitle, s)
 		if(IsFinite(ret))
 			baselineQCPassed = (ret == 0)
 
-			sprintf msg, "Baseline QC %s, last evaluated chunk %d returned with %g\r", SelectString(baselineQCPassed, "failed", "passed"), i, ret
+			sprintf msg, "Baseline QC/Sweep has %s, last evaluated chunk %d returned with %g\r", SelectString(baselineQCPassed, "failed", "passed"), i, ret
 			DEBUGPRINT(msg)
 
 			// document BL QC results

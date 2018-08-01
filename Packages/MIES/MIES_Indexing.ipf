@@ -53,17 +53,17 @@ Function IDX_ResetStartFinishForIndexing(panelTitle)
 		SetPopupMenuIndex(paneltitle, ctrl, idx - 1)
 
 		WAVE stimsets = IDX_GetStimsets(panelTitle, i, CHANNEL_TYPE_DAC)
-		DAG_Update(panelTitle, ctrl, val = idx, str = IDX_GetSingleStimset(stimsets, idx, allowNone = 1))
+		DAG_Update(panelTitle, ctrl, val = idx - 1, str = IDX_GetSingleStimset(stimsets, idx, allowNone = 1))
 
 		ctrl = GetPanelControl(i, CHANNEL_TYPE_TTL, CHANNEL_CONTROL_WAVE)
 		idx = TTLIndexingStorageWave[0][i]
 		SetPopupMenuIndex(paneltitle, ctrl, idx - 1)
 
 		WAVE stimsets = IDX_GetStimsets(panelTitle, i, CHANNEL_TYPE_TTL)
-		DAG_Update(panelTitle, ctrl, val = idx, str = IDX_GetSingleStimset(stimsets, idx, allowNone = 1))
+		DAG_Update(panelTitle, ctrl, val = idx - 1, str = IDX_GetSingleStimset(stimsets, idx, allowNone = 1))
 	endfor
 
-	DAP_UpdateDAQControls(panelTitle, REASON_STIMSET_CHANGE_DUR_DAQ)
+	DAP_UpdateDAQControls(panelTitle, REASON_STIMSET_CHANGE)
 End
 
 /// @brief Locked indexing, indexes all active channels at once
@@ -429,7 +429,10 @@ static Function/S IDX_GetSetsInRange(panelTitle, channel, channelType, lockedInd
 	variable channel, channelType, lockedIndexing
 
 	variable listOffset, first, last, indexStart, indexEnd
-	string waveCtrl, lastCtrl, list
+	string waveCtrl, lastCtrl, list, msg
+
+	sprintf msg, "channel %d, channelType %d, lockedIndexing %d", channel, channelType, lockedIndexing
+	DEBUGPRINT(msg)
 
 	// Additional entries not in menuExp: None
 	listOffset = 1

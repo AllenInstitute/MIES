@@ -62,6 +62,8 @@ Function AFM_CallAnalysisFunctions(panelTitle, eventType)
 
 		if((eventType == PRE_SET_EVENT && !setEventFlag[DAC][%PRE_SET_EVENT]) \
 		   || (eventType == POST_SET_EVENT && !setEventFlag[DAC][%POST_SET_EVENT]))
+			sprintf msg, "Skipping event \"%s\" on headstage %d", StringFromList(eventType, EVENT_NAME_LIST), i
+			DEBUGPRINT(msg)
 			continue
 		endif
 
@@ -129,6 +131,9 @@ Function AFM_CallAnalysisFunctions(panelTitle, eventType)
 		endtry
 
 		SetWaveLock 0, ITCDataWave
+
+		sprintf msg, "Calling analysis function \"%s\" for event \"%s\" on headstage %d returned ret %d", func, StringFromList(eventType, EVENT_NAME_LIST), i, ret
+		DEBUGPRINT(msg)
 
 		if((eventType == PRE_DAQ_EVENT || eventType == PRE_SET_EVENT) && ret == 1)
 			return ret

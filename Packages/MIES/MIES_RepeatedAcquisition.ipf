@@ -491,9 +491,11 @@ Function RA_SkipSweeps(panelTitle, skipCount, [limitToSetBorder])
 	variable skipCount, limitToSetBorder
 
 	variable numFollower, i, sweepsInSet
-	string followerPanelTitle
+	string followerPanelTitle, msg
+
 	NVAR count = $GetCount(panelTitle)
 	NVAR dataAcqRunMode = $GetDataAcqRunMode(panelTitle)
+	NVAR activeSetCount = $GetActiveSetCount(panelTitle)
 
 	//Skip sweeps if, and only if, data acquisition is ongoing.
 	if(dataAcqRunMode == DAQ_NOT_RUNNING)
@@ -506,10 +508,14 @@ Function RA_SkipSweeps(panelTitle, skipCount, [limitToSetBorder])
 		limitToSetBorder = !!limitToSetBorder
 	endif
 
+	sprintf msg, "skipCount (as passed) %d, limitToSetBorder %d, count %d, activeSetCount %d", skipCount, limitToSetBorder, count, activeSetCount
+	DEBUGPRINT(msg)
+
 	if(limitToSetBorder)
-		NVAR activeSetCount = $GetActiveSetCount(panelTitle)
 		skipCount = sign(skipCount) * limit(abs(skipCount), 0, activeSetCount - 1)
 		activeSetCount = 1
+		sprintf msg, "skipCount (clipped) %d, activeSetCount (resetted) %d", skipCount, activeSetCount
+		DEBUGPRINT(msg)
 	endif
 
 	count = RA_SkipSweepCalc(panelTitle, skipCount)
@@ -535,13 +541,20 @@ static Function RA_SkipSweepCalc(panelTitle, skipCount)
 	string panelTitle
 	variable skipCount
 
-	variable totSweeps = RA_GetTotalNumberOfSweeps(panelTitle)
+	string msg
+	variable totSweeps
+
+	totSweeps = RA_GetTotalNumberOfSweeps(panelTitle)
 	NVAR count = $GetCount(panelTitle)
+
+	sprintf msg, "skipCount %d, totSweeps %d, count %d", skipCount, totSweeps, count
+	DEBUGPRINT(msg)
+
 	if(DAG_GetNumericalValue(panelTitle, "Check_DataAcq1_RepeatAcq"))
 		// RA_counter and RA_counterMD increment count at initialization, -1 accounts for this and allows a skipping back to sweep 0
-		return min(totSweeps - 1, max(count + skipCount, -1))
+		return DEBUGPRINTv(min(totSweeps - 1, max(count + skipCount, -1)))
 	else 
-		return 0
+		return DEBUGPRINTv(0)
 	endif
 End
 
