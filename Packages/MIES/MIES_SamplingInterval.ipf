@@ -478,7 +478,7 @@ static Function SI_TestSampInt(panelTitle)
 		endif
 	endfor
 
-	return NaN
+	return -1
 End
 
 #else
