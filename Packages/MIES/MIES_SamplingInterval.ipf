@@ -125,8 +125,7 @@ static Function SI_CompressWave(wv)
 
 	variable i, j
 
-	ReplaceWaveWithBackup(wv, nonExistingBackupIsFatal=0)
-	CreateBackupWave(wv)
+	CreateBackupWave(wv, forceCreation = 1)
 	SI_SortWave(wv)
 
 	for(i = 0; i < DimSize(wv, ROWS); i += 1)
@@ -224,6 +223,18 @@ static Function/WAVE SI_LoadMinSampIntFromDisk(deviceType)
 	return wv
 End
 
+/// @brief Store the lookup wave on disc
+Function/WAVE SI_StoreMinSampIntOnDisk(wv, deviceType)
+	WAVE wv
+	string deviceType
+
+	Duplicate wv, $("SampInt_" + deviceType)/WAVE=storedWave
+
+	string path = GetFolder(FunctionPath("")) + "SampInt_" + deviceType + ".itx"
+	Save/O/T/M="\n" storedWave as path
+	KillWaves/Z storedWave
+End
+
 /// @brief Query the DA_EPhys panel for the active channels and
 /// fill it in the passed structure
 ///
@@ -276,6 +287,9 @@ Function SI_CreateLookupWave(panelTitle, [ignoreChannelOrder])
 		ignoreChannelOrder = !!ignoreChannelOrder
 	endif
 
+	NVAR raCycleID = $GetRepeatedAcquisitionCycleID(panelTitle)
+	raCycleID = 1
+
 	DC_ConfigureDataForITC(panelTitle, DATA_ACQUISITION_MODE)
 
 	WAVE ITCDataWave = GetITCDataWave(panelTitle)
@@ -286,7 +300,7 @@ Function SI_CreateLookupWave(panelTitle, [ignoreChannelOrder])
 	ret = ParseDeviceString(panelTitle, deviceType, deviceNumber)
 	ASSERT(ret, "Could not parse panelTitle")
 
-	if(!cmpstr(deviceType, "ITC18USB"))
+	if(!cmpstr(deviceType, "ITC18USB") || !cmpstr(deviceType, "ITC16USB") || !cmpstr(deviceType, "ITC16"))
 		totalNumDA    = 4
 		totalNumAD    = 8
 		totalNumTTL   = 4
@@ -415,13 +429,14 @@ Function SI_CreateLookupWave(panelTitle, [ignoreChannelOrder])
 	ITCConfigChannelReset2
 
 	SI_CompressWave(results)
+	SI_StoreMinSampIntOnDisk(results, deviceType)
 End
 
 /// @brief Test the preset sampling interval
 static Function SI_TestSampInt(panelTitle)
 	string panelTitle
 
-	variable i, sampInt, ret, sampIntRead, numChannels, sampIntRef, iLast
+	variable i, sampInt, sampIntRead, numChannels, sampIntRef, iLast
 	variable numConsecutive = -1
 	variable numTries = 1001
 
@@ -429,9 +444,6 @@ static Function SI_TestSampInt(panelTitle)
 	WAVE ITCChanConfigWave = GetITCChanConfigWave(panelTitle)
 	numChannels = DimSize(ITCChanConfigWave, ROWS)
 
-	Make/I/FREE/N=(2, numChannels) ReqWave
-	ReqWave[0][] = ITCChanConfigWave[q][0]
-	ReqWave[1][] = ITCChanConfigWave[q][1]
 	Make/D/FREE/N=(20, numChannels) ResultWave
 
 	for(i=1; i < numTries; i += 1)
@@ -442,15 +454,17 @@ static Function SI_TestSampInt(panelTitle)
 		endif
 
 		ITCChanConfigWave[][2] = sampInt
-		ITCConfigAllChannels2/Z ITCChanConfigWave, ITCDataWave
 
-		if(!ret)
+		WAVE config_t = HW_ITC_TransposeAndToDouble(ITCChanConfigWave)
+		ITCConfigAllChannels2/Z config_t, ITCDataWave
+
+		if(!V_ITCError)
 			// we could set the sampling interval
 			// so we try to read it back and check if it is the same
 			ITCConfigChannelUpload2
 			HW_ITC_HandleReturnValues(HARDWARE_ABORT_ON_ERROR, V_ITCError, V_ITCXOPError)
 
-			ITCGetAllChannelsConfig2/O ReqWave, ResultWave
+			ITCGetAllChannelsConfig2/O config_t, ResultWave
 			HW_ITC_HandleReturnValues(HARDWARE_ABORT_ON_ERROR, V_ITCError, V_ITCXOPError)
 
 			WaveStats/Q/R=[12,12] ResultWave
@@ -477,7 +491,7 @@ static Function SI_TestSampInt(panelTitle)
 		endif
 	endfor
 
-	return NaN
+	return -1
 End
 
 #else
@@ -555,6 +569,16 @@ static Function/WAVE SI_GetMinSampIntWave(panelTitle)
 
 			if(!WaveExists(wv))
 				return SI_LoadMinSampIntFromDisk("ITC18USB")
+			endif
+
+			return wv
+			break
+		case "ITC16USB":
+		case "ITC16":
+			WAVE/SDFR=dfr/Z wv = SampInt_ITC16USB
+
+			if(!WaveExists(wv))
+				return SI_LoadMinSampIntFromDisk("ITC16USB")
 			endif
 
 			return wv
