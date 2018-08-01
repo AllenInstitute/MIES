@@ -2002,7 +2002,7 @@ Function HW_NI_WriteAnalogSingleAndSlow(device, channel, value, [flags])
 		endif
 	endif
 
-	return ret != 0
+	return ret
 End
 
 /// @brief Read a single value from the given analog output channel
