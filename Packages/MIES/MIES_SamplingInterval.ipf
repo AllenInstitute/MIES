@@ -223,6 +223,18 @@ static Function/WAVE SI_LoadMinSampIntFromDisk(deviceType)
 	return wv
 End
 
+/// @brief Store the lookup wave on disc
+Function/WAVE SI_StoreMinSampIntOnDisk(wv, deviceType)
+	WAVE wv
+	string deviceType
+
+	Duplicate wv, $("SampInt_" + deviceType)/WAVE=storedWave
+
+	string path = GetFolder(FunctionPath("")) + "SampInt_" + deviceType + ".itx"
+	Save/O/T/M="\n" storedWave as path
+	KillWaves/Z storedWave
+End
+
 /// @brief Query the DA_EPhys panel for the active channels and
 /// fill it in the passed structure
 ///
@@ -417,6 +429,7 @@ Function SI_CreateLookupWave(panelTitle, [ignoreChannelOrder])
 	ITCConfigChannelReset2
 
 	SI_CompressWave(results)
+	SI_StoreMinSampIntOnDisk(results, deviceType)
 End
 
 /// @brief Test the preset sampling interval
