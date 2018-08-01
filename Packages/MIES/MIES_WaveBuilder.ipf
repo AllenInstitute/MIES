@@ -625,7 +625,7 @@ static Function WB_CalculateParameterWithDelta(operation, value, delta, dme, lde
 			break
 		default:
 			// future proof
-			printf "WB_AddDelta: Stimset %s uses an unknown operation %d and can therefore not be recreated.\r", setName, operation
+			printf "WB_AddDelta: Stimset %s uses an unknown operation %g and can therefore not be recreated.\r", setName, operation
 			return 1
 			break
 	endswitch
