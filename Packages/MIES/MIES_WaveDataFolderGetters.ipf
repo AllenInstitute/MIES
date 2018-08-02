@@ -537,14 +537,28 @@ Function/Wave GetHardwareDataWave(panelTitle)
 	string panelTitle
 
 	DFREF dfr = GetDevicePath(panelTitle)
-	WAVE/W/Z/SDFR=dfr wv = HardwareDataWave
+	variable hardwareType = DAP_GetHardwareType(panelTitle)
 
-	if(WaveExists(wv))
-		return wv
-	endif
+	switch(hardwareType)
+		case HARDWARE_ITC_DAC:
+			WAVE/W/Z/SDFR=dfr wv = HardwareDataWave
 
-	Make/W/N=(1, NUM_DA_TTL_CHANNELS) dfr:HardwareDataWave/Wave=wv
-	return wv
+			if(WaveExists(wv))
+				return wv
+			endif
+
+			Make/W/N=(1, NUM_DA_TTL_CHANNELS) dfr:HardwareDataWave/Wave=wv
+			return wv
+			break
+		case HARDWARE_NI_DAC:
+			WAVE/WAVE/Z/SDFR=dfr wv_ni = HardwareDataWave
+			if(WaveExists(wv_ni))
+				return wv_ni
+			endif
+			Make/WAVE/N=(NUM_DA_TTL_CHANNELS) dfr:HardwareDataWave/Wave=wv_ni
+			return wv_ni
+			break
+	endswitch
 End
 
 static Constant ITC_CONFIG_WAVE_VERSION = 1
