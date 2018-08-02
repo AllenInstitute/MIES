@@ -3995,7 +3995,7 @@ Function DAP_DeviceIsUnlocked(panelTitle)
 	string panelTitle
 
 	string deviceType, deviceNumber
-	return !(ParseDeviceString(panelTitle, deviceType, deviceNumber) && WhichListItem(deviceType, DEVICE_TYPES) != -1 && WhichListItem(deviceNumber, DEVICE_NUMBERS) != -1)
+	return !(ParseDeviceString(panelTitle, deviceType, deviceNumber) && WhichListItem(deviceType, DEVICE_TYPES_ITC) != -1 && WhichListItem(deviceNumber, DEVICE_NUMBERS) != -1)
 End
 
 Function DAP_AbortIfUnlocked(panelTitle)

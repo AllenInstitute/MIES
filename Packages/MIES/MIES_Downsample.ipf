@@ -97,11 +97,11 @@ Function/S GetPopupMenuDeviceListWithData()
 
 	string followerDeviceType, followerDeviceNumber
 	variable numFollower
-	variable numDeviceTypes   = ItemsInList(DEVICE_TYPES)
+	variable numDeviceTypes   = ItemsInList(DEVICE_TYPES_ITC)
 	variable numDevices       = ItemsInList(DEVICE_NUMBERS)
 
 	for(i=0; i < numDeviceTypes; i+=1)
-		deviceType = StringFromList(i, DEVICE_TYPES)
+		deviceType = StringFromList(i, DEVICE_TYPES_ITC)
 		path       = GetDeviceTypePathAsString(deviceType)
 
 		if(!DataFolderExists(path))

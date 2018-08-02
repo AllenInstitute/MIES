@@ -1499,10 +1499,10 @@ Function/S GetAllDevices([activeOnly])
 		return ""
 	endif
 
-	numTypes   = ItemsInList(DEVICE_TYPES)
+	numTypes   = ItemsInList(DEVICE_TYPES_ITC)
 	numNumbers = ItemsInList(DEVICE_NUMBERS)
 	for(i = 0; i < numTypes; i += 1)
-		type = StringFromList(i, DEVICE_TYPES)
+		type = StringFromList(i, DEVICE_TYPES_ITC)
 
 		for(j = 0; j < numNumbers ; j += 1)
 			number = StringFromList(j, DEVICE_NUMBERS)
@@ -1747,7 +1747,7 @@ Function UpdateSweepConfig(config, [samplingInterval])
 	config[][2] = samplingInterval
 End
 
-/// @brief Parse a device string of the form X_DEV_Y, where X is from @ref DEVICE_TYPES
+/// @brief Parse a device string of the form X_DEV_Y, where X is from @ref DEVICE_TYPES_ITC
 /// and Y from @ref DEVICE_NUMBERS.
 ///
 /// Returns the result in deviceType and deviceNumber.
