@@ -205,13 +205,17 @@ static Function AB_AddFile(baseFolder, discLocation)
 End
 
 /// @brief function tries to load Data From discLocation.
-static Function/S AB_LoadFile(discLocation)
+static Function AB_LoadFile(discLocation)
 	string discLocation
 
 	string device, deviceList
 	variable numDevices, i, highestSweepNumber
 
 	Wave/T map = AB_GetMap(discLocation)
+
+	if(!AB_HasCompatibleVersion(discLocation))
+		return NaN
+	endif
 
 	deviceList = AB_LoadLabNotebook(discLocation)
 	Wave/T deviceWave = AB_SaveDeviceList(deviceList, map[%DataFolder])
@@ -235,8 +239,51 @@ static Function/S AB_LoadFile(discLocation)
 		Wave/I sweeps = GetAnalysisChannelSweepWave(map[%DataFolder], device)
 		AB_FillListWave(map[%FileName], device, map[%DataFolder], sweeps)
 	endfor
+End
 
-	return deviceList
+/// @brief Check if the given file has a compatible version
+///        which this version of the analysis browser can handle.
+static Function AB_HasCompatibleVersion(discLocation)
+	string discLocation
+
+	string dataFolderPath
+	variable numWavesLoaded
+
+	WAVE/T map = AB_GetMap(discLocation)
+
+	strswitch(map[%FileType])
+		case ANALYSISBROWSER_FILE_TYPE_IGOR:
+			DFREF targetDFR = GetAnalysisExpFolder(map[%DataFolder])
+			dataFolderPath  = GetMiesPathAsString()
+
+			DFREF saveDFR  = GetDataFolderDFR()
+			numWavesLoaded = AB_LoadDataWrapper(targetDFR, map[%DiscLocation], dataFolderPath, "pxpVersion", typeFlags = LOAD_DATA_TYPE_NUMBERS)
+			SetDataFolder saveDFR
+
+			// no pxpVersion present
+			// we can load the file
+			if(numWavesLoaded == 0)
+				DEBUGPRINT("Experiment has no pxp version so we can load it.")
+				return 1
+			else
+				NVAR/Z pxpVersion = targetDFR:pxpVersion
+				ASSERT(NVAR_Exists(pxpVersion), "Expected existing pxpVersion")
+
+				if(IsFinite(pxpVersion) && pxpVersion <= ANALYSIS_BROWSER_SUPP_VERSION)
+					DEBUGPRINT("Experiment has a compatible pxp version.", var = pxpVersion)
+					return 1
+				else
+					printf "The experiment %s has the pxpVersion %d which this version of MIES can not handle.\r", map[%DiscLocation], pxpVersion
+					ControlWindowToFront()
+					return 0
+				endif
+			endif
+			break
+		case ANALYSISBROWSER_FILE_TYPE_NWB:
+			return 1
+		default:
+			ASSERT(0, "invalid file type")
+	endswitch
 End
 
 static Function/S AB_GetSettingNumFiniteVals(wv, device, sweepNo, name)

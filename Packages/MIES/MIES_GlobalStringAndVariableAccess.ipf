@@ -454,3 +454,8 @@ Function/S GetMaxIntertrialInterval(panelTitle)
 
 	return GetNVARAsString(GetDevicePath(panelTitle), "maxIntertrialInterval", initialValue = 0)
 End
+
+/// @brief Return the version number of the Igor experiment
+Function/S GetPxPVersion()
+	return GetNVARAsString(GetMiesPath(), "pxpVersion", initialValue = EXPERIMENT_VERSION)
+End

@@ -4207,6 +4207,7 @@ Function DAP_LockDevice(panelTitle)
 	HW_RegisterDevice(panelTitleLocked, HARDWARE_ITC_DAC, ITCDeviceIDGlobal)
 	if(ItemsInList(GetListOfLockedDevices()) == 1)
 		DAP_LoadBuiltinStimsets()
+		GetPxPVersion()
 	endif
 End
 
