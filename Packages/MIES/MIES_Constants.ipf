@@ -926,7 +926,7 @@ Constant DELTA_OPERATION_ALTERNATE = 5
 Constant DELTA_OPERATION_EXPLICIT  = 6
 /// @}
 
-Constant MINIMUM_FREE_DISC_SPACE = 107374182400 // 10GB
+Constant MINIMUM_FREE_DISC_SPACE = 10737418240 // 10GB
 
 /// @name Stimset wave note entry types for WB_GetWaveNoteEntry()
 /// @anchor StimsetWaveNoteEntryTypes
