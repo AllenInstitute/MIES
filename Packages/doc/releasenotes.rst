@@ -3,6 +3,94 @@ Release notes
 
 .. toctree::
 
+Release 1.7
+===========
+
+DA\_Ephys
+---------
+
+- Support stimsets with per-sweep ITI. This also changes how the ITI is
+  calculated for a set of sweeps, as now only the active sets are taken into
+  account and not all sets in range anymore.
+- Complain if the calculated number of sweeps in the set is zero
+- Check free disc space before acquisition
+- Add minimum sampling interval table for ITC16/ITC16USB
+- Complain better on known ITC issues for first time users
+- Fix acquisition order when changing tabs during DAQ with indexing turned on
+- Avoid indexing errors when changing Repeat Sets/Lists during DAQ
+- Apply on mode switch: Fix cases where the headstage and the DA/AD
+  numerical values don't match
+- Apply on mode switch: Fix some edge cases with indexing
+- Make TPStorage resizing faster
+- Testpulse Multi Device: Try selecting the device first
+  This handles some edge case experiments better which have the TP stored as
+  running and are then reopened.
+
+ExperimentConfig
+----------------
+
+- Changed I-Clamp primary gain to 5 from 1
+- Recursively create the folders to save the experiment
+
+General
+-------
+
+- Support stopping Igor Pro via `Quit/N` while the testpulse is running. We
+  now don't crash anymore.
+- Save and clear: Delete Databrowser, Cache and reset history capturing
+
+ITC XOP 2
+----------
+
+- Use current version of ITCXOP2 for IP8 as well
+
+MCC XOP
+-------
+- The XOP now works on a real 32bit Windows
+
+MIESUtils XOP
+-------------
+
+- New function MU_GetFreeDiskSpace
+
+Labnotebook
+-----------
+
+New numerical keys
+~~~~~~~~~~~~~~~~
+
+- Digitizer Hardware Type
+
+Pressure Control
+----------------
+
+- Make breakin work again with NI hardware
+- P_SetAndGetPressure now returns the real psi and not the calibrated one
+
+WaveBuilder
+-----------
+
+- Reorganize controls and add per sweep ITI controls
+- Due to the new per-sweep ITI the version of the stimset wave note has changed as well
+- Create a newly saved stimset in the stimset folder so that it can be used
+  immediately without the need to recreate it.
+- Speedup delta calculation
+
+Internal
+--------
+
+- Fix the bitrotted sampling interval calculation code
+- Documentation: Don't syntax highlight verbatim blocks
+- Enhance the debug panel
+- DEBUGPRINT/DEBUGPRINTw: Add support for outputting waves
+- Updated BackgroundWatchdog: New Panel Design, works with any background task
+  shows up to 15 tasks
+
+Tango
+-----
+
+- Changed the delimiter character from ; to | for the cmdID passing
+
 Release 1.6
 ===========
 

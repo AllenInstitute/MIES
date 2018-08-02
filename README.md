@@ -30,8 +30,8 @@ Both can be downloaded from [here](http://mdc.custhelp.com/app/answers/detail/a_
 
 The following versions receive fixes for all critical bugs.
 
-* [1.6](http://bamboo.corp.alleninstitute.org/browse/MIES-RELEASE/latestSuccessful/artifact)
-* [1.5](http://bamboo.corp.alleninstitute.org/browse/MIES-CRV1/latestSuccessful/artifact)
+* [1.7](http://bamboo.corp.alleninstitute.org/browse/MIES-RELEASE/latestSuccessful/artifact)
+* [1.6](http://bamboo.corp.alleninstitute.org/browse/MIES-CRV1/latestSuccessful/artifact)
 * [master](http://bamboo.corp.alleninstitute.org/browse/MIES-CM/latestSuccessful/artifact) intended for developer use
 
 ## Bug reporting
