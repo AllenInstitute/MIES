@@ -4704,3 +4704,16 @@ Function/S DAP_GetSamplingMultiplier()
 
 	return "1;2;4;8;16;32;64"
 End
+
+Function DAP_PopMenuProc_SampMult(pa) : PopupMenuControl
+	STRUCT WMPopupAction &pa
+
+	switch(pa.eventCode)
+		case 2: // mouse up
+			DAG_Update(pa.win, pa.ctrlName, val = pa.popNum - 1, str = pa.popStr)
+			DAP_UpdateDAQControls(pa.win, REASON_HEADSTAGE_CHANGE)
+			break
+	endswitch
+
+	return 0
+End
