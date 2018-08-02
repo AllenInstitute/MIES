@@ -37,6 +37,9 @@ ZeroMQ XOP
 MCC XOP
 -------
 
+MIESUtils XOP
+-------------
+
 Labnotebook
 -----------
 
