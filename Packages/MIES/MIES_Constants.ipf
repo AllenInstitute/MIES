@@ -496,6 +496,7 @@ Constant ESCAPE_KEY = 32
 StrConstant WAVEBUILDER_COMBINE_FORMULA_VER = "1"
 
 /// Conversion factor between volts and bits for the AD/DA channels
+/// The ITC 16 bit range is +-10.24 V such that a value of 32000 represents exactly 10 V, thus 3200 -> 1 V.
 Constant HARDWARE_ITC_BITS_PER_VOLT = 3200
 
 /// @name Trigger modes
