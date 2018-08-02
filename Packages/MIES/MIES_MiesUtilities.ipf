@@ -4635,7 +4635,7 @@ Function UpdateLeftOverSweepTime(panelTitle, fifoPos)
 
 	ASSERT(IsFinite(fifoPos), "Unexpected non-finite fifoPos")
 
-	WAVE ITCDataWave         = GetITCDataWave(panelTitle)
+	WAVE ITCDataWave         = GetHardwareDataWave(panelTitle)
 	NVAR repurposedTime      = $GetRepurposedSweepTime(panelTitle)
 	NVAR stopCollectionPoint = $GetStopCollectionPoint(panelTitle)
 

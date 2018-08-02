@@ -430,11 +430,10 @@ Function SCOPE_UpdateOscilloscopeData(panelTitle, dataAcqOrTP, [chunk, fifoPos])
 	string panelTitle
 	variable dataAcqOrTP, chunk, fifoPos
 
+	WAVE OscilloscopeData = GetOscilloscopeWave(panelTitle)
 	variable length, first, last
 	variable startOfADColumns, numEntries
-
-	WAVE OscilloscopeData = GetOscilloscopeWave(panelTitle)
-	WAVE ITCDataWave      = GetITCDataWave(panelTitle)
+	WAVE ITCDataWave      = GetHardwareDataWave(panelTitle)
 	WAVE ITCChanConfigWave = GetITCChanConfigWave(panelTitle)
 	WAVE ADCs = GetADCListFromConfig(ITCChanConfigWave)
 	WAVE DA_EphysGuiState = GetDA_EphysGuiStateNum(panelTitle)

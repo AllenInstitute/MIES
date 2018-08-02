@@ -150,7 +150,7 @@ Function TPM_BkrdTPFuncMD(s)
 		deviceID = ActiveDeviceList[i][%DeviceID]
 		panelTitle = HW_GetMainDeviceName(HARDWARE_ITC_DAC, deviceID)
 
-		WAVE ITCDataWave = GetITCDataWave(panelTitle)
+		WAVE ITCDataWave = GetHardwareDataWave(panelTitle)
 
 		NVAR tgID = $GetThreadGroupIDFIFO(panelTitle)
 		WAVE/Z result = TS_GetNewestFromThreadQueueMult(tgID, {"fifoPos", "startSequence"})

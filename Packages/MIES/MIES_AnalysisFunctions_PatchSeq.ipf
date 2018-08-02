@@ -185,7 +185,7 @@ static Function/WAVE PSQ_DeterminePulseDuration(panelTitle, sweepNo, totalOnsetD
 	WAVE/Z sweepWave = GetSweepWave(panelTitle, sweepNo)
 
 	if(!WaveExists(sweepWave))
-		WAVE sweepWave = GetITCDataWave(panelTitle)
+		WAVE sweepWave = GetHardwareDataWave(panelTitle)
 		WAVE config    = GetITCChanConfigWave(panelTitle)
 	else
 		WAVE config = GetConfigWave(sweepWave)
@@ -734,7 +734,7 @@ static Function/WAVE PSQ_SearchForSpikes(panelTitle, type, sweepWave, headstage,
 
 	Make/FREE/D/N=(LABNOTEBOOK_LAYER_COUNT) spikeDetection = (p == headstage ? 0 : NaN)
 
-	if(WaveRefsEqual(sweepWave, GetITCDataWave(panelTitle)))
+	if(WaveRefsEqual(sweepWave, GetHardwareDataWave(panelTitle)))
 		WAVE config = GetITCChanConfigWave(panelTitle)
 	else
 		WAVE config = GetConfigWave(sweepWave)

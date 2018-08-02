@@ -406,10 +406,10 @@ static Function DC_MakeITCDataWave(panelTitle, numActiveChannels, minSamplingInt
 	DFREF dfr = GetDevicePath(panelTitle)
 	numRows   = DC_CalculateITCDataWaveLength(panelTitle, dataAcqOrTP)
 
-	Make/W/O/N=(numRows, numActiveChannels) dfr:ITCDataWave/Wave=ITCDataWave
+	Make/W/O/N=(numRows, numActiveChannels) dfr:HardwareDataWave/Wave=wv
 
-	FastOp ITCDataWave = 0
-	SetScale/P x 0, minSamplingInterval / 1000, "ms", ITCDataWave
+	FastOp wv = 0
+	SetScale/P x 0, minSamplingInterval / 1000, "ms", wv
 End
 
 /// @brief Initializes the wave used for displaying DAQ/TP results in the
@@ -423,7 +423,7 @@ static Function DC_MakeOscilloscopeWave(panelTitle, numActiveChannels, dataAcqOr
 	variable numActiveChannels, dataAcqOrTP
 
 	variable numRows
-	WAVE ITCDataWave      = GetITCDataWave(panelTitle)
+	WAVE ITCDataWave      = GetHardwareDataWave(panelTitle)
 	WAVE OscilloscopeData = GetOscilloscopeWave(panelTitle)
 
 	if(dataAcqOrTP == TEST_PULSE_MODE)
@@ -598,7 +598,7 @@ static Function DC_CalculateStimsetLength(stimSet, decimationFactor, dataAcqOrTP
 	endif
 End
 
-/// @brief Places data from appropriate DA and TTL stimulus set(s) into ITCdatawave.
+/// @brief Places data from appropriate DA and TTL stimulus set(s) into HardwareDataWave.
 /// Also records certain DA_Ephys GUI settings into sweepDataLNB and sweepDataTxTLNB
 /// @param panelTitle        panel title
 /// @param numActiveChannels number of active channels as returned by DC_ChanCalcForITCChanConfigWave()
@@ -823,7 +823,7 @@ static Function DC_PlaceDataInITCDataWave(panelTitle, numActiveChannels, dataAcq
 	NVAR fifoPosition = $GetFifoPosition(panelTitle)
 	fifoPosition = 0
 
-	WAVE ITCDataWave = GetITCDataWave(panelTitle)
+	WAVE ITCDataWave = GetHardwareDataWave(panelTitle)
 
 	// varies per DAC:
 	// DAGain, DAScale, insertStart (with dDAQ), setLength, testPulseAmplitude (can be non-constant due to different VC/IC)
@@ -851,7 +851,7 @@ static Function DC_PlaceDataInITCDataWave(panelTitle, numActiveChannels, dataAcq
 
 			if(WaveExists(result))
 				MoveWaveWithOverwrite(ITCDataWave, result)
-				WAVE ITCDataWave = GetITCDataWave(panelTitle)
+				WAVE ITCDataWave = GetHardwareDataWave(panelTitle)
 			else
 				Multithread ITCDataWave[][0, numEntries - 1] =                            \
 				  limit(                                                                  \

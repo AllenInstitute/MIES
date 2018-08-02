@@ -533,19 +533,17 @@ End
 ///
 /// Columns:
 /// - one for each active DA, AD, TTL channel (in that order)
-Function/Wave GetITCDataWave(panelTitle)
+Function/Wave GetHardwareDataWave(panelTitle)
 	string panelTitle
 
 	DFREF dfr = GetDevicePath(panelTitle)
-
-	WAVE/W/Z/SDFR=dfr wv = ITCDataWave
+	WAVE/W/Z/SDFR=dfr wv = HardwareDataWave
 
 	if(WaveExists(wv))
 		return wv
 	endif
 
-	Make/W/N=(1, NUM_DA_TTL_CHANNELS) dfr:ITCDataWave/Wave=wv
-
+	Make/W/N=(1, NUM_DA_TTL_CHANNELS) dfr:HardwareDataWave/Wave=wv
 	return wv
 End
 

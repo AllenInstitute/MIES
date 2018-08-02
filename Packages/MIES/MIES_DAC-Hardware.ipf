@@ -1285,7 +1285,7 @@ Function HW_ITC_PrepareAcq(deviceID, [data, dataFunc, config, configFunc, flags,
 
 	if(ParamIsDefault(data))
 		if(ParamIsDefault(dataFunc))
-			WAVE data = GetITCDataWave(panelTitle)
+			WAVE data = GetHardwareDataWave(panelTitle)
 		else
 			WAVE data = dataFunc(panelTitle)
 		endif
