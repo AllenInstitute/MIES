@@ -1782,12 +1782,19 @@ threadsafe Function ParseDeviceString(device, deviceType, deviceNumber)
 	endif
 End
 
-/// @brief Builds the common device string X_DEV_Y, e.g. ITC1600_DEV_O and friends
+/// @brief Builds device string
 Function/S BuildDeviceString(deviceType, deviceNumber)
 	string deviceType, deviceNumber
 
 	ASSERT(!isEmpty(deviceType) && !isEmpty(deviceNumber), "empty device type or number");
-	return deviceType + "_Dev_" + deviceNumber
+// check what device we have
+	if(FindListItem(deviceType, DAP_GetNIDeviceList()) > -1)
+		return deviceType
+	elseif(FindListItem(deviceType, DEVICE_TYPES_ITC) > -1)
+		return deviceType + "_Dev_" + deviceNumber
+	else
+		ASSERT(0, "No NI or ITC device with this name found");
+	endif
 End
 
 /// @brief Create a vertically tiled graph for displaying AD and DA channels
