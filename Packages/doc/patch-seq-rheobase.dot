@@ -42,6 +42,7 @@ digraph G {
         "Enable \"Multidevice DAQ\"";
         "Disable \"dDAQ\"/\"oodDAQ\"";
         "Enable \"Repeated Acquisition\"";
+        "Enable \"Insert TP\"";
         "Valid Autobias voltage (finite and non-zero)";
         "Check if no TTL channels are active";
         "Prepare DAQ/Pre Set Event" -> "Enable \"Autobias\"";
@@ -50,6 +51,7 @@ digraph G {
         "Prepare DAQ/Pre Set Event" -> "Enable \"Multidevice DAQ\"";
         "Prepare DAQ/Pre Set Event" -> "Disable \"dDAQ\"/\"oodDAQ\"";
         "Prepare DAQ/Pre Set Event" -> "Check if no TTL channels are active";
+        "Prepare DAQ/Pre Set Event" -> "Enable \"Insert TP\"";
         "All checks passed";
         "Set \"TP during ITI\"";
         "Valid Autobias voltage (finite and non-zero)" -> "All checks passed";
