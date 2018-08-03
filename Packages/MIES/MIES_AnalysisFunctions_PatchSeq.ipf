@@ -1127,6 +1127,7 @@ Function PSQ_DAScale(panelTitle, s)
 			endif
 
 			PGC_SetAndActivateControl(panelTitle, "check_Settings_ITITP", val = 1)
+			PGC_SetAndActivateControl(panelTitle, "Check_Settings_InsertTP", val = 1)
 
 			KillOrMoveToTrash(wv = GetAnalysisFuncDAScaleDeltaI(panelTitle))
 			KillOrMoveToTrash(wv = GetAnalysisFuncDAScaleDeltaV(panelTitle))

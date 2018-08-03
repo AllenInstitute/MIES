@@ -38,6 +38,7 @@ digraph G {
         "Valid Autobias voltage (finite and non-zero)";
         "Disable \"dDAQ\"/\"oodDAQ\"";
         "Enable \"Repeated Acquisition\"";
+        "Enable \"Insert TP\"";
         "Check if no TTL channels are active";
         "Prepare DAQ/Pre Set Event" -> "Enable \"Autobias\"";
         "Prepare DAQ/Pre Set Event" -> "Enable \"TP during ITI\"";
@@ -46,6 +47,7 @@ digraph G {
         "Prepare DAQ/Pre Set Event" -> "Disable \"dDAQ\"/\"oodDAQ\"";
         "Prepare DAQ/Pre Set Event" -> "Enable \"Repeated Acquisition\"";
         "Prepare DAQ/Pre Set Event" -> "Check if no TTL channels are active";
+        "Prepare DAQ/Pre Set Event" -> "Enable \"Insert TP\"";
         "All checks passed";
         "Valid Autobias voltage (finite and non-zero)" -> "All checks passed";
         "Check if no TTL channels are active" -> "All checks passed";
