@@ -88,12 +88,14 @@ End
 /// Rows:
 ///  - Active channels only (same as ITCChanConfigWave)
 ///
-/// Can be used to convert the ITCDataWave contents from bits to mv/pA
+/// Can be used to convert the ITCDataWave contents from bits to mV/pA
+/// The ITCDataWave uses digital ADC/DAC values while for NI devices the values represent actual voltages
+/// So the gain for NI devices is inverted (aka it is an actual voltage gain factor)
 Function/WAVE SWS_GetChannelGains(panelTitle)
 	string panelTitle
 
 	variable numDACs, numADCs, numTTLs
-	variable numCols
+	variable numCols, hardwareType
 
 	WAVE ITCChanConfigWave = GetITCChanConfigWave(panelTitle)
 	numCols = DimSize(ITCChanConfigWave, ROWS)
@@ -109,20 +111,41 @@ Function/WAVE SWS_GetChannelGains(panelTitle)
 
 	Make/D/FREE/N=(numCols) gain
 
-	// DA: w' = w / (s / g)
-	if(numDACs > 0)
-		gain[0, numDACs - 1] = HARDWARE_ITC_BITS_PER_VOLT / DA_EphysGuiState[DACs[p]][%$GetSpecialControlLabel(CHANNEL_TYPE_DAC, CHANNEL_CONTROL_GAIN)]
-	endif
+	hardwareType = DAP_GetHardwareType(panelTitle)
+	switch(hardwareType)
+		case HARDWARE_NI_DAC:
+			//  in mV^-1, w'(V) = w * g
+			if(numDACs > 0)
+				gain[0, numDACs - 1] = 1 / DA_EphysGuiState[DACs[p]][%$GetSpecialControlLabel(CHANNEL_TYPE_DAC, CHANNEL_CONTROL_GAIN)]
+			endif
 
-	// AD: w' = w  / (g * s)
-	if(numADCs > 0)
-		gain[numDACs, numDACs + numADCs - 1] = DA_EphysGuiState[ADCs[p - numDACs]][%$GetSpecialControlLabel(CHANNEL_TYPE_ADC, CHANNEL_CONTROL_GAIN)] * HARDWARE_ITC_BITS_PER_VOLT
-	endif
+			// in pA / V, w'(pA) = w * g
+			if(numADCs > 0)
+				gain[numDACs, numDACs + numADCs - 1] = 1 / DA_EphysGuiState[ADCs[p - numDACs]][%$GetSpecialControlLabel(CHANNEL_TYPE_ADC, CHANNEL_CONTROL_GAIN)]
+			endif
 
-	// no scaling done for TTL
-	if(numTTLs > 0)
-		gain[numDACs + numADCs, *] = 1
-	endif
+			// no scaling done for TTL
+			if(numTTLs > 0)
+				gain[numDACs + numADCs, *] = 1
+			endif
+			break
+		case HARDWARE_ITC_DAC:
+			// DA: w' = w / (s / g)
+			if(numDACs > 0)
+				gain[0, numDACs - 1] = HARDWARE_ITC_BITS_PER_VOLT / DA_EphysGuiState[DACs[p]][%$GetSpecialControlLabel(CHANNEL_TYPE_DAC, CHANNEL_CONTROL_GAIN)]
+			endif
+
+			// AD: w' = w  / (g * s)
+			if(numADCs > 0)
+				gain[numDACs, numDACs + numADCs - 1] = DA_EphysGuiState[ADCs[p - numDACs]][%$GetSpecialControlLabel(CHANNEL_TYPE_ADC, CHANNEL_CONTROL_GAIN)] * HARDWARE_ITC_BITS_PER_VOLT
+			endif
+
+			// no scaling done for TTL
+			if(numTTLs > 0)
+				gain[numDACs + numADCs, *] = 1
+			endif
+			break
+	endswitch
 
 	return gain
 End
