@@ -796,6 +796,16 @@ Constant SIGNED_INT_16BIT_MIN = -32768
 Constant SIGNED_INT_16BIT_MAX =  32767
 /// @}
 
+/// @name Ranges for NIDAQ analog output in volts
+///
+/// @anchor NIDAQ_AO_WaveRanges
+/// @{
+Constant NI_DAC_MIN = -10
+Constant NI_DAC_MAX =  10
+Constant NI_ADC_MIN = -10
+Constant NI_ADC_MAX =  10
+/// @}
+
 /// Maximum length of a valid name in bytes in Igor Pro.
 Constant MAX_OBJECT_NAME_LENGTH_IN_BYTES = 31
 

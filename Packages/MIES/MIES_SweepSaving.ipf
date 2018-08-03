@@ -215,7 +215,7 @@ End
 /// @brief Return the floating point type for storing the raw data
 ///
 /// The returned values are the same as for `WaveType`
-static Function SWS_GetRawDataFPType(panelTitle)
+Function SWS_GetRawDataFPType(panelTitle)
 	string panelTitle
 
 	return DAG_GetNumericalValue(panelTitle, "Check_Settings_UseDoublePrec") ? IGOR_TYPE_64BIT_FLOAT : IGOR_TYPE_32BIT_FLOAT

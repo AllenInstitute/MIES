@@ -45,11 +45,9 @@ Function TPS_TestPulseFunc(s)
 
 	HW_ITC_ResetFifo(ITCDeviceIDGlobal, flags=HARDWARE_ABORT_ON_ERROR)
 	HW_StartAcq(HARDWARE_ITC_DAC, ITCDeviceIDGlobal, flags=HARDWARE_ABORT_ON_ERROR)
-
 	do
 		// nothing
 	while (HW_ITC_MoreData(ITCDeviceIDGlobal))
-
 	HW_StopAcq(HARDWARE_ITC_DAC, ITCDeviceIDGlobal, prepareForDAQ=1)
 	SCOPE_UpdateOscilloscopeData(panelTitle, TEST_PULSE_MODE)
 	TP_Delta(panelTitle)

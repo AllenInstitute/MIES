@@ -82,6 +82,34 @@ static Constant HW_ITC_RUNNING_STATE = 0x10
 /// @name Wrapper functions redirecting to the correct internal implementations depending on #HARDWARE_DAC_TYPES
 /// @{
 
+
+/// @brief Prepare for data acquisition
+///
+/// @param hardwareType One of @ref HardwareDACTypeConstants
+/// @param deviceID    device identifier
+/// @param data        hardware data wave
+/// @param dataFunc    [optional, defaults to GetITCDataWave()] override wave getter for the ITC data wave
+/// @param config      ITC config wave
+/// @param configFunc  [optional, defaults to GetITCChanConfigWave()] override wave getter for the ITC config wave
+/// @param flags       [optional, default none] One or multiple flags from @ref HardwareInteractionFlags
+/// @param offset      [optional, defaults to zero] offset into the data wave in points
+Function HW_PrepareAcq(hardwareType, deviceID, [data, dataFunc, config, configFunc, flags, offset])
+	variable hardwareType, deviceID
+	WAVE/Z data, config
+	FUNCREF HW_WAVE_GETTER_PROTOTYPE dataFunc, configFunc
+	variable flags, offset
+
+	switch(hardwareType)
+		case HARDWARE_ITC_DAC:
+			return HW_ITC_PrepareAcq(deviceID, flags=flags)
+			break
+		case HARDWARE_NI_DAC:
+			return HW_NI_PrepareAcq(deviceID, flags=flags)
+			break
+	endswitch
+	return 0
+End
+
 /// @brief Select a device
 ///
 /// Only used in special cases for ITC hardware as all ITC operations use the
@@ -394,8 +422,9 @@ End
 /// @param deviceID     device identifier
 /// @param triggerMode  [optional, defaults to #HARDWARE_DAC_DEFAULT_TRIGGER] one of @ref TriggerModeStartAcq
 /// @param flags        [optional, default none] One or multiple flags from @ref HardwareInteractionFlags
-Function HW_StartAcq(hardwareType, deviceID, [triggerMode, flags])
-	variable hardwareType, deviceID, triggerMode, flags
+/// @param repeat       [optional, default 0] for NI devices, repeats the scan after it ends
+Function HW_StartAcq(hardwareType, deviceID, [triggerMode, flags, repeat])
+	variable hardwareType, deviceID, triggerMode, flags, repeat
 
 	HW_AssertOnInvalid(hardwareType, deviceID)
 
@@ -408,8 +437,7 @@ Function HW_StartAcq(hardwareType, deviceID, [triggerMode, flags])
 			HW_ITC_StartAcq(deviceID, triggerMode, flags=flags)
 			break
 		case HARDWARE_NI_DAC:
-			/// @todo add start acq NI code
-			ASSERT(0, "not yet implemented")
+			HW_NI_StartAcq(deviceID, triggerMode, flags=flags, repeat=repeat)
 			break
 	endswitch
 End
@@ -1805,6 +1833,197 @@ static Constant HW_NI_MAX_VOLTAGE = +10.0
 ///@}
 
 static Constant HW_NI_DIFFERENTIAL_SETUP = 0
+static Constant HW_NI_FIFOSIZE = 10
+// HW_NI_FIFO_MIN_FREE_DISC_SPACE = SAFETY * HW_NI_FIFOSIZE * sizeof(double) * NI_MAX_SAMPLE_RATE
+// HW_NI_FIFO_MIN_FREE_DISC_SPACE = 2      * 10             *              8 * 500000
+static Constant HW_NI_FIFO_MIN_FREE_DISC_SPACE = 80000000
+
+/// @name Functions for interfacing with National Instruments Hardware
+///
+
+/// @see HW_StartAcq
+Function HW_NI_StartAcq(deviceID, triggerMode, [flags, repeat])
+	variable deviceID, triggerMode, flags, repeat
+
+	string panelTitle, device, FIFONote, noteID, fifoName, errMsg
+	variable i, pos, endpos, channelTimeOffset, freeDiskSpace
+
+	if(ParamIsDefault(repeat))
+		repeat = 0
+	endif
+
+	panelTitle = HW_GetMainDeviceName(HARDWARE_NI_DAC, deviceID)
+	device = HW_GetInternalDeviceName(HARDWARE_NI_DAC, deviceID)
+	SVAR scanStr = $GetNI_AISetup(panelTitle)
+	fifoName = GetNIFIFOName(deviceID)
+	try
+		freeDiskSpace = MU_GetFreeDiskSpace(GetWindowsPath(SpecialDirPath("Temporary", 0, 0, 0)))
+		if(isNaN(freeDiskSpace) || freeDiskSpace < HW_NI_FIFO_MIN_FREE_DISC_SPACE)
+			printf "%s: Can not start acquisition. Not enough free disk space for data buffer.\rThe free disk space is less than %.0W0PB (%.1W0PB).\r", panelTitle, HW_NI_FIFO_MIN_FREE_DISC_SPACE, freeDiskSpace
+			ControlWindowToFront()
+			return NaN
+		endif
+		CtrlFIFO $fifoName, start
+		if(repeat)
+			DAQmx_Scan/DEV=device/BKG/RPTC FIFO=scanStr
+		else
+			DAQmx_Scan/DEV=device/BKG FIFO=scanStr
+		endif
+		// The following code just gathers additional information that is printed out
+		FIFOStatus/Q $fifoName
+		FIFONote = StringByKey("NOTE", S_Info)
+		noteID = "Channel dt="
+		pos = strsearch(FIFONote, noteID, 0)
+		if(pos > -1)
+			pos += strlen(noteID)
+			endpos = strsearch(FIFONote, "\r", pos)
+			channelTimeOffset = str2num(FIFONote[pos, endpos - 1])
+			DEBUGPRINT("Time offset between NI channels: " + num2str(channelTimeOffset*1E6) + " µs")
+		endif
+	catch
+		errMsg = GetRTErrMessage()
+		ASSERT(0, "Start acquisition of NI device " + panelTitle + " failed with code: " + num2str(getRTError(1)) + "\r" + errMsg)
+	endtry
+End
+
+/// @brief Prepare for data acquisition
+///
+/// @param deviceID    device identifier
+/// @param data        ITC data wave
+/// @param dataFunc    [optional, defaults to GetITCDataWave()] override wave getter for the ITC data wave
+/// @param config      ITC config wave
+/// @param configFunc  [optional, defaults to GetITCChanConfigWave()] override wave getter for the ITC config wave
+/// @param offset      [optional, defaults to zero] offset into the data wave in points
+/// @param flags       [optional, default none] One or multiple flags from @ref HardwareInteractionFlags
+Function HW_NI_PrepareAcq(deviceID, [data, dataFunc, config, configFunc, flags, offset])
+	variable deviceID
+	WAVE/Z data, config
+	FUNCREF HW_WAVE_GETTER_PROTOTYPE dataFunc, configFunc
+	variable flags, offset
+
+	string panelTitle, tempStr, device, filename, clkStr, wavegenStr, TTLStr, fifoName, errMsg
+	variable i, aiCnt, ttlCnt, channels, sampleIntervall, numEntries, fifoSize
+
+	DEBUGPRINTSTACKINFO()
+
+	panelTitle = HW_GetMainDeviceName(HARDWARE_NI_DAC, deviceID)
+	device = HW_GetInternalDeviceName(HARDWARE_NI_DAC, deviceID)
+
+	if(ParamIsDefault(data))
+		if(ParamIsDefault(dataFunc))
+			WAVE/WAVE NIDataWave = GetHardwareDataWave(panelTitle)
+		else
+		// TODO
+			WAVE/WAVE NIDataWave = dataFunc(panelTitle)
+		endif
+	endif
+
+	if(ParamIsDefault(config))
+		if(ParamIsDefault(configFunc))
+			WAVE config = GetITCChanConfigWave(panelTitle)
+		else
+			WAVE config = configFunc(panelTitle)
+		endif
+	endif
+
+	if(!ParamIsDefault(offset))
+		config[][%Offset] = offset
+	endif
+// TODO MH case offset not 0
+
+// Get AD Scaling
+	WAVE gain = SWS_GetChannelGains(panelTitle)
+
+	fifoName = GetNIFIFOName(deviceID)
+	channels = DimSize(config, ROWS)
+	SVAR scanStr = $GetNI_AISetup(panelTitle)
+	scanStr = fifoName + ";"
+	wavegenStr = ""
+	TTLStr = ""
+	Make/FREE/WAVE/N=(channels) TTLWaves
+
+	try
+
+		NewFIFO $fifoName
+		aiCnt = 0
+		ttlCnt = 0
+		for(i = 0;i < channels; i += 1)
+			switch(config[i][%ChannelType])
+				case ITC_XOP_CHANNEL_TYPE_ADC:
+					scanStr += num2str(config[i][%ChannelNumber]) + "/RSE,"
+					scanStr += num2str(NI_ADC_MIN) + "," + num2str(NI_ADC_MAX) + ","
+					scanStr += num2str(gain[i]) + ",0"
+					scanStr += ";"
+					// note: the second parameter encodes the attributed NIDataWave index into the FIFO channel name
+					NewFIFOChan $fifoName, $num2str(i),0,1,NI_ADC_MIN,NI_ADC_MAX,"V"
+					aiCnt += 1
+					break
+				case ITC_XOP_CHANNEL_TYPE_DAC:
+					WAVE NIChannel = NIDataWave[i]
+					wavegenStr += GetWavesDataFolder(NIChannel, 2) + ","
+					wavegenStr += num2str(config[i][%ChannelNumber]) + ","
+					sprintf tempStr, "%10f", max(-10, WaveMin(NIChannel) - 0.001)
+					wavegenStr += tempStr + ","
+					sprintf tempStr, "%10f", min(10, WaveMax(NIChannel) + 0.001)
+					wavegenStr += tempStr + ";"
+					break
+				case ITC_XOP_CHANNEL_TYPE_TTL:
+					TTLStr += "/" + device + "/port0/line" + num2str(config[i][%ChannelNumber]) + ","
+					TTLWaves[ttlCnt]= NIDataWave[i]
+					ttlCnt += 1
+					break
+			endswitch
+		endfor
+
+		sampleIntervall = config[0][%SamplingInterval] * 1E-6
+		fifoSize = HW_NI_FIFOSIZE/sampleIntervall
+		NVAR fifopos = $GetFifoPosition(panelTitle)
+		fifopos = 0
+		NVAR fnum = $GetFIFOFileRef(panelTitle)
+		NewPath/O/Q tempNIAcqPath, SpecialDirPath("Temporary", 0, 0, 0)
+		filename = "MIES_FIFO_" + paneltitle + ".DAT"
+		Open/P=tempNIAcqPath fnum as filename
+		KillPath tempNIAcqPath
+		CtrlFIFO $fifoName, deltaT=sampleIntervall, size=fifoSize, file=fnum, note="MIES Analog In File"
+
+		clkStr = "/" + device + "/ai/sampleclock"
+		// note actually this does already 'starts' a measurement
+		DAQmx_WaveFormGen/DEV=device/STRT=1/CLK={clkStr, 0} wavegenStr
+		switch(ttlCnt)
+			case 0:
+				break
+			case 1:
+				DAQmx_DIO_Config/DEV=device/LGRP=1/CLK={clkStr, 0}/RPTC/DIR=1/WAVE={TTLWaves[0]} TTLStr
+				break
+			case 2:
+				DAQmx_DIO_Config/DEV=device/LGRP=1/CLK={clkStr, 0}/RPTC/DIR=1/WAVE={TTLWaves[0], TTLWaves[1]} TTLStr
+				break
+			case 3:
+				DAQmx_DIO_Config/DEV=device/LGRP=1/CLK={clkStr, 0}/RPTC/DIR=1/WAVE={TTLWaves[0], TTLWaves[1], TTLWaves[2]} TTLStr
+				break
+			case 4:
+				DAQmx_DIO_Config/DEV=device/LGRP=1/CLK={clkStr, 0}/RPTC/DIR=1/WAVE={TTLWaves[0], TTLWaves[1], TTLWaves[2], TTLWaves[3]} TTLStr
+				break
+			case 5:
+				DAQmx_DIO_Config/DEV=device/LGRP=1/CLK={clkStr, 0}/RPTC/DIR=1/WAVE={TTLWaves[0], TTLWaves[1], TTLWaves[2], TTLWaves[3], TTLWaves[4]} TTLStr
+				break
+			case 6:
+				DAQmx_DIO_Config/DEV=device/LGRP=1/CLK={clkStr, 0}/RPTC/DIR=1/WAVE={TTLWaves[0], TTLWaves[1], TTLWaves[2], TTLWaves[3], TTLWaves[4], TTLWaves[5]} TTLStr
+				break
+			case 7:
+				DAQmx_DIO_Config/DEV=device/LGRP=1/CLK={clkStr, 0}/RPTC/DIR=1/WAVE={TTLWaves[0], TTLWaves[1], TTLWaves[2], TTLWaves[3], TTLWaves[4], TTLWaves[5], TTLWaves[6]} TTLStr
+				break
+			case 8:
+				DAQmx_DIO_Config/DEV=device/LGRP=1/CLK={clkStr, 0}/RPTC/DIR=1/WAVE={TTLWaves[0], TTLWaves[1], TTLWaves[2], TTLWaves[3], TTLWaves[4], TTLWaves[5], TTLWaves[6], TTLWaves[7]} TTLStr
+				break
+		endswitch
+	catch
+		errMsg = GetRTErrMessage()
+		ASSERT(0, "Prepare acquisition of NI device " + panelTitle + " failed with code: " + num2str(getRTError(1)) + "\r" + errMsg)
+	endtry
+	NVAR taskID = $GetNI_TTLTaskID(panelTitle)
+	taskID = ttlCnt ? V_DAQmx_DIO_TaskNumber : NaN
+End
 
 /// @brief returns properties of NI device
 
@@ -2309,7 +2528,22 @@ Function HW_NI_CloseDevice(deviceID, [flags])
 	HW_NI_ResetDevice(deviceType, flags=flags)
 End
 
+
 #else
+
+Function HW_NI_StartAcq(deviceID, triggerMode, [flags, repeat])
+	variable deviceID, triggerMode, flags, repeat
+	DoAbortNow("NI-DAQ XOP is not available")
+End
+
+Function HW_NI_PrepareAcq(deviceID, [data, dataFunc, config, configFunc, flags, offset])
+	variable deviceID
+	WAVE/Z data, config
+	FUNCREF HW_WAVE_GETTER_PROTOTYPE dataFunc, configFunc
+	variable flags, offset
+
+	DoAbortNow("NI-DAQ XOP is not available")
+End
 
 Function/S HW_NI_GetPropertyListOfDevices(devNr)
 	variable devNr

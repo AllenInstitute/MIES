@@ -526,6 +526,7 @@ Function TP_Setup(panelTitle, runMode)
 	variable runMode
 
 	variable multiDevice
+	variable hardwareType
 
 	multiDevice = (runMode & TEST_PULSE_BG_MULTI_DEVICE)
 
@@ -542,7 +543,7 @@ Function TP_Setup(panelTitle, runMode)
 	DC_ConfigureDataForITC(panelTitle, TEST_PULSE_MODE, multiDevice=multiDevice)
 
 	NVAR ITCDeviceIDGlobal = $GetITCDeviceIDGlobal(panelTitle)
-	HW_ITC_PrepareAcq(ITCDeviceIDGlobal, flags=HARDWARE_ABORT_ON_ERROR)
+	HW_PrepareAcq(DAP_GetHardwareType(panelTitle), ITCDeviceIDGlobal, flags=HARDWARE_ABORT_ON_ERROR)
 End
 
 /// @brief Perform common actions after the testpulse

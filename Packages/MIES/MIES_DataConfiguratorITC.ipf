@@ -98,7 +98,7 @@ Function DC_ConfigureDataForITC(panelTitle, dataAcqOrTP, [multiDevice])
 	DC_UpdateGlobals(panelTitle, dataAcqOrTP)
 
 	if(dataAcqOrTP == TEST_PULSE_MODE)
-		if(multiDevice)
+		if(multiDevice && (DAP_GetHardwareType(panelTitle) == HARDWARE_ITC_DAC))
 			DC_UpdateTestPulseWaveMD(panelTitle)
 		else
 			WAVE TestPulse = GetTestPulse()
@@ -110,7 +110,7 @@ Function DC_ConfigureDataForITC(panelTitle, dataAcqOrTP, [multiDevice])
 	DC_MakeITCConfigAllConfigWave(panelTitle, numActiveChannels)
 
 	DC_PlaceDataInITCChanConfigWave(panelTitle, dataAcqOrTP)
-	DC_PlaceDataInITCDataWave(panelTitle, numActiveChannels, dataAcqOrTP, multiDevice)
+	DC_PlaceDataInHardwareDataWave(panelTitle, numActiveChannels, dataAcqOrTP, multiDevice)
 
 	WAVE ITCChanConfigWave = GetITCChanConfigWave(panelTitle)
 	WAVE ADCs = GetADCListFromConfig(ITCChanConfigWave)
@@ -236,23 +236,45 @@ static Function DC_ChanCalcForITCChanConfigWave(panelTitle, dataAcqOrTP)
 	variable dataAcqOrTP
 
 	variable numDACs, numADCs, numTTLsRackZero, numTTLsRackOne, numActiveHeadstages
+	variable numTTLs
 
-	if(dataAcqOrTP == DATA_ACQUISITION_MODE)
-		numDACs         = DC_NoOfChannelsSelected(panelTitle, CHANNEL_TYPE_DAC)
-		numADCs         = DC_NoOfChannelsSelected(panelTitle, CHANNEL_TYPE_ADC)
-		numTTLsRackZero = DC_AreTTLsInRackChecked(RACK_ZERO, panelTitle)
-		numTTLsRackOne  = DC_AreTTLsInRackChecked(RACK_ONE, panelTitle)
-	elseif(dataAcqOrTP == TEST_PULSE_MODE)
-		numActiveHeadstages = DC_NoOfChannelsSelected(panelTitle, CHANNEL_TYPE_HEADSTAGE)
-		numDACs         = numActiveHeadstages
-		numADCs         = numActiveHeadstages
-		numTTLsRackZero = 0
-		numTTLsRackOne  = 0
-	else
-		ASSERT(0, "Unknown value of dataAcqOrTP")
-	endif
+	variable hardwareType = DAP_GetHardwareType(panelTitle)
+	switch(hardwareType)
+		case HARDWARE_ITC_DAC:
+			if(dataAcqOrTP == DATA_ACQUISITION_MODE)
+				numDACs         = DC_NoOfChannelsSelected(panelTitle, CHANNEL_TYPE_DAC)
+				numADCs         = DC_NoOfChannelsSelected(panelTitle, CHANNEL_TYPE_ADC)
+				numTTLsRackZero = DC_AreTTLsInRackChecked(RACK_ZERO, panelTitle)
+				numTTLsRackOne  = DC_AreTTLsInRackChecked(RACK_ONE, panelTitle)
+			elseif(dataAcqOrTP == TEST_PULSE_MODE)
+				numActiveHeadstages = DC_NoOfChannelsSelected(panelTitle, CHANNEL_TYPE_HEADSTAGE)
+				numDACs         = numActiveHeadstages
+				numADCs         = numActiveHeadstages
+				numTTLsRackZero = 0
+				numTTLsRackOne  = 0
+			else
+				ASSERT(0, "Unknown value of dataAcqOrTP")
+			endif
+			return numDACs + numADCs + numTTLsRackZero + numTTLsRackOne
+			break
+		case HARDWARE_NI_DAC:
+			if(dataAcqOrTP == DATA_ACQUISITION_MODE)
+				numDACs = DC_NoOfChannelsSelected(panelTitle, CHANNEL_TYPE_DAC)
+				numADCs = DC_NoOfChannelsSelected(panelTitle, CHANNEL_TYPE_ADC)
+				numTTLs = DC_NoOfChannelsSelected(panelTitle, CHANNEL_TYPE_TTL)
+			elseif(dataAcqOrTP == TEST_PULSE_MODE)
+				numActiveHeadstages = DC_NoOfChannelsSelected(panelTitle, CHANNEL_TYPE_HEADSTAGE)
+				numDACs = numActiveHeadstages
+				numADCs = numActiveHeadstages
+				numTTLs = 0
+			else
+				ASSERT(0, "Unknown value of dataAcqOrTP")
+			endif
+			return numDACs + numADCs + numTTLs
+			break
+	endswitch
 
-	return numDACs + numADCs + numTTLsRackZero + numTTLsRackOne
+	return NaN
 END
 
 /// @brief Returns the ON/OFF status of the front TTLs on a specified rack.
@@ -336,18 +358,26 @@ static Function DC_CalculateITCDataWaveLength(panelTitle, dataAcqOrTP)
 	string panelTitle
 	variable dataAcqOrTP
 
-	variable exponent
-
+	variable hardwareType = DAP_GetHardwareType(panelTitle)
 	NVAR stopCollectionPoint = $GetStopCollectionPoint(panelTitle)
-	exponent = FindNextPower(stopCollectionPoint, 2)
 
-	if(dataAcqOrTP == DATA_ACQUISITION_MODE)
-		exponent += 1
-	endif
+	switch(hardwareType)
+		case HARDWARE_ITC_DAC:
+			variable exponent = FindNextPower(stopCollectionPoint, 2)
 
-	exponent = max(MINIMUM_ITCDATAWAVE_EXPONENT, exponent)
+			if(dataAcqOrTP == DATA_ACQUISITION_MODE)
+				exponent += 1
+			endif
 
-	return 2^exponent
+			exponent = max(MINIMUM_ITCDATAWAVE_EXPONENT, exponent)
+
+			return 2^exponent
+			break
+		case HARDWARE_NI_DAC:
+			return stopCollectionPoint
+			break
+	endswitch
+	return NaN
 end
 
 /// @brief Returns the longest sweep in a stimulus set across the given channel type
@@ -385,31 +415,70 @@ static Function DC_MakeITCConfigAllConfigWave(panelTitle, numActiveChannels)
 	FastOp config = 0
 End
 
-/// @brief Creates ITCDataWave; The wave that the ITC device takes DA and TTL data from and passes AD data to for all channels.
+/// @brief Creates HardwareDataWave; The wave that the device takes DA and TTL data from and passes AD data to for all channels.
 ///
 /// Config all refers to configuring all the channels at once
 ///
 /// @param panelTitle          panel title
 /// @param numActiveChannels   number of active channels as returned by DC_ChanCalcForITCChanConfigWave()
-/// @param minSamplingInterval sampling interval as returned by DAP_GetITCSampInt()
+/// @param minSamplingInterval sampling interval as returned by DAP_GetSampInt()
 /// @param dataAcqOrTP         one of #DATA_ACQUISITION_MODE or #TEST_PULSE_MODE
-static Function DC_MakeITCDataWave(panelTitle, numActiveChannels, minSamplingInterval, dataAcqOrTP)
+static Function DC_MakeHardwareDataWave(panelTitle, numActiveChannels, minSamplingInterval, dataAcqOrTP)
 	string panelTitle
 	variable numActiveChannels, minSamplingInterval, dataAcqOrTP
 
-	variable numRows
+	variable numRows, i
 
 	// prevent crash in ITC XOP as it must not run if we resize the ITCDataWave
 	NVAR ITCDeviceIDGlobal = $GetITCDeviceIDGlobal(panelTitle)
-	ASSERT(!HW_IsRunning(HARDWARE_ITC_DAC, ITCDeviceIDGlobal), "Hardware is still running and it shouldn't. Please report that as a bug.")
+	variable hardwareType = DAP_GetHardwareType(panelTitle)
+	ASSERT(!HW_IsRunning(hardwareType, ITCDeviceIDGlobal), "Hardware is still running and it shouldn't. Please report that as a bug.")
 
 	DFREF dfr = GetDevicePath(panelTitle)
 	numRows   = DC_CalculateITCDataWaveLength(panelTitle, dataAcqOrTP)
+	switch(hardwareType)
+		case HARDWARE_ITC_DAC:
 
-	Make/W/O/N=(numRows, numActiveChannels) dfr:HardwareDataWave/Wave=wv
+			Make/W/O/N=(numRows, numActiveChannels) dfr:HardwareDataWave/Wave=HardwareDataWave
 
-	FastOp wv = 0
-	SetScale/P x 0, minSamplingInterval / 1000, "ms", wv
+			FastOp HardwareDataWave = 0
+			SetScale/P x 0, minSamplingInterval / 1000, "ms", HardwareDataWave
+			break
+		case HARDWARE_NI_DAC:
+			WAVE/WAVE NIDataWave = GetHardwareDataWave(panelTitle)
+			for(i = numActiveChannels; i < numpnts(NIDataWave); i += 1)
+				WAVE/Z NIChannel = NIDataWave[i]
+				KillWaves/Z NIChannel
+			endfor
+			Redimension/N=(numActiveChannels) NIDataWave
+
+			make/FREE/N=(numActiveChannels) type = SWS_GetRawDataFPType(panelTitle)
+			WAVE config = GetITCChanConfigWave(panelTitle)
+			type = config[p][%ChannelType] == ITC_XOP_CHANNEL_TYPE_TTL ? IGOR_TYPE_UNSIGNED | IGOR_TYPE_8BIT_INT : type[p]
+			NIDataWave = DC_MakeNIChannelWave(dfr, numRows, minSamplingInterval, p, type[p])
+			break
+	endswitch
+End
+
+/// @brief Creates a single NIChannel wave
+///
+/// Config all refers to configuring all the channels at once
+///
+/// @return 							Wave Reference to NI Channel wave
+/// @param dfr 						Data Folder reference where the wave is created
+/// @param numRows				 	size of the 1D channel wave
+/// @param minSamplingInterval	minimum sample intervall in microseconds
+/// @param index	 					number of NI channel
+/// @param type	 					number type of NI channel
+
+static Function/WAVE DC_MakeNIChannelWave(dfr, numRows, minSamplingInterval, index, type)
+	DFREF dfr
+	variable numRows, minSamplingInterval, index, type
+
+	Make/O/N=(numRows)/Y=(type) dfr:$("NI_Channel" + num2str(index))/WAVE=w
+	FastOp w = 0
+	SetScale/P x 0, minSamplingInterval / 1000, "ms", w
+	return w
 End
 
 /// @brief Initializes the wave used for displaying DAQ/TP results in the
@@ -422,22 +491,51 @@ static Function DC_MakeOscilloscopeWave(panelTitle, numActiveChannels, dataAcqOr
 	string panelTitle
 	variable numActiveChannels, dataAcqOrTP
 
-	variable numRows
-	WAVE ITCDataWave      = GetHardwareDataWave(panelTitle)
+	variable numRows, sampleIntervall, col
+	WAVE config = GetITCChanConfigWave(panelTitle)
 	WAVE OscilloscopeData = GetOscilloscopeWave(panelTitle)
-
-	if(dataAcqOrTP == TEST_PULSE_MODE)
-		numRows = TP_GetTestPulseLengthInPoints(panelTitle)
-	elseif(dataAcqOrTP == DATA_ACQUISITION_MODE)
-		numRows = DimSize(ITCDataWave, ROWS)
-	else
-		ASSERT(0, "Invalid dataAcqOrTP value")
-	endif
+	variable hardwareType = DAP_GetHardwareType(panelTitle)
+	switch(hardwareType)
+		case HARDWARE_ITC_DAC:
+			WAVE ITCDataWave      = GetHardwareDataWave(panelTitle)
+			if(dataAcqOrTP == TEST_PULSE_MODE)
+				numRows = TP_GetTestPulseLengthInPoints(panelTitle)
+			elseif(dataAcqOrTP == DATA_ACQUISITION_MODE)
+				numRows = DimSize(ITCDataWave, ROWS)
+			else
+				ASSERT(0, "Invalid dataAcqOrTP value")
+			endif
+			sampleIntervall = DimDelta(ITCDataWave, ROWS)
+			break
+		case HARDWARE_NI_DAC:
+			WAVE/WAVE NIDataWave      = GetHardwareDataWave(panelTitle)
+			if(dataAcqOrTP == TEST_PULSE_MODE)
+				numRows = TP_GetTestPulseLengthInPoints(panelTitle)
+			elseif(dataAcqOrTP == DATA_ACQUISITION_MODE)
+				if(numpnts(NIDataWave))
+					numRows = numpnts(NIDataWave[0])
+				else
+					ASSERT(0, "No channels in NIDataWave")
+				endif
+			else
+				ASSERT(0, "Invalid dataAcqOrTP value")
+			endif
+			sampleIntervall = DimDelta(NIDataWave[0], ROWS)
+			break
+	endswitch
 
 	Redimension/N=(numRows, numActiveChannels) OscilloscopeData
-	SetScale/P x, 0, DimDelta(ITCDataWave, ROWS), "ms", OscilloscopeData
+	SetScale/P x, 0, sampleIntervall, "ms", OscilloscopeData
 	// 0/0 equals NaN, this is not accepted directly
 	WaveTransform/O/V=(0/0) setConstant OscilloscopeData
+	// set DAC channels to 0, this is required for PowerSpectrum as FFT source wave must not contain NaNs
+	for(col = 0; col < numActiveChannels; col += 1)
+		if(config[col][%ChannelType] == ITC_XOP_CHANNEL_TYPE_DAC)
+			MultiThread OscilloscopeData[][col] = 0
+		else
+			break
+		endif
+	endfor
 End
 
 /// @brief Check if the given channel is active
@@ -499,7 +597,9 @@ static Function DC_PlaceDataInITCChanConfigWave(panelTitle, dataAcqOrTP)
 	string ctrl, deviceType, deviceNumber
 	string unitList = ""
 
-	WAVE/SDFR=GetDevicePath(panelTitle) ITCChanConfigWave
+
+	WAVE ITCChanConfigWave = GetITCChanConfigWave(panelTitle)
+//	WAVE/SDFR=GetDevicePath(panelTitle) ITCChanConfigWave
 
 	WAVE statusHS = DAG_GetChannelState(panelTitle, CHANNEL_TYPE_HEADSTAGE)
 
@@ -546,25 +646,40 @@ static Function DC_PlaceDataInITCChanConfigWave(panelTitle, dataAcqOrTP)
 	ITCChanConfigWave[][%Offset]           = 0
 
 	if(dataAcqOrTP == DATA_ACQUISITION_MODE)
-		WAVE sweepDataLNB = GetSweepSettingsWave(panelTitle)
+		variable hardwareType = DAP_GetHardwareType(panelTitle)
+		switch(hardwareType)
+			case HARDWARE_ITC_DAC:
+				WAVE sweepDataLNB = GetSweepSettingsWave(panelTitle)
 
-		if(DC_AreTTLsInRackChecked(RACK_ZERO, panelTitle))
-			ITCChanConfigWave[j][%ChannelType] = ITC_XOP_CHANNEL_TYPE_TTL
+				if(DC_AreTTLsInRackChecked(RACK_ZERO, panelTitle))
+					ITCChanConfigWave[j][%ChannelType] = ITC_XOP_CHANNEL_TYPE_TTL
 
-			channel = HW_ITC_GetITCXOPChannelForRack(panelTitle, RACK_ZERO)
-			ITCChanConfigWave[j][%ChannelNumber] = channel
-			sweepDataLNB[0][10][INDEP_HEADSTAGE] = channel
+					channel = HW_ITC_GetITCXOPChannelForRack(panelTitle, RACK_ZERO)
+					ITCChanConfigWave[j][%ChannelNumber] = channel
+					sweepDataLNB[0][10][INDEP_HEADSTAGE] = channel
 
-			j += 1
-		endif
+					j += 1
+				endif
 
-		if(DC_AreTTLsInRackChecked(RACK_ONE, panelTitle))
-			ITCChanConfigWave[j][%ChannelType] = ITC_XOP_CHANNEL_TYPE_TTL
+				if(DC_AreTTLsInRackChecked(RACK_ONE, panelTitle))
+					ITCChanConfigWave[j][%ChannelType] = ITC_XOP_CHANNEL_TYPE_TTL
 
-			channel = HW_ITC_GetITCXOPChannelForRack(panelTitle, RACK_ONE)
-			ITCChanConfigWave[j][%ChannelNumber] = channel
-			sweepDataLNB[0][11][INDEP_HEADSTAGE] = channel
-		endif
+					channel = HW_ITC_GetITCXOPChannelForRack(panelTitle, RACK_ONE)
+					ITCChanConfigWave[j][%ChannelNumber] = channel
+					sweepDataLNB[0][11][INDEP_HEADSTAGE] = channel
+				endif
+				break
+			case HARDWARE_NI_DAC:
+				WAVE statusTTL = DAG_GetChannelState(panelTitle, CHANNEL_TYPE_TTL)
+				for(i = 0; i < numpnts(statusTTL); i += 1)
+					if(statusTTL[i])
+						ITCChanConfigWave[j][%ChannelType] = ITC_XOP_CHANNEL_TYPE_TTL
+						ITCChanConfigWave[j][%ChannelNumber] = i
+						j += 1
+					endif
+				endfor
+				break
+		endswitch
 	endif
 End
 
@@ -606,11 +721,11 @@ End
 /// @param multiDevice       Fine tune data handling for single device (false) or multi device (true)
 ///
 /// @exception Abort configuration failure
-static Function DC_PlaceDataInITCDataWave(panelTitle, numActiveChannels, dataAcqOrTP, multiDevice)
+static Function DC_PlaceDataInHardwareDataWave(panelTitle, numActiveChannels, dataAcqOrTP, multiDevice)
 	string panelTitle
 	variable numActiveChannels, dataAcqOrTP, multiDevice
 
-	variable i, activeColumn, numEntries, setChecksum, stimsetCycleID, fingerprint, maxITI
+	variable i, activeColumn, numEntries, setChecksum, stimsetCycleID, fingerprint, hardwareType, maxITI
 	string ctrl, str, list, func
 	variable setCycleCount, val, singleSetLength, singleInsertStart, minSamplingInterval
 	variable channelMode, TPAmpVClamp, TPAmpIClamp, testPulseLength, maxStimSetLength
@@ -631,6 +746,8 @@ static Function DC_PlaceDataInITCDataWave(panelTitle, numActiveChannels, dataAcq
 	TPAmpVClamp           = DAG_GetNumericalValue(panelTitle, "SetVar_DataAcq_TPAmplitude")
 	TPAmpIClamp           = DAG_GetNumericalValue(panelTitle, "SetVar_DataAcq_TPAmplitudeIC")
 	powerSpectrum         = DAG_GetNumericalValue(panelTitle, "check_settings_show_power")
+// MH: note with NI the decimationFactor can now be < 1, like 0.4 if a single NI ADC channel runs with 500 kHz
+// whereas the source data generated waves for ITC min sample rate are at 200 kHz
 	decimationFactor      = DC_GetDecimationFactor(panelTitle, dataAcqOrTP)
 	minSamplingInterval   = DAP_GetITCSampInt(panelTitle, dataAcqOrTP)
 	multiplier            = str2num(DAG_GetTextualValue(panelTitle, "Popup_Settings_SampIntMult"))
@@ -649,13 +766,14 @@ static Function DC_PlaceDataInITCDataWave(panelTitle, numActiveChannels, dataAcq
 	WAVE/T cellElectrodeNames = GetCellElectrodeNames(panelTitle)
 	WAVE/T analysisFunctions  = GetAnalysisFunctionStorage(panelTitle)
 	WAVE setEventFlag         = GetSetEventFlag(panelTitle)
+	WAVE DAGain 				  = SWS_GetChannelGains(panelTitle)
 
 	if(dataAcqOrTP == DATA_ACQUISITION_MODE)
 		setEventFlag = 0
 	endif
 
 	numEntries = DimSize(statusDA, ROWS)
-	Make/D/FREE/N=(numEntries) DAGain, DAScale, insertStart, setLength, testPulseAmplitude, setColumn, headstageDAC, DAC
+	Make/D/FREE/N=(numEntries) DAScale, insertStart, setLength, testPulseAmplitude, setColumn, headstageDAC, DAC
 	Make/T/FREE/N=(numEntries) setName
 	Make/WAVE/FREE/N=(numEntries) stimSet
 
@@ -736,11 +854,8 @@ static Function DC_PlaceDataInITCDataWave(panelTitle, numActiveChannels, dataAcq
 
 		DC_DocumentChannelProperty(panelTitle, "DAC", headstageDAC[activeColumn], i, var=i)
 
-		ctrl = GetSpecialControlLabel(CHANNEL_TYPE_DAC, CHANNEL_CONTROL_GAIN)
-		val = DAG_GetNumericalValue(panelTitle, ctrl, index = i)
-		DAGain[activeColumn] = HARDWARE_ITC_BITS_PER_VOLT / val
-
-		DC_DocumentChannelProperty(panelTitle, "DA GAIN", headstageDAC[activeColumn], i, var=val)
+		WAVE DA_EphysGuiState = GetDA_EphysGuiStateNum(panelTitle)
+		DC_DocumentChannelProperty(panelTitle, "DA GAIN", headstageDAC[activeColumn], i, var=DA_EphysGuiState[DAC[activeColumn]][%$GetSpecialControlLabel(CHANNEL_TYPE_DAC, CHANNEL_CONTROL_GAIN)])
 
 		DC_DocumentChannelProperty(panelTitle, STIM_WAVE_NAME_KEY, headstageDAC[activeColumn], i, str=setName[activeColumn])
 		DC_DocumentChannelProperty(panelTitle, STIMSET_WAVE_NOTE_KEY, headstageDAC[activeColumn], i, str=NormalizeToEOL(RemoveEnding(note(stimSet[activeColumn]), "\r"), "\n"))
@@ -816,13 +931,21 @@ static Function DC_PlaceDataInITCDataWave(panelTitle, numActiveChannels, dataAcq
 	NVAR stopCollectionPoint = $GetStopCollectionPoint(panelTitle)
 	stopCollectionPoint = DC_GetStopCollectionPoint(panelTitle, dataAcqOrTP, setLength)
 
-	DC_MakeITCDataWave(panelTitle, numActiveChannels, minSamplingInterval, dataAcqOrTP)
+	DC_MakeHardwareDataWave(panelTitle, numActiveChannels, minSamplingInterval, dataAcqOrTP)
 	DC_MakeOscilloscopeWave(panelTitle, numActiveChannels, dataAcqOrTP)
 
 	NVAR fifoPosition = $GetFifoPosition(panelTitle)
 	fifoPosition = 0
 
-	WAVE ITCDataWave = GetHardwareDataWave(panelTitle)
+	hardwareType = DAP_GetHardwareType(panelTitle)
+	switch(hardwareType)
+		case HARDWARE_ITC_DAC:
+			WAVE ITCDataWave = GetHardwareDataWave(panelTitle)
+			break
+		case HARDWARE_NI_DAC:
+			WAVE/WAVE NIDataWave = GetHardwareDataWave(panelTitle)
+			break
+	endswitch
 
 	// varies per DAC:
 	// DAGain, DAScale, insertStart (with dDAQ), setLength, testPulseAmplitude (can be non-constant due to different VC/IC)
@@ -838,55 +961,94 @@ static Function DC_PlaceDataInITCDataWave(panelTitle, numActiveChannels, dataAcq
 		WAVE singleStimSet = GetTestPulse()
 		singleSetLength = setLength[0]
 		ASSERT(DimSize(singleStimSet, COLS) <= 1, "Expected a 1D testpulse wave")
-		if(multiDevice)
-			// ITCDataWave depends on
-			// DAGain
-			// DAScale
-			// singlestimset
-			// ITCDataWave dimension properties of ROWS and COLS
-			string key = CA_ITCDataWaveTestPulseMD({DAGain, DAScale, singleStimSet}, ITCDataWave)
+		string key
+		switch(hardwareType)
+			case HARDWARE_ITC_DAC:
+				if(multiDevice)
+					// ITCDataWave depends on
+					// DAGain
+					// DAScale
+					// singlestimset
+					// ITCDataWave dimension properties of ROWS and COLS
+					key = CA_ITCDataWaveTestPulseMD({DAGain, DAScale, singleStimSet}, ITCDataWave)
 
-			WAVE/Z result = CA_TryFetchingEntryFromCache(key)
+					WAVE/Z result = CA_TryFetchingEntryFromCache(key)
 
-			if(WaveExists(result))
-				MoveWaveWithOverwrite(ITCDataWave, result)
-				WAVE ITCDataWave = GetHardwareDataWave(panelTitle)
-			else
-				Multithread ITCDataWave[][0, numEntries - 1] =                            \
-				  limit(                                                                  \
-					(DAGain[q] * DAScale[q]) * singleStimSet[mod(p, singleSetLength)][0], \
-					SIGNED_INT_16BIT_MIN,                                                 \
+					if(WaveExists(result))
+						MoveWaveWithOverwrite(ITCDataWave, result)
+						WAVE ITCDataWave = GetHardwareDataWave(panelTitle)
+					else
+						Multithread ITCDataWave[][0, numEntries - 1] =                        \
+						limit(                                                                \
+						(DAGain[q] * DAScale[q]) * singleStimSet[mod(p, singleSetLength)][0], \
+						SIGNED_INT_16BIT_MIN,                                                 \
+						SIGNED_INT_16BIT_MAX); AbortOnRTE
+						cutOff = mod(DimSize(ITCDataWave, ROWS), singleSetLength)
+						if(cutOff > 0)
+							ITCDataWave[DimSize(ITCDataWave, ROWS) - cutoff, *][0, numEntries - 1] = 0
+						endif
+					endif
+					CA_StoreEntryIntoCache(key, ITCDataWave)
+				else
+					Multithread ITCDataWave[0, setLength[0] - 1][0, numEntries - 1] = \
+					limit(                                                            \
+					DAGain[q] * DAScale[q] * singleStimSet[p][0],                     \
+					SIGNED_INT_16BIT_MIN,                                             \
 					SIGNED_INT_16BIT_MAX); AbortOnRTE
-				cutOff = mod(DimSize(ITCDataWave, ROWS), singleSetLength)
-				if(cutOff > 0)
-					ITCDataWave[DimSize(ITCDataWave, ROWS) - cutoff, *][0, numEntries - 1] = 0
 				endif
-
-				CA_StoreEntryIntoCache(key, ITCDataWave)
-			endif
-		else
-			Multithread ITCDataWave[0, setLength[0] - 1][0, numEntries - 1] =      \
-		      limit(                                                               \
-		        (DAGain[q] * DAScale[q]) * singleStimSet[p][0],                    \
-			    SIGNED_INT_16BIT_MIN,                                              \
-			    SIGNED_INT_16BIT_MAX); AbortOnRTE
-		endif
+				break
+			case HARDWARE_NI_DAC:
+				for(i = 0;i < numEntries; i += 1)
+					WAVE NIChannel = NIDataWave[i]
+					Multithread NIChannel[0, setLength[0] - 1] =    \
+					limit(                                          \
+					(DAGain[i] * DAScale[i]) * singleStimSet[p][0], \
+					NI_DAC_MIN,                                     \
+					NI_DAC_MAX); AbortOnRTE
+				endfor
+				break
+		endswitch
 	elseif(dataAcqOrTP == DATA_ACQUISITION_MODE)
-		for(i = 0; i < numEntries; i += 1)
-			WAVE singleStimSet = stimSet[i]
-			Multithread ITCDataWave[insertStart[i], insertStart[i] + setLength[i] - 1][i] =                             \
-			  limit(                                                                                                    \
-				(DAGain[i] * DAScale[i]) * singleStimSet[trunc(decimationFactor * (p - insertStart[i]))][setColumn[i]], \
-				SIGNED_INT_16BIT_MIN,                                                                                   \
-				SIGNED_INT_16BIT_MAX); AbortOnRTE
-		endfor
+		switch(hardwareType)
+			case HARDWARE_ITC_DAC:
+				for(i = 0; i < numEntries; i += 1)
+					WAVE singleStimSet = stimSet[i]
+					Multithread ITCDataWave[insertStart[i], insertStart[i] + setLength[i] - 1][i] =                  \
+					limit(                                                                                           \
+					(DAGain[i] * DAScale[i]) * singleStimSet[decimationFactor * (p - insertStart[i])][setColumn[i]], \
+					SIGNED_INT_16BIT_MIN,                                                                            \
+					SIGNED_INT_16BIT_MAX); AbortOnRTE
+				endfor
 
-		if(globalTPInsert)
-			// space in ITCDataWave for the testpulse is allocated via an automatic increase
-			// of the onset delay
-			ITCDataWave[baselineFrac * testPulseLength, (1 - baselineFrac) * testPulseLength][0, numEntries - 1] = \
-			  limit(testPulseAmplitude[q] * DAGain[q], SIGNED_INT_16BIT_MIN, SIGNED_INT_16BIT_MAX); AbortOnRTE
-		endif
+				if(globalTPInsert)
+					// space in ITCDataWave for the testpulse is allocated via an automatic increase
+					// of the onset delay
+					ITCDataWave[baselineFrac * testPulseLength, (1 - baselineFrac) * testPulseLength][0, numEntries - 1] = \
+					limit(testPulseAmplitude[q] * DAGain[q], SIGNED_INT_16BIT_MIN, SIGNED_INT_16BIT_MAX); AbortOnRTE
+				endif
+				break
+			case HARDWARE_NI_DAC:
+				for(i = 0; i < numEntries; i += 1)
+					WAVE singleStimSet = stimSet[i]
+					WAVE NIChannel = NIDataWave[i]
+					Multithread NIChannel[insertStart[i], insertStart[i] + setLength[i] - 1] =                     \
+					limit(                                                                                         \
+					DAGain[i] * DAScale[i] * singleStimSet[decimationFactor * (p - insertStart[i])][setColumn[i]], \
+					NI_DAC_MIN,                                                                                    \
+					NI_DAC_MAX); AbortOnRTE
+				endfor
+
+				if(globalTPInsert)
+					// space in ITCDataWave for the testpulse is allocated via an automatic increase
+					// of the onset delay
+					for(i = 0; i < numEntries; i += 1)
+						WAVE NIChannel = NIDataWave[i]
+						NIChannel[baselineFrac * testPulseLength, (1 - baselineFrac) * testPulseLength] = \
+						limit(testPulseAmplitude[i] * DAGain[i], NI_DAC_MIN, NI_DAC_MAX); AbortOnRTE
+					endfor
+				endif
+				break
+		endswitch
 	endif
 
 	if(!WaveExists(offsets))
@@ -906,7 +1068,15 @@ static Function DC_PlaceDataInITCDataWave(panelTitle, numActiveChannels, dataAcq
 
 		WAVE pulses = WB_GetPulsesFromPulseTrains(stimSet[i], setColumn[i], pulseToPulseLength)
 		// pulse positions are in ms, but not yet offsetted for the onset delays
-		pulses[] += IndexToScale(ITCDataWave, insertStart[i], ROWS) + offsets[i]
+		switch(hardwareType)
+			case HARDWARE_NI_DAC:
+				WAVE NIChannel = NIDataWave[0]
+				pulses[] += IndexToScale(NIChannel, insertStart[i], ROWS) + offsets[i]
+				break
+			case HARDWARE_ITC_DAC:
+				pulses[] += IndexToScale(ITCDataWave, insertStart[i], ROWS) + offsets[i]
+				break
+		endswitch
 		DC_DocumentChannelProperty(panelTitle, PULSE_START_TIMES_KEY, headstageDAC[i], DAC[i], str=NumericWaveToList(pulses, ";", format="%.15g"))
 		DC_DocumentChannelProperty(panelTitle, PULSE_TO_PULSE_LENGTH_KEY, headstageDAC[i], DAC[i], var=pulseToPulseLength)
 	endfor
@@ -975,28 +1145,42 @@ static Function DC_PlaceDataInITCDataWave(panelTitle, numActiveChannels, dataAcq
 	if(dataAcqOrTP == DATA_ACQUISITION_MODE)
 		// reset to the default value without distributedDAQ
 		singleInsertStart = onSetDelay
+		WAVE TTLWave = GetTTLWave(panelTitle)
+		switch(hardwareType)
+			case HARDWARE_NI_DAC:
+				WAVE config = GetITCChanConfigWave(panelTitle)
+				for(i = 0; i < DimSize(config, ROWS); i += 1)
+					if(config[i][%ChannelType] == ITC_XOP_CHANNEL_TYPE_TTL)
+						WAVE NIChannel = NIDataWave[activeColumn]
+						DC_MakeNITTLWave(panelTitle, config[i][%ChannelNumber])
+						singleSetLength = DC_CalculateStimsetLength(TTLWave, panelTitle, DATA_ACQUISITION_MODE)
+						MultiThread NIChannel[singleInsertStart, singleInsertStart + singleSetLength - 1] = limit(TTLWave[decimationFactor * (p - singleInsertStart)], 0, 1); AbortOnRTE
+						activeColumn += 1
+					endif
+				endfor
+				break
+			case HARDWARE_ITC_DAC:
+				// Place TTL waves into ITCDataWave
+				if(DC_AreTTLsInRackChecked(RACK_ZERO, panelTitle))
+					DC_MakeITCTTLWave(panelTitle, RACK_ZERO)
+					singleSetLength = DC_CalculateStimsetLength(TTLWave, decimationFactor, DATA_ACQUISITION_MODE)
+					MultiThread ITCDataWave[singleInsertStart, singleInsertStart + singleSetLength - 1][activeColumn] = \
+			  		limit(TTLWave[trunc(decimationFactor * (p - singleInsertStart))], SIGNED_INT_16BIT_MIN, SIGNED_INT_16BIT_MAX); AbortOnRTE
+					activeColumn += 1
+				endif
 
-		// Place TTL waves into ITCDataWave
-		if(DC_AreTTLsInRackChecked(RACK_ZERO, panelTitle))
-			DC_MakeITCTTLWave(panelTitle, RACK_ZERO)
-			WAVE TTLWave = GetTTLWave(panelTitle)
-			singleSetLength = DC_CalculateStimsetLength(TTLWave, decimationFactor, DATA_ACQUISITION_MODE)
-			MultiThread ITCDataWave[singleInsertStart, singleInsertStart + singleSetLength - 1][activeColumn] = \
-			  limit(TTLWave[trunc(decimationFactor * (p - singleInsertStart))], SIGNED_INT_16BIT_MIN, SIGNED_INT_16BIT_MAX); AbortOnRTE
-			activeColumn += 1
-		endif
-
-		if(DC_AreTTLsInRackChecked(RACK_ONE, panelTitle))
-			DC_MakeITCTTLWave(panelTitle, RACK_ONE)
-			WAVE TTLWave = GetTTLWave(panelTitle)
-			singleSetLength = DC_CalculateStimsetLength(TTLWave, decimationFactor, DATA_ACQUISITION_MODE)
-			MultiThread ITCDataWave[singleInsertStart, singleInsertStart + singleSetLength - 1][activeColumn] = \
-   			  limit(TTLWave[trunc(decimationFactor * (p - singleInsertStart))], SIGNED_INT_16BIT_MIN, SIGNED_INT_16BIT_MAX); AbortOnRTE
-		endif
+				if(DC_AreTTLsInRackChecked(RACK_ONE, panelTitle))
+					DC_MakeITCTTLWave(panelTitle, RACK_ONE)
+					singleSetLength = DC_CalculateStimsetLength(TTLWave, decimationFactor, DATA_ACQUISITION_MODE)
+					MultiThread ITCDataWave[singleInsertStart, singleInsertStart + singleSetLength - 1][activeColumn] = \
+					limit(TTLWave[trunc(decimationFactor * (p - singleInsertStart))], SIGNED_INT_16BIT_MIN, SIGNED_INT_16BIT_MAX); AbortOnRTE
+				endif
+				break
+		endswitch
 	endif
 
-	if(DC_CheckIfDataWaveHasBorderVals(ITCDataWave))
-		printf "Error writing stimsets into ITCDataWave: The values are out of range. Maybe the DA/AD Gain needs adjustment?\r"
+	if(DC_CheckIfDataWaveHasBorderVals(panelTitle))
+		printf "Error writing stimsets into DataWave: The values are out of range. Maybe the DA/AD Gain needs adjustment?\r"
 		ControlWindowToFront()
 		Abort
 	endif
@@ -1063,31 +1247,67 @@ static Function DC_GenerateStimsetFingerprint(raCycleID, setName, setCycleCount,
 	return crc
 End
 
-static Function DC_CheckIfDataWaveHasBorderVals(ITCDataWave)
-	WAVE/Z ITCDataWave
+static Function DC_CheckIfDataWaveHasBorderVals(panelTitle)
+	string panelTitle
 
-	ASSERT(WaveExists(ITCDataWave), "Missing ITCDataWave")
-	ASSERT(WaveType(ITCDataWave) == IGOR_TYPE_16BIT_INT, "Unexpected wave type: " + num2str(WaveType(ITCDataWave)))
+	variable hardwareType = DAP_GetHardwareType(panelTitle)
+	switch(hardwareType)
+		case HARDWARE_ITC_DAC:
+			WAVE/Z ITCDataWave = GetHardwareDataWave(panelTitle)
+			ASSERT(WaveExists(ITCDataWave), "Missing HardwareDataWave")
+			ASSERT(WaveType(ITCDataWave) == IGOR_TYPE_16BIT_INT, "Unexpected wave type: " + num2str(WaveType(ITCDataWave)))
 
 #if (IgorVersion() >= 8.00)
-	FindValue/UOFV/I=(SIGNED_INT_16BIT_MIN) ITCDataWave
+			FindValue/UOFV/I=(SIGNED_INT_16BIT_MIN) ITCDataWave
 
-	if(V_Value != -1)
-		return 1
-	endif
+			if(V_Value != -1)
+				return 1
+			endif
 
-	FindValue/UOFV/I=(SIGNED_INT_16BIT_MAX) ITCDataWave
+			FindValue/UOFV/I=(SIGNED_INT_16BIT_MAX) ITCDataWave
 
-	if(V_Value != -1)
-		return 1
-	endif
+			if(V_Value != -1)
+				return 1
+			endif
 
-	return 0
+			return 0
 #else
-	matrixop/FREE result = equal(minval(ITCDataWave), SIGNED_INT_16BIT_MIN) || equal(maxval(ITCDataWave), SIGNED_INT_16BIT_MAX)
+			matrixop/FREE result = equal(minval(ITCDataWave), SIGNED_INT_16BIT_MIN) || equal(maxval(ITCDataWave), SIGNED_INT_16BIT_MAX)
 
-	return result[0] > 0
+			return result[0] > 0
 #endif
+			break
+		case HARDWARE_NI_DAC:
+			WAVE/WAVE NIDataWave = GetHardwareDataWave(panelTitle)
+			ASSERT(WaveType(NIDataWave, 1) == IGOR_TYPE_WAVEREF_WAVE, "Unexpected wave type")
+			variable channels = numpnts(NIDataWave)
+			variable i
+			for(i = 0; i < channels; i += 1)
+				WAVE NIChannel = NIDataWave[i]
+// TODO need to test TTL waves differently
+#if (IgorVersion() >= 8.00)
+			FindValue/UOFV/V=(NI_DAC_MIN)/T=1E-6 NIChannel
+
+			if(V_Value != -1)
+				return 1
+			endif
+
+			FindValue/UOFV/V=(NI_DAC_MAX)/T=1E-6 NIChannel
+
+			if(V_Value != -1)
+				return 1
+			endif
+
+			return 0
+#else
+			// note: equal should work in the 10 V range ?!?
+			matrixop/FREE result = equal(minval(NIChannel), NI_DAC_MIN) || equal(maxval(NIChannel), NI_DAC_MAX)
+
+			return result[0] > 0
+#endif
+	endfor
+			break
+	endswitch
 End
 
 /// @brief Document channel properties of DA and AD channels
@@ -1195,6 +1415,7 @@ static Function DC_MakeITCTTLWave(panelTitle, rackNo)
 
 	HW_ITC_GetRackRange(rackNo, first, last)
 
+// for NI	for(i = 0; i < NUM_DA_TTL_CHANNELS; i += 1)
 	for(i = first; i <= last; i += 1)
 
 		if(!DC_ChannelIsActive(panelTitle, DATA_ACQUISITION_MODE, CHANNEL_TYPE_TTL, i, statusTTL, statusHS))
@@ -1235,6 +1456,24 @@ static Function DC_MakeITCTTLWave(panelTitle, rackNo)
 		bit = 2^(i - first)
 		MultiThread TTLWave[0, lastIdx] += bit * TTLStimSet[p][col]
 	endfor
+End
+
+static Function DC_MakeNITTLWave(panelTitle, channel)
+	string panelTitle
+	variable channel
+
+	variable col
+	string set
+
+	WAVE/T allSetNames = DAG_GetChannelTextual(panelTitle, CHANNEL_TYPE_TTL, CHANNEL_CONTROL_WAVE)
+	set = allSetNames[channel]
+	WAVE TTLStimSet = WB_CreateAndGetStimSet(set)
+
+	WAVE TTLWave = GetTTLWave(panelTitle)
+	Redimension/N=(DimSize(TTLStimSet, ROWS)) TTLWave
+
+	col = DC_CalculateChannelColumnNo(panelTitle, set, channel, CHANNEL_TYPE_TTL)
+	MultiThread TTLWave[] = TTLStimSet[p][col]
 End
 
 /// @brief Returns column number/step of the stimulus set, independent of the times the set is being cycled through

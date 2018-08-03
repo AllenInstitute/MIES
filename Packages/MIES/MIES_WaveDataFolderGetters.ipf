@@ -4699,12 +4699,13 @@ Function/WAVE GetActiveDevicesTPMD()
 	elseif(WaveExists(wv))
 		// handle upgrade
 	else
-		Make/N=(MINIMUM_WAVE_SIZE, 2) dfr:ActiveDevicesTPMD/Wave=wv
+		Make/N=(MINIMUM_WAVE_SIZE, 3) dfr:ActiveDevicesTPMD/Wave=wv
 		wv = NaN
 	endif
 
 	SetDimLabel COLS, 0, DeviceID,    wv
 	SetDimLabel COLS, 1, ActiveChunk, wv
+	SetDimLabel COLS, 2, HardwareType, wv
 
 	SetWaveVersion(wv, versionOfNewWave)
 	SetNumberInWaveNote(wv, NOTE_INDEX, 0)
