@@ -595,6 +595,12 @@ End
 /// is the same as the rows. TTL channels don't have units. Querying the
 /// channel unit should always be done via AFH_GetChannelUnit()/AFH_GetChannelUnits().
 ///
+/// This wave is also used for NI devices as configuration template. There is one difference though:
+/// While for ITC devices there is one TTL row for each rack,
+/// for NI devices there is one TTL row for each channel (up to 8 currently)
+/// The channel number column holds the hardware channel number for the NI device
+/// Currently the sampling interval is read from channel 0 only and used for all channels
+///
 /// Version 1 changes:
 /// - Columns now have dimension labels
 /// - One more column with the channel data offset
