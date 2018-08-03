@@ -399,7 +399,7 @@ End
 /// @brief Return a data folder reference to the ITC devices folder
 threadsafe Function/S GetITCDevicesFolderAsString()
 
-	return GetMiesPathAsString() + ":ITCDevices"
+	return GetMiesPathAsString() + ":HardwareDevices"
 End
 
 /// @brief Return the active ITC devices timer folder "root:mies:ITCDevices:ActiveITCDevices:Timer"
@@ -454,7 +454,16 @@ threadsafe Function/S GetDevicePathAsString(panelTitle)
 		ASSERT_TS(0, "Invalid/Non-locked paneltitle")
 	endif
 
-	return GetDeviceTypePathAsString(deviceType) + ":Device" + deviceNumber
+	switch(DAP_GetHardwareType(panelTitle))
+		case HARDWARE_NI_DAC:
+			return GetDeviceTypePathAsString(deviceType)
+			break
+		case HARDWARE_ITC_DAC:
+			return GetDeviceTypePathAsString(deviceType) + ":Device" + deviceNumber
+			break
+		default:
+			ASSERT_TS(0, "Invalid hardware type")
+	endswitch
 End
 
 /// @name DataBrowser
@@ -699,8 +708,14 @@ Function/S GetDevSpecLabNBFolderAsString(panelTitle)
 
 	ret = ParseDeviceString(panelTitle, deviceType, deviceNumber)
 	ASSERT(ret, "Could not parse the panelTitle")
-
-	return GetLabNotebookFolderAsString() + ":" + deviceType + ":Device" + deviceNumber
+	switch(DAP_GetHardwareType(panelTitle))
+		case HARDWARE_NI_DAC:
+			return GetLabNotebookFolderAsString() + ":" + deviceType
+			break
+		case HARDWARE_ITC_DAC:
+			return GetLabNotebookFolderAsString() + ":" + deviceType + ":Device" + deviceNumber
+			break
+	endswitch
 End
 
 /// @brief Return the datafolder reference to the device specific settings key
