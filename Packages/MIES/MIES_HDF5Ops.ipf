@@ -375,6 +375,8 @@ Function HD_LoadReplaceStimSet([incomingFileName, cmdID, incomingFileDirectory])
 	HDF5CloseFile fileID
 	print "Stimulus Set Loaded..."
 
+	WBP_UpdateITCPanelPopUps()
+
 	// restore the data folder
 	SetDataFolder savedDataFolder
 
@@ -454,6 +456,8 @@ Function HD_LoadAdditionalStimSet([incomingFileName, cmdID])
 	
 	// restore the data folder
 	SetDataFolder savedDataFolder
+
+	WBP_UpdateITCPanelPopUps()
 	
 	// determine if the cmdID was provided
 	if(!ParamIsDefault(cmdID))

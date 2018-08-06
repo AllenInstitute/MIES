@@ -11,7 +11,7 @@
 
 Window DA_Ephys() : Panel
 	PauseUpdate; Silent 1		// building window...
-	NewPanel /K=1 /W=(208,158,712,1038)
+	NewPanel /K=1 /W=(136,152,640,1032)
 	ValDisplay valdisp_DataAcq_P_LED_Clear,pos={366.00,298.00},size={86.00,29.00},disable=1
 	ValDisplay valdisp_DataAcq_P_LED_Clear,help={"red:user"},userdata(tabnum)=  "0"
 	ValDisplay valdisp_DataAcq_P_LED_Clear,userdata(tabcontrol)=  "tab_DataAcq_Pressure"
@@ -3208,7 +3208,7 @@ Window DA_Ephys() : Panel
 	CheckBox check_Settings_TPAfterDAQ,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	CheckBox check_Settings_TPAfterDAQ,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
 	CheckBox check_Settings_TPAfterDAQ,value= 0
-	PopupMenu Popup_Settings_SampIntMult,pos={223.00,239.00},size={189.00,19.00},bodyWidth=40,disable=1,proc=DAP_PopMenuProc_UpdateGuiState,title="Sampling interval multiplier"
+	PopupMenu Popup_Settings_SampIntMult,pos={223.00,239.00},size={189.00,19.00},bodyWidth=40,disable=1,proc=DAP_PopMenuProc_SampMult,title="Sampling interval multiplier"
 	PopupMenu Popup_Settings_SampIntMult,help={"Multiplier for the dataacquisition sampling interval (higher values mean lower resolution). The testpulse will always be sampled at the lowest possible interval."}
 	PopupMenu Popup_Settings_SampIntMult,userdata(tabnum)=  "5"
 	PopupMenu Popup_Settings_SampIntMult,userdata(tabcontrol)=  "ADC"
