@@ -573,6 +573,12 @@ Constant HARDWARE_ITC_DAC = 0
 Constant HARDWARE_NI_DAC  = 1
 /// @}
 
+/// @name Name of NI_DAC FIFO
+/// @anchor NIDAQ FIFO Name
+/// @{
+StrConstant HARDWARE_NI_ADC_FIFO = "NI_AnalogIn"
+/// @}
+
 Constant HARDWARE_MAX_DEVICES = 10
 
 /// @name Minimum possible sampling intervals in milliseconds (1e-3s)

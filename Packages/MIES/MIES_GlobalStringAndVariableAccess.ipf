@@ -340,6 +340,13 @@ threadsafe Function/S GetNIDeviceList()
 	return GetSVARAsString(GetITCDevicesFolder(), "NIDeviceList", initialValue="")
 End
 
+/// @brief Returns the current NI setup string for TTL out through DAQmx_DIO_Config
+Function/S GetNI_TTLTaskID(panelTitle)
+	string panelTitle
+
+	return GetNVARAsString(GetDevicePath(panelTitle), "NI_TTL_taskID")
+End
+
 /// @brief Return the experiment session start time in NWB-speech
 ///
 /// This is the time when the last device was locked.

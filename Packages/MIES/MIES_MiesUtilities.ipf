@@ -4820,3 +4820,10 @@ Function EntrySourceTypeMapper(entrySourceType)
 
 	return IsFinite(entrySourceType) ? ++entrySourceType : 0
 End
+
+/// @brief constructs a fifo name for NI device ADC operations from the deviceID
+Function/S GetNIFIFOName(deviceID)
+	variable deviceID
+
+	return HARDWARE_NI_ADC_FIFO + num2str(deviceID)
+End
