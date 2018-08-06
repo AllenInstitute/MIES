@@ -29,8 +29,6 @@ static StrConstant GUI_CONTROLSAVESTATE_DISABLED = "oldDisabledState"
 static StrConstant NI_PCIE_6343_PATTERN 	= "AI:32;AO:4;COUNTER:4;DIOPORTS:3;LINES:32,8,8"
 
 /// @brief This function resolves the hardwaretype of the device used a locked panel by comparing it to a list of devices of known type
-/// note: for speed optimization currently devices not appearing in the ITC devices list are considered NI devices.
-/// if more hardware types get introduced here, DAP_GetNIDeviceList could buffer to a global list of NI devices that could be used for faster comparison
 /// @return Returns the hardwaretype of the device identified by panelTitle
 threadsafe Function DAP_GetHardwareType(panelTitle)
 	string panelTitle
@@ -38,11 +36,14 @@ threadsafe Function DAP_GetHardwareType(panelTitle)
 	string deviceType, deviceNumber
 	ASSERT_TS(ParseDeviceString(panelTitle, deviceType, deviceNumber), "Error parsing device string!")
 
-	if(WhichListItem(deviceType, DEVICE_TYPES_ITC) == -1)
+	// note: globalNIDevList is initialized when a DA_Ephys panel is created
+	SVAR globalNIDevList = $GetNIDeviceList()
+	if(WhichListItem(deviceType, globalNIDevList) != -1)
 		return HARDWARE_NI_DAC
-	else
+	elseif(WhichListItem(deviceType, DEVICE_TYPES_ITC) != -1)
 		return HARDWARE_ITC_DAC
 	endif
+	return HARDWARE_UNSUPPORTED_DAC
 End
 
 /// @brief Returns a list of DAC devices for NI devices
@@ -4504,20 +4505,38 @@ static Function DAP_GetNumITCDevicesPerType(panelTitle)
 	return ItemsInList(ListMatch(HW_ITC_ListDevices(), DAP_GetDeviceType(panelTitle) + "_DEV_*"))
 End
 
+/// @brief Gets the selection from the Device popup menu of the DA_Ephys panel
+/// and checks of the device availability.
+/// Prints availability of the selected device to the history and en/dis 'Open Device' button in panel
 static Function DAP_IsDeviceTypeConnected(panelTitle)
 	string panelTitle
 
-	variable numDevices
+	variable numDevices, hardwareType
+	string deviceName
 
-	numDevices = DAP_GetNumITCDevicesPerType(panelTitle)
+	deviceName = DAP_GetDeviceType(panelTitle)
+	hardwareType = DAP_GetHardwareType(deviceName)
+	switch(hardwareType)
+		case HARDWARE_NI_DAC:
+			EnableControl(panelTitle, "button_SettingsPlus_PingDevice")
+			print "National Instrument device " + deviceName + " is connected."
+			break
+		case HARDWARE_ITC_DAC:
 
-	if(!numDevices)
-		DisableControl(panelTitle, "button_SettingsPlus_PingDevice")
-	else
-		EnableControl(panelTitle, "button_SettingsPlus_PingDevice")
-	endif
+			numDevices = DAP_GetNumITCDevicesPerType(panelTitle)
 
-	printf "Available number of specified ITC devices = %d\r" numDevices
+			if(!numDevices)
+				DisableControl(panelTitle, "button_SettingsPlus_PingDevice")
+			else
+				EnableControl(panelTitle, "button_SettingsPlus_PingDevice")
+			endif
+
+			printf "Available number of specified ITC devices = %d\r" numDevices
+			break
+		default:
+			print "Device type " + deviceName + " not supported."
+			break
+	endswitch
 End
 
 /// @brief Update the list of locked devices

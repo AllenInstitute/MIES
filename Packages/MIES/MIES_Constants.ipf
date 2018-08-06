@@ -571,6 +571,7 @@ StrConstant HARDWARE_DAC_TYPES = "ITC;NI"
 /// @{
 Constant HARDWARE_ITC_DAC = 0
 Constant HARDWARE_NI_DAC  = 1
+Constant HARDWARE_UNSUPPORTED_DAC  = 1000
 /// @}
 
 /// @name Name of NI_DAC FIFO
