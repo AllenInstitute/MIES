@@ -2551,7 +2551,6 @@ Function/WAVE GetTestPulse()
 
 	/// create dummy wave
 	Make/N=(0) dfr:TestPulse/Wave=wv
-	SetScale/P x 0, HARDWARE_ITC_MIN_SAMPINT, "ms", wv
 
 	return wv
 End

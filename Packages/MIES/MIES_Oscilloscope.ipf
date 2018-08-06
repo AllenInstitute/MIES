@@ -360,7 +360,7 @@ Function SCOPE_CreateGraph(panelTitle, dataAcqOrTP)
 			SetAxis/W=$graph/A bottom
 		else
 			Label/W=$graph bottom "Time (\\U)"
-			sampInt = DAP_GetITCSampInt(panelTitle, TEST_PULSE_MODE) / 1000
+			sampInt = DAP_GetSampInt(panelTitle, TEST_PULSE_MODE) / 1000
 			testPulseLength = TP_GetTestPulseLengthInPoints(panelTitle) * sampInt
 			NVAR duration = $GetTestpulseDuration(panelTitle)
 			NVAR baselineFrac = $GetTestpulseBaselineFraction(panelTitle)
@@ -370,7 +370,7 @@ Function SCOPE_CreateGraph(panelTitle, dataAcqOrTP)
 	else
 		Label/W=$graph bottom "Time (\\U)"
 		NVAR stopCollectionPoint = $GetStopCollectionPoint(panelTitle)
-		sampInt = DAP_GetITCSampInt(panelTitle, DATA_ACQUISITION_MODE) / 1000
+		sampInt = DAP_GetSampInt(panelTitle, DATA_ACQUISITION_MODE) / 1000
 		SetAxis/W=$graph bottom 0, stopCollectionPoint * sampInt
 	endif
 End

@@ -41,7 +41,7 @@ static Function DC_UpdateGlobals(panelTitle, dataAcqOrTP)
 	AFM_UpdateAnalysisFunctionWave(panelTitle)
 
 	pulseDuration = DAG_GetNumericalValue(panelTitle, "SetVar_DataAcq_TPDuration")
-	duration = pulseDuration / (DAP_GetITCSampInt(panelTitle, TEST_PULSE_MODE) / 1000)
+	duration = pulseDuration / (DAP_GetSampInt(panelTitle, TEST_PULSE_MODE) / 1000)
 	baselineFrac = DAG_GetNumericalValue(panelTitle, "SetVar_DataAcq_TPBaselinePerc") / 100
 
 	// need to deal with units here to ensure that resistance is calculated correctly
@@ -641,7 +641,7 @@ static Function DC_PlaceDataInITCChanConfigWave(panelTitle, dataAcqOrTP)
 
 	AddEntryIntoWaveNoteAsList(ITCChanConfigWave, CHANNEL_UNIT_KEY, str = unitList, replaceEntry = 1)
 
-	ITCChanConfigWave[][%SamplingInterval] = DAP_GetITCSampInt(panelTitle, dataAcqOrTP)
+	ITCChanConfigWave[][%SamplingInterval] = DAP_GetSampInt(panelTitle, dataAcqOrTP)
 	ITCChanConfigWave[][%DecimationMode]   = 0
 	ITCChanConfigWave[][%Offset]           = 0
 
@@ -693,8 +693,8 @@ End
 static Function DC_GetDecimationFactor(panelTitle, dataAcqOrTP)
 	string panelTitle
 	variable dataAcqOrTP
-/// @todo: minimum sampling intervall from generator and not itc here
-	return DAP_GetITCSampInt(panelTitle, dataAcqOrTP) / (HARDWARE_ITC_MIN_SAMPINT * 1000)
+
+	return DAP_GetSampInt(panelTitle, dataAcqOrTP) / (HARDWARE_ITC_MIN_SAMPINT * 1000)
 End
 
 /// @brief Get the stimset length for the real sampling interval
@@ -749,7 +749,7 @@ static Function DC_PlaceDataInHardwareDataWave(panelTitle, numActiveChannels, da
 // MH: note with NI the decimationFactor can now be < 1, like 0.4 if a single NI ADC channel runs with 500 kHz
 // whereas the source data generated waves for ITC min sample rate are at 200 kHz
 	decimationFactor      = DC_GetDecimationFactor(panelTitle, dataAcqOrTP)
-	minSamplingInterval   = DAP_GetITCSampInt(panelTitle, dataAcqOrTP)
+	minSamplingInterval   = DAP_GetSampInt(panelTitle, dataAcqOrTP)
 	multiplier            = str2num(DAG_GetTextualValue(panelTitle, "Popup_Settings_SampIntMult"))
 	testPulseLength       = TP_GetTestPulseLengthInPoints(panelTitle) / multiplier
 	WAVE/T allSetNames    = DAG_GetChannelTextual(panelTitle, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_WAVE)
@@ -1581,7 +1581,7 @@ static Function DC_ReturnTotalLengthIncrease(panelTitle, [onsetDelayUser, onsetD
 	variable distributedDAQ
 
 	numActiveDACs          = DC_NoOfChannelsSelected(panelTitle, CHANNEL_TYPE_DAC)
-	minSamplingInterval    = DAP_GetITCSampInt(panelTitle, DATA_ACQUISITION_MODE)
+	minSamplingInterval    = DAP_GetSampInt(panelTitle, DATA_ACQUISITION_MODE)
 	distributedDAQ         = DAG_GetNumericalValue(panelTitle, "Check_DataAcq1_DistribDaq")
 	onsetDelayUserVal      = round(DAG_GetNumericalValue(panelTitle, "setvar_DataAcq_OnsetDelayUser") / (minSamplingInterval / 1000))
 	onsetDelayAutoVal      = round(GetValDisplayAsNum(panelTitle, "valdisp_DataAcq_OnsetDelayAuto") / (minSamplingInterval / 1000))

@@ -1563,11 +1563,11 @@ static Function DAP_UpdateSweepLimitsAndDisplay(panelTitle)
 	endfor
 End
 
-/// @brief Return the ITC sampling interval with taking the mode and
+/// @brief Return the sampling interval with taking the mode and
 /// the multiplier into account
 ///
 /// @see SI_CalculateMinSampInterval()
-Function DAP_GetITCSampInt(panelTitle, dataAcqOrTP)
+Function DAP_GetSampInt(panelTitle, dataAcqOrTP)
 	string panelTitle
 	variable dataAcqOrTP
 
@@ -4663,7 +4663,7 @@ Function DAP_UpdateDAQControls(panelTitle, updateFlag)
 	endif
 
 	if(updateFlag & REASON_HEADSTAGE_CHANGE)
-		SetValDisplay(panelTitle, "ValDisp_DataAcq_SamplingInt", var=DAP_GetITCSampInt(panelTitle, DATA_ACQUISITION_MODE))
+		SetValDisplay(panelTitle, "ValDisp_DataAcq_SamplingInt", var=DAP_GetSampInt(panelTitle, DATA_ACQUISITION_MODE))
 	endif
 
 	if((updateFlag & REASON_HEADSTAGE_CHANGE) || (updateFlag & REASON_STIMSET_CHANGE))

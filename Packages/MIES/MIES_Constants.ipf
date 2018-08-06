@@ -581,6 +581,11 @@ StrConstant HARDWARE_NI_ADC_FIFO = "NI_AnalogIn"
 
 Constant HARDWARE_MAX_DEVICES = 10
 
+/// @name Minimum possible sampling intervals in microseconds (1e-6s) aggregated
+/// @{
+Constant HARDWARE_NI6343_MIN_SAMPINT     = 0.002 /// so it is 4E-3 ms for 2 channels, 6E-3 ms for 3 a.s.o.
+/// @}
+
 /// @name Minimum possible sampling intervals in milliseconds (1e-3s)
 /// @{
 Constant HARDWARE_ITC_MIN_SAMPINT     = 0.005 ///< ITC DACs
