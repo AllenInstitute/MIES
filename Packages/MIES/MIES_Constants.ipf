@@ -294,6 +294,17 @@ Constant IGOR_TYPE_32BIT_INT        = 0x020
 Constant IGOR_TYPE_64BIT_INT        = 0x080
 Constant IGOR_TYPE_UNSIGNED         = 0x040 ///< Can be combined, using bitwise or, with all integer types
 Constant IGOR_TYPE_STRUCT_PARAMETER = 0x200
+// If wavetype is called with selector 1
+Constant IGOR_TYPE_NULL_WAVE        = 0x000
+Constant IGOR_TYPE_NUMERIC_WAVE     = 0x001
+Constant IGOR_TYPE_TEXT_WAVE        = 0x002
+Constant IGOR_TYPE_DFREF_WAVE       = 0x003
+Constant IGOR_TYPE_WAVEREF_WAVE     = 0x004
+// If wavetype is called with selector 2
+//Constant IGOR_TYPE_NULL_WAVE      = 0x000
+Constant IGOR_TYPE_GLOBAL_WAVE      = 0x001
+Constant IGOR_TYPE_FREE_WAVE        = 0x002
+Constant IGOR_TYPE_FREEDF_WAVE      = 0x002
 /// @}
 
 /// @name TabControl values in Browser Settings Panel
