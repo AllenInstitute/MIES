@@ -507,7 +507,7 @@ Constant HARDWARE_DAC_EXTERNAL_TRIGGER = 0x1
 /// @}
 
 /// Used to upgrade the GuiStateWave as well as the DA Ephys panel
-Constant DA_EPHYS_PANEL_VERSION     = 32
+Constant DA_EPHYS_PANEL_VERSION     = 33
 Constant DATABROWSER_PANEL_VERSION  = 7
 Constant SWEEPBROWSER_PANEL_VERSION = 3
 Constant WAVEBUILDER_PANEL_VERSION  = 7
@@ -926,7 +926,7 @@ Constant DELTA_OPERATION_ALTERNATE = 5
 Constant DELTA_OPERATION_EXPLICIT  = 6
 /// @}
 
-Constant MINIMUM_FREE_DISC_SPACE = 107374182400 // 10GB
+Constant MINIMUM_FREE_DISC_SPACE = 10737418240 // 10GB
 
 /// @name Stimset wave note entry types for WB_GetWaveNoteEntry()
 /// @anchor StimsetWaveNoteEntryTypes

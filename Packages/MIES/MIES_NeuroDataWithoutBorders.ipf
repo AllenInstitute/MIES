@@ -1150,6 +1150,9 @@ Function NWB_LoadAllStimsets([overwrite, fileName, loadOnlyBuiltins])
 	NWB_LoadCustomWaves(groupID, loadedStimsets, overwrite)
 	HDF5CloseGroup/Z groupID
 	IPNWB#H5_CloseFile(fileID)
+
+	WBP_UpdateITCPanelPopUps()
+
 	return error
 End
 
