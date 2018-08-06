@@ -333,6 +333,13 @@ Function/S GetTestpulseRunMode(panelTitle)
 	return GetNVARAsString(GetDeviceTestPulse(panelTitle), "runMode", initialValue=NaN)
 End
 
+/// @brief Returns NI device list
+threadsafe Function/S GetNIDeviceList()
+
+	// note: this global gets killed in IH_KillTemporaries
+	return GetSVARAsString(GetITCDevicesFolder(), "NIDeviceList", initialValue="")
+End
+
 /// @brief Return the experiment session start time in NWB-speech
 ///
 /// This is the time when the last device was locked.

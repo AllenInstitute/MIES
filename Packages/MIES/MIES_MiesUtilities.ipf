@@ -1747,11 +1747,16 @@ Function UpdateSweepConfig(config, [samplingInterval])
 	config[][2] = samplingInterval
 End
 
-/// @brief Parse a device string of the form X_DEV_Y, where X is from @ref DEVICE_TYPES_ITC
+/// @brief Parse a device string:
+/// for ITC devices of the form X_DEV_Y, where X is from @ref DEVICE_TYPES_ITC
 /// and Y from @ref DEVICE_NUMBERS.
+/// for NI devices of the form X, where X is from DAP_GetNIDeviceList()
 ///
 /// Returns the result in deviceType and deviceNumber.
-/// Currently the parsing is successfull if X and Y are non-empty.
+/// Currently the parsing is successfull if
+/// for ITC devices X and Y are non-empty.
+/// for NI devices X is non-empty.
+/// deviceNumber is empty for NI devices as it does not apply
 /// @param[in]  device       input device string X_DEV_Y
 /// @param[out] deviceType   returns the device type X
 /// @param[out] deviceNumber returns the device number Y
@@ -1764,10 +1769,17 @@ threadsafe Function ParseDeviceString(device, deviceType, deviceNumber)
 		return 0
 	endif
 
-	deviceType   = StringFromList(0,device,"_")
-	deviceNumber = StringFromList(2,device,"_")
-
-	return !isEmpty(deviceType) && !isEmpty(deviceNumber) && cmpstr(deviceType, "DA")
+	if(strsearch(device, "_Dev_", 0, 2) == -1)
+		// NI device
+		deviceType = device
+		deviceNumber = ""
+		return !isEmpty(deviceType) && cmpstr(deviceType, "DA")
+	else
+		// ITC device notation with X_Dev_Y
+		deviceType   = StringFromList(0,device,"_")
+		deviceNumber = StringFromList(2,device,"_")
+		return !isEmpty(deviceType) && !isEmpty(deviceNumber) && cmpstr(deviceType, "DA")
+	endif
 End
 
 /// @brief Builds the common device string X_DEV_Y, e.g. ITC1600_DEV_O and friends

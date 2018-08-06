@@ -22,6 +22,10 @@ static Function IH_KillTemporaries()
 
 	KillStrings/Z dfr:version
 
+	DFREF dfrHW = GetITCDevicesFolder()
+
+	KillStrings/Z dfrHW:NIDeviceList
+
 	// try to delete all trash folders
 	allFolders = StringByKey("FOLDERS", DataFolderDir(1, dfr))
 	trashFolders = ListMatch(allFolders, TRASH_FOLDER_PREFIX + "*", ",")

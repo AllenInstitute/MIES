@@ -1803,6 +1803,53 @@ static Constant HW_NI_MAX_VOLTAGE = +10.0
 
 static Constant HW_NI_DIFFERENTIAL_SETUP = 0
 
+/// @brief returns properties of NI device
+
+/// @param devNr number of NI device to query
+/// @return keyword list of device properties, empty if device not present
+Function/S HW_NI_GetPropertyListOfDevices(devNr)
+	variable devNr
+
+	string device
+
+	variable numAI, numAO, numCounter, numDIO
+	string devices
+	string lines = ""
+	string propList
+	variable numDevices, i, portWidth
+
+	if(devNr < 0)
+		return ""
+	endif
+	DEBUGPRINTSTACKINFO()
+
+	devices    = fDAQmx_DeviceNames()
+	numDevices = ItemsInList(devices)
+	if(devNr >= numDevices)
+		return ""
+	endif
+
+	device = StringFromList(devNr, devices)
+	numAI       = fDAQmx_NumAnalogInputs(device)
+	numAO       = fDAQmx_NumAnalogOutputs(device)
+	numCounter  = fDAQmx_NumCounters(device)
+	numDIO      = fDAQmx_NumDIOPorts(device)
+	for(i = 0; i < numDIO; i += 1)
+		portWidth = fDAQmx_DIO_PortWidth(device, i)
+		lines = AddListItem(num2str(portWidth), lines, ",", Inf)
+	endfor
+	lines = RemoveEnding(lines, ",")
+
+	propList = "NAME:" + device
+	propList += ";AI:" + num2str(numAI)
+	propList += ";AO:" + num2str(numAO)
+	propList += ";COUNTER:" + num2str(numCounter)
+	propList += ";DIOPORTS:" + num2str(numDIO)
+	propList += ";LINES:" + lines
+
+	return propList
+End
+
 /// @name Functions for interfacing with National Instruments Hardware
 ///
 /// The manual for the USB 6001 device is available [here](../NI-USB6001-374259a.pdf).
@@ -2097,6 +2144,11 @@ Function HW_NI_IsRunning(device, [flags])
 End
 
 #else
+
+Function/S HW_NI_GetPropertyListOfDevices(devNr)
+	variable devNr
+	return ""
+End
 
 Function HW_NI_PrintPropertiesOfDevices()
 	DoAbortNow("NI-DAQ XOP is not available")

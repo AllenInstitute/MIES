@@ -24,6 +24,73 @@ static StrConstant COMMENT_PANEL_NOTEBOOK = "NB"
 
 static StrConstant AMPLIFIER_DEF_FORMAT   = "AmpNo %d Chan %d"
 
+static StrConstant NI_PCIE_6343_PATTERN 	= "AI:32;AO:4;COUNTER:4;DIOPORTS:3;LINES:32,8,8"
+
+/// @brief This function resolves the hardwaretype of the device used a locked panel by comparing it to a list of devices of known type
+/// note: for speed optimization currently devices not appearing in the ITC devices list are considered NI devices.
+/// if more hardware types get introduced here, DAP_GetNIDeviceList could buffer to a global list of NI devices that could be used for faster comparison
+/// @return Returns the hardwaretype of the device identified by panelTitle
+threadsafe Function DAP_GetHardwareType(panelTitle)
+	string panelTitle
+
+	string deviceType, deviceNumber
+	ASSERT_TS(ParseDeviceString(panelTitle, deviceType, deviceNumber), "Error parsing device string!")
+
+	if(WhichListItem(deviceType, DEVICE_TYPES_ITC) == -1)
+		return HARDWARE_NI_DAC
+	else
+		return HARDWARE_ITC_DAC
+	endif
+End
+
+/// @brief Returns a list of DAC devices for NI devices
+/// @return list of NI DAC devices
+Function/S DAP_GetNIDeviceList()
+	variable i
+	string DAQmxDevice, DAQmxDevName
+	string devList
+
+	SVAR globalNIDevList = $GetNIDeviceList()
+	devList = globalNIDevList
+	if(!isEmpty(devList))
+		return devList
+	endif
+	devList = ""
+	for(i = 0;i < HARDWARE_MAX_DEVICES;i += 1)
+		DAQmxDevice = HW_NI_GetPropertyListOfDevices(i)
+
+		if(!(strsearch(DAQmxDevice, NI_PCIE_6343_PATTERN, 0) == -1))
+			DAQmxDevName = StringByKey("NAME", DAQmxDevice)
+			if(!isEmpty(DAQmxDevName))
+				if(!IsValidWaveName(DAQmxDevName))
+					Print "NI device " + DAQmxDevName + " has a name that is incompatible for use in MIES. Please change the device name in NI MAX to a simple name, e.g. DeviceX."
+				else
+					devList += DAQmxDevName + ";"
+				endif
+			endif
+		endif
+	endfor
+	globalNIDevList = devList
+	return devList
+End
+
+/// @brief Returns a list of DAC devices for NI + ITC devices
+/// @return list of DAC devices
+Function/S DAP_GetDACDeviceList()
+
+	return DEVICE_TYPES_ITC + ";" + DAP_GetNIDeviceList()
+End
+
+/// @brief Returns a modified list of DAC devices for GUI panel
+/// @return string list for devices in GUI panel
+Function/S DAP_GetGUIDACDeviceList()
+	string deviceList
+
+	deviceList = DAP_GetDACDeviceList()
+	return ReplaceString("ITC00;", deviceList, "\\M1(ITC00;")
+End
+
+>>>>>>> 77ee9f17... DAEphys panel lists now valid NI DAC devices in the Devs popup menu
 /// @brief Restores the base state of the DA_Ephys panel.
 /// Useful when adding controls to GUI. Facilitates use of auto generation of GUI code.
 /// Useful when template experiment file has been overwritten.
