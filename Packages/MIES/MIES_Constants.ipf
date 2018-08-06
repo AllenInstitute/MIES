@@ -32,6 +32,17 @@ StrConstant BASE_WINDOW_TITLE    = "DA_Ephys"
 
 StrConstant amPanel = "analysisMaster"
 
+/// @name Task names
+/// @anchor MIES_TASKNAMES
+/// @{
+StrConstant TASKNAME_TP        = "Testpulse"
+StrConstant TASKNAME_TPMD      = "TestpulseMD"
+StrConstant TASKNAME_TIMER     = "ITC_Timer"
+StrConstant TASKNAME_TIMERMD   = "ITC_TimerMD"
+StrConstant TASKNAME_FIFOMON   = "ITC_FIFOMonitor"
+StrConstant TASKNAME_FIFOMONMD = "ITC_FIFOMonitorMD"
+/// @}
+
 /// @name Various mies specific regular expressions
 /// @anchor MIES_REGEXPS
 /// @{

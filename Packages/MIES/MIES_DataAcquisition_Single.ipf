@@ -124,8 +124,8 @@ static Function DQS_StopDataAcq(panelTitle, [forcedStop])
 End
 
 Function DQS_StartBackgroundFifoMonitor()
-	CtrlNamedBackground ITC_FIFOMonitor, period = 5, proc = DQS_FIFOMonitor
-	CtrlNamedBackground ITC_FIFOMonitor, start
+	CtrlNamedBackground $TASKNAME_FIFOMON, period = 5, proc = DQS_FIFOMonitor
+	CtrlNamedBackground $TASKNAME_FIFOMON, start
 End
 
 /// @brief Fifo monitor for DAQ Single Device
@@ -171,7 +171,7 @@ Function DQS_FIFOMonitor(s)
 End
 
 Function DQS_StopBackgroundFifoMonitor()
-	CtrlNamedBackground ITC_FIFOMonitor, stop
+	CtrlNamedBackground $TASKNAME_FIFOMON, stop
 End
 
 /// @brief Start the background timer for the inter trial interval (ITI)
@@ -193,13 +193,13 @@ Function DQS_StartBackgroundTimer(panelTitle, runTime, funcList)
 	repeatedAcqStart    = RelativeNowHighPrec()
 	repeatedAcqDuration = runTime
 
-	CtrlNamedBackground ITC_Timer, period = 5, proc = DQS_Timer, start
+	CtrlNamedBackground $TASKNAME_TIMER, period = 5, proc = DQS_Timer, start
 End
 
 /// @brief Stop the background timer used for ITI tracking
 Function DQS_StopBackgroundTimer()
 
-	CtrlNamedBackground ITC_Timer, stop
+	CtrlNamedBackground $TASKNAME_TIMER, stop
 End
 
 /// @brief Keep track of time during ITI

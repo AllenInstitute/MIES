@@ -81,7 +81,7 @@ Function DQM_TerminateOngoingDAQHelper(panelTitle)
 
 	// determine if device removed was the last device on the list, if yes stop the background function
 	if(DimSize(ActiveDeviceList, ROWS) == 0)
-		CtrlNamedBackground ITC_FIFOMonitorMD, stop
+		CtrlNamedBackground $TASKNAME_FIFOMONMD, stop
 	endif
 END
 
@@ -227,8 +227,8 @@ Function DQM_StartBackgroundTimer(panelTitle, runTime, funcList)
 	variable endTime      = startTime + durationTime
 
 	DQM_MakeOrUpdateTimerParamWave(panelTitle, funcList, startTime, durationTime, endTime, 1)
-	if(!IsBackgroundTaskRunning("ITC_TimerMD"))
-		CtrlNamedBackground ITC_TimerMD, period = 6, proc = DQM_Timer, start
+	if(!IsBackgroundTaskRunning(TASKNAME_TIMERMD))
+		CtrlNamedBackground $TASKNAME_TIMERMD, period = 6, proc = DQM_Timer, start
 	endif
 End
 
@@ -241,7 +241,7 @@ Function DQM_StopBackgroundTimer(panelTitle)
 	DQM_MakeOrUpdateTimerParamWave(panelTitle, "", 0, 0, 0, -1)
 	variable DevicesWithActiveTimers = DimSize(ActiveDevTimeParam, 0)
 	if(DevicesWithActiveTimers == 0) // stops background timer if no more devices are in the parameter waves
-		CtrlNamedBackground ITC_TimerMD, Stop
+		CtrlNamedBackground $TASKNAME_TIMERMD, Stop
 	endif
 End
 
@@ -284,8 +284,8 @@ Function DQM_Timer(s)
 End
 
 static Function DQM_StartBckrdFIFOMonitor()
-	CtrlNamedBackground ITC_FIFOMonitorMD, period = 1, proc = DQM_FIFOMonitor
-	CtrlNamedBackground ITC_FIFOMonitorMD, start
+	CtrlNamedBackground $TASKNAME_FIFOMONMD, period=1, proc=DQM_FIFOMonitor
+	CtrlNamedBackground $TASKNAME_FIFOMONMD, start
 End
 
 static Function DQM_StopDataAcq(panelTitle, ITCDeviceIDGlobal)
@@ -329,7 +329,7 @@ static Function DQM_BkrdDataAcq(panelTitle, [triggerMode])
 
 	DQM_MakeOrUpdateActivDevLstWave(panelTitle, ITCDeviceIDGlobal, ADChannelToMonitor, StopCollectionPoint, 1) // adds a device
 
-	if(!IsBackgroundTaskRunning("ITC_FIFOMonitorMD"))
+	if(!IsBackgroundTaskRunning(TASKNAME_FIFOMONMD))
 		DQM_StartBckrdFIFOMonitor()
 	endif
 End

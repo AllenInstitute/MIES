@@ -53,31 +53,31 @@ static Function DQ_StopOngoingDAQHelper(panelTitle, [startTPAfterDAQ])
 
 	startTPAfterDAQ = ParamIsDefault(startTPAfterDAQ) ? 1 : !!startTPAfterDAQ
 
-	if(IsDeviceActiveWithBGTask(panelTitle, "Testpulse"))
+	if(IsDeviceActiveWithBGTask(panelTitle, TASKNAME_TP))
 		TPS_StopTestPulseSingleDevice(panelTitle)
 
 		needsOTCAfterDAQ = needsOTCAfterDAQ | 0
 		discardData      = discardData      | 1
-	elseif(IsDeviceActiveWithBGTask(panelTitle, "TestPulseMD"))
+	elseif(IsDeviceActiveWithBGTask(panelTitle, TASKNAME_TPMD))
 		TPM_StopTestPulseMultiDevice(panelTitle)
 
 		needsOTCAfterDAQ = needsOTCAfterDAQ | 0
 		discardData      = discardData      | 1
 	endif
 
-	if(IsDeviceActiveWithBGTask(panelTitle, "ITC_Timer"))
+	if(IsDeviceActiveWithBGTask(panelTitle, TASKNAME_TIMER))
 		DQS_StopBackgroundTimer()
 
 		needsOTCAfterDAQ = needsOTCAfterDAQ | 1
 		discardData      = discardData      | 1
-	elseif(IsDeviceActiveWithBGTask(panelTitle, "ITC_TimerMD"))
+	elseif(IsDeviceActiveWithBGTask(panelTitle, TASKNAME_TIMERMD))
 		DQM_StopBackgroundTimer(panelTitle)
 
 		needsOTCAfterDAQ = needsOTCAfterDAQ | 1
 		discardData      = discardData      | 1
 	endif
 
-	if(IsDeviceActiveWithBGTask(panelTitle, "ITC_FIFOMonitor"))
+	if(IsDeviceActiveWithBGTask(panelTitle, TASKNAME_FIFOMON))
 		DQS_StopBackgroundFifoMonitor()
 
 		NVAR ITCDeviceIDGlobal = $GetITCDeviceIDGlobal(panelTitle)
@@ -89,7 +89,7 @@ static Function DQ_StopOngoingDAQHelper(panelTitle, [startTPAfterDAQ])
 
 		stopDeviceTimer  = stopDeviceTimer | 1
 		needsOTCAfterDAQ = needsOTCAfterDAQ | 1
-	elseif(IsDeviceActiveWithBGTask(panelTitle, "ITC_FIFOMonitorMD"))
+	elseif(IsDeviceActiveWithBGTask(panelTitle, TASKNAME_FIFOMONMD))
 		DQM_TerminateOngoingDAQHelper(panelTitle)
 
 		if(!discardData)
