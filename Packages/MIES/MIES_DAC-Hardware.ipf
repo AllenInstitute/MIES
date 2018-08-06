@@ -2078,7 +2078,7 @@ Function HW_NI_ResetDevice(device, [flags])
 		printf "Error %d: fDAQmx_resetDevice\r", ret
 		ControlWindowToFront()
 		if(flags & HARDWARE_ABORT_ON_ERROR)
-			ASSERT(0, "Error calling fDAQmx_DIO_Finished")
+			ASSERT(0, "Error calling fDAQmx_resetDevice")
 		endif
 	endif
 End
