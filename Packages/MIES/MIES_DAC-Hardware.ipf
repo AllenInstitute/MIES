@@ -2140,7 +2140,24 @@ Function HW_NI_IsRunning(device, [flags])
 
 	DEBUGPRINTSTACKINFO()
 
-	return !fDAQmx_WF_IsFinished(device)
+	string errMsg
+	variable WFstatus = fDAQmx_WF_IsFinished(device)
+	if(isNan(WFstatus))
+		errMsg = fDAQmx_ErrorString()
+		if(strsearch(errMsg, "No waveform operation is currently running for that device", 0) == -1)
+			print errMsg
+			print "Error: fDAQmx_WF_IsFinished\r"
+			ControlWindowToFront()
+			if(flags & HARDWARE_ABORT_ON_ERROR)
+				ASSERT(0, "Error calling fDAQmx_WF_IsFinished")
+			endif
+		else
+			return 0
+		endif
+	elseif(WFstatus == 0)
+		return 1
+	endif
+	return 0
 End
 
 #else
