@@ -4522,8 +4522,22 @@ End
 
 /// @brief Update the list of locked devices
 static Function DAP_UpdateListOfITCPanels()
+	variable i, numDevs, numItm
+	string NIPanelList = ""
+	string ITCPanelList = WinList("ITC*", ";", "WIN:64")
+	string allPanelList = WinList("*", ";", "WIN:64")
+	string NIDevList = DAP_GetNIDeviceList()
+
+	numDevs = ItemsInList(NIDevList)
+	for(i = 0;i < numDevs; i += 1)
+		numItm = WhichListItem(StringFromList(i, NIDevList), allPanelList)
+		if(numItm > -1)
+			NIPanelList = AddListItem(StringFromList(numItm, allPanelList), NIPanelList, ";")
+		endif
+	endfor
+
 	SVAR panelList = $GetDevicePanelTitleList()
-	panelList = WinList("ITC*", ";", "WIN:64")
+	panelList = ITCPanelList + NIPanelList
 End
 
 static Function DAP_UpdateChanAmpAssignStorWv(panelTitle)
