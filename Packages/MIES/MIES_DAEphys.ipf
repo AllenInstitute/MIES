@@ -1965,7 +1965,7 @@ Function DAP_CheckSettings(panelTitle, mode)
 		NVAR ITCDeviceIDGlobal = $GetITCDeviceIDGlobal(panelTitle)
 
 #ifndef EVIL_KITTEN_EATING_MODE
-		if(HW_SelectDevice(HARDWARE_ITC_DAC, ITCDeviceIDGlobal, flags=HARDWARE_PREVENT_ERROR_POPUP | HARDWARE_PREVENT_ERROR_MESSAGE))
+		if(HW_SelectDevice(DAP_GetHardwareType(panelTitle), ITCDeviceIDGlobal, flags=HARDWARE_PREVENT_ERROR_POPUP | HARDWARE_PREVENT_ERROR_MESSAGE))
 			printf "(%s) Device can not be selected. Please unlock and lock the device.\r", panelTitle
 			ControlWindowToFront()
 			return 1
@@ -4118,14 +4118,21 @@ Function DAP_DeviceIsUnlocked(panelTitle)
 	string panelTitle
 
 	string deviceType, deviceNumber
-	return !(ParseDeviceString(panelTitle, deviceType, deviceNumber) && WhichListItem(deviceType, DEVICE_TYPES_ITC) != -1 && WhichListItem(deviceNumber, DEVICE_NUMBERS) != -1)
+	if(ParseDeviceString(panelTitle, deviceType, deviceNumber))
+		if(!isEmpty(deviceNumber))
+			return !(WhichListItem(deviceType, DAP_GetDACDeviceList()) != -1 && WhichListItem(deviceNumber, DEVICE_NUMBERS) != -1)
+		else
+			return !(WhichListItem(deviceType, DAP_GetDACDeviceList()) != -1)
+		endif
+	endif
+	return NaN
 End
 
 Function DAP_AbortIfUnlocked(panelTitle)
 	string panelTitle
 
 	if(DAP_DeviceIsUnlocked(panelTitle))
-		DoAbortNow("A ITC device must be locked (see Hardware tab) to proceed")
+		DoAbortNow("A device must be locked (see Hardware tab) to proceed")
 	endif
 End
 
@@ -4258,13 +4265,15 @@ Function DAP_LockDevice(panelTitle)
 		DoAbortNow("Can not lock the device. The DA_Ephys panel is too old to be usable. Please close it and open a new one.")
 	endif
 
-	if(!DAP_GetNumITCDevicesPerType(panelTitle))
+	if(DAP_GetHardwareType(panelTitleLocked) == HARDWARE_ITC_DAC)
+		if(!DAP_GetNumITCDevicesPerType(panelTitle))
 #ifndef EVIL_KITTEN_EATING_MODE
-		sprintf msg, "Can not lock the device \"%s\" as no devices of type \"%s\" are connected.", panelTitleLocked, DAP_GetDeviceType(panelTitle)
-		DoAbortNow(msg)
+			sprintf msg, "Can not lock the device \"%s\" as no devices of type \"%s\" are connected.", panelTitleLocked, DAP_GetDeviceType(panelTitle)
+			DoAbortNow(msg)
 #else
-		print "EVIL_KITTEN_EATING_MODE is ON: Allowing to lock altough no devices could be found."
+			print "EVIL_KITTEN_EATING_MODE is ON: Allowing to lock altough no devices could be found."
 #endif
+		endif
 	endif
 
 	NVAR ITCDeviceIDGlobal = $GetITCDeviceIDGlobal(paneltitleLocked)
@@ -4327,7 +4336,7 @@ Function DAP_LockDevice(panelTitle)
 
 	DAP_UpdateOnsetDelay(panelTitleLocked)
 
-	HW_RegisterDevice(panelTitleLocked, HARDWARE_ITC_DAC, ITCDeviceIDGlobal)
+	HW_RegisterDevice(panelTitleLocked, hardwareType, ITCDeviceIDGlobal)
 	if(ItemsInList(GetListOfLockedDevices()) == 1)
 		DAP_LoadBuiltinStimsets()
 		GetPxPVersion()
@@ -4396,7 +4405,7 @@ End
 static Function DAP_UnlockDevice(panelTitle)
 	string panelTitle
 
-	variable flags, state
+	variable flags, state, hardwareType
 	string lockedDevices
 
 	if(!windowExists(panelTitle))
@@ -4444,12 +4453,13 @@ static Function DAP_UnlockDevice(panelTitle)
 
 	NVAR/SDFR=GetDevicePath(panelTitle) ITCDeviceIDGlobal
 
+	hardwareType = DAP_GetHardwareType(panelTitle)
 	// shutdown the FIFO thread now in case it is still running (which should never be the case)
-	TFH_StopFIFODaemon(HARDWARE_ITC_DAC, ITCDeviceIDGlobal)
+	TFH_StopFIFODaemon(hardwareType, ITCDeviceIDGlobal)
 
 	flags = HARDWARE_PREVENT_ERROR_POPUP | HARDWARE_PREVENT_ERROR_MESSAGE
-	HW_CloseDevice(HARDWARE_ITC_DAC, ITCDeviceIDGlobal, flags=flags)
-	HW_DeRegisterDevice(HARDWARE_ITC_DAC, ITCDeviceIDGlobal, flags=flags)
+	HW_CloseDevice(hardwareType, ITCDeviceIDGlobal, flags=flags)
+	HW_DeRegisterDevice(hardwareType, ITCDeviceIDGlobal, flags=flags)
 
 	DAP_UpdateYokeControls(panelTitleUnlocked)
 	DAP_UpdateListOfITCPanels()

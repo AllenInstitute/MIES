@@ -118,19 +118,24 @@ Function HW_OpenDevice(deviceToOpen, hardwareType, [flags])
 	variable &hardwareType, flags
 
 	string deviceType, deviceNumber
-	variable deviceTypeIndex, deviceNumberIndex, deviceID
+	variable deviceTypeIndex, deviceNumberIndex, deviceID, prelimHWType
 
-	hardwareType = NaN
-
-	if(ParseDeviceString(deviceToOpen, deviceType, deviceNumber))
-		deviceTypeIndex   = WhichListItem(deviceType, DEVICE_TYPES_ITC)
-		deviceNumberIndex = WhichListItem(deviceNumber, DEVICE_NUMBERS)
-		deviceID     = HW_ITC_OpenDevice(deviceTypeIndex, deviceNumberIndex)
-		hardwareType = HARDWARE_ITC_DAC
-	else
-		deviceID     = WhichListItem(deviceToOpen, HW_NI_ListDevices())
-		hardwareType = HARDWARE_NI_DAC
-	endif
+	hardwareType = DAP_GetHardwareType(deviceToOpen)
+	switch(hardwareType)
+		case HARDWARE_NI_DAC:
+			deviceID = WhichListItem(deviceToOpen, HW_NI_ListDevices())
+			HW_NI_OpenDevice(deviceToOpen)
+			break
+		case HARDWARE_ITC_DAC:
+			ParseDeviceString(deviceToOpen, deviceType, deviceNumber)
+			deviceTypeIndex   = WhichListItem(deviceType, DEVICE_TYPES_ITC)
+			deviceNumberIndex = WhichListItem(deviceNumber, DEVICE_NUMBERS)
+			deviceID     = HW_ITC_OpenDevice(deviceTypeIndex, deviceNumberIndex)
+			break
+		default:
+			ASSERT(0, "Unable to open device: Device to open had an unsupported hardware type")
+			break
+	endswitch
 
 	if(flags == HARDWARE_ABORT_ON_ERROR)
 		HW_AssertOnInvalid(hardwareType, deviceID)
@@ -152,7 +157,7 @@ Function HW_CloseDevice(hardwareType, deviceID, [flags])
 			HW_ITC_CloseDevice(deviceID, flags=flags)
 			break
 		case HARDWARE_NI_DAC:
-			// nothing do be done
+			HW_NI_CloseDevice(deviceID, flags=flags)
 			break
 	endswitch
 End
@@ -1852,6 +1857,21 @@ End
 
 /// @name Functions for interfacing with National Instruments Hardware
 ///
+
+/// @brief Opens a NI device, executes reset and self calibration
+
+/// @param device name of NI device
+/// @param flags [optional, default none] One or multiple flags from @ref HardwareInteractionFlags
+Function HW_NI_OpenDevice(device, [flags])
+	string device
+	variable flags
+
+	HW_NI_ResetDevice(device, flags=flags)
+	HW_NI_CalibrateDevice(device, flags=flags)
+End
+
+/// @name Functions for interfacing with National Instruments Hardware
+///
 /// The manual for the USB 6001 device is available [here](../NI-USB6001-374259a.pdf).
 
 /// @brief Print all available properties of all NI devices to the commandline
@@ -2160,6 +2180,54 @@ Function HW_NI_IsRunning(device, [flags])
 	return 0
 End
 
+/// @brief Calibrate a NI device if it wasn't calibrated within the last 24h.
+///
+/// @param device name of the NI device
+/// @param force  [optional, default 0] When not zero, forces a calibration
+/// @param flags  [optional, default none] One or multiple flags from @ref HardwareInteractionFlags
+Function HW_NI_CalibrateDevice(device, [force, flags])
+	string device
+	variable force, flags
+
+	variable ret
+
+	DEBUGPRINTSTACKINFO()
+
+	if(ParamIsDefault(force))
+		force = 0
+	else
+		force = !!force
+	endif
+
+	if((DateTime - fDAQmx_SelfCalDate(device)) >= 86400 || force)
+		ret = fDAQmx_selfCalibration(device, 0)
+		if(ret)
+			print fDAQmx_ErrorString()
+			printf "Error %d: fDAQmx_selfCalibration\r", ret
+			ControlWindowToFront()
+			if(flags & HARDWARE_ABORT_ON_ERROR)
+				ASSERT(0, "Error calling fDAQmx_selfCalibration")
+			endif
+		endif
+	endif
+End
+
+/// @see HW_CloseDevice
+Function HW_NI_CloseDevice(deviceID, [flags])
+	variable deviceID, flags
+
+	string deviceType, deviceNumber
+	DEBUGPRINTSTACKINFO()
+
+	ASSERT(ParseDeviceString(HW_GetMainDeviceName(HARDWARE_NI_DAC, deviceID), deviceType, deviceNumber), "Error parsing device string!")
+
+	if(HW_NI_IsRunning(deviceType, flags=flags))
+		HW_NI_StopAcq(deviceID, flags=flags)
+	endif
+
+	HW_NI_ResetDevice(deviceType, flags=flags)
+End
+
 #else
 
 Function/S HW_NI_GetPropertyListOfDevices(devNr)
@@ -2205,9 +2273,10 @@ Function/S HW_NI_ListDevices([flags])
 	return ""
 End
 
-Function HW_NI_StopAcq(device, [flags])
-	string device
-	variable flags
+Function HW_NI_StopAcq(deviceID, [config, configFunc, prepareForDAQ, zeroDAC, flags])
+	variable deviceID, prepareForDAQ, zeroDAC, flags
+	WAVE/Z config
+	FUNCREF HW_WAVE_GETTER_PROTOTYPE configFunc
 
 	DoAbortNow("NI-DAQ XOP is not available")
 End
@@ -2219,12 +2288,33 @@ Function HW_NI_ResetDevice(device, [flags])
 	DoAbortNow("NI-DAQ XOP is not available")
 End
 
+HW_NI_CalibrateDevice(device, [force, flags])
+	string device
+	variable force, flags
+
+	DoAbortNow("NI-DAQ XOP is not available")
+End
+
 Function HW_NI_IsRunning(device, [flags])
 	string device
 	variable flags
 
 	DoAbortNow("NI-DAQ XOP is not available")
 End
+
+Function HW_NI_OpenDevice(device, [flags])
+	string device
+	variable flags
+
+	DoAbortNow("NI-DAQ XOP is not available")
+End
+
+Function HW_NI_CloseDevice(deviceID, [flags])
+	variable deviceID, flags
+
+	DoAbortNow("NI-DAQ XOP is not available")
+End
+
 
 #endif // exists NI DAQ XOP
 
