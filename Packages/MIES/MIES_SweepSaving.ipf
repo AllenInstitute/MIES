@@ -17,14 +17,17 @@ Function SWS_SaveAndScaleITCData(panelTitle, [forcedStop])
 	string panelTitle
 	variable forcedStop
 
-	variable sweepNo
+	variable sweepNo, hardwareType
 
 	forcedStop = ParamIsDefault(forcedStop) ? 0 : !!forcedStop
 
 	sweepNo = DAG_GetNumericalValue(panelTitle, "SetVar_Sweep")
 
-	NVAR stopCollectionPoint = $GetStopCollectionPoint(panelTitle)
-	SCOPE_UpdateOscilloscopeData(panelTitle, DATA_ACQUISITION_MODE, fifoPos=stopCollectionPoint)
+	hardwareType = DAP_GetHardwareType(panelTitle)
+	if(hardwareType == HARDWARE_ITC_DAC)
+		NVAR stopCollectionPoint = $GetStopCollectionPoint(panelTitle)
+		SCOPE_UpdateOscilloscopeData(panelTitle, DATA_ACQUISITION_MODE, fifoPos=stopCollectionPoint)
+	endif
 
 	DFREf dfr = GetDeviceDataPath(panelTitle)
 
@@ -158,28 +161,49 @@ static Function/WAVE SWS_StoreITCDataWaveScaled(panelTitle, dfr, sweepNo)
 	DFREF dfr
 	variable sweepNo
 
-	variable numEntries, numDACs, numADCs, numTTLs
-	variable numRows, numCols
+	variable i, numDACs, numRows, numCols
 	string sweepWaveName
 
-	NVAR stopCollectionPoint = $GetStopCollectionPoint(panelTitle)
-	WAVE ITCDataWave = GetHardwareDataWave(panelTitle)
 	WAVE ITCChanConfigWave = GetITCChanConfigWave(panelTitle)
-
-	ASSERT(IsValidSweepAndConfig(ITCDataWave, ITCChanConfigWave), "ITC Data and config wave are not compatible")
-
-	numRows = stopCollectionPoint
-	numCols = DimSize(ITCDataWave, COLS)
-	ASSERT(numCols > 0, "Expected at least one channel")
-
-	sweepWaveName = "Sweep_" +  num2str(sweepNo)
-	Make/O/N=(numRows, numCols)/Y=(SWS_GetRawDataFPType(panelTitle)) dfr:$sweepWaveName/Wave=sweepWave
-
 	WAVE gain = SWS_GetChannelGains(paneltitle)
+	variable hardwareType = DAP_GetHardwareType(panelTitle)
 
-	MultiThread sweepWave[][] = ITCDataWave[p][q] / gain[q]
-	CopyScales/P ITCDataWave, sweepWave
+	switch(hardwareType)
+		case HARDWARE_ITC_DAC:
+			WAVE ITCDataWave = GetHardwareDataWave(panelTitle)
+			NVAR stopCollectionPoint = $GetStopCollectionPoint(panelTitle)
 
+			ASSERT(IsValidSweepAndConfig(ITCDataWave, ITCChanConfigWave), "ITC Data and config wave are not compatible")
+
+			numRows = stopCollectionPoint
+			numCols = DimSize(ITCDataWave, COLS)
+			ASSERT(numCols > 0, "Expected at least one channel")
+
+			sweepWaveName = "Sweep_" +  num2str(sweepNo)
+			Make/O/N=(numRows, numCols)/Y=(SWS_GetRawDataFPType(panelTitle)) dfr:$sweepWaveName/Wave=sweepWave
+
+
+			MultiThread sweepWave[][] = ITCDataWave[p][q] / gain[q]
+			CopyScales/P ITCDataWave, sweepWave
+			break
+		case HARDWARE_NI_DAC:
+			WAVE/WAVE NIDataWave = GetHardwareDataWave(panelTitle)
+			ASSERT(IsValidSweepAndConfig(NIDataWave, ITCChanConfigWave), "NI Data and config wave are not compatible")
+			WAVE DACs = GetDACListFromConfig(ITCChanConfigWave)
+			numDACs = DimSize(DACs, ROWS)
+			numCols = DimSize(NIDataWave, ROWS)
+			ASSERT(numCols > 0, "Expected at least one channel")
+			numRows = DimSize(NIDataWave[0], ROWS)
+			sweepWaveName = "Sweep_" +  num2str(sweepNo)
+			Make/O/N=(numRows, numCols)/Y=(SWS_GetRawDataFPType(panelTitle)) dfr:$sweepWaveName/Wave=sweepWave
+			for(i = 0; i < numCols; i += 1)
+				WAVE NIChannel = NIDataWave[i]
+				// only DAC waves require gain applied, ADC waves were scaled by the FIFO used in acquisition
+				Multithread sweepWave[][i] = (i < numDACs) ? NIChannel[p] / gain[i] : NIChannel[p]
+			endfor
+			CopyScales/P NIChannel, sweepWave
+			break
+	endswitch
 	return sweepWave
 End
 
