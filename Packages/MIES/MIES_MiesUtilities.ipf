@@ -4789,22 +4789,37 @@ Function IsValidConfigWave(config)
 		   DimSize(config, COLS) >= 4
 End
 
-/// @brief Check if the given wave is a valid ITCDataWave
+/// @brief Check if the given wave is a valid HardwareDataWave
 Function IsValidSweepWave(sweep)
 	WAVE/Z sweep
 
-	return WaveExists(sweep) &&        \
-		   DimSize(sweep, COLS) > 0 && \
-		   DimSize(sweep, ROWS) > 0
+	if(WaveType(sweep, 1) == IGOR_TYPE_WAVEREF_WAVE)
+		if(WaveExists(sweep) && DimSize(sweep, ROWS) > 0)
+			WAVE/Z/WAVE sweepWREF = sweep
+			WAVE/Z channel = sweepWREF[0]
+			return WaveExists(channel) && DimSize(channel, ROWS) > 0
+		endif
+	else
+		return WaveExists(sweep) &&        \
+			   DimSize(sweep, COLS) > 0 && \
+			   DimSize(sweep, ROWS) > 0
+	endif
+	return 0
 End
 
 /// @brief Check if the two waves are valid and compatible
 Function IsValidSweepAndConfig(sweep, config)
 	WAVE/Z sweep, config
 
-	return IsValidConfigWave(config) &&                  \
-		   IsValidSweepWave(sweep) &&                    \
-		   DimSize(sweep, COLS) == DimSize(config, ROWS)
+	if(WaveType(sweep, 1) == IGOR_TYPE_WAVEREF_WAVE)
+		return IsValidConfigWave(config) &&                  \
+				 IsValidSweepWave(sweep) &&                    \
+				 DimSize(sweep, ROWS) == DimSize(config, ROWS)
+	else
+		return IsValidConfigWave(config) &&                  \
+				 IsValidSweepWave(sweep) &&                    \
+				 DimSize(sweep, COLS) == DimSize(config, ROWS)
+	endif
 End
 
 /// @brief Return the next random number using the device specific RNG seed
