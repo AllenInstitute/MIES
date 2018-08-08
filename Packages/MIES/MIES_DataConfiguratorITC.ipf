@@ -578,7 +578,7 @@ End
 static Function DC_GetDecimationFactor(panelTitle, dataAcqOrTP)
 	string panelTitle
 	variable dataAcqOrTP
-
+/// @todo: minimum sampling intervall from generator and not itc here
 	return DAP_GetITCSampInt(panelTitle, dataAcqOrTP) / (HARDWARE_ITC_MIN_SAMPINT * 1000)
 End
 

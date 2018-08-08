@@ -3041,7 +3041,7 @@ Function/Wave GetSegmentWave([duration])
 	elseif(numPoints != DimSize(SegmentWave, ROWS))
 		Redimension/N=(numPoints) SegmentWave
 	endif
-
+	// @todo: should be generators sampling intervall
 	SetScale/P x 0, HARDWARE_ITC_MIN_SAMPINT, "ms", SegmentWave
 
 	return SegmentWave
