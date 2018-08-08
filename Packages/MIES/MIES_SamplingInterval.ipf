@@ -522,6 +522,9 @@ Function SI_CalculateMinSampInterval(panelTitle, dataAcqOrTP)
 	variable dataAcqOrTP
 
 	variable numActiveChannels
+	string deviceType, deviceNumber
+
+	ASSERT(ParseDeviceString(panelTitle, deviceType, deviceNumber), "Could not parse device string")
 
 	WAVE/Z lut = SI_GetMinSampIntWave(panelTitle)
 	if(!WaveExists(lut))
@@ -544,7 +547,15 @@ Function SI_CalculateMinSampInterval(panelTitle, dataAcqOrTP)
 		return HARDWARE_ITC_MIN_SAMPINT * 1000
 	endif
 
-	return SI_FindMatchingTableEntry(lut, ac)
+	strswitch(deviceType)
+		case "ITC18":
+		case "ITC16":
+			return 2 * SI_FindMatchingTableEntry(lut, ac)
+			break
+		default:
+			return SI_FindMatchingTableEntry(lut, ac)
+			break
+	endswitch
 End
 
 /// @brief Return a wave ref with the lookup wave for the sampling interval
