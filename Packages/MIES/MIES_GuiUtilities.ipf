@@ -973,6 +973,17 @@ Function IsControlDisabled(win, control)
 	return V_disable & DISABLE_CONTROL_BIT
 End
 
+/// @brief Return one if the given control is hidden,
+/// zero otherwise
+Function IsControlHidden(win, control)
+	string win, control
+
+	ControlInfo/W=$win $control
+	ASSERT(V_flag != 0, "Non-existing control or window")
+
+	return V_disable & HIDDEN_CONTROL_BIT
+End
+
 /// @brief Return the main window name from a full subwindow specification
 ///
 /// @param subwindow window name including subwindows, e.g. `panel#subWin1#subWin2`
