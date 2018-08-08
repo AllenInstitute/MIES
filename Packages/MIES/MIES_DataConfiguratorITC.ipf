@@ -380,26 +380,6 @@ static Function DC_CalculateITCDataWaveLength(panelTitle, dataAcqOrTP)
 	return NaN
 end
 
-/// @brief Returns the longest sweep in a stimulus set across the given channel type
-///
-/// @param panelTitle  device
-/// @param dataAcqOrTP mode, either #DATA_ACQUISITION_MODE or #TEST_PULSE_MODE
-/// @param channelType One of @ref ChannelTypeAndControlConstants
-///
-/// @return number of data points, *not* time
-static Function DC_CalculateLongestSweep(panelTitle, dataAcqOrTP, channelType)
-	string panelTitle
-	variable dataAcqOrTP
-	variable channelType
-
-	if(dataAcqOrTP == DATA_ACQUISITION_MODE)
-		return ceil(DC_LongestOutputWave(panelTitle, dataAcqOrTP, channelType) / DC_GetDecimationFactor(panelTitle, dataAcqOrTP))
-	elseif(dataAcqOrTP == TEST_PULSE_MODE)
-		return ceil(DC_LongestOutputWave(panelTitle, dataAcqOrTP, channelType))
-	else
-		ASSERT(0, "unhandled case")
-	endif
-End
 
 /// @brief Creates the ITCConfigALLConfigWave used to configure channels the ITC device
 ///
@@ -697,19 +677,55 @@ static Function DC_GetDecimationFactor(panelTitle, dataAcqOrTP)
 	return DAP_GetSampInt(panelTitle, dataAcqOrTP) / (HARDWARE_ITC_MIN_SAMPINT * 1000)
 End
 
+/// @brief Returns the longest sweep in a stimulus set across the given channel type
+///
+/// @param panelTitle  device
+/// @param dataAcqOrTP mode, either #DATA_ACQUISITION_MODE or #TEST_PULSE_MODE
+/// @param channelType One of @ref ChannelTypeAndControlConstants
+///
+/// @return number of data points, *not* time
+static Function DC_CalculateLongestSweep(panelTitle, dataAcqOrTP, channelType)
+	string panelTitle
+	variable dataAcqOrTP
+	variable channelType
+
+	return DC_CalculateGeneratedDataSize(panelTitle, dataAcqOrTP, DC_LongestOutputWave(panelTitle, dataAcqOrTP, channelType))
+End
+
 /// @brief Get the stimset length for the real sampling interval
 ///
 /// @param stimSet          stimset wave
-/// @param decimationFactor see DC_GetDecimationFactor()
+/// @param panelTitle 		 device
 /// @param dataAcqOrTP      one of #DATA_ACQUISITION_MODE or #TEST_PULSE_MODE
-static Function DC_CalculateStimsetLength(stimSet, decimationFactor, dataAcqOrTP)
+static Function DC_CalculateStimsetLength(stimSet, panelTitle, dataAcqOrTP)
 	WAVE stimSet
-	variable decimationFactor, dataAcqOrTP
+	string panelTitle
+	variable dataAcqOrTP
 
-	if(dataAcqOrTP == TEST_PULSE_MODE)
-		return round(DimSize(stimSet, ROWS))
-	elseif(dataAcqOrTP == DATA_ACQUISITION_MODE)
-		return round(DimSize(stimSet, ROWS) / decimationFactor)
+	return DC_CalculateGeneratedDataSize(panelTitle, dataAcqOrTP, DimSize(stimSet, ROWS))
+End
+
+/// @brief Get the length for the real sampling interval from a generated wave with length
+///
+/// @param panelTitle 		 device
+/// @param dataAcqOrTP      one of #DATA_ACQUISITION_MODE or #TEST_PULSE_MODE
+/// @param genLength        length of a generated data wave
+static Function DC_CalculateGeneratedDataSize(panelTitle, dataAcqOrTP, genLength)
+	string panelTitle
+	variable dataAcqOrTP, genLength
+
+	// note: the decimationFactor is the factor between the hardware sample rate and the sample rate of the generated waveform in singleStimSet
+	// The ratio of the source to target wave sizes is however limited by the integer size of both waves
+	// While ideally srcLength == tgtLength the floor(...) limits the real data wave length such that
+	// when decimationFactor * index of real data wave is applied as index of the generated data wave it never exceeds its size
+	// Also if decimationFactor >= 2 the last point of the generated data wave is never transferred
+	// e.g. generated data with 10 points and decimationFactor == 2 copies index 0, 2, 4, 6, 8 to the real data wave of size 5
+	if(dataAcqOrTP == DATA_ACQUISITION_MODE)
+		return floor(genLength / DC_GetDecimationFactor(panelTitle, dataAcqOrTP))
+	elseif(dataAcqOrTP == TEST_PULSE_MODE)
+		return genLength
+	else
+		ASSERT(0, "unhandled case")
 	endif
 End
 
@@ -733,6 +749,7 @@ static Function DC_PlaceDataInHardwareDataWave(panelTitle, numActiveChannels, da
 	variable distributedDAQDelay, onSetDelay, onsetDelayAuto, onsetDelayUser, decimationFactor, cutoff
 	variable multiplier, j, powerSpectrum, distributedDAQOptOv, distributedDAQOptPre, distributedDAQOptPost, distributedDAQOptRes, headstage
 	variable/C ret
+	variable srcLength, tgtLength
 
 	globalTPInsert        = DAG_GetNumericalValue(panelTitle, "Check_Settings_InsertTP")
 	scalingZero           = DAG_GetNumericalValue(panelTitle,  "check_Settings_ScalingZero")
@@ -916,7 +933,7 @@ static Function DC_PlaceDataInHardwareDataWave(panelTitle, numActiveChannels, da
 		WAVE/T regions = params.regions
 	endif
 
-	setLength[] = DC_CalculateStimsetLength(stimSet[p], decimationFactor, dataAcqOrTP)
+	setLength[] = DC_CalculateStimsetLength(stimSet[p], panelTitle, dataAcqOrTP)
 
 	if(dataAcqOrTP == TEST_PULSE_MODE)
 		insertStart[] = 0
@@ -1031,7 +1048,7 @@ static Function DC_PlaceDataInHardwareDataWave(panelTitle, numActiveChannels, da
 				for(i = 0; i < numEntries; i += 1)
 					WAVE singleStimSet = stimSet[i]
 					WAVE NIChannel = NIDataWave[i]
-					Multithread NIChannel[insertStart[i], insertStart[i] + setLength[i] - 1] =                     \
+					MultiThread NIChannel[insertStart[i], insertStart[i] + setLength[i] - 1] =                     \
 					limit(                                                                                         \
 					DAGain[i] * DAScale[i] * singleStimSet[decimationFactor * (p - insertStart[i])][setColumn[i]], \
 					NI_DAC_MIN,                                                                                    \
@@ -1163,7 +1180,7 @@ static Function DC_PlaceDataInHardwareDataWave(panelTitle, numActiveChannels, da
 				// Place TTL waves into ITCDataWave
 				if(DC_AreTTLsInRackChecked(RACK_ZERO, panelTitle))
 					DC_MakeITCTTLWave(panelTitle, RACK_ZERO)
-					singleSetLength = DC_CalculateStimsetLength(TTLWave, decimationFactor, DATA_ACQUISITION_MODE)
+					singleSetLength = DC_CalculateStimsetLength(TTLWave, panelTitle, DATA_ACQUISITION_MODE)
 					MultiThread ITCDataWave[singleInsertStart, singleInsertStart + singleSetLength - 1][activeColumn] = \
 			  		limit(TTLWave[trunc(decimationFactor * (p - singleInsertStart))], SIGNED_INT_16BIT_MIN, SIGNED_INT_16BIT_MAX); AbortOnRTE
 					activeColumn += 1
@@ -1171,7 +1188,7 @@ static Function DC_PlaceDataInHardwareDataWave(panelTitle, numActiveChannels, da
 
 				if(DC_AreTTLsInRackChecked(RACK_ONE, panelTitle))
 					DC_MakeITCTTLWave(panelTitle, RACK_ONE)
-					singleSetLength = DC_CalculateStimsetLength(TTLWave, decimationFactor, DATA_ACQUISITION_MODE)
+					singleSetLength = DC_CalculateStimsetLength(TTLWave, panelTitle, DATA_ACQUISITION_MODE)
 					MultiThread ITCDataWave[singleInsertStart, singleInsertStart + singleSetLength - 1][activeColumn] = \
 					limit(TTLWave[trunc(decimationFactor * (p - singleInsertStart))], SIGNED_INT_16BIT_MIN, SIGNED_INT_16BIT_MAX); AbortOnRTE
 				endif
@@ -1284,7 +1301,6 @@ static Function DC_CheckIfDataWaveHasBorderVals(panelTitle)
 			variable i
 			for(i = 0; i < channels; i += 1)
 				WAVE NIChannel = NIDataWave[i]
-// TODO need to test TTL waves differently
 #if (IgorVersion() >= 8.00)
 			FindValue/UOFV/V=(NI_DAC_MIN)/T=1E-6 NIChannel
 
