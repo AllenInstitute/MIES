@@ -303,15 +303,6 @@ Function ChangeControlBckgColors(win, controlList, R, G, B)
 	
 End
 
-/// @brief Returns control disable state
-Function GetControlDisable(win, control)
-	string win, control
-
-	ControlInfo/W=$win $control
-	ASSERT(V_flag != 0, "Non-existing control or window")
-	return V_disable
-End
-
 /// @brief Returns one if the checkbox is selected or zero if it is unselected
 Function GetCheckBoxState(win, control)
 	string win, control
@@ -971,6 +962,17 @@ Function IsControlDisabled(win, control)
 	ASSERT(V_flag != 0, "Non-existing control or window")
 
 	return V_disable & DISABLE_CONTROL_BIT
+End
+
+/// @brief Return one if the given control is hidden,
+/// zero otherwise
+Function IsControlHidden(win, control)
+	string win, control
+
+	ControlInfo/W=$win $control
+	ASSERT(V_flag != 0, "Non-existing control or window")
+
+	return V_disable & HIDDEN_CONTROL_BIT
 End
 
 /// @brief Return the main window name from a full subwindow specification
