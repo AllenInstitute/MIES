@@ -34,7 +34,7 @@ cd $top_level
 zipfile=$(ls Release_*.zip)
 
 cd tools
-rm -f installer/*.inc
+rm -f installer/*.inc installer/MIES-Release*.exe
 
 #Include file name, must be undecorated file names
 #The first name of NSISDEFINCS is fixed to "setincnames.inc"
