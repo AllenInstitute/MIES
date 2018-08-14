@@ -481,6 +481,7 @@ Function DAP_EphysPanelStartUpSettings()
 	SetVariable setvar_Settings_TP_RTolerance WIN = $panelTitle,value= _NUM:1
 	CheckBox check_Settings_SaveAmpSettings WIN = $panelTitle,value= 0
 	CheckBox check_Settings_AmpIEQZstep WIN = $panelTitle,value= 0
+	CheckBox Check_Settings_ITImanualStart WIN = $panelTitle,value= 0
 
 	SetControlUserData(panelTitle, "Check_Settings_BkgTP", "oldState", "")
 	SetControlUserData(panelTitle, "Check_Settings_BackgrndDataAcq", "oldState", "")
@@ -1794,8 +1795,9 @@ Function DAP_CheckSettings(panelTitle, mode)
 
 	variable numDACs, numADCs, numHS, numEntries, i, indexingEnabled, clampMode
 	variable ampSerial, ampChannelID, minValue, maxValue, leftOverBytes
+	variable lastStartSeconds, lastITI, nextStart, leftTime, sweepNo
 	string ctrl, endWave, ttlWave, dacWave, refDacWave, reqParams
-	string list
+	string list, lastStart
 
 	ASSERT(mode == DATA_ACQUISITION_MODE || mode == TEST_PULSE_MODE, "Invalid mode")
 
@@ -1904,6 +1906,27 @@ Function DAP_CheckSettings(panelTitle, mode)
 		WAVE statusHS = DAG_GetChannelState(panelTitle, CHANNEL_TYPE_HEADSTAGE)
 
 		if(mode == DATA_ACQUISITION_MODE)
+
+			if(DAG_GetNumericalValue(panelTitle, "Check_Settings_ITImanualStart"))
+				sweepNo = AFH_GetLastSweepAcquired(panelTitle)
+				WAVE numericalValues = GetLBNumericalValues(panelTitle)
+				WAVE textualValues   = GetLBTextualValues(panelTitle)
+				lastITI   = GetLastSettingIndep(numericalValues, sweepNo, "Inter-trial interval", DATA_ACQUISITION_MODE)
+				lastStart = GetLastSettingTextIndep(textualValues, sweepNo, HIGH_PREC_SWEEP_START_KEY, DATA_ACQUISITION_MODE)
+
+				if(IsFinite(lastITI) && !IsEmpty(lastStart))
+					lastStartSeconds = ParseISO8601TimeStamp(lastStart)
+					nextStart        = DateTimeInUTC()
+					leftTime         = lastStartSeconds + lastITI - nextStart
+
+					if(leftTime > 0)
+						printf "(%s) The next sweep can not be started as that would break the required inter trial interval. Please wait another %g seconds.\r", panelTitle, leftTime
+						ControlWindowToFront()
+						return 1
+					endif
+				endif
+			endif
+
 			// check all selected TTLs
 			indexingEnabled = DAG_GetNumericalValue(panelTitle, "Check_DataAcq_Indexing")
 			Wave statusTTL = DAG_GetChannelState(panelTitle, CHANNEL_TYPE_TTL)
