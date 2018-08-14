@@ -23,7 +23,6 @@
 
 set -e
 
-# Validate settings.
 [ "$TRACE" ] && set -x
 
 counter=0
@@ -61,11 +60,12 @@ do
       ;;
     *)
       echo "Unknown param $key"
-      exit 1 ;;
+      exit 1
+      ;;
   esac
 done
 
-# Define variables.
+# Define variables
 GH_API="https://api.github.com"
 GH_REPO="$GH_API/repos/$owner/$repo"
 AUTH="Authorization: token $github_api_token"
@@ -77,13 +77,13 @@ else
   GH_TAGS="$GH_REPO/releases/tags/$tag"
 fi
 
-# Validate token.
+# Validate token
 curl -o /dev/null -sH "$AUTH" $GH_REPO || { echo "Error: Invalid repo, token or network issue!";  exit 1; }
 
-# Read asset tags.
+# Read asset tags
 response=$(curl -sH "$AUTH" $GH_TAGS)
 
-# Get ID of the release.
+# Get ID of the release
 if echo "$response" | grep -q "\bid\b"
 then
   release_id=$(echo "$response" | grep "\bid\b" | head -n1 | grep -oP "([[:digit:]]+)")
@@ -93,25 +93,24 @@ else
   exit 1
 fi
 
-# Delete all assets
+# Delete all existing assets
 if echo "$response" | grep -q -A1 "releases/assets/"
 then
   for asset_id in $(echo "$response" | grep -A1 "releases/assets/" | grep "\bid\b" | grep -oP "([[:digit:]]+)")
   do
-    echo "Deleting asset ($asset_id) ... "
+    echo "Deleting asset ($asset_id) ..."
     curl -s -X "DELETE" -H "$AUTH" "https://api.github.com/repos/$owner/$repo/releases/assets/$asset_id"
   done
 else
-  echo "No need to delete asset"
+  echo "No need to delete assets."
 fi
 
-# Upload asset
-echo "Uploading asset... "
+echo "Uploading assets ..."
 
-# Construct urls
+# Upload assets
 for filename in "${filenames[@]}"
 do
   GH_ASSET="https://uploads.github.com/repos/$owner/$repo/releases/$release_id/assets?name=$(basename $filename)"
 
-  curl --data-binary @"$filename" -H "$AUTH" -H "Content-Type: application/octet-stream" $GH_ASSET -so /dev/null && echo "Successfully uploaded $filename"
+  curl --data-binary @"$filename" -H "$AUTH" -H "Content-Type: application/octet-stream" $GH_ASSET -so /dev/null && echo "Successfully uploaded $filename."
 done
