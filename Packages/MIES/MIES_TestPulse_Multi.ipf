@@ -159,8 +159,10 @@ Function TPM_BkrdTPFuncMD(s)
 		if(!WaveExists(result))
 			if(s.threadDeadCount < TP_MD_THREAD_DEAD_MAX_RETRIES)
 				s.threadDeadCount += 1
-				printf "Retrying getting data from thread, keep fingers crossed (%d/%d)\r", s.threadDeadCount, TP_MD_THREAD_DEAD_MAX_RETRIES
-				ControlWindowToFront()
+				if(s.threadDeadCount > 1)
+					printf "Retrying getting data from thread, keep fingers crossed (%d/%d)\r", s.threadDeadCount, TP_MD_THREAD_DEAD_MAX_RETRIES
+					ControlWindowToFront()
+				endif
 				continue
 			endif
 
