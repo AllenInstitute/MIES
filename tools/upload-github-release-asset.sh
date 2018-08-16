@@ -43,6 +43,21 @@ then
   exit 1
 fi
 
+branch=$(git rev-parse --abbrev-ref HEAD)
+
+case "$branch" in
+  master)
+    tag=latest
+    ;;
+  release/*)
+    tag=$(git tag | tail -1)
+    ;;
+  *)
+    echo "Unexpected branch $branch"
+    exit 1
+    ;;
+esac
+
 credentials=~/.credentials/github_api_token
 
 if [ ! -f $credentials ]
@@ -51,4 +66,4 @@ then
   exit 1
 fi
 
-./tools/upload-github-release-asset-helper.sh github_api_token=$(cat $credentials) owner=AllenInstitute repo=MIES tag=$(git tag | tail -1) filename=$zipfile filename=$installerfile
+./tools/upload-github-release-asset-helper.sh github_api_token=$(cat $credentials) owner=AllenInstitute repo=MIES tag=$tag filename=$zipfile filename=$installerfile
