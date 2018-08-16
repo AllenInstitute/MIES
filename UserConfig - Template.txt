@@ -16,6 +16,8 @@ ITC Device number = 0
 
 Enable multiple ITC devices = Yes
 
+Respect ITI for manual initialization = Yes
+
 ####### Amplifier and Pressure Settings #######
 
 #### Force position of MCCs to one of the following monitors: Upper Right, Lower Right, Upper Left, Lower Left. May be left to - none - and MCCs will open in place ####
@@ -134,4 +136,3 @@ Initial stim set IC = PulseTrain_20Hz_DA_0
 Initial stim set amplitude IC = 1500
 
 Enable stim set mode switch = Yes
-
