@@ -388,6 +388,8 @@ static Function ExpConfig_DAEphysSettings(panelTitle, UserSettings)
 	PGC_SetAndActivateControl(panelTitle,"ADC", val = DA_EPHYS_PANEL_SETTINGS)
 	FindValue /TXOP = 4 /TEXT = ENABLE_MULTIPLE_ITC UserSettings
 	PGC_SetAndActivateControl(panelTitle,"check_Settings_MD", val = str2numSafe(UserSettings[V_value][%SettingValue]))
+	FindValue /TXOP = 4 /TEXT = ENABLE_ITI_MANUAL_START UserSettings
+	PGC_SetAndActivateControl(panelTitle,"Check_Settings_ITImanualStart", val = str2numSafe(UserSettings[V_value][%SettingValue]))
 	FindValue /TXOP = 4 /TEXT = TP_AFTER_DAQ UserSettings
 	PGC_SetAndActivateControl(panelTitle,"check_Settings_TPAfterDAQ", val = str2numSafe(UserSettings[V_value][%SettingValue]))
 	FindValue /TXOP = 4 /TEXT = SAVE_TP UserSettings
