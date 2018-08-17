@@ -118,9 +118,9 @@ static Function TPM_BkrdTPMD(panelTitle, [triggerMode])
 	HW_StartAcq(HARDWARE_ITC_DAC, ITCDeviceIDGlobal, triggerMode=triggerMode, flags=HARDWARE_ABORT_ON_ERROR)
 	TFH_StartFIFOResetDeamon(HARDWARE_ITC_DAC, ITCDeviceIDGlobal, triggerMode)
 
-	if(!IsBackgroundTaskRunning("TestPulseMD"))
-		CtrlNamedBackground TestPulseMD, period = 5, proc = TPM_BkrdTPFuncMD
-		CtrlNamedBackground TestPulseMD, start
+	if(!IsBackgroundTaskRunning(TASKNAME_TPMD))
+		CtrlNamedBackground $TASKNAME_TPMD, period = 5, proc = TPM_BkrdTPFuncMD
+		CtrlNamedBackground $TASKNAME_TPMD, start
 	endif
 End
 
@@ -150,7 +150,7 @@ Function TPM_BkrdTPFuncMD(s)
 		deviceID = ActiveDeviceList[i][%DeviceID]
 		panelTitle = HW_GetMainDeviceName(HARDWARE_ITC_DAC, deviceID)
 
-		WAVE ITCDataWave = GetITCDataWave(panelTitle)
+		WAVE ITCDataWave = GetHardwareDataWave(panelTitle)
 
 		NVAR tgID = $GetThreadGroupIDFIFO(panelTitle)
 		WAVE/Z result = TS_GetNewestFromThreadQueueMult(tgID, {"fifoPos", "startSequence"})
@@ -221,7 +221,7 @@ static Function TPM_StopTPMD(panelTitle)
 
 		TPM_RemoveDevice(panelTitle)
 		if(!TPM_HasActiveDevices())
-			CtrlNamedBackground TestPulseMD, stop
+			CtrlNamedBackground $TASKNAME_TPMD, stop
 		endif
 
 		TP_Teardown(panelTitle)

@@ -12,15 +12,14 @@
 Function TPS_StartBackgroundTestPulse(panelTitle)
 	string panelTitle
 
-	CtrlNamedBackground TestPulse, period = 5, proc = TPS_TestPulseFunc
-	CtrlNamedBackground TestPulse, start
+	CtrlNamedBackground $TASKNAME_TP, period = 5, proc = TPS_TestPulseFunc
+	CtrlNamedBackground $TASKNAME_TP, start
 End
 
 Function TPS_StopTestPulseSingleDevice(panelTitle)
 	string panelTitle
 
-	CtrlNamedBackground TestPulse, stop
-
+	CtrlNamedBackground $TASKNAME_TP, stop
 	TP_Teardown(panelTitle)
 End
 

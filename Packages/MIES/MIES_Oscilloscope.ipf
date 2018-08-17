@@ -261,6 +261,9 @@ Function SCOPE_CreateGraph(panelTitle, dataAcqOrTP)
 			if(showPeakResistance)
 				peakTrace = "PeakResistance" + adcStr
 				AppendToGraph/W=$graph/R=$rightAxis/T=top TPStorage[][i][%PeakResistance]/TN=$peakTrace
+#if (IgorVersion() >= 8.00)
+				ModifyGraph/W=$graph live($peakTrace)=(2^1)
+#endif
 				ModifyGraph/W=$graph lstyle($peakTrace)=1, rgb($peakTrace)=(peakColor.red, peakColor.green, peakColor.blue)
 			endif
 
@@ -279,6 +282,9 @@ Function SCOPE_CreateGraph(panelTitle, dataAcqOrTP)
 				else
 					ModifyGraph/W=$graph lstyle($steadyStateTrace)=1, rgb($steadyStateTrace)=(steadyColor.red, steadyColor.green, steadyColor.blue)
 				endif
+#if (IgorVersion() >= 8.00)
+				ModifyGraph/W=$graph live($steadyStateTrace)=(2^1)
+#endif
 			endif
 
 			if(showPeakResistance ||showSteadyStateResistance)
@@ -430,11 +436,10 @@ Function SCOPE_UpdateOscilloscopeData(panelTitle, dataAcqOrTP, [chunk, fifoPos])
 	string panelTitle
 	variable dataAcqOrTP, chunk, fifoPos
 
+	WAVE OscilloscopeData = GetOscilloscopeWave(panelTitle)
 	variable length, first, last
 	variable startOfADColumns, numEntries
-
-	WAVE OscilloscopeData = GetOscilloscopeWave(panelTitle)
-	WAVE ITCDataWave      = GetITCDataWave(panelTitle)
+	WAVE ITCDataWave      = GetHardwareDataWave(panelTitle)
 	WAVE ITCChanConfigWave = GetITCChanConfigWave(panelTitle)
 	WAVE ADCs = GetADCListFromConfig(ITCChanConfigWave)
 	WAVE DA_EphysGuiState = GetDA_EphysGuiStateNum(panelTitle)

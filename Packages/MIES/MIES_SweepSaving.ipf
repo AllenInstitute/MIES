@@ -140,7 +140,7 @@ static Function/WAVE SWS_StoreITCDataWaveScaled(panelTitle, dfr, sweepNo)
 	string sweepWaveName
 
 	NVAR stopCollectionPoint = $GetStopCollectionPoint(panelTitle)
-	WAVE ITCDataWave = GetITCDataWave(panelTitle)
+	WAVE ITCDataWave = GetHardwareDataWave(panelTitle)
 	WAVE ITCChanConfigWave = GetITCChanConfigWave(panelTitle)
 
 	ASSERT(IsValidSweepAndConfig(ITCDataWave, ITCChanConfigWave), "ITC Data and config wave are not compatible")

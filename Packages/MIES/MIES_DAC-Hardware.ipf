@@ -123,7 +123,7 @@ Function HW_OpenDevice(deviceToOpen, hardwareType, [flags])
 	hardwareType = NaN
 
 	if(ParseDeviceString(deviceToOpen, deviceType, deviceNumber))
-		deviceTypeIndex   = WhichListItem(deviceType, DEVICE_TYPES)
+		deviceTypeIndex   = WhichListItem(deviceType, DEVICE_TYPES_ITC)
 		deviceNumberIndex = WhichListItem(deviceNumber, DEVICE_NUMBERS)
 		deviceID     = HW_ITC_OpenDevice(deviceTypeIndex, deviceNumberIndex)
 		hardwareType = HARDWARE_ITC_DAC
@@ -490,7 +490,7 @@ Function HW_RegisterDevice(mainDevice, hardwareType, deviceID, [pressureDevice])
 	if(hardwareType == HARDWARE_ITC_DAC)
 		devMap[deviceID][hardwareType][%InternalDevice] = NONE
 	elseif(hardwareType == HARDWARE_NI_DAC)
-		devMap[deviceID][hardwareType][%InternalDevice] = StringFromList(deviceID, HW_NI_ListDevices())
+		devMap[deviceID][hardwareType][%InternalDevice] = mainDevice
 	endif
 
 	if(!ParamIsDefault(pressureDevice))
@@ -605,7 +605,7 @@ Function/S HW_ITC_ListOfOpenDevices()
 
 		HW_ITC_HandleReturnValues(0, V_ITCError, V_ITCXOPError)
 
-		type   = StringFromList(DevInfo[0], DEVICE_TYPES)
+		type   = StringFromList(DevInfo[0], DEVICE_TYPES_ITC)
 		number = StringFromList(DevInfo[1], DEVICE_NUMBERS)
 		device = BuildDeviceString(type, number)
 		list   = AddListItem(device, list, ";", Inf)
@@ -631,8 +631,8 @@ Function/S HW_ITC_ListDevices()
 
 	DEBUGPRINTSTACKINFO()
 
-	for(i=0; i < ItemsInList(DEVICE_TYPES); i+=1)
-		type = StringFromList(i, DEVICE_TYPES)
+	for(i=0; i < ItemsInList(DEVICE_TYPES_ITC); i+=1)
+		type = StringFromList(i, DEVICE_TYPES_ITC)
 
 		if(CmpStr(type,"ITC00") == 0) // don't test the virtual device
 			continue
@@ -846,7 +846,7 @@ End
 
 /// @brief Open a ITC device
 ///
-/// @param deviceType   zero-based index into #DEVICE_TYPES
+/// @param deviceType   zero-based index into #DEVICE_TYPES_ITC
 /// @param deviceNumber zero-based index into #DEVICE_NUMBERS
 /// @param flags [optional, default none] One or multiple flags from @ref HardwareInteractionFlags
 ///
@@ -1285,7 +1285,7 @@ Function HW_ITC_PrepareAcq(deviceID, [data, dataFunc, config, configFunc, flags,
 
 	if(ParamIsDefault(data))
 		if(ParamIsDefault(dataFunc))
-			WAVE data = GetITCDataWave(panelTitle)
+			WAVE data = GetHardwareDataWave(panelTitle)
 		else
 			WAVE data = dataFunc(panelTitle)
 		endif
@@ -2078,7 +2078,7 @@ Function HW_NI_ResetDevice(device, [flags])
 		printf "Error %d: fDAQmx_resetDevice\r", ret
 		ControlWindowToFront()
 		if(flags & HARDWARE_ABORT_ON_ERROR)
-			ASSERT(0, "Error calling fDAQmx_DIO_Finished")
+			ASSERT(0, "Error calling fDAQmx_resetDevice")
 		endif
 	endif
 End

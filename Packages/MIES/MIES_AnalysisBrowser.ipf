@@ -757,12 +757,12 @@ static Function/S AB_LoadLabNotebookFromIgor(discLocation)
 	// AB_LoadDataWrapper switched current Data Folder to newDFR
 	cdf = GetDataFolder(1)
 
-	// loop through root:MIES:LabNoteBook:[DEVICE_TYPES]:Device[DEVICE_NUMBERS]:
+	// loop through root:MIES:LabNoteBook:[DEVICE_TYPES_ITC]:Device[DEVICE_NUMBERS]:
 	numDevices = ItemsInList(DEVICE_NUMBERS)
-	numTypes   = ItemsInList(DEVICE_TYPES)
+	numTypes   = ItemsInList(DEVICE_TYPES_ITC)
 
 	for(i = 0; i < numTypes; i += 1)
-		type = StringFromList(i, DEVICE_TYPES)
+		type = StringFromList(i, DEVICE_TYPES_ITC)
 		path = cdf + type
 
 		if(!DataFolderExists(path))

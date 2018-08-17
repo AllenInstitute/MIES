@@ -2139,11 +2139,12 @@ Function DAP_CheckSettings(panelTitle, mode)
 		endif
 
 		// unlock ITCDataWave, this happens if user functions error out and we don't catch it
-		WAVE ITCDataWave = GetITCDataWave(panelTitle)
-		if(NumberByKey("LOCK", WaveInfo(ITCDataWave, 0)))
+		// note: seems to work even if WAVE/WAVE would be required for NI
+		WAVE HardwareDataWave = GetHardwareDataWave(panelTitle)
+		if(NumberByKey("LOCK", WaveInfo(HardwareDataWave, 0)))
 			printf "(%s) Removing leftover lock on ITCDataWave\r", panelTitle
 			ControlWindowToFront()
-			SetWaveLock 0, ITCDataWave
+			SetWaveLock 0, HardwareDataWave
 		endif
 	endfor
 
@@ -4020,7 +4021,7 @@ Function DAP_DeviceIsUnlocked(panelTitle)
 	string panelTitle
 
 	string deviceType, deviceNumber
-	return !(ParseDeviceString(panelTitle, deviceType, deviceNumber) && WhichListItem(deviceType, DEVICE_TYPES) != -1 && WhichListItem(deviceNumber, DEVICE_NUMBERS) != -1)
+	return !(ParseDeviceString(panelTitle, deviceType, deviceNumber) && WhichListItem(deviceType, DEVICE_TYPES_ITC) != -1 && WhichListItem(deviceNumber, DEVICE_NUMBERS) != -1)
 End
 
 Function DAP_AbortIfUnlocked(panelTitle)

@@ -93,7 +93,7 @@ Function AFM_CallAnalysisFunctions(panelTitle, eventType)
 		valid_f3 = FuncRefIsAssigned(FuncRefInfo(f3))
 
 		// all functions are valid
-		WAVE ITCDataWave = GetITCDataWave(panelTitle)
+		WAVE ITCDataWave = GetHardwareDataWave(panelTitle)
 		SetWaveLock 1, ITCDataWave
 
 		ret = NaN

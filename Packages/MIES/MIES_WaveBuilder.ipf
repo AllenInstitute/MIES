@@ -377,6 +377,7 @@ Function/Wave WB_GetStimSet([setName])
 	Make/FREE/N=(lengthOf1DWaves, numSweeps) stimSet
 	FastOp stimSet = 0
 
+// note: here the stimset generation is coupled to the ITC minimum sample interval which is 200 kHz wheras for NI it is 500 kHz
 	SetScale/P x 0, HARDWARE_ITC_MIN_SAMPINT, "ms", stimset
 
 	for(i = 0; i < numSweeps; i += 1)

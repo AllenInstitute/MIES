@@ -24,13 +24,24 @@ Constant NUM_TTL_BITS_PER_RACK = 4
 /// Maximum values of @ref NUM_CHANNELS_CONSTANTS
 Constant NUM_MAX_CHANNELS      = 16
 
-StrConstant DEVICE_TYPES     = "ITC16;ITC18;ITC1600;ITC00;ITC16USB;ITC18USB"
+StrConstant DEVICE_TYPES_ITC = "ITC16;ITC18;ITC1600;ITC00;ITC16USB;ITC18USB"
 StrConstant DEVICE_NUMBERS   = "0;1;2;3;4;5;6;7;8;9;10"
 
 StrConstant ITC1600_FIRST_DEVICE = "ITC1600_Dev_0"
 StrConstant BASE_WINDOW_TITLE    = "DA_Ephys"
 
 StrConstant amPanel = "analysisMaster"
+
+/// @name Task names
+/// @anchor MIES_TASKNAMES
+/// @{
+StrConstant TASKNAME_TP        = "Testpulse"
+StrConstant TASKNAME_TPMD      = "TestpulseMD"
+StrConstant TASKNAME_TIMER     = "ITC_Timer"
+StrConstant TASKNAME_TIMERMD   = "ITC_TimerMD"
+StrConstant TASKNAME_FIFOMON   = "ITC_FIFOMonitor"
+StrConstant TASKNAME_FIFOMONMD = "ITC_FIFOMonitorMD"
+/// @}
 
 /// @name Various mies specific regular expressions
 /// @anchor MIES_REGEXPS
@@ -294,6 +305,17 @@ Constant IGOR_TYPE_32BIT_INT        = 0x020
 Constant IGOR_TYPE_64BIT_INT        = 0x080
 Constant IGOR_TYPE_UNSIGNED         = 0x040 ///< Can be combined, using bitwise or, with all integer types
 Constant IGOR_TYPE_STRUCT_PARAMETER = 0x200
+// If wavetype is called with selector 1
+Constant IGOR_TYPE_NULL_WAVE        = 0x000
+Constant IGOR_TYPE_NUMERIC_WAVE     = 0x001
+Constant IGOR_TYPE_TEXT_WAVE        = 0x002
+Constant IGOR_TYPE_DFREF_WAVE       = 0x003
+Constant IGOR_TYPE_WAVEREF_WAVE     = 0x004
+// If wavetype is called with selector 2
+//Constant IGOR_TYPE_NULL_WAVE      = 0x000
+Constant IGOR_TYPE_GLOBAL_WAVE      = 0x001
+Constant IGOR_TYPE_FREE_WAVE        = 0x002
+Constant IGOR_TYPE_FREEDF_WAVE      = 0x002
 /// @}
 
 /// @name TabControl values in Browser Settings Panel
@@ -496,6 +518,7 @@ Constant ESCAPE_KEY = 32
 StrConstant WAVEBUILDER_COMBINE_FORMULA_VER = "1"
 
 /// Conversion factor between volts and bits for the AD/DA channels
+/// The ITC 16 bit range is +-10.24 V such that a value of 32000 represents exactly 10 V, thus 3200 -> 1 V.
 Constant HARDWARE_ITC_BITS_PER_VOLT = 3200
 
 /// @name Trigger modes
