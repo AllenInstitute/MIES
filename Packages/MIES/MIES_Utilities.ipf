@@ -247,7 +247,7 @@ Function/S GetListOfObjects(dfr, regExpStr, [typeFlag, matchList, waveProperty, 
 						matches = matches & DimSize(wv, COLS) >= val
 						break
 					case "TEXT":
-						matches = matches & (WaveType(wv, 1) == 2) == !!val
+						matches = matches & IsTextWave(wv) == !!val
 						break
 					default:
 						ASSERT(0, "property not implemented")
@@ -2798,7 +2798,7 @@ Function/S TextWaveToList(txtWave, sep)
 	string list = ""
 	variable i, numRows
 
-	ASSERT(WaveType(txtWave, 1) == 2, "Expected a text wave")
+	ASSERT(IsTextWave(txtWave), "Expected a text wave")
 	ASSERT(DimSize(txtWave, COLS) == 0, "Expected a 1D wave")
 
 	numRows = DimSize(txtWave, ROWS)
