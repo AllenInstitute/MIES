@@ -271,24 +271,7 @@ static Function OOD_CalculateOffsets(params)
 		offsets[i] = offset
 	endfor
 
-	// we now know n offsets for n stimsets and can add this configuration into
-	// the cache
 	CA_StoreEntryIntoCache(key, offsets)
-	// but we also know that for every m < n we can reuse the same offsets. So
-	// let's add these into the cache as well.
-	Duplicate/WAVE/FREE params.stimSets, stimSetsPart
-	Duplicate/FREE params.setColumns, setColumnsPart
-	Duplicate/FREE offsets, offsetsPart
-
-	STRUCT OOdDAQParams tempParams
-	tempParams = params
-	for(i = numSets - 1; i > 1; i -= 1)
-		Redimension/N=(i) stimSetsPart, setColumnsPart, offsetsPart
-		WAVE tempParams.stimSets   = stimSetsPart
-		WAVE tempParams.setColumns = setColumnsPart
-		key = CA_DistDAQCreateCacheKey(tempParams)
-		CA_StoreEntryIntoCache(key, offsetsPart)
-	endfor
 
 	WAVE params.offsets = offsets
 End
