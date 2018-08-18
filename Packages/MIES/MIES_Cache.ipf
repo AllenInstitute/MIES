@@ -90,7 +90,7 @@ Function/S CA_DistDAQCreateCacheKey(params)
 		crc = WaveCRC(crc, params.preload)
 	endif
 
-	return num2istr(crc) + "Version 1"
+	return num2istr(crc) + "Version 2"
 End
 
 /// @brief Cache key generator for artefact removal ranges

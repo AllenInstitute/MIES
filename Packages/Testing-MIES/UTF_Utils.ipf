@@ -1136,8 +1136,7 @@ Function oodDAQRegTests_0()
 	InitOOdDAQParams(params, stimSet, {0, 0}, 0, 0, 1)
 	// END CHANGE ME
 
-	OOD_CalculateOffsetsYoked(panelTitle, params)
-	WAVE/WAVE stimSet = OOD_CreateStimSet(params)
+	WAVE/WAVE stimSet = OOD_GetResultWaves(panelTitle,params)
 
 //	oodDAQStore_IGNORE(stimSet, params.offsets, params.regions, index)
 	WAVE/WAVE refWave = GetoodDAQ_RefWaves_IGNORE(index)
@@ -1161,8 +1160,7 @@ Function oodDAQRegTests_1()
 	InitOOdDAQParams(params, stimSet, {1, 0}, 0, 0, 1)
 	// END CHANGE ME
 
-	OOD_CalculateOffsetsYoked(panelTitle, params)
-	WAVE/WAVE stimSet = OOD_CreateStimSet(params)
+	WAVE/WAVE stimSet = OOD_GetResultWaves(panelTitle,params)
 
 //	oodDAQStore_IGNORE(stimSet, params.offsets, params.regions, index)
 	WAVE/WAVE refWave = GetoodDAQ_RefWaves_IGNORE(index)
@@ -1186,8 +1184,7 @@ Function oodDAQRegTests_2()
 	InitOOdDAQParams(params, stimSet, {0, 1}, 0, 0, 1)
 	// END CHANGE ME
 
-	OOD_CalculateOffsetsYoked(panelTitle, params)
-	WAVE/WAVE stimSet = OOD_CreateStimSet(params)
+	WAVE/WAVE stimSet = OOD_GetResultWaves(panelTitle,params)
 
 //	oodDAQStore_IGNORE(stimSet, params.offsets, params.regions, index)
 	WAVE/WAVE refWave = GetoodDAQ_RefWaves_IGNORE(index)
@@ -1211,8 +1208,7 @@ Function oodDAQRegTests_3()
 	InitOOdDAQParams(params, stimSet, {0, 0}, 20, 0, 1)
 	// END CHANGE ME
 
-	OOD_CalculateOffsetsYoked(panelTitle, params)
-	WAVE/WAVE stimSet = OOD_CreateStimSet(params)
+	WAVE/WAVE stimSet = OOD_GetResultWaves(panelTitle,params)
 
 //	oodDAQStore_IGNORE(stimSet, params.offsets, params.regions, index)
 	WAVE/WAVE refWave = GetoodDAQ_RefWaves_IGNORE(index)
@@ -1236,8 +1232,7 @@ Function oodDAQRegTests_4()
 	InitOOdDAQParams(params, stimSet, {0, 0}, 0, 20, 1)
 	// END CHANGE ME
 
-	OOD_CalculateOffsetsYoked(panelTitle, params)
-	WAVE/WAVE stimSet = OOD_CreateStimSet(params)
+	WAVE/WAVE stimSet = OOD_GetResultWaves(panelTitle,params)
 
 //	oodDAQStore_IGNORE(stimSet, params.offsets, params.regions, index)
 	WAVE/WAVE refWave = GetoodDAQ_RefWaves_IGNORE(index)
@@ -1261,8 +1256,7 @@ Function oodDAQRegTests_5()
 	InitOOdDAQParams(params, stimSet, {0, 0}, 0, 0, 10)
 	// END CHANGE ME
 
-	OOD_CalculateOffsetsYoked(panelTitle, params)
-	WAVE/WAVE stimSet = OOD_CreateStimSet(params)
+	WAVE/WAVE stimSet = OOD_GetResultWaves(panelTitle,params)
 
 //	oodDAQStore_IGNORE(stimSet, params.offsets, params.regions, index)
 	WAVE/WAVE refWave = GetoodDAQ_RefWaves_IGNORE(index)
@@ -1286,8 +1280,7 @@ Function oodDAQRegTests_6()
 	InitOOdDAQParams(params, stimSet, {0, 1}, 20, 30, 10)
 	// END CHANGE ME
 
-	OOD_CalculateOffsetsYoked(panelTitle, params)
-	WAVE/WAVE stimSet = OOD_CreateStimSet(params)
+	WAVE/WAVE stimSet = OOD_GetResultWaves(panelTitle,params)
 
 //	oodDAQStore_IGNORE(stimSet, params.offsets, params.regions, index)
 	WAVE/WAVE refWave = GetoodDAQ_RefWaves_IGNORE(index)

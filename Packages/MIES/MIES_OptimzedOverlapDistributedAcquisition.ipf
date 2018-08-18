@@ -186,15 +186,6 @@ static Function OOD_CalculateOffsets(params)
 
 	WAVEClear params.offsets
 
-	key = CA_DistDAQCreateCacheKey(params)
-	WAVE/Z cachedOffsets = CA_TryFetchingEntryFromCache(key)
-
-	if(WaveExists(cachedOffsets))
-
-		WAVE params.offsets = cachedOffsets
-		return NaN
-	endif
-
 	Make/D/FREE/N=(numSets) offsets = 0
 	Make/FREE/R/N=0 tempWave
 
@@ -270,8 +261,6 @@ static Function OOD_CalculateOffsets(params)
 
 		offsets[i] = offset
 	endfor
-
-	CA_StoreEntryIntoCache(key, offsets)
 
 	WAVE params.offsets = offsets
 End
@@ -378,7 +367,7 @@ End
 ///
 /// For yoking we sort the lead and follower devices according to their device number.
 /// Each device will use the result of the previous device offset calculation as preloaded data.
-Function OOD_CalculateOffsetsYoked(panelTitle, params)
+static Function OOD_CalculateOffsetsYoked(panelTitle, params)
 	string panelTitle
 	STRUCT OOdDAQParams &params
 
@@ -500,11 +489,48 @@ static Function OOD_SmearStimSet(params)
 	WAVE/WAVE params.stimSetsSmeared = stimSetsSmeared
 End
 
+/// @brief Return the oodDAQ optimized stimsets
+///
+/// The offsets and the regions are returned in `params` and all results are
+/// cached.
+Function/WAVE OOD_GetResultWaves(panelTitle, params)
+	string panelTitle
+	STRUCT OOdDAQParams &params
+
+	string key
+
+	key = CA_DistDAQCreateCacheKey(params)
+
+	WAVE/WAVE/Z cache = CA_TryFetchingEntryFromCache(key)
+
+	if(WaveExists(cache))
+		WAVE params.offsets = cache[%offsets]
+		WAVE/T params.regions = cache[%regions]
+		return cache[%stimSetsWithOffset]
+	endif
+
+	OOD_CalculateOffsetsYoked(panelTitle, params)
+	WAVE stimSetsWithOffset = OOD_CreateStimSet(params)
+
+	Make/FREE/WAVE/N=3 cache
+	SetDimLabel ROWS, 0, offsets, cache
+	SetDimLabel ROWS, 1, regions, cache
+	SetDimLabel ROWS, 2, stimSetsWithOffset, cache
+
+	cache[%offsets] = params.offsets
+	cache[%regions] = params.regions
+	cache[%stimSetsWithOffset] = stimSetsWithOffset
+
+	CA_StoreEntryIntoCache(key, cache)
+
+	return stimSetsWithOffset
+End
+
 /// @brief Generate a stimset for "overlapped dDAQ" from the calculated offsets
 ///        by OOD_CalculateOffsets().
 ///
 /// @return stimset with offsets, one wave per offset
-Function/Wave OOD_CreateStimSet(params)
+static Function/Wave OOD_CreateStimSet(params)
 	STRUCT OOdDAQParams &params
 
 	variable i, numSets, length

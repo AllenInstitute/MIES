@@ -796,10 +796,9 @@ static Function DC_PlaceDataInITCDataWave(panelTitle, numActiveChannels, dataAcq
 	if(distributedDAQOptOv && dataAcqOrTP == DATA_ACQUISITION_MODE)
 		STRUCT OOdDAQParams params
 		InitOOdDAQParams(params, stimSet, setColumn, distributedDAQOptPre, distributedDAQOptPost, distributedDAQOptRes)
-		OOD_CalculateOffsetsYoked(panelTitle, params)
+		WAVE/WAVE stimSet = OOD_GetResultWaves(panelTitle, params)
 		WAVE offsets = params.offsets
 		WAVE/T regions = params.regions
-		WAVE/WAVE stimSet = OOD_CreateStimSet(params)
 	endif
 
 	setLength[] = DC_CalculateStimsetLength(stimSet[p], decimationFactor, dataAcqOrTP)
