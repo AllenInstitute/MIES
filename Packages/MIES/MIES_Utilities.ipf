@@ -407,11 +407,27 @@ Function ConvertFromBytesToMiB(var)
 End
 
 /// @brief Returns the size of the wave in bytes.
-Function GetWaveSize(wv)
-	Wave wv
+Function GetWaveSize(wv, [recursive])
+	WAVE wv
+	variable recursive
 
-	ASSERT(WaveExists(wv), "missing wave")
-	return NumberByKey("SizeInBytes", WaveInfo(wv, 0))
+	if(ParamIsDefault(recursive))
+		recursive = 0
+	else
+		recursive = !!recursive
+	endif
+
+	ASSERT_TS(WaveExists(wv), "missing wave")
+
+	if(!recursive || !IsWaveRefWave(wv))
+		return NumberByKey("SizeInBytes", WaveInfo(wv, 0))
+	endif
+
+	WAVE/WAVE waveRefs = wv
+
+	Make/FREE/L/U/N=(DimSize(wv, ROWS)) sizes = GetWaveSize(waveRefs[p], recursive = 1)
+
+	return GetWaveSize(wv, recursive = 0) + Sum(sizes)
 End
 
 /// @brief Convert the sampling interval in microseconds (1e-6s) to the rate in kHz
