@@ -1717,7 +1717,7 @@ Function GetRowIndex(wv, [val, str, refWave])
 	ASSERT(ParamIsDefault(val) + ParamIsDefault(str) + ParamIsDefault(refWave) == 2, "Expected exactly one argument")
 
 	if(!ParamIsDefault(refWave))
-		ASSERT(WaveType(wv, 1) == 4, "wv must be a wave holding wave references")
+		ASSERT(IsWaveRefWave(refWave), "wv must be a wave holding wave references")
 		numEntries = DimSize(wv, ROWS)
 		for(i = 0; i < numEntries; i += 1)
 			WAVE/WAVE cmpWave = wv
@@ -3114,7 +3114,7 @@ Function/WAVE DeepCopyWaveRefWave(src, [dimension, index, indexWave])
 
 	variable i, numEntries
 
-	ASSERT(WaveType(src, 1) == 4, "Expected wave ref wave")
+	ASSERT(IsWaveRefWave(src), "Expected wave ref wave")
 	ASSERT(DimSize(src, COLS) <= 1, "Expected a 1D wave for src")
 
 	if(!ParamIsDefault(dimension))
@@ -3179,6 +3179,13 @@ threadsafe Function IsNumericWave(wv)
 	WAVE wv
 
 	return WaveType(wv, 1) == 1
+End
+
+/// @brief Return 1 if the wave is a wave reference wave, zero otherwise
+threadsafe Function IsWaveRefWave(wv)
+	WAVE wv
+
+	return WaveType(wv, 1) == IGOR_TYPE_WAVEREF_WAVE
 End
 
 /// @brief Return the user name of the running user
