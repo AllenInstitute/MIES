@@ -442,7 +442,7 @@ End
 /// between the features in the stim sets.
 ///
 /// Normalizes the returned stimsets to 1 (feature present) and 0 (no feature present).
-Function OOD_SmearStimSet(params)
+static Function OOD_SmearStimSet(params)
 	STRUCT OOdDAQParams &params
 
 	variable i, numLevels, foundLevel, pLevel, preDelayWarnCount, postDelayWarnCount
