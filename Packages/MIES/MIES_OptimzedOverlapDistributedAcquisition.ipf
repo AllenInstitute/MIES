@@ -556,10 +556,10 @@ Function/Wave OOD_CreateStimSet(params)
 		Note acc, note(stimSet)
 
 		// remove empty space beyond `postFeatureTime` at the end
-		FindLevels/P/EDGE=2/Q/DEST=crossing acc, level
+		FindLevel/P/EDGE=2/Q/R=[DimSize(acc, ROWS) - 1, 0] acc, level
 
-		if(V_LevelsFound && acc[length - 1] < level)
-			cutoff = crossing[V_LevelsFound - 1] + params.postFeaturePoints
+		if(!V_flag && acc[length - 1] < level)
+			cutoff = V_levelX + params.postFeaturePoints
 			Redimension/N=(cutoff) acc
 		endif
 
