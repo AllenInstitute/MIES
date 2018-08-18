@@ -105,9 +105,8 @@ static Function/WAVE OOD_ExtractFeatureRegions(stimSets)
 	WAVE/WAVE stimSets
 
 	variable numSets, start, foundLevel, first, last, i, pLevel
-	variable dataLength
+	variable dataLength, level, minVal, maxVal
 	string list, str
-	variable level
 
 	numSets = DimSize(stimSets, ROWS)
 	Make/FREE/T/N=(numSets) regions
@@ -118,8 +117,9 @@ static Function/WAVE OOD_ExtractFeatureRegions(stimSets)
 		dataLength = DimSize(stimSet, ROWS)
 		ASSERT(DimSize(stimSet, COLS) <= 1, "stimSet must be a 1D wave")
 
-		WaveStats/Q/M=1 stimSet
-		level = V_min + (V_max - V_min) * 0.10
+		minVal = WaveMin(stimSet)
+		maxVal = WaveMax(stimSet)
+		level = minVal + (maxVal - minVal) * 0.10
 
 		list  = ""
 		first = 0
