@@ -187,7 +187,6 @@ static Function OOD_CalculateOffsets(params)
 	WAVEClear params.offsets
 
 	Make/D/FREE/N=(numSets) offsets = 0
-	Make/FREE/R/N=0 tempWave
 
 	Make/FREE/N=(numSets) dataLengths = DimSize(params.stimSets[p], ROWS)
 	maxDataLength = WaveMax(dataLengths)
@@ -249,7 +248,7 @@ static Function OOD_CalculateOffsets(params)
 				offsetToTest = j
 			endif
 
-			if(!OOD_Optimizer(acc, smearedStimSet, tempWave, offsetToTest))
+			if(!OOD_Optimizer(acc, smearedStimSet, offsetToTest))
 				// found a good offset in ms
 				offset = offsetToTest
 				break
@@ -313,15 +312,9 @@ End
 /// with the given `offset` in points. For performance reason a length of
 /// #OOD_BLOCK_SIZE points is checked at a time.
 ///
-/// `tempWave` allows to speed up successive calls. This must be a wave with
-/// zero rows for all callers at the first invocation. Except in `Multithread`
-/// statements where this optimization has to be turned off via passing an
-/// invalid wave reference `$""`.
-///
 /// @return 1 if the stimsets would overlap, 0 if there is no overlap
-threadsafe static Function OOD_Optimizer(baseStimSet, stimSet, tempWave, offset)
+threadsafe static Function OOD_Optimizer(baseStimSet, stimSet, offset)
 	WAVE baseStimSet, stimSet
-	WAVE/Z tempWave
 	variable offset
 
 	variable dataLength, endIndex, first, last, i
@@ -330,13 +323,6 @@ threadsafe static Function OOD_Optimizer(baseStimSet, stimSet, tempWave, offset)
 
 	first = round(offset)
 	last  = first + dataLength
-
-	if(!WaveExists(tempWave))
-		Make/FREE/R/N=(OOD_BLOCK_SIZE) tempWave
-	elseif(DimSize(tempWave, ROWS) == 0)
-		Redimension/R/N=(OOD_BLOCK_SIZE) tempWave
-		FastOp tempWave = 0
-	endif
 
 	endIndex = OOD_BLOCK_SIZE - 1
 	for(i = first; i < last; i += OOD_BLOCK_SIZE)
@@ -347,11 +333,9 @@ threadsafe static Function OOD_Optimizer(baseStimSet, stimSet, tempWave, offset)
 			endIndex = mod(dataLength, OOD_BLOCK_SIZE) - 1
 		endif
 
-		tempWave[0, endIndex] = (baseStimSet[i + p] > 0) && (stimSet[i + p - first] > 0)
+		MatrixOP/FREE maxValue = maxval(subrange(baseStimSet, i, i + endIndex, 0, 0) + subrange(stimSet, i - first, i + endIndex - first, 0, 0))
 
-		FindValue/V=1/Z/T=0.1 tempWave
-
-		if(V_Value != -1 && V_Value <= endIndex)
+		if(maxValue[0] > 1)
 			return 1
 		endif
 	endfor
