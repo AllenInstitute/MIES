@@ -408,7 +408,7 @@ End
 
 /// @brief Returns the size of the wave in bytes.
 Function GetWaveSize(wv, [recursive])
-	WAVE wv
+	WAVE/Z wv
 	variable recursive
 
 	if(ParamIsDefault(recursive))
@@ -417,7 +417,9 @@ Function GetWaveSize(wv, [recursive])
 		recursive = !!recursive
 	endif
 
-	ASSERT_TS(WaveExists(wv), "missing wave")
+	if(!WaveExists(wv))
+		return 0
+	endif
 
 	if(!recursive || !IsWaveRefWave(wv))
 		return NumberByKey("SizeInBytes", WaveInfo(wv, 0))
