@@ -1082,3 +1082,219 @@ Function EPS_WorksWithFloat()
 	CHECK_EQUAL_VAR(ref[0], val[0])
 End
 /// @}
+
+/// @{
+/// oodDAQ regression tests
+
+static Function oodDAQStore_IGNORE(stimset, offsets, regions, index)
+	WAVE/WAVE stimset
+	WAVE offsets, regions
+	variable index
+
+	DFREF dfr = root:oodDAQ
+
+	WAVE singleStimset = stimset[0]
+	Duplicate/O singleStimset, dfr:$("stimset_oodDAQ_" + num2str(index) + "_0")
+
+	WAVE singleStimset = stimset[1]
+	Duplicate/O singleStimset, dfr:$("stimset_oodDAQ_" + num2str(index) + "_1")
+
+	Duplicate/O offsets, dfr:$("offsets_" + num2str(index))
+	Duplicate/O regions, dfr:$("regions_" + num2str(index))
+End
+
+static Function/WAVE GetoodDAQ_RefWaves_IGNORE(index)
+	variable index
+
+	Make/FREE/WAVE/N=4 wv
+	DFREF dfr = root:oodDAQ
+
+	WAVE/Z/SDFR=dfr ref_stimset_0 = $("stimset_oodDAQ_" + num2str(index) + "_0")
+	WAVE/Z/SDFR=dfr ref_stimset_1 = $("stimset_oodDAQ_" + num2str(index) + "_1")
+	WAVE/Z/SDFR=dfr ref_offsets   = $("offsets_" + num2str(index))
+	WAVE/Z/SDFR=dfr ref_regions   = $("regions_" + num2str(index))
+
+	wv[0] = ref_stimset_0
+	wv[1] = ref_stimset_1
+	wv[2] = ref_offsets
+	wv[3] = ref_regions
+
+	return wv
+End
+
+Function oodDAQRegTests_0()
+
+	variable index
+	STRUCT OOdDAQParams params
+	DFREF dfr = root:oodDAQ
+	string panelTitle = "ITC18USB_Dev_0"
+	WAVE singleStimset = root:oodDAQ:input:StimSetoodDAQ_DA_0
+	Make/FREE/N=2/WAVE stimset = singleStimset
+
+	// BEGIN CHANGE ME
+	index = 0
+	InitOOdDAQParams(params, stimSet, {0, 0}, 0, 0, 1)
+	// END CHANGE ME
+
+	OOD_CalculateOffsetsYoked(panelTitle, params)
+	WAVE/WAVE stimSet = OOD_CreateStimSet(params)
+
+//	oodDAQStore_IGNORE(stimSet, params.offsets, params.regions, index)
+	WAVE/WAVE refWave = GetoodDAQ_RefWaves_IGNORE(index)
+	CHECK_EQUAL_WAVES(refWave[0], stimset[0])
+	CHECK_EQUAL_WAVES(refWave[1], stimset[1])
+	CHECK_EQUAL_WAVES(refWave[2], params.offsets)
+	CHECK_EQUAL_WAVES(refWave[3], params.regions)
+End
+
+Function oodDAQRegTests_1()
+
+	variable index
+	STRUCT OOdDAQParams params
+	DFREF dfr = root:oodDAQ
+	string panelTitle = "ITC18USB_Dev_0"
+	WAVE singleStimset = root:oodDAQ:input:StimSetoodDAQ_DA_0
+	Make/FREE/N=2/WAVE stimset = singleStimset
+
+	// BEGIN CHANGE ME
+	index = 1
+	InitOOdDAQParams(params, stimSet, {1, 0}, 0, 0, 1)
+	// END CHANGE ME
+
+	OOD_CalculateOffsetsYoked(panelTitle, params)
+	WAVE/WAVE stimSet = OOD_CreateStimSet(params)
+
+//	oodDAQStore_IGNORE(stimSet, params.offsets, params.regions, index)
+	WAVE/WAVE refWave = GetoodDAQ_RefWaves_IGNORE(index)
+	CHECK_EQUAL_WAVES(refWave[0], stimset[0])
+	CHECK_EQUAL_WAVES(refWave[1], stimset[1])
+	CHECK_EQUAL_WAVES(refWave[2], params.offsets)
+	CHECK_EQUAL_WAVES(refWave[3], params.regions)
+End
+
+Function oodDAQRegTests_2()
+
+	variable index
+	STRUCT OOdDAQParams params
+	DFREF dfr = root:oodDAQ
+	string panelTitle = "ITC18USB_Dev_0"
+	WAVE singleStimset = root:oodDAQ:input:StimSetoodDAQ_DA_0
+	Make/FREE/N=2/WAVE stimset = singleStimset
+
+	// BEGIN CHANGE ME
+	index = 2
+	InitOOdDAQParams(params, stimSet, {0, 1}, 0, 0, 1)
+	// END CHANGE ME
+
+	OOD_CalculateOffsetsYoked(panelTitle, params)
+	WAVE/WAVE stimSet = OOD_CreateStimSet(params)
+
+//	oodDAQStore_IGNORE(stimSet, params.offsets, params.regions, index)
+	WAVE/WAVE refWave = GetoodDAQ_RefWaves_IGNORE(index)
+	CHECK_EQUAL_WAVES(refWave[0], stimset[0])
+	CHECK_EQUAL_WAVES(refWave[1], stimset[1])
+	CHECK_EQUAL_WAVES(refWave[2], params.offsets)
+	CHECK_EQUAL_WAVES(refWave[3], params.regions)
+End
+
+Function oodDAQRegTests_3()
+
+	variable index
+	STRUCT OOdDAQParams params
+	DFREF dfr = root:oodDAQ
+	string panelTitle = "ITC18USB_Dev_0"
+	WAVE singleStimset = root:oodDAQ:input:StimSetoodDAQ_DA_0
+	Make/FREE/N=2/WAVE stimset = singleStimset
+
+	// BEGIN CHANGE ME
+	index = 3
+	InitOOdDAQParams(params, stimSet, {0, 0}, 20, 0, 1)
+	// END CHANGE ME
+
+	OOD_CalculateOffsetsYoked(panelTitle, params)
+	WAVE/WAVE stimSet = OOD_CreateStimSet(params)
+
+//	oodDAQStore_IGNORE(stimSet, params.offsets, params.regions, index)
+	WAVE/WAVE refWave = GetoodDAQ_RefWaves_IGNORE(index)
+	CHECK_EQUAL_WAVES(refWave[0], stimset[0])
+	CHECK_EQUAL_WAVES(refWave[1], stimset[1])
+	CHECK_EQUAL_WAVES(refWave[2], params.offsets)
+	CHECK_EQUAL_WAVES(refWave[3], params.regions)
+End
+
+Function oodDAQRegTests_4()
+
+	variable index
+	STRUCT OOdDAQParams params
+	DFREF dfr = root:oodDAQ
+	string panelTitle = "ITC18USB_Dev_0"
+	WAVE singleStimset = root:oodDAQ:input:StimSetoodDAQ_DA_0
+	Make/FREE/N=2/WAVE stimset = singleStimset
+
+	// BEGIN CHANGE ME
+	index = 4
+	InitOOdDAQParams(params, stimSet, {0, 0}, 0, 20, 1)
+	// END CHANGE ME
+
+	OOD_CalculateOffsetsYoked(panelTitle, params)
+	WAVE/WAVE stimSet = OOD_CreateStimSet(params)
+
+//	oodDAQStore_IGNORE(stimSet, params.offsets, params.regions, index)
+	WAVE/WAVE refWave = GetoodDAQ_RefWaves_IGNORE(index)
+	CHECK_EQUAL_WAVES(refWave[0], stimset[0])
+	CHECK_EQUAL_WAVES(refWave[1], stimset[1])
+	CHECK_EQUAL_WAVES(refWave[2], params.offsets)
+	CHECK_EQUAL_WAVES(refWave[3], params.regions)
+End
+
+Function oodDAQRegTests_5()
+
+	variable index
+	STRUCT OOdDAQParams params
+	DFREF dfr = root:oodDAQ
+	string panelTitle = "ITC18USB_Dev_0"
+	WAVE singleStimset = root:oodDAQ:input:StimSetoodDAQ_DA_0
+	Make/FREE/N=2/WAVE stimset = singleStimset
+
+	// BEGIN CHANGE ME
+	index = 5
+	InitOOdDAQParams(params, stimSet, {0, 0}, 0, 0, 10)
+	// END CHANGE ME
+
+	OOD_CalculateOffsetsYoked(panelTitle, params)
+	WAVE/WAVE stimSet = OOD_CreateStimSet(params)
+
+//	oodDAQStore_IGNORE(stimSet, params.offsets, params.regions, index)
+	WAVE/WAVE refWave = GetoodDAQ_RefWaves_IGNORE(index)
+	CHECK_EQUAL_WAVES(refWave[0], stimset[0])
+	CHECK_EQUAL_WAVES(refWave[1], stimset[1])
+	CHECK_EQUAL_WAVES(refWave[2], params.offsets)
+	CHECK_EQUAL_WAVES(refWave[3], params.regions)
+End
+
+Function oodDAQRegTests_6()
+
+	variable index
+	STRUCT OOdDAQParams params
+	DFREF dfr = root:oodDAQ
+	string panelTitle = "ITC18USB_Dev_0"
+	WAVE singleStimset = root:oodDAQ:input:StimSetoodDAQ_DA_0
+	Make/FREE/N=2/WAVE stimset = singleStimset
+
+	// BEGIN CHANGE ME
+	index = 6
+	InitOOdDAQParams(params, stimSet, {0, 1}, 20, 30, 10)
+	// END CHANGE ME
+
+	OOD_CalculateOffsetsYoked(panelTitle, params)
+	WAVE/WAVE stimSet = OOD_CreateStimSet(params)
+
+//	oodDAQStore_IGNORE(stimSet, params.offsets, params.regions, index)
+	WAVE/WAVE refWave = GetoodDAQ_RefWaves_IGNORE(index)
+	CHECK_EQUAL_WAVES(refWave[0], stimset[0])
+	CHECK_EQUAL_WAVES(refWave[1], stimset[1])
+	CHECK_EQUAL_WAVES(refWave[2], params.offsets)
+	CHECK_EQUAL_WAVES(refWave[3], params.regions)
+End
+
+/// @}
