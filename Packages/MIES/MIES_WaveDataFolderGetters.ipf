@@ -450,7 +450,7 @@ threadsafe Function/S GetDevicePathAsString(panelTitle)
 	string panelTitle
 
 	string deviceType, deviceNumber
-	if(!ParseDeviceString(panelTitle, deviceType, deviceNumber) || !CmpStr(deviceType, StringFromList(0, BASE_WINDOW_TITLE, "_")))
+	if(!ParseDeviceString(panelTitle, deviceType, deviceNumber))
 		ASSERT_TS(0, "Invalid/Non-locked paneltitle")
 	endif
 
