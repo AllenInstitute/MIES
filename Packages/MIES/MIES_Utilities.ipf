@@ -460,26 +460,26 @@ End
 /// Includes fast handling of the common case that the datafolder exists.
 /// @returns reference to the datafolder
 threadsafe Function/DF createDFWithAllParents(dataFolder)
-    string dataFolder
+	string dataFolder
 
-    variable i, numItems
-    string partialPath = "root"
+	variable i, numItems
+	string partialPath = "root"
 
-    if(DataFolderExists(dataFolder))
-        return $dataFolder
-    endif
+	if(DataFolderExists(dataFolder))
+		return $dataFolder
+	endif
 
-     // i=1 because we want to skip root, as this exists always
+	// i=1 because we want to skip root, as this exists always
 	numItems = ItemsInList(dataFolder,":")
-    for(i=1; i < numItems ; i+=1)
-        partialPath += ":"
-        partialPath += StringFromList(i,dataFolder,":")
-        if(!DataFolderExists(partialPath))
-            NewDataFolder $partialPath
-        endif
-    endfor
+	for(i=1; i < numItems ; i+=1)
+		partialPath += ":"
+		partialPath += StringFromList(i,dataFolder,":")
+		if(!DataFolderExists(partialPath))
+			NewDataFolder $partialPath
+		endif
+	endfor
 
-    return $dataFolder
+	return $dataFolder
 end
 
 /// @brief Returns one if var is an integer and zero otherwise
