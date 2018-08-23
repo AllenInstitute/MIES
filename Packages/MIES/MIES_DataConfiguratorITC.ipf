@@ -913,7 +913,7 @@ static Function DC_PlaceDataInITCDataWave(panelTitle, numActiveChannels, dataAcq
 	endfor
 
 	DC_DocumentChannelProperty(panelTitle, "Sampling interval multiplier", INDEP_HEADSTAGE, NaN, var=multiplier)
-	DC_DocumentChannelProperty(panelTitle, "Minimum sampling interval", INDEP_HEADSTAGE, NaN, var=SI_CalculateMinSampInterval(panelTitle, dataAcqOrTP) * 1e-3)
+	DC_DocumentChannelProperty(panelTitle, "Minimum sampling interval", INDEP_HEADSTAGE, NaN, var=minSamplingInterval / multiplier * 1e-3)
 
 	DC_DocumentChannelProperty(panelTitle, "Delay onset user", INDEP_HEADSTAGE, NaN, var=DAG_GetNumericalValue(panelTitle, "setvar_DataAcq_OnsetDelayUser"))
 	DC_DocumentChannelProperty(panelTitle, "Delay onset auto", INDEP_HEADSTAGE, NaN, var=GetValDisplayAsNum(panelTitle, "valdisp_DataAcq_OnsetDelayAuto"))
