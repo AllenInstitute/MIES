@@ -186,3 +186,33 @@ Function TS_ThreadGroupFinished(tgID)
 
 	return !ThreadGroupWait(tgID, 0)
 End
+
+/// @brief Stop the given thread group
+///
+/// Assumes that the running worker functions finish on getting the `abort`
+/// variable sent.
+Function TS_StopThreadGroup(tgID)
+	variable tgID
+
+	variable numThreadsRunning
+	string msg
+
+	if(!IsFinite(tgID))
+		// nothing to do
+		return NaN
+	endif
+
+	TS_ThreadGroupPutVariable(tgID, "abort", 1)
+
+	numThreadsRunning = ThreadGroupWait(tgID, 100)
+	sprintf msg, "num running threads: %d\r", numThreadsRunning
+	DEBUGPRINT(msg)
+
+	if(numThreadsRunning)
+		printf "WARNING: The thread group %d will be forcefully stopped. This might turn out ugly!\r", tgID
+		ControlWindowToFront()
+	endif
+
+	sprintf msg, "return value %g, thread release %g\r", ThreadReturnValue(tgID, 0), ThreadGroupRelease(tgID)
+	DEBUGPRINT(msg)
+End
