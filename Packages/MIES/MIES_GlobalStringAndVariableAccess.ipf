@@ -268,6 +268,13 @@ Function/S GetTestpulseBaselineFraction(panelTitle)
 	return GetNVARAsString(GetDeviceTestPulse(panelTitle), "baselineFrac", initialValue=NaN)
 End
 
+/// @brief Returns the list of locked device panels
+Function/S GetDevicePanelTitleList()
+	string panelTitle
+
+	return GetSVARAsString(GetITCDevicesFolder(), "ITCPanelTitleList", initialValue="")
+End
+
 /// @brief Return the absolute path to the user comment string
 Function/S GetUserComment(panelTitle)
 	string panelTitle

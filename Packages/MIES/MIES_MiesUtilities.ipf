@@ -3529,11 +3529,7 @@ End
 /// @brief Return the list of locked devices
 Function/S GetListOfLockedDevices()
 
-	SVAR/Z/SDFR=GetITCDevicesFolder() list = ITCPanelTitleList
-	if(!SVAR_Exists(list))
-		return ""
-	endif
-
+	SVAR list = $GetDevicePanelTitleList()
 	return list
 End
 

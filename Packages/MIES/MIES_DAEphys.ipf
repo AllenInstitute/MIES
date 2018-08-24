@@ -4425,8 +4425,8 @@ End
 
 /// @brief Update the list of locked devices
 static Function DAP_UpdateListOfITCPanels()
-	DFREF dfr = GetITCDevicesFolder()
-	string/G dfr:ITCPanelTitleList = WinList("ITC*", ";", "WIN:64")
+	SVAR panelList = $GetDevicePanelTitleList()
+	panelList = WinList("ITC*", ";", "WIN:64")
 End
 
 static Function DAP_UpdateChanAmpAssignStorWv(panelTitle)
