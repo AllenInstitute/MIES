@@ -121,7 +121,7 @@ Function CHI_CheckInstallation()
 		printf "Mies version info: Invalid (Very Bad)\r"
 		state.numErrors += 1
 	else
-		printf "Mies version info: Valid \"%s\" (Nice!)\r", miesVersion
+		printf "Mies version info: Valid \"%s...\" (Nice!)\r", StringFromList(0, miesVersion, "\r")
 	endif
 
 #if defined(IGOR64)
