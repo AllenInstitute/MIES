@@ -31,10 +31,12 @@ case $MSYSTEM in
   MINGW*)
       UNZIP_EXE="$top_level/tools/unzip.exe"
       IGOR_USER_FILES="$USERPROFILE/Documents/WaveMetrics/Igor Pro 7 User Files"
+      installNIDAQmxXOP=1
       ;;
     *)
       UNZIP_EXE=unzip
       IGOR_USER_FILES="$HOME/WaveMetrics/Igor Pro 7 User Files"
+      installNIDAQmxXOP=0
       ;;
 esac
 
@@ -78,6 +80,11 @@ if [ "$installHWXOPs" = "1" ]
 then
   cp -r  "$folder"/XOPs-IP7-64bit/*  "$xops"
   cp -r  "$folder"/XOP-tango-IP7-64bit/*  "$xops"
+  # the NIDAQ XOP is not in the release package so we need to cheat a bit
+  if [ "$installNIDAQmxXOP" = "1" ]
+  then
+    cp "$top_level/XOPs-IP7-64bit/NIDAQmx.*" "$xops"
+  fi
 else
   cp -r  "$folder"/XOPs-IP7-64bit/HDF5*  "$xops"
   cp -r  "$folder"/XOPs-IP7-64bit/MIESUtils*  "$xops"
