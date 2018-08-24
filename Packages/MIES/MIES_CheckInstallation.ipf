@@ -13,16 +13,15 @@
 
 /// @brief Collection of counters used for installation checking
 static Structure CHI_InstallationState
-	variable numErrors, numWarnings
+	variable numErrors
 	variable numTries
 EndStructure
 
 static Function CHI_InitInstallationState(state)
 	STRUCT CHI_InstallationState &state
 
-	state.numErrors   = 0
-	state.numTries    = 0
-	state.numWarnings = 0
+	state.numErrors = 0
+	state.numTries  = 0
 End
 
 /// @brief Return the file version
@@ -70,7 +69,7 @@ static Function CHI_CheckXOP(list, item, name, state)
 			for(i = 0; i < numMatches; i += 1)
 				printf "%s: Found version %s\r", name, CHI_GetFileVersion(StringFromList(i, matches, "|"))
 			endfor
-			state.numWarnings += 1
+			state.numErrors += 1
 			break
 	endswitch
 End
@@ -139,7 +138,7 @@ Function CHI_CheckInstallation()
 	CHI_CheckXOP(listOfXOPs, "ZeroMQ.xop", "ZeroMQ XOP", state)
 #endif
 
-	printf "Results: %d checks, %d number of errors, %d number of warnings\r", state.numTries, state.numErrors, state.numWarnings
+	printf "Results: %d checks, %d number of errors\r", state.numTries, state.numErrors
 
 	CHI_InitInstallationState(state)
 	printf "\rChecking extended installation:\r"
@@ -152,6 +151,6 @@ Function CHI_CheckInstallation()
 	CHI_CheckXOP(listOfXOPs, "NIDAQmx.xop", "NI-DAQ MX XOP", state)
 #endif
 
-	printf "Results: %d checks, %d number of errors, %d number of warnings\r", state.numTries, state.numErrors, state.numWarnings
+	printf "Results: %d checks, %d number of errors\r", state.numTries, state.numErrors
 	ControlWindowToFront()
 End
