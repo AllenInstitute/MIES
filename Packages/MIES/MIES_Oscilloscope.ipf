@@ -254,6 +254,10 @@ Function SCOPE_CreateGraph(panelTitle, dataAcqOrTP)
 				ModifyGraph/W=$graph freepos($leftAxis) = {0, kwFraction}, axisEnab($leftAxis)= {YaxisLow, YaxisHigh}
 				ModifyGraph/W=$graph lblPosMode($leftAxis)=4, lblPos($leftAxis) = 50, log($leftAxis)=1
 				SetAxis/W=$graph/A=2/N=2 $leftAxis
+#if (IgorVersion() >= 8.00)
+				// use fast line drawing
+				ModifyGraph/W=$graph live($powerSpectrumTrace)=(2^1)
+#endif
 			endif
 
 			rightAxis = "resistance" + adcStr
