@@ -346,6 +346,12 @@ Function/S GetNWBFilePathExport()
 	return GetSVARAsString(GetNWBFolder(), "filePathExport")
 End
 
+/// @brief Return the thread group id of the NWB writer
+Function/S GetNWBThreadID()
+
+	return GetNVARAsString(GetNWBFolder(), "threadGroupID", initialValue = NaN)
+End
+
 /// @brief Return the experiment session start time in NWB-speech as
 ///        read back from the NWB file.
 Function/S GetSessionStartTimeReadBack()
