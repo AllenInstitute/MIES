@@ -1,6 +1,11 @@
 ﻿#pragma TextEncoding = "UTF-8"
 #pragma rtGlobals=3		// Use modern global access method and strict wave access.
 
+Function CheckInstallation()
+
+   CHECK_EQUAL_VAR(CHI_CheckInstallation(), 0)
+End
+
 Function TestLocking()
 
 	Initialize_IGNORE()

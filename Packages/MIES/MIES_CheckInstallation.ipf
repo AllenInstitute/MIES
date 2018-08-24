@@ -77,6 +77,8 @@ End
 /// @brief Check the installation and print the results to the history
 ///
 /// Currently checks that all expected/optional XOPs are installed.
+///
+/// @return number of errors
 Function CHI_CheckInstallation()
 
 	string symbPath, allFiles, path, extName, info, igorBuild
@@ -153,4 +155,6 @@ Function CHI_CheckInstallation()
 
 	printf "Results: %d checks, %d number of errors\r", state.numTries, state.numErrors
 	ControlWindowToFront()
+
+	return state.numErrors
 End
