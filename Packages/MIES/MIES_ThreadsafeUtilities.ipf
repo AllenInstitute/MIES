@@ -152,7 +152,7 @@ threadsafe Function TS_ThreadGroupPutVariable(tgID, varName, varValue)
 	string datafolder
 
 	datafolder = UniqueDataFolderName($":", "temp")
-	NewDataFolder/S/O datafolder
+	NewDataFolder/S/O $datafolder
 	variable/G $varName = varValue
 	ThreadGroupPutDF tgID, :
 End
