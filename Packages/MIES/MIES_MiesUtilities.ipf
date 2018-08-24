@@ -1767,7 +1767,7 @@ threadsafe Function ParseDeviceString(device, deviceType, deviceNumber)
 	deviceType   = StringFromList(0,device,"_")
 	deviceNumber = StringFromList(2,device,"_")
 
-	return !isEmpty(deviceType) && !isEmpty(deviceNumber)
+	return !isEmpty(deviceType) && !isEmpty(deviceNumber) && cmpstr(deviceType, "DA")
 End
 
 /// @brief Builds the common device string X_DEV_Y, e.g. ITC1600_DEV_O and friends

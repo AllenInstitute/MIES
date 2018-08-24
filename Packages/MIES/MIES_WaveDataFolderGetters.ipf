@@ -450,7 +450,7 @@ threadsafe Function/S GetDevicePathAsString(panelTitle)
 	string panelTitle
 
 	string deviceType, deviceNumber
-	if(!ParseDeviceString(panelTitle, deviceType, deviceNumber) || !CmpStr(deviceType, StringFromList(0, BASE_WINDOW_TITLE, "_")))
+	if(!ParseDeviceString(panelTitle, deviceType, deviceNumber))
 		ASSERT_TS(0, "Invalid/Non-locked paneltitle")
 	endif
 
@@ -4734,17 +4734,10 @@ Function/Wave GetDA_EphysGuiStateNum(panelTitle)
 	string panelTitle
 
 	variable uniqueCtrlCount
-	string uniqueCtrlList, newName
+	string uniqueCtrlList
 
 	DFREF dfr = GetDevicePath(panelTitle)
-	newName = "DA_EphysGuiStateNum"
-
-	STRUCT WaveLocationMod p
-	p.dfr     = dfr
-	p.name    = "DA_EphysGuiState"
-	p.newName = newName
-
-	WAVE/Z/D wv = UpgradeWaveLocationAndGetIt(p)
+	WAVE/Z/D/SDFR=dfr wv = DA_EphysGuiStateNum
 
 	if(ExistsWithCorrectLayoutVersion(wv, DA_EPHYS_PANEL_VERSION))
 		return wv

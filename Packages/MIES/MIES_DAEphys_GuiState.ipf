@@ -284,7 +284,7 @@ Function/Wave DAG_GetChannelState(panelTitle, type)
 			break
 	endswitch
 
-	Make/FREE/U/B/N=(numEntries) wv = GUIState[p][col]
+	Make/FREE/D/N=(numEntries) wv = GUIState[p][col]
 
 	return wv
 End
