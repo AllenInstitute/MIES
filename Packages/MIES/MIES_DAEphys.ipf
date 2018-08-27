@@ -24,6 +24,8 @@ static StrConstant COMMENT_PANEL_NOTEBOOK = "NB"
 
 static StrConstant AMPLIFIER_DEF_FORMAT   = "AmpNo %d Chan %d"
 
+static StrConstant GUI_CONTROLSAVESTATE_DISABLED = "oldDisabledState"
+
 static StrConstant NI_PCIE_6343_PATTERN 	= "AI:32;AO:4;COUNTER:4;DIOPORTS:3;LINES:32,8,8"
 
 /// @brief This function resolves the hardwaretype of the device used a locked panel by comparing it to a list of devices of known type
@@ -90,7 +92,6 @@ Function/S DAP_GetGUIDACDeviceList()
 	return ReplaceString("ITC00;", deviceList, "\\M1(ITC00;")
 End
 
->>>>>>> 77ee9f17... DAEphys panel lists now valid NI DAC devices in the Devs popup menu
 /// @brief Restores the base state of the DA_Ephys panel.
 /// Useful when adding controls to GUI. Facilitates use of auto generation of GUI code.
 /// Useful when template experiment file has been overwritten.
@@ -1048,7 +1049,7 @@ Function DAP_OneTimeCallBeforeDAQ(panelTitle, runMode)
 	string panelTitle
 	variable runMode
 
-	variable numHS, i, DAC, ADC
+	variable numHS, i, DAC, ADC, multiDevGUIEnState, hardwareType
 
 	ASSERT(runMode != DAQ_NOT_RUNNING, "Invalid running mode")
 
@@ -1114,6 +1115,12 @@ Function DAP_OneTimeCallBeforeDAQ(panelTitle, runMode)
 
 	NVAR dataAcqRunMode = $GetDataAcqRunMode(panelTitle)
 	dataAcqRunMode = runMode
+	hardwareType = DAP_GetHardwareType(panelTitle)
+	if(hardwareType == HARDWARE_NI_DAC)
+		multiDevGUIEnState = IsControlDisabled(panelTitle, "check_Settings_MD")
+		SetControlUserData(panelTitle, "check_Settings_MD", GUI_CONTROLSAVESTATE_DISABLED, num2str(multiDevGUIEnState))
+	endif
+	DisableControls(panelTitle, "check_Settings_MD")
 
 	DAP_ToggleAcquisitionButton(panelTitle, DATA_ACQ_BUTTON_TO_STOP)
 	DisableControls(panelTitle, CONTROLS_DISABLE_DURING_DAQ_TP)
@@ -1180,6 +1187,8 @@ Function DAP_OneTimeCallAfterDAQ(panelTitle, [forcedStop, startTPAfterDAQ])
 	string panelTitle
 	variable forcedStop, startTPAfterDAQ
 
+	variable hardwareType
+
 	forcedStop      = ParamIsDefault(forcedStop)      ? 0 : !!forcedStop
 	startTPAfterDAQ = ParamIsDefault(startTPAfterDAQ) ? 1 : !!startTPAfterDAQ
 
@@ -1191,6 +1200,17 @@ Function DAP_OneTimeCallAfterDAQ(panelTitle, [forcedStop, startTPAfterDAQ])
 
 	NVAR dataAcqRunMode = $GetDataAcqRunMode(panelTitle)
 	dataAcqRunMode = DAQ_NOT_RUNNING
+	hardwareType = DAP_GetHardwareType(panelTitle)
+	switch(hardwareType)
+		case HARDWARE_NI_DAC:
+			if(str2num(GetUserData(panelTitle, "check_Settings_MD", GUI_CONTROLSAVESTATE_DISABLED)) > 0)
+				DisableControl(panelTitle, "check_Settings_MD")
+			endif
+			break
+		default:
+			EnableControl(panelTitle, "check_Settings_MD")
+			break
+	endswitch
 
 	NVAR count = $GetCount(panelTitle)
 	count = 0

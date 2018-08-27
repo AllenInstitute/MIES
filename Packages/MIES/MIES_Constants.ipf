@@ -763,7 +763,7 @@ StrConstant CONTROLS_DISABLE_DURING_DAQ = "Check_DataAcqHS_All;Radio_ClampMode_A
 StrConstant CONTROLS_DISABLE_DURING_IDX = "SetVar_DataAcq_ListRepeats;SetVar_DataAcq_SetRepeats"
 
 /// DA_Ephys controls which should be disabled during DAQ *and* TP
-StrConstant CONTROLS_DISABLE_DURING_DAQ_TP = "check_Settings_MD;Check_Settings_BkgTP;Check_Settings_BackgrndDataAcq"
+StrConstant CONTROLS_DISABLE_DURING_DAQ_TP = "Check_Settings_BkgTP;Check_Settings_BackgrndDataAcq"
 
 /// @name Parameters for GetAllDevicesWithContent()
 /// @anchor CONTENT_TYPES
