@@ -1057,6 +1057,10 @@ Function DAP_OneTimeCallBeforeDAQ(panelTitle, runMode)
 	endif
 
 	RA_StepSweepsRemaining(panelTitle)
+
+#if (IgorVersion() >= 8.00)
+	NWB_StartThreadGroup()
+#endif
 End
 
 /// @brief Enable all controls which were disabled before DAQ by #DAP_OneTimeCallBeforeDAQ
@@ -1139,6 +1143,12 @@ Function DAP_OneTimeCallAfterDAQ(panelTitle, [forcedStop, startTPAfterDAQ])
 	if(DAG_GetNumericalValue(panelTitle, "Check_DataAcq_Indexing"))
 		IDX_ResetStartFinishForIndexing(panelTitle)
 	endif
+
+#if (IgorVersion() >= 8.00)
+	NVAR tgID = $GetNWBThreadID()
+	TS_StopThreadGroup(tgID)
+	tgID = NaN
+#endif
 
 	if(!DAG_GetNumericalValue(panelTitle, "check_Settings_TPAfterDAQ") || !startTPAfterDAQ)
 		return NaN
