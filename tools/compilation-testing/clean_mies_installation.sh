@@ -31,9 +31,11 @@ fi
 case $MSYSTEM in
   MINGW*)
       IGOR_USER_FILES="$USERPROFILE/Documents/WaveMetrics/Igor Pro 7 User Files"
+      installNIDAQmxXOP=1
       ;;
     *)
       IGOR_USER_FILES="$HOME/WaveMetrics/Igor Pro 7 User Files"
+      installNIDAQmxXOP=0
       ;;
 esac
 
@@ -53,7 +55,10 @@ if [ "$installHWXOPs" = "1" ]
 then
   cp -r  "$top_level"/XOPs-IP7-64bit/*  "$xops"
   cp -r  "$top_level"/XOP-tango-IP7-64bit/* "$xops"
-  rm -f  "$xops"/NIDAQmx64.*
+  if [ "$installNIDAQmxXOP" = "0" ]
+  then
+    rm -f  "$xops"/NIDAQmx64.*
+  fi
 else
   cp -r  "$top_level"/XOPs-IP7-64bit/HDF5*  "$xops"
   cp -r  "$top_level"/XOPs-IP7-64bit/MIESUtils*  "$xops"
