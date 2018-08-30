@@ -247,7 +247,7 @@ Function/S GetListOfObjects(dfr, regExpStr, [typeFlag, matchList, waveProperty, 
 						matches = matches & DimSize(wv, COLS) >= val
 						break
 					case "TEXT":
-						matches = matches & (WaveType(wv, 1) == 2) == !!val
+						matches = matches & IsTextWave(wv) == !!val
 						break
 					default:
 						ASSERT(0, "property not implemented")
@@ -407,11 +407,29 @@ Function ConvertFromBytesToMiB(var)
 End
 
 /// @brief Returns the size of the wave in bytes.
-Function GetWaveSize(wv)
-	Wave wv
+Function GetWaveSize(wv, [recursive])
+	WAVE/Z wv
+	variable recursive
 
-	ASSERT(WaveExists(wv), "missing wave")
-	return NumberByKey("SizeInBytes", WaveInfo(wv, 0))
+	if(ParamIsDefault(recursive))
+		recursive = 0
+	else
+		recursive = !!recursive
+	endif
+
+	if(!WaveExists(wv))
+		return 0
+	endif
+
+	if(!recursive || !IsWaveRefWave(wv))
+		return NumberByKey("SizeInBytes", WaveInfo(wv, 0))
+	endif
+
+	WAVE/WAVE waveRefs = wv
+
+	Make/FREE/L/U/N=(DimSize(wv, ROWS)) sizes = GetWaveSize(waveRefs[p], recursive = 1)
+
+	return GetWaveSize(wv, recursive = 0) + Sum(sizes)
 End
 
 /// @brief Convert the sampling interval in microseconds (1e-6s) to the rate in kHz
@@ -1720,7 +1738,7 @@ Function GetRowIndex(wv, [val, str, refWave])
 	ASSERT(ParamIsDefault(val) + ParamIsDefault(str) + ParamIsDefault(refWave) == 2, "Expected exactly one argument")
 
 	if(!ParamIsDefault(refWave))
-		ASSERT(WaveType(wv, 1) == 4, "wv must be a wave holding wave references")
+		ASSERT(IsWaveRefWave(refWave), "wv must be a wave holding wave references")
 		numEntries = DimSize(wv, ROWS)
 		for(i = 0; i < numEntries; i += 1)
 			WAVE/WAVE cmpWave = wv
@@ -2801,7 +2819,7 @@ Function/S TextWaveToList(txtWave, sep)
 	string list = ""
 	variable i, numRows
 
-	ASSERT(WaveType(txtWave, 1) == 2, "Expected a text wave")
+	ASSERT(IsTextWave(txtWave), "Expected a text wave")
 	ASSERT(DimSize(txtWave, COLS) == 0, "Expected a 1D wave")
 
 	numRows = DimSize(txtWave, ROWS)
@@ -3117,7 +3135,7 @@ Function/WAVE DeepCopyWaveRefWave(src, [dimension, index, indexWave])
 
 	variable i, numEntries
 
-	ASSERT(WaveType(src, 1) == 4, "Expected wave ref wave")
+	ASSERT(IsWaveRefWave(src), "Expected wave ref wave")
 	ASSERT(DimSize(src, COLS) <= 1, "Expected a 1D wave for src")
 
 	if(!ParamIsDefault(dimension))
@@ -3182,6 +3200,13 @@ threadsafe Function IsNumericWave(wv)
 	WAVE wv
 
 	return WaveType(wv, 1) == 1
+End
+
+/// @brief Return 1 if the wave is a wave reference wave, zero otherwise
+threadsafe Function IsWaveRefWave(wv)
+	WAVE wv
+
+	return WaveType(wv, 1) == IGOR_TYPE_WAVEREF_WAVE
 End
 
 /// @brief Return the user name of the running user

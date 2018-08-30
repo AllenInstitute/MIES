@@ -105,9 +105,8 @@ static Function/WAVE OOD_ExtractFeatureRegions(stimSets)
 	WAVE/WAVE stimSets
 
 	variable numSets, start, foundLevel, first, last, i, pLevel
-	variable dataLength, level
-	string list = ""
-	string str
+	variable dataLength, level, minVal, maxVal
+	string list, str
 
 	numSets = DimSize(stimSets, ROWS)
 	Make/FREE/T/N=(numSets) regions
@@ -118,18 +117,9 @@ static Function/WAVE OOD_ExtractFeatureRegions(stimSets)
 		dataLength = DimSize(stimSet, ROWS)
 		ASSERT(DimSize(stimSet, COLS) <= 1, "stimSet must be a 1D wave")
 
-		WaveStats/Q/M=1 stimSet
-
-		// FindLevel errouneously finds a level crossing with constant data
-		// work around that issue
-		if(V_min == V_max)
-			first = 0
-			last  = dataLength - 1
-			regions[i] = OOD_AddToRegionList(first, last, "")
-			continue
-		endif
-
-		level = V_min + (V_max - V_min) * 0.10
+		minVal = WaveMin(stimSet)
+		maxVal = WaveMax(stimSet)
+		level = minVal + (maxVal - minVal) * 0.10
 
 		list  = ""
 		first = 0
@@ -196,17 +186,7 @@ static Function OOD_CalculateOffsets(params)
 
 	WAVEClear params.offsets
 
-	key = CA_DistDAQCreateCacheKey(params)
-	WAVE/Z cachedOffsets = CA_TryFetchingEntryFromCache(key)
-
-	if(WaveExists(cachedOffsets))
-
-		WAVE params.offsets = cachedOffsets
-		return NaN
-	endif
-
 	Make/D/FREE/N=(numSets) offsets = 0
-	Make/FREE/R/N=0 tempWave
 
 	Make/FREE/N=(numSets) dataLengths = DimSize(params.stimSets[p], ROWS)
 	maxDataLength = WaveMax(dataLengths)
@@ -268,7 +248,7 @@ static Function OOD_CalculateOffsets(params)
 				offsetToTest = j
 			endif
 
-			if(!OOD_Optimizer(acc, smearedStimSet, tempWave, offsetToTest))
+			if(!OOD_Optimizer(acc, smearedStimSet, offsetToTest))
 				// found a good offset in ms
 				offset = offsetToTest
 				break
@@ -279,25 +259,6 @@ static Function OOD_CalculateOffsets(params)
 		DEBUGPRINT(msg)
 
 		offsets[i] = offset
-	endfor
-
-	// we now know n offsets for n stimsets and can add this configuration into
-	// the cache
-	CA_StoreEntryIntoCache(key, offsets)
-	// but we also know that for every m < n we can reuse the same offsets. So
-	// let's add these into the cache as well.
-	Duplicate/WAVE/FREE params.stimSets, stimSetsPart
-	Duplicate/FREE params.setColumns, setColumnsPart
-	Duplicate/FREE offsets, offsetsPart
-
-	STRUCT OOdDAQParams tempParams
-	tempParams = params
-	for(i = numSets - 1; i > 1; i -= 1)
-		Redimension/N=(i) stimSetsPart, setColumnsPart, offsetsPart
-		WAVE tempParams.stimSets   = stimSetsPart
-		WAVE tempParams.setColumns = setColumnsPart
-		key = CA_DistDAQCreateCacheKey(tempParams)
-		CA_StoreEntryIntoCache(key, offsetsPart)
 	endfor
 
 	WAVE params.offsets = offsets
@@ -351,15 +312,9 @@ End
 /// with the given `offset` in points. For performance reason a length of
 /// #OOD_BLOCK_SIZE points is checked at a time.
 ///
-/// `tempWave` allows to speed up successive calls. This must be a wave with
-/// zero rows for all callers at the first invocation. Except in `Multithread`
-/// statements where this optimization has to be turned off via passing an
-/// invalid wave reference `$""`.
-///
 /// @return 1 if the stimsets would overlap, 0 if there is no overlap
-threadsafe static Function OOD_Optimizer(baseStimSet, stimSet, tempWave, offset)
+threadsafe static Function OOD_Optimizer(baseStimSet, stimSet, offset)
 	WAVE baseStimSet, stimSet
-	WAVE/Z tempWave
 	variable offset
 
 	variable dataLength, endIndex, first, last, i
@@ -368,13 +323,6 @@ threadsafe static Function OOD_Optimizer(baseStimSet, stimSet, tempWave, offset)
 
 	first = round(offset)
 	last  = first + dataLength
-
-	if(!WaveExists(tempWave))
-		Make/FREE/R/N=(OOD_BLOCK_SIZE) tempWave
-	elseif(DimSize(tempWave, ROWS) == 0)
-		Redimension/R/N=(OOD_BLOCK_SIZE) tempWave
-		FastOp tempWave = 0
-	endif
 
 	endIndex = OOD_BLOCK_SIZE - 1
 	for(i = first; i < last; i += OOD_BLOCK_SIZE)
@@ -385,11 +333,9 @@ threadsafe static Function OOD_Optimizer(baseStimSet, stimSet, tempWave, offset)
 			endIndex = mod(dataLength, OOD_BLOCK_SIZE) - 1
 		endif
 
-		tempWave[0, endIndex] = (baseStimSet[i + p] > 0) && (stimSet[i + p - first] > 0)
+		MatrixOP/FREE maxValue = maxval(subrange(baseStimSet, i, i + endIndex, 0, 0) + subrange(stimSet, i - first, i + endIndex - first, 0, 0))
 
-		FindValue/V=1/Z/T=0.1 tempWave
-
-		if(V_Value != -1 && V_Value <= endIndex)
+		if(maxValue[0] > 1)
 			return 1
 		endif
 	endfor
@@ -405,7 +351,7 @@ End
 ///
 /// For yoking we sort the lead and follower devices according to their device number.
 /// Each device will use the result of the previous device offset calculation as preloaded data.
-Function OOD_CalculateOffsetsYoked(panelTitle, params)
+static Function OOD_CalculateOffsetsYoked(panelTitle, params)
 	string panelTitle
 	STRUCT OOdDAQParams &params
 
@@ -452,7 +398,7 @@ End
 /// between the features in the stim sets.
 ///
 /// Normalizes the returned stimsets to 1 (feature present) and 0 (no feature present).
-Function OOD_SmearStimSet(params)
+static Function OOD_SmearStimSet(params)
 	STRUCT OOdDAQParams &params
 
 	variable i, numLevels, foundLevel, pLevel, preDelayWarnCount, postDelayWarnCount
@@ -527,11 +473,48 @@ Function OOD_SmearStimSet(params)
 	WAVE/WAVE params.stimSetsSmeared = stimSetsSmeared
 End
 
+/// @brief Return the oodDAQ optimized stimsets
+///
+/// The offsets and the regions are returned in `params` and all results are
+/// cached.
+Function/WAVE OOD_GetResultWaves(panelTitle, params)
+	string panelTitle
+	STRUCT OOdDAQParams &params
+
+	string key
+
+	key = CA_DistDAQCreateCacheKey(params)
+
+	WAVE/WAVE/Z cache = CA_TryFetchingEntryFromCache(key)
+
+	if(WaveExists(cache))
+		WAVE params.offsets = cache[%offsets]
+		WAVE/T params.regions = cache[%regions]
+		return cache[%stimSetsWithOffset]
+	endif
+
+	OOD_CalculateOffsetsYoked(panelTitle, params)
+	WAVE stimSetsWithOffset = OOD_CreateStimSet(params)
+
+	Make/FREE/WAVE/N=3 cache
+	SetDimLabel ROWS, 0, offsets, cache
+	SetDimLabel ROWS, 1, regions, cache
+	SetDimLabel ROWS, 2, stimSetsWithOffset, cache
+
+	cache[%offsets] = params.offsets
+	cache[%regions] = params.regions
+	cache[%stimSetsWithOffset] = stimSetsWithOffset
+
+	CA_StoreEntryIntoCache(key, cache)
+
+	return stimSetsWithOffset
+End
+
 /// @brief Generate a stimset for "overlapped dDAQ" from the calculated offsets
 ///        by OOD_CalculateOffsets().
 ///
 /// @return stimset with offsets, one wave per offset
-Function/Wave OOD_CreateStimSet(params)
+static Function/Wave OOD_CreateStimSet(params)
 	STRUCT OOdDAQParams &params
 
 	variable i, numSets, length
@@ -556,10 +539,10 @@ Function/Wave OOD_CreateStimSet(params)
 		Note acc, note(stimSet)
 
 		// remove empty space beyond `postFeatureTime` at the end
-		FindLevels/P/EDGE=2/Q/DEST=crossing acc, level
+		FindLevel/P/EDGE=2/Q/R=[DimSize(acc, ROWS) - 1, 0] acc, level
 
-		if(V_LevelsFound && acc[length - 1] < level)
-			cutoff = crossing[V_LevelsFound - 1] + params.postFeaturePoints
+		if(!V_flag && acc[length - 1] < level)
+			cutoff = V_levelX + params.postFeaturePoints
 			Redimension/N=(cutoff) acc
 		endif
 

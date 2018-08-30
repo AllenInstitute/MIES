@@ -61,6 +61,8 @@
 ///
 /// * The entries in the cache are stored as free wave copies of what you feed into CA_StoreEntryIntoCache().
 ///   Similiary you get a free wave copy from CA_TryFetchingEntryFromCache().
+///
+/// * Storing 1D wave reference waves is supported, they are by default deep copied.
 
 /// @name Cache key generators
 /// @anchor CacheKeyGenerators
@@ -88,7 +90,7 @@ Function/S CA_DistDAQCreateCacheKey(params)
 		crc = WaveCRC(crc, params.preload)
 	endif
 
-	return num2istr(crc) + "Version 1"
+	return num2istr(crc) + "Version 2"
 End
 
 /// @brief Cache key generator for artefact removal ranges
@@ -244,7 +246,11 @@ Function CA_StoreEntryIntoCache(key, val, [options])
 	endif
 
 	if(storeDuplicate)
-		Duplicate/FREE val, waveToStore
+		if(IsWaveRefWave(val))
+			WAVE waveToStore = DeepCopyWaveRefWave(val)
+		else
+			Duplicate/FREE val, waveToStore
+		endif
 	else
 		WAVE waveToStore = val
 	endif
@@ -254,7 +260,7 @@ Function CA_StoreEntryIntoCache(key, val, [options])
 
 	stats[index][]                       = 0
 	stats[index][%Misses]               += 1
-	stats[index][%Size]                  = GetWaveSize(val)
+	stats[index][%Size]                  = GetWaveSize(val, recursive=1)
 	stats[index][%ModificationTimestamp] = DateTimeInUTC()
 End
 
@@ -318,7 +324,11 @@ Function/WAVE CA_TryFetchingEntryFromCache(key, [options])
 	DEBUGPRINT("Found cache entry for key=", str=key)
 
 	if(returnDuplicate)
-		Duplicate/FREE cache, wv
+		if(IsWaveRefWave(cache))
+			WAVE wv = DeepCopyWaveRefWave(cache)
+		else
+			Duplicate/FREE cache, wv
+		endif
 	else
 		WAVE wv = cache
 	endif
