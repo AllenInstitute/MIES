@@ -36,7 +36,7 @@ Function TS_GetNewestFromThreadQueue(tgID, varName)
 			return NaN
 		endtry
 
-		if(!DataFolderExistsDFR(dfr))
+		if(!DataFolderRefStatus(dfr))
 			if(IsFinite(var))
 				return var
 			elseif(TS_ThreadGroupFinished(tgID))
@@ -94,7 +94,7 @@ Function/WAVE TS_GetNewestFromThreadQueueMult(tgID, varNames)
 			return $""
 		endtry
 
-		if(!DataFolderExistsDFR(dfr))
+		if(!DataFolderRefStatus(dfr))
 			if(TS_ThreadGroupFinished(tgID))
 				return $""
 			elseif(!oneValidEntry)

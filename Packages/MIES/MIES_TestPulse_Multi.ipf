@@ -130,7 +130,7 @@ End
 Function TPM_BkrdTPFuncMD(s)
 	STRUCT BackgroundStruct &s
 
-	variable i, deviceID
+	variable i, deviceID, fifoPos
 	variable pointsCompletedInITCDataWave, activeChunk
 	string panelTitle
 
@@ -153,10 +153,24 @@ Function TPM_BkrdTPFuncMD(s)
 		WAVE ITCDataWave = GetHardwareDataWave(panelTitle)
 
 		NVAR tgID = $GetThreadGroupIDFIFO(panelTitle)
-		WAVE/Z result = TS_GetNewestFromThreadQueueMult(tgID, {"fifoPos", "startSequence"})
+		if(DeviceHasFollower(panelTitle))
+			WAVE/Z/D result = TS_GetNewestFromThreadQueueMult(tgID, {"fifoPos", "startSequence"})
+
+			if(WaveExists(result))
+				fifoPos = result[%fifoPos]
+
+				if(IsFinite(result[%startSequence]))
+					ARDStartSequence()
+				endif
+			else
+				fifoPos = NaN
+			endif
+		else
+			fifoPos = TS_GetNewestFromThreadQueue(tgID, "fifoPos")
+		endif
 
 		// should never be hit
-		if(!WaveExists(result))
+		if(!IsFinite(fifoPos))
 			if(s.threadDeadCount < TP_MD_THREAD_DEAD_MAX_RETRIES)
 				s.threadDeadCount += 1
 				if(s.threadDeadCount > 1)
@@ -173,15 +187,7 @@ Function TPM_BkrdTPFuncMD(s)
 
 		s.threadDeadCount = 0
 
-		if(IsFinite(result[%startSequence]))
-			ARDStartSequence()
-		endif
-
-		if(!IsFinite(result[%fifoPos]))
-			continue
-		endif
-
-		pointsCompletedInITCDataWave = mod(result[%fifoPos], DimSize(ITCDataWave, ROWS))
+		pointsCompletedInITCDataWave = mod(fifoPos, DimSize(ITCDataWave, ROWS))
 
 		// extract the last fully completed chunk
 		activeChunk = floor(pointsCompletedInITCDataWave / TP_GetTestPulseLengthInPoints(panelTitle)) - 1

@@ -463,11 +463,14 @@ threadsafe Function/DF createDFWithAllParents(dataFolder)
 	string dataFolder
 
 	variable i, numItems
-	string partialPath = "root"
+	string partialPath
+	DFREF dfr = $dataFolder
 
-	if(DataFolderExists(dataFolder))
-		return $dataFolder
+	if(DataFolderRefStatus(dfr))
+		return dfr
 	endif
+
+	partialPath = "root"
 
 	// i=1 because we want to skip root, as this exists always
 	numItems = ItemsInList(dataFolder,":")
