@@ -65,7 +65,7 @@ static Function AcquireData(s, [postInitializeFunc, preAcquireFunc, setAnalysisF
 		PGC_SetAndActivateControl(unlockedPanelTitle, "popup_MoreSettings_DeviceType", val=2)
 		PGC_SetAndActivateControl(unlockedPanelTitle, "popup_moreSettings_DeviceNo", val=i)
 #else
-		PGC_SetAndActivateControl(unlockedPanelTitle, "popup_MoreSettings_DeviceType", val=5)
+		ChooseCorrectDevice(unlockedPanelTitle, device)
 #endif
 		PGC_SetAndActivateControl(unlockedPanelTitle, "button_SettingsPlus_LockDevice")
 

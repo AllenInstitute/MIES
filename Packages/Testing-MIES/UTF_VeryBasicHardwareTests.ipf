@@ -12,7 +12,7 @@ Function TestLocking()
 
 	string unlockedPanelTitle = DAP_CreateDAEphysPanel()
 
-	PGC_SetAndActivateControl(unlockedPanelTitle, "popup_MoreSettings_DeviceType", val=5)
+	ChooseCorrectDevice(unlockedPanelTitle, DEVICE)
 
 	try
 		PGC_SetAndActivateControl(unlockedPanelTitle, "button_SettingsPlus_LockDevice")

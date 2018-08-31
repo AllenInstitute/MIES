@@ -18,6 +18,16 @@
 StrConstant DEVICE        = "ITC18USB_dev_0"
 StrConstant DEVICES_YOKED = "ITC1600_dev_0;ITC1600_dev_1"
 
+Function ChooseCorrectDevice(unlockedPanelTitle, dev)
+	string unlockedPanelTitle, dev
+
+	if(!cmpstr(dev, "ITC18USB_dev_0"))
+		PGC_SetAndActivateControl(unlockedPanelTitle, "popup_MoreSettings_DeviceType", val=5)
+	else // assume first NI device
+		PGC_SetAndActivateControl(unlockedPanelTitle, "popup_MoreSettings_DeviceType", val=6)
+	endif
+End
+
 Function TEST_BEGIN_OVERRIDE(name)
 	string name
 
