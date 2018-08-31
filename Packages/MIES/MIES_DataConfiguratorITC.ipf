@@ -874,10 +874,10 @@ static Function DC_PlaceDataInITCDataWave(panelTitle, numActiveChannels, dataAcq
 	elseif(dataAcqOrTP == DATA_ACQUISITION_MODE)
 		for(i = 0; i < numEntries; i += 1)
 			WAVE singleStimSet = stimSet[i]
-			Multithread ITCDataWave[insertStart[i], insertStart[i] + setLength[i] - 1][i] =                      \
-			  limit(                                                                                             \
-				(DAGain[i] * DAScale[i]) * singleStimSet[decimationFactor * (p - insertStart[i])][setColumn[i]], \
-				SIGNED_INT_16BIT_MIN,                                                                            \
+			Multithread ITCDataWave[insertStart[i], insertStart[i] + setLength[i] - 1][i] =                             \
+			  limit(                                                                                                    \
+				(DAGain[i] * DAScale[i]) * singleStimSet[trunc(decimationFactor * (p - insertStart[i]))][setColumn[i]], \
+				SIGNED_INT_16BIT_MIN,                                                                                   \
 				SIGNED_INT_16BIT_MAX); AbortOnRTE
 		endfor
 
