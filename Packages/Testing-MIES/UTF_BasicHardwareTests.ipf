@@ -2030,7 +2030,14 @@ Function Test_UnassociatedChannels()
 
 			CHECK_EQUAL_VAR(DimSize(config, ROWS), DimSize(sweep, COLS))
 
-			CHECK_EQUAL_VAR(DimSize(config, ROWS), 7)
+			switch(DAP_GetHardwareType(device))
+				case HARDWARE_ITC_DAC:
+					CHECK_EQUAL_VAR(DimSize(config, ROWS), 7)
+					break
+				case HARDWARE_NI_DAC:
+					CHECK_EQUAL_VAR(DimSize(config, ROWS), 8)
+					break
+			endswitch
 
 			// check channel types
 			CHECK_EQUAL_VAR(config[0][0], ITC_XOP_CHANNEL_TYPE_DAC)
@@ -2048,28 +2055,34 @@ Function Test_UnassociatedChannels()
 			WAVE ADCs = GetADCListFromConfig(config)
 			CHECK_EQUAL_WAVES(ADCs, {0, 1, 2}, mode = WAVE_DATA)
 
-			WAVE TTLs = GetTTLListFromConfig(config)
-			CHECK_EQUAL_WAVES(TTLs, {HW_ITC_GetITCXOPChannelForRack(device, RACK_ZERO)}, mode = WAVE_DATA)
+			switch(DAP_GetHardwareType(device))
+				case HARDWARE_ITC_DAC:
+					// check TTL LBN keys
+					WAVE TTLs = GetTTLListFromConfig(config)
+					CHECK_EQUAL_WAVES(TTLs, {HW_ITC_GetITCXOPChannelForRack(device, RACK_ZERO)}, mode = WAVE_DATA)
+					WAVE/T/Z foundStimSets = GetLastSetting(textualValues, j, "TTL rack zero stim sets", DATA_ACQUISITION_MODE)
+					CHECK_EQUAL_TEXTWAVES(foundStimSets, {"", "", "", "", "", "", "", "", ";StimulusSetA_TTL_0;;StimulusSetB_TTL_0;"})
+					WAVE/T/Z foundStimSets = GetLastSetting(textualValues, j, "TTL rack one stim sets", DATA_ACQUISITION_MODE)
+					CHECK(!WaveExists(foundStimSets))
+					WAVE/T/Z foundStimSets = GetLastSetting(textualValues, j, "TTL rack one stim sets", DATA_ACQUISITION_MODE)
+					CHECK(!WaveExists(foundStimSets))
 
-			// check TTL LBN keys
-			WAVE/T/Z foundStimSets = GetLastSetting(textualValues, j, "TTL rack zero stim sets", DATA_ACQUISITION_MODE)
-			CHECK_EQUAL_TEXTWAVES(foundStimSets, {"", "", "", "", "", "", "", "", ";StimulusSetA_TTL_0;;StimulusSetB_TTL_0;"})
-			WAVE/T/Z foundStimSets = GetLastSetting(textualValues, j, "TTL rack one stim sets", DATA_ACQUISITION_MODE)
-			CHECK(!WaveExists(foundStimSets))
-			WAVE/T/Z foundStimSets = GetLastSetting(textualValues, j, "TTL rack one stim sets", DATA_ACQUISITION_MODE)
-			CHECK(!WaveExists(foundStimSets))
+					WAVE/Z bits = GetLastSetting(numericalValues, j, "TTL rack zero bits", DATA_ACQUISITION_MODE)
+					// TTL 1 and 3 are active -> 2^1 + 2^3 = 10
+					CHECK_EQUAL_WAVES(bits, {NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, 10}, mode = WAVE_DATA)
+					WAVE/Z bits = GetLastSetting(numericalValues, j, "TTL rack one bits", DATA_ACQUISITION_MODE)
+					CHECK(!WaveExists(bits))
 
-			WAVE/Z bits = GetLastSetting(numericalValues, j, "TTL rack zero bits", DATA_ACQUISITION_MODE)
-			// TTL 1 and 3 are active -> 2^1 + 2^3 = 10
-			CHECK_EQUAL_WAVES(bits, {NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, 10}, mode = WAVE_DATA)
-			WAVE/Z bits = GetLastSetting(numericalValues, j, "TTL rack one bits", DATA_ACQUISITION_MODE)
-			CHECK(!WaveExists(bits))
-
-			WAVE/Z channels = GetLastSetting(numericalValues, j, "TTL rack zero channel", DATA_ACQUISITION_MODE)
-			CHECK_EQUAL_VAR(DimSize(TTLs, ROWS), 1)
-			CHECK_EQUAL_WAVES(channels, {NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, TTLs[0]}, mode = WAVE_DATA)
-			WAVE/Z channels = GetLastSetting(numericalValues, j, "TTL rack one channel", DATA_ACQUISITION_MODE)
-			CHECK(!WaveExists(bits))
+					WAVE/Z channels = GetLastSetting(numericalValues, j, "TTL rack zero channel", DATA_ACQUISITION_MODE)
+					CHECK_EQUAL_VAR(DimSize(TTLs, ROWS), 1)
+					CHECK_EQUAL_WAVES(channels, {NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, TTLs[0]}, mode = WAVE_DATA)
+					WAVE/Z channels = GetLastSetting(numericalValues, j, "TTL rack one channel", DATA_ACQUISITION_MODE)
+					CHECK(!WaveExists(bits))
+					break
+				case HARDWARE_NI_DAC:
+					CHECK_EQUAL_WAVES(TTLs, {1, 3}, mode = WAVE_DATA)
+					break
+			endswitch
 		endfor
 	endfor
 End
