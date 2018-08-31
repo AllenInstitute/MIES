@@ -1994,13 +1994,9 @@ End
 // Using unassociated channels works
 Function DAQ_UnassociatedChannels()
 
-	string device
-
 	STRUCT DAQSettings s
 	InitDAQSettingsFromString(s, "DAQ_MD1_RA0_IDX0_LIDX0_BKG_1_RES_1")
 	AcquireData(s, preAcquireFunc = EnableUnassocChannels_IGNORE)
-
-	device = GetSingleDevice()
 End
 
 Function Test_UnassociatedChannels()
