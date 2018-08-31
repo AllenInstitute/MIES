@@ -164,7 +164,7 @@ Function BSP_DynamicStartupSettings(mainPanel)
 	SetControlProcedures(bsPanel, "slider_BrowserSettings_dDAQ;", "BSP_SliderProc_ChangedSetting")
 
 	// SB/DB specific controls
-	controlsSB = "check_BrowserSettings_splitTTL;check_BrowserSettings_TA;check_Display_EqualYrange;check_Display_EqualYignore;"
+	controlsSB = "check_BrowserSettings_TA;check_Display_EqualYrange;check_Display_EqualYignore;"
 	controlsDB = "popup_DB_lockedDevices;"
 	if(BSP_IsDataBrowser(mainPanel))
 		EnableControls(bsPanel, controlsDB)
@@ -922,7 +922,7 @@ Window BrowserSettingsPanel() : Panel
 	CheckBox check_SweepControl_HideSweep,help={"Hide sweep traces. Usually combined with \"Average traces\"."}
 	CheckBox check_SweepControl_HideSweep,userdata(tabnum)=  "0"
 	CheckBox check_SweepControl_HideSweep,userdata(tabcontrol)=  "Settings",value= 0
-	CheckBox check_BrowserSettings_splitTTL,pos={238.00,36.00},size={59.00,15.00},disable=2,proc=DB_CheckProc_ChangedSetting,title="sep. TTL"
+	CheckBox check_BrowserSettings_splitTTL,pos={238.00,36.00},size={59.00,15.00},proc=DB_CheckProc_ChangedSetting,title="sep. TTL"
 	CheckBox check_BrowserSettings_splitTTL,help={"Display the TTL channel data as single traces for each TTL bit"}
 	CheckBox check_BrowserSettings_splitTTL,userdata(tabnum)=  "0"
 	CheckBox check_BrowserSettings_splitTTL,userdata(tabcontrol)=  "Settings"
