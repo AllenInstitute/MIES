@@ -16,7 +16,7 @@ Function TestLocking()
 
 	try
 		PGC_SetAndActivateControl(unlockedPanelTitle, "button_SettingsPlus_LockDevice")
-		REQUIRE(WindowExists("ITC18USB_DEV_0"))
+		REQUIRE(WindowExists(DEVICE))
 	catch
 		FAIL()
 	endtry
