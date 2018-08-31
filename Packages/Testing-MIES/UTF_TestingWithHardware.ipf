@@ -97,6 +97,7 @@ Function Initialize_IGNORE()
 
 	CA_FlushCache()
 
+	DAP_GetNIDeviceList()
 	NVAR errorCounter = $GetAnalysisFuncErrorCounter(DEVICE)
 	errorCounter = 0
 End
