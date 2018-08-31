@@ -1892,7 +1892,7 @@ Function DAP_CheckSettings(panelTitle, mode)
 	variable mode
 
 	variable numDACs, numADCs, numHS, numEntries, i, indexingEnabled, clampMode
-	variable ampSerial, ampChannelID, minValue, maxValue, leftOverBytes
+	variable ampSerial, ampChannelID, minValue, maxValue, leftOverBytes, hardwareType
 	variable lastStartSeconds, lastITI, nextStart, leftTime, sweepNo
 	string ctrl, endWave, ttlWave, dacWave, refDacWave, reqParams
 	string list, lastStart
@@ -1964,15 +1964,21 @@ Function DAP_CheckSettings(panelTitle, mode)
 		endif
 
 		NVAR ITCDeviceIDGlobal = $GetITCDeviceIDGlobal(panelTitle)
+		hardwareType = DAP_GetHardwareType(panelTitle)
 
 #ifndef EVIL_KITTEN_EATING_MODE
-		if(HW_SelectDevice(DAP_GetHardwareType(panelTitle), ITCDeviceIDGlobal, flags=HARDWARE_PREVENT_ERROR_POPUP | HARDWARE_PREVENT_ERROR_MESSAGE))
+		if(HW_SelectDevice(hardwareType, ITCDeviceIDGlobal, flags=HARDWARE_PREVENT_ERROR_POPUP | HARDWARE_PREVENT_ERROR_MESSAGE))
 			printf "(%s) Device can not be selected. Please unlock and lock the device.\r", panelTitle
 			ControlWindowToFront()
 			return 1
 		endif
-#endif
 
+		if(hardwareType == HARDWARE_NI_DAC && !DAG_GetNumericalValue(panelTitle, "check_Settings_MD"))
+			printf "(%s) NI hardware can only be used in multi device mode.\r", panelTitle
+			ControlWindowToFront()
+			return 1
+		endif
+#endif
 		if(!HasPanelLatestVersion(panelTitle, DA_EPHYS_PANEL_VERSION))
 			printf "(%s) The DA_Ephys panel is too old to be usable. Please close it and open a new one.\r", panelTitle
 			ControlWindowToFront()
