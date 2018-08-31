@@ -982,7 +982,7 @@ static Function DC_PlaceDataInITCDataWave(panelTitle, numActiveChannels, dataAcq
 			WAVE TTLWave = GetTTLWave(panelTitle)
 			singleSetLength = DC_CalculateStimsetLength(TTLWave, decimationFactor, DATA_ACQUISITION_MODE)
 			MultiThread ITCDataWave[singleInsertStart, singleInsertStart + singleSetLength - 1][activeColumn] = \
-			  limit(TTLWave[decimationFactor * (p - singleInsertStart)], SIGNED_INT_16BIT_MIN, SIGNED_INT_16BIT_MAX); AbortOnRTE
+			  limit(TTLWave[trunc(decimationFactor * (p - singleInsertStart))], SIGNED_INT_16BIT_MIN, SIGNED_INT_16BIT_MAX); AbortOnRTE
 			activeColumn += 1
 		endif
 
@@ -991,7 +991,7 @@ static Function DC_PlaceDataInITCDataWave(panelTitle, numActiveChannels, dataAcq
 			WAVE TTLWave = GetTTLWave(panelTitle)
 			singleSetLength = DC_CalculateStimsetLength(TTLWave, decimationFactor, DATA_ACQUISITION_MODE)
 			MultiThread ITCDataWave[singleInsertStart, singleInsertStart + singleSetLength - 1][activeColumn] = \
-   			  limit(TTLWave[decimationFactor * (p - singleInsertStart)], SIGNED_INT_16BIT_MIN, SIGNED_INT_16BIT_MAX); AbortOnRTE
+   			  limit(TTLWave[trunc(decimationFactor * (p - singleInsertStart))], SIGNED_INT_16BIT_MIN, SIGNED_INT_16BIT_MAX); AbortOnRTE
 		endif
 	endif
 
