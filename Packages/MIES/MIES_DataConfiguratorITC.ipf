@@ -856,7 +856,7 @@ static Function DC_PlaceDataInITCDataWave(panelTitle, numActiveChannels, dataAcq
 				  limit(                                                                  \
 					(DAGain[q] * DAScale[q]) * singleStimSet[mod(p, singleSetLength)][0], \
 					SIGNED_INT_16BIT_MIN,                                                 \
-					SIGNED_INT_16BIT_MAX)
+					SIGNED_INT_16BIT_MAX); AbortOnRTE
 				cutOff = mod(DimSize(ITCDataWave, ROWS), singleSetLength)
 				if(cutOff > 0)
 					ITCDataWave[DimSize(ITCDataWave, ROWS) - cutoff, *][0, numEntries - 1] = 0
@@ -869,23 +869,23 @@ static Function DC_PlaceDataInITCDataWave(panelTitle, numActiveChannels, dataAcq
 		      limit(                                                               \
 		        (DAGain[q] * DAScale[q]) * singleStimSet[p][0],                    \
 			    SIGNED_INT_16BIT_MIN,                                              \
-			    SIGNED_INT_16BIT_MAX)
+			    SIGNED_INT_16BIT_MAX); AbortOnRTE
 		endif
 	elseif(dataAcqOrTP == DATA_ACQUISITION_MODE)
 		for(i = 0; i < numEntries; i += 1)
 			WAVE singleStimSet = stimSet[i]
-			Multithread ITCDataWave[insertStart[i], insertStart[i] + setLength[i] - 1][i] =                      \
-			  limit(                                                                                             \
-				(DAGain[i] * DAScale[i]) * singleStimSet[decimationFactor * (p - insertStart[i])][setColumn[i]], \
-				SIGNED_INT_16BIT_MIN,                                                                            \
-				SIGNED_INT_16BIT_MAX)
+			Multithread ITCDataWave[insertStart[i], insertStart[i] + setLength[i] - 1][i] =                             \
+			  limit(                                                                                                    \
+				(DAGain[i] * DAScale[i]) * singleStimSet[trunc(decimationFactor * (p - insertStart[i]))][setColumn[i]], \
+				SIGNED_INT_16BIT_MIN,                                                                                   \
+				SIGNED_INT_16BIT_MAX); AbortOnRTE
 		endfor
 
 		if(globalTPInsert)
 			// space in ITCDataWave for the testpulse is allocated via an automatic increase
 			// of the onset delay
 			ITCDataWave[baselineFrac * testPulseLength, (1 - baselineFrac) * testPulseLength][0, numEntries - 1] = \
-			  limit(testPulseAmplitude[q] * DAGain[q], SIGNED_INT_16BIT_MIN, SIGNED_INT_16BIT_MAX)
+			  limit(testPulseAmplitude[q] * DAGain[q], SIGNED_INT_16BIT_MIN, SIGNED_INT_16BIT_MAX); AbortOnRTE
 		endif
 	endif
 
@@ -980,18 +980,18 @@ static Function DC_PlaceDataInITCDataWave(panelTitle, numActiveChannels, dataAcq
 		if(DC_AreTTLsInRackChecked(RACK_ZERO, panelTitle))
 			DC_MakeITCTTLWave(panelTitle, RACK_ZERO)
 			WAVE TTLWave = GetTTLWave(panelTitle)
-			singleSetLength = round(DimSize(TTLWave, ROWS) / decimationFactor)
+			singleSetLength = DC_CalculateStimsetLength(TTLWave, decimationFactor, DATA_ACQUISITION_MODE)
 			MultiThread ITCDataWave[singleInsertStart, singleInsertStart + singleSetLength - 1][activeColumn] = \
-			  limit(TTLWave[decimationFactor * (p - singleInsertStart)], SIGNED_INT_16BIT_MIN, SIGNED_INT_16BIT_MAX)
+			  limit(TTLWave[trunc(decimationFactor * (p - singleInsertStart))], SIGNED_INT_16BIT_MIN, SIGNED_INT_16BIT_MAX); AbortOnRTE
 			activeColumn += 1
 		endif
 
 		if(DC_AreTTLsInRackChecked(RACK_ONE, panelTitle))
 			DC_MakeITCTTLWave(panelTitle, RACK_ONE)
 			WAVE TTLWave = GetTTLWave(panelTitle)
-			singleSetLength = round(DimSize(TTLWave, ROWS) / decimationFactor)
+			singleSetLength = DC_CalculateStimsetLength(TTLWave, decimationFactor, DATA_ACQUISITION_MODE)
 			MultiThread ITCDataWave[singleInsertStart, singleInsertStart + singleSetLength - 1][activeColumn] = \
-   			  limit(TTLWave[decimationFactor * (p - singleInsertStart)], SIGNED_INT_16BIT_MIN, SIGNED_INT_16BIT_MAX)
+   			  limit(TTLWave[trunc(decimationFactor * (p - singleInsertStart))], SIGNED_INT_16BIT_MIN, SIGNED_INT_16BIT_MAX); AbortOnRTE
 		endif
 	endif
 
