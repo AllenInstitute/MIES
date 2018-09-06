@@ -4580,23 +4580,14 @@ Function GetPanelVersion(win)
 	return version
 End
 
-Function UPDATESWEEPPLOT_PROTOTYPE(win, [optArg])
-	string win
-	variable optArg
-
-	ASSERT(0, "Calling prototype functions is an error!")
-End
-
 Function UpdateSweepPlot(win)
 	string win
 
 	if(BSP_IsDataBrowser(win))
-		FUNCREF UPDATESWEEPPLOT_PROTOTYPE f = $"DB_UpdateSweepPlot"
+		DB_UpdateSweepPlot(win)
 	else
-		FUNCREF UPDATESWEEPPLOT_PROTOTYPE f = $"SB_UpdateSweepPlot"
+		SB_UpdateSweepPlot(win)
 	endif
-
-	return f(GetMainWindow(win))
 End
 
 /// @brief Stringified short version of the clamp mode
