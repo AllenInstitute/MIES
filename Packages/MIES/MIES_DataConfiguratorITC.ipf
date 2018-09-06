@@ -1164,35 +1164,38 @@ static Function DC_PlaceDataInHardwareDataWave(panelTitle, numActiveChannels, da
 	if(dataAcqOrTP == DATA_ACQUISITION_MODE)
 		// reset to the default value without distributedDAQ
 		singleInsertStart = onSetDelay
-		WAVE TTLWave = GetTTLWave(panelTitle)
 		switch(hardwareType)
 			case HARDWARE_NI_DAC:
+				WAVE/WAVE TTLWaveNI = GetTTLWave(panelTitle)
 				WAVE config = GetITCChanConfigWave(panelTitle)
+				DC_MakeNITTLWave(panelTitle)
 				for(i = 0; i < DimSize(config, ROWS); i += 1)
 					if(config[i][%ChannelType] == ITC_XOP_CHANNEL_TYPE_TTL)
 						WAVE NIChannel = NIDataWave[activeColumn]
-						DC_MakeNITTLWave(panelTitle, config[i][%ChannelNumber])
-						singleSetLength = DC_CalculateStimsetLength(TTLWave, panelTitle, DATA_ACQUISITION_MODE)
-						MultiThread NIChannel[singleInsertStart, singleInsertStart + singleSetLength - 1] = limit(TTLWave[decimationFactor * (p - singleInsertStart)], 0, 1); AbortOnRTE
+						WAVE TTLWaveSingle = TTLWaveNI[config[i][%ChannelNumber]]
+						singleSetLength = DC_CalculateStimsetLength(TTLWaveSingle, panelTitle, DATA_ACQUISITION_MODE)
+						MultiThread NIChannel[singleInsertStart, singleInsertStart + singleSetLength - 1] = \
+						limit(TTLWaveSingle[decimationFactor * (p - singleInsertStart)], 0, 1); AbortOnRTE
 						activeColumn += 1
 					endif
 				endfor
 				break
 			case HARDWARE_ITC_DAC:
+				WAVE TTLWaveITC = GetTTLWave(panelTitle)
 				// Place TTL waves into ITCDataWave
 				if(DC_AreTTLsInRackChecked(RACK_ZERO, panelTitle))
 					DC_MakeITCTTLWave(panelTitle, RACK_ZERO)
-					singleSetLength = DC_CalculateStimsetLength(TTLWave, panelTitle, DATA_ACQUISITION_MODE)
+					singleSetLength = DC_CalculateStimsetLength(TTLWaveITC, panelTitle, DATA_ACQUISITION_MODE)
 					MultiThread ITCDataWave[singleInsertStart, singleInsertStart + singleSetLength - 1][activeColumn] = \
-			  		limit(TTLWave[trunc(decimationFactor * (p - singleInsertStart))], SIGNED_INT_16BIT_MIN, SIGNED_INT_16BIT_MAX); AbortOnRTE
+					limit(TTLWaveITC[trunc(decimationFactor * (p - singleInsertStart))], SIGNED_INT_16BIT_MIN, SIGNED_INT_16BIT_MAX); AbortOnRTE
 					activeColumn += 1
 				endif
 
 				if(DC_AreTTLsInRackChecked(RACK_ONE, panelTitle))
 					DC_MakeITCTTLWave(panelTitle, RACK_ONE)
-					singleSetLength = DC_CalculateStimsetLength(TTLWave, panelTitle, DATA_ACQUISITION_MODE)
+					singleSetLength = DC_CalculateStimsetLength(TTLWaveITC, panelTitle, DATA_ACQUISITION_MODE)
 					MultiThread ITCDataWave[singleInsertStart, singleInsertStart + singleSetLength - 1][activeColumn] = \
-					limit(TTLWave[trunc(decimationFactor * (p - singleInsertStart))], SIGNED_INT_16BIT_MIN, SIGNED_INT_16BIT_MAX); AbortOnRTE
+					limit(TTLWaveITC[trunc(decimationFactor * (p - singleInsertStart))], SIGNED_INT_16BIT_MIN, SIGNED_INT_16BIT_MAX); AbortOnRTE
 				endif
 				break
 		endswitch
@@ -1481,22 +1484,47 @@ static Function DC_MakeITCTTLWave(panelTitle, rackNo)
 	endif
 End
 
-static Function DC_MakeNITTLWave(panelTitle, channel)
+static Function DC_MakeNITTLWave(panelTitle)
 	string panelTitle
-	variable channel
 
-	variable col
+	variable col, i
 	string set
+	string listOfSets = ""
+	string setSweepCounts = ""
+	string channels = ""
 
+	WAVE statusTTL = DAG_GetChannelState(panelTitle, CHANNEL_TYPE_TTL)
+	WAVE statusHS = DAG_GetChannelState(panelTitle, CHANNEL_TYPE_HEADSTAGE)
 	WAVE/T allSetNames = DAG_GetChannelTextual(panelTitle, CHANNEL_TYPE_TTL, CHANNEL_CONTROL_WAVE)
-	set = allSetNames[channel]
-	WAVE TTLStimSet = WB_CreateAndGetStimSet(set)
+	WAVE/WAVE TTLWave = GetTTLWave(panelTitle)
 
-	WAVE TTLWave = GetTTLWave(panelTitle)
-	Redimension/N=(DimSize(TTLStimSet, ROWS)) TTLWave
+	WAVE/T sweepDataTxTLNB = GetSweepSettingsTextWave(panelTitle)
 
-	col = DC_CalculateChannelColumnNo(panelTitle, set, channel, CHANNEL_TYPE_TTL)
-	MultiThread TTLWave[] = TTLStimSet[p][col]
+	for(i = 0; i < NUM_DA_TTL_CHANNELS; i += 1)
+
+		if(!DC_ChannelIsActive(panelTitle, DATA_ACQUISITION_MODE, CHANNEL_TYPE_TTL, i, statusTTL, statusHS))
+			listOfSets = AddListItem("", listOfSets, ";", inf)
+			setSweepCounts = AddListItem("", setSweepCounts, ";", inf)
+			channels = AddListItem("", channels, ";", inf)
+			continue
+		endif
+
+		set = allSetNames[i]
+		WAVE TTLStimSet = WB_CreateAndGetStimSet(set)
+		col = DC_CalculateChannelColumnNo(panelTitle, set, i, CHANNEL_TYPE_TTL)
+
+		listOfSets = AddListItem(set, listOfSets, ";", inf)
+		setSweepCounts = AddListItem(num2str(col), setSweepCounts, ";", inf)
+		channels = AddListItem(num2str(i), channels, ";", inf)
+
+		Make/FREE/B/U/N=(DimSize(TTLStimSet, ROWS)) TTLWaveSingle
+		MultiThread TTLWaveSingle[] = TTLStimSet[p][col]
+		TTLWave[i] = TTLWaveSingle
+	endfor
+
+	sweepDataTxTLNB[0][%$"TTL channels"][INDEP_HEADSTAGE]         = channels
+	sweepDataTxTLNB[0][%$"TTL stim sets"][INDEP_HEADSTAGE]        = listOfSets
+	sweepDataTxTLNB[0][%$"TTL set sweep counts"][INDEP_HEADSTAGE] = setSweepCounts
 End
 
 /// @brief Returns column number/step of the stimulus set, independent of the times the set is being cycled through
