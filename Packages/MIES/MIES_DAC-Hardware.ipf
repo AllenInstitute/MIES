@@ -2349,7 +2349,7 @@ Function HW_NI_StopAcq(deviceID, [config, configFunc, prepareForDAQ, zeroDAC, fl
 	DEBUGPRINTSTACKINFO()
 
 	variable i, channels, aoChannel, ret, err
-	string panelTitle, paraStr, device, fifoName, errMsg
+	string panelTitle, paraStr, device, errMsg
 
 	// dont stop here, only if all devices removed
 	device = HW_GetInternalDeviceName(HARDWARE_NI_DAC, deviceID)
@@ -2415,7 +2415,21 @@ Function HW_NI_StopAcq(deviceID, [config, configFunc, prepareForDAQ, zeroDAC, fl
 			return NaN
 		endif
 	endif
+
+	HW_NI_KillFifo(deviceID)
+End
+
+/// @brief Kill the FIFO of the given NI device
+///
+/// @param deviceID device identifier
+Function HW_NI_KillFifo(deviceID)
+	variable deviceID
+
+	string fifoName, errMsg, panelTitle
+
+	panelTitle = HW_GetMainDeviceName(HARDWARE_NI_DAC, deviceID)
 	fifoName = GetNIFIFOName(deviceID)
+
 	try
 		CtrlFIFO $fifoName stop
 		DoXOPIdle
