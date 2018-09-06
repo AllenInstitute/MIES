@@ -2078,6 +2078,12 @@ Function Test_UnassociatedChannels()
 					CHECK_EQUAL_WAVES(channels, {NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, TTLs[0]}, mode = WAVE_DATA)
 					WAVE/Z channels = GetLastSetting(numericalValues, j, "TTL rack one channel", DATA_ACQUISITION_MODE)
 					CHECK(!WaveExists(bits))
+
+					// set sweep count
+					WAVE/T/Z sweepCounts = GetLastSetting(textualValues, j, "TTL rack zero set sweep counts", DATA_ACQUISITION_MODE)
+					CHECK_EQUAL_TEXTWAVES(sweepCounts, {"", "", "", "", "", "", "", "", ";0;;0;"})
+					WAVE/T/Z sweepCounts = GetLastSetting(textualValues, j, "TTL rack one set sweep counts", DATA_ACQUISITION_MODE)
+					CHECK(!WaveExists(sweepCounts))
 					break
 				case HARDWARE_NI_DAC:
 					CHECK_EQUAL_WAVES(TTLs, {1, 3}, mode = WAVE_DATA)

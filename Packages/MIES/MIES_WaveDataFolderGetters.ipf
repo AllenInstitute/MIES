@@ -1362,6 +1362,8 @@ static Function SetSweepSettingsTextDimLabels(wv)
 	SetDimLabel COLS, 16, $PULSE_START_TIMES_KEY                                , wv
 	SetDimLabel COLS, 17, $HIGH_PREC_SWEEP_START_KEY                            , wv
 	SetDimLabel COLS, 18, $STIMSET_WAVE_NOTE_KEY                                , wv
+	SetDimLabel COLS, 19, $"TTL rack zero set sweep counts"                     , wv
+	SetDimLabel COLS, 20, $"TTL rack one set sweep counts"                      , wv
 End
 
 /// @brief Returns a wave reference to the sweepSettingsWave
@@ -1705,7 +1707,7 @@ End
 Function/Wave GetSweepSettingsTextWave(panelTitle)
 	string panelTitle
 
-	variable versionOfNewWave = 14
+	variable versionOfNewWave = 15
 	string newName = "sweepSettingsTextValues"
 	DFREF newDFR = GetDevSpecLabNBTempFolder(panelTitle)
 
@@ -1720,9 +1722,9 @@ Function/Wave GetSweepSettingsTextWave(panelTitle)
 	if(ExistsWithCorrectLayoutVersion(wv, versionOfNewWave))
 		return wv
 	elseif(WaveExists(wv))
-		Redimension/N=(-1, 19, LABNOTEBOOK_LAYER_COUNT) wv
+		Redimension/N=(-1, 21, LABNOTEBOOK_LAYER_COUNT) wv
 	else
-		Make/T/N=(1, 19, LABNOTEBOOK_LAYER_COUNT) newDFR:$newName/Wave=wv
+		Make/T/N=(1, 21, LABNOTEBOOK_LAYER_COUNT) newDFR:$newName/Wave=wv
 	endif
 
 	wv = ""
@@ -1764,10 +1766,12 @@ End
 ///      - Unit: `sweep ms`.
 /// -17: High precision sweep start timestamp in ISO8601 format
 /// -18: Stimset wave note
+/// -19: TTL rack zero set sweep counts
+/// -20: TTL rack one set sweep counts
 Function/Wave GetSweepSettingsTextKeyWave(panelTitle)
 	string panelTitle
 
-	variable versionOfNewWave = 15
+	variable versionOfNewWave = 16
 	string newName = "sweepSettingsTextKeys"
 	DFREF newDFR = GetDevSpecLabNBTempFolder(panelTitle)
 
@@ -1782,9 +1786,9 @@ Function/Wave GetSweepSettingsTextKeyWave(panelTitle)
 	if(ExistsWithCorrectLayoutVersion(wv, versionOfNewWave))
 		return wv
 	elseif(WaveExists(wv))
-		Redimension/N=(-1, 19, 0) wv
+		Redimension/N=(-1, 21, 0) wv
 	else
-		Make/T/N=(1, 19) newDFR:$newName/Wave=wv
+		Make/T/N=(1, 21) newDFR:$newName/Wave=wv
 	endif
 
 	wv = ""
@@ -1808,6 +1812,8 @@ Function/Wave GetSweepSettingsTextKeyWave(panelTitle)
 	wv[0][16] = PULSE_START_TIMES_KEY
 	wv[0][17] = HIGH_PREC_SWEEP_START_KEY
 	wv[0][18] = STIMSET_WAVE_NOTE_KEY
+	wv[0][19] = "TTL rack zero set sweep counts"
+	wv[0][20] = "TTL rack one set sweep counts"
 
 	SetSweepSettingsTextDimLabels(wv)
 	SetWaveVersion(wv, versionOfNewWave)

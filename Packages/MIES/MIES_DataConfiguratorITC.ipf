@@ -1423,6 +1423,7 @@ static Function DC_MakeITCTTLWave(panelTitle, rackNo)
 	variable first, last, i, col, maxRows, lastIdx, bit, bits
 	string set
 	string listOfSets = ""
+	string setSweepCounts = ""
 
 	WAVE statusTTL = DAG_GetChannelState(panelTitle, CHANNEL_TYPE_TTL)
 	WAVE statusHS = DAG_GetChannelState(panelTitle, CHANNEL_TYPE_HEADSTAGE)
@@ -1448,14 +1449,6 @@ static Function DC_MakeITCTTLWave(panelTitle, rackNo)
 		listOfSets = AddListItem(set, listOfSets, ";", inf)
 	endfor
 
-	if(rackNo == RACK_ZERO)
-		sweepDataLNB[0][%$"TTL rack zero bits"][INDEP_HEADSTAGE]        = bits
-		sweepDataTxTLNB[0][%$"TTL rack zero stim sets"][INDEP_HEADSTAGE] = listOfSets
-	else
-		sweepDataLNB[0][%$"TTL rack one bits"][INDEP_HEADSTAGE]        = bits
-		sweepDataTxTLNB[0][%$"TTL rack one stim sets"][INDEP_HEADSTAGE] = listOfSets
-	endif
-
 	ASSERT(maxRows > 0, "Expected stim set of non-zero size")
 	WAVE TTLWave = GetTTLWave(panelTitle)
 	Redimension/N=(maxRows) TTLWave
@@ -1464,6 +1457,7 @@ static Function DC_MakeITCTTLWave(panelTitle, rackNo)
 	for(i = first; i <= last; i += 1)
 
 		if(!DC_ChannelIsActive(panelTitle, DATA_ACQUISITION_MODE, CHANNEL_TYPE_TTL, i, statusTTL, statusHS))
+			setSweepCounts = AddListItem("", setSweepCounts, ";", inf)
 			continue
 		endif
 
@@ -1473,7 +1467,18 @@ static Function DC_MakeITCTTLWave(panelTitle, rackNo)
 		lastIdx = DimSize(TTLStimSet, ROWS) - 1
 		bit = 2^(i - first)
 		MultiThread TTLWave[0, lastIdx] += bit * TTLStimSet[p][col]
+		setSweepCounts = AddListItem(num2str(col), setSweepCounts, ";", inf)
 	endfor
+
+	if(rackNo == RACK_ZERO)
+		sweepDataLNB[0][%$"TTL rack zero bits"][INDEP_HEADSTAGE]                = bits
+		sweepDataTxTLNB[0][%$"TTL rack zero stim sets"][INDEP_HEADSTAGE]        = listOfSets
+		sweepDataTxTLNB[0][%$"TTL rack zero set sweep counts"][INDEP_HEADSTAGE] = setSweepCounts
+	else
+		sweepDataLNB[0][%$"TTL rack one bits"][INDEP_HEADSTAGE]                = bits
+		sweepDataTxTLNB[0][%$"TTL rack one stim sets"][INDEP_HEADSTAGE]        = listOfSets
+		sweepDataTxTLNB[0][%$"TTL rack one set sweep counts"][INDEP_HEADSTAGE] = setSweepCounts
+	endif
 End
 
 static Function DC_MakeNITTLWave(panelTitle, channel)
