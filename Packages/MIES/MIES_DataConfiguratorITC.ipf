@@ -824,6 +824,8 @@ static Function DC_PlaceDataInITCDataWave(panelTitle, numActiveChannels, dataAcq
 
 	WAVE ITCDataWave = GetHardwareDataWave(panelTitle)
 
+	DEBUGPRINT("Clearing RTE flag", var=GetRTError(1))
+
 	// varies per DAC:
 	// DAGain, DAScale, insertStart (with dDAQ), setLength, testPulseAmplitude (can be non-constant due to different VC/IC)
 	// setName, setColumn, headstageDAC
