@@ -1206,7 +1206,7 @@ static Function DC_MakeITCTTLWave(panelTitle, rackNo)
 		set = allSetNames[i]
 		WAVE wv = WB_CreateAndGetStimSet(set)
 		maxRows = max(maxRows, DimSize(wv, ROWS))
-		bits += 2^(i)
+		bits += 2^(i - first)
 		listOfSets = AddListItem(set, listOfSets, ";", inf)
 	endfor
 
