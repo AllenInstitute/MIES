@@ -1412,8 +1412,10 @@ End
 
 /// @brief Combines the TTL stimulus sweeps across different TTL channels into a single wave
 ///
-/// @param rackNo Front TTL rack aka number of ITC devices. Only the ITC1600 has two racks, see @ref RackConstants. Rack number for all other devices is #RACK_ZERO.
 /// @param panelTitle  panel title
+/// @param rackNo      Front TTL rack aka number of ITC devices. Only the ITC1600
+///                    has two racks, see @ref RackConstants. Rack number for all other devices is
+///                    #RACK_ZERO.
 static Function DC_MakeITCTTLWave(panelTitle, rackNo)
 	string panelTitle
 	variable rackNo
@@ -1426,14 +1428,12 @@ static Function DC_MakeITCTTLWave(panelTitle, rackNo)
 	WAVE statusHS = DAG_GetChannelState(panelTitle, CHANNEL_TYPE_HEADSTAGE)
 
 	WAVE/T allSetNames = DAG_GetChannelTextual(panelTitle, CHANNEL_TYPE_TTL, CHANNEL_CONTROL_WAVE)
-	DFREF deviceDFR = GetDevicePath(panelTitle)
 
 	WAVE sweepDataLNB      = GetSweepSettingsWave(panelTitle)
 	WAVE/T sweepDataTxTLNB = GetSweepSettingsTextWave(panelTitle)
 
 	HW_ITC_GetRackRange(rackNo, first, last)
 
-// for NI	for(i = 0; i < NUM_DA_TTL_CHANNELS; i += 1)
 	for(i = first; i <= last; i += 1)
 
 		if(!DC_ChannelIsActive(panelTitle, DATA_ACQUISITION_MODE, CHANNEL_TYPE_TTL, i, statusTTL, statusHS))
