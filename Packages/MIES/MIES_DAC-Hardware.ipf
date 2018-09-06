@@ -2430,8 +2430,15 @@ Function HW_NI_KillFifo(deviceID)
 	panelTitle = HW_GetMainDeviceName(HARDWARE_NI_DAC, deviceID)
 	fifoName = GetNIFIFOName(deviceID)
 
+	FIFOStatus/Q $fifoName
+	if(!V_Flag)
+		return NaN
+	endif
+
 	try
-		CtrlFIFO $fifoName stop; AbortOnRTE
+		if(V_FIFORunning)
+			CtrlFIFO $fifoName stop; AbortOnRTE
+		endif
 		DoXOPIdle
 		KillFIFO $fifoName; AbortOnRTE
 	catch
@@ -2537,6 +2544,8 @@ Function HW_NI_CloseDevice(deviceID, [flags])
 
 	if(HW_NI_IsRunning(deviceType, flags=flags))
 		HW_NI_StopAcq(deviceID, flags=flags)
+	else
+		HW_NI_KillFifo(deviceID)
 	endif
 
 	HW_NI_ResetDevice(deviceType, flags=flags)
