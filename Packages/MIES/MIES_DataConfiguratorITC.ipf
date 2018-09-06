@@ -1449,11 +1449,11 @@ static Function DC_MakeITCTTLWave(panelTitle, rackNo)
 	endfor
 
 	if(rackNo == RACK_ZERO)
-		sweepDataLNB[0][8][INDEP_HEADSTAGE]    = bits
-		sweepDataTxTLNB[0][3][INDEP_HEADSTAGE] = listOfSets
+		sweepDataLNB[0][%$"TTL rack zero bits"][INDEP_HEADSTAGE]        = bits
+		sweepDataTxTLNB[0][%$"TTL rack zero stim sets"][INDEP_HEADSTAGE] = listOfSets
 	else
-		sweepDataLNB[0][9][INDEP_HEADSTAGE]    = bits
-		sweepDataTxTLNB[0][4][INDEP_HEADSTAGE] = listOfSets
+		sweepDataLNB[0][%$"TTL rack one bits"][INDEP_HEADSTAGE]        = bits
+		sweepDataTxTLNB[0][%$"TTL rack one stim sets"][INDEP_HEADSTAGE] = listOfSets
 	endif
 
 	ASSERT(maxRows > 0, "Expected stim set of non-zero size")
