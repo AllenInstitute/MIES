@@ -53,7 +53,8 @@ Function DQS_DataAcq(panelTitle)
 	string oscilloscopeSubwindow = SCOPE_GetGraph(panelTitle)
 
 	NVAR ITCDeviceIDGlobal = $GetITCDeviceIDGlobal(panelTitle)
-	HW_ITC_PrepareAcq(ITCDeviceIDGlobal, flags=HARDWARE_ABORT_ON_ERROR)
+
+	HW_PrepareAcq(HARDWARE_ITC_DAC, ITCDeviceIDGlobal, flags=HARDWARE_ABORT_ON_ERROR)
 
 	if(DAG_GetNumericalValue(panelTitle, "Check_DataAcq1_RepeatAcq"))
 		DQ_StartITCDeviceTimer(panelTitle) // starts a timer for each ITC device. Timer is used to do real time ITI timing.
@@ -66,7 +67,6 @@ Function DQS_DataAcq(panelTitle)
 		DoXOPIdle
 		SCOPE_UpdateOscilloscopeData(panelTitle, DATA_ACQUISITION_MODE, fifoPos=fifoPos)
 		DoUpdate/W=$oscilloscopeSubwindow
-
 		if(GetKeyState(0) & ESCAPE_KEY)
 			DQS_StopDataAcq(panelTitle, forcedStop = 1)
 			return NaN
@@ -83,7 +83,7 @@ Function DQS_BkrdDataAcq(panelTitle)
 	string panelTitle
 
 	NVAR ITCDeviceIDGlobal = $GetITCDeviceIDGlobal(panelTitle)
-	HW_ITC_PrepareAcq(ITCDeviceIDGlobal, flags=HARDWARE_ABORT_ON_ERROR)
+	HW_PrepareAcq(HARDWARE_ITC_DAC, ITCDeviceIDGlobal, flags=HARDWARE_ABORT_ON_ERROR)
 
 	if(DAG_GetNumericalValue(panelTitle, "Check_DataAcq1_RepeatAcq"))
 		DQ_StartITCDeviceTimer(panelTitle) // starts a timer for each ITC device. Timer is used to do real time ITI timing.
@@ -107,7 +107,7 @@ static Function DQS_StopDataAcq(panelTitle, [forcedStop])
 	endif
 
 	NVAR ITCDeviceIDGlobal = $GetITCDeviceIDGlobal(panelTitle)
-	HW_StopAcq(HARDWARE_ITC_DAC, ITCDeviceIDGlobal, prepareForDAQ=1, zeroDAC = 1, flags=HARDWARE_ABORT_ON_ERROR)
+	HW_StopAcq(HARDWARE_ITC_DAC, ITCDeviceIDGlobal, prepareForDAQ=1, zeroDAC=1, flags=HARDWARE_ABORT_ON_ERROR)
 	SWS_SaveAndScaleITCData(panelTitle, forcedStop = forcedStop)
 
 	if(forcedStop)

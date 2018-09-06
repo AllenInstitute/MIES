@@ -6,6 +6,14 @@
 #pragma ModuleName=MIES_TP_MD
 #endif
 
+/// @brief After this time in s the background task reading data from the ADC device
+/// @brief will not read multiple TP data sets subsequently to keep up if late
+/// @brief it will however still update once per device
+/// @brief so the gui thread can update at least every ~0.5 seconds (default value here)
+/// @brief however the fifo may run full if the timeout is hit too often
+static Constant TPM_NI_TASKTIMEOUT = 0.5
+static Constant TPM_NI_FIFO_THRESHOLD_SIZE = 1073741824
+
 /// @file MIES_TestPulse_Multi.ipf
 /// @brief __TPM__ Multi device background test pulse functionality
 
@@ -106,6 +114,8 @@ static Function TPM_BkrdTPMD(panelTitle, [triggerMode])
 	string panelTitle
 	variable triggerMode
 
+	variable hardwareType = DAP_GetHardwareType(panelTitle)
+
 	if(ParamIsDefault(triggerMode))
 		triggerMode = HARDWARE_DAC_DEFAULT_TRIGGER
 	endif
@@ -114,12 +124,20 @@ static Function TPM_BkrdTPMD(panelTitle, [triggerMode])
 
 	TPM_AddDevice(panelTitle)
 
-	HW_ITC_ResetFifo(ITCDeviceIDGlobal, flags=HARDWARE_ABORT_ON_ERROR)
-	HW_StartAcq(HARDWARE_ITC_DAC, ITCDeviceIDGlobal, triggerMode=triggerMode, flags=HARDWARE_ABORT_ON_ERROR)
-	TFH_StartFIFOResetDeamon(HARDWARE_ITC_DAC, ITCDeviceIDGlobal, triggerMode)
-
+	switch(hardwareType)
+		case HARDWARE_ITC_DAC:
+			HW_ITC_ResetFifo(ITCDeviceIDGlobal, flags=HARDWARE_ABORT_ON_ERROR)
+			HW_StartAcq(HARDWARE_ITC_DAC, ITCDeviceIDGlobal, triggerMode=triggerMode, flags=HARDWARE_ABORT_ON_ERROR)
+			TFH_StartFIFOResetDeamon(HARDWARE_ITC_DAC, ITCDeviceIDGlobal, triggerMode)
+			break
+		case HARDWARE_NI_DAC:
+			HW_StartAcq(HARDWARE_NI_DAC, ITCDeviceIDGlobal, triggerMode=triggerMode, flags=HARDWARE_ABORT_ON_ERROR, repeat=1)
+			NVAR tpCounter = $GetNITestPulseCounter(panelTitle)
+			tpCounter = 0
+			break
+	endswitch
 	if(!IsBackgroundTaskRunning(TASKNAME_TPMD))
-		CtrlNamedBackground $TASKNAME_TPMD, period = 5, proc = TPM_BkrdTPFuncMD
+		CtrlNamedBackground $TASKNAME_TPMD, period=5, proc=TPM_BkrdTPFuncMD
 		CtrlNamedBackground $TASKNAME_TPMD, start
 	endif
 End
@@ -130,9 +148,9 @@ End
 Function TPM_BkrdTPFuncMD(s)
 	STRUCT BackgroundStruct &s
 
-	variable i, deviceID, fifoPos
-	variable pointsCompletedInITCDataWave, activeChunk
-	string panelTitle
+	variable i, j, deviceID, fifoPos, hardwareType, checkAgain, updateInt, endOfPulse
+	variable pointsCompletedInITCDataWave, activeChunk, now
+	string panelTitle, fifoChannelName, fifoName, errMsg
 
 	WAVE ActiveDeviceList = GetActiveDevicesTPMD()
 
@@ -144,69 +162,119 @@ Function TPM_BkrdTPFuncMD(s)
 		s.count += 1
 	endif
 
+	now = DateTime
+
 	// works through list of active devices
 	// update parameters for a particular active device
 	for(i = 0; i < GetNumberFromWaveNote(ActiveDeviceList, NOTE_INDEX); i += 1)
 		deviceID = ActiveDeviceList[i][%DeviceID]
-		panelTitle = HW_GetMainDeviceName(HARDWARE_ITC_DAC, deviceID)
+		hardwareType = ActiveDeviceList[i][%HardwareType]
+		panelTitle = HW_GetMainDeviceName(hardwareType, deviceID)
+		switch(hardwareType)
+			case HARDWARE_NI_DAC:
+				// Pull data until end of FIFO, after BGTask finishes Graph shows only last update
+				do
+					checkAgain = 0
+					NVAR tpCounter = $GetNITestPulseCounter(panelTitle)
+					NVAR datapoints = $GetStopCollectionPoint(panelTitle)
+					fifoName = GetNIFIFOName(deviceID)
 
-		WAVE ITCDataWave = GetHardwareDataWave(panelTitle)
+					FIFOStatus/Q $fifoName
+					ASSERT(V_Flag != 0,"FIFO does not exist!")
+					endOfPulse = datapoints * tpCounter + datapoints
+					if(V_FIFOChunks >= endOfPulse)
+						WAVE/WAVE NIDataWave = GetHardwareDataWave(panelTitle)
 
-		NVAR tgID = $GetThreadGroupIDFIFO(panelTitle)
-		if(DeviceHasFollower(panelTitle))
-			WAVE/Z/D result = TS_GetNewestFromThreadQueueMult(tgID, {"fifoPos", "startSequence"})
+						try
+							for(j = 0; j < V_FIFOnchans; j += 1)
+								fifoChannelName = StringByKey("NAME" + num2str(j), S_Info)
+								WAVE NIChannel = NIDataWave[str2num(fifoChannelName)]
+								FIFO2WAVE/R=[endOfPulse - datapoints, endOfPulse - 1] $fifoName, $fifoChannelName, NIChannel; AbortOnRTE
+								SetScale/P x, 0, DimDelta(NIChannel, ROWS) * 1000, "ms", NIChannel
+							endfor
 
-			if(WaveExists(result))
-				fifoPos = result[%fifoPos]
+							SCOPE_UpdateOscilloscopeData(panelTitle, TEST_PULSE_MODE, deviceID=deviceID)
+							TP_Delta(panelTitle)
+						catch
+							errMsg = GetRTErrMessage()
+							print "Reading from NI device " + panelTitle + " failed with code: " + num2str(getRTError(1)) + "\r" + errMsg
+							ControlWindowToFront()
+						endtry
 
-				if(IsFinite(result[%startSequence]))
-					ARDStartSequence()
+						tpCounter += 1
+						if((DateTime - now) < TPM_NI_TASKTIMEOUT)
+							checkAgain = 1
+						endif
+					endif
+					if(V_FIFOChunks > TPM_NI_FIFO_THRESHOLD_SIZE)
+						HW_NI_StopAcq(deviceID)
+						HW_NI_PrepareAcq(deviceID)
+						HW_NI_StartAcq(deviceID, HARDWARE_DAC_DEFAULT_TRIGGER)
+						tpCounter = 0
+					endif
+				while(checkAgain)
+			break
+		case HARDWARE_ITC_DAC:
+			WAVE ITCDataWave = GetHardwareDataWave(panelTitle)
+
+			NVAR tgID = $GetThreadGroupIDFIFO(panelTitle)
+			if(DeviceHasFollower(panelTitle))
+				WAVE/Z/D result = TS_GetNewestFromThreadQueueMult(tgID, {"fifoPos", "startSequence"})
+
+				if(WaveExists(result))
+					fifoPos = result[%fifoPos]
+
+					if(IsFinite(result[%startSequence]))
+						ARDStartSequence()
+					endif
+				else
+					fifoPos = NaN
 				endif
 			else
-				fifoPos = NaN
+				fifoPos = TS_GetNewestFromThreadQueue(tgID, "fifoPos")
 			endif
-		else
-			fifoPos = TS_GetNewestFromThreadQueue(tgID, "fifoPos")
-		endif
 
-		// should never be hit
-		if(!IsFinite(fifoPos))
-			if(s.threadDeadCount < TP_MD_THREAD_DEAD_MAX_RETRIES)
-				s.threadDeadCount += 1
-				if(s.threadDeadCount > 1)
+			// should never be hit
+			if(!IsFinite(fifoPos))
+				if(s.threadDeadCount < TP_MD_THREAD_DEAD_MAX_RETRIES)
+					s.threadDeadCount += 1
 					printf "Retrying getting data from thread, keep fingers crossed (%d/%d)\r", s.threadDeadCount, TP_MD_THREAD_DEAD_MAX_RETRIES
 					ControlWindowToFront()
+					continue
 				endif
-				continue
+
+				// give up
+				TPM_StopTestPulseMultiDevice(panelTitle)
+				return 0
 			endif
 
-			// give up
-			TPM_StopTestPulseMultiDevice(panelTitle)
-			return 0
-		endif
+			s.threadDeadCount = 0
 
-		s.threadDeadCount = 0
+			pointsCompletedInITCDataWave = mod(fifoPos, DimSize(ITCDataWave, ROWS))
 
-		pointsCompletedInITCDataWave = mod(fifoPos, DimSize(ITCDataWave, ROWS))
+			// extract the last fully completed chunk
+			activeChunk = floor(pointsCompletedInITCDataWave / TP_GetTestPulseLengthInPoints(panelTitle)) - 1
 
-		// extract the last fully completed chunk
-		activeChunk = floor(pointsCompletedInITCDataWave / TP_GetTestPulseLengthInPoints(panelTitle)) - 1
+			// Ensures that the new TP chunk isn't the same as the last one.
+			// This is required to keep the TP buffer in sync.
+			if(activeChunk >= 0 && activeChunk != ActiveDeviceList[i][%ActiveChunk])
+				SCOPE_UpdateOscilloscopeData(panelTitle, TEST_PULSE_MODE, chunk=activeChunk)
+				TP_Delta(panelTitle)
+				ActiveDeviceList[i][%ActiveChunk] = activeChunk
+			endif
 
-		// Ensures that the new TP chunk isn't the same as the last one.
-		// This is required to keep the TP buffer in sync.
-		if(activeChunk >= 0 && activeChunk != ActiveDeviceList[i][%ActiveChunk])
-			SCOPE_UpdateOscilloscopeData(panelTitle, TEST_PULSE_MODE, chunk=activeChunk)
-			TP_Delta(panelTitle)
-			ActiveDeviceList[i][%ActiveChunk] = activeChunk
-		endif
+			break
+		endswitch
 
-		if(mod(s.count, TEST_PULSE_LIVE_UPDATE_INTERVAL) == 0)
+		updateInt = TEST_PULSE_LIVE_UPDATE_INTERVAL * 0.02
+		NVAR timestamp = $GetLastAcqHookCallTimeStamp(panelTitle)
+		if((now - timestamp) > updateInt)
+			timestamp = now
 			SCOPE_UpdateGraph(panelTitle)
 		endif
 
 		if(GetKeyState(0) & ESCAPE_KEY)
 			DQ_StopOngoingDAQ(panelTitle)
-			return 1
 		endif
 	endfor
 
@@ -218,18 +286,17 @@ static Function TPM_StopTPMD(panelTitle)
 
 	NVAR ITCDeviceIDGlobal = $GetITCDeviceIDGlobal(panelTitle)
 
-	TFH_StopFifoDaemon(HARDWARE_ITC_DAC, ITCDeviceIDGlobal)
-
-	// makes sure the device being stopped is actually running
-	if(!HW_SelectDevice(HARDWARE_ITC_DAC, ITCDeviceIDGlobal, flags = HARDWARE_PREVENT_ERROR_MESSAGE | HARDWARE_PREVENT_ERROR_POPUP) \
-	   && HW_IsRunning(HARDWARE_ITC_DAC, ITCDeviceIDGlobal, flags = HARDWARE_ABORT_ON_ERROR))
-		HW_StopAcq(HARDWARE_ITC_DAC, ITCDeviceIDGlobal, zeroDAC = 1)
-
+	variable hardwareType = DAP_GetHardwareType(panelTitle)
+	if(hardwareType == HARDWARE_ITC_DAC)
+		TFH_StopFifoDaemon(HARDWARE_ITC_DAC, ITCDeviceIDGlobal)
+	endif
+	if(!HW_SelectDevice(hardwareType, ITCDeviceIDGlobal, flags = HARDWARE_PREVENT_ERROR_MESSAGE | HARDWARE_PREVENT_ERROR_POPUP) \
+	   && HW_IsRunning(hardwareType, ITCDeviceIDGlobal, flags = HARDWARE_ABORT_ON_ERROR))
+		HW_StopAcq(hardwareType, ITCDeviceIDGlobal, zeroDAC = 1)
 		TPM_RemoveDevice(panelTitle)
 		if(!TPM_HasActiveDevices())
 			CtrlNamedBackground $TASKNAME_TPMD, stop
 		endif
-
 		TP_Teardown(panelTitle)
 	endif
 End
@@ -278,7 +345,8 @@ static Function TPM_AddDevice(panelTitle)
 	idx = GetNumberFromWaveNote(ActiveDevicesTPMD, NOTE_INDEX)
 	EnsureLargeEnoughWave(ActiveDevicesTPMD, minimumSize=idx + 1)
 
-	ActiveDevicesTPMD[idx][%DeviceID]    = ITCDeviceIDGlobal
+	ActiveDevicesTPMD[idx][%DeviceID]     = ITCDeviceIDGlobal
+	ActiveDevicesTPMD[idx][%HardwareType] = DAP_GetHardwareType(panelTitle)
 	ActiveDevicesTPMD[idx][%activeChunk] = NaN
 
 	SetNumberInWaveNote(ActiveDevicesTPMD, NOTE_INDEX, idx + 1)

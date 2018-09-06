@@ -268,6 +268,13 @@ Function/S GetTestpulseBaselineFraction(panelTitle)
 	return GetNVARAsString(GetDeviceTestPulse(panelTitle), "baselineFrac", initialValue=NaN)
 End
 
+/// @brief Returns the list of locked device panels
+Function/S GetDevicePanelTitleList()
+	string panelTitle
+
+	return GetSVARAsString(GetITCDevicesFolder(), "ITCPanelTitleList", initialValue="")
+End
+
 /// @brief Return the absolute path to the user comment string
 Function/S GetUserComment(panelTitle)
 	string panelTitle
@@ -324,6 +331,48 @@ Function/S GetTestpulseRunMode(panelTitle)
 	string panelTitle
 
 	return GetNVARAsString(GetDeviceTestPulse(panelTitle), "runMode", initialValue=NaN)
+End
+
+/// @brief Returns NI device list
+threadsafe Function/S GetNIDeviceList()
+
+	// note: this global gets killed in IH_KillTemporaries
+	return GetSVARAsString(GetITCDevicesFolder(), "NIDeviceList", initialValue="")
+End
+
+/// @brief Returns the last time stamp HW_NI_RepeatAcqHook was called
+Function/S GetLastAcqHookCallTimeStamp(panelTitle)
+	string panelTitle
+
+	return GetNVARAsString(GetDeviceTestPulse(panelTitle), "acqHookTimeStamp", initialValue=DateTime)
+End
+
+/// @brief Returns FIFO file reference
+Function/S GetFIFOFileRef(panelTitle)
+	string panelTitle
+
+	return GetNVARAsString(GetDeviceTestPulse(panelTitle), "FIFOFileRef", initialValue=0)
+End
+
+/// @brief Returns TestPulse Counter for Background Task
+Function/S GetNITestPulseCounter(panelTitle)
+	string panelTitle
+
+	return GetNVARAsString(GetDeviceTestPulse(panelTitle), "NITestPulseCounter", initialValue=0)
+End
+
+/// @brief Returns the current NI setup string for analog in through DAQmx_Scan
+Function/S GetNI_AISetup(panelTitle)
+	string panelTitle
+
+	return GetSVARAsString(GetDevicePath(panelTitle), "NI_AI_setupStr0")
+End
+
+/// @brief Returns the current NI setup string for TTL out through DAQmx_DIO_Config
+Function/S GetNI_TTLTaskID(panelTitle)
+	string panelTitle
+
+	return GetNVARAsString(GetDevicePath(panelTitle), "NI_TTL_taskID")
 End
 
 /// @brief Return the experiment session start time in NWB-speech

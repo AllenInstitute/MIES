@@ -17,14 +17,17 @@ Function SWS_SaveAndScaleITCData(panelTitle, [forcedStop])
 	string panelTitle
 	variable forcedStop
 
-	variable sweepNo
+	variable sweepNo, hardwareType
 
 	forcedStop = ParamIsDefault(forcedStop) ? 0 : !!forcedStop
 
 	sweepNo = DAG_GetNumericalValue(panelTitle, "SetVar_Sweep")
 
-	NVAR stopCollectionPoint = $GetStopCollectionPoint(panelTitle)
-	SCOPE_UpdateOscilloscopeData(panelTitle, DATA_ACQUISITION_MODE, fifoPos=stopCollectionPoint)
+	hardwareType = DAP_GetHardwareType(panelTitle)
+	if(hardwareType == HARDWARE_ITC_DAC)
+		NVAR stopCollectionPoint = $GetStopCollectionPoint(panelTitle)
+		SCOPE_UpdateOscilloscopeData(panelTitle, DATA_ACQUISITION_MODE, fifoPos=stopCollectionPoint)
+	endif
 
 	DFREf dfr = GetDeviceDataPath(panelTitle)
 
@@ -88,12 +91,14 @@ End
 /// Rows:
 ///  - Active channels only (same as ITCChanConfigWave)
 ///
-/// Can be used to convert the ITCDataWave contents from bits to mv/pA
+/// Can be used to convert the ITCDataWave contents from bits to mV/pA
+/// The ITCDataWave uses digital ADC/DAC values while for NI devices the values represent actual voltages
+/// So the gain for NI devices is inverted (aka it is an actual voltage gain factor)
 Function/WAVE SWS_GetChannelGains(panelTitle)
 	string panelTitle
 
 	variable numDACs, numADCs, numTTLs
-	variable numCols
+	variable numCols, hardwareType
 
 	WAVE ITCChanConfigWave = GetITCChanConfigWave(panelTitle)
 	numCols = DimSize(ITCChanConfigWave, ROWS)
@@ -109,20 +114,41 @@ Function/WAVE SWS_GetChannelGains(panelTitle)
 
 	Make/D/FREE/N=(numCols) gain
 
-	// DA: w' = w / (s / g)
-	if(numDACs > 0)
-		gain[0, numDACs - 1] = HARDWARE_ITC_BITS_PER_VOLT / DA_EphysGuiState[DACs[p]][%$GetSpecialControlLabel(CHANNEL_TYPE_DAC, CHANNEL_CONTROL_GAIN)]
-	endif
+	hardwareType = DAP_GetHardwareType(panelTitle)
+	switch(hardwareType)
+		case HARDWARE_NI_DAC:
+			//  in mV^-1, w'(V) = w * g
+			if(numDACs > 0)
+				gain[0, numDACs - 1] = 1 / DA_EphysGuiState[DACs[p]][%$GetSpecialControlLabel(CHANNEL_TYPE_DAC, CHANNEL_CONTROL_GAIN)]
+			endif
 
-	// AD: w' = w  / (g * s)
-	if(numADCs > 0)
-		gain[numDACs, numDACs + numADCs - 1] = DA_EphysGuiState[ADCs[p - numDACs]][%$GetSpecialControlLabel(CHANNEL_TYPE_ADC, CHANNEL_CONTROL_GAIN)] * HARDWARE_ITC_BITS_PER_VOLT
-	endif
+			// in pA / V, w'(pA) = w * g
+			if(numADCs > 0)
+				gain[numDACs, numDACs + numADCs - 1] = 1 / DA_EphysGuiState[ADCs[p - numDACs]][%$GetSpecialControlLabel(CHANNEL_TYPE_ADC, CHANNEL_CONTROL_GAIN)]
+			endif
 
-	// no scaling done for TTL
-	if(numTTLs > 0)
-		gain[numDACs + numADCs, *] = 1
-	endif
+			// no scaling done for TTL
+			if(numTTLs > 0)
+				gain[numDACs + numADCs, *] = 1
+			endif
+			break
+		case HARDWARE_ITC_DAC:
+			// DA: w' = w / (s / g)
+			if(numDACs > 0)
+				gain[0, numDACs - 1] = HARDWARE_ITC_BITS_PER_VOLT / DA_EphysGuiState[DACs[p]][%$GetSpecialControlLabel(CHANNEL_TYPE_DAC, CHANNEL_CONTROL_GAIN)]
+			endif
+
+			// AD: w' = w  / (g * s)
+			if(numADCs > 0)
+				gain[numDACs, numDACs + numADCs - 1] = DA_EphysGuiState[ADCs[p - numDACs]][%$GetSpecialControlLabel(CHANNEL_TYPE_ADC, CHANNEL_CONTROL_GAIN)] * HARDWARE_ITC_BITS_PER_VOLT
+			endif
+
+			// no scaling done for TTL
+			if(numTTLs > 0)
+				gain[numDACs + numADCs, *] = 1
+			endif
+			break
+	endswitch
 
 	return gain
 End
@@ -135,28 +161,49 @@ static Function/WAVE SWS_StoreITCDataWaveScaled(panelTitle, dfr, sweepNo)
 	DFREF dfr
 	variable sweepNo
 
-	variable numEntries, numDACs, numADCs, numTTLs
-	variable numRows, numCols
+	variable i, numDACs, numRows, numCols
 	string sweepWaveName
 
-	NVAR stopCollectionPoint = $GetStopCollectionPoint(panelTitle)
-	WAVE ITCDataWave = GetHardwareDataWave(panelTitle)
 	WAVE ITCChanConfigWave = GetITCChanConfigWave(panelTitle)
-
-	ASSERT(IsValidSweepAndConfig(ITCDataWave, ITCChanConfigWave), "ITC Data and config wave are not compatible")
-
-	numRows = stopCollectionPoint
-	numCols = DimSize(ITCDataWave, COLS)
-	ASSERT(numCols > 0, "Expected at least one channel")
-
-	sweepWaveName = "Sweep_" +  num2str(sweepNo)
-	Make/O/N=(numRows, numCols)/Y=(SWS_GetRawDataFPType(panelTitle)) dfr:$sweepWaveName/Wave=sweepWave
-
 	WAVE gain = SWS_GetChannelGains(paneltitle)
+	variable hardwareType = DAP_GetHardwareType(panelTitle)
 
-	MultiThread sweepWave[][] = ITCDataWave[p][q] / gain[q]
-	CopyScales/P ITCDataWave, sweepWave
+	switch(hardwareType)
+		case HARDWARE_ITC_DAC:
+			WAVE ITCDataWave = GetHardwareDataWave(panelTitle)
+			NVAR stopCollectionPoint = $GetStopCollectionPoint(panelTitle)
 
+			ASSERT(IsValidSweepAndConfig(ITCDataWave, ITCChanConfigWave), "ITC Data and config wave are not compatible")
+
+			numRows = stopCollectionPoint
+			numCols = DimSize(ITCDataWave, COLS)
+			ASSERT(numCols > 0, "Expected at least one channel")
+
+			sweepWaveName = "Sweep_" +  num2str(sweepNo)
+			Make/O/N=(numRows, numCols)/Y=(SWS_GetRawDataFPType(panelTitle)) dfr:$sweepWaveName/Wave=sweepWave
+
+
+			MultiThread sweepWave[][] = ITCDataWave[p][q] / gain[q]
+			CopyScales/P ITCDataWave, sweepWave
+			break
+		case HARDWARE_NI_DAC:
+			WAVE/WAVE NIDataWave = GetHardwareDataWave(panelTitle)
+			ASSERT(IsValidSweepAndConfig(NIDataWave, ITCChanConfigWave), "NI Data and config wave are not compatible")
+			WAVE DACs = GetDACListFromConfig(ITCChanConfigWave)
+			numDACs = DimSize(DACs, ROWS)
+			numCols = DimSize(NIDataWave, ROWS)
+			ASSERT(numCols > 0, "Expected at least one channel")
+			numRows = DimSize(NIDataWave[0], ROWS)
+			sweepWaveName = "Sweep_" +  num2str(sweepNo)
+			Make/O/N=(numRows, numCols)/Y=(SWS_GetRawDataFPType(panelTitle)) dfr:$sweepWaveName/Wave=sweepWave
+			for(i = 0; i < numCols; i += 1)
+				WAVE NIChannel = NIDataWave[i]
+				// only DAC waves require gain applied, ADC waves were scaled by the FIFO used in acquisition
+				Multithread sweepWave[][i] = (i < numDACs) ? NIChannel[p] / gain[i] : NIChannel[p]
+			endfor
+			CopyScales/P NIChannel, sweepWave
+			break
+	endswitch
 	return sweepWave
 End
 
@@ -192,7 +239,7 @@ End
 /// @brief Return the floating point type for storing the raw data
 ///
 /// The returned values are the same as for `WaveType`
-static Function SWS_GetRawDataFPType(panelTitle)
+Function SWS_GetRawDataFPType(panelTitle)
 	string panelTitle
 
 	return DAG_GetNumericalValue(panelTitle, "Check_Settings_UseDoublePrec") ? IGOR_TYPE_64BIT_FLOAT : IGOR_TYPE_32BIT_FLOAT

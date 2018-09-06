@@ -571,9 +571,21 @@ StrConstant HARDWARE_DAC_TYPES = "ITC;NI"
 /// @{
 Constant HARDWARE_ITC_DAC = 0
 Constant HARDWARE_NI_DAC  = 1
+Constant HARDWARE_UNSUPPORTED_DAC  = 1000
+/// @}
+
+/// @name Name of NI_DAC FIFO
+/// @anchor NIDAQ FIFO Name
+/// @{
+StrConstant HARDWARE_NI_ADC_FIFO = "NI_AnalogIn"
 /// @}
 
 Constant HARDWARE_MAX_DEVICES = 10
+
+/// @name Minimum possible sampling intervals in microseconds (1e-6s) aggregated
+/// @{
+Constant HARDWARE_NI6343_MIN_SAMPINT     = 0.002 /// so it is 4E-3 ms for 2 channels, 6E-3 ms for 3 a.s.o.
+/// @}
 
 /// @name Minimum possible sampling intervals in milliseconds (1e-3s)
 /// @{
@@ -763,7 +775,7 @@ StrConstant CONTROLS_DISABLE_DURING_DAQ = "Check_DataAcqHS_All;Radio_ClampMode_A
 StrConstant CONTROLS_DISABLE_DURING_IDX = "SetVar_DataAcq_ListRepeats;SetVar_DataAcq_SetRepeats"
 
 /// DA_Ephys controls which should be disabled during DAQ *and* TP
-StrConstant CONTROLS_DISABLE_DURING_DAQ_TP = "check_Settings_MD;Check_Settings_BkgTP;Check_Settings_BackgrndDataAcq"
+StrConstant CONTROLS_DISABLE_DURING_DAQ_TP = "Check_Settings_BkgTP;Check_Settings_BackgrndDataAcq"
 
 /// @name Parameters for GetAllDevicesWithContent()
 /// @anchor CONTENT_TYPES
@@ -788,6 +800,16 @@ Constant STIMSET_PARAM_SEGWVTYPE = 2
 /// @{
 Constant SIGNED_INT_16BIT_MIN = -32768
 Constant SIGNED_INT_16BIT_MAX =  32767
+/// @}
+
+/// @name Ranges for NIDAQ analog output in volts
+///
+/// @anchor NIDAQ_AO_WaveRanges
+/// @{
+Constant NI_DAC_MIN = -10
+Constant NI_DAC_MAX =  10
+Constant NI_ADC_MIN = -10
+Constant NI_ADC_MAX =  10
 /// @}
 
 /// Maximum length of a valid name in bytes in Igor Pro.
@@ -961,7 +983,7 @@ Constant EPOCH_ENTRY   = 0x4
 Constant STIMSET_ENTRY = 0x8
 /// @}
 /// Especially interesting for PXP consumers like the analysis browser.
-Constant EXPERIMENT_VERSION = 1
+Constant EXPERIMENT_VERSION = 2
 
 /// All experiment versions up to the given value are supported
 Constant ANALYSIS_BROWSER_SUPP_VERSION = 1

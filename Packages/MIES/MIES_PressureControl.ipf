@@ -2180,8 +2180,20 @@ Function ButtonProc_Hrdwr_P_UpdtDAClist(ba) : ButtonControl
 
 	switch(ba.eventCode)
 		case 2: // mouse up
+			string filteredList = ""
 			string DeviceList = NONE + ";" + HW_ITC_ListDevices() + HW_NI_ListDevices()
-			SetPopupMenuVal(ba.win, "popup_Settings_Pressure_dev", DeviceList)
+			string lockedList = GetListOfLockedDevices()
+			string dev
+			variable nrDevs = ItemsInList(DeviceList)
+			variable i
+			for(i = 0;i < nrDevs; i += 1)
+				dev = StringFromList(i, DeviceList)
+				if(WhichListItem(dev, lockedList) == -1)
+					filteredList = AddListItem(dev, filteredList)
+				endif
+			endfor
+
+			SetPopupMenuVal(ba.win, "popup_Settings_Pressure_dev", filteredList)
 			break
 	endswitch
 

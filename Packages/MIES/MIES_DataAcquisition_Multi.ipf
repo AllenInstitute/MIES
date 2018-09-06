@@ -21,19 +21,55 @@ Function DQM_FIFOMonitor(s)
 
 	DFREF activeDevices = GetActiveITCDevicesFolder()
 	WAVE/SDFR=activeDevices ActiveDeviceList
-	variable deviceID, isFinished
-	variable i, fifoPos, result
-	string panelTitle
+	variable deviceID, isFinished, hardwareType
+	variable i, j, fifoPos, fifoEnd, result, channel, stopCollectionPoint
+	string panelTitle, fifoChannelName, fifoName, errMsg
+	Make/FREE/N=(0) wNIReadOut
 
 	for(i = 0; i < DimSize(ActiveDeviceList, ROWS); i += 1)
-		deviceID   = ActiveDeviceList[i][0]
-		panelTitle = HW_GetMainDeviceName(HARDWARE_ITC_DAC, deviceID)
+		deviceID   = ActiveDeviceList[i][0] // deviceID
+		hardwareType = ActiveDeviceList[i][3] // hardwareType
+		panelTitle = HW_GetMainDeviceName(hardwareType, deviceID)
+		switch(hardwareType)
+			case HARDWARE_NI_DAC:
+				try
+					NVAR fifoPosGlobal = $GetFifoPosition(panelTitle)
+					fifoName = GetNIFIFOName(deviceID)
+					FIFOStatus/Q $fifoName
+					ASSERT(V_Flag != 0,"FIFO does not exist!")
+					if(fifoPosGlobal == V_FIFOChunks)
+						continue // no new data -> next device
+					endif
 
-		NVAR tgID = $GetThreadGroupIDFIFO(panelTitle)
-		fifoPos = TS_GetNewestFromThreadQueue(tgID, "fifoPos")
-		isFinished = IsNaN(fifoPos)
+					stopCollectionPoint = ActiveDeviceList[i][2] // stopCollectionPoint
+					fifoEnd = min(V_FIFOChunks, stopCollectionPoint)
+					isFinished = (fifoEnd == stopCollectionPoint) ? 1 : 0
 
-		SCOPE_UpdateOscilloscopeData(panelTitle, DATA_ACQUISITION_MODE, fifoPos=fifoPos)
+					WAVE/WAVE NIDataWave = GetHardwareDataWave(panelTitle)
+					for(j = 0; j < V_FIFOnchans; j += 1)
+						fifoChannelName = StringByKey("NAME" + num2str(j), S_Info)
+						channel = str2num(fifoChannelName)
+						WAVE NIChannel = NIDataWave[channel]
+						FIFO2WAVE/R=[fifoPosGlobal, fifoEnd - 1] $fifoName, $fifoChannelName, wNIReadOut; AbortOnRTE
+						multithread NIChannel[fifoPosGlobal, fifoEnd - 1] = wNIReadOut[p - fifoPosGlobal]
+						SetScale/P x, 0, DimDelta(wNIReadOut, ROWS) * 1000, "ms", NIChannel
+					endfor
+					SCOPE_UpdateOscilloscopeData(panelTitle, DATA_ACQUISITION_MODE, deviceID=deviceID, fifoPos=fifoEnd)
+					fifoPosGlobal = fifoEnd
+					fifoPos = fifoEnd
+				catch
+					errMsg = GetRTErrMessage()
+					ASSERT(0, "Reading from NI device " + panelTitle + " failed with code: " + num2str(getRTError(1)) + "\r" + errMsg)
+				endtry
+				break
+			case HARDWARE_ITC_DAC:
+				NVAR tgID = $GetThreadGroupIDFIFO(panelTitle)
+				fifoPos = TS_GetNewestFromThreadQueue(tgID, "fifoPos")
+				isFinished = IsNaN(fifoPos)
+
+				SCOPE_UpdateOscilloscopeData(panelTitle, DATA_ACQUISITION_MODE, fifoPos=fifoPos)
+				break
+		endswitch
 
 		result = AFM_CallAnalysisFunctions(panelTitle, MID_SWEEP_EVENT)
 
@@ -73,8 +109,11 @@ Function DQM_TerminateOngoingDAQHelper(panelTitle)
 	NVAR ITCDeviceIDGlobal = $GetITCDeviceIDGlobal(panelTitle)
 	WAVE/T/SDFR=GetActiveITCDevicesFolder() ActiveDeviceList
 
-	TFH_StopFIFODaemon(HARDWARE_ITC_DAC, ITCDeviceIDGlobal)
-	HW_StopAcq(HARDWARE_ITC_DAC, ITCDeviceIDGlobal, zeroDAC = 1, flags=HARDWARE_ABORT_ON_ERROR)
+	variable hardwareType = DAP_GetHardwareType(panelTitle)
+	if(hardwareType == HARDWARE_ITC_DAC)
+		TFH_StopFIFODaemon(HARDWARE_ITC_DAC, ITCDeviceIDGlobal)
+	endif
+	HW_StopAcq(hardwareType, ITCDeviceIDGlobal, zeroDAC = 1, flags=HARDWARE_ABORT_ON_ERROR)
 
 	// remove device passed in from active device lists
 	DQM_MakeOrUpdateActivDevLstWave(panelTitle, ITCDeviceIDGlobal, 0, 0, -1)
@@ -128,7 +167,7 @@ Function DQM_StartDAQMultiDevice(panelTitle, [initialSetupReq])
 
 	// configure passed device
 	NVAR ITCDeviceIDGlobal = $GetITCDeviceIDGlobal(panelTitle)
-	HW_ITC_PrepareAcq(ITCDeviceIDGlobal, flags=HARDWARE_ABORT_ON_ERROR)
+	HW_PrepareAcq(DAP_GetHardwareType(panelTitle), ITCDeviceIDGlobal, flags=HARDWARE_ABORT_ON_ERROR)
 
 	if(!DeviceHasFollower(panelTitle))
 		DAP_UpdateITIAcrossSets(panelTitle, maxITI)
@@ -292,8 +331,11 @@ static Function DQM_StopDataAcq(panelTitle, ITCDeviceIDGlobal)
 	String panelTitle
 	Variable ITCDeviceIDGlobal
 
-	TFH_StopFIFODaemon(HARDWARE_ITC_DAC, ITCDeviceIDGlobal)
-	HW_StopAcq(HARDWARE_ITC_DAC, ITCDeviceIDGlobal, prepareForDAQ=1, zeroDAC = 1, flags=HARDWARE_ABORT_ON_ERROR)
+	variable hardwareType = DAP_GetHardwareType(panelTitle)
+	if(hardwareType == HARDWARE_ITC_DAC)
+		TFH_StopFIFODaemon(hardwareType, ITCDeviceIDGlobal)
+	endif
+	HW_StopAcq(hardwareType, ITCDeviceIDGlobal, prepareForDAQ=1, zeroDAC = 1, flags=HARDWARE_ABORT_ON_ERROR)
 
 	SWS_SaveAndScaleITCData(panelTitle)
 	if(RA_IsFirstSweep(panelTitle))
@@ -323,9 +365,12 @@ static Function DQM_BkrdDataAcq(panelTitle, [triggerMode])
 		DQ_StartITCDeviceTimer(panelTitle)
 	endif
 
-	HW_StartAcq(HARDWARE_ITC_DAC, ITCDeviceIDGlobal, triggerMode=triggerMode, flags=HARDWARE_ABORT_ON_ERROR)
+	variable hardwareType = DAP_GetHardwareType(panelTitle)
+	HW_StartAcq(hardwareType, ITCDeviceIDGlobal, triggerMode=triggerMode, flags=HARDWARE_ABORT_ON_ERROR)
 	ED_MarkSweepStart(panelTitle)
-	TFH_StartFIFOStopDaemon(HARDWARE_ITC_DAC, ITCDeviceIDGlobal)
+	if(hardwareType == HARDWARE_ITC_DAC)
+		TFH_StartFIFOStopDaemon(hardwareType, ITCDeviceIDGlobal)
+	endif
 
 	DQM_MakeOrUpdateActivDevLstWave(panelTitle, ITCDeviceIDGlobal, ADChannelToMonitor, StopCollectionPoint, 1) // adds a device
 
@@ -342,6 +387,7 @@ static Function DQM_MakeOrUpdateActivDevLstWave(panelTitle, ITCDeviceIDGlobal, A
 
 	DFREF dfr = GetActiveITCDevicesFolder()
 	WAVE/Z/SDFR=dfr ActiveDeviceList
+	variable hardwareType = DAP_GetHardwareType(panelTitle)
 
 	if(addOrRemoveDevice == 1) // add a ITC device
 		if(!WaveExists(ActiveDeviceList))
@@ -349,12 +395,14 @@ static Function DQM_MakeOrUpdateActivDevLstWave(panelTitle, ITCDeviceIDGlobal, A
 			ActiveDeviceList[0][0] = ITCDeviceIDGlobal
 			ActiveDeviceList[0][1] = ADChannelToMonitor
 			ActiveDeviceList[0][2] = StopCollectionPoint
+			ActiveDeviceList[0][3] = hardwareType
 		else
 			numberOfRows = DimSize(ActiveDeviceList, ROWS)
 			Redimension/N=(numberOfRows + 1, 4) ActiveDeviceList
 			ActiveDeviceList[numberOfRows][0] = ITCDeviceIDGlobal
 			ActiveDeviceList[numberOfRows][1] = ADChannelToMonitor
 			ActiveDeviceList[numberOfRows][2] = StopCollectionPoint
+			ActiveDeviceList[numberOfRows][3] = hardwareType
 		endif
 	elseif(addOrRemoveDevice == -1) // remove a ITC device
 		Duplicate /FREE /r = [][0] ActiveDeviceList ListOfITCDeviceIDGlobal // duplicates the column that contains the global device ID's

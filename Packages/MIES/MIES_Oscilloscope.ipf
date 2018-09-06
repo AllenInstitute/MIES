@@ -254,6 +254,10 @@ Function SCOPE_CreateGraph(panelTitle, dataAcqOrTP)
 				ModifyGraph/W=$graph freepos($leftAxis) = {0, kwFraction}, axisEnab($leftAxis)= {YaxisLow, YaxisHigh}
 				ModifyGraph/W=$graph lblPosMode($leftAxis)=4, lblPos($leftAxis) = 50, log($leftAxis)=1
 				SetAxis/W=$graph/A=2/N=2 $leftAxis
+#if (IgorVersion() >= 8.00)
+				// use fast line drawing
+				ModifyGraph/W=$graph live($powerSpectrumTrace)=(2^1)
+#endif
 			endif
 
 			rightAxis = "resistance" + adcStr
@@ -360,7 +364,7 @@ Function SCOPE_CreateGraph(panelTitle, dataAcqOrTP)
 			SetAxis/W=$graph/A bottom
 		else
 			Label/W=$graph bottom "Time (\\U)"
-			sampInt = DAP_GetITCSampInt(panelTitle, TEST_PULSE_MODE) / 1000
+			sampInt = DAP_GetSampInt(panelTitle, TEST_PULSE_MODE) / 1000
 			testPulseLength = TP_GetTestPulseLengthInPoints(panelTitle) * sampInt
 			NVAR duration = $GetTestpulseDuration(panelTitle)
 			NVAR baselineFrac = $GetTestpulseBaselineFraction(panelTitle)
@@ -370,7 +374,7 @@ Function SCOPE_CreateGraph(panelTitle, dataAcqOrTP)
 	else
 		Label/W=$graph bottom "Time (\\U)"
 		NVAR stopCollectionPoint = $GetStopCollectionPoint(panelTitle)
-		sampInt = DAP_GetITCSampInt(panelTitle, DATA_ACQUISITION_MODE) / 1000
+		sampInt = DAP_GetSampInt(panelTitle, DATA_ACQUISITION_MODE) / 1000
 		SetAxis/W=$graph bottom 0, stopCollectionPoint * sampInt
 	endif
 End
@@ -423,6 +427,19 @@ Function SCOPE_SetADAxisLabel(panelTitle,activeHeadStage)
 	endfor
 End
 
+Function SCOPE_UpdatePowerSpectrum(panelTitle)
+	String panelTitle
+
+	if(GetDA_EphysGuiStateNum(panelTitle)[0][%check_settings_show_power])
+		WAVE OscilloscopeData = GetOscilloscopeWave(panelTitle)
+		WAVE powerSpectrum = GetTPPowerSpectrumWave(panelTitle)
+		// FFT knows how to transform units without prefix so transform them it temporarly
+		SetScale/P x, DimOffset(OscilloscopeData, ROWS) / 1000, DimDelta(OscilloscopeData, ROWS) / 1000, "s", OscilloscopeData
+		FFT/OUT=4/DEST=powerSpectrum/COLS/PAD={2^ceil(log(DimSize(OscilloscopeData, ROWS)) / log(2))} OscilloscopeData
+		SetScale/P x, DimOffset(OscilloscopeData, ROWS) * 1000, DimDelta(OscilloscopeData, ROWS) * 1000, "ms", OscilloscopeData
+	endif
+End
+
 /// @brief Prepares a subset/copy of `ITCDataWave` for displaying it in the
 /// oscilloscope panel
 ///
@@ -432,7 +449,65 @@ End
 ///                    the testpulse to extract
 /// @param fifoPos     Position of the fifo used by the ITC XOP to keep track of
 ///                    the position which will be written next
-Function SCOPE_UpdateOscilloscopeData(panelTitle, dataAcqOrTP, [chunk, fifoPos])
+/// @param deviceID    device ID
+Function SCOPE_UpdateOscilloscopeData(panelTitle, dataAcqOrTP, [chunk, fifoPos, deviceID])
+	string panelTitle
+	variable dataAcqOrTP, chunk, fifoPos, deviceID
+
+	variable hardwareType = DAP_GetHardwareType(panelTitle)
+	switch(hardwareType)
+		case HARDWARE_ITC_DAC:
+			if(dataAcqOrTP == TEST_PULSE_MODE)
+				if(ParamIsDefault(chunk))
+					chunk = 0
+				endif
+				ASSERT(ParamIsDefault(fifoPos), "optional parameter fifoPos is not possible with TEST_PULSE_MODE")
+			elseif(dataAcqOrTP == DATA_ACQUISITION_MODE)
+				ASSERT(!ParamIsDefault(fifoPos), "optional parameter fifoPos missing")
+				ASSERT(ParamIsDefault(chunk), "optional parameter chunk is not possible with DATA_ACQUISITION_MODE")
+			endif
+			SCOPE_ITC_UpdateOscilloscope(panelTitle, dataAcqOrTP, chunk, fifoPos)
+			break;
+		case HARDWARE_NI_DAC:
+			ASSERT(!ParamIsDefault(deviceID), "optional parameter deviceID missing (required for NI devices in TP mode)")
+			SCOPE_NI_UpdateOscilloscope(panelTitle, dataAcqOrTP, deviceID, fifoPos)
+			break;
+	endswitch
+End
+
+static Function SCOPE_NI_UpdateOscilloscope(panelTitle, dataAcqOrTP, deviceiD, fifoPos)
+	string panelTitle
+	variable dataAcqOrTP, deviceID, fifoPos
+
+	variable i, channel
+	string fifoName
+	WAVE OscilloscopeData = GetOscilloscopeWave(panelTitle)
+	WAVE/WAVE NIDataWave = GetHardwareDataWave(panelTitle)
+
+	fifoName = GetNIFIFOName(deviceID)
+	FIFOStatus/Q $fifoName
+	ASSERT(V_Flag != 0, "FIFO does not exist!")
+	if(dataAcqOrTP == TEST_PULSE_MODE)
+		// update a full pulse
+		for(i = 0; i < V_FIFOnchans; i += 1)
+			channel = str2num(StringByKey("NAME" + num2str(i), S_Info))
+			WAVE NIChannel = NIDataWave[channel]
+			multithread OscilloscopeData[][channel] = NIChannel[p]
+		endfor
+		SCOPE_UpdatePowerSpectrum(panelTitle)
+	elseif(dataAcqOrTP == DATA_ACQUISITION_MODE)
+		// it is in this moment the previous fifo position, so the new data goes from here to fifoPos-1
+		NVAR fifoPosGlobal = $GetFifoPosition(panelTitle)
+		for(i = 0; i < V_FIFOnchans; i += 1)
+			channel = str2num(StringByKey("NAME" + num2str(i), S_Info))
+			WAVE NIChannel = NIDataWave[channel]
+			Multithread OscilloscopeData[fifoPosGlobal, fifoPos - 1][channel] = NIChannel[p]
+		endfor
+	endif
+	SetScale/P y, DimOffset(NIChannel, ROWS), DimDelta(NIChannel, ROWS), "" OscilloscopeData
+End
+
+static Function SCOPE_ITC_UpdateOscilloscope(panelTitle, dataAcqOrTP, chunk, fifoPos)
 	string panelTitle
 	variable dataAcqOrTP, chunk, fifoPos
 
@@ -450,12 +525,6 @@ Function SCOPE_UpdateOscilloscopeData(panelTitle, dataAcqOrTP, [chunk, fifoPos])
 	Make/FREE/N=(numEntries) gain = DA_EphysGuiState[ADCs[p]][%$GetSpecialControlLabel(CHANNEL_TYPE_ADC, CHANNEL_CONTROL_GAIN)] * HARDWARE_ITC_BITS_PER_VOLT
 
 	if(dataAcqOrTP == TEST_PULSE_MODE)
-		if(ParamIsDefault(chunk))
-			chunk = 0
-		endif
-
-		ASSERT(ParamIsDefault(fifoPos), "optional parameter fifoPos is not possible with TEST_PULSE_MODE")
-
 		length = TP_GetTestPulseLengthInPoints(panelTitle)
 		first  = chunk * length
 		last   = first + length - 1
@@ -473,23 +542,12 @@ Function SCOPE_UpdateOscilloscopeData(panelTitle, dataAcqOrTP, [chunk, fifoPos])
 			Cursor/W=ITCDataWaveTPMD/H=2/P B ITCDataWave last
 		endif
 #endif
-
 		Multithread OscilloscopeData[][startOfADColumns, startOfADColumns + numEntries - 1] = ITCDataWave[first + p][q] / gain[q - startOfADColumns]
-
-		if(GetDA_EphysGuiStateNum(panelTitle)[0][%check_settings_show_power])
-			WAVE powerSpectrum = GetTPPowerSpectrumWave(panelTitle)
-			// FFT knows how to transform units without prefix so transform them it temporarly
-			SetScale/P x, DimOffset(ITCDataWave, ROWS) / 1000, DimDelta(ITCDataWave, ROWS) / 1000, "s", ITCDataWave
-			FFT/OUT=4/DEST=powerSpectrum/COLS ITCDataWave
-			SetScale/P x, DimOffset(ITCDataWave, ROWS) * 1000, DimDelta(ITCDataWave, ROWS) * 1000, "ms", ITCDataWave
-		endif
+		SCOPE_UpdatePowerSpectrum(panelTitle)
 
 	elseif(dataAcqOrTP == DATA_ACQUISITION_MODE)
-		ASSERT(ParamIsDefault(chunk), "optional parameter chunk is not possible with DATA_ACQUISITION_MODE")
+
 		ASSERT(EqualWaves(ITCDataWave, OscilloscopeData, 512), "ITCDataWave and OscilloscopeData have differing dimensions")
-
-		ASSERT(!ParamIsDefault(fifoPos), "optional parameter fifoPos missing")
-
 		fifoPos += GetDataOffset(ITCChanConfigWave)
 
 		if(fifoPos == 0 || !IsFinite(fifoPos))

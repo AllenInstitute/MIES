@@ -24,6 +24,75 @@ static StrConstant COMMENT_PANEL_NOTEBOOK = "NB"
 
 static StrConstant AMPLIFIER_DEF_FORMAT   = "AmpNo %d Chan %d"
 
+static StrConstant GUI_CONTROLSAVESTATE_DISABLED = "oldDisabledState"
+
+static StrConstant NI_PCIE_6343_PATTERN 	= "AI:32;AO:4;COUNTER:4;DIOPORTS:3;LINES:32,8,8"
+
+/// @brief This function resolves the hardwaretype of the device used a locked panel by comparing it to a list of devices of known type
+/// @return Returns the hardwaretype of the device identified by panelTitle
+threadsafe Function DAP_GetHardwareType(panelTitle)
+	string panelTitle
+
+	string deviceType, deviceNumber
+	ASSERT_TS(ParseDeviceString(panelTitle, deviceType, deviceNumber), "Error parsing device string!")
+
+	// note: globalNIDevList is initialized when a DA_Ephys panel is created
+	SVAR globalNIDevList = $GetNIDeviceList()
+	if(WhichListItem(deviceType, globalNIDevList) != -1)
+		return HARDWARE_NI_DAC
+	elseif(WhichListItem(deviceType, DEVICE_TYPES_ITC) != -1)
+		return HARDWARE_ITC_DAC
+	endif
+	return HARDWARE_UNSUPPORTED_DAC
+End
+
+/// @brief Returns a list of DAC devices for NI devices
+/// @return list of NI DAC devices
+Function/S DAP_GetNIDeviceList()
+	variable i
+	string DAQmxDevice, DAQmxDevName
+	string devList
+
+	SVAR globalNIDevList = $GetNIDeviceList()
+	devList = globalNIDevList
+	if(!isEmpty(devList))
+		return devList
+	endif
+	devList = ""
+	for(i = 0;i < HARDWARE_MAX_DEVICES;i += 1)
+		DAQmxDevice = HW_NI_GetPropertyListOfDevices(i)
+
+		if(!(strsearch(DAQmxDevice, NI_PCIE_6343_PATTERN, 0) == -1))
+			DAQmxDevName = StringByKey("NAME", DAQmxDevice)
+			if(!isEmpty(DAQmxDevName))
+				if(!IsValidWaveName(DAQmxDevName))
+					Print "NI device " + DAQmxDevName + " has a name that is incompatible for use in MIES. Please change the device name in NI MAX to a simple name, e.g. DeviceX."
+				else
+					devList += DAQmxDevName + ";"
+				endif
+			endif
+		endif
+	endfor
+	globalNIDevList = devList
+	return devList
+End
+
+/// @brief Returns a list of DAC devices for NI + ITC devices
+/// @return list of DAC devices
+Function/S DAP_GetDACDeviceList()
+
+	return DEVICE_TYPES_ITC + ";" + DAP_GetNIDeviceList()
+End
+
+/// @brief Returns a modified list of DAC devices for GUI panel
+/// @return string list for devices in GUI panel
+Function/S DAP_GetGUIDACDeviceList()
+	string deviceList
+
+	deviceList = DAP_GetDACDeviceList()
+	return ReplaceString("ITC00;", deviceList, "\\M1(ITC00;")
+End
+
 /// @brief Restores the base state of the DA_Ephys panel.
 /// Useful when adding controls to GUI. Facilitates use of auto generation of GUI code.
 /// Useful when template experiment file has been overwritten.
@@ -981,7 +1050,7 @@ Function DAP_OneTimeCallBeforeDAQ(panelTitle, runMode)
 	string panelTitle
 	variable runMode
 
-	variable numHS, i, DAC, ADC
+	variable numHS, i, DAC, ADC, multiDevGUIEnState, hardwareType
 
 	ASSERT(runMode != DAQ_NOT_RUNNING, "Invalid running mode")
 
@@ -1047,6 +1116,12 @@ Function DAP_OneTimeCallBeforeDAQ(panelTitle, runMode)
 
 	NVAR dataAcqRunMode = $GetDataAcqRunMode(panelTitle)
 	dataAcqRunMode = runMode
+	hardwareType = DAP_GetHardwareType(panelTitle)
+	if(hardwareType == HARDWARE_NI_DAC)
+		multiDevGUIEnState = IsControlDisabled(panelTitle, "check_Settings_MD")
+		SetControlUserData(panelTitle, "check_Settings_MD", GUI_CONTROLSAVESTATE_DISABLED, num2str(multiDevGUIEnState))
+	endif
+	DisableControls(panelTitle, "check_Settings_MD")
 
 	DAP_ToggleAcquisitionButton(panelTitle, DATA_ACQ_BUTTON_TO_STOP)
 	DisableControls(panelTitle, CONTROLS_DISABLE_DURING_DAQ_TP)
@@ -1113,6 +1188,8 @@ Function DAP_OneTimeCallAfterDAQ(panelTitle, [forcedStop, startTPAfterDAQ])
 	string panelTitle
 	variable forcedStop, startTPAfterDAQ
 
+	variable hardwareType
+
 	forcedStop      = ParamIsDefault(forcedStop)      ? 0 : !!forcedStop
 	startTPAfterDAQ = ParamIsDefault(startTPAfterDAQ) ? 1 : !!startTPAfterDAQ
 
@@ -1124,6 +1201,17 @@ Function DAP_OneTimeCallAfterDAQ(panelTitle, [forcedStop, startTPAfterDAQ])
 
 	NVAR dataAcqRunMode = $GetDataAcqRunMode(panelTitle)
 	dataAcqRunMode = DAQ_NOT_RUNNING
+	hardwareType = DAP_GetHardwareType(panelTitle)
+	switch(hardwareType)
+		case HARDWARE_NI_DAC:
+			if(str2num(GetUserData(panelTitle, "check_Settings_MD", GUI_CONTROLSAVESTATE_DISABLED)) > 0)
+				DisableControl(panelTitle, "check_Settings_MD")
+			endif
+			break
+		default:
+			EnableControl(panelTitle, "check_Settings_MD")
+			break
+	endswitch
 
 	NVAR count = $GetCount(panelTitle)
 	count = 0
@@ -1476,11 +1564,11 @@ static Function DAP_UpdateSweepLimitsAndDisplay(panelTitle)
 	endfor
 End
 
-/// @brief Return the ITC sampling interval with taking the mode and
+/// @brief Return the sampling interval with taking the mode and
 /// the multiplier into account
 ///
 /// @see SI_CalculateMinSampInterval()
-Function DAP_GetITCSampInt(panelTitle, dataAcqOrTP)
+Function DAP_GetSampInt(panelTitle, dataAcqOrTP)
 	string panelTitle
 	variable dataAcqOrTP
 
@@ -1878,7 +1966,7 @@ Function DAP_CheckSettings(panelTitle, mode)
 		NVAR ITCDeviceIDGlobal = $GetITCDeviceIDGlobal(panelTitle)
 
 #ifndef EVIL_KITTEN_EATING_MODE
-		if(HW_SelectDevice(HARDWARE_ITC_DAC, ITCDeviceIDGlobal, flags=HARDWARE_PREVENT_ERROR_POPUP | HARDWARE_PREVENT_ERROR_MESSAGE))
+		if(HW_SelectDevice(DAP_GetHardwareType(panelTitle), ITCDeviceIDGlobal, flags=HARDWARE_PREVENT_ERROR_POPUP | HARDWARE_PREVENT_ERROR_MESSAGE))
 			printf "(%s) Device can not be selected. Please unlock and lock the device.\r", panelTitle
 			ControlWindowToFront()
 			return 1
@@ -4031,14 +4119,21 @@ Function DAP_DeviceIsUnlocked(panelTitle)
 	string panelTitle
 
 	string deviceType, deviceNumber
-	return !(ParseDeviceString(panelTitle, deviceType, deviceNumber) && WhichListItem(deviceType, DEVICE_TYPES_ITC) != -1 && WhichListItem(deviceNumber, DEVICE_NUMBERS) != -1)
+	if(ParseDeviceString(panelTitle, deviceType, deviceNumber))
+		if(!isEmpty(deviceNumber))
+			return !(WhichListItem(deviceType, DAP_GetDACDeviceList()) != -1 && WhichListItem(deviceNumber, DEVICE_NUMBERS) != -1)
+		else
+			return !(WhichListItem(deviceType, DAP_GetDACDeviceList()) != -1)
+		endif
+	endif
+	return NaN
 End
 
 Function DAP_AbortIfUnlocked(panelTitle)
 	string panelTitle
 
 	if(DAP_DeviceIsUnlocked(panelTitle))
-		DoAbortNow("A ITC device must be locked (see Hardware tab) to proceed")
+		DoAbortNow("A device must be locked (see Hardware tab) to proceed")
 	endif
 End
 
@@ -4171,13 +4266,15 @@ Function DAP_LockDevice(panelTitle)
 		DoAbortNow("Can not lock the device. The DA_Ephys panel is too old to be usable. Please close it and open a new one.")
 	endif
 
-	if(!DAP_GetNumITCDevicesPerType(panelTitle))
+	if(DAP_GetHardwareType(panelTitleLocked) == HARDWARE_ITC_DAC)
+		if(!DAP_GetNumITCDevicesPerType(panelTitle))
 #ifndef EVIL_KITTEN_EATING_MODE
-		sprintf msg, "Can not lock the device \"%s\" as no devices of type \"%s\" are connected.", panelTitleLocked, DAP_GetDeviceType(panelTitle)
-		DoAbortNow(msg)
+			sprintf msg, "Can not lock the device \"%s\" as no devices of type \"%s\" are connected.", panelTitleLocked, DAP_GetDeviceType(panelTitle)
+			DoAbortNow(msg)
 #else
-		print "EVIL_KITTEN_EATING_MODE is ON: Allowing to lock altough no devices could be found."
+			print "EVIL_KITTEN_EATING_MODE is ON: Allowing to lock altough no devices could be found."
 #endif
+		endif
 	endif
 
 	NVAR ITCDeviceIDGlobal = $GetITCDeviceIDGlobal(paneltitleLocked)
@@ -4240,7 +4337,7 @@ Function DAP_LockDevice(panelTitle)
 
 	DAP_UpdateOnsetDelay(panelTitleLocked)
 
-	HW_RegisterDevice(panelTitleLocked, HARDWARE_ITC_DAC, ITCDeviceIDGlobal)
+	HW_RegisterDevice(panelTitleLocked, hardwareType, ITCDeviceIDGlobal)
 	if(ItemsInList(GetListOfLockedDevices()) == 1)
 		DAP_LoadBuiltinStimsets()
 		GetPxPVersion()
@@ -4309,7 +4406,7 @@ End
 static Function DAP_UnlockDevice(panelTitle)
 	string panelTitle
 
-	variable flags, state
+	variable flags, state, hardwareType
 	string lockedDevices
 
 	if(!windowExists(panelTitle))
@@ -4357,12 +4454,13 @@ static Function DAP_UnlockDevice(panelTitle)
 
 	NVAR/SDFR=GetDevicePath(panelTitle) ITCDeviceIDGlobal
 
+	hardwareType = DAP_GetHardwareType(panelTitle)
 	// shutdown the FIFO thread now in case it is still running (which should never be the case)
-	TFH_StopFIFODaemon(HARDWARE_ITC_DAC, ITCDeviceIDGlobal)
+	TFH_StopFIFODaemon(hardwareType, ITCDeviceIDGlobal)
 
 	flags = HARDWARE_PREVENT_ERROR_POPUP | HARDWARE_PREVENT_ERROR_MESSAGE
-	HW_CloseDevice(HARDWARE_ITC_DAC, ITCDeviceIDGlobal, flags=flags)
-	HW_DeRegisterDevice(HARDWARE_ITC_DAC, ITCDeviceIDGlobal, flags=flags)
+	HW_CloseDevice(hardwareType, ITCDeviceIDGlobal, flags=flags)
+	HW_DeRegisterDevice(hardwareType, ITCDeviceIDGlobal, flags=flags)
 
 	DAP_UpdateYokeControls(panelTitleUnlocked)
 	DAP_UpdateListOfITCPanels()
@@ -4407,26 +4505,58 @@ static Function DAP_GetNumITCDevicesPerType(panelTitle)
 	return ItemsInList(ListMatch(HW_ITC_ListDevices(), DAP_GetDeviceType(panelTitle) + "_DEV_*"))
 End
 
+/// @brief Gets the selection from the Device popup menu of the DA_Ephys panel
+/// and checks of the device availability.
+/// Prints availability of the selected device to the history and en/dis 'Open Device' button in panel
 static Function DAP_IsDeviceTypeConnected(panelTitle)
 	string panelTitle
 
-	variable numDevices
+	variable numDevices, hardwareType
+	string deviceName
 
-	numDevices = DAP_GetNumITCDevicesPerType(panelTitle)
+	deviceName = DAP_GetDeviceType(panelTitle)
+	hardwareType = DAP_GetHardwareType(deviceName)
+	switch(hardwareType)
+		case HARDWARE_NI_DAC:
+			EnableControl(panelTitle, "button_SettingsPlus_PingDevice")
+			print "National Instrument device " + deviceName + " is connected."
+			break
+		case HARDWARE_ITC_DAC:
 
-	if(!numDevices)
-		DisableControl(panelTitle, "button_SettingsPlus_PingDevice")
-	else
-		EnableControl(panelTitle, "button_SettingsPlus_PingDevice")
-	endif
+			numDevices = DAP_GetNumITCDevicesPerType(panelTitle)
 
-	printf "Available number of specified ITC devices = %d\r" numDevices
+			if(!numDevices)
+				DisableControl(panelTitle, "button_SettingsPlus_PingDevice")
+			else
+				EnableControl(panelTitle, "button_SettingsPlus_PingDevice")
+			endif
+
+			printf "Available number of specified ITC devices = %d\r" numDevices
+			break
+		default:
+			print "Device type " + deviceName + " not supported."
+			break
+	endswitch
 End
 
 /// @brief Update the list of locked devices
 static Function DAP_UpdateListOfITCPanels()
-	DFREF dfr = GetITCDevicesFolder()
-	string/G dfr:ITCPanelTitleList = WinList("ITC*", ";", "WIN:64")
+	variable i, numDevs, numItm
+	string NIPanelList = ""
+	string ITCPanelList = WinList("ITC*", ";", "WIN:64")
+	string allPanelList = WinList("*", ";", "WIN:64")
+	string NIDevList = DAP_GetNIDeviceList()
+
+	numDevs = ItemsInList(NIDevList)
+	for(i = 0;i < numDevs; i += 1)
+		numItm = WhichListItem(StringFromList(i, NIDevList), allPanelList)
+		if(numItm > -1)
+			NIPanelList = AddListItem(StringFromList(numItm, allPanelList), NIPanelList, ";")
+		endif
+	endfor
+
+	SVAR panelList = $GetDevicePanelTitleList()
+	panelList = ITCPanelList + NIPanelList
 End
 
 static Function DAP_UpdateChanAmpAssignStorWv(panelTitle)
@@ -4552,7 +4682,7 @@ Function DAP_UpdateDAQControls(panelTitle, updateFlag)
 	endif
 
 	if(updateFlag & REASON_HEADSTAGE_CHANGE)
-		SetValDisplay(panelTitle, "ValDisp_DataAcq_SamplingInt", var=DAP_GetITCSampInt(panelTitle, DATA_ACQUISITION_MODE))
+		SetValDisplay(panelTitle, "ValDisp_DataAcq_SamplingInt", var=DAP_GetSampInt(panelTitle, DATA_ACQUISITION_MODE))
 	endif
 
 	if((updateFlag & REASON_HEADSTAGE_CHANGE) || (updateFlag & REASON_STIMSET_CHANGE))

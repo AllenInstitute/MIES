@@ -399,7 +399,7 @@ End
 /// @brief Return a data folder reference to the ITC devices folder
 threadsafe Function/S GetITCDevicesFolderAsString()
 
-	return GetMiesPathAsString() + ":ITCDevices"
+	return GetMiesPathAsString() + ":HardwareDevices"
 End
 
 /// @brief Return the active ITC devices timer folder "root:mies:ITCDevices:ActiveITCDevices:Timer"
@@ -454,7 +454,16 @@ threadsafe Function/S GetDevicePathAsString(panelTitle)
 		ASSERT_TS(0, "Invalid/Non-locked paneltitle")
 	endif
 
-	return GetDeviceTypePathAsString(deviceType) + ":Device" + deviceNumber
+	switch(DAP_GetHardwareType(panelTitle))
+		case HARDWARE_NI_DAC:
+			return GetDeviceTypePathAsString(deviceType)
+			break
+		case HARDWARE_ITC_DAC:
+			return GetDeviceTypePathAsString(deviceType) + ":Device" + deviceNumber
+			break
+		default:
+			ASSERT_TS(0, "Invalid hardware type")
+	endswitch
 End
 
 /// @name DataBrowser
@@ -537,14 +546,28 @@ Function/Wave GetHardwareDataWave(panelTitle)
 	string panelTitle
 
 	DFREF dfr = GetDevicePath(panelTitle)
-	WAVE/W/Z/SDFR=dfr wv = HardwareDataWave
+	variable hardwareType = DAP_GetHardwareType(panelTitle)
 
-	if(WaveExists(wv))
-		return wv
-	endif
+	switch(hardwareType)
+		case HARDWARE_ITC_DAC:
+			WAVE/W/Z/SDFR=dfr wv = HardwareDataWave
 
-	Make/W/N=(1, NUM_DA_TTL_CHANNELS) dfr:HardwareDataWave/Wave=wv
-	return wv
+			if(WaveExists(wv))
+				return wv
+			endif
+
+			Make/W/N=(1, NUM_DA_TTL_CHANNELS) dfr:HardwareDataWave/Wave=wv
+			return wv
+			break
+		case HARDWARE_NI_DAC:
+			WAVE/WAVE/Z/SDFR=dfr wv_ni = HardwareDataWave
+			if(WaveExists(wv_ni))
+				return wv_ni
+			endif
+			Make/WAVE/N=(NUM_DA_TTL_CHANNELS) dfr:HardwareDataWave/Wave=wv_ni
+			return wv_ni
+			break
+	endswitch
 End
 
 static Constant ITC_CONFIG_WAVE_VERSION = 1
@@ -571,6 +594,12 @@ End
 /// The wave note holds a list of channel units. The order
 /// is the same as the rows. TTL channels don't have units. Querying the
 /// channel unit should always be done via AFH_GetChannelUnit()/AFH_GetChannelUnits().
+///
+/// This wave is also used for NI devices as configuration template. There is one difference though:
+/// While for ITC devices there is one TTL row for each rack,
+/// for NI devices there is one TTL row for each channel (up to 8 currently)
+/// The channel number column holds the hardware channel number for the NI device
+/// Currently the sampling interval is read from channel 0 only and used for all channels
 ///
 /// Version 1 changes:
 /// - Columns now have dimension labels
@@ -685,8 +714,14 @@ Function/S GetDevSpecLabNBFolderAsString(panelTitle)
 
 	ret = ParseDeviceString(panelTitle, deviceType, deviceNumber)
 	ASSERT(ret, "Could not parse the panelTitle")
-
-	return GetLabNotebookFolderAsString() + ":" + deviceType + ":Device" + deviceNumber
+	switch(DAP_GetHardwareType(panelTitle))
+		case HARDWARE_NI_DAC:
+			return GetLabNotebookFolderAsString() + ":" + deviceType
+			break
+		case HARDWARE_ITC_DAC:
+			return GetLabNotebookFolderAsString() + ":" + deviceType + ":Device" + deviceNumber
+			break
+	endswitch
 End
 
 /// @brief Return the datafolder reference to the device specific settings key
@@ -2516,7 +2551,6 @@ Function/WAVE GetTestPulse()
 
 	/// create dummy wave
 	Make/N=(0) dfr:TestPulse/Wave=wv
-	SetScale/P x 0, HARDWARE_ITC_MIN_SAMPINT, "ms", wv
 
 	return wv
 End
@@ -4685,12 +4719,13 @@ Function/WAVE GetActiveDevicesTPMD()
 	elseif(WaveExists(wv))
 		// handle upgrade
 	else
-		Make/N=(MINIMUM_WAVE_SIZE, 2) dfr:ActiveDevicesTPMD/Wave=wv
+		Make/N=(MINIMUM_WAVE_SIZE, 3) dfr:ActiveDevicesTPMD/Wave=wv
 		wv = NaN
 	endif
 
 	SetDimLabel COLS, 0, DeviceID,    wv
 	SetDimLabel COLS, 1, ActiveChunk, wv
+	SetDimLabel COLS, 2, HardwareType, wv
 
 	SetWaveVersion(wv, versionOfNewWave)
 	SetNumberInWaveNote(wv, NOTE_INDEX, 0)

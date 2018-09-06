@@ -511,13 +511,48 @@ End
 
 #endif
 
-/// @brief Calculate the minimum sampling interval using the lookup waves on disk
+/// @brief Calculate the minimum sampling interval
 ///
 /// @param panelTitle  device
 /// @param dataAcqOrTP one of @ref DataAcqModes, ignores TTL channels for #TEST_PULSE_MODE
 ///
 /// @returns sampling interval in microseconds (1e-6)
 Function SI_CalculateMinSampInterval(panelTitle, dataAcqOrTP)
+	string panelTitle
+	variable dataAcqOrTP
+
+	variable hardwareType = DAP_GetHardwareType(panelTitle)
+	switch(hardwareType)
+		case HARDWARE_ITC_DAC:
+			return SI_ITC_CalculateMinSampInterval(panelTitle, dataAcqOrTP)
+			break
+		case HARDWARE_NI_DAC:
+			return SI_NI_CalculateMinSampInterval(panelTitle)
+			break
+	endswitch
+End
+
+/// @brief Calculate the minimum sampling interval for NI hardware
+///
+/// @sa SI_CalculateMinSampInterval
+///
+/// @returns sampling interval in microseconds (1e-6)
+static Function SI_NI_CalculateMinSampInterval(panelTitle)
+	string panelTitle
+
+	WAVE channelStatus = DAG_GetChannelState(panelTitle, CHANNEL_TYPE_ADC)
+	return HARDWARE_NI6343_MIN_SAMPINT * 1000 * sum(channelStatus)
+End
+
+/// @brief Calculate the minimum sampling interval for ITC hardware using the lookup waves on disk
+///
+/// @param panelTitle  device
+/// @param dataAcqOrTP one of @ref DataAcqModes, ignores TTL channels for #TEST_PULSE_MODE
+///
+/// @sa SI_CalculateMinSampInterval
+///
+/// @returns sampling interval in microseconds (1e-6)
+static Function SI_ITC_CalculateMinSampInterval(panelTitle, dataAcqOrTP)
 	string panelTitle
 	variable dataAcqOrTP
 

@@ -1747,11 +1747,16 @@ Function UpdateSweepConfig(config, [samplingInterval])
 	config[][2] = samplingInterval
 End
 
-/// @brief Parse a device string of the form X_DEV_Y, where X is from @ref DEVICE_TYPES_ITC
+/// @brief Parse a device string:
+/// for ITC devices of the form X_DEV_Y, where X is from @ref DEVICE_TYPES_ITC
 /// and Y from @ref DEVICE_NUMBERS.
+/// for NI devices of the form X, where X is from DAP_GetNIDeviceList()
 ///
 /// Returns the result in deviceType and deviceNumber.
-/// Currently the parsing is successfull if X and Y are non-empty.
+/// Currently the parsing is successfull if
+/// for ITC devices X and Y are non-empty.
+/// for NI devices X is non-empty.
+/// deviceNumber is empty for NI devices as it does not apply
 /// @param[in]  device       input device string X_DEV_Y
 /// @param[out] deviceType   returns the device type X
 /// @param[out] deviceNumber returns the device number Y
@@ -1764,18 +1769,32 @@ threadsafe Function ParseDeviceString(device, deviceType, deviceNumber)
 		return 0
 	endif
 
-	deviceType   = StringFromList(0,device,"_")
-	deviceNumber = StringFromList(2,device,"_")
-
-	return !isEmpty(deviceType) && !isEmpty(deviceNumber) && cmpstr(deviceType, "DA")
+	if(strsearch(device, "_Dev_", 0, 2) == -1)
+		// NI device
+		deviceType = device
+		deviceNumber = ""
+		return !isEmpty(deviceType) && cmpstr(deviceType, "DA")
+	else
+		// ITC device notation with X_Dev_Y
+		deviceType   = StringFromList(0,device,"_")
+		deviceNumber = StringFromList(2,device,"_")
+		return !isEmpty(deviceType) && !isEmpty(deviceNumber) && cmpstr(deviceType, "DA")
+	endif
 End
 
-/// @brief Builds the common device string X_DEV_Y, e.g. ITC1600_DEV_O and friends
+/// @brief Builds device string
 Function/S BuildDeviceString(deviceType, deviceNumber)
 	string deviceType, deviceNumber
 
 	ASSERT(!isEmpty(deviceType) && !isEmpty(deviceNumber), "empty device type or number");
-	return deviceType + "_Dev_" + deviceNumber
+// check what device we have
+	if(FindListItem(deviceType, DAP_GetNIDeviceList()) > -1)
+		return deviceType
+	elseif(FindListItem(deviceType, DEVICE_TYPES_ITC) > -1)
+		return deviceType + "_Dev_" + deviceNumber
+	else
+		ASSERT(0, "No NI or ITC device with this name found");
+	endif
 End
 
 /// @brief Create a vertically tiled graph for displaying AD and DA channels
@@ -3529,11 +3548,7 @@ End
 /// @brief Return the list of locked devices
 Function/S GetListOfLockedDevices()
 
-	SVAR/Z/SDFR=GetITCDevicesFolder() list = ITCPanelTitleList
-	if(!SVAR_Exists(list))
-		return ""
-	endif
-
+	SVAR list = $GetDevicePanelTitleList()
 	return list
 End
 
@@ -4774,22 +4789,37 @@ Function IsValidConfigWave(config)
 		   DimSize(config, COLS) >= 4
 End
 
-/// @brief Check if the given wave is a valid ITCDataWave
+/// @brief Check if the given wave is a valid HardwareDataWave
 Function IsValidSweepWave(sweep)
 	WAVE/Z sweep
 
-	return WaveExists(sweep) &&        \
-		   DimSize(sweep, COLS) > 0 && \
-		   DimSize(sweep, ROWS) > 0
+	if(WaveType(sweep, 1) == IGOR_TYPE_WAVEREF_WAVE)
+		if(WaveExists(sweep) && DimSize(sweep, ROWS) > 0)
+			WAVE/Z/WAVE sweepWREF = sweep
+			WAVE/Z channel = sweepWREF[0]
+			return WaveExists(channel) && DimSize(channel, ROWS) > 0
+		endif
+	else
+		return WaveExists(sweep) &&        \
+			   DimSize(sweep, COLS) > 0 && \
+			   DimSize(sweep, ROWS) > 0
+	endif
+	return 0
 End
 
 /// @brief Check if the two waves are valid and compatible
 Function IsValidSweepAndConfig(sweep, config)
 	WAVE/Z sweep, config
 
-	return IsValidConfigWave(config) &&                  \
-		   IsValidSweepWave(sweep) &&                    \
-		   DimSize(sweep, COLS) == DimSize(config, ROWS)
+	if(WaveType(sweep, 1) == IGOR_TYPE_WAVEREF_WAVE)
+		return IsValidConfigWave(config) &&                  \
+				 IsValidSweepWave(sweep) &&                    \
+				 DimSize(sweep, ROWS) == DimSize(config, ROWS)
+	else
+		return IsValidConfigWave(config) &&                  \
+				 IsValidSweepWave(sweep) &&                    \
+				 DimSize(sweep, COLS) == DimSize(config, ROWS)
+	endif
 End
 
 /// @brief Return the next random number using the device specific RNG seed
@@ -4811,4 +4841,11 @@ Function EntrySourceTypeMapper(entrySourceType)
 	variable entrySourceType
 
 	return IsFinite(entrySourceType) ? ++entrySourceType : 0
+End
+
+/// @brief constructs a fifo name for NI device ADC operations from the deviceID
+Function/S GetNIFIFOName(deviceID)
+	variable deviceID
+
+	return HARDWARE_NI_ADC_FIFO + num2str(deviceID)
 End
