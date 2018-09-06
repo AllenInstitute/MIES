@@ -2431,9 +2431,9 @@ Function HW_NI_KillFifo(deviceID)
 	fifoName = GetNIFIFOName(deviceID)
 
 	try
-		CtrlFIFO $fifoName stop
+		CtrlFIFO $fifoName stop; AbortOnRTE
 		DoXOPIdle
-		KillFIFO $fifoName
+		KillFIFO $fifoName; AbortOnRTE
 	catch
 		errMsg = GetRTErrMessage()
 		print "Could not cleanup FIFO of NI device " + panelTitle + ", failed with code: " + num2str(getRTError(1)) + "\r" + errMsg
