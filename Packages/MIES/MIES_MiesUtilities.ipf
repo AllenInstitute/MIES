@@ -3734,8 +3734,11 @@ Function/S GetTTLStimSets(numericalValues, textualValues, sweep, channel)
 
 	WAVE/Z ttlRackZeroChannel = GetLastSetting(numericalValues, sweep, "TTL rack zero channel", DATA_ACQUISITION_MODE)
 	WAVE/Z ttlRackOneChannel  = GetLastSetting(numericalValues, sweep, "TTL rack one channel", DATA_ACQUISITION_MODE)
+	WAVE/Z ttlChannels        = GetLastSetting(textualValues, sweep, "TTL channels", DATA_ACQUISITION_MODE)
 
-	if(WaveExists(ttlRackZeroChannel) && ttlRackZeroChannel[index] == channel)
+	if(WaveExists(ttlChannels))
+		WAVE/T ttlStimsets = GetLastSetting(textualValues, sweep, "TTL stim sets", DATA_ACQUISITION_MODE)
+	elseif(WaveExists(ttlRackZeroChannel) && ttlRackZeroChannel[index] == channel)
 		WAVE/T ttlStimsets = GetLastSetting(textualValues, sweep, "TTL rack zero stim sets", DATA_ACQUISITION_MODE)
 	elseif(WaveExists(ttlRackOneChannel) && ttlRackOneChannel[index] == channel)
 		WAVE/T ttlStimsets = GetLastSetting(textualValues, sweep, "TTL rack one stim sets", DATA_ACQUISITION_MODE)
