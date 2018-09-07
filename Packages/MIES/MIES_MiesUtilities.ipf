@@ -3894,7 +3894,7 @@ Function/S ExtractAnalysisFunctionParams(stimSet)
 	return GetStringFromWaveNote(stimSet, ANALYSIS_FUNCTION_PARAMS_LBN, keySep = "=", listSep = ";")
 End
 
-/// @brief Split TTL data into a single wave for each channel
+/// @brief Split TTL data into a single wave for each bit
 /// @param data       1D channel data extracted by #ExtractOneDimDataFromSweep
 /// @param ttlBits    bit mask of the active TTL channels form e.g. #GetTTLBits
 /// @param targetDFR  datafolder where to put the waves, can be a free datafolder
