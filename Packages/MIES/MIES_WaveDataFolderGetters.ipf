@@ -601,6 +601,10 @@ End
 /// The channel number column holds the hardware channel number for the NI device
 /// Currently the sampling interval is read from channel 0 only and used for all channels
 ///
+/// ITC hardware:
+/// The number of TTL bits which are stored in each TTL channel is hardware
+/// dependent and can be queried with HW_ITC_GetRackRange().
+///
 /// Version 1 changes:
 /// - Columns now have dimension labels
 /// - One more column with the channel data offset
