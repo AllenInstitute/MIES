@@ -1863,12 +1863,12 @@ Function CreateTiledChannelGraph(graph, config, sweepNo, numericalValues,  textu
 	numADCs = DimSize(ADCs, ROWS)
 	numTTLs = DimSize(TTLs, ROWS)
 
-	WAVE/Z statusHS           = GetLastSetting(numericalValues, sweepNo, "Headstage Active", DATA_ACQUISITION_MODE)
-	WAVE/Z ttlRackZeroChannel = GetLastSetting(numericalValues, sweepNo, "TTL rack zero bits", DATA_ACQUISITION_MODE)
-	WAVE/Z ttlRackOneChannel  = GetLastSetting(numericalValues, sweepNo, "TTL rack one bits", DATA_ACQUISITION_MODE)
+	WAVE/Z statusHS        = GetLastSetting(numericalValues, sweepNo, "Headstage Active", DATA_ACQUISITION_MODE)
+	WAVE/Z ttlRackZeroBits = GetLastSetting(numericalValues, sweepNo, "TTL rack zero bits", DATA_ACQUISITION_MODE)
+	WAVE/Z ttlRackOneBits  = GetLastSetting(numericalValues, sweepNo, "TTL rack one bits", DATA_ACQUISITION_MODE)
 
 	if(tgs.splitTTLBits && numTTLs > 0)
-		if(!WaveExists(ttlRackZeroChannel) && !WaveExists(ttlRackOneChannel))
+		if(!WaveExists(ttlRackZeroBits) && !WaveExists(ttlRackOneBits))
 			print "Turning off tgs.splitTTLBits as some labnotebook entries could not be found"
 			ControlWindowToFront()
 			tgs.splitTTLBits = 0
@@ -1880,11 +1880,11 @@ Function CreateTiledChannelGraph(graph, config, sweepNo, numericalValues,  textu
 
 		if(tgs.splitTTLBits)
 			idx = GetIndexForHeadstageIndepData(numericalValues)
-			if(WaveExists(ttlRackZeroChannel))
-				numTTLBits += PopCount(ttlRackZeroChannel[idx])
+			if(WaveExists(ttlRackZeroBits))
+				numTTLBits += PopCount(ttlRackZeroBits[idx])
 			 endif
-			if(WaveExists(ttlRackOneChannel))
-				numTTLBits += PopCount(ttlRackOneChannel[idx])
+			if(WaveExists(ttlRackOneBits))
+				numTTLBits += PopCount(ttlRackOneBits[idx])
 			 endif
 		endif
 	endif
