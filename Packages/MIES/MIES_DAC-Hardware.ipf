@@ -1728,10 +1728,10 @@ Function HW_ITC_GetRackRange(rack, first, last)
 
 	if(rack == RACK_ZERO)
 		first = 0
-		last = NUM_TTL_BITS_PER_RACK - 1
+		last = NUM_ITC_TTL_BITS_PER_RACK - 1
 	elseif(rack == RACK_ONE)
-		first = NUM_TTL_BITS_PER_RACK
-		last = 2 * NUM_TTL_BITS_PER_RACK - 1
+		first = NUM_ITC_TTL_BITS_PER_RACK
+		last = 2 * NUM_ITC_TTL_BITS_PER_RACK - 1
 	else
 		ASSERT(0, "Invalid rack parameter")
 	endif
@@ -1746,7 +1746,7 @@ Function HW_ITC_ClipTTLBit(panelTitle, ttlBit)
 	variable ttlBit
 
 	if(HW_ITC_GetRackForTTLBit(panelTitle, ttlBit) == RACK_ONE)
-		return ttlBit - NUM_TTL_BITS_PER_RACK
+		return ttlBit - NUM_ITC_TTL_BITS_PER_RACK
 	else
 		return ttlBit
 	endif
@@ -1763,7 +1763,7 @@ Function HW_ITC_GetRackForTTLBit(panelTitle, ttlBit)
 
 	ASSERT(ttlBit < NUM_DA_TTL_CHANNELS, "Invalid channel index")
 
-	if(ttlBit >= NUM_TTL_BITS_PER_RACK)
+	if(ttlBit >= NUM_ITC_TTL_BITS_PER_RACK)
 		ret = ParseDeviceString(panelTitle, deviceType, deviceNumber)
 		ASSERT(ret, "Could not parse device string")
 		ASSERT(!cmpstr(deviceType, "ITC1600"), "Only the ITC1600 has multiple racks")

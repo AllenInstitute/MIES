@@ -2078,7 +2078,7 @@ Function CreateTiledChannelGraph(graph, config, sweepNo, numericalValues,  textu
 					hasPhysUnit      = 0
 					slotMult         = 1
 					numHorizWaves    = 1
-					numVertWaves     = tgs.splitTTLBits ? NUM_TTL_BITS_PER_RACK : 1
+					numVertWaves     = tgs.splitTTLBits ? NUM_ITC_TTL_BITS_PER_RACK : 1
 					numChannels      = numTTLs
 					break
 			endswitch
@@ -3911,7 +3911,7 @@ Function SplitTTLWaveIntoComponents(data, ttlBits, targetDFR, wavePrefix)
 		return NaN
 	endif
 
-	for(i = 0; i < NUM_TTL_BITS_PER_RACK; i += 1)
+	for(i = 0; i < NUM_ITC_TTL_BITS_PER_RACK; i += 1)
 
 		bit = 2^i
 		if(!(ttlBits & bit))
