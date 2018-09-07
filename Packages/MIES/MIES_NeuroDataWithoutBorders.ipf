@@ -651,6 +651,7 @@ static Function NWB_AppendSweepLowLevel(locationID, panelTitle, ITCDataWave, ITC
 	variable sweep, chunkedLayout
 
 	variable groupID, numEntries, i, j, ttlBits, dac, adc, col, refTime
+	variable ttlBit
 	string group, path, list, name
 	string channelSuffix, listOfStimsets, contents
 
@@ -800,11 +801,13 @@ static Function NWB_AppendSweepLowLevel(locationID, panelTitle, ITCDataWave, ITC
 		numEntries = ItemsInList(list)
 		for(j = 0; j < numEntries; j += 1)
 			name = StringFromList(j, list)
+			ttlBit = str2num(name[1,inf])
+			ASSERT((ttlBit & ttlBits) == 1, "Invalid ttlBit")
 			WAVE/SDFR=dfr params.data = $name
 			path                 = "/stimulus/presentation"
-			params.channelSuffix = name[1, inf]
+			params.channelSuffix = num2str(ttlBit)
 			params.channelSuffixDesc = NWB_SOURCE_TTL_BIT
-			params.stimset       = StringFromList(str2num(name[1,inf]), listOfStimsets)
+			params.stimset       = StringFromList(ttlBit, listOfStimsets)
 			NWB_GetTimeSeriesProperties(params, tsp)
 			params.groupIndex    = IsFinite(params.groupIndex) ? params.groupIndex : IPNWB#GetNextFreeGroupIndex(locationID, path)
 			IPNWB#WriteSingleChannel(locationID, path, params, tsp, chunkedLayout=chunkedLayout)
