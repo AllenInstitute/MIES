@@ -1851,7 +1851,7 @@ Function CreateTiledChannelGraph(graph, config, sweepNo, numericalValues,  textu
 	WAVE/Z channelSelWave
 
 	variable red, green, blue, axisIndex, numChannels, offset
-	variable numDACs, numADCs, numTTLs, i, j, k, hasPhysUnit, slotMult
+	variable numDACs, numADCs, numTTLs, i, j, k, hasPhysUnit, slotMult, hardwareType
 	variable moreData, low, high, step, spacePerSlot, chan, numSlots, numHorizWaves, numVertWaves, idx
 	variable numTTLBits, colorIndex, totalVertBlocks, headstage
 	variable delayOnsetUser, delayOnsetAuto, delayTermination, delaydDAQ, dDAQEnabled, oodDAQEnabled
@@ -1881,18 +1881,25 @@ Function CreateTiledChannelGraph(graph, config, sweepNo, numericalValues,  textu
 	numADCs = DimSize(ADCs, ROWS)
 	numTTLs = DimSize(TTLs, ROWS)
 
+	// introduced in ba0d59ee (DC_PlaceDataInITCDataWave: Document the digitizer hardware type, 2018-07-30)
+	// before that we only had ITC hardware
+	hardwareType           = GetLastSettingIndep(numericalValues, sweepNo, "Digitizer Hardware Type", DATA_ACQUISITION_MODE, defValue = HARDWARE_ITC_DAC)
 	WAVE/Z statusHS        = GetLastSetting(numericalValues, sweepNo, "Headstage Active", DATA_ACQUISITION_MODE)
 	WAVE/Z ttlRackZeroBits = GetLastSetting(numericalValues, sweepNo, "TTL rack zero bits", DATA_ACQUISITION_MODE)
 	WAVE/Z ttlRackOneBits  = GetLastSetting(numericalValues, sweepNo, "TTL rack one bits", DATA_ACQUISITION_MODE)
+	WAVE/Z/T ttlChannels   = GetLastSetting(textualValues, sweepNo, "TTL channels", DATA_ACQUISITION_MODE)
 
 	if(tgs.splitTTLBits && numTTLs > 0)
-		if(!WaveExists(ttlRackZeroBits) && !WaveExists(ttlRackOneBits))
+		if(!WaveExists(ttlRackZeroBits) && !WaveExists(ttlRackOneBits) && hardwareType == HARDWARE_ITC_DAC)
 			print "Turning off tgs.splitTTLBits as some labnotebook entries could not be found"
 			ControlWindowToFront()
 			tgs.splitTTLBits = 0
 		elseif(tgs.overlayChannels)
 			print "Turning off tgs.splitTTLBits as it is overriden by tgs.overlayChannels"
 			ControlWindowToFront()
+			tgs.splitTTLBits = 0
+		elseif(WaveExists(ttlChannels))
+			// NI hardware does use one channel per bit so we don't need that here
 			tgs.splitTTLBits = 0
 		endif
 
@@ -2096,8 +2103,14 @@ Function CreateTiledChannelGraph(graph, config, sweepNo, numericalValues,  textu
 					hasPhysUnit      = 0
 					slotMult         = 1
 					numHorizWaves    = 1
-					numVertWaves     = tgs.splitTTLBits ? NUM_ITC_TTL_BITS_PER_RACK : 1
-					numChannels      = numTTLs
+
+					if(hardwareType == HARDWARE_ITC_DAC)
+						numVertWaves = tgs.splitTTLBits ? NUM_ITC_TTL_BITS_PER_RACK : 1
+					else
+						numVertWaves = 1
+					endif
+
+					numChannels = numTTLs
 					break
 			endswitch
 
