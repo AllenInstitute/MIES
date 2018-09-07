@@ -2318,7 +2318,7 @@ Function IsBackgroundTaskRunning(task)
 	return NumberByKey("RUN", s_info)
 End
 
-/// @brief Count the number of in a binary number
+/// @brief Count the number of ones in `value`
 ///
 /// @param value will be truncated to an integer value
 Function PopCount(value)
