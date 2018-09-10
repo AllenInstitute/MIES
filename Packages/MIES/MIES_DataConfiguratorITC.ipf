@@ -98,7 +98,7 @@ Function DC_ConfigureDataForITC(panelTitle, dataAcqOrTP, [multiDevice])
 	DC_UpdateGlobals(panelTitle, dataAcqOrTP)
 
 	if(dataAcqOrTP == TEST_PULSE_MODE)
-		if(multiDevice && (DAP_GetHardwareType(panelTitle) == HARDWARE_ITC_DAC))
+		if(multiDevice && (GetHardwareType(panelTitle) == HARDWARE_ITC_DAC))
 			DC_UpdateTestPulseWaveMD(panelTitle)
 		else
 			WAVE TestPulse = GetTestPulse()
@@ -238,7 +238,7 @@ static Function DC_ChanCalcForITCChanConfigWave(panelTitle, dataAcqOrTP)
 	variable numDACs, numADCs, numTTLsRackZero, numTTLsRackOne, numActiveHeadstages
 	variable numTTLs
 
-	variable hardwareType = DAP_GetHardwareType(panelTitle)
+	variable hardwareType = GetHardwareType(panelTitle)
 	switch(hardwareType)
 		case HARDWARE_ITC_DAC:
 			if(dataAcqOrTP == DATA_ACQUISITION_MODE)
@@ -358,7 +358,7 @@ static Function DC_CalculateITCDataWaveLength(panelTitle, dataAcqOrTP)
 	string panelTitle
 	variable dataAcqOrTP
 
-	variable hardwareType = DAP_GetHardwareType(panelTitle)
+	variable hardwareType = GetHardwareType(panelTitle)
 	NVAR stopCollectionPoint = $GetStopCollectionPoint(panelTitle)
 
 	switch(hardwareType)
@@ -411,7 +411,7 @@ static Function DC_MakeHardwareDataWave(panelTitle, numActiveChannels, minSampli
 
 	// prevent crash in ITC XOP as it must not run if we resize the ITCDataWave
 	NVAR ITCDeviceIDGlobal = $GetITCDeviceIDGlobal(panelTitle)
-	variable hardwareType = DAP_GetHardwareType(panelTitle)
+	variable hardwareType = GetHardwareType(panelTitle)
 	ASSERT(!HW_IsRunning(hardwareType, ITCDeviceIDGlobal), "Hardware is still running and it shouldn't. Please report that as a bug.")
 
 	DFREF dfr = GetDevicePath(panelTitle)
@@ -474,7 +474,7 @@ static Function DC_MakeOscilloscopeWave(panelTitle, numActiveChannels, dataAcqOr
 	variable numRows, sampleIntervall, col
 	WAVE config = GetITCChanConfigWave(panelTitle)
 	WAVE OscilloscopeData = GetOscilloscopeWave(panelTitle)
-	variable hardwareType = DAP_GetHardwareType(panelTitle)
+	variable hardwareType = GetHardwareType(panelTitle)
 	switch(hardwareType)
 		case HARDWARE_ITC_DAC:
 			WAVE ITCDataWave      = GetHardwareDataWave(panelTitle)
@@ -626,7 +626,7 @@ static Function DC_PlaceDataInITCChanConfigWave(panelTitle, dataAcqOrTP)
 	ITCChanConfigWave[][%Offset]           = 0
 
 	if(dataAcqOrTP == DATA_ACQUISITION_MODE)
-		variable hardwareType = DAP_GetHardwareType(panelTitle)
+		variable hardwareType = GetHardwareType(panelTitle)
 		switch(hardwareType)
 			case HARDWARE_ITC_DAC:
 				WAVE sweepDataLNB = GetSweepSettingsWave(panelTitle)
@@ -954,7 +954,7 @@ static Function DC_PlaceDataInHardwareDataWave(panelTitle, numActiveChannels, da
 	NVAR fifoPosition = $GetFifoPosition(panelTitle)
 	fifoPosition = 0
 
-	hardwareType = DAP_GetHardwareType(panelTitle)
+	hardwareType = GetHardwareType(panelTitle)
 	switch(hardwareType)
 		case HARDWARE_ITC_DAC:
 			WAVE ITCDataWave = GetHardwareDataWave(panelTitle)
@@ -1269,7 +1269,7 @@ End
 static Function DC_CheckIfDataWaveHasBorderVals(panelTitle)
 	string panelTitle
 
-	variable hardwareType = DAP_GetHardwareType(panelTitle)
+	variable hardwareType = GetHardwareType(panelTitle)
 	switch(hardwareType)
 		case HARDWARE_ITC_DAC:
 			WAVE/Z ITCDataWave = GetHardwareDataWave(panelTitle)

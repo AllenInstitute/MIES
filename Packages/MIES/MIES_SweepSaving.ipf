@@ -23,7 +23,7 @@ Function SWS_SaveAndScaleITCData(panelTitle, [forcedStop])
 
 	sweepNo = DAG_GetNumericalValue(panelTitle, "SetVar_Sweep")
 
-	hardwareType = DAP_GetHardwareType(panelTitle)
+	hardwareType = GetHardwareType(panelTitle)
 	if(hardwareType == HARDWARE_ITC_DAC)
 		NVAR stopCollectionPoint = $GetStopCollectionPoint(panelTitle)
 		SCOPE_UpdateOscilloscopeData(panelTitle, DATA_ACQUISITION_MODE, fifoPos=stopCollectionPoint)
@@ -114,7 +114,7 @@ Function/WAVE SWS_GetChannelGains(panelTitle)
 
 	Make/D/FREE/N=(numCols) gain
 
-	hardwareType = DAP_GetHardwareType(panelTitle)
+	hardwareType = GetHardwareType(panelTitle)
 	switch(hardwareType)
 		case HARDWARE_NI_DAC:
 			//  in mV^-1, w'(V) = w * g
@@ -166,7 +166,7 @@ static Function/WAVE SWS_StoreITCDataWaveScaled(panelTitle, dfr, sweepNo)
 
 	WAVE ITCChanConfigWave = GetITCChanConfigWave(panelTitle)
 	WAVE gain = SWS_GetChannelGains(paneltitle)
-	variable hardwareType = DAP_GetHardwareType(panelTitle)
+	variable hardwareType = GetHardwareType(panelTitle)
 
 	switch(hardwareType)
 		case HARDWARE_ITC_DAC:

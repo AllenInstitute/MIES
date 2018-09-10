@@ -454,7 +454,7 @@ Function SCOPE_UpdateOscilloscopeData(panelTitle, dataAcqOrTP, [chunk, fifoPos, 
 	string panelTitle
 	variable dataAcqOrTP, chunk, fifoPos, deviceID
 
-	variable hardwareType = DAP_GetHardwareType(panelTitle)
+	variable hardwareType = GetHardwareType(panelTitle)
 	switch(hardwareType)
 		case HARDWARE_ITC_DAC:
 			if(dataAcqOrTP == TEST_PULSE_MODE)

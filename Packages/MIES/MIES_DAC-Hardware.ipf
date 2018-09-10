@@ -148,7 +148,7 @@ Function HW_OpenDevice(deviceToOpen, hardwareType, [flags])
 	string deviceType, deviceNumber
 	variable deviceTypeIndex, deviceNumberIndex, deviceID, prelimHWType
 
-	hardwareType = DAP_GetHardwareType(deviceToOpen)
+	hardwareType = GetHardwareType(deviceToOpen)
 	switch(hardwareType)
 		case HARDWARE_NI_DAC:
 			deviceID = WhichListItem(deviceToOpen, HW_NI_ListDevices())

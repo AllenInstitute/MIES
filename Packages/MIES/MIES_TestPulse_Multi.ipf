@@ -114,7 +114,7 @@ static Function TPM_BkrdTPMD(panelTitle, [triggerMode])
 	string panelTitle
 	variable triggerMode
 
-	variable hardwareType = DAP_GetHardwareType(panelTitle)
+	variable hardwareType = GetHardwareType(panelTitle)
 
 	if(ParamIsDefault(triggerMode))
 		triggerMode = HARDWARE_DAC_DEFAULT_TRIGGER
@@ -286,7 +286,7 @@ static Function TPM_StopTPMD(panelTitle)
 
 	NVAR ITCDeviceIDGlobal = $GetITCDeviceIDGlobal(panelTitle)
 
-	variable hardwareType = DAP_GetHardwareType(panelTitle)
+	variable hardwareType = GetHardwareType(panelTitle)
 	if(hardwareType == HARDWARE_ITC_DAC)
 		TFH_StopFifoDaemon(HARDWARE_ITC_DAC, ITCDeviceIDGlobal)
 	endif
@@ -346,7 +346,7 @@ static Function TPM_AddDevice(panelTitle)
 	EnsureLargeEnoughWave(ActiveDevicesTPMD, minimumSize=idx + 1)
 
 	ActiveDevicesTPMD[idx][%DeviceID]     = ITCDeviceIDGlobal
-	ActiveDevicesTPMD[idx][%HardwareType] = DAP_GetHardwareType(panelTitle)
+	ActiveDevicesTPMD[idx][%HardwareType] = GetHardwareType(panelTitle)
 	ActiveDevicesTPMD[idx][%activeChunk] = NaN
 
 	SetNumberInWaveNote(ActiveDevicesTPMD, NOTE_INDEX, idx + 1)

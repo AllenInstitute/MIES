@@ -1747,6 +1747,24 @@ Function UpdateSweepConfig(config, [samplingInterval])
 	config[][2] = samplingInterval
 End
 
+/// @brief Return the hardware type of the device
+///
+/// @return One of @ref HardwareDACTypeConstants
+threadsafe Function GetHardwareType(panelTitle)
+	string panelTitle
+
+	string deviceType, deviceNumber
+	ASSERT_TS(ParseDeviceString(panelTitle, deviceType, deviceNumber), "Error parsing device string!")
+
+	if(WhichListItem(deviceType, DEVICE_TYPES_ITC) != -1)
+		return HARDWARE_ITC_DAC
+	elseif(IsEmpty(deviceNumber))
+		return HARDWARE_NI_DAC
+	endif
+
+	return HARDWARE_UNSUPPORTED_DAC
+End
+
 /// @brief Parse a device string:
 /// for ITC devices of the form X_DEV_Y, where X is from @ref DEVICE_TYPES_ITC
 /// and Y from @ref DEVICE_NUMBERS.

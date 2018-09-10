@@ -521,7 +521,7 @@ Function SI_CalculateMinSampInterval(panelTitle, dataAcqOrTP)
 	string panelTitle
 	variable dataAcqOrTP
 
-	variable hardwareType = DAP_GetHardwareType(panelTitle)
+	variable hardwareType = GetHardwareType(panelTitle)
 	switch(hardwareType)
 		case HARDWARE_ITC_DAC:
 			return SI_ITC_CalculateMinSampInterval(panelTitle, dataAcqOrTP)

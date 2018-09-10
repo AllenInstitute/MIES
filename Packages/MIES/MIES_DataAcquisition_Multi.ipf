@@ -109,7 +109,7 @@ Function DQM_TerminateOngoingDAQHelper(panelTitle)
 	NVAR ITCDeviceIDGlobal = $GetITCDeviceIDGlobal(panelTitle)
 	WAVE/T/SDFR=GetActiveITCDevicesFolder() ActiveDeviceList
 
-	variable hardwareType = DAP_GetHardwareType(panelTitle)
+	variable hardwareType = GetHardwareType(panelTitle)
 	if(hardwareType == HARDWARE_ITC_DAC)
 		TFH_StopFIFODaemon(HARDWARE_ITC_DAC, ITCDeviceIDGlobal)
 	endif
@@ -167,7 +167,7 @@ Function DQM_StartDAQMultiDevice(panelTitle, [initialSetupReq])
 
 	// configure passed device
 	NVAR ITCDeviceIDGlobal = $GetITCDeviceIDGlobal(panelTitle)
-	HW_PrepareAcq(DAP_GetHardwareType(panelTitle), ITCDeviceIDGlobal, flags=HARDWARE_ABORT_ON_ERROR)
+	HW_PrepareAcq(GetHardwareType(panelTitle), ITCDeviceIDGlobal, flags=HARDWARE_ABORT_ON_ERROR)
 
 	if(!DeviceHasFollower(panelTitle))
 		DAP_UpdateITIAcrossSets(panelTitle, maxITI)
@@ -331,7 +331,7 @@ static Function DQM_StopDataAcq(panelTitle, ITCDeviceIDGlobal)
 	String panelTitle
 	Variable ITCDeviceIDGlobal
 
-	variable hardwareType = DAP_GetHardwareType(panelTitle)
+	variable hardwareType = GetHardwareType(panelTitle)
 	if(hardwareType == HARDWARE_ITC_DAC)
 		TFH_StopFIFODaemon(hardwareType, ITCDeviceIDGlobal)
 	endif
@@ -365,7 +365,7 @@ static Function DQM_BkrdDataAcq(panelTitle, [triggerMode])
 		DQ_StartITCDeviceTimer(panelTitle)
 	endif
 
-	variable hardwareType = DAP_GetHardwareType(panelTitle)
+	variable hardwareType = GetHardwareType(panelTitle)
 	HW_StartAcq(hardwareType, ITCDeviceIDGlobal, triggerMode=triggerMode, flags=HARDWARE_ABORT_ON_ERROR)
 	ED_MarkSweepStart(panelTitle)
 	if(hardwareType == HARDWARE_ITC_DAC)
@@ -387,7 +387,7 @@ static Function DQM_MakeOrUpdateActivDevLstWave(panelTitle, ITCDeviceIDGlobal, A
 
 	DFREF dfr = GetActiveITCDevicesFolder()
 	WAVE/Z/SDFR=dfr ActiveDeviceList
-	variable hardwareType = DAP_GetHardwareType(panelTitle)
+	variable hardwareType = GetHardwareType(panelTitle)
 
 	if(addOrRemoveDevice == 1) // add a ITC device
 		if(!WaveExists(ActiveDeviceList))
