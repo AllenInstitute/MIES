@@ -450,9 +450,7 @@ threadsafe Function/S GetDevicePathAsString(panelTitle)
 	string panelTitle
 
 	string deviceType, deviceNumber
-	if(!ParseDeviceString(panelTitle, deviceType, deviceNumber))
-		ASSERT_TS(0, "Invalid/Non-locked paneltitle")
-	endif
+	ASSERT_TS(ParseDeviceString(panelTitle, deviceType, deviceNumber), "Invalid/Non-locked paneltitle")
 
 	switch(DAP_GetHardwareType(panelTitle))
 		case HARDWARE_NI_DAC:
@@ -714,10 +712,9 @@ Function/S GetDevSpecLabNBFolderAsString(panelTitle)
 	string panelTitle
 
 	string deviceType, deviceNumber
-	variable ret
 
-	ret = ParseDeviceString(panelTitle, deviceType, deviceNumber)
-	ASSERT(ret, "Could not parse the panelTitle")
+	ASSERT(ParseDeviceString(panelTitle, deviceType, deviceNumber), "Could not parse the panelTitle")
+
 	switch(DAP_GetHardwareType(panelTitle))
 		case HARDWARE_NI_DAC:
 			return GetLabNotebookFolderAsString() + ":" + deviceType
