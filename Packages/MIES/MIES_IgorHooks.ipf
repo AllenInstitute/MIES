@@ -104,6 +104,9 @@ static Function IH_Cleanup()
 		IH_KillTemporaries(); AbortOnRTE
 		IH_KillStimSets(); AbortOnRTE
 		CA_FlushCache(); AbortOnRTE
+
+		DFREF dfrNWB = GetNWBFolder()
+		KilLVariables/Z dfrNWB:histRefNumber
 	catch
 		error = GetRTError(1)
 		DEBUGPRINT("Caught runtime error or assertion")
