@@ -41,7 +41,16 @@ Function ValidFunc_V1(panelTitle, eventType, ITCDataWave, headStage)
 
 	CHECK_NON_EMPTY_STR(panelTitle)
 	CHECK_EQUAL_VAR(numType(eventType), 0)
-	CHECK_WAVE(ITCDataWave, NUMERIC_WAVE)
+
+	switch(DAP_GetHardwareType(panelTitle))
+		case HARDWARE_ITC_DAC:
+			CHECK_WAVE(ITCDataWave, NUMERIC_WAVE)
+			break
+		case HARDWARE_NI_DAC:
+			CHECK_WAVE(ITCDataWave, WAVE_WAVE)
+			break
+	endswitch
+
 	CHECK_EQUAL_VAR(NumberByKey("LOCK", WaveInfo(ITCDataWave, 0)), 1)
 	CHECK_EQUAL_VAR(headstage, 0)
 
@@ -59,7 +68,16 @@ Function ValidFunc_V2(panelTitle, eventType, ITCDataWave, headStage, realDataLen
 
 	CHECK_NON_EMPTY_STR(panelTitle)
 	CHECK_EQUAL_VAR(numType(eventType), 0)
-	CHECK_WAVE(ITCDataWave, NUMERIC_WAVE)
+
+	switch(DAP_GetHardwareType(panelTitle))
+		case HARDWARE_ITC_DAC:
+			CHECK_WAVE(ITCDataWave, NUMERIC_WAVE)
+			break
+		case HARDWARE_NI_DAC:
+			CHECK_WAVE(ITCDataWave, WAVE_WAVE)
+			break
+	endswitch
+
 	CHECK_EQUAL_VAR(NumberByKey("LOCK", WaveInfo(ITCDataWave, 0)), 1)
 	CHECK_EQUAL_VAR(headstage, 0)
 
@@ -235,7 +253,16 @@ Function ValidFunc_V3(panelTitle, s)
 	STRUCT AnalysisFunction_V3& s
 
 	CHECK_NON_EMPTY_STR(panelTitle)
-	CHECK_WAVE(s.rawDACWave, NUMERIC_WAVE)
+
+	switch(DAP_GetHardwareType(panelTitle))
+		case HARDWARE_ITC_DAC:
+			CHECK_WAVE(s.rawDACWave, NUMERIC_WAVE)
+			break
+		case HARDWARE_NI_DAC:
+			CHECK_WAVE(s.rawDACWave, WAVE_WAVE)
+			break
+	endswitch
+
 	CHECK_EQUAL_VAR(NumberByKey("LOCK", WaveInfo(s.rawDACWAVE, 0)), 1)
 	CHECK_EQUAL_VAR(s.headstage, 0)
 	CHECK_EQUAL_VAR(numType(s.sweepNo), 0)

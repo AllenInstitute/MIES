@@ -15,7 +15,7 @@ Function CheckIfAllControlsReferStateWv()
 
 	unlockedPanelTitle = DAP_CreateDAEphysPanel()
 
-	PGC_SetAndActivateControl(unlockedPanelTitle, "popup_MoreSettings_DeviceType", val=5)
+	ChooseCorrectDevice(unlockedPanelTitle, DEVICE)
 	PGC_SetAndActivateControl(unlockedPanelTitle, "button_SettingsPlus_LockDevice")
 	REQUIRE(WindowExists(panelTitle))
 
@@ -170,7 +170,7 @@ Function CheckStartupSettings()
 
 	unlockedPanelTitle = DAP_CreateDAEphysPanel()
 
-	PGC_SetAndActivateControl(unlockedPanelTitle, "popup_MoreSettings_DeviceType", val=5)
+	ChooseCorrectDevice(unlockedPanelTitle, DEVICE)
 	PGC_SetAndActivateControl(unlockedPanelTitle, "button_SettingsPlus_LockDevice")
 	REQUIRE(WindowExists(panelTitle))
 
@@ -223,7 +223,7 @@ Function CheckStartupSettings()
 	SCOPE_OpenScopeWindow(unlockedPanelTitle)
 	AddVersionToPanel(unlockedPanelTitle, DA_EPHYS_PANEL_VERSION)
 
-	PGC_SetAndActivateControl(unlockedPanelTitle, "popup_MoreSettings_DeviceType", val=5)
+	ChooseCorrectDevice(unlockedPanelTitle, DEVICE)
 	PGC_SetAndActivateControl(unlockedPanelTitle, "button_SettingsPlus_LockDevice")
 	REQUIRE(WindowExists(panelTitle))
 

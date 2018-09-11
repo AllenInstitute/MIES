@@ -1,6 +1,6 @@
 ﻿#pragma TextEncoding = "UTF-8"
 #pragma rtGlobals=3		// Use modern global access method and strict wave access.
-#pragma Module=AnalysisFunctionParameterTesting
+#pragma ModuleName=AnalysisFuncParamTesting
 
 static Function TEST_CASE_BEGIN_OVERRIDE(testCase)
 	string testCase
