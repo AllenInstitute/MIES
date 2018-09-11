@@ -1728,10 +1728,10 @@ Function HW_ITC_GetRackRange(rack, first, last)
 
 	if(rack == RACK_ZERO)
 		first = 0
-		last = NUM_TTL_BITS_PER_RACK - 1
+		last = NUM_ITC_TTL_BITS_PER_RACK - 1
 	elseif(rack == RACK_ONE)
-		first = NUM_TTL_BITS_PER_RACK
-		last = 2 * NUM_TTL_BITS_PER_RACK - 1
+		first = NUM_ITC_TTL_BITS_PER_RACK
+		last = 2 * NUM_ITC_TTL_BITS_PER_RACK - 1
 	else
 		ASSERT(0, "Invalid rack parameter")
 	endif
@@ -1746,7 +1746,7 @@ Function HW_ITC_ClipTTLBit(panelTitle, ttlBit)
 	variable ttlBit
 
 	if(HW_ITC_GetRackForTTLBit(panelTitle, ttlBit) == RACK_ONE)
-		return ttlBit - NUM_TTL_BITS_PER_RACK
+		return ttlBit - NUM_ITC_TTL_BITS_PER_RACK
 	else
 		return ttlBit
 	endif
@@ -1763,7 +1763,7 @@ Function HW_ITC_GetRackForTTLBit(panelTitle, ttlBit)
 
 	ASSERT(ttlBit < NUM_DA_TTL_CHANNELS, "Invalid channel index")
 
-	if(ttlBit >= NUM_TTL_BITS_PER_RACK)
+	if(ttlBit >= NUM_ITC_TTL_BITS_PER_RACK)
 		ret = ParseDeviceString(panelTitle, deviceType, deviceNumber)
 		ASSERT(ret, "Could not parse device string")
 		ASSERT(!cmpstr(deviceType, "ITC1600"), "Only the ITC1600 has multiple racks")
@@ -2349,7 +2349,7 @@ Function HW_NI_StopAcq(deviceID, [config, configFunc, prepareForDAQ, zeroDAC, fl
 	DEBUGPRINTSTACKINFO()
 
 	variable i, channels, aoChannel, ret, err
-	string panelTitle, paraStr, device, fifoName, errMsg
+	string panelTitle, paraStr, device, errMsg
 
 	// dont stop here, only if all devices removed
 	device = HW_GetInternalDeviceName(HARDWARE_NI_DAC, deviceID)
@@ -2415,11 +2415,32 @@ Function HW_NI_StopAcq(deviceID, [config, configFunc, prepareForDAQ, zeroDAC, fl
 			return NaN
 		endif
 	endif
+
+	HW_NI_KillFifo(deviceID)
+End
+
+/// @brief Kill the FIFO of the given NI device
+///
+/// @param deviceID device identifier
+Function HW_NI_KillFifo(deviceID)
+	variable deviceID
+
+	string fifoName, errMsg, panelTitle
+
+	panelTitle = HW_GetMainDeviceName(HARDWARE_NI_DAC, deviceID)
 	fifoName = GetNIFIFOName(deviceID)
+
+	FIFOStatus/Q $fifoName
+	if(!V_Flag)
+		return NaN
+	endif
+
 	try
-		CtrlFIFO $fifoName stop
+		if(V_FIFORunning)
+			CtrlFIFO $fifoName stop; AbortOnRTE
+		endif
 		DoXOPIdle
-		KillFIFO $fifoName
+		KillFIFO $fifoName; AbortOnRTE
 	catch
 		errMsg = GetRTErrMessage()
 		print "Could not cleanup FIFO of NI device " + panelTitle + ", failed with code: " + num2str(getRTError(1)) + "\r" + errMsg
@@ -2523,6 +2544,8 @@ Function HW_NI_CloseDevice(deviceID, [flags])
 
 	if(HW_NI_IsRunning(deviceType, flags=flags))
 		HW_NI_StopAcq(deviceID, flags=flags)
+	else
+		HW_NI_KillFifo(deviceID)
 	endif
 
 	HW_NI_ResetDevice(deviceType, flags=flags)

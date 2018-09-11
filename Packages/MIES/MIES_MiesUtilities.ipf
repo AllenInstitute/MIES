@@ -1863,12 +1863,12 @@ Function CreateTiledChannelGraph(graph, config, sweepNo, numericalValues,  textu
 	numADCs = DimSize(ADCs, ROWS)
 	numTTLs = DimSize(TTLs, ROWS)
 
-	WAVE/Z statusHS           = GetLastSetting(numericalValues, sweepNo, "Headstage Active", DATA_ACQUISITION_MODE)
-	WAVE/Z ttlRackZeroChannel = GetLastSetting(numericalValues, sweepNo, "TTL rack zero bits", DATA_ACQUISITION_MODE)
-	WAVE/Z ttlRackOneChannel  = GetLastSetting(numericalValues, sweepNo, "TTL rack one bits", DATA_ACQUISITION_MODE)
+	WAVE/Z statusHS        = GetLastSetting(numericalValues, sweepNo, "Headstage Active", DATA_ACQUISITION_MODE)
+	WAVE/Z ttlRackZeroBits = GetLastSetting(numericalValues, sweepNo, "TTL rack zero bits", DATA_ACQUISITION_MODE)
+	WAVE/Z ttlRackOneBits  = GetLastSetting(numericalValues, sweepNo, "TTL rack one bits", DATA_ACQUISITION_MODE)
 
 	if(tgs.splitTTLBits && numTTLs > 0)
-		if(!WaveExists(ttlRackZeroChannel) && !WaveExists(ttlRackOneChannel))
+		if(!WaveExists(ttlRackZeroBits) && !WaveExists(ttlRackOneBits))
 			print "Turning off tgs.splitTTLBits as some labnotebook entries could not be found"
 			ControlWindowToFront()
 			tgs.splitTTLBits = 0
@@ -1880,11 +1880,11 @@ Function CreateTiledChannelGraph(graph, config, sweepNo, numericalValues,  textu
 
 		if(tgs.splitTTLBits)
 			idx = GetIndexForHeadstageIndepData(numericalValues)
-			if(WaveExists(ttlRackZeroChannel))
-				numTTLBits += PopCount(ttlRackZeroChannel[idx])
+			if(WaveExists(ttlRackZeroBits))
+				numTTLBits += PopCount(ttlRackZeroBits[idx])
 			 endif
-			if(WaveExists(ttlRackOneChannel))
-				numTTLBits += PopCount(ttlRackOneChannel[idx])
+			if(WaveExists(ttlRackOneBits))
+				numTTLBits += PopCount(ttlRackOneBits[idx])
 			 endif
 		endif
 	endif
@@ -2078,7 +2078,7 @@ Function CreateTiledChannelGraph(graph, config, sweepNo, numericalValues,  textu
 					hasPhysUnit      = 0
 					slotMult         = 1
 					numHorizWaves    = 1
-					numVertWaves     = tgs.splitTTLBits ? NUM_TTL_BITS_PER_RACK : 1
+					numVertWaves     = tgs.splitTTLBits ? NUM_ITC_TTL_BITS_PER_RACK : 1
 					numChannels      = numTTLs
 					break
 			endswitch
@@ -3894,7 +3894,7 @@ Function/S ExtractAnalysisFunctionParams(stimSet)
 	return GetStringFromWaveNote(stimSet, ANALYSIS_FUNCTION_PARAMS_LBN, keySep = "=", listSep = ";")
 End
 
-/// @brief Split TTL data into a single wave for each channel
+/// @brief Split TTL data into a single wave for each bit
 /// @param data       1D channel data extracted by #ExtractOneDimDataFromSweep
 /// @param ttlBits    bit mask of the active TTL channels form e.g. #GetTTLBits
 /// @param targetDFR  datafolder where to put the waves, can be a free datafolder
@@ -3911,7 +3911,7 @@ Function SplitTTLWaveIntoComponents(data, ttlBits, targetDFR, wavePrefix)
 		return NaN
 	endif
 
-	for(i = 0; i < NUM_TTL_BITS_PER_RACK; i += 1)
+	for(i = 0; i < NUM_ITC_TTL_BITS_PER_RACK; i += 1)
 
 		bit = 2^i
 		if(!(ttlBits & bit))
@@ -3922,8 +3922,6 @@ Function SplitTTLWaveIntoComponents(data, ttlBits, targetDFR, wavePrefix)
 		MultiThread dest[] = dest[p] & bit
 	endfor
 End
-
-#if exists("HDF5CloseFile")
 
 /// @brief Close a possibly open export-into-NWB file
 Function CloseNWBFile()
@@ -3939,14 +3937,6 @@ Function CloseNWBFile()
 		endif
 	endif
 End
-
-#else
-
-Function CloseNWBFile()
-	DEBUGPRINT("HDF5 XOP could not be found, not closing any NWB files")
-End
-
-#endif
 
 /// @brief Check wether the given background task is running and that the
 ///        device is active in multi device mode.
@@ -4580,23 +4570,14 @@ Function GetPanelVersion(win)
 	return version
 End
 
-Function UPDATESWEEPPLOT_PROTOTYPE(win, [optArg])
-	string win
-	variable optArg
-
-	ASSERT(0, "Calling prototype functions is an error!")
-End
-
 Function UpdateSweepPlot(win)
 	string win
 
 	if(BSP_IsDataBrowser(win))
-		FUNCREF UPDATESWEEPPLOT_PROTOTYPE f = $"DB_UpdateSweepPlot"
+		DB_UpdateSweepPlot(win)
 	else
-		FUNCREF UPDATESWEEPPLOT_PROTOTYPE f = $"SB_UpdateSweepPlot"
+		SB_UpdateSweepPlot(win)
 	endif
-
-	return f(GetMainWindow(win))
 End
 
 /// @brief Stringified short version of the clamp mode

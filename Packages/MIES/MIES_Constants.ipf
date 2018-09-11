@@ -18,7 +18,7 @@ Constant NUM_DA_TTL_CHANNELS   = 8
 Constant NUM_HEADSTAGES        = 8
 Constant NUM_AD_CHANNELS       = 16
 Constant NUM_ASYNC_CHANNELS    = 8
-Constant NUM_TTL_BITS_PER_RACK = 4
+Constant NUM_ITC_TTL_BITS_PER_RACK = 4
 /// @}
 
 /// Maximum values of @ref NUM_CHANNELS_CONSTANTS

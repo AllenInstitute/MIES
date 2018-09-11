@@ -202,10 +202,8 @@ End
 ///
 /// Only outside callers are generic external panels which must update the graph.
 /// @param win        locked databrowser
-/// @param dummyArg   [unnused] required to be compatible to UpdateSweepPlot()
-Function DB_UpdateSweepPlot(win, [dummyArg])
+Function DB_UpdateSweepPlot(win)
 	string win
-	variable dummyArg
 
 	variable numEntries, i, sweepNo, highlightSweep, referenceTime, traceIndex
 	string device, mainPanel, lbPanel, bsPanel, scPanel, graph
