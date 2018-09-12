@@ -2064,8 +2064,6 @@ Function Test_UnassociatedChannels()
 					CHECK_EQUAL_TEXTWAVES(foundStimSets, {"", "", "", "", "", "", "", "", ";StimulusSetA_TTL_0;;StimulusSetB_TTL_0;"})
 					WAVE/T/Z foundStimSets = GetLastSetting(textualValues, j, "TTL rack one stim sets", DATA_ACQUISITION_MODE)
 					CHECK(!WaveExists(foundStimSets))
-					WAVE/T/Z foundStimSets = GetLastSetting(textualValues, j, "TTL rack one stim sets", DATA_ACQUISITION_MODE)
-					CHECK(!WaveExists(foundStimSets))
 
 					WAVE/Z bits = GetLastSetting(numericalValues, j, "TTL rack zero bits", DATA_ACQUISITION_MODE)
 					// TTL 1 and 3 are active -> 2^1 + 2^3 = 10
