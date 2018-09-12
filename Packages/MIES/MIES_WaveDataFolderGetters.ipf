@@ -450,11 +450,9 @@ threadsafe Function/S GetDevicePathAsString(panelTitle)
 	string panelTitle
 
 	string deviceType, deviceNumber
-	if(!ParseDeviceString(panelTitle, deviceType, deviceNumber))
-		ASSERT_TS(0, "Invalid/Non-locked paneltitle")
-	endif
+	ASSERT_TS(ParseDeviceString(panelTitle, deviceType, deviceNumber), "Invalid/Non-locked paneltitle")
 
-	switch(DAP_GetHardwareType(panelTitle))
+	switch(GetHardwareType(panelTitle))
 		case HARDWARE_NI_DAC:
 			return GetDeviceTypePathAsString(deviceType)
 			break
@@ -546,7 +544,7 @@ Function/Wave GetHardwareDataWave(panelTitle)
 	string panelTitle
 
 	DFREF dfr = GetDevicePath(panelTitle)
-	variable hardwareType = DAP_GetHardwareType(panelTitle)
+	variable hardwareType = GetHardwareType(panelTitle)
 
 	switch(hardwareType)
 		case HARDWARE_ITC_DAC:
@@ -714,11 +712,10 @@ Function/S GetDevSpecLabNBFolderAsString(panelTitle)
 	string panelTitle
 
 	string deviceType, deviceNumber
-	variable ret
 
-	ret = ParseDeviceString(panelTitle, deviceType, deviceNumber)
-	ASSERT(ret, "Could not parse the panelTitle")
-	switch(DAP_GetHardwareType(panelTitle))
+	ASSERT(ParseDeviceString(panelTitle, deviceType, deviceNumber), "Could not parse the panelTitle")
+
+	switch(GetHardwareType(panelTitle))
 		case HARDWARE_NI_DAC:
 			return GetLabNotebookFolderAsString() + ":" + deviceType
 			break

@@ -2030,7 +2030,7 @@ Function Test_UnassociatedChannels()
 
 			CHECK_EQUAL_VAR(DimSize(config, ROWS), DimSize(sweep, COLS))
 
-			switch(DAP_GetHardwareType(device))
+			switch(GetHardwareType(device))
 				case HARDWARE_ITC_DAC:
 					CHECK_EQUAL_VAR(DimSize(config, ROWS), 7)
 					break
@@ -2055,7 +2055,7 @@ Function Test_UnassociatedChannels()
 			WAVE ADCs = GetADCListFromConfig(config)
 			CHECK_EQUAL_WAVES(ADCs, {0, 1, 2}, mode = WAVE_DATA)
 
-			switch(DAP_GetHardwareType(device))
+			switch(GetHardwareType(device))
 				case HARDWARE_ITC_DAC:
 					// check TTL LBN keys
 					WAVE TTLs = GetTTLListFromConfig(config)

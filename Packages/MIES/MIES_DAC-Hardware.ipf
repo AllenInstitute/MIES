@@ -148,7 +148,7 @@ Function HW_OpenDevice(deviceToOpen, hardwareType, [flags])
 	string deviceType, deviceNumber
 	variable deviceTypeIndex, deviceNumberIndex, deviceID, prelimHWType
 
-	hardwareType = DAP_GetHardwareType(deviceToOpen)
+	hardwareType = GetHardwareType(deviceToOpen)
 	switch(hardwareType)
 		case HARDWARE_NI_DAC:
 			deviceID = WhichListItem(deviceToOpen, HW_NI_ListDevices())
@@ -521,7 +521,7 @@ Function HW_RegisterDevice(mainDevice, hardwareType, deviceID, [pressureDevice])
 	if(hardwareType == HARDWARE_ITC_DAC)
 		devMap[deviceID][hardwareType][%InternalDevice] = NONE
 	elseif(hardwareType == HARDWARE_NI_DAC)
-		devMap[deviceID][hardwareType][%InternalDevice] = mainDevice
+		devMap[deviceID][hardwareType][%InternalDevice] = StringFromList(deviceID, HW_NI_ListDevices())
 	endif
 
 	if(!ParamIsDefault(pressureDevice))

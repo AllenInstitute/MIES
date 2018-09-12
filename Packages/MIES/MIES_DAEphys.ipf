@@ -28,24 +28,6 @@ static StrConstant GUI_CONTROLSAVESTATE_DISABLED = "oldDisabledState"
 
 static StrConstant NI_PCIE_6343_PATTERN 	= "AI:32;AO:4;COUNTER:4;DIOPORTS:3;LINES:32,8,8"
 
-/// @brief This function resolves the hardwaretype of the device used a locked panel by comparing it to a list of devices of known type
-/// @return Returns the hardwaretype of the device identified by panelTitle
-threadsafe Function DAP_GetHardwareType(panelTitle)
-	string panelTitle
-
-	string deviceType, deviceNumber
-	ASSERT_TS(ParseDeviceString(panelTitle, deviceType, deviceNumber), "Error parsing device string!")
-
-	// note: globalNIDevList is initialized when a DA_Ephys panel is created
-	SVAR globalNIDevList = $GetNIDeviceList()
-	if(WhichListItem(deviceType, globalNIDevList) != -1)
-		return HARDWARE_NI_DAC
-	elseif(WhichListItem(deviceType, DEVICE_TYPES_ITC) != -1)
-		return HARDWARE_ITC_DAC
-	endif
-	return HARDWARE_UNSUPPORTED_DAC
-End
-
 /// @brief Returns a list of DAC devices for NI devices
 /// @return list of NI DAC devices
 Function/S DAP_GetNIDeviceList()
@@ -1116,7 +1098,7 @@ Function DAP_OneTimeCallBeforeDAQ(panelTitle, runMode)
 
 	NVAR dataAcqRunMode = $GetDataAcqRunMode(panelTitle)
 	dataAcqRunMode = runMode
-	hardwareType = DAP_GetHardwareType(panelTitle)
+	hardwareType = GetHardwareType(panelTitle)
 	if(hardwareType == HARDWARE_NI_DAC)
 		multiDevGUIEnState = IsControlDisabled(panelTitle, "check_Settings_MD")
 		SetControlUserData(panelTitle, "check_Settings_MD", GUI_CONTROLSAVESTATE_DISABLED, num2str(multiDevGUIEnState))
@@ -1201,7 +1183,7 @@ Function DAP_OneTimeCallAfterDAQ(panelTitle, [forcedStop, startTPAfterDAQ])
 
 	NVAR dataAcqRunMode = $GetDataAcqRunMode(panelTitle)
 	dataAcqRunMode = DAQ_NOT_RUNNING
-	hardwareType = DAP_GetHardwareType(panelTitle)
+	hardwareType = GetHardwareType(panelTitle)
 	switch(hardwareType)
 		case HARDWARE_NI_DAC:
 			if(str2num(GetUserData(panelTitle, "check_Settings_MD", GUI_CONTROLSAVESTATE_DISABLED)) > 0)
@@ -1964,7 +1946,7 @@ Function DAP_CheckSettings(panelTitle, mode)
 		endif
 
 		NVAR ITCDeviceIDGlobal = $GetITCDeviceIDGlobal(panelTitle)
-		hardwareType = DAP_GetHardwareType(panelTitle)
+		hardwareType = GetHardwareType(panelTitle)
 
 #ifndef EVIL_KITTEN_EATING_MODE
 		if(HW_SelectDevice(hardwareType, ITCDeviceIDGlobal, flags=HARDWARE_PREVENT_ERROR_POPUP | HARDWARE_PREVENT_ERROR_MESSAGE))
@@ -4272,7 +4254,7 @@ Function DAP_LockDevice(panelTitle)
 		DoAbortNow("Can not lock the device. The DA_Ephys panel is too old to be usable. Please close it and open a new one.")
 	endif
 
-	if(DAP_GetHardwareType(panelTitleLocked) == HARDWARE_ITC_DAC)
+	if(GetHardwareType(panelTitleLocked) == HARDWARE_ITC_DAC)
 		if(!DAP_GetNumITCDevicesPerType(panelTitle))
 #ifndef EVIL_KITTEN_EATING_MODE
 			sprintf msg, "Can not lock the device \"%s\" as no devices of type \"%s\" are connected.", panelTitleLocked, DAP_GetDeviceType(panelTitle)
@@ -4460,7 +4442,7 @@ static Function DAP_UnlockDevice(panelTitle)
 
 	NVAR/SDFR=GetDevicePath(panelTitle) ITCDeviceIDGlobal
 
-	hardwareType = DAP_GetHardwareType(panelTitle)
+	hardwareType = GetHardwareType(panelTitle)
 	// shutdown the FIFO thread now in case it is still running (which should never be the case)
 	TFH_StopFIFODaemon(hardwareType, ITCDeviceIDGlobal)
 
@@ -4521,7 +4503,7 @@ static Function DAP_IsDeviceTypeConnected(panelTitle)
 	string deviceName
 
 	deviceName = DAP_GetDeviceType(panelTitle)
-	hardwareType = DAP_GetHardwareType(deviceName)
+	hardwareType = GetHardwareType(deviceName)
 	switch(hardwareType)
 		case HARDWARE_NI_DAC:
 			EnableControl(panelTitle, "button_SettingsPlus_PingDevice")

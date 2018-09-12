@@ -42,7 +42,7 @@ Function ValidFunc_V1(panelTitle, eventType, ITCDataWave, headStage)
 	CHECK_NON_EMPTY_STR(panelTitle)
 	CHECK_EQUAL_VAR(numType(eventType), 0)
 
-	switch(DAP_GetHardwareType(panelTitle))
+	switch(GetHardwareType(panelTitle))
 		case HARDWARE_ITC_DAC:
 			CHECK_WAVE(ITCDataWave, NUMERIC_WAVE)
 			break
@@ -69,7 +69,7 @@ Function ValidFunc_V2(panelTitle, eventType, ITCDataWave, headStage, realDataLen
 	CHECK_NON_EMPTY_STR(panelTitle)
 	CHECK_EQUAL_VAR(numType(eventType), 0)
 
-	switch(DAP_GetHardwareType(panelTitle))
+	switch(GetHardwareType(panelTitle))
 		case HARDWARE_ITC_DAC:
 			CHECK_WAVE(ITCDataWave, NUMERIC_WAVE)
 			break
@@ -254,7 +254,7 @@ Function ValidFunc_V3(panelTitle, s)
 
 	CHECK_NON_EMPTY_STR(panelTitle)
 
-	switch(DAP_GetHardwareType(panelTitle))
+	switch(GetHardwareType(panelTitle))
 		case HARDWARE_ITC_DAC:
 			CHECK_WAVE(s.rawDACWave, NUMERIC_WAVE)
 			break
