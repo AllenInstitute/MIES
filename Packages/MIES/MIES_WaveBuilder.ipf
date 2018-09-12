@@ -776,7 +776,7 @@ static Function/WAVE WB_MakeWaveBuilderWave(WP, WPT, SegWvType, stepCount, numEp
 				AddEntryIntoWaveNoteAsList(WaveBuilderWave, "Offset"       , var=params.Offset)
 				AddEntryIntoWaveNoteAsList(WaveBuilderWave, "Frequency"    , var=params.Frequency)
 				AddEntryIntoWaveNoteAsList(WaveBuilderWave, "End frequency", var=params.EndFrequency)
-				AddEntryIntoWaveNoteAsList(WaveBuilderWave, "Log chirp"    , str=SelectString(params.logChirp, "False", "True"))
+				AddEntryIntoWaveNoteAsList(WaveBuilderWave, "Log chirp"    , str=ToTrueFalse(params.logChirp))
 				AddEntryIntoWaveNoteAsList(WaveBuilderWave, "FunctionType" , str=SelectString(params.trigFuncType, "Sin", "Cos"))
 				break
 			case EPOCH_TYPE_SAW_TOOTH:
@@ -820,10 +820,10 @@ static Function/WAVE WB_MakeWaveBuilderWave(WP, WPT, SegWvType, stepCount, numEp
 				AddEntryIntoWaveNoteAsList(WaveBuilderWave, PULSE_TO_PULSE_LENGTH_KEY, var=pulseToPulseLength)
 				AddEntryIntoWaveNoteAsList(WaveBuilderWave, "Pulse duration"         , var=params.PulseDuration)
 				AddEntryIntoWaveNoteAsList(WaveBuilderWave, "Number of pulses"       , var=params.NumberOfPulses)
-				AddEntryIntoWaveNoteAsList(WaveBuilderWave, "Mixed frequency"        , str=SelectString(params.mixedFreq, "False", "True"))
+				AddEntryIntoWaveNoteAsList(WaveBuilderWave, "Mixed frequency"        , str=ToTrueFalse(params.mixedFreq))
 				AddEntryIntoWaveNoteAsList(WaveBuilderWave, "First mixed frequency"  , var=params.firstFreq)
 				AddEntryIntoWaveNoteAsList(WaveBuilderWave, "Last mixed frequency"   , var=params.lastFreq)
-				AddEntryIntoWaveNoteAsList(WaveBuilderWave, "Poisson distribution"   , str=SelectString(params.poisson, "False", "True"))
+				AddEntryIntoWaveNoteAsList(WaveBuilderWave, "Poisson distribution"   , str=ToTrueFalse(params.poisson))
 				AddEntryIntoWaveNoteAsList(WaveBuilderWave, "Random seed"            , var=params.randomSeed)
 				AddEntryIntoWaveNoteAsList(WaveBuilderWave, PULSE_START_TIMES_KEY    , str=NumericWaveToList(pulseStartTimes, ",", format="%.15g"))
 				AddEntryIntoWaveNoteAsList(WaveBuilderWave, "Definition mode"        , str=defMode)

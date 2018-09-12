@@ -3675,3 +3675,10 @@ Function WaveModCountWrapper(wv)
 #endif
 
 End
+
+// @brief Convert a number to the strings `True` (!= 0) or `False` (0).
+Function/S ToTrueFalse(var)
+	variable var
+
+	return SelectString(var, "False", "True")
+End
