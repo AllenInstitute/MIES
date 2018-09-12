@@ -521,7 +521,7 @@ Function HW_RegisterDevice(mainDevice, hardwareType, deviceID, [pressureDevice])
 	if(hardwareType == HARDWARE_ITC_DAC)
 		devMap[deviceID][hardwareType][%InternalDevice] = NONE
 	elseif(hardwareType == HARDWARE_NI_DAC)
-		devMap[deviceID][hardwareType][%InternalDevice] = mainDevice
+		devMap[deviceID][hardwareType][%InternalDevice] = StringFromList(deviceID, HW_NI_ListDevices())
 	endif
 
 	if(!ParamIsDefault(pressureDevice))
