@@ -651,8 +651,8 @@ static Function NWB_AppendSweepLowLevel(locationID, panelTitle, ITCDataWave, ITC
 	variable sweep, chunkedLayout
 
 	variable groupID, numEntries, i, j, ttlBits, dac, adc, col, refTime
-	variable ttlBit
-	string group, path, list, name
+	variable ttlBit, hardwareType
+	string group, path, list, name, stimset
 	string channelSuffix, listOfStimsets, contents
 
 	refTime = DEBUG_TIMER_START()
@@ -776,14 +776,30 @@ static Function NWB_AppendSweepLowLevel(locationID, panelTitle, ITCDataWave, ITC
 
 	DEBUGPRINT_ELAPSED(refTime)
 
+	// introduced in ba0d59ee (DC_PlaceDataInITCDataWave: Document the digitizer hardware type, 2018-07-30)
+	// before that we only had ITC hardware
+	hardwareType = GetLastSettingIndep(numericalValues, sweep, "Digitizer Hardware Type", DATA_ACQUISITION_MODE, defValue = HARDWARE_ITC_DAC)
+
 	for(i = 0; i < NUM_DA_TTL_CHANNELS; i += 1)
 
-		ttlBits = GetTTLBits(numericalValues, sweep, i)
-		if(!IsFinite(ttlBits))
-			continue
-		endif
+		if(hardwareType == HARDWARE_ITC_DAC)
+			ttlBits = GetTTLBits(numericalValues, sweep, i)
+			if(!IsFinite(ttlBits))
+				continue
+			endif
 
-		listOfStimsets = GetTTLstimSets(numericalValues, textualValues, sweep, i)
+			listOfStimsets = GetTTLstimSets(numericalValues, textualValues, sweep, i)
+		elseif(hardwareType == HARDWARE_NI_DAC)
+			ttlBits = NaN
+
+			listOfStimsets = GetTTLstimSets(numericalValues, textualValues, sweep, NaN)
+			stimset = StringFromList(i, listOfStimsets)
+			if(IsEmpty(stimset))
+				continue
+			endif
+		else
+			ASSERT(0, "unsupported hardware type")
+		endif
 
 		params.clampMode        = NaN
 		params.channelNumber    = i
@@ -794,24 +810,34 @@ static Function NWB_AppendSweepLowLevel(locationID, panelTitle, ITCDataWave, ITC
 		writtenDataColumns[col] = 1
 
 		WAVE data = ExtractOneDimDataFromSweep(ITCChanConfigWave, ITCDataWave, col)
-		DFREF dfr = NewFreeDataFolder()
-		SplitTTLWaveIntoComponents(data, ttlBits, dfr, "_")
 
-		list = GetListOfObjects(dfr, ".*")
-		numEntries = ItemsInList(list)
-		for(j = 0; j < numEntries; j += 1)
-			name = StringFromList(j, list)
-			ttlBit = str2num(name[1,inf])
-			ASSERT((ttlBit & ttlBits) == 1, "Invalid ttlBit")
-			WAVE/SDFR=dfr params.data = $name
+		if(hardwareType == HARDWARE_ITC_DAC)
+			DFREF dfr = NewFreeDataFolder()
+			SplitTTLWaveIntoComponents(data, ttlBits, dfr, "_")
+
+			list = GetListOfObjects(dfr, ".*")
+			numEntries = ItemsInList(list)
+			for(j = 0; j < numEntries; j += 1)
+				name = StringFromList(j, list)
+				ttlBit = 2^str2num(name[1,inf])
+				ASSERT((ttlBit & ttlBits) == 1, "Invalid ttlBit")
+				WAVE/SDFR=dfr params.data = $name
+				path                 = "/stimulus/presentation"
+				params.channelSuffix = num2str(ttlBit)
+				params.channelSuffixDesc = NWB_SOURCE_TTL_BIT
+				params.stimset       = StringFromList(ttlBit, listOfStimsets)
+				NWB_GetTimeSeriesProperties(params, tsp)
+				params.groupIndex    = IsFinite(params.groupIndex) ? params.groupIndex : IPNWB#GetNextFreeGroupIndex(locationID, path)
+				IPNWB#WriteSingleChannel(locationID, path, params, tsp, chunkedLayout=chunkedLayout)
+			endfor
+		elseif(hardwareType == HARDWARE_NI_DAC)
+			WAVE params.data     = data
 			path                 = "/stimulus/presentation"
-			params.channelSuffix = num2str(ttlBit)
-			params.channelSuffixDesc = NWB_SOURCE_TTL_BIT
-			params.stimset       = StringFromList(ttlBit, listOfStimsets)
+			params.stimset       = stimset
 			NWB_GetTimeSeriesProperties(params, tsp)
 			params.groupIndex    = IsFinite(params.groupIndex) ? params.groupIndex : IPNWB#GetNextFreeGroupIndex(locationID, path)
 			IPNWB#WriteSingleChannel(locationID, path, params, tsp, chunkedLayout=chunkedLayout)
-		endfor
+		endif
 
 		ClearWriteChannelParams(params)
 	endfor
