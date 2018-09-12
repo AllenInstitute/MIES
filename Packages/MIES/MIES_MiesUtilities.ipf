@@ -1477,21 +1477,11 @@ Function/S GetLastSweepWithSettingTextI(numericalValues, setting, sweepNo, [defV
 End
 
 /// @brief Returns a list of all devices, e.g. "ITC18USB_Dev_0;..."
-///
-/// @param activeOnly [optional, defaults to false] restrict the list to devices
-///                   with an existing datafolder returned by `GetDevicePathAsString(device)`
-Function/S GetAllDevices([activeOnly])
-	variable activeOnly
+Function/S GetAllDevices()
 
 	variable i, j, numTypes, numNumbers
 	string type, number, device
 	string path, list = ""
-
-	if(ParamIsDefault(activeOnly))
-		activeOnly = 0
-	else
-		activeOnly = !!activeOnly
-	endif
 
 	path = GetITCDevicesFolderAsString()
 
@@ -1509,7 +1499,7 @@ Function/S GetAllDevices([activeOnly])
 			device = BuildDeviceString(type, number)
 			path   = GetDevicePathAsString(device)
 
-			if(!activeOnly || DataFolderExists(path))
+			if(DataFolderExists(path))
 				list = AddListItem(device, list, ";", inf)
 			endif
 		endfor
@@ -1533,7 +1523,7 @@ Function/S GetAllDevicesWithContent([contentType])
 		contentType = CONTENT_TYPE_SWEEP
 	endif
 
-	deviceList = GetAllDevices(activeOnly = 1)
+	deviceList = GetAllDevices()
 
 	numDevices = ItemsInList(deviceList)
 	for(i = 0; i < numDevices; i += 1)
@@ -2829,7 +2819,7 @@ Function SaveExperimentSpecial(mode)
 		DB_ClearAllGraphs()
 
 		// remove other waves from active devices
-		activeDevices = GetAllDevices(activeOnly = 1)
+		activeDevices = GetAllDevices()
 		numDevices = ItemsInList(activeDevices)
 		for(i = 0; i < numDevices; i += 1)
 			device = StringFromList(i, activeDevices)
