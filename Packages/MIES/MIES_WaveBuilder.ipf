@@ -776,7 +776,7 @@ static Function/WAVE WB_MakeWaveBuilderWave(WP, WPT, SegWvType, stepCount, numEp
 				AddEntryIntoWaveNoteAsList(WaveBuilderWave, "Offset"       , var=params.Offset)
 				AddEntryIntoWaveNoteAsList(WaveBuilderWave, "Frequency"    , var=params.Frequency)
 				AddEntryIntoWaveNoteAsList(WaveBuilderWave, "End frequency", var=params.EndFrequency)
-				AddEntryIntoWaveNoteAsList(WaveBuilderWave, "Log chirp"    , str=SelectString(params.logChirp, "True", "False"))
+				AddEntryIntoWaveNoteAsList(WaveBuilderWave, "Log chirp"    , str=SelectString(params.logChirp, "False", "True"))
 				AddEntryIntoWaveNoteAsList(WaveBuilderWave, "FunctionType" , str=SelectString(params.trigFuncType, "Sin", "Cos"))
 				break
 			case EPOCH_TYPE_SAW_TOOTH:
