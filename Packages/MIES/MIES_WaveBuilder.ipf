@@ -654,7 +654,7 @@ static Structure SegmentParameters
 	variable numberOfPulses
 	// checkboxes
 	variable poisson
-	variable sinChirp
+	variable logChirp // 0: no chirp, 1: log chirp
 	variable randomSeed
 	// popupmenues
 	variable trigFuncType // 0: sin, 1: cos
@@ -710,7 +710,7 @@ static Function/WAVE WB_MakeWaveBuilderWave(WP, WPT, SegWvType, stepCount, numEp
 		params.highPassCutOff       = WP[22][i][type]
 		params.endFrequency         = WP[24][i][type]
 		params.filterOrder          = WP[26][i][type]
-		params.sinChirp             = WP[43][i][type]
+		params.logChirp             = WP[43][i][type]
 		params.poisson              = WP[44][i][type]
 		params.numberOfPulses       = WP[45][i][type]
 		params.trigFuncType         = WP[53][i][type]
@@ -776,7 +776,7 @@ static Function/WAVE WB_MakeWaveBuilderWave(WP, WPT, SegWvType, stepCount, numEp
 				AddEntryIntoWaveNoteAsList(WaveBuilderWave, "Offset"       , var=params.Offset)
 				AddEntryIntoWaveNoteAsList(WaveBuilderWave, "Frequency"    , var=params.Frequency)
 				AddEntryIntoWaveNoteAsList(WaveBuilderWave, "End frequency", var=params.EndFrequency)
-				AddEntryIntoWaveNoteAsList(WaveBuilderWave, "Log chirp"    , str=SelectString(params.SinChirp, "True", "False"))
+				AddEntryIntoWaveNoteAsList(WaveBuilderWave, "Log chirp"    , str=SelectString(params.logChirp, "True", "False"))
 				AddEntryIntoWaveNoteAsList(WaveBuilderWave, "FunctionType" , str=SelectString(params.trigFuncType, "Sin", "Cos"))
 				break
 			case EPOCH_TYPE_SAW_TOOTH:
@@ -1189,13 +1189,7 @@ static Function WB_TrigSegment(pa)
 
 	Wave SegmentWave = GetSegmentWave(duration=pa.duration)
 
-	if(!pa.sinChirp)
-		if(pa.trigFuncType == 0)
-			MultiThread SegmentWave = pa.amplitude * sin(2 * Pi * (pa.frequency * 1000) * (5 / 1000000000) * p)
-		else
-			MultiThread SegmentWave = pa.amplitude * cos(2 * Pi * (pa.frequency * 1000) * (5 / 1000000000) * p)
-		endif
-	else
+	if(pa.logChirp)
 		k0 = ln(pa.frequency / 1000)
 		k1 = (ln(pa.endFrequency / 1000) - k0) / (pa.duration)
 		k2 = 2 * pi * e^k0 / k1
@@ -1204,6 +1198,12 @@ static Function WB_TrigSegment(pa)
 			MultiThread SegmentWave = pa.amplitude * sin(k2 * e^(k1 * x) - k3)
 		else
 			MultiThread SegmentWave = pa.amplitude * cos(k2 * e^(k1 * x) - k3)
+		endif
+	else
+		if(pa.trigFuncType == 0)
+			MultiThread SegmentWave = pa.amplitude * sin(2 * Pi * (pa.frequency * 1000) * (5 / 1000000000) * p)
+		else
+			MultiThread SegmentWave = pa.amplitude * cos(2 * Pi * (pa.frequency * 1000) * (5 / 1000000000) * p)
 		endif
 	endif
 End
