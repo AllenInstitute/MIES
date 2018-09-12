@@ -1477,10 +1477,11 @@ Function/S GetLastSweepWithSettingTextI(numericalValues, setting, sweepNo, [defV
 End
 
 /// @brief Returns a list of all devices, e.g. "ITC18USB_Dev_0;..."
+///        which were locked at some point
 Function/S GetAllDevices()
 
-	variable i, j, numTypes, numNumbers
-	string type, number, device
+	variable i, j, numEntries, numNumbers
+	string folder, number, device, folders
 	string path, list = ""
 
 	path = GetITCDevicesFolderAsString()
@@ -1489,20 +1490,43 @@ Function/S GetAllDevices()
 		return ""
 	endif
 
-	numTypes   = ItemsInList(DEVICE_TYPES_ITC)
 	numNumbers = ItemsInList(DEVICE_NUMBERS)
-	for(i = 0; i < numTypes; i += 1)
-		type = StringFromList(i, DEVICE_TYPES_ITC)
 
-		for(j = 0; j < numNumbers ; j += 1)
-			number = StringFromList(j, DEVICE_NUMBERS)
-			device = BuildDeviceString(type, number)
-			path   = GetDevicePathAsString(device)
+	folders = GetListOfObjects($path, ".*", typeFlag = COUNTOBJECTS_DATAFOLDER)
+	numEntries = ItemsInList(folders)
+	for(i = 0; i < numEntries; i += 1)
+		folder = StringFromList(i, folders)
+
+		if(GrepString(folder, "^ITC.*"))
+			// ITC hardware is in a specific subfolder
+			for(j = 0; j < numNumbers ; j += 1)
+				number = StringFromList(j, DEVICE_NUMBERS)
+				device = BuildDeviceString(folder, number)
+				path   = GetDevicePathAsString(device)
+
+				if(DataFolderExists(path))
+					DFREF dfr = $path
+					NVAR/SDFR=dfr/Z ITCDeviceIDGlobal
+
+					if(NVAR_Exists(ITCDeviceIDGlobal))
+						list = AddListItem(device, list, ";", inf)
+					endif
+				endif
+			endfor
+		else
+			// other hardware has no subfolder
+			device = folder
+			path = GetDevicePathAsString(device)
 
 			if(DataFolderExists(path))
-				list = AddListItem(device, list, ";", inf)
+				DFREF dfr = $path
+				NVAR/SDFR=dfr/Z ITCDeviceIDGlobal
+
+				if(NVAR_Exists(ITCDeviceIDGlobal))
+					list = AddListItem(device, list, ";", inf)
+				endif
 			endif
-		endfor
+		endif
 	endfor
 
 	return list
