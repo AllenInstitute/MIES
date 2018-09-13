@@ -1535,7 +1535,7 @@ Function AB_LoadSweepFromNWBgeneric(h5_groupID, channelList, sweepDFR, configSwe
 	string channel, channelName
 	variable numChannels, numEntries, i
 	STRUCT IPNWB#ReadChannelParams p
-	variable waveNoteLoaded, fakeConfigWave, fakeTTLbase
+	variable waveNoteLoaded, fakeConfigWave
 
 	numChannels = ItemsInList(channelList)
 
@@ -1564,25 +1564,32 @@ Function AB_LoadSweepFromNWBgeneric(h5_groupID, channelList, sweepDFR, configSwe
 				wave loaded = IPNWB#LoadStimulus(h5_groupID, channel)
 				channelName += "_" + num2str(p.channelNumber)
 
-				// always fake TTL base wave (bitwise sum of all TTL channels)
-				wave/Z/I base = sweepDFR:$channelName
-				if(!WaveExists(base))
-					Duplicate loaded sweepDFR:$channelName/wave=base
-					base = 0
-					fakeConfigWave = 1
-					SetNumberInWaveNote(base, "fake", 1)
-				endif
+				if(IsFinite(p.ttlBit))
+					// always fake TTL base wave (bitwise sum of all TTL channels)
+					wave/Z/I base = sweepDFR:$channelName
+					if(!WaveExists(base))
+						Duplicate loaded sweepDFR:$channelName/wave=base
+						base = 0
+						fakeConfigWave = 1
+						SetNumberInWaveNote(base, "fake", 1)
+					endif
 
-				if(WaveMax(loaded) < 2)
-					base += 2^(p.ttlBit) * loaded
+					if(WaveMax(loaded) < 2)
+						base += 2^(p.ttlBit) * loaded
+					else
+						base += loaded
+					endif
+
+					channelName += "_" + num2str(p.ttlBit)
 				else
-					base += loaded
+					// for non-ITC hardware we don't have multiple bits in one channel
+					// so we don't need to fake a base wave
+					fakeConfigWave = 1
 				endif
 
-				channelName += "_" + num2str(p.ttlBit)
 				break
 			default:
-				ASSERT(1, "unknown channel type " + num2str(p.channelType))
+				ASSERT(0, "unknown channel type " + num2str(p.channelType))
 		endswitch
 
 		if(waveNoteLoaded == 0)

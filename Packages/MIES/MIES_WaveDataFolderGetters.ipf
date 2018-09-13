@@ -644,16 +644,34 @@ Function/Wave GetTTLWave(panelTitle)
 	string panelTitle
 
 	DFREF dfr = GetDevicePath(panelTitle)
+	variable hardwareType = GetHardwareType(panelTitle)
 
-	WAVE/W/Z/SDFR=dfr wv = TTLWave
+	switch(hardwareType)
+		case HARDWARE_ITC_DAC:
+			WAVE/W/Z/SDFR=dfr wv = TTLWave
 
-	if(WaveExists(wv))
-		return wv
-	endif
+			if(WaveExists(wv))
+				return wv
+			endif
 
-	Make/W/O/N=0 dfr:TTLWave/Wave=wv
+			Make/W/N=(0) dfr:TTLWave/Wave=wv
 
-	return wv
+			return wv
+
+			break
+		case HARDWARE_NI_DAC:
+			WAVE/WAVE/Z/SDFR=dfr wv_ni = TTLWave
+
+			if(WaveExists(wv_ni))
+				return wv_ni
+			endif
+
+			Make/WAVE/N=(NUM_DA_TTL_CHANNELS) dfr:TTLWave/Wave=wv_ni
+
+			return wv_ni
+
+			break
+	endswitch
 End
 
 /// @brief Return the stimset acquistion cycle ID helper wave
@@ -1362,6 +1380,11 @@ static Function SetSweepSettingsTextDimLabels(wv)
 	SetDimLabel COLS, 16, $PULSE_START_TIMES_KEY                                , wv
 	SetDimLabel COLS, 17, $HIGH_PREC_SWEEP_START_KEY                            , wv
 	SetDimLabel COLS, 18, $STIMSET_WAVE_NOTE_KEY                                , wv
+	SetDimLabel COLS, 19, $"TTL rack zero set sweep counts"                     , wv
+	SetDimLabel COLS, 20, $"TTL rack one set sweep counts"                      , wv
+	SetDimLabel COLS, 21, $"TTL set sweep counts"                               , wv
+	SetDimLabel COLS, 22, $"TTL stim sets"                                      , wv
+	SetDimLabel COLS, 23, $"TTL channels"                                       , wv
 End
 
 /// @brief Returns a wave reference to the sweepSettingsWave
@@ -1705,7 +1728,7 @@ End
 Function/Wave GetSweepSettingsTextWave(panelTitle)
 	string panelTitle
 
-	variable versionOfNewWave = 14
+	variable versionOfNewWave = 16
 	string newName = "sweepSettingsTextValues"
 	DFREF newDFR = GetDevSpecLabNBTempFolder(panelTitle)
 
@@ -1720,9 +1743,9 @@ Function/Wave GetSweepSettingsTextWave(panelTitle)
 	if(ExistsWithCorrectLayoutVersion(wv, versionOfNewWave))
 		return wv
 	elseif(WaveExists(wv))
-		Redimension/N=(-1, 19, LABNOTEBOOK_LAYER_COUNT) wv
+		Redimension/N=(-1, 24, LABNOTEBOOK_LAYER_COUNT) wv
 	else
-		Make/T/N=(1, 19, LABNOTEBOOK_LAYER_COUNT) newDFR:$newName/Wave=wv
+		Make/T/N=(1, 24, LABNOTEBOOK_LAYER_COUNT) newDFR:$newName/Wave=wv
 	endif
 
 	wv = ""
@@ -1764,10 +1787,15 @@ End
 ///      - Unit: `sweep ms`.
 /// -17: High precision sweep start timestamp in ISO8601 format
 /// -18: Stimset wave note
+/// -19: TTL rack zero set sweep counts
+/// -20: TTL rack one set sweep counts
+/// -21: TTL set sweep counts (NI hardware)
+/// -22: TTL stim sets (NI hardware)
+/// -23: TTL channels (NI hardware)
 Function/Wave GetSweepSettingsTextKeyWave(panelTitle)
 	string panelTitle
 
-	variable versionOfNewWave = 15
+	variable versionOfNewWave = 17
 	string newName = "sweepSettingsTextKeys"
 	DFREF newDFR = GetDevSpecLabNBTempFolder(panelTitle)
 
@@ -1782,9 +1810,9 @@ Function/Wave GetSweepSettingsTextKeyWave(panelTitle)
 	if(ExistsWithCorrectLayoutVersion(wv, versionOfNewWave))
 		return wv
 	elseif(WaveExists(wv))
-		Redimension/N=(-1, 19, 0) wv
+		Redimension/N=(-1, 24, 0) wv
 	else
-		Make/T/N=(1, 19) newDFR:$newName/Wave=wv
+		Make/T/N=(1, 24) newDFR:$newName/Wave=wv
 	endif
 
 	wv = ""
@@ -1808,6 +1836,11 @@ Function/Wave GetSweepSettingsTextKeyWave(panelTitle)
 	wv[0][16] = PULSE_START_TIMES_KEY
 	wv[0][17] = HIGH_PREC_SWEEP_START_KEY
 	wv[0][18] = STIMSET_WAVE_NOTE_KEY
+	wv[0][19] = "TTL rack zero set sweep counts"
+	wv[0][20] = "TTL rack one set sweep counts"
+	wv[0][21] = "TTL set sweep counts"
+	wv[0][22] = "TTL stim sets"
+	wv[0][23] = "TTL channels"
 
 	SetSweepSettingsTextDimLabels(wv)
 	SetWaveVersion(wv, versionOfNewWave)

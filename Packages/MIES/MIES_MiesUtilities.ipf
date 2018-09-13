@@ -1477,21 +1477,12 @@ Function/S GetLastSweepWithSettingTextI(numericalValues, setting, sweepNo, [defV
 End
 
 /// @brief Returns a list of all devices, e.g. "ITC18USB_Dev_0;..."
-///
-/// @param activeOnly [optional, defaults to false] restrict the list to devices
-///                   with an existing datafolder returned by `GetDevicePathAsString(device)`
-Function/S GetAllDevices([activeOnly])
-	variable activeOnly
+///        which were locked at some point
+Function/S GetAllDevices()
 
-	variable i, j, numTypes, numNumbers
-	string type, number, device
+	variable i, j, numEntries, numNumbers
+	string folder, number, device, folders
 	string path, list = ""
-
-	if(ParamIsDefault(activeOnly))
-		activeOnly = 0
-	else
-		activeOnly = !!activeOnly
-	endif
 
 	path = GetITCDevicesFolderAsString()
 
@@ -1499,20 +1490,43 @@ Function/S GetAllDevices([activeOnly])
 		return ""
 	endif
 
-	numTypes   = ItemsInList(DEVICE_TYPES_ITC)
 	numNumbers = ItemsInList(DEVICE_NUMBERS)
-	for(i = 0; i < numTypes; i += 1)
-		type = StringFromList(i, DEVICE_TYPES_ITC)
 
-		for(j = 0; j < numNumbers ; j += 1)
-			number = StringFromList(j, DEVICE_NUMBERS)
-			device = BuildDeviceString(type, number)
-			path   = GetDevicePathAsString(device)
+	folders = GetListOfObjects($path, ".*", typeFlag = COUNTOBJECTS_DATAFOLDER)
+	numEntries = ItemsInList(folders)
+	for(i = 0; i < numEntries; i += 1)
+		folder = StringFromList(i, folders)
 
-			if(!activeOnly || DataFolderExists(path))
-				list = AddListItem(device, list, ";", inf)
+		if(GrepString(folder, "^ITC.*"))
+			// ITC hardware is in a specific subfolder
+			for(j = 0; j < numNumbers ; j += 1)
+				number = StringFromList(j, DEVICE_NUMBERS)
+				device = BuildDeviceString(folder, number)
+				path   = GetDevicePathAsString(device)
+
+				if(DataFolderExists(path))
+					DFREF dfr = $path
+					NVAR/SDFR=dfr/Z ITCDeviceIDGlobal
+
+					if(NVAR_Exists(ITCDeviceIDGlobal))
+						list = AddListItem(device, list, ";", inf)
+					endif
+				endif
+			endfor
+		else
+			// other hardware has no subfolder
+			device = folder
+			path = GetDevicePathAsString(device)
+
+			if(DataFolderExists(path))
+				DFREF dfr = $path
+				NVAR/SDFR=dfr/Z ITCDeviceIDGlobal
+
+				if(NVAR_Exists(ITCDeviceIDGlobal))
+					list = AddListItem(device, list, ";", inf)
+				endif
 			endif
-		endfor
+		endif
 	endfor
 
 	return list
@@ -1533,7 +1547,7 @@ Function/S GetAllDevicesWithContent([contentType])
 		contentType = CONTENT_TYPE_SWEEP
 	endif
 
-	deviceList = GetAllDevices(activeOnly = 1)
+	deviceList = GetAllDevices()
 
 	numDevices = ItemsInList(deviceList)
 	for(i = 0; i < numDevices; i += 1)
@@ -1851,7 +1865,7 @@ Function CreateTiledChannelGraph(graph, config, sweepNo, numericalValues,  textu
 	WAVE/Z channelSelWave
 
 	variable red, green, blue, axisIndex, numChannels, offset
-	variable numDACs, numADCs, numTTLs, i, j, k, hasPhysUnit, slotMult
+	variable numDACs, numADCs, numTTLs, i, j, k, hasPhysUnit, slotMult, hardwareType
 	variable moreData, low, high, step, spacePerSlot, chan, numSlots, numHorizWaves, numVertWaves, idx
 	variable numTTLBits, colorIndex, totalVertBlocks, headstage
 	variable delayOnsetUser, delayOnsetAuto, delayTermination, delaydDAQ, dDAQEnabled, oodDAQEnabled
@@ -1881,18 +1895,25 @@ Function CreateTiledChannelGraph(graph, config, sweepNo, numericalValues,  textu
 	numADCs = DimSize(ADCs, ROWS)
 	numTTLs = DimSize(TTLs, ROWS)
 
+	// introduced in ba0d59ee (DC_PlaceDataInITCDataWave: Document the digitizer hardware type, 2018-07-30)
+	// before that we only had ITC hardware
+	hardwareType           = GetLastSettingIndep(numericalValues, sweepNo, "Digitizer Hardware Type", DATA_ACQUISITION_MODE, defValue = HARDWARE_ITC_DAC)
 	WAVE/Z statusHS        = GetLastSetting(numericalValues, sweepNo, "Headstage Active", DATA_ACQUISITION_MODE)
 	WAVE/Z ttlRackZeroBits = GetLastSetting(numericalValues, sweepNo, "TTL rack zero bits", DATA_ACQUISITION_MODE)
 	WAVE/Z ttlRackOneBits  = GetLastSetting(numericalValues, sweepNo, "TTL rack one bits", DATA_ACQUISITION_MODE)
+	WAVE/Z/T ttlChannels   = GetLastSetting(textualValues, sweepNo, "TTL channels", DATA_ACQUISITION_MODE)
 
 	if(tgs.splitTTLBits && numTTLs > 0)
-		if(!WaveExists(ttlRackZeroBits) && !WaveExists(ttlRackOneBits))
+		if(!WaveExists(ttlRackZeroBits) && !WaveExists(ttlRackOneBits) && hardwareType == HARDWARE_ITC_DAC)
 			print "Turning off tgs.splitTTLBits as some labnotebook entries could not be found"
 			ControlWindowToFront()
 			tgs.splitTTLBits = 0
 		elseif(tgs.overlayChannels)
 			print "Turning off tgs.splitTTLBits as it is overriden by tgs.overlayChannels"
 			ControlWindowToFront()
+			tgs.splitTTLBits = 0
+		elseif(WaveExists(ttlChannels))
+			// NI hardware does use one channel per bit so we don't need that here
 			tgs.splitTTLBits = 0
 		endif
 
@@ -2096,8 +2117,14 @@ Function CreateTiledChannelGraph(graph, config, sweepNo, numericalValues,  textu
 					hasPhysUnit      = 0
 					slotMult         = 1
 					numHorizWaves    = 1
-					numVertWaves     = tgs.splitTTLBits ? NUM_ITC_TTL_BITS_PER_RACK : 1
-					numChannels      = numTTLs
+
+					if(hardwareType == HARDWARE_ITC_DAC)
+						numVertWaves = tgs.splitTTLBits ? NUM_ITC_TTL_BITS_PER_RACK : 1
+					else
+						numVertWaves = 1
+					endif
+
+					numChannels = numTTLs
 					break
 			endswitch
 
@@ -2816,7 +2843,7 @@ Function SaveExperimentSpecial(mode)
 		DB_ClearAllGraphs()
 
 		// remove other waves from active devices
-		activeDevices = GetAllDevices(activeOnly = 1)
+		activeDevices = GetAllDevices()
 		numDevices = ItemsInList(activeDevices)
 		for(i = 0; i < numDevices; i += 1)
 			device = StringFromList(i, activeDevices)
@@ -3721,8 +3748,11 @@ Function/S GetTTLStimSets(numericalValues, textualValues, sweep, channel)
 
 	WAVE/Z ttlRackZeroChannel = GetLastSetting(numericalValues, sweep, "TTL rack zero channel", DATA_ACQUISITION_MODE)
 	WAVE/Z ttlRackOneChannel  = GetLastSetting(numericalValues, sweep, "TTL rack one channel", DATA_ACQUISITION_MODE)
+	WAVE/Z ttlChannels        = GetLastSetting(textualValues, sweep, "TTL channels", DATA_ACQUISITION_MODE)
 
-	if(WaveExists(ttlRackZeroChannel) && ttlRackZeroChannel[index] == channel)
+	if(WaveExists(ttlChannels))
+		WAVE/T ttlStimsets = GetLastSetting(textualValues, sweep, "TTL stim sets", DATA_ACQUISITION_MODE)
+	elseif(WaveExists(ttlRackZeroChannel) && ttlRackZeroChannel[index] == channel)
 		WAVE/T ttlStimsets = GetLastSetting(textualValues, sweep, "TTL rack zero stim sets", DATA_ACQUISITION_MODE)
 	elseif(WaveExists(ttlRackOneChannel) && ttlRackOneChannel[index] == channel)
 		WAVE/T ttlStimsets = GetLastSetting(textualValues, sweep, "TTL rack one stim sets", DATA_ACQUISITION_MODE)
