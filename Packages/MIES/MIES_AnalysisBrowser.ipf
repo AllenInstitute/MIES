@@ -1535,7 +1535,7 @@ Function AB_LoadSweepFromNWBgeneric(h5_groupID, channelList, sweepDFR, configSwe
 	string channel, channelName
 	variable numChannels, numEntries, i
 	STRUCT IPNWB#ReadChannelParams p
-	variable waveNoteLoaded, fakeConfigWave, fakeTTLbase
+	variable waveNoteLoaded, fakeConfigWave
 
 	numChannels = ItemsInList(channelList)
 
