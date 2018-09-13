@@ -1291,3 +1291,104 @@ Function oodDAQRegTests_6()
 End
 
 /// @}
+
+/// @name CheckActiveHeadstages
+/// @{
+override Function/WAVE DAG_GetChannelState(panelTitle, var)
+	string panelTitle
+	variable var
+
+	WAVE/Z statusHS
+	REQUIRE(WaveExists(statusHS))
+
+	return statusHS
+End
+
+override Function DAG_GetHeadstageMode(panelTitle, headstage)
+	string panelTitle
+	variable headstage
+
+	WAVE/Z clampModes
+	REQUIRE(WaveExists(clampModes))
+
+	return clampModes[headstage]
+End
+
+Function HAH_ReturnsNaN()
+
+	string panelTitle = "IGNORE"
+	Make/O/N=(NUM_HEADSTAGES) statusHS = 0
+	Make/O/N=(NUM_HEADSTAGES) clampModes = NaN
+
+	CHECK_EQUAL_VAR(DAP_GetHighestActiveHeadstage(panelTitle), NaN)
+End
+
+Function HAH_Works1()
+
+	string panelTitle = "IGNORE"
+	Make/O/N=(NUM_HEADSTAGES) statusHS = 0
+	Make/O/N=(NUM_HEADSTAGES) clampModes = NaN
+
+	statusHS[0] = 1
+
+	CHECK_EQUAL_VAR(DAP_GetHighestActiveHeadstage(panelTitle), 0)
+End
+
+Function HAH_Works2()
+
+	string panelTitle = "IGNORE"
+	Make/O/N=(NUM_HEADSTAGES) statusHS = 0
+	Make/O/N=(NUM_HEADSTAGES) clampModes = NaN
+
+	statusHS[6] = 1
+
+	CHECK_EQUAL_VAR(DAP_GetHighestActiveHeadstage(panelTitle), 6)
+End
+
+Function HAH_ChecksClampMode()
+
+	string panelTitle = "IGNORE"
+	Make/O/N=(NUM_HEADSTAGES) statusHS = 1
+	Make/O/N=(NUM_HEADSTAGES) clampModes = NaN
+
+	try
+		DAP_GetHighestActiveHeadstage(panelTitle, clampMode = NaN); AbortOnRTE
+		FAIL()
+	catch
+		PASS()
+	endtry
+End
+
+Function HAH_ReturnsNaNWithClampMode()
+
+	string panelTitle = "IGNORE"
+	Make/O/N=(NUM_HEADSTAGES) statusHS = 0
+	Make/O/N=(NUM_HEADSTAGES) clampModes = NaN
+
+	CHECK_EQUAL_VAR(DAP_GetHighestActiveHeadstage(panelTitle, clampMode = I_CLAMP_MODE), NaN)
+End
+
+Function HAH_WorksWithClampMode1()
+
+	string panelTitle = "IGNORE"
+	Make/O/N=(NUM_HEADSTAGES) statusHS = 0
+	Make/O/N=(NUM_HEADSTAGES) clampModes = NaN
+
+	statusHS[1, 2] = 1
+	clampModes[1] = I_CLAMP_MODE
+	CHECK_EQUAL_VAR(DAP_GetHighestActiveHeadstage(panelTitle, clampMode = I_CLAMP_MODE), 1)
+End
+
+Function HAH_WorksWithClampMode2()
+
+	string panelTitle = "IGNORE"
+	Make/O/N=(NUM_HEADSTAGES) statusHS = 0
+	Make/O/N=(NUM_HEADSTAGES) clampModes = NaN
+
+	statusHS[1, 6] = 1
+	clampModes[] = I_CLAMP_MODE
+	clampModes[6] = V_CLAMP_MODE
+
+	CHECK_EQUAL_VAR(DAP_GetHighestActiveHeadstage(panelTitle, clampMode = V_CLAMP_MODE), 6)
+End
+/// @}
