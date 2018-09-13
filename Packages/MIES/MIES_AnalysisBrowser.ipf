@@ -1589,7 +1589,7 @@ Function AB_LoadSweepFromNWBgeneric(h5_groupID, channelList, sweepDFR, configSwe
 
 				break
 			default:
-				ASSERT(1, "unknown channel type " + num2str(p.channelType))
+				ASSERT(0, "unknown channel type " + num2str(p.channelType))
 		endswitch
 
 		if(waveNoteLoaded == 0)
