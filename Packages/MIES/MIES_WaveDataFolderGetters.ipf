@@ -390,7 +390,7 @@ Function/WAVE GetActiveHSProperties(panelTitle)
 	return wv
 End
 
-/// @brief Return the ITC devices folder "root:mies:ITCDevices"
+/// @brief Return the ITC devices folder "root:mies:HardwareDevices"
 threadsafe Function/DF GetITCDevicesFolder()
 
 	return createDFWithAllParents(GetITCDevicesFolderAsString())
@@ -402,7 +402,7 @@ threadsafe Function/S GetITCDevicesFolderAsString()
 	return GetMiesPathAsString() + ":HardwareDevices"
 End
 
-/// @brief Return the active ITC devices timer folder "root:mies:ITCDevices:ActiveITCDevices:Timer"
+/// @brief Return the active ITC devices timer folder "root:mies:HardwareDevices:ActiveITCDevices:Timer"
 Function/DF GetActiveITCDevicesTimerFolder()
 
 	return createDFWithAllParents(GetActiveITCDevicesTimerAS())
@@ -414,7 +414,7 @@ Function/S GetActiveITCDevicesTimerAS()
 	return GetActiveITCDevicesFolderAS() + ":Timer"
 End
 
-/// @brief Return the active ITC devices folder "root:mies:ITCDevices:ActiveITCDevices"
+/// @brief Return the active ITC devices folder "root:mies:HardwareDevices:ActiveITCDevices"
 Function/DF GetActiveITCDevicesFolder()
 
 	return createDFWithAllParents(GetActiveITCDevicesFolderAS())
@@ -432,7 +432,7 @@ Function/DF GetDeviceTypePath(deviceType)
 	return createDFWithAllParents(GetDeviceTypePathAsString(deviceType))
 End
 
-/// @brief Return the path to the device type folder, e.g. root:mies:ITCDevices:ITC1600
+/// @brief Return the path to the device type folder, e.g. root:mies:HardwareDevices:ITC1600
 threadsafe Function/S GetDeviceTypePathAsString(deviceType)
 	string deviceType
 
@@ -445,7 +445,7 @@ threadsafe Function/DF GetDevicePath(panelTitle)
 	return createDFWithAllParents(GetDevicePathAsString(panelTitle))
 End
 
-/// @brief Return the path to the device folder, e.g. root:mies:ITCDevices:ITC1600:Device0
+/// @brief Return the path to the device folder, e.g. root:mies:HardwareDevices:ITC1600:Device0
 threadsafe Function/S GetDevicePathAsString(panelTitle)
 	string panelTitle
 
@@ -473,7 +473,7 @@ Function/DF GetDeviceDataBrowserPath(panelTitle)
 	return createDFWithAllParents(GetDeviceDataBrowserPathAS(panelTitle))
 End
 
-/// @brief Return the path to the device folder, e.g. root:mies:ITCDevices:ITC1600:Device0:DataBrowser
+/// @brief Return the path to the device folder, e.g. root:mies:HardwareDevices:ITC1600:Device0:DataBrowser
 Function/S GetDeviceDataBrowserPathAS(panelTitle)
 	string panelTitle
 
@@ -487,7 +487,7 @@ Function/DF GetDeviceDataPath(panelTitle)
 	return createDFWithAllParents(GetDeviceDataPathAsString(panelTitle))
 End
 
-/// @brief Return the path to the device folder, e.g. root:mies:ITCDevices:ITC1600:Device0:Data
+/// @brief Return the path to the device folder, e.g. root:mies:HardwareDevices:ITC1600:Device0:Data
 Function/S GetDeviceDataPathAsString(panelTitle)
 	string panelTitle
 	return GetDevicePathAsString(panelTitle) + ":Data"
@@ -1954,7 +1954,7 @@ Function/DF GetDeviceTestPulse(panelTitle)
 	return createDFWithAllParents(GetDeviceTestPulseAsString(panelTitle))
 End
 
-/// @brief Return the path to the test pulse folder, e.g. root:mies:ITCDevices:ITC1600:Device0:TestPulse
+/// @brief Return the path to the test pulse folder, e.g. root:mies:HardwareDevices:ITC1600:Device0:TestPulse
 Function/S GetDeviceTestPulseAsString(panelTitle)
 	string panelTitle
 	return GetDevicePathAsString(panelTitle) + ":TestPulse"
@@ -4721,7 +4721,7 @@ Function/S GetStaticDataFolderAS()
 End
 
 /// @brief Return the datafolder reference to the active ITC devices folder,
-/// e.g. root:MIES:ITCDevices:ActiveITCDevices:TestPulse
+/// e.g. root:MIES:HardwareDevices:ActiveITCDevices:TestPulse
 Function/DF GetActITCDevicesTestPulseFolder()
 	return createDFWithAllParents(GetActITCDevicesTestPulFolderA())
 End
@@ -4769,7 +4769,7 @@ End
 
 /// @brief Returns wave (DA_EphysGuiState) that stores the DA_Ephys GUI state
 /// DA_EphysGuiState is stored in the device specific folder
-/// e.g. root:MIES:ITCDevices:ITC18USB:Device0
+/// e.g. root:MIES:HardwareDevices:ITC18USB:Device0
 ///
 /// Rows:
 /// - Column specific GUI control settings usually associated with control name number
@@ -5057,7 +5057,7 @@ Function/DF GetDistDAQFolder()
 End
 
 /// @brief Return the full path to the optimized overlap distributed
-///        acquisition (oodDAQ) folder, e.g. root:MIES:ITCDevices:oodDAQ
+///        acquisition (oodDAQ) folder, e.g. root:MIES:HardwareDevices:oodDAQ
 Function/S GetDistDAQFolderAS()
 	return GetITCDevicesFolderAsString() + ":oodDAQ"
 End
