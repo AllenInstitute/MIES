@@ -1,4 +1,4 @@
-﻿#pragma TextEncoding = "UTF-8"
+#pragma TextEncoding = "UTF-8"
 #pragma rtGlobals=3		// Use modern global access method and strict wave access.
 
 #include "MIES_include"
@@ -12,6 +12,7 @@
 #include "UTF_Labnotebook"
 #include "UTF_WaveBuilder"
 #include "UTF_WaveVersioning"
+#include "UTF_AsynFrameworkTest"
 
 Function run()
 	// speeds up testing to start with a fresh copy
@@ -21,7 +22,7 @@ Function run()
 	string procList = ""
 	procList += "UTF_AnalysisFunctionHelpers.ipf;UTF_WaveVersioning.ipf;UTF_UpgradeWaveLocationAndGetIt.ipf;"
 	procList += "UTF_Utils.ipf;UTF_Labnotebook.ipf;UTF_WaveBuilder.ipf;UTF_PGCSetAndActivateControl.ipf;"
-	procList += "UTF_UpgradeDataFolderLocation.ipf"
+	procList += "UTF_UpgradeDataFolderLocation.ipf;UTF_AsynFrameworkTest.ipf"
 
 	RunTest(procList, enableJU = 1)
 
