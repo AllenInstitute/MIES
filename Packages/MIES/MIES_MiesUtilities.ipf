@@ -4810,7 +4810,7 @@ Function/WAVE MoveWaveWithOverwrite(dest, src)
 End
 
 /// @brief Check if the given wave is a valid ITCConfigWave
-Function IsValidConfigWave(config)
+threadsafe Function IsValidConfigWave(config)
 	WAVE/Z config
 
 	return WaveExists(config) &&        \
@@ -4819,7 +4819,7 @@ Function IsValidConfigWave(config)
 End
 
 /// @brief Check if the given wave is a valid HardwareDataWave
-Function IsValidSweepWave(sweep)
+threadsafe Function IsValidSweepWave(sweep)
 	WAVE/Z sweep
 
 	if(WaveType(sweep, 1) == IGOR_TYPE_WAVEREF_WAVE)
@@ -4837,7 +4837,7 @@ Function IsValidSweepWave(sweep)
 End
 
 /// @brief Check if the two waves are valid and compatible
-Function IsValidSweepAndConfig(sweep, config)
+threadsafe Function IsValidSweepAndConfig(sweep, config)
 	WAVE/Z sweep, config
 
 	if(WaveType(sweep, 1) == IGOR_TYPE_WAVEREF_WAVE)
