@@ -4699,8 +4699,7 @@ Function CalculateTPLikePropsFromSweep(numericalValues, textualValues, sweep, de
 	sweepNo     = ExtractSweepNumber(NameofWave(sweep))
 	WAVE config = GetConfigWave(sweep)
 
-	totalOnsetDelay = GetLastSettingIndep(numericalValues, sweepNo, "Delay onset auto", DATA_ACQUISITION_MODE) + \
-					  GetLastSettingIndep(numericalValues, sweepNo, "Delay onset user", DATA_ACQUISITION_MODE)
+	totalOnsetDelay = GetTotalOnsetDelay(numericalValues, sweepNo)
 
 	WAVE ADCs = GetLastSetting(numericalValues, sweepNo, "ADC", DATA_ACQUISITION_MODE)
 	WAVE DACs = GetLastSetting(numericalValues, sweepNo, "DAC", DATA_ACQUISITION_MODE)
@@ -4873,4 +4872,13 @@ Function/S GetNIFIFOName(deviceID)
 	variable deviceID
 
 	return HARDWARE_NI_ADC_FIFO + num2str(deviceID)
+End
+
+/// @brief Return the total onset delay of the given sweep
+Function GetTotalOnsetDelay(numericalValues, sweepNo)
+	WAVE numericalValues
+	variable sweepNo
+
+	return GetLastSettingIndep(numericalValues, sweepNo, "Delay onset auto", DATA_ACQUISITION_MODE) + \
+			GetLastSettingIndep(numericalValues, sweepNo, "Delay onset user", DATA_ACQUISITION_MODE)
 End
