@@ -798,8 +798,7 @@ Function/WAVE GetLastSettingNoCache(values, sweepNo, setting, entrySourceType, [
 
 					if(pulseDurationCol > 0)
 						status[] = numericalValues[i][pulseDurationCol][p]
-						WaveStats/Q/M=1 status
-						hasValidTPPulseDurationEntry = (V_numNaNs != numLayers)
+						hasValidTPPulseDurationEntry = HasOneValidEntry(status)
 					else
 						hasValidTPPulseDurationEntry = 0
 					endif
@@ -813,8 +812,7 @@ Function/WAVE GetLastSettingNoCache(values, sweepNo, setting, entrySourceType, [
 					elseif(hasValidTPPulseDurationEntry)
 						// if the previous row has a "TP Peak Resistance" entry we know that this is a testpulse block
 						status[] = numericalValues[i - 1][peakResistanceCol][p]
-						WaveStats/Q/M=1 status
-						if(V_numNaNs != numLayers)
+						if(HasOneValidEntry(status))
 							blockType = TEST_PULSE_MODE
 							testpulseBlockLength = 1
 						else
@@ -822,8 +820,7 @@ Function/WAVE GetLastSettingNoCache(values, sweepNo, setting, entrySourceType, [
 						endif
 					else // no match, maybe old format
 						status[] = numericalValues[i][peakResistanceCol][p]
-						WaveStats/Q/M=1 status
-						if(V_numNaNs != numLayers)
+						if(HasOneValidEntry(status))
 							blockType = TEST_PULSE_MODE
 							testpulseBlockLength = 0
 						else
@@ -852,10 +849,8 @@ Function/WAVE GetLastSettingNoCache(values, sweepNo, setting, entrySourceType, [
 			endif
 
 			status[] = numericalValues[i][settingCol][p]
-			WaveStats/Q/M=1 status
 
-			// return if at least one entry is not NaN
-			if(V_numNaNs != numLayers)
+			if(HasOneValidEntry(status))
 				if(!ParamIsDefault(rowIndex))
 					rowIndex = i
 				endif
@@ -956,8 +951,7 @@ Function/WAVE GetLastSettingIndepEachRAC(numericalValues, sweepNo, setting, entr
 
 	Make/FREE/D/N=(numSweeps) result = GetLastSettingIndep(numericalValues, sweeps[p], setting, entrySourceType, defValue = defValue)
 
-	WaveStats/Q/M=1 result
-	if(V_numNaNs == numSweeps)
+	if(!HasOneValidEntry(result))
 		return $""
 	endif
 
@@ -1036,8 +1030,7 @@ Function/WAVE GetLastSettingEachRAC(numericalValues, sweepNo, setting, headstage
 		endif
 	endfor
 
-	WaveStats/Q/M=1 result
-	if(V_numNaNs == numSweeps)
+	if(!HasOneValidEntry(result))
 		return $""
 	endif
 
@@ -1175,8 +1168,7 @@ Function/WAVE GetLastSettingIndepEachSCI(numericalValues, sweepNo, setting, head
 
 	Make/FREE/D/N=(numSweeps) result = GetLastSettingIndep(numericalValues, sweeps[p], setting, entrySourceType, defValue = defValue)
 
-	WaveStats/Q/M=1 result
-	if(V_numNaNs == numSweeps)
+	if(!HasOneValidEntry(result))
 		return $""
 	endif
 
@@ -1255,8 +1247,7 @@ Function/WAVE GetLastSettingEachSCI(numericalValues, sweepNo, setting, headstage
 		endif
 	endfor
 
-	WaveStats/Q/M=1 result
-	if(V_numNaNs == numSweeps)
+	if(!HasOneValidEntry(result))
 		return $""
 	endif
 
