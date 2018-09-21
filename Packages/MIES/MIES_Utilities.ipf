@@ -3697,3 +3697,19 @@ Function/S ToTrueFalse(var)
 
 	return SelectString(var, "False", "True")
 End
+
+/// @brief Return true if not all wave entries are NaN, false otherwise.
+///
+Function HasOneValidEntry(wv)
+	WAVE wv
+
+	variable numEntries
+
+	ASSERT(IsFloatingPointWave(wv), "Unexpected wave type")
+
+	numEntries = numpnts(wv)
+	ASSERT(numEntries > 0, "Empty wave")
+
+	WaveStats/Q/M=1 wv
+	return V_numNaNs != numEntries
+End

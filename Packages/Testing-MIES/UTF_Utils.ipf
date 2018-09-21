@@ -1392,3 +1392,82 @@ Function HAH_WorksWithClampMode2()
 	CHECK_EQUAL_VAR(DAP_GetHighestActiveHeadstage(panelTitle, clampMode = V_CLAMP_MODE), 6)
 End
 /// @}
+
+/// @{
+/// HasOneValidEntry
+
+Function HOV_AssertsInvalidType()
+
+	Make/B wv
+	try
+		HasOneValidEntry(wv)
+		FAIL()
+	catch
+		PASS()
+	endtry
+End
+
+Function HOV_AssertsOnInvalidType()
+
+	Make/B wv
+	try
+		HasOneValidEntry(wv)
+		FAIL()
+	catch
+		PASS()
+	endtry
+End
+
+Function HOV_AssertsOnEmptyWave()
+
+	Make/D/N=0 wv
+	try
+		HasOneValidEntry(wv)
+		FAIL()
+	catch
+		PASS()
+	endtry
+End
+
+Function HOV_Works1()
+
+	Make/D/N=10 wv = NaN
+	CHECK(!HasOneValidEntry(wv))
+End
+
+Function HOV_Works2()
+
+	Make/D/N=10 wv = NaN
+	wv[9] = 1
+	CHECK(HasOneValidEntry(wv))
+End
+
+Function HOV_Works3()
+
+	Make/D/N=10 wv = NaN
+	wv[9] = inf
+	CHECK(HasOneValidEntry(wv))
+End
+
+Function HOV_Works4()
+
+	Make/D/N=10 wv = NaN
+	wv[9] = -inf
+	CHECK(HasOneValidEntry(wv))
+End
+
+Function HOV_WorksWithReal()
+
+	Make/R/N=10 wv = NaN
+	wv[9] = -inf
+	CHECK(HasOneValidEntry(wv))
+End
+
+Function HOV_WorksWith2D()
+
+	Make/R/N=(10, 9) wv = NaN
+	wv[2, 3] = 4711
+	CHECK(HasOneValidEntry(wv))
+End
+
+/// @}
