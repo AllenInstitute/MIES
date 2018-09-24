@@ -26,7 +26,9 @@ Function SWS_SaveAndScaleITCData(panelTitle, [forcedStop])
 	hardwareType = GetHardwareType(panelTitle)
 	if(hardwareType == HARDWARE_ITC_DAC)
 		NVAR stopCollectionPoint = $GetStopCollectionPoint(panelTitle)
-		SCOPE_UpdateOscilloscopeData(panelTitle, DATA_ACQUISITION_MODE, fifoPos=stopCollectionPoint)
+
+		WAVE ITCChanConfigWave = GetITCChanConfigWave(panelTitle)
+		SCOPE_UpdateOscilloscopeData(panelTitle, DATA_ACQUISITION_MODE, fifoPos=stopCollectionPoint - GetDataOffset(ITCChanConfigWave))
 	endif
 
 	DFREf dfr = GetDeviceDataPath(panelTitle)
