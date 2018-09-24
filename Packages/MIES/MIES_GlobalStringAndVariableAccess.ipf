@@ -478,6 +478,8 @@ Function/S GetRepeatedAcquisitionDuration()
 End
 
 /// @brief Return the current fifo position. Only valid if called during DAQ with DATA_ACQUISITION_MODE.
+///        This value is relative to first row of the rawDACWave, so an
+///        possible offset is already included in it.
 Function/S GetFifoPosition(panelTitle)
 	string panelTitle
 
