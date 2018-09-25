@@ -1383,7 +1383,9 @@ threadsafe Function HW_ITC_MoreData_TS(deviceID, ADChannelToMonitor, stopCollect
 	variable &fifoPos
 	variable flags
 
-	variable fifoPosValue
+	variable fifoPosValue, offset
+
+	offset = GetDataOffset(config)
 
 	WAVE config_t = HW_ITC_TransposeAndToDouble(config)
 
@@ -1399,7 +1401,7 @@ threadsafe Function HW_ITC_MoreData_TS(deviceID, ADChannelToMonitor, stopCollect
 		fifoPos = fifoPosValue
 	endif
 
-	return fifoPosValue < stopCollectionPoint
+	return (offset + fifoPosValue) < stopCollectionPoint
 End
 
 /// @brief Check wether more data can be acquired
@@ -1421,7 +1423,7 @@ Function HW_ITC_MoreData(deviceID, [ADChannelToMonitor, stopCollectionPoint, con
 	variable &fifoPos
 	variable flags
 
-	variable fifoPosValue
+	variable fifoPosValue, offset
 	string panelTitle
 
 	DEBUGPRINTSTACKINFO()
@@ -1446,6 +1448,8 @@ Function HW_ITC_MoreData(deviceID, [ADChannelToMonitor, stopCollectionPoint, con
 		endif
 	endif
 
+	offset = GetDataOffset(config)
+
 	WAVE config_t = HW_ITC_TransposeAndToDouble(config)
 
 	do
@@ -1459,7 +1463,7 @@ Function HW_ITC_MoreData(deviceID, [ADChannelToMonitor, stopCollectionPoint, con
 		fifoPos = fifoPosValue
 	endif
 
-	return fifoPosValue < stopCollectionPoint
+	return (offset + fifoPosValue) < stopCollectionPoint
 End
 
 #else
