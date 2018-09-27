@@ -162,8 +162,7 @@ Structure AnalysisFunction_V3
 
 	/// raw data wave for interacting with the DAC hardware (locked to prevent
 	/// changes using `SetWaveLock`). The exact wave format depends on the hardware.
-	///
-	/// ITC Hardware: ITCDataWave, see GetITCDataWave()
+	/// @sa GetHardwareDataWave()
 	WAVE rawDACWave
 
 	/// active headstage index, `[0, NUM_HEADSTAGES[`
