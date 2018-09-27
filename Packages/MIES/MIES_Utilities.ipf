@@ -3224,6 +3224,15 @@ threadsafe Function IsWaveRefWave(wv)
 	return WaveType(wv, 1) == IGOR_TYPE_WAVEREF_WAVE
 End
 
+/// @brief Return 1 if the wave is a floating point wave
+threadsafe Function IsFloatingPointWave(wv)
+	WAVE wv
+
+	variable type = WaveType(wv)
+
+	return (type & IGOR_TYPE_32BIT_FLOAT) || (type & IGOR_TYPE_64BIT_FLOAT)
+End
+
 /// @brief Return the user name of the running user
 Function/S GetSystemUserName()
 
