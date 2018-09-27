@@ -2361,11 +2361,11 @@ End
 
 /// @brief Queries the parameter and unit from a labnotebook key wave
 ///
-/// @param keyWave   labnotebook key wave
-/// @param key       key to look for
-/// @param parameter name of the result [empty if not found]
-/// @param unit      unit of the result [empty if not found]
-/// @param col       column of the result into the keyWave [NaN if not found]
+/// @param[in]  keyWave   labnotebook key wave
+/// @param[in]  key       key to look for
+/// @param[out] parameter name of the result [empty if not found]
+/// @param[out] unit      unit of the result [empty if not found]
+/// @param[out] col       column of the result into the keyWave [NaN if not found]
 /// @returns one on error, zero otherwise
 Function GetKeyWaveParameterAndUnit(keyWave, key, parameter, unit, col)
 	WAVE/T/Z keyWave
