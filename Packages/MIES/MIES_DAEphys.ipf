@@ -1235,35 +1235,6 @@ Function DAP_OneTimeCallAfterDAQ(panelTitle, [forcedStop, startTPAfterDAQ])
 	endif
 End
 
-Function DAP_ButtonProc_AcquireData(ba) : ButtonControl
-	STRUCT WMButtonAction &ba
-
-	string panelTitle
-
-	switch(ba.eventcode)
-		case 2: // mouse up
-			panelTitle = ba.win
-
-			NVAR dataAcqRunMode = $GetDataAcqRunMode(panelTitle)
-
-			if(dataAcqRunMode == DAQ_NOT_RUNNING)
-				TP_StopTestPulse(panelTitle)
-				AbortOnValue DAP_CheckSettings(panelTitle, DATA_ACQUISITION_MODE), 1
-
-				if(DAG_GetNumericalValue(panelTitle, "check_Settings_MD"))
-					DQM_StartDAQMultiDevice(panelTitle)
-				else
-					DQS_StartDAQSingleDevice(panelTitle)
-				endif
-			else // data acquistion is ongoing, stop data acq
-				DQ_StopDAQ(panelTitle)
-			endif
-			break
-	endswitch
-
-	return 0
-End
-
 Function DAP_CheckProc_IndexingState(cba) : CheckBoxControl
 	STRUCT WMCheckboxAction &cba
 
@@ -3652,28 +3623,50 @@ Function DAP_SetVarProc_SyncCtrl(sva) : SetVariableControl
 	return 0
 End
 
-Function DAP_ButtonProc_TestPulse(ba) : ButtonControl
+Function DAP_ButtonProc_TPDAQ(ba) : ButtonControl
 	STRUCT WMButtonAction &ba
 
 	string panelTitle
 
 	switch(ba.eventcode)
 		case 2:
+			ba.blockreentry = 1
 			panelTitle = ba.win
 
-			DAP_AbortIfUnlocked(panelTitle)
+			if(!cmpstr(ba.ctrlName, "StartTestPulseButton"))
 
-			NVAR dataAcqRunMode = $GetDataAcqRunMode(panelTitle)
+				DAP_AbortIfUnlocked(panelTitle)
 
-			// if data acquisition is currently running we just
-			// want just call TP_StartTestPulse* which automatically
-			// ends DAQ
-			if(dataAcqRunMode == DAQ_NOT_RUNNING && TP_CheckIfTestpulseIsRunning(panelTitle))
-				TP_StopTestPulse(panelTitle)
-			elseif(DAG_GetNumericalValue(panelTitle, "check_Settings_MD"))
-				TPM_StartTestPulseMultiDevice(panelTitle)
+				NVAR dataAcqRunMode = $GetDataAcqRunMode(panelTitle)
+
+				// if data acquisition is currently running we just
+				// want just call TP_StartTestPulse* which automatically
+				// ends DAQ
+				if(dataAcqRunMode == DAQ_NOT_RUNNING && TP_CheckIfTestpulseIsRunning(panelTitle))
+					TP_StopTestPulse(panelTitle)
+				elseif(DAG_GetNumericalValue(panelTitle, "check_Settings_MD"))
+					TPM_StartTestPulseMultiDevice(panelTitle)
+				else
+					TPS_StartTestPulseSingleDevice(panelTitle)
+				endif
+			elseif(!cmpstr(ba.ctrlName, "DataAcquireButton"))
+
+				NVAR dataAcqRunMode = $GetDataAcqRunMode(panelTitle)
+
+				if(dataAcqRunMode == DAQ_NOT_RUNNING)
+					TP_StopTestPulse(panelTitle)
+					AbortOnValue DAP_CheckSettings(panelTitle, DATA_ACQUISITION_MODE), 1
+
+					if(DAG_GetNumericalValue(panelTitle, "check_Settings_MD"))
+						DQM_StartDAQMultiDevice(panelTitle)
+					else
+						DQS_StartDAQSingleDevice(panelTitle)
+					endif
+				else // data acquistion is ongoing, stop data acq
+					DQ_StopDAQ(panelTitle)
+				endif
 			else
-				TPS_StartTestPulseSingleDevice(panelTitle)
+				ASSERT(0, "invalid control")
 			endif
 			break
 	endswitch

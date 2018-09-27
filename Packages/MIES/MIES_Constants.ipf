@@ -530,7 +530,7 @@ Constant HARDWARE_DAC_EXTERNAL_TRIGGER = 0x1
 /// @}
 
 /// Used to upgrade the GuiStateWave as well as the DA Ephys panel
-Constant DA_EPHYS_PANEL_VERSION     = 34
+Constant DA_EPHYS_PANEL_VERSION     = 35
 Constant DATABROWSER_PANEL_VERSION  = 8
 Constant SWEEPBROWSER_PANEL_VERSION = 3
 Constant WAVEBUILDER_PANEL_VERSION  = 7
@@ -934,7 +934,7 @@ Constant NUM_ENTRIES_FOR_MULTITHREAD = 16
 
 /// Exclusive list of functions which are allowed to call
 /// DQS_StartDAQSingleDevice()/DQM_StartDAQMultiDevice()
-StrConstant DAQ_ALLOWED_FUNCTIONS = "DQ_RestartDAQ;DAP_ButtonProc_AcquireData;RA_CounterMD"
+StrConstant DAQ_ALLOWED_FUNCTIONS = "DQ_RestartDAQ;DAP_ButtonProc_TPDAQ;RA_CounterMD"
 
 StrConstant RESISTANCE_GRAPH = "AnalysisFuncResistanceGraph"
 
