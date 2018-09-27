@@ -1544,9 +1544,6 @@ Function DAP_UpdateSweepSetVariables(panelTitle)
 
 	variable numSetRepeats
 
-	NVAR daqRunMode = $GetDataAcqRunMode(panelTitle)
-	ASSERT(daqRunMode == DAQ_NOT_RUNNING, "Invalid call during DAQ")
-
 	if(DAG_GetNumericalValue(panelTitle, "Check_DataAcq1_RepeatAcq"))
 		numSetRepeats = DAG_GetNumericalValue(panelTitle, "SetVar_DataAcq_SetRepeats")
 
