@@ -457,6 +457,7 @@ Function/S AFH_GetAnalysisFunctions(versionBitMask)
 
 	funcList  = FunctionList("*", ";", "KIND:2,WIN:MIES_AnalysisFunctions.ipf")
 	funcList += FunctionList("*", ";", "KIND:2,WIN:MIES_AnalysisFunctions_PatchSeq.ipf")
+	funcList += FunctionList("*", ";", "KIND:2,WIN:MIES_AnalysisFunctions_MultiPatchSeq.ipf")
 	funcList += FunctionList("*", ";", "KIND:2,WIN:UserAnalysisFunctions.ipf")
 
 	numEntries = ItemsInList(funcList)
