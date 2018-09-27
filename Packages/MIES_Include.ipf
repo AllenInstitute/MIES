@@ -39,6 +39,7 @@
 #include "MIES_AnalysisFunctionManagement"
 #include "MIES_AnalysisFunctions_PatchSeq"
 #include "MIES_AnalysisFunctions_Dashboard"
+#include "MIES_AnalysisFunctions_MultiPatchSeq"
 #include "MIES_AnalysisFunctionPrototypes"
 #include "MIES_AnalysisFunctions"
 #include "MIES_AnalysisMaster"

@@ -4876,3 +4876,10 @@ Function GetTotalOnsetDelay(numericalValues, sweepNo)
 	return GetLastSettingIndep(numericalValues, sweepNo, "Delay onset auto", DATA_ACQUISITION_MODE) + \
 			GetLastSettingIndep(numericalValues, sweepNo, "Delay onset user", DATA_ACQUISITION_MODE)
 End
+
+/// @brief Check if the given multiplier is a valid sampling interval multiplier
+Function IsValidSamplingMultiplier(multiplier)
+	variable multiplier
+
+	return IsFinite(multiplier) && WhichListItem(num2str(multiplier), DAP_GetSamplingMultiplier()) != -1
+End

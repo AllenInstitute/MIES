@@ -3700,6 +3700,13 @@ Function WaveModCountWrapper(wv)
 
 End
 
+// @brief Convert a number to the strings `Passed` (!= 0) or `Failed` (0).
+Function/S ToPassFail(passedOrFailed)
+	variable passedOrFailed
+
+	return SelectString(passedOrFailed, "failed", "passed")
+End
+
 // @brief Convert a number to the strings `True` (!= 0) or `False` (0).
 Function/S ToTrueFalse(var)
 	variable var
