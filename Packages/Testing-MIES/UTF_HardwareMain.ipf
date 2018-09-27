@@ -15,6 +15,7 @@
 #include "UTF_PatchSeqSquarePulse"
 #include "UTF_PatchSeqRheobase"
 #include "UTF_PatchSeqRamp"
+#include "UTF_MultiPatchSeqFastRheoEstimate"
 
 Function LoadStimsets()
 	string filename = GetFolder(FunctionPath("")) + "_2017_09_01_192934-compressed.nwb"
@@ -252,6 +253,28 @@ Function run()
 	list = AddListItem("AFT_Test19", list, ";", INF)
 	list = AddListItem("AFT_DAQ20", list, ";", INF)
 	list = AddListItem("AFT_Test20", list, ";", INF)
+
+	list = AddListItem("MSQ_FRE_Run1", list, ";", INF)
+	list = AddListItem("MSQ_FRE_Test1", list, ";", INF)
+	list = AddListItem("MSQ_FRE_Run2", list, ";", INF)
+	list = AddListItem("MSQ_FRE_Test2", list, ";", INF)
+	list = AddListItem("MSQ_FRE_Run3", list, ";", INF)
+	list = AddListItem("MSQ_FRE_Test3", list, ";", INF)
+	list = AddListItem("MSQ_FRE_Run4", list, ";", INF)
+	list = AddListItem("MSQ_FRE_Test4", list, ";", INF)
+	list = AddListItem("MSQ_FRE_Run5", list, ";", INF)
+	list = AddListItem("MSQ_FRE_Test5", list, ";", INF)
+	list = AddListItem("MSQ_FRE_Run6", list, ";", INF)
+	list = AddListItem("MSQ_FRE_Test6", list, ";", INF)
+	list = AddListItem("MSQ_FRE_Run7", list, ";", INF)
+	list = AddListItem("MSQ_FRE_Test7", list, ";", INF)
+	list = AddListItem("MSQ_FRE_Run8", list, ";", INF)
+	list = AddListItem("MSQ_FRE_Test8", list, ";", INF)
+	list = AddListItem("MSQ_FRE_Run9", list, ";", INF)
+	list = AddListItem("MSQ_FRE_Test9", list, ";", INF)
+	list = AddListItem("MSQ_FRE_Run10", list, ";", INF)
+	list = AddListItem("MSQ_FRE_Test10", list, ";", INF)
+
 #endif
 
 	// initialize everything
