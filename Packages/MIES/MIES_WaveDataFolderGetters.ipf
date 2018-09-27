@@ -608,7 +608,13 @@ Function/S GetSingleSweepFolderAsString(dfr, sweepNo)
 	return GetDataFolder(1, dfr) + "X_" + num2str(sweepNo)
 End
 
-/// @brief Return the ITC data wave
+/// @brief Return the hardware data wave
+///
+/// ITC hardware:
+/// - 2D signed 16bit integer wave, the colums are for the channel
+///
+/// NI hardware:
+/// - Wave reference wave, one referencing each channel
 ///
 /// Rows:
 /// - data
