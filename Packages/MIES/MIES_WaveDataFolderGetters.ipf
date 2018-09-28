@@ -314,7 +314,7 @@ Function/WAVE UpgradeWaveLocationAndGetIt(p)
 			// and src also not, the wave was not yet created
 			return $""
 		else
-			ASSERT(IsValidWaveName(p.newName), "Invalid/Liberal wave name for newName")
+			ASSERT(IsValidObjectName(p.newName), "Invalid/Liberal wave name for newName")
 			MoveWave src, p.newDFR:$p.newName
 			RemoveEmptyDataFolder(p.dfr)
 			return src
