@@ -47,7 +47,7 @@ Function/S DAP_GetNIDeviceList()
 		if(!(strsearch(DAQmxDevice, NI_PCIE_6343_PATTERN, 0) == -1))
 			DAQmxDevName = StringByKey("NAME", DAQmxDevice)
 			if(!isEmpty(DAQmxDevName))
-				if(!IsValidWaveName(DAQmxDevName))
+				if(!IsValidObjectName(DAQmxDevName))
 					Print "NI device " + DAQmxDevName + " has a name that is incompatible for use in MIES. Please change the device name in NI MAX to a simple name, e.g. DeviceX."
 				else
 					devList += DAQmxDevName + ";"
