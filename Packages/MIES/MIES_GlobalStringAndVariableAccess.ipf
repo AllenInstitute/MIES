@@ -334,7 +334,7 @@ Function/S GetTestpulseRunMode(panelTitle)
 End
 
 /// @brief Returns NI device list
-threadsafe Function/S GetNIDeviceList()
+Function/S GetNIDeviceList()
 
 	// note: this global gets killed in IH_KillTemporaries
 	return GetSVARAsString(GetITCDevicesFolder(), "NIDeviceList", initialValue="")
