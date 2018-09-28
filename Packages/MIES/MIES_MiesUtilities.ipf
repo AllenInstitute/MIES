@@ -1722,15 +1722,15 @@ Function GetSamplingInterval(config)
 End
 
 /// @brief Returns the data offset of the sweep in points
-Function GetDataOffset(config)
+threadsafe Function GetDataOffset(config)
 	Wave config
 
-	ASSERT(IsValidConfigWave(config),"Expected a valid config wave")
+	ASSERT_TS(IsValidConfigWave(config),"Expected a valid config wave")
 
 	Duplicate/D/R=[][4]/FREE config, offsets
 
 	// The data offset is the same for all channels
-	ASSERT(WaveMax(offsets) == WaveMin(offsets), "Expected constant data offset for all channels")
+	ASSERT_TS(WaveMax(offsets) == WaveMin(offsets), "Expected constant data offset for all channels")
 	return offsets[0]
 End
 
@@ -4766,7 +4766,7 @@ Function/WAVE MoveWaveWithOverwrite(dest, src)
 End
 
 /// @brief Check if the given wave is a valid ITCConfigWave
-Function IsValidConfigWave(config)
+threadsafe Function IsValidConfigWave(config)
 	WAVE/Z config
 
 	return WaveExists(config) &&        \
@@ -4775,7 +4775,7 @@ Function IsValidConfigWave(config)
 End
 
 /// @brief Check if the given wave is a valid ITCDataWave
-Function IsValidSweepWave(sweep)
+threadsafe Function IsValidSweepWave(sweep)
 	WAVE/Z sweep
 
 	return WaveExists(sweep) &&        \
@@ -4784,7 +4784,7 @@ Function IsValidSweepWave(sweep)
 End
 
 /// @brief Check if the two waves are valid and compatible
-Function IsValidSweepAndConfig(sweep, config)
+threadsafe Function IsValidSweepAndConfig(sweep, config)
 	WAVE/Z sweep, config
 
 	return IsValidConfigWave(config) &&                  \
