@@ -3016,14 +3016,29 @@ Function/WAVE ExtractFromSubrange(listOfRanges, dim)
 	return ranges
 End
 
-/// @brief Check if a name for a wave adheres to the strict naming rules
+#if (IgorVersion() >= 8.00)
+
+/// @brief Check if a name for an object adheres to the strict naming rules
 ///
 /// @see `DisplayHelpTopic "ObjectName"`
-Function IsValidWaveName(wvName)
+threadsafe Function IsValidObjectName(wvName)
 	string wvName
 
 	return !cmpstr(wvName, CleanupName(wvName, 0))
 End
+
+#else
+
+/// @brief Check if a name for an object adheres to the strict naming rules
+///
+/// @see `DisplayHelpTopic "ObjectName"`
+Function IsValidObjectName(wvName)
+	string wvName
+
+	return !cmpstr(wvName, CleanupName(wvName, 0))
+End
+
+#endif
 
 /// @brief Find an integer `x` which is larger than `a` but the
 /// smallest possible power of `p`.
