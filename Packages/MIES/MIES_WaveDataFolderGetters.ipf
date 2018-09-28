@@ -466,9 +466,9 @@ Function/WAVE GetActiveHSProperties(panelTitle)
 End
 
 /// @brief Return the ITC devices folder "root:mies:HardwareDevices"
-threadsafe Function/DF GetITCDevicesFolder()
+Function/DF GetITCDevicesFolder()
 
-	return createDFWithAllParents(GetITCDevicesFolderAsString())
+	return UpgradeDataFolderLocation(GetMiesPathAsString() + ":ITCDevices", GetITCDevicesFolderAsString())
 End
 
 /// @brief Return a data folder reference to the ITC devices folder

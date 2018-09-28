@@ -1484,15 +1484,11 @@ Function/S GetAllDevices()
 	string folder, number, device, folders
 	string path, list = ""
 
-	path = GetITCDevicesFolderAsString()
-
-	if(!DataFolderExists(path))
-		return ""
-	endif
+	DFREF devicesFolder = GetITCDevicesFolder()
 
 	numNumbers = ItemsInList(DEVICE_NUMBERS)
 
-	folders = GetListOfObjects($path, ".*", typeFlag = COUNTOBJECTS_DATAFOLDER)
+	folders = GetListOfObjects(devicesFolder, ".*", typeFlag = COUNTOBJECTS_DATAFOLDER)
 	numEntries = ItemsInList(folders)
 	for(i = 0; i < numEntries; i += 1)
 		folder = StringFromList(i, folders)

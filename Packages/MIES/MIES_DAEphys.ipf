@@ -3926,6 +3926,9 @@ Function/S DAP_CreateDAEphysPanel()
 
 	string panel
 
+	// upgrade folder locations
+	GetITCDevicesFolder()
+
 	Execute "DA_Ephys()"
 	panel = GetCurrentWindow()
 	SCOPE_OpenScopeWindow(panel)

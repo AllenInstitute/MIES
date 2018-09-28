@@ -293,6 +293,9 @@ Function/S BSP_GetDevice(win)
 	mainPanel = GetMainWindow(win)
 	ASSERT(WindowExists(mainPanel), "specified panel does not exist.")
 
+	// upgrade folder locations
+	GetITCDevicesFolder()
+
 	return GetUserData(mainPanel, "", MIES_BSP_DEVICE)
 End
 
