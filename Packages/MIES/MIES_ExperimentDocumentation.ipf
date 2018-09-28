@@ -496,7 +496,7 @@ Function ED_createWaveNoteTags(panelTitle, sweepCount)
 	ED_AddEntriesToLabnotebook(sweepSettingsTxtWave, sweepSettingsTxtKey, SweepCount, panelTitle, DATA_ACQUISITION_MODE)
 
 	// document active headstages and their clamp modes
-	Make/FREE/N=(3, 2)/T numKeys
+	Make/FREE/N=(3, 3)/T numKeys
 	numKeys = ""
 
 	numKeys[0][0] =  "Headstage Active"
@@ -507,9 +507,13 @@ Function ED_createWaveNoteTags(panelTitle, sweepCount)
 	numKeys[1][1] =  ""
 	numKeys[2][1] =  LABNOTEBOOK_NO_TOLERANCE
 
+	numKeys[0][2] = "Igor Pro bitness"
+	numKeys[1][2] = ""
+	numKeys[2][2] = LABNOTEBOOK_NO_TOLERANCE
+
 	WAVE statusHS = DAG_GetChannelState(panelTitle, CHANNEL_TYPE_HEADSTAGE)
 
-	Make/FREE/N=(1, 2, LABNOTEBOOK_LAYER_COUNT) numSettings = NaN
+	Make/FREE/N=(1, 3, LABNOTEBOOK_LAYER_COUNT) numSettings = NaN
 	numSettings[0][0][0,7] = statusHS[r]
 
 	WAVE activeHSProp = GetActiveHSProperties(panelTitle)
@@ -523,6 +527,12 @@ Function ED_createWaveNoteTags(panelTitle, sweepCount)
 		numSettings[0][1][i] = activeHSProp[j][%ClampMode]
 		j += 1
 	endfor
+
+#if defined(IGOR64)
+	numSettings[0][2][INDEP_HEADSTAGE] = 64
+#else
+	numSettings[0][2][INDEP_HEADSTAGE] = 32
+#endif
 
 	ED_AddEntriesToLabnotebook(numSettings, numKeys, SweepCount, panelTitle, DATA_ACQUISITION_MODE)
 
