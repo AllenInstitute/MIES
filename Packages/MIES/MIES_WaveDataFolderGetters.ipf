@@ -232,6 +232,81 @@ static Function SetWaveVersion(wv, val)
 	SetNumberInWaveNote(wv, WAVE_NOTE_LAYOUT_KEY, val)
 End
 
+/// @brief Move/Rename a datafolder across different locations
+///
+/// Both parameters must be absolute datafolder locations.
+/// Cases where both exist are also handled gracefully.
+///
+/// \rst
+/// .. code-block:: igorpro
+///
+///		Function/DF GetMyFolder()
+///			return UpgradeDataFolderLocation("root:old", "root:new")
+///		End
+/// \endrst
+///
+/// @todo Make threadsafe once IP8 is mandatory
+///
+/// @return DFREF to the `newFolder` with the contents of `oldFolder`
+Function/DF UpgradeDataFolderLocation(oldFolder, newFolder)
+	string oldFolder, newFolder
+
+	string oldName, newName, from, to, msg, tempFolder
+
+	ASSERT_TS(!IsEmpty(oldFolder), "oldFolder must not be empty")
+	ASSERT_TS(!IsEmpty(newFolder), "newFolder must not be empty")
+	ASSERT_TS(!IsValidObjectName(oldFolder), "oldFolder must be a valid object name (non-liberal)")
+	ASSERT_TS(!IsValidObjectName(newFolder), "newFolder must be a valid object name (non-liberal)")
+	ASSERT_TS(GrepString(oldFolder, "(?i)^root:"), "oldFolder must be an absolute path")
+	ASSERT_TS(GrepString(newFolder, "(?i)^root:"), "newFolder must be an absolute path")
+
+	sprintf msg, "%s -> %s", oldFolder, newFolder
+	DEBUGPRINT(msg)
+
+	oldFolder = RemoveEnding(oldFolder, ":")
+	newFolder = RemoveEnding(newFolder, ":")
+
+	if(!DataFolderExists(oldFolder))
+		return createDFWithAllParents(newFolder)
+	elseif(DataFolderExists(newFolder))
+
+		if(!DataFolderRefsEqual($oldFolder, $newFolder))
+			printf "WARNING! The location %s was supposed to be renamed/moved but the old location still exists.\r", oldFolder
+			printf "Returning the new location and ignoring the old one.\r"
+		endif
+
+		return $newFolder
+	endif
+
+	// oldFolder exists and newFolder not -> move it
+	// 1: Rename to unique name
+	// 2: Move into new location
+	// 3: Rename to target name
+	oldName = GetDataFolder(0, $oldFolder)
+	newName = GetDataFolder(0, createDFWithAllParents(newFolder))
+	KillOrMoveToTrash(dfr=$newFolder)
+
+	sprintf msg, "%s -> %s", oldName, newName
+	DEBUGPRINT(msg)
+
+	tempFolder = UniqueDataFolderName($"root:", "temp")
+	NewDataFolder $tempFolder
+
+	MoveDataFolder $oldFolder, $tempFolder
+	RenameDataFolder $(tempFolder + ":" + oldName), $newName
+
+	from = tempFolder + ":" + newName
+	to   = RemoveEnding(newFolder, ":" + newName)
+
+	sprintf msg, "%s -> %s", from, to
+	DEBUGPRINT(msg)
+
+	MoveDataFolder $from, $to
+	KillOrMoveToTrash(dfr=$tempFolder)
+
+	return $newFolder
+End
+
 /// @brief Rename/Move a wave to a new location
 ///
 /// Valid transformations (and all combinations of them):
