@@ -168,6 +168,10 @@ Getting all sweeps of a repeated acquisition cycle `RAC`
   non-empty entry.
 * Now collect all sweep numbers which have that `RAC` value
 
+The related entry `Stimset Acq Cycle ID` (`SCI`) is an identifier which is
+constant for a given headstage if the data stems from the same stimset, the
+same RAC and had the same stimset cycle count.
+
 Existing code
 =============
 
