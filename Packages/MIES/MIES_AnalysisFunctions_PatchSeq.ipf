@@ -264,7 +264,7 @@ static Function PSQ_EvaluateBaselineProperties(panelTitle, type, sweepNo, chunk,
 	endif
 
 	// not enough data to evaluate
-	if(fifoInStimsetTime < chunkStartTimeMax + chunkLengthTime)
+	if(fifoInStimsetTime + totalOnsetDelay < chunkStartTimeMax + chunkLengthTime)
 		return NaN
 	endif
 
@@ -297,7 +297,7 @@ static Function PSQ_EvaluateBaselineProperties(panelTitle, type, sweepNo, chunk,
 
 	WAVE OscilloscopeData = GetOscilloscopeWave(panelTitle)
 
-	sprintf msg, "We have some data to evaluate in chunk %d [%g, %g]:  %gms\r", chunk, chunkStartTimeMax, chunkStartTimeMax + chunkLengthTime, fifoInStimsetTime
+	sprintf msg, "We have some data to evaluate in chunk %d [%g, %g]:  %gms\r", chunk, chunkStartTimeMax, chunkStartTimeMax + chunkLengthTime, fifoInStimsetTime + totalOnsetDelay
 	DEBUGPRINT(msg)
 
 	WAVE config = GetITCChanConfigWave(panelTitle)
