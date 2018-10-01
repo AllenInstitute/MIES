@@ -103,6 +103,10 @@ Caveats
   additional entries present which are formatted like `$entry UNASSOC_$channelNumber`
   and only have entries in the nineth layer (as it is by definition headstage
   independent data).
+* One important concept is valid entries vs placeholder entries. All non-`NaN`
+  or non-empty string entries are valid entries. Therefore only valid entries
+  override other placeholder entries. But placeholder entries never override
+  valid entries.
 * This document describes the latest version of the labnotebook only. Some
   things will be different for older versions. In case you need to read these
   and got into trouble please contact `MIES@alleninstitute.org` for
