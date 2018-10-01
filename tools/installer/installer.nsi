@@ -881,14 +881,9 @@ EndOfLinks:
   # Set the INSTALLSIZE constant (!defined at the top of this script) so Add/Remove Programs can accurately report the size
   WriteRegDWORD HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\${COMPANYNAME} ${APPNAME}" "EstimatedSize" ${INSTALLSIZE}
 
-  ExecCmd::exec "$\"$INSTDIR\vc_redist.x86.exe /quiet$\""
-  Pop $0
-  ExecCmd::wait $0
-  Pop $0
-  ExecCmd::exec "$\"$INSTDIR\vc_redist.x64.exe /quiet$\""
-  Pop $0
-  ExecCmd::wait $0
-  Pop $0
+  ExecWait '"$INSTDIR\vc_redist.x86.exe" /quiet'
+  ExecWait '"$INSTDIR\vc_redist.x64.exe" /quiet'
+  Sleep 1000
   Delete "$INSTDIR\vc_redist.x86.exe"
   Delete "$INSTDIR\vc_redist.x64.exe"
 SectionEnd
