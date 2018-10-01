@@ -75,7 +75,7 @@ Addition of new entries
 
 When writing a new value into the labnotebook a new row is appended/filled in
 the `value` array. This means we never overwrite old entries. Due to sweep
-rollback (aka deleting exsting sweeps and acquiring new sweeps) it can happen
+rollback (aka deleting existing sweeps and acquiring new sweeps) it can happen
 that duplicated sweep numbers are present in the labnotebook. Each row holds
 the entry source type, which tells you about the subsystem the entry originated
 from, the possible values are
