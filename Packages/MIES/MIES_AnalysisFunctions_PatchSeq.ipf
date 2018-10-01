@@ -220,10 +220,14 @@ static Function/WAVE PSQ_DeterminePulseDuration(panelTitle, sweepNo, totalOnsetD
 	return durations
 End
 
-/// @brief Evaluate one chunk of the baseline.
+/// @brief Evaluate one chunk of the baseline
 ///
-/// chunk == 0: Pre pulse baseline
-/// chunk >= 1: Post pulse baseline
+/// @param panelTitle        device
+/// @param type              analysis function type, one of @ref PatchSeqAnalysisFunctionTypes
+/// @param sweepNo           sweep number
+/// @param chunk             chunk number, `chunk == 0` -> Pre pulse baseline chunk, `chunk >= 1` -> Post pulse baseline
+/// @param fifoInStimsetTime Fifo position in ms *relative* to the start of the stimset (therefore ignoring the totalOnsetDelay)
+/// @param totalOnsetDelay   total onset delay in ms
 ///
 /// @return
 /// pre pulse baseline: 0 if the chunk passes, one of the possible @ref AnalysisFuncReturnTypesConstants values otherwise
