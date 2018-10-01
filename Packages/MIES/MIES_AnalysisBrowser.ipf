@@ -23,6 +23,11 @@ static Function AB_ResetSelectionWave()
 
 	WAVE expBrowserSel    = GetExperimentBrowserGUISel()
 	WAVE/T expBrowserList = GetExperimentBrowserGUIList()
+
+	if(DimSize(expBrowserSel, ROWS) == 0)
+		return NaN
+	endif
+
 	expBrowserSel = 0
 
 	col = FindDimLabel(expBrowserList, COLS, "experiment")
