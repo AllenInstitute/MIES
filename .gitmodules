@@ -1,6 +1,6 @@
 [submodule "Packages/unit-testing"]
 	path = Packages/unit-testing
-	url = https://github.com/t-b/igor-unit-testing-framework
+	url = https://github.com/byte-physics/igor-unit-testing-framework
 [submodule "Packages/IPNWB"]
 	path = Packages/IPNWB
 	url = https://github.com/AllenInstitute/IPNWB
@@ -12,4 +12,4 @@
 	url = https://github.com/AllenInstitute/ITCXOP2
 [submodule "Packages/doc/doxygen-filter-ipf"]
 	path = Packages/doc/doxygen-filter-ipf
-	url = https://github.com/t-b/doxygen-filter-ipf
+	url = https://github.com/byte-physics/doxygen-filter-ipf
