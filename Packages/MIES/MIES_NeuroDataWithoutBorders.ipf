@@ -1356,10 +1356,16 @@ static Function NWB_AppendIgorHistory(locationID)
 		return NaN
 	endif
 
+	try
+		history = CaptureHistory(refnum, 0); AbortOnRTE
+	catch
+		return NaN
+	endtry
+
 	name = "history"
 
 	IPNWB#H5_CreateGroupsRecursively(locationID, "/general", groupID=groupID)
-	history = NormalizeToEOL(CaptureHistory(refnum, 0), "\n")
+	history = NormalizeToEOL(history, "\n")
 	IPNWB#H5_WriteTextDataset(groupID, name, str=history, chunkedLayout=1, overwrite=1, writeIgorAttr=0)
 	IPNWB#MarkAsCustomEntry(groupID, name)
 
