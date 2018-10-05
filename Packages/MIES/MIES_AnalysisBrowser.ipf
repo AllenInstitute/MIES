@@ -739,9 +739,9 @@ End
 static Function/S AB_LoadLabNotebookFromIgor(discLocation)
 	String discLocation
 
-	string labNotebookWaves, labNotebookPath, type, number, path, basepath, device, cdf, str
+	string labNotebookWaves, labNotebookPath, type, number, path, basepath, device, str
 	string deviceList = ""
-	variable numDevices, numTypes, i, j, numWavesLoaded
+	variable numEntries, i, j, numWavesLoaded, numNumbers
 
 	WAVE/T experiment = AB_GetMap(discLocation)
 
@@ -763,28 +763,26 @@ static Function/S AB_LoadLabNotebookFromIgor(discLocation)
 		return ""
 	endif
 
-	// AB_LoadDataWrapper switched current Data Folder to newDFR
-	cdf = GetDataFolder(1)
+	numEntries = CountObjectsDFR(newDFR, COUNTOBJECTS_DATAFOLDER)
+	numNumbers = ItemsInList(DEVICE_NUMBERS)
+	for(i = 0; i < numEntries; i += 1)
 
-	// loop through root:MIES:LabNoteBook:[DEVICE_TYPES_ITC]:Device[DEVICE_NUMBERS]:
-	numDevices = ItemsInList(DEVICE_NUMBERS)
-	numTypes   = ItemsInList(DEVICE_TYPES_ITC)
+		type = GetIndexedObjNameDFR(newDFR, COUNTOBJECTS_DATAFOLDER, i)
 
-	for(i = 0; i < numTypes; i += 1)
-		type = StringFromList(i, DEVICE_TYPES_ITC)
-		path = cdf + type
+		if(GrepString(type, "^ITC.*"))
+			// ITC hardware is in a specific subfolder
+			for(j = 0; j < numNumbers ; j += 1)
+				number = StringFromList(j, DEVICE_NUMBERS)
+				device = BuildDeviceString(type, number)
+				path = GetDataFolder(1, newDFR) + type + ":Device" + number
 
-		if(!DataFolderExists(path))
-			continue
-		endif
-
-		for(j = 0; j < numDevices; j += 1)
-			number = StringFromList(j, DEVICE_NUMBERS)
-			path = cdf + type + ":Device" + number
-
-			device = BuildDeviceString(type, number)
+				AB_LoadLabNotebookFromIgorLow(discLocation, path, device, deviceList)
+			endfor
+		else // other hardware not
+			device = type
+			path = GetDataFolder(1, newDFR) + device
 			AB_LoadLabNotebookFromIgorLow(discLocation, path, device, deviceList)
-		endfor
+		endif
 	endfor
 
 	SetDataFolder saveDFR
