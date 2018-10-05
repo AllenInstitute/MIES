@@ -248,6 +248,8 @@ End
 
 /// @brief Check if the given file has a compatible version
 ///        which this version of the analysis browser can handle.
+///
+/// @param discLocation file to check, parameter to AB_GetMap()
 static Function AB_HasCompatibleVersion(discLocation)
 	string discLocation
 
