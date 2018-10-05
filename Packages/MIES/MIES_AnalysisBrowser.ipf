@@ -1672,8 +1672,8 @@ End
 /// @brief Load specified device/sweep combination from Igor experiment file to sweepDFR
 ///
 /// @returns name of loaded sweep
-Function/S AB_LoadSweepFromIgor(expFilePath, sweepDFR, device, sweep)
-	string expFilePath, device
+Function/S AB_LoadSweepFromIgor(discLocation, sweepDFR, device, sweep)
+	string discLocation, device
 	DFREF sweepDFR
 	variable sweep
 
@@ -1690,10 +1690,10 @@ Function/S AB_LoadSweepFromIgor(expFilePath, sweepDFR, device, sweep)
 	dataPath = GetDeviceDataPathAsString(device)
 	DFREF saveDFR = GetDataFolderDFR()
 	DFREF newDFR = UniqueDataFolder(GetAnalysisFolder(), "temp")
-	numWavesLoaded = AB_LoadDataWrapper(newDFR, expFilePath, dataPath, sweepWaveList)
+	numWavesLoaded = AB_LoadDataWrapper(newDFR, discLocation, dataPath, sweepWaveList)
 
 	if(numWavesLoaded <= 0)
-		printf "Could not load sweep %d of device %s and %s\r", sweep, device, expFilePath
+		printf "Could not load sweep %d of device %s and %s\r", sweep, device, discLocation
 		SetDataFolder saveDFR
 		KillOrMoveToTrash(dfr=newDFR)
 		KillOrMoveToTrash(dfr=sweepDFR)
