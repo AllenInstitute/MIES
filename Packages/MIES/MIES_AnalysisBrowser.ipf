@@ -647,6 +647,7 @@ static Function AB_LoadTPStorageFromFile(expFilePath, expFolder, device)
 
 	DFREF targetDFR = GetAnalysisDeviceTestpulse(expFolder, device)
 	dataFolderPath  = GetDeviceTestPulseAsString(device)
+	dataFolderPath  = AB_TranslatePath(dataFolderPath, expFolder)
 	DFREF saveDFR   = GetDataFolderDFR()
 
 	// we can not determine how many TPStorage waves are in dataFolderPath
@@ -673,6 +674,7 @@ static Function AB_LoadUserCommentFromFile(expFilePath, expFolder, device)
 
 	DFREF targetDFR = GetAnalysisDeviceFolder(expFolder, device)
 	dataFolderPath  = GetDevicePathAsString(device)
+	dataFolderPath  = AB_TranslatePath(dataFolderPath, expFolder)
 	DFREF saveDFR   = GetDataFolderDFR()
 
 	numStringsLoaded = AB_LoadDataWrapper(targetDFR, expFilePath, dataFolderPath, "userComment", typeFlags=LOAD_DATA_TYPE_STRING)
@@ -947,6 +949,24 @@ static Function AB_updateLabelsInLabNotebook(dfr)
 	return 1
 End
 
+static Function/S AB_TranslatePath(path, expFolder)
+	string path, expFolder
+
+	DFREF dfr = GetAnalysisExpFolder(expFolder)
+	NVAR pxpVersion = $GetPxpVersionForAB(dfr)
+
+	if(isNaN(pxpVersion) || pxpVersion == 1)
+		// old data in expFolder still uses ITCDevices but
+		// path already uses the new name
+		return ReplaceString(":HardwareDevices", path, ":ITCDevices")
+	endif
+
+	// pxpVersion 2
+	// HardwareDevices is used consistently
+
+	return path
+End
+
 static Constant LOAD_CONFIG_CHUNK_SIZE = 50
 
 /// @brief Load all `Config_Sweep_*` waves from the given experiment file or folder and the given device
@@ -968,6 +988,7 @@ static Function AB_LoadSweepConfigData(expFilePath, expFolder, device, highestSw
 
 	DFREF targetDFR = GetAnalysisDeviceConfigFolder(expFolder, device)
 	dataFolderPath = GetDeviceDataPathAsString(device)
+	dataFolderPath = AB_TranslatePath(dataFolderPath, expFolder)
 	DFREF saveDFR = GetDataFolderDFR()
 
 	step  = 1
@@ -1404,7 +1425,7 @@ Function AB_LoadSweepFromFile(discLocation, dataFolder, fileType, device, sweep,
 
 	strswitch(fileType)
 		case ANALYSISBROWSER_FILE_TYPE_IGOR:
-			sweeps = AB_LoadSweepFromIgor(discLocation, sweepDFR, device, sweep)
+			sweeps = AB_LoadSweepFromIgor(discLocation, dataFolder, sweepDFR, device, sweep)
 			if(!cmpstr(sweeps, ""))
 				return 1
 			endif
@@ -1672,8 +1693,8 @@ End
 /// @brief Load specified device/sweep combination from Igor experiment file to sweepDFR
 ///
 /// @returns name of loaded sweep
-Function/S AB_LoadSweepFromIgor(discLocation, sweepDFR, device, sweep)
-	string discLocation, device
+Function/S AB_LoadSweepFromIgor(discLocation, expFolder, sweepDFR, device, sweep)
+	string discLocation, expFolder, device
 	DFREF sweepDFR
 	variable sweep
 
@@ -1688,6 +1709,7 @@ Function/S AB_LoadSweepFromIgor(discLocation, sweepDFR, device, sweep)
 	sweepWaveList = AddListItem(sweepWaveList, sweepWaveName + WAVE_BACKUP_SUFFIX, ";", Inf)
 
 	dataPath = GetDeviceDataPathAsString(device)
+	dataPath = AB_TranslatePath(dataPath, expFolder)
 	DFREF saveDFR = GetDataFolderDFR()
 	DFREF newDFR = UniqueDataFolder(GetAnalysisFolder(), "temp")
 	numWavesLoaded = AB_LoadDataWrapper(newDFR, discLocation, dataPath, sweepWaveList)
