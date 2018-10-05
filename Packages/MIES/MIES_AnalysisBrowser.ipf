@@ -782,69 +782,8 @@ static Function/S AB_LoadLabNotebookFromIgor(discLocation)
 			number = StringFromList(j, DEVICE_NUMBERS)
 			path = cdf + type + ":Device" + number
 
-			if(!DataFolderExists(path))
-				continue
-			endif
-
-			// search for Loaded labNotebookWaves
-			// first try the new wave names and then as fallback
-			// the old ones
-			// Supports old/new wavename mixes although these should not
-			// exist in the wild.
-
-			Wave/Z/SDFR=$path numericalKeys
-
-			if(!WaveExists(numericalKeys))
-				basepath = path + ":KeyWave"
-				if(DataFolderExists(basepath))
-					Wave/Z/SDFR=$basepath numericalKeys = keyWave
-				endif
-			endif
-
-			Wave/Z/SDFR=$path numericalValues
-
-			if(!WaveExists(numericalValues))
-				basepath = path + ":settingsHistory"
-				if(DataFolderExists(basepath))
-					Wave/Z/SDFR=$basepath numericalValues = settingsHistory
-				endif
-			endif
-
-			Wave/Z/SDFR=$path textualKeys
-
-			if(!WaveExists(textualKeys))
-				basepath = path + ":TextDocKeyWave"
-				if(DataFolderExists(basepath))
-					Wave/Z/SDFR=$basepath textualKeys = txtDocKeyWave
-				endif
-			endif
-
-			Wave/Z/SDFR=$path textualValues
-
-			if(!WaveExists(textualValues))
-				basepath = path + ":textDocumentation"
-				if(DataFolderExists(basepath))
-					Wave/Z/SDFR=$basepath textualValues = txtDocWave
-				endif
-			endif
-
 			device = BuildDeviceString(type, number)
-
-			if(!WaveExists(numericalKeys) || !WaveExists(numericalValues) || !WaveExists(textualKeys) || !WaveExists(textualValues))
-				printf "Could not find all four labnotebook waves, dropping all data from device %s in file %s\r", device, discLocation
-				continue
-			endif
-
-			// copy and rename loaded waves to Analysisbrowser directory.
-			DFREF dfr = GetAnalysisLabNBFolder(experiment[%DataFolder], device)
-			Duplicate/O numericalKeys, dfr:numericalKeys/Wave=numericalKeys
-			Duplicate/O numericalValues, dfr:numericalValues/Wave=numericalValues
-			Duplicate/O textualKeys, dfr:textualKeys/Wave=textualKeys
-			Duplicate/O textualValues, dfr:textualValues
-
-			// add device to devicelist
-			DEBUGPRINT("Loaded Igor labnotebook for device: ", str=device)
-			deviceList = AddListItem(device, deviceList, ";", inf)
+			AB_LoadLabNotebookFromIgorLow(discLocation, path, device, deviceList)
 		endfor
 	endfor
 
@@ -852,6 +791,82 @@ static Function/S AB_LoadLabNotebookFromIgor(discLocation)
 	KillOrMoveToTrash(dfr=newDFR)
 
 	return deviceList
+End
+
+/// @brief Try loading the four labnotebooks from path
+///
+/// @param[in] discLocation    experiment location on disc
+/// @param[in] path            datafolder path which holds the labnotebooks (might not exist)
+/// @param[in] device          name of the device
+/// @param[in, out] deviceList list of loaded devices, for successful loads we add to that list
+static Function AB_LoadLabNotebookFromIgorLow(discLocation, path, device, deviceList)
+	string discLocation, path, device
+	string &deviceList
+
+	string basepath
+
+	if(!DataFolderExists(path))
+		return NaN
+	endif
+
+	WAVE/T experiment = AB_GetMap(discLocation)
+
+	// search for Loaded labNotebookWaves
+	// first try the new wave names and then as fallback
+	// the old ones
+	// Supports old/new wavename mixes although these should not
+	// exist in the wild.
+
+	Wave/Z/SDFR=$path numericalKeys
+
+	if(!WaveExists(numericalKeys))
+		basepath = path + ":KeyWave"
+		if(DataFolderExists(basepath))
+			Wave/Z/SDFR=$basepath numericalKeys = keyWave
+		endif
+	endif
+
+	Wave/Z/SDFR=$path numericalValues
+
+	if(!WaveExists(numericalValues))
+		basepath = path + ":settingsHistory"
+		if(DataFolderExists(basepath))
+			Wave/Z/SDFR=$basepath numericalValues = settingsHistory
+		endif
+	endif
+
+	Wave/Z/SDFR=$path textualKeys
+
+	if(!WaveExists(textualKeys))
+		basepath = path + ":TextDocKeyWave"
+		if(DataFolderExists(basepath))
+			Wave/Z/SDFR=$basepath textualKeys = txtDocKeyWave
+		endif
+	endif
+
+	Wave/Z/SDFR=$path textualValues
+
+	if(!WaveExists(textualValues))
+		basepath = path + ":textDocumentation"
+		if(DataFolderExists(basepath))
+			Wave/Z/SDFR=$basepath textualValues = txtDocWave
+		endif
+	endif
+
+	if(!WaveExists(numericalKeys) || !WaveExists(numericalValues) || !WaveExists(textualKeys) || !WaveExists(textualValues))
+		printf "Could not find all four labnotebook waves, dropping all data from device %s in file %s\r", device, discLocation
+		return NaN
+	endif
+
+	// copy and rename loaded waves to Analysisbrowser directory
+	DFREF dfr = GetAnalysisLabNBFolder(experiment[%DataFolder], device)
+	Duplicate/O numericalKeys, dfr:numericalKeys/Wave=numericalKeys
+	Duplicate/O numericalValues, dfr:numericalValues/Wave=numericalValues
+	Duplicate/O textualKeys, dfr:textualKeys/Wave=textualKeys
+	Duplicate/O textualValues, dfr:textualValues
+
+	DEBUGPRINT("Loaded Igor labnotebook for device: ", str=device)
+	deviceList = AddListItem(device, deviceList, ";", inf)
 End
 
 static Function/S AB_LoadLabNotebookFromNWB(discLocation)
