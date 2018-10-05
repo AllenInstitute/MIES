@@ -5101,7 +5101,8 @@ End
 /// Dimension sizes and `NOTE_INDEX` value must coincide with other two cache waves.
 Function/Wave GetCacheStatsWave()
 
-	variable versionOfNewWave = 1
+	variable versionOfNewWave = 2
+	variable numRows
 	DFREF dfr = GetCacheFolder()
 
 	WAVE/D/Z/SDFR=dfr wv = stats
@@ -5109,7 +5110,21 @@ Function/Wave GetCacheStatsWave()
 	if(ExistsWithCorrectLayoutVersion(wv, versionOfNewWave))
 		return wv
 	else
-		Make/O/D/N=(MINIMUM_WAVE_SIZE, 4) dfr:stats/Wave=wv
+
+		WAVE/T keys      = GetCacheKeyWave()
+		WAVE/WAVE values = GetCacheValueWave()
+		numRows = DimSize(values, ROWS)
+		ASSERT(DimSize(keys, ROWS) == numRows, "Mismatched row sizes")
+
+		// experiments prior to 37178117 (Cache: Add statistics for each entry, 2018-03-23)
+		// don't hold this wave, but we still have to ensure that the stats wave has the right number of rows
+		if(WaveExists(wv) && DimSize(wv, ROWS) < numRows)
+			Redimension/D/N=(numRows, 4) wv
+			SetWaveVersion(wv, versionOfNewWave)
+			return wv
+		else
+			Make/D/N=(numRows, 4) dfr:stats/Wave=wv
+		endif
 	endif
 
 	wv = NaN
