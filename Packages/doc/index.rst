@@ -14,6 +14,7 @@ Table of Contents
   namespacelist
   CalculateTPLikePropsFromSweep
   IPNWB
+  TPdelta_algorithm
   ZeroMQ-XOP-Readme
   labnotebook-docs
   mies-concepts
