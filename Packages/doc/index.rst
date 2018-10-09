@@ -12,6 +12,7 @@ Table of Contents
   filelist
   structlist
   namespacelist
+  CalculateTPLikePropsFromSweep
   IPNWB
   ZeroMQ-XOP-Readme
   labnotebook-docs
