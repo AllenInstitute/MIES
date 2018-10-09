@@ -1,3 +1,5 @@
+ .. _TP_delta_doc:
+
 Testpulse Delta Algorithm
 -------------------------
 
