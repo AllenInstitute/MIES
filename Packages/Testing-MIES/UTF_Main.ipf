@@ -7,6 +7,7 @@
 #include "UTF_AnalysisFunctionHelpers"
 #include "UTF_PGCSetAndActivateControl"
 #include "UTF_UpgradeWaveLocationAndGetIt"
+#include "UTF_UpgradeDataFolderLocation"
 #include "UTF_Utils"
 #include "UTF_Labnotebook"
 #include "UTF_WaveBuilder"
@@ -19,7 +20,8 @@ Function run()
 	DisableDebugOutput()
 	string procList = ""
 	procList += "UTF_AnalysisFunctionHelpers.ipf;UTF_WaveVersioning.ipf;UTF_UpgradeWaveLocationAndGetIt.ipf;"
-	procList += "UTF_Utils.ipf;UTF_Labnotebook.ipf;UTF_WaveBuilder.ipf;UTF_PGCSetAndActivateControl.ipf"
+	procList += "UTF_Utils.ipf;UTF_Labnotebook.ipf;UTF_WaveBuilder.ipf;UTF_PGCSetAndActivateControl.ipf;"
+	procList += "UTF_UpgradeDataFolderLocation.ipf"
 
 	RunTest(procList, enableJU = 1)
 

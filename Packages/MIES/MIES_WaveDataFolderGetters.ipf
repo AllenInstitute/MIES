@@ -232,6 +232,81 @@ static Function SetWaveVersion(wv, val)
 	SetNumberInWaveNote(wv, WAVE_NOTE_LAYOUT_KEY, val)
 End
 
+/// @brief Move/Rename a datafolder across different locations
+///
+/// Both parameters must be absolute datafolder locations.
+/// Cases where both exist are also handled gracefully.
+///
+/// \rst
+/// .. code-block:: igorpro
+///
+///		Function/DF GetMyFolder()
+///			return UpgradeDataFolderLocation("root:old", "root:new")
+///		End
+/// \endrst
+///
+/// @todo Make threadsafe once IP8 is mandatory
+///
+/// @return DFREF to the `newFolder` with the contents of `oldFolder`
+Function/DF UpgradeDataFolderLocation(oldFolder, newFolder)
+	string oldFolder, newFolder
+
+	string oldName, newName, from, to, msg, tempFolder
+
+	ASSERT_TS(!IsEmpty(oldFolder), "oldFolder must not be empty")
+	ASSERT_TS(!IsEmpty(newFolder), "newFolder must not be empty")
+	ASSERT_TS(!IsValidObjectName(oldFolder), "oldFolder must be a valid object name (non-liberal)")
+	ASSERT_TS(!IsValidObjectName(newFolder), "newFolder must be a valid object name (non-liberal)")
+	ASSERT_TS(GrepString(oldFolder, "(?i)^root:"), "oldFolder must be an absolute path")
+	ASSERT_TS(GrepString(newFolder, "(?i)^root:"), "newFolder must be an absolute path")
+
+	sprintf msg, "%s -> %s", oldFolder, newFolder
+	DEBUGPRINT(msg)
+
+	oldFolder = RemoveEnding(oldFolder, ":")
+	newFolder = RemoveEnding(newFolder, ":")
+
+	if(!DataFolderExists(oldFolder))
+		return createDFWithAllParents(newFolder)
+	elseif(DataFolderExists(newFolder))
+
+		if(!DataFolderRefsEqual($oldFolder, $newFolder))
+			printf "WARNING! The location %s was supposed to be renamed/moved but the old location still exists.\r", oldFolder
+			printf "Returning the new location and ignoring the old one.\r"
+		endif
+
+		return $newFolder
+	endif
+
+	// oldFolder exists and newFolder not -> move it
+	// 1: Rename to unique name
+	// 2: Move into new location
+	// 3: Rename to target name
+	oldName = GetDataFolder(0, $oldFolder)
+	newName = GetDataFolder(0, createDFWithAllParents(newFolder))
+	KillOrMoveToTrash(dfr=$newFolder)
+
+	sprintf msg, "%s -> %s", oldName, newName
+	DEBUGPRINT(msg)
+
+	tempFolder = UniqueDataFolderName($"root:", "temp")
+	NewDataFolder $tempFolder
+
+	MoveDataFolder $oldFolder, $tempFolder
+	RenameDataFolder $(tempFolder + ":" + oldName), $newName
+
+	from = tempFolder + ":" + newName
+	to   = RemoveEnding(newFolder, ":" + newName)
+
+	sprintf msg, "%s -> %s", from, to
+	DEBUGPRINT(msg)
+
+	MoveDataFolder $from, $to
+	KillOrMoveToTrash(dfr=$tempFolder)
+
+	return $newFolder
+End
+
 /// @brief Rename/Move a wave to a new location
 ///
 /// Valid transformations (and all combinations of them):
@@ -314,7 +389,7 @@ Function/WAVE UpgradeWaveLocationAndGetIt(p)
 			// and src also not, the wave was not yet created
 			return $""
 		else
-			ASSERT(IsValidWaveName(p.newName), "Invalid/Liberal wave name for newName")
+			ASSERT(IsValidObjectName(p.newName), "Invalid/Liberal wave name for newName")
 			MoveWave src, p.newDFR:$p.newName
 			RemoveEmptyDataFolder(p.dfr)
 			return src
@@ -390,10 +465,10 @@ Function/WAVE GetActiveHSProperties(panelTitle)
 	return wv
 End
 
-/// @brief Return the ITC devices folder "root:mies:ITCDevices"
-threadsafe Function/DF GetITCDevicesFolder()
+/// @brief Return the ITC devices folder "root:mies:HardwareDevices"
+Function/DF GetITCDevicesFolder()
 
-	return createDFWithAllParents(GetITCDevicesFolderAsString())
+	return UpgradeDataFolderLocation(GetMiesPathAsString() + ":ITCDevices", GetITCDevicesFolderAsString())
 End
 
 /// @brief Return a data folder reference to the ITC devices folder
@@ -402,7 +477,7 @@ threadsafe Function/S GetITCDevicesFolderAsString()
 	return GetMiesPathAsString() + ":HardwareDevices"
 End
 
-/// @brief Return the active ITC devices timer folder "root:mies:ITCDevices:ActiveITCDevices:Timer"
+/// @brief Return the active ITC devices timer folder "root:mies:HardwareDevices:ActiveITCDevices:Timer"
 Function/DF GetActiveITCDevicesTimerFolder()
 
 	return createDFWithAllParents(GetActiveITCDevicesTimerAS())
@@ -414,7 +489,7 @@ Function/S GetActiveITCDevicesTimerAS()
 	return GetActiveITCDevicesFolderAS() + ":Timer"
 End
 
-/// @brief Return the active ITC devices folder "root:mies:ITCDevices:ActiveITCDevices"
+/// @brief Return the active ITC devices folder "root:mies:HardwareDevices:ActiveITCDevices"
 Function/DF GetActiveITCDevicesFolder()
 
 	return createDFWithAllParents(GetActiveITCDevicesFolderAS())
@@ -432,7 +507,7 @@ Function/DF GetDeviceTypePath(deviceType)
 	return createDFWithAllParents(GetDeviceTypePathAsString(deviceType))
 End
 
-/// @brief Return the path to the device type folder, e.g. root:mies:ITCDevices:ITC1600
+/// @brief Return the path to the device type folder, e.g. root:mies:HardwareDevices:ITC1600
 threadsafe Function/S GetDeviceTypePathAsString(deviceType)
 	string deviceType
 
@@ -445,7 +520,7 @@ threadsafe Function/DF GetDevicePath(panelTitle)
 	return createDFWithAllParents(GetDevicePathAsString(panelTitle))
 End
 
-/// @brief Return the path to the device folder, e.g. root:mies:ITCDevices:ITC1600:Device0
+/// @brief Return the path to the device folder, e.g. root:mies:HardwareDevices:ITC1600:Device0
 threadsafe Function/S GetDevicePathAsString(panelTitle)
 	string panelTitle
 
@@ -473,7 +548,7 @@ Function/DF GetDeviceDataBrowserPath(panelTitle)
 	return createDFWithAllParents(GetDeviceDataBrowserPathAS(panelTitle))
 End
 
-/// @brief Return the path to the device folder, e.g. root:mies:ITCDevices:ITC1600:Device0:DataBrowser
+/// @brief Return the path to the device folder, e.g. root:mies:HardwareDevices:ITC1600:Device0:DataBrowser
 Function/S GetDeviceDataBrowserPathAS(panelTitle)
 	string panelTitle
 
@@ -487,7 +562,7 @@ Function/DF GetDeviceDataPath(panelTitle)
 	return createDFWithAllParents(GetDeviceDataPathAsString(panelTitle))
 End
 
-/// @brief Return the path to the device folder, e.g. root:mies:ITCDevices:ITC1600:Device0:Data
+/// @brief Return the path to the device folder, e.g. root:mies:HardwareDevices:ITC1600:Device0:Data
 Function/S GetDeviceDataPathAsString(panelTitle)
 	string panelTitle
 	return GetDevicePathAsString(panelTitle) + ":Data"
@@ -1954,7 +2029,7 @@ Function/DF GetDeviceTestPulse(panelTitle)
 	return createDFWithAllParents(GetDeviceTestPulseAsString(panelTitle))
 End
 
-/// @brief Return the path to the test pulse folder, e.g. root:mies:ITCDevices:ITC1600:Device0:TestPulse
+/// @brief Return the path to the test pulse folder, e.g. root:mies:HardwareDevices:ITC1600:Device0:TestPulse
 Function/S GetDeviceTestPulseAsString(panelTitle)
 	string panelTitle
 	return GetDevicePathAsString(panelTitle) + ":TestPulse"
@@ -4721,7 +4796,7 @@ Function/S GetStaticDataFolderAS()
 End
 
 /// @brief Return the datafolder reference to the active ITC devices folder,
-/// e.g. root:MIES:ITCDevices:ActiveITCDevices:TestPulse
+/// e.g. root:MIES:HardwareDevices:ActiveITCDevices:TestPulse
 Function/DF GetActITCDevicesTestPulseFolder()
 	return createDFWithAllParents(GetActITCDevicesTestPulFolderA())
 End
@@ -4769,7 +4844,7 @@ End
 
 /// @brief Returns wave (DA_EphysGuiState) that stores the DA_Ephys GUI state
 /// DA_EphysGuiState is stored in the device specific folder
-/// e.g. root:MIES:ITCDevices:ITC18USB:Device0
+/// e.g. root:MIES:HardwareDevices:ITC18USB:Device0
 ///
 /// Rows:
 /// - Column specific GUI control settings usually associated with control name number
@@ -5026,7 +5101,8 @@ End
 /// Dimension sizes and `NOTE_INDEX` value must coincide with other two cache waves.
 Function/Wave GetCacheStatsWave()
 
-	variable versionOfNewWave = 1
+	variable versionOfNewWave = 2
+	variable numRows
 	DFREF dfr = GetCacheFolder()
 
 	WAVE/D/Z/SDFR=dfr wv = stats
@@ -5034,7 +5110,21 @@ Function/Wave GetCacheStatsWave()
 	if(ExistsWithCorrectLayoutVersion(wv, versionOfNewWave))
 		return wv
 	else
-		Make/O/D/N=(MINIMUM_WAVE_SIZE, 4) dfr:stats/Wave=wv
+
+		WAVE/T keys      = GetCacheKeyWave()
+		WAVE/WAVE values = GetCacheValueWave()
+		numRows = DimSize(values, ROWS)
+		ASSERT(DimSize(keys, ROWS) == numRows, "Mismatched row sizes")
+
+		// experiments prior to 37178117 (Cache: Add statistics for each entry, 2018-03-23)
+		// don't hold this wave, but we still have to ensure that the stats wave has the right number of rows
+		if(WaveExists(wv) && DimSize(wv, ROWS) < numRows)
+			Redimension/D/N=(numRows, 4) wv
+			SetWaveVersion(wv, versionOfNewWave)
+			return wv
+		else
+			Make/D/N=(numRows, 4) dfr:stats/Wave=wv
+		endif
 	endif
 
 	wv = NaN
@@ -5057,7 +5147,7 @@ Function/DF GetDistDAQFolder()
 End
 
 /// @brief Return the full path to the optimized overlap distributed
-///        acquisition (oodDAQ) folder, e.g. root:MIES:ITCDevices:oodDAQ
+///        acquisition (oodDAQ) folder, e.g. root:MIES:HardwareDevices:oodDAQ
 Function/S GetDistDAQFolderAS()
 	return GetITCDevicesFolderAsString() + ":oodDAQ"
 End
