@@ -4742,7 +4742,7 @@ Function CalculateTPLikePropsFromSweep(numericalValues, textualValues, sweep, de
 		high = firstEdge - 1
 		low  = high - (firstEdge - onsetDelayPoint) * 0.1
 
-		baseline = sum(AD, IndexToScale(AD, low, ROWS), IndexToScale(AD, high, ROWS)) / (high - low + 1)
+		baseline = mean(AD, IndexToScale(AD, low, ROWS), IndexToScale(AD, high, ROWS))
 
 		sprintf msg, "(%d) AD: low = %g (%g ms), high = %g (%g ms), baseline %g", i, low, IndexToScale(AD, low, ROWS), high, IndexToScale(AD, high, ROWS), baseline
 		DEBUGPRINT(msg)
@@ -4750,7 +4750,7 @@ Function CalculateTPLikePropsFromSweep(numericalValues, textualValues, sweep, de
 		high = secondEdge - 1
 		low  = high - (secondEdge - firstEdge) * 0.1
 
-		elevated = sum(AD, IndexToScale(AD, low, ROWS), IndexToScale(AD, high, ROWS)) / (high - low + 1)
+		elevated = mean(AD, IndexToScale(AD, low, ROWS), IndexToScale(AD, high, ROWS))
 
 		sprintf msg, "(%d) AD: low = %g (%g ms), high = %g (%g ms), elevated %g", i, low, IndexToScale(AD, low, ROWS),  high, IndexToScale(AD, high, ROWS), elevated
 		DEBUGPRINT(msg)
@@ -4763,7 +4763,7 @@ Function CalculateTPLikePropsFromSweep(numericalValues, textualValues, sweep, de
 		high = firstEdge - 1
 		low  = high - (firstEdge - onsetDelayPoint) * 0.1
 
-		baseline = sum(DA, IndexToScale(DA, low, ROWS), IndexToScale(DA, high, ROWS)) / (high - low + 1)
+		baseline = mean(DA, IndexToScale(DA, low, ROWS), IndexToScale(DA, high, ROWS))
 
 		sprintf msg, "(%d) DA: low = %g (%g ms), high = %g (%g ms), baseline %g", i, low, IndexToScale(DA, low, ROWS), high, IndexToScale(DA, high, ROWS), elevated
 		DEBUGPRINT(msg)
@@ -4771,7 +4771,7 @@ Function CalculateTPLikePropsFromSweep(numericalValues, textualValues, sweep, de
 		high = secondEdge - 1
 		low  = high - (secondEdge - firstEdge) * 0.1
 
-		elevated = sum(DA, IndexToScale(DA, low, ROWS), IndexToScale(DA, high, ROWS)) / (high - low + 1)
+		elevated = mean(DA, IndexToScale(DA, low, ROWS), IndexToScale(DA, high, ROWS))
 
 		sprintf msg, "(%d) DA: low = %g (%g ms), high = %g (%g ms), elevated %g", i, low, IndexToScale(DA, low, ROWS), high, IndexToScale(DA, high, ROWS), elevated
 		DEBUGPRINT(msg)
