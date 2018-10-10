@@ -479,7 +479,7 @@ Function AI_SyncGUIToAmpStorageAndMCCApp(panelTitle, headStage, clampMode)
 			continue
 		endif
 
-		AI_UpdateAmpModel(panelTitle, ctrl, headStage, checkBeforeWrite=1)
+		AI_UpdateAmpModel(panelTitle, ctrl, headStage, checkBeforeWrite=1, sendToAll = 0)
 	endfor
 End
 
