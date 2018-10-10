@@ -23,6 +23,11 @@ static Function AB_ResetSelectionWave()
 
 	WAVE expBrowserSel    = GetExperimentBrowserGUISel()
 	WAVE/T expBrowserList = GetExperimentBrowserGUIList()
+
+	if(DimSize(expBrowserSel, ROWS) == 0)
+		return NaN
+	endif
+
 	expBrowserSel = 0
 
 	col = FindDimLabel(expBrowserList, COLS, "experiment")
@@ -243,6 +248,8 @@ End
 
 /// @brief Check if the given file has a compatible version
 ///        which this version of the analysis browser can handle.
+///
+/// @param discLocation file to check, parameter to AB_GetMap()
 static Function AB_HasCompatibleVersion(discLocation)
 	string discLocation
 
@@ -640,6 +647,7 @@ static Function AB_LoadTPStorageFromFile(expFilePath, expFolder, device)
 
 	DFREF targetDFR = GetAnalysisDeviceTestpulse(expFolder, device)
 	dataFolderPath  = GetDeviceTestPulseAsString(device)
+	dataFolderPath  = AB_TranslatePath(dataFolderPath, expFolder)
 	DFREF saveDFR   = GetDataFolderDFR()
 
 	// we can not determine how many TPStorage waves are in dataFolderPath
@@ -666,6 +674,7 @@ static Function AB_LoadUserCommentFromFile(expFilePath, expFolder, device)
 
 	DFREF targetDFR = GetAnalysisDeviceFolder(expFolder, device)
 	dataFolderPath  = GetDevicePathAsString(device)
+	dataFolderPath  = AB_TranslatePath(dataFolderPath, expFolder)
 	DFREF saveDFR   = GetDataFolderDFR()
 
 	numStringsLoaded = AB_LoadDataWrapper(targetDFR, expFilePath, dataFolderPath, "userComment", typeFlags=LOAD_DATA_TYPE_STRING)
@@ -730,9 +739,9 @@ End
 static Function/S AB_LoadLabNotebookFromIgor(discLocation)
 	String discLocation
 
-	string labNotebookWaves, labNotebookPath, type, number, path, basepath, device, cdf, str
+	string labNotebookWaves, labNotebookPath, type, number, path, basepath, device, str
 	string deviceList = ""
-	variable numDevices, numTypes, i, j, numWavesLoaded
+	variable numEntries, i, j, numWavesLoaded, numNumbers
 
 	WAVE/T experiment = AB_GetMap(discLocation)
 
@@ -754,95 +763,108 @@ static Function/S AB_LoadLabNotebookFromIgor(discLocation)
 		return ""
 	endif
 
-	// AB_LoadDataWrapper switched current Data Folder to newDFR
-	cdf = GetDataFolder(1)
+	numEntries = CountObjectsDFR(newDFR, COUNTOBJECTS_DATAFOLDER)
+	numNumbers = ItemsInList(DEVICE_NUMBERS)
+	for(i = 0; i < numEntries; i += 1)
 
-	// loop through root:MIES:LabNoteBook:[DEVICE_TYPES_ITC]:Device[DEVICE_NUMBERS]:
-	numDevices = ItemsInList(DEVICE_NUMBERS)
-	numTypes   = ItemsInList(DEVICE_TYPES_ITC)
+		type = GetIndexedObjNameDFR(newDFR, COUNTOBJECTS_DATAFOLDER, i)
 
-	for(i = 0; i < numTypes; i += 1)
-		type = StringFromList(i, DEVICE_TYPES_ITC)
-		path = cdf + type
+		if(GrepString(type, "^ITC.*"))
+			// ITC hardware is in a specific subfolder
+			for(j = 0; j < numNumbers ; j += 1)
+				number = StringFromList(j, DEVICE_NUMBERS)
+				device = BuildDeviceString(type, number)
+				path = GetDataFolder(1, newDFR) + type + ":Device" + number
 
-		if(!DataFolderExists(path))
-			continue
+				AB_LoadLabNotebookFromIgorLow(discLocation, path, device, deviceList)
+			endfor
+		else // other hardware not
+			device = type
+			path = GetDataFolder(1, newDFR) + device
+			AB_LoadLabNotebookFromIgorLow(discLocation, path, device, deviceList)
 		endif
-
-		for(j = 0; j < numDevices; j += 1)
-			number = StringFromList(j, DEVICE_NUMBERS)
-			path = cdf + type + ":Device" + number
-
-			if(!DataFolderExists(path))
-				continue
-			endif
-
-			// search for Loaded labNotebookWaves
-			// first try the new wave names and then as fallback
-			// the old ones
-			// Supports old/new wavename mixes although these should not
-			// exist in the wild.
-
-			Wave/Z/SDFR=$path numericalKeys
-
-			if(!WaveExists(numericalKeys))
-				basepath = path + ":KeyWave"
-				if(DataFolderExists(basepath))
-					Wave/Z/SDFR=$basepath numericalKeys = keyWave
-				endif
-			endif
-
-			Wave/Z/SDFR=$path numericalValues
-
-			if(!WaveExists(numericalValues))
-				basepath = path + ":settingsHistory"
-				if(DataFolderExists(basepath))
-					Wave/Z/SDFR=$basepath numericalValues = settingsHistory
-				endif
-			endif
-
-			Wave/Z/SDFR=$path textualKeys
-
-			if(!WaveExists(textualKeys))
-				basepath = path + ":TextDocKeyWave"
-				if(DataFolderExists(basepath))
-					Wave/Z/SDFR=$basepath textualKeys = txtDocKeyWave
-				endif
-			endif
-
-			Wave/Z/SDFR=$path textualValues
-
-			if(!WaveExists(textualValues))
-				basepath = path + ":textDocumentation"
-				if(DataFolderExists(basepath))
-					Wave/Z/SDFR=$basepath textualValues = txtDocWave
-				endif
-			endif
-
-			device = BuildDeviceString(type, number)
-
-			if(!WaveExists(numericalKeys) || !WaveExists(numericalValues) || !WaveExists(textualKeys) || !WaveExists(textualValues))
-				printf "Could not find all four labnotebook waves, dropping all data from device %s in file %s\r", device, discLocation
-				continue
-			endif
-
-			// copy and rename loaded waves to Analysisbrowser directory.
-			DFREF dfr = GetAnalysisLabNBFolder(experiment[%DataFolder], device)
-			Duplicate/O numericalKeys, dfr:numericalKeys/Wave=numericalKeys
-			Duplicate/O numericalValues, dfr:numericalValues/Wave=numericalValues
-			Duplicate/O textualKeys, dfr:textualKeys/Wave=textualKeys
-			Duplicate/O textualValues, dfr:textualValues
-
-			// add device to devicelist
-			DEBUGPRINT("Loaded Igor labnotebook for device: ", str=device)
-			deviceList = AddListItem(device, deviceList, ";", inf)
-		endfor
 	endfor
 
 	SetDataFolder saveDFR
 	KillOrMoveToTrash(dfr=newDFR)
 
 	return deviceList
+End
+
+/// @brief Try loading the four labnotebooks from path
+///
+/// @param[in] discLocation    experiment location on disc
+/// @param[in] path            datafolder path which holds the labnotebooks (might not exist)
+/// @param[in] device          name of the device
+/// @param[in, out] deviceList list of loaded devices, for successful loads we add to that list
+static Function AB_LoadLabNotebookFromIgorLow(discLocation, path, device, deviceList)
+	string discLocation, path, device
+	string &deviceList
+
+	string basepath
+
+	if(!DataFolderExists(path))
+		return NaN
+	endif
+
+	WAVE/T experiment = AB_GetMap(discLocation)
+
+	// search for Loaded labNotebookWaves
+	// first try the new wave names and then as fallback
+	// the old ones
+	// Supports old/new wavename mixes although these should not
+	// exist in the wild.
+
+	Wave/Z/SDFR=$path numericalKeys
+
+	if(!WaveExists(numericalKeys))
+		basepath = path + ":KeyWave"
+		if(DataFolderExists(basepath))
+			Wave/Z/SDFR=$basepath numericalKeys = keyWave
+		endif
+	endif
+
+	Wave/Z/SDFR=$path numericalValues
+
+	if(!WaveExists(numericalValues))
+		basepath = path + ":settingsHistory"
+		if(DataFolderExists(basepath))
+			Wave/Z/SDFR=$basepath numericalValues = settingsHistory
+		endif
+	endif
+
+	Wave/Z/SDFR=$path textualKeys
+
+	if(!WaveExists(textualKeys))
+		basepath = path + ":TextDocKeyWave"
+		if(DataFolderExists(basepath))
+			Wave/Z/SDFR=$basepath textualKeys = txtDocKeyWave
+		endif
+	endif
+
+	Wave/Z/SDFR=$path textualValues
+
+	if(!WaveExists(textualValues))
+		basepath = path + ":textDocumentation"
+		if(DataFolderExists(basepath))
+			Wave/Z/SDFR=$basepath textualValues = txtDocWave
+		endif
+	endif
+
+	if(!WaveExists(numericalKeys) || !WaveExists(numericalValues) || !WaveExists(textualKeys) || !WaveExists(textualValues))
+		printf "Could not find all four labnotebook waves, dropping all data from device %s in file %s\r", device, discLocation
+		return NaN
+	endif
+
+	// copy and rename loaded waves to Analysisbrowser directory
+	DFREF dfr = GetAnalysisLabNBFolder(experiment[%DataFolder], device)
+	Duplicate/O numericalKeys, dfr:numericalKeys/Wave=numericalKeys
+	Duplicate/O numericalValues, dfr:numericalValues/Wave=numericalValues
+	Duplicate/O textualKeys, dfr:textualKeys/Wave=textualKeys
+	Duplicate/O textualValues, dfr:textualValues
+
+	DEBUGPRINT("Loaded Igor labnotebook for device: ", str=device)
+	deviceList = AddListItem(device, deviceList, ";", inf)
 End
 
 static Function/S AB_LoadLabNotebookFromNWB(discLocation)
@@ -940,6 +962,24 @@ static Function AB_updateLabelsInLabNotebook(dfr)
 	return 1
 End
 
+static Function/S AB_TranslatePath(path, expFolder)
+	string path, expFolder
+
+	DFREF dfr = GetAnalysisExpFolder(expFolder)
+	NVAR pxpVersion = $GetPxpVersionForAB(dfr)
+
+	if(isNaN(pxpVersion) || pxpVersion == 1)
+		// old data in expFolder still uses ITCDevices but
+		// path already uses the new name
+		return ReplaceString(":HardwareDevices", path, ":ITCDevices")
+	endif
+
+	// pxpVersion 2
+	// HardwareDevices is used consistently
+
+	return path
+End
+
 static Constant LOAD_CONFIG_CHUNK_SIZE = 50
 
 /// @brief Load all `Config_Sweep_*` waves from the given experiment file or folder and the given device
@@ -961,6 +1001,7 @@ static Function AB_LoadSweepConfigData(expFilePath, expFolder, device, highestSw
 
 	DFREF targetDFR = GetAnalysisDeviceConfigFolder(expFolder, device)
 	dataFolderPath = GetDeviceDataPathAsString(device)
+	dataFolderPath = AB_TranslatePath(dataFolderPath, expFolder)
 	DFREF saveDFR = GetDataFolderDFR()
 
 	step  = 1
@@ -1397,7 +1438,7 @@ Function AB_LoadSweepFromFile(discLocation, dataFolder, fileType, device, sweep,
 
 	strswitch(fileType)
 		case ANALYSISBROWSER_FILE_TYPE_IGOR:
-			sweeps = AB_LoadSweepFromIgor(discLocation, sweepDFR, device, sweep)
+			sweeps = AB_LoadSweepFromIgor(discLocation, dataFolder, sweepDFR, device, sweep)
 			if(!cmpstr(sweeps, ""))
 				return 1
 			endif
@@ -1665,8 +1706,8 @@ End
 /// @brief Load specified device/sweep combination from Igor experiment file to sweepDFR
 ///
 /// @returns name of loaded sweep
-Function/S AB_LoadSweepFromIgor(expFilePath, sweepDFR, device, sweep)
-	string expFilePath, device
+Function/S AB_LoadSweepFromIgor(discLocation, expFolder, sweepDFR, device, sweep)
+	string discLocation, expFolder, device
 	DFREF sweepDFR
 	variable sweep
 
@@ -1681,12 +1722,13 @@ Function/S AB_LoadSweepFromIgor(expFilePath, sweepDFR, device, sweep)
 	sweepWaveList = AddListItem(sweepWaveList, sweepWaveName + WAVE_BACKUP_SUFFIX, ";", Inf)
 
 	dataPath = GetDeviceDataPathAsString(device)
+	dataPath = AB_TranslatePath(dataPath, expFolder)
 	DFREF saveDFR = GetDataFolderDFR()
 	DFREF newDFR = UniqueDataFolder(GetAnalysisFolder(), "temp")
-	numWavesLoaded = AB_LoadDataWrapper(newDFR, expFilePath, dataPath, sweepWaveList)
+	numWavesLoaded = AB_LoadDataWrapper(newDFR, discLocation, dataPath, sweepWaveList)
 
 	if(numWavesLoaded <= 0)
-		printf "Could not load sweep %d of device %s and %s\r", sweep, device, expFilePath
+		printf "Could not load sweep %d of device %s and %s\r", sweep, device, discLocation
 		SetDataFolder saveDFR
 		KillOrMoveToTrash(dfr=newDFR)
 		KillOrMoveToTrash(dfr=sweepDFR)

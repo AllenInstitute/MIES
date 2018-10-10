@@ -516,3 +516,12 @@ End
 Function/S GetPxPVersion()
 	return GetNVARAsString(GetMiesPath(), "pxpVersion", initialValue = EXPERIMENT_VERSION)
 End
+
+/// @brief Return the version number of the Igor experiment loaded into the analysis browser
+///
+/// @param dfr experiment folder, @sa GetAnalysisExpFolder()
+Function/S GetPxPVersionForAB(dfr)
+	DFREF dfr
+
+	return GetNVARAsString(dfr, "pxpVersion", initialValue = NaN)
+End

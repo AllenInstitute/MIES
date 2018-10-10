@@ -986,4 +986,4 @@ Constant STIMSET_ENTRY = 0x8
 Constant EXPERIMENT_VERSION = 2
 
 /// All experiment versions up to the given value are supported
-Constant ANALYSIS_BROWSER_SUPP_VERSION = 1
+Constant ANALYSIS_BROWSER_SUPP_VERSION = 2
