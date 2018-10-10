@@ -4653,7 +4653,7 @@ Function CalculateTPLikePropsFromSweep(numericalValues, textualValues, sweep, de
 
 	variable i
 	variable DAcol, ADcol, level, low, high, baseline, elevated, firstEdge, secondEdge, sweepNo
-	variable totalOnsetDelay, first, last
+	variable totalOnsetDelay, first, last, onsetDelayPoint
 	string msg
 
 	sweepNo     = ExtractSweepNumber(NameofWave(sweep))
@@ -4682,6 +4682,8 @@ Function CalculateTPLikePropsFromSweep(numericalValues, textualValues, sweep, de
 		WAVE DA = ExtractOneDimDataFromSweep(config, sweep, DACol)
 		WAVE AD = ExtractOneDimDataFromSweep(config, sweep, ADcol)
 
+		onsetDelayPoint = (totalOnsetDelay - DimOffset(DA, ROWS)) / DimDelta(DA, ROWS)
+
 		first = totalOnsetDelay
 		last  = IndexToScale(DA, DimSize(DA, ROWS) - 1, ROWS)
 
@@ -4694,23 +4696,23 @@ Function CalculateTPLikePropsFromSweep(numericalValues, textualValues, sweep, de
 		FindLevels/Q/P/DEST=levels/R=(first, last)/N=2 DA, level
 		ASSERT(V_LevelsFound >= 2, "Could not find enough levels")
 
-		firstEdge   = levels[0]
-		secondEdge  = levels[1]
+		firstEdge   = trunc(levels[0])
+		secondEdge  = trunc(levels[1])
 
-		low  = floor(firstEdge * 0.9)
-		high = floor(firstEdge - 1)
+		high = firstEdge - 1
+		low  = high - (firstEdge - onsetDelayPoint) * 0.1
 
 		baseline = sum(AD, IndexToScale(AD, low, ROWS), IndexToScale(AD, high, ROWS)) / (high - low + 1)
 
-		sprintf msg, "(%d) AD: low = %d (%g ms), high = %d (%g ms), baseline %g", i, low, IndexToScale(AD, low, ROWS), high, IndexToScale(AD, high, ROWS), baseline
+		sprintf msg, "(%d) AD: low = %g (%g ms), high = %g (%g ms), baseline %g", i, low, IndexToScale(AD, low, ROWS), high, IndexToScale(AD, high, ROWS), baseline
 		DEBUGPRINT(msg)
 
-		low  = floor(secondEdge * 0.9)
-		high = floor(secondEdge - 1)
+		high = secondEdge - 1
+		low  = high - (secondEdge - firstEdge) * 0.1
 
 		elevated = sum(AD, IndexToScale(AD, low, ROWS), IndexToScale(AD, high, ROWS)) / (high - low + 1)
 
-		sprintf msg, "(%d) AD: low = %d (%g ms), high = %d (%g ms), elevated %g", i, low, IndexToScale(AD, low, ROWS),  high, IndexToScale(AD, high, ROWS), elevated
+		sprintf msg, "(%d) AD: low = %g (%g ms), high = %g (%g ms), elevated %g", i, low, IndexToScale(AD, low, ROWS),  high, IndexToScale(AD, high, ROWS), elevated
 		DEBUGPRINT(msg)
 
 		// convert from mv to V
@@ -4718,20 +4720,20 @@ Function CalculateTPLikePropsFromSweep(numericalValues, textualValues, sweep, de
 
 		deltaV[i] = (elevated - baseline) * 1e-3
 
-		low  = floor(firstEdge * 0.9)
-		high = floor(firstEdge - 1)
+		high = firstEdge - 1
+		low  = high - (firstEdge - onsetDelayPoint) * 0.1
 
 		baseline = sum(DA, IndexToScale(DA, low, ROWS), IndexToScale(DA, high, ROWS)) / (high - low + 1)
 
-		sprintf msg, "(%d) DA: low = %d (%g ms), high = %d (%g ms), baseline %g", i, low, IndexToScale(DA, low, ROWS), high, IndexToScale(DA, high, ROWS), elevated
+		sprintf msg, "(%d) DA: low = %g (%g ms), high = %g (%g ms), baseline %g", i, low, IndexToScale(DA, low, ROWS), high, IndexToScale(DA, high, ROWS), elevated
 		DEBUGPRINT(msg)
 
-		low  = floor(secondEdge * 0.9)
-		high = floor(secondEdge - 1)
+		high = secondEdge - 1
+		low  = high - (secondEdge - firstEdge) * 0.1
 
 		elevated = sum(DA, IndexToScale(DA, low, ROWS), IndexToScale(DA, high, ROWS)) / (high - low + 1)
 
-		sprintf msg, "(%d) DA: low = %d (%g ms), high = %d (%g ms), elevated %g", i, low, IndexToScale(DA, low, ROWS), high, IndexToScale(DA, high, ROWS), elevated
+		sprintf msg, "(%d) DA: low = %g (%g ms), high = %g (%g ms), elevated %g", i, low, IndexToScale(DA, low, ROWS), high, IndexToScale(DA, high, ROWS), elevated
 		DEBUGPRINT(msg)
 
 		// convert from pA to A
