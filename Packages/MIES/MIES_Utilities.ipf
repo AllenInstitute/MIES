@@ -3224,6 +3224,15 @@ threadsafe Function IsWaveRefWave(wv)
 	return WaveType(wv, 1) == IGOR_TYPE_WAVEREF_WAVE
 End
 
+/// @brief Return 1 if the wave is a floating point wave
+threadsafe Function IsFloatingPointWave(wv)
+	WAVE wv
+
+	variable type = WaveType(wv)
+
+	return (type & IGOR_TYPE_32BIT_FLOAT) || (type & IGOR_TYPE_64BIT_FLOAT)
+End
+
 /// @brief Return the user name of the running user
 Function/S GetSystemUserName()
 
@@ -3696,4 +3705,55 @@ Function/S ToTrueFalse(var)
 	variable var
 
 	return SelectString(var, "False", "True")
+End
+
+/// @brief Return true if not all wave entries are NaN, false otherwise.
+///
+Function HasOneValidEntry(wv)
+	WAVE wv
+
+	variable numEntries
+
+	ASSERT(IsFloatingPointWave(wv), "Unexpected wave type")
+
+	numEntries = numpnts(wv)
+	ASSERT(numEntries > 0, "Empty wave")
+
+	WaveStats/Q/M=1 wv
+	return V_numNaNs != numEntries
+End
+
+/// @brief Merge two floating point waves labnotebook waves
+///
+/// The result will hold the finite row entry of either `wv1` or `wv2`.
+Function/WAVE MergeTwoWaves(wv1, wv2)
+	WAVE wv1, wv2
+
+	variable numEntries, i, validEntryOne, validEntryTwo
+
+	ASSERT(EqualWaves(wv1, wv2, 512), "Non matching wave dim sizes")
+	ASSERT(EqualWaves(wv1, wv2, 2), "Non matching wave types")
+	ASSERT(IsFloatingPointWave(wv1), "Expected floating point wave")
+	ASSERT(DimSize(wv1, COLS) <= 1, "Expected 1D wave")
+
+	Make/FREE/Y=(WaveType(wv1)) result = NaN
+
+	numEntries = DimSize(wv1, ROWS)
+	for(i = 0; i < numEntries; i +=1)
+
+		validEntryOne = IsFinite(wv1[i])
+		validEntryTwo = IsFinite(wv2[i])
+
+		if(!validEntryOne && !validEntryTwo)
+			continue
+		elseif(validEntryOne)
+			result[i] = wv1[i]
+		elseif(validEntryTwo)
+			result[i] = wv2[i]
+		else
+			ASSERT(0, "Both entries can not be valid.")
+		endif
+	endfor
+
+	return result
 End

@@ -369,7 +369,7 @@ static Function/WAVE AFH_GetSweepsFromSameSCINC(numericalValues, sweepNo, headst
 
 	WAVE/Z stimsetCycleIDs = GetLastSetting(numericalValues, sweepNo, STIMSET_ACQ_CYCLE_ID_KEY, DATA_ACQUISITION_MODE)
 
-	if(!WaveExists(stimsetCycleIDs))
+	if(!WaveExists(stimsetCycleIDs) || IsNaN(stimsetCycleIDs[headstage]))
 		return $""
 	endif
 

@@ -2189,7 +2189,7 @@ Function ButtonProc_Hrdwr_P_UpdtDAClist(ba) : ButtonControl
 			for(i = 0;i < nrDevs; i += 1)
 				dev = StringFromList(i, DeviceList)
 				if(WhichListItem(dev, lockedList) == -1)
-					filteredList = AddListItem(dev, filteredList)
+					filteredList = AddListItem(dev, filteredList, ";", INF)
 				endif
 			endfor
 

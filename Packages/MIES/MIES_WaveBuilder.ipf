@@ -209,7 +209,8 @@ End
 static Function WB_ParameterWvsNewerThanStim(setName)
 	string setName
 
-	variable lastModStimSet
+	variable lastModStimSet, lastModWP, lastModWPT, lastModSegWvType
+	string msg
 
 	WAVE/Z WP        = WB_GetWaveParamForSet(setName)
 	WAVE/Z/T WPT     = WB_GetWaveTextParamForSet(setName)
@@ -217,7 +218,14 @@ static Function WB_ParameterWvsNewerThanStim(setName)
 
 	lastModStimSet = WB_GetLastModStimSet(setName)
 	if(WaveExists(WP) && WaveExists(WPT) && WaveExists(SegWvType))
-		if(modDate(WP) > lastModStimSet || modDate(WPT) > lastModStimSet || modDate(SegWvType) > lastModStimSet)
+		lastModWP        = modDate(WP)
+		lastModWPT       = modDate(WPT)
+		lastModSegWvType = modDate(SegWvType)
+
+		sprintf msg, "stimset %d, WP %d, WPT %d, SegWvType %d", lastModStimSet, lastModWP, lastModWPT, lastModSegWvType
+		DEBUGPRINT(msg)
+
+		if(lastModWP > lastModStimSet || lastModWPT > lastModStimSet || lastModSegWvType > lastModStimSet)
 			return 1
 		endif
 	endif

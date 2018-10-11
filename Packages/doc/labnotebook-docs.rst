@@ -75,7 +75,7 @@ Addition of new entries
 
 When writing a new value into the labnotebook a new row is appended/filled in
 the `value` array. This means we never overwrite old entries. Due to sweep
-rollback (aka deleting exsting sweeps and acquiring new sweeps) it can happen
+rollback (aka deleting existing sweeps and acquiring new sweeps) it can happen
 that duplicated sweep numbers are present in the labnotebook. Each row holds
 the entry source type, which tells you about the subsystem the entry originated
 from, the possible values are
@@ -103,6 +103,10 @@ Caveats
   additional entries present which are formatted like `$entry UNASSOC_$channelNumber`
   and only have entries in the nineth layer (as it is by definition headstage
   independent data).
+* One important concept is valid entries vs placeholder entries. All non-`NaN`
+  or non-empty string entries are valid entries. Therefore only valid entries
+  override other placeholder entries. But placeholder entries never override
+  valid entries.
 * This document describes the latest version of the labnotebook only. Some
   things will be different for older versions. In case you need to read these
   and got into trouble please contact `MIES@alleninstitute.org` for
@@ -167,6 +171,10 @@ Getting all sweeps of a repeated acquisition cycle `RAC`
 * Search in this row range and the `RAC` column *from back to front* for a
   non-empty entry.
 * Now collect all sweep numbers which have that `RAC` value
+
+The related entry `Stimset Acq Cycle ID` (`SCI`) is an identifier which is
+constant for a given headstage if the data stems from the same stimset, the
+same RAC and had the same stimset cycle count.
 
 Existing code
 =============

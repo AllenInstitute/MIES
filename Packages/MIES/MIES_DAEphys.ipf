@@ -1544,9 +1544,6 @@ Function DAP_UpdateSweepSetVariables(panelTitle)
 
 	variable numSetRepeats
 
-	NVAR daqRunMode = $GetDataAcqRunMode(panelTitle)
-	ASSERT(daqRunMode == DAQ_NOT_RUNNING, "Invalid call during DAQ")
-
 	if(DAG_GetNumericalValue(panelTitle, "Check_DataAcq1_RepeatAcq"))
 		numSetRepeats = DAG_GetNumericalValue(panelTitle, "SetVar_DataAcq_SetRepeats")
 
@@ -4820,9 +4817,13 @@ End
 
 /// @brief Return the highest active headstage (zero-based and therefore in the range [0, 7])
 ///
+/// @param panelTitle device
+/// @param clampMode  [optional, defaults to all clamp modes] Restrict to the given clamp mode
+///
 /// Return `NaN` if no headstage is active at all.
-Function DAP_GetHighestActiveHeadstage(panelTitle)
+Function DAP_GetHighestActiveHeadstage(panelTitle, [clampMode])
 	string panelTitle
+	variable clampMode
 
 	WAVE statusHS = DAG_GetChannelState(panelTitle, CHANNEL_TYPE_HEADSTAGE)
 
@@ -4831,7 +4832,12 @@ Function DAP_GetHighestActiveHeadstage(panelTitle)
 		return NaN
 	endif
 
-	Make/FREE/N=(NUM_HEADSTAGES) activeHS = statusHS[p] * p
+	if(ParamIsDefault(clampMode))
+		Make/FREE/N=(NUM_HEADSTAGES) activeHS = statusHS[p] * p
+	else
+		AI_AssertOnInvalidClampMode(clampMode)
+		Make/FREE/N=(NUM_HEADSTAGES) activeHS = statusHS[p] * p	* (DAG_GetHeadstageMode(panelTitle, p) == clampMode)
+	endif
 
 	return WaveMax(activeHS)
 End

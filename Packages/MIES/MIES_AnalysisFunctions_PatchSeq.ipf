@@ -1423,8 +1423,7 @@ Function PSQ_SquarePulse(panelTitle, s)
 			WAVE sweepWave = GetSweepWave(panelTitle, s.sweepNo)
 			WAVE numericalValues = GetLBNumericalValues(panelTitle)
 
-			totalOnsetDelay = GetLastSettingIndep(numericalValues, s.sweepNo, "Delay onset auto", DATA_ACQUISITION_MODE) \
-							  + GetLastSettingIndep(numericalValues, s.sweepNo, "Delay onset user", DATA_ACQUISITION_MODE)
+			totalOnsetDelay = GetTotalOnsetDelay(numericalValues, s.sweepNo)
 
 			WAVE spikeDetection = PSQ_SearchForSpikes(panelTitle, PSQ_SQUARE_PULSE, sweepWave, s.headstage, totalOnsetDelay)
 			key = PSQ_CreateLBNKey(PSQ_SQUARE_PULSE, PSQ_FMT_LBN_SPIKE_DETECT)
@@ -1695,8 +1694,7 @@ Function PSQ_Rheobase(panelTitle, s)
 			WAVE sweepWave = GetSweepWave(panelTitle, s.sweepNo)
 			WAVE numericalValues = GetLBNumericalValues(panelTitle)
 
-			totalOnsetDelay = GetLastSettingIndep(numericalValues, s.sweepNo, "Delay onset auto", DATA_ACQUISITION_MODE)   \
-							  + GetLastSettingIndep(numericalValues, s.sweepNo, "Delay onset user", DATA_ACQUISITION_MODE)
+			totalOnsetDelay = GetTotalOnsetDelay(numericalValues, s.sweepNo)
 
 			WAVE spikeDetection = PSQ_SearchForSpikes(panelTitle, PSQ_RHEOBASE, sweepWave, s.headstage, totalOnsetDelay)
 			key = PSQ_CreateLBNKey(PSQ_RHEOBASE, PSQ_FMT_LBN_SPIKE_DETECT)
