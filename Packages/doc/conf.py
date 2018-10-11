@@ -21,7 +21,7 @@ def get_version():
 
 
 # sphinx config
-extensions = ['sphinx.ext.imgmath', 'sphinx.ext.todo', 'breathe', 'sphinxcontrib.fulltoc', 'sphinx.ext.graphviz', 'sphinx.ext.autosectionlabel']
+extensions = ['sphinx.ext.imgmath', 'sphinx.ext.todo', 'breathe', 'sphinxcontrib.fulltoc', 'sphinx.ext.graphviz']
 master_doc = "index"
 project= "MIES Igor"
 
