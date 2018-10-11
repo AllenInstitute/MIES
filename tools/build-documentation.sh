@@ -59,7 +59,7 @@ if hash sphinx-build 2>/dev/null; then
 
   rm -f sphinx-output.log
 
-  sphinx-build -Q -w sphinx-output.log . html
+  sphinx-build -q -w sphinx-output.log . html
 
   if [ -e "sphinx-output.log" ]
   then
