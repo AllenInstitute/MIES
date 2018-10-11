@@ -27,7 +27,7 @@ packages both for 32bit(x86) and 64bit(x64) in English.
   * In "Igor Help Files" a shortcut pointing to HelpFiles-IP7
 * Start Igor Pro
 
-### Igor Pro 8.0.0 (latest nightly of the latest beta version)
+### Igor Pro 8.0.2
 
 * Quit Igor Pro
 * Create the following shortcuts in "C:\Users\$username\Documents\WaveMetrics\Igor Pro 8 User Files"
