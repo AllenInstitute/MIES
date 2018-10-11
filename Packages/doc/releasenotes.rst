@@ -57,7 +57,7 @@ Labnotebook
 -----------
 
 New numerical keys
-~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~
 
 - Digitizer Hardware Type
 
@@ -447,8 +447,7 @@ None
 Labnotebook
 -----------
 - Textual Labnotebook: Normalize EOLs in entries to `\n`
-- The new analysis functions write some labnotebook entries. See their
-documentation for details.
+- The new analysis functions write some labnotebook entries. See their documentation for details.
 
 New numerical keys
 ~~~~~~~~~~~~~~~~~~
@@ -468,7 +467,7 @@ Changed textual entries
 ~~~~~~~~~~~~~~~~~~~~~~~
 
 - "Async Unit": The textual entry for the "Async Unit" should be the plain unit
-  instead of "Async AD *: *". Same for the unit of the async entry itself.
+  instead of "Async AD \*: \*". Same for the unit of the async entry itself.
 - "Timestamp": Store sub-second precision in Timestamp columns
 
 NWB/IPNWB
