@@ -6,7 +6,7 @@ CalculateTPLikePropsFromSweep Algorithm
 Description
 ===========
 
-The :cpp:func:`CalculateTPLikePropsFromSweep` calculates test pulse properties
+The :cpp:func:`CalculateTPLikePropsFromSweep` calculates square pulse properties
 from a given sweep. It retrieves the associated setting values for the sweep and
 returns the voltage difference, current difference and resistance for each
 head stage. The function only works for current clamp mode.
@@ -15,7 +15,7 @@ The function is split into several parts:
 
  - `Principle`_
  - `Retrieving settings`_
- - `Finding test pulse`_
+ - `Finding square pulse`_
  - `Extraction of levels`_
  - `Calculation`_
 
@@ -23,14 +23,14 @@ Principle
 =========
 
 The goal of the algorithm is to determine the steady state resistance of a
-test pulse response. The available sweep data contains the excitation pulse as
+square pulse response. The available sweep data contains the excitation pulse as
 well as the response pulse. The excitation pulse is in units of current and the
 response is measured in voltage. The actual data consists of discrete points of
 digital to analog output (excitation) and analog to digital input (response).
 For simplicity this will be neglected in the following.
 
-The test pulse excitation data is used to find the leading and trailing edge of
-the pulse. Therefore a level of 10% of the amplitude of the test pulse is defined
+The square pulse DA data is used to find the leading and trailing edge of
+the pulse. Therefore a level of 10% of the amplitude of the square pulse is defined
 to find the location of signal crossing.
 
 .. math::
@@ -40,8 +40,8 @@ Using a edge finding algorithm the location of **firstEdge** and **secondEdge**
 is retrieved.
 
 For determination of the base line level in front of the pulse a
-range is defined to average the points of the test pulse response. The full base
-line fraction in front of a test pulse starts after the ``onSetDelay`` and ends
+range is defined to average the points of the square pulse response. The full base
+line fraction in front of a square pulse starts after the ``onSetDelay`` and ends
 at ``firstEdge``. The length of the range is defined as 10% of this distance. The
 reference point is the end of this range and it is set close to firstEdge.
 
@@ -56,7 +56,7 @@ The base line level is then determined by averaging over the data points **p** b
    baselinelevel = \frac{1}{N} \sum^{right}_{n=left} p_n
 
 For determination of the elevated level at the end of the active pulse a
-range is defined to average the points of the test pulse response. The active
+range is defined to average the points of the square pulse response. The active
 pulse starts after ``firstEdge`` and ends with ``secondEdge``. The length of the
 range is defined as 10% of this distance. The reference point is the end of this
 range and it is set close to secondEdge.
@@ -78,9 +78,9 @@ for the steady state.
    \Delta U = elevatedlevel - baselinelevel
 
 To get the steady state resistance the current from the excitation amplitude of
-the test pulse is required. It is retrieved the same way from the test pulse
-excitation data as the voltage response from the test pulse response data.
-The difference from the test pulse excitation data yields:
+the square pulse is required. It is retrieved the same way from the square pulse
+excitation data as the voltage response from the square pulse response data.
+The difference from the square pulse excitation data yields:
 
 .. math::
    \Delta I = elevatedlevel - baselinelevel
@@ -120,7 +120,7 @@ wave ``DAunit``. If a head stage was active is read to the wave wave ``statusHS`
 
    WAVE statusHS = GetLastSetting(numericalValues, sweepNo, "Headstage Active", DATA_ACQUISITION_MODE)
 
-Finding test pulse
+Finding square pulse
 ==================
 
 The following is **done for each head stage** up to ``NUM_HEADSTAGES`` (default = 8):
@@ -150,11 +150,11 @@ The following is **done for each head stage** up to ``NUM_HEADSTAGES`` (default 
 
      onsetDelayPoint = (totalOnsetDelay - DimOffset(DA, ROWS)) / DimDelta(DA, ROWS)
 
-  The scaled x coordinates of the full test pulse range including base line are
+  The scaled x coordinates of the full square pulse range including base line are
   defined from ``totalOnsetDelay`` to the end of the ``DA`` wave and saved in
   ``first`` and ``last``.
 
-  A signal level is defined for finding the edges in the sent test pulse
+  A signal level is defined for finding the edges in the sent square pulse
   (DA channel). The level is 10 % from the difference of maximum - minimum of the
   DA data above the minimum level. With ``FindLevels`` up to two signal crossings
   at the level are searched between ``first`` and ``last`` in wave ``DA`` and
@@ -273,7 +273,7 @@ The following is **done for each head stage**:
      resistance[i] = deltaV[i] / deltaI[i]
 
 Then the loop continues to the next head stage of this sweep with
-`Finding test pulse`_
+`Finding square pulse`_
 
 .. figure:: CalculateTPLikePropsFromSweep.svg
    :align: center
