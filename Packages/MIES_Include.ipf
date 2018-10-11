@@ -1,7 +1,12 @@
 #pragma TextEncoding = "UTF-8"
 #pragma rtGlobals=3		// Use modern global access method and strict wave access.
 #pragma rtFunctionErrors=1
+
+#if (IgorVersion() >= 8.00)
+#pragma IgorVersion=8.02
+#else
 #pragma IgorVersion=7.08
+#endif
 
 /// @file MIES_Include.ipf
 /// @brief Main include
