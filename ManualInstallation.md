@@ -51,8 +51,6 @@ packages both for 32bit(x86) and 64bit(x64) in English.
 In case you don't have the hardware connected/available a certain XOP requires
 you can also install MIES without any hardware related XOPs present.
 
-### Igor Pro 7.0.8 or later
-
 * Quit Igor Pro
 * Create the following shortcuts in "C:\Users\$username\Documents\WaveMetrics\Igor Pro 7 User Files" (Or "7" -> "8" for IP8)
   * In "User Procedures" a shortcut pointing to
