@@ -539,7 +539,7 @@ End
 ///
 /// @param name      parameter name
 /// @param params    serialized parameters, usually just #AnalysisFunction_V3.params
-/// @param typeCheck [optional, defaults to false] Check with an assertion that
+/// @param typeCheck [optional, defaults to true] Check with an assertion that
 ///                  the readout type is one of @ref ANALYSIS_FUNCTION_PARAMS_TYPES
 ///
 /// @ingroup AnalysisFunctionParameterHelpers
