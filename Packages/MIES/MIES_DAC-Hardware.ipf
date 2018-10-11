@@ -2630,7 +2630,7 @@ Function HW_NI_ResetDevice(device, [flags])
 	DoAbortNow("NI-DAQ XOP is not available")
 End
 
-HW_NI_CalibrateDevice(device, [force, flags])
+Function HW_NI_CalibrateDevice(device, [force, flags])
 	string device
 	variable force, flags
 
