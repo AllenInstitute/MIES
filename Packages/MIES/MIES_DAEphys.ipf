@@ -2391,6 +2391,13 @@ static Function DAP_CheckHeadStage(panelTitle, headStage, mode)
 						numEntries = ItemsInList(reqNames, ",")
 						for(j = 0; i < numEntries; j += 1)
 							reqName = StringFromList(i, reqNames, ",")
+
+							if(!AFH_IsValidAnalysisParameter(reqName))
+								printf "(%s) The required analysis parameter %s for %s in stim set %s has the invalid name %s.\r", panelTitle, name, func, dacWave, reqName
+								ControlWindowToFront()
+								return 1
+							endif
+
 							reqType = AFH_GetAnalysisParamType(reqName, reqParams, typeCheck = 0)
 							// no type specification is allowed
 							if(IsEmpty(reqType))
