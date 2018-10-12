@@ -3024,7 +3024,7 @@ End
 threadsafe Function IsValidObjectName(wvName)
 	string wvName
 
-	return !cmpstr(wvName, CleanupName(wvName, 0))
+	return !cmpstr(wvName, CleanupName(wvName, 0, MAX_OBJECT_NAME_LENGTH_IN_BYTES))
 End
 
 #else
