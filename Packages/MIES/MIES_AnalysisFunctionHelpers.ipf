@@ -647,7 +647,7 @@ End
 Function AFH_IsValidAnalysisParameter(name)
 	string name
 
-	return !IsEmpty(name) && !cmpstr(CleanupName(name, 0), name)
+	return IsValidObjectName(name)
 End
 
 /// @brief Check if the given type is a valid user parameter type
