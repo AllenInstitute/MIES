@@ -12,7 +12,9 @@ Table of Contents
   filelist
   structlist
   namespacelist
+  CalculateTPLikePropsFromSweep
   IPNWB
+  TPdelta_algorithm
   ZeroMQ-XOP-Readme
   labnotebook-docs
   mies-concepts

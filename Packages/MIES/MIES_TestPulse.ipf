@@ -84,6 +84,10 @@ Function TP_SplitStoredTestPulseWave(panelTitle)
 End
 
 /// @brief Calculates peak and steady state resistance simultaneously on all active headstages. Also returns basline Vm.
+///
+/// \rst
+/// See :ref:`TP_delta_doc` for the full documentation.
+/// \endrst
 // The function TPDelta is called by the TP dataaquistion functions
 // It updates a wave in the Test pulse folder for the device
 // The wave contains the steady state difference between the baseline and the TP response

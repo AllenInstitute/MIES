@@ -4679,6 +4679,9 @@ End
 /// @brief Calculate deltaI/deltaV from a testpulse like stimset in "Current Clamp" mode
 /// @todo unify with TP_Delta code
 /// @todo add support for evaluating "inserted TP" only
+/// \rst
+/// See :ref:`CalculateTPLikePropsFromSweep_doc` for the full documentation.
+/// \endrst
 Function CalculateTPLikePropsFromSweep(numericalValues, textualValues, sweep, deltaI, deltaV, resistance)
 	WAVE numericalValues, textualValues, sweep, deltaI, deltaV, resistance
 
