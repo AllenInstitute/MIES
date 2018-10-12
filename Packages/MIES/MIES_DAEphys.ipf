@@ -2479,7 +2479,7 @@ static Function DAP_CheckHeadStage(panelTitle, headStage, mode)
 
 							// invalid types are not allowed
 							if(WhichListItem(reqType, ANALYSIS_FUNCTION_PARAMS_TYPES) == -1)
-								printf "(%s) The analysis parameter %s for %s in stim set %s has type %s which is unknown.\r", panelTitle, name, func, dacWave, type
+								printf "(%s) The required analysis parameter %s for %s in stim set %s has type %s which is unknown.\r", panelTitle, name, func, dacWave, type
 								ControlWindowToFront()
 								return 1
 							endif
