@@ -1,0 +1,77 @@
+digraph G {
+    fontname="sans-serif";
+    compound="true";
+    ratio="compress";
+    center="true";
+    penwidth="0.1";
+    edge [comment="Wildcard edge",
+          fontname="sans-serif",
+          fontsize=10,
+          colorscheme="blues3",
+          color=2,
+          fontcolor=3];
+    node [fontname="serif",
+          fontsize=13,
+          fillcolor="1",
+          colorscheme="blues4",
+          color="2",
+          fontcolor="4",
+          style="filled"];
+    "Start DAQ/RA (only call for last active headstage)";
+    "Post DAQ Event";
+    "Prepare DAQ";
+    "Pre Set Event";
+    "Start DAQ/RA (only call for last active headstage)" -> "Post Sweep Event";
+    "Start DAQ/RA (only call for last active headstage)" -> "Post DAQ Event";
+    "Start DAQ/RA (only call for last active headstage)" -> "Pre Set Event";
+    "Start DAQ/RA (only call for last active headstage)" -> "Prepare DAQ";
+    "Enable \"Multidevice DAQ\"";
+    "Enable \"dDAQ\"";
+    "Enable \"Repeated Acquisition\"";
+    "Check if no TTL channels are active";
+    "Enable \"TP during ITI\"";
+    "Valid Autobias voltage (finite and non-zero)";
+    "Enable \"Insert TP\"";
+    "Enable \"Autobias\"";
+    "Force Sampling Multiplier to 1";
+    "All checks passed";
+    "Check if there is at least\none active IC headstage";
+    "Abort";
+    "Store active headstages in labnotebook";
+    "Turn off active non-IC headstages\nor headstages which have not passed FastRheoEstimate";
+    "Look for an existing and passing FastRheoEstimate sweep\n within a passing set and\n a pulse duration of more than 500ms";
+    "Use the DAScale value of that sweep\n as offset to the DAScale values from the analysis parameters";
+    "Store active headstages in labnotebook";
+    "Valid Autobias voltage (finite and non-zero)";
+    "Prepare DAQ" -> "Enable \"Multidevice DAQ\"";
+    "Enable \"Multidevice DAQ\"" -> "Enable \"Repeated Acquisition\"";
+    "Enable \"Repeated Acquisition\"" -> "Force Sampling Multiplier to 1";
+    "Force Sampling Multiplier to 1" -> "Check if no TTL channels are active";
+    "Check if no TTL channels are active" -> "Store active headstages in labnotebook";
+    "Store active headstages in labnotebook" -> "Turn off active non-IC headstages\nor headstages which have not passed FastRheoEstimate";
+    "Post Sweep Event";
+    "Post Sweep Event" -> "Mark all active headstages as passed";
+    "Mark Sweep as passed";
+    "All checks passed" -> "Abort"  [label="No"];
+    "Mark all active headstages as passed" -> "Mark Sweep as passed";
+    "Read active headstages from labnotebook\nand turn them all on again";
+    "Post DAQ Event" -> "Read active headstages from labnotebook\nand turn them all on again";
+    "Update Dashboard";
+    "Read active headstages from labnotebook\nand turn them all on again" -> "Update Dashboard";
+    "Post Set Event" -> "Mark set as passed";
+    "Set next DAScale value,\nuse the analysis parameter values as offset\nonto the earlier FastRheoEstimate guess";
+    "Pre Set Event" -> "Enable \"Autobias\"";
+    "Enable \"Autobias\"" -> "Enable \"Insert TP\"";
+    "Enable \"Insert TP\"" -> "Enable \"TP during ITI\"";
+    "Enable \"TP during ITI\"" -> "Valid Autobias voltage (finite and non-zero)";
+    "Valid Autobias voltage (finite and non-zero)" -> "Enable \"dDAQ\"";
+    "Enable \"dDAQ\"" -> "Look for an existing and passing FastRheoEstimate sweep\n within a passing set and\n a pulse duration of more than 500ms";
+    "Look for an existing and passing FastRheoEstimate sweep\n within a passing set and\n a pulse duration of more than 500ms" -> "Use the DAScale value of that sweep\n as offset to the DAScale values from the analysis parameters"  [label="Found"];
+    "Look for an existing and passing FastRheoEstimate sweep\n within a passing set and\n a pulse duration of more than 500ms" -> "Abort"  [label="Not found"];
+    "Turn off active non-IC headstages\nor headstages which have not passed FastRheoEstimate" -> "Check if there is at least\none active IC headstage";
+    "Start DAQ/RA (only call for last active headstage)" -> "Post Set Event";
+    "Use the DAScale value of that sweep\n as offset to the DAScale values from the analysis parameters";
+    "Check if there is at least\none active IC headstage" -> "All checks passed";
+    "Pre Set Event" -> "Set next DAScale value,\nuse the analysis parameter values as offset\nonto the earlier FastRheoEstimate guess";
+    "Post Sweep Event" -> "Set next DAScale value,\nuse the analysis parameter values as offset\nonto the earlier FastRheoEstimate guess";
+}

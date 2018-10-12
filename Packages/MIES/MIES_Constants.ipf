@@ -945,6 +945,9 @@ Constant MSQ_DS_PULSE_DUR        = 1000
 
 Constant MSQ_RA_BL_EVAL_RANGE = 500
 
+Constant MSQ_DS_OFFSETSCALE_FAKE = 23 // pA
+Constant MSQ_DS_SWEEP_FAKE       = 42
+
 Constant MSQ_SPIKE_LEVEL         = 0.01 // mV
 Constant MSQ_RMS_SHORT_THRESHOLD = 0.07 // mV
 Constant MSQ_RMS_LONG_THRESHOLD  = 0.5  // mV
@@ -955,9 +958,10 @@ Constant MSQ_TARGETV_THRESHOLD   = 1    // mV
 /// @anchor MultiPatchSeqAnalysisFunctionTypes
 /// @{
 Constant MSQ_FAST_RHEO_EST = 0x1
+Constant MSQ_DA_SCALE      = 0x2
 
 /// List of analysis function types
-StrConstant MSQ_LIST_OF_TYPES = "0x1"
+StrConstant MSQ_LIST_OF_TYPES = "0x1;0x2"
 /// @}
 
 /// @anchor MultiPatchSeqLabnotebookFormatStrings
