@@ -39,6 +39,7 @@ Function run()
 	NWB_LoadAllStimsets(filename = GetFolder(FunctionPath("")) + "_2017_09_01_192934-compressed.nwb", overwrite = 1)
 	KillDataFolder/Z root:WaveBuilder
 	DuplicateDataFolder	root:MIES:WaveBuilder, root:WaveBuilder
+	KillDataFolder/Z root:WaveBuilder:SavedStimulusSets
 
 	RunTest("UTF_VeryBasicHardwareTests.ipf;UTF_DAEphys.ipf;UTF_AnalysisFunctionParameters.ipf", enableJU = 1)
 
