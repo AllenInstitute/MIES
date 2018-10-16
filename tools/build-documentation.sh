@@ -46,13 +46,29 @@ cp "$top_level/Packages/ZeroMQ/Readme.rst" "$top_level/Packages/doc/ZeroMQ-XOP-R
 if hash breathe-apidoc 2>/dev/null; then
   echo "Start breathe-apidoc"
 
-  breathe-apidoc -o . xml
+  breathe-apidoc -f -o . xml
 
 else
   echo "Errors building the documentation" 1>&2
   echo "breathe-apidoc could not be found" 1>&2
   exit 1
 fi
+
+# Add labels to each group and each file
+# can be referenced via :ref:`Group LabnotebookQueryFunctions`
+# or :ref:`File MIES_Utilities.ipf`
+
+for i in `ls group/group_*.rst`
+do
+  name=$(sed -e '$!d' -e 's/.*doxygengroup:: \(.*\)$/\1/' $i)
+  sed -i "1s/^/.. _Group ${name}:\n\n/" $i
+done
+
+for i in `ls file/*.rst`
+do
+  name=$(sed -e '$!d' -e 's/.*doxygenfile:: \(.*\)$/\1/' $i)
+  sed -i "1s/^/.. _File ${name}:\n\n/" $i
+done
 
 if hash sphinx-build 2>/dev/null; then
   echo "Start sphinx-build"
@@ -61,7 +77,9 @@ if hash sphinx-build 2>/dev/null; then
 
   sphinx-build -q -w sphinx-output.log . html
 
-  if [ -e "sphinx-output.log" ]
+  sed -i -e '/WARNING: Duplicate declaration./d' sphinx-output.log
+
+  if [ -s "sphinx-output.log" ]
   then
     echo "Errors building the documentation" 1>&2
     echo "sphinx-build says: "               1>&2
