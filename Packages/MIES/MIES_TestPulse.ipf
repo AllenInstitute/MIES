@@ -286,7 +286,7 @@ static Function TP_RecordTP(panelTitle, BaselineSSAvg, InstResistance, SSResista
 	Wave TPStorage = GetTPStorage(panelTitle)
 	WAVE activeHSProp = GetActiveHSProperties(panelTitle)
 	Wave GUIState  = GetDA_EphysGuiStateNum(panelTitle)
-	variable count = GetNumberFromWaveNote(TPStorage, TP_CYLCE_COUNT_KEY)
+	variable count = GetNumberFromWaveNote(TPStorage, NOTE_INDEX)
 	variable now   = ticks * TICKS_TO_SECONDS
 	variable lastRescaling = GetNumberFromWaveNote(TPStorage, DIMENSION_SCALING_LAST_INVOC)
 
@@ -340,7 +340,7 @@ static Function TP_RecordTP(panelTitle, BaselineSSAvg, InstResistance, SSResista
 
 		TPStorage[count][][%DeltaTimeInSeconds] = count > 0 ? now - TPStorage[0][0][%TimeInSeconds] : 0
 		P_PressureControl(panelTitle)
-		SetNumberInWaveNote(TPStorage, TP_CYLCE_COUNT_KEY, count + 1)
+		SetNumberInWaveNote(TPStorage, NOTE_INDEX, count + 1)
 		TP_AnalyzeTP(panelTitle, TPStorage, count)
 
 		// not all rows have the unit seconds, but with
@@ -564,7 +564,7 @@ Function TP_TestPulseHasCycled(panelTitle, cycles)
 
 	Wave TPStorage = GetTPStorage(panelTitle)
 
-	return GetNumberFromWaveNote(TPStorage, TP_CYLCE_COUNT_KEY) > cycles
+	return GetNumberFromWaveNote(TPStorage, NOTE_INDEX) > cycles
 End
 
 /// @brief Save the amplifier holding command in the TPStorage wave
@@ -587,7 +587,7 @@ Function TP_UpdateHoldCmdInTPStorage(panelTitle, headStage)
 	clampMode = DAG_GetHeadstageMode(panelTitle, headStage)
 
 	WAVE TPStorage = GetTPStorage(panelTitle)
-	count = GetNumberFromWaveNote(TPStorage, TP_CYLCE_COUNT_KEY)
+	count = GetNumberFromWaveNote(TPStorage, NOTE_INDEX)
 
 	EnsureLargeEnoughWave(TPStorage, minimumSize=count, dimension=ROWS, initialValue=NaN)
 

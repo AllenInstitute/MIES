@@ -196,7 +196,6 @@ Constant INITIAL_KEY_WAVE_COL_COUNT = 4
 
 /// @name Constants for the note of the wave returned by GetTPStorage
 /// @{
-StrConstant TP_CYLCE_COUNT_KEY             = "TPCycleCount"
 StrConstant AUTOBIAS_LAST_INVOCATION_KEY   = "AutoBiasLastInvocation"
 StrConstant DIMENSION_SCALING_LAST_INVOC   = "DimensionScalingLastInvocation"
 /// @}

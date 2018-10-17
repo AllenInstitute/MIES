@@ -1967,7 +1967,7 @@ Function/Wave GetTPStorage(panelTitle)
 	string 	panelTitle
 
 	dfref dfr = GetDeviceTestPulse(panelTitle)
-	variable versionOfNewWave = 6
+	variable versionOfNewWave = 7
 
 	WAVE/Z/SDFR=dfr/D wv = TPStorage
 
@@ -2004,7 +2004,7 @@ Function/Wave GetTPStorage(panelTitle)
 	SetDimLabel LAYERS, 18, PressureMethod            , wv
 	SetDimLabel LAYERS, 19, ValidState                , wv
 
-	SetNumberInWaveNote(wv, TP_CYLCE_COUNT_KEY, 0)
+	SetNumberInWaveNote(wv, NOTE_INDEX, 0)
 	SetNumberInWaveNote(wv, AUTOBIAS_LAST_INVOCATION_KEY, 0)
 	SetNumberInWaveNote(wv, DIMENSION_SCALING_LAST_INVOC, 0)
 

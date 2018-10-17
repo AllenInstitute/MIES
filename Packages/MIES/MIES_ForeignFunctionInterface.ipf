@@ -43,7 +43,7 @@ Function/WAVE FFI_ReturnTPValues()
 		Wave tpStorageWave=GetTPStorage(currentPanel)
 
 		//we want the last row of the column in question
-		tpCycleCount = GetNumberFromWaveNote(tpStorageWave, TP_CYLCE_COUNT_KEY) // used to pull most recent values from TP
+		tpCycleCount = GetNumberFromWaveNote(tpStorageWave, NOTE_INDEX) // used to pull most recent values from TP
 
 		//make sure we get a valid TPCycleCount value
 		if (TPCycleCount == 0)

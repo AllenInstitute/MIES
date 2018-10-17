@@ -116,7 +116,7 @@ static Function P_UpdateTPStorage(panelTitle, headStage)
 
 	WAVE PressureDataWv = P_GetPressureDataWaveRef(panelTitle)
 	WAVE TPStorage      = GetTPStorage(panelTitle)
-	variable count      = GetNumberFromWaveNote(TPStorage, TP_CYLCE_COUNT_KEY)
+	variable count      = GetNumberFromWaveNote(TPStorage, NOTE_INDEX)
 	variable column
 
 	if(!P_ValidatePressureSetHeadstage(panelTitle, headStage) || !P_IsHSActiveAndInVClamp(panelTitle, headStage))
@@ -812,7 +812,7 @@ static Function P_UpdateSSRSlopeAndSSR(panelTitle)
 	WAVE ITCChanConfigWave = GetITCChanConfigWave(panelTitle)
 
 	WAVE ADCs = GetADCListFromConfig(ITCChanConfigWave)
-	variable lastValidEntry = GetNumberFromWaveNote(TPStorageWave, TP_CYLCE_COUNT_KEY) - 1
+	variable lastValidEntry = GetNumberFromWaveNote(TPStorageWave, NOTE_INDEX) - 1
 	variable Row
 	// pull data from TPStorageWave, apply it to headStage using AFH_GetHeadstageFromADC(panelTitle, AD)
 	variable ColumnsInTPStorageWave = DimSize(TPStorageWave, 1)
