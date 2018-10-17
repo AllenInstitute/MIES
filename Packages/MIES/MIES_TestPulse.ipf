@@ -294,7 +294,6 @@ static Function TP_RecordTP(panelTitle, BaselineSSAvg, InstResistance, SSResista
 
 	if(!count)
 		Redimension/N=(-1, numADCs, -1, -1) TPStorage
-		TPStorage = NaN
 		// time of the first sweep
 		TPStorage[0][][%TimeInSeconds] = now
 
@@ -408,32 +407,6 @@ static Function TP_AnalyzeTP(panelTitle, TPStorage, endRow)
 	endfor
 End
 
-/// @brief Resets the TP storage wave
-///
-/// - Store the TP record if requested by the user
-/// - Clear the wave to start with a pristine storage wave
-static Function TP_ResetTPStorage(panelTitle)
-	string panelTitle
-
-	Wave TPStorage = GetTPStorage(panelTitle)
-	variable count = GetNumberFromWaveNote(TPStorage, TP_CYLCE_COUNT_KEY)
-	string name
-
-	if(count > 0)
-		if(DAG_GetNumericalValue(panelTitle, "check_Settings_TP_SaveTPRecord"))
-			dfref dfr = GetDeviceTestPulse(panelTitle)
-			name = NameOfWave(TPStorage)
-			Duplicate/RMD=[0, count - 1] TPStorage, dfr:$(name + "_" + num2str(ItemsInList(GetListOfObjects(dfr, TP_STORAGE_REGEXP))))
-		endif
-
-		SetNumberInWaveNote(TPStorage, TP_CYLCE_COUNT_KEY, 0)
-		SetNumberInWaveNote(TPStorage, AUTOBIAS_LAST_INVOCATION_KEY, 0)
-		SetNumberInWaveNote(TPStorage, DIMENSION_SCALING_LAST_INVOC, 0)
-		EnsureSmallEnoughWave(TPStorage)
-		TPStorage = NaN
-	endif
-End
-
 /// @brief Returns the column of any of the TP results waves (TPBaseline, TPInstResistance, TPSSResistance) associated with a headstage.
 ///
 Function TP_GetTPResultsColOfHS(panelTitle, headStage)
@@ -538,8 +511,6 @@ Function TP_Setup(panelTitle, runMode)
 		DAP_ToggleTestpulseButton(panelTitle, TESTPULSE_BUTTON_TO_STOP)
 		DisableControls(panelTitle, CONTROLS_DISABLE_DURING_DAQ_TP)
 	endif
-
-	TP_ResetTPStorage(panelTitle)
 
 	NVAR runModeGlobal = $GetTestpulseRunMode(panelTitle)
 	runModeGlobal = runMode

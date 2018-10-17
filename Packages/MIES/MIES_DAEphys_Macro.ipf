@@ -2750,14 +2750,6 @@ Window DA_Ephys() : Panel
 	SetVariable setvar_Settings_TP_RTolerance,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Duafnzzzzzzzzzzz"
 	SetVariable setvar_Settings_TP_RTolerance,userdata(ResizeControlsInfo) += A"zzz!!#u:Duafnzzzzzzzzzzzzzz!!!"
 	SetVariable setvar_Settings_TP_RTolerance,limits={1,inf,1},value= _NUM:1
-	CheckBox check_Settings_TP_SaveTPRecord,pos={342.00,132.00},size={93.00,15.00},disable=1,proc=DAP_CheckProc_UpdateGuiState,title="Save TP record"
-	CheckBox check_Settings_TP_SaveTPRecord,help={"When unchecked, the TP analysis record (from the previous TP run), is overwritten on the initiation of of the TP"}
-	CheckBox check_Settings_TP_SaveTPRecord,userdata(tabnum)=  "5"
-	CheckBox check_Settings_TP_SaveTPRecord,userdata(tabcontrol)=  "ADC"
-	CheckBox check_Settings_TP_SaveTPRecord,userdata(ResizeControlsInfo)= A"!!,HmJ,hq?!!#?s!!#<(z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
-	CheckBox check_Settings_TP_SaveTPRecord,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Duafnzzzzzzzzzzz"
-	CheckBox check_Settings_TP_SaveTPRecord,userdata(ResizeControlsInfo) += A"zzz!!#u:Duafnzzzzzzzzzzzzzz!!!"
-	CheckBox check_Settings_TP_SaveTPRecord,value= 0
 	Button button_DataAcq_AutoBridgeBal_IC,pos={240.00,208.00},size={39.00,15.00},disable=1,proc=DAP_ButtonProc_AmpCntrls,title="Auto"
 	Button button_DataAcq_AutoBridgeBal_IC,help={"Automatically calculate the bridge balance"}
 	Button button_DataAcq_AutoBridgeBal_IC,userdata(tabnum)=  "1"
