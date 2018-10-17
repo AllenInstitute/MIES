@@ -392,8 +392,6 @@ static Function ExpConfig_DAEphysSettings(panelTitle, UserSettings)
 	PGC_SetAndActivateControl(panelTitle,"Check_Settings_ITImanualStart", val = str2numSafe(UserSettings[V_value][%SettingValue]))
 	FindValue /TXOP = 4 /TEXT = TP_AFTER_DAQ UserSettings
 	PGC_SetAndActivateControl(panelTitle,"check_Settings_TPAfterDAQ", val = str2numSafe(UserSettings[V_value][%SettingValue]))
-	FindValue /TXOP = 4 /TEXT = SAVE_TP UserSettings
-	PGC_SetAndActivateControl(panelTitle,"check_Settings_TP_SaveTPRecord", val = str2numSafe(UserSettings[V_value][%SettingValue]))
 	FindValue /TXOP = 4 /TEXT = SAVE_TP_SWEEP UserSettings
 	PGC_SetAndActivateControl(panelTitle,"check_Settings_TP_SaveTP", val = str2numSafe(UserSettings[V_value][%SettingValue]))
 	FindValue /TXOP = 4 /TEXT = EXPORT_NWB UserSettings
