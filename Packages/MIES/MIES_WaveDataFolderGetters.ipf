@@ -436,7 +436,7 @@ End
 /// The order is the same as in ITCChanConfigWave and there does, by principle,
 /// not include unassociated ADCs.
 ///
-/// @sa DC_UpdateActiveClampModeWave()
+/// @sa DC_UpdateActiveHSProperties()
 Function/WAVE GetActiveHSProperties(panelTitle)
 	string panelTitle
 
