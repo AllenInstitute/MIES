@@ -117,26 +117,20 @@ static Function P_UpdateTPStorage(panelTitle, headStage)
 	WAVE PressureDataWv = P_GetPressureDataWaveRef(panelTitle)
 	WAVE TPStorage      = GetTPStorage(panelTitle)
 	variable count      = GetNumberFromWaveNote(TPStorage, NOTE_INDEX)
-	variable column
 
 	if(!P_ValidatePressureSetHeadstage(panelTitle, headStage) || !P_IsHSActiveAndInVClamp(panelTitle, headStage))
 		return NaN
 	endif
 
-	column = TP_GetTPResultsColOfHS(panelTitle, headStage)
-	if(column == -1)
-		return NaN
-	endif
-
-	TPStorage[count][column][%Pressure] = PressureDataWv[headStage][%RealTimePressure][0]
+	TPStorage[count][headstage][%Pressure] = PressureDataWv[headStage][%RealTimePressure][0]
 
 	if(count == 0) // don' record pressure change for first entry
 		return NaN
 	endif
 
-	TPStorage[count][column][%PressureChange] = (TPStorage[count - 1][column][%Pressure] == PressureDataWv[headStage][%RealTimePressure][0] ? NaN : PRESSURE_CHANGE)
+	TPStorage[count][headstage][%PressureChange] = (TPStorage[count - 1][headstage][%Pressure] == PressureDataWv[headStage][%RealTimePressure][0] ? NaN : PRESSURE_CHANGE)
 
-	TPStorage[count][column][%PressureMethod] = PressureDataWv[headStage][%Approach_Seal_BrkIn_Clear]
+	TPStorage[count][headstage][%PressureMethod] = PressureDataWv[headStage][%Approach_Seal_BrkIn_Clear]
 End
 
 /// @brief Sets the pressure to atmospheric
@@ -807,37 +801,26 @@ End
 static Function P_UpdateSSRSlopeAndSSR(panelTitle)
 	string panelTitle
 
-	WAVE TPStorageWave     = GetTPStorage(panelTitle)
-	WAVE PressureDataWv    = P_GetPressureDataWaveRef(panelTitle)
-	WAVE ITCChanConfigWave = GetITCChanConfigWave(panelTitle)
+	variable lastValidEntry, i
 
-	WAVE ADCs = GetADCListFromConfig(ITCChanConfigWave)
-	variable lastValidEntry = GetNumberFromWaveNote(TPStorageWave, NOTE_INDEX) - 1
-	variable Row
-	// pull data from TPStorageWave, apply it to headStage using AFH_GetHeadstageFromADC(panelTitle, AD)
-	variable ColumnsInTPStorageWave = DimSize(TPStorageWave, 1)
-	if(ColumnsInTPStorageWave == 0)
-		ColumnsInTPStorageWave = 1
-	endif
+	WAVE TPStorageWave  = GetTPStorage(panelTitle)
+	WAVE PressureDataWv = P_GetPressureDataWaveRef(panelTitle)
+
+	lastValidEntry = GetNumberFromWaveNote(TPStorageWave, NOTE_INDEX) - 1
 
 	if(lastValidEntry < 0) // very first call without any TpStorage data
 		return NaN
 	endif
 
-	Duplicate/FREE/R=[lastValidEntry][*][FindDimLabel(TPStorageWave, LAYERS, "ValidState")] TPStorageWave, validStateEntries
-
-	variable i
-	for(i = 0; i < ColumnsInTPStorageWave; i += 1)
-		
-		if(!validStateEntries[i])
+	for(i = 0; i < NUM_HEADSTAGES; i += 1)
+		if(!TPStorageWave[lastValidEntry][i][%ValidState] || !IsFinite(TPStorageWave[lastValidEntry][i][%Headstage]))
 			continue
 		endif
 
-		Row = AFH_GetHeadstageFromADC(panelTitle, ADCs[i])
-		PressureDataWv[Row][%PeakR] = TPStorageWave[lastValidEntry][i][%PeakResistance] // update the peak resistance value
-		PressureDataWv[Row][%LastResistanceValue] = TPStorageWave[lastValidEntry][i][%SteadyStateResistance]	// update the steady state resistance value
-		PressureDataWv[Row][%SSResistanceSlope] = TPStorageWave[0][i][%Rss_Slope]
-	endfor																					// Column 22 of the PressureDataWv stores the steady state resistance slope
+		PressureDataWv[i][%PeakR]               = TPStorageWave[lastValidEntry][i][%PeakResistance]
+		PressureDataWv[i][%LastResistanceValue] = TPStorageWave[lastValidEntry][i][%SteadyStateResistance]
+		PressureDataWv[i][%SSResistanceSlope]   = TPStorageWave[0][i][%Rss_Slope]
+	endfor
 End
 
 /// @brief Updates the pressure state (approach, seal, break in, or clear) from DA_Ephys panel to the pressureData wave

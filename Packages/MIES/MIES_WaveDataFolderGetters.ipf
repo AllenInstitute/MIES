@@ -1940,7 +1940,7 @@ End
 /// - One entry per step
 ///
 /// COLS:
-/// - One for each *active* and associated ADC
+/// - NUM_AD_CHANNELS
 ///
 /// LAYERS:
 /// -  0: Amplifier holding command (Voltage Clamp)
@@ -1967,21 +1967,21 @@ Function/Wave GetTPStorage(panelTitle)
 	string 	panelTitle
 
 	dfref dfr = GetDeviceTestPulse(panelTitle)
-	variable versionOfNewWave = 7
+	variable versionOfNewWave = 8
 
 	WAVE/Z/SDFR=dfr/D wv = TPStorage
 
 	if(ExistsWithCorrectLayoutVersion(wv, versionOfNewWave))
 		return wv
 	elseif(WaveExists(wv))
-		Redimension/N=(-1, -1, 20)/D wv
+		Redimension/N=(-1, NUM_HEADSTAGES, 20)/D wv
 	else
-		Make/N=(MINIMUM_WAVE_SIZE, NUM_AD_CHANNELS, 20)/D dfr:TPStorage/Wave=wv
+		Make/N=(MINIMUM_WAVE_SIZE_LARGE, NUM_HEADSTAGES, 20)/D dfr:TPStorage/Wave=wv
 	endif
 
 	wv = NaN
 
-	SetDimLabel COLS,  -1,  ADChannel                 , wv
+	SetDimLabel COLS,  -1,  Headstage                 , wv
 
 	SetDimLabel LAYERS,  0, HoldingCmd_VC             , wv
 	SetDimLabel LAYERS,  1, HoldingCmd_IC             , wv

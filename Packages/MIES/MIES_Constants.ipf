@@ -77,6 +77,7 @@ Constant ITC_XOP_CHANNEL_TYPE_TTL = 3
 /// @}
 
 Constant MINIMUM_WAVE_SIZE = 64
+Constant MINIMUM_WAVE_SIZE_LARGE = 2048
 Constant MAXIMUM_WAVE_SIZE = 16384 // 2^14
 
 /// @name Wave dimension constants

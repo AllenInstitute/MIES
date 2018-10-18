@@ -63,7 +63,7 @@ Function SCOPE_UpdateGraph(panelTitle)
 	string panelTitle
 
 	variable latest, count, i, numADCs, minVal, maxVal, range, numDACs, statsMin, statsMax
-	variable axisMin, axisMax, spacing
+	variable axisMin, axisMax, spacing, adc, headstage
 	variable relTimeAxisMin, relTimeAxisMax, showSteadyStateResistance, showPeakResistance
 	variable showPowerSpectrum
 	string graph, rightAxis, leftAxis, info
@@ -90,8 +90,8 @@ Function SCOPE_UpdateGraph(panelTitle)
 		endif
 
 		for(i = 0; i < numADCs; i += 1)
-
-			rightAxis = "resistance" + num2str(ADCs[i])
+			adc = ADCs[i]
+			rightAxis = "resistance" + num2str(adc)
 
 			info = AxisInfo(graph, rightAxis)
 
@@ -99,17 +99,20 @@ Function SCOPE_UpdateGraph(panelTitle)
 				continue
 			endif
 
+			headstage = AFH_GetHeadstageFromADC(panelTitle, adc)
+			ASSERT(IsFinite(headstage), "Headstage must be finite")
+
 			minVal = +Inf
 			maxVal = -Inf
 
 			if(showPeakResistance)
-				WaveStats/M=1/Q/RMD=(relTimeAxisMin, relTimeAxisMax)[i][1] TPStorage
+				WaveStats/M=1/Q/RMD=(relTimeAxisMin, relTimeAxisMax)[headstage][1] TPStorage
 				minVal = min(V_min, minVal)
 				maxVal = max(V_max, maxVal)
 			endif
 
 			if(showSteadyStateResistance)
-				WaveStats/M=1/Q/RMD=(relTimeAxisMin, relTimeAxisMax)[i][2] TPStorage
+				WaveStats/M=1/Q/RMD=(relTimeAxisMin, relTimeAxisMax)[headstage][2] TPStorage
 				minVal = min(V_min, minVal)
 				maxVal = max(V_max, maxVal)
 			endif
@@ -264,7 +267,7 @@ Function SCOPE_CreateGraph(panelTitle, dataAcqOrTP)
 
 			if(showPeakResistance)
 				peakTrace = "PeakResistance" + adcStr
-				AppendToGraph/W=$graph/R=$rightAxis/T=top TPStorage[][i][%PeakResistance]/TN=$peakTrace
+				AppendToGraph/W=$graph/R=$rightAxis/T=top TPStorage[][headstage][%PeakResistance]/TN=$peakTrace
 #if (IgorVersion() >= 8.00)
 				ModifyGraph/W=$graph live($peakTrace)=(2^1)
 #endif
@@ -273,16 +276,16 @@ Function SCOPE_CreateGraph(panelTitle, dataAcqOrTP)
 
 			if(showSteadyStateResistance)
 				steadyStateTrace = "SteadyStateResistance" + adcStr
-				AppendToGraph/W=$graph/R=$rightAxis/T=top TPStorage[][i][%SteadyStateResistance]/TN=$steadyStateTrace
+				AppendToGraph/W=$graph/R=$rightAxis/T=top TPStorage[][headstage][%SteadyStateResistance]/TN=$steadyStateTrace
 				ASSERT(isFinite(headStage), "invalid headStage")
 				if(isFinite(PressureData[headStage][%DAC_DevID])) // Check if pressure is enabled
 					ModifyGraph/W=$graph marker($steadyStateTrace)=19, mode($steadyStateTrace)=4
 					ModifyGraph/W=$graph msize($steadyStateTrace)=1, gaps($steadyStateTrace)=0
 					ModifyGraph/W=$graph useMrkStrokeRGB($steadyStateTrace)=1, mrkStrokeRGB($steadyStateTrace)=(65535,65535,65535)
-					ModifyGraph/W=$graph zColor($steadyStateTrace)={TPStorage[*][i][%Pressure],   \
+					ModifyGraph/W=$graph zColor($steadyStateTrace)={TPStorage[*][headstage][%Pressure],   \
 											(PRESSURE_SPECTRUM_PERCENT * MIN_REGULATOR_PRESSURE), \
 											(PRESSURE_SPECTRUM_PERCENT * MAX_REGULATOR_PRESSURE), BlueBlackRed,0}
-					ModifyGraph/W=$graph zmrkSize($steadyStateTrace)={TPStorage[*][i][%PressureChange],0,1,1,4}
+					ModifyGraph/W=$graph zmrkSize($steadyStateTrace)={TPStorage[*][headstage][%PressureChange],0,1,1,4}
 				else
 					ModifyGraph/W=$graph lstyle($steadyStateTrace)=1, rgb($steadyStateTrace)=(steadyColor.red, steadyColor.green, steadyColor.blue)
 				endif
