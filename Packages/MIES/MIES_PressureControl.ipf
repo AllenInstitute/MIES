@@ -834,7 +834,7 @@ static Function P_UpdateSSRSlopeAndSSR(panelTitle)
 		endif
 
 		Row = AFH_GetHeadstageFromADC(panelTitle, ADCs[i])
-		PressureDataWv[Row][%PeakR] = TPStorageWave[lastValidEntry][i][1] // update the peak resistance value
+		PressureDataWv[Row][%PeakR] = TPStorageWave[lastValidEntry][i][%PeakResistance] // update the peak resistance value
 		PressureDataWv[Row][%LastResistanceValue] = TPStorageWave[lastValidEntry][i][%SteadyStateResistance]	// update the steady state resistance value
 		PressureDataWv[Row][%SSResistanceSlope] = TPStorageWave[0][i][%Rss_Slope]
 	endfor																					// Column 22 of the PressureDataWv stores the steady state resistance slope
