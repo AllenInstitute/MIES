@@ -396,7 +396,7 @@ static Function TP_AnalyzeTP(panelTitle, TPStorage, endRow)
 			TPStorage[0][i][%Rss_Slope] = coefWave[1]
 		catch
 			/// @todo - add code that let's functions which rely on this data know to wait for good data
-			TPStorage[startRow,endRow][i][%Rss_Slope]   = NaN
+			TPStorage[0][i][%Rss_Slope] = NaN
 			DEBUGPRINT("Fit was not successfull")
 			DEBUGPRINT("V_FitError=", var=V_FitError)
 			DEBUGPRINT("V_FitQuitReason=", var=V_FitQuitReason)
