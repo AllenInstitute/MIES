@@ -42,7 +42,7 @@ purpose of the object. This documentation should be the primary, and only,
 source for finding out what the object holds. Using a single access point for
 global objects allows to quickly find all users of that object.
 
-For waves we use wave versioning, see :ref:`WaveVersioningSupport`. This is
+For waves we use wave versioning, see :ref:`Group WaveVersioningSupport`. This is
 done in order to enable a smooth upgrade when the wave layout changes and old
 experiments are loaded with the old wave layout.
 

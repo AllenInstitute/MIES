@@ -121,7 +121,7 @@ wave ``DAunit``. If a head stage was active is read to the wave wave ``statusHS`
    WAVE statusHS = GetLastSetting(numericalValues, sweepNo, "Headstage Active", DATA_ACQUISITION_MODE)
 
 Finding square pulse
-==================
+====================
 
 The following is **done for each head stage** up to ``NUM_HEADSTAGES`` (default = 8):
 

@@ -127,8 +127,7 @@ Function/Wave GetChanAmpAssignUnit(panelTitle)
 	return wv
 End
 
-/// @name Wave versioning support
-/// @anchor WaveVersioningSupport
+/// @defgroup WaveVersioningSupport Wave versioning support
 ///
 /// The wave getter functions always return an existing wave.
 /// This can result in problems if the layout of the wave changes.
