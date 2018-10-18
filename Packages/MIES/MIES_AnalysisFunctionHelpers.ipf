@@ -539,7 +539,7 @@ End
 ///
 /// @param name      parameter name
 /// @param params    serialized parameters, usually just #AnalysisFunction_V3.params
-/// @param typeCheck [optional, defaults to false] Check with an assertion that
+/// @param typeCheck [optional, defaults to true] Check with an assertion that
 ///                  the readout type is one of @ref ANALYSIS_FUNCTION_PARAMS_TYPES
 ///
 /// @ingroup AnalysisFunctionParameterHelpers
@@ -647,7 +647,7 @@ End
 Function AFH_IsValidAnalysisParameter(name)
 	string name
 
-	return !IsEmpty(name) && !cmpstr(CleanupName(name, 0), name)
+	return IsValidObjectName(name)
 End
 
 /// @brief Check if the given type is a valid user parameter type
