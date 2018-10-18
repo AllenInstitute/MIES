@@ -65,6 +65,7 @@ Function ExecuteNextTestCase_IGNORE()
 	list = AddListItem("UTF_PatchSeqRheobase.ipf", list, ";", Inf)
 	list = AddListItem("UTF_PatchSeqRamp.ipf", list, ";", Inf)
 	list = AddListItem("UTF_AnalysisFunctionManagement.ipf", list, ";", Inf)
+	list = AddListItem("UTF_MultiPatchSeqFastRheoEstimate.ipf", list, ";", Inf)
 
 	Execute/P/Q "runtest(\"" + list + "\", testCase=\"" + testCases[testCaseIndex] + "\", enableJU = 1)"
 

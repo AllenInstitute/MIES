@@ -927,6 +927,55 @@ Constant PSQ_RA_DASCALE_DEFAULT = 1 // pA
 Constant PSQ_RA_NUM_SWEEPS_PASS = 3
 /// @}
 
+/// @name MultiPatchSeq various constants
+/// @{
+Constant MSQ_FRE_INIT_AMP_m50    = -50e-12
+Constant MSQ_FRE_INIT_AMP_p100   = +100e-12
+Constant MSQ_FRE_INIT_AMP_p10    = +10e-12
+
+Constant MSQ_RB_PRE_BL_EVAL_RANGE  = 500
+Constant MSQ_RB_POST_BL_EVAL_RANGE = 500
+
+Constant MSQ_DS_BL_EVAL_RANGE_MS = 500
+Constant MSQ_DS_PULSE_DUR        = 1000
+
+Constant MSQ_RA_BL_EVAL_RANGE = 500
+
+Constant MSQ_SPIKE_LEVEL         = 0.01 // mV
+Constant MSQ_RMS_SHORT_THRESHOLD = 0.07 // mV
+Constant MSQ_RMS_LONG_THRESHOLD  = 0.5  // mV
+Constant MSQ_TARGETV_THRESHOLD   = 1    // mV
+/// @}
+
+/// @name MultiPatchSeq types of analysis functions
+/// @anchor MultiPatchSeqAnalysisFunctionTypes
+/// @{
+Constant MSQ_FAST_RHEO_EST = 0x1
+
+/// List of analysis function types
+StrConstant MSQ_LIST_OF_TYPES = "0x1"
+/// @}
+
+/// @anchor MultiPatchSeqLabnotebookFormatStrings
+/// @{
+StrConstant MSQ_FMT_LBN_DASCALE_EXC    = "%s DAScale exceeded"
+StrConstant MSQ_FMT_LBN_STEPSIZE          = "%s step size"
+StrConstant MSQ_FMT_LBN_SPIKE_DETECT      = "%s spike detected"
+StrConstant MSQ_FMT_LBN_SPIKE_POSITIONS   = "%s spike positions"
+StrConstant MSQ_FMT_LBN_FINAL_SCALE       = "%s final DAScale"
+StrConstant MSQ_FMT_LBN_INITIAL_SCALE     = "%s initial DAScale"
+StrConstant MSQ_FMT_LBN_RMS_SHORT_PASS    = "%s Chk%d S-RMS QC"
+StrConstant MSQ_FMT_LBN_RMS_LONG_PASS     = "%s Chk%d L-RMS QC"
+StrConstant MSQ_FMT_LBN_TARGETV_PASS      = "%s Chk%d T-V BL QC"
+StrConstant MSQ_FMT_LBN_CHUNK_PASS        = "%s Chk%d BL QC"
+StrConstant MSQ_FMT_LBN_BL_QC_PASS        = "%s Baseline QC"
+StrConstant MSQ_FMT_LBN_HEADSTAGE_PASS    = "%s Headstage QC"
+StrConstant MSQ_FMT_LBN_SWEEP_PASS        = "%s Sweep QC"
+StrConstant MSQ_FMT_LBN_SET_PASS          = "%s Set QC"
+StrConstant MSQ_FMT_LBN_PULSE_DUR         = "%s Pulse duration"
+StrConstant MSQ_FMT_LBN_ACTIVE_HS         = "%s Active Headstage"
+/// @}
+
 Constant TP_MD_THREAD_DEAD_MAX_RETRIES = 10
 
 /// @todo: IP8 convert all call sites to use MultiThread/T=
