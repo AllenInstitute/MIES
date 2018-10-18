@@ -15,7 +15,6 @@
 #include <Resize Controls>
 #include <ZoomBrowser>
 #include <FunctionProfiling>
-#include <Readback ModifyStr>
 #include <HDF5 Browser>
 
 // third party includes
