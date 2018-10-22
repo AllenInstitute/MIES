@@ -8,9 +8,6 @@
 
 /// @cond DOXYGEN_IGNORES_THIS
 
-// stock igor
-#include <Readback ModifyStr>
-
 #include ":ACL_TabUtilities"
 
 #include ":MIES_Constants"
