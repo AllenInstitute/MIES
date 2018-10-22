@@ -2482,7 +2482,7 @@ Window DA_Ephys() : Panel
 	Slider slider_DataAcq_ActiveHeadstage,userdata(ResizeControlsInfo) += A"zzz!!#u:Duafnzzzzzzzzzzzzzz!!!"
 	Slider slider_DataAcq_ActiveHeadstage,labelBack=(60928,60928,60928)
 	Slider slider_DataAcq_ActiveHeadstage,limits={0,7,1},value= 0,live= 0,side= 2,vert= 0,ticks= 0,thumbColor= (43520,43520,43520)
-	SetVariable setvar_DataAcq_AutoBiasV,pos={286.00,217.00},size={100.00,18.00},bodyWidth=50,disable=1,proc=DAP_SetVarProc_AmpCntrls,title="Vm (mV)"
+	SetVariable setvar_DataAcq_AutoBiasV,pos={286.00,217.00},size={100.00,18.00},bodyWidth=50,disable=1,proc=DAP_SetVarProc_AmpCntrls,title="Vm (mV)",limits={-99,99,1}
 	SetVariable setvar_DataAcq_AutoBiasV,userdata(tabnum)=  "1"
 	SetVariable setvar_DataAcq_AutoBiasV,userdata(tabcontrol)=  "tab_DataAcq_Amp"
 	SetVariable setvar_DataAcq_AutoBiasV,userdata(ResizeControlsInfo)= A"!!,HJJ,hr?!!#@.!!#<Hz!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
