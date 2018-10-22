@@ -3435,6 +3435,38 @@ Function/S GetAllAxesWithOrientation(graph, axisOrientation)
 	return list
 End
 
+/// @brief Polished version of `GetNumFromModifyStr` from `Readback ModifyStr.ipf`
+///
+/// @param info     string as returned by AxisInfo or TraceInfo
+/// @param key      keyword
+/// @param listChar empty, `{` or `(` depending on keyword style
+/// @param item     return the given element from the extracted list
+static Function GetNumFromModifyStr(info, key, listChar, item)
+	string info
+	string key
+	string listChar
+	variable item
+
+	string list, escapedListChar, regexp
+
+	escapedListChar = "\\Q" + listChar + "\\E"
+
+	sprintf regexp, "(?i)\\Q%s\\E\([^=]+\)=%s([^});]+)", key, escapedListChar
+
+	SplitString/E=regexp info, list
+
+	if(V_Flag < 1)
+		return NaN
+	endif
+
+	if(item == 0)
+		return str2num(list)
+	else
+		ASSERT(item >= 0 && item < ItemsInList(list, ","), "Invalid index")
+		return str2num(StringFromList(item, list, ","))
+	endif
+End
+
 /// @brief Return the list of axis sorted from highest
 ///        to lowest starting value of the `axisEnab` keyword.
 ///
