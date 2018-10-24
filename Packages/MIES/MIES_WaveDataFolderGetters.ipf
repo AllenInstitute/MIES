@@ -216,7 +216,7 @@ static Function WaveVersionIsSmaller(wv, existingVersion)
 End
 
 /// @brief return the Version of the Wave
-static Function GetWaveVersion(wv)
+Function GetWaveVersion(wv)
 	Wave/Z wv
 
 	return GetNumberFromWaveNote(wv, WAVE_NOTE_LAYOUT_KEY)
