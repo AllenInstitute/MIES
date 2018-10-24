@@ -5537,14 +5537,13 @@ Function /WAVE GetExpUserSettings(ConfigNB, KeyTypes)
 
 	SetWaveDimLabel(UserSettings, "SettingKey;SettingValue", COLs)
 
+	Notebook $ConfigNB selection = {startOfFile, endOfFile}
+	GetSelection notebook, $ConfigNB, 2
+	Content = S_Selection
 
-		Notebook $ConfigNB selection = {startOfFile, endOfFile}
-		GetSelection notebook, $ConfigNB, 2
-		Content = S_Selection
-
-		numLines = ItemsInList(Content, "\r")
-		for(i = 0; i < numLines; i += 1)
-			line = StringFromList(i, Content, "\r")
+	numLines = ItemsInList(Content, "\r")
+	for(i = 0; i < numLines; i += 1)
+		line = StringFromList(i, Content, "\r")
 
 		if(!isEmpty(line))
 			if(cmpstr(line[0], "#"))
@@ -5600,16 +5599,13 @@ Function /WAVE GetExpUserSettings(ConfigNB, KeyTypes)
 					endif
 				endif
 			endif
-
 		endif
-
 	endfor
 
 	ASSERT(ii > 0, "No User Settings were found")
 	Redimension /N = (ii, DimSize(UserSettings, COLS)) UserSettings
 
 	return UserSettings
-
 End
 
 /// @name AnalysisFunctionGetters Getters used by analysis functions
