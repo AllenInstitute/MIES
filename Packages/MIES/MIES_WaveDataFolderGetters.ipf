@@ -5545,59 +5545,59 @@ Function /WAVE GetExpUserSettings(ConfigNB, KeyTypes)
 	for(i = 0; i < numLines; i += 1)
 		line = StringFromList(i, Content, "\r")
 
-		if(!isEmpty(line))
-			if(cmpstr(line[0], "#"))
-				delimiter = strsearch(line, "=", 0)
-				sprintf errorMsg, "Please insert a '=' on line %d of the Configuration Notebook between the parameter and setting value" line
-				ASSERT(isInteger(delimiter), errorMsg)
-				CurrentKey = TrimString(line[0, delimiter - 1])
-				CurrentValue = TrimString(line[delimiter + 1, inf])
-				FindValue /TXOP = 4 /TEXT = CurrentKey KeyTypes
-				sprintf errorMsg, "Parameter key %s does not exist", CurrentKey
-				ASSERT(V_value >= 0, errorMsg)
-				CurrentKeyType = GetDimLabel(KeyTypes, 1, floor(V_value/DimSize(KeyTypes, 0)))
-				if(isEmpty(CurrentValue))
-					sprintf errorMsg, "%s has not been set, please enter a value in the Configuration NoteBook", CurrentKey
-					ASSERT(isEmpty(CurrentValue), errorMsg)
-				elseif(!cmpstr(CurrentKey, "Version"))
-					ASSERT(str2num(CurrentValue) == EXPCONFIG_VERSION_NUM, "Invalid version, please update Configuration NoteBook")
-					ASSERT(ii == 0, "Configuration Notebook version must be specified first")
-					EnsureLargeEnoughWave(UserSettings, minimumSize = ii)
-					UserSettings[ii][%SettingKey] = CurrentKey
-					UserSettings[ii][%SettingValue] = CurrentValue
-					ii += 1
-				elseif(!cmpstr(CurrentKeyType, "StringKeys"))
-					EnsureLargeEnoughWave(UserSettings, minimumSize = ii)
-					UserSettings[ii][%SettingKey] = CurrentKey
-					UserSettings[ii][%SettingValue] = CurrentValue
-					ii += 1
-				elseif(!cmpstr(CurrentKeyType, "NumKeys"))
-					if(itemsinlist(CurrentValue) != 1)
-						sprintf errorMsg, "%s requires a single numerical entry, please check the Configuration NoteBook", CurrentKey
-						ASSERT(0, errorMsg)
-					else
-						NumValue = str2num(CurrentValue)
-						EnsureLargeEnoughWave(UserSettings, minimumSize = ii)
-						UserSettings[ii][%SettingKey] = CurrentKey
-						UserSettings[ii][%SettingValue] = CurrentValue
-						ii += 1
-					endif
-				elseif(!cmpstr(CurrentKeyType, "CheckBoxKeys"))
-					if(!cmpstr(CurrentValue, "Yes"))
-						EnsureLargeEnoughWave(UserSettings, minimumSize = ii)
-						UserSettings[ii][%SettingKey] = CurrentKey
-						UserSettings[ii][%SettingValue] = num2str(CHECKBOX_SELECTED)
-						ii += 1
-					elseif(!cmpstr(CurrentValue, "No"))
-						EnsureLargeEnoughWave(UserSettings, minimumSize = ii)
-						UserSettings[ii][%SettingKey] = CurrentKey
-						UserSettings[ii][%SettingValue] = num2str(CHECKBOX_UNSELECTED)
-						ii += 1
-					else
-						sprintf errorMsg, "%s is not in the correct format, must be 'Yes' or 'No'", CurrentKey
-						ASSERT(0, errorMsg)
-					endif
-				endif
+		if(isEmpty(line) || !cmpstr(line[0], "#"))
+			continue
+		endif
+
+		delimiter = strsearch(line, "=", 0)
+		sprintf errorMsg, "Please insert a '=' on line %d of the Configuration Notebook between the parameter and setting value" line
+		ASSERT(isInteger(delimiter), errorMsg)
+		CurrentKey = TrimString(line[0, delimiter - 1])
+		CurrentValue = TrimString(line[delimiter + 1, inf])
+		FindValue /TXOP = 4 /TEXT = CurrentKey KeyTypes
+		sprintf errorMsg, "Parameter key %s does not exist", CurrentKey
+		ASSERT(V_value >= 0, errorMsg)
+		CurrentKeyType = GetDimLabel(KeyTypes, 1, floor(V_value/DimSize(KeyTypes, 0)))
+		if(isEmpty(CurrentValue))
+			sprintf errorMsg, "%s has not been set, please enter a value in the Configuration NoteBook", CurrentKey
+			ASSERT(isEmpty(CurrentValue), errorMsg)
+		elseif(!cmpstr(CurrentKey, "Version"))
+			ASSERT(str2num(CurrentValue) == EXPCONFIG_VERSION_NUM, "Invalid version, please update Configuration NoteBook")
+			ASSERT(ii == 0, "Configuration Notebook version must be specified first")
+			EnsureLargeEnoughWave(UserSettings, minimumSize = ii)
+			UserSettings[ii][%SettingKey] = CurrentKey
+			UserSettings[ii][%SettingValue] = CurrentValue
+			ii += 1
+		elseif(!cmpstr(CurrentKeyType, "StringKeys"))
+			EnsureLargeEnoughWave(UserSettings, minimumSize = ii)
+			UserSettings[ii][%SettingKey] = CurrentKey
+			UserSettings[ii][%SettingValue] = CurrentValue
+			ii += 1
+		elseif(!cmpstr(CurrentKeyType, "NumKeys"))
+			if(itemsinlist(CurrentValue) != 1)
+				sprintf errorMsg, "%s requires a single numerical entry, please check the Configuration NoteBook", CurrentKey
+				ASSERT(0, errorMsg)
+			else
+				NumValue = str2num(CurrentValue)
+				EnsureLargeEnoughWave(UserSettings, minimumSize = ii)
+				UserSettings[ii][%SettingKey] = CurrentKey
+				UserSettings[ii][%SettingValue] = CurrentValue
+				ii += 1
+			endif
+		elseif(!cmpstr(CurrentKeyType, "CheckBoxKeys"))
+			if(!cmpstr(CurrentValue, "Yes"))
+				EnsureLargeEnoughWave(UserSettings, minimumSize = ii)
+				UserSettings[ii][%SettingKey] = CurrentKey
+				UserSettings[ii][%SettingValue] = num2str(CHECKBOX_SELECTED)
+				ii += 1
+			elseif(!cmpstr(CurrentValue, "No"))
+				EnsureLargeEnoughWave(UserSettings, minimumSize = ii)
+				UserSettings[ii][%SettingKey] = CurrentKey
+				UserSettings[ii][%SettingValue] = num2str(CHECKBOX_UNSELECTED)
+				ii += 1
+			else
+				sprintf errorMsg, "%s is not in the correct format, must be 'Yes' or 'No'", CurrentKey
+				ASSERT(0, errorMsg)
 			endif
 		endif
 	endfor
