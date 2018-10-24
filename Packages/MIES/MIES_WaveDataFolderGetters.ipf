@@ -5555,8 +5555,12 @@ Function /WAVE GetExpUserSettings(ConfigNB, KeyTypes)
 		CurrentKey = TrimString(line[0, delimiter - 1])
 		CurrentValue = TrimString(line[delimiter + 1, inf])
 		FindValue /TXOP = 4 /TEXT = CurrentKey KeyTypes
-		sprintf errorMsg, "Parameter key %s does not exist", CurrentKey
-		ASSERT(V_value >= 0, errorMsg)
+		if(V_Value < 0)
+			printf "ExperimentConfig: Ignoring unknown parameter key %s.", CurrentKey
+			ControlWindowToFront()
+			continue
+		endif
+
 		CurrentKeyType = GetDimLabel(KeyTypes, 1, floor(V_value/DimSize(KeyTypes, 0)))
 		if(isEmpty(CurrentValue))
 			sprintf errorMsg, "%s has not been set, please enter a value in the Configuration NoteBook", CurrentKey
