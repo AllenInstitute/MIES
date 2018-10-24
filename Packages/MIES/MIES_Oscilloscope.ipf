@@ -272,6 +272,7 @@ Function SCOPE_CreateGraph(panelTitle, dataAcqOrTP)
 				ModifyGraph/W=$graph live($peakTrace)=(2^1)
 #endif
 				ModifyGraph/W=$graph lstyle($peakTrace)=1, rgb($peakTrace)=(peakColor.red, peakColor.green, peakColor.blue)
+				ModifyGraph/W=$graph mode($peakTrace)=2
 			endif
 
 			if(showSteadyStateResistance)
@@ -292,6 +293,8 @@ Function SCOPE_CreateGraph(panelTitle, dataAcqOrTP)
 #if (IgorVersion() >= 8.00)
 				ModifyGraph/W=$graph live($steadyStateTrace)=(2^1)
 #endif
+				ModifyGraph/W=$graph mode($steadyStateTrace)=2
+
 			endif
 
 			if(showPeakResistance ||showSteadyStateResistance)
