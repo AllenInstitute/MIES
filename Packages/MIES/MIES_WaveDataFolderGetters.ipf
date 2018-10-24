@@ -2094,6 +2094,8 @@ End
 ///
 /// The columns hold the *active* AD channels only and are subject to resizing.
 ///
+/// @todo change columns to hold entries for each headstage, num_cols = NUM_HEADSTAGES
+///
 /// Unit: MOhm (1e3 Ohm)
 Function/Wave GetInstResistanceWave(panelTitle)
 	string 	panelTitle
@@ -2114,6 +2116,8 @@ End
 ///
 /// The columns hold the *active* AD channels only and are subject to resizing.
 ///
+/// @todo change columns to hold entries for each headstage, num_cols = NUM_HEADSTAGES
+///
 /// Unit: mV (1e-3 Volt) for IC, pA (1e-12 Amps) for VC
 Function/Wave GetBaselineAverage(panelTitle)
 	string 	panelTitle
@@ -2133,6 +2137,8 @@ End
 /// @brief Return the testpulse steady state resistance wave
 ///
 /// The columns hold the *active* AD channels only and are subject to resizing.
+///
+/// @todo change columns to hold entries for each headstage, num_cols = NUM_HEADSTAGES
 ///
 /// Unit: MOhm (1e3 Ohm)
 Function/Wave GetSSResistanceWave(panelTitle)
