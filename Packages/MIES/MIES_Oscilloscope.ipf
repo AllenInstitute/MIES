@@ -387,7 +387,7 @@ Function SCOPE_SetADAxisLabel(panelTitle,activeHeadStage)
 	WAVE ADCs = GetADCListFromConfig(ITCChanConfigWave)
 	variable adc, i, headStage, red, green, blue
 	variable numADChannels = DimSize(ADCs, ROWS)
-	string leftAxis, style, color, unit
+	string leftAxis, style, color, unit, labelStr
 	string graph = SCOPE_GetGraph(panelTitle)
 
 	if(!windowExists(graph))
@@ -406,8 +406,10 @@ Function SCOPE_SetADAxisLabel(panelTitle,activeHeadStage)
 
 		headStage = AFH_GetHeadstageFromADC(panelTitle, adc)
 		if(isFinite(headStage))
+			labelStr = "HS" + num2str(headstage)
 			GetTraceColor(headStage, red, green, blue)
 		else
+			labelStr = "AD" + num2str(adc)
 			GetTraceColor(NUM_HEADSTAGES, red, green, blue)
 		endif
 
@@ -423,7 +425,7 @@ Function SCOPE_SetADAxisLabel(panelTitle,activeHeadStage)
 		else
 			unit = AFH_GetChannelUnit(ITCChanConfigWave, adc, ITC_XOP_CHANNEL_TYPE_ADC)
 		endif
-		Label/W=$Graph $leftAxis, style + color + leftAxis + " (" + unit + ")"
+		Label/W=$Graph $leftAxis, style + color + labelStr + " (" + unit + ")"
 	endfor
 End
 
