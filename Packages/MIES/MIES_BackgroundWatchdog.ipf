@@ -8,8 +8,6 @@
 
 /// @cond DOXYGEN_IGNORES_THIS
 
-#include ":ACL_TabUtilities"
-
 #include ":MIES_Constants"
 #include ":MIES_Debugging"
 #include ":MIES_GuiUtilities"
