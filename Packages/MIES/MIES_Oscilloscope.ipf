@@ -228,6 +228,7 @@ Function SCOPE_CreateGraph(panelTitle, dataAcqOrTP)
 				peakTrace = "PeakResistance" + adcStr
 				AppendToGraph/W=$graph/R=$rightAxis/T=top TPStorage[][headstage][%PeakResistance]/TN=$peakTrace vs TPStorage[][headstage][%DeltaTimeInSeconds]
 				SetAxis/W=$graph/A=2/N=1 $rightAxis
+				ModifyGraph/W=$graph fSize($rightAxis)=10
 #if (IgorVersion() >= 8.00)
 				ModifyGraph/W=$graph live($peakTrace)=(2^1)
 #endif
@@ -239,6 +240,7 @@ Function SCOPE_CreateGraph(panelTitle, dataAcqOrTP)
 				steadyStateTrace = "SteadyStateResistance" + adcStr
 				AppendToGraph/W=$graph/R=$rightAxis/T=top TPStorage[][headstage][%SteadyStateResistance]/TN=$steadyStateTrace vs TPStorage[][headstage][%DeltaTimeInSeconds]
 				SetAxis/W=$graph/A=2/N=1 $rightAxis
+				ModifyGraph/W=$graph fSize($rightAxis)=10
 				ASSERT(isFinite(headStage), "invalid headStage")
 				if(isFinite(PressureData[headStage][%DAC_DevID])) // Check if pressure is enabled
 					ModifyGraph/W=$graph marker($steadyStateTrace)=19, mode($steadyStateTrace)=4
