@@ -88,47 +88,6 @@ Function SCOPE_UpdateGraph(panelTitle)
 		if(latest >= V_max)
 			SetAxis/W=$graph top, relTimeAxisMin, relTimeAxisMax
 		endif
-
-		for(i = 0; i < numADCs; i += 1)
-			adc = ADCs[i]
-			rightAxis = "resistance" + num2str(adc)
-
-			info = AxisInfo(graph, rightAxis)
-
-			if(isEmpty(info))
-				continue
-			endif
-
-			headstage = AFH_GetHeadstageFromADC(panelTitle, adc)
-			ASSERT(IsFinite(headstage), "Headstage must be finite")
-
-			minVal = +Inf
-			maxVal = -Inf
-
-			if(showPeakResistance)
-				WaveStats/M=1/Q/RMD=(relTimeAxisMin, relTimeAxisMax)[headstage][1] TPStorage
-				minVal = min(V_min, minVal)
-				maxVal = max(V_max, maxVal)
-			endif
-
-			if(showSteadyStateResistance)
-				WaveStats/M=1/Q/RMD=(relTimeAxisMin, relTimeAxisMax)[headstage][2] TPStorage
-				minVal = min(V_min, minVal)
-				maxVal = max(V_max, maxVal)
-			endif
-
-			range = maxVal - minVal
-
-			if(!IsFinite(range) || range == 0)
-				continue
-			endif
-
-			minVal = minVal + 0.02 * range
-			range *= 0.98
-
-			ModifyGraph/W=$graph manTick($rightAxis)={minVal,range,0,1}
-			ModifyGraph/W=$graph manMinor($rightAxis)={3,0}
-		endfor
 	endif
 
 	if(showPowerSpectrum)
@@ -268,6 +227,7 @@ Function SCOPE_CreateGraph(panelTitle, dataAcqOrTP)
 			if(showPeakResistance)
 				peakTrace = "PeakResistance" + adcStr
 				AppendToGraph/W=$graph/R=$rightAxis/T=top TPStorage[][headstage][%PeakResistance]/TN=$peakTrace vs TPStorage[][headstage][%DeltaTimeInSeconds]
+				SetAxis/W=$graph/A=2/N=1 $rightAxis
 #if (IgorVersion() >= 8.00)
 				ModifyGraph/W=$graph live($peakTrace)=(2^1)
 #endif
@@ -278,6 +238,7 @@ Function SCOPE_CreateGraph(panelTitle, dataAcqOrTP)
 			if(showSteadyStateResistance)
 				steadyStateTrace = "SteadyStateResistance" + adcStr
 				AppendToGraph/W=$graph/R=$rightAxis/T=top TPStorage[][headstage][%SteadyStateResistance]/TN=$steadyStateTrace vs TPStorage[][headstage][%DeltaTimeInSeconds]
+				SetAxis/W=$graph/A=2/N=1 $rightAxis
 				ASSERT(isFinite(headStage), "invalid headStage")
 				if(isFinite(PressureData[headStage][%DAC_DevID])) // Check if pressure is enabled
 					ModifyGraph/W=$graph marker($steadyStateTrace)=19, mode($steadyStateTrace)=4
