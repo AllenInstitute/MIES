@@ -17,9 +17,8 @@
 Function/WAVE FFI_ReturnTPValues()
 	string lockedDevList
 	variable noLockedDevs
-	variable n, i
+	variable n
 	string currentPanel
-	variable headstage,numChannels
 	variable tpCycleCount
 
 	//Get the active panelTitle
@@ -36,29 +35,20 @@ Function/WAVE FFI_ReturnTPValues()
 	for(n=0; n<noLockedDevs; n+= 1)
 		currentPanel=StringFromList(n, lockedDevList)
 
-		WAVE ITCChanConfigWave = GetITCChanConfigWave(currentPanel)
-		WAVE ADCs = GetADCListFromConfig(ITCChanConfigWave)
-
 		// Get the tpStorageWave
 		Wave tpStorageWave=GetTPStorage(currentPanel)
 
 		//we want the last row of the column in question
-		tpCycleCount = GetNumberFromWaveNote(tpStorageWave, TP_CYLCE_COUNT_KEY) // used to pull most recent values from TP
+		tpCycleCount = GetNumberFromWaveNote(tpStorageWave, NOTE_INDEX) // used to pull most recent values from TP
 
 		//make sure we get a valid TPCycleCount value
 		if (TPCycleCount == 0)
 			return $""	
 		endif
 
-		numChannels = DimSize(ADCs, ROWS)
-
-		// pull the relevant information out of the tpStorageWave and put it into acqStorageWave
-		for(i = 0; i < numChannels; i += 1)
-			headstage = AFH_GetHeadstageFromADC(currentPanel,ADCs[i])
-			acqStorageWave[%PeakResistance][headstage][n]=tpStorageWave[tpCycleCount-1][i][%PeakResistance]
-			acqStorageWave[%SteadyStateResistance][headstage][n]=tpStorageWave[tpCycleCount-1][i][%SteadyStateResistance]
-			acqStorageWave[%TimeStamp][headstage][n]=tpStorageWave[tpCycleCount-1][i][%TimeStamp]
-		endfor
+		acqStorageWave[%PeakResistance][][n]        = tpStorageWave[tpCycleCount-1][q][%PeakResistance]
+		acqStorageWave[%SteadyStateResistance][][n] = tpStorageWave[tpCycleCount-1][q][%SteadyStateResistance]
+		acqStorageWave[%TimeStamp][][n]             = tpStorageWave[tpCycleCount-1][q][%TimeStamp]
 	endfor
 
 	return acqStorageWave

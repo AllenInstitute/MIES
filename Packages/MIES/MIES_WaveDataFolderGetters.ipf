@@ -216,7 +216,7 @@ static Function WaveVersionIsSmaller(wv, existingVersion)
 End
 
 /// @brief return the Version of the Wave
-static Function GetWaveVersion(wv)
+Function GetWaveVersion(wv)
 	Wave/Z wv
 
 	return GetNumberFromWaveNote(wv, WAVE_NOTE_LAYOUT_KEY)
@@ -1940,7 +1940,7 @@ End
 /// - One entry per step
 ///
 /// COLS:
-/// - One for each *active* and associated ADC
+/// - NUM_AD_CHANNELS
 ///
 /// LAYERS:
 /// -  0: Amplifier holding command (Voltage Clamp)
@@ -1967,21 +1967,21 @@ Function/Wave GetTPStorage(panelTitle)
 	string 	panelTitle
 
 	dfref dfr = GetDeviceTestPulse(panelTitle)
-	variable versionOfNewWave = 6
+	variable versionOfNewWave = 8
 
 	WAVE/Z/SDFR=dfr/D wv = TPStorage
 
 	if(ExistsWithCorrectLayoutVersion(wv, versionOfNewWave))
 		return wv
 	elseif(WaveExists(wv))
-		Redimension/N=(-1, -1, 20)/D wv
+		Redimension/N=(-1, NUM_HEADSTAGES, 20)/D wv
 	else
-		Make/N=(MINIMUM_WAVE_SIZE, NUM_AD_CHANNELS, 20)/D dfr:TPStorage/Wave=wv
+		Make/N=(MINIMUM_WAVE_SIZE_LARGE, NUM_HEADSTAGES, 20)/D dfr:TPStorage/Wave=wv
 	endif
 
 	wv = NaN
 
-	SetDimLabel COLS,  -1,  ADChannel                 , wv
+	SetDimLabel COLS,  -1,  Headstage                 , wv
 
 	SetDimLabel LAYERS,  0, HoldingCmd_VC             , wv
 	SetDimLabel LAYERS,  1, HoldingCmd_IC             , wv
@@ -2004,7 +2004,7 @@ Function/Wave GetTPStorage(panelTitle)
 	SetDimLabel LAYERS, 18, PressureMethod            , wv
 	SetDimLabel LAYERS, 19, ValidState                , wv
 
-	SetNumberInWaveNote(wv, TP_CYLCE_COUNT_KEY, 0)
+	SetNumberInWaveNote(wv, NOTE_INDEX, 0)
 	SetNumberInWaveNote(wv, AUTOBIAS_LAST_INVOCATION_KEY, 0)
 	SetNumberInWaveNote(wv, DIMENSION_SCALING_LAST_INVOC, 0)
 
@@ -2094,6 +2094,8 @@ End
 ///
 /// The columns hold the *active* AD channels only and are subject to resizing.
 ///
+/// @todo change columns to hold entries for each headstage, num_cols = NUM_HEADSTAGES
+///
 /// Unit: MOhm (1e3 Ohm)
 Function/Wave GetInstResistanceWave(panelTitle)
 	string 	panelTitle
@@ -2114,6 +2116,8 @@ End
 ///
 /// The columns hold the *active* AD channels only and are subject to resizing.
 ///
+/// @todo change columns to hold entries for each headstage, num_cols = NUM_HEADSTAGES
+///
 /// Unit: mV (1e-3 Volt) for IC, pA (1e-12 Amps) for VC
 Function/Wave GetBaselineAverage(panelTitle)
 	string 	panelTitle
@@ -2133,6 +2137,8 @@ End
 /// @brief Return the testpulse steady state resistance wave
 ///
 /// The columns hold the *active* AD channels only and are subject to resizing.
+///
+/// @todo change columns to hold entries for each headstage, num_cols = NUM_HEADSTAGES
 ///
 /// Unit: MOhm (1e3 Ohm)
 Function/Wave GetSSResistanceWave(panelTitle)
@@ -5504,7 +5510,7 @@ Function/WAVE GetExpConfigKeyTypes()
 							  NUM_STIM_SETS, DEFAULT_ITI, OODAQ_POST_DELAY, OODAQ_RESOLUTION,  \
 							  HOLDING, AUTOBIAS_RANGE, AUTOBIAS_MAXI, USER_ONSET_DELAY, TERMINATION_DELAY, \
 							  FIRST_STIM_AMP_VC_ALL, FIRST_STIM_AMP_IC_ALL, TP_BASELINE, TP_AMP_IC}
-	Make/FREE/T checkBoxKeys = {TP_AFTER_DAQ, SAVE_TP, EXPORT_NWB, APPEND_ASYNC,                                     \
+	Make/FREE/T checkBoxKeys = {TP_AFTER_DAQ, EXPORT_NWB, APPEND_ASYNC,                                     \
 								SYNC_MIES_MCC, ENABLE_I_EQUAL_ZERO, PRESSURE_USER_ON_SEAL, PRESSURE_USER_FOLLOW_HS,  \
 								REPEAT_ACQ, GET_SET_ITI, ENABLE_OODAQ, ENABLE_MULTIPLE_ITC, SAVE_AMP_SETTINGS, REQUIRE_AMP, \
 								AUTOBIAS, CAP_NEUT, SAVE_TP_SWEEP, STIM_MODE_SWITCH, ANALYSIS_FUNC, ENABLE_ITI_MANUAL_START}
@@ -5537,79 +5543,79 @@ Function /WAVE GetExpUserSettings(ConfigNB, KeyTypes)
 
 	SetWaveDimLabel(UserSettings, "SettingKey;SettingValue", COLs)
 
+	Notebook $ConfigNB selection = {startOfFile, endOfFile}
+	GetSelection notebook, $ConfigNB, 2
+	Content = S_Selection
 
-		Notebook $ConfigNB selection = {startOfFile, endOfFile}
-		GetSelection notebook, $ConfigNB, 2
-		Content = S_Selection
+	numLines = ItemsInList(Content, "\r")
+	for(i = 0; i < numLines; i += 1)
+		line = StringFromList(i, Content, "\r")
 
-		numLines = ItemsInList(Content, "\r")
-		for(i = 0; i < numLines; i += 1)
-			line = StringFromList(i, Content, "\r")
-
-		if(!isEmpty(line))
-			if(cmpstr(line[0], "#"))
-				delimiter = strsearch(line, "=", 0)
-				sprintf errorMsg, "Please insert a '=' on line %d of the Configuration Notebook between the parameter and setting value" line
-				ASSERT(isInteger(delimiter), errorMsg)
-				CurrentKey = TrimString(line[0, delimiter - 1])
-				CurrentValue = TrimString(line[delimiter + 1, inf])
-				FindValue /TXOP = 4 /TEXT = CurrentKey KeyTypes
-				sprintf errorMsg, "Parameter key %s does not exist", CurrentKey
-				ASSERT(V_value >= 0, errorMsg)
-				CurrentKeyType = GetDimLabel(KeyTypes, 1, floor(V_value/DimSize(KeyTypes, 0)))
-				if(isEmpty(CurrentValue))
-					sprintf errorMsg, "%s has not been set, please enter a value in the Configuration NoteBook", CurrentKey
-					ASSERT(isEmpty(CurrentValue), errorMsg)
-				elseif(!cmpstr(CurrentKey, "Version"))
-					ASSERT(str2num(CurrentValue) == EXPCONFIG_VERSION_NUM, "Invalid version, please update Configuration NoteBook")
-					ASSERT(ii == 0, "Configuration Notebook version must be specified first")
-					EnsureLargeEnoughWave(UserSettings, minimumSize = ii)
-					UserSettings[ii][%SettingKey] = CurrentKey
-					UserSettings[ii][%SettingValue] = CurrentValue
-					ii += 1
-				elseif(!cmpstr(CurrentKeyType, "StringKeys"))
-					EnsureLargeEnoughWave(UserSettings, minimumSize = ii)
-					UserSettings[ii][%SettingKey] = CurrentKey
-					UserSettings[ii][%SettingValue] = CurrentValue
-					ii += 1
-				elseif(!cmpstr(CurrentKeyType, "NumKeys"))
-					if(itemsinlist(CurrentValue) != 1)
-						sprintf errorMsg, "%s requires a single numerical entry, please check the Configuration NoteBook", CurrentKey
-						ASSERT(0, errorMsg)
-					else
-						NumValue = str2num(CurrentValue)
-						EnsureLargeEnoughWave(UserSettings, minimumSize = ii)
-						UserSettings[ii][%SettingKey] = CurrentKey
-						UserSettings[ii][%SettingValue] = CurrentValue
-						ii += 1
-					endif
-				elseif(!cmpstr(CurrentKeyType, "CheckBoxKeys"))
-					if(!cmpstr(CurrentValue, "Yes"))
-						EnsureLargeEnoughWave(UserSettings, minimumSize = ii)
-						UserSettings[ii][%SettingKey] = CurrentKey
-						UserSettings[ii][%SettingValue] = num2str(CHECKBOX_SELECTED)
-						ii += 1
-					elseif(!cmpstr(CurrentValue, "No"))
-						EnsureLargeEnoughWave(UserSettings, minimumSize = ii)
-						UserSettings[ii][%SettingKey] = CurrentKey
-						UserSettings[ii][%SettingValue] = num2str(CHECKBOX_UNSELECTED)
-						ii += 1
-					else
-						sprintf errorMsg, "%s is not in the correct format, must be 'Yes' or 'No'", CurrentKey
-						ASSERT(0, errorMsg)
-					endif
-				endif
-			endif
-
+		if(isEmpty(line) || !cmpstr(line[0], "#"))
+			continue
 		endif
 
+		delimiter = strsearch(line, "=", 0)
+		sprintf errorMsg, "Please insert a '=' on line %d of the Configuration Notebook between the parameter and setting value" line
+		ASSERT(isInteger(delimiter), errorMsg)
+		CurrentKey = TrimString(line[0, delimiter - 1])
+		CurrentValue = TrimString(line[delimiter + 1, inf])
+		FindValue /TXOP = 4 /TEXT = CurrentKey KeyTypes
+		if(V_Value < 0)
+			printf "ExperimentConfig: Ignoring unknown parameter key %s.", CurrentKey
+			ControlWindowToFront()
+			continue
+		endif
+
+		CurrentKeyType = GetDimLabel(KeyTypes, 1, floor(V_value/DimSize(KeyTypes, 0)))
+		if(isEmpty(CurrentValue))
+			sprintf errorMsg, "%s has not been set, please enter a value in the Configuration NoteBook", CurrentKey
+			ASSERT(isEmpty(CurrentValue), errorMsg)
+		elseif(!cmpstr(CurrentKey, "Version"))
+			ASSERT(str2num(CurrentValue) == EXPCONFIG_VERSION_NUM, "Invalid version, please update Configuration NoteBook")
+			ASSERT(ii == 0, "Configuration Notebook version must be specified first")
+			EnsureLargeEnoughWave(UserSettings, minimumSize = ii)
+			UserSettings[ii][%SettingKey] = CurrentKey
+			UserSettings[ii][%SettingValue] = CurrentValue
+			ii += 1
+		elseif(!cmpstr(CurrentKeyType, "StringKeys"))
+			EnsureLargeEnoughWave(UserSettings, minimumSize = ii)
+			UserSettings[ii][%SettingKey] = CurrentKey
+			UserSettings[ii][%SettingValue] = CurrentValue
+			ii += 1
+		elseif(!cmpstr(CurrentKeyType, "NumKeys"))
+			if(itemsinlist(CurrentValue) != 1)
+				sprintf errorMsg, "%s requires a single numerical entry, please check the Configuration NoteBook", CurrentKey
+				ASSERT(0, errorMsg)
+			else
+				NumValue = str2num(CurrentValue)
+				EnsureLargeEnoughWave(UserSettings, minimumSize = ii)
+				UserSettings[ii][%SettingKey] = CurrentKey
+				UserSettings[ii][%SettingValue] = CurrentValue
+				ii += 1
+			endif
+		elseif(!cmpstr(CurrentKeyType, "CheckBoxKeys"))
+			if(!cmpstr(CurrentValue, "Yes"))
+				EnsureLargeEnoughWave(UserSettings, minimumSize = ii)
+				UserSettings[ii][%SettingKey] = CurrentKey
+				UserSettings[ii][%SettingValue] = num2str(CHECKBOX_SELECTED)
+				ii += 1
+			elseif(!cmpstr(CurrentValue, "No"))
+				EnsureLargeEnoughWave(UserSettings, minimumSize = ii)
+				UserSettings[ii][%SettingKey] = CurrentKey
+				UserSettings[ii][%SettingValue] = num2str(CHECKBOX_UNSELECTED)
+				ii += 1
+			else
+				sprintf errorMsg, "%s is not in the correct format, must be 'Yes' or 'No'", CurrentKey
+				ASSERT(0, errorMsg)
+			endif
+		endif
 	endfor
 
 	ASSERT(ii > 0, "No User Settings were found")
 	Redimension /N = (ii, DimSize(UserSettings, COLS)) UserSettings
 
 	return UserSettings
-
 End
 
 /// @name AnalysisFunctionGetters Getters used by analysis functions

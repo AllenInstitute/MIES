@@ -77,6 +77,7 @@ Constant ITC_XOP_CHANNEL_TYPE_TTL = 3
 /// @}
 
 Constant MINIMUM_WAVE_SIZE = 64
+Constant MINIMUM_WAVE_SIZE_LARGE = 2048
 Constant MAXIMUM_WAVE_SIZE = 16384 // 2^14
 
 /// @name Wave dimension constants
@@ -196,7 +197,6 @@ Constant INITIAL_KEY_WAVE_COL_COUNT = 4
 
 /// @name Constants for the note of the wave returned by GetTPStorage
 /// @{
-StrConstant TP_CYLCE_COUNT_KEY             = "TPCycleCount"
 StrConstant AUTOBIAS_LAST_INVOCATION_KEY   = "AutoBiasLastInvocation"
 StrConstant DIMENSION_SCALING_LAST_INVOC   = "DimensionScalingLastInvocation"
 /// @}
@@ -530,7 +530,7 @@ Constant HARDWARE_DAC_EXTERNAL_TRIGGER = 0x1
 /// @}
 
 /// Used to upgrade the GuiStateWave as well as the DA Ephys panel
-Constant DA_EPHYS_PANEL_VERSION     = 35
+Constant DA_EPHYS_PANEL_VERSION     = 36
 Constant DATABROWSER_PANEL_VERSION  = 8
 Constant SWEEPBROWSER_PANEL_VERSION = 3
 Constant WAVEBUILDER_PANEL_VERSION  = 7
@@ -722,7 +722,6 @@ StrConstant PRESSURE_BATH           = "In bath pressure (psi)"
 StrConstant PRESSURE_STARTSEAL      = "Initial Seal Pressure (psi)"
 StrConstant PRESSURE_MAXSEAL        = "Maximum Seal Pressure (psi)"
 StrConstant TP_AFTER_DAQ            = "Activate TP after DAQ"
-StrConstant SAVE_TP                 = "Save TP record"
 StrConstant EXPORT_NWB              = "Export to NWB"
 StrConstant APPEND_ASYNC            = "Append Asynchronous reading to wave note"
 StrConstant SYNC_MIES_MCC           = "Sync MIES to MCC"

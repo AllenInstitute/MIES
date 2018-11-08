@@ -63,7 +63,7 @@ Function SCOPE_UpdateGraph(panelTitle)
 	string panelTitle
 
 	variable latest, count, i, numADCs, minVal, maxVal, range, numDACs, statsMin, statsMax
-	variable axisMin, axisMax, spacing
+	variable axisMin, axisMax, spacing, adc, headstage
 	variable relTimeAxisMin, relTimeAxisMax, showSteadyStateResistance, showPeakResistance
 	variable showPowerSpectrum
 	string graph, rightAxis, leftAxis, info
@@ -80,7 +80,7 @@ Function SCOPE_UpdateGraph(panelTitle)
 	GetAxis/W=$graph/Q top
 	if(!V_flag) // axis exists in graph
 		Wave TPStorage = GetTPStorage(panelTitle)
-		count  = GetNumberFromWaveNote(TPStorage, TP_CYLCE_COUNT_KEY)
+		count  = GetNumberFromWaveNote(TPStorage, NOTE_INDEX)
 		latest = DimOffset(TPStorage, ROWS) + count * DimDelta(TPStorage, ROWS)
 		relTimeAxisMin = latest - 0.5 * SCOPE_TIMEAXIS_RESISTANCE_RANGE
 		relTimeAxisMax = latest + 0.5 * SCOPE_TIMEAXIS_RESISTANCE_RANGE
@@ -88,44 +88,6 @@ Function SCOPE_UpdateGraph(panelTitle)
 		if(latest >= V_max)
 			SetAxis/W=$graph top, relTimeAxisMin, relTimeAxisMax
 		endif
-
-		for(i = 0; i < numADCs; i += 1)
-
-			rightAxis = "resistance" + num2str(ADCs[i])
-
-			info = AxisInfo(graph, rightAxis)
-
-			if(isEmpty(info))
-				continue
-			endif
-
-			minVal = +Inf
-			maxVal = -Inf
-
-			if(showPeakResistance)
-				WaveStats/M=1/Q/RMD=(relTimeAxisMin, relTimeAxisMax)[i][1] TPStorage
-				minVal = min(V_min, minVal)
-				maxVal = max(V_max, maxVal)
-			endif
-
-			if(showSteadyStateResistance)
-				WaveStats/M=1/Q/RMD=(relTimeAxisMin, relTimeAxisMax)[i][2] TPStorage
-				minVal = min(V_min, minVal)
-				maxVal = max(V_max, maxVal)
-			endif
-
-			range = maxVal - minVal
-
-			if(!IsFinite(range) || range == 0)
-				continue
-			endif
-
-			minVal = minVal + 0.02 * range
-			range *= 0.98
-
-			ModifyGraph/W=$graph manTick($rightAxis)={minVal,range,0,1}
-			ModifyGraph/W=$graph manMinor($rightAxis)={3,0}
-		endfor
 	endif
 
 	if(showPowerSpectrum)
@@ -264,31 +226,38 @@ Function SCOPE_CreateGraph(panelTitle, dataAcqOrTP)
 
 			if(showPeakResistance)
 				peakTrace = "PeakResistance" + adcStr
-				AppendToGraph/W=$graph/R=$rightAxis/T=top TPStorage[][i][%PeakResistance]/TN=$peakTrace
+				AppendToGraph/W=$graph/R=$rightAxis/T=top TPStorage[][headstage][%PeakResistance]/TN=$peakTrace vs TPStorage[][headstage][%DeltaTimeInSeconds]
+				SetAxis/W=$graph/A=2/N=1 $rightAxis
+				ModifyGraph/W=$graph fSize($rightAxis)=10,grid($rightAxis)=1,gridStyle($rightAxis)=4,gridRGB($rightAxis)=(0,0,0,3277)
 #if (IgorVersion() >= 8.00)
 				ModifyGraph/W=$graph live($peakTrace)=(2^1)
 #endif
 				ModifyGraph/W=$graph lstyle($peakTrace)=1, rgb($peakTrace)=(peakColor.red, peakColor.green, peakColor.blue)
+				ModifyGraph/W=$graph mode($peakTrace)=2
 			endif
 
 			if(showSteadyStateResistance)
 				steadyStateTrace = "SteadyStateResistance" + adcStr
-				AppendToGraph/W=$graph/R=$rightAxis/T=top TPStorage[][i][%SteadyStateResistance]/TN=$steadyStateTrace
+				AppendToGraph/W=$graph/R=$rightAxis/T=top TPStorage[][headstage][%SteadyStateResistance]/TN=$steadyStateTrace vs TPStorage[][headstage][%DeltaTimeInSeconds]
+				SetAxis/W=$graph/A=2/N=1 $rightAxis
+				ModifyGraph/W=$graph fSize($rightAxis)=10,grid($rightAxis)=1,gridStyle($rightAxis)=4,gridRGB($rightAxis)=(0,0,0,3277)
 				ASSERT(isFinite(headStage), "invalid headStage")
 				if(isFinite(PressureData[headStage][%DAC_DevID])) // Check if pressure is enabled
 					ModifyGraph/W=$graph marker($steadyStateTrace)=19, mode($steadyStateTrace)=4
 					ModifyGraph/W=$graph msize($steadyStateTrace)=1, gaps($steadyStateTrace)=0
 					ModifyGraph/W=$graph useMrkStrokeRGB($steadyStateTrace)=1, mrkStrokeRGB($steadyStateTrace)=(65535,65535,65535)
-					ModifyGraph/W=$graph zColor($steadyStateTrace)={TPStorage[*][i][%Pressure],   \
+					ModifyGraph/W=$graph zColor($steadyStateTrace)={TPStorage[*][headstage][%Pressure],   \
 											(PRESSURE_SPECTRUM_PERCENT * MIN_REGULATOR_PRESSURE), \
 											(PRESSURE_SPECTRUM_PERCENT * MAX_REGULATOR_PRESSURE), BlueBlackRed,0}
-					ModifyGraph/W=$graph zmrkSize($steadyStateTrace)={TPStorage[*][i][%PressureChange],0,1,1,4}
+					ModifyGraph/W=$graph zmrkSize($steadyStateTrace)={TPStorage[*][headstage][%PressureChange],0,1,1,4}
 				else
 					ModifyGraph/W=$graph lstyle($steadyStateTrace)=1, rgb($steadyStateTrace)=(steadyColor.red, steadyColor.green, steadyColor.blue)
 				endif
 #if (IgorVersion() >= 8.00)
 				ModifyGraph/W=$graph live($steadyStateTrace)=(2^1)
 #endif
+				ModifyGraph/W=$graph mode($steadyStateTrace)=2
+
 			endif
 
 			if(showPeakResistance ||showSteadyStateResistance)

@@ -12,7 +12,8 @@
 
 static StrConstant LAB_NOTEBOOK_BROWSER = "LabnotebookBrowser"
 static StrConstant TPSTORAGE_BROWSER    = "TPStorageBrowser"
-static StrConstant USERDATA_AD_COLUMNS = "ADColumns"
+static StrConstant USERDATA_ACTIVE_ADC  = "ActiveADColumns"
+static StrConstant USERDATA_ADC         = "ADColumns"
 
 static Function/S LBN_GetLeftPanel(win)
 	string win
@@ -54,16 +55,47 @@ Function LBN_OpenLabnotebookBrowser()
 	DoUpdate/W=$leftPanel
 End
 
+/// @brief Maps the given ADC to a column index for TPStorage
+///
+/// "No Version" up to and including 7:
+/// - Columns are active ADCs
+///
+/// Version 8:
+/// - Columns are headstages, inactive ones are NaN
+static Function LBN_GetTPStorageColumnIndex(TPStorage, adc)
+	WAVE TPStorage
+	variable adc
+
+	variable version, i, count
+
+	version = GetWaveVersion(TPStorage)
+
+	if(IsFinite(version) && version >= 8)
+		count = GetNumberFromWaveNote(TPStorage, NOTE_INDEX)
+
+		for(i = 0; i < NUM_HEADSTAGES; i += 1)
+			if(TPStorage[count][i][%ADC] == adc)
+				return i
+			endif
+		endfor
+
+		return NaN
+	endif
+
+	return adc
+End
+
 /// @brief Add a trace to the TPStorage browser graph
-static Function LBN_AddTraceToTPStorage(panel, TPStorage, ActiveADC, key)
+///
+/// Handles all versions of TPStorage wave.
+static Function LBN_AddTraceToTPStorage(panel, TPStorage, activeADC, adc, key)
 	string panel
 	WAVE TPStorage
-	variable activeADC
+	variable activeADC, adc
 	string key
-	variable column
 
 	string lbl, axis, trace, graph, columns, traceList
-	variable col
+	variable idx
 	variable red, green, blue
 	variable numExistingTraces
 
@@ -81,12 +113,19 @@ static Function LBN_AddTraceToTPStorage(panel, TPStorage, ActiveADC, key)
 	traceList = TraceNameList(graph, ";", 0 + 1)
 	numExistingTraces = ItemsInList(traceList)
 
-	AppendToGraph/W=$graph/L=$axis TPStorage[][activeADC][%$key]/TN=$trace vs TPStorage[][activeADC][%DeltaTimeInSeconds]
+	if(IsFinite(activeADC))
+		idx = activeADC
+	else
+		idx = LBN_GetTPStorageColumnIndex(TPStorage, adc)
+	endif
+
+	AppendToGraph/W=$graph/L=$axis TPStorage[][idx][%$key]/TN=$trace vs TPStorage[][idx][%DeltaTimeInSeconds]
 	GetTraceColor(numExistingTraces, red, green, blue)
 	ModifyGraph/W=$graph rgb($trace)=(red, green, blue)
 	ModifyGraph/W=$graph marker=8,msize=2
 	ModifyGraph/W=$graph userData($trace)={key, 0, key}
 	ModifyGraph/W=$graph userData($trace)={activeADC, 0, num2str(activeADC)}
+	ModifyGraph/W=$graph userData($trace)={ADC, 0, num2str(adc)}
 
 	Label/W=$graph $axis lbl
 	Label/W=$graph bottom "Delta time [s]"
@@ -105,7 +144,7 @@ static Function LBN_UpdateTPSGraphLegend(graph, [traceList])
 	string graph, traceList
 
 	string str, trace, entry, key
-	variable i, numTraces, numRows, activeADC
+	variable i, numTraces, numRows, activeADC, adc
 
 	if(!windowExists(graph))
 		return NaN
@@ -120,8 +159,6 @@ static Function LBN_UpdateTPSGraphLegend(graph, [traceList])
 		return NaN
 	endif
 
-	str = "\\JCActive ADC\\JL\r"
-
 	Make/N=(NUM_AD_CHANNELS)/FREE/T sections
 	numRows = DimSize(sections, ROWS)
 	numTraces = ItemsInList(traceList)
@@ -130,16 +167,32 @@ static Function LBN_UpdateTPSGraphLegend(graph, [traceList])
 		trace = StringFromList(i, traceList)
 		key = GetUserData(graph, trace, "key")
 		activeADC = str2num(GetUserData(graph, trace, "activeADC"))
-		ASSERT(IsFinite(activeADC), "activeDA user data is not valid")
+
+		adc = str2num(GetUserData(graph, trace, "ADC"))
 
 		entry = sections[activeADC]
 		if(isEmpty(entry))
-			entry = StringFromList(activeADC, numerals) + "\r"
+			if(IsFinite(adc)) // we can use real AD channels
+				entry = "ADC " + num2str(adc) + "\r"
+			else
+				entry = StringFromList(activeADC, numerals) + "\r"
+			endif
 		endif
+
 		entry += "\\s(" + trace + ") " + key + "\r"
 
-		sections[activeADC] = entry
+		if(IsFinite(adc))
+			sections[adc] = entry
+		else
+			sections[activeADC] = entry
+		endif
 	endfor
+
+	if(IsFinite(adc))
+		str = "\\JCReal ADC\\JL\r"
+	else
+		str = "\\JCActive ADC\\JL\r"
+	endif
 
 	for(i = 0; i < numRows; i += 1)
 		entry = sections[i]
@@ -306,7 +359,7 @@ Function LBN_PopMenuProc_TPSViewEntries(pa) : PopupMenuControl
 	STRUCT WMPopupAction &pa
 
 	string key, graph, panel, expFolder, device, columns
-	variable numActiveADC
+	variable numActiveADC, adc
 
 	switch(pa.eventCode)
 		case 2: // mouse up
@@ -324,11 +377,19 @@ Function LBN_PopMenuProc_TPSViewEntries(pa) : PopupMenuControl
 				break
 			endif
 
-			columns = GetUserData(panel, pa.ctrlName, USERDATA_AD_COLUMNS)
-			numActiveADC = str2num(StringFromList(pa.popNum - 1, columns))
-			ASSERT(IsFinite(numActiveADC), "Expected valid numActiveADC")
+			columns = GetUserData(panel, pa.ctrlName, USERDATA_ADC)
+			adc = str2num(StringFromList(pa.popNum - 1, columns))
 
-			LBN_AddTraceToTPStorage(panel, TPStorage, numActiveADC, key)
+			if(IsFinite(adc)) // ADC available
+				numActiveADC = NaN
+			else
+				adc = NaN
+				columns = GetUserData(panel, pa.ctrlName, USERDATA_ACTIVE_ADC)
+				numActiveADC = str2num(StringFromList(pa.popNum - 1, columns))
+				ASSERT(IsFinite(numActiveADC), "Expected valid numActiveADC")
+			endif
+
+			LBN_AddTraceToTPStorage(panel, TPStorage, numActiveADC, adc, key)
 			break
 	endswitch
 
@@ -405,8 +466,9 @@ End
 Function LBN_PopMenuProc_TPSAllSelector(pa) : PopupMenuControl
 	STRUCT WMPopupAction &pa
 
-	string graph, panel, expFolder, device, traceList, trace, key, tpstorageName, activeADC
+	string graph, panel, expFolder, device, traceList, trace, key, tpstorageName, activeADC, adc
 	string keyList = ""
+	string activeADCList = ""
 	string ADCList = ""
 	variable i, numTraces
 
@@ -439,20 +501,25 @@ Function LBN_PopMenuProc_TPSAllSelector(pa) : PopupMenuControl
 
 				key = GetUserData(graph, trace, "key")
 				activeADC = GetUserData(graph, trace, "activeADC")
+				adc = GetUserData(graph, trace, "ADC")
+
 				ASSERT(!isEmpty(key), "Invalid key in trace user data")
 				ASSERT(!isEmpty(activeADC), "Invalid activeADC in trace user data")
+				ASSERT(!isEmpty(adc), "Invalid ADC in trace user data")
 
 				keyList  = AddListItem(key, keyList, ";", Inf)
-				ADCList = AddListItem(activeADC, ADCList, ";", Inf)
+				activeADCList = AddListItem(activeADC, activeADCList, ";", Inf)
+				ADCList = AddListItem(adc, ADCList, ";", Inf)
 			endfor
 
 			RemoveTracesFromGraph(graph)
 
 			ASSERT(numTraces == ItemsInList(keyList) && numTraces == ItemsInList(ADCList), "Unexpected list size")
 			for(i = 0; i < numTraces; i += 1)
-				key           = StringFromList(i, keyList)
-				activeADC = StringFromList(i, ADCList)
-				LBN_AddTraceToTPStorage(panel, TPStorage, str2num(activeADC), key)
+				key       = StringFromList(i, keyList)
+				activeADC = StringFromList(i, activeADCList)
+				adc = StringFromList(i, ADCList)
+				LBN_AddTraceToTPStorage(panel, TPStorage, str2num(activeADC), str2num(adc), key)
 			endfor
 			break
 	endswitch
@@ -547,9 +614,11 @@ Function/S LBN_TPStorageViewAbleCols(graph)
 	string graph
 
 	string expFolder, device, panel, control, entry
-	string userDataList = ""
+	string userDataActiveADCList = ""
+	string userDataADCList = ""
 	string list = ""
-	variable numCols, numLayers, i, j, currentCol, numEntries
+	variable numCols, numLayers, i, j, activeADC, numEntries
+	variable adcLayer, adc
 
 	panel   = LBN_GetLeftPanel(graph)
 	control = "popup_select_device"
@@ -572,35 +641,62 @@ Function/S LBN_TPStorageViewAbleCols(graph)
 		return NONE
 	endif
 
+	// ADC entry was introduced in 2d0186d7 (Rework TPStorage contents, 2017-01-10)
+	adcLayer = FindDimLabel(TPStorage, LAYERS, "ADC")
+
 	numCols   = DimSize(TPStorage, COLS)
 	numLayers = DimSize(TPStorage, LAYERS)
 	for(i = 0; i < numCols; i += 1)
-		list = AddListItem("\\M1(" + StringFromList(i, NUMERALS) + " Active AD", list, ";", Inf)
+		if(adcLayer >= 0)
+			// either new TPStorage layout with fixed number of NUM_HEADSTAGES columns or
+			// the old one with variable number of AD columns
+			// both cases can be treated the same here.
+			adc = TPStorage[0][i][adcLayer]
+
+			if(!IsFinite(adc)) // inactive
+				continue
+			endif
+		endif
+
+		if(IsFinite(adc))
+			list = AddListItem("\\M1(ADC " + num2str(adc), list, ";", Inf)
+		else
+			list = AddListItem("\\M1(" + StringFromList(i, NUMERALS) + " Active AD", list, ";", Inf)
+		endif
+
+		// add one entry for the divider as well
+		userDataActiveADCList = AddListItem("NaN", userDataActiveADCList, ";", Inf)
+		userDataADCList = AddListItem("NaN", userDataADCList, ";", Inf)
 
 		for(j = 0; j < numLayers; j += 1)
-			list = AddListItem(GetDimLabel(TPStorage, LAYERS, j), list, ";", Inf)
+			entry = GetDimLabel(TPStorage, LAYERS, j)
+
+			if(GrepString(entry, ".*Time.*") || GrepString(entry, ".*Slope.*"))
+				continue
+			endif
+
+			list = AddListItem(entry, list, ";", Inf)
+
+			userDataActiveADCList = AddListItem(num2str(activeADC), userDataActiveADCList, ";", Inf)
+
+			if(IsFinite(adc))
+				userDataADCList = AddListItem(num2str(adc), userDataADCList, ";", Inf)
+			endif
 		endfor
+
 		if(i != numCols - 1)
 			list = AddListItem(POPUPMENU_DIVIDER, list, ";", Inf)
-		endif
-	endfor
 
-	list = ListMatch(list, "!*Time*")
-	list = ListMatch(list, "!*Slope*")
-
-	// create a list of the column index into TPStorage of each TPStorage layer
-	numEntries = ItemsInList(list)
-	for(i = 0; i < numEntries; i += 1)
-		entry = StringFromList(i, list)
-
-		if(!cmpstr(entry, POPUPMENU_DIVIDER))
-			currentCol += 1
+			// add one entry for the divider as well
+			userDataActiveADCList = AddListItem("NaN", userDataActiveADCList, ";", Inf)
+			userDataADCList = AddListItem("NaN", userDataADCList, ";", Inf)
 		endif
 
-		userDataList = AddListItem(num2str(currentCol), userDataList, ";", Inf)
+		activeADC += 1
 	endfor
 
-	SetControlUserData(panel, "popup_TPStorageViewableCols", USERDATA_AD_COLUMNS, userDataList)
+	SetControlUserData(panel, "popup_TPStorageViewableCols", USERDATA_ACTIVE_ADC, userDataActiveADCList)
+	SetControlUserData(panel, "popup_TPStorageViewableCols", USERDATA_ADC, userDataADCList)
 
 	return list
 End

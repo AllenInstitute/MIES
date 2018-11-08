@@ -542,7 +542,6 @@ Function DAP_EphysPanelStartUpSettings()
 
 	CheckBox Check_Settings_InsertTP WIN = $panelTitle,value= 1
 	CheckBox Check_DataAcq_Get_Set_ITI WIN = $panelTitle, value = 1
-	CheckBox check_Settings_TP_SaveTPRecord WIN = $panelTitle, value = 0
 	CheckBox check_Settings_TP_SaveTP WIN = $panelTitle, value = 0
 	CheckBox check_settings_TP_show_steady WIN = $panelTitle, value = 1
 	CheckBox check_settings_TP_show_peak WIN = $panelTitle, value = 1

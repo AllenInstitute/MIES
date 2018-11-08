@@ -81,8 +81,6 @@ Capacitance Neutralization enabled = No
 ######## Test Pulse Settings ######
 Activate TP after DAQ = Yes
 
-Save TP Record = Yes
-
 Save each TP sweep = No
 
 TP Amplitude in VC = -10
