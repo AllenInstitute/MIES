@@ -1840,7 +1840,7 @@ Function DAP_CheckSettings(panelTitle, mode)
 	string panelTitle
 	variable mode
 
-	variable numDACs, numADCs, numHS, numEntries, i, indexingEnabled, clampMode
+	variable numDACs, numADCs, numHS, numEntries, i, clampMode
 	variable ampSerial, ampChannelID, minValue, maxValue, leftOverBytes, hardwareType
 	variable lastStartSeconds, lastITI, nextStart, leftTime, sweepNo
 	string ctrl, endWave, ttlWave, dacWave, refDacWave, reqParams
@@ -1983,7 +1983,6 @@ Function DAP_CheckSettings(panelTitle, mode)
 			endif
 
 			// check all selected TTLs
-			indexingEnabled = DAG_GetNumericalValue(panelTitle, "Check_DataAcq_Indexing")
 			Wave statusTTL = DAG_GetChannelState(panelTitle, CHANNEL_TYPE_TTL)
 			numEntries = DimSize(statusTTL, ROWS)
 			for(i=0; i < numEntries; i+=1)
@@ -1996,7 +1995,7 @@ Function DAP_CheckSettings(panelTitle, mode)
 				endif
 			endfor
 
-			if(DAG_GetNumericalValue(panelTitle, "Check_DataAcq1_RepeatAcq") && DAG_GetNumericalValue(panelTitle, "check_DataAcq_RepAcqRandom") && indexingEnabled)
+			if(DAG_GetNumericalValue(panelTitle, "Check_DataAcq1_RepeatAcq") && DAG_GetNumericalValue(panelTitle, "check_DataAcq_RepAcqRandom") && DAG_GetNumericalValue(panelTitle, "Check_DataAcq_Indexing"))
 				printf "(%s) Repeated random acquisition can not be combined with indexing.\r", panelTitle
 				printf "(%s) If you need this feature please contact the MIES developers.\r", panelTitle
 				ControlWindowToFront()
