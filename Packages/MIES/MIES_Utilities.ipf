@@ -295,12 +295,11 @@ End
 /// 	endfor
 /// \endrst
 ///
-/// @param wv		 	wave to redimension
-/// @param minimumSize 	the minimum size of the wave. Defaults to @ref MINIMUM_WAVE_SIZE.
-///                     The actual size of the wave after the function returns might be larger.
-/// @param dimension 	dimension to resize, all other dimensions are left untouched.
-///                     Defaults to @ref ROWS.
-/// @param initialValue initialValue of the new wave points
+/// @param wv              wave to redimension
+/// @param minimumSize 	   [optional, default is implementation defined] the minimum size of the wave.
+///                        The actual size of the wave after the function returns might be larger.
+/// @param dimension       [optional, defaults to ROWS] dimension to resize, all other dimensions are left untouched.
+/// @param initialValue    [optional, defaults to zero] initialValue of the new wave points
 Function EnsureLargeEnoughWave(wv, [minimumSize, dimension, initialValue])
 	Wave wv
 	variable minimumSize, dimension, initialValue
