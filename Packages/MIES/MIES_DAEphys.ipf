@@ -2399,9 +2399,8 @@ static Function DAP_CheckStimset(panelTitle, channelType, channel, headstage)
 
 	string setName, setNameEnd, func, listOfAnalysisFunctions
 	string info, str, suppParams, suppName, suppType, reqParams, reqNames, reqName
-	string diff, name, type, suppNames, reqType, channelTypeStr
-
-	variable i, j, numEntries
+	string diff, name, type, suppNames, reqType, channelTypeStr, sets
+	variable i, j, k, numEntries, numSets
 
 	if(channelType == CHANNEL_TYPE_DAC)
 		channelTypeStr = "DA"
@@ -2430,128 +2429,134 @@ static Function DAP_CheckStimset(panelTitle, channelType, channel, headstage)
 		endif
 	endif
 
-	// third party stim sets might not match our expectations
-	WAVE/Z stimSet = WB_CreateAndGetStimSet(setName)
+	sets = IDX_GetSetsInRange(panelTitle, channel, channelType, 0)
 
-	if(!WaveExists(stimSet))
-		printf "(%s) The stim set %s of headstage %g does not exist or could not be created..\r", panelTitle, setName, headstage
-		ControlWindowToFront()
-		return 1
-	elseif(DimSize(stimSet, ROWS) == 0)
-		printf "(%s) The stim set %s of headstage %g is empty, but must have at least one row.\r", panelTitle, setName, headstage
-		ControlWindowToFront()
-		return 1
-	endif
+	numSets = ItemsInList(sets)
+	for(i = 0; i < numSets; i += 1)
+		setName = StringFromList(i, sets)
+		// third party stim sets might not match our expectations
+		WAVE/Z stimSet = WB_CreateAndGetStimSet(setName)
 
-	// non fatal errors which we fix ourselves
-	if(DimDelta(stimSet, ROWS) != HARDWARE_ITC_MIN_SAMPINT || DimOffset(stimSet, ROWS) != 0.0 || cmpstr(WaveUnits(stimSet, ROWS), "ms"))
-		sprintf str, "(%s) The stim set %s for %s channel of headstage %g must have a row dimension delta of %g, " + \
-					 "row dimension offset of zero and row unit \"ms\".\r", panelTitle, setName, channelTypeStr, headstage, HARDWARE_ITC_MIN_SAMPINT
-		DEBUGPRINT(str)
-		DEBUGPRINT("The stim set is now automatically fixed")
-		SetScale/P x 0, HARDWARE_ITC_MIN_SAMPINT, "ms", stimSet
-	endif
-
-	if(DAG_GetNumericalValue(panelTitle, "Check_Settings_SkipAnalysFuncs") || channelType != CHANNEL_TYPE_DAC)
-		return NaN
-	endif
-
-	listOfAnalysisFunctions = AFH_GetAnalysisFunctions(ANALYSIS_FUNCTION_VERSION_ALL)
-
-	for(i = 0; i < TOTAL_NUM_EVENTS; i += 1)
-		func = ExtractAnalysisFuncFromStimSet(stimSet, i)
-
-		if(isEmpty(func)) // none set
-			continue
-		endif
-
-		info = FunctionInfo(func)
-
-		if(isEmpty(info))
-			printf "(%s) Warning: The analysis function %s for stim set %s and event type \"%s\" could not be found\r", panelTitle, func, setName, StringFromList(i, EVENT_NAME_LIST)
+		if(!WaveExists(stimSet))
+			printf "(%s) The stim set %s of headstage %g does not exist or could not be created.\r", panelTitle, setName, headstage
 			ControlWindowToFront()
-			continue
-		endif
-
-		if(WhichListItem(func, listOfAnalysisFunctions) == -1) // not a valid analysis function
-			printf "(%s) The analysis function %s for stim set %s and event type \"%s\" has an invalid signature or is in an unlisted location\r", panelTitle, func, setName, StringFromList(i, EVENT_NAME_LIST)
+			return 1
+		elseif(DimSize(stimSet, ROWS) == 0)
+			printf "(%s) The stim set %s of headstage %g is empty, but must have at least one row.\r", panelTitle, setName, headstage
 			ControlWindowToFront()
 			return 1
 		endif
 
-		if(i == MID_SWEEP_EVENT && !DAG_GetNumericalValue(panelTitle, "Check_Settings_BackgrndDataAcq"))
-			printf "(%s) The event type \"%s\" for stim set %s can not be used together with foreground DAQ\r", panelTitle, StringFromList(i, EVENT_NAME_LIST), setName
-			ControlWindowToFront()
-			return 1
-		elseif(i == GENERIC_EVENT)
-			// check that all required user parameters are supplied
-			reqParams = AFH_GetListOfReqAnalysisParams(func)
-			if(!IsEmpty(reqParams))
-				reqNames   = AFH_GetListOfAnalysisParamNames(reqParams)
-				suppParams = ExtractAnalysisFunctionParams(stimSet)
-				suppNames  = AFH_GetListOfAnalysisParamNames(suppParams)
-				diff = GetListDifference(reqNames, suppNames)
-				if(!IsEmpty(diff))
-					printf "(%s) The required analysis parameters requested by %s for stim set %s were not all supplied (missing are: %s)\r", panelTitle, func, setName, diff
-					ControlWindowToFront()
-					return 1
-				endif
+		// non fatal errors which we fix ourselves
+		if(DimDelta(stimSet, ROWS) != HARDWARE_ITC_MIN_SAMPINT || DimOffset(stimSet, ROWS) != 0.0 || cmpstr(WaveUnits(stimSet, ROWS), "ms"))
+			sprintf str, "(%s) The stim set %s for %s channel of headstage %g must have a row dimension delta of %g, " + \
+						 "row dimension offset of zero and row unit \"ms\".\r", panelTitle, setName, channelTypeStr, headstage, HARDWARE_ITC_MIN_SAMPINT
+			DEBUGPRINT(str)
+			DEBUGPRINT("The stim set is now automatically fixed")
+			SetScale/P x 0, HARDWARE_ITC_MIN_SAMPINT, "ms", stimSet
+		endif
 
-				numEntries = ItemsInList(reqNames, ",")
-				for(j = 0; i < numEntries; j += 1)
-					reqName = StringFromList(i, reqNames, ",")
+		if(DAG_GetNumericalValue(panelTitle, "Check_Settings_SkipAnalysFuncs") || channelType != CHANNEL_TYPE_DAC)
+			continue
+		endif
 
-					if(!AFH_IsValidAnalysisParameter(reqName))
-						printf "(%s) The required analysis parameter %s for %s in stim set %s has the invalid name %s.\r", panelTitle, name, func, setName, reqName
-						ControlWindowToFront()
-						return 1
-					endif
+		listOfAnalysisFunctions = AFH_GetAnalysisFunctions(ANALYSIS_FUNCTION_VERSION_ALL)
 
-					reqType = AFH_GetAnalysisParamType(reqName, reqParams, typeCheck = 0)
-					// no type specification is allowed
-					if(IsEmpty(reqType))
-						continue
-					endif
+		for(j = 0; j < TOTAL_NUM_EVENTS; j += 1)
+			func = ExtractAnalysisFuncFromStimSet(stimSet, j)
 
-					// invalid types are not allowed
-					if(WhichListItem(reqType, ANALYSIS_FUNCTION_PARAMS_TYPES) == -1)
-						printf "(%s) The required analysis parameter %s for %s in stim set %s has type %s which is unknown.\r", panelTitle, reqName, func, setName, type
-						ControlWindowToFront()
-						return 1
-					endif
-
-					// non matching type
-					suppType = AFH_GetAnalysisParamType(reqName, suppParams, typeCheck = 0)
-					if(cmpstr(reqType, suppType))
-						printf "(%s) The analysis parameter %s for %s in stim set %s has type %s but the required type is %s which is unknown.\r", panelTitle, reqName, func, setName, suppType, reqType
-						ControlWindowToFront()
-						return 1
-					endif
-
-					strswitch(reqType)
-						case "wave":
-							WAVE/Z wv = AFH_GetAnalysisParamWave(reqName, reqParams)
-							if(!WaveExists(wv) || DimSize(wv, ROWS) == 0)
-								printf "(%s) The analysis parameter %s for %s in stim set %s is a non-existing or empty numeric wave.\r", panelTitle, reqName, func, setName
-								ControlWindowToFront()
-								return 1
-							endif
-							break
-						case "textwave":
-							WAVE/Z wv = AFH_GetAnalysisParamTextWave(reqName, reqParams)
-							if(!WaveExists(wv) || DimSize(wv, ROWS) == 0)
-								printf "(%s) The analysis parameter %s for %s in stim set %s is a non-existing or empty text wave.\r", panelTitle, reqName, func, setName
-								ControlWindowToFront()
-								return 1
-							endif
-							break
-						default:
-							// do nothing
-							break
-					endswitch
-				endfor
+			if(isEmpty(func)) // none set
+				continue
 			endif
-		endif
+
+			info = FunctionInfo(func)
+
+			if(isEmpty(info))
+				printf "(%s) Warning: The analysis function %s for stim set %s and event type \"%s\" could not be found\r", panelTitle, func, setName, StringFromList(j, EVENT_NAME_LIST)
+				ControlWindowToFront()
+				continue
+			endif
+
+			if(WhichListItem(func, listOfAnalysisFunctions) == -1) // not a valid analysis function
+				printf "(%s) The analysis function %s for stim set %s and event type \"%s\" has an invalid signature or is in an unlisted location\r", panelTitle, func, setName, StringFromList(j, EVENT_NAME_LIST)
+				ControlWindowToFront()
+				return 1
+			endif
+
+			if(j == MID_SWEEP_EVENT && !DAG_GetNumericalValue(panelTitle, "Check_Settings_BackgrndDataAcq"))
+				printf "(%s) The event type \"%s\" for stim set %s can not be used together with foreground DAQ\r", panelTitle, StringFromList(j, EVENT_NAME_LIST), setName
+				ControlWindowToFront()
+				return 1
+			elseif(j == GENERIC_EVENT)
+				// check that all required user parameters are supplied
+				reqParams = AFH_GetListOfReqAnalysisParams(func)
+				if(!IsEmpty(reqParams))
+					reqNames   = AFH_GetListOfAnalysisParamNames(reqParams)
+					suppParams = ExtractAnalysisFunctionParams(stimSet)
+					suppNames  = AFH_GetListOfAnalysisParamNames(suppParams)
+					diff = GetListDifference(reqNames, suppNames)
+					if(!IsEmpty(diff))
+						printf "(%s) The required analysis parameters requested by %s for stim set %s were not all supplied (missing are: %s)\r", panelTitle, func, setName, diff
+						ControlWindowToFront()
+						return 1
+					endif
+
+					numEntries = ItemsInList(reqNames, ",")
+					for(k = 0; j < numEntries; k += 1)
+						reqName = StringFromList(j, reqNames, ",")
+
+						if(!AFH_IsValidAnalysisParameter(reqName))
+							printf "(%s) The required analysis parameter %s for %s in stim set %s has the invalid name %s.\r", panelTitle, name, func, setName, reqName
+							ControlWindowToFront()
+							return 1
+						endif
+
+						reqType = AFH_GetAnalysisParamType(reqName, reqParams, typeCheck = 0)
+						// no type specification is allowed
+						if(IsEmpty(reqType))
+							continue
+						endif
+
+						// invalid types are not allowed
+						if(WhichListItem(reqType, ANALYSIS_FUNCTION_PARAMS_TYPES) == -1)
+						printf "(%s) The required analysis parameter %s for %s in stim set %s has type %s which is unknown.\r", panelTitle, reqName, func, setName, type
+							ControlWindowToFront()
+							return 1
+						endif
+
+						// non matching type
+						suppType = AFH_GetAnalysisParamType(reqName, suppParams, typeCheck = 0)
+						if(cmpstr(reqType, suppType))
+						printf "(%s) The analysis parameter %s for %s in stim set %s has type %s but the required type is %s which is unknown.\r", panelTitle, reqName, func, setName, suppType, reqType
+							ControlWindowToFront()
+							return 1
+						endif
+
+						strswitch(reqType)
+							case "wave":
+								WAVE/Z wv = AFH_GetAnalysisParamWave(reqName, reqParams)
+								if(!WaveExists(wv) || DimSize(wv, ROWS) == 0)
+									printf "(%s) The analysis parameter %s for %s in stim set %s is a non-existing or empty numeric wave.\r", panelTitle, reqName, func, setName
+									ControlWindowToFront()
+									return 1
+								endif
+								break
+							case "textwave":
+								WAVE/Z wv = AFH_GetAnalysisParamTextWave(reqName, reqParams)
+								if(!WaveExists(wv) || DimSize(wv, ROWS) == 0)
+									printf "(%s) The analysis parameter %s for %s in stim set %s is a non-existing or empty text wave.\r", panelTitle, reqName, func, setName
+									ControlWindowToFront()
+									return 1
+								endif
+								break
+							default:
+								// do nothing
+								break
+						endswitch
+					endfor
+				endif
+			endif
+		endfor
 	endfor
 End
 
