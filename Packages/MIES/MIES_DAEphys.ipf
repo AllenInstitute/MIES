@@ -1991,24 +1991,8 @@ Function DAP_CheckSettings(panelTitle, mode)
 					continue
 				endif
 
-				ttlWave = DAG_GetTextualValue(panelTitle, GetSpecialControlLabel(CHANNEL_TYPE_TTL, CHANNEL_CONTROL_WAVE), index = i)
-				if(!CmpStr(ttlWave, NONE))
-					printf "(%s) Please select a valid wave for TTL channel %d\r", panelTitle, i
-					ControlWindowToFront()
+				if(DAP_CheckStimset(panelTitle, CHANNEL_TYPE_TTL, i, NaN))
 					return 1
-				endif
-
-				if(indexingEnabled)
-					endWave = DAG_GetTextualValue(panelTitle, GetSpecialControlLabel(CHANNEL_TYPE_TTL, CHANNEL_CONTROL_INDEX_END), index = i)
-					if(!CmpStr(endWave, NONE))
-						printf "(%s) Please select a valid indexing end wave for TTL channel %d\r", panelTitle, i
-						ControlWindowToFront()
-						return 1
-					elseif(!CmpStr(ttlWave, endWave))
-						printf "(%s) Please select a indexing end wave different as the main wave for TTL channel %d\r", panelTitle, i
-						ControlWindowToFront()
-						return 1
-					endif
 				endif
 			endfor
 
