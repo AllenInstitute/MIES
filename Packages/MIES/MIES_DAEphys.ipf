@@ -2416,13 +2416,21 @@ static Function DAP_CheckStimset(panelTitle, channelType, channel, headstage)
 
 	string setName, setNameEnd, func, listOfAnalysisFunctions
 	string info, str, suppParams, suppName, suppType, reqParams, reqNames, reqName
-	string diff, name, type, suppNames, reqType
+	string diff, name, type, suppNames, reqType, channelTypeStr
 
 	variable i, j, numEntries
 
+	if(channelType == CHANNEL_TYPE_DAC)
+		channelTypeStr = "DA"
+	elseif(channelType == CHANNEL_TYPE_TTL)
+		channelTypeStr = "TTL"
+	else
+		ASSERT(0, "Unexpected channelType")
+	endif
+
 	setName = DAG_GetTextualValue(panelTitle, GetSpecialControlLabel(channelType, CHANNEL_CONTROL_WAVE), index = channel)
 	if(!CmpStr(setName, NONE))
-		printf "(%s) Please select a stimulus set for DA channel %d referenced by Headstage %d\r", panelTitle, channel, headStage
+		printf "(%s) Please select a stimulus set for %s channel %d referenced by headstage %g\r", panelTitle, channelTypeStr, channel, headStage
 		ControlWindowToFront()
 		return 1
 	endif
@@ -2430,11 +2438,11 @@ static Function DAP_CheckStimset(panelTitle, channelType, channel, headstage)
 	if(DAG_GetNumericalValue(panelTitle, "Check_DataAcq_Indexing"))
 		setNameEnd = DAG_GetTextualValue(panelTitle, GetSpecialControlLabel(channelType, CHANNEL_CONTROL_INDEX_END), index = channel)
 		if(!CmpStr(setNameEnd, NONE))
-			printf "(%s) Please select a valid indexing end wave for DA channel %d referenced by HeadStage %d\r", panelTitle, channel, headStage
+			printf "(%s) Please select a valid indexing end wave for %s channel %d referenced by headstage %g\r", panelTitle, channelTypeStr, channel, headStage
 			ControlWindowToFront()
 			return 1
 		elseif(!CmpStr(setName, setNameEnd))
-			printf "(%s) Please select a different indexing end wave than the DAC wave for DA channel %d referenced by HeadStage %d\r", panelTitle, channel, headStage
+			printf "(%s) Please select a different indexing end setimset for %s channel %d referenced by headstage %g\r", panelTitle, channelTypeStr, channel, headStage
 			return 1
 		endif
 	endif
@@ -2443,19 +2451,19 @@ static Function DAP_CheckStimset(panelTitle, channelType, channel, headstage)
 	WAVE/Z stimSet = WB_CreateAndGetStimSet(setName)
 
 	if(!WaveExists(stimSet))
-		printf "(%s) The stim set %s of headstage %d does not exist or could not be created..\r", panelTitle, setName, headstage
+		printf "(%s) The stim set %s of headstage %g does not exist or could not be created..\r", panelTitle, setName, headstage
 		ControlWindowToFront()
 		return 1
 	elseif(DimSize(stimSet, ROWS) == 0)
-		printf "(%s) The stim set %s of headstage %d is empty, but must have at least one row.\r", panelTitle, setName, headstage
+		printf "(%s) The stim set %s of headstage %g is empty, but must have at least one row.\r", panelTitle, setName, headstage
 		ControlWindowToFront()
 		return 1
 	endif
 
 	// non fatal errors which we fix ourselves
 	if(DimDelta(stimSet, ROWS) != HARDWARE_ITC_MIN_SAMPINT || DimOffset(stimSet, ROWS) != 0.0 || cmpstr(WaveUnits(stimSet, ROWS), "ms"))
-		sprintf str, "(%s) The stim set %s of headstage %d must have a row dimension delta of %g, " + \
-					 "row dimension offset of zero and row unit \"ms\".\r", panelTitle, setName, headstage, HARDWARE_ITC_MIN_SAMPINT
+		sprintf str, "(%s) The stim set %s for %s channel of headstage %g must have a row dimension delta of %g, " + \
+					 "row dimension offset of zero and row unit \"ms\".\r", panelTitle, setName, channelTypeStr, headstage, HARDWARE_ITC_MIN_SAMPINT
 		DEBUGPRINT(str)
 		DEBUGPRINT("The stim set is now automatically fixed")
 		SetScale/P x 0, HARDWARE_ITC_MIN_SAMPINT, "ms", stimSet
