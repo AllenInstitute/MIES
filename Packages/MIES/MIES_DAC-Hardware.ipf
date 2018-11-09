@@ -2436,7 +2436,7 @@ End
 ///
 /// @param device name of the NI device
 /// @param flags  [optional, default none] One or multiple flags from @ref HardwareInteractionFlags
-Function HW_NI_ResetDevice(device, [flags])
+static Function HW_NI_ResetDevice(device, [flags])
 	string device
 	variable flags
 
@@ -2490,7 +2490,7 @@ End
 /// @param device name of the NI device
 /// @param force  [optional, default 0] When not zero, forces a calibration
 /// @param flags  [optional, default none] One or multiple flags from @ref HardwareInteractionFlags
-Function HW_NI_CalibrateDevice(device, [force, flags])
+static Function HW_NI_CalibrateDevice(device, [force, flags])
 	string device
 	variable force, flags
 
@@ -2603,14 +2603,14 @@ Function HW_NI_StopAcq(deviceID, [config, configFunc, prepareForDAQ, zeroDAC, fl
 	DoAbortNow("NI-DAQ XOP is not available")
 End
 
-Function HW_NI_ResetDevice(device, [flags])
+static Function HW_NI_ResetDevice(device, [flags])
 	string device
 	variable flags
 
 	DoAbortNow("NI-DAQ XOP is not available")
 End
 
-Function HW_NI_CalibrateDevice(device, [force, flags])
+static Function HW_NI_CalibrateDevice(device, [force, flags])
 	string device
 	variable force, flags
 
