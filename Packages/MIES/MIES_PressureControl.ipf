@@ -412,10 +412,9 @@ static Function P_CloseDevice(panelTitle)
 			ListOfHeadstagesUsingITCDev = P_HeadstageUsingDevice(panelTitle, DeviceToClose)
 			j += 1
 		while(cmpstr("", ListOfHeadstagesUsingITCDev) == 0)
-			j = 0
-
-			headStage = str2num(StringFromList(0, ListOfHeadstagesUsingITCDev))
-			P_CloseDeviceLowLevel(panelTitle, DeviceToClose, headstage)
+		j = 0
+		headStage = str2num(StringFromList(0, ListOfHeadstagesUsingITCDev))
+		P_CloseDeviceLowLevel(panelTitle, DeviceToClose, headstage)
 	endfor
 End
 
