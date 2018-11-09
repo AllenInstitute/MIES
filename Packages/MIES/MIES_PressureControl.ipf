@@ -429,7 +429,6 @@ static Function P_OpenDevice(mainDevice, pressureDevice)
 
 	deviceID = HW_OpenDevice(pressureDevice, hwType, flags=HARDWARE_ABORT_ON_ERROR)
 	HW_RegisterDevice(mainDevice, hwType, deviceID, pressureDevice=pressureDevice)
-	HW_ResetDevice(hwType, deviceID)
 
 	if(hwType == HARDWARE_ITC_DAC)
 		P_PrepareITCWaves(mainDevice, pressureDevice)
