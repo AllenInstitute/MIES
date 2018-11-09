@@ -486,7 +486,7 @@ static Function P_PrepareITCWaves(mainDevice, pressureDevice)
 	ITCConfig[2][1]  = HW_ITC_GetITCXOPChannelForRack(pressureDevice, RACK_ZERO)
 End
 
-/// @brief Used to close ITC device used for pressure regulation
+/// @brief Used to close the device used for pressure regulation
 static Function P_CloseDeviceLowLevel(panelTitle, deviceToClose, refHeadstage)
 	string panelTitle, deviceToClose
 	variable refHeadstage
