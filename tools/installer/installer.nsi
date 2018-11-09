@@ -40,9 +40,9 @@
 !define IGOR864HDFXOPSOURCETEMPL "HDF5-64.xop - Shortcut"
 # source file names for Utils for installation without Hardware XOPs
 !define IGOR732UTILXOPSOURCETEMPL "MIESUtils.xop"
-!define IGOR832UTILXOPSOURCETEMPL ""
+!define IGOR832UTILXOPSOURCETEMPL "MIESUtils.xop"
 !define IGOR764UTILXOPSOURCETEMPL "MIESUtils-64.xop"
-!define IGOR864UTILXOPSOURCETEMPL ""
+!define IGOR864UTILXOPSOURCETEMPL "MIESUtils-64.xop"
 # source folder name for tango for installation with XOPs
 !define IGOR732TANGOXOPSOURCETEMPL "XOP-tango"
 !define IGOR764TANGOXOPSOURCETEMPL "XOP-tango-IP7-64bit"
