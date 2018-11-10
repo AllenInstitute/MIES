@@ -3089,6 +3089,7 @@ static Function WBP_AddAnalysisParameterIntoWPT(WPT, name, [var, str, wv])
 		type = "string"
 		value = str
 	elseif(!ParamIsDefault(wv))
+		ASSERT(DimSize(wv, ROWS) > 0, "Expected non-empty wave")
 		if(IsTextWave(wv))
 			type  = "textwave"
 			FindValue/TEXT="|" wv

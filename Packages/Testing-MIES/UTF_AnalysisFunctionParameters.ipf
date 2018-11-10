@@ -229,6 +229,30 @@ static Function AbortsWithInvalidWaveType()
 	CHECK_EMPTY_STR(params)
 End
 
+static Function AbortsWithEmptyWave()
+
+	string params
+	string stimSet = "AnaFuncParams1_DA_0"
+
+	WAVE/T/Z WPT = WB_GetWaveTextParamForSet(stimSet)
+	CHECK_WAVE(WPT, TEXT_WAVE)
+
+	params = WPT[10][%Set][INDEP_EPOCH_TYPE]
+	CHECK_EMPTY_STR(params)
+
+	try
+		Make/N=0 wv
+		WBP_AddAnalysisParameter(stimSet, "ab", wv = wv); AbortOnRTE
+		FAIL()
+	catch
+		PASS()
+	endtry
+
+	params = WPT[10][%Set][INDEP_EPOCH_TYPE]
+	CHECK_EMPTY_STR(params)
+End
+
+
 static Function AbortsWithInvalidTextWaveCont()
 
 	string params, names, refNames, name, type, refType
