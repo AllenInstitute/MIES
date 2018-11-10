@@ -4813,7 +4813,7 @@ End
 threadsafe Function IsValidSweepWave(sweep)
 	WAVE/Z sweep
 
-	if(WaveType(sweep, 1) == IGOR_TYPE_WAVEREF_WAVE)
+	if(IsWaveRefWave(sweep))
 		if(WaveExists(sweep) && DimSize(sweep, ROWS) > 0)
 			WAVE/Z/WAVE sweepWREF = sweep
 			WAVE/Z channel = sweepWREF[0]
@@ -4831,7 +4831,7 @@ End
 threadsafe Function IsValidSweepAndConfig(sweep, config)
 	WAVE/Z sweep, config
 
-	if(WaveType(sweep, 1) == IGOR_TYPE_WAVEREF_WAVE)
+	if(IsWaveRefWave(sweep))
 		return IsValidConfigWave(config) &&                  \
 				 IsValidSweepWave(sweep) &&                    \
 				 DimSize(sweep, ROWS) == DimSize(config, ROWS)
