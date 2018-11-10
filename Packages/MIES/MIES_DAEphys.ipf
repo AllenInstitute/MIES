@@ -2497,6 +2497,28 @@ static Function DAP_CheckHeadStage(panelTitle, headStage, mode)
 								ControlWindowToFront()
 								return 1
 							endif
+
+							strswitch(reqType)
+								case "wave":
+									WAVE/Z wv = AFH_GetAnalysisParamWave(reqName, reqParams)
+									if(!WaveExists(wv) || DimSize(wv, ROWS) == 0)
+										printf "(%s) The analysis parameter %s for %s in stim set %s is a non-existing or empty numeric wave.\r", panelTitle, reqName, func, dacWave
+										ControlWindowToFront()
+										return 1
+									endif
+									break
+								case "textwave":
+									WAVE/Z wv = AFH_GetAnalysisParamTextWave(reqName, reqParams)
+									if(!WaveExists(wv) || DimSize(wv, ROWS) == 0)
+										printf "(%s) The analysis parameter %s for %s in stim set %s is a non-existing or empty text wave.\r", panelTitle, reqName, func, dacWave
+										ControlWindowToFront()
+										return 1
+									endif
+									break
+								default:
+									// do nothing
+									break
+							endswitch
 						endfor
 					endif
 				endif
