@@ -764,7 +764,7 @@ End
 ///        Searches in the complete SCI and assumes that the entries are either 0/1/NaN.
 ///
 /// @todo merge with LBN functions once these are reworked.
-static Function MSQ_GetLBNEntryForHeadstageSCI(numericalValues, sweepNo, type, str, headstage)
+static Function MSQ_GetLBNEntryForHSSCIBool(numericalValues, sweepNo, type, str, headstage)
 	WAVE numericalValues
 	variable sweepNo, type
 	string str
@@ -787,6 +787,40 @@ static Function MSQ_GetLBNEntryForHeadstageSCI(numericalValues, sweepNo, type, s
 
 	return Sum(values) >= 1
 End
+
+/// @brief Return the last entry for a given headstage from the full SCI.
+///
+/// This differs from GetLastSettingSCI as specifically the setting for the
+/// passed headstage must be valid.
+///
+/// @todo merge with LBN functions once these are reworked.
+static Function MSQ_GetLBNEntryForHeadstageSCI(numericalValues, sweepNo, type, str, headstage)
+	WAVE numericalValues
+	variable sweepNo, type
+	string str
+	variable headstage
+
+	string key
+	variable numEntries
+
+	key = MSQ_CreateLBNKey(type, str, query = 1)
+	WAVE/Z values = GetLastSettingEachSCI(numericalValues, sweepNo, key, headstage, UNKNOWN_MODE)
+
+	if(!WaveExists(values))
+		return NaN
+	endif
+
+	WaveTransform/O zapNaNs, values
+
+	numEntries = DimSize(values, ROWS)
+
+	if(numEntries == 0)
+		return NaN
+	endif
+
+	return values[numEntries - 1]
+End
+
 
 /// @brief Return a list of required parameters for MSQ_FastRheoEst()
 ///
@@ -1008,12 +1042,12 @@ Function MSQ_FastRheoEst(panelTitle, s)
 					continue
 				endif
 
-				found = MSQ_GetLBNEntryForHeadstageSCI(numericalValues, s.sweepNo, MSQ_FAST_RHEO_EST, MSQ_FMT_LBN_DASCALE_EXC, i)
+				found = MSQ_GetLBNEntryForHSSCIBool(numericalValues, s.sweepNo, MSQ_FAST_RHEO_EST, MSQ_FMT_LBN_DASCALE_EXC, i)
 				if(found)
 					continue
 				endif
 
-				found = MSQ_GetLBNEntryForHeadstageSCI(numericalValues, s.sweepNo, MSQ_FAST_RHEO_EST, MSQ_FMT_LBN_HEADSTAGE_PASS, i)
+				found = MSQ_GetLBNEntryForHSSCIBool(numericalValues, s.sweepNo, MSQ_FAST_RHEO_EST, MSQ_FMT_LBN_HEADSTAGE_PASS, i)
 				if(found)
 					stepSize[i] = NaN
 					continue
@@ -1097,10 +1131,10 @@ Function MSQ_FastRheoEst(panelTitle, s)
 					continue
 				endif
 
-				totalRangeExceeded[i] = MSQ_GetLBNEntryForHeadstageSCI(numericalValues, s.sweepNo, MSQ_FAST_RHEO_EST,\
+				totalRangeExceeded[i] = MSQ_GetLBNEntryForHSSCIBool(numericalValues, s.sweepNo, MSQ_FAST_RHEO_EST,\
 																	   MSQ_FMT_LBN_DASCALE_EXC, i)
 
-				sweepPassed = sweepPassed && MSQ_GetLBNEntryForHeadstageSCI(numericalValues, s.sweepNo, MSQ_FAST_RHEO_EST,\
+				sweepPassed = sweepPassed && MSQ_GetLBNEntryForHSSCIBool(numericalValues, s.sweepNo, MSQ_FAST_RHEO_EST,\
 																	   MSQ_FMT_LBN_HEADSTAGE_PASS, i)
 			endfor
 
