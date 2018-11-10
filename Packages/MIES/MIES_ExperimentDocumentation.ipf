@@ -443,7 +443,7 @@ static Function/Wave ED_FindIndizesAndRedimension(incomingKey, key, values, rowI
 		rowIndex = DimSize(values, ROWS)
 	endif
 
-	if(WaveType(values)) // numeric
+	if(IsNumericWave(values))
 		EnsureLargeEnoughWave(values, minimumSize=rowIndex, dimension=ROWS, initialValue=NaN)
 		if(numAdditions)
 			values[][numKeyCols,][] = NaN
