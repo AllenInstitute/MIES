@@ -2691,6 +2691,7 @@ static Function WBP_AnaFuncsToWPT()
 	if(cmpstr(func, NONE))
 		WPT[1, 5][%Set][INDEP_EPOCH_TYPE] = ""
 		WPT[8][%Set][INDEP_EPOCH_TYPE]    = ""
+		WPT[27][%Set][INDEP_EPOCH_TYPE]   = ""
 	endif
 
 	WBP_UpdateParameterWave()
