@@ -1327,11 +1327,9 @@ Function/S GetControlTypeAsString(win, control)
 	string win
 	string control
 
-	controlInfo/W=$win $control
-	ASSERT(V_flag != 0, "Non-existing control or window")
-	variable controlType = abs(V_flag)
 	variable checkBoxMode
-	switch(controlType)
+
+	switch(GetControlType(win, control))
 		case 1:
 			return "Button"
 			break
@@ -1381,6 +1379,17 @@ Function/S GetControlTypeAsString(win, control)
 			ASSERT(0, "Impossible case")
 			break
 	endswitch
+End
+
+/// @brief Return the numeric control type
+///
+/// @return one of @ref GUIControlTypes
+Function GetControlType(win, control)
+	string win, control
+
+	ControlInfo/W=$win $control
+	ASSERT(V_flag != 0, "Non-existing control or window")
+	return abs(V_flag)
 End
 
 /// @brief Determines if control stores numeric or text data
