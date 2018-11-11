@@ -983,3 +983,86 @@ Function ReachTargetVoltage(panelTitle, eventType, ITCDataWave, headStage, realD
 		SetDAScale(panelTitle, i, amps)
 	endfor
 End
+
+/// @brief Analysis function to set GUI controls in the PRE_SET_EVENT
+///
+/// Usage:
+/// - Add analysis parameters named like the control
+/// - Their value, either a variable or a string, determine the target value
+Function SetControlInPreSetEvent(panelTitle, s)
+	string panelTitle
+	STRUCT AnalysisFunction_V3 &s
+
+	string ctrls, ctrl, type, str
+	variable numEntries, i, var, controlType
+
+	switch(s.eventType)
+		case PRE_SET_EVENT:
+
+			if(s.headstage != DAP_GetHighestActiveHeadstage(panelTitle))
+				break
+			endif
+
+			ctrls = AFH_GetListOfAnalysisParamNames(s.params)
+			numEntries = ItemsInList(ctrls)
+
+			// check names and types
+			for(i = 0; i < numEntries; i += 1)
+				ctrl = StringFromList(i, ctrls)
+
+				if(!ControlExists(paneltitle, ctrl))
+					printf "(%s): The analysis parameter %s is not a valid control.\r", panelTitle, ctrl
+					ControlWindowToFront()
+					return 1
+				endif
+
+				type = AFH_GetAnalysisParamType(ctrl, s.params)
+
+				strswitch(type)
+					case "variable":
+						// all controls accept variables
+						break
+					case "string":
+						controlType = GetControlType(panelTitle, ctrl)
+						if(controlType != CONTROL_TYPE_SETVARIABLE && controlType != CONTROL_TYPE_POPUPMENU)
+							printf "(%s): The analysis parameter's %s value is a string but refers to a control which does not accept a string.\r", panelTitle, ctrl
+							ControlWindowToFront()
+							return 1
+						endif
+						break
+					default:
+						printf "(%s): The analysis parameter %s must have the type \"variable\" or \"string\".\r", panelTitle, ctrl
+						ControlWindowToFront()
+						return 1
+						break
+				endswitch
+
+				if(WhichListItem(ctrl, CONTROLS_DISABLE_DURING_DAQ) != -1)
+					printf "(%s): The analysis parameter %s is a control which can not be changed during DAQ.\r", panelTitle, ctrl
+					ControlWindowToFront()
+					return 1
+				elseif(IsControlDisabled(panelTitle, ctrl))
+					printf "(%s): The analysis parameter %s is a control which is disabled. Therefore it can not be set.\r", panelTitle, ctrl
+					ControlWindowToFront()
+					return 1
+				endif
+			endfor
+
+			for(i = 0; i < numEntries; i += 1)
+				ctrl = StringFromList(i, ctrls)
+				type = AFH_GetAnalysisParamType(ctrl, s.params)
+
+				strswitch(type)
+					case "variable":
+						var = AFH_GetAnalysisParamNumerical(ctrl, s.params)
+						PGC_SetAndActivateControl(panelTitle, ctrl, val = var)
+						break
+					case "string":
+						str = AFH_GetAnalysisParamTextual(ctrl, s.params)
+						PGC_SetAndActivateControl(panelTitle, ctrl, str = str)
+						break
+				endswitch
+			endfor
+			break
+	endswitch
+End

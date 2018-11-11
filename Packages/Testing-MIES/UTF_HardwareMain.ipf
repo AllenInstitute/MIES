@@ -252,6 +252,19 @@ Function run()
 	list = AddListItem("AFT_Test19", list, ";", INF)
 	list = AddListItem("AFT_DAQ20", list, ";", INF)
 	list = AddListItem("AFT_Test20", list, ";", INF)
+	list = AddListItem("AFT_SetControls1", list, ";", INF)
+	list = AddListItem("AFT_SetControlsTest1", list, ";", INF)
+	list = AddListItem("AFT_SetControls2", list, ";", INF)
+	list = AddListItem("AFT_SetControlsTest2", list, ";", INF)
+	list = AddListItem("AFT_SetControls3", list, ";", INF)
+	list = AddListItem("AFT_SetControlsTest3", list, ";", INF)
+	list = AddListItem("AFT_SetControls4", list, ";", INF)
+	list = AddListItem("AFT_SetControlsTest4", list, ";", INF)
+	list = AddListItem("AFT_SetControls5", list, ";", INF)
+	list = AddListItem("AFT_SetControlsTest5", list, ";", INF)
+	list = AddListItem("AFT_SetControls6", list, ";", INF)
+	list = AddListItem("AFT_SetControlsTest6", list, ";", INF)
+
 #endif
 
 	// initialize everything
