@@ -1325,11 +1325,9 @@ Function/S GetControlTypeAsString(win, control)
 	string win
 	string control
 
-	controlInfo/W=$win $control
-	ASSERT(V_flag != 0, "Non-existing control or window")
-	variable controlType = abs(V_flag)
 	variable checkBoxMode
-	switch(controlType)
+
+	switch(GetControlType(win, control))
 		case 1:
 			return "Button"
 			break
@@ -1381,6 +1379,17 @@ Function/S GetControlTypeAsString(win, control)
 	endswitch
 End
 
+/// @brief Return the numeric control type
+///
+/// @return one of @ref GUIControlTypes
+Function GetControlType(win, control)
+	string win, control
+
+	ControlInfo/W=$win $control
+	ASSERT(V_flag != 0, "Non-existing control or window")
+	return abs(V_flag)
+End
+
 /// @brief Determines if control stores numeric or text data
 Function DoesControlHaveInternalString(win, control)
 	string win, control
@@ -1410,28 +1419,28 @@ Function GetCheckBoxMode(win, checkBoxName)
 End
 
 ///@brief Returns formatted control name
-	Function/S GetFormattedControlName(win, control)
-		string win, control
+Function/S GetFormattedControlName(win, control)
+	string win, control
 
-		string savedCtrlName = control
-		string newPrefix = GetControlTypeAsString(Win, control)
-		control = trimstring(control)
-		variable stringLocation = strsearch(control,newPrefix,0,2)
-		if(stringLocation == 0)
-			control = replacestring(newPrefix, control, newPrefix) // returns case correct formatting
-		elseif(stringLocation > 0)
-			control = replacestring(newPrefix, control, "") // removes incorrectly placed ctrl type string
-			control = newPrefix + control
-			control = replacestring("__", control, "_") // remove double underscores
-		elseif(stringLocation == -1)
-			control = newPrefix + "_" + control // adds ctrl type string prefix to ctrl name with missing ctrl type string
-		endif
+	string savedCtrlName = control
+	string newPrefix = GetControlTypeAsString(Win, control)
+	control = trimstring(control)
+	variable stringLocation = strsearch(control,newPrefix,0,2)
+	if(stringLocation == 0)
+		control = replacestring(newPrefix, control, newPrefix) // returns case correct formatting
+	elseif(stringLocation > 0)
+		control = replacestring(newPrefix, control, "") // removes incorrectly placed ctrl type string
+		control = newPrefix + control
+		control = replacestring("__", control, "_") // remove double underscores
+	elseif(stringLocation == -1)
+		control = newPrefix + "_" + control // adds ctrl type string prefix to ctrl name with missing ctrl type string
+	endif
 
-		if(DoesControlHaveInternalString(win, savedCtrlName)) // adds txt suffix string to string setting ctrl
-			control = control + "_txt"
-		endif
-		return control
-	End
+	if(DoesControlHaveInternalString(win, savedCtrlName)) // adds txt suffix string to string setting ctrl
+		control = control + "_txt"
+	endif
+	return control
+End
 
 /// @brief Returns the selected row of the ListBox for some modes
 ///        without selection waves

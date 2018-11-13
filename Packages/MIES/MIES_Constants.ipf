@@ -107,15 +107,19 @@ Constant COUNTOBJECTS_DATAFOLDER = 4
 /// @}
 
 /// @name Control types from ControlInfo
+/// @anchor GUIControlTypes
 /// @{
-Constant CONTROL_TYPE_BUTTON      = 1
-Constant CONTROL_TYPE_CHECKBOX    = 2
-Constant CONTROL_TYPE_POPUPMENU   = 3
-Constant CONTROL_TYPE_VALDISPLAY  = 4
-Constant CONTROL_TYPE_SETVARIABLE = 5
-Constant CONTROL_TYPE_SLIDER      = 7
-Constant CONTROL_TYPE_TAB         = 8
-Constant CONTROL_TYPE_LISTBOX     = 11
+Constant CONTROL_TYPE_BUTTON        = 1
+Constant CONTROL_TYPE_CHECKBOX      = 2
+Constant CONTROL_TYPE_POPUPMENU     = 3
+Constant CONTROL_TYPE_VALDISPLAY    = 4
+Constant CONTROL_TYPE_SETVARIABLE   = 5
+Constant CONTROL_TYPE_SLIDER        = 7
+Constant CONTROL_TYPE_TAB           = 8
+Constant CONTROL_TYPE_GROUPBOX      = 9
+Constant CONTROL_TYPE_TITLEBOX      = 10
+Constant CONTROL_TYPE_LISTBOX       = 11
+Constant CONTROL_TYPE_CUSTOMCONTROL = 12
 /// @}
 
 // Conversion factor from ticks to seconds, exact value is 1/60
