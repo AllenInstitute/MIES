@@ -1042,7 +1042,7 @@ Function SetControlInPreSetEvent(panelTitle, s)
 					ControlWindowToFront()
 					return 1
 				elseif(IsControlDisabled(panelTitle, ctrl))
-					printf "(%s): The analysis parameter %s is a control which is hidden. Therefore it can not be set.\r", panelTitle, ctrl
+					printf "(%s): The analysis parameter %s is a control which is disabled. Therefore it can not be set.\r", panelTitle, ctrl
 					ControlWindowToFront()
 					return 1
 				endif
