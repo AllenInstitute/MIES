@@ -3821,7 +3821,13 @@ Function/S ReturnListOfAllStimSets(DAorTTL, searchString, [WBstimSetList, thirdP
 		thirdPartyStimSetList = SortList(listThirdParty,";",16)
 	endif
 
-	return SortList(listInternal + listThirdParty, ";", 16)
+	list = SortList(listInternal + listThirdParty, ";", 16)
+
+	if(!DAorTTL)
+		list = AddListItem(STIMSET_TP_WHILE_DAQ, list, ";", 0)
+	endif
+
+	return list
 End
 
 /// @brief Return the name short String of the Parameter Wave used in the WaveBuilder

@@ -2137,7 +2137,7 @@ end
 Function WBP_IsBuiltinStimset(setName)
 	string setName
 
-	return GrepString(setName, "^MIES_.*")
+	return GrepString(setName, "^MIES_.*") || !CmpStr(setName, STIMSET_TP_WHILE_DAQ)
 End
 
 /// @brief Save the set parameter waves

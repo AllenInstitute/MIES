@@ -392,6 +392,12 @@ Constant DAQ_FG_SINGLE_DEVICE = 0x004
 // foreground multi device does not exist
 /// @}
 
+/// @name Reserved Stim set name for TP while DAQ
+/// @anchor ReservedStimSetName
+/// @{
+StrConstant STIMSET_TP_WHILE_DAQ = "TestPulse"
+/// @}
+
 /// @name Constants for GetAxisOrientation
 /// @anchor AxisOrientationConstants
 /// @{
