@@ -201,7 +201,7 @@ static Function WB_StimsetNeedsUpdate(setName)
 	return 0
 End
 
-/// @brief Check if parameter waves' modification date is newer than saved stimset
+/// @brief Check if parameter waves' are newer than the saved stimset
 ///
 /// @param setName	string containing name of stimset
 ///
@@ -210,7 +210,7 @@ static Function WB_ParameterWvsNewerThanStim(setName)
 	string setName
 
 	variable lastModStimSet, lastModWP, lastModWPT, lastModSegWvType
-	string msg
+	string msg, WPModCount, WPTModCount, SegWvTypeModCount
 
 	WAVE/Z WP        = WB_GetWaveParamForSet(setName)
 	WAVE/Z/T WPT     = WB_GetWaveTextParamForSet(setName)
@@ -227,6 +227,28 @@ static Function WB_ParameterWvsNewerThanStim(setName)
 
 		if(lastModWP > lastModStimSet || lastModWPT > lastModStimSet || lastModSegWvType > lastModStimSet)
 			return 1
+		elseif(lastModWP == lastModStimSet || lastModWPT == lastModStimSet || lastModSegWvType == lastModStimSet)
+			DFREF dfr = GetSetFolder(GetStimSetType(setName))
+			WAVE/Z/SDFR=dfr stimSet = $setName
+			ASSERT(WaveExists(stimSet), "Unexpected missing wave")
+
+			WPModCount =  GetStringFromWaveNote(stimSet, "WP modification count", keySep="=")
+			WPTModCount = GetStringFromWaveNote(stimSet, "WPT modification count", keySep="=")
+			SegWvTypeModCount = GetStringFromWaveNote(stimSet, "SegWvType modification count", keySep="=")
+
+			sprintf msg, "WPModCount %s, WPTModCount %s, SegWvTypeModCount %s", WPModCount, WPTModCount, SegWvTypeModCount
+			DEBUGPRINT(msg)
+
+			if(IsEmpty(WPModCount) || IsEmpty(WPTModCount) || IsEmpty(SegWvTypeModCount))
+				// old stimset without these entries, force recreation
+				return 1
+			endif
+
+			if(WaveModCountWrapper(WP) > str2num(WPModCount)                  \
+			   || WaveModCountWrapper(WPT) > str2num(WPTModCount)             \
+			   || WaveModCountWrapper(SegWvType) > str2num(SegWvTypeModCount))
+				return 1
+			endif
 		endif
 	endif
 
@@ -413,7 +435,10 @@ Function/Wave WB_GetStimSet([setName])
 	endif
 
 	if(!isEmpty(setName))
-		AddEntryIntoWaveNoteAsList(stimset, "Checksum", var=WB_CalculateStimsetChecksum(stimset, setName), format = "%d", appendCR=1)
+		AddEntryIntoWaveNoteAsList(stimset, "Checksum", var=WB_CalculateStimsetChecksum(stimset, setName), format = "%d")
+		AddEntryIntoWaveNoteAsList(stimset, "WP modification count", var=WaveModCountWrapper(WP), format = "%d")
+		AddEntryIntoWaveNoteAsList(stimset, "WPT modification count", var=WaveModCountWrapper(WPT), format = "%d")
+		AddEntryIntoWaveNoteAsList(stimset, "SegWvType modification count", var=WaveModCountWrapper(SegWvType), format = "%d", appendCR=1)
 	endif
 
 	DEBUGPRINT_ELAPSED(referenceTime)

@@ -160,3 +160,79 @@ Function WB_StimsetEntryParsing()
 	reference = "PSQ_Ramp"
 	CHECK_EQUAL_STR(actual, reference)
 End
+
+Function WB_StimsetRecreation1()
+	string setName = "Ref0_DA_0"
+
+	// stimset does not yet exist
+	CHECK_EQUAL_VAR(MIES_WB#WB_ParameterWvsNewerThanStim(setName), 1)
+
+	WAVE/Z stimset = WB_CreateAndGetStimSet(setName)
+	CHECK_WAVE(stimset, NORMAL_WAVE)
+
+	WAVE/Z WP = WB_GetWaveParamForSet(setName)
+	CHECK_WAVE(WP, NORMAL_WAVE)
+
+	WAVE/T/Z WPT = WB_GetWaveTextParamForSet(setName)
+	CHECK_WAVE(WPT, NORMAL_WAVE)
+
+	WAVE/Z SegWvType = WB_GetSegWvTypeForSet(setName)
+	CHECK_WAVE(SegWvType, NORMAL_WAVE)
+
+	// stimset exists and is up-to-date
+	CHECK_EQUAL_VAR(MIES_WB#WB_ParameterWvsNewerThanStim(setName), 0)
+End
+
+Function WB_StimsetRecreation2()
+	string setName = "Ref0_DA_0"
+
+	WAVE/Z stimset = WB_CreateAndGetStimSet(setName)
+	CHECK_WAVE(stimset, NORMAL_WAVE)
+
+	WAVE/Z WP = WB_GetWaveParamForSet(setName)
+	CHECK_WAVE(WP, NORMAL_WAVE)
+
+	WAVE/T/Z WPT = WB_GetWaveTextParamForSet(setName)
+	CHECK_WAVE(WPT, NORMAL_WAVE)
+
+	WAVE/Z SegWvType = WB_GetSegWvTypeForSet(setName)
+	CHECK_WAVE(SegWvType, NORMAL_WAVE)
+
+	CHECK_EQUAL_VAR(MIES_WB#WB_ParameterWvsNewerThanStim(setName), 0)
+
+	// modifcation tracking works
+	WP[0][0] += 0
+	Sleep/S 2
+	CHECK_EQUAL_VAR(MIES_WB#WB_ParameterWvsNewerThanStim(setName), 1)
+End
+
+Function WB_StimsetRecreation3()
+	string setName = "Ref0_DA_0"
+
+	WAVE/Z stimset = WB_CreateAndGetStimSet(setName)
+	CHECK_WAVE(stimset, NORMAL_WAVE)
+
+	WAVE/Z WP = WB_GetWaveParamForSet(setName)
+	CHECK_WAVE(WP, NORMAL_WAVE)
+
+	WAVE/T/Z WPT = WB_GetWaveTextParamForSet(setName)
+	CHECK_WAVE(WPT, NORMAL_WAVE)
+
+	WAVE/Z SegWvType = WB_GetSegWvTypeForSet(setName)
+	CHECK_WAVE(SegWvType, NORMAL_WAVE)
+
+	CHECK_EQUAL_VAR(MIES_WB#WB_ParameterWvsNewerThanStim(setName), 0)
+
+	stimset[0][0] += 0
+	SegWvType[0][0] += 0
+	WP[0][0] += 0
+	WPT[0][0] += ""
+
+	// this took less time than a second
+	CHECK_EQUAL_VAR(ModDate(stimset), ModDate(WP))
+	CHECK_EQUAL_VAR(ModDate(stimset), ModDate(WPT))
+	CHECK_EQUAL_VAR(ModDate(stimset), ModDate(SegWvType))
+
+	// but the mod count logic kicks in nevertheless
+	CHECK_EQUAL_VAR(MIES_WB#WB_ParameterWvsNewerThanStim(setName), 1)
+End
