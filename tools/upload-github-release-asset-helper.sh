@@ -26,6 +26,14 @@ set -e
 # Validate settings.
 [ "$TRACE" ] && set -x
 
+function extractValue
+{
+  release_json=$1
+  key=$2
+
+  echo "$release_json" | grep "\"\b${key}\b" | head -n1 | cut -d ":" -f 2 | sed -e 's/,//g'
+}
+
 counter=0
 
 # argument parsing
@@ -115,3 +123,25 @@ do
 
   curl --data-binary @"$filename" -H "$AUTH" -H "Content-Type: application/octet-stream" $GH_ASSET -so /dev/null && echo "Successfully uploaded $filename"
 done
+
+echo "Updating release description"
+
+tag_name=$(extractValue "$response" "tag_name")
+target_commitish=$(extractValue "$response" "target_commitish")
+name=$(extractValue "$response" "name")
+draft=$(extractValue "$response" "draft")
+prerelease=$(extractValue "$response" "prerelease")
+
+release_description=$(cat <<EOF
+{
+  "tag_name": ${tag_name},
+  "target_commitish": ${target_commitish},
+  "name": ${name},
+  "body": "Last updated: $(date +"%F %T%z")\n\nThe installer package should work for all users. Only users wishing to manually install the package need the zip file.\n\nSee [here](https://alleninstitute.github.io/MIES/releasenotes.html) for the changelog and [here](https://alleninstitute.github.io/MIES/index.html) for the documentation.",
+  "draft":${draft},
+  "prerelease": ${prerelease}
+}
+EOF
+)
+
+curl -H "$AUTH" -d "$release_description" "https://api.github.com/repos/$owner/$repo/releases/$release_id" -so /dev/null
