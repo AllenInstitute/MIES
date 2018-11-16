@@ -716,7 +716,7 @@ Function/Wave GetHardwareDataWave(panelTitle)
 	endswitch
 End
 
-static Constant ITC_CONFIG_WAVE_VERSION = 1
+static Constant ITC_CONFIG_WAVE_VERSION = 2
 
 /// @brief Check if the given ITC config wave is the latest version
 Function IsLatestConfigWaveVersion(wv)
@@ -757,6 +757,8 @@ End
 /// - Due to the wave versioning the channel unit is now stored with the
 ///   #CHANNEL_UNIT_KEY as key and it is now separated not with semicolon
 ///   anymore but a comma.
+/// Version 2 changes:
+/// - DAQChannelType column added
 Function/Wave GetITCChanConfigWave(panelTitle)
 	string panelTitle
 
@@ -767,12 +769,22 @@ Function/Wave GetITCChanConfigWave(panelTitle)
 	if(ExistsWithCorrectLayoutVersion(wv, ITC_CONFIG_WAVE_VERSION))
 		return wv
 	elseif(WaveExists(wv))
-		Redimension/I/N=(-1, 5) wv
-		// offset
-		wv[][4] = 0
-		Note/K wv
+		// do sequential version upgrade
+		if(WaveVersionIsSmaller(wv, 1))
+			// this version adds the Offset column
+			Redimension/I/N=(-1, 5) wv
+			wv[][4] = 0
+			Note/K wv
+		endif
+		if(WaveVersionIsSmaller(wv, 2))
+			// this version adds the DAQChannelType column
+			// In previous version of TPduringDAQ only DAQ type channels existed
+			Redimension/I/N=(-1, 6) wv
+			wv[][5] = DAQ_CHANNEL_TYPE_DAQ
+			Note/K wv
+		endif
 	else
-		Make/I/N=(2, 5) dfr:ITCChanConfigWave/Wave=wv
+		Make/I/N=(2, 6) dfr:ITCChanConfigWave/Wave=wv
 	endif
 
 	SetDimLabel COLS, 0, ChannelType, wv
@@ -780,6 +792,7 @@ Function/Wave GetITCChanConfigWave(panelTitle)
 	SetDimLabel COLS, 2, SamplingInterval, wv
 	SetDimLabel COLS, 3, DecimationMode, wv
 	SetDimLabel COLS, 4, Offset, wv
+	SetDimLabel COLS, 5, DAQChannelType, wv
 
 	SetWaveVersion(wv, ITC_CONFIG_WAVE_VERSION)
 	AddEntryIntoWaveNoteAsList(wv, CHANNEL_UNIT_KEY, str = "")

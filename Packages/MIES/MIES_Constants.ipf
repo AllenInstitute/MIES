@@ -78,6 +78,14 @@ Constant ITC_XOP_CHANNEL_TYPE_DAC = 1
 Constant ITC_XOP_CHANNEL_TYPE_TTL = 3
 /// @}
 
+/// @name DAQ Channel Type constants used in ITCChanConfigWave
+/// @anchor DAQ_CHANNEL_TYPE_CONSTANTS
+/// @{
+Constant DAQ_CHANNEL_TYPE_UNKOWN = -1
+Constant DAQ_CHANNEL_TYPE_DAQ    = 1
+Constant DAQ_CHANNEL_TYPE_TP     = 2
+/// @}
+
 Constant MINIMUM_WAVE_SIZE = 64
 Constant MINIMUM_WAVE_SIZE_LARGE = 2048
 Constant MAXIMUM_WAVE_SIZE = 16384 // 2^14
