@@ -15,6 +15,7 @@ Table of Contents
   CalculateTPLikePropsFromSweep
   IPNWB
   TPdelta_algorithm
+  asyncframework
   ZeroMQ-XOP-Readme
   labnotebook-docs
   mies-concepts

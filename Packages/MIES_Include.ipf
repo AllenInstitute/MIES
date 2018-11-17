@@ -44,6 +44,7 @@
 #include "MIES_AnalysisMaster"
 #include "MIES_ArtefactRemoval"
 #include "MIES_AsynchronousData"
+#include "MIES_Async"
 #include "MIES_Blowout"
 #include "MIES_BrowserSettingsPanel"
 #include "MIES_BackgroundWatchdog"
