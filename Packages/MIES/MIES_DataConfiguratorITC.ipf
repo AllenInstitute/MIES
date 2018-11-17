@@ -1301,7 +1301,7 @@ static Function DC_CheckIfDataWaveHasBorderVals(panelTitle)
 			break
 		case HARDWARE_NI_DAC:
 			WAVE/WAVE NIDataWave = GetHardwareDataWave(panelTitle)
-			ASSERT(WaveType(NIDataWave, 1) == IGOR_TYPE_WAVEREF_WAVE, "Unexpected wave type")
+			ASSERT(IsWaveRefWave(NIDataWave), "Unexpected wave type")
 			variable channels = numpnts(NIDataWave)
 			variable i
 			for(i = 0; i < channels; i += 1)

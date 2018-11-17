@@ -1360,7 +1360,7 @@ Function/WAVE GetLastSweepWithSetting(numericalValues, setting, sweepNo)
 	variable idx
 
 	sweepNo = NaN
-	ASSERT(WaveType(numericalValues), "Can only work with numeric waves")
+	ASSERT(IsNumericWave(numericalValues), "Can only work with numeric waves")
 
 	WAVE/Z indizes = GetNonEmptyLBNRows(numericalValues, setting)
 	if(!WaveExists(indizes))
@@ -1423,7 +1423,7 @@ Function/WAVE GetLastSweepWithSettingText(textualValues, setting, sweepNo)
 	variable idx
 
 	sweepNo = NaN
-	ASSERT(!WaveType(textualValues), "Can only work with text waves")
+	ASSERT(IsTextWave(textualValues), "Can only work with text waves")
 
 	WAVE/Z indizes = GetNonEmptyLBNRows(textualValues, setting)
 	if(!WaveExists(indizes))
@@ -4792,7 +4792,7 @@ Function/WAVE MoveWaveWithOverwrite(dest, src)
 
 	string path
 
-	ASSERT(WaveType(dest, 2) == 1, "dest must be a global/permanent wave")
+	ASSERT(!IsFreeWave(dest), "dest must be a global/permanent wave")
 
 	path = GetWavesDataFolder(dest, 2)
 
@@ -4813,7 +4813,7 @@ End
 threadsafe Function IsValidSweepWave(sweep)
 	WAVE/Z sweep
 
-	if(WaveType(sweep, 1) == IGOR_TYPE_WAVEREF_WAVE)
+	if(IsWaveRefWave(sweep))
 		if(WaveExists(sweep) && DimSize(sweep, ROWS) > 0)
 			WAVE/Z/WAVE sweepWREF = sweep
 			WAVE/Z channel = sweepWREF[0]
@@ -4831,7 +4831,7 @@ End
 threadsafe Function IsValidSweepAndConfig(sweep, config)
 	WAVE/Z sweep, config
 
-	if(WaveType(sweep, 1) == IGOR_TYPE_WAVEREF_WAVE)
+	if(IsWaveRefWave(sweep))
 		return IsValidConfigWave(config) &&                  \
 				 IsValidSweepWave(sweep) &&                    \
 				 DimSize(sweep, ROWS) == DimSize(config, ROWS)

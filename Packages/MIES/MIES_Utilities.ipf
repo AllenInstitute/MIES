@@ -364,8 +364,7 @@ Function ValueCanBeWritten(wv, value)
 		return 0
 	endif
 
-	// non-numeric wave
-	if(WaveType(wv, 1) != 1)
+	if(!IsNumericWave(wv))
 		return 0
 	endif
 
@@ -2847,7 +2846,7 @@ Function/S NumericWaveToList(wv, sep, [format])
 		format = "%g"
 	endif
 
-	ASSERT(WaveType(wv, 1) == 1, "Expected a numeric wave")
+	ASSERT(IsNumericWave(wv), "Expected a numeric wave")
 	ASSERT(DimSize(wv, COLS) == 0, "Expected a 1D wave")
 
 	numRows = DimSize(wv, ROWS)
