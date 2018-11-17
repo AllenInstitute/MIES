@@ -1,4 +1,5 @@
 !include "LogicLib.nsh"
+!include "FileFunc.nsh"
 !include "MUI2.nsh"
 !include "nsDialogs.nsh"
 !include "setincnames.inc"
@@ -519,7 +520,15 @@ FunctionEnd
 
 function .onInit
   StrCpy $ALLUSER "0"
-  StrCpy $XOPINST "1"
+
+  ClearErrors
+  # Setting if /SKIPHWXOPS was encountered
+  StrCpy $XOPINST "0"
+  ${GetOptions} $CMDLINE /SKIPHWXOPS $0
+  ${If} ${Errors}
+    # default setting install with XOPs
+    StrCpy $XOPINST "1"
+  ${EndIf}
 
   StrCpy $ISADMIN "0"
   UserInfo::GetAccountType
@@ -598,23 +607,36 @@ IGOR964CheckEnd:
   StrCpy $INSTALL_I9PATH "${IGOR9DEFPATH}"
   StrCpy $INSTALL_I932 "1"
 IGOR9CheckEnd:
-# Prefer 64 bit
-  IntCmp $INSTALL_I864 0 +2
-    StrCpy $INSTALL_I832 "0"
-  IntCmp $INSTALL_I964 0 +2
-    StrCpy $INSTALL_I932 "0"
 
-  !insertmacro PreventMultipleInstaller
-  !insertmacro StopOnIgor32
-  !insertmacro StopOnIgor64
+  # If found all available Igor installations are enabled for install at this point
 
-  !insertmacro UninstallAttemptAdmin
-  !insertmacro WaitForUninstaller
+  # the /CIS skips various installation checks and is reserved for internal use
+  # on the CI server only
+  ClearErrors
+  ${GetOptions} $CMDLINE /CIS $0
+  ${If} ${Errors}
+    # normal installation
 
-  !insertmacro UninstallAttemptUser
-  !insertmacro WaitForUninstaller
+    # For regular installation prefer 64 bit
+    IntCmp $INSTALL_I864 0 +2
+      StrCpy $INSTALL_I832 "0"
+    IntCmp $INSTALL_I964 0 +2
+      StrCpy $INSTALL_I932 "0"
 
-  !insertmacro CheckAllUninstalled
+    !insertmacro PreventMultipleInstaller
+    !insertmacro StopOnIgor32
+    !insertmacro StopOnIgor64
+
+    !insertmacro UninstallAttemptAdmin
+    !insertmacro WaitForUninstaller
+
+    !insertmacro UninstallAttemptUser
+    !insertmacro WaitForUninstaller
+
+    !insertmacro CheckAllUninstalled
+  ${Else}
+    StrCpy $INSTDIR "${USERINSTDIR}"
+  ${EndIf}
 functionEnd
 
 !macro CheckLinkTarget LinkPath TargetName
