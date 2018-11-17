@@ -295,18 +295,26 @@ End
 /// 	endfor
 /// \endrst
 ///
-/// @param wv		 	wave to redimension
-/// @param minimumSize 	the minimum size of the wave. Defaults to @ref MINIMUM_WAVE_SIZE.
-///                     The actual size of the wave after the function returns might be larger.
-/// @param dimension 	dimension to resize, all other dimensions are left untouched.
-///                     Defaults to @ref ROWS.
-/// @param initialValue initialValue of the new wave points
-Function EnsureLargeEnoughWave(wv, [minimumSize, dimension, initialValue])
+/// @param wv              wave to redimension
+/// @param minimumSize 	   [optional, default is implementation defined] the minimum size of the wave.
+///                        The actual size of the wave after the function returns might be larger.
+/// @param dimension       [optional, defaults to ROWS] dimension to resize, all other dimensions are left untouched.
+/// @param initialValue    [optional, defaults to zero] initialValue of the new wave points
+/// @param checkFreeMemory [optional, defaults to false] check if the free memory is enough for increasing the size
+///
+/// @return 0 on success, (only for checkFreeMemory = True) 1 if increasing the wave's size would fail due to little memory
+Function EnsureLargeEnoughWave(wv, [minimumSize, dimension, initialValue, checkFreeMemory])
 	Wave wv
-	variable minimumSize, dimension, initialValue
+	variable minimumSize, dimension, initialValue, checkFreeMemory
 
 	if(ParamIsDefault(dimension))
 		dimension = ROWS
+	endif
+
+	if(ParamIsDefault(checkFreeMemory))
+		checkFreeMemory = 0
+	else
+		checkFreeMemory = !!checkFreeMemory
 	endif
 
 	ASSERT(dimension == ROWS || dimension == COLS || dimension == LAYERS || dimension == CHUNKS, "Invalid dimension")
@@ -320,10 +328,16 @@ Function EnsureLargeEnoughWave(wv, [minimumSize, dimension, initialValue])
 	endif
 
 	if(minimumSize < DimSize(wv, dimension))
-		return NaN
+		return 0
 	endif
 
 	minimumSize *= 2
+
+	if(checkFreeMemory)
+		if(GetWaveSize(wv) * (minimumSize - DimSize(wv, dimension)) / 1024 / 1024 / 1024 >= GetFreeMemory())
+			return 1
+		endif
+	endif
 
 	Make/FREE/L/N=(MAX_DIMENSION_COUNT) targetSizes = -1
 	targetSizes[dimension] = minimumSize
@@ -349,6 +363,8 @@ Function EnsureLargeEnoughWave(wv, [minimumSize, dimension, initialValue])
 			break
 		endswitch
 	endif
+
+	return 0
 End
 
 /// @brief Check that the given value can be stored in the wave

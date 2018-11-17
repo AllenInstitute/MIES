@@ -269,7 +269,7 @@ static Function TP_RecordTP(panelTitle, BaselineSSAvg, InstResistance, SSResista
 	string panelTitle
 	WAVE BaselineSSAvg, InstResistance, SSResistance
 
-	variable delta, i, headstage
+	variable delta, i, headstage, ret
 	WAVE TPStorage = GetTPStorage(panelTitle)
 	WAVE activeHSProp = GetActiveHSProperties(panelTitle)
 	Wave GUIState  = GetDA_EphysGuiStateNum(panelTitle)
@@ -293,7 +293,15 @@ static Function TP_RecordTP(panelTitle, BaselineSSAvg, InstResistance, SSResista
 		endfor
 	endif
 
-	EnsureLargeEnoughWave(TPStorage, minimumSize=count, dimension=ROWS, initialValue=NaN)
+	ret = EnsureLargeEnoughWave(TPStorage, minimumSize=count, dimension=ROWS, initialValue=NaN, checkFreeMemory = 1)
+
+	if(ret) // running out of memory
+		printf "The amount of free memory is too low to increase TPStorage, please create a new experiment.\r"
+		ControlWindowToFront()
+		DQ_StopDAQ(panelTitle, startTPAfterDAQ = 0)
+		TP_StopTestPulse(panelTitle)
+		return NaN
+	endif
 
 	// use the last value if we don't have a current one
 	if(count > 0)
