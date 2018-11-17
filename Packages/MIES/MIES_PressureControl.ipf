@@ -412,10 +412,9 @@ static Function P_CloseDevice(panelTitle)
 			ListOfHeadstagesUsingITCDev = P_HeadstageUsingDevice(panelTitle, DeviceToClose)
 			j += 1
 		while(cmpstr("", ListOfHeadstagesUsingITCDev) == 0)
-			j = 0
-
-			headStage = str2num(StringFromList(0, ListOfHeadstagesUsingITCDev))
-			P_CloseDeviceLowLevel(panelTitle, DeviceToClose, headstage)
+		j = 0
+		headStage = str2num(StringFromList(0, ListOfHeadstagesUsingITCDev))
+		P_CloseDeviceLowLevel(panelTitle, DeviceToClose, headstage)
 	endfor
 End
 
@@ -430,7 +429,6 @@ static Function P_OpenDevice(mainDevice, pressureDevice)
 
 	deviceID = HW_OpenDevice(pressureDevice, hwType, flags=HARDWARE_ABORT_ON_ERROR)
 	HW_RegisterDevice(mainDevice, hwType, deviceID, pressureDevice=pressureDevice)
-	HW_ResetDevice(hwType, deviceID)
 
 	if(hwType == HARDWARE_ITC_DAC)
 		P_PrepareITCWaves(mainDevice, pressureDevice)
@@ -488,7 +486,7 @@ static Function P_PrepareITCWaves(mainDevice, pressureDevice)
 	ITCConfig[2][1]  = HW_ITC_GetITCXOPChannelForRack(pressureDevice, RACK_ZERO)
 End
 
-/// @brief Used to close ITC device used for pressure regulation
+/// @brief Used to close the device used for pressure regulation
 static Function P_CloseDeviceLowLevel(panelTitle, deviceToClose, refHeadstage)
 	string panelTitle, deviceToClose
 	variable refHeadstage

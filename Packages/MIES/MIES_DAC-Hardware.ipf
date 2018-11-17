@@ -209,7 +209,7 @@ Function HW_WriteDAC(hardwareType, deviceID, channel, value, [flags])
 			HW_ITC_WriteDAC(deviceID, channel, value, flags=flags)
 			break
 		case HARDWARE_NI_DAC:
-			device = HW_GetInternalDeviceName(hardwareType, deviceID)
+			device = HW_GetDeviceName(hardwareType, deviceID)
 			HW_NI_AssertOnInvalid(device)
 			HW_NI_WriteAnalogSingleAndSlow(device, channel, value, flags=flags)
 			break
@@ -236,7 +236,7 @@ Function HW_ReadADC(hardwareType, deviceID, channel, [flags])
 			return HW_ITC_ReadADC(deviceID, channel, flags=flags)
 			break
 		case HARDWARE_NI_DAC:
-			device = HW_GetInternalDeviceName(hardwareType, deviceID)
+			device = HW_GetDeviceName(hardwareType, deviceID)
 			HW_NI_AssertOnInvalid(device)
 			return HW_NI_ReadAnalogSingleAndSlow(device, channel, flags=flags)
 			break
@@ -271,7 +271,7 @@ Function HW_ReadDigital(hardwareType, deviceID, channel, [line, flags])
 			return HW_ITC_ReadDigital(deviceID, xopChannel, flags=flags)
 			break
 		case HARDWARE_NI_DAC:
-			device = HW_GetInternalDeviceName(hardwareType, deviceID)
+			device = HW_GetDeviceName(hardwareType, deviceID)
 			HW_NI_AssertOnInvalid(device)
 			if(ParamisDefault(line))
 				return HW_NI_ReadDigital(device, DIOPort=channel, flags=flags)
@@ -309,7 +309,7 @@ Function HW_WriteDigital(hardwareType, deviceID, channel, value, [line, flags])
 			HW_ITC_WriteDigital(deviceID, xopChannel, value, flags=flags)
 			break
 		case HARDWARE_NI_DAC:
-			device = HW_GetInternalDeviceName(hardwareType, deviceID)
+			device = HW_GetDeviceName(hardwareType, deviceID)
 			HW_NI_AssertOnInvalid(device)
 			if(ParamisDefault(line))
 				HW_NI_WriteDigital(device, value, DIOPort=channel, flags=flags)
@@ -337,7 +337,7 @@ Function HW_EnableYoking(hardwareType, deviceID, [flags])
 			HW_ITC_EnableYoking(deviceID, flags=flags)
 			break
 		case HARDWARE_NI_DAC:
-			device = HW_GetInternalDeviceName(hardwareType, deviceID)
+			device = HW_GetDeviceName(hardwareType, deviceID)
 			HW_NI_AssertOnInvalid(device)
 			ASSERT(0, "Not implemented")
 			break
@@ -361,7 +361,7 @@ Function HW_DisableYoking(hardwareType, deviceID, [flags])
 			HW_ITC_DisableYoking(deviceID, flags=flags)
 			break
 		case HARDWARE_NI_DAC:
-			device = HW_GetInternalDeviceName(hardwareType, deviceID)
+			device = HW_GetDeviceName(hardwareType, deviceID)
 			HW_NI_AssertOnInvalid(device)
 			ASSERT(0, "Not implemented")
 			break
@@ -409,7 +409,7 @@ Function HW_IsRunning(hardwareType, deviceID, [flags])
 			return HW_ITC_IsRunning(deviceID, flags=flags)
 			break
 		case HARDWARE_NI_DAC:
-			device = HW_GetInternalDeviceName(hardwareType, deviceID)
+			device = HW_GetDeviceName(hardwareType, deviceID)
 			HW_NI_AssertOnInvalid(device)
 			return HW_NI_IsRunning(device, flags=flags)
 			break
@@ -457,7 +457,7 @@ Function HW_ResetDevice(hardwareType, deviceID, [flags])
 			// no equivalent functionality
 			break
 		case HARDWARE_NI_DAC:
-			device = HW_GetInternalDeviceName(hardwareType, deviceID)
+			device = HW_GetDeviceName(hardwareType, deviceID)
 			HW_NI_AssertOnInvalid(device)
 			HW_NI_ResetDevice(device, flags=flags)
 			break
@@ -517,12 +517,6 @@ Function HW_RegisterDevice(mainDevice, hardwareType, deviceID, [pressureDevice])
 
 	ASSERT(!isEmpty(mainDevice), "Device name can not be empty")
 	devMap[deviceID][hardwareType][%MainDevice] = mainDevice
-
-	if(hardwareType == HARDWARE_ITC_DAC)
-		devMap[deviceID][hardwareType][%InternalDevice] = NONE
-	elseif(hardwareType == HARDWARE_NI_DAC)
-		devMap[deviceID][hardwareType][%InternalDevice] = StringFromList(deviceID, HW_NI_ListDevices())
-	endif
 
 	if(!ParamIsDefault(pressureDevice))
 		ASSERT(!isEmpty(pressureDevice), "Device name can not be empty")
@@ -592,20 +586,6 @@ Function/S HW_GetDeviceName(hardwareType, deviceID)
 	endif
 
 	return mainDevice
-End
-
-/// @brief Return the internal deviceName given the `deviceID` and the `hardwareType`
-///
-/// @param deviceID     device identifier
-/// @param hardwareType One of @ref HardwareDACTypeConstants
-Function/S HW_GetInternalDeviceName(hardwareType, deviceID)
-	variable hardwareType, deviceID
-
-	HW_AssertOnInvalid(hardwareType, deviceID)
-
-	WAVE/T devMap = GetDeviceMapping()
-
-	return devMap[deviceID][hardwareType][%InternalDevice]
 End
 /// @}
 
@@ -1857,7 +1837,7 @@ Function HW_NI_StartAcq(deviceID, triggerMode, [flags, repeat])
 	endif
 
 	panelTitle = HW_GetMainDeviceName(HARDWARE_NI_DAC, deviceID)
-	device = HW_GetInternalDeviceName(HARDWARE_NI_DAC, deviceID)
+	device = HW_GetDeviceName(HARDWARE_NI_DAC, deviceID)
 	SVAR scanStr = $GetNI_AISetup(panelTitle)
 	fifoName = GetNIFIFOName(deviceID)
 	try
@@ -1911,7 +1891,7 @@ Function HW_NI_PrepareAcq(deviceID, [data, dataFunc, config, configFunc, flags, 
 	DEBUGPRINTSTACKINFO()
 
 	panelTitle = HW_GetMainDeviceName(HARDWARE_NI_DAC, deviceID)
-	device = HW_GetInternalDeviceName(HARDWARE_NI_DAC, deviceID)
+	device = HW_GetDeviceName(HARDWARE_NI_DAC, deviceID)
 
 	if(ParamIsDefault(data))
 		if(ParamIsDefault(dataFunc))
@@ -2356,7 +2336,7 @@ Function HW_NI_StopAcq(deviceID, [config, configFunc, prepareForDAQ, zeroDAC, fl
 	string panelTitle, paraStr, device, errMsg
 
 	// dont stop here, only if all devices removed
-	device = HW_GetInternalDeviceName(HARDWARE_NI_DAC, deviceID)
+	device = HW_GetDeviceName(HARDWARE_NI_DAC, deviceID)
 	panelTitle = HW_GetMainDeviceName(HARDWARE_NI_DAC, deviceID)
 	ret = fDAQmx_ScanStop(device)
 	// note: calling Stop on a finished scan generates an error code
@@ -2456,7 +2436,7 @@ End
 ///
 /// @param device name of the NI device
 /// @param flags  [optional, default none] One or multiple flags from @ref HardwareInteractionFlags
-Function HW_NI_ResetDevice(device, [flags])
+static Function HW_NI_ResetDevice(device, [flags])
 	string device
 	variable flags
 
@@ -2510,7 +2490,7 @@ End
 /// @param device name of the NI device
 /// @param force  [optional, default 0] When not zero, forces a calibration
 /// @param flags  [optional, default none] One or multiple flags from @ref HardwareInteractionFlags
-Function HW_NI_CalibrateDevice(device, [force, flags])
+static Function HW_NI_CalibrateDevice(device, [force, flags])
 	string device
 	variable force, flags
 
@@ -2544,7 +2524,7 @@ Function HW_NI_CloseDevice(deviceID, [flags])
 	string deviceType, deviceNumber
 	DEBUGPRINTSTACKINFO()
 
-	ASSERT(ParseDeviceString(HW_GetMainDeviceName(HARDWARE_NI_DAC, deviceID), deviceType, deviceNumber), "Error parsing device string!")
+	ASSERT(ParseDeviceString(HW_GetDeviceName(HARDWARE_NI_DAC, deviceID), deviceType, deviceNumber), "Error parsing device string!")
 
 	if(HW_NI_IsRunning(deviceType, flags=flags))
 		HW_NI_StopAcq(deviceID, flags=flags)
@@ -2623,14 +2603,14 @@ Function HW_NI_StopAcq(deviceID, [config, configFunc, prepareForDAQ, zeroDAC, fl
 	DoAbortNow("NI-DAQ XOP is not available")
 End
 
-Function HW_NI_ResetDevice(device, [flags])
+static Function HW_NI_ResetDevice(device, [flags])
 	string device
 	variable flags
 
 	DoAbortNow("NI-DAQ XOP is not available")
 End
 
-Function HW_NI_CalibrateDevice(device, [force, flags])
+static Function HW_NI_CalibrateDevice(device, [force, flags])
 	string device
 	variable force, flags
 

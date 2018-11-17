@@ -5015,21 +5015,20 @@ End
 ///
 /// LAYERS:
 /// - 0: Main device (aka panelTitle of a DA_Ephys panel), used for deriving datafolders for storage
-/// - 1: (NI only) Internally used name of the device
-/// - 2: Name of the device used for pressure control (maybe empty)
+/// - 1: Name of the device used for pressure control (maybe empty)
 Function/WAVE GetDeviceMapping()
 
 	DFREF dfr = GetITCDevicesFolder()
-	variable versionOfNewWave = 1
+	variable versionOfNewWave = 2
 
 	WAVE/Z/T/SDFR=dfr wv = deviceMapping
 
 	if(ExistsWithCorrectLayoutVersion(wv, versionOfNewWave))
 		return wv
 	elseif(WaveExists(wv))
-		Redimension/N=(HARDWARE_MAX_DEVICES, -1, -1) wv
+		Redimension/N=(HARDWARE_MAX_DEVICES, -1, 2) wv
 	else
-		Make/T/N=(HARDWARE_MAX_DEVICES, ItemsInList(HARDWARE_DAC_TYPES), 3) dfr:deviceMapping/Wave=wv
+		Make/T/N=(HARDWARE_MAX_DEVICES, ItemsInList(HARDWARE_DAC_TYPES), 2) dfr:deviceMapping/Wave=wv
 	endif
 
 	SetDimLabel ROWS, -1, DeviceID, wv
@@ -5038,8 +5037,7 @@ Function/WAVE GetDeviceMapping()
 	SetDimLabel COLS, 1, NI_DEVICE , wv
 
 	SetDimLabel LAYERS, 0, MainDevice    , wv
-	SetDimLabel LAYERS, 1, InternalDevice, wv
-	SetDimLabel LAYERS, 2, PressureDevice, wv
+	SetDimLabel LAYERS, 1, PressureDevice, wv
 
 	SetWaveVersion(wv, versionOfNewWave)
 
