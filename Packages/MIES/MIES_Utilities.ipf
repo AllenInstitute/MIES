@@ -334,7 +334,7 @@ Function EnsureLargeEnoughWave(wv, [minimumSize, dimension, initialValue, checkF
 	minimumSize *= 2
 
 	if(checkFreeMemory)
-		if(GetWaveSize(wv) * (minimumSize - DimSize(wv, dimension)) / 1024 / 1024 / 1024 >= GetFreeMemory())
+		if(GetWaveSize(wv) * (minimumSize / DimSize(wv, dimension)) / 1024 / 1024 / 1024 >= GetFreeMemory())
 			return 1
 		endif
 	endif
