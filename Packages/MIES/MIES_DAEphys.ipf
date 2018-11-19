@@ -4830,7 +4830,7 @@ Function DAP_setSkipAheadLimit(panelTitle, filteredSkipAhead)
 	string panelTitle
 	variable filteredSkipAhead
 
-	SetSetVariableLimits(panelTitle, "SetVar_DataAcq_skipAhead", 0, filteredSkipAhead, 1)
+	SetSetVariableLimits(panelTitle, "SetVar_DataAcq_skipAhead", 0, max(0, filteredSkipAhead), 1)
 End
 
 Function DAP_SetVarProc_skipAhead(sva) : SetVariableControl
