@@ -635,7 +635,7 @@ Function DAP_EphysPanelStartUpSettings()
 	PopupMenu Popup_Settings_FixedFreq WIN = $panelTitle, mode=1
 	EnableControls(panelTitle, "Popup_Settings_SampIntMult;Popup_Settings_FixedFreq")
 
-	SetVariable setvar_dataAcq_skipAhead win=$panelTitle, value= _NUM:0
+	SetVariable setvar_dataAcq_skipAhead win=$panelTitle,limits={0,0,1},value= _NUM:0
 	EnableControl(panelTitle, "button_Hardware_P_Enable")
 	DisableControl(panelTitle, "button_Hardware_P_Disable")
 	EnableControls(panelTitle, "Button_DataAcq_SkipBackwards;Button_DataAcq_SkipForward")
