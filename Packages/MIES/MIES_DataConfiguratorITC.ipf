@@ -1655,3 +1655,30 @@ static Function DC_GetStopCollectionPoint(panelTitle, dataAcqOrTP, setLengths)
 
 	ASSERT(0, "unknown mode")
 End
+
+
+/// @brief Returns 1 if a channel is set to TP, the check is through the
+/// stimset name from the GUI
+Function DC_GotTPChannelWhileDAQ(panelTitle)
+	string panelTitle
+
+	variable i, numEntries
+	WAVE statusHS = DAG_GetChannelState(panelTitle, CHANNEL_TYPE_HEADSTAGE)
+	WAVE statusDA = DAG_GetChannelState(panelTitle, CHANNEL_TYPE_DAC)
+	WAVE/T allSetNames = DAG_GetChannelTextual(panelTitle, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_WAVE)
+	numEntries = DimSize(statusDA, ROWS)
+
+	for(i = 0; i < numEntries; i += 1)
+
+		if(!DC_ChannelIsActive(panelTitle, DATA_ACQUISITION_MODE, CHANNEL_TYPE_DAC, i, statusDA, statusHS))
+			continue
+		endif
+
+		if(!CmpStr(allSetNames[i], STIMSET_TP_WHILE_DAQ))
+			return 1
+		endif
+
+	endfor
+
+	return 0
+End
