@@ -1411,7 +1411,7 @@ static Function SetSweepSettingsDimLabels(wv)
 	SetDimLabel COLS, 20, $"Locked indexing"             , wv
 	SetDimLabel COLS, 21, $"Repeated Acquisition"        , wv
 	SetDimLabel COLS, 22, $"Random Repeated Acquisition" , wv
-	SetDimLabel COLS, 23, $"Minimum Sampling interval"   , wv
+	SetDimLabel COLS, 23, $"Sampling interval"           , wv
 	SetDimLabel COLS, 24, $"Sampling interval multiplier", wv
 	SetDimLabel COLS, 25, $"Stim set length"             , wv
 	SetDimLabel COLS, 26, $"oodDAQ Pre Feature"          , wv
@@ -1487,7 +1487,7 @@ End
 Function/Wave GetSweepSettingsWave(panelTitle)
 	string panelTitle
 
-	variable versionOfNewWave = 16
+	variable versionOfNewWave = 17
 	string newName = "sweepSettingsNumericValues"
 	DFREF newDFR = GetDevSpecLabNBTempFolder(panelTitle)
 
@@ -1549,7 +1549,7 @@ End
 /// - 20: Locked indexing
 /// - 21: Repeated Acquisition
 /// - 22: Random Repeated Acquisition
-/// - 23: Minimum Sampling interval
+/// - 23: Sampling interval
 /// - 24: Sampling interval multiplier
 /// - 25: Stim set length
 /// - 26: oodDAQ Pre Feature
@@ -1578,7 +1578,7 @@ End
 Function/Wave GetSweepSettingsKeyWave(panelTitle)
 	string panelTitle
 
-	variable versionOfNewWave = 17
+	variable versionOfNewWave = 18
 	string newName = "sweepSettingsNumericKeys"
 	DFREF newDFR = GetDevSpecLabNBTempFolder(panelTitle)
 
@@ -1696,7 +1696,7 @@ Function/Wave GetSweepSettingsKeyWave(panelTitle)
 	wv[%Units][22]     = LABNOTEBOOK_BINARY_UNIT
 	wv[%Tolerance][22] = LABNOTEBOOK_NO_TOLERANCE
 
-	wv[%Parameter][23] = "Minimum Sampling interval"
+	wv[%Parameter][23] = "Sampling interval"
 	wv[%Units][23]     = "ms"
 	wv[%Tolerance][23] = "1"
 
