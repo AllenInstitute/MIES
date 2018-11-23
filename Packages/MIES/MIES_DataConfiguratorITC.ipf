@@ -745,7 +745,7 @@ static Function DC_PlaceDataInHardwareDataWave(panelTitle, numActiveChannels, da
 	variable channelMode, TPAmpVClamp, TPAmpIClamp, testPulseLength, maxStimSetLength
 	variable GlobalTPInsert, scalingZero, indexingLocked, indexing, distributedDAQ, pulseToPulseLength
 	variable distributedDAQDelay, onSetDelay, onsetDelayAuto, onsetDelayUser, decimationFactor, cutoff
-	variable multiplier, j, powerSpectrum, distributedDAQOptOv, distributedDAQOptPre, distributedDAQOptPost, distributedDAQOptRes, headstage
+	variable j, powerSpectrum, distributedDAQOptOv, distributedDAQOptPre, distributedDAQOptPost, distributedDAQOptRes, headstage
 	variable/C ret
 
 	globalTPInsert        = DAG_GetNumericalValue(panelTitle, "Check_Settings_InsertTP")
@@ -764,7 +764,6 @@ static Function DC_PlaceDataInHardwareDataWave(panelTitle, numActiveChannels, da
 // whereas the source data generated waves for ITC min sample rate are at 200 kHz
 	decimationFactor      = DC_GetDecimationFactor(panelTitle, dataAcqOrTP)
 	samplingInterval      = DAP_GetSampInt(panelTitle, dataAcqOrTP)
-	multiplier            = str2num(DAG_GetTextualValue(panelTitle, "Popup_Settings_SampIntMult"))
 	testPulseLength       = TP_GetTestPulseLengthInPoints(panelTitle, DATA_ACQUISITION_MODE)
 	WAVE/T allSetNames    = DAG_GetChannelTextual(panelTitle, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_WAVE)
 	DC_ReturnTotalLengthIncrease(panelTitle, onsetdelayUser=onsetDelayUser, onsetDelayAuto=onsetDelayAuto, distributedDAQDelay=distributedDAQDelay)
@@ -1097,7 +1096,7 @@ static Function DC_PlaceDataInHardwareDataWave(panelTitle, numActiveChannels, da
 		DC_DocumentChannelProperty(panelTitle, PULSE_TO_PULSE_LENGTH_KEY, headstageDAC[i], DAC[i], var=pulseToPulseLength)
 	endfor
 
-	DC_DocumentChannelProperty(panelTitle, "Sampling interval multiplier", INDEP_HEADSTAGE, NaN, var=multiplier)
+	DC_DocumentChannelProperty(panelTitle, "Sampling interval multiplier", INDEP_HEADSTAGE, NaN, var=str2num(DAG_GetTextualValue(panelTitle, "Popup_Settings_SampIntMult")))
 	DC_DocumentChannelProperty(panelTitle, "Fixed frequency acquisition", INDEP_HEADSTAGE, NaN, var=str2numSafe(DAG_GetTextualValue(panelTitle, "Popup_Settings_FixedFreq")))
 	DC_DocumentChannelProperty(panelTitle, "Sampling interval", INDEP_HEADSTAGE, NaN, var=samplingInterval * 1e-3)
 
@@ -1121,7 +1120,6 @@ static Function DC_PlaceDataInHardwareDataWave(panelTitle, numActiveChannels, da
 	DC_DocumentChannelProperty(panelTitle, "Multi Device mode", INDEP_HEADSTAGE, NaN, var=DAG_GetNumericalValue(panelTitle, "check_Settings_MD"))
 	DC_DocumentChannelProperty(panelTitle, "Background Testpulse", INDEP_HEADSTAGE, NaN, var=DAG_GetNumericalValue(panelTitle, "Check_Settings_BkgTP"))
 	DC_DocumentChannelProperty(panelTitle, "Background DAQ", INDEP_HEADSTAGE, NaN, var=DAG_GetNumericalValue(panelTitle, "Check_Settings_BackgrndDataAcq"))
-	DC_DocumentChannelProperty(panelTitle, "Sampling interval multiplier", INDEP_HEADSTAGE, NaN, var=str2num(DAG_GetTextualValue(panelTitle, "Popup_Settings_SampIntMult")))
 	DC_DocumentChannelProperty(panelTitle, "TP buffer size", INDEP_HEADSTAGE, NaN, var=DAG_GetNumericalValue(panelTitle, "setvar_Settings_TPBuffer"))
 	DC_DocumentChannelProperty(panelTitle, "TP during ITI", INDEP_HEADSTAGE, NaN, var=DAG_GetNumericalValue(panelTitle, "check_Settings_ITITP"))
 	DC_DocumentChannelProperty(panelTitle, "Amplifier change via I=0", INDEP_HEADSTAGE, NaN, var=DAG_GetNumericalValue(panelTitle, "check_Settings_AmpIEQZstep"))
