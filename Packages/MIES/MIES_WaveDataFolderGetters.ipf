@@ -1434,6 +1434,7 @@ static Function SetSweepSettingsDimLabels(wv)
 	SetDimLabel COLS, 43, $"Set Cycle Count"             , wv
 	SetDimLabel COLS, 44, $STIMSET_ACQ_CYCLE_ID_KEY      , wv
 	SetDimLabel COLS, 45, $"Digitizer Hardware Type"     , wv
+	SetDimLabel COLS, 46, $"Fixed frequency acquisition" , wv
 End
 
 /// @brief Set dimension labels for GetSweepSettingsTextKeyWave() and
@@ -1486,7 +1487,7 @@ End
 Function/Wave GetSweepSettingsWave(panelTitle)
 	string panelTitle
 
-	variable versionOfNewWave = 15
+	variable versionOfNewWave = 16
 	string newName = "sweepSettingsNumericValues"
 	DFREF newDFR = GetDevSpecLabNBTempFolder(panelTitle)
 
@@ -1501,9 +1502,9 @@ Function/Wave GetSweepSettingsWave(panelTitle)
 	if(ExistsWithCorrectLayoutVersion(wv, versionOfNewWave))
 		return wv
 	elseif(WaveExists(wv))
-		Redimension/N=(-1, 46, LABNOTEBOOK_LAYER_COUNT) wv
+		Redimension/N=(-1, 47, LABNOTEBOOK_LAYER_COUNT) wv
 	else
-		Make/N=(1, 46, LABNOTEBOOK_LAYER_COUNT) newDFR:$newName/Wave=wv
+		Make/N=(1, 47, LABNOTEBOOK_LAYER_COUNT) newDFR:$newName/Wave=wv
 	endif
 
 	wv = NaN
@@ -1573,10 +1574,11 @@ End
 /// - 43: Set Cycle Count
 /// - 44: Stimset cycle ID
 /// - 45: Digitizer Hardware Type, one of @ref HardwareDACTypeConstants
+/// - 46: Fixed frequency acquisition
 Function/Wave GetSweepSettingsKeyWave(panelTitle)
 	string panelTitle
 
-	variable versionOfNewWave = 16
+	variable versionOfNewWave = 17
 	string newName = "sweepSettingsNumericKeys"
 	DFREF newDFR = GetDevSpecLabNBTempFolder(panelTitle)
 
@@ -1591,9 +1593,9 @@ Function/Wave GetSweepSettingsKeyWave(panelTitle)
 	if(ExistsWithCorrectLayoutVersion(wv, versionOfNewWave))
 		return wv
 	elseif(WaveExists(wv))
-		Redimension/N=(-1, 46) wv
+		Redimension/N=(-1, 47) wv
 	else
-		Make/T/N=(3, 46) newDFR:$newName/Wave=wv
+		Make/T/N=(3, 47) newDFR:$newName/Wave=wv
 	endif
 
 	wv = ""
@@ -1785,6 +1787,10 @@ Function/Wave GetSweepSettingsKeyWave(panelTitle)
 	wv[%Parameter][45] = "Digitizer Hardware Type"
 	wv[%Units][45]     = "a. u."
 	wv[%Tolerance][45] = "1"
+
+	wv[%Parameter][46] = "Fixed frequency acquisition"
+	wv[%Units][46]     = "kHz"
+	wv[%Tolerance][46] = "1"
 
 	SetSweepSettingsDimLabels(wv)
 	SetWaveVersion(wv, versionOfNewWave)
