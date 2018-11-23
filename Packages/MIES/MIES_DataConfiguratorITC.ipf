@@ -399,11 +399,11 @@ End
 ///
 /// @param panelTitle          panel title
 /// @param numActiveChannels   number of active channels as returned by DC_ChanCalcForITCChanConfigWave()
-/// @param minSamplingInterval sampling interval as returned by DAP_GetSampInt()
+/// @param samplingInterval    sampling interval as returned by DAP_GetSampInt()
 /// @param dataAcqOrTP         one of #DATA_ACQUISITION_MODE or #TEST_PULSE_MODE
-static Function DC_MakeHardwareDataWave(panelTitle, numActiveChannels, minSamplingInterval, dataAcqOrTP)
+static Function DC_MakeHardwareDataWave(panelTitle, numActiveChannels, samplingInterval, dataAcqOrTP)
 	string panelTitle
-	variable numActiveChannels, minSamplingInterval, dataAcqOrTP
+	variable numActiveChannels, samplingInterval, dataAcqOrTP
 
 	variable numRows, i
 
@@ -420,7 +420,7 @@ static Function DC_MakeHardwareDataWave(panelTitle, numActiveChannels, minSampli
 			Make/W/O/N=(numRows, numActiveChannels) dfr:HardwareDataWave/Wave=HardwareDataWave
 
 			FastOp HardwareDataWave = 0
-			SetScale/P x 0, minSamplingInterval / 1000, "ms", HardwareDataWave
+			SetScale/P x 0, samplingInterval / 1000, "ms", HardwareDataWave
 			break
 		case HARDWARE_NI_DAC:
 			WAVE/WAVE NIDataWave = GetHardwareDataWave(panelTitle)
@@ -433,7 +433,7 @@ static Function DC_MakeHardwareDataWave(panelTitle, numActiveChannels, minSampli
 			make/FREE/N=(numActiveChannels) type = SWS_GetRawDataFPType(panelTitle)
 			WAVE config = GetITCChanConfigWave(panelTitle)
 			type = config[p][%ChannelType] == ITC_XOP_CHANNEL_TYPE_TTL ? IGOR_TYPE_UNSIGNED | IGOR_TYPE_8BIT_INT : type[p]
-			NIDataWave = DC_MakeNIChannelWave(dfr, numRows, minSamplingInterval, p, type[p])
+			NIDataWave = DC_MakeNIChannelWave(dfr, numRows, samplingInterval, p, type[p])
 			break
 	endswitch
 End
@@ -442,20 +442,20 @@ End
 ///
 /// Config all refers to configuring all the channels at once
 ///
-/// @return 							Wave Reference to NI Channel wave
-/// @param dfr 						Data Folder reference where the wave is created
-/// @param numRows				 	size of the 1D channel wave
-/// @param minSamplingInterval	minimum sample intervall in microseconds
-/// @param index	 					number of NI channel
-/// @param type	 					number type of NI channel
-
-static Function/WAVE DC_MakeNIChannelWave(dfr, numRows, minSamplingInterval, index, type)
+/// @param dfr              Data Folder reference where the wave is created
+/// @param numRows          size of the 1D channel wave
+/// @param samplingInterval minimum sample intervall in microseconds
+/// @param index            number of NI channel
+/// @param type             number type of NI channel
+///
+/// @return                 Wave Reference to NI Channel wave
+static Function/WAVE DC_MakeNIChannelWave(dfr, numRows, samplingInterval, index, type)
 	DFREF dfr
-	variable numRows, minSamplingInterval, index, type
+	variable numRows, samplingInterval, index, type
 
 	Make/O/N=(numRows)/Y=(type) dfr:$("NI_Channel" + num2str(index))/WAVE=w
 	FastOp w = 0
-	SetScale/P x 0, minSamplingInterval / 1000, "ms", w
+	SetScale/P x 0, samplingInterval / 1000, "ms", w
 	return w
 End
 
@@ -741,7 +741,7 @@ static Function DC_PlaceDataInHardwareDataWave(panelTitle, numActiveChannels, da
 
 	variable i, activeColumn, numEntries, setChecksum, stimsetCycleID, fingerprint, hardwareType, maxITI
 	string ctrl, str, list, func
-	variable setCycleCount, val, singleSetLength, singleInsertStart, minSamplingInterval
+	variable setCycleCount, val, singleSetLength, singleInsertStart, samplingInterval
 	variable channelMode, TPAmpVClamp, TPAmpIClamp, testPulseLength, maxStimSetLength
 	variable GlobalTPInsert, scalingZero, indexingLocked, indexing, distributedDAQ, pulseToPulseLength
 	variable distributedDAQDelay, onSetDelay, onsetDelayAuto, onsetDelayUser, decimationFactor, cutoff
@@ -763,7 +763,7 @@ static Function DC_PlaceDataInHardwareDataWave(panelTitle, numActiveChannels, da
 // MH: note with NI the decimationFactor can now be < 1, like 0.4 if a single NI ADC channel runs with 500 kHz
 // whereas the source data generated waves for ITC min sample rate are at 200 kHz
 	decimationFactor      = DC_GetDecimationFactor(panelTitle, dataAcqOrTP)
-	minSamplingInterval   = DAP_GetSampInt(panelTitle, dataAcqOrTP)
+	samplingInterval      = DAP_GetSampInt(panelTitle, dataAcqOrTP)
 	multiplier            = str2num(DAG_GetTextualValue(panelTitle, "Popup_Settings_SampIntMult"))
 	testPulseLength       = TP_GetTestPulseLengthInPoints(panelTitle, DATA_ACQUISITION_MODE)
 	WAVE/T allSetNames    = DAG_GetChannelTextual(panelTitle, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_WAVE)
@@ -945,7 +945,7 @@ static Function DC_PlaceDataInHardwareDataWave(panelTitle, numActiveChannels, da
 	NVAR stopCollectionPoint = $GetStopCollectionPoint(panelTitle)
 	stopCollectionPoint = DC_GetStopCollectionPoint(panelTitle, dataAcqOrTP, setLength)
 
-	DC_MakeHardwareDataWave(panelTitle, numActiveChannels, minSamplingInterval, dataAcqOrTP)
+	DC_MakeHardwareDataWave(panelTitle, numActiveChannels, samplingInterval, dataAcqOrTP)
 	DC_MakeOscilloscopeWave(panelTitle, numActiveChannels, dataAcqOrTP)
 
 	NVAR fifoPosition = $GetFifoPosition(panelTitle)
@@ -1099,7 +1099,7 @@ static Function DC_PlaceDataInHardwareDataWave(panelTitle, numActiveChannels, da
 
 	DC_DocumentChannelProperty(panelTitle, "Sampling interval multiplier", INDEP_HEADSTAGE, NaN, var=multiplier)
 	DC_DocumentChannelProperty(panelTitle, "Fixed frequency acquisition", INDEP_HEADSTAGE, NaN, var=str2numSafe(DAG_GetTextualValue(panelTitle, "Popup_Settings_FixedFreq")))
-	DC_DocumentChannelProperty(panelTitle, "Minimum sampling interval", INDEP_HEADSTAGE, NaN, var=minSamplingInterval / multiplier * 1e-3)
+	DC_DocumentChannelProperty(panelTitle, "Minimum sampling interval", INDEP_HEADSTAGE, NaN, var=samplingInterval / multiplier * 1e-3)
 
 	DC_DocumentChannelProperty(panelTitle, "Delay onset user", INDEP_HEADSTAGE, NaN, var=DAG_GetNumericalValue(panelTitle, "setvar_DataAcq_OnsetDelayUser"))
 	DC_DocumentChannelProperty(panelTitle, "Delay onset auto", INDEP_HEADSTAGE, NaN, var=GetValDisplayAsNum(panelTitle, "valdisp_DataAcq_OnsetDelayAuto"))
@@ -1626,16 +1626,16 @@ static Function DC_ReturnTotalLengthIncrease(panelTitle, [onsetDelayUser, onsetD
 	string panelTitle
 	variable &onsetDelayUser, &onsetDelayAuto, &terminationDelay, &distributedDAQDelay
 
-	variable minSamplingInterval, onsetDelayUserVal, onsetDelayAutoVal, terminationDelayVal, distributedDAQDelayVal, numActiveDACs
+	variable samplingInterval, onsetDelayUserVal, onsetDelayAutoVal, terminationDelayVal, distributedDAQDelayVal, numActiveDACs
 	variable distributedDAQ
 
 	numActiveDACs          = DC_NoOfChannelsSelected(panelTitle, CHANNEL_TYPE_DAC)
-	minSamplingInterval    = DAP_GetSampInt(panelTitle, DATA_ACQUISITION_MODE)
+	samplingInterval       = DAP_GetSampInt(panelTitle, DATA_ACQUISITION_MODE)
 	distributedDAQ         = DAG_GetNumericalValue(panelTitle, "Check_DataAcq1_DistribDaq")
-	onsetDelayUserVal      = round(DAG_GetNumericalValue(panelTitle, "setvar_DataAcq_OnsetDelayUser") / (minSamplingInterval / 1000))
-	onsetDelayAutoVal      = round(GetValDisplayAsNum(panelTitle, "valdisp_DataAcq_OnsetDelayAuto") / (minSamplingInterval / 1000))
-	terminationDelayVal    = round(DAG_GetNumericalValue(panelTitle, "setvar_DataAcq_TerminationDelay") / (minSamplingInterval / 1000))
-	distributedDAQDelayVal = round(DAG_GetNumericalValue(panelTitle, "setvar_DataAcq_dDAQDelay") / (minSamplingInterval / 1000))
+	onsetDelayUserVal      = round(DAG_GetNumericalValue(panelTitle, "setvar_DataAcq_OnsetDelayUser") / (samplingInterval / 1000))
+	onsetDelayAutoVal      = round(GetValDisplayAsNum(panelTitle, "valdisp_DataAcq_OnsetDelayAuto") / (samplingInterval / 1000))
+	terminationDelayVal    = round(DAG_GetNumericalValue(panelTitle, "setvar_DataAcq_TerminationDelay") / (samplingInterval / 1000))
+	distributedDAQDelayVal = round(DAG_GetNumericalValue(panelTitle, "setvar_DataAcq_dDAQDelay") / (samplingInterval / 1000))
 
 	if(!ParamIsDefault(onsetDelayUser))
 		onsetDelayUser = onsetDelayUserVal
