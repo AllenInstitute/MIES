@@ -253,7 +253,7 @@ Function TPM_BkrdTPFuncMD(s)
 			pointsCompletedInITCDataWave = mod(fifoPos, DimSize(ITCDataWave, ROWS))
 
 			// extract the last fully completed chunk
-			activeChunk = floor(pointsCompletedInITCDataWave / TP_GetTestPulseLengthInPoints(panelTitle)) - 1
+			activeChunk = floor(pointsCompletedInITCDataWave / TP_GetTestPulseLengthInPoints(panelTitle, TEST_PULSE_MODE)) - 1
 
 			// Ensures that the new TP chunk isn't the same as the last one.
 			// This is required to keep the TP buffer in sync.
