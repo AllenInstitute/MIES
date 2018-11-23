@@ -142,7 +142,7 @@ static Function DC_UpdateTestPulseWave(panelTitle, TestPulse)
 
 	variable length
 
-	length = TP_GetTestPulseLengthInPoints(panelTitle)
+	length = TP_GetTestPulseLengthInPoints(panelTitle, TEST_PULSE_MODE)
 
 	Redimension/N=(length) TestPulse
 	FastOp TestPulse = 0
@@ -161,7 +161,7 @@ static Function DC_UpdateTestPulseWaveMD(panelTitle)
 
 	WAVE TestPulse = GetTestPulse()
 
-	length = TP_GetTestPulseLengthInPoints(panelTitle)
+	length = TP_GetTestPulseLengthInPoints(panelTitle, TEST_PULSE_MODE)
 	NVAR baselineFraction = $GetTestpulseBaselineFraction(panelTitle)
 
 	key = CA_TestPulseMultiDeviceKey(length, baselineFraction)
@@ -427,7 +427,7 @@ static Function DC_MakeOscilloscopeWave(panelTitle, numActiveChannels, dataAcqOr
 	WAVE OscilloscopeData = GetOscilloscopeWave(panelTitle)
 
 	if(dataAcqOrTP == TEST_PULSE_MODE)
-		numRows = TP_GetTestPulseLengthInPoints(panelTitle)
+		numRows = TP_GetTestPulseLengthInPoints(panelTitle, TEST_PULSE_MODE)
 	elseif(dataAcqOrTP == DATA_ACQUISITION_MODE)
 		numRows = DimSize(ITCDataWave, ROWS)
 	else
@@ -634,7 +634,7 @@ static Function DC_PlaceDataInITCDataWave(panelTitle, numActiveChannels, dataAcq
 	decimationFactor      = DC_GetDecimationFactor(panelTitle, dataAcqOrTP)
 	minSamplingInterval   = DAP_GetITCSampInt(panelTitle, dataAcqOrTP)
 	multiplier            = str2num(DAG_GetTextualValue(panelTitle, "Popup_Settings_SampIntMult"))
-	testPulseLength       = TP_GetTestPulseLengthInPoints(panelTitle) / multiplier
+	testPulseLength       = TP_GetTestPulseLengthInPoints(panelTitle, DATA_ACQUISITION_MODE)
 	WAVE/T allSetNames    = DAG_GetChannelTextual(panelTitle, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_WAVE)
 	DC_ReturnTotalLengthIncrease(panelTitle, onsetdelayUser=onsetDelayUser, onsetDelayAuto=onsetDelayAuto, distributedDAQDelay=distributedDAQDelay)
 	onsetDelay            = onsetDelayUser + onsetDelayAuto
