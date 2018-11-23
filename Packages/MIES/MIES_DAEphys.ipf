@@ -631,6 +631,7 @@ Function DAP_EphysPanelStartUpSettings()
 	CheckBox check_DataACq_Pressure_User WIN = $panelTitle, value=0
 	CheckBox check_DA_applyOnModeSwitch WIN = $panelTitle, value=0
 
+	PopupMenu Popup_Settings_SampIntMult WIN = $panelTitle, mode=1
 	SetVariable setvar_dataAcq_skipAhead win=$panelTitle, value= _NUM:0
 	EnableControl(panelTitle, "button_Hardware_P_Enable")
 	DisableControl(panelTitle, "button_Hardware_P_Disable")
