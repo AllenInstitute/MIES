@@ -96,8 +96,7 @@ Function DC_ConfigureDataForITC(panelTitle, dataAcqOrTP, [multiDevice])
 	DC_UpdateGlobals(panelTitle)
 
 	if(dataAcqOrTP == TEST_PULSE_MODE)
-		WAVE TestPulse = GetTestPulse()
-		DC_UpdateTestPulseWave(panelTitle, TestPulse)
+		TP_CreateTestPulseWave(panelTitle)
 	endif
 
 	numActiveChannels = DC_ChanCalcForITCChanConfigWave(panelTitle, dataAcqOrTP)
@@ -128,21 +127,6 @@ Function DC_ConfigureDataForITC(panelTitle, dataAcqOrTP, [multiDevice])
 	if(dataAcqOrTP == DATA_ACQUISITION_MODE)
 		AFM_CallAnalysisFunctions(panelTitle, PRE_SWEEP_EVENT)
 	endif
-End
-
-static Function DC_UpdateTestPulseWave(panelTitle, TestPulse)
-	string panelTitle
-	WAVE TestPulse
-
-	variable length
-
-	length = TP_GetTestPulseLengthInPoints(panelTitle, TEST_PULSE_MODE)
-
-	Redimension/N=(length) TestPulse
-	FastOp TestPulse = 0
-
-	NVAR baselineFrac = $GetTestpulseBaselineFraction(panelTitle)
-	TestPulse[baselineFrac * length, (1 - baselineFrac) * length] = 1
 End
 
 static Function DC_UpdateActiveHSProperties(panelTitle, ADCs)
