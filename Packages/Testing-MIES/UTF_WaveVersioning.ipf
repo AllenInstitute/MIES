@@ -97,3 +97,90 @@ Function GWV_Works()
 	CHECK_EQUAL_VAR(MIES_WAVEGETTERS#GetWaveVersion(wv), 4711)
 End
 /// @}
+
+/// @{ WaveVersionIsAtLeast
+Function WV_IsAtLeastNull()
+
+	try
+		MIES_WAVEGETTERS#WaveVersionIsAtLeast($"", 1)
+		FAIL()
+	catch
+		PASS()
+	endtry
+End
+
+Function WV_IsAtLeastOne()
+	Make/FREE wv
+
+	try
+		MIES_WAVEGETTERS#WaveVersionIsAtLeast(wv, 0)
+		FAIL()
+	catch
+		PASS()
+	endtry
+End
+
+Function WV_IsAtLeastInteger()
+	Make/FREE wv
+
+	try
+		MIES_WAVEGETTERS#WaveVersionIsAtLeast(wv, 1.5)
+		FAIL()
+	catch
+		PASS()
+	endtry
+End
+
+Function WV_IsAtLeast()
+	Make/FREE wv
+	CHECK(!MIES_WAVEGETTERS#WaveVersionIsAtLeast(wv, 1))
+
+	MIES_WAVEGETTERS#SetWaveVersion(wv, 1)
+	CHECK(MIES_WAVEGETTERS#WaveVersionIsAtLeast(wv, 1))
+	CHECK(!MIES_WAVEGETTERS#WaveVersionIsAtLeast(wv, 2))
+End
+/// @}
+
+/// @{ WaveVersionIsSmaller
+Function WV_IsSmallerNull()
+
+	try
+		MIES_WAVEGETTERS#WaveVersionIsSmaller($"", 1)
+		FAIL()
+	catch
+		PASS()
+	endtry
+End
+
+Function WV_IsSmallerOne()
+	Make/FREE wv
+
+	try
+		MIES_WAVEGETTERS#WaveVersionIsSmaller(wv, 0)
+		FAIL()
+	catch
+		PASS()
+	endtry
+End
+
+Function WV_IsSmallerInteger()
+	Make/FREE wv
+
+	try
+		MIES_WAVEGETTERS#WaveVersionIsSmaller(wv, 1.5)
+		FAIL()
+	catch
+		PASS()
+	endtry
+End
+
+
+Function WV_IsSmaller()
+	Make/FREE wv
+	CHECK(MIES_WAVEGETTERS#WaveVersionIsSmaller(wv, 1))
+
+	MIES_WAVEGETTERS#SetWaveVersion(wv, 1)
+	CHECK(!MIES_WAVEGETTERS#WaveVersionIsSmaller(wv, 1))
+	CHECK(MIES_WAVEGETTERS#WaveVersionIsSmaller(wv, 2))
+End
+/// @}
