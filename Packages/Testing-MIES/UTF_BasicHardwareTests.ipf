@@ -2055,10 +2055,11 @@ Function Test_UnassociatedChannels()
 			WAVE ADCs = GetADCListFromConfig(config)
 			CHECK_EQUAL_WAVES(ADCs, {0, 1, 2}, mode = WAVE_DATA)
 
+			WAVE TTLs = GetTTLListFromConfig(config)
+
 			switch(GetHardwareType(device))
 				case HARDWARE_ITC_DAC:
 					// check TTL LBN keys
-					WAVE TTLs = GetTTLListFromConfig(config)
 					CHECK_EQUAL_WAVES(TTLs, {HW_ITC_GetITCXOPChannelForRack(device, RACK_ZERO)}, mode = WAVE_DATA)
 					WAVE/T/Z foundStimSets = GetLastSetting(textualValues, j, "TTL rack zero stim sets", DATA_ACQUISITION_MODE)
 					CHECK_EQUAL_TEXTWAVES(foundStimSets, {"", "", "", "", "", "", "", "", ";StimulusSetA_TTL_0;;StimulusSetB_TTL_0;"})
