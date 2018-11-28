@@ -13,10 +13,8 @@
 /// @brief Update global variables used by the Testpulse or DAQ
 ///
 /// @param panelTitle device
-/// @param dataAcqOrTP one of #DATA_ACQUISITION_MODE or #TEST_PULSE_MODE
-static Function DC_UpdateGlobals(panelTitle, dataAcqOrTP)
+static Function DC_UpdateGlobals(panelTitle)
 	string panelTitle
-	variable dataAcqOrTP
 
 	DFREF testPulseDFR = GetDeviceTestPulse(panelTitle)
 
@@ -95,7 +93,7 @@ Function DC_ConfigureDataForITC(panelTitle, dataAcqOrTP, [multiDevice])
 	KillOrMoveToTrash(wv=GetSweepSettingsKeyWave(panelTitle))
 	KillOrMoveToTrash(wv=GetSweepSettingsTextKeyWave(panelTitle))
 
-	DC_UpdateGlobals(panelTitle, dataAcqOrTP)
+	DC_UpdateGlobals(panelTitle)
 
 	if(dataAcqOrTP == TEST_PULSE_MODE)
 		if(multiDevice && (GetHardwareType(panelTitle) == HARDWARE_ITC_DAC))
@@ -749,7 +747,6 @@ static Function DC_PlaceDataInHardwareDataWave(panelTitle, numActiveChannels, da
 	variable distributedDAQDelay, onSetDelay, onsetDelayAuto, onsetDelayUser, decimationFactor, cutoff
 	variable multiplier, j, powerSpectrum, distributedDAQOptOv, distributedDAQOptPre, distributedDAQOptPost, distributedDAQOptRes, headstage
 	variable/C ret
-	variable srcLength, tgtLength
 
 	globalTPInsert        = DAG_GetNumericalValue(panelTitle, "Check_Settings_InsertTP")
 	scalingZero           = DAG_GetNumericalValue(panelTitle,  "check_Settings_ScalingZero")
