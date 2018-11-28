@@ -3,8 +3,6 @@
 #pragma rtFunctionErrors=1
 #pragma ModuleName=DAEphysPanel
 
-static StrConstant panelTitle = "ITC18USB_DEV_0"
-
 Function CheckIfAllControlsReferStateWv()
 
 	string unlockedPanelTitle, list, ctrl, str, expected, lbl, uniqueControls
@@ -17,17 +15,17 @@ Function CheckIfAllControlsReferStateWv()
 
 	ChooseCorrectDevice(unlockedPanelTitle, DEVICE)
 	PGC_SetAndActivateControl(unlockedPanelTitle, "button_SettingsPlus_LockDevice")
-	REQUIRE(WindowExists(panelTitle))
+	REQUIRE(WindowExists(DEVICE))
 
-	list  = ControlNameList(panelTitle, ";")
+	list  = ControlNameList(DEVICE, ";")
 
-	uniqueControls = MIES_DAG#DAG_GetUniqueCtrlList(panelTitle)
+	uniqueControls = MIES_DAG#DAG_GetUniqueCtrlList(DEVICE)
 
 	numEntries = ItemsInList(list)
 	CHECK(numEntries > 0)
 	for(i = 0; i < numEntries; i += 1)
 		ctrl = StringFromList(i, list)
-		ControlInfo/W=$panelTitle $ctrl
+		ControlInfo/W=$DEVICE $ctrl
 
 		if(!DAP_ParsePanelControl(ctrl, channelIndex, channelType, controlType) && channelIndex >= 0)
 			index = channelIndex
@@ -43,7 +41,7 @@ Function CheckIfAllControlsReferStateWv()
 		endif
 
 		// ignore turned off controls
-		if(IsControlDisabled(panelTitle, ctrl))
+		if(IsControlDisabled(DEVICE, ctrl))
 			continue
 		endif
 
@@ -62,98 +60,98 @@ Function CheckIfAllControlsReferStateWv()
 				val    = !oldVal
 
 				try
-					PGC_SetAndActivateControl(panelTitle, ctrl, val = val); err = GetRTError(1)
+					PGC_SetAndActivateControl(DEVICE, ctrl, val = val); err = GetRTError(1)
 				catch
 					// do nothing
 				endtry
 
-				CHECK_EQUAL_VAR(GetCheckBoxState(panelTitle, ctrl), val)
-				CHECK_EQUAL_VAR(DAG_GetNumericalValue(panelTitle, lbl, index = index), val)
+				CHECK_EQUAL_VAR(GetCheckBoxState(DEVICE, ctrl), val)
+				CHECK_EQUAL_VAR(DAG_GetNumericalValue(DEVICE, lbl, index = index), val)
 				// undo
-				PGC_SetAndActivateControl(panelTitle, ctrl, val = oldVal)
+				PGC_SetAndActivateControl(DEVICE, ctrl, val = oldVal)
 				break
 			case CONTROL_TYPE_SETVARIABLE:
-				if(DoesControlHaveInternalString(panelTitle, ctrl))
+				if(DoesControlHaveInternalString(DEVICE, ctrl))
 					str = NONE
-					KillOrMoveToTrash(wv = GetDA_EphysGuiStateTxT(panelTitle))
+					KillOrMoveToTrash(wv = GetDA_EphysGuiStateTxT(DEVICE))
 
 					try
-						PGC_SetAndActivateControl(panelTitle, ctrl, str = str); err = GetRTError(1)
+						PGC_SetAndActivateControl(DEVICE, ctrl, str = str); err = GetRTError(1)
 					catch
 						// do nothing
 					endtry
 
 					// if the gui state wave exists we wrote into it
-					WAVE/Z/SDFR=GetDevicePath(panelTitle) DA_EphysGuiStateTxT
+					WAVE/Z/SDFR=GetDevicePath(DEVICE) DA_EphysGuiStateTxT
 					CHECK_WAVE(DA_EphysGuiStateTxT, TEXT_WAVE)
-					expected = DAG_GetTextualValue(panelTitle, lbl, index = index)
+					expected = DAG_GetTextualValue(DEVICE, lbl, index = index)
 					CHECK_EQUAL_STR(expected, str)
 				else
 					val = 0
-					KillOrMoveToTrash(wv = GetDA_EphysGuiStateNum(panelTitle))
+					KillOrMoveToTrash(wv = GetDA_EphysGuiStateNum(DEVICE))
 
 					try
-						inputModified = PGC_SetAndActivateControl(panelTitle, ctrl, val = val); err = GetRTError(1)
+						inputModified = PGC_SetAndActivateControl(DEVICE, ctrl, val = val); err = GetRTError(1)
 					catch
 						// do nothing
 					endtry
 
 					// if the gui state wave exists we wrote into it
-					WAVE/Z/SDFR=GetDevicePath(panelTitle) DA_EphysGuiStateNum
+					WAVE/Z/SDFR=GetDevicePath(DEVICE) DA_EphysGuiStateNum
 					CHECK_WAVE(DA_EphysGuiStateNum, NUMERIC_WAVE)
 
 					if(inputModified)
-						val = GetLimitConstrainedSetVar(panelTitle, ctrl, val)
+						val = GetLimitConstrainedSetVar(DEVICE, ctrl, val)
 					endif
 
-					CHECK_EQUAL_VAR(DAG_GetNumericalValue(panelTitle, lbl, index = index), val)
+					CHECK_EQUAL_VAR(DAG_GetNumericalValue(DEVICE, lbl, index = index), val)
 				endif
 
 				break
 			case CONTROL_TYPE_SLIDER:
 
 				val = 0
-				KillOrMoveToTrash(wv = GetDA_EphysGuiStateNum(panelTitle))
+				KillOrMoveToTrash(wv = GetDA_EphysGuiStateNum(DEVICE))
 
 				try
-					PGC_SetAndActivateControl(panelTitle, ctrl, val = val); err = GetRTError(1)
+					PGC_SetAndActivateControl(DEVICE, ctrl, val = val); err = GetRTError(1)
 				catch
 					// do nothing
 				endtry
 
 				// if the gui state wave exists we wrote into it
-				WAVE/Z/SDFR=GetDevicePath(panelTitle) DA_EphysGuiStateNum
+				WAVE/Z/SDFR=GetDevicePath(DEVICE) DA_EphysGuiStateNum
 				CHECK_WAVE(DA_EphysGuiStateNum, NUMERIC_WAVE)
-				CHECK_EQUAL_VAR(DAG_GetNumericalValue(panelTitle, lbl, index = index), val)
+				CHECK_EQUAL_VAR(DAG_GetNumericalValue(DEVICE, lbl, index = index), val)
 
 				break
 			case CONTROL_TYPE_POPUPMENU:
 
-				oldVal = GetPopupMenuIndex(panelTitle, ctrl)
+				oldVal = GetPopupMenuIndex(DEVICE, ctrl)
 				val = 1
-				KillOrMoveToTrash(wv = GetDA_EphysGuiStateNum(panelTitle))
-				KillOrMoveToTrash(wv = GetDA_EphysGuiStateTxT(panelTitle))
+				KillOrMoveToTrash(wv = GetDA_EphysGuiStateNum(DEVICE))
+				KillOrMoveToTrash(wv = GetDA_EphysGuiStateTxT(DEVICE))
 
 				try
-					PGC_SetAndActivateControl(panelTitle, ctrl, val = val); err = GetRTError(1)
+					PGC_SetAndActivateControl(DEVICE, ctrl, val = val); err = GetRTError(1)
 				catch
 					// do nothing
 				endtry
 
-				str = GetPopupMenuString(panelTitle, ctrl)
+				str = GetPopupMenuString(DEVICE, ctrl)
 				// if the gui state wave exists we wrote into it
-				WAVE/Z/SDFR=GetDevicePath(panelTitle) DA_EphysGuiStateNum
+				WAVE/Z/SDFR=GetDevicePath(DEVICE) DA_EphysGuiStateNum
 				CHECK_WAVE(DA_EphysGuiStateNum, NUMERIC_WAVE)
 
-				WAVE/Z/SDFR=GetDevicePath(panelTitle) DA_EphysGuiStateTxT
+				WAVE/Z/SDFR=GetDevicePath(DEVICE) DA_EphysGuiStateTxT
 				CHECK_WAVE(DA_EphysGuiStateTxT, TEXT_WAVE)
 
-				CHECK_EQUAL_VAR(DAG_GetNumericalValue(panelTitle, lbl, index = index), val)
+				CHECK_EQUAL_VAR(DAG_GetNumericalValue(DEVICE, lbl, index = index), val)
 
-				expected = DAG_GetTextualValue(panelTitle, lbl, index = index)
+				expected = DAG_GetTextualValue(DEVICE, lbl, index = index)
 				CHECK_EQUAL_STR(expected, str)
 				// undo
-				PGC_SetAndActivateControl(panelTitle, ctrl, val = oldVal)
+				PGC_SetAndActivateControl(DEVICE, ctrl, val = oldVal)
 				break
 		endswitch
 	endfor
@@ -172,18 +170,18 @@ Function CheckStartupSettings()
 
 	ChooseCorrectDevice(unlockedPanelTitle, DEVICE)
 	PGC_SetAndActivateControl(unlockedPanelTitle, "button_SettingsPlus_LockDevice")
-	REQUIRE(WindowExists(panelTitle))
+	REQUIRE(WindowExists(DEVICE))
 
-	Duplicate/O GetDA_EphysGuiStateNum(panelTitle), guiStateNumRef
-	Duplicate/O GetDA_EphysGuiStateTxT(panelTitle), guiStateTxTRef
+	Duplicate/O GetDA_EphysGuiStateNum(DEVICE), guiStateNumRef
+	Duplicate/O GetDA_EphysGuiStateTxT(DEVICE), guiStateTxTRef
 
-	list  = ControlNameList(panelTitle, ";")
+	list  = ControlNameList(DEVICE, ";")
 
 	numEntries = ItemsInList(list)
 	CHECK(numEntries > 0)
 	for(i = 0; i < numEntries; i += 1)
 		ctrl = StringFromList(i, list)
-		ControlInfo/W=$panelTitle $ctrl
+		ControlInfo/W=$DEVICE $ctrl
 
 		switch(abs(V_Flag))
 			case CONTROL_TYPE_BUTTON:
@@ -195,24 +193,24 @@ Function CheckStartupSettings()
 			case CONTROL_TYPE_CHECKBOX:
 				oldVal = V_Value
 				val    = !oldVal
-				SetCheckBoxState(panelTitle, ctrl, val)
+				SetCheckBoxState(DEVICE, ctrl, val)
 				break
 			case CONTROL_TYPE_SETVARIABLE:
-				if(DoesControlHaveInternalString(panelTitle, ctrl))
-					SetSetVariableString(panelTitle, ctrl, num2str(enoise(1, 2)))
+				if(DoesControlHaveInternalString(DEVICE, ctrl))
+					SetSetVariableString(DEVICE, ctrl, num2str(enoise(1, 2)))
 				else
-					SetSetVariable(panelTitle, ctrl, enoise(5, 2))
+					SetSetVariable(DEVICE, ctrl, enoise(5, 2))
 				endif
 				break
 			case CONTROL_TYPE_SLIDER:
 
 				oldVal = V_Value
-				SetSliderPositionIndex(panelTitle, ctrl, oldVal + 1)
+				SetSliderPositionIndex(DEVICE, ctrl, oldVal + 1)
 
 				break
 			case CONTROL_TYPE_POPUPMENU:
 
-				SetPopupMenuIndex(panelTitle, ctrl, 1 + enoise(2, 2))
+				SetPopupMenuIndex(DEVICE, ctrl, 1 + enoise(2, 2))
 				break
 		endswitch
 	endfor
@@ -225,10 +223,10 @@ Function CheckStartupSettings()
 
 	ChooseCorrectDevice(unlockedPanelTitle, DEVICE)
 	PGC_SetAndActivateControl(unlockedPanelTitle, "button_SettingsPlus_LockDevice")
-	REQUIRE(WindowExists(panelTitle))
+	REQUIRE(WindowExists(DEVICE))
 
-	Duplicate/O GetDA_EphysGuiStateNum(panelTitle), guiStateNumNew
-	Duplicate/O GetDA_EphysGuiStateTxT(panelTitle), guiStateTxTNew
+	Duplicate/O GetDA_EphysGuiStateNum(DEVICE), guiStateNumNew
+	Duplicate/O GetDA_EphysGuiStateTxT(DEVICE), guiStateTxTNew
 
 	CHECK_EQUAL_WAVES(guiStateNumRef, guiStateNumNew, mode = WAVE_DATA | DIMENSION_LABELS)
 	CHECK_EQUAL_WAVES(guiStateTxTRef, guiStateTxTNew, mode = WAVE_DATA | DIMENSION_LABELS)
