@@ -865,16 +865,31 @@ End
 
 /// @brief Updates the numeric value of `key` found in the wave note to `val`
 ///
+/// @param wv     wave
+/// @param key    key of the Key/Value pair
+/// @param val    value of the Key/Value pair
+/// @param format [optional] printf compatible format string to set
+///               the conversion to string for `val`
+///
 /// The expected wave note format is: `key1:val1;key2:val2;`
-Function SetNumberInWaveNote(wv, key, val)
+Function SetNumberInWaveNote(wv, key, val, [format])
 	Wave wv
 	string key
 	variable val
+	string format
+
+	string str
 
 	ASSERT(WaveExists(wv), "Missing wave")
 	ASSERT(!IsEmpty(key), "Empty key")
 
-	Note/K wv, ReplaceNumberByKey(key, note(wv), val)
+	if(!ParamIsDefault(format))
+		ASSERT(!IsEmpty(format), "Empty format")
+		sprintf str, format, val
+		Note/K wv, ReplaceStringByKey(key, note(wv), str)
+	else
+		Note/K wv, ReplaceNumberByKey(key, note(wv), val)
+	endif
 End
 
 /// @brief Return the string value of `key` found in the wave note

@@ -1518,3 +1518,115 @@ Function GNMS_Works2()
 End
 
 /// @}
+
+/// @{
+/// SetNumberInWaveNote
+Function SNWN_AbortsOnInvalidWave()
+
+	Wave/Z wv = $""
+
+	try
+		SetNumberInWaveNote(wv, "key", 123)
+		FAIL()
+	catch
+		PASS()
+	endtry
+End
+
+Function SNWN_AbortsOnInvalidKey()
+
+	Make/FREE wv
+
+	try
+		SetNumberInWaveNote(wv, "", 123)
+		FAIL()
+	catch
+		PASS()
+	endtry
+End
+
+Function SNWN_ComplainsOnEmptyFormat()
+
+	Make/FREE wv
+
+	try
+		SetNumberInWaveNote(wv, "key", 123, format="")
+		FAIL()
+	catch
+		PASS()
+	endtry
+End
+
+Function SNWN_Works()
+
+	string expected, actual
+
+	Make/FREE wv
+	SetNumberInWaveNote(wv, "key", 123)
+	expected = "key:123;"
+	actual   = note(wv)
+	CHECK_EQUAL_STR(expected, actual)
+End
+
+Function SNWN_WorksWithNaN()
+
+	string expected, actual
+
+	Make/FREE wv
+	SetNumberInWaveNote(wv, "key", NaN)
+	expected = "key:nan;"
+	actual   = note(wv)
+	CHECK_EQUAL_STR(expected, actual)
+End
+
+Function SNWN_LeavesOldEntries()
+
+	string expected, actual, oldEntry
+
+	Make/FREE wv
+	// existing entry
+	SetNumberInWaveNote(wv, "otherkey", 456)
+	oldEntry = note(wv)
+
+	SetNumberInWaveNote(wv, "key", 123)
+	expected = oldEntry + "key:123;"
+	actual   = note(wv)
+	CHECK_EQUAL_STR(expected, actual)
+End
+
+Function SNWN_IntegerFormat()
+
+	string expected, actual
+
+	Make/FREE wv
+	SetNumberInWaveNote(wv, "key", 123.456, format="%d")
+	expected = "key:123;"
+	actual   = note(wv)
+	CHECK_EQUAL_STR(expected, actual)
+End
+
+Function SNWN_FloatFormat()
+
+	string expected, actual
+
+	Make/FREE wv
+	SetNumberInWaveNote(wv, "key", 123.456, format="%.1f")
+	// %f rounds
+	expected = "key:123.5;"
+	actual   = note(wv)
+	CHECK_EQUAL_STR(expected, actual)
+End
+
+Function SNWN_FloatFormatWithZeros()
+
+	string expected, actual
+
+	Make/FREE wv
+	SetNumberInWaveNote(wv, "key", 123.1, format="%.06f")
+	// %f rounds
+	expected = "key:123.100000;"
+	actual   = note(wv)
+	CHECK_EQUAL_STR(expected, actual)
+End
+
+/// @}
