@@ -262,7 +262,7 @@ Function TP_Delta(panelTitle)
 	i = 0
 	do
 		if(activeHSProp[i][%ClampMode] == I_CLAMP_MODE)
-			// R = V / I
+			// R = V / I (here in mV / pA = GigaOhm, thus * 1000 to get MegaOhm)
 			Multithread SSResistance[0][i] = (AvgDeltaSS[0][i + ADChannelToMonitor] / (amplitudeIC)) * 1000
 			Multithread InstResistance[0][i] =  (InstAvg[0][i + ADChannelToMonitor] / (amplitudeIC)) * 1000
 		else
