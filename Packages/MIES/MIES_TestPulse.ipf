@@ -525,14 +525,26 @@ Function TP_Setup(panelTitle, runMode)
 	string panelTitle
 	variable runMode
 
-	variable multiDevice
-	variable hardwareType
+	variable multiDevice, now
 
 	multiDevice = (runMode & TEST_PULSE_BG_MULTI_DEVICE)
 
 	if(!(runMode & TEST_PULSE_DURING_RA_MOD))
 		DAP_ToggleTestpulseButton(panelTitle, TESTPULSE_BUTTON_TO_STOP)
 		DisableControls(panelTitle, CONTROLS_DISABLE_DURING_DAQ_TP)
+	endif
+
+	// ticks are relative to OS start time
+	// so we can have "future" timestamps from existing experiments
+	WAVE TPStorage = GetTPStorage(panelTitle)
+	now = ticks * TICKS_TO_SECONDS
+
+	if(GetNumberFromWaveNote(TPStorage, DIMENSION_SCALING_LAST_INVOC) > now)
+		SetNumberInWaveNote(TPStorage, DIMENSION_SCALING_LAST_INVOC, 0)
+	endif
+
+	if(GetNumberFromWaveNote(TPStorage, AUTOBIAS_LAST_INVOCATION_KEY) > now)
+		SetNumberInWaveNote(TPStorage, AUTOBIAS_LAST_INVOCATION_KEY, 0)
 	endif
 
 	NVAR runModeGlobal = $GetTestpulseRunMode(panelTitle)
