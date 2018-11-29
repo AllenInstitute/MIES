@@ -1411,7 +1411,7 @@ static Function SetSweepSettingsDimLabels(wv)
 	SetDimLabel COLS, 20, $"Locked indexing"             , wv
 	SetDimLabel COLS, 21, $"Repeated Acquisition"        , wv
 	SetDimLabel COLS, 22, $"Random Repeated Acquisition" , wv
-	SetDimLabel COLS, 23, $"Minimum Sampling interval"   , wv
+	SetDimLabel COLS, 23, $"Sampling interval"           , wv
 	SetDimLabel COLS, 24, $"Sampling interval multiplier", wv
 	SetDimLabel COLS, 25, $"Stim set length"             , wv
 	SetDimLabel COLS, 26, $"oodDAQ Pre Feature"          , wv
@@ -1434,6 +1434,7 @@ static Function SetSweepSettingsDimLabels(wv)
 	SetDimLabel COLS, 43, $"Set Cycle Count"             , wv
 	SetDimLabel COLS, 44, $STIMSET_ACQ_CYCLE_ID_KEY      , wv
 	SetDimLabel COLS, 45, $"Digitizer Hardware Type"     , wv
+	SetDimLabel COLS, 46, $"Fixed frequency acquisition" , wv
 End
 
 /// @brief Set dimension labels for GetSweepSettingsTextKeyWave() and
@@ -1486,7 +1487,7 @@ End
 Function/Wave GetSweepSettingsWave(panelTitle)
 	string panelTitle
 
-	variable versionOfNewWave = 15
+	variable versionOfNewWave = 17
 	string newName = "sweepSettingsNumericValues"
 	DFREF newDFR = GetDevSpecLabNBTempFolder(panelTitle)
 
@@ -1501,9 +1502,9 @@ Function/Wave GetSweepSettingsWave(panelTitle)
 	if(ExistsWithCorrectLayoutVersion(wv, versionOfNewWave))
 		return wv
 	elseif(WaveExists(wv))
-		Redimension/N=(-1, 46, LABNOTEBOOK_LAYER_COUNT) wv
+		Redimension/N=(-1, 47, LABNOTEBOOK_LAYER_COUNT) wv
 	else
-		Make/N=(1, 46, LABNOTEBOOK_LAYER_COUNT) newDFR:$newName/Wave=wv
+		Make/N=(1, 47, LABNOTEBOOK_LAYER_COUNT) newDFR:$newName/Wave=wv
 	endif
 
 	wv = NaN
@@ -1548,7 +1549,7 @@ End
 /// - 20: Locked indexing
 /// - 21: Repeated Acquisition
 /// - 22: Random Repeated Acquisition
-/// - 23: Minimum Sampling interval
+/// - 23: Sampling interval
 /// - 24: Sampling interval multiplier
 /// - 25: Stim set length
 /// - 26: oodDAQ Pre Feature
@@ -1573,10 +1574,11 @@ End
 /// - 43: Set Cycle Count
 /// - 44: Stimset cycle ID
 /// - 45: Digitizer Hardware Type, one of @ref HardwareDACTypeConstants
+/// - 46: Fixed frequency acquisition
 Function/Wave GetSweepSettingsKeyWave(panelTitle)
 	string panelTitle
 
-	variable versionOfNewWave = 16
+	variable versionOfNewWave = 18
 	string newName = "sweepSettingsNumericKeys"
 	DFREF newDFR = GetDevSpecLabNBTempFolder(panelTitle)
 
@@ -1591,9 +1593,9 @@ Function/Wave GetSweepSettingsKeyWave(panelTitle)
 	if(ExistsWithCorrectLayoutVersion(wv, versionOfNewWave))
 		return wv
 	elseif(WaveExists(wv))
-		Redimension/N=(-1, 46) wv
+		Redimension/N=(-1, 47) wv
 	else
-		Make/T/N=(3, 46) newDFR:$newName/Wave=wv
+		Make/T/N=(3, 47) newDFR:$newName/Wave=wv
 	endif
 
 	wv = ""
@@ -1694,7 +1696,7 @@ Function/Wave GetSweepSettingsKeyWave(panelTitle)
 	wv[%Units][22]     = LABNOTEBOOK_BINARY_UNIT
 	wv[%Tolerance][22] = LABNOTEBOOK_NO_TOLERANCE
 
-	wv[%Parameter][23] = "Minimum Sampling interval"
+	wv[%Parameter][23] = "Sampling interval"
 	wv[%Units][23]     = "ms"
 	wv[%Tolerance][23] = "1"
 
@@ -1785,6 +1787,10 @@ Function/Wave GetSweepSettingsKeyWave(panelTitle)
 	wv[%Parameter][45] = "Digitizer Hardware Type"
 	wv[%Units][45]     = "a. u."
 	wv[%Tolerance][45] = "1"
+
+	wv[%Parameter][46] = "Fixed frequency acquisition"
+	wv[%Units][46]     = "kHz"
+	wv[%Tolerance][46] = "1"
 
 	SetSweepSettingsDimLabels(wv)
 	SetWaveVersion(wv, versionOfNewWave)

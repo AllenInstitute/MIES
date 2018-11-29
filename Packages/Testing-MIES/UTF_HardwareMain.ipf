@@ -145,6 +145,13 @@ Function run()
 	list = AddListItem("DAQ_UnassociatedChannels", list, ";", INF)
 	list = AddListItem("Test_UnassociatedChannels", list, ";", INF)
 
+	list = AddListItem("DAQ_CheckSamplingInterval1", list, ";", INF)
+	list = AddListItem("Test_CheckSamplingInterval1", list, ";", INF)
+	list = AddListItem("DAQ_CheckSamplingInterval2", list, ";", INF)
+	list = AddListItem("Test_CheckSamplingInterval2", list, ";", INF)
+	list = AddListItem("DAQ_CheckSamplingInterval3", list, ";", INF)
+	list = AddListItem("Test_CheckSamplingInterval3", list, ";", INF)
+
 #ifndef TESTS_WITH_YOKING
 
 	list = AddListItem("PS_DS_Sub_Run1", list, ";", INF)

@@ -334,7 +334,7 @@ Function SCOPE_CreateGraph(panelTitle, dataAcqOrTP)
 		else
 			Label/W=$graph bottom "Time (\\U)"
 			sampInt = DAP_GetSampInt(panelTitle, TEST_PULSE_MODE) / 1000
-			testPulseLength = TP_GetTestPulseLengthInPoints(panelTitle) * sampInt
+			testPulseLength = TP_GetTestPulseLengthInPoints(panelTitle, TEST_PULSE_MODE) * sampInt
 			NVAR duration = $GetTestpulseDuration(panelTitle)
 			NVAR baselineFrac = $GetTestpulseBaselineFraction(panelTitle)
 			cutOff = max(0, baseLineFrac * testPulseLength - duration/2 * sampInt)
@@ -496,7 +496,7 @@ static Function SCOPE_ITC_UpdateOscilloscope(panelTitle, dataAcqOrTP, chunk, fif
 	Make/FREE/N=(numEntries) gain = DA_EphysGuiState[ADCs[p]][%$GetSpecialControlLabel(CHANNEL_TYPE_ADC, CHANNEL_CONTROL_GAIN)] * HARDWARE_ITC_BITS_PER_VOLT
 
 	if(dataAcqOrTP == TEST_PULSE_MODE)
-		length = TP_GetTestPulseLengthInPoints(panelTitle)
+		length = TP_GetTestPulseLengthInPoints(panelTitle, TEST_PULSE_MODE)
 		first  = chunk * length
 		last   = first + length - 1
 		ASSERT(first >= 0 && last < DimSize(ITCDataWave, ROWS) && first < last, "Invalid wave subrange")

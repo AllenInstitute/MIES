@@ -2090,3 +2090,128 @@ Function Test_UnassociatedChannels()
 		endfor
 	endfor
 End
+
+static Function DisableSecondHeadstage_IGNORE()
+
+	PGC_SetAndActivateControl(DEVICE, GetPanelControl(1, CHANNEL_TYPE_HEADSTAGE, CHANNEL_CONTROL_CHECK), val=0)
+End
+
+Function DAQ_CheckSamplingInterval1()
+	STRUCT DAQSettings s
+	InitDAQSettingsFromString(s, "DAQ_MD1_RA0_IDX0_LIDX0_BKG_1_RES_1")
+	AcquireData(s, preAcquireFunc=DisableSecondHeadstage_IGNORE)
+End
+
+Function Test_CheckSamplingInterval1()
+
+	variable sweepNo, sampInt, sampIntMult, fixedFreqAcq
+
+	CHECK_EQUAL_VAR(GetSetVariable(DEVICE, "SetVar_Sweep"), 1)
+
+	sweepNo = AFH_GetLastSweepAcquired(DEVICE)
+	CHECK_EQUAL_VAR(sweepNo, 0)
+
+	WAVE/Z sweepWave = GetSweepWave(device, sweepNo)
+	CHECK_WAVE(sweepWave, NORMAL_WAVE)
+
+	WAVE/Z configWave = GetConfigWave(sweepWave)
+	CHECK_WAVE(configWave, NORMAL_WAVE)
+
+	sampInt = GetSamplingInterval(configWave)
+	CHECK_CLOSE_VAR(sampInt, 5, tol=1e-6)
+
+	WAVE numericalValues = GetLBNumericalValues(DEVICE)
+
+	sampInt = GetLastSettingIndep(numericalValues, sweepNo, "Sampling interval", DATA_ACQUISITION_MODE)
+	CHECK_CLOSE_VAR(sampInt, 0.005, tol=1e-6)
+
+	sampIntMult = GetLastSettingIndep(numericalValues, sweepNo, "Sampling interval multiplier", DATA_ACQUISITION_MODE)
+	CHECK_EQUAL_VAR(sampIntMult, 1)
+
+	fixedFreqAcq = GetLastSettingIndep(numericalValues, sweepNo, "Fixed frequency acquisition", DATA_ACQUISITION_MODE)
+	CHECK_EQUAL_VAR(fixedFreqAcq, NaN)
+End
+
+Function UseSamplingInterval_IGNORE()
+
+	PGC_SetAndActivateControl(DEVICE, GetPanelControl(1, CHANNEL_TYPE_HEADSTAGE, CHANNEL_CONTROL_CHECK), val=0)
+	PGC_SetAndActivateControl(DEVICE, "Popup_Settings_SampIntMult", str="8")
+End
+
+Function DAQ_CheckSamplingInterval2()
+	STRUCT DAQSettings s
+	InitDAQSettingsFromString(s, "DAQ_MD1_RA0_IDX0_LIDX0_BKG_1_RES_1")
+	AcquireData(s, preAcquireFunc=UseSamplingInterval_IGNORE)
+End
+
+Function Test_CheckSamplingInterval2()
+
+	variable sweepNo, sampInt, sampIntMult, fixedFreqAcq
+
+	CHECK_EQUAL_VAR(GetSetVariable(DEVICE, "SetVar_Sweep"), 1)
+
+	sweepNo = AFH_GetLastSweepAcquired(DEVICE)
+	CHECK_EQUAL_VAR(sweepNo, 0)
+
+	WAVE/Z sweepWave = GetSweepWave(device, sweepNo)
+	CHECK_WAVE(sweepWave, NORMAL_WAVE)
+
+	WAVE/Z configWave = GetConfigWave(sweepWave)
+	CHECK_WAVE(configWave, NORMAL_WAVE)
+
+	sampInt = GetSamplingInterval(configWave)
+	CHECK_CLOSE_VAR(sampInt, 40, tol=1e-6)
+
+	WAVE numericalValues = GetLBNumericalValues(DEVICE)
+
+	sampInt = GetLastSettingIndep(numericalValues, sweepNo, "Sampling interval", DATA_ACQUISITION_MODE)
+	CHECK_CLOSE_VAR(sampInt, 0.040, tol=1e-6)
+
+	sampIntMult = GetLastSettingIndep(numericalValues, sweepNo, "Sampling interval multiplier", DATA_ACQUISITION_MODE)
+	CHECK_EQUAL_VAR(sampIntMult, 8)
+
+	fixedFreqAcq = GetLastSettingIndep(numericalValues, sweepNo, "Fixed frequency acquisition", DATA_ACQUISITION_MODE)
+	CHECK_EQUAL_VAR(fixedFreqAcq, NaN)
+End
+
+static Function UseFixedFrequency_IGNORE()
+
+	PGC_SetAndActivateControl(DEVICE, GetPanelControl(1, CHANNEL_TYPE_HEADSTAGE, CHANNEL_CONTROL_CHECK), val=0)
+	PGC_SetAndActivateControl(DEVICE, "Popup_Settings_FixedFreq", str="100")
+End
+
+Function DAQ_CheckSamplingInterval3()
+	STRUCT DAQSettings s
+	InitDAQSettingsFromString(s, "DAQ_MD1_RA0_IDX0_LIDX0_BKG_1_RES_1")
+	AcquireData(s, preAcquireFunc=UseFixedFrequency_IGNORE)
+End
+
+Function Test_CheckSamplingInterval3()
+
+	variable sweepNo, sampInt, sampIntMult, fixedFreqAcq
+
+	CHECK_EQUAL_VAR(GetSetVariable(DEVICE, "SetVar_Sweep"), 1)
+
+	sweepNo = AFH_GetLastSweepAcquired(DEVICE)
+	CHECK_EQUAL_VAR(sweepNo, 0)
+
+	WAVE/Z sweepWave = GetSweepWave(device, sweepNo)
+	CHECK_WAVE(sweepWave, NORMAL_WAVE)
+
+	WAVE/Z configWave = GetConfigWave(sweepWave)
+	CHECK_WAVE(configWave, NORMAL_WAVE)
+
+	sampInt = GetSamplingInterval(configWave)
+	CHECK_CLOSE_VAR(sampInt, 10, tol=1e-6)
+
+	WAVE numericalValues = GetLBNumericalValues(DEVICE)
+
+	sampInt = GetLastSettingIndep(numericalValues, sweepNo, "Sampling interval", DATA_ACQUISITION_MODE)
+	CHECK_CLOSE_VAR(sampInt, 0.010, tol=1e-6)
+
+	sampIntMult = GetLastSettingIndep(numericalValues, sweepNo, "Sampling interval multiplier", DATA_ACQUISITION_MODE)
+	CHECK_EQUAL_VAR(sampIntMult, 1)
+
+	fixedFreqAcq = GetLastSettingIndep(numericalValues, sweepNo, "Fixed frequency acquisition", DATA_ACQUISITION_MODE)
+	CHECK_EQUAL_VAR(fixedFreqAcq, 100)
+End

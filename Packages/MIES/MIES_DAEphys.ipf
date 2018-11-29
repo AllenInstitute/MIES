@@ -631,6 +631,10 @@ Function DAP_EphysPanelStartUpSettings()
 	CheckBox check_DataACq_Pressure_User WIN = $panelTitle, value=0
 	CheckBox check_DA_applyOnModeSwitch WIN = $panelTitle, value=0
 
+	PopupMenu Popup_Settings_SampIntMult WIN = $panelTitle, mode=1
+	PopupMenu Popup_Settings_FixedFreq WIN = $panelTitle, mode=1
+	EnableControls(panelTitle, "Popup_Settings_SampIntMult;Popup_Settings_FixedFreq")
+
 	SetVariable setvar_dataAcq_skipAhead win=$panelTitle, value= _NUM:0
 	EnableControl(panelTitle, "button_Hardware_P_Enable")
 	DisableControl(panelTitle, "button_Hardware_P_Disable")
@@ -1516,25 +1520,44 @@ static Function DAP_UpdateSweepLimitsAndDisplay(panelTitle)
 	endfor
 End
 
-/// @brief Return the sampling interval with taking the mode and
-/// the multiplier into account
+/// @brief Return the sampling interval with taking the mode,
+/// the multiplier and the fixed frequency selection into account
 ///
+/// @param[in]  panelTitle  device
+/// @param[in]  dataAcqOrTP one of @ref DataAcqModes
+/// @param[out] valid       [optional] returns if the choosen
+///                         sampling interval is valid or not (DAQ only)
 /// @see SI_CalculateMinSampInterval()
-Function DAP_GetSampInt(panelTitle, dataAcqOrTP)
+Function DAP_GetSampInt(panelTitle, dataAcqOrTP, [valid])
 	string panelTitle
 	variable dataAcqOrTP
+	variable &valid
 
-	variable multiplier
+	variable multiplier, fixedFreqkHz, sampInt
+
+	if(!ParamIsDefault(valid))
+		valid = 1
+	endif
 
 	if(dataAcqOrTP == DATA_ACQUISITION_MODE)
-		multiplier = str2num(DAG_GetTextualValue(panelTitle, "Popup_Settings_SampIntMult"))
+		fixedFreqkHz = str2numSafe(DAG_GetTextualValue(panelTitle, "Popup_Settings_FixedFreq"))
+		if(IsFinite(fixedFreqkHz))
+			sampInt = 1 / (fixedFreqkHz * 1e3) * 1e6
+
+			if(!ParamIsDefault(valid))
+				valid = sampInt >= SI_CalculateMinSampInterval(panelTitle, DATA_ACQUISITION_MODE)
+			endif
+
+			return sampInt
+		else
+			multiplier = str2num(DAG_GetTextualValue(panelTitle, "Popup_Settings_SampIntMult"))
+			return SI_CalculateMinSampInterval(panelTitle, dataAcqOrTP) * multiplier
+		endif
 	elseif(dataAcqOrTP == TEST_PULSE_MODE)
-		multiplier = 1
+		return SI_CalculateMinSampInterval(panelTitle, dataAcqOrTP)
 	else
 		ASSERT(0, "unknown mode")
 	endif
-
-	return SI_CalculateMinSampInterval(panelTitle, dataAcqOrTP) * multiplier
 End
 
 /// @todo display correct values for yoked devices
@@ -1842,7 +1865,7 @@ Function DAP_CheckSettings(panelTitle, mode)
 
 	variable numDACs, numADCs, numHS, numEntries, i, indexingEnabled, clampMode
 	variable ampSerial, ampChannelID, minValue, maxValue, leftOverBytes, hardwareType
-	variable lastStartSeconds, lastITI, nextStart, leftTime, sweepNo
+	variable lastStartSeconds, lastITI, nextStart, leftTime, sweepNo, validSampInt
 	string ctrl, endWave, ttlWave, dacWave, refDacWave, reqParams
 	string list, lastStart
 
@@ -1872,9 +1895,22 @@ Function DAP_CheckSettings(panelTitle, mode)
 		return 1
 	endif
 
+	DAP_GetSampInt(panelTitle, mode, valid=validSampInt)
+	if(!validSampInt)
+		printf "%s: The selected sampling interval is not possible with your hardware.\r", panelTitle
+		ControlWindowToFront()
+		return 1
+	endif
+
 	// check that if multiple devices are locked we are in multi device mode
 	if(ItemsInList(GetListOfLockedDevices()) > 1 && !DAG_GetNumericalValue(panelTitle, "check_Settings_MD"))
 		print "If multiple devices are locked, DAQ/TP is only possible in multi device mode"
+		ControlWindowToFront()
+		return 1
+	endif
+
+	if(DAG_GetNumericalValue(panelTitle, "Popup_Settings_SampIntMult") > 0 && DAG_GetNumericalValue(panelTitle, "Popup_Settings_FixedFreq") > 0)
+		print "It is not possible to combine fixed frequency acqusition with the sampling interval multiplier"
 		ControlWindowToFront()
 		return 1
 	endif
@@ -4898,6 +4934,37 @@ Function DAP_PopMenuProc_SampMult(pa) : PopupMenuControl
 		case 2: // mouse up
 			DAG_Update(pa.win, pa.ctrlName, val = pa.popNum - 1, str = pa.popStr)
 			DAP_UpdateDAQControls(pa.win, REASON_HEADSTAGE_CHANGE)
+
+			if(!cmpstr(pa.popStr, "1"))
+				EnableControl(pa.win, "Popup_Settings_FixedFreq")
+			else
+				DisableControl(pa.win, "Popup_Settings_FixedFreq")
+			endif
+			break
+	endswitch
+
+	return 0
+End
+
+/// @brief Return the list of available fixed sampling frequencies
+Function/S DAP_GetSamplingFrequencies()
+
+	return "Maximum;100;50;25;10"
+End
+
+Function DAP_PopMenuProc_FixedSampInt(pa) : PopupMenuControl
+	STRUCT WMPopupAction &pa
+
+	switch(pa.eventCode)
+		case 2: // mouse up
+			DAG_Update(pa.win, pa.ctrlName, val = pa.popNum - 1, str = pa.popStr)
+			DAP_UpdateDAQControls(pa.win, REASON_HEADSTAGE_CHANGE)
+
+			if(!cmpstr(pa.popStr, "Maximum"))
+				EnableControl(pa.win, "Popup_Settings_SampIntMult")
+			else
+				DisableControl(pa.win, "Popup_Settings_SampIntMult")
+			endif
 			break
 	endswitch
 
