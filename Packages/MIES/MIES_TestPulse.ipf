@@ -10,7 +10,7 @@
 /// @brief __TP__ Basic Testpulse related functionality
 
 static Constant TP_MAX_VALID_RESISTANCE       = 3000 ///< Units MOhm
-static Constant TP_TPSTORAGE_EVAL_INTERVAL   = 0.18
+static Constant TP_TPSTORAGE_EVAL_INTERVAL    = 0.18
 static Constant TP_FIT_POINTS                 = 5
 static Constant TP_DIMENSION_SCALING_INTERVAL = 18  ///< [s]
 static Constant TP_EVAL_POINT_OFFSET          = 5
