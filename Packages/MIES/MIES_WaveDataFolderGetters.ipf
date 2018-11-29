@@ -2114,7 +2114,7 @@ End
 ///
 /// @todo change columns to hold entries for each headstage, num_cols = NUM_HEADSTAGES
 ///
-/// Unit: MOhm (1e3 Ohm)
+/// Unit: MOhm (1e6 Ohm)
 Function/Wave GetInstResistanceWave(panelTitle)
 	string 	panelTitle
 
@@ -2158,7 +2158,7 @@ End
 ///
 /// @todo change columns to hold entries for each headstage, num_cols = NUM_HEADSTAGES
 ///
-/// Unit: MOhm (1e3 Ohm)
+/// Unit: MOhm (1e6 Ohm)
 Function/Wave GetSSResistanceWave(panelTitle)
 	string 	panelTitle
 
