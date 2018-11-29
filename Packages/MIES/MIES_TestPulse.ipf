@@ -377,7 +377,7 @@ static Function TP_RecordTP(panelTitle, BaselineSSAvg, InstResistance, SSResista
 		SetScale/P x, 0.0, delta, "s", TPStorage
 		DEBUGPRINT("New delta: ", var=delta)
 
-		SetNumberInWaveNote(TPStorage, DIMENSION_SCALING_LAST_INVOC, now)
+		SetNumberInWaveNote(TPStorage, DIMENSION_SCALING_LAST_INVOC, now, format="%.06f")
 	endif
 End
 

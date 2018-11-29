@@ -255,7 +255,7 @@ Function DQ_ApplyAutoBias(panelTitle, BaselineSSAvg, SSResistance)
 	endif
 
 	DEBUGPRINT("DQ_ApplyAutoBias's turn, curTime=", var=curTime)
-	SetNumberInWaveNote(TPStorage, AUTOBIAS_LAST_INVOCATION_KEY, curTime)
+	SetNumberInWaveNote(TPStorage, AUTOBIAS_LAST_INVOCATION_KEY, curTime, format="%.06f")
 
 	if(isEmpty(panelTitle))
 		DEBUGPRINT("Can't work with an empty panelTitle")
