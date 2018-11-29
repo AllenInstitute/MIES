@@ -497,7 +497,6 @@ Function TI_runBaselineCheckQC(headstage, [cmdID])
 	
 	for(n = 0; n<noLockedDevs; n+= 1)
 		currentPanel = StringFromList(n, lockedDevList)
-		DFREF dfr = GetDeviceTestPulse(currentPanel)
 		
 		// pop the itc panel window to the front
 		DoWindow /F $currentPanel
@@ -602,8 +601,7 @@ Function TI_finishBaselineQCCheck(s)
 	endif
 
 	// grab the baseline avg value
-	DFREF dfr = GetDeviceTestPulse(currentPanel)
-	WAVE/SDFR=dfr BaselineSSAvg // wave that contains the baseline Vm from the TP
+	WAVE BaselineSSAvg = GetBaselineAverage(currentPanel)
 
 	adChannel = TP_GetTPResultsColOfHS(currentPanel, headstage)
 
@@ -677,8 +675,6 @@ Function TI_runElectrodeDriftQC(headstage, expTime, [cmdID])
 		Wave actionScaleSettingsWave =  GetActionScaleSettingsWaveRef(currentPanel)
 		actionScaleSettingsWave[headStage][%elapsedTime] = expTime
 		
-		DFREF dfr = GetDeviceTestPulse(currentPanel)
-		
 		// get the reference to the asyn response wave ref 
 		Wave/T asynRespWave = GetAsynRspWaveRef(currentPanel)
 		// and put the cmdID there, if passed one
@@ -726,7 +722,7 @@ Function TI_runElectrodeDriftQC(headstage, expTime, [cmdID])
 		PGC_SetAndActivateControl(currentPanel, waveSelect, val=incomingWaveIndex + 1)
 				
 		// look at the instResistance already saved in the lab notebook.  This should be the InstResistance from the start of the experiment.
-		WAVE/SDFR=dfr InstResistance // wave that contains the Initial Access Resistance from the TP
+		WAVE InstResistance = GetInstResistanceWave(currentPanel)
 		
 		adChannel = TP_GetTPResultsColOfHS(currentPanel, headstage)
 		startInstResistanceVal = InstResistance[0][adChannel]
@@ -736,9 +732,6 @@ Function TI_runElectrodeDriftQC(headstage, expTime, [cmdID])
 			PGC_SetAndActivateControl(currentPanel,"StartTestPulseButton")
 		endif
 
-		// and grab the initial resistance avg value again
-		WAVE/SDFR=dfr InstResistance // wave that contains the Initial Access Resistance from the TP
-		
 		adChannel = TP_GetTPResultsColOfHS(currentPanel, headstage)
 		currentInstResistanceVal = InstResistance[0][adChannel]		
 		
@@ -830,7 +823,6 @@ Function TI_runInitAccessResisQC(headstage, [cmdID])
 
 	for(n = 0; n<noLockedDevs; n+= 1)
 		currentPanel = StringFromList(n, lockedDevList)
-		DFREF dfr = GetDeviceTestPulse(currentPanel)
 
 		// pop the itc panel window to the front
 		DoWindow /F $currentPanel
@@ -942,11 +934,8 @@ Function TI_finishInitAccessQCCheck(s)
 	endif
 
 	// and grab the initial resistance avg value
-	DFREF dfr = GetDeviceTestPulse(currentPanel)
-	WAVE/SDFR=dfr InstResistance // wave that contains the Initial Access Resistance from the TP
-
-	// and get the steady state resistance
-	WAVE/SDFR=dfr SSResistance
+	WAVE InstResistance = GetInstResistanceWave(currentPanel)
+	WAVE SSResistance = GetSSResistanceWave(currentPanel)
 
 	adChannel = TP_GetTPResultsColOfHS(currentPanel, headstage)
 	ASSERT(adChannel >= 0, "Could not query AD channel")
@@ -1010,7 +999,6 @@ Function TI_runCoreStimSet(headstage, stimName, [cmdID])
 	
 	for(n = 0; n<noLockedDevs; n+= 1)
 		currentPanel = StringFromList(n, lockedDevList)
-		DFREF dfr = GetDeviceTestPulse(currentPanel)
 		
 		// pop the itc panel window to the front
 		DoWindow /F $currentPanel
@@ -1287,7 +1275,6 @@ Function TI_runGigOhmSealQC(headstage, [cmdID])
 	
 	for(n = 0; n<noLockedDevs; n+= 1)
 		currentPanel = StringFromList(n, lockedDevList)
-		DFREF dfr = GetDeviceTestPulse(currentPanel)
 		
 		// pop the itc panel window to the front
 		DoWindow /F $currentPanel
@@ -1389,8 +1376,7 @@ Function TI_finishGigOhmSealQCCheck(s)
 	endif
 
 	// and grab the Steady State Resistance
-	DFREF dfr = GetDeviceTestPulse(currentPanel)
-	WAVE/Z/SDFR=dfr SSResistance // wave that contains the Steady State Resistance from the TP
+	WAVE SSResistance = GetSSResistanceWave(currentPanel)
 
 	adChannel = TP_GetTPResultsColOfHS(currentPanel, headstage)
 	ASSERT(adChannel >= 0, "Could not query AD channel")

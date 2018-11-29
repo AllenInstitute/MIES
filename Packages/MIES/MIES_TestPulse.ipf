@@ -16,6 +16,49 @@ static Constant TP_DIMENSION_SCALING_INTERVAL = 18  ///< [s]
 static Constant TP_PRESSURE_INTERVAL          = 0.090  ///< [s]
 static Constant TP_EVAL_POINT_OFFSET          = 5
 
+Function TP_CreateTPAvgBuffer(panelTitle)
+	string panelTitle
+
+	variable numADCs
+
+	WAVE ITCChanConfigWave = GetITCChanConfigWave(panelTitle)
+	WAVE ADCs = GetADCListFromConfig(ITCChanConfigWave)
+	numADCs = DimSize(ADCs, ROWS)
+
+	NVAR tpBufferSize = $GetTPBufferSizeGlobal(panelTitle)
+	WAVE TPBaselineBuffer = GetGetBaselineBuffer(panelTitle)
+	WAVE TPInstBuffer = GetInstantaneousBuffer(panelTitle)
+	WAVE TPSSBuffer = GetSteadyStateBuffer(panelTitle)
+
+	Redimension/N=(tpBufferSize, numADCs) TPBaselineBuffer, TPInstBuffer, TPSSBuffer
+	TPBaselineBuffer = NaN
+	TPInstBuffer = NaN
+	TPSSBuffer = NaN
+End
+
+Function TP_ReadTPSettingFromGUI(panelTitle)
+	string panelTitle
+
+	NVAR pulseDuration = $GetTPPulseDuration(panelTitle)
+	NVAR duration = $GetTestpulseDuration(panelTitle)
+	NVAR AmplitudeVC = $GetTPAmplitudeVC(panelTitle)
+	NVAR AmplitudeIC = $GetTPAmplitudeIC(panelTitle)
+	NVAR baselineFrac = $GetTestpulseBaselineFraction(panelTitle)
+	NVAR tpBufSizeGlobal = $GetTPBufferSizeGlobal(panelTitle)
+
+	pulseDuration = DAG_GetNumericalValue(panelTitle, "SetVar_DataAcq_TPDuration")
+	// pulseDuration in ms, SampInt in microSec, test pulse mode ignores sample int multiplier for DAQ
+	duration = pulseDuration / (DAP_GetSampInt(panelTitle, TEST_PULSE_MODE) / 1000)
+	baselineFrac = DAG_GetNumericalValue(panelTitle, "SetVar_DataAcq_TPBaselinePerc") / 100
+
+	// need to deal with units here to ensure that resistance is calculated correctly
+	AmplitudeVC = DAG_GetNumericalValue(panelTitle, "SetVar_DataAcq_TPAmplitude")
+	AmplitudeIC = DAG_GetNumericalValue(panelTitle, "SetVar_DataAcq_TPAmplitudeIC")
+
+	// tpBufSizeGlobal determines the number of TP cycles to average at end of TP_Delta
+	tpBufSizeGlobal = DAG_GetNumericalValue(panelTitle, "setvar_Settings_TPBuffer")
+End
+
 /// @brief Return the total length of a single testpulse with baseline
 ///
 /// @param pulseDuration duration of the high portion of the testpulse in points or time
@@ -120,11 +163,9 @@ Function TP_Delta(panelTitle)
 		TP_StoreFullWave(panelTitle)
 	endif
 
-	DFREF dfr = GetDeviceTestPulse(panelTitle)
-	
 	WAVE OscilloscopeData = GetOscilloscopeWave(panelTitle)
-	NVAR/SDFR=dfr amplitudeICGlobal = amplitudeIC
-	NVAR/SDFR=dfr amplitudeVCGlobal = amplitudeVC
+	NVAR amplitudeVCGlobal = $GetTPAmplitudeVC(panelTitle)
+	NVAR amplitudeICGlobal = $GetTPAmplitudeIC(panelTitle)
 	NVAR ADChannelToMonitor = $GetADChannelToMonitor(panelTitle)
 	WAVE activeHSProp = GetActiveHSProperties(panelTitle)
 
@@ -133,6 +174,11 @@ Function TP_Delta(panelTitle)
 	lengthTPInPoints  = TP_GetTestPulseLengthInPoints(panelTitle, TEST_PULSE_MODE)
 
 	NVAR tpBufferSize = $GetTPBufferSizeGlobal(panelTitle)
+
+	// Initialization of the wave sizes of base, inst, ss is done by Duplicate later
+	WAVE BaselineSSAvg = GetBaselineAverage(panelTitle)
+	WAVE InstResistance = GetInstResistanceWave(panelTitle)
+	WAVE SSResistance = GetSSResistanceWave(panelTitle)
 
 	amplitudeIC = abs(amplitudeICGlobal)
 	amplitudeVC = abs(amplitudeVCGlobal)
@@ -176,7 +222,8 @@ Function TP_Delta(panelTitle)
 	MatrixOp /FREE /NTHR = 0   AvgBaselineSS = sumCols(BaselineSS)
 	AvgBaselineSS /= dimsize(BaselineSS, ROWS)
 	// duplicate only the AD columns - this would error if a TTL was ever active with the TP, at present, however, they should never be coactive
-	Duplicate/O/R=[][ADChannelToMonitor, dimsize(BaselineSS,1) - 1] AvgBaselineSS dfr:BaselineSSAvg/Wave=BaselineSSAvg
+
+	Duplicate/O/R=[][ADChannelToMonitor, dimsize(BaselineSS,1) - 1] AvgBaselineSS BaselineSSAvg
 
 	//	calculate the difference between the steady state and the baseline
 	Duplicate/FREE AvgTPSS, AvgDeltaSS
@@ -206,10 +253,10 @@ Function TP_Delta(panelTitle)
 	Multithread InstAvg -= AvgBaselineSS
 	Multithread InstAvg = abs(InstAvg)
 
-	Duplicate/O/R=[][ADChannelToMonitor, dimsize(TPSS,1) - 1] AvgDeltaSS dfr:SSResistance/Wave=SSResistance
+	Duplicate/O/R=[][ADChannelToMonitor, dimsize(TPSS,1) - 1] AvgDeltaSS SSResistance
 	SetScale/P x IndexToScale(OscilloscopeData, TPSSEndPoint, ROWS),1,"ms", SSResistance // this line determines where the value sit on the bottom axis of the oscilloscope
 
-	Duplicate/O/R=[][(ADChannelToMonitor), (dimsize(TPSS,1) - 1)] InstAvg dfr:InstResistance/Wave=InstResistance
+	Duplicate/O/R=[][(ADChannelToMonitor), (dimsize(TPSS,1) - 1)] InstAvg InstResistance
 	SetScale/P x IndexToScale(OscilloscopeData, TPInstantaneousOnsetPoint, ROWS),1,"ms", InstResistance
 
 	i = 0
@@ -228,7 +275,9 @@ Function TP_Delta(panelTitle)
 	if(tpBufferSize > 1)
 		// the first row will hold the value of the most recent TP,
 		// the waves will be averaged and the value will be passed into what was storing the data for the most recent TP
-		WAVE/SDFR=dfr TPBaselineBuffer, TPInstBuffer, TPSSBuffer
+		WAVE TPBaselineBuffer = GetGetBaselineBuffer(panelTitle)
+		WAVE TPInstBuffer = GetInstantaneousBuffer(panelTitle)
+		WAVE TPSSBuffer = GetSteadyStateBuffer(panelTitle)
 
 		TP_CalculateAverage(TPBaselineBuffer, BaselineSSAvg)
 		TP_CalculateAverage(TPInstBuffer, InstResistance)

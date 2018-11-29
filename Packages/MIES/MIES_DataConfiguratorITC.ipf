@@ -16,39 +16,12 @@
 static Function DC_UpdateGlobals(panelTitle)
 	string panelTitle
 
-	DFREF testPulseDFR = GetDeviceTestPulse(panelTitle)
-
-	variable/G testPulseDFR:pulseDuration
-	NVAR/SDFR=testPulseDFR pulseDuration
-
-	variable/G testPulseDFR:duration
-	NVAR/SDFR=testPulseDFR duration
-
-	variable/G testPulseDFR:AmplitudeVC
-	NVAR/SDFR=testPulseDFR AmplitudeVC
-
-	variable/G testPulseDFR:AmplitudeIC
-	NVAR/SDFR=testPulseDFR AmplitudeIC
-
-	variable/G testPulseDFR:baselineFrac
-	NVAR/SDFR=testPulseDFR baselineFrac
-
 	// we need to update the list of analysis functions here as the stimset
 	// can change due to indexing, etc.
 	// @todo investigate if this is really required here
 	AFM_UpdateAnalysisFunctionWave(panelTitle)
 
-	pulseDuration = DAG_GetNumericalValue(panelTitle, "SetVar_DataAcq_TPDuration")
-	duration = pulseDuration / (DAP_GetSampInt(panelTitle, TEST_PULSE_MODE) / 1000)
-	baselineFrac = DAG_GetNumericalValue(panelTitle, "SetVar_DataAcq_TPBaselinePerc") / 100
-
-	// need to deal with units here to ensure that resistance is calculated correctly
-	AmplitudeVC = DAG_GetNumericalValue(panelTitle, "SetVar_DataAcq_TPAmplitude")
-	AmplitudeIC = DAG_GetNumericalValue(panelTitle, "SetVar_DataAcq_TPAmplitudeIC")
-
-	NVAR n = $GetTPBufferSizeGlobal(panelTitle)
-	// n determines the number of TP cycles to average
-	n = DAG_GetNumericalValue(panelTitle, "setvar_Settings_TPBuffer")
+	TP_ReadTPSettingFromGUI(panelTitle)
 
 	SVAR panelTitleG = $GetPanelTitleGlobal()
 	panelTitleG = panelTitle
@@ -65,7 +38,7 @@ Function DC_ConfigureDataForITC(panelTitle, dataAcqOrTP, [multiDevice])
 	string panelTitle
 	variable dataAcqOrTP, multiDevice
 
-	variable numADCs, numActiveChannels
+	variable numActiveChannels
 	ASSERT(dataAcqOrTP == DATA_ACQUISITION_MODE || dataAcqOrTP == TEST_PULSE_MODE, "invalid mode")
 
 	if(ParamIsDefault(multiDevice))
@@ -113,13 +86,7 @@ Function DC_ConfigureDataForITC(panelTitle, dataAcqOrTP, [multiDevice])
 	ADChannelToMonitor = DimSize(GetDACListFromConfig(ITCChanConfigWave), ROWS)
 
 	if(dataAcqOrTP == TEST_PULSE_MODE)
-		numADCs = DimSize(ADCs, ROWS)
-
-		NVAR tpBufferSize = $GetTPBufferSizeGlobal(panelTitle)
-		DFREF dfr = GetDeviceTestPulse(panelTitle)
-		Make/O/N=(tpBufferSize, numADCs) dfr:TPBaselineBuffer = NaN
-		Make/O/N=(tpBufferSize, numADCs) dfr:TPInstBuffer     = NaN
-		Make/O/N=(tpBufferSize, numADCs) dfr:TPSSBuffer       = NaN
+		TP_CreateTPAvgBuffer(panelTitle)
 	endif
 
 	SCOPE_CreateGraph(panelTitle, dataAcqOrTP)

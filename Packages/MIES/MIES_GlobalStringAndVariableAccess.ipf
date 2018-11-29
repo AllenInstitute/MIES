@@ -361,6 +361,27 @@ Function/S GetNITestPulseCounter(panelTitle)
 	return GetNVARAsString(GetDeviceTestPulse(panelTitle), "NITestPulseCounter", initialValue=0)
 End
 
+/// @brief Returns TestPulse pulseDuration in ms
+Function/S GetTPPulseDuration(panelTitle)
+	string panelTitle
+
+	return GetNVARAsString(GetDeviceTestPulse(panelTitle), "pulseDuration", initialValue=NaN)
+End
+
+/// @brief Returns TestPulse amplitude in voltage clamp mode in mV
+Function/S GetTPAmplitudeVC(panelTitle)
+	string panelTitle
+
+	return GetNVARAsString(GetDeviceTestPulse(panelTitle), "AmplitudeVC", initialValue=NaN)
+End
+
+/// @brief Returns TestPulse amplitude in current clamp mode in pA
+Function/S GetTPAmplitudeIC(panelTitle)
+	string panelTitle
+
+	return GetNVARAsString(GetDeviceTestPulse(panelTitle), "AmplitudeIC", initialValue=NaN)
+End
+
 /// @brief Returns the current NI setup string for analog in through DAQmx_Scan
 Function/S GetNI_AISetup(panelTitle)
 	string panelTitle

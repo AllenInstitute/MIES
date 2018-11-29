@@ -689,14 +689,13 @@ Function ED_TPDocumentation(panelTitle)
 
 	variable sweepNo, RTolerance, numActiveHS
 	variable i, j
-	DFREF dfr = GetDeviceTestPulse(panelTitle)
 	WAVE activeHSProp = GetActiveHSProperties(panelTitle)
 
-	WAVE/Z/SDFR=dfr BaselineSSAvg
-	WAVE/Z/SDFR=dfr InstResistance
-	WAVE/Z/SDFR=dfr SSResistance
+	WAVE BaselineSSAvg = GetBaselineAverage(panelTitle)
+	WAVE InstResistance = GetInstResistanceWave(panelTitle)
+	WAVE SSResistance = GetSSResistanceWave(panelTitle)
 
-	if(!WaveExists(BaselineSSAvg) || !WaveExists(InstResistance) || !WaveExists(SSResistance))
+	if(!DimSize(baselineSSAvg, ROWS) || !DimSize(InstResistance, ROWS) || !DimSize(SSResistance, ROWS))
 		return NaN
 	endif
 
@@ -797,7 +796,10 @@ static Function ED_TPSettingsDocumentation(panelTitle, sweepNo, entrySourceType)
 	string panelTitle
 	variable sweepNo, entrySourceType
 
-	NVAR/SDFR=GetDeviceTestPulse(panelTitle) baselineFrac, AmplitudeVC, AmplitudeIC, pulseDuration
+	NVAR pulseDuration = $GetTPPulseDuration(panelTitle)
+	NVAR AmplitudeVC = $GetTPAmplitudeVC(panelTitle)
+	NVAR AmplitudeIC = $GetTPAmplitudeIC(panelTitle)
+	NVAR baselineFrac = $GetTestpulseBaselineFraction(panelTitle)
 
 	Make/FREE/T/N=(3, 4) TPKeyWave
 	Make/FREE/N=(1, 4, LABNOTEBOOK_LAYER_COUNT) TPSettingsWave = NaN
