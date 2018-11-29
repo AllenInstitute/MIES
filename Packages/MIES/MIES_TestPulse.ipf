@@ -13,6 +13,7 @@ static Constant TP_MAX_VALID_RESISTANCE       = 3000 ///< Units MOhm
 static Constant TP_TPSTORAGE_EVAL_INTERVAL    = 0.18
 static Constant TP_FIT_POINTS                 = 5
 static Constant TP_DIMENSION_SCALING_INTERVAL = 18  ///< [s]
+static Constant TP_PRESSURE_INTERVAL          = 0.090  ///< [s]
 static Constant TP_EVAL_POINT_OFFSET          = 5
 
 /// @brief Return the total length of a single testpulse with baseline
@@ -279,7 +280,7 @@ static Function TP_RecordTP(panelTitle, BaselineSSAvg, InstResistance, SSResista
 	string panelTitle
 	WAVE BaselineSSAvg, InstResistance, SSResistance
 
-	variable delta, i, headstage, ret
+	variable delta, i, headstage, ret, lastPressureCtrl
 	WAVE TPStorage = GetTPStorage(panelTitle)
 	WAVE activeHSProp = GetActiveHSProperties(panelTitle)
 	Wave GUIState  = GetDA_EphysGuiStateNum(panelTitle)
@@ -357,8 +358,15 @@ static Function TP_RecordTP(panelTitle, BaselineSSAvg, InstResistance, SSResista
 	endfor
 
 	TPStorage[count][][%DeltaTimeInSeconds] = count > 0 ? now - TPStorage[0][0][%TimeInSeconds] : 0
-	P_PressureControl(panelTitle)
+
 	SetNumberInWaveNote(TPStorage, NOTE_INDEX, count + 1)
+
+	lastPressureCtrl = GetNumberFromWaveNote(TPStorage, PRESSURE_CTRL_LAST_INVOC)
+	if((now - lastPressureCtrl) > TP_PRESSURE_INTERVAL)
+		P_PressureControl(panelTitle)
+		SetNumberInWaveNote(TPStorage, PRESSURE_CTRL_LAST_INVOC, now, format="%.06f")
+	endif
+
 	TP_AnalyzeTP(panelTitle, TPStorage, count)
 
 	// not all rows have the unit seconds, but with
@@ -545,6 +553,10 @@ Function TP_Setup(panelTitle, runMode)
 
 	if(GetNumberFromWaveNote(TPStorage, AUTOBIAS_LAST_INVOCATION_KEY) > now)
 		SetNumberInWaveNote(TPStorage, AUTOBIAS_LAST_INVOCATION_KEY, 0)
+	endif
+
+	if(GetNumberFromWaveNote(TPStorage, PRESSURE_CTRL_LAST_INVOC) > now)
+		SetNumberInWaveNote(TPStorage, PRESSURE_CTRL_LAST_INVOC, 0)
 	endif
 
 	NVAR runModeGlobal = $GetTestpulseRunMode(panelTitle)
