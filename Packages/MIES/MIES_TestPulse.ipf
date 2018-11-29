@@ -618,3 +618,20 @@ Function TP_UpdateHoldCmdInTPStorage(panelTitle, headStage)
 		TPStorage[count][headstage][%HoldingCmd_IC] = AI_GetHoldingCommand(panelTitle, headStage)
 	endif
 End
+
+/// @brief Create the testpulse wave with the current settings
+Function TP_CreateTestPulseWave(panelTitle)
+	string panelTitle
+
+	variable length
+
+	WAVE TestPulse = GetTestPulse()
+
+	length = TP_GetTestPulseLengthInPoints(panelTitle, TEST_PULSE_MODE)
+
+	Redimension/N=(length) TestPulse
+	FastOp TestPulse = 0
+
+	NVAR baselineFrac = $GetTestpulseBaselineFraction(panelTitle)
+	TestPulse[baselineFrac * length, (1 - baselineFrac) * length] = 1
+End

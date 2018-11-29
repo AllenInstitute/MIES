@@ -106,31 +106,6 @@ Function/S CA_ArtefactRemovalRangesKey(singleSweepDFR, sweepNo)
 	return num2istr(crc) + "Version 1"
 End
 
-/// @brief Cache key generator for testpulse waves
-Function/S CA_TestPulseMultiDeviceKey(testpulseLengthInPoints, baselineFraction)
-	variable testpulseLengthInPoints, baselineFraction
-
-	variable crc
-
-	crc = StringCRC(crc, num2str(testpulseLengthInPoints))
-	crc = StringCRC(crc, num2str(baselineFraction))
-
-	return num2istr(crc) + "Version 1"
-End
-
-/// @brief Cache key generator for multi device testpulse ITCDataWave
-Function/S CA_ITCDataWaveTestPulseMD(waveRefs, ITCDataWave)
-	WAVE/WAVE waveRefs
-	WAVE ITCDataWave
-
-	variable crc
-
-	crc = CA_WaveScalingCRC(crc, ITCDataWave, ROWS)
-	crc = CA_WaveScalingCRC(crc, ITCDataWave, COLS)
-
-	return CA_WaveCRCs(waveRefs) + num2istr(crc) + "Version 1"
-End
-
 /// @brief Cache key generator for averaging
 Function/S CA_AveragingKey(waveRefs)
 	WAVE/WAVE waveRefs

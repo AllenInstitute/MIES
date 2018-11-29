@@ -96,12 +96,7 @@ Function DC_ConfigureDataForITC(panelTitle, dataAcqOrTP, [multiDevice])
 	DC_UpdateGlobals(panelTitle)
 
 	if(dataAcqOrTP == TEST_PULSE_MODE)
-		if(multiDevice && (GetHardwareType(panelTitle) == HARDWARE_ITC_DAC))
-			DC_UpdateTestPulseWaveMD(panelTitle)
-		else
-			WAVE TestPulse = GetTestPulse()
-			DC_UpdateTestPulseWave(panelTitle, TestPulse)
-		endif
+		TP_CreateTestPulseWave(panelTitle)
 	endif
 
 	numActiveChannels = DC_ChanCalcForITCChanConfigWave(panelTitle, dataAcqOrTP)
@@ -132,61 +127,6 @@ Function DC_ConfigureDataForITC(panelTitle, dataAcqOrTP, [multiDevice])
 	if(dataAcqOrTP == DATA_ACQUISITION_MODE)
 		AFM_CallAnalysisFunctions(panelTitle, PRE_SWEEP_EVENT)
 	endif
-End
-
-static Function DC_UpdateTestPulseWave(panelTitle, TestPulse)
-	string panelTitle
-	WAVE TestPulse
-
-	variable length
-
-	length = TP_GetTestPulseLengthInPoints(panelTitle, TEST_PULSE_MODE)
-
-	Redimension/N=(length) TestPulse
-	FastOp TestPulse = 0
-
-	NVAR baselineFrac = $GetTestpulseBaselineFraction(panelTitle)
-	TestPulse[baselineFrac * length, (1 - baselineFrac) * length] = 1
-End
-
-/// @brief MD-variant of #DC_UpdateTestPulseWave
-static Function DC_UpdateTestPulseWaveMD(panelTitle)
-	string panelTitle
-
-	variable length, numPulses, singlePulseLength, i
-	variable first, last
-	string key
-
-	WAVE TestPulse = GetTestPulse()
-
-	length = TP_GetTestPulseLengthInPoints(panelTitle, TEST_PULSE_MODE)
-	NVAR baselineFraction = $GetTestpulseBaselineFraction(panelTitle)
-
-	key = CA_TestPulseMultiDeviceKey(length, baselineFraction)
-
-	WAVE/Z result = CA_TryFetchingEntryFromCache(key)
-
-	if(WaveExists(result))
-		MoveWaveWithOverwrite(TestPulse, result)
-		return NaN
-	endif
-
-	Make/FREE singlePulse
-	DC_UpdateTestPulseWave(panelTitle, singlePulse)
-	singlePulseLength = DimSize(singlePulse, ROWS)
-	numPulses = max(10, ceil((2^(MINIMUM_ITCDATAWAVE_EXPONENT + 1) * 0.90) / singlePulseLength))
-	length = numPulses * singlePulseLength
-
-	Redimension/N=(length) TestPulse
-	FastOp TestPulse = 0
-
-	for(i = 0; i < numPulses; i += 1)
-		first = i * singlePulseLength
-		last  = (i + 1) * singlePulseLength - 1
-		Multithread TestPulse[first, last] = singlePulse[p - first]
-	endfor
-
-	CA_StoreEntryIntoCache(key, TestPulse)
 End
 
 static Function DC_UpdateActiveHSProperties(panelTitle, ADCs)
@@ -316,7 +256,7 @@ static Function DC_LongestOutputWave(panelTitle, dataAcqOrTP, channelType)
 	string panelTitle
 	variable dataAcqOrTP, channelType
 
-	variable maxNumRows, i, numEntries
+	variable maxNumRows, i, numEntries, numPulses, singlePulseLength
 
 	WAVE statusChannel = DAG_GetChannelState(panelTitle, channelType)
 	WAVE statusHS      = DAG_GetChannelState(panelTitle, CHANNEL_TYPE_HEADSTAGE)
@@ -337,7 +277,21 @@ static Function DC_LongestOutputWave(panelTitle, dataAcqOrTP, channelType)
 			ASSERT(0, "unhandled case")
 		endif
 
-		if(WaveExists(wv))
+		if(!WaveExists(wv))
+			continue
+		endif
+
+		if(dataAcqOrTP == TEST_PULSE_MODE                             \
+		   && GetHardwareType(panelTitle) == HARDWARE_ITC_DAC         \
+		   && DAG_GetNumericalValue(panelTitle, "check_Settings_MD"))
+			// ITC hardware requires us to use a pulse train for TP MD,
+			// so we need to determine the number of TP pulses here (numPulses)
+			// In DC_PlaceDataInHardwareDataWave we write as many pulses into the
+			// HardwareDataWave which fit in
+			singlePulseLength = DimSize(wv, ROWS)
+			numPulses = max(10, ceil((2^(MINIMUM_ITCDATAWAVE_EXPONENT + 1) * 0.90) / singlePulseLength))
+			maxNumRows = max(maxNumRows, numPulses * singlePulseLength)
+		else
 			maxNumRows = max(maxNumRows, DimSize(wv, ROWS))
 		endif
 	endfor
@@ -976,34 +930,18 @@ static Function DC_PlaceDataInHardwareDataWave(panelTitle, numActiveChannels, da
 		WAVE singleStimSet = GetTestPulse()
 		singleSetLength = setLength[0]
 		ASSERT(DimSize(singleStimSet, COLS) <= 1, "Expected a 1D testpulse wave")
-		string key
 		switch(hardwareType)
 			case HARDWARE_ITC_DAC:
 				if(multiDevice)
-					// ITCDataWave depends on
-					// DAGain
-					// DAScale
-					// singlestimset
-					// ITCDataWave dimension properties of ROWS and COLS
-					key = CA_ITCDataWaveTestPulseMD({DAGain, DAScale, singleStimSet}, ITCDataWave)
-
-					WAVE/Z result = CA_TryFetchingEntryFromCache(key)
-
-					if(WaveExists(result))
-						MoveWaveWithOverwrite(ITCDataWave, result)
-						WAVE ITCDataWave = GetHardwareDataWave(panelTitle)
-					else
-						Multithread ITCDataWave[][0, numEntries - 1] =                        \
-						limit(                                                                \
-						(DAGain[q] * DAScale[q]) * singleStimSet[mod(p, singleSetLength)][0], \
-						SIGNED_INT_16BIT_MIN,                                                 \
-						SIGNED_INT_16BIT_MAX); AbortOnRTE
-						cutOff = mod(DimSize(ITCDataWave, ROWS), singleSetLength)
-						if(cutOff > 0)
-							ITCDataWave[DimSize(ITCDataWave, ROWS) - cutoff, *][0, numEntries - 1] = 0
-						endif
+					Multithread ITCDataWave[][0, numEntries - 1] =                        \
+					limit(                                                                \
+					(DAGain[q] * DAScale[q]) * singleStimSet[mod(p, singleSetLength)][0], \
+					SIGNED_INT_16BIT_MIN,                                                 \
+					SIGNED_INT_16BIT_MAX); AbortOnRTE
+					cutOff = mod(DimSize(ITCDataWave, ROWS), singleSetLength)
+					if(cutOff > 0)
+						ITCDataWave[DimSize(ITCDataWave, ROWS) - cutoff, *][0, numEntries - 1] = 0
 					endif
-					CA_StoreEntryIntoCache(key, ITCDataWave)
 				else
 					Multithread ITCDataWave[0, setLength[0] - 1][0, numEntries - 1] = \
 					limit(                                                            \
