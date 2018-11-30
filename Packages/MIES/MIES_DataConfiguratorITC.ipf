@@ -1119,7 +1119,7 @@ static Function DC_PlaceDataInHardwareDataWave(panelTitle, numActiveChannels, da
 						WAVE TTLWaveSingle = TTLWaveNI[config[i][%ChannelNumber]]
 						singleSetLength = DC_CalculateStimsetLength(TTLWaveSingle, panelTitle, DATA_ACQUISITION_MODE)
 						MultiThread NIChannel[singleInsertStart, singleInsertStart + singleSetLength - 1] = \
-						limit(TTLWaveSingle[decimationFactor * (p - singleInsertStart)], 0, 1); AbortOnRTE
+						limit(TTLWaveSingle[trunc(decimationFactor * (p - singleInsertStart))], 0, 1); AbortOnRTE
 						activeColumn += 1
 					endif
 				endfor
