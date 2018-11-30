@@ -2092,6 +2092,29 @@ Function Test_UnassociatedChannels()
 	endfor
 End
 
+static Function GetMinSampInt([unit])
+	string unit
+
+	variable factor
+
+	if(ParamIsDefault(unit))
+		FAIL()
+	elseif(cmpstr(unit, "µs"))
+		factor = 1
+	elseif(cmpstr(unit, "ms"))
+		factor = 1000
+	else
+		FAIL()
+	endif
+
+#ifdef TESTS_WITH_NI_HARDWARE
+	return factor * HARDWARE_NI6343_MIN_SAMPINT
+#else
+	return factor * HARDWARE_ITC_MIN_SAMPINT
+#endif
+
+End
+
 static Function DisableSecondHeadstage_IGNORE()
 
 	PGC_SetAndActivateControl(DEVICE, GetPanelControl(1, CHANNEL_TYPE_HEADSTAGE, CHANNEL_CONTROL_CHECK), val=0)
@@ -2105,7 +2128,7 @@ End
 
 Function Test_CheckSamplingInterval1()
 
-	variable sweepNo, sampInt, sampIntMult, fixedFreqAcq
+	variable sweepNo, sampInt, sampIntMult, fixedFreqAcq, expectedSampInt
 
 	CHECK_EQUAL_VAR(GetSetVariable(DEVICE, "SetVar_Sweep"), 1)
 
@@ -2119,12 +2142,13 @@ Function Test_CheckSamplingInterval1()
 	CHECK_WAVE(configWave, NORMAL_WAVE)
 
 	sampInt = GetSamplingInterval(configWave)
-	CHECK_CLOSE_VAR(sampInt, 5, tol=1e-6)
+	CHECK_CLOSE_VAR(sampInt, GetMinSampInt(unit="µs"), tol=1e-6)
 
 	WAVE numericalValues = GetLBNumericalValues(DEVICE)
 
 	sampInt = GetLastSettingIndep(numericalValues, sweepNo, "Sampling interval", DATA_ACQUISITION_MODE)
-	CHECK_CLOSE_VAR(sampInt, 0.005, tol=1e-6)
+	expectedSampInt = GetMinSampInt(unit="ms")
+	CHECK_CLOSE_VAR(sampInt, expectedSampInt, tol=1e-6)
 
 	sampIntMult = GetLastSettingIndep(numericalValues, sweepNo, "Sampling interval multiplier", DATA_ACQUISITION_MODE)
 	CHECK_EQUAL_VAR(sampIntMult, 1)
@@ -2147,7 +2171,7 @@ End
 
 Function Test_CheckSamplingInterval2()
 
-	variable sweepNo, sampInt, sampIntMult, fixedFreqAcq
+	variable sweepNo, sampInt, sampIntMult, fixedFreqAcq, expectedSampInt
 
 	CHECK_EQUAL_VAR(GetSetVariable(DEVICE, "SetVar_Sweep"), 1)
 
@@ -2161,12 +2185,13 @@ Function Test_CheckSamplingInterval2()
 	CHECK_WAVE(configWave, NORMAL_WAVE)
 
 	sampInt = GetSamplingInterval(configWave)
-	CHECK_CLOSE_VAR(sampInt, 40, tol=1e-6)
+	CHECK_CLOSE_VAR(sampInt, GetMinSampInt(unit="µs") * 8, tol=1e-6)
 
 	WAVE numericalValues = GetLBNumericalValues(DEVICE)
 
 	sampInt = GetLastSettingIndep(numericalValues, sweepNo, "Sampling interval", DATA_ACQUISITION_MODE)
-	CHECK_CLOSE_VAR(sampInt, 0.040, tol=1e-6)
+	expectedSampInt = GetMinSampInt(unit="ms") * 8
+	CHECK_CLOSE_VAR(sampInt, expectedSampInt, tol=1e-6)
 
 	sampIntMult = GetLastSettingIndep(numericalValues, sweepNo, "Sampling interval multiplier", DATA_ACQUISITION_MODE)
 	CHECK_EQUAL_VAR(sampIntMult, 8)
@@ -2189,7 +2214,7 @@ End
 
 Function Test_CheckSamplingInterval3()
 
-	variable sweepNo, sampInt, sampIntMult, fixedFreqAcq
+	variable sweepNo, sampInt, sampIntMult, fixedFreqAcq, expectedSampInt
 
 	CHECK_EQUAL_VAR(GetSetVariable(DEVICE, "SetVar_Sweep"), 1)
 
@@ -2208,7 +2233,8 @@ Function Test_CheckSamplingInterval3()
 	WAVE numericalValues = GetLBNumericalValues(DEVICE)
 
 	sampInt = GetLastSettingIndep(numericalValues, sweepNo, "Sampling interval", DATA_ACQUISITION_MODE)
-	CHECK_CLOSE_VAR(sampInt, 0.010, tol=1e-6)
+	expectedSampInt = 0.010
+	CHECK_CLOSE_VAR(sampInt, expectedSampInt, tol=1e-6)
 
 	sampIntMult = GetLastSettingIndep(numericalValues, sweepNo, "Sampling interval multiplier", DATA_ACQUISITION_MODE)
 	CHECK_EQUAL_VAR(sampIntMult, 1)
