@@ -83,8 +83,14 @@ Function ValidFunc_V2(panelTitle, eventType, HardwareDataWave, headStage, realDa
 
 	if(eventType == PRE_DAQ_EVENT || eventType == PRE_SET_EVENT)
 		CHECK_EQUAL_VAR(numType(realDataLength), 2)
-	else
+	elseif(GetHardWareType(panelTitle) == HARDWARE_ITC_DAC)
 		CHECK(realDataLength >= 0 && realDataLength < DimSize(HardwareDataWave, ROWS))
+	elseif(GetHardWareType(panelTitle) == HARDWARE_NI_DAC)
+		WAVE/WAVE HardwareDataWaveRef = HardwareDataWave
+		Make/FREE/N=(DimSize(HardwareDataWaveRef, ROWS)) sizes = DimSize(HardwareDataWaveRef[p], ROWS)
+		CHECK(realDataLength >= 0 && realDataLength <= WaveMax(sizes))
+	else
+		FAIL()
 	endif
 
 	WAVE anaFuncTracker = TrackAnalysisFunctionCalls()
@@ -101,7 +107,16 @@ Function ValidMultHS_V1(panelTitle, eventType, HardwareDataWave, headStage)
 
 	CHECK_NON_EMPTY_STR(panelTitle)
 	CHECK_EQUAL_VAR(numType(eventType), 0)
-	CHECK_WAVE(HardwareDataWave, NUMERIC_WAVE)
+
+	switch(GetHardwareType(panelTitle))
+		case HARDWARE_ITC_DAC:
+			CHECK_WAVE(HardwareDataWave, NUMERIC_WAVE)
+			break
+		case HARDWARE_NI_DAC:
+			CHECK_WAVE(HardwareDataWave, WAVE_WAVE)
+			break
+	endswitch
+
 	CHECK_EQUAL_VAR(NumberByKey("LOCK", WaveInfo(HardwareDataWave, 0)), 1)
 
 	WAVE anaFuncTracker = TrackAnalysisFunctionCalls()
@@ -271,8 +286,14 @@ Function ValidFunc_V3(panelTitle, s)
 
 	if(s.eventType == PRE_DAQ_EVENT || s.eventType == PRE_SET_EVENT)
 		CHECK_EQUAL_VAR(numType(s.lastValidRowIndex), 2)
+	elseif(GetHardWareType(panelTitle) == HARDWARE_ITC_DAC)
+		CHECK(s.lastValidRowIndex >= 0 && s.lastValidRowIndex < DimSize(s.rawDACWave, ROWS))
+	elseif(GetHardWareType(panelTitle) == HARDWARE_NI_DAC)
+		WAVE/WAVE rawDACWaveRef = s.rawDACWave
+		Make/FREE/N=(DimSize(rawDACWaveRef, ROWS)) sizes = DimSize(rawDACWaveRef[p], ROWS)
+		CHECK(s.lastValidRowIndex >= 0 && s.lastValidRowIndex <= WaveMax(sizes))
 	else
-		CHECK(s.lastValidRowIndex >= 0 && s.lastValidRowIndex < DimSize(s.rawDACWAVE, ROWS))
+		FAIL()
 	endif
 
 	WAVE anaFuncTracker = TrackAnalysisFunctionCalls()
