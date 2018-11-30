@@ -353,7 +353,7 @@ End
 /// @param lockedIndexing defaults to false, true returns just the DAC/TTL setname
 ///
 /// Constants are defined at @ref ChannelTypeAndControlConstants
-static Function/S IDX_GetSetsInRange(panelTitle, channel, channelType, lockedIndexing)
+Function/S IDX_GetSetsInRange(panelTitle, channel, channelType, lockedIndexing)
 	string panelTitle
 	variable channel, channelType, lockedIndexing
 
