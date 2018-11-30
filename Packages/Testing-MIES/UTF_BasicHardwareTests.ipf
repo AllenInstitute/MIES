@@ -2155,6 +2155,9 @@ Function Test_CheckSamplingInterval1()
 
 	fixedFreqAcq = GetLastSettingIndep(numericalValues, sweepNo, "Fixed frequency acquisition", DATA_ACQUISITION_MODE)
 	CHECK_EQUAL_VAR(fixedFreqAcq, NaN)
+
+	CHECK_EQUAL_VAR(DimOffset(sweepWave, ROWS), 0)
+	CHECK_CLOSE_VAR(DimDelta(sweepWave, ROWS), expectedSampInt, tol=1e-6)
 End
 
 Function UseSamplingInterval_IGNORE()
@@ -2198,6 +2201,9 @@ Function Test_CheckSamplingInterval2()
 
 	fixedFreqAcq = GetLastSettingIndep(numericalValues, sweepNo, "Fixed frequency acquisition", DATA_ACQUISITION_MODE)
 	CHECK_EQUAL_VAR(fixedFreqAcq, NaN)
+
+	CHECK_EQUAL_VAR(DimOffset(sweepWave, ROWS), 0)
+	CHECK_CLOSE_VAR(DimDelta(sweepWave, ROWS), expectedSampInt, tol=1e-6)
 End
 
 static Function UseFixedFrequency_IGNORE()
@@ -2241,4 +2247,7 @@ Function Test_CheckSamplingInterval3()
 
 	fixedFreqAcq = GetLastSettingIndep(numericalValues, sweepNo, "Fixed frequency acquisition", DATA_ACQUISITION_MODE)
 	CHECK_EQUAL_VAR(fixedFreqAcq, 100)
+
+	CHECK_EQUAL_VAR(DimOffset(sweepWave, ROWS), 0)
+	CHECK_CLOSE_VAR(DimDelta(sweepWave, ROWS), expectedSampInt, tol=1e-6)
 End
