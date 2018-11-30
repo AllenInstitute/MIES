@@ -15,8 +15,17 @@
 /// Call SetupTestCases_IGNORE() with a list of testcases. The testcase which
 /// acquire data and testcases which test the results should be interleaved.
 
+#ifdef TESTS_WITH_NI_HARDWARE
+
+StrConstant DEVICE        = "Dev1"
+StrConstant DEVICES_YOKED = "Unsupported"
+
+#else
+
 StrConstant DEVICE        = "ITC18USB_dev_0"
 StrConstant DEVICES_YOKED = "ITC1600_dev_0;ITC1600_dev_1"
+
+#endif
 
 Function ChooseCorrectDevice(unlockedPanelTitle, dev)
 	string unlockedPanelTitle, dev
