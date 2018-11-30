@@ -2946,26 +2946,33 @@ Function GetNumberFromType([var, str, itcVar])
 	endif
 End
 
-/// @brief Extract an one dimensional wave from the given ITC wave and column
+/// @brief Extract an one dimensional wave from the given sweep/hardware data wave and column
 ///
-/// @param config ITC config wave
-/// @param sweep  ITC sweep wave
-/// @param column column index into `sweep`, can be queried with #AFH_GetITCDataColumn
+/// @param config config wave
+/// @param sweep  sweep wave or hardware data wave from all hardware types
+/// @param index  index into `sweep`, can be queried with #AFH_GetITCDataColumn
 ///
 /// @returns a reference to a free wave with the single channel data
-Function/Wave ExtractOneDimDataFromSweep(config, sweep, column)
+Function/Wave ExtractOneDimDataFromSweep(config, sweep, index)
 	WAVE config
 	WAVE sweep
-	variable column
+	variable index
 
 	ASSERT(IsValidSweepAndConfig(sweep, config), "Sweep and config are not compatible")
-	ASSERT(column < DimSize(sweep, COLS), "The column is out of range")
 
-	MatrixOP/FREE data = col(sweep, column)
+	if(IsWaveRefWave(sweep))
+		ASSERT(index < DimSize(sweep, ROWS), "The index is out of range")
+		WAVE/WAVE sweepRef = sweep
+		WAVE data = sweepRef[index]
+	else
+		ASSERT(index < DimSize(sweep, COLS), "The index is out of range")
+		MatrixOP/FREE data = col(sweep, index)
+	endif
+
 	SetScale/P x, DimOffset(sweep, ROWS), DimDelta(sweep, ROWS), WaveUnits(sweep, ROWS), data
 	WAVE/T units = AFH_GetChannelUnits(config)
-	if(column < DimSize(units, ROWS))
-		SetScale d, 0, 0, units[column], data
+	if(index < DimSize(units, ROWS))
+		SetScale d, 0, 0, units[index], data
 	endif
 
 	Note data, note(sweep)
