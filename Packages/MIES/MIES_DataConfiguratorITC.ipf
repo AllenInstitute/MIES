@@ -700,6 +700,7 @@ static Function DC_PlaceDataInHardwareDataWave(panelTitle, numActiveChannels, da
 	variable GlobalTPInsert, scalingZero, indexingLocked, indexing, distributedDAQ, pulseToPulseLength
 	variable distributedDAQDelay, onSetDelay, onsetDelayAuto, onsetDelayUser, decimationFactor, cutoff
 	variable j, powerSpectrum, distributedDAQOptOv, distributedDAQOptPre, distributedDAQOptPost, distributedDAQOptRes, headstage
+	variable lastValidRow
 	variable/C ret
 
 	globalTPInsert        = DAG_GetNumericalValue(panelTitle, "Check_Settings_InsertTP")
@@ -981,13 +982,22 @@ static Function DC_PlaceDataInHardwareDataWave(panelTitle, numActiveChannels, da
 				endif
 				break
 			case HARDWARE_NI_DAC:
+				// for an index step of 1 in NIChannel, singleStimSet steps decimationFactor
+				// for an index step of 1 in singleStimset, NIChannel steps 1 / decimationFactor
+				// for decimationFactor < 1 and indexing NIChannel to DimSize(NIChannel, ROWS) - 1 (as implemented here),
+				// singleStimset would be indexed to DimSize(singleStimSet, ROWS) - decimationFactor
+				// this leads to an invalid index if decimationFactor is <= 0.5 (due to the way Igor handles nD wave indexing)
+				// it is solved here by limiting the index of singleStimSet to the last valid integer index
+				// for the case of decimationFactor >= 1 there is no issue since index DimSize(singleStimSet, ROWS) - decimationFactor is valid
+				// for ITC decimationFactor is always >= 1 since the stimSets are generated for the ITC max. sample rate
 				for(i = 0; i < numEntries; i += 1)
 					WAVE singleStimSet = stimSet[i]
 					WAVE NIChannel = NIDataWave[i]
-					MultiThread NIChannel[insertStart[i], insertStart[i] + setLength[i] - 1] =                     \
-					limit(                                                                                         \
-					DAGain[i] * DAScale[i] * singleStimSet[decimationFactor * (p - insertStart[i])][setColumn[i]], \
-					NI_DAC_MIN,                                                                                    \
+					lastValidRow = DimSize(singleStimSet, ROWS) - 1
+					MultiThread NIChannel[insertStart[i], insertStart[i] + setLength[i] - 1] =                                             \
+					limit(                                                                                                                 \
+					DAGain[i] * DAScale[i] * singleStimSet[limit(decimationFactor * (p - insertStart[i]), 0, lastValidRow)][setColumn[i]], \
+					NI_DAC_MIN,                                                                                                            \
 					NI_DAC_MAX); AbortOnRTE
 				endfor
 
