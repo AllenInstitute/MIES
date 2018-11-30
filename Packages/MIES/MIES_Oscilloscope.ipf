@@ -509,8 +509,8 @@ static Function SCOPE_ITC_UpdateOscilloscope(panelTitle, dataAcqOrTP, chunk, fif
 				Display/N=ITCDataWaveTPMD ITCDataWave[][1]
 			endif
 
-			Cursor/W=ITCDataWaveTPMD/H=2/P A ITCDataWave first
-			Cursor/W=ITCDataWaveTPMD/H=2/P B ITCDataWave last
+			Cursor/W=ITCDataWaveTPMD/H=2/P A HardwareDataWave first
+			Cursor/W=ITCDataWaveTPMD/H=2/P B HardwareDataWave last
 		endif
 #endif
 		Multithread OscilloscopeData[][startOfADColumns, startOfADColumns + numEntries - 1] = ITCDataWave[first + p][q] / gain[q - startOfADColumns]
