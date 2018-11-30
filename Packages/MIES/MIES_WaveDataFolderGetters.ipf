@@ -193,29 +193,35 @@ static Function ExistsWithCorrectLayoutVersion(wv, versionOfNewWave)
 	return WaveExists(wv) && GetWaveVersion(wv) == versionOfNewWave
 End
 
-/// @brief Check if the given wave's version is equal or larger than the given version
+/// @brief Check if the given wave's version is equal or larger than the given version, if version is not set false is returned
 static Function WaveVersionIsAtLeast(wv, existingVersion)
 	WAVE/Z wv
 	variable existingVersion
 
+	variable waveVersion
+
 	ASSERT(WaveExists(wv), "Wave does not exist")
 	ASSERT(IsInteger(existingVersion) && existingVersion > 0, "existing version must be a positive integer")
+	waveVersion = GetWaveVersion(wv)
 
-	return GetWaveVersion(wv) >= existingVersion
+	return !isNaN(waveVersion) && waveVersion >= existingVersion
 End
 
-/// @brief Check if the given wave's version is smaller than the given version
+/// @brief Check if the given wave's version is smaller than the given version, if version is not set true is returned
 static Function WaveVersionIsSmaller(wv, existingVersion)
 	WAVE/Z wv
 	variable existingVersion
 
+	variable waveVersion
+
 	ASSERT(WaveExists(wv), "Wave does not exist")
 	ASSERT(IsInteger(existingVersion) && existingVersion > 0, "existing version must be a positive integer")
+	waveVersion = GetWaveVersion(wv)
 
-	return GetWaveVersion(wv) < existingVersion
+	return isNaN(waveVersion) || waveVersion < existingVersion
 End
 
-/// @brief return the Version of the Wave
+/// @brief return the Version of the Wave, returns NaN if no version was set
 Function GetWaveVersion(wv)
 	Wave/Z wv
 
