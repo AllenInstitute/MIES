@@ -384,6 +384,8 @@ static Function DC_MakeHardwareDataWave(panelTitle, numActiveChannels, samplingI
 			endfor
 			Redimension/N=(numActiveChannels) NIDataWave
 
+			SetScale/P x 0, samplingInterval / 1000, "ms", NIDataWave
+
 			make/FREE/N=(numActiveChannels) type = SWS_GetRawDataFPType(panelTitle)
 			WAVE config = GetITCChanConfigWave(panelTitle)
 			type = config[p][%ChannelType] == ITC_XOP_CHANNEL_TYPE_TTL ? IGOR_TYPE_UNSIGNED | IGOR_TYPE_8BIT_INT : type[p]
