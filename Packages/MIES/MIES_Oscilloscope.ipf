@@ -355,7 +355,7 @@ Function SCOPE_CreateGraph(panelTitle, dataAcqOrTP)
 		else
 			Label/W=$graph bottom "Time (\\U)"
 			sampInt = DAP_GetITCSampInt(panelTitle, TEST_PULSE_MODE) / 1000
-			testPulseLength = TP_GetTestPulseLengthInPoints(panelTitle) * sampInt
+			testPulseLength = TP_GetTestPulseLengthInPoints(panelTitle, TEST_PULSE_MODE) * sampInt
 			NVAR duration = $GetTestpulseDuration(panelTitle)
 			NVAR baselineFrac = $GetTestpulseBaselineFraction(panelTitle)
 			cutOff = max(0, baseLineFrac * testPulseLength - duration/2 * sampInt)
@@ -451,7 +451,7 @@ Function SCOPE_UpdateOscilloscopeData(panelTitle, dataAcqOrTP, [chunk, fifoPos])
 
 		ASSERT(ParamIsDefault(fifoPos), "optional parameter fifoPos is not possible with TEST_PULSE_MODE")
 
-		length = TP_GetTestPulseLengthInPoints(panelTitle)
+		length = TP_GetTestPulseLengthInPoints(panelTitle, TEST_PULSE_MODE)
 		first  = chunk * length
 		last   = first + length - 1
 		ASSERT(first >= 0 && last < DimSize(ITCDataWave, ROWS) && first < last, "Invalid wave subrange")

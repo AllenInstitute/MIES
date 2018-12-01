@@ -27,16 +27,26 @@ Function TP_CalculateTestPulseLength(pulseDuration, baselineFrac)
 End
 
 /// @brief Return the total length in points of a single testpulse with baseline, equal to one
-///        chunk for the MD case, in points for the real sampling interval type
+///        chunk for the MD case, in points for the real sampling interval type for the given mode.
 ///
-/// @param panelTitle  device
-Function TP_GetTestPulseLengthInPoints(panelTitle)
+/// See DAP_GetSampInt() for the difference regarding the modes
+///
+/// @param panelTitle device
+/// @param mode       one of @ref DataAcqModes
+Function TP_GetTestPulseLengthInPoints(panelTitle, mode)
 	string panelTitle
+	variable mode
 
 	NVAR duration = $GetTestpulseDuration(panelTitle)
 	NVAR baselineFrac = $GetTestpulseBaselineFraction(panelTitle)
 
-	return trunc(TP_CalculateTestPulseLength(duration, baselineFrac))
+	if(mode == TEST_PULSE_MODE)
+		return trunc(TP_CalculateTestPulseLength(duration, baselineFrac))
+	elseif(mode == DATA_ACQUISITION_MODE)
+		return trunc(TP_CalculateTestPulseLength(duration, baselineFrac) / DAP_GetITCSampInt(panelTitle, DATA_ACQUISITION_MODE) * DAP_GetITCSampInt(panelTitle, TEST_PULSE_MODE))
+	else
+		ASSERT(0, "Invalid mode")
+	endif
 End
 
 /// @brief Store the full test pulse wave for later inspection
@@ -115,7 +125,7 @@ Function TP_Delta(panelTitle)
 
 	NVAR duration     = $GetTestpulseDuration(panelTitle)
 	NVAR baselineFrac = $GetTestpulseBaselineFraction(panelTitle)
-	lengthTPInPoints  = TP_GetTestPulseLengthInPoints(panelTitle)
+	lengthTPInPoints  = TP_GetTestPulseLengthInPoints(panelTitle, TEST_PULSE_MODE)
 
 	NVAR tpBufferSize = $GetTPBufferSizeGlobal(panelTitle)
 
