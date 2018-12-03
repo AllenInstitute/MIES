@@ -1979,14 +1979,19 @@ Function/Wave GetTPStorage(panelTitle)
 	string 	panelTitle
 
 	dfref dfr = GetDeviceTestPulse(panelTitle)
-	variable versionOfNewWave = 8
+	variable versionOfNewWave = 9
 
 	WAVE/Z/SDFR=dfr/D wv = TPStorage
 
 	if(ExistsWithCorrectLayoutVersion(wv, versionOfNewWave))
 		return wv
 	elseif(WaveExists(wv))
-		Redimension/N=(-1, NUM_HEADSTAGES, 20)/D wv
+		if(WaveVersionIsAtLeast(wv, 8))
+			SetNumberInWaveNote(wv, PRESSURE_CTRL_LAST_INVOC, 0)
+			return wv
+		else
+			Redimension/N=(-1, NUM_HEADSTAGES, 20)/D wv
+		endif
 	else
 		Make/N=(MINIMUM_WAVE_SIZE_LARGE, NUM_HEADSTAGES, 20)/D dfr:TPStorage/Wave=wv
 	endif
@@ -2019,6 +2024,7 @@ Function/Wave GetTPStorage(panelTitle)
 	SetNumberInWaveNote(wv, NOTE_INDEX, 0)
 	SetNumberInWaveNote(wv, AUTOBIAS_LAST_INVOCATION_KEY, 0)
 	SetNumberInWaveNote(wv, DIMENSION_SCALING_LAST_INVOC, 0)
+	SetNumberInWaveNote(wv, PRESSURE_CTRL_LAST_INVOC, 0)
 
 	SetWaveVersion(wv, versionOfNewWave)
 

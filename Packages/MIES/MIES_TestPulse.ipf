@@ -10,9 +10,10 @@
 /// @brief __TP__ Basic Testpulse related functionality
 
 static Constant TP_MAX_VALID_RESISTANCE       = 3000 ///< Units MOhm
-static Constant TP_TPSTORAGE_EVAL_INTERVAL   = 0.18
+static Constant TP_TPSTORAGE_EVAL_INTERVAL    = 0.18
 static Constant TP_FIT_POINTS                 = 5
 static Constant TP_DIMENSION_SCALING_INTERVAL = 18  ///< [s]
+static Constant TP_PRESSURE_INTERVAL          = 0.090  ///< [s]
 static Constant TP_EVAL_POINT_OFFSET          = 5
 
 /// @brief Return the total length of a single testpulse with baseline
@@ -279,7 +280,7 @@ static Function TP_RecordTP(panelTitle, BaselineSSAvg, InstResistance, SSResista
 	string panelTitle
 	WAVE BaselineSSAvg, InstResistance, SSResistance
 
-	variable delta, i, headstage, ret
+	variable delta, i, headstage, ret, lastPressureCtrl
 	WAVE TPStorage = GetTPStorage(panelTitle)
 	WAVE activeHSProp = GetActiveHSProperties(panelTitle)
 	Wave GUIState  = GetDA_EphysGuiStateNum(panelTitle)
@@ -357,8 +358,15 @@ static Function TP_RecordTP(panelTitle, BaselineSSAvg, InstResistance, SSResista
 	endfor
 
 	TPStorage[count][][%DeltaTimeInSeconds] = count > 0 ? now - TPStorage[0][0][%TimeInSeconds] : 0
-	P_PressureControl(panelTitle)
+
 	SetNumberInWaveNote(TPStorage, NOTE_INDEX, count + 1)
+
+	lastPressureCtrl = GetNumberFromWaveNote(TPStorage, PRESSURE_CTRL_LAST_INVOC)
+	if((now - lastPressureCtrl) > TP_PRESSURE_INTERVAL)
+		P_PressureControl(panelTitle)
+		SetNumberInWaveNote(TPStorage, PRESSURE_CTRL_LAST_INVOC, now, format="%.06f")
+	endif
+
 	TP_AnalyzeTP(panelTitle, TPStorage, count)
 
 	// not all rows have the unit seconds, but with
@@ -377,7 +385,7 @@ static Function TP_RecordTP(panelTitle, BaselineSSAvg, InstResistance, SSResista
 		SetScale/P x, 0.0, delta, "s", TPStorage
 		DEBUGPRINT("New delta: ", var=delta)
 
-		SetNumberInWaveNote(TPStorage, DIMENSION_SCALING_LAST_INVOC, now)
+		SetNumberInWaveNote(TPStorage, DIMENSION_SCALING_LAST_INVOC, now, format="%.06f")
 	endif
 End
 
@@ -525,14 +533,30 @@ Function TP_Setup(panelTitle, runMode)
 	string panelTitle
 	variable runMode
 
-	variable multiDevice
-	variable hardwareType
+	variable multiDevice, now
 
 	multiDevice = (runMode & TEST_PULSE_BG_MULTI_DEVICE)
 
 	if(!(runMode & TEST_PULSE_DURING_RA_MOD))
 		DAP_ToggleTestpulseButton(panelTitle, TESTPULSE_BUTTON_TO_STOP)
 		DisableControls(panelTitle, CONTROLS_DISABLE_DURING_DAQ_TP)
+	endif
+
+	// ticks are relative to OS start time
+	// so we can have "future" timestamps from existing experiments
+	WAVE TPStorage = GetTPStorage(panelTitle)
+	now = ticks * TICKS_TO_SECONDS
+
+	if(GetNumberFromWaveNote(TPStorage, DIMENSION_SCALING_LAST_INVOC) > now)
+		SetNumberInWaveNote(TPStorage, DIMENSION_SCALING_LAST_INVOC, 0)
+	endif
+
+	if(GetNumberFromWaveNote(TPStorage, AUTOBIAS_LAST_INVOCATION_KEY) > now)
+		SetNumberInWaveNote(TPStorage, AUTOBIAS_LAST_INVOCATION_KEY, 0)
+	endif
+
+	if(GetNumberFromWaveNote(TPStorage, PRESSURE_CTRL_LAST_INVOC) > now)
+		SetNumberInWaveNote(TPStorage, PRESSURE_CTRL_LAST_INVOC, 0)
 	endif
 
 	NVAR runModeGlobal = $GetTestpulseRunMode(panelTitle)
