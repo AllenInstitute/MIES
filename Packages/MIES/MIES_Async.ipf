@@ -191,13 +191,14 @@ Function ASYNC_ThreadReadOut()
 	variable bufferSize, i
 	variable justBuffered
 
-	variable orderIndex, rterr
+	variable orderIndex, rterr, statCnt
 	string rterrmsg
 	NVAR tgID = $GetThreadGroupID()
 	ASSERT(!isNaN(tgID), "Async frame work is not running")
 	WAVE/DF DFREFbuffer = GetDFREFBuffer(getAsyncHomeDF())
 	WAVE/T workloadID = GetWorkloadID(getAsyncHomeDF())
 	WAVE workloadOrder = GetWorkloadOrder(getAsyncHomeDF())
+	NVAR rc = $GetReadOutCounter()
 
 	for(;;)
 		DFREF dfr = ThreadGroupGetDFR(tgID, 0)
@@ -226,6 +227,7 @@ Function ASYNC_ThreadReadOut()
 			endfor
 
 			if(i == bufferSize)
+				DEBUGPRINT("Async ReadOut: this run " + num2str(statCnt) + " RO functions called; " + num2str(rc) + " ever.")
 				return 0
 			endif
 		else
@@ -257,9 +259,9 @@ Function ASYNC_ThreadReadOut()
 		FUNCREF ASYNC_ReadOut f = $RFunc
 		NVAR err = dfr:$ASYNC_ERROR_STR
 		SVAR errmsg = dfr:$ASYNC_ERRORMSG_STR
-		NVAR rc = $GetReadOutCounter()
 		rc += 1
 
+		statCnt += 1
 		try
 			f(dfrOut, err, errmsg);AbortOnRTE
 		catch
