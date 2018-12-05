@@ -800,6 +800,9 @@ Function TP_Setup(panelTitle, runMode)
 		SetNumberInWaveNote(TPStorage, PRESSURE_CTRL_LAST_INVOC, 0)
 	endif
 
+	WAVE tpAsyncBuffer = GetTPResultAsyncBuffer(panelTitle)
+	KillOrMoveToTrash(wv=tpAsyncBuffer)
+
 	NVAR runModeGlobal = $GetTestpulseRunMode(panelTitle)
 	runModeGlobal = runMode
 
