@@ -347,7 +347,9 @@ Function ASYNC_Stop([timeout])
 	variable i, endtime, waitResult, localtgID, outatime
 
 	NVAR tgID = $GetThreadGroupID()
-	ASSERT(!isNaN(tgID), "Async FrameWork already in stopped state")
+	if(isNaN(tgID))
+		return 0
+	endif
 
 	// Send abort to all threads
 	NVAR numThreads = $GetNumThreads()

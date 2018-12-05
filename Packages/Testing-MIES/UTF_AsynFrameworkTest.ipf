@@ -44,12 +44,8 @@ End
 
 /// @brief Test to stop Framework when it is already stopped
 static Function TASYNC_Stop_AlreadyStopped()
-	try
-		ASYNC_Stop()
-		FAIL()
-	catch
-		PASS()
-	endtry
+
+	CHECK_EQUAL_VAR(ASYNC_Stop(), 0)
 End
 
 /// @brief Test to start and stop the Framework
