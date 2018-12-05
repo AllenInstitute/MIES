@@ -3221,7 +3221,7 @@ static Function WBP_ToggleAnalysisParamGUI()
 	Button button_add_parameter,pos={73.00,99.00},size={60.00,25.00},proc=WBP_ButtonProc_AddParam,title="Add",win=AnalysisParamGUI
 	Button button_add_parameter,win=AnalysisParamGUI,help={"Add the parameter with type and value to the stimset"}
 	PopupMenu popup_param_types,pos={45.00,52.00},size={102.00,19.00},bodyWidth=70,title="Type:",win=AnalysisParamGUI
-	PopupMenu popup_param_types,mode=4,popvalue="variable",value= #"WBP_GetParameterTypes()",win=AnalysisParamGUI
+	PopupMenu popup_param_types,mode=1,popvalue="variable",value= #"WBP_GetParameterTypes()",win=AnalysisParamGUI
 	PopupMenu popup_param_types,help={"Choose the parameter type"},win=AnalysisParamGUI
 	SetVariable setvar_param_value,pos={43.00,76.00},size={120.00,18.00},bodyWidth=120,win=AnalysisParamGUI
 	SetVariable setvar_param_value,limits={-inf,inf,0},value= _STR:"",win=AnalysisParamGUI
