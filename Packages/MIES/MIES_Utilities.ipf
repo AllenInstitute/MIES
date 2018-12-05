@@ -113,10 +113,17 @@ Function ASSERT(var, errorMsg)
 		print "MIES version:"
 		print miesVersionStr
 		print "################################"
+#endif // AUTOMATED_TESTING
 
+		// --- Cleanup functions
+		ASYNC_Stop(timeout=1, fromAssert=1)
+		// --- End of cleanup functions
+
+#ifndef AUTOMATED_TESTING
 		ControlWindowToFront()
 		Debugger
 #endif // AUTOMATED_TESTING
+
 		Abort
 	endtry
 End
