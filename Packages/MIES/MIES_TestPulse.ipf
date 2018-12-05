@@ -137,6 +137,177 @@ Function TP_SplitStoredTestPulseWave(panelTitle)
 	endfor
 End
 
+/// @brief Receives data from the async function TP_TSAnalysis(), buffers partial results and puts
+/// complete results back to main thread,
+/// results are base line level, steady state resistance, instantaneous resistance and their positions
+/// collected results for all channels of a measurement are send to TP_RecordTP(), DQ_ApplyAutoBias() when complete
+///
+/// @param dfr output data folder from ASYNC frame work with results from workloads associated with this registered function
+///		  The output parameter in the data folder follow the definition as created in TP_TSAnalysis()
+///
+/// @param err error code of TP_TSAnalysis() function
+///
+/// @param errmsg error message of TP_TSAnalysis() function
+Function TP_ROAnalysis(dfr, err, errmsg)
+	DFREF dfr
+	variable err
+	string errmsg
+
+	variable i, j, bufSize
+	variable posMarker, posAsync
+	variable posBaseline, posSSRes, posInstRes
+
+	if(err)
+		ASSERT(0, "RTError " + num2str(err) + " in TP_Analysis thread: " + errmsg)
+	endif
+
+	WAVE/SDFR=dfr inData=outData
+	NVAR/SDFR=dfr now=now
+	NVAR/SDFR=dfr hsIndex=hsIndex
+	SVAR/SDFR=dfr panelTitle=panelTitle
+	NVAR/SDFR=dfr marker=marker
+	NVAR/SDFR=dfr activeADCs=activeADCs
+
+	WAVE asyncBuffer = GetTPResultAsyncBuffer(panelTitle)
+
+	bufSize = DimSize(asyncBuffer, ROWS)
+	posMarker = FindDimLabel(asyncBuffer, LAYERS, "MARKER")
+	posAsync = FindDimLabel(asyncBuffer, COLS, "ASYNCDATA")
+	posBaseline = FindDimLabel(asyncBuffer, COLS, "BASELINE")
+	posSSRes = FindDimLabel(asyncBuffer, COLS, "STEADYSTATERES")
+	posInstRes = FindDimLabel(asyncBuffer, COLS, "INSTANTRES")
+
+#if IgorVersion() >= 8.00
+
+	FindValue/RMD=[][posAsync][posMarker, posMarker]/V=(marker)/T=0 asyncBuffer
+	i = V_Value >= 0 ? V_Row : bufSize
+
+#else
+
+	for(i = 0; i < bufSize; i += 1)
+		if(asyncBuffer[i][posAsync][posMarker] == marker)
+			break
+		endif
+	endfor
+
+#endif
+
+	if(i == bufSize)
+		Redimension/N=(bufSize + 1, -1, -1) asyncBuffer
+		asyncBuffer[bufSize][][] = NaN
+		asyncBuffer[bufSize][posAsync][%REC_CHANNELS] = 0
+		asyncBuffer[bufSize][posAsync][posMarker] = marker
+	endif
+
+	asyncBuffer[i][posBaseline][hsIndex] = inData[%BASELINE]
+	asyncBuffer[i][posSSRes][hsIndex] = inData[%STEADYSTATERES]
+	asyncBuffer[i][posInstRes][hsIndex] = inData[%INSTANTRES]
+
+	asyncBuffer[i][posAsync][%NOW] = now
+	asyncBuffer[i][posAsync][%REC_CHANNELS] += 1
+
+	// got one set of results ready
+	if(asyncBuffer[i][posAsync][%REC_CHANNELS] == activeADCs)
+
+		WAVE BaselineSSAvg = GetBaselineAverage(panelTitle)
+		WAVE SSResistance = GetSSResistanceWave(panelTitle)
+		WAVE InstResistance = GetInstResistanceWave(panelTitle)
+		MultiThread BaselineSSAvg[] = asyncBuffer[i][posBaseline][p]
+		MultiThread SSResistance[] = asyncBuffer[i][posSSRes][p]
+		MultiThread InstResistance[] = asyncBuffer[i][posInstRes][p]
+
+		NVAR tpBufferSize = $GetTPBufferSizeGlobal(panelTitle)
+		if(tpBufferSize > 1)
+			DFREF dfr = GetDeviceTestPulse(panelTitle)
+			WAVE/SDFR=dfr TPBaselineBuffer, TPInstBuffer, TPSSBuffer
+
+			TP_CalculateAverage(TPBaselineBuffer, BaselineSSAvg)
+			TP_CalculateAverage(TPInstBuffer, InstResistance)
+			TP_CalculateAverage(TPSSBuffer, SSResistance)
+		endif
+
+		TP_RecordTP(panelTitle, BaselineSSAvg, InstResistance, SSResistance, now)
+		DQ_ApplyAutoBias(panelTitle, BaselineSSAvg, SSResistance)
+
+		// Remove finished results from buffer
+		DeletePoints i, 1, asyncBuffer
+		if(!DimSize(asyncBuffer, ROWS))
+			KillOrMoveToTrash(wv=asyncBuffer)
+		endif
+
+	endif
+
+End
+
+/// @brief This function analyses a TP data set. It is called by the ASYNC frame work in an own thread.
+/// 		  currently six properties are determined.
+///
+/// @param dfrInp input data folder from the ASYNC framework, parameter input order therein follows the setup in TP_SendToAnalysis()
+///
+threadsafe Function/DF TP_TSAnalysis(dfrInp)
+	DFREF dfrInp
+
+	variable evalRange, refTime, refPoint, tpStartPoint
+	variable sampleInt
+	variable avgBaselineSS, avgTPSS, avgInst
+
+	DFREF dfrOut = NewFreeDataFolder()
+
+	WAVE data = dfrInp:param0
+	NVAR/SDFR=dfrInp clampAmp = param1
+	NVAR/SDFR=dfrInp clampMode = param2
+	NVAR/SDFR=dfrInp duration = param3
+	NVAR/SDFR=dfrInp baselineFrac = param4
+	NVAR/SDFR=dfrInp lengthTPInPoints = param5
+	NVAR/SDFR=dfrInp now = param6
+	NVAR/SDFR=dfrInp hsIndex = param7
+	SVAR/SDFR=dfrInp panelTitle = param8
+	NVAR/SDFR=dfrInp marker = param9
+	NVAR/SDFR=dfrInp activeADCs = param10
+
+	// Rows:
+	// 0: base line level
+	// 1: steady state resistance
+	// 2: instantaneous resistance
+	Make/N=3/D dfrOut:outData/wave=outData
+	SetDimLabel ROWS, 0, BASELINE, outData
+	SetDimLabel ROWS, 1, STEADYSTATERES, outData
+	SetDimLabel ROWS, 2, INSTANTRES, outData
+
+	sampleInt = DimDelta(data, ROWS)
+	tpStartPoint = baseLineFrac * lengthTPInPoints
+	evalRange = min(5 / sampleInt, min(duration * 0.2, tpStartPoint * 0.2)) * sampleInt
+
+	refTime = (tpStartPoint - TP_EVAL_POINT_OFFSET) * sampleInt
+	AvgBaselineSS = mean(data, refTime - evalRange, refTime)
+
+	refTime = (lengthTPInPoints - tpStartPoint - TP_EVAL_POINT_OFFSET) * sampleInt
+	avgTPSS = mean(data, refTime - evalRange, refTime)
+
+	refPoint = tpStartPoint + TP_EVAL_POINT_OFFSET
+	Duplicate/FREE/R=[refPoint, refPoint + 0.25 / sampleInt] data, inst1d
+	WaveStats/Q/M=1 inst1d
+	avgInst = (clampAmp < 0) ? mean(inst1d, pnt2x(inst1d, V_minRowLoc - 1), pnt2x(inst1d, V_minRowLoc + 1)) : mean(inst1d, pnt2x(inst1d, V_maxRowLoc - 1), pnt2x(inst1d, V_maxRowLoc + 1))
+
+	if(clampMode == I_CLAMP_MODE)
+		outData[1] = (avgTPSS - avgBaselineSS) / clampAmp * 1000
+		outData[2] = (avgInst - avgBaselineSS) / clampAmp * 1000
+	else
+		outData[1] = clampAmp / (avgTPSS - avgBaselineSS) * 1000
+		outData[2] = clampAmp / (avgInst - avgBaselineSS) * 1000
+	endif
+	outData[0] = avgBaselineSS
+
+	// additional data copy
+	variable/G dfrOut:now = now
+	variable/G dfrOut:hsIndex = hsIndex
+	string/G dfrOut:panelTitle = panelTitle
+	variable/G dfrOut:marker = marker
+	variable/G dfrOut:activeADCs = activeADCs
+
+	return dfrOut
+End
+
 /// @brief Calculates peak and steady state resistance simultaneously on all active headstages. Also returns basline Vm.
 ///
 /// \rst
@@ -284,7 +455,7 @@ Function TP_Delta(panelTitle)
 		TP_CalculateAverage(TPSSBuffer, SSResistance)
 	endif
 
-	TP_RecordTP(panelTitle, BaselineSSAvg, InstResistance, SSResistance)
+	TP_RecordTP(panelTitle, BaselineSSAvg, InstResistance, SSResistance, ticks * TICKS_TO_SECONDS)
 	DQ_ApplyAutoBias(panelTitle, BaselineSSAvg, SSResistance)
 
 	DEBUGPRINT_ELAPSED(referenceTime)
@@ -340,17 +511,22 @@ static Function TP_CalculateAverage(buffer, dest)
 	endif
 End
 
-/// @brief Records values from  BaselineSSAvg, InstResistance, SSResistance into TPStorage
-static Function TP_RecordTP(panelTitle, BaselineSSAvg, InstResistance, SSResistance)
-	string panelTitle
-	WAVE BaselineSSAvg, InstResistance, SSResistance
+/// @brief Records values from  BaselineSSAvg, InstResistance, SSResistance into TPStorage at defined intervals.
+///
+/// Used for analysis of TP over time.
+/// When the TP is initiated by any method, the TP storageWave should be empty
+/// If 200 ms have elapsed, or it is the first TP sweep,
+/// data from the input waves is transferred to the storage waves.
+static Function TP_RecordTP(panelTitle, BaselineSSAvg, InstResistance, SSResistance, now)
+	string 	panelTitle
+	wave 	BaselineSSAvg, InstResistance, SSResistance
+	variable now
 
 	variable delta, i, headstage, ret, lastPressureCtrl
 	WAVE TPStorage = GetTPStorage(panelTitle)
 	WAVE activeHSProp = GetActiveHSProperties(panelTitle)
 	Wave GUIState  = GetDA_EphysGuiStateNum(panelTitle)
 	variable count = GetNumberFromWaveNote(TPStorage, NOTE_INDEX)
-	variable now   = ticks * TICKS_TO_SECONDS
 	variable lastRescaling = GetNumberFromWaveNote(TPStorage, DIMENSION_SCALING_LAST_INVOC)
 
 	if(!count)
