@@ -137,6 +137,7 @@ static Function TPM_BkrdTPMD(panelTitle, [triggerMode])
 			break
 	endswitch
 	if(!IsBackgroundTaskRunning(TASKNAME_TPMD))
+		ASYNC_Start(ThreadProcessorCount, disableTask=1)
 		CtrlNamedBackground $TASKNAME_TPMD, period=5, proc=TPM_BkrdTPFuncMD
 		CtrlNamedBackground $TASKNAME_TPMD, start
 	endif
@@ -296,6 +297,7 @@ static Function TPM_StopTPMD(panelTitle)
 		TPM_RemoveDevice(panelTitle)
 		if(!TPM_HasActiveDevices())
 			CtrlNamedBackground $TASKNAME_TPMD, stop
+			ASYNC_Stop(timeout=10)
 		endif
 		TP_Teardown(panelTitle)
 	endif
