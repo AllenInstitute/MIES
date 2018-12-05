@@ -151,7 +151,7 @@ Function TPM_BkrdTPFuncMD(s)
 
 	variable i, j, deviceID, fifoPos, hardwareType, checkAgain, updateInt, endOfPulse
 	variable pointsCompletedInITCDataWave, activeChunk, now, readTimeStamp, measurementMarker
-	variable channelNr, startOfADColumns, numEntries, tpLengthPoints
+	variable channelNr, startOfADColumns, numEntries, tpLengthPoints, err
 	string panelTitle, fifoChannelName, fifoName, errMsg
 
 	WAVE ActiveDeviceList = GetActiveDevicesTPMD()
@@ -229,8 +229,13 @@ Function TPM_BkrdTPFuncMD(s)
 							SCOPE_UpdateOscilloscopeData(panelTitle, TEST_PULSE_MODE, deviceID=deviceID)
 						catch
 							errMsg = GetRTErrMessage()
-							print "Reading from NI device " + panelTitle + " failed with code: " + num2str(getRTError(1)) + "\r" + errMsg
-							ControlWindowToFront()
+							err = getRTError(1)
+							DQ_StopOngoingDAQ(panelTitle)
+							if(err == 18)
+								ASSERT(0, "Acquisition FIFO overflow, data lost. This may happen if the computer is too slow.")
+							else
+								ASSERT(0, "Error reading data from NI device: code " + num2str(err) + "\r" + errMsg)
+							endif
 						endtry
 
 						tpCounter += 1
