@@ -136,11 +136,12 @@ End
 /// - Sizes of all dimensions
 /// - Labels of all dimensions
 /// - Wave data type
-/// - Prefilled wave content
+/// - Prefilled wave content or wave note
 ///
-/// This also means that the name and location of the wave does *not* influence the
-/// wave version. Use UpgradeWaveLocationAndGetIt() for that. The main reason is that
-/// for being able to query the wave version you already need to know where it is.
+/// This also means that the name and location of the wave does *not* influence
+/// the wave version. Use UpgradeWaveLocationAndGetIt() if you need to move the
+/// wave. The main reason is that for being able to query the wave version you
+/// already need to know where it is.
 ///
 /// In order to enable smooth upgrades between old and new wave layouts
 /// the following code pattern can be used:
@@ -151,16 +152,20 @@ End
 /// 		string panelTitle
 ///
 /// 		DFREF dfr = GetMyPath(panelTitle)
-/// 		variable versionOfNewWave = 1
+/// 		variable versionOfNewWave = 2
 ///
 /// 		Wave/Z/SDFR=dfr wv = myWave
 ///
 /// 		if(ExistsWithCorrectLayoutVersion(wv, versionOfNewWave))
 /// 			return wv
 /// 		elseif(WaveExists(wv)) // handle upgrade
-/// 		    // change the required dimensions and leave all others untouched with -1
-/// 		    // the extended dimensions are initialized with zero
-/// 			Redimension/N=(10, -1, -1, -1) wv
+/// 			if(WaveVersionIsAtLeast(wv, 1)) // 1->2
+/// 				Redimension/D wv
+/// 			else // no-version->2
+/// 				// change the required dimensions and leave all others untouched with -1
+/// 				// the extended dimensions are initialized with zero
+/// 				Redimension/D/N=(10, -1, -1, -1) wv
+/// 			endif
 /// 		else
 /// 			Make/N=(10, 2) dfr:myWave/Wave=wv
 /// 		end
@@ -171,11 +176,10 @@ End
 /// 	End
 /// \endrst
 ///
-/// Now everytime the layout of `myWave` changes, raise `versionOfNewWave` by 1 and
-/// adapt the `Make` and `Redimension` calls. When `GetMyWave` is called the first time,
-/// the wave is redimensioned, and on successive calls the newly recreated wave is just returned.
-/// Fancy solutions might adapt the redimensioning step depending on the new and old version.
-/// The old version can be queried with `GetNumberFromWaveNote(wv, WAVE_NOTE_LAYOUT_KEY)`.
+/// Now everytime the layout of `myWave` changes, raise `versionOfNewWave` by 1
+/// and add a new `WaveVersionIsAtLeast` branch. When `GetMyWave` is called the
+/// first time, the wave is redimensioned or rebuilt as double wave depending
+/// on the current version, and on successive calls the wave is returned as is.
 ///
 /// Hints:
 /// - Wave layout versioning is *mandatory* if you change the layout of the wave
