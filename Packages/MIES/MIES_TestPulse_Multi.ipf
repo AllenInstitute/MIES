@@ -150,7 +150,8 @@ Function TPM_BkrdTPFuncMD(s)
 	STRUCT BackgroundStruct &s
 
 	variable i, j, deviceID, fifoPos, hardwareType, checkAgain, updateInt, endOfPulse
-	variable pointsCompletedInITCDataWave, activeChunk, now
+	variable pointsCompletedInITCDataWave, activeChunk, now, readTimeStamp, measurementMarker
+	variable channelNr, startOfADColumns, numEntries, tpLengthPoints
 	string panelTitle, fifoChannelName, fifoName, errMsg
 
 	WAVE ActiveDeviceList = GetActiveDevicesTPMD()
@@ -171,6 +172,15 @@ Function TPM_BkrdTPFuncMD(s)
 		deviceID = ActiveDeviceList[i][%DeviceID]
 		hardwareType = ActiveDeviceList[i][%HardwareType]
 		panelTitle = HW_GetMainDeviceName(hardwareType, deviceID)
+
+		DFREF dfrTP = GetDeviceTestPulse(panelTitle)
+		WAVE activeHSProp = GetActiveHSProperties(panelTitle)
+		NVAR duration = $GetTestpulseDuration(panelTitle)
+		NVAR baselineFrac = $GetTestpulseBaselineFraction(panelTitle)
+		readTimeStamp = ticks * TICKS_TO_SECONDS
+		measurementMarker = GetNonreproduciblerandom()
+		tpLengthPoints = TP_GetTestPulseLengthInPoints(panelTitle, TEST_PULSE_MODE)
+
 		switch(hardwareType)
 			case HARDWARE_NI_DAC:
 				// Pull data until end of FIFO, after BGTask finishes Graph shows only last update
@@ -187,15 +197,36 @@ Function TPM_BkrdTPFuncMD(s)
 						WAVE/WAVE NIDataWave = GetHardwareDataWave(panelTitle)
 
 						try
+
 							for(j = 0; j < V_FIFOnchans; j += 1)
 								fifoChannelName = StringByKey("NAME" + num2str(j), S_Info)
-								WAVE NIChannel = NIDataWave[str2num(fifoChannelName)]
+								channelNr = str2num(fifoChannelName)
+								WAVE NIChannel = NIDataWave[channelNr]
 								FIFO2WAVE/R=[endOfPulse - datapoints, endOfPulse - 1] $fifoName, $fifoChannelName, NIChannel; AbortOnRTE
 								SetScale/P x, 0, DimDelta(NIChannel, ROWS) * 1000, "ms", NIChannel
+
+								DFREF threadDF = ASYNC_PrepareDF("TP_TSAnalysis", "TP_ROAnalysis", inOrder=0)
+								ASYNC_AddParam(threadDF, w=NIChannel)
+								if(activeHSProp[j][%ClampMode] == I_CLAMP_MODE)
+									NVAR/SDFR=dfrTP clampAmp=amplitudeIC
+								else
+									NVAR/SDFR=dfrTP clampAmp=amplitudeVC
+								endif
+								ASYNC_AddParam(threadDF, var=clampAmp)
+								ASYNC_AddParam(threadDF, var=activeHSProp[j][%ClampMode])
+								ASYNC_AddParam(threadDF, var=duration)
+								ASYNC_AddParam(threadDF, var=baselineFrac)
+								ASYNC_AddParam(threadDF, var=tpLengthPoints)
+								ASYNC_AddParam(threadDF, var=readTimeStamp)
+								ASYNC_AddParam(threadDF, var=channelNr)
+								ASYNC_AddParam(threadDF, str=panelTitle)
+								ASYNC_AddParam(threadDF, var=measurementMarker)
+								ASYNC_AddParam(threadDF, var=V_FIFOnchans)
+								ASYNC_Execute(threadDF)
+
 							endfor
 
 							SCOPE_UpdateOscilloscopeData(panelTitle, TEST_PULSE_MODE, deviceID=deviceID)
-							TP_Delta(panelTitle)
 						catch
 							errMsg = GetRTErrMessage()
 							print "Reading from NI device " + panelTitle + " failed with code: " + num2str(getRTError(1)) + "\r" + errMsg
@@ -254,13 +285,44 @@ Function TPM_BkrdTPFuncMD(s)
 			pointsCompletedInITCDataWave = mod(fifoPos, DimSize(ITCDataWave, ROWS))
 
 			// extract the last fully completed chunk
-			activeChunk = floor(pointsCompletedInITCDataWave / TP_GetTestPulseLengthInPoints(panelTitle, TEST_PULSE_MODE)) - 1
+			activeChunk = floor(pointsCompletedInITCDataWave / tpLengthPoints) - 1
 
 			// Ensures that the new TP chunk isn't the same as the last one.
 			// This is required to keep the TP buffer in sync.
 			if(activeChunk >= 0 && activeChunk != ActiveDeviceList[i][%ActiveChunk])
 				SCOPE_UpdateOscilloscopeData(panelTitle, TEST_PULSE_MODE, chunk=activeChunk)
-				TP_Delta(panelTitle)
+
+				WAVE OscilloscopeData = GetOscilloscopeWave(panelTitle)
+				WAVE ITCChanConfigWave = GetITCChanConfigWave(panelTitle)
+				WAVE ADCs = GetADCListFromConfig(ITCChanConfigWave)
+				startOfADColumns = DimSize(GetDACListFromConfig(ITCChanConfigWave), ROWS)
+				numEntries = DimSize(ADCs, ROWS)
+				Make/FREE/N=(DimSize(OscilloscopeData, ROWS)) channelData
+
+				for(j = 0; j < numEntries; j += 1)
+					MultiThread channelData[] = OscilloscopeData[p][startOfADColumns + j]
+					CopyScales OscilloscopeData channelData
+
+					DFREF threadDF = ASYNC_PrepareDF("TP_TSAnalysis", "TP_ROAnalysis", inOrder=0)
+					ASYNC_AddParam(threadDF, w=channelData)
+					if(activeHSProp[j][%ClampMode] == I_CLAMP_MODE)
+						NVAR/SDFR=dfrTP clampAmp=amplitudeIC
+					else
+						NVAR/SDFR=dfrTP clampAmp=amplitudeVC
+					endif
+					ASYNC_AddParam(threadDF, var=clampAmp)
+					ASYNC_AddParam(threadDF, var=activeHSProp[j][%ClampMode])
+					ASYNC_AddParam(threadDF, var=duration)
+					ASYNC_AddParam(threadDF, var=baselineFrac)
+					ASYNC_AddParam(threadDF, var=tpLengthPoints)
+					ASYNC_AddParam(threadDF, var=readTimeStamp)
+					ASYNC_AddParam(threadDF, var=ADCs[j])
+					ASYNC_AddParam(threadDF, str=panelTitle)
+					ASYNC_AddParam(threadDF, var=measurementMarker)
+					ASYNC_AddParam(threadDF, var=numEntries)
+					ASYNC_Execute(threadDF)
+				endfor
+
 				ActiveDeviceList[i][%ActiveChunk] = activeChunk
 			endif
 
@@ -273,6 +335,8 @@ Function TPM_BkrdTPFuncMD(s)
 			timestamp = now
 			SCOPE_UpdateGraph(panelTitle)
 		endif
+
+		ASYNC_ThreadReadOut()
 
 		if(GetKeyState(0) & ESCAPE_KEY)
 			DQ_StopOngoingDAQ(panelTitle)
