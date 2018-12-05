@@ -677,37 +677,6 @@ static Function TP_AnalyzeTP(panelTitle, TPStorage, endRow)
 	endfor
 End
 
-/// @brief Returns the column of any of the TP results waves (TPBaseline, TPInstResistance, TPSSResistance) associated with a headstage.
-///
-Function TP_GetTPResultsColOfHS(panelTitle, headStage)
-	string panelTitle
-	variable headStage
-	variable ADC
-	DFREF dfr = GetDevicePath(panelTitle)
-	Wave/Z/SDFR=dfr wv = ITCChanConfigWave
-	if(!WaveExists(Wv))
-		return -1
-	endif	
-	// Get the AD channel associated with the headstage
-	ADC = AFH_GetADCFromHeadstage(panelTitle, headstage)
-	// Get the first AD rows of the ITCChanConfig wave
-	matrixOp/FREE OneDwave = col(Wv, 0) // extract the channel type column
-	FindValue/V = 0 OneDwave // ITC_XOP_CHANNEL_TYPE_ADC // find the AD channels
-	if(V_Value == -1)
-		return -1
-	endif
-	//ASSERT(V_Value + 1, "No AD Columns found in ITCChanConfigWave")
-	variable FirstADColumn = V_Value
-	// Get the Column used by the headstage
-	matrixOp/FREE OneDwave = col(Wv, 1) // Extract the channel number column
-	findValue/S=(FirstADColumn)/V=(ADC) OneDwave // find the specific AD channel
-	if(V_Value == -1)
-		return -1
-	endif
-	//ASSERT(V_Value + 1, "AD channel not found in ITCChaneConfigWave")
-	return V_value - FirstADColumn
-End
-
 /// @brief Stop running background testpulse on all locked devices
 Function TP_StopTestPulseOnAllDevices()
 
