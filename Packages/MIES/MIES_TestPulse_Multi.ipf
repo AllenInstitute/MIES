@@ -296,6 +296,7 @@ Function TPM_BkrdTPFuncMD(s)
 			pointsCompletedInITCDataWave = mod(fifoPos, DimSize(ITCDataWave, ROWS))
 
 			// extract the last fully completed chunk
+			// for ITC only the last complete TP is evaluated, all earlier TPs get discarded
 			activeChunk = floor(pointsCompletedInITCDataWave / tpLengthPoints) - 1
 
 			// Ensures that the new TP chunk isn't the same as the last one.
