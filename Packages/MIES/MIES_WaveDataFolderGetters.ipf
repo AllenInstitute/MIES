@@ -1988,6 +1988,7 @@ Function/Wave GetTPStorage(panelTitle)
 	elseif(WaveExists(wv))
 		if(WaveVersionIsAtLeast(wv, 8))
 			SetNumberInWaveNote(wv, PRESSURE_CTRL_LAST_INVOC, 0)
+			SetWaveVersion(wv, versionOfNewWave)
 			return wv
 		else
 			Redimension/N=(-1, NUM_HEADSTAGES, 20)/D wv
