@@ -340,16 +340,22 @@ End
 /// If the threads have to be stopped forcefully, an assertion is raised.
 /// Using a finite timeout is strongly recommended.
 ///
+/// @param fromAssert [optional, default = 0] specified when called as cleanup function from ASSERT
+/// Suppresses further assertions such that all required cleanup routines such as ThreadGroupRelease
+/// are executed.
+///
 /// @return 1 if a timeout was encountered, 0 otherwise
-Function ASYNC_Stop([timeout])
-	variable timeout
+Function ASYNC_Stop([timeout, fromAssert])
+	variable timeout, fromAssert
 
-	variable i, endtime, waitResult, localtgID, outatime
+	variable i, endtime, waitResult, localtgID, outatime, err
 
 	NVAR tgID = $GetThreadGroupID()
 	if(isNaN(tgID))
 		return 0
 	endif
+
+	fromAssert = ParamIsDefault(fromAssert) ? 0 : !!fromAssert
 
 	// Send abort to all threads
 	NVAR numThreads = $GetNumThreads()
@@ -362,7 +368,15 @@ Function ASYNC_Stop([timeout])
 		variable/G dfr:$ASYNC_THREAD_MARKER_STR
 		NVAR marker = dfr:$ASYNC_THREAD_MARKER_STR
 		marker = ASYNC_THREAD_MARKER
-		ASYNC_Execute(dfr)
+		if(fromAssert)
+			try
+				ASYNC_Execute(dfr);AbortOnRTE
+			catch
+				err = GetRTError(1)
+			endtry
+		else
+			ASYNC_Execute(dfr)
+		endif
 	endfor
 
 	// Wait for all threads to finish (or timeout)
@@ -391,7 +405,15 @@ Function ASYNC_Stop([timeout])
 		WAVE workerIDCounter = GetWorkerIDCounter(getAsyncHomeDF())
 		do
 			if(ReadOutCounter < workerIDCOunter[0] - numThreads)
-				ASYNC_ThreadReadOut()
+				if(fromAssert)
+					try
+						ASYNC_ThreadReadOut();AbortOnRTE
+					catch
+						err = GetRTError(1)
+					endtry
+				else
+					ASYNC_ThreadReadOut()
+				endif
 			else
 				break
 			endif
@@ -406,7 +428,10 @@ Function ASYNC_Stop([timeout])
 
 	localtgID = tgID
 	KillDataFolder GetAsyncHomeDF()
-	ASSERT(!(ThreadGroupRelease(localtgID) == -2), "Async framework stopped forcefully")
+	err = ThreadGroupRelease(localtgID)
+	if(!fromAssert)
+		ASSERT(err != -2, "Async framework stopped forcefully")
+	endif
 
 	return outatime
 End
