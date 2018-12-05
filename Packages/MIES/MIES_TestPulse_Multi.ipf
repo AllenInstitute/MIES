@@ -154,6 +154,8 @@ Function TPM_BkrdTPFuncMD(s)
 	variable channelNr, startOfADColumns, numEntries, tpLengthPoints, err
 	string panelTitle, fifoChannelName, fifoName, errMsg
 
+	variable debTime
+
 	WAVE ActiveDeviceList = GetActiveDevicesTPMD()
 
 	if(s.wmbs.started)
@@ -165,6 +167,8 @@ Function TPM_BkrdTPFuncMD(s)
 	endif
 
 	now = DateTime
+
+	debTime = DEBUG_TIMER_START()
 
 	// works through list of active devices
 	// update parameters for a particular active device
@@ -241,6 +245,8 @@ Function TPM_BkrdTPFuncMD(s)
 						tpCounter += 1
 						if((DateTime - now) < TPM_NI_TASKTIMEOUT)
 							checkAgain = 1
+						else
+							DEBUGPRINT("Warning: NI DAC readout is late, aborted further reading.")
 						endif
 					endif
 					if(V_FIFOChunks > TPM_NI_FIFO_THRESHOLD_SIZE)
@@ -347,6 +353,8 @@ Function TPM_BkrdTPFuncMD(s)
 			DQ_StopOngoingDAQ(panelTitle)
 		endif
 	endfor
+
+	DEBUGPRINT_ELAPSED(debTime)
 
 	return 0
 End
