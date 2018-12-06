@@ -903,3 +903,22 @@ Function TP_CreateTestPulseWave(panelTitle)
 	NVAR baselineFrac = $GetTestpulseBaselineFraction(panelTitle)
 	TestPulse[baselineFrac * length, (1 - baselineFrac) * length] = 1
 End
+
+/// @brief Send a TP data set to the asynchroneous analysis function TP_TSAnalysis
+Function TP_SendToAnalysis(tpInput)
+	STRUCT TPAnalysisInput &tpInput
+
+	DFREF threadDF = ASYNC_PrepareDF("TP_TSAnalysis", "TP_ROAnalysis", inOrder=0)
+	ASYNC_AddParam(threadDF, w=tpInput.data)
+	ASYNC_AddParam(threadDF, var=tpInput.clampAmp)
+	ASYNC_AddParam(threadDF, var=tpInput.clampMode)
+	ASYNC_AddParam(threadDF, var=tpInput.duration)
+	ASYNC_AddParam(threadDF, var=tpInput.baselineFrac)
+	ASYNC_AddParam(threadDF, var=tpInput.tpLengthPoints)
+	ASYNC_AddParam(threadDF, var=tpInput.readTimeStamp)
+	ASYNC_AddParam(threadDF, var=tpInput.hsIndex)
+	ASYNC_AddParam(threadDF, str=tpInput.panelTitle)
+	ASYNC_AddParam(threadDF, var=tpInput.measurementMarker)
+	ASYNC_AddParam(threadDF, var=tpInput.activeADCs)
+	ASYNC_Execute(threadDF)
+End
