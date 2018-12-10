@@ -15,28 +15,28 @@ Function/WAVE InvalidSignatureAndReturnType()
 	FAIL()
 End
 
-Function/WAVE InvalidReturnTypeAndValidSig_V1(panelTitle, eventType, ITCDataWave, headStage)
+Function/WAVE InvalidReturnTypeAndValidSig_V1(panelTitle, eventType, HardwareDataWave, headStage)
 	string panelTitle
 	variable eventType
-	Wave ITCDataWave
+	Wave HardwareDataWave
 	variable headstage
 
 	FAIL()
 End
 
-Function/WAVE InvalidReturnTypeAndValidSig_V2(panelTitle, eventType, ITCDataWave, headStage, realDataLength)
+Function/WAVE InvalidReturnTypeAndValidSig_V2(panelTitle, eventType, HardwareDataWave, headStage, realDataLength)
 	string panelTitle
 	variable eventType
-	Wave ITCDataWave
+	Wave HardwareDataWave
 	variable headstage, realDataLength
 
 	FAIL()
 End
 
-Function ValidFunc_V1(panelTitle, eventType, ITCDataWave, headStage)
+Function ValidFunc_V1(panelTitle, eventType, HardwareDataWave, headStage)
 	string panelTitle
 	variable eventType
-	Wave ITCDataWave
+	Wave HardwareDataWave
 	variable headstage
 
 	CHECK_NON_EMPTY_STR(panelTitle)
@@ -44,14 +44,14 @@ Function ValidFunc_V1(panelTitle, eventType, ITCDataWave, headStage)
 
 	switch(GetHardwareType(panelTitle))
 		case HARDWARE_ITC_DAC:
-			CHECK_WAVE(ITCDataWave, NUMERIC_WAVE)
+			CHECK_WAVE(HardwareDataWave, NUMERIC_WAVE)
 			break
 		case HARDWARE_NI_DAC:
-			CHECK_WAVE(ITCDataWave, WAVE_WAVE)
+			CHECK_WAVE(HardwareDataWave, WAVE_WAVE)
 			break
 	endswitch
 
-	CHECK_EQUAL_VAR(NumberByKey("LOCK", WaveInfo(ITCDataWave, 0)), 1)
+	CHECK_EQUAL_VAR(NumberByKey("LOCK", WaveInfo(HardwareDataWave, 0)), 1)
 	CHECK_EQUAL_VAR(headstage, 0)
 
 	WAVE anaFuncTracker = TrackAnalysisFunctionCalls()
@@ -60,10 +60,10 @@ Function ValidFunc_V1(panelTitle, eventType, ITCDataWave, headStage)
 	anaFuncTracker[eventType] += 1
 End
 
-Function ValidFunc_V2(panelTitle, eventType, ITCDataWave, headStage, realDataLength)
+Function ValidFunc_V2(panelTitle, eventType, HardwareDataWave, headStage, realDataLength)
 	string panelTitle
 	variable eventType
-	Wave ITCDataWave
+	Wave HardwareDataWave
 	variable headstage, realDataLength
 
 	CHECK_NON_EMPTY_STR(panelTitle)
@@ -71,20 +71,26 @@ Function ValidFunc_V2(panelTitle, eventType, ITCDataWave, headStage, realDataLen
 
 	switch(GetHardwareType(panelTitle))
 		case HARDWARE_ITC_DAC:
-			CHECK_WAVE(ITCDataWave, NUMERIC_WAVE)
+			CHECK_WAVE(HardwareDataWave, NUMERIC_WAVE)
 			break
 		case HARDWARE_NI_DAC:
-			CHECK_WAVE(ITCDataWave, WAVE_WAVE)
+			CHECK_WAVE(HardwareDataWave, WAVE_WAVE)
 			break
 	endswitch
 
-	CHECK_EQUAL_VAR(NumberByKey("LOCK", WaveInfo(ITCDataWave, 0)), 1)
+	CHECK_EQUAL_VAR(NumberByKey("LOCK", WaveInfo(HardwareDataWave, 0)), 1)
 	CHECK_EQUAL_VAR(headstage, 0)
 
 	if(eventType == PRE_DAQ_EVENT || eventType == PRE_SET_EVENT)
 		CHECK_EQUAL_VAR(numType(realDataLength), 2)
+	elseif(GetHardWareType(panelTitle) == HARDWARE_ITC_DAC)
+		CHECK(realDataLength >= 0 && realDataLength < DimSize(HardwareDataWave, ROWS))
+	elseif(GetHardWareType(panelTitle) == HARDWARE_NI_DAC)
+		WAVE/WAVE HardwareDataWaveRef = HardwareDataWave
+		Make/FREE/N=(DimSize(HardwareDataWaveRef, ROWS)) sizes = DimSize(HardwareDataWaveRef[p], ROWS)
+		CHECK(realDataLength >= 0 && realDataLength <= WaveMax(sizes))
 	else
-		CHECK(realDataLength >= 0 && realDataLength < DimSize(ITCDataWave, ROWS))
+		FAIL()
 	endif
 
 	WAVE anaFuncTracker = TrackAnalysisFunctionCalls()
@@ -93,16 +99,25 @@ Function ValidFunc_V2(panelTitle, eventType, ITCDataWave, headStage, realDataLen
 	anaFuncTracker[eventType] += 1
 End
 
-Function ValidMultHS_V1(panelTitle, eventType, ITCDataWave, headStage)
+Function ValidMultHS_V1(panelTitle, eventType, HardwareDataWave, headStage)
 	string panelTitle
 	variable eventType
-	Wave ITCDataWave
+	Wave HardwareDataWave
 	variable headstage
 
 	CHECK_NON_EMPTY_STR(panelTitle)
 	CHECK_EQUAL_VAR(numType(eventType), 0)
-	CHECK_WAVE(ITCDataWave, NUMERIC_WAVE)
-	CHECK_EQUAL_VAR(NumberByKey("LOCK", WaveInfo(ITCDataWave, 0)), 1)
+
+	switch(GetHardwareType(panelTitle))
+		case HARDWARE_ITC_DAC:
+			CHECK_WAVE(HardwareDataWave, NUMERIC_WAVE)
+			break
+		case HARDWARE_NI_DAC:
+			CHECK_WAVE(HardwareDataWave, WAVE_WAVE)
+			break
+	endswitch
+
+	CHECK_EQUAL_VAR(NumberByKey("LOCK", WaveInfo(HardwareDataWave, 0)), 1)
 
 	WAVE anaFuncTracker = TrackAnalysisFunctionCalls()
 
@@ -110,19 +125,19 @@ Function ValidMultHS_V1(panelTitle, eventType, ITCDataWave, headStage)
 	anaFuncTracker[eventType][headstage] += 1
 End
 
-Function NotCalled_V1(panelTitle, eventType, ITCDataWave, headStage)
+Function NotCalled_V1(panelTitle, eventType, HardwareDataWave, headStage)
 	string panelTitle
 	variable eventType
-	Wave ITCDataWave
+	Wave HardwareDataWave
 	variable headstage
 
 	FAIL()
 End
 
-Function preDAQHardAbort(panelTitle, eventType, ITCDataWave, headStage, realDataLength)
+Function preDAQHardAbort(panelTitle, eventType, HardwareDataWave, headStage, realDataLength)
 	string panelTitle
 	variable eventType
-	Wave ITCDataWave
+	Wave HardwareDataWave
 	variable headstage, realDataLength
 
 	WAVE anaFuncTracker = TrackAnalysisFunctionCalls()
@@ -135,10 +150,10 @@ Function preDAQHardAbort(panelTitle, eventType, ITCDataWave, headStage, realData
 	endif
 End
 
-Function preDAQ(panelTitle, eventType, ITCDataWave, headStage, realDataLength)
+Function preDAQ(panelTitle, eventType, HardwareDataWave, headStage, realDataLength)
 	string panelTitle
 	variable eventType
-	Wave ITCDataWave
+	Wave HardwareDataWave
 	variable headstage, realDataLength
 
 	WAVE anaFuncTracker = TrackAnalysisFunctionCalls()
@@ -147,10 +162,10 @@ Function preDAQ(panelTitle, eventType, ITCDataWave, headStage, realDataLength)
 	anaFuncTracker[eventType][headstage] += 1
 End
 
-Function preSet(panelTitle, eventType, ITCDataWave, headStage, realDataLength)
+Function preSet(panelTitle, eventType, HardwareDataWave, headStage, realDataLength)
 	string panelTitle
 	variable eventType
-	Wave ITCDataWave
+	Wave HardwareDataWave
 	variable headstage, realDataLength
 
 	WAVE anaFuncTracker = TrackAnalysisFunctionCalls()
@@ -159,10 +174,10 @@ Function preSet(panelTitle, eventType, ITCDataWave, headStage, realDataLength)
 	anaFuncTracker[eventType][headstage] += 1
 End
 
-Function preSweep(panelTitle, eventType, ITCDataWave, headStage, realDataLength)
+Function preSweep(panelTitle, eventType, HardwareDataWave, headStage, realDataLength)
 	string panelTitle
 	variable eventType
-	Wave ITCDataWave
+	Wave HardwareDataWave
 	variable headstage, realDataLength
 
 	WAVE anaFuncTracker = TrackAnalysisFunctionCalls()
@@ -171,10 +186,10 @@ Function preSweep(panelTitle, eventType, ITCDataWave, headStage, realDataLength)
 	anaFuncTracker[eventType][headstage] += 1
 End
 
-Function midSweep(panelTitle, eventType, ITCDataWave, headStage, realDataLength)
+Function midSweep(panelTitle, eventType, HardwareDataWave, headStage, realDataLength)
 	string panelTitle
 	variable eventType
-	Wave ITCDataWave
+	Wave HardwareDataWave
 	variable headstage, realDataLength
 
 	WAVE anaFuncTracker = TrackAnalysisFunctionCalls()
@@ -183,10 +198,10 @@ Function midSweep(panelTitle, eventType, ITCDataWave, headStage, realDataLength)
 	anaFuncTracker[eventType][headstage] += 1
 End
 
-Function postSweep(panelTitle, eventType, ITCDataWave, headStage, realDataLength)
+Function postSweep(panelTitle, eventType, HardwareDataWave, headStage, realDataLength)
 	string panelTitle
 	variable eventType
-	Wave ITCDataWave
+	Wave HardwareDataWave
 	variable headstage, realDataLength
 
 	WAVE anaFuncTracker = TrackAnalysisFunctionCalls()
@@ -195,10 +210,10 @@ Function postSweep(panelTitle, eventType, ITCDataWave, headStage, realDataLength
 	anaFuncTracker[eventType][headstage] += 1
 End
 
-Function postSet(panelTitle, eventType, ITCDataWave, headStage, realDataLength)
+Function postSet(panelTitle, eventType, HardwareDataWave, headStage, realDataLength)
 	string panelTitle
 	variable eventType
-	Wave ITCDataWave
+	Wave HardwareDataWave
 	variable headstage, realDataLength
 
 	WAVE anaFuncTracker = TrackAnalysisFunctionCalls()
@@ -207,10 +222,10 @@ Function postSet(panelTitle, eventType, ITCDataWave, headStage, realDataLength)
 	anaFuncTracker[eventType][headstage] += 1
 End
 
-Function postDAQ(panelTitle, eventType, ITCDataWave, headStage, realDataLength)
+Function postDAQ(panelTitle, eventType, HardwareDataWave, headStage, realDataLength)
 	string panelTitle
 	variable eventType
-	Wave ITCDataWave
+	Wave HardwareDataWave
 	variable headstage, realDataLength
 
 	WAVE anaFuncTracker = TrackAnalysisFunctionCalls()
@@ -219,10 +234,10 @@ Function postDAQ(panelTitle, eventType, ITCDataWave, headStage, realDataLength)
 	anaFuncTracker[eventType][headstage] += 1
 End
 
-Function AbortPreDAQ(panelTitle, eventType, ITCDataWave, headStage, realDataLength)
+Function AbortPreDAQ(panelTitle, eventType, HardwareDataWave, headStage, realDataLength)
 	string panelTitle
 	variable eventType
-	Wave ITCDataWave
+	Wave HardwareDataWave
 	variable headstage, realDataLength
 
 	WAVE anaFuncTracker = TrackAnalysisFunctionCalls()
@@ -234,10 +249,10 @@ Function AbortPreDAQ(panelTitle, eventType, ITCDataWave, headStage, realDataLeng
 	return 1
 End
 
-Function StopMidSweep(panelTitle, eventType, ITCDataWave, headStage, realDataLength)
+Function StopMidSweep(panelTitle, eventType, HardwareDataWave, headStage, realDataLength)
 	string panelTitle
 	variable eventType
-	Wave ITCDataWave
+	Wave HardwareDataWave
 	variable headstage, realDataLength
 
 	WAVE anaFuncTracker = TrackAnalysisFunctionCalls()
@@ -271,8 +286,14 @@ Function ValidFunc_V3(panelTitle, s)
 
 	if(s.eventType == PRE_DAQ_EVENT || s.eventType == PRE_SET_EVENT)
 		CHECK_EQUAL_VAR(numType(s.lastValidRowIndex), 2)
+	elseif(GetHardWareType(panelTitle) == HARDWARE_ITC_DAC)
+		CHECK(s.lastValidRowIndex >= 0 && s.lastValidRowIndex < DimSize(s.rawDACWave, ROWS))
+	elseif(GetHardWareType(panelTitle) == HARDWARE_NI_DAC)
+		WAVE/WAVE rawDACWaveRef = s.rawDACWave
+		Make/FREE/N=(DimSize(rawDACWaveRef, ROWS)) sizes = DimSize(rawDACWaveRef[p], ROWS)
+		CHECK(s.lastValidRowIndex >= 0 && s.lastValidRowIndex <= WaveMax(sizes))
 	else
-		CHECK(s.lastValidRowIndex >= 0 && s.lastValidRowIndex < DimSize(s.rawDACWAVE, ROWS))
+		FAIL()
 	endif
 
 	WAVE anaFuncTracker = TrackAnalysisFunctionCalls()
@@ -371,20 +392,20 @@ Function Params4_V3(panelTitle, s)
 	anaFuncTracker[s.eventType] += 1
 End
 
-Function ChangeToSingleDeviceDAQ(panelTitle, eventType, ITCDataWave, headStage, realDataLength)
+Function ChangeToSingleDeviceDAQ(panelTitle, eventType, HardwareDataWave, headStage, realDataLength)
 	string panelTitle
 	variable eventType
-	Wave ITCDataWave
+	Wave HardwareDataWave
 	variable headstage, realDataLength
 
 	PGC_SetAndActivateControl(panelTitle, "check_Settings_MD", val = CHECKBOX_UNSELECTED)
 	return 0
 End
 
-Function ChangeToMultiDeviceDAQ(panelTitle, eventType, ITCDataWave, headStage, realDataLength)
+Function ChangeToMultiDeviceDAQ(panelTitle, eventType, HardwareDataWave, headStage, realDataLength)
 	string panelTitle
 	variable eventType
-	Wave ITCDataWave
+	Wave HardwareDataWave
 	variable headstage, realDataLength
 
 	PGC_SetAndActivateControl(panelTitle, "check_Settings_MD", val = CHECKBOX_SELECTED)
