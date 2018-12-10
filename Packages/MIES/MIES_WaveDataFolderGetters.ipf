@@ -2119,7 +2119,7 @@ End
 ///
 /// @todo change columns to hold entries for each headstage, num_cols = NUM_HEADSTAGES
 ///
-/// Unit: MOhm (1e3 Ohm)
+/// Unit: MOhm (1e6 Ohm)
 Function/Wave GetInstResistanceWave(panelTitle)
 	string 	panelTitle
 
@@ -2130,7 +2130,7 @@ Function/Wave GetInstResistanceWave(panelTitle)
 		return wv
 	endif
 
-	Make/N=(1, NUM_AD_CHANNELS) dfr:InstResistance/Wave=wv
+	Make/N=(0, NUM_AD_CHANNELS) dfr:InstResistance/Wave=wv
 
 	return wv
 End
@@ -2152,7 +2152,7 @@ Function/Wave GetBaselineAverage(panelTitle)
 		return wv
 	endif
 
-	Make/N=(1, NUM_AD_CHANNELS) dfr:BaselineSSAvg/Wave=wv
+	Make/N=(0, NUM_AD_CHANNELS) dfr:BaselineSSAvg/Wave=wv
 
 	return wv
 End
@@ -2163,7 +2163,7 @@ End
 ///
 /// @todo change columns to hold entries for each headstage, num_cols = NUM_HEADSTAGES
 ///
-/// Unit: MOhm (1e3 Ohm)
+/// Unit: MOhm (1e6 Ohm)
 Function/Wave GetSSResistanceWave(panelTitle)
 	string 	panelTitle
 
@@ -2174,11 +2174,79 @@ Function/Wave GetSSResistanceWave(panelTitle)
 		return wv
 	endif
 
-	Make/N=(1, NUM_AD_CHANNELS) dfr:SSResistance/Wave=wv
+	Make/N=(0, NUM_AD_CHANNELS) dfr:SSResistance/Wave=wv
 
 	return wv
 End
 
+/// @brief Return the testpulse baseline running box average buffer
+///
+/// The columns hold the *active* AD channels only and are subject to resizing.
+/// Currently the initialization and resize is done in TP_CreateTPAvgBuffer()
+///
+/// @todo change columns to hold entries for each headstage, num_cols = NUM_HEADSTAGES
+///
+/// Unit: Unit: mV (1e-3 Volt) for IC, pA (1e-12 Amps) for VC
+Function/Wave GetGetBaselineBuffer(panelTitle)
+	string 	panelTitle
+
+	dfref dfr = GetDeviceTestPulse(panelTitle)
+	WAVE/Z/SDFR=dfr wv = TPBaselineBuffer
+
+	if(WaveExists(wv))
+		return wv
+	endif
+
+	Make/N=(0, 0) dfr:TPBaselineBuffer/Wave=wv
+
+	return wv
+End
+
+/// @brief Return the testpulse instantaneous resistance running box average buffer
+///
+/// The columns hold the *active* AD channels only and are subject to resizing.
+/// Currently the initialization and resize is done in TP_CreateTPAvgBuffer()
+///
+/// @todo change columns to hold entries for each headstage, num_cols = NUM_HEADSTAGES
+///
+/// Unit: MOhm (1e6 Ohm)
+Function/Wave GetInstantaneousBuffer(panelTitle)
+	string 	panelTitle
+
+	dfref dfr = GetDeviceTestPulse(panelTitle)
+	WAVE/Z/SDFR=dfr wv = TPInstBuffer
+
+	if(WaveExists(wv))
+		return wv
+	endif
+
+	Make/N=(0, 0) dfr:TPInstBuffer/Wave=wv
+
+	return wv
+End
+
+/// @brief Return the testpulse steady state resistance running box average buffer
+///
+/// The columns hold the *active* AD channels only and are subject to resizing.
+/// Currently the initialization and resize is done in TP_CreateTPAvgBuffer()
+///
+/// @todo change columns to hold entries for each headstage, num_cols = NUM_HEADSTAGES
+///
+/// Unit: MOhm (1e6 Ohm)
+Function/Wave GetSteadyStateBuffer(panelTitle)
+	string 	panelTitle
+
+	dfref dfr = GetDeviceTestPulse(panelTitle)
+	WAVE/Z/SDFR=dfr wv = TPSSBuffer
+
+	if(WaveExists(wv))
+		return wv
+	endif
+
+	Make/N=(0, 0) dfr:TPSSBuffer/Wave=wv
+
+	return wv
+End
 /// @}
 
 /// @name Amplifier

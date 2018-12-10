@@ -678,11 +678,10 @@ Function AI_MIESAutoPipetteOffset(panelTitle, headStage)
 
 	variable clampMode, column, vDelta, offset, value
 
-	DFREF dfr = GetDeviceTestPulse(panelTitle)
-	WAVE/Z/SDFR=dfr baselineSSAvg
-	WAVE/Z/SDFR=dfr SSResistance
+	WAVE BaselineSSAvg = GetBaselineAverage(panelTitle)
+	WAVE SSResistance = GetSSResistanceWave(panelTitle)
 
-	if(!WaveExists(baselineSSAvg) || !WaveExists(SSResistance))
+	if(!DimSize(baselineSSAvg, ROWS) || !DimSize(SSResistance, ROWS))
 		return NaN
 	endif
 
