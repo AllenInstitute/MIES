@@ -444,6 +444,16 @@ Function SCOPE_UpdateOscilloscopeData(panelTitle, dataAcqOrTP, [chunk, fifoPos, 
 			SCOPE_NI_UpdateOscilloscope(panelTitle, dataAcqOrTP, deviceID, fifoPos)
 			break;
 	endswitch
+
+	if(dataAcqOrTP == TEST_PULSE_MODE)
+
+		WAVE GUIState = GetDA_EphysGuiStateNum(panelTitle)
+		if(GUIState[0][%check_Settings_TP_SaveTP])
+			TP_StoreFullWave(panelTitle)
+		endif
+
+	endif
+
 End
 
 static Function SCOPE_NI_UpdateOscilloscope(panelTitle, dataAcqOrTP, deviceiD, fifoPos)
