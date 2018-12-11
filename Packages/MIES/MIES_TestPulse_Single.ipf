@@ -182,12 +182,14 @@ static Function TPS_SendToAsyncAnalysis(panelTitle, timeStamp)
 	string panelTitle
 	variable timeStamp
 
-	variable j, startOfADColumns, numADCs, measurementMarker
+	STRUCT TPAnalysisInput tpInput
+
+	variable j, startOfADColumns, numADCs
+
 	DFREF dfrTP = GetDeviceTestPulse(panelTitle)
 	NVAR duration = $GetTestpulseDuration(panelTitle)
 	NVAR baselineFrac = $GetTestpulseBaselineFraction(panelTitle)
 	WAVE activeHSProp = GetActiveHSProperties(panelTitle)
-	measurementMarker = GetNonreproduciblerandom()
 
 	WAVE OscilloscopeData = GetOscilloscopeWave(panelTitle)
 	WAVE ITCChanConfigWave = GetITCChanConfigWave(panelTitle)
@@ -196,28 +198,28 @@ static Function TPS_SendToAsyncAnalysis(panelTitle, timeStamp)
 	numADCs = DimSize(ADCs, ROWS)
 	Make/FREE/N=(DimSize(OscilloscopeData, ROWS)) channelData
 
+	tpInput.panelTitle = panelTitle
+	tpInput.duration = duration
+	tpInput.baselineFrac = baselineFrac
+	tpInput.measurementMarker = GetNonreproduciblerandom()
+	tpInput.tpLengthPoints = TP_GetTestPulseLengthInPoints(panelTitle, TEST_PULSE_MODE)
+	tpInput.readTimeStamp = timeStamp
+	tpInput.activeADCs = numADCs
+	WAVE tpInput.data = channelData
+
 	for(j = 0; j < numADCs; j += 1)
 		MultiThread channelData[] = OscilloscopeData[p][startOfADColumns + j]
 		CopyScales OscilloscopeData channelData
 
-		DFREF threadDF = ASYNC_PrepareDF("TP_TSAnalysis", "TP_ROAnalysis", inOrder=0)
-		ASYNC_AddParam(threadDF, w=channelData)
 		if(activeHSProp[j][%ClampMode] == I_CLAMP_MODE)
 			NVAR/SDFR=dfrTP clampAmp=amplitudeIC
 		else
 			NVAR/SDFR=dfrTP clampAmp=amplitudeVC
 		endif
-		ASYNC_AddParam(threadDF, var=clampAmp)
-		ASYNC_AddParam(threadDF, var=activeHSProp[j][%ClampMode])
-		ASYNC_AddParam(threadDF, var=duration)
-		ASYNC_AddParam(threadDF, var=baselineFrac)
-		ASYNC_AddParam(threadDF, var=TP_GetTestPulseLengthInPoints(panelTitle, TEST_PULSE_MODE))
-		ASYNC_AddParam(threadDF, var=timeStamp)
-		ASYNC_AddParam(threadDF, var=activeHSProp[j][%Headstage]) // hsIndex
-		ASYNC_AddParam(threadDF, str=panelTitle)
-		ASYNC_AddParam(threadDF, var=measurementMarker)
-		ASYNC_AddParam(threadDF, var=numADCs) // activeADCs
-		ASYNC_Execute(threadDF)
+		tpInput.clampAmp = clampAmp
+		tpInput.clampMode = activeHSProp[j][%ClampMode]
+		tpInput.hsIndex = activeHSProp[j][%Headstage]
+		TP_SendToAnalysis(tpInput)
 	endfor
 
 End

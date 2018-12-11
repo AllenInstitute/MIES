@@ -150,9 +150,11 @@ Function TPM_BkrdTPFuncMD(s)
 	STRUCT BackgroundStruct &s
 
 	variable i, j, deviceID, fifoPos, hardwareType, checkAgain, updateInt, endOfPulse
-	variable pointsCompletedInITCDataWave, activeChunk, now, readTimeStamp, measurementMarker
+	variable pointsCompletedInITCDataWave, activeChunk, now
 	variable channelNr, startOfADColumns, numEntries, tpLengthPoints, err
 	string panelTitle, fifoChannelName, fifoName, errMsg
+
+	STRUCT TPAnalysisInput tpInput
 
 	variable debTime
 
@@ -181,9 +183,14 @@ Function TPM_BkrdTPFuncMD(s)
 		WAVE activeHSProp = GetActiveHSProperties(panelTitle)
 		NVAR duration = $GetTestpulseDuration(panelTitle)
 		NVAR baselineFrac = $GetTestpulseBaselineFraction(panelTitle)
-		readTimeStamp = ticks * TICKS_TO_SECONDS
-		measurementMarker = GetNonreproduciblerandom()
 		tpLengthPoints = TP_GetTestPulseLengthInPoints(panelTitle, TEST_PULSE_MODE)
+
+		tpInput.panelTitle = panelTitle
+		tpInput.duration = duration
+		tpInput.baselineFrac = baselineFrac
+		tpInput.measurementMarker = GetNonreproduciblerandom()
+		tpInput.tpLengthPoints = tpLengthPoints
+		tpInput.readTimeStamp = ticks * TICKS_TO_SECONDS
 
 		switch(hardwareType)
 			case HARDWARE_NI_DAC:
@@ -202,6 +209,8 @@ Function TPM_BkrdTPFuncMD(s)
 
 						try
 
+							tpInput.activeADCs = V_FIFOnchans
+
 							for(j = 0; j < V_FIFOnchans; j += 1)
 								fifoChannelName = StringByKey("NAME" + num2str(j), S_Info)
 								channelNr = str2num(fifoChannelName)
@@ -209,24 +218,16 @@ Function TPM_BkrdTPFuncMD(s)
 								FIFO2WAVE/R=[endOfPulse - datapoints, endOfPulse - 1] $fifoName, $fifoChannelName, NIChannel; AbortOnRTE
 								SetScale/P x, 0, DimDelta(NIChannel, ROWS) * 1000, "ms", NIChannel
 
-								DFREF threadDF = ASYNC_PrepareDF("TP_TSAnalysis", "TP_ROAnalysis", inOrder=0)
-								ASYNC_AddParam(threadDF, w=NIChannel)
+								WAVE tpInput.data = NIChannel
 								if(activeHSProp[j][%ClampMode] == I_CLAMP_MODE)
 									NVAR/SDFR=dfrTP clampAmp=amplitudeIC
 								else
 									NVAR/SDFR=dfrTP clampAmp=amplitudeVC
 								endif
-								ASYNC_AddParam(threadDF, var=clampAmp)
-								ASYNC_AddParam(threadDF, var=activeHSProp[j][%ClampMode])
-								ASYNC_AddParam(threadDF, var=duration)
-								ASYNC_AddParam(threadDF, var=baselineFrac)
-								ASYNC_AddParam(threadDF, var=tpLengthPoints)
-								ASYNC_AddParam(threadDF, var=readTimeStamp)
-								ASYNC_AddParam(threadDF, var=activeHSProp[j][%Headstage]) // hsIndex
-								ASYNC_AddParam(threadDF, str=panelTitle)
-								ASYNC_AddParam(threadDF, var=measurementMarker)
-								ASYNC_AddParam(threadDF, var=V_FIFOnchans)  // activeADCs
-								ASYNC_Execute(threadDF)
+								tpInput.clampAmp = clampAmp
+								tpInput.clampMode = activeHSProp[j][%ClampMode]
+								tpInput.hsIndex = activeHSProp[j][%Headstage]
+								TP_SendToAnalysis(tpInput)
 
 							endfor
 
@@ -311,28 +312,23 @@ Function TPM_BkrdTPFuncMD(s)
 				numEntries = DimSize(ADCs, ROWS)
 				Make/FREE/N=(DimSize(OscilloscopeData, ROWS)) channelData
 
+				tpInput.activeADCs = numEntries
+				WAVE tpInput.data = channelData
+
 				for(j = 0; j < numEntries; j += 1)
 					MultiThread channelData[] = OscilloscopeData[p][startOfADColumns + j]
 					CopyScales OscilloscopeData channelData
 
-					DFREF threadDF = ASYNC_PrepareDF("TP_TSAnalysis", "TP_ROAnalysis", inOrder=0)
-					ASYNC_AddParam(threadDF, w=channelData)
 					if(activeHSProp[j][%ClampMode] == I_CLAMP_MODE)
 						NVAR/SDFR=dfrTP clampAmp=amplitudeIC
 					else
 						NVAR/SDFR=dfrTP clampAmp=amplitudeVC
 					endif
-					ASYNC_AddParam(threadDF, var=clampAmp)
-					ASYNC_AddParam(threadDF, var=activeHSProp[j][%ClampMode])
-					ASYNC_AddParam(threadDF, var=duration)
-					ASYNC_AddParam(threadDF, var=baselineFrac)
-					ASYNC_AddParam(threadDF, var=tpLengthPoints)
-					ASYNC_AddParam(threadDF, var=readTimeStamp)
-					ASYNC_AddParam(threadDF, var=activeHSProp[j][%Headstage]) // hsIndex
-					ASYNC_AddParam(threadDF, str=panelTitle)
-					ASYNC_AddParam(threadDF, var=measurementMarker)
-					ASYNC_AddParam(threadDF, var=numEntries) // activeADCs
-					ASYNC_Execute(threadDF)
+					tpInput.clampAmp = clampAmp
+					tpInput.clampMode = activeHSProp[j][%ClampMode]
+					tpInput.hsIndex = activeHSProp[j][%Headstage]
+					TP_SendToAnalysis(tpInput)
+
 				endfor
 
 				ActiveDeviceList[i][%ActiveChunk] = activeChunk

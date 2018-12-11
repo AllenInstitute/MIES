@@ -719,6 +719,8 @@ Function TP_CreateTestPulseWave(panelTitle)
 End
 
 /// @brief Send a TP data set to the asynchroneous analysis function TP_TSAnalysis
+///
+/// @param tpInput structure of type TPAnalysisInput() that holds the parameters send to analysis
 Function TP_SendToAnalysis(tpInput)
 	STRUCT TPAnalysisInput &tpInput
 
