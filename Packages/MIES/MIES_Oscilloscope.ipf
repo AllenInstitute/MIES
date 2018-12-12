@@ -12,7 +12,7 @@
 static Constant SCOPE_TIMEAXIS_RESISTANCE_RANGE = 120
 static Constant SCOPE_GREEN                     = 26122
 static Constant SCOPE_BLUE                      = 39168
-static StrConstant TAG_FORMAT_STR               = "\\[1\\K(%d, %d, %d)\\{\"%%s\", FloatWithMinSigDigits(TagVal(2), numMinSignDigits = 2)}\\]1\K(0, 0, 0)"
+static StrConstant RES_FORMAT_STR               = "\\[1\\K(%d, %d, %d)\\{\"%%s\", FloatWithMinSigDigits(%s[%d], numMinSignDigits = 2)}\\]1\K(0, 0, 0)"
 static Constant PRESSURE_SPECTRUM_PERCENT       = 0.05
 static Constant ADDITIONAL_SPACE_AD_GRAPH       = 0.10 ///< percent of total axis range
 
@@ -144,13 +144,12 @@ Function SCOPE_CreateGraph(panelTitle, dataAcqOrTP)
 	string panelTitle
 	variable dataAcqOrTP
 
-	string graph, tagName, color, style
+	string graph, color, style
 	variable i, adc, numActiveDACs, numADChannels, oneTimeInitDone
 	variable showSteadyStateResistance, showPeakResistance, Red, Green, Blue
-	string leftAxis, rightAxis, tagAxis, str, powerSpectrumTrace, oscilloscopeTrace
-	string tagPeakTrace, tagSteadyStateTrace
-	string steadyStateTrace, peakTrace, adcStr, anchor
-	variable YaxisLow, YaxisHigh, YaxisSpacing, Yoffset, xPos, yPos
+	string leftAxis, rightAxis, str, powerSpectrumTrace, oscilloscopeTrace
+	string steadyStateTrace, peakTrace, adcStr
+	variable YaxisLow, YaxisHigh, YaxisSpacing, Yoffset, resPosPercY
 	variable testPulseLength, cutOff, sampInt
 	variable headStage, activeHeadStage, showPowerSpectrum
 	STRUCT RGBColor peakColor
@@ -188,8 +187,6 @@ Function SCOPE_CreateGraph(panelTitle, dataAcqOrTP)
 		adcStr = num2str(adc)
 		leftAxis = "AD" + adcStr
 		
-		headStage = AFH_GetHeadstageFromADC(panelTitle, adc)
-
 		if(dataAcqOrTP != TEST_PULSE_MODE || !showPowerSpectrum)
 			oscilloscopeTrace = "osci" + adcStr
 			AppendToGraph/W=$graph/L=$leftAxis OscilloscopeData[][numActiveDACs + i]/TN=$oscilloscopeTrace
@@ -206,6 +203,8 @@ Function SCOPE_CreateGraph(panelTitle, dataAcqOrTP)
 		// handles plotting of peak and steady state resistance curves in the oscilloscope window with the TP
 		// add the also the trace for the current resistance values from the test pulse
 		if(dataAcqOrTP == TEST_PULSE_MODE)
+
+			headStage = AFH_GetHeadstageFromADC(panelTitle, adc)
 
 			if(showPowerSpectrum)
 				powerSpectrumTrace = "powerSpectra" + adcStr
@@ -277,48 +276,12 @@ Function SCOPE_CreateGraph(panelTitle, dataAcqOrTP)
 				endif
 			endif
 
-			tagAxis = rightAxis + "_tags"
+			resPosPercY = 100 * (1 - ((YaxisHigh - YaxisLow) / 2 + YaxisLow))
+			sprintf str, RES_FORMAT_STR, steadyColor.red, steadyColor.green, steadyColor.blue, GetWavesDataFolder(SSResistance, 2), headstage
+			TextBox/W=$graph/A=RT/B=1/F=0/X=-10 /Y=(resPosPercY - 1) str
+			sprintf str, RES_FORMAT_STR, peakColor.red, peakColor.green, peakColor.blue, GetWavesDataFolder(InstResistance, 2), headstage
+			TextBox/W=$graph/A=RT/B=1/F=0/X=-10 /Y=(resPosPercY + 1) str
 
-			tagSteadyStateTrace = "SSR" + adcStr
-			AppendToGraph/W=$graph/R=$tagAxis SSResistance[headstage][] /TN=$tagSteadyStateTrace
-			ModifyGraph/W=$graph mode($tagSteadyStateTrace) = 2, lsize($tagSteadyStateTrace) = 0
-
-			if(showPeakResistance || showSteadyStateResistance)
-				xPos = 40
-				yPos = 2
-				anchor = "RB"
-			else
-				XPos = 0
-				yPos = -yOffset
-				anchor = "MC"
-			endif
-
-			tagName = "SSR" + adcStr
-			sprintf str, TAG_FORMAT_STR, steadyColor.red, steadyColor.green, steadyColor.blue
-			Tag/W=$graph/C/N=$tagName/F=0/B=1/A=$anchor/X=(xPos)/Y=(yPos)/L=0/I=1 $tagSteadyStateTrace, 0, str
-
-			tagPeakTrace = "InstR" + adcStr
-			AppendToGraph/W=$graph/R=$tagAxis InstResistance[headstage][] /TN=$tagPeakTrace
-			ModifyGraph/W=$graph mode($tagPeakTrace) = 2, lsize($tagPeakTrace) = 0
-
-			if(showPeakResistance || showSteadyStateResistance)
-				xPos = 90
-				yPos = 0
-				anchor = "RB"
-			else
-				xPos = -15
-				yPos = -yOffset
-				anchor = "LT"
-			endif
-
-			tagName = "InstR" + adcStr
-			sprintf str, TAG_FORMAT_STR, peakColor.red, peakColor.green, peakColor.blue
-			Tag/W=$graph/C/N=$tagName/F=0/B=1/A=$anchor/X=(xPos)/Y=(yPos)/L=0/I=1 $tagPeakTrace, 0, str
-
-			ModifyGraph/W=$graph noLabel($tagAxis) = 2, axThick($tagAxis) = 0, width = 25
-			ModifyGraph/W=$graph axisEnab($tagAxis) = {YaxisLow, YaxisHigh}, freePos($tagAxis)={1, kwFraction}
-
-			SetAxis/W=$graph/A=2/N=2/E=2 $tagAxis -20000000, 20000000
 		endif
 
 		YaxisHigh -= YaxisSpacing
