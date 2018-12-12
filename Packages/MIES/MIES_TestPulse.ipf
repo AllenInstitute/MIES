@@ -30,7 +30,7 @@ Function TP_CreateTPAvgBuffer(panelTitle)
 	WAVE TPInstBuffer = GetInstantaneousBuffer(panelTitle)
 	WAVE TPSSBuffer = GetSteadyStateBuffer(panelTitle)
 
-	Redimension/N=(tpBufferSize, numADCs) TPBaselineBuffer, TPInstBuffer, TPSSBuffer
+	Redimension/N=(tpBufferSize, NUM_HEADSTAGES) TPBaselineBuffer, TPInstBuffer, TPSSBuffer
 	TPBaselineBuffer = NaN
 	TPInstBuffer = NaN
 	TPSSBuffer = NaN
@@ -290,37 +290,53 @@ Function TP_Delta(panelTitle)
 	DEBUGPRINT_ELAPSED(referenceTime)
 End
 
+/// @brief Calculates running average [box average] of single point data for all active channels
+///
+/// @param buffer 2D wave storing the values for the average, the rows are the box size, cols index the channels
+///
+/// @param dest 1D wave where rows index the channels, store the input data per channel
+///		  the number of rows of dest must match the number of columns of buffer
+///		  On return the content of dest is replaced with the averaged output data
 static Function TP_CalculateAverage(buffer, dest)
 	Wave buffer, dest
 
-	variable i
-	variable lastFiniteRow = NaN
+	variable i, j
 	variable numRows = DimSize(buffer, ROWS)
+	variable numCols = DimSize(buffer, COLS)
 
-	ASSERT(DimSize(buffer, COLS) == DimSize(dest, COLS) || (DimSize(dest, COLS) == 1 && DimSize(buffer, COLS) == 0) , "Mismatched column sizes")
+	ASSERT(numCols == DimSize(dest, ROWS) , "Number of averaging buffer columns and 1D input wave size must have be the same")
 
-	MatrixOp/O buffer = rotaterows(buffer, 1)
-	buffer[0][] = dest[0][q]
+	MatrixOp/O buffer = rotateRows(buffer, 1)
+	buffer[0][] = dest[q]
+
+	// find head stage (COL) with actual values, that we just wrote in ROW 0 above
+	for(j = 0; j < numCols; j += 1)
+		if(IsFinite(buffer[0][j]))
+			break
+		endif
+	endfor
+	ASSERT(j != numCols, "Average found no actual new value in any input row.")
 
 	// only remove NaNs if we actually have one
 	// as we append data to the front, the last row is a good point to check
-	if(IsFinite(buffer[numRows - 1][0]))
-		MatrixOp/O dest = sumcols(buffer)
+	if(IsFinite(buffer[numRows - 1][j]))
+		MatrixOp/O dest = sumCols(buffer)
 		dest /= numRows
+		Redimension/E=1/N=(numCols) dest
 	else
 		// FindValue/BinarySearch does not support searching for NaNs
 		// reported to WM on 2nd April 2015
+
+		// find first row with NaN in an 'active' column
 		for(i = 0; i < numRows; i += 1)
-			if(!IsFinite(buffer[i][0]))
-				ASSERT(i > 0, "No valid entries in buffer")
-				lastFiniteRow = i - 1
+			if(!IsFinite(buffer[i][j]))
 				break
 			endif
 		endfor
-		ASSERT(IsFinite(lastFiniteRow), "Hugh? Did not find any NaNs...")
-		Duplicate/FREE/R=[0, lastFiniteRow][] buffer, filledBuffer
-		MatrixOp/O dest = sumcols(filledBuffer)
-		dest /= DimSize(filledBuffer, ROWS)
+		Duplicate/FREE/R=[0, i - 1][] buffer, filledBuffer
+		MatrixOp/O dest = sumCols(filledBuffer)
+		dest /= i
+		Redimension/E=1/N=(numCols) dest
 	endif
 End
 

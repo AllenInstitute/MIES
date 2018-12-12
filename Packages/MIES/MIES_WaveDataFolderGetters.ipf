@@ -410,6 +410,50 @@ End
 
 /// @}
 
+/// @brief Return a wave reference to the tp result async buffer wave
+///
+/// Rows:
+/// - buffered partial result entries
+///
+/// Column 0 (ASYNCDATA):
+///   - Layers:
+///     - 0: marker
+///     - 1: received channels
+///     - 2: now
+/// Column 1: baseline level
+/// Column 2: steady state res
+/// Column 3: instantaneous res
+/// Column 4: baseline position
+/// Column 5: steady state res position
+/// Column 6: instantaneous res position
+///   - Layers NUM_HEADSTAGES positions with value entries at hsIndex
+Function/Wave GetTPResultAsyncBuffer(panelTitle)
+	string panelTitle
+
+	DFREF dfr = GetDeviceTestPulse(panelTitle)
+
+	Wave/Z/SDFR=dfr/D wv = TPResultAsyncBuffer
+
+	if(WaveExists(wv))
+		return wv
+	endif
+
+	Make/N=(0, 7, NUM_HEADSTAGES)/D dfr:TPResultAsyncBuffer/Wave=wv
+
+	SetDimLabel COLS, 0, ASYNCDATA, wv
+	SetDimLabel COLS, 1, BASELINE, wv
+	SetDimLabel COLS, 2, STEADYSTATERES, wv
+	SetDimLabel COLS, 3, INSTANTRES, wv
+	SetDimLabel COLS, 4, BASELINE_POS, wv
+	SetDimLabel COLS, 5, STEADYSTATERES_POS, wv
+	SetDimLabel COLS, 6, INSTANTRES_POS, wv
+	SetDimLabel LAYERS, 0, MARKER, wv
+	SetDimLabel LAYERS, 1, REC_CHANNELS, wv
+	SetDimLabel LAYERS, 2, NOW, wv
+
+	return wv
+End
+
 /// @brief Return a wave reference to the channel clamp mode wave
 ///
 /// Rows:
