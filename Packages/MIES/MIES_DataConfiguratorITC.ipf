@@ -80,7 +80,7 @@ Function DC_ConfigureDataForITC(panelTitle, dataAcqOrTP, [multiDevice])
 
 	WAVE ITCChanConfigWave = GetITCChanConfigWave(panelTitle)
 	WAVE ADCs = GetADCListFromConfig(ITCChanConfigWave)
-	DC_UpdateActiveHSProperties(panelTitle, ADCs)
+	DC_UpdateHSProperties(panelTitle, ADCs)
 
 	NVAR ADChannelToMonitor = $GetADChannelToMonitor(panelTitle)
 	ADChannelToMonitor = DimSize(GetDACListFromConfig(ITCChanConfigWave), ROWS)
@@ -96,16 +96,17 @@ Function DC_ConfigureDataForITC(panelTitle, dataAcqOrTP, [multiDevice])
 	endif
 End
 
-static Function DC_UpdateActiveHSProperties(panelTitle, ADCs)
+static Function DC_UpdateHSProperties(panelTitle, ADCs)
 	string panelTitle
 	WAVE ADCs
 
-	variable i, idx, numChannels, headStage
+	variable i, numChannels, headStage
 
 	WAVE GUIState = GetDA_EphysGuiStateNum(panelTitle)
-	WAVE activeHSProp = GetActiveHSProperties(panelTitle)
+	WAVE hsProp = GetHSProperties(panelTitle)
 
-	activeHSProp = NaN
+	hsProp = NaN
+	hsProp[][%Enabled] = 0
 
 	numChannels = DimSize(ADCs, ROWS)
 	for(i = 0; i < numChannels; i += 1)
@@ -115,12 +116,11 @@ static Function DC_UpdateActiveHSProperties(panelTitle, ADCs)
 			continue
 		endif
 
-		activeHSProp[idx][%HeadStage] = headStage
-		activeHSProp[idx][%ADC]       = ADCs[i]
-		activeHSProp[idx][%DAC]       = AFH_GetDACFromHeadstage(panelTitle, headstage)
-		activeHSProp[idx][%ClampMode] = GUIState[headStage][%HSMode]
+		hsProp[headStage][%Enabled]   = 1
+		hsProp[headStage][%ADC]       = ADCs[i]
+		hsProp[headStage][%DAC]       = AFH_GetDACFromHeadstage(panelTitle, headstage)
+		hsProp[headStage][%ClampMode] = GUIState[headStage][%HSMode]
 
-		idx += 1
 	endfor
 End
 

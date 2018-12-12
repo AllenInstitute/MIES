@@ -184,12 +184,12 @@ static Function TPS_SendToAsyncAnalysis(panelTitle, timeStamp)
 
 	STRUCT TPAnalysisInput tpInput
 
-	variable j, startOfADColumns, numADCs
+	variable j, startOfADColumns, numADCs, headstage
 
 	DFREF dfrTP = GetDeviceTestPulse(panelTitle)
 	NVAR duration = $GetTestpulseDuration(panelTitle)
 	NVAR baselineFrac = $GetTestpulseBaselineFraction(panelTitle)
-	WAVE activeHSProp = GetActiveHSProperties(panelTitle)
+	WAVE hsProp = GetHSProperties(panelTitle)
 
 	WAVE OscilloscopeData = GetOscilloscopeWave(panelTitle)
 	WAVE ITCChanConfigWave = GetITCChanConfigWave(panelTitle)
@@ -208,17 +208,19 @@ static Function TPS_SendToAsyncAnalysis(panelTitle, timeStamp)
 	WAVE tpInput.data = channelData
 
 	for(j = 0; j < numADCs; j += 1)
+
+		headstage = AFH_GetHeadstageFromADC(panelTitle, ADCs[j])
 		MultiThread channelData[] = OscilloscopeData[p][startOfADColumns + j]
 		CopyScales OscilloscopeData channelData
 
-		if(activeHSProp[j][%ClampMode] == I_CLAMP_MODE)
+		if(hsProp[headstage][%ClampMode] == I_CLAMP_MODE)
 			NVAR/SDFR=dfrTP clampAmp=amplitudeIC
 		else
 			NVAR/SDFR=dfrTP clampAmp=amplitudeVC
 		endif
 		tpInput.clampAmp = clampAmp
-		tpInput.clampMode = activeHSProp[j][%ClampMode]
-		tpInput.hsIndex = activeHSProp[j][%Headstage]
+		tpInput.clampMode = hsProp[headstage][%ClampMode]
+		tpInput.hsIndex = headstage
 		TP_SendToAnalysis(tpInput)
 	endfor
 

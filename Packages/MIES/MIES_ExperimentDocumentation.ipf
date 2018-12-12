@@ -516,17 +516,8 @@ Function ED_createWaveNoteTags(panelTitle, sweepCount)
 	Make/FREE/N=(1, 3, LABNOTEBOOK_LAYER_COUNT) numSettings = NaN
 	numSettings[0][0][0,7] = statusHS[r]
 
-	WAVE activeHSProp = GetActiveHSProperties(panelTitle)
-	for(i = 0; i < NUM_HEADSTAGES; i += 1)
-		if(!statusHS[i])
-			continue
-		endif
-
-		ASSERT(i == activeHSProp[j][%Headstage], "The state of the active headstages is inconsistent.")
-
-		numSettings[0][1][i] = activeHSProp[j][%ClampMode]
-		j += 1
-	endfor
+	WAVE hsProp = GetHSProperties(panelTitle)
+	numSettings[0][1][0, NUM_HEADSTAGES - 1] = hsProp[r][%ClampMode]
 
 #if defined(IGOR64)
 	numSettings[0][2][INDEP_HEADSTAGE] = 64
@@ -689,7 +680,7 @@ Function ED_TPDocumentation(panelTitle)
 
 	variable sweepNo, RTolerance
 	variable i, j
-	WAVE activeHSProp = GetActiveHSProperties(panelTitle)
+	WAVE hsProp = GetHSProperties(panelTitle)
 
 	WAVE BaselineSSAvg = GetBaselineAverage(panelTitle)
 	WAVE InstResistance = GetInstResistanceWave(panelTitle)
@@ -746,33 +737,21 @@ Function ED_TPDocumentation(panelTitle)
 	TPKeyWave[2][10] = "0.0001"
 	TPKeyWave[2][11] = LABNOTEBOOK_NO_TOLERANCE
 
-	TPSettingsWave[0][2][0, NUM_HEADSTAGES]  = InstResistance[r]
-	TPSettingsWave[0][3][0, NUM_HEADSTAGES]  = SSResistance[r]
+	TPSettingsWave[0][2][0, NUM_HEADSTAGES - 1]  = InstResistance[r]
+	TPSettingsWave[0][3][0, NUM_HEADSTAGES - 1]  = SSResistance[r]
 
-	for(i = 0; i < NUM_HEADSTAGES; i += 1)
+	TPSettingsWave[0][8][0, NUM_HEADSTAGES - 1] = statusHS[r]
 
-		TPSettingsWave[0][8][i] = statusHS[i]
+	TPSettingsWave[0][4][0, NUM_HEADSTAGES - 1] = hsProp[r][%ClampMode] == V_CLAMP_MODE ? AI_SendToAmp(panelTitle, r, V_CLAMP_MODE, MCC_GETFASTCOMPCAP_FUNC, NaN) : NaN
+	TPSettingsWave[0][5][0, NUM_HEADSTAGES - 1] = hsProp[r][%ClampMode] == V_CLAMP_MODE ? AI_SendToAmp(panelTitle, r, V_CLAMP_MODE, MCC_GETSLOWCOMPCAP_FUNC, NaN) : NaN
+	TPSettingsWave[0][6][0, NUM_HEADSTAGES - 1] = hsProp[r][%ClampMode] == V_CLAMP_MODE ? AI_SendToAmp(panelTitle, r, V_CLAMP_MODE, MCC_GETFASTCOMPTAU_FUNC, NaN) : NaN
+	TPSettingsWave[0][7][0, NUM_HEADSTAGES - 1] = hsProp[r][%ClampMode] == V_CLAMP_MODE ? AI_SendToAmp(panelTitle, r, V_CLAMP_MODE, MCC_GETSLOWCOMPTAU_FUNC, NaN) : NaN
+	TPSettingsWave[0][1][0, NUM_HEADSTAGES - 1] = hsProp[r][%ClampMode] == V_CLAMP_MODE ? BaselineSSAvg[r] : NaN
+	TPSettingsWave[0][0][0, NUM_HEADSTAGES - 1] = hsProp[r][%ClampMode] == I_CLAMP_MODE ? BaselineSSAvg[r] : NaN
 
-		if(!statusHS[i])
-			continue
-		endif
-
-		if(activeHSProp[j][%ClampMode] == V_CLAMP_MODE)
-			TPSettingsWave[0][4][i] = AI_SendToAmp(panelTitle, i, V_CLAMP_MODE, MCC_GETFASTCOMPCAP_FUNC, NaN)
-			TPSettingsWave[0][5][i] = AI_SendToAmp(panelTitle, i, V_CLAMP_MODE, MCC_GETSLOWCOMPCAP_FUNC, NaN)
-			TPSettingsWave[0][6][i] = AI_SendToAmp(panelTitle, i, V_CLAMP_MODE, MCC_GETFASTCOMPTAU_FUNC, NaN)
-			TPSettingsWave[0][7][i] = AI_SendToAmp(panelTitle, i, V_CLAMP_MODE, MCC_GETSLOWCOMPTAU_FUNC, NaN)
-			TPSettingsWave[0][1][i] = BaselineSSAvg[i]
-		else
-			TPSettingsWave[0][0][i] = BaselineSSAvg[i]
-		endif
-
-		TPSettingsWave[0][9][i]  = activeHSProp[j][%DAC]
-		TPSettingsWave[0][10][i] = activeHSProp[j][%ADC]
-		TPSettingsWave[0][11][i] = activeHSProp[j][%ClampMode]
-		j += 1
-			   // headstage (no place holder columns), j only increments for active headstages.
-	endfor
+	TPSettingsWave[0][9][0, NUM_HEADSTAGES - 1]  = hsProp[r][%DAC]
+	TPSettingsWave[0][10][0, NUM_HEADSTAGES - 1] = hsProp[r][%ADC]
+	TPSettingsWave[0][11][0, NUM_HEADSTAGES - 1] = hsProp[r][%ClampMode]
 
 	sweepNo = AFH_GetLastSweepAcquired(panelTitle)
 	ED_AddEntriesToLabnotebook(TPSettingsWave, TPKeyWave, sweepNo, panelTitle, TEST_PULSE_MODE)

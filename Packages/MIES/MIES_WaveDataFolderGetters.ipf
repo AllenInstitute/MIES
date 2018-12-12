@@ -484,34 +484,31 @@ Function/Wave GetChannelClampMode(panelTitle)
 	return wv
 End
 
-/// @brief Return properties for the active headstages *during* TP/DAQ
+/// @brief Return properties for the headstages *during* TP/DAQ
 ///
-/// The order is the same as in ITCChanConfigWave and there does, by principle,
-/// not include unassociated ADCs.
-///
-/// @sa DC_UpdateActiveHSProperties()
-Function/WAVE GetActiveHSProperties(panelTitle)
+/// @sa DC_UpdateHSProperties()
+Function/WAVE GetHSProperties(panelTitle)
 	string panelTitle
 
 	DFREF dfr = GetDevicePath(panelTitle)
 	variable versionOfNewWave = 1
 
-	Wave/Z/SDFR=dfr wv = ChannelClampModeActive
+	Wave/Z/SDFR=dfr wv = HSProperties
 
 	if(ExistsWithCorrectLayoutVersion(wv, versionOfNewWave))
 		return wv
 	elseif(WaveExists(wv))
 		// handle upgrade
 	else
-		Make/N=(NUM_AD_CHANNELS, 4) dfr:ChannelClampModeActive/Wave=wv
+		Make/N=(NUM_HEADSTAGES, 4) dfr:HSProperties/Wave=wv
 	endif
 
 	wv = NaN
 
-	SetDimLabel COLS, 0, ADC      , wv
-	SetDimLabel COLS, 1, DAC      , wv
-	SetDimLabel COLS, 2, ClampMode, wv
-	SetDimLabel COLS, 3, Headstage, wv
+	SetDimLabel COLS, 0, Enabled  , wv
+	SetDimLabel COLS, 1, ADC      , wv
+	SetDimLabel COLS, 2, DAC      , wv
+	SetDimLabel COLS, 3, ClampMode, wv
 
 	SetWaveVersion(wv, versionOfNewWave)
 

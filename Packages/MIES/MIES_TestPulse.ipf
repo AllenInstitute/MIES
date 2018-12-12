@@ -369,9 +369,9 @@ static Function TP_RecordTP(panelTitle, BaselineSSAvg, InstResistance, SSResista
 	wave 	BaselineSSAvg, InstResistance, SSResistance
 	variable now
 
-	variable delta, i, headstage, ret, lastPressureCtrl
+	variable delta, i, ret, lastPressureCtrl
 	WAVE TPStorage = GetTPStorage(panelTitle)
-	WAVE activeHSProp = GetActiveHSProperties(panelTitle)
+	WAVE hsProp = GetHSProperties(panelTitle)
 	Wave GUIState  = GetDA_EphysGuiStateNum(panelTitle)
 	variable count = GetNumberFromWaveNote(TPStorage, NOTE_INDEX)
 	variable lastRescaling = GetNumberFromWaveNote(TPStorage, DIMENSION_SCALING_LAST_INVOC)
@@ -422,26 +422,13 @@ static Function TP_RecordTP(panelTitle, BaselineSSAvg, InstResistance, SSResista
 	TPStorage[count][][%ValidState]            = TPStorage[count][q][%PeakResistance] < TP_MAX_VALID_RESISTANCE \
 															&& TPStorage[count][q][%SteadyStateResistance] < TP_MAX_VALID_RESISTANCE
 
-	for(i = 0; i < NUM_AD_CHANNELS; i += 1)
+	TPStorage[count][][%DAC]       = hsProp[q][%DAC]
+	TPStorage[count][][%ADC]       = hsProp[q][%ADC]
+	TPStorage[count][][%Headstage] = hsProp[q][%Enabled] ? q : NaN
+	TPStorage[count][][%ClampMode] = hsProp[q][%ClampMode]
 
-		headstage = activeHSProp[i][%HeadStage]
-
-		if(!IsFinite(headstage))
-			// as activeHSProp only holds the active ADCs the first invalid
-			// entry signals the end as well
-			break
-		endif
-
-		TPStorage[count][headstage][%DAC]       = activeHSProp[i][%DAC]
-		TPStorage[count][headstage][%ADC]       = activeHSProp[i][%ADC]
-		TPStorage[count][headstage][%Headstage] = activeHSProp[i][%HeadStage]
-		TPStorage[count][headstage][%ClampMode] = activeHSProp[i][%ClampMode]
-
-		TPStorage[count][headstage][%Baseline_VC] = activeHSProp[i][%ClampMode] == V_CLAMP_MODE ? baselineSSAvg[headstage] : NaN
-		TPStorage[count][headstage][%Baseline_IC] = activeHSProp[i][%ClampMode] != V_CLAMP_MODE ? baselineSSAvg[headstage] : NaN
-
-		TPStorage[count][headstage][%DeltaTimeInSeconds] = count > 0 ? now - TPStorage[0][0][%TimeInSeconds] : 0
-	endfor
+	TPStorage[count][][%Baseline_VC] = hsProp[q][%ClampMode] == V_CLAMP_MODE ? baselineSSAvg[q] : NaN
+	TPStorage[count][][%Baseline_IC] = hsProp[q][%ClampMode] == I_CLAMP_MODE ? baselineSSAvg[q] : NaN
 
 	TPStorage[count][][%DeltaTimeInSeconds] = count > 0 ? now - TPStorage[0][0][%TimeInSeconds] : 0
 
