@@ -647,20 +647,13 @@ Function AI_ZeroAmps(panelTitle, [headStage])
 
 		WAVE baselineSSAvg = GetBaselineAverage(panelTitle)
 		if(!ParamIsDefault(headstage))
-			col = TP_GetTPResultsColOfHS(panelTitle, headstage)
-			if(col >= 0 && abs(baselineSSAvg[0][col]) >= ZERO_TOLERANCE)
+			if(abs(baselineSSAvg[headstage]) >= ZERO_TOLERANCE)
 				AI_MIESAutoPipetteOffset(panelTitle, headStage)
 			endif
 		else
-			WAVE statusHS = DAG_GetChannelState(panelTitle, CHANNEL_TYPE_HEADSTAGE)
 			for(i = 0; i < NUM_HEADSTAGES; i += 1)
-
-				if(!statusHS[i])
-					continue
-				endif
-				col = TP_GetTPResultsColOfHS(panelTitle, i)
-				if(col >= 0 && abs(baselineSSAvg[0][col]) >= ZERO_TOLERANCE)
-					AI_MIESAutoPipetteOffset(panelTitle, headStage)
+				if(abs(baselineSSAvg[i]) >= ZERO_TOLERANCE)
+					AI_MIESAutoPipetteOffset(panelTitle, i)
 				endif
 			endfor
 		endif
@@ -688,10 +681,9 @@ Function AI_MIESAutoPipetteOffset(panelTitle, headStage)
 	clampMode = DAG_GetHeadstageMode(panelTitle, headStage)
 
 	ASSERT(clampMode == V_CLAMP_MODE || clampMode == I_CLAMP_MODE, "Headstage must be in VC/IC mode to use this function")
-	column =TP_GetTPResultsColOfHS(panelTitle, headstage)
 	ASSERT(column >= 0, "Invalid column number")
 	//calculate delta current to reach zero
-	vdelta = (baselineSSAvg[0][column] * SSResistance[0][column]) / 1000 // set to mV
+	vdelta = (baselineSSAvg[headstage] * SSResistance[headstage]) / 1000 // set to mV
 	// get current DC V offset
 	offset = AI_SendToAmp(panelTitle, headStage, clampMode, MCC_GETPIPETTEOFFSET_FUNC, nan)
 	// add delta to current DC V offset

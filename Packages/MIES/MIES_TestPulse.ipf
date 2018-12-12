@@ -570,8 +570,11 @@ static Function TP_RecordTP(panelTitle, BaselineSSAvg, InstResistance, SSResista
 	TPStorage[count][][%TimeStamp]                  = DateTime
 	TPStorage[count][][%TimeStampSinceIgorEpochUTC] = DateTimeInUTC()
 
-	/// @todo use pqr indexing once InstResistance, SSResistance don't use the
-	/// active columns approach anymore
+	TPStorage[count][][%PeakResistance]        = min(InstResistance[q], TP_MAX_VALID_RESISTANCE)
+	TPStorage[count][][%SteadyStateResistance] = min(SSResistance[q], TP_MAX_VALID_RESISTANCE)
+	TPStorage[count][][%ValidState]            = TPStorage[count][q][%PeakResistance] < TP_MAX_VALID_RESISTANCE \
+															&& TPStorage[count][q][%SteadyStateResistance] < TP_MAX_VALID_RESISTANCE
+
 	for(i = 0; i < NUM_AD_CHANNELS; i += 1)
 
 		headstage = activeHSProp[i][%HeadStage]
@@ -582,18 +585,13 @@ static Function TP_RecordTP(panelTitle, BaselineSSAvg, InstResistance, SSResista
 			break
 		endif
 
-		TPStorage[count][headstage][%PeakResistance]        = min(InstResistance[0][i][0], TP_MAX_VALID_RESISTANCE)
-		TPStorage[count][headstage][%SteadyStateResistance] = min(SSResistance[0][i][0], TP_MAX_VALID_RESISTANCE)
-		TPStorage[count][headstage][%ValidState]            = TPStorage[count][headstage][%PeakResistance] < TP_MAX_VALID_RESISTANCE \
-														&& TPStorage[count][headstage][%SteadyStateResistance] < TP_MAX_VALID_RESISTANCE
-
 		TPStorage[count][headstage][%DAC]       = activeHSProp[i][%DAC]
 		TPStorage[count][headstage][%ADC]       = activeHSProp[i][%ADC]
 		TPStorage[count][headstage][%Headstage] = activeHSProp[i][%HeadStage]
 		TPStorage[count][headstage][%ClampMode] = activeHSProp[i][%ClampMode]
 
-		TPStorage[count][headstage][%Baseline_VC] = activeHSProp[i][%ClampMode] == V_CLAMP_MODE ? baselineSSAvg[0][i] : NaN
-		TPStorage[count][headstage][%Baseline_IC] = activeHSProp[i][%ClampMode] != V_CLAMP_MODE ? baselineSSAvg[0][i] : NaN
+		TPStorage[count][headstage][%Baseline_VC] = activeHSProp[i][%ClampMode] == V_CLAMP_MODE ? baselineSSAvg[headstage] : NaN
+		TPStorage[count][headstage][%Baseline_IC] = activeHSProp[i][%ClampMode] != V_CLAMP_MODE ? baselineSSAvg[headstage] : NaN
 
 		TPStorage[count][headstage][%DeltaTimeInSeconds] = count > 0 ? now - TPStorage[0][0][%TimeInSeconds] : 0
 	endfor

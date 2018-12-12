@@ -687,7 +687,7 @@ End
 Function ED_TPDocumentation(panelTitle)
 	string panelTitle
 
-	variable sweepNo, RTolerance, numActiveHS
+	variable sweepNo, RTolerance
 	variable i, j
 	WAVE activeHSProp = GetActiveHSProperties(panelTitle)
 
@@ -700,11 +700,6 @@ Function ED_TPDocumentation(panelTitle)
 	endif
 
 	WAVE statusHS = DAG_GetChannelState(panelTitle, CHANNEL_TYPE_HEADSTAGE)
-	numActiveHS = Sum(statusHS)
-
-	if(DimSize(BaselineSSAvg, COLS) != numActiveHS || DimSize(InstResistance, COLS) != numActiveHS || DimSize(SSResistance, COLS) != numActiveHS)
-		return NaN
-	endif
 
 	Make/FREE/T/N=(3, 12) TPKeyWave
 	Make/FREE/N=(1, 12, LABNOTEBOOK_LAYER_COUNT) TPSettingsWave = NaN
@@ -751,6 +746,9 @@ Function ED_TPDocumentation(panelTitle)
 	TPKeyWave[2][10] = "0.0001"
 	TPKeyWave[2][11] = LABNOTEBOOK_NO_TOLERANCE
 
+	TPSettingsWave[0][2][0, NUM_HEADSTAGES]  = InstResistance[r]
+	TPSettingsWave[0][3][0, NUM_HEADSTAGES]  = SSResistance[r]
+
 	for(i = 0; i < NUM_HEADSTAGES; i += 1)
 
 		TPSettingsWave[0][8][i] = statusHS[i]
@@ -764,17 +762,15 @@ Function ED_TPDocumentation(panelTitle)
 			TPSettingsWave[0][5][i] = AI_SendToAmp(panelTitle, i, V_CLAMP_MODE, MCC_GETSLOWCOMPCAP_FUNC, NaN)
 			TPSettingsWave[0][6][i] = AI_SendToAmp(panelTitle, i, V_CLAMP_MODE, MCC_GETFASTCOMPTAU_FUNC, NaN)
 			TPSettingsWave[0][7][i] = AI_SendToAmp(panelTitle, i, V_CLAMP_MODE, MCC_GETSLOWCOMPTAU_FUNC, NaN)
-			TPSettingsWave[0][1][i] = BaselineSSAvg[0][j]
+			TPSettingsWave[0][1][i] = BaselineSSAvg[i]
 		else
-			TPSettingsWave[0][0][i] = BaselineSSAvg[0][j]
+			TPSettingsWave[0][0][i] = BaselineSSAvg[i]
 		endif
 
-		TPSettingsWave[0][2][i]  = InstResistance[0][j]
-		TPSettingsWave[0][3][i]  = SSResistance[0][j]
 		TPSettingsWave[0][9][i]  = activeHSProp[j][%DAC]
 		TPSettingsWave[0][10][i] = activeHSProp[j][%ADC]
 		TPSettingsWave[0][11][i] = activeHSProp[j][%ClampMode]
-		j += 1 //  BaselineSSAvg, InstResistance, SSResistance only have a column for each active
+		j += 1
 			   // headstage (no place holder columns), j only increments for active headstages.
 	endfor
 

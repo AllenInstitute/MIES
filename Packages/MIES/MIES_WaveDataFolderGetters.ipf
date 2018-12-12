@@ -2159,66 +2159,102 @@ End
 
 /// @brief Return the testpulse instantenous resistance wave
 ///
-/// The columns hold the *active* AD channels only and are subject to resizing.
-///
-/// @todo change columns to hold entries for each headstage, num_cols = NUM_HEADSTAGES
+/// The rows have NUM_HEADSTAGES size and are initialized with NaN
 ///
 /// Unit: MOhm (1e6 Ohm)
 Function/Wave GetInstResistanceWave(panelTitle)
 	string 	panelTitle
 
-	dfref dfr = GetDeviceTestPulse(panelTitle)
+	variable version = 1
+
+	DFREF dfr = GetDeviceTestPulse(panelTitle)
 	WAVE/Z/SDFR=dfr wv = InstResistance
 
-	if(WaveExists(wv))
+	if(ExistsWithCorrectLayoutVersion(wv, version))
+
 		return wv
+
+	elseif(WaveExists(wv))
+		// Unversioned wave stored only active headstages
+		Redimension/N=(NUM_HEADSTAGES) wv
+		wv = NaN
+
+	else
+
+		Make/N=(NUM_HEADSTAGES) dfr:InstResistance/Wave=wv
+		wv = NaN
+
 	endif
 
-	Make/N=(0, NUM_AD_CHANNELS) dfr:InstResistance/Wave=wv
+	SetWaveVersion(wv, version)
 
 	return wv
 End
 
 /// @brief Return the testpulse steady state average
 ///
-/// The columns hold the *active* AD channels only and are subject to resizing.
-///
-/// @todo change columns to hold entries for each headstage, num_cols = NUM_HEADSTAGES
+/// The rows have NUM_HEADSTAGES size and are initialized with NaN
 ///
 /// Unit: mV (1e-3 Volt) for IC, pA (1e-12 Amps) for VC
 Function/Wave GetBaselineAverage(panelTitle)
 	string 	panelTitle
 
-	dfref dfr = GetDeviceTestPulse(panelTitle)
+	variable version = 1
+
+	DFREF dfr = GetDeviceTestPulse(panelTitle)
 	WAVE/Z/SDFR=dfr wv = BaselineSSAvg
 
-	if(WaveExists(wv))
+	if(ExistsWithCorrectLayoutVersion(wv, version))
+
 		return wv
+
+	elseif(WaveExists(wv))
+		// Unversioned wave stored only active headstages
+		Redimension/N=(NUM_HEADSTAGES) wv
+		wv = NaN
+
+	else
+
+		Make/N=(NUM_HEADSTAGES) dfr:BaselineSSAvg/Wave=wv
+		wv = NaN
+
 	endif
 
-	Make/N=(0, NUM_AD_CHANNELS) dfr:BaselineSSAvg/Wave=wv
+	SetWaveVersion(wv, version)
 
 	return wv
 End
 
 /// @brief Return the testpulse steady state resistance wave
 ///
-/// The columns hold the *active* AD channels only and are subject to resizing.
-///
-/// @todo change columns to hold entries for each headstage, num_cols = NUM_HEADSTAGES
+/// The rows have NUM_HEADSTAGES size and are initialized with NaN
 ///
 /// Unit: MOhm (1e6 Ohm)
 Function/Wave GetSSResistanceWave(panelTitle)
 	string 	panelTitle
 
-	dfref dfr = GetDeviceTestPulse(panelTitle)
+	variable version = 1
+
+	DFREF dfr = GetDeviceTestPulse(panelTitle)
 	WAVE/Z/SDFR=dfr wv = SSResistance
 
-	if(WaveExists(wv))
+	if(ExistsWithCorrectLayoutVersion(wv, version))
+
 		return wv
+
+	elseif(WaveExists(wv))
+		// Unversioned wave stored only active headstages
+		Redimension/N=(NUM_HEADSTAGES) wv
+		wv = NaN
+
+	else
+
+		Make/N=(NUM_HEADSTAGES) dfr:SSResistance/Wave=wv
+		wv = NaN
+
 	endif
 
-	Make/N=(0, NUM_AD_CHANNELS) dfr:SSResistance/Wave=wv
+	SetWaveVersion(wv, version)
 
 	return wv
 End

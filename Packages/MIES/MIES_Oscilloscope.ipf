@@ -280,7 +280,7 @@ Function SCOPE_CreateGraph(panelTitle, dataAcqOrTP)
 			tagAxis = rightAxis + "_tags"
 
 			tagSteadyStateTrace = "SSR" + adcStr
-			AppendToGraph/W=$graph/R=$tagAxis SSResistance[][i]/TN=$tagSteadyStateTrace
+			AppendToGraph/W=$graph/R=$tagAxis SSResistance[headstage][] /TN=$tagSteadyStateTrace
 			ModifyGraph/W=$graph mode($tagSteadyStateTrace) = 2, lsize($tagSteadyStateTrace) = 0
 
 			if(showPeakResistance || showSteadyStateResistance)
@@ -298,7 +298,7 @@ Function SCOPE_CreateGraph(panelTitle, dataAcqOrTP)
 			Tag/W=$graph/C/N=$tagName/F=0/B=1/A=$anchor/X=(xPos)/Y=(yPos)/L=0/I=1 $tagSteadyStateTrace, 0, str
 
 			tagPeakTrace = "InstR" + adcStr
-			AppendToGraph/W=$graph/R=$tagAxis InstResistance[][i]/TN=$tagPeakTrace
+			AppendToGraph/W=$graph/R=$tagAxis InstResistance[headstage][] /TN=$tagPeakTrace
 			ModifyGraph/W=$graph mode($tagPeakTrace) = 2, lsize($tagPeakTrace) = 0
 
 			if(showPeakResistance || showSteadyStateResistance)

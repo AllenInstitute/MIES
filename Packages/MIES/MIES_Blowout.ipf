@@ -175,9 +175,7 @@ static Function BWO_CheckAndClearPipettes(panelTitle)
 	for(i = 0; i < NUM_HEADSTAGES; i += 1)
 
 
-		col = TP_GetTPResultsColOfHS(panelTitle, i)
-
-		if(!P_ValidatePressureSetHeadstage(panelTitle, i) || SSResistance[0][col] < BWO_MAX_RESISTANCE)
+		if(!P_ValidatePressureSetHeadstage(panelTitle, i) || SSResistance[i] < BWO_MAX_RESISTANCE)
 			continue
 		endif
 
@@ -203,12 +201,12 @@ static Function BWO_CheckAndClearPipettes(panelTitle)
 			endif
 			TPM_BkrdTPFuncMD(s)
 			DoUpdate/W=$SCOPE_GetPanel(panelTitle)
-		while(SSResistance[0][col] > BWO_MAX_RESISTANCE && ticks - startTime < FIFTEEN_SECONDS) // continue if the pipette is not clear AND the timeout hasn't been exceeded
+		while(SSResistance[i] > BWO_MAX_RESISTANCE && ticks - startTime < FIFTEEN_SECONDS) // continue if the pipette is not clear AND the timeout hasn't been exceeded
 
 		PGC_SetAndActivateControl(panelTitle, "button_DataAcq_SSSetPressureMan") // turn off manual pressure
 		PGC_SetAndActivateControl(panelTitle, "setvar_DataAcq_SSPressure", val = 0)
 
-		if(SSResistance[0][col] > BWO_MAX_RESISTANCE)
+		if(SSResistance[i] > BWO_MAX_RESISTANCE)
 			printf "Unable to clear pipette on headstage %d with %g psi\r" i, PressureTracking[i]
 		endif
 	endfor

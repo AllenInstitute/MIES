@@ -222,10 +222,10 @@ Function TPM_BkrdTPFuncMD(s)
 								ASYNC_AddParam(threadDF, var=baselineFrac)
 								ASYNC_AddParam(threadDF, var=tpLengthPoints)
 								ASYNC_AddParam(threadDF, var=readTimeStamp)
-								ASYNC_AddParam(threadDF, var=channelNr)
+								ASYNC_AddParam(threadDF, var=activeHSProp[j][%Headstage]) // hsIndex
 								ASYNC_AddParam(threadDF, str=panelTitle)
 								ASYNC_AddParam(threadDF, var=measurementMarker)
-								ASYNC_AddParam(threadDF, var=V_FIFOnchans)
+								ASYNC_AddParam(threadDF, var=V_FIFOnchans)  // activeADCs
 								ASYNC_Execute(threadDF)
 
 							endfor
@@ -327,10 +327,10 @@ Function TPM_BkrdTPFuncMD(s)
 					ASYNC_AddParam(threadDF, var=baselineFrac)
 					ASYNC_AddParam(threadDF, var=tpLengthPoints)
 					ASYNC_AddParam(threadDF, var=readTimeStamp)
-					ASYNC_AddParam(threadDF, var=ADCs[j])
+					ASYNC_AddParam(threadDF, var=activeHSProp[j][%Headstage]) // hsIndex
 					ASYNC_AddParam(threadDF, str=panelTitle)
 					ASYNC_AddParam(threadDF, var=measurementMarker)
-					ASYNC_AddParam(threadDF, var=numEntries)
+					ASYNC_AddParam(threadDF, var=numEntries) // activeADCs
 					ASYNC_Execute(threadDF)
 				endfor
 
