@@ -425,7 +425,8 @@ static Function TP_RecordTP(panelTitle, BaselineSSAvg, InstResistance, SSResista
 	if((now - lastRescaling) > TP_DIMENSION_SCALING_INTERVAL)
 
 		if(!count) // initial estimate
-			delta = TP_TPSTORAGE_EVAL_INTERVAL
+			WAVE OscilloscopeData = GetOscilloscopeWave(panelTitle)
+			delta = TP_GetTestPulseLengthInPoints(panelTitle, TEST_PULSE_MODE) * DimDelta(OscilloscopeData, ROWS) / 1000
 		else
 			delta = TPStorage[count][0][%DeltaTimeInSeconds] / count
 		endif
