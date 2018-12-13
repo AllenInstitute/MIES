@@ -765,6 +765,11 @@ static Function/WAVE WB_MakeWaveBuilderWave(WP, WPT, SegWvType, stepCount, numEp
 			if(updateEpochIDWave && stepCount == 0)
 				WB_UpdateEpochID(i, params.duration, accumulatedDuration)
 			endif
+
+			AddEntryIntoWaveNoteAsList(WaveBuilderWave, "Sweep", var=stepCount)
+			AddEntryIntoWaveNoteAsList(WaveBuilderWave, "Epoch", var=i)
+			AddEntryIntoWaveNoteAsList(WaveBuilderWave, "Type" , str=WB_ToEpochTypeString(type))
+			AddEntryIntoWaveNoteAsList(WaveBuilderWave, "Duration" , var=params.Duration, appendCR=1)
 			continue
 		endif
 
