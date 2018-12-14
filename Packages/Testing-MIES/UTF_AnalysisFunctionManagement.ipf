@@ -1735,7 +1735,8 @@ End
 
 static Function AFT_SetControls1_Setter()
 
-	WBP_AddAnalysisParameter("AnaFuncSetCtrl_DA_0", "unknown_ctrl", var=1)
+	Make/FREE/T payload = {"Pre DAQ", "1"}
+	WBP_AddAnalysisParameter("AnaFuncSetCtrl_DA_0", "unknown_ctrl", wv=payload)
 End
 
 // complains on invalid control
@@ -1744,7 +1745,12 @@ static Function AFT_SetControls1()
 	STRUCT DAQSettings s
 	InitDAQSettingsFromString(s, "DAQ_MD1_RA0_IDX0_LIDX0_BKG_1")
 
-	AcquireData(s, "AnaFuncSetCtrl_DA_0", postInitializeFunc = AFT_SetControls1_Setter)
+	try
+		AcquireData(s, "AnaFuncSetCtrl_DA_0", postInitializeFunc = AFT_SetControls1_Setter)
+		FAIL()
+	catch
+		PASS()
+	endtry
 End
 
 static Function AFT_SetControlsTest1()
@@ -1761,16 +1767,21 @@ End
 
 static Function AFT_SetControls2_Setter()
 
-	WBP_AddAnalysisParameter("AnaFuncSetCtrl_DA_0", "Check_DataAcq_Indexing", str="my string")
+	WBP_AddAnalysisParameter("AnaFuncSetCtrl_DA_0", "Check_DataAcq_Indexing", str="myValue")
 End
 
-// complains about string param with variable-only control
+// complains on wrong parameter type (string)
 static Function AFT_SetControls2()
 
 	STRUCT DAQSettings s
 	InitDAQSettingsFromString(s, "DAQ_MD1_RA0_IDX0_LIDX0_BKG_1")
 
-	AcquireData(s, "AnaFuncSetCtrl_DA_0", postInitializeFunc = AFT_SetControls2_Setter)
+	try
+		AcquireData(s, "AnaFuncSetCtrl_DA_0", postInitializeFunc = AFT_SetControls2_Setter)
+		FAIL()
+	catch
+		PASS()
+	endtry
 End
 
 static Function AFT_SetControlsTest2()
@@ -1785,19 +1796,87 @@ static Function AFT_SetControlsTest2()
 	EnsureNoAnaFuncErrors()
 End
 
-static Function AFT_SetControls3_Setter()
+static Function AFT_SetControls2a_Setter()
 
-	Make/FREE wv
-	WBP_AddAnalysisParameter("AnaFuncSetCtrl_DA_0", "Check_DataAcq_Indexing", wv=wv)
+	WBP_AddAnalysisParameter("AnaFuncSetCtrl_DA_0", "Check_DataAcq_Indexing", var = 1)
 End
 
-// invalid parameter type
+// complains on wrong parameter type (numeric)
+static Function AFT_SetControls2a()
+
+	STRUCT DAQSettings s
+	InitDAQSettingsFromString(s, "DAQ_MD1_RA0_IDX0_LIDX0_BKG_1")
+
+	try
+		AcquireData(s, "AnaFuncSetCtrl_DA_0", postInitializeFunc = AFT_SetControls2a_Setter)
+		FAIL()
+	catch
+		PASS()
+	endtry
+End
+
+static Function AFT_SetControlsTest2a()
+
+	variable sweepNo
+
+	CHECK_EQUAL_VAR(GetSetVariable(DEVICE, "SetVar_Sweep"), 0)
+
+	sweepNo = AFH_GetLastSweepAcquired(DEVICE)
+	CHECK_EQUAL_VAR(sweepNo, NaN)
+
+	EnsureNoAnaFuncErrors()
+End
+
+static Function AFT_SetControls2b_Setter()
+
+	Make/FREE wv
+	WBP_AddAnalysisParameter("AnaFuncSetCtrl_DA_0", "Check_DataAcq_Indexing", wv = wv)
+End
+
+// complains on wrong parameter type (numeric wave)
+static Function AFT_SetControls2b()
+
+	STRUCT DAQSettings s
+	InitDAQSettingsFromString(s, "DAQ_MD1_RA0_IDX0_LIDX0_BKG_1")
+
+	try
+		AcquireData(s, "AnaFuncSetCtrl_DA_0", postInitializeFunc = AFT_SetControls2b_Setter)
+		FAIL()
+	catch
+		PASS()
+	endtry
+End
+
+static Function AFT_SetControlsTest2b()
+
+	variable sweepNo
+
+	CHECK_EQUAL_VAR(GetSetVariable(DEVICE, "SetVar_Sweep"), 0)
+
+	sweepNo = AFH_GetLastSweepAcquired(DEVICE)
+	CHECK_EQUAL_VAR(sweepNo, NaN)
+
+	EnsureNoAnaFuncErrors()
+End
+
+static Function AFT_SetControls3_Setter()
+
+	Make/FREE/T wv
+	WBP_AddAnalysisParameter("AnaFuncSetCtrl_DA_0", "Check_DataAcq_Indexing", wv = wv)
+End
+
+// invalid parameter wave size
 static Function AFT_SetControls3()
 
 	STRUCT DAQSettings s
 	InitDAQSettingsFromString(s, "DAQ_MD1_RA0_IDX0_LIDX0_BKG_1")
 
-	AcquireData(s, "AnaFuncSetCtrl_DA_0", postInitializeFunc = AFT_SetControls3_Setter)
+	try
+		AcquireData(s, "AnaFuncSetCtrl_DA_0", postInitializeFunc = AFT_SetControls3_Setter)
+		FAIL()
+	catch
+		PASS()
+	endtry
 End
 
 static Function AFT_SetControlsTest3()
@@ -1812,19 +1891,120 @@ static Function AFT_SetControlsTest3()
 	EnsureNoAnaFuncErrors()
 End
 
-static Function AFT_SetControls4_Setter()
+static Function AFT_SetControls3a_Setter()
 
-	Make/FREE wv
-	WBP_AddAnalysisParameter("AnaFuncSetCtrl_DA_0", "Check_DataAcq_Indexing", var=1)
+	Make/FREE/T wv = {"Unknown", "1"}
+	WBP_AddAnalysisParameter("AnaFuncSetCtrl_DA_0", "Check_DataAcq_Indexing", wv = wv)
 End
 
-// unchangeable control
+// invalid event type (unknown)
+static Function AFT_SetControls3a()
+
+	STRUCT DAQSettings s
+	InitDAQSettingsFromString(s, "DAQ_MD1_RA0_IDX0_LIDX0_BKG_1")
+
+	try
+		AcquireData(s, "AnaFuncSetCtrl_DA_0", postInitializeFunc = AFT_SetControls3a_Setter)
+		FAIL()
+	catch
+		PASS()
+	endtry
+End
+
+static Function AFT_SetControlsTest3a()
+
+	variable sweepNo
+
+	CHECK_EQUAL_VAR(GetSetVariable(DEVICE, "SetVar_Sweep"), 0)
+
+	sweepNo = AFH_GetLastSweepAcquired(DEVICE)
+	CHECK_EQUAL_VAR(sweepNo, NaN)
+
+	EnsureNoAnaFuncErrors()
+End
+
+static Function AFT_SetControls3b_Setter()
+
+	Make/FREE/T wv = {"Mid Sweep", "1"}
+	WBP_AddAnalysisParameter("AnaFuncSetCtrl_DA_0", "Check_DataAcq_Indexing", wv = wv)
+End
+
+// invalid event type (mid sweep)
+static Function AFT_SetControls3b()
+
+	STRUCT DAQSettings s
+	InitDAQSettingsFromString(s, "DAQ_MD1_RA0_IDX0_LIDX0_BKG_1")
+
+	try
+		AcquireData(s, "AnaFuncSetCtrl_DA_0", postInitializeFunc = AFT_SetControls3b_Setter)
+		FAIL()
+	catch
+		PASS()
+	endtry
+End
+
+static Function AFT_SetControlsTest3b()
+
+	variable sweepNo
+
+	CHECK_EQUAL_VAR(GetSetVariable(DEVICE, "SetVar_Sweep"), 0)
+
+	sweepNo = AFH_GetLastSweepAcquired(DEVICE)
+	CHECK_EQUAL_VAR(sweepNo, NaN)
+
+	EnsureNoAnaFuncErrors()
+End
+
+static Function AFT_SetControls3c_Setter()
+
+	Make/FREE/T wv = {"Generic", "1"}
+	WBP_AddAnalysisParameter("AnaFuncSetCtrl_DA_0", "Check_DataAcq_Indexing", wv = wv)
+End
+
+// invalid event type (generic)
+static Function AFT_SetControls3c()
+
+	STRUCT DAQSettings s
+	InitDAQSettingsFromString(s, "DAQ_MD1_RA0_IDX0_LIDX0_BKG_1")
+
+	try
+		AcquireData(s, "AnaFuncSetCtrl_DA_0", postInitializeFunc = AFT_SetControls3c_Setter)
+		FAIL()
+	catch
+		PASS()
+	endtry
+End
+
+static Function AFT_SetControlsTest3c()
+
+	variable sweepNo
+
+	CHECK_EQUAL_VAR(GetSetVariable(DEVICE, "SetVar_Sweep"), 0)
+
+	sweepNo = AFH_GetLastSweepAcquired(DEVICE)
+	CHECK_EQUAL_VAR(sweepNo, NaN)
+
+	EnsureNoAnaFuncErrors()
+End
+
+static Function AFT_SetControls4_Setter()
+
+	Make/FREE/T wv = {"Pre Sweep", "1"}
+	WBP_AddAnalysisParameter("AnaFuncSetCtrl_DA_0", "Check_DataAcq_Indexing", wv = wv)
+End
+
+// unchangeable control in other event than pre DAQ
 static Function AFT_SetControls4()
 
 	STRUCT DAQSettings s
 	InitDAQSettingsFromString(s, "DAQ_MD1_RA0_IDX0_LIDX0_BKG_1")
 
-	AcquireData(s, "AnaFuncSetCtrl_DA_0", postInitializeFunc = AFT_SetControls4_Setter)
+	try
+		AcquireData(s, "AnaFuncSetCtrl_DA_0", postInitializeFunc = AFT_SetControls4_Setter)
+		FAIL()
+	catch
+		PASS()
+	endtry
 End
 
 static Function AFT_SetControlsTest4()
@@ -1841,11 +2021,11 @@ End
 
 static Function AFT_SetControls5_Setter()
 
-	Make/FREE wv
-	WBP_AddAnalysisParameter("AnaFuncSetCtrl_DA_0", "popup_MoreSettings_DeviceType", var=1)
+	Make/FREE/T wv = {"Post Sweep", "0"}
+	WBP_AddAnalysisParameter("AnaFuncSetCtrl_DA_0", "Check_DataAcqHS_00", wv = wv)
 End
 
-// hidden control
+// hidden control is ignored
 static Function AFT_SetControls5()
 
 	STRUCT DAQSettings s
@@ -1858,20 +2038,41 @@ static Function AFT_SetControlsTest5()
 
 	variable sweepNo
 
-	CHECK_EQUAL_VAR(GetSetVariable(DEVICE, "SetVar_Sweep"), 0)
+	CHECK_EQUAL_VAR(GetSetVariable(DEVICE, "SetVar_Sweep"), 1)
 
 	sweepNo = AFH_GetLastSweepAcquired(DEVICE)
-	CHECK_EQUAL_VAR(sweepNo, NaN)
+	CHECK_EQUAL_VAR(sweepNo, 0)
+
+	CHECK_EQUAL_VAR(GetCheckBoxState(DEVICE, "Check_DataAcqHS_00"), 1)
 
 	EnsureNoAnaFuncErrors()
 End
 
 static Function AFT_SetControls6_Setter()
 
-	WBP_AddAnalysisParameter("AnaFuncSetCtrl_DA_0", "Check_Settings_UseDoublePrec", var=1)
-	WBP_AddAnalysisParameter("AnaFuncSetCtrl_DA_0", "check_Settings_ShowScopeWindow", var=0)
-	WBP_AddAnalysisParameter("AnaFuncSetCtrl_DA_0", "SetVar_DataAcq_Comment", str="abcd efgh")
-	WBP_AddAnalysisParameter("AnaFuncSetCtrl_DA_0", "SetVar_DataAcq_TPBaselinePerc", var=47)
+	// indexing and repeated acquistion are special as both can only be set in Pre/POST DAQ
+
+	Make/FREE/T/N=2 wv
+	wv[] = {"Pre DAQ", "0"}
+	WBP_AddAnalysisParameter("AnaFuncSetCtrl_DA_0", "Check_DataAcq1_RepeatAcq", wv = wv)
+
+	wv[] = {"Pre DAQ", "1"}
+	WBP_AddAnalysisParameter("AnaFuncSetCtrl_DA_0", "Check_Settings_UseDoublePrec", wv = wv)
+
+	wv[] = {"Pre Set", "47"}
+	WBP_AddAnalysisParameter("AnaFuncSetCtrl_DA_0", "SetVar_DataAcq_TPBaselinePerc", wv = wv)
+
+	wv[] = {"Pre Sweep", "4"}
+	WBP_AddAnalysisParameter("AnaFuncSetCtrl_DA_0", "Popup_Settings_SampIntMult", wv = wv)
+
+	wv[] = {"Post Sweep", "abcd efgh"}
+	WBP_AddAnalysisParameter("AnaFuncSetCtrl_DA_0", "SetVar_DataAcq_Comment", wv = wv)
+
+	wv[] = {"Post Set", "10"}
+	WBP_AddAnalysisParameter("AnaFuncSetCtrl_DA_0", "setvar_DataAcq_OnsetDelayUser", wv = wv)
+
+	wv[] = {"Post DAQ", "0"}
+	WBP_AddAnalysisParameter("AnaFuncSetCtrl_DA_0", "Check_DataAcq_Indexing", wv = wv)
 End
 
 // works with different controls
@@ -1893,14 +2094,18 @@ static Function AFT_SetControlsTest6()
 	sweepNo = AFH_GetLastSweepAcquired(DEVICE)
 	CHECK_EQUAL_VAR(sweepNo, 0)
 
+	CHECK_EQUAL_VAR(GetCheckBoxState(DEVICE, "Check_DataAcq1_RepeatAcq"), 0)
 	CHECK_EQUAL_VAR(GetCheckBoxState(DEVICE, "Check_Settings_UseDoublePrec"), 1)
-	CHECK_EQUAL_VAR(GetCheckBoxState(DEVICE, "check_Settings_ShowScopeWindow"), 0)
+	CHECK_EQUAL_VAR(GetSetVariable(DEVICE, "setvar_DataAcq_OnsetDelayUser"), 10)
 
 	ref = "abcd efgh"
 	actual = GetSetVariableString(DEVICE, "SetVar_DataAcq_Comment")
 	CHECK_EQUAL_STR(ref, actual)
 
 	CHECK_EQUAL_VAR(GetSetVariable(DEVICE, "SetVar_DataAcq_TPBaselinePerc"), 47)
+	CHECK_EQUAL_VAR(GetSetVariable(DEVICE, "setvar_DataAcq_OnsetDelayUser"), 10)
+	// the third entry is four
+	CHECK_EQUAL_VAR(GetPopupMenuIndex(DEVICE, "Popup_Settings_SampIntMult"), 2)
 
 	EnsureNoAnaFuncErrors()
 End

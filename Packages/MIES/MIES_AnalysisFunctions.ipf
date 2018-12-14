@@ -984,85 +984,98 @@ Function ReachTargetVoltage(panelTitle, eventType, ITCDataWave, headStage, realD
 	endfor
 End
 
-/// @brief Analysis function to set GUI controls in the PRE_SET_EVENT
+/// @brief Analysis function to set GUI controls in the events
 ///
 /// Usage:
 /// - Add analysis parameters named like the control
-/// - Their value, either a variable or a string, determine the target value
-Function SetControlInPreSetEvent(panelTitle, s)
+/// - Their value must be a textwave with two elements
+/// - The first element is the event type, one of #EVENT_NAME_LIST without "Mid Sweep"
+///   and "Generic", and the second element the value to set
+/// - For PopupMenus the passed value is the menu item and *not* its index
+Function SetControlInEvent(panelTitle, s)
 	string panelTitle
 	STRUCT AnalysisFunction_V3 &s
 
-	string ctrls, ctrl, type, str
-	variable numEntries, i, var, controlType
+	string ctrls, ctrl, type, valueStr, event, msg
+	variable numEntries, i, controlType
 
-	switch(s.eventType)
-		case PRE_SET_EVENT:
+	if(s.eventType == MID_SWEEP_EVENT)
+		return NaN
+	endif
 
-			if(s.headstage != DAP_GetHighestActiveHeadstage(panelTitle))
-				break
-			endif
+	if(s.headstage != DAP_GetHighestActiveHeadstage(panelTitle))
+		return NaN
+	endif
 
-			ctrls = AFH_GetListOfAnalysisParamNames(s.params)
-			numEntries = ItemsInList(ctrls)
+	ctrls = AFH_GetListOfAnalysisParamNames(s.params)
+	numEntries = ItemsInList(ctrls)
 
-			// check names and types
-			for(i = 0; i < numEntries; i += 1)
-				ctrl = StringFromList(i, ctrls)
+	for(i = 0; i < numEntries; i += 1)
+		ctrl = StringFromList(i, ctrls)
 
-				if(!ControlExists(paneltitle, ctrl))
-					printf "(%s): The analysis parameter %s is not a valid control.\r", panelTitle, ctrl
-					ControlWindowToFront()
-					return 1
-				endif
+		if(!ControlExists(paneltitle, ctrl))
+			printf "(%s): The analysis parameter %s is not a valid control.\r", panelTitle, ctrl
+			ControlWindowToFront()
+			return 1
+		endif
 
-				type = AFH_GetAnalysisParamType(ctrl, s.params)
+		// check payload type and format
+		type = AFH_GetAnalysisParamType(ctrl, s.params)
 
-				strswitch(type)
-					case "variable":
-						// all controls accept variables
-						break
-					case "string":
-						controlType = GetControlType(panelTitle, ctrl)
-						if(controlType != CONTROL_TYPE_SETVARIABLE && controlType != CONTROL_TYPE_POPUPMENU)
-							printf "(%s): The analysis parameter's %s value is a string but refers to a control which does not accept a string.\r", panelTitle, ctrl
-							ControlWindowToFront()
-							return 1
-						endif
-						break
-					default:
-						printf "(%s): The analysis parameter %s must have the type \"variable\" or \"string\".\r", panelTitle, ctrl
-						ControlWindowToFront()
-						return 1
-						break
-				endswitch
+		if(cmpstr(type, "textwave"))
+			printf "(%s): The analysis parameter's %s type is not \"textwave\".\r", panelTitle, ctrl
+			ControlWindowToFront()
+			return 1
+		endif
 
-				if(WhichListItem(ctrl, CONTROLS_DISABLE_DURING_DAQ) != -1)
-					printf "(%s): The analysis parameter %s is a control which can not be changed during DAQ.\r", panelTitle, ctrl
-					ControlWindowToFront()
-					return 1
-				elseif(IsControlDisabled(panelTitle, ctrl))
-					printf "(%s): The analysis parameter %s is a control which is disabled. Therefore it can not be set.\r", panelTitle, ctrl
-					ControlWindowToFront()
-					return 1
-				endif
-			endfor
+		WAVE/T/Z data = AFH_GetAnalysisParamTextWave(ctrl, s.params)
 
-			for(i = 0; i < numEntries; i += 1)
-				ctrl = StringFromList(i, ctrls)
-				type = AFH_GetAnalysisParamType(ctrl, s.params)
+		if(!WaveExists(data))
+			printf "(%s): The analysis parameter's %s payload is empty.\r", panelTitle, ctrl
+			ControlWindowToFront()
+			return 1
+		elseif(DimSize(data, ROWS) != 2 || DimSize(data, COLS) != 0)
+			printf "(%s): The analysis parameter's %s payload has not exactly two rows only.\r", panelTitle, ctrl
+			ControlWindowToFront()
+			return 1
+		endif
 
-				strswitch(type)
-					case "variable":
-						var = AFH_GetAnalysisParamNumerical(ctrl, s.params)
-						PGC_SetAndActivateControl(panelTitle, ctrl, val = var)
-						break
-					case "string":
-						str = AFH_GetAnalysisParamTextual(ctrl, s.params)
-						PGC_SetAndActivateControl(panelTitle, ctrl, str = str)
-						break
-				endswitch
-			endfor
-			break
-	endswitch
+		// check given event type
+		event = data[0]
+
+		if(WhichListItem(event, EVENT_NAME_LIST) == -1 || WhichListItem(event, "Mid Sweep;Generic") != -1)
+			printf "(%s): The analysis parameter's %s event \"%s\" is invalid.\r", panelTitle, ctrl, event
+			ControlWindowToFront()
+			return 1
+		elseif(WhichListItem(ctrl, CONTROLS_DISABLE_DURING_DAQ) != -1 && WhichListItem(event, "Pre DAQ;Post DAQ") == -1)
+			printf "(%s): The analysis parameter %s is a control which can only be changed in Pre/Post DAQ.\r", panelTitle, ctrl
+			ControlWindowToFront()
+			return 1
+		endif
+
+		// now we can finally check if it is our turn
+		if(WhichListItem(event, EVENT_NAME_LIST) != s.eventType)
+			continue
+		endif
+
+		if(IsControlDisabled(panelTitle, ctrl))
+			printf "(%s): The analysis parameter %s is a control which is disabled. Therefore it can not be set.\r", panelTitle, ctrl
+			ControlWindowToFront()
+			return 1
+		endif
+
+		// set the control
+		valueStr = data[1]
+
+		sprintf msg, "%s: Setting control %s to %s in event %s\r", GetRTStackInfo(1), ctrl, valueStr, event
+		DEBUGPRINT(msg)
+
+		controlType = GetControlType(panelTitle, ctrl)
+		if(controlType == CONTROL_TYPE_SETVARIABLE || controlType == CONTROL_TYPE_POPUPMENU)
+			PGC_SetAndActivateControl(panelTitle, ctrl, str = valueStr)
+		else
+			PGC_SetAndActivateControl(panelTitle, ctrl, val = str2numSafe(valueStr))
+		endif
+
+	endfor
 End
