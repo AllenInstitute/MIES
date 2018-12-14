@@ -410,6 +410,50 @@ End
 
 /// @}
 
+/// @brief Return a wave reference to the tp result async buffer wave
+///
+/// Rows:
+/// - buffered partial result entries
+///
+/// Column 0 (ASYNCDATA):
+///   - Layers:
+///     - 0: marker
+///     - 1: received channels
+///     - 2: now
+/// Column 1: baseline level
+/// Column 2: steady state res
+/// Column 3: instantaneous res
+/// Column 4: baseline position
+/// Column 5: steady state res position
+/// Column 6: instantaneous res position
+///   - Layers NUM_HEADSTAGES positions with value entries at hsIndex
+Function/Wave GetTPResultAsyncBuffer(panelTitle)
+	string panelTitle
+
+	DFREF dfr = GetDeviceTestPulse(panelTitle)
+
+	Wave/Z/SDFR=dfr/D wv = TPResultAsyncBuffer
+
+	if(WaveExists(wv))
+		return wv
+	endif
+
+	Make/N=(0, 7, NUM_HEADSTAGES)/D dfr:TPResultAsyncBuffer/Wave=wv
+
+	SetDimLabel COLS, 0, ASYNCDATA, wv
+	SetDimLabel COLS, 1, BASELINE, wv
+	SetDimLabel COLS, 2, STEADYSTATERES, wv
+	SetDimLabel COLS, 3, INSTANTRES, wv
+	SetDimLabel COLS, 4, BASELINE_POS, wv
+	SetDimLabel COLS, 5, STEADYSTATERES_POS, wv
+	SetDimLabel COLS, 6, INSTANTRES_POS, wv
+	SetDimLabel LAYERS, 0, MARKER, wv
+	SetDimLabel LAYERS, 1, REC_CHANNELS, wv
+	SetDimLabel LAYERS, 2, NOW, wv
+
+	return wv
+End
+
 /// @brief Return a wave reference to the channel clamp mode wave
 ///
 /// Rows:
@@ -440,34 +484,31 @@ Function/Wave GetChannelClampMode(panelTitle)
 	return wv
 End
 
-/// @brief Return properties for the active headstages *during* TP/DAQ
+/// @brief Return properties for the headstages *during* TP/DAQ
 ///
-/// The order is the same as in ITCChanConfigWave and there does, by principle,
-/// not include unassociated ADCs.
-///
-/// @sa DC_UpdateActiveHSProperties()
-Function/WAVE GetActiveHSProperties(panelTitle)
+/// @sa DC_UpdateHSProperties()
+Function/WAVE GetHSProperties(panelTitle)
 	string panelTitle
 
 	DFREF dfr = GetDevicePath(panelTitle)
 	variable versionOfNewWave = 1
 
-	Wave/Z/SDFR=dfr wv = ChannelClampModeActive
+	Wave/Z/SDFR=dfr wv = HSProperties
 
 	if(ExistsWithCorrectLayoutVersion(wv, versionOfNewWave))
 		return wv
 	elseif(WaveExists(wv))
 		// handle upgrade
 	else
-		Make/N=(NUM_AD_CHANNELS, 4) dfr:ChannelClampModeActive/Wave=wv
+		Make/N=(NUM_HEADSTAGES, 4) dfr:HSProperties/Wave=wv
 	endif
 
 	wv = NaN
 
-	SetDimLabel COLS, 0, ADC      , wv
-	SetDimLabel COLS, 1, DAC      , wv
-	SetDimLabel COLS, 2, ClampMode, wv
-	SetDimLabel COLS, 3, Headstage, wv
+	SetDimLabel COLS, 0, Enabled  , wv
+	SetDimLabel COLS, 1, ADC      , wv
+	SetDimLabel COLS, 2, DAC      , wv
+	SetDimLabel COLS, 3, ClampMode, wv
 
 	SetWaveVersion(wv, versionOfNewWave)
 
@@ -2115,66 +2156,102 @@ End
 
 /// @brief Return the testpulse instantenous resistance wave
 ///
-/// The columns hold the *active* AD channels only and are subject to resizing.
-///
-/// @todo change columns to hold entries for each headstage, num_cols = NUM_HEADSTAGES
+/// The rows have NUM_HEADSTAGES size and are initialized with NaN
 ///
 /// Unit: MOhm (1e6 Ohm)
 Function/Wave GetInstResistanceWave(panelTitle)
 	string 	panelTitle
 
-	dfref dfr = GetDeviceTestPulse(panelTitle)
+	variable version = 1
+
+	DFREF dfr = GetDeviceTestPulse(panelTitle)
 	WAVE/Z/SDFR=dfr wv = InstResistance
 
-	if(WaveExists(wv))
+	if(ExistsWithCorrectLayoutVersion(wv, version))
+
 		return wv
+
+	elseif(WaveExists(wv))
+		// Unversioned wave stored only active headstages
+		Redimension/N=(NUM_HEADSTAGES) wv
+		wv = NaN
+
+	else
+
+		Make/N=(NUM_HEADSTAGES) dfr:InstResistance/Wave=wv
+		wv = NaN
+
 	endif
 
-	Make/N=(0, NUM_AD_CHANNELS) dfr:InstResistance/Wave=wv
+	SetWaveVersion(wv, version)
 
 	return wv
 End
 
 /// @brief Return the testpulse steady state average
 ///
-/// The columns hold the *active* AD channels only and are subject to resizing.
-///
-/// @todo change columns to hold entries for each headstage, num_cols = NUM_HEADSTAGES
+/// The rows have NUM_HEADSTAGES size and are initialized with NaN
 ///
 /// Unit: mV (1e-3 Volt) for IC, pA (1e-12 Amps) for VC
 Function/Wave GetBaselineAverage(panelTitle)
 	string 	panelTitle
 
-	dfref dfr = GetDeviceTestPulse(panelTitle)
+	variable version = 1
+
+	DFREF dfr = GetDeviceTestPulse(panelTitle)
 	WAVE/Z/SDFR=dfr wv = BaselineSSAvg
 
-	if(WaveExists(wv))
+	if(ExistsWithCorrectLayoutVersion(wv, version))
+
 		return wv
+
+	elseif(WaveExists(wv))
+		// Unversioned wave stored only active headstages
+		Redimension/N=(NUM_HEADSTAGES) wv
+		wv = NaN
+
+	else
+
+		Make/N=(NUM_HEADSTAGES) dfr:BaselineSSAvg/Wave=wv
+		wv = NaN
+
 	endif
 
-	Make/N=(0, NUM_AD_CHANNELS) dfr:BaselineSSAvg/Wave=wv
+	SetWaveVersion(wv, version)
 
 	return wv
 End
 
 /// @brief Return the testpulse steady state resistance wave
 ///
-/// The columns hold the *active* AD channels only and are subject to resizing.
-///
-/// @todo change columns to hold entries for each headstage, num_cols = NUM_HEADSTAGES
+/// The rows have NUM_HEADSTAGES size and are initialized with NaN
 ///
 /// Unit: MOhm (1e6 Ohm)
 Function/Wave GetSSResistanceWave(panelTitle)
 	string 	panelTitle
 
-	dfref dfr = GetDeviceTestPulse(panelTitle)
+	variable version = 1
+
+	DFREF dfr = GetDeviceTestPulse(panelTitle)
 	WAVE/Z/SDFR=dfr wv = SSResistance
 
-	if(WaveExists(wv))
+	if(ExistsWithCorrectLayoutVersion(wv, version))
+
 		return wv
+
+	elseif(WaveExists(wv))
+		// Unversioned wave stored only active headstages
+		Redimension/N=(NUM_HEADSTAGES) wv
+		wv = NaN
+
+	else
+
+		Make/N=(NUM_HEADSTAGES) dfr:SSResistance/Wave=wv
+		wv = NaN
+
 	endif
 
-	Make/N=(0, NUM_AD_CHANNELS) dfr:SSResistance/Wave=wv
+	SetWaveVersion(wv, version)
 
 	return wv
 End

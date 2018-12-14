@@ -242,7 +242,7 @@ Function DQ_ApplyAutoBias(panelTitle, BaselineSSAvg, SSResistance)
 	Wave BaselineSSAvg, SSResistance
 
 	variable headStage, actualcurrent, current, targetVoltage, targetVoltageTol, setVoltage
-	variable activeADCol, DAC, ADC
+	variable DAC, ADC
 	variable resistance, maximumAutoBiasCurrent
 	Wave TPStorage = GetTPStorage(panelTitle)
 	variable lastInvocation = GetNumberFromWaveNote(TPStorage, AUTOBIAS_LAST_INVOCATION_KEY)
@@ -297,11 +297,8 @@ Function DQ_ApplyAutoBias(panelTitle, BaselineSSAvg, SSResistance)
 		targetVoltage    = ampSettings[%AutoBiasVcom][0][headStage] * 1e-3
 		targetVoltageTol = ampSettings[%AutoBiasVcomVariance][0][headStage] * 1e-3
 
-		activeADCol = TP_GetTPResultsColOfHS(panelTitle, headstage)
-		ASSERT(activeADCol >= 0, "Active Testpulse column is invalid")
-
-		resistance = SSResistance[0][activeADCol] * 1e6
-		setVoltage = BaselineSSAvg[0][activeADCol] * 1e-3
+		resistance = SSResistance[headstage] * 1e6
+		setVoltage = BaselineSSAvg[headstage] * 1e-3
 
 		DEBUGPRINT("resistance[Ohm]=", var=resistance)
 		DEBUGPRINT("setVoltage[V]=", var=setVoltage)

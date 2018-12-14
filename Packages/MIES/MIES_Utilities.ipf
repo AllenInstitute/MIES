@@ -76,9 +76,23 @@ Function ASSERT(var, errorMsg)
 
 	string stracktrace, miesVersionStr
 
+
 	try
 		AbortOnValue var==0, 1
 	catch
+		// Recursion detection, if ASSERT appears multiple times in StackTrace
+		if (ItemsInList(ListMatch(GetRTStackInfo(0), GetRTStackInfo(1))) > 1)
+
+			// Happens e.g. when ASSERT is encounterd in cleanup functions
+			print "Double Assertion Fail encountered !"
+#ifndef AUTOMATED_TESTING
+			ControlWindowToFront()
+			Debugger
+#endif // AUTOMATED_TESTING
+
+			Abort
+		endif
+
 		print "!!! Assertion FAILED !!!"
 		printf "Message: \"%s\"\r", RemoveEnding(errorMsg, "\r")
 
@@ -99,10 +113,17 @@ Function ASSERT(var, errorMsg)
 		print "MIES version:"
 		print miesVersionStr
 		print "################################"
+#endif // AUTOMATED_TESTING
 
+		// --- Cleanup functions
+		ASYNC_Stop(timeout=1, fromAssert=1)
+		// --- End of cleanup functions
+
+#ifndef AUTOMATED_TESTING
 		ControlWindowToFront()
 		Debugger
 #endif // AUTOMATED_TESTING
+
 		Abort
 	endtry
 End

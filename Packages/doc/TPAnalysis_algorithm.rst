@@ -1,7 +1,9 @@
  .. _TP_delta_doc:
 
-Testpulse Delta Algorithm
--------------------------
+Testpulse Analysis Algorithm
+----------------------------
+
+This algorithm has been moved as simpler code to :cpp:func:`TP_TSAnalysis` and :cpp:func:`TP_ROAnalysis`.
 
 Description
 ===========

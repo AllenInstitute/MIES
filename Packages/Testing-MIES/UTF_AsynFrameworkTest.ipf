@@ -44,12 +44,8 @@ End
 
 /// @brief Test to stop Framework when it is already stopped
 static Function TASYNC_Stop_AlreadyStopped()
-	try
-		ASYNC_Stop()
-		FAIL()
-	catch
-		PASS()
-	endtry
+
+	CHECK_EQUAL_VAR(ASYNC_Stop(), 0)
 End
 
 /// @brief Test to start and stop the Framework
@@ -543,6 +539,27 @@ static Function TASYNC_WorkerRealDF()
 	CHECK(!timeout)
 
 	ASYNC_Stop(timeout=1)
+End
+
+/// @brief Test if ASYNC_Stop does not throw with fromAssert=1
+static Function TASYNC_StopForAssert()
+
+	string myDF
+	DFREF threadDF
+	variable endtime, timeout
+
+	ASYNC_Start(ThreadProcessorCount)
+	threadDF = ASYNC_PrepareDF("RunGenericWorker", "RunGenericReadOutAbort")
+	ASYNC_AddParam(threadDF, var=1)
+	Make/N=10 data
+	ASYNC_AddParam(threadDF, w=data, move=1)
+	myDF = GetDataFolder(1)
+	ASYNC_AddParam(threadDF, str=myDF)
+
+	ASYNC_Execute(threadDF)
+	Make/N=0 returnOrder
+
+	ASYNC_Stop(timeout=1, fromAssert=1)
 End
 
 /// @brief Test if ASYNC_Execute triggers execution and data is returned through readout.
@@ -1102,6 +1119,26 @@ Function RunGenericReadOut2(dfr, err, errmsg)
 	size = numpnts(retOrder)
 	Redimension/N=(size + 1) retOrder
 	retOrder[size] = oID
+End
+
+/// @brief ReadOut function for combination with RunGenericWorker, order is saved in wave returnOrder
+/// Aborts at end to trigger an exception
+Function RunGenericReadOutAbort(dfr, err, errmsg)
+	DFREF dfr
+	variable err
+	string errmsg
+
+	variable size
+
+	CHECK(!err)
+
+	SVAR/SDFR=dfr testDF=myDF
+	NVAR/SDFR=dfr oID=outV
+	WAVE retOrder = $(testDF + "returnOrder")
+	size = numpnts(retOrder)
+	Redimension/N=(size + 1) retOrder
+	retOrder[size] = oID
+	Abort
 End
 
 /// @brief Worker that generates a runtime error 330

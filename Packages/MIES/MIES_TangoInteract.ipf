@@ -603,10 +603,7 @@ Function TI_finishBaselineQCCheck(s)
 	// grab the baseline avg value
 	WAVE BaselineSSAvg = GetBaselineAverage(currentPanel)
 
-	adChannel = TP_GetTPResultsColOfHS(currentPanel, headstage)
-
-	ASSERT(adChannel >= 0, "Could not query AD channel")
-	baselineAverage = BaselineSSAvg[0][adChannel]
+	baselineAverage = BaselineSSAvg[headstage]
 
 	print "baseline Average: ", baselineAverage
 
@@ -658,7 +655,6 @@ Function TI_runElectrodeDriftQC(headstage, expTime, [cmdID])
 	variable startInstResistanceVal
 	variable currentInstResistanceVal
 	variable qcResult = 0
-	variable adChannel
 	variable meanValue
 	string responseString
 	
@@ -724,16 +720,14 @@ Function TI_runElectrodeDriftQC(headstage, expTime, [cmdID])
 		// look at the instResistance already saved in the lab notebook.  This should be the InstResistance from the start of the experiment.
 		WAVE InstResistance = GetInstResistanceWave(currentPanel)
 		
-		adChannel = TP_GetTPResultsColOfHS(currentPanel, headstage)
-		startInstResistanceVal = InstResistance[0][adChannel]
+		startInstResistanceVal = InstResistance[headstage]
 		
 		// Check to see if Test Pulse is already running...if not running, turn it on...
 		if(!TP_CheckIfTestpulseIsRunning(currentPanel))
 			PGC_SetAndActivateControl(currentPanel,"StartTestPulseButton")
 		endif
 
-		adChannel = TP_GetTPResultsColOfHS(currentPanel, headstage)
-		currentInstResistanceVal = InstResistance[0][adChannel]		
+		currentInstResistanceVal = InstResistance[headstage]
 		
 		print "Current Access Resistance: ", currentInstResistanceVal
 		
@@ -911,7 +905,6 @@ Function TI_finishInitAccessQCCheck(s)
 
 	variable instResistanceVal, ssResistanceVal, tpBufferSetting
 	variable qcResult
-	variable adChannel
 	string responseString
 
 	// get the da_ephys panel names
@@ -937,10 +930,8 @@ Function TI_finishInitAccessQCCheck(s)
 	WAVE InstResistance = GetInstResistanceWave(currentPanel)
 	WAVE SSResistance = GetSSResistanceWave(currentPanel)
 
-	adChannel = TP_GetTPResultsColOfHS(currentPanel, headstage)
-	ASSERT(adChannel >= 0, "Could not query AD channel")
-	instResistanceVal = InstResistance[0][adChannel]
-	ssResistanceVal = SSResistance[0][adChannel]
+	instResistanceVal = InstResistance[headstage]
+	ssResistanceVal = SSResistance[headstage]
 
 	print "Initial Access Resistance: ", instResistanceVal
 	print "SS Resistance: ", ssResistanceVal
@@ -1354,7 +1345,6 @@ Function TI_finishGigOhmSealQCCheck(s)
 
 	variable ssResistanceVal
 	variable qcResult
-	variable adChannel
 	string responseString
 
 	// get the da_ephys panel names
@@ -1377,10 +1367,7 @@ Function TI_finishGigOhmSealQCCheck(s)
 
 	// and grab the Steady State Resistance
 	WAVE SSResistance = GetSSResistanceWave(currentPanel)
-
-	adChannel = TP_GetTPResultsColOfHS(currentPanel, headstage)
-	ASSERT(adChannel >= 0, "Could not query AD channel")
-	ssResistanceVal = SSResistance[0][adChannel]
+	ssResistanceVal = SSResistance[headstage]
 		
 	print "Steady State Resistance: ", ssResistanceVal
 		
@@ -1396,7 +1383,7 @@ Function TI_finishGigOhmSealQCCheck(s)
 			abort
 		endif
 	catch
-		ssResistanceVal = SSResistance[0][adChannel]
+		ssResistanceVal = SSResistance[headstage]
 			
 		print "Second Pass: Steady State Resistance: ", ssResistanceVal
 			

@@ -204,3 +204,18 @@ End
 Structure DeltaControlNames
 	string main, delta, dme, op, ldelta
 EndStructure
+
+/// @brief Helper structure for TP data transfer to analysis
+Structure TPAnalysisInput
+	WAVE data
+	variable clampAmp
+	variable clampMode
+	variable duration
+	variable baselineFrac
+	variable tpLengthPoints
+	variable readTimeStamp
+	variable hsIndex
+	string panelTitle
+	variable measurementMarker
+	variable activeADCs
+EndStructure

@@ -191,13 +191,14 @@ Function ASYNC_ThreadReadOut()
 	variable bufferSize, i
 	variable justBuffered
 
-	variable orderIndex, rterr
+	variable orderIndex, rterr, statCnt
 	string rterrmsg
 	NVAR tgID = $GetThreadGroupID()
 	ASSERT(!isNaN(tgID), "Async frame work is not running")
 	WAVE/DF DFREFbuffer = GetDFREFBuffer(getAsyncHomeDF())
 	WAVE/T workloadID = GetWorkloadID(getAsyncHomeDF())
 	WAVE workloadOrder = GetWorkloadOrder(getAsyncHomeDF())
+	NVAR rc = $GetReadOutCounter()
 
 	for(;;)
 		DFREF dfr = ThreadGroupGetDFR(tgID, 0)
@@ -226,6 +227,7 @@ Function ASYNC_ThreadReadOut()
 			endfor
 
 			if(i == bufferSize)
+				DEBUGPRINT("Async ReadOut: this run " + num2str(statCnt) + " RO functions called; " + num2str(rc) + " ever.")
 				return 0
 			endif
 		else
@@ -257,9 +259,9 @@ Function ASYNC_ThreadReadOut()
 		FUNCREF ASYNC_ReadOut f = $RFunc
 		NVAR err = dfr:$ASYNC_ERROR_STR
 		SVAR errmsg = dfr:$ASYNC_ERRORMSG_STR
-		NVAR rc = $GetReadOutCounter()
 		rc += 1
 
+		statCnt += 1
 		try
 			f(dfrOut, err, errmsg);AbortOnRTE
 		catch
@@ -338,14 +340,22 @@ End
 /// If the threads have to be stopped forcefully, an assertion is raised.
 /// Using a finite timeout is strongly recommended.
 ///
+/// @param fromAssert [optional, default = 0] specified when called as cleanup function from ASSERT
+/// Suppresses further assertions such that all required cleanup routines such as ThreadGroupRelease
+/// are executed.
+///
 /// @return 1 if a timeout was encountered, 0 otherwise
-Function ASYNC_Stop([timeout])
-	variable timeout
+Function ASYNC_Stop([timeout, fromAssert])
+	variable timeout, fromAssert
 
-	variable i, endtime, waitResult, localtgID, outatime
+	variable i, endtime, waitResult, localtgID, outatime, err
 
 	NVAR tgID = $GetThreadGroupID()
-	ASSERT(!isNaN(tgID), "Async FrameWork already in stopped state")
+	if(isNaN(tgID))
+		return 0
+	endif
+
+	fromAssert = ParamIsDefault(fromAssert) ? 0 : !!fromAssert
 
 	// Send abort to all threads
 	NVAR numThreads = $GetNumThreads()
@@ -358,7 +368,15 @@ Function ASYNC_Stop([timeout])
 		variable/G dfr:$ASYNC_THREAD_MARKER_STR
 		NVAR marker = dfr:$ASYNC_THREAD_MARKER_STR
 		marker = ASYNC_THREAD_MARKER
-		ASYNC_Execute(dfr)
+		if(fromAssert)
+			try
+				ASYNC_Execute(dfr);AbortOnRTE
+			catch
+				err = GetRTError(1)
+			endtry
+		else
+			ASYNC_Execute(dfr)
+		endif
 	endfor
 
 	// Wait for all threads to finish (or timeout)
@@ -387,7 +405,15 @@ Function ASYNC_Stop([timeout])
 		WAVE workerIDCounter = GetWorkerIDCounter(getAsyncHomeDF())
 		do
 			if(ReadOutCounter < workerIDCOunter[0] - numThreads)
-				ASYNC_ThreadReadOut()
+				if(fromAssert)
+					try
+						ASYNC_ThreadReadOut();AbortOnRTE
+					catch
+						err = GetRTError(1)
+					endtry
+				else
+					ASYNC_ThreadReadOut()
+				endif
 			else
 				break
 			endif
@@ -402,7 +428,10 @@ Function ASYNC_Stop([timeout])
 
 	localtgID = tgID
 	KillDataFolder GetAsyncHomeDF()
-	ASSERT(!(ThreadGroupRelease(localtgID) == -2), "Async framework stopped forcefully")
+	err = ThreadGroupRelease(localtgID)
+	if(!fromAssert)
+		ASSERT(err != -2, "Async framework stopped forcefully")
+	endif
 
 	return outatime
 End
@@ -624,9 +653,22 @@ static Function ASSERT(var, errorMsg)
 
 	string stracktrace, miesVersionStr
 
+
 	try
 		AbortOnValue var==0, 1
 	catch
+		// Recursion detection, if ASSERT appears multiple times in StackTrace
+		if (ItemsInList(ListMatch(GetRTStackInfo(0), GetRTStackInfo(1))) > 1)
+
+			// Happens e.g. when ASSERT is encounterd in cleanup functions
+			print "Double Assertion Fail encountered !"
+#ifndef AUTOMATED_TESTING
+			DoWindow/H
+			Debugger
+#endif // AUTOMATED_TESTING
+
+			Abort
+		endif
 		print "!!! Assertion FAILED !!!"
 		printf "Message: \"%s\"\r", RemoveEnding(errorMsg, "\r")
 
@@ -634,10 +676,17 @@ static Function ASSERT(var, errorMsg)
 		print "################################"
 		print GetStackTrace()
 		print "################################"
+#endif // AUTOMATED_TESTING
 
+		// --- Cleanup functions
+		ASYNC_Stop(timeout=1, fromAssert=1)
+		// --- End of cleanup functions
+
+#ifndef AUTOMATED_TESTING
 		DoWindow/H
 		Debugger
 #endif // AUTOMATED_TESTING
+
 		Abort
 	endtry
 End
