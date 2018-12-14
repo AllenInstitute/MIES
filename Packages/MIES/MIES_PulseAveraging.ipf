@@ -631,7 +631,7 @@ Function PA_ShowPulses(win, dfr, pa)
 						pulseTrace = NameOfWave(plotWave) + "_IDX" + num2str(idx)
 
 						GetTraceColor(headstage, red, green, blue)
-						AppendToGraph/Q/W=$graph/L=$vertAxis/B=$horizAxis/C=(red, green, blue, 65535 * 0.05) plotWave/TN=$pulseTrace
+						AppendToGraph/Q/W=$graph/L=$vertAxis/B=$horizAxis/C=(red, green, blue, 65535 * 0.1) plotWave/TN=$pulseTrace
 					endif
 
 					listOfWavesPerChannel[channelNumber] = AddListItem(GetWavesDataFolder(plotWave, 2), listOfWavesPerChannel[channelNumber], ";", inf)
