@@ -1230,14 +1230,17 @@ Function MSQ_FastRheoEst(panelTitle, s)
 			WAVE statusHS = DAG_GetChannelState(panelTitle, CHANNEL_TYPE_HEADSTAGE)
 
 			key = MSQ_CreateLBNKey(MSQ_FAST_RHEO_EST, MSQ_FMT_LBN_ACTIVE_HS, query = 1)
-			WAVE previousActiveHS = GetLastSettingSCI(numericalValues, s.sweepNo, key, s.headstage, UNKNOWN_MODE)
 
-			for(i = 0; i < NUM_HEADSTAGES; i += 1)
-				if(previousActiveHS[i] && !statusHS[i])
-					ctrl = GetPanelControl(i, CHANNEL_TYPE_HEADSTAGE, CHANNEL_CONTROL_CHECK)
-					PGC_SetAndActivateControl(panelTitle, ctrl, val=CHECKBOX_SELECTED)
-				endif
-			endfor
+			WAVE/Z previousActiveHS = GetLastSettingSCI(numericalValues, s.sweepNo, key, s.headstage, UNKNOWN_MODE)
+
+			if(WaveExists(previousActiveHS))
+				for(i = 0; i < NUM_HEADSTAGES; i += 1)
+					if(previousActiveHS[i] && !statusHS[i])
+						ctrl = GetPanelControl(i, CHANNEL_TYPE_HEADSTAGE, CHANNEL_CONTROL_CHECK)
+						PGC_SetAndActivateControl(panelTitle, ctrl, val=CHECKBOX_SELECTED)
+					endif
+				endfor
+			endif
 
 			// @todo add support in dashboard
 			// AD_UpdateAllDatabrowser()
