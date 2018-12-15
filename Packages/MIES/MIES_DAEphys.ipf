@@ -4227,13 +4227,11 @@ End
 Function DAP_CheckProc_Settings_PUser(cba) : CheckBoxControl
 	STRUCT WMCheckboxAction &cba
 
-	variable col
-	switch( cba.eventCode )
+	switch(cba.eventCode)
 		case 2: // mouse up
 			DAP_AbortIfUnlocked(cba.win)
 			DAG_Update(cba.win, cba.ctrlName, val = cba.checked)
 			WAVE pressureDataWv = P_GetPressureDataWaveRef(cba.win)
-			WAVE GUIState = GetDA_EphysGuiStateNum(cba.win)
 			P_RunP_ControlIfTPOFF(cba.win)
 			if(P_ValidatePressureSetHeadstage(cba.win, PressureDataWv[0][%UserSelectedHeadStage]))
 				P_SetPressureValves(cba.win, PressureDataWv[0][%UserSelectedHeadStage], P_GetUserAccess(cba.win, PressureDataWv[0][%UserSelectedHeadStage],PressureDataWv[PressureDataWv[0][%UserSelectedHeadStage]][%Approach_Seal_BrkIn_Clear]))
