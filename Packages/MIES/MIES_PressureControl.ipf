@@ -1491,7 +1491,7 @@ Function P_UpdatePressureMode(panelTitle, pressureMode, pressureControlName, che
 				endif
 			endif
 		endif
-		P_GetPressureType(panelTitle)
+		P_UpdatePressureType(panelTitle)
 		P_PressureDisplayHighlite(panelTitle, 1)
 	endif
 
@@ -1544,7 +1544,7 @@ static Function P_CheckAll(panelTitle, pressureMode, SavedPressureMode)
 			endfor
 		endif
 	endif
-	P_GetPressureType(panelTitle)
+	P_UpdatePressureType(panelTitle)
 End
 
 Function P_SetPressureOffset(panelTitle, headstage, userOffset)
@@ -1936,7 +1936,7 @@ Function P_Disable()
 			EnableControls(LockedDevice,PRESSURE_CONTROL_CHECKBOX_LIST)
 			DisableControls(LockedDevice, PRESSURE_CONTROLS_BUTTON_LIST)
 			DisableControls(LockedDevice, PRESSURE_CONTROL_CHECKBOX_LIST)
-			P_GetPressureType(LockedDevice)
+			P_UpdatePressureType(LockedDevice)
 		endif
 	endfor
 End
@@ -2319,22 +2319,23 @@ End
 
 /// @brief Encodes the pressure type for each headstage
 ///
-/// pressure types are: Atm(-1), Automated(0), Manual(1), User(2)
-Function P_GetPressureType(panelTitle)
+/// See also @ref PressureTypeConstants
+Function P_UpdatePressureType(panelTitle)
 	string panelTitle
+
+	variable headstage
 
 	WAVE pressureType = GetPressureTypeWv(panelTitle)
 	WAVE pressureDataWv = P_GetPressureDataWaveRef(panelTitle)
-	// Encode atm pressure mode (keep all -1)
-	pressureType[] = pressureDataWv[p][0] == PRESSURE_METHOD_ATM ? PRESSURE_METHOD_ATM : pressureType[p]
-	// Encode automated pressure modes (change 0,1,2,3 to 0)
-	pressureType[] = pressureDataWv[p][0] >= PRESSURE_METHOD_APPROACH && pressureDataWv[p][0] <= PRESSURE_METHOD_CLEAR ? 0 : pressureType[p]
-	//	Encode manual pressure mode (change 4 to 1)
-	pressureType[] = pressureDataWv[p][0] == PRESSURE_METHOD_MANUAL ? 1 : pressureType[p]
-	// Encode user access (if there is user access on the user selected headstage encode as 2)
-	pressureType[pressureDataWv[0][%userSelectedHeadStage]] = P_GetUserAccess(panelTitle, pressureDataWv[0][%userSelectedHeadStage], \
-																			  pressureDataWv[PressureDataWv[0][%userSelectedHeadStage]][0] \
-																			  ) == ACCESS_USER ? 2 : PressureType[PressureDataWv[0][%UserSelectedHeadStage]]
+	// Encode atm pressure mode
+	pressureType[] = pressureDataWv[p][0] == PRESSURE_METHOD_ATM ? PRESSURE_TYPE_ATM : pressureType[p]
+	// Encode automated pressure modes
+	pressureType[] = pressureDataWv[p][0] >= PRESSURE_METHOD_APPROACH && pressureDataWv[p][0] <= PRESSURE_METHOD_CLEAR ? PRESSURE_TYPE_AUTO : pressureType[p]
+	// Encode manual pressure mode
+	pressureType[] = pressureDataWv[p][0] == PRESSURE_METHOD_MANUAL ? PRESSURE_TYPE_MANUAL : pressureType[p]
+	// Encode user access
+	headstage = pressureDataWv[0][%userSelectedHeadStage]
+	pressureType[headstage] = P_GetUserAccess(panelTitle, headstage, pressureDataWv[headstage][0]) == ACCESS_USER ? PRESSURE_TYPE_USER : PressureType[headstage]
 	// Encode headstages without valid pressure settings
 	pressureType[] = P_ValidatePressureSetHeadstage(panelTitle, p) == 1 ? pressureType[p] : NaN
 End

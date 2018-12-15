@@ -646,6 +646,15 @@ Constant PRESSURE_METHOD_CLEAR    = 3
 Constant PRESSURE_METHOD_MANUAL   = 4
 /// @}
 
+/// @name Different pressure types of each headstage
+/// @anchor PressureTypeConstants
+/// @{
+Constant PRESSURE_TYPE_ATM    = -1
+Constant PRESSURE_TYPE_AUTO   =  0
+Constant PRESSURE_TYPE_MANUAL =  1
+Constant PRESSURE_TYPE_USER   =  2
+/// @}
+
 StrConstant POPUPMENU_DIVIDER = "\\M1(-"
 
 /// @name Constants for different WaveBuilder epochs

@@ -5374,11 +5374,15 @@ Function/WAVE GetCellElectrodeNames(panelTitle)
 	return wv
 End
 
-/// @brief Returns a 1D wave with the same number of rows as headstages used to store the pressure type (See: P_GetPressureType(panelTitle)).
-/// pressure types are: Atm(-1), Automated(0), Manual(1), User(2)
+/// @brief Returns a 1D wave with the same number of rows as headstages
+///        used to store the pressure type
+///
+/// Available pressure types are one of @ref PressureTypeConstants
 ///
 /// ROWS:
 /// - One row for each headstage
+///
+/// @sa P_UpdatePressureType
 Function/WAVE GetPressureTypeWv(panelTitle)
 	string panelTitle
 

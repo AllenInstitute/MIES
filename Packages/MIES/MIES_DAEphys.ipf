@@ -3082,7 +3082,7 @@ static Function DAP_ChangeHeadstageState(panelTitle, headStageCtrl, enabled)
 		if(!enabled)
 			DAP_RemoveClampModeSettings(panelTitle, i, clampMode)
 			P_SetPressureMode(panelTitle, i, PRESSURE_METHOD_ATM)
-			P_GetPressureType(panelTitle)
+			P_UpdatePressureType(panelTitle)
 		else
 			DAP_ApplyClmpModeSavdSettngs(panelTitle, i, clampMode)
 		endif
@@ -3417,7 +3417,7 @@ Function DAP_SliderProc_MIESHeadStage(sc) : SliderControl
 		P_PressureDisplayHighlite(panelTitle, 0)
 		P_SaveUserSelectedHeadstage(panelTitle, headStage)
 		P_GetAutoUserOff(panelTitle)
-		P_GetPressureType(panelTitle)
+		P_UpdatePressureType(panelTitle)
 		P_LoadPressureButtonState(panelTitle)
 		P_UpdatePressureModeTabs(panelTitle, headStage)
 		DAP_UpdateClampmodeTabs(panelTitle, headStage, mode, DO_MCC_MIES_SYNCING)
@@ -4239,7 +4239,7 @@ Function DAP_CheckProc_Settings_PUser(cba) : CheckBoxControl
 			if(P_ValidatePressureSetHeadstage(cba.win, headstage))
 				P_SetPressureValves(cba.win, headstage, P_GetUserAccess(cba.win, headstage,PressureDataWv[headstage][%Approach_Seal_BrkIn_Clear]))
 			endif
-			P_GetPressureType(cba.win)
+			P_UpdatePressureType(cba.win)
 
 			break
 	endswitch
