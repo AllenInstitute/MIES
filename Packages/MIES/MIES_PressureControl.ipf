@@ -2334,8 +2334,9 @@ Function P_GetPressureType(panelTitle)
 	//	Encode manual pressure mode (change 4 to 1)
 	pressureType[] = pressureDataWv[p][0] == PRESSURE_METHOD_MANUAL ? 1 : pressureType[p]
 	// Encode user access (if there is user access on the user selected headstage encode as 2)
-	// ToDo: Add line continuation character when we migrate to IP7
-	pressureType[pressureDataWv[0][%userSelectedHeadStage]] = P_GetUserAccess(panelTitle, pressureDataWv[0][%userSelectedHeadStage], pressureDataWv[PressureDataWv[0][%userSelectedHeadStage]][0]) == ACCESS_USER ? 2 : PressureType[PressureDataWv[0][%UserSelectedHeadStage]]
+	pressureType[pressureDataWv[0][%userSelectedHeadStage]] = P_GetUserAccess(panelTitle, pressureDataWv[0][%userSelectedHeadStage], \
+																			  pressureDataWv[PressureDataWv[0][%userSelectedHeadStage]][0] \
+																			  ) == ACCESS_USER ? 2 : PressureType[PressureDataWv[0][%UserSelectedHeadStage]]
 	// Encode headstages without valid pressure settings
 	pressureType[] = P_ValidatePressureSetHeadstage(panelTitle, p) == 1 ? pressureType[p] : NaN
 End
