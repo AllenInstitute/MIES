@@ -2272,8 +2272,6 @@ End
 Function P_RunP_ControlIfTPOFF(panelTitle)
 	string panelTitle
 
-	variable headStageNo = P_GetPressureDataWaveRef(panelTitle)[0][%userSelectedHeadstage]
-
 	if(!TP_CheckIfTestpulseIsRunning(panelTitle)) // P_PressureControl will be called from TP functions when the TP is running
 		P_PressureControl(panelTitle)
 	endif
