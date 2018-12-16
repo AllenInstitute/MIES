@@ -583,6 +583,14 @@ Function DAP_EphysPanelStartUpSettings()
 	SetVariable setvar_DataAcq_PPPressure, win=$panelTitle, value= _NUM:0
 	SetVariable setvar_DataAcq_SSPressure, win=$panelTitle, value= _NUM:0
 
+	// user pressure
+	PopupMenu popup_Settings_UserPressure WIN = $panelTitle, mode=1
+	EnableControl(panelTitle, "popup_Settings_UserPressure")
+	PopupMenu Popup_Settings_UserPressure_ADC  WIN = $panelTitle, mode=1
+	EnableControl(panelTitle, "Popup_Settings_UserPressure_ADC")
+	EnableControl(panelTitle, "button_Hardware_PUser_Enable")
+	DisableControl(panelTitle, "button_Hardware_PUser_Disable")
+
    ValDisplay valdisp_DataAcq_P_LED_0 WIN = $panelTitle, value= _NUM:-1
    ValDisplay valdisp_DataAcq_P_LED_1 WIN = $panelTitle, value= _NUM:-1
    ValDisplay valdisp_DataAcq_P_LED_2 WIN = $panelTitle, value= _NUM:-1
@@ -4490,6 +4498,7 @@ static Function DAP_UnlockDevice(panelTitle)
 	DAP_SerializeCommentNotebook(panelTitle)
 	DAP_LockCommentNotebook(panelTitle)
 	PGC_SetAndActivateControl(panelTitle, "button_Hardware_P_Disable")
+	PGC_SetAndActivateControl(panelTitle, "button_Hardware_PUser_Disable")
 
 	if(DeviceHasFollower(panelTitle))
 		DAP_RemoveALLYokedDACs(panelTitle)

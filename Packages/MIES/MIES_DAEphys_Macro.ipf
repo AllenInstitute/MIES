@@ -11,7 +11,7 @@
 
 Window DA_Ephys() : Panel
 	PauseUpdate; Silent 1		// building window...
-	NewPanel /K=1 /W=(128,484,632,1364)
+	NewPanel /K=1 /W=(120,750,624,1636)
 	ValDisplay valdisp_DataAcq_P_LED_Clear,pos={366.00,298.00},size={86.00,29.00},disable=1
 	ValDisplay valdisp_DataAcq_P_LED_Clear,help={"red:user"},userdata(tabnum)=  "0"
 	ValDisplay valdisp_DataAcq_P_LED_Clear,userdata(tabcontrol)=  "tab_DataAcq_Pressure"
@@ -3575,6 +3575,26 @@ Window DA_Ephys() : Panel
 	PopupMenu Popup_Settings_FixedFreq,userdata(tabnum)=  "5"
 	PopupMenu Popup_Settings_FixedFreq,userdata(tabcontrol)=  "ADC"
 	PopupMenu Popup_Settings_FixedFreq,mode=1,popvalue="Maximum",value= #"DAP_GetSamplingFrequencies()"
+	TitleBox Title_settings_Hardware_UPress,pos={43.00,598.00},size={70.00,15.00},title="User Pressure"
+	TitleBox Title_settings_Hardware_UPress,userdata(tabnum)=  "6"
+	TitleBox Title_settings_Hardware_UPress,userdata(tabcontrol)=  "ADC",frame=0
+	PopupMenu popup_Settings_UserPressure,pos={41.00,619.00},size={219.00,19.00},bodyWidth=150,proc=DAP_PopMenuProc_UpdateGuiState,title="DAC devices"
+	PopupMenu popup_Settings_UserPressure,help={"List of available DAC devices for pressure control"}
+	PopupMenu popup_Settings_UserPressure,userdata(tabnum)=  "6"
+	PopupMenu popup_Settings_UserPressure,userdata(tabcontrol)=  "ADC"
+	PopupMenu popup_Settings_UserPressure,mode=1,popvalue="- none -",value= #"\"- none -\""
+	PopupMenu Popup_Settings_UserPressure_ADC,pos={269.00,619.00},size={47.00,19.00},proc=DAP_PopMenuProc_UpdateGuiState,title="AD"
+	PopupMenu Popup_Settings_UserPressure_ADC,userdata(tabnum)=  "6"
+	PopupMenu Popup_Settings_UserPressure_ADC,userdata(tabcontrol)=  "ADC"
+	PopupMenu Popup_Settings_UserPressure_ADC,mode=1,popvalue="0",value= #"\"0;1;2;3;4;5;6;7;8;9;10;11;12;13;14;15\""
+	Button button_Hardware_PUser_Enable,pos={336.00,598.00},size={60.00,45.00},proc=P_ButtonProc_UserPressure,title="Enable"
+	Button button_Hardware_PUser_Enable,help={"Enable device for user pressure acquisition"}
+	Button button_Hardware_PUser_Enable,userdata(tabnum)=  "6"
+	Button button_Hardware_PUser_Enable,userdata(tabcontrol)=  "ADC",fSize=14
+	Button button_Hardware_PUser_Disable,pos={400.00,598.00},size={60.00,45.00},disable=2,proc=P_ButtonProc_UserPressure,title="Disable"
+	Button button_Hardware_PUser_Disable,help={"Disable device for user pressure acquisition"}
+	Button button_Hardware_PUser_Disable,userdata(tabnum)=  "6"
+	Button button_Hardware_PUser_Disable,userdata(tabcontrol)=  "ADC",fSize=14
 	DefineGuide UGV0={FR,-25},UGH0={FB,-27},UGV1={FL,481}
 	SetWindow kwTopWin,hook(cleanup)=DAP_WindowHook
 	SetWindow kwTopWin,userdata(ResizeControlsInfo)= A"!!*'\"z!!#CW!!#Dl5QCcbzzzzzzzzzzzzzzzzzzzz"
