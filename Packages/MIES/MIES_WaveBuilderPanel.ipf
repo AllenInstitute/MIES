@@ -2733,6 +2733,13 @@ Function WBP_ButtonProc_OpenAnaFuncs(ba) : ButtonControl
 
 	switch(ba.eventCode)
 		case 2: // mouse up
+
+			if(TP_GetNumDevicesWithTPRunning() > 0)
+				printf "The analysis function procedure window can not be opened when the testpulse is running.\n"
+				ControlWindowToFront()
+				break
+			endif
+
 			baseName = "UserAnalysisFunctions"
 			fileName = baseName + ".ipf"
 			userFile = GetFolder(FunctionPath("")) + fileName
