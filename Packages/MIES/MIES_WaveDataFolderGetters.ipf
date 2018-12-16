@@ -2017,23 +2017,31 @@ End
 /// - 14: DA channel
 /// - 15: Headstage
 /// - 16: ClampMode
-/// - 17: UserPressure (place holder)
+/// - 17: UserPressure
 /// - 18: PressureMethod (see @ref PressureModeConstants)
 /// - 19: ValidState (true if the entry is considered valid, false otherwise)
+/// - 20: UserPressureType (see @ref PressureTypeConstants)
+/// - 21: UserPressureTimeStampUTC timestamp since Igor Pro epoch in UTC where
+///       the user pressure was acquired
 Function/Wave GetTPStorage(panelTitle)
 	string 	panelTitle
 
 	dfref dfr = GetDeviceTestPulse(panelTitle)
-	variable versionOfNewWave = 9
+	variable versionOfNewWave = 10
 
 	WAVE/Z/SDFR=dfr/D wv = TPStorage
 
 	if(ExistsWithCorrectLayoutVersion(wv, versionOfNewWave))
 		return wv
 	elseif(WaveExists(wv))
-		Redimension/N=(-1, NUM_HEADSTAGES, 20)/D wv
+		Redimension/N=(-1, NUM_HEADSTAGES, 22)/D wv
+
+		if(WaveVersionIsSmaller(wv, 10))
+			wv[][][17]    = NaN
+			wv[][][20,21] = NaN
+		endif
 	else
-		Make/N=(MINIMUM_WAVE_SIZE_LARGE, NUM_HEADSTAGES, 20)/D dfr:TPStorage/Wave=wv
+		Make/N=(MINIMUM_WAVE_SIZE_LARGE, NUM_HEADSTAGES, 22)/D dfr:TPStorage/Wave=wv
 
 		wv = NaN
 
@@ -2062,6 +2070,8 @@ Function/Wave GetTPStorage(panelTitle)
 	SetDimLabel LAYERS, 17, UserPressure              , wv
 	SetDimLabel LAYERS, 18, PressureMethod            , wv
 	SetDimLabel LAYERS, 19, ValidState                , wv
+	SetDimLabel LAYERS, 20, UserPressureType          , wv
+	SetDimLabel LAYERS, 21, UserPressureTimeStampUTC  , wv
 
 	SetNumberInWaveNote(wv, AUTOBIAS_LAST_INVOCATION_KEY, 0)
 	SetNumberInWaveNote(wv, DIMENSION_SCALING_LAST_INVOC, 0)
