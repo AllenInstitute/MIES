@@ -4057,6 +4057,9 @@ static Function SetPressureWaveDimLabels(wv)
 	SetDimLabel COLS, 42, UserPressureOffsetTotal , wv
 	SetDimLabel COLS, 43, UserPressureOffsetPeriod, wv
 	SetDimLabel COLS, 44, TTL_B                   , wv
+	SetDimLabel COLS, 45, UserPressureDeviceID    , wv
+	SetDimLabel COLS, 46, UserPressureDeviceHWType, wv
+	SetDimLabel COLS, 47, UserPressureDeviceADC   , wv
 
 	SetDimLabel ROWS, 0, Headstage_0, wv
 	SetDimLabel ROWS, 1, Headstage_1, wv
@@ -4120,20 +4123,23 @@ End
 /// - 42: Total sum of user pressure offsets in psi.
 /// - 43: Total sum of user pressure offsets since last pulse in psi.
 /// - 44: TTL channel B used for pressure regulation.
+/// - 45: User pressure deviceID
+/// - 46: User pressure device hardware type
+/// - 47: User pressure ADC
 Function/WAVE P_GetPressureDataWaveRef(panelTitle)
 	string	panelTitle
 
-	variable versionOfNewWave = 6
+	variable versionOfNewWave = 7
 	DFREF dfr = P_DeviceSpecificPressureDFRef(panelTitle)
 	Wave/Z/SDFR=dfr wv=PressureData
 
 	if(ExistsWithCorrectLayoutVersion(wv, versionOfNewWave))
 		return wv
 	elseif(WaveExists(wv))
-		Redimension/N=(8, 45) wv
+		Redimension/N=(8, 48) wv
 		SetPressureWaveDimLabels(wv)
 	else
-		Make/N=(8, 45) dfr:PressureData/Wave=wv
+		Make/N=(8, 48) dfr:PressureData/Wave=wv
 
 		SetPressureWaveDimLabels(wv)
 
@@ -4167,6 +4173,9 @@ Function/WAVE P_GetPressureDataWaveRef(panelTitle)
 	wv[][%UserPressureOffset]        = 0
 	wv[][%UserPressureOffsetPeriod]  = 0
 	wv[][%UserPressureOffsetTotal]   = NaN
+	wv[][%UserPressureDeviceID]      = NaN
+	wv[][%UserPressureDeviceHWType]  = NaN
+	wv[][%UserPressureDeviceADC]     = NaN
 
 	SetWaveVersion(wv, versionOfNewWave)
 
