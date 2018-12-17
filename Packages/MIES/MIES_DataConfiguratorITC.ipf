@@ -39,6 +39,7 @@ Function DC_ConfigureDataForITC(panelTitle, dataAcqOrTP, [multiDevice])
 	variable dataAcqOrTP, multiDevice
 
 	variable numActiveChannels
+	variable gotTPChannels
 	ASSERT(dataAcqOrTP == DATA_ACQUISITION_MODE || dataAcqOrTP == TEST_PULSE_MODE, "invalid mode")
 
 	if(ParamIsDefault(multiDevice))
@@ -68,24 +69,29 @@ Function DC_ConfigureDataForITC(panelTitle, dataAcqOrTP, [multiDevice])
 
 	DC_UpdateGlobals(panelTitle)
 
-	if(dataAcqOrTP == TEST_PULSE_MODE)
-		TP_CreateTestPulseWave(panelTitle)
-	endif
-
 	numActiveChannels = DC_ChanCalcForITCChanConfigWave(panelTitle, dataAcqOrTP)
 	DC_MakeITCConfigAllConfigWave(panelTitle, numActiveChannels)
 
 	DC_PlaceDataInITCChanConfigWave(panelTitle, dataAcqOrTP)
-	DC_PlaceDataInHardwareDataWave(panelTitle, numActiveChannels, dataAcqOrTP, multiDevice)
 
 	WAVE ITCChanConfigWave = GetITCChanConfigWave(panelTitle)
+	WAVE ADCmode = GetADCTypesFromConfig(ITCChanConfigWave)
+	FindValue/I=(DAQ_CHANNEL_TYPE_TP) ADCmode
+	gotTPChannels = (V_Value != -1)
+
+	if(dataAcqOrTP == TEST_PULSE_MODE || gotTPChannels)
+		TP_CreateTestPulseWave(panelTitle)
+	endif
+
+	DC_PlaceDataInHardwareDataWave(panelTitle, numActiveChannels, dataAcqOrTP, multiDevice)
+
 	WAVE ADCs = GetADCListFromConfig(ITCChanConfigWave)
 	DC_UpdateHSProperties(panelTitle, ADCs)
 
 	NVAR ADChannelToMonitor = $GetADChannelToMonitor(panelTitle)
 	ADChannelToMonitor = DimSize(GetDACListFromConfig(ITCChanConfigWave), ROWS)
 
-	if(dataAcqOrTP == TEST_PULSE_MODE)
+	if(dataAcqOrTP == TEST_PULSE_MODE || gotTPChannels)
 		TP_CreateTPAvgBuffer(panelTitle)
 	endif
 
