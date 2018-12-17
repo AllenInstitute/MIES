@@ -2562,6 +2562,11 @@ static Function DAP_CheckStimset(panelTitle, channelType, channel, headstage)
 	numSets = ItemsInList(sets)
 	for(i = 0; i < numSets; i += 1)
 		setName = StringFromList(i, sets)
+
+		if(!CmpStr(setName, STIMSET_TP_WHILE_DAQ))
+			continue
+		endif
+
 		// third party stim sets might not match our expectations
 		WAVE/Z stimSet = WB_CreateAndGetStimSet(setName)
 
