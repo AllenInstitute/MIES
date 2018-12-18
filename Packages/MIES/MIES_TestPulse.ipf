@@ -635,6 +635,22 @@ Function TP_Teardown(panelTitle)
 	P_LoadPressureButtonState(panelTitle)
 End
 
+/// @brief Return the number of devices which have TP running
+Function TP_GetNumDevicesWithTPRunning()
+
+	variable numEntries, i, count
+	string list, panelTitle
+
+	list = GetListOfLockedDevices()
+	numEntries = ItemsInList(list)
+	for(i= 0; i < numEntries;i += 1)
+		panelTitle = StringFromList(i, list)
+		count += TP_CheckIfTestpulseIsRunning(panelTitle)
+	endfor
+
+	return count
+End
+
 /// @brief Check if the testpulse is running
 ///
 /// Can not be used to check for foreground TP as during foreground TP/DAQ nothing else runs.
