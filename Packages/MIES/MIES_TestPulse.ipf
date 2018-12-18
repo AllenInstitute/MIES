@@ -216,6 +216,12 @@ Function TP_ROAnalysis(dfr, err, errmsg)
 		MultiThread SSResistance[] = asyncBuffer[i][posSSRes][p]
 		MultiThread InstResistance[] = asyncBuffer[i][posInstRes][p]
 
+		// Remove finished results from buffer
+		DeletePoints i, 1, asyncBuffer
+		if(!DimSize(asyncBuffer, ROWS))
+			KillOrMoveToTrash(wv=asyncBuffer)
+		endif
+
 		NVAR tpBufferSize = $GetTPBufferSizeGlobal(panelTitle)
 		if(tpBufferSize > 1)
 			DFREF dfr = GetDeviceTestPulse(panelTitle)
@@ -228,13 +234,6 @@ Function TP_ROAnalysis(dfr, err, errmsg)
 
 		TP_RecordTP(panelTitle, BaselineSSAvg, InstResistance, SSResistance, now)
 		DQ_ApplyAutoBias(panelTitle, BaselineSSAvg, SSResistance)
-
-		// Remove finished results from buffer
-		DeletePoints i, 1, asyncBuffer
-		if(!DimSize(asyncBuffer, ROWS))
-			KillOrMoveToTrash(wv=asyncBuffer)
-		endif
-
 	endif
 
 End
