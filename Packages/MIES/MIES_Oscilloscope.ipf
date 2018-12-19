@@ -82,10 +82,10 @@ Function SCOPE_UpdateGraph(panelTitle)
 		Wave TPStorage = GetTPStorage(panelTitle)
 		count  = GetNumberFromWaveNote(TPStorage, NOTE_INDEX)
 		latest = DimOffset(TPStorage, ROWS) + count * DimDelta(TPStorage, ROWS)
-		relTimeAxisMin = latest - 0.5 * SCOPE_TIMEAXIS_RESISTANCE_RANGE
-		relTimeAxisMax = latest + 0.5 * SCOPE_TIMEAXIS_RESISTANCE_RANGE
 
 		if(latest >= V_max)
+			relTimeAxisMin = latest - 0.5 * SCOPE_TIMEAXIS_RESISTANCE_RANGE
+			relTimeAxisMax = latest + 0.5 * SCOPE_TIMEAXIS_RESISTANCE_RANGE
 			SetAxis/W=$graph top, relTimeAxisMin, relTimeAxisMax
 		endif
 	endif
