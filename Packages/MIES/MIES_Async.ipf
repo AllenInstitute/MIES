@@ -42,12 +42,14 @@ Function ASYNC_Start(numThreads, [disableTask])
 
 	variable i
 
+	NVAR tgID = $GetThreadGroupID()
+	if(!isNaN(tgID))
+		// framework already running
+		return 0
+	endif
+
 	ASSERT(numThreads >= 1 && numThreads <= ASYNC_MAX_THREADS, "numThread must be > 0 and <= " + num2str(ASYNC_MAX_THREADS))
 	disableTask = ParamIsDefault(disableTask) ? 0 : !!disableTask
-
-	DFREF dfr = GetAsyncHomeDF()
-	NVAR tgID = $GetThreadGroupID()
-	ASSERT(isNaN(tgID), "Async frame work already running")
 
 	NVAR numT = $GetNumThreads()
 	numT = numThreads
