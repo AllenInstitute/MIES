@@ -4488,7 +4488,8 @@ static Function DAP_UnlockDevice(panelTitle)
 
 	DAP_SerializeCommentNotebook(panelTitle)
 	DAP_LockCommentNotebook(panelTitle)
-	P_Disable() // Closes DACs used for pressure regulation
+	PGC_SetAndActivateControl(panelTitle, "button_Hardware_P_Disable")
+
 	if(DeviceHasFollower(panelTitle))
 		DAP_RemoveALLYokedDACs(panelTitle)
 	else
