@@ -3700,6 +3700,7 @@ Function DAP_ButtonProc_TPDAQ(ba) : ButtonControl
 	STRUCT WMButtonAction &ba
 
 	string panelTitle
+	variable testpulseRunMode
 
 	switch(ba.eventcode)
 		case 2:
@@ -3727,9 +3728,11 @@ Function DAP_ButtonProc_TPDAQ(ba) : ButtonControl
 				NVAR dataAcqRunMode = $GetDataAcqRunMode(panelTitle)
 
 				if(dataAcqRunMode == DAQ_NOT_RUNNING)
-					AbortOnValue DAP_CheckSettings(panelTitle, DATA_ACQUISITION_MODE), 1
-
-					TP_StopTestPulse(panelTitle)
+					testpulseRunMode = TP_StopTestPulse(panelTitle)
+					if(DAP_CheckSettings(panelTitle, DATA_ACQUISITION_MODE))
+						TP_RestartTestPulse(panelTitle, testpulseRunMode)
+						Abort
+					endif
 
 					if(DAG_GetNumericalValue(panelTitle, "check_Settings_MD"))
 						DQM_StartDAQMultiDevice(panelTitle)
