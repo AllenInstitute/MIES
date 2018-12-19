@@ -2018,7 +2018,7 @@ End
 /// - 15: Headstage
 /// - 16: ClampMode
 /// - 17: UserPressure (place holder)
-/// - 18: PressureMethod (see PressureModeConstants)
+/// - 18: PressureMethod (see @ref PressureModeConstants)
 /// - 19: ValidState (true if the entry is considered valid, false otherwise)
 Function/Wave GetTPStorage(panelTitle)
 	string 	panelTitle
