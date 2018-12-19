@@ -80,13 +80,15 @@ Function SCOPE_UpdateGraph(panelTitle)
 	GetAxis/W=$graph/Q top
 	if(!V_flag) // axis exists in graph
 		Wave TPStorage = GetTPStorage(panelTitle)
-		count  = GetNumberFromWaveNote(TPStorage, NOTE_INDEX)
-		latest = DimOffset(TPStorage, ROWS) + count * DimDelta(TPStorage, ROWS)
-		relTimeAxisMin = latest - 0.5 * SCOPE_TIMEAXIS_RESISTANCE_RANGE
-		relTimeAxisMax = latest + 0.5 * SCOPE_TIMEAXIS_RESISTANCE_RANGE
+		count = GetNumberFromWaveNote(TPStorage, NOTE_INDEX)
 
-		if(latest >= V_max)
-			SetAxis/W=$graph top, relTimeAxisMin, relTimeAxisMax
+		if(count > 0)
+			latest = TPStorage[count - 1][0][%DeltaTimeInSeconds]
+			if(latest >= V_max)
+				relTimeAxisMin = latest - 0.5 * SCOPE_TIMEAXIS_RESISTANCE_RANGE
+				relTimeAxisMax = latest + 0.5 * SCOPE_TIMEAXIS_RESISTANCE_RANGE
+				SetAxis/W=$graph top, relTimeAxisMin, relTimeAxisMax
+			endif
 		endif
 	endif
 
