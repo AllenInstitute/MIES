@@ -531,3 +531,28 @@ Function Bug(msg)
 
 	ControlWindowToFront()
 End
+
+/// @brief Debug helper which creates a textwave which will hold
+///        the names of all waves and their size in MiB
+Function GetSizeOfAllWavesInExperiment()
+
+	string allWaves = GetListOfObjects($"root:", ".*", fullPath=1, recursive=1)
+
+	allWaves = TextWaveToList(GetUniqueTextEntries(ListToTextWave(allWaves, ";")), ";")
+	variable numWaves = ItemsInList(allWaves)
+
+	Make/T/N=(numWaves, 2)/O list
+
+	list[][0] = StringFromList(p, allWaves)
+
+	Make/O/D/N=(numWaves) waveSizes = GetWaveSize($list[p][0], recursive=1) / 1024 / 1024
+
+	list[][1] = num2str(waveSizes[p])
+
+	SortColumns/KNDX=1 sortWaves={list}
+
+	WaveStats/M=2/Q waveSizes
+	printf "Sum of all waves: %g\r", V_sum
+
+	Edit/K=1 root:list
+End
