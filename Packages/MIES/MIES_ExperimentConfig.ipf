@@ -309,6 +309,15 @@ static Function ExpConfig_Pressure(panelTitle, UserSettings)
 
 	PGC_SetAndActivateControl(panelTitle,"button_Hardware_P_Enable")
 
+	FindValue/TXOP=4/TEXT=USER_PRESSURE_DEV UserSettings
+	if(V_Value != -1)
+		PGC_SetAndActivateControl(panelTitle, "popup_Settings_UserPressure", str=UserSettings[V_value][%SettingValue])
+		FindValue/TXOP=4/TEXT=USER_PRESSURE_DEV_ADC UserSettings
+		ASSERT(V_Value != -1, "Missing user pressure adc entry")
+		PGC_SetAndActivateControl(panelTitle, "Popup_Settings_UserPressure_ADC", str=UserSettings[V_value][%SettingValue])
+		PGC_SetAndActivateControl(panelTitle, "button_Hardware_PUser_Enable")
+	endif
+
 	PGC_SetAndActivateControl(panelTitle,"ADC", val = DA_EPHYS_PANEL_SETTINGS)
 	FindValue /TXOP = 4 /TEXT = PRESSURE_BATH UserSettings
 	PGC_SetAndActivateControl(panelTitle,"setvar_Settings_InBathP", val = str2numSafe(UserSettings[V_value][%SettingValue]))

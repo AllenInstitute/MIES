@@ -78,6 +78,11 @@ I-clamp Max bias current (pA) = 500
 
 Capacitance Neutralization enabled = No
 
+### User pressure entries ###
+
+Name of User Pressure Device = Dev1
+User Pressure Device ADC = 0
+
 ######## Test Pulse Settings ######
 Activate TP after DAQ = Yes
 
