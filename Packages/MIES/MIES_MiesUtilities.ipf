@@ -5080,3 +5080,13 @@ Function ZeroWave(wv)
 	Note/K wv, wavenote + "\r"
 	SetNumberInWaveNote(wv, NOTE_KEY_ZEROED, 1)
 End
+
+/// @brief Stops the ASYNC framework if no TP or DAQ operation is running
+Function StopAsyncIfDone()
+
+	if(TP_GetNumDevicesWithTPRunning() + DQ_GetNumDevicesWithDAQRunning())
+		return NaN
+	endif
+
+	ASYNC_Stop(timeout=10)
+End

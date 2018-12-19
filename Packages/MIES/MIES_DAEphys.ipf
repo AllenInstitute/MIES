@@ -1272,6 +1272,9 @@ Function DAP_OneTimeCallAfterDAQ(panelTitle, [forcedStop, startTPAfterDAQ])
 
 	NVAR dataAcqRunMode = $GetDataAcqRunMode(panelTitle)
 	dataAcqRunMode = DAQ_NOT_RUNNING
+
+	StopAsyncIfDone()
+
 	hardwareType = GetHardwareType(panelTitle)
 	switch(hardwareType)
 		case HARDWARE_NI_DAC:

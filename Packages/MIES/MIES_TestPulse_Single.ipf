@@ -19,7 +19,6 @@ Function TPS_StopTestPulseSingleDevice(panelTitle)
 	string panelTitle
 
 	CtrlNamedBackground $TASKNAME_TP, stop
-	ASYNC_Stop(timeout=10)
 	TP_Teardown(panelTitle)
 End
 
@@ -151,8 +150,6 @@ Function TPS_StartTestPulseForeground(panelTitle, [elapsedTime])
 
 		i += 1
 	while(!(GetKeyState(0) & ESCAPE_KEY))
-
-	ASYNC_Stop(timeout=10)
 
 	return 1
 End

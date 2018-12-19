@@ -142,7 +142,6 @@ Function DQM_TerminateOngoingDAQHelper(panelTitle)
 	// determine if device removed was the last device on the list, if yes stop the background function
 	if(DimSize(ActiveDeviceList, ROWS) == 0)
 		CtrlNamedBackground $TASKNAME_FIFOMONMD, stop
-		ASYNC_Stop(timeout=10)
 	endif
 END
 

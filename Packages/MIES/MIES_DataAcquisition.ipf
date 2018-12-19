@@ -332,3 +332,21 @@ Function DQ_ApplyAutoBias(panelTitle, BaselineSSAvg, SSResistance)
 		AI_UpdateAmpModel(panelTitle, "setvar_DataAcq_Hold_IC", headstage, value=current * 1e12,sendToAll=0)
 	endfor
 End
+
+/// @brief Return the number of devices which have DAQ running
+Function DQ_GetNumDevicesWithDAQRunning()
+
+	variable numEntries, i, count
+	string list, panelTitle
+
+	list = GetListOfLockedDevices()
+	numEntries = ItemsInList(list)
+	for(i= 0; i < numEntries;i += 1)
+		panelTitle = StringFromList(i, list)
+		NVAR daqMode=$GetDataAcqRunMode(panelTitle)
+
+		count += (daqMode != DAQ_NOT_RUNNING)
+	endfor
+
+	return count
+End

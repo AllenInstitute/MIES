@@ -307,7 +307,6 @@ static Function TPM_StopTPMD(panelTitle)
 		TPM_RemoveDevice(panelTitle)
 		if(!TPM_HasActiveDevices())
 			CtrlNamedBackground $TASKNAME_TPMD, stop
-			ASYNC_Stop(timeout=10)
 		endif
 		TP_Teardown(panelTitle)
 	endif

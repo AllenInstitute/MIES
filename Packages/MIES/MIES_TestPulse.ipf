@@ -714,6 +714,8 @@ Function TP_Teardown(panelTitle)
 	runMode = TEST_PULSE_NOT_RUNNING
 
 	P_LoadPressureButtonState(panelTitle)
+
+	StopAsyncIfDone()
 End
 
 /// @brief Return the number of devices which have TP running
