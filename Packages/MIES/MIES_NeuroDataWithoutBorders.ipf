@@ -1383,18 +1383,7 @@ static Function NWB_AppendIgorHistory(locationID)
 	variable groupID
 	string history, name
 
-	NVAR refnum = $GetHistoryRefNumber()
-
-	if(IsNan(refnum))
-		// nothing to do
-		return NaN
-	endif
-
-	try
-		history = CaptureHistory(refnum, 0); AbortOnRTE
-	catch
-		return NaN
-	endtry
+	history = GetHistoryNotebookText()
 
 	name = "history"
 

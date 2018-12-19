@@ -2853,9 +2853,9 @@ Function SaveExperimentSpecial(mode)
 	SaveExperiment
 
 	if(useNewNWBFile)
-		// reset history capturing
-		NVAR historyRefnum = $GetHistoryRefNumber()
-		historyRefnum = NaN
+
+		KillWindow/Z HistoryCarbonCopy
+		CreateHistoryNotebook()
 
 		CloseNWBFile()
 	endif

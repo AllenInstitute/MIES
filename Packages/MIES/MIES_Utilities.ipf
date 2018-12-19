@@ -3847,3 +3847,26 @@ Function/WAVE MergeTwoWaves(wv1, wv2)
 
 	return result
 End
+
+/// @brief Create the special Notebook "HistoryCarbonCopy" which will hold
+///        a readable copy of the history starting from the time of the
+///        notebook creation.
+Function CreateHistoryNotebook()
+	NewNotebook/V=0/F=0/N=HistoryCarbonCopy
+End
+
+/// @brief Return the text of the history notebook
+Function/S GetHistoryNotebookText()
+
+	if(!WindowExists("HistoryCarbonCopy"))
+		return ""
+	endif
+
+	Notebook HistoryCarbonCopy selection={startOfFile, endOfFile}
+	ASSERT(!V_Flag, "Illegal selection")
+
+	GetSelection notebook, HistoryCarbonCopy, 2
+	ASSERT(V_Flag, "Illegal selection")
+
+	return S_Selection
+End
