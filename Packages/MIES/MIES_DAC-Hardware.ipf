@@ -2533,8 +2533,6 @@ Function HW_NI_CloseDevice(deviceID, [flags])
 	else
 		HW_NI_KillFifo(deviceID)
 	endif
-
-	HW_NI_ResetDevice(deviceType, flags=flags)
 End
 
 
