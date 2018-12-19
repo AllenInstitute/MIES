@@ -507,14 +507,6 @@ Function/S GetFifoPosition(panelTitle)
 	return GetNVARAsString(GetDevicePath(panelTitle), "fifoPosition", initialValue = NaN)
 End
 
-/// @brief Return history capture reference number
-///
-/// Used for storing the igor history in NWB
-Function/S GetHistoryRefNumber()
-
-	return GetNVARAsString(GetNWBFolder(), "histRefNumber", initialValue = NaN)
-End
-
 /// @brief Return the error counter for the analysis function management
 ///
 /// Mainly used during testing to ensure that no RTE was thrown.
