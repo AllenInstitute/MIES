@@ -16,6 +16,7 @@
 #include "UTF_PatchSeqRheobase"
 #include "UTF_PatchSeqRamp"
 #include "UTF_MultiPatchSeqFastRheoEstimate"
+#include "UTF_MultiPatchSeqDAScale"
 
 Function LoadStimsets()
 	string filename = GetFolder(FunctionPath("")) + "_2017_09_01_192934-compressed.nwb"
@@ -326,6 +327,8 @@ Function run()
 	list = AddListItem("MSQ_FRE_Run10", list, ";", INF)
 	list = AddListItem("MSQ_FRE_Test10", list, ";", INF)
 
+	list = AddListItem("MSQ_DS_Run1", list, ";", INF)
+	list = AddListItem("MSQ_DS_Test1", list, ";", INF)
 #endif
 
 	// initialize everything

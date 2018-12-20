@@ -22,10 +22,10 @@
 /// MSQ_FMT_LBN_SPIKE_DETECT    The required number of spikes were detected on the sweep  FRE               No                    Yes
 /// MSQ_FMT_LBN_STEPSIZE        Current DAScale step size                                 FRE               No                    Yes
 /// MSQ_FMT_LBN_FINAL_SCALE     Final DAScale of the given headstage, only set on success FRE               No                    Yes
-/// MSQ_FMT_LBN_HEADSTAGE_PASS  Pass/fail state of the headstage                          FRE               No                    Yes
-/// MSQ_FMT_LBN_SWEEP_PASS      Pass/fail state of the complete sweep                     FRE               No                    No
-/// MSQ_FMT_LBN_SET_PASS        Pass/fail state of the complete set                       FRE               No                    No
-/// MSQ_FMT_LBN_ACTIVE_HS       Active headstages in pre DAQ event                        FRE               No                    Yes
+/// MSQ_FMT_LBN_HEADSTAGE_PASS  Pass/fail state of the headstage                          FRE, DS           No                    Yes
+/// MSQ_FMT_LBN_SWEEP_PASS      Pass/fail state of the complete sweep                     FRE, DS           No                    No
+/// MSQ_FMT_LBN_SET_PASS        Pass/fail state of the complete set                       FRE, DS           No                    No
+/// MSQ_FMT_LBN_ACTIVE_HS       Active headstages in pre DAQ event                        FRE, DS           No                    Yes
 /// MSQ_FMT_LBN_DASCALE_EXC     Allowed DAScale exceeded given limit                      FRE               No                    Yes
 /// MSQ_FMT_LBN_PULSE_DUR       Square pulse duration in ms                               FRE               No                    Yes
 /// =========================== ========================================================= ================= ===================== =====================
@@ -42,6 +42,7 @@ static Constant MSQ_RMS_LONG_TEST  = 0x1
 static Constant MSQ_TARGETV_TEST   = 0x2
 
 static StrConstant MSQ_FRE_LBN_PREFIX = "F Rheo E"
+static StrConstant MSQ_DS_LBN_PREFIX  = "Da Scale"
 
 /// @brief Return labnotebook keys for patch seq analysis functions
 ///
@@ -58,6 +59,9 @@ Function/S MSQ_CreateLBNKey(type, formatString, [chunk, query])
 	switch(type)
 		case MSQ_FAST_RHEO_EST:
 			prefix = MSQ_FRE_LBN_PREFIX
+			break
+		case MSQ_DA_SCALE:
+			prefix = MSQ_DS_LBN_PREFIX
 			break
 		default:
 			ASSERT(0, "unsupported type")
@@ -597,6 +601,8 @@ Function/WAVE MSQ_CreateOverrideResults(panelTitle, headstage, type)
 			numRows = IDX_NumberOfSweepsInSet(stimset)
 			numCols = Sum(MSQ_GetActiveHeadstages(panelTitle, I_CLAMP_MODE))
 			numLayers = 0
+		case MSQ_DA_SCALE:
+			// nothing to set
 			break
 		default:
 			ASSERT(0, "invalid type")
@@ -820,7 +826,6 @@ static Function MSQ_GetLBNEntryForHeadstageSCI(numericalValues, sweepNo, type, s
 
 	return values[numEntries - 1]
 End
-
 
 /// @brief Return a list of required parameters for MSQ_FastRheoEst()
 ///
@@ -1225,14 +1230,17 @@ Function MSQ_FastRheoEst(panelTitle, s)
 			WAVE statusHS = DAG_GetChannelState(panelTitle, CHANNEL_TYPE_HEADSTAGE)
 
 			key = MSQ_CreateLBNKey(MSQ_FAST_RHEO_EST, MSQ_FMT_LBN_ACTIVE_HS, query = 1)
-			WAVE previousActiveHS = GetLastSettingSCI(numericalValues, s.sweepNo, key, s.headstage, UNKNOWN_MODE)
 
-			for(i = 0; i < NUM_HEADSTAGES; i += 1)
-				if(previousActiveHS[i] && !statusHS[i])
-					ctrl = GetPanelControl(i, CHANNEL_TYPE_HEADSTAGE, CHANNEL_CONTROL_CHECK)
-					PGC_SetAndActivateControl(panelTitle, ctrl, val=CHECKBOX_SELECTED)
-				endif
-			endfor
+			WAVE/Z previousActiveHS = GetLastSettingSCI(numericalValues, s.sweepNo, key, s.headstage, UNKNOWN_MODE)
+
+			if(WaveExists(previousActiveHS))
+				for(i = 0; i < NUM_HEADSTAGES; i += 1)
+					if(previousActiveHS[i] && !statusHS[i])
+						ctrl = GetPanelControl(i, CHANNEL_TYPE_HEADSTAGE, CHANNEL_CONTROL_CHECK)
+						PGC_SetAndActivateControl(panelTitle, ctrl, val=CHECKBOX_SELECTED)
+					endif
+				endfor
+			endif
 
 			// @todo add support in dashboard
 			// AD_UpdateAllDatabrowser()
@@ -1255,9 +1263,255 @@ Function MSQ_MapFunctionToConstant(anaFunc)
 	strswitch(anaFunc)
 		case "MSQ_FastRheoEst":
 			return MSQ_FAST_RHEO_EST
+		case "MSQ_DAScale":
+			return MSQ_DA_SCALE
 		default:
 			return NaN
 	endswitch
+End
+
+/// @brief Return the DAScale offset [pA] for MSQ_DaScale()
+///
+/// @return wave with #LABNOTEBOOK_LAYER_COUNT entries, each holding the final DA Scale entry
+///         from the previous fast rheo estimate run.
+static Function/WAVE MSQ_DS_GetDAScaleOffset(panelTitle, headstage)
+	string panelTitle
+	variable headstage
+
+	variable sweepNo, i
+
+	Make/D/FREE/N=(LABNOTEBOOK_LAYER_COUNT) values = NaN
+
+	if(MSQ_TestOverrideActive())
+		values[] = MSQ_DS_OFFSETSCALE_FAKE
+		return values
+	endif
+
+	sweepNo = MSQ_GetLastPassingLongRHSweep(panelTitle, headstage)
+	if(!IsValidSweepNumber(sweepNo))
+		return values
+	endif
+
+	WAVE numericalValues = GetLBNumericalValues(panelTitle)
+
+	values[0, NUM_HEADSTAGES - 1] = MSQ_GetLBNEntryForHeadstageSCI(numericalValues, sweepNo, MSQ_FAST_RHEO_EST, MSQ_FMT_LBN_FINAL_SCALE, p) * 1e12
+
+	return values
+End
+
+/// @brief Return a sweep number of an existing sweep matching the following conditions
+///
+/// - Acquired with Rheobase analysis function
+/// - Sweep set was passing
+/// - Pulse duration was longer than 500ms
+///
+/// And as usual we want the *last* matching sweep.
+///
+/// @return existing sweep number or -1 in case no such sweep could be found
+static Function MSQ_GetLastPassingLongRHSweep(panelTitle, headstage)
+	string panelTitle
+	variable headstage
+
+	string key
+	variable i, numEntries, sweepNo, sweepCol
+
+	if(MSQ_TestOverrideActive())
+		return MSQ_DS_SWEEP_FAKE
+	endif
+
+	WAVE numericalValues = GetLBNumericalValues(panelTitle)
+
+	// rheobase sweeps passing
+	key = MSQ_CreateLBNKey(MSQ_FAST_RHEO_EST, MSQ_FMT_LBN_SET_PASS, query = 1)
+	WAVE/Z sweeps = GetSweepsWithSetting(numericalValues, key)
+
+	if(!WaveExists(sweeps))
+		return -1
+	endif
+
+	// pulse duration
+	key = MSQ_CreateLBNKey(MSQ_FAST_RHEO_EST, MSQ_FMT_LBN_PULSE_DUR, query = 1)
+
+	numEntries = DimSize(sweeps, ROWS)
+	for(i = numEntries - 1; i >= 0; i -= 1)
+		sweepNo = sweeps[i]
+		WAVE/Z setting = GetLastSettingSCI(numericalValues, sweepNo, key, headstage, UNKNOWN_MODE)
+
+		if(WaveExists(setting) && setting[headstage] > 500)
+			return sweepNo
+		endif
+	endfor
+
+	return -1
+End
+
+/// @brief Require parameters from stimset
+///
+/// - DAScales (Numeric wave): DA Scale Factors in pA
+Function/S MSQ_DAScale_GetParams()
+	return "DAScales:wave"
+End
+
+/// @brief Analysis function to apply a list of DAScale values to a range of sweeps
+///
+/// Decision logic flowchart:
+///
+/// \rst
+///	.. graphviz:: ../multi-patch-seq-dascale.dot
+/// \endrst
+///
+Function MSQ_DAScale(panelTitle, s)
+	string panelTitle
+	STRUCT AnalysisFunction_V3 &s
+
+	variable i, index, ret, headstagePassed, val, sweepNo
+	string msg, key, ctrl
+
+	WAVE DAScales = AFH_GetAnalysisParamWave("DAScales", s.params)
+
+	WAVE DAScalesIndex = GetAnalysisFuncIndexingHelper(panelTitle)
+
+	if(s.headstage != DAP_GetHighestActiveHeadstage(panelTitle))
+		return NaN
+	endif
+
+	switch(s.eventType)
+		case PRE_DAQ_EVENT:
+			PGC_SetAndActivateControl(panelTitle, "check_Settings_MD", val = 1)
+			PGC_SetAndActivateControl(panelTitle, "Check_DataAcq1_RepeatAcq", val = 1)
+
+			PGC_SetAndActivateControl(panelTitle, "Popup_Settings_SampIntMult", str = "1")
+
+			WAVE statusTTL = DAG_GetChannelState(panelTitle, CHANNEL_TYPE_TTL)
+			if(sum(statusTTL) != 0)
+				printf "(%s) Analysis function does not support TTL channels.\r", panelTitle
+				ControlWindowToFront()
+				return 1
+			endif
+
+			WAVE statusHS = DAG_GetChannelState(panelTitle, CHANNEL_TYPE_HEADSTAGE)
+			WAVE statusHSIC = MSQ_GetActiveHeadstages(panelTitle, I_CLAMP_MODE)
+
+			key = MSQ_CreateLBNKey(MSQ_FAST_RHEO_EST, MSQ_FMT_LBN_ACTIVE_HS)
+			Make/FREE/D/N=(LABNOTEBOOK_LAYER_COUNT) values = NaN
+			values[0, NUM_HEADSTAGES - 1] = statusHS[p]
+			ED_AddEntryToLabnotebook(panelTitle, key, values, overrideSweepNo = s.sweepNo)
+
+			WAVE numericalValues = GetLBNumericalValues(panelTitle)
+
+			for(i = 0; i < NUM_HEADSTAGES; i += 1)
+
+				if(MSQ_TestOverrideActive())
+					headstagePassed = 1
+				else
+					headstagePassed = MSQ_GetLBNEntryForHSSCIBool(numericalValues, sweepNo, MSQ_FAST_RHEO_EST, MSQ_FMT_LBN_HEADSTAGE_PASS, i)
+				endif
+
+				if(statusHS[i] && (!statusHSIC[i] || !headstagePassed)) // active non-IC headstage or not passing in FastRheoEstimate
+					ctrl = GetPanelControl(i, CHANNEL_TYPE_HEADSTAGE, CHANNEL_CONTROL_CHECK)
+					PGC_SetAndActivateControl(panelTitle, ctrl, val=CHECKBOX_UNSELECTED)
+				endif
+			endfor
+
+			if(Sum(MSQ_GetActiveHeadstages(panelTitle, I_CLAMP_MODE)) == 0)
+				printf "(%s) At least one active headstage must have IC clamp mode.\r", panelTitle
+				ControlWindowToFront()
+				return 1
+			endif
+
+			DisableControls(panelTitle, "Button_DataAcq_SkipBackwards;Button_DataAcq_SkipForward")
+			break
+		case PRE_SET_EVENT:
+
+			DAScalesIndex[] = 0
+
+			WAVE daScaleOffset = MSQ_DS_GetDAScaleOffset(panelTitle, s.headstage)
+			if(!HasOneValidEntry(daScaleOffset))
+				printf "(%s): Could not find a valid DAScale threshold value from previous rheobase runs with long pulses.\r", panelTitle
+				ControlWindowToFront()
+				return 1
+			endif
+
+			val = DAG_GetNumericalValue(panelTitle, "setvar_DataAcq_AutoBiasV")
+
+			if(!IsFinite(val) || CheckIfSmall(val, tol = 1e-12))
+				printf "(%s): Autobias value is zero or non-finite\r", panelTitle
+				ControlWindowToFront()
+				return 1
+			endif
+
+			PGC_SetAndActivateControl(panelTitle, "check_DataAcq_AutoBias", val = 1)
+			PGC_SetAndActivateControl(panelTitle, "Check_DataAcq1_DistribDaq", val = 1)
+			PGC_SetAndActivateControl(panelTitle, "check_Settings_ITITP", val = 1)
+			PGC_SetAndActivateControl(panelTitle, "Check_Settings_InsertTP", val = 1)
+
+			break
+		case POST_SWEEP_EVENT:
+
+			Make/D/FREE/N=(LABNOTEBOOK_LAYER_COUNT) values = NaN
+			WAVE statusHSIC = MSQ_GetActiveHeadstages(panelTitle, I_CLAMP_MODE)
+			values[0, NUM_HEADSTAGES - 1] = statusHSIC[p] ? 1 : NaN
+			key = MSQ_CreateLBNKey(MSQ_DA_SCALE, MSQ_FMT_LBN_HEADSTAGE_PASS)
+			ED_AddEntryToLabnotebook(panelTitle, key, values, unit = LABNOTEBOOK_BINARY_UNIT)
+
+			Make/D/FREE/N=(LABNOTEBOOK_LAYER_COUNT) values = NaN
+			values[INDEP_HEADSTAGE] = 1
+			key = MSQ_CreateLBNKey(MSQ_DA_SCALE, MSQ_FMT_LBN_SWEEP_PASS)
+			ED_AddEntryToLabnotebook(panelTitle, key, values, unit = LABNOTEBOOK_BINARY_UNIT)
+
+			break
+		case POST_SET_EVENT:
+
+			Make/D/FREE/N=(LABNOTEBOOK_LAYER_COUNT) values = NaN
+			values[INDEP_HEADSTAGE] = 1
+			key = MSQ_CreateLBNKey(MSQ_DA_SCALE, MSQ_FMT_LBN_SET_PASS)
+			ED_AddEntryToLabnotebook(panelTitle, key, values, unit = LABNOTEBOOK_BINARY_UNIT)
+
+			/// @todo support
+			/// AD_UpdateAllDatabrowser()
+			break
+		case POST_DAQ_EVENT:
+			WAVE statusHS = DAG_GetChannelState(panelTitle, CHANNEL_TYPE_HEADSTAGE)
+
+			WAVE numericalValues = GetLBNumericalValues(panelTitle)
+
+			key = MSQ_CreateLBNKey(MSQ_FAST_RHEO_EST, MSQ_FMT_LBN_ACTIVE_HS, query = 1)
+			WAVE/Z previousActiveHS = GetLastSettingSCI(numericalValues, s.sweepNo, key, s.headstage, UNKNOWN_MODE)
+
+			if(WaveExists(previousActiveHS))
+				for(i = 0; i < NUM_HEADSTAGES; i += 1)
+					if(previousActiveHS[i] && !statusHS[i])
+						ctrl = GetPanelControl(i, CHANNEL_TYPE_HEADSTAGE, CHANNEL_CONTROL_CHECK)
+						PGC_SetAndActivateControl(panelTitle, ctrl, val=CHECKBOX_SELECTED)
+					endif
+				endfor
+			endif
+
+			/// @todo support
+			/// AD_UpdateAllDatabrowser()
+			EnableControls(panelTitle, "Button_DataAcq_SkipBackwards;Button_DataAcq_SkipForward")
+			break
+		default:
+			break
+	endswitch
+
+	if(s.eventType == PRE_SET_EVENT || s.eventType == POST_SWEEP_EVENT)
+		WAVE daScaleOffset = MSQ_DS_GetDAScaleOffset(panelTitle, s.headstage)
+
+		WAVE statusHS = DAG_GetChannelState(panelTitle, CHANNEL_TYPE_HEADSTAGE)
+
+		for(i = 0; i < NUM_HEADSTAGES; i += 1)
+			if(!statusHS[i])
+				continue
+			endif
+
+			index = mod(DAScalesIndex[i], DimSize(DAScales, ROWS))
+
+			ASSERT(isFinite(daScaleOffset[i]), "DAScale offset is non-finite")
+			SetDAScale(panelTitle, i, (DAScales[index] + daScaleOffset[i]) * 1e-12)
+			DAScalesIndex[i] += 1
+		endfor
+	endif
 End
 
 /// @brief Manually force the pre/post set events
