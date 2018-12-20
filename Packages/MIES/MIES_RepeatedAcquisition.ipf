@@ -31,6 +31,8 @@ static Function RA_HandleITI_MD(panelTitle)
 	variable ITI
 	string funcList
 
+	DAP_ApplyDelayedClampModeChange(panelTitle)
+
 	ITI = RA_RecalculateITI(panelTitle)
 
 	if(!DAG_GetNumericalValue(panelTitle, "check_Settings_ITITP") || ITI <= 0)
@@ -82,6 +84,8 @@ static Function RA_HandleITI(panelTitle)
 
 	variable ITI, refTime, background, aborted
 	string funcList
+
+	DAP_ApplyDelayedClampModeChange(panelTitle)
 
 	ITI = RA_RecalculateITI(panelTitle)
 	background = DAG_GetNumericalValue(panelTitle, "Check_Settings_BackgrndDataAcq")
@@ -199,6 +203,8 @@ Function RA_Counter(panelTitle)
 
 	variable numTotalSweeps, indexing, indexingLocked
 	string str
+
+	DAP_ApplyDelayedClampModeChange(panelTitle)
 
 	NVAR count = $GetCount(panelTitle)
 	NVAR activeSetCount = $GetActiveSetCount(panelTitle)
@@ -322,6 +328,8 @@ Function RA_CounterMD(panelTitle)
 	NVAR activeSetCount = $GetActiveSetCount(panelTitle)
 	variable i, indexing, indexingLocked, numFollower, followerActiveSetCount
 	string str, followerPanelTitle
+
+	DAP_ApplyDelayedClampModeChange(panelTitle)
 
 	Count += 1
 	ActiveSetCount -= 1

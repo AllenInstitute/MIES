@@ -1065,6 +1065,8 @@ Function DAP_OneTimeCallBeforeDAQ(panelTitle, runMode)
 	WAVE stimsetAcqIDHelper = GetStimsetAcqIDHelperWave(panelTitle)
 	stimsetAcqIDHelper = NaN
 
+	DAP_ClearDelayedClampModeChange(panelTitle)
+
 	WAVE setEventFlag = GetSetEventFlag(panelTitle)
 	setEventFlag[][%PRE_SET_EVENT] = 1
 
@@ -1082,9 +1084,6 @@ Function DAP_OneTimeCallBeforeDAQ(panelTitle, runMode)
 		endif
 
 		DisableControl(panelTitle, GetPanelControl(i, CHANNEL_TYPE_HEADSTAGE, CHANNEL_CONTROL_CHECK))
-		DisableControl(panelTitle, DAP_GetClampModeControl(I_CLAMP_MODE, i))
-		DisableControl(panelTitle, DAP_GetClampModeControl(V_CLAMP_MODE, i))
-		DisableControl(panelTitle, DAP_GetClampModeControl(I_EQUAL_ZERO_MODE, i))
 
 		DAC = AFH_GetDACFromHeadstage(paneltitle, i)
 
@@ -1131,6 +1130,13 @@ Function DAP_OneTimeCallBeforeDAQ(panelTitle, runMode)
 #endif
 End
 
+static Function DAP_ResetClampModeTitle(panelTitle, ctrl)
+	string panelTitle, ctrl
+
+	SetControlTitle(panelTitle, ctrl, "")
+	SetControlTitleColor(panelTitle, ctrl, 0, 0, 0)
+End
+
 /// @brief Enable all controls which were disabled before DAQ by #DAP_OneTimeCallBeforeDAQ
 static Function DAP_ResetGUIAfterDAQ(panelTitle)
 	string panelTitle
@@ -1139,9 +1145,6 @@ static Function DAP_ResetGUIAfterDAQ(panelTitle)
 
 	for(i = 0; i < NUM_HEADSTAGES; i += 1)
 		EnableControl(panelTitle, GetPanelControl(i, CHANNEL_TYPE_HEADSTAGE, CHANNEL_CONTROL_CHECK))
-		EnableControl(panelTitle, DAP_GetClampModeControl(I_CLAMP_MODE, i))
-		EnableControl(panelTitle, DAP_GetClampModeControl(V_CLAMP_MODE, i))
-		EnableControl(panelTitle, DAP_GetClampModeControl(I_EQUAL_ZERO_MODE, i))
 
 		DAC = AFH_GetDACFromHeadstage(paneltitle, i)
 
@@ -1160,6 +1163,10 @@ static Function DAP_ResetGUIAfterDAQ(panelTitle)
 			EnableControl(panelTitle, GetPanelControl(ADC, CHANNEL_TYPE_ADC, CHANNEL_CONTROL_GAIN))
 			EnableControl(panelTitle, GetPanelControl(ADC, CHANNEL_TYPE_ADC, CHANNEL_CONTROL_UNIT))
 		endif
+
+		DAP_ResetClampModeTitle(panelTitle, DAP_GetClampModeControl(I_CLAMP_MODE, i))
+		DAP_ResetClampModeTitle(panelTitle, DAP_GetClampModeControl(V_CLAMP_MODE, i))
+		DAP_ResetClampModeTitle(panelTitle, DAP_GetClampModeControl(I_EQUAL_ZERO_MODE, i))
 	endfor
 
 	EnableControls(panelTitle, CONTROLS_DISABLE_DURING_DAQ)
@@ -1230,6 +1237,8 @@ Function DAP_OneTimeCallAfterDAQ(panelTitle, [forcedStop, startTPAfterDAQ])
 	TS_StopThreadGroup(tgID)
 	tgID = NaN
 #endif
+
+	DAP_ApplyDelayedClampModeChange(panelTitle)
 
 	if(!DAG_GetNumericalValue(panelTitle, "check_Settings_TPAfterDAQ") || !startTPAfterDAQ)
 		return NaN
@@ -2844,7 +2853,15 @@ Function DAP_CheckProc_ClampMode(cba) : CheckBoxControl
 				panelTitle = cba.win
 				control    = cba.ctrlName
 				DAP_GetInfoFromControl(panelTitle, control, mode, headStage)
-				DAP_ChangeHeadStageMode(panelTitle, mode, headstage, DO_MCC_MIES_SYNCING)
+
+				NVAR dataAcqRunMode = $GetDataAcqRunMode(panelTitle)
+				if(dataAcqRunMode == DAQ_NOT_RUNNING)
+					DAP_ChangeHeadStageMode(panelTitle, mode, headstage, DO_MCC_MIES_SYNCING)
+				else
+					WAVE GuiState = GetDA_EphysGuiStateNum(panelTitle)
+					GuiState[headstage][%HSmode_delayed] = mode
+					DAP_SetAmpModeControls(panelTitle, headstage, mode, delayed = 1)
+				endif
 			catch
 				SetCheckBoxState(panelTitle, control, !cba.checked)
 				Abort
@@ -2942,7 +2959,7 @@ Function DAP_ChangeHeadStageMode(panelTitle, clampMode, headstage, options)
 		GuiState[i][%HSmode] = clampMode
 
 		DAP_SetAmpModeControls(panelTitle, i, clampMode)
-		DAP_SetHeadstageChanControls(panelTitle, i, clampMode)
+		DAP_SetHeadstageChanControls(panelTitle, i, clampMode, delayed = IsFinite(GuiState[i][%HSmode_delayed]))
 		DAP_IZeroSetClampMode(panelTitle, i, clampMode)
 	endfor
 
@@ -2996,10 +3013,18 @@ End
 ///@param panelTitle	device
 ///@param headstage		controls associated with headstage are set
 ///@param clampMode		clamp mode to activate
-static Function DAP_SetAmpModeControls(panelTitle, headstage, clampMode)
+///@param delayed       indicate on the control that the change is delayed
+static Function DAP_SetAmpModeControls(panelTitle, headstage, clampMode, [delayed])
 	string panelTitle
 	variable headstage
 	variable clampMode
+	variable delayed
+
+	if(ParamIsDefault(delayed))
+		delayed = 0
+	else
+		delayed = !!delayed
+	endif
 
 	string VCctrl    = DAP_GetClampModeControl(V_CLAMP_MODE, headstage)
 	string ICctrl    = DAP_GetClampModeControl(I_CLAMP_MODE, headstage)
@@ -3013,6 +3038,13 @@ static Function DAP_SetAmpModeControls(panelTitle, headstage, clampMode)
 	if(headstage >= 0)
 		SetCheckboxState(panelTitle, ctrl, CHECKBOX_SELECTED)
 	endif
+
+	if(delayed)
+		SetControlTitle(panelTitle, ctrl, "D")
+		SetControlTitleColor(panelTitle, ctrl, 1, 39321, 19939)
+	else
+		DAP_ResetClampModeTitle(panelTitle, ctrl)
+	endif
 End
 
 /// @brief Sets the DA and AD channel settings according to the headstage mode
@@ -3020,10 +3052,11 @@ End
 /// @param panelTitle Device (used for data acquisition)
 /// @param headstage  Channels associated with headstage are set
 /// @param clampMode  Clamp mode to activate
-static Function DAP_SetHeadstageChanControls(panelTitle, headstage, clampMode)
+/// @param delayed    [optional, defaults to false] Indicate that this is a delayed clamp mode change
+static Function DAP_SetHeadstageChanControls(panelTitle, headstage, clampMode, [delayed])
 	string panelTitle
 	variable headstage
-	variable clampMode
+	variable clampMode, delayed
 
 	variable oppositeMode
 
@@ -3034,7 +3067,7 @@ static Function DAP_SetHeadstageChanControls(panelTitle, headstage, clampMode)
 	oppositeMode = (clampMode == I_CLAMP_MODE || clampMode == I_EQUAL_ZERO_MODE ? V_CLAMP_MODE : I_CLAMP_MODE)
 	DAP_RemoveClampModeSettings(panelTitle, headstage, oppositeMode)
 	DAP_ApplyClmpModeSavdSettngs(panelTitle, headstage, clampMode)
-	DAP_AllChanDASettings(panelTitle, headStage)
+	DAP_AllChanDASettings(panelTitle, headStage, delayed = delayed)
 End
 
 /// See @ref MCCSyncOverrides for allowed values of `mccMiesSyncOverride`
@@ -4770,16 +4803,23 @@ End
 /// @brief Applies user settings for the clamp mode stimulus sets (DA Set and Indexing End Set) on mode switch
 ///
 /// @param panelTitle device
-/// @param headStage MIES headstage number, must be in the range [0, NUM_HEADSTAGES]
-static Function DAP_AllChanDASettings(panelTitle, headStage)
+/// @param headStage  MIES headstage number, must be in the range [0, NUM_HEADSTAGES]
+/// @param delayed    [optional, defaults to false] On a delayed clamp mode change the stimulus set is not set.
+static Function DAP_AllChanDASettings(panelTitle, headStage, [delayed])
 	string panelTitle
-	variable headStage
+	variable headStage, delayed
 
 	string ctrl
 	variable scalar, index, indexEnd, DAC
 
 	if(!DAG_GetNumericalValue(panelTitle, "check_DA_applyOnModeSwitch"))
 		return NaN
+	endif
+
+	if(ParamIsDefault(delayed))
+		delayed = 0
+	else
+		delayed = !!delayed
 	endif
 
 	DAC = AFH_GetDACFromHeadstage(paneltitle, headstage)
@@ -4803,12 +4843,15 @@ static Function DAP_AllChanDASettings(panelTitle, headStage)
 	// update the scalar
 	ctrl = GetPanelControl(DAC, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_SCALE)
 	PGC_SetAndActivateControl(panelTitle, ctrl, val = scalar)
-	// update the stimulus set
-	ctrl = GetPanelControl(DAC, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_WAVE)
-	PGC_SetAndActivateControl(panelTitle, ctrl, val = index)
-	// update the Index end set
-	ctrl = GetPanelControl(DAC, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_INDEX_END)
-	PGC_SetAndActivateControl(panelTitle, ctrl, val = indexEnd)
+
+	// update the stimulus/index end set if not delayed clamp mode change
+	if(!delayed)
+		ctrl = GetPanelControl(DAC, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_WAVE)
+		PGC_SetAndActivateControl(panelTitle, ctrl, val = index)
+
+		ctrl = GetPanelControl(DAC, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_INDEX_END)
+		PGC_SetAndActivateControl(panelTitle, ctrl, val = indexEnd)
+	endif
 End
 
 Function DAP_ButtonProc_skipSweep(ba) : ButtonControl
@@ -5000,4 +5043,31 @@ Function DAP_PopMenuProc_FixedSampInt(pa) : PopupMenuControl
 	endswitch
 
 	return 0
+End
+
+Function DAP_ApplyDelayedClampModeChange(panelTitle)
+	string panelTitle
+
+	variable i, mode
+
+	WAVE GuiState = GetDA_EphysGuiStateNum(panelTitle)
+
+	for(i = 0; i < NUM_HEADSTAGES; i += 1)
+		mode = GuiState[i][%HSmode_delayed]
+
+		if(IsNaN(mode))
+			continue
+		endif
+
+		DAP_ChangeHeadStageMode(panelTitle, mode, i, NO_SLIDER_MOVEMENT)
+	endfor
+
+	DAP_ClearDelayedClampModeChange(panelTitle)
+End
+
+Function DAP_ClearDelayedClampModeChange(panelTitle)
+	string panelTitle
+
+	WAVE GuiState = GetDA_EphysGuiStateNum(panelTitle)
+	GuiState[][%HSmode_delayed] = NaN
 End
