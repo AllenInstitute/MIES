@@ -558,7 +558,7 @@ static Function RA_SkipSweepCalc(panelTitle, skipCount)
 	endif
 End
 
-Function RA_PerfInitialize(panelTitle)
+static Function RA_PerfInitialize(panelTitle)
 	string panelTitle
 
 	KillOrMoveToTrash(wv = GetRAPerfWave(panelTitle))
@@ -567,7 +567,7 @@ Function RA_PerfInitialize(panelTitle)
 	perfWave[0] = RelativeNowHighPrec()
 End
 
-Function RA_PerfAddMark(panelTitle, idx)
+static Function RA_PerfAddMark(panelTitle, idx)
 	string panelTitle
 	variable idx
 
@@ -577,7 +577,7 @@ Function RA_PerfAddMark(panelTitle, idx)
 	perfWave[idx] = RelativeNowHighPrec()
 End
 
-Function RA_PerfFinish(panelTitle)
+static Function RA_PerfFinish(panelTitle)
 	string panelTitle
 
 	WAVE perfWave = GetRAPerfWave(panelTitle)
