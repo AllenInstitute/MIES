@@ -175,7 +175,7 @@ End
 
 /// @brief Function gets called after the first sweep is already
 /// acquired and if repeated acquisition is on
-Function RA_Start(panelTitle)
+static Function RA_Start(panelTitle)
 	string panelTitle
 	
 	variable numTotalSweeps
@@ -265,7 +265,7 @@ static Function RA_FinishAcquisition(panelTitle)
 	endfor
 End
 
-Function RA_BckgTPwithCallToRACounter(panelTitle)
+static Function RA_BckgTPwithCallToRACounter(panelTitle)
 	string panelTitle
 
 	variable numTotalSweeps
@@ -440,7 +440,7 @@ static Function RA_AreLeaderAndFollowerFinished()
 	return 1
 End
 
-Function RA_YokedRAStartMD(panelTitle)
+static Function RA_YokedRAStartMD(panelTitle)
 	string panelTitle
 
 	// catches independent devices and leader with no follower
@@ -454,7 +454,7 @@ Function RA_YokedRAStartMD(panelTitle)
 	endif
 End
 
-Function RA_YokedRABckgTPCallRACounter(panelTitle)
+static Function RA_YokedRABckgTPCallRACounter(panelTitle)
 	string panelTitle
 
 	// catches independent devices and leader with no follower
@@ -598,4 +598,37 @@ static Function RA_PerfFinish(panelTitle)
 	DFREF dfr = GetWavesDataFolderDFR(perfWave)
 
 	Duplicate perfWave, dfr:$UniqueWaveName(dfr, NameOfWave(perfWave) + "_finished")
+End
+
+/// @brief Continue DAQ if requested or stop it
+///
+/// @param panelTitle  device
+/// @param multiDevice [optional, defaults to false] DAQ mode
+Function RA_ContinueOrStop(panelTitle, [multiDevice])
+	string panelTitle
+	variable multiDevice
+
+	if(ParamIsDefault(multiDevice))
+		multiDevice = 0
+	else
+		multiDevice = !!multiDevice
+	endif
+
+	if(RA_IsFirstSweep(panelTitle))
+		if(DAG_GetNumericalValue(panelTitle, "Check_DataAcq1_RepeatAcq"))
+			if(multiDevice)
+				RA_YokedRAStartMD(panelTitle)
+			else
+				RA_Start(panelTitle)
+			endif
+		else
+			DAP_OneTimeCallAfterDAQ(panelTitle)
+		endif
+	else
+		if(multiDevice)
+			RA_YokedRABckgTPCallRACounter(panelTitle)
+		else
+			RA_BckgTPwithCallToRACounter(panelTitle)
+		endif
+	endif
 End
