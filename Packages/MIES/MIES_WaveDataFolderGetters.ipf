@@ -2185,6 +2185,22 @@ Function/Wave GetOscilloscopeWave(panelTitle)
 	return wv
 End
 
+/// @brief Return a wave for displaying scaled TP data in the oscilloscope window
+Function/Wave GetTPOscilloscopeWave(panelTitle)
+	string 	panelTitle
+
+	dfref dfr = GetDevicePath(panelTitle)
+	WAVE/Z/SDFR=dfr wv = TPOscilloscopeData
+
+	if(WaveExists(wv))
+		return wv
+	endif
+
+	Make/R/N=(0, NUM_DA_TTL_CHANNELS) dfr:TPOscilloscopeData/Wave=wv
+
+	return wv
+End
+
 /// @brief Return the testpulse power spectrum wave
 Function/WAVE GetTPPowerSpectrumWave(panelTitle)
 	string panelTitle

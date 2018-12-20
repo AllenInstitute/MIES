@@ -54,7 +54,7 @@ Function TPS_TestPulseFunc(s)
 	HW_StopAcq(HARDWARE_ITC_DAC, ITCDeviceIDGlobal, prepareForDAQ=1)
 	SCOPE_UpdateOscilloscopeData(panelTitle, TEST_PULSE_MODE)
 
-	SCOPE_UpdateGraph(panelTitle)
+	SCOPE_UpdateGraph(panelTitle, TEST_PULSE_MODE)
 
 	if(GetKeyState(0) & ESCAPE_KEY)
 		DQ_StopOngoingDAQ(panelTitle)
@@ -133,7 +133,7 @@ Function TPS_StartTestPulseForeground(panelTitle, [elapsedTime])
 		HW_StopAcq(HARDWARE_ITC_DAC, ITCDeviceIDGlobal, prepareForDAQ=1)
 		SCOPE_UpdateOscilloscopeData(panelTitle, TEST_PULSE_MODE)
 
-		SCOPE_UpdateGraph(panelTitle)
+			SCOPE_UpdateGraph(panelTitle, TEST_PULSE_MODE)
 
 		if(IsFinite(refTime))
 			timeLeft = max((refTime + elapsedTime) - RelativeNowHighPrec(), 0)

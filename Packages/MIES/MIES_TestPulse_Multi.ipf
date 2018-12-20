@@ -280,7 +280,7 @@ Function TPM_BkrdTPFuncMD(s)
 			break
 		endswitch
 
-		SCOPE_UpdateGraph(panelTitle)
+		SCOPE_UpdateGraph(panelTitle, TEST_PULSE_MODE)
 
 		if(GetKeyState(0) & ESCAPE_KEY)
 			DQ_StopOngoingDAQ(panelTitle)
