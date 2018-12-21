@@ -511,7 +511,7 @@ Function PA_ShowPulses(win, dfr, pa)
 		startingPulseSett = pa.startingPulse
 	endif
 
-	if( pa.endingPulse >= 0)
+	if(pa.endingPulse >= 0)
 		endingPulseSett = pa.endingPulse
 	endif
 

@@ -3004,7 +3004,7 @@ Function PostPlotTransformations(graph, pps)
 		TimeAlignmentIfReq(graph, traces, pps.timeAlignMode, pps.timeAlignRefTrace, pps.timeAlignLevel)
 	endif
 
-	AverageWavesFromSameYAxisIfReq(graph, traces, pps.averageTraces, pps.averageDataFolder,pps.hideSweep)
+	AverageWavesFromSameYAxisIfReq(graph, traces, pps.averageTraces, pps.averageDataFolder, pps.hideSweep)
 	AR_HighlightArtefactsEntry(graph)
 	PA_ShowPulses(graph, pps.averageDataFolder, pps.pulseAverSett)
 
