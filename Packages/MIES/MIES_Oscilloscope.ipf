@@ -477,6 +477,7 @@ Function SCOPE_UpdateOscilloscopeData(panelTitle, dataAcqOrTP, [chunk, fifoPos, 
 			elseif(dataAcqOrTP == DATA_ACQUISITION_MODE)
 				ASSERT(!ParamIsDefault(fifoPos), "optional parameter fifoPos missing")
 				ASSERT(ParamIsDefault(chunk), "optional parameter chunk is not possible with DATA_ACQUISITION_MODE")
+				fifopos = SCOPE_ITC_AdjustFIFOPos(panelTitle, fifopos)
 			endif
 			SCOPE_ITC_UpdateOscilloscope(panelTitle, dataAcqOrTP, chunk, fifoPos)
 			break;
@@ -564,6 +565,7 @@ Function SCOPE_UpdateOscilloscopeData(panelTitle, dataAcqOrTP, [chunk, fifoPos, 
 
 	endif
 
+	// Sync fifo position
 	fifoPosGlobal = fifoPos
 
 	ASYNC_ThreadReadOut()
@@ -642,20 +644,8 @@ static Function SCOPE_ITC_UpdateOscilloscope(panelTitle, dataAcqOrTP, chunk, fif
 
 	elseif(dataAcqOrTP == DATA_ACQUISITION_MODE)
 
-		ASSERT(EqualWaves(ITCDataWave, OscilloscopeData, 512), "ITCDataWave and OscilloscopeData have differing dimensions")
-
-		// fifopos correction for ITC
-		fifoPos += GetDataOffset(ITCChanConfigWave)
-
-		if(fifoPos == 0 || !IsFinite(fifoPos))
-			// nothing to do
+		if(!IsFinite(fifopos) || fifopos <= 0)
 			return NaN
-		elseif(fifoPos < 0)
-			printf "fifoPos was clipped to zero, old value %g\r", fifoPos
-			return NaN
-		elseif(fifoPos >= DimSize(OscilloscopeData, ROWS))
-			printf "fifoPos was clipped to row size of OscilloscopeData, old value %g\r", fifoPos
-			fifoPos = DimSize(OscilloscopeData, ROWS) - 1
 		endif
 
 		NVAR fifoPosGlobal = $GetFifoPosition(panelTitle)
@@ -669,4 +659,36 @@ static Function SCOPE_ITC_UpdateOscilloscope(panelTitle, dataAcqOrTP, chunk, fif
 	else
 		ASSERT(0, "Invalid dataAcqOrTP value")
 	endif
+End
+
+/// @brief Adjusts the fifo position when using ITC
+///
+/// @param panelTitle panel title
+///
+/// @param fifopos fifo position
+///
+/// @return adjusted fifo position
+static Function SCOPE_ITC_AdjustFIFOPos(panelTitle, fifopos)
+	string panelTitle
+	variable fifopos
+
+	WAVE OscilloscopeData = GetOscilloscopeWave(panelTitle)
+	WAVE ITCDataWave      = GetHardwareDataWave(panelTitle)
+	WAVE ITCChanConfigWave = GetITCChanConfigWave(panelTitle)
+	ASSERT(EqualWaves(ITCDataWave, OscilloscopeData, 512), "ITCDataWave and OscilloscopeData have differing dimensions")
+
+	fifoPos += GetDataOffset(ITCChanConfigWave)
+
+	if(fifoPos == 0 || !IsFinite(fifoPos))
+		// nothing to do
+		return fifopos
+	elseif(fifoPos < 0)
+		printf "fifoPos was clipped to zero, old value %g\r", fifoPos
+		fifopos = 0
+	elseif(fifoPos >= DimSize(OscilloscopeData, ROWS))
+		printf "fifoPos was clipped to row size of OscilloscopeData, old value %g\r", fifoPos
+		fifoPos = DimSize(OscilloscopeData, ROWS) - 1
+	endif
+
+	return fifopos
 End
