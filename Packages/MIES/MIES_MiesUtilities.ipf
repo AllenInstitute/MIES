@@ -205,6 +205,30 @@ static Function/WAVE GetChanneListFromITCConfig(config, channelType)
 	return activeChannels
 End
 
+/// @brief Returns the number of given mode channels from channelType wave
+///
+/// @param chanTypes a 1D wave containing #DAQ_CHANNEL_TYPE_CONSTANTS
+///
+/// @param type to count, one of #DAQ_CHANNEL_TYPE_CONSTANTS
+///
+/// @return number of types present in chanTypes
+Function GetNrOfTypedChannels(chanTypes, type)
+	WAVE chanTypes
+	variable type
+
+	variable i, numChannels, count
+
+	ASSERT(type == DAQ_CHANNEL_TYPE_UNKOWN || type == DAQ_CHANNEL_TYPE_DAQ || type == DAQ_CHANNEL_TYPE_TP, "Invalid type")
+	numChannels = DimSize(chanTypes, ROWS)
+	for(i = 0; i < numChannels; i += 1)
+		if(chanTypes[i] == type)
+			count += 1
+		endif
+	endfor
+
+	return count
+End
+
 /// @brief Return a types of the AD channels from the ITC config
 Function/WAVE GetTTLTypesFromConfig(config)
 	WAVE config
