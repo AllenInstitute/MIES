@@ -205,6 +205,56 @@ static Function/WAVE GetChanneListFromITCConfig(config, channelType)
 	return activeChannels
 End
 
+/// @brief Return a types of the AD channels from the ITC config
+Function/WAVE GetTTLTypesFromConfig(config)
+	WAVE config
+
+	return GetTypeListFromITCConfig(config, ITC_XOP_CHANNEL_TYPE_TTL)
+End
+
+/// @brief Return a types of the AD channels from the ITC config
+Function/WAVE GetADCTypesFromConfig(config)
+	WAVE config
+
+	return GetTypeListFromITCConfig(config, ITC_XOP_CHANNEL_TYPE_ADC)
+End
+
+/// @brief Return a types of the DA channels from the ITC config
+Function/WAVE GetDACTypesFromConfig(config)
+	WAVE config
+
+	return GetTypeListFromITCConfig(config, ITC_XOP_CHANNEL_TYPE_DAC)
+End
+
+/// @brief Return a wave with all active channels
+///
+/// @todo change to return a 0/1 wave with constant size a la DAG_GetChannelState
+///
+/// @param config       ITCChanConfigWave as passed to the ITC XOP
+/// @param channelType  DA/AD/TTL constants, see @ref ChannelTypeAndControlConstants
+static Function/WAVE GetTypeListFromITCConfig(config, channelType)
+	WAVE config
+	variable channelType
+
+	variable numRows, i, j
+
+	ASSERT(IsValidConfigWave(config), "Invalid config wave")
+
+	numRows = DimSize(config, ROWS)
+	Make/U/B/FREE/N=(numRows) activeChannels
+
+	for(i = 0; i < numRows; i += 1)
+		if(channelType == config[i][%ChannelType])
+			activeChannels[j] = config[i][%DAQChannelType]
+			j += 1
+		endif
+	endfor
+
+	Redimension/N=(j) activeChannels
+
+	return activeChannels
+End
+
 /// @brief Return the dimension label for the special, aka non-unique, controls
 Function/S GetSpecialControlLabel(channelType, controlType)
 	variable channelType, controlType
