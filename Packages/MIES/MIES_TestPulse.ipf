@@ -431,8 +431,6 @@ static Function TP_RecordTP(panelTitle, BaselineSSAvg, InstResistance, SSResista
 
 	TPStorage[count][][%DeltaTimeInSeconds] = count > 0 ? now - TPStorage[0][0][%TimeInSeconds] : 0
 
-	SetNumberInWaveNote(TPStorage, NOTE_INDEX, count + 1)
-
 	lastPressureCtrl = GetNumberFromWaveNote(TPStorage, PRESSURE_CTRL_LAST_INVOC)
 	if((now - lastPressureCtrl) > TP_PRESSURE_INTERVAL)
 		P_PressureControl(panelTitle)
@@ -460,6 +458,8 @@ static Function TP_RecordTP(panelTitle, BaselineSSAvg, InstResistance, SSResista
 
 		SetNumberInWaveNote(TPStorage, DIMENSION_SCALING_LAST_INVOC, now, format="%.06f")
 	endif
+
+	SetNumberInWaveNote(TPStorage, NOTE_INDEX, count + 1)
 End
 
 /// @brief Determine the slope of the steady state resistance

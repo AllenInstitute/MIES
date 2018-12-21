@@ -107,6 +107,40 @@ Function P_PressureControl(panelTitle)
 
 		P_UpdateTPStorage(panelTitle, headStage)
 	endfor
+
+	P_RecordUserPressure(panelTitle)
+End
+
+static Function P_RecordUserPressure(panelTitle)
+	string panelTitle
+
+	string device
+	variable ADC, i, deviceID, hwType
+
+	WAVE TPStorage = GetTPStorage(panelTitle)
+	variable count = GetNumberFromWaveNote(TPStorage, NOTE_INDEX)
+
+	WAVE pressureType = GetPressureTypeWv(panelTitle)
+	WAVE pressureDataWv = P_GetPressureDataWaveRef(panelTitle)
+
+	TPStorage[count][][%UserPressureType] = pressureType[q]
+
+	for(i = 0; i < NUM_HEADSTAGES; i += 1)
+		if(pressureType[i] != PRESSURE_TYPE_USER)
+			continue
+		endif
+
+		hwType   = pressureDataWv[i][%UserPressureDeviceHWType]
+		deviceID = pressureDataWv[i][%UserPressureDeviceID]
+		ADC      = pressureDataWv[i][%UserPressureDeviceADC]
+
+		if(IsNaN(hwType) || IsNaN(deviceID) || IsNaN(ADC))
+			continue
+		endif
+
+		TPStorage[count][i][%UserPressure]             = HW_ReadADC(hwType, deviceID, ADC)
+		TPStorage[count][i][%UserPressureTimeStampUTC] = DateTimeInUTC()
+	endfor
 End
 
 /// @brief Record pressure in TPStorage wave
@@ -971,6 +1005,28 @@ static Function P_ITC_SetChannels(panelTitle, headstage)
 	ITCConfig[%AD][%Chan_num]  = pressureDataWv[headStage][%ADC]
 End
 
+/// @brief Check wether the given device is used as pressure device already
+Function P_DeviceIsUsedForPressureCtrl(panelTitle, pressureDevice)
+	string panelTitle, pressureDevice
+
+	variable i, hwType, deviceID
+
+	WAVE pressureDataWv = P_GetPressureDataWaveRef(panelTitle)
+
+	for(i = 0; i < NUM_HEADSTAGES; i += 1)
+		deviceID = pressureDataWv[i][%DAC_DevID]
+		hwType   = pressureDataWv[i][%HW_DAC_Type]
+
+		if(isFinite(deviceID) && isFinite(hwType))
+			if(!cmpstr(HW_GetDeviceName(hwType, deviceID), pressureDevice))
+				return 1
+			endif
+		endif
+	endfor
+
+	return 0
+End
+
 /// @brief Perform an acquisition cycle on the pressure device for pressure control
 static Function P_DataAcq(panelTitle, headStage)
 	string panelTitle
@@ -1491,7 +1547,7 @@ Function P_UpdatePressureMode(panelTitle, pressureMode, pressureControlName, che
 				endif
 			endif
 		endif
-		P_GetPressureType(panelTitle)
+		P_UpdatePressureType(panelTitle)
 		P_PressureDisplayHighlite(panelTitle, 1)
 	endif
 
@@ -1544,7 +1600,7 @@ static Function P_CheckAll(panelTitle, pressureMode, SavedPressureMode)
 			endfor
 		endif
 	endif
-	P_GetPressureType(panelTitle)
+	P_UpdatePressureType(panelTitle)
 End
 
 Function P_SetPressureOffset(panelTitle, headstage, userOffset)
@@ -1936,7 +1992,7 @@ Function P_Disable()
 			EnableControls(LockedDevice,PRESSURE_CONTROL_CHECKBOX_LIST)
 			DisableControls(LockedDevice, PRESSURE_CONTROLS_BUTTON_LIST)
 			DisableControls(LockedDevice, PRESSURE_CONTROL_CHECKBOX_LIST)
-			P_GetPressureType(LockedDevice)
+			P_UpdatePressureType(LockedDevice)
 		endif
 	endfor
 End
@@ -2175,6 +2231,7 @@ Function ButtonProc_Hrdwr_P_UpdtDAClist(ba) : ButtonControl
 			endfor
 
 			SetPopupMenuVal(ba.win, "popup_Settings_Pressure_dev", filteredList)
+			SetPopupMenuVal(ba.win, "popup_Settings_UserPressure", filteredList)
 			break
 	endswitch
 
@@ -2268,11 +2325,68 @@ Function P_Check_SealAtm(cba) : CheckBoxControl
 	return 0
 End
 
+Function P_ButtonProc_UserPressure(ba) : ButtonControl
+	STRUCT WMButtonAction &ba
+
+	string userPressureDevice, panelTitle
+	variable hardwareType, deviceID, ADC, flags
+
+	switch(ba.eventCode)
+		case 2: // mouse up
+			panelTitle = ba.win
+
+			DAP_AbortIfUnlocked(panelTitle)
+
+			WAVE pressureDataWv = P_GetPressureDataWaveRef(panelTitle)
+			userPressureDevice = DAG_GetTextualValue(panelTitle, "popup_Settings_UserPressure")
+
+			if(!cmpstr(ba.ctrlName, "button_Hardware_PUser_Enable"))
+
+				if(!cmpstr(userPressureDevice, NONE))
+					break
+				endif
+
+				ADC = str2num(DAG_GetTextualValue(panelTitle, "Popup_Settings_UserPressure_ADC"))
+
+				deviceID = HW_OpenDevice(userPressureDevice, hardwareType)
+				HW_RegisterDevice(panelTitle, hardwareType, deviceID, pressureDevice=userPressureDevice)
+
+				pressureDataWv[][%UserPressureDeviceID]     = deviceID
+				pressureDataWv[][%UserPressureDeviceHWType] = hardwareType
+				pressureDataWv[][%UserPressureDeviceADC]    = ADC
+
+				DisableControls(panelTitle, "popup_Settings_UserPressure;Popup_Settings_UserPressure_ADC;button_Hardware_PUser_Enable")
+				EnableControls(panelTitle, "button_Hardware_PUser_Disable")
+
+			elseif(!cmpstr(ba.ctrlName, "button_Hardware_PUser_Disable"))
+
+				// the same device can be used for pressure control and user pressure control
+				if(!P_DeviceIsUsedForPressureCtrl(panelTitle, userPressureDevice))
+					// the device is the same for all headstages
+					deviceID = pressureDataWv[0][%UserPressureDeviceID]
+					hardwareType = pressureDataWv[0][%UserPressureDeviceHWType]
+					HW_CloseDevice(deviceID, hardwareType, flags = HARDWARE_PREVENT_ERROR_POPUP | HARDWARE_PREVENT_ERROR_MESSAGE)
+					HW_DeRegisterDevice(deviceID, hardwareType)
+				endif
+
+				pressureDataWv[][%UserPressureDeviceID]     = NaN
+				pressureDataWv[][%UserPressureDeviceHWType] = NaN
+				pressureDataWv[][%UserPressureDeviceADC]    = NaN
+
+				DisableControls(panelTitle, "button_Hardware_PUser_Disable")
+				EnableControls(panelTitle, "popup_Settings_UserPressure;Popup_Settings_UserPressure_ADC;button_Hardware_PUser_Enable")
+			else
+				ASSERT(0, "Invalid ctrl")
+			endif
+			break
+	endswitch
+
+	return 0
+End
+
 /// @brief Runs P_PressureControl if the TP is OFF
 Function P_RunP_ControlIfTPOFF(panelTitle)
 	string panelTitle
-
-	variable headStageNo = P_GetPressureDataWaveRef(panelTitle)[0][%userSelectedHeadstage]
 
 	if(!TP_CheckIfTestpulseIsRunning(panelTitle)) // P_PressureControl will be called from TP functions when the TP is running
 		P_PressureControl(panelTitle)
@@ -2321,21 +2435,23 @@ End
 
 /// @brief Encodes the pressure type for each headstage
 ///
-/// pressure types are: Atm(-1), Automated(0), Manual(1), User(2)
-Function P_GetPressureType(panelTitle)
+/// See also @ref PressureTypeConstants
+Function P_UpdatePressureType(panelTitle)
 	string panelTitle
+
+	variable headstage
 
 	WAVE pressureType = GetPressureTypeWv(panelTitle)
 	WAVE pressureDataWv = P_GetPressureDataWaveRef(panelTitle)
-	// Encode atm pressure mode (keep all -1)
-	pressureType[] = pressureDataWv[p][0] == PRESSURE_METHOD_ATM ? PRESSURE_METHOD_ATM : pressureType[p]
-	// Encode automated pressure modes (change 0,1,2,3 to 0)
-	pressureType[] = pressureDataWv[p][0] >= PRESSURE_METHOD_APPROACH && pressureDataWv[p][0] <= PRESSURE_METHOD_CLEAR ? 0 : pressureType[p]
-	//	Encode manual pressure mode (change 4 to 1)
-	pressureType[] = pressureDataWv[p][0] == PRESSURE_METHOD_MANUAL ? 1 : pressureType[p]
-	// Encode user access (if there is user access on the user selected headstage encode as 2)
-	// ToDo: Add line continuation character when we migrate to IP7
-	pressureType[pressureDataWv[0][%userSelectedHeadStage]] = P_GetUserAccess(panelTitle, pressureDataWv[0][%userSelectedHeadStage], pressureDataWv[PressureDataWv[0][%userSelectedHeadStage]][0]) == ACCESS_USER ? 2 : PressureType[PressureDataWv[0][%UserSelectedHeadStage]]
+	// Encode atm pressure mode
+	pressureType[] = pressureDataWv[p][0] == PRESSURE_METHOD_ATM ? PRESSURE_TYPE_ATM : pressureType[p]
+	// Encode automated pressure modes
+	pressureType[] = pressureDataWv[p][0] >= PRESSURE_METHOD_APPROACH && pressureDataWv[p][0] <= PRESSURE_METHOD_CLEAR ? PRESSURE_TYPE_AUTO : pressureType[p]
+	// Encode manual pressure mode
+	pressureType[] = pressureDataWv[p][0] == PRESSURE_METHOD_MANUAL ? PRESSURE_TYPE_MANUAL : pressureType[p]
+	// Encode user access
+	headstage = pressureDataWv[0][%userSelectedHeadStage]
+	pressureType[headstage] = P_GetUserAccess(panelTitle, headstage, pressureDataWv[headstage][0]) == ACCESS_USER ? PRESSURE_TYPE_USER : PressureType[headstage]
 	// Encode headstages without valid pressure settings
 	pressureType[] = P_ValidatePressureSetHeadstage(panelTitle, p) == 1 ? pressureType[p] : NaN
 End

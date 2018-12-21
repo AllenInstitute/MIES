@@ -535,7 +535,7 @@ Constant HARDWARE_DAC_EXTERNAL_TRIGGER = 0x1
 /// @}
 
 /// Used to upgrade the GuiStateWave as well as the DA Ephys panel
-Constant DA_EPHYS_PANEL_VERSION     = 37
+Constant DA_EPHYS_PANEL_VERSION     = 38
 Constant DATABROWSER_PANEL_VERSION  = 8
 Constant SWEEPBROWSER_PANEL_VERSION = 3
 Constant WAVEBUILDER_PANEL_VERSION  = 7
@@ -646,6 +646,15 @@ Constant PRESSURE_METHOD_CLEAR    = 3
 Constant PRESSURE_METHOD_MANUAL   = 4
 /// @}
 
+/// @name Different pressure types of each headstage
+/// @anchor PressureTypeConstants
+/// @{
+Constant PRESSURE_TYPE_ATM    = -1
+Constant PRESSURE_TYPE_AUTO   =  0
+Constant PRESSURE_TYPE_MANUAL =  1
+Constant PRESSURE_TYPE_USER   =  2
+/// @}
+
 StrConstant POPUPMENU_DIVIDER = "\\M1(-"
 
 /// @name Constants for different WaveBuilder epochs
@@ -719,6 +728,8 @@ StrConstant ITC_DEV_NUM             = "ITC Device number"
 StrConstant AMP_TITLE               = "Amplifier Names"
 StrConstant AMP_SERIAL              = "Amplifier Serial Numbers"
 StrConstant PRESSURE_DEV            = "Name of Pressure Devices"
+StrConstant USER_PRESSURE_DEV       = "Name of User Pressure Device"
+StrConstant USER_PRESSURE_DEV_ADC   = "User Pressure Device ADC"
 StrConstant TEMP_GAIN               = "Temperature control gain (in V)"
 StrConstant TEMP_MAX                = "Maximum Temperature Allowed (in degrees C)"
 StrConstant TEMP_MIN                = "Minimum Temperature Allowed (in degrees C)"

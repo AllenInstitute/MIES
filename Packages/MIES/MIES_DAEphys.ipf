@@ -583,6 +583,14 @@ Function DAP_EphysPanelStartUpSettings()
 	SetVariable setvar_DataAcq_PPPressure, win=$panelTitle, value= _NUM:0
 	SetVariable setvar_DataAcq_SSPressure, win=$panelTitle, value= _NUM:0
 
+	// user pressure
+	PopupMenu popup_Settings_UserPressure WIN = $panelTitle, mode=1
+	EnableControl(panelTitle, "popup_Settings_UserPressure")
+	PopupMenu Popup_Settings_UserPressure_ADC  WIN = $panelTitle, mode=1
+	EnableControl(panelTitle, "Popup_Settings_UserPressure_ADC")
+	EnableControl(panelTitle, "button_Hardware_PUser_Enable")
+	DisableControl(panelTitle, "button_Hardware_PUser_Disable")
+
    ValDisplay valdisp_DataAcq_P_LED_0 WIN = $panelTitle, value= _NUM:-1
    ValDisplay valdisp_DataAcq_P_LED_1 WIN = $panelTitle, value= _NUM:-1
    ValDisplay valdisp_DataAcq_P_LED_2 WIN = $panelTitle, value= _NUM:-1
@@ -3082,7 +3090,7 @@ static Function DAP_ChangeHeadstageState(panelTitle, headStageCtrl, enabled)
 		if(!enabled)
 			DAP_RemoveClampModeSettings(panelTitle, i, clampMode)
 			P_SetPressureMode(panelTitle, i, PRESSURE_METHOD_ATM)
-			P_GetPressureType(panelTitle)
+			P_UpdatePressureType(panelTitle)
 		else
 			DAP_ApplyClmpModeSavdSettngs(panelTitle, i, clampMode)
 		endif
@@ -3417,7 +3425,7 @@ Function DAP_SliderProc_MIESHeadStage(sc) : SliderControl
 		P_PressureDisplayHighlite(panelTitle, 0)
 		P_SaveUserSelectedHeadstage(panelTitle, headStage)
 		P_GetAutoUserOff(panelTitle)
-		P_GetPressureType(panelTitle)
+		P_UpdatePressureType(panelTitle)
 		P_LoadPressureButtonState(panelTitle)
 		P_UpdatePressureModeTabs(panelTitle, headStage)
 		DAP_UpdateClampmodeTabs(panelTitle, headStage, mode, DO_MCC_MIES_SYNCING)
@@ -4227,18 +4235,19 @@ End
 Function DAP_CheckProc_Settings_PUser(cba) : CheckBoxControl
 	STRUCT WMCheckboxAction &cba
 
-	variable col
-	switch( cba.eventCode )
+	variable headstage
+
+	switch(cba.eventCode)
 		case 2: // mouse up
 			DAP_AbortIfUnlocked(cba.win)
 			DAG_Update(cba.win, cba.ctrlName, val = cba.checked)
 			WAVE pressureDataWv = P_GetPressureDataWaveRef(cba.win)
-			WAVE GUIState = GetDA_EphysGuiStateNum(cba.win)
 			P_RunP_ControlIfTPOFF(cba.win)
-			if(P_ValidatePressureSetHeadstage(cba.win, PressureDataWv[0][%UserSelectedHeadStage]))
-				P_SetPressureValves(cba.win, PressureDataWv[0][%UserSelectedHeadStage], P_GetUserAccess(cba.win, PressureDataWv[0][%UserSelectedHeadStage],PressureDataWv[PressureDataWv[0][%UserSelectedHeadStage]][%Approach_Seal_BrkIn_Clear]))
+			headstage = PressureDataWv[0][%UserSelectedHeadStage]
+			if(P_ValidatePressureSetHeadstage(cba.win, headstage))
+				P_SetPressureValves(cba.win, headstage, P_GetUserAccess(cba.win, headstage,PressureDataWv[headstage][%Approach_Seal_BrkIn_Clear]))
 			endif
-			P_GetPressureType(cba.win)
+			P_UpdatePressureType(cba.win)
 
 			break
 	endswitch
@@ -4488,7 +4497,9 @@ static Function DAP_UnlockDevice(panelTitle)
 
 	DAP_SerializeCommentNotebook(panelTitle)
 	DAP_LockCommentNotebook(panelTitle)
-	P_Disable() // Closes DACs used for pressure regulation
+	PGC_SetAndActivateControl(panelTitle, "button_Hardware_P_Disable")
+	PGC_SetAndActivateControl(panelTitle, "button_Hardware_PUser_Disable")
+
 	if(DeviceHasFollower(panelTitle))
 		DAP_RemoveALLYokedDACs(panelTitle)
 	else

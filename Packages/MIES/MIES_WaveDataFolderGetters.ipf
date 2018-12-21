@@ -2017,32 +2017,36 @@ End
 /// - 14: DA channel
 /// - 15: Headstage
 /// - 16: ClampMode
-/// - 17: UserPressure (place holder)
-/// - 18: PressureMethod (see PressureModeConstants)
+/// - 17: UserPressure
+/// - 18: PressureMethod (see @ref PressureModeConstants)
 /// - 19: ValidState (true if the entry is considered valid, false otherwise)
+/// - 20: UserPressureType (see @ref PressureTypeConstants)
+/// - 21: UserPressureTimeStampUTC timestamp since Igor Pro epoch in UTC where
+///       the user pressure was acquired
 Function/Wave GetTPStorage(panelTitle)
 	string 	panelTitle
 
 	dfref dfr = GetDeviceTestPulse(panelTitle)
-	variable versionOfNewWave = 9
+	variable versionOfNewWave = 10
 
 	WAVE/Z/SDFR=dfr/D wv = TPStorage
 
 	if(ExistsWithCorrectLayoutVersion(wv, versionOfNewWave))
 		return wv
 	elseif(WaveExists(wv))
-		if(WaveVersionIsAtLeast(wv, 8))
-			SetNumberInWaveNote(wv, PRESSURE_CTRL_LAST_INVOC, 0)
-			SetWaveVersion(wv, versionOfNewWave)
-			return wv
-		else
-			Redimension/N=(-1, NUM_HEADSTAGES, 20)/D wv
+		Redimension/N=(-1, NUM_HEADSTAGES, 22)/D wv
+
+		if(WaveVersionIsSmaller(wv, 10))
+			wv[][][17]    = NaN
+			wv[][][20,21] = NaN
 		endif
 	else
-		Make/N=(MINIMUM_WAVE_SIZE_LARGE, NUM_HEADSTAGES, 20)/D dfr:TPStorage/Wave=wv
-	endif
+		Make/N=(MINIMUM_WAVE_SIZE_LARGE, NUM_HEADSTAGES, 22)/D dfr:TPStorage/Wave=wv
 
-	wv = NaN
+		wv = NaN
+
+		SetNumberInWaveNote(wv, NOTE_INDEX, 0)
+	endif
 
 	SetDimLabel COLS,  -1,  Headstage                 , wv
 
@@ -2066,8 +2070,9 @@ Function/Wave GetTPStorage(panelTitle)
 	SetDimLabel LAYERS, 17, UserPressure              , wv
 	SetDimLabel LAYERS, 18, PressureMethod            , wv
 	SetDimLabel LAYERS, 19, ValidState                , wv
+	SetDimLabel LAYERS, 20, UserPressureType          , wv
+	SetDimLabel LAYERS, 21, UserPressureTimeStampUTC  , wv
 
-	SetNumberInWaveNote(wv, NOTE_INDEX, 0)
 	SetNumberInWaveNote(wv, AUTOBIAS_LAST_INVOCATION_KEY, 0)
 	SetNumberInWaveNote(wv, DIMENSION_SCALING_LAST_INVOC, 0)
 	SetNumberInWaveNote(wv, PRESSURE_CTRL_LAST_INVOC, 0)
@@ -4057,6 +4062,9 @@ static Function SetPressureWaveDimLabels(wv)
 	SetDimLabel COLS, 42, UserPressureOffsetTotal , wv
 	SetDimLabel COLS, 43, UserPressureOffsetPeriod, wv
 	SetDimLabel COLS, 44, TTL_B                   , wv
+	SetDimLabel COLS, 45, UserPressureDeviceID    , wv
+	SetDimLabel COLS, 46, UserPressureDeviceHWType, wv
+	SetDimLabel COLS, 47, UserPressureDeviceADC   , wv
 
 	SetDimLabel ROWS, 0, Headstage_0, wv
 	SetDimLabel ROWS, 1, Headstage_1, wv
@@ -4120,20 +4128,23 @@ End
 /// - 42: Total sum of user pressure offsets in psi.
 /// - 43: Total sum of user pressure offsets since last pulse in psi.
 /// - 44: TTL channel B used for pressure regulation.
+/// - 45: User pressure deviceID
+/// - 46: User pressure device hardware type
+/// - 47: User pressure ADC
 Function/WAVE P_GetPressureDataWaveRef(panelTitle)
 	string	panelTitle
 
-	variable versionOfNewWave = 6
+	variable versionOfNewWave = 7
 	DFREF dfr = P_DeviceSpecificPressureDFRef(panelTitle)
 	Wave/Z/SDFR=dfr wv=PressureData
 
 	if(ExistsWithCorrectLayoutVersion(wv, versionOfNewWave))
 		return wv
 	elseif(WaveExists(wv))
-		Redimension/N=(8, 45) wv
+		Redimension/N=(8, 48) wv
 		SetPressureWaveDimLabels(wv)
 	else
-		Make/N=(8, 45) dfr:PressureData/Wave=wv
+		Make/N=(8, 48) dfr:PressureData/Wave=wv
 
 		SetPressureWaveDimLabels(wv)
 
@@ -4167,6 +4178,9 @@ Function/WAVE P_GetPressureDataWaveRef(panelTitle)
 	wv[][%UserPressureOffset]        = 0
 	wv[][%UserPressureOffsetPeriod]  = 0
 	wv[][%UserPressureOffsetTotal]   = NaN
+	wv[][%UserPressureDeviceID]      = NaN
+	wv[][%UserPressureDeviceHWType]  = NaN
+	wv[][%UserPressureDeviceADC]     = NaN
 
 	SetWaveVersion(wv, versionOfNewWave)
 
@@ -5374,11 +5388,15 @@ Function/WAVE GetCellElectrodeNames(panelTitle)
 	return wv
 End
 
-/// @brief Returns a 1D wave with the same number of rows as headstages used to store the pressure type (See: P_GetPressureType(panelTitle)).
-/// pressure types are: Atm(-1), Automated(0), Manual(1), User(2)
+/// @brief Returns a 1D wave with the same number of rows as headstages
+///        used to store the pressure type
+///
+/// Available pressure types are one of @ref PressureTypeConstants
 ///
 /// ROWS:
 /// - One row for each headstage
+///
+/// @sa P_UpdatePressureType
 Function/WAVE GetPressureTypeWv(panelTitle)
 	string panelTitle
 
@@ -5669,8 +5687,9 @@ Function/WAVE GetExpConfigKeyTypes()
 	variable numRows
 
 	Make/FREE/T stringKeys = {ITC_DEV_TYPE, ITC_DEV_NUM, AMP_TITLE, AMP_SERIAL, PRESSURE_DEV, PRESSURE_CONST, \
-								ACTIVE_HEADSTAGES, ASYNC_CH00, ASYNC_CH01, ASYNC_UNIT, SAVE_PATH, \
-								POSITION_MCC, STIMSET_NAME, FIRST_STIM_VC_ALL, FIRST_STIM_IC_ALL}
+							  ACTIVE_HEADSTAGES, ASYNC_CH00, ASYNC_CH01, ASYNC_UNIT, SAVE_PATH,               \
+							  POSITION_MCC, STIMSET_NAME, FIRST_STIM_VC_ALL, FIRST_STIM_IC_ALL,               \
+							  USER_PRESSURE_DEV, USER_PRESSURE_DEV_ADC}
 	Make/FREE/T numKeys    = {CONFIG_VERSION, TEMP_GAIN, TEMP_MAX, TEMP_MIN,                   \
 							  PRESSURE_BATH, PRESSURE_STARTSEAL, PRESSURE_MAXSEAL, TP_AMP_VC,  \
 							  NUM_STIM_SETS, DEFAULT_ITI, OODAQ_POST_DELAY, OODAQ_RESOLUTION,  \
