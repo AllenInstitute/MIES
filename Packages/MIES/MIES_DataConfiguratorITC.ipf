@@ -691,7 +691,7 @@ static Function DC_PlaceDataInHardwareDataWave(panelTitle, numActiveChannels, da
 	variable multiplier, powerSpectrum, distributedDAQOptOv, distributedDAQOptPre, distributedDAQOptPost, distributedDAQOptRes, headstage
 	variable lastValidRow
 	variable/C ret
-	variable gotDAQChannel, TPLength
+	variable TPLength
 
 	globalTPInsert        = DAG_GetNumericalValue(panelTitle, "Check_Settings_InsertTP")
 	scalingZero           = DAG_GetNumericalValue(panelTitle,  "check_Settings_ScalingZero")
@@ -759,7 +759,6 @@ static Function DC_PlaceDataInHardwareDataWave(panelTitle, numActiveChannels, da
 			setName[activeColumn] = allSetNames[i]
 			if(config[activeColumn][%DAQChannelType] == DAQ_CHANNEL_TYPE_DAQ)
 				stimSet[activeColumn] = WB_CreateAndGetStimSet(setName[activeColumn])
-				gotDAQChannel = 1
 			elseif(config[activeColumn][%DAQChannelType] == DAQ_CHANNEL_TYPE_TP)
 				stimSet[activeColumn] = GetTestPulse()
 			else
@@ -946,11 +945,7 @@ static Function DC_PlaceDataInHardwareDataWave(panelTitle, numActiveChannels, da
 	endif
 
 	NVAR stopCollectionPoint = $GetStopCollectionPoint(panelTitle)
-	if(dataAcqOrTP == DATA_ACQUISITION_MODE && !gotDAQChannel)
-		stopCollectionPoint = TIME_TP_ONLY_ON_DAQ * 1E6 / samplingInterval
-	else
-		stopCollectionPoint = DC_GetStopCollectionPoint(panelTitle, dataAcqOrTP, setLength)
-	endif
+	stopCollectionPoint = DC_GetStopCollectionPoint(panelTitle, dataAcqOrTP, setLength)
 
 	DC_MakeHardwareDataWave(panelTitle, numActiveChannels, samplingInterval, dataAcqOrTP)
 	DC_MakeOscilloscopeWave(panelTitle, numActiveChannels, dataAcqOrTP)
@@ -1748,16 +1743,27 @@ static Function DC_GetStopCollectionPoint(panelTitle, dataAcqOrTP, setLengths)
 	DAClength = DC_CalculateLongestSweep(panelTitle, dataAcqOrTP, CHANNEL_TYPE_DAC)
 
 	if(dataAcqOrTP == DATA_ACQUISITION_MODE)
-		totalIncrease = DC_ReturnTotalLengthIncrease(panelTitle)
-		TTLlength     = DC_CalculateLongestSweep(panelTitle, DATA_ACQUISITION_MODE, CHANNEL_TYPE_TTL)
 
-		if(DAG_GetNumericalValue(panelTitle, "Check_DataAcq1_dDAQOptOv"))
-			DAClength = WaveMax(setLengths)
-		elseif(DAG_GetNumericalValue(panelTitle, "Check_DataAcq1_DistribDaq"))
-			DAClength *= DC_NoOfChannelsSelected(panelTitle, CHANNEL_TYPE_DAC)
+		// find out if we have only TP channels
+		WAVE config = GetITCChanConfigWave(panelTitle)
+		WAVE DACmode = GetDACTypesFromConfig(config)
+
+		FindValue/I=(DAQ_CHANNEL_TYPE_DAQ) DACmode
+
+		if(V_Value == -1)
+			return TIME_TP_ONLY_ON_DAQ * 1E6 / DAP_GetSampInt(panelTitle, dataAcqOrTP)
+		else
+			totalIncrease = DC_ReturnTotalLengthIncrease(panelTitle)
+			TTLlength     = DC_CalculateLongestSweep(panelTitle, DATA_ACQUISITION_MODE, CHANNEL_TYPE_TTL)
+
+			if(DAG_GetNumericalValue(panelTitle, "Check_DataAcq1_dDAQOptOv"))
+				DAClength = WaveMax(setLengths)
+			elseif(DAG_GetNumericalValue(panelTitle, "Check_DataAcq1_DistribDaq"))
+				DAClength *= DC_NoOfChannelsSelected(panelTitle, CHANNEL_TYPE_DAC)
+			endif
+
+			return max(DAClength, TTLlength) + totalIncrease
 		endif
-
-		return max(DAClength, TTLlength) + totalIncrease
 	elseif(dataAcqOrTP == TEST_PULSE_MODE)
 		return DAClength
 	endif
