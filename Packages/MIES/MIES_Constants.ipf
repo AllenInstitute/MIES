@@ -68,6 +68,12 @@ Constant MAX_REGULATOR_PRESSURE =  9.9
 Constant MIN_REGULATOR_PRESSURE = -9.9
 /// @}
 
+/// @name Latest version of config wave
+/// @anchor ItcConfigWaveVersion
+/// @{
+Constant ITC_CONFIG_WAVE_VERSION = 2
+/// @}
+
 StrConstant ITC_CHANNEL_NAMES    = "AD;DA;;TTL"
 
 /// @name Channel constants shared with the ITC XOP

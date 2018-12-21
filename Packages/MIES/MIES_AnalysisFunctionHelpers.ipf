@@ -143,7 +143,7 @@ Function/WAVE AFH_GetChannelUnits(ITCChanConfigWave)
 
 	string units
 
-	if(IsLatestConfigWaveVersion(ITCChanConfigWave))
+	if(IsValidConfigWave(ITCChanConfigWave, version=1))
 		units = GetStringFromWaveNote(ITCChanConfigWave, CHANNEL_UNIT_KEY, keySep = "=")
 		return ListToTextWave(units, ",")
 	else

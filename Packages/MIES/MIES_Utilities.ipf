@@ -943,12 +943,12 @@ End
 /// returns NaN if it could not be found
 ///
 /// The expected wave note format is: `key1:val1;key2:val2;`
-Function GetNumberFromWaveNote(wv, key)
+threadsafe Function GetNumberFromWaveNote(wv, key)
 	Wave wv
 	string key
 
-	ASSERT(WaveExists(wv), "Missing wave")
-	ASSERT(!IsEmpty(key), "Empty key")
+	ASSERT_TS(WaveExists(wv), "Missing wave")
+	ASSERT_TS(!IsEmpty(key), "Empty key")
 
 	return NumberByKey(key, note(wv))
 End

@@ -188,7 +188,7 @@ static Function/WAVE GetChanneListFromITCConfig(config, channelType)
 
 	variable numRows, i, j
 
-	ASSERT(IsValidConfigWave(config), "Invalid config wave")
+	ASSERT(IsValidConfigWave(config, version=0), "Invalid config wave")
 
 	numRows = DimSize(config, ROWS)
 	Make/U/B/FREE/N=(numRows) activeChannels
@@ -262,7 +262,7 @@ static Function/WAVE GetTypeListFromITCConfig(config, channelType)
 
 	variable numRows, i, j
 
-	ASSERT(IsValidConfigWave(config), "Invalid config wave")
+	ASSERT(IsValidConfigWave(config, version=2), "Invalid config wave")
 
 	numRows = DimSize(config, ROWS)
 	Make/U/B/FREE/N=(numRows) activeChannels
@@ -1772,7 +1772,7 @@ Function/Wave GetConfigWave(sweepWave)
 
 	string name = "Config_" + NameOfWave(sweepWave)
 	Wave/SDFR=GetWavesDataFolderDFR(sweepWave) config = $name
-	ASSERT(IsValidConfigWave(config),"Invalid config wave")
+	ASSERT(IsValidConfigWave(config, version=0),"Invalid config wave")
 
 	return config
 End
@@ -1799,7 +1799,7 @@ End
 Function GetSamplingInterval(config)
 	Wave config
 
-	ASSERT(IsValidConfigWave(config), "Expected a valid config wave")
+	ASSERT(IsValidConfigWave(config, version=0), "Expected a valid config wave")
 
 	// from ITCConfigAllChannels help file:
 	// Third Column  = SamplingInterval:  integer value for sampling interval in microseconds (minimum value - 5 us)
@@ -1814,7 +1814,7 @@ End
 threadsafe Function GetDataOffset(config)
 	Wave config
 
-	ASSERT_TS(IsValidConfigWave(config),"Expected a valid config wave")
+	ASSERT_TS(IsValidConfigWave(config, version=1),"Expected a valid config wave")
 
 	Duplicate/D/R=[][4]/FREE config, offsets
 
@@ -4929,12 +4929,41 @@ Function MoveWaveWithOverwrite(dest, src)
 End
 
 /// @brief Check if the given wave is a valid ITCConfigWave
-threadsafe Function IsValidConfigWave(config)
+///
+/// The optional version parameter allows to check if the wave is at least comaptible with this version.
+/// The function assumes that higher versions are compatible with lower versions which is for most callers true.
+/// For a special case see AFH_GetChannelUnits.
+///
+/// @param config wave reference to a ITCConfigWave
+///
+/// @param version [optional, default=ITC_CONFIG_WAVE_VERSION], check against a specific version
+///                current versions known are 0 (equals NaN), 1, 2
+threadsafe Function IsValidConfigWave(config, [version])
 	WAVE/Z config
+	variable version
 
-	return WaveExists(config) &&        \
-		   DimSize(config, ROWS) > 0 && \
-		   DimSize(config, COLS) >= 4
+	variable waveVersion
+
+	if(!WaveExists(config))
+		return 0
+	endif
+
+	if(ParamIsDefault(version))
+		version = ITC_CONFIG_WAVE_VERSION
+	endif
+
+	waveVersion = GetWaveVersion(config)
+
+	// we know version NaN, 1 and 2, see GetITCChanConfigWave()
+	if(version == 2 && waveVersion >= 2)
+		return DimSize(config, ROWS) > 0 && DimSize(config, COLS) >= 6
+	elseif(version == 1 && waveVersion >= 1)
+		return DimSize(config, ROWS) > 0 && DimSize(config, COLS) >= 5
+	elseif(version == 0 && (isNaN(waveVersion) || waveVersion >= 1))
+		return DimSize(config, ROWS) > 0 && DimSize(config, COLS) >= 4
+	endif
+
+	return 0
 End
 
 /// @brief Check if the given wave is a valid HardwareDataWave

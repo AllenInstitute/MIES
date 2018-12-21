@@ -189,7 +189,7 @@ End
 /// @{
 
 /// @brief Check if wv exists and has the correct version
-static Function ExistsWithCorrectLayoutVersion(wv, versionOfNewWave)
+threadsafe static Function ExistsWithCorrectLayoutVersion(wv, versionOfNewWave)
 	Wave/Z wv
 	variable versionOfNewWave
 
@@ -226,7 +226,7 @@ static Function WaveVersionIsSmaller(wv, existingVersion)
 End
 
 /// @brief return the Version of the Wave, returns NaN if no version was set
-Function GetWaveVersion(wv)
+threadsafe Function GetWaveVersion(wv)
 	Wave/Z wv
 
 	return GetNumberFromWaveNote(wv, WAVE_NOTE_LAYOUT_KEY)
@@ -716,15 +716,6 @@ Function/Wave GetHardwareDataWave(panelTitle)
 	endswitch
 End
 
-static Constant ITC_CONFIG_WAVE_VERSION = 2
-
-/// @brief Check if the given ITC config wave is the latest version
-Function IsLatestConfigWaveVersion(wv)
-	WAVE wv
-
-	return ExistsWithCorrectLayoutVersion(wv, ITC_CONFIG_WAVE_VERSION)
-End
-
 /// @brief Return the ITC channel config wave
 ///
 /// Rows:
@@ -766,6 +757,7 @@ Function/Wave GetITCChanConfigWave(panelTitle)
 
 	WAVE/I/Z/SDFR=dfr wv = ITCChanConfigWave
 
+	// On version upgrade also adapt function IsValidConfigWave
 	if(ExistsWithCorrectLayoutVersion(wv, ITC_CONFIG_WAVE_VERSION))
 		return wv
 	elseif(WaveExists(wv))
