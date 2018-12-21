@@ -490,6 +490,11 @@ Function PA_GatherSettings(win, pps)
 	pps.pulseAverSett.endingPulse          = GetSetVariable(extPanel, "setvar_pulseAver_endPulse")
 	pps.pulseAverSett.fallbackPulseLength  = GetSetVariable(extPanel, "setvar_pulseAver_fallbackLength")
 	pps.pulseAverSett.regionSlider         = BSP_GetDDAQ(win)
+
+	pps.pulseAverSett.deconv_enable = GetCheckboxState(extPanel, "check_pulseAver_deconv")
+	pps.pulseAverSett.deconv_smth   = round(GetSetVariable(extPanel, "setvar_pulseAver_deconv_smth") / 2) * 2 + 1
+	pps.pulseAverSett.deconv_tau    = GetSetVariable(extPanel, "setvar_pulseAver_deconv_tau")
+	pps.pulseAverSett.deconv_range  = GetSetVariable(extPanel, "setvar_pulseAver_deconv_range")
 End
 
 Function PA_ShowPulses(win, dfr, pa)
@@ -498,7 +503,7 @@ Function PA_ShowPulses(win, dfr, pa)
 	STRUCT PulseAverageSettings &pa
 
 	string graph, trace, preExistingGraphs
-	string averageWaveName, pulseTrace, channelTypeStr, str, traceList, traceFullPath
+	string averageWaveName, convolutionWaveName, pulseTrace, channelTypeStr, str, traceList, traceFullPath
 	variable numChannels, i, j, k, l, idx, numTraces, sweepNo, headstage, numPulsesTotal, numPulses
 	variable first, numEntries, startingPulse, endingPulse, numGraphs
 	variable startingPulseSett, endingPulseSett, ret, pulseToPulseLength, numSweeps
@@ -688,6 +693,17 @@ Function PA_ShowPulses(win, dfr, pa)
 					listOfWavesPerChannel[channelNumber] = ""
 				endif
 
+				if(pa.deconv_enable && (activeRegionCount != activeChanCount) && !IsEmpty(listOfWaves))
+					if(!WaveExists(averageWave))
+						WAVE averageWave = PA_Average(listOfWaves, pulseAverageDFR, "average_" + baseName)
+					endif
+					WAVE deconv = PA_Deconvolution(averageWave, pulseAverageDFR, "deconv_" + baseName, pa)
+
+					GetTraceColor(NUM_HEADSTAGES + 1, red, green, blue)
+					AppendToGraph/Q/W=$graph/L=$vertAxis/B=$horizAxis/C=(65535, 0, 0) deconv
+					SetAxis/Z/W=$graph $horizAxis 0, pa.deconv_range
+				endif
+
 				if(pa.multipleGraphs)
 					sprintf str, "\\Z08\\Zr075#Pulses %g / #Swps. %d", numPulses, numSweeps
 					Legend/W=$graph/C/N=leg/X=-5.00/Y=-5.00 str
@@ -746,12 +762,75 @@ Function/WAVE PA_Average(listOfWaves, outputDFR, outputWaveName)
 	return wv
 End
 
+Function/WAVE PA_SmoothDeconv(input, pa)
+	WAVE input
+	STRUCT PulseAverageSettings &pa
+
+	variable range_pnts, smoothingFactor
+	string key
+
+	range_pnts = pa.deconv_range / DimDelta(input, ROWS)
+	smoothingFactor = max(min(pa.deconv_smth, 32767), 1)
+
+	key = CA_SmoothDeconv(input, smoothingFactor, range_pnts)
+	WAVE/Z cache = CA_TryFetchingEntryFromCache(key, options = CA_OPTS_NO_DUPLICATE)
+	if(WaveExists(cache))
+		return cache
+	endif
+
+	Duplicate/FREE/R=[0, range_pnts] input wv
+	Smooth smoothingFactor, wv
+
+	CA_StoreEntryIntoCache(key, wv)
+	return wv
+End
+
+Function/WAVE PA_Deconvolution(average, outputDFR, outputWaveName, pa)
+	WAVE average
+	DFREF outputDFR
+	string outputWaveName
+	STRUCT PulseAverageSettings &pa
+
+	variable step
+	string key
+
+	WAVE smoothed = PA_SmoothDeconv(average, pa)
+
+	key = CA_Deconv(smoothed, pa.deconv_tau)
+	WAVE/Z cache = CA_TryFetchingEntryFromCache(key, options = CA_OPTS_NO_DUPLICATE)
+	if(WaveExists(cache))
+		Duplicate/O cache outputDFR:$outputWaveName/WAVE=wv
+		return wv
+	endif
+
+	Duplicate/O/R=[0, DimSize(smoothed, ROWS) - 2] smoothed outputDFR:$outputWaveName/WAVE=wv
+	step = pa.deconv_tau / DimDelta(average, 0)
+	MultiThread wv = step * (smoothed[p + 1] - smoothed[p]) + smoothed[p]
+
+	CA_StoreEntryIntoCache(key, wv)
+	return wv
+End
+
 Function PA_CheckProc_Common(cba) : CheckBoxControl
 	STRUCT WMCheckboxAction &cba
 
 	switch(cba.eventCode)
 		case 2: // mouse up
 			UpdateSweepPlot(cba.win)
+			break
+	endswitch
+
+	return 0
+End
+
+Function PA_CheckProc_Deconvolution(cba) : CheckBoxControl
+	STRUCT WMCheckboxAction &cba
+
+	switch( cba.eventCode )
+		case 2: // mouse up
+			UpdateSweepPlot(cba.win)
+			break
+		case -1: // control being killed
 			break
 	endswitch
 
