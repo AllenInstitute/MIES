@@ -495,18 +495,16 @@ static Function DC_PlaceDataInITCChanConfigWave(panelTitle, dataAcqOrTP)
 	variable dataAcqOrTP
 
 	variable i, j, numEntries, ret, channel
+	variable col, adc, dac, headstage
 	string ctrl, deviceType, deviceNumber
 	string unitList = ""
 
-
 	WAVE ITCChanConfigWave = GetITCChanConfigWave(panelTitle)
-//	WAVE/SDFR=GetDevicePath(panelTitle) ITCChanConfigWave
-
 	WAVE statusHS = DAG_GetChannelState(panelTitle, CHANNEL_TYPE_HEADSTAGE)
 
 	// query DA properties
 	WAVE channelStatus = DAG_GetChannelState(panelTitle, CHANNEL_TYPE_DAC)
-
+	WAVE/T allSetNames    = DAG_GetChannelTextual(panelTitle, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_WAVE)
 	ctrl = GetSpecialControlLabel(CHANNEL_TYPE_DAC, CHANNEL_CONTROL_UNIT)
 
 	numEntries = DimSize(channelStatus, ROWS)
@@ -519,6 +517,7 @@ static Function DC_PlaceDataInITCChanConfigWave(panelTitle, dataAcqOrTP)
 		ITCChanConfigWave[j][%ChannelType]   = ITC_XOP_CHANNEL_TYPE_DAC
 		ITCChanConfigWave[j][%ChannelNumber] = i
 		unitList = AddListItem(DAG_GetTextualValue(panelTitle, ctrl, index = i), unitList, ",", Inf)
+		ITCChanConfigWave[j][%DAQChannelType] = !CmpStr(allSetNames[i], STIMSET_TP_WHILE_DAQ, 1) || dataAcqOrTP == TEST_PULSE_MODE ? DAQ_CHANNEL_TYPE_TP : DAQ_CHANNEL_TYPE_DAQ
 		j += 1
 	endfor
 
@@ -537,6 +536,17 @@ static Function DC_PlaceDataInITCChanConfigWave(panelTitle, dataAcqOrTP)
 		ITCChanConfigWave[j][%ChannelType]   = ITC_XOP_CHANNEL_TYPE_ADC
 		ITCChanConfigWave[j][%ChannelNumber] = i
 		unitList = AddListItem(DAG_GetTextualValue(panelTitle, ctrl, index = i), unitList, ",", Inf)
+
+		headstage = AFH_GetHeadstageFromADC(panelTitle, i)
+
+		if(IsFinite(headstage))
+			// use the same channel type as the DAC
+			ITCChanConfigWave[j][%DAQChannelType] = DC_GetChannelTypefromHS(panelTitle, headstage)
+		else
+			// unassociated ADCs are always of DAQ type
+			ITCChanConfigWave[j][%DAQChannelType] = DAQ_CHANNEL_TYPE_DAQ
+		endif
+
 		j += 1
 	endfor
 
@@ -558,6 +568,7 @@ static Function DC_PlaceDataInITCChanConfigWave(panelTitle, dataAcqOrTP)
 					channel = HW_ITC_GetITCXOPChannelForRack(panelTitle, RACK_ZERO)
 					ITCChanConfigWave[j][%ChannelNumber] = channel
 					sweepDataLNB[0][10][INDEP_HEADSTAGE] = channel
+					ITCChanConfigWave[j][%DAQChannelType] = DAQ_CHANNEL_TYPE_DAQ
 
 					j += 1
 				endif
@@ -568,6 +579,7 @@ static Function DC_PlaceDataInITCChanConfigWave(panelTitle, dataAcqOrTP)
 					channel = HW_ITC_GetITCXOPChannelForRack(panelTitle, RACK_ONE)
 					ITCChanConfigWave[j][%ChannelNumber] = channel
 					sweepDataLNB[0][11][INDEP_HEADSTAGE] = channel
+					ITCChanConfigWave[j][%DAQChannelType] = DAQ_CHANNEL_TYPE_DAQ
 				endif
 				break
 			case HARDWARE_NI_DAC:
@@ -576,6 +588,7 @@ static Function DC_PlaceDataInITCChanConfigWave(panelTitle, dataAcqOrTP)
 					if(statusTTL[i])
 						ITCChanConfigWave[j][%ChannelType] = ITC_XOP_CHANNEL_TYPE_TTL
 						ITCChanConfigWave[j][%ChannelNumber] = i
+						ITCChanConfigWave[j][%DAQChannelType] = DAQ_CHANNEL_TYPE_DAQ
 						j += 1
 					endif
 				endfor
