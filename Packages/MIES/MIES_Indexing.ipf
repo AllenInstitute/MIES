@@ -428,6 +428,9 @@ Function IDX_NumberOfSweepsInSet(setName)
 	if(isEmpty(setName))
 		return 0
 	endif
+	if(!CmpStr(setName, STIMSET_TP_WHILE_DAQ))
+		return 1
+	endif
 
 	WAVE/Z wv = WB_CreateAndGetStimSet(setName)
 
