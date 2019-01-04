@@ -86,6 +86,13 @@ Constant DAQ_CHANNEL_TYPE_DAQ    = 1
 Constant DAQ_CHANNEL_TYPE_TP     = 2
 /// @}
 
+/// @name When all DAQ Channels are set to TestPulse the output runs for TIME_TP_ONLY_ON_DAQ seconds
+/// @anchor TIME_TP_ONLY_ON_DAQ_CONSTANT
+/// @{
+Constant TIME_TP_ONLY_ON_DAQ = 1
+/// @}
+
+
 Constant MINIMUM_WAVE_SIZE = 64
 Constant MINIMUM_WAVE_SIZE_LARGE = 2048
 Constant MAXIMUM_WAVE_SIZE = 16384 // 2^14
