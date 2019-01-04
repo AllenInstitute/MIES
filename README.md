@@ -7,7 +7,7 @@ dataBrowser. The waveBuilder is used to generate stimulus sets. The DA_Ephys
 GUI is used to control and observe data acquisition in real time.  The
 DataBrowser is used to browse acquired data. All three interfaces may be operated in parallel.
 
-The Wavebuilder is used to create a series of related sweeps called a stimulus
+The Wavebuilder is used to create a series of related sweeps (i.e. timeseries) called a stimulus
 set. A sweep is composed of up to 99 epochs. Each epoch can contain one of
 seven different waveforms types, arbitrary combinations of waveform types, or a
 custom waveform. A custom waveform can be a sweep from a different stimulus
