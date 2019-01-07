@@ -207,9 +207,9 @@ End
 
 /// @brief Returns the number of given mode channels from channelType wave
 ///
-/// @param chanTypes a 1D wave containing #DAQ_CHANNEL_TYPE_CONSTANTS
+/// @param chanTypes a 1D wave containing @ref DaqChannelTypeConstants, returned by GetADCTypesFromConfig()
 ///
-/// @param type to count, one of #DAQ_CHANNEL_TYPE_CONSTANTS
+/// @param type to count, one of @ref DaqChannelTypeConstants
 ///
 /// @return number of types present in chanTypes
 Function GetNrOfTypedChannels(chanTypes, type)
@@ -1704,7 +1704,7 @@ End
 /// Holds invalid wave refs for non-existing entries.
 ///
 /// @param sweepDFR    datafolder reference with 1D sweep data
-/// @param channelType One of @ref ITC_XOP_CHANNEL_CONSTANTS
+/// @param channelType One of @ref ItcXopChannelConstants
 ///
 /// @see GetITCDataSingleColumnWave() or SplitSweepIntoComponents()
 Function/WAVE GetITCDataSingleColumnWaves(sweepDFR, channelType)
@@ -1721,7 +1721,7 @@ End
 /// Returned wave reference can be invalid.
 ///
 /// @param sweepDFR      datafolder holding 1D waves
-/// @param channelType   One of @ref ITC_XOP_CHANNEL_CONSTANTS
+/// @param channelType   One of @ref ItcXopChannelConstants
 /// @param channelNumber channel number
 /// @param splitTTLBits  [optional, defaults to false] return a single bit of the TTL wave
 /// @param ttlBit        [optional] number specifying the TTL bit

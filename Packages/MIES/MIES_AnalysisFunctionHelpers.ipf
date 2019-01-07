@@ -104,7 +104,7 @@ End
 /// @param ITCChanConfigWave ITC configuration wave, most users need to call
 ///                          `GetITCChanConfigWave(panelTitle)` to get that wave.
 /// @param channelNumber     channel number (0-based)
-/// @param channelType       channel type, one of @ref ITC_XOP_CHANNEL_CONSTANTS
+/// @param channelType       channel type, one of @ref ItcXopChannelConstants
 Function AFH_GetITCDataColumn(ITCChanConfigWave, channelNumber, channelType)
 	WAVE ITCChanConfigWave
 	variable channelNumber, channelType
@@ -157,7 +157,7 @@ End
 /// @param ITCChanConfigWave ITC configuration wave, most users need to call
 ///                          `GetITCChanConfigWave(panelTitle)` to get that wave.
 /// @param channelNumber     channel number (0-based)
-/// @param channelType       channel type, one of @ref ITC_XOP_CHANNEL_CONSTANTS
+/// @param channelType       channel type, one of @ref ItcXopChannelConstants
 Function/S AFH_GetChannelUnit(ITCChanConfigWave, channelNumber, channelType)
 	WAVE ITCChanConfigWave
 	variable channelNumber, channelType
@@ -387,7 +387,7 @@ End
 /// @param panelTitle            device
 /// @param sweep                 sweep wave
 /// @param headstageOrChannelNum headstage [0, NUM_HEADSTAGES[ or channel number for TTL channels [0, NUM_DA_TTL_CHANNELS]
-/// @param channelType           One of @ref ITC_XOP_CHANNEL_CONSTANTS
+/// @param channelType           One of @ref ItcXopChannelConstants
 /// @param config                [optional, defaults to config wave of the sweep returned by GetConfigWave()] config wave
 Function/WAVE AFH_ExtractOneDimDataFromSweep(panelTitle, sweep, headstageOrChannelNum, channelType, [config])
 	string panelTitle

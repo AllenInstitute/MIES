@@ -33,7 +33,7 @@ StrConstant BASE_WINDOW_TITLE    = "DA_Ephys"
 StrConstant amPanel = "analysisMaster"
 
 /// @name Task names
-/// @anchor MIES_TASKNAMES
+/// @anchor MiesTasknames
 /// @{
 StrConstant TASKNAME_TP        = "Testpulse"
 StrConstant TASKNAME_TPMD      = "TestpulseMD"
@@ -45,7 +45,7 @@ StrConstant TASKNAMES          = "Testpulse;TestpulseMD;ITC_Timer;ITC_TimerMD;IT
 /// @}
 
 /// @name Various mies specific regular expressions
-/// @anchor MIES_REGEXPS
+/// @anchor MiesRegexps
 /// @{
 StrConstant DATA_SWEEP_REGEXP        = "(?i)^Sweep_[[:digit:]]+$"
 StrConstant DATA_CONFIG_REGEXP       = "(?i)^Config_Sweep_[[:digit:]]+$"
@@ -77,7 +77,7 @@ Constant ITC_CONFIG_WAVE_VERSION = 2
 StrConstant ITC_CHANNEL_NAMES    = "AD;DA;;TTL"
 
 /// @name Channel constants shared with the ITC XOP
-/// @anchor ITC_XOP_CHANNEL_CONSTANTS
+/// @anchor ItcXopChannelConstants
 /// @{
 Constant ITC_XOP_CHANNEL_TYPE_ADC = 0
 Constant ITC_XOP_CHANNEL_TYPE_DAC = 1
@@ -85,7 +85,7 @@ Constant ITC_XOP_CHANNEL_TYPE_TTL = 3
 /// @}
 
 /// @name DAQ Channel Type constants used in ITCChanConfigWave
-/// @anchor DAQ_CHANNEL_TYPE_CONSTANTS
+/// @anchor DaqChannelTypeConstants
 /// @{
 Constant DAQ_CHANNEL_TYPE_UNKOWN = -1
 Constant DAQ_CHANNEL_TYPE_DAQ    = 1
@@ -93,7 +93,7 @@ Constant DAQ_CHANNEL_TYPE_TP     = 2
 /// @}
 
 /// @name When all DAQ Channels are set to TestPulse the output runs for TIME_TP_ONLY_ON_DAQ seconds
-/// @anchor TIME_TP_ONLY_ON_DAQ_CONSTANT
+/// @anchor TimeTpOnlyOnDaqConstant
 /// @{
 Constant TIME_TP_ONLY_ON_DAQ = 1
 /// @}

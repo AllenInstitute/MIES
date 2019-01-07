@@ -722,7 +722,7 @@ End
 /// - One for each channel, the order is DA, AD, TTL (same as in the ITCDataWave)
 ///
 /// Columns:
-/// - channel type, one of @ref ITC_XOP_CHANNEL_CONSTANTS
+/// - channel type, one of @ref ItcXopChannelConstants
 /// - channel number (0-based)
 /// - sampling interval in microseconds (1e-6)
 /// - decimation mode (always zero)
