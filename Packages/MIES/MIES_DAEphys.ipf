@@ -4530,6 +4530,7 @@ static Function DAP_UnlockDevice(panelTitle)
 
 	flags = HARDWARE_PREVENT_ERROR_POPUP | HARDWARE_PREVENT_ERROR_MESSAGE
 	HW_CloseDevice(hardwareType, ITCDeviceIDGlobal, flags=flags)
+	HW_ResetDevice(hardwareType, ITCDeviceIDGlobal, flags=flags)
 	HW_DeRegisterDevice(hardwareType, ITCDeviceIDGlobal, flags=flags)
 
 	DAP_UpdateYokeControls(panelTitleUnlocked)
