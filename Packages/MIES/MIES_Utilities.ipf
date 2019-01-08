@@ -674,7 +674,7 @@ Function/Wave GetUniqueEntries(wv)
 
 	Duplicate/FREE wv, result
 
-	if(numRows == 0)
+	if(numRows <= 1)
 		return result
 	endif
 
