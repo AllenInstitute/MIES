@@ -944,7 +944,15 @@ static Function NWB_WriteStimsetTemplateWaves(locationID, stimSet, chunkedLayout
 
 	// write the stim set parameter waves only if all three exist
 	if(WB_StimsetIsFromThirdParty(stimSet))
-		WAVE stimSetWave = WB_CreateAndGetStimSet(stimSet)
+		WAVE/Z stimSetWave = WB_CreateAndGetStimSet(stimSet)
+
+		if(!WaveExists(stimSetWave))
+			printf "The stimset \"%s\" can not be exported as it can not be recreated.\r", stimset
+			ControlWindowToFront()
+			HDF5CloseGroup groupID
+			return NaN
+		endif
+
 		stimset = NameOfWave(stimSetWave)
 		IPNWB#H5_WriteDataset(groupID, stimset, wv=stimSetWave, chunkedLayout=chunkedLayout, overwrite=1, writeIgorAttr=1)
 		// @todo remove once IP7 64bit is mandatory
