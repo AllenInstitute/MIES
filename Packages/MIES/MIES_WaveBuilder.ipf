@@ -2134,12 +2134,10 @@ Function WB_StimsetFamilyNames(knownNames, [parent])
 	endif
 
 	// unique names list with dependent children always left to their parents
-	WAVE/T wv = ListToTextWave(children, ";")
-	children = TextWaveToList(GetUniqueTextEntries(wv, caseSensitive = 0), ";")
+	children = GetUniqueTextEntriesFromList(children, caseSensitive=0)
 	knownNames = children + knownNames
 	numMoved = ItemsInList(knownNames)
-	WAVE/T wv = ListToTextWave(knownNames, ";")
-	knownNames = TextWaveToList(GetUniqueTextEntries(wv, caseSensitive = 0), ";")
+	knownNames = GetUniqueTextEntriesFromList(knownNames, caseSensitive=0)
 	numMoved -= ItemsInList(knownNames)
 
 	return numMoved
@@ -2197,9 +2195,7 @@ Function/S WB_StimsetRecursionForList(stimsetQueue)
 	variable i, numStimsets
 	string stimset, stimsetList
 
-	// assure unique entry list
-	WAVE/T wv = ListToTextWave(stimsetQueue, ";")
-	stimsetQueue = TextWaveToList(GetUniqueTextEntries(wv, caseSensitive = 0), ";")
+	stimsetQueue = GetUniqueTextEntriesFromList(stimsetQueue, caseSensitive = 0)
 
 	// loop through list
 	numStimsets = ItemsInList(stimsetQueue)

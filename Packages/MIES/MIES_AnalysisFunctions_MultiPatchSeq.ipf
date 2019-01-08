@@ -953,7 +953,7 @@ Function MSQ_FastRheoEst(panelTitle, s)
 				stimsets = AddListItem(AFH_GetStimSetName(panelTitle, DAC, CHANNEL_TYPE_DAC), stimsets, ";", inf)
 			endfor
 
-			if(DimSize(GetUniqueEntries(ListToTextWave(stimsets, ";")), ROWS) > 1)
+			if(ItemsInList(GetUniqueTextEntriesFromList(stimsets)) > 1)
 				printf "(%s): Not all IC headstages have the same stimset.\r", panelTitle
 				ControlWindowToFront()
 				return 1

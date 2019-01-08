@@ -686,6 +686,29 @@ Function/Wave GetUniqueEntries(wv)
 	return result
 End
 
+/// @brief Convenience wrapper around GetUniqueTextEntries() for string lists
+Function/S GetUniqueTextEntriesFromList(list, [sep, caseSensitive])
+	string list, sep
+	variable caseSensitive
+
+	if(ParamIsDefault(sep))
+		sep = ";"
+	else
+		ASSERT(strlen(sep) == 1, "Separator should be one byte long")
+	endif
+
+	if(ParamIsDefault(caseSensitive))
+		caseSensitive = 1
+	else
+		caseSensitive = !!caseSensitive
+	endif
+
+	WAVE/T wv = ListToTextWave(list, sep)
+	WAVE/T unique = GetUniqueTextEntries(wv, caseSensitive=caseSensitive)
+
+	return TextWaveToList(unique, sep)
+End
+
 /// @brief Search and Remove Duplicates from Text Wave wv
 ///
 /// Duplicates are removed from left to right
