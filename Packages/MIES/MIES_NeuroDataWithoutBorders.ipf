@@ -962,7 +962,6 @@ static Function NWB_WriteStimsetTemplateWaves(locationID, stimSet, chunkedLayout
 
 	ASSERT(WaveExists(WP) && WaveExists(WPT) && WaveExists(SegWvType) , "Some stim set parameter waves are missing")
 
-	stimset = RemovePrefix(NameOfWave(WP), startStr = "WP_")
 	name = WB_GetParameterWaveName(stimset, STIMSET_PARAM_WP, nwbFormat = 1)
 	IPNWB#H5_WriteDataset(groupID, name, wv=WP, chunkedLayout=chunkedLayout, overwrite=1, writeIgorAttr=1)
 
