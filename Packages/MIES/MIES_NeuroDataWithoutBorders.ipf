@@ -942,13 +942,8 @@ static Function NWB_WriteStimsetTemplateWaves(locationID, stimSet, chunkedLayout
 
 	IPNWB#H5_CreateGroupsRecursively(locationID, "/general/stimsets", groupID = groupID)
 
-	// write also the stim set parameter waves if all three exist
-	WAVE/Z WP  = WB_GetWaveParamForSet(stimSet)
-	WAVE/Z WPT = WB_GetWaveTextParamForSet(stimSet)
-	WAVE/Z SegWvType = WB_GetSegWvTypeForSet(stimSet)
-
-	if(!WaveExists(WP) && !WaveExists(WPT) && !WaveExists(SegWvType))
-		// third party stim sets need to be written as we don't have parameter waves
+	// write the stim set parameter waves only if all three exist
+	if(WB_StimsetIsFromThirdParty(stimSet))
 		WAVE stimSetWave = WB_CreateAndGetStimSet(stimSet)
 		stimset = NameOfWave(stimSetWave)
 		IPNWB#H5_WriteDataset(groupID, stimset, wv=stimSetWave, chunkedLayout=chunkedLayout, overwrite=1, writeIgorAttr=1)
@@ -960,7 +955,9 @@ static Function NWB_WriteStimsetTemplateWaves(locationID, stimSet, chunkedLayout
 		return NaN
 	endif
 
-	ASSERT(WaveExists(WP) && WaveExists(WPT) && WaveExists(SegWvType) , "Some stim set parameter waves are missing")
+	WAVE WP  = WB_GetWaveParamForSet(stimSet)
+	WAVE WPT = WB_GetWaveTextParamForSet(stimSet)
+	WAVE SegWvType = WB_GetSegWvTypeForSet(stimSet)
 
 	name = WB_GetParameterWaveName(stimset, STIMSET_PARAM_WP, nwbFormat = 1)
 	IPNWB#H5_WriteDataset(groupID, name, wv=WP, chunkedLayout=chunkedLayout, overwrite=1, writeIgorAttr=1)
