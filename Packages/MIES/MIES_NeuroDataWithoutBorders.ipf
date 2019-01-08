@@ -506,7 +506,7 @@ static Function NWB_AppendStimset(locationID, stimsets)
 	endfor
 
 	// process custom waves
-	WAVE/Z/WAVE wv = WB_CustomWavesFromStimSet(stimsetList = stimsets)
+	WAVE/WAVE wv = WB_CustomWavesFromStimSet(stimsetList = stimsets)
 	numWaves = DimSize(wv, ROWS)
 	for(i = 0; i < numWaves; i += 1)
 		NWB_WriteStimsetCustomWave(locationID, wv[i], 1)

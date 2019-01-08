@@ -1937,7 +1937,7 @@ End
 ///
 /// used by WaveBuilder and NeuroDataWithoutBorders
 ///
-/// @returns a wave of wave references on success and a invalid wave if a wave did not exist.
+/// @returns a wave of wave references
 Function/WAVE WB_CustomWavesFromStimSet([stimsetList])
 	string stimsetList
 
