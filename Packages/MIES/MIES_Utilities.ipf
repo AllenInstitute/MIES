@@ -657,16 +657,23 @@ Function CalculateLCMOfWave(wv)
 	return result
 End
 
-/// @brief Returns an unsorted free wave with all unique entries from wv neglecting NaN.
+/// @brief Returns an unsorted free wave with all unique entries from wv neglecting NaN/Inf.
 ///
 /// uses built-in igor function FindDuplicates. Entries are deleted from left to right.
-Function/Wave GetUniqueEntries(wv)
+Function/Wave GetUniqueEntries(wv, [caseSensitive])
 	Wave wv
+	variable caseSensitive
 
 	variable numRows, i
 
 	if(IsTextWave(wv))
-		return GetUniqueTextEntries(wv)
+		if(ParamIsDefault(caseSensitive))
+			caseSensitive = 1
+		else
+			caseSensitive = !!caseSensitive
+		endif
+
+		return GetUniqueTextEntries(wv, caseSensitive=caseSensitive)
 	endif
 
 	numRows = DimSize(wv, ROWS)
@@ -717,7 +724,7 @@ End
 /// @param caseSensitive  [optional] Indicates whether comparison should be case sensitive. defaults to True
 ///
 /// @return free wave with unique entries
-Function/Wave GetUniqueTextEntries(wv, [caseSensitive])
+static Function/Wave GetUniqueTextEntries(wv, [caseSensitive])
 	Wave/T wv
 	variable caseSensitive
 
