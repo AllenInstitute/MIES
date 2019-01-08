@@ -2081,7 +2081,7 @@ static Function/S WB_StimsetChildren([stimset])
 		WAVE/Z/T WPT     = GetWaveBuilderWaveTextParam()
 		WAVE/Z SegWvType = GetSegmentTypeWave()
 	else
-		if(!WB_ParameterWavesExist(stimset) && WB_StimsetExists(stimset))
+		if(!WB_ParameterWavesExist(stimset))
 			// stimset without parameter waves has no dependencies
 			return ""
 		endif
