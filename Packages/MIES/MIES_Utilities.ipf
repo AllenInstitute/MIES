@@ -702,6 +702,8 @@ Function/Wave GetUniqueTextEntries(wv, [caseSensitive])
 
 	if(ParamIsDefault(caseSensitive))
 		caseSensitive = 1
+	else
+		caseSensitive = !!caseSensitive
 	endif
 
 	numEntries = DimSize(wv, ROWS)
