@@ -884,7 +884,7 @@ static Function DC_PlaceDataInHardwareDataWave(panelTitle, numActiveChannels, da
 			break
 	endswitch
 
-	DEBUGPRINT("Clearing RTE flag", var=GetRTError(1))
+	ClearRTError()
 
 	// varies per DAC:
 	// DAGain, DAScale, insertStart (with dDAQ), setLength, testPulseAmplitude (can be non-constant due to different VC/IC)

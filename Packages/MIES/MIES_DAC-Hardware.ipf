@@ -2423,6 +2423,7 @@ Function HW_NI_KillFifo(deviceID)
 	endif
 
 	try
+		ClearRTError()
 		if(V_FIFORunning)
 			CtrlFIFO $fifoName stop; AbortOnRTE
 		endif
