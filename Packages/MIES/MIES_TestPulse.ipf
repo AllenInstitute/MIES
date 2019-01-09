@@ -93,84 +93,12 @@ Function TP_GetTestPulseLengthInPoints(panelTitle, mode)
 	endif
 End
 
-/// @brief Store the full test pulse wave for later inspection
-/// for DAQ mode, fifopos must be >= fifoPosGlobal for NI HARDWARE
-///
-/// @param panelTitle panel title
-///
-/// @param dataAcqOrTP one of @ref DataAcqModes
-///
-/// @param fifopos optional, mandatory if dataAcqOrTP == DATA_ACQUISITION_MODE, current fifo position
-Function TP_StoreFullWave(panelTitle, dataAcqOrTP, [fifopos])
-	string panelTitle
-	variable dataAcqOrTP, fifopos
-
-	variable numDACs, numADCs, startOfADColumns, gotTPChannels, TPChannels, hardwareType
-	variable i, j, TPChanIndex, tpLengthPoints, tpStartPos, tpStart, tpEnd
-	variable index
-
-	WAVE config = GetITCChanConfigWave(panelTitle)
-	WAVE OscilloscopeData = GetOscilloscopeWave(panelTitle)
-	numDACs = DimSize(GetDACListFromConfig(config), ROWS)
-	numADCs = DimSize(GetADCListFromConfig(config), ROWS)
-
-	if(dataAcqOrTP == TEST_PULSE_MODE)
-
-		// Assume no TTL channel active in TP mode
-		Duplicate/FREE/R=[][numDACs,] OscilloscopeData, tmp
-		TP_StoreTP(panelTitle, tmp)
-
-	elseif(dataAcqOrTP == DATA_ACQUISITION_MODE)
-
-		ASSERT(!ParamIsDefault(fifopos), "In DAQ mode fifopos must be given")
-
-		WAVE ADCmode = GetADCTypesFromConfig(config)
-
-		gotTPChannels = GotTPChannelsOnADCs(paneltitle)
-
-		if(gotTPChannels)
-
-			TPChannels = GetNrOfTypedChannels(ADCmode, DAQ_CHANNEL_TYPE_TP)
-			tpLengthPoints = TP_GetTestPulseLengthInPoints(panelTitle, DATA_ACQUISITION_MODE)
-			// get old fifo position
-			NVAR fifoPosGlobal = $GetFifoPosition(panelTitle)
-			tpStart = trunc(fifoPosGlobal / tpLengthPoints)
-			tpEnd = trunc(fifopos / tpLengthPoints)
-
-			for(i = tpStart; i < tpEnd; i += 1)
-
-				tpStartPos = i * tpLengthPoints
-				Duplicate/FREE/R=[tpStartPos, tpStartPos + tpLengthPoints - 1][numDACs, numDACs + TPChannels - 1] OscilloscopeData, tmp
-
-				TPChanIndex = 0
-				for(j = 0;j < numADCs; j += 1)
-					if(ADCmode[j] == DAQ_CHANNEL_TYPE_TP)
-						if(TPChanIndex != j)
-							MultiThread tmp[][TPChanIndex] = OscilloscopeData[tpStartPos + p][numDACs + j]
-						endif
-						TPChanIndex += 1
-					endif
-				endfor
-
-				TP_StoreTP(panelTitle, tmp)
-				WaveClear tmp
-
-			endfor
-
-		endif
-
-	else
-		ASSERT(0, "Unknown Acquisition Mode")
-	endif
-
-End
-
 /// @brief Stores the given TP wave
 ///
 /// @param panelTitle panel title
 ///
 /// @param TPWave reference to wave holding the TP data in the same format as OscilloscopeData
-static Function TP_StoreTP(panelTitle, TPWave)
+Function TP_StoreTP(panelTitle, TPWave)
 	string panelTitle
 	WAVE TPWave
 

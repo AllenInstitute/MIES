@@ -462,8 +462,10 @@ Function SCOPE_UpdateOscilloscopeData(panelTitle, dataAcqOrTP, [chunk, fifoPos, 
 	variable dataAcqOrTP, chunk, fifoPos, deviceID
 
 	STRUCT TPAnalysisInput tpInput
+	string osciUnits
 	variable i, j
 	variable tpChannels, numADCs, numDACs, tpLengthPoints, tpStart, tpEnd, tpStartPos
+	variable TPChanIndex, saveTP, sampleInt
 	variable headstage, fifoLatest
 
 	variable hardwareType = GetHardwareType(panelTitle)
@@ -487,85 +489,108 @@ Function SCOPE_UpdateOscilloscopeData(panelTitle, dataAcqOrTP, [chunk, fifoPos, 
 			break;
 	endswitch
 
-	WAVE GUIState = GetDA_EphysGuiStateNum(panelTitle)
-	if(GUIState[0][%check_Settings_TP_SaveTP])
-		TP_StoreFullWave(panelTitle, dataAcqOrTP, fifopos=fifopos)
-	endif
+	// In DAQ mode, fifopos is NaN when ITC finishes
+	if(isFinite(fifopos))
+		WAVE GUIState = GetDA_EphysGuiStateNum(panelTitle)
+		saveTP = GUIState[0][%check_Settings_TP_SaveTP]
 
-	// send data to TP Analysis if TP present
-	NVAR fifoPosGlobal = $GetFifoPosition(panelTitle)
+		// send data to TP Analysis if TP present
+		NVAR fifoPosGlobal = $GetFifoPosition(panelTitle)
 
-	tpLengthPoints = TP_GetTestPulseLengthInPoints(panelTitle, dataAcqOrTP)
-	// use a 'virtual' end position for fifoLatest for TP Mode since the input data contains one TP only
-	fifoLatest = (dataAcqOrTP == TEST_PULSE_MODE) ? tpLengthPoints : fifoPos
+		tpLengthPoints = TP_GetTestPulseLengthInPoints(panelTitle, dataAcqOrTP)
+		// use a 'virtual' end position for fifoLatest for TP Mode since the input data contains one TP only
+		fifoLatest = (dataAcqOrTP == TEST_PULSE_MODE) ? tpLengthPoints : fifoPos
 
-	WAVE config = GetITCChanConfigWave(panelTitle)
-	WAVE ADCmode = GetADCTypesFromConfig(config)
-	tpChannels = GetNrOfTypedChannels(ADCmode, DAQ_CHANNEL_TYPE_TP)
+		WAVE config = GetITCChanConfigWave(panelTitle)
+		WAVE ADCmode = GetADCTypesFromConfig(config)
+		tpChannels = GetNrOfTypedChannels(ADCmode, DAQ_CHANNEL_TYPE_TP)
 
-	if(tpChannels)
-		WAVE ADCs = GetADCListFromConfig(config)
-		WAVE hsProp = GetHSProperties(panelTitle)
-		NVAR duration = $GetTestpulseDuration(panelTitle)
-		NVAR baselineFrac = $GetTestpulseBaselineFraction(panelTitle)
+		if(tpChannels)
+			WAVE ADCs = GetADCListFromConfig(config)
+			WAVE hsProp = GetHSProperties(panelTitle)
+			NVAR duration = $GetTestpulseDuration(panelTitle)
+			NVAR baselineFrac = $GetTestpulseBaselineFraction(panelTitle)
 
-		WAVE OscilloscopeData = GetOscilloscopeWave(panelTitle)
-		numDACs = DimSize(GetDACListFromConfig(config), ROWS)
-		numADCs = DimSize(ADCs, ROWS)
+			WAVE OscilloscopeData = GetOscilloscopeWave(panelTitle)
+			sampleInt = DimDelta(OscilloscopeData, ROWS)
+			osciUnits = WaveUnits(OscilloscopeData, ROWS)
+			numDACs = DimSize(GetDACListFromConfig(config), ROWS)
+			numADCs = DimSize(ADCs, ROWS)
 
-		// note: currently this works for multiplier = 1 only, see DC_PlaceDataInHardwareDataWave
-		Make/FREE/N=(tpLengthPoints) channelData
-		WAVE tpInput.data = channelData
-		CopyScales OscilloscopeData channelData
+			// note: currently this works for multiplier = 1 only, see DC_PlaceDataInHardwareDataWave
+			Make/FREE/N=(tpLengthPoints) channelData
+			WAVE tpInput.data = channelData
+			SetScale/P x, 0, sampleInt, osciUnits, channelData
 
-		tpInput.panelTitle = panelTitle
-		tpInput.duration = duration
-		tpInput.baselineFrac = baselineFrac
-		tpInput.tpLengthPoints = tpLengthPoints
-		tpInput.readTimeStamp = ticks * TICKS_TO_SECONDS
-		tpInput.activeADCs = tpChannels
+			tpInput.panelTitle = panelTitle
+			tpInput.duration = duration
+			tpInput.baselineFrac = baselineFrac
+			tpInput.tpLengthPoints = tpLengthPoints
+			tpInput.readTimeStamp = ticks * TICKS_TO_SECONDS
+			tpInput.activeADCs = tpChannels
 
-		tpStart = trunc(fifoPosGlobal / tpLengthPoints)
-		tpEnd = trunc(fifoLatest / tpLengthPoints)
-		Make/FREE/D/N=(tpEnd - tpStart) tpMarker
-		tpMarker[] = GetNonreproduciblerandom()
+			tpStart = trunc(fifoPosGlobal / tpLengthPoints)
+			tpEnd = trunc(fifoLatest / tpLengthPoints)
+			ASSERT(tpStart <= tpEnd, "New fifopos is smaller than previous fifopos")
+			Make/FREE/D/N=(tpEnd - tpStart) tpMarker
+			NewRandomSeed()
+			tpMarker[] = GetReproducibleRandom()
 
-		for(i = tpStart;i < tpEnd; i += 1)
+			for(i = tpStart;i < tpEnd; i += 1)
 
-			tpInput.measurementMarker = tpMarker[i - tpStart]
-			tpStartPos = i * tpLengthPoints
+				tpInput.measurementMarker = tpMarker[i - tpStart]
+				tpStartPos = i * tpLengthPoints
 
-			for(j = 0; j < numADCs; j += 1)
-				if(ADCmode[j] == DAQ_CHANNEL_TYPE_TP)
-
-					MultiThread channelData[] = OscilloscopeData[tpStartPos + p][numDACs + j]
-
-					headstage = AFH_GetHeadstageFromADC(panelTitle, ADCs[j])
-					if(hsProp[headstage][%ClampMode] == I_CLAMP_MODE)
-						NVAR clampAmp=$GetTPAmplitudeIC(panelTitle)
-					else
-						NVAR clampAmp=$GetTPAmplitudeVC(panelTitle)
-					endif
-					tpInput.clampAmp = clampAmp
-					tpInput.clampMode = hsProp[headstage][%ClampMode]
-					tpInput.hsIndex = headstage
-					TP_SendToAnalysis(tpInput)
+				if(saveTP)
+					Duplicate/FREE/R=[tpStartPos, tpStartPos + tpLengthPoints - 1][numDACs, numDACs + tpChannels - 1] OscilloscopeData, StoreTPWave
+					SetScale/P x, 0, sampleInt, osciUnits, StoreTPWave
+					TPChanIndex = 0
 				endif
+
+				for(j = 0; j < numADCs; j += 1)
+					if(ADCmode[j] == DAQ_CHANNEL_TYPE_TP)
+
+						MultiThread channelData[] = OscilloscopeData[tpStartPos + p][numDACs + j]
+
+						headstage = AFH_GetHeadstageFromADC(panelTitle, ADCs[j])
+						if(hsProp[headstage][%ClampMode] == I_CLAMP_MODE)
+							NVAR clampAmp=$GetTPAmplitudeIC(panelTitle)
+						else
+							NVAR clampAmp=$GetTPAmplitudeVC(panelTitle)
+						endif
+						tpInput.clampAmp = clampAmp
+						tpInput.clampMode = hsProp[headstage][%ClampMode]
+						tpInput.hsIndex = headstage
+						TP_SendToAnalysis(tpInput)
+
+						if(saveTP && TPChanIndex != j)
+							MultiThread StoreTPWave[][TPChanIndex] = channelData[p]
+						endif
+
+
+					endif
+				endfor
+
+				if(saveTP)
+					TP_StoreTP(panelTitle, StoreTPWave)
+					WaveClear StoreTPWave
+				endif
+
 			endfor
 
-		endfor
+			if(dataAcqOrTP == DATA_ACQUISITION_MODE)
+				// optimization for regular TP we use OscilloscopeData directly
+				WAVE TPOscilloscopeData = GetTPOscilloscopeWave(panelTitle)
+				Duplicate/O/R=[tpStartPos, tpStartPos + tpLengthPoints - 1][] OscilloscopeData TPOscilloscopeData
+				SetScale/P x, 0, sampleInt, osciUnits, TPOscilloscopeData
+			endif
 
-		if(dataAcqOrTP == DATA_ACQUISITION_MODE)
-			// optimization for regular TP we use OscilloscopeData directly
-			WAVE TPOscilloscopeData = GetTPOscilloscopeWave(panelTitle)
-			Duplicate/O/R=[tpStartPos, tpStartPos + tpLengthPoints - 1][] OscilloscopeData TPOscilloscopeData
-			SetScale/P x, 0, DimDelta(OscilloscopeData, ROWS), WaveUnits(OscilloscopeData, ROWS), TPOscilloscopeData
 		endif
 
-	endif
+		// Sync fifo position
+		fifoPosGlobal = fifoPos
 
-	// Sync fifo position
-	fifoPosGlobal = fifoPos
+	endif
 
 	ASYNC_ThreadReadOut()
 
