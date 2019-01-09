@@ -19,16 +19,15 @@
 Function DQM_FIFOMonitor(s)
 	STRUCT WMBackgroundStruct &s
 
-	DFREF activeDevices = GetActiveITCDevicesFolder()
-	WAVE/SDFR=activeDevices ActiveDeviceList
 	variable deviceID, isFinished, hardwareType
 	variable i, j, fifoPos, fifoEnd, result, channel, stopCollectionPoint
 	string panelTitle, fifoChannelName, fifoName, errMsg
+	WAVE ActiveDeviceList = GetDQMActiveDeviceList()
 	Make/FREE/N=(0) wNIReadOut
 
 	for(i = 0; i < DimSize(ActiveDeviceList, ROWS); i += 1)
-		deviceID   = ActiveDeviceList[i][0] // deviceID
-		hardwareType = ActiveDeviceList[i][3] // hardwareType
+		deviceID   = ActiveDeviceList[i][%DeviceID]
+		hardwareType = ActiveDeviceList[i][%HardwareType]
 		panelTitle = HW_GetMainDeviceName(hardwareType, deviceID)
 		switch(hardwareType)
 			case HARDWARE_NI_DAC:
@@ -81,7 +80,7 @@ Function DQM_FIFOMonitor(s)
 		endif
 
 		if(isFinished)
-			DQM_MakeOrUpdateActivDevLstWave(panelTitle, deviceID, 0, 0, -1)
+			DQM_RemoveDevice(panelTitle, deviceID)
 			DQM_StopDataAcq(panelTitle, deviceID)
 			i = 0
 			continue
@@ -107,7 +106,7 @@ Function DQM_TerminateOngoingDAQHelper(panelTitle)
 	String panelTitle
 
 	NVAR ITCDeviceIDGlobal = $GetITCDeviceIDGlobal(panelTitle)
-	WAVE/T/SDFR=GetActiveITCDevicesFolder() ActiveDeviceList
+	WAVE ActiveDeviceList = GetDQMActiveDeviceList()
 
 	variable hardwareType = GetHardwareType(panelTitle)
 	if(hardwareType == HARDWARE_ITC_DAC)
@@ -116,7 +115,7 @@ Function DQM_TerminateOngoingDAQHelper(panelTitle)
 	HW_StopAcq(hardwareType, ITCDeviceIDGlobal, zeroDAC = 1, flags=HARDWARE_ABORT_ON_ERROR)
 
 	// remove device passed in from active device lists
-	DQM_MakeOrUpdateActivDevLstWave(panelTitle, ITCDeviceIDGlobal, 0, 0, -1)
+	DQM_RemoveDevice(panelTitle, ITCDeviceIDGlobal)
 
 	// determine if device removed was the last device on the list, if yes stop the background function
 	if(DimSize(ActiveDeviceList, ROWS) == 0)
@@ -363,46 +362,50 @@ static Function DQM_BkrdDataAcq(panelTitle, [triggerMode])
 		TFH_StartFIFOStopDaemon(hardwareType, ITCDeviceIDGlobal)
 	endif
 
-	DQM_MakeOrUpdateActivDevLstWave(panelTitle, ITCDeviceIDGlobal, ADChannelToMonitor, StopCollectionPoint, 1) // adds a device
+	DQM_AddDevice(panelTitle)
 
 	if(!IsBackgroundTaskRunning(TASKNAME_FIFOMONMD))
 		DQM_StartBckrdFIFOMonitor()
 	endif
 End
 
-static Function DQM_MakeOrUpdateActivDevLstWave(panelTitle, ITCDeviceIDGlobal, ADChannelToMonitor, StopCollectionPoint, addOrRemoveDevice)
+/// @brief Removes a device from the ActiveDeviceList
+///
+/// @param panelTitle panel title
+///
+/// @param ITCDeviceIDGlobal device id of the device to be removed
+static Function DQM_RemoveDevice(panelTitle, ITCDeviceIDGlobal)
 	string panelTitle
-	Variable ITCDeviceIDGlobal, ADChannelToMonitor, StopCollectionPoint, addOrRemoveDevice // when removing a device only the ITCDeviceIDGlobal is needed
+	variable ITCDeviceIDGlobal
+
+	variable idCol
+	WAVE ActiveDeviceList = GetDQMActiveDeviceList()
+
+	idCol = FindDimLabel(ActiveDeviceList, 1, "DeviceID")
+	Duplicate/FREE/R=[][idCol] ActiveDeviceList ListOfITCDeviceIDGlobal // duplicates the column that contains the global device ID's
+	FindValue/V=(ITCDeviceIDGlobal) ListOfITCDeviceIDGlobal
+	DeleteWavePoint(ActiveDeviceList, ROWS, V_Value)
+End
+
+/// @brief Adds a device to the ActiveDeviceList
+///
+/// @param panelTitle panel title
+static Function DQM_AddDevice(panelTitle)
+	string panelTitle
 
 	variable numberOfRows
 
-	DFREF dfr = GetActiveITCDevicesFolder()
-	WAVE/Z/D/SDFR=dfr ActiveDeviceList
-	variable hardwareType = GetHardwareType(panelTitle)
+	NVAR ADChannelToMonitor  = $GetADChannelToMonitor(panelTitle)
+	NVAR ITCDeviceIDGlobal   = $GetITCDeviceIDGlobal(panelTitle)
+	WAVE ActiveDeviceList    = GetDQMActiveDeviceList()
 
-	if(addOrRemoveDevice == 1) // add a ITC device
-		if(!WaveExists(ActiveDeviceList))
-			Make/D/N=(1, 4) dfr:ActiveDeviceList/WAVE=ActiveDeviceList
-			ActiveDeviceList[0][0] = ITCDeviceIDGlobal
-			ActiveDeviceList[0][1] = ADChannelToMonitor
-			ActiveDeviceList[0][2] = StopCollectionPoint
-			ActiveDeviceList[0][3] = hardwareType
-		else
-			numberOfRows = DimSize(ActiveDeviceList, ROWS)
-			Redimension/D/N=(numberOfRows + 1, 4) ActiveDeviceList
-			ActiveDeviceList[numberOfRows][0] = ITCDeviceIDGlobal
-			ActiveDeviceList[numberOfRows][1] = ADChannelToMonitor
-			ActiveDeviceList[numberOfRows][2] = StopCollectionPoint
-			ActiveDeviceList[numberOfRows][3] = hardwareType
-		endif
-	elseif(addOrRemoveDevice == -1) // remove a ITC device
-		Duplicate /FREE /r = [][0] ActiveDeviceList ListOfITCDeviceIDGlobal // duplicates the column that contains the global device ID's
-		FindValue/V=(ITCDeviceIDGlobal) ListOfITCDeviceIDGlobal
-		ASSERT(V_Value >= 0, "Trying to remove a non existing device")
-		DeletePoints/M=(ROWS) V_Value, 1, ActiveDeviceList
-	else
-		ASSERT(0, "Invalid addOrRemoveDevice value")
-	endif
+	numberOfRows = DimSize(ActiveDeviceList, ROWS)
+	Redimension/N=(numberOfRows + 1, 4) ActiveDeviceList
+
+	ActiveDeviceList[numberOfRows][%DeviceID] = ITCDeviceIDGlobal
+	ActiveDeviceList[numberOfRows][%ADChannelToMonitor] = ADChannelToMonitor
+	ActiveDeviceList[numberOfRows][%HardwareType] = GetHardwareType(panelTitle)
+	ActiveDeviceList[numberOfRows][%ActiveChunk] = NaN
 End
 
 static Function DQM_MakeOrUpdateTimerParamWave(panelTitle, listOfFunctions, startTime, RunTime, EndTime, addOrRemoveDevice)

@@ -4084,7 +4084,7 @@ Function IsDeviceActiveWithBGTask(panelTitle, task)
 			WAVE/Z/SDFR=GetActiveITCDevicesTimerFolder() deviceIDList = ActiveDevTimeParam
 			break
 		case "ITC_FIFOMonitorMD":
-			WAVE/Z/SDFR=GetActiveITCDevicesFolder() deviceIDList = ActiveDeviceList
+			WAVE deviceIDList = GetDQMActiveDeviceList()
 			break
 		case "TestPulse":
 		case "ITC_Timer":

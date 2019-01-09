@@ -800,6 +800,60 @@ Function/Wave GetITCChanConfigWave(panelTitle)
 	return wv
 End
 
+static Constant DQM_ACTIVE_DEV_WAVE_VERSION = 3
+
+/// @brief Returns a reference to the wave of active devices for data acquisition in multi device mode
+///
+/// The wave is used in data acquisition in multiple device mode to keep track of active devices.
+///
+/// Columns:
+/// DeviceID id of an active device
+/// ADChannelToMonitor index of first active AD channel in HardwareDataWave
+/// StopCollectionPoint number of samples to acquire
+/// hardwareType type of hardware of the device
+/// activeChunk if a channel of the device is used for TP while DAQ this column saves the number of the last evaluated test pulse
+///
+/// Changes in version 1:
+/// added column activeChunk
+/// Changes in version 2:
+/// changed precision to double
+/// Changes in version 3:
+/// removed column 2 with StopCollectionPoint as it is no longer used
+Function/Wave GetDQMActiveDeviceList()
+
+	DFREF dfr = GetActiveITCDevicesFolder()
+
+	WAVE/Z/D/SDFR=dfr wv = ActiveDeviceList
+
+	if(ExistsWithCorrectLayoutVersion(wv, DQM_ACTIVE_DEV_WAVE_VERSION))
+		return wv
+	elseif(WaveExists(wv))
+		// do sequential version upgrade
+		if(WaveVersionIsSmaller(wv, 1))
+			Redimension/N=(-1, 5) wv
+			wv[][4] = NaN
+			Note/K wv
+		endif
+		if(WaveVersionIsSmaller(wv, 2))
+			Redimension/D/N=(-1, -1) wv
+		endif
+		if(WaveVersionIsSmaller(wv, 3))
+			DeleteWavePoint(wv, COLS, 2)
+		endif
+	else
+		Make/D/N=(0, 4) dfr:ActiveDeviceList/WAVE=wv
+	endif
+
+	SetDimLabel COLS, 0, DeviceID,    wv
+	SetDimLabel COLS, 1, ADChannelToMonitor, wv
+	SetDimLabel COLS, 2, HardwareType, wv
+	SetDimLabel COLS, 3, ActiveChunk, wv
+
+	SetWaveVersion(wv, DQM_ACTIVE_DEV_WAVE_VERSION)
+
+	return wv
+End
+
 /// @brief Return the intermediate storage wave for the TTL data
 Function/Wave GetTTLWave(panelTitle)
 	string panelTitle
