@@ -487,7 +487,7 @@ static Function TP_AnalyzeTP(panelTitle, TPStorage, endRow)
 
 		headstage = TPStorage[endRow][i][%Headstage]
 
-		if(!IsFinite(headstage))
+		if(!IsFinite(headstage) || DC_GetChannelTypefromHS(panelTitle, headstage) != DAQ_CHANNEL_TYPE_TP)
 			continue
 		endif
 
