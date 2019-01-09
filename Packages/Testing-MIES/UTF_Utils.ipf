@@ -1886,3 +1886,227 @@ End
 
 // Not checked: typeFlag, matchList and waveProperty
 /// @}
+
+/// @{
+/// DeleteWavePoint
+Function DWP_InvalidWave()
+
+	WAVE/Z wv = $""
+	try
+		DeleteWavePoint(wv, ROWS, 0)
+		FAIL()
+	catch
+		PASS()
+	endtry
+End
+
+Function DWP_InvalidDim()
+
+	variable i
+
+	Make/FREE/N=1 wv
+	Make/FREE/N=4 fDims = {-1, 1, 2, 3, 5, NaN, Inf}
+
+	for(i = 0; i < numpnts(fDims); i += 1)
+		try
+			DeleteWavePoint(wv, fDims[i], 0)
+			FAIL()
+		catch
+			PASS()
+		endtry
+	endfor
+End
+
+Function DWP_InvalidIndex()
+
+	variable i
+
+	Make/FREE/N=1 wv
+	Make/FREE/N=4 fInd = {-1, 2, NaN, Inf}
+
+	for(i = 0; i < numpnts(fInd); i += 1)
+		try
+			DeleteWavePoint(wv, ROWS, fInd[i])
+			FAIL()
+		catch
+			PASS()
+		endtry
+	endfor
+End
+
+Function DWP_DeleteFromEmpty()
+
+	variable i
+
+	Make/FREE/N=0 wv
+
+	try
+		DeleteWavePoint(wv, ROWS, 0)
+		FAIL()
+	catch
+		PASS()
+	endtry
+End
+
+Function DWP_Check1D()
+
+	Make/FREE/N=3 wv = {0, 1, 2}
+	DeleteWavePoint(wv, ROWS, 1)
+	CHECK_EQUAL_WAVES(wv, {0, 2})
+	DeleteWavePoint(wv, ROWS, 1)
+	CHECK_EQUAL_WAVES(wv, {0})
+	DeleteWavePoint(wv, ROWS, 0)
+	CHECK_EQUAL_VAR(DimSize(wv, ROWS), 0)
+End
+
+Function DWP_Check2D()
+
+	Make/FREE/N=(3, 3) wv
+	wv = p + DimSize(wv, COLS) * q
+	DeleteWavePoint(wv, ROWS, 1)
+	CHECK_EQUAL_WAVES(wv, {{0, 2}, {3, 5}, {6, 8}})
+	DeleteWavePoint(wv, ROWS, 1)
+	CHECK_EQUAL_WAVES(wv, {{0}, {3}, {6}})
+	DeleteWavePoint(wv, ROWS, 0)
+	CHECK_EQUAL_VAR(DimSize(wv, ROWS), 0)
+	CHECK_EQUAL_VAR(DimSize(wv, COLS), 3)
+
+	Make/O/FREE/N=(3, 3) wv
+	wv = p + DimSize(wv, COLS) * q
+	DeleteWavePoint(wv, COLS, 1)
+	CHECK_EQUAL_WAVES(wv, {{0, 1, 2}, {6, 7, 8}})
+	DeleteWavePoint(wv, COLS, 1)
+	CHECK_EQUAL_WAVES(wv, {{0, 1, 2}})
+	DeleteWavePoint(wv, COLS, 0)
+	CHECK_EQUAL_VAR(DimSize(wv, ROWS), 3)
+	CHECK_EQUAL_VAR(DimSize(wv, COLS), 0)
+End
+
+Function DWP_Check3D()
+
+	Make/FREE/N=(3, 3, 3) wv
+	wv = p + DimSize(wv, COLS) * q + DimSize(wv, COLS) * DimSize(wv, LAYERS) * r
+	DeleteWavePoint(wv, ROWS, 1)
+	CHECK_EQUAL_WAVES(wv, {{{0, 2}, {3, 5}, {6, 8}}, {{9, 11}, {12, 14}, {15, 17}}, {{18, 20}, {21, 23}, {24, 26}}})
+	DeleteWavePoint(wv, ROWS, 1)
+	CHECK_EQUAL_WAVES(wv, {{{0}, {3}, {6}}, {{9}, {12}, {15}}, {{18}, {21}, {24}}})
+	DeleteWavePoint(wv, ROWS, 0)
+	CHECK_EQUAL_VAR(DimSize(wv, ROWS), 0)
+	CHECK_EQUAL_VAR(DimSize(wv, COLS), 3)
+	CHECK_EQUAL_VAR(DimSize(wv, LAYERS), 3)
+
+	Make/O/FREE/N=(3, 3, 3) wv
+	wv = p + DimSize(wv, COLS) * q + DimSize(wv, COLS) * DimSize(wv, LAYERS) * r
+	DeleteWavePoint(wv, COLS, 1)
+	CHECK_EQUAL_WAVES(wv, {{{0, 1, 2}, {6, 7, 8}}, {{9, 10, 11}, {15, 16, 17}}, {{18, 19, 20}, {24, 25, 26}}})
+	DeleteWavePoint(wv, COLS, 1)
+	CHECK_EQUAL_WAVES(wv, {{{0, 1, 2}}, {{9, 10, 11}}, {{18, 19, 20}}})
+	DeleteWavePoint(wv, COLS, 0)
+	CHECK_EQUAL_VAR(DimSize(wv, ROWS), 3)
+	CHECK_EQUAL_VAR(DimSize(wv, COLS), 0)
+	CHECK_EQUAL_VAR(DimSize(wv, LAYERS), 3)
+
+	Make/O/FREE/N=(3, 3, 3) wv
+	wv = p + DimSize(wv, COLS) * q + DimSize(wv, COLS) * DimSize(wv, LAYERS) * r
+	DeleteWavePoint(wv, LAYERS, 1)
+	CHECK_EQUAL_WAVES(wv, {{{0, 1, 2}, {3, 4, 5}, {6, 7, 8}}, {{18, 19, 20}, {21, 22, 23}, {24, 25, 26}}})
+	DeleteWavePoint(wv, LAYERS, 1)
+	CHECK_EQUAL_WAVES(wv, {{{0, 1, 2}, {3, 4, 5}, {6, 7, 8}}})
+	DeleteWavePoint(wv, LAYERS, 0)
+	CHECK_EQUAL_VAR(DimSize(wv, ROWS), 3)
+	CHECK_EQUAL_VAR(DimSize(wv, COLS), 3)
+	CHECK_EQUAL_VAR(DimSize(wv, LAYERS), 0)
+End
+
+Function DWP_Check4D()
+
+	Make/FREE/N=(3, 3, 3, 3) wv
+	wv = p + DimSize(wv, COLS) * q + DimSize(wv, COLS) * DimSize(wv, LAYERS) * r +  + DimSize(wv, COLS) * DimSize(wv, LAYERS) * DimSize(wv, CHUNKS) * s
+
+	DeleteWavePoint(wv, ROWS, 1)
+	Make/FREE/N=(2, 3, 3, 3) comp
+	comp[][][][0] = {{{0, 2}, {3, 5}, {6, 8}}, {{9, 11}, {12, 14}, {15, 17}}, {{18, 20}, {21, 23}, {24, 26}}}
+	comp[][][][1] = {{{27, 29}, {30, 32}, {33, 35}}, {{36, 38}, {39, 41}, {42, 44}}, {{45, 47}, {48, 50}, {51, 53}}}
+	comp[][][][2] = {{{54, 56}, {57, 59}, {60, 62}}, {{63, 65}, {66, 68}, {69, 71}}, {{72, 74}, {75, 77}, {78, 80}}}
+	CHECK_EQUAL_WAVES(wv, comp)
+
+	DeleteWavePoint(wv, ROWS, 1)
+	Make/O/FREE/N=(1, 3, 3, 3) comp
+	comp[][][][0] = {{{0}, {3}, {6}}, {{9}, {12}, {15}}, {{18}, {21}, {24}}}
+	comp[][][][1] = {{{27}, {30}, {33}}, {{36}, {39}, {42}}, {{45}, {48}, {51}}}
+	comp[][][][2] = {{{54}, {57}, {60}}, {{63}, {66}, {69}}, {{72}, {75}, {78}}}
+	CHECK_EQUAL_WAVES(wv, comp)
+
+	DeleteWavePoint(wv, ROWS, 0)
+	CHECK_EQUAL_VAR(DimSize(wv, ROWS), 0)
+	CHECK_EQUAL_VAR(DimSize(wv, COLS), 3)
+	CHECK_EQUAL_VAR(DimSize(wv, LAYERS), 3)
+	CHECK_EQUAL_VAR(DimSize(wv, CHUNKS), 3)
+
+	Make/O/FREE/N=(3, 3, 3, 3) wv
+	wv = p + DimSize(wv, COLS) * q + DimSize(wv, COLS) * DimSize(wv, LAYERS) * r +  + DimSize(wv, COLS) * DimSize(wv, LAYERS) * DimSize(wv, CHUNKS) * s
+
+	DeleteWavePoint(wv, COLS, 1)
+	Make/O/FREE/N=(3, 2, 3, 3) comp
+	comp[][][][0] = {{{0, 1, 2}, {6, 7, 8}}, {{9, 10, 11}, {15, 16, 17}}, {{18, 19, 20}, {24, 25, 26}}}
+	comp[][][][1] = {{{27, 28, 29}, {33, 34, 35}}, {{36, 37, 38}, {42, 43, 44}}, {{45, 46, 47}, {51, 52, 53}}}
+	comp[][][][2] = {{{54, 55, 56}, {60, 61, 62}}, {{63, 64, 65}, {69, 70, 71}}, {{72, 73, 74}, {78, 79, 80}}}
+	CHECK_EQUAL_WAVES(wv, comp)
+
+	DeleteWavePoint(wv, COLS, 1)
+	Make/O/FREE/N=(3, 1, 3, 3) comp
+	comp[][][][0] = {{{0 , 1, 2}}, {{9, 10, 11}}, {{18, 19, 20}}}
+	comp[][][][1] = {{{27, 28, 29}}, {{36, 37, 38}}, {{45, 46, 47}}}
+	comp[][][][2] = {{{54, 55, 56}}, {{63, 64, 65}}, {{72, 73, 74}}}
+	CHECK_EQUAL_WAVES(wv, comp)
+
+	DeleteWavePoint(wv, COLS, 0)
+	CHECK_EQUAL_VAR(DimSize(wv, ROWS), 3)
+	CHECK_EQUAL_VAR(DimSize(wv, COLS), 0)
+	CHECK_EQUAL_VAR(DimSize(wv, LAYERS), 3)
+	CHECK_EQUAL_VAR(DimSize(wv, CHUNKS), 3)
+
+	Make/O/FREE/N=(3, 3, 3, 3) wv
+	wv = p + DimSize(wv, COLS) * q + DimSize(wv, COLS) * DimSize(wv, LAYERS) * r +  + DimSize(wv, COLS) * DimSize(wv, LAYERS) * DimSize(wv, CHUNKS) * s
+
+	DeleteWavePoint(wv, LAYERS, 1)
+	Make/O/FREE/N=(3, 3, 2, 3) comp
+	comp[][][][0] = {{{0, 1, 2}, {3, 4, 5}, {6, 7, 8}}, {{18, 19, 20}, {21, 22, 23}, {24, 25, 26}}}
+	comp[][][][1] = {{{27, 28, 29}, {30, 31, 32}, {33, 34, 35}}, {{45, 46, 47}, {48, 49, 50}, {51, 52, 53}}}
+	comp[][][][2] = {{{54, 55, 56}, {57, 58, 59}, {60, 61, 62}}, {{72, 73, 74}, {75, 76, 77}, {78, 79, 80}}}
+	CHECK_EQUAL_WAVES(wv, comp)
+
+	DeleteWavePoint(wv, LAYERS, 1)
+	Make/O/FREE/N=(3, 3, 1, 3) comp
+	comp[][][][0] = {{{0, 1, 2}, {3, 4, 5}, {6, 7, 8}}}
+	comp[][][][1] = {{{27, 28, 29}, {30, 31, 32}, {33, 34, 35}}}
+	comp[][][][2] = {{{54, 55, 56}, {57, 58, 59}, {60, 61, 62}}}
+	CHECK_EQUAL_WAVES(wv, comp)
+
+	DeleteWavePoint(wv, LAYERS, 0)
+	CHECK_EQUAL_VAR(DimSize(wv, ROWS), 3)
+	CHECK_EQUAL_VAR(DimSize(wv, COLS), 3)
+	CHECK_EQUAL_VAR(DimSize(wv, LAYERS), 0)
+	CHECK_EQUAL_VAR(DimSize(wv, CHUNKS), 3)
+
+	Make/O/FREE/N=(3, 3, 3, 3) wv
+	wv = p + DimSize(wv, COLS) * q + DimSize(wv, COLS) * DimSize(wv, LAYERS) * r +  + DimSize(wv, COLS) * DimSize(wv, LAYERS) * DimSize(wv, CHUNKS) * s
+
+	DeleteWavePoint(wv, CHUNKS, 1)
+	Make/O/FREE/N=(3, 3, 3, 2) comp
+	comp[][][][0] = {{{0, 1, 2}, {3, 4, 5}, {6, 7, 8}}, {{9, 10, 11}, {12, 13, 14}, {15, 16, 17}}, {{18, 19, 20}, {21, 22, 23}, {24, 25, 26}}}
+	comp[][][][1] = {{{54, 55, 56}, {57, 58, 59}, {60, 61, 62}}, {{63, 64, 65}, {66, 67, 68}, {69, 70, 71}}, {{72, 73, 74}, {75, 76, 77}, {78, 79, 80}}}
+	CHECK_EQUAL_WAVES(wv, comp)
+
+	DeleteWavePoint(wv, CHUNKS, 1)
+	Make/O/FREE/N=(3, 3, 3, 1) comp
+	comp[][][][0] = {{{0, 1, 2}, {3, 4, 5}, {6, 7, 8}}, {{9, 10, 11}, {12, 13, 14}, {15, 16, 17}}, {{18, 19, 20}, {21, 22, 23}, {24, 25, 26}}}
+	CHECK_EQUAL_WAVES(wv, comp)
+
+	DeleteWavePoint(wv, CHUNKS, 0)
+	CHECK_EQUAL_VAR(DimSize(wv, ROWS), 3)
+	CHECK_EQUAL_VAR(DimSize(wv, COLS), 3)
+	CHECK_EQUAL_VAR(DimSize(wv, LAYERS), 3)
+	CHECK_EQUAL_VAR(DimSize(wv, CHUNKS), 0)
+End
+/// @}
