@@ -3902,3 +3902,26 @@ Function/S GetHistoryNotebookText()
 
 	return S_Selection
 End
+
+/// @brief Helper function for try/catch with AbortOnRTE
+///
+/// Not clearing the RTE before calling `AbortOnRTE` will always trigger the RTE no
+/// matter what you do in that line.
+///
+/// Usage:
+/// \rst
+/// .. code-block:: igorpro
+///
+///    try
+///       ClearRTError()
+///       myFunc(); AbortOnRTE
+///    catch
+///      err = GetRTError(1)
+///    endtry
+///
+/// \endrst
+threadsafe Function ClearRTError()
+
+	variable err = GetRTError(1)
+	DEBUGPRINT_TS("Clearing RTE", var = err)
+End

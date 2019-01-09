@@ -210,7 +210,7 @@ Function TPM_BkrdTPFuncMD(s)
 						WAVE/WAVE NIDataWave = GetHardwareDataWave(panelTitle)
 
 						try
-
+							ClearRTError()
 							tpInput.activeADCs = V_FIFOnchans
 
 							for(j = 0; j < V_FIFOnchans; j += 1)

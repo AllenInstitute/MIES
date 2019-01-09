@@ -973,6 +973,7 @@ Function AI_SelectMultiClamp(panelTitle, headStage)
 	debugOnError = DisableDebugOnError()
 
 	try
+		ClearRTError()
 		MCC_SelectMultiClamp700B(mccSerial, channel); AbortOnRTE
 	catch
 		errorCode = GetRTError(1)

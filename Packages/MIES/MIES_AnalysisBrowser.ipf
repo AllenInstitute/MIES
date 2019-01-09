@@ -468,6 +468,7 @@ static Function AB_LoadDataWrapper(tmpDFR, expFilePath, datafolderPath, listOfNa
 
 	// also with "/Q" LoadData still complains if the subfolder path does not exist
 	try
+		ClearRTError()
 		GetFileFolderInfo/Q/Z expFileOrFolder
 		if(V_isFile)
 			LoadData/Q/R/L=(typeFlags)/S=dataFolderPath/J=listOfNames/O=1 expFileOrFolder; AbortOnRTE

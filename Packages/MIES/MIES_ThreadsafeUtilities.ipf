@@ -30,6 +30,7 @@ Function TS_GetNewestFromThreadQueue(tgID, varName)
 
 	for(;;)
 		try
+			ClearRTError()
 			DFREF dfr = ThreadGroupGetDFR(tgID, TS_GET_REPEAT_TIMEOUT_IN_MS); AbortOnRTE
 		catch
 			err = GetRTError(1)

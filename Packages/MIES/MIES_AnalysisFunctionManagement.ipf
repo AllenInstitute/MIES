@@ -98,6 +98,7 @@ Function AFM_CallAnalysisFunctions(panelTitle, eventType)
 
 		ret = NaN
 		try
+			ClearRTError()
 			if(valid_f1)
 				ret = f1(panelTitle, eventType, ITCDataWave, i); AbortOnRTE
 			elseif(valid_f2)
