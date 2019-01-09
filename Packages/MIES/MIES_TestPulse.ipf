@@ -125,8 +125,8 @@ Function TP_StoreFullWave(panelTitle, dataAcqOrTP, [fifopos])
 		ASSERT(!ParamIsDefault(fifopos), "In DAQ mode fifopos must be given")
 
 		WAVE ADCmode = GetADCTypesFromConfig(config)
-		FindValue/I=(DAQ_CHANNEL_TYPE_TP) ADCmode
-		gotTPChannels = (V_Value != -1)
+
+		gotTPChannels = GotTPChannelsOnADCs(paneltitle)
 
 		if(gotTPChannels)
 

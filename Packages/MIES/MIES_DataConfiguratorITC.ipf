@@ -74,10 +74,7 @@ Function DC_ConfigureDataForITC(panelTitle, dataAcqOrTP, [multiDevice])
 
 	DC_PlaceDataInITCChanConfigWave(panelTitle, dataAcqOrTP)
 
-	WAVE ITCChanConfigWave = GetITCChanConfigWave(panelTitle)
-	WAVE ADCmode = GetADCTypesFromConfig(ITCChanConfigWave)
-	FindValue/I=(DAQ_CHANNEL_TYPE_TP) ADCmode
-	gotTPChannels = (V_Value != -1)
+	gotTPChannels = GotTPChannelsOnADCs(paneltitle)
 
 	if(dataAcqOrTP == TEST_PULSE_MODE || gotTPChannels)
 		TP_CreateTestPulseWave(panelTitle)
@@ -85,6 +82,7 @@ Function DC_ConfigureDataForITC(panelTitle, dataAcqOrTP, [multiDevice])
 
 	DC_PlaceDataInHardwareDataWave(panelTitle, numActiveChannels, dataAcqOrTP, multiDevice)
 
+	WAVE ITCChanConfigWave = GetITCChanConfigWave(panelTitle)
 	WAVE ADCs = GetADCListFromConfig(ITCChanConfigWave)
 	DC_UpdateHSProperties(panelTitle, ADCs)
 

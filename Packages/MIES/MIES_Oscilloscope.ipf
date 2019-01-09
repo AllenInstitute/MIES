@@ -463,7 +463,7 @@ Function SCOPE_UpdateOscilloscopeData(panelTitle, dataAcqOrTP, [chunk, fifoPos, 
 
 	STRUCT TPAnalysisInput tpInput
 	variable i, j
-	variable gotTPChannels, numADCs, numDACs, tpLengthPoints, tpStart, tpEnd, tpStartPos
+	variable tpChannels, numADCs, numDACs, tpLengthPoints, tpStart, tpEnd, tpStartPos
 	variable headstage, fifoLatest
 
 	variable hardwareType = GetHardwareType(panelTitle)
@@ -501,10 +501,9 @@ Function SCOPE_UpdateOscilloscopeData(panelTitle, dataAcqOrTP, [chunk, fifoPos, 
 
 	WAVE config = GetITCChanConfigWave(panelTitle)
 	WAVE ADCmode = GetADCTypesFromConfig(config)
-	FindValue/I=(DAQ_CHANNEL_TYPE_TP) ADCmode
-	gotTPChannels = (V_Value != -1)
+	tpChannels = GetNrOfTypedChannels(ADCmode, DAQ_CHANNEL_TYPE_TP)
 
-	if(gotTPChannels)
+	if(tpChannels)
 		WAVE ADCs = GetADCListFromConfig(config)
 		WAVE hsProp = GetHSProperties(panelTitle)
 		NVAR duration = $GetTestpulseDuration(panelTitle)
@@ -524,7 +523,7 @@ Function SCOPE_UpdateOscilloscopeData(panelTitle, dataAcqOrTP, [chunk, fifoPos, 
 		tpInput.baselineFrac = baselineFrac
 		tpInput.tpLengthPoints = tpLengthPoints
 		tpInput.readTimeStamp = ticks * TICKS_TO_SECONDS
-		tpInput.activeADCs = GetNrOfTypedChannels(ADCmode, DAQ_CHANNEL_TYPE_TP)
+		tpInput.activeADCs = tpChannels
 
 		tpStart = trunc(fifoPosGlobal / tpLengthPoints)
 		tpEnd = trunc(fifoLatest / tpLengthPoints)

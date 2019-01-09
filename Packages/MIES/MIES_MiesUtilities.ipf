@@ -279,6 +279,20 @@ static Function/WAVE GetTypeListFromITCConfig(config, channelType)
 	return activeChannels
 End
 
+/// @brief Checks if a channel of TP type exists on ADCs
+///
+/// @param panelTitle device
+///
+/// @return 1 if TP type present, 0 otherwise
+Function GotTPChannelsOnADCs(panelTitle)
+	string panelTitle
+
+	WAVE config = GetITCChanConfigWave(panelTitle)
+	WAVE ADCmode = GetADCTypesFromConfig(config)
+	FindValue/I=(DAQ_CHANNEL_TYPE_TP) ADCmode
+	return (V_Value != -1)
+End
+
 /// @brief Return the dimension label for the special, aka non-unique, controls
 Function/S GetSpecialControlLabel(channelType, controlType)
 	variable channelType, controlType

@@ -74,11 +74,7 @@ Function DQM_FIFOMonitor(s)
 				isFinished = IsNaN(fifoLatest)
 
 				// Update ActiveChunk Entry for ITC, not used in DAQ mode
-				WAVE config = GetITCChanConfigWave(panelTitle)
-				WAVE ADCmode = GetADCTypesFromConfig(config)
-				FindValue/I=(DAQ_CHANNEL_TYPE_TP) ADCmode
-				gotTPChannels = (V_Value != -1)
-
+				gotTPChannels = GotTPChannelsOnADCs(paneltitle)
 				if(gotTPChannels)
 					tpLengthPoints = TP_GetTestPulseLengthInPoints(panelTitle, DATA_ACQUISITION_MODE)
 					lastTP = trunc(fifoLatest / tpLengthPoints) - 1
