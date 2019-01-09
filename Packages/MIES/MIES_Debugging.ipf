@@ -538,7 +538,7 @@ Function GetSizeOfAllWavesInExperiment()
 
 	string allWaves = GetListOfObjects($"root:", ".*", fullPath=1, recursive=1)
 
-	allWaves = TextWaveToList(GetUniqueTextEntries(ListToTextWave(allWaves, ";")), ";")
+	allWaves = GetUniqueTextEntriesFromList(allWaves)
 	variable numWaves = ItemsInList(allWaves)
 
 	Make/T/N=(numWaves, 2)/O list

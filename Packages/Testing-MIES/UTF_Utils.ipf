@@ -1630,3 +1630,127 @@ Function SNWN_FloatFormatWithZeros()
 End
 
 /// @}
+
+/// GetUniqueEntries*
+/// @{
+
+Function GUE_WorksWithEmpty()
+
+	Make/N=0 wv
+
+	WAVE/Z result = GetUniqueEntries(wv)
+	CHECK_WAVE(result, NUMERIC_WAVE, minorType=FLOAT_WAVE)
+	CHECK_EQUAL_VAR(DimSize(wv, ROWS), 0)
+End
+
+Function GUE_WorksWithOne()
+
+	Make/N=1 wv
+
+	WAVE/Z result = GetUniqueEntries(wv)
+	CHECK_EQUAL_WAVES(result, wv)
+End
+
+Function GUE_RemovesSpecialValues()
+
+	Make/N=3 wv
+
+	wv[1] = Inf
+	wv[2] = NaN
+
+	WAVE/Z result = GetUniqueEntries(wv)
+	CHECK_WAVE(result, NUMERIC_WAVE, minorType=FLOAT_WAVE)
+	CHECK_EQUAL_WAVES(wv, {0})
+End
+
+Function GUE_BailsOutWith2D()
+
+	Make/N=(1, 2) wv
+
+	try
+		WAVE/Z result = GetUniqueEntries(wv)
+		FAIL()
+	catch
+		PASS()
+	endtry
+End
+
+Function GUE_WorksWithTextEmpty()
+
+	Make/T/N=0 wv
+
+	WAVE/Z result = GetUniqueEntries(wv)
+	CHECK_WAVE(result, TEXT_WAVE)
+	CHECK_EQUAL_VAR(DimSize(wv, ROWS), 0)
+End
+
+Function GUE_WorksWithTextOne()
+
+	Make/T/N=1 wv
+
+	WAVE/Z result = GetUniqueEntries(wv)
+	CHECK_EQUAL_WAVES(result, wv)
+End
+
+Function GUE_IgnoresCase()
+
+	Make/T wv = {"a", "A"}
+
+	WAVE/Z result = GetUniqueEntries(wv, caseSensitive=0)
+	CHECK_EQUAL_TEXTWAVES(result, {"a"})
+End
+
+Function GUE_HandlesCase()
+
+	Make/T wv = {"a", "A"}
+
+	WAVE/Z result = GetUniqueEntries(wv, caseSensitive=1)
+	CHECK_EQUAL_TEXTWAVES(result, {"a", "A"})
+End
+
+Function GUE_BailsOutWithText2D()
+
+	Make/T/N=(1, 2) wv
+
+	try
+		WAVE/Z result = GetUniqueEntries(wv)
+		FAIL()
+	catch
+		PASS()
+	endtry
+End
+
+Function GUE_ListWorks1()
+
+	string input, expected, result
+
+	input = "a;A;"
+	expected = "a;"
+
+	result = GetUniqueTextEntriesFromList(input, caseSensitive=0)
+	CHECK_EQUAL_STR(result, expected)
+End
+
+Function GUE_ListWorks2()
+
+	string input, expected, result
+
+	input = "a;A;"
+	expected = input
+
+	result = GetUniqueTextEntriesFromList(input, caseSensitive=1)
+	CHECK_EQUAL_STR(result, expected)
+End
+
+Function GUE_ListWorksWithSep()
+
+	string input, expected, result
+
+	input = "a-A-a"
+	expected = "a-A-"
+
+	result = GetUniqueTextEntriesFromList(input, caseSensitive=1, sep="-")
+	CHECK_EQUAL_STR(result, expected)
+End
+
+/// @}
