@@ -444,6 +444,11 @@ Function SCOPE_UpdateOscilloscopeData(panelTitle, dataAcqOrTP, [chunk, fifoPos, 
 	string panelTitle
 	variable dataAcqOrTP, chunk, fifoPos, deviceID
 
+	STRUCT TPAnalysisInput tpInput
+	variable i, j
+	variable TPChannels, numDACs, tpLengthPoints, tpStart, tpEnd, tpStartPos
+	variable headstage, fifoLatest
+
 	variable hardwareType = GetHardwareType(panelTitle)
 	switch(hardwareType)
 		case HARDWARE_ITC_DAC:
@@ -464,14 +469,75 @@ Function SCOPE_UpdateOscilloscopeData(panelTitle, dataAcqOrTP, [chunk, fifoPos, 
 			break;
 	endswitch
 
-	if(dataAcqOrTP == TEST_PULSE_MODE)
+	WAVE GUIState = GetDA_EphysGuiStateNum(panelTitle)
+	if(GUIState[0][%check_Settings_TP_SaveTP])
+		TP_StoreFullWave(panelTitle, dataAcqOrTP, fifopos=fifopos)
+	endif
 
-		WAVE GUIState = GetDA_EphysGuiStateNum(panelTitle)
-		if(GUIState[0][%check_Settings_TP_SaveTP])
-			TP_StoreFullWave(panelTitle)
-		endif
+	NVAR fifoPosGlobal = $GetFifoPosition(panelTitle)
+
+	tpLengthPoints = TP_GetTestPulseLengthInPoints(panelTitle, dataAcqOrTP)
+
+	fifoLatest = (dataAcqOrTP == TEST_PULSE_MODE) ? tpLengthPoints : fifoPos
+
+	TPChannels = DC_NrTPChannelsPresent(panelTitle, DATA_ACQUISITION_MODE)
+	if(TPChannels)
+		WAVE ITCChanConfigWave = GetITCChanConfigWave(panelTitle)
+		WAVE ADCs = GetADCListFromConfig(ITCChanConfigWave)
+		WAVE hsProp = GetHSProperties(panelTitle)
+		NVAR duration = $GetTestpulseDuration(panelTitle)
+		NVAR baselineFrac = $GetTestpulseBaselineFraction(panelTitle)
+
+		WAVE OscilloscopeData = GetOscilloscopeWave(panelTitle)
+		numDACs = DimSize(GetDACListFromConfig(ITCChanConfigWave), ROWS)
+
+		// note: currently this works for multiplier = 1 only, see DC_PlaceDataInHardwareDataWave
+		Make/FREE/N=(tpLengthPoints) channelData
+		WAVE tpInput.data = channelData
+		CopyScales OscilloscopeData channelData
+
+		tpInput.panelTitle = panelTitle
+		tpInput.duration = duration
+		tpInput.baselineFrac = baselineFrac
+		tpInput.tpLengthPoints = tpLengthPoints
+		tpInput.readTimeStamp = ticks * TICKS_TO_SECONDS
+		tpInput.activeADCs = TPChannels
+
+		tpStart = trunc(fifoPosGlobal / tpLengthPoints)
+		tpEnd = trunc(fifoLatest / tpLengthPoints)
+		Make/FREE/D/N=(tpEnd - tpStart) tpMarker
+		tpMarker[] = GetNonreproduciblerandom()
+
+		for(i = tpStart;i < tpEnd; i += 1)
+
+			tpInput.measurementMarker = tpMarker[i - tpStart]
+			tpStartPos = i * tpLengthPoints
+
+			for(j = 0; j < numDACs; j += 1)
+				if(DC_IsChannelInTPMode(panelTitle, dataAcqOrTP, j))
+
+					MultiThread channelData[] = OscilloscopeData[tpStartPos + p][numDACs + j]
+
+					headstage = AFH_GetHeadstageFromADC(panelTitle, ADCs[j])
+					if(hsProp[headstage][%ClampMode] == I_CLAMP_MODE)
+						NVAR clampAmp=$GetTPAmplitudeIC(panelTitle)
+					else
+						NVAR clampAmp=$GetTPAmplitudeVC(panelTitle)
+					endif
+					tpInput.clampAmp = clampAmp
+					tpInput.clampMode = hsProp[headstage][%ClampMode]
+					tpInput.hsIndex = headstage
+					TP_SendToAnalysis(tpInput)
+				endif
+			endfor
+
+		endfor
 
 	endif
+
+	fifoPosGlobal = fifoPos
+
+	ASYNC_ThreadReadOut()
 
 End
 
@@ -548,6 +614,8 @@ static Function SCOPE_ITC_UpdateOscilloscope(panelTitle, dataAcqOrTP, chunk, fif
 	elseif(dataAcqOrTP == DATA_ACQUISITION_MODE)
 
 		ASSERT(EqualWaves(ITCDataWave, OscilloscopeData, 512), "ITCDataWave and OscilloscopeData have differing dimensions")
+
+		// fifopos correction for ITC
 		fifoPos += GetDataOffset(ITCChanConfigWave)
 
 		if(fifoPos == 0 || !IsFinite(fifoPos))
@@ -569,7 +637,6 @@ static Function SCOPE_ITC_UpdateOscilloscope(panelTitle, dataAcqOrTP, chunk, fif
 
 		Multithread OscilloscopeData[fifoPosGlobal, fifoPos - 1][startOfADColumns, startOfADColumns + numEntries - 1] = ITCDataWave[p][q] / gain[q - startOfADColumns]
 
-		fifoPosGlobal = fifoPos
 	else
 		ASSERT(0, "Invalid dataAcqOrTP value")
 	endif

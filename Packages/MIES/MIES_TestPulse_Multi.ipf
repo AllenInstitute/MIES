@@ -149,11 +149,9 @@ Function TPM_BkrdTPFuncMD(s)
 	STRUCT BackgroundStruct &s
 
 	variable i, j, deviceID, fifoPos, hardwareType, checkAgain, updateInt, endOfPulse
-	variable pointsCompletedInITCDataWave, activeChunk, now
-	variable channelNr, startOfADColumns, numEntries, tpLengthPoints, err, headstage
+	variable fifoLatest, lastTP, now
+	variable channelNr, startOfADColumns, tpLengthPoints, err
 	string panelTitle, fifoChannelName, fifoName, errMsg
-
-	STRUCT TPAnalysisInput tpInput
 
 	variable debTime
 
@@ -178,22 +176,6 @@ Function TPM_BkrdTPFuncMD(s)
 		hardwareType = ActiveDeviceList[i][%HardwareType]
 		panelTitle = HW_GetMainDeviceName(hardwareType, deviceID)
 
-		DFREF dfrTP = GetDeviceTestPulse(panelTitle)
-		WAVE ITCChanConfigWave = GetITCChanConfigWave(panelTitle)
-		WAVE ADCs = GetADCListFromConfig(ITCChanConfigWave)
-		WAVE hsProp = GetHSProperties(panelTitle)
-		NVAR duration = $GetTestpulseDuration(panelTitle)
-		NVAR baselineFrac = $GetTestpulseBaselineFraction(panelTitle)
-		tpLengthPoints = TP_GetTestPulseLengthInPoints(panelTitle, TEST_PULSE_MODE)
-
-		tpInput.panelTitle = panelTitle
-		tpInput.duration = duration
-		tpInput.baselineFrac = baselineFrac
-		NewRandomSeed()
-		tpInput.measurementMarker = Getreproduciblerandom()
-		tpInput.tpLengthPoints = tpLengthPoints
-		tpInput.readTimeStamp = ticks * TICKS_TO_SECONDS
-
 		switch(hardwareType)
 			case HARDWARE_NI_DAC:
 				// Pull data until end of FIFO, after BGTask finishes Graph shows only last update
@@ -211,28 +193,12 @@ Function TPM_BkrdTPFuncMD(s)
 
 						try
 							ClearRTError()
-							tpInput.activeADCs = V_FIFOnchans
-
 							for(j = 0; j < V_FIFOnchans; j += 1)
 								fifoChannelName = StringByKey("NAME" + num2str(j), S_Info)
 								channelNr = str2num(fifoChannelName)
 								WAVE NIChannel = NIDataWave[channelNr]
 								FIFO2WAVE/R=[endOfPulse - datapoints, endOfPulse - 1] $fifoName, $fifoChannelName, NIChannel; AbortOnRTE
 								SetScale/P x, 0, DimDelta(NIChannel, ROWS) * 1000, "ms", NIChannel
-
-								headstage = AFH_GetHeadstageFromADC(panelTitle, ADCs[j])
-
-								WAVE tpInput.data = NIChannel
-								if(hsProp[headstage][%ClampMode] == I_CLAMP_MODE)
-									NVAR/SDFR=dfrTP clampAmp=amplitudeIC
-								else
-									NVAR/SDFR=dfrTP clampAmp=amplitudeVC
-								endif
-								tpInput.clampAmp = clampAmp
-								tpInput.clampMode = hsProp[headstage][%ClampMode]
-								tpInput.hsIndex = headstage
-								TP_SendToAnalysis(tpInput)
-
 							endfor
 
 							SCOPE_UpdateOscilloscopeData(panelTitle, TEST_PULSE_MODE, deviceID=deviceID)
@@ -298,51 +264,24 @@ Function TPM_BkrdTPFuncMD(s)
 
 			s.threadDeadCount = 0
 
-			pointsCompletedInITCDataWave = mod(fifoPos, DimSize(ITCDataWave, ROWS))
+			fifoLatest = mod(fifoPos, DimSize(ITCDataWave, ROWS))
 
 			// extract the last fully completed chunk
 			// for ITC only the last complete TP is evaluated, all earlier TPs get discarded
-			activeChunk = floor(pointsCompletedInITCDataWave / tpLengthPoints) - 1
+			tpLengthPoints = TP_GetTestPulseLengthInPoints(panelTitle, TEST_PULSE_MODE)
+			lastTP = trunc(fifoLatest / tpLengthPoints) - 1
 
 			// Ensures that the new TP chunk isn't the same as the last one.
 			// This is required to keep the TP buffer in sync.
-			if(activeChunk >= 0 && activeChunk != ActiveDeviceList[i][%ActiveChunk])
-				SCOPE_UpdateOscilloscopeData(panelTitle, TEST_PULSE_MODE, chunk=activeChunk)
-
-				WAVE OscilloscopeData = GetOscilloscopeWave(panelTitle)
-				startOfADColumns = DimSize(GetDACListFromConfig(ITCChanConfigWave), ROWS)
-				numEntries = DimSize(ADCs, ROWS)
-				Make/FREE/N=(DimSize(OscilloscopeData, ROWS)) channelData
-
-				tpInput.activeADCs = numEntries
-				WAVE tpInput.data = channelData
-
-				for(j = 0; j < numEntries; j += 1)
-					MultiThread channelData[] = OscilloscopeData[p][startOfADColumns + j]
-					CopyScales OscilloscopeData channelData
-
-					headstage = AFH_GetHeadstageFromADC(panelTitle, ADCs[j])
-
-					if(hsProp[headstage][%ClampMode] == I_CLAMP_MODE)
-						NVAR/SDFR=dfrTP clampAmp=amplitudeIC
-					else
-						NVAR/SDFR=dfrTP clampAmp=amplitudeVC
-					endif
-					tpInput.clampAmp = clampAmp
-					tpInput.clampMode = hsProp[headstage][%ClampMode]
-					tpInput.hsIndex = headstage
-					TP_SendToAnalysis(tpInput)
-
-				endfor
-
-				ActiveDeviceList[i][%ActiveChunk] = activeChunk
+			if(lastTP >= 0 && lastTP != ActiveDeviceList[i][%ActiveChunk])
+				SCOPE_UpdateOscilloscopeData(panelTitle, TEST_PULSE_MODE, chunk=lastTP)
+				ActiveDeviceList[i][%ActiveChunk] = lastTP
 			endif
 
 			break
 		endswitch
 
 		SCOPE_UpdateGraph(panelTitle)
-		ASYNC_ThreadReadOut()
 
 		if(GetKeyState(0) & ESCAPE_KEY)
 			DQ_StopOngoingDAQ(panelTitle)

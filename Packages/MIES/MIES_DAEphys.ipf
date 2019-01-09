@@ -1197,6 +1197,8 @@ Function DAP_OneTimeCallBeforeDAQ(panelTitle, runMode)
 #if (IgorVersion() >= 8.00)
 	NWB_StartThreadGroup()
 #endif
+
+	ASYNC_Start(ThreadProcessorCount, disableTask=1)
 End
 
 static Function DAP_ResetClampModeTitle(panelTitle, ctrl)

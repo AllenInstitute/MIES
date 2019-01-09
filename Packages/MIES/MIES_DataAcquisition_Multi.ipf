@@ -20,7 +20,7 @@ Function DQM_FIFOMonitor(s)
 	STRUCT WMBackgroundStruct &s
 
 	variable deviceID, isFinished, hardwareType
-	variable i, j, fifoPos, fifoEnd, result, channel, stopCollectionPoint
+	variable i, j, err, fifoLatest, result, channel, stopCollectionPoint, lastTP, tpLengthPoints, gotTPChannels
 	string panelTitle, fifoChannelName, fifoName, errMsg
 	WAVE ActiveDeviceList = GetDQMActiveDeviceList()
 	Make/FREE/N=(0) wNIReadOut
@@ -29,8 +29,10 @@ Function DQM_FIFOMonitor(s)
 		deviceID   = ActiveDeviceList[i][%DeviceID]
 		hardwareType = ActiveDeviceList[i][%HardwareType]
 		panelTitle = HW_GetMainDeviceName(hardwareType, deviceID)
+
 		switch(hardwareType)
 			case HARDWARE_NI_DAC:
+
 				try
 					NVAR fifoPosGlobal = $GetFifoPosition(panelTitle)
 					fifoName = GetNIFIFOName(deviceID)
@@ -40,40 +42,60 @@ Function DQM_FIFOMonitor(s)
 						continue // no new data -> next device
 					endif
 
-					stopCollectionPoint = ActiveDeviceList[i][2] // stopCollectionPoint
-					fifoEnd = min(V_FIFOChunks, stopCollectionPoint)
-					isFinished = (fifoEnd == stopCollectionPoint) ? 1 : 0
+					stopCollectionPoint = ActiveDeviceList[i][%stopCollectionPoint]
+					fifoLatest = min(V_FIFOChunks, stopCollectionPoint)
+					isFinished = (fifoLatest == stopCollectionPoint) ? 1 : 0
 
 					WAVE/WAVE NIDataWave = GetHardwareDataWave(panelTitle)
 					for(j = 0; j < V_FIFOnchans; j += 1)
+
 						fifoChannelName = StringByKey("NAME" + num2str(j), S_Info)
 						channel = str2num(fifoChannelName)
 						WAVE NIChannel = NIDataWave[channel]
-						FIFO2WAVE/R=[fifoPosGlobal, fifoEnd - 1] $fifoName, $fifoChannelName, wNIReadOut; AbortOnRTE
-						multithread NIChannel[fifoPosGlobal, fifoEnd - 1] = wNIReadOut[p - fifoPosGlobal]
+						FIFO2WAVE/R=[fifoPosGlobal, fifoLatest - 1] $fifoName, $fifoChannelName, wNIReadOut; AbortOnRTE
+						multithread NIChannel[fifoPosGlobal, fifoLatest - 1] = wNIReadOut[p - fifoPosGlobal]
 						SetScale/P x, 0, DimDelta(wNIReadOut, ROWS) * 1000, "ms", NIChannel
+
 					endfor
-					SCOPE_UpdateOscilloscopeData(panelTitle, DATA_ACQUISITION_MODE, deviceID=deviceID, fifoPos=fifoEnd)
-					fifoPosGlobal = fifoEnd
-					fifoPos = fifoEnd
 				catch
 					errMsg = GetRTErrMessage()
-					ASSERT(0, "Reading from NI device " + panelTitle + " failed with code: " + num2str(getRTError(1)) + "\r" + errMsg)
+					err = getRTError(1)
+					DQ_StopOngoingDAQ(panelTitle, startTPAfterDAQ = 0)
+					if(err == 18)
+						ASSERT(0, "Acquisition FIFO overflow, data lost. This may happen if the computer is too slow.")
+					else
+						ASSERT(0, "Error reading data from NI device: code " + num2str(err) + "\r" + errMsg)
+					endif
 				endtry
 				break
 			case HARDWARE_ITC_DAC:
 				NVAR tgID = $GetThreadGroupIDFIFO(panelTitle)
-				fifoPos = TS_GetNewestFromThreadQueue(tgID, "fifoPos")
-				isFinished = IsNaN(fifoPos)
+				fifoLatest = TS_GetNewestFromThreadQueue(tgID, "fifoPos")
+				isFinished = IsNaN(fifoLatest)
 
-				SCOPE_UpdateOscilloscopeData(panelTitle, DATA_ACQUISITION_MODE, fifoPos=fifoPos)
+				// Update ActiveChunk Entry for ITC, not used in DAQ mode
+				WAVE config = GetITCChanConfigWave(panelTitle)
+				WAVE ADCmode = GetADCTypesFromConfig(config)
+				FindValue/I=(DAQ_CHANNEL_TYPE_TP) ADCmode
+				gotTPChannels = (V_Value != -1)
+
+				if(gotTPChannels)
+					tpLengthPoints = TP_GetTestPulseLengthInPoints(panelTitle, DATA_ACQUISITION_MODE)
+					lastTP = trunc(fifoLatest / tpLengthPoints) - 1
+					if(lastTP >= 0 && lastTP != ActiveDeviceList[i][%ActiveChunk])
+						ActiveDeviceList[i][%ActiveChunk] = lastTP
+					endif
+				endif
+
 				break
 		endswitch
+
+		SCOPE_UpdateOscilloscopeData(panelTitle, DATA_ACQUISITION_MODE, deviceID=deviceID, fifoPos=fifoLatest)
 
 		result = AFM_CallAnalysisFunctions(panelTitle, MID_SWEEP_EVENT)
 
 		if(result == ANALYSIS_FUNC_RET_REPURP_TIME)
-			UpdateLeftOverSweepTime(panelTitle, fifoPos)
+			UpdateLeftOverSweepTime(panelTitle, fifoLatest)
 			isFinished = 1
 		elseif(result == ANALYSIS_FUNC_RET_EARLY_STOP)
 			isFinished = 1
@@ -120,6 +142,7 @@ Function DQM_TerminateOngoingDAQHelper(panelTitle)
 	// determine if device removed was the last device on the list, if yes stop the background function
 	if(DimSize(ActiveDeviceList, ROWS) == 0)
 		CtrlNamedBackground $TASKNAME_FIFOMONMD, stop
+		ASYNC_Stop(timeout=10)
 	endif
 END
 

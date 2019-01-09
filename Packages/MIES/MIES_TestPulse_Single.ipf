@@ -56,11 +56,7 @@ Function TPS_TestPulseFunc(s)
 	HW_StopAcq(HARDWARE_ITC_DAC, ITCDeviceIDGlobal, prepareForDAQ=1)
 	SCOPE_UpdateOscilloscopeData(panelTitle, TEST_PULSE_MODE)
 
-	TPS_SendToAsyncAnalysis(panelTitle, readTimeStamp)
-
 	SCOPE_UpdateGraph(panelTitle)
-
-	ASYNC_ThreadReadOut()
 
 	if(GetKeyState(0) & ESCAPE_KEY)
 		DQ_StopOngoingDAQ(panelTitle)
@@ -140,10 +136,7 @@ Function TPS_StartTestPulseForeground(panelTitle, [elapsedTime])
 		HW_StopAcq(HARDWARE_ITC_DAC, ITCDeviceIDGlobal, prepareForDAQ=1)
 		SCOPE_UpdateOscilloscopeData(panelTitle, TEST_PULSE_MODE)
 
-		TPS_SendToAsyncAnalysis(panelTitle, readTimeStamp)
-
 		SCOPE_UpdateGraph(panelTitle)
-		ASYNC_ThreadReadOut()
 
 		if(IsFinite(refTime))
 			timeLeft = max((refTime + elapsedTime) - RelativeNowHighPrec(), 0)
@@ -164,59 +157,4 @@ Function TPS_StartTestPulseForeground(panelTitle, [elapsedTime])
 	ASYNC_Stop(timeout=10)
 
 	return 1
-End
-
-/// @brief splits single device TP acquistion to channels and sends each to TP analysis, see TP_SendToAnalysis()
-/// OscilloscopeData must hold the current TP
-///
-/// @param panelTitle title of current device panel
-///
-/// @param timeStamp time of TP acquisition in s
-static Function TPS_SendToAsyncAnalysis(panelTitle, timeStamp)
-	string panelTitle
-	variable timeStamp
-
-	STRUCT TPAnalysisInput tpInput
-
-	variable j, startOfADColumns, numADCs, headstage
-
-	DFREF dfrTP = GetDeviceTestPulse(panelTitle)
-	NVAR duration = $GetTestpulseDuration(panelTitle)
-	NVAR baselineFrac = $GetTestpulseBaselineFraction(panelTitle)
-	WAVE hsProp = GetHSProperties(panelTitle)
-
-	WAVE OscilloscopeData = GetOscilloscopeWave(panelTitle)
-	WAVE ITCChanConfigWave = GetITCChanConfigWave(panelTitle)
-	WAVE ADCs = GetADCListFromConfig(ITCChanConfigWave)
-	startOfADColumns = DimSize(GetDACListFromConfig(ITCChanConfigWave), ROWS)
-	numADCs = DimSize(ADCs, ROWS)
-	Make/FREE/N=(DimSize(OscilloscopeData, ROWS)) channelData
-
-	tpInput.panelTitle = panelTitle
-	tpInput.duration = duration
-	tpInput.baselineFrac = baselineFrac
-	NewRandomSeed()
-	tpInput.measurementMarker = Getreproduciblerandom()
-	tpInput.tpLengthPoints = TP_GetTestPulseLengthInPoints(panelTitle, TEST_PULSE_MODE)
-	tpInput.readTimeStamp = timeStamp
-	tpInput.activeADCs = numADCs
-	WAVE tpInput.data = channelData
-
-	for(j = 0; j < numADCs; j += 1)
-
-		headstage = AFH_GetHeadstageFromADC(panelTitle, ADCs[j])
-		MultiThread channelData[] = OscilloscopeData[p][startOfADColumns + j]
-		CopyScales OscilloscopeData channelData
-
-		if(hsProp[headstage][%ClampMode] == I_CLAMP_MODE)
-			NVAR/SDFR=dfrTP clampAmp=amplitudeIC
-		else
-			NVAR/SDFR=dfrTP clampAmp=amplitudeVC
-		endif
-		tpInput.clampAmp = clampAmp
-		tpInput.clampMode = hsProp[headstage][%ClampMode]
-		tpInput.hsIndex = headstage
-		TP_SendToAnalysis(tpInput)
-	endfor
-
 End
