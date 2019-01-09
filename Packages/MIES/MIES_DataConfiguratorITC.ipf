@@ -1669,7 +1669,6 @@ static Function DC_GetStopCollectionPoint(panelTitle, dataAcqOrTP, setLengths)
 	ASSERT(0, "unknown mode")
 End
 
-
 /// @brief Returns 1 if a channel is set to TP, the check is through the
 /// stimset name from the GUI
 Function DC_GotTPChannelWhileDAQ(panelTitle)
@@ -1694,4 +1693,23 @@ Function DC_GotTPChannelWhileDAQ(panelTitle)
 	endfor
 
 	return 0
+End
+
+/// @brief Get the channel type of given headstage
+///
+/// @param panelTitle panel title
+/// @param headstage head stage
+///
+/// @return One of @ref DaqChannelTypeConstants
+Function DC_GetChannelTypefromHS(panelTitle, headstage)
+	string panelTitle
+	variable headstage
+
+	variable dac, row
+	WAVE config = GetITCChanConfigWave(panelTitle)
+
+	dac = AFH_GetDACFromHeadstage(panelTitle, headstage)
+	row = AFH_GetITCDataColumn(config, dac, ITC_XOP_CHANNEL_TYPE_DAC)
+	ASSERT(IsFinite(row), "Invalid column")
+	return config[row][%DAQChannelType]
 End
