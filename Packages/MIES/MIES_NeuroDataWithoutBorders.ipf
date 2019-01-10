@@ -500,6 +500,8 @@ static Function NWB_AppendStimset(locationID, stimsets, compressionMode)
 
 	variable i, numStimsets, numWaves
 
+	stimsets = GrepList(stimsets, "(?i)\\Q" + STIMSET_TP_WHILE_DAQ + "\\E", 1)
+
 	// process stimsets and dependent stimsets
 	stimsets = WB_StimsetRecursionForList(stimsets)
 	numStimsets = ItemsInList(stimsets)
