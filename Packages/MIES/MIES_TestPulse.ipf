@@ -492,6 +492,13 @@ static Function TP_AnalyzeTP(panelTitle, TPStorage, endRow)
 			continue
 		endif
 
+		// finish early on missing data
+		if(!IsFinite(TPStorage[startRow][headstage][%SteadyStateResistance])   \
+		   || !IsFinite(TPStorage[endRow][headstage][%SteadyStateResistance]))
+			TPStorage[0][headstage][%Rss_Slope] = NaN
+			continue
+		endif
+
 		try
 			ClearRTError()
 			V_FitError  = 0
