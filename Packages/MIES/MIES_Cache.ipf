@@ -93,6 +93,19 @@ Function/S CA_DistDAQCreateCacheKey(params)
 	return num2istr(crc) + "Version 2"
 End
 
+/// @brief Cache key generator for @c FindLevel in PA_CalculatePulseStartTimes()
+Function/S CA_PulseStartTimes(wv, totalOnsetDelay)
+	WAVE wv
+	variable totalOnsetDelay
+
+	variable crc
+
+	crc = WaveCRC(0, wv)
+	crc = StringCRC(crc, num2str(totalOnsetDelay))
+
+	return num2istr(crc) + "Version 1"
+End
+
 /// @brief Cache key generator for artefact removal ranges
 Function/S CA_ArtefactRemovalRangesKey(singleSweepDFR, sweepNo)
 	DFREF singleSweepDFR

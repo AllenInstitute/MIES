@@ -127,7 +127,14 @@ static Function/WAVE PA_CalculatePulseStartTimes(DA, totalOnsetDelay)
 	variable totalOnsetDelay
 
 	variable level, delta
+	string key
 	ASSERT(totalOnsetDelay >= 0, "Invalid onsetDelay")
+
+	key = CA_PulseStartTimes(DA, totalOnsetDelay)
+	WAVE/Z cache = CA_TryFetchingEntryFromCache(key)
+	if(WaveExists(cache))
+		return cache
+	endif
 
 	WaveStats/Q/M=1/R=(totalOnsetDelay, inf) DA
 	level = V_min + (V_Max - V_Min) * 0.1
@@ -146,6 +153,7 @@ static Function/WAVE PA_CalculatePulseStartTimes(DA, totalOnsetDelay)
 	// round to the last wave point
 	levels[] = levels[p] - mod(levels[p], delta)
 
+	CA_StoreEntryIntoCache(key, levels)
 	return levels
 End
 
