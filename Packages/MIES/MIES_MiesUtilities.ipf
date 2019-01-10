@@ -4794,7 +4794,7 @@ End
 ///
 /// @param dest permanent wave
 /// @param src  wave (free or permanent)
-Function/WAVE MoveWaveWithOverwrite(dest, src)
+Function MoveWaveWithOverwrite(dest, src)
 	WAVE dest, src
 
 	string path

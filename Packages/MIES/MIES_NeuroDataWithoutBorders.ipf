@@ -506,7 +506,7 @@ static Function NWB_AppendStimset(locationID, stimsets)
 	endfor
 
 	// process custom waves
-	WAVE/Z/WAVE wv = WB_CustomWavesFromStimSet(stimsetList = stimsets)
+	WAVE/WAVE wv = WB_CustomWavesFromStimSet(stimsetList = stimsets)
 	numWaves = DimSize(wv, ROWS)
 	for(i = 0; i < numWaves; i += 1)
 		NWB_WriteStimsetCustomWave(locationID, wv[i], 1)
@@ -942,14 +942,17 @@ static Function NWB_WriteStimsetTemplateWaves(locationID, stimSet, chunkedLayout
 
 	IPNWB#H5_CreateGroupsRecursively(locationID, "/general/stimsets", groupID = groupID)
 
-	// write also the stim set parameter waves if all three exist
-	WAVE/Z WP  = WB_GetWaveParamForSet(stimSet)
-	WAVE/Z WPT = WB_GetWaveTextParamForSet(stimSet)
-	WAVE/Z SegWvType = WB_GetSegWvTypeForSet(stimSet)
+	// write the stim set parameter waves only if all three exist
+	if(WB_StimsetIsFromThirdParty(stimSet))
+		WAVE/Z stimSetWave = WB_CreateAndGetStimSet(stimSet)
 
-	if(!WaveExists(WP) && !WaveExists(WPT) && !WaveExists(SegWvType))
-		// third party stim sets need to be written as we don't have parameter waves
-		WAVE stimSetWave = WB_CreateAndGetStimSet(stimSet)
+		if(!WaveExists(stimSetWave))
+			printf "The stimset \"%s\" can not be exported as it can not be recreated.\r", stimset
+			ControlWindowToFront()
+			HDF5CloseGroup groupID
+			return NaN
+		endif
+
 		stimset = NameOfWave(stimSetWave)
 		IPNWB#H5_WriteDataset(groupID, stimset, wv=stimSetWave, chunkedLayout=chunkedLayout, overwrite=1, writeIgorAttr=1)
 		// @todo remove once IP7 64bit is mandatory
@@ -960,9 +963,10 @@ static Function NWB_WriteStimsetTemplateWaves(locationID, stimSet, chunkedLayout
 		return NaN
 	endif
 
-	ASSERT(WaveExists(WP) && WaveExists(WPT) && WaveExists(SegWvType) , "Some stim set parameter waves are missing")
+	WAVE WP  = WB_GetWaveParamForSet(stimSet)
+	WAVE WPT = WB_GetWaveTextParamForSet(stimSet)
+	WAVE SegWvType = WB_GetSegWvTypeForSet(stimSet)
 
-	stimset = RemovePrefix(NameOfWave(WP), startStr = "WP_")
 	name = WB_GetParameterWaveName(stimset, STIMSET_PARAM_WP, nwbFormat = 1)
 	IPNWB#H5_WriteDataset(groupID, name, wv=WP, chunkedLayout=chunkedLayout, overwrite=1, writeIgorAttr=1)
 
