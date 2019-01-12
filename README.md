@@ -2,7 +2,7 @@
 
 MIES is a sweep based data acquisition tool written in Igor Pro.
 
-MIES has three primary user interfaces: The waveBuilder, DA_Ephys, and
+MIES has three primary user interfaces: waveBuilder, DA_Ephys, and
 dataBrowser. The waveBuilder is used to generate stimulus sets. The DA_Ephys
 GUI is used to control and observe data acquisition in real time.  The
 DataBrowser is used to browse acquired data. All three interfaces may be operated in parallel.
