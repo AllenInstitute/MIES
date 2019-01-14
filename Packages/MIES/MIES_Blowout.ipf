@@ -28,7 +28,7 @@ Function BWO_SelectDevice()
 	elseif(noOfLockedDevices == 1)
 	   if(interactiveMode)
 	     DoAlert 1, "Proceed with automated blowout routine?"
-	     if(!V_flag)
+	     if(V_flag != 1)
 	        return NaN
 	     endif
 	   endif
@@ -59,6 +59,8 @@ Function BWO_Go(panelTitle)
 	BWO_CheckAndClearPipettes(panelTitle)
 	// acquire blowout sweep
 	BWO_AcquireSweep(panelTitle)
+	
+	SaveExperiment
 End
 
 /// @brief Checks that MIES is correctly configured for automated blowout protocol
