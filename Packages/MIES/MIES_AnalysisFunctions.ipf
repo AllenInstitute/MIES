@@ -364,7 +364,7 @@ Function setVClampMode()
 
 	for(i=0; i<NUM_HEADSTAGES; i+=1)
 		if(statusHS[i])
-			PGC_SetAndActivateControl(DEFAULT_DEVICE, "slider_DataAcq_ActiveHeadstage", val = CHECKBOX_SELECTED)
+			PGC_SetAndActivateControl(DEFAULT_DEVICE, "slider_DataAcq_ActiveHeadstage", val = i)
 			ctrl = DAP_GetClampModeControl(V_CLAMP_MODE, i)
 			PGC_SetAndActivateControl(DEFAULT_DEVICE, ctrl, val = CHECKBOX_SELECTED)
 		endif
@@ -381,7 +381,7 @@ Function setIClampMode()
 
 	for(i=0; i<NUM_HEADSTAGES; i+=1)
 		if(statusHS[i])
-			PGC_SetAndActivateControl(DEFAULT_DEVICE, "slider_DataAcq_ActiveHeadstage", val = CHECKBOX_SELECTED)
+			PGC_SetAndActivateControl(DEFAULT_DEVICE, "slider_DataAcq_ActiveHeadstage", val = i)
 			ctrl = DAP_GetClampModeControl(I_CLAMP_MODE, i)
 			PGC_SetAndActivateControl(DEFAULT_DEVICE, ctrl, val = CHECKBOX_SELECTED)
 		endif
