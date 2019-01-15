@@ -617,8 +617,9 @@ StrConstant NWB_SOURCE_TTL_BIT = "TTLBit"
 /// @name Convenience constants for DAP_UpdateClampmodeTabs() and DAP_ChangeHeadStageMode()
 /// @anchor MCCSyncOverrides
 /// @{
-Constant SKIP_MCC_MIES_SYNCING = 1
-Constant DO_MCC_MIES_SYNCING   = 0
+Constant DO_MCC_MIES_SYNCING   = 0x0
+Constant SKIP_MCC_MIES_SYNCING = 0x1
+Constant NO_SLIDER_MOVEMENT    = 0x2
 /// @}
 
 /// Number of trials to find a suitable port for binding a ZeroMQ service
