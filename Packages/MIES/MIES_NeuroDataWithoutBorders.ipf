@@ -233,10 +233,10 @@ static Function/S NWB_GenerateDeviceDescription(panelTitle)
 	return desc
 End
 
-static Function NWB_AddDeviceSpecificData(locationID, panelTitle, [chunkedLayout, writeStoredTestPulses])
+static Function NWB_AddDeviceSpecificData(locationID, panelTitle, [compressionMode, writeStoredTestPulses])
 	variable locationID
 	string panelTitle
-	variable chunkedLayout, writeStoredTestPulses
+	variable compressionMode, writeStoredTestPulses
 
 	variable groupID, i, numEntries, refTime
 	string path, list, name, contents
@@ -249,7 +249,9 @@ static Function NWB_AddDeviceSpecificData(locationID, panelTitle, [chunkedLayout
 		writeStoredTestPulses = !!writeStoredTestPulses
 	endif
 
-	chunkedLayout = ParamIsDefault(chunkedLayout) ? 0 : !!chunkedLayout
+	if(ParamIsDefault(compressionMode))
+		compressionMode = IPNWB#GetNoCompression()
+	endif
 
 	IPNWB#AddDevice(locationID, panelTitle, NWB_GenerateDeviceDescription(panelTitle))
 
@@ -263,10 +265,10 @@ static Function NWB_AddDeviceSpecificData(locationID, panelTitle, [chunkedLayout
 
 	IPNWB#MarkAsCustomEntry(locationID, "/general/labnotebook")
 
-	IPNWB#H5_WriteDataset(groupID, "numericalValues", wv=numericalValues, writeIgorAttr=1, overwrite=1, chunkedLayout=chunkedLayout)
-	IPNWB#H5_WriteTextDataset(groupID, "numericalKeys", wvText=numericalKeys, writeIgorAttr=1, overwrite=1, chunkedLayout=chunkedLayout)
-	IPNWB#H5_WriteTextDataset(groupID, "textualValues", wvText=textualValues, writeIgorAttr=1, overwrite=1, chunkedLayout=chunkedLayout)
-	IPNWB#H5_WriteTextDataset(groupID, "textualKeys", wvText=textualKeys, writeIgorAttr=1, overwrite=1, chunkedLayout=chunkedLayout)
+	IPNWB#H5_WriteDataset(groupID, "numericalValues", wv=numericalValues, writeIgorAttr=1, overwrite=1, compressionMode = compressionMode)
+	IPNWB#H5_WriteTextDataset(groupID, "numericalKeys", wvText=numericalKeys, writeIgorAttr=1, overwrite=1, compressionMode = compressionMode)
+	IPNWB#H5_WriteTextDataset(groupID, "textualValues", wvText=textualValues, writeIgorAttr=1, overwrite=1, compressionMode = compressionMode)
+	IPNWB#H5_WriteTextDataset(groupID, "textualKeys", wvText=textualKeys, writeIgorAttr=1, overwrite=1, compressionMode = compressionMode)
 
 	HDF5CloseGroup/Z groupID
 	DEBUGPRINT_ELAPSED(refTime)
@@ -277,7 +279,7 @@ static Function NWB_AddDeviceSpecificData(locationID, panelTitle, [chunkedLayout
 	IPNWB#MarkAsCustomEntry(locationID, "/general/user_comment")
 
 	SVAR userComment = $GetUserComment(panelTitle)
-	IPNWB#H5_WriteTextDataset(groupID, "userComment", str=userComment, overwrite=1, chunkedLayout=chunkedLayout)
+	IPNWB#H5_WriteTextDataset(groupID, "userComment", str=userComment, overwrite=1, compressionMode = compressionMode)
 
 	HDF5CloseGroup/Z groupID
 	DEBUGPRINT_ELAPSED(refTime)
@@ -293,7 +295,7 @@ static Function NWB_AddDeviceSpecificData(locationID, panelTitle, [chunkedLayout
 	for(i = 0; i < numEntries; i += 1)
 		name = StringFromList(i, list)
 		WAVE/SDFR=dfr wv = $name
-		IPNWB#H5_WriteDataset(groupID, name, wv=wv, writeIgorAttr=1, overwrite=1, chunkedLayout=chunkedLayout)
+		IPNWB#H5_WriteDataset(groupID, name, wv=wv, writeIgorAttr=1, overwrite=1, compressionMode = compressionMode)
 	endfor
 
 	if(writeStoredTestPulses)
@@ -351,7 +353,7 @@ Function NWB_ExportAllData([overrideFilePath, writeStoredTestPulses, writeIgorHi
 	numEntries = ItemsInList(devicesWithContent)
 	for(i = 0; i < numEntries; i += 1)
 		panelTitle = StringFromList(i, devicesWithContent)
-		NWB_AddDeviceSpecificData(locationID, panelTitle, chunkedLayout=1, writeStoredTestPulses = writeStoredTestPulses)
+		NWB_AddDeviceSpecificData(locationID, panelTitle, compressionMode = IPNWB#GetChunkedCompression(), writeStoredTestPulses = writeStoredTestPulses)
 
 		DFREF dfr = GetDeviceDataPath(panelTitle)
 		list = GetListOfObjects(dfr, DATA_SWEEP_REGEXP)
@@ -366,7 +368,7 @@ Function NWB_ExportAllData([overrideFilePath, writeStoredTestPulses, writeIgorHi
 			WAVE/SDFR=dfr sweepWave = $name
 			WAVE configWave = GetConfigWave(sweepWave)
 			sweep = ExtractSweepNumber(name)
-			NWB_AppendSweepLowLevel(locationID, panelTitle, sweepWave, configWave, sweep, chunkedLayout=1)
+			NWB_AppendSweepLowLevel(locationID, panelTitle, sweepWave, configWave, sweep, compressionMode = IPNWB#GetChunkedCompression())
 			stimsetList += NWB_GetStimsetFromPanel(panelTitle, sweep)
 		endfor
 	endfor
@@ -483,7 +485,7 @@ static Function NWB_AppendStoredTestPulses(panelTitle, locationID)
 
 	for(i = 0; i < index; i += 1)
 		sprintf name, "StoredTestPulses_%d", i
-		IPNWB#H5_WriteDataset(locationID, name, wv = storedTP[i], chunkedLayout = 1, overwrite = 1, writeIgorAttr = 1)
+		IPNWB#H5_WriteDataset(locationID, name, wv = storedTP[i], compressionMode = IPNWB#GetChunkedCompression(), overwrite = 1, writeIgorAttr = 1)
 	endfor
 End
 
@@ -644,11 +646,11 @@ static Function/S NWB_GetStimsetFromSweepGeneric(sweep, numericalValues, textual
 	return stimsetList
 End
 
-static Function NWB_AppendSweepLowLevel(locationID, panelTitle, ITCDataWave, ITCChanConfigWave, sweep, [chunkedLayout])
+static Function NWB_AppendSweepLowLevel(locationID, panelTitle, ITCDataWave, ITCChanConfigWave, sweep, [compressionMode])
 	variable locationID
 	string panelTitle
 	WAVE ITCDataWave, ITCChanConfigWave
-	variable sweep, chunkedLayout
+	variable sweep, compressionMode
 
 	variable groupID, numEntries, i, j, ttlBits, dac, adc, col, refTime
 	variable ttlBit, hardwareType
@@ -657,7 +659,9 @@ static Function NWB_AppendSweepLowLevel(locationID, panelTitle, ITCDataWave, ITC
 
 	refTime = DEBUG_TIMER_START()
 
-	chunkedLayout = ParamIsDefault(chunkedLayout) ? 0 : !!chunkedLayout
+	if(ParamIsDefault(compressionMode))
+		compressionMode = IPNWB#GetNoCompression()
+	endif
 
 	NVAR session_start_time = $GetSessionStartTimeReadBack()
 
@@ -750,7 +754,7 @@ static Function NWB_AppendSweepLowLevel(locationID, panelTitle, ITCDataWave, ITC
 			WAVE params.data        = ExtractOneDimDataFromSweep(ITCChanConfigWave, ITCDataWave, col)
 			NWB_GetTimeSeriesProperties(params, tsp)
 			params.groupIndex    = IsFinite(params.groupIndex) ? params.groupIndex : IPNWB#GetNextFreeGroupIndex(locationID, path)
-			IPNWB#WriteSingleChannel(locationID, path, params, tsp, chunkedLayout=chunkedLayout)
+			IPNWB#WriteSingleChannel(locationID, path, params, tsp, compressionMode = compressionMode)
 		endif
 
 		DEBUGPRINT_ELAPSED(refTime)
@@ -764,7 +768,7 @@ static Function NWB_AppendSweepLowLevel(locationID, panelTitle, ITCDataWave, ITC
 			WAVE params.data        = ExtractOneDimDataFromSweep(ITCChanConfigWave, ITCDataWave, col)
 			NWB_GetTimeSeriesProperties(params, tsp)
 			params.groupIndex    = IsFinite(params.groupIndex) ? params.groupIndex : IPNWB#GetNextFreeGroupIndex(locationID, path)
-			IPNWB#WriteSingleChannel(locationID, path, params, tsp, chunkedLayout=chunkedLayout)
+			IPNWB#WriteSingleChannel(locationID, path, params, tsp, compressionMode = compressionMode)
 		endif
 
 		ClearWriteChannelParams(params)
@@ -828,7 +832,7 @@ static Function NWB_AppendSweepLowLevel(locationID, panelTitle, ITCDataWave, ITC
 				params.stimset       = StringFromList(ttlBit, listOfStimsets)
 				NWB_GetTimeSeriesProperties(params, tsp)
 				params.groupIndex    = IsFinite(params.groupIndex) ? params.groupIndex : IPNWB#GetNextFreeGroupIndex(locationID, path)
-				IPNWB#WriteSingleChannel(locationID, path, params, tsp, chunkedLayout=chunkedLayout)
+				IPNWB#WriteSingleChannel(locationID, path, params, tsp, compressionMode = compressionMode)
 			endfor
 		elseif(hardwareType == HARDWARE_NI_DAC)
 			WAVE params.data     = data
@@ -836,7 +840,7 @@ static Function NWB_AppendSweepLowLevel(locationID, panelTitle, ITCDataWave, ITC
 			params.stimset       = stimset
 			NWB_GetTimeSeriesProperties(params, tsp)
 			params.groupIndex    = IsFinite(params.groupIndex) ? params.groupIndex : IPNWB#GetNextFreeGroupIndex(locationID, path)
-			IPNWB#WriteSingleChannel(locationID, path, params, tsp, chunkedLayout=chunkedLayout)
+			IPNWB#WriteSingleChannel(locationID, path, params, tsp, compressionMode = compressionMode)
 		endif
 
 		ClearWriteChannelParams(params)
@@ -867,7 +871,7 @@ static Function NWB_AppendSweepLowLevel(locationID, panelTitle, ITCDataWave, ITC
 		NWB_GetTimeSeriesProperties(params, tsp)
 		WAVE params.data       = ExtractOneDimDataFromSweep(ITCChanConfigWave, ITCDataWave, i)
 		params.groupIndex      = IsFinite(params.groupIndex) ? params.groupIndex : IPNWB#GetNextFreeGroupIndex(locationID, path)
-		IPNWB#WriteSingleChannel(locationID, path, params, tsp, chunkedLayout=chunkedLayout)
+		IPNWB#WriteSingleChannel(locationID, path, params, tsp, compressionMode = compressionMode)
 		ClearWriteChannelParams(params)
 	endfor
 
@@ -907,11 +911,11 @@ End
 
 /// @brief Save Custom Wave (from stimset) in NWB file
 ///
-/// @param locationID		open HDF5 group or file identifier
-/// @param custom_wave		wave reference to the wave that is to be saved
-/// @param chunkedLayout 	use chunked layout with compression and shuffling
-static Function NWB_WriteStimsetCustomWave(locationID, custom_wave, chunkedLayout)
-	variable locationID, chunkedLayout
+/// @param locationID		                                      Open HDF5 group or file identifier
+/// @param custom_wave		                                      Wave reference to the wave that is to be saved
+/// @param compressionMode [optional, defaults to NO_COMPRESSION] Type of compression to use, one of @ref CompressionMode
+static Function NWB_WriteStimsetCustomWave(locationID, custom_wave, compressionMode)
+	variable locationID, compressionMode
 	WAVE custom_wave
 
 	variable groupID
@@ -927,15 +931,15 @@ static Function NWB_WriteStimsetCustomWave(locationID, custom_wave, chunkedLayou
 	custom_wave_name = NameOfWave(custom_wave)
 
 	IPNWB#H5_CreateGroupsRecursively(locationID, pathInNWB, groupID = groupID)
-	IPNWB#H5_WriteDataset(groupID, custom_wave_name, wv=custom_wave, chunkedLayout=chunkedLayout, overwrite=1, writeIgorAttr=1)
+	IPNWB#H5_WriteDataset(groupID, custom_wave_name, wv=custom_wave, compressionMode = compressionMode, overwrite=1, writeIgorAttr=1)
 
 	HDF5CloseGroup groupID
 End
 
-static Function NWB_WriteStimsetTemplateWaves(locationID, stimSet, chunkedLayout)
+static Function NWB_WriteStimsetTemplateWaves(locationID, stimSet, compressionMode)
 	variable locationID
 	string stimSet
-	variable chunkedLayout
+	variable compressionMode
 
 	variable groupID
 	string name
@@ -954,7 +958,7 @@ static Function NWB_WriteStimsetTemplateWaves(locationID, stimSet, chunkedLayout
 		endif
 
 		stimset = NameOfWave(stimSetWave)
-		IPNWB#H5_WriteDataset(groupID, stimset, wv=stimSetWave, chunkedLayout=chunkedLayout, overwrite=1, writeIgorAttr=1)
+		IPNWB#H5_WriteDataset(groupID, stimset, wv=stimSetWave, compressionMode = compressionMode, overwrite=1, writeIgorAttr=1)
 		// @todo remove once IP7 64bit is mandatory
 		// save memory by deleting the stimset again
 		KillOrMoveToTrash(wv=stimSetWave)
@@ -968,13 +972,13 @@ static Function NWB_WriteStimsetTemplateWaves(locationID, stimSet, chunkedLayout
 	WAVE SegWvType = WB_GetSegWvTypeForSet(stimSet)
 
 	name = WB_GetParameterWaveName(stimset, STIMSET_PARAM_WP, nwbFormat = 1)
-	IPNWB#H5_WriteDataset(groupID, name, wv=WP, chunkedLayout=chunkedLayout, overwrite=1, writeIgorAttr=1)
+	IPNWB#H5_WriteDataset(groupID, name, wv=WP, compressionMode = compressionMode, overwrite=1, writeIgorAttr=1)
 
 	name = WB_GetParameterWaveName(stimset, STIMSET_PARAM_WPT, nwbFormat = 1)
-	IPNWB#H5_WriteDataset(groupID, name, wv=WPT, chunkedLayout=chunkedLayout, overwrite=1, writeIgorAttr=1)
+	IPNWB#H5_WriteDataset(groupID, name, wv=WPT, compressionMode = compressionMode, overwrite=1, writeIgorAttr=1)
 
 	name = WB_GetParameterWaveName(stimset, STIMSET_PARAM_SEGWVTYPE, nwbFormat = 1)
-	IPNWB#H5_WriteDataset(groupID, name, wv=SegWVType, chunkedLayout=chunkedLayout, overwrite=1, writeIgorAttr=1)
+	IPNWB#H5_WriteDataset(groupID, name, wv=SegWVType, compressionMode = compressionMode, overwrite=1, writeIgorAttr=1)
 
 	HDF5CloseGroup groupID
 End
@@ -1392,7 +1396,7 @@ static Function NWB_AppendIgorHistory(locationID)
 
 	IPNWB#H5_CreateGroupsRecursively(locationID, "/general", groupID=groupID)
 	history = NormalizeToEOL(history, "\n")
-	IPNWB#H5_WriteTextDataset(groupID, name, str=history, chunkedLayout=1, overwrite=1, writeIgorAttr=0)
+	IPNWB#H5_WriteTextDataset(groupID, name, str=history, compressionMode = IPNWB#GetChunkedCompression(), overwrite=1, writeIgorAttr=0)
 	IPNWB#MarkAsCustomEntry(groupID, name)
 
 	HDF5CloseGroup/Z groupID
