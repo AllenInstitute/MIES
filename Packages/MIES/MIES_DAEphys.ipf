@@ -2425,7 +2425,7 @@ static Function DAP_CheckHeadStage(panelTitle, headStage, mode)
 	endif
 
 	if(ampConnState == AMPLIFIER_CONNECTION_SUCCESS && !CheckIfClose(ADGain, gain, tol=1e-4))
-		printf "(%s) The configured gain for the AD channel %d differs from the one in the \"DAC Channel and Device Associations\" menu (%d vs %d).\r", panelTitle, ADCchannel, ADGain, gain
+		printf "(%s) The configured gain for the AD channel %d differs from the one in the \"DAC Channel and Device Associations\" menu (%g vs %g).\r", panelTitle, ADCchannel, ADGain, gain
 		ControlWindowToFront()
 		return 1
 	endif
