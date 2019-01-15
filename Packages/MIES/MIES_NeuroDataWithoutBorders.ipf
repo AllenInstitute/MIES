@@ -485,7 +485,7 @@ static Function NWB_AppendStoredTestPulses(panelTitle, locationID)
 
 	for(i = 0; i < index; i += 1)
 		sprintf name, "StoredTestPulses_%d", i
-		IPNWB#H5_WriteDataset(locationID, name, wv = storedTP[i], compressionMode = IPNWB#GetChunkedCompression(), overwrite = 1, writeIgorAttr = 1)
+		IPNWB#H5_WriteDataset(locationID, name, wv = storedTP[i], compressionMode = IPNWB#GetSingleChunkCompression(), overwrite = 1, writeIgorAttr = 1)
 	endfor
 End
 
