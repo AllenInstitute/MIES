@@ -1110,7 +1110,7 @@ End
 /// @brief check if the specified setting is activated
 ///
 /// @param win 			name of external panel or main window
-/// @param elementID 	one of BROWSERSETTINGS_* constants
+/// @param elementID 	one of MIES_BSP_* constants like MIES_BSP_PA
 /// @return 1 if setting was activated, 0 otherwise
 Function BSP_IsActive(win, elementID)
 	string win
