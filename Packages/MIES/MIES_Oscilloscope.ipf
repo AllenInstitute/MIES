@@ -467,6 +467,7 @@ Function SCOPE_UpdateOscilloscopeData(panelTitle, dataAcqOrTP, [chunk, fifoPos, 
 	variable tpChannels, numADCs, numDACs, tpLengthPoints, tpStart, tpEnd, tpStartPos
 	variable TPChanIndex, saveTP, sampleInt
 	variable headstage, fifoLatest
+	string hsList
 
 	variable hardwareType = GetHardwareType(panelTitle)
 	switch(hardwareType)
@@ -545,6 +546,7 @@ Function SCOPE_UpdateOscilloscopeData(panelTitle, dataAcqOrTP, [chunk, fifoPos, 
 					Duplicate/FREE/R=[tpStartPos, tpStartPos + tpLengthPoints - 1][numDACs, numDACs + tpChannels - 1] OscilloscopeData, StoreTPWave
 					SetScale/P x, 0, sampleInt, osciUnits, StoreTPWave
 					TPChanIndex = 0
+					hsList = ""
 				endif
 
 				for(j = 0; j < numADCs; j += 1)
@@ -563,16 +565,18 @@ Function SCOPE_UpdateOscilloscopeData(panelTitle, dataAcqOrTP, [chunk, fifoPos, 
 						tpInput.hsIndex = headstage
 						TP_SendToAnalysis(tpInput)
 
-						if(saveTP && TPChanIndex != j)
-							MultiThread StoreTPWave[][TPChanIndex] = channelData[p]
+						if(saveTP)
+							hsList = AddListItem(num2str(headstage), hsList, ",", Inf)
+							if(TPChanIndex != j)
+								MultiThread StoreTPWave[][TPChanIndex] = channelData[p]
+							endif
 						endif
-
 
 					endif
 				endfor
 
 				if(saveTP)
-					TP_StoreTP(panelTitle, StoreTPWave)
+					TP_StoreTP(panelTitle, StoreTPWave, tpInput.measurementMarker, hsList)
 					WaveClear StoreTPWave
 				endif
 

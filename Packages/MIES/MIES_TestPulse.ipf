@@ -98,9 +98,15 @@ End
 /// @param panelTitle panel title
 ///
 /// @param TPWave reference to wave holding the TP data in the same format as OscilloscopeData
-Function TP_StoreTP(panelTitle, TPWave)
+///
+/// @param tpMarker unique number for this set of TPs from all TP channels
+///
+/// @param hsList list of headstage numbers in the same order as the columns of TPWave
+Function TP_StoreTP(panelTitle, TPWave, tpMarker, hsList)
 	string panelTitle
 	WAVE TPWave
+	variable tpMarker
+	string hsList
 
 	variable index
 
@@ -108,6 +114,8 @@ Function TP_StoreTP(panelTitle, TPWave)
 	index = GetNumberFromWaveNote(storedTP, NOTE_INDEX)
 	EnsureLargeEnoughWave(storedTP, minimumSize=index)
 	Note/K TPWave, "TimeStamp: " + GetISO8601TimeStamp(numFracSecondsDigits = 3)
+	SetNumberInWaveNote(TPWave, "TPMarker", tpMarker, format="%d")
+	SetStringInWaveNote(TPWave, "Headstages", hsList)
 	storedTP[index++] = TPWave
 
 	SetNumberInWaveNote(storedTP, NOTE_INDEX, index)
@@ -231,7 +239,7 @@ Function TP_ROAnalysis(dfr, err, errmsg)
 			TP_CalculateAverage(TPSSBuffer, SSResistance)
 		endif
 
-		TP_RecordTP(panelTitle, BaselineSSAvg, InstResistance, SSResistance, now)
+		TP_RecordTP(panelTitle, BaselineSSAvg, InstResistance, SSResistance, now, marker)
 		DQ_ApplyAutoBias(panelTitle, BaselineSSAvg, SSResistance)
 	endif
 
@@ -362,10 +370,10 @@ End
 /// When the TP is initiated by any method, the TP storageWave should be empty
 /// If 200 ms have elapsed, or it is the first TP sweep,
 /// data from the input waves is transferred to the storage waves.
-static Function TP_RecordTP(panelTitle, BaselineSSAvg, InstResistance, SSResistance, now)
+static Function TP_RecordTP(panelTitle, BaselineSSAvg, InstResistance, SSResistance, now, tpMarker)
 	string 	panelTitle
 	wave 	BaselineSSAvg, InstResistance, SSResistance
-	variable now
+	variable now, tpMarker
 
 	variable delta, i, ret, lastPressureCtrl
 	WAVE TPStorage = GetTPStorage(panelTitle)
@@ -429,6 +437,7 @@ static Function TP_RecordTP(panelTitle, BaselineSSAvg, InstResistance, SSResista
 	TPStorage[count][][%Baseline_IC] = hsProp[q][%ClampMode] == I_CLAMP_MODE ? baselineSSAvg[q] : NaN
 
 	TPStorage[count][][%DeltaTimeInSeconds] = count > 0 ? now - TPStorage[0][0][%TimeInSeconds] : 0
+	TPStorage[count][][%TPMarker] = tpMarker
 
 	lastPressureCtrl = GetNumberFromWaveNote(TPStorage, PRESSURE_CTRL_LAST_INVOC)
 	if((now - lastPressureCtrl) > TP_PRESSURE_INTERVAL)
