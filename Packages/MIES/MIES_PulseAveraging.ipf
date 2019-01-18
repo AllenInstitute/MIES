@@ -731,94 +731,17 @@ static Function/S PA_BaseName(channelTypeStr, channelNumber, headStage)
 	return baseName
 End
 
-/// @brief calculate the average wave and store it in the given datafolder
+/// @brief calculate the average wave from a @p listOfWaves
 ///
-/// @see MIES_fWaveAverage
-/// @see CalculateAverage
+/// Note: MIES_fWaveAverage() usually takes 5 times longer than CA_AveragingKey()
 ///
-/// Note: execution times of fWaveAverage are fast enough to not use caching.
-///       As average will possibly not change, return the wave if it was found.
-///
-/// @returns wave reference to the created average wave
-Function/WAVE PA_Average(listOfWaves, outputDFR, outputWaveName, [averageMode, getterMode])
+/// @returns wave reference to the average wave specified by @p outputDFR and @p outputWaveName
+Function/WAVE PA_Average(listOfWaves, outputDFR, outputWaveName)
 	string listOfWaves
 	DFREF outputDFR
 	string outputWaveName
-	variable averageMode, getterMode
 
-	variable ret
-	string key
-
-	if(ParamIsDefault(averageMode))
-		averageMode = 0
-	endif
-	if(ParamIsDefault(getterMode))
-		getterMode = 1
-	endif
-
-	switch(getterMode)
-		case 0:
-			WAVE/Z/SDFR=outputDFR wv = $outputWaveName
-		case 1:
-			WAVE waveRefs = ListToWaveRefWave(listOfWaves, 1)
-			WAVE/Z wv = CA_TryFetchingEntryFromCache(CA_AveragingKey(waveRefs))
-		case 2:
-			WAVE/Z wv = $""
-			break
-		default:
-	endswitch
-
-//	BeginFunctionProfiling()
-//	variable i
-//	for(i = 0; i < 1000; i +=1)
-		switch(averageMode)
-			case 0:
-				WAVE waveRefs = ListToWaveRefWave(listOfWaves, 1)
-				key = CA_AveragingKey(waveRefs)
-
-				WAVE/Z cache = CA_TryFetchingEntryFromCache(key, options = CA_OPTS_NO_DUPLICATE)
-				if(WaveExists(cache))
-					Duplicate/O cache outputDFR:$outputWaveName/WAVE=wv
-					break
-				endif
-
-				ret = MIES_fWaveAverage(listOfWaves, "", 0, 0, GetDataFolder(1, outputDFR) + outputWaveName, "")
-				ASSERT(ret != -1, "Wave averaging failed")
-
-				WAVE/SDFR=outputDFR wv = $outputWaveName
-
-				AddEntryIntoWaveNoteAsList(wv, "SourceWavesForAverage", str=ReplaceString(";", listOfWaves, "|"))
-
-				CA_StoreEntryIntoCache(key, wv)
-				break
-			case 1:
-				WAVE wv = CalculateAverage(listOfWaves, outputDFR, outputWaveName, skipCRC = 1)
-				break
-			case 2:
-#if (IgorVersion() >= 8.00)
-				Concatenate/FREE listOfWaves, fullWave
-				MatrixOP/O outputDFR:$outputWaveName/WAVE=wv = averageCols(fullWave^t)^t
-#else
-				ASSERT(0, "Unsupported on IP7")
-#endif
-				break
-			case 3:
-				ret = MIES_fWaveAverage(listOfWaves, "", 0, 0, GetDataFolder(1, outputDFR) + outputWaveName, "")
-				ASSERT(ret != -1, "Wave averaging failed")
-				WAVE/SDFR=outputDFR wv = $outputWaveName
-			case 4:
-#if (IgorVersion() >= 8.00)
-				Concatenate/FREE listOfWaves, fullWave
-				MatrixOP/O/NTHR=0 outputDFR:$outputWaveName/WAVE=wv = averageCols(fullWave^t)^t
-#else
-				ASSERT(0, "Unsupported on IP7")
-#endif
-				break
-			default:
-		endswitch
-//	endfor
-//	EndFunctionProfiling()
-//	Abort
+	WAVE wv = CalculateAverage(listOfWaves, outputDFR, outputWaveName, skipCRC = 1)
 
 	return wv
 End
