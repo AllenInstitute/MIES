@@ -537,6 +537,9 @@ Function SCOPE_UpdateOscilloscopeData(panelTitle, dataAcqOrTP, [chunk, fifoPos, 
 			NewRandomSeed()
 			tpMarker[] = GetUniqueInteger()
 
+			DEBUGPRINT("tpChannels: ", var = tpChannels)
+			DEBUGPRINT("tpLength: ", var = tpLengthPoints)
+
 			for(i = tpStart;i < tpEnd; i += 1)
 
 				tpInput.measurementMarker = tpMarker[i - tpStart]
@@ -563,6 +566,10 @@ Function SCOPE_UpdateOscilloscopeData(panelTitle, dataAcqOrTP, [chunk, fifoPos, 
 						tpInput.clampAmp = clampAmp
 						tpInput.clampMode = hsProp[headstage][%ClampMode]
 						tpInput.hsIndex = headstage
+
+						DEBUGPRINT("headstage: ", var = headstage)
+						DEBUGPRINT("channel: ", var = numDACs + j)
+
 						TP_SendToAnalysis(tpInput)
 
 						if(saveTP)
@@ -576,6 +583,7 @@ Function SCOPE_UpdateOscilloscopeData(panelTitle, dataAcqOrTP, [chunk, fifoPos, 
 				endfor
 
 				if(saveTP)
+					DEBUGPRINT("Storing TP with marker: ", var = tpInput.measurementMarker)
 					TP_StoreTP(panelTitle, StoreTPWave, tpInput.measurementMarker, hsList)
 					WaveClear StoreTPWave
 				endif

@@ -271,6 +271,15 @@ threadsafe Function/DF TP_TSAnalysis(dfrInp)
 	NVAR/SDFR=dfrInp marker = param9
 	NVAR/SDFR=dfrInp activeADCs = param10
 
+#if defined(DEBUGGING_ENABLED)
+	DEBUGPRINT_TS("Marker: ", var = marker)
+	Duplicate data dfrOut:colors
+	Duplicate data dfrOut:data
+	WAVE colors = dfrOut:colors
+	colors = 0
+	colors[0, lengthTPInPoints - 1] = 100
+#endif
+
 	// Rows:
 	// 0: base line level
 	// 1: steady state resistance
@@ -287,13 +296,45 @@ threadsafe Function/DF TP_TSAnalysis(dfrInp)
 	refTime = (tpStartPoint - TP_EVAL_POINT_OFFSET) * sampleInt
 	AvgBaselineSS = mean(data, refTime - evalRange, refTime)
 
+#if defined(DEBUGGING_ENABLED)
+	// color BASE
+	variable refpt = tpStartPoint - TP_EVAL_POINT_OFFSET
+	colors[refpt - evalRange / sampleInt, refpt] = 50
+	DEBUGPRINT_TS("SampleInt: ", var = sampleInt)
+	DEBUGPRINT_TS("tpStartPoint: ", var = tpStartPoint)
+	DEBUGPRINT_TS("evalRange (ms): ", var = evalRange)
+	DEBUGPRINT_TS("evalRange in points: ", var = evalRange / sampleInt)
+	DEBUGPRINT_TS("Base range begin (ms): ", var = refTime - evalRange)
+	DEBUGPRINT_TS("Base range eng (ms): ", var = refTime)
+	DEBUGPRINT_TS("average BaseLine: ", var = AvgBaselineSS)
+#endif
+
 	refTime = (lengthTPInPoints - tpStartPoint - TP_EVAL_POINT_OFFSET) * sampleInt
 	avgTPSS = mean(data, refTime - evalRange, refTime)
+
+#if defined(DEBUGGING_ENABLED)
+	DEBUGPRINT_TS("TPSS range begin (ms): ", var = refTime - evalRange)
+	DEBUGPRINT_TS("TPSS range eng (ms): ", var = refTime)
+	DEBUGPRINT_TS("average TPSS: ", var = avgTPSS)
+	// color SS
+	refpt = lengthTPInPoints - tpStartPoint - TP_EVAL_POINT_OFFSET
+	colors[refpt - evalRange / sampleInt, refpt] = 50
+	// color INST
+	refpt = tpStartPoint + TP_EVAL_POINT_OFFSET
+	colors[refpt, refpt + 0.25 / sampleInt] = 50
+#endif
 
 	refPoint = tpStartPoint + TP_EVAL_POINT_OFFSET
 	Duplicate/FREE/R=[refPoint, refPoint + 0.25 / sampleInt] data, inst1d
 	WaveStats/Q/M=1 inst1d
 	avgInst = (clampAmp < 0) ? mean(inst1d, pnt2x(inst1d, V_minRowLoc - 1), pnt2x(inst1d, V_minRowLoc + 1)) : mean(inst1d, pnt2x(inst1d, V_maxRowLoc - 1), pnt2x(inst1d, V_maxRowLoc + 1))
+
+#if defined(DEBUGGING_ENABLED)
+	refpt = V_minRowLoc + refPoint
+	DEBUGPRINT_TS("refPoint IntSS: ", var = refpt)
+	DEBUGPRINT_TS("average InstSS: ", var = avgInst)
+	colors[refpt - 1, refpt + 1] = 75
+#endif
 
 	if(clampMode == I_CLAMP_MODE)
 		outData[1] = (avgTPSS - avgBaselineSS) / clampAmp * 1000
@@ -303,6 +344,11 @@ threadsafe Function/DF TP_TSAnalysis(dfrInp)
 		outData[2] = clampAmp / (avgInst - avgBaselineSS) * 1000
 	endif
 	outData[0] = avgBaselineSS
+
+#if defined(DEBUGGING_ENABLED)
+	DEBUGPRINT_TS("IntRes: ", var = outData[2])
+	DEBUGPRINT_TS("SSRes: ", var = outData[1])
+#endif
 
 	// additional data copy
 	variable/G dfrOut:now = now
