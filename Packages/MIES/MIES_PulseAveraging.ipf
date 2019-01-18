@@ -14,11 +14,12 @@ static Function/S PA_GetAverageGraphs()
 	return WinList(PULSE_AVERAGE_GRAPH_PREFIX + "*", ";", "WIN:1")
 End
 
-static Function/S PA_GetGraphName(multipleGraphs, channelType, channelNumber, activeRegionCount)
-	variable multipleGraphs, channelType, channelNumber, activeRegionCount
+static Function/S PA_GetGraphName(multipleGraphs, channelTypeStr, channelNumber, activeRegionCount)
+	variable multipleGraphs, channelNumber, activeRegionCount
+	string channelTypeStr
 
 	if(multipleGraphs)
-		return PULSE_AVERAGE_GRAPH_PREFIX + "_" + StringFromList(channelType, ITC_CHANNEL_NAMES) + num2str(channelNumber) + "_R" + num2str(activeRegionCount)
+		return PULSE_AVERAGE_GRAPH_PREFIX + "_" + channelTypeStr + num2str(channelNumber) + "_R" + num2str(activeRegionCount)
 	else
 		return PULSE_AVERAGE_GRAPH_PREFIX
 	endif
@@ -32,15 +33,15 @@ End
 /// - Positions the graphs right to `mainWin` in matrix form
 /// - Columns: Regions (aka headstages with pulse starting time information respecting region selection in GUI)
 /// - Rows:    Active unique channels
-static Function/S PA_GetGraph(mainWin, multipleGraphs, channelType, channelNumber, region, activeRegionCount, activeChanCount)
-	string mainWin
-	variable multipleGraphs, channelType, channelNumber, region, activeRegionCount, activeChanCount
+static Function/S PA_GetGraph(mainWin, multipleGraphs, channelTypeStr, channelNumber, region, activeRegionCount, activeChanCount)
+	string mainWin, channelTypeStr
+	variable multipleGraphs, channelNumber, region, activeRegionCount, activeChanCount
 
 	variable top, left, bottom, right, i
 	variable width, height, width_spacing, height_spacing, width_offset, height_offset
 	string win, winAbove
 
-	win = PA_GetGraphName(multipleGraphs, channelType, channelNumber, activeRegionCount)
+	win = PA_GetGraphName(multipleGraphs, channelTypeStr, channelNumber, activeRegionCount)
 
 	if(!WindowExists(win))
 
@@ -71,10 +72,10 @@ static Function/S PA_GetGraph(mainWin, multipleGraphs, channelType, channelNumbe
 		Display/W=(left, top, right, bottom)/K=1/N=$win
 
 		if(multipleGraphs)
-			winAbove = PA_GetGraphName(multipleGraphs, channelType, channelNumber - 1, activeRegionCount)
+			winAbove = PA_GetGraphName(multipleGraphs, channelTypeStr, channelNumber - 1, activeRegionCount)
 
 			for(i = channelNumber - 1; i >=0; i -= 1)
-				winAbove = PA_GetGraphName(multipleGraphs, channelType, i, activeRegionCount)
+				winAbove = PA_GetGraphName(multipleGraphs, channelTypeStr, i, activeRegionCount)
 
 				if(WindowExists(winAbove))
 					DoWindow/B=$winAbove $win
@@ -613,7 +614,7 @@ Function PA_ShowPulses(win, dfr, pa)
 
 				totalOnsetDelay = GetTotalOnsetDelay(numericalValues, sweepNo)
 
-				graph = PA_GetGraph(win, pa.multipleGraphs, channelType, channelNumber, region, activeRegionCount, activeChanCount)
+				graph = PA_GetGraph(win, pa.multipleGraphs, channelTypeStr, channelNumber, region, activeRegionCount, activeChanCount)
 				PA_GetAxes(pa.multipleGraphs, activeRegionCount, activeChanCount, vertAxis, horizAxis)
 
 				if(WhichListItem(graph, newlyCreatedGraphs) == -1)
@@ -672,7 +673,7 @@ Function PA_ShowPulses(win, dfr, pa)
 				listOfWaves = listOfWavesPerChannel[channelNumber]
 				numSweeps   = ItemsInList(listOfWaves) / numPulses
 
-				graph = PA_GetGraph(win, pa.multipleGraphs, channelType, channelNumber, region, activeRegionCount, activeChanCount)
+				graph = PA_GetGraph(win, pa.multipleGraphs, channelTypeStr, channelNumber, region, activeRegionCount, activeChanCount)
 				PA_GetAxes(pa.multipleGraphs, activeRegionCount, activeChanCount, vertAxis, horizAxis)
 
 				if(pa.showAverageTrace && !IsEmpty(listOfWaves))
