@@ -12,6 +12,8 @@ static StrConstant SOURCE_WAVE_TIMESTAMP      = "SOURCE_WAVE_TS"
 static StrConstant PA_AVERAGE_WAVE_PREFIX       = "average_"
 static StrConstant PA_DECONVOLUTION_WAVE_PREFIX = "deconv_"
 
+static StrConstant PA_USERDATA_SPECIAL_TRACES = "SPECIAL_TRACES"
+
 /// @brief Return a list of all average graphs
 static Function/S PA_GetAverageGraphs()
 	return WinList(PULSE_AVERAGE_GRAPH_PREFIX + "*", ";", "WIN:1")
@@ -638,6 +640,7 @@ Function PA_ShowPulses(win, dfr, pa)
 
 				if(WhichListItem(graph, newlyCreatedGraphs) == -1)
 					RemoveTracesFromGraph(graph)
+					SetWindow $graph, userData($PA_USERDATA_SPECIAL_TRACES) = ""
 					newlyCreatedGraphs = AddListItem(graph, newlyCreatedGraphs, ";", inf)
 				endif
 
@@ -702,6 +705,7 @@ Function PA_ShowPulses(win, dfr, pa)
 
 					GetTraceColor(NUM_HEADSTAGES + 1, red, green, blue)
 					AppendToGraph/Q/W=$graph/L=$vertAxis/B=$horizAxis/C=(red, green, blue) averageWave
+					SetWindow $graph, userData($PA_USERDATA_SPECIAL_TRACES) += NameOfWave(averageWave) + ";"
 
 					listOfWavesPerChannel[channelNumber] = ""
 				endif
@@ -714,6 +718,7 @@ Function PA_ShowPulses(win, dfr, pa)
 
 					AppendToGraph/Q/W=$graph/L=$vertAxis/B=$horizAxis/C=(65535, 0, 0) deconv
 					SetAxis/Z/W=$graph $horizAxis 0, pa.deconvolution.range
+					SetWindow $graph, userData($PA_USERDATA_SPECIAL_TRACES) += NameOfWave(deconv) + ";"
 				endif
 
 				if(pa.multipleGraphs)
@@ -918,7 +923,7 @@ Function PA_UpdateSweepPlotDeconvolution(win, show)
 	variable show
 
 	string graph, graphs, horizAxis, vertAxis, axisFlags
-	string traceList, traceName, traceMatch, traceInformation
+	string traceList, traceListOut, traceName, traceMatch, traceInformation
 	string baseName, bsPanel
 	variable i, numGraphs, multipleGraphs, j, numTraces, numDiagonalElements
 	STRUCT PulseAverageDeconvSettings deconvolution
@@ -949,7 +954,9 @@ Function PA_UpdateSweepPlotDeconvolution(win, show)
 	for(i = 0; i < numGraphs; i += 1)
 		graph = StringFromList(i, graphs)
 
-		traceList = TraceNameList(graph, ";", 1)
+		traceList = GetUserData(graph, "", PA_USERDATA_SPECIAL_TRACES)
+		traceListOut = traceList
+		ASSERT(ItemsInList(traceList) > 0, "UserData empty. No average Traces? You could call TraceNameList to check.")
 		traceList = ListMatch(traceList, traceMatch + "*")
 
 		numTraces = ItemsInList(traceList)
@@ -971,6 +978,7 @@ Function PA_UpdateSweepPlotDeconvolution(win, show)
 			if(!show)
 				RemoveFromGraph/W=$graph $traceName
 				SetAxis/Z/W=$graph $horizAxis 0, *
+				traceListOut = RemoveFromList(traceName, traceListOut)
 				continue
 			endif
 
@@ -991,6 +999,9 @@ Function PA_UpdateSweepPlotDeconvolution(win, show)
 
 			AppendToGraph/Q/W=$graph/L=$vertAxis/B=$horizAxis/C=(65535, 0, 0) deconv
 			SetAxis/Z/W=$graph $horizAxis 0, deconvolution.range
+			traceListOut = AddListItem(NameOfWave(deconv), traceListOut)
 		endfor
+
+		SetWindow $graph, userData($PA_USERDATA_SPECIAL_TRACES) = traceListOut
 	endfor
 End
