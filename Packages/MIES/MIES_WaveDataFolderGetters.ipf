@@ -2075,25 +2075,29 @@ End
 /// - 20: UserPressureType (see @ref PressureTypeConstants)
 /// - 21: UserPressureTimeStampUTC timestamp since Igor Pro epoch in UTC where
 ///       the user pressure was acquired
+/// - 22: TPMarker unique number identifying this set of TPs
 Function/Wave GetTPStorage(panelTitle)
 	string 	panelTitle
 
 	dfref dfr = GetDeviceTestPulse(panelTitle)
-	variable versionOfNewWave = 10
+	variable versionOfNewWave = 11
 
 	WAVE/Z/SDFR=dfr/D wv = TPStorage
 
 	if(ExistsWithCorrectLayoutVersion(wv, versionOfNewWave))
 		return wv
 	elseif(WaveExists(wv))
-		Redimension/N=(-1, NUM_HEADSTAGES, 22)/D wv
+		Redimension/N=(-1, NUM_HEADSTAGES, 23)/D wv
 
 		if(WaveVersionIsSmaller(wv, 10))
 			wv[][][17]    = NaN
 			wv[][][20,21] = NaN
 		endif
+		if(WaveVersionIsSmaller(wv, 11))
+			wv[][][22]    = NaN
+		endif
 	else
-		Make/N=(MINIMUM_WAVE_SIZE_LARGE, NUM_HEADSTAGES, 22)/D dfr:TPStorage/Wave=wv
+		Make/N=(MINIMUM_WAVE_SIZE_LARGE, NUM_HEADSTAGES, 23)/D dfr:TPStorage/Wave=wv
 
 		wv = NaN
 
@@ -2124,6 +2128,7 @@ Function/Wave GetTPStorage(panelTitle)
 	SetDimLabel LAYERS, 19, ValidState                , wv
 	SetDimLabel LAYERS, 20, UserPressureType          , wv
 	SetDimLabel LAYERS, 21, UserPressureTimeStampUTC  , wv
+	SetDimLabel LAYERS, 22, TPMarker                  , wv
 
 	SetNumberInWaveNote(wv, AUTOBIAS_LAST_INVOCATION_KEY, 0)
 	SetNumberInWaveNote(wv, DIMENSION_SCALING_LAST_INVOC, 0)
