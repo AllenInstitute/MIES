@@ -753,7 +753,7 @@ Function/WAVE PA_Average(listOfWaves, outputDFR, outputWaveName, [averageMode, g
 		averageMode = 0
 	endif
 	if(ParamIsDefault(getterMode))
-		getterMode = 2
+		getterMode = 1
 	endif
 
 	switch(getterMode)
@@ -792,13 +792,7 @@ Function/WAVE PA_Average(listOfWaves, outputDFR, outputWaveName, [averageMode, g
 				CA_StoreEntryIntoCache(key, wv)
 				break
 			case 1:
-				WAVE wv = CalculateAverage(listOfWaves, outputDFR, outputWaveName)
-				WAVE/Z/SDFR=outputDFR average = $outputWaveName
-				if(WaveExists(average))
-					MoveWaveWithOverwrite(average, wv)
-				else
-					Rename wv $outputWaveName
-				endif
+				WAVE wv = CalculateAverage(listOfWaves, outputDFR, outputWaveName, skipCRC = 1)
 				break
 			case 2:
 #if (IgorVersion() >= 8.00)
