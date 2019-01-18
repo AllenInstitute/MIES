@@ -63,7 +63,12 @@ Structure PulseAverageSettings
 	variable showIndividualTraces, showAverageTrace
 	variable startingPulse, endingPulse, regionSlider
 	variable fallbackPulseLength, multipleGraphs
-	variable deconv_enable, deconv_smth, deconv_tau, deconv_range
+
+	STRUCT PulseAverageDeconvSettings deconvolution
+EndStructure
+
+Structure PulseAverageDeconvSettings
+	variable enable, smth, tau, range
 EndStructure
 
 /// @brief Parameter to #CreateTiledChannelGraph

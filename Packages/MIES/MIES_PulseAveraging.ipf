@@ -9,6 +9,9 @@
 static StrConstant PULSE_AVERAGE_GRAPH_PREFIX = "PulseAverage"
 static StrConstant SOURCE_WAVE_TIMESTAMP      = "SOURCE_WAVE_TS"
 
+static StrConstant PA_AVERAGE_WAVE_PREFIX       = "average_"
+static StrConstant PA_DECONVOLUTION_WAVE_PREFIX = "deconv_"
+
 /// @brief Return a list of all average graphs
 static Function/S PA_GetAverageGraphs()
 	return WinList(PULSE_AVERAGE_GRAPH_PREFIX + "*", ";", "WIN:1")
@@ -491,10 +494,20 @@ Function PA_GatherSettings(win, pps)
 	pps.pulseAverSett.fallbackPulseLength  = GetSetVariable(extPanel, "setvar_pulseAver_fallbackLength")
 	pps.pulseAverSett.regionSlider         = BSP_GetDDAQ(win)
 
-	pps.pulseAverSett.deconv_enable = GetCheckboxState(extPanel, "check_pulseAver_deconv")
-	pps.pulseAverSett.deconv_smth   = round(GetSetVariable(extPanel, "setvar_pulseAver_deconv_smth") / 2) * 2 + 1
-	pps.pulseAverSett.deconv_tau    = GetSetVariable(extPanel, "setvar_pulseAver_deconv_tau")
-	pps.pulseAverSett.deconv_range  = GetSetVariable(extPanel, "setvar_pulseAver_deconv_range")
+	PA_DeconvGatherSettings(win, pps.pulseAverSett.deconvolution)
+End
+
+/// @brief gather deconvolution settings from PA section in BSP
+Function PA_DeconvGatherSettings(win, deconvolution)
+	string win
+	STRUCT PulseAverageDeconvSettings &deconvolution
+
+	string bsPanel = BSP_GetPanel(win)
+
+	deconvolution.enable = PA_DeconvolutionIsActive(win)
+	deconvolution.smth   = GetSetVariable(bsPanel, "setvar_pulseAver_deconv_smth")
+	deconvolution.tau    = GetSetVariable(bsPanel, "setvar_pulseAver_deconv_tau")
+	deconvolution.range  = GetSetVariable(bsPanel, "setvar_pulseAver_deconv_range")
 End
 
 Function PA_ShowPulses(win, dfr, pa)
@@ -685,7 +698,7 @@ Function PA_ShowPulses(win, dfr, pa)
 				baseName = PA_BaseName(channelTypeStr, channelNumber, region)
 				WAVE/Z averageWave = $""
 				if(pa.showAverageTrace && !IsEmpty(listOfWaves))
-					WAVE averageWave = PA_Average(listOfWaves, pulseAverageDFR, "average_" + baseName)
+					WAVE averageWave = PA_Average(listOfWaves, pulseAverageDFR, PA_AVERAGE_WAVE_PREFIX + baseName)
 
 					GetTraceColor(NUM_HEADSTAGES + 1, red, green, blue)
 					AppendToGraph/Q/W=$graph/L=$vertAxis/B=$horizAxis/C=(red, green, blue) averageWave
@@ -693,15 +706,14 @@ Function PA_ShowPulses(win, dfr, pa)
 					listOfWavesPerChannel[channelNumber] = ""
 				endif
 
-				if(pa.deconv_enable && (activeRegionCount != activeChanCount) && !IsEmpty(listOfWaves))
+				if(pa.deconvolution.enable && (activeRegionCount != activeChanCount) && !IsEmpty(listOfWaves))
 					if(!WaveExists(averageWave))
-						WAVE averageWave = PA_Average(listOfWaves, pulseAverageDFR, "average_" + baseName)
+						WAVE averageWave = PA_Average(listOfWaves, pulseAverageDFR, PA_AVERAGE_WAVE_PREFIX + baseName)
 					endif
-					WAVE deconv = PA_Deconvolution(averageWave, pulseAverageDFR, "deconv_" + baseName, pa)
+					WAVE deconv = PA_Deconvolution(averageWave, pulseAverageDFR, PA_DECONVOLUTION_WAVE_PREFIX + baseName, pa.deconvolution)
 
-					GetTraceColor(NUM_HEADSTAGES + 1, red, green, blue)
 					AppendToGraph/Q/W=$graph/L=$vertAxis/B=$horizAxis/C=(65535, 0, 0) deconv
-					SetAxis/Z/W=$graph $horizAxis 0, pa.deconv_range
+					SetAxis/Z/W=$graph $horizAxis 0, pa.deconvolution.range
 				endif
 
 				if(pa.multipleGraphs)
@@ -762,15 +774,15 @@ Function/WAVE PA_Average(listOfWaves, outputDFR, outputWaveName)
 	return wv
 End
 
-Function/WAVE PA_SmoothDeconv(input, pa)
+Function/WAVE PA_SmoothDeconv(input, deconvolution)
 	WAVE input
-	STRUCT PulseAverageSettings &pa
+	STRUCT PulseAverageDeconvSettings &deconvolution
 
 	variable range_pnts, smoothingFactor
 	string key
 
-	range_pnts = pa.deconv_range / DimDelta(input, ROWS)
-	smoothingFactor = max(min(pa.deconv_smth, 32767), 1)
+	range_pnts = deconvolution.range / DimDelta(input, ROWS)
+	smoothingFactor = max(min(deconvolution.smth, 32767), 1)
 
 	key = CA_SmoothDeconv(input, smoothingFactor, range_pnts)
 	WAVE/Z cache = CA_TryFetchingEntryFromCache(key, options = CA_OPTS_NO_DUPLICATE)
@@ -785,18 +797,18 @@ Function/WAVE PA_SmoothDeconv(input, pa)
 	return wv
 End
 
-Function/WAVE PA_Deconvolution(average, outputDFR, outputWaveName, pa)
+Function/WAVE PA_Deconvolution(average, outputDFR, outputWaveName, deconvolution)
 	WAVE average
 	DFREF outputDFR
 	string outputWaveName
-	STRUCT PulseAverageSettings &pa
+	STRUCT PulseAverageDeconvSettings &deconvolution
 
 	variable step
 	string key
 
-	WAVE smoothed = PA_SmoothDeconv(average, pa)
+	WAVE smoothed = PA_SmoothDeconv(average, deconvolution)
 
-	key = CA_Deconv(smoothed, pa.deconv_tau)
+	key = CA_Deconv(smoothed, deconvolution.tau)
 	WAVE/Z cache = CA_TryFetchingEntryFromCache(key, options = CA_OPTS_NO_DUPLICATE)
 	if(WaveExists(cache))
 		Duplicate/O cache outputDFR:$outputWaveName/WAVE=wv
@@ -804,7 +816,7 @@ Function/WAVE PA_Deconvolution(average, outputDFR, outputWaveName, pa)
 	endif
 
 	Duplicate/O/R=[0, DimSize(smoothed, ROWS) - 2] smoothed outputDFR:$outputWaveName/WAVE=wv
-	step = pa.deconv_tau / DimDelta(average, 0)
+	step = deconvolution.tau / DimDelta(average, 0)
 	MultiThread wv = step * (smoothed[p + 1] - smoothed[p]) + smoothed[p]
 
 	CA_StoreEntryIntoCache(key, wv)
@@ -823,12 +835,26 @@ Function PA_CheckProc_Common(cba) : CheckBoxControl
 	return 0
 End
 
+Function PA_CheckProc_Average(cba) : CheckBoxControl
+	STRUCT WMCheckboxAction &cba
+
+	switch(cba.eventCode)
+		case 2: // mouse up
+			BSP_SetDeconvControlStatus(cba.win)
+			UpdateSweepPlot(cba.win)
+			break
+	endswitch
+
+	return 0
+End
+
 Function PA_CheckProc_Deconvolution(cba) : CheckBoxControl
 	STRUCT WMCheckboxAction &cba
 
 	switch( cba.eventCode )
 		case 2: // mouse up
-			UpdateSweepPlot(cba.win)
+			BSP_SetDeconvControlStatus(cba.win)
+			PA_UpdateSweepPlotDeconvolution(cba.win, cba.checked)
 			break
 		case -1: // control being killed
 			break
@@ -856,4 +882,115 @@ Function PA_IsActive(win)
 	string win
 
 	return BSP_IsActive(win, MIES_BSP_PA)
+End
+
+/// @brief checks if "show average trace" in PA is activated.
+Function PA_AverageIsActive(win)
+	string win
+
+	string bsPanel
+
+	if(!PA_IsActive(win))
+		return 0
+	endif
+
+	bsPanel = BSP_GetPanel(win)
+	return GetCheckboxState(bsPanel, "check_pulseAver_showAver")
+End
+
+/// @brief checks if "show average trace" in PA is activated.
+Function PA_DeconvolutionIsActive(win)
+	string win
+
+	string bsPanel
+
+	if(!PA_AverageIsActive(win))
+		return 0
+	endif
+
+	bsPanel = BSP_GetPanel(win)
+	return GetCheckboxState(bsPanel, "check_pulseAver_deconv")
+End
+
+/// @brief Update deconvolution traces in Sweep Plots
+Function PA_UpdateSweepPlotDeconvolution(win, show)
+	string win
+	variable show
+
+	string graph, graphs, horizAxis, vertAxis, axisFlags
+	string traceList, traceName, traceMatch, traceInformation
+	string baseName, bsPanel
+	variable i, numGraphs, multipleGraphs, j, numTraces, numDiagonalElements
+	STRUCT PulseAverageDeconvSettings deconvolution
+
+	win = GetMainWindow(win)
+	if(!PA_IsActive(win))
+		return 0
+	endif
+
+	bsPanel = BSP_GetPanel(win)
+	PA_DeconvGatherSettings(bsPanel, deconvolution)
+
+	if(!!show)
+		traceMatch = PA_AVERAGE_WAVE_PREFIX
+	else
+		traceMatch = PA_DECONVOLUTION_WAVE_PREFIX
+	endif
+
+	multipleGraphs = GetCheckboxState(bsPanel, "check_pulseAver_multGraphs")
+	if(multipleGraphs)
+		graphs = PA_GetAverageGraphs()
+		numGraphs = ItemsInList(graphs)
+	else
+		graphs = AddListItem(PULSE_AVERAGE_GRAPH_PREFIX, "")
+		numGraphs = 1
+	endif
+
+	for(i = 0; i < numGraphs; i += 1)
+		graph = StringFromList(i, graphs)
+
+		traceList = TraceNameList(graph, ";", 1)
+		traceList = ListMatch(traceList, traceMatch + "*")
+
+		numTraces = ItemsInList(traceList)
+		if(show)
+			numDiagonalElements = round(sqrt(numTraces)) // assume square matrix
+		endif
+		for(j = 0; j < numTraces; j += 1)
+			traceName = StringFromList(j, traceList)
+
+			traceInformation = TraceInfo(graph, traceName, 0)
+			vertAxis  = StringByKey("YAXIS", traceInformation)
+			horizAxis = StringByKey("XAXIS", traceInformation)
+			axisFlags = StringByKey("AXISFLAGS", traceInformation)
+			if(!IsEmpty(axisFlags))
+				ASSERT(StringMatch(axisFlags, "*/B*"), "Axis not handled.")
+				ASSERT(StringMatch(axisFlags, "*/L*"), "Axis not handled.")
+			endif
+
+			if(!show)
+				RemoveFromGraph/W=$graph $traceName
+				SetAxis/Z/W=$graph $horizAxis 0, *
+				continue
+			endif
+
+			// skip diagonal elements
+			if(mod(j, numDiagonalElements) == floor(j / numDiagonalElements))
+				continue
+			endif
+
+			WAVE averageWave = TraceNameToWaveRef(graph, traceName)
+			DFREF pulseAverageDFR = GetWavesDataFolderDFR(averageWave)
+
+			SplitString/E=(traceMatch + "(.*)") NameOfWave(averageWave), baseName
+			ASSERT(V_flag == 1, "Unexpected Trace Name")
+
+			traceName = PA_DECONVOLUTION_WAVE_PREFIX + baseName
+			ASSERT(WhichListItem(traceName, traceList) == -1, "Unexpected Behavior: Trace already in graph.")
+			WAVE deconv = PA_Deconvolution(averageWave, pulseAverageDFR, traceName, deconvolution)
+
+			AppendToGraph/Q/W=$graph/L=$vertAxis/B=$horizAxis/C=(65535, 0, 0) deconv
+			SetAxis/Z/W=$graph $horizAxis 0, deconvolution.range
+		endfor
+	endfor
 End

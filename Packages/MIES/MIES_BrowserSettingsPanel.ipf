@@ -496,9 +496,27 @@ End
 Function BSP_SetPAControlStatus(win)
 	string win
 
-	string controlList = "group_properties_pulse;check_pulseAver_indTraces;check_pulseAver_showAver;check_pulseAver_multGraphs;check_pulseAver_deconv;setvar_pulseAver_startPulse;setvar_pulseAver_endPulse;setvar_pulseAver_fallbackLength;"
+	string controlList
 
+	controlList = "group_properties_pulse;check_pulseAver_indTraces;check_pulseAver_showAver;check_pulseAver_multGraphs;setvar_pulseAver_startPulse;setvar_pulseAver_endPulse;setvar_pulseAver_fallbackLength;"
 	BSP_SetControlStatus(win, controlList, PA_IsActive(win))
+
+	BSP_SetDeconvControlStatus(win)
+End
+
+/// @brief enable/disable deconvolution buttons depending on the status of @c check_pulseAver_showAver
+///
+/// @param win 	specify mainPanel or bsPanel with OVS controls
+Function BSP_SetDeconvControlStatus(win)
+	string win
+
+	string controlList
+
+	controlList = "group_pulseAver_deconv;check_pulseAver_deconv;"
+	BSP_SetControlStatus(win, controlList, PA_AverageIsActive(win))
+
+	controlList = "setvar_pulseAver_deconv_tau;setvar_pulseAver_deconv_smth;setvar_pulseAver_deconv_range;"
+	BSP_SetControlStatus(win, controlList, PA_DeconvolutionIsActive(win))
 End
 
 /// @brief enable/disable a list of controls
@@ -813,7 +831,7 @@ Window BrowserSettingsPanel() : Panel
 	CheckBox check_pulseAver_multGraphs,help={"Show the single pulses in multiple graphs or only one graph with mutiple axis."}
 	CheckBox check_pulseAver_multGraphs,userdata(tabnum)=  "4"
 	CheckBox check_pulseAver_multGraphs,userdata(tabcontrol)=  "Settings",value= 0
-	CheckBox check_pulseAver_showAver,pos={110.00,121.00},size={117.00,15.00},disable=3,proc=PA_CheckProc_Common,title="Show average trace"
+	CheckBox check_pulseAver_showAver,pos={110.00,121.00},size={117.00,15.00},disable=3,proc=PA_CheckProc_Average,title="Show average trace"
 	CheckBox check_pulseAver_showAver,help={"Show the average trace"}
 	CheckBox check_pulseAver_showAver,userdata(tabnum)=  "4"
 	CheckBox check_pulseAver_showAver,userdata(tabcontrol)=  "Settings",value= 0
@@ -824,20 +842,25 @@ Window BrowserSettingsPanel() : Panel
 	CheckBox check_pulseAver_deconv,pos={110.00,231.00},size={94.00,15.00},proc=PA_CheckProc_Deconvolution,title="Deconvolution"
 	CheckBox check_pulseAver_deconv,help={"Show Deconvolution: tau * dV/dt + V"},value= 0
 	CheckBox check_pulseAver_deconv,userdata(tabnum)=  "4",userdata(tabcontrol)=  "Settings"
+	CheckBox check_pulseAver_deconv disable=2
 	SetVariable setvar_pulseAver_deconv_tau,pos={155.00,252.00},size={87.00,18.00},bodyWidth=50,proc=PA_SetVarProc_Common,title="tau [ms]"
 	SetVariable setvar_pulseAver_deconv_tau,limits={0,inf,0},value= _NUM:15
 	SetVariable setvar_pulseAver_deconv_tau,userdata(tabnum)=  "4",userdata(tabcontrol)=  "Settings"
 	SetVariable setvar_pulseAver_deconv_tau,help={"Deconvolution time tau: tau * dV/dt + V"}
+	SetVariable setvar_pulseAver_deconv_tau disable=2
 	SetVariable setvar_pulseAver_deconv_smth,pos={130.00,274.00},size={112.00,18.00},bodyWidth=50,proc=PA_SetVarProc_Common,title="smoothing"
 	SetVariable setvar_pulseAver_deconv_smth,limits={1,inf,0},value= _NUM:1000
 	SetVariable setvar_pulseAver_deconv_smth,userdata(tabnum)=  "4",userdata(tabcontrol)=  "Settings"
 	SetVariable setvar_pulseAver_deconv_smth,help={"Smoothing factor to use before the deconvolution is calculated. Set to 1 to do the calculation without smoothing."}
+	SetVariable setvar_pulseAver_deconv_smth disable=2
 	SetVariable setvar_pulseAver_deconv_range,pos={124.00,296.00},size={118.00,18.00},bodyWidth=50,proc=PA_SetVarProc_Common,title="display [ms]"
 	SetVariable setvar_pulseAver_deconv_range,limits={0,inf,0},value= _NUM:15
 	SetVariable setvar_pulseAver_deconv_range,userdata(tabnum)=  "4",userdata(tabcontrol)=  "Settings"
 	SetVariable setvar_pulseAver_deconv_range,help={"Time in ms from the beginning of the pulse that is used for the calculation"}
+	SetVariable setvar_pulseAver_deconv_range disable=2
 	GroupBox group_pulseAver_deconv,pos={101.00,228.00},size={155.00,97.00}
 	GroupBox group_pulseAver_deconv,userdata(tabnum)=  "4",userdata(tabcontrol)=  "Settings"
+	GroupBox group_pulseAver_deconv disable=2
 	CheckBox check_BrowserSettings_OVS,pos={156.00,50.00},size={50.00,15.00},disable=1,proc=DB_CheckProc_OverlaySweeps,title="enable"
 	CheckBox check_BrowserSettings_OVS,help={"Adds unplotted sweep to graph. Removes plotted sweep from graph."}
 	CheckBox check_BrowserSettings_OVS,userdata(tabnum)=  "1"
