@@ -959,7 +959,7 @@ Constant MSQ_RA_BL_EVAL_RANGE = 500
 Constant MSQ_DS_OFFSETSCALE_FAKE = 23 // pA
 Constant MSQ_DS_SWEEP_FAKE       = 42
 
-Constant MSQ_SPIKE_LEVEL         = 0.01 // mV
+Constant MSQ_SPIKE_LEVEL         = -10.0 // mV
 Constant MSQ_RMS_SHORT_THRESHOLD = 0.07 // mV
 Constant MSQ_RMS_LONG_THRESHOLD  = 0.5  // mV
 Constant MSQ_TARGETV_THRESHOLD   = 1    // mV
