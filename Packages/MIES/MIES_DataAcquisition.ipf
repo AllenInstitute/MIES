@@ -340,7 +340,7 @@ Function DQ_ApplyAutoBias(panelTitle, BaselineSSAvg, SSResistance)
 		endif
 
 		DEBUGPRINT("current[A] to send=", var=current)
-		AI_UpdateAmpModel(panelTitle, "check_DatAcq_HoldEnable", headStage, value=1)
-		AI_UpdateAmpModel(panelTitle, "setvar_DataAcq_Hold_IC", headstage, value=current * 1e12)
+		AI_UpdateAmpModel(panelTitle, "check_DatAcq_HoldEnable", headStage, value=1, sendToAll=0)
+		AI_UpdateAmpModel(panelTitle, "setvar_DataAcq_Hold_IC", headstage, value=current * 1e12,sendToAll=0)
 	endfor
 End
