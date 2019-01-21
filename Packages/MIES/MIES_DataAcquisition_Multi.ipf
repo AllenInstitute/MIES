@@ -97,6 +97,8 @@ Function DQM_FIFOMonitor(s)
 			isFinished = 1
 		endif
 
+		SCOPE_UpdateGraph(panelTitle, DATA_ACQUISITION_MODE)
+
 		if(isFinished)
 			DQM_RemoveDevice(panelTitle, deviceID)
 			DQM_StopDataAcq(panelTitle, deviceID)

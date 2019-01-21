@@ -93,8 +93,9 @@ Function SCOPE_GetTPTopAxisStart(panelTitle, axisMin)
 	endif
 End
 
-Function SCOPE_UpdateGraph(panelTitle)
+Function SCOPE_UpdateGraph(panelTitle, dataAcqOrTP)
 	string panelTitle
+	variable dataAcqOrTP
 
 	variable i, numADCs, range, numDACs, statsMin, statsMax
 	variable axisMin, axisMax, spacing, additionalSpacing
@@ -124,21 +125,35 @@ Function SCOPE_UpdateGraph(panelTitle)
 		return NaN
 	endif
 
+	if(!GotTPChannelsOnADCs(paneltitle))
+		return NaN
+	endif
+
 	WAVE config = GetITCChanConfigWave(panelTitle)
-	WAVE OscilloscopeData  = GetOscilloscopeWave(panelTitle)
+	WAVE ADCmode = GetADCTypesFromConfig(config)
 	WAVE ADCs = GetADCListFromConfig(config)
 	WAVE DACs = GetDACListFromConfig(config)
 	numADCs = DimSize(ADCs, ROWS)
 	numDACs = DimSize(DACs, ROWS)
+
+	if(dataAcqOrTP == DATA_ACQUISITION_MODE)
+		WAVE TPData = GetTPOscilloscopeWave(panelTitle)
+	else
+		WAVE TPData = GetOscilloscopeWave(panelTitle)
+	endif
 
 	additionalSpacing = DAG_GetNumericalValue(panelTitle, "setvar_Settings_OsciUpdExt") / 100
 
 	// scale the left AD axes
 	for(i = 0; i < numADCs; i += 1)
 
+		if(ADCmode[i] != DAQ_CHANNEL_TYPE_TP)
+			continue
+		endif
+
 		leftAxis = AXIS_SCOPE_AD + num2str(ADCs[i])
 
-		WaveStats/M=1/Q/RMD=[][numDACs + i] OscilloscopeData
+		WaveStats/M=1/Q/RMD=[][numDACs + i] TPData
 
 		statsMin = V_min
 		statsMax = V_max
