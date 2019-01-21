@@ -2653,7 +2653,8 @@ Function WBP_ButtonProc_NewSeed(ba) : ButtonControl
 
 	switch(ba.eventCode)
 		case 2: // mouse up
-			WBP_UpdateControlAndWave(ba.ctrlName, var = GetNonReproducibleRandom())
+			NewRandomSeed()
+			WBP_UpdateControlAndWave(ba.ctrlName, var = GetReproducibleRandom())
 			WBP_UpdatePanelIfAllowed()
 			break
 	endswitch

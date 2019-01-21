@@ -190,7 +190,8 @@ Function TPM_BkrdTPFuncMD(s)
 		tpInput.panelTitle = panelTitle
 		tpInput.duration = duration
 		tpInput.baselineFrac = baselineFrac
-		tpInput.measurementMarker = GetNonreproduciblerandom()
+		NewRandomSeed()
+		tpInput.measurementMarker = Getreproduciblerandom()
 		tpInput.tpLengthPoints = tpLengthPoints
 		tpInput.readTimeStamp = ticks * TICKS_TO_SECONDS
 

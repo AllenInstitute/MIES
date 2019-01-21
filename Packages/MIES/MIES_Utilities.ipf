@@ -2420,20 +2420,25 @@ Function PopCount(value)
 	return count
 End
 
-/// @brief Return a random value in the range (0,1] which can be used as a seed for `SetRandomSeed`
-/// Return different values for each call *not* depending on the RNG seed.
+/// @brief Initializes the random number generator with a new seed between (0,1]
+/// The time base is assumed to be at least 0.1 microsecond precise, so a new seed
+/// is available every 0.1 microsecond.
 ///
-/// Note: Calls `SetRandomSeed` and therefore changes the current RNG sequence
-Function GetNonReproducibleRandom()
+/// Usage example for the case that one needs n non reproducible random numbers.
+/// Whenever the following code block is executed a new seed is set, resulting in a different series of numbers
+///
+/// \rst
+/// .. code-block:: igorpro
+///
+///		Make/D/N=(n) newRandoms
+///		NewRandomSeed() // Initialize random number series with a new seed
+///		newRandoms[] = GetReproducibleRandom() // Get n randoms from the new series
+///
+/// \endrst
+Function NewRandomSeed()
 
-	// reseed the RNG so that we get a different value even if we
-	// have directly set a new seed value before
-	//
-	// new seed: number of milliseconds since computer start scaled
-	// to a number in the range 0 <-> 1.
-	SetRandomSeed/BETR=1 trunc(stopmstimer(-2)/1000)/2^32
+	SetRandomSeed/BETR=1 ((stopmstimer(-2) * 10 ) & 0xffffffff) / 2^32
 
-	return GetReproducibleRandom()
 End
 
 /// @brief Return a random value in the range (0,1] which can be used as a seed for `SetRandomSeed`
@@ -2809,7 +2814,8 @@ Function/S GetUniqueSymbolicPath([prefix])
 		prefix = "temp_"
 	endif
 
-	return prefix + num2istr(GetNonReproducibleRandom() * 1e6)
+	NewRandomSeed()
+	return prefix + num2istr(GetReproducibleRandom() * 1e6)
 End
 
 /// @brief Return a list of all files from the given symbolic path

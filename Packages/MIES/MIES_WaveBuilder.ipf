@@ -1068,12 +1068,14 @@ static Function WB_InitializeSeed(WP, SegWvType, epoch, type, stepCount)
 	// initialize the random seed value if not already done
 	// per epoch seed
 	if(WP[48][epoch][type] == 0)
-		WP[48][epoch][type] = GetNonReproducibleRandom()
+		NewRandomSeed()
+		WP[48][epoch][type] = GetReproducibleRandom()
 	endif
 
 	// global stimset seed
 	if(SegWvType[97] == 0)
-		SegWvType[97] = GetNonReproducibleRandom()
+		NewRandomSeed()
+		SegWvType[97] = GetReproducibleRandom()
 	endif
 
 	if(WP[39][epoch][type])

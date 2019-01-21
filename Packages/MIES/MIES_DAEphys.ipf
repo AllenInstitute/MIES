@@ -4440,7 +4440,8 @@ Function DAP_LockDevice(panelTitle)
 	sessionStartTime = DateTimeInUTC()
 
 	NVAR rngSeed = $GetRNGSeed(panelTitleLocked)
-	rngSeed = GetNonReproducibleRandom()
+	NewRandomSeed()
+	rngSeed = GetReproducibleRandom()
 
 	DAP_UpdateOnsetDelay(panelTitleLocked)
 
