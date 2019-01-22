@@ -386,19 +386,19 @@ static Function DQM_MakeOrUpdateActivDevLstWave(panelTitle, ITCDeviceIDGlobal, A
 	variable numberOfRows
 
 	DFREF dfr = GetActiveITCDevicesFolder()
-	WAVE/Z/SDFR=dfr ActiveDeviceList
+	WAVE/Z/D/SDFR=dfr ActiveDeviceList
 	variable hardwareType = GetHardwareType(panelTitle)
 
 	if(addOrRemoveDevice == 1) // add a ITC device
 		if(!WaveExists(ActiveDeviceList))
-			Make/N=(1, 4) dfr:ActiveDeviceList/WAVE=ActiveDeviceList
+			Make/D/N=(1, 4) dfr:ActiveDeviceList/WAVE=ActiveDeviceList
 			ActiveDeviceList[0][0] = ITCDeviceIDGlobal
 			ActiveDeviceList[0][1] = ADChannelToMonitor
 			ActiveDeviceList[0][2] = StopCollectionPoint
 			ActiveDeviceList[0][3] = hardwareType
 		else
 			numberOfRows = DimSize(ActiveDeviceList, ROWS)
-			Redimension/N=(numberOfRows + 1, 4) ActiveDeviceList
+			Redimension/D/N=(numberOfRows + 1, 4) ActiveDeviceList
 			ActiveDeviceList[numberOfRows][0] = ITCDeviceIDGlobal
 			ActiveDeviceList[numberOfRows][1] = ADChannelToMonitor
 			ActiveDeviceList[numberOfRows][2] = StopCollectionPoint
