@@ -16,19 +16,25 @@
 ///
 /// @anchor AnalysisFunction_V3DescriptionTable
 ///
-/// Event      | Description                                  | Specialities
-/// -----------|----------------------------------------------|---------------------------------------------------------------
-/// Pre DAQ    | Before any DAQ occurs                        | Called before the settings are validated. With Indexing on only
-///            |                                              | the analysis function of the first stimset will receive that event.
-/// Mid Sweep  | Each time when new data is polled            | Available for background DAQ only.
-///            |                                              | Will always be called at least once and
-///            |                                              | also with the full stimset acquired.
-/// Pre Sweep  | Immediately before the sweep starts          | None
-/// Pre Set    | Before a new set starts                      | None
-/// Post Sweep | After each sweep (before possible ITI pause) | None
-/// Post Set   | After a *full* set has been acquired         | This event is not always reached as the user might not acquire all steps
-///            |                                              | of a set or indexing on multiple headstages is used.
-/// Post DAQ   | After all DAQ has been finished              | None
+/// \rst
+///
+/// =========== ============================================== ===============================================================
+/// Event        Description                                    Specialities
+/// =========== ============================================== ===============================================================
+/// Pre DAQ      Before any DAQ occurs                          Called before the settings are validated. With Indexing on only
+///                                                             the analysis function of the first stimset will receive that event.
+/// Mid Sweep    Each time when new data is polled              Available for background DAQ only.
+///                                                             Will always be called at least once and
+///                                                             also with the full stimset acquired.
+/// Pre Sweep    Immediately before the sweep starts            None
+/// Pre Set      Before a new set starts                        None
+/// Post Sweep   After each sweep (before possible ITI pause)   None
+/// Post Set     After a *full* set has been acquired           This event is not always reached as the user might not acquire all steps
+///                                                             of a set or indexing on multiple headstages is used.
+/// Post DAQ     After all DAQ has been finished                None
+/// =========== ============================================== ===============================================================
+///
+/// \endrst
 ///
 /// Useful helper functions are defined in MIES_AnalysisFunctionHelpers.ipf.
 ///
@@ -43,14 +49,20 @@
 /// will immediately do so, thus subsequent analysis functions for other active
 /// headstage will not run.
 ///
-/// Value                             | Event Types | Action
-/// ----------------------------------|-------------|-------
-/// NaN                               | All         | Nothing
-/// 0                                 | All         | Nothing
-/// 1                                 | Pre DAQ     | DAQ is prevented to start
-/// 1                                 | Pre Set     | DAQ is stopped
-/// #ANALYSIS_FUNC_RET_REPURP_TIME    | Mid Sweep   | Current sweep is immediately stopped. Left over time is repurposed for ITI.
-/// #ANALYSIS_FUNC_RET_EARLY_STOP     | Mid Sweep   | Current sweep is immediately stopped without honouring the left over time in a special way.
+/// \rst
+///
+/// ======================================== ============= ============================================================================================
+/// Value                                    Event Types   Action
+/// ======================================== ============= ============================================================================================
+/// NaN                                      All           Nothing
+/// 0                                        All           Nothing
+/// 1                                        Pre DAQ       DAQ is prevented to start
+/// 1                                        Pre Set       DAQ is stopped
+/// :cpp:var:`ANALYSIS_FUNC_RET_REPURP_TIME` Mid Sweep     Current sweep is immediately stopped. Left over time is repurposed for ITI.
+/// :cpp:var:`ANALYSIS_FUNC_RET_EARLY_STOP`  Mid Sweep     Current sweep is immediately stopped without honouring the left over time in a special way.
+/// ======================================== ============= ============================================================================================
+///
+/// \endrst
 ///
 /// @anchor AnalysisFunctionParameters Analayis function user parameters (V3 only)
 ///
