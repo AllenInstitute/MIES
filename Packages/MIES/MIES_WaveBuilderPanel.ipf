@@ -3169,8 +3169,8 @@ End
 ///        parameters extracted from its WPT
 static Function WBP_UpdateParameterWave()
 
-	string params, names, name, type, genericFunc, reqParams
-	string missingParams, reqNames
+	string params, names, name, type, genericFunc, suggParams
+	string missingParams, suggNames, reqNames
 	variable i, numEntries, offset
 
 	Wave/T listWave = WBP_GetAnalysisParamGUIListWave()
@@ -3179,8 +3179,11 @@ static Function WBP_UpdateParameterWave()
 	WAVE/T WPT = GetWaveBuilderWaveTextParam()
 
 	genericFunc = WPT[%$("Analysis function (generic)")][%Set][INDEP_EPOCH_TYPE]
-	reqParams = AFH_GetListOfAnalysisParams(genericFunc, REQUIRED_PARAMS)
-	reqNames  = AFH_GetListOfAnalysisParamNames(reqParams)
+
+	suggParams = AFH_GetListOfAnalysisParams(genericFunc, REQUIRED_PARAMS | OPTIONAL_PARAMS)
+	suggNames = AFH_GetListOfAnalysisParamNames(suggParams)
+
+	reqNames = AFH_GetListOfAnalysisParamNames(AFH_GetListOfAnalysisParams(genericFunc, REQUIRED_PARAMS))
 
 	params = WBP_GetAnalysisParameters()
 	names  = AFH_GetListOfAnalysisParamNames(params)
@@ -3197,14 +3200,15 @@ static Function WBP_UpdateParameterWave()
 
 	offset = DimSize(listWave, ROWS)
 
-	missingParams = GetListDifference(reqNames, names)
+	missingParams = GetListDifference(suggNames, names)
 	numEntries = ItemsInList(missingParams)
 	Redimension/N=(offset + numEntries, -1) listWave, selWave
 
 	for(i = 0; i < numEntries; i += 1)
 		name = StringFromList(i, missingParams)
-		listWave[offset + i][%Name] = name
-		listWave[offset + i][%Type] = AFH_GetAnalysisParamType(name, reqParams, typeCheck = 0)
+		listWave[offset + i][%Name]     = name
+		listWave[offset + i][%Type]     = AFH_GetAnalysisParamType(name, suggParams, typeCheck = 0)
+		listWave[offset + i][%Required] = ToTrueFalse(WhichListItem(name, reqNames) != -1)
 	endfor
 End
 
@@ -3238,7 +3242,7 @@ static Function WBP_ToggleAnalysisParamGUI()
 	ListBox list_params,pos={174.00,19.00},size={453.00,175.00},win=AnalysisParamGUI
 	ListBox list_params,listWave=listWave,win=AnalysisParamGUI
 	ListBox list_params,selWave=selWave,mode=4,proc=WBP_ListBoxProc_AnalysisParams,win=AnalysisParamGUI
-	ListBox list_params,widths={25,15,60},win=AnalysisParamGUI,help={"Visualization of all parameters with types and values"}
+	ListBox list_params widths={25,15,50,13},win=AnalysisParamGUI,help={"Visualization of all parameters with types and values"}
 
 	WBP_UpdateParameterWave()
 
