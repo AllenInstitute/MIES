@@ -3015,21 +3015,26 @@ static Function DAP_SetAmpModeControls(panelTitle, headstage, clampMode)
 	endif
 End
 
-///@brief Sets the DA and AD channel settings according to the headstage mode
-///@param	panelTitle 	Device (used for data acquisition)
-///@param	headstage		channels associated with headstage are set
-///@param	clampMode		clamp mode to activate
+/// @brief Sets the DA and AD channel settings according to the headstage mode
+///
+/// @param panelTitle Device (used for data acquisition)
+/// @param headstage  Channels associated with headstage are set
+/// @param clampMode  Clamp mode to activate
 static Function DAP_SetHeadstageChanControls(panelTitle, headstage, clampMode)
 	string panelTitle
 	variable headstage
 	variable clampMode
 
-	if(DAG_GetHeadstageState(panelTitle, headstage))
-		variable oppositeMode = (clampMode == I_CLAMP_MODE || clampMode == I_EQUAL_ZERO_MODE ? V_CLAMP_MODE : I_CLAMP_MODE)
-		DAP_RemoveClampModeSettings(panelTitle, headstage, oppositeMode)
-		DAP_ApplyClmpModeSavdSettngs(panelTitle, headstage, clampMode)
-		DAP_AllChanDASettings(panelTitle, headStage)
+	variable oppositeMode
+
+	if(!DAG_GetHeadstageState(panelTitle, headstage))
+		return NaN
 	endif
+
+	oppositeMode = (clampMode == I_CLAMP_MODE || clampMode == I_EQUAL_ZERO_MODE ? V_CLAMP_MODE : I_CLAMP_MODE)
+	DAP_RemoveClampModeSettings(panelTitle, headstage, oppositeMode)
+	DAP_ApplyClmpModeSavdSettngs(panelTitle, headstage, clampMode)
+	DAP_AllChanDASettings(panelTitle, headStage)
 End
 
 /// See @ref MCCSyncOverrides for allowed values of `mccMiesSyncOverride`
