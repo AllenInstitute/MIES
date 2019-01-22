@@ -20,7 +20,8 @@ Function DQM_FIFOMonitor(s)
 	STRUCT WMBackgroundStruct &s
 
 	variable deviceID, isFinished, hardwareType
-	variable i, j, err, fifoLatest, result, channel, stopCollectionPoint, lastTP, tpLengthPoints, gotTPChannels
+	variable i, j, err, fifoLatest, result, channel, lastTP, tpLengthPoints, gotTPChannels
+	variable bufferSize
 	string panelTitle, fifoChannelName, fifoName, errMsg
 	WAVE ActiveDeviceList = GetDQMActiveDeviceList()
 	Make/FREE/N=(0) wNIReadOut
@@ -42,16 +43,16 @@ Function DQM_FIFOMonitor(s)
 						continue // no new data -> next device
 					endif
 
-					stopCollectionPoint = ActiveDeviceList[i][%stopCollectionPoint]
-					fifoLatest = min(V_FIFOChunks, stopCollectionPoint)
-					isFinished = (fifoLatest == stopCollectionPoint) ? 1 : 0
-
 					WAVE/WAVE NIDataWave = GetHardwareDataWave(panelTitle)
 					for(j = 0; j < V_FIFOnchans; j += 1)
 
 						fifoChannelName = StringByKey("NAME" + num2str(j), S_Info)
 						channel = str2num(fifoChannelName)
 						WAVE NIChannel = NIDataWave[channel]
+						bufferSize = DimSize(NIChannel, ROWS)
+						fifoLatest = min(V_FIFOChunks, bufferSize)
+						isFinished = (fifoLatest == bufferSize) ? 1 : isFinished
+
 						FIFO2WAVE/R=[fifoPosGlobal, fifoLatest - 1] $fifoName, $fifoChannelName, wNIReadOut; AbortOnRTE
 						multithread NIChannel[fifoPosGlobal, fifoLatest - 1] = wNIReadOut[p - fifoPosGlobal]
 						SetScale/P x, 0, DimDelta(wNIReadOut, ROWS) * 1000, "ms", NIChannel
