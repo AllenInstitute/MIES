@@ -399,13 +399,23 @@ static Function DQM_RemoveDevice(panelTitle, ITCDeviceIDGlobal)
 	string panelTitle
 	variable ITCDeviceIDGlobal
 
+	WAVE ActiveDeviceList = GetDQMActiveDeviceList()
+
+	WAVE ListOfITCDeviceIDGlobal = DQM_GetActiveDeviceIDs()
+	FindValue/V=(ITCDeviceIDGlobal) ListOfITCDeviceIDGlobal
+	DeleteWavePoint(ActiveDeviceList, ROWS, V_Value)
+End
+
+/// @brief Returns a 1D wave containing all active device IDs
+Function/WAVE DQM_GetActiveDeviceIDs()
+
 	variable idCol
 	WAVE ActiveDeviceList = GetDQMActiveDeviceList()
 
-	idCol = FindDimLabel(ActiveDeviceList, 1, "DeviceID")
-	Duplicate/FREE/R=[][idCol] ActiveDeviceList ListOfITCDeviceIDGlobal // duplicates the column that contains the global device ID's
-	FindValue/V=(ITCDeviceIDGlobal) ListOfITCDeviceIDGlobal
-	DeleteWavePoint(ActiveDeviceList, ROWS, V_Value)
+	idCol = FindDimLabel(ActiveDeviceList, COLS, "DeviceID")
+	Duplicate/FREE/R=[][idCol] ActiveDeviceList ListOfITCDeviceIDGlobal
+
+	return ListOfITCDeviceIDGlobal
 End
 
 /// @brief Adds a device to the ActiveDeviceList
