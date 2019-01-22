@@ -484,14 +484,17 @@ Function/S AFH_GetAnalysisFunctions(versionBitMask)
 	return funcListClean
 End
 
-/// @brief Return the list of required analysis function
-/// parameters, possibly including the type, as specified by the function `$func_GetParams`
+/// @brief Return the list of required/optional analysis function
+///        parameters, possibly including the type, as specified by the function
+///        `$func_GetParams`
 ///
 /// @param func Analysis function `V3` which must be valid and existing
-Function/S AFH_GetListOfReqAnalysisParams(func)
+/// @param mode Bit mask values from @ref GetListOfParamsModeFlags
+Function/S AFH_GetListOfAnalysisParams(func, mode)
 	string func
+	variable mode
 
-	string params
+	string params, re
 
 	FUNCREF AF_PROTO_PARAM_GETTER_V3 f = $(func + "_GetParams")
 
@@ -503,7 +506,18 @@ Function/S AFH_GetListOfReqAnalysisParams(func)
 
 	ASSERT(strsearch(params, ";", 0) == -1, "Entries must be separated with ,")
 
-	return params
+	re = "\[.+\]"
+
+	if(mode & REQUIRED_PARAMS && mode & OPTIONAL_PARAMS)
+		return ReplaceString("[", ReplaceString("]", params, ""), "")
+	elseif(mode & REQUIRED_PARAMS)
+		return GrepList(params, re, 1, ",")
+	elseif(mode & OPTIONAL_PARAMS)
+		params = GrepList(params, re, 0, ",")
+		return ReplaceString("[", ReplaceString("]", params, ""), "")
+	else
+		ASSERT(0, "Invalid mode value")
+	endif
 End
 
 /// @defgroup AnalysisFunctionParameterHelpers Analysis Helper functions for dealing with user parameters

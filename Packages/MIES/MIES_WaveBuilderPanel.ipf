@@ -3179,7 +3179,7 @@ static Function WBP_UpdateParameterWave()
 	WAVE/T WPT = GetWaveBuilderWaveTextParam()
 
 	genericFunc = WPT[%$("Analysis function (generic)")][%Set][INDEP_EPOCH_TYPE]
-	reqParams = AFH_GetListOfReqAnalysisParams(genericFunc)
+	reqParams = AFH_GetListOfAnalysisParams(genericFunc, REQUIRED_PARAMS)
 	reqNames  = AFH_GetListOfAnalysisParamNames(reqParams)
 
 	params = WBP_GetAnalysisParameters()

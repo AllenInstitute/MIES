@@ -1055,3 +1055,10 @@ Constant EXPERIMENT_VERSION = 2
 
 /// All experiment versions up to the given value are supported
 Constant ANALYSIS_BROWSER_SUPP_VERSION = 2
+
+/// @name Mode flag for AFH_GetListOfAnalysisParams()
+/// @anchor GetListOfParamsModeFlags
+/// @{
+Constant REQUIRED_PARAMS = 0x1
+Constant OPTIONAL_PARAMS = 0x2
+/// @}

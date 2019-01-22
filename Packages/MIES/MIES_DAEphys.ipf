@@ -2533,7 +2533,7 @@ static Function DAP_CheckStimset(panelTitle, channelType, channel, headstage)
 				return 1
 			elseif(j == GENERIC_EVENT)
 				// check that all required user parameters are supplied
-				reqParams = AFH_GetListOfReqAnalysisParams(func)
+				reqParams = AFH_GetListOfAnalysisParams(func, REQUIRED_PARAMS)
 				if(!IsEmpty(reqParams))
 					reqNames   = AFH_GetListOfAnalysisParamNames(reqParams)
 					suppParams = ExtractAnalysisFunctionParams(stimSet)
