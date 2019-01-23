@@ -659,7 +659,7 @@ Function PA_ShowPulses(win, dfr, pa)
 					endif
 
 					if(pa.showIndividualTraces)
-						pulseTrace = NameOfWave(plotWave) + "_IDX" + num2str(idx)
+						sprintf pulseTrace, "%s_IDX%d", NameOfWave(plotWave), idx
 
 						GetTraceColor(headstage, red, green, blue)
 						AppendToGraph/Q/W=$graph/L=$vertAxis/B=$horizAxis/C=(red, green, blue, 65535 * 0.1) plotWave/TN=$pulseTrace
