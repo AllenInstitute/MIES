@@ -520,7 +520,7 @@ Function PA_ShowPulses(win, dfr, pa)
 	string graph, trace, preExistingGraphs
 	string averageWaveName, convolutionWaveName, pulseTrace, channelTypeStr, str, traceList, traceFullPath
 	variable numChannels, i, j, k, l, idx, numTraces, sweepNo, headstage, numPulsesTotal, numPulses
-	variable first, numEntries, startingPulse, endingPulse, numGraphs
+	variable first, numEntries, startingPulse, endingPulse, numGraphs, traceCount
 	variable startingPulseSett, endingPulseSett, ret, pulseToPulseLength, numSweeps
 	variable red, green, blue, channelNumber, region, channelType, numHeadstages, length
 	variable numChannelTypeTraces, activeRegionCount, activeChanCount, totalOnsetDelay
@@ -659,10 +659,11 @@ Function PA_ShowPulses(win, dfr, pa)
 					endif
 
 					if(pa.showIndividualTraces)
-						sprintf pulseTrace, "%s_IDX%d", NameOfWave(plotWave), idx
+						sprintf pulseTrace, "T%06d%s_IDX%d", traceCount, NameOfWave(plotWave), idx
 
 						GetTraceColor(headstage, red, green, blue)
 						AppendToGraph/Q/W=$graph/L=$vertAxis/B=$horizAxis/C=(red, green, blue, 65535 * 0.1) plotWave/TN=$pulseTrace
+						traceCount += 1
 					endif
 
 					listOfWavesPerChannel[channelNumber] = AddListItem(GetWavesDataFolder(plotWave, 2), listOfWavesPerChannel[channelNumber], ";", inf)
