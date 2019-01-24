@@ -5109,6 +5109,7 @@ Function/Wave GetDA_EphysGuiStateNum(panelTitle)
 	SetDimLabel COLS, 14, $GetSpecialControlLabel(CHANNEL_TYPE_ALARM, CHANNEL_CONTROL_CHECK), wv
 	SetDimLabel COLS, 15, $GetSpecialControlLabel(CHANNEL_TYPE_ASYNC, CHANNEL_CONTROL_ALARM_MIN), wv
 	SetDimLabel COLS, 16, $GetSpecialControlLabel(CHANNEL_TYPE_ASYNC, CHANNEL_CONTROL_ALARM_MAX), wv
+	SetDimLabel COLS, 17, HSMode_delayed, wv
 
 	SetWaveDimLabel(wv, uniqueCtrlList, COLS, startPos = COMMON_CONTROL_GROUP_COUNT_NUM)
 	SetWaveVersion(wv, DA_EPHYS_PANEL_VERSION)

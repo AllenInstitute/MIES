@@ -164,6 +164,21 @@ Function run()
 	list = AddListItem("DAQ_CheckSamplingInterval3", list, ";", INF)
 	list = AddListItem("Test_CheckSamplingInterval3", list, ";", INF)
 
+	list = AddListItem("DAQ_ChangeCMDuringSweep", list, ";", INF)
+	list = AddListItem("Test_ChangeCMDuringSweep", list, ";", INF)
+
+	list = AddListItem("DAQ_ChangeCMDuringSweepWMS", list, ";", INF)
+	list = AddListItem("Test_ChangeCMDuringSweepWMS", list, ";", INF)
+
+	list = AddListItem("DAQ_ChangeCMDuringSweepNoRA", list, ";", INF)
+	list = AddListItem("Test_ChangeCMDuringSweepNoRA", list, ";", INF)
+
+	list = AddListItem("DAQ_ChangeCMDuringITI", list, ";", INF)
+	list = AddListItem("Test_ChangeCMDuringITI", list, ";", INF)
+
+	list = AddListItem("DAQ_ChangeCMDuringITIWithTP", list, ";", INF)
+	list = AddListItem("Test_ChangeCMDuringITIWithTP", list, ";", INF)
+
 #ifndef TESTS_WITH_YOKING
 
 	list = AddListItem("PS_DS_Sub_Run1", list, ";", INF)

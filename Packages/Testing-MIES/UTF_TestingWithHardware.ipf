@@ -216,6 +216,36 @@ Function ChangeStimSet_IGNORE(s)
 	return 1
 End
 
+Function ClampModeDuringSweep_IGNORE(s)
+	STRUCT WMBackgroundStruct &s
+
+	string device = GetSingleDevice()
+
+	NVAR dataAcqRunMode = $GetDataAcqRunMode(device)
+
+	if(dataAcqRunMode != DAQ_NOT_RUNNING)
+		PGC_SetAndActivateControl(device, DAP_GetClampModeControl(I_CLAMP_MODE, 1), val=1)
+		return 1
+	endif
+
+	return 0
+End
+
+Function ClampModeDuringITI_IGNORE(s)
+	STRUCT WMBackgroundStruct &s
+
+	string device = GetSingleDevice()
+
+	NVAR dataAcqRunMode = $GetDataAcqRunMode(device)
+
+	if(dataAcqRunMode != DAQ_NOT_RUNNING && IsDeviceActiveWithBGTask(device, "ITC_TimerMD"))
+		PGC_SetAndActivateControl(device, DAP_GetClampModeControl(I_CLAMP_MODE, 1), val=1)
+		return 1
+	endif
+
+	return 0
+End
+
 /// @brief Structure to hold various common DAQ DAQSettings
 ///
 /// MultiDevice (MD: 1/0)

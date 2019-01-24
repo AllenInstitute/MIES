@@ -2251,3 +2251,244 @@ Function Test_CheckSamplingInterval3()
 	CHECK_EQUAL_VAR(DimOffset(sweepWave, ROWS), 0)
 	CHECK_CLOSE_VAR(DimDelta(sweepWave, ROWS), expectedSampInt, tol=1e-6)
 End
+
+Function DAQ_ChangeCMDuringSweep()
+
+	string ctrl
+
+	STRUCT DAQSettings s
+	InitDAQSettingsFromString(s, "DAQ_MD1_RA1_IDX0_LIDX0_BKG_1_RES_1")
+	AcquireData(s)
+
+	ctrl = DAP_GetClampModeControl(V_CLAMP_MODE, 0)
+	CHECK_EQUAL_VAR(GetCheckBoxState(DEVICE, ctrl), 1)
+
+	ctrl = DAP_GetClampModeControl(V_CLAMP_MODE, 1)
+	CHECK_EQUAL_VAR(GetCheckBoxState(DEVICE, ctrl), 1)
+
+	CtrlNamedBackGround ChangeClampModeDuringSweep, start, period=30, proc=ClampModeDuringSweep_IGNORE
+End
+
+Function Test_ChangeCMDuringSweep()
+
+	variable sweepNo
+	string ctrl
+
+	CHECK_EQUAL_VAR(GetSetVariable(DEVICE, "SetVar_Sweep"), 3)
+
+	sweepNo = AFH_GetLastSweepAcquired(DEVICE)
+	CHECK_EQUAL_VAR(sweepNo, 2)
+
+	ctrl = DAP_GetClampModeControl(V_CLAMP_MODE, 0)
+	CHECK_EQUAL_VAR(GetCheckBoxState(DEVICE, ctrl), 1)
+
+	ctrl = DAP_GetClampModeControl(I_CLAMP_MODE, 1)
+	CHECK_EQUAL_VAR(GetCheckBoxState(DEVICE, ctrl), 1)
+
+	WAVE numericalValues = GetLBNumericalValues(DEVICE)
+
+	WAVE clampMode = GetLastSetting(numericalValues, 0, "Clamp Mode", DATA_ACQUISITION_MODE)
+	CHECK_EQUAL_WAVES(clampMode, {V_CLAMP_MODE, V_CLAMP_MODE, NaN, NaN, NaN, NaN, NaN, NaN, NaN}, mode=1)
+
+	WAVE clampMode = GetLastSetting(numericalValues, 1, "Clamp Mode", DATA_ACQUISITION_MODE)
+	CHECK_EQUAL_WAVES(clampMode, {V_CLAMP_MODE, I_CLAMP_MODE, NaN, NaN, NaN, NaN, NaN, NaN, NaN}, mode=1)
+
+	WAVE clampMode = GetLastSetting(numericalValues, 2, "Clamp Mode", DATA_ACQUISITION_MODE)
+	CHECK_EQUAL_WAVES(clampMode, {V_CLAMP_MODE, I_CLAMP_MODE, NaN, NaN, NaN, NaN, NaN, NaN, NaN}, mode=1)
+End
+
+Function EnableApplyOnModeSwitch_IGNORE()
+	string ctrl
+
+	ctrl = GetPanelControl(CHANNEL_INDEX_ALL_I_CLAMP, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_WAVE)
+	PGC_SetAndActivateControl(DEVICE, ctrl, str = "StimulusSetA_DA_0")
+
+	ctrl = GetPanelControl(CHANNEL_INDEX_ALL_V_CLAMP, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_WAVE)
+	PGC_SetAndActivateControl(DEVICE, ctrl, str = "StimulusSetA_DA_0")
+
+	PGC_SetAndActivateControl(DEVICE, "check_DA_applyOnModeSwitch", val=1)
+End
+
+Function DAQ_ChangeCMDuringSweepWMS()
+
+	string ctrl
+
+	STRUCT DAQSettings s
+	InitDAQSettingsFromString(s, "DAQ_MD1_RA1_IDX0_LIDX0_BKG_1_RES_1")
+	AcquireData(s, preAcquireFunc=EnableApplyOnModeSwitch_IGNORE)
+
+	ctrl = DAP_GetClampModeControl(V_CLAMP_MODE, 0)
+	CHECK_EQUAL_VAR(GetCheckBoxState(DEVICE, ctrl), 1)
+
+	ctrl = DAP_GetClampModeControl(V_CLAMP_MODE, 1)
+	CHECK_EQUAL_VAR(GetCheckBoxState(DEVICE, ctrl), 1)
+
+	CtrlNamedBackGround ChangeClampModeDuringSweep, start, period=30, proc=ClampModeDuringSweep_IGNORE
+End
+
+Function Test_ChangeCMDuringSweepWMS()
+
+	variable sweepNo
+	string ctrl
+
+	CHECK_EQUAL_VAR(GetSetVariable(DEVICE, "SetVar_Sweep"), 3)
+
+	sweepNo = AFH_GetLastSweepAcquired(DEVICE)
+	CHECK_EQUAL_VAR(sweepNo, 2)
+
+	ctrl = DAP_GetClampModeControl(V_CLAMP_MODE, 0)
+	CHECK_EQUAL_VAR(GetCheckBoxState(DEVICE, ctrl), 1)
+
+	ctrl = DAP_GetClampModeControl(I_CLAMP_MODE, 1)
+	CHECK_EQUAL_VAR(GetCheckBoxState(DEVICE, ctrl), 1)
+
+	WAVE numericalValues = GetLBNumericalValues(DEVICE)
+
+	WAVE clampMode = GetLastSetting(numericalValues, 0, "Clamp Mode", DATA_ACQUISITION_MODE)
+	CHECK_EQUAL_WAVES(clampMode, {V_CLAMP_MODE, V_CLAMP_MODE, NaN, NaN, NaN, NaN, NaN, NaN, NaN}, mode=1)
+
+	WAVE clampMode = GetLastSetting(numericalValues, 1, "Clamp Mode", DATA_ACQUISITION_MODE)
+	CHECK_EQUAL_WAVES(clampMode, {V_CLAMP_MODE, I_CLAMP_MODE, NaN, NaN, NaN, NaN, NaN, NaN, NaN}, mode=1)
+
+	WAVE clampMode = GetLastSetting(numericalValues, 2, "Clamp Mode", DATA_ACQUISITION_MODE)
+	CHECK_EQUAL_WAVES(clampMode, {V_CLAMP_MODE, I_CLAMP_MODE, NaN, NaN, NaN, NaN, NaN, NaN, NaN}, mode=1)
+End
+
+Function DAQ_ChangeCMDuringSweepNoRA()
+	string ctrl
+
+	STRUCT DAQSettings s
+	InitDAQSettingsFromString(s, "DAQ_MD1_RA0_IDX0_LIDX0_BKG_1_RES_1")
+	AcquireData(s)
+
+	ctrl = DAP_GetClampModeControl(V_CLAMP_MODE, 0)
+	CHECK_EQUAL_VAR(GetCheckBoxState(DEVICE, ctrl), 1)
+
+	ctrl = DAP_GetClampModeControl(V_CLAMP_MODE, 1)
+	CHECK_EQUAL_VAR(GetCheckBoxState(DEVICE, ctrl), 1)
+
+	CtrlNamedBackGround ChangeClampModeDuringSweep, start, period=30, proc=ClampModeDuringSweep_IGNORE
+End
+
+Function Test_ChangeCMDuringSweepNoRA()
+
+	variable sweepNo
+	string ctrl
+
+	CHECK_EQUAL_VAR(GetSetVariable(DEVICE, "SetVar_Sweep"), 1)
+
+	sweepNo = AFH_GetLastSweepAcquired(DEVICE)
+	CHECK_EQUAL_VAR(sweepNo, 0)
+
+	ctrl = DAP_GetClampModeControl(V_CLAMP_MODE, 0)
+	CHECK_EQUAL_VAR(GetCheckBoxState(DEVICE, ctrl), 1)
+
+	ctrl = DAP_GetClampModeControl(I_CLAMP_MODE, 1)
+	CHECK_EQUAL_VAR(GetCheckBoxState(DEVICE, ctrl), 1)
+
+	WAVE numericalValues = GetLBNumericalValues(DEVICE)
+
+	WAVE clampMode = GetLastSetting(numericalValues, 0, "Clamp Mode", DATA_ACQUISITION_MODE)
+	CHECK_EQUAL_WAVES(clampMode, {V_CLAMP_MODE, V_CLAMP_MODE, NaN, NaN, NaN, NaN, NaN, NaN, NaN}, mode=1)
+End
+
+Function ITISetupNoTP_IGNORE()
+
+	PGC_SetAndActivateControl(device, "Check_DataAcq_Get_Set_ITI", val=0)
+	PGC_SetAndActivateControl(device, "SetVar_DataAcq_ITI", val=2)
+	PGC_SetAndActivateControl(device, "check_Settings_ITITP", val=0)
+End
+
+Function DAQ_ChangeCMDuringITI()
+	string ctrl
+
+	STRUCT DAQSettings s
+	InitDAQSettingsFromString(s, "DAQ_MD1_RA1_IDX0_LIDX0_BKG_1_RES_1")
+	AcquireData(s, preAcquireFunc=ITISetupNoTP_IGNORE)
+
+	ctrl = DAP_GetClampModeControl(V_CLAMP_MODE, 0)
+	CHECK_EQUAL_VAR(GetCheckBoxState(DEVICE, ctrl), 1)
+
+	ctrl = DAP_GetClampModeControl(V_CLAMP_MODE, 1)
+	CHECK_EQUAL_VAR(GetCheckBoxState(DEVICE, ctrl), 1)
+
+	CtrlNamedBackGround ChangeClampModeDuringSweep, start, period=30, proc=ClampModeDuringITI_IGNORE
+End
+
+Function Test_ChangeCMDuringITI()
+
+	variable sweepNo
+	string ctrl
+
+	CHECK_EQUAL_VAR(GetSetVariable(DEVICE, "SetVar_Sweep"), 3)
+
+	sweepNo = AFH_GetLastSweepAcquired(DEVICE)
+	CHECK_EQUAL_VAR(sweepNo, 2)
+
+	ctrl = DAP_GetClampModeControl(V_CLAMP_MODE, 0)
+	CHECK_EQUAL_VAR(GetCheckBoxState(DEVICE, ctrl), 1)
+
+	ctrl = DAP_GetClampModeControl(I_CLAMP_MODE, 1)
+	CHECK_EQUAL_VAR(GetCheckBoxState(DEVICE, ctrl), 1)
+
+	WAVE numericalValues = GetLBNumericalValues(DEVICE)
+
+	WAVE clampMode = GetLastSetting(numericalValues, 0, "Clamp Mode", DATA_ACQUISITION_MODE)
+	CHECK_EQUAL_WAVES(clampMode, {V_CLAMP_MODE, V_CLAMP_MODE, NaN, NaN, NaN, NaN, NaN, NaN, NaN}, mode=1)
+
+	WAVE clampMode = GetLastSetting(numericalValues, 1, "Clamp Mode", DATA_ACQUISITION_MODE)
+	CHECK_EQUAL_WAVES(clampMode, {V_CLAMP_MODE, I_CLAMP_MODE, NaN, NaN, NaN, NaN, NaN, NaN, NaN}, mode=1)
+
+	WAVE clampMode = GetLastSetting(numericalValues, 2, "Clamp Mode", DATA_ACQUISITION_MODE)
+	CHECK_EQUAL_WAVES(clampMode, {V_CLAMP_MODE, I_CLAMP_MODE, NaN, NaN, NaN, NaN, NaN, NaN, NaN}, mode=1)
+End
+
+Function ITISetupWithTP_IGNORE()
+
+	PGC_SetAndActivateControl(device, "Check_DataAcq_Get_Set_ITI", val=0)
+	PGC_SetAndActivateControl(device, "SetVar_DataAcq_ITI", val=2)
+	PGC_SetAndActivateControl(device, "check_Settings_ITITP", val=1)
+End
+
+Function DAQ_ChangeCMDuringITIWithTP()
+	string ctrl
+
+	STRUCT DAQSettings s
+	InitDAQSettingsFromString(s, "DAQ_MD1_RA1_IDX0_LIDX0_BKG_1_RES_1")
+	AcquireData(s, preAcquireFunc=ITISetupWithTP_IGNORE)
+
+	ctrl = DAP_GetClampModeControl(V_CLAMP_MODE, 0)
+	CHECK_EQUAL_VAR(GetCheckBoxState(DEVICE, ctrl), 1)
+
+	ctrl = DAP_GetClampModeControl(V_CLAMP_MODE, 1)
+	CHECK_EQUAL_VAR(GetCheckBoxState(DEVICE, ctrl), 1)
+
+	CtrlNamedBackGround ChangeClampModeDuringSweep, start, period=30, proc=ClampModeDuringITI_IGNORE
+End
+
+Function Test_ChangeCMDuringITIWithTP()
+	variable sweepNo
+	string ctrl
+
+	CHECK_EQUAL_VAR(GetSetVariable(DEVICE, "SetVar_Sweep"), 3)
+
+	sweepNo = AFH_GetLastSweepAcquired(DEVICE)
+	CHECK_EQUAL_VAR(sweepNo, 2)
+
+	ctrl = DAP_GetClampModeControl(V_CLAMP_MODE, 0)
+	CHECK_EQUAL_VAR(GetCheckBoxState(DEVICE, ctrl), 1)
+
+	ctrl = DAP_GetClampModeControl(I_CLAMP_MODE, 1)
+	CHECK_EQUAL_VAR(GetCheckBoxState(DEVICE, ctrl), 1)
+
+	WAVE numericalValues = GetLBNumericalValues(DEVICE)
+
+	WAVE clampMode = GetLastSetting(numericalValues, 0, "Clamp Mode", DATA_ACQUISITION_MODE)
+	CHECK_EQUAL_WAVES(clampMode, {V_CLAMP_MODE, V_CLAMP_MODE, NaN, NaN, NaN, NaN, NaN, NaN, NaN}, mode=1)
+
+	WAVE clampMode = GetLastSetting(numericalValues, 1, "Clamp Mode", DATA_ACQUISITION_MODE)
+	CHECK_EQUAL_WAVES(clampMode, {V_CLAMP_MODE, I_CLAMP_MODE, NaN, NaN, NaN, NaN, NaN, NaN, NaN}, mode=1)
+
+	WAVE clampMode = GetLastSetting(numericalValues, 2, "Clamp Mode", DATA_ACQUISITION_MODE)
+	CHECK_EQUAL_WAVES(clampMode, {V_CLAMP_MODE, I_CLAMP_MODE, NaN, NaN, NaN, NaN, NaN, NaN, NaN}, mode=1)
+End

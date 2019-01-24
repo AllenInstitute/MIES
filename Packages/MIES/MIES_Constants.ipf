@@ -508,7 +508,7 @@ Constant INDEP_HEADSTAGE = 8
 StrConstant UNKNOWN_MIES_VERSION = "unknown version"
 
 /// Number of common control groups in the DA_EPHYS panel
-Constant COMMON_CONTROL_GROUP_COUNT_NUM = 18
+Constant COMMON_CONTROL_GROUP_COUNT_NUM = 19
 Constant COMMON_CONTROL_GROUP_COUNT_TXT = 10
 
 /// Equals 2^5 from `GetKeyState`
@@ -617,8 +617,9 @@ StrConstant NWB_SOURCE_TTL_BIT = "TTLBit"
 /// @name Convenience constants for DAP_UpdateClampmodeTabs() and DAP_ChangeHeadStageMode()
 /// @anchor MCCSyncOverrides
 /// @{
-Constant SKIP_MCC_MIES_SYNCING = 1
-Constant DO_MCC_MIES_SYNCING   = 0
+Constant DO_MCC_MIES_SYNCING   = 0x0
+Constant SKIP_MCC_MIES_SYNCING = 0x1
+Constant NO_SLIDER_MOVEMENT    = 0x2
 /// @}
 
 /// Number of trials to find a suitable port for binding a ZeroMQ service

@@ -112,14 +112,8 @@ static Function DQS_StopDataAcq(panelTitle, [forcedStop])
 
 	if(forcedStop)
 		DQ_StopOngoingDAQ(panelTitle)
-	elseif(RA_IsFirstSweep(panelTitle))
-		if(DAG_GetNumericalValue(panelTitle, "Check_DataAcq1_RepeatAcq"))
-			RA_Start(PanelTitle)
-		else
-			DAP_OneTimeCallAfterDAQ(panelTitle)
-		endif
 	else
-		RA_BckgTPwithCallToRACounter(panelTitle)
+		RA_ContinueOrStop(panelTitle, multiDevice=0)
 	endif
 End
 

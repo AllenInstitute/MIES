@@ -338,15 +338,7 @@ static Function DQM_StopDataAcq(panelTitle, ITCDeviceIDGlobal)
 	HW_StopAcq(hardwareType, ITCDeviceIDGlobal, prepareForDAQ=1, zeroDAC = 1, flags=HARDWARE_ABORT_ON_ERROR)
 
 	SWS_SaveAndScaleITCData(panelTitle)
-	if(RA_IsFirstSweep(panelTitle))
-		if(DAG_GetNumericalValue(panelTitle, "Check_DataAcq1_RepeatAcq"))
-			RA_YokedRAStartMD(panelTitle)
-		else
-			DAP_OneTimeCallAfterDAQ(panelTitle)
-		endif
-	else
-		RA_YokedRABckgTPCallRACounter(panelTitle)
-	endif
+	RA_ContinueOrStop(panelTitle, multiDevice=1)
 End
 
 static Function DQM_BkrdDataAcq(panelTitle, [triggerMode])
