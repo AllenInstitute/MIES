@@ -93,6 +93,56 @@ Function/S CA_DistDAQCreateCacheKey(params)
 	return num2istr(crc) + "Version 2"
 End
 
+/// @brief Cache key generator for @c FindLevel in PA_CalculatePulseStartTimes()
+Function/S CA_PulseStartTimes(wv, totalOnsetDelay)
+	WAVE wv
+	variable totalOnsetDelay
+
+	variable crc
+
+	crc = WaveCRC(0, wv)
+	crc = StringCRC(crc, num2str(totalOnsetDelay))
+
+	return num2istr(crc) + "Version 1"
+End
+
+/// @brief Cache key generator for PA_SmoothDeconv()
+///
+/// @param wv               input wave (average)
+/// @param smoothingFactor  smoothing factor
+/// @param range_pnts       number of points (p) the smoothing was performed
+Function/S CA_SmoothDeconv(wv, smoothingFactor, range_pnts)
+	WAVE wv
+	variable smoothingFactor, range_pnts
+
+	variable crc
+
+	crc = WaveCRC(0, wv)
+	crc = StringCRC(crc, num2str(DimDelta(wv, ROWS)))
+	crc = StringCRC(crc, num2istr(smoothingFactor))
+	crc = StringCRC(crc, num2istr(range_pnts))
+
+	return num2istr(crc) + "Version 1"
+End
+
+/// @brief Cache key generator for PA_Deconvolution()
+///
+/// @param wv  input wave (smoothed average)
+/// @param tau convolution time
+Function/S CA_Deconv(wv, tau)
+	WAVE wv
+	variable tau
+
+	variable crc
+
+	crc = WaveCRC(0, wv)
+	crc = CA_WaveScalingCRC(crc, wv, ROWS)
+	crc = StringCRC(crc, num2str(tau))
+
+
+	return num2istr(crc) + "Version 1"
+End
+
 /// @brief Cache key generator for artefact removal ranges
 Function/S CA_ArtefactRemovalRangesKey(singleSweepDFR, sweepNo)
 	DFREF singleSweepDFR

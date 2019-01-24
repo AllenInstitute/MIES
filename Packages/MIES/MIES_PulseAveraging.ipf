@@ -9,16 +9,22 @@
 static StrConstant PULSE_AVERAGE_GRAPH_PREFIX = "PulseAverage"
 static StrConstant SOURCE_WAVE_TIMESTAMP      = "SOURCE_WAVE_TS"
 
+static StrConstant PA_AVERAGE_WAVE_PREFIX       = "average_"
+static StrConstant PA_DECONVOLUTION_WAVE_PREFIX = "deconv_"
+
+static StrConstant PA_USERDATA_SPECIAL_TRACES = "SPECIAL_TRACES"
+
 /// @brief Return a list of all average graphs
 static Function/S PA_GetAverageGraphs()
 	return WinList(PULSE_AVERAGE_GRAPH_PREFIX + "*", ";", "WIN:1")
 End
 
-static Function/S PA_GetGraphName(multipleGraphs, channelType, channelNumber, activeRegionCount)
-	variable multipleGraphs, channelType, channelNumber, activeRegionCount
+static Function/S PA_GetGraphName(multipleGraphs, channelTypeStr, channelNumber, activeRegionCount)
+	variable multipleGraphs, channelNumber, activeRegionCount
+	string channelTypeStr
 
 	if(multipleGraphs)
-		return PULSE_AVERAGE_GRAPH_PREFIX + "_" + StringFromList(channelType, ITC_CHANNEL_NAMES) + num2str(channelNumber) + "_R" + num2str(activeRegionCount)
+		return PULSE_AVERAGE_GRAPH_PREFIX + "_" + channelTypeStr + num2str(channelNumber) + "_R" + num2str(activeRegionCount)
 	else
 		return PULSE_AVERAGE_GRAPH_PREFIX
 	endif
@@ -32,15 +38,15 @@ End
 /// - Positions the graphs right to `mainWin` in matrix form
 /// - Columns: Regions (aka headstages with pulse starting time information respecting region selection in GUI)
 /// - Rows:    Active unique channels
-static Function/S PA_GetGraph(mainWin, multipleGraphs, channelType, channelNumber, region, activeRegionCount, activeChanCount)
-	string mainWin
-	variable multipleGraphs, channelType, channelNumber, region, activeRegionCount, activeChanCount
+static Function/S PA_GetGraph(mainWin, multipleGraphs, channelTypeStr, channelNumber, region, activeRegionCount, activeChanCount)
+	string mainWin, channelTypeStr
+	variable multipleGraphs, channelNumber, region, activeRegionCount, activeChanCount
 
 	variable top, left, bottom, right, i
 	variable width, height, width_spacing, height_spacing, width_offset, height_offset
 	string win, winAbove
 
-	win = PA_GetGraphName(multipleGraphs, channelType, channelNumber, activeRegionCount)
+	win = PA_GetGraphName(multipleGraphs, channelTypeStr, channelNumber, activeRegionCount)
 
 	if(!WindowExists(win))
 
@@ -71,10 +77,10 @@ static Function/S PA_GetGraph(mainWin, multipleGraphs, channelType, channelNumbe
 		Display/W=(left, top, right, bottom)/K=1/N=$win
 
 		if(multipleGraphs)
-			winAbove = PA_GetGraphName(multipleGraphs, channelType, channelNumber - 1, activeRegionCount)
+			winAbove = PA_GetGraphName(multipleGraphs, channelTypeStr, channelNumber - 1, activeRegionCount)
 
 			for(i = channelNumber - 1; i >=0; i -= 1)
-				winAbove = PA_GetGraphName(multipleGraphs, channelType, i, activeRegionCount)
+				winAbove = PA_GetGraphName(multipleGraphs, channelTypeStr, i, activeRegionCount)
 
 				if(WindowExists(winAbove))
 					DoWindow/B=$winAbove $win
@@ -127,7 +133,14 @@ static Function/WAVE PA_CalculatePulseStartTimes(DA, totalOnsetDelay)
 	variable totalOnsetDelay
 
 	variable level, delta
+	string key
 	ASSERT(totalOnsetDelay >= 0, "Invalid onsetDelay")
+
+	key = CA_PulseStartTimes(DA, totalOnsetDelay)
+	WAVE/Z cache = CA_TryFetchingEntryFromCache(key)
+	if(WaveExists(cache))
+		return cache
+	endif
 
 	WaveStats/Q/M=1/R=(totalOnsetDelay, inf) DA
 	level = V_min + (V_Max - V_Min) * 0.1
@@ -146,6 +159,7 @@ static Function/WAVE PA_CalculatePulseStartTimes(DA, totalOnsetDelay)
 	// round to the last wave point
 	levels[] = levels[p] - mod(levels[p], delta)
 
+	CA_StoreEntryIntoCache(key, levels)
 	return levels
 End
 
@@ -481,6 +495,21 @@ Function PA_GatherSettings(win, pps)
 	pps.pulseAverSett.endingPulse          = GetSetVariable(extPanel, "setvar_pulseAver_endPulse")
 	pps.pulseAverSett.fallbackPulseLength  = GetSetVariable(extPanel, "setvar_pulseAver_fallbackLength")
 	pps.pulseAverSett.regionSlider         = BSP_GetDDAQ(win)
+
+	PA_DeconvGatherSettings(win, pps.pulseAverSett.deconvolution)
+End
+
+/// @brief gather deconvolution settings from PA section in BSP
+Function PA_DeconvGatherSettings(win, deconvolution)
+	string win
+	STRUCT PulseAverageDeconvSettings &deconvolution
+
+	string bsPanel = BSP_GetPanel(win)
+
+	deconvolution.enable = PA_DeconvolutionIsActive(win)
+	deconvolution.smth   = GetSetVariable(bsPanel, "setvar_pulseAver_deconv_smth")
+	deconvolution.tau    = GetSetVariable(bsPanel, "setvar_pulseAver_deconv_tau")
+	deconvolution.range  = GetSetVariable(bsPanel, "setvar_pulseAver_deconv_range")
 End
 
 Function PA_ShowPulses(win, dfr, pa)
@@ -489,13 +518,14 @@ Function PA_ShowPulses(win, dfr, pa)
 	STRUCT PulseAverageSettings &pa
 
 	string graph, trace, preExistingGraphs
-	string averageWaveName, pulseTrace, channelTypeStr, str, traceList, traceFullPath
+	string averageWaveName, convolutionWaveName, pulseTrace, channelTypeStr, str, traceList, traceFullPath
 	variable numChannels, i, j, k, l, idx, numTraces, sweepNo, headstage, numPulsesTotal, numPulses
-	variable first, numEntries, startingPulse, endingPulse, numGraphs
+	variable first, numEntries, startingPulse, endingPulse, numGraphs, traceCount
 	variable startingPulseSett, endingPulseSett, ret, pulseToPulseLength, numSweeps
 	variable red, green, blue, channelNumber, region, channelType, numHeadstages, length
 	variable numChannelTypeTraces, activeRegionCount, activeChanCount, totalOnsetDelay
 	string listOfWaves, channelList, vertAxis, horizAxis, channelNumberStr
+	string baseName, traceName
 	string newlyCreatedGraphs = ""
 
 	win = GetMainWindow(win)
@@ -511,7 +541,7 @@ Function PA_ShowPulses(win, dfr, pa)
 		startingPulseSett = pa.startingPulse
 	endif
 
-	if( pa.endingPulse >= 0)
+	if(pa.endingPulse >= 0)
 		endingPulseSett = pa.endingPulse
 	endif
 
@@ -605,11 +635,12 @@ Function PA_ShowPulses(win, dfr, pa)
 
 				totalOnsetDelay = GetTotalOnsetDelay(numericalValues, sweepNo)
 
-				graph = PA_GetGraph(win, pa.multipleGraphs, channelType, channelNumber, region, activeRegionCount, activeChanCount)
+				graph = PA_GetGraph(win, pa.multipleGraphs, channelTypeStr, channelNumber, region, activeRegionCount, activeChanCount)
 				PA_GetAxes(pa.multipleGraphs, activeRegionCount, activeChanCount, vertAxis, horizAxis)
 
 				if(WhichListItem(graph, newlyCreatedGraphs) == -1)
 					RemoveTracesFromGraph(graph)
+					SetWindow $graph, userData($PA_USERDATA_SPECIAL_TRACES) = ""
 					newlyCreatedGraphs = AddListItem(graph, newlyCreatedGraphs, ";", inf)
 				endif
 
@@ -628,10 +659,11 @@ Function PA_ShowPulses(win, dfr, pa)
 					endif
 
 					if(pa.showIndividualTraces)
-						pulseTrace = NameOfWave(plotWave) + "_IDX" + num2str(idx)
+						sprintf pulseTrace, "T%06d%s_IDX%d", traceCount, NameOfWave(plotWave), idx
 
 						GetTraceColor(headstage, red, green, blue)
 						AppendToGraph/Q/W=$graph/L=$vertAxis/B=$horizAxis/C=(red, green, blue, 65535 * 0.1) plotWave/TN=$pulseTrace
+						traceCount += 1
 					endif
 
 					listOfWavesPerChannel[channelNumber] = AddListItem(GetWavesDataFolder(plotWave, 2), listOfWavesPerChannel[channelNumber], ";", inf)
@@ -664,23 +696,33 @@ Function PA_ShowPulses(win, dfr, pa)
 				listOfWaves = listOfWavesPerChannel[channelNumber]
 				numSweeps   = ItemsInList(listOfWaves) / numPulses
 
-				graph = PA_GetGraph(win, pa.multipleGraphs, channelType, channelNumber, region, activeRegionCount, activeChanCount)
+				graph = PA_GetGraph(win, pa.multipleGraphs, channelTypeStr, channelNumber, region, activeRegionCount, activeChanCount)
 				PA_GetAxes(pa.multipleGraphs, activeRegionCount, activeChanCount, vertAxis, horizAxis)
 
+				baseName = PA_BaseName(channelTypeStr, channelNumber, region)
+				WAVE/Z averageWave = $""
 				if(pa.showAverageTrace && !IsEmpty(listOfWaves))
-
-					averageWaveName = "average_" + channelTypeStr + num2str(channelNumber) + "_HS" + num2str(region)
-
-					ret = MIES_fWaveAverage(listOfWaves, "", 0, 0, GetDataFolder(1, pulseAverageDFR) + averageWaveName, "")
-					ASSERT(ret != -1, "Wave averaging failed")
-
-					WAVE/SDFR=pulseAverageDFR averageWave = $averageWaveName
+					WAVE averageWave = PA_Average(listOfWaves, pulseAverageDFR, PA_AVERAGE_WAVE_PREFIX + baseName)
 
 					GetTraceColor(NUM_HEADSTAGES + 1, red, green, blue)
 					AppendToGraph/Q/W=$graph/L=$vertAxis/B=$horizAxis/C=(red, green, blue) averageWave
+					SetWindow $graph, userData($PA_USERDATA_SPECIAL_TRACES) += NameOfWave(averageWave) + ";"
 
-					AddEntryIntoWaveNoteAsList(averageWave, "SourceWavesForAverage", str=ReplaceString(";", listOfWaves, "|"))
 					listOfWavesPerChannel[channelNumber] = ""
+				endif
+
+				if(pa.deconvolution.enable && (activeRegionCount != activeChanCount) && !IsEmpty(listOfWaves))
+					if(!WaveExists(averageWave))
+						WAVE averageWave = PA_Average(listOfWaves, pulseAverageDFR, PA_AVERAGE_WAVE_PREFIX + baseName)
+					endif
+					traceName = PA_DECONVOLUTION_WAVE_PREFIX + baseName
+					WAVE deconv = PA_Deconvolution(averageWave, pulseAverageDFR, traceName, pa.deconvolution)
+
+					AppendToGraph/Q/W=$graph/L=$vertAxis/B=$horizAxis/C=(0,0,0) deconv/TN=$traceName
+					ModifyGraph/W=$graph lsize($traceName)=2
+
+					SetAxis/Z/W=$graph $horizAxis 0, pa.deconvolution.range
+					SetWindow $graph, userData($PA_USERDATA_SPECIAL_TRACES) += NameOfWave(deconv) + ";"
 				endif
 
 				if(pa.multipleGraphs)
@@ -714,12 +756,116 @@ Function PA_ShowPulses(win, dfr, pa)
 	endfor
 End
 
+/// @brief Generate a static base name for objects in the current averaging folder
+static Function/S PA_BaseName(channelTypeStr, channelNumber, headStage)
+	string channelTypeStr
+	variable channelNumber, headStage
+
+	string baseName
+	baseName = channelTypeStr + num2str(channelNumber)
+	baseName += "_HS" + num2str(headStage)
+
+	return baseName
+End
+
+/// @brief calculate the average wave from a @p listOfWaves
+///
+/// Note: MIES_fWaveAverage() usually takes 5 times longer than CA_AveragingKey()
+///
+/// @returns wave reference to the average wave specified by @p outputDFR and @p outputWaveName
+Function/WAVE PA_Average(listOfWaves, outputDFR, outputWaveName)
+	string listOfWaves
+	DFREF outputDFR
+	string outputWaveName
+
+	WAVE wv = CalculateAverage(listOfWaves, outputDFR, outputWaveName, skipCRC = 1)
+
+	return wv
+End
+
+Function/WAVE PA_SmoothDeconv(input, deconvolution)
+	WAVE input
+	STRUCT PulseAverageDeconvSettings &deconvolution
+
+	variable range_pnts, smoothingFactor
+	string key
+
+	range_pnts = deconvolution.range / DimDelta(input, ROWS)
+	smoothingFactor = max(min(deconvolution.smth, 32767), 1)
+
+	key = CA_SmoothDeconv(input, smoothingFactor, range_pnts)
+	WAVE/Z cache = CA_TryFetchingEntryFromCache(key, options = CA_OPTS_NO_DUPLICATE)
+	if(WaveExists(cache))
+		return cache
+	endif
+
+	Duplicate/FREE/R=[0, range_pnts] input wv
+	Smooth smoothingFactor, wv
+
+	CA_StoreEntryIntoCache(key, wv)
+	return wv
+End
+
+Function/WAVE PA_Deconvolution(average, outputDFR, outputWaveName, deconvolution)
+	WAVE average
+	DFREF outputDFR
+	string outputWaveName
+	STRUCT PulseAverageDeconvSettings &deconvolution
+
+	variable step
+	string key
+
+	WAVE smoothed = PA_SmoothDeconv(average, deconvolution)
+
+	key = CA_Deconv(smoothed, deconvolution.tau)
+	WAVE/Z cache = CA_TryFetchingEntryFromCache(key, options = CA_OPTS_NO_DUPLICATE)
+	if(WaveExists(cache))
+		Duplicate/O cache outputDFR:$outputWaveName/WAVE=wv
+		return wv
+	endif
+
+	Duplicate/O/R=[0, DimSize(smoothed, ROWS) - 2] smoothed outputDFR:$outputWaveName/WAVE=wv
+	step = deconvolution.tau / DimDelta(average, 0)
+	MultiThread wv = step * (smoothed[p + 1] - smoothed[p]) + smoothed[p]
+
+	CA_StoreEntryIntoCache(key, wv)
+	return wv
+End
+
 Function PA_CheckProc_Common(cba) : CheckBoxControl
 	STRUCT WMCheckboxAction &cba
 
 	switch(cba.eventCode)
 		case 2: // mouse up
 			UpdateSweepPlot(cba.win)
+			break
+	endswitch
+
+	return 0
+End
+
+Function PA_CheckProc_Average(cba) : CheckBoxControl
+	STRUCT WMCheckboxAction &cba
+
+	switch(cba.eventCode)
+		case 2: // mouse up
+			BSP_SetDeconvControlStatus(cba.win)
+			UpdateSweepPlot(cba.win)
+			break
+	endswitch
+
+	return 0
+End
+
+Function PA_CheckProc_Deconvolution(cba) : CheckBoxControl
+	STRUCT WMCheckboxAction &cba
+
+	switch( cba.eventCode )
+		case 2: // mouse up
+			BSP_SetDeconvControlStatus(cba.win)
+			PA_UpdateSweepPlotDeconvolution(cba.win, cba.checked)
+			break
+		case -1: // control being killed
 			break
 	endswitch
 
@@ -745,4 +891,123 @@ Function PA_IsActive(win)
 	string win
 
 	return BSP_IsActive(win, MIES_BSP_PA)
+End
+
+/// @brief checks if "show average trace" in PA is activated.
+Function PA_AverageIsActive(win)
+	string win
+
+	string bsPanel
+
+	if(!PA_IsActive(win))
+		return 0
+	endif
+
+	bsPanel = BSP_GetPanel(win)
+	return GetCheckboxState(bsPanel, "check_pulseAver_showAver")
+End
+
+/// @brief checks if "show average trace" in PA is activated.
+Function PA_DeconvolutionIsActive(win)
+	string win
+
+	string bsPanel
+
+	if(!PA_AverageIsActive(win))
+		return 0
+	endif
+
+	bsPanel = BSP_GetPanel(win)
+	return GetCheckboxState(bsPanel, "check_pulseAver_deconv")
+End
+
+/// @brief Update deconvolution traces in Sweep Plots
+Function PA_UpdateSweepPlotDeconvolution(win, show)
+	string win
+	variable show
+
+	string graph, graphs, horizAxis, vertAxis, axisFlags
+	string traceList, traceListOut, traceName, traceMatch, traceInformation
+	string baseName, bsPanel
+	variable i, numGraphs, multipleGraphs, j, numTraces, numDiagonalElements
+	STRUCT PulseAverageDeconvSettings deconvolution
+
+	win = GetMainWindow(win)
+	if(!PA_IsActive(win))
+		return 0
+	endif
+
+	bsPanel = BSP_GetPanel(win)
+	PA_DeconvGatherSettings(bsPanel, deconvolution)
+
+	if(!!show)
+		traceMatch = PA_AVERAGE_WAVE_PREFIX
+	else
+		traceMatch = PA_DECONVOLUTION_WAVE_PREFIX
+	endif
+
+	multipleGraphs = GetCheckboxState(bsPanel, "check_pulseAver_multGraphs")
+	if(multipleGraphs)
+		graphs = PA_GetAverageGraphs()
+		numGraphs = ItemsInList(graphs)
+	else
+		graphs = AddListItem(PULSE_AVERAGE_GRAPH_PREFIX, "")
+		numGraphs = 1
+	endif
+
+	for(i = 0; i < numGraphs; i += 1)
+		graph = StringFromList(i, graphs)
+
+		traceList = GetUserData(graph, "", PA_USERDATA_SPECIAL_TRACES)
+		traceListOut = traceList
+		ASSERT(ItemsInList(traceList) > 0, "UserData empty. No average Traces? You could call TraceNameList to check.")
+		traceList = ListMatch(traceList, traceMatch + "*")
+
+		numTraces = ItemsInList(traceList)
+		if(show)
+			numDiagonalElements = round(sqrt(numTraces)) // assume square matrix
+		endif
+		for(j = 0; j < numTraces; j += 1)
+			traceName = StringFromList(j, traceList)
+
+			traceInformation = TraceInfo(graph, traceName, 0)
+			vertAxis  = StringByKey("YAXIS", traceInformation)
+			horizAxis = StringByKey("XAXIS", traceInformation)
+			axisFlags = StringByKey("AXISFLAGS", traceInformation)
+			if(!IsEmpty(axisFlags))
+				ASSERT(StringMatch(axisFlags, "*/B*"), "Axis not handled.")
+				ASSERT(StringMatch(axisFlags, "*/L*"), "Axis not handled.")
+			endif
+
+			if(!show)
+				RemoveFromGraph/W=$graph $traceName
+				SetAxis/Z/W=$graph $horizAxis 0, *
+				traceListOut = RemoveFromList(traceName, traceListOut)
+				continue
+			endif
+
+			// skip diagonal elements
+			if(mod(j, numDiagonalElements) == floor(j / numDiagonalElements))
+				continue
+			endif
+
+			WAVE averageWave = TraceNameToWaveRef(graph, traceName)
+			DFREF pulseAverageDFR = GetWavesDataFolderDFR(averageWave)
+
+			SplitString/E=(traceMatch + "(.*)") NameOfWave(averageWave), baseName
+			ASSERT(V_flag == 1, "Unexpected Trace Name")
+
+			traceName = PA_DECONVOLUTION_WAVE_PREFIX + baseName
+			ASSERT(WhichListItem(traceName, traceList) == -1, "Unexpected Behavior: Trace already in graph.")
+			WAVE deconv = PA_Deconvolution(averageWave, pulseAverageDFR, traceName, deconvolution)
+
+			AppendToGraph/Q/W=$graph/L=$vertAxis/B=$horizAxis/C=(0,0,0) deconv/TN=$traceName
+			ModifyGraph/W=$graph lsize($traceName)=2
+			SetAxis/Z/W=$graph $horizAxis 0, deconvolution.range
+
+			traceListOut = AddListItem(NameOfWave(deconv), traceListOut)
+		endfor
+
+		SetWindow $graph, userData($PA_USERDATA_SPECIAL_TRACES) = traceListOut
+	endfor
 End

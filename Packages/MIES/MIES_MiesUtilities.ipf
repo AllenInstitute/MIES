@@ -3004,7 +3004,7 @@ Function PostPlotTransformations(graph, pps)
 		TimeAlignmentIfReq(graph, traces, pps.timeAlignMode, pps.timeAlignRefTrace, pps.timeAlignLevel)
 	endif
 
-	AverageWavesFromSameYAxisIfReq(graph, traces, pps.averageTraces, pps.averageDataFolder,pps.hideSweep)
+	AverageWavesFromSameYAxisIfReq(graph, traces, pps.averageTraces, pps.averageDataFolder, pps.hideSweep)
 	AR_HighlightArtefactsEntry(graph)
 	PA_ShowPulses(graph, pps.averageDataFolder, pps.pulseAverSett)
 
@@ -3225,15 +3225,19 @@ End
 /// @param listOfWaves       list of 1D waves to average
 /// @param averageDataFolder folder where the data is to be stored
 /// @param averageWaveName   base name of the averaged data
+/// @param skipCRC           [optional, defaults to false] Add the average wave CRC as suffix to its name
 ///
 /// @return wave reference to the average wave
-Function/WAVE CalculateAverage(listOfWaves, averageDataFolder, averageWaveName)
+Function/WAVE CalculateAverage(listOfWaves, averageDataFolder, averageWaveName, [skipCRC])
 	string listOfWaves
 	DFREF averageDataFolder
 	string averageWaveName
+	variable skipCRC
 
 	variable ret, crc
 	string key, wvName
+
+	skipCRC = ParamIsDefault(skipCRC) ? 0 : !!skipCRC
 
 	WAVE waveRefs = ListToWaveRefWave(listOfWaves, 1)
 	key = CA_AveragingKey(waveRefs)
@@ -3241,7 +3245,10 @@ Function/WAVE CalculateAverage(listOfWaves, averageDataFolder, averageWaveName)
 	WAVE/Z freeAverageWave = CA_TryFetchingEntryFromCache(key)
 
 	if(WaveExists(freeAverageWave)) // found in the cache
-		wvName = averageWaveName + "_" + num2istr(GetNumberFromWaveNote(freeAverageWave, "DataCRC"))
+		wvName = averageWaveName
+		if(!skipCRC)
+			wvName += "_" + num2istr(GetNumberFromWaveNote(freeAverageWave, "DataCRC"))
+		endif
 		WAVE/Z/SDFR=averageDataFolder permAverageWave = $wvName
 
 		if(!WaveExists(permAverageWave))
@@ -3257,14 +3264,18 @@ Function/WAVE CalculateAverage(listOfWaves, averageDataFolder, averageWaveName)
 
 	WAVE/SDFR=averageDataFolder averageWave = $averageWaveName
 
-	crc = WaveCRC(0, averageWave)
-	wvName = averageWaveName + "_" + num2istr(crc)
+	wvName = averageWaveName
 
-	WAVE/Z/SDFR=averageDataFolder averageWaveToDelete = $wvName
-	KillOrMoveToTrash(wv=averageWaveToDelete)
-	MoveWave averageWave, averageDataFolder:$wvName
+	if(!skipCRC)
+		crc = WaveCRC(0, averageWave)
+		wvName += "_" + num2istr(crc)
 
-	SetNumberInWaveNote(averageWave, "DataCRC", crc)
+		WAVE/Z/SDFR=averageDataFolder averageWaveToDelete = $wvName
+		KillOrMoveToTrash(wv=averageWaveToDelete)
+		MoveWave averageWave, averageDataFolder:$wvName
+		SetNumberInWaveNote(averageWave, "DataCRC", crc)
+	endif
+
 	AddEntryIntoWaveNoteAsList(averageWave, "SourceWavesForAverage", str=ReplaceString(";", listOfWaves, "|"))
 	CA_StoreEntryIntoCache(key, averageWave)
 
