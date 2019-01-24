@@ -2444,7 +2444,7 @@ End
 /// @brief Return a random value in the range (0,1] which can be used as a seed for `SetRandomSeed`
 ///
 /// Return a reproducible random number depending on the RNG seed.
-Function GetReproducibleRandom()
+threadsafe Function GetReproducibleRandom()
 
 	variable randomSeed
 
