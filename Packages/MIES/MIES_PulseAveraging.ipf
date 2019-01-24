@@ -517,7 +517,7 @@ Function PA_ShowPulses(win, dfr, pa)
 	DFREF dfr
 	STRUCT PulseAverageSettings &pa
 
-	string graph, trace, preExistingGraphs
+	string graph, preExistingGraphs
 	string averageWaveName, convolutionWaveName, pulseTrace, channelTypeStr, str, traceList, traceFullPath
 	variable numChannels, i, j, k, l, idx, numTraces, sweepNo, headstage, numPulsesTotal, numPulses
 	variable first, numEntries, startingPulse, endingPulse, numGraphs, traceCount
@@ -683,7 +683,6 @@ Function PA_ShowPulses(win, dfr, pa)
 					continue
 				endif
 
-				trace            = traceData[idx][%traceName]
 				sweepNo          = str2num(traceData[idx][%sweepNumber])
 				channelNumberStr = traceData[idx][%channelNumber]
 				channelNumber    = str2num(channelNumberStr)
