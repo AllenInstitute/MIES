@@ -113,7 +113,8 @@ Function TP_StoreTP(panelTitle, TPWave, tpMarker, hsList)
 	WAVE/WAVE storedTP = GetStoredTestPulseWave(panelTitle)
 	index = GetNumberFromWaveNote(storedTP, NOTE_INDEX)
 	EnsureLargeEnoughWave(storedTP, minimumSize=index)
-	Note/K TPWave, "TimeStamp: " + GetISO8601TimeStamp(numFracSecondsDigits = 3)
+	Note/K TPWave
+	SetStringInWaveNote(TPWave, "TimeStamp", GetISO8601TimeStamp(numFracSecondsDigits = 3))
 	SetNumberInWaveNote(TPWave, "TPMarker", tpMarker, format="%d")
 	SetStringInWaveNote(TPWave, "Headstages", hsList)
 	storedTP[index++] = TPWave
