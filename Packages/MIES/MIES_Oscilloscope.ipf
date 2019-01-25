@@ -534,7 +534,7 @@ Function SCOPE_UpdateOscilloscopeData(panelTitle, dataAcqOrTP, [chunk, fifoPos, 
 			ASSERT(tpStart <= tpEnd, "New fifopos is smaller than previous fifopos")
 			Make/FREE/D/N=(tpEnd - tpStart) tpMarker
 			NewRandomSeed()
-			tpMarker[] = GetReproducibleRandom()
+			tpMarker[] = GetUniqueInteger()
 
 			for(i = tpStart;i < tpEnd; i += 1)
 

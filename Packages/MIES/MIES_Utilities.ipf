@@ -2480,6 +2480,14 @@ threadsafe Function GetReproducibleRandom()
 	return randomSeed
 End
 
+/// @brief Return a unique integer
+///
+/// The returned values can *not* be used for statistical purposes
+/// as the distribution is not uniform anymore.
+Function GetUniqueInteger()
+	return (GetReproducibleRandom() * 2^33) & 0xFFFFFFFF
+End
+
 /// @brief Add a string prefix to each list item and
 /// return the new list
 Function/S AddPrefixToEachListItem(prefix, list)
