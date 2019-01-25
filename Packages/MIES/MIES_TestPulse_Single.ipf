@@ -201,7 +201,8 @@ static Function TPS_SendToAsyncAnalysis(panelTitle, timeStamp)
 	tpInput.panelTitle = panelTitle
 	tpInput.duration = duration
 	tpInput.baselineFrac = baselineFrac
-	tpInput.measurementMarker = GetNonreproduciblerandom()
+	NewRandomSeed()
+	tpInput.measurementMarker = Getreproduciblerandom()
 	tpInput.tpLengthPoints = TP_GetTestPulseLengthInPoints(panelTitle, TEST_PULSE_MODE)
 	tpInput.readTimeStamp = timeStamp
 	tpInput.activeADCs = numADCs
