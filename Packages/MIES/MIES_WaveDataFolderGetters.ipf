@@ -2163,14 +2163,19 @@ End
 ///
 /// The rows have NUM_HEADSTAGES size and are initialized with NaN
 ///
+/// Version 1:
+/// - stores number of headstages entrys, NaN when headstage not active
+/// Version 2:
+/// - upgraded precision to double
+///
 /// Unit: MOhm (1e6 Ohm)
 Function/Wave GetInstResistanceWave(panelTitle)
 	string 	panelTitle
 
-	variable version = 1
+	variable version = 2
 
 	DFREF dfr = GetDeviceTestPulse(panelTitle)
-	WAVE/Z/SDFR=dfr wv = InstResistance
+	WAVE/D/Z/SDFR=dfr wv = InstResistance
 
 	if(ExistsWithCorrectLayoutVersion(wv, version))
 
@@ -2178,12 +2183,12 @@ Function/Wave GetInstResistanceWave(panelTitle)
 
 	elseif(WaveExists(wv))
 		// Unversioned wave stored only active headstages
-		Redimension/N=(NUM_HEADSTAGES) wv
+		Redimension/D/N=(NUM_HEADSTAGES) wv
 		wv = NaN
 
 	else
 
-		Make/N=(NUM_HEADSTAGES) dfr:InstResistance/Wave=wv
+		Make/D/N=(NUM_HEADSTAGES) dfr:InstResistance/Wave=wv
 		wv = NaN
 
 	endif
@@ -2197,14 +2202,19 @@ End
 ///
 /// The rows have NUM_HEADSTAGES size and are initialized with NaN
 ///
+/// Version 1:
+/// - stores number of headstages entrys, NaN when headstage not active
+/// Version 2:
+/// - upgraded precision to double
+///
 /// Unit: mV (1e-3 Volt) for IC, pA (1e-12 Amps) for VC
 Function/Wave GetBaselineAverage(panelTitle)
 	string 	panelTitle
 
-	variable version = 1
+	variable version = 2
 
 	DFREF dfr = GetDeviceTestPulse(panelTitle)
-	WAVE/Z/SDFR=dfr wv = BaselineSSAvg
+	WAVE/D/Z/SDFR=dfr wv = BaselineSSAvg
 
 	if(ExistsWithCorrectLayoutVersion(wv, version))
 
@@ -2212,12 +2222,12 @@ Function/Wave GetBaselineAverage(panelTitle)
 
 	elseif(WaveExists(wv))
 		// Unversioned wave stored only active headstages
-		Redimension/N=(NUM_HEADSTAGES) wv
+		Redimension/D/N=(NUM_HEADSTAGES) wv
 		wv = NaN
 
 	else
 
-		Make/N=(NUM_HEADSTAGES) dfr:BaselineSSAvg/Wave=wv
+		Make/D/N=(NUM_HEADSTAGES) dfr:BaselineSSAvg/Wave=wv
 		wv = NaN
 
 	endif
@@ -2231,14 +2241,19 @@ End
 ///
 /// The rows have NUM_HEADSTAGES size and are initialized with NaN
 ///
+/// Version 1:
+/// - stores number of headstages entrys, NaN when headstage not active
+/// Version 2:
+/// - upgraded precision to double
+///
 /// Unit: MOhm (1e6 Ohm)
 Function/Wave GetSSResistanceWave(panelTitle)
 	string 	panelTitle
 
-	variable version = 1
+	variable version = 2
 
 	DFREF dfr = GetDeviceTestPulse(panelTitle)
-	WAVE/Z/SDFR=dfr wv = SSResistance
+	WAVE/D/Z/SDFR=dfr wv = SSResistance
 
 	if(ExistsWithCorrectLayoutVersion(wv, version))
 
@@ -2246,12 +2261,12 @@ Function/Wave GetSSResistanceWave(panelTitle)
 
 	elseif(WaveExists(wv))
 		// Unversioned wave stored only active headstages
-		Redimension/N=(NUM_HEADSTAGES) wv
+		Redimension/D/N=(NUM_HEADSTAGES) wv
 		wv = NaN
 
 	else
 
-		Make/N=(NUM_HEADSTAGES) dfr:SSResistance/Wave=wv
+		Make/D/N=(NUM_HEADSTAGES) dfr:SSResistance/Wave=wv
 		wv = NaN
 
 	endif
@@ -2268,18 +2283,33 @@ End
 ///
 /// @todo change columns to hold entries for each headstage, num_cols = NUM_HEADSTAGES
 ///
+/// Version 1:
+/// - upgraded precision to double
+///
 /// Unit: Unit: mV (1e-3 Volt) for IC, pA (1e-12 Amps) for VC
 Function/Wave GetGetBaselineBuffer(panelTitle)
 	string 	panelTitle
 
-	dfref dfr = GetDeviceTestPulse(panelTitle)
-	WAVE/Z/SDFR=dfr wv = TPBaselineBuffer
+	variable version = 1
 
-	if(WaveExists(wv))
+	dfref dfr = GetDeviceTestPulse(panelTitle)
+	WAVE/D/Z/SDFR=dfr wv = TPBaselineBuffer
+
+	if(ExistsWithCorrectLayoutVersion(wv, version))
+
 		return wv
+
+	elseif(WaveExists(wv))
+
+		Redimension/D/N=(-1, -1) wv
+
+	else
+
+		Make/D/N=(0, 0) dfr:TPBaselineBuffer/Wave=wv
+
 	endif
 
-	Make/N=(0, 0) dfr:TPBaselineBuffer/Wave=wv
+	SetWaveVersion(wv, version)
 
 	return wv
 End
@@ -2291,18 +2321,33 @@ End
 ///
 /// @todo change columns to hold entries for each headstage, num_cols = NUM_HEADSTAGES
 ///
+/// Version 1:
+/// - upgraded precision to double
+///
 /// Unit: MOhm (1e6 Ohm)
 Function/Wave GetInstantaneousBuffer(panelTitle)
 	string 	panelTitle
 
-	dfref dfr = GetDeviceTestPulse(panelTitle)
-	WAVE/Z/SDFR=dfr wv = TPInstBuffer
+	variable version = 1
 
-	if(WaveExists(wv))
+	dfref dfr = GetDeviceTestPulse(panelTitle)
+	WAVE/D/Z/SDFR=dfr wv = TPInstBuffer
+
+	if(ExistsWithCorrectLayoutVersion(wv, version))
+
 		return wv
+
+	elseif(WaveExists(wv))
+
+		Redimension/D/N=(-1, -1) wv
+
+	else
+
+		Make/D/N=(0, 0) dfr:TPInstBuffer/Wave=wv
+
 	endif
 
-	Make/N=(0, 0) dfr:TPInstBuffer/Wave=wv
+	SetWaveVersion(wv, version)
 
 	return wv
 End
@@ -2314,18 +2359,33 @@ End
 ///
 /// @todo change columns to hold entries for each headstage, num_cols = NUM_HEADSTAGES
 ///
+/// Version 1:
+/// - upgraded precision to double
+///
 /// Unit: MOhm (1e6 Ohm)
 Function/Wave GetSteadyStateBuffer(panelTitle)
 	string 	panelTitle
 
-	dfref dfr = GetDeviceTestPulse(panelTitle)
-	WAVE/Z/SDFR=dfr wv = TPSSBuffer
+	variable version = 1
 
-	if(WaveExists(wv))
+	dfref dfr = GetDeviceTestPulse(panelTitle)
+	WAVE/D/Z/SDFR=dfr wv = TPSSBuffer
+
+	if(ExistsWithCorrectLayoutVersion(wv, version))
+
 		return wv
+
+	elseif(WaveExists(wv))
+
+		Redimension/D/N=(-1, -1) wv
+
+	else
+
+		Make/D/N=(0, 0) dfr:TPSSBuffer/Wave=wv
+
 	endif
 
-	Make/N=(0, 0) dfr:TPSSBuffer/Wave=wv
+	SetWaveVersion(wv, version)
 
 	return wv
 End
