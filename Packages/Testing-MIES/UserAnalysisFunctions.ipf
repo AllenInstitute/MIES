@@ -348,7 +348,7 @@ Function Params1_V3(panelTitle, s)
 End
 
 Function/S Params2_V3_GetParams()
-	return "MyStr:string,MyVar"
+	return "MyStr:string,MyVar,[OptionalParam]"
 End
 
 Function Params2_V3(panelTitle, s)

@@ -6114,19 +6114,22 @@ End
 /// @brief Return the list wave for the analysis parameter GUI
 Function/WAVE WBP_GetAnalysisParamGUIListWave()
 
-	variable versionOfWave = 1
+	variable versionOfWave = 2
 	DFREF dfr = GetWaveBuilderDataPath()
 	WAVE/T/Z/SDFR=dfr wv = analysisGUIListWave
 
 	if(ExistsWithCorrectLayoutVersion(wv, versionOfWave))
 		return wv
+	elseif(WaveExists(wv))
+		Redimension/N=(-1, 4) wv
+	else
+		Make/T/N=(0, 4) dfr:analysisGUIListWave/WAVE=wv
 	endif
-
-	Make/T/N=(0, 3) dfr:analysisGUIListWave/WAVE=wv
 
 	SetDimLabel COLS, 0, Name, wv
 	SetDimLabel COLS, 1, Type, wv
 	SetDimLabel COLS, 2, Value, wv
+	SetDimLabel COLS, 3, Required, wv
 
 	SetWaveVersion(wv, versionOfWave)
 

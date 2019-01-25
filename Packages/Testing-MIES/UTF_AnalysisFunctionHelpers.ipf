@@ -584,3 +584,93 @@ End
 
 /// END ED_AddEntryToLabnotebook
 /// @}
+
+/// BEGIN AFH_GetListOfAnalysisParams
+/// @{
+
+Function/S AnaFunc_WrongSep_GetParams()
+	return "param1;param2"
+End
+
+Function/S AnaFunc_1_GetParams()
+	return "param1"
+End
+
+Function/S AnaFunc_WithType_GetParams()
+	return "param1:variable"
+End
+
+Function/S AnaFunc_WithOptionals_GetParams()
+	return "param1,[optParam1],param2,[optParam2]"
+End
+
+Function AGLAP_MissingFunc()
+
+	string expected = ""
+	string actual = AFH_GetListOfAnalysisParams("I_DONT_EXIST", REQUIRED_PARAMS)
+
+	CHECK_EQUAL_STR(expected, actual)
+End
+
+Function AGLAP_WrongSeparator()
+
+	try
+		AFH_GetListOfAnalysisParams("AnaFunc_WrongSep", REQUIRED_PARAMS)
+		FAIL()
+	catch
+		PASS()
+	endtry
+
+	try
+		AFH_GetListOfAnalysisParams("AnaFunc_WrongSep", OPTIONAL_PARAMS)
+		FAIL()
+	catch
+		PASS()
+	endtry
+End
+
+Function AGLAP_InvalidMode()
+
+	try
+		AFH_GetListOfAnalysisParams("AnaFunc_1", 4)
+		FAIL()
+	catch
+		PASS()
+	endtry
+End
+
+Function AGLAP_Works1()
+
+	string expected, actual
+
+	expected = "param1,"
+	actual = AFH_GetListOfAnalysisParams("AnaFunc_1", REQUIRED_PARAMS)
+
+	CHECK_EQUAL_STR(expected, actual)
+
+	expected = ""
+	actual = AFH_GetListOfAnalysisParams("AnaFunc_1", OPTIONAL_PARAMS)
+
+	CHECK_EQUAL_STR(expected, actual)
+End
+
+Function AGLAP_WorksWithType()
+
+	string expected, actual
+
+	expected = "param1,param2,"
+	actual = AFH_GetListOfAnalysisParams("AnaFunc_WithOptionals", REQUIRED_PARAMS)
+
+	CHECK_EQUAL_STR(expected, actual)
+
+	expected = "optParam1,optParam2,"
+	actual = AFH_GetListOfAnalysisParams("AnaFunc_WithOptionals", OPTIONAL_PARAMS)
+
+	expected = "param1,optParam1,param2,optParam2"
+	actual = AFH_GetListOfAnalysisParams("AnaFunc_WithOptionals", REQUIRED_PARAMS | OPTIONAL_PARAMS)
+
+	CHECK_EQUAL_STR(expected, actual)
+End
+
+/// END AFH_GetListOfAnalysisParams
+/// @}

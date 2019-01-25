@@ -16,19 +16,25 @@
 ///
 /// @anchor AnalysisFunction_V3DescriptionTable
 ///
-/// Event      | Description                                  | Specialities
-/// -----------|----------------------------------------------|---------------------------------------------------------------
-/// Pre DAQ    | Before any DAQ occurs                        | Called before the settings are validated. With Indexing on only
-///            |                                              | the analysis function of the first stimset will receive that event.
-/// Mid Sweep  | Each time when new data is polled            | Available for background DAQ only.
-///            |                                              | Will always be called at least once and
-///            |                                              | also with the full stimset acquired.
-/// Pre Sweep  | Immediately before the sweep starts          | None
-/// Pre Set    | Before a new set starts                      | None
-/// Post Sweep | After each sweep (before possible ITI pause) | None
-/// Post Set   | After a *full* set has been acquired         | This event is not always reached as the user might not acquire all steps
-///            |                                              | of a set or indexing on multiple headstages is used.
-/// Post DAQ   | After all DAQ has been finished              | None
+/// \rst
+///
+/// =========== ============================================== ===============================================================
+/// Event        Description                                    Specialities
+/// =========== ============================================== ===============================================================
+/// Pre DAQ      Before any DAQ occurs                          Called before the settings are validated. With Indexing on only
+///                                                             the analysis function of the first stimset will receive that event.
+/// Mid Sweep    Each time when new data is polled              Available for background DAQ only.
+///                                                             Will always be called at least once and
+///                                                             also with the full stimset acquired.
+/// Pre Sweep    Immediately before the sweep starts            None
+/// Pre Set      Before a new set starts                        None
+/// Post Sweep   After each sweep (before possible ITI pause)   None
+/// Post Set     After a *full* set has been acquired           This event is not always reached as the user might not acquire all steps
+///                                                             of a set or indexing on multiple headstages is used.
+/// Post DAQ     After all DAQ has been finished                None
+/// =========== ============================================== ===============================================================
+///
+/// \endrst
 ///
 /// Useful helper functions are defined in MIES_AnalysisFunctionHelpers.ipf.
 ///
@@ -43,30 +49,56 @@
 /// will immediately do so, thus subsequent analysis functions for other active
 /// headstage will not run.
 ///
-/// Value                             | Event Types | Action
-/// ----------------------------------|-------------|-------
-/// NaN                               | All         | Nothing
-/// 0                                 | All         | Nothing
-/// 1                                 | Pre DAQ     | DAQ is prevented to start
-/// 1                                 | Pre Set     | DAQ is stopped
-/// #ANALYSIS_FUNC_RET_REPURP_TIME    | Mid Sweep   | Current sweep is immediately stopped. Left over time is repurposed for ITI.
-/// #ANALYSIS_FUNC_RET_EARLY_STOP     | Mid Sweep   | Current sweep is immediately stopped without honouring the left over time in a special way.
+/// \rst
+///
+/// ======================================== ============= ============================================================================================
+/// Value                                    Event Types   Action
+/// ======================================== ============= ============================================================================================
+/// NaN                                      All           Nothing
+/// 0                                        All           Nothing
+/// 1                                        Pre DAQ       DAQ is prevented to start
+/// 1                                        Pre Set       DAQ is stopped
+/// :cpp:var:`ANALYSIS_FUNC_RET_REPURP_TIME` Mid Sweep     Current sweep is immediately stopped. Left over time is repurposed for ITI.
+/// :cpp:var:`ANALYSIS_FUNC_RET_EARLY_STOP`  Mid Sweep     Current sweep is immediately stopped without honouring the left over time in a special way.
+/// ======================================== ============= ============================================================================================
+///
+/// \endrst
 ///
 /// @anchor AnalysisFunctionParameters Analayis function user parameters (V3 only)
 ///
 /// For some analysis functions it is beneficial to send in additional data
 /// depending on the stimset. This is supported by adding parameters and their
-/// values via WBP_AddAnalysisParameter() to the stimset and then querying them
-/// with the help of @ref AnalysisFunctionParameterHelpers. The parameters are
-/// stored serialized in the `WPT` wave, see GetWaveBuilderWaveTextParam() for
-/// the exact format. See TestAnalysisFunction_V3() for an example
-/// implementation.
+/// values via WBP_AddAnalysisParameter() to the stimset, or using the
+/// Wavebuilder GUI, and then querying them with the help of @ref
+/// AnalysisFunctionParameterHelpers. The parameters are stored serialized in
+/// the `WPT` wave, see GetWaveBuilderWaveTextParam() for the exact format. See
+/// TestAnalysisFunction_V3() for an example implementation.
 ///
-/// If you want to enforce a list of parameters which must be present, define
+/// If you want to propose a list of parameters which should/must be present, define
 /// an additional function named like your analysis function but suffixed with
-/// `_GetParams` and return a comma separated list of required names. Adding the
+/// `_GetParams` and return a comma separated list of names. Adding the
 /// type is also possible via `$name:$type` syntax. The list of parameter names and types
-/// is then checked before DAQ.
+/// is then checked before DAQ. The supplied names are taken to be required by
+/// default, optional parameters, and their types, must be enclosed with `[]`.
+/// The list at #ANALYSIS_FUNCTION_PARAMS_TYPES holds all valid types.
+///
+/// Example:
+///
+/// \rst
+/// .. code-block:: igorpro
+///
+///    Function MyAnalysisFunction(panelTitle, s)
+///        string panelTitle
+///        struct AnalysisFunction_V3& s
+///
+///        // ...
+///    End
+///
+///    Function/S MyAnalysisFunction_GetParams()
+///        return "param1:variable,[optParam1:wave]"
+///    End
+///
+/// \endrst
 
 /// @name Initial parameters for stimulation
 ///@{

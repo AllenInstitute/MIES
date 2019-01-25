@@ -1415,7 +1415,7 @@ static Function SetParams2_IGNORE()
 	WBP_AddAnalysisParameter(stimSet, "MyVar", str = "abcd")
 End
 
-// test parameter handling with valid type string
+// test parameter handling with valid type string and optional parameter
 static Function AFT_DAQ14a()
 
 	STRUCT DAQSettings s
