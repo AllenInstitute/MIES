@@ -757,7 +757,14 @@ End
 Function AI_AssertOnInvalidClampMode(clampMode)
 	variable clampMode
 
-	ASSERT(clampMode == V_CLAMP_MODE || clampMode == I_CLAMP_MODE || clampMode == I_EQUAL_ZERO_MODE, "invalid clamp mode")
+	ASSERT(IsValidClampMode(clampMode), "invalid clamp mode")
+End
+
+/// @brief Return true if the given clamp mode is valid
+Function IsValidClampMode(clampMode)
+	variable clampMode
+
+	return clampMode == V_CLAMP_MODE || clampMode == I_CLAMP_MODE || clampMode == I_EQUAL_ZERO_MODE
 End
 
 /// @brief Opens Multi-clamp commander software

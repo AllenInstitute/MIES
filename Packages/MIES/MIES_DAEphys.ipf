@@ -2271,7 +2271,14 @@ static Function DAP_CheckHeadStage(panelTitle, headStage, mode)
 		return 1
 	endif
 
+	ampConnState = AI_SelectMultiClamp(panelTitle, headStage)
 	clampMode = DAG_GetHeadstageMode(panelTitle, headstage)
+
+	// needs to be at the beginning as DAP_ApplyClmpModeSavdSettngs writes into
+	// ChanAmpAssign/ChanAmpAssignUnit
+	if(ampConnState == AMPLIFIER_CONNECTION_SUCCESS && IsValidClampMode(clampMode))
+		DAP_ApplyClmpModeSavdSettngs(panelTitle, i, clampMode)
+	endif
 
 	if(clampMode == V_CLAMP_MODE)
 		DACchannel = ChanAmpAssign[%VC_DA][headStage]
@@ -2292,8 +2299,6 @@ static Function DAP_CheckHeadStage(panelTitle, headStage, mode)
 		ControlWindowToFront()
 		return 1
 	endif
-
-	ampConnState = AI_SelectMultiClamp(panelTitle, headStage)
 
 	if(ampConnState == AMPLIFIER_CONNECTION_SUCCESS)
 
@@ -2425,7 +2430,7 @@ static Function DAP_CheckHeadStage(panelTitle, headStage, mode)
 	endif
 
 	if(ampConnState == AMPLIFIER_CONNECTION_SUCCESS && !CheckIfClose(ADGain, gain, tol=1e-4))
-		printf "(%s) The configured gain for the AD channel %d differs from the one in the \"DAC Channel and Device Associations\" menu (%d vs %d).\r", panelTitle, ADCchannel, ADGain, gain
+		printf "(%s) The configured gain for the AD channel %d differs from the one in the \"DAC Channel and Device Associations\" menu (%g vs %g).\r", panelTitle, ADCchannel, ADGain, gain
 		ControlWindowToFront()
 		return 1
 	endif
