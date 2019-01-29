@@ -76,7 +76,7 @@ Within the Allen Institute, the documentation can be reached at the following lo
 * [pandoc](https://github.com/jgm/pandoc/releases) 1.17.1 or later
 * [python](http://www.python.org) 2.7 or later
 * [breathe](https://github.com/michaeljones/breathe) 4.11.1 or later, via `pip install -U breathe`
-* [sphinx](http://www.sphinx-doc.org/en/stable) 1.8.3 or later, via `pip install -U sphinx`
+* [sphinx](http://www.sphinx-doc.org/en/stable) 1.8.3, via `pip install -U sphinx`
 * [sphinxcontrib-fulltoc](https://sphinxcontrib-fulltoc.readthedocs.io/en/latest/) via `pip install -U sphinxcontrib-fulltoc`
 * [sphinxcontrib-images](https://github.com/spinus/sphinxcontrib-images/) via `pip install -U sphinxcontrib-images`
 
