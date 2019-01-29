@@ -27,6 +27,20 @@ then
   exit 1
 fi
 
+if hash dot 2>/dev/null; then
+  echo "Start converting dot files to svg"
+
+  for i in $(ls *.dot)
+  do
+    dot -Tsvg -O "$i"
+  done
+
+else
+  echo "Errors building the documentation" 1>&2
+  echo "dot/graphviz could not be found"   1>&2
+  exit 1
+fi
+
 if hash pandoc 2>/dev/null; then
   echo "Start converting markdown files to rst"
 

@@ -21,7 +21,7 @@ def get_version():
 
 
 # sphinx config
-extensions = ['sphinx.ext.imgmath', 'sphinx.ext.todo', 'breathe', 'sphinxcontrib.fulltoc', 'sphinx.ext.graphviz']
+extensions = ['sphinx.ext.imgmath', 'sphinx.ext.todo', 'breathe', 'sphinxcontrib.fulltoc', 'sphinxcontrib.images']
 master_doc = "index"
 project= "MIES Igor"
 
@@ -50,5 +50,4 @@ breathe_default_project     = "MIES"
 breathe_domain_by_extension = { "ipf" : "cpp" }
 breathe_default_members     = ('members', 'undoc-members')
 
-# dot
-graphviz_output_format = 'svg'
+images_config = {"override_image_directive": True}

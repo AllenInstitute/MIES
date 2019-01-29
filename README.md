@@ -78,6 +78,7 @@ Within the Allen Institute, the documentation can be reached at the following lo
 * [breathe](https://github.com/michaeljones/breathe) 4.11.1 or later, via `pip install -U breathe`
 * [sphinx](http://www.sphinx-doc.org/en/stable) 1.8.3 or later, via `pip install -U sphinx`
 * [sphinxcontrib-fulltoc](https://sphinxcontrib-fulltoc.readthedocs.io/en/latest/) via `pip install -U sphinxcontrib-fulltoc`
+* [sphinxcontrib-images](https://github.com/spinus/sphinxcontrib-images/) via `pip install -U sphinxcontrib-images`
 
 Execute `tools/build-documentation.sh`.
 
