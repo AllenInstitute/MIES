@@ -137,7 +137,6 @@ static Function TPM_BkrdTPMD(panelTitle, [triggerMode])
 			break
 	endswitch
 	if(!IsBackgroundTaskRunning(TASKNAME_TPMD))
-		ASYNC_Start(ThreadProcessorCount, disableTask=1)
 		CtrlNamedBackground $TASKNAME_TPMD, start
 	endif
 End

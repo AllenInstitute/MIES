@@ -690,6 +690,8 @@ Function TP_Setup(panelTitle, runMode)
 
 	NVAR ITCDeviceIDGlobal = $GetITCDeviceIDGlobal(panelTitle)
 	HW_PrepareAcq(GetHardwareType(panelTitle), ITCDeviceIDGlobal, flags=HARDWARE_ABORT_ON_ERROR)
+
+	ASYNC_Start(ThreadProcessorCount, disableTask=1)
 End
 
 /// @brief Perform common actions after the testpulse

@@ -12,7 +12,6 @@
 Function TPS_StartBackgroundTestPulse(panelTitle)
 	string panelTitle
 
-	ASYNC_Start(ThreadProcessorCount, disableTask=1)
 	CtrlNamedBackground $TASKNAME_TP, start
 End
 
@@ -120,7 +119,6 @@ Function TPS_StartTestPulseForeground(panelTitle, [elapsedTime])
 
 	oscilloscopeSubwindow = SCOPE_GetGraph(panelTitle)
 	NVAR ITCDeviceIDGlobal = $GetITCDeviceIDGlobal(panelTitle)
-	ASYNC_Start(ThreadProcessorCount, disableTask=1)
 
 	do
 		DoXOPIdle
