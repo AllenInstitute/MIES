@@ -866,7 +866,7 @@ End
 /// Decision logic flowchart:
 ///
 /// \rst
-///	.. graphviz:: ../multi-patch-seq-fast-rheo-estimate.dot
+///	.. image:: ../multi-patch-seq-fast-rheo-estimate.dot.svg
 /// \endrst
 ///
 /// @verbatim
@@ -1357,7 +1357,7 @@ End
 /// Decision logic flowchart:
 ///
 /// \rst
-///	.. graphviz:: ../multi-patch-seq-dascale.dot
+///	.. image:: ../multi-patch-seq-dascale.dot.svg
 /// \endrst
 ///
 Function MSQ_DAScale(panelTitle, s)

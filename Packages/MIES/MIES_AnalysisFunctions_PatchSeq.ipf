@@ -1012,7 +1012,7 @@ End
 /// Decision logic flowchart:
 ///
 /// \rst
-///	.. graphviz:: ../patch-seq-dascale.dot
+/// .. image:: ../patch-seq-dascale.dot.svg
 /// \endrst
 ///
 /// @verbatim
@@ -1334,7 +1334,7 @@ End
 /// Decision logic flowchart:
 ///
 /// \rst
-///	.. graphviz:: ../patch-seq-squarepulse.dot
+///	.. image:: ../patch-seq-squarepulse.dot.svg
 /// \endrst
 ///
 /// @verbatim
@@ -1537,7 +1537,7 @@ End
 /// Decision logic flowchart:
 ///
 /// \rst
-///	.. graphviz:: ../patch-seq-rheobase.dot
+///	.. image:: ../patch-seq-rheobase.dot.svg
 /// \endrst
 ///
 /// @verbatim
@@ -1897,7 +1897,7 @@ End
 /// Decision logic flowchart:
 ///
 /// \rst
-///	.. graphviz:: ../patch-seq-ramp.dot
+///	.. image:: ../patch-seq-ramp.dot.svg
 /// \endrst
 ///
 /// @verbatim

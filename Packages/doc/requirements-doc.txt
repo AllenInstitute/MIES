@@ -1,0 +1,4 @@
+sphinx==1.8.3
+breathe==4.11.0
+sphinxcontrib-images==0.8.0
+sphinxcontrib-fulltoc==1.1
