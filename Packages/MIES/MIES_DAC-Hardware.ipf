@@ -1817,10 +1817,12 @@ static Constant HW_NI_MAX_VOLTAGE = +10.0
 ///@}
 
 static Constant HW_NI_DIFFERENTIAL_SETUP = 0
-static Constant HW_NI_FIFOSIZE = 10
+
+static Constant HW_NI_FIFOSIZE = 120
+
 // HW_NI_FIFO_MIN_FREE_DISC_SPACE = SAFETY * HW_NI_FIFOSIZE * sizeof(double) * NI_MAX_SAMPLE_RATE
-// HW_NI_FIFO_MIN_FREE_DISC_SPACE = 2      * 10             *              8 * 500000
-static Constant HW_NI_FIFO_MIN_FREE_DISC_SPACE = 80000000
+// HW_NI_FIFO_MIN_FREE_DISC_SPACE = 2      * 120            *              8 * 500000
+static Constant HW_NI_FIFO_MIN_FREE_DISC_SPACE = 960000000
 
 /// @name Functions for interfacing with National Instruments Hardware
 ///
