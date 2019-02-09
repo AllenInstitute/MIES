@@ -4112,7 +4112,7 @@ Function RemoveTracesFromGraph(graph, [kill, trace, wv, dfr])
 	WAVE/Z wv
 	DFREF dfr
 
-	variable i, numEntries, removals, tryKillingTheWave, numOptArgs
+	variable i, numEntries, removals, tryKillingTheWave, numOptArgs, remove_all_traces, error
 	string traceList, refTrace
 
 	if(ParamIsDefault(kill))
@@ -4130,6 +4130,21 @@ Function RemoveTracesFromGraph(graph, [kill, trace, wv, dfr])
 		WAVE candidates = ConvertListOfWaves(GetListOfObjects(dfr, ".*", fullpath=1))
 	endif
 
+	remove_all_traces = ParamIsDefault(trace) && ParamIsDefault(wv) && ParamIsDefault(dfr)
+
+	// remove without calling TraceNameList or TraceNameToWaveRef
+	if(!kill && remove_all_traces)
+		do
+			try
+				RemoveFromGraph/W=$graph $("#0"); AbortOnRTE
+				removals += 1
+			catch
+				error = GetRTError(1)
+				return removals
+			endtry
+		while(1)
+	endif
+
 	traceList  = TraceNameList(graph, ";", 1 )
 	numEntries = ItemsInList(traceList)
 
@@ -4139,7 +4154,7 @@ Function RemoveTracesFromGraph(graph, [kill, trace, wv, dfr])
 
 		Wave/Z refWave = TraceNameToWaveRef(graph, refTrace)
 
-		if(ParamIsDefault(trace) && ParamIsDefault(wv) && ParamIsDefault(dfr))
+		if(remove_all_traces)
 			RemoveFromGraph/W=$graph $refTrace
 			removals += 1
 			tryKillingTheWave = 1
