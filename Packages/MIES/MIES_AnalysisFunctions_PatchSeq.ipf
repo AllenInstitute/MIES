@@ -712,15 +712,15 @@ Function/WAVE PSQ_CreateOverrideResults(panelTitle, headstage, type)
 End
 
 /// @brief Store the current step size in the labnotebook
-static Function PSQ_StoreStepSizeInLBN(panelTitle, sweepNo, stepsize)
+static Function PSQ_StoreStepSizeInLBN(panelTitle, type, sweepNo, stepsize)
 	string panelTitle
-	variable sweepNo, stepsize
+	variable type, sweepNo, stepsize
 
 	string key
 
 	Make/FREE/D/N=(LABNOTEBOOK_LAYER_COUNT) values = NaN
 	values[INDEP_HEADSTAGE] = stepsize
-	key = PSQ_CreateLBNKey(PSQ_SQUARE_PULSE, PSQ_FMT_LBN_STEPSIZE)
+	key = PSQ_CreateLBNKey(type, PSQ_FMT_LBN_STEPSIZE)
 	ED_AddEntryToLabnotebook(panelTitle, key, values, overrideSweepNo = sweepNo)
 End
 
@@ -1430,7 +1430,7 @@ Function PSQ_SquarePulse(panelTitle, s)
 			PGC_SetAndActivateControl(panelTitle, "Check_Settings_InsertTP", val = 0)
 			PGC_SetAndActivateControl(panelTitle, "check_Settings_ITITP", val = 0)
 
-			PSQ_StoreStepSizeInLBN(panelTitle, s.sweepNo, PSQ_SP_INIT_AMP_p100)
+			PSQ_StoreStepSizeInLBN(panelTitle, PSQ_SQUARE_PULSE, s.sweepNo, PSQ_SP_INIT_AMP_p100)
 			SetDAScale(panelTitle, s.headstage, PSQ_SP_INIT_AMP_p100)
 
 			return 0
@@ -1469,7 +1469,7 @@ Function PSQ_SquarePulse(panelTitle, s)
 					PSQ_ForceSetEvent(panelTitle, s.headstage)
 					RA_SkipSweeps(panelTitle, inf, limitToSetBorder = 1)
 				elseif(CheckIfClose(stepSize, PSQ_SP_INIT_AMP_p100))
-					PSQ_StoreStepSizeInLBN(panelTitle, s.sweepNo, PSQ_SP_INIT_AMP_m50)
+					PSQ_StoreStepSizeInLBN(panelTitle, PSQ_SQUARE_PULSE, s.sweepNo, PSQ_SP_INIT_AMP_m50)
 					stepsize = PSQ_SP_INIT_AMP_m50
 					SetDAScale(panelTitle, s.headstage, DAScale + stepsize)
 				else
@@ -1477,7 +1477,7 @@ Function PSQ_SquarePulse(panelTitle, s)
 				endif
 			else // headstage did not spike
 				if(CheckIfClose(stepSize, PSQ_SP_INIT_AMP_m50))
-					PSQ_StoreStepSizeInLBN(panelTitle, s.sweepNo, PSQ_SP_INIT_AMP_p10)
+					PSQ_StoreStepSizeInLBN(panelTitle, PSQ_SQUARE_PULSE, s.sweepNo, PSQ_SP_INIT_AMP_p10)
 					stepsize = PSQ_SP_INIT_AMP_p10
 				elseif(CheckIfClose(stepSize, PSQ_SP_INIT_AMP_p10))
 					// do nothing
