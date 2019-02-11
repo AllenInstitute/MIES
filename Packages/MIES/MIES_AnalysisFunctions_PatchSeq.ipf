@@ -679,8 +679,8 @@ Function/WAVE PSQ_CreateOverrideResults(panelTitle, headstage, type)
 
 	DAC = AFH_GetDACFromHeadstage(panelTitle, headstage)
 	stimset = AFH_GetStimSetName(panelTitle, DAC, CHANNEL_TYPE_DAC)
-	WAVE/Z wv = WB_CreateAndGetStimSet(stimset)
-	ASSERT(WaveExists(wv), "Stimset does not exist")
+	WAVE/Z stimsetWave = WB_CreateAndGetStimSet(stimset)
+	ASSERT(WaveExists(stimsetWave), "Stimset does not exist")
 
 	switch(type)
 		case PSQ_RAMP:
