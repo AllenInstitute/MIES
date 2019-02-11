@@ -21,7 +21,7 @@
 /// =========================== ========================================================= ================= =====================  =====================
 /// PSQ_FMT_LBN_SPIKE_DETECT    The required number of spikes were detected on the sweep  SP, RB, RA        No                     Yes
 /// PSQ_FMT_LBN_SPIKE_POSITIONS Spike positions in ms                                     RA                No                     Yes
-/// PSQ_FMT_LBN_STEPSIZE        Current DAScale step size                                 SP                No                     Yes
+/// PSQ_FMT_LBN_STEPSIZE        Current DAScale step size                                 SP, RB            No                     Yes
 /// PSQ_FMT_LBN_RB_DASCALE_EXC  Range for valid DAScale values is exceedd                 RB                No                     Yes
 /// PSQ_FMT_LBN_FINAL_SCALE     Final DAScale of the given headstage, only set on success SP, RB            No                     No
 /// PSQ_FMT_LBN_INITIAL_SCALE   Initial DAScale                                           RB                No                     No
@@ -1582,7 +1582,7 @@ Function PSQ_Rheobase(panelTitle, s)
 	STRUCT AnalysisFunction_V3 &s
 
 	variable DAScale, val, numSweeps, currentSweepHasSpike, lastSweepHasSpike, setPassed
-	variable baselineQCPassed, finalDAScale, initialDAScale
+	variable baselineQCPassed, finalDAScale, initialDAScale, stepSize
 	variable numBaselineChunks, lastFifoPos, totalOnsetDelay, fifoInStimsetPoint, fifoInStimsetTime
 	variable i, ret, numSweepsWithSpikeDetection, sweepNoFound, length, minLength, multiplier
 	string key, msg
@@ -1693,6 +1693,8 @@ Function PSQ_Rheobase(panelTitle, s)
 				result[INDEP_HEADSTAGE] = finalDAScale
 				key = PSQ_CreateLBNKey(PSQ_RHEOBASE, PSQ_FMT_LBN_INITIAL_SCALE)
 				ED_AddEntryToLabnotebook(panelTitle, key, result)
+
+				PSQ_StoreStepSizeInLBN(panelTitle, PSQ_RHEOBASE, s.sweepNo, PSQ_RB_DASCALE_STEP_LARGE)
 			endif
 
 			key = PSQ_CreateLBNKey(PSQ_RHEOBASE, PSQ_FMT_LBN_BL_QC_PASS, query = 1)
@@ -1746,10 +1748,12 @@ Function PSQ_Rheobase(panelTitle, s)
 			endif
 
 			DAScale = GetLastSetting(numericalValues, s.sweepNo, STIMSET_SCALE_FACTOR_KEY, DATA_ACQUISITION_MODE)[s.headstage] * 1e-12
+			key = PSQ_CreateLBNKey(PSQ_RHEOBASE, PSQ_FMT_LBN_STEPSIZE, query = 1)
+			stepSize = GetLastSettingIndepSCI(numericalValues, s.sweepNo, key, s.headstage, UNKNOWN_MODE)
 			if(currentSweepHasSpike)
-				DAScale -= PSQ_RB_DASCALE_STEP
+				DAScale -= stepSize
 			else
-				DAScale += PSQ_RB_DASCALE_STEP
+				DAScale += stepSize
 			endif
 
 			key = PSQ_CreateLBNKey(PSQ_RHEOBASE, PSQ_FMT_LBN_INITIAL_SCALE, query = 1)
