@@ -139,7 +139,7 @@ Function ExecuteNextTestCase_IGNORE()
 		return NaN
 	endif
 
-	Execute/P/Q "runtest(\"UTF_.*\.ipf\", testCase=\"" + testCases[testCaseIndex] + "\", enableJU = 1, enableRegexp = 1)"
+	Execute/P/Q "runtest(\"UTF_.*\.ipf\", testCase=\"" + testCases[testCaseIndex] + "\", enableJU = 1, enableRegexp = 1, allowDebug = 0)"
 
 	testCaseIndex += 1
 End
