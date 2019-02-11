@@ -922,9 +922,10 @@ StrConstant PSQ_LIST_OF_TYPES = "0x1;0x2;0x4;0x8"
 
 /// @name PatchSeq Rheobase
 /// @{
-Constant PSQ_RB_MAX_DASCALE_DIFF = 60e-12
-Constant PSQ_RB_DASCALE_STEP     = 10e-12
-Constant PSQ_RB_FINALSCALE_FAKE  = 42e-12
+Constant PSQ_RB_MAX_DASCALE_DIFF       = 60e-12
+Constant PSQ_RB_DASCALE_STEP           = 10e-12
+StrConstant PSQ_RB_FINALSCALE_FAKE_KEY = "PSQRheobaseFinalDAScaleFake"
+Constant PSQ_RB_FINALSCALE_FAKE_HIGH   = 42e-12
 /// @}
 
 /// @name PatchSeq DAScale

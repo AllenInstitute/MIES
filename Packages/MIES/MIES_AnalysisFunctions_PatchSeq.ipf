@@ -1660,7 +1660,7 @@ Function PSQ_Rheobase(panelTitle, s)
 			if(!IsFinite(finalDAScale) || !IsValidSweepNumber(sweepNoFound))
 				printf "(%s): Could not find final DAScale value from one of the previous analysis functions.\r", panelTitle
 				if(PSQ_TestOverrideActive())
-					finalDASCale = PSQ_RB_FINALSCALE_FAKE
+					finalDASCale = PSQ_GetFinalDAScaleFake()
 				else
 					ControlWindowToFront()
 					return 1
@@ -1683,7 +1683,7 @@ Function PSQ_Rheobase(panelTitle, s)
 				key = PSQ_CreateLBNKey(PSQ_SQUARE_PULSE, PSQ_FMT_LBN_FINAL_SCALE, query = 1)
 				finalDAScale = GetLastSweepWithSettingIndep(numericalValues, key, sweepNoFound)
 				if(PSQ_TestOverrideActive())
-					finalDAScale = PSQ_RB_FINALSCALE_FAKE
+					finalDAScale = PSQ_GetFinalDAScaleFake()
 				else
 					ASSERT(IsFinite(finalDAScale) && IsValidSweepNumber(sweepNoFound), "Could not find final DAScale value from previous analysis function")
 				endif
@@ -1887,6 +1887,20 @@ Function PSQ_Rheobase(panelTitle, s)
 	ED_AddEntryToLabnotebook(panelTitle, key, result, unit = LABNOTEBOOK_BINARY_UNIT, overrideSweepNo = s.sweepNo)
 
 	return baselineQCPassed ? ANALYSIS_FUNC_RET_EARLY_STOP : ret
+End
+
+Function PSQ_GetFinalDAScaleFake()
+
+	variable daScale
+
+	ASSERT(PSQ_TestOverrideActive(), "Should not be called in production.")
+
+	WAVE/Z/SDFR=root: overrideResults
+	ASSERT(WaveExists(overrideResults), "overrideResults wave must exist")
+
+	daScale = GetNumberFromWaveNote(overrideResults, PSQ_RB_FINALSCALE_FAKE_KEY)
+	ASSERT(IsFinite(daScale), "Missing fake DAScale for PatchSeq Rheobase")
+	return daScale
 End
 
 /// @brief Return a list of required parameters for PSQ_Ramp()
