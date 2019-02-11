@@ -21,7 +21,7 @@
 /// =========================== ========================================================= ================= =====================  =====================
 /// PSQ_FMT_LBN_SPIKE_DETECT    The required number of spikes were detected on the sweep  SP, RB, RA        No                     Yes
 /// PSQ_FMT_LBN_SPIKE_POSITIONS Spike positions in ms                                     RA                No                     Yes
-/// PSQ_FMT_LBN_STEPSIZE        Current DAScale step size                                 SP, RB            No                     Yes
+/// PSQ_FMT_LBN_STEPSIZE        Current DAScale step size                                 SP, RB            No                     No
 /// PSQ_FMT_LBN_RB_DASCALE_EXC  Range for valid DAScale values is exceedd                 RB                No                     Yes
 /// PSQ_FMT_LBN_FINAL_SCALE     Final DAScale of the given headstage, only set on success SP, RB            No                     No
 /// PSQ_FMT_LBN_INITIAL_SCALE   Initial DAScale                                           RB                No                     No
