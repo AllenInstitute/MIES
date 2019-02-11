@@ -698,9 +698,17 @@ Function/WAVE PSQ_CreateOverrideResults(panelTitle, headstage, type)
 			ASSERT(0, "invalid type")
 	endswitch
 
-	Make/D/O/N=(numRows, numCols, numLayers) root:overrideResults/Wave=overrideResults = 0
+	WAVE/D/Z/SDFR=root: wv = overrideResults
 
-	return overrideResults
+	if(WaveExists(wv))
+		Redimension/D/N=(numRows, numCols, numLayers) wv
+	else
+		Make/D/N=(numRows, numCols, numLayers) root:overrideResults/Wave=wv
+	endif
+
+	wv[] = 0
+
+	return wv
 End
 
 /// @brief Store the current step size in the labnotebook
