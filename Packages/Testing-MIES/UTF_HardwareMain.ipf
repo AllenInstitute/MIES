@@ -228,6 +228,8 @@ Function run()
 	list = AddListItem("PS_RB_Test6", list, ";", INF)
 	list = AddListItem("PS_RB_Run7", list, ";", INF)
 	list = AddListItem("PS_RB_Test7", list, ";", INF)
+	list = AddListItem("PS_RB_Run8", list, ";", INF)
+	list = AddListItem("PS_RB_Test8", list, ";", INF)
 
 #ifndef TESTS_WITH_NI_HARDWARE
 

@@ -1,9 +1,9 @@
 digraph G {
     fontname="sans-serif";
-    compound="true";
+    penwidth="0.1";
     ratio="0,01";
     center="true";
-    penwidth="0.1";
+    compound="true";
     edge [comment="Wildcard edge",
           fontname="sans-serif",
           fontsize=10,
@@ -104,15 +104,20 @@ digraph G {
     "Post Sweep Event" -> "First Sweep?";
     "BL QC passed? [2]" -> "Spike detected?\n(x range: pulse onset to end of sweep\ny condition: max above 0.01mV)\nStore result in labnotebook"  [label="Yes"];
     "Spike detected?\n(x range: pulse onset to end of sweep\ny condition: max above 0.01mV)\nStore result in labnotebook" -> "Previous sweep has opposite spike result";
-    "Previous sweep has opposite spike result" -> "Mark set as passed"  [label="Yes"];
+    "Previous sweep has opposite spike result" -> "DAScale larger than 50pA\nor stepsize is 2pA"  [label="Yes"];
+    "DAScale larger than 50pA\nor stepsize is 2pA" -> "Mark set as passed"  [label="Yes"];
+    "DAScale larger than 50pA\nor stepsize is 2pA" -> "Store DAScale stepsize of 2pA in LBN"  [label="No"];
+    "Store DAScale stepsize of 2pA in LBN" -> "Spike detected? (queried from labnotebook)";
     "Mark set as passed" -> "Skip to end of active set";
     "Previous sweep has opposite spike result" -> "Spike detected? (queried from labnotebook)"  [label="No"];
-    "Spike detected? (queried from labnotebook)" -> "Offset DAScale by -10pA"  [label="Yes"];
-    "Offset DAScale by +10pA" -> "Difference to initial DAScale larger than 60pA?";
-    "Spike detected? (queried from labnotebook)" -> "Offset DAScale by +10pA"  [label="No"];
-    "Offset DAScale by -10pA" -> "Difference to initial DAScale larger than 60pA?";
+    "Spike detected? (queried from labnotebook)" -> "Offset DAScale by minus\nstepsize from LBN"  [label="Yes"];
+    "Offset DAScale by minus\nstepsize from LBN" -> "Difference to initial DAScale larger than 60pA?";
+    "Spike detected? (queried from labnotebook)" -> "Offset DAScale by plus\nstepsize from LBN"  [label="No"];
+    "Offset DAScale by plus\nstepsize from LBN" -> "Difference to initial DAScale larger than 60pA?";
     "Mark set as failed" -> "Skip to end";
-    "Store final DAScale of last sweep\n from previous RAC as initial DAScale" -> "BL QC passed? [2]";
+    "Store DAScale stepsize of 10pA in LBN";
+    "Store final DAScale of last sweep\n from previous RAC as initial DAScale" -> "Store DAScale stepsize of 10pA in LBN";
+    "Store DAScale stepsize of 10pA in LBN" -> "BL QC passed? [2]";
     "Set \"Repeat Sets\" to 1";
     "Early sweep stop";
     "Mark BL QC as passed" -> "Early sweep stop";

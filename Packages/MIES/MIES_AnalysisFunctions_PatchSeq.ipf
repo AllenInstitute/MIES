@@ -1727,27 +1727,37 @@ Function PSQ_Rheobase(panelTitle, s)
 			numSweepsWithSpikeDetection = DimSize(spikeDetectionRA, ROWS)
 			currentSweepHasSpike        = spikeDetectionRA[numSweepsWithSpikeDetection - 1]
 
+			DAScale = GetLastSetting(numericalValues, s.sweepNo, STIMSET_SCALE_FACTOR_KEY, DATA_ACQUISITION_MODE)[s.headstage] * 1e-12
+
 			if(numSweepsWithSpikeDetection >= 2)
 				lastSweepHasSpike = spikeDetectionRA[numSweepsWithSpikeDetection - 2]
 
 				if(IsFinite(currentSweepHasSpike) && IsFinite(lastSweepHasSpike) \
 				   && (currentSweepHasSpike != lastSweepHasSpike))
-					// mark the set as passed
-					// we can't mark each sweep as passed/failed as it is not possible
-					// to add LBN entries to other sweeps than the last one
-					Make/FREE/D/N=(LABNOTEBOOK_LAYER_COUNT) result = NaN
-					key = PSQ_CreateLBNKey(PSQ_RHEOBASE, PSQ_FMT_LBN_SET_PASS)
-					result[INDEP_HEADSTAGE] = 1
-					ED_AddEntryToLabnotebook(panelTitle, key, result, unit = LABNOTEBOOK_BINARY_UNIT)
-					PSQ_ForceSetEvent(panelTitle, s.headstage)
-					RA_SkipSweeps(panelTitle, inf, limitToSetBorder = 1)
 
-					DEBUGPRINT("Sweep has passed")
-					break
+					key = PSQ_CreateLBNKey(PSQ_RHEOBASE, PSQ_FMT_LBN_STEPSIZE, query = 1)
+					stepSize = GetLastSettingIndepSCI(numericalValues, s.sweepNo, key, s.headstage, UNKNOWN_MODE)
+
+					if(DAScale <= PSQ_RB_DASCALE_SMALL_BORDER && stepSize == PSQ_RB_DASCALE_STEP_LARGE)
+						PSQ_StoreStepSizeInLBN(panelTitle, PSQ_RHEOBASE, s.sweepNo, PSQ_RB_DASCALE_STEP_SMALL)
+					else
+						// mark the set as passed
+						// we can't mark each sweep as passed/failed as it is not possible
+						// to add LBN entries to other sweeps than the last one
+						Make/FREE/D/N=(LABNOTEBOOK_LAYER_COUNT) result = NaN
+						key = PSQ_CreateLBNKey(PSQ_RHEOBASE, PSQ_FMT_LBN_SET_PASS)
+						result[INDEP_HEADSTAGE] = 1
+						ED_AddEntryToLabnotebook(panelTitle, key, result, unit = LABNOTEBOOK_BINARY_UNIT)
+						PSQ_ForceSetEvent(panelTitle, s.headstage)
+						RA_SkipSweeps(panelTitle, inf, limitToSetBorder = 1)
+
+						DEBUGPRINT("Sweep has passed")
+						break
+					endif
 				endif
 			endif
 
-			DAScale = GetLastSetting(numericalValues, s.sweepNo, STIMSET_SCALE_FACTOR_KEY, DATA_ACQUISITION_MODE)[s.headstage] * 1e-12
+			// refetch possibly changed stepSize
 			key = PSQ_CreateLBNKey(PSQ_RHEOBASE, PSQ_FMT_LBN_STEPSIZE, query = 1)
 			stepSize = GetLastSettingIndepSCI(numericalValues, s.sweepNo, key, s.headstage, UNKNOWN_MODE)
 			if(currentSweepHasSpike)
