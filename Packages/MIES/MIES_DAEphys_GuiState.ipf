@@ -179,6 +179,7 @@ Function DAG_GetNumericalValue(panelTitle, ctrl, [index])
 
 #ifdef DEBUGGING_ENABLED
 	variable refValue
+	string msg
 
 	// check if the GUI state wave is consistent
 	if(DP_DebuggingEnabledForFile(GetFile(FunctionPath(""))))
@@ -199,7 +200,8 @@ Function DAG_GetNumericalValue(panelTitle, ctrl, [index])
 		refValue = GetDA_EphysGuiStateNum(panelTitle)[index][%$ctrl]
 
 		if(!CheckIfClose(V_Value, refValue) && !(V_Value == 0 && refValue == 0))
-			printf "BUG: Numeric GUI state wave is inconsistent for %s: %g vs. %g\r", ctrl, V_Value, refValue
+			sprintf msg, "Numeric GUI state wave is inconsistent for %s: %g vs. %g\r", ctrl, V_Value, refValue
+			BUG(msg)
 		endif
 	endif
 #endif
@@ -222,7 +224,7 @@ Function/S DAG_GetTextualValue(panelTitle, ctrl, [index])
 	WAVE/T GUIState = GetDA_EphysGuiStateTxT(panelTitle)
 
 #ifdef DEBUGGING_ENABLED
-	string str
+	string str, msg
 	// check if the GUI state wave is consistent
 	if(DP_DebuggingEnabledForFile(GetFile(FunctionPath(""))))
 
@@ -237,7 +239,8 @@ Function/S DAG_GetTextualValue(panelTitle, ctrl, [index])
 		str = GUIState[index][%$ctrl]
 
 		if(IsEmpty(S_Value) != IsEmpty(str) || cmpstr(S_Value, str))
-			printf "BUG: Textual GUI state wave is inconsistent for %s: %s vs. %s\r", ctrl, SelectString(IsNull(S_Value), S_Value, "<null>"), GUIState[index][%$ctrl]
+			sprintf msg, "Textual GUI state wave is inconsistent for %s: %s vs. %s\r", ctrl, SelectString(IsNull(S_Value), S_Value, "<null>"), GUIState[index][%$ctrl]
+			BUG(msg)
 		endif
 	endif
 #endif
