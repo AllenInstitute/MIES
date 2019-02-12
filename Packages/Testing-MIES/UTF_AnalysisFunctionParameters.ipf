@@ -447,6 +447,6 @@ static Function ReturnsInvalidWaveRef()
 	params = WPT[10][%Set][INDEP_EPOCH_TYPE]
 	CHECK_EMPTY_STR(params)
 
-	CHECK(!WaveExists(AFH_GetAnalysisParamWave("I_DONT_EXIST", params)))
-	CHECK(!WaveExists(AFH_GetAnalysisParamTextWave("I_DONT_EXIST", params)))
+	CHECK_WAVE(AFH_GetAnalysisParamWave("I_DONT_EXIST", params), NULL_WAVE)
+	CHECK_WAVE(AFH_GetAnalysisParamTextWave("I_DONT_EXIST", params), NULL_WAVE)
 End

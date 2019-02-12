@@ -43,7 +43,7 @@ Function GetLastSettingEntrySourceTypes()
 	WAVE/Z TPSettings  = GetLastSetting(numericalValues_no_type_no_TP, 0, "DAC", TEST_PULSE_MODE)
 
 	CHECK_EQUAL_WAVES(DAQSettings, {0,1,NaN,NaN,NaN,NaN,NaN,NaN,NaN}, mode = WAVE_DATA)
-	CHECK(!WaveExists(TPSettings))
+	CHECK_WAVE(TPSettings, NULL_WAVE)
 
 	// contains two times sweep 0, created with sweep rollback
 	WAVE/SDFR=dfr numericalValues_with_sweep_rb
@@ -108,12 +108,12 @@ Function GetLastSettingEmptyUnknown()
 	WAVE/SDFR=dfr numericalValues
 
 	WAVE/Z settings = GetLastSetting(numericalValues, NaN, "I DONT EXIST", UNKNOWN_MODE)
-	CHECK(!WaveExists(settings))
+	CHECK_WAVE(settings, NULL_WAVE)
 
 	first = LABNOTEBOOK_GET_RANGE
 	last  = LABNOTEBOOK_GET_RANGE
 	WAVE/Z settings = MIES_MIESUTILS#GetLastSettingNoCache(numericalValues, NaN, "I DONT EXIST", UNKNOWN_MODE, first = first , last = last)
-	CHECK(!WaveExists(settings))
+	CHECK_WAVE(settings, NULL_WAVE)
 	CHECK_EQUAL_VAR(first, -1)
 	CHECK_EQUAL_VAR(last, -1)
 End
@@ -141,7 +141,7 @@ Function GetLastSettingQueryWoMatch()
 	last  = LABNOTEBOOK_GET_RANGE
 	// sweep is unknown
 	WAVE/Z settings = MIES_MIESUTILS#GetLastSettingNoCache(numericalValues, 100, "DA unit", DATA_ACQUISITION_MODE, first = first, last = last)
-	CHECK(!WaveExists(settings))
+	CHECK_WAVE(settings, NULL_WAVE)
 	CHECK_EQUAL_VAR(first, -1)
 	CHECK_EQUAL_VAR(last, -1)
 End
@@ -230,12 +230,12 @@ Function GetLastSettingTextEmptyUnknown()
 	WAVE/SDFR=dfr textualValues
 
 	WAVE/Z settings = GetLastSetting(textualValues, NaN, "I DONT EXIST", UNKNOWN_MODE)
-	CHECK(!WaveExists(settings))
+	CHECK_WAVE(settings, NULL_WAVE)
 
 	first = LABNOTEBOOK_GET_RANGE
 	last  = LABNOTEBOOK_GET_RANGE
 	WAVE/Z settings = MIES_MIESUTILS#GetLastSettingNoCache(textualValues, NaN, "I DONT EXIST", UNKNOWN_MODE, first = first , last = last)
-	CHECK(!WaveExists(settings))
+	CHECK_WAVE(settings, NULL_WAVE)
 	CHECK_EQUAL_VAR(first, -1)
 	CHECK_EQUAL_VAR(last, -1)
 End
@@ -251,7 +251,7 @@ Function GetLastSettingTextQueryWoMatch()
 	last  = LABNOTEBOOK_GET_RANGE
 	// sweep is unknown
 	WAVE/Z settings = MIES_MIESUTILS#GetLastSettingNoCache(textualValues, 100, "DA unit", DATA_ACQUISITION_MODE, first = first, last = last)
-	CHECK(!WaveExists(settings))
+	CHECK_WAVE(settings, NULL_WAVE)
 	CHECK_EQUAL_VAR(first, -1)
 	CHECK_EQUAL_VAR(last, -1)
 End
@@ -342,7 +342,7 @@ Function LBNCache_InvalidSweep()
 	WAVE numericalValues = root:Labnotebook_CacheTest:numericalValues
 
 	WAVE/Z settings = GetLastSetting(numericalValues, sweepNo, "DAC", DATA_ACQUISITION_MODE)
-	CHECK(!WaveExists(settings))
+	CHECK_WAVE(settings, NULL_WAVE)
 
 	WAVE indexWave = GetLBIndexCache(numericalValues)
 	CHECK_EQUAL_VAR(indexWave[sweepNo][FindDimLabel(numericalValues, COLS, "DAC")][EntrySourceTypeMapper(DATA_ACQUISITION_MODE)], LABNOTEBOOK_MISSING_VALUE)
@@ -354,7 +354,7 @@ Function LBNCache_InvalidKey()
 	WAVE numericalValues = root:Labnotebook_CacheTest:numericalValues
 
 	WAVE/Z settings = GetLastSetting(numericalValues, sweepNo, "I DONT EXIST", DATA_ACQUISITION_MODE)
-	CHECK(!WaveExists(settings))
+	CHECK_WAVE(settings, NULL_WAVE)
 End
 
 Function LBN_CacheCorrectSourceTypes1()
@@ -484,8 +484,8 @@ Function LBNCache_Reliable()
 			if(WaveExists(settingsNoCache) && WaveExists(settings))
 				CHECK_EQUAL_WAVES(settingsNoCache, settings)
 			else
-				CHECK(!WaveExists(settings))
-				CHECK(!WaveExists(settingsNoCache))
+				CHECK_WAVE(settings, NULL_WAVE)
+				CHECK_WAVE(settingsNoCache, NULL_WAVE)
 			endif
 		endfor
 	endfor
@@ -504,8 +504,8 @@ Function LBNCache_Reliable()
 			if(WaveExists(settingsNoCache) && WaveExists(settings))
 				CHECK_EQUAL_WAVES(settingsNoCache, settings)
 			else
-				CHECK(!WaveExists(settings))
-				CHECK(!WaveExists(settingsNoCache))
+				CHECK_WAVE(settings, NULL_WAVE)
+				CHECK_WAVE(settingsNoCache, NULL_WAVE)
 			endif
 		endfor
 	endfor
@@ -527,8 +527,8 @@ Function RACid_Reliable()
 		if(WaveExists(settingsNoCache) && WaveExists(settings))
 			CHECK_EQUAL_WAVES(settingsNoCache, settings)
 		else
-			CHECK(!WaveExists(settings))
-			CHECK(!WaveExists(settingsNoCache))
+			CHECK_WAVE(settings, NULL_WAVE)
+			CHECK_WAVE(settingsNoCache, NULL_WAVE)
 		endif
 	endfor
 End
@@ -541,13 +541,13 @@ Function RACid_InvalidWaveRef()
 
 	WAVE/Z settingsNoCache = MIES_AFH#AFH_GetSweepsFromSameRACycleNC(numericalValues, sweepNo)
 	WAVE/Z settings        = AFH_GetSweepsFromSameRACycle(numericalValues, sweepNo)
-	CHECK(!WaveExists(settings))
-	CHECK(!WaveExists(settingsNoCache))
+	CHECK_WAVE(settings, NULL_WAVE)
+	CHECK_WAVE(settingsNoCache, NULL_WAVE)
 
 	// try the cached version again
 
 	WAVE/Z settings  = AFH_GetSweepsFromSameRACycle(numericalValues, sweepNo)
-	CHECK(!WaveExists(settings))
+	CHECK_WAVE(settings, NULL_WAVE)
 End
 
 /// Check that the cache returns the same entries
@@ -567,8 +567,8 @@ Function SCid_Reliable()
 			if(WaveExists(settingsNoCache) && WaveExists(settings))
 				CHECK_EQUAL_WAVES(settingsNoCache, settings)
 			else
-				CHECK(!WaveExists(settings))
-				CHECK(!WaveExists(settingsNoCache))
+				CHECK_WAVE(settings, NULL_WAVE)
+				CHECK_WAVE(settingsNoCache, NULL_WAVE)
 			endif
 		endfor
 	endfor
@@ -582,11 +582,11 @@ Function SCid_InvalidWaveRef()
 
 	WAVE/Z settingsNoCache = MIES_AFH#AFH_GetSweepsFromSameSCINC(numericalValues, sweepNo, 0)
 	WAVE/Z settings        = AFH_GetSweepsFromSameSCI(numericalValues, sweepNo, 0)
-	CHECK(!WaveExists(settings))
-	CHECK(!WaveExists(settingsNoCache))
+	CHECK_WAVE(settings, NULL_WAVE)
+	CHECK_WAVE(settingsNoCache, NULL_WAVE)
 
 	// try the cached version again
 
 	WAVE/Z settings  = AFH_GetSweepsFromSameRACycle(numericalValues, sweepNo)
-	CHECK(!WaveExists(settings))
+	CHECK_WAVE(settings, NULL_WAVE)
 End

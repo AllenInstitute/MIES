@@ -245,7 +245,7 @@ Function ReturnsInvalidWaveRefWOMatches1()
 	Make/Free/D data2
 
 	WAVE/Z matches = GetSetIntersection(data1, data2)
-	CHECK(!WaveExists(matches))
+	CHECK_WAVE(matches, NULL_WAVE)
 End
 
 Function ReturnsInvalidWaveRefWOMatches2()
@@ -254,7 +254,7 @@ Function ReturnsInvalidWaveRefWOMatches2()
 	Make/Free/D/N=0 data2
 
 	WAVE matches = GetSetIntersection(data1, data2)
-	CHECK(!WaveExists(matches))
+	CHECK_WAVE(matches, NULL_WAVE)
 End
 
 Function ReturnsInvalidWaveRefWOMatches3()
@@ -263,7 +263,7 @@ Function ReturnsInvalidWaveRefWOMatches3()
 	Make/Free/D data2 = -1
 
 	WAVE matches = GetSetIntersection(data1, data2)
-	CHECK(!WaveExists(matches))
+	CHECK_WAVE(matches, NULL_WAVE)
 End
 /// @}
 
@@ -749,7 +749,7 @@ Function FI_NumSearchWithCol3()
 	WAVE/SDFR=dfr numeric
 
 	WAVE/Z indizes = FindIndizes(numeric, col = 2, var = 4711)
-	CHECK(!WaveExists(indizes))
+	CHECK_WAVE(indizes, NULL_WAVE)
 End
 
 Function FI_NumSearchWithColLabel()
@@ -845,7 +845,7 @@ Function FI_TextSearchWithCol3()
 	WAVE/SDFR=dfr text
 
 	WAVE/Z indizes = FindIndizes(text, col = 2, str = "4711")
-	CHECK(!WaveExists(indizes))
+	CHECK_WAVE(indizes, NULL_WAVE)
 End
 
 Function FI_TextSearchWithColLabel()

@@ -60,7 +60,7 @@ Function empty_wave_ref()
 	p.dfr  = root:
 
 	WAVE/Z wv = UpgradeWaveLocationAndGetIt(p)
-	CHECK(!WaveExists(wv))
+	CHECK_WAVE(wv, NULL_WAVE)
 End
 
 Function no_trafo()
@@ -262,7 +262,7 @@ Function move_rename_keeps_dfr()
 	CHECK(DataFolderExistsDFR(p.dfr))
 
 	WAVE/SDFR=tmpDFR src = $name
-	CHECK(!WaveExists(src))
+	CHECK_WAVE(src, NULL_WAVE)
 End
 
 Function return_dest_if_both_keep_src()
