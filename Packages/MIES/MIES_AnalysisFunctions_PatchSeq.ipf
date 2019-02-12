@@ -16,24 +16,25 @@
 ///
 /// \rst
 ///
-/// =========================== ========================================================= ================= =====================  =====================
-/// Naming constant             Description                                               Analysis function Per Chunk?             Headstage dependent?
-/// =========================== ========================================================= ================= =====================  =====================
-/// PSQ_FMT_LBN_SPIKE_DETECT    The required number of spikes were detected on the sweep  SP, RB, RA        No                     Yes
-/// PSQ_FMT_LBN_SPIKE_POSITIONS Spike positions in ms                                     RA                No                     Yes
-/// PSQ_FMT_LBN_STEPSIZE        Current DAScale step size                                 SP, RB            No                     No
-/// PSQ_FMT_LBN_RB_DASCALE_EXC  Range for valid DAScale values is exceedd                 RB                No                     Yes
-/// PSQ_FMT_LBN_FINAL_SCALE     Final DAScale of the given headstage, only set on success SP, RB            No                     No
-/// PSQ_FMT_LBN_INITIAL_SCALE   Initial DAScale                                           RB                No                     No
-/// PSQ_FMT_LBN_RMS_SHORT_PASS  Short RMS baseline QC result                              DA, RB, RA        Yes                    Yes
-/// PSQ_FMT_LBN_RMS_LONG_PASS   Long RMS baseline QC result                               DA, RB, RA        Yes                    Yes
-/// PSQ_FMT_LBN_TARGETV_PASS    Target voltage baseline QC result                         DA, RB, RA        Yes                    Yes
-/// PSQ_FMT_LBN_CHUNK_PASS      Which chunk passed/failed baseline QC                     DA, RB, RA        Yes                    Yes
-/// PSQ_FMT_LBN_BL_QC_PASS      Pass/fail state of the complete baseline                  DA, RB, RA        No                     Yes
-/// PSQ_FMT_LBN_SWEEP_PASS      Pass/fail state of the complete sweep                     DA, SP, RA        No                     No
-/// PSQ_FMT_LBN_SET_PASS        Pass/fail state of the complete set                       DA, RB, RA, SP    No                     No
-/// PSQ_FMT_LBN_PULSE_DUR       Pulse duration as determined experimentally               RB                No                     Yes
-/// =========================== ========================================================= ================= =====================  =====================
+/// ============================== ========================================================= ================= =====================  =====================
+/// Naming constant                Description                                               Analysis function Per Chunk?             Headstage dependent?
+/// ============================== ========================================================= ================= =====================  =====================
+/// PSQ_FMT_LBN_SPIKE_DETECT       The required number of spikes were detected on the sweep  SP, RB, RA        No                     Yes
+/// PSQ_FMT_LBN_SPIKE_POSITIONS    Spike positions in ms                                     RA                No                     Yes
+/// PSQ_FMT_LBN_STEPSIZE           Current DAScale step size                                 SP, RB            No                     No
+/// PSQ_FMT_LBN_RB_DASCALE_EXC     Range for valid DAScale values is exceedd                 RB                No                     Yes
+/// PSQ_FMT_LBN_FINAL_SCALE        Final DAScale of the given headstage, only set on success SP, RB            No                     No
+/// PSQ_FMT_LBN_SPIKE_DASCALE_ZERO Sweep spiked with DAScale of 0                            SP                No                     No
+/// PSQ_FMT_LBN_INITIAL_SCALE      Initial DAScale                                           RB                No                     No
+/// PSQ_FMT_LBN_RMS_SHORT_PASS     Short RMS baseline QC result                              DA, RB, RA        Yes                    Yes
+/// PSQ_FMT_LBN_RMS_LONG_PASS      Long RMS baseline QC result                               DA, RB, RA        Yes                    Yes
+/// PSQ_FMT_LBN_TARGETV_PASS       Target voltage baseline QC result                         DA, RB, RA        Yes                    Yes
+/// PSQ_FMT_LBN_CHUNK_PASS         Which chunk passed/failed baseline QC                     DA, RB, RA        Yes                    Yes
+/// PSQ_FMT_LBN_BL_QC_PASS         Pass/fail state of the complete baseline                  DA, RB, RA        No                     Yes
+/// PSQ_FMT_LBN_SWEEP_PASS         Pass/fail state of the complete sweep                     DA, SP, RA        No                     No
+/// PSQ_FMT_LBN_SET_PASS           Pass/fail state of the complete set                       DA, RB, RA, SP    No                     No
+/// PSQ_FMT_LBN_PULSE_DUR          Pulse duration as determined experimentally               RB                No                     Yes
+/// ============================== ========================================================= ================= =====================  =====================
 ///
 /// \endrst
 ///
@@ -1456,7 +1457,20 @@ Function PSQ_SquarePulse(panelTitle, s)
 			DEBUGPRINT(msg)
 
 			if(spikeDetection[s.headstage]) // headstage spiked
-				if(CheckIfClose(stepSize, PSQ_SP_INIT_AMP_m50))
+				if(CheckIfSmall(DAScale, tol = 1e-14))
+					Make/FREE/D/N=(LABNOTEBOOK_LAYER_COUNT) value = NaN
+					value[INDEP_HEADSTAGE] = 1
+					key = PSQ_CreateLBNKey(PSQ_SQUARE_PULSE, PSQ_FMT_LBN_SPIKE_DASCALE_ZERO)
+					ED_AddEntryToLabnotebook(panelTitle, key, value, unit = LABNOTEBOOK_BINARY_UNIT)
+
+					key = PSQ_CreateLBNKey(PSQ_SQUARE_PULSE, PSQ_FMT_LBN_SPIKE_DASCALE_ZERO, query = 1)
+					WAVE spikeWithDAScaleZero = GetLastSettingIndepEachSCI(numericalValues, s.sweepNo, key, s.headstage, UNKNOWN_MODE)
+					WaveTransform/O zapNaNs, spikeWithDAScaleZero
+					if(DimSize(spikeWithDAScaleZero, ROWS) == PSQ_NUM_MAX_DASCALE_ZERO)
+						PSQ_ForceSetEvent(panelTitle, s.headstage)
+						RA_SkipSweeps(panelTitle, inf, limitToSetBorder = 1)
+					endif
+				elseif(CheckIfClose(stepSize, PSQ_SP_INIT_AMP_m50))
 					SetDAScale(panelTitle, s.headstage, DAScale + stepsize)
 				elseif(CheckIfClose(stepSize, PSQ_SP_INIT_AMP_p10))
 					Make/FREE/D/N=(LABNOTEBOOK_LAYER_COUNT) value = NaN

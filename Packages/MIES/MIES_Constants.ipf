@@ -867,9 +867,10 @@ Constant MAX_NUM_MS_TIMERS = 10
 
 /// @name PatchSeq various constants
 /// @{
-Constant PSQ_SP_INIT_AMP_m50    = -50e-12
-Constant PSQ_SP_INIT_AMP_p100   = +100e-12
-Constant PSQ_SP_INIT_AMP_p10    = +10e-12
+Constant PSQ_SP_INIT_AMP_m50      = -50e-12
+Constant PSQ_SP_INIT_AMP_p100     = +100e-12
+Constant PSQ_SP_INIT_AMP_p10      = +10e-12
+Constant PSQ_NUM_MAX_DASCALE_ZERO = 3
 
 Constant PSQ_RB_PRE_BL_EVAL_RANGE  = 500
 Constant PSQ_RB_POST_BL_EVAL_RANGE = 500
@@ -893,20 +894,21 @@ Constant PSQ_TARGETV_THRESHOLD   = 1    // mV
 ///
 /// @anchor PatchSeqLabnotebookFormatStrings
 /// @{
-StrConstant PSQ_FMT_LBN_RB_DASCALE_EXC    = "%s DAScale exceeded"
-StrConstant PSQ_FMT_LBN_STEPSIZE          = "%s step size"
-StrConstant PSQ_FMT_LBN_SPIKE_DETECT      = "%s spike detected"
-StrConstant PSQ_FMT_LBN_SPIKE_POSITIONS   = "%s spike positions"
-StrConstant PSQ_FMT_LBN_FINAL_SCALE       = "%s final DAScale"
-StrConstant PSQ_FMT_LBN_INITIAL_SCALE     = "%s initial DAScale"
-StrConstant PSQ_FMT_LBN_RMS_SHORT_PASS    = "%s Chk%d S-RMS QC"
-StrConstant PSQ_FMT_LBN_RMS_LONG_PASS     = "%s Chk%d L-RMS QC"
-StrConstant PSQ_FMT_LBN_TARGETV_PASS      = "%s Chk%d T-V BL QC"
-StrConstant PSQ_FMT_LBN_CHUNK_PASS        = "%s Chk%d BL QC"
-StrConstant PSQ_FMT_LBN_BL_QC_PASS        = "%s BL QC"
-StrConstant PSQ_FMT_LBN_SWEEP_PASS        = "%s Sweep QC"
-StrConstant PSQ_FMT_LBN_SET_PASS          = "%s Set QC"
-StrConstant PSQ_FMT_LBN_PULSE_DUR         = "%s Pulse duration"
+StrConstant PSQ_FMT_LBN_RB_DASCALE_EXC     = "%s DAScale exceeded"
+StrConstant PSQ_FMT_LBN_STEPSIZE           = "%s step size"
+StrConstant PSQ_FMT_LBN_SPIKE_DETECT       = "%s spike detected"
+StrConstant PSQ_FMT_LBN_SPIKE_POSITIONS    = "%s spike positions"
+StrConstant PSQ_FMT_LBN_FINAL_SCALE        = "%s final DAScale"
+StrConstant PSQ_FMT_LBN_INITIAL_SCALE      = "%s initial DAScale"
+StrConstant PSQ_FMT_LBN_RMS_SHORT_PASS     = "%s Chk%d S-RMS QC"
+StrConstant PSQ_FMT_LBN_RMS_LONG_PASS      = "%s Chk%d L-RMS QC"
+StrConstant PSQ_FMT_LBN_TARGETV_PASS       = "%s Chk%d T-V BL QC"
+StrConstant PSQ_FMT_LBN_CHUNK_PASS         = "%s Chk%d BL QC"
+StrConstant PSQ_FMT_LBN_BL_QC_PASS         = "%s BL QC"
+StrConstant PSQ_FMT_LBN_SWEEP_PASS         = "%s Sweep QC"
+StrConstant PSQ_FMT_LBN_SET_PASS           = "%s Set QC"
+StrConstant PSQ_FMT_LBN_PULSE_DUR          = "%s Pulse duration"
+StrConstant PSQ_FMT_LBN_SPIKE_DASCALE_ZERO = "%s spike with zero"
 /// @}
 
 /// @name PatchSeq types of analysis functions

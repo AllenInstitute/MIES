@@ -1,8 +1,8 @@
 digraph G {
     fontname="sans-serif";
+    compound="true";
     ratio="0,01";
     center="true";
-    compound="true";
     penwidth="0.1";
     edge [comment="Wildcard edge",
           fontname="sans-serif",
@@ -57,32 +57,38 @@ digraph G {
 
     "Spike detected?\n(x range: pulse onset to end of sweep\ny condition: max above 0.01mV)\nStore result in labnotebook";
     "Post Sweep Event" -> "Spike detected?\n(x range: pulse onset to end of sweep\ny condition: max above 0.01mV)\nStore result in labnotebook";
-    "Spike detected?\n(x range: pulse onset to end of sweep\ny condition: max above 0.01mV)\nStore result in labnotebook" -> "Step size from labnotebook?"  [label="Yes"];
-    "Step size from labnotebook?" -> "Store DAScale in labnotebook"  [label="+10pA"];
+    "DAScale is zero";
+    "Spike detected?\n(x range: pulse onset to end of sweep\ny condition: max above 0.01mV)\nStore result in labnotebook" -> "DAScale is zero"  [label="Yes"];
+    "DAScale is zero" -> "Step size from labnotebook?"  [label="No"];
+    "DAScale is zero" -> "Add labnotebook entry\ndocumenting this case"  [label="Yes"];
+    "Add labnotebook entry\ndocumenting this case" -> "Mark sweep as failure [2]";
+    "Mark sweep as failure [2]" -> "Three sweeps exist with\nthis labnotebook entry?";
     "Skip to end of active set";
-    "Offset DAScale by -50pA";
-    "Step size from labnotebook?" -> "Offset DAScale by -50pA"  [label="-50pA"];
-    "Write step size of -50pA to labnotebook";
-    "Step size from labnotebook?" -> "Write step size of -50pA to labnotebook"  [label="+100pA"];
-    "Write step size of -50pA to labnotebook" -> "Offset DAScale by -50pA";
+    "Three sweeps exist with\nthis labnotebook entry?" -> "Skip to end of active set"  [label="Yes"];
+    "Step size from labnotebook?" -> "Store DAScale\nin labnotebook"  [label="+10pA"];
+    "Offset DAScale\nby -50pA";
+    "Step size from labnotebook?" -> "Offset DAScale\nby -50pA"  [label="-50pA"];
+    "Write step size of\n-50pA to labnotebook";
+    "Step size from labnotebook?" -> "Write step size of\n-50pA to labnotebook"  [label="+100pA"];
+    "Write step size of\n-50pA to labnotebook" -> "Offset DAScale\nby -50pA";
     "Step size from labnotebook?";
     "Step Size from labnotebook?";
     "Spike detected?\n(x range: pulse onset to end of sweep\ny condition: max above 0.01mV)\nStore result in labnotebook" -> "Step Size from labnotebook?"  [label="No"];
-    "Write step size of +10pA to labnotebook";
-    "Offset DAScale by +10pA";
-    "Offset DAScale by +100pA";
-    "Step Size from labnotebook?" -> "Offset DAScale by +10pA"  [label="+10pA"];
-    "Step Size from labnotebook?" -> "Write step size of +10pA to labnotebook"  [label="-50pA"];
-    "Step Size from labnotebook?" -> "Offset DAScale by +100pA"  [label="+100pA"];
-    "Write step size of +10pA to labnotebook" -> "Offset DAScale by +10pA";
+    "Write step size of\n+10pA to labnotebook";
+    "Offset DAScale\nby +10pA";
+    "Offset DAScale\nby +100pA";
+    "Step Size from labnotebook?" -> "Offset DAScale\nby +10pA"  [label="+10pA"];
+    "Step Size from labnotebook?" -> "Write step size of\n+10pA to labnotebook"  [label="-50pA"];
+    "Step Size from labnotebook?" -> "Offset DAScale\nby +100pA"  [label="+100pA"];
+    "Write step size of\n+10pA to labnotebook" -> "Offset DAScale\nby +10pA";
     "Mark sweep as passed";
     "Mark sweep as passed" -> "Skip to end of active set";
-    "Store DAScale in labnotebook" -> "Mark sweep as passed";
-    "Mark sweep as failed";
-    "Offset DAScale by -50pA" -> "Mark sweep as failed";
-    "Offset DAScale by +10pA" -> "Mark sweep as failed";
-    "Offset DAScale by +100pA" -> "Mark sweep as failed";
+    "Store DAScale\nin labnotebook" -> "Mark sweep as passed";
+    "Mark sweep as failed [1]";
+    "Offset DAScale\nby -50pA" -> "Mark sweep as failed [1]";
+    "Offset DAScale\nby +10pA" -> "Mark sweep as failed [1]";
+    "Offset DAScale\nby +100pA" -> "Mark sweep as failed [1]";
     "Start DAQ/RA" -> "Post Set Event";
-    "Post Set Event" -> "Mark set as passed if 1 sweep passed, as failure otherwise";
-    "Mark set as passed if 1 sweep passed, as failure otherwise" -> "Skip to end"  [label="Failure"];
+    "Post Set Event" -> "Mark set as passed if 1 sweep passed,\nas failure otherwise";
+    "Mark set as passed if 1 sweep passed,\nas failure otherwise" -> "Skip to end"  [label="Failure"];
 }

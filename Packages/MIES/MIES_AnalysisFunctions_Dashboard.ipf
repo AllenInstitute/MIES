@@ -234,6 +234,18 @@ static Function/S AD_GetSquarePulseFailMsg(numericalValues, sweepNo, headstage)
 	string msg, key
 	variable stepSize
 
+	key = PSQ_CreateLBNKey(PSQ_SQUARE_PULSE, PSQ_FMT_LBN_SPIKE_DASCALE_ZERO, query = 1)
+	WAVE/Z spikeWithDAScaleZero = GetLastSettingIndepEachSCI(numericalValues, sweepNo, key, headstage, UNKNOWN_MODE)
+	// Prior to 0c6120e6 (Merge pull request #1073 in ENG/mies-igor from
+	// ~THOMASB/mies-igor:feature/larger-fifo-for-NI to master, 2019-02-09)
+	// this labnotebook key does not exist
+	if(WaveExists(spikeWithDAScaleZero))
+		WaveTransform/O zapNaNs, spikeWithDAScaleZero
+		if(DimSize(spikeWithDAScaleZero, ROWS) == 3)
+			return "Failure as we did had three spikes with a DAScale of 0.0pA."
+		endif
+	endif
+
 	key = PSQ_CreateLBNKey(PSQ_SQUARE_PULSE, PSQ_FMT_LBN_STEPSIZE, query = 1)
 	stepSize = GetLastSettingIndepSCI(numericalValues, sweepNo, key, headstage, UNKNOWN_MODE)
 	ASSERT(IsFinite(stepSize), "Missing DAScale stepsize LBN entry")
