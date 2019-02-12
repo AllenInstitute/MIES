@@ -1452,7 +1452,7 @@ Function PSQ_SquarePulse(panelTitle, s)
 
 			sweepPassed = 0
 
-			sprintf msg, "stepSize %g", stepSize
+			sprintf msg, "DAScale %g, stepSize %g", DAScale, stepSize
 			DEBUGPRINT(msg)
 
 			if(spikeDetection[s.headstage]) // headstage spiked
