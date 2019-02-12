@@ -436,10 +436,10 @@ static Function PS_RB_Test7()
 
 	WAVE numericalValues = GetLBNumericalValues(DEVICE)
 
-	CHECK_EQUAL_VAR(GetSetVariable(DEVICE, "SetVar_Sweep"), 8)
+	CHECK_EQUAL_VAR(GetSetVariable(DEVICE, "SetVar_Sweep"), 9)
 
 	sweepNo = AFH_GetLastSweepAcquired(DEVICE)
-	CHECK_EQUAL_VAR(sweepNo, 7)
+	CHECK_EQUAL_VAR(sweepNo, 8)
 
 	key = PSQ_CreateLBNKey(PSQ_RHEOBASE, PSQ_FMT_LBN_INITIAL_SCALE, query = 1)
 	initialDAScale = GetLastSettingIndepRAC(numericalValues, sweepNo, key, UNKNOWN_MODE)
@@ -450,17 +450,17 @@ static Function PS_RB_Test7()
 	CHECK_EQUAL_VAR(setPassed, 0)
 
 	WAVE/Z baselineQCWave = GetBaselineQCResults_IGNORE(sweepNo)
-	CHECK_EQUAL_WAVES(baselineQCWave, {0, 0, 1, 1, 1, 1, 1, 1}, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(baselineQCWave, {0, 0, 1, 1, 1, 1, 1, 1, 1}, mode = WAVE_DATA)
 
 	WAVE/Z spikeDetectionWave = GetSpikeResults_IGNORE(sweepNo)
-	CHECK_EQUAL_WAVES(spikeDetectionWave, {NaN, NaN, 0, 0, 0, 0, 0, 0}, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(spikeDetectionWave, {NaN, NaN, 0, 0, 0, 0, 0, 0, 0}, mode = WAVE_DATA)
 
 	WAVE/Z sweeps = AFH_GetSweepsFromSameRACycle(numericalValues, sweepNo)
 	CHECK_WAVE(sweeps, NUMERIC_WAVE)
 	numEntries = DimSize(sweeps, ROWS)
-	CHECK_EQUAL_VAR(numEntries, 8)
+	CHECK_EQUAL_VAR(numEntries, 9)
 
-	Make/FREE/D/N=(numEntries) stimScale    = GetLastSetting(numericalValues, sweeps[p], STIMSET_SCALE_FACTOR_KEY, DATA_ACQUISITION_MODE)[HEADSTAGE]
+	Make/FREE/D/N=(numEntries) stimScale = GetLastSetting(numericalValues, sweeps[p], STIMSET_SCALE_FACTOR_KEY, DATA_ACQUISITION_MODE)[HEADSTAGE]
 	Make/FREE/D/N=(numEntries) stimScaleRef
 	stimScaleRef[0, 1]   = PSQ_RB_FINALSCALE_FAKE * 1e12
 	stimScaleRef[2, inf] = (PSQ_RB_FINALSCALE_FAKE + (p - 2) * PSQ_RB_DASCALE_STEP) * 1e12
