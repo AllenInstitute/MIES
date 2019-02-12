@@ -530,6 +530,10 @@ Function Bug(msg)
 	endif
 
 	ControlWindowToFront()
+
+#ifdef AUTOMATED_TESTING
+	ASSERT(0, "BUG: Should never be called during automated testing.")
+#endif
 End
 
 /// @brief Debug helper which creates a textwave which will hold
