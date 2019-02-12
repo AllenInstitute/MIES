@@ -157,7 +157,7 @@ Function DAG_RecordGuiStateTxT(panelTitle, [GUIState])
 	GUIStateTxT[0, NUM_ASYNC_CHANNELS - 1][%$lbl] = state[p]
 
 	numEntries = DimSize(GUIStateTxT, COLS)
-	for(i = COMMON_CONTROL_GROUP_COUNT_NUM; i < numEntries; i += 1)
+	for(i = COMMON_CONTROL_GROUP_COUNT_TXT; i < numEntries; i += 1)
 		ctrlName = GetDimLabel(GUIStateTxT, COLS, i)
 		controlInfo/w=$panelTitle $ctrlName
 		ASSERT(V_flag != 0, "invalid or non existing control")
