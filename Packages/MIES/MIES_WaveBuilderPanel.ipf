@@ -1,5 +1,5 @@
 #pragma TextEncoding = "UTF-8"
-#pragma rtGlobals=3		// Use modern global access method and strict wave access.
+#pragma rtGlobals=3 // Use modern global access method and strict wave access.
 #pragma rtFunctionErrors=1
 
 #ifdef AUTOMATED_TESTING
@@ -2748,7 +2748,7 @@ Function WBP_ButtonProc_OpenAnaFuncs(ba) : ButtonControl
 			if(V_Flag) // create a default file
 				Open refNum as userFile
 
-				fprintf refNum, "#pragma rtGlobals=3		// Use modern global access method and strict wave access.\n"
+				fprintf refNum, "#pragma rtGlobals=3 // Use modern global access method and strict wave access.\n"
 				fprintf refNum, "\n"
 				fprintf refNum, "// This file can be used for user analysis functions.\n"
 				fprintf refNum, "// It will not be overwritten by MIES on an upgrade.\n"
