@@ -177,12 +177,12 @@ Function DAG_GetNumericalValue(panelTitle, ctrl, [index])
 	string panelTitle, ctrl
 	variable index
 
-#ifdef DEBUGGING_ENABLED
+#if defined(AUTOMATED_TESTING) || defined(DEBUGGING_ENABLED)
 	variable refValue
 	string msg
 
 	// check if the GUI state wave is consistent
-	if(DP_DebuggingEnabledForFile(GetFile(FunctionPath(""))))
+	if(defined(AUTOMATED_TESTING) || DP_DebuggingEnabledForFile(GetFile(FunctionPath(""))))
 		ControlInfo/W=$panelTitle $ctrl
 
 		if(ParamIsDefault(index))
@@ -223,10 +223,10 @@ Function/S DAG_GetTextualValue(panelTitle, ctrl, [index])
 
 	WAVE/T GUIState = GetDA_EphysGuiStateTxT(panelTitle)
 
-#ifdef DEBUGGING_ENABLED
+#if defined(AUTOMATED_TESTING) || defined(DEBUGGING_ENABLED)
 	string str, msg
 	// check if the GUI state wave is consistent
-	if(DP_DebuggingEnabledForFile(GetFile(FunctionPath(""))))
+	if(defined(AUTOMATED_TESTING) || DP_DebuggingEnabledForFile(GetFile(FunctionPath(""))))
 
 		if(ParamIsDefault(index))
 			ControlInfo/W=$panelTitle $ctrl
