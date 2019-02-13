@@ -5,11 +5,16 @@
 static Constant HEADSTAGE = 0
 
 /// @brief Acquire data with the given DAQSettings
-static Function AcquireData(s, stimset)
+static Function AcquireData(s, stimset, [postInitializeFunc, preAcquireFunc])
 	STRUCT DAQSettings& s
 	string stimset
+	FUNCREF CALLABLE_PROTO postInitializeFunc, preAcquireFunc
 
 	Initialize_IGNORE()
+
+	if(!ParamIsDefault(postInitializeFunc))
+		postInitializeFunc()
+	endif
 
 	string unlockedPanelTitle = DAP_CreateDAEphysPanel()
 
@@ -51,6 +56,10 @@ static Function AcquireData(s, stimset)
 	PGC_SetAndActivateControl(DEVICE, "Popup_Settings_SampIntMult", str = "4")
 
 	DoUpdate/W=$DEVICE
+
+	if(!ParamIsDefault(preAcquireFunc))
+		preAcquireFunc()
+	endif
 
 	CtrlNamedBackGround DAQWatchdog, start, period=120, proc=WaitUntilDAQDone_IGNORE
 	PGC_SetAndActivateControl(DEVICE, "DataAcquireButton")
