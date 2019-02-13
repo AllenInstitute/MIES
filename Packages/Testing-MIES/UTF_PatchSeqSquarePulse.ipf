@@ -89,7 +89,8 @@ End
 
 static Function PS_SP_Test1()
 
-	variable sweepNo, spikeDetected, i, numEntries
+	variable sweepNo, sweepPassed, setPassed, numEntries
+	string key
 
 	CHECK_EQUAL_VAR(GetSetVariable(DEVICE, "SetVar_Sweep"), 20)
 
@@ -98,11 +99,17 @@ static Function PS_SP_Test1()
 
 	WAVE numericalValues = GetLBNumericalValues(DEVICE)
 
-	spikeDetected = GetLastSetting(numericalValues, sweepNo, PSQ_CreateLBNKey(PSQ_SQUARE_PULSE, PSQ_FMT_LBN_SPIKE_DETECT, query = 1), UNKNOWN_MODE)[HEADSTAGE]
-	CHECK_EQUAL_VAR(spikeDetected, 0)
+	key = PSQ_CreateLBNKey(PSQ_SQUARE_PULSE, PSQ_FMT_LBN_SWEEP_PASS, query = 1)
+	sweepPassed = GetLastSettingIndep(numericalValues, sweepNo, key, UNKNOWN_MODE)
+	CHECK_EQUAL_VAR(sweepPassed, 0)
 
-	WAVE/Z result = GetLastSetting(numericalValues, sweepNo, PSQ_CreateLBNKey(PSQ_SQUARE_PULSE, PSQ_FMT_LBN_FINAL_SCALE, query = 1), UNKNOWN_MODE)
-	CHECK_WAVE(result, NULL_WAVE)
+	key = PSQ_CreateLBNKey(PSQ_SQUARE_PULSE, PSQ_FMT_LBN_SET_PASS, query = 1)
+	setPassed = GetLastSettingIndep(numericalValues, sweepNo, key, UNKNOWN_MODE)
+	CHECK_EQUAL_VAR(setPassed, 0)
+
+	key =  PSQ_CreateLBNKey(PSQ_SQUARE_PULSE, PSQ_FMT_LBN_FINAL_SCALE, query = 1)
+	finalDaScale = GetLastSettingIndep(numericalValues, sweepNo, key, UNKNOWN_MODE)
+	CHECK_EQUAL_VAR(finalDAScale, NaN)
 
 	WAVE/Z spikeDetectionWave = GetSpikeResults_IGNORE(sweepNo)
 	CHECK_EQUAL_WAVES(spikeDetectionWave, {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}, mode = WAVE_DATA)
@@ -133,7 +140,8 @@ End
 
 static Function PS_SP_Test2()
 
-	variable sweepNo, spikeDetected, numEntries, i
+	variable sweepNo, sweepPassed, setPassed, numEntries
+	string key
 
 	CHECK_EQUAL_VAR(GetSetVariable(DEVICE, "SetVar_Sweep"), 20)
 
@@ -142,11 +150,17 @@ static Function PS_SP_Test2()
 
 	WAVE numericalValues = GetLBNumericalValues(DEVICE)
 
-	spikeDetected = GetLastSetting(numericalValues, sweepNo, PSQ_CreateLBNKey(PSQ_SQUARE_PULSE, PSQ_FMT_LBN_SPIKE_DETECT, query = 1), UNKNOWN_MODE)[HEADSTAGE]
-	CHECK_EQUAL_VAR(spikeDetected, 0)
+	key = PSQ_CreateLBNKey(PSQ_SQUARE_PULSE, PSQ_FMT_LBN_SWEEP_PASS, query = 1)
+	sweepPassed = GetLastSettingIndep(numericalValues, sweepNo, key, UNKNOWN_MODE)
+	CHECK_EQUAL_VAR(sweepPassed, 0)
 
-	WAVE/Z result = GetLastSetting(numericalValues, sweepNo, PSQ_CreateLBNKey(PSQ_SQUARE_PULSE, PSQ_FMT_LBN_FINAL_SCALE, query = 1), UNKNOWN_MODE)
-	CHECK_WAVE(result, NULL_WAVE)
+	key = PSQ_CreateLBNKey(PSQ_SQUARE_PULSE, PSQ_FMT_LBN_SET_PASS, query = 1)
+	setPassed = GetLastSettingIndep(numericalValues, sweepNo, key, UNKNOWN_MODE)
+	CHECK_EQUAL_VAR(setPassed, 0)
+
+	key =  PSQ_CreateLBNKey(PSQ_SQUARE_PULSE, PSQ_FMT_LBN_FINAL_SCALE, query = 1)
+	finalDaScale = GetLastSettingIndep(numericalValues, sweepNo, key, UNKNOWN_MODE)
+	CHECK_EQUAL_VAR(finalDAScale, NaN)
 
 	WAVE/Z spikeDetectionWave = GetSpikeResults_IGNORE(sweepNo)
 	CHECK_EQUAL_WAVES(spikeDetectionWave, {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}, mode = WAVE_DATA)
@@ -177,7 +191,8 @@ End
 
 static Function PS_SP_Test3()
 
-	variable sweepNo, spikeDetected, numEntries, i
+	variable sweepNo, sweepPassed, setPassed, numEntries
+	string key
 
 	CHECK_EQUAL_VAR(GetSetVariable(DEVICE, "SetVar_Sweep"), 20)
 
@@ -186,11 +201,17 @@ static Function PS_SP_Test3()
 
 	WAVE numericalValues = GetLBNumericalValues(DEVICE)
 
-	spikeDetected = GetLastSetting(numericalValues, sweepNo, PSQ_CreateLBNKey(PSQ_SQUARE_PULSE, PSQ_FMT_LBN_SPIKE_DETECT, query = 1), UNKNOWN_MODE)[HEADSTAGE]
-	CHECK_EQUAL_VAR(spikeDetected, 0)
+	key = PSQ_CreateLBNKey(PSQ_SQUARE_PULSE, PSQ_FMT_LBN_SWEEP_PASS, query = 1)
+	sweepPassed = GetLastSettingIndep(numericalValues, sweepNo, key, UNKNOWN_MODE)
+	CHECK_EQUAL_VAR(sweepPassed, 0)
 
-	WAVE/Z result = GetLastSetting(numericalValues, sweepNo, PSQ_CreateLBNKey(PSQ_SQUARE_PULSE, PSQ_FMT_LBN_FINAL_SCALE, query = 1), UNKNOWN_MODE)
-	CHECK_WAVE(result, NULL_WAVE)
+	key = PSQ_CreateLBNKey(PSQ_SQUARE_PULSE, PSQ_FMT_LBN_SET_PASS, query = 1)
+	setPassed = GetLastSettingIndep(numericalValues, sweepNo, key, UNKNOWN_MODE)
+	CHECK_EQUAL_VAR(setPassed, 0)
+
+	key =  PSQ_CreateLBNKey(PSQ_SQUARE_PULSE, PSQ_FMT_LBN_FINAL_SCALE, query = 1)
+	finalDaScale = GetLastSettingIndep(numericalValues, sweepNo, key, UNKNOWN_MODE)
+	CHECK_EQUAL_VAR(finalDAScale, NaN)
 
 	WAVE/Z spikeDetectionWave = GetSpikeResults_IGNORE(sweepNo)
 	CHECK_EQUAL_WAVES(spikeDetectionWave, {0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}, mode = WAVE_DATA)
@@ -221,7 +242,8 @@ End
 
 static Function PS_SP_Test4()
 
-	variable sweepNo, spikeDetected, numEntries, i
+	variable sweepNo, sweepPassed, setPassed, numEntries
+	string key
 
 	CHECK_EQUAL_VAR(GetSetVariable(DEVICE, "SetVar_Sweep"), 20)
 
@@ -230,11 +252,17 @@ static Function PS_SP_Test4()
 
 	WAVE numericalValues = GetLBNumericalValues(DEVICE)
 
-	spikeDetected = GetLastSetting(numericalValues, sweepNo, PSQ_CreateLBNKey(PSQ_SQUARE_PULSE, PSQ_FMT_LBN_SPIKE_DETECT, query = 1), UNKNOWN_MODE)[HEADSTAGE]
-	CHECK_EQUAL_VAR(spikeDetected, 0)
+	key = PSQ_CreateLBNKey(PSQ_SQUARE_PULSE, PSQ_FMT_LBN_SWEEP_PASS, query = 1)
+	sweepPassed = GetLastSettingIndep(numericalValues, sweepNo, key, UNKNOWN_MODE)
+	CHECK_EQUAL_VAR(sweepPassed, 0)
 
-	WAVE/Z result = GetLastSetting(numericalValues, sweepNo, PSQ_CreateLBNKey(PSQ_SQUARE_PULSE, PSQ_FMT_LBN_FINAL_SCALE, query = 1), UNKNOWN_MODE)
-	CHECK_WAVE(result, NULL_WAVE)
+	key = PSQ_CreateLBNKey(PSQ_SQUARE_PULSE, PSQ_FMT_LBN_SET_PASS, query = 1)
+	setPassed = GetLastSettingIndep(numericalValues, sweepNo, key, UNKNOWN_MODE)
+	CHECK_EQUAL_VAR(setPassed, 0)
+
+	key =  PSQ_CreateLBNKey(PSQ_SQUARE_PULSE, PSQ_FMT_LBN_FINAL_SCALE, query = 1)
+	finalDaScale = GetLastSettingIndep(numericalValues, sweepNo, key, UNKNOWN_MODE)
+	CHECK_EQUAL_VAR(finalDAScale, NaN)
 
 	WAVE/Z spikeDetectionWave = GetSpikeResults_IGNORE(sweepNo)
 	CHECK_EQUAL_WAVES(spikeDetectionWave, {0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}, mode = WAVE_DATA)
@@ -266,7 +294,8 @@ End
 
 static Function PS_SP_Test5()
 
-	variable sweepNo, spikeDetected, numEntries, result, i
+	variable sweepNo, sweepPassed, setPassed, numEntries
+	string key
 
 	CHECK_EQUAL_VAR(GetSetVariable(DEVICE, "SetVar_Sweep"), 4)
 
@@ -275,14 +304,20 @@ static Function PS_SP_Test5()
 
 	WAVE numericalValues = GetLBNumericalValues(DEVICE)
 
-	spikeDetected = GetLastSetting(numericalValues, sweepNo, PSQ_CreateLBNKey(PSQ_SQUARE_PULSE, PSQ_FMT_LBN_SPIKE_DETECT, query = 1), UNKNOWN_MODE)[HEADSTAGE]
-	CHECK_EQUAL_VAR(spikeDetected, 1)
+	key = PSQ_CreateLBNKey(PSQ_SQUARE_PULSE, PSQ_FMT_LBN_SWEEP_PASS, query = 1)
+	sweepPassed = GetLastSettingIndep(numericalValues, sweepNo, key, UNKNOWN_MODE)
+	CHECK_EQUAL_VAR(sweepPassed, 1)
+
+	key = PSQ_CreateLBNKey(PSQ_SQUARE_PULSE, PSQ_FMT_LBN_SET_PASS, query = 1)
+	setPassed = GetLastSettingIndep(numericalValues, sweepNo, key, UNKNOWN_MODE)
+	CHECK_EQUAL_VAR(setPassed, 1)
+
+	key =  PSQ_CreateLBNKey(PSQ_SQUARE_PULSE, PSQ_FMT_LBN_FINAL_SCALE, query = 1)
+	finalDaScale = GetLastSettingIndep(numericalValues, sweepNo, key, UNKNOWN_MODE)
+	CHECK_EQUAL_VAR(finalDAScale, 160e-12)
 
 	WAVE/Z spikeDetectionWave = GetSpikeResults_IGNORE(sweepNo)
 	CHECK_EQUAL_WAVES(spikeDetectionWave, {0, 1, 0, 1}, mode = WAVE_DATA)
-
-	result = GetLastSettingIndep(numericalValues, sweepNo, PSQ_CreateLBNKey(PSQ_SQUARE_PULSE, PSQ_FMT_LBN_FINAL_SCALE, query = 1), UNKNOWN_MODE)
-	CHECK_EQUAL_VAR(result, 160e-12)
 
 	WAVE/Z sweeps = AFH_GetSweepsFromSameRACycle(numericalValues, sweepNo)
 	CHECK_WAVE(sweeps, NUMERIC_WAVE)
