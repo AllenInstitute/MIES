@@ -762,19 +762,21 @@ static Function/WAVE PSQ_SearchForSpikes(panelTitle, type, sweepWave, headstage,
 	maxVal = WaveMax(singleDA, totalOnsetDelay, inf)
 
 	if(minVal == 0 && maxVal == 0)
-		return spikeDetection
+		if(type == PSQ_SQUARE_PULSE)
+			first = 0
+			last = inf
+		else
+			return spikeDetection
+		endif
+	else
+		level = minVal + GetMachineEpsilon(WaveType(singleDA))
+
+		Make/FREE/D levels
+		FindLevels/R=(totalOnsetDelay, inf)/Q/N=2/DEST=levels singleDA, level
+		ASSERT(V_LevelsFound == 2, "Could not find two levels")
+		first = levels[0]
+		last  = inf
 	endif
-
-	level = minVal + GetMachineEpsilon(WaveType(singleDA))
-
-	Make/FREE/D levels
-	FindLevels/R=(totalOnsetDelay, inf)/Q/N=2/DEST=levels singleDA, level
-	ASSERT(V_LevelsFound == 2, "Could not find two levels")
-	first = levels[0]
-	last  = inf
-
-	WAVE singleAD = AFH_ExtractOneDimDataFromSweep(panelTitle, sweepWave, headstage, ITC_XOP_CHANNEL_TYPE_ADC, config = config)
-	ASSERT(!cmpstr(WaveUnits(singleAD, -1), "mV"), "Unexpected AD Unit")
 
 	if(PSQ_TestOverrideActive())
 		WAVE/SDFR=root: overrideResults
@@ -812,6 +814,9 @@ static Function/WAVE PSQ_SearchForSpikes(panelTitle, type, sweepWave, headstage,
 		else
 			level = PSQ_SPIKE_LEVEL
 		endif
+
+		WAVE singleAD = AFH_ExtractOneDimDataFromSweep(panelTitle, sweepWave, headstage, ITC_XOP_CHANNEL_TYPE_ADC, config = config)
+		ASSERT(!cmpstr(WaveUnits(singleAD, -1), "mV"), "Unexpected AD Unit")
 
 		if(numberOfSpikes == 1)
 			// search the spike from the rising edge till the end of the wave
