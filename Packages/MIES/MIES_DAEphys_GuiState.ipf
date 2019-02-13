@@ -171,21 +171,28 @@ End
 ///
 /// @param panelTitle device
 /// @param ctrl       control name
-/// @param index      [optional, default to zero] Some control entries have multiple
+/// @param index      [optional, default to NaN] Some control entries have multiple
 ///                   entries per headstage/channel/etc.
 Function DAG_GetNumericalValue(panelTitle, ctrl, [index])
 	string panelTitle, ctrl
 	variable index
 
 #if defined(AUTOMATED_TESTING) || defined(DEBUGGING_ENABLED)
-	variable refValue
+	variable refValue, waveIndex
 	string msg
+
+	if(ParamIsDefault(index) || IsNaN(index))
+		waveIndex = 0
+		index = NaN
+	else
+		waveIndex = index
+	endif
 
 	// check if the GUI state wave is consistent
 	if(defined(AUTOMATED_TESTING) || DP_DebuggingEnabledForFile(GetFile(FunctionPath(""))))
 		ControlInfo/W=$panelTitle $ctrl
 
-		if(ParamIsDefault(index))
+		if(!IsFinite(index))
 			ControlInfo/W=$panelTitle $ctrl
 		else
 			string fullCtrl
@@ -197,7 +204,7 @@ Function DAG_GetNumericalValue(panelTitle, ctrl, [index])
 			V_Value -= 1
 		endif
 
-		refValue = GetDA_EphysGuiStateNum(panelTitle)[index][%$ctrl]
+		refValue = GetDA_EphysGuiStateNum(panelTitle)[waveIndex][%$ctrl]
 
 		if(!CheckIfClose(V_Value, refValue) && !(V_Value == 0 && refValue == 0))
 			sprintf msg, "Numeric GUI state wave is inconsistent for %s: %g vs. %g\r", ctrl, V_Value, refValue
@@ -206,7 +213,7 @@ Function DAG_GetNumericalValue(panelTitle, ctrl, [index])
 	endif
 #endif
 
-	return GetDA_EphysGuiStateNum(panelTitle)[index][%$ctrl]
+	return GetDA_EphysGuiStateNum(panelTitle)[waveIndex][%$ctrl]
 End
 
 /// @brief Query a control value from the textual gui state wave
@@ -215,7 +222,7 @@ End
 ///
 /// @param panelTitle device
 /// @param ctrl       control name
-/// @param index      [optional, default to zero] Some control entries have multiple
+/// @param index      [optional, default to NaN] Some control entries have multiple
 ///                   entries per headstage/channel/etc.
 Function/S DAG_GetTextualValue(panelTitle, ctrl, [index])
 	string panelTitle, ctrl
@@ -225,10 +232,19 @@ Function/S DAG_GetTextualValue(panelTitle, ctrl, [index])
 
 #if defined(AUTOMATED_TESTING) || defined(DEBUGGING_ENABLED)
 	string str, msg
+	variable waveIndex
+
+	if(ParamIsDefault(index) || IsNaN(index))
+		waveIndex = 0
+		index = NaN
+	else
+		waveIndex = index
+	endif
+
 	// check if the GUI state wave is consistent
 	if(defined(AUTOMATED_TESTING) || DP_DebuggingEnabledForFile(GetFile(FunctionPath(""))))
 
-		if(ParamIsDefault(index))
+		if(!IsFinite(index))
 			ControlInfo/W=$panelTitle $ctrl
 		else
 			string fullCtrl
@@ -236,7 +252,7 @@ Function/S DAG_GetTextualValue(panelTitle, ctrl, [index])
 			ControlInfo/W=$panelTitle $fullCtrl
 		endif
 
-		str = GUIState[index][%$ctrl]
+		str = GUIState[waveIndex][%$ctrl]
 
 		if(IsEmpty(S_Value) != IsEmpty(str) || cmpstr(S_Value, str))
 			sprintf msg, "Textual GUI state wave is inconsistent for %s: %s vs. %s\r", ctrl, SelectString(IsNull(S_Value), S_Value, "<null>"), GUIState[index][%$ctrl]
@@ -245,7 +261,7 @@ Function/S DAG_GetTextualValue(panelTitle, ctrl, [index])
 	endif
 #endif
 
-	return GUIState[index][%$ctrl]
+	return GUIState[waveIndex][%$ctrl]
 End
 
 /// @brief Return a free wave of the status of the checkboxes specified by
