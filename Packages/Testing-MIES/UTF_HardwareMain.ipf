@@ -202,6 +202,8 @@ Function run()
 	list = AddListItem("PS_DS_Sub_Test8", list, ";", INF)
 	list = AddListItem("PS_DS_Supra_Run1", list, ";", INF)
 	list = AddListItem("PS_DS_Supra_Test1", list, ";", INF)
+	list = AddListItem("PS_DS_Supra_Run2", list, ";", INF)
+	list = AddListItem("PS_DS_Supra_Test2", list, ";", INF)
 
 	list = AddListItem("PS_SP_Run1", list, ";", INF)
 	list = AddListItem("PS_SP_Test1", list, ";", INF)

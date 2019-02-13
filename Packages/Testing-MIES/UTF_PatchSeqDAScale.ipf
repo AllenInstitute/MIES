@@ -462,3 +462,49 @@ Function PS_DS_Supra_Test1()
 	Make/FREE/D/N=(numEntries) stimScaleRef = {PSQ_DS_OFFSETSCALE_FAKE + 20, PSQ_DS_OFFSETSCALE_FAKE + 40}
 	CHECK_EQUAL_WAVES(stimScale, stimScaleRef, mode = WAVE_DATA, tol = 1e-14)
 End
+
+Function PS_SetOffsetOp_IGNORE()
+	WBP_AddAnalysisParameter("PSQ_DaScale_Supr_DA_0", "OffsetOperator", str="*")
+End
+
+Function PS_DS_Supra_Run2()
+
+	STRUCT DAQSettings s
+	InitDAQSettingsFromString(s, "DAQ_MD1_RA1_IDX0_LIDX0_BKG_1")
+	AcquireData(s, "PSQ_DaScale_Supr_DA_0", postInitializeFunc = PS_SetOffsetOp_IGNORE)
+
+	WAVE wv = PSQ_CreateOverrideResults(DEVICE, HEADSTAGE, PSQ_DA_SCALE)
+	// pre pulse chunk pass
+	// second post pulse chunk pass
+	wv[]    = 0
+	wv[0][] = 1
+	wv[1][] = 1
+End
+
+Function PS_DS_Supra_Test2()
+
+	variable sweepNo, setPassed, numEntries
+
+	CHECK_EQUAL_VAR(GetSetVariable(DEVICE, "SetVar_Sweep"), 2)
+
+	sweepNo = AFH_GetLastSweepAcquired(DEVICE)
+	CHECK_EQUAL_VAR(sweepNo, 1)
+
+	WAVE numericalValues = GetLBNumericalValues(DEVICE)
+
+	setPassed = GetLastSettingIndep(numericalValues, sweepNo, PSQ_CreateLBNKey(PSQ_DA_SCALE, PSQ_FMT_LBN_SET_PASS, query = 1), UNKNOWN_MODE)
+	CHECK_EQUAL_VAR(setPassed, 1)
+
+	WAVE/Z sweepPassed = GetSweepResults_IGNORE(sweepNo)
+	CHECK_EQUAL_WAVES(sweepPassed, {1, 1})
+
+	WAVE/Z sweeps = AFH_GetSweepsFromSameRACycle(numericalValues, sweepNo)
+	CHECK_WAVE(sweeps, NUMERIC_WAVE)
+	numEntries = DimSize(sweeps, ROWS)
+	CHECK_EQUAL_VAR(numEntries, 2)
+
+	numEntries = DimSize(sweepPassed, ROWS)
+	Make/FREE/D/N=(numEntries) stimScale = GetLastSetting(numericalValues, sweeps[p], STIMSET_SCALE_FACTOR_KEY, DATA_ACQUISITION_MODE)[HEADSTAGE]
+	Make/FREE/D/N=(numEntries) stimScaleRef = {PSQ_DS_OFFSETSCALE_FAKE * 20, PSQ_DS_OFFSETSCALE_FAKE * 40}
+	CHECK_EQUAL_WAVES(stimScale, stimScaleRef, mode = WAVE_DATA, tol = 1e-14)
+End

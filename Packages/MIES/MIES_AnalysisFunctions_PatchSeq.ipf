@@ -973,8 +973,12 @@ End
 /// - OperationMode (String):        Operation mode of the analayis function. Can be
 ///                                  either #PSQ_DS_SUB or #PSQ_DS_SUPRA.
 /// - SamplingMultiplier (Variable): Sampling multiplier, use 1 for no multiplier
+/// - OffsetOperator (String):       [Optional, defaults to "+"] Set the math operator to use for
+///                                  combining the rheobase DAScale value from the previous run and
+///                                  the DAScales values. Valid strings are "+" (addition) and "*" (multiplication).
+///                                  Ignored for #PSQ_DS_SUB.
 Function/S PSQ_DAScale_GetParams()
-	return "DAScales:wave,OperationMode:string,SamplingMultiplier:variable"
+	return "DAScales:wave,OperationMode:string,SamplingMultiplier:variable,[OffsetOperator:string]"
 End
 
 /// @brief Patch Seq Analysis function to find a suitable DAScale
@@ -1060,12 +1064,12 @@ Function PSQ_DAScale(panelTitle, s)
 	string panelTitle
 	STRUCT AnalysisFunction_V3 &s
 
-	variable val, totalOnsetDelay
+	variable val, totalOnsetDelay, DAScale
 	variable i, fifoInStimsetPoint, fifoInStimsetTime
 	variable index, ret
 	variable sweepPassed, setPassed, numSweepsPass, length, minLength
 	variable sweepsInSet, passesInSet, acquiredSweepsInSet, numBaselineChunks, multiplier
-	string msg, stimset, key, opMode
+	string msg, stimset, key, opMode, offsetOp
 	variable daScaleOffset = NaN
 
 	WAVE/D/Z DAScales = AFH_GetAnalysisParamWave("DAScales", s.params)
@@ -1076,6 +1080,19 @@ Function PSQ_DAScale(panelTitle, s)
 
 	multiplier = AFH_GetAnalysisParamNumerical("SamplingMultiplier", s.params)
 	ASSERT(multiplier > 0, "Missing or non-positive SamplingMultiplier parameter.")
+
+	if(!cmpstr(opMode, PSQ_DS_SUPRA))
+
+		offsetOp = AFH_GetAnalysisParamTextual("OffsetOperator", s.params)
+
+		if(IsEmpty(offsetOp))
+			offsetOp = "+"
+		else
+			ASSERT(!cmpstr(offsetOp, "+") || !cmpstr(offsetOp, "*"), "Invalid offset operator")
+		endif
+	else
+		offsetOp = "+"
+	endif
 
 	numSweepsPass = DimSize(DAScales, ROWS)
 	ASSERT(numSweepsPass > 0, "Invalid number of entries in DAScales")
@@ -1251,7 +1268,19 @@ Function PSQ_DAScale(panelTitle, s)
 				continue
 			elseif(index < DimSize(DAScales, ROWS))
 				ASSERT(isFinite(daScaleOffset), "DAScale offset is non-finite")
-				SetDAScale(panelTitle, i, (DAScales[index] + daScaleOffset) * 1e-12)
+
+				strswitch(offsetOp)
+					case "+":
+						DAScale = DAScales[index] + daScaleOffset
+						break
+					case "*":
+						DAScale = DAScales[index] * daScaleOffset
+						break
+					default:
+						ASSERT(0, "Invalid case")
+						break
+				endswitch
+				SetDAScale(panelTitle, i, DAScale * 1e-12)
 			endif
 		endfor
 	endif
