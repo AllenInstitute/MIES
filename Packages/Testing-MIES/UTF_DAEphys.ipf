@@ -31,7 +31,7 @@ Function CheckIfAllControlsReferStateWv()
 			index = channelIndex
 			lbl   = GetSpecialControlLabel(channelType, controlType)
 		else
-			index = 0
+			index = NaN
 			lbl   = ctrl
 
 			// ignore controls we don't store
