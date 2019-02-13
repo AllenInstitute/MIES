@@ -175,13 +175,16 @@ Function CheckStartupSettings()
 	Duplicate/O GetDA_EphysGuiStateNum(DEVICE), guiStateNumRef
 	Duplicate/O GetDA_EphysGuiStateTxT(DEVICE), guiStateTxTRef
 
-	list  = ControlNameList(DEVICE, ";")
+	PGC_SetAndActivateControl(DEVICE, "button_SettingsPlus_unLockDevic")
+	unlockedPanelTitle = GetCurrentWindow()
+
+	list  = ControlNameList(unlockedPanelTitle, ";")
 
 	numEntries = ItemsInList(list)
 	CHECK(numEntries > 0)
 	for(i = 0; i < numEntries; i += 1)
 		ctrl = StringFromList(i, list)
-		ControlInfo/W=$DEVICE $ctrl
+		ControlInfo/W=$unlockedPanelTitle $ctrl
 
 		switch(abs(V_Flag))
 			case CONTROL_TYPE_BUTTON:
@@ -193,30 +196,29 @@ Function CheckStartupSettings()
 			case CONTROL_TYPE_CHECKBOX:
 				oldVal = V_Value
 				val    = !oldVal
-				SetCheckBoxState(DEVICE, ctrl, val)
+				SetCheckBoxState(unlockedPanelTitle, ctrl, val)
 				break
 			case CONTROL_TYPE_SETVARIABLE:
-				if(DoesControlHaveInternalString(DEVICE, ctrl))
-					SetSetVariableString(DEVICE, ctrl, num2str(enoise(1, 2)))
+				if(DoesControlHaveInternalString(unlockedPanelTitle, ctrl))
+					SetSetVariableString(unlockedPanelTitle, ctrl, num2str(enoise(1, 2)))
 				else
-					SetSetVariable(DEVICE, ctrl, enoise(5, 2))
+					SetSetVariable(unlockedPanelTitle, ctrl, enoise(5, 2))
 				endif
 				break
 			case CONTROL_TYPE_SLIDER:
 
 				oldVal = V_Value
-				SetSliderPositionIndex(DEVICE, ctrl, oldVal + 1)
+				SetSliderPositionIndex(unlockedPanelTitle, ctrl, oldVal + 1)
 
 				break
 			case CONTROL_TYPE_POPUPMENU:
 
-				SetPopupMenuIndex(DEVICE, ctrl, 1 + enoise(2, 2))
+				SetPopupMenuIndex(unlockedPanelTitle, ctrl, 1 + enoise(2, 2))
 				break
 		endswitch
 	endfor
 
 	DAP_EphysPanelStartUpSettings()
-	unlockedPanelTitle = GetCurrentWindow()
 
 	SCOPE_OpenScopeWindow(unlockedPanelTitle)
 	AddVersionToPanel(unlockedPanelTitle, DA_EPHYS_PANEL_VERSION)
