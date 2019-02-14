@@ -50,6 +50,10 @@ Function/S DAP_GetNIDeviceList()
 		if(IsEmpty(DAQmxDevice))
 			break
 		endif
+
+#ifdef EVIL_KITTEN_EATING_MODE
+		devList += DAQmxDevName + ";"
+#else
 		for(j = 0; j < numPattern; j += 1)
 			pattern = StringFromList(j, NI_DAC_PATTERNS, "|")
 			if(!(strsearch(DAQmxDevice, pattern, 0) == -1))
@@ -63,6 +67,7 @@ Function/S DAP_GetNIDeviceList()
 				endif
 			endif
 		endfor
+#endif
 	endfor
 
 	globalNIDevList = devList
