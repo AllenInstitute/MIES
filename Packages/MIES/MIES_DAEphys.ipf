@@ -37,10 +37,11 @@ Function/S DAP_GetNIDeviceList()
 
 	SVAR globalNIDevList = $GetNIDeviceList()
 	devList = globalNIDevList
+
 	if(!isEmpty(devList))
 		return devList
 	endif
-	devList = ""
+
 	for(i = 0;i < HARDWARE_MAX_DEVICES;i += 1)
 		DAQmxDevice = HW_NI_GetPropertyListOfDevices(i)
 
@@ -55,7 +56,9 @@ Function/S DAP_GetNIDeviceList()
 			endif
 		endif
 	endfor
+
 	globalNIDevList = devList
+
 	return devList
 End
 
