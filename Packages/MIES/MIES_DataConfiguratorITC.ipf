@@ -98,6 +98,11 @@ Function DC_ConfigureDataForITC(panelTitle, dataAcqOrTP, [multiDevice])
 	if(dataAcqOrTP == DATA_ACQUISITION_MODE)
 		AFM_CallAnalysisFunctions(panelTitle, PRE_SWEEP_EVENT)
 	endif
+
+	WAVE HardwareDataWave = GetHardwareDataWave(panelTitle)
+	WAVE ITCChanConfigWave = GetITCChanConfigWave(panelTitle)
+
+	ASSERT(IsValidSweepAndConfig(HardwareDataWave, ITCChanConfigWave), "Invalid sweep and config combination")
 End
 
 static Function DC_UpdateHSProperties(panelTitle, ADCs)
