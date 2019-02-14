@@ -408,7 +408,7 @@ Function/Wave WB_GetStimSet([setName])
 	FastOp stimSet = 0
 
 // note: here the stimset generation is coupled to the ITC minimum sample interval which is 200 kHz wheras for NI it is 500 kHz
-	SetScale/P x 0, HARDWARE_ITC_MIN_SAMPINT, "ms", stimset
+	SetScale/P x 0, WAVEBUILDER_MIN_SAMPINT, "ms", stimset
 
 	for(i = 0; i < numSweeps; i += 1)
 		WAVE wv = data[i]
@@ -910,7 +910,7 @@ static Function/WAVE WB_MakeWaveBuilderWave(WP, WPT, SegWvType, stepCount, numEp
 
 				Duplicate/O combinedWave, segmentWave
 
-				params.Duration = DimSize(segmentWave, ROWS) * HARDWARE_ITC_MIN_SAMPINT
+				params.Duration = DimSize(segmentWave, ROWS) * WAVEBUILDER_MIN_SAMPINT
 
 				AddEntryIntoWaveNoteAsList(WaveBuilderWave, "Formula"         , str=formula)
 				AddEntryIntoWaveNoteAsList(WaveBuilderWave, "Formula Version" , str=formula_version)
@@ -1117,7 +1117,7 @@ End
 static Function WB_RampSegment(pa)
 	struct SegmentParameters &pa
 
-	variable amplitudeIncrement = pa.amplitude * HARDWARE_ITC_MIN_SAMPINT / pa.duration
+	variable amplitudeIncrement = pa.amplitude * WAVEBUILDER_MIN_SAMPINT / pa.duration
 
 	Wave SegmentWave = GetSegmentWave(duration=pa.duration)
 	MultiThread SegmentWave = amplitudeIncrement * p
@@ -1127,7 +1127,7 @@ End
 Function WB_IsValidCutoffFrequency(freq)
 	variable freq
 
-	return WB_IsValidScaledCutoffFrequency(freq / HARDWARE_ITC_MIN_SAMPINT_HZ)
+	return WB_IsValidScaledCutoffFrequency(freq / WAVEBUILDER_MIN_SAMPINT_HZ)
 End
 
 /// @brief Check if the given frequency is a valid setting for the noise epoch
@@ -1149,14 +1149,14 @@ static Function WB_NoiseSegment(pa)
 	ASSERT(IsInteger(pa.buildResolution) && pa.buildResolution > 0, "Invalid build resolution")
 
 	// duration is in ms
-	samples = pa.duration * pa.buildResolution * HARDWARE_ITC_MIN_SAMPINT_HZ * 1e-3
+	samples = pa.duration * pa.buildResolution * WAVEBUILDER_MIN_SAMPINT_HZ * 1e-3
 
 	// even number of points for IFFT
 	samples = 2 * ceil(samples / 2)
 
 	Make/FREE/D/C/N=(samples / 2 + 1) magphase
 	FastOp magphase = 0
-	SetScale/P x 0, HARDWARE_ITC_MIN_SAMPINT_HZ/samples, "Hz" magphase
+	SetScale/P x 0, WAVEBUILDER_MIN_SAMPINT_HZ/samples, "Hz" magphase
 
 	// we can't use Multithread here as this creates non-reproducible data
 	switch(pa.noiseType)
@@ -1197,8 +1197,8 @@ static Function WB_NoiseSegment(pa)
 
 	Redimension/N=(DimSize(segmentWave, ROWS) / pa.buildResolution) segmentWave
 
-	lowPassCutoffScaled  = pa.lowpasscutoff  / HARDWARE_ITC_MIN_SAMPINT_HZ
-	highPassCutoffScaled = pa.highpasscutoff / HARDWARE_ITC_MIN_SAMPINT_HZ
+	lowPassCutoffScaled  = pa.lowpasscutoff  / WAVEBUILDER_MIN_SAMPINT_HZ
+	highPassCutoffScaled = pa.highpasscutoff / WAVEBUILDER_MIN_SAMPINT_HZ
 
 	if(WB_IsValidScaledCutoffFrequency(lowPassCutoffScaled) && WB_IsValidScaledCutoffFrequency(highPassCutoffScaled))
 		FilterIIR/CASC/LO=(lowPassCutoffScaled)/HI=(highPassCutoffScaled)/ORD=(pa.filterOrder) segmentWave
@@ -1553,13 +1553,13 @@ static Function/WAVE WB_PulseTrainSegment(pa, mode, pulseStartTimes, pulseToPuls
 
 		for(;;)
 			pulseStartTime += -ln(abs(enoise(1, NOISE_GEN_MERSENNE_TWISTER))) / pa.frequency * 1000
-			endIndex = floor((pulseStartTime + pa.pulseDuration) / HARDWARE_ITC_MIN_SAMPINT)
+			endIndex = floor((pulseStartTime + pa.pulseDuration) / WAVEBUILDER_MIN_SAMPINT)
 
 			if(endIndex >= numRows || endIndex < 0)
 				break
 			endif
 
-			startIndex = floor(pulseStartTime / HARDWARE_ITC_MIN_SAMPINT)
+			startIndex = floor(pulseStartTime / WAVEBUILDER_MIN_SAMPINT)
 			WB_CreatePulse(segmentWave, pa.pulseType, pa.amplitude, startIndex, endIndex)
 
 			EnsureLargeEnoughWave(pulseStartTimes, minimumSize=idx)
@@ -1583,13 +1583,13 @@ static Function/WAVE WB_PulseTrainSegment(pa, mode, pulseStartTimes, pulseToPuls
 
 		for(i = 0; i < pa.numberOfPulses; i += 1)
 
-			endIndex = floor((pulseStartTime + pa.pulseDuration) / HARDWARE_ITC_MIN_SAMPINT)
+			endIndex = floor((pulseStartTime + pa.pulseDuration) / WAVEBUILDER_MIN_SAMPINT)
 
 			if(endIndex >= numRows || endIndex < 0)
 				break
 			endif
 
-			startIndex = floor(pulseStartTime / HARDWARE_ITC_MIN_SAMPINT)
+			startIndex = floor(pulseStartTime / WAVEBUILDER_MIN_SAMPINT)
 			WB_CreatePulse(segmentWave, pa.pulseType, pa.amplitude, startIndex, endIndex)
 
 			EnsureLargeEnoughWave(pulseStartTimes, minimumSize=idx)
@@ -1607,13 +1607,13 @@ static Function/WAVE WB_PulseTrainSegment(pa, mode, pulseStartTimes, pulseToPuls
 		pulseToPulseLength = interPulseInterval + pa.pulseDuration
 
 		for(;;)
-			endIndex = floor((pulseStartTime + pa.pulseDuration) / HARDWARE_ITC_MIN_SAMPINT)
+			endIndex = floor((pulseStartTime + pa.pulseDuration) / WAVEBUILDER_MIN_SAMPINT)
 
 			if(endIndex >= numRows || endIndex < 0)
 				break
 			endif
 
-			startIndex = floor(pulseStartTime / HARDWARE_ITC_MIN_SAMPINT)
+			startIndex = floor(pulseStartTime / WAVEBUILDER_MIN_SAMPINT)
 			WB_CreatePulse(segmentWave, pa.pulseType, pa.amplitude, startIndex, endIndex)
 
 			EnsureLargeEnoughWave(pulseStartTimes, minimumSize=idx)
@@ -1630,13 +1630,13 @@ static Function/WAVE WB_PulseTrainSegment(pa, mode, pulseStartTimes, pulseToPuls
 	if(V_Value != -1)
 		DEBUGPRINT("Removal of points:", var=(DimSize(segmentWave, ROWS) - V_Value))
 		Redimension/N=(V_Value) segmentWave
-		pa.duration = V_Value * HARDWARE_ITC_MIN_SAMPINT
+		pa.duration = V_Value * WAVEBUILDER_MIN_SAMPINT
 	else
 		DEBUGPRINT("No removal of points")
 	endif
 
 	sprintf str, "interPulseInterval=%g ms, numberOfPulses=%g [a.u.], pulseDuration=%g [ms], real duration=%.6f [a.u.]\r", \
-	 			  interPulseInterval, pa.numberOfPulses, pa.pulseDuration, DimSize(segmentWave, ROWS) * HARDWARE_ITC_MIN_SAMPINT
+	 			  interPulseInterval, pa.numberOfPulses, pa.pulseDuration, DimSize(segmentWave, ROWS) * WAVEBUILDER_MIN_SAMPINT
 
 	DEBUGPRINT(str)
 End
@@ -1649,11 +1649,11 @@ static Function WB_PSCSegment(pa)
 	Wave SegmentWave = GetSegmentWave(duration=pa.duration)
 
 	pa.TauRise = 1 / pa.TauRise
-	pa.TauRise *= HARDWARE_ITC_MIN_SAMPINT
+	pa.TauRise *= WAVEBUILDER_MIN_SAMPINT
 	pa.TauDecay1 = 1 / pa.TauDecay1
-	pa.TauDecay1 *= HARDWARE_ITC_MIN_SAMPINT
+	pa.TauDecay1 *= WAVEBUILDER_MIN_SAMPINT
 	pa.TauDecay2 = 1 / pa.TauDecay2
-	pa.TauDecay2 *= HARDWARE_ITC_MIN_SAMPINT
+	pa.TauDecay2 *= WAVEBUILDER_MIN_SAMPINT
 
 	MultiThread SegmentWave[] = pa.amplitude * ((1 - exp(-pa.TauRise * p)) + exp(-pa.TauDecay1 * p) * (1 - pa.TauDecay2Weight) + exp(-pa.TauDecay2 * p) * pa.TauDecay2Weight)
 
@@ -1669,7 +1669,7 @@ static Function WB_CustomWaveSegment(pa, customWave)
 	struct SegmentParameters &pa
 	WAVE customWave
 
-	pa.duration = DimSize(customWave, ROWS) * HARDWARE_ITC_MIN_SAMPINT
+	pa.duration = DimSize(customWave, ROWS) * WAVEBUILDER_MIN_SAMPINT
 	WAVE segmentWave = GetSegmentWave(duration=pa.duration)
 	MultiThread segmentWave[] = customWave[p]
 End

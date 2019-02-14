@@ -3402,7 +3402,7 @@ Function/Wave GetSegmentWave([duration])
 	variable duration
 
 	DFREF dfr = GetWaveBuilderDataPath()
-	variable numPoints = duration / HARDWARE_ITC_MIN_SAMPINT
+	variable numPoints = duration / WAVEBUILDER_MIN_SAMPINT
 	Wave/Z/SDFR=dfr SegmentWave
 
 	if(ParamIsDefault(duration))
@@ -3419,8 +3419,8 @@ Function/Wave GetSegmentWave([duration])
 	elseif(numPoints != DimSize(SegmentWave, ROWS))
 		Redimension/N=(numPoints) SegmentWave
 	endif
-	// @todo: should be generators sampling intervall
-	SetScale/P x 0, HARDWARE_ITC_MIN_SAMPINT, "ms", SegmentWave
+
+	SetScale/P x 0, WAVEBUILDER_MIN_SAMPINT, "ms", SegmentWave
 
 	return SegmentWave
 End
@@ -4042,7 +4042,7 @@ Function/WAVE P_GetITCChanConfig(panelTitle)
 	wv[2][1] = -1
 	wv[3][1] = -1
 
-	wv[][2]  = HARDWARE_ITC_MIN_SAMPINT * 1000
+	wv[][2]  = WAVEBUILDER_MIN_SAMPINT * 1000
 
 	SetDimLabel ROWS, 0, DA, 		wv
 	SetDimLabel ROWS, 1, AD, 		wv

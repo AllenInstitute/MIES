@@ -598,7 +598,8 @@ Constant HARDWARE_ITC_MIN_SAMPINT     = 0.005 ///< ITC DACs
 Constant HARDWARE_NI_6001_MIN_SAMPINT = 0.2   ///< NI 6001 USB
 /// @}
 
-Constant HARDWARE_ITC_MIN_SAMPINT_HZ  = 200e3 ///< ITC DACs
+Constant WAVEBUILDER_MIN_SAMPINT    = 0.005
+Constant WAVEBUILDER_MIN_SAMPINT_HZ = 200e3 ///< Stimulus sets are created with that frequency
 
 StrConstant CHANNEL_DA_SEARCH_STRING  = "*DA*"
 StrConstant CHANNEL_TTL_SEARCH_STRING = "*TTL*"

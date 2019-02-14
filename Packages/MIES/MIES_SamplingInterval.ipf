@@ -448,7 +448,7 @@ static Function SI_TestSampInt(panelTitle)
 
 	for(i=1; i < numTries; i += 1)
 		if(numConsecutive == -1)
-			sampInt  = HARDWARE_ITC_MIN_SAMPINT * i * 1000
+			sampInt  = WAVEBUILDER_MIN_SAMPINT * i * 1000
 		else
 			sampInt *= 2
 		endif

@@ -2969,7 +2969,7 @@ Function WBP_ShowFFTSpectrumIfReq(segmentWave, sweep)
 	Duplicate/FREE segmentWave, input
 
 	ASSERT(!cmpstr(WaveUnits(input, ROWS), "ms"), "Unexpected data units for row dimension")
-	SetScale/P x 0, HARDWARE_ITC_MIN_SAMPINT/1000, "s", input
+	SetScale/P x 0, WAVEBUILDER_MIN_SAMPINT/1000, "s", input
 	FFT/FREE/DEST=cmplxFFT input
 
 	MultiThread cmplxFFT = r2polar(cmplxFFT)

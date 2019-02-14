@@ -2557,12 +2557,12 @@ static Function DAP_CheckStimset(panelTitle, channelType, channel, headstage)
 		endif
 
 		// non fatal errors which we fix ourselves
-		if(DimDelta(stimSet, ROWS) != HARDWARE_ITC_MIN_SAMPINT || DimOffset(stimSet, ROWS) != 0.0 || cmpstr(WaveUnits(stimSet, ROWS), "ms"))
+		if(DimDelta(stimSet, ROWS) != WAVEBUILDER_MIN_SAMPINT || DimOffset(stimSet, ROWS) != 0.0 || cmpstr(WaveUnits(stimSet, ROWS), "ms"))
 			sprintf str, "(%s) The stim set %s for %s channel of headstage %g must have a row dimension delta of %g, " + \
-						 "row dimension offset of zero and row unit \"ms\".\r", panelTitle, setName, channelTypeStr, headstage, HARDWARE_ITC_MIN_SAMPINT
+						 "row dimension offset of zero and row unit \"ms\".\r", panelTitle, setName, channelTypeStr, headstage, WAVEBUILDER_MIN_SAMPINT
 			DEBUGPRINT(str)
 			DEBUGPRINT("The stim set is now automatically fixed")
-			SetScale/P x 0, HARDWARE_ITC_MIN_SAMPINT, "ms", stimSet
+			SetScale/P x 0, WAVEBUILDER_MIN_SAMPINT, "ms", stimSet
 		endif
 
 		if(DAG_GetNumericalValue(panelTitle, "Check_Settings_SkipAnalysFuncs") || channelType != CHANNEL_TYPE_DAC)

@@ -128,8 +128,8 @@ Function InitOOdDAQParams(params, stimSets, setColumns, preFeatureTime, postFeat
 
 	WAVE params.stimSets        = stimSets
 	WAVE params.setColumns      = setColumns
-	params.preFeaturePoints     = preFeatureTime  / HARDWARE_ITC_MIN_SAMPINT
-	params.postFeaturePoints    = postFeatureTime / HARDWARE_ITC_MIN_SAMPINT
+	params.preFeaturePoints     = preFeatureTime  / WAVEBUILDER_MIN_SAMPINT
+	params.postFeaturePoints    = postFeatureTime / WAVEBUILDER_MIN_SAMPINT
 	params.resolution           = resolution
 End
 

@@ -594,8 +594,8 @@ End
 static Function DC_GetDecimationFactor(panelTitle, dataAcqOrTP)
 	string panelTitle
 	variable dataAcqOrTP
-/// @todo: minimum sampling intervall from generator and not itc here
-	return DAP_GetSampInt(panelTitle, dataAcqOrTP) / (HARDWARE_ITC_MIN_SAMPINT * 1000)
+
+	return DAP_GetSampInt(panelTitle, dataAcqOrTP) / (WAVEBUILDER_MIN_SAMPINT * 1000)
 End
 
 /// @brief Returns the longest sweep in a stimulus set across the given channel type
@@ -989,7 +989,7 @@ static Function DC_PlaceDataInHardwareDataWave(panelTitle, numActiveChannels, da
 	if(!WaveExists(offsets))
 		Make/FREE/N=(numEntries) offsets = 0
 	else
-		offsets[] *= HARDWARE_ITC_MIN_SAMPINT
+		offsets[] *= WAVEBUILDER_MIN_SAMPINT
 	endif
 
 	if(!WaveExists(regions))
