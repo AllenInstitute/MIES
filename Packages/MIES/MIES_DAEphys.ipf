@@ -45,6 +45,10 @@ Function/S DAP_GetNIDeviceList()
 	for(i = 0;i < HARDWARE_MAX_DEVICES;i += 1)
 		DAQmxDevice = HW_NI_GetPropertyListOfDevices(i)
 
+		if(IsEmpty(DAQmxDevice))
+			break
+		endif
+
 		if(!(strsearch(DAQmxDevice, NI_PCIE_6343_PATTERN, 0) == -1))
 			DAQmxDevName = StringByKey("NAME", DAQmxDevice)
 			if(!isEmpty(DAQmxDevName))
