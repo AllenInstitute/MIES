@@ -155,12 +155,12 @@ Function GetLastSettingWorks()
 	WAVE/SDFR=dfr numericalValues
 
 	WAVE/Z settings = GetLastSetting(numericalValues, 10, "DAC", DATA_ACQUISITION_MODE)
-	CHECK(WaveExists(settings))
+	CHECK_WAVE(settings, NUMERIC_WAVE)
 
 	first = LABNOTEBOOK_GET_RANGE
 	last  = LABNOTEBOOK_GET_RANGE
 	WAVE/Z settings = MIES_MIESUTILS#GetLastSettingNoCache(numericalValues, 10, "DAC", DATA_ACQUISITION_MODE, first = first, last = last)
-	CHECK(WaveExists(settings))
+	CHECK_WAVE(settings, NUMERIC_WAVE)
 	CHECK(first >= 0)
 	CHECK(last  >= 0)
 
@@ -265,12 +265,12 @@ Function GetLastSettingTextWorks()
 	WAVE/SDFR=dfr textualValues
 
 	WAVE/Z settings = GetLastSetting(textualValues, 1, "DA unit", DATA_ACQUISITION_MODE)
-	CHECK(WaveExists(settings))
+	CHECK_WAVE(settings, TEXT_WAVE)
 
 	first = LABNOTEBOOK_GET_RANGE
 	last  = LABNOTEBOOK_GET_RANGE
 	WAVE/Z settings = MIES_MIESUTILS#GetLastSettingNoCache(textualValues, 1, "DA unit", DATA_ACQUISITION_MODE, first = first, last = last)
-	CHECK(WaveExists(settings))
+	CHECK_WAVE(settings, TEXT_WAVE)
 	CHECK(first >= 0)
 	CHECK(last  >= 0)
 

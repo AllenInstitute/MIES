@@ -307,7 +307,7 @@ static Function TASYNC_AddParam_FreeWaveMove()
 
 	DFREF dfrInp = threadDF:input
 	WAVE/Z/SDFR=dfrInp p0 = param0
-	CHECK(WAVEExists(p0))
+	CHECK_WAVE(p0, NUMERIC_WAVE)
 
 	ASYNC_Stop(timeout=1)
 End
@@ -326,7 +326,7 @@ static Function TASYNC_AddParam_WaveMove()
 
 	DFREF dfrInp = threadDF:input
 	WAVE/Z/SDFR=dfrInp p0 = param0
-	CHECK(WAVEExists(p0))
+	CHECK_WAVE(p0, NUMERIC_WAVE)
 
 	ASYNC_Stop(timeout=1)
 End
@@ -345,7 +345,7 @@ static Function TASYNC_AddParam_Wave()
 
 	DFREF dfrInp = threadDF:input
 	WAVE/Z/SDFR=dfrInp p0 = param0
-	CHECK(WAVEExists(p0))
+	CHECK_WAVE(p0, NUMERIC_WAVE)
 
 	ASYNC_Stop(timeout=1)
 End
@@ -364,7 +364,7 @@ static Function TASYNC_AddParam_FreeWave()
 
 	DFREF dfrInp = threadDF:input
 	WAVE/Z/SDFR=dfrInp p0 = param0
-	CHECK(WAVEExists(p0))
+	CHECK_WAVE(p0, NUMERIC_WAVE)
 
 	ASYNC_Stop(timeout=1)
 End

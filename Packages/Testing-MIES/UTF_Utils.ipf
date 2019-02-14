@@ -638,7 +638,7 @@ Function ITCC_WorksLegacy()
 	CHECK(IsValidConfigWave(config))
 
 	WAVE/T/Z units = AFH_GetChannelUnits(config)
-	CHECK(WaveExists(units))
+	CHECK_WAVE(units, TEXT_WAVE)
 	// we have one TTL channel which does not have a unit
 	CHECK_EQUAL_VAR(DimSize(units, ROWS) + 1, DimSize(config, ROWS))
 	CHECK_EQUAL_TEXTWAVES(units, {"DA0", "DA1", "DA2", "AD0", "AD1", "AD2"})
@@ -677,7 +677,7 @@ Function ITCC_WorksVersion1()
 	CHECK(IsValidConfigWave(config))
 
 	WAVE/T/Z units = AFH_GetChannelUnits(config)
-	CHECK(WaveExists(units))
+	CHECK_WAVE(units, TEXT_WAVE)
 	// we have one TTL channel which does not have a unit
 	CHECK_EQUAL_VAR(DimSize(units, ROWS) + 1, DimSize(config, ROWS))
 	CHECK_EQUAL_TEXTWAVES(units, {"DA0", "DA1", "DA2", "AD0", "AD1", "AD2"})
