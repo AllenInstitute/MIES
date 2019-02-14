@@ -26,17 +26,19 @@ static StrConstant AMPLIFIER_DEF_FORMAT   = "AmpNo %d Chan %d"
 
 static StrConstant GUI_CONTROLSAVESTATE_DISABLED = "oldDisabledState"
 
-static StrConstant NI_PCIE_6343_PATTERN 	= "AI:32;AO:4;COUNTER:4;DIOPORTS:3;LINES:32,8,8"
+static StrConstant NI_DAC_PATTERNS = "AI:32;AO:4;COUNTER:4;DIOPORTS:3;LINES:32,8,8|"
 
 /// @brief Returns a list of DAC devices for NI devices
 /// @return list of NI DAC devices
 Function/S DAP_GetNIDeviceList()
-	variable i
+	variable i, j, numPattern
 	string DAQmxDevice, DAQmxDevName
-	string devList
+	string devList, pattern
 
 	SVAR globalNIDevList = $GetNIDeviceList()
 	devList = globalNIDevList
+
+	numPattern = ItemsInList(NI_DAC_PATTERNS, "|")
 
 	if(!isEmpty(devList))
 		return devList
@@ -48,17 +50,19 @@ Function/S DAP_GetNIDeviceList()
 		if(IsEmpty(DAQmxDevice))
 			break
 		endif
-
-		if(!(strsearch(DAQmxDevice, NI_PCIE_6343_PATTERN, 0) == -1))
-			DAQmxDevName = StringByKey("NAME", DAQmxDevice)
-			if(!isEmpty(DAQmxDevName))
-				if(!IsValidObjectName(DAQmxDevName))
-					Print "NI device " + DAQmxDevName + " has a name that is incompatible for use in MIES. Please change the device name in NI MAX to a simple name, e.g. DeviceX."
-				else
-					devList += DAQmxDevName + ";"
+		for(j = 0; j < numPattern; j += 1)
+			pattern = StringFromList(j, NI_DAC_PATTERNS, "|")
+			if(!(strsearch(DAQmxDevice, pattern, 0) == -1))
+				DAQmxDevName = StringByKey("NAME", DAQmxDevice)
+				if(!isEmpty(DAQmxDevName))
+					if(!IsValidObjectName(DAQmxDevName))
+						Print "NI device " + DAQmxDevName + " has a name that is incompatible for use in MIES. Please change the device name in NI MAX to a simple name, e.g. DeviceX."
+					else
+						devList += DAQmxDevName + ";"
+					endif
 				endif
 			endif
-		endif
+		endfor
 	endfor
 
 	globalNIDevList = devList

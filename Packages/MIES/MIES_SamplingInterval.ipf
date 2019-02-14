@@ -541,7 +541,7 @@ static Function SI_NI_CalculateMinSampInterval(panelTitle)
 	string panelTitle
 
 	WAVE channelStatus = DAG_GetChannelState(panelTitle, CHANNEL_TYPE_ADC)
-	return HARDWARE_NI6343_MIN_SAMPINT * 1000 * sum(channelStatus)
+	return HARDWARE_NI_DAC_MIN_SAMPINT * 1000 * sum(channelStatus)
 End
 
 /// @brief Calculate the minimum sampling interval for ITC hardware using the lookup waves on disk
