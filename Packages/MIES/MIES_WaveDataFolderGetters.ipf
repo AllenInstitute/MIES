@@ -1647,6 +1647,8 @@ End
 /// - 47: Headstage Active
 /// - 48: Clamp Mode
 /// - 49: Igor Pro bitness
+/// - 50: DA ChannelType, one of @ref DaqChannelTypeConstants
+/// - 51: AD ChannelType, one of @ref DaqChannelTypeConstants
 Function/Wave GetSweepSettingsKeyWave(panelTitle)
 	string panelTitle
 
@@ -1665,9 +1667,9 @@ Function/Wave GetSweepSettingsKeyWave(panelTitle)
 	if(ExistsWithCorrectLayoutVersion(wv, versionOfNewWave))
 		return wv
 	elseif(WaveExists(wv))
-		Redimension/N=(-1, 50) wv
+		Redimension/N=(-1, 52) wv
 	else
-		Make/T/N=(3, 50) newDFR:$newName/Wave=wv
+		Make/T/N=(3, 52) newDFR:$newName/Wave=wv
 	endif
 
 	wv = ""
@@ -1875,6 +1877,14 @@ Function/Wave GetSweepSettingsKeyWave(panelTitle)
 	wv[%Parameter][49] = "Igor Pro bitness"
 	wv[%Units][49]     = ""
 	wv[%Tolerance][49] = LABNOTEBOOK_NO_TOLERANCE
+
+	wv[%Parameter][50] = "DA ChannelType"
+	wv[%Units][50]     = "a. u."
+	wv[%Tolerance][50] = "1"
+
+	wv[%Parameter][51] = "AD ChannelType"
+	wv[%Units][51]     = "a. u."
+	wv[%Tolerance][51] = "1"
 
 	SetSweepSettingsDimLabels(wv, wv)
 	SetWaveVersion(wv, versionOfNewWave)
