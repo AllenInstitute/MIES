@@ -1036,8 +1036,8 @@ static Function DC_PlaceDataInHardwareDataWave(panelTitle, numActiveChannels, da
 						break
 					case HARDWARE_NI_DAC:
 						WAVE NIChannel = NIDataWave[i]
-						Multithread NIChannel[] = 				                    \
-						limit(                                        			  \
+						Multithread NIChannel[] = 				                \
+						limit(                                        			\
 						(DAGain[i] * DAScale[i]) * testPulse[mod(p, TPLength)], \
 						NI_DAC_MIN,                                  	        \
 						NI_DAC_MAX); AbortOnRTE
