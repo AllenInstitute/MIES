@@ -166,6 +166,34 @@ Function WaitUntilDAQDone_IGNORE(s)
 	return 1
 End
 
+/// @brief Background function to wait until TP is finished.
+///
+/// If it is finished pushes the next two, one setup and the
+/// corresponding `Test`, testcases to the queue.
+Function WaitUntilTPDone_IGNORE(s)
+	STRUCT WMBackgroundStruct &s
+
+	string devices, dev
+	variable numEntries, i
+
+	devices = GetDevices()
+
+	numEntries = ItemsInList(devices)
+	for(i = 0; i < numEntries; i += 1)
+		dev = StringFromList(i, devices)
+
+		NVAR runMode = $GetTestpulseRunMode(device)
+
+		if(runMode != TEST_PULSE_NOT_RUNNING)
+			return 0
+		endif
+	endfor
+
+	ExecuteNextTestCase_IGNORE()
+	ExecuteNextTestCase_IGNORE()
+	return 1
+End
+
 Function StopAcqDuringITI_IGNORE(s)
 	STRUCT WMBackgroundStruct &s
 
