@@ -2637,3 +2637,356 @@ Function ChangeCMDuringITIWithTP_REENTRY([str])
 	WAVE clampMode = GetLastSetting(numericalValues, 2, "Clamp Mode", DATA_ACQUISITION_MODE)
 	CHECK_EQUAL_WAVES(clampMode, {V_CLAMP_MODE, I_CLAMP_MODE, NaN, NaN, NaN, NaN, NaN, NaN, NaN}, mode=1)
 End
+
+Function TPDuringDAQOnlyTP_IGNORE(device)
+	string device
+
+	PGC_SetAndActivateControl(device, GetPanelControl(0, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_WAVE), str = "TestPulse")
+	PGC_SetAndActivateControl(device, GetPanelControl(1, CHANNEL_TYPE_HEADSTAGE, CHANNEL_CONTROL_CHECK), val = 0)
+End
+
+// UTF_TD_GENERATOR HardwareMain#DeviceNameGeneratorMD1
+Function TPDuringDAQOnlyTP([str])
+	string str
+
+	STRUCT DAQSettings s
+	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG_1_RES_1")
+	AcquireData(s, str, preAcquireFunc=TPDuringDAQOnlyTP_IGNORE)
+End
+
+Function TPDuringDAQOnlyTP_REENTRY([str])
+	string str
+
+	variable sweepNo, col, tpAmplitude
+	string ctrl
+
+	CHECK_EQUAL_VAR(GetSetVariable(str, "SetVar_Sweep"), 1)
+
+	sweepNo = AFH_GetLastSweepAcquired(str)
+	CHECK_EQUAL_VAR(sweepNo, 0)
+
+	WAVE/Z sweepWave = GetSweepWave(str, 0)
+	CHECK_WAVE(sweepWave, NORMAL_WAVE)
+
+	CHECK_EQUAL_VAR(GetMinSampInt_IGNORE(unit = "ms"), DimDelta(sweepWave, ROWS))
+	CHECK_EQUAL_VAR(DimSize(sweepWave, ROWS) * DimDelta(sweepWave, ROWS) / 1000, TIME_TP_ONLY_ON_DAQ)
+
+	WAVE/Z configWave = GetConfigWave(sweepWave)
+	CHECK_WAVE(configWave, NORMAL_WAVE)
+	CHECK_EQUAL_VAR(DimSize(configWave, ROWS), 2)
+	CHECK_EQUAL_VAR(DimSize(configWave, COLS), 6)
+
+	col = FindDimLabel(configWave, COLS, "DAQChannelType")
+	Duplicate/FREE/R=[][col] configWave, channelTypes
+	Redimension/N=-1 channelTypes
+	CHECK_EQUAL_WAVES(channelTypes, {DAQ_CHANNEL_TYPE_TP, DAQ_CHANNEL_TYPE_TP}, mode = WAVE_DATA)
+
+	WAVE/T units = AFH_GetChannelUnits(configWave)
+	CHECK_EQUAL_TEXTWAVES(units, {"mV", "pA"}, mode = WAVE_DATA)
+
+	WAVE numericalValues = GetLBNumericalValues(str)
+	WAVE textualValues = GetLBTextualValues(str)
+
+	WAVE DAChannelTypes = GetLastSetting(numericalValues, sweepNo, "DA ChannelType", DATA_ACQUISITION_MODE)
+	CHECK_EQUAL_WAVES(DAChannelTypes, {DAQ_CHANNEL_TYPE_TP, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN}, mode = WAVE_DATA)
+
+	WAVE ADChannelTypes = GetLastSetting(numericalValues, sweepNo, "AD ChannelType", DATA_ACQUISITION_MODE)
+	CHECK_EQUAL_WAVES(ADChannelTypes, {DAQ_CHANNEL_TYPE_TP, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN}, mode = WAVE_DATA)
+
+	WAVE/Z stimScale = GetLastSetting(numericalValues, sweepNo, STIMSET_SCALE_FACTOR_KEY, DATA_ACQUISITION_MODE)
+	tpAmplitude = GetLastSettingIndep(numericalValues, sweepNo, "TP Amplitude VC", DATA_ACQUISITION_MODE)
+	CHECK_EQUAL_WAVES(stimScale, {tpAmplitude, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN}, mode = WAVE_DATA)
+
+	WAVE/Z/T stimsets = GetLastSetting(textualValues, sweepNo, STIM_WAVE_NAME_KEY, DATA_ACQUISITION_MODE)
+	CHECK_EQUAL_TEXTWAVES(stimsets, {"TestPulse", "", "", "", "", "", "", "", ""}, mode = WAVE_DATA)
+End
+
+Function TPDuringDAQTPAndAssoc_IGNORE(device)
+	string device
+
+	PGC_SetAndActivateControl(device, GetPanelControl(0, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_WAVE), str = "TestPulse")
+	PGC_SetAndActivateControl(device, GetPanelControl(1, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_WAVE), str = "TestPulse")
+
+	// cut association
+	PGC_SetAndActivateControl(device, "Popup_Settings_HeadStage", str = "1")
+	PGC_SetAndActivateControl(device, "button_Hardware_ClearChanConn")
+
+	// disable HS1
+	PGC_SetAndActivateControl(device, GetPanelControl(1, CHANNEL_TYPE_HEADSTAGE, CHANNEL_CONTROL_CHECK), val = 0)
+End
+
+// UTF_TD_GENERATOR HardwareMain#DeviceNameGeneratorMD1
+Function TPDuringDAQTPAndAssoc([str])
+	string str
+
+	STRUCT DAQSettings s
+	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG_1_RES_1")
+	AcquireData(s, str, preAcquireFunc=TPDuringDAQTPAndAssoc_IGNORE)
+End
+
+Function TPDuringDAQTPAndAssoc_REENTRY([str])
+	string str
+
+	variable sweepNo, col, channelTypeUnassoc, tpAmplitude, stimScaleUnassoc
+	string ctrl, stimsetUnassoc, stimsetUnassocRef
+
+	CHECK_EQUAL_VAR(GetSetVariable(str, "SetVar_Sweep"), 1)
+
+	sweepNo = AFH_GetLastSweepAcquired(str)
+	CHECK_EQUAL_VAR(sweepNo, 0)
+
+	WAVE/Z sweepWave = GetSweepWave(str, 0)
+	CHECK_WAVE(sweepWave, NORMAL_WAVE)
+
+	CHECK_EQUAL_VAR(2 * GetMinSampInt_IGNORE(unit = "ms"), DimDelta(sweepWave, ROWS))
+	CHECK_EQUAL_VAR(DimSize(sweepWave, ROWS) * DimDelta(sweepWave, ROWS) / 1000, TIME_TP_ONLY_ON_DAQ)
+
+	WAVE/Z configWave = GetConfigWave(sweepWave)
+	CHECK_WAVE(configWave, NORMAL_WAVE)
+	CHECK_EQUAL_VAR(DimSize(configWave, ROWS), 4)
+	CHECK_EQUAL_VAR(DimSize(configWave, COLS), 6)
+
+	col = FindDimLabel(configWave, COLS, "DAQChannelType")
+	Duplicate/FREE/R=[][col] configWave, channelTypes
+	Redimension/N=-1 channelTypes
+
+	// the unassociated AD channel is in DAQ mode
+	CHECK_EQUAL_WAVES(channelTypes, {DAQ_CHANNEL_TYPE_TP, DAQ_CHANNEL_TYPE_TP, DAQ_CHANNEL_TYPE_TP, DAQ_CHANNEL_TYPE_DAQ}, mode = WAVE_DATA)
+
+	WAVE/T units = AFH_GetChannelUnits(configWave)
+	CHECK_EQUAL_TEXTWAVES(units, {"mV", "mV", "pA", "pA"}, mode = WAVE_DATA)
+
+	WAVE numericalValues = GetLBNumericalValues(str)
+	WAVE textualValues = GetLBTextualValues(str)
+
+	WAVE DAChannelTypes = GetLastSetting(numericalValues, sweepNo, "DA ChannelType", DATA_ACQUISITION_MODE)
+	CHECK_EQUAL_WAVES(DAChannelTypes, {DAQ_CHANNEL_TYPE_TP, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN}, mode = WAVE_DATA)
+
+	WAVE ADChannelTypes = GetLastSetting(numericalValues, sweepNo, "AD ChannelType", DATA_ACQUISITION_MODE)
+	CHECK_EQUAL_WAVES(ADChannelTypes, {DAQ_CHANNEL_TYPE_TP, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN}, mode = WAVE_DATA)
+
+	channelTypeUnassoc = GetLastSettingIndep(numericalValues, sweepNo, "DA ChannelType UNASSOC_1", DATA_ACQUISITION_MODE)
+	CHECK_EQUAL_VAR(channelTypeUnassoc, DAQ_CHANNEL_TYPE_TP)
+
+	channelTypeUnassoc = GetLastSettingIndep(numericalValues, sweepNo, "AD ChannelType UNASSOC_1", DATA_ACQUISITION_MODE)
+	CHECK_EQUAL_VAR(channelTypeUnassoc, DAQ_CHANNEL_TYPE_DAQ)
+
+	WAVE/Z stimScale = GetLastSetting(numericalValues, sweepNo, STIMSET_SCALE_FACTOR_KEY, DATA_ACQUISITION_MODE)
+	tpAmplitude = GetLastSettingIndep(numericalValues, sweepNo, "TP Amplitude VC", DATA_ACQUISITION_MODE)
+	CHECK_EQUAL_WAVES(stimScale, {tpAmplitude, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN}, mode = WAVE_DATA)
+
+	stimScaleUnassoc = GetLastSettingIndep(numericalValues, sweepNo, STIMSET_SCALE_FACTOR_KEY + " UNASSOC_1", DATA_ACQUISITION_MODE)
+	CHECK_EQUAL_VAR(stimScaleUnassoc, 0.0)
+
+	WAVE/Z/T stimsets = GetLastSetting(textualValues, sweepNo, STIM_WAVE_NAME_KEY, DATA_ACQUISITION_MODE)
+	CHECK_EQUAL_TEXTWAVES(stimsets, {"TestPulse", "", "", "", "", "", "", "", ""}, mode = WAVE_DATA)
+
+	stimsetUnassoc = GetLastSettingTextIndep(textualValues, sweepNo, STIM_WAVE_NAME_KEY + " UNASSOC_1", DATA_ACQUISITION_MODE)
+	stimsetUnassocRef = "TestPulse"
+	CHECK_EQUAL_STR(stimsetUnassoc, stimsetUnassocRef)
+End
+
+Function TPDuringDAQ_IGNORE(device)
+	string device
+
+	PGC_SetAndActivateControl(device, GetPanelControl(0, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_WAVE), str = "TestPulse")
+End
+
+// UTF_TD_GENERATOR HardwareMain#DeviceNameGeneratorMD1
+Function TPDuringDAQ([str])
+	string str
+
+	STRUCT DAQSettings s
+	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG_1_RES_1")
+	AcquireData(s, str, preAcquireFunc=TPDuringDAQ_IGNORE)
+End
+
+Function TPDuringDAQ_REENTRY([str])
+	string str
+
+	variable sweepNo, col, tpAmplitude, daGain
+	string ctrl
+
+	CHECK_EQUAL_VAR(GetSetVariable(str, "SetVar_Sweep"), 1)
+
+	sweepNo = AFH_GetLastSweepAcquired(str)
+	CHECK_EQUAL_VAR(sweepNo, 0)
+
+	WAVE/Z sweepWave = GetSweepWave(str, 0)
+	CHECK_WAVE(sweepWave, NORMAL_WAVE)
+
+	CHECK_EQUAL_VAR(2 * GetMinSampInt_IGNORE(unit = "ms"), DimDelta(sweepWave, ROWS))
+
+	WAVE/Z configWave = GetConfigWave(sweepWave)
+	CHECK_WAVE(configWave, NORMAL_WAVE)
+	CHECK_EQUAL_VAR(DimSize(configWave, ROWS), 4)
+	CHECK_EQUAL_VAR(DimSize(configWave, COLS), 6)
+
+	col = FindDimLabel(configWave, COLS, "DAQChannelType")
+	Duplicate/FREE/R=[][col] configWave, channelTypes
+	Redimension/N=-1 channelTypes
+
+	CHECK_EQUAL_WAVES(channelTypes, {DAQ_CHANNEL_TYPE_TP, DAQ_CHANNEL_TYPE_DAQ, DAQ_CHANNEL_TYPE_TP, DAQ_CHANNEL_TYPE_DAQ}, mode = WAVE_DATA)
+
+	WAVE/T units = AFH_GetChannelUnits(configWave)
+	CHECK_EQUAL_TEXTWAVES(units, {"mV", "mV", "pA", "pA"}, mode = WAVE_DATA)
+
+	WAVE numericalValues = GetLBNumericalValues(str)
+	WAVE textualValues = GetLBTextualValues(str)
+
+	WAVE DAChannelTypes = GetLastSetting(numericalValues, sweepNo, "DA ChannelType", DATA_ACQUISITION_MODE)
+	CHECK_EQUAL_WAVES(DAChannelTypes, {DAQ_CHANNEL_TYPE_TP, DAQ_CHANNEL_TYPE_DAQ, NaN, NaN, NaN, NaN, NaN, NaN, NaN}, mode = WAVE_DATA)
+
+	WAVE ADChannelTypes = GetLastSetting(numericalValues, sweepNo, "AD ChannelType", DATA_ACQUISITION_MODE)
+	CHECK_EQUAL_WAVES(ADChannelTypes, {DAQ_CHANNEL_TYPE_TP, DAQ_CHANNEL_TYPE_DAQ, NaN, NaN, NaN, NaN, NaN, NaN, NaN}, mode = WAVE_DATA)
+
+	WAVE/Z stimScale = GetLastSetting(numericalValues, sweepNo, STIMSET_SCALE_FACTOR_KEY, DATA_ACQUISITION_MODE)
+	tpAmplitude = GetLastSettingIndep(numericalValues, sweepNo, "TP Amplitude VC", DATA_ACQUISITION_MODE)
+	daGain = DAG_GetNumericalValue(str, GetSpecialControlLabel(CHANNEL_TYPE_DAC, CHANNEL_CONTROL_SCALE), index = 0)
+
+	CHECK_EQUAL_WAVES(stimScale, {tpAmplitude, daGain, NaN, NaN, NaN, NaN, NaN, NaN, NaN}, mode = WAVE_DATA)
+
+	WAVE/Z/T stimsets = GetLastSetting(textualValues, sweepNo, STIM_WAVE_NAME_KEY, DATA_ACQUISITION_MODE)
+	CHECK_EQUAL_TEXTWAVES(stimsets, {"TestPulse", "StimulusSetC_DA_0", "", "", "", "", "", "", ""}, mode = WAVE_DATA)
+End
+
+Function TPDuringDAQWithoodDAQ_IGNORE(device)
+	string device
+
+	PGC_SetAndActivateControl(device, GetPanelControl(0, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_WAVE), str = "TestPulse")
+	PGC_SetAndActivateControl(device, "check_Settings_RequireAmpConn", val = 0)
+	PGC_SetAndActivateControl(device, "Check_DataAcq1_dDAQOptOv", val = 1)
+
+	PGC_SetAndActivateControl(device, GetPanelControl(2, CHANNEL_TYPE_HEADSTAGE, CHANNEL_CONTROL_CHECK), val = 1)
+	PGC_SetAndActivateControl(device, GetPanelControl(2, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_WAVE), str = "StimulusSetC_DA_0")
+End
+
+// UTF_TD_GENERATOR HardwareMain#DeviceNameGeneratorMD1
+Function TPDuringDAQWithoodDAQ([str])
+	string str
+
+	STRUCT DAQSettings s
+	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG_1_RES_1")
+	AcquireData(s, str, preAcquireFunc=TPDuringDAQWithoodDAQ_IGNORE)
+End
+
+Function TPDuringDAQWithoodDAQ_REENTRY([str])
+	string str
+
+	variable sweepNo, col, tpAmplitude, daGain, oodDAQ
+	string ctrl
+
+	CHECK_EQUAL_VAR(GetSetVariable(str, "SetVar_Sweep"), 1)
+
+	sweepNo = AFH_GetLastSweepAcquired(str)
+	CHECK_EQUAL_VAR(sweepNo, 0)
+
+	WAVE/Z sweepWave = GetSweepWave(str, 0)
+	CHECK_WAVE(sweepWave, NORMAL_WAVE)
+
+	WAVE/Z configWave = GetConfigWave(sweepWave)
+	CHECK_WAVE(configWave, NORMAL_WAVE)
+	CHECK_EQUAL_VAR(DimSize(configWave, ROWS), 6)
+	CHECK_EQUAL_VAR(DimSize(configWave, COLS), 6)
+
+	col = FindDimLabel(configWave, COLS, "DAQChannelType")
+	Duplicate/FREE/R=[][col] configWave, channelTypes
+	Redimension/N=-1 channelTypes
+
+	CHECK_EQUAL_WAVES(channelTypes, {DAQ_CHANNEL_TYPE_TP, DAQ_CHANNEL_TYPE_DAQ, DAQ_CHANNEL_TYPE_DAQ, DAQ_CHANNEL_TYPE_TP, DAQ_CHANNEL_TYPE_DAQ, DAQ_CHANNEL_TYPE_DAQ}, mode = WAVE_DATA)
+
+	WAVE/T units = AFH_GetChannelUnits(configWave)
+	CHECK_EQUAL_TEXTWAVES(units, {"mV", "mV", "mV", "pA", "pA", "pA"}, mode = WAVE_DATA)
+
+	WAVE numericalValues = GetLBNumericalValues(str)
+	WAVE textualValues = GetLBTextualValues(str)
+
+	WAVE DAChannelTypes = GetLastSetting(numericalValues, sweepNo, "DA ChannelType", DATA_ACQUISITION_MODE)
+	CHECK_EQUAL_WAVES(DAChannelTypes, {DAQ_CHANNEL_TYPE_TP, DAQ_CHANNEL_TYPE_DAQ, DAQ_CHANNEL_TYPE_DAQ, NaN, NaN, NaN, NaN, NaN, NaN}, mode = WAVE_DATA)
+
+	WAVE ADChannelTypes = GetLastSetting(numericalValues, sweepNo, "AD ChannelType", DATA_ACQUISITION_MODE)
+	CHECK_EQUAL_WAVES(ADChannelTypes, {DAQ_CHANNEL_TYPE_TP, DAQ_CHANNEL_TYPE_DAQ, DAQ_CHANNEL_TYPE_DAQ, NaN, NaN, NaN, NaN, NaN, NaN}, mode = WAVE_DATA)
+
+	WAVE/Z stimScale = GetLastSetting(numericalValues, sweepNo, STIMSET_SCALE_FACTOR_KEY, DATA_ACQUISITION_MODE)
+	tpAmplitude = GetLastSettingIndep(numericalValues, sweepNo, "TP Amplitude VC", DATA_ACQUISITION_MODE)
+	daGain = DAG_GetNumericalValue(str, GetSpecialControlLabel(CHANNEL_TYPE_DAC, CHANNEL_CONTROL_SCALE), index = 0)
+
+	oodDAQ = GetLastSettingIndep(numericalValues, sweepNo, "Optimized Overlap dDAQ", DATA_ACQUISITION_MODE)
+	CHECK_EQUAL_VAR(oodDAQ, 1)
+
+	WAVE/Z oodDAQMembers = GetLastSetting(numericalValues, sweepNo, "oodDAQ member", DATA_ACQUISITION_MODE)
+	CHECK_EQUAL_WAVES(oodDAQMembers, {0, 1, 1, NaN, NaN, NaN, NaN, NaN, NaN}, mode = WAVE_DATA)
+
+	CHECK_EQUAL_WAVES(stimScale, {tpAmplitude, daGain, daGain, NaN, NaN, NaN, NaN, NaN, NaN}, mode = WAVE_DATA)
+
+	WAVE/Z/T stimsets = GetLastSetting(textualValues, sweepNo, STIM_WAVE_NAME_KEY, DATA_ACQUISITION_MODE)
+	CHECK_EQUAL_TEXTWAVES(stimsets, {"TestPulse", "StimulusSetC_DA_0", "StimulusSetC_DA_0", "", "", "", "", "", ""}, mode = WAVE_DATA)
+End
+
+static Constant TP_DURATION_S = 5
+
+Function CheckThatTPsCanBeFound_IGNORE(device)
+	string device
+
+	PGC_SetAndActivateControl(device, "check_Settings_TP_SaveTP", val = 1)
+End
+
+// UTF_TD_GENERATOR HardwareMain#DeviceNameGeneratorMD1
+Function CheckThatTPsCanBeFound([str])
+	string str
+
+	STRUCT DAQSettings s
+	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG_1_RES_1")
+	AcquireData(s, str, startTPInstead=1, preAcquireFunc=CheckThatTPsCanBeFound_IGNORE)
+
+	CtrlNamedBackGround StopTPAfterFiveSeconds, start=(ticks + TP_DURATION_S * 60), period=1, proc=StopTPAfterFiveSeconds_IGNORE
+End
+
+Function CheckThatTPsCanBeFound_REENTRY([str])
+	string str
+
+	variable duration, index, col, i
+
+	// check that we have at least 4.5 seconds of data
+	WAVE/Z TPStorage = GetTPStorage(str)
+	CHECK_WAVE(TPStorage, NORMAL_WAVE)
+
+	index = GetNumberFromWaveNote(TPStorage, NOTE_INDEX)
+	CHECK(index > 0)
+	duration = TPStorage[index - 1][0][%DeltaTimeInSeconds]
+	CHECK(duration > TP_DURATION_S * 0.9)
+
+	col = FindDimLabel(TPStorage, LAYERS, "TPMarker")
+	Duplicate/FREE/RMD=[0, index - 1][0][col] TPStorage, TPMarker
+	Redimension/N=-1 TPMarker
+
+	// ensure that we have a one-to-one mapping between the stored Testpulses and our TPMarkers
+	WAVE/Z/WAVE storedTestPulses = GetStoredTestPulseWave(str)
+	CHECK_WAVE(storedTestPulses, WAVE_WAVE)
+	CHECK_EQUAL_VAR(index, GetNumberFromWaveNote(storedTestPulses, NOTE_INDEX))
+
+	Make/FREE/D/N=(index) TPMarkerTestpulses
+	Make/FREE/T/N=(index) Headstages
+
+	// fetch TPMarkers
+	for(i = 0; i < index; i += 1)
+		WAVE/Z wv = storedTestPulses[i]
+		CHECK_WAVE(wv, FREE_WAVE)
+		TPMarkerTestpulses[i] = GetNumberFromWaveNote(wv, "TPMarker")
+		Headstages[i]         = GetStringFromWaveNote(wv, "Headstages")
+	endfor
+
+	FindDuplicates/RT=HeadstagesNoDups Headstages
+	CHECK_EQUAL_TEXTWAVES(HeadstagesNoDups, {"0,1,"}, mode = WAVE_DATA)
+
+	Sort/A TPMarkerTestpulses, TPMarkerTestpulses
+	Sort/A TPMarker, TPMarker
+
+	CHECK_EQUAL_WAVES(TPMarkerTestpulses, TPMarker, mode = WAVE_DATA)
+
+	FindDuplicates/DN=dups TPMarkerTestpulses
+	CHECK_EQUAL_VAR(DimSize(dups, ROWS), 0)
+
+	FindDuplicates/DN=dups TPMarker
+	CHECK_EQUAL_VAR(DimSize(dups, ROWS), 0)
+End
