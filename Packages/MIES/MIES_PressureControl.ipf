@@ -1878,11 +1878,7 @@ static Function P_IsHSActiveAndInVClamp(panelTitle, headStage)
 	string panelTitle
 	variable headStage
 
-	if(!DAG_GetHeadstageMode(panelTitle, headStage) && DAG_GetHeadstageState(panelTitle, headStage))
-		return 1
-	endif
-
-	return 0
+	return V_CLAMP_MODE == DAG_GetHeadstageMode(panelTitle, headStage) && DAG_GetHeadstageState(panelTitle, headStage)
 End
 
 /// @brief Returns the four pressure buttons to the base state (gray color; removes "Stop" string from button title)
