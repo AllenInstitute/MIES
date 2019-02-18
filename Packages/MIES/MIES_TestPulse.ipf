@@ -638,14 +638,33 @@ Function TP_Setup(panelTitle, runMode)
 	string panelTitle
 	variable runMode
 
-	variable multiDevice, now
+	variable multiDevice
 
 	multiDevice = (runMode & TEST_PULSE_BG_MULTI_DEVICE)
+
+	TP_SetupCommon(panelTitle)
 
 	if(!(runMode & TEST_PULSE_DURING_RA_MOD))
 		DAP_ToggleTestpulseButton(panelTitle, TESTPULSE_BUTTON_TO_STOP)
 		DisableControls(panelTitle, CONTROLS_DISABLE_DURING_DAQ_TP)
 	endif
+
+	NVAR runModeGlobal = $GetTestpulseRunMode(panelTitle)
+	runModeGlobal = runMode
+
+	DC_ConfigureDataForITC(panelTitle, TEST_PULSE_MODE, multiDevice=multiDevice)
+
+	NVAR ITCDeviceIDGlobal = $GetITCDeviceIDGlobal(panelTitle)
+	HW_PrepareAcq(GetHardwareType(panelTitle), ITCDeviceIDGlobal, flags=HARDWARE_ABORT_ON_ERROR)
+
+	ASYNC_Start(ThreadProcessorCount, disableTask=1)
+End
+
+/// @brief Common setup calls for TP and TP during DAQ
+Function TP_SetupCommon(panelTitle)
+	string panelTitle
+
+	variable now
 
 	// ticks are relative to OS start time
 	// so we can have "future" timestamps from existing experiments
@@ -666,16 +685,6 @@ Function TP_Setup(panelTitle, runMode)
 
 	WAVE tpAsyncBuffer = GetTPResultAsyncBuffer(panelTitle)
 	KillOrMoveToTrash(wv=tpAsyncBuffer)
-
-	NVAR runModeGlobal = $GetTestpulseRunMode(panelTitle)
-	runModeGlobal = runMode
-
-	DC_ConfigureDataForITC(panelTitle, TEST_PULSE_MODE, multiDevice=multiDevice)
-
-	NVAR ITCDeviceIDGlobal = $GetITCDeviceIDGlobal(panelTitle)
-	HW_PrepareAcq(GetHardwareType(panelTitle), ITCDeviceIDGlobal, flags=HARDWARE_ABORT_ON_ERROR)
-
-	ASYNC_Start(ThreadProcessorCount, disableTask=1)
 End
 
 /// @brief Perform common actions after the testpulse
@@ -697,11 +706,17 @@ Function TP_Teardown(panelTitle)
 
 	runMode = TEST_PULSE_NOT_RUNNING
 
-	P_LoadPressureButtonState(panelTitle)
+	TP_TeardownCommon(panelTitle)
 
 	StopAsyncIfDone()
 End
 
+/// @brief Common teardown calls for TP and TP during DAQ
+Function TP_TeardownCommon(panelTitle)
+	string panelTitle
+
+	P_LoadPressureButtonState(panelTitle)
+End
 /// @brief Return the number of devices which have TP running
 Function TP_GetNumDevicesWithTPRunning()
 

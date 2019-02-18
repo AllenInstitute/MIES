@@ -1198,6 +1198,11 @@ Function DAP_OneTimeCallBeforeDAQ(panelTitle, runMode)
 	NWB_StartThreadGroup()
 #endif
 
+	if(DC_GotTPChannelWhileDAQ(panelTitle))
+		TP_SetupCommon(panelTitle)
+		P_InitBeforeTP(panelTitle)
+	endif
+
 	ASYNC_Start(ThreadProcessorCount, disableTask=1)
 End
 
@@ -1312,6 +1317,10 @@ Function DAP_OneTimeCallAfterDAQ(panelTitle, [forcedStop, startTPAfterDAQ])
 	TS_StopThreadGroup(tgID)
 	tgID = NaN
 #endif
+
+	if(DC_GotTPChannelWhileDAQ(panelTitle))
+		TP_TeardownCommon(panelTitle)
+	endif
 
 	DAP_ApplyDelayedClampModeChange(panelTitle)
 
