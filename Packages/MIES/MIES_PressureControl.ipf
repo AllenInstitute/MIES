@@ -1881,7 +1881,11 @@ static Function P_PressureMethodPossible(panelTitle, headstage)
 	string panelTitle
 	variable headstage
 
-	return TP_CheckIfTestpulseIsRunning(panelTitle) && P_IsHSActiveAndInVClamp(panelTitle, headstage)
+	NVAR dataAcqRunMode = $GetDataAcqRunMode(panelTitle)
+
+	return (TP_CheckIfTestpulseIsRunning(panelTitle)                                                                         \
+			|| (dataAcqRunMode != DAQ_NOT_RUNNING && DC_GetChannelTypefromHS(panelTitle, headstage) == DAQ_CHANNEL_TYPE_TP)) \
+			&& P_IsHSActiveAndInVClamp(panelTitle, headstage)
 End
 
 /// @brief Determines headStage is on and in V-Clamp mode
