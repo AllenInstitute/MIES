@@ -44,6 +44,36 @@ Function TEST_BEGIN_OVERRIDE(name)
 	interactiveMode = 0
 End
 
+static Function/WAVE GetSweepsFromLBN_IGNORE(device, name)
+	string device, name
+
+	variable col
+
+	DFREF dfr = GetDevSpecLabNBFolder(device)
+	WAVE/Z values = dfr:$name
+
+	if(!WaveExists(values))
+		return $""
+	endif
+
+	// all sweep numbers are ascending
+	col = GetSweepColumn(values)
+
+	if(IsTextWave(values))
+		Duplicate/T/FREE/RMD=[*][col][0] values, sweepsText
+		Redimension/N=-1 sweepsText
+
+		Make/FREE/N=(DimSize(sweepsText, ROWS)) sweeps = str2num(sweepsText[p])
+	else
+		Duplicate/FREE/RMD=[*][col][0] values, sweeps
+		Redimension/N=-1 sweeps
+	endif
+
+	WaveTransform/O zapNaNs, sweeps
+
+	return sweeps
+End
+
 Function TEST_CASE_END_OVERRIDE(name)
 	string name
 
@@ -55,8 +85,33 @@ Function TEST_CASE_END_OVERRIDE(name)
 	numEntries = ItemsInList(devices)
 	for(i = 0; i < numEntries; i += 1)
 		dev = StringFromList(i, devices)
+
+		// no analysis function errors
 		NVAR errorCounter = $GetAnalysisFuncErrorCounter(dev)
 		CHECK_EQUAL_VAR(errorCounter, 0)
+
+		// ascending sweep numbers in both labnotebooks
+		WAVE/Z sweeps = GetSweepsFromLBN_IGNORE(dev, "numericalValues")
+
+		if(!WaveExists(sweeps))
+			PASS()
+			continue
+		endif
+
+		Duplicate/FREE sweeps, unsortedSweeps
+		Sort sweeps, sweeps
+		CHECK_EQUAL_WAVES(sweeps, unsortedSweeps, mode = WAVE_DATA)
+
+		WAVE/Z sweeps = GetSweepsFromLBN_IGNORE(dev, "textualValues")
+
+		if(!WaveExists(sweeps))
+			PASS()
+			continue
+		endif
+
+		Duplicate/FREE sweeps, unsortedSweeps
+		Sort sweeps, sweeps
+		CHECK_EQUAL_WAVES(sweeps, unsortedSweeps, mode = WAVE_DATA)
 	endfor
 End
 
