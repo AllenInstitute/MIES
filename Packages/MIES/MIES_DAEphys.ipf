@@ -4408,6 +4408,11 @@ Function DAP_LockDevice(panelTitle)
 
 	DoWindow/W=$panelTitle/C $panelTitleLocked
 
+	// initial fill of the GUI state wave
+	// all other changes are propagated immediately to the GUI state waves
+	DAG_RecordGuiStateNum(panelTitleLocked)
+	DAG_RecordGuiStateTxT(panelTitleLocked)
+
 	locked = 1
 	DAP_UpdateDataFolderDisplay(panelTitleLocked, locked)
 
@@ -4425,11 +4430,6 @@ Function DAP_LockDevice(panelTitle)
 	DAP_UnlockCommentNotebook(panelTitleLocked)
 	DAP_ToggleAcquisitionButton(panelTitleLocked, DATA_ACQ_BUTTON_TO_DAQ)
 	SI_CalculateMinSampInterval(panelTitleLocked, DATA_ACQUISITION_MODE)
-
-	// initial fill of the GUI state wave
-	// all other changes are propagated immediately to the GUI state waves
-	DAG_RecordGuiStateNum(panelTitleLocked)
-	DAG_RecordGuiStateTxT(panelTitleLocked)
 
 	// deliberately not using the GUIState wave
 	headstage = GetSliderPositionIndex(panelTitleLocked, "slider_DataAcq_ActiveHeadstage")
