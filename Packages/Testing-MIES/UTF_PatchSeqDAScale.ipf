@@ -107,7 +107,6 @@ Function PS_DS_Sub_Test1()
 	Make/FREE/D/N=(numEntries) stimScaleRef = -30
 
 	CHECK_EQUAL_WAVES(stimScale, stimScaleRef, mode = WAVE_DATA, tol = 1e-14)
-	EnsureNoAnaFuncErrors()
 End
 
 Function PS_DS_Sub_Run2()
@@ -149,7 +148,6 @@ Function PS_DS_Sub_Test2()
 	Make/FREE/D/N=(numEntries) stimScaleRef = -30
 
 	CHECK_EQUAL_WAVES(stimScale, stimScaleRef, mode = WAVE_DATA, tol = 1e-14)
-	EnsureNoAnaFuncErrors()
 End
 
 Function PS_DS_Sub_Run3()
@@ -192,7 +190,6 @@ Function PS_DS_Sub_Test3()
 	Make/FREE/D/N=(numEntries) stimScaleRef = {-30, -50, -70, -110, -130}
 
 	CHECK_EQUAL_WAVES(stimScale, stimScaleRef, mode = WAVE_DATA, tol = 1e-14)
-	EnsureNoAnaFuncErrors()
 End
 
 Function PS_DS_Sub_Run4()
@@ -236,7 +233,6 @@ Function PS_DS_Sub_Test4()
 	Make/FREE/D/N=(numEntries) stimScaleRef = {-30, -50, -70, -110, -130}
 
 	CHECK_EQUAL_WAVES(stimScale, stimScaleRef, mode = WAVE_DATA, tol = 1e-14)
-	EnsureNoAnaFuncErrors()
 End
 
 Function PS_DS_Sub_Run5()
@@ -279,7 +275,6 @@ Function PS_DS_Sub_Test5()
 	Make/FREE/D/N=(numEntries) stimScaleRef = -30
 
 	CHECK_EQUAL_WAVES(stimScale, stimScaleRef, mode = WAVE_DATA, tol = 1e-14)
-	EnsureNoAnaFuncErrors()
 End
 
 Function PS_DS_Sub_Run6()
@@ -323,7 +318,6 @@ Function PS_DS_Sub_Test6()
 	Make/FREE/D/N=(numEntries) stimScaleRef = {-30, -50, -70, -110, -130}
 
 	CHECK_EQUAL_WAVES(stimScale, stimScaleRef, mode = WAVE_DATA, tol = 1e-14)
-	EnsureNoAnaFuncErrors()
 End
 
 Function PS_DS_Sub_Run7()
@@ -367,7 +361,6 @@ Function PS_DS_Sub_Test7()
 	Make/FREE/D/N=(numEntries) stimScaleRef = {-30, -30, -30, -50, -70, -110, -130}
 
 	CHECK_EQUAL_WAVES(stimScale, stimScaleRef, mode = WAVE_DATA, tol = 1e-14)
-	EnsureNoAnaFuncErrors()
 End
 
 Function PS_DS_Sub_Run8()
@@ -415,7 +408,6 @@ Function PS_DS_Sub_Test8()
 	Make/FREE/D/N=(numEntries) stimScaleRef = {-30, -50, -50, -50, -70, -70, -70, -110, -130}
 
 	CHECK_EQUAL_WAVES(stimScale, stimScaleRef, mode = WAVE_DATA, tol = 1e-14)
-	EnsureNoAnaFuncErrors()
 End
 
 // We only have here one function to test the used DAScale values
@@ -460,5 +452,4 @@ Function PS_DS_Supra_Test1()
 	Make/FREE/D/N=(numEntries) stimScale = GetLastSetting(numericalValues, sweeps[p], STIMSET_SCALE_FACTOR_KEY, DATA_ACQUISITION_MODE)[HEADSTAGE]
 	Make/FREE/D/N=(numEntries) stimScaleRef = {PSQ_DS_OFFSETSCALE_FAKE + 20, PSQ_DS_OFFSETSCALE_FAKE + 40}
 	CHECK_EQUAL_WAVES(stimScale, stimScaleRef, mode = WAVE_DATA, tol = 1e-14)
-	EnsureNoAnaFuncErrors()
 End

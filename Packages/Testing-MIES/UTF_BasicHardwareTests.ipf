@@ -2112,7 +2112,6 @@ static Function GetMinSampInt([unit])
 #else
 	return factor * HARDWARE_ITC_MIN_SAMPINT
 #endif
-
 End
 
 static Function DisableSecondHeadstage_IGNORE()

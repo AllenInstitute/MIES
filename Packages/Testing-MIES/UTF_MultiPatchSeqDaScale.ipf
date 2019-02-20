@@ -124,6 +124,4 @@ static Function MSQ_DS_Test1()
 
 	WAVE/Z stimScale = GetLastSettingEachSCI(numericalValues, sweepNo, STIMSET_SCALE_FACTOR_KEY, 0, UNKNOWN_MODE)
 	CHECK_EQUAL_WAVES(stimScale, {33, 43, 53, 63, 73}, mode = WAVE_DATA)
-
-	EnsureNoAnaFuncErrors()
 End

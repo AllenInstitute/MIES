@@ -44,6 +44,22 @@ Function TEST_BEGIN_OVERRIDE(name)
 	interactiveMode = 0
 End
 
+Function TEST_CASE_END_OVERRIDE(name)
+	string name
+
+	string devices, dev
+	variable numEntries, i
+
+	devices = GetDevices()
+
+	numEntries = ItemsInList(devices)
+	for(i = 0; i < numEntries; i += 1)
+		dev = StringFromList(i, devices)
+		NVAR errorCounter = $GetAnalysisFuncErrorCounter(dev)
+		CHECK_EQUAL_VAR(errorCounter, 0)
+	endfor
+End
+
 Function SetupTestCases_IGNORE(testCaseList)
 	string testCaseList
 
@@ -288,11 +304,4 @@ Function OpenDatabrowser()
 	string win = DB_OpenDataBrowser()
 	string panel = BSP_GetSweepControlsPanel(win)
 	PGC_SetAndActivateControl(panel, "check_SweepControl_AutoUpdate", val = 1)
-End
-
-Function EnsureNoAnaFuncErrors()
-
-	NVAR errorCounter = $GetAnalysisFuncErrorCounter(DEVICE)
-
-	CHECK_EQUAL_VAR(errorCounter, 0)
 End
