@@ -302,6 +302,16 @@ Function StopAcq_IGNORE(s)
 	return 1
 End
 
+Function StartAcq_IGNORE(s)
+	STRUCT WMBackgroundStruct &s
+
+	string device = GetSingleDevice()
+	PGC_SetAndActivateControl(device, "DataAcquireButton")
+	CtrlNamedBackGround DAQWatchdog, start, period=120, proc=WaitUntilDAQDone_IGNORE
+
+	return 1
+End
+
 Function ChangeStimSet_IGNORE(s)
 	STRUCT WMBackgroundStruct &s
 

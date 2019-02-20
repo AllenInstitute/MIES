@@ -1706,6 +1706,48 @@ Function Test_Abort_ITI_TP_A_PressTP_SD()
 	endfor
 End
 
+Function StartDAQDuringTP_IGNORE()
+
+	WAVE/T wv = root:MIES:WaveBuilder:SavedStimulusSetParameters:DA:WPT_StimulusSetA_DA_0
+
+	wv[][%Set] = ""
+	wv[%$"Analysis function (generic)"][%Set] = "WriteIntoLBNOnPreDAQ"
+End
+
+Function DAQ_StartDAQDuringTP()
+
+	STRUCT DAQSettings s
+	InitDAQSettingsFromString(s, "DAQ_MD0_RA0_IDX0_LIDX0_BKG_1_RES_0")
+	AcquireData(s, startTPInstead=1, postInitializeFunc=StartDAQDuringTP_IGNORE)
+
+	CtrlNamedBackGround StartDAQDuringTP, start=(ticks + 600), period=100, proc=StartAcq_IGNORE
+End
+
+Function Test_StartDAQDuringTP()
+
+	variable sweepNo
+	string device
+
+	device = GetSingleDevice()
+
+	NVAR runModeDAQ = $GetDataAcqRunMode(device)
+
+	CHECK_EQUAL_VAR(runModeDAQ, DAQ_NOT_RUNNING)
+
+	NVAR runModeTP = $GetTestpulseRunMode(device)
+	CHECK_EQUAL_VAR(runModeTP, TEST_PULSE_NOT_RUNNING)
+
+	sweepNo = AFH_GetLastSweepAcquired(device)
+	CHECK_EQUAL_VAR(sweepNo, 0)
+
+	WAVE numericalValues = GetLBNumericalValues(device)
+	WAVE/Z settings = GetLastSetting(numericalValues, sweepNo, "USER_GARBAGE", UNKNOWN_MODE)
+	CHECK_WAVE(settings, FREE_WAVE)
+	CHECK_EQUAL_WAVES(settings, {0, 1, 2, 3, 4, 5, 6, 7, NaN}, mode = WAVE_DATA)
+
+	// ascending sweep numbers are checked in TEST_CASE_BEGIN_OVERRIDE()
+End
+
 Function DAQ_Abort_ITI_TP_A_PressTP_MD()
 
 	string device

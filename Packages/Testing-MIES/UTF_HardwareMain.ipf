@@ -179,6 +179,9 @@ Function run()
 	list = AddListItem("DAQ_ChangeCMDuringITIWithTP", list, ";", INF)
 	list = AddListItem("Test_ChangeCMDuringITIWithTP", list, ";", INF)
 
+	list = AddListItem("DAQ_StartDAQDuringTP", list, ";", INF)
+	list = AddListItem("Test_StartDAQDuringTP", list, ";", INF)
+
 #ifndef TESTS_WITH_YOKING
 
 	list = AddListItem("PS_DS_Sub_Run1", list, ";", INF)
