@@ -136,7 +136,7 @@ static Function AD_FillWaves(panelTitle, list, info)
 			// - needs at least PSQ_RA_NUM_SWEEPS_PASS passing sweeps
 
 			// SP
-			// - only reached "PSQ_FMT_LBN_STEPSIZE" step size
+			// - only reached PSQ_FMT_LBN_STEPSIZE step size and not PSQ_SP_INIT_AMP_p10 with a spike
 
 			// DA
 			// - needs at least $NUM_DA_SCALES passing sweeps
@@ -232,14 +232,22 @@ static Function/S AD_GetSquarePulseFailMsg(numericalValues, sweepNo, headstage)
 	variable headstage
 
 	string msg, key
-	variable stepsize
+	variable stepSize
 
 	key = PSQ_CreateLBNKey(PSQ_SQUARE_PULSE, PSQ_FMT_LBN_STEPSIZE, query = 1)
-	stepsize = GetLastSettingIndepSCI(numericalValues, sweepNo, key, headstage, UNKNOWN_MODE)
+	stepSize = GetLastSettingIndepSCI(numericalValues, sweepNo, key, headstage, UNKNOWN_MODE)
 	ASSERT(IsFinite(stepSize), "Missing DAScale stepsize LBN entry")
 
-	if(stepsize != PSQ_SP_INIT_AMP_p10)
-		sprintf msg, "Failure as we did not reach the desired DAScale step size of %.0W0PA but only %.0W0PA", PSQ_SP_INIT_AMP_p10, stepsize
+	if(stepSize != PSQ_SP_INIT_AMP_p10)
+		sprintf msg, "Failure as we did not reach the desired DAScale step size of %.0W0PA but only %.0W0PA", PSQ_SP_INIT_AMP_p10, stepSize
+		return msg
+	endif
+
+	key = PSQ_CreateLBNKey(PSQ_SQUARE_PULSE, PSQ_FMT_LBN_SPIKE_DETECT, query = 1)
+	WAVE/Z spikeDetection = GetLastSettingSCI(numericalValues, sweepNo, key, headstage, UNKNOWN_MODE)
+
+	if(!spikeDetection[headstage])
+		sprintf msg, "Failure as we reached the desired DAScale step size of %.0W0PA but we ran out of sweeps as it did not spike.", PSQ_SP_INIT_AMP_p10
 		return msg
 	endif
 
