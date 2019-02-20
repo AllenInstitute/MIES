@@ -1,5 +1,5 @@
 ﻿#pragma TextEncoding = "UTF-8"
-#pragma rtGlobals=3		// Use modern global access method and strict wave access.
+#pragma rtGlobals=3 // Use modern global access method and strict wave access.
 
 /// @file UTF_TestingWithHardware.ipf Implement MIES testing with real world hardware
 ///

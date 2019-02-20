@@ -1,5 +1,5 @@
 ﻿#pragma TextEncoding = "UTF-8"
-#pragma rtGlobals=3		// Use modern global access method and strict wave access.
+#pragma rtGlobals=3 // Use modern global access method and strict wave access.
 #pragma ModuleName=MultiPatchSeqFastRheoEstimate
 
 /// @brief Acquire data with the given DAQSettings
@@ -165,10 +165,10 @@ static Function MSQ_FRE_Test1()
 	CHECK_EQUAL_WAVES(activeHS, statusHS, mode = WAVE_DATA)
 
 	WAVE/Z rangeExceeded = GetResults_IGNORE(sweepNo, MSQ_FMT_LBN_DASCALE_EXC, 0, EACH_SCI)
-	CHECK_WAVE(rangeExceeded, NULL_WAVE)
+	CHECK_EQUAL_WAVES(rangeExceeded, {0, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN}, mode = WAVE_DATA)
 
 	WAVE/Z rangeExceeded = GetResults_IGNORE(sweepNo, MSQ_FMT_LBN_DASCALE_EXC, 1, EACH_SCI)
-	CHECK_WAVE(rangeExceeded, NULL_WAVE)
+	CHECK_EQUAL_WAVES(rangeExceeded, {0, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN}, mode = WAVE_DATA)
 
 	WAVE/Z finalDAScale = GetResults_IGNORE(sweepNo, MSQ_FMT_LBN_FINAL_SCALE, 0, EACH_SCI)
 	CHECK_WAVE(finalDAScale, NULL_WAVE)
@@ -255,10 +255,10 @@ static Function MSQ_FRE_Test2()
 	CHECK_EQUAL_WAVES(activeHS, statusHS, mode = WAVE_DATA)
 
 	WAVE/Z rangeExceeded = GetResults_IGNORE(sweepNo, MSQ_FMT_LBN_DASCALE_EXC, 0, EACH_SCI)
-	CHECK_WAVE(rangeExceeded, NULL_WAVE)
+	CHECK_EQUAL_WAVES(rangeExceeded, {0, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN}, mode = WAVE_DATA)
 
 	WAVE/Z rangeExceeded = GetResults_IGNORE(sweepNo, MSQ_FMT_LBN_DASCALE_EXC, 1, EACH_SCI)
-	CHECK_WAVE(rangeExceeded, NULL_WAVE)
+	CHECK_EQUAL_WAVES(rangeExceeded, {0, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN}, mode = WAVE_DATA)
 
 	WAVE/Z finalDAScale = GetResults_IGNORE(sweepNo, MSQ_FMT_LBN_FINAL_SCALE, 0, EACH_SCI)
 	CHECK_WAVE(finalDAScale, NULL_WAVE)
@@ -347,10 +347,10 @@ static Function MSQ_FRE_Test3()
 	CHECK_EQUAL_WAVES(activeHS, statusHS, mode = WAVE_DATA)
 
 	WAVE/Z rangeExceeded = GetResults_IGNORE(sweepNo, MSQ_FMT_LBN_DASCALE_EXC, 0, EACH_SCI)
-	CHECK_WAVE(rangeExceeded, NULL_WAVE)
+	CHECK_EQUAL_WAVES(rangeExceeded, {0, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN}, mode = WAVE_DATA)
 
 	WAVE/Z rangeExceeded = GetResults_IGNORE(sweepNo, MSQ_FMT_LBN_DASCALE_EXC, 1, EACH_SCI)
-	CHECK_WAVE(rangeExceeded, NULL_WAVE)
+	CHECK_EQUAL_WAVES(rangeExceeded, {0, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN}, mode = WAVE_DATA)
 
 	WAVE/Z finalDAScale = GetResults_IGNORE(sweepNo, MSQ_FMT_LBN_FINAL_SCALE, 0, EACH_SCI)
 	CHECK_WAVE(finalDAScale, NULL_WAVE)
@@ -440,10 +440,10 @@ static Function MSQ_FRE_Test4()
 	CHECK_EQUAL_WAVES(activeHS, statusHS, mode = WAVE_DATA)
 
 	WAVE/Z rangeExceeded = GetResults_IGNORE(sweepNo, MSQ_FMT_LBN_DASCALE_EXC, 0, EACH_SCI)
-	CHECK_WAVE(rangeExceeded, NULL_WAVE)
+	CHECK_EQUAL_WAVES(rangeExceeded, {0, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN}, mode = WAVE_DATA)
 
 	WAVE/Z rangeExceeded = GetResults_IGNORE(sweepNo, MSQ_FMT_LBN_DASCALE_EXC, 1, EACH_SCI)
-	CHECK_WAVE(rangeExceeded, NULL_WAVE)
+	CHECK_EQUAL_WAVES(rangeExceeded, {0, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN}, mode = WAVE_DATA)
 
 	WAVE/Z finalDAScale = GetResults_IGNORE(sweepNo, MSQ_FMT_LBN_FINAL_SCALE, 0, EACH_SCI)
 	CHECK_WAVE(finalDAScale, NULL_WAVE)
@@ -538,10 +538,10 @@ static Function MSQ_FRE_Test5()
 	CHECK_EQUAL_WAVES(activeHS, statusHS, mode = WAVE_DATA)
 
 	WAVE/Z rangeExceeded = GetResults_IGNORE(sweepNo, MSQ_FMT_LBN_DASCALE_EXC, 0, EACH_SCI)
-	CHECK_WAVE(rangeExceeded, NULL_WAVE)
+	CHECK_EQUAL_WAVES(rangeExceeded, {0, NaN, NaN, NaN, NaN, NaN, NaN, NaN}, mode = WAVE_DATA)
 
 	WAVE/Z rangeExceeded = GetResults_IGNORE(sweepNo, MSQ_FMT_LBN_DASCALE_EXC, 1, EACH_SCI)
-	CHECK_WAVE(rangeExceeded, NULL_WAVE)
+	CHECK_EQUAL_WAVES(rangeExceeded, {0, NaN, NaN, NaN, NaN, NaN, NaN, NaN}, mode = WAVE_DATA)
 
 	WAVE/Z finalDAScale = GetResults_IGNORE(sweepNo, MSQ_FMT_LBN_FINAL_SCALE, 0, EACH_SCI)
 	CHECK_EQUAL_WAVES(finalDAScale, {NaN, NaN, NaN, NaN, NaN, NaN, NaN, 560e-12}, mode = WAVE_DATA, tol = 1e-14)
@@ -641,7 +641,7 @@ static Function MSQ_FRE_Test6()
 	CHECK_EQUAL_WAVES(activeHS, statusHS, mode = WAVE_DATA)
 
 	WAVE/Z rangeExceeded = GetResults_IGNORE(sweepNo, MSQ_FMT_LBN_DASCALE_EXC, 0, EACH_SCI)
-	CHECK_WAVE(rangeExceeded, NULL_WAVE)
+	CHECK_EQUAL_WAVES(rangeExceeded, {0, NaN, NaN, NaN, NaN, NaN, NaN, NaN}, mode = WAVE_DATA)
 
 	WAVE/Z rangeExceeded = GetResults_IGNORE(sweepNo, MSQ_FMT_LBN_DASCALE_EXC, 1, EACH_SCI)
 	CHECK_WAVE(rangeExceeded, NULL_WAVE)
@@ -741,10 +741,10 @@ static Function MSQ_FRE_Test7()
 	CHECK_EQUAL_WAVES(activeHS, statusHS, mode = WAVE_DATA)
 
 	WAVE/Z rangeExceeded = GetResults_IGNORE(sweepNo, MSQ_FMT_LBN_DASCALE_EXC, 0, EACH_SCI)
-	CHECK_WAVE(rangeExceeded, NULL_WAVE)
+	CHECK_EQUAL_WAVES(rangeExceeded, {0, NaN, NaN, NaN, NaN, NaN, NaN, NaN}, mode = WAVE_DATA)
 
 	WAVE/Z rangeExceeded = GetResults_IGNORE(sweepNo, MSQ_FMT_LBN_DASCALE_EXC, 1, EACH_SCI)
-	CHECK_WAVE(rangeExceeded, NULL_WAVE)
+	CHECK_EQUAL_WAVES(rangeExceeded, {0, NaN, NaN, NaN, NaN, NaN, NaN, NaN}, mode = WAVE_DATA)
 
 	WAVE/Z finalDAScale = GetResults_IGNORE(sweepNo, MSQ_FMT_LBN_FINAL_SCALE, 0, EACH_SCI)
 	CHECK_EQUAL_WAVES(finalDAScale, {NaN, NaN, NaN, NaN, NaN, NaN, NaN, 560e-12}, mode = WAVE_DATA, tol = 1e-14)
@@ -841,10 +841,10 @@ static Function MSQ_FRE_Test8()
 	CHECK_EQUAL_WAVES(activeHS, statusHS, mode = WAVE_DATA)
 
 	WAVE/Z rangeExceeded = GetResults_IGNORE(sweepNo, MSQ_FMT_LBN_DASCALE_EXC, 0, EACH_SCI)
-	CHECK_WAVE(rangeExceeded, NULL_WAVE)
+	CHECK_EQUAL_WAVES(rangeExceeded, {0, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN}, mode = WAVE_DATA)
 
 	WAVE/Z rangeExceeded = GetResults_IGNORE(sweepNo, MSQ_FMT_LBN_DASCALE_EXC, 1, EACH_SCI)
-	CHECK_WAVE(rangeExceeded, NULL_WAVE)
+	CHECK_EQUAL_WAVES(rangeExceeded, {0, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN}, mode = WAVE_DATA)
 
 	WAVE/Z finalDAScale = GetResults_IGNORE(sweepNo, MSQ_FMT_LBN_FINAL_SCALE, 0, EACH_SCI)
 	CHECK_EQUAL_WAVES(finalDAScale, {NaN, NaN, NaN, NaN, NaN, NaN, NaN, 560e-12, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN}, mode = WAVE_DATA, tol = 1e-14)
@@ -941,10 +941,10 @@ static Function MSQ_FRE_Test9()
 	CHECK_EQUAL_WAVES(activeHS, statusHS, mode = WAVE_DATA)
 
 	WAVE/Z rangeExceeded = GetResults_IGNORE(sweepNo, MSQ_FMT_LBN_DASCALE_EXC, 0, EACH_SCI)
-	CHECK_WAVE(rangeExceeded, NULL_WAVE)
+	CHECK_EQUAL_WAVES(rangeExceeded, {0, 1}, mode = WAVE_DATA)
 
 	WAVE/Z rangeExceeded = GetResults_IGNORE(sweepNo, MSQ_FMT_LBN_DASCALE_EXC, 1, EACH_SCI)
-	CHECK_WAVE(rangeExceeded, NULL_WAVE)
+	CHECK_EQUAL_WAVES(rangeExceeded, {0, 1}, mode = WAVE_DATA)
 
 	WAVE/Z finalDAScale = GetResults_IGNORE(sweepNo, MSQ_FMT_LBN_FINAL_SCALE, 0, EACH_SCI)
 	CHECK_WAVE(finalDAScale, NULL_WAVE)
@@ -1047,10 +1047,10 @@ static Function MSQ_FRE_Test10()
 	CHECK_EQUAL_WAVES(activeHS, statusHS, mode = WAVE_DATA)
 
 	WAVE/Z rangeExceeded = GetResults_IGNORE(sweepNo, MSQ_FMT_LBN_DASCALE_EXC, 0, EACH_SCI)
-	CHECK_WAVE(rangeExceeded, NULL_WAVE)
+	CHECK_EQUAL_WAVES(rangeExceeded, {0, NaN, NaN, NaN, NaN, NaN, NaN, NaN}, mode = WAVE_DATA)
 
 	WAVE/Z rangeExceeded = GetResults_IGNORE(sweepNo, MSQ_FMT_LBN_DASCALE_EXC, 1, EACH_SCI)
-	CHECK_WAVE(rangeExceeded, NULL_WAVE)
+	CHECK_EQUAL_WAVES(rangeExceeded, {0, NaN, NaN, NaN, NaN, NaN, NaN, NaN}, mode = WAVE_DATA)
 
 	WAVE/Z finalDAScale = GetResults_IGNORE(sweepNo, MSQ_FMT_LBN_FINAL_SCALE, 0, EACH_SCI)
 	CHECK_EQUAL_WAVES(finalDAScale, {NaN, NaN, NaN, NaN, NaN, NaN, NaN, 560e-12}, mode = WAVE_DATA, tol = 1e-14)

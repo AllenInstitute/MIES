@@ -1,5 +1,5 @@
 ﻿#pragma TextEncoding = "UTF-8"
-#pragma rtGlobals=3		// Use modern global access method and strict wave access.
+#pragma rtGlobals=3 // Use modern global access method and strict wave access.
 #pragma ModuleName=PatchSeqTestRamp
 
 static Constant HEADSTAGE = 0
@@ -136,10 +136,10 @@ static Function PS_RA_Test1()
 	CHECK_EQUAL_WAVES(sweepQCWave, {0, 0}, mode = WAVE_DATA)
 
 	WAVE/Z spikeDetectionWave = GetSpikeResults_IGNORE(sweepNo)
-	CHECK(!WaveExists(spikeDetectionWave))
+	CHECK_WAVE(spikeDetectionWave, NULL_WAVE)
 
 	WAVE/Z spikePositionWave = GetSpikePosition_IGNORE(sweepNo)
-	CHECK(!WaveExists(spikePositionWave))
+	CHECK_WAVE(spikePositionWave, NULL_WAVE)
 
 	WAVE/Z sweeps = AFH_GetSweepsFromSameRACycle(numericalValues, sweepNo)
 	CHECK_WAVE(sweeps, NUMERIC_WAVE)
@@ -207,7 +207,7 @@ static Function PS_RA_Test2()
 	CHECK_EQUAL_WAVES(spikeDetectionWave, {0, 0, 0}, mode = WAVE_DATA)
 
 	WAVE/Z spikePositionWave = GetSpikePosition_IGNORE(sweepNo)
-	CHECK(!WaveExists(spikePositionWave))
+	CHECK_WAVE(spikePositionWave, NULL_WAVE)
 
 	WAVE/Z sweeps = AFH_GetSweepsFromSameRACycle(numericalValues, sweepNo)
 	CHECK_WAVE(sweeps, NUMERIC_WAVE)

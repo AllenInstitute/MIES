@@ -1,5 +1,5 @@
 ﻿#pragma TextEncoding = "UTF-8"
-#pragma rtGlobals=3		// Use modern global access method and strict wave access.
+#pragma rtGlobals=3 // Use modern global access method and strict wave access.
 #pragma ModuleName=PatchSeqTestSquarePulse
 
 static Constant HEADSTAGE = 0
@@ -92,7 +92,7 @@ static Function PS_SP_Test1()
 	CHECK_EQUAL_VAR(spikeDetected, 0)
 
 	WAVE/Z result = GetLastSetting(numericalValues, sweepNo, PSQ_CreateLBNKey(PSQ_SQUARE_PULSE, PSQ_FMT_LBN_FINAL_SCALE, query = 1), UNKNOWN_MODE)
-	CHECK(!WaveExists(result))
+	CHECK_WAVE(result, NULL_WAVE)
 
 	WAVE/Z spikeDetectionWave = GetSpikeResults_IGNORE(sweepNo)
 	CHECK_EQUAL_WAVES(spikeDetectionWave, {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}, mode = WAVE_DATA)
@@ -134,7 +134,7 @@ static Function PS_SP_Test2()
 	CHECK_EQUAL_VAR(spikeDetected, 0)
 
 	WAVE/Z result = GetLastSetting(numericalValues, sweepNo, PSQ_CreateLBNKey(PSQ_SQUARE_PULSE, PSQ_FMT_LBN_FINAL_SCALE, query = 1), UNKNOWN_MODE)
-	CHECK(!WaveExists(result))
+	CHECK_WAVE(result, NULL_WAVE)
 
 	WAVE/Z spikeDetectionWave = GetSpikeResults_IGNORE(sweepNo)
 	CHECK_EQUAL_WAVES(spikeDetectionWave, {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}, mode = WAVE_DATA)
@@ -176,7 +176,7 @@ static Function PS_SP_Test3()
 	CHECK_EQUAL_VAR(spikeDetected, 0)
 
 	WAVE/Z result = GetLastSetting(numericalValues, sweepNo, PSQ_CreateLBNKey(PSQ_SQUARE_PULSE, PSQ_FMT_LBN_FINAL_SCALE, query = 1), UNKNOWN_MODE)
-	CHECK(!WaveExists(result))
+	CHECK_WAVE(result, NULL_WAVE)
 
 	WAVE/Z spikeDetectionWave = GetSpikeResults_IGNORE(sweepNo)
 	CHECK_EQUAL_WAVES(spikeDetectionWave, {0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}, mode = WAVE_DATA)
@@ -218,7 +218,7 @@ static Function PS_SP_Test4()
 	CHECK_EQUAL_VAR(spikeDetected, 0)
 
 	WAVE/Z result = GetLastSetting(numericalValues, sweepNo, PSQ_CreateLBNKey(PSQ_SQUARE_PULSE, PSQ_FMT_LBN_FINAL_SCALE, query = 1), UNKNOWN_MODE)
-	CHECK(!WaveExists(result))
+	CHECK_WAVE(result, NULL_WAVE)
 
 	WAVE/Z spikeDetectionWave = GetSpikeResults_IGNORE(sweepNo)
 	CHECK_EQUAL_WAVES(spikeDetectionWave, {0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}, mode = WAVE_DATA)

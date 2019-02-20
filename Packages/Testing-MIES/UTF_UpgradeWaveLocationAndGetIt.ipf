@@ -1,5 +1,5 @@
 #pragma TextEncoding = "UTF-8"
-#pragma rtGlobals=3		// Use modern global access method and strict wave access.
+#pragma rtGlobals=3 // Use modern global access method and strict wave access.
 
 Function TEST_CASE_BEGIN_OVERRIDE(name)
 	string name
@@ -60,7 +60,7 @@ Function empty_wave_ref()
 	p.dfr  = root:
 
 	WAVE/Z wv = UpgradeWaveLocationAndGetIt(p)
-	CHECK(!WaveExists(wv))
+	CHECK_WAVE(wv, NULL_WAVE)
 End
 
 Function no_trafo()
@@ -70,7 +70,7 @@ Function no_trafo()
 	p.dfr  = srcf
 
 	WAVE/Z wv = UpgradeWaveLocationAndGetIt(p)
-	CHECK(WaveExists(wv))
+	CHECK_WAVE(wv, NUMERIC_WAVE)
 	CHECK_EQUAL_VAR(wv[0], 12345)
 End
 
@@ -86,7 +86,7 @@ Function rename_wave_only()
 	p.newName = newName
 
 	WAVE/Z wv = UpgradeWaveLocationAndGetIt(p)
-	CHECK(WaveExists(wv))
+	CHECK_WAVE(wv, NUMERIC_WAVE)
 	name = NameOfWave(wv)
 	CHECK_EQUAL_STR(name, newName)
 	CHECK_EQUAL_VAR(wv[0], 12345)
@@ -106,7 +106,7 @@ Function rename_handles_equal_names()
 	p.name = newName
 
 	WAVE/Z wv = UpgradeWaveLocationAndGetIt(p)
-	CHECK(WaveExists(wv))
+	CHECK_WAVE(wv, NUMERIC_WAVE)
 	name = NameOfWave(wv)
 	CHECK_EQUAL_STR(name, newName)
 	CHECK_EQUAL_VAR(wv[0], 12345)
@@ -126,7 +126,7 @@ Function move_wave_only()
 	p.newDFR = $newFolder
 
 	WAVE/Z wv = UpgradeWaveLocationAndGetIt(p)
-	CHECK(WaveExists(wv))
+	CHECK_WAVE(wv, NUMERIC_WAVE)
 	folder = GetWavesDataFolder(wv, 0)
 	CHECK_EQUAL_STR(folder, newFolder)
 	CHECK_EQUAL_VAR(wv[0], 12345)
@@ -149,7 +149,7 @@ Function move_fails_on_non_exist_ret_src()
 	CHECK(!DataFolderExistsDFR(p.newDFR))
 
 	WAVE/Z wv = UpgradeWaveLocationAndGetIt(p)
-	CHECK(WaveExists(wv))
+	CHECK_WAVE(wv, NUMERIC_WAVE)
 	folder = GetWavesDataFolder(wv, 0)
 	oldFolder = "srcf"
 	CHECK_EQUAL_STR(folder, oldFolder)
@@ -170,7 +170,7 @@ Function move_handles_equal_folders()
 	p.newDFR  = $newFolder
 
 	WAVE/Z wv = UpgradeWaveLocationAndGetIt(p)
-	CHECK(WaveExists(wv))
+	CHECK_WAVE(wv, NUMERIC_WAVE)
 	folder = GetWavesDataFolder(wv, 0)
 	CHECK_EQUAL_STR(folder, newFolder)
 	CHECK_EQUAL_VAR(wv[0], 12345)
@@ -193,7 +193,7 @@ Function move_rename_both_equal()
 	p.newName = newName
 
 	WAVE/Z wv = UpgradeWaveLocationAndGetIt(p)
-	CHECK(WaveExists(wv))
+	CHECK_WAVE(wv, NUMERIC_WAVE)
 	folder = GetWavesDataFolder(wv, 0)
 	CHECK_EQUAL_STR(folder, newFolder)
 	CHECK_EQUAL_VAR(wv[0], 12345)
@@ -220,7 +220,7 @@ Function move_rename()
 	p.newName = newName
 
 	WAVE/Z wv = UpgradeWaveLocationAndGetIt(p)
-	CHECK(WaveExists(wv))
+	CHECK_WAVE(wv, NUMERIC_WAVE)
 	name = NameOfWave(wv)
 	CHECK_EQUAL_STR(name, newName)
 	folder = GetWavesDataFolder(wv, 0)
@@ -252,7 +252,7 @@ Function move_rename_keeps_dfr()
 	Make tmpDFR:tmp
 
 	WAVE/Z wv = UpgradeWaveLocationAndGetIt(p)
-	CHECK(WaveExists(wv))
+	CHECK_WAVE(wv, NUMERIC_WAVE)
 	name = NameOfWave(wv)
 	CHECK_EQUAL_STR(name, newName)
 	folder = GetWavesDataFolder(wv, 0)
@@ -262,7 +262,7 @@ Function move_rename_keeps_dfr()
 	CHECK(DataFolderExistsDFR(p.dfr))
 
 	WAVE/SDFR=tmpDFR src = $name
-	CHECK(!WaveExists(src))
+	CHECK_WAVE(src, NULL_WAVE)
 End
 
 Function return_dest_if_both_keep_src()
@@ -288,12 +288,12 @@ Function return_dest_if_both_keep_src()
 	Duplicate src, tmpDFR:$(p.newName)/WAVE=dest
 
 	WAVE/Z wv = UpgradeWaveLocationAndGetIt(p)
-	CHECK(WaveExists(wv))
+	CHECK_WAVE(wv, NUMERIC_WAVE)
 	CHECK(WaveRefsEqual(wv, dest))
 
 	WAVE/SDFR=p.dfr src = $name
 	// src still exists
-	CHECK(WaveExists(src))
+	CHECK_WAVE(src, NUMERIC_WAVE)
 
 	name = NameOfWave(wv)
 	CHECK_EQUAL_STR(name, newName)

@@ -4112,7 +4112,7 @@ Function RemoveTracesFromGraph(graph, [kill, trace, wv, dfr])
 	WAVE/Z wv
 	DFREF dfr
 
-	variable i, numEntries, removals, tryKillingTheWave, numOptArgs, remove_all_traces, error
+	variable i, numEntries, removals, tryKillingTheWave, numOptArgs, remove_all_traces, error, debugOnError
 	string traceList, refTrace
 
 	if(ParamIsDefault(kill))
@@ -4134,12 +4134,14 @@ Function RemoveTracesFromGraph(graph, [kill, trace, wv, dfr])
 
 	// remove without calling TraceNameList or TraceNameToWaveRef
 	if(!kill && remove_all_traces)
+		debugOnError = DisableDebugOnError()
 		do
 			try
 				RemoveFromGraph/W=$graph $("#0"); AbortOnRTE
 				removals += 1
 			catch
 				error = GetRTError(1)
+				ResetDebugOnError(debugOnError)
 				return removals
 			endtry
 		while(1)

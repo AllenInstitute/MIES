@@ -1,4 +1,4 @@
-#pragma rtGlobals=3		// Use modern global access method and strict wave access.
+#pragma rtGlobals=3 // Use modern global access method and strict wave access.
 
 #ifndef AUTOMATED_TESTING
 
@@ -302,13 +302,13 @@ Function ValidFunc_V3(panelTitle, s)
 	switch(s.eventType)
 		case PRE_DAQ_EVENT:
 			CHECK_EQUAL_VAR(s.sweepNo, 0)
-			CHECK(!WaveExists(GetSweepWave(panelTitle, s.sweepNo)))
+			CHECK_WAVE(GetSweepWave(panelTitle, s.sweepNo), NULL_WAVE)
 			break
 		case PRE_SWEEP_EVENT:
 		case PRE_SET_EVENT:
 		case MID_SWEEP_EVENT:
 			CHECK_EQUAL_VAR(s.sweepNo, anaFuncTracker[POST_SWEEP_EVENT])
-			CHECK(!WaveExists(GetSweepWave(panelTitle, s.sweepNo)))
+			CHECK_WAVE(GetSweepWave(panelTitle, s.sweepNo), NULL_WAVE)
 			break
 		case POST_SWEEP_EVENT:
 			CHECK_EQUAL_VAR(s.sweepNo, anaFuncTracker[POST_SWEEP_EVENT])
@@ -325,7 +325,7 @@ Function ValidFunc_V3(panelTitle, s)
 	endswitch
 
 	// the next sweep can not exist
-	CHECK(!WaveExists(GetSweepWave(panelTitle, s.sweepNo + 1)))
+	CHECK_WAVE(GetSweepWave(panelTitle, s.sweepNo + 1), NULL_WAVE)
 
 	CHECK(s.eventType >= 0 && s.eventType < TOTAL_NUM_EVENTS && s.eventType != GENERIC_EVENT)
 	CHECK(s.eventType >= 0 && s.eventType < DimSize(anaFuncTracker, ROWS))

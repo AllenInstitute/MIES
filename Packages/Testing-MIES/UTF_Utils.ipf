@@ -1,5 +1,5 @@
 #pragma TextEncoding = "UTF-8"
-#pragma rtGlobals=3		// Use modern global access method and strict wave access.
+#pragma rtGlobals=3 // Use modern global access method and strict wave access.
 
 /// RemoveAllEmptyDataFolders
 /// @{
@@ -245,7 +245,7 @@ Function ReturnsInvalidWaveRefWOMatches1()
 	Make/Free/D data2
 
 	WAVE/Z matches = GetSetIntersection(data1, data2)
-	CHECK(!WaveExists(matches))
+	CHECK_WAVE(matches, NULL_WAVE)
 End
 
 Function ReturnsInvalidWaveRefWOMatches2()
@@ -254,7 +254,7 @@ Function ReturnsInvalidWaveRefWOMatches2()
 	Make/Free/D/N=0 data2
 
 	WAVE matches = GetSetIntersection(data1, data2)
-	CHECK(!WaveExists(matches))
+	CHECK_WAVE(matches, NULL_WAVE)
 End
 
 Function ReturnsInvalidWaveRefWOMatches3()
@@ -263,7 +263,7 @@ Function ReturnsInvalidWaveRefWOMatches3()
 	Make/Free/D data2 = -1
 
 	WAVE matches = GetSetIntersection(data1, data2)
-	CHECK(!WaveExists(matches))
+	CHECK_WAVE(matches, NULL_WAVE)
 End
 /// @}
 
@@ -638,7 +638,7 @@ Function ITCC_WorksLegacy()
 	CHECK(IsValidConfigWave(config))
 
 	WAVE/T/Z units = AFH_GetChannelUnits(config)
-	CHECK(WaveExists(units))
+	CHECK_WAVE(units, TEXT_WAVE)
 	// we have one TTL channel which does not have a unit
 	CHECK_EQUAL_VAR(DimSize(units, ROWS) + 1, DimSize(config, ROWS))
 	CHECK_EQUAL_TEXTWAVES(units, {"DA0", "DA1", "DA2", "AD0", "AD1", "AD2"})
@@ -677,7 +677,7 @@ Function ITCC_WorksVersion1()
 	CHECK(IsValidConfigWave(config))
 
 	WAVE/T/Z units = AFH_GetChannelUnits(config)
-	CHECK(WaveExists(units))
+	CHECK_WAVE(units, TEXT_WAVE)
 	// we have one TTL channel which does not have a unit
 	CHECK_EQUAL_VAR(DimSize(units, ROWS) + 1, DimSize(config, ROWS))
 	CHECK_EQUAL_TEXTWAVES(units, {"DA0", "DA1", "DA2", "AD0", "AD1", "AD2"})
@@ -749,7 +749,7 @@ Function FI_NumSearchWithCol3()
 	WAVE/SDFR=dfr numeric
 
 	WAVE/Z indizes = FindIndizes(numeric, col = 2, var = 4711)
-	CHECK(!WaveExists(indizes))
+	CHECK_WAVE(indizes, NULL_WAVE)
 End
 
 Function FI_NumSearchWithColLabel()
@@ -845,7 +845,7 @@ Function FI_TextSearchWithCol3()
 	WAVE/SDFR=dfr text
 
 	WAVE/Z indizes = FindIndizes(text, col = 2, str = "4711")
-	CHECK(!WaveExists(indizes))
+	CHECK_WAVE(indizes, NULL_WAVE)
 End
 
 Function FI_TextSearchWithColLabel()

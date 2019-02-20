@@ -1,5 +1,5 @@
 ﻿#pragma TextEncoding = "UTF-8"
-#pragma rtGlobals=3		// Use modern global access method and strict wave access.
+#pragma rtGlobals=3 // Use modern global access method and strict wave access.
 #pragma ModuleName=UTF_AnalyisFunctionHelpers
 
 static StrConstant device = "ITC18USB_Dev_0"
@@ -329,7 +329,7 @@ Function AE_WorksMultiValues()
 	CHECK_EQUAL_WAVES(found, values, mode = WAVE_DATA)
 
 	WAVE/Z settings = GetLastSetting(numericalValues, 0, LABNOTEBOOK_USER_PREFIX + key, UNKNOWN_MODE)
-	CHECK(WaveExists(settings))
+	CHECK_WAVE(settings, NUMERIC_WAVE)
 	CHECK_EQUAL_WAVES(settings, values, mode = WAVE_DATA)
 
 	// inserted under correct sweep number

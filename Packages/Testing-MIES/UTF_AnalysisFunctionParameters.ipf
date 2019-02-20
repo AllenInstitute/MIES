@@ -1,5 +1,5 @@
 ﻿#pragma TextEncoding = "UTF-8"
-#pragma rtGlobals=3		// Use modern global access method and strict wave access.
+#pragma rtGlobals=3 // Use modern global access method and strict wave access.
 #pragma ModuleName=AnalysisFuncParamTesting
 
 static Function TEST_CASE_BEGIN_OVERRIDE(testCase)
@@ -447,6 +447,6 @@ static Function ReturnsInvalidWaveRef()
 	params = WPT[10][%Set][INDEP_EPOCH_TYPE]
 	CHECK_EMPTY_STR(params)
 
-	CHECK(!WaveExists(AFH_GetAnalysisParamWave("I_DONT_EXIST", params)))
-	CHECK(!WaveExists(AFH_GetAnalysisParamTextWave("I_DONT_EXIST", params)))
+	CHECK_WAVE(AFH_GetAnalysisParamWave("I_DONT_EXIST", params), NULL_WAVE)
+	CHECK_WAVE(AFH_GetAnalysisParamTextWave("I_DONT_EXIST", params), NULL_WAVE)
 End
