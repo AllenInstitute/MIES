@@ -1600,6 +1600,9 @@ static Function AFT_DAQ17()
 		FAIL()
 	catch
 		PASS()
+		NVAR errorCounter = $GetAnalysisFuncErrorCounter(DEVICE)
+		CHECK_EQUAL_VAR(errorCounter, 1)
+		errorCounter = 0 // avoid TEST_CASE_END_OVERRIDE() complaining
 	endtry
 End
 
