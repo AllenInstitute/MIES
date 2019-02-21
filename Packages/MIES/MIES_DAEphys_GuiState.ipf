@@ -177,7 +177,6 @@ Function DAG_GetNumericalValue(panelTitle, ctrl, [index])
 	string panelTitle, ctrl
 	variable index
 
-#if defined(AUTOMATED_TESTING) || defined(DEBUGGING_ENABLED)
 	variable refValue, waveIndex
 	string msg
 
@@ -187,6 +186,8 @@ Function DAG_GetNumericalValue(panelTitle, ctrl, [index])
 	else
 		waveIndex = index
 	endif
+
+#if defined(AUTOMATED_TESTING) || defined(DEBUGGING_ENABLED)
 
 	// check if the GUI state wave is consistent
 	if(defined(AUTOMATED_TESTING) || DP_DebuggingEnabledForFile(GetFile(FunctionPath(""))))
@@ -228,9 +229,6 @@ Function/S DAG_GetTextualValue(panelTitle, ctrl, [index])
 	string panelTitle, ctrl
 	variable index
 
-	WAVE/T GUIState = GetDA_EphysGuiStateTxT(panelTitle)
-
-#if defined(AUTOMATED_TESTING) || defined(DEBUGGING_ENABLED)
 	string str, msg
 	variable waveIndex
 
@@ -240,6 +238,10 @@ Function/S DAG_GetTextualValue(panelTitle, ctrl, [index])
 	else
 		waveIndex = index
 	endif
+
+	WAVE/T GUIState = GetDA_EphysGuiStateTxT(panelTitle)
+
+#if defined(AUTOMATED_TESTING) || defined(DEBUGGING_ENABLED)
 
 	// check if the GUI state wave is consistent
 	if(defined(AUTOMATED_TESTING) || DP_DebuggingEnabledForFile(GetFile(FunctionPath(""))))
