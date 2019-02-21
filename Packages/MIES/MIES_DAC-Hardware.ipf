@@ -416,6 +416,31 @@ Function HW_IsRunning(hardwareType, deviceID, [flags])
 	endswitch
 End
 
+/// @brief Return hardware specific information from the device
+///
+/// @param hardwareType One of @ref HardwareDACTypeConstants
+/// @param deviceID     device identifier
+/// @param flags        [optional, default none] One or multiple flags from @ref HardwareInteractionFlags
+///
+/// @return free numeric/text wave with information and dimension labels
+Function/WAVE HW_GetDeviceInfo(hardwareType, deviceID, [flags])
+	variable hardwareType, deviceID, flags
+
+	string device
+	HW_AssertOnInvalid(hardwareType, deviceID)
+
+	switch(hardwareType)
+		case HARDWARE_ITC_DAC:
+			return HW_ITC_GetDeviceInfo(deviceID, flags=flags)
+			break
+		case HARDWARE_NI_DAC:
+			device = HW_GetDeviceName(hardwareType, deviceID)
+			HW_NI_AssertOnInvalid(device)
+			return HW_NI_GetDeviceInfo(device, flags=flags)
+			break
+	endswitch
+End
+
 /// @brief Start data acquisition
 ///
 /// @param hardwareType One of @ref HardwareDACTypeConstants
@@ -608,13 +633,7 @@ Function/S HW_ITC_ListOfOpenDevices()
 			continue
 		endif
 
-		// device could be selected
-		// get the device type
-		do
-			ITCGetDeviceInfo2/FREE DevInfo
-		while(V_ITCXOPError == SLOT_LOCKED_TO_OTHER_THREAD && V_ITCError == 0)
-
-		HW_ITC_HandleReturnValues(0, V_ITCError, V_ITCXOPError)
+		WAVE DevInfo = HW_ITC_GetDeviceInfo(i)
 
 		type   = StringFromList(DevInfo[0], DEVICE_TYPES_ITC)
 		number = StringFromList(DevInfo[1], DEVICE_NUMBERS)
@@ -929,6 +948,21 @@ Function HW_ITC_SelectDevice(deviceID, [flags])
 	while(V_ITCXOPError == SLOT_LOCKED_TO_OTHER_THREAD && V_ITCError == 0)
 
 	return HW_ITC_HandleReturnValues(flags, V_ITCError, V_ITCXOPError)
+End
+
+/// @see HW_GetDeviceInfo
+Function/WAVE HW_ITC_GetDeviceInfo(deviceID, [flags])
+	variable deviceID, flags
+
+	DEBUGPRINTSTACKINFO()
+
+	do
+		ITCGetDeviceInfo2/Z=(HW_ITC_GetZValue(flags))/DEV=(deviceID)/FREE DevInfo
+	while(V_ITCXOPError == SLOT_LOCKED_TO_OTHER_THREAD && V_ITCError == 0)
+
+	HW_ITC_HandleReturnValues(flags, V_ITCError, V_ITCXOPError)
+
+	return DevInfo
 End
 
 /// @see HW_EnableYoking
@@ -1496,6 +1530,12 @@ Function HW_ITC_CloseDevice(deviceID, [flags])
 End
 
 Function HW_ITC_SelectDevice(deviceID, [flags])
+	variable deviceID, flags
+
+	DEBUGPRINT("Unimplemented")
+End
+
+Function/WAVE HW_ITC_GetDeviceInfo(deviceID, [flags])
 	variable deviceID, flags
 
 	DEBUGPRINT("Unimplemented")
@@ -2539,6 +2579,31 @@ Function HW_NI_CloseDevice(deviceID, [flags])
 	endif
 End
 
+/// @see HW_NI_GetDeviceInfo
+Function/WAVE HW_NI_GetDeviceInfo(device, [flags])
+	string device
+	variable flags
+
+	DEBUGPRINTSTACKINFO()
+
+	DAQmx_DeviceInfo/DEV=device
+
+	Make/FREE/T/N=(5) deviceInfo
+	SetDimLabel ROWS, 0, DeviceCategoryNum, deviceInfo
+	SetDimLabel ROWS, 1, ProductNumber, deviceInfo
+	SetDimLabel ROWS, 2, DeviceSerialNumber, deviceInfo
+	SetDimLabel ROWS, 3, DeviceCategoryStr, deviceInfo
+	SetDimLabel ROWS, 4, ProductType, deviceInfo
+
+	deviceInfo[%DeviceCategoryNum]  = num2istr(V_NIDeviceCategory)
+	deviceInfo[%ProductNumber]      = num2istr(V_NIProductNumber)
+	deviceInfo[%DeviceSerialNumber] = num2istr(V_NIDeviceSerialNumber)
+	deviceInfo[%DeviceCategoryStr]  = S_NIDeviceCategory
+	// S_NIProductType has a trailing \0
+	deviceInfo[%ProductType]        = RemoveEnding(S_NIProductType, num2char(0))
+
+	return deviceInfo
+End
 
 #else
 
@@ -2641,6 +2706,12 @@ Function HW_NI_CloseDevice(deviceID, [flags])
 	DoAbortNow("NI-DAQ XOP is not available")
 End
 
+Function/WAVE HW_NI_GetDeviceInfo(device, [flags])
+	string device
+	variable flags
+
+	DoAbortNow("NI-DAQ XOP is not available")
+End
 
 #endif // exists NI DAQ XOP
 
