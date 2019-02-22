@@ -1434,6 +1434,8 @@ Function/WAVE GetLBNidCache(numericalValues)
 	return wv
 End
 
+static Constant SWEEP_SETTINGS_WAVE_VERSION = 19
+
 /// @brief Uses the parameter names from the `sourceKey` columns and
 ///        write them as dimension into the columns of dest.
 static Function SetSweepSettingsDimLabels(dest, sourceKey)
@@ -1471,7 +1473,9 @@ End
 Function/Wave GetSweepSettingsWave(panelTitle)
 	string panelTitle
 
-	variable versionOfNewWave = 17
+	variable numCols
+
+	variable versionOfNewWave = SWEEP_SETTINGS_WAVE_VERSION
 	string newName = "sweepSettingsNumericValues"
 	DFREF newDFR = GetDevSpecLabNBTempFolder(panelTitle)
 
@@ -1483,17 +1487,22 @@ Function/Wave GetSweepSettingsWave(panelTitle)
 
 	WAVE/Z wv = UpgradeWaveLocationAndGetIt(p)
 
-	if(ExistsWithCorrectLayoutVersion(wv, versionOfNewWave))
+	if(ExistsWithCorrectLayoutVersion(wv, SWEEP_SETTINGS_WAVE_VERSION))
 		return wv
-	elseif(WaveExists(wv))
-		Redimension/N=(-1, 47, LABNOTEBOOK_LAYER_COUNT) wv
+	endif
+
+	WAVE/T keyWave = GetSweepSettingsKeyWave(panelTitle)
+	numCols = DimSize(keyWave, COLS)
+
+	if(WaveExists(wv))
+		Redimension/N=(-1, numCols, LABNOTEBOOK_LAYER_COUNT) wv
 	else
-		Make/N=(1, 47, LABNOTEBOOK_LAYER_COUNT) newDFR:$newName/Wave=wv
+		Make/N=(1, numCols, LABNOTEBOOK_LAYER_COUNT) newDFR:$newName/Wave=wv
 	endif
 
 	wv = NaN
 
-	SetSweepSettingsDimLabels(wv, GetSweepSettingsKeyWave(panelTitle))
+	SetSweepSettingsDimLabels(wv, keyWave)
 	SetWaveVersion(wv, versionOfNewWave)
 
 	return wv
@@ -1562,7 +1571,7 @@ End
 Function/Wave GetSweepSettingsKeyWave(panelTitle)
 	string panelTitle
 
-	variable versionOfNewWave = 18
+	variable versionOfNewWave = SWEEP_SETTINGS_WAVE_VERSION
 	string newName = "sweepSettingsNumericKeys"
 	DFREF newDFR = GetDevSpecLabNBTempFolder(panelTitle)
 
@@ -1798,7 +1807,9 @@ End
 Function/Wave GetSweepSettingsTextWave(panelTitle)
 	string panelTitle
 
-	variable versionOfNewWave = 16
+	variable numCols
+
+	variable versionOfNewWave = SWEEP_SETTINGS_WAVE_VERSION
 	string newName = "sweepSettingsTextValues"
 	DFREF newDFR = GetDevSpecLabNBTempFolder(panelTitle)
 
@@ -1812,15 +1823,20 @@ Function/Wave GetSweepSettingsTextWave(panelTitle)
 
 	if(ExistsWithCorrectLayoutVersion(wv, versionOfNewWave))
 		return wv
-	elseif(WaveExists(wv))
-		Redimension/N=(-1, 24, LABNOTEBOOK_LAYER_COUNT) wv
+	endif
+
+	WAVE/T keyWave = GetSweepSettingsTextKeyWave(panelTitle)
+	numCols = DimSize(keyWave, COLS)
+
+	if(WaveExists(wv))
+		Redimension/N=(-1, numCols, LABNOTEBOOK_LAYER_COUNT) wv
 	else
-		Make/T/N=(1, 24, LABNOTEBOOK_LAYER_COUNT) newDFR:$newName/Wave=wv
+		Make/T/N=(1, numCols, LABNOTEBOOK_LAYER_COUNT) newDFR:$newName/Wave=wv
 	endif
 
 	wv = ""
 
-	SetSweepSettingsDimLabels(wv, GetSweepSettingsTextKeyWave(panelTitle))
+	SetSweepSettingsDimLabels(wv, keyWave)
 	SetWaveVersion(wv, versionOfNewWave)
 
 	return wv
@@ -1865,7 +1881,7 @@ End
 Function/Wave GetSweepSettingsTextKeyWave(panelTitle)
 	string panelTitle
 
-	variable versionOfNewWave = 17
+	variable versionOfNewWave = SWEEP_SETTINGS_WAVE_VERSION
 	string newName = "sweepSettingsTextKeys"
 	DFREF newDFR = GetDevSpecLabNBTempFolder(panelTitle)
 
@@ -1884,6 +1900,8 @@ Function/Wave GetSweepSettingsTextKeyWave(panelTitle)
 	else
 		Make/T/N=(1, 24) newDFR:$newName/Wave=wv
 	endif
+
+	SetDimLabel ROWS, 0, Parameter, wv
 
 	wv = ""
 
