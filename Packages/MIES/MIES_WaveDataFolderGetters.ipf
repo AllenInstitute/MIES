@@ -1453,7 +1453,7 @@ Function/WAVE GetLBNidCache(numericalValues)
 	return wv
 End
 
-static Constant SWEEP_SETTINGS_WAVE_VERSION = 20
+static Constant SWEEP_SETTINGS_WAVE_VERSION = 21
 
 /// @brief Uses the parameter names from the `sourceKey` columns and
 ///        write them as dimension into the columns of dest.
@@ -1915,6 +1915,8 @@ End
 /// -24: Follower Device, list of follower devices
 /// -25: MIES version, multi line mies version string
 /// -26: Igor Pro version
+/// -27: Digitizer Hardware Name
+/// -28: Digitizer Serial Numbers
 Function/Wave GetSweepSettingsTextKeyWave(panelTitle)
 	string panelTitle
 
@@ -1933,9 +1935,9 @@ Function/Wave GetSweepSettingsTextKeyWave(panelTitle)
 	if(ExistsWithCorrectLayoutVersion(wv, versionOfNewWave))
 		return wv
 	elseif(WaveExists(wv))
-		Redimension/N=(-1, 27, 0) wv
+		Redimension/N=(-1, 29, 0) wv
 	else
-		Make/T/N=(1, 27) newDFR:$newName/Wave=wv
+		Make/T/N=(1, 29) newDFR:$newName/Wave=wv
 	endif
 
 	SetDimLabel ROWS, 0, Parameter, wv
@@ -1969,6 +1971,8 @@ Function/Wave GetSweepSettingsTextKeyWave(panelTitle)
 	wv[0][24] = "Follower Device"
 	wv[0][25] = "MIES version"
 	wv[0][26] = "Igor Pro version"
+	wv[0][27] = "Digitizer Hardware Name"
+	wv[0][28] = "Digitizer Serial Numbers"
 
 	SetSweepSettingsDimLabels(wv, wv)
 	SetWaveVersion(wv, versionOfNewWave)
