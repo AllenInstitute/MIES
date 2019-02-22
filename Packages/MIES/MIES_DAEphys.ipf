@@ -26,7 +26,8 @@ static StrConstant AMPLIFIER_DEF_FORMAT   = "AmpNo %d Chan %d"
 
 static StrConstant GUI_CONTROLSAVESTATE_DISABLED = "oldDisabledState"
 
-static StrConstant NI_DAC_PATTERNS = "AI:32;AO:4;COUNTER:4;DIOPORTS:3;LINES:32,8,8|"
+// PCIe-6343 | PXI-6259
+static StrConstant NI_DAC_PATTERNS = "AI:32;AO:4;COUNTER:4;DIOPORTS:3;LINES:32,8,8|AI:32;AO:4;COUNTER:2;DIOPORTS:3;LINES:32,8,8"
 
 /// @brief Returns a list of DAC devices for NI devices
 /// @return list of NI DAC devices
