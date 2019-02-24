@@ -529,20 +529,27 @@ End
 
 /// @brief Return the type of the user parameter
 ///
-/// @param name      parameter name
-/// @param params    serialized parameters, usually just #AnalysisFunction_V3.params
-/// @param typeCheck [optional, defaults to true] Check with an assertion that
-///                  the readout type is one of @ref ANALYSIS_FUNCTION_PARAMS_TYPES
-///
+/// @param name         parameter name
+/// @param params       serialized parameters, usually just #AnalysisFunction_V3.params
+/// @param typeCheck    [optional, defaults to true] Check with an assertion that
+///                     the readout type is one of @ref ANALYSIS_FUNCTION_PARAMS_TYPES
+/// @param expectedType [optional, defaults to nothing] Expected type, one of @ref ANALYSIS_FUNCTION_PARAMS_TYPES,
+///                     aborts if the type does not match. Implies `typeCheck = true`.
 /// @ingroup AnalysisFunctionParameterHelpers
 /// @return one of @ref AnalysisFunctionParameterTypes or an empty string
-Function/S AFH_GetAnalysisParamType(name, params, [typeCheck])
+Function/S AFH_GetAnalysisParamType(name, params, [typeCheck, expectedType])
 	string name, params
 	variable typeCheck
+	string expectedType
 
 	string typeAndValue
 	string type = ""
 	variable pos
+
+	if(!ParamIsDefault(expectedType))
+		typeCheck = 1
+		ASSERT(AFH_IsValidAnalysisParamType(expectedType), "Invalid expectedType")
+	endif
 
 	if(ParamIsDefault(typeCheck))
 		typeCheck = 1
@@ -561,6 +568,10 @@ Function/S AFH_GetAnalysisParamType(name, params, [typeCheck])
 
 	if(typeCheck)
 		ASSERT(AFH_IsValidAnalysisParamType(type), "Invalid type")
+	endif
+
+	if(!IsEmpty(expectedType))
+		ASSERT(!cmpstr(type, expectedType), "Requested parameter is not of type: " + expectedType)
 	endif
 
 	return type
