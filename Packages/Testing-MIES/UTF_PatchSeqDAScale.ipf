@@ -63,20 +63,25 @@ static Function AcquireData(s, stimset, device, [postInitializeFunc, preAcquireF
 	OpenDatabrowser()
 End
 
-Function/WAVE GetSweepResults_IGNORE(device, sweepNo)
+Function/WAVE GetLBNEntries_IGNORE(device, sweepNo, name)
 	string device
 	variable sweepNo
+	string name
 
 	string key
 
 	WAVE numericalValues = GetLBNumericalValues(DEVICE)
-	WAVE/Z sweeps = AFH_GetSweepsFromSameRACycle(numericalValues, sweepNo)
-	CHECK_WAVE(sweeps, NUMERIC_WAVE)
+	key = PSQ_CreateLBNKey(PSQ_DA_SCALE, name, query = 1)
 
-	key = PSQ_CreateLBNKey(PSQ_DA_SCALE, PSQ_FMT_LBN_SWEEP_PASS, query = 1)
-	Make/FREE/N=(DimSize(sweeps, ROWS)) sweepPassed = GetLastSettingIndep(numericalValues, sweeps[p], key, UNKNOWN_MODE)
-
-	return sweepPassed
+	strswitch(name)
+		case PSQ_FMT_LBN_SWEEP_PASS:
+			return GetLastSettingIndepEachSCI(numericalValues, sweepNo, key, HEADSTAGE, UNKNOWN_MODE)
+		case PSQ_FMT_LBN_BL_QC_PASS:
+			return GetLastSettingEachSCI(numericalValues, sweepNo, key, HEADSTAGE, UNKNOWN_MODE)
+			break
+		default:
+			FAIL()
+	endswitch
 End
 
 // UTF_TD_GENERATOR HardwareMain#DeviceNameGeneratorMD1
@@ -109,8 +114,8 @@ Function PS_DS_Sub1_REENTRY([str])
 	setPassed = GetLastSettingIndep(numericalValues, sweepNo, key, UNKNOWN_MODE)
 	CHECK_EQUAL_VAR(setPassed, 0)
 
-	WAVE/Z sweepPassed = GetSweepResults_IGNORE(str, sweepNo)
-	CHECK_EQUAL_WAVES(sweepPassed, {0, 0, 0, 0, 0})
+	WAVE/Z sweepPassed = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_SWEEP_PASS)
+	CHECK_EQUAL_WAVES(sweepPassed, {0, 0, 0, 0, 0}, mode = WAVE_DATA)
 
 	WAVE/Z sweeps = AFH_GetSweepsFromSameRACycle(numericalValues, sweepNo)
 	CHECK_WAVE(sweeps, NUMERIC_WAVE)
@@ -155,8 +160,8 @@ Function PS_DS_Sub2_REENTRY([str])
 	setPassed = GetLastSettingIndep(numericalValues, sweepNo, key, UNKNOWN_MODE)
 	CHECK_EQUAL_VAR(setPassed, 0)
 
-	WAVE/Z sweepPassed = GetSweepResults_IGNORE(str, sweepNo)
-	CHECK_EQUAL_WAVES(sweepPassed, {0, 0, 0, 0, 0})
+	WAVE/Z sweepPassed = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_SWEEP_PASS)
+	CHECK_EQUAL_WAVES(sweepPassed, {0, 0, 0, 0, 0}, mode = WAVE_DATA)
 
 	WAVE/Z sweeps = AFH_GetSweepsFromSameRACycle(numericalValues, sweepNo)
 	CHECK_WAVE(sweeps, NUMERIC_WAVE)
@@ -202,8 +207,8 @@ Function PS_DS_Sub3_REENTRY([str])
 	setPassed = GetLastSettingIndep(numericalValues, sweepNo, key, UNKNOWN_MODE)
 	CHECK_EQUAL_VAR(setPassed, 1)
 
-	WAVE/Z sweepPassed = GetSweepResults_IGNORE(str, sweepNo)
-	CHECK_EQUAL_WAVES(sweepPassed, {1, 1, 1, 1, 1})
+	WAVE/Z sweepPassed = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_SWEEP_PASS)
+	CHECK_EQUAL_WAVES(sweepPassed, {1, 1, 1, 1, 1}, mode = WAVE_DATA)
 
 	WAVE/Z sweeps = AFH_GetSweepsFromSameRACycle(numericalValues, sweepNo)
 	CHECK_WAVE(sweeps, NUMERIC_WAVE)
@@ -250,8 +255,8 @@ Function PS_DS_Sub4_REENTRY([str])
 	setPassed = GetLastSettingIndep(numericalValues, sweepNo, key, UNKNOWN_MODE)
 	CHECK_EQUAL_VAR(setPassed, 1)
 
-	WAVE/Z sweepPassed = GetSweepResults_IGNORE(str, sweepNo)
-	CHECK_EQUAL_WAVES(sweepPassed, {1, 1, 1, 1, 1})
+	WAVE/Z sweepPassed = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_SWEEP_PASS)
+	CHECK_EQUAL_WAVES(sweepPassed, {1, 1, 1, 1, 1}, mode = WAVE_DATA)
 
 	WAVE/Z sweeps = AFH_GetSweepsFromSameRACycle(numericalValues, sweepNo)
 	CHECK_WAVE(sweeps, NUMERIC_WAVE)
@@ -297,8 +302,8 @@ Function PS_DS_Sub5_REENTRY([str])
 	setPassed = GetLastSettingIndep(numericalValues, sweepNo, key, UNKNOWN_MODE)
 	CHECK_EQUAL_VAR(setPassed, 0)
 
-	WAVE/Z sweepPassed = GetSweepResults_IGNORE(str, sweepNo)
-	CHECK_EQUAL_WAVES(sweepPassed, {0, 0, 0, 0, 0})
+	WAVE/Z sweepPassed = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_SWEEP_PASS)
+	CHECK_EQUAL_WAVES(sweepPassed, {0, 0, 0, 0, 0}, mode = WAVE_DATA)
 
 	WAVE/Z sweeps = AFH_GetSweepsFromSameRACycle(numericalValues, sweepNo)
 	CHECK_WAVE(sweeps, NUMERIC_WAVE)
@@ -345,8 +350,8 @@ Function PS_DS_Sub6_REENTRY([str])
 	setPassed = GetLastSettingIndep(numericalValues, sweepNo, key, UNKNOWN_MODE)
 	CHECK_EQUAL_VAR(setPassed, 1)
 
-	WAVE/Z sweepPassed = GetSweepResults_IGNORE(str, sweepNo)
-	CHECK_EQUAL_WAVES(sweepPassed, {1, 1, 1, 1, 1})
+	WAVE/Z sweepPassed = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_SWEEP_PASS)
+	CHECK_EQUAL_WAVES(sweepPassed, {1, 1, 1, 1, 1}, mode = WAVE_DATA)
 
 	WAVE/Z sweeps = AFH_GetSweepsFromSameRACycle(numericalValues, sweepNo)
 	CHECK_WAVE(sweeps, NUMERIC_WAVE)
@@ -393,8 +398,8 @@ Function PS_DS_Sub7_REENTRY([str])
 	setPassed = GetLastSettingIndep(numericalValues, sweepNo, key, UNKNOWN_MODE)
 	CHECK_EQUAL_VAR(setPassed, 1)
 
-	WAVE/Z sweepPassed = GetSweepResults_IGNORE(str, sweepNo)
-	CHECK_EQUAL_WAVES(sweepPassed, {0, 0, 1, 1, 1, 1, 1})
+	WAVE/Z sweepPassed = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_SWEEP_PASS)
+	CHECK_EQUAL_WAVES(sweepPassed, {0, 0, 1, 1, 1, 1, 1}, mode = WAVE_DATA)
 
 	WAVE/Z sweeps = AFH_GetSweepsFromSameRACycle(numericalValues, sweepNo)
 	CHECK_WAVE(sweeps, NUMERIC_WAVE)
@@ -445,8 +450,8 @@ Function PS_DS_Sub8_REENTRY([str])
 	setPassed = GetLastSettingIndep(numericalValues, sweepNo, key, UNKNOWN_MODE)
 	CHECK_EQUAL_VAR(setPassed, 1)
 
-	WAVE/Z sweepPassed = GetSweepResults_IGNORE(str, sweepNo)
-	CHECK_EQUAL_WAVES(sweepPassed, {1, 0, 0, 1, 0, 0, 1, 1, 1})
+	WAVE/Z sweepPassed = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_SWEEP_PASS)
+	CHECK_EQUAL_WAVES(sweepPassed, {1, 0, 0, 1, 0, 0, 1, 1, 1}, mode = WAVE_DATA)
 
 	WAVE/Z sweeps = AFH_GetSweepsFromSameRACycle(numericalValues, sweepNo)
 	CHECK_WAVE(sweeps, NUMERIC_WAVE)
@@ -495,8 +500,8 @@ Function PS_DS_Supra1_REENTRY([str])
 	setPassed = GetLastSettingIndep(numericalValues, sweepNo, key, UNKNOWN_MODE)
 	CHECK_EQUAL_VAR(setPassed, 1)
 
-	WAVE/Z sweepPassed = GetSweepResults_IGNORE(str, sweepNo)
-	CHECK_EQUAL_WAVES(sweepPassed, {1, 1})
+	WAVE/Z sweepPassed = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_SWEEP_PASS)
+	CHECK_EQUAL_WAVES(sweepPassed, {1, 1}, mode = WAVE_DATA)
 
 	WAVE/Z sweeps = AFH_GetSweepsFromSameRACycle(numericalValues, sweepNo)
 	CHECK_WAVE(sweeps, NUMERIC_WAVE)
@@ -546,8 +551,8 @@ Function PS_DS_Supra2_REENTRY([str])
 	setPassed = GetLastSettingIndep(numericalValues, sweepNo, PSQ_CreateLBNKey(PSQ_DA_SCALE, PSQ_FMT_LBN_SET_PASS, query = 1), UNKNOWN_MODE)
 	CHECK_EQUAL_VAR(setPassed, 1)
 
-	WAVE/Z sweepPassed = GetSweepResults_IGNORE(str, sweepNo)
-	CHECK_EQUAL_WAVES(sweepPassed, {1, 1})
+	WAVE/Z sweepPassed = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_SWEEP_PASS)
+	CHECK_EQUAL_WAVES(sweepPassed, {1, 1}, mode = WAVE_DATA)
 
 	WAVE/Z sweeps = AFH_GetSweepsFromSameRACycle(numericalValues, sweepNo)
 	CHECK_WAVE(sweeps, NUMERIC_WAVE)
