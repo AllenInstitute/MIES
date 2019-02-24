@@ -505,6 +505,12 @@ Function GAPN_Works()
 	CHECK_EQUAL_VAR(result, 123)
 End
 
+Function GAPN_WorksWithDefault()
+
+	variable result = AFH_GetAnalysisParamNumerical("name", "", defValue = 123)
+	CHECK_EQUAL_VAR(result, 123)
+End
+
 /// @}
 
 /// @name AFH_GetAnalysisParamTextual
@@ -559,6 +565,13 @@ End
 Function GAPT_Works()
 
 	string result = AFH_GetAnalysisparamTextual("name", "name:string=abcd")
+	string expected = "abcd"
+	CHECK_EQUAL_STR(result, expected)
+End
+
+Function GAPT_WorksWithDefault()
+
+	string result = AFH_GetAnalysisparamTextual("name", "", defValue = "abcd")
 	string expected = "abcd"
 	CHECK_EQUAL_STR(result, expected)
 End
@@ -619,6 +632,12 @@ Function GAPW_Works()
 	CHECK_EQUAL_WAVES(result, {1, 2, 3}, mode = WAVE_DATA)
 End
 
+Function GAPW_WorksWithDefault()
+
+	WAVE/Z result = AFH_GetAnalysisParamWave("name", "", defValue = {1, 2, 3})
+	CHECK_EQUAL_WAVES(result, {1, 2, 3}, mode = WAVE_DATA)
+End
+
 /// @}
 
 /// @name AFH_GetAnalysisParamTextWave
@@ -672,6 +691,13 @@ End
 Function GAPTW_Works()
 
 	WAVE/Z result = AFH_GetAnalysisParamTextWave("name", "name:textwave=a|b|c|d")
+	CHECK_EQUAL_TEXTWAVES(result, {"a", "b", "c", "d"}, mode = WAVE_DATA)
+End
+
+Function GAPTW_WorksWithDefault()
+
+	Make/T/FREE input = {"a", "b", "c", "d"}
+	WAVE/Z result = AFH_GetAnalysisParamTextWave("name", "", defValue = input)
 	CHECK_EQUAL_TEXTWAVES(result, {"a", "b", "c", "d"}, mode = WAVE_DATA)
 End
 
