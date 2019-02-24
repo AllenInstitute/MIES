@@ -585,8 +585,17 @@ End
 Function AFH_GetAnalysisParamNumerical(name, params)
 	string name, params
 
+	string type
+
 	ASSERT(AFH_IsValidAnalysisParameter(name), "Name is not a legal non-liberal igor object name")
-	return NumberByKey(name + ":variable", params, "=", ",", 0)
+
+	if(WhichListItem(name, AFH_GetListOfAnalysisParamNames(params)) == -1)
+		return NaN
+	endif
+
+	type = AFH_GetAnalysisParamType(name, params, expectedType = "variable")
+
+	return NumberByKey(name + ":" + type, params, "=", ",", 0)
 End
 
 /// @brief Return a textual user parameter
@@ -597,8 +606,17 @@ End
 Function/S AFH_GetAnalysisParamTextual(name, params)
 	string name, params
 
+	string type
+
 	ASSERT(AFH_IsValidAnalysisParameter(name), "Name is not a legal non-liberal igor object name")
-	return StringByKey(name + ":string", params, "=", ",", 0)
+
+	if(WhichListItem(name, AFH_GetListOfAnalysisParamNames(params)) == -1)
+		return ""
+	endif
+
+	type = AFH_GetAnalysisParamType(name, params, expectedType = "string")
+
+	return StringByKey(name + ":" + type, params, "=", ",", 0)
 End
 
 /// @brief Return a numerical wave user parameter
@@ -612,12 +630,17 @@ End
 Function/WAVE AFH_GetAnalysisParamWave(name, params)
 	string name, params
 
-	ASSERT(AFH_IsValidAnalysisParameter(name), "Name is not a legal non-liberal igor object name")
-	string contents = StringByKey(name + ":wave", params, "=", ",", 0)
+	string type, contents
 
-	if(IsEmpty(contents))
+	ASSERT(AFH_IsValidAnalysisParameter(name), "Name is not a legal non-liberal igor object name")
+
+	if(WhichListItem(name, AFH_GetListOfAnalysisParamNames(params)) == -1)
 		return $""
 	endif
+
+	type = AFH_GetAnalysisParamType(name, params, expectedType = "wave")
+
+	contents = StringByKey(name + ":" + type, params, "=", ",", 0)
 
 	return ListToNumericWave(contents, "|")
 End
@@ -634,12 +657,17 @@ End
 Function/WAVE AFH_GetAnalysisParamTextWave(name, params)
 	string name, params
 
-	ASSERT(AFH_IsValidAnalysisParameter(name), "Name is not a legal non-liberal igor object name")
-	string contents = StringByKey(name + ":textwave", params, "=", ",", 0)
+	string type, contents
 
-	if(IsEmpty(contents))
+	ASSERT(AFH_IsValidAnalysisParameter(name), "Name is not a legal non-liberal igor object name")
+
+	if(WhichListItem(name, AFH_GetListOfAnalysisParamNames(params)) == -1)
 		return $""
 	endif
+
+	type = AFH_GetAnalysisParamType(name, params, expectedType = "textwave")
+
+	contents = StringByKey(name + ":" + type, params, "=", ",", 0)
 
 	return ListToTextWave(contents, "|")
 End

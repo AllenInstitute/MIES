@@ -450,3 +450,229 @@ static Function ReturnsInvalidWaveRef()
 	CHECK_WAVE(AFH_GetAnalysisParamWave("I_DONT_EXIST", params), NULL_WAVE)
 	CHECK_WAVE(AFH_GetAnalysisParamTextWave("I_DONT_EXIST", params), NULL_WAVE)
 End
+
+/// @name AFH_GetAnalysisParamNumerical
+/// @{
+Function GAPN_AbortsWithEmptyName()
+
+	try
+		AFH_GetAnalysisParamNumerical("", "name:variable=0")
+		FAIL()
+	catch
+		PASS()
+	endtry
+End
+
+Function GAPN_AbortsWithIllegalName()
+
+	try
+		AFH_GetAnalysisParamNumerical("123", "name:variable=0")
+		FAIL()
+	catch
+		PASS()
+	endtry
+End
+
+Function GAPN_AbortsWithIllegalType()
+
+	try
+		AFH_GetAnalysisParamNumerical("name", "name:invalidType=0")
+		FAIL()
+	catch
+		PASS()
+	endtry
+End
+
+Function GAPN_AbortsWithWrongType()
+
+	try
+		AFH_GetAnalysisParamNumerical("name", "name:string=0")
+		FAIL()
+	catch
+		PASS()
+	endtry
+End
+
+Function GAPN_ReturnsNanForNonExisting()
+
+	variable result = AFH_GetAnalysisParamNumerical("name", "otherName:variable=0")
+	CHECK_EQUAL_VAR(result, NaN)
+End
+
+Function GAPN_Works()
+
+	variable result = AFH_GetAnalysisParamNumerical("name", "name:variable=123")
+	CHECK_EQUAL_VAR(result, 123)
+End
+
+/// @}
+
+/// @name AFH_GetAnalysisParamTextual
+/// @{
+Function GAPT_AbortsWithEmptyName()
+
+	try
+		AFH_GetAnalysisparamTextual("", "name:string=0")
+		FAIL()
+	catch
+		PASS()
+	endtry
+End
+
+Function GAPT_AbortsWithIllegalName()
+
+	try
+		AFH_GetAnalysisparamTextual("123", "name:string=0")
+		FAIL()
+	catch
+		PASS()
+	endtry
+End
+
+Function GAPT_AbortsWithIllegalType()
+
+	try
+		AFH_GetAnalysisparamTextual("name", "name:invalidType=0")
+		FAIL()
+	catch
+		PASS()
+	endtry
+End
+
+Function GAPT_AbortsWithWrongType()
+
+	try
+		AFH_GetAnalysisparamTextual("name", "name:variable=0")
+		FAIL()
+	catch
+		PASS()
+	endtry
+End
+
+Function GAPT_ReturnsEmptyForNonExisting()
+
+	string result = AFH_GetAnalysisparamTextual("name", "otherName:string=0")
+	string expected = ""
+	CHECK_EQUAL_STR(result, expected)
+End
+
+Function GAPT_Works()
+
+	string result = AFH_GetAnalysisparamTextual("name", "name:string=abcd")
+	string expected = "abcd"
+	CHECK_EQUAL_STR(result, expected)
+End
+
+/// @}
+
+/// @name AFH_GetAnalysisParamWave
+/// @{
+Function GAPW_AbortsWithEmptyName()
+
+	try
+		AFH_GetAnalysisParamWave("", "name:wave=0")
+		FAIL()
+	catch
+		PASS()
+	endtry
+End
+
+Function GAPW_AbortsWithIllegalName()
+
+	try
+		AFH_GetAnalysisParamWave("123", "name:wave=0")
+		FAIL()
+	catch
+		PASS()
+	endtry
+End
+
+Function GAPW_AbortsWithIllegalType()
+
+	try
+		AFH_GetAnalysisParamWave("name", "name:invalidType=0")
+		FAIL()
+	catch
+		PASS()
+	endtry
+End
+
+Function GAPW_AbortsWithWrongType()
+
+	try
+		AFH_GetAnalysisParamWave("name", "name:variable=0")
+		FAIL()
+	catch
+		PASS()
+	endtry
+End
+
+Function GAPW_ReturnsNonExisting()
+
+	WAVE/Z result = AFH_GetAnalysisParamWave("name", "otherName:wave=1|2|3")
+	CHECK_WAVE(result, NULL_WAVE)
+End
+
+Function GAPW_Works()
+
+	WAVE/Z result = AFH_GetAnalysisParamWave("name", "name:wave=1|2|3")
+	CHECK_EQUAL_WAVES(result, {1, 2, 3}, mode = WAVE_DATA)
+End
+
+/// @}
+
+/// @name AFH_GetAnalysisParamTextWave
+/// @{
+Function GAPTW_AbortsWithEmptyName()
+
+	try
+		AFH_GetAnalysisParamTextWave("", "name:textwave=0")
+		FAIL()
+	catch
+		PASS()
+	endtry
+End
+
+Function GAPTW_AbortsWithIllegalName()
+
+	try
+		AFH_GetAnalysisParamTextWave("123", "name:textwave=0")
+		FAIL()
+	catch
+		PASS()
+	endtry
+End
+
+Function GAPTW_AbortsWithIllegalType()
+
+	try
+		AFH_GetAnalysisParamTextWave("name", "name:invalidType=0")
+		FAIL()
+	catch
+		PASS()
+	endtry
+End
+
+Function GAPTW_AbortsWithWrongType()
+
+	try
+		AFH_GetAnalysisParamTextWave("name", "name:variable=0")
+		FAIL()
+	catch
+		PASS()
+	endtry
+End
+
+Function GAPTW_ReturnsNonExisting()
+
+	WAVE/Z result = AFH_GetAnalysisParamTextWave("name", "otherName:textwave=1|2|3")
+	CHECK_WAVE(result, NULL_WAVE)
+End
+
+Function GAPTW_Works()
+
+	WAVE/Z result = AFH_GetAnalysisParamTextWave("name", "name:textwave=a|b|c|d")
+	CHECK_EQUAL_TEXTWAVES(result, {"a", "b", "c", "d"}, mode = WAVE_DATA)
+End
+
+/// @}
