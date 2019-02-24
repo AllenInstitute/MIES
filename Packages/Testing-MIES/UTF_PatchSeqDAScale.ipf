@@ -67,11 +67,14 @@ Function/WAVE GetSweepResults_IGNORE(device, sweepNo)
 	string device
 	variable sweepNo
 
+	string key
+
 	WAVE numericalValues = GetLBNumericalValues(DEVICE)
 	WAVE/Z sweeps = AFH_GetSweepsFromSameRACycle(numericalValues, sweepNo)
 	CHECK_WAVE(sweeps, NUMERIC_WAVE)
 
-	Make/FREE/N=(DimSize(sweeps, ROWS)) sweepPassed = GetLastSettingIndep(numericalValues, sweeps[p], PSQ_CreateLBNKey(PSQ_DA_SCALE, PSQ_FMT_LBN_SWEEP_PASS, query = 1), UNKNOWN_MODE)
+	key = PSQ_CreateLBNKey(PSQ_DA_SCALE, PSQ_FMT_LBN_SWEEP_PASS, query = 1)
+	Make/FREE/N=(DimSize(sweeps, ROWS)) sweepPassed = GetLastSettingIndep(numericalValues, sweeps[p], key, UNKNOWN_MODE)
 
 	return sweepPassed
 End
@@ -93,6 +96,7 @@ Function PS_DS_Sub1_REENTRY([str])
 	string str
 
 	variable sweepNo, setPassed, numEntries
+	string key
 
 	CHECK_EQUAL_VAR(GetSetVariable(str, "SetVar_Sweep"), 5)
 
@@ -101,7 +105,8 @@ Function PS_DS_Sub1_REENTRY([str])
 
 	WAVE numericalValues = GetLBNumericalValues(str)
 
-	setPassed = GetLastSettingIndep(numericalValues, sweepNo, PSQ_CreateLBNKey(PSQ_DA_SCALE, PSQ_FMT_LBN_SET_PASS, query = 1), UNKNOWN_MODE)
+	key = PSQ_CreateLBNKey(PSQ_DA_SCALE, PSQ_FMT_LBN_SET_PASS, query = 1)
+	setPassed = GetLastSettingIndep(numericalValues, sweepNo, key, UNKNOWN_MODE)
 	CHECK_EQUAL_VAR(setPassed, 0)
 
 	WAVE/Z sweepPassed = GetSweepResults_IGNORE(str, sweepNo)
@@ -137,6 +142,7 @@ Function PS_DS_Sub2_REENTRY([str])
 	string str
 
 	variable sweepNo, setPassed, numEntries
+	string key
 
 	CHECK_EQUAL_VAR(GetSetVariable(str, "SetVar_Sweep"), 5)
 
@@ -145,7 +151,8 @@ Function PS_DS_Sub2_REENTRY([str])
 
 	WAVE numericalValues = GetLBNumericalValues(str)
 
-	setPassed = GetLastSettingIndep(numericalValues, sweepNo, PSQ_CreateLBNKey(PSQ_DA_SCALE, PSQ_FMT_LBN_SET_PASS, query = 1), UNKNOWN_MODE)
+	key = PSQ_CreateLBNKey(PSQ_DA_SCALE, PSQ_FMT_LBN_SET_PASS, query = 1)
+	setPassed = GetLastSettingIndep(numericalValues, sweepNo, key, UNKNOWN_MODE)
 	CHECK_EQUAL_VAR(setPassed, 0)
 
 	WAVE/Z sweepPassed = GetSweepResults_IGNORE(str, sweepNo)
@@ -182,6 +189,7 @@ Function PS_DS_Sub3_REENTRY([str])
 	string str
 
 	variable sweepNo, setPassed, numEntries
+	string key
 
 	CHECK_EQUAL_VAR(GetSetVariable(str, "SetVar_Sweep"), 5)
 
@@ -190,7 +198,8 @@ Function PS_DS_Sub3_REENTRY([str])
 
 	WAVE numericalValues = GetLBNumericalValues(str)
 
-	setPassed = GetLastSettingIndep(numericalValues, sweepNo, PSQ_CreateLBNKey(PSQ_DA_SCALE, PSQ_FMT_LBN_SET_PASS, query = 1), UNKNOWN_MODE)
+	key = PSQ_CreateLBNKey(PSQ_DA_SCALE, PSQ_FMT_LBN_SET_PASS, query = 1)
+	setPassed = GetLastSettingIndep(numericalValues, sweepNo, key, UNKNOWN_MODE)
 	CHECK_EQUAL_VAR(setPassed, 1)
 
 	WAVE/Z sweepPassed = GetSweepResults_IGNORE(str, sweepNo)
@@ -228,6 +237,7 @@ Function PS_DS_Sub4_REENTRY([str])
 	string str
 
 	variable sweepNo, setPassed, numEntries
+	string key
 
 	CHECK_EQUAL_VAR(GetSetVariable(str, "SetVar_Sweep"), 5)
 
@@ -236,7 +246,8 @@ Function PS_DS_Sub4_REENTRY([str])
 
 	WAVE numericalValues = GetLBNumericalValues(str)
 
-	setPassed = GetLastSettingIndep(numericalValues, sweepNo, PSQ_CreateLBNKey(PSQ_DA_SCALE, PSQ_FMT_LBN_SET_PASS, query = 1), UNKNOWN_MODE)
+	key = PSQ_CreateLBNKey(PSQ_DA_SCALE, PSQ_FMT_LBN_SET_PASS, query = 1)
+	setPassed = GetLastSettingIndep(numericalValues, sweepNo, key, UNKNOWN_MODE)
 	CHECK_EQUAL_VAR(setPassed, 1)
 
 	WAVE/Z sweepPassed = GetSweepResults_IGNORE(str, sweepNo)
@@ -273,6 +284,7 @@ Function PS_DS_Sub5_REENTRY([str])
 	string str
 
 	variable sweepNo, setPassed, numEntries
+	string key
 
 	CHECK_EQUAL_VAR(GetSetVariable(str, "SetVar_Sweep"), 5)
 
@@ -281,7 +293,8 @@ Function PS_DS_Sub5_REENTRY([str])
 
 	WAVE numericalValues = GetLBNumericalValues(str)
 
-	setPassed = GetLastSettingIndep(numericalValues, sweepNo, PSQ_CreateLBNKey(PSQ_DA_SCALE, PSQ_FMT_LBN_SET_PASS, query = 1), UNKNOWN_MODE)
+	key = PSQ_CreateLBNKey(PSQ_DA_SCALE, PSQ_FMT_LBN_SET_PASS, query = 1)
+	setPassed = GetLastSettingIndep(numericalValues, sweepNo, key, UNKNOWN_MODE)
 	CHECK_EQUAL_VAR(setPassed, 0)
 
 	WAVE/Z sweepPassed = GetSweepResults_IGNORE(str, sweepNo)
@@ -319,6 +332,7 @@ Function PS_DS_Sub6_REENTRY([str])
 	string str
 
 	variable sweepNo, setPassed, numEntries
+	string key
 
 	CHECK_EQUAL_VAR(GetSetVariable(str, "SetVar_Sweep"), 5)
 
@@ -327,7 +341,8 @@ Function PS_DS_Sub6_REENTRY([str])
 
 	WAVE numericalValues = GetLBNumericalValues(str)
 
-	setPassed = GetLastSettingIndep(numericalValues, sweepNo, PSQ_CreateLBNKey(PSQ_DA_SCALE, PSQ_FMT_LBN_SET_PASS, query = 1), UNKNOWN_MODE)
+	key = PSQ_CreateLBNKey(PSQ_DA_SCALE, PSQ_FMT_LBN_SET_PASS, query = 1)
+	setPassed = GetLastSettingIndep(numericalValues, sweepNo, key, UNKNOWN_MODE)
 	CHECK_EQUAL_VAR(setPassed, 1)
 
 	WAVE/Z sweepPassed = GetSweepResults_IGNORE(str, sweepNo)
@@ -365,6 +380,7 @@ Function PS_DS_Sub7_REENTRY([str])
 	string str
 
 	variable sweepNo, setPassed, numEntries
+	string key
 
 	CHECK_EQUAL_VAR(GetSetVariable(str, "SetVar_Sweep"), 7)
 
@@ -373,7 +389,8 @@ Function PS_DS_Sub7_REENTRY([str])
 
 	WAVE numericalValues = GetLBNumericalValues(str)
 
-	setPassed = GetLastSettingIndep(numericalValues, sweepNo, PSQ_CreateLBNKey(PSQ_DA_SCALE, PSQ_FMT_LBN_SET_PASS, query = 1), UNKNOWN_MODE)
+	key = PSQ_CreateLBNKey(PSQ_DA_SCALE, PSQ_FMT_LBN_SET_PASS, query = 1)
+	setPassed = GetLastSettingIndep(numericalValues, sweepNo, key, UNKNOWN_MODE)
 	CHECK_EQUAL_VAR(setPassed, 1)
 
 	WAVE/Z sweepPassed = GetSweepResults_IGNORE(str, sweepNo)
@@ -415,6 +432,7 @@ Function PS_DS_Sub8_REENTRY([str])
 	string str
 
 	variable sweepNo, setPassed, numEntries
+	string key
 
 	CHECK_EQUAL_VAR(GetSetVariable(str, "SetVar_Sweep"), 9)
 
@@ -423,7 +441,8 @@ Function PS_DS_Sub8_REENTRY([str])
 
 	WAVE numericalValues = GetLBNumericalValues(str)
 
-	setPassed = GetLastSettingIndep(numericalValues, sweepNo, PSQ_CreateLBNKey(PSQ_DA_SCALE, PSQ_FMT_LBN_SET_PASS, query = 1), UNKNOWN_MODE)
+	key = PSQ_CreateLBNKey(PSQ_DA_SCALE, PSQ_FMT_LBN_SET_PASS, query = 1)
+	setPassed = GetLastSettingIndep(numericalValues, sweepNo, key, UNKNOWN_MODE)
 	CHECK_EQUAL_VAR(setPassed, 1)
 
 	WAVE/Z sweepPassed = GetSweepResults_IGNORE(str, sweepNo)
@@ -463,6 +482,7 @@ Function PS_DS_Supra1_REENTRY([str])
 	string str
 
 	variable sweepNo, setPassed, numEntries
+	string key
 
 	CHECK_EQUAL_VAR(GetSetVariable(str, "SetVar_Sweep"), 2)
 
@@ -471,7 +491,8 @@ Function PS_DS_Supra1_REENTRY([str])
 
 	WAVE numericalValues = GetLBNumericalValues(str)
 
-	setPassed = GetLastSettingIndep(numericalValues, sweepNo, PSQ_CreateLBNKey(PSQ_DA_SCALE, PSQ_FMT_LBN_SET_PASS, query = 1), UNKNOWN_MODE)
+	key = PSQ_CreateLBNKey(PSQ_DA_SCALE, PSQ_FMT_LBN_SET_PASS, query = 1)
+	setPassed = GetLastSettingIndep(numericalValues, sweepNo, key, UNKNOWN_MODE)
 	CHECK_EQUAL_VAR(setPassed, 1)
 
 	WAVE/Z sweepPassed = GetSweepResults_IGNORE(str, sweepNo)
