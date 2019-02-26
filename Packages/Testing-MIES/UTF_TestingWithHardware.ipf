@@ -44,6 +44,77 @@ Function TEST_BEGIN_OVERRIDE(name)
 	interactiveMode = 0
 End
 
+static Function/WAVE GetSweepsFromLBN_IGNORE(device, name)
+	string device, name
+
+	variable col
+
+	DFREF dfr = GetDevSpecLabNBFolder(device)
+	WAVE/Z values = dfr:$name
+
+	if(!WaveExists(values))
+		return $""
+	endif
+
+	// all sweep numbers are ascending
+	col = GetSweepColumn(values)
+
+	if(IsTextWave(values))
+		Duplicate/T/FREE/RMD=[*][col][0] values, sweepsText
+		Redimension/N=-1 sweepsText
+
+		Make/FREE/N=(DimSize(sweepsText, ROWS)) sweeps = str2num(sweepsText[p])
+	else
+		Duplicate/FREE/RMD=[*][col][0] values, sweeps
+		Redimension/N=-1 sweeps
+	endif
+
+	WaveTransform/O zapNaNs, sweeps
+
+	return sweeps
+End
+
+Function TEST_CASE_END_OVERRIDE(name)
+	string name
+
+	string devices, dev
+	variable numEntries, i
+
+	devices = GetDevices()
+
+	numEntries = ItemsInList(devices)
+	for(i = 0; i < numEntries; i += 1)
+		dev = StringFromList(i, devices)
+
+		// no analysis function errors
+		NVAR errorCounter = $GetAnalysisFuncErrorCounter(dev)
+		CHECK_EQUAL_VAR(errorCounter, 0)
+
+		// ascending sweep numbers in both labnotebooks
+		WAVE/Z sweeps = GetSweepsFromLBN_IGNORE(dev, "numericalValues")
+
+		if(!WaveExists(sweeps))
+			PASS()
+			continue
+		endif
+
+		Duplicate/FREE sweeps, unsortedSweeps
+		Sort sweeps, sweeps
+		CHECK_EQUAL_WAVES(sweeps, unsortedSweeps, mode = WAVE_DATA)
+
+		WAVE/Z sweeps = GetSweepsFromLBN_IGNORE(dev, "textualValues")
+
+		if(!WaveExists(sweeps))
+			PASS()
+			continue
+		endif
+
+		Duplicate/FREE sweeps, unsortedSweeps
+		Sort sweeps, sweeps
+		CHECK_EQUAL_WAVES(sweeps, unsortedSweeps, mode = WAVE_DATA)
+	endfor
+End
+
 Function SetupTestCases_IGNORE(testCaseList)
 	string testCaseList
 
@@ -150,6 +221,34 @@ Function WaitUntilDAQDone_IGNORE(s)
 	return 1
 End
 
+/// @brief Background function to wait until TP is finished.
+///
+/// If it is finished pushes the next two, one setup and the
+/// corresponding `Test`, testcases to the queue.
+Function WaitUntilTPDone_IGNORE(s)
+	STRUCT WMBackgroundStruct &s
+
+	string devices, dev
+	variable numEntries, i
+
+	devices = GetDevices()
+
+	numEntries = ItemsInList(devices)
+	for(i = 0; i < numEntries; i += 1)
+		dev = StringFromList(i, devices)
+
+		NVAR runMode = $GetTestpulseRunMode(device)
+
+		if(runMode != TEST_PULSE_NOT_RUNNING)
+			return 0
+		endif
+	endfor
+
+	ExecuteNextTestCase_IGNORE()
+	ExecuteNextTestCase_IGNORE()
+	return 1
+End
+
 Function StopAcqDuringITI_IGNORE(s)
 	STRUCT WMBackgroundStruct &s
 
@@ -199,6 +298,16 @@ Function StopAcq_IGNORE(s)
 
 	string device = GetSingleDevice()
 	PGC_SetAndActivateControl(device, "DataAcquireButton")
+
+	return 1
+End
+
+Function StartAcq_IGNORE(s)
+	STRUCT WMBackgroundStruct &s
+
+	string device = GetSingleDevice()
+	PGC_SetAndActivateControl(device, "DataAcquireButton")
+	CtrlNamedBackGround DAQWatchdog, start, period=120, proc=WaitUntilDAQDone_IGNORE
 
 	return 1
 End
@@ -288,11 +397,4 @@ Function OpenDatabrowser()
 	string win = DB_OpenDataBrowser()
 	string panel = BSP_GetSweepControlsPanel(win)
 	PGC_SetAndActivateControl(panel, "check_SweepControl_AutoUpdate", val = 1)
-End
-
-Function EnsureNoAnaFuncErrors()
-
-	NVAR errorCounter = $GetAnalysisFuncErrorCounter(DEVICE)
-
-	CHECK_EQUAL_VAR(errorCounter, 0)
 End

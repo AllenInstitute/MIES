@@ -184,8 +184,6 @@ static Function MSQ_FRE_Test1()
 
 	WAVE/Z pulseDuration = GetResults_IGNORE(sweepNo, MSQ_FMT_LBN_PULSE_DUR, 1, SINGLE_SCI)
 	CHECK_EQUAL_WAVES(pulseDuration, {3, 3, NaN, NaN, NaN, NaN, NaN, NaN, NaN}, mode = WAVE_DATA, tol=1e-8)
-
-	EnsureNoAnaFuncErrors()
 End
 
 static Function MSQ_FRE_Run2()
@@ -276,8 +274,6 @@ static Function MSQ_FRE_Test2()
 
 	WAVE/Z pulseDuration = GetResults_IGNORE(sweepNo, MSQ_FMT_LBN_PULSE_DUR, 1, SINGLE_SCI)
 	CHECK_EQUAL_WAVES(pulseDuration, {3, 3, NaN, NaN, NaN, NaN, NaN, NaN, NaN}, mode = WAVE_DATA, tol=1e-8)
-
-	EnsureNoAnaFuncErrors()
 End
 
 static Function MSQ_FRE_Run3()
@@ -366,8 +362,6 @@ static Function MSQ_FRE_Test3()
 
 	WAVE/Z pulseDuration = GetResults_IGNORE(sweepNo, MSQ_FMT_LBN_PULSE_DUR, 1, SINGLE_SCI)
 	CHECK_EQUAL_WAVES(pulseDuration, {3, 3, NaN, NaN, NaN, NaN, NaN, NaN, NaN}, mode = WAVE_DATA, tol=1e-8)
-
-	EnsureNoAnaFuncErrors()
 End
 
 static Function MSQ_FRE_Run4()
@@ -461,8 +455,6 @@ static Function MSQ_FRE_Test4()
 
 	WAVE/Z pulseDuration = GetResults_IGNORE(sweepNo, MSQ_FMT_LBN_PULSE_DUR, 1, SINGLE_SCI)
 	CHECK_EQUAL_WAVES(pulseDuration, {3, 3, NaN, NaN, NaN, NaN, NaN, NaN, NaN}, mode = WAVE_DATA, tol=1e-8)
-
-	EnsureNoAnaFuncErrors()
 End
 
 static Function MSQ_FRE_Run5()
@@ -562,8 +554,6 @@ static Function MSQ_FRE_Test5()
 
 	WAVE/Z pulseDuration = GetResults_IGNORE(sweepNo, MSQ_FMT_LBN_PULSE_DUR, 1, SINGLE_SCI)
 	CHECK_EQUAL_WAVES(pulseDuration, {3, 3, NaN, NaN, NaN, NaN, NaN, NaN, NaN}, mode = WAVE_DATA, tol=1e-8)
-
-	EnsureNoAnaFuncErrors()
 End
 
 static Function VClampOnSecondHS_IGNORE()
@@ -657,8 +647,6 @@ static Function MSQ_FRE_Test6()
 
 	WAVE/Z pulseDuration = GetResults_IGNORE(sweepNo, MSQ_FMT_LBN_PULSE_DUR, 0, SINGLE_SCI)
 	CHECK_EQUAL_WAVES(pulseDuration, {3, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN}, mode = WAVE_DATA, tol=1e-8)
-
-	EnsureNoAnaFuncErrors()
 End
 
 static Function AddAnalysisParamsDAScale_IGNORE()
@@ -765,8 +753,6 @@ static Function MSQ_FRE_Test7()
 
 	WAVE/Z pulseDuration = GetResults_IGNORE(sweepNo, MSQ_FMT_LBN_PULSE_DUR, 1, SINGLE_SCI)
 	CHECK_EQUAL_WAVES(pulseDuration, {3, 3, NaN, NaN, NaN, NaN, NaN, NaN, NaN}, mode = WAVE_DATA, tol=1e-8)
-
-	EnsureNoAnaFuncErrors()
 End
 
 // one test with PostDAQDAScale and PostDAQDAScaleFactor analysis parameters
@@ -865,8 +851,6 @@ static Function MSQ_FRE_Test8()
 
 	WAVE/Z pulseDuration = GetResults_IGNORE(sweepNo, MSQ_FMT_LBN_PULSE_DUR, 1, SINGLE_SCI)
 	CHECK_EQUAL_WAVES(pulseDuration, {3, 3, NaN, NaN, NaN, NaN, NaN, NaN, NaN}, mode = WAVE_DATA, tol=1e-8)
-
-	EnsureNoAnaFuncErrors()
 End
 
 static Function AddAnalysisParamsMaxDa_IGNORE()
@@ -963,8 +947,6 @@ static Function MSQ_FRE_Test9()
 
 	WAVE/Z pulseDuration = GetResults_IGNORE(sweepNo, MSQ_FMT_LBN_PULSE_DUR, 1, SINGLE_SCI)
 	CHECK_EQUAL_WAVES(pulseDuration, {3, 3, NaN, NaN, NaN, NaN, NaN, NaN, NaN}, mode = WAVE_DATA, tol=1e-8)
-
-	EnsureNoAnaFuncErrors()
 End
 
 static Function AddAnalysisParamsMinRheo_IGNORE()
@@ -1071,6 +1053,4 @@ static Function MSQ_FRE_Test10()
 
 	WAVE/Z pulseDuration = GetResults_IGNORE(sweepNo, MSQ_FMT_LBN_PULSE_DUR, 1, SINGLE_SCI)
 	CHECK_EQUAL_WAVES(pulseDuration, {3, 3, NaN, NaN, NaN, NaN, NaN, NaN, NaN}, mode = WAVE_DATA, tol=1e-8)
-
-	EnsureNoAnaFuncErrors()
 End

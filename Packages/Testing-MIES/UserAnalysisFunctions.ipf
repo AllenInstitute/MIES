@@ -501,3 +501,16 @@ Function SkipSweeps(panelTitle, s)
 
 	RA_SkipSweeps(panelTitle, inf, limitToSetBorder = 1)
 End
+
+Function WriteIntoLBNOnPreDAQ(panelTitle, s)
+	string panelTitle
+	STRUCT AnalysisFunction_V3& s
+
+	if(s.eventType == PRE_DAQ_EVENT)
+		Make/FREE/N=(LABNOTEBOOK_LAYER_COUNT) values = p
+		values[INDEP_HEADSTAGE] = NaN
+		ED_AddEntryToLabnotebook(panelTitle, "GARBAGE", values, overrideSweepNo = s.sweepNo)
+	endif
+
+	return 0
+End

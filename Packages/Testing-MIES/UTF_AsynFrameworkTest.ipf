@@ -1051,7 +1051,6 @@ End
 /// @brief A worker, that return no data folder
 threadsafe Function/DF RunGenericWorker4(dfr)
 	DFREF dfr
-
 End
 
 /// @brief Generic worker with a fixed runtime, the function transfers required data to the output folder

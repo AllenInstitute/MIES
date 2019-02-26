@@ -1600,6 +1600,9 @@ static Function AFT_DAQ17()
 		FAIL()
 	catch
 		PASS()
+		NVAR errorCounter = $GetAnalysisFuncErrorCounter(DEVICE)
+		CHECK_EQUAL_VAR(errorCounter, 1)
+		errorCounter = 0 // avoid TEST_CASE_END_OVERRIDE() complaining
 	endtry
 End
 
@@ -1761,8 +1764,6 @@ static Function AFT_SetControlsTest1()
 
 	sweepNo = AFH_GetLastSweepAcquired(DEVICE)
 	CHECK_EQUAL_VAR(sweepNo, NaN)
-
-	EnsureNoAnaFuncErrors()
 End
 
 static Function AFT_SetControls2_Setter()
@@ -1792,8 +1793,6 @@ static Function AFT_SetControlsTest2()
 
 	sweepNo = AFH_GetLastSweepAcquired(DEVICE)
 	CHECK_EQUAL_VAR(sweepNo, NaN)
-
-	EnsureNoAnaFuncErrors()
 End
 
 static Function AFT_SetControls2a_Setter()
@@ -1823,8 +1822,6 @@ static Function AFT_SetControlsTest2a()
 
 	sweepNo = AFH_GetLastSweepAcquired(DEVICE)
 	CHECK_EQUAL_VAR(sweepNo, NaN)
-
-	EnsureNoAnaFuncErrors()
 End
 
 static Function AFT_SetControls2b_Setter()
@@ -1855,8 +1852,6 @@ static Function AFT_SetControlsTest2b()
 
 	sweepNo = AFH_GetLastSweepAcquired(DEVICE)
 	CHECK_EQUAL_VAR(sweepNo, NaN)
-
-	EnsureNoAnaFuncErrors()
 End
 
 static Function AFT_SetControls3_Setter()
@@ -1887,8 +1882,6 @@ static Function AFT_SetControlsTest3()
 
 	sweepNo = AFH_GetLastSweepAcquired(DEVICE)
 	CHECK_EQUAL_VAR(sweepNo, NaN)
-
-	EnsureNoAnaFuncErrors()
 End
 
 static Function AFT_SetControls3a_Setter()
@@ -1919,8 +1912,6 @@ static Function AFT_SetControlsTest3a()
 
 	sweepNo = AFH_GetLastSweepAcquired(DEVICE)
 	CHECK_EQUAL_VAR(sweepNo, NaN)
-
-	EnsureNoAnaFuncErrors()
 End
 
 static Function AFT_SetControls3b_Setter()
@@ -1951,8 +1942,6 @@ static Function AFT_SetControlsTest3b()
 
 	sweepNo = AFH_GetLastSweepAcquired(DEVICE)
 	CHECK_EQUAL_VAR(sweepNo, NaN)
-
-	EnsureNoAnaFuncErrors()
 End
 
 static Function AFT_SetControls3c_Setter()
@@ -1983,8 +1972,6 @@ static Function AFT_SetControlsTest3c()
 
 	sweepNo = AFH_GetLastSweepAcquired(DEVICE)
 	CHECK_EQUAL_VAR(sweepNo, NaN)
-
-	EnsureNoAnaFuncErrors()
 End
 
 static Function AFT_SetControls4_Setter()
@@ -2015,8 +2002,6 @@ static Function AFT_SetControlsTest4()
 
 	sweepNo = AFH_GetLastSweepAcquired(DEVICE)
 	CHECK_EQUAL_VAR(sweepNo, NaN)
-
-	EnsureNoAnaFuncErrors()
 End
 
 static Function AFT_SetControls5_Setter()
@@ -2044,8 +2029,6 @@ static Function AFT_SetControlsTest5()
 	CHECK_EQUAL_VAR(sweepNo, 0)
 
 	CHECK_EQUAL_VAR(GetCheckBoxState(DEVICE, "Check_DataAcqHS_00"), 1)
-
-	EnsureNoAnaFuncErrors()
 End
 
 static Function AFT_SetControls6_Setter()
@@ -2106,6 +2089,4 @@ static Function AFT_SetControlsTest6()
 	CHECK_EQUAL_VAR(GetSetVariable(DEVICE, "setvar_DataAcq_OnsetDelayUser"), 10)
 	// the third entry is four
 	CHECK_EQUAL_VAR(GetPopupMenuIndex(DEVICE, "Popup_Settings_SampIntMult"), 2)
-
-	EnsureNoAnaFuncErrors()
 End
