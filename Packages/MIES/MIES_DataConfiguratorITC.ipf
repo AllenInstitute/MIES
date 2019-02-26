@@ -692,7 +692,7 @@ static Function DC_PlaceDataInHardwareDataWave(panelTitle, numActiveChannels, da
 	variable GlobalTPInsert, scalingZero, indexingLocked, indexing, distributedDAQ, pulseToPulseLength
 	variable distributedDAQDelay, onSetDelay, onsetDelayAuto, onsetDelayUser, decimationFactor, cutoff
 	variable multiplier, powerSpectrum, distributedDAQOptOv, distributedDAQOptPre, distributedDAQOptPost, distributedDAQOptRes, headstage
-	variable lastValidRow
+	variable lastValidRow, isoodDAQMember
 	variable/C ret
 	variable TPLength
 
@@ -884,6 +884,11 @@ static Function DC_PlaceDataInHardwareDataWave(panelTitle, numActiveChannels, da
 
 			setEventFlag[i][] = (setColumn[activeColumn] + 1 == IDX_NumberOfSweepsInSet(setName[activeColumn]))
 			DC_DocumentChannelProperty(panelTitle, STIMSET_ACQ_CYCLE_ID_KEY, headstageDAC[activeColumn], i, var=stimsetCycleID)
+		endif
+
+		if(dataAcqOrTP == DATA_ACQUISITION_MODE)
+			isoodDAQMember = (distributedDAQOptOv && config[activeColumn][%DAQChannelType] == DAQ_CHANNEL_TYPE_DAQ && IsFinite(headstageDAC[i]))
+			DC_DocumentChannelProperty(panelTitle, "oodDAQ member", headstageDAC[i], i, var=isoodDAQMember)
 		endif
 
 		activeColumn += 1

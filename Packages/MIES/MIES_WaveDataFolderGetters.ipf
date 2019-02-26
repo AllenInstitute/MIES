@@ -1510,7 +1510,7 @@ Function/WAVE GetLBNidCache(numericalValues)
 	return wv
 End
 
-static Constant SWEEP_SETTINGS_WAVE_VERSION = 21
+static Constant SWEEP_SETTINGS_WAVE_VERSION = 22
 
 /// @brief Uses the parameter names from the `sourceKey` columns and
 ///        write them as dimension into the columns of dest.
@@ -1649,6 +1649,7 @@ End
 /// - 49: Igor Pro bitness
 /// - 50: DA ChannelType, one of @ref DaqChannelTypeConstants
 /// - 51: AD ChannelType, one of @ref DaqChannelTypeConstants
+/// - 52: oodDAQ member, true if headstage takes part in oodDAQ mode, false otherwise
 Function/Wave GetSweepSettingsKeyWave(panelTitle)
 	string panelTitle
 
@@ -1667,9 +1668,9 @@ Function/Wave GetSweepSettingsKeyWave(panelTitle)
 	if(ExistsWithCorrectLayoutVersion(wv, versionOfNewWave))
 		return wv
 	elseif(WaveExists(wv))
-		Redimension/N=(-1, 52) wv
+		Redimension/N=(-1, 53) wv
 	else
-		Make/T/N=(3, 52) newDFR:$newName/Wave=wv
+		Make/T/N=(3, 53) newDFR:$newName/Wave=wv
 	endif
 
 	wv = ""
@@ -1885,6 +1886,10 @@ Function/Wave GetSweepSettingsKeyWave(panelTitle)
 	wv[%Parameter][51] = "AD ChannelType"
 	wv[%Units][51]     = "a. u."
 	wv[%Tolerance][51] = "1"
+
+	wv[%Parameter][52] = "oodDAQ member"
+	wv[%Units][52]     = LABNOTEBOOK_BINARY_UNIT
+	wv[%Tolerance][52] = LABNOTEBOOK_NO_TOLERANCE
 
 	SetSweepSettingsDimLabels(wv, wv)
 	SetWaveVersion(wv, versionOfNewWave)
