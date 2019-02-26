@@ -824,7 +824,7 @@ static Function NWB_AppendSweepLowLevel(locationID, panelTitle, ITCDataWave, ITC
 			for(j = 0; j < numEntries; j += 1)
 				name = StringFromList(j, list)
 				ttlBit = 2^str2num(name[1,inf])
-				ASSERT((ttlBit & ttlBits) == 1, "Invalid ttlBit")
+				ASSERT((ttlBit & ttlBits) == ttlBit, "Invalid ttlBit")
 				WAVE/SDFR=dfr params.data = $name
 				path                 = "/stimulus/presentation"
 				params.channelSuffix = num2str(ttlBit)
