@@ -1434,89 +1434,24 @@ Function/WAVE GetLBNidCache(numericalValues)
 	return wv
 End
 
-/// @brief Set dimension labels for GetSweepSettingsKeyWave() and
-/// GetSweepSettingsWave()
-static Function SetSweepSettingsDimLabels(wv)
-	WAVE wv
+static Constant SWEEP_SETTINGS_WAVE_VERSION = 19
 
-	SetDimLabel COLS, 0 , $STIMSET_SCALE_FACTOR_KEY      , wv
-	SetDimLabel COLS, 1 , $"DAC"                         , wv
-	SetDimLabel COLS, 2 , $"ADC"                         , wv
-	SetDimLabel COLS, 3 , $"DA Gain"                     , wv
-	SetDimLabel COLS, 4 , $"AD Gain"                     , wv
-	SetDimLabel COLS, 5 , $"Set Sweep Count"             , wv
-	SetDimLabel COLS, 6 , $"TP Insert Checkbox"          , wv
-	SetDimLabel COLS, 7 , $"Inter-trial interval"        , wv
-	SetDimLabel COLS, 8 , $"TTL rack zero bits"          , wv
-	SetDimLabel COLS, 9 , $"TTL rack one bits"           , wv
-	SetDimLabel COLS, 10, $"TTL rack zero channel"       , wv
-	SetDimLabel COLS, 11, $"TTL rack one channel"        , wv
-	SetDimLabel COLS, 12, $"Delay onset user"            , wv
-	SetDimLabel COLS, 13, $"Delay onset auto"            , wv
-	SetDimLabel COLS, 14, $"Delay termination"           , wv
-	SetDimLabel COLS, 15, $"Delay distributed DAQ"       , wv
-	SetDimLabel COLS, 16, $"Distributed DAQ"             , wv
-	SetDimLabel COLS, 17, $"Repeat Sets"                 , wv
-	SetDimLabel COLS, 18, $"Scaling zero"                , wv
-	SetDimLabel COLS, 19, $"Indexing"                    , wv
-	SetDimLabel COLS, 20, $"Locked indexing"             , wv
-	SetDimLabel COLS, 21, $"Repeated Acquisition"        , wv
-	SetDimLabel COLS, 22, $"Random Repeated Acquisition" , wv
-	SetDimLabel COLS, 23, $"Sampling interval"           , wv
-	SetDimLabel COLS, 24, $"Sampling interval multiplier", wv
-	SetDimLabel COLS, 25, $"Stim set length"             , wv
-	SetDimLabel COLS, 26, $"oodDAQ Pre Feature"          , wv
-	SetDimLabel COLS, 27, $"oodDAQ Post Feature"         , wv
-	SetDimLabel COLS, 28, $"oodDAQ Resolution"           , wv
-	SetDimLabel COLS, 29, $"Optimized Overlap dDAQ"      , wv
-	SetDimLabel COLS, 30, $"Delay onset oodDAQ"          , wv
-	SetDimLabel COLS, 31, $PULSE_TO_PULSE_LENGTH_KEY     , wv
-	SetDimLabel COLS, 32, $RA_ACQ_CYCLE_ID_KEY           , wv
-	SetDimLabel COLS, 33, $"Stim Wave Checksum"          , wv
-	SetDimLabel COLS, 34, $"Multi Device mode"           , wv
-	SetDimLabel COLS, 35, $"Background Testpulse"        , wv
-	SetDimLabel COLS, 36, $"Background DAQ"              , wv
-	SetDimLabel COLS, 37, $"Sampling interval multiplier", wv
-	SetDimLabel COLS, 38, $"TP buffer size"              , wv
-	SetDimLabel COLS, 39, $"TP during ITI"               , wv
-	SetDimLabel COLS, 40, $"Amplifier change via I=0"    , wv
-	SetDimLabel COLS, 41, $"Skip analysis functions"     , wv
-	SetDimLabel COLS, 42, $"Repeat sweep on async alarm" , wv
-	SetDimLabel COLS, 43, $"Set Cycle Count"             , wv
-	SetDimLabel COLS, 44, $STIMSET_ACQ_CYCLE_ID_KEY      , wv
-	SetDimLabel COLS, 45, $"Digitizer Hardware Type"     , wv
-	SetDimLabel COLS, 46, $"Fixed frequency acquisition" , wv
-End
+/// @brief Uses the parameter names from the `sourceKey` columns and
+///        write them as dimension into the columns of dest.
+static Function SetSweepSettingsDimLabels(dest, sourceKey)
+	WAVE dest
+	WAVE/T sourceKey
 
-/// @brief Set dimension labels for GetSweepSettingsTextKeyWave() and
-/// GetSweepSettingsTextWave()
-static Function SetSweepSettingsTextDimLabels(wv)
-	WAVE wv
+	variable i, numCols
 
-	SetDimLabel COLS, 0 , $STIM_WAVE_NAME_KEY                                   , wv
-	SetDimLabel COLS, 1 , $"DA unit"                                            , wv
-	SetDimLabel COLS, 2 , $"AD unit"                                            , wv
-	SetDimLabel COLS, 3 , $"TTL rack zero stim sets"                            , wv
-	SetDimLabel COLS, 4 , $"TTL rack one stim sets"                             , wv
-	SetDimLabel COLS, 5 , $StringFromList(PRE_DAQ_EVENT, EVENT_NAME_LIST_LBN)   , wv
-	SetDimLabel COLS, 6 , $StringFromList(MID_SWEEP_EVENT, EVENT_NAME_LIST_LBN) , wv
-	SetDimLabel COLS, 7 , $StringFromList(POST_SWEEP_EVENT, EVENT_NAME_LIST_LBN), wv
-	SetDimLabel COLS, 8 , $StringFromList(POST_SET_EVENT, EVENT_NAME_LIST_LBN)  , wv
-	SetDimLabel COLS, 9 , $StringFromList(POST_DAQ_EVENT, EVENT_NAME_LIST_LBN)  , wv
-	SetDimLabel COLS, 10, $StringFromList(PRE_SWEEP_EVENT, EVENT_NAME_LIST_LBN) , wv
-	SetDimLabel COLS, 11, $StringFromList(GENERIC_EVENT, EVENT_NAME_LIST_LBN)   , wv
-	SetDimLabel COLS, 12, $StringFromList(PRE_SET_EVENT, EVENT_NAME_LIST_LBN)   , wv
-	SetDimLabel COLS, 13, $ANALYSIS_FUNCTION_PARAMS_LBN                         , wv
-	SetDimLabel COLS, 14, $"oodDAQ regions"                                     , wv
-	SetDimLabel COLS, 15, $"Electrode"                                          , wv
-	SetDimLabel COLS, 16, $PULSE_START_TIMES_KEY                                , wv
-	SetDimLabel COLS, 17, $HIGH_PREC_SWEEP_START_KEY                            , wv
-	SetDimLabel COLS, 18, $STIMSET_WAVE_NOTE_KEY                                , wv
-	SetDimLabel COLS, 19, $"TTL rack zero set sweep counts"                     , wv
-	SetDimLabel COLS, 20, $"TTL rack one set sweep counts"                      , wv
-	SetDimLabel COLS, 21, $"TTL set sweep counts"                               , wv
-	SetDimLabel COLS, 22, $"TTL stim sets"                                      , wv
-	SetDimLabel COLS, 23, $"TTL channels"                                       , wv
+	numCols = DimSize(dest, COLS)
+
+	ASSERT(numCols == DimSize(sourceKey, COLS), "Dimension column size mismatch")
+	ASSERT(DimSize(sourceKey, ROWS) == 3 || DimSize(sourceKey, ROWS) == 1, "Unexpected number of rows in the sourceKey wave")
+
+	for(i = 0; i < numCols; i += 1)
+		SetDimLabel COLS, i, $sourceKey[%Parameter][i], dest
+	endfor
 End
 
 /// @brief Returns a wave reference to the sweepSettingsWave
@@ -1538,7 +1473,9 @@ End
 Function/Wave GetSweepSettingsWave(panelTitle)
 	string panelTitle
 
-	variable versionOfNewWave = 17
+	variable numCols
+
+	variable versionOfNewWave = SWEEP_SETTINGS_WAVE_VERSION
 	string newName = "sweepSettingsNumericValues"
 	DFREF newDFR = GetDevSpecLabNBTempFolder(panelTitle)
 
@@ -1550,17 +1487,22 @@ Function/Wave GetSweepSettingsWave(panelTitle)
 
 	WAVE/Z wv = UpgradeWaveLocationAndGetIt(p)
 
-	if(ExistsWithCorrectLayoutVersion(wv, versionOfNewWave))
+	if(ExistsWithCorrectLayoutVersion(wv, SWEEP_SETTINGS_WAVE_VERSION))
 		return wv
-	elseif(WaveExists(wv))
-		Redimension/N=(-1, 47, LABNOTEBOOK_LAYER_COUNT) wv
+	endif
+
+	WAVE/T keyWave = GetSweepSettingsKeyWave(panelTitle)
+	numCols = DimSize(keyWave, COLS)
+
+	if(WaveExists(wv))
+		Redimension/N=(-1, numCols, LABNOTEBOOK_LAYER_COUNT) wv
 	else
-		Make/N=(1, 47, LABNOTEBOOK_LAYER_COUNT) newDFR:$newName/Wave=wv
+		Make/N=(1, numCols, LABNOTEBOOK_LAYER_COUNT) newDFR:$newName/Wave=wv
 	endif
 
 	wv = NaN
 
-	SetSweepSettingsDimLabels(wv)
+	SetSweepSettingsDimLabels(wv, keyWave)
 	SetWaveVersion(wv, versionOfNewWave)
 
 	return wv
@@ -1629,7 +1571,7 @@ End
 Function/Wave GetSweepSettingsKeyWave(panelTitle)
 	string panelTitle
 
-	variable versionOfNewWave = 18
+	variable versionOfNewWave = SWEEP_SETTINGS_WAVE_VERSION
 	string newName = "sweepSettingsNumericKeys"
 	DFREF newDFR = GetDevSpecLabNBTempFolder(panelTitle)
 
@@ -1843,7 +1785,7 @@ Function/Wave GetSweepSettingsKeyWave(panelTitle)
 	wv[%Units][46]     = "kHz"
 	wv[%Tolerance][46] = "1"
 
-	SetSweepSettingsDimLabels(wv)
+	SetSweepSettingsDimLabels(wv, wv)
 	SetWaveVersion(wv, versionOfNewWave)
 
 	return wv
@@ -1865,7 +1807,9 @@ End
 Function/Wave GetSweepSettingsTextWave(panelTitle)
 	string panelTitle
 
-	variable versionOfNewWave = 16
+	variable numCols
+
+	variable versionOfNewWave = SWEEP_SETTINGS_WAVE_VERSION
 	string newName = "sweepSettingsTextValues"
 	DFREF newDFR = GetDevSpecLabNBTempFolder(panelTitle)
 
@@ -1879,15 +1823,20 @@ Function/Wave GetSweepSettingsTextWave(panelTitle)
 
 	if(ExistsWithCorrectLayoutVersion(wv, versionOfNewWave))
 		return wv
-	elseif(WaveExists(wv))
-		Redimension/N=(-1, 24, LABNOTEBOOK_LAYER_COUNT) wv
+	endif
+
+	WAVE/T keyWave = GetSweepSettingsTextKeyWave(panelTitle)
+	numCols = DimSize(keyWave, COLS)
+
+	if(WaveExists(wv))
+		Redimension/N=(-1, numCols, LABNOTEBOOK_LAYER_COUNT) wv
 	else
-		Make/T/N=(1, 24, LABNOTEBOOK_LAYER_COUNT) newDFR:$newName/Wave=wv
+		Make/T/N=(1, numCols, LABNOTEBOOK_LAYER_COUNT) newDFR:$newName/Wave=wv
 	endif
 
 	wv = ""
 
-	SetSweepSettingsTextDimLabels(wv)
+	SetSweepSettingsDimLabels(wv, keyWave)
 	SetWaveVersion(wv, versionOfNewWave)
 
 	return wv
@@ -1932,7 +1881,7 @@ End
 Function/Wave GetSweepSettingsTextKeyWave(panelTitle)
 	string panelTitle
 
-	variable versionOfNewWave = 17
+	variable versionOfNewWave = SWEEP_SETTINGS_WAVE_VERSION
 	string newName = "sweepSettingsTextKeys"
 	DFREF newDFR = GetDevSpecLabNBTempFolder(panelTitle)
 
@@ -1951,6 +1900,8 @@ Function/Wave GetSweepSettingsTextKeyWave(panelTitle)
 	else
 		Make/T/N=(1, 24) newDFR:$newName/Wave=wv
 	endif
+
+	SetDimLabel ROWS, 0, Parameter, wv
 
 	wv = ""
 
@@ -1979,7 +1930,7 @@ Function/Wave GetSweepSettingsTextKeyWave(panelTitle)
 	wv[0][22] = "TTL stim sets"
 	wv[0][23] = "TTL channels"
 
-	SetSweepSettingsTextDimLabels(wv)
+	SetSweepSettingsDimLabels(wv, wv)
 	SetWaveVersion(wv, versionOfNewWave)
 
 	return wv
