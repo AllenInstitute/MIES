@@ -1874,6 +1874,8 @@ Function HW_NI_StartAcq(deviceID, triggerMode, [flags, repeat])
 	string panelTitle, device, FIFONote, noteID, fifoName, errMsg
 	variable i, pos, endpos, channelTimeOffset, freeDiskSpace
 
+	DEBUGPRINTSTACKINFO()
+
 	if(ParamIsDefault(repeat))
 		repeat = 0
 	endif
@@ -2069,10 +2071,11 @@ Function/S HW_NI_GetPropertyListOfDevices(devNr)
 	string propList
 	variable numDevices, i, portWidth
 
+	DEBUGPRINTSTACKINFO()
+
 	if(devNr < 0)
 		return ""
 	endif
-	DEBUGPRINTSTACKINFO()
 
 	devices    = fDAQmx_DeviceNames()
 	numDevices = ItemsInList(devices)
@@ -2111,6 +2114,8 @@ End
 Function HW_NI_OpenDevice(device, [flags])
 	string device
 	variable flags
+
+	DEBUGPRINTSTACKINFO()
 
 	HW_NI_ResetDevice(device, flags=flags)
 	HW_NI_CalibrateDevice(device, flags=flags)
@@ -2375,10 +2380,10 @@ Function HW_NI_StopAcq(deviceID, [config, configFunc, prepareForDAQ, zeroDAC, fl
 	WAVE/Z config
 	FUNCREF HW_WAVE_GETTER_PROTOTYPE configFunc
 
-	DEBUGPRINTSTACKINFO()
-
 	variable i, channels, aoChannel, ret, err
 	string panelTitle, paraStr, device, errMsg
+
+	DEBUGPRINTSTACKINFO()
 
 	// dont stop here, only if all devices removed
 	device = HW_GetDeviceName(HARDWARE_NI_DAC, deviceID)
@@ -2568,6 +2573,7 @@ Function HW_NI_CloseDevice(deviceID, [flags])
 	variable deviceID, flags
 
 	string deviceType, deviceNumber
+
 	DEBUGPRINTSTACKINFO()
 
 	ASSERT(ParseDeviceString(HW_GetDeviceName(HARDWARE_NI_DAC, deviceID), deviceType, deviceNumber), "Error parsing device string!")
