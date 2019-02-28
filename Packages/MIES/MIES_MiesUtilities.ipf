@@ -4957,3 +4957,10 @@ Function EqualizeCheckBoxes(win, checkBoxIn, checkBoxPartner, checkBoxInState)
 	SetCheckBoxState(win, checkBoxPartner, checkBoxInState)
 	DAG_Update(win, checkBoxPartner, val = checkBoxInState)
 End
+
+/// @brief Return the MIES version with canonical EOLs
+Function/S GetMIESVersionAsString()
+
+	SVAR miesVersion = $GetMiesVersion()
+	return NormalizeToEOL(miesVersion, "\n")
+End
