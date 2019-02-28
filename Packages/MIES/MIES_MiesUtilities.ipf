@@ -4421,6 +4421,9 @@ Function/S CreateLBNUnassocKey(setting, channelNumber)
 	string setting
 	variable channelNumber
 
+	ASSERT(!IsEmpty(setting), "Expected non empty string")
+	ASSERT(IsFinite(channelNumber), "Expected finite channel number")
+
 	string key
 
 	sprintf key, "%s UNASSOC_%d", setting, channelNumber
