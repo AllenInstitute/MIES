@@ -790,10 +790,8 @@ static Function DC_PlaceDataInHardwareDataWave(panelTitle, numActiveChannels, da
 		endif
 
 		DC_DocumentChannelProperty(panelTitle, "DAC", headstageDAC[activeColumn], i, var=i)
-
-		WAVE DA_EphysGuiState = GetDA_EphysGuiStateNum(panelTitle)
-		DC_DocumentChannelProperty(panelTitle, "DA GAIN", headstageDAC[activeColumn], i, var=DA_EphysGuiState[DAC[activeColumn]][%$GetSpecialControlLabel(CHANNEL_TYPE_DAC, CHANNEL_CONTROL_GAIN)])
-
+		ctrl = GetSpecialControlLabel(CHANNEL_TYPE_DAC, CHANNEL_CONTROL_GAIN)
+		DC_DocumentChannelProperty(panelTitle, "DA GAIN", headstageDAC[activeColumn], i, var=DAG_GetNumericalValue(panelTitle, ctrl, index = i))
 		DC_DocumentChannelProperty(panelTitle, STIM_WAVE_NAME_KEY, headstageDAC[activeColumn], i, str=setName[activeColumn])
 		DC_DocumentChannelProperty(panelTitle, STIMSET_WAVE_NOTE_KEY, headstageDAC[activeColumn], i, str=NormalizeToEOL(RemoveEnding(note(stimSet[activeColumn]), "\r"), "\n"))
 
