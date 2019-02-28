@@ -553,7 +553,7 @@ Function ED_createWaveNoteTags(panelTitle, sweepCount)
 	SVAR miesVersion = $GetMiesVersion()
 	values[0][1][INDEP_HEADSTAGE] = miesVersion
 
-	values[0][2][INDEP_HEADSTAGE] = StringByKey("IGORFILEVERSION", IgorInfo(3))
+	values[0][2][INDEP_HEADSTAGE] = GetIgorProVersion()
 
 	ED_AddEntriesToLabnotebook(values, keys, SweepCount, panelTitle, DATA_ACQUISITION_MODE)
 

@@ -191,7 +191,7 @@ static Function NWB_AddGeneratorString(fileID)
 	props[0][1] = "Igor Pro " + num2str(GetArchitectureBits()) + "bit"
 
 	props[1][0] = "Program Version"
-	props[1][1] = StringByKey("IGORFILEVERSION", IgorInfo(3))
+	props[1][1] = GetIgorProVersion()
 
 	props[2][0] = "Package"
 	props[2][1] = "MIES"
