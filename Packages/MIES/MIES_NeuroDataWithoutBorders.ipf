@@ -764,6 +764,7 @@ static Function NWB_AppendSweepLowLevel(locationID, panelTitle, ITCDataWave, ITC
 
 		adc                    = ADCs[i]
 		dac                    = DACs[i]
+		params.electrodeNumber = i
 		params.electrodeName   = electrodeNames[i]
 		params.clampMode       = clampMode[i]
 		params.stimset         = stimSets[i]
