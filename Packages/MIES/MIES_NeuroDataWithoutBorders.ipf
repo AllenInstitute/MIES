@@ -188,11 +188,7 @@ static Function NWB_AddGeneratorString(fileID)
 	Make/FREE/T/N=(5, 2) props
 
 	props[0][0] = "Program"
-#if defined(IGOR64)
-	props[0][1] = "Igor Pro 64bit"
-#else
-	props[0][1] = "Igor Pro 32bit"
-#endif
+	props[0][1] = "Igor Pro " + num2str(GetArchitectureBits()) + "bit"
 
 	props[1][0] = "Program Version"
 	props[1][1] = StringByKey("IGORFILEVERSION", IgorInfo(3))
