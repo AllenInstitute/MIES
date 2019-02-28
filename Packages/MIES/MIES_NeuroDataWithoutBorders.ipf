@@ -648,8 +648,8 @@ static Function NWB_AppendSweepLowLevel(locationID, panelTitle, ITCDataWave, ITC
 	variable sweep, compressionMode
 
 	variable groupID, numEntries, i, j, ttlBits, dac, adc, col, refTime
-	variable ttlBit, hardwareType
-	string group, path, list, name, stimset
+	variable ttlBit, hardwareType, DACUnassoc, ADCUnassoc
+	string group, path, list, name, stimset, key
 	string channelSuffix, listOfStimsets, contents
 
 	refTime = DEBUG_TIMER_START()
@@ -685,13 +685,41 @@ static Function NWB_AppendSweepLowLevel(locationID, panelTitle, ITCDataWave, ITC
 	ASSERT(WaveExists(DACs), "Labnotebook is too old for NWB export.")
 
 	// 9c8e1a94 (Record the active headstage in the settingsHistory, 2014-11-04)
-	WAVE/Z statusHS = GetLastSetting(numericalValues, sweep, "Headstage Active", DATA_ACQUISITION_MODE)
+	WAVE/D/Z statusHS = GetLastSetting(numericalValues, sweep, "Headstage Active", DATA_ACQUISITION_MODE)
 	if(!WaveExists(statusHS))
-		Duplicate/FREE ADCs, statusHS
-
-		statusHS = (IsFinite(ADCs[p]) && IsFinite(DACs[p]))
-		ASSERT(sum(statusHS) >= 1, "Headstage active workaround failed as there are no active headstages")
+		Make/D/N=(LABNOTEBOOK_LAYER_COUNT) statusHS
 	endif
+
+	for(i = 0; i < NUM_HEADSTAGES; i += 1)
+		if(statusHS[i])
+			// we don't fixup this case
+			continue
+		endif
+
+		// check that the headstage is really turned off
+		if(IsNaN(ADCs[i]) && IsNaN(DACs[i]))
+			// no AD/DA channels for that headstage
+			continue
+		endif
+
+		// now if the headstage is turned off but one of the AD/DA entries exist
+		// this can be a buggy headstage state
+		// we know that these AD/DA entries really belong to that headstate
+		// if no unassociated entry exists
+		key = CreateLBNUnassocKey("DAC", DACs[i])
+		DACUnassoc = GetLastSettingIndep(numericalValues, sweep, key, DATA_ACQUISITION_MODE)
+
+		key = CreateLBNUnassocKey("ADC", ADCs[i])
+		ADCUnassoc = GetLastSettingIndep(numericalValues, sweep, key, DATA_ACQUISITION_MODE)
+
+		if(IsNaN(DACUnassoc) && IsNan(ADCUnassoc))
+			printf "Encountered an incorrect headstage state for HS %d in sweep %d. Turning that HS now on for the export.\r", i, sweep
+			ControlWindowToFront()
+			statusHS[i] = 1
+		endif
+	endfor
+
+	ASSERT(Sum(statusHS, 0, NUM_HEADSTAGES - 1) >= 1, "Expected at least one active headstage.")
 
 	// 296097c2 (Changes to Tango Interact, 2014-09-03)
 	WAVE/T stimSets = GetLastSetting(textualValues, sweep, STIM_WAVE_NAME_KEY, DATA_ACQUISITION_MODE)
