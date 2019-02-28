@@ -495,68 +495,6 @@ Function ED_createWaveNoteTags(panelTitle, sweepCount)
 	WAVE/T sweepSettingsTxtKey = GetSweepSettingsTextKeyWave(panelTitle)
 	ED_AddEntriesToLabnotebook(sweepSettingsTxtWave, sweepSettingsTxtKey, SweepCount, panelTitle, DATA_ACQUISITION_MODE)
 
-	// document active headstages and their clamp modes
-	Make/FREE/N=(3, 3)/T numKeys
-	numKeys = ""
-
-	numKeys[0][0] =  "Headstage Active"
-	numKeys[1][0] =  LABNOTEBOOK_BINARY_UNIT
-	numKeys[2][0] =  LABNOTEBOOK_NO_TOLERANCE
-
-	numKeys[0][1] =  "Clamp Mode"
-	numKeys[1][1] =  ""
-	numKeys[2][1] =  LABNOTEBOOK_NO_TOLERANCE
-
-	numKeys[0][2] = "Igor Pro bitness"
-	numKeys[1][2] = ""
-	numKeys[2][2] = LABNOTEBOOK_NO_TOLERANCE
-
-	WAVE statusHS = DAG_GetChannelState(panelTitle, CHANNEL_TYPE_HEADSTAGE)
-
-	Make/FREE/N=(1, 3, LABNOTEBOOK_LAYER_COUNT) numSettings = NaN
-	numSettings[0][0][0,7] = statusHS[r]
-
-	WAVE hsProp = GetHSProperties(panelTitle)
-	numSettings[0][1][0, NUM_HEADSTAGES - 1] = hsProp[r][%ClampMode]
-
-#if defined(IGOR64)
-	numSettings[0][2][INDEP_HEADSTAGE] = 64
-#else
-	numSettings[0][2][INDEP_HEADSTAGE] = 32
-#endif
-
-	ED_AddEntriesToLabnotebook(numSettings, numKeys, SweepCount, panelTitle, DATA_ACQUISITION_MODE)
-
-	Make/FREE/T/N=(3, 3) keys
-	keys = ""
-
-	keys[0][0] = "Follower Device"
-	keys[1][0] = LABNOTEBOOK_BINARY_UNIT
-	keys[2][0] = LABNOTEBOOK_NO_TOLERANCE
-
-	keys[0][1] = "MIES version"
-	keys[1][1] = LABNOTEBOOK_BINARY_UNIT
-	keys[2][1] = LABNOTEBOOK_NO_TOLERANCE
-
-	keys[0][2] = "Igor Pro version"
-	keys[1][2] = ""
-	keys[2][2] = LABNOTEBOOK_NO_TOLERANCE
-
-	Make/FREE/T/N=(1, 3, LABNOTEBOOK_LAYER_COUNT) values
-	values = ""
-
-	if(DeviceCanLead(panelTitle))
-		SVAR listOfFollowerDevices = $GetFollowerList(panelTitle)
-		values[0][0][INDEP_HEADSTAGE] = listOfFollowerDevices
-	endif
-
-	SVAR miesVersion = $GetMiesVersion()
-	values[0][1][INDEP_HEADSTAGE] = miesVersion
-
-	values[0][2][INDEP_HEADSTAGE] = GetIgorProVersion()
-
-	ED_AddEntriesToLabnotebook(values, keys, SweepCount, panelTitle, DATA_ACQUISITION_MODE)
-
 	if(DAG_GetNumericalValue(panelTitle, "check_Settings_SaveAmpSettings"))
 		AI_FillAndSendAmpliferSettings(panelTitle, sweepCount)
 		// function for debugging

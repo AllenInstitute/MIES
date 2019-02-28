@@ -1042,6 +1042,26 @@ static Function DC_PlaceDataInHardwareDataWave(panelTitle, numActiveChannels, da
 	DC_DocumentChannelProperty(panelTitle, "Repeat sweep on async alarm", INDEP_HEADSTAGE, NaN, var=DAG_GetNumericalValue(panelTitle, "Check_Settings_AlarmAutoRepeat"))
 	DC_DocumentChannelProperty(panelTitle, "Digitizer Hardware Type", INDEP_HEADSTAGE, NaN, var=hardwareType)
 
+	if(DeviceCanLead(panelTitle))
+		SVAR listOfFollowerDevices = $GetFollowerList(panelTitle)
+		DC_DocumentChannelProperty(panelTitle, "Follower Device", INDEP_HEADSTAGE, NaN, str=listOfFollowerDevices)
+	endif
+
+	DC_DocumentChannelProperty(panelTitle, "MIES version", INDEP_HEADSTAGE, NaN, str=GetMIESVersionAsString())
+	DC_DocumentChannelProperty(panelTitle, "Igor Pro version", INDEP_HEADSTAGE, NaN, str=GetIgorProVersion())
+	DC_DocumentChannelProperty(panelTitle, "Igor Pro bitness", INDEP_HEADSTAGE, NaN, var=GetArchitectureBits())
+
+	for(i = 0; i < NUM_HEADSTAGES; i += 1)
+
+		DC_DocumentChannelProperty(panelTitle, "Headstage Active", i, NaN, var=statusHS[i])
+
+		if(!statusHS[i])
+			continue
+		endif
+
+		DC_DocumentChannelProperty(panelTitle, "Clamp Mode", i, NaN, var=DAG_GetHeadstageMode(panelTitle, i))
+	endfor
+
 	if(distributedDAQ)
 		// dDAQ requires that all stimsets have the same length, so store the stim set length
 		// also headstage independent
