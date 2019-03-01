@@ -301,9 +301,9 @@ static Function NWB_AddDeviceSpecificData(locationID, panelTitle, [compressionMo
 	DEBUGPRINT_ELAPSED(refTime)
 End
 
-Function NWB_ExportAllData([overrideFilePath, writeStoredTestPulses, writeIgorHistory])
+Function NWB_ExportAllData([overrideFilePath, writeStoredTestPulses, writeIgorHistory, compressionMode])
 	string overrideFilePath
-	variable writeStoredTestPulses, writeIgorHistory
+	variable writeStoredTestPulses, writeIgorHistory, compressionMode
 
 	string devicesWithContent, panelTitle, list, name
 	variable i, j, numEntries, locationID, sweep, numWaves, firstCall
@@ -335,6 +335,10 @@ Function NWB_ExportAllData([overrideFilePath, writeStoredTestPulses, writeIgorHi
 		locationID = NWB_GetFileForExport()
 	endif
 
+	if(ParamIsDefault(compressionMode))
+		compressionMode = IPNWB#GetChunkedCompression()
+	endif
+
 	if(!IsFinite(locationID))
 		return NaN
 	endif
@@ -348,7 +352,7 @@ Function NWB_ExportAllData([overrideFilePath, writeStoredTestPulses, writeIgorHi
 	numEntries = ItemsInList(devicesWithContent)
 	for(i = 0; i < numEntries; i += 1)
 		panelTitle = StringFromList(i, devicesWithContent)
-		NWB_AddDeviceSpecificData(locationID, panelTitle, compressionMode = IPNWB#GetChunkedCompression(), writeStoredTestPulses = writeStoredTestPulses)
+		NWB_AddDeviceSpecificData(locationID, panelTitle, compressionMode = compressionMode, writeStoredTestPulses = writeStoredTestPulses)
 
 		DFREF dfr = GetDeviceDataPath(panelTitle)
 		list = GetListOfObjects(dfr, DATA_SWEEP_REGEXP)
@@ -363,12 +367,12 @@ Function NWB_ExportAllData([overrideFilePath, writeStoredTestPulses, writeIgorHi
 			WAVE/SDFR=dfr sweepWave = $name
 			WAVE configWave = GetConfigWave(sweepWave)
 			sweep = ExtractSweepNumber(name)
-			NWB_AppendSweepLowLevel(locationID, panelTitle, sweepWave, configWave, sweep, compressionMode = IPNWB#GetChunkedCompression())
+			NWB_AppendSweepLowLevel(locationID, panelTitle, sweepWave, configWave, sweep, compressionMode = compressionMode)
 			stimsetList += NWB_GetStimsetFromPanel(panelTitle, sweep)
 		endfor
 	endfor
 
-	NWB_AppendStimset(locationID, stimsetList)
+	NWB_AppendStimset(locationID, stimsetList, compressionMode)
 
 	if(writeIgorHistory)
 		NWB_AppendIgorHistory(locationID)
@@ -404,7 +408,7 @@ Function NWB_ExportAllStimsets([overrideFilePath])
 	print "Please be patient while we export all existing stimsets to NWB"
 	ControlWindowToFront()
 
-	NWB_AppendStimset(locationID, stimsets)
+	NWB_AppendStimset(locationID, stimsets, IPNWB#GetChunkedCompression())
 	CloseNWBFile()
 End
 
@@ -486,11 +490,12 @@ End
 
 /// @brief Export given stimsets to NWB file
 ///
-/// @param locationID	Identifier of open hdf5 group or file
-/// @param stimsets		single stimset as string
-///                     or list of stimsets sparated by ;
-static Function NWB_AppendStimset(locationID, stimsets)
-	variable locationID
+/// @param locationID      Identifier of open hdf5 group or file
+/// @param stimsets        Single stimset as string
+///                        or list of stimsets sparated by ;
+/// @param compressionMode Type of compression to use, one of @ref CompressionMode
+static Function NWB_AppendStimset(locationID, stimsets, compressionMode)
+	variable locationID, compressionMode
 	string stimsets
 
 	variable i, numStimsets, numWaves
@@ -499,14 +504,14 @@ static Function NWB_AppendStimset(locationID, stimsets)
 	stimsets = WB_StimsetRecursionForList(stimsets)
 	numStimsets = ItemsInList(stimsets)
 	for(i = 0; i < numStimsets; i += 1)
-		NWB_WriteStimsetTemplateWaves(locationID, StringFromList(i, stimsets), 1)
+		NWB_WriteStimsetTemplateWaves(locationID, StringFromList(i, stimsets), compressionMode)
 	endfor
 
 	// process custom waves
 	WAVE/WAVE wv = WB_CustomWavesFromStimSet(stimsetList = stimsets)
 	numWaves = DimSize(wv, ROWS)
 	for(i = 0; i < numWaves; i += 1)
-		NWB_WriteStimsetCustomWave(locationID, wv[i], 1)
+		NWB_WriteStimsetCustomWave(locationID, wv[i], compressionMode)
 	endfor
 End
 
@@ -553,7 +558,7 @@ Function NWB_AppendSweep(panelTitle, ITCDataWave, ITCChanConfigWave, sweep)
 	NWB_AddDeviceSpecificData(locationID, panelTitle)
 	NWB_AppendSweepLowLevel(locationID, panelTitle, ITCDataWave, ITCChanConfigWave, sweep)
 	stimsets = NWB_GetStimsetFromPanel(panelTitle, sweep)
-	NWB_AppendStimset(locationID, stimsets)
+	NWB_AppendStimset(locationID, stimsets, IPNWB#GetChunkedCompression())
 
 	NVAR nwbThreadID = $GetNWBThreadID()
 	if(IsFinite(nwbThreadID) && !TS_ThreadGroupFinished(nwbThreadID))
