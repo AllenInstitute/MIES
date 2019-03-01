@@ -606,7 +606,7 @@ static Function AB_LoadSweepsFromNWB(discLocation, dataFolder, device)
 End
 
 /// @brief Store channelList in storage wave according to index in sweeps wave
-Function AB_StoreChannelsBySweep(groupID, channelList, sweeps, storage)
+static Function AB_StoreChannelsBySweep(groupID, channelList, sweeps, storage)
 	variable groupID
 	string channelList
 	Wave/I sweeps
@@ -1132,7 +1132,7 @@ static Function/Wave AB_ReturnAndClearGUISelBits()
 End
 
 /// @brief Collapse the given treeview
-Function AB_CollapseListEntry(row, col)
+static Function AB_CollapseListEntry(row, col)
 	variable row, col
 
 	variable mask, last, length
@@ -1161,7 +1161,7 @@ Function AB_CollapseListEntry(row, col)
 End
 
 /// @brief Expand the given treeview
-Function AB_ExpandListEntry(row, col)
+static Function AB_ExpandListEntry(row, col)
 	variable row, col
 
 	variable mask, last, length, sourceRow, targetRow
@@ -1342,7 +1342,7 @@ static Function AB_GetRowWithNextTreeView(selWave, startRow, col)
 	return numRows
 End
 
-Function AB_LoadFromFile(AB_LoadType, [sweepBrowserDFR])
+static Function AB_LoadFromFile(AB_LoadType, [sweepBrowserDFR])
 	variable AB_LoadType
 	DFREF sweepBrowserDFR
 
@@ -1441,7 +1441,7 @@ static Function AB_LoadFromFileASSERT(discLocation, dataFolder, fileType, device
 End
 
 /// @returns 0 if the sweeps could be loaded, or already exists, and 1 on error
-Function AB_LoadSweepFromFile(discLocation, dataFolder, fileType, device, sweep, [overwrite])
+static Function AB_LoadSweepFromFile(discLocation, dataFolder, fileType, device, sweep, [overwrite])
 	string discLocation, dataFolder, fileType, device
 	variable sweep, overwrite
 
@@ -1491,7 +1491,7 @@ Function AB_LoadSweepFromFile(discLocation, dataFolder, fileType, device, sweep,
 	return 0
 End
 
-Function AB_LoadStimsetFromFile(discLocation, dataFolder, fileType, device, sweep, [overwrite])
+static Function AB_LoadStimsetFromFile(discLocation, dataFolder, fileType, device, sweep, [overwrite])
 	string discLocation, dataFolder, fileType, device
 	variable sweep, overwrite
 
@@ -1541,7 +1541,7 @@ Function AB_LoadStimsetFromFile(discLocation, dataFolder, fileType, device, swee
 	return 0
 End
 
-Function AB_LoadSweepFromNWB(discLocation, sweepDFR, device, sweep)
+static Function AB_LoadSweepFromNWB(discLocation, sweepDFR, device, sweep)
 	string discLocation, device
 	DFREF sweepDFR
 	variable sweep
@@ -1596,7 +1596,7 @@ Function AB_LoadSweepFromNWB(discLocation, sweepDFR, device, sweep)
 	return 0
 End
 
-Function AB_LoadSweepFromNWBgeneric(h5_groupID, channelList, sweepDFR, configSweep)
+static Function AB_LoadSweepFromNWBgeneric(h5_groupID, channelList, sweepDFR, configSweep)
 	variable h5_groupID
 	string channelList
 	DFREF sweepDFR
@@ -1705,7 +1705,7 @@ End
 /// @brief Sorts the faked Config Sweeps Wave to get correct display order in Sweep Browser
 ///
 /// function is oriented at MDSort()
-Function AB_SortConfigSweeps(config)
+static Function AB_SortConfigSweeps(config)
 	wave/I config
 
 	string wavenote = Note(config)
@@ -1735,7 +1735,7 @@ End
 /// @brief Load specified device/sweep combination from Igor experiment file to sweepDFR
 ///
 /// @returns name of loaded sweep
-Function/S AB_LoadSweepFromIgor(discLocation, expFolder, sweepDFR, device, sweep)
+static Function/S AB_LoadSweepFromIgor(discLocation, expFolder, sweepDFR, device, sweep)
 	string discLocation, expFolder, device
 	DFREF sweepDFR
 	variable sweep
@@ -1824,7 +1824,7 @@ End
 /// @param overwrite          overwrite flag
 ///
 /// @return 1 on error and 0 on success
-Function/S AB_LoadStimsets(expFilePath, stimsets, overwrite, [processedStimsets])
+static Function/S AB_LoadStimsets(expFilePath, stimsets, overwrite, [processedStimsets])
 	string expFilePath, stimsets, processedStimsets
 	variable overwrite
 
@@ -1993,7 +1993,7 @@ End
 /// @brief Load custom waves for specified stimset from Igor experiment file
 ///
 /// @return 1 on error and 0 on success
-Function/S AB_LoadCustomWaves(expFilePath, stimsets, overwrite)
+static Function/S AB_LoadCustomWaves(expFilePath, stimsets, overwrite)
 	string expFilePath, stimsets
 	variable overwrite
 
@@ -2061,7 +2061,7 @@ End
 /// @brief Load specified wave from Igor Experiment file.
 ///
 /// @return 1 on error and 0 on success
-Function AB_LoadWave(expFilePath, fullPath, overwrite)
+static Function AB_LoadWave(expFilePath, fullPath, overwrite)
 	string expFilePath, fullPath
 	variable overwrite
 
@@ -2127,7 +2127,7 @@ static Function AB_SplitSweepIntoComponents(expFolder, device, sweep, sweepWave)
 	return 0
 End
 
-Function AB_ScanFolder(win)
+static Function AB_ScanFolder(win)
 	string win
 
 	string baseFolder, path, pxpList, uxpList, nwbList, list
