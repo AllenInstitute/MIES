@@ -1997,7 +1997,7 @@ Function DAP_CheckSettings(panelTitle, mode)
 	endif
 
 	if(DAG_GetNumericalValue(panelTitle, "Popup_Settings_SampIntMult") > 0 && DAG_GetNumericalValue(panelTitle, "Popup_Settings_FixedFreq") > 0)
-		print "It is not possible to combine fixed frequency acqusition with the sampling interval multiplier"
+		print "It is not possible to combine fixed frequency acquisition with the sampling interval multiplier"
 		ControlWindowToFront()
 		return 1
 	endif

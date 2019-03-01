@@ -76,7 +76,7 @@ End
 ///
 /// Actions depend on `mode`:
 /// - #TFH_RESTART_ACQ: Restart acquisition from the start
-/// - #TFH_STOP_ACQ:    Stop acqusition and quit running
+/// - #TFH_STOP_ACQ:    Stop acquisition and quit running
 ///
 /// Stops in the following cases:
 /// - An error during ITC operation calls

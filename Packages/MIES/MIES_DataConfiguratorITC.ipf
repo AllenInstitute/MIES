@@ -1202,7 +1202,7 @@ End
 /// @brief Generate the stimset fingerprint
 ///
 /// This fingerprint is unique for the combination of the following properties:
-/// - Repeated acqusition cycle ID
+/// - Repeated acquisition cycle ID
 /// - stimset name
 /// - stimset checksum
 /// - set cycle count
