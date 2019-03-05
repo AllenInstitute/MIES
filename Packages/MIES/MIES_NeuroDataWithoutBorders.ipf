@@ -800,12 +800,12 @@ static Function NWB_AppendSweepLowLevel(locationID, panelTitle, ITCDataWave, ITC
 			IPNWB#WriteSingleChannel(locationID, path, params, tsp, compressionMode = compressionMode)
 		endif
 
-		ClearWriteChannelParams(params)
+		NWB_ClearWriteChannelParams(params)
 
 		DEBUGPRINT_ELAPSED(refTime)
 	endfor
 
-	ClearWriteChannelParams(params)
+	NWB_ClearWriteChannelParams(params)
 
 	DEBUGPRINT_ELAPSED(refTime)
 
@@ -872,10 +872,10 @@ static Function NWB_AppendSweepLowLevel(locationID, panelTitle, ITCDataWave, ITC
 			IPNWB#WriteSingleChannel(locationID, path, params, tsp, compressionMode = compressionMode)
 		endif
 
-		ClearWriteChannelParams(params)
+		NWB_ClearWriteChannelParams(params)
 	endfor
 
-	ClearWriteChannelParams(params)
+	NWB_ClearWriteChannelParams(params)
 
 	DEBUGPRINT_ELAPSED(refTime)
 
@@ -901,14 +901,14 @@ static Function NWB_AppendSweepLowLevel(locationID, panelTitle, ITCDataWave, ITC
 		WAVE params.data       = ExtractOneDimDataFromSweep(ITCChanConfigWave, ITCDataWave, i)
 		params.groupIndex      = IsFinite(params.groupIndex) ? params.groupIndex : IPNWB#GetNextFreeGroupIndex(locationID, path)
 		IPNWB#WriteSingleChannel(locationID, path, params, tsp, compressionMode = compressionMode)
-		ClearWriteChannelParams(params)
+		NWB_ClearWriteChannelParams(params)
 	endfor
 
 	DEBUGPRINT_ELAPSED(refTime)
 End
 
 /// @brief Clear all entries which are channel specific
-static Function ClearWriteChannelParams(s)
+static Function NWB_ClearWriteChannelParams(s)
 	STRUCT IPNWB#WriteChannelParams &s
 
 	string device
