@@ -887,16 +887,25 @@ static Function NWB_AppendSweepLowLevel(locationID, panelTitle, ITCDataWave, ITC
 		endif
 
 		// unassociated channel data
-		// can currently be ADC only or for buggy
-		// data, where a headstage is turned off but
-		// actually active, also all other channels
-		path                   = "/acquisition/timeseries"
 		params.clampMode       = NaN
 		params.electrodeNumber = NaN
 		params.electrodeName   = ""
 		params.channelType     = ITCChanConfigWave[i][0]
 		params.channelNumber   = ITCChanConfigWave[i][1]
 		params.stimSet         = ""
+
+		switch(params.channelType)
+			case ITC_XOP_CHANNEL_TYPE_ADC:
+				path = "/acquisition/timeseries"
+				break
+			case ITC_XOP_CHANNEL_TYPE_DAC:
+				path = "/stimulus/presentation"
+				break
+			default:
+				ASSERT(0, "Unexpected channel type")
+				break
+		endswitch
+
 		NWB_GetTimeSeriesProperties(params, tsp)
 		WAVE params.data       = ExtractOneDimDataFromSweep(ITCChanConfigWave, ITCDataWave, i)
 		params.groupIndex      = IsFinite(params.groupIndex) ? params.groupIndex : IPNWB#GetNextFreeGroupIndex(locationID, path)
