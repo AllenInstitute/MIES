@@ -16,6 +16,7 @@
 #include "UTF_PatchSeqRamp"
 #include "UTF_MultiPatchSeqFastRheoEstimate"
 #include "UTF_MultiPatchSeqDAScale"
+#include "UTF_TestNWBExportV1"
 
 #ifdef TESTS_WITH_NI_HARDWARE
 
