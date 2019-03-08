@@ -1043,7 +1043,7 @@ Function DAP_OneTimeCallBeforeDAQ(panelTitle, runMode)
 	string panelTitle
 	variable runMode
 
-	variable numHS, i, DAC, ADC, multiDevGUIEnState, hardwareType
+	variable i, DAC, ADC, multiDevGUIEnState, hardwareType
 
 	ASSERT(runMode != DAQ_NOT_RUNNING, "Invalid running mode")
 
@@ -1077,8 +1077,8 @@ Function DAP_OneTimeCallBeforeDAQ(panelTitle, runMode)
 	// disable the clamp mode checkboxes of all active headstages
 	WAVE statusHS = DAG_GetChannelState(panelTitle, CHANNEL_TYPE_HEADSTAGE)
 
-	numHS = DimSize(statusHS, ROWS)
-	for(i = 0; i < numHS; i += 1)
+	for(i = 0; i < NUM_HEADSTAGES; i += 1)
+
 		if(!statusHS[i])
 			continue
 		endif

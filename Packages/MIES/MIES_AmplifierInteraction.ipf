@@ -1358,7 +1358,7 @@ Function AI_FillAndSendAmpliferSettings(panelTitle, sweepNo)
 	string panelTitle
 	variable sweepNo
 
-	variable numHS, i, axonSerial, channel, ampConnState, clampMode
+	variable i, axonSerial, channel, ampConnState, clampMode
 	string mccSerial
 
 	WAVE statusHS              = DAG_GetChannelState(panelTitle, CHANNEL_TYPE_HEADSTAGE)
@@ -1370,8 +1370,8 @@ Function AI_FillAndSendAmpliferSettings(panelTitle, sweepNo)
 
 	ampSettingsWave = NaN
 
-	numHS = DimSize(statusHS, ROWS)
-	for(i = 0; i < numHS ; i += 1)
+	for(i = 0; i < NUM_HEADSTAGES; i += 1)
+
 		if(!statusHS[i])
 			continue
 		endif
