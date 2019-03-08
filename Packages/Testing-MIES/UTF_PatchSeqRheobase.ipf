@@ -143,7 +143,7 @@ static Function PS_RB_Test1()
 	WAVE/Z durations = GetLastSetting(numericalValues, sweeps[0], PSQ_CreateLBNKey(PSQ_RHEOBASE, PSQ_FMT_LBN_PULSE_DUR, query = 1), UNKNOWN_MODE)
 	CHECK_EQUAL_WAVES(durations, {3, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN}, mode = WAVE_DATA, tol = 0.01)
 
-	key = PSQ_CreateLBNKey(PSQ_RHEOBASE, PSQ_FMT_LBN_STEPSIZE, query = 1)
+	key = PSQ_CreateLBNKey(PSQ_RHEOBASE, PSQ_FMT_LBN_STEPSIZE_FUTURE, query = 1)
 	setPassed = GetLastSettingIndepRAC(numericalValues, sweepNo, key, UNKNOWN_MODE)
 	CHECK_EQUAL_VAR(setPassed, PSQ_RB_DASCALE_STEP_LARGE)
 End
@@ -203,7 +203,7 @@ static Function PS_RB_Test2()
 	WAVE/Z durations = GetLastSetting(numericalValues, sweeps[0], PSQ_CreateLBNKey(PSQ_RHEOBASE, PSQ_FMT_LBN_PULSE_DUR, query = 1), UNKNOWN_MODE)
 	CHECK_EQUAL_WAVES(durations, {3, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN}, mode = WAVE_DATA, tol = 0.01)
 
-	key = PSQ_CreateLBNKey(PSQ_RHEOBASE, PSQ_FMT_LBN_STEPSIZE, query = 1)
+	key = PSQ_CreateLBNKey(PSQ_RHEOBASE, PSQ_FMT_LBN_STEPSIZE_FUTURE, query = 1)
 	setPassed = GetLastSettingIndepRAC(numericalValues, sweepNo, key, UNKNOWN_MODE)
 	CHECK_EQUAL_VAR(setPassed, PSQ_RB_DASCALE_STEP_LARGE)
 End
@@ -315,7 +315,7 @@ static Function PS_RB_Test4()
 	WAVE/Z durations = GetLastSetting(numericalValues, sweeps[0], PSQ_CreateLBNKey(PSQ_RHEOBASE, PSQ_FMT_LBN_PULSE_DUR, query = 1), UNKNOWN_MODE)
 	CHECK_EQUAL_WAVES(durations, {3, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN}, mode = WAVE_DATA, tol = 0.01)
 
-	key = PSQ_CreateLBNKey(PSQ_RHEOBASE, PSQ_FMT_LBN_STEPSIZE, query = 1)
+	key = PSQ_CreateLBNKey(PSQ_RHEOBASE, PSQ_FMT_LBN_STEPSIZE_FUTURE, query = 1)
 	setPassed = GetLastSettingIndepRAC(numericalValues, sweepNo, key, UNKNOWN_MODE)
 	CHECK_EQUAL_VAR(setPassed, PSQ_RB_DASCALE_STEP_LARGE)
 End
@@ -373,7 +373,7 @@ static Function PS_RB_Test5()
 	WAVE/Z durations = GetLastSetting(numericalValues, sweeps[0], PSQ_CreateLBNKey(PSQ_RHEOBASE, PSQ_FMT_LBN_PULSE_DUR, query = 1), UNKNOWN_MODE)
 	CHECK_EQUAL_WAVES(durations, {3, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN}, mode = WAVE_DATA, tol = 0.01)
 
-	key = PSQ_CreateLBNKey(PSQ_RHEOBASE, PSQ_FMT_LBN_STEPSIZE, query = 1)
+	key = PSQ_CreateLBNKey(PSQ_RHEOBASE, PSQ_FMT_LBN_STEPSIZE_FUTURE, query = 1)
 	setPassed = GetLastSettingIndepRAC(numericalValues, sweepNo, key, UNKNOWN_MODE)
 	CHECK_EQUAL_VAR(setPassed, PSQ_RB_DASCALE_STEP_LARGE)
 End
@@ -431,7 +431,7 @@ static Function PS_RB_Test6()
 	WAVE/Z durations = GetLastSetting(numericalValues, sweeps[0], PSQ_CreateLBNKey(PSQ_RHEOBASE, PSQ_FMT_LBN_PULSE_DUR, query = 1), UNKNOWN_MODE)
 	CHECK_EQUAL_WAVES(durations, {3, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN}, mode = WAVE_DATA, tol = 0.01)
 
-	key = PSQ_CreateLBNKey(PSQ_RHEOBASE, PSQ_FMT_LBN_STEPSIZE, query = 1)
+	key = PSQ_CreateLBNKey(PSQ_RHEOBASE, PSQ_FMT_LBN_STEPSIZE_FUTURE, query = 1)
 	setPassed = GetLastSettingIndepRAC(numericalValues, sweepNo, key, UNKNOWN_MODE)
 	CHECK_EQUAL_VAR(setPassed, PSQ_RB_DASCALE_STEP_LARGE)
 End
@@ -492,7 +492,7 @@ static Function PS_RB_Test7()
 	WAVE/Z durations = GetLastSetting(numericalValues, sweeps[0], PSQ_CreateLBNKey(PSQ_RHEOBASE, PSQ_FMT_LBN_PULSE_DUR, query = 1), UNKNOWN_MODE)
 	CHECK_EQUAL_WAVES(durations, {3, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN}, mode = WAVE_DATA, tol = 0.01)
 
-	key = PSQ_CreateLBNKey(PSQ_RHEOBASE, PSQ_FMT_LBN_STEPSIZE, query = 1)
+	key = PSQ_CreateLBNKey(PSQ_RHEOBASE, PSQ_FMT_LBN_STEPSIZE_FUTURE, query = 1)
 	setPassed = GetLastSettingIndepRAC(numericalValues, sweepNo, key, UNKNOWN_MODE)
 	CHECK_EQUAL_VAR(setPassed, PSQ_RB_DASCALE_STEP_LARGE)
 End
@@ -560,7 +560,139 @@ static Function PS_RB_Test8()
 	WAVE/Z durations = GetLastSetting(numericalValues, sweeps[0], PSQ_CreateLBNKey(PSQ_RHEOBASE, PSQ_FMT_LBN_PULSE_DUR, query = 1), UNKNOWN_MODE)
 	CHECK_EQUAL_WAVES(durations, {3, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN}, mode = WAVE_DATA, tol = 0.01)
 
-	key = PSQ_CreateLBNKey(PSQ_RHEOBASE, PSQ_FMT_LBN_STEPSIZE, query = 1)
+	key = PSQ_CreateLBNKey(PSQ_RHEOBASE, PSQ_FMT_LBN_STEPSIZE_FUTURE, query = 1)
 	setPassed = GetLastSettingIndepRAC(numericalValues, sweepNo, key, UNKNOWN_MODE)
 	CHECK_EQUAL_VAR(setPassed, PSQ_RB_DASCALE_STEP_SMALL)
+End
+
+// check behaviour of DAScale 0 with PSQ_RB_DASCALE_STEP_LARGE stepsize
+static Function PS_RB_Run9()
+
+	STRUCT DAQSettings s
+	InitDAQSettingsFromString(s, "DAQ_MD1_RA1_IDX0_LIDX0_BKG_1")
+	AcquireData(s, PSQ_RB_DASCALE_STEP_LARGE)
+
+	WAVE wv = PSQ_CreateOverrideResults(DEVICE, HEADSTAGE, PSQ_RHEOBASE)
+	// baseline QC passes and first spikes, second not, third spikes
+	wv = 0
+	wv[0,1][][0] = 1
+	wv[][0][1]   = 1
+	wv[][2][1]   = 1
+End
+
+static Function PS_RB_Test9()
+
+	variable sweepNo, setPassed, i, numEntries, onsetDelay
+	variable initialDAScale
+	string key
+
+	WAVE numericalValues = GetLBNumericalValues(DEVICE)
+
+	CHECK_EQUAL_VAR(GetSetVariable(DEVICE, "SetVar_Sweep"), 3)
+
+	sweepNo = AFH_GetLastSweepAcquired(DEVICE)
+	CHECK_EQUAL_VAR(sweepNo, 2)
+
+	key = PSQ_CreateLBNKey(PSQ_RHEOBASE, PSQ_FMT_LBN_INITIAL_SCALE, query = 1)
+	initialDAScale = GetLastSettingIndepRAC(numericalValues, sweepNo, key, UNKNOWN_MODE)
+	CHECK_EQUAL_VAR(initialDAScale, PSQ_GetFinalDAScaleFake())
+
+	key = PSQ_CreateLBNKey(PSQ_RHEOBASE, PSQ_FMT_LBN_SET_PASS, query = 1)
+	setPassed = GetLastSettingIndep(numericalValues, sweepNo, key, UNKNOWN_MODE)
+	CHECK_EQUAL_VAR(setPassed, 1)
+
+	WAVE/Z baselineQCWave = GetBaselineQCResults_IGNORE(sweepNo)
+	CHECK_EQUAL_WAVES(baselineQCWave, {1, 1, 1}, mode = WAVE_DATA)
+
+	WAVE/Z spikeDetectionWave = GetSpikeResults_IGNORE(sweepNo)
+	CHECK_EQUAL_WAVES(spikeDetectionWave, {1, 0, 1}, mode = WAVE_DATA)
+
+	WAVE/Z sweeps = AFH_GetSweepsFromSameRACycle(numericalValues, sweepNo)
+	CHECK_WAVE(sweeps, NUMERIC_WAVE)
+	numEntries = DimSize(sweeps, ROWS)
+	CHECK_EQUAL_VAR(numEntries, 3)
+
+	Make/FREE/D/N=(numEntries) stimScale = GetLastSetting(numericalValues, sweeps[p], STIMSET_SCALE_FACTOR_KEY, DATA_ACQUISITION_MODE)[HEADSTAGE]
+	Make/FREE/D/N=(numEntries) stimScaleRef
+
+	stimScaleRef[0] = PSQ_RB_DASCALE_STEP_LARGE
+	stimScaleRef[1] = PSQ_RB_DASCALE_STEP_SMALL
+	stimScaleRef[2] = 2 * PSQ_RB_DASCALE_STEP_SMALL
+	stimScaleRef *= 1e12
+
+	CHECK_EQUAL_WAVES(stimScale, stimScaleRef, mode = WAVE_DATA, tol = 1e-14)
+
+	WAVE/Z durations = GetLastSetting(numericalValues, sweeps[0], PSQ_CreateLBNKey(PSQ_RHEOBASE, PSQ_FMT_LBN_PULSE_DUR, query = 1), UNKNOWN_MODE)
+	CHECK_EQUAL_WAVES(durations, {3, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN}, mode = WAVE_DATA, tol = 0.01)
+
+	key = PSQ_CreateLBNKey(PSQ_RHEOBASE, PSQ_FMT_LBN_STEPSIZE_FUTURE, query = 1)
+	setPassed = GetLastSettingIndepRAC(numericalValues, sweepNo, key, UNKNOWN_MODE)
+	CHECK_EQUAL_VAR(setPassed, PSQ_RB_DASCALE_STEP_SMALL)
+End
+
+// check behaviour of DAScale 0 with PSQ_RB_DASCALE_STEP_SMALL stepsize
+static Function PS_RB_Run10()
+
+	STRUCT DAQSettings s
+	InitDAQSettingsFromString(s, "DAQ_MD1_RA1_IDX0_LIDX0_BKG_1")
+	AcquireData(s, -8e-12)
+
+	WAVE wv = PSQ_CreateOverrideResults(DEVICE, HEADSTAGE, PSQ_RHEOBASE)
+	// baseline QC passes and first spikes not, rest spikes
+	wv = 0
+	wv[0,1][][0] = 1
+	wv[][0][1]   = 0
+	wv[][1,inf][1] = 1
+End
+
+static Function PS_RB_Test10()
+
+	variable sweepNo, setPassed, i, numEntries, onsetDelay
+	variable initialDAScale
+	string key
+
+	WAVE numericalValues = GetLBNumericalValues(DEVICE)
+
+	CHECK_EQUAL_VAR(GetSetVariable(DEVICE, "SetVar_Sweep"), 2)
+
+	sweepNo = AFH_GetLastSweepAcquired(DEVICE)
+	CHECK_EQUAL_VAR(sweepNo, 1)
+
+	key = PSQ_CreateLBNKey(PSQ_RHEOBASE, PSQ_FMT_LBN_INITIAL_SCALE, query = 1)
+	initialDAScale = GetLastSettingIndepRAC(numericalValues, sweepNo, key, UNKNOWN_MODE)
+	CHECK_EQUAL_VAR(initialDAScale, PSQ_GetFinalDAScaleFake())
+
+	key = PSQ_CreateLBNKey(PSQ_RHEOBASE, PSQ_FMT_LBN_SET_PASS, query = 1)
+	setPassed = GetLastSettingIndep(numericalValues, sweepNo, key, UNKNOWN_MODE)
+	CHECK_EQUAL_VAR(setPassed, 0)
+
+	WAVE/Z baselineQCWave = GetBaselineQCResults_IGNORE(sweepNo)
+	CHECK_EQUAL_WAVES(baselineQCWave, {1, 1}, mode = WAVE_DATA)
+
+	WAVE/Z spikeDetectionWave = GetSpikeResults_IGNORE(sweepNo)
+	CHECK_EQUAL_WAVES(spikeDetectionWave, {0, 1}, mode = WAVE_DATA)
+
+	WAVE/Z sweeps = AFH_GetSweepsFromSameRACycle(numericalValues, sweepNo)
+	CHECK_WAVE(sweeps, NUMERIC_WAVE)
+	numEntries = DimSize(sweeps, ROWS)
+	CHECK_EQUAL_VAR(numEntries, 2)
+
+	Make/FREE/D/N=(numEntries) stimScale = GetLastSetting(numericalValues, sweeps[p], STIMSET_SCALE_FACTOR_KEY, DATA_ACQUISITION_MODE)[HEADSTAGE]
+	Make/FREE/D/N=(numEntries) stimScaleRef
+
+	stimScaleRef[0] = -8
+	stimScaleRef[1] = 2
+
+	CHECK_EQUAL_WAVES(stimScale, stimScaleRef, mode = WAVE_DATA, tol = 1e-14)
+
+	WAVE/Z durations = GetLastSetting(numericalValues, sweeps[0], PSQ_CreateLBNKey(PSQ_RHEOBASE, PSQ_FMT_LBN_PULSE_DUR, query = 1), UNKNOWN_MODE)
+	CHECK_EQUAL_WAVES(durations, {3, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN}, mode = WAVE_DATA, tol = 0.01)
+
+	key = PSQ_CreateLBNKey(PSQ_RHEOBASE, PSQ_FMT_LBN_STEPSIZE_FUTURE, query = 1)
+	setPassed = GetLastSettingIndepRAC(numericalValues, sweepNo, key, UNKNOWN_MODE)
+	CHECK_EQUAL_VAR(setPassed, PSQ_RB_DASCALE_STEP_SMALL)
+
+	key = PSQ_CreateLBNKey(PSQ_RHEOBASE, PSQ_FMT_LBN_RB_LIMITED_RES, query = 1)
+	WAVE/Z limitedResolution = GetLastSetting(numericalValues, sweepNo, key, UNKNOWN_MODE)
+	CHECK_EQUAL_WAVES(limitedResolution, {1, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN}, mode = WAVE_DATA, tol = 0.01)
 End

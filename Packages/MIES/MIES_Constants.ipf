@@ -896,6 +896,7 @@ Constant PSQ_TARGETV_THRESHOLD   = 1    // mV
 /// @{
 StrConstant PSQ_FMT_LBN_RB_DASCALE_EXC     = "%s DAScale exceeded"
 StrConstant PSQ_FMT_LBN_STEPSIZE           = "%s step size"
+StrConstant PSQ_FMT_LBN_STEPSIZE_FUTURE    = "%s step size (fut.)"
 StrConstant PSQ_FMT_LBN_SPIKE_DETECT       = "%s spike detected"
 StrConstant PSQ_FMT_LBN_SPIKE_POSITIONS    = "%s spike positions"
 StrConstant PSQ_FMT_LBN_FINAL_SCALE        = "%s final DAScale"
@@ -909,6 +910,7 @@ StrConstant PSQ_FMT_LBN_SWEEP_PASS         = "%s Sweep QC"
 StrConstant PSQ_FMT_LBN_SET_PASS           = "%s Set QC"
 StrConstant PSQ_FMT_LBN_PULSE_DUR          = "%s Pulse duration"
 StrConstant PSQ_FMT_LBN_SPIKE_DASCALE_ZERO = "%s spike with zero"
+StrConstant PSQ_FMT_LBN_RB_LIMITED_RES     = "%s limited resolut."
 /// @}
 
 /// @name PatchSeq types of analysis functions

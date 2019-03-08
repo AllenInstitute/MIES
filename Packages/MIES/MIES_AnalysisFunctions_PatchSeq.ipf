@@ -22,7 +22,9 @@
 /// PSQ_FMT_LBN_SPIKE_DETECT       The required number of spikes were detected on the sweep  SP, RB, RA        No                     Yes
 /// PSQ_FMT_LBN_SPIKE_POSITIONS    Spike positions in ms                                     RA                No                     Yes
 /// PSQ_FMT_LBN_STEPSIZE           Current DAScale step size                                 SP, RB            No                     No
-/// PSQ_FMT_LBN_RB_DASCALE_EXC     Range for valid DAScale values is exceedd                 RB                No                     Yes
+/// PSQ_FMT_LBN_STEPSIZE_FUTURE    Future DAScale step size                                  RB                No                     No
+/// PSQ_FMT_LBN_RB_DASCALE_EXC     Range for valid DAScale values is exceeded                RB                No                     Yes
+/// PSQ_FMT_LBN_RB_LIMITED_RES     Failed due to limited DAScale resolution                  RB                No                     Yes
 /// PSQ_FMT_LBN_FINAL_SCALE        Final DAScale of the given headstage, only set on success SP, RB            No                     No
 /// PSQ_FMT_LBN_SPIKE_DASCALE_ZERO Sweep spiked with DAScale of 0                            SP                No                     No
 /// PSQ_FMT_LBN_INITIAL_SCALE      Initial DAScale                                           RB                No                     No
@@ -712,16 +714,22 @@ Function/WAVE PSQ_CreateOverrideResults(panelTitle, headstage, type)
 	return wv
 End
 
-/// @brief Store the current step size in the labnotebook
-static Function PSQ_StoreStepSizeInLBN(panelTitle, type, sweepNo, stepsize)
+/// @brief Store the step size in the labnotebook
+static Function PSQ_StoreStepSizeInLBN(panelTitle, type, sweepNo, stepsize, [future])
 	string panelTitle
-	variable type, sweepNo, stepsize
+	variable type, sweepNo, stepsize, future
 
 	string key
 
+	if(ParamIsDefault(future))
+		future = 0
+	else
+		future = !!future
+	endif
+
 	Make/FREE/D/N=(LABNOTEBOOK_LAYER_COUNT) values = NaN
 	values[INDEP_HEADSTAGE] = stepsize
-	key = PSQ_CreateLBNKey(type, PSQ_FMT_LBN_STEPSIZE)
+	key = PSQ_CreateLBNKey(type, SelectString(future, PSQ_FMT_LBN_STEPSIZE, PSQ_FMT_LBN_STEPSIZE_FUTURE))
 	ED_AddEntryToLabnotebook(panelTitle, key, values, overrideSweepNo = sweepNo)
 End
 
@@ -1625,7 +1633,7 @@ Function PSQ_Rheobase(panelTitle, s)
 	STRUCT AnalysisFunction_V3 &s
 
 	variable DAScale, val, numSweeps, currentSweepHasSpike, lastSweepHasSpike, setPassed
-	variable baselineQCPassed, finalDAScale, initialDAScale, stepSize
+	variable baselineQCPassed, finalDAScale, initialDAScale, stepSize, previousStepSize
 	variable numBaselineChunks, lastFifoPos, totalOnsetDelay, fifoInStimsetPoint, fifoInStimsetTime
 	variable i, ret, numSweepsWithSpikeDetection, sweepNoFound, length, minLength, multiplier
 	string key, msg
@@ -1700,7 +1708,7 @@ Function PSQ_Rheobase(panelTitle, s)
 			key = PSQ_CreateLBNKey(PSQ_SQUARE_PULSE, PSQ_FMT_LBN_FINAL_SCALE, query = 1)
 			finalDAScale = GetLastSweepWithSettingIndep(numericalValues, key, sweepNoFound)
 
-			if(!IsFinite(finalDAScale) || !IsValidSweepNumber(sweepNoFound))
+			if(!IsFinite(finalDAScale) || CheckIfSmall(finalDAScale, tol = 1e-14) || !IsValidSweepNumber(sweepNoFound))
 				printf "(%s): Could not find final DAScale value from one of the previous analysis functions.\r", panelTitle
 				if(PSQ_TestOverrideActive())
 					finalDASCale = PSQ_GetFinalDAScaleFake()
@@ -1737,8 +1745,13 @@ Function PSQ_Rheobase(panelTitle, s)
 				key = PSQ_CreateLBNKey(PSQ_RHEOBASE, PSQ_FMT_LBN_INITIAL_SCALE)
 				ED_AddEntryToLabnotebook(panelTitle, key, result)
 
-				PSQ_StoreStepSizeInLBN(panelTitle, PSQ_RHEOBASE, s.sweepNo, PSQ_RB_DASCALE_STEP_LARGE)
+				PSQ_StoreStepSizeInLBN(panelTitle, PSQ_RHEOBASE, s.sweepNo, PSQ_RB_DASCALE_STEP_LARGE, future = 1)
 			endif
+
+			// store the future step size as the step size of the current sweep
+			key = PSQ_CreateLBNKey(PSQ_RHEOBASE, PSQ_FMT_LBN_STEPSIZE_FUTURE, query = 1)
+			stepSize = GetLastSettingIndepSCI(numericalValues, s.sweepNo, key, s.headstage, UNKNOWN_MODE)
+			PSQ_StoreStepSizeInLBN(panelTitle, PSQ_RHEOBASE, s.sweepNo, stepSize)
 
 			key = PSQ_CreateLBNKey(PSQ_RHEOBASE, PSQ_FMT_LBN_BL_QC_PASS, query = 1)
 			WAVE/Z baselineQCPassedWave = GetLastSetting(numericalValues, s.sweepNo, key, UNKNOWN_MODE)
@@ -1775,14 +1788,19 @@ Function PSQ_Rheobase(panelTitle, s)
 			if(numSweepsWithSpikeDetection >= 2)
 				lastSweepHasSpike = spikeDetectionRA[numSweepsWithSpikeDetection - 2]
 
-				if(IsFinite(currentSweepHasSpike) && IsFinite(lastSweepHasSpike) \
-				   && (currentSweepHasSpike != lastSweepHasSpike))
+				key = PSQ_CreateLBNKey(PSQ_RHEOBASE, PSQ_FMT_LBN_STEPSIZE, query = 1)
+				stepSize = GetLastSettingIndep(numericalValues, s.sweepNo, key, UNKNOWN_MODE)
+				previousStepSize = GetLastSettingIndep(numericalValues, s.sweepNo - 1, key, UNKNOWN_MODE)
 
-					key = PSQ_CreateLBNKey(PSQ_RHEOBASE, PSQ_FMT_LBN_STEPSIZE, query = 1)
+				if(IsFinite(currentSweepHasSpike) && IsFinite(lastSweepHasSpike) \
+				   && (currentSweepHasSpike != lastSweepHasSpike)                \
+				   && (stepSize == previousStepSize))
+
+					key = PSQ_CreateLBNKey(PSQ_RHEOBASE, PSQ_FMT_LBN_STEPSIZE_FUTURE, query = 1)
 					stepSize = GetLastSettingIndepSCI(numericalValues, s.sweepNo, key, s.headstage, UNKNOWN_MODE)
 
 					if(DAScale <= PSQ_RB_DASCALE_SMALL_BORDER && stepSize == PSQ_RB_DASCALE_STEP_LARGE)
-						PSQ_StoreStepSizeInLBN(panelTitle, PSQ_RHEOBASE, s.sweepNo, PSQ_RB_DASCALE_STEP_SMALL)
+						PSQ_StoreStepSizeInLBN(panelTitle, PSQ_RHEOBASE, s.sweepNo, PSQ_RB_DASCALE_STEP_SMALL, future = 1)
 					else
 						// mark the set as passed
 						// we can't mark each sweep as passed/failed as it is not possible
@@ -1800,13 +1818,45 @@ Function PSQ_Rheobase(panelTitle, s)
 				endif
 			endif
 
-			// refetch possibly changed stepSize
-			key = PSQ_CreateLBNKey(PSQ_RHEOBASE, PSQ_FMT_LBN_STEPSIZE, query = 1)
+			// fetch the future step size
+			key = PSQ_CreateLBNKey(PSQ_RHEOBASE, PSQ_FMT_LBN_STEPSIZE_FUTURE, query = 1)
 			stepSize = GetLastSettingIndepSCI(numericalValues, s.sweepNo, key, s.headstage, UNKNOWN_MODE)
 			if(currentSweepHasSpike)
 				DAScale -= stepSize
 			else
 				DAScale += stepSize
+			endif
+
+			if(CheckIfSmall(DaScale, tol = 1e-14) && currentSweepHasSpike)
+				// future DAScale would be zero
+				if(stepSize == PSQ_RB_DASCALE_STEP_SMALL)
+					// mark set as failure
+					Make/FREE/D/N=(LABNOTEBOOK_LAYER_COUNT) result = NaN
+					key = PSQ_CreateLBNKey(PSQ_RHEOBASE, PSQ_FMT_LBN_SET_PASS)
+					result[INDEP_HEADSTAGE] = 0
+					ED_AddEntryToLabnotebook(panelTitle, key, result, unit = LABNOTEBOOK_BINARY_UNIT)
+
+					key = PSQ_CreateLBNKey(PSQ_RHEOBASE, PSQ_FMT_LBN_RB_LIMITED_RES)
+					result              = NaN
+					result[s.headstage] = 1
+					ED_AddEntryToLabnotebook(panelTitle, key, result, unit = LABNOTEBOOK_BINARY_UNIT)
+
+					PSQ_ForceSetEvent(panelTitle, s.headstage)
+					RA_SkipSweeps(panelTitle, inf)
+
+					DEBUGPRINT("Set has failed")
+					break
+				elseif(stepSize == PSQ_RB_DASCALE_STEP_LARGE)
+					// retry with much smaller values
+					PSQ_StoreStepSizeInLBN(panelTitle, PSQ_RHEOBASE, s.sweepNo, PSQ_RB_DASCALE_STEP_SMALL, future = 1)
+
+					key = PSQ_CreateLBNKey(PSQ_RHEOBASE, PSQ_FMT_LBN_STEPSIZE_FUTURE, query = 1)
+					stepSize = GetLastSettingIndepSCI(numericalValues, s.sweepNo, key, s.headstage, UNKNOWN_MODE)
+
+					DAScale = PSQ_RB_DASCALE_STEP_SMALL
+				else
+					ASSERT(0, "Unknown step size")
+				endif
 			endif
 
 			key = PSQ_CreateLBNKey(PSQ_RHEOBASE, PSQ_FMT_LBN_INITIAL_SCALE, query = 1)
@@ -1859,6 +1909,16 @@ Function PSQ_Rheobase(panelTitle, s)
 				Make/FREE/D/N=(LABNOTEBOOK_LAYER_COUNT) result = NaN
 				result[s.headstage] = 0
 				key = PSQ_CreateLBNKey(PSQ_RHEOBASE, PSQ_FMT_LBN_RB_DASCALE_EXC)
+				ED_AddEntryToLabnotebook(panelTitle, key, result, unit = LABNOTEBOOK_BINARY_UNIT)
+			endif
+
+			key = PSQ_CreateLBNKey(PSQ_RHEOBASE, PSQ_FMT_LBN_RB_LIMITED_RES, query = 1)
+			WAVE/Z limitedResolution = GetLastSettingSCI(numericalValues, s.sweepNo, key, s.headstage, UNKNOWN_MODE)
+
+			if(!WaveExists(limitedResolution))
+				Make/FREE/D/N=(LABNOTEBOOK_LAYER_COUNT) result = NaN
+				result[s.headstage] = 0
+				key = PSQ_CreateLBNKey(PSQ_RHEOBASE, PSQ_FMT_LBN_RB_LIMITED_RES)
 				ED_AddEntryToLabnotebook(panelTitle, key, result, unit = LABNOTEBOOK_BINARY_UNIT)
 			endif
 

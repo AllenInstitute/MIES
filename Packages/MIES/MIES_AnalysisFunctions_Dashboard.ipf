@@ -354,6 +354,15 @@ static Function/S AD_GetRheobaseFailMsg(numericalValues, sweepNo, headstage)
 		return "Failure due to DAScale value exceeded"
 	endif
 
+	key = PSQ_CreateLBNKey(PSQ_RHEOBASE, PSQ_FMT_LBN_RB_LIMITED_RES, query = 1)
+	WAVE/Z limitedResolution = GetLastSettingEachSCI(numericalValues, sweepNo, key, headstage, UNKNOWN_MODE)
+	ASSERT(WaveExists(limitedResolution), "Missing limited resolution labnotebook entry")
+	WaveTransform/O zapNaNs, limitedResolution
+
+	if(Sum(limitedResolution) > 0)
+		return "Failure due to limited resolution"
+	endif
+
 	key = PSQ_CreateLBNKey(PSQ_RHEOBASE, PSQ_FMT_LBN_SPIKE_DETECT, query = 1)
 	WAVE/Z spikeDetect = GetLastSettingEachSCI(numericalValues, sweepNo, key, headstage, UNKNOWN_MODE)
 
