@@ -33,20 +33,9 @@ Function AFH_GetHeadstageFromADC(panelTitle, AD)
 	string panelTitle
 	variable AD
 
-	variable i, row, entries
+	WAVE channelClampMode = GetChannelClampMode(panelTitle)
 
-	WAVE ChanAmpAssign = GetChanAmpAssign(panelTitle)
-	WAVE ChannelClampMode = GetChannelClampMode(panelTitle)
-
-	entries = DimSize(ChanAmpAssign, COLS)
-	row = ChannelClampMode[AD][%ADC] == V_CLAMP_MODE ? 2 : 2 + 4
-	for(i = 0; i < entries; i += 1)
-		if(chanAmpAssign[row][i] == AD)
-			return i
-		endif
-	endfor
-
-	return NaN
+	return channelClampMode[AD][%ADC][%Headstage]
 End
 
 /// @brief Return the headstage the DA channel is assigned to
@@ -60,21 +49,9 @@ Function AFH_GetHeadstageFromDAC(panelTitle, DA)
 	string 	panelTitle
 	variable DA
 
-	variable i, row, entries
-
-	WAVE ChanAmpAssign = GetChanAmpAssign(panelTitle)
 	WAVE channelClampMode = GetChannelClampMode(panelTitle)
 
-	entries = DimSize(chanAmpAssign, COLS)
-	row = channelClampMode[DA][%DAC] == V_CLAMP_MODE ? 0 : 0 + 4
-
-	for(i = 0; i < entries; i += 1)
-		if(chanAmpAssign[row][i] == DA)
-			return i
-		endif
-	endfor
-
-	return NaN
+	return channelClampMode[DA][%DAC][%Headstage]
 End
 
 /// @brief Return the AD channel assigned to the headstage
