@@ -2369,7 +2369,7 @@ static Function DAP_CheckHeadStage(panelTitle, headStage, mode)
 		return 1
 	endif
 
-	if(DAheadstage != ADheadstage)
+	if(DAheadstage != ADheadstage || headstage != ADheadstage || headstage != DAheadstage)
 		printf "(%s) The configured headstages for the DA channel %d and the AD channel %d differ (%d vs %d).\r", panelTitle, DACchannel, ADCchannel, DAheadstage, ADheadstage
 		ControlWindowToFront()
 		return 1
