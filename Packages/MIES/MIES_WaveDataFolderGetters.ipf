@@ -456,6 +456,9 @@ End
 
 /// @brief Return a wave reference to the channel clamp mode wave
 ///
+/// Only specialized code which does not have a headstage, or needs to know the
+/// clamp mode for unassociated channels, should use this function.
+///
 /// Rows:
 /// - Channel numbers
 ///
