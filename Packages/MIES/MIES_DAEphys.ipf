@@ -2276,7 +2276,7 @@ static Function DAP_CheckHeadStage(panelTitle, headStage, mode)
 
 	// needs to be at the beginning as DAP_ApplyClmpModeSavdSettngs writes into
 	// ChanAmpAssign/ChanAmpAssignUnit
-	if(ampConnState == AMPLIFIER_CONNECTION_SUCCESS && IsValidClampMode(clampMode))
+	if(ampConnState == AMPLIFIER_CONNECTION_SUCCESS && AI_IsValidClampMode(clampMode))
 		DAP_ApplyClmpModeSavdSettngs(panelTitle, headstage, clampMode)
 	endif
 
