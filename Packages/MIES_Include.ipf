@@ -1,9 +1,9 @@
 #pragma TextEncoding = "UTF-8"
-#pragma rtGlobals=3		// Use modern global access method and strict wave access.
+#pragma rtGlobals=3 // Use modern global access method and strict wave access.
 #pragma rtFunctionErrors=1
 
 #if (IgorVersion() >= 8.00)
-#pragma IgorVersion=8.02
+#pragma IgorVersion=8.03
 #else
 #pragma IgorVersion=7.08
 #endif
