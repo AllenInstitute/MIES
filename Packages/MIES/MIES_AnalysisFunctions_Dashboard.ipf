@@ -348,8 +348,9 @@ static Function/S AD_GetRheobaseFailMsg(numericalValues, sweepNo, headstage)
 	key = PSQ_CreateLBNKey(PSQ_RHEOBASE, PSQ_FMT_LBN_RB_DASCALE_EXC, query = 1)
 	WAVE/Z daScaleExc = GetLastSettingEachSCI(numericalValues, sweepNo, key, headstage, UNKNOWN_MODE)
 	ASSERT(WaveExists(daScaleExc), "Missing DAScale exceeded LBN entry")
+	WaveTransform/O zapNaNs, daScaleExc
 
-	if(daScaleExc[headstage])
+	if(Sum(daScaleExc) > 0)
 		return "Failure due to DAScale value exceeded"
 	endif
 
