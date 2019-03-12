@@ -757,13 +757,18 @@ static Function DC_PlaceDataInHardwareDataWave(panelTitle, numActiveChannels, da
 
 		maxITI = max(maxITI, WB_GetITI(stimSet[activeColumn], setColumn[activeColumn]))
 
-		channelMode = ChannelClampMode[i][%DAC][%Headstage]
-		if(channelMode == V_CLAMP_MODE)
-			testPulseAmplitude[activeColumn] = TPAmpVClamp
-		elseif(channelMode == I_CLAMP_MODE || channelMode == I_EQUAL_ZERO_MODE)
-			testPulseAmplitude[activeColumn] = TPAmpIClamp
-		else
-			ASSERT(0, "Unknown clamp mode")
+		if(IsFinite(headstageDAC[activeColumn]))
+			channelMode = ChannelClampMode[i][%DAC][%Headstage]
+			if(channelMode == V_CLAMP_MODE)
+				testPulseAmplitude[activeColumn] = TPAmpVClamp
+			elseif(channelMode == I_CLAMP_MODE || channelMode == I_EQUAL_ZERO_MODE)
+				testPulseAmplitude[activeColumn] = TPAmpIClamp
+			else
+				ASSERT(0, "Unknown clamp mode")
+			endif
+		else // unassoc channel
+			channelMode = NaN
+			testPulseAmplitude[activeColumn] = 0.0
 		endif
 
 		ctrl = GetSpecialControlLabel(CHANNEL_TYPE_DAC, CHANNEL_CONTROL_SCALE)
