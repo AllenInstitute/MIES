@@ -2524,10 +2524,18 @@ End
 /// @brief Return a string in ISO 8601 format with timezone UTC
 /// @param secondsSinceIgorEpoch [optional, defaults to number of seconds until now] Seconds since the Igor Pro epoch (1/1/1904) in UTC
 /// @param numFracSecondsDigits  [optional, defaults to zero] Number of sub-second digits
-Function/S GetISO8601TimeStamp([secondsSinceIgorEpoch, numFracSecondsDigits])
-	variable secondsSinceIgorEpoch, numFracSecondsDigits
+/// @param localTimeZone         [optional, defaults to false] Use the local time zone instead of UTC
+Function/S GetISO8601TimeStamp([secondsSinceIgorEpoch, numFracSecondsDigits, localTimeZone])
+	variable secondsSinceIgorEpoch, numFracSecondsDigits, localTimeZone
 
 	string str
+	variable timezone
+
+	if(ParamIsDefault(localTimeZone))
+		localTimeZone = 0
+	else
+		localTimeZone = !!localTimeZone
+	endif
 
 	if(ParamIsDefault(numFracSecondsDigits))
 		numFracSecondsDigits = 0
@@ -2536,10 +2544,19 @@ Function/S GetISO8601TimeStamp([secondsSinceIgorEpoch, numFracSecondsDigits])
 	endif
 
 	if(ParamIsDefault(secondsSinceIgorEpoch))
-		secondsSinceIgorEpoch = DateTimeInUTC()
+		if(localTimeZone)
+			secondsSinceIgorEpoch = DateTime
+		else
+			secondsSinceIgorEpoch = DateTimeInUTC()
+		endif
 	endif
 
-	sprintf str, "%sT%sZ", Secs2Date(secondsSinceIgorEpoch, -2), Secs2Time(secondsSinceIgorEpoch, 3, numFracSecondsDigits)
+	if(localTimeZone)
+		timezone = Date2Secs(-1,-1,-1)
+		sprintf str, "%sT%s%+03d:%02d", Secs2Date(secondsSinceIgorEpoch, -2), Secs2Time(secondsSinceIgorEpoch, 3, numFracSecondsDigits), trunc(timezone / 3600), abs(mod(timezone / 60, 60))
+	else
+		sprintf str, "%sT%sZ", Secs2Date(secondsSinceIgorEpoch, -2), Secs2Time(secondsSinceIgorEpoch, 3, numFracSecondsDigits)
+	endif
 
 	return str
 End

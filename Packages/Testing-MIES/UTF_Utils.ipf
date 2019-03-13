@@ -204,6 +204,12 @@ Function AcceptsValid10()
 	CHECK_EQUAL_VAR(actual, expected)
 End
 
+Function FailsWithLocalTimeZone()
+
+	variable actual = ParseISO8601TimeStamp(GetIso8601TimeStamp(localtimeZone = 1))
+	CHECK_EQUAL_VAR(actual, NaN)
+End
+
 /// @}
 
 /// GetSetIntersection
