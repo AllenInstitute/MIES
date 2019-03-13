@@ -74,8 +74,8 @@ Function ASSERT(var, errorMsg)
 	variable var
 	string errorMsg
 
-	string stracktrace, miesVersionStr
-
+	string stracktrace, miesVersionStr, lockedDevicesStr, device
+	variable i, numLockedDevices
 
 	try
 		AbortOnValue var==0, 1
@@ -107,9 +107,46 @@ Function ASSERT(var, errorMsg)
 			miesVersionStr = ""
 		endif
 
+		SVAR/Z lockedDevices = root:MIES:HardwareDevices:ITCPanelTitleList
+
+		Make/FREE/T sweeps =  NONE
+		Make/FREE/T tpStates = NONE
+		Make/FREE/T daqStates = NONE
+
+		if(!SVAR_Exists(lockedDevices) || strlen(lockedDevices) == 0)
+			lockedDevicesStr = NONE
+		else
+			lockedDevicesStr = lockedDevices
+
+			numLockedDevices = ItemsInList(lockedDevicesStr)
+
+#if exists("AFH_GetLastSweepAcquired")
+			Redimension/N=(numLockedDevices) sweeps, daqStates, tpStates
+
+			for(i = 0; i < numLockedDevices; i += 1)
+				device = StringFromList(i, lockedDevicesStr)
+				NVAR runMode = $GetDataAcqRunMode(device)
+				NVAR testpulseMode = $GetTestpulseRunMode(device)
+
+				sweeps[i]    = num2str(AFH_GetLastSweepAcquired(device))
+				tpStates[i]  = TestPulseRunModeToString(testpulseMode)
+				daqStates[i] = DAQRunModeToString(runMode)
+			endfor
+#endif
+		endif
+
 		print "Please provide the following information if you contact the MIES developers:"
 		print "################################"
+		print "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
 		print GetStackTrace()
+		print "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
+		printf "Time: %s\r", GetIso8601TimeStamp(localTimeZone = 1)
+		printf "Locked device: [%s]\r", lockedDevicesStr
+		printf "Current sweep: [%s]\r", TextWaveToList(sweeps, ";")
+		printf "DAQ: [%s]\r", TextWaveToList(daqStates, ";")
+		printf "Testpulse: [%s]\r", TextWaveToList(tpStates, ";")
+		printf "Experiment: %s.pxp\r", GetExperimentName()
+		printf "Igor Pro version: %s (%s)\r", GetIgorProVersion(), StringByKey("BUILD", IgorInfo(0))
 		print "MIES version:"
 		print miesVersionStr
 		print "################################"
