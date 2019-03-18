@@ -1286,38 +1286,6 @@ Function GetNumericSubType(subType)
 	endswitch
 End
 
-///@brief Places paired checkboxes in opposite state
-///
-/// @param win     window name
-/// @param checkBoxIn	ctrl checkbox ex. cba.ctrlName
-/// @param checkBoxPartner	checkbox that will be placed in opposite state
-/// @param checkBoxInState	state of the ctrl checkbox
-Function ToggleCheckBoxes(win, checkBoxIn, checkBoxPartner, checkBoxInState)
-	string win
-	string checkBoxIn
-	string checkBoxPartner
-	variable checkBoxInState
-
-	SetCheckBoxState(win, checkBoxIn, checkBoxInState)
-	SetCheckBoxState(win, checkBoxPartner, !checkBoxInState)
-End
-
-///@brief Placed paired checkboxes in same state
-///
-/// @param win     window name
-/// @param checkBoxIn	ctrl checkbox ex. cba.ctrlName
-/// @param checkBoxPartner	checkbox that will be placed in the same state
-/// @param checkBoxInState	state of the ctrl checkbox
-Function EqualizeCheckBoxes(win, checkBoxIn, checkBoxPartner, checkBoxInState)
-	string win
-	string checkBoxIn
-	string checkBoxPartner
-	variable checkBoxInState
-
-	SetCheckBoxState(win, checkBoxIn, checkBoxInState)
-	SetCheckBoxState(win, checkBoxPartner, checkBoxInState)
-End
-
 ///@brief Return the control type as string
 ///
 /// @param win     window name
