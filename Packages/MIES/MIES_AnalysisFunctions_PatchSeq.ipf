@@ -548,6 +548,10 @@ static Function PSQ_CalculateAvg(wv, column, startTime, rangeTime)
 	startPoints = startTime / DimDelta(wv, ROWS)
 	rangePoints = rangeTime / DimDelta(wv, ROWS)
 
+	if(startPoints + rangePoints >= DimSize(wv, ROWS))
+		rangePoints = DimSize(wv, ROWS) - startPoints - 1
+	endif
+
 	MatrixOP/FREE data = subWaveC(wv, startPoints, column, rangePoints)
 	MatrixOP/FREE avg  = mean(data)
 
