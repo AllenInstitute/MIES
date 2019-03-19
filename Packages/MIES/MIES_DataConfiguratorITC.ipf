@@ -757,13 +757,18 @@ static Function DC_PlaceDataInHardwareDataWave(panelTitle, numActiveChannels, da
 
 		maxITI = max(maxITI, WB_GetITI(stimSet[activeColumn], setColumn[activeColumn]))
 
-		channelMode = ChannelClampMode[i][%DAC]
-		if(channelMode == V_CLAMP_MODE)
-			testPulseAmplitude[activeColumn] = TPAmpVClamp
-		elseif(channelMode == I_CLAMP_MODE || channelMode == I_EQUAL_ZERO_MODE)
-			testPulseAmplitude[activeColumn] = TPAmpIClamp
-		else
-			ASSERT(0, "Unknown clamp mode")
+		if(IsFinite(headstageDAC[activeColumn]))
+			channelMode = ChannelClampMode[i][%DAC][%Headstage]
+			if(channelMode == V_CLAMP_MODE)
+				testPulseAmplitude[activeColumn] = TPAmpVClamp
+			elseif(channelMode == I_CLAMP_MODE || channelMode == I_EQUAL_ZERO_MODE)
+				testPulseAmplitude[activeColumn] = TPAmpIClamp
+			else
+				ASSERT(0, "Unknown clamp mode")
+			endif
+		else // unassoc channel
+			channelMode = NaN
+			testPulseAmplitude[activeColumn] = 0.0
 		endif
 
 		ctrl = GetSpecialControlLabel(CHANNEL_TYPE_DAC, CHANNEL_CONTROL_SCALE)
@@ -790,10 +795,8 @@ static Function DC_PlaceDataInHardwareDataWave(panelTitle, numActiveChannels, da
 		endif
 
 		DC_DocumentChannelProperty(panelTitle, "DAC", headstageDAC[activeColumn], i, var=i)
-
-		WAVE DA_EphysGuiState = GetDA_EphysGuiStateNum(panelTitle)
-		DC_DocumentChannelProperty(panelTitle, "DA GAIN", headstageDAC[activeColumn], i, var=DA_EphysGuiState[DAC[activeColumn]][%$GetSpecialControlLabel(CHANNEL_TYPE_DAC, CHANNEL_CONTROL_GAIN)])
-
+		ctrl = GetSpecialControlLabel(CHANNEL_TYPE_DAC, CHANNEL_CONTROL_GAIN)
+		DC_DocumentChannelProperty(panelTitle, "DA GAIN", headstageDAC[activeColumn], i, var=DAG_GetNumericalValue(panelTitle, ctrl, index = i))
 		DC_DocumentChannelProperty(panelTitle, STIM_WAVE_NAME_KEY, headstageDAC[activeColumn], i, str=setName[activeColumn])
 		DC_DocumentChannelProperty(panelTitle, STIMSET_WAVE_NOTE_KEY, headstageDAC[activeColumn], i, str=NormalizeToEOL(RemoveEnding(note(stimSet[activeColumn]), "\r"), "\n"))
 
@@ -1043,6 +1046,26 @@ static Function DC_PlaceDataInHardwareDataWave(panelTitle, numActiveChannels, da
 	DC_DocumentChannelProperty(panelTitle, "Skip analysis functions", INDEP_HEADSTAGE, NaN, var=DAG_GetNumericalValue(panelTitle, "Check_Settings_SkipAnalysFuncs"))
 	DC_DocumentChannelProperty(panelTitle, "Repeat sweep on async alarm", INDEP_HEADSTAGE, NaN, var=DAG_GetNumericalValue(panelTitle, "Check_Settings_AlarmAutoRepeat"))
 	DC_DocumentChannelProperty(panelTitle, "Digitizer Hardware Type", INDEP_HEADSTAGE, NaN, var=hardwareType)
+
+	if(DeviceCanLead(panelTitle))
+		SVAR listOfFollowerDevices = $GetFollowerList(panelTitle)
+		DC_DocumentChannelProperty(panelTitle, "Follower Device", INDEP_HEADSTAGE, NaN, str=listOfFollowerDevices)
+	endif
+
+	DC_DocumentChannelProperty(panelTitle, "MIES version", INDEP_HEADSTAGE, NaN, str=GetMIESVersionAsString())
+	DC_DocumentChannelProperty(panelTitle, "Igor Pro version", INDEP_HEADSTAGE, NaN, str=GetIgorProVersion())
+	DC_DocumentChannelProperty(panelTitle, "Igor Pro bitness", INDEP_HEADSTAGE, NaN, var=GetArchitectureBits())
+
+	for(i = 0; i < NUM_HEADSTAGES; i += 1)
+
+		DC_DocumentChannelProperty(panelTitle, "Headstage Active", i, NaN, var=statusHS[i])
+
+		if(!statusHS[i])
+			continue
+		endif
+
+		DC_DocumentChannelProperty(panelTitle, "Clamp Mode", i, NaN, var=DAG_GetHeadstageMode(panelTitle, i))
+	endfor
 
 	if(distributedDAQ)
 		// dDAQ requires that all stimsets have the same length, so store the stim set length

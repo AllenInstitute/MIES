@@ -2799,6 +2799,11 @@ Function GetArchitectureBits()
 #endif
 End
 
+/// @brief Return the Igor Pro version string
+Function/S GetIgorProVersion()
+	return StringByKey("IGORFILEVERSION", IgorInfo(3))
+End
+
 /// @brief Return a unique symbolic path name
 ///
 /// \rst

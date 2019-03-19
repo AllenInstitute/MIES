@@ -757,11 +757,11 @@ End
 Function AI_AssertOnInvalidClampMode(clampMode)
 	variable clampMode
 
-	ASSERT(IsValidClampMode(clampMode), "invalid clamp mode")
+	ASSERT(AI_IsValidClampMode(clampMode), "invalid clamp mode")
 End
 
 /// @brief Return true if the given clamp mode is valid
-Function IsValidClampMode(clampMode)
+Function AI_IsValidClampMode(clampMode)
 	variable clampMode
 
 	return clampMode == V_CLAMP_MODE || clampMode == I_CLAMP_MODE || clampMode == I_EQUAL_ZERO_MODE
@@ -1358,10 +1358,9 @@ Function AI_FillAndSendAmpliferSettings(panelTitle, sweepNo)
 	string panelTitle
 	variable sweepNo
 
-	variable numHS, i, axonSerial, channel, DAC, ampConnState
+	variable i, axonSerial, channel, ampConnState, clampMode
 	string mccSerial
 
-	WAVE channelClampMode      = GetChannelClampMode(panelTitle)
 	WAVE statusHS              = DAG_GetChannelState(panelTitle, CHANNEL_TYPE_HEADSTAGE)
 	WAVE ampSettingsWave       = GetAmplifierSettingsWave()
 	WAVE/T ampSettingsKey      = GetAmplifierSettingsKeyWave()
@@ -1371,8 +1370,8 @@ Function AI_FillAndSendAmpliferSettings(panelTitle, sweepNo)
 
 	ampSettingsWave = NaN
 
-	numHS = DimSize(statusHS, ROWS)
-	for(i = 0; i < numHS ; i += 1)
+	for(i = 0; i < NUM_HEADSTAGES; i += 1)
+
 		if(!statusHS[i])
 			continue
 		endif
@@ -1391,10 +1390,10 @@ Function AI_FillAndSendAmpliferSettings(panelTitle, sweepNo)
 			continue
 		endif
 
-		DAC = AFH_GetDACFromHeadstage(panelTitle, i)
-		ASSERT(IsFinite(DAC), "Expected finite DAC")
+		clampMode = DAG_GetHeadstageMode(panelTitle, i)
+		AI_AssertOnInvalidClampMode(clampMode)
 
-		if(channelClampMode[DAC][%DAC] == V_CLAMP_MODE)
+		if(clampMode == V_CLAMP_MODE)
 			ampSettingsWave[0][0][i]  = MCC_GetHoldingEnable()
 			ampSettingsWave[0][1][i]  = MCC_GetHolding() * AI_GetMCCScale(V_CLAMP_MODE, MCC_GETHOLDING_FUNC)
 			ampSettingsWave[0][2][i]  = MCC_GetOscKillerEnable()
@@ -1409,7 +1408,7 @@ Function AI_FillAndSendAmpliferSettings(panelTitle, sweepNo)
 			ampSettingsWave[0][40][i] = MCC_GetSlowCompCap()
 			ampSettingsWave[0][41][i] = MCC_GetFastCompTau()
 			ampSettingsWave[0][42][i] = MCC_GetSlowCompTau()
-		elseif(channelClampMode[DAC][%DAC] == I_CLAMP_MODE || channelClampMode[DAC][%DAC] == I_EQUAL_ZERO_MODE)
+		elseif(clampMode == I_CLAMP_MODE || clampMode == I_EQUAL_ZERO_MODE)
 			ampSettingsWave[0][10][i] = MCC_GetHoldingEnable()
 			ampSettingsWave[0][11][i] = MCC_GetHolding() * AI_GetMCCScale(I_CLAMP_MODE, MCC_GETHOLDING_FUNC)
 			ampSettingsWave[0][12][i] = MCC_GetNeutralizationEnable()

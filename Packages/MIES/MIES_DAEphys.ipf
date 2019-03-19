@@ -1043,7 +1043,7 @@ Function DAP_OneTimeCallBeforeDAQ(panelTitle, runMode)
 	string panelTitle
 	variable runMode
 
-	variable numHS, i, DAC, ADC, multiDevGUIEnState, hardwareType
+	variable i, DAC, ADC, multiDevGUIEnState, hardwareType
 
 	ASSERT(runMode != DAQ_NOT_RUNNING, "Invalid running mode")
 
@@ -1077,8 +1077,8 @@ Function DAP_OneTimeCallBeforeDAQ(panelTitle, runMode)
 	// disable the clamp mode checkboxes of all active headstages
 	WAVE statusHS = DAG_GetChannelState(panelTitle, CHANNEL_TYPE_HEADSTAGE)
 
-	numHS = DimSize(statusHS, ROWS)
-	for(i = 0; i < numHS; i += 1)
+	for(i = 0; i < NUM_HEADSTAGES; i += 1)
+
 		if(!statusHS[i])
 			continue
 		endif
@@ -2276,7 +2276,7 @@ static Function DAP_CheckHeadStage(panelTitle, headStage, mode)
 
 	// needs to be at the beginning as DAP_ApplyClmpModeSavdSettngs writes into
 	// ChanAmpAssign/ChanAmpAssignUnit
-	if(ampConnState == AMPLIFIER_CONNECTION_SUCCESS && IsValidClampMode(clampMode))
+	if(ampConnState == AMPLIFIER_CONNECTION_SUCCESS && AI_IsValidClampMode(clampMode))
 		DAP_ApplyClmpModeSavdSettngs(panelTitle, headstage, clampMode)
 	endif
 
@@ -2341,14 +2341,14 @@ static Function DAP_CheckHeadStage(panelTitle, headStage, mode)
 		return 1
 	endif
 
-	realMode = channelClampMode[DACchannel][%DAC]
+	realMode = channelClampMode[DACchannel][%DAC][%ClampMode]
 	if(realMode != clampMode)
 		printf "(%s) The clamp mode of DA %d is %s and differs from the requested mode %s.\r", panelTitle, DACchannel, ConvertAmplifierModeToString(realMode), ConvertAmplifierModeToString(clampMode)
 		ControlWindowToFront()
 		return 1
 	endif
 
-	realMode = channelClampMode[ADCchannel][%ADC]
+	realMode = channelClampMode[ADCchannel][%ADC][%ClampMode]
 	if(realMode != clampMode)
 		printf "(%s) The clamp mode of AD %d is %s and differs from the requested mode %s.\r", panelTitle, ADCchannel, ConvertAmplifierModeToString(realMode), ConvertAmplifierModeToString(clampMode)
 		ControlWindowToFront()
@@ -2369,7 +2369,7 @@ static Function DAP_CheckHeadStage(panelTitle, headStage, mode)
 		return 1
 	endif
 
-	if(DAheadstage != ADheadstage)
+	if(DAheadstage != ADheadstage || headstage != ADheadstage || headstage != DAheadstage)
 		printf "(%s) The configured headstages for the DA channel %d and the AD channel %d differ (%d vs %d).\r", panelTitle, DACchannel, ADCchannel, DAheadstage, ADheadstage
 		ControlWindowToFront()
 		return 1
@@ -2681,8 +2681,9 @@ static Function DAP_ApplyClmpModeSavdSettngs(panelTitle, headStage, clampMode)
 	GuiState[DACchannel][%$GetSpecialControlLabel(CHANNEL_TYPE_DAC, CHANNEL_CONTROL_GAIN)] = DAGain
 	ctrl = GetPanelControl(DACchannel, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_UNIT)
 	SetSetVariableString(panelTitle, ctrl, DaUnit)
-	ChannelClampMode[DACchannel][%DAC] = clampMode
 	GuiStateTxT[DACchannel][%$GetSpecialControlLabel(CHANNEL_TYPE_DAC, CHANNEL_CONTROL_UNIT)] = DAUnit
+	ChannelClampMode[DACchannel][%DAC][%ClampMode] = clampMode
+	ChannelClampMode[DACchannel][%DAC][%Headstage] = headStage
 
 	// ADC channels
 	ctrl = GetPanelControl(ADCchannel, CHANNEL_TYPE_ADC, CHANNEL_CONTROL_CHECK)
@@ -2694,7 +2695,8 @@ static Function DAP_ApplyClmpModeSavdSettngs(panelTitle, headStage, clampMode)
 	ctrl = GetPanelControl(ADCchannel, CHANNEL_TYPE_ADC, CHANNEL_CONTROL_UNIT)
 	SetSetVariableString(panelTitle, ctrl, ADUnit)
 	GuiStateTxT[ADCchannel][%$GetSpecialControlLabel(CHANNEL_TYPE_ADC, CHANNEL_CONTROL_UNIT)] = ADUnit
-	ChannelClampMode[ADCchannel][%ADC] = clampMode
+	ChannelClampMode[ADCchannel][%ADC][%ClampMode] = clampMode
+	ChannelClampMode[ADCchannel][%ADC][%Headstage] = headStage
 End
 
 static Function DAP_RemoveClampModeSettings(panelTitle, headStage, clampMode)
@@ -2722,12 +2724,12 @@ static Function DAP_RemoveClampModeSettings(panelTitle, headStage, clampMode)
 
 	ctrl = GetPanelControl(DACchannel, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_CHECK)
 	SetCheckBoxState(panelTitle, ctrl, CHECKBOX_UNSELECTED)
-	ChannelClampMode[DACchannel][%DAC] = nan
+	ChannelClampMode[DACchannel][%DAC][] = NaN
 	GuiState[DACchannel][%$GetSpecialControlLabel(CHANNEL_TYPE_DAC, CHANNEL_CONTROL_CHECK)] = CHECKBOX_UNSELECTED
 
 	ctrl = GetPanelControl(ADCchannel, CHANNEL_TYPE_ADC, CHANNEL_CONTROL_CHECK)
 	SetCheckBoxState(panelTitle, ctrl, CHECKBOX_UNSELECTED)
-	ChannelClampMode[ADCchannel][%ADC] = nan
+	ChannelClampMode[ADCchannel][%ADC][] = NaN
 	GuiState[ADCchannel][%$GetSpecialControlLabel(CHANNEL_TYPE_ADC, CHANNEL_CONTROL_CHECK)] = CHECKBOX_UNSELECTED
 End
 

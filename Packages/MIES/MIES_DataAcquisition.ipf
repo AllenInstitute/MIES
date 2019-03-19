@@ -242,7 +242,6 @@ Function DQ_ApplyAutoBias(panelTitle, BaselineSSAvg, SSResistance)
 	Wave BaselineSSAvg, SSResistance
 
 	variable headStage, actualcurrent, current, targetVoltage, targetVoltageTol, setVoltage
-	variable DAC, ADC
 	variable resistance, maximumAutoBiasCurrent
 	Wave TPStorage = GetTPStorage(panelTitle)
 	variable lastInvocation = GetNumberFromWaveNote(TPStorage, AUTOBIAS_LAST_INVOCATION_KEY)
@@ -257,27 +256,16 @@ Function DQ_ApplyAutoBias(panelTitle, BaselineSSAvg, SSResistance)
 	DEBUGPRINT("DQ_ApplyAutoBias's turn, curTime=", var=curTime)
 	SetNumberInWaveNote(TPStorage, AUTOBIAS_LAST_INVOCATION_KEY, curTime, format="%.06f")
 
-	if(isEmpty(panelTitle))
-		DEBUGPRINT("Can't work with an empty panelTitle")
-		return NaN
-	endif
-
-	Wave channelClampMode = GetChannelClampMode(panelTitle)
-	Wave ampSettings      = GetAmplifierParamStorageWave(panelTitle)
+	Wave ampSettings = GetAmplifierParamStorageWave(panelTitle)
+	WAVE statusHS = DAG_GetChannelState(panelTitle, CHANNEL_TYPE_HEADSTAGE)
 
 	for(headStage=0; headStage < NUM_HEADSTAGES; headStage+=1)
 
-		DAC = AFH_GetDACFromHeadstage(panelTitle, headstage)
-		ADC = AFH_GetADCFromHeadstage(panelTitle, headstage)
-
-		// From DAP_RemoveClampModeSettings and DAP_ApplyClmpModeSavdSettngs we know that
-		// both wave entries are NaN iff the headstage is unset
-		if(!IsFinite(DAC) || !IsFinite(ADC) || !IsFinite(channelClampMode[DAC][%DAC]) || !IsFinite(channelClampMode[ADC][%ADC]))
+		if(!statusHS[headstage])
 			continue
 		endif
 
-		// headStage channels not in current clamp mode
-		if(channelClampMode[DAC][%DAC] != I_CLAMP_MODE && channelClampMode[ADC][%ADC] != I_CLAMP_MODE)
+		if(DAG_GetHeadstageMode(panelTitle, headstage) != I_CLAMP_MODE)
 			continue
 		endif
 

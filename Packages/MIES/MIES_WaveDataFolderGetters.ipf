@@ -454,32 +454,78 @@ Function/Wave GetTPResultAsyncBuffer(panelTitle)
 	return wv
 End
 
+static Function GetHeadstageCompat(panelTitle, channelType, channelNumber, clampMode)
+	string panelTitle
+	variable channelType, channelNumber, clampMode
+
+	variable i, row
+
+	if(!AI_IsValidClampMode(clampMode))
+		return NaN
+	endif
+
+	WAVE chanAmpAssign = GetChanAmpAssign(panelTitle)
+
+	if(channelType == ITC_XOP_CHANNEL_TYPE_ADC)
+		row = clampMode == V_CLAMP_MODE ? 2 : 2 + 4
+	elseif(channelType == ITC_XOP_CHANNEL_TYPE_DAC)
+		row = clampMode == V_CLAMP_MODE ? 0 : 0 + 4
+	else
+		ASSERT(0, "Unexpected clamp mode")
+	endif
+
+	for(i = 0; i < NUM_HEADSTAGES; i += 1)
+		if(chanAmpAssign[row][i] == channelNumber)
+			return i
+		endif
+	endfor
+
+	return NaN
+ End
+
 /// @brief Return a wave reference to the channel clamp mode wave
+///
+/// Only specialized code which does not have a headstage, or needs to know the
+/// clamp mode for unassociated channels, should use this function.
 ///
 /// Rows:
 /// - Channel numbers
 ///
 /// Columns:
-/// - 0: DAC channels
-/// - 1: ADC channels
+/// - 0: DAC
+/// - 1: ADC
 ///
-/// Contents:
-/// - Clamp mode: One of V_CLAMP_MODE, I_CLAMP_MODE and I_EQUAL_ZERO_MODE
+/// Layers:
+/// - 0: Clamp Mode
+/// - 1: Headstage
 Function/Wave GetChannelClampMode(panelTitle)
 	string panelTitle
 
 	DFREF dfr = GetDevicePath(panelTitle)
+	variable versionOfNewWave = 1
 
 	Wave/Z/SDFR=dfr wv = ChannelClampMode
 
-	if(WaveExists(wv))
+	if(ExistsWithCorrectLayoutVersion(wv, versionOfNewWave))
 		return wv
-	endif
+	elseif(WaveExists(wv))
+		Redimension/N=(-1, -1, 2) wv
 
-	Make/N=(NUM_AD_CHANNELS, 2) dfr:ChannelClampMode/Wave=wv
+		// prefill with existing algorithm for easier upgrades
+		wv[][%DAC][1] = GetHeadstageCompat(panelTitle, ITC_XOP_CHANNEL_TYPE_DAC, p, wv[p][%DAC][0])
+		wv[][%ADC][1] = GetHeadstageCompat(panelTitle, ITC_XOP_CHANNEL_TYPE_ADC, p, wv[p][%ADC][0])
+
+		return wv
+	else
+		Make/N=(NUM_AD_CHANNELS, 2, 2) dfr:ChannelClampMode/Wave=wv
+		wv = NaN
+	endif
 
 	SetDimLabel COLS, 0, DAC, wv
 	SetDimLabel COLS, 1, ADC, wv
+
+	SetDimLabel LAYERS, 0, ClampMode, wv
+	SetDimLabel LAYERS, 1, Headstage, wv
 
 	return wv
 End
@@ -1434,7 +1480,7 @@ Function/WAVE GetLBNidCache(numericalValues)
 	return wv
 End
 
-static Constant SWEEP_SETTINGS_WAVE_VERSION = 19
+static Constant SWEEP_SETTINGS_WAVE_VERSION = 20
 
 /// @brief Uses the parameter names from the `sourceKey` columns and
 ///        write them as dimension into the columns of dest.
@@ -1568,6 +1614,9 @@ End
 /// - 44: Stimset cycle ID
 /// - 45: Digitizer Hardware Type, one of @ref HardwareDACTypeConstants
 /// - 46: Fixed frequency acquisition
+/// - 47: Headstage Active
+/// - 48: Clamp Mode
+/// - 49: Igor Pro bitness
 Function/Wave GetSweepSettingsKeyWave(panelTitle)
 	string panelTitle
 
@@ -1586,9 +1635,9 @@ Function/Wave GetSweepSettingsKeyWave(panelTitle)
 	if(ExistsWithCorrectLayoutVersion(wv, versionOfNewWave))
 		return wv
 	elseif(WaveExists(wv))
-		Redimension/N=(-1, 47) wv
+		Redimension/N=(-1, 50) wv
 	else
-		Make/T/N=(3, 47) newDFR:$newName/Wave=wv
+		Make/T/N=(3, 50) newDFR:$newName/Wave=wv
 	endif
 
 	wv = ""
@@ -1785,6 +1834,18 @@ Function/Wave GetSweepSettingsKeyWave(panelTitle)
 	wv[%Units][46]     = "kHz"
 	wv[%Tolerance][46] = "1"
 
+	wv[%Parameter][47] = "Headstage Active"
+	wv[%Units][47]     = LABNOTEBOOK_BINARY_UNIT
+	wv[%Tolerance][47] = LABNOTEBOOK_NO_TOLERANCE
+
+	wv[%Parameter][48] = "Clamp Mode"
+	wv[%Units][48]     = "a. u."
+	wv[%Tolerance][48] = LABNOTEBOOK_NO_TOLERANCE
+
+	wv[%Parameter][49] = "Igor Pro bitness"
+	wv[%Units][49]     = ""
+	wv[%Tolerance][49] = LABNOTEBOOK_NO_TOLERANCE
+
 	SetSweepSettingsDimLabels(wv, wv)
 	SetWaveVersion(wv, versionOfNewWave)
 
@@ -1878,6 +1939,9 @@ End
 /// -21: TTL set sweep counts (NI hardware)
 /// -22: TTL stim sets (NI hardware)
 /// -23: TTL channels (NI hardware)
+/// -24: Follower Device, list of follower devices
+/// -25: MIES version, multi line mies version string
+/// -26: Igor Pro version
 Function/Wave GetSweepSettingsTextKeyWave(panelTitle)
 	string panelTitle
 
@@ -1896,9 +1960,9 @@ Function/Wave GetSweepSettingsTextKeyWave(panelTitle)
 	if(ExistsWithCorrectLayoutVersion(wv, versionOfNewWave))
 		return wv
 	elseif(WaveExists(wv))
-		Redimension/N=(-1, 24, 0) wv
+		Redimension/N=(-1, 27, 0) wv
 	else
-		Make/T/N=(1, 24) newDFR:$newName/Wave=wv
+		Make/T/N=(1, 27) newDFR:$newName/Wave=wv
 	endif
 
 	SetDimLabel ROWS, 0, Parameter, wv
@@ -1929,6 +1993,9 @@ Function/Wave GetSweepSettingsTextKeyWave(panelTitle)
 	wv[0][21] = "TTL set sweep counts"
 	wv[0][22] = "TTL stim sets"
 	wv[0][23] = "TTL channels"
+	wv[0][24] = "Follower Device"
+	wv[0][25] = "MIES version"
+	wv[0][26] = "Igor Pro version"
 
 	SetSweepSettingsDimLabels(wv, wv)
 	SetWaveVersion(wv, versionOfNewWave)
