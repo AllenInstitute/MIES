@@ -3029,7 +3029,7 @@ Function DAP_ChangeHeadStageMode(panelTitle, clampMode, headstage, options)
 
 		DAP_SetAmpModeControls(panelTitle, i, clampMode)
 		DAP_SetHeadstageChanControls(panelTitle, i, clampMode, delayed = IsFinite(GuiState[i][%HSmode_delayed]))
-		DAP_IZeroSetClampMode(panelTitle, i, clampMode)
+		AI_SetClampMode(panelTitle, i, clampMode, zeroStep = DAG_GetNumericalValue(panelTitle, "check_Settings_AmpIEQZstep"))
 	endfor
 
 	if(options == SKIP_MCC_MIES_SYNCING)
@@ -3058,24 +3058,6 @@ Function DAP_ChangeHeadStageMode(panelTitle, clampMode, headstage, options)
 	if(oldTab != 0)
 		PGC_SetAndActivateControl(panelTitle, "ADC", val=oldTab)
 	endif
-End
-
-///@brief Sets the clamp mode by going through I=0 mode if check_Settings_AmpIEQZstep is checked
-///			Stops the TP if changing mode for a single headstage
-/// @param 	panelTitle		device
-/// @param 	headstage			headstage to undergo mode switch
-/// @param 	clampMode			clamp mode to activate
-static Function DAP_IZeroSetClampMode(panelTitle, headstage, clampMode)
-	string panelTitle
-	variable headstage
-	variable clampMode
-
-	if(DAG_GetNumericalValue(panelTitle, "check_Settings_AmpIEQZstep") && (clampMode == I_CLAMP_MODE || clampMode == V_CLAMP_MODE))
-		AI_SetClampMode(panelTitle, headstage, I_EQUAL_ZERO_MODE)
-		Sleep/Q/T/C=-1 6
-	endif
-
-	return AI_SetClampMode(panelTitle, headstage, clampMode)
 End
 
 ///@brief Sets the control state of the radio buttons used for setting the clamp mode on the Data Acquisition Tab of the DA_Ephys panel

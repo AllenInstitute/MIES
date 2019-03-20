@@ -994,15 +994,28 @@ Function AI_SelectMultiClamp(panelTitle, headStage)
 end
 
 /// @brief Set the clamp mode of user linked MCC based on the headstage number
-Function AI_SetClampMode(panelTitle, headStage, mode)
+Function AI_SetClampMode(panelTitle, headStage, mode, [zeroStep])
 	string panelTitle
 	variable headStage
-	variable mode
+	variable mode, zeroStep
+
+	if(ParamIsDefault(zeroStep))
+		zeroStep = 0
+	else
+		zeroStep = !!zeroStep
+	endif
 
 	AI_AssertOnInvalidClampMode(mode)
 
 	if(AI_SelectMultiClamp(panelTitle, headStage) != AMPLIFIER_CONNECTION_SUCCESS)
 		return NaN
+	endif
+
+	if(zeroStep && (mode == I_CLAMP_MODE || mode == V_CLAMP_MODE))
+		if(!IsFinite(MCC_SetMode(I_EQUAL_ZERO_MODE)))
+			printf "MCC amplifier cannot be switched to mode %d. Linked MCC is no longer present\r", mode
+		endif
+		Sleep/Q/T/C=-1 6
 	endif
 
 	if(!IsFinite(MCC_SetMode(mode)))
@@ -1578,10 +1591,10 @@ Function AI_SelectMultiClamp(panelTitle, headStage)
 	DEBUGPRINT("Unimplemented")
 End
 
-Function AI_SetClampMode(panelTitle, headStage, mode)
+Function AI_SetClampMode(panelTitle, headStage, mode, [zeroStep])
 	string panelTitle
 	variable headStage
-	variable mode
+	variable mode, zeroStep
 
 	DEBUGPRINT("Unimplemented")
 End
