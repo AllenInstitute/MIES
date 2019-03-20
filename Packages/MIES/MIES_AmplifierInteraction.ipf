@@ -695,6 +695,8 @@ Function AI_MIESAutoPipetteOffset(panelTitle, headStage)
 End
 
 /// @brief Query the MCC application for the gains and units of the given clamp mode
+///
+/// Assumes that the correct amplifier is already selected!
 Function AI_QueryGainsUnitsForClampMode(panelTitle, headstage, clampMode, DAGain, ADGain, DAUnit, ADUnit)
 	string panelTitle
 	variable headstage, clampMode
@@ -707,10 +709,6 @@ Function AI_QueryGainsUnitsForClampMode(panelTitle, headstage, clampMode, DAGain
 	ADUnit = ""
 
 	AI_AssertOnInvalidClampMode(clampMode)
-
-	if(AI_SelectMultiClamp(panelTitle, headStage) != AMPLIFIER_CONNECTION_SUCCESS)
-		return NaN
-	endif
 
 	AI_RetrieveGains(panelTitle, headstage, clampMode, ADGain, DAGain)
 
