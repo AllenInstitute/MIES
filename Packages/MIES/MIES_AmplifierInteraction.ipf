@@ -1032,10 +1032,10 @@ End
 ///                         before use, some callers might save time in doing that once themselves.
 ///
 /// @returns return value (for getters, respects `usePrefixes`), success (`0`) or error (`NaN`).
-Function AI_SendToAmp(panelTitle, headStage, mode, func, value, [checkBeforeWrite, usePrefixes])
+Function AI_SendToAmp(panelTitle, headStage, mode, func, value, [checkBeforeWrite, usePrefixes, selectAmp])
 	string panelTitle
 	variable headStage, mode, func, value
-	variable checkBeforeWrite, usePrefixes
+	variable checkBeforeWrite, usePrefixes, selectAmp
 
 	variable ret, headstageMode, scale
 	string str
