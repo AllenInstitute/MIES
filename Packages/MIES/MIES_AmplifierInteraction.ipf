@@ -932,15 +932,11 @@ static Function AI_RetrieveGains(panelTitle, headstage, clampMode, ADGain, DAGai
 End
 
 /// @brief Changes the mode of the amplifier between I-Clamp and V-Clamp depending on the currently set mode
-static Function AI_SwitchAxonAmpMode(panelTitle, headStage)
-	string panelTitle
-	variable headStage
+///
+/// Assumes that the correct amplifier is selected.
+static Function AI_SwitchAxonAmpMode()
 
 	variable mode
-
-	if(AI_SelectMultiClamp(panelTitle, headStage) != AMPLIFIER_CONNECTION_SUCCESS)
-		return NAN
-	endif
 
 	mode = MCC_GetMode()
 
@@ -1529,7 +1525,7 @@ Function AI_QueryGainsFromMCC(panelTitle)
 
 		if(clampModeSwitchAllowed)
 			old_clampMode = clampMode
-			AI_SwitchAxonAmpMode(panelTitle, i)
+			AI_SwitchAxonAmpMode()
 
 			clampMode = MCC_GetMode()
 
@@ -1591,9 +1587,7 @@ static Function AI_RetrieveGains(panelTitle, headstage, clampMode, ADGain, DAGai
 	DEBUGPRINT("Unimplemented")
 End
 
-static Function AI_SwitchAxonAmpMode(panelTitle, headStage)
-	string panelTitle
-	variable headStage
+static Function AI_SwitchAxonAmpMode()
 
 	DEBUGPRINT("Unimplemented")
 End
