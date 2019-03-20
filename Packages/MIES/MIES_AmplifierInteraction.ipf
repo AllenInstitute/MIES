@@ -478,7 +478,7 @@ Function AI_SyncGUIToAmpStorageAndMCCApp(panelTitle, headStage, clampMode)
 		return NaN
 	endif
 
-	AI_EnsureCorrectMode(panelTitle, headStage)
+	AI_EnsureCorrectMode(panelTitle, headStage, selectAmp = 1)
 
 	if(clampMode == V_CLAMP_MODE)
 		list = AMPLIFIER_CONTROLS_VC
