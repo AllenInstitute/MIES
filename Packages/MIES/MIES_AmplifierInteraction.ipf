@@ -1028,6 +1028,8 @@ End
 ///                         check the current value and do nothing if it is equal within some tolerance to the one written
 /// @param usePrefixes      [optional, defaults to true] Use SI-prefixes common in MIES for the passed and returned values, e.g.
 ///                         `mV` instead of `V`
+/// @param selectAmp        [optional, defaults to true] Select the amplifier
+///                         before use, some callers might save time in doing that once themselves.
 ///
 /// @returns return value (for getters, respects `usePrefixes`), success (`0`) or error (`NaN`).
 Function AI_SendToAmp(panelTitle, headStage, mode, func, value, [checkBeforeWrite, usePrefixes])
@@ -1048,8 +1050,10 @@ Function AI_SendToAmp(panelTitle, headStage, mode, func, value, [checkBeforeWrit
 		checkBeforeWrite = !!checkBeforeWrite
 	endif
 
-	if(AI_SelectMultiClamp(panelTitle, headstage) != AMPLIFIER_CONNECTION_SUCCESS)
-		return NaN
+	if(ParamIsDefault(selectAmp))
+		selectAmp = 1
+	else
+		selectAmp = !!selectAmp
 	endif
 
 	if(ParamIsDefault(usePrefixes) || !!usePrefixes)
@@ -1062,6 +1066,12 @@ Function AI_SendToAmp(panelTitle, headStage, mode, func, value, [checkBeforeWrit
 
 	if(headstageMode != mode)
 		return NaN
+	endif
+
+	if(selectAmp)
+		if(AI_SelectMultiClamp(panelTitle, headstage) != AMPLIFIER_CONNECTION_SUCCESS)
+			return NaN
+		endif
 	endif
 
 	AI_EnsureCorrectMode(panelTitle, headStage)
@@ -1607,10 +1617,10 @@ Function AI_SetClampMode(panelTitle, headStage, mode, [zeroStep])
 	DEBUGPRINT("Unimplemented")
 End
 
-Function AI_SendToAmp(panelTitle, headStage, mode, func, value, [checkBeforeWrite, usePrefixes])
+Function AI_SendToAmp(panelTitle, headStage, mode, func, value, [checkBeforeWrite, usePrefixes, selectAmp])
 	string panelTitle
 	variable headStage, mode, func, value
-	variable checkBeforeWrite, usePrefixes
+	variable checkBeforeWrite, usePrefixes, selectAmp
 
 	DEBUGPRINT("Unimplemented")
 End
