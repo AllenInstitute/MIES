@@ -1337,16 +1337,32 @@ End
 
 /// @brief Set the clamp mode in the MCC app to the
 ///        same clamp mode as MIES has stored.
-Function AI_EnsureCorrectMode(panelTitle, headStage)
+///
+/// @param panelTitle device
+/// @param headstage  headstage
+/// @paran selectAmp  [optional, defaults to false] selects the amplifier
+///                   before using, some callers might be able to skip it.
+Function AI_EnsureCorrectMode(panelTitle, headStage, [selectAmp])
 	string panelTitle
-	variable headStage
+	variable headStage, selectAmp
 
-	variable serial  = AI_GetAmpAxonSerial(panelTitle, headStage)
-	variable channel = AI_GetAmpChannel(panelTitle, headStage)
-	variable storedMode, setMode
+	variable serial, channel, storedMode, setMode
+
+	if(ParamIsDefault(selectAmp))
+		selectAmp = 0
+	else
+		selectAmp = !!selectAmp
+	endif
+
+	serial  = AI_GetAmpAxonSerial(panelTitle, headStage)
+	channel = AI_GetAmpChannel(panelTitle, headStage)
 
 	if(!AI_IsValidSerialAndChannel(channel=channel, axonSerial=serial))
 		return NaN
+	endif
+
+	if(selectAmp)
+		AI_SelectMultiClamp(panelTitle, headstage)
 	endif
 
 	STRUCT AxonTelegraph_DataStruct tds
@@ -1607,9 +1623,9 @@ Function AI_SendToAmp(panelTitle, headStage, mode, func, value, [checkBeforeWrit
 	DEBUGPRINT("Unimplemented")
 End
 
-Function AI_EnsureCorrectMode(panelTitle, headStage)
+Function AI_EnsureCorrectMode(panelTitle, headStage, [selectAmp])
 	string panelTitle
-	variable headStage
+	variable headStage, selectAmp
 
 	DEBUGPRINT("Unimplemented")
 End
