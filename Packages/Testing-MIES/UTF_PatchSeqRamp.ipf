@@ -23,11 +23,6 @@ static Function AcquireData(s)
 	PGC_SetAndActivateControl(DEVICE, "ADC", val=0)
 	DoUpdate/W=$DEVICE
 
-	PGC_SetAndActivateControl(DEVICE, "check_DataAcq_AutoBias", val = 1)
-	PGC_SetAndActivateControl(DEVICE, "setvar_DataAcq_AutoBiasV", val = 70)
-	PGC_SetAndActivateControl(DEVICE, GetPanelControl(0, CHANNEL_TYPE_HEADSTAGE, CHANNEL_CONTROL_CHECK), val=1)
-	PGC_SetAndActivateControl(DEVICE, GetPanelControl(0, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_WAVE), str = "Ramp*")
-
 	WAVE ampMCC = GetAmplifierMultiClamps()
 	WAVE ampTel = GetAmplifierTelegraphServers()
 
@@ -42,6 +37,11 @@ static Function AcquireData(s)
 	DoUpdate/W=$DEVICE
 
 	PGC_SetAndActivateControl(DEVICE, "button_Hardware_AutoGainAndUnit")
+
+	PGC_SetAndActivateControl(DEVICE, "check_DataAcq_AutoBias", val = 1)
+	PGC_SetAndActivateControl(DEVICE, "setvar_DataAcq_AutoBiasV", val = 70)
+	PGC_SetAndActivateControl(DEVICE, GetPanelControl(0, CHANNEL_TYPE_HEADSTAGE, CHANNEL_CONTROL_CHECK), val=1)
+	PGC_SetAndActivateControl(DEVICE, GetPanelControl(0, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_WAVE), str = "Ramp*")
 
 	PGC_SetAndActivateControl(DEVICE, "check_Settings_MD", val = s.MD)
 	PGC_SetAndActivateControl(DEVICE, "Check_DataAcq1_RepeatAcq", val = s.RA)
