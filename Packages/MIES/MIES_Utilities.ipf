@@ -3953,3 +3953,55 @@ threadsafe Function ClearRTError()
 	variable err = GetRTError(1)
 	DEBUGPRINT_TS("Clearing RTE", var = err)
 End
+
+/// @brief Convert the DAQ run mode to a string
+///
+/// @param runMode One of @ref DAQRunModes
+threadsafe Function/S DAQRunModeToString(runMode)
+	variable runMode
+
+	switch(runMode)
+		case DAQ_NOT_RUNNING:
+			return "DAQ_NOT_RUNNING"
+			break
+		case DAQ_BG_SINGLE_DEVICE:
+			return "DAQ_BG_SINGLE_DEVICE"
+			break
+		case DAQ_BG_MULTI_DEVICE:
+			return "DAQ_BG_MULTI_DEVICE"
+			break
+		case DAQ_FG_SINGLE_DEVICE:
+			return "DAQ_FG_SINGLE_DEVICE"
+			break
+		default:
+			ASSERT_TS(0, "Unknown run mode")
+			break
+	endswitch
+End
+
+/// @brief Convert the Testpulse run mode to a string
+///
+/// @param runMode One of @ref TestPulseRunModes
+threadsafe Function/S TestPulseRunModeToString(runMode)
+	variable runMode
+
+	runMode = ClearBit(runMode, TEST_PULSE_DURING_RA_MOD)
+
+	switch(runMode)
+		case TEST_PULSE_NOT_RUNNING:
+			return "TEST_PULSE_NOT_RUNNING"
+			break
+		case TEST_PULSE_BG_SINGLE_DEVICE:
+			return "TEST_PULSE_BG_SINGLE_DEVICE"
+			break
+		case TEST_PULSE_BG_MULTI_DEVICE:
+			return "TEST_PULSE_BG_MULTI_DEVICE"
+			break
+		case TEST_PULSE_FG_SINGLE_DEVICE:
+			return "TEST_PULSE_FG_SINGLE_DEVICE"
+			break
+		default:
+			ASSERT_TS(0, "Unknown run mode")
+			break
+	endswitch
+End
