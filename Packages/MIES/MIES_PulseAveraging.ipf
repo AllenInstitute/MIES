@@ -459,14 +459,19 @@ static Function/WAVE PA_CreateAndFillPulseWaveIfReq(wv, singleSweepFolder, chann
 
 	length = limit(length, 1, DimSize(wv, ROWS) - first)
 
-	if(DimSize(singlePulseWave, ROWS) == length && GetNumberFromWaveNote(wv, SOURCE_WAVE_TIMESTAMP) == ModDate(wv))
+	if(GetNumberFromWaveNote(singlePulseWave, "PulseLength") == length \
+	   && GetNumberFromWaveNote(wv, SOURCE_WAVE_TIMESTAMP) == ModDate(wv))
 		return singlePulseWave
 	endif
+
+	KillOrMoveToTrash(wv = GetBackupWave(singlePulseWave))
 
 	Redimension/N=(length) singlePulseWave
 
 	MultiThread singlePulseWave[] = wv[first + p]
 	SetScale/P x, 0.0, DimDelta(wv, ROWS), WaveUnits(wv, ROWS), singlePulseWave
+	SetNumberInWaveNote(singlePulseWave, NOTE_KEY_ZEROED, 0)
+	SetNumberInWaveNote(singlePulseWave, "PulseLength", length)
 
 	SetNumberInWaveNote(wv, SOURCE_WAVE_TIMESTAMP, ModDate(wv))
 
@@ -495,6 +500,7 @@ Function PA_GatherSettings(win, pps)
 	pps.pulseAverSett.endingPulse          = GetSetVariable(extPanel, "setvar_pulseAver_endPulse")
 	pps.pulseAverSett.fallbackPulseLength  = GetSetVariable(extPanel, "setvar_pulseAver_fallbackLength")
 	pps.pulseAverSett.regionSlider         = BSP_GetDDAQ(win)
+	pps.pulseAverSett.zeroTraces           = GetCheckboxState(extPanel, "check_pulseAver_zeroTrac")
 
 	PA_DeconvGatherSettings(win, pps.pulseAverSett.deconvolution)
 End
@@ -698,6 +704,8 @@ Function PA_ShowPulses(win, dfr, pa)
 				graph = PA_GetGraph(win, pa.multipleGraphs, channelTypeStr, channelNumber, region, activeRegionCount, activeChanCount)
 				PA_GetAxes(pa.multipleGraphs, activeRegionCount, activeChanCount, vertAxis, horizAxis)
 
+				PA_ZeroTraces(listOfWaves, pa.zeroTraces)
+
 				baseName = PA_BaseName(channelTypeStr, channelNumber, region)
 				WAVE/Z averageWave = $""
 				if(pa.showAverageTrace && !IsEmpty(listOfWaves))
@@ -765,6 +773,35 @@ static Function/S PA_BaseName(channelTypeStr, channelNumber, headStage)
 	baseName += "_HS" + num2str(headStage)
 
 	return baseName
+End
+
+/// @brief Zero pulse averaging traces using @c ZeroWave
+///
+/// This function has to be the first function to call before altering waves
+/// from listofWaves.
+///
+/// @param listOfWaves   a list with full wave paths where to apply zeroing
+/// @param setZero       add/remove zeroing from the wave
+static Function PA_ZeroTraces(listOfWaves, setZero)
+	string listOfWaves
+	variable setZero
+
+	variable i, numWaves
+
+	if(IsEmpty(listOfWaves))
+		return NaN
+	endif
+	setZero = !!setZero
+
+	numWaves = ItemsInList(listOfWaves)
+	for(i = 0; i < numWaves; i += 1)
+		WAVE wv = $StringFromList(i, listOfWaves)
+		if(setZero)
+			ZeroWave(wv)
+		else
+			ReplaceWaveWithBackup(wv, nonExistingBackupIsFatal = 0)
+		endif
+	endfor
 End
 
 /// @brief calculate the average wave from a @p listOfWaves

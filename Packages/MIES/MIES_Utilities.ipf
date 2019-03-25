@@ -2412,18 +2412,6 @@ Function WaveListHasSameWaveNames(listOfWaves, baseName)
 	return 1
 End
 
-/// @brief Zero the wave using differentiation and integration
-///
-/// Overwrites the input wave
-///
-/// 2D waves are zeroed along each row
-Function ZeroWave(wv)
-	WAVE wv
-
-	Differentiate/DIM=0/EP=1 wv/D=wv
-	Integrate/DIM=0 wv/D=wv
-End
-
 /// @brief Check wether the given background task is currently running
 ///
 /// Note:

@@ -498,7 +498,7 @@ Function BSP_SetPAControlStatus(win)
 
 	string controlList
 
-	controlList = "group_properties_pulse;check_pulseAver_indTraces;check_pulseAver_showAver;check_pulseAver_multGraphs;setvar_pulseAver_startPulse;setvar_pulseAver_endPulse;setvar_pulseAver_fallbackLength;"
+	controlList = "group_properties_pulse;check_pulseAver_indTraces;check_pulseAver_showAver;check_pulseAver_zeroTrac;check_pulseAver_multGraphs;setvar_pulseAver_startPulse;setvar_pulseAver_endPulse;setvar_pulseAver_fallbackLength;"
 	BSP_SetControlStatus(win, controlList, PA_IsActive(win))
 
 	BSP_SetDeconvControlStatus(win)
@@ -628,7 +628,7 @@ EndMacro
 /// @brief window macro for side panel
 Window BrowserSettingsPanel() : Panel
 	PauseUpdate; Silent 1		// building window...
-	//NewPanel /W=(202,80,484,492) as " "
+	//NewPanel /W=(202,80,566,488) as " "
 	GroupBox group_calc,pos={12.00,196.00},size={288.00,51.00}
 	GroupBox group_calc,userdata(tabnum)=  "0",userdata(tabcontrol)=  "Settings"
 	TabControl Settings,pos={2.00,2.00},size={362.00,22.00},proc=ACL_DisplayTab
@@ -640,26 +640,26 @@ Window BrowserSettingsPanel() : Panel
 	ListBox list_of_ranges,help={"Select sweeps for overlay; The second column (\"Headstages\") allows to ignore some headstages for the graphing. Syntax is a semicolon \";\" separated list of subranges, e.g. \"0\", \"0,2\", \"1;4;2\""}
 	ListBox list_of_ranges,userdata(tabnum)=  "1",userdata(tabcontrol)=  "Settings"
 	ListBox list_of_ranges,widths={50,50}
-	PopupMenu popup_overlaySweeps_select,pos={112.00,99.00},size={143.00,19.00},bodyWidth=109,disable=3,proc=OVS_PopMenuProc_Select,title="Select"
+	PopupMenu popup_overlaySweeps_select,pos={112.00,99.00},size={143.00,17.00},bodyWidth=109,disable=3,proc=OVS_PopMenuProc_Select,title="Select"
 	PopupMenu popup_overlaySweeps_select,help={"Select sweeps according to various properties"}
 	PopupMenu popup_overlaySweeps_select,userdata(tabnum)=  "1"
 	PopupMenu popup_overlaySweeps_select,userdata(tabcontrol)=  "Settings"
 	PopupMenu popup_overlaySweeps_select,mode=1,popvalue="- none -",value= #"OVS_GetSweepSelectionChoices(\"DB_ITC18USB_Dev_0#BrowserSettingsPanel\")"
-	CheckBox check_overlaySweeps_disableHS,pos={99.00,160.00},size={120.00,15.00},disable=3,proc=OVS_CheckBoxProc_HS_Select,title="Headstage Removal"
+	CheckBox check_overlaySweeps_disableHS,pos={99.00,160.00},size={117.00,16.00},disable=3,proc=OVS_CheckBoxProc_HS_Select,title="Headstage Removal"
 	CheckBox check_overlaySweeps_disableHS,help={"Toggle headstage removal"}
 	CheckBox check_overlaySweeps_disableHS,userdata(tabnum)=  "1"
 	CheckBox check_overlaySweeps_disableHS,userdata(tabcontrol)=  "Settings"
 	CheckBox check_overlaySweeps_disableHS,value= 0
-	CheckBox check_overlaySweeps_non_commula,pos={98.00,180.00},size={153.00,15.00},disable=3,title="Non-commulative update"
+	CheckBox check_overlaySweeps_non_commula,pos={98.00,180.00},size={148.00,16.00},disable=3,title="Non-commulative update"
 	CheckBox check_overlaySweeps_non_commula,help={"If \"Display Last sweep acquired\" is checked, this checkbox here allows to only add the newly acquired sweep and will remove the currently added last sweep."}
 	CheckBox check_overlaySweeps_non_commula,userdata(tabcontrol)=  "Settings"
 	CheckBox check_overlaySweeps_non_commula,userdata(tabnum)=  "1",value= 0
-	SetVariable setvar_overlaySweeps_offset,pos={97.00,126.00},size={81.00,18.00},bodyWidth=45,disable=3,proc=OVS_SetVarProc_SelectionRange,title="Offset"
+	SetVariable setvar_overlaySweeps_offset,pos={97.00,126.00},size={81.00,19.00},bodyWidth=45,disable=3,proc=OVS_SetVarProc_SelectionRange,title="Offset"
 	SetVariable setvar_overlaySweeps_offset,help={"Offsets the first selected sweep from the selection menu"}
 	SetVariable setvar_overlaySweeps_offset,userdata(tabnum)=  "1"
 	SetVariable setvar_overlaySweeps_offset,userdata(tabcontrol)=  "Settings"
 	SetVariable setvar_overlaySweeps_offset,limits={0,inf,1},value= _NUM:0
-	SetVariable setvar_overlaySweeps_step,pos={184.00,126.00},size={72.00,18.00},bodyWidth=45,disable=3,proc=OVS_SetVarProc_SelectionRange,title="Step"
+	SetVariable setvar_overlaySweeps_step,pos={184.00,126.00},size={72.00,19.00},bodyWidth=45,disable=3,proc=OVS_SetVarProc_SelectionRange,title="Step"
 	SetVariable setvar_overlaySweeps_step,help={"Selects every `step` sweep from the selection menu"}
 	SetVariable setvar_overlaySweeps_step,userdata(tabnum)=  "1"
 	SetVariable setvar_overlaySweeps_step,userdata(tabcontrol)=  "Settings"
@@ -814,54 +814,58 @@ Window BrowserSettingsPanel() : Panel
 	CheckBox check_highlightRanges,help={"Visualize the found ranges in the graph (*might* slowdown graphing)"}
 	CheckBox check_highlightRanges,userdata(tabnum)=  "3"
 	CheckBox check_highlightRanges,userdata(tabcontrol)=  "Settings",value= 0
-	SetVariable setvar_pulseAver_fallbackLength,pos={105.00,207.00},size={137.00,18.00},bodyWidth=50,disable=3,proc=PA_SetVarProc_Common,title="Fallback Length"
+	SetVariable setvar_pulseAver_fallbackLength,pos={106.00,227.00},size={136.00,19.00},bodyWidth=50,disable=3,proc=PA_SetVarProc_Common,title="Fallback Length"
 	SetVariable setvar_pulseAver_fallbackLength,help={"Pulse To Pulse Length in ms for edge cases which can not be computed."}
 	SetVariable setvar_pulseAver_fallbackLength,userdata(tabnum)=  "4"
 	SetVariable setvar_pulseAver_fallbackLength,userdata(tabcontrol)=  "Settings"
 	SetVariable setvar_pulseAver_fallbackLength,value= _NUM:100
-	SetVariable setvar_pulseAver_endPulse,pos={120.00,184.00},size={122.00,18.00},bodyWidth=50,disable=3,proc=PA_SetVarProc_Common,title="Ending Pulse"
+	SetVariable setvar_pulseAver_endPulse,pos={120.00,204.00},size={122.00,19.00},bodyWidth=50,disable=3,proc=PA_SetVarProc_Common,title="Ending Pulse"
 	SetVariable setvar_pulseAver_endPulse,userdata(tabnum)=  "4"
 	SetVariable setvar_pulseAver_endPulse,userdata(tabcontrol)=  "Settings"
 	SetVariable setvar_pulseAver_endPulse,value= _NUM:inf
-	SetVariable setvar_pulseAver_startPulse,pos={116.00,162.00},size={126.00,18.00},bodyWidth=50,disable=3,proc=PA_SetVarProc_Common,title="Starting Pulse"
+	SetVariable setvar_pulseAver_startPulse,pos={116.00,182.00},size={126.00,19.00},bodyWidth=50,disable=3,proc=PA_SetVarProc_Common,title="Starting Pulse"
 	SetVariable setvar_pulseAver_startPulse,userdata(tabnum)=  "4"
 	SetVariable setvar_pulseAver_startPulse,userdata(tabcontrol)=  "Settings"
 	SetVariable setvar_pulseAver_startPulse,value= _NUM:0
-	CheckBox check_pulseAver_multGraphs,pos={110.00,142.00},size={120.00,15.00},disable=3,proc=PA_CheckProc_Common,title="Use multiple graphs"
+	CheckBox check_pulseAver_multGraphs,pos={110.00,162.00},size={118.00,16.00},disable=3,proc=PA_CheckProc_Common,title="Use multiple graphs"
 	CheckBox check_pulseAver_multGraphs,help={"Show the single pulses in multiple graphs or only one graph with mutiple axis."}
 	CheckBox check_pulseAver_multGraphs,userdata(tabnum)=  "4"
 	CheckBox check_pulseAver_multGraphs,userdata(tabcontrol)=  "Settings",value= 0
-	CheckBox check_pulseAver_showAver,pos={110.00,121.00},size={117.00,15.00},disable=3,proc=PA_CheckProc_Average,title="Show average trace"
+	CheckBox check_pulseAver_zeroTrac,pos={110.00,121.00},size={69.00,16.00},disable=3,proc=PA_CheckProc_Common,title="Zero traces"
+	CheckBox check_pulseAver_zeroTrac,help={"Zero the individual traces using subsequent differentiation and integration"}
+	CheckBox check_pulseAver_zeroTrac,userdata(tabnum)=  "4"
+	CheckBox check_pulseAver_zeroTrac,userdata(tabcontrol)=  "Settings",value= 0
+	CheckBox check_pulseAver_showAver,pos={110.00,141.00},size={115.00,16.00},disable=3,proc=PA_CheckProc_Average,title="Show average trace"
 	CheckBox check_pulseAver_showAver,help={"Show the average trace"}
 	CheckBox check_pulseAver_showAver,userdata(tabnum)=  "4"
 	CheckBox check_pulseAver_showAver,userdata(tabcontrol)=  "Settings",value= 0
-	CheckBox check_pulseAver_indTraces,pos={110.00,100.00},size={133.00,15.00},disable=3,proc=PA_CheckProc_Common,title="Show individual traces"
+	CheckBox check_pulseAver_indTraces,pos={110.00,100.00},size={130.00,16.00},disable=3,proc=PA_CheckProc_Common,title="Show individual traces"
 	CheckBox check_pulseAver_indTraces,help={"Show the individual traces"}
 	CheckBox check_pulseAver_indTraces,userdata(tabnum)=  "4"
 	CheckBox check_pulseAver_indTraces,userdata(tabcontrol)=  "Settings",value= 1
-	CheckBox check_pulseAver_deconv,pos={110.00,231.00},size={94.00,15.00},proc=PA_CheckProc_Deconvolution,title="Deconvolution"
-	CheckBox check_pulseAver_deconv,help={"Show Deconvolution: tau * dV/dt + V"},value= 0
-	CheckBox check_pulseAver_deconv,userdata(tabnum)=  "4",userdata(tabcontrol)=  "Settings"
-	CheckBox check_pulseAver_deconv disable=2
-	SetVariable setvar_pulseAver_deconv_tau,pos={155.00,252.00},size={87.00,18.00},bodyWidth=50,proc=PA_SetVarProc_Common,title="tau [ms]"
-	SetVariable setvar_pulseAver_deconv_tau,limits={0,inf,0},value= _NUM:15
-	SetVariable setvar_pulseAver_deconv_tau,userdata(tabnum)=  "4",userdata(tabcontrol)=  "Settings"
+	CheckBox check_pulseAver_deconv,pos={110.00,251.00},size={89.00,16.00},disable=3,proc=PA_CheckProc_Deconvolution,title="Deconvolution"
+	CheckBox check_pulseAver_deconv,help={"Show Deconvolution: tau * dV/dt + V"}
+	CheckBox check_pulseAver_deconv,userdata(tabnum)=  "4"
+	CheckBox check_pulseAver_deconv,userdata(tabcontrol)=  "Settings",value= 0
+	SetVariable setvar_pulseAver_deconv_tau,pos={145.00,272.00},size={97.00,19.00},bodyWidth=50,disable=3,proc=PA_SetVarProc_Common,title="tau [ms]"
 	SetVariable setvar_pulseAver_deconv_tau,help={"Deconvolution time tau: tau * dV/dt + V"}
-	SetVariable setvar_pulseAver_deconv_tau disable=2
-	SetVariable setvar_pulseAver_deconv_smth,pos={130.00,274.00},size={112.00,18.00},bodyWidth=50,proc=PA_SetVarProc_Common,title="smoothing"
-	SetVariable setvar_pulseAver_deconv_smth,limits={1,inf,0},value= _NUM:1000
-	SetVariable setvar_pulseAver_deconv_smth,userdata(tabnum)=  "4",userdata(tabcontrol)=  "Settings"
+	SetVariable setvar_pulseAver_deconv_tau,userdata(tabnum)=  "4"
+	SetVariable setvar_pulseAver_deconv_tau,userdata(tabcontrol)=  "Settings"
+	SetVariable setvar_pulseAver_deconv_tau,limits={0,inf,0},value= _NUM:15
+	SetVariable setvar_pulseAver_deconv_smth,pos={131.00,294.00},size={111.00,19.00},bodyWidth=50,disable=3,proc=PA_SetVarProc_Common,title="smoothing"
 	SetVariable setvar_pulseAver_deconv_smth,help={"Smoothing factor to use before the deconvolution is calculated. Set to 1 to do the calculation without smoothing."}
-	SetVariable setvar_pulseAver_deconv_smth disable=2
-	SetVariable setvar_pulseAver_deconv_range,pos={124.00,296.00},size={118.00,18.00},bodyWidth=50,proc=PA_SetVarProc_Common,title="display [ms]"
-	SetVariable setvar_pulseAver_deconv_range,limits={0,inf,0},value= _NUM:15
-	SetVariable setvar_pulseAver_deconv_range,userdata(tabnum)=  "4",userdata(tabcontrol)=  "Settings"
+	SetVariable setvar_pulseAver_deconv_smth,userdata(tabnum)=  "4"
+	SetVariable setvar_pulseAver_deconv_smth,userdata(tabcontrol)=  "Settings"
+	SetVariable setvar_pulseAver_deconv_smth,limits={1,inf,0},value= _NUM:1000
+	SetVariable setvar_pulseAver_deconv_range,pos={125.00,316.00},size={117.00,19.00},bodyWidth=50,disable=3,proc=PA_SetVarProc_Common,title="display [ms]"
 	SetVariable setvar_pulseAver_deconv_range,help={"Time in ms from the beginning of the pulse that is used for the calculation"}
-	SetVariable setvar_pulseAver_deconv_range disable=2
-	GroupBox group_pulseAver_deconv,pos={101.00,228.00},size={155.00,97.00}
-	GroupBox group_pulseAver_deconv,userdata(tabnum)=  "4",userdata(tabcontrol)=  "Settings"
-	GroupBox group_pulseAver_deconv disable=2
-	CheckBox check_BrowserSettings_OVS,pos={156.00,50.00},size={50.00,15.00},disable=1,proc=DB_CheckProc_OverlaySweeps,title="enable"
+	SetVariable setvar_pulseAver_deconv_range,userdata(tabnum)=  "4"
+	SetVariable setvar_pulseAver_deconv_range,userdata(tabcontrol)=  "Settings"
+	SetVariable setvar_pulseAver_deconv_range,limits={0,inf,0},value= _NUM:15
+	GroupBox group_pulseAver_deconv,pos={101.00,248.00},size={155.00,97.00},disable=3
+	GroupBox group_pulseAver_deconv,userdata(tabnum)=  "4"
+	GroupBox group_pulseAver_deconv,userdata(tabcontrol)=  "Settings"
+	CheckBox check_BrowserSettings_OVS,pos={156.00,50.00},size={47.00,16.00},disable=1,proc=DB_CheckProc_OverlaySweeps,title="enable"
 	CheckBox check_BrowserSettings_OVS,help={"Adds unplotted sweep to graph. Removes plotted sweep from graph."}
 	CheckBox check_BrowserSettings_OVS,userdata(tabnum)=  "1"
 	CheckBox check_BrowserSettings_OVS,userdata(tabcontrol)=  "Settings",value= 0
@@ -869,49 +873,49 @@ Window BrowserSettingsPanel() : Panel
 	CheckBox check_BrowserSettings_AR,help={"Open the artefact removal dialog"}
 	CheckBox check_BrowserSettings_AR,userdata(tabnum)=  "3"
 	CheckBox check_BrowserSettings_AR,userdata(tabcontrol)=  "Settings",value= 0
-	CheckBox check_BrowserSettings_PA,pos={150.00,50.00},size={50.00,15.00},disable=1,proc=BSP_CheckBoxProc_PerPulseAver,title="enable"
+	CheckBox check_BrowserSettings_PA,pos={150.00,50.00},size={47.00,16.00},disable=1,proc=BSP_CheckBoxProc_PerPulseAver,title="enable"
 	CheckBox check_BrowserSettings_PA,help={"Allows to average multiple pulses from pulse train epochs"}
 	CheckBox check_BrowserSettings_PA,userdata(tabnum)=  "4"
 	CheckBox check_BrowserSettings_PA,userdata(tabcontrol)=  "Settings",value= 0
-	CheckBox check_BrowserSettings_DAC,pos={13.00,36.00},size={31.00,15.00},proc=DB_CheckProc_ChangedSetting,title="DA"
+	CheckBox check_BrowserSettings_DAC,pos={13.00,36.00},size={28.00,16.00},proc=DB_CheckProc_ChangedSetting,title="DA"
 	CheckBox check_BrowserSettings_DAC,help={"Display the DA channel data"}
 	CheckBox check_BrowserSettings_DAC,userdata(tabnum)=  "0"
 	CheckBox check_BrowserSettings_DAC,userdata(tabcontrol)=  "Settings",value= 0
-	CheckBox check_BrowserSettings_ADC,pos={75.00,36.00},size={31.00,15.00},proc=DB_CheckProc_ChangedSetting,title="AD"
+	CheckBox check_BrowserSettings_ADC,pos={75.00,36.00},size={28.00,16.00},proc=DB_CheckProc_ChangedSetting,title="AD"
 	CheckBox check_BrowserSettings_ADC,help={"Display the AD channels"}
 	CheckBox check_BrowserSettings_ADC,userdata(tabnum)=  "0"
 	CheckBox check_BrowserSettings_ADC,userdata(tabcontrol)=  "Settings",value= 1
-	CheckBox check_BrowserSettings_TTL,pos={132.00,36.00},size={35.00,15.00},proc=DB_CheckProc_ChangedSetting,title="TTL"
+	CheckBox check_BrowserSettings_TTL,pos={132.00,36.00},size={30.00,16.00},proc=DB_CheckProc_ChangedSetting,title="TTL"
 	CheckBox check_BrowserSettings_TTL,help={"Display the TTL channels"}
 	CheckBox check_BrowserSettings_TTL,userdata(tabnum)=  "0"
 	CheckBox check_BrowserSettings_TTL,userdata(tabcontrol)=  "Settings",value= 0
-	CheckBox check_BrowserSettings_OChan,pos={13.00,62.00},size={64.00,15.00},proc=DB_CheckProc_ChangedSetting,title="Channels"
+	CheckBox check_BrowserSettings_OChan,pos={13.00,62.00},size={60.00,16.00},proc=DB_CheckProc_ChangedSetting,title="Channels"
 	CheckBox check_BrowserSettings_OChan,help={"Overlay the data from multiple channels in one graph"}
 	CheckBox check_BrowserSettings_OChan,userdata(tabnum)=  "0"
 	CheckBox check_BrowserSettings_OChan,userdata(tabcontrol)=  "Settings",value= 0
-	CheckBox check_BrowserSettings_dDAQ,pos={132.00,62.00},size={47.00,15.00},proc=DB_CheckProc_ChangedSetting,title="dDAQ"
+	CheckBox check_BrowserSettings_dDAQ,pos={132.00,62.00},size={44.00,16.00},proc=DB_CheckProc_ChangedSetting,title="dDAQ"
 	CheckBox check_BrowserSettings_dDAQ,help={"Enable dedicated support for viewing distributed DAQ data"}
 	CheckBox check_BrowserSettings_dDAQ,userdata(tabnum)=  "0"
 	CheckBox check_BrowserSettings_dDAQ,userdata(tabcontrol)=  "Settings",value= 0
-	CheckBox check_Calculation_ZeroTraces,pos={25.00,220.00},size={76.00,15.00},proc=DB_CheckProc_ChangedSetting,title="Zero Traces"
+	CheckBox check_Calculation_ZeroTraces,pos={25.00,220.00},size={72.00,16.00},proc=DB_CheckProc_ChangedSetting,title="Zero Traces"
 	CheckBox check_Calculation_ZeroTraces,help={"Remove the offset of all traces"}
 	CheckBox check_Calculation_ZeroTraces,userdata(tabnum)=  "0"
 	CheckBox check_Calculation_ZeroTraces,userdata(tabcontrol)=  "Settings",value= 0
-	CheckBox check_Calculation_AverageTraces,pos={25.00,200.00},size={95.00,15.00},proc=DB_CheckProc_ChangedSetting,title="Average Traces"
+	CheckBox check_Calculation_AverageTraces,pos={25.00,200.00},size={91.00,16.00},proc=DB_CheckProc_ChangedSetting,title="Average Traces"
 	CheckBox check_Calculation_AverageTraces,help={"Average all traces which belong to the same y axis"}
 	CheckBox check_Calculation_AverageTraces,userdata(tabnum)=  "0"
 	CheckBox check_Calculation_AverageTraces,userdata(tabcontrol)=  "Settings"
 	CheckBox check_Calculation_AverageTraces,value= 0
-	CheckBox check_BrowserSettings_TA,pos={139.00,112.00},size={50.00,15.00},disable=2,proc=SB_TimeAlignmentProc,title="enable"
+	CheckBox check_BrowserSettings_TA,pos={139.00,112.00},size={47.00,16.00},disable=2,proc=SB_TimeAlignmentProc,title="enable"
 	CheckBox check_BrowserSettings_TA,help={"Activate time alignment"}
 	CheckBox check_BrowserSettings_TA,userdata(tabnum)=  "0"
 	CheckBox check_BrowserSettings_TA,userdata(tabcontrol)=  "Settings",value= 0
-	PopupMenu popup_TimeAlignment_Mode,pos={24.00,135.00},size={143.00,19.00},bodyWidth=50,disable=2,proc=SB_TimeAlignmentPopup,title="Alignment Mode"
+	PopupMenu popup_TimeAlignment_Mode,pos={25.00,135.00},size={142.00,17.00},bodyWidth=50,disable=2,proc=SB_TimeAlignmentPopup,title="Alignment Mode"
 	PopupMenu popup_TimeAlignment_Mode,help={"Select the alignment mode"}
 	PopupMenu popup_TimeAlignment_Mode,userdata(tabnum)=  "0"
 	PopupMenu popup_TimeAlignment_Mode,userdata(tabcontrol)=  "Settings"
 	PopupMenu popup_TimeAlignment_Mode,mode=1,popvalue="Level (Raising)",value= #"\"Level (Raising);Level (Falling);Min;Max\""
-	SetVariable setvar_TimeAlignment_LevelCross,pos={173.00,136.00},size={50.00,18.00},disable=2,proc=SB_TimeAlignmentLevel,title="Level"
+	SetVariable setvar_TimeAlignment_LevelCross,pos={173.00,136.00},size={50.00,19.00},disable=2,proc=SB_TimeAlignmentLevel,title="Level"
 	SetVariable setvar_TimeAlignment_LevelCross,help={"Select the level (for rising and falling alignment mode) at which traces are aligned"}
 	SetVariable setvar_TimeAlignment_LevelCross,userdata(tabnum)=  "0"
 	SetVariable setvar_TimeAlignment_LevelCross,userdata(tabcontrol)=  "Settings"
@@ -923,24 +927,24 @@ Window BrowserSettingsPanel() : Panel
 	GroupBox group_SB_axes_scaling,pos={12.00,248.00},size={286.00,52.00},title="Axes Scaling"
 	GroupBox group_SB_axes_scaling,userdata(tabnum)=  "0"
 	GroupBox group_SB_axes_scaling,userdata(tabcontrol)=  "Settings"
-	CheckBox check_Display_VisibleXrange,pos={25.00,272.00},size={40.00,15.00},proc=DB_CheckProc_ScaleAxes,title="Vis X"
+	CheckBox check_Display_VisibleXrange,pos={25.00,272.00},size={38.00,16.00},proc=DB_CheckProc_ScaleAxes,title="Vis X"
 	CheckBox check_Display_VisibleXrange,help={"Scale the y axis to the visible x data range"}
 	CheckBox check_Display_VisibleXrange,userdata(tabnum)=  "0"
 	CheckBox check_Display_VisibleXrange,userdata(tabcontrol)=  "Settings",value= 0
-	CheckBox check_Display_EqualYrange,pos={79.00,272.00},size={54.00,15.00},disable=2,title="Equal Y"
+	CheckBox check_Display_EqualYrange,pos={79.00,272.00},size={51.00,16.00},disable=2,title="Equal Y"
 	CheckBox check_Display_EqualYrange,help={"Equalize the vertical axes ranges"}
 	CheckBox check_Display_EqualYrange,userdata(tabnum)=  "0"
 	CheckBox check_Display_EqualYrange,userdata(tabcontrol)=  "Settings",value= 0
-	CheckBox check_Display_EqualYignore,pos={139.00,272.00},size={35.00,15.00},disable=2,title="ign."
+	CheckBox check_Display_EqualYignore,pos={139.00,272.00},size={31.00,16.00},disable=2,title="ign."
 	CheckBox check_Display_EqualYignore,help={"Equalize the vertical axes ranges but ignore all traces with level crossings"}
 	CheckBox check_Display_EqualYignore,userdata(tabnum)=  "0"
 	CheckBox check_Display_EqualYignore,userdata(tabcontrol)=  "Settings",value= 0
-	SetVariable setvar_Display_EqualYlevel,pos={178.00,270.00},size={25.00,18.00},disable=2,proc=SB_AxisScalingLevelCross
+	SetVariable setvar_Display_EqualYlevel,pos={178.00,270.00},size={25.00,19.00},disable=2,proc=SB_AxisScalingLevelCross
 	SetVariable setvar_Display_EqualYlevel,help={"Crossing level value for 'Equal Y ign.\""}
 	SetVariable setvar_Display_EqualYlevel,userdata(tabnum)=  "0"
 	SetVariable setvar_Display_EqualYlevel,userdata(tabcontrol)=  "Settings"
 	SetVariable setvar_Display_EqualYlevel,limits={-inf,inf,0},value= _NUM:0
-	PopupMenu popup_TimeAlignment_Master,pos={32.00,159.00},size={134.00,19.00},bodyWidth=50,disable=2,proc=SB_TimeAlignmentPopup,title="Reference trace"
+	PopupMenu popup_TimeAlignment_Master,pos={31.00,159.00},size={135.00,17.00},bodyWidth=50,disable=2,proc=SB_TimeAlignmentPopup,title="Reference trace"
 	PopupMenu popup_TimeAlignment_Master,help={"Select the reference trace to which all other traces should be aligned to"}
 	PopupMenu popup_TimeAlignment_Master,userdata(tabnum)=  "0"
 	PopupMenu popup_TimeAlignment_Master,userdata(tabcontrol)=  "Settings"
@@ -956,47 +960,49 @@ Window BrowserSettingsPanel() : Panel
 	GroupBox group_timealignment,pos={12.00,89.00},size={286.00,101.00},title="Time Alignment"
 	GroupBox group_timealignment,userdata(tabnum)=  "0"
 	GroupBox group_timealignment,userdata(tabcontrol)=  "Settings"
-	Slider slider_BrowserSettings_dDAQ,pos={302.00,38.00},size={54.00,300.00},disable=2,proc=BSP_SliderProc_ChangedSetting
+	Slider slider_BrowserSettings_dDAQ,pos={302.00,38.00},size={49.00,300.00},disable=2,proc=BSP_SliderProc_ChangedSetting
 	Slider slider_BrowserSettings_dDAQ,help={"Allows to view only regions from the selected headstage (oodDAQ) resp. the selected headstage (dDAQ). Choose -1 to display all."}
 	Slider slider_BrowserSettings_dDAQ,userdata(tabnum)=  "0"
 	Slider slider_BrowserSettings_dDAQ,userdata(tabcontrol)=  "Settings"
 	Slider slider_BrowserSettings_dDAQ,limits={-1,7,1},value= -1
-	CheckBox check_SweepControl_HideSweep,pos={238.00,62.00},size={40.00,15.00},proc=DB_CheckProc_ChangedSetting,title="Hide"
+	CheckBox check_SweepControl_HideSweep,pos={238.00,62.00},size={37.00,16.00},proc=DB_CheckProc_ChangedSetting,title="Hide"
 	CheckBox check_SweepControl_HideSweep,help={"Hide sweep traces. Usually combined with \"Average traces\"."}
 	CheckBox check_SweepControl_HideSweep,userdata(tabnum)=  "0"
 	CheckBox check_SweepControl_HideSweep,userdata(tabcontrol)=  "Settings",value= 0
-	CheckBox check_BrowserSettings_splitTTL,pos={238.00,36.00},size={59.00,15.00},proc=DB_CheckProc_ChangedSetting,title="sep. TTL"
+	CheckBox check_BrowserSettings_splitTTL,pos={238.00,36.00},size={55.00,16.00},proc=DB_CheckProc_ChangedSetting,title="sep. TTL"
 	CheckBox check_BrowserSettings_splitTTL,help={"Display the TTL channel data as single traces for each TTL bit"}
 	CheckBox check_BrowserSettings_splitTTL,userdata(tabnum)=  "0"
 	CheckBox check_BrowserSettings_splitTTL,userdata(tabcontrol)=  "Settings"
 	CheckBox check_BrowserSettings_splitTTL,value= 0
-	PopupMenu popup_DB_lockedDevices,pos={13.00,304.00},size={205.00,19.00},bodyWidth=100,proc=DB_PopMenuProc_LockDBtoDevice,title="Device assingment:"
+	PopupMenu popup_DB_lockedDevices,pos={14.00,304.00},size={204.00,17.00},bodyWidth=100,proc=DB_PopMenuProc_LockDBtoDevice,title="Device assingment:"
 	PopupMenu popup_DB_lockedDevices,help={"Select a data acquistion device to display data"}
 	PopupMenu popup_DB_lockedDevices,userdata(tabnum)=  "0"
 	PopupMenu popup_DB_lockedDevices,userdata(tabcontrol)=  "Settings"
 	PopupMenu popup_DB_lockedDevices,mode=1,popvalue="ITC18USB_Dev_0",value= #"DB_GetAllDevicesWithData()"
-	ListBox list_dashboard,pos={4.00,90.00},size={353.00,311.00},proc=AD_ListBoxProc
+	ListBox list_dashboard,pos={4.00,90.00},size={353.00,311.00},disable=1,proc=AD_ListBoxProc
 	ListBox list_dashboard,userdata(tabnum)=  "6",userdata(tabcontrol)=  "Settings"
-	ListBox list_dashboard,fSize=12
-	ListBox list_dashboard,mode= 1,selRow= -1,widths={141,109,500}
+	ListBox list_dashboard,fSize=12,mode= 1,selRow= -1,widths={141,109,500}
 	ListBox list_dashboard,userColumnResize= 1
-	GroupBox group_enable_dashboard,pos={4.00,27.00},size={355.00,57.00}
-	GroupBox group_enable_dashboard,userdata(tabnum)=  "6",userdata(tabcontrol)=  "Settings"
-	CheckBox check_BrowserSettings_DB_Passed,pos={160.00,40.00},size={51.00,15.00},title="Passed"
+	GroupBox group_enable_dashboard,pos={4.00,27.00},size={355.00,57.00},disable=1
+	GroupBox group_enable_dashboard,userdata(tabnum)=  "6"
+	GroupBox group_enable_dashboard,userdata(tabcontrol)=  "Settings"
+	CheckBox check_BrowserSettings_DB_Passed,pos={160.00,40.00},size={48.00,16.00},disable=1,proc=AD_CheckProc_PassedSweeps,title="Passed"
 	CheckBox check_BrowserSettings_DB_Passed,help={"Show passed sweeps on double click into ListBox "}
+	CheckBox check_BrowserSettings_DB_Passed,userdata(tabnum)=  "6"
+	CheckBox check_BrowserSettings_DB_Passed,userdata(tabcontrol)=  "Settings"
 	CheckBox check_BrowserSettings_DB_Passed,value= 0
-	CheckBox check_BrowserSettings_DB_Passed, proc=AD_CheckProc_PassedSweeps
-	CheckBox check_BrowserSettings_DB_Passed,userdata(tabnum)=  "6",userdata(tabcontrol)=  "Settings"
-	CheckBox check_BrowserSettings_DB_Failed,pos={160.00,60.00},size={46.00,15.00},title="Failed"
+	CheckBox check_BrowserSettings_DB_Failed,pos={160.00,60.00},size={43.00,16.00},disable=1,proc=AD_CheckProc_FailedSweeps,title="Failed"
 	CheckBox check_BrowserSettings_DB_Failed,help={"Show failed sweeps on double click into ListBox "}
+	CheckBox check_BrowserSettings_DB_Failed,userdata(tabnum)=  "6"
+	CheckBox check_BrowserSettings_DB_Failed,userdata(tabcontrol)=  "Settings"
 	CheckBox check_BrowserSettings_DB_Failed,value= 0
-	CheckBox check_BrowserSettings_DB_Failed,userdata(tabnum)=  "6",userdata(tabcontrol)=  "Settings"
-	CheckBox check_BrowserSettings_DB_Failed,proc=AD_CheckProc_FailedSweeps
 	SetWindow kwTopWin,hook(main)=BSP_ClosePanelHook
 	SetWindow kwTopWin,userdata(panelVersion)=  "2"
-	NewNotebook /F=1 /N=WaveNoteDisplay /W=(200,24,600,561)/FG=(FL,$"",FR,UGH0) /HOST=# /V=0 /OPTS=10
-	Notebook kwTopWin, defaultTab=36, autoSave= 1, showRuler=0, rulerUnits=1
+	NewNotebook /F=1 /N=WaveNoteDisplay /W=(200,24,600,561)/FG=(FL,$"",FR,UGH0) /HOST=# /V=0 /OPTS=10 
+	Notebook kwTopWin, defaultTab=36, autoSave= 1, magnification=100, showRuler=0, rulerUnits=1
 	Notebook kwTopWin newRuler=Normal, justification=0, margins={0,0,252}, spacing={0,0,0}, tabs={}, rulerDefaults={"Arial",10,0,(0,0,0)}
+	Notebook kwTopWin, zdata= "GaqDU%ejN7!Z)u^\"(F_BAcgu2S,7dSL]iZ-,W[?i6\"=DG6/B>,7,t^3K>Ff@1GOXc!\"Z\"8'`"
+	Notebook kwTopWin, zdataEnd= 1
 	SetWindow kwTopWin,userdata(tabnum)=  "5"
 	SetWindow kwTopWin,userdata(tabcontrol)=  "Settings"
 	RenameWindow #,WaveNoteDisplay
