@@ -3401,7 +3401,7 @@ static Function TimeAlignmentIfReq(panel, traces, mode, refTrace, level)
 	string refTrace
 	variable mode, level
 
-	string csrA, csrB, str, axList, refAxis, axis
+	string csrA, csrB, str, refAxis, axis
 	string trace, graph
 	variable offset
 	variable csrAx, csrBx, first, last, pos, numTraces, i, j
@@ -3431,7 +3431,6 @@ static Function TimeAlignmentIfReq(panel, traces, mode, refTrace, level)
 
 	// now determine the feature's time position
 	// using the traces from the same axis as the reference trace
-	axList  = AxisList(graph)
 	refAxis = StringByKey("YAXIS", TraceInfo(graph, refTrace, 0))
 
 	numTraces = DimSize(traces, ROWS)
