@@ -1913,6 +1913,9 @@ Function/WAVE ConvertListOfWaves(list)
 End
 
 /// @brief Convert a list of strings to a text wave.
+///
+/// Counterpart @see TextWaveToList
+/// @see ListToNumericWave
 Function/WAVE ConvertListToTextWave(list, [listSepString])
 	string list, listSepString
 	if(ParamIsDefault(listSepString))
@@ -2342,6 +2345,10 @@ Function InPlaceRandomShuffle(inwave, [noiseGenMode])
 end
 
 /// @brief Convert a 1D numeric wave to a list
+///
+/// Counterpart @see ListToNumericWave
+/// Similar @see NumericWaveToList
+/// @see ListToNumericWave
 Function/S Convert1DWaveToList(wv)
 	Wave wv
 
@@ -2973,6 +2980,9 @@ End
 /// @param[in] colSep      [optional, default = ","] separator for column entries
 /// @param[in] stopOnEmpty [optional, default = 0] when 1 stops generating the list when an empty string entry in txtWave is encountered
 /// @return string with wave entries separated as list using given separators
+///
+/// Counterpart @see ConvertListToTextWave
+/// @see NumericWaveToList
 Function/S TextWaveToList(txtWave, sep[, colSep, stopOnEmpty])
 	WAVE/T txtWave
 	string sep, colSep
@@ -3027,6 +3037,10 @@ End
 
 /// @brief Convert a numeric wave to string list
 ///
+/// Counterpart @see ListToNumericWave
+/// Similar @see Convert1DWaveToList
+/// @see TextWaveToList
+///
 /// @param wv     numeric wave
 /// @param sep    separator
 /// @param format [optional, defaults to `%g`] sprintf conversion specifier
@@ -3056,7 +3070,8 @@ End
 
 /// @brief Convert a list to a numeric wave
 ///
-/// Counterpart of NumericWaveToList().
+/// Counterpart @see NumericWaveToList().
+/// @see TextWaveToList
 ///
 /// @param list list with numeric entries
 /// @param sep  separator
