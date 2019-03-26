@@ -74,8 +74,8 @@ Function ASSERT(var, errorMsg)
 	variable var
 	string errorMsg
 
-	string stracktrace, miesVersionStr
-
+	string stracktrace, miesVersionStr, lockedDevicesStr, device
+	variable i, numLockedDevices
 
 	try
 		AbortOnValue var==0, 1
@@ -107,9 +107,46 @@ Function ASSERT(var, errorMsg)
 			miesVersionStr = ""
 		endif
 
+		SVAR/Z lockedDevices = root:MIES:HardwareDevices:ITCPanelTitleList
+
+		Make/FREE/T sweeps =  NONE
+		Make/FREE/T tpStates = NONE
+		Make/FREE/T daqStates = NONE
+
+		if(!SVAR_Exists(lockedDevices) || strlen(lockedDevices) == 0)
+			lockedDevicesStr = NONE
+		else
+			lockedDevicesStr = lockedDevices
+
+			numLockedDevices = ItemsInList(lockedDevicesStr)
+
+#if exists("AFH_GetLastSweepAcquired")
+			Redimension/N=(numLockedDevices) sweeps, daqStates, tpStates
+
+			for(i = 0; i < numLockedDevices; i += 1)
+				device = StringFromList(i, lockedDevicesStr)
+				NVAR runMode = $GetDataAcqRunMode(device)
+				NVAR testpulseMode = $GetTestpulseRunMode(device)
+
+				sweeps[i]    = num2str(AFH_GetLastSweepAcquired(device))
+				tpStates[i]  = TestPulseRunModeToString(testpulseMode)
+				daqStates[i] = DAQRunModeToString(runMode)
+			endfor
+#endif
+		endif
+
 		print "Please provide the following information if you contact the MIES developers:"
 		print "################################"
+		print "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
 		print GetStackTrace()
+		print "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
+		printf "Time: %s\r", GetIso8601TimeStamp(localTimeZone = 1)
+		printf "Locked device: [%s]\r", lockedDevicesStr
+		printf "Current sweep: [%s]\r", TextWaveToList(sweeps, ";")
+		printf "DAQ: [%s]\r", TextWaveToList(daqStates, ";")
+		printf "Testpulse: [%s]\r", TextWaveToList(tpStates, ";")
+		printf "Experiment: %s.pxp\r", GetExperimentName()
+		printf "Igor Pro version: %s (%s)\r", GetIgorProVersion(), StringByKey("BUILD", IgorInfo(0))
 		print "MIES version:"
 		print miesVersionStr
 		print "################################"
@@ -2524,10 +2561,18 @@ End
 /// @brief Return a string in ISO 8601 format with timezone UTC
 /// @param secondsSinceIgorEpoch [optional, defaults to number of seconds until now] Seconds since the Igor Pro epoch (1/1/1904) in UTC
 /// @param numFracSecondsDigits  [optional, defaults to zero] Number of sub-second digits
-Function/S GetISO8601TimeStamp([secondsSinceIgorEpoch, numFracSecondsDigits])
-	variable secondsSinceIgorEpoch, numFracSecondsDigits
+/// @param localTimeZone         [optional, defaults to false] Use the local time zone instead of UTC
+Function/S GetISO8601TimeStamp([secondsSinceIgorEpoch, numFracSecondsDigits, localTimeZone])
+	variable secondsSinceIgorEpoch, numFracSecondsDigits, localTimeZone
 
 	string str
+	variable timezone
+
+	if(ParamIsDefault(localTimeZone))
+		localTimeZone = 0
+	else
+		localTimeZone = !!localTimeZone
+	endif
 
 	if(ParamIsDefault(numFracSecondsDigits))
 		numFracSecondsDigits = 0
@@ -2536,10 +2581,19 @@ Function/S GetISO8601TimeStamp([secondsSinceIgorEpoch, numFracSecondsDigits])
 	endif
 
 	if(ParamIsDefault(secondsSinceIgorEpoch))
-		secondsSinceIgorEpoch = DateTimeInUTC()
+		if(localTimeZone)
+			secondsSinceIgorEpoch = DateTime
+		else
+			secondsSinceIgorEpoch = DateTimeInUTC()
+		endif
 	endif
 
-	sprintf str, "%sT%sZ", Secs2Date(secondsSinceIgorEpoch, -2), Secs2Time(secondsSinceIgorEpoch, 3, numFracSecondsDigits)
+	if(localTimeZone)
+		timezone = Date2Secs(-1,-1,-1)
+		sprintf str, "%sT%s%+03d:%02d", Secs2Date(secondsSinceIgorEpoch, -2), Secs2Time(secondsSinceIgorEpoch, 3, numFracSecondsDigits), trunc(timezone / 3600), abs(mod(timezone / 60, 60))
+	else
+		sprintf str, "%sT%sZ", Secs2Date(secondsSinceIgorEpoch, -2), Secs2Time(secondsSinceIgorEpoch, 3, numFracSecondsDigits)
+	endif
 
 	return str
 End
@@ -3935,4 +3989,56 @@ threadsafe Function ClearRTError()
 
 	variable err = GetRTError(1)
 	DEBUGPRINT_TS("Clearing RTE", var = err)
+End
+
+/// @brief Convert the DAQ run mode to a string
+///
+/// @param runMode One of @ref DAQRunModes
+threadsafe Function/S DAQRunModeToString(runMode)
+	variable runMode
+
+	switch(runMode)
+		case DAQ_NOT_RUNNING:
+			return "DAQ_NOT_RUNNING"
+			break
+		case DAQ_BG_SINGLE_DEVICE:
+			return "DAQ_BG_SINGLE_DEVICE"
+			break
+		case DAQ_BG_MULTI_DEVICE:
+			return "DAQ_BG_MULTI_DEVICE"
+			break
+		case DAQ_FG_SINGLE_DEVICE:
+			return "DAQ_FG_SINGLE_DEVICE"
+			break
+		default:
+			ASSERT_TS(0, "Unknown run mode")
+			break
+	endswitch
+End
+
+/// @brief Convert the Testpulse run mode to a string
+///
+/// @param runMode One of @ref TestPulseRunModes
+threadsafe Function/S TestPulseRunModeToString(runMode)
+	variable runMode
+
+	runMode = ClearBit(runMode, TEST_PULSE_DURING_RA_MOD)
+
+	switch(runMode)
+		case TEST_PULSE_NOT_RUNNING:
+			return "TEST_PULSE_NOT_RUNNING"
+			break
+		case TEST_PULSE_BG_SINGLE_DEVICE:
+			return "TEST_PULSE_BG_SINGLE_DEVICE"
+			break
+		case TEST_PULSE_BG_MULTI_DEVICE:
+			return "TEST_PULSE_BG_MULTI_DEVICE"
+			break
+		case TEST_PULSE_FG_SINGLE_DEVICE:
+			return "TEST_PULSE_FG_SINGLE_DEVICE"
+			break
+		default:
+			ASSERT_TS(0, "Unknown run mode")
+			break
+	endswitch
 End
