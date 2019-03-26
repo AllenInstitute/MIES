@@ -211,7 +211,7 @@ Function/S GetChannelNameFromChannelType(groupID, device, channel, sweep, params
 		case ITC_XOP_CHANNEL_TYPE_TTL:
 			channelName  = "TTL"
 			WAVE loadedFromNWB = IPNWB#LoadStimulus(groupID, channel)
-			channelName += "_" + num2str(params.channelNumber) + "_" + num2str(params.ttlBit)
+			channelName += "_" + num2str(params.channelNumber) + "_" + num2str(log(params.ttlBit)/log(2))
 
 			CHECK_EQUAL_VAR(str2num(params.channelSuffix), params.ttlBit)
 			break

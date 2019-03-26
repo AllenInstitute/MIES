@@ -3946,6 +3946,8 @@ End
 /// @param ttlBits    bit mask of the active TTL channels form e.g. #GetTTLBits
 /// @param targetDFR  datafolder where to put the waves, can be a free datafolder
 /// @param wavePrefix prefix of the created wave names
+///
+/// The created waves will be named `TTL_3_3` so the final suffix is the running TTL Bit.
 Function SplitTTLWaveIntoComponents(data, ttlBits, targetDFR, wavePrefix)
 	WAVE data
 	variable ttlBits

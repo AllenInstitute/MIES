@@ -1650,7 +1650,7 @@ static Function AB_LoadSweepFromNWBgeneric(h5_groupID, channelList, sweepDFR, co
 						base += loaded
 					endif
 
-					channelName += "_" + num2str(p.ttlBit)
+					channelName += "_" + num2str(log(p.ttlBit)/log(2))
 				else
 					// for non-ITC hardware we don't have multiple bits in one channel
 					// so we don't need to fake a base wave
