@@ -972,7 +972,7 @@ Function PA_UpdateSweepPlotDeconvolution(win, show)
 	string graph, graphs, horizAxis, vertAxis, axisFlags
 	string traceList, traceListOut, traceName, traceMatch, traceInformation
 	string baseName, bsPanel
-	variable i, numGraphs, multipleGraphs, j, numTraces, numDiagonalElements
+	variable i, numGraphs, j, numTraces, numDiagonalElements
 	STRUCT PulseAverageDeconvSettings deconvolution
 
 	win = GetMainWindow(win)
@@ -989,14 +989,8 @@ Function PA_UpdateSweepPlotDeconvolution(win, show)
 		traceMatch = PA_DECONVOLUTION_WAVE_PREFIX
 	endif
 
-	multipleGraphs = GetCheckboxState(bsPanel, "check_pulseAver_multGraphs")
-	if(multipleGraphs)
-		graphs = PA_GetAverageGraphs()
-		numGraphs = ItemsInList(graphs)
-	else
-		graphs = AddListItem(PULSE_AVERAGE_GRAPH_PREFIX, "")
-		numGraphs = 1
-	endif
+	graphs = PA_GetAverageGraphs()
+	numGraphs = ItemsInList(graphs)
 
 	for(i = 0; i < numGraphs; i += 1)
 		graph = StringFromList(i, graphs)
