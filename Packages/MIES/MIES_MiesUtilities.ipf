@@ -2094,7 +2094,9 @@ Function CreateTiledChannelGraph(graph, config, sweepNo, numericalValues,  textu
 					numChannels      = numADCs
 					break
 				case ITC_XOP_CHANNEL_TYPE_TTL:
-					if(!tgs.displayTTL)
+					if(!tgs.displayTTL                                      \
+					   || (tgs.displayDAC && numDACs != activeChanCount[0]) \
+					   || (tgs.displayADC && numADCs != activeChanCount[1]))
 						continue
 					endif
 
