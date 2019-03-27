@@ -2490,7 +2490,7 @@ Function HW_NI_ZeroDAC(deviceID, flags, config)
 	WAVE config
 
 	string device, paraStr
-	variable channels, aoChannel, i, err
+	variable channels, i, err
 
 	device = HW_GetDeviceName(HARDWARE_NI_DAC, deviceID)
 
@@ -2498,8 +2498,7 @@ Function HW_NI_ZeroDAC(deviceID, flags, config)
 	channels = DimSize(config, ROWS)
 	for(i = 0;i < channels; i += 1)
 		if(config[i][%ChannelType] == ITC_XOP_CHANNEL_TYPE_DAC)
-			paraStr += "0," + num2str(aoChannel) + ";"
-			aoChannel += 1
+			paraStr += "0," + num2str(config[i][%ChannelNumber]) + ";"
 		endif
 	endfor
 	// clear RTE
