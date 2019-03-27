@@ -2374,8 +2374,7 @@ End
 
 /// @brief Stop scanning and waveform generation
 ///
-/// @param deviceID ID of the NI device
-/// @param deviceID      device identifier
+/// @param deviceID 		 ID of the NI device
 /// @param config        [optional] ITC config wave
 /// @param configFunc    [optional, defaults to GetITCChanConfigWave()] override wave getter for the ITC config wave
 /// @param prepareForDAQ [optional, defaults to false] prepare for next DAQ immediately
@@ -2388,16 +2387,39 @@ Function HW_NI_StopAcq(deviceID, [config, configFunc, prepareForDAQ, zeroDAC, fl
 	WAVE/Z config
 	FUNCREF HW_WAVE_GETTER_PROTOTYPE configFunc
 
-	variable i, channels, aoChannel, ret, err
-	string panelTitle, paraStr, device, errMsg
+	string panelTitle
 
+	HW_NI_StopADC(deviceID, flags)
+	HW_NI_StopDAC(deviceID, flags)
+	HW_NI_StopTTL(deviceID, flags)
+
+	if(zeroDAC)
 	DEBUGPRINTSTACKINFO()
 
-	// dont stop here, only if all devices removed
+		panelTitle = HW_GetMainDeviceName(HARDWARE_NI_DAC, deviceID)
+		if(ParamIsDefault(config))
+			if(ParamIsDefault(configFunc))
+				WAVE config = GetITCChanConfigWave(panelTitle)
+			else
+				WAVE config = configFunc(panelTitle)
+			endif
+		endif
+		HW_NI_ZeroDAC(deviceID, flags, config)
+	endif
+End
+
+/// @brief Stop ADC task
+///
+/// @param deviceID 		 ID of the NI device
+/// @param flags         One or multiple flags from @ref HardwareInteractionFlags
+Function HW_NI_StopADC(deviceID, flags)
+	variable deviceID, flags
+
+	variable ret
+	string device
+
 	device = HW_GetDeviceName(HARDWARE_NI_DAC, deviceID)
-	panelTitle = HW_GetMainDeviceName(HARDWARE_NI_DAC, deviceID)
 	ret = fDAQmx_ScanStop(device)
-	// note: calling Stop on a finished scan generates an error code
 	if(ret)
 		print fDAQmx_ErrorString()
 		printf "Error %d: fDAQmx_ScanStop\r", ret
@@ -2406,6 +2428,20 @@ Function HW_NI_StopAcq(deviceID, [config, configFunc, prepareForDAQ, zeroDAC, fl
 			ASSERT(0, "Error calling fDAQmx_ScanStop (has Scan already finished?)")
 		endif
 	endif
+	HW_NI_KillFifo(deviceID)
+End
+
+/// @brief Stop DAC task
+///
+/// @param deviceID 		 ID of the NI device
+/// @param flags         One or multiple flags from @ref HardwareInteractionFlags
+Function HW_NI_StopDAC(deviceID, flags)
+	variable deviceID, flags
+
+	variable ret
+	string device
+
+	device = HW_GetDeviceName(HARDWARE_NI_DAC, deviceID)
 	ret = fDAQmx_WaveformStop(device)
 	if(ret)
 		print fDAQmx_ErrorString()
@@ -2415,6 +2451,20 @@ Function HW_NI_StopAcq(deviceID, [config, configFunc, prepareForDAQ, zeroDAC, fl
 			ASSERT(0, "Error calling fDAQmx_WaveformStop")
 		endif
 	endif
+End
+
+/// @brief Stop TTL task
+///
+/// @param deviceID 		 ID of the NI device
+/// @param flags         One or multiple flags from @ref HardwareInteractionFlags
+Function HW_NI_StopTTL(deviceID, flags)
+	variable deviceID, flags
+
+	variable ret
+	string device, panelTitle
+
+	device = HW_GetDeviceName(HARDWARE_NI_DAC, deviceID)
+	panelTitle = HW_GetMainDeviceName(HARDWARE_NI_DAC, deviceID)
 
 	NVAR taskID = $GetNI_TTLTaskID(panelTitle)
 	if(!isNaN(taskID))
@@ -2428,38 +2478,43 @@ Function HW_NI_StopAcq(deviceID, [config, configFunc, prepareForDAQ, zeroDAC, fl
 			endif
 		endif
 	endif
-
-	if(zeroDAC)
-		if(ParamIsDefault(config))
-			if(ParamIsDefault(configFunc))
-				WAVE config = GetITCChanConfigWave(panelTitle)
-			else
-				WAVE config = configFunc(panelTitle)
-			endif
-		endif
-		paraStr = ""
-		channels = DimSize(config, ROWS)
-		for(i = 0;i < channels; i += 1)
-			if(config[i][%ChannelType] == ITC_XOP_CHANNEL_TYPE_DAC)
-				paraStr += "0," + num2str(aoChannel) + ";"
-				aoChannel += 1
-			endif
-		endfor
-		// clear RTE
-		err = GetRTError(1)
-		DAQmx_AO_SetOutputs/DEV=device paraStr
-		if(GetRTError(1))
-			print fDAQmx_ErrorString()
-			ControlWindowToFront()
-			if(flags & HARDWARE_ABORT_ON_ERROR)
-				ASSERT(0, "Error calling DAQmx_AO_SetOutputs")
-			endif
-			return NaN
-		endif
-	endif
-
-	HW_NI_KillFifo(deviceID)
 End
+
+/// @brief Zero analog output on all DAC channels
+///
+/// @param deviceID 		 ID of the NI device
+/// @param flags         One or multiple flags from @ref HardwareInteractionFlags
+/// @param config        reference to Channel Config Wave, this allows to use custom configurations
+Function HW_NI_ZeroDAC(deviceID, flags, config)
+	variable deviceID, flags
+	WAVE config
+
+	string device, paraStr
+	variable channels, aoChannel, i, err
+
+	device = HW_GetDeviceName(HARDWARE_NI_DAC, deviceID)
+
+	paraStr = ""
+	channels = DimSize(config, ROWS)
+	for(i = 0;i < channels; i += 1)
+		if(config[i][%ChannelType] == ITC_XOP_CHANNEL_TYPE_DAC)
+			paraStr += "0," + num2str(aoChannel) + ";"
+			aoChannel += 1
+		endif
+	endfor
+	// clear RTE
+	err = GetRTError(1)
+	DAQmx_AO_SetOutputs/DEV=device paraStr
+	if(GetRTError(1))
+		print fDAQmx_ErrorString()
+		ControlWindowToFront()
+		if(flags & HARDWARE_ABORT_ON_ERROR)
+			ASSERT(0, "Error calling DAQmx_AO_SetOutputs")
+		endif
+		return NaN
+	endif
+End
+
 
 /// @brief Kill the FIFO of the given NI device
 ///
