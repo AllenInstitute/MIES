@@ -1935,6 +1935,8 @@ Function PSQ_Ramp(panelTitle, s)
 	variable DAC, sweepPassed, sweepsInSet, passesInSet, acquiredSweepsInSet, enoughSpikesFound
 	variable pulseStart, pulseDuration, fifoPos, fifoOffset, numberOfSpikes, multiplier
 	string key, msg, stimset
+	string fifoname
+	variable hardwareType
 
 	numberOfSpikes = AFH_GetAnalysisParamNumerical("NumberOfSpikes", s.params)
 	ASSERT(numberOfSpikes > 0, "Missing or non-positive NumberOfSpikes parameter.")
@@ -2119,51 +2121,78 @@ Function PSQ_Ramp(panelTitle, s)
 			key = PSQ_CreateLBNKey(PSQ_RAMP, PSQ_FMT_LBN_SPIKE_POSITIONS)
 			ED_AddEntryToLabnotebook(panelTitle, key, resultTxT, overrideSweepNo = s.sweepNo, unit = "ms")
 
-			// stop DAQ, set DA to zero from now to the end and start DAQ again
 			NVAR ITCDeviceIDGlobal = $GetITCDeviceIDGlobal(panelTitle)
 			NVAR ADChannelToMonitor = $GetADChannelToMonitor(panelTitle)
 
-			// fetch the very last fifo position immediately before we stop it
-			NVAR tgID = $GetThreadGroupIDFIFO(panelTitle)
-			fifoOffset = TS_GetNewestFromThreadQueue(tgID, "fifoPos")
-			TFH_StopFIFODaemon(HARDWARE_ITC_DAC, ITCDeviceIDGlobal)
-			HW_StopAcq(HARDWARE_ITC_DAC, ITCDeviceIDGlobal)
-			HW_ITC_PrepareAcq(ITCDeviceIDGlobal, offset=fifoOffset)
+			hardwareType = GetHardwareType(panelTitle)
+			if(hardwareType == HARDWARE_ITC_DAC)
 
-			WAVE wv = s.rawDACWave
+				// stop DAQ, set DA to zero from now to the end and start DAQ again
 
-			sprintf msg, "DA black out: [%g, %g]\r", fifoOffset, inf
-			DEBUGPRINT(msg)
+				// fetch the very last fifo position immediately before we stop it
+				NVAR tgID = $GetThreadGroupIDFIFO(panelTitle)
+				fifoOffset = TS_GetNewestFromThreadQueue(tgID, "fifoPos")
+				TFH_StopFIFODaemon(HARDWARE_ITC_DAC, ITCDeviceIDGlobal)
+				HW_StopAcq(HARDWARE_ITC_DAC, ITCDeviceIDGlobal)
+				HW_ITC_PrepareAcq(ITCDeviceIDGlobal, offset=fifoOffset)
 
-			SetWaveLock 0, wv
-			Multithread wv[fifoOffset, inf][0, ADChannelToMonitor - 1] = 0
-			SetWaveLock 1, wv
+				WAVE wv = s.rawDACWave
 
-			HW_StartAcq(HARDWARE_ITC_DAC, ITCDeviceIDGlobal)
-			TFH_StartFIFOStopDaemon(HARDWARE_ITC_DAC, ITCDeviceIDGlobal)
+				sprintf msg, "DA black out: [%g, %g]\r", fifoOffset, inf
+				DEBUGPRINT(msg)
 
-			// fetch newest fifo position, blocks until it gets a valid value
-			// its zero is now fifoOffset
-			NVAR tgID = $GetThreadGroupIDFIFO(panelTitle)
-			fifoPos = TS_GetNewestFromThreadQueue(tgID, "fifoPos")
-			ASSERT(fifoPos > 0, "Invalid fifo position, has the thread died?")
+				SetWaveLock 0, wv
+				Multithread wv[fifoOffset, inf][0, ADChannelToMonitor - 1] = 0
+				SetWaveLock 1, wv
 
-			// wait until the hardware is finished with writing this chunk
-			// this is to avoid that two threads write simultaneously into the ITCDataWave
-			for(;;)
-				val = TS_GetNewestFromThreadQueue(tgID, "fifoPos")
+				HW_StartAcq(HARDWARE_ITC_DAC, ITCDeviceIDGlobal)
+				TFH_StartFIFOStopDaemon(HARDWARE_ITC_DAC, ITCDeviceIDGlobal)
 
-				if(val > fifoPos)
-					break
+				// fetch newest fifo position, blocks until it gets a valid value
+				// its zero is now fifoOffset
+				NVAR tgID = $GetThreadGroupIDFIFO(panelTitle)
+				fifoPos = TS_GetNewestFromThreadQueue(tgID, "fifoPos")
+				ASSERT(fifoPos > 0, "Invalid fifo position, has the thread died?")
+
+				// wait until the hardware is finished with writing this chunk
+				// this is to avoid that two threads write simultaneously into the ITCDataWave
+				for(;;)
+					val = TS_GetNewestFromThreadQueue(tgID, "fifoPos")
+
+					if(val > fifoPos)
+						break
+					endif
+				endfor
+
+				sprintf msg, "AD black out: [%g, %g]\r", fifoOffset, (fifoOffset + fifoPos)
+				DEBUGPRINT(msg)
+
+				SetWaveLock 0, wv
+				Multithread wv[fifoOffset, fifoOffset + fifoPos][ADChannelToMonitor, inf] = 0
+				SetWaveLock 1, wv
+
+			elseif(hardwareType == HARDWARE_NI_DAC)
+				// DA output runs on the AD tasks clock source ai
+				// we stop DA and set the analog out to 0, the AD task keeps on running
+
+				WAVE config = GetITCChanConfigWave(panelTitle)
+				fifoName = GetNIFIFOName(ITCDeviceIDGlobal)
+
+				HW_NI_StopDAC(ITCDeviceIDGlobal)
+				HW_NI_ZeroDAC(ITCDeviceIDGlobal)
+
+				DoXOPIdle
+				FIFOStatus/Q $fifoName
+				WAVE/WAVE NIDataWave = s.rawDACWave
+				// As only one AD and DA channel is allowed for this function, at index 0 the setting for first DA channel are expected
+				WAVE NIChannel = NIDataWave[0]
+				if(V_FIFOChunks < DimSize(NIChannel, ROWS))
+					MultiThread NIChannel[V_FIFOChunks,] = 0
 				endif
-			endfor
 
-			sprintf msg, "AD black out: [%g, %g]\r", fifoOffset, (fifoOffset + fifoPos)
-			DEBUGPRINT(msg)
-
-			SetWaveLock 0, wv
-			Multithread wv[fifoOffset, fifoOffset + fifoPos][ADChannelToMonitor, inf] = 0
-			SetWaveLock 1, wv
+			else
+				ASSERT(0, "Unknown hardware type")
+			endif
 
 			// recalculate pulse duration
 			PSQ_GetPulseDurations(panelTitle, PSQ_RAMP, s.sweepNo, totalOnsetDelay, forceRecalculation = 1)
