@@ -389,7 +389,7 @@ Function/S GetNI_AISetup(panelTitle)
 	return GetSVARAsString(GetDevicePath(panelTitle), "NI_AI_setupStr0")
 End
 
-/// @brief Returns the current NI setup string for TTL out through DAQmx_DIO_Config
+/// @brief Returns the TTL task ID set by DAQmx_DIO_Config in HW_NI_PrepareAcq
 Function/S GetNI_TTLTaskID(panelTitle)
 	string panelTitle
 
