@@ -758,7 +758,7 @@ static Function DC_PlaceDataInHardwareDataWave(panelTitle, numActiveChannels, da
 		maxITI = max(maxITI, WB_GetITI(stimSet[activeColumn], setColumn[activeColumn]))
 
 		if(IsFinite(headstageDAC[activeColumn]))
-			channelMode = ChannelClampMode[i][%DAC][%Headstage]
+			channelMode = ChannelClampMode[i][%DAC][%ClampMode]
 			if(channelMode == V_CLAMP_MODE)
 				testPulseAmplitude[activeColumn] = TPAmpVClamp
 			elseif(channelMode == I_CLAMP_MODE || channelMode == I_EQUAL_ZERO_MODE)
