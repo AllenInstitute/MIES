@@ -94,7 +94,7 @@ Function AFM_CallAnalysisFunctions(panelTitle, eventType)
 
 		// all functions are valid
 		WAVE DAQDataWave = GetHardwareDataWave(panelTitle)
-		SetWaveLock 1, DAQDataWave
+		ChangeWaveLock(DAQDataWave, 1)
 
 		ret = NaN
 		try
@@ -131,7 +131,7 @@ Function AFM_CallAnalysisFunctions(panelTitle, eventType)
 			endif
 		endtry
 
-		SetWaveLock 0, DAQDataWave
+		ChangeWaveLock(DAQDataWave, 0)
 
 		sprintf msg, "Calling analysis function \"%s\" for event \"%s\" on headstage %d returned ret %d", func, StringFromList(eventType, EVENT_NAME_LIST), i, ret
 		DEBUGPRINT(msg)
