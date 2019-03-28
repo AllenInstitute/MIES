@@ -562,9 +562,14 @@ Function DAP_EphysPanelStartUpSettings()
 	CheckBox check_Settings_TP_SaveTP WIN = $panelTitle, value = 0
 	CheckBox check_settings_TP_show_steady WIN = $panelTitle, value = 1
 	CheckBox check_settings_TP_show_peak WIN = $panelTitle, value = 1
-	CheckBox check_settings_show_power WIN = $panelTitle, value = 0
 	CheckBox check_Settings_DisablePressure WIN = $panelTitle, value = 0
 	CheckBox check_Settings_RequireAmpConn WIN = $panelTitle, value = 1
+	// Oscilloscope section in setting tab
+	CheckBox check_settings_show_power WIN = $panelTitle, value = 0
+	SetVariable setvar_Settings_OsciUpdInt, win=$panelTitle, value= _NUM:500
+	SetVariable setvar_Settings_OsciUpdExt, win=$panelTitle, value= _NUM:10
+	PopupMenu Popup_Settings_OsciUpdMode WIN = $panelTitle, value=DAP_GetOsciUpdModes(), mode=3
+	EnableControls(panelTitle, "Popup_Settings_OsciUpdMode")
 
 	// defaults are also hardcoded in P_GetPressureDataWaveRef
 	// and P_PressureDataTxtWaveRef
@@ -5108,6 +5113,40 @@ Function DAP_PopMenuProc_FixedSampInt(pa) : PopupMenuControl
 				EnableControl(pa.win, "Popup_Settings_SampIntMult")
 			else
 				DisableControl(pa.win, "Popup_Settings_SampIntMult")
+			endif
+			break
+	endswitch
+
+	return 0
+End
+
+/// @brief Return the list of available Oscilloscope Update Modes
+Function/S DAP_GetOsciUpdModes()
+
+	string list = ""
+	list = AddListItem("Interval", list, ";", GUI_SETTING_OSCI_SCALE_INTERVAL)
+	list = AddListItem("Auto Scale", list, ";", GUI_SETTING_OSCI_SCALE_AUTO)
+	list = AddListItem("Fixed Scale", list, ";", GUI_SETTING_OSCI_SCALE_FIXED)
+	return list
+End
+
+Function DAP_PopMenuProc_OsciUpdMode(pa) : PopupMenuControl
+	STRUCT WMPopupAction &pa
+
+	string panelTitle
+
+	switch(pa.eventCode)
+		case 2: // mouse up
+			panelTitle = pa.win
+			DAG_Update(panelTitle, pa.ctrlName, val = pa.popNum - 1, str = pa.popStr)
+
+			NVAR tpRunMode = $GetTestpulseRunMode(panelTitle)
+			NVAR dataAcqRunMode = $GetDataAcqRunMode(panelTitle)
+
+			if(IsFinite(tpRunMode) && tpRunMode != TEST_PULSE_NOT_RUNNING)
+				SCOPE_CreateGraph(panelTitle, TEST_PULSE_MODE)
+			elseif(IsFinite(dataAcqRunMode) && dataAcqRunMode != DAQ_NOT_RUNNING)
+				SCOPE_CreateGraph(panelTitle, DATA_ACQUISITION_MODE)
 			endif
 			break
 	endswitch

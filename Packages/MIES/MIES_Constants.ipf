@@ -535,7 +535,7 @@ Constant HARDWARE_DAC_EXTERNAL_TRIGGER = 0x1
 /// @}
 
 /// Used to upgrade the GuiStateWave as well as the DA Ephys panel
-Constant DA_EPHYS_PANEL_VERSION     = 38
+Constant DA_EPHYS_PANEL_VERSION     = 39
 Constant DATABROWSER_PANEL_VERSION  = 8
 Constant SWEEPBROWSER_PANEL_VERSION = 3
 Constant WAVEBUILDER_PANEL_VERSION  = 7
@@ -1059,4 +1059,12 @@ Constant ANALYSIS_BROWSER_SUPP_VERSION = 2
 /// @{
 Constant REQUIRED_PARAMS = 0x1
 Constant OPTIONAL_PARAMS = 0x2
+/// @}
+
+/// @name GUI settings oscilloscopy Y scale update modes
+/// @anchor GUISettingOscilloscopeScaleMode
+/// @{
+Constant GUI_SETTING_OSCI_SCALE_AUTO      = 0
+Constant GUI_SETTING_OSCI_SCALE_FIXED     = 1
+Constant GUI_SETTING_OSCI_SCALE_INTERVAL  = 2
 /// @}
