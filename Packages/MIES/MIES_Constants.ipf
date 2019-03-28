@@ -359,12 +359,13 @@ Constant MIES_BSP_AR  = 3
 Constant MIES_BSP_PA  = 4
 /// @}
 
-/// @name values for BrowserSettings UserData
+/// @name values for  UserData in BrowserSettings and derived windows
 /// @{
 strConstant MIES_BSP_BROWSER = "BROWSER"
 strConstant MIES_BSP_DEVICE = "DEVICE"
 strConstant MIES_BSP_PANEL_FOLDER = "PANEL_FOLDER"
 strConstant MIES_BSP_AR_SWEEPFOLDER = "AR_SWEEPFOLDER"
+strConstant MIES_BSP_PA_MAINPANEL = "HOSTWINDOW"
 /// @}
 
 StrConstant NUMERALS = "First;Second;Third;Fourth;Fifth;Sixth;Seventh;Eighth"

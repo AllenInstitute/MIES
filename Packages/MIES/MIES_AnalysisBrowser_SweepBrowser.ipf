@@ -581,6 +581,7 @@ Window SweepBrowser() : Graph
 	PauseUpdate; Silent 1		// building window...
 	Display /W=(850.5,168.5,1284,473.75)/K=1  as "SweepBrowser"
 	SetWindow kwTopWin,userdata(panelVersion)=  "2"
+	SetWindow kwTopWin,hook(TA_CURSOR_MOVED)=TimeAlignCursorMovedHook
 	Button button_BSP_open,pos={5.00,5.00},size={25.00,25.00},proc=BSP_ButtonProc_Panel,title="<<"
 	Button button_BSP_open,help={"Open Side Panel"}
 EndMacro

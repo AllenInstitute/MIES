@@ -77,6 +77,8 @@ static Function/S PA_GetGraph(mainWin, multipleGraphs, channelTypeStr, channelNu
 		top    += height_offset
 		bottom += height_offset
 		Display/W=(left, top, right, bottom)/K=1/N=$win
+		SetWindow $win, hook(TA_CURSOR_MOVED) = TimeAlignCursorMovedHook
+		SetWindow $win, userdata($MIES_BSP_PA_MAINPANEL) = mainWin
 
 		if(multipleGraphs)
 			winAbove = PA_GetGraphName(multipleGraphs, channelTypeStr, channelNumber - 1, activeRegionCount)

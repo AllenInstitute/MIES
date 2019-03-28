@@ -425,6 +425,7 @@ Window DataBrowser() : Graph
 	PauseUpdate; Silent 1		// building window...
 	Display /W=(850.5,168.5,1284,473.75)/K=1  as "DataBrowser"
 	SetWindow kwTopWin,userdata(panelVersion)=  "7"
+	SetWindow kwTopWin,hook(TA_CURSOR_MOVED)=TimeAlignCursorMovedHook
 	ModifyGraph margin(left)=28,margin(bottom)=1
 	Button button_BSP_open,pos={5.00,5.00},size={25.00,25.00},proc=DB_ButtonProc_Panel,title="<<"
 	Button button_BSP_open,help={"Open Side Panel"}

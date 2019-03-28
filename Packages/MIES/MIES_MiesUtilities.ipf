@@ -3171,6 +3171,42 @@ Function TimeAlignHandleCursorDisplay(win)
 	Cursor/W=$graph/A=1/N=1/P B $trace posB
 End
 
+Function TimeAlignCursorMovedHook(s)
+	STRUCT WMWinHookStruct &s
+
+	String trace, graphtrace, bsPanel
+
+	strswitch(s.eventName)
+		case "cursormoved":
+			trace = s.traceName
+			if(isEmpty(trace))
+				return 0
+			endif
+
+			bsPanel = BSP_GetPanel(s.winName)
+			if(!windowExists(bsPanel))
+				// check if hook was called from a PA graph
+				if(WhichListItem(s.winName, PA_GetAverageGraphs()) == -1)
+					return 0
+				endif
+				bsPanel = BSP_GetPanel(GetUserData(s.winName, "", MIES_BSP_PA_MAINPANEL))
+				if(!windowExists(bsPanel))
+					return 0
+				endif
+			endif
+
+			if(!GetCheckBoxState(bsPanel, "check_BrowserSettings_TA"))
+				return 0
+			endif
+
+			graphtrace = s.winName + "#" + s.traceName
+			PGC_SetAndActivateControl(bsPanel, "popup_TimeAlignment_Master", str = graphtrace)
+			break
+	endswitch
+
+	return 0
+End
+
 /// @brief Replace all waves from the traces in the graph with their backup
 Function ReplaceAllWavesWithBackup(graph, traceList)
 	string graph
