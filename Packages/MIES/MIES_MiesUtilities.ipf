@@ -3081,9 +3081,6 @@ Function PostPlotTransformations(graph, pps)
 	string graph
 	STRUCT PostPlotSettings &pps
 
-	string traceList, trace
-	variable numTraces, i
-
 	WAVE/T traces = ListToTextWave(GetAllSweepTraces(graph), ";")
 
 	ZeroTracesIfReq(graph, traces, pps.zeroTraces)
