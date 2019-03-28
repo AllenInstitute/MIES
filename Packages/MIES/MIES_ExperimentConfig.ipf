@@ -172,7 +172,7 @@ static Function ExpConfig_Amplifiers(panelTitle, UserSettings, midExp)
 	Wave /T UserSettings
 	variable midExp
 
-	string AmpSerialLocal, AmpTitleLocal, CheckDA, HeadstagesToConfigure, MCCWinPosition
+	string AmpSerialLocal, AmpTitleLocal, ctrl, HeadstagesToConfigure, MCCWinPosition
 	variable i, ii, ampSerial, numRows, RequireAmpConnection
 	
 	FindValue /TXOP = 4 /TEXT = AMP_SERIAL UserSettings
@@ -208,7 +208,6 @@ static Function ExpConfig_Amplifiers(panelTitle, UserSettings, midExp)
 		PGC_SetAndActivateControl(panelTitle,"Popup_Settings_HeadStage", val = i)
 		
 		if(WhichListItem(num2str(i), HeadstagesToConfigure) != -1)
-			CheckDA = GetPanelControl(i, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_CHECK)
 			if(IsInteger(str2numSafe(StringFromList(ii, AmpSerialLocal))))
 				if(!mod(i,2)) // even
 					ampSerial = str2numSafe(StringFromList(ii, AmpSerialLocal))
@@ -233,14 +232,16 @@ static Function ExpConfig_Amplifiers(panelTitle, UserSettings, midExp)
 					ExpConfig_MCC_MidExp(panelTitle, i, UserSettings)
 				endif
 				
-				PGC_SetAndActivateControl(panelTitle,CheckDA,val = CHECKBOX_SELECTED)
+				ctrl = GetPanelControl(i, CHANNEL_TYPE_HEADSTAGE, CHANNEL_CONTROL_CHECK)
+				PGC_SetAndActivateControl(panelTitle, ctrl, val = CHECKBOX_SELECTED)
 				PGC_SetAndActivateControl(panelTitle,"ADC", val = DA_EPHYS_PANEL_DATA_ACQUISITION)
 				PGC_SetAndActivateControl(panelTitle,"ADC", val = DA_EPHYS_PANEL_HARDWARE)
 		
 				printf "%d successful\r", i
 			elseif(!RequireAmpConnection)  
 				PGC_SetAndActivateControl(panelTitle,"popup_Settings_Amplifier", val = WhichListItem(NONE, DAP_GetNiceAmplifierChannelList()))
-				PGC_SetAndActivateControl(panelTitle,CheckDA,val = CHECKBOX_SELECTED)
+				ctrl = GetPanelControl(i, CHANNEL_TYPE_HEADSTAGE, CHANNEL_CONTROL_CHECK)
+				PGC_SetAndActivateControl(panelTitle, ctrl, val = CHECKBOX_SELECTED)
 				printf "%d not connected to amplifier but configured\r", i	
 			else
 				PGC_SetAndActivateControl(panelTitle,"popup_Settings_Amplifier", val = WhichListItem(NONE, DAP_GetNiceAmplifierChannelList()))
