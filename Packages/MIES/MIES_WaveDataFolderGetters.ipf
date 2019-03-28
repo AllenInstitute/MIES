@@ -527,6 +527,8 @@ Function/Wave GetChannelClampMode(panelTitle)
 	SetDimLabel LAYERS, 0, ClampMode, wv
 	SetDimLabel LAYERS, 1, Headstage, wv
 
+	SetWaveVersion(wv, versionOfNewWave)
+
 	return wv
 End
 
