@@ -206,7 +206,7 @@ Function DB_UpdateSweepPlot(win)
 	string win
 
 	variable numEntries, i, sweepNo, highlightSweep, referenceTime, traceIndex
-	string device, mainPanel, lbPanel, bsPanel, scPanel, graph
+	string device, mainPanel, lbPanel, bsPanel, scPanel, graph, csrA, csrB
 
 	if(BSP_MainPanelNeedsUpdate(win))
 		DoAbortNow("Can not display data. The Databrowser panel is too old to be usable. Please close it and open a new one.")
@@ -222,6 +222,8 @@ Function DB_UpdateSweepPlot(win)
 
 	WAVE axesRanges = GetAxesRanges(graph)
 
+	csrA = CsrInfo(A, graph)
+	csrB = CsrInfo(B, graph)
 	RemoveTracesFromGraph(graph)
 
 	if(!BSP_HasBoundDevice(win))
@@ -282,6 +284,9 @@ Function DB_UpdateSweepPlot(win)
 		CreateTiledChannelGraph(graph, config, sweepNo, numericalValues, textualValues, tgs, dfr, axisLabelCache, traceIndex, channelSelWave=sweepChannelSel)
 		AR_UpdateTracesIfReq(graph, dfr, numericalValues, sweepNo)
 	endfor
+
+	RestoreCursor(graph, csrA)
+	RestoreCursor(graph, csrB)
 
 	DEBUGPRINT_ELAPSED(referenceTime)
 

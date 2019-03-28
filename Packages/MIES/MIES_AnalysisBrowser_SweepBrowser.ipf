@@ -339,7 +339,7 @@ Function SB_UpdateSweepPlot(win, [newSweep])
 	string win
 	variable newSweep
 
-	string device, dataFolder, graph, bsPanel, scPanel, lbPanel
+	string device, dataFolder, graph, bsPanel, scPanel, lbPanel, csrA, csrB
 	variable mapIndex, i, numEntries, sweepNo, highlightSweep, traceIndex, currentSweep
 
 	graph = GetMainWindow(win)
@@ -376,6 +376,8 @@ Function SB_UpdateSweepPlot(win, [newSweep])
 
 	WAVE axesRanges = GetAxesRanges(graph)
 
+	csrA = CsrInfo(A, graph)
+	csrB = CsrInfo(B, graph)
 	RemoveTracesFromGraph(graph)
 
 	WAVE/T sweepMap = SB_GetSweepBrowserMap(sweepBrowserDFR)
@@ -415,6 +417,9 @@ Function SB_UpdateSweepPlot(win, [newSweep])
 		CreateTiledChannelGraph(graph, configWave, sweepNo, numericalValues, textualValues, tgs, sweepDFR, axisLabelCache, traceIndex, channelSelWave=sweepChannelSel)
 		AR_UpdateTracesIfReq(graph, sweepDFR, numericalValues, sweepNo)
 	endfor
+
+	RestoreCursor(graph, csrA)
+	RestoreCursor(graph, csrB)
 
 	dataFolder = sweepMap[currentSweep][%DataFolder]
 	device     = sweepMap[currentSweep][%Device]

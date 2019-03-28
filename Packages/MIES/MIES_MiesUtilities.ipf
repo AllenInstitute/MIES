@@ -3081,11 +3081,8 @@ Function PostPlotTransformations(graph, pps)
 	string graph
 	STRUCT PostPlotSettings &pps
 
-	string traceList, trace, crsA, crsB
+	string traceList, trace
 	variable numTraces, i
-
-	crsA = CsrInfo(A, graph)
-	crsB = CsrInfo(B, graph)
 
 	WAVE/T traces = ListToTextWave(GetAllSweepTraces(graph), ";")
 
@@ -3097,9 +3094,6 @@ Function PostPlotTransformations(graph, pps)
 	AverageWavesFromSameYAxisIfReq(graph, traces, pps.averageTraces, pps.averageDataFolder, pps.hideSweep)
 	AR_HighlightArtefactsEntry(graph)
 	PA_ShowPulses(graph, pps.averageDataFolder, pps.pulseAverSett)
-
-	RestoreCursor(graph, crsA)
-	RestoreCursor(graph, crsB)
 
 	pps.finalUpdateHook(graph)
 End
