@@ -294,9 +294,6 @@ Constant MCC_END_INVALID_FUNC            = 10052
 Constant CHECKBOX_SELECTED     = 1
 Constant CHECKBOX_UNSELECTED   = 0
 
-/// Interval in iterations between the switch from live update false to true
-Constant TEST_PULSE_LIVE_UPDATE_INTERVAL = 25
-
 /// @name Constants for FunctionInfo and WaveType
 ///
 /// @anchor IgorTypes
@@ -409,6 +406,14 @@ Constant AXIS_ORIENTATION_RIGHT  = 0x22
 /// @{
 Constant AXIS_RANGE_INC_AUTOSCALED = 0x01
 Constant AXIS_RANGE_USE_MINMAX     = 0x02
+/// @}
+
+/// @name Constants for Axis name template
+/// @anchor AxisNameTemplates
+/// @{
+StrConstant AXIS_SCOPE_AD        = "AD"
+StrConstant AXIS_SCOPE_AD_REGEXP = "AD[0123456789]+"
+StrConstant AXIS_SCOPE_TP_TIME   = "top"
 /// @}
 
 /// @name Constants for DAP_ToggleAcquisitionButton

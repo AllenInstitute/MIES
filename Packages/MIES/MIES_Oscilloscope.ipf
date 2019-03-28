@@ -59,47 +59,83 @@ Function SCOPE_KillScopeWindowIfRequest(panelTitle)
 	endif
 End
 
+// @brief Finds the current minimum for the top time axis for TP graphs
+// @param[in]  panelTitle title of panel
+// @param[out] axisMin suggested new axis minimum
+// @return 1 if axisMin has changed, 0 otherwise
+Function SCOPE_GetTPTopAxisStart(panelTitle, axisMin)
+	string panelTitle
+	variable &axisMin
+
+	string graph
+	variable count, latest
+
+	graph = SCOPE_GetGraph(panelTitle)
+	GetAxis/W=$graph/Q $AXIS_SCOPE_TP_TIME
+	if(V_flag)
+		return 0
+	endif
+
+	Wave TPStorage = GetTPStorage(panelTitle)
+	count = GetNumberFromWaveNote(TPStorage, NOTE_INDEX)
+
+	if(count > 0)
+		latest = TPStorage[count - 1][0][%DeltaTimeInSeconds]
+		if(latest >= V_max)
+			axisMin = latest - 0.5 * SCOPE_TIMEAXIS_RESISTANCE_RANGE
+			return 1
+		else
+			axisMin = V_min
+			return 0
+		endif
+	else
+		axisMin = 0
+		return V_Min != 0
+	endif
+End
+
 Function SCOPE_UpdateGraph(panelTitle)
 	string panelTitle
 
-	variable latest, count, i, numADCs, minVal, maxVal, range, numDACs, statsMin, statsMax
-	variable axisMin, axisMax, spacing, adc, headstage
-	variable relTimeAxisMin, relTimeAxisMax, showSteadyStateResistance, showPeakResistance
-	variable showPowerSpectrum
-	string graph, rightAxis, leftAxis, info
+	variable i, numADCs, range, numDACs, statsMin, statsMax
+	variable axisMin, axisMax, spacing
+	variable showSteadyStateResistance, showPeakResistance, showPowerSpectrum
+	variable updateInt, now
+	string graph, leftAxis
 
-	SCOPE_GetCheckBoxesForAddons(panelTitle, showSteadyStateResistance, showPeakResistance, showPowerSpectrum)
+	NVAR timestamp = $GetLastAcqHookCallTimeStamp(panelTitle)
+	updateInt = DAG_GetNumericalValue(panelTitle, "setvar_Settings_OsciUpdInt")
+	now = DateTime
+	if((now - timestamp) < updateInt / 1000)
+		return 0
+	endif
+	timestamp = now
+
 	graph = SCOPE_GetGraph(panelTitle)
-	WAVE ITCChanConfigWave = GetITCChanConfigWave(panelTitle)
-	WAVE OscilloscopeData  = GetOscilloscopeWave(panelTitle)
-	WAVE ADCs = GetADCListFromConfig(ITCChanConfigWave)
-	WAVE DACs = GetDACListFromConfig(ITCChanConfigWave)
-	numADCs = DimSize(ADCs, ROWS)
-	numDACs = DimSize(DACs, ROWS)
-
-	GetAxis/W=$graph/Q top
-	if(!V_flag) // axis exists in graph
-		Wave TPStorage = GetTPStorage(panelTitle)
-		count = GetNumberFromWaveNote(TPStorage, NOTE_INDEX)
-
-		if(count > 0)
-			latest = TPStorage[count - 1][0][%DeltaTimeInSeconds]
-			if(latest >= V_max)
-				relTimeAxisMin = latest - 0.5 * SCOPE_TIMEAXIS_RESISTANCE_RANGE
-				relTimeAxisMax = latest + 0.5 * SCOPE_TIMEAXIS_RESISTANCE_RANGE
-				SetAxis/W=$graph top, relTimeAxisMin, relTimeAxisMax
-			endif
-		endif
+	if(SCOPE_GetTPTopAxisStart(panelTitle, axisMin))
+		SetAxis/W=$graph $AXIS_SCOPE_TP_TIME, axisMin, axisMin + SCOPE_TIMEAXIS_RESISTANCE_RANGE
 	endif
 
+	if(DAG_GetNumericalValue(panelTitle, "Popup_Settings_OsciUpdMode") != GUI_SETTING_OSCI_SCALE_INTERVAL)
+		return 0
+	endif
+
+	SCOPE_GetCheckBoxesForAddons(panelTitle, showSteadyStateResistance, showPeakResistance, showPowerSpectrum)
 	if(showPowerSpectrum)
 		return NaN
 	endif
 
+	WAVE config = GetITCChanConfigWave(panelTitle)
+	WAVE OscilloscopeData  = GetOscilloscopeWave(panelTitle)
+	WAVE ADCs = GetADCListFromConfig(config)
+	WAVE DACs = GetDACListFromConfig(config)
+	numADCs = DimSize(ADCs, ROWS)
+	numDACs = DimSize(DACs, ROWS)
+
 	// scale the left AD axes
 	for(i = 0; i < numADCs; i += 1)
 
-		leftAxis = "AD" + num2str(ADCs[i])
+		leftAxis = AXIS_SCOPE_AD + num2str(ADCs[i])
 
 		WaveStats/M=1/Q/RMD=[][numDACs + i] OscilloscopeData
 
@@ -152,13 +188,14 @@ Function SCOPE_CreateGraph(panelTitle, dataAcqOrTP)
 	string leftAxis, rightAxis, str, powerSpectrumTrace, oscilloscopeTrace
 	string steadyStateTrace, peakTrace, adcStr
 	variable YaxisLow, YaxisHigh, YaxisSpacing, Yoffset, resPosPercY
-	variable testPulseLength, cutOff, sampInt
-	variable headStage, activeHeadStage, showPowerSpectrum
+	variable testPulseLength, cutOff, sampInt, axisMinTop, axisMaxTop
+	variable headStage, activeHeadStage, showPowerSpectrum, scopeScaleMode
 	STRUCT RGBColor peakColor
 	STRUCT RGBColor steadyColor
 
 	SCOPE_OpenScopeWindow(panelTitle)
 	graph = SCOPE_GetGraph(panelTitle)
+	scopeScaleMode = DAG_GetNumericalValue(panelTitle, "Popup_Settings_OsciUpdMode")
 
 	WAVE ITCChanConfigWave = GetITCChanConfigWave(panelTitle)
 	WAVE SSResistance      = GetSSResistanceWave(panelTitle)
@@ -179,6 +216,11 @@ Function SCOPE_CreateGraph(panelTitle, dataAcqOrTP)
 	steadyColor.blue = SCOPE_BLUE
 	activeHeadStage = GetDA_EphysGuiStateNum(panelTitle)[0][%slider_DataAcq_ActiveHeadstage]
 
+	GetAxisRange(graph, AXIS_SCOPE_TP_TIME, axisMinTop, axisMaxTop, mode=AXIS_RANGE_INC_AUTOSCALED)
+	if(dataAcqOrTP != TEST_PULSE_MODE || !showPowerSpectrum && scopeScaleMode == GUI_SETTING_OSCI_SCALE_FIXED)
+		WAVE previousADAxesRanges = GetAxesRanges(graph, axesRegexp=AXIS_SCOPE_AD_REGEXP, orientation=AXIS_ORIENTATION_LEFT, mode=AXIS_RANGE_INC_AUTOSCALED)
+	endif
+
 	RemoveTracesFromGraph(graph)
 	RemoveAnnotationsFromGraph(graph)
 
@@ -187,7 +229,7 @@ Function SCOPE_CreateGraph(panelTitle, dataAcqOrTP)
 	for(i = 0; i < numADChannels; i += 1)
 		adc    = ADCs[i]
 		adcStr = num2str(adc)
-		leftAxis = "AD" + adcStr
+		leftAxis = AXIS_SCOPE_AD + adcStr
 		
 		if(dataAcqOrTP != TEST_PULSE_MODE || !showPowerSpectrum)
 			oscilloscopeTrace = "osci" + adcStr
@@ -227,7 +269,7 @@ Function SCOPE_CreateGraph(panelTitle, dataAcqOrTP)
 
 			if(showPeakResistance)
 				peakTrace = "PeakResistance" + adcStr
-				AppendToGraph/W=$graph/R=$rightAxis/T=top TPStorage[][headstage][%PeakResistance]/TN=$peakTrace vs TPStorage[][headstage][%DeltaTimeInSeconds]
+				AppendToGraph/W=$graph/R=$rightAxis/T=$AXIS_SCOPE_TP_TIME TPStorage[][headstage][%PeakResistance]/TN=$peakTrace vs TPStorage[][headstage][%DeltaTimeInSeconds]
 				SetAxis/W=$graph/A=2/N=1 $rightAxis
 				ModifyGraph/W=$graph fSize($rightAxis)=10,grid($rightAxis)=1,gridStyle($rightAxis)=4,gridRGB($rightAxis)=(0,0,0,3277)
 #if (IgorVersion() >= 8.00)
@@ -239,7 +281,7 @@ Function SCOPE_CreateGraph(panelTitle, dataAcqOrTP)
 
 			if(showSteadyStateResistance)
 				steadyStateTrace = "SteadyStateResistance" + adcStr
-				AppendToGraph/W=$graph/R=$rightAxis/T=top TPStorage[][headstage][%SteadyStateResistance]/TN=$steadyStateTrace vs TPStorage[][headstage][%DeltaTimeInSeconds]
+				AppendToGraph/W=$graph/R=$rightAxis/T=$AXIS_SCOPE_TP_TIME TPStorage[][headstage][%SteadyStateResistance]/TN=$steadyStateTrace vs TPStorage[][headstage][%DeltaTimeInSeconds]
 				SetAxis/W=$graph/A=2/N=1 $rightAxis
 				ModifyGraph/W=$graph fSize($rightAxis)=10,grid($rightAxis)=1,gridStyle($rightAxis)=4,gridRGB($rightAxis)=(0,0,0,3277)
 				ASSERT(isFinite(headStage), "invalid headStage")
@@ -264,16 +306,23 @@ Function SCOPE_CreateGraph(panelTitle, dataAcqOrTP)
 			if(showPeakResistance ||showSteadyStateResistance)
 				ModifyGraph/W=$graph axisEnab($rightAxis) = {YaxisLow, YaxisLow + (YaxisHigh - YaxisLow) * 0.3}, freePos($rightAxis)={0, kwFraction}
 				ModifyGraph/W=$graph lblPosMode($rightAxis) = 4, lblPos($rightAxis) = 60, lblRot($rightAxis) = 180
-				ModifyGraph/W=$graph nticks($rightAxis) = 2, tickUnit(top)=1
+				ModifyGraph/W=$graph nticks($rightAxis) = 2, tickUnit($AXIS_SCOPE_TP_TIME)=1
 				Label/W=$graph $rightAxis "(MΩ)"
 
 				if(!oneTimeInitDone)
 					sprintf str, "\\[1\\K(%d, %d, %d)R\\Bss\\M(MΩ)\\]1\\K(%d, %d,%d)\r\\[1\\K(0, 26122, 0)R\\Bpeak\\M(MΩ)\\]1\\K(0, 0, 0)", steadyColor.red, steadyColor.green, steadyColor.blue, peakColor.red, peakColor.green, peakColor.blue
 					TextBox/W=$graph/F=0/B=1/X=0.62/Y=0.36/E=2  str
 
-					Label/W=$graph top "Relative time (s)"
+					Label/W=$graph $AXIS_SCOPE_TP_TIME "Relative time (s)"
 					SetAxis/W=$graph/A=2 $rightAxis
-					SetAxis/W=$graph top, 0, SCOPE_TIMEAXIS_RESISTANCE_RANGE
+
+					if(!isNaN(axisMinTop))
+						SetAxis/W=$graph $AXIS_SCOPE_TP_TIME, axisMinTop, axisMinTop + SCOPE_TIMEAXIS_RESISTANCE_RANGE
+					endif
+					if(SCOPE_GetTPTopAxisStart(panelTitle, axisMinTop))
+						SetAxis/W=$graph $AXIS_SCOPE_TP_TIME, axisMinTop, axisMinTop + SCOPE_TIMEAXIS_RESISTANCE_RANGE
+					endif
+
 					oneTimeInitDone = 1
 				endif
 			endif
@@ -289,6 +338,10 @@ Function SCOPE_CreateGraph(panelTitle, dataAcqOrTP)
 		YaxisHigh -= YaxisSpacing
 		YaxisLow -= YaxisSpacing
 	endfor
+
+	if(WaveExists(previousADAxesRanges))
+		SetAxesRanges(graph, previousADAxesRanges, axesRegexp=AXIS_SCOPE_AD_REGEXP, orientation=AXIS_ORIENTATION_LEFT, mode=AXIS_RANGE_USE_MINMAX)
+	endif
 
 	SCOPE_SetADAxisLabel(panelTitle,activeHeadStage)
 
@@ -332,7 +385,7 @@ Function SCOPE_SetADAxisLabel(panelTitle,activeHeadStage)
 
 	for(i = 0; i < numADChannels; i += 1)
 		adc    = ADCs[i]
-		leftAxis = "AD" + num2str(adc)
+		leftAxis = AXIS_SCOPE_AD + num2str(adc)
 
 		if(WhichListItem(leftAxis, axList) == -1)
 			continue
@@ -343,7 +396,7 @@ Function SCOPE_SetADAxisLabel(panelTitle,activeHeadStage)
 			labelStr = "HS" + num2str(headstage)
 			GetTraceColor(headStage, red, green, blue)
 		else
-			labelStr = "AD" + num2str(adc)
+			labelStr = AXIS_SCOPE_AD + num2str(adc)
 			GetTraceColor(NUM_HEADSTAGES, red, green, blue)
 		endif
 
