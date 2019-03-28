@@ -17,7 +17,7 @@ static StrConstant PA_USERDATA_SPECIAL_TRACES = "SPECIAL_TRACES"
 static Constant PA_PLOT_STEPPING = 16
 
 /// @brief Return a list of all average graphs
-static Function/S PA_GetAverageGraphs()
+Function/S PA_GetAverageGraphs()
 	return WinList(PULSE_AVERAGE_GRAPH_PREFIX + "*", ";", "WIN:1")
 End
 
@@ -533,7 +533,7 @@ Function PA_ShowPulses(win, dfr, pa)
 	variable red, green, blue, channelNumber, region, channelType, numHeadstages, length
 	variable numChannelTypeTraces, activeRegionCount, activeChanCount, totalOnsetDelay
 	string listOfWaves, channelList, vertAxis, horizAxis, channelNumberStr
-	string baseName, traceName
+	string baseName, traceName, csrA, csrB
 	string newlyCreatedGraphs = ""
 
 	win = GetMainWindow(win)
@@ -647,6 +647,8 @@ Function PA_ShowPulses(win, dfr, pa)
 				PA_GetAxes(pa.multipleGraphs, activeRegionCount, activeChanCount, vertAxis, horizAxis)
 
 				if(WhichListItem(graph, newlyCreatedGraphs) == -1)
+					csrA = CsrInfo(A, graph)
+					csrB = CsrInfo(B, graph)
 					RemoveTracesFromGraph(graph)
 					SetWindow $graph, userData($PA_USERDATA_SPECIAL_TRACES) = ""
 					newlyCreatedGraphs = AddListItem(graph, newlyCreatedGraphs, ";", inf)
@@ -671,11 +673,17 @@ Function PA_ShowPulses(win, dfr, pa)
 
 						GetTraceColor(headstage, red, green, blue)
 						AppendToGraph/Q/W=$graph/L=$vertAxis/B=$horizAxis/C=(red, green, blue, 65535 * 0.2) plotWave[0,inf;PA_PLOT_STEPPING]/TN=$pulseTrace
+						ModifyGraph/W=$graph userData($pulseTrace) = {sweepNumber, USERDATA_MODIFYGRAPH_REPLACE, num2str(sweepNo)}, userData($pulseTrace) = {region, USERDATA_MODIFYGRAPH_REPLACE, num2str(region)}, userData($pulseTrace) = {channelNumber, USERDATA_MODIFYGRAPH_REPLACE, channelNumberStr}, userData($pulseTrace) = {channelType, USERDATA_MODIFYGRAPH_REPLACE, channelTypeStr}
 						traceCount += 1
 					endif
 
 					listOfWavesPerChannel[channelNumber] = AddListItem(GetWavesDataFolder(plotWave, 2), listOfWavesPerChannel[channelNumber], ";", inf)
 				endfor
+
+				if(!isEmpty(csrA) && !isEmpty(csrB))
+					RestoreCursor(graph, csrA)
+					RestoreCursor(graph, csrB)
+				endif
 			endfor
 
 			activeChanCount = 0

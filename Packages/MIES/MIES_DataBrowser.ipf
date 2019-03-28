@@ -856,6 +856,9 @@ static Function DB_GraphUpdate(win)
 	if(GetCheckBoxState(bsPanel, "check_Display_VisibleXrange"))
 		AutoscaleVertAxisVisXRange(graph)
 	endif
+
+	TimeAlignHandleCursorDisplay(graph)
+	ControlUpdate/W=$bsPanel popup_TimeAlignment_Master
 End
 
 /// @brief enable/disable checkbox control for side panel

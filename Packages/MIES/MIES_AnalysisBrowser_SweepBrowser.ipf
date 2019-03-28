@@ -135,7 +135,7 @@ static Function SB_PanelUpdate(win)
 		DisableControls(bsPanel, "popup_TimeAlignment_Mode;setvar_TimeAlignment_LevelCross;popup_TimeAlignment_Master;button_TimeAlignment_Action")
 	endif
 
-	SB_HandleCursorDisplay(graph)
+	TimeAlignHandleCursorDisplay(graph)
 	SB_ScaleAxes(graph)
 	ControlUpdate/W=$bsPanel popup_TimeAlignment_Master
 End
@@ -658,12 +658,6 @@ static Function/WAVE SB_GetTextualValuesWaves(win)
 	return allTextualValues
 End
 
-Function/S SB_GetAllTraces(graph)
-	string graph
-
-	return TraceNameList(graph, ";", 1 + 2)
-End
-
 Function SB_PopupMenuSelectSweep(pa) : PopupMenuControl
 	STRUCT WMPopupAction &pa
 
@@ -706,47 +700,6 @@ Function SB_ButtonProc_ChangeSweep(ba) : ButtonControl
 	endswitch
 
 	return 0
-End
-
-/// @brief Adds or removes the cursors from the graphs depending on the
-///        panel settings
-static Function SB_HandleCursorDisplay(win)
-	string win
-
-	string traceList, trace, csrA, csrB, graph, bsPanel
-	variable length
-
-	graph   = GetMainWindow(win)
-	bsPanel = BSP_GetPanel(graph)
-
-	traceList = GetAllSweepTraces(graph)
-	if(isEmpty(traceList))
-		return NaN
-	endif
-
-	if(GetCheckBoxState(bsPanel, "check_BrowserSettings_TA"))
-
-		// ensure that trace is really on the graph
-		trace = GetPopupMenuString(bsPanel, "popup_TimeAlignment_Master")
-		if(FindListItem(trace, traceList) == -1)
-			trace = StringFromList(0, traceList)
-		endif
-
-		length = DimSize(TraceNameToWaveRef(graph, trace), ROWS)
-
-		csrA = CsrInfo(A, graph)
-		if(IsEmpty(csrA))
-			Cursor/W=$graph/A=1/N=1/P A $trace length / 3
-		endif
-
-		csrB = CsrInfo(B, graph)
-		if(isEmpty(csrB))
-			Cursor/W=$graph/A=1/N=1/P B $trace length * 2 / 3
-		endif
-	else
-		Cursor/K/W=$graph A
-		Cursor/K/W=$graph B
-	endif
 End
 
 Function SB_TimeAlignmentProc(cba) : CheckBoxControl

@@ -1171,6 +1171,57 @@ Function IsWaveDisplayedOnGraph(win, [wv, dfr])
 	return 0
 End
 
+/// @brief Kill all cursors in a given list of graphs
+///
+/// @param graphs     semicolon separated list of graph names
+/// @param cursorName name of cursor as string
+Function KillCursorInGraphs(graphs, cursorName)
+	String graphs, cursorName
+
+	string graph
+	variable i, numGraphs
+
+	ASSERT(strlen(cursorName) == 1, "Invalid Cursor Name.")
+	ASSERT(char2num(cursorName) > 64 && char2num(cursorName) < 75, "Cursor name out of range.")
+
+	numGraphs = ItemsInList(graphs)
+	for(i = 0; i < numGraphs; i += 1)
+		graph = StringFromList(i, graphs)
+		if(!WindowExists(graph))
+			continue
+		endif
+		Cursor/K/W=$graph $cursorName
+	endfor
+End
+
+/// @brief Find the first match for a given cursor in a list of graph names
+///
+/// @param graphs     semicolon separated list of graph names
+/// @param cursorName name of cursor as string
+///
+/// @return graph where cursor was found
+Function/S FindCursorInGraphs(graphs, cursorName)
+	String graphs, cursorName
+
+	string graph, csr
+	variable i, numGraphs
+
+	ASSERT(strlen(cursorName) == 1, "Invalid Cursor Name.")
+	ASSERT(char2num(cursorName) > 64 && char2num(cursorName) < 75, "Cursor name out of range.")
+
+	numGraphs = ItemsInList(graphs)
+	for(i = 0; i < numGraphs; i += 1)
+		graph = StringFromList(i, graphs)
+		if(!WindowExists(graph))
+			continue
+		endif
+		csr = CsrInfo($cursorName, graph)
+		if(!IsEmpty(csr))
+			return graph
+		endif
+	endfor
+End
+
 ///@brief Removes all annotations from the graph
 Function RemoveAnnotationsFromGraph(graph)
 	string graph

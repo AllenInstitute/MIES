@@ -8,7 +8,7 @@
 static strConstant EXT_PANEL_SUBWINDOW = "BrowserSettingsPanel"
 static strConstant EXT_PANEL_SWEEPCONTROL = "SweepControl"
 
-static Constant BROWSERSETTINGS_PANEL_VERSION = 2
+static Constant BROWSERSETTINGS_PANEL_VERSION = 3
 
 static strConstant BROWSERTYPE_DATABROWSER  = "D"
 static strConstant BROWSERTYPE_SWEEPBROWSER = "S"
@@ -173,7 +173,7 @@ Function BSP_DynamicStartupSettings(mainPanel)
 		EnableControls(bsPanel, controlsSB)
 		DisableControls(bsPanel, controlsDB)
 		DisableControls(bsPanel, "list_dashboard;check_BrowserSettings_DB_Failed;check_BrowserSettings_DB_Passed")
-		PopupMenu popup_TimeAlignment_Master win=$bsPanel, value = #("SB_GetAllTraces(\"" + mainPanel + "\")")
+		PopupMenu popup_TimeAlignment_Master win=$bsPanel, value = #("TimeAlignGetAllTraces(\"" + mainPanel + "\")")
 	endif
 
 	BSP_InitMainCheckboxes(bsPanel)

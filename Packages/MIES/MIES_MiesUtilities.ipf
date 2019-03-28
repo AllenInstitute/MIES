@@ -3085,7 +3085,7 @@ Function PostPlotTransformations(graph, pps)
 
 	ZeroTracesIfReq(graph, traces, pps.zeroTraces)
 	if(pps.timeAlignment)
-		TimeAlignmentIfReq(graph, traces, pps.timeAlignMode, pps.timeAlignRefTrace, pps.timeAlignLevel)
+		TimeAlignmentIfReq(pps.timeAlignRefTrace, pps.timeAlignMode, pps.timeAlignLevel)
 	endif
 
 	AverageWavesFromSameYAxisIfReq(graph, traces, pps.averageTraces, pps.averageDataFolder, pps.hideSweep)
@@ -3093,6 +3093,82 @@ Function PostPlotTransformations(graph, pps)
 	PA_ShowPulses(graph, pps.averageDataFolder, pps.pulseAverSett)
 
 	pps.finalUpdateHook(graph)
+End
+
+/// @brief return a list of all traces relevant for TimeAlignment
+Function/S TimeAlignGetAllTraces(graph)
+	string graph
+
+	return GetAllSweepTracesFromGraphs(TimeAlignGetAllGraphs(graph))
+End
+
+/// @brief return a list of all graphs included in TimeAlignment
+Function/S TimeAlignGetAllGraphs(graph)
+	string graph
+
+	string graphs
+
+	graphs = AddListItem(graph, "")
+	if(PA_IsActive(graph))
+		graphs += PA_GetAverageGraphs()
+	endif
+
+	return graphs
+End
+
+/// @brief Adds or removes the cursors from the graphs depending on the
+///        panel settings
+Function TimeAlignHandleCursorDisplay(win)
+	string win
+
+	string graphtrace, graph, graphs, trace, traceList, bsPanel, csrA, csrB
+	variable length, posA, posB
+
+	win     = GetMainWindow(win)
+	bsPanel = BSP_GetPanel(win)
+
+	traceList = TimeAlignGetAllTraces(win)
+	if(isEmpty(traceList))
+		return NaN
+	endif
+
+	graphs = TimeAlignGetAllGraphs(win)
+
+	// deactivate cursor
+	if(!GetCheckBoxState(bsPanel, "check_BrowserSettings_TA"))
+		KillCursorInGraphs(graphs, "A")
+		KillCursorInGraphs(graphs, "B")
+		return 0
+	endif
+
+	// save cursor and kill all available A,B cursors
+	graph = FindCursorInGraphs(graphs, "A")
+	if(!isempty(graph))
+		csrA = CsrInfo(A, graph)
+		KillCursorInGraphs(graphs, "A")
+		csrB = CsrInfo(B, graph)
+		KillCursorInGraphs(graphs, "B")
+	endif
+
+	// ensure that trace is really on the graph
+	graphtrace = GetPopupMenuString(bsPanel, "popup_TimeAlignment_Master")
+	if(FindListItem(graphtrace, traceList) == -1)
+		graphtrace = StringFromList(0, traceList)
+	endif
+	graph = StringFromList(0, graphtrace, "#")
+	trace = StringFromList(1, graphtrace, "#")
+
+	// set cursor to trace
+	if(isEmpty(csrA) || isEmpty(csrB))
+		length = DimSize(TraceNameToWaveRef(graph, trace), ROWS)
+		posA = length / 3
+		posB = length * 2 / 3
+	else
+		posA = NumberByKey("POINT", csrA)
+		posB = NumberByKey("POINT", csrB)
+	endif
+	Cursor/W=$graph/A=1/N=1/P A $trace posA
+	Cursor/W=$graph/A=1/N=1/P B $trace posB
 End
 
 /// @brief Replace all waves from the traces in the graph with their backup
@@ -3118,35 +3194,80 @@ End
 /// @param graph graph
 /// @param channelType [optional, defaults to all] restrict the returned traces
 ///                    to the given channel type
-Function/S GetAllSweepTraces(graph, [channelType])
+/// @param region      [optional] return only traces of the specified region
+Function/S GetAllSweepTraces(graph, [channelType, region])
 	string graph
 	variable channelType
+	string region
 
-	string traceList, trace, channelTypeAct, channelTypeRef
+	string traceList, trace, channelTypeAct, channelTypeRef, regionAct
 	string traceListClean = ""
 	variable numTraces, i
+
+	ASSERT(ParamIsDefault(channelType) || ParamIsDefault(region), "Only one parameter can be set")
 
 	traceList = TraceNameList(graph, ";", 0+1)
 	traceList = ListMatch(traceList, "!average*")
 
-	if(ParamIsDefault(channelType))
+	if(ParamIsDefault(channelType) && ParamIsDefault(region))
 		return traceList
 	endif
 
-	channelTypeRef = StringFromList(channelType, ITC_CHANNEL_NAMES)
-	ASSERT(!IsEmpty(channelTypeRef), "Invalid channelType")
+	if(!ParamIsDefault(channelType))
+		channelTypeRef = StringFromList(channelType, ITC_CHANNEL_NAMES)
+		ASSERT(!IsEmpty(channelTypeRef), "Invalid channelType")
+	endif
+
+	if(!ParamIsDefault(region))
+		ASSERT(!IsEmpty(region), "Invalid region")
+	endif
 
 	numTraces = ItemsInList(traceList)
 	for(i = 0; i < numTraces; i += 1)
 		trace = StringFromList(i, traceList)
-		channelTypeAct = GetUserData(graph, trace, "channelType")
 
-		if(!cmpstr(channelTypeAct, channelTypeRef))
-			traceListClean = AddListItem(trace, traceListClean, ";", inf)
+		if(!ParamIsDefault(region))
+			regionAct = GetUserData(graph, trace, "region")
+			if(!cmpstr(regionAct, region))
+				traceListClean = AddListItem(trace, traceListClean, ";", inf)
+			endif
+		elseif(!ParamIsDefault(channelType))
+			channelTypeAct = GetUserData(graph, trace, "channelType")
+			if(!cmpstr(channelTypeAct, channelTypeRef))
+				traceListClean = AddListItem(trace, traceListClean, ";", inf)
+			endif
 		endif
 	endfor
 
 	return traceListClean
+End
+
+/// @brief get a list of all traces from a list of graphs
+///
+/// @param graphs semicolon separated list of graph names
+/// @param region [optional] return only traces with the specified region
+///               userdata entry
+/// @returns graph#trace named patterns in a semicolon separated list
+Function/S GetAllSweepTracesFromGraphs(graphs, [region])
+	string graphs
+	string region
+
+	string graph, traces
+	variable i, numGraphs
+	string graphtraces = ""
+
+	numGraphs = ItemsInList(graphs)
+	for(i = 0; i < numGraphs; i += 1)
+		graph = StringFromList(i, graphs)
+		if(ParamIsDefault(region))
+			traces = GetAllSweepTraces(graph)
+		else
+			traces = GetAllSweepTraces(graph, region = region)
+		endif
+		graphtraces += AddPrefixToEachListItem(graph + "#", traces)
+	endfor
+
+	return graphtraces
 End
 
 /// @brief Average traces in the graph from the same y-axis and append them to the graph
@@ -3386,33 +3507,37 @@ static Function ZeroTracesIfReq(graph, traces, zeroTraces)
 End
 
 /// @brief Perform time alignment of features in the sweep traces
-static Function TimeAlignmentIfReq(panel, traces, mode, refTrace, level)
-	string panel
-	WAVE/T traces
-	string refTrace
+///
+/// @param graphtrace reference trace in the form of graph#trace
+/// @param mode       time alignment mode
+/// @param level      level input to the @c FindLevel operation in @see CalculateFeatureLoc
+static Function TimeAlignmentIfReq(graphtrace, mode, level)
+	string graphtrace
 	variable mode, level
 
 	string csrA, csrB, str, refAxis, axis
-	string trace, graph
+	string trace, refTrace, graph, refGraph, paGraphs, refRegion
 	variable offset
 	variable csrAx, csrBx, first, last, pos, numTraces, i, j
-
-	ASSERT(windowExists(panel), "Graph must exist")
-	graph = GetMainWindow(panel)
+	string sweepNo
 
 	if(mode == TIME_ALIGNMENT_NONE) // nothing to do
 		return NaN
 	endif
 
-	csrA = CsrInfo(A, graph)
-	csrB = CsrInfo(B, graph)
+	refGraph = StringFromList(0, graphtrace, "#")
+	refTrace = StringFromList(1, graphtrace, "#")
+	ASSERT(windowExists(refGraph), "Graph must exist")
+
+	csrA = CsrInfo(A, refGraph)
+	csrB = CsrInfo(B, refGraph)
 
 	if(isEmpty(csrA) || isEmpty(csrB))
 		return NaN
 	endif
 
-	csrAx = xcsr(A, graph)
-	csrBx = xcsr(B, graph)
+	csrAx = xcsr(A, refGraph)
+	csrBx = xcsr(B, refGraph)
 
 	first = min(csrAx, csrBx)
 	last  = max(csrAx, csrBx)
@@ -3422,15 +3547,27 @@ static Function TimeAlignmentIfReq(panel, traces, mode, refTrace, level)
 
 	// now determine the feature's time position
 	// using the traces from the same axis as the reference trace
-	refAxis = StringByKey("YAXIS", TraceInfo(graph, refTrace, 0))
+	refGraph = refGraph
+	refAxis = StringByKey("YAXIS", TraceInfo(refGraph, refTrace, 0))
 
-	numTraces = DimSize(traces, ROWS)
+	paGraphs = PA_GetAverageGraphs()
+	if(WhichListItem(refGraph, paGraphs) == -1)
+		WAVE/T graphtraces = ListToTextWave(GetAllSweepTracesFromGraphs(refGraph), ";")
+	else
+		// only do PA for sweeps with same region
+		refRegion = GetUserData(refGraph, refTrace, "region")
+		ASSERT(!isEmpty(refRegion), "region is empty. Set \"region\" in userData entry for trace.")
+		WAVE/T graphtraces = ListToTextWave(GetAllSweepTracesFromGraphs(paGraphs, region = refRegion), ";")
+	endif
+
+	numTraces = DimSize(graphtraces, ROWS)
 	MAKE/FREE/D/N=(numTraces) featurePos = NaN, sweepNumber = NaN
 	for(i = 0; i < numTraces; i += 1)
-		trace = traces[i]
+		graph = StringFromList(0, graphtraces[i], "#")
+		trace = StringFromList(1, graphtraces[i], "#")
 		axis = StringByKey("YAXIS", TraceInfo(graph, trace, 0))
 
-		if(cmpstr(axis, refAxis))
+		if(cmpstr(axis, refAxis) || cmpstr(graph, refGraph))
 			continue
 		endif
 
@@ -3443,17 +3580,23 @@ static Function TimeAlignmentIfReq(panel, traces, mode, refTrace, level)
 		endif
 
 		featurePos[i]  = pos
-		sweepNumber[i] = str2num(GetUserData(graph, trace, "sweepNumber"))
+		sweepNo = GetUserData(graph, trace, "sweepNumber")
+		ASSERT(!isEmpty(sweepNo), "Sweep number is empty. Set \"sweepNumber\" userData entry for trace.")
+		sweepNumber[i] = str2num(sweepNo)
 	endfor
 
 	// now shift all traces from all sweeps according to their relative offsets
 	// to the reference position
 	for(i = 0; i < numTraces; i += 1)
-		trace = traces[i]
+		graph = StringFromList(0, graphtraces[i], "#")
+		trace = StringFromList(1, graphtraces[i], "#")
 		WAVE wv = TraceNameToWaveRef(graph, trace)
+		ASSERT(WaveExists(wv), "Could not resolve trace to wave")
 
-		j = GetRowIndex(sweepNumber, str=GetUserData(graph, trace, "sweepNumber"))
+		sweepNo = GetUserData(graph, trace, "sweepNumber")
+		j = GetRowIndex(sweepNumber, val=str2num(sweepNo))
 		ASSERT(IsFinite(j), "Could not find sweep number")
+
 		WAVE backup = CreateBackupWave(wv)
 		offset = DimOffset(wv, ROWS) - featurePos[j]
 		DEBUGPRINT("trace", str=trace)
@@ -3462,6 +3605,11 @@ static Function TimeAlignmentIfReq(panel, traces, mode, refTrace, level)
 		SetScale/P x, offset, DimDelta(wv, ROWS), wv
 		offset = DimOffset(backup, ROWS) - DimOffset(wv, ROWS)
 		AddEntryIntoWaveNoteAsList(wv, "TimeAlignmentTotalOffset", var=offset, replaceEntry=1)
+
+		if(!cmpstr(trace, refTrace))
+			Cursor/W=$graph A $trace (first - featurePos[j])
+			Cursor/W=$graph B $trace (last  - featurePos[j])
+		endif
 	endfor
 End
 
