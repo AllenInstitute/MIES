@@ -454,35 +454,6 @@ Function/Wave GetTPResultAsyncBuffer(panelTitle)
 	return wv
 End
 
-static Function GetHeadstageCompat(panelTitle, channelType, channelNumber, clampMode)
-	string panelTitle
-	variable channelType, channelNumber, clampMode
-
-	variable i, row
-
-	if(!AI_IsValidClampMode(clampMode))
-		return NaN
-	endif
-
-	WAVE chanAmpAssign = GetChanAmpAssign(panelTitle)
-
-	if(channelType == ITC_XOP_CHANNEL_TYPE_ADC)
-		row = clampMode == V_CLAMP_MODE ? 2 : 2 + 4
-	elseif(channelType == ITC_XOP_CHANNEL_TYPE_DAC)
-		row = clampMode == V_CLAMP_MODE ? 0 : 0 + 4
-	else
-		ASSERT(0, "Unexpected clamp mode")
-	endif
-
-	for(i = 0; i < NUM_HEADSTAGES; i += 1)
-		if(chanAmpAssign[row][i] == channelNumber)
-			return i
-		endif
-	endfor
-
-	return NaN
- End
-
 /// @brief Return a wave reference to the channel clamp mode wave
 ///
 /// Only specialized code which does not have a headstage, or needs to know the
@@ -512,8 +483,8 @@ Function/Wave GetChannelClampMode(panelTitle)
 		Redimension/N=(-1, -1, 2) wv
 
 		// prefill with existing algorithm for easier upgrades
-		wv[][%DAC][1] = GetHeadstageCompat(panelTitle, ITC_XOP_CHANNEL_TYPE_DAC, p, wv[p][%DAC][0])
-		wv[][%ADC][1] = GetHeadstageCompat(panelTitle, ITC_XOP_CHANNEL_TYPE_ADC, p, wv[p][%ADC][0])
+		wv[][%DAC][1] = GetHeadstageFromSettings(panelTitle, ITC_XOP_CHANNEL_TYPE_DAC, p, wv[p][%DAC][0])
+		wv[][%ADC][1] = GetHeadstageFromSettings(panelTitle, ITC_XOP_CHANNEL_TYPE_ADC, p, wv[p][%ADC][0])
 
 		return wv
 	else

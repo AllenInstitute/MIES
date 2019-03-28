@@ -976,6 +976,39 @@ Function DAP_CheckProc_AD(cba) : CheckBoxControl
 	return 0
 End
 
+/// @brief Get the headstage for the given channel number and type from the amplifier settings
+///
+/// This is different from what GetChannelClampMode holds as we here hold the
+/// setup information and GetChannelClampMode holds what is currently active.
+Function GetHeadstageFromSettings(panelTitle, channelType, channelNumber, clampMode)
+	string panelTitle
+	variable channelType, channelNumber, clampMode
+
+	variable i, row
+
+	if(!AI_IsValidClampMode(clampMode))
+		return NaN
+	endif
+
+	WAVE chanAmpAssign = GetChanAmpAssign(panelTitle)
+
+	if(channelType == ITC_XOP_CHANNEL_TYPE_ADC)
+		row = clampMode == V_CLAMP_MODE ? 2 : 2 + 4
+	elseif(channelType == ITC_XOP_CHANNEL_TYPE_DAC)
+		row = clampMode == V_CLAMP_MODE ? 0 : 0 + 4
+	else
+		ASSERT(0, "Unexpected clamp mode")
+	endif
+
+	for(i = 0; i < NUM_HEADSTAGES; i += 1)
+		if(chanAmpAssign[row][i] == channelNumber)
+			return i
+		endif
+	endfor
+
+	return NaN
+ End
+
 /// @brief Adapt the state of the associated headstage on DA/AD channel change
 ///
 static Function DAP_AdaptAssocHeadstageState(panelTitle, checkboxCtrl)
@@ -984,7 +1017,7 @@ static Function DAP_AdaptAssocHeadstageState(panelTitle, checkboxCtrl)
 
 	string headStageCheckBox
 	variable headstage, idx, channelType, controlType
-	variable headstageState
+	variable headstageState, headStageFromSettingsVC, headStageFromSettingsIC
 	string checkboxLabel, headstageLabel
 
 	DAP_AbortIfUnlocked(panelTitle)
@@ -994,16 +1027,27 @@ static Function DAP_AdaptAssocHeadstageState(panelTitle, checkboxCtrl)
 
 	if(channelType == CHANNEL_TYPE_DAC)
 		headStage = AFH_GetHeadstageFromDAC(panelTitle, idx)
+		headStageFromSettingsVC = GetHeadstageFromSettings(panelTitle, ITC_XOP_CHANNEL_TYPE_DAC, idx, V_CLAMP_MODE)
+		headStageFromSettingsIC = GetHeadstageFromSettings(panelTitle, ITC_XOP_CHANNEL_TYPE_DAC, idx, I_CLAMP_MODE)
 	elseif(channelType == CHANNEL_TYPE_ADC)
 		headStage = AFH_GetHeadstageFromADC(panelTitle, idx)
+		headStageFromSettingsVC = GetHeadstageFromSettings(panelTitle, ITC_XOP_CHANNEL_TYPE_ADC, idx, V_CLAMP_MODE)
+		headStageFromSettingsIC = GetHeadstageFromSettings(panelTitle, ITC_XOP_CHANNEL_TYPE_ADC, idx, I_CLAMP_MODE)
 	elseif(channelType == CHANNEL_TYPE_TTL)
 		// nothing to do
+		headStageFromSettingsVC = NaN
+		headStageFromSettingsIC = NaN
 		return NaN
 	endif
 
 	// headStage can be NaN for non associated DA/AD channels
 	if(!IsFinite(headStage))
-		return NaN
+		if(headStageFromSettingsIC == headStageFromSettingsVC)
+			// be nice to users and activate the headstage for them
+			headStage = headStageFromSettingsIC
+		else
+			return NaN
+		endif
 	endif
 
 	checkboxLabel  = GetSpecialControlLabel(channelType, CHANNEL_CONTROL_CHECK)
