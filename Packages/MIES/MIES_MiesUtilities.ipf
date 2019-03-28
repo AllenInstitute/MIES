@@ -2384,7 +2384,7 @@ Function CreateTiledChannelGraph(graph, config, sweepNo, numericalValues,  textu
 					endif
 
 					GetTraceColor(colorIndex, red, green, blue)
-					ModifyGraph/W=$graph hideTrace($trace)=(tgs.hideSweep), rgb($trace)=(red, green, blue), userData($trace)={channelType, 0, channelID}, userData($trace)={channelNumber, 0, num2str(chan)}, userData($trace)={sweepNumber, 0, num2str(sweepNo)}, userData($trace)={headstage, 0, num2str(headstage)}, userData($trace)={textualValues, 0, GetWavesDataFolder(textualValues, 2)}, userData($trace)={numericalValues, 0, GetWavesDataFolder(numericalValues, 2)}, userData($trace)={clampMode, 0, num2str(IsFinite(headstage) ? clampModes[headstage] : NaN)}
+					ModifyGraph/W=$graph hideTrace($trace)=(tgs.hideSweep), rgb($trace)=(red, green, blue), userData($trace)={channelType, USERDATA_MODIFYGRAPH_REPLACE, channelID}, userData($trace)={channelNumber, USERDATA_MODIFYGRAPH_REPLACE, num2str(chan)}, userData($trace)={sweepNumber, USERDATA_MODIFYGRAPH_REPLACE, num2str(sweepNo)}, userData($trace)={headstage, USERDATA_MODIFYGRAPH_REPLACE, num2str(headstage)}, userData($trace)={textualValues, USERDATA_MODIFYGRAPH_REPLACE, GetWavesDataFolder(textualValues, 2)}, userData($trace)={numericalValues, USERDATA_MODIFYGRAPH_REPLACE, GetWavesDataFolder(numericalValues, 2)}, userData($trace)={clampMode, USERDATA_MODIFYGRAPH_REPLACE, num2str(IsFinite(headstage) ? clampModes[headstage] : NaN)}
 
 					sprintf str, "colorIndex=%d", colorIndex
 					DEBUGPRINT(str)
@@ -2705,7 +2705,7 @@ Function AddTraceToLBGraph(graph, keys, values, key)
 			endif
 		endif
 
-		ModifyGraph/W=$graph userData($trace)={key, 0, key}
+		ModifyGraph/W=$graph userData($trace)={key, USERDATA_MODIFYGRAPH_REPLACE, key}
 
 		GetTraceColor(i, red, green, blue)
 		ModifyGraph/W=$graph rgb($trace)=(red, green, blue), marker($trace)=i
@@ -3282,7 +3282,7 @@ static Function AverageWavesFromSameYAxisIfReq(graph, traces, averagingEnabled, 
 		endif
 
 		if(ListHasOnlyOneUniqueEntry(listOfClampModes))
-			ModifyGraph/W=$graph userData($traceName)={clampMode, 0, StringFromList(0, listOfClampModes)}
+			ModifyGraph/W=$graph userData($traceName)={clampMode, USERDATA_MODIFYGRAPH_REPLACE, StringFromList(0, listOfClampModes)}
 		endif
 
 		if(WaveListHasSameWaveNames(listOfHeadstages, headstage)&& hideSweep)

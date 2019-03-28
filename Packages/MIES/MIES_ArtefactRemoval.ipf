@@ -276,7 +276,7 @@ Function AR_HandleRanges(graph, [removeRange])
 				AppendToGraph/W=$graph/L=$leftAxis/B=$bottomAxis AD[first, last]/TN=$traceName
 				ModifyGraph/W=$graph mode($traceName)=3, marker($traceName)=8
 				ModifyGraph/W=$graph msize($traceName)=0.5,rgb($traceName)=(65535,0,0,32768)
-				ModifyGraph/W=$graph userData($traceName)={AR_INDEX, 0, num2str(i)}
+				ModifyGraph/W=$graph userData($traceName)={AR_INDEX, USERDATA_MODIFYGRAPH_REPLACE, num2str(i)}
 				l += 1
 			endif
 		endfor

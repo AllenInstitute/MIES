@@ -115,6 +115,14 @@ Constant CHUNKS              = 3
 /// @}
 Constant MAX_DIMENSION_COUNT = 4
 
+/// @name append userData constants
+/// Convenience definition.
+/// easier to read than ModifyGraph userData(trace)={name, 0, value}
+/// @{
+Constant USERDATA_MODIFYGRAPH_REPLACE = 0
+Constant USERDATA_MODIFYGRAPH_APPEND  = 1
+/// @}
+
 /// @name Constants used by Downsample
 /// @{
 Constant DECIMATION_BY_OMISSION  = 1
