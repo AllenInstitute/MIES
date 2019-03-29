@@ -411,7 +411,7 @@ Function HW_IsRunning(hardwareType, deviceID, [flags])
 		case HARDWARE_NI_DAC:
 			device = HW_GetDeviceName(hardwareType, deviceID)
 			HW_NI_AssertOnInvalid(device)
-			return HW_NI_IsRunning(device, flags=flags)
+			return HW_NI_IsRunning(device)
 			break
 	endswitch
 End
@@ -1880,7 +1880,7 @@ Function HW_NI_StartAcq(deviceID, triggerMode, [flags, repeat])
 	variable deviceID, triggerMode, flags, repeat
 
 	string panelTitle, device, FIFONote, noteID, fifoName, errMsg
-	variable i, pos, endpos, channelTimeOffset, freeDiskSpace
+	variable i, pos, endpos, channelTimeOffset, freeDiskSpace, err
 
 	DEBUGPRINTSTACKINFO()
 
@@ -1922,8 +1922,10 @@ Function HW_NI_StartAcq(deviceID, triggerMode, [flags, repeat])
 		endif
 	catch
 		errMsg = GetRTErrMessage() + "\r" + fDAQmx_ErrorString()
+		err = getRTError(1)
+		HW_NI_StopAcq(deviceID)
 		HW_NI_KillFifo(deviceID)
-		ASSERT(0, "Start acquisition of NI device " + panelTitle + " failed with code: " + num2str(getRTError(1)) + "\r" + errMsg)
+		ASSERT(0, "Start acquisition of NI device " + panelTitle + " failed with code: " + num2str(err) + "\r" + errMsg)
 	endtry
 End
 
@@ -1943,7 +1945,7 @@ Function HW_NI_PrepareAcq(deviceID, [data, dataFunc, config, configFunc, flags, 
 	variable flags, offset
 
 	string panelTitle, tempStr, device, filename, clkStr, wavegenStr, TTLStr, fifoName, errMsg
-	variable i, aiCnt, ttlCnt, channels, sampleIntervall, numEntries, fifoSize
+	variable i, aiCnt, ttlCnt, channels, sampleIntervall, numEntries, fifoSize, err
 
 	DEBUGPRINTSTACKINFO()
 
@@ -2066,8 +2068,10 @@ Function HW_NI_PrepareAcq(deviceID, [data, dataFunc, config, configFunc, flags, 
 
 	catch
 		errMsg = GetRTErrMessage() + "\r" + fDAQmx_ErrorString()
+		err = getRTError(1)
+		HW_NI_StopAcq(deviceID)
 		HW_NI_KillFifo(deviceID)
-		ASSERT(0, "Prepare acquisition of NI device " + panelTitle + " failed with code: " + num2str(getRTError(1)) + "\r" + errMsg)
+		ASSERT(0, "Prepare acquisition of NI device " + panelTitle + " failed with code: " + num2str(err) + "\r" + errMsg)
 	endtry
 End
 
@@ -2600,31 +2604,16 @@ End
 /// @brief Check if the device is running
 ///
 /// @param device name of the NI device
-/// @param flags  [optional, default none] One or multiple flags from @ref HardwareInteractionFlags
-Function HW_NI_IsRunning(device, [flags])
+Function HW_NI_IsRunning(device)
 	string device
-	variable flags
 
 	DEBUGPRINTSTACKINFO()
 
-	string errMsg
-	variable WFstatus = fDAQmx_WF_IsFinished(device)
-	if(isNan(WFstatus))
-		errMsg = fDAQmx_ErrorString()
-		if(strsearch(errMsg, "No waveform operation is currently running for that device", 0) == -1)
-			print errMsg
-			print "Error: fDAQmx_WF_IsFinished\r"
-			ControlWindowToFront()
-			if(flags & HARDWARE_ABORT_ON_ERROR)
-				ASSERT(0, "Error calling fDAQmx_WF_IsFinished")
-			endif
-		else
-			return 0
-		endif
-	elseif(WFstatus == 0)
-		return 1
-	endif
-	return 0
+	NVAR taskIDADC = $GetNI_ADCTaskID(device)
+	NVAR taskIDDAC = $GetNI_DACTaskID(device)
+	NVAR taskIDTTL = $GetNI_TTLTaskID(device)
+
+	return (IsFinite(taskIDADC) || IsFinite(taskIDDAC) || IsFinite(taskIDTTL))
 End
 
 /// @brief Calibrate a NI device if it wasn't calibrated within the last 24h.
@@ -2669,7 +2658,7 @@ Function HW_NI_CloseDevice(deviceID, [flags])
 
 	ASSERT(ParseDeviceString(HW_GetDeviceName(HARDWARE_NI_DAC, deviceID), deviceType, deviceNumber), "Error parsing device string!")
 
-	if(HW_NI_IsRunning(deviceType, flags=flags))
+	if(HW_NI_IsRunning(deviceType))
 		HW_NI_StopAcq(deviceID, flags=flags)
 	else
 		HW_NI_KillFifo(deviceID)
