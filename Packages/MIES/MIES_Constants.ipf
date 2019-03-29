@@ -404,6 +404,13 @@ Constant AXIS_ORIENTATION_LEFT   = 0x12
 Constant AXIS_ORIENTATION_RIGHT  = 0x22
 /// @}
 
+/// @name Constants for Set/GetAxesRanges modes, use binary pattern
+/// @anchor AxisRangeModeConstants
+/// @{
+Constant AXIS_RANGE_INC_AUTOSCALED = 0x01
+Constant AXIS_RANGE_USE_MINMAX     = 0x02
+/// @}
+
 /// @name Constants for DAP_ToggleAcquisitionButton
 /// @anchor ToggleAcquisitionButtonConstants
 /// @{
