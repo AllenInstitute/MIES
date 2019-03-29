@@ -2121,7 +2121,7 @@ Function PSQ_Ramp(panelTitle, s)
 			key = PSQ_CreateLBNKey(PSQ_RAMP, PSQ_FMT_LBN_SPIKE_POSITIONS)
 			ED_AddEntryToLabnotebook(panelTitle, key, resultTxT, overrideSweepNo = s.sweepNo, unit = "ms")
 
-			NVAR ITCDeviceIDGlobal = $GetITCDeviceIDGlobal(panelTitle)
+			NVAR deviceID = $GetITCDeviceIDGlobal(panelTitle)
 			NVAR ADChannelToMonitor = $GetADChannelToMonitor(panelTitle)
 
 			hardwareType = GetHardwareType(panelTitle)
@@ -2132,9 +2132,9 @@ Function PSQ_Ramp(panelTitle, s)
 				// fetch the very last fifo position immediately before we stop it
 				NVAR tgID = $GetThreadGroupIDFIFO(panelTitle)
 				fifoOffset = TS_GetNewestFromThreadQueue(tgID, "fifoPos")
-				TFH_StopFIFODaemon(HARDWARE_ITC_DAC, ITCDeviceIDGlobal)
-				HW_StopAcq(HARDWARE_ITC_DAC, ITCDeviceIDGlobal)
-				HW_ITC_PrepareAcq(ITCDeviceIDGlobal, offset=fifoOffset)
+				TFH_StopFIFODaemon(HARDWARE_ITC_DAC, deviceID)
+				HW_StopAcq(HARDWARE_ITC_DAC, deviceID)
+				HW_ITC_PrepareAcq(deviceID, offset=fifoOffset)
 
 				WAVE wv = s.rawDACWave
 
@@ -2145,8 +2145,8 @@ Function PSQ_Ramp(panelTitle, s)
 				Multithread wv[fifoOffset, inf][0, ADChannelToMonitor - 1] = 0
 				SetWaveLock 1, wv
 
-				HW_StartAcq(HARDWARE_ITC_DAC, ITCDeviceIDGlobal)
-				TFH_StartFIFOStopDaemon(HARDWARE_ITC_DAC, ITCDeviceIDGlobal)
+				HW_StartAcq(HARDWARE_ITC_DAC, deviceID)
+				TFH_StartFIFOStopDaemon(HARDWARE_ITC_DAC, deviceID)
 
 				// fetch newest fifo position, blocks until it gets a valid value
 				// its zero is now fifoOffset
@@ -2176,10 +2176,10 @@ Function PSQ_Ramp(panelTitle, s)
 				// we stop DA and set the analog out to 0, the AD task keeps on running
 
 				WAVE config = GetITCChanConfigWave(panelTitle)
-				fifoName = GetNIFIFOName(ITCDeviceIDGlobal)
+				fifoName = GetNIFIFOName(deviceID)
 
-				HW_NI_StopDAC(ITCDeviceIDGlobal)
-				HW_NI_ZeroDAC(ITCDeviceIDGlobal)
+				HW_NI_StopDAC(deviceID)
+				HW_NI_ZeroDAC(deviceID)
 
 				DoXOPIdle
 				FIFOStatus/Q $fifoName
