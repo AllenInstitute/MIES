@@ -1179,6 +1179,8 @@ Function DAP_OneTimeCallBeforeDAQ(panelTitle, runMode)
 	if(hardwareType == HARDWARE_NI_DAC)
 		multiDevGUIEnState = IsControlDisabled(panelTitle, "check_Settings_MD")
 		SetControlUserData(panelTitle, "check_Settings_MD", GUI_CONTROLSAVESTATE_DISABLED, num2str(multiDevGUIEnState))
+
+		HW_NI_ResetTaskIDs(panelTitle)
 	endif
 	DisableControls(panelTitle, "check_Settings_MD")
 
@@ -1274,6 +1276,7 @@ Function DAP_OneTimeCallAfterDAQ(panelTitle, [forcedStop, startTPAfterDAQ])
 			if(str2num(GetUserData(panelTitle, "check_Settings_MD", GUI_CONTROLSAVESTATE_DISABLED)) > 0)
 				DisableControl(panelTitle, "check_Settings_MD")
 			endif
+			HW_NI_ResetTaskIDs(panelTitle)
 			break
 		default:
 			EnableControl(panelTitle, "check_Settings_MD")

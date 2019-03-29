@@ -2579,7 +2579,23 @@ static Function HW_NI_ResetDevice(device, [flags])
 			ASSERT(0, "Error calling fDAQmx_resetDevice")
 		endif
 	endif
+	HW_NI_ResetTaskIDs(device)
 End
+
+/// @brief Reset task IDs for NI hardware
+///
+/// @param device name of the NI device
+Function HW_NI_ResetTaskIDs(device)
+	string device
+
+	NVAR taskIDADC = $GetNI_ADCTaskID(device)
+	NVAR taskIDDAC = $GetNI_DACTaskID(device)
+	NVAR taskIDTTL = $GetNI_TTLTaskID(device)
+	taskIDADC = NaN
+	taskIDDAC = NaN
+	taskIDTTL = NaN
+End
+
 
 /// @brief Check if the device is running
 ///
