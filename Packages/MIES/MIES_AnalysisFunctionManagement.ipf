@@ -93,19 +93,19 @@ Function AFM_CallAnalysisFunctions(panelTitle, eventType)
 		valid_f3 = FuncRefIsAssigned(FuncRefInfo(f3))
 
 		// all functions are valid
-		WAVE ITCDataWave = GetHardwareDataWave(panelTitle)
-		SetWaveLock 1, ITCDataWave
+		WAVE DAQDataWave = GetHardwareDataWave(panelTitle)
+		ChangeWaveLock(DAQDataWave, 1)
 
 		ret = NaN
 		try
 			ClearRTError()
 			if(valid_f1)
-				ret = f1(panelTitle, eventType, ITCDataWave, i); AbortOnRTE
+				ret = f1(panelTitle, eventType, DAQDataWave, i); AbortOnRTE
 			elseif(valid_f2)
-				ret = f2(panelTitle, eventType, ITCDataWave, i, realDataLength); AbortOnRTE
+				ret = f2(panelTitle, eventType, DAQDataWave, i, realDataLength); AbortOnRTE
 			elseif(valid_f3)
 				s.eventType         = eventType
-				WAVE s.rawDACWave   = ITCDataWave
+				WAVE s.rawDACWave   = DAQDataWave
 				s.headstage         = i
 				s.lastValidRowIndex = realDataLength
 				s.lastKnownRowIndex = fifoPosition
@@ -131,7 +131,7 @@ Function AFM_CallAnalysisFunctions(panelTitle, eventType)
 			endif
 		endtry
 
-		SetWaveLock 0, ITCDataWave
+		ChangeWaveLock(DAQDataWave, 0)
 
 		sprintf msg, "Calling analysis function \"%s\" for event \"%s\" on headstage %d returned ret %d", func, StringFromList(eventType, EVENT_NAME_LIST), i, ret
 		DEBUGPRINT(msg)

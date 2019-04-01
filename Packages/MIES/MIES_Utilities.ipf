@@ -4042,3 +4042,25 @@ threadsafe Function/S TestPulseRunModeToString(runMode)
 			break
 	endswitch
 End
+
+/// @brief Adapt the wave lock status on the wave and its contained waves
+Function ChangeWaveLock(wv, val)
+	WAVE/WAVE wv
+	variable val
+
+	variable numEntries, i
+
+	val = !!val
+
+	if(!IsWaveRefWave(wv))
+		SetWaveLock val, wv
+		return NaN
+	endif
+
+	ASSERT(DimSize(wv, ROWS) != numpnts(wv), "Expected a 1D wave")
+	numEntries = DimSize(wv, ROWS)
+
+	for(i = 0; i < numEntries; i += 1)
+		ChangeWaveLock(wv[i], val)
+	endfor
+End
