@@ -448,7 +448,7 @@ static Function SI_TestSampInt(panelTitle)
 
 	for(i=1; i < numTries; i += 1)
 		if(numConsecutive == -1)
-			sampInt  = HARDWARE_ITC_MIN_SAMPINT * i * 1000
+			sampInt  = WAVEBUILDER_MIN_SAMPINT * i * 1000
 		else
 			sampInt *= 2
 		endif
@@ -541,7 +541,7 @@ static Function SI_NI_CalculateMinSampInterval(panelTitle)
 	string panelTitle
 
 	WAVE channelStatus = DAG_GetChannelState(panelTitle, CHANNEL_TYPE_ADC)
-	return HARDWARE_NI6343_MIN_SAMPINT * 1000 * sum(channelStatus)
+	return HARDWARE_NI_DAC_MIN_SAMPINT * 1000 * sum(channelStatus)
 End
 
 /// @brief Calculate the minimum sampling interval for ITC hardware using the lookup waves on disk

@@ -594,8 +594,8 @@ End
 static Function DC_GetDecimationFactor(panelTitle, dataAcqOrTP)
 	string panelTitle
 	variable dataAcqOrTP
-/// @todo: minimum sampling intervall from generator and not itc here
-	return DAP_GetSampInt(panelTitle, dataAcqOrTP) / (HARDWARE_ITC_MIN_SAMPINT * 1000)
+
+	return DAP_GetSampInt(panelTitle, dataAcqOrTP) / (WAVEBUILDER_MIN_SAMPINT * 1000)
 End
 
 /// @brief Returns the longest sweep in a stimulus set across the given channel type
@@ -989,7 +989,7 @@ static Function DC_PlaceDataInHardwareDataWave(panelTitle, numActiveChannels, da
 	if(!WaveExists(offsets))
 		Make/FREE/N=(numEntries) offsets = 0
 	else
-		offsets[] *= HARDWARE_ITC_MIN_SAMPINT
+		offsets[] *= WAVEBUILDER_MIN_SAMPINT
 	endif
 
 	if(!WaveExists(regions))
@@ -1045,7 +1045,7 @@ static Function DC_PlaceDataInHardwareDataWave(panelTitle, numActiveChannels, da
 	DC_DocumentChannelProperty(panelTitle, "Amplifier change via I=0", INDEP_HEADSTAGE, NaN, var=DAG_GetNumericalValue(panelTitle, "check_Settings_AmpIEQZstep"))
 	DC_DocumentChannelProperty(panelTitle, "Skip analysis functions", INDEP_HEADSTAGE, NaN, var=DAG_GetNumericalValue(panelTitle, "Check_Settings_SkipAnalysFuncs"))
 	DC_DocumentChannelProperty(panelTitle, "Repeat sweep on async alarm", INDEP_HEADSTAGE, NaN, var=DAG_GetNumericalValue(panelTitle, "Check_Settings_AlarmAutoRepeat"))
-	DC_DocumentChannelProperty(panelTitle, "Digitizer Hardware Type", INDEP_HEADSTAGE, NaN, var=hardwareType)
+	DC_DocumentHardwareProperties(panelTitle, hardwareType)
 
 	if(DeviceCanLead(panelTitle))
 		SVAR listOfFollowerDevices = $GetFollowerList(panelTitle)
@@ -1142,6 +1142,36 @@ static Function DC_PlaceDataInHardwareDataWave(panelTitle, numActiveChannels, da
 		ControlWindowToFront()
 		Abort
 	endif
+End
+
+/// @brief Document hardware type/name/serial number into the labnotebook
+static Function DC_DocumentHardwareProperties(panelTitle, hardwareType)
+	string panelTitle
+	variable hardwareType
+
+	string str
+
+	DC_DocumentChannelProperty(panelTitle, "Digitizer Hardware Type", INDEP_HEADSTAGE, NaN, var=hardwareType)
+
+	NVAR ITCDeviceIDGlobal = $GetITCDeviceIDGlobal(panelTitle)
+	WAVE devInfo = HW_GetDeviceInfo(hardwareType, ITCDeviceIDGlobal)
+
+	switch(hardwareType)
+		case HARDWARE_ITC_DAC:
+			DC_DocumentChannelProperty(panelTitle, "Digitizer Hardware Name", INDEP_HEADSTAGE, NaN, str=StringFromList(devInfo[%DeviceType], DEVICE_TYPES_ITC))
+			sprintf str, "Master:%#0X,Secondary:%#0X,Host:%#0X", devInfo[%MasterSerialNumber], devInfo[%SecondarySerialNumber], devInfo[%HostSerialNumber]
+			DC_DocumentChannelProperty(panelTitle, "Digitizer Serial Numbers", INDEP_HEADSTAGE, NaN, str=str)
+			break
+		case HARDWARE_NI_DAC:
+			WAVE/T devInfoText = devInfo
+			sprintf str, "%s %s (%#0X)", devInfoText[%DeviceCategoryStr], devInfoText[%ProductType], str2num(devInfoText[%ProductNumber])
+			DC_DocumentChannelProperty(panelTitle, "Digitizer Hardware Name", INDEP_HEADSTAGE, NaN, str=str)
+			sprintf str, "%#0X", str2num(devInfoText[%DeviceSerialNumber])
+			DC_DocumentChannelProperty(panelTitle, "Digitizer Serial Numbers", INDEP_HEADSTAGE, NaN, str=str)
+			break
+		default:
+			ASSERT(0, "Unknown hardware")
+	endswitch
 End
 
 /// @brief Return the stimset acquisition cycle ID

@@ -547,7 +547,7 @@ Constant WAVEBUILDER_PANEL_VERSION  = 7
 /// - Changed names of entries
 /// - Changed units or meaning of entries
 /// - New/Changed layers of entries
-Constant LABNOTEBOOK_VERSION = 31
+Constant LABNOTEBOOK_VERSION = 32
 
 /// Version of the stimset wave note
 Constant STIMSET_NOTE_VERSION = 4
@@ -587,18 +587,15 @@ StrConstant HARDWARE_NI_ADC_FIFO = "NI_AnalogIn"
 
 Constant HARDWARE_MAX_DEVICES = 10
 
-/// @name Minimum possible sampling intervals in microseconds (1e-6s) aggregated
-/// @{
-Constant HARDWARE_NI6343_MIN_SAMPINT     = 0.002 /// so it is 4E-3 ms for 2 channels, 6E-3 ms for 3 a.s.o.
-/// @}
-
 /// @name Minimum possible sampling intervals in milliseconds (1e-3s)
 /// @{
+Constant HARDWARE_NI_DAC_MIN_SAMPINT  = 0.002 ///< NI 6343 and other devices, so it is 4E-3 ms for 2 channels, 6E-3 ms for 3 a.s.o.
 Constant HARDWARE_ITC_MIN_SAMPINT     = 0.005 ///< ITC DACs
 Constant HARDWARE_NI_6001_MIN_SAMPINT = 0.2   ///< NI 6001 USB
 /// @}
 
-Constant HARDWARE_ITC_MIN_SAMPINT_HZ  = 200e3 ///< ITC DACs
+Constant WAVEBUILDER_MIN_SAMPINT    = 0.005
+Constant WAVEBUILDER_MIN_SAMPINT_HZ = 200e3 ///< Stimulus sets are created with that frequency
 
 StrConstant CHANNEL_DA_SEARCH_STRING  = "*DA*"
 StrConstant CHANNEL_TTL_SEARCH_STRING = "*TTL*"

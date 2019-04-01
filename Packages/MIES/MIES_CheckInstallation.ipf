@@ -11,8 +11,8 @@
 /// @brief __CHI__ Routines for checking the health of the
 ///        MIES installation
 
-static StrConstant CHI_NIDAQ_XOP_64_HASH = "17b2005e72c02b3c8a493adb295165aa8ef0291722f2bc2823e74765ad3014d9"
-static StrConstant CHI_NIDAQ_XOP_HASH    = "3dbcbfb6866528f2a389b3beab75bb888b35ca99df733b26d9ccee80775949ed"
+static StrConstant CHI_NIDAQ_XOP_64_HASH = "1c33075538a1a1d745b56459576c9d41c29602e6fc8d4d048b42ada0a97d58e0"
+static StrConstant CHI_NIDAQ_XOP_HASH    = "a35030f8d403a6c2c029e0a92618be26a90f2a1ea5b8531920f19385d4a28611"
 
 /// @brief Collection of counters used for installation checking
 static Structure CHI_InstallationState

@@ -1084,7 +1084,7 @@ static Function P_DataAcq(panelTitle, headStage)
 
 		// wait some time before opening the solenoid
 		startTime = stopmstimer(-2)
-		duration = PRESSURE_TTL_HIGH_START * HARDWARE_ITC_MIN_SAMPINT * 1000
+		duration = PRESSURE_TTL_HIGH_START * WAVEBUILDER_MIN_SAMPINT * 1000
 		do
 			elapsedTime = stopmstimer(-2) - startTime
 			if(elapsedTime >= duration)
@@ -1197,12 +1197,12 @@ static Function P_GetPressureForDA(panelTitle, headStage, pressureMode, p)
 
 	switch(pressureMode)
 		case P_MANUAL_PULSE:
-			p.last        = PRESSURE_TTL_HIGH_START * HARDWARE_ITC_MIN_SAMPINT + pressureDataWv[headStage][%ManPPDuration]
+			p.last        = PRESSURE_TTL_HIGH_START * WAVEBUILDER_MIN_SAMPINT + pressureDataWv[headStage][%ManPPDuration]
 			p.pressure    = pressureDataWv[headStage][%ManPPPressure]
 			p.calPressure = p.calPressureOffset + p.pressure / DAGain
 			break
 		case P_POSITIVE_PULSE:
-			p.last     = PRESSURE_PULSE_ENDpt * HARDWARE_ITC_MIN_SAMPINT
+			p.last     = PRESSURE_PULSE_ENDpt * WAVEBUILDER_MIN_SAMPINT
 			p.pressure = pressureDataWv[Headstage][%LastPressureCommand] + POS_PRESSURE_PULSE_INCREMENT
 
 			p.calPressure = p.pressure
@@ -1224,7 +1224,7 @@ static Function P_GetPressureForDA(panelTitle, headStage, pressureMode, p)
 
 			break
 		case P_NEGATIVE_PULSE:
-			p.last     = PRESSURE_PULSE_ENDpt * HARDWARE_ITC_MIN_SAMPINT
+			p.last     = PRESSURE_PULSE_ENDpt * WAVEBUILDER_MIN_SAMPINT
 			p.pressure = pressureDataWv[Headstage][%LastPressureCommand]
 
 			if(IsFinite(pressureDataWv[headStage][%UserPressureOffsetTotal]))

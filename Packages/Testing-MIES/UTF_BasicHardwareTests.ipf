@@ -2160,7 +2160,7 @@ static Function GetMinSampInt([unit])
 	endif
 
 #ifdef TESTS_WITH_NI_HARDWARE
-	return factor * HARDWARE_NI6343_MIN_SAMPINT
+	return factor * HARDWARE_NI_DAC_MIN_SAMPINT
 #else
 	return factor * HARDWARE_ITC_MIN_SAMPINT
 #endif

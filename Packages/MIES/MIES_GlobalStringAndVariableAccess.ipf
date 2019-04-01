@@ -251,7 +251,7 @@ End
 /// The duration is for a single pulse only without baseline.
 ///
 /// The duration is *not* in units of time but in number of points for
-/// the real (compared to #HARDWARE_ITC_MIN_SAMPINT) sampling interval
+/// the real (compared to #HARDWARE_ITC_MIN_SAMPINT/#HARDWARE_NI_DAC_MIN_SAMPINT) sampling interval
 Function/S GetTestpulseDuration(panelTitle)
 	string panelTitle
 

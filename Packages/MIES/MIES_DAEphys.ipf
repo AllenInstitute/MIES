@@ -26,36 +26,53 @@ static StrConstant AMPLIFIER_DEF_FORMAT   = "AmpNo %d Chan %d"
 
 static StrConstant GUI_CONTROLSAVESTATE_DISABLED = "oldDisabledState"
 
-static StrConstant NI_PCIE_6343_PATTERN 	= "AI:32;AO:4;COUNTER:4;DIOPORTS:3;LINES:32,8,8"
+// PCIe-6343 | PXI-6259
+static StrConstant NI_DAC_PATTERNS = "AI:32;AO:4;COUNTER:4;DIOPORTS:3;LINES:32,8,8|AI:32;AO:4;COUNTER:2;DIOPORTS:3;LINES:32,8,8"
 
 /// @brief Returns a list of DAC devices for NI devices
 /// @return list of NI DAC devices
 Function/S DAP_GetNIDeviceList()
-	variable i
+	variable i, j, numPattern
 	string DAQmxDevice, DAQmxDevName
-	string devList
+	string devList, pattern
 
 	SVAR globalNIDevList = $GetNIDeviceList()
 	devList = globalNIDevList
+
+	numPattern = ItemsInList(NI_DAC_PATTERNS, "|")
+
 	if(!isEmpty(devList))
 		return devList
 	endif
-	devList = ""
+
 	for(i = 0;i < HARDWARE_MAX_DEVICES;i += 1)
 		DAQmxDevice = HW_NI_GetPropertyListOfDevices(i)
 
-		if(!(strsearch(DAQmxDevice, NI_PCIE_6343_PATTERN, 0) == -1))
-			DAQmxDevName = StringByKey("NAME", DAQmxDevice)
-			if(!isEmpty(DAQmxDevName))
-				if(!IsValidObjectName(DAQmxDevName))
-					Print "NI device " + DAQmxDevName + " has a name that is incompatible for use in MIES. Please change the device name in NI MAX to a simple name, e.g. DeviceX."
-				else
-					devList += DAQmxDevName + ";"
+		if(IsEmpty(DAQmxDevice))
+			break
+		endif
+
+#ifdef EVIL_KITTEN_EATING_MODE
+		devList += DAQmxDevName + ";"
+#else
+		for(j = 0; j < numPattern; j += 1)
+			pattern = StringFromList(j, NI_DAC_PATTERNS, "|")
+			if(!(strsearch(DAQmxDevice, pattern, 0) == -1))
+				DAQmxDevName = StringByKey("NAME", DAQmxDevice)
+				if(!isEmpty(DAQmxDevName))
+					if(!IsValidObjectName(DAQmxDevName))
+						Print "NI device " + DAQmxDevName + " has a name that is incompatible for use in MIES. Please change the device name in NI MAX to a simple name, e.g. DeviceX."
+					else
+						devList += DAQmxDevName + ";"
+					endif
 				endif
 			endif
-		endif
+		endfor
+#endif
 	endfor
+
 	globalNIDevList = devList
+
 	return devList
 End
 
@@ -2550,12 +2567,12 @@ static Function DAP_CheckStimset(panelTitle, channelType, channel, headstage)
 		endif
 
 		// non fatal errors which we fix ourselves
-		if(DimDelta(stimSet, ROWS) != HARDWARE_ITC_MIN_SAMPINT || DimOffset(stimSet, ROWS) != 0.0 || cmpstr(WaveUnits(stimSet, ROWS), "ms"))
+		if(DimDelta(stimSet, ROWS) != WAVEBUILDER_MIN_SAMPINT || DimOffset(stimSet, ROWS) != 0.0 || cmpstr(WaveUnits(stimSet, ROWS), "ms"))
 			sprintf str, "(%s) The stim set %s for %s channel of headstage %g must have a row dimension delta of %g, " + \
-						 "row dimension offset of zero and row unit \"ms\".\r", panelTitle, setName, channelTypeStr, headstage, HARDWARE_ITC_MIN_SAMPINT
+						 "row dimension offset of zero and row unit \"ms\".\r", panelTitle, setName, channelTypeStr, headstage, WAVEBUILDER_MIN_SAMPINT
 			DEBUGPRINT(str)
 			DEBUGPRINT("The stim set is now automatically fixed")
-			SetScale/P x 0, HARDWARE_ITC_MIN_SAMPINT, "ms", stimSet
+			SetScale/P x 0, WAVEBUILDER_MIN_SAMPINT, "ms", stimSet
 		endif
 
 		if(DAG_GetNumericalValue(panelTitle, "Check_Settings_SkipAnalysFuncs") || channelType != CHANNEL_TYPE_DAC)
