@@ -1728,7 +1728,7 @@ Function DAQ_StartDAQDuringTP()
 
 	STRUCT DAQSettings s
 	InitDAQSettingsFromString(s, "DAQ_MD0_RA0_IDX0_LIDX0_BKG_1_RES_0")
-	AcquireData(s, startTPInstead=1, postInitializeFunc=StartDAQDuringTP_IGNORE)
+	AcquireData(s, startTPInstead=1, startWatchdog = 0, postInitializeFunc=StartDAQDuringTP_IGNORE)
 
 	CtrlNamedBackGround StartDAQDuringTP, start=(ticks + 600), period=100, proc=StartAcq_IGNORE
 End
