@@ -231,11 +231,12 @@ static Function AB_LoadFile(discLocation)
 		strswitch(map[%FileType])
 			case ANALYSISBROWSER_FILE_TYPE_IGOR:
 				AB_LoadSweepsFromExperiment(map[%DiscLocation], device)
-				AB_LoadTPStorageFromFile(map[%DiscLocation], map[%DataFolder], device)
+				AB_LoadTPStorageFromIgor(map[%DiscLocation], map[%DataFolder], device)
 				AB_LoadUserCommentFromFile(map[%DiscLocation], map[%DataFolder], device)
 				break
 			case ANALYSISBROWSER_FILE_TYPE_NWB:
 				AB_LoadSweepsFromNWB(map[%DiscLocation], map[%DataFolder], device)
+				AB_LoadTPStorageFromNWB(map[%DiscLocation], map[%DataFolder], device)
 				break
 			default:
 				ASSERT(0, "invalid file type")
@@ -640,7 +641,7 @@ Function AB_StoreChannelsBySweep(groupID, channelList, sweeps, storage)
 	SetNumberInWaveNote(storage, NOTE_INDEX, numSweeps)
 End
 
-static Function AB_LoadTPStorageFromFile(expFilePath, expFolder, device)
+static Function AB_LoadTPStorageFromIgor(expFilePath, expFolder, device)
 	string expFilePath, expFolder, device
 
 	string dataFolderPath, wanted, unwanted, all
@@ -665,6 +666,33 @@ static Function AB_LoadTPStorageFromFile(expFilePath, expFolder, device)
 
 	SetDataFolder saveDFR
 	return numWavesLoaded
+End
+
+Function AB_LoadTPStorageFromNWB(nwbFilePath, expFolder, device)
+	string nwbFilePath, expFolder, device
+
+	variable h5_fileID, testpulseGroup, numEntries, i
+	string dataFolderPath, list, name, groupName
+
+	h5_fileID = IPNWB#H5_OpenFile(nwbFilePath)
+
+	groupName = "/general/testpulse/" + device
+	testpulseGroup = IPNWB#H5_OpenGroup(h5_fileID, groupName)
+
+	list = IPNWB#H5_ListGroupMembers(testpulseGroup, groupName)
+	list = GrepList(list, TP_STORAGE_REGEXP)
+
+	DFREF targetDFR = GetAnalysisDeviceTestpulse(expFolder, device)
+
+	numEntries = ItemsInList(list)
+	for(i = 0; i < numEntries; i += 1)
+		name = StringFromList(i, list)
+		WAVE wv = IPNWB#H5_LoadDataset(testpulseGroup, name)
+		MoveWave wv, targetDFR
+	endfor
+
+	HDF5CloseGroup/Z testpulseGroup
+	IPNWB#H5_CloseFile(h5_fileID)
 End
 
 static Function AB_LoadUserCommentFromFile(expFilePath, expFolder, device)
