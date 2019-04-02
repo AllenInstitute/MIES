@@ -1776,3 +1776,113 @@ Function RandomTest()
 End
 
 /// @}
+
+/// GetListOfObjects
+/// @{
+
+// This cuts away the temporary folder in which the tests runs
+Function/S TrimVolatileFolderName_IGNORE(list)
+	string list
+
+	variable pos, i, numEntries
+	string str
+	string result = ""
+
+	if(strlen(list) == 0)
+		return list
+	endif
+
+	numEntries = ItemsInList(list)
+	for(i = 0; i < numEntries; i += 1)
+		str = StringFromList(i, list)
+
+		pos = strsearch(str, ":test", 0)
+
+		if(pos >= 0)
+			str = str[pos,inf]
+		endif
+
+		result = AddListItem(str, result, ";", inf)
+	endfor
+
+	return result
+End
+
+Function GetListOfObjectsWorks1()
+
+	string result, expected
+
+	NewDataFolder/O test
+	NewDataFolder/O :test:test2
+
+	DFREF dfr = $"test"
+
+	result = GetListOfObjects(dfr, ".*", recursive = 0, fullpath = 0)
+	result = TrimVolatileFolderName_IGNORE(result)
+	expected = ""
+	CHECK_EQUAL_STR(result, expected)
+
+	result = GetListOfObjects(dfr, ".*", recursive = 1, fullpath = 0)
+	result = TrimVolatileFolderName_IGNORE(result)
+	expected = ""
+	CHECK_EQUAL_STR(result, expected)
+
+	result = GetListOfObjects(dfr, ".*", recursive = 1, fullpath = 1)
+	result = TrimVolatileFolderName_IGNORE(result)
+	expected = ""
+	CHECK_EQUAL_STR(result, expected)
+
+	result = GetListOfObjects(dfr, ".*", recursive = 0, fullpath = 1)
+	result = TrimVolatileFolderName_IGNORE(result)
+	expected = ""
+	CHECK_EQUAL_STR(result, expected)
+End
+
+Function GetListOfObjectsWorks2()
+
+	string result, expected
+
+	NewDataFolder/O test
+	NewDataFolder/O :test:test2
+
+	DFREF dfr = $":test"
+	CHECK(DataFolderExistsDFR(dfr))
+
+	Make dfr:wv1
+	Make dfr:wv2
+
+	DFREF dfrDeep = $":test:test2"
+	CHECK(DataFolderExistsDFR(dfrDeep))
+
+	Make dfrDeep:wv3
+	Make dfrDeep:wv4
+
+	result = GetListOfObjects(dfr, ".*", recursive = 0, fullpath = 0)
+	result = TrimVolatileFolderName_IGNORE(result)
+	expected = "wv1;wv2;"
+	CHECK_EQUAL_STR(result, expected)
+
+	result = GetListOfObjects(dfr, ".*", recursive = 1, fullpath = 0)
+	result = TrimVolatileFolderName_IGNORE(result)
+	expected = "wv1;wv2;wv3;wv4"
+	// sort order is implementation defined
+	result = SortList(result)
+	expected = SortList(expected)
+	CHECK_EQUAL_STR(result, expected)
+
+	result = GetListOfObjects(dfr, ".*", recursive = 1, fullpath = 1)
+	result = TrimVolatileFolderName_IGNORE(result)
+	expected = ":test:wv1;:test:wv2;:test:test2:wv3;:test:test2:wv4;"
+	// sort order is implementation defined
+	result = SortList(result)
+	expected = SortList(expected)
+	CHECK_EQUAL_STR(result, expected)
+
+	result = GetListOfObjects(dfr, ".*", recursive = 0, fullpath = 1)
+	result = TrimVolatileFolderName_IGNORE(result)
+	expected = ":test:wv1;:test:wv2;"
+	CHECK_EQUAL_STR(result, expected)
+End
+
+// Not checked: typeFlag, matchList and waveProperty
+/// @}
