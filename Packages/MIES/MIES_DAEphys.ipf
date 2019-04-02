@@ -2780,6 +2780,7 @@ static Function DAP_RemoveClampModeSettings(panelTitle, headStage, clampMode)
 	endIf
 
 	if(!IsFinite(DACchannel) || !IsFinite(ADCchannel))
+		ChannelClampMode[][][%Headstage] = ChannelClampMode[p][q][%Headstage] == headstage ? NaN : ChannelClampMode[p][q][%Headstage]
 		return NaN
 	endif
 
