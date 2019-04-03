@@ -14,7 +14,6 @@ static Constant SCOPE_GREEN                     = 26122
 static Constant SCOPE_BLUE                      = 39168
 static StrConstant RES_FORMAT_STR               = "\\[1\\K(%d, %d, %d)\\{\"%%s\", FloatWithMinSigDigits(%s[%d], numMinSignDigits = 2)}\\]1\K(0, 0, 0)"
 static Constant PRESSURE_SPECTRUM_PERCENT       = 0.05
-static Constant ADDITIONAL_SPACE_AD_GRAPH       = 0.10 ///< percent of total axis range
 
 Function/S SCOPE_GetGraph(panelTitle)
 	string panelTitle
@@ -98,7 +97,7 @@ Function SCOPE_UpdateGraph(panelTitle)
 	string panelTitle
 
 	variable i, numADCs, range, numDACs, statsMin, statsMax
-	variable axisMin, axisMax, spacing
+	variable axisMin, axisMax, spacing, additionalSpacing
 	variable showSteadyStateResistance, showPeakResistance, showPowerSpectrum
 	variable updateInt, now
 	string graph, leftAxis
@@ -132,6 +131,8 @@ Function SCOPE_UpdateGraph(panelTitle)
 	numADCs = DimSize(ADCs, ROWS)
 	numDACs = DimSize(DACs, ROWS)
 
+	additionalSpacing = DAG_GetNumericalValue(panelTitle, "setvar_Settings_OsciUpdExt") / 100
+
 	// scale the left AD axes
 	for(i = 0; i < numADCs; i += 1)
 
@@ -154,9 +155,9 @@ Function SCOPE_UpdateGraph(panelTitle)
 		axisMax = V_max
 
 		if(axisMax == axisMin || (axisMin == -1 && axisMax == 1))
-			spacing = (statsMax - statsMin) * ADDITIONAL_SPACE_AD_GRAPH
+			spacing = (statsMax - statsMin) * additionalSpacing
 		else
-			spacing = (axisMax - axisMin) * ADDITIONAL_SPACE_AD_GRAPH
+			spacing = (axisMax - axisMin) * additionalSpacing
 		endif
 
 		if(axisMin < statsMin && abs(statsMin - axisMin) < spacing)
