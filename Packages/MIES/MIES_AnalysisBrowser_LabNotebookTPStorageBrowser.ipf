@@ -71,7 +71,7 @@ static Function LBN_GetTPStorageColumnIndex(TPStorage, adc)
 	version = GetWaveVersion(TPStorage)
 
 	if(IsFinite(version) && version >= 8)
-		count = GetNumberFromWaveNote(TPStorage, NOTE_INDEX)
+		count = GetNumberFromWaveNote(TPStorage, NOTE_INDEX) - 1
 
 		for(i = 0; i < NUM_HEADSTAGES; i += 1)
 			if(TPStorage[count][i][%ADC] == adc)
