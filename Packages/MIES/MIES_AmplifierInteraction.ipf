@@ -1474,7 +1474,7 @@ End
 Function AI_QueryGainsFromMCC(panelTitle)
 	string panelTitle
 
-	variable clampMode, old_ClampMode, i, numConnAmplifiers
+	variable clampMode, old_ClampMode, i, numConnAmplifiers, clampModeSwitchAllowed
 	variable DAGain, ADGain
 	string DAUnit, ADUnit
 
@@ -1492,7 +1492,17 @@ Function AI_QueryGainsFromMCC(panelTitle)
 		AI_QueryGainsUnitsForClampMode(panelTitle, i, clampMode, DAGain, ADGain, DAUnit, ADUnit)
 		AI_UpdateChanAmpAssign(panelTitle, i, clampMode, DAGain, ADGain, DAUnit, ADUnit)
 
-		if(!MCC_GetHoldingEnable())
+		clampModeSwitchAllowed = !MCC_GetHoldingEnable()
+
+#ifdef AUTOMATED_TESTING
+		if(!clampModeSwitchAllowed)
+			printf "AI_QueryGainsFromMCC: Turning off holding potential for automated testing!\r"
+			MCC_SetHoldingEnable(0)
+			clampModeSwitchAllowed = 1
+		endif
+#endif
+
+		if(clampModeSwitchAllowed)
 			old_clampMode = clampMode
 			AI_SwitchAxonAmpMode(panelTitle, i)
 

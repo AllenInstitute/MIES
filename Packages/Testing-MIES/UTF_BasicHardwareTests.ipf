@@ -27,10 +27,10 @@ static Function SetAnalysisFunctions_IGNORE()
 End
 
 /// @brief Acquire data with the given DAQSettings
-static Function AcquireData(s, [postInitializeFunc, preAcquireFunc, setAnalysisFuncs, startTPInstead])
+static Function AcquireData(s, [postInitializeFunc, preAcquireFunc, setAnalysisFuncs, startTPInstead, startWatchdog])
 	STRUCT DAQSettings& s
 	FUNCREF CALLABLE_PROTO postInitializeFunc, preAcquireFunc
-	variable setAnalysisFuncs, startTPInstead
+	variable setAnalysisFuncs, startTPInstead, startWatchdog
 
 	string unlockedPanelTitle, devices, device
 	variable i, numEntries
@@ -53,6 +53,12 @@ static Function AcquireData(s, [postInitializeFunc, preAcquireFunc, setAnalysisF
 		setAnalysisFuncs = 0
 	else
 		setAnalysisFuncs = !!setAnalysisFuncs
+	endif
+
+	if(ParamIsDefault(startWatchdog))
+		startWatchdog = 1
+	else
+		startWatchdog = !!startWatchdog
 	endif
 
 	if(setAnalysisFuncs)
@@ -133,10 +139,14 @@ static Function AcquireData(s, [postInitializeFunc, preAcquireFunc, setAnalysisF
 
 	if(startTPInstead)
 		PGC_SetAndActivateControl(device, "StartTestPulseButton")
-		CtrlNamedBackGround TPWatchdog, start, period=120, proc=WaitUntilTPDone_IGNORE
+		if(startWatchdog)
+			CtrlNamedBackGround TPWatchdog, start, period=120, proc=WaitUntilTPDone_IGNORE
+		endif
 	else
 		PGC_SetAndActivateControl(device, "DataAcquireButton")
-		CtrlNamedBackGround DAQWatchdog, start, period=120, proc=WaitUntilDAQDone_IGNORE
+		if(startWatchdog)
+			CtrlNamedBackGround DAQWatchdog, start, period=120, proc=WaitUntilDAQDone_IGNORE
+		endif
 	endif
 End
 
@@ -1718,7 +1728,7 @@ Function DAQ_StartDAQDuringTP()
 
 	STRUCT DAQSettings s
 	InitDAQSettingsFromString(s, "DAQ_MD0_RA0_IDX0_LIDX0_BKG_1_RES_0")
-	AcquireData(s, startTPInstead=1, postInitializeFunc=StartDAQDuringTP_IGNORE)
+	AcquireData(s, startTPInstead=1, startWatchdog = 0, postInitializeFunc=StartDAQDuringTP_IGNORE)
 
 	CtrlNamedBackGround StartDAQDuringTP, start=(ticks + 600), period=100, proc=StartAcq_IGNORE
 End
