@@ -529,20 +529,27 @@ End
 
 /// @brief Return the type of the user parameter
 ///
-/// @param name      parameter name
-/// @param params    serialized parameters, usually just #AnalysisFunction_V3.params
-/// @param typeCheck [optional, defaults to true] Check with an assertion that
-///                  the readout type is one of @ref ANALYSIS_FUNCTION_PARAMS_TYPES
-///
+/// @param name         parameter name
+/// @param params       serialized parameters, usually just #AnalysisFunction_V3.params
+/// @param typeCheck    [optional, defaults to true] Check with an assertion that
+///                     the readout type is one of @ref ANALYSIS_FUNCTION_PARAMS_TYPES
+/// @param expectedType [optional, defaults to nothing] Expected type, one of @ref ANALYSIS_FUNCTION_PARAMS_TYPES,
+///                     aborts if the type does not match. Implies `typeCheck = true`.
 /// @ingroup AnalysisFunctionParameterHelpers
 /// @return one of @ref AnalysisFunctionParameterTypes or an empty string
-Function/S AFH_GetAnalysisParamType(name, params, [typeCheck])
+Function/S AFH_GetAnalysisParamType(name, params, [typeCheck, expectedType])
 	string name, params
 	variable typeCheck
+	string expectedType
 
 	string typeAndValue
 	string type = ""
 	variable pos
+
+	if(!ParamIsDefault(expectedType))
+		typeCheck = 1
+		ASSERT(AFH_IsValidAnalysisParamType(expectedType), "Invalid expectedType")
+	endif
 
 	if(ParamIsDefault(typeCheck))
 		typeCheck = 1
@@ -563,72 +570,131 @@ Function/S AFH_GetAnalysisParamType(name, params, [typeCheck])
 		ASSERT(AFH_IsValidAnalysisParamType(type), "Invalid type")
 	endif
 
+	if(!IsEmpty(expectedType))
+		ASSERT(!cmpstr(type, expectedType), "Requested parameter is not of type: " + expectedType)
+	endif
+
 	return type
 End
 
 /// @brief Return a numerical user parameter
 ///
-/// @param name   parameter name
-/// @param params serialized parameters, usually just #AnalysisFunction_V3.params
+/// @param name     parameter name
+/// @param params   serialized parameters, usually just #AnalysisFunction_V3.params
+/// @param defValue [optional, defaults to `NaN`] return this value if the parameter could not be found
+///
 /// @ingroup AnalysisFunctionParameterHelpers
-Function AFH_GetAnalysisParamNumerical(name, params)
+Function AFH_GetAnalysisParamNumerical(name, params, [defValue])
 	string name, params
+	variable defValue
+
+	string type
 
 	ASSERT(AFH_IsValidAnalysisParameter(name), "Name is not a legal non-liberal igor object name")
-	return NumberByKey(name + ":variable", params, "=", ",", 0)
+
+	if(WhichListItem(name, AFH_GetListOfAnalysisParamNames(params)) == -1)
+		if(ParamIsDefault(defValue))
+			return NaN
+		else
+			return defValue
+		endif
+	endif
+
+	type = AFH_GetAnalysisParamType(name, params, expectedType = "variable")
+
+	return NumberByKey(name + ":" + type, params, "=", ",", 0)
 End
 
 /// @brief Return a textual user parameter
 ///
-/// @param name   parameter name
-/// @param params serialized parameters, usually just #AnalysisFunction_V3.params
+/// @param name     parameter name
+/// @param params   serialized parameters, usually just #AnalysisFunction_V3.params
+/// @param defValue [optional, defaults to an empty string] return this value if the parameter could not be found
+///
 /// @ingroup AnalysisFunctionParameterHelpers
-Function/S AFH_GetAnalysisParamTextual(name, params)
+Function/S AFH_GetAnalysisParamTextual(name, params, [defValue])
 	string name, params
+	string defValue
+
+	string type
 
 	ASSERT(AFH_IsValidAnalysisParameter(name), "Name is not a legal non-liberal igor object name")
-	return StringByKey(name + ":string", params, "=", ",", 0)
+
+	if(WhichListItem(name, AFH_GetListOfAnalysisParamNames(params)) == -1)
+		if(ParamIsDefault(defValue))
+			return ""
+		else
+			return defValue
+		endif
+	endif
+
+	type = AFH_GetAnalysisParamType(name, params, expectedType = "string")
+
+	return StringByKey(name + ":" + type, params, "=", ",", 0)
 End
 
 /// @brief Return a numerical wave user parameter
 ///
-/// @param name   parameter name
-/// @param params serialized parameters, usually just #AnalysisFunction_V3.params
+/// @param name     parameter name
+/// @param params   serialized parameters, usually just #AnalysisFunction_V3.params
+/// @param defValue [optional, defaults to an invalid wave ref] return this value if the parameter could not be found
+///
 /// @ingroup AnalysisFunctionParameterHelpers
 ///
 /// @return wave reference to free numeric wave, or invalid wave ref in case the
 /// parameter could not be found.
-Function/WAVE AFH_GetAnalysisParamWave(name, params)
+Function/WAVE AFH_GetAnalysisParamWave(name, params, [defValue])
 	string name, params
+	WAVE defValue
+
+	string type, contents
 
 	ASSERT(AFH_IsValidAnalysisParameter(name), "Name is not a legal non-liberal igor object name")
-	string contents = StringByKey(name + ":wave", params, "=", ",", 0)
 
-	if(IsEmpty(contents))
-		return $""
+	if(WhichListItem(name, AFH_GetListOfAnalysisParamNames(params)) == -1)
+		if(ParamIsDefault(defValue))
+			return $""
+		else
+			return defValue
+		endif
 	endif
+
+	type = AFH_GetAnalysisParamType(name, params, expectedType = "wave")
+
+	contents = StringByKey(name + ":" + type, params, "=", ",", 0)
 
 	return ListToNumericWave(contents, "|")
 End
 
 /// @brief Return a textual wave user parameter
 ///
-/// @param name   parameter name
-/// @param params serialized parameters, usually just #AnalysisFunction_V3.params
+/// @param name     parameter name
+/// @param params   serialized parameters, usually just #AnalysisFunction_V3.params
+/// @param defValue [optional, defaults to an invalid wave ref] return this value if the parameter could not be found
 ///
 /// @ingroup AnalysisFunctionParameterHelpers
 ///
 /// @return wave reference to free text wave, or invalid wave ref in case the
 /// parameter could not be found.
-Function/WAVE AFH_GetAnalysisParamTextWave(name, params)
+Function/WAVE AFH_GetAnalysisParamTextWave(name, params, [defValue])
 	string name, params
+	WAVE/T defValue
+
+	string type, contents
 
 	ASSERT(AFH_IsValidAnalysisParameter(name), "Name is not a legal non-liberal igor object name")
-	string contents = StringByKey(name + ":textwave", params, "=", ",", 0)
 
-	if(IsEmpty(contents))
-		return $""
+	if(WhichListItem(name, AFH_GetListOfAnalysisParamNames(params)) == -1)
+		if(ParamIsDefault(defValue))
+			return $""
+		else
+			return defValue
+		endif
 	endif
+
+	type = AFH_GetAnalysisParamType(name, params, expectedType = "textwave")
+
+	contents = StringByKey(name + ":" + type, params, "=", ",", 0)
 
 	return ListToTextWave(contents, "|")
 End
@@ -651,7 +717,7 @@ Function AFH_IsValidAnalysisParamType(type)
 	return !IsEmpty(type) && WhichListItem(type, ANALYSIS_FUNCTION_PARAMS_TYPES) != -1
 End
 
-/// @brief Return an user parameter as string
+/// @brief Return an user parameter's value as string
 ///
 /// @param name   parameter name
 /// @param params serialized parameters, usually just #AnalysisFunction_V3.params
