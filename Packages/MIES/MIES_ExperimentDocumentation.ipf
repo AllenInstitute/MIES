@@ -680,10 +680,26 @@ Function ED_TPDocumentation(panelTitle)
 
 	TPSettingsWave[0][8][0, NUM_HEADSTAGES - 1] = statusHS[r]
 
-	TPSettingsWave[0][4][0, NUM_HEADSTAGES - 1] = hsProp[r][%ClampMode] == V_CLAMP_MODE ? AI_SendToAmp(panelTitle, r, V_CLAMP_MODE, MCC_GETFASTCOMPCAP_FUNC, NaN) : NaN
-	TPSettingsWave[0][5][0, NUM_HEADSTAGES - 1] = hsProp[r][%ClampMode] == V_CLAMP_MODE ? AI_SendToAmp(panelTitle, r, V_CLAMP_MODE, MCC_GETSLOWCOMPCAP_FUNC, NaN) : NaN
-	TPSettingsWave[0][6][0, NUM_HEADSTAGES - 1] = hsProp[r][%ClampMode] == V_CLAMP_MODE ? AI_SendToAmp(panelTitle, r, V_CLAMP_MODE, MCC_GETFASTCOMPTAU_FUNC, NaN) : NaN
-	TPSettingsWave[0][7][0, NUM_HEADSTAGES - 1] = hsProp[r][%ClampMode] == V_CLAMP_MODE ? AI_SendToAmp(panelTitle, r, V_CLAMP_MODE, MCC_GETSLOWCOMPTAU_FUNC, NaN) : NaN
+	for(i = 0; i < NUM_HEADSTAGES; i += 1)
+
+		if(!statusHS[i])
+			continue
+		endif
+
+		if(hsProp[i][%ClampMode] != V_CLAMP_MODE)
+			continue
+		endif
+
+		if(AI_SelectMultiClamp(panelTitle, i) != AMPLIFIER_CONNECTION_SUCCESS)
+			continue
+		endif
+
+		TPSettingsWave[0][4][i] = AI_SendToAmp(panelTitle, i, V_CLAMP_MODE, MCC_GETFASTCOMPCAP_FUNC, NaN, selectAmp = 0)
+		TPSettingsWave[0][5][i] = AI_SendToAmp(panelTitle, i, V_CLAMP_MODE, MCC_GETSLOWCOMPCAP_FUNC, NaN, selectAmp = 0)
+		TPSettingsWave[0][6][i] = AI_SendToAmp(panelTitle, i, V_CLAMP_MODE, MCC_GETFASTCOMPTAU_FUNC, NaN, selectAmp = 0)
+		TPSettingsWave[0][7][i] = AI_SendToAmp(panelTitle, i, V_CLAMP_MODE, MCC_GETSLOWCOMPTAU_FUNC, NaN, selectAmp = 0)
+	endfor
+
 	TPSettingsWave[0][1][0, NUM_HEADSTAGES - 1] = hsProp[r][%ClampMode] == V_CLAMP_MODE ? BaselineSSAvg[r] : NaN
 	TPSettingsWave[0][0][0, NUM_HEADSTAGES - 1] = hsProp[r][%ClampMode] == I_CLAMP_MODE ? BaselineSSAvg[r] : NaN
 
