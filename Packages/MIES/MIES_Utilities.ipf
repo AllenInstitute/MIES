@@ -271,7 +271,7 @@ Function/S GetListOfObjects(dfr, regExpStr, [typeFlag, matchList, waveProperty, 
 			subList = GetListOfObjects(subFolder, regExpStr, matchList=matchList, waveProperty=waveProperty, \
 						               fullPath=fullPath, recursive=recursive)
 			if(!IsEmpty(subList))
-				list = AddListItem(subList, list)
+				list = AddListItem(RemoveEnding(subList, ";"), list)
 			endif
 		endfor
 	endif
