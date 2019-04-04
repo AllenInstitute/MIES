@@ -294,9 +294,6 @@ Constant MCC_END_INVALID_FUNC            = 10052
 Constant CHECKBOX_SELECTED     = 1
 Constant CHECKBOX_UNSELECTED   = 0
 
-/// Interval in iterations between the switch from live update false to true
-Constant TEST_PULSE_LIVE_UPDATE_INTERVAL = 25
-
 /// @name Constants for FunctionInfo and WaveType
 ///
 /// @anchor IgorTypes
@@ -402,6 +399,21 @@ Constant AXIS_ORIENTATION_TOP    = 0x09
 Constant AXIS_ORIENTATION_VERT   = 0x02
 Constant AXIS_ORIENTATION_LEFT   = 0x12
 Constant AXIS_ORIENTATION_RIGHT  = 0x22
+/// @}
+
+/// @name Constants for Set/GetAxesRanges modes, use binary pattern
+/// @anchor AxisRangeModeConstants
+/// @{
+Constant AXIS_RANGE_INC_AUTOSCALED = 0x01
+Constant AXIS_RANGE_USE_MINMAX     = 0x02
+/// @}
+
+/// @name Constants for Axis name template
+/// @anchor AxisNameTemplates
+/// @{
+StrConstant AXIS_SCOPE_AD        = "AD"
+StrConstant AXIS_SCOPE_AD_REGEXP = "AD[0123456789]+"
+StrConstant AXIS_SCOPE_TP_TIME   = "top"
 /// @}
 
 /// @name Constants for DAP_ToggleAcquisitionButton
@@ -535,7 +547,7 @@ Constant HARDWARE_DAC_EXTERNAL_TRIGGER = 0x1
 /// @}
 
 /// Used to upgrade the GuiStateWave as well as the DA Ephys panel
-Constant DA_EPHYS_PANEL_VERSION     = 38
+Constant DA_EPHYS_PANEL_VERSION     = 39
 Constant DATABROWSER_PANEL_VERSION  = 8
 Constant SWEEPBROWSER_PANEL_VERSION = 3
 Constant WAVEBUILDER_PANEL_VERSION  = 7
@@ -1059,4 +1071,12 @@ Constant ANALYSIS_BROWSER_SUPP_VERSION = 2
 /// @{
 Constant REQUIRED_PARAMS = 0x1
 Constant OPTIONAL_PARAMS = 0x2
+/// @}
+
+/// @name GUI settings oscilloscopy Y scale update modes
+/// @anchor GUISettingOscilloscopeScaleMode
+/// @{
+Constant GUI_SETTING_OSCI_SCALE_AUTO      = 0
+Constant GUI_SETTING_OSCI_SCALE_FIXED     = 1
+Constant GUI_SETTING_OSCI_SCALE_INTERVAL  = 2
 /// @}

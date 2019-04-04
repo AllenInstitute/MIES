@@ -59,9 +59,7 @@ Function TPS_TestPulseFunc(s)
 
 	TPS_SendToAsyncAnalysis(panelTitle, readTimeStamp)
 
-	if(mod(s.count, TEST_PULSE_LIVE_UPDATE_INTERVAL) == 0)
-		SCOPE_UpdateGraph(panelTitle)
-	endif
+	SCOPE_UpdateGraph(panelTitle)
 
 	ASYNC_ThreadReadOut()
 
@@ -145,10 +143,7 @@ Function TPS_StartTestPulseForeground(panelTitle, [elapsedTime])
 
 		TPS_SendToAsyncAnalysis(panelTitle, readTimeStamp)
 
-		if(mod(i, TEST_PULSE_LIVE_UPDATE_INTERVAL) == 0)
-			SCOPE_UpdateGraph(panelTitle)
-		endif
-
+		SCOPE_UpdateGraph(panelTitle)
 		ASYNC_ThreadReadOut()
 
 		if(IsFinite(refTime))

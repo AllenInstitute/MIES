@@ -342,13 +342,7 @@ Function TPM_BkrdTPFuncMD(s)
 			break
 		endswitch
 
-		updateInt = TEST_PULSE_LIVE_UPDATE_INTERVAL * 0.02
-		NVAR timestamp = $GetLastAcqHookCallTimeStamp(panelTitle)
-		if((now - timestamp) > updateInt)
-			timestamp = now
-			SCOPE_UpdateGraph(panelTitle)
-		endif
-
+		SCOPE_UpdateGraph(panelTitle)
 		ASYNC_ThreadReadOut()
 
 		if(GetKeyState(0) & ESCAPE_KEY)
