@@ -71,7 +71,7 @@ static Function LBN_GetTPStorageColumnIndex(TPStorage, adc)
 	version = GetWaveVersion(TPStorage)
 
 	if(IsFinite(version) && version >= 8)
-		count = GetNumberFromWaveNote(TPStorage, NOTE_INDEX)
+		count = GetNumberFromWaveNote(TPStorage, NOTE_INDEX) - 1
 
 		for(i = 0; i < NUM_HEADSTAGES; i += 1)
 			if(TPStorage[count][i][%ADC] == adc)
@@ -108,7 +108,6 @@ static Function LBN_AddTraceToTPStorage(panel, TPStorage, activeADC, adc, key)
 	lbl = LineBreakingIntoParWithMinWidth(key)
 
 	axis = GetNextFreeAxisName(graph, VERT_AXIS_BASE_NAME)
-	trace = CleanupName(lbl + "_" + num2str(activeADC), 1)
 
 	traceList = TraceNameList(graph, ";", 0 + 1)
 	numExistingTraces = ItemsInList(traceList)
@@ -118,6 +117,8 @@ static Function LBN_AddTraceToTPStorage(panel, TPStorage, activeADC, adc, key)
 	else
 		idx = LBN_GetTPStorageColumnIndex(TPStorage, adc)
 	endif
+
+	trace = CleanupName(lbl + "_" + num2str(idx), 1)
 
 	AppendToGraph/W=$graph/L=$axis TPStorage[][idx][%$key]/TN=$trace vs TPStorage[][idx][%DeltaTimeInSeconds]
 	GetTraceColor(numExistingTraces, red, green, blue)
