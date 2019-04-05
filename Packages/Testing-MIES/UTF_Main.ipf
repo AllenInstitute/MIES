@@ -25,8 +25,4 @@ Function run()
 	procList += "UTF_UpgradeDataFolderLocation.ipf;UTF_AsynFrameworkTest.ipf"
 
 	RunTest(procList, enableJU = 1)
-
-	if(GetAutorunMode() == AUTORUN_PLAIN)
-		Execute/P/Q "Quit/N"
-	endif
 End
