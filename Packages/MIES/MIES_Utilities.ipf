@@ -4057,7 +4057,7 @@ Function ChangeWaveLock(wv, val)
 		return NaN
 	endif
 
-	ASSERT(DimSize(wv, ROWS) != numpnts(wv), "Expected a 1D wave")
+	ASSERT(DimSize(wv, ROWS) == numpnts(wv), "Expected a 1D wave")
 	numEntries = DimSize(wv, ROWS)
 
 	for(i = 0; i < numEntries; i += 1)
