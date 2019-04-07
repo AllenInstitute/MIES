@@ -2965,7 +2965,7 @@ Function/Wave ExtractOneDimDataFromSweep(config, sweep, index)
 	if(IsWaveRefWave(sweep))
 		ASSERT(index < DimSize(sweep, ROWS), "The index is out of range")
 		WAVE/WAVE sweepRef = sweep
-		WAVE data = sweepRef[index]
+		Duplicate/FREE sweepRef[index], data
 	else
 		ASSERT(index < DimSize(sweep, COLS), "The index is out of range")
 		MatrixOP/FREE data = col(sweep, index)
