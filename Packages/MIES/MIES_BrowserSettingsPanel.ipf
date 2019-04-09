@@ -950,7 +950,7 @@ Window BrowserSettingsPanel() : Panel
 	PopupMenu popup_TimeAlignment_Master,userdata(tabcontrol)=  "Settings"
 	PopupMenu popup_TimeAlignment_Master,mode=1,popvalue="AD0",value= #"\"\""
 	Button button_Calculation_RestoreData,pos={137.00,210.00},size={75.00,25.00},proc=DB_ButtonProc_RestoreData,title="Restore"
-	Button button_Calculation_RestoreData,help={"Duplicate the graph and its trace for further processing"}
+	Button button_Calculation_RestoreData,help={"Restore the data in its pristine state without any modifications"}
 	Button button_Calculation_RestoreData,userdata(tabnum)=  "0"
 	Button button_Calculation_RestoreData,userdata(tabcontrol)=  "Settings"
 	Button button_BrowserSettings_Export,pos={68.00,333.00},size={100.00,25.00},proc=SB_ButtonProc_ExportTraces,title="Export Traces"
