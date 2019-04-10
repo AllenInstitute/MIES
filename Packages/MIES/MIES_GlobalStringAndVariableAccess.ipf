@@ -389,11 +389,25 @@ Function/S GetNI_AISetup(panelTitle)
 	return GetSVARAsString(GetDevicePath(panelTitle), "NI_AI_setupStr0")
 End
 
-/// @brief Returns the current NI setup string for TTL out through DAQmx_DIO_Config
+/// @brief Returns the ADC task ID set after DAQmx_Scan in HW_NI_StartAcq
+Function/S GetNI_ADCTaskID(panelTitle)
+	string panelTitle
+
+	return GetNVARAsString(GetDevicePath(panelTitle), "NI_ADC_taskID", initialValue=NaN)
+End
+
+/// @brief Returns the DAC task ID set after DAQmx_WaveFormGen in HW_NI_PrepareAcq
+Function/S GetNI_DACTaskID(panelTitle)
+	string panelTitle
+
+	return GetNVARAsString(GetDevicePath(panelTitle), "NI_DAC_taskID", initialValue=NaN)
+End
+
+/// @brief Returns the TTL task ID set by DAQmx_DIO_Config in HW_NI_PrepareAcq
 Function/S GetNI_TTLTaskID(panelTitle)
 	string panelTitle
 
-	return GetNVARAsString(GetDevicePath(panelTitle), "NI_TTL_taskID")
+	return GetNVARAsString(GetDevicePath(panelTitle), "NI_TTL_taskID", initialValue=NaN)
 End
 
 /// @brief Return the experiment session start time in NWB-speech

@@ -4,6 +4,12 @@
 
 static Constant HEADSTAGE = 0
 
+// Time were we inject the spike
+Constant SPIKE_POSITION_MS = 10000
+
+// Maximum time we accept it
+Constant SPIKE_POSITION_TEST_DELAY_MS = 10500
+
 /// @brief Acquire data with the given DAQSettings
 static Function AcquireData(s)
 	STRUCT DAQSettings& s
@@ -228,7 +234,7 @@ static Function PS_RA_Run3()
 	// baseline QC passes and always spikes
 	wv = 0
 	wv[0,2][][0] = 1
-	wv[0,2][][1] = 10e3
+	wv[0,2][][1] = SPIKE_POSITION_MS
 End
 
 static Function PS_RA_Test3()
@@ -266,13 +272,13 @@ static Function PS_RA_Test3()
 
 	key = PSQ_CreateLBNKey(PSQ_RAMP, PSQ_FMT_LBN_PULSE_DUR, query = 1)
 	WAVE durations = GetLastSetting(numericalValues, sweeps[0], key, UNKNOWN_MODE)
-	CHECK(durations[0] > 10000 - PSQ_RA_BL_EVAL_RANGE && durations[0] < 10000)
+	CHECK(durations[0] > SPIKE_POSITION_MS - PSQ_RA_BL_EVAL_RANGE && durations[0] < SPIKE_POSITION_TEST_DELAY_MS)
 
 	WAVE durations = GetLastSetting(numericalValues, sweeps[1], key, UNKNOWN_MODE)
-	CHECK(durations[0] > 10000 - PSQ_RA_BL_EVAL_RANGE && durations[0] < 10000)
+	CHECK(durations[0] > SPIKE_POSITION_MS - PSQ_RA_BL_EVAL_RANGE && durations[0] < SPIKE_POSITION_TEST_DELAY_MS)
 
 	WAVE durations = GetLastSetting(numericalValues, sweeps[2], key, UNKNOWN_MODE)
-	CHECK(durations[0] > 10000 - PSQ_RA_BL_EVAL_RANGE && durations[0] < 10000)
+	CHECK(durations[0] > SPIKE_POSITION_MS - PSQ_RA_BL_EVAL_RANGE && durations[0] < SPIKE_POSITION_TEST_DELAY_MS)
 End
 
 static Function PS_RA_Run4()
@@ -285,7 +291,7 @@ static Function PS_RA_Run4()
 	// baseline QC passes and first spikes, second and third not
 	wv = 0
 	wv[0,2][][0] = 1
-	wv[][0][1]   = 10e3
+	wv[][0][1]   = SPIKE_POSITION_MS
 End
 
 static Function PS_RA_Test4()
@@ -323,7 +329,7 @@ static Function PS_RA_Test4()
 
 	key = PSQ_CreateLBNKey(PSQ_RAMP, PSQ_FMT_LBN_PULSE_DUR, query = 1)
 	WAVE durations = GetLastSetting(numericalValues, sweeps[0], key, UNKNOWN_MODE)
-	CHECK(durations[0] > 10000 - PSQ_RA_BL_EVAL_RANGE && durations[0] < 10000)
+	CHECK(durations[0] > SPIKE_POSITION_MS - PSQ_RA_BL_EVAL_RANGE && durations[0] < SPIKE_POSITION_TEST_DELAY_MS)
 End
 
 static Function PS_RA_Run5()
@@ -336,7 +342,7 @@ static Function PS_RA_Run5()
 	// baseline QC passes and first spikes not, second and third does
 	wv = 0
 	wv[0,2][][0] = 1
-	wv[][1,2][1] = 10e3
+	wv[][1,2][1] = SPIKE_POSITION_MS
 End
 
 static Function PS_RA_Test5()
@@ -377,10 +383,10 @@ static Function PS_RA_Test5()
 	CHECK(durations[0] > 15000 - PSQ_RA_BL_EVAL_RANGE)
 
 	WAVE durations = GetLastSetting(numericalValues, sweeps[1], key, UNKNOWN_MODE)
-	CHECK(durations[0] > 10000 - PSQ_RA_BL_EVAL_RANGE)
+	CHECK(durations[0] > SPIKE_POSITION_MS - PSQ_RA_BL_EVAL_RANGE)
 
 	WAVE durations = GetLastSetting(numericalValues, sweeps[2], key, UNKNOWN_MODE)
-	CHECK(durations[0] > 10000 - PSQ_RA_BL_EVAL_RANGE && durations[0] < 10000)
+	CHECK(durations[0] > SPIKE_POSITION_MS - PSQ_RA_BL_EVAL_RANGE && durations[0] < SPIKE_POSITION_TEST_DELAY_MS)
 End
 
 static Function PS_RA_Run6()
@@ -393,7 +399,7 @@ static Function PS_RA_Run6()
 	// baseline QC passes and first two spike not, third does
 	wv = 0
 	wv[0,1][][0] = 1
-	wv[][2][1]   = 10e3
+	wv[][2][1]   = SPIKE_POSITION_MS
 End
 
 static Function PS_RA_Test6()
@@ -437,5 +443,5 @@ static Function PS_RA_Test6()
 	CHECK(durations[0] > 15000 - PSQ_RA_BL_EVAL_RANGE)
 
 	WAVE durations = GetLastSetting(numericalValues, sweeps[2], key, UNKNOWN_MODE)
-	CHECK(durations[0] > 10000 - PSQ_RA_BL_EVAL_RANGE && durations[0] < 10000)
+	CHECK(durations[0] > SPIKE_POSITION_MS - PSQ_RA_BL_EVAL_RANGE && durations[0] < SPIKE_POSITION_TEST_DELAY_MS)
 End

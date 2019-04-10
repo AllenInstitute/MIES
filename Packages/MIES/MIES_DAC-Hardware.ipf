@@ -411,7 +411,7 @@ Function HW_IsRunning(hardwareType, deviceID, [flags])
 		case HARDWARE_NI_DAC:
 			device = HW_GetDeviceName(hardwareType, deviceID)
 			HW_NI_AssertOnInvalid(device)
-			return HW_NI_IsRunning(device, flags=flags)
+			return HW_NI_IsRunning(device)
 			break
 	endswitch
 End
@@ -1880,7 +1880,7 @@ Function HW_NI_StartAcq(deviceID, triggerMode, [flags, repeat])
 	variable deviceID, triggerMode, flags, repeat
 
 	string panelTitle, device, FIFONote, noteID, fifoName, errMsg
-	variable i, pos, endpos, channelTimeOffset, freeDiskSpace
+	variable i, pos, endpos, channelTimeOffset, freeDiskSpace, err
 
 	DEBUGPRINTSTACKINFO()
 
@@ -1906,6 +1906,9 @@ Function HW_NI_StartAcq(deviceID, triggerMode, [flags, repeat])
 		else
 			DAQmx_Scan/DEV=device/BKG FIFO=scanStr;AbortOnRTE
 		endif
+		NVAR taskIDADC = $GetNI_ADCTaskID(panelTitle)
+		taskIDADC = 1
+
 		// The following code just gathers additional information that is printed out
 		FIFOStatus/Q $fifoName
 		FIFONote = StringByKey("NOTE", S_Info)
@@ -1919,8 +1922,10 @@ Function HW_NI_StartAcq(deviceID, triggerMode, [flags, repeat])
 		endif
 	catch
 		errMsg = GetRTErrMessage() + "\r" + fDAQmx_ErrorString()
+		err = getRTError(1)
+		HW_NI_StopAcq(deviceID)
 		HW_NI_KillFifo(deviceID)
-		ASSERT(0, "Start acquisition of NI device " + panelTitle + " failed with code: " + num2str(getRTError(1)) + "\r" + errMsg)
+		ASSERT(0, "Start acquisition of NI device " + panelTitle + " failed with code: " + num2str(err) + "\r" + errMsg)
 	endtry
 End
 
@@ -1940,7 +1945,7 @@ Function HW_NI_PrepareAcq(deviceID, [data, dataFunc, config, configFunc, flags, 
 	variable flags, offset
 
 	string panelTitle, tempStr, device, filename, clkStr, wavegenStr, TTLStr, fifoName, errMsg
-	variable i, aiCnt, ttlCnt, channels, sampleIntervall, numEntries, fifoSize
+	variable i, aiCnt, ttlCnt, channels, sampleIntervall, numEntries, fifoSize, err
 
 	DEBUGPRINTSTACKINFO()
 
@@ -2027,6 +2032,9 @@ Function HW_NI_PrepareAcq(deviceID, [data, dataFunc, config, configFunc, flags, 
 		clkStr = "/" + device + "/ai/sampleclock"
 		// note actually this does already 'starts' a measurement
 		DAQmx_WaveFormGen/DEV=device/STRT=1/CLK={clkStr, 0} wavegenStr;AbortOnRTE
+		NVAR taskIDDAC = $GetNI_DACTaskID(panelTitle)
+		taskIDDAC = 1
+
 		switch(ttlCnt)
 			case 0:
 				break
@@ -2055,13 +2063,16 @@ Function HW_NI_PrepareAcq(deviceID, [data, dataFunc, config, configFunc, flags, 
 				DAQmx_DIO_Config/DEV=device/LGRP=1/CLK={clkStr, 0}/RPTC/DIR=1/WAVE={TTLWaves[0], TTLWaves[1], TTLWaves[2], TTLWaves[3], TTLWaves[4], TTLWaves[5], TTLWaves[6], TTLWaves[7]} TTLStr;AbortOnRTE
 				break
 		endswitch
+		NVAR taskIDTTL = $GetNI_TTLTaskID(panelTitle)
+		taskIDTTL = ttlCnt ? V_DAQmx_DIO_TaskNumber : NaN
+
 	catch
 		errMsg = GetRTErrMessage() + "\r" + fDAQmx_ErrorString()
+		err = getRTError(1)
+		HW_NI_StopAcq(deviceID)
 		HW_NI_KillFifo(deviceID)
-		ASSERT(0, "Prepare acquisition of NI device " + panelTitle + " failed with code: " + num2str(getRTError(1)) + "\r" + errMsg)
+		ASSERT(0, "Prepare acquisition of NI device " + panelTitle + " failed with code: " + num2str(err) + "\r" + errMsg)
 	endtry
-	NVAR taskID = $GetNI_TTLTaskID(panelTitle)
-	taskID = ttlCnt ? V_DAQmx_DIO_TaskNumber : NaN
 End
 
 /// @brief returns properties of NI device
@@ -2374,51 +2385,102 @@ End
 
 /// @brief Stop scanning and waveform generation
 ///
-/// @param deviceID ID of the NI device
-/// @param deviceID      device identifier
-/// @param config        [optional] ITC config wave
-/// @param configFunc    [optional, defaults to GetITCChanConfigWave()] override wave getter for the ITC config wave
-/// @param prepareForDAQ [optional, defaults to false] prepare for next DAQ immediately
-/// @param zeroDAC       [optional, defaults to false] set all DA channels to zero
-/// @param flags         [optional, default none] One or multiple flags from @ref HardwareInteractionFlags
+/// @param[in] deviceID 		 ID of the NI device
+/// @param[in] zeroDAC       [optional, defaults to false] set all DA channels to zero
+/// @param[in] flags         [optional, default none] One or multiple flags from @ref HardwareInteractionFlags
 ///
 /// @see HW_StopAcq
-Function HW_NI_StopAcq(deviceID, [config, configFunc, prepareForDAQ, zeroDAC, flags])
-	variable deviceID, prepareForDAQ, zeroDAC, flags
-	WAVE/Z config
-	FUNCREF HW_WAVE_GETTER_PROTOTYPE configFunc
+Function HW_NI_StopAcq(deviceID, [zeroDAC, flags])
+	variable deviceID, zeroDAC, flags
 
-	variable i, channels, aoChannel, ret, err
-	string panelTitle, paraStr, device, errMsg
+	string panelTitle
+
+	HW_NI_StopADC(deviceID, flags=flags)
+	HW_NI_StopDAC(deviceID, flags=flags)
+	HW_NI_StopTTL(deviceID, flags=flags)
+
+	if(zeroDAC)
+	DEBUGPRINTSTACKINFO()
+		HW_NI_ZeroDAC(deviceID, flags=flags)
+	endif
+End
+
+/// @brief Stop ADC task
+///
+/// @param[in] deviceID ID of the NI device
+/// @param[in] flags    [optional, default none] One or multiple flags from @ref HardwareInteractionFlags
+Function HW_NI_StopADC(deviceID, [flags])
+	variable deviceID, flags
 
 	DEBUGPRINTSTACKINFO()
 
-	// dont stop here, only if all devices removed
-	device = HW_GetDeviceName(HARDWARE_NI_DAC, deviceID)
-	panelTitle = HW_GetMainDeviceName(HARDWARE_NI_DAC, deviceID)
-	ret = fDAQmx_ScanStop(device)
-	// note: calling Stop on a finished scan generates an error code
-	if(ret)
-		print fDAQmx_ErrorString()
-		printf "Error %d: fDAQmx_ScanStop\r", ret
-		ControlWindowToFront()
-		if(flags & HARDWARE_ABORT_ON_ERROR)
-			ASSERT(0, "Error calling fDAQmx_ScanStop (has Scan already finished?)")
-		endif
-	endif
-	ret = fDAQmx_WaveformStop(device)
-	if(ret)
-		print fDAQmx_ErrorString()
-		printf "Error %d: fDAQmx_WaveformStop\r", ret
-		ControlWindowToFront()
-		if(flags & HARDWARE_ABORT_ON_ERROR)
-			ASSERT(0, "Error calling fDAQmx_WaveformStop")
-		endif
-	endif
+	variable ret
+	string device, panelTitle
 
-	NVAR taskID = $GetNI_TTLTaskID(panelTitle)
-	if(!isNaN(taskID))
-		ret = fDAQmx_DIO_Finished(device, taskID)
+	panelTitle = HW_GetMainDeviceName(HARDWARE_NI_DAC, deviceID)
+	NVAR taskIDADC = $GetNI_ADCTaskID(panelTitle)
+	if(!isNaN(taskIDADC))
+		device = HW_GetDeviceName(HARDWARE_NI_DAC, deviceID)
+		ret = fDAQmx_ScanStop(device)
+		if(ret)
+			print fDAQmx_ErrorString()
+			printf "Error %d: fDAQmx_ScanStop\r", ret
+			ControlWindowToFront()
+			if(flags & HARDWARE_ABORT_ON_ERROR)
+				ASSERT(0, "Error calling fDAQmx_ScanStop (has Scan already finished?)")
+			endif
+		endif
+		taskIDADC = NaN
+		HW_NI_KillFifo(deviceID)
+	endif
+End
+
+/// @brief Stop DAC task
+///
+/// @param[in] deviceID ID of the NI device
+/// @param[in] flags    [optional, default none] One or multiple flags from @ref HardwareInteractionFlags
+Function HW_NI_StopDAC(deviceID, [flags])
+	variable deviceID, flags
+
+	DEBUGPRINTSTACKINFO()
+
+	variable ret
+	string device, panelTitle
+
+	panelTitle = HW_GetMainDeviceName(HARDWARE_NI_DAC, deviceID)
+	NVAR taskIDDAC = $GetNI_DACTaskID(panelTitle)
+	if(!isNaN(taskIDDAC))
+		device = HW_GetDeviceName(HARDWARE_NI_DAC, deviceID)
+		ret = fDAQmx_WaveformStop(device)
+		if(ret)
+			print fDAQmx_ErrorString()
+			printf "Error %d: fDAQmx_WaveformStop\r", ret
+			ControlWindowToFront()
+			if(flags & HARDWARE_ABORT_ON_ERROR)
+				ASSERT(0, "Error calling fDAQmx_WaveformStop")
+			endif
+		endif
+		taskIDDAC = NaN
+	endif
+End
+
+/// @brief Stop TTL task
+///
+/// @param[in] deviceID ID of the NI device
+/// @param[in] flags    [optional, default none] One or multiple flags from @ref HardwareInteractionFlags
+Function HW_NI_StopTTL(deviceID, [flags])
+	variable deviceID, flags
+
+	DEBUGPRINTSTACKINFO()
+
+	variable ret
+	string device, panelTitle
+
+	panelTitle = HW_GetMainDeviceName(HARDWARE_NI_DAC, deviceID)
+	NVAR taskIDTTL = $GetNI_TTLTaskID(panelTitle)
+	if(!isNaN(taskIDTTL))
+		device = HW_GetDeviceName(HARDWARE_NI_DAC, deviceID)
+		ret = fDAQmx_DIO_Finished(device, taskIDTTL)
 		if(ret)
 			print fDAQmx_ErrorString()
 			printf "Error %d: fDAQmx_DIO_Finished\r", ret
@@ -2427,45 +2489,54 @@ Function HW_NI_StopAcq(deviceID, [config, configFunc, prepareForDAQ, zeroDAC, fl
 				ASSERT(0, "Error calling fDAQmx_DIO_Finished")
 			endif
 		endif
+		taskIDTTL = NaN
 	endif
-
-	if(zeroDAC)
-		if(ParamIsDefault(config))
-			if(ParamIsDefault(configFunc))
-				WAVE config = GetITCChanConfigWave(panelTitle)
-			else
-				WAVE config = configFunc(panelTitle)
-			endif
-		endif
-		paraStr = ""
-		channels = DimSize(config, ROWS)
-		for(i = 0;i < channels; i += 1)
-			if(config[i][%ChannelType] == ITC_XOP_CHANNEL_TYPE_DAC)
-				paraStr += "0," + num2str(aoChannel) + ";"
-				aoChannel += 1
-			endif
-		endfor
-		// clear RTE
-		err = GetRTError(1)
-		DAQmx_AO_SetOutputs/DEV=device paraStr
-		if(GetRTError(1))
-			print fDAQmx_ErrorString()
-			ControlWindowToFront()
-			if(flags & HARDWARE_ABORT_ON_ERROR)
-				ASSERT(0, "Error calling DAQmx_AO_SetOutputs")
-			endif
-			return NaN
-		endif
-	endif
-
-	HW_NI_KillFifo(deviceID)
 End
+
+/// @brief Zero analog output on all DAC channels
+///
+/// @param[in] deviceID ID of the NI device
+/// @param[in] flags    [optional, default none] One or multiple flags from @ref HardwareInteractionFlags
+Function HW_NI_ZeroDAC(deviceID, [flags])
+	variable deviceID, flags
+
+	DEBUGPRINTSTACKINFO()
+
+	string device, panelTitle, paraStr
+	variable channels, i, err
+
+	device = HW_GetDeviceName(HARDWARE_NI_DAC, deviceID)
+	panelTitle = HW_GetMainDeviceName(HARDWARE_NI_DAC, deviceID)
+	WAVE config = GetITCChanConfigWave(panelTitle)
+
+	paraStr = ""
+	channels = DimSize(config, ROWS)
+	for(i = 0;i < channels; i += 1)
+		if(config[i][%ChannelType] == ITC_XOP_CHANNEL_TYPE_DAC)
+			paraStr += "0," + num2str(config[i][%ChannelNumber]) + ";"
+		endif
+	endfor
+	// clear RTE
+	err = GetRTError(1)
+	DAQmx_AO_SetOutputs/DEV=device paraStr
+	if(GetRTError(1))
+		print fDAQmx_ErrorString()
+		ControlWindowToFront()
+		if(flags & HARDWARE_ABORT_ON_ERROR)
+			ASSERT(0, "Error calling DAQmx_AO_SetOutputs")
+		endif
+		return NaN
+	endif
+End
+
 
 /// @brief Kill the FIFO of the given NI device
 ///
 /// @param deviceID device identifier
 Function HW_NI_KillFifo(deviceID)
 	variable deviceID
+
+	DEBUGPRINTSTACKINFO()
 
 	string fifoName, errMsg, panelTitle
 
@@ -2512,36 +2583,37 @@ static Function HW_NI_ResetDevice(device, [flags])
 			ASSERT(0, "Error calling fDAQmx_resetDevice")
 		endif
 	endif
+	HW_NI_ResetTaskIDs(device)
 End
+
+/// @brief Reset task IDs for NI hardware
+///
+/// @param device name of the NI device
+Function HW_NI_ResetTaskIDs(device)
+	string device
+
+	NVAR taskIDADC = $GetNI_ADCTaskID(device)
+	NVAR taskIDDAC = $GetNI_DACTaskID(device)
+	NVAR taskIDTTL = $GetNI_TTLTaskID(device)
+	taskIDADC = NaN
+	taskIDDAC = NaN
+	taskIDTTL = NaN
+End
+
 
 /// @brief Check if the device is running
 ///
 /// @param device name of the NI device
-/// @param flags  [optional, default none] One or multiple flags from @ref HardwareInteractionFlags
-Function HW_NI_IsRunning(device, [flags])
+Function HW_NI_IsRunning(device)
 	string device
-	variable flags
 
 	DEBUGPRINTSTACKINFO()
 
-	string errMsg
-	variable WFstatus = fDAQmx_WF_IsFinished(device)
-	if(isNan(WFstatus))
-		errMsg = fDAQmx_ErrorString()
-		if(strsearch(errMsg, "No waveform operation is currently running for that device", 0) == -1)
-			print errMsg
-			print "Error: fDAQmx_WF_IsFinished\r"
-			ControlWindowToFront()
-			if(flags & HARDWARE_ABORT_ON_ERROR)
-				ASSERT(0, "Error calling fDAQmx_WF_IsFinished")
-			endif
-		else
-			return 0
-		endif
-	elseif(WFstatus == 0)
-		return 1
-	endif
-	return 0
+	NVAR taskIDADC = $GetNI_ADCTaskID(device)
+	NVAR taskIDDAC = $GetNI_DACTaskID(device)
+	NVAR taskIDTTL = $GetNI_TTLTaskID(device)
+
+	return (IsFinite(taskIDADC) || IsFinite(taskIDDAC) || IsFinite(taskIDTTL))
 End
 
 /// @brief Calibrate a NI device if it wasn't calibrated within the last 24h.
@@ -2586,7 +2658,7 @@ Function HW_NI_CloseDevice(deviceID, [flags])
 
 	ASSERT(ParseDeviceString(HW_GetDeviceName(HARDWARE_NI_DAC, deviceID), deviceType, deviceNumber), "Error parsing device string!")
 
-	if(HW_NI_IsRunning(deviceType, flags=flags))
+	if(HW_NI_IsRunning(deviceType))
 		HW_NI_StopAcq(deviceID, flags=flags)
 	else
 		HW_NI_KillFifo(deviceID)
@@ -2678,10 +2750,32 @@ Function/S HW_NI_ListDevices([flags])
 	return ""
 End
 
-Function HW_NI_StopAcq(deviceID, [config, configFunc, prepareForDAQ, zeroDAC, flags])
-	variable deviceID, prepareForDAQ, zeroDAC, flags
-	WAVE/Z config
-	FUNCREF HW_WAVE_GETTER_PROTOTYPE configFunc
+Function HW_NI_StopAcq(deviceID, [zeroDAC, flags])
+	variable deviceID, zeroDAC, flags
+
+	DoAbortNow("NI-DAQ XOP is not available")
+End
+
+Function HW_NI_StopDAC(deviceID, [flags])
+	variable deviceID, flags
+
+	DoAbortNow("NI-DAQ XOP is not available")
+End
+
+Function HW_NI_StopADC(deviceID, [flags])
+	variable deviceID, flags
+
+	DoAbortNow("NI-DAQ XOP is not available")
+End
+
+Function HW_NI_StopTTL(deviceID, [flags])
+	variable deviceID, flags
+
+	DoAbortNow("NI-DAQ XOP is not available")
+End
+
+Function HW_NI_ZeroDAC(deviceID, [flags])
+	variable deviceID, flags
 
 	DoAbortNow("NI-DAQ XOP is not available")
 End
@@ -2723,6 +2817,12 @@ End
 Function/WAVE HW_NI_GetDeviceInfo(device, [flags])
 	string device
 	variable flags
+
+	DoAbortNow("NI-DAQ XOP is not available")
+End
+
+Function HW_NI_ResetTaskIDs(device)
+	string device
 
 	DoAbortNow("NI-DAQ XOP is not available")
 End
