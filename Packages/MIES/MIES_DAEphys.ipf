@@ -4509,7 +4509,7 @@ Function DAP_LockDevice(panelTitle)
 	if(ItemsInList(GetListOfLockedDevices()) == 1)
 		DAP_LoadBuiltinStimsets()
 		GetPxPVersion()
-
+		SetupBackgroundTasks()
 #if IgorVersion() >= 8.0
 #if NumberByKey("BUILD", IgorInfo(0)) >= 33453
 		CtrlNamedBackground _all_, noevents=1

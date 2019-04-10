@@ -267,7 +267,7 @@ Function DQM_StartBackgroundTimer(panelTitle, runTime, funcList)
 
 	DQM_MakeOrUpdateTimerParamWave(panelTitle, funcList, startTime, durationTime, endTime, 1)
 	if(!IsBackgroundTaskRunning(TASKNAME_TIMERMD))
-		CtrlNamedBackground $TASKNAME_TIMERMD, period = 6, proc = DQM_Timer, start
+		CtrlNamedBackground $TASKNAME_TIMERMD, start
 	endif
 End
 
@@ -323,7 +323,6 @@ Function DQM_Timer(s)
 End
 
 static Function DQM_StartBckrdFIFOMonitor()
-	CtrlNamedBackground $TASKNAME_FIFOMONMD, period=1, proc=DQM_FIFOMonitor
 	CtrlNamedBackground $TASKNAME_FIFOMONMD, start
 End
 

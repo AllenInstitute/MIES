@@ -1053,7 +1053,6 @@ static Function P_DataAcq(panelTitle, headStage)
 		HW_ITC_PrepareAcq(deviceID, dataFunc=P_GetITCData, configFunc=P_GetITCChanConfig)
 		HW_StartAcq(hwType, deviceID, flags=HARDWARE_ABORT_ON_ERROR)
 
-		CtrlNamedBackground P_ITC_FIFOMonitor, period = 10, proc = P_ITC_FIFOMonitorProc
 		CtrlNamedBackground P_ITC_FIFOMonitor, start
 	elseif(hwType == HARDWARE_NI_DAC)
 

@@ -13,7 +13,6 @@ Function TPS_StartBackgroundTestPulse(panelTitle)
 	string panelTitle
 
 	ASYNC_Start(ThreadProcessorCount, disableTask=1)
-	CtrlNamedBackground $TASKNAME_TP, period = 5, proc = TPS_TestPulseFunc
 	CtrlNamedBackground $TASKNAME_TP, start
 End
 

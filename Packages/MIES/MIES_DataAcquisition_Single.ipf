@@ -118,7 +118,6 @@ static Function DQS_StopDataAcq(panelTitle, [forcedStop])
 End
 
 Function DQS_StartBackgroundFifoMonitor()
-	CtrlNamedBackground $TASKNAME_FIFOMON, period = 5, proc = DQS_FIFOMonitor
 	CtrlNamedBackground $TASKNAME_FIFOMON, start
 End
 
@@ -187,7 +186,7 @@ Function DQS_StartBackgroundTimer(panelTitle, runTime, funcList)
 	repeatedAcqStart    = RelativeNowHighPrec()
 	repeatedAcqDuration = runTime
 
-	CtrlNamedBackground $TASKNAME_TIMER, period = 5, proc = DQS_Timer, start
+	CtrlNamedBackground $TASKNAME_TIMER, start
 End
 
 /// @brief Stop the background timer used for ITI tracking
