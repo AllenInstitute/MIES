@@ -3212,7 +3212,8 @@ End
 Function TimeAlignCursorMovedHook(s)
 	STRUCT WMWinHookStruct &s
 
-	String trace, graphtrace, bsPanel
+	string trace, graphtrace, graphtraces, xAxis, yAxis, traceData, traceList, fullTraceList, bsPanel, mainPanel
+	variable numTrace, numAxes
 
 	strswitch(s.eventName)
 		case "cursormoved":
@@ -3237,7 +3238,40 @@ Function TimeAlignCursorMovedHook(s)
 				return 0
 			endif
 
-			graphtrace = s.winName + "#" + s.traceName
+			mainPanel = GetMainWindow(bsPanel)
+			graphtrace = s.winName + "#" + trace
+			graphtraces = TimeAlignGetAllTraces(mainPanel)
+			if(FindListItem(graphtrace, graphtraces) == -1)
+				numAxes = ItemsInList(AxisList(s.winName))
+				if(numAxes > 2)
+					traceData = TraceInfo(s.winName, trace, 0)
+					xAxis = StringByKey("XAXIS", traceData)
+					yAxis = StringByKey("YAXIS", traceData)
+				endif
+				traceList = TraceNameList(s.winName, ";", 0x01)
+				numTrace = WhichListItem(trace, traceList)
+				do
+					traceList = RemoveListItem(numTrace, traceList)
+					if(numTrace == -1 || ItemsInList(traceList) == 0)
+						graphtrace = StringFromList(0, graphtraces)
+						break
+					endif
+					if(numTrace > 0)
+						numTrace -= 1
+					endif
+					trace = StringFromList(numTrace, traceList)
+					if(numAxes > 2)
+						traceData = TraceInfo(s.winName, trace, 0)
+						if(cmpstr(xAxis, StringByKey("XAXIS", traceData)))
+							continue
+						elseif(cmpstr(yAxis, StringByKey("YAXIS", traceData)))
+							continue
+						endif
+					endif
+					graphtrace = s.winName + "#" + trace
+				while(FindListItem(graphtrace, graphtraces) == -1)
+			endif
+
 			PGC_SetAndActivateControl(bsPanel, "popup_TimeAlignment_Master", str = graphtrace)
 			break
 	endswitch
