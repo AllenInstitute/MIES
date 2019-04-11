@@ -9,8 +9,6 @@ Function CheckIfAllControlsReferStateWv()
 	variable i, numEntries, val, channelIndex, channelType, controlType, index, oldVal
 	variable err, inputModified
 
-	Initialize_IGNORE()
-
 	unlockedPanelTitle = DAP_CreateDAEphysPanel()
 
 	ChooseCorrectDevice(unlockedPanelTitle, DEVICE)
@@ -161,8 +159,6 @@ Function CheckStartupSettings()
 
 	string unlockedPanelTitle, list, ctrl, str, expected, lbl
 	variable i, numEntries, val, channelIndex, channelType, controlType, index, oldVal
-
-	Initialize_IGNORE()
 
 	SetRandomSeed/BETR=1 1
 

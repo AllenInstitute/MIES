@@ -10,12 +10,9 @@ static Function AcquireData(s, stimset, [postInitializeFunc, preAcquireFunc])
 	string stimset
 	FUNCREF CALLABLE_PROTO postInitializeFunc, preAcquireFunc
 
-	Initialize_IGNORE()
-
 	if(!ParamIsDefault(postInitializeFunc))
 		postInitializeFunc()
 	endif
-
 	string unlockedPanelTitle = DAP_CreateDAEphysPanel()
 
 	ChooseCorrectDevice(unlockedPanelTitle, DEVICE)
@@ -61,7 +58,6 @@ static Function AcquireData(s, stimset, [postInitializeFunc, preAcquireFunc])
 		preAcquireFunc()
 	endif
 
-	CtrlNamedBackGround DAQWatchdog, start, period=120, proc=WaitUntilDAQDone_IGNORE
 	PGC_SetAndActivateControl(DEVICE, "DataAcquireButton")
 	OpenDatabrowser()
 End
@@ -78,10 +74,10 @@ Function/WAVE GetSweepResults_IGNORE(sweepNo)
 	return sweepPassed
 End
 
-Function PS_DS_Sub_Run1()
+Function PS_DS_Sub1()
 
 	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "DAQ_MD1_RA1_IDX0_LIDX0_BKG_1")
+	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG_1")
 	AcquireData(s, "PSQ_DaScale_Sub_DA_0")
 
 	WAVE wv = PSQ_CreateOverrideResults(DEVICE, HEADSTAGE, PSQ_DA_SCALE)
@@ -89,7 +85,7 @@ Function PS_DS_Sub_Run1()
 	wv = 0
 End
 
-Function PS_DS_Sub_Test1()
+Function PS_DS_Sub1_REENTRY()
 
 	variable sweepNo, setPassed, numEntries
 
@@ -118,10 +114,10 @@ Function PS_DS_Sub_Test1()
 	CHECK_EQUAL_WAVES(stimScale, stimScaleRef, mode = WAVE_DATA, tol = 1e-14)
 End
 
-Function PS_DS_Sub_Run2()
+Function PS_DS_Sub2()
 
 	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "DAQ_MD1_RA1_IDX0_LIDX0_BKG_1")
+	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG_1")
 	AcquireData(s, "PSQ_DaScale_Sub_DA_0")
 
 	WAVE wv = PSQ_CreateOverrideResults(DEVICE, HEADSTAGE, PSQ_DA_SCALE)
@@ -130,7 +126,7 @@ Function PS_DS_Sub_Run2()
 	wv[0][] = 1
 End
 
-Function PS_DS_Sub_Test2()
+Function PS_DS_Sub2_REENTRY()
 
 	variable sweepNo, setPassed, numEntries
 
@@ -159,10 +155,10 @@ Function PS_DS_Sub_Test2()
 	CHECK_EQUAL_WAVES(stimScale, stimScaleRef, mode = WAVE_DATA, tol = 1e-14)
 End
 
-Function PS_DS_Sub_Run3()
+Function PS_DS_Sub3()
 
 	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "DAQ_MD1_RA1_IDX0_LIDX0_BKG_1")
+	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG_1")
 	AcquireData(s, "PSQ_DaScale_Sub_DA_0")
 
 	WAVE wv = PSQ_CreateOverrideResults(DEVICE, HEADSTAGE, PSQ_DA_SCALE)
@@ -172,7 +168,7 @@ Function PS_DS_Sub_Run3()
 	wv[0,1][] = 1
 End
 
-Function PS_DS_Sub_Test3()
+Function PS_DS_Sub3_REENTRY()
 
 	variable sweepNo, setPassed, numEntries
 
@@ -201,10 +197,10 @@ Function PS_DS_Sub_Test3()
 	CHECK_EQUAL_WAVES(stimScale, stimScaleRef, mode = WAVE_DATA, tol = 1e-14)
 End
 
-Function PS_DS_Sub_Run4()
+Function PS_DS_Sub4()
 
 	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "DAQ_MD1_RA1_IDX0_LIDX0_BKG_1")
+	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG_1")
 	AcquireData(s, "PSQ_DaScale_Sub_DA_0")
 
 	WAVE wv = PSQ_CreateOverrideResults(DEVICE, HEADSTAGE, PSQ_DA_SCALE)
@@ -215,7 +211,7 @@ Function PS_DS_Sub_Run4()
 	wv[DimSize(wv, ROWS) - 1][] = 1
 End
 
-Function PS_DS_Sub_Test4()
+Function PS_DS_Sub4_REENTRY()
 
 	variable sweepNo, setPassed, numEntries
 
@@ -244,10 +240,10 @@ Function PS_DS_Sub_Test4()
 	CHECK_EQUAL_WAVES(stimScale, stimScaleRef, mode = WAVE_DATA, tol = 1e-14)
 End
 
-Function PS_DS_Sub_Run5()
+Function PS_DS_Sub5()
 
 	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "DAQ_MD1_RA1_IDX0_LIDX0_BKG_1")
+	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG_1")
 	AcquireData(s, "PSQ_DaScale_Sub_DA_0")
 
 	WAVE wv = PSQ_CreateOverrideResults(DEVICE, HEADSTAGE, PSQ_DA_SCALE)
@@ -257,7 +253,7 @@ Function PS_DS_Sub_Run5()
 	wv[0][] = 0
 End
 
-Function PS_DS_Sub_Test5()
+Function PS_DS_Sub5_REENTRY()
 
 	variable sweepNo, setPassed, numEntries
 
@@ -286,10 +282,10 @@ Function PS_DS_Sub_Test5()
 	CHECK_EQUAL_WAVES(stimScale, stimScaleRef, mode = WAVE_DATA, tol = 1e-14)
 End
 
-Function PS_DS_Sub_Run6()
+Function PS_DS_Sub6()
 
 	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "DAQ_MD1_RA1_IDX0_LIDX0_BKG_1")
+	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG_1")
 	AcquireData(s, "PSQ_DaScale_Sub_DA_0")
 
 	WAVE wv = PSQ_CreateOverrideResults(DEVICE, HEADSTAGE, PSQ_DA_SCALE)
@@ -300,7 +296,7 @@ Function PS_DS_Sub_Run6()
 	wv[2][] = 1
 End
 
-Function PS_DS_Sub_Test6()
+Function PS_DS_Sub6_REENTRY()
 
 	variable sweepNo, setPassed, numEntries
 
@@ -329,10 +325,10 @@ Function PS_DS_Sub_Test6()
 	CHECK_EQUAL_WAVES(stimScale, stimScaleRef, mode = WAVE_DATA, tol = 1e-14)
 End
 
-Function PS_DS_Sub_Run7()
+Function PS_DS_Sub7()
 
 	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "DAQ_MD1_RA1_IDX0_LIDX0_BKG_1")
+	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG_1")
 	AcquireData(s, "PSQ_DaScale_Sub_DA_0")
 
 	WAVE wv = PSQ_CreateOverrideResults(DEVICE, HEADSTAGE, PSQ_DA_SCALE)
@@ -343,7 +339,7 @@ Function PS_DS_Sub_Run7()
 	wv[0, 1][2,6] = 1
 End
 
-Function PS_DS_Sub_Test7()
+Function PS_DS_Sub7_REENTRY()
 
 	variable sweepNo, setPassed, numEntries
 
@@ -372,10 +368,10 @@ Function PS_DS_Sub_Test7()
 	CHECK_EQUAL_WAVES(stimScale, stimScaleRef, mode = WAVE_DATA, tol = 1e-14)
 End
 
-Function PS_DS_Sub_Run8()
+Function PS_DS_Sub8()
 
 	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "DAQ_MD1_RA1_IDX0_LIDX0_BKG_1")
+	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG_1")
 	AcquireData(s, "PSQ_DaScale_Sub_DA_0")
 
 	WAVE wv = PSQ_CreateOverrideResults(DEVICE, HEADSTAGE, PSQ_DA_SCALE)
@@ -390,7 +386,7 @@ Function PS_DS_Sub_Run8()
 	wv[0, 1][8] = 1
 End
 
-Function PS_DS_Sub_Test8()
+Function PS_DS_Sub8_REENTRY()
 
 	variable sweepNo, setPassed, numEntries
 
@@ -421,10 +417,10 @@ End
 
 // We only have here one function to test the used DAScale values
 // the decision logic is the same as for Sub
-Function PS_DS_Supra_Run1()
+Function PS_DS_Supra1()
 
 	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "DAQ_MD1_RA1_IDX0_LIDX0_BKG_1")
+	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG_1")
 	AcquireData(s, "PSQ_DaScale_Supr_DA_0")
 
 	WAVE wv = PSQ_CreateOverrideResults(DEVICE, HEADSTAGE, PSQ_DA_SCALE)
@@ -435,7 +431,7 @@ Function PS_DS_Supra_Run1()
 	wv[1][] = 1
 End
 
-Function PS_DS_Supra_Test1()
+Function PS_DS_Supra1_REENTRY()
 
 	variable sweepNo, setPassed, numEntries
 
@@ -467,10 +463,10 @@ Function PS_SetOffsetOp_IGNORE()
 	WBP_AddAnalysisParameter("PSQ_DaScale_Supr_DA_0", "OffsetOperator", str="*")
 End
 
-Function PS_DS_Supra_Run2()
+Function PS_DS_Supra2()
 
 	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "DAQ_MD1_RA1_IDX0_LIDX0_BKG_1")
+	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG_1")
 	AcquireData(s, "PSQ_DaScale_Supr_DA_0", postInitializeFunc = PS_SetOffsetOp_IGNORE)
 
 	WAVE wv = PSQ_CreateOverrideResults(DEVICE, HEADSTAGE, PSQ_DA_SCALE)
@@ -481,7 +477,7 @@ Function PS_DS_Supra_Run2()
 	wv[1][] = 1
 End
 
-Function PS_DS_Supra_Test2()
+Function PS_DS_Supra2_REENTRY()
 
 	variable sweepNo, setPassed, numEntries
 

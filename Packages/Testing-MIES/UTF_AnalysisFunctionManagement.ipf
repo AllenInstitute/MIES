@@ -236,10 +236,6 @@ Function/WAVE TrackAnalysisFunctionOrder([numHeadstages])
 	return wv
 End
 
-Function CALLABLE_PROTO()
-	FAIL()
-End
-
 /// @brief Acquire data with the given DAQSettings
 static Function AcquireData(s, stimset, [numHeadstages, TTLStimset, postInitializeFunc, preAcquireFunc])
 	STRUCT DAQSettings& s
@@ -261,8 +257,6 @@ static Function AcquireData(s, stimset, [numHeadstages, TTLStimset, postInitiali
 	KillOrMoveToTrash(wv = anaFuncOrder)
 
 	WAVE anaFuncTracker = TrackAnalysisFunctionCalls(numHeadstages = numHeadstages)
-
-	Initialize_IGNORE()
 
 	if(!ParamIsDefault(postInitializeFunc))
 		postInitializeFunc()
@@ -317,15 +311,14 @@ static Function AcquireData(s, stimset, [numHeadstages, TTLStimset, postInitiali
 		preAcquireFunc()
 	endif
 
-	CtrlNamedBackGround DAQWatchdog, start, period=120, proc=WaitUntilDAQDone_IGNORE
 	PGC_SetAndActivateControl(DEVICE, "DataAcquireButton")
 End
 
 // invalid analysis functions
-static Function AFT_DAQ1()
+static Function AFT1()
 
 	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "DAQ_MD1_RA1_IDX0_LIDX0_BKG_1")
+	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG_1")
 
 	try
 		AcquireData(s, "AnaFuncInvalid1_DA*"); AbortOnRTE
@@ -335,7 +328,7 @@ static Function AFT_DAQ1()
 	endtry
 End
 
-static Function AFT_Test1()
+static Function AFT1_REENTRY()
 
 	variable sweepNo
 	string key
@@ -380,12 +373,12 @@ static Function AFT_Test1()
 End
 
 // can not call prototype analysis functions as they reside in the wrong file
-static Function AFT_DAQ2()
+static Function AFT2()
 
 	variable sweepNo
 
 	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "DAQ_MD1_RA1_IDX0_LIDX0_BKG_1")
+	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG_1")
 
 	try
 		AcquireData(s, "AnaFuncInvalid2_DA*"); AbortOnRTE
@@ -395,7 +388,7 @@ static Function AFT_DAQ2()
 	endtry
 End
 
-static Function AFT_Test2()
+static Function AFT2_REENTRY()
 
 	variable sweepNo
 	string key
@@ -440,17 +433,17 @@ static Function AFT_Test2()
 End
 
 // uses a valid V1 function and got calls for all events except post set
-static Function AFT_DAQ3()
+static Function AFT3()
 
 	variable sweepNo
 
 	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "DAQ_MD1_RA0_IDX0_LIDX0_BKG_1")
+	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG_1")
 
 	AcquireData(s, "AnaFuncValid1_DA*")
 End
 
-static Function AFT_Test3()
+static Function AFT3_REENTRY()
 
 	variable sweepNo
 	string key
@@ -511,17 +504,17 @@ static Function AFT_Test3()
 End
 
 // uses a valid V1 function and got calls for all events including post set
-static Function AFT_DAQ4()
+static Function AFT4()
 
 	variable sweepNo
 
 	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "DAQ_MD1_RA1_IDX0_LIDX0_BKG_1")
+	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG_1")
 
 	AcquireData(s, "AnaFuncValid1_DA*")
 End
 
-static Function AFT_Test4()
+static Function AFT4_REENTRY()
 
 	variable sweepNo
 	string key
@@ -582,17 +575,17 @@ static Function AFT_Test4()
 End
 
 // uses a valid V2 function and got calls for all events except post set
-static Function AFT_DAQ5()
+static Function AFT5()
 
 	variable sweepNo
 
 	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "DAQ_MD1_RA0_IDX0_LIDX0_BKG_1")
+	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG_1")
 
 	AcquireData(s, "AnaFuncValid2_DA*")
 End
 
-static Function AFT_Test5()
+static Function AFT5_REENTRY()
 
 	variable sweepNo
 	string key
@@ -644,17 +637,17 @@ static Function AFT_Test5()
 End
 
 // uses a valid V2 function and got calls for all events including post set
-static Function AFT_DAQ6()
+static Function AFT6()
 
 	variable sweepNo
 
 	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "DAQ_MD1_RA1_IDX0_LIDX0_BKG_1")
+	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG_1")
 
 	AcquireData(s, "AnaFuncValid2_DA*")
 End
 
-static Function AFT_Test6()
+static Function AFT6_REENTRY()
 
 	variable sweepNo
 	string key
@@ -715,17 +708,17 @@ static Function AFT_Test6()
 End
 
 // uses a valid V3 function and got calls for all events including post set
-static Function AFT_DAQ6a()
+static Function AFT6a()
 
 	variable sweepNo
 
 	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "DAQ_MD1_RA1_IDX0_LIDX0_BKG_1")
+	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG_1")
 
 	AcquireData(s, "AnaFuncValid3_DA*")
 End
 
-static Function AFT_Test6a()
+static Function AFT6a_REENTRY()
 
 	variable sweepNo
 	string key
@@ -782,17 +775,17 @@ End
 // uses a valid V3 generic function and then ignores other set analysis functions
 // The wavebuilder does not store other analysis functions if the generic name is set.
 // That is the reason why they are in the labnotebook but not called.
-static Function AFT_DAQ6b()
+static Function AFT6b()
 
 	variable sweepNo
 
 	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "DAQ_MD1_RA1_IDX0_LIDX0_BKG_1")
+	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG_1")
 
 	AcquireData(s, "AnaFuncGeneric_DA*")
 End
 
-static Function AFT_Test6b()
+static Function AFT6b_REENTRY()
 
 	variable sweepNo
 	string key
@@ -855,17 +848,17 @@ End
 
 
 // ana func called for each headstage
-static Function AFT_DAQ7()
+static Function AFT7()
 
 	variable sweepNo
 
 	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "DAQ_MD1_RA1_IDX0_LIDX0_BKG_1")
+	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG_1")
 
 	AcquireData(s, "AnaFuncValidMult_DA*", numHeadstages = 2)
 End
 
-static Function AFT_Test7()
+static Function AFT7_REENTRY()
 
 	variable sweepNo, i, numHeadstages
 	string key
@@ -935,17 +928,17 @@ static Function AFT_Test7()
 End
 
 // not called if attached to TTL stimsets
-static Function AFT_DAQ8()
+static Function AFT8()
 
 	variable sweepNo
 
 	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "DAQ_MD1_RA1_IDX0_LIDX0_BKG_1")
+	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG_1")
 
 	AcquireData(s, "StimulusSetA_DA*", TTLstimset = "AnaFuncTTLNot_TTL_*")
 End
 
-static Function AFT_Test8()
+static Function AFT8_REENTRY()
 
 	variable sweepNo, i, numHeadstages
 	string key
@@ -990,18 +983,18 @@ static Function AFT_Test8()
 End
 
 // does not call some ana funcs if aborted
-static Function AFT_DAQ9()
+static Function AFT9()
 
 	variable sweepNo
 
 	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "DAQ_MD1_RA1_IDX0_LIDX0_BKG_1")
+	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG_1")
 
 	AcquireData(s, "AnaFuncValid2_DA*")
 	CtrlNamedBackGround Abort_ITI_PressAcq, start, period=30, proc=StopAcq_IGNORE
 End
 
-static Function AFT_Test9()
+static Function AFT9_REENTRY()
 
 	variable sweepNo
 	string key
@@ -1064,15 +1057,15 @@ static Function AFT_Test9()
 End
 
 // DAQ works if the analysis function can not be found
-static Function AFT_DAQ10()
+static Function AFT10()
 
 	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "DAQ_MD1_RA0_IDX0_LIDX0_BKG_1")
+	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG_1")
 
 	AcquireData(s, "AnaFuncMissing_DA*")
 End
 
-static Function AFT_Test10()
+static Function AFT10_REENTRY()
 
 	variable sweepNo
 	string key
@@ -1117,15 +1110,15 @@ static Function AFT_Test10()
 End
 
 // calls correct analysis functions
-static Function AFT_DAQ11()
+static Function AFT11()
 
 	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "DAQ_MD1_RA1_IDX0_LIDX0_BKG_1")
+	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG_1")
 
 	AcquireData(s, "AnaFuncDiff_DA*")
 End
 
-static Function AFT_Test11()
+static Function AFT11_REENTRY()
 
 	variable sweepNo
 	string key
@@ -1189,10 +1182,10 @@ End
 
 // abort early results in other analysis functions not being called
 // preDAQ
-static Function AFT_DAQ12()
+static Function AFT12()
 
 	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "DAQ_MD1_RA0_IDX0_LIDX0_BKG_1")
+	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG_1")
 
 	try
 		AcquireData(s, "AnaFuncAbortPre_DA*", numHeadstages = 2); AbortOnRTE
@@ -1202,7 +1195,7 @@ static Function AFT_DAQ12()
 	endtry
 End
 
-static Function AFT_Test12()
+static Function AFT12_REENTRY()
 
 	variable sweepNo
 	string key
@@ -1260,15 +1253,15 @@ End
 
 // abort early results in other analysis functions not being called
 // midSweep
-static Function AFT_DAQ13()
+static Function AFT13()
 
 	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "DAQ_MD1_RA0_IDX0_LIDX0_BKG_1")
+	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG_1")
 
 	AcquireData(s, "AnaFuncStopMid_DA*", numHeadstages = 2)
 End
 
-static Function AFT_Test13()
+static Function AFT13_REENTRY()
 
 	variable sweepNo
 	string key
@@ -1338,16 +1331,16 @@ End
 // test parameter handling
 // tests also that no type parameters
 // in Params1_V3_GetParams() are okay
-static Function AFT_DAQ14()
+static Function AFT14()
 
 	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "DAQ_MD1_RA0_IDX0_LIDX0_BKG_1")
+	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG_1")
 
 	FUNCREF CALLABLE_PROTO f = SetParams1_IGNORE
 	AcquireData(s, "AnaFuncParams1_DA_0", postInitializeFunc = f)
 End
 
-static Function AFT_Test14()
+static Function AFT14_REENTRY()
 
 	variable sweepNo
 	string key
@@ -1416,16 +1409,16 @@ static Function SetParams2_IGNORE()
 End
 
 // test parameter handling with valid type string and optional parameter
-static Function AFT_DAQ14a()
+static Function AFT14a()
 
 	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "DAQ_MD1_RA0_IDX0_LIDX0_BKG_1")
+	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG_1")
 
 	FUNCREF CALLABLE_PROTO f = SetParams2_IGNORE
 	AcquireData(s, "AnaFuncParams2_DA_0", postInitializeFunc = f)
 End
 
-static Function AFT_Test14a()
+static Function AFT14a_REENTRY()
 
 	variable sweepNo
 	string key
@@ -1454,16 +1447,16 @@ static Function SetParams3_IGNORE()
 End
 
 // test parameter handling with non-matching type string
-static Function AFT_DAQ14b()
+static Function AFT14b()
 
 	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "DAQ_MD1_RA0_IDX0_LIDX0_BKG_1")
+	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG_1")
 
 	FUNCREF CALLABLE_PROTO f = SetParams3_IGNORE
 	AcquireData(s, "AnaFuncParams3_DA_0", postInitializeFunc = f)
 End
 
-static Function AFT_Test14b()
+static Function AFT14b_REENTRY()
 
 	variable sweepNo
 	string key
@@ -1492,16 +1485,16 @@ static Function SetParams4_IGNORE()
 End
 
 // test parameter handling with invalid type string
-static Function AFT_DAQ14c()
+static Function AFT14c()
 
 	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "DAQ_MD1_RA0_IDX0_LIDX0_BKG_1")
+	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG_1")
 
 	FUNCREF CALLABLE_PROTO f = SetParams4_IGNORE
 	AcquireData(s, "AnaFuncParams4_DA_0", postInitializeFunc = f)
 End
 
-static Function AFT_Test14c()
+static Function AFT14c_REENTRY()
 
 	variable sweepNo
 	string key
@@ -1528,15 +1521,15 @@ static Function DisableInsertTP_IGNORE()
 End
 
 // MD: mid sweep event is also called for very short stimsets
-static Function AFT_DAQ15()
+static Function AFT15()
 
 	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "DAQ_MD1_RA0_IDX0_LIDX0_BKG_1")
+	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG_1")
 
 	AcquireData(s, "AnaFuncVeryShort*", preAcquireFunc=DisableInsertTP_IGNORE)
 End
 
-static Function AFT_Test15()
+static Function AFT15_REENTRY()
 
 	variable sweepNo
 	string key
@@ -1559,15 +1552,15 @@ static Function AFT_Test15()
 End
 
 // SD: mid sweep event is also called for very short stimsets
-static Function AFT_DAQ16()
+static Function AFT16()
 
 	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "DAQ_MD0_RA0_IDX0_LIDX0_BKG_1")
+	InitDAQSettingsFromString(s, "MD0_RA0_I0_L0_BKG_1")
 
 	AcquireData(s, "AnaFuncVeryShort*", preAcquireFunc=DisableInsertTP_IGNORE)
 End
 
-static Function AFT_Test16()
+static Function AFT16_REENTRY()
 
 	variable sweepNo
 	string key
@@ -1590,10 +1583,10 @@ static Function AFT_Test16()
 End
 
 // Calling Abort during pre DAQ event will prevent DAQ
-static Function AFT_DAQ17()
+static Function AFT17()
 
 	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "DAQ_MD0_RA0_IDX0_LIDX0_BKG_1")
+	InitDAQSettingsFromString(s, "MD0_RA0_I0_L0_BKG_1")
 
 	try
 		AcquireData(s, "AnaFuncPreDAQHar_DA_0"); AbortOnRTE
@@ -1606,7 +1599,7 @@ static Function AFT_DAQ17()
 	endtry
 End
 
-static Function AFT_Test17()
+static Function AFT17_REENTRY()
 
 	variable sweepNo
 	string key
@@ -1628,7 +1621,7 @@ static Function AFT_Test17()
 	CHECK_EQUAL_VAR(anaFuncTracker[GENERIC_EVENT], 0)
 End
 
-static Function SetIndexingEnd()
+static Function SetIndexingEnd_IGNORE()
 
 	PGC_SetAndActivateControl(DEVICE, GetPanelControl(0, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_INDEX_END), str = "AnaFuncIdx2_DA_0")
 End
@@ -1636,15 +1629,15 @@ End
 // Analysis functions work properly with indexing
 // We index from AnaFuncIdx1_DA_0 to AnaFuncIdx2_DA_0
 // but only the second one has a analysis function set
-static Function AFT_DAQ18()
+static Function AFT18()
 
 	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "DAQ_MD1_RA1_IDX1_LIDX0_BKG_1_RES_2")
+	InitDAQSettingsFromString(s, "MD1_RA1_I1_L0_BKG_1_RES_2")
 
-	AcquireData(s, "AnaFuncIdx1_DA_0", preAcquireFunc = SetIndexingEnd)
+	AcquireData(s, "AnaFuncIdx1_DA_0", preAcquireFunc = SetIndexingEnd_IGNORE)
 End
 
-static Function AFT_Test18()
+static Function AFT18_REENTRY()
 
 	variable sweepNo
 	string key
@@ -1677,15 +1670,15 @@ static Function AFT_Test18()
 End
 
 // check that pre-set-event can abort
-static Function AFT_DAQ19()
+static Function AFT19()
 
 	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "DAQ_MD1_RA0_IDX0_LIDX0_BKG_1")
+	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG_1")
 
 	AcquireData(s, "AnaFuncPreSetHar_DA_0")
 End
 
-static Function AFT_Test19()
+static Function AFT19_REENTRY()
 
 	variable sweepNo
 	string key
@@ -1708,15 +1701,15 @@ static Function AFT_Test19()
 End
 
 // check total ordering of events via timestamps
-static Function AFT_DAQ20()
+static Function AFT20()
 
 	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "DAQ_MD1_RA0_IDX0_LIDX0_BKG_1")
+	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG_1")
 
 	AcquireData(s, "AnaFuncOrder_DA_0")
 End
 
-static Function AFT_Test20()
+static Function AFT20_REENTRY()
 
 	variable sweepNo
 
@@ -1746,7 +1739,7 @@ End
 static Function AFT_SetControls1()
 
 	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "DAQ_MD1_RA0_IDX0_LIDX0_BKG_1")
+	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG_1")
 
 	try
 		AcquireData(s, "AnaFuncSetCtrl_DA_0", postInitializeFunc = AFT_SetControls1_Setter)
@@ -1756,7 +1749,7 @@ static Function AFT_SetControls1()
 	endtry
 End
 
-static Function AFT_SetControlsTest1()
+static Function AFT_SetControls1_REENTRY()
 
 	variable sweepNo
 
@@ -1775,7 +1768,7 @@ End
 static Function AFT_SetControls2()
 
 	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "DAQ_MD1_RA0_IDX0_LIDX0_BKG_1")
+	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG_1")
 
 	try
 		AcquireData(s, "AnaFuncSetCtrl_DA_0", postInitializeFunc = AFT_SetControls2_Setter)
@@ -1785,7 +1778,7 @@ static Function AFT_SetControls2()
 	endtry
 End
 
-static Function AFT_SetControlsTest2()
+static Function AFT_SetControls2_REENTRY()
 
 	variable sweepNo
 
@@ -1804,7 +1797,7 @@ End
 static Function AFT_SetControls2a()
 
 	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "DAQ_MD1_RA0_IDX0_LIDX0_BKG_1")
+	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG_1")
 
 	try
 		AcquireData(s, "AnaFuncSetCtrl_DA_0", postInitializeFunc = AFT_SetControls2a_Setter)
@@ -1814,7 +1807,7 @@ static Function AFT_SetControls2a()
 	endtry
 End
 
-static Function AFT_SetControlsTest2a()
+static Function AFT_SetControls2a_REENTRY()
 
 	variable sweepNo
 
@@ -1834,7 +1827,7 @@ End
 static Function AFT_SetControls2b()
 
 	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "DAQ_MD1_RA0_IDX0_LIDX0_BKG_1")
+	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG_1")
 
 	try
 		AcquireData(s, "AnaFuncSetCtrl_DA_0", postInitializeFunc = AFT_SetControls2b_Setter)
@@ -1844,7 +1837,7 @@ static Function AFT_SetControls2b()
 	endtry
 End
 
-static Function AFT_SetControlsTest2b()
+static Function AFT_SetControls2b_REENTRY()
 
 	variable sweepNo
 
@@ -1864,7 +1857,7 @@ End
 static Function AFT_SetControls3()
 
 	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "DAQ_MD1_RA0_IDX0_LIDX0_BKG_1")
+	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG_1")
 
 	try
 		AcquireData(s, "AnaFuncSetCtrl_DA_0", postInitializeFunc = AFT_SetControls3_Setter)
@@ -1874,7 +1867,7 @@ static Function AFT_SetControls3()
 	endtry
 End
 
-static Function AFT_SetControlsTest3()
+static Function AFT_SetControls3_REENTRY()
 
 	variable sweepNo
 
@@ -1894,7 +1887,7 @@ End
 static Function AFT_SetControls3a()
 
 	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "DAQ_MD1_RA0_IDX0_LIDX0_BKG_1")
+	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG_1")
 
 	try
 		AcquireData(s, "AnaFuncSetCtrl_DA_0", postInitializeFunc = AFT_SetControls3a_Setter)
@@ -1904,7 +1897,7 @@ static Function AFT_SetControls3a()
 	endtry
 End
 
-static Function AFT_SetControlsTest3a()
+static Function AFT_SetControls3a_REENTRY()
 
 	variable sweepNo
 
@@ -1924,7 +1917,7 @@ End
 static Function AFT_SetControls3b()
 
 	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "DAQ_MD1_RA0_IDX0_LIDX0_BKG_1")
+	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG_1")
 
 	try
 		AcquireData(s, "AnaFuncSetCtrl_DA_0", postInitializeFunc = AFT_SetControls3b_Setter)
@@ -1934,7 +1927,7 @@ static Function AFT_SetControls3b()
 	endtry
 End
 
-static Function AFT_SetControlsTest3b()
+static Function AFT_SetControls3b_REENTRY()
 
 	variable sweepNo
 
@@ -1954,7 +1947,7 @@ End
 static Function AFT_SetControls3c()
 
 	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "DAQ_MD1_RA0_IDX0_LIDX0_BKG_1")
+	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG_1")
 
 	try
 		AcquireData(s, "AnaFuncSetCtrl_DA_0", postInitializeFunc = AFT_SetControls3c_Setter)
@@ -1964,7 +1957,7 @@ static Function AFT_SetControls3c()
 	endtry
 End
 
-static Function AFT_SetControlsTest3c()
+static Function AFT_SetControls3c_REENTRY()
 
 	variable sweepNo
 
@@ -1984,7 +1977,7 @@ End
 static Function AFT_SetControls4()
 
 	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "DAQ_MD1_RA0_IDX0_LIDX0_BKG_1")
+	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG_1")
 
 	try
 		AcquireData(s, "AnaFuncSetCtrl_DA_0", postInitializeFunc = AFT_SetControls4_Setter)
@@ -1994,7 +1987,7 @@ static Function AFT_SetControls4()
 	endtry
 End
 
-static Function AFT_SetControlsTest4()
+static Function AFT_SetControls4_REENTRY()
 
 	variable sweepNo
 
@@ -2014,12 +2007,12 @@ End
 static Function AFT_SetControls5()
 
 	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "DAQ_MD1_RA0_IDX0_LIDX0_BKG_1")
+	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG_1")
 
 	AcquireData(s, "AnaFuncSetCtrl_DA_0", postInitializeFunc = AFT_SetControls5_Setter)
 End
 
-static Function AFT_SetControlsTest5()
+static Function AFT_SetControls5_REENTRY()
 
 	variable sweepNo
 
@@ -2062,12 +2055,12 @@ End
 static Function AFT_SetControls6()
 
 	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "DAQ_MD1_RA0_IDX0_LIDX0_BKG_1")
+	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG_1")
 
 	AcquireData(s, "AnaFuncSetCtrl_DA_0", postInitializeFunc = AFT_SetControls6_Setter)
 End
 
-static Function AFT_SetControlsTest6()
+static Function AFT_SetControls6_REENTRY()
 
 	variable sweepNo
 	string ref, actual

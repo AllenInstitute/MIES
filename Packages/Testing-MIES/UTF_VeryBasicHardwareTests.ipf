@@ -8,8 +8,6 @@ End
 
 Function TestLocking()
 
-	Initialize_IGNORE()
-
 	string unlockedPanelTitle = DAP_CreateDAEphysPanel()
 
 	ChooseCorrectDevice(unlockedPanelTitle, DEVICE)

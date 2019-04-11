@@ -27,17 +27,16 @@ static Function SetAnalysisFunctions_IGNORE()
 End
 
 /// @brief Acquire data with the given DAQSettings
-static Function AcquireData(s, [postInitializeFunc, preAcquireFunc, setAnalysisFuncs, startTPInstead, startWatchdog])
+static Function AcquireData(s, [postInitializeFunc, preAcquireFunc, setAnalysisFuncs, startTPInstead])
 	STRUCT DAQSettings& s
 	FUNCREF CALLABLE_PROTO postInitializeFunc, preAcquireFunc
-	variable setAnalysisFuncs, startTPInstead, startWatchdog
+	variable setAnalysisFuncs, startTPInstead
 
 	string unlockedPanelTitle, devices, device
 	variable i, numEntries
 
 	KillOrMoveToTrash(wv = GetTrackSweepCounts())
 	KillOrMoveToTrash(wv = GetTrackActiveSetCount())
-	Initialize_IGNORE()
 
 	if(!ParamIsDefault(postInitializeFunc))
 		postInitializeFunc()
@@ -53,12 +52,6 @@ static Function AcquireData(s, [postInitializeFunc, preAcquireFunc, setAnalysisF
 		setAnalysisFuncs = 0
 	else
 		setAnalysisFuncs = !!setAnalysisFuncs
-	endif
-
-	if(ParamIsDefault(startWatchdog))
-		startWatchdog = 1
-	else
-		startWatchdog = !!startWatchdog
 	endif
 
 	if(setAnalysisFuncs)
@@ -139,14 +132,8 @@ static Function AcquireData(s, [postInitializeFunc, preAcquireFunc, setAnalysisF
 
 	if(startTPInstead)
 		PGC_SetAndActivateControl(device, "StartTestPulseButton")
-		if(startWatchdog)
-			CtrlNamedBackGround TPWatchdog, start, period=120, proc=WaitUntilTPDone_IGNORE
-		endif
 	else
 		PGC_SetAndActivateControl(device, "DataAcquireButton")
-		if(startWatchdog)
-			CtrlNamedBackGround DAQWatchdog, start, period=120, proc=WaitUntilDAQDone_IGNORE
-		endif
 	endif
 End
 
@@ -341,7 +328,7 @@ Function Events_Common(t)
 	t.events_HS1[][POST_SWEEP_EVENT] = p
 End
 
-Function Events_MD0_RA0_IDX0_LIDX0_BKG_0(t)
+Function Events_MD0_RA0_I0_L0_BKG_0(t)
 	STRUCT TestSettings &t
 
 	variable sweepNo
@@ -356,14 +343,14 @@ Function Events_MD0_RA0_IDX0_LIDX0_BKG_0(t)
 	t.events_HS1[sweepNo][POST_SET_EVENT]   = NaN
 End
 
-Function DAQ_MD0_RA0_IDX0_LIDX0_BKG_0()
+Function MD0_RA0_I0_L0_BKG_0()
 
 	STRUCT DAQSettings s
 	InitSettings(s)
 	AcquireData(s, setAnalysisFuncs = 1)
 End
 
-Function Test_MD0_RA0_IDX0_LIDX0_BKG_0()
+Function MD0_RA0_I0_L0_BKG_0_REENTRY()
 
 	STRUCT TestSettings t
 
@@ -371,7 +358,7 @@ Function Test_MD0_RA0_IDX0_LIDX0_BKG_0()
 	t.sweepWaveType    = FLOAT_WAVE
 
 	InitTestStructure(t)
-	Events_MD0_RA0_IDX0_LIDX0_BKG_0(t)
+	Events_MD0_RA0_I0_L0_BKG_0(t)
 
 	t.acquiredStimSets_HS0[] = "StimulusSetA_DA_0"
 	t.sweepCount_HS0[]       = 0
@@ -386,20 +373,20 @@ Function Test_MD0_RA0_IDX0_LIDX0_BKG_0()
 	AllTests(t)
 End
 
-Function Events_MD1_RA0_IDX0_LIDX0_BKG_1(t)
+Function Events_MD1_RA0_I0_L0_BKG_1(t)
 	STRUCT TestSettings &t
 
-	Events_MD0_RA0_IDX0_LIDX0_BKG_0(t)
+	Events_MD0_RA0_I0_L0_BKG_0(t)
 End
 
-Function DAQ_MD1_RA0_IDX0_LIDX0_BKG_1()
+Function MD1_RA0_I0_L0_BKG_1()
 
 	STRUCT DAQSettings s
 	InitSettings(s)
 	AcquireData(s, setAnalysisFuncs = 1)
 End
 
-Function Test_MD1_RA0_IDX0_LIDX0_BKG_1()
+Function MD1_RA0_I0_L0_BKG_1_REENTRY()
 
 	STRUCT TestSettings t
 
@@ -407,7 +394,7 @@ Function Test_MD1_RA0_IDX0_LIDX0_BKG_1()
 	t.sweepWaveType = FLOAT_WAVE
 
 	InitTestStructure(t)
-	Events_MD1_RA0_IDX0_LIDX0_BKG_1(t)
+	Events_MD1_RA0_I0_L0_BKG_1(t)
 
 	t.acquiredStimSets_HS0[] = "StimulusSetA_DA_0"
 	t.sweepCount_HS0[]       = 0
@@ -422,7 +409,7 @@ Function Test_MD1_RA0_IDX0_LIDX0_BKG_1()
 	AllTests(t)
 End
 
-Function Events_MD0_RA1_IDX0_LIDX0_BKG_1(t)
+Function Events_MD0_RA1_I0_L0_BKG_1(t)
 	STRUCT TestSettings &t
 
 	variable sweepNo
@@ -451,14 +438,14 @@ Function Events_MD0_RA1_IDX0_LIDX0_BKG_1(t)
 	t.events_HS1[sweepNo][POST_SET_EVENT] = NaN
 End
 
-Function DAQ_MD0_RA1_IDX0_LIDX0_BKG_0()
+Function MD0_RA1_I0_L0_BKG_0()
 
 	STRUCT DAQSettings s
 	InitSettings(s)
 	AcquireData(s, setAnalysisFuncs = 1)
 End
 
-Function Test_MD0_RA1_IDX0_LIDX0_BKG_0()
+Function MD0_RA1_I0_L0_BKG_0_REENTRY()
 
 	STRUCT TestSettings t
 
@@ -466,7 +453,7 @@ Function Test_MD0_RA1_IDX0_LIDX0_BKG_0()
 	t.sweepWaveType          = FLOAT_WAVE
 
 	InitTestStructure(t)
-	Events_MD0_RA1_IDX0_LIDX0_BKG_1(t)
+	Events_MD0_RA1_I0_L0_BKG_1(t)
 
 	t.acquiredStimSets_HS0[] = "StimulusSetA_DA_0"
 	t.sweepCount_HS0         = {0, 1, 2}
@@ -481,20 +468,20 @@ Function Test_MD0_RA1_IDX0_LIDX0_BKG_0()
 	AllTests(t)
 End
 
-Function Events_MD1_RA1_IDX0_LIDX0_BKG_1(t)
+Function Events_MD1_RA1_I0_L0_BKG_1(t)
 	STRUCT TestSettings &t
 
-	Events_MD0_RA1_IDX0_LIDX0_BKG_1(t)
+	Events_MD0_RA1_I0_L0_BKG_1(t)
 End
 
-Function DAQ_MD1_RA1_IDX0_LIDX0_BKG_1()
+Function MD1_RA1_I0_L0_BKG_1()
 
 	STRUCT DAQSettings s
 	InitSettings(s)
 	AcquireData(s, setAnalysisFuncs = 1)
 End
 
-Function Test_MD1_RA1_IDX0_LIDX0_BKG_1()
+Function MD1_RA1_I0_L0_BKG_1_REENTRY()
 
 	STRUCT TestSettings t
 
@@ -502,7 +489,7 @@ Function Test_MD1_RA1_IDX0_LIDX0_BKG_1()
 	t.sweepWaveType          = FLOAT_WAVE
 
 	InitTestStructure(t)
-	Events_MD1_RA1_IDX0_LIDX0_BKG_1(t)
+	Events_MD1_RA1_I0_L0_BKG_1(t)
 
 	t.acquiredStimSets_HS0[] = "StimulusSetA_DA_0"
 	t.sweepCount_HS0         = {0, 1, 2}
@@ -517,7 +504,7 @@ Function Test_MD1_RA1_IDX0_LIDX0_BKG_1()
 	AllTests(t)
 End
 
-Function Events_MD1_RA1_IDX1_LIDX0_BKG_1(t)
+Function Events_MD1_RA1_I1_L0_BKG_1(t)
 	STRUCT TestSettings &t
 
 	variable sweepNo
@@ -560,14 +547,14 @@ Function Events_MD1_RA1_IDX1_LIDX0_BKG_1(t)
 	t.events_HS1[sweepNo][POST_SET_EVENT] = sweepNo
 End
 
-Function DAQ_MD1_RA1_IDX1_LIDX0_BKG_1()
+Function MD1_RA1_I1_L0_BKG_1()
 
 	STRUCT DAQSettings s
 	InitSettings(s)
 	AcquireData(s, setAnalysisFuncs = 1)
 End
 
-Function Test_MD1_RA1_IDX1_LIDX0_BKG_1()
+Function MD1_RA1_I1_L0_BKG_1_REENTRY()
 
 	STRUCT TestSettings t
 
@@ -575,7 +562,7 @@ Function Test_MD1_RA1_IDX1_LIDX0_BKG_1()
 	t.sweepWaveType = FLOAT_WAVE
 
 	InitTestStructure(t)
-	Events_MD1_RA1_IDX1_LIDX0_BKG_1(t)
+	Events_MD1_RA1_I1_L0_BKG_1(t)
 
 	t.acquiredStimSets_HS0[0,2] = "StimulusSetA_DA_0"
 	t.acquiredStimSets_HS0[3]   = "StimulusSetB_DA_0"
@@ -593,20 +580,20 @@ Function Test_MD1_RA1_IDX1_LIDX0_BKG_1()
 	AllTests(t)
 End
 
-Function Events_MD0_RA1_IDX1_LIDX0_BKG_0(t)
+Function Events_MD0_RA1_I1_L0_BKG_0(t)
 	STRUCT TestSettings &t
 
-	Events_MD1_RA1_IDX1_LIDX0_BKG_1(t)
+	Events_MD1_RA1_I1_L0_BKG_1(t)
 End
 
-Function DAQ_MD0_RA1_IDX1_LIDX0_BKG_0()
+Function MD0_RA1_I1_L0_BKG_0()
 
 	STRUCT DAQSettings s
 	InitSettings(s)
 	AcquireData(s, setAnalysisFuncs = 1)
 End
 
-Function Test_MD0_RA1_IDX1_LIDX0_BKG_0()
+Function MD0_RA1_I1_L0_BKG_0_REENTRY()
 
 	STRUCT TestSettings t
 
@@ -614,7 +601,7 @@ Function Test_MD0_RA1_IDX1_LIDX0_BKG_0()
 	t.sweepWaveType = FLOAT_WAVE
 
 	InitTestStructure(t)
-	Events_MD0_RA1_IDX1_LIDX0_BKG_0(t)
+	Events_MD0_RA1_I1_L0_BKG_0(t)
 
 	t.acquiredStimSets_HS0[0,2] = "StimulusSetA_DA_0"
 	t.acquiredStimSets_HS0[3]   = "StimulusSetB_DA_0"
@@ -632,7 +619,7 @@ Function Test_MD0_RA1_IDX1_LIDX0_BKG_0()
 	AllTests(t)
 End
 
-Function Events_MD1_RA1_IDX1_LIDX1_BKG_1(t)
+Function Events_MD1_RA1_I1_L1_BKG_1(t)
 	STRUCT TestSettings &t
 
 	variable sweepNo
@@ -682,14 +669,14 @@ Function Events_MD1_RA1_IDX1_LIDX1_BKG_1(t)
 	t.events_HS1[sweepNo][POST_SET_EVENT] = sweepNo
 End
 
-Function DAQ_MD1_RA1_IDX1_LIDX1_BKG_1()
+Function MD1_RA1_I1_L1_BKG_1()
 
 	STRUCT DAQSettings s
 	InitSettings(s)
 	AcquireData(s, setAnalysisFuncs = 1)
 End
 
-Function Test_MD1_RA1_IDX1_LIDX1_BKG_1()
+Function MD1_RA1_I1_L1_BKG_1_REENTRY()
 
 	STRUCT TestSettings t
 
@@ -697,7 +684,7 @@ Function Test_MD1_RA1_IDX1_LIDX1_BKG_1()
 	t.sweepWaveType = FLOAT_WAVE
 
 	InitTestStructure(t)
-	Events_MD1_RA1_IDX1_LIDX1_BKG_1(t)
+	Events_MD1_RA1_I1_L1_BKG_1(t)
 
 	t.acquiredStimSets_HS0[0,2] = "StimulusSetA_DA_0"
 	t.acquiredStimSets_HS0[3,5] = "StimulusSetB_DA_0"
@@ -714,20 +701,20 @@ Function Test_MD1_RA1_IDX1_LIDX1_BKG_1()
 	AllTests(t)
 End
 
-Function Events_MD0_RA1_IDX1_LIDX1_BKG_0(t)
+Function Events_MD0_RA1_I1_L1_BKG_0(t)
 	STRUCT TestSettings &t
 
-	Events_MD1_RA1_IDX1_LIDX1_BKG_1(t)
+	Events_MD1_RA1_I1_L1_BKG_1(t)
 End
 
-Function DAQ_MD0_RA1_IDX1_LIDX1_BKG_0()
+Function MD0_RA1_I1_L1_BKG_0()
 
 	STRUCT DAQSettings s
 	InitSettings(s)
 	AcquireData(s, setAnalysisFuncs = 1)
 End
 
-Function Test_MD0_RA1_IDX1_LIDX1_BKG_0()
+Function MD0_RA1_I1_L1_BKG_0_REENTRY()
 
 	STRUCT TestSettings t
 
@@ -735,7 +722,7 @@ Function Test_MD0_RA1_IDX1_LIDX1_BKG_0()
 	t.sweepWaveType = FLOAT_WAVE
 
 	InitTestStructure(t)
-	Events_MD0_RA1_IDX1_LIDX1_BKG_0(t)
+	Events_MD0_RA1_I1_L1_BKG_0(t)
 
 	t.acquiredStimSets_HS0[0,2] = "StimulusSetA_DA_0"
 	t.acquiredStimSets_HS0[3,5] = "StimulusSetB_DA_0"
@@ -802,14 +789,14 @@ Function Events_RepeatSets_1(t)
 	t.events_HS1[sweepNo][POST_SET_EVENT] = sweepNo
 End
 
-Function DAQ_RepeatSets_1()
+Function RepeatSets_1()
 
 	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "DAQ_MD1_RA1_IDX0_LIDX0_BKG_1_RES_2")
+	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG_1_RES_2")
 	AcquireData(s, setAnalysisFuncs = 1)
 End
 
-Function Test_RepeatSets_1()
+Function RepeatSets_1_REENTRY()
 
 	STRUCT TestSettings t
 
@@ -910,14 +897,14 @@ Function Events_RepeatSets_2(t)
 	t.events_HS1[sweepNo][POST_SET_EVENT] = sweepNo
 End
 
-Function DAQ_RepeatSets_2()
+Function RepeatSets_2()
 
 	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "DAQ_MD1_RA1_IDX1_LIDX0_BKG_1_RES_2")
+	InitDAQSettingsFromString(s, "MD1_RA1_I1_L0_BKG_1_RES_2")
 	AcquireData(s, setAnalysisFuncs = 1)
 End
 
-Function Test_RepeatSets_2()
+Function RepeatSets_2_REENTRY()
 
 	STRUCT TestSettings t
 
@@ -1039,14 +1026,14 @@ Function Events_RepeatSets_3(t)
 	t.events_HS1[sweepNo][POST_SET_EVENT] = sweepNo
 End
 
-Function DAQ_RepeatSets_3()
+Function RepeatSets_3()
 
 	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "DAQ_MD1_RA1_IDX1_LIDX1_BKG_1_RES_2")
+	InitDAQSettingsFromString(s, "MD1_RA1_I1_L1_BKG_1_RES_2")
 	AcquireData(s, setAnalysisFuncs = 1)
 End
 
-Function Test_RepeatSets_3()
+Function RepeatSets_3_REENTRY()
 
 	STRUCT TestSettings t
 
@@ -1071,7 +1058,7 @@ Function Test_RepeatSets_3()
 	AllTests(t)
 End
 
-Function SwitchIndexingOrder()
+Function SwitchIndexingOrder_IGNORE()
 	PGC_SetAndActivateControl(DEVICE, GetPanelControl(0, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_Index_End), val = GetStimSet("StimulusSetA_DA_0") + 1)
 	PGC_SetAndActivateControl(DEVICE, GetPanelControl(0, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_Wave), val = GetStimSet("StimulusSetB_DA_0") + 1)
 	PGC_SetAndActivateControl(DEVICE, GetPanelControl(1, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_Index_End), val = GetStimSet("StimulusSetC_DA_0") + 1)
@@ -1170,14 +1157,14 @@ Function Events_RepeatSets_4(t)
 	t.events_HS1[sweepNo][POST_SET_EVENT] = sweepNo
 End
 
-Function DAQ_RepeatSets_4()
+Function RepeatSets_4()
 
 	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "DAQ_MD1_RA1_IDX1_LIDX1_BKG_1_RES_2")
-	AcquireData(s, preAcquireFunc = SwitchIndexingOrder, setAnalysisFuncs = 1)
+	InitDAQSettingsFromString(s, "MD1_RA1_I1_L1_BKG_1_RES_2")
+	AcquireData(s, preAcquireFunc = SwitchIndexingOrder_IGNORE, setAnalysisFuncs = 1)
 End
 
-Function Test_RepeatSets_4()
+Function RepeatSets_4_REENTRY()
 
 	STRUCT TestSettings t
 
@@ -1280,14 +1267,14 @@ Function Events_RepeatSets_5(t)
 	t.events_HS1[sweepNo][POST_SET_EVENT] = sweepNo
 End
 
-Function DAQ_RepeatSets_5()
+Function RepeatSets_5()
 
 	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "DAQ_MD1_RA1_IDX1_LIDX0_BKG_1_RES_2")
-	AcquireData(s, preAcquireFunc = SwitchIndexingOrder, setAnalysisFuncs = 1)
+	InitDAQSettingsFromString(s, "MD1_RA1_I1_L0_BKG_1_RES_2")
+	AcquireData(s, preAcquireFunc = SwitchIndexingOrder_IGNORE, setAnalysisFuncs = 1)
 End
 
-Function Test_RepeatSets_5()
+Function RepeatSets_5_REENTRY()
 
 	STRUCT TestSettings t
 
@@ -1318,7 +1305,7 @@ Function Test_RepeatSets_5()
 	AllTests(t)
 End
 
-Function ChangeStimSets()
+Function ChangeStimSets_IGNORE()
 
 	PGC_SetAndActivateControl(DEVICE, GetPanelControl(0, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_Wave), str = "StimulusSetA_DA_0")
 	PGC_SetAndActivateControl(DEVICE, GetPanelControl(0, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_Index_End), str = "StimulusSetB_DA_0")
@@ -1328,14 +1315,14 @@ End
 
 // test that locked indexing works when the maximum number of sweeps is
 // not in the first stimset
-Function DAQ_RepeatSets_6()
+Function RepeatSets_6()
 
 	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "DAQ_MD1_RA1_IDX1_LIDX1_BKG_1_RES_1")
-	AcquireData(s, preAcquireFunc = ChangeStimSets)
+	InitDAQSettingsFromString(s, "MD1_RA1_I1_L1_BKG_1_RES_1")
+	AcquireData(s, preAcquireFunc = ChangeStimSets_IGNORE)
 End
 
-Function Test_RepeatSets_6()
+Function RepeatSets_6_REENTRY()
 
 	STRUCT TestSettings t
 
@@ -1389,14 +1376,14 @@ static Function ActiveSetCount_IGNORE()
 	PGC_SetAndActivateControl(device, GetPanelControl(0, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_INDEX_END), str = "StimulusSetD*")
 End
 
-Function DAQ_CheckActiveSetCountU()
+Function CheckActiveSetCountU()
 
 	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "DAQ_MD1_RA1_IDX1_LIDX0_BKG_1")
+	InitDAQSettingsFromString(s, "MD1_RA1_I1_L0_BKG_1")
 	AcquireData(s, postInitializeFunc = ActiveSetCountStimsets, preAcquireFunc = ActiveSetCount_IGNORE)
 End
 
-Function Test_CheckActiveSetCountU()
+Function CheckActiveSetCountU_REENTRY()
 
 	WAVE anaFuncActiveSetCount = GetTrackActiveSetCount()
 
@@ -1404,14 +1391,14 @@ Function Test_CheckActiveSetCountU()
 	CHECK_EQUAL_WAVES(anaFuncActiveSetCount, {2, 1, 3, 2, 1})
 End
 
-Function DAQ_CheckActiveSetCountL()
+Function CheckActiveSetCountL()
 
 	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "DAQ_MD1_RA1_IDX1_LIDX1_BKG_1")
+	InitDAQSettingsFromString(s, "MD1_RA1_I1_L1_BKG_1")
 	AcquireData(s, postInitializeFunc = ActiveSetCountStimsets, preAcquireFunc = ActiveSetCount_IGNORE)
 End
 
-Function Test_CheckActiveSetCountL()
+Function CheckActiveSetCountL_REENTRY()
 
 	WAVE anaFuncActiveSetCount = GetTrackActiveSetCount()
 
@@ -1455,14 +1442,14 @@ static Function RepeatSets7_IGNORE()
 End
 
 // test that all events are fired, even with TP during ITI
-Function DAQ_RepeatSets_7()
+Function RepeatSets_7()
 
 	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "DAQ_MD1_RA1_IDX0_LIDX0_BKG_1_RES_1")
+	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG_1_RES_1")
 	AcquireData(s, setAnalysisFuncs = 1, preAcquireFunc = RepeatSets7_IGNORE)
 End
 
-Function Test_RepeatSets_7()
+Function RepeatSets_7_REENTRY()
 
 	STRUCT TestSettings t
 
@@ -1515,14 +1502,14 @@ static Function SkipSweepsStimsets_IGNORE()
 	PGC_SetAndActivateControl(device, GetPanelControl(0, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_INDEX_END), str = "StimulusSetD_*")
 End
 
-Function DAQ_SweepSkipping()
+Function SweepSkipping()
 
 	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "DAQ_MD1_RA1_IDX1_LIDX0_BKG_1")
+	InitDAQSettingsFromString(s, "MD1_RA1_I1_L0_BKG_1")
 	AcquireData(s, postInitializeFunc = SkipSweepsStimsets, preAcquireFunc = SkipSweepsStimsets_IGNORE)
 End
 
-Function Test_SweepSkipping()
+Function SweepSkipping_REENTRY()
 
 	variable numSweeps = 4
 	variable sweepNo   = 0
@@ -1542,12 +1529,12 @@ Function Test_SweepSkipping()
 	CHECK_EQUAL_WAVES(sweepCounts, {0, 0, 0, 0}, mode = WAVE_DATA)
 End
 
-Function DAQ_SkipSweepsDuringITI_SD()
+Function SkipSweepsDuringITI_SD()
 
 	string device
 
 	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "DAQ_MD0_RA1_IDX0_LIDX0_BKG_1_RES_5")
+	InitDAQSettingsFromString(s, "MD0_RA1_I0_L0_BKG_1_RES_5")
 	AcquireData(s)
 
 	device = GetSingleDevice()
@@ -1558,7 +1545,7 @@ Function DAQ_SkipSweepsDuringITI_SD()
 	PGC_SetAndActivateControl(device, "SetVar_DataAcq_ITI", val = 5)
 End
 
-Function Test_SkipSweepsDuringITI_SD()
+Function SkipSweepsDuringITI_SD_REENTRY()
 
 	string devices, device
 	variable numEntries, i
@@ -1574,12 +1561,12 @@ Function Test_SkipSweepsDuringITI_SD()
 	endfor
 End
 
-Function DAQ_SkipSweepsDuringITI_MD()
+Function SkipSweepsDuringITI_MD()
 
 	string device
 
 	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "DAQ_MD1_RA1_IDX0_LIDX0_BKG_1_RES_5")
+	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG_1_RES_5")
 	AcquireData(s)
 
 	device = GetSingleDevice()
@@ -1590,7 +1577,7 @@ Function DAQ_SkipSweepsDuringITI_MD()
 	PGC_SetAndActivateControl(device, "SetVar_DataAcq_ITI", val = 5)
 End
 
-Function Test_SkipSweepsDuringITI_MD()
+Function SkipSweepsDuringITI_MD_REENTRY()
 
 	string devices, device
 	variable numEntries, i
@@ -1606,23 +1593,23 @@ Function Test_SkipSweepsDuringITI_MD()
 	endfor
 End
 
-Function DAQ_Abort_ITI_PressTP_SD()
+Function Abort_ITI_TP_SD()
 
 	string device
 
 	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "DAQ_MD0_RA1_IDX0_LIDX0_BKG_1_RES_5")
+	InitDAQSettingsFromString(s, "MD0_RA1_I0_L0_BKG_1_RES_5")
 	AcquireData(s)
 
 	device = GetSingleDevice()
 
-	CtrlNamedBackGround Abort_ITI_PressTP, start, period=30, proc=StartTPDuringITI_IGNORE
+	CtrlNamedBackGround Abort_ITI_TP, start, period=30, proc=StartTPDuringITI_IGNORE
 
 	PGC_SetAndActivateControl(device, "Check_DataAcq_Get_Set_ITI", val = 0)
 	PGC_SetAndActivateControl(device, "SetVar_DataAcq_ITI", val = 5)
 End
 
-Function Test_Abort_ITI_PressTP_SD()
+Function Abort_ITI_TP_SD_REENTRY()
 
 	string devices, device
 	variable numEntries, i
@@ -1642,23 +1629,23 @@ Function Test_Abort_ITI_PressTP_SD()
 	endfor
 End
 
-Function DAQ_Abort_ITI_PressTP_MD()
+Function Abort_ITI_TP_MD()
 
 	string device
 
 	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "DAQ_MD1_RA1_IDX0_LIDX0_BKG_1_RES_5")
+	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG_1_RES_5")
 	AcquireData(s)
 
 	device = GetSingleDevice()
 
-	CtrlNamedBackGround Abort_ITI_PressTP, start, period=30, proc=StartTPDuringITI_IGNORE
+	CtrlNamedBackGround Abort_ITI_TP, start, period=30, proc=StartTPDuringITI_IGNORE
 
 	PGC_SetAndActivateControl(device, "Check_DataAcq_Get_Set_ITI", val = 0)
 	PGC_SetAndActivateControl(device, "SetVar_DataAcq_ITI", val = 5)
 End
 
-Function Test_Abort_ITI_PressTP_MD()
+Function Abort_ITI_TP_MD_REENTRY()
 
 	string devices, device
 	variable numEntries, i
@@ -1678,24 +1665,24 @@ Function Test_Abort_ITI_PressTP_MD()
 	endfor
 End
 
-Function DAQ_Abort_ITI_TP_A_PressTP_SD()
+Function Abort_ITI_TP_A_TP_SD()
 
 	string device
 
 	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "DAQ_MD0_RA1_IDX0_LIDX0_BKG_1_RES_5")
+	InitDAQSettingsFromString(s, "MD0_RA1_I0_L0_BKG_1_RES_5")
 	AcquireData(s)
 
 	device = GetSingleDevice()
 
-	CtrlNamedBackGround Abort_ITI_PressTP, start, period=30, proc=StartTPDuringITI_IGNORE
+	CtrlNamedBackGround Abort_ITI_TP, start, period=30, proc=StartTPDuringITI_IGNORE
 
 	PGC_SetAndActivateControl(device, "Check_DataAcq_Get_Set_ITI", val = 0)
 	PGC_SetAndActivateControl(device, "SetVar_DataAcq_ITI", val = 5)
 	PGC_SetAndActivateControl(device, "check_Settings_TPAfterDAQ", val = 1)
 End
 
-Function Test_Abort_ITI_TP_A_PressTP_SD()
+Function Abort_ITI_TP_A_TP_SD_REENTRY()
 
 	string devices, device
 	variable numEntries, i
@@ -1724,16 +1711,16 @@ Function StartDAQDuringTP_IGNORE()
 	wv[%$"Analysis function (generic)"][%Set] = "WriteIntoLBNOnPreDAQ"
 End
 
-Function DAQ_StartDAQDuringTP()
+Function StartDAQDuringTP()
 
 	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "DAQ_MD0_RA0_IDX0_LIDX0_BKG_1_RES_0")
-	AcquireData(s, startTPInstead=1, startWatchdog = 0, postInitializeFunc=StartDAQDuringTP_IGNORE)
+	InitDAQSettingsFromString(s, "MD0_RA0_I0_L0_BKG_1_RES_0")
+	AcquireData(s, startTPInstead=1, postInitializeFunc=StartDAQDuringTP_IGNORE)
 
 	CtrlNamedBackGround StartDAQDuringTP, start=(ticks + 600), period=100, proc=StartAcq_IGNORE
 End
 
-Function Test_StartDAQDuringTP()
+Function StartDAQDuringTP_REENTRY()
 
 	variable sweepNo
 	string device
@@ -1758,24 +1745,24 @@ Function Test_StartDAQDuringTP()
 	// ascending sweep numbers are checked in TEST_CASE_BEGIN_OVERRIDE()
 End
 
-Function DAQ_Abort_ITI_TP_A_PressTP_MD()
+Function Abort_ITI_TP_A_TP_MD()
 
 	string device
 
 	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "DAQ_MD1_RA1_IDX0_LIDX0_BKG_1_RES_5")
+	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG_1_RES_5")
 	AcquireData(s)
 
 	device = GetSingleDevice()
 
-	CtrlNamedBackGround Abort_ITI_PressTP, start, period=30, proc=StartTPDuringITI_IGNORE
+	CtrlNamedBackGround Abort_ITI_TP, start, period=30, proc=StartTPDuringITI_IGNORE
 
 	PGC_SetAndActivateControl(device, "Check_DataAcq_Get_Set_ITI", val = 0)
 	PGC_SetAndActivateControl(device, "SetVar_DataAcq_ITI", val = 5)
 	PGC_SetAndActivateControl(device, "check_Settings_TPAfterDAQ", val = 1)
 End
 
-Function Test_Abort_ITI_TP_A_PressTP_MD()
+Function Abort_ITI_TP_A_TP_MD_REENTRY()
 
 	string devices, device
 	variable numEntries, i
@@ -1796,12 +1783,12 @@ Function Test_Abort_ITI_TP_A_PressTP_MD()
 	endfor
 End
 
-Function DAQ_Abort_ITI_PressAcq_SD()
+Function Abort_ITI_PressAcq_SD()
 
 	string device
 
 	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "DAQ_MD0_RA1_IDX0_LIDX0_BKG_1_RES_5")
+	InitDAQSettingsFromString(s, "MD0_RA1_I0_L0_BKG_1_RES_5")
 	AcquireData(s)
 
 	device = GetSingleDevice()
@@ -1812,7 +1799,7 @@ Function DAQ_Abort_ITI_PressAcq_SD()
 	PGC_SetAndActivateControl(device, "SetVar_DataAcq_ITI", val = 5)
 End
 
-Function Test_Abort_ITI_PressAcq_SD()
+Function Abort_ITI_PressAcq_SD_REENTRY()
 
 	string devices, device
 	variable numEntries, i
@@ -1831,12 +1818,12 @@ Function Test_Abort_ITI_PressAcq_SD()
 	endfor
 End
 
-Function DAQ_Abort_ITI_PressAcq_MD()
+Function Abort_ITI_PressAcq_MD()
 
 	string device
 
 	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "DAQ_MD1_RA1_IDX0_LIDX0_BKG_1_RES_5")
+	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG_1_RES_5")
 	AcquireData(s)
 
 	device = GetSingleDevice()
@@ -1847,7 +1834,7 @@ Function DAQ_Abort_ITI_PressAcq_MD()
 	PGC_SetAndActivateControl(device, "SetVar_DataAcq_ITI", val = 5)
 End
 
-Function Test_Abort_ITI_PressAcq_MD()
+Function Abort_ITI_PressAcq_MD_REENTRY()
 
 	string devices, device
 	variable numEntries, i
@@ -1866,12 +1853,12 @@ Function Test_Abort_ITI_PressAcq_MD()
 	endfor
 End
 
-Function DAQ_Abort_ITI_TP_A_PressAcq_SD()
+Function Abort_ITI_TP_A_PressAcq_SD()
 
 	string device
 
 	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "DAQ_MD0_RA1_IDX0_LIDX0_BKG_1_RES_5")
+	InitDAQSettingsFromString(s, "MD0_RA1_I0_L0_BKG_1_RES_5")
 	AcquireData(s)
 
 	device = GetSingleDevice()
@@ -1883,7 +1870,7 @@ Function DAQ_Abort_ITI_TP_A_PressAcq_SD()
 	PGC_SetAndActivateControl(device, "check_Settings_TPAfterDAQ", val = 1)
 End
 
-Function Test_Abort_ITI_TP_A_PressAcq_SD()
+Function Abort_ITI_TP_A_Acq_SD_REENTRY()
 
 	string devices, device
 	variable numEntries, i
@@ -1904,24 +1891,24 @@ Function Test_Abort_ITI_TP_A_PressAcq_SD()
 	endfor
 End
 
-Function DAQ_Abort_ITI_TP_A_PressAcq_MD()
+Function Abort_ITI_TP_A_Acq_MD()
 
 	string device
 
 	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "DAQ_MD1_RA1_IDX0_LIDX0_BKG_1_RES_5")
+	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG_1_RES_5")
 	AcquireData(s)
 
 	device = GetSingleDevice()
 
-	CtrlNamedBackGround Abort_ITI_PressAcq, start, period=30, proc=StopAcqDuringITI_IGNORE
+	CtrlNamedBackGround Abort_ITI_Acq, start, period=30, proc=StopAcqDuringITI_IGNORE
 
 	PGC_SetAndActivateControl(device, "Check_DataAcq_Get_Set_ITI", val = 0)
 	PGC_SetAndActivateControl(device, "SetVar_DataAcq_ITI", val = 5)
 	PGC_SetAndActivateControl(device, "check_Settings_TPAfterDAQ", val = 1)
 End
 
-Function Test_Abort_ITI_TP_A_PressAcq_MD()
+Function Abort_ITI_TP_A_Acq_MD_REENTRY()
 
 	string devices, device
 	variable numEntries, i
@@ -1945,17 +1932,17 @@ End
 static Function SetSingleDeviceDAQ_IGNORE()
 	WAVE/T wv = root:MIES:WaveBuilder:SavedStimulusSetParameters:DA:WPT_StimulusSetA_DA_0
 	wv[][%Set] = ""
-	wv[%$"Analysis pre DAQ function"][%Set] = "ChangeToSingleDeviceDAQ"
+	wv[%$"Analysis pre DAQ function"][%Set] = "ChangeToSingleDeviceDAQAF"
 End
 
-Function DAQ_ChangeToSingleDeviceDAQ()
+Function ChangeToSingleDeviceDAQ()
 
 	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "DAQ_MD1_RA0_IDX0_LIDX0_BKG_1_RES_1")
+	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG_1_RES_1")
 	AcquireData(s, postInitializeFunc=SetSingleDeviceDAQ_IGNORE)
 End
 
-Function Test_ChangeToSingleDeviceDAQ()
+Function ChangeToSingleDeviceDAQ_REENTRY()
 	string device
 	variable sweepNo, multiDeviceMode
 
@@ -1972,16 +1959,16 @@ End
 static Function SetMultiDeviceDAQ_IGNORE()
 	WAVE/T wv = root:MIES:WaveBuilder:SavedStimulusSetParameters:DA:WPT_StimulusSetA_DA_0
 	wv[][%Set] = ""
-	wv[%$"Analysis pre DAQ function"][%Set] = "ChangeToMultiDeviceDAQ"
+	wv[%$"Analysis pre DAQ function"][%Set] = "ChangeToMultiDeviceDAQAF"
 End
 
-Function DAQ_ChangeToMultiDeviceDAQ()
+Function ChangeToMultiDeviceDAQ()
 	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "DAQ_MD0_RA0_IDX0_LIDX0_BKG_1_RES_1")
+	InitDAQSettingsFromString(s, "MD0_RA0_I0_L0_BKG_1_RES_1")
 	AcquireData(s, postInitializeFunc=SetMultiDeviceDAQ_IGNORE)
 End
 
-Function Test_ChangeToMultiDeviceDAQ()
+Function ChangeToMultiDeviceDAQ_REENTRY()
 	string device
 	variable sweepNo, multiDeviceMode
 
@@ -1995,12 +1982,12 @@ Function Test_ChangeToMultiDeviceDAQ()
 	CHECK_EQUAL_VAR(multiDeviceMode, 1)
 End
 
-Function DAQ_ChangeStimSetDuringDAQ()
+Function ChangeStimSetDuringDAQ()
 
 	string device
 
 	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "DAQ_MD1_RA1_IDX0_LIDX0_BKG_1_RES_1")
+	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG_1_RES_1")
 	AcquireData(s)
 
 	device = GetSingleDevice()
@@ -2009,7 +1996,7 @@ Function DAQ_ChangeStimSetDuringDAQ()
 	PGC_SetAndActivateControl(device, "check_Settings_TPAfterDAQ", val = 1)
 End
 
-Function Test_ChangeStimSetDuringDAQ()
+Function ChangeStimSetDuringDAQ_REENTRY()
 
 	string devices, device
 	variable numEntries, i
@@ -2054,14 +2041,14 @@ Function EnableUnassocChannels_IGNORE()
 End
 
 // Using unassociated channels works
-Function DAQ_UnassociatedChannels()
+Function UnassociatedChannels()
 
 	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "DAQ_MD1_RA0_IDX0_LIDX0_BKG_1_RES_1")
+	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG_1_RES_1")
 	AcquireData(s, preAcquireFunc = EnableUnassocChannels_IGNORE)
 End
 
-Function Test_UnassociatedChannels()
+Function UnassociatedChannels_REENTRY()
 
 	string devices, device, sweeps, configs, unit
 	variable numEntries, i, j, numSweeps
@@ -2181,13 +2168,13 @@ static Function DisableSecondHeadstage_IGNORE()
 	PGC_SetAndActivateControl(DEVICE, GetPanelControl(1, CHANNEL_TYPE_HEADSTAGE, CHANNEL_CONTROL_CHECK), val=0)
 End
 
-Function DAQ_CheckSamplingInterval1()
+Function CheckSamplingInterval1()
 	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "DAQ_MD1_RA0_IDX0_LIDX0_BKG_1_RES_1")
+	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG_1_RES_1")
 	AcquireData(s, preAcquireFunc=DisableSecondHeadstage_IGNORE)
 End
 
-Function Test_CheckSamplingInterval1()
+Function CheckSamplingInterval1_REENTRY()
 
 	variable sweepNo, sampInt, sampIntMult, fixedFreqAcq, expectedSampInt
 
@@ -2227,13 +2214,13 @@ Function UseSamplingInterval_IGNORE()
 	PGC_SetAndActivateControl(DEVICE, "Popup_Settings_SampIntMult", str="8")
 End
 
-Function DAQ_CheckSamplingInterval2()
+Function CheckSamplingInterval2()
 	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "DAQ_MD1_RA0_IDX0_LIDX0_BKG_1_RES_1")
+	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG_1_RES_1")
 	AcquireData(s, preAcquireFunc=UseSamplingInterval_IGNORE)
 End
 
-Function Test_CheckSamplingInterval2()
+Function CheckSamplingInterval2_REENTRY()
 
 	variable sweepNo, sampInt, sampIntMult, fixedFreqAcq, expectedSampInt
 
@@ -2273,13 +2260,13 @@ static Function UseFixedFrequency_IGNORE()
 	PGC_SetAndActivateControl(DEVICE, "Popup_Settings_FixedFreq", str="100")
 End
 
-Function DAQ_CheckSamplingInterval3()
+Function CheckSamplingInterval3()
 	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "DAQ_MD1_RA0_IDX0_LIDX0_BKG_1_RES_1")
+	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG_1_RES_1")
 	AcquireData(s, preAcquireFunc=UseFixedFrequency_IGNORE)
 End
 
-Function Test_CheckSamplingInterval3()
+Function CheckSamplingInterval3_REENTRY()
 
 	variable sweepNo, sampInt, sampIntMult, fixedFreqAcq, expectedSampInt
 
@@ -2313,12 +2300,12 @@ Function Test_CheckSamplingInterval3()
 	CHECK_CLOSE_VAR(DimDelta(sweepWave, ROWS), expectedSampInt, tol=1e-6)
 End
 
-Function DAQ_ChangeCMDuringSweep()
+Function ChangeCMDuringSweep()
 
 	string ctrl
 
 	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "DAQ_MD1_RA1_IDX0_LIDX0_BKG_1_RES_1")
+	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG_1_RES_1")
 	AcquireData(s)
 
 	ctrl = DAP_GetClampModeControl(V_CLAMP_MODE, 0)
@@ -2330,7 +2317,7 @@ Function DAQ_ChangeCMDuringSweep()
 	CtrlNamedBackGround ChangeClampModeDuringSweep, start, period=30, proc=ClampModeDuringSweep_IGNORE
 End
 
-Function Test_ChangeCMDuringSweep()
+Function ChangeCMDuringSweep_REENTRY()
 
 	variable sweepNo
 	string ctrl
@@ -2370,12 +2357,12 @@ Function EnableApplyOnModeSwitch_IGNORE()
 	PGC_SetAndActivateControl(DEVICE, "check_DA_applyOnModeSwitch", val=1)
 End
 
-Function DAQ_ChangeCMDuringSweepWMS()
+Function ChangeCMDuringSweepWMS()
 
 	string ctrl
 
 	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "DAQ_MD1_RA1_IDX0_LIDX0_BKG_1_RES_1")
+	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG_1_RES_1")
 	AcquireData(s, preAcquireFunc=EnableApplyOnModeSwitch_IGNORE)
 
 	ctrl = DAP_GetClampModeControl(V_CLAMP_MODE, 0)
@@ -2387,7 +2374,7 @@ Function DAQ_ChangeCMDuringSweepWMS()
 	CtrlNamedBackGround ChangeClampModeDuringSweep, start, period=30, proc=ClampModeDuringSweep_IGNORE
 End
 
-Function Test_ChangeCMDuringSweepWMS()
+Function ChangeCMDuringSweepWMS_REENTRY()
 
 	variable sweepNo
 	string ctrl
@@ -2415,11 +2402,11 @@ Function Test_ChangeCMDuringSweepWMS()
 	CHECK_EQUAL_WAVES(clampMode, {V_CLAMP_MODE, I_CLAMP_MODE, NaN, NaN, NaN, NaN, NaN, NaN, NaN}, mode=1)
 End
 
-Function DAQ_ChangeCMDuringSweepNoRA()
+Function ChangeCMDuringSweepNoRA()
 	string ctrl
 
 	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "DAQ_MD1_RA0_IDX0_LIDX0_BKG_1_RES_1")
+	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG_1_RES_1")
 	AcquireData(s)
 
 	ctrl = DAP_GetClampModeControl(V_CLAMP_MODE, 0)
@@ -2431,7 +2418,7 @@ Function DAQ_ChangeCMDuringSweepNoRA()
 	CtrlNamedBackGround ChangeClampModeDuringSweep, start, period=30, proc=ClampModeDuringSweep_IGNORE
 End
 
-Function Test_ChangeCMDuringSweepNoRA()
+Function ChangeCMDuringSweepNoRA_REENTRY()
 
 	variable sweepNo
 	string ctrl
@@ -2460,11 +2447,11 @@ Function ITISetupNoTP_IGNORE()
 	PGC_SetAndActivateControl(device, "check_Settings_ITITP", val=0)
 End
 
-Function DAQ_ChangeCMDuringITI()
+Function ChangeCMDuringITI()
 	string ctrl
 
 	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "DAQ_MD1_RA1_IDX0_LIDX0_BKG_1_RES_1")
+	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG_1_RES_1")
 	AcquireData(s, preAcquireFunc=ITISetupNoTP_IGNORE)
 
 	ctrl = DAP_GetClampModeControl(V_CLAMP_MODE, 0)
@@ -2476,7 +2463,7 @@ Function DAQ_ChangeCMDuringITI()
 	CtrlNamedBackGround ChangeClampModeDuringSweep, start, period=30, proc=ClampModeDuringITI_IGNORE
 End
 
-Function Test_ChangeCMDuringITI()
+Function ChangeCMDuringITI_REENTRY()
 
 	variable sweepNo
 	string ctrl
@@ -2507,15 +2494,15 @@ End
 Function ITISetupWithTP_IGNORE()
 
 	PGC_SetAndActivateControl(device, "Check_DataAcq_Get_Set_ITI", val=0)
-	PGC_SetAndActivateControl(device, "SetVar_DataAcq_ITI", val=2)
+	PGC_SetAndActivateControl(device, "SetVar_DataAcq_ITI", val=5)
 	PGC_SetAndActivateControl(device, "check_Settings_ITITP", val=1)
 End
 
-Function DAQ_ChangeCMDuringITIWithTP()
+Function ChangeCMDuringITIWithTP()
 	string ctrl
 
 	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "DAQ_MD1_RA1_IDX0_LIDX0_BKG_1_RES_1")
+	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG_1_RES_1")
 	AcquireData(s, preAcquireFunc=ITISetupWithTP_IGNORE)
 
 	ctrl = DAP_GetClampModeControl(V_CLAMP_MODE, 0)
@@ -2527,7 +2514,7 @@ Function DAQ_ChangeCMDuringITIWithTP()
 	CtrlNamedBackGround ChangeClampModeDuringSweep, start, period=30, proc=ClampModeDuringITI_IGNORE
 End
 
-Function Test_ChangeCMDuringITIWithTP()
+Function ChangeCMDuringITIWithTP_REENTRY()
 	variable sweepNo
 	string ctrl
 

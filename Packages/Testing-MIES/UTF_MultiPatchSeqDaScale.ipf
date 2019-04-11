@@ -7,8 +7,6 @@ static Function AcquireData(s, [postInitializeFunc, preAcquireFunc])
 	STRUCT DAQSettings& s
 	FUNCREF CALLABLE_PROTO postInitializeFunc, preAcquireFunc
 
-	Initialize_IGNORE()
-
 	if(!ParamIsDefault(postInitializeFunc))
 		postInitializeFunc()
 	endif
@@ -53,8 +51,6 @@ static Function AcquireData(s, [postInitializeFunc, preAcquireFunc])
 
 	DoUpdate/W=$DEVICE
 
-	CtrlNamedBackGround DAQWatchdog, start, period=120, proc=WaitUntilDAQDone_IGNORE
-
 	if(!ParamIsDefault(preAcquireFunc))
 		preAcquireFunc()
 	endif
@@ -93,15 +89,15 @@ static Function/WAVE GetResults_IGNORE(sweepNo, str, headstage, mode)
 	endswitch
 End
 
-static Function MSQ_DS_Run1()
+static Function MSQ_DS1()
 
 	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "DAQ_MD1_RA1_IDX0_LIDX0_BKG_1")
+	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG_1")
 
 	AcquireData(s)
 End
 
-static Function MSQ_DS_Test1()
+static Function MSQ_DS1_REENTRY()
 
 	variable sweepNo
 	string lbl

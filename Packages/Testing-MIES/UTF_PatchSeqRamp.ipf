@@ -17,8 +17,6 @@ static Function AcquireData(s)
 	// create an empty one so that the preDAQ analysis function can find it
 	Make/N=0/O root:overrideResults
 
-	Initialize_IGNORE()
-
 	string unlockedPanelTitle = DAP_CreateDAEphysPanel()
 
 	ChooseCorrectDevice(unlockedPanelTitle, DEVICE)
@@ -60,7 +58,6 @@ static Function AcquireData(s)
 
 	DoUpdate/W=$DEVICE
 
-	CtrlNamedBackGround DAQWatchdog, start, period=120, proc=WaitUntilDAQDone_IGNORE
 	PGC_SetAndActivateControl(DEVICE, "DataAcquireButton")
 	OpenDatabrowser()
 End
@@ -107,10 +104,10 @@ static Function/WAVE GetBaselineQCResults_IGNORE(sweepNo)
 	return GetLastSettingEachRAC(numericalValues, sweepNo, key, HEADSTAGE, UNKNOWN_MODE)
 End
 
-static Function PS_RA_Run1()
+static Function PS_RA1()
 
 	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "DAQ_MD1_RA1_IDX0_LIDX0_BKG_1")
+	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG_1")
 	AcquireData(s)
 
 	WAVE wv = PSQ_CreateOverrideResults(DEVICE, HEADSTAGE, PSQ_RAMP)
@@ -119,7 +116,7 @@ static Function PS_RA_Run1()
 	wv[][][1] = NaN
 End
 
-static Function PS_RA_Test1()
+static Function PS_RA1_REENTRY()
 
 	variable sweepNo, setPassed, i, numEntries, DAScale, onsetDelay
 	string key
@@ -174,10 +171,10 @@ End
 // we don't test the BL QC code path here anymore
 // as that is already done in the patchseq square pulse tests
 
-static Function PS_RA_Run2()
+static Function PS_RA2()
 
 	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "DAQ_MD1_RA1_IDX0_LIDX0_BKG_1")
+	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG_1")
 	AcquireData(s)
 
 	WAVE wv = PSQ_CreateOverrideResults(DEVICE, HEADSTAGE, PSQ_RAMP)
@@ -186,7 +183,7 @@ static Function PS_RA_Run2()
 	wv[0,2][][0] = 1
 End
 
-static Function PS_RA_Test2()
+static Function PS_RA2_REENTRY()
 
 	variable sweepNo, setPassed, i, numEntries
 	string key
@@ -224,10 +221,10 @@ static Function PS_RA_Test2()
 	CHECK_EQUAL_WAVES(durations, {15000, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN}, mode = WAVE_DATA, tol = 1)
 End
 
-static Function PS_RA_Run3()
+static Function PS_RA3()
 
 	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "DAQ_MD1_RA1_IDX0_LIDX0_BKG_1")
+	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG_1")
 	AcquireData(s)
 
 	WAVE wv = PSQ_CreateOverrideResults(DEVICE, HEADSTAGE, PSQ_RAMP)
@@ -237,7 +234,7 @@ static Function PS_RA_Run3()
 	wv[0,2][][1] = SPIKE_POSITION_MS
 End
 
-static Function PS_RA_Test3()
+static Function PS_RA3_REENTRY()
 
 	variable sweepNo, setPassed, i, numEntries
 	string key
@@ -281,10 +278,10 @@ static Function PS_RA_Test3()
 	CHECK(durations[0] > SPIKE_POSITION_MS - PSQ_RA_BL_EVAL_RANGE && durations[0] < SPIKE_POSITION_TEST_DELAY_MS)
 End
 
-static Function PS_RA_Run4()
+static Function PS_RA4()
 
 	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "DAQ_MD1_RA1_IDX0_LIDX0_BKG_1")
+	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG_1")
 	AcquireData(s)
 
 	WAVE wv = PSQ_CreateOverrideResults(DEVICE, HEADSTAGE, PSQ_RAMP)
@@ -294,7 +291,7 @@ static Function PS_RA_Run4()
 	wv[][0][1]   = SPIKE_POSITION_MS
 End
 
-static Function PS_RA_Test4()
+static Function PS_RA4_REENTRY()
 
 	variable sweepNo, setPassed, i, numEntries
 	string key
@@ -332,10 +329,10 @@ static Function PS_RA_Test4()
 	CHECK(durations[0] > SPIKE_POSITION_MS - PSQ_RA_BL_EVAL_RANGE && durations[0] < SPIKE_POSITION_TEST_DELAY_MS)
 End
 
-static Function PS_RA_Run5()
+static Function PS_RA5()
 
 	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "DAQ_MD1_RA1_IDX0_LIDX0_BKG_1")
+	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG_1")
 	AcquireData(s)
 
 	WAVE wv = PSQ_CreateOverrideResults(DEVICE, HEADSTAGE, PSQ_RAMP)
@@ -345,7 +342,7 @@ static Function PS_RA_Run5()
 	wv[][1,2][1] = SPIKE_POSITION_MS
 End
 
-static Function PS_RA_Test5()
+static Function PS_RA5_REENTRY()
 
 	variable sweepNo, setPassed, i, numEntries
 	string key
@@ -389,10 +386,10 @@ static Function PS_RA_Test5()
 	CHECK(durations[0] > SPIKE_POSITION_MS - PSQ_RA_BL_EVAL_RANGE && durations[0] < SPIKE_POSITION_TEST_DELAY_MS)
 End
 
-static Function PS_RA_Run6()
+static Function PS_RA6()
 
 	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "DAQ_MD1_RA1_IDX0_LIDX0_BKG_1")
+	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG_1")
 	AcquireData(s)
 
 	WAVE wv = PSQ_CreateOverrideResults(DEVICE, HEADSTAGE, PSQ_RAMP)
@@ -402,7 +399,7 @@ static Function PS_RA_Run6()
 	wv[][2][1]   = SPIKE_POSITION_MS
 End
 
-static Function PS_RA_Test6()
+static Function PS_RA6_REENTRY()
 
 	variable sweepNo, setPassed, i, numEntries
 	string key

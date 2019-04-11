@@ -392,7 +392,7 @@ Function Params4_V3(panelTitle, s)
 	anaFuncTracker[s.eventType] += 1
 End
 
-Function ChangeToSingleDeviceDAQ(panelTitle, eventType, HardwareDataWave, headStage, realDataLength)
+Function ChangeToSingleDeviceDAQAF(panelTitle, eventType, HardwareDataWave, headStage, realDataLength)
 	string panelTitle
 	variable eventType
 	Wave HardwareDataWave
@@ -402,7 +402,7 @@ Function ChangeToSingleDeviceDAQ(panelTitle, eventType, HardwareDataWave, headSt
 	return 0
 End
 
-Function ChangeToMultiDeviceDAQ(panelTitle, eventType, HardwareDataWave, headStage, realDataLength)
+Function ChangeToMultiDeviceDAQAF(panelTitle, eventType, HardwareDataWave, headStage, realDataLength)
 	string panelTitle
 	variable eventType
 	Wave HardwareDataWave
