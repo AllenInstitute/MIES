@@ -1992,6 +1992,7 @@ Function ChangeStimSetDuringDAQ()
 
 	device = GetSingleDevice()
 
+	CtrlNamedBackGround StopTPAfterSomeTime, start=(ticks + 600), period=60, proc=StopTP_IGNORE
 	CtrlNamedBackGround ChangeStimsetDuringDAQ, start=180, period=30, proc=ChangeStimSet_IGNORE
 	PGC_SetAndActivateControl(device, "check_Settings_TPAfterDAQ", val = 1)
 End
@@ -2011,7 +2012,7 @@ Function ChangeStimSetDuringDAQ_REENTRY()
 		CHECK_EQUAL_VAR(runModeDAQ, DAQ_NOT_RUNNING)
 
 		NVAR runModeTP = $GetTestpulseRunMode(device)
-		CHECK_EQUAL_VAR(runModeTP, TEST_PULSE_BG_MULTI_DEVICE)
+		CHECK_EQUAL_VAR(runModeTP, TEST_PULSE_NOT_RUNNING)
 	endfor
 End
 

@@ -320,6 +320,15 @@ Function StopAcq_IGNORE(s)
 	return 1
 End
 
+Function StopTP_IGNORE(s)
+	STRUCT WMBackgroundStruct &s
+
+	string device = GetSingleDevice()
+	PGC_SetAndActivateControl(device, "StartTestPulseButton")
+
+	return 1
+End
+
 Function StartAcq_IGNORE(s)
 	STRUCT WMBackgroundStruct &s
 
