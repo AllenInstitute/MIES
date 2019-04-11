@@ -3171,6 +3171,44 @@ Function TimeAlignHandleCursorDisplay(win)
 	Cursor/W=$graph/A=1/N=1/P B $trace posB
 End
 
+/// @brief Enable/Disable TimeAlignment Controls and Cursors
+Function TimeAlignUpdateControls(win)
+	string win
+	variable alignMode
+
+	string bsPanel, graph
+
+	bsPanel = BSP_GetPanel(win)
+	graph = GetMainWindow(win)
+
+	if(GetCheckBoxState(bsPanel, "check_BrowserSettings_TA"))
+		EnableControls(bsPanel, "popup_TimeAlignment_Mode;setvar_TimeAlignment_LevelCross;popup_TimeAlignment_Master;button_TimeAlignment_Action")
+
+		alignMode = GetPopupMenuIndex(bsPanel, "popup_TimeAlignment_Mode")
+		if(alignMode == TIME_ALIGNMENT_LEVEL_RISING || alignMode == TIME_ALIGNMENT_LEVEL_FALLING)
+			EnableControl(bsPanel, "setvar_TimeAlignment_LevelCross")
+		else
+			DisableControl(bsPanel, "setvar_TimeAlignment_LevelCross")
+		endif
+	else
+		DisableControls(bsPanel, "popup_TimeAlignment_Mode;setvar_TimeAlignment_LevelCross;popup_TimeAlignment_Master;button_TimeAlignment_Action")
+	endif
+
+	TimeAlignHandleCursorDisplay(graph)
+	ControlUpdate/W=$bsPanel popup_TimeAlignment_Master
+End
+
+Function TimeAlignGatherSettings(bsPanel, pps)
+	String bsPanel
+	STRUCT PostPlotSettings &pps
+
+	pps.timeAlignment     = GetCheckBoxState(bsPanel, "check_BrowserSettings_TA")
+	pps.timeAlignMode     = GetPopupMenuIndex(bsPanel, "popup_TimeAlignment_Mode")
+	pps.timeAlignLevel    = GetSetVariable(bsPanel, "setvar_TimeAlignment_LevelCross")
+	pps.timeAlignRefTrace = GetPopupMenuString(bsPanel, "popup_TimeAlignment_Master")
+	pps.timeAlignment     = GetCheckBoxState(bsPanel, "check_BrowserSettings_TA")
+End
+
 Function TimeAlignCursorMovedHook(s)
 	STRUCT WMWinHookStruct &s
 
@@ -4914,6 +4952,17 @@ Function UpdateSweepPlot(win)
 		DB_UpdateSweepPlot(win)
 	else
 		SB_UpdateSweepPlot(win)
+	endif
+End
+
+/// @brief update of panel elements and related displayed graphs in BSP
+Function UpdateSettingsPanel(win)
+	string win
+
+	if(BSP_IsDataBrowser(win))
+		DB_GraphUpdate(win)
+	else
+		SB_PanelUpdate(win)
 	endif
 End
 

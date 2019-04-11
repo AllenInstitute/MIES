@@ -162,9 +162,10 @@ Function BSP_DynamicStartupSettings(mainPanel)
 	SetControlProcedure(bsPanel, "check_Display_VisibleXrange", BSP_AddBrowserPrefix(mainPanel, "CheckProc_ScaleAxes"))
 	SetControlProcedures(bsPanel, "check_SweepControl_HideSweep;", BSP_AddBrowserPrefix(mainPanel, "CheckProc_ChangedSetting"))
 	SetControlProcedures(bsPanel, "slider_BrowserSettings_dDAQ;", "BSP_SliderProc_ChangedSetting")
+	SetControlProcedures(bsPanel, "button_TimeAlignment_Action", BSP_AddBrowserPrefix(mainPanel, "DoTimeAlignment"))
 
 	// SB/DB specific controls
-	controlsSB = "check_BrowserSettings_TA;check_Display_EqualYrange;check_Display_EqualYignore;"
+	controlsSB = "check_Display_EqualYrange;check_Display_EqualYignore;"
 	controlsDB = "popup_DB_lockedDevices;"
 	if(BSP_IsDataBrowser(mainPanel))
 		EnableControls(bsPanel, controlsDB)
@@ -173,8 +174,8 @@ Function BSP_DynamicStartupSettings(mainPanel)
 		EnableControls(bsPanel, controlsSB)
 		DisableControls(bsPanel, controlsDB)
 		DisableControls(bsPanel, "list_dashboard;check_BrowserSettings_DB_Failed;check_BrowserSettings_DB_Passed")
-		PopupMenu popup_TimeAlignment_Master win=$bsPanel, value = #("TimeAlignGetAllTraces(\"" + mainPanel + "\")")
 	endif
+	PopupMenu popup_TimeAlignment_Master win=$bsPanel, value = #("TimeAlignGetAllTraces(\"" + mainPanel + "\")")
 
 	BSP_InitMainCheckboxes(bsPanel)
 
@@ -906,21 +907,21 @@ Window BrowserSettingsPanel() : Panel
 	CheckBox check_Calculation_AverageTraces,userdata(tabnum)=  "0"
 	CheckBox check_Calculation_AverageTraces,userdata(tabcontrol)=  "Settings"
 	CheckBox check_Calculation_AverageTraces,value= 0
-	CheckBox check_BrowserSettings_TA,pos={139.00,112.00},size={47.00,16.00},disable=2,proc=SB_TimeAlignmentProc,title="enable"
+	CheckBox check_BrowserSettings_TA,pos={139.00,112.00},size={50.00,16.00},proc=BSP_TimeAlignmentProc,title="enable"
 	CheckBox check_BrowserSettings_TA,help={"Activate time alignment"}
 	CheckBox check_BrowserSettings_TA,userdata(tabnum)=  "0"
 	CheckBox check_BrowserSettings_TA,userdata(tabcontrol)=  "Settings",value= 0
-	PopupMenu popup_TimeAlignment_Mode,pos={25.00,135.00},size={142.00,17.00},bodyWidth=50,disable=2,proc=SB_TimeAlignmentPopup,title="Alignment Mode"
+	PopupMenu popup_TimeAlignment_Mode,pos={24.00,135.00},size={143.00,19.00},bodyWidth=50,disable=2,proc=BSP_TimeAlignmentPopup,title="Alignment Mode"
 	PopupMenu popup_TimeAlignment_Mode,help={"Select the alignment mode"}
 	PopupMenu popup_TimeAlignment_Mode,userdata(tabnum)=  "0"
 	PopupMenu popup_TimeAlignment_Mode,userdata(tabcontrol)=  "Settings"
 	PopupMenu popup_TimeAlignment_Mode,mode=1,popvalue="Level (Raising)",value= #"\"Level (Raising);Level (Falling);Min;Max\""
-	SetVariable setvar_TimeAlignment_LevelCross,pos={173.00,136.00},size={50.00,19.00},disable=2,proc=SB_TimeAlignmentLevel,title="Level"
+	SetVariable setvar_TimeAlignment_LevelCross,pos={173.00,136.00},size={50.00,19.00},disable=2,proc=BSP_TimeAlignmentLevel,title="Level"
 	SetVariable setvar_TimeAlignment_LevelCross,help={"Select the level (for rising and falling alignment mode) at which traces are aligned"}
 	SetVariable setvar_TimeAlignment_LevelCross,userdata(tabnum)=  "0"
 	SetVariable setvar_TimeAlignment_LevelCross,userdata(tabcontrol)=  "Settings"
 	SetVariable setvar_TimeAlignment_LevelCross,limits={-inf,inf,0},value= _NUM:0
-	Button button_TimeAlignment_Action,pos={193.00,159.00},size={30.00,20.00},disable=2,proc=SB_DoTimeAlignment,title="Do!"
+	Button button_TimeAlignment_Action,pos={193.00,159.00},size={30.00,20.00},disable=2,title="Do!"
 	Button button_TimeAlignment_Action,help={"Perform the time alignment, needs the cursors A and B to have a selected feature"}
 	Button button_TimeAlignment_Action,userdata(tabnum)=  "0"
 	Button button_TimeAlignment_Action,userdata(tabcontrol)=  "Settings"
@@ -944,7 +945,7 @@ Window BrowserSettingsPanel() : Panel
 	SetVariable setvar_Display_EqualYlevel,userdata(tabnum)=  "0"
 	SetVariable setvar_Display_EqualYlevel,userdata(tabcontrol)=  "Settings"
 	SetVariable setvar_Display_EqualYlevel,limits={-inf,inf,0},value= _NUM:0
-	PopupMenu popup_TimeAlignment_Master,pos={31.00,159.00},size={135.00,17.00},bodyWidth=50,disable=2,proc=SB_TimeAlignmentPopup,title="Reference trace"
+	PopupMenu popup_TimeAlignment_Master,pos={32.00,159.00},size={135.00,17.00},bodyWidth=50,disable=2,proc=BSP_TimeAlignmentPopup,title="Reference trace"
 	PopupMenu popup_TimeAlignment_Master,help={"Select the reference trace to which all other traces should be aligned to"}
 	PopupMenu popup_TimeAlignment_Master,userdata(tabnum)=  "0"
 	PopupMenu popup_TimeAlignment_Master,userdata(tabcontrol)=  "Settings"
@@ -1068,6 +1069,47 @@ Function BSP_SliderProc_ChangedSetting(spa) : SliderControl
 		win = spa.win
 		UpdateSweepPlot(win)
 	endif
+
+	return 0
+End
+
+/// @see SB_DoTimeAlignment DB_DoTimeAlignment
+Function BSP_TimeAlignmentProc(cba) : CheckBoxControl
+	STRUCT WMCheckBoxAction &cba
+
+	switch(cba.eventCode)
+		case 2: // mouse up
+			if(cba.checked)
+				UpdateSettingsPanel(cba.win)
+			else
+				PGC_SetAndActivateControl(cba.win, "button_TimeAlignment_Action")
+			endif
+			break
+	endswitch
+End
+
+Function BSP_TimeAlignmentPopup(pa) : PopupMenuControl
+	STRUCT WMPopupAction &pa
+
+	switch(pa.eventCode)
+		case 2: // mouse up
+			UpdateSettingsPanel(pa.win)
+			break
+	endswitch
+
+	return 0
+End
+
+Function BSP_TimeAlignmentLevel(sva) : SetVariableControl
+	STRUCT WMSetVariableAction &sva
+
+	switch(sva.eventCode)
+		case 1: // mouse up
+		case 2: // Enter key
+		case 3: // Live update
+			UpdateSettingsPanel(sva.win)
+			break
+	endswitch
 
 	return 0
 End

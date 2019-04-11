@@ -113,31 +113,18 @@ Function SB_GetIndexFromSweepDataPath(win, dataDFR)
 	return matches[0]
 End
 
-static Function SB_PanelUpdate(win)
+/// @see DB_GraphUpdate
+Function SB_PanelUpdate(win)
 	string win
 
-	variable alignMode
 	string bsPanel, graph
 
 	graph = GetMainWindow(win)
 	bsPanel = BSP_GetPanel(graph)
 
-	if(GetCheckBoxState(bsPanel, "check_BrowserSettings_TA"))
-		EnableControls(bsPanel, "popup_TimeAlignment_Mode;setvar_TimeAlignment_LevelCross;popup_TimeAlignment_Master;button_TimeAlignment_Action")
+	TimeAlignUpdateControls(bsPanel)
 
-		alignMode = GetPopupMenuIndex(bsPanel, "popup_TimeAlignment_Mode")
-		if(alignMode == TIME_ALIGNMENT_LEVEL_RISING || alignMode == TIME_ALIGNMENT_LEVEL_FALLING)
-			EnableControl(bsPanel, "setvar_TimeAlignment_LevelCross")
-		else
-			DisableControl(bsPanel, "setvar_TimeAlignment_LevelCross")
-		endif
-	else
-		DisableControls(bsPanel, "popup_TimeAlignment_Mode;setvar_TimeAlignment_LevelCross;popup_TimeAlignment_Master;button_TimeAlignment_Action")
-	endif
-
-	TimeAlignHandleCursorDisplay(graph)
 	SB_ScaleAxes(graph)
-	ControlUpdate/W=$bsPanel popup_TimeAlignment_Master
 End
 
 /// @brief set graph userdata similar to DB_SetUserData()
@@ -152,6 +139,7 @@ static Function SB_SetUserData(win)
 	BSP_SetFolder(win, dfr, MIES_BSP_PANEL_FOLDER)
 End
 
+/// @see DB_InitPostPlotSettings
 static Function SB_InitPostPlotSettings(graph, pps)
 	string graph
 	STRUCT PostPlotSettings &pps
@@ -161,9 +149,8 @@ static Function SB_InitPostPlotSettings(graph, pps)
 	pps.averageDataFolder = SB_GetSweepBrowserFolder(graph)
 	pps.averageTraces     = GetCheckboxState(bsPanel, "check_Calculation_AverageTraces")
 	pps.zeroTraces        = GetCheckBoxState(bsPanel, "check_Calculation_ZeroTraces")
-	pps.timeAlignMode     = GetPopupMenuIndex(bsPanel, "popup_TimeAlignment_Mode")
-	pps.timeAlignLevel    = GetSetVariable(bsPanel, "setvar_TimeAlignment_LevelCross")
-	pps.timeAlignRefTrace = GetPopupMenuString(bsPanel, "popup_TimeAlignment_Master")
+	pps.timeAlignRefTrace = ""
+	pps.timeAlignMode     = TIME_ALIGNMENT_NONE
 	pps.hideSweep         = GetCheckBoxState(bsPanel, "check_SweepControl_HideSweep")
 
 	PA_GatherSettings(graph, pps)
@@ -469,6 +456,7 @@ Function SB_AddToSweepBrowser(sweepBrowser, fileName, dataFolder, device, sweep)
 	SetNumberInWaveNote(map, NOTE_INDEX, index + 1)
 End
 
+/// @see DB_HandleTimeAlignPropChange
 static Function SB_HandleTimeAlignPropChange(win)
 	string win
 
@@ -479,7 +467,9 @@ static Function SB_HandleTimeAlignPropChange(win)
 
 	STRUCT PostPlotSettings pps
 	SB_InitPostPlotSettings(graph, pps)
-	pps.timeAlignment = GetCheckBoxState(bsPanel, "check_BrowserSettings_TA")
+
+	TimeAlignGatherSettings(bsPanel, pps)
+
 	PostPlotTransformations(graph, pps)
 End
 
@@ -697,46 +687,6 @@ Function SB_ButtonProc_ChangeSweep(ba) : ButtonControl
 			endif
 
 			SB_UpdateSweepPlot(graph, newSweep=index)
-			break
-	endswitch
-
-	return 0
-End
-
-Function SB_TimeAlignmentProc(cba) : CheckBoxControl
-	STRUCT WMCheckBoxAction &cba
-
-	switch(cba.eventCode)
-		case 2: // mouse up
-			if(cba.checked)
-				SB_PanelUpdate(cba.win)
-			else
-				SB_HandleTimeAlignPropChange(cba.win)
-			endif
-			break
-	endswitch
-End
-
-Function SB_TimeAlignmentPopup(pa) : PopupMenuControl
-	STRUCT WMPopupAction &pa
-
-	switch(pa.eventCode)
-		case 2: // mouse up
-			SB_PanelUpdate(pa.win)
-			break
-	endswitch
-
-	return 0
-End
-
-Function SB_TimeAlignmentLevel(sva) : SetVariableControl
-	STRUCT WMSetVariableAction &sva
-
-	switch(sva.eventCode)
-		case 1: // mouse up
-		case 2: // Enter key
-		case 3: // Live update
-			SB_PanelUpdate(sva.win)
 			break
 	endswitch
 

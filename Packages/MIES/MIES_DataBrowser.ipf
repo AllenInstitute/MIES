@@ -296,20 +296,66 @@ Function DB_UpdateSweepPlot(win)
 	endif
 
 	Struct PostPlotSettings pps
-	pps.averageDataFolder = GetDeviceDataBrowserPath(device)
-	pps.averageTraces     = GetCheckboxState(bsPanel, "check_Calculation_AverageTraces")
-	pps.zeroTraces        = GetCheckBoxState(bsPanel, "check_Calculation_ZeroTraces")
-	pps.timeAlignRefTrace = ""
-	pps.timeAlignMode     = TIME_ALIGNMENT_NONE
-	pps.hideSweep         = tgs.hideSweep
-
-	PA_GatherSettings(win, pps)
-
-	FUNCREF FinalUpdateHookProto pps.finalUpdateHook = DB_GraphUpdate
+	DB_InitPostPlotSettings(win, pps)
 
 	PostPlotTransformations(graph, pps)
 	SetAxesRanges(graph, axesRanges)
 	DEBUGPRINT_ELAPSED(referenceTime)
+End
+
+/// @see SB_InitPostPlotSettings
+Function DB_InitPostPlotSettings(win, pps)
+	string win
+	STRUCT PostPlotSettings &pps
+
+	string bsPanel = BSP_GetPanel(win)
+
+	ASSERT(BSP_HasBoundDevice(win), "DataBrowser was not assigned to a specific device")
+
+	pps.averageDataFolder = GetDeviceDataBrowserPath(BSP_GetDevice(win))
+	pps.averageTraces     = GetCheckboxState(bsPanel, "check_Calculation_AverageTraces")
+	pps.zeroTraces        = GetCheckBoxState(bsPanel, "check_Calculation_ZeroTraces")
+	pps.hideSweep         = GetCheckBoxState(bsPanel, "check_SweepControl_HideSweep")
+	pps.timeAlignRefTrace = ""
+	pps.timeAlignMode     = TIME_ALIGNMENT_NONE
+
+	PA_GatherSettings(win, pps)
+
+	FUNCREF FinalUpdateHookProto pps.finalUpdateHook = DB_GraphUpdate
+End
+
+Function DB_DoTimeAlignment(ba) : ButtonControl
+	STRUCT WMButtonAction &ba
+
+	switch( ba.eventCode )
+		case 2: // mouse up
+			DB_HandleTimeAlignPropChange(ba.win)
+			break
+	endswitch
+
+	return 0
+End
+
+/// @see SB_HandleTimeAlignPropChange
+static Function DB_HandleTimeAlignPropChange(win)
+	string win
+
+	string bsPanel, graph
+
+	graph = GetMainWindow(win)
+	bsPanel = BSP_GetPanel(graph)
+
+	if(!BSP_HasBoundDevice(win))
+		UpdateSettingsPanel(win)
+		return NaN
+	endif
+
+	STRUCT PostPlotSettings pps
+	DB_InitPostPlotSettings(graph, pps)
+
+	TimeAlignGatherSettings(bsPanel, pps)
+
+	PostPlotTransformations(graph, pps)
 End
 
 static Function DB_ClearGraph(win)
@@ -846,7 +892,8 @@ Function DB_CheckProc_ScaleAxes(cba) : CheckBoxControl
 	return 0
 End
 
-static Function DB_GraphUpdate(win)
+/// @see SB_PanelUpdate
+Function DB_GraphUpdate(win)
 	string win
 
 	string bsPanel, graph
@@ -858,8 +905,7 @@ static Function DB_GraphUpdate(win)
 		AutoscaleVertAxisVisXRange(graph)
 	endif
 
-	TimeAlignHandleCursorDisplay(graph)
-	ControlUpdate/W=$bsPanel popup_TimeAlignment_Master
+	TimeAlignUpdateControls(bsPanel)
 End
 
 /// @brief enable/disable checkbox control for side panel
