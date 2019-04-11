@@ -41,6 +41,7 @@ StrConstant TASKNAME_TIMER     = "ITC_Timer"
 StrConstant TASKNAME_TIMERMD   = "ITC_TimerMD"
 StrConstant TASKNAME_FIFOMON   = "ITC_FIFOMonitor"
 StrConstant TASKNAME_FIFOMONMD = "ITC_FIFOMonitorMD"
+StrConstant TASKNAMES          = "Testpulse;TestpulseMD;ITC_Timer;ITC_TimerMD;ITC_FIFOMonitor;ITC_FIFOMonitorMD;"
 /// @}
 
 /// @name Various mies specific regular expressions
