@@ -879,9 +879,10 @@ Constant MAX_NUM_MS_TIMERS = 10
 
 /// @name PatchSeq various constants
 /// @{
-Constant PSQ_SP_INIT_AMP_m50    = -50e-12
-Constant PSQ_SP_INIT_AMP_p100   = +100e-12
-Constant PSQ_SP_INIT_AMP_p10    = +10e-12
+Constant PSQ_SP_INIT_AMP_m50      = -50e-12
+Constant PSQ_SP_INIT_AMP_p100     = +100e-12
+Constant PSQ_SP_INIT_AMP_p10      = +10e-12
+Constant PSQ_NUM_MAX_DASCALE_ZERO = 3
 
 Constant PSQ_RB_PRE_BL_EVAL_RANGE  = 500
 Constant PSQ_RB_POST_BL_EVAL_RANGE = 500
@@ -905,20 +906,23 @@ Constant PSQ_TARGETV_THRESHOLD   = 1    // mV
 ///
 /// @anchor PatchSeqLabnotebookFormatStrings
 /// @{
-StrConstant PSQ_FMT_LBN_RB_DASCALE_EXC    = "%s DAScale exceeded"
-StrConstant PSQ_FMT_LBN_STEPSIZE          = "%s step size"
-StrConstant PSQ_FMT_LBN_SPIKE_DETECT      = "%s spike detected"
-StrConstant PSQ_FMT_LBN_SPIKE_POSITIONS   = "%s spike positions"
-StrConstant PSQ_FMT_LBN_FINAL_SCALE       = "%s final DAScale"
-StrConstant PSQ_FMT_LBN_INITIAL_SCALE     = "%s initial DAScale"
-StrConstant PSQ_FMT_LBN_RMS_SHORT_PASS    = "%s Chk%d S-RMS QC"
-StrConstant PSQ_FMT_LBN_RMS_LONG_PASS     = "%s Chk%d L-RMS QC"
-StrConstant PSQ_FMT_LBN_TARGETV_PASS      = "%s Chk%d T-V BL QC"
-StrConstant PSQ_FMT_LBN_CHUNK_PASS        = "%s Chk%d BL QC"
-StrConstant PSQ_FMT_LBN_BL_QC_PASS        = "%s BL QC"
-StrConstant PSQ_FMT_LBN_SWEEP_PASS        = "%s Sweep QC"
-StrConstant PSQ_FMT_LBN_SET_PASS          = "%s Set QC"
-StrConstant PSQ_FMT_LBN_PULSE_DUR         = "%s Pulse duration"
+StrConstant PSQ_FMT_LBN_RB_DASCALE_EXC     = "%s DAScale exceeded"
+StrConstant PSQ_FMT_LBN_STEPSIZE           = "%s step size"
+StrConstant PSQ_FMT_LBN_STEPSIZE_FUTURE    = "%s step size (fut.)"
+StrConstant PSQ_FMT_LBN_SPIKE_DETECT       = "%s spike detected"
+StrConstant PSQ_FMT_LBN_SPIKE_POSITIONS    = "%s spike positions"
+StrConstant PSQ_FMT_LBN_FINAL_SCALE        = "%s final DAScale"
+StrConstant PSQ_FMT_LBN_INITIAL_SCALE      = "%s initial DAScale"
+StrConstant PSQ_FMT_LBN_RMS_SHORT_PASS     = "%s Chk%d S-RMS QC"
+StrConstant PSQ_FMT_LBN_RMS_LONG_PASS      = "%s Chk%d L-RMS QC"
+StrConstant PSQ_FMT_LBN_TARGETV_PASS       = "%s Chk%d T-V BL QC"
+StrConstant PSQ_FMT_LBN_CHUNK_PASS         = "%s Chk%d BL QC"
+StrConstant PSQ_FMT_LBN_BL_QC_PASS         = "%s BL QC"
+StrConstant PSQ_FMT_LBN_SWEEP_PASS         = "%s Sweep QC"
+StrConstant PSQ_FMT_LBN_SET_PASS           = "%s Set QC"
+StrConstant PSQ_FMT_LBN_PULSE_DUR          = "%s Pulse duration"
+StrConstant PSQ_FMT_LBN_SPIKE_DASCALE_ZERO = "%s spike with zero"
+StrConstant PSQ_FMT_LBN_RB_LIMITED_RES     = "%s limited resolut."
 /// @}
 
 /// @name PatchSeq types of analysis functions
@@ -934,9 +938,13 @@ StrConstant PSQ_LIST_OF_TYPES = "0x1;0x2;0x4;0x8"
 
 /// @name PatchSeq Rheobase
 /// @{
-Constant PSQ_RB_MAX_DASCALE_DIFF = 60e-12
-Constant PSQ_RB_DASCALE_STEP     = 10e-12
-Constant PSQ_RB_FINALSCALE_FAKE  = 42e-12
+Constant PSQ_RB_MAX_DASCALE_DIFF       = 60e-12
+Constant PSQ_RB_DASCALE_SMALL_BORDER   = 50e-12
+Constant PSQ_RB_DASCALE_STEP_LARGE     = 10e-12
+Constant PSQ_RB_DASCALE_STEP_SMALL     =  2e-12
+StrConstant PSQ_RB_FINALSCALE_FAKE_KEY = "PSQRheobaseFinalDAScaleFake"
+Constant PSQ_RB_FINALSCALE_FAKE_HIGH   = 70e-12
+Constant PSQ_RB_FINALSCALE_FAKE_LOW    = 40e-12
 /// @}
 
 /// @name PatchSeq DAScale
