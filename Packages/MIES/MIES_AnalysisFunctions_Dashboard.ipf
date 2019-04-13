@@ -140,6 +140,7 @@ static Function AD_FillWaves(panelTitle, list, info)
 
 			// DA
 			// - needs at least $NUM_DA_SCALES passing sweeps
+			//   and for supra mode if the FinalSlopePercent parameter is present this has to be reached as well
 
 			switch(anaFuncType)
 				case PSQ_RHEOBASE:
@@ -279,8 +280,8 @@ static Function/S AD_GetDAScaleFailMsg(numericalValues, textualValues, sweepNo, 
 	variable sweepNo
 	variable headstage
 
-	string msg
-	variable numPasses, numRequiredPasses
+	string msg, key, fISlopeStr
+	variable numPasses, numRequiredPasses, finalSlopePercent
 
 	numPasses = PSQ_NumPassesInSet(numericalValues, PSQ_DA_SCALE, sweepNo, headstage)
 
@@ -291,6 +292,21 @@ static Function/S AD_GetDAScaleFailMsg(numericalValues, textualValues, sweepNo, 
 
 	if(numPasses < numRequiredPasses)
 		sprintf msg, "Failure as we ran out of sweeps (%d passed but we needed %d)", numPasses, numRequiredPasses
+		return msg
+	endif
+
+	key = PSQ_CreateLBNKey(PSQ_DA_SCALE, PSQ_FMT_LBN_DA_fI_SLOPE_REACHED, query = 1)
+	WAVE/Z fISlopeReached = GetLastSettingIndepEachSCI(numericalValues, sweepNo, key, headstage, UNKNOWN_MODE)
+	ASSERT(WaveExists(fiSlopeReached), "Missing fI Slope reached LBN entry")
+
+	if(Sum(fISlopeReached) == 0)
+		key = PSQ_CreateLBNKey(PSQ_DA_SCALE, PSQ_FMT_LBN_DA_fI_SLOPE, query = 1)
+		WAVE fISlope = GetLastSettingEachSCI(numericalValues, sweepNo, key, headstage, UNKNOWN_MODE)
+		fISlopeStr = RemoveEnding(NumericWaveToList(fISlope, "%, ", format = "%d"), "%, ")
+
+		finalSlopePercent = AFH_GetAnalysisParamNumerical("FinalSlopePercent", params[headstage])
+
+		sprintf msg, "Failure as we did not reach the required fI slope (target: %g%% reached: %s%%)", finalSlopePercent, fISlopeStr
 		return msg
 	endif
 

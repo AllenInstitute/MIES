@@ -16,27 +16,30 @@
 ///
 /// \rst
 ///
-/// ============================== ========================================================= ================= =====================  =====================
-/// Naming constant                Description                                               Analysis function Per Chunk?             Headstage dependent?
-/// ============================== ========================================================= ================= =====================  =====================
-/// PSQ_FMT_LBN_SPIKE_DETECT       The required number of spikes were detected on the sweep  SP, RB, RA        No                     Yes
-/// PSQ_FMT_LBN_SPIKE_POSITIONS    Spike positions in ms                                     RA                No                     Yes
-/// PSQ_FMT_LBN_STEPSIZE           Current DAScale step size                                 SP, RB            No                     No
-/// PSQ_FMT_LBN_STEPSIZE_FUTURE    Future DAScale step size                                  RB                No                     No
-/// PSQ_FMT_LBN_RB_DASCALE_EXC     Range for valid DAScale values is exceeded                RB                No                     Yes
-/// PSQ_FMT_LBN_RB_LIMITED_RES     Failed due to limited DAScale resolution                  RB                No                     Yes
-/// PSQ_FMT_LBN_FINAL_SCALE        Final DAScale of the given headstage, only set on success SP, RB            No                     No
-/// PSQ_FMT_LBN_SPIKE_DASCALE_ZERO Sweep spiked with DAScale of 0                            SP                No                     No
-/// PSQ_FMT_LBN_INITIAL_SCALE      Initial DAScale                                           RB                No                     No
-/// PSQ_FMT_LBN_RMS_SHORT_PASS     Short RMS baseline QC result                              DA, RB, RA        Yes                    Yes
-/// PSQ_FMT_LBN_RMS_LONG_PASS      Long RMS baseline QC result                               DA, RB, RA        Yes                    Yes
-/// PSQ_FMT_LBN_TARGETV_PASS       Target voltage baseline QC result                         DA, RB, RA        Yes                    Yes
-/// PSQ_FMT_LBN_CHUNK_PASS         Which chunk passed/failed baseline QC                     DA, RB, RA        Yes                    Yes
-/// PSQ_FMT_LBN_BL_QC_PASS         Pass/fail state of the complete baseline                  DA, RB, RA        No                     Yes
-/// PSQ_FMT_LBN_SWEEP_PASS         Pass/fail state of the complete sweep                     DA, SP, RA        No                     No
-/// PSQ_FMT_LBN_SET_PASS           Pass/fail state of the complete set                       DA, RB, RA, SP    No                     No
-/// PSQ_FMT_LBN_PULSE_DUR          Pulse duration as determined experimentally               RB                No                     Yes
-/// ============================== ========================================================= ================= =====================  =====================
+/// =============================== ========================================================= ======================== =====================  =====================
+/// Naming constant                 Description                                               Analysis function        Per Chunk?             Headstage dependent?
+/// =============================== ========================================================= ======================== =====================  =====================
+/// PSQ_FMT_LBN_SPIKE_DETECT        The required number of spikes were detected on the sweep  SP, RB, RA, DA (Supra)   No                     Yes
+/// PSQ_FMT_LBN_SPIKE_POSITIONS     Spike positions in ms                                     RA                       No                     Yes
+/// PSQ_FMT_LBN_SPIKE_COUNT         Spike count                                               DA (Supra)               No                     Yes
+/// PSQ_FMT_LBN_STEPSIZE            Current DAScale step size                                 SP, RB                   No                     No
+/// PSQ_FMT_LBN_STEPSIZE_FUTURE     Future DAScale step size                                  RB                       No                     No
+/// PSQ_FMT_LBN_RB_DASCALE_EXC      Range for valid DAScale values is exceeded                RB                       No                     Yes
+/// PSQ_FMT_LBN_RB_LIMITED_RES      Failed due to limited DAScale resolution                  RB                       No                     Yes
+/// PSQ_FMT_LBN_FINAL_SCALE         Final DAScale of the given headstage, only set on success SP, RB                   No                     No
+/// PSQ_FMT_LBN_SPIKE_DASCALE_ZERO  Sweep spiked with DAScale of 0                            SP                       No                     No
+/// PSQ_FMT_LBN_INITIAL_SCALE       Initial DAScale                                           RB                       No                     No
+/// PSQ_FMT_LBN_RMS_SHORT_PASS      Short RMS baseline QC result                              DA, RB, RA               Yes                    Yes
+/// PSQ_FMT_LBN_RMS_LONG_PASS       Long RMS baseline QC result                               DA, RB, RA               Yes                    Yes
+/// PSQ_FMT_LBN_TARGETV_PASS        Target voltage baseline QC result                         DA, RB, RA               Yes                    Yes
+/// PSQ_FMT_LBN_CHUNK_PASS          Which chunk passed/failed baseline QC                     DA, RB, RA               Yes                    Yes
+/// PSQ_FMT_LBN_BL_QC_PASS          Pass/fail state of the complete baseline                  DA, RB, RA               No                     Yes
+/// PSQ_FMT_LBN_SWEEP_PASS          Pass/fail state of the complete sweep                     DA, SP, RA               No                     No
+/// PSQ_FMT_LBN_SET_PASS            Pass/fail state of the complete set                       DA, RB, RA, SP           No                     No
+/// PSQ_FMT_LBN_PULSE_DUR           Pulse duration as determined experimentally               RB, DA (Supra)           No                     Yes
+/// PSQ_FMT_LBN_DA_fI_SLOPE         Fitted slope in the f-I plot                              DA (Supra)               No                     Yes
+/// PSQ_FMT_LBN_DA_fI_SLOPE_REACHED Fitted slope in the f-I plot exceeds target value         DA (Supra)               No                     No
+/// =============================== ========================================================= ======================== =====================  =====================
 ///
 /// \endrst
 ///
@@ -682,7 +685,11 @@ Function/WAVE PSQ_CreateOverrideResults(panelTitle, headstage, type)
 		case PSQ_RAMP:
 		case PSQ_RHEOBASE:
 			numLayers = 2
+			numRows = PSQ_GetNumberOfChunks(panelTitle, 0, headstage, type)
+			numCols = IDX_NumberOfSweepsInSet(stimset)
+			break
 		case PSQ_DA_SCALE:
+			numLayers = 3
 			numRows = PSQ_GetNumberOfChunks(panelTitle, 0, headstage, type)
 			numCols = IDX_NumberOfSweepsInSet(stimset)
 			break
@@ -769,6 +776,10 @@ static Function/WAVE PSQ_SearchForSpikes(panelTitle, type, sweepWave, headstage,
 		numberOfSpikesReq = trunc(numberOfSpikesReq)
 	endif
 
+	if(!ParamIsDefault(numberOfSpikesFound))
+		numberOfSpikesFound = NaN
+	endif
+
 	sprintf msg, "Type %d, headstage %d, totalOnsetDelay %g, numberOfSpikesReq %d", type, headstage, totalOnsetDelay, numberOfSpikesReq
 	DEBUGPRINT(msg)
 
@@ -812,7 +823,11 @@ static Function/WAVE PSQ_SearchForSpikes(panelTitle, type, sweepWave, headstage,
 				break
 			case PSQ_DA_SCALE:
 				overrideValue = overrideResults[0][count][1]
-				numSpikesFoundOverride = overrideResults[0][count][2]
+				if(overrideValue > 0)
+					numSpikesFoundOverride = overrideResults[0][count][2]
+				else
+					numSpikesFoundOverride = 0
+				endif
 				break
 			default:
 				ASSERT(0, "unsupported type")
@@ -1008,9 +1023,15 @@ End
 ///                                  combining the rheobase DAScale value from the previous run and
 ///                                  the DAScales values. Valid strings are "+" (addition) and "*" (multiplication).
 ///                                  Ignored for #PSQ_DS_SUB.
-/// - ShowPlot (Variable):           [Optional, defaults to true] Show the resistance plot in #PSQ_SUB mode.
+/// - ShowPlot (Variable):           [Optional, defaults to true] Show the resistance (#PSQ_DS_SUB) or
+///                                  the f-I (#PSQ_DS_SUPRA) plot.
+/// - FinalSlopePercent (Variable):  [Optional] As additional passing criteria the slope of the f-I plot
+///                                  must be larger than this value.
+///                                  Note: The slope is used in percent.
+///                                  Ignored for #PSQ_DS_SUB.
 Function/S PSQ_DAScale_GetParams()
-	return "DAScales:wave,OperationMode:string,SamplingMultiplier:variable,[ShowPlot:variable],[OffsetOperator:string]"
+	return "DAScales:wave,OperationMode:string,SamplingMultiplier:variable,[ShowPlot:variable],[OffsetOperator:string]," + \
+		   "[FinalSlopePercent:variable]"
 End
 
 /// @brief Patch Seq Analysis function to find a suitable DAScale
@@ -1059,7 +1080,7 @@ End
 ///    targetVPassed  = GetLastSettingIndep(numericalValues, sweepNo, key, UNKNOWN_MODE)
 ///
 ///    // get fitted resistance from last passing sweep
-///	   // resistance for the first headstage can be found in resistanceFitted[0]
+///    // resistance for the first headstage can be found in resistanceFitted[0]
 ///    WAVE/Z resistanceFitted = GetLastSettingSCI(numericalValues, sweepNo, LABNOTEBOOK_USER_PREFIX + "ResistanceFromFit", headstage, UNKNOWN_MODE)
 /// \endrst
 ///
@@ -1097,12 +1118,13 @@ Function PSQ_DAScale(panelTitle, s)
 	STRUCT AnalysisFunction_V3 &s
 
 	variable val, totalOnsetDelay, DAScale, baselineQCPassed
-	variable i, fifoInStimsetPoint, fifoInStimsetTime
-	variable index, ret, showPlot
+	variable i, fifoInStimsetPoint, fifoInStimsetTime, numberOfSpikes
+	variable index, ret, showPlot, V_AbortCode, V_FitError, err, enoughSweepsPassed
 	variable sweepPassed, setPassed, numSweepsPass, length, minLength
 	variable sweepsInSet, passesInSet, acquiredSweepsInSet, numBaselineChunks, multiplier
-	string msg, stimset, key, opMode, offsetOp
+	string msg, stimset, key, opMode, offsetOp, textboxString, str
 	variable daScaleOffset = NaN
+	variable finalSlopePercent = NaN
 
 	WAVE/D/Z DAScales = AFH_GetAnalysisParamWave("DAScales", s.params)
 	ASSERT(WaveExists(DAScales), "Missing DAScale parameter")
@@ -1115,12 +1137,13 @@ Function PSQ_DAScale(panelTitle, s)
 
 	if(!cmpstr(opMode, PSQ_DS_SUPRA))
 
-		offsetOp = AFH_GetAnalysisParamTextual("OffsetOperator", s.params)
+		offsetOp = AFH_GetAnalysisParamTextual("OffsetOperator", s.params, defValue = "+")
+		ASSERT(!cmpstr(offsetOp, "+") || !cmpstr(offsetOp, "*"), "Invalid offset operator")
 
-		if(IsEmpty(offsetOp))
-			offsetOp = "+"
-		else
-			ASSERT(!cmpstr(offsetOp, "+") || !cmpstr(offsetOp, "*"), "Invalid offset operator")
+		finalSlopePercent = AFH_GetAnalysisParamNumerical("FinalSlopePercent", s.params, defValue = NaN)
+
+		if(IsFinite(finalSlopePercent))
+			ASSERT(finalSlopePercent >= 0 && finalSlopePercent <= 100, "Invalid final slope percent value")
 		endif
 	else
 		offsetOp = "+"
@@ -1204,6 +1227,7 @@ Function PSQ_DAScale(panelTitle, s)
 			KillOrMoveToTrash(wv = GetAnalysisFuncDAScaleDeltaV(panelTitle))
 			KillOrMoveToTrash(wv = GetAnalysisFuncDAScaleRes(panelTitle))
 			KillWindow/Z $RESISTANCE_GRAPH
+			KillWindow/Z $SPIKE_FREQ_GRAPH
 
 			break
 		case POST_SWEEP_EVENT:
@@ -1215,9 +1239,21 @@ Function PSQ_DAScale(panelTitle, s)
 			key = PSQ_CreateLBNKey(PSQ_DA_SCALE, PSQ_FMT_LBN_BL_QC_PASS, query = 1)
 			WAVE/Z baselineQCPassedLBN = GetLastSetting(numericalValues, s.sweepNo, key, UNKNOWN_MODE)
 			ASSERT(WaveExists(baselineQCPassedLBN), "Expected BL QC passed LBN entry")
-			baselineQCPassed = baselineQCPassedLBN[s.headstage]
 
-			if(baselineQCPassed)
+			sweepPassed = baselineQCPassedLBN[s.headstage]
+
+			Make/D/FREE/N=(LABNOTEBOOK_LAYER_COUNT) result = NaN
+			result[INDEP_HEADSTAGE] = sweepPassed
+			key = PSQ_CreateLBNKey(PSQ_DA_SCALE, PSQ_FMT_LBN_SWEEP_PASS)
+			ED_AddEntryToLabnotebook(panelTitle, key, result, unit = LABNOTEBOOK_BINARY_UNIT, overrideSweepNo = s.sweepNo)
+
+			sprintf msg, "Sweep %s\r", ToPassFail(sweepPassed)
+			DEBUGPRINT(msg)
+
+			Make/D/FREE/N=(LABNOTEBOOK_LAYER_COUNT) fISlope = NaN
+
+			if(sweepPassed)
+
 				showPlot = AFH_GetAnalysisParamNumerical("ShowPlot", s.params, defValue = 1)
 
 				WAVE/Z sweep = GetSweepWave(panelTitle, s.sweepNo)
@@ -1236,17 +1272,124 @@ Function PSQ_DAScale(panelTitle, s)
 					if(showPlot)
 						PlotResistanceGraph(panelTitle)
 					endif
+
+				elseif(!cmpstr(opMode, PSQ_DS_SUPRA))
+					totalOnsetDelay = DAG_GetNumericalValue(panelTitle, "setvar_DataAcq_OnsetDelayUser") \
+									  + GetValDisplayAsNum(panelTitle, "valdisp_DataAcq_OnsetDelayAuto")
+
+					WAVE spikeDetection = PSQ_SearchForSpikes(panelTitle, PSQ_DA_SCALE, sweep, s.headstage, totalOnsetDelay, \
+								                              numberOfSpikesReq = inf, numberOfSpikesFound = numberOfSpikes)
+					key = PSQ_CreateLBNKey(PSQ_DA_SCALE, PSQ_FMT_LBN_SPIKE_DETECT)
+					ED_AddEntryToLabnotebook(panelTitle, key, spikeDetection, unit = LABNOTEBOOK_BINARY_UNIT, overrideSweepNo = s.sweepNo)
+
+					Make/D/FREE/N=(LABNOTEBOOK_LAYER_COUNT) numberOfSpikesLBN = NaN
+					numberOfSpikesLBN[s.headstage] = numberOfSpikes
+					key = PSQ_CreateLBNKey(PSQ_DA_SCALE, PSQ_FMT_LBN_SPIKE_COUNT)
+					ED_AddEntryToLabnotebook(panelTitle, key, numberOfSpikesLBN, overrideSweepNo = s.sweepNo)
+
+					WAVE durations = PSQ_DeterminePulseDuration(panelTitle, s.sweepNo, totalOnsetDelay)
+					key = PSQ_CreateLBNKey(PSQ_DA_SCALE, PSQ_FMT_LBN_PULSE_DUR)
+					ED_AddEntryToLabnotebook(panelTitle, key, durations, unit = "ms", overrideSweepNo = s.sweepNo)
+
+					sprintf msg, "Spike detection: result %d, number of spikes %d, pulse duration %d\r", spikeDetection[s.headstage], numberOfSpikesLBN[s.headstage], durations[s.headstage]
+					DEBUGPRINT(msg)
+
+					acquiredSweepsInSet = PSQ_NumAcquiredSweepsInSet(panelTitle, s.sweepNo, s.headstage)
+
+					ASSERT(acquiredSweepsInSet > 0, "Unexpected number of acquired sweeps")
+					WAVE spikeFrequencies = GetAnalysisFuncDAScaleSpikeFreq(panelTitle, s.headstage)
+					Redimension/N=(acquiredSweepsInSet) spikeFrequencies
+
+					key = PSQ_CreateLBNKey(PSQ_DA_SCALE, PSQ_FMT_LBN_SPIKE_COUNT, query = 1)
+					WAVE spikeCount = GetLastSettingEachSCI(numericalValues, s.sweepNo, key, s.headstage, UNKNOWN_MODE)
+					ASSERT(DimSize(spikeCount, ROWS) == acquiredSweepsInSet, "Mismatched row count")
+
+					key = PSQ_CreateLBNKey(PSQ_DA_SCALE, PSQ_FMT_LBN_PULSE_DUR, query = 1)
+					WAVE pulseDuration = GetLastSettingEachSCI(numericalValues, s.sweepNo, key, s.headstage, UNKNOWN_MODE)
+					ASSERT(DimSize(pulseDuration, ROWS) == acquiredSweepsInSet, "Mismatched row count")
+
+					spikeFrequencies[] = str2num(FloatWithMinSigDigits(spikeCount[p] / (pulseDuration[p] / 1000), numMinSignDigits = 2))
+
+					WAVE DAScalesPlot = GetAnalysisFuncDAScales(panelTitle, s.headstage)
+					Redimension/N=(acquiredSweepsInSet) DAScalesPlot
+
+					WAVE DAScalesLBN = GetLastSettingEachSCI(numericalValues, s.sweepNo, STIMSET_SCALE_FACTOR_KEY, \
+															 s.headstage, DATA_ACQUISITION_MODE)
+					ASSERT(DimSize(DAScalesLBN, ROWS) == acquiredSweepsInSet, "Mismatched row count")
+					DAScalesPlot[] = DAScalesLBN[p] * 1e-12
+
+					sprintf msg, "Spike frequency %.2W1PHz, DAScale %.2W1PA", spikeFrequencies[acquiredSweepsInSet - 1], DAScalesPlot[acquiredSweepsInSet - 1]
+					DEBUGPRINT(msg)
+
+					try
+						ClearRTError()
+						V_FitError  = 0
+						V_AbortCode = 0
+
+						Make/FREE/D/N=2 coefWave
+						CurveFit/Q/N=1/NTHR=1/M=0/W=2 line, kwCWave=coefWave, spikeFrequencies[]/D/X=DAScalesPlot[]; AbortOnRTE
+
+						WAVE/D/Z W_sigma
+						if(!WaveExists(W_sigma))
+							Make/FREE/D/N=2 W_sigma = NaN
+						endif
+
+						fISlope[s.headstage] = coefWave[1]/1e12 * 100
+
+						WAVE fitWave = $(CleanupName("fit_" + NameOfWave(spikeFrequencies), 0))
+
+						WAVE curveFitWave = GetAnalysisFuncDAScaleFreqFit(panelTitle, i)
+						Duplicate/O fitWave, curveFitWave
+
+						if(showPlot)
+							if(WindowExists(SPIKE_FREQ_GRAPH))
+								RemoveFromGraph/Z/W=$SPIKE_FREQ_GRAPH $NameOfWave(fitWave)
+							else
+								Display/K=1/N=$SPIKE_FREQ_GRAPH spikeFrequencies vs DAScalesPlot
+								ModifyGraph/W=$SPIKE_FREQ_GRAPH mode=3, zapTZ(left)=1
+
+								AppendToGraph/W=$SPIKE_FREQ_GRAPH curveFitWave
+
+								Label/W=$SPIKE_FREQ_GRAPH left "Spike Frequency (\\U)"
+								Label/W=$SPIKE_FREQ_GRAPH bottom "DAScale (\\U)"
+							endif
+
+							sprintf str, "\\s(%s) Spike Frequency\r", NameOfWave(spikeFrequencies)
+							textBoxString = str
+
+							sprintf str, "\\s(%s) Linear Regression\r", NameOfWave(curveFitWave)
+							textBoxString += str
+
+							sprintf str, "Fit parameters:\r"
+							textBoxString += str
+
+							sprintf str, "a = %.3g +/- %.3g Hz\r", coefWave[0], W_sigma[0]
+							textBoxString += str
+
+							sprintf str, "b = %.3g +/- %.3g Hz/pA\r", coefWave[1]/1e12, W_sigma[1]/1e12
+							textBoxString += str
+
+							sprintf str, "Fitted Slope: %.0W1P%%\r", fISlope[s.headstage]
+							textBoxString += str
+							TextBox/A=RB/C/N=text/W=$SPIKE_FREQ_GRAPH RemoveEnding(textBoxString, "\r")
+						endif
+					catch
+						err = GetRTError(1)
+						DEBUGPRINT("CurveFit failed with " + num2str(err))
+					endtry
 				endif
 			endif
 
-			key = PSQ_CreateLBNKey(PSQ_DA_SCALE, PSQ_FMT_LBN_SWEEP_PASS)
-			Make/D/FREE/N=(LABNOTEBOOK_LAYER_COUNT) result = NaN
-			result[INDEP_HEADSTAGE] = baselineQCPassed
-			ED_AddEntryToLabnotebook(panelTitle, key, result, unit = LABNOTEBOOK_BINARY_UNIT, overrideSweepNo = s.sweepNo)
+			sprintf msg, "Fitted Slope: %.0W1P%%\r", fISlope[s.headstage]
+			DEBUGPRINT(msg)
 
-			key = PSQ_CreateLBNKey(PSQ_DA_SCALE, PSQ_FMT_LBN_SWEEP_PASS, query = 1)
-			sweepPassed = GetLastSettingIndep(numericalValues, s.sweepNo, key, UNKNOWN_MODE)
-			ASSERT(IsFinite(sweepPassed), "Could not find the sweep passed labnotebook entry")
+			key = PSQ_CreateLBNKey(PSQ_DA_SCALE, PSQ_FMT_LBN_DA_fI_SLOPE)
+			ED_AddEntryToLabnotebook(panelTitle, key, fISlope, unit = "% of Hz/pA")
+
+			Make/D/FREE/N=(LABNOTEBOOK_LAYER_COUNT) result = NaN
+			result[INDEP_HEADSTAGE] = IsFinite(finalSlopePercent) && fiSlope[s.headstage] >= finalSlopePercent
+			key = PSQ_CreateLBNKey(PSQ_DA_SCALE, PSQ_FMT_LBN_DA_fI_SLOPE_REACHED)
+			ED_AddEntryToLabnotebook(panelTitle, key, result, unit = LABNOTEBOOK_BINARY_UNIT)
 
 			WAVE/T stimsets = GetLastSetting(textualValues, s.sweepNo, STIM_WAVE_NAME_KEY, DATA_ACQUISITION_MODE)
 			stimset = stimsets[s.headstage]
@@ -1255,7 +1398,7 @@ Function PSQ_DAScale(panelTitle, s)
 			passesInSet         = PSQ_NumPassesInSet(numericalValues, PSQ_DA_SCALE, s.sweepNo, s.headstage)
 			acquiredSweepsInSet = PSQ_NumAcquiredSweepsInSet(panelTitle, s.sweepNo, s.headstage)
 
-			sprintf msg, "Sweep %s, total sweeps %d, acquired sweeps %d, passed sweeps %d, required passes %d, DAScalesIndex %d\r", SelectString(sweepPassed, "failed", "passed"), sweepsInSet, acquiredSweepsInSet, passesInSet, numSweepsPass, DAScalesIndex[s.headstage]
+			sprintf msg, "Sweep %s, BL QC %s, total sweeps %d, acquired sweeps %d, passed sweeps %d, required passes %d, DAScalesIndex %d\r", ToPassFail(sweepPassed), ToPassFail(baselineQCPassed), sweepsInSet, acquiredSweepsInSet, passesInSet, numSweepsPass, DAScalesIndex[s.headstage]
 			DEBUGPRINT(msg)
 
 			if(!sweepPassed)
@@ -1280,7 +1423,23 @@ Function PSQ_DAScale(panelTitle, s)
 		case POST_SET_EVENT:
 			WAVE numericalValues = GetLBNumericalValues(panelTitle)
 
-			setPassed = PSQ_NumPassesInSet(numericalValues, PSQ_DA_SCALE, s.sweepNo, s.headstage) >= numSweepsPass
+			enoughSweepsPassed = PSQ_NumPassesInSet(numericalValues, PSQ_DA_SCALE, s.sweepNo, s.headstage) >= numSweepsPass
+
+			if(!cmpstr(opMode, PSQ_DS_SUPRA))
+				key = PSQ_CreateLBNKey(PSQ_DA_SCALE, PSQ_FMT_LBN_DA_fI_SLOPE_REACHED, query = 1)
+				WAVE fISlopeReached = GetLastSettingIndepEachSCI(numericalValues, s.sweepNo, key, s.headstage, UNKNOWN_MODE)
+
+				if(IsFinite(finalSlopePercent))
+					setPassed = enoughSweepsPassed && Sum(fISlopeReached) > 0
+				else
+					sprintf msg, "Final slope percentage not present\r"
+					DEBUGPRINT(msg)
+
+					setPassed = enoughSweepsPassed
+				endif
+			elseif(!cmpstr(opMode, PSQ_DS_SUB))
+				setPassed = enoughSweepsPassed
+			endif
 
 			sprintf msg, "Set has %s\r", SelectString(setPassed, "failed", "passed")
 			DEBUGPRINT(msg)
