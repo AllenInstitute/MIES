@@ -1079,7 +1079,7 @@ Function PSQ_DAScale(panelTitle, s)
 	string panelTitle
 	STRUCT AnalysisFunction_V3 &s
 
-	variable val, totalOnsetDelay, DAScale
+	variable val, totalOnsetDelay, DAScale, baselineQCPassed
 	variable i, fifoInStimsetPoint, fifoInStimsetTime
 	variable index, ret, showPlot
 	variable sweepPassed, setPassed, numSweepsPass, length, minLength
@@ -1195,6 +1195,38 @@ Function PSQ_DAScale(panelTitle, s)
 
 			daScaleOffset = PSQ_DS_GetDAScaleOffset(panelTitle, s.headstage, opMode)
 
+			key = PSQ_CreateLBNKey(PSQ_DA_SCALE, PSQ_FMT_LBN_BL_QC_PASS, query = 1)
+			WAVE/Z baselineQCPassedLBN = GetLastSetting(numericalValues, s.sweepNo, key, UNKNOWN_MODE)
+			ASSERT(WaveExists(baselineQCPassedLBN), "Expected BL QC passed LBN entry")
+			baselineQCPassed = baselineQCPassedLBN[s.headstage]
+
+			if(baselineQCPassed)
+				showPlot = AFH_GetAnalysisParamNumerical("ShowPlot", s.params, defValue = 1)
+
+				WAVE/Z sweep = GetSweepWave(panelTitle, s.sweepNo)
+				ASSERT(WaveExists(sweep), "Expected a sweep for evaluation")
+
+				if(!cmpstr(opMode, PSQ_DS_SUB))
+					Make/D/FREE/N=(LABNOTEBOOK_LAYER_COUNT) deltaV     = NaN
+					Make/D/FREE/N=(LABNOTEBOOK_LAYER_COUNT) deltaI     = NaN
+					Make/D/FREE/N=(LABNOTEBOOK_LAYER_COUNT) resistance = NaN
+
+					CalculateTPLikePropsFromSweep(numericalValues, textualValues, sweep, deltaI, deltaV, resistance)
+
+					ED_AddEntryToLabnotebook(panelTitle, "Delta I", deltaI, unit = "I")
+					ED_AddEntryToLabnotebook(panelTitle, "Delta V", deltaV, unit = "V")
+
+					if(showPlot)
+						PlotResistanceGraph(panelTitle)
+					endif
+				endif
+			endif
+
+			key = PSQ_CreateLBNKey(PSQ_DA_SCALE, PSQ_FMT_LBN_SWEEP_PASS)
+			Make/D/FREE/N=(LABNOTEBOOK_LAYER_COUNT) result = NaN
+			result[INDEP_HEADSTAGE] = baselineQCPassed
+			ED_AddEntryToLabnotebook(panelTitle, key, result, unit = LABNOTEBOOK_BINARY_UNIT, overrideSweepNo = s.sweepNo)
+
 			key = PSQ_CreateLBNKey(PSQ_DA_SCALE, PSQ_FMT_LBN_SWEEP_PASS, query = 1)
 			sweepPassed = GetLastSettingIndep(numericalValues, s.sweepNo, key, UNKNOWN_MODE)
 			ASSERT(IsFinite(sweepPassed), "Could not find the sweep passed labnotebook entry")
@@ -1217,27 +1249,6 @@ Function PSQ_DAScale(panelTitle, s)
 					return NaN
 				endif
 			else
-				// sweep passed
-				showPlot = AFH_GetAnalysisParamNumerical("ShowPlot", s.params, defValue = 1)
-
-				if(!cmpstr(opMode, PSQ_DS_SUB))
-					WAVE/Z sweep = GetSweepWave(panelTitle, s.sweepNo)
-					ASSERT(WaveExists(sweep), "Expected a sweep for evaluation")
-
-					Make/D/FREE/N=(LABNOTEBOOK_LAYER_COUNT) deltaV     = NaN
-					Make/D/FREE/N=(LABNOTEBOOK_LAYER_COUNT) deltaI     = NaN
-					Make/D/FREE/N=(LABNOTEBOOK_LAYER_COUNT) resistance = NaN
-
-					CalculateTPLikePropsFromSweep(numericalValues, textualValues, sweep, deltaI, deltaV, resistance)
-
-					ED_AddEntryToLabnotebook(panelTitle, "Delta I", deltaI, unit = "I")
-					ED_AddEntryToLabnotebook(panelTitle, "Delta V", deltaV, unit = "V")
-
-					if(showPlot)
-						PlotResistanceGraph(panelTitle)
-					endif
-				endif
-
 				if(passesInSet >= numSweepsPass)
 					PSQ_ForceSetEvent(panelTitle, s.headstage)
 					RA_SkipSweeps(panelTitle, inf, limitToSetBorder = 1)
@@ -1257,7 +1268,7 @@ Function PSQ_DAScale(panelTitle, s)
 			sprintf msg, "Set has %s\r", SelectString(setPassed, "failed", "passed")
 			DEBUGPRINT(msg)
 
-			Make/FREE/N=(LABNOTEBOOK_LAYER_COUNT) result = NaN
+			Make/D/FREE/N=(LABNOTEBOOK_LAYER_COUNT) result = NaN
 			result[INDEP_HEADSTAGE] = setPassed
 			key = PSQ_CreateLBNKey(PSQ_DA_SCALE, PSQ_FMT_LBN_SET_PASS)
 			ED_AddEntryToLabnotebook(panelTitle, key, result, unit = LABNOTEBOOK_BINARY_UNIT)
@@ -1310,10 +1321,10 @@ Function PSQ_DAScale(panelTitle, s)
 
 	WAVE numericalValues = GetLBNumericalValues(panelTitle)
 
-	key = PSQ_CreateLBNKey(PSQ_DA_SCALE, PSQ_FMT_LBN_SWEEP_PASS, query = 1)
-	sweepPassed = GetLastSettingIndep(numericalValues, s.sweepNo, key, UNKNOWN_MODE, defValue = 0)
+	key = PSQ_CreateLBNKey(PSQ_DA_SCALE, PSQ_FMT_LBN_BL_QC_PASS, query = 1)
+	baselineQCPassed = GetLastSettingIndep(numericalValues, s.sweepNo, key, UNKNOWN_MODE, defValue = 0)
 
-	if(sweepPassed) // already done
+	if(baselineQCPassed) // already done
 		return NaN
 	endif
 
@@ -1365,19 +1376,19 @@ Function PSQ_DAScale(panelTitle, s)
 		endif
 	endfor
 
-	sweepPassed = (ret == 0)
+	baselineQCPassed = (ret == 0)
 
-	sprintf msg, "Sweep %s, last evaluated chunk %d returned with %g\r", SelectString(sweepPassed, "failed", "passed"), i, ret
+	sprintf msg, "BL QC %s, last evaluated chunk %d returned with %g\r", SelectString(baselineQCPassed, "failed", "passed"), i, ret
 	DEBUGPRINT(msg)
 
-	// document sweep results
-	Make/FREE/N=(LABNOTEBOOK_LAYER_COUNT) result = NaN
-	result[INDEP_HEADSTAGE] = sweepPassed
+	// document BL QC results
+	Make/FREE/D/N=(LABNOTEBOOK_LAYER_COUNT) result = NaN
+	result[s.headstage] = baselineQCPassed
 
-	key = PSQ_CreateLBNKey(PSQ_DA_SCALE, PSQ_FMT_LBN_SWEEP_PASS)
+	key = PSQ_CreateLBNKey(PSQ_DA_SCALE, PSQ_FMT_LBN_BL_QC_PASS)
 	ED_AddEntryToLabnotebook(panelTitle, key, result, unit = LABNOTEBOOK_BINARY_UNIT, overrideSweepNo = s.sweepNo)
 
-	return sweepPassed ? ANALYSIS_FUNC_RET_EARLY_STOP : ret
+	return baselineQCPassed ? ANALYSIS_FUNC_RET_EARLY_STOP : ret
 End
 
 /// @brief Return a list of required parameters for PSQ_SquarePulse()
