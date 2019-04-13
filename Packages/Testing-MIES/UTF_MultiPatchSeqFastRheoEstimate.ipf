@@ -7,8 +7,6 @@ static Function AcquireData(s, [postInitializeFunc, preAcquireFunc])
 	STRUCT DAQSettings& s
 	FUNCREF CALLABLE_PROTO postInitializeFunc, preAcquireFunc
 
-	Initialize_IGNORE()
-
 	if(!ParamIsDefault(postInitializeFunc))
 		postInitializeFunc()
 	endif
@@ -61,8 +59,6 @@ static Function AcquireData(s, [postInitializeFunc, preAcquireFunc])
 
 	DoUpdate/W=$DEVICE
 
-	CtrlNamedBackGround DAQWatchdog, start, period=120, proc=WaitUntilDAQDone_IGNORE
-
 	if(!ParamIsDefault(preAcquireFunc))
 		preAcquireFunc()
 	endif
@@ -99,10 +95,10 @@ static Function/WAVE GetResults_IGNORE(sweepNo, str, headstage, mode)
 	endswitch
 End
 
-static Function MSQ_FRE_Run1()
+static Function MSQ_FRE1()
 
 	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "DAQ_MD1_RA1_IDX0_LIDX0_BKG_1")
+	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG_1")
 	AcquireData(s)
 
 	WAVE wv = MSQ_CreateOverrideResults(DEVICE, 0, MSQ_FAST_RHEO_EST)
@@ -110,7 +106,7 @@ static Function MSQ_FRE_Run1()
 	wv = 0
 End
 
-static Function MSQ_FRE_Test1()
+static Function MSQ_FRE1_REENTRY()
 
 	variable sweepNo
 	string lbl
@@ -186,10 +182,10 @@ static Function MSQ_FRE_Test1()
 	CHECK_EQUAL_WAVES(pulseDuration, {3, 3, NaN, NaN, NaN, NaN, NaN, NaN, NaN}, mode = WAVE_DATA, tol=1e-8)
 End
 
-static Function MSQ_FRE_Run2()
+static Function MSQ_FRE2()
 
 	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "DAQ_MD1_RA1_IDX0_LIDX0_BKG_1")
+	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG_1")
 	AcquireData(s)
 
 	WAVE wv = MSQ_CreateOverrideResults(DEVICE, 0, MSQ_FAST_RHEO_EST)
@@ -198,7 +194,7 @@ static Function MSQ_FRE_Run2()
 	wv = 2.5
 End
 
-static Function MSQ_FRE_Test2()
+static Function MSQ_FRE2_REENTRY()
 
 	variable sweepNo
 	string lbl
@@ -276,10 +272,10 @@ static Function MSQ_FRE_Test2()
 	CHECK_EQUAL_WAVES(pulseDuration, {3, 3, NaN, NaN, NaN, NaN, NaN, NaN, NaN}, mode = WAVE_DATA, tol=1e-8)
 End
 
-static Function MSQ_FRE_Run3()
+static Function MSQ_FRE3()
 
 	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "DAQ_MD1_RA1_IDX0_LIDX0_BKG_1")
+	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG_1")
 	AcquireData(s)
 
 	WAVE wv = MSQ_CreateOverrideResults(DEVICE, 0, MSQ_FAST_RHEO_EST)
@@ -288,7 +284,7 @@ static Function MSQ_FRE_Run3()
 	wv[1][] = 1
 End
 
-static Function MSQ_FRE_Test3()
+static Function MSQ_FRE3_REENTRY()
 
 	variable sweepNo
 	string lbl
@@ -364,10 +360,10 @@ static Function MSQ_FRE_Test3()
 	CHECK_EQUAL_WAVES(pulseDuration, {3, 3, NaN, NaN, NaN, NaN, NaN, NaN, NaN}, mode = WAVE_DATA, tol=1e-8)
 End
 
-static Function MSQ_FRE_Run4()
+static Function MSQ_FRE4()
 
 	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "DAQ_MD1_RA1_IDX0_LIDX0_BKG_1")
+	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG_1")
 	AcquireData(s)
 
 	WAVE wv = MSQ_CreateOverrideResults(DEVICE, 0, MSQ_FAST_RHEO_EST)
@@ -379,7 +375,7 @@ static Function MSQ_FRE_Run4()
 	wv[3][1] = 1
 End
 
-static Function MSQ_FRE_Test4()
+static Function MSQ_FRE4_REENTRY()
 
 	variable sweepNo
 	string lbl
@@ -457,10 +453,10 @@ static Function MSQ_FRE_Test4()
 	CHECK_EQUAL_WAVES(pulseDuration, {3, 3, NaN, NaN, NaN, NaN, NaN, NaN, NaN}, mode = WAVE_DATA, tol=1e-8)
 End
 
-static Function MSQ_FRE_Run5()
+static Function MSQ_FRE5()
 
 	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "DAQ_MD1_RA1_IDX0_LIDX0_BKG_1")
+	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG_1")
 	AcquireData(s)
 
 	WAVE wv = MSQ_CreateOverrideResults(DEVICE, 0, MSQ_FAST_RHEO_EST)
@@ -475,7 +471,7 @@ static Function MSQ_FRE_Run5()
 	wv[3][1] = 1
 End
 
-static Function MSQ_FRE_Test5()
+static Function MSQ_FRE5_REENTRY()
 
 	variable sweepNo
 	string lbl
@@ -563,10 +559,10 @@ End
 
 // only one IC and one VC headstage
 // check that VC is on again in the end
-static Function MSQ_FRE_Run6()
+static Function MSQ_FRE6()
 
 	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "DAQ_MD1_RA1_IDX0_LIDX0_BKG_1")
+	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG_1")
 	AcquireData(s, preAcquireFunc=VClampOnSecondHS_IGNORE)
 
 	WAVE wv = MSQ_CreateOverrideResults(DEVICE, 0, MSQ_FAST_RHEO_EST)
@@ -577,7 +573,7 @@ static Function MSQ_FRE_Run6()
 	wv[7][0] = 1
 End
 
-static Function MSQ_FRE_Test6()
+static Function MSQ_FRE6_REENTRY()
 
 	variable sweepNo
 	string lbl
@@ -656,10 +652,10 @@ End
 
 // one test with PostDAQDAScale and PostDAQDAScaleFactor analysis parameters
 // check dascale after DAQ
-static Function MSQ_FRE_Run7()
+static Function MSQ_FRE7()
 
 	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "DAQ_MD1_RA1_IDX0_LIDX0_BKG_1")
+	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG_1")
 	AcquireData(s, postInitializeFunc=AddAnalysisParamsDAScale_IGNORE)
 
 	WAVE wv = MSQ_CreateOverrideResults(DEVICE, 0, MSQ_FAST_RHEO_EST)
@@ -674,7 +670,7 @@ static Function MSQ_FRE_Run7()
 	wv[3][1] = 1
 End
 
-static Function MSQ_FRE_Test7()
+static Function MSQ_FRE7_REENTRY()
 
 	variable sweepNo
 	string lbl
@@ -757,10 +753,10 @@ End
 
 // one test with PostDAQDAScale and PostDAQDAScaleFactor analysis parameters
 // check dascale after DAQ and one headstage failed
-static Function MSQ_FRE_Run8()
+static Function MSQ_FRE8()
 
 	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "DAQ_MD1_RA1_IDX0_LIDX0_BKG_1")
+	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG_1")
 	AcquireData(s, postInitializeFunc=AddAnalysisParamsDAScale_IGNORE)
 
 	WAVE wv = MSQ_CreateOverrideResults(DEVICE, 0, MSQ_FAST_RHEO_EST)
@@ -772,7 +768,7 @@ static Function MSQ_FRE_Run8()
 	wv[7][0] = 1
 End
 
-static Function MSQ_FRE_Test8()
+static Function MSQ_FRE8_REENTRY()
 
 	variable sweepNo
 	string lbl
@@ -858,10 +854,10 @@ static Function AddAnalysisParamsMaxDa_IGNORE()
 End
 
 // one test with range exceeded and MaximumDAScale analysis parameter
-static Function MSQ_FRE_Run9()
+static Function MSQ_FRE9()
 
 	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "DAQ_MD1_RA1_IDX0_LIDX0_BKG_1")
+	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG_1")
 	AcquireData(s, postInitializeFunc=AddAnalysisParamsMaxDa_IGNORE)
 
 	WAVE wv = MSQ_CreateOverrideResults(DEVICE, 0, MSQ_FAST_RHEO_EST)
@@ -870,7 +866,7 @@ static Function MSQ_FRE_Run9()
 	wv[] = 0
 End
 
-static Function MSQ_FRE_Test9()
+static Function MSQ_FRE9_REENTRY()
 
 	variable sweepNo
 	string lbl
@@ -956,10 +952,10 @@ static Function AddAnalysisParamsMinRheo_IGNORE()
 End
 
 // Using MinOffset and a scale factor
-static Function MSQ_FRE_Run10()
+static Function MSQ_FRE10()
 
 	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "DAQ_MD1_RA1_IDX0_LIDX0_BKG_1")
+	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG_1")
 	AcquireData(s, postInitializeFunc=AddAnalysisParamsMinRheo_IGNORE)
 
 	WAVE wv = MSQ_CreateOverrideResults(DEVICE, 0, MSQ_FAST_RHEO_EST)
@@ -974,7 +970,7 @@ static Function MSQ_FRE_Run10()
 	wv[3][1] = 1
 End
 
-static Function MSQ_FRE_Test10()
+static Function MSQ_FRE10_REENTRY()
 
 	variable sweepNo
 	string lbl

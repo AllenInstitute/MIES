@@ -2,12 +2,6 @@
 #pragma rtGlobals=3 // Use modern global access method and strict wave access.
 #pragma ModuleName=AnalysisFuncParamTesting
 
-static Function TEST_CASE_BEGIN_OVERRIDE(testCase)
-	string testCase
-
-	Initialize_IGNORE()
-End
-
 static Function AbortsWithEmptyName()
 
 	string params

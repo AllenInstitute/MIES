@@ -1,6 +1,6 @@
 #!/bin/sh
 
-StateFile=DO_AUTORUN_PLAIN.txt
+StateFile=DO_AUTORUN.txt
 
 touch $StateFile
 

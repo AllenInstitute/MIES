@@ -8,7 +8,6 @@
 #include "UserAnalysisFunctions"
 #include "UTF_AnalysisFunctionParameters"
 #include "UTF_VeryBasicHardwareTests"
-#include "UTF_TestingWithHardware"
 #include "UTF_DAEphys"
 #include "UTF_BasicHardwareTests"
 #include "UTF_PatchSeqDAScale"
@@ -17,6 +16,420 @@
 #include "UTF_PatchSeqRamp"
 #include "UTF_MultiPatchSeqFastRheoEstimate"
 #include "UTF_MultiPatchSeqDAScale"
+
+#ifdef TESTS_WITH_NI_HARDWARE
+
+StrConstant DEVICE        = "Dev1"
+StrConstant DEVICES_YOKED = "Unsupported"
+
+#else
+
+StrConstant DEVICE        = "ITC18USB_dev_0"
+StrConstant DEVICES_YOKED = "ITC1600_dev_0;ITC1600_dev_1"
+
+#endif
+
+Function run()
+
+	string list = ""
+	list = AddListItem("UTF_VeryBasicHardwareTests.ipf", list)
+	list = AddListItem("UTF_BasicHardwareTests.ipf", list)
+	list = AddListItem("UTF_AnalysisFunctionManagement.ipf", list)
+	list = AddListItem("UTF_AnalysisFunctionParameters.ipf", list)
+	list = AddListItem("UTF_DAEphys.ipf", list)
+	list = AddListItem("UTF_PatchSeqDAScale.ipf", list)
+	list = AddListItem("UTF_PatchSeqSquarePulse.ipf", list)
+	list = AddListItem("UTF_PatchSeqRheobase.ipf", list)
+	list = AddListItem("UTF_PatchSeqRamp.ipf", list)
+	list = AddListItem("UTF_MultiPatchSeqFastRheoEstimate.ipf", list)
+	list = AddListItem("UTF_MultiPatchSeqDAScale.ipf", list)
+
+	RunTest(list, name = "MIES with ITC Hardware", enableJU = 1, allowDebug = 0)
+End
+
+Function TEST_BEGIN_OVERRIDE(name)
+	string name
+
+	NVAR interactiveMode = $GetInteractiveMode()
+	interactiveMode = 0
+
+//	DisableDebugOutput()
+//	EnableDebugoutput()
+
+	NWB_LoadAllStimsets(filename = GetFolder(FunctionPath("")) + "_2017_09_01_192934-compressed.nwb", overwrite = 1)
+	KillDataFolder/Z root:WaveBuilder
+	DuplicateDataFolder	root:MIES:WaveBuilder, root:WaveBuilder
+	KillDataFolder/Z root:WaveBuilder:SavedStimulusSets
+End
+
+Function TEST_CASE_BEGIN_OVERRIDE(name)
+	string name
+
+	variable numWindows, i
+	string list, reentryFuncName, win
+
+	reentryFuncName = name + "_REENTRY"
+	FUNCREF TEST_CASE_PROTO reentryFunc = $reentryFuncName
+
+	if(FuncRefIsAssigned(FuncRefInfo(reentryFunc)))
+		CtrlNamedBackGround DAQWatchdog, start, period=120, proc=WaitUntilDAQDone_IGNORE
+		CtrlNamedBackGround TPWatchdog, start, period=120, proc=WaitUntilTPDone_IGNORE
+		RegisterUTFMonitor(TASKNAMES + "DAQWatchdog;TPWatchdog", BACKGROUNDMONMODE_AND, reentryFuncName, timeout = 600)
+	endif
+
+	list = WinList("*", ";", "WIN:67") // Panels, Graphs and tables
+
+	numWindows = ItemsInList(list)
+	for(i = 0; i < numWindows; i += 1)
+		win = StringFromList(i, list)
+
+		if(!cmpstr(win, "BW_MiesBackgroundWatchPanel"))
+			continue
+		endif
+
+		KillWindow $win
+	endfor
+
+	KillOrMoveToTrash(dfr=root:MIES)
+
+	GetMiesPath()
+	DuplicateDataFolder	root:WaveBuilder, root:MIES:WaveBuilder
+	REQUIRE(DataFolderExists("root:MIES:WaveBuilder:SavedStimulusSetParameters:DA"))
+
+	HW_ITC_CloseAllDevices()
+
+	CA_FlushCache()
+
+	DAP_GetNIDeviceList()
+	NVAR errorCounter = $GetAnalysisFuncErrorCounter(DEVICE)
+	errorCounter = 0
+End
+
+Function TEST_CASE_END_OVERRIDE(name)
+	string name
+
+	string devices, dev
+	variable numEntries, i
+
+	devices = GetDevices()
+
+	numEntries = ItemsInList(devices)
+	for(i = 0; i < numEntries; i += 1)
+		dev = StringFromList(i, devices)
+
+		// no analysis function errors
+		NVAR errorCounter = $GetAnalysisFuncErrorCounter(dev)
+		CHECK_EQUAL_VAR(errorCounter, 0)
+
+		// ascending sweep numbers in both labnotebooks
+		WAVE/Z sweeps = GetSweepsFromLBN_IGNORE(dev, "numericalValues")
+
+		if(!WaveExists(sweeps))
+			PASS()
+			continue
+		endif
+
+		Duplicate/FREE sweeps, unsortedSweeps
+		Sort sweeps, sweeps
+		CHECK_EQUAL_WAVES(sweeps, unsortedSweeps, mode = WAVE_DATA)
+
+		WAVE/Z sweeps = GetSweepsFromLBN_IGNORE(dev, "textualValues")
+
+		if(!WaveExists(sweeps))
+			PASS()
+			continue
+		endif
+
+		Duplicate/FREE sweeps, unsortedSweeps
+		Sort sweeps, sweeps
+		CHECK_EQUAL_WAVES(sweeps, unsortedSweeps, mode = WAVE_DATA)
+	endfor
+
+	CtrlNamedBackGround DAQWatchdog, stop
+	CtrlNamedBackGround TPWatchdog, stop
+End
+
+Function ChooseCorrectDevice(unlockedPanelTitle, dev)
+	string unlockedPanelTitle, dev
+
+	if(!cmpstr(dev, "ITC18USB_dev_0"))
+		PGC_SetAndActivateControl(unlockedPanelTitle, "popup_MoreSettings_DeviceType", val=5)
+	else // assume first NI device
+		PGC_SetAndActivateControl(unlockedPanelTitle, "popup_MoreSettings_DeviceType", val=6)
+	endif
+End
+
+static Function/WAVE GetSweepsFromLBN_IGNORE(device, name)
+	string device, name
+
+	variable col
+
+	DFREF dfr = GetDevSpecLabNBFolder(device)
+	WAVE/Z values = dfr:$name
+
+	if(!WaveExists(values))
+		return $""
+	endif
+
+	// all sweep numbers are ascending
+	col = GetSweepColumn(values)
+
+	if(IsTextWave(values))
+		Duplicate/T/FREE/RMD=[*][col][0] values, sweepsText
+		Redimension/N=-1 sweepsText
+
+		Make/FREE/N=(DimSize(sweepsText, ROWS)) sweeps = str2num(sweepsText[p])
+	else
+		Duplicate/FREE/RMD=[*][col][0] values, sweeps
+		Redimension/N=-1 sweeps
+	endif
+
+	WaveTransform/O zapNaNs, sweeps
+
+	return sweeps
+End
+
+/// @brief Return the list of active devices
+Function/S GetDevices()
+
+#ifdef TESTS_WITH_YOKING
+	return DEVICES_YOKED
+#else
+	return DEVICE
+#endif
+End
+
+Function/S GetSingleDevice()
+
+#ifdef TESTS_WITH_YOKING
+	return StringFromList(0, DEVICES_YOKED)
+#else
+	return DEVICE
+#endif
+End
+
+/// @brief Background function to wait until DAQ is finished.
+Function WaitUntilDAQDone_IGNORE(s)
+	STRUCT WMBackgroundStruct &s
+
+	string devices, dev
+	variable numEntries, i
+
+	devices = GetDevices()
+
+	numEntries = ItemsInList(devices)
+	for(i = 0; i < numEntries; i += 1)
+		dev = StringFromList(i, devices)
+
+		NVAR dataAcqRunMode = $GetDataAcqRunMode(dev)
+
+		if(IsNaN(dataAcqRunMode))
+			// not active
+			continue
+		endif
+
+		if(dataAcqRunMode != DAQ_NOT_RUNNING)
+			return 0
+		endif
+	endfor
+
+	return 1
+End
+
+/// @brief Background function to wait until TP is finished.
+///
+/// If it is finished pushes the next two, one setup and the
+/// corresponding `Test`, testcases to the queue.
+Function WaitUntilTPDone_IGNORE(s)
+	STRUCT WMBackgroundStruct &s
+
+	string devices, dev
+	variable numEntries, i
+
+	devices = GetDevices()
+
+	numEntries = ItemsInList(devices)
+	for(i = 0; i < numEntries; i += 1)
+		dev = StringFromList(i, devices)
+
+		NVAR runMode = $GetTestpulseRunMode(device)
+
+		if(IsNaN(runMode))
+			// not active
+			continue
+		endif
+
+		if(runMode != TEST_PULSE_NOT_RUNNING)
+			return 0
+		endif
+	endfor
+
+	return 1
+End
+
+Function StopAcqDuringITI_IGNORE(s)
+	STRUCT WMBackgroundStruct &s
+
+	string device = GetSingleDevice()
+	NVAR runMode = $GetTestpulseRunMode(device)
+
+	if(runMode & TEST_PULSE_DURING_RA_MOD)
+		PGC_SetAndActivateControl(device, "DataAcquireButton")
+		return 1
+	endif
+
+	return 0
+End
+
+Function StartTPDuringITI_IGNORE(s)
+	STRUCT WMBackgroundStruct &s
+
+	string device = GetSingleDevice()
+
+	NVAR runMode = $GetTestpulseRunMode(device)
+
+	if(runMode & TEST_PULSE_DURING_RA_MOD)
+		PGC_SetAndActivateControl(device, "StartTestPulseButton")
+		return 1
+	endif
+
+	return 0
+End
+
+Function ExecuteDuringITI_IGNORE(s)
+	STRUCT WMBackgroundStruct &s
+
+	string device = GetSingleDevice()
+
+	NVAR runMode = $GetTestpulseRunMode(device)
+
+	if(runMode & TEST_PULSE_DURING_RA_MOD)
+		RA_SkipSweeps(device, inf)
+		return 1
+	endif
+
+	return 0
+End
+
+Function StopAcq_IGNORE(s)
+	STRUCT WMBackgroundStruct &s
+
+	string device = GetSingleDevice()
+	PGC_SetAndActivateControl(device, "DataAcquireButton")
+
+	return 1
+End
+
+Function StopTP_IGNORE(s)
+	STRUCT WMBackgroundStruct &s
+
+	string device = GetSingleDevice()
+	PGC_SetAndActivateControl(device, "StartTestPulseButton")
+
+	return 1
+End
+
+Function StartAcq_IGNORE(s)
+	STRUCT WMBackgroundStruct &s
+
+	string device = GetSingleDevice()
+	PGC_SetAndActivateControl(device, "DataAcquireButton")
+	CtrlNamedBackGround DAQWatchdog, start, period=120, proc=WaitUntilDAQDone_IGNORE
+
+	return 1
+End
+
+Function ChangeStimSet_IGNORE(s)
+	STRUCT WMBackgroundStruct &s
+
+	string device, ctrl
+
+	device = GetSingleDevice()
+	ctrl   = GetPanelControl(0, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_WAVE)
+
+	PGC_SetAndActivateControl(device, ctrl, val = GetPopupMenuIndex(device, ctrl) + 1)
+
+	return 1
+End
+
+Function ClampModeDuringSweep_IGNORE(s)
+	STRUCT WMBackgroundStruct &s
+
+	string device = GetSingleDevice()
+
+	NVAR dataAcqRunMode = $GetDataAcqRunMode(device)
+
+	if(dataAcqRunMode != DAQ_NOT_RUNNING)
+		PGC_SetAndActivateControl(device, DAP_GetClampModeControl(I_CLAMP_MODE, 1), val=1)
+		return 1
+	endif
+
+	return 0
+End
+
+Function ClampModeDuringITI_IGNORE(s)
+	STRUCT WMBackgroundStruct &s
+
+	string device = GetSingleDevice()
+
+	NVAR dataAcqRunMode = $GetDataAcqRunMode(device)
+
+	if(IsFinite(dataAcqRunMode) && dataAcqRunMode != DAQ_NOT_RUNNING && IsDeviceActiveWithBGTask(device, "ITC_TimerMD"))
+		PGC_SetAndActivateControl(device, DAP_GetClampModeControl(I_CLAMP_MODE, 1), val=1)
+		return 1
+	endif
+
+	return 0
+End
+
+/// @brief Structure to hold various common DAQ DAQSettings
+///
+/// MultiDevice (MD: 1/0)
+/// Repeated Acquisition (RA: 1/0)
+/// Indexing (IDX: 1/0)
+/// Locked Indexing (LIDX: 1/0)
+/// Background Data acquisition (BKG_DAQ: 1/0)
+/// Repeat Sets (RES: [1, inf])
+Structure DAQSettings
+	variable MD, RA, IDX, LIDX, BKG_DAQ, RES
+EndStructure
+
+/// @brief Fill the #DAQSetttings structure from a specially crafted string
+Function InitDAQSettingsFromString(s, str)
+	STRUCT DAQSettings& s
+	string str
+
+	variable md, ra, idx, lidx, bkg_daq, res
+
+	/// @todo use longer names once IP8 is mandatory
+	sscanf str, "MD%d_RA%d_I%d_L%d_BKG_%d_RES_%d", md, ra, idx, lidx, bkg_daq, res
+	REQUIRE(V_Flag >= 5)
+
+	s.md        = md
+	s.ra        = ra
+	s.idx       = idx
+	s.lidx      = lidx
+	s.bkg_daq   = bkg_daq
+	s.res       = limit(res, 1, inf)
+End
+
+/// @brief Similiar to InitDAQSettingsFromString() but uses the function name of the caller
+Function InitSettings(s)
+	STRUCT DAQSettings& s
+
+	string caller = GetRTStackInfo(2)
+	InitDAQSettingsFromString(s, caller)
+End
+
+Function OpenDatabrowser()
+	string win = DB_OpenDataBrowser()
+	string panel = BSP_GetSweepControlsPanel(win)
+	PGC_SetAndActivateControl(panel, "check_SweepControl_AutoUpdate", val = 1)
+End
+
+Function CALLABLE_PROTO()
+	FAIL()
+End
 
 Function LoadStimsets()
 	string filename = GetFolder(FunctionPath("")) + "_2017_09_01_192934-compressed.nwb"
@@ -27,345 +440,4 @@ Function SaveStimsets()
 	string filename = GetFolder(FunctionPath("")) + "_2017_09_01_192934-compressed.nwb"
 	DeleteFile filename
 	NWB_ExportAllStimsets(overrideFilePath = filename)
-End
-
-Function run()
-	// speeds up testing to start with a fresh copy
-	KillWindow/Z HistoryCarbonCopy
-
-//	DisableDebugOutput()
-//	EnableDebugoutput()
-
-	string list = ""
-
-	NWB_LoadAllStimsets(filename = GetFolder(FunctionPath("")) + "_2017_09_01_192934-compressed.nwb", overwrite = 1)
-	KillDataFolder/Z root:WaveBuilder
-	DuplicateDataFolder	root:MIES:WaveBuilder, root:WaveBuilder
-	KillDataFolder/Z root:WaveBuilder:SavedStimulusSets
-
-	RunTest("UTF_VeryBasicHardwareTests.ipf;UTF_DAEphys.ipf;UTF_AnalysisFunctionParameters.ipf", enableJU = 1)
-
-#ifndef TESTS_WITH_YOKING
-#ifndef TESTS_WITH_NI_HARDWARE
-
-	list = AddListItem("DAQ_MD0_RA0_IDX0_LIDX0_BKG_0", list, ";", INF)
-	list = AddListItem("Test_MD0_RA0_IDX0_LIDX0_BKG_0", list, ";", INF)
-	list = AddListItem("DAQ_MD0_RA1_IDX0_LIDX0_BKG_0", list, ";", INF)
-	list = AddListItem("Test_MD0_RA1_IDX0_LIDX0_BKG_0", list, ";", INF)
-	list = AddListItem("DAQ_MD0_RA1_IDX1_LIDX0_BKG_0", list, ";", INF)
-	list = AddListItem("Test_MD0_RA1_IDX1_LIDX0_BKG_0", list, ";", INF)
-	list = AddListItem("DAQ_MD0_RA1_IDX1_LIDX1_BKG_0", list, ";", INF)
-	list = AddListItem("Test_MD0_RA1_IDX1_LIDX1_BKG_0", list, ";", INF)
-
-#endif
-#endif
-
-	list = AddListItem("DAQ_MD1_RA0_IDX0_LIDX0_BKG_1", list, ";", INF)
-	list = AddListItem("Test_MD1_RA0_IDX0_LIDX0_BKG_1", list, ";", INF)
-	list = AddListItem("DAQ_MD1_RA1_IDX0_LIDX0_BKG_1", list, ";", INF)
-	list = AddListItem("Test_MD1_RA1_IDX0_LIDX0_BKG_1", list, ";", INF)
-
-#ifndef TESTS_WITH_YOKING
-#ifndef TESTS_WITH_NI_HARDWARE
-
-	list = AddListItem("DAQ_MD1_RA1_IDX1_LIDX0_BKG_1", list, ";", INF)
-	list = AddListItem("Test_MD1_RA1_IDX1_LIDX0_BKG_1", list, ";", INF)
-	list = AddListItem("DAQ_MD1_RA1_IDX1_LIDX1_BKG_1", list, ";", INF)
-	list = AddListItem("Test_MD1_RA1_IDX1_LIDX1_BKG_1", list, ";", INF)
-
-#endif
-#endif
-
-	list = AddListItem("DAQ_RepeatSets_1", list, ";", INF)
-	list = AddListItem("Test_RepeatSets_1", list, ";", INF)
-
-#ifndef TESTS_WITH_YOKING
-
-	list = AddListItem("DAQ_RepeatSets_2", list, ";", INF)
-	list = AddListItem("Test_RepeatSets_2", list, ";", INF)
-	list = AddListItem("DAQ_RepeatSets_3", list, ";", INF)
-	list = AddListItem("Test_RepeatSets_3", list, ";", INF)
-	list = AddListItem("DAQ_RepeatSets_4", list, ";", INF)
-	list = AddListItem("Test_RepeatSets_4", list, ";", INF)
-	list = AddListItem("DAQ_RepeatSets_5", list, ";", INF)
-	list = AddListItem("Test_RepeatSets_5", list, ";", INF)
-	list = AddListItem("DAQ_RepeatSets_6", list, ";", INF)
-	list = AddListItem("Test_RepeatSets_6", list, ";", INF)
-	list = AddListItem("DAQ_RepeatSets_7", list, ";", INF)
-	list = AddListItem("Test_RepeatSets_7", list, ";", INF)
-	list = AddListItem("DAQ_CheckActiveSetCountU", list, ";", INF)
-	list = AddListItem("Test_CheckActiveSetCountU", list, ";", INF)
-	list = AddListItem("DAQ_CheckActiveSetCountL", list, ";", INF)
-	list = AddListItem("Test_CheckActiveSetCountL", list, ";", INF)
-	list = AddListItem("DAQ_SweepSkipping", list, ";", INF)
-	list = AddListItem("Test_SweepSkipping", list, ";", INF)
-
-#endif
-
-#ifndef TESTS_WITH_YOKING
-#ifndef TESTS_WITH_NI_HARDWARE
-
-	list = AddListItem("DAQ_SkipSweepsDuringITI_SD", list, ";", INF)
-	list = AddListItem("Test_SkipSweepsDuringITI_SD", list, ";", INF)
-
-#endif
-#endif
-
-	list = AddListItem("DAQ_SkipSweepsDuringITI_MD", list, ";", INF)
-	list = AddListItem("Test_SkipSweepsDuringITI_MD", list, ";", INF)
-
-#ifndef TESTS_WITH_YOKING
-#ifndef TESTS_WITH_NI_HARDWARE
-
-	list = AddListItem("DAQ_Abort_ITI_PressAcq_SD", list, ";", INF)
-	list = AddListItem("Test_Abort_ITI_PressAcq_SD", list, ";", INF)
-	list = AddListItem("DAQ_Abort_ITI_PressTP_SD", list, ";", INF)
-	list = AddListItem("Test_Abort_ITI_PressTP_SD", list, ";", INF)
-	list = AddListItem("DAQ_Abort_ITI_TP_A_PressAcq_SD", list, ";", INF)
-	list = AddListItem("Test_Abort_ITI_TP_A_PressAcq_SD", list, ";", INF)
-	list = AddListItem("DAQ_Abort_ITI_TP_A_PressTP_SD", list, ";", INF)
-	list = AddListItem("Test_Abort_ITI_TP_A_PressTP_SD", list, ";", INF)
-
-#endif
-#endif
-
-	list = AddListItem("DAQ_Abort_ITI_PressAcq_MD", list, ";", INF)
-	list = AddListItem("Test_Abort_ITI_PressAcq_MD", list, ";", INF)
-	list = AddListItem("DAQ_Abort_ITI_PressTP_MD", list, ";", INF)
-	list = AddListItem("Test_Abort_ITI_PressTP_MD", list, ";", INF)
-	list = AddListItem("DAQ_ChangeStimSetDuringDAQ", list, ";", INF)
-	list = AddListItem("Test_ChangeStimSetDuringDAQ", list, ";", INF)
-
-#ifndef TESTS_WITH_YOKING
-
-	list = AddListItem("DAQ_Abort_ITI_TP_A_PressAcq_MD", list, ";", INF)
-	list = AddListItem("Test_Abort_ITI_TP_A_PressAcq_MD", list, ";", INF)
-	list = AddListItem("DAQ_Abort_ITI_TP_A_PressTP_MD", list, ";", INF)
-	list = AddListItem("Test_Abort_ITI_TP_A_PressTP_MD", list, ";", INF)
-
-#endif
-
-#ifndef TESTS_WITH_NI_HARDWARE
-
-	list = AddListItem("DAQ_ChangeToSingleDeviceDAQ", list, ";", INF)
-	list = AddListItem("Test_ChangeToSingleDeviceDAQ", list, ";", INF)
-	list = AddListItem("DAQ_ChangeToMultiDeviceDAQ", list, ";", INF)
-	list = AddListItem("Test_ChangeToMultiDeviceDAQ", list, ";", INF)
-
-#endif
-
-	list = AddListItem("DAQ_UnassociatedChannels", list, ";", INF)
-	list = AddListItem("Test_UnassociatedChannels", list, ";", INF)
-
-	list = AddListItem("DAQ_CheckSamplingInterval1", list, ";", INF)
-	list = AddListItem("Test_CheckSamplingInterval1", list, ";", INF)
-	list = AddListItem("DAQ_CheckSamplingInterval2", list, ";", INF)
-	list = AddListItem("Test_CheckSamplingInterval2", list, ";", INF)
-	list = AddListItem("DAQ_CheckSamplingInterval3", list, ";", INF)
-	list = AddListItem("Test_CheckSamplingInterval3", list, ";", INF)
-
-	list = AddListItem("DAQ_ChangeCMDuringSweep", list, ";", INF)
-	list = AddListItem("Test_ChangeCMDuringSweep", list, ";", INF)
-
-	list = AddListItem("DAQ_ChangeCMDuringSweepWMS", list, ";", INF)
-	list = AddListItem("Test_ChangeCMDuringSweepWMS", list, ";", INF)
-
-	list = AddListItem("DAQ_ChangeCMDuringSweepNoRA", list, ";", INF)
-	list = AddListItem("Test_ChangeCMDuringSweepNoRA", list, ";", INF)
-
-	list = AddListItem("DAQ_ChangeCMDuringITI", list, ";", INF)
-	list = AddListItem("Test_ChangeCMDuringITI", list, ";", INF)
-
-	list = AddListItem("DAQ_ChangeCMDuringITIWithTP", list, ";", INF)
-	list = AddListItem("Test_ChangeCMDuringITIWithTP", list, ";", INF)
-
-	list = AddListItem("DAQ_StartDAQDuringTP", list, ";", INF)
-	list = AddListItem("Test_StartDAQDuringTP", list, ";", INF)
-
-#ifndef TESTS_WITH_YOKING
-
-	list = AddListItem("PS_DS_Sub_Run1", list, ";", INF)
-	list = AddListItem("PS_DS_Sub_Test1", list, ";", INF)
-	list = AddListItem("PS_DS_Sub_Run2", list, ";", INF)
-	list = AddListItem("PS_DS_Sub_Test2", list, ";", INF)
-	list = AddListItem("PS_DS_Sub_Run3", list, ";", INF)
-	list = AddListItem("PS_DS_Sub_Test3", list, ";", INF)
-	list = AddListItem("PS_DS_Sub_Run4", list, ";", INF)
-	list = AddListItem("PS_DS_Sub_Test4", list, ";", INF)
-	list = AddListItem("PS_DS_Sub_Run5", list, ";", INF)
-	list = AddListItem("PS_DS_Sub_Test5", list, ";", INF)
-	list = AddListItem("PS_DS_Sub_Run6", list, ";", INF)
-	list = AddListItem("PS_DS_Sub_Test6", list, ";", INF)
-	list = AddListItem("PS_DS_Sub_Run7", list, ";", INF)
-	list = AddListItem("PS_DS_Sub_Test7", list, ";", INF)
-	list = AddListItem("PS_DS_Sub_Run8", list, ";", INF)
-	list = AddListItem("PS_DS_Sub_Test8", list, ";", INF)
-	list = AddListItem("PS_DS_Supra_Run1", list, ";", INF)
-	list = AddListItem("PS_DS_Supra_Test1", list, ";", INF)
-	list = AddListItem("PS_DS_Supra_Run2", list, ";", INF)
-	list = AddListItem("PS_DS_Supra_Test2", list, ";", INF)
-
-	list = AddListItem("PS_SP_Run1", list, ";", INF)
-	list = AddListItem("PS_SP_Test1", list, ";", INF)
-	list = AddListItem("PS_SP_Run2", list, ";", INF)
-	list = AddListItem("PS_SP_Test2", list, ";", INF)
-	list = AddListItem("PS_SP_Run3", list, ";", INF)
-	list = AddListItem("PS_SP_Test3", list, ";", INF)
-	list = AddListItem("PS_SP_Run4", list, ";", INF)
-	list = AddListItem("PS_SP_Test4", list, ";", INF)
-	list = AddListItem("PS_SP_Run5", list, ";", INF)
-	list = AddListItem("PS_SP_Test5", list, ";", INF)
-	list = AddListItem("PS_SP_Run6", list, ";", INF)
-	list = AddListItem("PS_SP_Test6", list, ";", INF)
-	list = AddListItem("PS_SP_Run7", list, ";", INF)
-	list = AddListItem("PS_SP_Test7", list, ";", INF)
-
-	list = AddListItem("PS_RB_Run1", list, ";", INF)
-	list = AddListItem("PS_RB_Test1", list, ";", INF)
-	list = AddListItem("PS_RB_Run2", list, ";", INF)
-	list = AddListItem("PS_RB_Test2", list, ";", INF)
-	list = AddListItem("PS_RB_Run3", list, ";", INF)
-	list = AddListItem("PS_RB_Test3", list, ";", INF)
-	list = AddListItem("PS_RB_Run4", list, ";", INF)
-	list = AddListItem("PS_RB_Test4", list, ";", INF)
-	list = AddListItem("PS_RB_Run5", list, ";", INF)
-	list = AddListItem("PS_RB_Test5", list, ";", INF)
-	list = AddListItem("PS_RB_Run6", list, ";", INF)
-	list = AddListItem("PS_RB_Test6", list, ";", INF)
-	list = AddListItem("PS_RB_Run7", list, ";", INF)
-	list = AddListItem("PS_RB_Test7", list, ";", INF)
-	list = AddListItem("PS_RB_Run8", list, ";", INF)
-	list = AddListItem("PS_RB_Test8", list, ";", INF)
-	list = AddListItem("PS_RB_Run9", list, ";", INF)
-	list = AddListItem("PS_RB_Test9", list, ";", INF)
-	list = AddListItem("PS_RB_Run10", list, ";", INF)
-	list = AddListItem("PS_RB_Test10", list, ";", INF)
-
-#ifndef TESTS_WITH_NI_HARDWARE
-
-	list = AddListItem("PS_RA_Run1", list, ";", INF)
-	list = AddListItem("PS_RA_Test1", list, ";", INF)
-	list = AddListItem("PS_RA_Run2", list, ";", INF)
-	list = AddListItem("PS_RA_Test2", list, ";", INF)
-	list = AddListItem("PS_RA_Run3", list, ";", INF)
-	list = AddListItem("PS_RA_Test3", list, ";", INF)
-	list = AddListItem("PS_RA_Run4", list, ";", INF)
-	list = AddListItem("PS_RA_Test4", list, ";", INF)
-	list = AddListItem("PS_RA_Run5", list, ";", INF)
-	list = AddListItem("PS_RA_Test5", list, ";", INF)
-	list = AddListItem("PS_RA_Run6", list, ";", INF)
-	list = AddListItem("PS_RA_Test6", list, ";", INF)
-
-#endif
-
-	list = AddListItem("AFT_DAQ1", list, ";", INF)
-	list = AddListItem("AFT_Test1", list, ";", INF)
-	list = AddListItem("AFT_DAQ2", list, ";", INF)
-	list = AddListItem("AFT_Test2", list, ";", INF)
-	list = AddListItem("AFT_DAQ3", list, ";", INF)
-	list = AddListItem("AFT_Test3", list, ";", INF)
-	list = AddListItem("AFT_DAQ4", list, ";", INF)
-	list = AddListItem("AFT_Test4", list, ";", INF)
-	list = AddListItem("AFT_DAQ5", list, ";", INF)
-	list = AddListItem("AFT_Test5", list, ";", INF)
-	list = AddListItem("AFT_DAQ6", list, ";", INF)
-	list = AddListItem("AFT_Test6", list, ";", INF)
-	list = AddListItem("AFT_DAQ6a", list, ";", INF)
-	list = AddListItem("AFT_Test6a", list, ";", INF)
-	list = AddListItem("AFT_DAQ6b", list, ";", INF)
-	list = AddListItem("AFT_Test6b", list, ";", INF)
-	list = AddListItem("AFT_DAQ7", list, ";", INF)
-	list = AddListItem("AFT_Test7", list, ";", INF)
-	list = AddListItem("AFT_DAQ8", list, ";", INF)
-	list = AddListItem("AFT_Test8", list, ";", INF)
-	list = AddListItem("AFT_DAQ9", list, ";", INF)
-	list = AddListItem("AFT_Test9", list, ";", INF)
-	list = AddListItem("AFT_DAQ10", list, ";", INF)
-	list = AddListItem("AFT_Test10", list, ";", INF)
-	list = AddListItem("AFT_DAQ11", list, ";", INF)
-	list = AddListItem("AFT_Test11", list, ";", INF)
-	list = AddListItem("AFT_DAQ12", list, ";", INF)
-	list = AddListItem("AFT_Test12", list, ";", INF)
-	list = AddListItem("AFT_DAQ13", list, ";", INF)
-	list = AddListItem("AFT_Test13", list, ";", INF)
-	list = AddListItem("AFT_DAQ14", list, ";", INF)
-	list = AddListItem("AFT_Test14", list, ";", INF)
-	list = AddListItem("AFT_DAQ14a", list, ";", INF)
-	list = AddListItem("AFT_Test14a", list, ";", INF)
-	list = AddListItem("AFT_DAQ14b", list, ";", INF)
-	list = AddListItem("AFT_Test14b", list, ";", INF)
-	list = AddListItem("AFT_DAQ14c", list, ";", INF)
-	list = AddListItem("AFT_Test14c", list, ";", INF)
-	list = AddListItem("AFT_DAQ15", list, ";", INF)
-	list = AddListItem("AFT_Test15", list, ";", INF)
-
-#ifndef TESTS_WITH_NI_HARDWARE
-
-	list = AddListItem("AFT_DAQ16", list, ";", INF)
-	list = AddListItem("AFT_Test16", list, ";", INF)
-
-#endif
-
-	list = AddListItem("AFT_DAQ17", list, ";", INF)
-	list = AddListItem("AFT_Test17", list, ";", INF)
-	list = AddListItem("AFT_DAQ18", list, ";", INF)
-	list = AddListItem("AFT_Test18", list, ";", INF)
-	list = AddListItem("AFT_DAQ19", list, ";", INF)
-	list = AddListItem("AFT_Test19", list, ";", INF)
-	list = AddListItem("AFT_DAQ20", list, ";", INF)
-	list = AddListItem("AFT_Test20", list, ";", INF)
-
-	list = AddListItem("AFT_SetControls1", list, ";", INF)
-	list = AddListItem("AFT_SetControlsTest1", list, ";", INF)
-	list = AddListItem("AFT_SetControls2", list, ";", INF)
-	list = AddListItem("AFT_SetControlsTest2", list, ";", INF)
-	list = AddListItem("AFT_SetControls2a", list, ";", INF)
-	list = AddListItem("AFT_SetControlsTest2a", list, ";", INF)
-	list = AddListItem("AFT_SetControls2b", list, ";", INF)
-	list = AddListItem("AFT_SetControlsTest2b", list, ";", INF)
-	list = AddListItem("AFT_SetControls3", list, ";", INF)
-	list = AddListItem("AFT_SetControlsTest3", list, ";", INF)
-	list = AddListItem("AFT_SetControls3a", list, ";", INF)
-	list = AddListItem("AFT_SetControlsTest3a", list, ";", INF)
-	list = AddListItem("AFT_SetControls3b", list, ";", INF)
-	list = AddListItem("AFT_SetControlsTest3b", list, ";", INF)
-	list = AddListItem("AFT_SetControls3c", list, ";", INF)
-	list = AddListItem("AFT_SetControlsTest3c", list, ";", INF)
-	list = AddListItem("AFT_SetControls4", list, ";", INF)
-	list = AddListItem("AFT_SetControlsTest4", list, ";", INF)
-	list = AddListItem("AFT_SetControls5", list, ";", INF)
-	list = AddListItem("AFT_SetControlsTest5", list, ";", INF)
-	list = AddListItem("AFT_SetControls6", list, ";", INF)
-	list = AddListItem("AFT_SetControlsTest6", list, ";", INF)
-
-	list = AddListItem("MSQ_FRE_Run1", list, ";", INF)
-	list = AddListItem("MSQ_FRE_Test1", list, ";", INF)
-	list = AddListItem("MSQ_FRE_Run2", list, ";", INF)
-	list = AddListItem("MSQ_FRE_Test2", list, ";", INF)
-	list = AddListItem("MSQ_FRE_Run3", list, ";", INF)
-	list = AddListItem("MSQ_FRE_Test3", list, ";", INF)
-	list = AddListItem("MSQ_FRE_Run4", list, ";", INF)
-	list = AddListItem("MSQ_FRE_Test4", list, ";", INF)
-	list = AddListItem("MSQ_FRE_Run5", list, ";", INF)
-	list = AddListItem("MSQ_FRE_Test5", list, ";", INF)
-	list = AddListItem("MSQ_FRE_Run6", list, ";", INF)
-	list = AddListItem("MSQ_FRE_Test6", list, ";", INF)
-	list = AddListItem("MSQ_FRE_Run7", list, ";", INF)
-	list = AddListItem("MSQ_FRE_Test7", list, ";", INF)
-	list = AddListItem("MSQ_FRE_Run8", list, ";", INF)
-	list = AddListItem("MSQ_FRE_Test8", list, ";", INF)
-	list = AddListItem("MSQ_FRE_Run9", list, ";", INF)
-	list = AddListItem("MSQ_FRE_Test9", list, ";", INF)
-	list = AddListItem("MSQ_FRE_Run10", list, ";", INF)
-	list = AddListItem("MSQ_FRE_Test10", list, ";", INF)
-
-	list = AddListItem("MSQ_DS_Run1", list, ";", INF)
-	list = AddListItem("MSQ_DS_Test1", list, ";", INF)
-#endif
-
-	// initialize everything
-	CtrlNamedBackGround DAQWatchdog, stop, period=120, proc=WaitUntilDAQDone_IGNORE
-	Initialize_IGNORE()
-	SetupTestCases_IGNORE(list)
-	ExecuteNextTestCase_IGNORE()
 End

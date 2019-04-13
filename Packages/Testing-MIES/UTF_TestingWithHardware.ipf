@@ -374,7 +374,7 @@ Function InitDAQSettingsFromString(s, str)
 
 	variable md, ra, idx, lidx, bkg_daq, res
 
-	sscanf str, "DAQ_MD%d_RA%d_IDX%d_LIDX%d_BKG_%d_RES_%d", md, ra, idx, lidx, bkg_daq, res
+	sscanf str, "DAQ_MD%d_RA%d_I%d_L%d_BKG_%d_RES_%d", md, ra, idx, lidx, bkg_daq, res
 	REQUIRE(V_Flag >= 5)
 
 	s.md        = md

@@ -8,8 +8,6 @@ static Constant HEADSTAGE = 0
 static Function AcquireData(s)
 	STRUCT DAQSettings& s
 
-	Initialize_IGNORE()
-
 	string unlockedPanelTitle = DAP_CreateDAEphysPanel()
 
 	ChooseCorrectDevice(unlockedPanelTitle, DEVICE)
@@ -51,7 +49,6 @@ static Function AcquireData(s)
 
 	DoUpdate/W=$DEVICE
 
-	CtrlNamedBackGround DAQWatchdog, start, period=120, proc=WaitUntilDAQDone_IGNORE
 	PGC_SetAndActivateControl(DEVICE, "DataAcquireButton")
 	OpenDatabrowser()
 End
@@ -76,10 +73,10 @@ static Function/WAVE GetDAScaleStepSize_IGNORE(sweepNo)
 	return GetLastSettingIndepEachRAC(numericalValues, sweepNo, key, UNKNOWN_MODE)
 End
 
-static Function PS_SP_Run1()
+static Function PS_SP1()
 
 	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "DAQ_MD1_RA1_IDX0_LIDX0_BKG_1")
+	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG_1")
 	AcquireData(s)
 
 	WAVE wv = PSQ_CreateOverrideResults(DEVICE, HEADSTAGE, PSQ_SQUARE_PULSE)
@@ -87,7 +84,7 @@ static Function PS_SP_Run1()
 	wv = 0
 End
 
-static Function PS_SP_Test1()
+static Function PS_SP1_REENTRY()
 
 	variable sweepNo, sweepPassed, setPassed, finalDAScale, numEntries
 	string key
@@ -129,10 +126,10 @@ static Function PS_SP_Test1()
 	CHECK_EQUAL_WAVES(stepSizes, {100e-12, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN}, mode = WAVE_DATA, tol = 1e-13)
 End
 
-static Function PS_SP_Run2()
+static Function PS_SP2()
 
 	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "DAQ_MD1_RA1_IDX0_LIDX0_BKG_1")
+	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG_1")
 	AcquireData(s)
 
 	WAVE wv = PSQ_CreateOverrideResults(DEVICE, HEADSTAGE, PSQ_SQUARE_PULSE)
@@ -141,7 +138,7 @@ static Function PS_SP_Run2()
 	wv = 2.5
 End
 
-static Function PS_SP_Test2()
+static Function PS_SP2_REENTRY()
 
 	variable sweepNo, sweepPassed, setPassed, finalDAScale, numEntries
 	string key
@@ -183,10 +180,10 @@ static Function PS_SP_Test2()
 	CHECK_EQUAL_WAVES(stepSizes, {100e-12, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN}, mode = WAVE_DATA, tol = 1e-13)
 End
 
-static Function PS_SP_Run3()
+static Function PS_SP3()
 
 	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "DAQ_MD1_RA1_IDX0_LIDX0_BKG_1")
+	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG_1")
 	AcquireData(s)
 
 	WAVE wv = PSQ_CreateOverrideResults(DEVICE, HEADSTAGE, PSQ_SQUARE_PULSE)
@@ -195,7 +192,7 @@ static Function PS_SP_Run3()
 	wv[1] = 1
 End
 
-static Function PS_SP_Test3()
+static Function PS_SP3_REENTRY()
 
 	variable sweepNo, sweepPassed, setPassed, finalDAScale, numEntries
 	string key
@@ -237,10 +234,10 @@ static Function PS_SP_Test3()
 	CHECK_EQUAL_WAVES(stepSizes, {100e-12, -50e-12, 10e-12, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN}, mode = WAVE_DATA, tol = 1e-13)
 End
 
-static Function PS_SP_Run4()
+static Function PS_SP4()
 
 	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "DAQ_MD1_RA1_IDX0_LIDX0_BKG_1")
+	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG_1")
 	AcquireData(s)
 
 	WAVE wv = PSQ_CreateOverrideResults(DEVICE, HEADSTAGE, PSQ_SQUARE_PULSE)
@@ -249,7 +246,7 @@ static Function PS_SP_Run4()
 	wv[1,2] = 1
 End
 
-static Function PS_SP_Test4()
+static Function PS_SP4_REENTRY()
 
 	variable sweepNo, sweepPassed, setPassed, finalDAScale, numEntries
 	string key
@@ -291,10 +288,10 @@ static Function PS_SP_Test4()
 	CHECK_EQUAL_WAVES(stepSizes, {100e-12, -50e-12, NaN, 10e-12, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN}, mode = WAVE_DATA, tol = 1e-13)
 End
 
-static Function PS_SP_Run5()
+static Function PS_SP5()
 
 	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "DAQ_MD1_RA1_IDX0_LIDX0_BKG_1")
+	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG_1")
 	AcquireData(s)
 
 	WAVE wv = PSQ_CreateOverrideResults(DEVICE, HEADSTAGE, PSQ_SQUARE_PULSE)
@@ -304,7 +301,7 @@ static Function PS_SP_Run5()
 	wv[3] = 1
 End
 
-static Function PS_SP_Test5()
+static Function PS_SP5_REENTRY()
 
 	variable sweepNo, sweepPassed, setPassed, finalDAScale, numEntries
 	string key
@@ -346,10 +343,10 @@ static Function PS_SP_Test5()
 	CHECK_EQUAL_WAVES(stepSizes, {100e-12, -50e-12, 10e-12, NaN}, mode = WAVE_DATA, tol = 1e-13)
 End
 
-static Function PS_SP_Run6()
+static Function PS_SP6()
 
 	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "DAQ_MD1_RA1_IDX0_LIDX0_BKG_1")
+	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG_1")
 	AcquireData(s)
 
 	WAVE wv = PSQ_CreateOverrideResults(DEVICE, HEADSTAGE, PSQ_SQUARE_PULSE)
@@ -359,7 +356,7 @@ static Function PS_SP_Run6()
 	wv[4] = 1
 End
 
-static Function PS_SP_Test6()
+static Function PS_SP6_REENTRY()
 
 	variable sweepNo, sweepPassed, setPassed, finalDAScale, numEntries
 	string key
@@ -402,10 +399,10 @@ static Function PS_SP_Test6()
 	CHECK_EQUAL_WAVES(stepSizes, {-50e-12, NaN, NaN, 10e-12, NaN}, mode = WAVE_DATA, tol = 1e-13)
 End
 
-static Function PS_SP_Run7()
+static Function PS_SP7()
 
 	STRUCT DAQSettings s
-	InitDAQSettingsFromString(s, "DAQ_MD1_RA1_IDX0_LIDX0_BKG_1")
+	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG_1")
 	AcquireData(s)
 
 	WAVE wv = PSQ_CreateOverrideResults(DEVICE, HEADSTAGE, PSQ_SQUARE_PULSE)
@@ -413,7 +410,7 @@ static Function PS_SP_Run7()
 	wv[] = 1
 End
 
-static Function PS_SP_Test7()
+static Function PS_SP7_REENTRY()
 
 	variable sweepNo, sweepPassed, setPassed, finalDAScale, numEntries
 	string key
