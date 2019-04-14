@@ -741,10 +741,16 @@ End
 /// @brief Return if the analysis function results are overriden for testing purposes
 static Function MSQ_TestOverrideActive()
 
+	variable numberOfOverrideWarnings
+
 	WAVE/Z/SDFR=root: overrideResults
 
 	if(WaveExists(overrideResults))
-		print "TEST OVERRIDE ACTIVE"
+		numberOfOverrideWarnings = GetNumberFromWaveNote(overrideResults, "OverrideWarningIssued")
+		if(IsNaN(numberOfOverrideWarnings))
+			print "TEST OVERRIDE ACTIVE"
+			SetNumberInWaveNote(overrideResults, "OverrideWarningIssued", 1)
+		endif
 		return 1
 	endif
 
