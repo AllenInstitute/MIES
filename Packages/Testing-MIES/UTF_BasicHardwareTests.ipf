@@ -2444,7 +2444,7 @@ End
 Function ITISetupNoTP_IGNORE()
 
 	PGC_SetAndActivateControl(device, "Check_DataAcq_Get_Set_ITI", val=0)
-	PGC_SetAndActivateControl(device, "SetVar_DataAcq_ITI", val=2)
+	PGC_SetAndActivateControl(device, "SetVar_DataAcq_ITI", val=5)
 	PGC_SetAndActivateControl(device, "check_Settings_ITITP", val=0)
 End
 
@@ -2512,7 +2512,10 @@ Function ChangeCMDuringITIWithTP()
 	ctrl = DAP_GetClampModeControl(V_CLAMP_MODE, 1)
 	CHECK_EQUAL_VAR(GetCheckBoxState(DEVICE, ctrl), 1)
 
-	CtrlNamedBackGround ChangeClampModeDuringSweep, start, period=30, proc=ClampModeDuringITI_IGNORE
+	RegisterUTFMonitor(TASKNAMES + "DAQWatchdog;TPWatchdog;ChangeClampModeDuringSweep", BACKGROUNDMONMODE_AND, \
+					   "ChangeCMDuringITIWithTP_REENTRY", timeout = 600)
+
+	CtrlNamedBackGround ChangeClampModeDuringSweep, start, period=10, proc=ClampModeDuringITI_IGNORE
 End
 
 Function ChangeCMDuringITIWithTP_REENTRY()
