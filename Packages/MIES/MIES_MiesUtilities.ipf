@@ -3301,17 +3301,8 @@ static Function ZeroTracesIfReq(graph, traces, zeroTraces)
 	numTraces = DimSize(traces, ROWS)
 	for(i = 0; i < numTraces; i += 1)
 		trace = traces[i]
-
 		WAVE wv = TraceNameToWaveRef(graph, trace)
-
-		if(HasEntryInWaveNoteList(wv, NOTE_KEY_ZEROED, "true"))
-			continue
-		endif
-
-		WAVE backup = CreateBackupWave(wv)
 		ZeroWave(wv)
-		Note wv, note(backup) + "\r"
-		AddEntryIntoWaveNoteAsList(wv, NOTE_KEY_ZEROED, str="true", replaceEntry=1)
 	endfor
 End
 
@@ -4977,4 +4968,30 @@ Function SetupBackgroundTasks()
 	CtrlNamedBackground $TASKNAME_TPMD, period=5, proc=TPM_BkrdTPFuncMD
 	CtrlNamedBackground $TASKNAME_TP, period = 5, proc=TPS_TestPulseFunc
 	CtrlNamedBackground P_ITC_FIFOMonitor, period = 10, proc=P_ITC_FIFOMonitorProc
+End
+
+/// @brief Zero the wave using differentiation and integration
+///
+/// Overwrites the input wave
+/// Preserves the WaveNote and adds the entry NOTE_KEY_ZEROED
+///
+/// 2D waves are zeroed along each row
+Function ZeroWave(wv)
+	WAVE wv
+
+	string wavenote
+
+	if(GetNumberFromWaveNote(wv, NOTE_KEY_ZEROED) == 1)
+		return NaN
+	endif
+
+	CreateBackupWave(wv)
+
+	wavenote = note(wv)
+
+	Differentiate/DIM=0/EP=1 wv/D=wv
+	Integrate/DIM=0 wv/D=wv
+
+	Note/K wv, wavenote + "\r"
+	SetNumberInWaveNote(wv, NOTE_KEY_ZEROED, 1)
 End
