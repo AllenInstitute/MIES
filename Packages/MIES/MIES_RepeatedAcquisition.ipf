@@ -98,7 +98,7 @@ static Function RA_HandleITI(panelTitle)
 		elseif(background)
 			DQS_StartBackgroundTimer(panelTitle, ITI, funcList)
 		else
-			RA_WaitUntiIITIDone(panelTitle, ITI)
+			aborted = RA_WaitUntiIITIDone(panelTitle, ITI)
 
 			if(aborted)
 				RA_FinishAcquisition(panelTitle)
