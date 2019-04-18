@@ -2143,7 +2143,7 @@ Function UnassociatedChannels_REENTRY()
 	endfor
 End
 
-static Function GetMinSampInt([unit])
+static Function GetMinSampInt_IGNORE([unit])
 	string unit
 
 	variable factor
@@ -2192,12 +2192,12 @@ Function CheckSamplingInterval1_REENTRY()
 	CHECK_WAVE(configWave, NORMAL_WAVE)
 
 	sampInt = GetSamplingInterval(configWave)
-	CHECK_CLOSE_VAR(sampInt, GetMinSampInt(unit="µs"), tol=1e-6)
+	CHECK_CLOSE_VAR(sampInt, GetMinSampInt_IGNORE(unit="µs"), tol=1e-6)
 
 	WAVE numericalValues = GetLBNumericalValues(DEVICE)
 
 	sampInt = GetLastSettingIndep(numericalValues, sweepNo, "Sampling interval", DATA_ACQUISITION_MODE)
-	expectedSampInt = GetMinSampInt(unit="ms")
+	expectedSampInt = GetMinSampInt_IGNORE(unit="ms")
 	CHECK_CLOSE_VAR(sampInt, expectedSampInt, tol=1e-6)
 
 	sampIntMult = GetLastSettingIndep(numericalValues, sweepNo, "Sampling interval multiplier", DATA_ACQUISITION_MODE)
@@ -2238,12 +2238,12 @@ Function CheckSamplingInterval2_REENTRY()
 	CHECK_WAVE(configWave, NORMAL_WAVE)
 
 	sampInt = GetSamplingInterval(configWave)
-	CHECK_CLOSE_VAR(sampInt, GetMinSampInt(unit="µs") * 8, tol=1e-6)
+	CHECK_CLOSE_VAR(sampInt, GetMinSampInt_IGNORE(unit="µs") * 8, tol=1e-6)
 
 	WAVE numericalValues = GetLBNumericalValues(DEVICE)
 
 	sampInt = GetLastSettingIndep(numericalValues, sweepNo, "Sampling interval", DATA_ACQUISITION_MODE)
-	expectedSampInt = GetMinSampInt(unit="ms") * 8
+	expectedSampInt = GetMinSampInt_IGNORE(unit="ms") * 8
 	CHECK_CLOSE_VAR(sampInt, expectedSampInt, tol=1e-6)
 
 	sampIntMult = GetLastSettingIndep(numericalValues, sweepNo, "Sampling interval multiplier", DATA_ACQUISITION_MODE)
