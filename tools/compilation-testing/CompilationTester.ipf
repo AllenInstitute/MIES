@@ -1,4 +1,4 @@
-#pragma rtGlobals=3		// Use modern global access method and strict wave access.
+#pragma rtGlobals=3 // Use modern global access method and strict wave access.
 #pragma IndependentModule=CompilationTester
 
 /// @cond DOXYGEN_IGNORES_THIS
