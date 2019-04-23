@@ -18,6 +18,7 @@ then
 fi
 
 echo DEBUGGING_ENABLED >> define.txt
+echo EVIL_KITTEN_EATING_MODE >> define.txt
 
 ./autorun-test.sh
 
