@@ -1,5 +1,6 @@
 #pragma TextEncoding = "UTF-8"
 #pragma rtGlobals=3 // Use modern global access method and strict wave access.
+#pragma ModuleName=BasicHardwareTests
 
 /// @file UTF_BasicHardWareTests.ipf Implement some basic tests using the ITC hardware.
 
@@ -2142,7 +2143,7 @@ Function UnassociatedChannels_REENTRY()
 	endfor
 End
 
-static Function GetMinSampInt([unit])
+static Function GetMinSampInt_IGNORE([unit])
 	string unit
 
 	variable factor
@@ -2191,12 +2192,12 @@ Function CheckSamplingInterval1_REENTRY()
 	CHECK_WAVE(configWave, NORMAL_WAVE)
 
 	sampInt = GetSamplingInterval(configWave)
-	CHECK_CLOSE_VAR(sampInt, GetMinSampInt(unit="µs"), tol=1e-6)
+	CHECK_CLOSE_VAR(sampInt, GetMinSampInt_IGNORE(unit="µs"), tol=1e-6)
 
 	WAVE numericalValues = GetLBNumericalValues(DEVICE)
 
 	sampInt = GetLastSettingIndep(numericalValues, sweepNo, "Sampling interval", DATA_ACQUISITION_MODE)
-	expectedSampInt = GetMinSampInt(unit="ms")
+	expectedSampInt = GetMinSampInt_IGNORE(unit="ms")
 	CHECK_CLOSE_VAR(sampInt, expectedSampInt, tol=1e-6)
 
 	sampIntMult = GetLastSettingIndep(numericalValues, sweepNo, "Sampling interval multiplier", DATA_ACQUISITION_MODE)
@@ -2237,12 +2238,12 @@ Function CheckSamplingInterval2_REENTRY()
 	CHECK_WAVE(configWave, NORMAL_WAVE)
 
 	sampInt = GetSamplingInterval(configWave)
-	CHECK_CLOSE_VAR(sampInt, GetMinSampInt(unit="µs") * 8, tol=1e-6)
+	CHECK_CLOSE_VAR(sampInt, GetMinSampInt_IGNORE(unit="µs") * 8, tol=1e-6)
 
 	WAVE numericalValues = GetLBNumericalValues(DEVICE)
 
 	sampInt = GetLastSettingIndep(numericalValues, sweepNo, "Sampling interval", DATA_ACQUISITION_MODE)
-	expectedSampInt = GetMinSampInt(unit="ms") * 8
+	expectedSampInt = GetMinSampInt_IGNORE(unit="ms") * 8
 	CHECK_CLOSE_VAR(sampInt, expectedSampInt, tol=1e-6)
 
 	sampIntMult = GetLastSettingIndep(numericalValues, sweepNo, "Sampling interval multiplier", DATA_ACQUISITION_MODE)
@@ -2444,7 +2445,7 @@ End
 Function ITISetupNoTP_IGNORE()
 
 	PGC_SetAndActivateControl(device, "Check_DataAcq_Get_Set_ITI", val=0)
-	PGC_SetAndActivateControl(device, "SetVar_DataAcq_ITI", val=2)
+	PGC_SetAndActivateControl(device, "SetVar_DataAcq_ITI", val=5)
 	PGC_SetAndActivateControl(device, "check_Settings_ITITP", val=0)
 End
 
@@ -2512,7 +2513,10 @@ Function ChangeCMDuringITIWithTP()
 	ctrl = DAP_GetClampModeControl(V_CLAMP_MODE, 1)
 	CHECK_EQUAL_VAR(GetCheckBoxState(DEVICE, ctrl), 1)
 
-	CtrlNamedBackGround ChangeClampModeDuringSweep, start, period=30, proc=ClampModeDuringITI_IGNORE
+	RegisterUTFMonitor(TASKNAMES + "DAQWatchdog;TPWatchdog;ChangeClampModeDuringSweep", BACKGROUNDMONMODE_AND, \
+					   "ChangeCMDuringITIWithTP_REENTRY", timeout = 600)
+
+	CtrlNamedBackGround ChangeClampModeDuringSweep, start, period=10, proc=ClampModeDuringITI_IGNORE
 End
 
 Function ChangeCMDuringITIWithTP_REENTRY()

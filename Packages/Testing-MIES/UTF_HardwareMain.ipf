@@ -145,8 +145,17 @@ Function TEST_CASE_END_OVERRIDE(name)
 		CHECK_EQUAL_WAVES(sweeps, unsortedSweeps, mode = WAVE_DATA)
 	endfor
 
-	CtrlNamedBackGround DAQWatchdog, stop
-	CtrlNamedBackGround TPWatchdog, stop
+	StopAllBackgroundTasks()
+
+	// accessing UTF internals, don't do that at home
+	// but it helps debugging flaky tests
+	DFREF dfr = GetPackageFolder()
+	NVAR/Z/SDFR=dfr error_count
+
+	if(NVAR_Exists(error_count) && error_count > 0)
+		CtrlNamedBackGround _all_, status
+		print s_info
+	endif
 End
 
 Function ChooseCorrectDevice(unlockedPanelTitle, dev)
@@ -440,4 +449,26 @@ Function SaveStimsets()
 	string filename = GetFolder(FunctionPath("")) + "_2017_09_01_192934-compressed.nwb"
 	DeleteFile filename
 	NWB_ExportAllStimsets(overrideFilePath = filename)
+End
+
+Function StopAllBackgroundTasks()
+
+	string list, name, bkgInfo
+	variable i, numEntries
+
+	CtrlNamedBackGround _all_, status
+	list = S_info
+	numEntries = ItemsInList(list, "\r")
+
+	for(i = 0; i < numEntries; i += 1)
+		bkgInfo = StringFromList(i, list, "\r")
+
+		name = StringByKey("NAME", bkgInfo)
+		// ignore background watcher panel and testing framework background functions
+		if(stringmatch(name, "BW*") || stringmatch(name, "UTF*"))
+			continue
+		endif
+
+		CtrlNamedBackGround $name, stop
+	endfor
 End
