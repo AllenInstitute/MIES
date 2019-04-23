@@ -22,8 +22,9 @@
 
 /// @brief Perform compilation testing
 ///
-/// This function should be called by a Function named `run` without arguments in ProcGlobal.
-/// See chapter 1.5 in the unit testing framework [documentation](../Manual-UnitTestingFramework-v1.03.pdf).
+/// This function should be called by a Function named `run` without arguments
+/// in ProcGlobal, see
+/// https://docs.byte-physics.de/igor-unit-testing-framework/advanced.html#automate-test-runs.
 Function TestCompilation()
 	variable i, numEntries
 
