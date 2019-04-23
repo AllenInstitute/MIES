@@ -36,9 +36,7 @@ Function TestCompilation()
 	compilationState = 0x0
 
 	data = LoadTextFile("input.txt")
-	data = ReplaceString("\r\n", data, "\n")
-	data = ReplaceString("\r", data, "\n")
-	data = RemoveEnding(data, "\n")
+	data = NormalizeToEOL(data, "\n")
 	WAVE/T includeFileList = ListToTextWave(data, "\n")
 
 	compilationState = 0x1
