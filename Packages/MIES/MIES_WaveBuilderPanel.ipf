@@ -3301,6 +3301,12 @@ Function WBP_ButtonProc_AddParam(ba) : ButtonControl
 			type       = GetPopupMenuString(win, "popup_param_types")
 			value      = GetSetVariableString(win, "setvar_param_value")
 
+			if(IsEmpty(value))
+				printf "The parameter \"%s\" has an empty value and is thus not valid.\r", name
+				ControlWindowToFront()
+				break
+			endif
+
 			strswitch(type)
 				case "variable":
 					WBP_AddAnalysisParameterIntoWPT(WPT, name, var = str2numSafe(value))
