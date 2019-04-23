@@ -18,7 +18,8 @@
 ///    success/failure of the compilation check.
 ///  - An optional file `define.txt` is loaded. If found the compilation testing is
 ///    done twice once with the symbol defined (using `poundDefine` from SetIgorOption)
-//     and once undefined.
+//     and once undefined. The file can hold a new line separated list of
+//     symbols. No cross-combinations of the symbols are checked.
 
 /// @brief Perform compilation testing
 ///
@@ -26,8 +27,8 @@
 /// in ProcGlobal, see
 /// https://docs.byte-physics.de/igor-unit-testing-framework/advanced.html#automate-test-runs.
 Function TestCompilation()
-	variable i, numEntries
 
+	variable i, j, numFiles, numDefines
 	string data, includeFile, define
 
 	string/G root:includeFile = ""
@@ -42,16 +43,25 @@ Function TestCompilation()
 	compilationState = 0x1
 
 	define = LoadTextFile("define.txt", required = 0)
+	define = NormalizeToEOL(define, "\n")
+	WAVE/T defineList = ListToTextWave(define, "\n")
 
-	numEntries = DimSize(includeFileList, 0)
-	REQUIRE(numEntries > 0)
-	for(i = 0; i < numEntries; i += 1)
+	numFiles = DimSize(includeFileList, 0)
+	REQUIRE(numFiles > 0)
+	numDefines = DimSize(defineList, 0)
+	for(i = 0; i < numFiles; i += 1)
 		includeFile = trimstring(includeFileList[i])
 		CHECK_PROPER_STR(includeFile)
-		TestCompilationOnFile(includeFile, define = define)
 
-		if(!IsEmpty(define))
-			TestCompilationOnFile(includeFile, define = define, useDefine = 1)
+		if(numDefines == 0)
+			TestCompilationOnFile(includeFile)
+		else
+			for(j = 0; j < numDefines; j += 1)
+				define = trimstring(defineList[j])
+				CHECK_PROPER_STR(define)
+				TestCompilationOnFile(includeFile, define = define, useDefine = 0)
+				TestCompilationOnFile(includeFile, define = define, useDefine = 1)
+			endfor
 		endif
 	endfor
 End
