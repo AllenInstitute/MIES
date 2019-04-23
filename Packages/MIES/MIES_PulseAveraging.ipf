@@ -14,6 +14,8 @@ static StrConstant PA_DECONVOLUTION_WAVE_PREFIX = "deconv_"
 
 static StrConstant PA_USERDATA_SPECIAL_TRACES = "SPECIAL_TRACES"
 
+static Constant PA_PLOT_STEPPING = 16
+
 /// @brief Return a list of all average graphs
 static Function/S PA_GetAverageGraphs()
 	return WinList(PULSE_AVERAGE_GRAPH_PREFIX + "*", ";", "WIN:1")
@@ -668,7 +670,7 @@ Function PA_ShowPulses(win, dfr, pa)
 						sprintf pulseTrace, "T%06d%s_IDX%d", traceCount, NameOfWave(plotWave), idx
 
 						GetTraceColor(headstage, red, green, blue)
-						AppendToGraph/Q/W=$graph/L=$vertAxis/B=$horizAxis/C=(red, green, blue, 65535 * 0.1) plotWave/TN=$pulseTrace
+						AppendToGraph/Q/W=$graph/L=$vertAxis/B=$horizAxis/C=(red, green, blue, 65535 * 0.1) plotWave[0,inf;PA_PLOT_STEPPING]/TN=$pulseTrace
 						traceCount += 1
 					endif
 
@@ -712,7 +714,7 @@ Function PA_ShowPulses(win, dfr, pa)
 					WAVE averageWave = PA_Average(listOfWaves, pulseAverageDFR, PA_AVERAGE_WAVE_PREFIX + baseName)
 
 					GetTraceColor(NUM_HEADSTAGES + 1, red, green, blue)
-					AppendToGraph/Q/W=$graph/L=$vertAxis/B=$horizAxis/C=(red, green, blue) averageWave
+					AppendToGraph/Q/W=$graph/L=$vertAxis/B=$horizAxis/C=(red, green, blue) averageWave[0,inf;PA_PLOT_STEPPING]
 					SetWindow $graph, userData($PA_USERDATA_SPECIAL_TRACES) += NameOfWave(averageWave) + ";"
 
 					listOfWavesPerChannel[channelNumber] = ""
@@ -725,7 +727,7 @@ Function PA_ShowPulses(win, dfr, pa)
 					traceName = PA_DECONVOLUTION_WAVE_PREFIX + baseName
 					WAVE deconv = PA_Deconvolution(averageWave, pulseAverageDFR, traceName, pa.deconvolution)
 
-					AppendToGraph/Q/W=$graph/L=$vertAxis/B=$horizAxis/C=(0,0,0) deconv/TN=$traceName
+					AppendToGraph/Q/W=$graph/L=$vertAxis/B=$horizAxis/C=(0,0,0) deconv[0,inf;PA_PLOT_STEPPING]/TN=$traceName
 					ModifyGraph/W=$graph lsize($traceName)=2
 
 					SetAxis/Z/W=$graph $horizAxis 0, pa.deconvolution.range
@@ -750,6 +752,8 @@ Function PA_ShowPulses(win, dfr, pa)
 				EquallySpaceAxis(graph, axisRegExp="left_R" + num2str(activeRegionCount) + ".*", sortOrder=1)
 				EquallySpaceAxis(graph, axisRegExp="bottom.*", sortOrder=0)
 			endif
+
+			ModifyGraph/W=$graph mode=0
 		endfor // headstages
 	endfor // channelType
 
