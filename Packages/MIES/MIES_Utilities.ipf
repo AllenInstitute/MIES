@@ -109,9 +109,9 @@ Function ASSERT(var, errorMsg)
 
 		SVAR/Z lockedDevices = root:MIES:HardwareDevices:ITCPanelTitleList
 
-		Make/FREE/T sweeps =  NONE
-		Make/FREE/T tpStates = NONE
-		Make/FREE/T daqStates = NONE
+		Make/FREE/T sweeps = { NONE }
+		Make/FREE/T tpStates = { NONE }
+		Make/FREE/T daqStates = { NONE }
 
 		if(!SVAR_Exists(lockedDevices) || strlen(lockedDevices) == 0)
 			lockedDevicesStr = NONE
@@ -141,10 +141,10 @@ Function ASSERT(var, errorMsg)
 		print GetStackTrace()
 		print "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
 		printf "Time: %s\r", GetIso8601TimeStamp(localTimeZone = 1)
-		printf "Locked device: [%s]\r", lockedDevicesStr
-		printf "Current sweep: [%s]\r", TextWaveToList(sweeps, ";")
-		printf "DAQ: [%s]\r", TextWaveToList(daqStates, ";")
-		printf "Testpulse: [%s]\r", TextWaveToList(tpStates, ";")
+		printf "Locked device: [%s]\r", RemoveEnding(lockedDevicesStr, ";")
+		printf "Current sweep: [%s]\r", RemoveEnding(TextWaveToList(sweeps, ";"), ";")
+		printf "DAQ: [%s]\r", RemoveEnding(TextWaveToList(daqStates, ";"), ";")
+		printf "Testpulse: [%s]\r", RemoveEnding(TextWaveToList(tpStates, ";"), ";")
 		printf "Experiment: %s.pxp\r", GetExperimentName()
 		printf "Igor Pro version: %s (%s)\r", GetIgorProVersion(), StringByKey("BUILD", IgorInfo(0))
 		print "MIES version:"
