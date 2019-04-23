@@ -2031,7 +2031,12 @@ Function HW_NI_PrepareAcq(deviceID, [data, dataFunc, config, configFunc, flags, 
 
 		clkStr = "/" + device + "/ai/sampleclock"
 		// note actually this does already 'starts' a measurement
+#ifdef EVIL_KITTEN_EATING_MODE
+		// more NI devices support DAQmx_Val_Rising (`1`)
+		DAQmx_WaveFormGen/DEV=device/STRT=1/CLK={clkStr, 1} wavegenStr;AbortOnRTE
+#else
 		DAQmx_WaveFormGen/DEV=device/STRT=1/CLK={clkStr, 0} wavegenStr;AbortOnRTE
+#endif
 		NVAR taskIDDAC = $GetNI_DACTaskID(panelTitle)
 		taskIDDAC = 1
 
