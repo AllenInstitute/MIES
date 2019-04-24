@@ -1,4 +1,4 @@
-#pragma rtGlobals=3		// Use modern global access method and strict wave access.
+#pragma rtGlobals=3 // Use modern global access method and strict wave access.
 #pragma IndependentModule=CompilationTester
 
 /// @brief Load the contents of the given file into data
@@ -99,4 +99,20 @@ threadsafe Function IsEmpty(str)
 
 	variable len = strlen(str)
 	return numtype(len) == 2 || len <= 0
+End
+
+/// @brief Normalize the line endings in the given string to either classic Mac OS/Igor Pro EOLs (`\r`)
+///        or Unix EOLs (`\n`)
+Function/S NormalizeToEOL(str, eol)
+	string str, eol
+
+	str = ReplaceString("\r\n", str, eol)
+
+	if(!cmpstr(eol, "\r"))
+		return ReplaceString("\n", str, eol)
+	elseif(!cmpstr(eol, "\n"))
+		return ReplaceString("\r", str, eol)
+	else
+		return str
+	endif
 End

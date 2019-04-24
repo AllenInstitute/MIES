@@ -53,7 +53,7 @@ Function/S DAP_GetNIDeviceList()
 		endif
 
 #ifdef EVIL_KITTEN_EATING_MODE
-		devList += DAQmxDevName + ";"
+		devList += StringByKey("NAME", DAQmxDevice) + ";"
 #else
 		for(j = 0; j < numPattern; j += 1)
 			pattern = StringFromList(j, NI_DAC_PATTERNS, "|")

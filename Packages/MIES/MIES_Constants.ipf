@@ -603,7 +603,11 @@ Constant HARDWARE_MAX_DEVICES = 10
 
 /// @name Minimum possible sampling intervals in milliseconds (1e-3s)
 /// @{
+#ifdef EVIL_KITTEN_EATING_MODE
+Constant HARDWARE_NI_DAC_MIN_SAMPINT  = 0.2
+#else
 Constant HARDWARE_NI_DAC_MIN_SAMPINT  = 0.002 ///< NI 6343 and other devices, so it is 4E-3 ms for 2 channels, 6E-3 ms for 3 a.s.o.
+#endif
 Constant HARDWARE_ITC_MIN_SAMPINT     = 0.005 ///< ITC DACs
 Constant HARDWARE_NI_6001_MIN_SAMPINT = 0.2   ///< NI 6001 USB
 /// @}

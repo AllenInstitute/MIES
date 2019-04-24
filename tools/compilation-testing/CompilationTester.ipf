@@ -1,4 +1,4 @@
-#pragma rtGlobals=3		// Use modern global access method and strict wave access.
+#pragma rtGlobals=3 // Use modern global access method and strict wave access.
 #pragma IndependentModule=CompilationTester
 
 /// @cond DOXYGEN_IGNORES_THIS
@@ -18,15 +18,17 @@
 ///    success/failure of the compilation check.
 ///  - An optional file `define.txt` is loaded. If found the compilation testing is
 ///    done twice once with the symbol defined (using `poundDefine` from SetIgorOption)
-//     and once undefined.
+//     and once undefined. The file can hold a new line separated list of
+//     symbols. No cross-combinations of the symbols are checked.
 
 /// @brief Perform compilation testing
 ///
-/// This function should be called by a Function named `run` without arguments in ProcGlobal.
-/// See chapter 1.5 in the unit testing framework [documentation](../Manual-UnitTestingFramework-v1.03.pdf).
+/// This function should be called by a Function named `run` without arguments
+/// in ProcGlobal, see
+/// https://docs.byte-physics.de/igor-unit-testing-framework/advanced.html#automate-test-runs.
 Function TestCompilation()
-	variable i, numEntries
 
+	variable i, j, numFiles, numDefines
 	string data, includeFile, define
 
 	string/G root:includeFile = ""
@@ -35,24 +37,31 @@ Function TestCompilation()
 	compilationState = 0x0
 
 	data = LoadTextFile("input.txt")
-	data = ReplaceString("\r\n", data, "\n")
-	data = ReplaceString("\r", data, "\n")
-	data = RemoveEnding(data, "\n")
+	data = NormalizeToEOL(data, "\n")
 	WAVE/T includeFileList = ListToTextWave(data, "\n")
 
 	compilationState = 0x1
 
 	define = LoadTextFile("define.txt", required = 0)
+	define = NormalizeToEOL(define, "\n")
+	WAVE/T defineList = ListToTextWave(define, "\n")
 
-	numEntries = DimSize(includeFileList, 0)
-	REQUIRE(numEntries > 0)
-	for(i = 0; i < numEntries; i += 1)
+	numFiles = DimSize(includeFileList, 0)
+	REQUIRE(numFiles > 0)
+	numDefines = DimSize(defineList, 0)
+	for(i = 0; i < numFiles; i += 1)
 		includeFile = trimstring(includeFileList[i])
 		CHECK_PROPER_STR(includeFile)
-		TestCompilationOnFile(includeFile, define = define)
 
-		if(!IsEmpty(define))
-			TestCompilationOnFile(includeFile, define = define, useDefine = 1)
+		if(numDefines == 0)
+			TestCompilationOnFile(includeFile)
+		else
+			for(j = 0; j < numDefines; j += 1)
+				define = trimstring(defineList[j])
+				CHECK_PROPER_STR(define)
+				TestCompilationOnFile(includeFile, define = define, useDefine = 0)
+				TestCompilationOnFile(includeFile, define = define, useDefine = 1)
+			endfor
 		endif
 	endfor
 End
