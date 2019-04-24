@@ -84,6 +84,8 @@ Function/S WB_GetParameterWaveName(stimset, type, [nwbFormat])
 
 	if(ParamIsDefault(nwbFormat))
 		nwbFormat = 0
+	else
+		nwbFormat = !!nwbFormat
 	endif
 
 	shortname = GetWaveBuilderParameterTypeName(type)

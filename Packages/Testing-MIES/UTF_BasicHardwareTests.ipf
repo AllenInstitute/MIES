@@ -269,6 +269,8 @@ static Function AllTests(t)
 			CHECK_EQUAL_WAVES(refEvents_HS1, actualEvents_HS1, mode = WAVE_DATA)
 		endfor
 	endfor
+
+	TestNwbExport()
 End
 
 Function/WAVE GetTrackActiveSetCount()
@@ -2141,6 +2143,8 @@ Function UnassociatedChannels_REENTRY()
 			endswitch
 		endfor
 	endfor
+
+	TestNwbExport()
 End
 
 static Function GetMinSampInt_IGNORE([unit])

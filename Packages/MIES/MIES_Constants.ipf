@@ -47,11 +47,12 @@ StrConstant TASKNAMES          = "Testpulse;TestpulseMD;ITC_Timer;ITC_TimerMD;IT
 /// @name Various mies specific regular expressions
 /// @anchor MIES_REGEXPS
 /// @{
-StrConstant DATA_SWEEP_REGEXP      = "(?i)^Sweep_[[:digit:]]+$"
-StrConstant DATA_CONFIG_REGEXP     = "(?i)^Config_Sweep_[[:digit:]]+$"
-StrConstant TP_STORAGE_REGEXP      = "(?i)^TPStorage(_[[:digit:]]+)?$"
-StrConstant DATA_SWEEP_REGEXP_BAK  = "(?i)^Sweep_[[:digit:]]+_bak$"
-StrConstant DATA_CONFIG_REGEXP_BAK = "(?i)^Config_Sweep_[[:digit:]]+_bak$"
+StrConstant DATA_SWEEP_REGEXP        = "(?i)^Sweep_[[:digit:]]+$"
+StrConstant DATA_CONFIG_REGEXP       = "(?i)^Config_Sweep_[[:digit:]]+$"
+StrConstant TP_STORAGE_REGEXP        = "(?i)^TPStorage(_[[:digit:]]+)?$"
+StrConstant STORED_TESTPULSES_REGEXP = "(?i)^StoredTestPulses_([[:digit:]]+)$"
+StrConstant DATA_SWEEP_REGEXP_BAK    = "(?i)^Sweep_[[:digit:]]+_bak$"
+StrConstant DATA_CONFIG_REGEXP_BAK   = "(?i)^Config_Sweep_[[:digit:]]+_bak$"
 /// @}
 
 StrConstant UNTITLED_EXPERIMENT           = "Untitled"
