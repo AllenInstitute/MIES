@@ -1222,6 +1222,31 @@ Function/S FindCursorInGraphs(graphs, cursorName)
 	endfor
 End
 
+/// @brief get the x value of the cursors A and B
+///
+/// @param[in]  graph where the cursor are
+/// @param[out] csrAx Position of cursor A
+/// @param[out] csrBx Position of cursor B
+Function GetCursorXPositionAB(graph, csrAx, csrBx)
+	string graph
+	variable &csrAx, &csrBx
+
+	string csrA, csrB
+
+	ASSERT(WindowExists(graph), "Graph for given cursors does not exist.")
+
+	csrA = CsrInfo(A, graph)
+	csrB = CsrInfo(B, graph)
+
+	if(isEmpty(csrA) || isEmpty(csrB))
+		csrAx = -inf
+		csrBx = inf
+	else
+		csrAx = xcsr(A, graph)
+		csrBx = xcsr(B, graph)
+	endif
+End
+
 ///@brief Removes all annotations from the graph
 Function RemoveAnnotationsFromGraph(graph)
 	string graph

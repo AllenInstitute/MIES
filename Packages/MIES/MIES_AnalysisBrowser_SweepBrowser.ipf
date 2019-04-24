@@ -117,14 +117,7 @@ End
 Function SB_PanelUpdate(win)
 	string win
 
-	string bsPanel, graph
-
-	graph = GetMainWindow(win)
-	bsPanel = BSP_GetPanel(graph)
-
-	TimeAlignUpdateControls(bsPanel)
-
-	SB_ScaleAxes(graph)
+	SB_ScaleAxes(win)
 End
 
 /// @brief set graph userdata similar to DB_SetUserData()

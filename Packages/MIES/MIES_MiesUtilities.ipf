@@ -3081,12 +3081,12 @@ Function PostPlotTransformations(graph, pps)
 	string graph
 	STRUCT PostPlotSettings &pps
 
+	variable csrAx, csrBx
+
 	WAVE/T traces = ListToTextWave(GetAllSweepTraces(graph), ";")
 
 	ZeroTracesIfReq(graph, traces, pps.zeroTraces)
-	if(pps.timeAlignment)
-		TimeAlignmentIfReq(pps.timeAlignRefTrace, pps.timeAlignMode, pps.timeAlignLevel)
-	endif
+	TimeAlignMainWindow(graph, pps)
 
 	AverageWavesFromSameYAxisIfReq(graph, traces, pps.averageTraces, pps.averageDataFolder, pps.hideSweep)
 	AR_HighlightArtefactsEntry(graph)
@@ -3095,11 +3095,30 @@ Function PostPlotTransformations(graph, pps)
 	pps.finalUpdateHook(graph)
 End
 
+/// @brief Time Alignment for the BrowserSettingsPanel
+///
+/// This function should work for any given reference trace in
+/// pps.timeAlignRefTrace in the popup menu. (DB and SB)
+///
+/// @param graph graph with sweep traces
+/// @param pps   settings
+Function TimeAlignMainWindow(graph, pps)
+	string graph
+	STRUCT PostPlotSettings &pps
+
+	variable csrAx, csrBx
+
+	if(pps.timeAlignment)
+		GetCursorXPositionAB(graph, csrAx, csrBx)
+		TimeAlignmentIfReq(pps.timeAlignRefTrace, pps.timeAlignMode, pps.timeAlignLevel, csrAx, csrBx, force = 1)
+	endif
+End
+
 /// @brief return a list of all traces relevant for TimeAlignment
 Function/S TimeAlignGetAllTraces(graph)
 	string graph
 
-	return GetAllSweepTracesFromGraphs(TimeAlignGetAllGraphs(graph))
+	return GetAllSweepTracesFromGraphs(graph)
 End
 
 /// @brief return a list of all graphs included in TimeAlignment
@@ -3118,6 +3137,8 @@ End
 
 /// @brief Adds or removes the cursors from the graphs depending on the
 ///        panel settings
+///
+/// @param win  main DB/SB graph or any subwindow panel.
 Function TimeAlignHandleCursorDisplay(win)
 	string win
 
@@ -3619,15 +3640,24 @@ End
 /// @param graphtrace reference trace in the form of graph#trace
 /// @param mode       time alignment mode
 /// @param level      level input to the @c FindLevel operation in @see CalculateFeatureLoc
-static Function TimeAlignmentIfReq(graphtrace, mode, level)
+/// @param pos1x      specify start range for feature position
+/// @param pos2x      specify end range for feature position
+/// @param force      [optional, defaults to false] redo time aligment regardless of wave note
+Function TimeAlignmentIfReq(graphtrace, mode, level, pos1x, pos2x, [force])
 	string graphtrace
-	variable mode, level
+	variable mode, level, pos1x, pos2x, force
 
-	string csrA, csrB, str, refAxis, axis
+	if(ParamIsDefault(force))
+		force = 0
+	else
+		force = !!force
+	endif
+
+	string str, refAxis, axis
 	string trace, refTrace, graph, refGraph, paGraphs, refRegion
-	variable offset
-	variable csrAx, csrBx, first, last, pos, numTraces, i, j
-	string sweepNo
+	variable offset, refPos
+	variable first, last, pos, numTraces, i, idx
+	string sweepNo, pulseIndexStr, indexStr
 
 	if(mode == TIME_ALIGNMENT_NONE) // nothing to do
 		return NaN
@@ -3637,18 +3667,8 @@ static Function TimeAlignmentIfReq(graphtrace, mode, level)
 	refTrace = StringFromList(1, graphtrace, "#")
 	ASSERT(windowExists(refGraph), "Graph must exist")
 
-	csrA = CsrInfo(A, refGraph)
-	csrB = CsrInfo(B, refGraph)
-
-	if(isEmpty(csrA) || isEmpty(csrB))
-		return NaN
-	endif
-
-	csrAx = xcsr(A, refGraph)
-	csrBx = xcsr(B, refGraph)
-
-	first = min(csrAx, csrBx)
-	last  = max(csrAx, csrBx)
+	first = min(pos1x, pos2x)
+	last  = max(pos1x, pos2x)
 
 	sprintf str, "first=%g, last=%g", first, last
 	DEBUGPRINT(str)
@@ -3668,8 +3688,11 @@ static Function TimeAlignmentIfReq(graphtrace, mode, level)
 		WAVE/T graphtraces = ListToTextWave(GetAllSweepTracesFromGraphs(paGraphs, region = refRegion), ";")
 	endif
 
+	refPos = NaN
+
 	numTraces = DimSize(graphtraces, ROWS)
 	MAKE/FREE/D/N=(numTraces) featurePos = NaN, sweepNumber = NaN
+	MAKE/FREE/T/N=(numTraces) refIndex
 	for(i = 0; i < numTraces; i += 1)
 		graph = StringFromList(0, graphtraces[i], "#")
 		trace = StringFromList(1, graphtraces[i], "#")
@@ -3680,6 +3703,7 @@ static Function TimeAlignmentIfReq(graphtrace, mode, level)
 		endif
 
 		WAVE wv = TraceNameToWaveRef(graph, trace)
+
 		pos = CalculateFeatureLoc(wv, mode, level, first, last)
 
 		if(!IsFinite(pos))
@@ -3687,10 +3711,16 @@ static Function TimeAlignmentIfReq(graphtrace, mode, level)
 			return NaN
 		endif
 
+		if(!cmpstr(refTrace, trace))
+			refPos = pos
+		endif
+
 		featurePos[i]  = pos
 		sweepNo = GetUserData(graph, trace, "sweepNumber")
 		ASSERT(!isEmpty(sweepNo), "Sweep number is empty. Set \"sweepNumber\" userData entry for trace.")
 		sweepNumber[i] = str2num(sweepNo)
+		pulseIndexStr = GetUserData(graph, trace, "pulseIndex")
+		refIndex[i] = sweepNo + ":" + pulseIndexStr
 	endfor
 
 	// now shift all traces from all sweeps according to their relative offsets
@@ -3701,23 +3731,24 @@ static Function TimeAlignmentIfReq(graphtrace, mode, level)
 		WAVE wv = TraceNameToWaveRef(graph, trace)
 		ASSERT(WaveExists(wv), "Could not resolve trace to wave")
 
+		if(GetNumberFromWaveNote(wv, NOTE_KEY_TIMEALIGN) == 1 && force == 0)
+			continue
+		endif
+
 		sweepNo = GetUserData(graph, trace, "sweepNumber")
-		j = GetRowIndex(sweepNumber, val=str2num(sweepNo))
-		ASSERT(IsFinite(j), "Could not find sweep number")
+		pulseIndexStr = GetUserData(graph, trace, "pulseIndex")
+		indexStr = sweepNo + ":" + pulseIndexStr
+		idx = GetRowIndex(refIndex, str = indexStr)
+		ASSERT(IsFinite(idx), "Could not find index")
 
 		WAVE backup = CreateBackupWave(wv)
-		offset = DimOffset(wv, ROWS) - featurePos[j]
+		offset = - (refPos + featurePos[idx])
 		DEBUGPRINT("trace", str=trace)
 		DEBUGPRINT("old DimOffset", var=DimOffset(wv, ROWS))
-		DEBUGPRINT("new DimOffset", var=offset)
-		SetScale/P x, offset, DimDelta(wv, ROWS), wv
-		offset = DimOffset(backup, ROWS) - DimOffset(wv, ROWS)
-		AddEntryIntoWaveNoteAsList(wv, "TimeAlignmentTotalOffset", var=offset, replaceEntry=1)
-
-		if(!cmpstr(trace, refTrace))
-			Cursor/W=$graph A $trace (first - featurePos[j])
-			Cursor/W=$graph B $trace (last  - featurePos[j])
-		endif
+		DEBUGPRINT("new DimOffset", var=DimOffset(wv, ROWS) + offset)
+		SetScale/P x, DimOffset(wv, ROWS) + offset, DimDelta(wv, ROWS), wv
+		SetNumberInWaveNote(wv, "TimeAlignmentTotalOffset", offset)
+		SetNumberInWaveNote(wv, NOTE_KEY_TIMEALIGN, 1)
 	endfor
 End
 
@@ -4992,6 +5023,13 @@ End
 /// @brief update of panel elements and related displayed graphs in BSP
 Function UpdateSettingsPanel(win)
 	string win
+
+	string graph, bsPanel, controls
+
+	graph = GetMainWindow(win)
+	bsPanel = BSP_GetPanel(win)
+
+	TimeAlignUpdateControls(bsPanel)
 
 	if(BSP_IsDataBrowser(win))
 		DB_GraphUpdate(win)

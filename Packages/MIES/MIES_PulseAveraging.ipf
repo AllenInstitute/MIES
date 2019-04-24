@@ -13,6 +13,8 @@ static StrConstant PA_AVERAGE_WAVE_PREFIX       = "average_"
 static StrConstant PA_DECONVOLUTION_WAVE_PREFIX = "deconv_"
 
 static StrConstant PA_USERDATA_SPECIAL_TRACES = "SPECIAL_TRACES"
+static StrConstant PA_USERDATA_REFERENCE_TRACES = "REFERENCE_TRACES"
+static StrConstant PA_USERDATA_REFERENCE_GRAPH  = "REFERENCE"
 
 static Constant PA_PLOT_STEPPING = 16
 
@@ -77,8 +79,8 @@ static Function/S PA_GetGraph(mainWin, multipleGraphs, channelTypeStr, channelNu
 		top    += height_offset
 		bottom += height_offset
 		Display/W=(left, top, right, bottom)/K=1/N=$win
-		SetWindow $win, hook(TA_CURSOR_MOVED) = TimeAlignCursorMovedHook
 		SetWindow $win, userdata($MIES_BSP_PA_MAINPANEL) = mainWin
+		SetWindow $win, userdata($PA_USERDATA_REFERENCE_GRAPH) = num2str(activeRegionCount == activeChanCount)
 
 		if(multipleGraphs)
 			winAbove = PA_GetGraphName(multipleGraphs, channelTypeStr, channelNumber - 1, activeRegionCount)
@@ -475,6 +477,7 @@ static Function/WAVE PA_CreateAndFillPulseWaveIfReq(wv, singleSweepFolder, chann
 	MultiThread singlePulseWave[] = wv[first + p]
 	SetScale/P x, 0.0, DimDelta(wv, ROWS), WaveUnits(wv, ROWS), singlePulseWave
 	SetNumberInWaveNote(singlePulseWave, NOTE_KEY_ZEROED, 0)
+	SetNumberInWaveNote(singlePulseWave, NOTE_KEY_TIMEALIGN, 0)
 	SetNumberInWaveNote(singlePulseWave, "PulseLength", length)
 
 	SetNumberInWaveNote(wv, SOURCE_WAVE_TIMESTAMP, ModDate(wv))
@@ -505,6 +508,7 @@ Function PA_GatherSettings(win, pps)
 	pps.pulseAverSett.fallbackPulseLength  = GetSetVariable(extPanel, "setvar_pulseAver_fallbackLength")
 	pps.pulseAverSett.regionSlider         = BSP_GetDDAQ(win)
 	pps.pulseAverSett.zeroTraces           = GetCheckboxState(extPanel, "check_pulseAver_zeroTrac")
+	pps.pulseAverSett.autoTimeAlignment    = GetCheckboxState(extPanel, "check_pulseAver_timeAlign")
 
 	PA_DeconvGatherSettings(win, pps.pulseAverSett.deconvolution)
 End
@@ -531,12 +535,13 @@ Function PA_ShowPulses(win, dfr, pa)
 	string averageWaveName, convolutionWaveName, pulseTrace, channelTypeStr, str, traceList, traceFullPath
 	variable numChannels, i, j, k, l, idx, numTraces, sweepNo, headstage, numPulsesTotal, numPulses
 	variable first, numEntries, startingPulse, endingPulse, numGraphs, traceCount
-	variable startingPulseSett, endingPulseSett, ret, pulseToPulseLength, numSweeps
+	variable startingPulseSett, endingPulseSett, ret, pulseToPulseLength, numSweeps, numRegions
 	variable red, green, blue, channelNumber, region, channelType, numHeadstages, length
 	variable numChannelTypeTraces, activeRegionCount, activeChanCount, totalOnsetDelay
 	string listOfWaves, channelList, vertAxis, horizAxis, channelNumberStr
 	string baseName, traceName, csrA, csrB
 	string newlyCreatedGraphs = ""
+	string referenceTraceList = ""
 
 	win = GetMainWindow(win)
 
@@ -580,6 +585,9 @@ Function PA_ShowPulses(win, dfr, pa)
 		numHeadstages        = DimSize(headstages, ROWS)
 
 		activeRegionCount = 0
+
+		WaveStats/M=1/Q headstages
+		numRegions = V_npnts
 
 		// iterate over all headstages, ignores duplicates from overlay sweeps
 		for(j = 0; j < numHeadstages; j += 1)
@@ -653,6 +661,7 @@ Function PA_ShowPulses(win, dfr, pa)
 					csrB = CsrInfo(B, graph)
 					RemoveTracesFromGraph(graph)
 					SetWindow $graph, userData($PA_USERDATA_SPECIAL_TRACES) = ""
+					SetWindow $graph, userData($PA_USERDATA_REFERENCE_TRACES) = ""
 					newlyCreatedGraphs = AddListItem(graph, newlyCreatedGraphs, ";", inf)
 				endif
 
@@ -675,8 +684,13 @@ Function PA_ShowPulses(win, dfr, pa)
 
 						GetTraceColor(headstage, red, green, blue)
 						AppendToGraph/Q/W=$graph/L=$vertAxis/B=$horizAxis/C=(red, green, blue, 65535 * 0.2) plotWave[0,inf;PA_PLOT_STEPPING]/TN=$pulseTrace
-						ModifyGraph/W=$graph userData($pulseTrace) = {sweepNumber, USERDATA_MODIFYGRAPH_REPLACE, num2str(sweepNo)}, userData($pulseTrace) = {region, USERDATA_MODIFYGRAPH_REPLACE, num2str(region)}, userData($pulseTrace) = {channelNumber, USERDATA_MODIFYGRAPH_REPLACE, channelNumberStr}, userData($pulseTrace) = {channelType, USERDATA_MODIFYGRAPH_REPLACE, channelTypeStr}
+						ModifyGraph/W=$graph userData($pulseTrace) = {sweepNumber, USERDATA_MODIFYGRAPH_REPLACE, num2str(sweepNo)}, userData($pulseTrace) = {region, USERDATA_MODIFYGRAPH_REPLACE, num2str(region)}, userData($pulseTrace) = {channelNumber, USERDATA_MODIFYGRAPH_REPLACE, channelNumberStr}, userData($pulseTrace) = {channelType, USERDATA_MODIFYGRAPH_REPLACE, channelTypeStr}, userData($pulseTrace) = {pulseIndex, USERDATA_MODIFYGRAPH_REPLACE, num2str(l)}
 						traceCount += 1
+
+						if(l == startingPulse && activeRegionCount == activeChanCount && WhichListItem(channelNumberStr, referenceTraceList) == -1)
+							SetWindow $graph, userData($PA_USERDATA_REFERENCE_TRACES) += pulseTrace + ";"
+							referenceTraceList = AddListItem(channelNumberStr, referenceTraceList)
+						endif
 					endif
 
 					listOfWavesPerChannel[channelNumber] = AddListItem(GetWavesDataFolder(plotWave, 2), listOfWavesPerChannel[channelNumber], ";", inf)
@@ -691,9 +705,43 @@ Function PA_ShowPulses(win, dfr, pa)
 			activeChanCount = 0
 			channelList     = ""
 
+			// do calculations on traces
+			String testList = ""
+			for(k = 0; k < numChannelTypeTraces; k += 1)
+				idx = indizesChannelType[k]
+
+				channelNumberStr = traceData[idx][%channelNumber]
+				channelNumber    = str2num(channelNumberStr)
+
+				if(WhichListItem(channelNumberStr, channelList) != -1)
+					continue
+				endif
+				activeChanCount += 1
+				channelList = AddListItem(channelNumberStr, channelList, ";", inf)
+
+				// reset waves
+				listOfWaves = listOfWavesPerChannel[channelNumber]
+				PA_ResetWavesIfRequired(listOfWaves, pa)
+
+				// Zero Traces
+				PA_ZeroTraces(listOfWaves, pa.zeroTraces)
+
+				// Automatic Time Alignment with Reference Trace
+				if(pa.autoTimeAlignment && pa.multipleGraphs)
+					graph = PA_GetGraphName(pa.multipleGraphs, channelTypeStr, channelNumber, activeRegionCount)
+					PA_AutomaticTimeAlignment(PA_GetReferenceTracesFromGraph(graph))
+				endif
+			endfor
+
+			if(pa.autoTimeAlignment && !pa.multipleGraphs)
+				PA_AutomaticTimeAlignment(PA_GetReferenceTracesFromGraph(PULSE_AVERAGE_GRAPH_PREFIX))
+			endif
+
+			activeChanCount = 0
+			channelList     = ""
+
 			// handle graph legends and average calculation
 			for(k = 0; k < numChannelTypeTraces; k += 1)
-
 				idx       = indizesChannelType[k]
 				headstage = str2num(traceData[idx][%headstage])
 
@@ -716,17 +764,16 @@ Function PA_ShowPulses(win, dfr, pa)
 				graph = PA_GetGraph(win, pa.multipleGraphs, channelTypeStr, channelNumber, region, activeRegionCount, activeChanCount)
 				PA_GetAxes(pa.multipleGraphs, activeRegionCount, activeChanCount, vertAxis, horizAxis)
 
-				PA_ZeroTraces(listOfWaves, pa.zeroTraces)
-
 				baseName = PA_BaseName(channelTypeStr, channelNumber, region)
 				WAVE/Z averageWave = $""
 				if(pa.showAverageTrace && !IsEmpty(listOfWaves))
-					WAVE averageWave = PA_Average(listOfWaves, pulseAverageDFR, PA_AVERAGE_WAVE_PREFIX + baseName)
+					pulseTrace = PA_AVERAGE_WAVE_PREFIX + baseName
+					WAVE averageWave = PA_Average(listOfWaves, pulseAverageDFR, pulseTrace)
 
 					traceName = PA_AVERAGE_WAVE_PREFIX + baseName
 
 					GetTraceColor(NUM_HEADSTAGES + 1, red, green, blue)
-					AppendToGraph/Q/W=$graph/L=$vertAxis/B=$horizAxis/C=(red, green, blue) averageWave[0,inf;PA_PLOT_STEPPING]/TN=$traceName
+					AppendToGraph/Q/W=$graph/L=$vertAxis/B=$horizAxis/C=(red, green, blue) averageWave
 					SetWindow $graph, userData($PA_USERDATA_SPECIAL_TRACES) += NameOfWave(averageWave) + ";"
 					ModifyGraph/W=$graph lsize($traceName)=1.5
 
@@ -897,6 +944,19 @@ Function PA_CheckProc_Common(cba) : CheckBoxControl
 	return 0
 End
 
+Function PA_CheckProc_Individual(cba) : CheckBoxControl
+	STRUCT WMCheckboxAction &cba
+
+	switch(cba.eventCode)
+		case 2: // mouse up
+			BSP_SetIndividualControlStatus(cba.win)
+			UpdateSweepPlot(cba.win)
+			break
+	endswitch
+
+	return 0
+End
+
 Function PA_CheckProc_Average(cba) : CheckBoxControl
 	STRUCT WMCheckboxAction &cba
 
@@ -944,6 +1004,20 @@ Function PA_IsActive(win)
 	string win
 
 	return BSP_IsActive(win, MIES_BSP_PA)
+End
+
+/// @brief checks if "show individual traces" in PA is activated.
+Function PA_IndividualIsActive(win)
+	string win
+
+	string bsPanel
+
+	if(!PA_IsActive(win))
+		return 0
+	endif
+
+	bsPanel = BSP_GetPanel(win)
+	return GetCheckBoxState(bsPanel, "check_pulseAver_indTraces")
 End
 
 /// @brief checks if "show average trace" in PA is activated.
@@ -1056,5 +1130,109 @@ Function PA_UpdateSweepPlotDeconvolution(win, show)
 		endfor
 
 		SetWindow $graph, userData($PA_USERDATA_SPECIAL_TRACES) = traceListOut
+	endfor
+End
+
+/// @brief use reference trace from graph for time alignment
+///
+/// A reference trace for automatic time alignment is usually the first trace
+/// added to a graph where region and channelnumber have the same counter. These
+/// traces are plotted on the diagonal graphs/axes of the PA graph(s).
+///
+/// @param refTraces list of graph#trace entries as reference for time alignment
+///                  fill complete list using @see PA_GetReferenceTraces(win)
+Function PA_AutomaticTimeAlignment(refTraces)
+	string refTraces
+
+	string graphtrace
+	variable i, numTraces
+
+	numTraces = ItemsInList(refTraces)
+	for(i = 0; i < numTraces; i += 1)
+		graphtrace = StringFromList(i, refTraces)
+		TimeAlignmentIfReq(graphtrace, TIME_ALIGNMENT_MAX, 0, -inf, inf)
+	endfor
+End
+
+/// @brief Get a list of all reference traces in all PA graphs
+///
+/// @param win  main DB/SB graph or any subwindow panel.
+/// @returns graphtraces in the form graph#trace
+static Function/S PA_GetReferenceTraces(win)
+	string win
+
+	string graph, graphs
+	variable i, numGraphs
+	string graphTraces = ""
+
+	if(!PA_IsActive(win))
+		return ""
+	endif
+
+	graphs = PA_GetAverageGraphs()
+	numGraphs = ItemsInList(graphs)
+	for(i = 0; i < numGraphs; i += 1)
+		graph = StringFromList(i, graphs)
+		graphtraces += PA_GetReferenceTracesFromGraph(graph)
+	endfor
+
+	return graphtraces
+End
+
+/// @brief Get all traces marked as reference traces for the current graph.
+///
+/// @param graph  Pulse Averaging Reference Graph (diagonal elements when multiple graphs)
+/// @returns graphtraces in the form graph#trace if the graph is a valid reference graph
+static Function/S PA_GetReferenceTracesFromGraph(graph)
+	string graph
+
+	string trace, traces
+	variable i, numTraces
+	string graphTraces = ""
+
+	ASSERT(WindowExists(graph), "specified PA graph does not exist")
+
+	if(!str2num(GetUserData(graph, "", PA_USERDATA_REFERENCE_GRAPH)))
+		return ""
+	endif
+
+	traces = GetUserData(graph, "", PA_USERDATA_REFERENCE_TRACES)
+	numTraces = ItemsInList(traces)
+	for(i = 0; i < numTraces; i += 1)
+		trace = StringFromList(i, traces)
+		graphtraces = AddListItem(graph + "#" + trace, graphtraces)
+	endfor
+
+	return graphtraces
+End
+
+/// @brief Reset All Waves from a list of waves to its original state if they are outdated
+///
+// PA waves get an entry to their wave note as soon as they are modified. If
+// this entry does not match the current panel selection, they are resetted to
+// redo the calculation from the beginning.
+//
+// @param listOfWaves  A semicolon separated list of full paths to the waves that need to
+//                     get tested
+// @param pa           Filled PulseAverageSettings structure. @see PA_GatherSettings
+static Function PA_ResetWavesIfRequired(listOfWaves, pa)
+	string listOfWaves
+	STRUCT PulseAverageSettings &pa
+
+	variable i, statusZero, statusTimeAlign
+	WAVE/WAVE wv = ListToWaveRefWave(listOfWaves, 1)
+
+	for(i = 0; i < DimSize(wv, ROWS); i += 1)
+		statusZero = GetNumberFromWaveNote(wv[i], NOTE_KEY_ZEROED)
+		statusTimeAlign = GetNumberFromWaveNote(wv[i], NOTE_KEY_TIMEALIGN)
+
+		if(statusZero == 0 && statusTimeAlign == 0)
+			continue // wave is unmodified
+		endif
+
+		if(statusZero == pa.zeroTraces && statusTimeAlign == pa.autoTimeAlignment)
+			continue // wave is up to date
+		endif
+		ReplaceWaveWithBackup(wv[i], nonExistingBackupIsFatal = 1)
 	endfor
 End

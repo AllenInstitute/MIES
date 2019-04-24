@@ -898,14 +898,12 @@ Function DB_GraphUpdate(win)
 
 	string bsPanel, graph
 
+	graph = GetMainWindow(win)
 	bsPanel = BSP_GetPanel(win)
-	graph = DB_GetMainGraph(win)
 
 	if(GetCheckBoxState(bsPanel, "check_Display_VisibleXrange"))
 		AutoscaleVertAxisVisXRange(graph)
 	endif
-
-	TimeAlignUpdateControls(bsPanel)
 End
 
 /// @brief enable/disable checkbox control for side panel

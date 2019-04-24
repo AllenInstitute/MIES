@@ -8,7 +8,7 @@
 static strConstant EXT_PANEL_SUBWINDOW = "BrowserSettingsPanel"
 static strConstant EXT_PANEL_SWEEPCONTROL = "SweepControl"
 
-static Constant BROWSERSETTINGS_PANEL_VERSION = 3
+static Constant BROWSERSETTINGS_PANEL_VERSION = 4
 
 static strConstant BROWSERTYPE_DATABROWSER  = "D"
 static strConstant BROWSERTYPE_SWEEPBROWSER = "S"
@@ -499,10 +499,21 @@ Function BSP_SetPAControlStatus(win)
 
 	string controlList
 
-	controlList = "group_properties_pulse;check_pulseAver_indTraces;check_pulseAver_showAver;check_pulseAver_zeroTrac;check_pulseAver_multGraphs;setvar_pulseAver_startPulse;setvar_pulseAver_endPulse;setvar_pulseAver_fallbackLength;"
+	controlList = "group_properties_pulse;check_pulseAver_indTraces;check_pulseAver_showAver;check_pulseAver_zeroTrac;check_pulseAver_multGraphs;check_pulseAver_deconv;check_pulseAver_timeAlign;setvar_pulseAver_startPulse;setvar_pulseAver_endPulse;setvar_pulseAver_fallbackLength;"
 	BSP_SetControlStatus(win, controlList, PA_IsActive(win))
+	BSP_SetIndividualControlStatus(win)
+	BSP_SetDeconvControlStatus(win)
 
 	BSP_SetDeconvControlStatus(win)
+End
+
+/// @brief enable/disable the buttons that rely on displayed traces
+///
+/// @param win 	specify mainPanel or bsPanel with OVS controls
+Function BSP_SetIndividualControlStatus(win)
+	string win
+
+	BSP_SetControlStatus(win, "check_pulseAver_timeAlign", PA_IndividualIsActive(win))
 End
 
 /// @brief enable/disable deconvolution buttons depending on the status of @c check_pulseAver_showAver
@@ -815,55 +826,59 @@ Window BrowserSettingsPanel() : Panel
 	CheckBox check_highlightRanges,help={"Visualize the found ranges in the graph (*might* slowdown graphing)"}
 	CheckBox check_highlightRanges,userdata(tabnum)=  "3"
 	CheckBox check_highlightRanges,userdata(tabcontrol)=  "Settings",value= 0
-	SetVariable setvar_pulseAver_fallbackLength,pos={106.00,227.00},size={136.00,19.00},bodyWidth=50,disable=3,proc=PA_SetVarProc_Common,title="Fallback Length"
+	SetVariable setvar_pulseAver_fallbackLength,pos={105.00,227.00},size={137.00,18.00},bodyWidth=50,disable=2,proc=PA_SetVarProc_Common,title="Fallback Length"
 	SetVariable setvar_pulseAver_fallbackLength,help={"Pulse To Pulse Length in ms for edge cases which can not be computed."}
 	SetVariable setvar_pulseAver_fallbackLength,userdata(tabnum)=  "4"
 	SetVariable setvar_pulseAver_fallbackLength,userdata(tabcontrol)=  "Settings"
 	SetVariable setvar_pulseAver_fallbackLength,value= _NUM:100
-	SetVariable setvar_pulseAver_endPulse,pos={120.00,204.00},size={122.00,19.00},bodyWidth=50,disable=3,proc=PA_SetVarProc_Common,title="Ending Pulse"
+	SetVariable setvar_pulseAver_endPulse,pos={120.00,204.00},size={122.00,18.00},bodyWidth=50,disable=2,proc=PA_SetVarProc_Common,title="Ending Pulse"
 	SetVariable setvar_pulseAver_endPulse,userdata(tabnum)=  "4"
 	SetVariable setvar_pulseAver_endPulse,userdata(tabcontrol)=  "Settings"
 	SetVariable setvar_pulseAver_endPulse,value= _NUM:inf
-	SetVariable setvar_pulseAver_startPulse,pos={116.00,182.00},size={126.00,19.00},bodyWidth=50,disable=3,proc=PA_SetVarProc_Common,title="Starting Pulse"
+	SetVariable setvar_pulseAver_startPulse,pos={116.00,182.00},size={126.00,18.00},bodyWidth=50,disable=2,proc=PA_SetVarProc_Common,title="Starting Pulse"
 	SetVariable setvar_pulseAver_startPulse,userdata(tabnum)=  "4"
 	SetVariable setvar_pulseAver_startPulse,userdata(tabcontrol)=  "Settings"
 	SetVariable setvar_pulseAver_startPulse,value= _NUM:0
-	CheckBox check_pulseAver_multGraphs,pos={110.00,162.00},size={118.00,16.00},disable=3,proc=PA_CheckProc_Common,title="Use multiple graphs"
+	CheckBox check_pulseAver_multGraphs,pos={110.00,162.00},size={121.00,15.00},disable=2,proc=PA_CheckProc_Common,title="Use multiple graphs"
 	CheckBox check_pulseAver_multGraphs,help={"Show the single pulses in multiple graphs or only one graph with mutiple axis."}
 	CheckBox check_pulseAver_multGraphs,userdata(tabnum)=  "4"
 	CheckBox check_pulseAver_multGraphs,userdata(tabcontrol)=  "Settings",value= 0
-	CheckBox check_pulseAver_zeroTrac,pos={110.00,121.00},size={69.00,16.00},disable=3,proc=PA_CheckProc_Common,title="Zero traces"
+	CheckBox check_pulseAver_zeroTrac,pos={110.00,121.00},size={74.00,15.00},disable=2,proc=PA_CheckProc_Common,title="Zero traces"
 	CheckBox check_pulseAver_zeroTrac,help={"Zero the individual traces using subsequent differentiation and integration"}
 	CheckBox check_pulseAver_zeroTrac,userdata(tabnum)=  "4"
 	CheckBox check_pulseAver_zeroTrac,userdata(tabcontrol)=  "Settings",value= 0
-	CheckBox check_pulseAver_showAver,pos={110.00,141.00},size={115.00,16.00},disable=3,proc=PA_CheckProc_Average,title="Show average trace"
+	CheckBox check_pulseAver_showAver,pos={110.00,141.00},size={118.00,15.00},disable=2,proc=PA_CheckProc_Average,title="Show average trace"
 	CheckBox check_pulseAver_showAver,help={"Show the average trace"}
 	CheckBox check_pulseAver_showAver,userdata(tabnum)=  "4"
 	CheckBox check_pulseAver_showAver,userdata(tabcontrol)=  "Settings",value= 0
-	CheckBox check_pulseAver_indTraces,pos={110.00,100.00},size={130.00,16.00},disable=3,proc=PA_CheckProc_Common,title="Show individual traces"
+	CheckBox check_pulseAver_indTraces,pos={110.00,100.00},size={134.00,15.00},disable=2,proc=PA_CheckProc_Individual,title="Show individual traces"
 	CheckBox check_pulseAver_indTraces,help={"Show the individual traces"}
 	CheckBox check_pulseAver_indTraces,userdata(tabnum)=  "4"
 	CheckBox check_pulseAver_indTraces,userdata(tabcontrol)=  "Settings",value= 1
-	CheckBox check_pulseAver_deconv,pos={110.00,251.00},size={89.00,16.00},disable=3,proc=PA_CheckProc_Deconvolution,title="Deconvolution"
+	CheckBox check_pulseAver_deconv,pos={110.00,251.00},size={94.00,15.00},disable=2,proc=PA_CheckProc_Deconvolution,title="Deconvolution"
 	CheckBox check_pulseAver_deconv,help={"Show Deconvolution: tau * dV/dt + V"}
 	CheckBox check_pulseAver_deconv,userdata(tabnum)=  "4"
 	CheckBox check_pulseAver_deconv,userdata(tabcontrol)=  "Settings",value= 0
-	SetVariable setvar_pulseAver_deconv_tau,pos={145.00,272.00},size={97.00,19.00},bodyWidth=50,disable=3,proc=PA_SetVarProc_Common,title="tau [ms]"
+	CheckBox check_pulseAver_timeAlign,pos={110.00,348.00},size={102.00,15.00},disable=2,proc=PA_CheckProc_Common,title="Time Alignment"
+	CheckBox check_pulseAver_timeAlign,help={"Automatically align all traces in the PA graph to a reference trace from the diagonal element"}
+	CheckBox check_pulseAver_timeAlign,userdata(tabnum)=  "4"
+	CheckBox check_pulseAver_timeAlign,userdata(tabcontrol)=  "Settings",value= 0
+	SetVariable setvar_pulseAver_deconv_tau,pos={144.00,272.00},size={98.00,18.00},bodyWidth=50,disable=2,proc=PA_SetVarProc_Common,title="tau [ms]"
 	SetVariable setvar_pulseAver_deconv_tau,help={"Deconvolution time tau: tau * dV/dt + V"}
 	SetVariable setvar_pulseAver_deconv_tau,userdata(tabnum)=  "4"
 	SetVariable setvar_pulseAver_deconv_tau,userdata(tabcontrol)=  "Settings"
 	SetVariable setvar_pulseAver_deconv_tau,limits={0,inf,0},value= _NUM:15
-	SetVariable setvar_pulseAver_deconv_smth,pos={131.00,294.00},size={111.00,19.00},bodyWidth=50,disable=3,proc=PA_SetVarProc_Common,title="smoothing"
+	SetVariable setvar_pulseAver_deconv_smth,pos={130.00,294.00},size={112.00,18.00},bodyWidth=50,disable=2,proc=PA_SetVarProc_Common,title="smoothing"
 	SetVariable setvar_pulseAver_deconv_smth,help={"Smoothing factor to use before the deconvolution is calculated. Set to 1 to do the calculation without smoothing."}
 	SetVariable setvar_pulseAver_deconv_smth,userdata(tabnum)=  "4"
 	SetVariable setvar_pulseAver_deconv_smth,userdata(tabcontrol)=  "Settings"
 	SetVariable setvar_pulseAver_deconv_smth,limits={1,inf,0},value= _NUM:1000
-	SetVariable setvar_pulseAver_deconv_range,pos={125.00,316.00},size={117.00,19.00},bodyWidth=50,disable=3,proc=PA_SetVarProc_Common,title="display [ms]"
+	SetVariable setvar_pulseAver_deconv_range,pos={124.00,316.00},size={118.00,18.00},bodyWidth=50,disable=2,proc=PA_SetVarProc_Common,title="display [ms]"
 	SetVariable setvar_pulseAver_deconv_range,help={"Time in ms from the beginning of the pulse that is used for the calculation"}
 	SetVariable setvar_pulseAver_deconv_range,userdata(tabnum)=  "4"
 	SetVariable setvar_pulseAver_deconv_range,userdata(tabcontrol)=  "Settings"
 	SetVariable setvar_pulseAver_deconv_range,limits={0,inf,0},value= _NUM:15
-	GroupBox group_pulseAver_deconv,pos={101.00,248.00},size={155.00,97.00},disable=3
+	GroupBox group_pulseAver_deconv,pos={101.00,248.00},size={155.00,97.00},disable=2
 	GroupBox group_pulseAver_deconv,userdata(tabnum)=  "4"
 	GroupBox group_pulseAver_deconv,userdata(tabcontrol)=  "Settings"
 	CheckBox check_BrowserSettings_OVS,pos={156.00,50.00},size={47.00,16.00},disable=1,proc=DB_CheckProc_OverlaySweeps,title="enable"
