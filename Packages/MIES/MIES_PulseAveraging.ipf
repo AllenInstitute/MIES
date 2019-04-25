@@ -713,9 +713,12 @@ Function PA_ShowPulses(win, dfr, pa)
 				if(pa.showAverageTrace && !IsEmpty(listOfWaves))
 					WAVE averageWave = PA_Average(listOfWaves, pulseAverageDFR, PA_AVERAGE_WAVE_PREFIX + baseName)
 
+					traceName = PA_AVERAGE_WAVE_PREFIX + baseName
+
 					GetTraceColor(NUM_HEADSTAGES + 1, red, green, blue)
-					AppendToGraph/Q/W=$graph/L=$vertAxis/B=$horizAxis/C=(red, green, blue) averageWave[0,inf;PA_PLOT_STEPPING]
+					AppendToGraph/Q/W=$graph/L=$vertAxis/B=$horizAxis/C=(red, green, blue) averageWave[0,inf;PA_PLOT_STEPPING]/TN=$traceName
 					SetWindow $graph, userData($PA_USERDATA_SPECIAL_TRACES) += NameOfWave(averageWave) + ";"
+					ModifyGraph/W=$graph lsize($traceName)=1.5
 
 					listOfWavesPerChannel[channelNumber] = ""
 				endif
