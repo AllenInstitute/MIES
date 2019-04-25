@@ -3519,6 +3519,13 @@ threadsafe Function IsFloatingPointWave(wv)
 	return (type & IGOR_TYPE_32BIT_FLOAT) || (type & IGOR_TYPE_64BIT_FLOAT)
 End
 
+/// @brief Return 1 if the wave is a global wave (not a null wave and not a free wave)
+threadsafe Function IsGlobalWave(wv)
+	WAVE wv
+
+	return WaveType(wv, 2) == 1
+End
+
 /// @brief Return the user name of the running user
 Function/S GetSystemUserName()
 

@@ -4570,7 +4570,7 @@ Function/Wave CreateBackupWave(wv, [forceCreation])
 	string backupname
 	dfref dfr
 
-	ASSERT(WaveExists(wv), "missing wave")
+	ASSERT(IsGlobalWave(wv), "Wave Can Not Be A Null Wave Or A Free Wave")
 	backupname = NameOfWave(wv) + WAVE_BACKUP_SUFFIX
 	dfr        = GetWavesDataFolderDFR(wv)
 
@@ -4597,7 +4597,7 @@ Function/WAVE GetBackupWave(wv)
 
 	string backupname
 
-	ASSERT(WaveExists(wv), "Found no original wave")
+	ASSERT(IsGlobalWave(wv), "Wave Can Not Be A Null Wave Or A Free Wave")
 
 	backupname = NameOfWave(wv) + WAVE_BACKUP_SUFFIX
 	DFREF dfr  = GetWavesDataFolderDFR(wv)
