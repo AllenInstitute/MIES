@@ -670,7 +670,7 @@ Function PA_ShowPulses(win, dfr, pa)
 						sprintf pulseTrace, "T%06d%s_IDX%d", traceCount, NameOfWave(plotWave), idx
 
 						GetTraceColor(headstage, red, green, blue)
-						AppendToGraph/Q/W=$graph/L=$vertAxis/B=$horizAxis/C=(red, green, blue, 65535 * 0.1) plotWave[0,inf;PA_PLOT_STEPPING]/TN=$pulseTrace
+						AppendToGraph/Q/W=$graph/L=$vertAxis/B=$horizAxis/C=(red, green, blue, 65535 * 0.2) plotWave[0,inf;PA_PLOT_STEPPING]/TN=$pulseTrace
 						traceCount += 1
 					endif
 
