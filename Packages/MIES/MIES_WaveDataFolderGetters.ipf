@@ -5597,11 +5597,11 @@ Function/WAVE GetPulseAverageWave(dfr, channelType, channelNumber, region, pulse
 	wvName  = StringFromList(channelType, ITC_CHANNEL_NAMES) + num2str(channelNumber)
 	wvName += "_R" + num2str(region) + "_P" + num2str(pulseIndex)
 
-	WAVE/SDFR=dfr/Z/D wv = $wvName
+	WAVE/SDFR=dfr/Z wv = $wvName
 	if(WaveExists(wv))
 		return wv
 	else
-		Make/N=(0)/D dfr:$wvName/WAVE=wv
+		Make/N=(0) dfr:$wvName/WAVE=wv
 	endif
 
 	return wv
