@@ -5,22 +5,23 @@
 static Constant HEADSTAGE = 0
 
 /// @brief Acquire data with the given DAQSettings
-static Function AcquireData(s, finalDAScaleFake)
+static Function AcquireData(s, finalDAScaleFake, device)
 	STRUCT DAQSettings& s
 	variable finalDAScaleFake
+	string device
 
 	Make/O/N=(0) root:overrideResults/Wave=overrideResults
 	Note/K overrideResults
 	SetNumberInWaveNote(overrideResults, PSQ_RB_FINALSCALE_FAKE_KEY, finalDaScaleFake)
 	string unlockedPanelTitle = DAP_CreateDAEphysPanel()
 
-	ChooseCorrectDevice(unlockedPanelTitle, DEVICE)
+	ChooseCorrectDevice(unlockedPanelTitle, device)
 	PGC_SetAndActivateControl(unlockedPanelTitle, "button_SettingsPlus_LockDevice")
 
-	REQUIRE(WindowExists(DEVICE))
+	REQUIRE(WindowExists(device))
 
-	PGC_SetAndActivateControl(DEVICE, "ADC", val=0)
-	DoUpdate/W=$DEVICE
+	PGC_SetAndActivateControl(device, "ADC", val=0)
+	DoUpdate/W=$device
 
 	WAVE ampMCC = GetAmplifierMultiClamps()
 	WAVE ampTel = GetAmplifierTelegraphServers()
@@ -29,76 +30,81 @@ static Function AcquireData(s, finalDAScaleFake)
 	CHECK_EQUAL_VAR(DimSize(ampTel, ROWS), 2)
 
 	// HS 0 with Amp
-	PGC_SetAndActivateControl(DEVICE, "Popup_Settings_HeadStage", val = HEADSTAGE)
-	PGC_SetAndActivateControl(DEVICE, "popup_Settings_Amplifier", val = 1)
+	PGC_SetAndActivateControl(device, "Popup_Settings_HeadStage", val = HEADSTAGE)
+	PGC_SetAndActivateControl(device, "popup_Settings_Amplifier", val = 1)
 
-	PGC_SetAndActivateControl(DEVICE, DAP_GetClampModeControl(I_CLAMP_MODE, HEADSTAGE), val=1)
-	DoUpdate/W=$DEVICE
+	PGC_SetAndActivateControl(device, DAP_GetClampModeControl(I_CLAMP_MODE, HEADSTAGE), val=1)
+	DoUpdate/W=$device
 
-	PGC_SetAndActivateControl(DEVICE, "button_Hardware_AutoGainAndUnit")
+	PGC_SetAndActivateControl(device, "button_Hardware_AutoGainAndUnit")
 
-	PGC_SetAndActivateControl(DEVICE, "check_DataAcq_AutoBias", val = 1)
-	PGC_SetAndActivateControl(DEVICE, "setvar_DataAcq_AutoBiasV", val = 70)
-	PGC_SetAndActivateControl(DEVICE, GetPanelControl(0, CHANNEL_TYPE_HEADSTAGE, CHANNEL_CONTROL_CHECK), val=1)
-	PGC_SetAndActivateControl(DEVICE, GetPanelControl(0, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_WAVE), str = "Rheobase*")
+	PGC_SetAndActivateControl(device, "check_DataAcq_AutoBias", val = 1)
+	PGC_SetAndActivateControl(device, "setvar_DataAcq_AutoBiasV", val = 70)
+	PGC_SetAndActivateControl(device, GetPanelControl(0, CHANNEL_TYPE_HEADSTAGE, CHANNEL_CONTROL_CHECK), val=1)
+	PGC_SetAndActivateControl(device, GetPanelControl(0, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_WAVE), str = "Rheobase*")
 
-	PGC_SetAndActivateControl(DEVICE, "check_Settings_MD", val = s.MD)
-	PGC_SetAndActivateControl(DEVICE, "Check_DataAcq1_RepeatAcq", val = s.RA)
-	PGC_SetAndActivateControl(DEVICE, "Check_DataAcq_Indexing", val = s.IDX)
-	PGC_SetAndActivateControl(DEVICE, "Check_DataAcq1_IndexingLocked", val = s.LIDX)
-	PGC_SetAndActivateControl(DEVICE, "Check_Settings_BackgrndDataAcq", val = s.BKG_DAQ)
-	PGC_SetAndActivateControl(DEVICE, "SetVar_DataAcq_SetRepeats", val = s.RES)
-	PGC_SetAndActivateControl(DEVICE, "Check_Settings_SkipAnalysFuncs", val = 0)
-	PGC_SetAndActivateControl(DEVICE, "Popup_Settings_SampIntMult", str = "4")
+	PGC_SetAndActivateControl(device, "check_Settings_MD", val = s.MD)
+	PGC_SetAndActivateControl(device, "Check_DataAcq1_RepeatAcq", val = s.RA)
+	PGC_SetAndActivateControl(device, "Check_DataAcq_Indexing", val = s.IDX)
+	PGC_SetAndActivateControl(device, "Check_DataAcq1_IndexingLocked", val = s.LIDX)
+	PGC_SetAndActivateControl(device, "Check_Settings_BackgrndDataAcq", val = s.BKG_DAQ)
+	PGC_SetAndActivateControl(device, "SetVar_DataAcq_SetRepeats", val = s.RES)
+	PGC_SetAndActivateControl(device, "Check_Settings_SkipAnalysFuncs", val = 0)
+	PGC_SetAndActivateControl(device, "Popup_Settings_SampIntMult", str = "4")
 
-	DoUpdate/W=$DEVICE
+	DoUpdate/W=$device
 
-	PGC_SetAndActivateControl(DEVICE, "DataAcquireButton")
+	PGC_SetAndActivateControl(device, "DataAcquireButton")
 	OpenDatabrowser()
 End
 
-static Function/WAVE GetSpikeResults_IGNORE(sweepNo)
+static Function/WAVE GetSpikeResults_IGNORE(sweepNo, device)
 	variable sweepNo
+	string device
 
 	string key
 
-	WAVE numericalValues = GetLBNumericalValues(DEVICE)
+	WAVE numericalValues = GetLBNumericalValues(device)
 	key = PSQ_CreateLBNKey(PSQ_RHEOBASE, PSQ_FMT_LBN_SPIKE_DETECT, query = 1)
 	return GetLastSettingEachRAC(numericalValues, sweepNo, key, HEADSTAGE, UNKNOWN_MODE)
 End
 
-static Function/WAVE GetBaselineQCResults_IGNORE(sweepNo)
+static Function/WAVE GetBaselineQCResults_IGNORE(sweepNo, device)
 	variable sweepNo
+	string device
 
 	string key
 
-	WAVE numericalValues = GetLBNumericalValues(DEVICE)
+	WAVE numericalValues = GetLBNumericalValues(device)
 	key = PSQ_CreateLBNKey(PSQ_RHEOBASE, PSQ_FMT_LBN_BL_QC_PASS, query = 1)
 	return GetLastSettingEachRAC(numericalValues, sweepNo, key, HEADSTAGE, UNKNOWN_MODE)
 End
 
-static Function PS_RB1()
+// UTF_TD_GENERATOR HardwareMain#DeviceNameGeneratorMD1
+static Function PS_RB1([str])
+	string str
 
 	STRUCT DAQSettings s
 	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG_1")
-	AcquireData(s, PSQ_RB_FINALSCALE_FAKE_HIGH)
+	AcquireData(s, PSQ_RB_FINALSCALE_FAKE_HIGH, str)
 
-	WAVE wv = PSQ_CreateOverrideResults(DEVICE, HEADSTAGE, PSQ_RHEOBASE)
+	WAVE wv = PSQ_CreateOverrideResults(str, HEADSTAGE, PSQ_RHEOBASE)
 	// all tests fail, baseline QC and alternating spike finding
 	wv = 0
 End
 
-static Function PS_RB1_REENTRY()
+static Function PS_RB1_REENTRY([str])
+	string str
 
 	variable sweepNo, setPassed, i, numEntries, onsetDelay, initialDAScale
 	string key
 
-	CHECK_EQUAL_VAR(GetSetVariable(DEVICE, "SetVar_Sweep"), 15)
+	CHECK_EQUAL_VAR(GetSetVariable(str, "SetVar_Sweep"), 15)
 
-	sweepNo = AFH_GetLastSweepAcquired(DEVICE)
+	sweepNo = AFH_GetLastSweepAcquired(str)
 	CHECK_EQUAL_VAR(sweepNo, 14)
 
-	WAVE numericalValues = GetLBNumericalValues(DEVICE)
+	WAVE numericalValues = GetLBNumericalValues(str)
 
 	key = PSQ_CreateLBNKey(PSQ_RHEOBASE, PSQ_FMT_LBN_INITIAL_SCALE, query = 1)
 	initialDAScale = GetLastSettingIndepRAC(numericalValues, sweepNo, key, UNKNOWN_MODE)
@@ -108,7 +114,7 @@ static Function PS_RB1_REENTRY()
 	setPassed = GetLastSettingIndep(numericalValues, sweepNo, key, UNKNOWN_MODE)
 	CHECK_EQUAL_VAR(setPassed, 0)
 
-	WAVE/Z baselineQCWave = GetBaselineQCResults_IGNORE(sweepNo)
+	WAVE/Z baselineQCWave = GetBaselineQCResults_IGNORE(sweepNo, str)
 	CHECK_EQUAL_WAVES(baselineQCWave, {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}, mode = WAVE_DATA)
 
 	WAVE/Z sweeps = AFH_GetSweepsFromSameRACycle(numericalValues, sweepNo)
@@ -130,9 +136,9 @@ static Function PS_RB1_REENTRY()
 				 GetLastSettingIndep(numericalValues, sweepNo, "Delay onset user", DATA_ACQUISITION_MODE)
 
 	Make/FREE/N=(numEntries) stimSetLengths = GetLastSetting(numericalValues, sweeps[p], "Stim set length", DATA_ACQUISITION_MODE)[HEADSTAGE]
-	Make/FREE/N=(numEntries) sweepLengths   = DimSize(GetSweepWave(DEVICE, sweeps[p]), ROWS)
+	Make/FREE/N=(numEntries) sweepLengths   = DimSize(GetSweepWave(str, sweeps[p]), ROWS)
 
-	sweepLengths[] -= onsetDelay / DimDelta(GetSweepWave(DEVICE, sweeps[p]), ROWS)
+	sweepLengths[] -= onsetDelay / DimDelta(GetSweepWave(str, sweeps[p]), ROWS)
 
 	CHECK_EQUAL_WAVES(stimSetLengths, sweepLengths, mode = WAVE_DATA)
 
@@ -147,29 +153,32 @@ End
 // we don't test the BL QC code path here anymore
 // as that is already done in the patchseq square pulse tests
 
-static Function PS_RB2()
+// UTF_TD_GENERATOR HardwareMain#DeviceNameGeneratorMD1
+static Function PS_RB2([str])
+	string str
 
 	STRUCT DAQSettings s
 	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG_1")
-	AcquireData(s, PSQ_RB_FINALSCALE_FAKE_HIGH)
+	AcquireData(s, PSQ_RB_FINALSCALE_FAKE_HIGH, str)
 
-	WAVE wv = PSQ_CreateOverrideResults(DEVICE, HEADSTAGE, PSQ_RHEOBASE)
+	WAVE wv = PSQ_CreateOverrideResults(str, HEADSTAGE, PSQ_RHEOBASE)
 	// baseline QC passes and no spikes at all
 	wv = 0
 	wv[0,1][][0] = 1
 End
 
-static Function PS_RB2_REENTRY()
+static Function PS_RB2_REENTRY([str])
+	string str
 
 	variable sweepNo, setPassed, i, numEntries, onsetDelay
 	variable initialDAScale
 	string key
 
-	WAVE numericalValues = GetLBNumericalValues(DEVICE)
+	WAVE numericalValues = GetLBNumericalValues(str)
 
-	CHECK_EQUAL_VAR(GetSetVariable(DEVICE, "SetVar_Sweep"), 7)
+	CHECK_EQUAL_VAR(GetSetVariable(str, "SetVar_Sweep"), 7)
 
-	sweepNo = AFH_GetLastSweepAcquired(DEVICE)
+	sweepNo = AFH_GetLastSweepAcquired(str)
 	CHECK_EQUAL_VAR(sweepNo, 6)
 
 	key = PSQ_CreateLBNKey(PSQ_RHEOBASE, PSQ_FMT_LBN_INITIAL_SCALE, query = 1)
@@ -180,10 +189,10 @@ static Function PS_RB2_REENTRY()
 	setPassed = GetLastSettingIndep(numericalValues, sweepNo, key, UNKNOWN_MODE)
 	CHECK_EQUAL_VAR(setPassed, 0)
 
-	WAVE/Z baselineQCWave = GetBaselineQCResults_IGNORE(sweepNo)
+	WAVE/Z baselineQCWave = GetBaselineQCResults_IGNORE(sweepNo, str)
 	CHECK_EQUAL_WAVES(baselineQCWave, {1, 1, 1, 1, 1, 1, 1}, mode = WAVE_DATA)
 
-	WAVE/Z spikeDetectionWave = GetSpikeResults_IGNORE(sweepNo)
+	WAVE/Z spikeDetectionWave = GetSpikeResults_IGNORE(sweepNo, str)
 	CHECK_EQUAL_WAVES(spikeDetectionWave, {0, 0, 0, 0, 0, 0, 0}, mode = WAVE_DATA)
 
 	WAVE/Z sweeps = AFH_GetSweepsFromSameRACycle(numericalValues, sweepNo)
@@ -204,30 +213,33 @@ static Function PS_RB2_REENTRY()
 	CHECK_EQUAL_VAR(setPassed, PSQ_RB_DASCALE_STEP_LARGE)
 End
 
-static Function PS_RB3()
+// UTF_TD_GENERATOR HardwareMain#DeviceNameGeneratorMD1
+static Function PS_RB3([str])
+	string str
 
 	STRUCT DAQSettings s
 	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG_1")
-	AcquireData(s, PSQ_RB_FINALSCALE_FAKE_HIGH)
+	AcquireData(s, PSQ_RB_FINALSCALE_FAKE_HIGH, str)
 
-	WAVE wv = PSQ_CreateOverrideResults(DEVICE, HEADSTAGE, PSQ_RHEOBASE)
+	WAVE wv = PSQ_CreateOverrideResults(str, HEADSTAGE, PSQ_RHEOBASE)
 	// baseline QC passes and always spikes
 	wv = 0
 	wv[0,1][][0] = 1
 	wv[][][1]    = 1
 End
 
-static Function PS_RB3_REENTRY()
+static Function PS_RB3_REENTRY([str])
+	string str
 
 	variable sweepNo, setPassed, i, numEntries, onsetDelay
 	variable initialDAScale
 	string key
 
-	WAVE numericalValues = GetLBNumericalValues(DEVICE)
+	WAVE numericalValues = GetLBNumericalValues(str)
 
-	CHECK_EQUAL_VAR(GetSetVariable(DEVICE, "SetVar_Sweep"), 6)
+	CHECK_EQUAL_VAR(GetSetVariable(str, "SetVar_Sweep"), 6)
 
-	sweepNo = AFH_GetLastSweepAcquired(DEVICE)
+	sweepNo = AFH_GetLastSweepAcquired(str)
 	CHECK_EQUAL_VAR(sweepNo, 5)
 
 	key = PSQ_CreateLBNKey(PSQ_RHEOBASE, PSQ_FMT_LBN_INITIAL_SCALE, query = 1)
@@ -238,10 +250,10 @@ static Function PS_RB3_REENTRY()
 	setPassed = GetLastSettingIndep(numericalValues, sweepNo, key, UNKNOWN_MODE)
 	CHECK_EQUAL_VAR(setPassed, 0)
 
-	WAVE/Z baselineQCWave = GetBaselineQCResults_IGNORE(sweepNo)
+	WAVE/Z baselineQCWave = GetBaselineQCResults_IGNORE(sweepNo, str)
 	CHECK_EQUAL_WAVES(baselineQCWave, {1, 1, 1, 1, 1, 1}, mode = WAVE_DATA)
 
-	WAVE/Z spikeDetectionWave = GetSpikeResults_IGNORE(sweepNo)
+	WAVE/Z spikeDetectionWave = GetSpikeResults_IGNORE(sweepNo, str)
 	CHECK_EQUAL_WAVES(spikeDetectionWave, {1, 1, 1, 1, 1, 1}, mode = WAVE_DATA)
 
 	WAVE/Z sweeps = AFH_GetSweepsFromSameRACycle(numericalValues, sweepNo)
@@ -258,30 +270,33 @@ static Function PS_RB3_REENTRY()
 	CHECK_EQUAL_WAVES(durations, {3, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN}, mode = WAVE_DATA, tol = 0.01)
 End
 
-static Function PS_RB4()
+// UTF_TD_GENERATOR HardwareMain#DeviceNameGeneratorMD1
+static Function PS_RB4([str])
+	string str
 
 	STRUCT DAQSettings s
 	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG_1")
-	AcquireData(s, PSQ_RB_FINALSCALE_FAKE_HIGH)
+	AcquireData(s, PSQ_RB_FINALSCALE_FAKE_HIGH, str)
 
-	WAVE wv = PSQ_CreateOverrideResults(DEVICE, HEADSTAGE, PSQ_RHEOBASE)
+	WAVE wv = PSQ_CreateOverrideResults(str, HEADSTAGE, PSQ_RHEOBASE)
 	// baseline QC passes and first spikes, second not
 	wv = 0
 	wv[0,1][][0] = 1
 	wv[][0][1]   = 1
 End
 
-static Function PS_RB4_REENTRY()
+static Function PS_RB4_REENTRY([str])
+	string str
 
 	variable sweepNo, setPassed, i, numEntries, onsetDelay
 	variable initialDAScale
 	string key
 
-	WAVE numericalValues = GetLBNumericalValues(DEVICE)
+	WAVE numericalValues = GetLBNumericalValues(str)
 
-	CHECK_EQUAL_VAR(GetSetVariable(DEVICE, "SetVar_Sweep"), 2)
+	CHECK_EQUAL_VAR(GetSetVariable(str, "SetVar_Sweep"), 2)
 
-	sweepNo = AFH_GetLastSweepAcquired(DEVICE)
+	sweepNo = AFH_GetLastSweepAcquired(str)
 	CHECK_EQUAL_VAR(sweepNo, 1)
 
 	key = PSQ_CreateLBNKey(PSQ_RHEOBASE, PSQ_FMT_LBN_INITIAL_SCALE, query = 1)
@@ -292,10 +307,10 @@ static Function PS_RB4_REENTRY()
 	setPassed = GetLastSettingIndep(numericalValues, sweepNo, key, UNKNOWN_MODE)
 	CHECK_EQUAL_VAR(setPassed, 1)
 
-	WAVE/Z baselineQCWave = GetBaselineQCResults_IGNORE(sweepNo)
+	WAVE/Z baselineQCWave = GetBaselineQCResults_IGNORE(sweepNo, str)
 	CHECK_EQUAL_WAVES(baselineQCWave, {1, 1}, mode = WAVE_DATA)
 
-	WAVE/Z spikeDetectionWave = GetSpikeResults_IGNORE(sweepNo)
+	WAVE/Z spikeDetectionWave = GetSpikeResults_IGNORE(sweepNo, str)
 	CHECK_EQUAL_WAVES(spikeDetectionWave, {1, 0}, mode = WAVE_DATA)
 
 	WAVE/Z sweeps = AFH_GetSweepsFromSameRACycle(numericalValues, sweepNo)
@@ -316,30 +331,33 @@ static Function PS_RB4_REENTRY()
 	CHECK_EQUAL_VAR(setPassed, PSQ_RB_DASCALE_STEP_LARGE)
 End
 
-static Function PS_RB5()
+// UTF_TD_GENERATOR HardwareMain#DeviceNameGeneratorMD1
+static Function PS_RB5([str])
+	string str
 
 	STRUCT DAQSettings s
 	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG_1")
-	AcquireData(s, PSQ_RB_FINALSCALE_FAKE_HIGH)
+	AcquireData(s, PSQ_RB_FINALSCALE_FAKE_HIGH, str)
 
-	WAVE wv = PSQ_CreateOverrideResults(DEVICE, HEADSTAGE, PSQ_RHEOBASE)
+	WAVE wv = PSQ_CreateOverrideResults(str, HEADSTAGE, PSQ_RHEOBASE)
 	// baseline QC passes and first spikes not, second does
 	wv = 0
 	wv[0,1][][0] = 1
 	wv[][1][1]   = 1
 End
 
-static Function PS_RB5_REENTRY()
+static Function PS_RB5_REENTRY([str])
+	string str
 
 	variable sweepNo, setPassed, i, numEntries, onsetDelay
 	variable initialDAScale
 	string key
 
-	WAVE numericalValues = GetLBNumericalValues(DEVICE)
+	WAVE numericalValues = GetLBNumericalValues(str)
 
-	CHECK_EQUAL_VAR(GetSetVariable(DEVICE, "SetVar_Sweep"), 2)
+	CHECK_EQUAL_VAR(GetSetVariable(str, "SetVar_Sweep"), 2)
 
-	sweepNo = AFH_GetLastSweepAcquired(DEVICE)
+	sweepNo = AFH_GetLastSweepAcquired(str)
 	CHECK_EQUAL_VAR(sweepNo, 1)
 
 	key = PSQ_CreateLBNKey(PSQ_RHEOBASE, PSQ_FMT_LBN_INITIAL_SCALE, query = 1)
@@ -350,10 +368,10 @@ static Function PS_RB5_REENTRY()
 	setPassed = GetLastSettingIndep(numericalValues, sweepNo, key, UNKNOWN_MODE)
 	CHECK_EQUAL_VAR(setPassed, 1)
 
-	WAVE/Z baselineQCWave = GetBaselineQCResults_IGNORE(sweepNo)
+	WAVE/Z baselineQCWave = GetBaselineQCResults_IGNORE(sweepNo, str)
 	CHECK_EQUAL_WAVES(baselineQCWave, {1, 1}, mode = WAVE_DATA)
 
-	WAVE/Z spikeDetectionWave = GetSpikeResults_IGNORE(sweepNo)
+	WAVE/Z spikeDetectionWave = GetSpikeResults_IGNORE(sweepNo, str)
 	CHECK_EQUAL_WAVES(spikeDetectionWave, {0, 1}, mode = WAVE_DATA)
 
 	WAVE/Z sweeps = AFH_GetSweepsFromSameRACycle(numericalValues, sweepNo)
@@ -374,30 +392,33 @@ static Function PS_RB5_REENTRY()
 	CHECK_EQUAL_VAR(setPassed, PSQ_RB_DASCALE_STEP_LARGE)
 End
 
-static Function PS_RB6()
+// UTF_TD_GENERATOR HardwareMain#DeviceNameGeneratorMD1
+static Function PS_RB6([str])
+	string str
 
 	STRUCT DAQSettings s
 	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG_1")
-	AcquireData(s, PSQ_RB_FINALSCALE_FAKE_HIGH)
+	AcquireData(s, PSQ_RB_FINALSCALE_FAKE_HIGH, str)
 
-	WAVE wv = PSQ_CreateOverrideResults(DEVICE, HEADSTAGE, PSQ_RHEOBASE)
+	WAVE wv = PSQ_CreateOverrideResults(str, HEADSTAGE, PSQ_RHEOBASE)
 	// baseline QC passes and first two spike not, third does
 	wv = 0
 	wv[0,1][][0] = 1
 	wv[][2][1]   = 1
 End
 
-static Function PS_RB6_REENTRY()
+static Function PS_RB6_REENTRY([str])
+	string str
 
 	variable sweepNo, setPassed, i, numEntries, onsetDelay
 	variable initialDAScale
 	string key
 
-	WAVE numericalValues = GetLBNumericalValues(DEVICE)
+	WAVE numericalValues = GetLBNumericalValues(str)
 
-	CHECK_EQUAL_VAR(GetSetVariable(DEVICE, "SetVar_Sweep"), 3)
+	CHECK_EQUAL_VAR(GetSetVariable(str, "SetVar_Sweep"), 3)
 
-	sweepNo = AFH_GetLastSweepAcquired(DEVICE)
+	sweepNo = AFH_GetLastSweepAcquired(str)
 	CHECK_EQUAL_VAR(sweepNo, 2)
 
 	key = PSQ_CreateLBNKey(PSQ_RHEOBASE, PSQ_FMT_LBN_INITIAL_SCALE, query = 1)
@@ -408,10 +429,10 @@ static Function PS_RB6_REENTRY()
 	setPassed = GetLastSettingIndep(numericalValues, sweepNo, key, UNKNOWN_MODE)
 	CHECK_EQUAL_VAR(setPassed, 1)
 
-	WAVE/Z baselineQCWave = GetBaselineQCResults_IGNORE(sweepNo)
+	WAVE/Z baselineQCWave = GetBaselineQCResults_IGNORE(sweepNo, str)
 	CHECK_EQUAL_WAVES(baselineQCWave, {1, 1, 1}, mode = WAVE_DATA)
 
-	WAVE/Z spikeDetectionWave = GetSpikeResults_IGNORE(sweepNo)
+	WAVE/Z spikeDetectionWave = GetSpikeResults_IGNORE(sweepNo, str)
 	CHECK_EQUAL_WAVES(spikeDetectionWave, {0, 0, 1}, mode = WAVE_DATA)
 
 	WAVE/Z sweeps = AFH_GetSweepsFromSameRACycle(numericalValues, sweepNo)
@@ -432,13 +453,15 @@ static Function PS_RB6_REENTRY()
 	CHECK_EQUAL_VAR(setPassed, PSQ_RB_DASCALE_STEP_LARGE)
 End
 
-static Function PS_RB7()
+// UTF_TD_GENERATOR HardwareMain#DeviceNameGeneratorMD1
+static Function PS_RB7([str])
+	string str
 
 	STRUCT DAQSettings s
 	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG_1")
-	AcquireData(s, PSQ_RB_FINALSCALE_FAKE_HIGH)
+	AcquireData(s, PSQ_RB_FINALSCALE_FAKE_HIGH, str)
 
-	WAVE wv = PSQ_CreateOverrideResults(DEVICE, HEADSTAGE, PSQ_RHEOBASE)
+	WAVE wv = PSQ_CreateOverrideResults(str, HEADSTAGE, PSQ_RHEOBASE)
 	// frist two sweeps: baseline QC fails
 	// rest:baseline QC passes
 	// all: no spikes
@@ -446,17 +469,18 @@ static Function PS_RB7()
 	wv[0,1][2, inf][0] = 1
 End
 
-static Function PS_RB7_REENTRY()
+static Function PS_RB7_REENTRY([str])
+	string str
 
 	variable sweepNo, setPassed, i, numEntries, onsetDelay
 	variable initialDAScale
 	string key
 
-	WAVE numericalValues = GetLBNumericalValues(DEVICE)
+	WAVE numericalValues = GetLBNumericalValues(str)
 
-	CHECK_EQUAL_VAR(GetSetVariable(DEVICE, "SetVar_Sweep"), 9)
+	CHECK_EQUAL_VAR(GetSetVariable(str, "SetVar_Sweep"), 9)
 
-	sweepNo = AFH_GetLastSweepAcquired(DEVICE)
+	sweepNo = AFH_GetLastSweepAcquired(str)
 	CHECK_EQUAL_VAR(sweepNo, 8)
 
 	key = PSQ_CreateLBNKey(PSQ_RHEOBASE, PSQ_FMT_LBN_INITIAL_SCALE, query = 1)
@@ -467,10 +491,10 @@ static Function PS_RB7_REENTRY()
 	setPassed = GetLastSettingIndep(numericalValues, sweepNo, key, UNKNOWN_MODE)
 	CHECK_EQUAL_VAR(setPassed, 0)
 
-	WAVE/Z baselineQCWave = GetBaselineQCResults_IGNORE(sweepNo)
+	WAVE/Z baselineQCWave = GetBaselineQCResults_IGNORE(sweepNo, str)
 	CHECK_EQUAL_WAVES(baselineQCWave, {0, 0, 1, 1, 1, 1, 1, 1, 1}, mode = WAVE_DATA)
 
-	WAVE/Z spikeDetectionWave = GetSpikeResults_IGNORE(sweepNo)
+	WAVE/Z spikeDetectionWave = GetSpikeResults_IGNORE(sweepNo, str)
 	CHECK_EQUAL_WAVES(spikeDetectionWave, {NaN, NaN, 0, 0, 0, 0, 0, 0, 0}, mode = WAVE_DATA)
 
 	WAVE/Z sweeps = AFH_GetSweepsFromSameRACycle(numericalValues, sweepNo)
@@ -493,13 +517,15 @@ static Function PS_RB7_REENTRY()
 	CHECK_EQUAL_VAR(setPassed, PSQ_RB_DASCALE_STEP_LARGE)
 End
 
-static Function PS_RB8()
+// UTF_TD_GENERATOR HardwareMain#DeviceNameGeneratorMD1
+static Function PS_RB8([str])
+	string str
 
 	STRUCT DAQSettings s
 	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG_1")
-	AcquireData(s, PSQ_RB_FINALSCALE_FAKE_LOW)
+	AcquireData(s, PSQ_RB_FINALSCALE_FAKE_LOW, str)
 
-	WAVE wv = PSQ_CreateOverrideResults(DEVICE, HEADSTAGE, PSQ_RHEOBASE)
+	WAVE wv = PSQ_CreateOverrideResults(str, HEADSTAGE, PSQ_RHEOBASE)
 	// baseline QC passes
 	// 0: spike
 	// 1-2: no-spike
@@ -510,17 +536,18 @@ static Function PS_RB8()
 	wv[][3][1]   = 1
 End
 
-static Function PS_RB8_REENTRY()
+static Function PS_RB8_REENTRY([str])
+	string str
 
 	variable sweepNo, setPassed, i, numEntries, onsetDelay
 	variable initialDAScale
 	string key
 
-	WAVE numericalValues = GetLBNumericalValues(DEVICE)
+	WAVE numericalValues = GetLBNumericalValues(str)
 
-	CHECK_EQUAL_VAR(GetSetVariable(DEVICE, "SetVar_Sweep"), 4)
+	CHECK_EQUAL_VAR(GetSetVariable(str, "SetVar_Sweep"), 4)
 
-	sweepNo = AFH_GetLastSweepAcquired(DEVICE)
+	sweepNo = AFH_GetLastSweepAcquired(str)
 	CHECK_EQUAL_VAR(sweepNo, 3)
 
 	key = PSQ_CreateLBNKey(PSQ_RHEOBASE, PSQ_FMT_LBN_INITIAL_SCALE, query = 1)
@@ -531,10 +558,10 @@ static Function PS_RB8_REENTRY()
 	setPassed = GetLastSettingIndep(numericalValues, sweepNo, key, UNKNOWN_MODE)
 	CHECK_EQUAL_VAR(setPassed, 1)
 
-	WAVE/Z baselineQCWave = GetBaselineQCResults_IGNORE(sweepNo)
+	WAVE/Z baselineQCWave = GetBaselineQCResults_IGNORE(sweepNo, str)
 	CHECK_EQUAL_WAVES(baselineQCWave, {1, 1, 1, 1}, mode = WAVE_DATA)
 
-	WAVE/Z spikeDetectionWave = GetSpikeResults_IGNORE(sweepNo)
+	WAVE/Z spikeDetectionWave = GetSpikeResults_IGNORE(sweepNo, str)
 	CHECK_EQUAL_WAVES(spikeDetectionWave, {1, 0, 0, 1}, mode = WAVE_DATA)
 
 	WAVE/Z sweeps = AFH_GetSweepsFromSameRACycle(numericalValues, sweepNo)
@@ -562,13 +589,15 @@ static Function PS_RB8_REENTRY()
 End
 
 // check behaviour of DAScale 0 with PSQ_RB_DASCALE_STEP_LARGE stepsize
-static Function PS_RB9()
+// UTF_TD_GENERATOR HardwareMain#DeviceNameGeneratorMD1
+static Function PS_RB9([str])
+	string str
 
 	STRUCT DAQSettings s
 	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG_1")
-	AcquireData(s, PSQ_RB_DASCALE_STEP_LARGE)
+	AcquireData(s, PSQ_RB_DASCALE_STEP_LARGE, str)
 
-	WAVE wv = PSQ_CreateOverrideResults(DEVICE, HEADSTAGE, PSQ_RHEOBASE)
+	WAVE wv = PSQ_CreateOverrideResults(str, HEADSTAGE, PSQ_RHEOBASE)
 	// baseline QC passes and first spikes, second not, third spikes
 	wv = 0
 	wv[0,1][][0] = 1
@@ -576,17 +605,18 @@ static Function PS_RB9()
 	wv[][2][1]   = 1
 End
 
-static Function PS_RB9_REENTRY()
+static Function PS_RB9_REENTRY([str])
+	string str
 
 	variable sweepNo, setPassed, i, numEntries, onsetDelay
 	variable initialDAScale
 	string key
 
-	WAVE numericalValues = GetLBNumericalValues(DEVICE)
+	WAVE numericalValues = GetLBNumericalValues(str)
 
-	CHECK_EQUAL_VAR(GetSetVariable(DEVICE, "SetVar_Sweep"), 3)
+	CHECK_EQUAL_VAR(GetSetVariable(str, "SetVar_Sweep"), 3)
 
-	sweepNo = AFH_GetLastSweepAcquired(DEVICE)
+	sweepNo = AFH_GetLastSweepAcquired(str)
 	CHECK_EQUAL_VAR(sweepNo, 2)
 
 	key = PSQ_CreateLBNKey(PSQ_RHEOBASE, PSQ_FMT_LBN_INITIAL_SCALE, query = 1)
@@ -597,10 +627,10 @@ static Function PS_RB9_REENTRY()
 	setPassed = GetLastSettingIndep(numericalValues, sweepNo, key, UNKNOWN_MODE)
 	CHECK_EQUAL_VAR(setPassed, 1)
 
-	WAVE/Z baselineQCWave = GetBaselineQCResults_IGNORE(sweepNo)
+	WAVE/Z baselineQCWave = GetBaselineQCResults_IGNORE(sweepNo, str)
 	CHECK_EQUAL_WAVES(baselineQCWave, {1, 1, 1}, mode = WAVE_DATA)
 
-	WAVE/Z spikeDetectionWave = GetSpikeResults_IGNORE(sweepNo)
+	WAVE/Z spikeDetectionWave = GetSpikeResults_IGNORE(sweepNo, str)
 	CHECK_EQUAL_WAVES(spikeDetectionWave, {1, 0, 1}, mode = WAVE_DATA)
 
 	WAVE/Z sweeps = AFH_GetSweepsFromSameRACycle(numericalValues, sweepNo)
@@ -627,13 +657,15 @@ static Function PS_RB9_REENTRY()
 End
 
 // check behaviour of DAScale 0 with PSQ_RB_DASCALE_STEP_SMALL stepsize
-static Function PS_RB10()
+// UTF_TD_GENERATOR HardwareMain#DeviceNameGeneratorMD1
+static Function PS_RB10([str])
+	string str
 
 	STRUCT DAQSettings s
 	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG_1")
-	AcquireData(s, -8e-12)
+	AcquireData(s, -8e-12, str)
 
-	WAVE wv = PSQ_CreateOverrideResults(DEVICE, HEADSTAGE, PSQ_RHEOBASE)
+	WAVE wv = PSQ_CreateOverrideResults(str, HEADSTAGE, PSQ_RHEOBASE)
 	// baseline QC passes and first spikes not, rest spikes
 	wv = 0
 	wv[0,1][][0] = 1
@@ -641,17 +673,18 @@ static Function PS_RB10()
 	wv[][1,inf][1] = 1
 End
 
-static Function PS_RB10_REENTRY()
+static Function PS_RB10_REENTRY([str])
+	string str
 
 	variable sweepNo, setPassed, i, numEntries, onsetDelay
 	variable initialDAScale
 	string key
 
-	WAVE numericalValues = GetLBNumericalValues(DEVICE)
+	WAVE numericalValues = GetLBNumericalValues(str)
 
-	CHECK_EQUAL_VAR(GetSetVariable(DEVICE, "SetVar_Sweep"), 2)
+	CHECK_EQUAL_VAR(GetSetVariable(str, "SetVar_Sweep"), 2)
 
-	sweepNo = AFH_GetLastSweepAcquired(DEVICE)
+	sweepNo = AFH_GetLastSweepAcquired(str)
 	CHECK_EQUAL_VAR(sweepNo, 1)
 
 	key = PSQ_CreateLBNKey(PSQ_RHEOBASE, PSQ_FMT_LBN_INITIAL_SCALE, query = 1)
@@ -662,10 +695,10 @@ static Function PS_RB10_REENTRY()
 	setPassed = GetLastSettingIndep(numericalValues, sweepNo, key, UNKNOWN_MODE)
 	CHECK_EQUAL_VAR(setPassed, 0)
 
-	WAVE/Z baselineQCWave = GetBaselineQCResults_IGNORE(sweepNo)
+	WAVE/Z baselineQCWave = GetBaselineQCResults_IGNORE(sweepNo, str)
 	CHECK_EQUAL_WAVES(baselineQCWave, {1, 1}, mode = WAVE_DATA)
 
-	WAVE/Z spikeDetectionWave = GetSpikeResults_IGNORE(sweepNo)
+	WAVE/Z spikeDetectionWave = GetSpikeResults_IGNORE(sweepNo, str)
 	CHECK_EQUAL_WAVES(spikeDetectionWave, {0, 1}, mode = WAVE_DATA)
 
 	WAVE/Z sweeps = AFH_GetSweepsFromSameRACycle(numericalValues, sweepNo)

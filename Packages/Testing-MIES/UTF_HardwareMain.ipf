@@ -1,5 +1,6 @@
 ﻿#pragma TextEncoding = "UTF-8"
 #pragma rtGlobals=3 // Use modern global access method and strict wave access.
+#pragma ModuleName=HardwareMain
 
 #include "MIES_include"
 #include "unit-testing"
@@ -18,18 +19,6 @@
 #include "UTF_MultiPatchSeqDAScale"
 #include "UTF_TestNWBExportV1"
 
-#ifdef TESTS_WITH_NI_HARDWARE
-
-StrConstant DEVICE        = "Dev1"
-StrConstant DEVICES_YOKED = "Unsupported"
-
-#else
-
-StrConstant DEVICE        = "ITC18USB_dev_0"
-StrConstant DEVICES_YOKED = "ITC1600_dev_0;ITC1600_dev_1"
-
-#endif
-
 Function run()
 
 	string list = ""
@@ -45,8 +34,68 @@ Function run()
 	list = AddListItem("UTF_MultiPatchSeqFastRheoEstimate.ipf", list)
 	list = AddListItem("UTF_MultiPatchSeqDAScale.ipf", list)
 
-	RunTest(list, name = "MIES with ITC Hardware", enableJU = 1, allowDebug = 0)
+	RunTest(list, name = "MIES with Hardware", enableJU = 1, allowDebug = 0)
 End
+
+Function/WAVE DeviceNameGeneratorMD1()
+
+	string devList = ""
+	string lblList = ""
+	variable i
+
+#ifdef TESTS_WITH_NI_HARDWARE
+
+#ifdef TESTS_WITH_YOKING
+#define *** NI Hardware has no Yoking support
+#else
+	devList = AddListItem("Dev1", devList, ":")
+	lblList = AddListItem("NI", lblList)
+#endif
+
+#endif
+
+#ifdef TESTS_WITH_ITC_HARDWARE
+
+#ifdef TESTS_WITH_YOKING
+	devList = AddListItem("ITC1600_dev_0;ITC1600_dev_1", devList, ":")
+	lblList = AddListItem("ITC_YOKED", lblList)
+#else
+	devList = AddListItem("ITC18USB_dev_0", devList, ":")
+	lblList = AddListItem("ITC", lblList)
+#endif
+
+#endif
+
+	WAVE data = ListToTextWave(devList, ":")
+	for(i = 0; i < DimSize(data, ROWS); i += 1)
+		SetDimLabel ROWS, i, $StringFromList(i, lblList), data
+	endfor
+
+	return data
+End
+
+Function/WAVE DeviceNameGeneratorMD0()
+
+#ifdef TESTS_WITH_NI_HARDWARE
+	// NI Hardware has no single device support
+	Make/FREE/N=0 data
+	return data
+#endif
+
+#ifdef TESTS_WITH_ITC_HARDWARE
+
+#ifdef TESTS_WITH_YOKING
+	// Yoking with ITC hardware is only supported in multi device mode
+	Make/FREE/N=0 data
+	return data
+#else
+	return DeviceNameGeneratorMD1()
+#endif
+
+#endif
+
+End
+
 
 Function TEST_BEGIN_OVERRIDE(name)
 	string name
@@ -106,10 +155,10 @@ End
 Function TEST_CASE_END_OVERRIDE(name)
 	string name
 
-	string devices, dev
+	string dev
 	variable numEntries, i
 
-	devices = GetDevices()
+	SVAR devices = $GetDevicePanelTitleList()
 
 	numEntries = ItemsInList(devices)
 	for(i = 0; i < numEntries; i += 1)
@@ -196,33 +245,14 @@ static Function/WAVE GetSweepsFromLBN_IGNORE(device, name)
 	return sweeps
 End
 
-/// @brief Return the list of active devices
-Function/S GetDevices()
-
-#ifdef TESTS_WITH_YOKING
-	return DEVICES_YOKED
-#else
-	return DEVICE
-#endif
-End
-
-Function/S GetSingleDevice()
-
-#ifdef TESTS_WITH_YOKING
-	return StringFromList(0, DEVICES_YOKED)
-#else
-	return DEVICE
-#endif
-End
-
 /// @brief Background function to wait until DAQ is finished.
 Function WaitUntilDAQDone_IGNORE(s)
 	STRUCT WMBackgroundStruct &s
 
-	string devices, dev
+	string dev
 	variable numEntries, i
 
-	devices = GetDevices()
+	SVAR devices = $GetDevicePanelTitleList()
 
 	numEntries = ItemsInList(devices)
 	for(i = 0; i < numEntries; i += 1)
@@ -250,14 +280,14 @@ End
 Function WaitUntilTPDone_IGNORE(s)
 	STRUCT WMBackgroundStruct &s
 
-	string devices, dev
+	string device
 	variable numEntries, i
 
-	devices = GetDevices()
+	SVAR devices = $GetDevicePanelTitleList()
 
 	numEntries = ItemsInList(devices)
 	for(i = 0; i < numEntries; i += 1)
-		dev = StringFromList(i, devices)
+		device = StringFromList(i, devices)
 
 		NVAR runMode = $GetTestpulseRunMode(device)
 
@@ -277,7 +307,9 @@ End
 Function StopAcqDuringITI_IGNORE(s)
 	STRUCT WMBackgroundStruct &s
 
-	string device = GetSingleDevice()
+	SVAR devices = $GetDevicePanelTitleList()
+	string device = StringFromList(0, devices)
+
 	NVAR runMode = $GetTestpulseRunMode(device)
 
 	if(runMode & TEST_PULSE_DURING_RA_MOD)
@@ -291,7 +323,8 @@ End
 Function StartTPDuringITI_IGNORE(s)
 	STRUCT WMBackgroundStruct &s
 
-	string device = GetSingleDevice()
+	SVAR devices = $GetDevicePanelTitleList()
+	string device = StringFromList(0, devices)
 
 	NVAR runMode = $GetTestpulseRunMode(device)
 
@@ -306,7 +339,8 @@ End
 Function ExecuteDuringITI_IGNORE(s)
 	STRUCT WMBackgroundStruct &s
 
-	string device = GetSingleDevice()
+	SVAR devices = $GetDevicePanelTitleList()
+	string device = StringFromList(0, devices)
 
 	NVAR runMode = $GetTestpulseRunMode(device)
 
@@ -321,7 +355,8 @@ End
 Function StopAcq_IGNORE(s)
 	STRUCT WMBackgroundStruct &s
 
-	string device = GetSingleDevice()
+	SVAR devices = $GetDevicePanelTitleList()
+	string device = StringFromList(0, devices)
 	PGC_SetAndActivateControl(device, "DataAcquireButton")
 
 	return 1
@@ -330,7 +365,8 @@ End
 Function StopTP_IGNORE(s)
 	STRUCT WMBackgroundStruct &s
 
-	string device = GetSingleDevice()
+	SVAR devices = $GetDevicePanelTitleList()
+	string device = StringFromList(0, devices)
 	PGC_SetAndActivateControl(device, "StartTestPulseButton")
 
 	return 1
@@ -339,7 +375,8 @@ End
 Function StartAcq_IGNORE(s)
 	STRUCT WMBackgroundStruct &s
 
-	string device = GetSingleDevice()
+	SVAR devices = $GetDevicePanelTitleList()
+	string device = StringFromList(0, devices)
 	PGC_SetAndActivateControl(device, "DataAcquireButton")
 	CtrlNamedBackGround DAQWatchdog, start, period=120, proc=WaitUntilDAQDone_IGNORE
 
@@ -349,9 +386,10 @@ End
 Function ChangeStimSet_IGNORE(s)
 	STRUCT WMBackgroundStruct &s
 
-	string device, ctrl
+	string ctrl
+	SVAR devices = $GetDevicePanelTitleList()
+	string device = StringFromList(0, devices)
 
-	device = GetSingleDevice()
 	ctrl   = GetPanelControl(0, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_WAVE)
 
 	PGC_SetAndActivateControl(device, ctrl, val = GetPopupMenuIndex(device, ctrl) + 1)
@@ -362,7 +400,8 @@ End
 Function ClampModeDuringSweep_IGNORE(s)
 	STRUCT WMBackgroundStruct &s
 
-	string device = GetSingleDevice()
+	SVAR devices = $GetDevicePanelTitleList()
+	string device = StringFromList(0, devices)
 
 	NVAR dataAcqRunMode = $GetDataAcqRunMode(device)
 
@@ -377,7 +416,8 @@ End
 Function ClampModeDuringITI_IGNORE(s)
 	STRUCT WMBackgroundStruct &s
 
-	string device = GetSingleDevice()
+	SVAR devices = $GetDevicePanelTitleList()
+	string device = StringFromList(0, devices)
 
 	NVAR dataAcqRunMode = $GetDataAcqRunMode(device)
 
@@ -434,7 +474,8 @@ Function OpenDatabrowser()
 	PGC_SetAndActivateControl(panel, "check_SweepControl_AutoUpdate", val = 1)
 End
 
-Function CALLABLE_PROTO()
+Function CALLABLE_PROTO(device)
+	string device
 	FAIL()
 End
 
