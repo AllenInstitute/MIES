@@ -784,13 +784,13 @@ Function PA_ShowPulses(win, dfr, pa)
 					if(!WaveExists(averageWave))
 						WAVE averageWave = PA_Average(listOfWaves, pulseAverageDFR, PA_AVERAGE_WAVE_PREFIX + baseName)
 					endif
+
 					traceName = PA_DECONVOLUTION_WAVE_PREFIX + baseName
 					WAVE deconv = PA_Deconvolution(averageWave, pulseAverageDFR, traceName, pa.deconvolution)
 
 					AppendToGraph/Q/W=$graph/L=$vertAxis/B=$horizAxis/C=(0,0,0) deconv[0,inf;PA_PLOT_STEPPING]/TN=$traceName
 					ModifyGraph/W=$graph lsize($traceName)=2
 
-					SetAxis/Z/W=$graph $horizAxis 0, pa.deconvolution.range
 					SetWindow $graph, userData($PA_USERDATA_SPECIAL_TRACES) += NameOfWave(deconv) + ";"
 				endif
 
@@ -1102,7 +1102,6 @@ Function PA_UpdateSweepPlotDeconvolution(win, show)
 
 			if(!show)
 				RemoveFromGraph/W=$graph $traceName
-				SetAxis/Z/W=$graph $horizAxis 0, *
 				traceListOut = RemoveFromList(traceName, traceListOut)
 				continue
 			endif
@@ -1124,7 +1123,6 @@ Function PA_UpdateSweepPlotDeconvolution(win, show)
 
 			AppendToGraph/Q/W=$graph/L=$vertAxis/B=$horizAxis/C=(0,0,0) deconv/TN=$traceName
 			ModifyGraph/W=$graph lsize($traceName)=2
-			SetAxis/Z/W=$graph $horizAxis 0, deconvolution.range
 
 			traceListOut = AddListItem(NameOfWave(deconv), traceListOut)
 		endfor
