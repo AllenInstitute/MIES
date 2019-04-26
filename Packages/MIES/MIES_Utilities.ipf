@@ -1867,14 +1867,26 @@ Function GetRowIndex(wv, [val, str, refWave])
 			endif
 		endfor
 	else
-		if(!ParamIsDefault(str))
-			val = str2num(str)
-		endif
+		if(IsNumericWave(wv))
+			if(!ParamIsDefault(str))
+				val = str2num(str)
+			endif
 
-		FindValue/V=(val) wv
+			FindValue/V=(val) wv
 
-		if(V_Value >= 0)
-			return V_Value
+			if(V_Value >= 0)
+				return V_Value
+			endif
+		elseif(IsTextWave(wv))
+			if(!ParamIsDefault(val))
+				str = num2str(val)
+			endif
+
+			FindValue/TEXT=(str)/TXOP=4 wv
+
+			if(V_Value >= 0)
+				return V_Value
+			endif
 		endif
 	endif
 
