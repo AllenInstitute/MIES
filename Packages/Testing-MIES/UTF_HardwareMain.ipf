@@ -69,10 +69,13 @@ Function TEST_CASE_BEGIN_OVERRIDE(name)
 	variable numWindows, i
 	string list, reentryFuncName, win
 
+	// cut off multi data suffix
+	name = StringFromList(0, name, ":")
 	reentryFuncName = name + "_REENTRY"
-	FUNCREF TEST_CASE_PROTO reentryFunc = $reentryFuncName
+	FUNCREF TEST_CASE_PROTO reentryFuncPlain = $reentryFuncName
+	FUNCREF TEST_CASE_PROTO_MD_STR reentryFuncMDStr = $reentryFuncName
 
-	if(FuncRefIsAssigned(FuncRefInfo(reentryFunc)))
+	if(FuncRefIsAssigned(FuncRefInfo(reentryFuncPlain)) || FuncRefIsAssigned(FuncRefInfo(reentryFuncMDStr)))
 		CtrlNamedBackGround DAQWatchdog, start, period=120, proc=WaitUntilDAQDone_IGNORE
 		CtrlNamedBackGround TPWatchdog, start, period=120, proc=WaitUntilTPDone_IGNORE
 		RegisterUTFMonitor(TASKNAMES + "DAQWatchdog;TPWatchdog", BACKGROUNDMONMODE_AND, reentryFuncName, timeout = 600)
@@ -98,12 +101,6 @@ Function TEST_CASE_BEGIN_OVERRIDE(name)
 	REQUIRE(DataFolderExists("root:MIES:WaveBuilder:SavedStimulusSetParameters:DA"))
 
 	HW_ITC_CloseAllDevices()
-
-	CA_FlushCache()
-
-	DAP_GetNIDeviceList()
-	NVAR errorCounter = $GetAnalysisFuncErrorCounter(DEVICE)
-	errorCounter = 0
 End
 
 Function TEST_CASE_END_OVERRIDE(name)
