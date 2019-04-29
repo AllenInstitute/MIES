@@ -2,20 +2,22 @@
 #pragma rtGlobals=3 // Use modern global access method and strict wave access.
 #pragma ModuleName=VeryBasicHardwareTesting
 
-Function CheckInstallation()
+static Function CheckInstallation()
 
    CHECK_EQUAL_VAR(CHI_CheckInstallation(), 0)
 End
 
-Function TestLocking()
+// UTF_TD_GENERATOR HardwareMain#DeviceNameGeneratorMD1
+static Function TestLocking([str])
+	string str
 
 	string unlockedPanelTitle = DAP_CreateDAEphysPanel()
 
-	ChooseCorrectDevice(unlockedPanelTitle, DEVICE)
+	ChooseCorrectDevice(unlockedPanelTitle, str)
 
 	try
 		PGC_SetAndActivateControl(unlockedPanelTitle, "button_SettingsPlus_LockDevice")
-		REQUIRE(WindowExists(DEVICE))
+		REQUIRE(WindowExists(str))
 	catch
 		FAIL()
 	endtry
