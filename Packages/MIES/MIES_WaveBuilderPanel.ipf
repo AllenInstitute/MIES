@@ -3194,9 +3194,10 @@ static Function WBP_UpdateParameterWave()
 
 	for(i = 0; i < numEntries; i += 1)
 		name = StringFromList(i, names)
-		listWave[i][%Name]  = name
-		listWave[i][%Type]  = AFH_GetAnalysisParamType(name, params)
-		listWave[i][%Value] = AFH_GetAnalysisParameter(name, params)
+		listWave[i][%Name]     = name
+		listWave[i][%Type]     = AFH_GetAnalysisParamType(name, params)
+		listWave[i][%Value]    = AFH_GetAnalysisParameter(name, params)
+		listWave[i][%Required] = ToTrueFalse(WhichListItem(name, reqNames) != -1)
 	endfor
 
 	offset = DimSize(listWave, ROWS)
