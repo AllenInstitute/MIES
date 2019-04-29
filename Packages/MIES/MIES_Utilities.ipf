@@ -4040,8 +4040,9 @@ Function ChangeWaveLock(wv, val)
 
 	val = !!val
 
+	SetWaveLock val, wv
+
 	if(!IsWaveRefWave(wv))
-		SetWaveLock val, wv
 		return NaN
 	endif
 
@@ -4049,6 +4050,10 @@ Function ChangeWaveLock(wv, val)
 	numEntries = DimSize(wv, ROWS)
 
 	for(i = 0; i < numEntries; i += 1)
-		ChangeWaveLock(wv[i], val)
+		WAVE/Z subWave = wv[i]
+
+		if(WaveExists(subWave))
+			ChangeWaveLock(subWave, val)
+		endif
 	endfor
 End

@@ -2331,7 +2331,9 @@ Function PSQ_Ramp(panelTitle, s)
 				// As only one AD and DA channel is allowed for this function, at index 0 the setting for first DA channel are expected
 				WAVE NIChannel = NIDataWave[0]
 				if(V_FIFOChunks < DimSize(NIChannel, ROWS))
+					SetWaveLock 0, NIChannel
 					MultiThread NIChannel[V_FIFOChunks,] = 0
+					SetWaveLock 1, NIChannel
 				endif
 
 			else
