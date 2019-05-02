@@ -2034,7 +2034,7 @@ static Function P_ManSetPressure(panelTitle, headStage, manPressureAll)
 	psi = PressureDataWv[headStage][%ManSSPressure]
 
 	PressureDataWv[headstage][%LastPressureCommand] = P_SetAndGetPressure(panelTitle, headstage, psi)
-	P_SetPressureValves(panelTitle, headStage, ACCESS_REGULATOR)
+	P_SetPressureValves(panelTitle, headStage, P_GetUserAccess(panelTitle, headstage, PRESSURE_METHOD_MANUAL))
 End
 
 /// @brief Saves user seleted headstage in pressureData wave
