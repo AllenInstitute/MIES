@@ -1203,7 +1203,9 @@ Function DAP_OneTimeCallBeforeDAQ(panelTitle, runMode)
 		P_InitBeforeTP(panelTitle)
 	endif
 
+#if !(IgorVersion() >= 8.04 && NumberByKey("BUILD", IgorInfo(0)) >= 33703)
 	ASYNC_Start(ThreadProcessorCount, disableTask=1)
+#endif
 End
 
 static Function DAP_ResetClampModeTitle(panelTitle, ctrl)
@@ -1278,7 +1280,9 @@ Function DAP_OneTimeCallAfterDAQ(panelTitle, [forcedStop, startTPAfterDAQ])
 	NVAR dataAcqRunMode = $GetDataAcqRunMode(panelTitle)
 	dataAcqRunMode = DAQ_NOT_RUNNING
 
+#if !(IgorVersion() >= 8.04 && NumberByKey("BUILD", IgorInfo(0)) >= 33703)
 	StopAsyncIfDone()
+#endif
 
 	hardwareType = GetHardwareType(panelTitle)
 	switch(hardwareType)

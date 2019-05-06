@@ -164,3 +164,30 @@ static Function IgorStartOrNewHook(igorApplicationNameStr)
 
 	return 0
 End
+
+#if (IgorVersion() >= 8.04 && NumberByKey("BUILD", IgorInfo(0)) >= 33703)
+
+static Function BeforeUncompiledHook(changeCode, procedureWindowTitleStr, textChangeStr)
+	variable changeCode
+	string procedureWindowTitleStr
+	string textChangeStr
+
+	variable i, numDev
+	string device
+
+	SVAR devices = $GetDevicePanelTitleList()
+	numDev = ItemsInList(devices)
+	for(i = 0; i < numDev; i += 1)
+		device = StringFromList(i, devices)
+		DQ_StopOngoingDAQ(device, startTPAfterDAQ = 0)
+	endfor
+
+	ASYNC_Stop(timeout=5)
+End
+
+static Function AfterCompiledHook()
+
+	ASYNC_Start(threadprocessorCount, disableTask=1)
+End
+
+#endif

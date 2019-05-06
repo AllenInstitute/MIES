@@ -704,7 +704,9 @@ Function TP_Setup(panelTitle, runMode, [fast])
 	NVAR ITCDeviceIDGlobal = $GetITCDeviceIDGlobal(panelTitle)
 	HW_PrepareAcq(GetHardwareType(panelTitle), ITCDeviceIDGlobal, flags=HARDWARE_ABORT_ON_ERROR)
 
+#if !(IgorVersion() >= 8.04 && NumberByKey("BUILD", IgorInfo(0)) >= 33703)
 	ASYNC_Start(ThreadProcessorCount, disableTask=1)
+#endif
 End
 
 /// @brief Common setup calls for TP and TP during DAQ
@@ -767,7 +769,9 @@ Function TP_Teardown(panelTitle, [fast])
 
 	TP_TeardownCommon(panelTitle)
 
+#if !(IgorVersion() >= 8.04 && NumberByKey("BUILD", IgorInfo(0)) >= 33703)
 	StopAsyncIfDone()
+#endif
 End
 
 /// @brief Common teardown calls for TP and TP during DAQ
