@@ -48,3 +48,6 @@ Packages/Arduino/*exe export-ignore
 *.ihf binary
 *.ifn binary
 *.ift binary
+
+tools/unit-testing/*.pxp filter=compress
+*.nwb filter=compress
