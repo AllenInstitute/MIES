@@ -236,7 +236,7 @@ static Function/S AD_GetSquarePulseFailMsg(numericalValues, sweepNo, headstage)
 
 	key = PSQ_CreateLBNKey(PSQ_SQUARE_PULSE, PSQ_FMT_LBN_SPIKE_DASCALE_ZERO, query = 1)
 	WAVE/Z spikeWithDAScaleZero = GetLastSettingIndepEachSCI(numericalValues, sweepNo, key, headstage, UNKNOWN_MODE)
-	// Prior to 0c6120e6 (Merge pull request #1073 in ENG/mies-igor from
+	// Prior to 1e2f38ba (Merge pull request #1073 in ENG/mies-igor from
 	// ~THOMASB/mies-igor:feature/larger-fifo-for-NI to master, 2019-02-09)
 	// this labnotebook key does not exist
 	if(WaveExists(spikeWithDAScaleZero))

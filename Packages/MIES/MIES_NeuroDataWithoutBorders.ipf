@@ -673,7 +673,7 @@ static Function NWB_AppendSweepLowLevel(locationID, panelTitle, ITCDataWave, ITC
 	Make/FREE/N=(DimSize(ITCDataWave, COLS)) writtenDataColumns = 0
 
 	// comment denotes the introducing comment of the labnotebook entry
-	// 9b35fdad (Add the clamp mode to the labnotebook for acquired data, 2015-04-26)
+	// a2220e9f (Add the clamp mode to the labnotebook for acquired data, 2015-04-26)
 	WAVE/Z clampMode = GetLastSetting(numericalValues, sweep, "Clamp Mode", DATA_ACQUISITION_MODE)
 
 	if(!WaveExists(clampMode))
@@ -681,7 +681,7 @@ static Function NWB_AppendSweepLowLevel(locationID, panelTitle, ITCDataWave, ITC
 		ASSERT(WaveExists(clampMode), "Labnotebook is too old for NWB export.")
 	endif
 
-	// 3a94d3a4 (Modified files: DR_MIES_TangoInteract:  changes recommended by Thomas ..., 2014-09-11)
+	// 5872e556 (Modified files: DR_MIES_TangoInteract:  changes recommended by Thomas ..., 2014-09-11)
 	WAVE/Z ADCs = GetLastSetting(numericalValues, sweep, "ADC", DATA_ACQUISITION_MODE)
 	ASSERT(WaveExists(ADCs), "Labnotebook is too old for NWB export.")
 
@@ -689,7 +689,7 @@ static Function NWB_AppendSweepLowLevel(locationID, panelTitle, ITCDataWave, ITC
 	WAVE DACs = GetLastSetting(numericalValues, sweep, "DAC", DATA_ACQUISITION_MODE)
 	ASSERT(WaveExists(DACs), "Labnotebook is too old for NWB export.")
 
-	// 9c8e1a94 (Record the active headstage in the settingsHistory, 2014-11-04)
+	// 602debb9 (Record the active headstage in the settingsHistory, 2014-11-04)
 	WAVE/D/Z statusHS = GetLastSetting(numericalValues, sweep, "Headstage Active", DATA_ACQUISITION_MODE)
 	if(!WaveExists(statusHS))
 		Make/D/N=(LABNOTEBOOK_LAYER_COUNT) statusHS
@@ -726,7 +726,7 @@ static Function NWB_AppendSweepLowLevel(locationID, panelTitle, ITCDataWave, ITC
 
 	ASSERT(Sum(statusHS, 0, NUM_HEADSTAGES - 1) >= 1, "Expected at least one active headstage.")
 
-	// 296097c2 (Changes to Tango Interact, 2014-09-03)
+	// 1a4b8e59 (Changes to Tango Interact, 2014-09-03)
 	WAVE/T stimSets = GetLastSetting(textualValues, sweep, STIM_WAVE_NAME_KEY, DATA_ACQUISITION_MODE)
 	ASSERT(WaveExists(stimSets), "Labnotebook is too old for NWB export.")
 
@@ -809,7 +809,7 @@ static Function NWB_AppendSweepLowLevel(locationID, panelTitle, ITCDataWave, ITC
 
 	DEBUGPRINT_ELAPSED(refTime)
 
-	// introduced in ba0d59ee (DC_PlaceDataInITCDataWave: Document the digitizer hardware type, 2018-07-30)
+	// introduced in db531d20 (DC_PlaceDataInITCDataWave: Document the digitizer hardware type, 2018-07-30)
 	// before that we only had ITC hardware
 	hardwareType = GetLastSettingIndep(numericalValues, sweep, "Digitizer Hardware Type", DATA_ACQUISITION_MODE, defValue = HARDWARE_ITC_DAC)
 

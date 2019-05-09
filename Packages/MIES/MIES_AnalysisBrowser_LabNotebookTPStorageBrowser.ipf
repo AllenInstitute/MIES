@@ -642,7 +642,7 @@ Function/S LBN_TPStorageViewAbleCols(graph)
 		return NONE
 	endif
 
-	// ADC entry was introduced in 2d0186d7 (Rework TPStorage contents, 2017-01-10)
+	// ADC entry was introduced in c4f37b62 (Rework TPStorage contents, 2017-01-10)
 	adcLayer = FindDimLabel(TPStorage, LAYERS, "ADC")
 
 	numCols   = DimSize(TPStorage, COLS)

@@ -374,7 +374,7 @@ Function GetSweepColumn(labnotebookValues)
 		return sweepCol
 	endif
 
-	// Old label prior to 276b5cf6
+	// Old label prior to 4caea03f
 	// was normally overwritten by SweepNum later in the code
 	// but not always as it turned out
 	sweepCol = FindDimLabel(labnotebookValues, COLS, "SweepNumber")
@@ -780,10 +780,10 @@ Function/WAVE GetLastSettingNoCache(values, sweepNo, setting, entrySourceType, [
 					// no source type information available but it is requested
 					// use a heuristic
 					//
-					// Since 60f4a9d9 (TP documenting is implemented using David
+					// Since 666d761a (TP documenting is implemented using David
 					// Reid's documenting functions, 2014-07-28) we have one
 					// row for the testpulse which holds "TP Peak Resistance".
-					// Since dd49bf47 (Document the testpulse settings in the
+					// Since 4f4649a2 (Document the testpulse settings in the
 					// labnotebook, 2015-07-28) we have two rows; starting with
 					// "TP Peak Resistance" and ending with "TP Pulse Duration".
 					if(!pulseDurationCol)
@@ -803,7 +803,7 @@ Function/WAVE GetLastSettingNoCache(values, sweepNo, setting, entrySourceType, [
 						hasValidTPPulseDurationEntry = 0
 					endif
 
-					// Since dd49bf47 (Document the testpulse settings in the
+					// Since 4f4649a2 (Document the testpulse settings in the
 					// labnotebook, 2015-07-28) we can have a "TP Pulse Duration"
 					// entry but no "TP Peak Resistance" entry iff the user only
 					// acquired sweep data but never TP.
@@ -1882,7 +1882,7 @@ Function CreateTiledChannelGraph(graph, config, sweepNo, numericalValues,  textu
 	numADCs = DimSize(ADCs, ROWS)
 	numTTLs = DimSize(TTLs, ROWS)
 
-	// introduced in ba0d59ee (DC_PlaceDataInITCDataWave: Document the digitizer hardware type, 2018-07-30)
+	// introduced in db531d20 (DC_PlaceDataInITCDataWave: Document the digitizer hardware type, 2018-07-30)
 	// before that we only had ITC hardware
 	hardwareType           = GetLastSettingIndep(numericalValues, sweepNo, "Digitizer Hardware Type", DATA_ACQUISITION_MODE, defValue = HARDWARE_ITC_DAC)
 	WAVE/Z statusHS        = GetLastSetting(numericalValues, sweepNo, "Headstage Active", DATA_ACQUISITION_MODE)
@@ -1990,7 +1990,7 @@ Function CreateTiledChannelGraph(graph, config, sweepNo, numericalValues,  textu
 		samplingInt = GetSamplingInterval(config) * 1e-3
 
 		// dDAQ data taken with versions prior to
-		// 125a5407 (DC_PlaceDataInITCDataWave: Document all other settings from the DAQ groupbox, 2015-11-26)
+		// 778969b0 (DC_PlaceDataInITCDataWave: Document all other settings from the DAQ groupbox, 2015-11-26)
 		// does not have the delays stored in the labnotebook
 		delayOnsetUser   = GetLastSettingIndep(numericalValues, sweepNo, "Delay onset user", DATA_ACQUISITION_MODE, defValue=0) / samplingInt
 		delayOnsetAuto   = GetLastSettingIndep(numericalValues, sweepNo, "Delay onset auto", DATA_ACQUISITION_MODE, defValue=0) / samplingInt
@@ -3722,7 +3722,7 @@ End
 
 /// @brief Return the index for headstage independent data
 ///
-/// Before 4ada04a2 (Make the function AB_SplitTTLWaveIntoComponents available for all, 2015-10-07)
+/// Before dfe2d862 (Make the function AB_SplitTTLWaveIntoComponents available for all, 2015-10-07)
 /// we stored headstage independent data in either all entries or only the first one.
 /// Since that commit we store the data in `INDEP_HEADSTAGE`.
 Function GetIndexForHeadstageIndepData(numericalValues)
