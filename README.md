@@ -4,7 +4,7 @@
 
 ### Latest development version from master branch
 
-* `git clone http://stash.corp.alleninstitute.org/scm/eng/mies-igor.git`
+* `git clone https://github.com/AllenInstitute/MIES`
 * `./tools/initial-repo-config.sh` (Requires a Git Bash shell, named Git terminal in SourceTree)
 
 ## Installation
