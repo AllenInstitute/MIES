@@ -208,10 +208,10 @@ End
 Function ChooseCorrectDevice(unlockedPanelTitle, dev)
 	string unlockedPanelTitle, dev
 
-	if(!cmpstr(dev, "ITC18USB_dev_0"))
-		PGC_SetAndActivateControl(unlockedPanelTitle, "popup_MoreSettings_DeviceType", val=5)
-	else // assume first NI device
-		PGC_SetAndActivateControl(unlockedPanelTitle, "popup_MoreSettings_DeviceType", val=6)
+	if(GetHardwareType(dev) == HARDWARE_ITC_DAC)
+		PGC_SetAndActivateControl(unlockedPanelTitle, "popup_MoreSettings_DeviceType", str=StringFromList(0, dev, "_") + "*")
+	else
+		PGC_SetAndActivateControl(unlockedPanelTitle, "popup_MoreSettings_DeviceType", str=dev)
 	endif
 End
 
