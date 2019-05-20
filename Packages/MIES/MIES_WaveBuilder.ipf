@@ -1580,6 +1580,8 @@ static Function/WAVE WB_PulseTrainSegment(pa, mode, pulseStartTimes, pulseToPuls
 			InPlaceRandomShuffle(interPulseIntervals, noiseGenMode = NOISE_GEN_MERSENNE_TWISTER)
 		endif
 
+		pulseToPulseLength = 0
+
 		pa.duration = (sum(interPulseIntervals) + pa.numberOfPulses * pa.pulseDuration)
 		WAVE segmentWave = GetSegmentWave(duration=pa.duration)
 		FastOp segmentWave = 0
