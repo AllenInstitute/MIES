@@ -1519,6 +1519,8 @@ static Function/WAVE WB_PulseTrainSegment(pa, mode, pulseStartTimes, pulseToPuls
 	variable numRows, interPulseInterval, idx, firstStep, lastStep, dist
 	string str
 
+	pulseToPulseLength = NaN
+
 	ASSERT(pa.poisson + pa.mixedFreq <= 1, "Only one of Mixed Frequency or poisson can be checked")
 
 	if(!pa.mixedFreq)
