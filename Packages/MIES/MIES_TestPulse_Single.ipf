@@ -69,6 +69,9 @@ End
 Function TPS_StartTestPulseSingleDevice(panelTitle)
 	string panelTitle
 
+	variable bkg
+
+
 	AbortOnValue DAP_CheckSettings(panelTitle, TEST_PULSE_MODE),1
 
 	DQ_StopOngoingDAQ(panelTitle)
@@ -79,8 +82,7 @@ Function TPS_StartTestPulseSingleDevice(panelTitle)
 	endif
 
 	try
-		if(DAG_GetNumericalValue(panelTitle, "Check_Settings_BkgTP"))
-
+		if(bkg)
 			TP_Setup(panelTitle, TEST_PULSE_BG_SINGLE_DEVICE)
 
 			TPS_StartBackgroundTestPulse(panelTitle)
