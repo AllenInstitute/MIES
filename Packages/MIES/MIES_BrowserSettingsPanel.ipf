@@ -877,7 +877,7 @@ Window BrowserSettingsPanel() : Panel
 	SetVariable setvar_pulseAver_deconv_range,help={"Time in ms from the beginning of the pulse that is used for the calculation"}
 	SetVariable setvar_pulseAver_deconv_range,userdata(tabnum)=  "4"
 	SetVariable setvar_pulseAver_deconv_range,userdata(tabcontrol)=  "Settings"
-	SetVariable setvar_pulseAver_deconv_range,limits={0,inf,0},value= _NUM:15
+	SetVariable setvar_pulseAver_deconv_range,limits={0,inf,0},value= _NUM:inf
 	GroupBox group_pulseAver_deconv,pos={101.00,248.00},size={155.00,97.00},disable=2
 	GroupBox group_pulseAver_deconv,userdata(tabnum)=  "4"
 	GroupBox group_pulseAver_deconv,userdata(tabcontrol)=  "Settings"
