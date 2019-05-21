@@ -96,8 +96,6 @@ Function TPM_StartTestPulseMultiDevice(panelTitle)
 	endif
 
 	TPM_StartTPMultiDeviceLow(panelTitle)
-
-
 	P_InitBeforeTP(panelTitle)
 End
 
