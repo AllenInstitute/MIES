@@ -208,7 +208,7 @@ Function AI_UpdateAmpModel(panelTitle, ctrl, headStage, [value, sendToAll, check
 	string ctrl
 	variable headStage, value, sendToAll, checkBeforeWrite, selectAmp
 
-	variable i, diff, selectedHeadstage, clampMode, oppositeMode
+	variable i, diff, selectedHeadstage, clampMode, oppositeMode, runMode
 	string str, rowLabel, rowLabelOpposite, ctrlToCall, ctrlToCallOpposite
 
 	DAP_AbortIfUnlocked(panelTitle)
@@ -362,6 +362,10 @@ Function AI_UpdateAmpModel(panelTitle, ctrl, headStage, [value, sendToAll, check
 					oppositeMode       = V_CLAMP_MODE
 				endif
 
+				if(!DeviceHasFollower(panelTitle))
+					runMode = TP_StopTestPulseFast(panelTitle)
+				endif
+
 				value = AI_SendToAmp(panelTitle, i, clampMode, MCC_AUTOPIPETTEOFFSET_FUNC, NaN, checkBeforeWrite=checkBeforeWrite, selectAmp = 0)
 				AmpStorageWave[%$rowLabel][0][i] = value
 				AI_UpdateAmpView(panelTitle, i, ctrl=ctrlToCall)
@@ -379,6 +383,11 @@ Function AI_UpdateAmpModel(panelTitle, ctrl, headStage, [value, sendToAll, check
 					endif
 					// do nothing
 				endtry
+
+				if(!DeviceHasFollower(panelTitle))
+					TP_RestartTestPulse(panelTitle, runMode, fast = 1)
+				endif
+
 				break
 			case "button_DataAcq_FastComp_VC":
 				AmpStorageWave[%FastCapacitanceComp][0][i] = value
