@@ -15,11 +15,18 @@ Function TPS_StartBackgroundTestPulse(panelTitle)
 	CtrlNamedBackground $TASKNAME_TP, start
 End
 
-Function TPS_StopTestPulseSingleDevice(panelTitle)
+Function TPS_StopTestPulseSingleDevice(panelTitle, [fast])
 	string panelTitle
+	variable fast
+
+	if(ParamIsDefault(fast))
+		fast = 0
+	else
+		fast = !!fast
+	endif
 
 	CtrlNamedBackground $TASKNAME_TP, stop
-	TP_Teardown(panelTitle)
+	TP_Teardown(panelTitle, fast = fast)
 End
 
 /// @brief Background TP Single Device
@@ -66,11 +73,35 @@ End
 
 /// @brief Start a single device test pulse, either in background
 /// or in foreground mode depending on the settings
-Function TPS_StartTestPulseSingleDevice(panelTitle)
+///
+/// @param panelTitle device
+/// @param fast       [optional, defaults to false] Starts TP without any checks or
+///                   setup. Can be called after stopping it with TP_StopTestPulseFast().
+Function TPS_StartTestPulseSingleDevice(panelTitle, [fast])
 	string panelTitle
+	variable fast
 
 	variable bkg
 
+	if(ParamIsDefault(fast))
+		fast = 0
+	else
+		fast = !!fast
+	endif
+
+	bkg = DAG_GetNumericalValue(panelTitle, "Check_Settings_BkgTP")
+
+	if(fast)
+		if(bkg)
+			TP_Setup(panelTitle, TEST_PULSE_BG_SINGLE_DEVICE, fast = 1)
+			TPS_StartBackgroundTestPulse(panelTitle)
+		else
+			TP_Setup(panelTitle, TEST_PULSE_FG_SINGLE_DEVICE, fast = 1)
+			TPS_StartTestPulseForeground(panelTitle)
+			TP_Teardown(panelTitle, fast = 1)
+		endif
+		return NaN
+	endif
 
 	AbortOnValue DAP_CheckSettings(panelTitle, TEST_PULSE_MODE),1
 

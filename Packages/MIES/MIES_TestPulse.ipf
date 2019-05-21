@@ -580,14 +580,38 @@ Function TP_StopTestPulseOnAllDevices()
 	CallFunctionForEachListItem(TP_StopTestPulse, GetListOfLockedDevices())
 End
 
-/// @brief Stop any running background test pulses
-///
-/// Assumes that single device and multi device do not run at the same time.
-/// @return One of @ref TestPulseRunModes
+/// @sa TP_StopTestPulseWrapper
+Function TP_StopTestPulseFast(panelTitle)
+	string panelTitle
+
+	return TP_StopTestPulseWrapper(panelTitle, fast = 1)
+End
+
+/// @sa TP_StopTestPulseWrapper
 Function TP_StopTestPulse(panelTitle)
 	string panelTitle
 
+	return TP_StopTestPulseWrapper(panelTitle, fast = 0)
+End
+
+/// @brief Stop any running background test pulses
+///
+/// @param panelTitle device
+/// @param fast       [optional, defaults to false] Performs only the totally
+///                   necessary steps for tear down.
+///
+/// @return One of @ref TestPulseRunModes
+static Function TP_StopTestPulseWrapper(panelTitle, [fast])
+	string panelTitle
+	variable fast
+
 	variable runMode
+
+	if(ParamIsDefault(fast))
+		fast = 0
+	else
+		fast = !!fast
+	endif
 
 	NVAR runModeGlobal = $GetTestpulseRunMode(panelTitle)
 
@@ -598,10 +622,10 @@ Function TP_StopTestPulse(panelTitle)
 	runMode = runMode & ~TEST_PULSE_DURING_RA_MOD
 
 	if(runMode == TEST_PULSE_BG_SINGLE_DEVICE)
-		TPS_StopTestPulseSingleDevice(panelTitle)
+		TPS_StopTestPulseSingleDevice(panelTitle, fast = fast)
 		return runMode
 	elseif(runMode == TEST_PULSE_BG_MULTI_DEVICE)
-		TPM_StopTestPulseMultiDevice(panelTitle)
+		TPM_StopTestPulseMultiDevice(panelTitle, fast = fast)
 		return runMode
 	elseif(runMode == TEST_PULSE_FG_SINGLE_DEVICE)
 		// can not be stopped
@@ -612,18 +636,24 @@ Function TP_StopTestPulse(panelTitle)
 End
 
 /// @brief Restarts a test pulse previously stopped with #TP_StopTestPulse
-Function TP_RestartTestPulse(panelTitle, testPulseMode)
+Function TP_RestartTestPulse(panelTitle, testPulseMode, [fast])
 	string panelTitle
-	variable testPulseMode
+	variable testPulseMode, fast
+
+	if(ParamIsDefault(fast))
+		fast = 0
+	else
+		fast = !!fast
+	endif
 
 	switch(testPulseMode)
 		case TEST_PULSE_NOT_RUNNING:
 			break // nothing to do
 		case TEST_PULSE_BG_SINGLE_DEVICE:
-			TPS_StartTestPulseSingleDevice(panelTitle)
+			TPS_StartTestPulseSingleDevice(panelTitle, fast = fast)
 			break
 		case TEST_PULSE_BG_MULTI_DEVICE:
-			TPM_StartTestPulseMultiDevice(panelTitle)
+			TPM_StartTestPulseMultiDevice(panelTitle, fast = fast)
 			break
 		default:
 			DEBUGPRINT("Ignoring unknown value:", var=testPulseMode)
@@ -634,11 +664,28 @@ End
 /// @brief Prepare device for TestPulse
 /// @param panelTitle  device
 /// @param runMode     Testpulse running mode, one of @ref TestPulseRunModes
-Function TP_Setup(panelTitle, runMode)
+/// @param fast        [optional, defaults to false] Performs only the totally necessary steps for setup
+Function TP_Setup(panelTitle, runMode, [fast])
 	string panelTitle
 	variable runMode
+	variable fast
 
 	variable multiDevice
+
+	if(ParamIsDefault(fast))
+		fast = 0
+	else
+		fast = !!fast
+	endif
+
+	if(fast)
+		NVAR runModeGlobal = $GetTestpulseRunMode(panelTitle)
+		runModeGlobal = runMode
+
+		NVAR ITCDeviceIDGlobal = $GetITCDeviceIDGlobal(panelTitle)
+		HW_PrepareAcq(GetHardwareType(panelTitle), ITCDeviceIDGlobal, flags=HARDWARE_ABORT_ON_ERROR)
+		return NaN
+	endif
 
 	multiDevice = (runMode & TEST_PULSE_BG_MULTI_DEVICE)
 
@@ -688,10 +735,22 @@ Function TP_SetupCommon(panelTitle)
 End
 
 /// @brief Perform common actions after the testpulse
-Function TP_Teardown(panelTitle)
+Function TP_Teardown(panelTitle, [fast])
 	string panelTitle
+	variable fast
+
+	if(ParamIsDefault(fast))
+		fast = 0
+	else
+		fast = !!fast
+	endif
 
 	NVAR runMode = $GetTestpulseRunMode(panelTitle)
+
+	if(fast)
+		runMode = TEST_PULSE_NOT_RUNNING
+		return NaN
+	endif
 
 	if(!(runMode & TEST_PULSE_DURING_RA_MOD))
 		EnableControls(panelTitle, CONTROLS_DISABLE_DURING_DAQ_TP)

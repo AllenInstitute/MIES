@@ -21,9 +21,16 @@ static Constant TPM_NI_FIFO_THRESHOLD_SIZE = 1073741824
 ///
 /// Handles the TP initiation for all ITC devices. Yoked ITC1600s are handled specially using the external trigger.
 /// The external trigger is assumed to be a arduino device using the arduino squencer.
-Function TPM_StartTPMultiDeviceLow(panelTitle, [runModifier])
+Function TPM_StartTPMultiDeviceLow(panelTitle, [runModifier, fast])
 	string panelTitle
 	variable runModifier
+	variable fast
+
+	if(ParamIsDefault(fast))
+		fast = 0
+	else
+		fast = !!fast
+	endif
 
 	variable i, TriggerMode
 	variable runMode, numFollower
@@ -37,13 +44,15 @@ Function TPM_StartTPMultiDeviceLow(panelTitle, [runModifier])
 
 	if(!DeviceHasFollower(panelTitle))
 		try
-			TP_Setup(panelTitle, runMode)
+			TP_Setup(panelTitle, runMode, fast = fast)
 			TPM_BkrdTPMD(panelTitle)
 		catch
 			TP_Teardown(panelTitle)
 		endtry
 
 		return NaN
+	else
+		ASSERT(!fast, "fast mode does not work with yoking")
 	endif
 
 	SVAR listOfFollowerDevices = $GetFollowerList(panelTitle)
@@ -83,8 +92,20 @@ Function TPM_StartTPMultiDeviceLow(panelTitle, [runModifier])
 End
 
 /// @brief Start a multi device test pulse, always done in background mode
-Function TPM_StartTestPulseMultiDevice(panelTitle)
+Function TPM_StartTestPulseMultiDevice(panelTitle, [fast])
 	string panelTitle
+	variable fast
+
+	if(ParamIsDefault(fast))
+		fast = 0
+	else
+		fast = !!fast
+	endif
+
+	if(fast)
+		TPM_StartTPMultiDeviceLow(panelTitle, fast = 1)
+		return NaN
+	endif
 
 	AbortOnValue DAP_CheckSettings(panelTitle, TEST_PULSE_MODE),1
 
@@ -102,10 +123,21 @@ End
 /// @brief Stop the TP on yoked devices simultaneously
 ///
 /// Handles also non-yoked devices in multi device mode correctly.
-Function TPM_StopTestPulseMultiDevice(panelTitle)
+Function TPM_StopTestPulseMultiDevice(panelTitle, [fast])
 	string panelTitle
+	variable fast
 
-	DQM_CallFuncForDevicesYoked(panelTitle, TPM_StopTPMD)
+	if(ParamIsDefault(fast))
+		fast = 0
+	else
+		fast = !!fast
+	endif
+
+	if(fast)
+		DQM_CallFuncForDevicesYoked(panelTitle, TPM_StopTPMDFast)
+	else
+		DQM_CallFuncForDevicesYoked(panelTitle, TPM_StopTPMD)
+	endif
 End
 
 static Function TPM_BkrdTPMD(panelTitle, [triggerMode])
@@ -290,8 +322,29 @@ Function TPM_BkrdTPFuncMD(s)
 	return 0
 End
 
+/// @brief Wrapper for DQM_CallFuncForDevicesYoked()
 static Function TPM_StopTPMD(panelTitle)
 	string panelTitle
+
+	return TPM_StopTPMDWrapper(panelTitle, fast = 0)
+End
+
+/// @brief Wrapper for DQM_CallFuncForDevicesYoked()
+static Function TPM_StopTPMDFast(panelTitle)
+	string panelTitle
+
+	return TPM_StopTPMDWrapper(panelTitle, fast = 1)
+End
+
+static Function TPM_StopTPMDWrapper(panelTitle, [fast])
+	string panelTitle
+	variable fast
+
+	if(ParamIsDefault(fast))
+		fast = 0
+	else
+		fast = !!fast
+	endif
 
 	NVAR ITCDeviceIDGlobal = $GetITCDeviceIDGlobal(panelTitle)
 
@@ -299,6 +352,7 @@ static Function TPM_StopTPMD(panelTitle)
 	if(hardwareType == HARDWARE_ITC_DAC)
 		TFH_StopFifoDaemon(HARDWARE_ITC_DAC, ITCDeviceIDGlobal)
 	endif
+
 	if(!HW_SelectDevice(hardwareType, ITCDeviceIDGlobal, flags = HARDWARE_PREVENT_ERROR_MESSAGE | HARDWARE_PREVENT_ERROR_POPUP) \
 	   && HW_IsRunning(hardwareType, ITCDeviceIDGlobal, flags = HARDWARE_ABORT_ON_ERROR))
 		HW_StopAcq(hardwareType, ITCDeviceIDGlobal, zeroDAC = 1)
@@ -306,7 +360,8 @@ static Function TPM_StopTPMD(panelTitle)
 		if(!TPM_HasActiveDevices())
 			CtrlNamedBackground $TASKNAME_TPMD, stop
 		endif
-		TP_Teardown(panelTitle)
+
+		TP_Teardown(panelTitle, fast = fast)
 	endif
 End
 
