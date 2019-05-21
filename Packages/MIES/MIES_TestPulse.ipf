@@ -605,7 +605,7 @@ Function TP_StopTestPulse(panelTitle)
 		return runMode
 	elseif(runMode == TEST_PULSE_FG_SINGLE_DEVICE)
 		// can not be stopped
-		return TEST_PULSE_FG_SINGLE_DEVICE
+		return runMode
 	endif
 
 	return TEST_PULSE_NOT_RUNNING
