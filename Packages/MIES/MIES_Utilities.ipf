@@ -2956,20 +2956,59 @@ Function/S GetAllFilesRecursivelyFromPath(pathName, [extension])
 End
 
 /// @brief Convert a text wave to string list
-Function/S TextWaveToList(txtWave, sep)
+/// @param[in] txtWave     1D or 2D input text wave
+/// @param[in] sep         separator for row entries
+/// @param[in] colSep      [optional, default = ","] separator for column entries
+/// @param[in] stopOnEmpty [optional, default = 0] when 1 stops generating the list when an empty string entry in txtWave is encountered
+/// @return string with wave entries separated as list using given separators
+Function/S TextWaveToList(txtWave, sep[, colSep, stopOnEmpty])
 	WAVE/T txtWave
-	string sep
+	string sep, colSep
+	variable stopOnEmpty
 
+	string entry, colList
 	string list = ""
-	variable i, numRows
+	variable i, j, numRows, numCols
 
 	ASSERT(IsTextWave(txtWave), "Expected a text wave")
-	ASSERT(DimSize(txtWave, COLS) == 0, "Expected a 1D wave")
+	ASSERT(DimSize(txtWave, LAYERS) == 0, "Expected a 1D or 2D wave")
+	ASSERT(!IsEmpty(sep), "Expected a non-empty row list separator")
+
+	if(ParamIsDefault(colSep))
+		colSep = ","
+	else
+		ASSERT(!IsEmpty(colSep), "Expected a non-empty column list separator")
+	endif
+	stopOnEmpty = ParamIsDefault(stopOnEmpty) ? 0 : !!stopOnEmpty
 
 	numRows = DimSize(txtWave, ROWS)
-	for(i = 0; i < numRows; i += 1)
-		list = AddListItem(txtWave[i], list, sep, Inf)
-	endfor
+	numCols = DimSize(txtWave, COLS)
+	if(!numCols)
+		for(i = 0; i < numRows; i += 1)
+			entry = txtWave[i]
+			if(stopOnEmpty && isEmpty(entry))
+				return list
+			endif
+			list = AddListItem(entry, list, sep, Inf)
+		endfor
+	else
+		for(i = 0; i < numRows; i += 1)
+			colList = ""
+			for(j = 0; j < numCols; j += 1)
+				entry = txtWave[i][j]
+				if(stopOnEmpty && isEmpty(entry))
+					break
+				endif
+				colList = AddListItem(entry, colList, colSep, Inf)
+			endfor
+			if(!(stopOnEmpty && isEmpty(colList)))
+				list = AddListItem(colList, list, sep, Inf)
+			endif
+			if(stopOnEmpty && isEmpty(entry))
+				return list
+			endif
+		endfor
+	endif
 
 	return list
 End
