@@ -364,6 +364,13 @@ Function TestTimeSeries(fileID, device, groupID, channel, sweep, pxpSweepsDFR)
 				FAIL()
 			endif
 			break
+		case I_EQUAL_ZERO_MODE:
+			if(params.channelType == ITC_XOP_CHANNEL_TYPE_ADC)
+				CHECK_EQUAL_TEXTWAVES(ancestry, {"TimeSeries", "PatchClampSeries", "CurrentClampSeries", "IZeroClampSeries"})
+			else
+				FAIL()
+			endif
+			break
 		default:
 			if(IsNaN(clampMode))
 				CHECK_EQUAL_TEXTWAVES(ancestry, {"TimeSeries"})
@@ -440,8 +447,8 @@ Function/DF TestSweepData(entry, device, sweep)
 	string device
 	variable sweep
 
-	variable ret, i, numEntries
-	string nwbSweeps, pxpSweeps
+	variable ret, i, numEntries, headstage
+	string nwbSweeps, pxpSweeps, pxpSweepsClean, name, channelTypeStr, channelNumberStr, channelSuffix
 
 	WAVE numericalValues = GetLBNumericalValues(device)
 	WAVE/T textualValues = GetLBTextualValues(device)
@@ -463,13 +470,37 @@ Function/DF TestSweepData(entry, device, sweep)
 
 	nwbSweeps = SortList(GetListOfObjects(nwbSweepsDFR, ".*"))
 	pxpSweeps = SortList(GetListOfObjects(pxpSweepsDFR, ".*"))
-	CHECK_EQUAL_STR(nwbSweeps, pxpSweeps)
+
+	// remove IZero DA channels as we don't save these in NWB
+	pxpSweepsClean = ""
+	numEntries = ItemsInList(pxpSweeps)
+	for(i = 0; i < numEntries; i += 1)
+		name = StringFromList(i, pxpSweeps)
+
+		SplitString/E="^([[:alpha:]]+)_([[:digit:]]+)(?:_.*)?$" name, channelTypeStr, channelNumberStr, channelSuffix
+		CHECK_EQUAL_VAR(V_Flag, 2)
+
+		WAVE DAC = GetLastSetting(numericalValues, sweep, "DAC", DATA_ACQUISITION_MODE)
+		headstage = GetRowIndex(DAC, val=str2num(channelNumberStr))
+		if(IsFinite(headstage))
+			WAVE clampMode = GetLastSetting(numericalValues, sweep, "Clamp Mode", DATA_ACQUISITION_MODE)
+
+			if(clampMode[headstage] == I_EQUAL_ZERO_MODE \
+			   && !cmpstr(channelTypeStr, StringFromList(ITC_XOP_CHANNEL_TYPE_DAC, ITC_CHANNEL_NAMES)))
+				continue
+			endif
+		endif
+
+		pxpSweepsClean = AddListItem(name, pxpSweepsClean, ";", inf)
+	endfor
+
+	CHECK_EQUAL_STR(nwbSweeps, pxpSweepsClean)
 
 	numEntries = ItemsInList(nwbSweeps)
 	for(i = 0; i < numEntries; i += 1)
 		WAVE/Z/SDFR=nwbSweepsDFR nwbWave = $StringFromList(i, nwbSweeps)
 		CHECK_WAVE(nwbWave, NORMAL_WAVE)
-		WAVE/Z/SDFR=pxpSweepsDFR pxpWave = $StringFromList(i, pxpSweeps)
+		WAVE/Z/SDFR=pxpSweepsDFR pxpWave = $StringFromList(i, pxpSweepsClean)
 		CHECK_WAVE(pxpWave, FREE_WAVE)
 		CHECK_EQUAL_WAVES(nwbWave, pxpWave, mode = WAVE_DATA | WAVE_DATA_TYPE | WAVE_SCALING | DATA_UNITS | DIMENSION_UNITS | DIMENSION_LABELS | DATA_FULL_SCALE | DIMENSION_SIZES) // all except WAVE_NOTE
 	endfor

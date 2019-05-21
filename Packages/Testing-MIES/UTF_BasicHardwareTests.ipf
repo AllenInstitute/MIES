@@ -2990,3 +2990,47 @@ Function CheckThatTPsCanBeFound_REENTRY([str])
 	FindDuplicates/DN=dups TPMarker
 	CHECK_EQUAL_VAR(DimSize(dups, ROWS), 0)
 End
+
+Function CheckIZeroClampMode_IGNORE(device)
+	string device
+
+	PGC_SetAndActivateControl(device, "Radio_ClampMode_1IZ", val = 1)
+End
+
+// UTF_TD_GENERATOR HardwareMain#DeviceNameGeneratorMD1
+Function CheckIZeroClampMode([str])
+	string str
+
+	STRUCT DAQSettings s
+	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG_1_RES_1")
+	AcquireData(s, str, setAnalysisFuncs = 1, preAcquireFunc=CheckIZeroClampMode_IGNORE)
+End
+
+Function CheckIZeroClampMode_REENTRY([str])
+	string str
+
+	STRUCT TestSettings t
+
+	t.numSweeps = 1
+	t.sweepWaveType = FLOAT_WAVE
+
+	InitTestStructure(t)
+	Events_MD1_RA0_I0_L0_BKG_1(t)
+
+	t.acquiredStimSets_HS0[] = "StimulusSetA_DA_0"
+	t.sweepCount_HS0[]       = 0
+	t.setCycleCount_HS0[]    = 0
+	t.stimsetCycleID_HS0[]   = 0
+
+	t.acquiredStimSets_HS1[] = "StimulusSetC_DA_0"
+	t.sweepCount_HS1[]       = 0
+	t.setCycleCount_HS1[]    = 0
+	t.stimsetCycleID_HS1[]   = 0
+
+	AllTests(t, str)
+
+	WAVE numericalValues = GetLBNumericalValues(str)
+
+	WAVE clampMode = GetLastSetting(numericalValues, 0, "Clamp Mode", DATA_ACQUISITION_MODE)
+	CHECK_EQUAL_WAVES(clampMode, {I_EQUAL_ZERO_MODE, V_CLAMP_MODE, NaN, NaN, NaN, NaN, NaN, NaN, NaN}, mode=WAVE_DATA)
+End
