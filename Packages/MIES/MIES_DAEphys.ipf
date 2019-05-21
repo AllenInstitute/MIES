@@ -2419,7 +2419,7 @@ static Function DAP_CheckHeadStage(panelTitle, headStage, mode)
 			needResetting = 1
 		endif
 
-		if(!CheckIfClose(DAGain, DAGainMCC, tol=1e-4) || (clampMode == I_EQUAL_ZERO_MODE && CheckIfSmall(DAGainMCC)))
+		if((!CheckIfClose(DAGain, DAGainMCC, tol=1e-4) && clampMode != I_EQUAL_ZERO_MODE) || (clampMode == I_EQUAL_ZERO_MODE && !CheckIfSmall(DAGainMCC)))
 			printf "(%s) The configured gain for the DA channel %d differs from the one in the \"DAC Channel and Device Associations\" menu (%g vs %g).\r", panelTitle, DACchannel, DAGain, DAGainMCC
 			needResetting = 1
 		endif
