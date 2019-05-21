@@ -534,7 +534,7 @@ Function PA_ShowPulses(win, dfr, pa)
 	string graph, preExistingGraphs
 	string averageWaveName, convolutionWaveName, pulseTrace, channelTypeStr, str, traceList, traceFullPath
 	variable numChannels, i, j, k, l, idx, numTraces, sweepNo, headstage, numPulsesTotal, numPulses
-	variable first, numEntries, startingPulse, endingPulse, numGraphs, traceCount
+	variable first, numEntries, startingPulse, endingPulse, numGraphs, traceCount, step
 	variable startingPulseSett, endingPulseSett, ret, pulseToPulseLength, numSweeps, numRegions
 	variable red, green, blue, channelNumber, region, channelType, numHeadstages, length
 	variable numChannelTypeTraces, activeRegionCount, activeChanCount, totalOnsetDelay
@@ -682,8 +682,10 @@ Function PA_ShowPulses(win, dfr, pa)
 					if(pa.showIndividualTraces)
 						sprintf pulseTrace, "T%06d%s_IDX%d", traceCount, NameOfWave(plotWave), idx
 
+						step = activeRegionCount == activeChanCount ? 1 : PA_PLOT_STEPPING
+
 						GetTraceColor(headstage, red, green, blue)
-						AppendToGraph/Q/W=$graph/L=$vertAxis/B=$horizAxis/C=(red, green, blue, 65535 * 0.2) plotWave[0,inf;PA_PLOT_STEPPING]/TN=$pulseTrace
+						AppendToGraph/Q/W=$graph/L=$vertAxis/B=$horizAxis/C=(red, green, blue, 65535 * 0.2) plotWave[0,inf;step]/TN=$pulseTrace
 						ModifyGraph/W=$graph userData($pulseTrace) = {sweepNumber, USERDATA_MODIFYGRAPH_REPLACE, num2str(sweepNo)}, userData($pulseTrace) = {region, USERDATA_MODIFYGRAPH_REPLACE, num2str(region)}, userData($pulseTrace) = {channelNumber, USERDATA_MODIFYGRAPH_REPLACE, channelNumberStr}, userData($pulseTrace) = {channelType, USERDATA_MODIFYGRAPH_REPLACE, channelTypeStr}, userData($pulseTrace) = {pulseIndex, USERDATA_MODIFYGRAPH_REPLACE, num2str(l)}
 						traceCount += 1
 
