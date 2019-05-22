@@ -2137,3 +2137,164 @@ Function DWP_Check4D()
 	CHECK_EQUAL_VAR(DimSize(wv, CHUNKS), 0)
 End
 /// @}
+
+/// TextWaveToList
+/// @{
+
+/// @brief Fail due to null wave
+Function TextWaveToListFail0()
+
+	WAVE/T w=$""
+	string list
+
+	try
+		list = TextWaveToList(w, ";")
+		FAIL()
+	catch
+		PASS()
+	endtry
+End
+
+/// @brief Fail due to numeric wave
+Function TextWaveToListFail1()
+
+	Make/FREE/N=1 w
+	string list
+
+	try
+		list = TextWaveToList(w, ";")
+		FAIL()
+	catch
+		PASS()
+	endtry
+End
+
+/// @brief Fail due to 3D+ wave
+Function TextWaveToListFail2()
+
+	Make/FREE/T/N=(1,1,1) w
+	string list
+
+	try
+		list = TextWaveToList(w, ";")
+		FAIL()
+	catch
+		PASS()
+	endtry
+End
+
+/// @brief Fail due to empty row separator
+Function TextWaveToListFail3()
+
+	Make/FREE/T/N=1 w
+	string list
+
+	try
+		list = TextWaveToList(w, "")
+		FAIL()
+	catch
+		PASS()
+	endtry
+End
+
+/// @brief Fail due to empty column separator
+Function TextWaveToListFail4()
+
+	Make/FREE/T/N=1 w
+	string list
+
+	try
+		list = TextWaveToList(w, ";", colSep = "")
+		FAIL()
+	catch
+		PASS()
+	endtry
+End
+
+/// @brief 1D wave zero elements
+Function TextWaveToListWorks0()
+
+	Make/FREE/T/N=0 w
+	string list
+	string refList = ""
+
+	list = TextWaveToList(w, ";")
+	CHECK_EQUAL_STR(list, refList)
+End
+
+/// @brief 1D wave 3 elements
+Function TextWaveToListWorks1()
+
+	Make/FREE/T/N=3 w = {"1", "2", "3"}
+
+	string list
+	string refList
+
+	refList = "1;2;3;"
+	list = TextWaveToList(w, ";")
+	CHECK_EQUAL_STR(list, refList)
+End
+
+/// @brief 1D wave 3 elements, stopOnEmpty
+Function TextWaveToListWorks2()
+
+	Make/FREE/T/N=3 w = {"1", "", "3"}
+
+	string list
+	string refList
+
+	refList = "1;"
+	list = TextWaveToList(w, ";", stopOnEmpty = 1)
+	CHECK_EQUAL_STR(list, refList)
+End
+
+/// @brief 2D wave 3x3 elements
+Function TextWaveToListWorks3()
+
+	Make/FREE/T/N=(3,3) w = {{"1", "2", "3"} , {"4", "5", "6"}, {"7", "8", "9"}}
+
+	string list
+	string refList
+
+	refList = "1,4,7,;2,5,8,;3,6,9,;"
+	list = TextWaveToList(w, ";")
+	CHECK_EQUAL_STR(list, refList)
+End
+
+/// @brief 2D wave 3x3 elements, own column separator
+Function TextWaveToListWorks4()
+
+	Make/FREE/T/N=(3,3) w = {{"1", "2", "3"} , {"4", "5", "6"}, {"7", "8", "9"}}
+
+	string list
+	string refList
+
+	refList = "1:4:7:;2:5:8:;3:6:9:;"
+	list = TextWaveToList(w, ";", colSep = ":")
+	CHECK_EQUAL_STR(list, refList)
+End
+
+/// @brief 2D wave 3x3 elements, stopOnEmpty
+Function TextWaveToListWorks5()
+
+	Make/FREE/T/N=(3,3) w = {{"", "2", "3"} , {"4", "5", "6"}, {"7", "8", "9"}}
+
+	string list
+	string refList
+
+	// stop at first element
+	refList = ""
+	list = TextWaveToList(w, ";", stopOnEmpty = 1)
+	CHECK_EQUAL_STR(list, refList)
+	// stop at last element with partial filling
+	w = {{"1", "2", "3"} , {"4", "5", "6"}, {"7", "8", ""}}
+	refList = "1,4,7,;2,5,8,;3,6,;"
+	list = TextWaveToList(w, ";", stopOnEmpty = 1)
+	CHECK_EQUAL_STR(list, refList)
+   // stop at new row
+	w = {{"1", "", "3"} , {"4", "5", "6"}, {"7", "8", "9"}}
+	refList = "1,4,7,;"
+	list = TextWaveToList(w, ";", stopOnEmpty = 1)
+	CHECK_EQUAL_STR(list, refList)
+End
+/// @}
