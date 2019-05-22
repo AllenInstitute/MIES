@@ -1367,26 +1367,6 @@ End
 
 /// @name CheckActiveHeadstages
 /// @{
-override Function/WAVE DAG_GetChannelState(panelTitle, var)
-	string panelTitle
-	variable var
-
-	WAVE/Z statusHS
-	REQUIRE(WaveExists(statusHS))
-
-	return statusHS
-End
-
-override Function DAG_GetHeadstageMode(panelTitle, headstage)
-	string panelTitle
-	variable headstage
-
-	WAVE/Z clampModes
-	REQUIRE(WaveExists(clampModes))
-
-	return clampModes[headstage]
-End
-
 Function HAH_ReturnsNaN()
 
 	string panelTitle = "IGNORE"
