@@ -142,7 +142,7 @@ threadsafe static Function ASYNC_Thread()
 
 		elseif(DataFolderExistsDFR(dfrOut))
 
-#if NumberByKey("BUILD", igorinfo(0)) >= 32616
+#if (IgorVersion() >= 8.00 && NumberByKey("BUILD", igorinfo(0)) >= 32616)
 			MoveDataFolder dfrOut, dfrAsync
 			RenameDataFolder dfrOut, freeroot
 #else
