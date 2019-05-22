@@ -1518,6 +1518,24 @@ Function WB_GetWaveNoteEntryAsNumber(text, entryType, [key, sweep, epoch])
 	return str2num(str)
 End
 
+Function/WAVE WB_GetPulsesFromPTSweepEpoch(stimset, sweep, epoch, pulseToPulseLength)
+	WAVE stimset
+	variable sweep, epoch
+	variable &pulseToPulseLength
+
+	string startTimesList, stimNote
+	stimNote = note(stimset)
+
+	pulseToPulseLength = WB_GetWaveNoteEntryAsNumber(stimNote, EPOCH_ENTRY, sweep = sweep, epoch = epoch, key = PULSE_TO_PULSE_LENGTH_KEY)
+	ASSERT(IsFinite(pulseToPulseLength), "Non-finite " + PULSE_TO_PULSE_LENGTH_KEY)
+
+	startTimesList = WB_GetWaveNoteEntry(stimNote, EPOCH_ENTRY, sweep = sweep, epoch = epoch, key = PULSE_START_TIMES_KEY)
+	WAVE/Z/D startTimes = ListToNumericWave(startTimesList, ",")
+	ASSERT(WaveExists(startTimes) && DimSize(startTimes, ROWS) > 0, "Found no starting times")
+
+	return startTimes
+End
+
 static Function/WAVE WB_PulseTrainSegment(pa, mode, pulseStartTimes, pulseToPulseLength)
 	struct SegmentParameters &pa
 	variable mode
