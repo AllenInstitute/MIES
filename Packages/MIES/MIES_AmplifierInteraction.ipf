@@ -208,7 +208,8 @@ Function AI_UpdateAmpModel(panelTitle, ctrl, headStage, [value, sendToAll, check
 	string ctrl
 	variable headStage, value, sendToAll, checkBeforeWrite, selectAmp
 
-	variable i, diff, selectedHeadstage, clampMode, oppositeMode, runMode
+	variable i, diff, selectedHeadstage, clampMode, oppositeMode
+	variable runMode = TEST_PULSE_NOT_RUNNING
 	string str, rowLabel, rowLabelOpposite, ctrlToCall, ctrlToCallOpposite
 
 	DAP_AbortIfUnlocked(panelTitle)
@@ -254,6 +255,16 @@ Function AI_UpdateAmpModel(panelTitle, ctrl, headStage, [value, sendToAll, check
 	if(ParamIsDefault(checkBeforeWrite))
 		checkBeforeWrite = 0
 	endif
+
+	strswitch(ctrl)
+		case "button_DataAcq_AutoPipOffset_IC":
+		case "button_DataAcq_AutoPipOffset_VC":
+			if(!DeviceHasFollower(panelTitle))
+				runMode = TP_StopTestPulseFast(panelTitle)
+			endif
+		default:
+			// do nothing
+	endswitch
 
 	for(i = 0; i < NUM_HEADSTAGES; i += 1)
 
@@ -362,10 +373,6 @@ Function AI_UpdateAmpModel(panelTitle, ctrl, headStage, [value, sendToAll, check
 					oppositeMode       = V_CLAMP_MODE
 				endif
 
-				if(!DeviceHasFollower(panelTitle))
-					runMode = TP_StopTestPulseFast(panelTitle)
-				endif
-
 				value = AI_SendToAmp(panelTitle, i, clampMode, MCC_AUTOPIPETTEOFFSET_FUNC, NaN, checkBeforeWrite=checkBeforeWrite, selectAmp = 0)
 				AmpStorageWave[%$rowLabel][0][i] = value
 				AI_UpdateAmpView(panelTitle, i, ctrl=ctrlToCall)
@@ -383,10 +390,6 @@ Function AI_UpdateAmpModel(panelTitle, ctrl, headStage, [value, sendToAll, check
 					endif
 					// do nothing
 				endtry
-
-				if(!DeviceHasFollower(panelTitle))
-					TP_RestartTestPulse(panelTitle, runMode, fast = 1)
-				endif
 
 				break
 			case "button_DataAcq_FastComp_VC":
@@ -458,6 +461,10 @@ Function AI_UpdateAmpModel(panelTitle, ctrl, headStage, [value, sendToAll, check
 			AI_UpdateAmpView(panelTitle, i, ctrl = ctrl)
 		endif
 	endfor
+
+	if(!DeviceHasFollower(panelTitle))
+		TP_RestartTestPulse(panelTitle, runMode, fast = 1)
+	endif
 
 	return 0
 End
