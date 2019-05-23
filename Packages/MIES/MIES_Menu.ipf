@@ -26,6 +26,7 @@ Menu "Mies Panels"
 		"Blowout/8"                            , /Q, BWO_SelectDevice()
 		"Save and Clear Experiment"            , /Q, SaveExperimentSpecial(SAVE_AND_CLEAR)
 		"Close Mies"                           , /Q, CloseMies()
+		"IVSCC control panel"                  , /Q, IVS_CreatePanel()
 	End
 	"-"
 	SubMenu "Neurodata Without Borders (NWB)"
