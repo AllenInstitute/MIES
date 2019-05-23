@@ -11,6 +11,13 @@
 static Constant WORK_COUNT_GENERIC = 200
 static Constant THREADING_TEST_TIMEOUT = 60
 
+/// @brief Stops a possibly running Async frame work due to Compilehook feature of IP8
+static Function TEST_CASE_BEGIN_OVERRIDE(testCase)
+	string testCase
+
+	TEST_CASE_END_OVERRIDE(testCase)
+End
+
 /// @brief Cleans up failing tests
 static Function TEST_CASE_END_OVERRIDE(testCase)
 	string testCase
@@ -45,7 +52,7 @@ End
 /// @brief Test to stop Framework when it is already stopped
 static Function TASYNC_Stop_AlreadyStopped()
 
-	CHECK_EQUAL_VAR(ASYNC_Stop(), 0)
+	CHECK_EQUAL_VAR(ASYNC_Stop(), 2)
 End
 
 /// @brief Test to start and stop the Framework
@@ -75,15 +82,11 @@ static Function TASYNC_StartWOTask()
 End
 
 /// @brief Test to start and the Framework twice
-static Function TASYNC_Start_DoubleStart()
+static Function TASYNC_Start_DoubleStart0()
 
 	ASYNC_Start(ThreadProcessorCount)
-	try
-		ASYNC_Start(ThreadProcessorCount)
-		PASS()
-	catch
-		FAIL()
-	endtry
+	ASYNC_Start(ThreadProcessorCount)
+	PASS()
 	ASYNC_Stop(timeout=1)
 End
 
