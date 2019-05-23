@@ -50,7 +50,6 @@
 #include "MIES_AnalysisFunctions_MultiPatchSeq"
 #include "MIES_AnalysisFunctionPrototypes"
 #include "MIES_AnalysisFunctions"
-#include "MIES_AnalysisMaster"
 #include "MIES_ArtefactRemoval"
 #include "MIES_AsynchronousData"
 #include "MIES_Async"

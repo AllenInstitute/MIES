@@ -26,7 +26,6 @@ Menu "Mies Panels"
 		"Blowout/8"                            , /Q, BWO_SelectDevice()
 		"Save and Clear Experiment"            , /Q, SaveExperimentSpecial(SAVE_AND_CLEAR)
 		"Close Mies"                           , /Q, CloseMies()
-	"Open AnalysisMaster Panel"                , /Q, analysisMaster()
 	End
 	"-"
 	SubMenu "Neurodata Without Borders (NWB)"
@@ -81,8 +80,7 @@ Function CloseMies()
 		   || StringMatch(windowToClose, "dataBrowser*")       \
 		   || StringMatch(windowToClose, "DB_ITC*")            \
 		   || StringMatch(windowToClose, "DA_Ephys*")          \
-		   || StringMatch(windowToClose, "configureAnalysis*") \
-		   || StringMatch(windowToClose, "analysisMaster*"))
+		   || StringMatch(windowToClose, "configureAnalysis*"))
 			KillWindow $windowToClose
 		endif
 	endfor

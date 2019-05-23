@@ -48,8 +48,6 @@ Function SWS_SaveAcquiredData(panelTitle, [forcedStop])
 		NWB_AppendSweep(panelTitle, sweepWave, configWave, sweepNo)
 	endif
 
-	AM_analysisMasterPostSweep(panelTitle, sweepNo)
-
 	if(!forcedStop)
 		AFM_CallAnalysisFunctions(panelTitle, POST_SWEEP_EVENT)
 		AFM_CallAnalysisFunctions(panelTitle, POST_SET_EVENT)
