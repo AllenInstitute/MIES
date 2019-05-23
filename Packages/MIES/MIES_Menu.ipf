@@ -52,19 +52,6 @@ Menu "Mies Panels"
 	End
 End
 
-Menu "HDF5 Tools"
-	"-"
-	"Open HDF5 Browser"        , /Q, CreateNewHDF5Browser()
-	"Save HDF5 File"           , /Q, HD_Convert_To_HDF5("menuSaveFile.h5")
-	"Save Stim Set"            , /Q, HD_SaveStimSet()
-	"Load and Replace Stim Set", /Q, HD_LoadReplaceStimSet()
-	"Load Additional Stim Set" , /Q, HD_LoadAdditionalStimSet()
-	"Save Sweep Data"          , /Q, HD_SaveSweepData()
-	"Save Configuration"       , /Q, HD_SaveConfiguration()
-	"Load Configuration"       , /Q, HD_LoadConfigSet()
-	"Load Sweep Data"          , /Q, HD_LoadDataSet()
-End
-
 Function CloseMies()
 
 	DAP_UnlockAllDevices()
