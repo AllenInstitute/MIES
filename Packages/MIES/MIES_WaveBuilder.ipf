@@ -919,6 +919,7 @@ static Function/WAVE WB_MakeWaveBuilderWave(WP, WPT, SegWvType, stepCount, numEp
 				AddEntryIntoWaveNoteAsList(WaveBuilderWave, "Pulse duration"         , var=params.PulseDuration)
 				AddEntryIntoWaveNoteAsList(WaveBuilderWave, "Number of pulses"       , var=params.NumberOfPulses)
 				AddEntryIntoWaveNoteAsList(WaveBuilderWave, "Mixed frequency"        , str=ToTrueFalse(params.mixedFreq))
+				AddEntryIntoWaveNoteAsList(WaveBuilderWave, "Mixed frequency shuffle", str=ToTrueFalse(params.mixedFreqShuffle))
 				AddEntryIntoWaveNoteAsList(WaveBuilderWave, "First mixed frequency"  , var=params.firstFreq)
 				AddEntryIntoWaveNoteAsList(WaveBuilderWave, "Last mixed frequency"   , var=params.lastFreq)
 				AddEntryIntoWaveNoteAsList(WaveBuilderWave, "Poisson distribution"   , str=ToTrueFalse(params.poisson))
