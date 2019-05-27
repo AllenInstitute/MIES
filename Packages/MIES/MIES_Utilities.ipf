@@ -3113,6 +3113,124 @@ Function/S TextWaveToList(txtWave, sep[, colSep, stopOnEmpty])
 	return list
 End
 
+/// @brief Converts a list to a multi dimensional text wave, treating it row major order
+/// The output wave does not contain unused dimensions, so if dims = 4 is specified but no
+/// chunk separator is found then the returned wave is 3 dimensional.
+/// An empty list results in a zero dimensional wave.
+///
+/// @param[in] list   input string with list
+/// @param[in] dims   number of dimensions the output text wave should have
+/// @param[in] rowSep [optional, default = ";"] row separator
+/// @param[in] colSep [optional, default = ","] column separator
+/// @param[in] laySep [optional, default = ":"] layer separator
+/// @param[in] chuSep [optional, default = "/"] chunk separator
+/// @return text wave with at least dims dimensions
+///
+/// The following call
+/// ListToTextWaveMD("1/5/6/:8/:,;2/:,;3/7/:,;4/:,;", 4, rowSep=";", colSep=",",laySep=":", chuSep="/")
+/// returns
+/// '_free_'[0][0][0][0]= {"1","2","3","4"}
+/// '_free_'[0][0][1][0]= {"8","","",""}
+/// '_free_'[0][0][0][1]= {"5","","7",""}
+/// '_free_'[0][0][1][1]= {"","","",""}
+/// '_free_'[0][0][0][2]= {"6","","",""}
+/// '_free_'[0][0][1][2]= {"","","",""}
+Function/WAVE ListToTextWaveMD(list, dims, [rowSep, colSep, laySep, chuSep])
+	string list
+	variable dims
+	string rowSep, colSep, laySep, chuSep
+
+	variable colSize, laySize, chuSize
+	variable rowMaxSize, colMaxSize, layMaxSize, chuMaxSize
+	variable rowNr, colNr, layNr
+
+	ASSERT(!isNull(list), "list input string is null")
+	ASSERT(dims > 0 && dims <= 4, "number of dimensions must be > 0 and < 5")
+
+	if(ParamIsDefault(rowSep))
+		rowSep = ";"
+	endif
+	if(ParamIsDefault(colSep))
+		colSep = ","
+	endif
+	if(ParamIsDefault(laySep))
+		laySep = ":"
+	endif
+	if(ParamIsDefault(chuSep))
+		chuSep = "/"
+	endif
+
+	if(dims == 1)
+		return ListToTextWave(list, rowSep)
+	endif
+
+	WAVE/T rowEntries = ListToTextWave(list, rowSep)
+	rowMaxSize = DimSize(rowEntries, ROWS)
+	if(!rowMaxSize)
+		Make/FREE/T/N=0 emptyList
+		return emptyList
+	endif
+
+	Make/FREE/N=(rowMaxSize) colSizes
+	colSizes[] = ItemsInList(rowEntries[p], colSep)
+	colMaxSize = WaveMax(colSizes)
+
+	if(dims == 2)
+		Make/T/FREE/N=(rowMaxSize, colMaxSize) output
+		for(rowNr = 0; rowNr < rowMaxSize; rowNr += 1)
+			WAVE/T colEntries = ListToTextWave(rowEntries[rowNr], colSep)
+			output[rowNr][0, DimSize(colEntries, ROWS) - 1] = colEntries[q]
+		endfor
+		return output
+	endif
+
+
+	for(rowNr = 0; rowNr < rowMaxSize; rowNr += 1)
+		WAVE/T colEntries = ListToTextWave(rowEntries[rowNr], colSep)
+		colSize = DimSize(colEntries, ROWS)
+		for(colNr = 0; colNr < colSize; colNr += 1)
+			layMaxSize = Max(layMaxSize, ItemsInList(colEntries[colNr], laySep))
+
+			if(dims == 4)
+				WAVE/T layEntries = ListToTextWave(colEntries[colNr], laySep)
+				laySize = DimSize(layEntries, ROWS)
+				for(layNr = 0; layNr < laySize; layNr += 1)
+					chuMaxSize = Max(chuMaxSize, ItemsInList(layEntries[layNr], chuSep))
+				endfor
+			endif
+
+		endfor
+	endfor
+
+	if(dims == 3)
+		Make/T/FREE/N=(rowMaxSize, colMaxSize, layMaxSize) output
+		for(rowNr = 0; rowNr < rowMaxSize; rowNr += 1)
+			WAVE/T colEntries = ListToTextWave(rowEntries[rowNr], colSep)
+			colSize = DimSize(colEntries, ROWS)
+			for(colNr = 0; colNr < colSize; colNr += 1)
+				WAVE/T layEntries = ListToTextWave(colEntries[colNr], laySep)
+				output[rowNr][colNr][0, DimSize(layEntries, ROWS) - 1] = layEntries[r]
+			endfor
+		endfor
+		return output
+	endif
+
+	Make/T/FREE/N=(rowMaxSize, colMaxSize, layMaxSize, chuMaxSize) output
+	for(rowNr = 0; rowNr < rowMaxSize; rowNr += 1)
+		WAVE/T colEntries = ListToTextWave(rowEntries[rowNr], colSep)
+		colSize = DimSize(colEntries, ROWS)
+		for(colNr = 0; colNr < colSize; colNr += 1)
+			WAVE/T layEntries = ListToTextWave(colEntries[colNr], laySep)
+			laySize = DimSize(layEntries, ROWS)
+			for(layNr = 0; layNr < laySize; layNr += 1)
+				WAVE/T chuEntries = ListToTextWave(layEntries[layNr], chuSep)
+				output[rowNr][colNr][layNr][0, DimSize(chuEntries, ROWS) - 1] = chuEntries[s]
+			endfor
+		endfor
+	endfor
+	return output
+End
+
 /// @brief Convert a numeric wave to string list
 ///
 /// Counterpart @see ListToNumericWave
