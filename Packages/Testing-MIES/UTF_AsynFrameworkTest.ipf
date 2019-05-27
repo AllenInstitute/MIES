@@ -927,12 +927,17 @@ static Function TASYNC_StopTimeOutForce()
 		ASYNC_Execute(threadDF)
 	endfor
 	Make/N=0 returnOrder
+#if (IgorVersion() >= 8.03)
+	timeout=ASYNC_Stop(timeout = 0)
+	PASS()
+#else
 	try
-		timeout=ASYNC_Stop(timeout=0)
+		timeout=ASYNC_Stop(timeout = 0)
 		FAIL()
 	catch
 		PASS()
 	endtry
+#endif
 End
 
 /// @brief Test if a direct stop after pushing mixed workloads finishes all readouts properly on stopping attempt
