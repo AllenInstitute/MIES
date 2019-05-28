@@ -153,7 +153,7 @@ Function ASSERT(var, errorMsg)
 #endif // AUTOMATED_TESTING
 
 		// --- Cleanup functions
-#if !(IgorVersion() >= 8.04 && NumberByKey("BUILD", IgorInfo(0)) >= 33703)
+#if (IgorVersion() < 8.00)
 		ASYNC_Stop(timeout=1, fromAssert=1)
 #endif
 		// --- End of cleanup functions

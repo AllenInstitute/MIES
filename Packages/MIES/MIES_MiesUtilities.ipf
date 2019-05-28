@@ -5419,7 +5419,7 @@ Function ZeroWave(wv)
 	SetNumberInWaveNote(wv, NOTE_KEY_ZEROED, 1)
 End
 
-#if !(IgorVersion() >= 8.04 && NumberByKey("BUILD", IgorInfo(0)) >= 33703)
+#if (IgorVersion() < 8.00)
 /// @brief Stops the ASYNC framework if no TP or DAQ operation is running
 Function StopAsyncIfDone()
 

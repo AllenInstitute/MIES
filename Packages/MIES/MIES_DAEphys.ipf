@@ -1203,7 +1203,7 @@ Function DAP_OneTimeCallBeforeDAQ(panelTitle, runMode)
 		P_InitBeforeTP(panelTitle)
 	endif
 
-#if !(IgorVersion() >= 8.04 && NumberByKey("BUILD", IgorInfo(0)) >= 33703)
+#if (IgorVersion() < 8.00)
 	ASYNC_Start(ThreadProcessorCount, disableTask=1)
 #endif
 End
@@ -1280,7 +1280,7 @@ Function DAP_OneTimeCallAfterDAQ(panelTitle, [forcedStop, startTPAfterDAQ])
 	NVAR dataAcqRunMode = $GetDataAcqRunMode(panelTitle)
 	dataAcqRunMode = DAQ_NOT_RUNNING
 
-#if !(IgorVersion() >= 8.04 && NumberByKey("BUILD", IgorInfo(0)) >= 33703)
+#if (IgorVersion() < 8.00)
 	StopAsyncIfDone()
 #endif
 
@@ -4558,10 +4558,8 @@ Function DAP_LockDevice(panelTitle)
 		DAP_LoadBuiltinStimsets()
 		GetPxPVersion()
 		SetupBackgroundTasks()
-#if IgorVersion() >= 8.0
-#if NumberByKey("BUILD", IgorInfo(0)) >= 33453
+#if (IgorVersion() >= 8.00)
 		CtrlNamedBackground _all_, noevents=1
-#endif
 #endif
 	endif
 End

@@ -146,7 +146,7 @@ threadsafe static Function ASYNC_Thread()
 
 		elseif(DataFolderExistsDFR(dfrOut))
 
-#if (IgorVersion() >= 8.00 && NumberByKey("BUILD", igorinfo(0)) >= 32616)
+#if (IgorVersion() >= 8.00)
 			MoveDataFolder dfrOut, dfrAsync
 			RenameDataFolder dfrOut, freeroot
 #else
@@ -685,7 +685,7 @@ static Function ASSERT(var, errorMsg)
 #endif // AUTOMATED_TESTING
 
 		// --- Cleanup functions
-#if !(IgorVersion() >= 8.04 && NumberByKey("BUILD", IgorInfo(0)) >= 33703)
+#if (IgorVersion() < 8.00)
 		ASYNC_Stop(timeout=1, fromAssert=1)
 #endif
 		// --- End of cleanup functions

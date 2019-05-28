@@ -185,7 +185,7 @@ Function TP_ROAnalysis(dfr, err, errmsg)
 	posSSRes = FindDimLabel(asyncBuffer, COLS, "STEADYSTATERES")
 	posInstRes = FindDimLabel(asyncBuffer, COLS, "INSTANTRES")
 
-#if IgorVersion() >= 8.00
+#if (IgorVersion() >= 8.00)
 
 	FindValue/RMD=[][posAsync][posMarker, posMarker]/V=(marker)/T=0 asyncBuffer
 	i = V_Value >= 0 ? V_Row : bufSize
@@ -704,7 +704,7 @@ Function TP_Setup(panelTitle, runMode, [fast])
 	NVAR ITCDeviceIDGlobal = $GetITCDeviceIDGlobal(panelTitle)
 	HW_PrepareAcq(GetHardwareType(panelTitle), ITCDeviceIDGlobal, flags=HARDWARE_ABORT_ON_ERROR)
 
-#if !(IgorVersion() >= 8.04 && NumberByKey("BUILD", IgorInfo(0)) >= 33703)
+#if (IgorVersion() < 8.00)
 	ASYNC_Start(ThreadProcessorCount, disableTask=1)
 #endif
 End
@@ -769,7 +769,7 @@ Function TP_Teardown(panelTitle, [fast])
 
 	TP_TeardownCommon(panelTitle)
 
-#if !(IgorVersion() >= 8.04 && NumberByKey("BUILD", IgorInfo(0)) >= 33703)
+#if (IgorVersion() < 8.00)
 	StopAsyncIfDone()
 #endif
 End
