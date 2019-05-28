@@ -153,7 +153,7 @@ The documentation for the master and the latest release branch,
 [MIES-BUILD](http://bamboo.corp.alleninstitute.org/browse/MIES-BUILD) and
 [MIES-BUILDRELEASE](http://bamboo.corp.alleninstitute.org/browse/MIES-BUILDRELEASE).
 
-### Setting up a continous integration server
+### Setting up a continous integration server (Linux)
 
 #### Preliminaries
 * Linux box with fixed IP
@@ -210,3 +210,22 @@ The documentation for the master and the latest release branch,
 #### Bamboo jobs
 * Add bamboo jobs requiring the capability `Igor`.
 * Done!
+
+### Setting up a continous integration server (Windows)
+
+* Windows 10 with "Remote Desktop" enabled user
+* Install the folllowing programs:
+  * Java 8
+  * Git (choose the installer option which will make the Unix tools available in cmd as well)
+  * Multiclamp Commander (see above for specifics)
+  * NIDAQ-mx driver package 19.0 or later
+  * NIDAQ-mx XOP from WaveMetrics
+  * HEKA Harware Drivers 2014-03 Windows.zip
+  * Igor Pro 7 and 8
+* Install bamboo remote agent according to
+  http://bamboo.corp.alleninstitute.org/admin/agent/addRemoteAgent.action.
+* Start Igor Pro and open a DA_Ephys panel, lock the device. This will not
+  work, so follow the posted suggestions to get it working.
+* Start the bamboo agent as normal user (not using the NT service)
+* Add a new "Igor Pro" style capability to the agent in bamboo
+* Be sure that the "git" capability and the "bash" capability are present as well
