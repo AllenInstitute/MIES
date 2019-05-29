@@ -1075,7 +1075,7 @@ static Function DAP_AdaptAssocHeadstageState(panelTitle, checkboxCtrl)
 
 	checkboxLabel  = GetSpecialControlLabel(channelType, CHANNEL_CONTROL_CHECK)
 	headstageLabel = GetSpecialControlLabel(CHANNEL_TYPE_HEADSTAGE, CHANNEL_CONTROL_CHECK)
-	headstageState = DAG_GetNumericalValue(panelTitle, headstageLabel, index = idx)
+	headstageState = DAG_GetNumericalValue(panelTitle, headstageLabel, index = headstage)
 
 	if(DAG_GetNumericalValue(panelTitle, checkboxLabel, index = idx) == headstageState)
 		// nothing to do

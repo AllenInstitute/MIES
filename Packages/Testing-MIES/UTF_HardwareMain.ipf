@@ -54,13 +54,24 @@ Function/WAVE DeviceNameGeneratorMD1()
 
 #endif
 
-#ifdef TESTS_WITH_ITC_HARDWARE
+#ifdef TESTS_WITH_ITC18USB_HARDWARE
+
+#ifdef TESTS_WITH_YOKING
+#define *** ITC18USB has no Yoking support
+#else
+	devList = AddListItem("ITC18USB_dev_0", devList, ":")
+	lblList = AddListItem("ITC", lblList)
+#endif
+
+#endif
+
+#ifdef TESTS_WITH_ITC1600_HARDWARE
 
 #ifdef TESTS_WITH_YOKING
 	devList = AddListItem("ITC1600_dev_0;ITC1600_dev_1", devList, ":")
 	lblList = AddListItem("ITC_YOKED", lblList)
 #else
-	devList = AddListItem("ITC18USB_dev_0", devList, ":")
+	devList = AddListItem("ITC1600_dev_0", devList, ":")
 	lblList = AddListItem("ITC", lblList)
 #endif
 
@@ -82,7 +93,7 @@ Function/WAVE DeviceNameGeneratorMD0()
 	return data
 #endif
 
-#ifdef TESTS_WITH_ITC_HARDWARE
+#ifdef TESTS_WITH_ITC18USB_HARDWARE
 
 #ifdef TESTS_WITH_YOKING
 	// Yoking with ITC hardware is only supported in multi device mode
@@ -208,10 +219,10 @@ End
 Function ChooseCorrectDevice(unlockedPanelTitle, dev)
 	string unlockedPanelTitle, dev
 
-	if(!cmpstr(dev, "ITC18USB_dev_0"))
-		PGC_SetAndActivateControl(unlockedPanelTitle, "popup_MoreSettings_DeviceType", val=5)
-	else // assume first NI device
-		PGC_SetAndActivateControl(unlockedPanelTitle, "popup_MoreSettings_DeviceType", val=6)
+	if(GetHardwareType(dev) == HARDWARE_ITC_DAC)
+		PGC_SetAndActivateControl(unlockedPanelTitle, "popup_MoreSettings_DeviceType", str=StringFromList(0, dev, "_") + "*")
+	else
+		PGC_SetAndActivateControl(unlockedPanelTitle, "popup_MoreSettings_DeviceType", str=dev)
 	endif
 End
 

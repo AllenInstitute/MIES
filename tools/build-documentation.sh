@@ -1,8 +1,18 @@
-#!/bin/sh
+#!/bin/bash
 
 top_level=$(git rev-parse --show-toplevel)
 branch=$(git rev-parse --abbrev-ref HEAD)
 version=$(git describe --always --tags)
+
+function Passed {
+  cp "$top_level/tools/JU_Passed.xml" "$top_level/tools/unit-testing/"
+  exit 0
+}
+
+function Failed {
+  cp "$top_level/tools/JU_Failed.xml" "$top_level/tools/unit-testing/"
+  exit 1
+}
 
 case $(uname) in
     Linux)
@@ -24,7 +34,7 @@ then
   echo "Errors building the documentation" 1>&2
   echo "Doxygen says: "                    1>&2
   echo "$output"                           1>&2
-  exit 1
+  Failed
 fi
 
 if hash dot 2>/dev/null; then
@@ -38,7 +48,7 @@ if hash dot 2>/dev/null; then
 else
   echo "Errors building the documentation" 1>&2
   echo "dot/graphviz could not be found"   1>&2
-  exit 1
+  Failed
 fi
 
 if hash pandoc 2>/dev/null; then
@@ -51,7 +61,7 @@ if hash pandoc 2>/dev/null; then
 else
   echo "Errors building the documentation" 1>&2
   echo "pandoc could not be found"         1>&2
-  exit 1
+  Failed
 fi
 
 cp "$top_level/Packages/IPNWB/Readme.rst" "$top_level/Packages/doc/IPNWB.rst"
@@ -65,7 +75,7 @@ if hash breathe-apidoc 2>/dev/null; then
 else
   echo "Errors building the documentation" 1>&2
   echo "breathe-apidoc could not be found" 1>&2
-  exit 1
+  Failed
 fi
 
 # Add labels to each group and each file
@@ -98,17 +108,21 @@ if hash sphinx-build 2>/dev/null; then
     echo "Errors building the documentation" 1>&2
     echo "sphinx-build says: "               1>&2
     cat sphinx-output.log                    1>&2
-    exit 1
+    Failed
   fi
 
 else
   echo "Errors building the documentation" 1>&2
   echo "sphinx-build could not be found"   1>&2
-  exit 1
+  Failed
 fi
 
 echo "Start zipping the results"
 rm -f mies-docu*.zip
 "$ZIP_EXE" -qr0 mies-docu-$version.zip html
 
-exit 0
+Passed
+
+# handle cases where we are called with plain sh
+# which does not know about functions
+exit 1

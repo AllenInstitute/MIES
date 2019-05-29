@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<testsuites>
+	<testsuite package="Procedure" id="0" name="Procedure" timestamp="2019-05-28T18:00:29Z+02:00" hostname="THOMAS-WIN7-X64" tests="1" failures="0" errors="0" skipped="0" disabled="0" time="0.007">
+		<properties>
+			<property name="User" value="thomas"/>
+			<property name="System" value="OS:Windows 7 Professional Service Pack 1;OSVERSION:6.1.7601;LOCALE:US;IGORFILEVERSION:8.0.4.1"/>
+			<property name="Experiment" value="Experiment"/>
+			<property name="UTFversion" value="1.08"/>
+			<property name="IgorInfo" value="IGORVERS:8.04;BUILD:33780;IGORKIND:pro64;FREEMEM:8795338485760;PHYSMEM:68656939008;USEDPHYSMEM:179187712;NSCREENS:3;SCREEN1:DEPTH=32,RECT=0,0,1200,1920;SCREEN2:DEPTH=32,RECT=1200,0,2400,1920;SCREEN3:DEPTH=32,RECT=2400,0,3600,1920"/>
+		</properties>
+		<testcase name="Passed in Procedure (1)" classname="Passed" time="0.002">
+		<system-out>Entering test case &quot;Passed&quot;Leaving test case &quot;Passed&quot;</system-out>
+		</testcase>
+		<system-out>Entering test case &quot;Passed&quot;Leaving test case &quot;Passed&quot;</system-out>
+	</testsuite>
+</testsuites>
