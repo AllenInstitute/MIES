@@ -48,6 +48,8 @@ branch=$(git rev-parse --abbrev-ref HEAD)
 case "$branch" in
   master)
     tag=latest
+    git tag --force $tags
+    git push --force origin $tags
     ;;
   release/*)
     tag=$(git tag | tail -1)
