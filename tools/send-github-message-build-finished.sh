@@ -37,7 +37,7 @@ if [ -z "$RESULT_FILES" ]
 then
   FAILURES=1
 else
-  FAILURES=$(grep "errors\|failures=\"[0-9]\+\"" $RESULT_FILES | grep -cv "failures=\"0\" errors=\"0\"")
+  FAILURES=$(grep "\(errors\|failures\)=\"[0-9]\+\"" $RESULT_FILES | grep -cv "failures=\"0\" errors=\"0\"")
 fi
 
 if [ $FAILURES -eq 0 ]
