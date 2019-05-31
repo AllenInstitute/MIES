@@ -641,7 +641,7 @@ Function ITCC_WorksLegacy()
 	string actual, expected
 
 	WAVE/SDFR=root:ITCWaves config = ITCChanConfigWave_legacy
-	CHECK(IsValidConfigWave(config))
+	CHECK(IsValidConfigWave(config, version=0))
 
 	WAVE/T/Z units = AFH_GetChannelUnits(config)
 	CHECK_WAVE(units, TEXT_WAVE)
@@ -680,7 +680,7 @@ Function ITCC_WorksVersion1()
 	string actual, expected
 
 	WAVE/SDFR=root:ITCWaves config = ITCChanConfigWave_Version1
-	CHECK(IsValidConfigWave(config))
+	CHECK(IsValidConfigWave(config, version=1))
 
 	WAVE/T/Z units = AFH_GetChannelUnits(config)
 	CHECK_WAVE(units, TEXT_WAVE)
@@ -711,6 +711,53 @@ Function ITCC_WorksVersion1()
 	WAVE/Z TTLs = GetTTLListFromConfig(config)
 	CHECK_WAVE(TTLs, NUMERIC_WAVE)
 	CHECK_EQUAL_WAVES(TTLS, {1}, mode = WAVE_DATA)
+End
+
+Function ITCC_WorksVersion2()
+
+	variable type, i
+	string actual, expected
+
+	WAVE/SDFR=root:ITCWaves config = ITCChanConfigWave_Version2
+	CHECK(IsValidConfigWave(config, version=2))
+
+	WAVE/T/Z units = AFH_GetChannelUnits(config)
+	CHECK(WaveExists(units))
+	// we have one TTL channel which does not have a unit
+	CHECK_EQUAL_VAR(DimSize(units, ROWS) + 1, DimSize(config, ROWS))
+	CHECK_EQUAL_TEXTWAVES(units, {"DA0", "DA1", "DA2", "AD0", "AD1", "AD2"})
+
+	for(i = 0; i < 3; i += 1)
+		type = ITC_XOP_CHANNEL_TYPE_DAC
+		expected = StringFromList(type, ITC_CHANNEL_NAMES) + num2str(i)
+		actual   = AFH_GetChannelUnit(config, i, type)
+		CHECK_EQUAL_STR(expected, actual)
+
+		type = ITC_XOP_CHANNEL_TYPE_ADC
+		expected = StringFromList(type, ITC_CHANNEL_NAMES) + num2str(i)
+		actual   = AFH_GetChannelUnit(config, i, type)
+		CHECK_EQUAL_STR(expected, actual)
+	endfor
+
+	WAVE/Z DACs = GetDACListFromConfig(config)
+	CHECK_WAVE(DACs, NUMERIC_WAVE)
+	CHECK_EQUAL_WAVES(DACs, {0, 1, 2}, mode = WAVE_DATA)
+
+	WAVE/Z ADCs = GetADCListFromConfig(config)
+	CHECK_WAVE(ADCs, NUMERIC_WAVE)
+	CHECK_EQUAL_WAVES(ADCs, {0, 1, 2}, mode = WAVE_DATA)
+
+	WAVE/Z TTLs = GetTTLListFromConfig(config)
+	CHECK_WAVE(TTLs, NUMERIC_WAVE)
+	CHECK_EQUAL_WAVES(TTLS, {1}, mode = WAVE_DATA)
+
+	WAVE/Z DACmode = GetDACTypesFromConfig(config)
+	CHECK_WAVE(DACmode, NUMERIC_WAVE)
+	CHECK_EQUAL_WAVES(DACmode, {1, 2, 2}, mode = WAVE_DATA)
+
+	WAVE/Z ADCmode = GetADCTypesFromConfig(config)
+	CHECK_WAVE(ADCmode, NUMERIC_WAVE)
+	CHECK_EQUAL_WAVES(ADCmode, {2, 1, 2}, mode = WAVE_DATA)
 End
 
 /// @}
@@ -1320,26 +1367,6 @@ End
 
 /// @name CheckActiveHeadstages
 /// @{
-override Function/WAVE DAG_GetChannelState(panelTitle, var)
-	string panelTitle
-	variable var
-
-	WAVE/Z statusHS
-	REQUIRE(WaveExists(statusHS))
-
-	return statusHS
-End
-
-override Function DAG_GetHeadstageMode(panelTitle, headstage)
-	string panelTitle
-	variable headstage
-
-	WAVE/Z clampModes
-	REQUIRE(WaveExists(clampModes))
-
-	return clampModes[headstage]
-End
-
 Function HAH_ReturnsNaN()
 
 	string panelTitle = "IGNORE"
@@ -1885,4 +1912,389 @@ Function GetListOfObjectsWorks2()
 End
 
 // Not checked: typeFlag, matchList and waveProperty
+/// @}
+
+/// @{
+/// DeleteWavePoint
+Function DWP_InvalidWave()
+
+	WAVE/Z wv = $""
+	try
+		DeleteWavePoint(wv, ROWS, 0)
+		FAIL()
+	catch
+		PASS()
+	endtry
+End
+
+Function DWP_InvalidDim()
+
+	variable i
+
+	Make/FREE/N=1 wv
+	Make/FREE/N=4 fDims = {-1, 1, 2, 3, 5, NaN, Inf}
+
+	for(i = 0; i < numpnts(fDims); i += 1)
+		try
+			DeleteWavePoint(wv, fDims[i], 0)
+			FAIL()
+		catch
+			PASS()
+		endtry
+	endfor
+End
+
+Function DWP_InvalidIndex()
+
+	variable i
+
+	Make/FREE/N=1 wv
+	Make/FREE/N=4 fInd = {-1, 2, NaN, Inf}
+
+	for(i = 0; i < numpnts(fInd); i += 1)
+		try
+			DeleteWavePoint(wv, ROWS, fInd[i])
+			FAIL()
+		catch
+			PASS()
+		endtry
+	endfor
+End
+
+Function DWP_DeleteFromEmpty()
+
+	variable i
+
+	Make/FREE/N=0 wv
+
+	try
+		DeleteWavePoint(wv, ROWS, 0)
+		FAIL()
+	catch
+		PASS()
+	endtry
+End
+
+Function DWP_Check1D()
+
+	Make/FREE/N=3 wv = {0, 1, 2}
+	DeleteWavePoint(wv, ROWS, 1)
+	CHECK_EQUAL_WAVES(wv, {0, 2})
+	DeleteWavePoint(wv, ROWS, 1)
+	CHECK_EQUAL_WAVES(wv, {0})
+	DeleteWavePoint(wv, ROWS, 0)
+	CHECK_EQUAL_VAR(DimSize(wv, ROWS), 0)
+End
+
+Function DWP_Check2D()
+
+	Make/FREE/N=(3, 3) wv
+	wv = p + DimSize(wv, COLS) * q
+	DeleteWavePoint(wv, ROWS, 1)
+	CHECK_EQUAL_WAVES(wv, {{0, 2}, {3, 5}, {6, 8}})
+	DeleteWavePoint(wv, ROWS, 1)
+	CHECK_EQUAL_WAVES(wv, {{0}, {3}, {6}})
+	DeleteWavePoint(wv, ROWS, 0)
+	CHECK_EQUAL_VAR(DimSize(wv, ROWS), 0)
+	CHECK_EQUAL_VAR(DimSize(wv, COLS), 3)
+
+	Make/O/FREE/N=(3, 3) wv
+	wv = p + DimSize(wv, COLS) * q
+	DeleteWavePoint(wv, COLS, 1)
+	CHECK_EQUAL_WAVES(wv, {{0, 1, 2}, {6, 7, 8}})
+	DeleteWavePoint(wv, COLS, 1)
+	CHECK_EQUAL_WAVES(wv, {{0, 1, 2}})
+	DeleteWavePoint(wv, COLS, 0)
+	CHECK_EQUAL_VAR(DimSize(wv, ROWS), 3)
+	CHECK_EQUAL_VAR(DimSize(wv, COLS), 0)
+End
+
+Function DWP_Check3D()
+
+	Make/FREE/N=(3, 3, 3) wv
+	wv = p + DimSize(wv, COLS) * q + DimSize(wv, COLS) * DimSize(wv, LAYERS) * r
+	DeleteWavePoint(wv, ROWS, 1)
+	CHECK_EQUAL_WAVES(wv, {{{0, 2}, {3, 5}, {6, 8}}, {{9, 11}, {12, 14}, {15, 17}}, {{18, 20}, {21, 23}, {24, 26}}})
+	DeleteWavePoint(wv, ROWS, 1)
+	CHECK_EQUAL_WAVES(wv, {{{0}, {3}, {6}}, {{9}, {12}, {15}}, {{18}, {21}, {24}}})
+	DeleteWavePoint(wv, ROWS, 0)
+	CHECK_EQUAL_VAR(DimSize(wv, ROWS), 0)
+	CHECK_EQUAL_VAR(DimSize(wv, COLS), 3)
+	CHECK_EQUAL_VAR(DimSize(wv, LAYERS), 3)
+
+	Make/O/FREE/N=(3, 3, 3) wv
+	wv = p + DimSize(wv, COLS) * q + DimSize(wv, COLS) * DimSize(wv, LAYERS) * r
+	DeleteWavePoint(wv, COLS, 1)
+	CHECK_EQUAL_WAVES(wv, {{{0, 1, 2}, {6, 7, 8}}, {{9, 10, 11}, {15, 16, 17}}, {{18, 19, 20}, {24, 25, 26}}})
+	DeleteWavePoint(wv, COLS, 1)
+	CHECK_EQUAL_WAVES(wv, {{{0, 1, 2}}, {{9, 10, 11}}, {{18, 19, 20}}})
+	DeleteWavePoint(wv, COLS, 0)
+	CHECK_EQUAL_VAR(DimSize(wv, ROWS), 3)
+	CHECK_EQUAL_VAR(DimSize(wv, COLS), 0)
+	CHECK_EQUAL_VAR(DimSize(wv, LAYERS), 3)
+
+	Make/O/FREE/N=(3, 3, 3) wv
+	wv = p + DimSize(wv, COLS) * q + DimSize(wv, COLS) * DimSize(wv, LAYERS) * r
+	DeleteWavePoint(wv, LAYERS, 1)
+	CHECK_EQUAL_WAVES(wv, {{{0, 1, 2}, {3, 4, 5}, {6, 7, 8}}, {{18, 19, 20}, {21, 22, 23}, {24, 25, 26}}})
+	DeleteWavePoint(wv, LAYERS, 1)
+	CHECK_EQUAL_WAVES(wv, {{{0, 1, 2}, {3, 4, 5}, {6, 7, 8}}})
+	DeleteWavePoint(wv, LAYERS, 0)
+	CHECK_EQUAL_VAR(DimSize(wv, ROWS), 3)
+	CHECK_EQUAL_VAR(DimSize(wv, COLS), 3)
+	CHECK_EQUAL_VAR(DimSize(wv, LAYERS), 0)
+End
+
+Function DWP_Check4D()
+
+	Make/FREE/N=(3, 3, 3, 3) wv
+	wv = p + DimSize(wv, COLS) * q + DimSize(wv, COLS) * DimSize(wv, LAYERS) * r +  + DimSize(wv, COLS) * DimSize(wv, LAYERS) * DimSize(wv, CHUNKS) * s
+
+	DeleteWavePoint(wv, ROWS, 1)
+	Make/FREE/N=(2, 3, 3, 3) comp
+	comp[][][][0] = {{{0, 2}, {3, 5}, {6, 8}}, {{9, 11}, {12, 14}, {15, 17}}, {{18, 20}, {21, 23}, {24, 26}}}
+	comp[][][][1] = {{{27, 29}, {30, 32}, {33, 35}}, {{36, 38}, {39, 41}, {42, 44}}, {{45, 47}, {48, 50}, {51, 53}}}
+	comp[][][][2] = {{{54, 56}, {57, 59}, {60, 62}}, {{63, 65}, {66, 68}, {69, 71}}, {{72, 74}, {75, 77}, {78, 80}}}
+	CHECK_EQUAL_WAVES(wv, comp)
+
+	DeleteWavePoint(wv, ROWS, 1)
+	Make/O/FREE/N=(1, 3, 3, 3) comp
+	comp[][][][0] = {{{0}, {3}, {6}}, {{9}, {12}, {15}}, {{18}, {21}, {24}}}
+	comp[][][][1] = {{{27}, {30}, {33}}, {{36}, {39}, {42}}, {{45}, {48}, {51}}}
+	comp[][][][2] = {{{54}, {57}, {60}}, {{63}, {66}, {69}}, {{72}, {75}, {78}}}
+	CHECK_EQUAL_WAVES(wv, comp)
+
+	DeleteWavePoint(wv, ROWS, 0)
+	CHECK_EQUAL_VAR(DimSize(wv, ROWS), 0)
+	CHECK_EQUAL_VAR(DimSize(wv, COLS), 3)
+	CHECK_EQUAL_VAR(DimSize(wv, LAYERS), 3)
+	CHECK_EQUAL_VAR(DimSize(wv, CHUNKS), 3)
+
+	Make/O/FREE/N=(3, 3, 3, 3) wv
+	wv = p + DimSize(wv, COLS) * q + DimSize(wv, COLS) * DimSize(wv, LAYERS) * r +  + DimSize(wv, COLS) * DimSize(wv, LAYERS) * DimSize(wv, CHUNKS) * s
+
+	DeleteWavePoint(wv, COLS, 1)
+	Make/O/FREE/N=(3, 2, 3, 3) comp
+	comp[][][][0] = {{{0, 1, 2}, {6, 7, 8}}, {{9, 10, 11}, {15, 16, 17}}, {{18, 19, 20}, {24, 25, 26}}}
+	comp[][][][1] = {{{27, 28, 29}, {33, 34, 35}}, {{36, 37, 38}, {42, 43, 44}}, {{45, 46, 47}, {51, 52, 53}}}
+	comp[][][][2] = {{{54, 55, 56}, {60, 61, 62}}, {{63, 64, 65}, {69, 70, 71}}, {{72, 73, 74}, {78, 79, 80}}}
+	CHECK_EQUAL_WAVES(wv, comp)
+
+	DeleteWavePoint(wv, COLS, 1)
+	Make/O/FREE/N=(3, 1, 3, 3) comp
+	comp[][][][0] = {{{0 , 1, 2}}, {{9, 10, 11}}, {{18, 19, 20}}}
+	comp[][][][1] = {{{27, 28, 29}}, {{36, 37, 38}}, {{45, 46, 47}}}
+	comp[][][][2] = {{{54, 55, 56}}, {{63, 64, 65}}, {{72, 73, 74}}}
+	CHECK_EQUAL_WAVES(wv, comp)
+
+	DeleteWavePoint(wv, COLS, 0)
+	CHECK_EQUAL_VAR(DimSize(wv, ROWS), 3)
+	CHECK_EQUAL_VAR(DimSize(wv, COLS), 0)
+	CHECK_EQUAL_VAR(DimSize(wv, LAYERS), 3)
+	CHECK_EQUAL_VAR(DimSize(wv, CHUNKS), 3)
+
+	Make/O/FREE/N=(3, 3, 3, 3) wv
+	wv = p + DimSize(wv, COLS) * q + DimSize(wv, COLS) * DimSize(wv, LAYERS) * r +  + DimSize(wv, COLS) * DimSize(wv, LAYERS) * DimSize(wv, CHUNKS) * s
+
+	DeleteWavePoint(wv, LAYERS, 1)
+	Make/O/FREE/N=(3, 3, 2, 3) comp
+	comp[][][][0] = {{{0, 1, 2}, {3, 4, 5}, {6, 7, 8}}, {{18, 19, 20}, {21, 22, 23}, {24, 25, 26}}}
+	comp[][][][1] = {{{27, 28, 29}, {30, 31, 32}, {33, 34, 35}}, {{45, 46, 47}, {48, 49, 50}, {51, 52, 53}}}
+	comp[][][][2] = {{{54, 55, 56}, {57, 58, 59}, {60, 61, 62}}, {{72, 73, 74}, {75, 76, 77}, {78, 79, 80}}}
+	CHECK_EQUAL_WAVES(wv, comp)
+
+	DeleteWavePoint(wv, LAYERS, 1)
+	Make/O/FREE/N=(3, 3, 1, 3) comp
+	comp[][][][0] = {{{0, 1, 2}, {3, 4, 5}, {6, 7, 8}}}
+	comp[][][][1] = {{{27, 28, 29}, {30, 31, 32}, {33, 34, 35}}}
+	comp[][][][2] = {{{54, 55, 56}, {57, 58, 59}, {60, 61, 62}}}
+	CHECK_EQUAL_WAVES(wv, comp)
+
+	DeleteWavePoint(wv, LAYERS, 0)
+	CHECK_EQUAL_VAR(DimSize(wv, ROWS), 3)
+	CHECK_EQUAL_VAR(DimSize(wv, COLS), 3)
+	CHECK_EQUAL_VAR(DimSize(wv, LAYERS), 0)
+	CHECK_EQUAL_VAR(DimSize(wv, CHUNKS), 3)
+
+	Make/O/FREE/N=(3, 3, 3, 3) wv
+	wv = p + DimSize(wv, COLS) * q + DimSize(wv, COLS) * DimSize(wv, LAYERS) * r +  + DimSize(wv, COLS) * DimSize(wv, LAYERS) * DimSize(wv, CHUNKS) * s
+
+	DeleteWavePoint(wv, CHUNKS, 1)
+	Make/O/FREE/N=(3, 3, 3, 2) comp
+	comp[][][][0] = {{{0, 1, 2}, {3, 4, 5}, {6, 7, 8}}, {{9, 10, 11}, {12, 13, 14}, {15, 16, 17}}, {{18, 19, 20}, {21, 22, 23}, {24, 25, 26}}}
+	comp[][][][1] = {{{54, 55, 56}, {57, 58, 59}, {60, 61, 62}}, {{63, 64, 65}, {66, 67, 68}, {69, 70, 71}}, {{72, 73, 74}, {75, 76, 77}, {78, 79, 80}}}
+	CHECK_EQUAL_WAVES(wv, comp)
+
+	DeleteWavePoint(wv, CHUNKS, 1)
+	Make/O/FREE/N=(3, 3, 3, 1) comp
+	comp[][][][0] = {{{0, 1, 2}, {3, 4, 5}, {6, 7, 8}}, {{9, 10, 11}, {12, 13, 14}, {15, 16, 17}}, {{18, 19, 20}, {21, 22, 23}, {24, 25, 26}}}
+	CHECK_EQUAL_WAVES(wv, comp)
+
+	DeleteWavePoint(wv, CHUNKS, 0)
+	CHECK_EQUAL_VAR(DimSize(wv, ROWS), 3)
+	CHECK_EQUAL_VAR(DimSize(wv, COLS), 3)
+	CHECK_EQUAL_VAR(DimSize(wv, LAYERS), 3)
+	CHECK_EQUAL_VAR(DimSize(wv, CHUNKS), 0)
+End
+/// @}
+
+/// TextWaveToList
+/// @{
+
+/// @brief Fail due to null wave
+Function TextWaveToListFail0()
+
+	WAVE/T w=$""
+	string list
+
+	try
+		list = TextWaveToList(w, ";")
+		FAIL()
+	catch
+		PASS()
+	endtry
+End
+
+/// @brief Fail due to numeric wave
+Function TextWaveToListFail1()
+
+	Make/FREE/N=1 w
+	string list
+
+	try
+		list = TextWaveToList(w, ";")
+		FAIL()
+	catch
+		PASS()
+	endtry
+End
+
+/// @brief Fail due to 3D+ wave
+Function TextWaveToListFail2()
+
+	Make/FREE/T/N=(1,1,1) w
+	string list
+
+	try
+		list = TextWaveToList(w, ";")
+		FAIL()
+	catch
+		PASS()
+	endtry
+End
+
+/// @brief Fail due to empty row separator
+Function TextWaveToListFail3()
+
+	Make/FREE/T/N=1 w
+	string list
+
+	try
+		list = TextWaveToList(w, "")
+		FAIL()
+	catch
+		PASS()
+	endtry
+End
+
+/// @brief Fail due to empty column separator
+Function TextWaveToListFail4()
+
+	Make/FREE/T/N=1 w
+	string list
+
+	try
+		list = TextWaveToList(w, ";", colSep = "")
+		FAIL()
+	catch
+		PASS()
+	endtry
+End
+
+/// @brief 1D wave zero elements
+Function TextWaveToListWorks0()
+
+	Make/FREE/T/N=0 w
+	string list
+	string refList = ""
+
+	list = TextWaveToList(w, ";")
+	CHECK_EQUAL_STR(list, refList)
+End
+
+/// @brief 1D wave 3 elements
+Function TextWaveToListWorks1()
+
+	Make/FREE/T/N=3 w = {"1", "2", "3"}
+
+	string list
+	string refList
+
+	refList = "1;2;3;"
+	list = TextWaveToList(w, ";")
+	CHECK_EQUAL_STR(list, refList)
+End
+
+/// @brief 1D wave 3 elements, stopOnEmpty
+Function TextWaveToListWorks2()
+
+	Make/FREE/T/N=3 w = {"1", "", "3"}
+
+	string list
+	string refList
+
+	refList = "1;"
+	list = TextWaveToList(w, ";", stopOnEmpty = 1)
+	CHECK_EQUAL_STR(list, refList)
+End
+
+/// @brief 2D wave 3x3 elements
+Function TextWaveToListWorks3()
+
+	Make/FREE/T/N=(3,3) w = {{"1", "2", "3"} , {"4", "5", "6"}, {"7", "8", "9"}}
+
+	string list
+	string refList
+
+	refList = "1,4,7,;2,5,8,;3,6,9,;"
+	list = TextWaveToList(w, ";")
+	CHECK_EQUAL_STR(list, refList)
+End
+
+/// @brief 2D wave 3x3 elements, own column separator
+Function TextWaveToListWorks4()
+
+	Make/FREE/T/N=(3,3) w = {{"1", "2", "3"} , {"4", "5", "6"}, {"7", "8", "9"}}
+
+	string list
+	string refList
+
+	refList = "1:4:7:;2:5:8:;3:6:9:;"
+	list = TextWaveToList(w, ";", colSep = ":")
+	CHECK_EQUAL_STR(list, refList)
+End
+
+/// @brief 2D wave 3x3 elements, stopOnEmpty
+Function TextWaveToListWorks5()
+
+	Make/FREE/T/N=(3,3) w = {{"", "2", "3"} , {"4", "5", "6"}, {"7", "8", "9"}}
+
+	string list
+	string refList
+
+	// stop at first element
+	refList = ""
+	list = TextWaveToList(w, ";", stopOnEmpty = 1)
+	CHECK_EQUAL_STR(list, refList)
+	// stop at last element with partial filling
+	w = {{"1", "2", "3"} , {"4", "5", "6"}, {"7", "8", ""}}
+	refList = "1,4,7,;2,5,8,;3,6,;"
+	list = TextWaveToList(w, ";", stopOnEmpty = 1)
+	CHECK_EQUAL_STR(list, refList)
+   // stop at new row
+	w = {{"1", "", "3"} , {"4", "5", "6"}, {"7", "8", "9"}}
+	refList = "1,4,7,;"
+	list = TextWaveToList(w, ";", stopOnEmpty = 1)
+	CHECK_EQUAL_STR(list, refList)
+End
 /// @}

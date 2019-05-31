@@ -109,9 +109,9 @@ Function ASSERT(var, errorMsg)
 
 		SVAR/Z lockedDevices = root:MIES:HardwareDevices:ITCPanelTitleList
 
-		Make/FREE/T sweeps =  NONE
-		Make/FREE/T tpStates = NONE
-		Make/FREE/T daqStates = NONE
+		Make/FREE/T sweeps = { NONE }
+		Make/FREE/T tpStates = { NONE }
+		Make/FREE/T daqStates = { NONE }
 
 		if(!SVAR_Exists(lockedDevices) || strlen(lockedDevices) == 0)
 			lockedDevicesStr = NONE
@@ -141,10 +141,10 @@ Function ASSERT(var, errorMsg)
 		print GetStackTrace()
 		print "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
 		printf "Time: %s\r", GetIso8601TimeStamp(localTimeZone = 1)
-		printf "Locked device: [%s]\r", lockedDevicesStr
-		printf "Current sweep: [%s]\r", TextWaveToList(sweeps, ";")
-		printf "DAQ: [%s]\r", TextWaveToList(daqStates, ";")
-		printf "Testpulse: [%s]\r", TextWaveToList(tpStates, ";")
+		printf "Locked device: [%s]\r", RemoveEnding(lockedDevicesStr, ";")
+		printf "Current sweep: [%s]\r", RemoveEnding(TextWaveToList(sweeps, ";"), ";")
+		printf "DAQ: [%s]\r", RemoveEnding(TextWaveToList(daqStates, ";"), ";")
+		printf "Testpulse: [%s]\r", RemoveEnding(TextWaveToList(tpStates, ";"), ";")
 		printf "Experiment: %s.pxp\r", GetExperimentName()
 		printf "Igor Pro version: %s (%s)\r", GetIgorProVersion(), StringByKey("BUILD", IgorInfo(0))
 		print "MIES version:"
@@ -943,12 +943,12 @@ End
 /// returns NaN if it could not be found
 ///
 /// The expected wave note format is: `key1:val1;key2:val2;`
-Function GetNumberFromWaveNote(wv, key)
+threadsafe Function GetNumberFromWaveNote(wv, key)
 	Wave wv
 	string key
 
-	ASSERT(WaveExists(wv), "Missing wave")
-	ASSERT(!IsEmpty(key), "Empty key")
+	ASSERT_TS(WaveExists(wv), "Missing wave")
+	ASSERT_TS(!IsEmpty(key), "Empty key")
 
 	return NumberByKey(key, note(wv))
 End
@@ -1169,6 +1169,82 @@ Function IsWaveDisplayedOnGraph(win, [wv, dfr])
 	endfor
 
 	return 0
+End
+
+/// @brief Kill all cursors in a given list of graphs
+///
+/// @param graphs     semicolon separated list of graph names
+/// @param cursorName name of cursor as string
+Function KillCursorInGraphs(graphs, cursorName)
+	String graphs, cursorName
+
+	string graph
+	variable i, numGraphs
+
+	ASSERT(strlen(cursorName) == 1, "Invalid Cursor Name.")
+	ASSERT(char2num(cursorName) > 64 && char2num(cursorName) < 75, "Cursor name out of range.")
+
+	numGraphs = ItemsInList(graphs)
+	for(i = 0; i < numGraphs; i += 1)
+		graph = StringFromList(i, graphs)
+		if(!WindowExists(graph))
+			continue
+		endif
+		Cursor/K/W=$graph $cursorName
+	endfor
+End
+
+/// @brief Find the first match for a given cursor in a list of graph names
+///
+/// @param graphs     semicolon separated list of graph names
+/// @param cursorName name of cursor as string
+///
+/// @return graph where cursor was found
+Function/S FindCursorInGraphs(graphs, cursorName)
+	String graphs, cursorName
+
+	string graph, csr
+	variable i, numGraphs
+
+	ASSERT(strlen(cursorName) == 1, "Invalid Cursor Name.")
+	ASSERT(char2num(cursorName) > 64 && char2num(cursorName) < 75, "Cursor name out of range.")
+
+	numGraphs = ItemsInList(graphs)
+	for(i = 0; i < numGraphs; i += 1)
+		graph = StringFromList(i, graphs)
+		if(!WindowExists(graph))
+			continue
+		endif
+		csr = CsrInfo($cursorName, graph)
+		if(!IsEmpty(csr))
+			return graph
+		endif
+	endfor
+End
+
+/// @brief get the x value of the cursors A and B
+///
+/// @param[in]  graph where the cursor are
+/// @param[out] csrAx Position of cursor A
+/// @param[out] csrBx Position of cursor B
+Function GetCursorXPositionAB(graph, csrAx, csrBx)
+	string graph
+	variable &csrAx, &csrBx
+
+	string csrA, csrB
+
+	ASSERT(WindowExists(graph), "Graph for given cursors does not exist.")
+
+	csrA = CsrInfo(A, graph)
+	csrB = CsrInfo(B, graph)
+
+	if(isEmpty(csrA) || isEmpty(csrB))
+		csrAx = -inf
+		csrBx = inf
+	else
+		csrAx = xcsr(A, graph)
+		csrBx = xcsr(B, graph)
+	endif
 End
 
 ///@brief Removes all annotations from the graph
@@ -1867,14 +1943,26 @@ Function GetRowIndex(wv, [val, str, refWave])
 			endif
 		endfor
 	else
-		if(!ParamIsDefault(str))
-			val = str2num(str)
-		endif
+		if(IsNumericWave(wv))
+			if(!ParamIsDefault(str))
+				val = str2num(str)
+			endif
 
-		FindValue/V=(val) wv
+			FindValue/V=(val) wv
 
-		if(V_Value >= 0)
-			return V_Value
+			if(V_Value >= 0)
+				return V_Value
+			endif
+		elseif(IsTextWave(wv))
+			if(!ParamIsDefault(val))
+				str = num2str(val)
+			endif
+
+			FindValue/TEXT=(str)/TXOP=4 wv
+
+			if(V_Value >= 0)
+				return V_Value
+			endif
 		endif
 	endif
 
@@ -1901,6 +1989,9 @@ Function/WAVE ConvertListOfWaves(list)
 End
 
 /// @brief Convert a list of strings to a text wave.
+///
+/// Counterpart @see TextWaveToList
+/// @see ListToNumericWave
 Function/WAVE ConvertListToTextWave(list, [listSepString])
 	string list, listSepString
 	if(ParamIsDefault(listSepString))
@@ -2330,6 +2421,10 @@ Function InPlaceRandomShuffle(inwave, [noiseGenMode])
 end
 
 /// @brief Convert a 1D numeric wave to a list
+///
+/// Counterpart @see ListToNumericWave
+/// Similar @see NumericWaveToList
+/// @see ListToNumericWave
 Function/S Convert1DWaveToList(wv)
 	Wave wv
 
@@ -2478,6 +2573,14 @@ threadsafe Function GetReproducibleRandom()
 	while(randomSeed == 0)
 
 	return randomSeed
+End
+
+/// @brief Return a unique integer
+///
+/// The returned values can *not* be used for statistical purposes
+/// as the distribution is not uniform anymore.
+Function GetUniqueInteger()
+	return (GetReproducibleRandom() * 2^33) & 0xFFFFFFFF
 End
 
 /// @brief Add a string prefix to each list item and
@@ -2948,25 +3051,71 @@ Function/S GetAllFilesRecursivelyFromPath(pathName, [extension])
 End
 
 /// @brief Convert a text wave to string list
-Function/S TextWaveToList(txtWave, sep)
+/// @param[in] txtWave     1D or 2D input text wave
+/// @param[in] sep         separator for row entries
+/// @param[in] colSep      [optional, default = ","] separator for column entries
+/// @param[in] stopOnEmpty [optional, default = 0] when 1 stops generating the list when an empty string entry in txtWave is encountered
+/// @return string with wave entries separated as list using given separators
+///
+/// Counterpart @see ConvertListToTextWave
+/// @see NumericWaveToList
+Function/S TextWaveToList(txtWave, sep[, colSep, stopOnEmpty])
 	WAVE/T txtWave
-	string sep
+	string sep, colSep
+	variable stopOnEmpty
 
+	string entry, colList
 	string list = ""
-	variable i, numRows
+	variable i, j, numRows, numCols
 
 	ASSERT(IsTextWave(txtWave), "Expected a text wave")
-	ASSERT(DimSize(txtWave, COLS) == 0, "Expected a 1D wave")
+	ASSERT(DimSize(txtWave, LAYERS) == 0, "Expected a 1D or 2D wave")
+	ASSERT(!IsEmpty(sep), "Expected a non-empty row list separator")
+
+	if(ParamIsDefault(colSep))
+		colSep = ","
+	else
+		ASSERT(!IsEmpty(colSep), "Expected a non-empty column list separator")
+	endif
+	stopOnEmpty = ParamIsDefault(stopOnEmpty) ? 0 : !!stopOnEmpty
 
 	numRows = DimSize(txtWave, ROWS)
-	for(i = 0; i < numRows; i += 1)
-		list = AddListItem(txtWave[i], list, sep, Inf)
-	endfor
+	numCols = DimSize(txtWave, COLS)
+	if(!numCols)
+		for(i = 0; i < numRows; i += 1)
+			entry = txtWave[i]
+			if(stopOnEmpty && isEmpty(entry))
+				return list
+			endif
+			list = AddListItem(entry, list, sep, Inf)
+		endfor
+	else
+		for(i = 0; i < numRows; i += 1)
+			colList = ""
+			for(j = 0; j < numCols; j += 1)
+				entry = txtWave[i][j]
+				if(stopOnEmpty && isEmpty(entry))
+					break
+				endif
+				colList = AddListItem(entry, colList, colSep, Inf)
+			endfor
+			if(!(stopOnEmpty && isEmpty(colList)))
+				list = AddListItem(colList, list, sep, Inf)
+			endif
+			if(stopOnEmpty && isEmpty(entry))
+				return list
+			endif
+		endfor
+	endif
 
 	return list
 End
 
 /// @brief Convert a numeric wave to string list
+///
+/// Counterpart @see ListToNumericWave
+/// Similar @see Convert1DWaveToList
+/// @see TextWaveToList
 ///
 /// @param wv     numeric wave
 /// @param sep    separator
@@ -2997,7 +3146,8 @@ End
 
 /// @brief Convert a list to a numeric wave
 ///
-/// Counterpart of NumericWaveToList().
+/// Counterpart @see NumericWaveToList().
+/// @see TextWaveToList
 ///
 /// @param list list with numeric entries
 /// @param sep  separator
@@ -3367,6 +3517,13 @@ threadsafe Function IsFloatingPointWave(wv)
 	variable type = WaveType(wv)
 
 	return (type & IGOR_TYPE_32BIT_FLOAT) || (type & IGOR_TYPE_64BIT_FLOAT)
+End
+
+/// @brief Return 1 if the wave is a global wave (not a null wave and not a free wave)
+threadsafe Function IsGlobalWave(wv)
+	WAVE wv
+
+	return WaveType(wv, 2) == 1
 End
 
 /// @brief Return the user name of the running user
@@ -4056,4 +4213,49 @@ Function ChangeWaveLock(wv, val)
 			ChangeWaveLock(subWave, val)
 		endif
 	endfor
+End
+
+/// @brief Deletes one row, column, layer or chunk from a wave
+/// Advantages over DeletePoints:
+/// Keeps the dimensionality of the wave when deleting the last row, column, layer or chunk in a wave
+/// Implements range check
+/// Advantages over DeletePoints + KillWaves:
+/// The wave reference stays valid
+///
+/// @param wv wave where the row, column, layer or chunk should be deleted
+///
+/// @param dim dimension 0 - rows, 1 - column, 2 - layer, 3 - chunk
+///
+/// @param index index where one point in the given dimension is deleted
+Function DeleteWavePoint(wv, dim, index)
+   WAVE wv
+   variable dim, index
+
+   variable size
+
+   ASSERT(WaveExists(wv), "wave does not exist")
+   ASSERT(dim >= 0 && dim < 4, "dim must be 0, 1, 2 or 3")
+   size = DimSize(wv, dim)
+   if(index >= 0 && index < size)
+	   if(size > 1)
+		   DeletePoints/M=(dim) index, 1, wv
+	   else
+		   switch(dim)
+			   case 0:
+				   Redimension/N=(0, -1, -1, -1) wv
+				   break
+			   case 1:
+				   Redimension/N=(-1, 0, -1, -1) wv
+				   break
+			   case 2:
+				   Redimension/N=(-1, -1, 0, -1) wv
+				   break
+			   case 3:
+				   Redimension/N=(-1, -1, -1, 0) wv
+				   break
+		   endswitch
+	   endif
+   else
+	   ASSERT(0, "index out of range")
+   endif
 End

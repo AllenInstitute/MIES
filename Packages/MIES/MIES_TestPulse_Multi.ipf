@@ -21,9 +21,16 @@ static Constant TPM_NI_FIFO_THRESHOLD_SIZE = 1073741824
 ///
 /// Handles the TP initiation for all ITC devices. Yoked ITC1600s are handled specially using the external trigger.
 /// The external trigger is assumed to be a arduino device using the arduino squencer.
-Function TPM_StartTPMultiDeviceLow(panelTitle, [runModifier])
+Function TPM_StartTPMultiDeviceLow(panelTitle, [runModifier, fast])
 	string panelTitle
 	variable runModifier
+	variable fast
+
+	if(ParamIsDefault(fast))
+		fast = 0
+	else
+		fast = !!fast
+	endif
 
 	variable i, TriggerMode
 	variable runMode, numFollower
@@ -37,13 +44,15 @@ Function TPM_StartTPMultiDeviceLow(panelTitle, [runModifier])
 
 	if(!DeviceHasFollower(panelTitle))
 		try
-			TP_Setup(panelTitle, runMode)
+			TP_Setup(panelTitle, runMode, fast = fast)
 			TPM_BkrdTPMD(panelTitle)
 		catch
 			TP_Teardown(panelTitle)
 		endtry
 
 		return NaN
+	else
+		ASSERT(!fast, "fast mode does not work with yoking")
 	endif
 
 	SVAR listOfFollowerDevices = $GetFollowerList(panelTitle)
@@ -83,8 +92,20 @@ Function TPM_StartTPMultiDeviceLow(panelTitle, [runModifier])
 End
 
 /// @brief Start a multi device test pulse, always done in background mode
-Function TPM_StartTestPulseMultiDevice(panelTitle)
+Function TPM_StartTestPulseMultiDevice(panelTitle, [fast])
 	string panelTitle
+	variable fast
+
+	if(ParamIsDefault(fast))
+		fast = 0
+	else
+		fast = !!fast
+	endif
+
+	if(fast)
+		TPM_StartTPMultiDeviceLow(panelTitle, fast = 1)
+		return NaN
+	endif
 
 	AbortOnValue DAP_CheckSettings(panelTitle, TEST_PULSE_MODE),1
 
@@ -96,18 +117,27 @@ Function TPM_StartTestPulseMultiDevice(panelTitle)
 	endif
 
 	TPM_StartTPMultiDeviceLow(panelTitle)
-
-
 	P_InitBeforeTP(panelTitle)
 End
 
 /// @brief Stop the TP on yoked devices simultaneously
 ///
 /// Handles also non-yoked devices in multi device mode correctly.
-Function TPM_StopTestPulseMultiDevice(panelTitle)
+Function TPM_StopTestPulseMultiDevice(panelTitle, [fast])
 	string panelTitle
+	variable fast
 
-	DQM_CallFuncForDevicesYoked(panelTitle, TPM_StopTPMD)
+	if(ParamIsDefault(fast))
+		fast = 0
+	else
+		fast = !!fast
+	endif
+
+	if(fast)
+		DQM_CallFuncForDevicesYoked(panelTitle, TPM_StopTPMDFast)
+	else
+		DQM_CallFuncForDevicesYoked(panelTitle, TPM_StopTPMD)
+	endif
 End
 
 static Function TPM_BkrdTPMD(panelTitle, [triggerMode])
@@ -137,7 +167,6 @@ static Function TPM_BkrdTPMD(panelTitle, [triggerMode])
 			break
 	endswitch
 	if(!IsBackgroundTaskRunning(TASKNAME_TPMD))
-		ASYNC_Start(ThreadProcessorCount, disableTask=1)
 		CtrlNamedBackground $TASKNAME_TPMD, start
 	endif
 End
@@ -149,11 +178,9 @@ Function TPM_BkrdTPFuncMD(s)
 	STRUCT BackgroundStruct &s
 
 	variable i, j, deviceID, fifoPos, hardwareType, checkAgain, updateInt, endOfPulse
-	variable pointsCompletedInITCDataWave, activeChunk, now
-	variable channelNr, startOfADColumns, numEntries, tpLengthPoints, err, headstage
+	variable fifoLatest, lastTP, now
+	variable channelNr, startOfADColumns, tpLengthPoints, err
 	string panelTitle, fifoChannelName, fifoName, errMsg
-
-	STRUCT TPAnalysisInput tpInput
 
 	variable debTime
 
@@ -178,22 +205,6 @@ Function TPM_BkrdTPFuncMD(s)
 		hardwareType = ActiveDeviceList[i][%HardwareType]
 		panelTitle = HW_GetMainDeviceName(hardwareType, deviceID)
 
-		DFREF dfrTP = GetDeviceTestPulse(panelTitle)
-		WAVE ITCChanConfigWave = GetITCChanConfigWave(panelTitle)
-		WAVE ADCs = GetADCListFromConfig(ITCChanConfigWave)
-		WAVE hsProp = GetHSProperties(panelTitle)
-		NVAR duration = $GetTestpulseDuration(panelTitle)
-		NVAR baselineFrac = $GetTestpulseBaselineFraction(panelTitle)
-		tpLengthPoints = TP_GetTestPulseLengthInPoints(panelTitle, TEST_PULSE_MODE)
-
-		tpInput.panelTitle = panelTitle
-		tpInput.duration = duration
-		tpInput.baselineFrac = baselineFrac
-		NewRandomSeed()
-		tpInput.measurementMarker = Getreproduciblerandom()
-		tpInput.tpLengthPoints = tpLengthPoints
-		tpInput.readTimeStamp = ticks * TICKS_TO_SECONDS
-
 		switch(hardwareType)
 			case HARDWARE_NI_DAC:
 				// Pull data until end of FIFO, after BGTask finishes Graph shows only last update
@@ -211,28 +222,12 @@ Function TPM_BkrdTPFuncMD(s)
 
 						try
 							ClearRTError()
-							tpInput.activeADCs = V_FIFOnchans
-
 							for(j = 0; j < V_FIFOnchans; j += 1)
 								fifoChannelName = StringByKey("NAME" + num2str(j), S_Info)
 								channelNr = str2num(fifoChannelName)
 								WAVE NIChannel = NIDataWave[channelNr]
 								FIFO2WAVE/R=[endOfPulse - datapoints, endOfPulse - 1] $fifoName, $fifoChannelName, NIChannel; AbortOnRTE
 								SetScale/P x, 0, DimDelta(NIChannel, ROWS) * 1000, "ms", NIChannel
-
-								headstage = AFH_GetHeadstageFromADC(panelTitle, ADCs[j])
-
-								WAVE tpInput.data = NIChannel
-								if(hsProp[headstage][%ClampMode] == I_CLAMP_MODE)
-									NVAR/SDFR=dfrTP clampAmp=amplitudeIC
-								else
-									NVAR/SDFR=dfrTP clampAmp=amplitudeVC
-								endif
-								tpInput.clampAmp = clampAmp
-								tpInput.clampMode = hsProp[headstage][%ClampMode]
-								tpInput.hsIndex = headstage
-								TP_SendToAnalysis(tpInput)
-
 							endfor
 
 							SCOPE_UpdateOscilloscopeData(panelTitle, TEST_PULSE_MODE, deviceID=deviceID)
@@ -298,51 +293,24 @@ Function TPM_BkrdTPFuncMD(s)
 
 			s.threadDeadCount = 0
 
-			pointsCompletedInITCDataWave = mod(fifoPos, DimSize(ITCDataWave, ROWS))
+			fifoLatest = mod(fifoPos, DimSize(ITCDataWave, ROWS))
 
 			// extract the last fully completed chunk
 			// for ITC only the last complete TP is evaluated, all earlier TPs get discarded
-			activeChunk = floor(pointsCompletedInITCDataWave / tpLengthPoints) - 1
+			tpLengthPoints = TP_GetTestPulseLengthInPoints(panelTitle, TEST_PULSE_MODE)
+			lastTP = trunc(fifoLatest / tpLengthPoints) - 1
 
 			// Ensures that the new TP chunk isn't the same as the last one.
 			// This is required to keep the TP buffer in sync.
-			if(activeChunk >= 0 && activeChunk != ActiveDeviceList[i][%ActiveChunk])
-				SCOPE_UpdateOscilloscopeData(panelTitle, TEST_PULSE_MODE, chunk=activeChunk)
-
-				WAVE OscilloscopeData = GetOscilloscopeWave(panelTitle)
-				startOfADColumns = DimSize(GetDACListFromConfig(ITCChanConfigWave), ROWS)
-				numEntries = DimSize(ADCs, ROWS)
-				Make/FREE/N=(DimSize(OscilloscopeData, ROWS)) channelData
-
-				tpInput.activeADCs = numEntries
-				WAVE tpInput.data = channelData
-
-				for(j = 0; j < numEntries; j += 1)
-					MultiThread channelData[] = OscilloscopeData[p][startOfADColumns + j]
-					CopyScales OscilloscopeData channelData
-
-					headstage = AFH_GetHeadstageFromADC(panelTitle, ADCs[j])
-
-					if(hsProp[headstage][%ClampMode] == I_CLAMP_MODE)
-						NVAR/SDFR=dfrTP clampAmp=amplitudeIC
-					else
-						NVAR/SDFR=dfrTP clampAmp=amplitudeVC
-					endif
-					tpInput.clampAmp = clampAmp
-					tpInput.clampMode = hsProp[headstage][%ClampMode]
-					tpInput.hsIndex = headstage
-					TP_SendToAnalysis(tpInput)
-
-				endfor
-
-				ActiveDeviceList[i][%ActiveChunk] = activeChunk
+			if(lastTP >= 0 && lastTP != ActiveDeviceList[i][%ActiveChunk])
+				SCOPE_UpdateOscilloscopeData(panelTitle, TEST_PULSE_MODE, chunk=lastTP)
+				ActiveDeviceList[i][%ActiveChunk] = lastTP
 			endif
 
 			break
 		endswitch
 
-		SCOPE_UpdateGraph(panelTitle)
-		ASYNC_ThreadReadOut()
+		SCOPE_UpdateGraph(panelTitle, TEST_PULSE_MODE)
 
 		if(GetKeyState(0) & ESCAPE_KEY)
 			DQ_StopOngoingDAQ(panelTitle)
@@ -354,8 +322,29 @@ Function TPM_BkrdTPFuncMD(s)
 	return 0
 End
 
+/// @brief Wrapper for DQM_CallFuncForDevicesYoked()
 static Function TPM_StopTPMD(panelTitle)
 	string panelTitle
+
+	return TPM_StopTPMDWrapper(panelTitle, fast = 0)
+End
+
+/// @brief Wrapper for DQM_CallFuncForDevicesYoked()
+static Function TPM_StopTPMDFast(panelTitle)
+	string panelTitle
+
+	return TPM_StopTPMDWrapper(panelTitle, fast = 1)
+End
+
+static Function TPM_StopTPMDWrapper(panelTitle, [fast])
+	string panelTitle
+	variable fast
+
+	if(ParamIsDefault(fast))
+		fast = 0
+	else
+		fast = !!fast
+	endif
 
 	NVAR ITCDeviceIDGlobal = $GetITCDeviceIDGlobal(panelTitle)
 
@@ -363,15 +352,16 @@ static Function TPM_StopTPMD(panelTitle)
 	if(hardwareType == HARDWARE_ITC_DAC)
 		TFH_StopFifoDaemon(HARDWARE_ITC_DAC, ITCDeviceIDGlobal)
 	endif
+
 	if(!HW_SelectDevice(hardwareType, ITCDeviceIDGlobal, flags = HARDWARE_PREVENT_ERROR_MESSAGE | HARDWARE_PREVENT_ERROR_POPUP) \
 	   && HW_IsRunning(hardwareType, ITCDeviceIDGlobal, flags = HARDWARE_ABORT_ON_ERROR))
 		HW_StopAcq(hardwareType, ITCDeviceIDGlobal, zeroDAC = 1)
 		TPM_RemoveDevice(panelTitle)
 		if(!TPM_HasActiveDevices())
 			CtrlNamedBackground $TASKNAME_TPMD, stop
-			ASYNC_Stop(timeout=10)
 		endif
-		TP_Teardown(panelTitle)
+
+		TP_Teardown(panelTitle, fast = fast)
 	endif
 End
 

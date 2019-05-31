@@ -189,7 +189,7 @@ End
 /// @{
 
 /// @brief Check if wv exists and has the correct version
-static Function ExistsWithCorrectLayoutVersion(wv, versionOfNewWave)
+threadsafe static Function ExistsWithCorrectLayoutVersion(wv, versionOfNewWave)
 	Wave/Z wv
 	variable versionOfNewWave
 
@@ -226,7 +226,7 @@ static Function WaveVersionIsSmaller(wv, existingVersion)
 End
 
 /// @brief return the Version of the Wave, returns NaN if no version was set
-Function GetWaveVersion(wv)
+threadsafe Function GetWaveVersion(wv)
 	Wave/Z wv
 
 	return GetNumberFromWaveNote(wv, WAVE_NOTE_LAYOUT_KEY)
@@ -716,22 +716,13 @@ Function/Wave GetHardwareDataWave(panelTitle)
 	endswitch
 End
 
-static Constant ITC_CONFIG_WAVE_VERSION = 1
-
-/// @brief Check if the given ITC config wave is the latest version
-Function IsLatestConfigWaveVersion(wv)
-	WAVE wv
-
-	return ExistsWithCorrectLayoutVersion(wv, ITC_CONFIG_WAVE_VERSION)
-End
-
 /// @brief Return the ITC channel config wave
 ///
 /// Rows:
 /// - One for each channel, the order is DA, AD, TTL (same as in the ITCDataWave)
 ///
 /// Columns:
-/// - channel type, one of @ref ITC_XOP_CHANNEL_CONSTANTS
+/// - channel type, one of @ref ItcXopChannelConstants
 /// - channel number (0-based)
 /// - sampling interval in microseconds (1e-6)
 /// - decimation mode (always zero)
@@ -757,6 +748,8 @@ End
 /// - Due to the wave versioning the channel unit is now stored with the
 ///   #CHANNEL_UNIT_KEY as key and it is now separated not with semicolon
 ///   anymore but a comma.
+/// Version 2 changes:
+/// - DAQChannelType column added
 Function/Wave GetITCChanConfigWave(panelTitle)
 	string panelTitle
 
@@ -764,15 +757,26 @@ Function/Wave GetITCChanConfigWave(panelTitle)
 
 	WAVE/I/Z/SDFR=dfr wv = ITCChanConfigWave
 
+	// On version upgrade also adapt function IsValidConfigWave
 	if(ExistsWithCorrectLayoutVersion(wv, ITC_CONFIG_WAVE_VERSION))
 		return wv
 	elseif(WaveExists(wv))
-		Redimension/I/N=(-1, 5) wv
-		// offset
-		wv[][4] = 0
-		Note/K wv
+		// do sequential version upgrade
+		if(WaveVersionIsSmaller(wv, 1))
+			// this version adds the Offset column
+			Redimension/I/N=(-1, 5) wv
+			wv[][4] = 0
+			Note/K wv
+		endif
+		if(WaveVersionIsSmaller(wv, 2))
+			// this version adds the DAQChannelType column
+			// In previous version of TPduringDAQ only DAQ type channels existed
+			Redimension/I/N=(-1, 6) wv
+			wv[][5] = DAQ_CHANNEL_TYPE_DAQ
+			Note/K wv
+		endif
 	else
-		Make/I/N=(2, 5) dfr:ITCChanConfigWave/Wave=wv
+		Make/I/N=(2, 6) dfr:ITCChanConfigWave/Wave=wv
 	endif
 
 	SetDimLabel COLS, 0, ChannelType, wv
@@ -780,9 +784,64 @@ Function/Wave GetITCChanConfigWave(panelTitle)
 	SetDimLabel COLS, 2, SamplingInterval, wv
 	SetDimLabel COLS, 3, DecimationMode, wv
 	SetDimLabel COLS, 4, Offset, wv
+	SetDimLabel COLS, 5, DAQChannelType, wv
 
 	SetWaveVersion(wv, ITC_CONFIG_WAVE_VERSION)
 	AddEntryIntoWaveNoteAsList(wv, CHANNEL_UNIT_KEY, str = "")
+
+	return wv
+End
+
+static Constant DQM_ACTIVE_DEV_WAVE_VERSION = 3
+
+/// @brief Returns a reference to the wave of active devices for data acquisition in multi device mode
+///
+/// The wave is used in data acquisition in multiple device mode to keep track of active devices.
+///
+/// Columns:
+/// DeviceID id of an active device
+/// ADChannelToMonitor index of first active AD channel in HardwareDataWave
+/// StopCollectionPoint number of samples to acquire
+/// hardwareType type of hardware of the device
+/// activeChunk if a channel of the device is used for TP while DAQ this column saves the number of the last evaluated test pulse
+///
+/// Changes in version 1:
+/// added column activeChunk
+/// Changes in version 2:
+/// changed precision to double
+/// Changes in version 3:
+/// removed column 2 with StopCollectionPoint as it is no longer used
+Function/Wave GetDQMActiveDeviceList()
+
+	DFREF dfr = GetActiveITCDevicesFolder()
+
+	WAVE/Z/D/SDFR=dfr wv = ActiveDeviceList
+
+	if(ExistsWithCorrectLayoutVersion(wv, DQM_ACTIVE_DEV_WAVE_VERSION))
+		return wv
+	elseif(WaveExists(wv))
+		// do sequential version upgrade
+		if(WaveVersionIsSmaller(wv, 1))
+			Redimension/N=(-1, 5) wv
+			wv[][4] = NaN
+			Note/K wv
+		endif
+		if(WaveVersionIsSmaller(wv, 2))
+			Redimension/D/N=(-1, -1) wv
+		endif
+		if(WaveVersionIsSmaller(wv, 3))
+			DeleteWavePoint(wv, COLS, 2)
+		endif
+	else
+		Make/D/N=(0, 4) dfr:ActiveDeviceList/WAVE=wv
+	endif
+
+	SetDimLabel COLS, 0, DeviceID,    wv
+	SetDimLabel COLS, 1, ADChannelToMonitor, wv
+	SetDimLabel COLS, 2, HardwareType, wv
+	SetDimLabel COLS, 3, ActiveChunk, wv
+
+	SetWaveVersion(wv, DQM_ACTIVE_DEV_WAVE_VERSION)
 
 	return wv
 End
@@ -1451,7 +1510,7 @@ Function/WAVE GetLBNidCache(numericalValues)
 	return wv
 End
 
-static Constant SWEEP_SETTINGS_WAVE_VERSION = 21
+static Constant SWEEP_SETTINGS_WAVE_VERSION = 22
 
 /// @brief Uses the parameter names from the `sourceKey` columns and
 ///        write them as dimension into the columns of dest.
@@ -1588,6 +1647,9 @@ End
 /// - 47: Headstage Active
 /// - 48: Clamp Mode
 /// - 49: Igor Pro bitness
+/// - 50: DA ChannelType, one of @ref DaqChannelTypeConstants
+/// - 51: AD ChannelType, one of @ref DaqChannelTypeConstants
+/// - 52: oodDAQ member, true if headstage takes part in oodDAQ mode, false otherwise
 Function/Wave GetSweepSettingsKeyWave(panelTitle)
 	string panelTitle
 
@@ -1606,9 +1668,9 @@ Function/Wave GetSweepSettingsKeyWave(panelTitle)
 	if(ExistsWithCorrectLayoutVersion(wv, versionOfNewWave))
 		return wv
 	elseif(WaveExists(wv))
-		Redimension/N=(-1, 50) wv
+		Redimension/N=(-1, 53) wv
 	else
-		Make/T/N=(3, 50) newDFR:$newName/Wave=wv
+		Make/T/N=(3, 53) newDFR:$newName/Wave=wv
 	endif
 
 	wv = ""
@@ -1817,6 +1879,18 @@ Function/Wave GetSweepSettingsKeyWave(panelTitle)
 	wv[%Units][49]     = ""
 	wv[%Tolerance][49] = LABNOTEBOOK_NO_TOLERANCE
 
+	wv[%Parameter][50] = "DA ChannelType"
+	wv[%Units][50]     = "a. u."
+	wv[%Tolerance][50] = "1"
+
+	wv[%Parameter][51] = "AD ChannelType"
+	wv[%Units][51]     = "a. u."
+	wv[%Tolerance][51] = "1"
+
+	wv[%Parameter][52] = "oodDAQ member"
+	wv[%Units][52]     = LABNOTEBOOK_BINARY_UNIT
+	wv[%Tolerance][52] = LABNOTEBOOK_NO_TOLERANCE
+
 	SetSweepSettingsDimLabels(wv, wv)
 	SetWaveVersion(wv, versionOfNewWave)
 
@@ -2016,25 +2090,29 @@ End
 /// - 20: UserPressureType (see @ref PressureTypeConstants)
 /// - 21: UserPressureTimeStampUTC timestamp since Igor Pro epoch in UTC where
 ///       the user pressure was acquired
+/// - 22: TPMarker unique number identifying this set of TPs
 Function/Wave GetTPStorage(panelTitle)
 	string 	panelTitle
 
 	dfref dfr = GetDeviceTestPulse(panelTitle)
-	variable versionOfNewWave = 10
+	variable versionOfNewWave = 11
 
 	WAVE/Z/SDFR=dfr/D wv = TPStorage
 
 	if(ExistsWithCorrectLayoutVersion(wv, versionOfNewWave))
 		return wv
 	elseif(WaveExists(wv))
-		Redimension/N=(-1, NUM_HEADSTAGES, 22)/D wv
+		Redimension/N=(-1, NUM_HEADSTAGES, 23)/D wv
 
 		if(WaveVersionIsSmaller(wv, 10))
 			wv[][][17]    = NaN
 			wv[][][20,21] = NaN
 		endif
+		if(WaveVersionIsSmaller(wv, 11))
+			wv[][][22]    = NaN
+		endif
 	else
-		Make/N=(MINIMUM_WAVE_SIZE_LARGE, NUM_HEADSTAGES, 22)/D dfr:TPStorage/Wave=wv
+		Make/N=(MINIMUM_WAVE_SIZE_LARGE, NUM_HEADSTAGES, 23)/D dfr:TPStorage/Wave=wv
 
 		wv = NaN
 
@@ -2065,6 +2143,7 @@ Function/Wave GetTPStorage(panelTitle)
 	SetDimLabel LAYERS, 19, ValidState                , wv
 	SetDimLabel LAYERS, 20, UserPressureType          , wv
 	SetDimLabel LAYERS, 21, UserPressureTimeStampUTC  , wv
+	SetDimLabel LAYERS, 22, TPMarker                  , wv
 
 	SetNumberInWaveNote(wv, AUTOBIAS_LAST_INVOCATION_KEY, 0)
 	SetNumberInWaveNote(wv, DIMENSION_SCALING_LAST_INVOC, 0)
@@ -2114,6 +2193,22 @@ Function/Wave GetOscilloscopeWave(panelTitle)
 	endif
 
 	Make/R/N=(1, NUM_DA_TTL_CHANNELS) dfr:OscilloscopeData/Wave=wv
+
+	return wv
+End
+
+/// @brief Return a wave for displaying scaled TP data in the oscilloscope window
+Function/Wave GetTPOscilloscopeWave(panelTitle)
+	string 	panelTitle
+
+	dfref dfr = GetDevicePath(panelTitle)
+	WAVE/Z/SDFR=dfr wv = TPOscilloscopeData
+
+	if(WaveExists(wv))
+		return wv
+	endif
+
+	Make/R/N=(0, NUM_DA_TTL_CHANNELS) dfr:TPOscilloscopeData/Wave=wv
 
 	return wv
 End
@@ -5502,11 +5597,11 @@ Function/WAVE GetPulseAverageWave(dfr, channelType, channelNumber, region, pulse
 	wvName  = StringFromList(channelType, ITC_CHANNEL_NAMES) + num2str(channelNumber)
 	wvName += "_R" + num2str(region) + "_P" + num2str(pulseIndex)
 
-	WAVE/SDFR=dfr/Z/D wv = $wvName
+	WAVE/SDFR=dfr/Z wv = $wvName
 	if(WaveExists(wv))
 		return wv
 	else
-		Make/N=(0)/D dfr:$wvName/WAVE=wv
+		Make/N=(0) dfr:$wvName/WAVE=wv
 	endif
 
 	return wv

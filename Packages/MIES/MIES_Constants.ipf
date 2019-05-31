@@ -33,7 +33,7 @@ StrConstant BASE_WINDOW_TITLE    = "DA_Ephys"
 StrConstant amPanel = "analysisMaster"
 
 /// @name Task names
-/// @anchor MIES_TASKNAMES
+/// @anchor MiesTasknames
 /// @{
 StrConstant TASKNAME_TP        = "Testpulse"
 StrConstant TASKNAME_TPMD      = "TestpulseMD"
@@ -45,7 +45,7 @@ StrConstant TASKNAMES          = "Testpulse;TestpulseMD;ITC_Timer;ITC_TimerMD;IT
 /// @}
 
 /// @name Various mies specific regular expressions
-/// @anchor MIES_REGEXPS
+/// @anchor MiesRegexps
 /// @{
 StrConstant DATA_SWEEP_REGEXP        = "(?i)^Sweep_[[:digit:]]+$"
 StrConstant DATA_CONFIG_REGEXP       = "(?i)^Config_Sweep_[[:digit:]]+$"
@@ -68,15 +68,36 @@ Constant MAX_REGULATOR_PRESSURE =  9.9
 Constant MIN_REGULATOR_PRESSURE = -9.9
 /// @}
 
+/// @name Latest version of config wave
+/// @anchor ItcConfigWaveVersion
+/// @{
+Constant ITC_CONFIG_WAVE_VERSION = 2
+/// @}
+
 StrConstant ITC_CHANNEL_NAMES    = "AD;DA;;TTL"
 
 /// @name Channel constants shared with the ITC XOP
-/// @anchor ITC_XOP_CHANNEL_CONSTANTS
+/// @anchor ItcXopChannelConstants
 /// @{
 Constant ITC_XOP_CHANNEL_TYPE_ADC = 0
 Constant ITC_XOP_CHANNEL_TYPE_DAC = 1
 Constant ITC_XOP_CHANNEL_TYPE_TTL = 3
 /// @}
+
+/// @name DAQ Channel Type constants used in ITCChanConfigWave
+/// @anchor DaqChannelTypeConstants
+/// @{
+Constant DAQ_CHANNEL_TYPE_UNKOWN = -1
+Constant DAQ_CHANNEL_TYPE_DAQ    = 1
+Constant DAQ_CHANNEL_TYPE_TP     = 2
+/// @}
+
+/// @name When all DAQ Channels are set to TestPulse the output runs for TIME_TP_ONLY_ON_DAQ seconds
+/// @anchor TimeTpOnlyOnDaqConstant
+/// @{
+Constant TIME_TP_ONLY_ON_DAQ = 1
+/// @}
+
 
 Constant MINIMUM_WAVE_SIZE = 64
 Constant MINIMUM_WAVE_SIZE_LARGE = 2048
@@ -93,6 +114,14 @@ Constant LAYERS              = 2
 Constant CHUNKS              = 3
 /// @}
 Constant MAX_DIMENSION_COUNT = 4
+
+/// @name append userData constants
+/// Convenience definition.
+/// easier to read than ModifyGraph userData(trace)={name, 0, value}
+/// @{
+Constant USERDATA_MODIFYGRAPH_REPLACE = 0
+Constant USERDATA_MODIFYGRAPH_APPEND  = 1
+/// @}
 
 /// @name Constants used by Downsample
 /// @{
@@ -330,12 +359,13 @@ Constant MIES_BSP_AR  = 3
 Constant MIES_BSP_PA  = 4
 /// @}
 
-/// @name values for BrowserSettings UserData
+/// @name values for  UserData in BrowserSettings and derived windows
 /// @{
 strConstant MIES_BSP_BROWSER = "BROWSER"
 strConstant MIES_BSP_DEVICE = "DEVICE"
 strConstant MIES_BSP_PANEL_FOLDER = "PANEL_FOLDER"
 strConstant MIES_BSP_AR_SWEEPFOLDER = "AR_SWEEPFOLDER"
+strConstant MIES_BSP_PA_MAINPANEL = "HOSTWINDOW"
 /// @}
 
 StrConstant NUMERALS = "First;Second;Third;Fourth;Fifth;Sixth;Seventh;Eighth"
@@ -390,6 +420,12 @@ Constant DAQ_BG_SINGLE_DEVICE = 0x001
 Constant DAQ_BG_MULTI_DEVICE  = 0x002
 Constant DAQ_FG_SINGLE_DEVICE = 0x004
 // foreground multi device does not exist
+/// @}
+
+/// @name Reserved Stim set name for TP while DAQ
+/// @anchor ReservedStimSetName
+/// @{
+StrConstant STIMSET_TP_WHILE_DAQ = "TestPulse"
 /// @}
 
 /// @name Constants for GetAxisOrientation
@@ -550,7 +586,7 @@ Constant HARDWARE_DAC_EXTERNAL_TRIGGER = 0x1
 
 /// Used to upgrade the GuiStateWave as well as the DA Ephys panel
 Constant DA_EPHYS_PANEL_VERSION     = 39
-Constant DATABROWSER_PANEL_VERSION  = 8
+Constant DATABROWSER_PANEL_VERSION  = 9
 Constant SWEEPBROWSER_PANEL_VERSION = 3
 Constant WAVEBUILDER_PANEL_VERSION  = 7
 
@@ -713,6 +749,7 @@ StrConstant NOISE_TYPES_STRINGS = "White;Pink;Brown"
 StrConstant PULSE_TYPES_STRINGS = "Square;Triangle"
 
 StrConstant NOTE_KEY_ZEROED           = "Zeroed"
+StrConstant NOTE_KEY_TIMEALIGN        = "TimeAlign"
 StrConstant NOTE_KEY_ARTEFACT_REMOVAL = "ArtefactRemoval"
 
 /// DA_Ephys Panel Tabs

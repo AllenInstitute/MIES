@@ -93,23 +93,31 @@ Function TP_GetTestPulseLengthInPoints(panelTitle, mode)
 	endif
 End
 
-/// @brief Store the full test pulse wave for later inspection
-Function TP_StoreFullWave(panelTitle)
+/// @brief Stores the given TP wave
+///
+/// @param panelTitle panel title
+///
+/// @param TPWave reference to wave holding the TP data in the same format as OscilloscopeData
+///
+/// @param tpMarker unique number for this set of TPs from all TP channels
+///
+/// @param hsList list of headstage numbers in the same order as the columns of TPWave
+Function TP_StoreTP(panelTitle, TPWave, tpMarker, hsList)
 	string panelTitle
+	WAVE TPWave
+	variable tpMarker
+	string hsList
 
-	variable index, startOfADColumns
+	variable index
 
-	WAVE OscilloscopeData = GetOscilloscopeWave(panelTitle)
-	WAVE config = GetITCChanConfigWave(panelTitle)
-	startOfADColumns = DimSize(GetDACListFromConfig(config), ROWS)
 	WAVE/WAVE storedTP = GetStoredTestPulseWave(panelTitle)
-
 	index = GetNumberFromWaveNote(storedTP, NOTE_INDEX)
-	EnsureLargeEnoughWave(storedTP, minimumSize = index)
-	Duplicate/FREE/R=[][startOfADColumns,] OscilloscopeData, tmp
-	Note/K tmp, "TimeStamp: " + GetISO8601TimeStamp(numFracSecondsDigits = 3)
-	storedTP[index++] = tmp
-	WaveClear tmp
+	EnsureLargeEnoughWave(storedTP, minimumSize=index)
+	Note/K TPWave
+	SetStringInWaveNote(TPWave, "TimeStamp", GetISO8601TimeStamp(numFracSecondsDigits = 3))
+	SetNumberInWaveNote(TPWave, "TPMarker", tpMarker, format="%d")
+	SetStringInWaveNote(TPWave, "Headstages", hsList)
+	storedTP[index++] = TPWave
 
 	SetNumberInWaveNote(storedTP, NOTE_INDEX, index)
 End
@@ -232,7 +240,7 @@ Function TP_ROAnalysis(dfr, err, errmsg)
 			TP_CalculateAverage(TPSSBuffer, SSResistance)
 		endif
 
-		TP_RecordTP(panelTitle, BaselineSSAvg, InstResistance, SSResistance, now)
+		TP_RecordTP(panelTitle, BaselineSSAvg, InstResistance, SSResistance, now, marker)
 		DQ_ApplyAutoBias(panelTitle, BaselineSSAvg, SSResistance)
 	endif
 
@@ -264,6 +272,15 @@ threadsafe Function/DF TP_TSAnalysis(dfrInp)
 	NVAR/SDFR=dfrInp marker = param9
 	NVAR/SDFR=dfrInp activeADCs = param10
 
+#if defined(DEBUGGING_ENABLED)
+	DEBUGPRINT_TS("Marker: ", var = marker)
+	Duplicate data dfrOut:colors
+	Duplicate data dfrOut:data
+	WAVE colors = dfrOut:colors
+	colors = 0
+	colors[0, lengthTPInPoints - 1] = 100
+#endif
+
 	// Rows:
 	// 0: base line level
 	// 1: steady state resistance
@@ -280,13 +297,45 @@ threadsafe Function/DF TP_TSAnalysis(dfrInp)
 	refTime = (tpStartPoint - TP_EVAL_POINT_OFFSET) * sampleInt
 	AvgBaselineSS = mean(data, refTime - evalRange, refTime)
 
+#if defined(DEBUGGING_ENABLED)
+	// color BASE
+	variable refpt = tpStartPoint - TP_EVAL_POINT_OFFSET
+	colors[refpt - evalRange / sampleInt, refpt] = 50
+	DEBUGPRINT_TS("SampleInt: ", var = sampleInt)
+	DEBUGPRINT_TS("tpStartPoint: ", var = tpStartPoint)
+	DEBUGPRINT_TS("evalRange (ms): ", var = evalRange)
+	DEBUGPRINT_TS("evalRange in points: ", var = evalRange / sampleInt)
+	DEBUGPRINT_TS("Base range begin (ms): ", var = refTime - evalRange)
+	DEBUGPRINT_TS("Base range eng (ms): ", var = refTime)
+	DEBUGPRINT_TS("average BaseLine: ", var = AvgBaselineSS)
+#endif
+
 	refTime = (lengthTPInPoints - tpStartPoint - TP_EVAL_POINT_OFFSET) * sampleInt
 	avgTPSS = mean(data, refTime - evalRange, refTime)
+
+#if defined(DEBUGGING_ENABLED)
+	DEBUGPRINT_TS("TPSS range begin (ms): ", var = refTime - evalRange)
+	DEBUGPRINT_TS("TPSS range eng (ms): ", var = refTime)
+	DEBUGPRINT_TS("average TPSS: ", var = avgTPSS)
+	// color SS
+	refpt = lengthTPInPoints - tpStartPoint - TP_EVAL_POINT_OFFSET
+	colors[refpt - evalRange / sampleInt, refpt] = 50
+	// color INST
+	refpt = tpStartPoint + TP_EVAL_POINT_OFFSET
+	colors[refpt, refpt + 0.25 / sampleInt] = 50
+#endif
 
 	refPoint = tpStartPoint + TP_EVAL_POINT_OFFSET
 	Duplicate/FREE/R=[refPoint, refPoint + 0.25 / sampleInt] data, inst1d
 	WaveStats/Q/M=1 inst1d
 	avgInst = (clampAmp < 0) ? mean(inst1d, pnt2x(inst1d, V_minRowLoc - 1), pnt2x(inst1d, V_minRowLoc + 1)) : mean(inst1d, pnt2x(inst1d, V_maxRowLoc - 1), pnt2x(inst1d, V_maxRowLoc + 1))
+
+#if defined(DEBUGGING_ENABLED)
+	refpt = V_minRowLoc + refPoint
+	DEBUGPRINT_TS("refPoint IntSS: ", var = refpt)
+	DEBUGPRINT_TS("average InstSS: ", var = avgInst)
+	colors[refpt - 1, refpt + 1] = 75
+#endif
 
 	if(clampMode == I_CLAMP_MODE)
 		outData[1] = (avgTPSS - avgBaselineSS) / clampAmp * 1000
@@ -296,6 +345,11 @@ threadsafe Function/DF TP_TSAnalysis(dfrInp)
 		outData[2] = clampAmp / (avgInst - avgBaselineSS) * 1000
 	endif
 	outData[0] = avgBaselineSS
+
+#if defined(DEBUGGING_ENABLED)
+	DEBUGPRINT_TS("IntRes: ", var = outData[2])
+	DEBUGPRINT_TS("SSRes: ", var = outData[1])
+#endif
 
 	// additional data copy
 	variable/G dfrOut:now = now
@@ -363,10 +417,10 @@ End
 /// When the TP is initiated by any method, the TP storageWave should be empty
 /// If 200 ms have elapsed, or it is the first TP sweep,
 /// data from the input waves is transferred to the storage waves.
-static Function TP_RecordTP(panelTitle, BaselineSSAvg, InstResistance, SSResistance, now)
+static Function TP_RecordTP(panelTitle, BaselineSSAvg, InstResistance, SSResistance, now, tpMarker)
 	string 	panelTitle
 	wave 	BaselineSSAvg, InstResistance, SSResistance
-	variable now
+	variable now, tpMarker
 
 	variable delta, i, ret, lastPressureCtrl
 	WAVE TPStorage = GetTPStorage(panelTitle)
@@ -430,6 +484,7 @@ static Function TP_RecordTP(panelTitle, BaselineSSAvg, InstResistance, SSResista
 	TPStorage[count][][%Baseline_IC] = hsProp[q][%ClampMode] == I_CLAMP_MODE ? baselineSSAvg[q] : NaN
 
 	TPStorage[count][][%DeltaTimeInSeconds] = count > 0 ? now - TPStorage[0][0][%TimeInSeconds] : 0
+	TPStorage[count][][%TPMarker] = tpMarker
 
 	lastPressureCtrl = GetNumberFromWaveNote(TPStorage, PRESSURE_CTRL_LAST_INVOC)
 	if((now - lastPressureCtrl) > TP_PRESSURE_INTERVAL)
@@ -488,7 +543,7 @@ static Function TP_AnalyzeTP(panelTitle, TPStorage, endRow)
 
 		headstage = TPStorage[endRow][i][%Headstage]
 
-		if(!IsFinite(headstage))
+		if(!IsFinite(headstage) || DC_GetChannelTypefromHS(panelTitle, headstage) != DAQ_CHANNEL_TYPE_TP)
 			continue
 		endif
 
@@ -525,14 +580,38 @@ Function TP_StopTestPulseOnAllDevices()
 	CallFunctionForEachListItem(TP_StopTestPulse, GetListOfLockedDevices())
 End
 
-/// @brief Stop any running background test pulses
-///
-/// Assumes that single device and multi device do not run at the same time.
-/// @return One of @ref TestPulseRunModes
+/// @sa TP_StopTestPulseWrapper
+Function TP_StopTestPulseFast(panelTitle)
+	string panelTitle
+
+	return TP_StopTestPulseWrapper(panelTitle, fast = 1)
+End
+
+/// @sa TP_StopTestPulseWrapper
 Function TP_StopTestPulse(panelTitle)
 	string panelTitle
 
+	return TP_StopTestPulseWrapper(panelTitle, fast = 0)
+End
+
+/// @brief Stop any running background test pulses
+///
+/// @param panelTitle device
+/// @param fast       [optional, defaults to false] Performs only the totally
+///                   necessary steps for tear down.
+///
+/// @return One of @ref TestPulseRunModes
+static Function TP_StopTestPulseWrapper(panelTitle, [fast])
+	string panelTitle
+	variable fast
+
 	variable runMode
+
+	if(ParamIsDefault(fast))
+		fast = 0
+	else
+		fast = !!fast
+	endif
 
 	NVAR runModeGlobal = $GetTestpulseRunMode(panelTitle)
 
@@ -543,32 +622,38 @@ Function TP_StopTestPulse(panelTitle)
 	runMode = runMode & ~TEST_PULSE_DURING_RA_MOD
 
 	if(runMode == TEST_PULSE_BG_SINGLE_DEVICE)
-		TPS_StopTestPulseSingleDevice(panelTitle)
+		TPS_StopTestPulseSingleDevice(panelTitle, fast = fast)
 		return runMode
 	elseif(runMode == TEST_PULSE_BG_MULTI_DEVICE)
-		TPM_StopTestPulseMultiDevice(panelTitle)
+		TPM_StopTestPulseMultiDevice(panelTitle, fast = fast)
 		return runMode
 	elseif(runMode == TEST_PULSE_FG_SINGLE_DEVICE)
 		// can not be stopped
-		return TEST_PULSE_FG_SINGLE_DEVICE
+		return runMode
 	endif
 
 	return TEST_PULSE_NOT_RUNNING
 End
 
 /// @brief Restarts a test pulse previously stopped with #TP_StopTestPulse
-Function TP_RestartTestPulse(panelTitle, testPulseMode)
+Function TP_RestartTestPulse(panelTitle, testPulseMode, [fast])
 	string panelTitle
-	variable testPulseMode
+	variable testPulseMode, fast
+
+	if(ParamIsDefault(fast))
+		fast = 0
+	else
+		fast = !!fast
+	endif
 
 	switch(testPulseMode)
 		case TEST_PULSE_NOT_RUNNING:
 			break // nothing to do
 		case TEST_PULSE_BG_SINGLE_DEVICE:
-			TPS_StartTestPulseSingleDevice(panelTitle)
+			TPS_StartTestPulseSingleDevice(panelTitle, fast = fast)
 			break
 		case TEST_PULSE_BG_MULTI_DEVICE:
-			TPM_StartTestPulseMultiDevice(panelTitle)
+			TPM_StartTestPulseMultiDevice(panelTitle, fast = fast)
 			break
 		default:
 			DEBUGPRINT("Ignoring unknown value:", var=testPulseMode)
@@ -579,18 +664,54 @@ End
 /// @brief Prepare device for TestPulse
 /// @param panelTitle  device
 /// @param runMode     Testpulse running mode, one of @ref TestPulseRunModes
-Function TP_Setup(panelTitle, runMode)
+/// @param fast        [optional, defaults to false] Performs only the totally necessary steps for setup
+Function TP_Setup(panelTitle, runMode, [fast])
 	string panelTitle
 	variable runMode
+	variable fast
 
-	variable multiDevice, now
+	variable multiDevice
+
+	if(ParamIsDefault(fast))
+		fast = 0
+	else
+		fast = !!fast
+	endif
+
+	if(fast)
+		NVAR runModeGlobal = $GetTestpulseRunMode(panelTitle)
+		runModeGlobal = runMode
+
+		NVAR ITCDeviceIDGlobal = $GetITCDeviceIDGlobal(panelTitle)
+		HW_PrepareAcq(GetHardwareType(panelTitle), ITCDeviceIDGlobal, flags=HARDWARE_ABORT_ON_ERROR)
+		return NaN
+	endif
 
 	multiDevice = (runMode & TEST_PULSE_BG_MULTI_DEVICE)
+
+	TP_SetupCommon(panelTitle)
 
 	if(!(runMode & TEST_PULSE_DURING_RA_MOD))
 		DAP_ToggleTestpulseButton(panelTitle, TESTPULSE_BUTTON_TO_STOP)
 		DisableControls(panelTitle, CONTROLS_DISABLE_DURING_DAQ_TP)
 	endif
+
+	NVAR runModeGlobal = $GetTestpulseRunMode(panelTitle)
+	runModeGlobal = runMode
+
+	DC_ConfigureDataForITC(panelTitle, TEST_PULSE_MODE, multiDevice=multiDevice)
+
+	NVAR ITCDeviceIDGlobal = $GetITCDeviceIDGlobal(panelTitle)
+	HW_PrepareAcq(GetHardwareType(panelTitle), ITCDeviceIDGlobal, flags=HARDWARE_ABORT_ON_ERROR)
+
+	ASYNC_Start(ThreadProcessorCount, disableTask=1)
+End
+
+/// @brief Common setup calls for TP and TP during DAQ
+Function TP_SetupCommon(panelTitle)
+	string panelTitle
+
+	variable now
 
 	// ticks are relative to OS start time
 	// so we can have "future" timestamps from existing experiments
@@ -611,21 +732,25 @@ Function TP_Setup(panelTitle, runMode)
 
 	WAVE tpAsyncBuffer = GetTPResultAsyncBuffer(panelTitle)
 	KillOrMoveToTrash(wv=tpAsyncBuffer)
-
-	NVAR runModeGlobal = $GetTestpulseRunMode(panelTitle)
-	runModeGlobal = runMode
-
-	DC_ConfigureDataForITC(panelTitle, TEST_PULSE_MODE, multiDevice=multiDevice)
-
-	NVAR ITCDeviceIDGlobal = $GetITCDeviceIDGlobal(panelTitle)
-	HW_PrepareAcq(GetHardwareType(panelTitle), ITCDeviceIDGlobal, flags=HARDWARE_ABORT_ON_ERROR)
 End
 
 /// @brief Perform common actions after the testpulse
-Function TP_Teardown(panelTitle)
+Function TP_Teardown(panelTitle, [fast])
 	string panelTitle
+	variable fast
+
+	if(ParamIsDefault(fast))
+		fast = 0
+	else
+		fast = !!fast
+	endif
 
 	NVAR runMode = $GetTestpulseRunMode(panelTitle)
+
+	if(fast)
+		runMode = TEST_PULSE_NOT_RUNNING
+		return NaN
+	endif
 
 	if(!(runMode & TEST_PULSE_DURING_RA_MOD))
 		EnableControls(panelTitle, CONTROLS_DISABLE_DURING_DAQ_TP)
@@ -640,9 +765,17 @@ Function TP_Teardown(panelTitle)
 
 	runMode = TEST_PULSE_NOT_RUNNING
 
-	P_LoadPressureButtonState(panelTitle)
+	TP_TeardownCommon(panelTitle)
+
+	StopAsyncIfDone()
 End
 
+/// @brief Common teardown calls for TP and TP during DAQ
+Function TP_TeardownCommon(panelTitle)
+	string panelTitle
+
+	P_LoadPressureButtonState(panelTitle)
+End
 /// @brief Return the number of devices which have TP running
 Function TP_GetNumDevicesWithTPRunning()
 

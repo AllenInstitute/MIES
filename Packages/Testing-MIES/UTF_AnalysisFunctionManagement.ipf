@@ -1024,7 +1024,7 @@ static Function AFT9([str])
 	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG_1")
 
 	AcquireData(s, "AnaFuncValid2_DA*", str)
-	CtrlNamedBackGround Abort_ITI_PressAcq, start, period=30, proc=StopAcq_IGNORE
+	CtrlNamedBackGround Abort_ITI_PressAcq, start=(ticks + 3), period=30, proc=StopAcq_IGNORE
 End
 
 static Function AFT9_REENTRY([str])

@@ -80,9 +80,9 @@ static Function TASYNC_Start_DoubleStart()
 	ASYNC_Start(ThreadProcessorCount)
 	try
 		ASYNC_Start(ThreadProcessorCount)
-		FAIL()
-	catch
 		PASS()
+	catch
+		FAIL()
 	endtry
 	ASYNC_Stop(timeout=1)
 End

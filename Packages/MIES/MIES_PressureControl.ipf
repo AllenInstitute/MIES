@@ -81,17 +81,17 @@ Function P_PressureControl(panelTitle)
 					P_MethodApproach(panelTitle, headStage)
 					break
 				case PRESSURE_METHOD_SEAL:
-					if(TP_CheckIfTestpulseIsRunning(panelTitle) && P_IsHSActiveAndInVClamp(panelTitle, headStage))
+					if(P_PressureMethodPossible(panelTitle, headStage))
 						P_MethodSeal(panelTitle, headStage)
 					endif
 					break
 				case PRESSURE_METHOD_BREAKIN:
-					if(TP_CheckIfTestpulseIsRunning(panelTitle) && P_IsHSActiveAndInVClamp(panelTitle, headStage))
+					if(P_PressureMethodPossible(panelTitle, headStage))
 						P_MethodBreakIn(panelTitle, headStage)
 					endif
 					break
 				case PRESSURE_METHOD_CLEAR:
-					if(TP_CheckIfTestpulseIsRunning(panelTitle) && P_IsHSActiveAndInVClamp(panelTitle, headStage))
+					if(P_PressureMethodPossible(panelTitle, headStage))
 						 P_MethodClear(panelTitle, headStage)
 					endif
 					break
@@ -1539,7 +1539,7 @@ Function P_UpdatePressureMode(panelTitle, pressureMode, pressureControlName, che
 				SetControlTitleColor(panelTitle, pressureControlName, 39168, 0, 0)
 				PressureDataWv[headStageNo][%Approach_Seal_BrkIn_Clear] = pressureMode
 			elseif(PressureMode) // all other modes, only apply if TP is running
-				if(TP_CheckIfTestpulseIsRunning(panelTitle) && P_IsHSActiveAndInVClamp(panelTitle, headStageNo)) // check to see if TP is running and the headStage is in V-clampmode
+				if(P_PressureMethodPossible(panelTitle, headStageNo))
 					SetControlTitle(panelTitle, pressureControlName, ("Stop " + StringFromList(pressureMode, PRESSURE_CONTROL_TITLE_LIST)))
 					SetControlTitleColor(panelTitle, pressureControlName, 39168, 0, 0)
 					PressureDataWv[headStageNo][%Approach_Seal_BrkIn_Clear] = pressureMode
@@ -1590,7 +1590,7 @@ static Function P_CheckAll(panelTitle, pressureMode, SavedPressureMode)
 		if(DAG_GetNumericalValue(panelTitle, StringFromList(pressureMode, PRESSURE_CONTROL_CHECKBOX_LIST)))
 			for(headStage = 0; headStage < NUM_HEADSTAGES; headStage += 1)
 				if(P_ValidatePressureSetHeadstage(panelTitle, headStage))
-					if(pressureMode && TP_CheckIfTestpulseIsRunning(panelTitle) && P_IsHSActiveAndInVClamp(panelTitle, headStage))
+					if(pressureMode && P_PressureMethodPossible(panelTitle, headStage))
 						PressureDataWv[headStage][%Approach_Seal_BrkIn_Clear] = pressureMode
 					else
 						PressureDataWv[headStage][%Approach_Seal_BrkIn_Clear] = pressureMode // pressure mode = 0
@@ -1696,7 +1696,7 @@ Function P_LoadPressureButtonState(panelTitle)
 				SetControlTitle(panelTitle, StringFromList(SavedPressureMode, PRESSURE_CONTROLS_BUTTON_LIST), ("Stop " + StringFromList(SavedPressureMode, PRESSURE_CONTROL_TITLE_LIST)))
 				SetControlTitleColor(panelTitle, StringFromList(SavedPressureMode, PRESSURE_CONTROLS_BUTTON_LIST), 39168, 0, 0)
 			elseif(SavedPressureMode) // other pressure modes
-				if(TP_CheckIfTestpulseIsRunning(panelTitle) && P_IsHSActiveAndInVClamp(panelTitle, headStageNo)) // check to see if TP is running and the headStage is in V-clampmode
+				if(P_PressureMethodPossible(panelTitle, headStageNo))
 					SetControlTitle(panelTitle, StringFromList(SavedPressureMode, PRESSURE_CONTROLS_BUTTON_LIST), ("Stop " + StringFromList(SavedPressureMode, PRESSURE_CONTROL_TITLE_LIST)))
 					SetControlTitleColor(panelTitle, StringFromList(SavedPressureMode, PRESSURE_CONTROLS_BUTTON_LIST), 39168, 0, 0)
 				endif
@@ -1732,7 +1732,7 @@ static Function P_EnableButtonsIfValid(panelTitle, headStageNo)
 	SetControlTitles(panelTitle, PRESSURE_CONTROLS_BUTTON_LIST, PRESSURE_CONTROL_TITLE_LIST)
 	SetControlTitleColors(panelTitle, PRESSURE_CONTROLS_BUTTON_LIST, 0, 0, 0)
 
-	if(TP_CheckIfTestpulseIsRunning(panelTitle) && P_IsHSActiveAndInVClamp(panelTitle, headStageNo))
+	if(P_PressureMethodPossible(panelTitle, headStageNo))
 		if(DAG_GetNumericalValue(panelTitle, StringFromList(PRESSURE_METHOD_CLEAR, PRESSURE_CONTROL_CHECKBOX_LIST)))
 			EnableControls(panelTitle, PRESSURE_CONTROLS_BUTTON_LIST)
 		else
@@ -1873,16 +1873,27 @@ static Function P_DACIsCollectingData(panelTitle, headStage)
 	return HW_IsRunning(hwType, deviceID)
 End
 
+/// @brief Return true if pressure methods can be used on that headstage now
+///
+/// Does not check if the headstage has valid settings, see P_ValidatePressureSetHeadstage(),
+/// or that no pressure pulse is currently ongoing, see P_DACIsCollectingData().
+static Function P_PressureMethodPossible(panelTitle, headstage)
+	string panelTitle
+	variable headstage
+
+	NVAR dataAcqRunMode = $GetDataAcqRunMode(panelTitle)
+
+	return (TP_CheckIfTestpulseIsRunning(panelTitle)                                                                         \
+			|| (dataAcqRunMode != DAQ_NOT_RUNNING && DC_GetChannelTypefromHS(panelTitle, headstage) == DAQ_CHANNEL_TYPE_TP)) \
+			&& P_IsHSActiveAndInVClamp(panelTitle, headstage)
+End
+
 /// @brief Determines headStage is on and in V-Clamp mode
 static Function P_IsHSActiveAndInVClamp(panelTitle, headStage)
 	string panelTitle
 	variable headStage
 
-	if(!DAG_GetHeadstageMode(panelTitle, headStage) && DAG_GetHeadstageState(panelTitle, headStage))
-		return 1
-	endif
-
-	return 0
+	return V_CLAMP_MODE == DAG_GetHeadstageMode(panelTitle, headStage) && DAG_GetHeadstageState(panelTitle, headStage)
 End
 
 /// @brief Returns the four pressure buttons to the base state (gray color; removes "Stop" string from button title)
@@ -2192,13 +2203,16 @@ End
 Function CheckProc_ClearEnable(cba) : CheckBoxControl
 	STRUCT WMCheckboxAction &cba
 
+	variable headstage
+
 	switch(cba.eventCode)
 		case 2: // mouse up
 			Variable checked = cba.checked
 			DAG_Update(cba.win, cba.ctrlName, val = cba.checked)
+			headstage = DAG_GetNumericalValue(cba.win, "slider_DataAcq_ActiveHeadstage")
 
 			if(checked)
-				if(TP_CheckIfTestpulseIsRunning(cba.win) && P_IsHSActiveAndInVClamp(cba.win, DAG_GetNumericalValue(cba.win, "slider_DataAcq_ActiveHeadstage")))
+				if(P_PressureMethodPossible(cba.win, headstage))
 					EnableControl(cba.win, "button_DataAcq_Clear")
 				endif
 			else

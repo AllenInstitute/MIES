@@ -188,7 +188,7 @@ static Function/WAVE GetChanneListFromITCConfig(config, channelType)
 
 	variable numRows, i, j
 
-	ASSERT(IsValidConfigWave(config), "Invalid config wave")
+	ASSERT(IsValidConfigWave(config, version=0), "Invalid config wave")
 
 	numRows = DimSize(config, ROWS)
 	Make/U/B/FREE/N=(numRows) activeChannels
@@ -203,6 +203,94 @@ static Function/WAVE GetChanneListFromITCConfig(config, channelType)
 	Redimension/N=(j) activeChannels
 
 	return activeChannels
+End
+
+/// @brief Returns the number of given mode channels from channelType wave
+///
+/// @param chanTypes a 1D wave containing @ref DaqChannelTypeConstants, returned by GetADCTypesFromConfig()
+///
+/// @param type to count, one of @ref DaqChannelTypeConstants
+///
+/// @return number of types present in chanTypes
+Function GetNrOfTypedChannels(chanTypes, type)
+	WAVE chanTypes
+	variable type
+
+	variable i, numChannels, count
+
+	ASSERT(type == DAQ_CHANNEL_TYPE_UNKOWN || type == DAQ_CHANNEL_TYPE_DAQ || type == DAQ_CHANNEL_TYPE_TP, "Invalid type")
+	numChannels = DimSize(chanTypes, ROWS)
+	for(i = 0; i < numChannels; i += 1)
+		if(chanTypes[i] == type)
+			count += 1
+		endif
+	endfor
+
+	return count
+End
+
+/// @brief Return a types of the AD channels from the ITC config
+Function/WAVE GetTTLTypesFromConfig(config)
+	WAVE config
+
+	return GetTypeListFromITCConfig(config, ITC_XOP_CHANNEL_TYPE_TTL)
+End
+
+/// @brief Return a types of the AD channels from the ITC config
+Function/WAVE GetADCTypesFromConfig(config)
+	WAVE config
+
+	return GetTypeListFromITCConfig(config, ITC_XOP_CHANNEL_TYPE_ADC)
+End
+
+/// @brief Return a types of the DA channels from the ITC config
+Function/WAVE GetDACTypesFromConfig(config)
+	WAVE config
+
+	return GetTypeListFromITCConfig(config, ITC_XOP_CHANNEL_TYPE_DAC)
+End
+
+/// @brief Return a wave with all active channels
+///
+/// @todo change to return a 0/1 wave with constant size a la DAG_GetChannelState
+///
+/// @param config       ITCChanConfigWave as passed to the ITC XOP
+/// @param channelType  DA/AD/TTL constants, see @ref ChannelTypeAndControlConstants
+static Function/WAVE GetTypeListFromITCConfig(config, channelType)
+	WAVE config
+	variable channelType
+
+	variable numRows, i, j
+
+	ASSERT(IsValidConfigWave(config, version=2), "Invalid config wave")
+
+	numRows = DimSize(config, ROWS)
+	Make/U/B/FREE/N=(numRows) activeChannels
+
+	for(i = 0; i < numRows; i += 1)
+		if(channelType == config[i][%ChannelType])
+			activeChannels[j] = config[i][%DAQChannelType]
+			j += 1
+		endif
+	endfor
+
+	Redimension/N=(j) activeChannels
+
+	return activeChannels
+End
+
+/// @brief Checks if a channel of TP type exists on ADCs
+///
+/// @param panelTitle device
+///
+/// @return 1 if TP type present, 0 otherwise
+Function GotTPChannelsOnADCs(panelTitle)
+	string panelTitle
+
+	WAVE config = GetITCChanConfigWave(panelTitle)
+	WAVE ADCmode = GetADCTypesFromConfig(config)
+	FindValue/I=(DAQ_CHANNEL_TYPE_TP) ADCmode
+	return (V_Value != -1)
 End
 
 /// @brief Return the dimension label for the special, aka non-unique, controls
@@ -1616,7 +1704,7 @@ End
 /// Holds invalid wave refs for non-existing entries.
 ///
 /// @param sweepDFR    datafolder reference with 1D sweep data
-/// @param channelType One of @ref ITC_XOP_CHANNEL_CONSTANTS
+/// @param channelType One of @ref ItcXopChannelConstants
 ///
 /// @see GetITCDataSingleColumnWave() or SplitSweepIntoComponents()
 Function/WAVE GetITCDataSingleColumnWaves(sweepDFR, channelType)
@@ -1633,7 +1721,7 @@ End
 /// Returned wave reference can be invalid.
 ///
 /// @param sweepDFR      datafolder holding 1D waves
-/// @param channelType   One of @ref ITC_XOP_CHANNEL_CONSTANTS
+/// @param channelType   One of @ref ItcXopChannelConstants
 /// @param channelNumber channel number
 /// @param splitTTLBits  [optional, defaults to false] return a single bit of the TTL wave
 /// @param ttlBit        [optional] number specifying the TTL bit
@@ -1684,7 +1772,7 @@ Function/Wave GetConfigWave(sweepWave)
 
 	string name = "Config_" + NameOfWave(sweepWave)
 	Wave/SDFR=GetWavesDataFolderDFR(sweepWave) config = $name
-	ASSERT(IsValidConfigWave(config),"Invalid config wave")
+	ASSERT(IsValidConfigWave(config, version=0),"Invalid config wave")
 
 	return config
 End
@@ -1711,7 +1799,7 @@ End
 Function GetSamplingInterval(config)
 	Wave config
 
-	ASSERT(IsValidConfigWave(config), "Expected a valid config wave")
+	ASSERT(IsValidConfigWave(config, version=0), "Expected a valid config wave")
 
 	// from ITCConfigAllChannels help file:
 	// Third Column  = SamplingInterval:  integer value for sampling interval in microseconds (minimum value - 5 us)
@@ -1726,7 +1814,7 @@ End
 threadsafe Function GetDataOffset(config)
 	Wave config
 
-	ASSERT_TS(IsValidConfigWave(config),"Expected a valid config wave")
+	ASSERT_TS(IsValidConfigWave(config, version=1),"Expected a valid config wave")
 
 	Duplicate/D/R=[][4]/FREE config, offsets
 
@@ -2296,7 +2384,7 @@ Function CreateTiledChannelGraph(graph, config, sweepNo, numericalValues,  textu
 					endif
 
 					GetTraceColor(colorIndex, red, green, blue)
-					ModifyGraph/W=$graph hideTrace($trace)=(tgs.hideSweep), rgb($trace)=(red, green, blue), userData($trace)={channelType, 0, channelID}, userData($trace)={channelNumber, 0, num2str(chan)}, userData($trace)={sweepNumber, 0, num2str(sweepNo)}, userData($trace)={headstage, 0, num2str(headstage)}, userData($trace)={textualValues, 0, GetWavesDataFolder(textualValues, 2)}, userData($trace)={numericalValues, 0, GetWavesDataFolder(numericalValues, 2)}, userData($trace)={clampMode, 0, num2str(IsFinite(headstage) ? clampModes[headstage] : NaN)}
+					ModifyGraph/W=$graph hideTrace($trace)=(tgs.hideSweep), rgb($trace)=(red, green, blue), userData($trace)={channelType, USERDATA_MODIFYGRAPH_REPLACE, channelID}, userData($trace)={channelNumber, USERDATA_MODIFYGRAPH_REPLACE, num2str(chan)}, userData($trace)={sweepNumber, USERDATA_MODIFYGRAPH_REPLACE, num2str(sweepNo)}, userData($trace)={headstage, USERDATA_MODIFYGRAPH_REPLACE, num2str(headstage)}, userData($trace)={textualValues, USERDATA_MODIFYGRAPH_REPLACE, GetWavesDataFolder(textualValues, 2)}, userData($trace)={numericalValues, USERDATA_MODIFYGRAPH_REPLACE, GetWavesDataFolder(numericalValues, 2)}, userData($trace)={clampMode, USERDATA_MODIFYGRAPH_REPLACE, num2str(IsFinite(headstage) ? clampModes[headstage] : NaN)}
 
 					sprintf str, "colorIndex=%d", colorIndex
 					DEBUGPRINT(str)
@@ -2617,7 +2705,7 @@ Function AddTraceToLBGraph(graph, keys, values, key)
 			endif
 		endif
 
-		ModifyGraph/W=$graph userData($trace)={key, 0, key}
+		ModifyGraph/W=$graph userData($trace)={key, USERDATA_MODIFYGRAPH_REPLACE, key}
 
 		GetTraceColor(i, red, green, blue)
 		ModifyGraph/W=$graph rgb($trace)=(red, green, blue), marker($trace)=i
@@ -2993,27 +3081,223 @@ Function PostPlotTransformations(graph, pps)
 	string graph
 	STRUCT PostPlotSettings &pps
 
-	string traceList, trace, crsA, crsB
-	variable numTraces, i
-
-	crsA = CsrInfo(A, graph)
-	crsB = CsrInfo(B, graph)
+	variable csrAx, csrBx
 
 	WAVE/T traces = ListToTextWave(GetAllSweepTraces(graph), ";")
 
 	ZeroTracesIfReq(graph, traces, pps.zeroTraces)
-	if(pps.timeAlignment)
-		TimeAlignmentIfReq(graph, traces, pps.timeAlignMode, pps.timeAlignRefTrace, pps.timeAlignLevel)
-	endif
+	TimeAlignMainWindow(graph, pps)
 
 	AverageWavesFromSameYAxisIfReq(graph, traces, pps.averageTraces, pps.averageDataFolder, pps.hideSweep)
 	AR_HighlightArtefactsEntry(graph)
 	PA_ShowPulses(graph, pps.averageDataFolder, pps.pulseAverSett)
 
-	RestoreCursor(graph, crsA)
-	RestoreCursor(graph, crsB)
-
 	pps.finalUpdateHook(graph)
+End
+
+/// @brief Time Alignment for the BrowserSettingsPanel
+///
+/// This function should work for any given reference trace in
+/// pps.timeAlignRefTrace in the popup menu. (DB and SB)
+///
+/// @param graph graph with sweep traces
+/// @param pps   settings
+Function TimeAlignMainWindow(graph, pps)
+	string graph
+	STRUCT PostPlotSettings &pps
+
+	variable csrAx, csrBx
+
+	if(pps.timeAlignment)
+		GetCursorXPositionAB(graph, csrAx, csrBx)
+		TimeAlignmentIfReq(pps.timeAlignRefTrace, pps.timeAlignMode, pps.timeAlignLevel, csrAx, csrBx, force = 1)
+	endif
+End
+
+/// @brief return a list of all traces relevant for TimeAlignment
+Function/S TimeAlignGetAllTraces(graph)
+	string graph
+
+	return GetAllSweepTracesFromGraphs(graph)
+End
+
+/// @brief return a list of all graphs included in TimeAlignment
+Function/S TimeAlignGetAllGraphs(graph)
+	string graph
+
+	string graphs
+
+	graphs = AddListItem(graph, "")
+	if(PA_IsActive(graph))
+		graphs += PA_GetAverageGraphs()
+	endif
+
+	return graphs
+End
+
+/// @brief Adds or removes the cursors from the graphs depending on the
+///        panel settings
+///
+/// @param win  main DB/SB graph or any subwindow panel.
+Function TimeAlignHandleCursorDisplay(win)
+	string win
+
+	string graphtrace, graph, graphs, trace, traceList, bsPanel, csrA, csrB
+	variable length, posA, posB
+
+	win     = GetMainWindow(win)
+	bsPanel = BSP_GetPanel(win)
+
+	traceList = TimeAlignGetAllTraces(win)
+	if(isEmpty(traceList))
+		return NaN
+	endif
+
+	graphs = TimeAlignGetAllGraphs(win)
+
+	// deactivate cursor
+	if(!GetCheckBoxState(bsPanel, "check_BrowserSettings_TA"))
+		KillCursorInGraphs(graphs, "A")
+		KillCursorInGraphs(graphs, "B")
+		return 0
+	endif
+
+	// save cursor and kill all available A,B cursors
+	graph = FindCursorInGraphs(graphs, "A")
+	if(!isempty(graph))
+		csrA = CsrInfo(A, graph)
+		KillCursorInGraphs(graphs, "A")
+		csrB = CsrInfo(B, graph)
+		KillCursorInGraphs(graphs, "B")
+	endif
+
+	// ensure that trace is really on the graph
+	graphtrace = GetPopupMenuString(bsPanel, "popup_TimeAlignment_Master")
+	if(FindListItem(graphtrace, traceList) == -1)
+		graphtrace = StringFromList(0, traceList)
+	endif
+	graph = StringFromList(0, graphtrace, "#")
+	trace = StringFromList(1, graphtrace, "#")
+
+	// set cursor to trace
+	if(isEmpty(csrA) || isEmpty(csrB))
+		length = DimSize(TraceNameToWaveRef(graph, trace), ROWS)
+		posA = length / 3
+		posB = length * 2 / 3
+	else
+		posA = NumberByKey("POINT", csrA)
+		posB = NumberByKey("POINT", csrB)
+	endif
+	Cursor/W=$graph/A=1/N=1/P A $trace posA
+	Cursor/W=$graph/A=1/N=1/P B $trace posB
+End
+
+/// @brief Enable/Disable TimeAlignment Controls and Cursors
+Function TimeAlignUpdateControls(win)
+	string win
+	variable alignMode
+
+	string bsPanel, graph
+
+	bsPanel = BSP_GetPanel(win)
+	graph = GetMainWindow(win)
+
+	if(GetCheckBoxState(bsPanel, "check_BrowserSettings_TA"))
+		EnableControls(bsPanel, "popup_TimeAlignment_Mode;setvar_TimeAlignment_LevelCross;popup_TimeAlignment_Master;button_TimeAlignment_Action")
+
+		alignMode = GetPopupMenuIndex(bsPanel, "popup_TimeAlignment_Mode")
+		if(alignMode == TIME_ALIGNMENT_LEVEL_RISING || alignMode == TIME_ALIGNMENT_LEVEL_FALLING)
+			EnableControl(bsPanel, "setvar_TimeAlignment_LevelCross")
+		else
+			DisableControl(bsPanel, "setvar_TimeAlignment_LevelCross")
+		endif
+	else
+		DisableControls(bsPanel, "popup_TimeAlignment_Mode;setvar_TimeAlignment_LevelCross;popup_TimeAlignment_Master;button_TimeAlignment_Action")
+	endif
+
+	TimeAlignHandleCursorDisplay(graph)
+	ControlUpdate/W=$bsPanel popup_TimeAlignment_Master
+End
+
+Function TimeAlignGatherSettings(bsPanel, pps)
+	String bsPanel
+	STRUCT PostPlotSettings &pps
+
+	pps.timeAlignment     = GetCheckBoxState(bsPanel, "check_BrowserSettings_TA")
+	pps.timeAlignMode     = GetPopupMenuIndex(bsPanel, "popup_TimeAlignment_Mode")
+	pps.timeAlignLevel    = GetSetVariable(bsPanel, "setvar_TimeAlignment_LevelCross")
+	pps.timeAlignRefTrace = GetPopupMenuString(bsPanel, "popup_TimeAlignment_Master")
+	pps.timeAlignment     = GetCheckBoxState(bsPanel, "check_BrowserSettings_TA")
+End
+
+Function TimeAlignCursorMovedHook(s)
+	STRUCT WMWinHookStruct &s
+
+	string trace, graphtrace, graphtraces, xAxis, yAxis, traceData, traceList, fullTraceList, bsPanel, mainPanel
+	variable numTrace, numAxes
+
+	strswitch(s.eventName)
+		case "cursormoved":
+			trace = s.traceName
+			if(isEmpty(trace))
+				return 0
+			endif
+
+			bsPanel = BSP_GetPanel(s.winName)
+			if(!windowExists(bsPanel))
+				// check if hook was called from a PA graph
+				if(WhichListItem(s.winName, PA_GetAverageGraphs()) == -1)
+					return 0
+				endif
+				bsPanel = BSP_GetPanel(GetUserData(s.winName, "", MIES_BSP_PA_MAINPANEL))
+				if(!windowExists(bsPanel))
+					return 0
+				endif
+			endif
+
+			if(!GetCheckBoxState(bsPanel, "check_BrowserSettings_TA"))
+				return 0
+			endif
+
+			mainPanel = GetMainWindow(bsPanel)
+			graphtrace = s.winName + "#" + trace
+			graphtraces = TimeAlignGetAllTraces(mainPanel)
+			if(FindListItem(graphtrace, graphtraces) == -1)
+				numAxes = ItemsInList(AxisList(s.winName))
+				if(numAxes > 2)
+					traceData = TraceInfo(s.winName, trace, 0)
+					xAxis = StringByKey("XAXIS", traceData)
+					yAxis = StringByKey("YAXIS", traceData)
+				endif
+				traceList = TraceNameList(s.winName, ";", 0x01)
+				numTrace = WhichListItem(trace, traceList)
+				do
+					traceList = RemoveListItem(numTrace, traceList)
+					if(numTrace == -1 || ItemsInList(traceList) == 0)
+						graphtrace = StringFromList(0, graphtraces)
+						break
+					endif
+					if(numTrace > 0)
+						numTrace -= 1
+					endif
+					trace = StringFromList(numTrace, traceList)
+					if(numAxes > 2)
+						traceData = TraceInfo(s.winName, trace, 0)
+						if(cmpstr(xAxis, StringByKey("XAXIS", traceData)))
+							continue
+						elseif(cmpstr(yAxis, StringByKey("YAXIS", traceData)))
+							continue
+						endif
+					endif
+					graphtrace = s.winName + "#" + trace
+				while(FindListItem(graphtrace, graphtraces) == -1)
+			endif
+
+			PGC_SetAndActivateControl(bsPanel, "popup_TimeAlignment_Master", str = graphtrace)
+			break
+	endswitch
+
+	return 0
 End
 
 /// @brief Replace all waves from the traces in the graph with their backup
@@ -3039,35 +3323,80 @@ End
 /// @param graph graph
 /// @param channelType [optional, defaults to all] restrict the returned traces
 ///                    to the given channel type
-Function/S GetAllSweepTraces(graph, [channelType])
+/// @param region      [optional] return only traces of the specified region
+Function/S GetAllSweepTraces(graph, [channelType, region])
 	string graph
 	variable channelType
+	string region
 
-	string traceList, trace, channelTypeAct, channelTypeRef
+	string traceList, trace, channelTypeAct, channelTypeRef, regionAct
 	string traceListClean = ""
 	variable numTraces, i
+
+	ASSERT(ParamIsDefault(channelType) || ParamIsDefault(region), "Only one parameter can be set")
 
 	traceList = TraceNameList(graph, ";", 0+1)
 	traceList = ListMatch(traceList, "!average*")
 
-	if(ParamIsDefault(channelType))
+	if(ParamIsDefault(channelType) && ParamIsDefault(region))
 		return traceList
 	endif
 
-	channelTypeRef = StringFromList(channelType, ITC_CHANNEL_NAMES)
-	ASSERT(!IsEmpty(channelTypeRef), "Invalid channelType")
+	if(!ParamIsDefault(channelType))
+		channelTypeRef = StringFromList(channelType, ITC_CHANNEL_NAMES)
+		ASSERT(!IsEmpty(channelTypeRef), "Invalid channelType")
+	endif
+
+	if(!ParamIsDefault(region))
+		ASSERT(!IsEmpty(region), "Invalid region")
+	endif
 
 	numTraces = ItemsInList(traceList)
 	for(i = 0; i < numTraces; i += 1)
 		trace = StringFromList(i, traceList)
-		channelTypeAct = GetUserData(graph, trace, "channelType")
 
-		if(!cmpstr(channelTypeAct, channelTypeRef))
-			traceListClean = AddListItem(trace, traceListClean, ";", inf)
+		if(!ParamIsDefault(region))
+			regionAct = GetUserData(graph, trace, "region")
+			if(!cmpstr(regionAct, region))
+				traceListClean = AddListItem(trace, traceListClean, ";", inf)
+			endif
+		elseif(!ParamIsDefault(channelType))
+			channelTypeAct = GetUserData(graph, trace, "channelType")
+			if(!cmpstr(channelTypeAct, channelTypeRef))
+				traceListClean = AddListItem(trace, traceListClean, ";", inf)
+			endif
 		endif
 	endfor
 
 	return traceListClean
+End
+
+/// @brief get a list of all traces from a list of graphs
+///
+/// @param graphs semicolon separated list of graph names
+/// @param region [optional] return only traces with the specified region
+///               userdata entry
+/// @returns graph#trace named patterns in a semicolon separated list
+Function/S GetAllSweepTracesFromGraphs(graphs, [region])
+	string graphs
+	string region
+
+	string graph, traces
+	variable i, numGraphs
+	string graphtraces = ""
+
+	numGraphs = ItemsInList(graphs)
+	for(i = 0; i < numGraphs; i += 1)
+		graph = StringFromList(i, graphs)
+		if(ParamIsDefault(region))
+			traces = GetAllSweepTraces(graph)
+		else
+			traces = GetAllSweepTraces(graph, region = region)
+		endif
+		graphtraces += AddPrefixToEachListItem(graph + "#", traces)
+	endfor
+
+	return graphtraces
 End
 
 /// @brief Average traces in the graph from the same y-axis and append them to the graph
@@ -3203,7 +3532,7 @@ static Function AverageWavesFromSameYAxisIfReq(graph, traces, averagingEnabled, 
 		endif
 
 		if(ListHasOnlyOneUniqueEntry(listOfClampModes))
-			ModifyGraph/W=$graph userData($traceName)={clampMode, 0, StringFromList(0, listOfClampModes)}
+			ModifyGraph/W=$graph userData($traceName)={clampMode, USERDATA_MODIFYGRAPH_REPLACE, StringFromList(0, listOfClampModes)}
 		endif
 
 		if(WaveListHasSameWaveNames(listOfHeadstages, headstage)&& hideSweep)
@@ -3307,56 +3636,74 @@ static Function ZeroTracesIfReq(graph, traces, zeroTraces)
 End
 
 /// @brief Perform time alignment of features in the sweep traces
-static Function TimeAlignmentIfReq(panel, traces, mode, refTrace, level)
-	string panel
-	WAVE/T traces
-	string refTrace
-	variable mode, level
+///
+/// @param graphtrace reference trace in the form of graph#trace
+/// @param mode       time alignment mode
+/// @param level      level input to the @c FindLevel operation in @see CalculateFeatureLoc
+/// @param pos1x      specify start range for feature position
+/// @param pos2x      specify end range for feature position
+/// @param force      [optional, defaults to false] redo time aligment regardless of wave note
+Function TimeAlignmentIfReq(graphtrace, mode, level, pos1x, pos2x, [force])
+	string graphtrace
+	variable mode, level, pos1x, pos2x, force
 
-	string csrA, csrB, str, axList, refAxis, axis
-	string trace, graph
-	variable offset
-	variable csrAx, csrBx, first, last, pos, numTraces, i, j
+	if(ParamIsDefault(force))
+		force = 0
+	else
+		force = !!force
+	endif
 
-	ASSERT(windowExists(panel), "Graph must exist")
-	graph = GetMainWindow(panel)
+	string str, refAxis, axis
+	string trace, refTrace, graph, refGraph, paGraphs, refRegion
+	variable offset, refPos
+	variable first, last, pos, numTraces, i, idx
+	string sweepNo, pulseIndexStr, indexStr
 
 	if(mode == TIME_ALIGNMENT_NONE) // nothing to do
 		return NaN
 	endif
 
-	csrA = CsrInfo(A, graph)
-	csrB = CsrInfo(B, graph)
+	refGraph = StringFromList(0, graphtrace, "#")
+	refTrace = StringFromList(1, graphtrace, "#")
+	ASSERT(windowExists(refGraph), "Graph must exist")
 
-	if(isEmpty(csrA) || isEmpty(csrB))
-		return NaN
-	endif
-
-	csrAx = xcsr(A, graph)
-	csrBx = xcsr(B, graph)
-
-	first = min(csrAx, csrBx)
-	last  = max(csrAx, csrBx)
+	first = min(pos1x, pos2x)
+	last  = max(pos1x, pos2x)
 
 	sprintf str, "first=%g, last=%g", first, last
 	DEBUGPRINT(str)
 
 	// now determine the feature's time position
 	// using the traces from the same axis as the reference trace
-	axList  = AxisList(graph)
-	refAxis = StringByKey("YAXIS", TraceInfo(graph, refTrace, 0))
+	refGraph = refGraph
+	refAxis = StringByKey("YAXIS", TraceInfo(refGraph, refTrace, 0))
 
-	numTraces = DimSize(traces, ROWS)
+	paGraphs = PA_GetAverageGraphs()
+	if(WhichListItem(refGraph, paGraphs) == -1)
+		WAVE/T graphtraces = ListToTextWave(GetAllSweepTracesFromGraphs(refGraph), ";")
+	else
+		// only do PA for sweeps with same region
+		refRegion = GetUserData(refGraph, refTrace, "region")
+		ASSERT(!isEmpty(refRegion), "region is empty. Set \"region\" in userData entry for trace.")
+		WAVE/T graphtraces = ListToTextWave(GetAllSweepTracesFromGraphs(paGraphs, region = refRegion), ";")
+	endif
+
+	refPos = NaN
+
+	numTraces = DimSize(graphtraces, ROWS)
 	MAKE/FREE/D/N=(numTraces) featurePos = NaN, sweepNumber = NaN
+	MAKE/FREE/T/N=(numTraces) refIndex
 	for(i = 0; i < numTraces; i += 1)
-		trace = traces[i]
+		graph = StringFromList(0, graphtraces[i], "#")
+		trace = StringFromList(1, graphtraces[i], "#")
 		axis = StringByKey("YAXIS", TraceInfo(graph, trace, 0))
 
-		if(cmpstr(axis, refAxis))
+		if(cmpstr(axis, refAxis) || cmpstr(graph, refGraph))
 			continue
 		endif
 
 		WAVE wv = TraceNameToWaveRef(graph, trace)
+
 		pos = CalculateFeatureLoc(wv, mode, level, first, last)
 
 		if(!IsFinite(pos))
@@ -3364,26 +3711,44 @@ static Function TimeAlignmentIfReq(panel, traces, mode, refTrace, level)
 			return NaN
 		endif
 
+		if(!cmpstr(refTrace, trace))
+			refPos = pos
+		endif
+
 		featurePos[i]  = pos
-		sweepNumber[i] = str2num(GetUserData(graph, trace, "sweepNumber"))
+		sweepNo = GetUserData(graph, trace, "sweepNumber")
+		ASSERT(!isEmpty(sweepNo), "Sweep number is empty. Set \"sweepNumber\" userData entry for trace.")
+		sweepNumber[i] = str2num(sweepNo)
+		pulseIndexStr = GetUserData(graph, trace, "pulseIndex")
+		refIndex[i] = sweepNo + ":" + pulseIndexStr
 	endfor
 
 	// now shift all traces from all sweeps according to their relative offsets
 	// to the reference position
 	for(i = 0; i < numTraces; i += 1)
-		trace = traces[i]
+		graph = StringFromList(0, graphtraces[i], "#")
+		trace = StringFromList(1, graphtraces[i], "#")
 		WAVE wv = TraceNameToWaveRef(graph, trace)
+		ASSERT(WaveExists(wv), "Could not resolve trace to wave")
 
-		j = GetRowIndex(sweepNumber, str=GetUserData(graph, trace, "sweepNumber"))
-		ASSERT(IsFinite(j), "Could not find sweep number")
+		if(GetNumberFromWaveNote(wv, NOTE_KEY_TIMEALIGN) == 1 && force == 0)
+			continue
+		endif
+
+		sweepNo = GetUserData(graph, trace, "sweepNumber")
+		pulseIndexStr = GetUserData(graph, trace, "pulseIndex")
+		indexStr = sweepNo + ":" + pulseIndexStr
+		idx = GetRowIndex(refIndex, str = indexStr)
+		ASSERT(IsFinite(idx), "Could not find index")
+
 		WAVE backup = CreateBackupWave(wv)
-		offset = DimOffset(wv, ROWS) - featurePos[j]
+		offset = - (refPos + featurePos[idx])
 		DEBUGPRINT("trace", str=trace)
 		DEBUGPRINT("old DimOffset", var=DimOffset(wv, ROWS))
-		DEBUGPRINT("new DimOffset", var=offset)
-		SetScale/P x, offset, DimDelta(wv, ROWS), wv
-		offset = DimOffset(backup, ROWS) - DimOffset(wv, ROWS)
-		AddEntryIntoWaveNoteAsList(wv, "TimeAlignmentTotalOffset", var=offset, replaceEntry=1)
+		DEBUGPRINT("new DimOffset", var=DimOffset(wv, ROWS) + offset)
+		SetScale/P x, DimOffset(wv, ROWS) + offset, DimDelta(wv, ROWS), wv
+		SetNumberInWaveNote(wv, "TimeAlignmentTotalOffset", offset)
+		SetNumberInWaveNote(wv, NOTE_KEY_TIMEALIGN, 1)
 	endfor
 End
 
@@ -3821,7 +4186,13 @@ Function/S ReturnListOfAllStimSets(DAorTTL, searchString, [WBstimSetList, thirdP
 		thirdPartyStimSetList = SortList(listThirdParty,";",16)
 	endif
 
-	return SortList(listInternal + listThirdParty, ";", 16)
+	list = SortList(listInternal + listThirdParty, ";", 16)
+
+	if(!DAorTTL)
+		list = AddListItem(STIMSET_TP_WHILE_DAQ, list, ";", 0)
+	endif
+
+	return list
 End
 
 /// @brief Return the name short String of the Parameter Wave used in the WaveBuilder
@@ -4004,7 +4375,7 @@ Function IsDeviceActiveWithBGTask(panelTitle, task)
 			WAVE/Z/SDFR=GetActiveITCDevicesTimerFolder() deviceIDList = ActiveDevTimeParam
 			break
 		case "ITC_FIFOMonitorMD":
-			WAVE/Z/SDFR=GetActiveITCDevicesFolder() deviceIDList = ActiveDeviceList
+			WAVE deviceIDList = GetDQMActiveDeviceList()
 			break
 		case "TestPulse":
 		case "ITC_Timer":
@@ -4199,7 +4570,7 @@ Function/Wave CreateBackupWave(wv, [forceCreation])
 	string backupname
 	dfref dfr
 
-	ASSERT(WaveExists(wv), "missing wave")
+	ASSERT(IsGlobalWave(wv), "Wave Can Not Be A Null Wave Or A Free Wave")
 	backupname = NameOfWave(wv) + WAVE_BACKUP_SUFFIX
 	dfr        = GetWavesDataFolderDFR(wv)
 
@@ -4226,7 +4597,7 @@ Function/WAVE GetBackupWave(wv)
 
 	string backupname
 
-	ASSERT(WaveExists(wv), "Found no original wave")
+	ASSERT(IsGlobalWave(wv), "Wave Can Not Be A Null Wave Or A Free Wave")
 
 	backupname = NameOfWave(wv) + WAVE_BACKUP_SUFFIX
 	DFREF dfr  = GetWavesDataFolderDFR(wv)
@@ -4649,6 +5020,24 @@ Function UpdateSweepPlot(win)
 	endif
 End
 
+/// @brief update of panel elements and related displayed graphs in BSP
+Function UpdateSettingsPanel(win)
+	string win
+
+	string graph, bsPanel, controls
+
+	graph = GetMainWindow(win)
+	bsPanel = BSP_GetPanel(win)
+
+	TimeAlignUpdateControls(bsPanel)
+
+	if(BSP_IsDataBrowser(win))
+		DB_GraphUpdate(win)
+	else
+		SB_PanelUpdate(win)
+	endif
+End
+
 /// @brief Stringified short version of the clamp mode
 Function/S ConvertAmplifierModeShortStr(mode)
 	variable mode
@@ -4835,12 +5224,41 @@ Function MoveWaveWithOverwrite(dest, src)
 End
 
 /// @brief Check if the given wave is a valid ITCConfigWave
-threadsafe Function IsValidConfigWave(config)
+///
+/// The optional version parameter allows to check if the wave is at least comaptible with this version.
+/// The function assumes that higher versions are compatible with lower versions which is for most callers true.
+/// For a special case see AFH_GetChannelUnits.
+///
+/// @param config wave reference to a ITCConfigWave
+///
+/// @param version [optional, default=ITC_CONFIG_WAVE_VERSION], check against a specific version
+///                current versions known are 0 (equals NaN), 1, 2
+threadsafe Function IsValidConfigWave(config, [version])
 	WAVE/Z config
+	variable version
 
-	return WaveExists(config) &&        \
-		   DimSize(config, ROWS) > 0 && \
-		   DimSize(config, COLS) >= 4
+	variable waveVersion
+
+	if(!WaveExists(config))
+		return 0
+	endif
+
+	if(ParamIsDefault(version))
+		version = ITC_CONFIG_WAVE_VERSION
+	endif
+
+	waveVersion = GetWaveVersion(config)
+
+	// we know version NaN, 1 and 2, see GetITCChanConfigWave()
+	if(version == 2 && waveVersion >= 2)
+		return DimSize(config, ROWS) > 0 && DimSize(config, COLS) >= 6
+	elseif(version == 1 && waveVersion >= 1)
+		return DimSize(config, ROWS) > 0 && DimSize(config, COLS) >= 5
+	elseif(version == 0 && (isNaN(waveVersion) || waveVersion >= 1))
+		return DimSize(config, ROWS) > 0 && DimSize(config, COLS) >= 4
+	endif
+
+	return 0
 End
 
 /// @brief Check if the given wave is a valid HardwareDataWave
@@ -4999,4 +5417,14 @@ Function ZeroWave(wv)
 
 	Note/K wv, wavenote + "\r"
 	SetNumberInWaveNote(wv, NOTE_KEY_ZEROED, 1)
+End
+
+/// @brief Stops the ASYNC framework if no TP or DAQ operation is running
+Function StopAsyncIfDone()
+
+	if(TP_GetNumDevicesWithTPRunning() + DQ_GetNumDevicesWithDAQRunning())
+		return NaN
+	endif
+
+	ASYNC_Stop(timeout=10)
 End

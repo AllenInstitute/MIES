@@ -58,13 +58,14 @@ Function InitPulseAverageSettings(pa)
 	pa.fallbackPulseLength  = NaN
 	pa.multipleGraphs       = NaN
 	pa.zeroTraces           = NaN
+	pa.autoTimeAlignment    = NaN
 End
 
 Structure PulseAverageSettings
 	variable showIndividualTraces, showAverageTrace
 	variable startingPulse, endingPulse, regionSlider
 	variable fallbackPulseLength, multipleGraphs
-	variable zeroTraces
+	variable zeroTraces, autoTimeAlignment
 
 	STRUCT PulseAverageDeconvSettings deconvolution
 EndStructure

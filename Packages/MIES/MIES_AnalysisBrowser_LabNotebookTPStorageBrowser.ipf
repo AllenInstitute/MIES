@@ -124,9 +124,9 @@ static Function LBN_AddTraceToTPStorage(panel, TPStorage, activeADC, adc, key)
 	GetTraceColor(numExistingTraces, red, green, blue)
 	ModifyGraph/W=$graph rgb($trace)=(red, green, blue)
 	ModifyGraph/W=$graph marker=8,msize=2
-	ModifyGraph/W=$graph userData($trace)={key, 0, key}
-	ModifyGraph/W=$graph userData($trace)={activeADC, 0, num2str(activeADC)}
-	ModifyGraph/W=$graph userData($trace)={ADC, 0, num2str(adc)}
+	ModifyGraph/W=$graph userData($trace)={key, USERDATA_MODIFYGRAPH_REPLACE, key}
+	ModifyGraph/W=$graph userData($trace)={activeADC, USERDATA_MODIFYGRAPH_REPLACE, num2str(activeADC)}
+	ModifyGraph/W=$graph userData($trace)={ADC, USERDATA_MODIFYGRAPH_REPLACE, num2str(adc)}
 
 	Label/W=$graph $axis lbl
 	Label/W=$graph bottom "Delta time [s]"

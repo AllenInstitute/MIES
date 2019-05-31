@@ -2137,7 +2137,7 @@ end
 Function WBP_IsBuiltinStimset(setName)
 	string setName
 
-	return GrepString(setName, "^MIES_.*")
+	return GrepString(setName, "^MIES_.*") || !CmpStr(setName, STIMSET_TP_WHILE_DAQ)
 End
 
 /// @brief Save the set parameter waves
@@ -3194,9 +3194,10 @@ static Function WBP_UpdateParameterWave()
 
 	for(i = 0; i < numEntries; i += 1)
 		name = StringFromList(i, names)
-		listWave[i][%Name]  = name
-		listWave[i][%Type]  = AFH_GetAnalysisParamType(name, params)
-		listWave[i][%Value] = AFH_GetAnalysisParameter(name, params)
+		listWave[i][%Name]     = name
+		listWave[i][%Type]     = AFH_GetAnalysisParamType(name, params)
+		listWave[i][%Value]    = AFH_GetAnalysisParameter(name, params)
+		listWave[i][%Required] = ToTrueFalse(WhichListItem(name, reqNames) != -1)
 	endfor
 
 	offset = DimSize(listWave, ROWS)
@@ -3300,6 +3301,12 @@ Function WBP_ButtonProc_AddParam(ba) : ButtonControl
 			WAVE/T WPT = GetWaveBuilderWaveTextParam()
 			type       = GetPopupMenuString(win, "popup_param_types")
 			value      = GetSetVariableString(win, "setvar_param_value")
+
+			if(IsEmpty(value))
+				printf "The parameter \"%s\" has an empty value and is thus not valid.\r", name
+				ControlWindowToFront()
+				break
+			endif
 
 			strswitch(type)
 				case "variable":

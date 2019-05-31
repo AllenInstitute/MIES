@@ -8,7 +8,7 @@
 static strConstant EXT_PANEL_SUBWINDOW = "BrowserSettingsPanel"
 static strConstant EXT_PANEL_SWEEPCONTROL = "SweepControl"
 
-static Constant BROWSERSETTINGS_PANEL_VERSION = 2
+static Constant BROWSERSETTINGS_PANEL_VERSION = 4
 
 static strConstant BROWSERTYPE_DATABROWSER  = "D"
 static strConstant BROWSERTYPE_SWEEPBROWSER = "S"
@@ -162,9 +162,10 @@ Function BSP_DynamicStartupSettings(mainPanel)
 	SetControlProcedure(bsPanel, "check_Display_VisibleXrange", BSP_AddBrowserPrefix(mainPanel, "CheckProc_ScaleAxes"))
 	SetControlProcedures(bsPanel, "check_SweepControl_HideSweep;", BSP_AddBrowserPrefix(mainPanel, "CheckProc_ChangedSetting"))
 	SetControlProcedures(bsPanel, "slider_BrowserSettings_dDAQ;", "BSP_SliderProc_ChangedSetting")
+	SetControlProcedures(bsPanel, "button_TimeAlignment_Action", BSP_AddBrowserPrefix(mainPanel, "DoTimeAlignment"))
 
 	// SB/DB specific controls
-	controlsSB = "check_BrowserSettings_TA;check_Display_EqualYrange;check_Display_EqualYignore;"
+	controlsSB = "check_Display_EqualYrange;check_Display_EqualYignore;"
 	controlsDB = "popup_DB_lockedDevices;"
 	if(BSP_IsDataBrowser(mainPanel))
 		EnableControls(bsPanel, controlsDB)
@@ -173,8 +174,8 @@ Function BSP_DynamicStartupSettings(mainPanel)
 		EnableControls(bsPanel, controlsSB)
 		DisableControls(bsPanel, controlsDB)
 		DisableControls(bsPanel, "list_dashboard;check_BrowserSettings_DB_Failed;check_BrowserSettings_DB_Passed")
-		PopupMenu popup_TimeAlignment_Master win=$bsPanel, value = #("SB_GetAllTraces(\"" + mainPanel + "\")")
 	endif
+	PopupMenu popup_TimeAlignment_Master win=$bsPanel, value = #("TimeAlignGetAllTraces(\"" + mainPanel + "\")")
 
 	BSP_InitMainCheckboxes(bsPanel)
 
@@ -498,10 +499,21 @@ Function BSP_SetPAControlStatus(win)
 
 	string controlList
 
-	controlList = "group_properties_pulse;check_pulseAver_indTraces;check_pulseAver_showAver;check_pulseAver_zeroTrac;check_pulseAver_multGraphs;setvar_pulseAver_startPulse;setvar_pulseAver_endPulse;setvar_pulseAver_fallbackLength;"
+	controlList = "group_properties_pulse;check_pulseAver_indTraces;check_pulseAver_showAver;check_pulseAver_zeroTrac;check_pulseAver_multGraphs;check_pulseAver_deconv;check_pulseAver_timeAlign;setvar_pulseAver_startPulse;setvar_pulseAver_endPulse;setvar_pulseAver_fallbackLength;"
 	BSP_SetControlStatus(win, controlList, PA_IsActive(win))
+	BSP_SetIndividualControlStatus(win)
+	BSP_SetDeconvControlStatus(win)
 
 	BSP_SetDeconvControlStatus(win)
+End
+
+/// @brief enable/disable the buttons that rely on displayed traces
+///
+/// @param win 	specify mainPanel or bsPanel with OVS controls
+Function BSP_SetIndividualControlStatus(win)
+	string win
+
+	BSP_SetControlStatus(win, "check_pulseAver_timeAlign", PA_IndividualIsActive(win))
 End
 
 /// @brief enable/disable deconvolution buttons depending on the status of @c check_pulseAver_showAver
@@ -814,55 +826,59 @@ Window BrowserSettingsPanel() : Panel
 	CheckBox check_highlightRanges,help={"Visualize the found ranges in the graph (*might* slowdown graphing)"}
 	CheckBox check_highlightRanges,userdata(tabnum)=  "3"
 	CheckBox check_highlightRanges,userdata(tabcontrol)=  "Settings",value= 0
-	SetVariable setvar_pulseAver_fallbackLength,pos={106.00,227.00},size={136.00,19.00},bodyWidth=50,disable=3,proc=PA_SetVarProc_Common,title="Fallback Length"
+	SetVariable setvar_pulseAver_fallbackLength,pos={105.00,227.00},size={137.00,18.00},bodyWidth=50,disable=2,proc=PA_SetVarProc_Common,title="Fallback Length"
 	SetVariable setvar_pulseAver_fallbackLength,help={"Pulse To Pulse Length in ms for edge cases which can not be computed."}
 	SetVariable setvar_pulseAver_fallbackLength,userdata(tabnum)=  "4"
 	SetVariable setvar_pulseAver_fallbackLength,userdata(tabcontrol)=  "Settings"
 	SetVariable setvar_pulseAver_fallbackLength,value= _NUM:100
-	SetVariable setvar_pulseAver_endPulse,pos={120.00,204.00},size={122.00,19.00},bodyWidth=50,disable=3,proc=PA_SetVarProc_Common,title="Ending Pulse"
+	SetVariable setvar_pulseAver_endPulse,pos={120.00,204.00},size={122.00,18.00},bodyWidth=50,disable=2,proc=PA_SetVarProc_Common,title="Ending Pulse"
 	SetVariable setvar_pulseAver_endPulse,userdata(tabnum)=  "4"
 	SetVariable setvar_pulseAver_endPulse,userdata(tabcontrol)=  "Settings"
 	SetVariable setvar_pulseAver_endPulse,value= _NUM:inf
-	SetVariable setvar_pulseAver_startPulse,pos={116.00,182.00},size={126.00,19.00},bodyWidth=50,disable=3,proc=PA_SetVarProc_Common,title="Starting Pulse"
+	SetVariable setvar_pulseAver_startPulse,pos={116.00,182.00},size={126.00,18.00},bodyWidth=50,disable=2,proc=PA_SetVarProc_Common,title="Starting Pulse"
 	SetVariable setvar_pulseAver_startPulse,userdata(tabnum)=  "4"
 	SetVariable setvar_pulseAver_startPulse,userdata(tabcontrol)=  "Settings"
 	SetVariable setvar_pulseAver_startPulse,value= _NUM:0
-	CheckBox check_pulseAver_multGraphs,pos={110.00,162.00},size={118.00,16.00},disable=3,proc=PA_CheckProc_Common,title="Use multiple graphs"
+	CheckBox check_pulseAver_multGraphs,pos={110.00,162.00},size={121.00,15.00},disable=2,proc=PA_CheckProc_Common,title="Use multiple graphs"
 	CheckBox check_pulseAver_multGraphs,help={"Show the single pulses in multiple graphs or only one graph with mutiple axis."}
 	CheckBox check_pulseAver_multGraphs,userdata(tabnum)=  "4"
 	CheckBox check_pulseAver_multGraphs,userdata(tabcontrol)=  "Settings",value= 0
-	CheckBox check_pulseAver_zeroTrac,pos={110.00,121.00},size={69.00,16.00},disable=3,proc=PA_CheckProc_Common,title="Zero traces"
+	CheckBox check_pulseAver_zeroTrac,pos={110.00,121.00},size={74.00,15.00},disable=2,proc=PA_CheckProc_Common,title="Zero traces"
 	CheckBox check_pulseAver_zeroTrac,help={"Zero the individual traces using subsequent differentiation and integration"}
 	CheckBox check_pulseAver_zeroTrac,userdata(tabnum)=  "4"
 	CheckBox check_pulseAver_zeroTrac,userdata(tabcontrol)=  "Settings",value= 0
-	CheckBox check_pulseAver_showAver,pos={110.00,141.00},size={115.00,16.00},disable=3,proc=PA_CheckProc_Average,title="Show average trace"
+	CheckBox check_pulseAver_showAver,pos={110.00,141.00},size={118.00,15.00},disable=2,proc=PA_CheckProc_Average,title="Show average trace"
 	CheckBox check_pulseAver_showAver,help={"Show the average trace"}
 	CheckBox check_pulseAver_showAver,userdata(tabnum)=  "4"
 	CheckBox check_pulseAver_showAver,userdata(tabcontrol)=  "Settings",value= 0
-	CheckBox check_pulseAver_indTraces,pos={110.00,100.00},size={130.00,16.00},disable=3,proc=PA_CheckProc_Common,title="Show individual traces"
+	CheckBox check_pulseAver_indTraces,pos={110.00,100.00},size={134.00,15.00},disable=2,proc=PA_CheckProc_Individual,title="Show individual traces"
 	CheckBox check_pulseAver_indTraces,help={"Show the individual traces"}
 	CheckBox check_pulseAver_indTraces,userdata(tabnum)=  "4"
 	CheckBox check_pulseAver_indTraces,userdata(tabcontrol)=  "Settings",value= 1
-	CheckBox check_pulseAver_deconv,pos={110.00,251.00},size={89.00,16.00},disable=3,proc=PA_CheckProc_Deconvolution,title="Deconvolution"
+	CheckBox check_pulseAver_deconv,pos={110.00,251.00},size={94.00,15.00},disable=2,proc=PA_CheckProc_Deconvolution,title="Deconvolution"
 	CheckBox check_pulseAver_deconv,help={"Show Deconvolution: tau * dV/dt + V"}
 	CheckBox check_pulseAver_deconv,userdata(tabnum)=  "4"
 	CheckBox check_pulseAver_deconv,userdata(tabcontrol)=  "Settings",value= 0
-	SetVariable setvar_pulseAver_deconv_tau,pos={145.00,272.00},size={97.00,19.00},bodyWidth=50,disable=3,proc=PA_SetVarProc_Common,title="tau [ms]"
+	CheckBox check_pulseAver_timeAlign,pos={110.00,348.00},size={102.00,15.00},disable=2,proc=PA_CheckProc_Common,title="Time Alignment"
+	CheckBox check_pulseAver_timeAlign,help={"Automatically align all traces in the PA graph to a reference trace from the diagonal element"}
+	CheckBox check_pulseAver_timeAlign,userdata(tabnum)=  "4"
+	CheckBox check_pulseAver_timeAlign,userdata(tabcontrol)=  "Settings",value= 0
+	SetVariable setvar_pulseAver_deconv_tau,pos={144.00,272.00},size={98.00,18.00},bodyWidth=50,disable=2,proc=PA_SetVarProc_Common,title="tau [ms]"
 	SetVariable setvar_pulseAver_deconv_tau,help={"Deconvolution time tau: tau * dV/dt + V"}
 	SetVariable setvar_pulseAver_deconv_tau,userdata(tabnum)=  "4"
 	SetVariable setvar_pulseAver_deconv_tau,userdata(tabcontrol)=  "Settings"
 	SetVariable setvar_pulseAver_deconv_tau,limits={0,inf,0},value= _NUM:15
-	SetVariable setvar_pulseAver_deconv_smth,pos={131.00,294.00},size={111.00,19.00},bodyWidth=50,disable=3,proc=PA_SetVarProc_Common,title="smoothing"
+	SetVariable setvar_pulseAver_deconv_smth,pos={130.00,294.00},size={112.00,18.00},bodyWidth=50,disable=2,proc=PA_SetVarProc_Common,title="smoothing"
 	SetVariable setvar_pulseAver_deconv_smth,help={"Smoothing factor to use before the deconvolution is calculated. Set to 1 to do the calculation without smoothing."}
 	SetVariable setvar_pulseAver_deconv_smth,userdata(tabnum)=  "4"
 	SetVariable setvar_pulseAver_deconv_smth,userdata(tabcontrol)=  "Settings"
 	SetVariable setvar_pulseAver_deconv_smth,limits={1,inf,0},value= _NUM:1000
-	SetVariable setvar_pulseAver_deconv_range,pos={125.00,316.00},size={117.00,19.00},bodyWidth=50,disable=3,proc=PA_SetVarProc_Common,title="display [ms]"
+	SetVariable setvar_pulseAver_deconv_range,pos={124.00,316.00},size={118.00,18.00},bodyWidth=50,disable=2,proc=PA_SetVarProc_Common,title="display [ms]"
 	SetVariable setvar_pulseAver_deconv_range,help={"Time in ms from the beginning of the pulse that is used for the calculation"}
 	SetVariable setvar_pulseAver_deconv_range,userdata(tabnum)=  "4"
 	SetVariable setvar_pulseAver_deconv_range,userdata(tabcontrol)=  "Settings"
-	SetVariable setvar_pulseAver_deconv_range,limits={0,inf,0},value= _NUM:15
-	GroupBox group_pulseAver_deconv,pos={101.00,248.00},size={155.00,97.00},disable=3
+	SetVariable setvar_pulseAver_deconv_range,limits={0,inf,0},value= _NUM:inf
+	GroupBox group_pulseAver_deconv,pos={101.00,248.00},size={155.00,97.00},disable=2
 	GroupBox group_pulseAver_deconv,userdata(tabnum)=  "4"
 	GroupBox group_pulseAver_deconv,userdata(tabcontrol)=  "Settings"
 	CheckBox check_BrowserSettings_OVS,pos={156.00,50.00},size={47.00,16.00},disable=1,proc=DB_CheckProc_OverlaySweeps,title="enable"
@@ -906,21 +922,21 @@ Window BrowserSettingsPanel() : Panel
 	CheckBox check_Calculation_AverageTraces,userdata(tabnum)=  "0"
 	CheckBox check_Calculation_AverageTraces,userdata(tabcontrol)=  "Settings"
 	CheckBox check_Calculation_AverageTraces,value= 0
-	CheckBox check_BrowserSettings_TA,pos={139.00,112.00},size={47.00,16.00},disable=2,proc=SB_TimeAlignmentProc,title="enable"
+	CheckBox check_BrowserSettings_TA,pos={139.00,112.00},size={50.00,16.00},proc=BSP_TimeAlignmentProc,title="enable"
 	CheckBox check_BrowserSettings_TA,help={"Activate time alignment"}
 	CheckBox check_BrowserSettings_TA,userdata(tabnum)=  "0"
 	CheckBox check_BrowserSettings_TA,userdata(tabcontrol)=  "Settings",value= 0
-	PopupMenu popup_TimeAlignment_Mode,pos={25.00,135.00},size={142.00,17.00},bodyWidth=50,disable=2,proc=SB_TimeAlignmentPopup,title="Alignment Mode"
+	PopupMenu popup_TimeAlignment_Mode,pos={24.00,135.00},size={143.00,19.00},bodyWidth=50,disable=2,proc=BSP_TimeAlignmentPopup,title="Alignment Mode"
 	PopupMenu popup_TimeAlignment_Mode,help={"Select the alignment mode"}
 	PopupMenu popup_TimeAlignment_Mode,userdata(tabnum)=  "0"
 	PopupMenu popup_TimeAlignment_Mode,userdata(tabcontrol)=  "Settings"
 	PopupMenu popup_TimeAlignment_Mode,mode=1,popvalue="Level (Raising)",value= #"\"Level (Raising);Level (Falling);Min;Max\""
-	SetVariable setvar_TimeAlignment_LevelCross,pos={173.00,136.00},size={50.00,19.00},disable=2,proc=SB_TimeAlignmentLevel,title="Level"
+	SetVariable setvar_TimeAlignment_LevelCross,pos={173.00,136.00},size={50.00,19.00},disable=2,proc=BSP_TimeAlignmentLevel,title="Level"
 	SetVariable setvar_TimeAlignment_LevelCross,help={"Select the level (for rising and falling alignment mode) at which traces are aligned"}
 	SetVariable setvar_TimeAlignment_LevelCross,userdata(tabnum)=  "0"
 	SetVariable setvar_TimeAlignment_LevelCross,userdata(tabcontrol)=  "Settings"
 	SetVariable setvar_TimeAlignment_LevelCross,limits={-inf,inf,0},value= _NUM:0
-	Button button_TimeAlignment_Action,pos={193.00,159.00},size={30.00,20.00},disable=2,proc=SB_DoTimeAlignment,title="Do!"
+	Button button_TimeAlignment_Action,pos={193.00,159.00},size={30.00,20.00},disable=2,title="Do!"
 	Button button_TimeAlignment_Action,help={"Perform the time alignment, needs the cursors A and B to have a selected feature"}
 	Button button_TimeAlignment_Action,userdata(tabnum)=  "0"
 	Button button_TimeAlignment_Action,userdata(tabcontrol)=  "Settings"
@@ -944,13 +960,13 @@ Window BrowserSettingsPanel() : Panel
 	SetVariable setvar_Display_EqualYlevel,userdata(tabnum)=  "0"
 	SetVariable setvar_Display_EqualYlevel,userdata(tabcontrol)=  "Settings"
 	SetVariable setvar_Display_EqualYlevel,limits={-inf,inf,0},value= _NUM:0
-	PopupMenu popup_TimeAlignment_Master,pos={31.00,159.00},size={135.00,17.00},bodyWidth=50,disable=2,proc=SB_TimeAlignmentPopup,title="Reference trace"
+	PopupMenu popup_TimeAlignment_Master,pos={32.00,159.00},size={135.00,17.00},bodyWidth=50,disable=2,proc=BSP_TimeAlignmentPopup,title="Reference trace"
 	PopupMenu popup_TimeAlignment_Master,help={"Select the reference trace to which all other traces should be aligned to"}
 	PopupMenu popup_TimeAlignment_Master,userdata(tabnum)=  "0"
 	PopupMenu popup_TimeAlignment_Master,userdata(tabcontrol)=  "Settings"
 	PopupMenu popup_TimeAlignment_Master,mode=1,popvalue="AD0",value= #"\"\""
 	Button button_Calculation_RestoreData,pos={137.00,210.00},size={75.00,25.00},proc=DB_ButtonProc_RestoreData,title="Restore"
-	Button button_Calculation_RestoreData,help={"Duplicate the graph and its trace for further processing"}
+	Button button_Calculation_RestoreData,help={"Restore the data in its pristine state without any modifications"}
 	Button button_Calculation_RestoreData,userdata(tabnum)=  "0"
 	Button button_Calculation_RestoreData,userdata(tabcontrol)=  "Settings"
 	Button button_BrowserSettings_Export,pos={68.00,333.00},size={100.00,25.00},proc=SB_ButtonProc_ExportTraces,title="Export Traces"
@@ -1068,6 +1084,47 @@ Function BSP_SliderProc_ChangedSetting(spa) : SliderControl
 		win = spa.win
 		UpdateSweepPlot(win)
 	endif
+
+	return 0
+End
+
+/// @see SB_DoTimeAlignment DB_DoTimeAlignment
+Function BSP_TimeAlignmentProc(cba) : CheckBoxControl
+	STRUCT WMCheckBoxAction &cba
+
+	switch(cba.eventCode)
+		case 2: // mouse up
+			if(cba.checked)
+				UpdateSettingsPanel(cba.win)
+			else
+				PGC_SetAndActivateControl(cba.win, "button_TimeAlignment_Action")
+			endif
+			break
+	endswitch
+End
+
+Function BSP_TimeAlignmentPopup(pa) : PopupMenuControl
+	STRUCT WMPopupAction &pa
+
+	switch(pa.eventCode)
+		case 2: // mouse up
+			UpdateSettingsPanel(pa.win)
+			break
+	endswitch
+
+	return 0
+End
+
+Function BSP_TimeAlignmentLevel(sva) : SetVariableControl
+	STRUCT WMSetVariableAction &sva
+
+	switch(sva.eventCode)
+		case 1: // mouse up
+		case 2: // Enter key
+		case 3: // Live update
+			UpdateSettingsPanel(sva.win)
+			break
+	endswitch
 
 	return 0
 End

@@ -93,8 +93,9 @@ Function SCOPE_GetTPTopAxisStart(panelTitle, axisMin)
 	endif
 End
 
-Function SCOPE_UpdateGraph(panelTitle)
+Function SCOPE_UpdateGraph(panelTitle, dataAcqOrTP)
 	string panelTitle
+	variable dataAcqOrTP
 
 	variable i, numADCs, range, numDACs, statsMin, statsMax
 	variable axisMin, axisMax, spacing, additionalSpacing
@@ -124,21 +125,35 @@ Function SCOPE_UpdateGraph(panelTitle)
 		return NaN
 	endif
 
+	if(!GotTPChannelsOnADCs(paneltitle))
+		return NaN
+	endif
+
 	WAVE config = GetITCChanConfigWave(panelTitle)
-	WAVE OscilloscopeData  = GetOscilloscopeWave(panelTitle)
+	WAVE ADCmode = GetADCTypesFromConfig(config)
 	WAVE ADCs = GetADCListFromConfig(config)
 	WAVE DACs = GetDACListFromConfig(config)
 	numADCs = DimSize(ADCs, ROWS)
 	numDACs = DimSize(DACs, ROWS)
+
+	if(dataAcqOrTP == DATA_ACQUISITION_MODE)
+		WAVE TPData = GetTPOscilloscopeWave(panelTitle)
+	else
+		WAVE TPData = GetOscilloscopeWave(panelTitle)
+	endif
 
 	additionalSpacing = DAG_GetNumericalValue(panelTitle, "setvar_Settings_OsciUpdExt") / 100
 
 	// scale the left AD axes
 	for(i = 0; i < numADCs; i += 1)
 
+		if(ADCmode[i] != DAQ_CHANNEL_TYPE_TP)
+			continue
+		endif
+
 		leftAxis = AXIS_SCOPE_AD + num2str(ADCs[i])
 
-		WaveStats/M=1/Q/RMD=[][numDACs + i] OscilloscopeData
+		WaveStats/M=1/Q/RMD=[][numDACs + i] TPData
 
 		statsMin = V_min
 		statsMax = V_max
@@ -184,13 +199,13 @@ Function SCOPE_CreateGraph(panelTitle, dataAcqOrTP)
 	variable dataAcqOrTP
 
 	string graph, color, style
-	variable i, adc, numActiveDACs, numADChannels, oneTimeInitDone
-	variable showSteadyStateResistance, showPeakResistance, Red, Green, Blue
+	variable i, adc, numActiveDACs, numADChannels, oneTimeInitDone, chanTPmode, scopeScaleMode
+	variable showSteadyStateResistance, showPeakResistance, Red, Green, Blue, gotTPChan, gotDAQChan
 	string leftAxis, rightAxis, str, powerSpectrumTrace, oscilloscopeTrace
 	string steadyStateTrace, peakTrace, adcStr
 	variable YaxisLow, YaxisHigh, YaxisSpacing, Yoffset, resPosPercY
 	variable testPulseLength, cutOff, sampInt, axisMinTop, axisMaxTop
-	variable headStage, activeHeadStage, showPowerSpectrum, scopeScaleMode
+	variable headStage, activeHeadStage, showPowerSpectrum
 	STRUCT RGBColor peakColor
 	STRUCT RGBColor steadyColor
 
@@ -198,19 +213,21 @@ Function SCOPE_CreateGraph(panelTitle, dataAcqOrTP)
 	graph = SCOPE_GetGraph(panelTitle)
 	scopeScaleMode = DAG_GetNumericalValue(panelTitle, "Popup_Settings_OsciUpdMode")
 
-	WAVE ITCChanConfigWave = GetITCChanConfigWave(panelTitle)
-	WAVE SSResistance      = GetSSResistanceWave(panelTitle)
-	WAVE InstResistance    = GetInstResistanceWave(panelTitle)
-	WAVE TPStorage         = GetTPStorage(panelTitle)
-	WAVE OscilloscopeData  = GetOscilloscopeWave(panelTitle)
-	WAVE PressureData		= P_GetPressureDataWaveRef(panelTitle)
+	WAVE ITCChanConfigWave  = GetITCChanConfigWave(panelTitle)
+	WAVE SSResistance       = GetSSResistanceWave(panelTitle)
+	WAVE InstResistance     = GetInstResistanceWave(panelTitle)
+	WAVE TPStorage          = GetTPStorage(panelTitle)
+	WAVE OscilloscopeData   = GetOscilloscopeWave(panelTitle)
+	WAVE TPOscilloscopeData = GetTPOscilloscopeWave(panelTitle)
+	WAVE PressureData	= P_GetPressureDataWaveRef(panelTitle)
 
+	WAVE ADCmode = GetADCTypesFromConfig(ITCChanConfigWave)
 	WAVE ADCs = GetADCListFromConfig(ITCChanConfigWave)
 	numADChannels = DimSize(ADCs, ROWS)
 	numActiveDACs = DimSize(GetDACListFromConfig(ITCChanConfigWave), ROWS)
 	graph = SCOPE_GetGraph(panelTitle)
 	Yoffset = 40 / numADChannels
-	YaxisSpacing = 1 / numADChannels
+	YaxisSpacing = 0.95 / numADChannels
 	YaxisHigh = 1
 	YaxisLow = YaxisHigh - YaxisSpacing + 0.025
 	peakColor.green = SCOPE_GREEN
@@ -228,13 +245,26 @@ Function SCOPE_CreateGraph(panelTitle, dataAcqOrTP)
 	SCOPE_GetCheckBoxesForAddons(panelTitle, showSteadyStateResistance, showPeakResistance, showPowerSpectrum)
 
 	for(i = 0; i < numADChannels; i += 1)
+		chanTPmode = (ADCmode[i] == DAQ_CHANNEL_TYPE_TP)
+
 		adc    = ADCs[i]
 		adcStr = num2str(adc)
 		leftAxis = AXIS_SCOPE_AD + adcStr
 		
-		if(dataAcqOrTP != TEST_PULSE_MODE || !showPowerSpectrum)
+		if((chanTPmode && !showPowerSpectrum) || !chanTPmode)
+
 			oscilloscopeTrace = "osci" + adcStr
-			AppendToGraph/W=$graph/L=$leftAxis OscilloscopeData[][numActiveDACs + i]/TN=$oscilloscopeTrace
+			if(chanTPmode && !showPowerSpectrum)
+				gotTPChan = 1
+				if(dataAcqOrTP == DATA_ACQUISITION_MODE)
+					AppendToGraph/W=$graph/L=$leftAxis/B=bottomTP TPOscilloscopeData[][numActiveDACs + i]/TN=$oscilloscopeTrace
+				else
+					AppendToGraph/W=$graph/L=$leftAxis/B=bottomTP OscilloscopeData[][numActiveDACs + i]/TN=$oscilloscopeTrace
+				endif
+			else
+				gotDAQChan = 1
+				AppendToGraph/W=$graph/L=$leftAxis/B=bottomDAQ OscilloscopeData[][numActiveDACs + i]/TN=$oscilloscopeTrace
+			endif
 
 #if (IgorVersion() >= 8.00)
 			// use fast line drawing
@@ -247,14 +277,14 @@ Function SCOPE_CreateGraph(panelTitle, dataAcqOrTP)
 
 		// handles plotting of peak and steady state resistance curves in the oscilloscope window with the TP
 		// add the also the trace for the current resistance values from the test pulse
-		if(dataAcqOrTP == TEST_PULSE_MODE)
+		if(chanTPmode)
 
 			headStage = AFH_GetHeadstageFromADC(panelTitle, adc)
 
 			if(showPowerSpectrum)
 				powerSpectrumTrace = "powerSpectra" + adcStr
 				WAVE powerSpectrum = GetTPPowerSpectrumWave(panelTitle)
-				AppendToGraph/W=$graph/L=$leftAxis powerSpectrum[][numActiveDACs + i]/TN=$powerSpectrumTrace
+				AppendToGraph/W=$graph/L=$leftAxis/B=bottomPS powerSpectrum[][numActiveDACs + i]/TN=$powerSpectrumTrace
 				ModifyGraph/W=$graph lstyle=0, mode($powerSpectrumTrace)=0
 				ModifyGraph/W=$graph rgb($powerSpectrumTrace)=(65535,0,0,13107)
 				ModifyGraph/W=$graph freepos($leftAxis) = {0, kwFraction}, axisEnab($leftAxis)= {YaxisLow, YaxisHigh}
@@ -304,7 +334,7 @@ Function SCOPE_CreateGraph(panelTitle, dataAcqOrTP)
 
 			endif
 
-			if(showPeakResistance ||showSteadyStateResistance)
+			if(showPeakResistance || showSteadyStateResistance)
 				ModifyGraph/W=$graph axisEnab($rightAxis) = {YaxisLow, YaxisLow + (YaxisHigh - YaxisLow) * 0.3}, freePos($rightAxis)={0, kwFraction}
 				ModifyGraph/W=$graph lblPosMode($rightAxis) = 4, lblPos($rightAxis) = 60, lblRot($rightAxis) = 180
 				ModifyGraph/W=$graph nticks($rightAxis) = 2, tickUnit($AXIS_SCOPE_TP_TIME)=1
@@ -346,24 +376,26 @@ Function SCOPE_CreateGraph(panelTitle, dataAcqOrTP)
 
 	SCOPE_SetADAxisLabel(panelTitle,activeHeadStage)
 
-	if(dataAcqOrTP == TEST_PULSE_MODE)
-		if(showPowerSpectrum)
-			Label/W=$graph bottom "Frequency (\\U)"
-			SetAxis/W=$graph/A bottom
-		else
-			Label/W=$graph bottom "Time (\\U)"
+	if(showPowerSpectrum)
+			Label/W=$graph bottomPS "Frequency (\\U)"
+			SetAxis/W=$graph/A bottomPS
+			ModifyGraph/W=$graph freePos(bottomPS)=0
+	elseif(gotTPChan)
+			Label/W=$graph bottomTP "Time TP (\\U)"
 			sampInt = DAP_GetSampInt(panelTitle, TEST_PULSE_MODE) / 1000
 			testPulseLength = TP_GetTestPulseLengthInPoints(panelTitle, TEST_PULSE_MODE) * sampInt
 			NVAR duration = $GetTestpulseDuration(panelTitle)
 			NVAR baselineFrac = $GetTestpulseBaselineFraction(panelTitle)
 			cutOff = max(0, baseLineFrac * testPulseLength - duration/2 * sampInt)
-			SetAxis/W=$graph bottom cutOff, testPulseLength - cutOff
-		endif
-	else
-		Label/W=$graph bottom "Time (\\U)"
+			SetAxis/W=$graph bottomTP cutOff, testPulseLength - cutOff
+			ModifyGraph/W=$graph freePos(bottomTP)=0
+	endif
+	if(gotDAQChan)
+		Label/W=$graph bottomDAQ "Time DAQ (\\U)"
 		NVAR stopCollectionPoint = $GetStopCollectionPoint(panelTitle)
 		sampInt = DAP_GetSampInt(panelTitle, DATA_ACQUISITION_MODE) / 1000
-		SetAxis/W=$graph bottom 0, stopCollectionPoint * sampInt
+		SetAxis/W=$graph bottomDAQ 0, stopCollectionPoint * sampInt
+		ModifyGraph/W=$graph freePos(bottomDAQ)=-35
 	endif
 End
 
@@ -444,6 +476,14 @@ Function SCOPE_UpdateOscilloscopeData(panelTitle, dataAcqOrTP, [chunk, fifoPos, 
 	string panelTitle
 	variable dataAcqOrTP, chunk, fifoPos, deviceID
 
+	STRUCT TPAnalysisInput tpInput
+	string osciUnits
+	variable i, j
+	variable tpChannels, numADCs, numDACs, tpLengthPoints, tpStart, tpEnd, tpStartPos
+	variable TPChanIndex, saveTP, sampleInt
+	variable headstage, fifoLatest
+	string hsList
+
 	variable hardwareType = GetHardwareType(panelTitle)
 	switch(hardwareType)
 		case HARDWARE_ITC_DAC:
@@ -455,6 +495,7 @@ Function SCOPE_UpdateOscilloscopeData(panelTitle, dataAcqOrTP, [chunk, fifoPos, 
 			elseif(dataAcqOrTP == DATA_ACQUISITION_MODE)
 				ASSERT(!ParamIsDefault(fifoPos), "optional parameter fifoPos missing")
 				ASSERT(ParamIsDefault(chunk), "optional parameter chunk is not possible with DATA_ACQUISITION_MODE")
+				fifopos = SCOPE_ITC_AdjustFIFOPos(panelTitle, fifopos)
 			endif
 			SCOPE_ITC_UpdateOscilloscope(panelTitle, dataAcqOrTP, chunk, fifoPos)
 			break;
@@ -464,14 +505,121 @@ Function SCOPE_UpdateOscilloscopeData(panelTitle, dataAcqOrTP, [chunk, fifoPos, 
 			break;
 	endswitch
 
-	if(dataAcqOrTP == TEST_PULSE_MODE)
-
+	// In DAQ mode, fifopos is NaN when ITC finishes
+	if(isFinite(fifopos))
 		WAVE GUIState = GetDA_EphysGuiStateNum(panelTitle)
-		if(GUIState[0][%check_Settings_TP_SaveTP])
-			TP_StoreFullWave(panelTitle)
+		saveTP = GUIState[0][%check_Settings_TP_SaveTP]
+
+		// send data to TP Analysis if TP present
+		NVAR fifoPosGlobal = $GetFifoPosition(panelTitle)
+
+		tpLengthPoints = TP_GetTestPulseLengthInPoints(panelTitle, dataAcqOrTP)
+		// use a 'virtual' end position for fifoLatest for TP Mode since the input data contains one TP only
+		fifoLatest = (dataAcqOrTP == TEST_PULSE_MODE) ? tpLengthPoints : fifoPos
+
+		WAVE config = GetITCChanConfigWave(panelTitle)
+		WAVE ADCmode = GetADCTypesFromConfig(config)
+		tpChannels = GetNrOfTypedChannels(ADCmode, DAQ_CHANNEL_TYPE_TP)
+
+		if(tpChannels)
+			WAVE ADCs = GetADCListFromConfig(config)
+			WAVE hsProp = GetHSProperties(panelTitle)
+			NVAR duration = $GetTestpulseDuration(panelTitle)
+			NVAR baselineFrac = $GetTestpulseBaselineFraction(panelTitle)
+
+			WAVE OscilloscopeData = GetOscilloscopeWave(panelTitle)
+			sampleInt = DimDelta(OscilloscopeData, ROWS)
+			osciUnits = WaveUnits(OscilloscopeData, ROWS)
+			numDACs = DimSize(GetDACListFromConfig(config), ROWS)
+			numADCs = DimSize(ADCs, ROWS)
+
+			// note: currently this works for multiplier = 1 only, see DC_PlaceDataInHardwareDataWave
+			Make/FREE/N=(tpLengthPoints) channelData
+			WAVE tpInput.data = channelData
+			SetScale/P x, 0, sampleInt, osciUnits, channelData
+
+			tpInput.panelTitle = panelTitle
+			tpInput.duration = duration
+			tpInput.baselineFrac = baselineFrac
+			tpInput.tpLengthPoints = tpLengthPoints
+			tpInput.readTimeStamp = ticks * TICKS_TO_SECONDS
+			tpInput.activeADCs = tpChannels
+
+			tpStart = trunc(fifoPosGlobal / tpLengthPoints)
+			tpEnd = trunc(fifoLatest / tpLengthPoints)
+			ASSERT(tpStart <= tpEnd, "New fifopos is smaller than previous fifopos")
+			Make/FREE/D/N=(tpEnd - tpStart) tpMarker
+			NewRandomSeed()
+			tpMarker[] = GetUniqueInteger()
+
+			DEBUGPRINT("tpChannels: ", var = tpChannels)
+			DEBUGPRINT("tpLength: ", var = tpLengthPoints)
+
+			for(i = tpStart;i < tpEnd; i += 1)
+
+				tpInput.measurementMarker = tpMarker[i - tpStart]
+				tpStartPos = i * tpLengthPoints
+
+				if(saveTP)
+					Duplicate/FREE/R=[tpStartPos, tpStartPos + tpLengthPoints - 1][numDACs, numDACs + tpChannels - 1] OscilloscopeData, StoreTPWave
+					SetScale/P x, 0, sampleInt, osciUnits, StoreTPWave
+					TPChanIndex = 0
+					hsList = ""
+				endif
+
+				for(j = 0; j < numADCs; j += 1)
+					if(ADCmode[j] == DAQ_CHANNEL_TYPE_TP)
+
+						MultiThread channelData[] = OscilloscopeData[tpStartPos + p][numDACs + j]
+
+						headstage = AFH_GetHeadstageFromADC(panelTitle, ADCs[j])
+						if(hsProp[headstage][%ClampMode] == I_CLAMP_MODE)
+							NVAR clampAmp=$GetTPAmplitudeIC(panelTitle)
+						else
+							NVAR clampAmp=$GetTPAmplitudeVC(panelTitle)
+						endif
+						tpInput.clampAmp = clampAmp
+						tpInput.clampMode = hsProp[headstage][%ClampMode]
+						tpInput.hsIndex = headstage
+
+						DEBUGPRINT("headstage: ", var = headstage)
+						DEBUGPRINT("channel: ", var = numDACs + j)
+
+						TP_SendToAnalysis(tpInput)
+
+						if(saveTP)
+							hsList = AddListItem(num2str(headstage), hsList, ",", Inf)
+							if(TPChanIndex != j)
+								MultiThread StoreTPWave[][TPChanIndex] = channelData[p]
+							endif
+						endif
+
+					endif
+				endfor
+
+				if(saveTP)
+					DEBUGPRINT("Storing TP with marker: ", var = tpInput.measurementMarker)
+					TP_StoreTP(panelTitle, StoreTPWave, tpInput.measurementMarker, hsList)
+					WaveClear StoreTPWave
+				endif
+
+			endfor
+
+			if(dataAcqOrTP == DATA_ACQUISITION_MODE)
+				// optimization for regular TP we use OscilloscopeData directly
+				WAVE TPOscilloscopeData = GetTPOscilloscopeWave(panelTitle)
+				Duplicate/O/R=[tpStartPos, tpStartPos + tpLengthPoints - 1][] OscilloscopeData TPOscilloscopeData
+				SetScale/P x, 0, sampleInt, osciUnits, TPOscilloscopeData
+			endif
+
 		endif
 
+		// Sync fifo position
+		fifoPosGlobal = fifoPos
+
 	endif
+
+	ASYNC_ThreadReadOut()
 
 End
 
@@ -547,18 +695,8 @@ static Function SCOPE_ITC_UpdateOscilloscope(panelTitle, dataAcqOrTP, chunk, fif
 
 	elseif(dataAcqOrTP == DATA_ACQUISITION_MODE)
 
-		ASSERT(EqualWaves(ITCDataWave, OscilloscopeData, 512), "ITCDataWave and OscilloscopeData have differing dimensions")
-		fifoPos += GetDataOffset(ITCChanConfigWave)
-
-		if(fifoPos == 0 || !IsFinite(fifoPos))
-			// nothing to do
+		if(!IsFinite(fifopos) || fifopos <= 0)
 			return NaN
-		elseif(fifoPos < 0)
-			printf "fifoPos was clipped to zero, old value %g\r", fifoPos
-			return NaN
-		elseif(fifoPos >= DimSize(OscilloscopeData, ROWS))
-			printf "fifoPos was clipped to row size of OscilloscopeData, old value %g\r", fifoPos
-			fifoPos = DimSize(OscilloscopeData, ROWS) - 1
 		endif
 
 		NVAR fifoPosGlobal = $GetFifoPosition(panelTitle)
@@ -569,8 +707,39 @@ static Function SCOPE_ITC_UpdateOscilloscope(panelTitle, dataAcqOrTP, chunk, fif
 
 		Multithread OscilloscopeData[fifoPosGlobal, fifoPos - 1][startOfADColumns, startOfADColumns + numEntries - 1] = ITCDataWave[p][q] / gain[q - startOfADColumns]
 
-		fifoPosGlobal = fifoPos
 	else
 		ASSERT(0, "Invalid dataAcqOrTP value")
 	endif
+End
+
+/// @brief Adjusts the fifo position when using ITC
+///
+/// @param panelTitle panel title
+///
+/// @param fifopos fifo position
+///
+/// @return adjusted fifo position
+static Function SCOPE_ITC_AdjustFIFOPos(panelTitle, fifopos)
+	string panelTitle
+	variable fifopos
+
+	WAVE OscilloscopeData = GetOscilloscopeWave(panelTitle)
+	WAVE ITCDataWave      = GetHardwareDataWave(panelTitle)
+	WAVE ITCChanConfigWave = GetITCChanConfigWave(panelTitle)
+	ASSERT(EqualWaves(ITCDataWave, OscilloscopeData, 512), "ITCDataWave and OscilloscopeData have differing dimensions")
+
+	fifoPos += GetDataOffset(ITCChanConfigWave)
+
+	if(fifoPos == 0 || !IsFinite(fifoPos))
+		// nothing to do
+		return fifopos
+	elseif(fifoPos < 0)
+		printf "fifoPos was clipped to zero, old value %g\r", fifoPos
+		fifopos = 0
+	elseif(fifoPos >= DimSize(OscilloscopeData, ROWS))
+		printf "fifoPos was clipped to row size of OscilloscopeData, old value %g\r", fifoPos
+		fifoPos = DimSize(OscilloscopeData, ROWS) - 1
+	endif
+
+	return fifopos
 End

@@ -440,6 +440,17 @@ Function ClampModeDuringITI_IGNORE(s)
 	return 0
 End
 
+Function StopTPAfterFiveSeconds_IGNORE(s)
+   STRUCT WMBackgroundStruct &s
+
+	SVAR devices = $GetDevicePanelTitleList()
+	string device = StringFromList(0, devices)
+
+	PGC_SetAndActivateControl(device, "StartTestPulseButton")
+
+   return 1
+End
+
 /// @brief Structure to hold various common DAQ DAQSettings
 ///
 /// MultiDevice (MD: 1/0)

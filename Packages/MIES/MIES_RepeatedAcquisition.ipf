@@ -424,9 +424,7 @@ static Function RA_AreLeaderAndFollowerFinished()
 	variable numCandidates, i
 	string listOfCandidates, candidate
 
-	WAVE/SDFR=GetActiveITCDevicesFolder() ActiveDeviceList
-
-	Duplicate/FREE/R=[][0] ActiveDeviceList, activeIDs
+	WAVE activeIDs = DQM_GetActiveDeviceIDs()
 
 	if(DimSize(activeIDs, ROWS) == 0)
 		return 1

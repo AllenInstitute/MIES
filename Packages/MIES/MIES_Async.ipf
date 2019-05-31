@@ -42,12 +42,14 @@ Function ASYNC_Start(numThreads, [disableTask])
 
 	variable i
 
+	NVAR tgID = $GetThreadGroupID()
+	if(!isNaN(tgID))
+		// framework already running
+		return 0
+	endif
+
 	ASSERT(numThreads >= 1 && numThreads <= ASYNC_MAX_THREADS, "numThread must be > 0 and <= " + num2str(ASYNC_MAX_THREADS))
 	disableTask = ParamIsDefault(disableTask) ? 0 : !!disableTask
-
-	DFREF dfr = GetAsyncHomeDF()
-	NVAR tgID = $GetThreadGroupID()
-	ASSERT(isNaN(tgID), "Async frame work already running")
 
 	NVAR numT = $GetNumThreads()
 	numT = numThreads
@@ -140,7 +142,7 @@ threadsafe static Function ASYNC_Thread()
 
 		elseif(DataFolderExistsDFR(dfrOut))
 
-#if NumberByKey("BUILD", igorinfo(0)) >= 32616
+#if (IgorVersion() >= 8.00 && NumberByKey("BUILD", igorinfo(0)) >= 32616)
 			MoveDataFolder dfrOut, dfrAsync
 			RenameDataFolder dfrOut, freeroot
 #else

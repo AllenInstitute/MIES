@@ -1197,6 +1197,13 @@ Function DAP_OneTimeCallBeforeDAQ(panelTitle, runMode)
 #if (IgorVersion() >= 8.00)
 	NWB_StartThreadGroup()
 #endif
+
+	if(DC_GotTPChannelWhileDAQ(panelTitle))
+		TP_SetupCommon(panelTitle)
+		P_InitBeforeTP(panelTitle)
+	endif
+
+	ASYNC_Start(ThreadProcessorCount, disableTask=1)
 End
 
 static Function DAP_ResetClampModeTitle(panelTitle, ctrl)
@@ -1270,6 +1277,9 @@ Function DAP_OneTimeCallAfterDAQ(panelTitle, [forcedStop, startTPAfterDAQ])
 
 	NVAR dataAcqRunMode = $GetDataAcqRunMode(panelTitle)
 	dataAcqRunMode = DAQ_NOT_RUNNING
+
+	StopAsyncIfDone()
+
 	hardwareType = GetHardwareType(panelTitle)
 	switch(hardwareType)
 		case HARDWARE_NI_DAC:
@@ -1307,6 +1317,10 @@ Function DAP_OneTimeCallAfterDAQ(panelTitle, [forcedStop, startTPAfterDAQ])
 	TS_StopThreadGroup(tgID)
 	tgID = NaN
 #endif
+
+	if(DC_GotTPChannelWhileDAQ(panelTitle))
+		TP_TeardownCommon(panelTitle)
+	endif
 
 	DAP_ApplyDelayedClampModeChange(panelTitle)
 
@@ -2291,9 +2305,34 @@ Function DAP_CheckSettings(panelTitle, mode)
 
 		if(mode == DATA_ACQUISITION_MODE)
 			if(GetValDisplayAsNum(panelTitle, "valdisp_DataAcq_SweepsInSet") == 0)
-				printf "(%s) The calculated number of sweeps is zero. This is unexpected and very likely a bug.\r", panelTitle
-				ControlWindowToFront()
-				return 1
+				// if there are no regular sweeps, check if all remaining active channels are set to a reserved mode (like TP)
+				WAVE/T allSetNames = DAG_GetChannelTextual(panelTitle, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_WAVE)
+				numEntries = DimSize(statusDA, ROWS)
+				for(i = 0; i < numEntries; i += 1)
+
+					if(!DC_ChannelIsActive(panelTitle, mode, CHANNEL_TYPE_DAC, i, statusDA, statusHS))
+						continue
+					endif
+
+					if(CmpStr(allSetNames[i], STIMSET_TP_WHILE_DAQ))
+						printf "(%s) The calculated number of sweeps is zero. This is unexpected and very likely a bug.\r", panelTitle
+						ControlWindowToFront()
+						return 1
+						break
+					endif
+				endfor
+			endif
+			if(DC_GotTPChannelWhileDAQ(panelTitle))
+				if(DAG_GetNumericalValue(panelTitle, "Popup_Settings_SampIntMult") > 0)
+					printf "(%s) When TP while DAQ is used only sample multiplier of 1 is supported.\r", panelTitle
+					ControlWindowToFront()
+					return 1
+				endif
+				if(DAG_GetNumericalValue(panelTitle, "Popup_Settings_FixedFreq") > 0)
+					printf "(%s) When TP while DAQ is used no fixed frequency acquisition is supported.\r", panelTitle
+					ControlWindowToFront()
+					return 1
+				endif
 			endif
 		endif
 
@@ -2562,6 +2601,11 @@ static Function DAP_CheckStimset(panelTitle, channelType, channel, headstage)
 	numSets = ItemsInList(sets)
 	for(i = 0; i < numSets; i += 1)
 		setName = StringFromList(i, sets)
+
+		if(!CmpStr(setName, STIMSET_TP_WHILE_DAQ))
+			continue
+		endif
+
 		// third party stim sets might not match our expectations
 		WAVE/Z stimSet = WB_CreateAndGetStimSet(setName)
 

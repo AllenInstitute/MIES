@@ -500,6 +500,8 @@ static Function NWB_AppendStimset(locationID, stimsets, compressionMode)
 
 	variable i, numStimsets, numWaves
 
+	stimsets = GrepList(stimsets, "(?i)\\Q" + STIMSET_TP_WHILE_DAQ + "\\E", 1)
+
 	// process stimsets and dependent stimsets
 	stimsets = WB_StimsetRecursionForList(stimsets)
 	numStimsets = ItemsInList(stimsets)
@@ -858,7 +860,7 @@ static Function NWB_AppendSweepLowLevel(locationID, panelTitle, ITCDataWave, ITC
 				path                 = "/stimulus/presentation"
 				params.channelSuffix = num2str(ttlBit)
 				params.channelSuffixDesc = NWB_SOURCE_TTL_BIT
-				params.stimset       = StringFromList(ttlBit, listOfStimsets)
+				params.stimset       = StringFromList(log(ttlBit)/log(2), listOfStimsets)
 				NWB_GetTimeSeriesProperties(params, tsp)
 				params.groupIndex    = IsFinite(params.groupIndex) ? params.groupIndex : IPNWB#GetNextFreeGroupIndex(locationID, path)
 				IPNWB#WriteSingleChannel(locationID, path, params, tsp, compressionMode = compressionMode)

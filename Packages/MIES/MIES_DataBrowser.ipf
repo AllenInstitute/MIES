@@ -206,7 +206,7 @@ Function DB_UpdateSweepPlot(win)
 	string win
 
 	variable numEntries, i, sweepNo, highlightSweep, referenceTime, traceIndex
-	string device, mainPanel, lbPanel, bsPanel, scPanel, graph
+	string device, mainPanel, lbPanel, bsPanel, scPanel, graph, csrA, csrB
 
 	if(BSP_MainPanelNeedsUpdate(win))
 		DoAbortNow("Can not display data. The Databrowser panel is too old to be usable. Please close it and open a new one.")
@@ -222,6 +222,8 @@ Function DB_UpdateSweepPlot(win)
 
 	WAVE axesRanges = GetAxesRanges(graph)
 
+	csrA = CsrInfo(A, graph)
+	csrB = CsrInfo(B, graph)
 	RemoveTracesFromGraph(graph)
 
 	if(!BSP_HasBoundDevice(win))
@@ -283,6 +285,9 @@ Function DB_UpdateSweepPlot(win)
 		AR_UpdateTracesIfReq(graph, dfr, numericalValues, sweepNo)
 	endfor
 
+	RestoreCursor(graph, csrA)
+	RestoreCursor(graph, csrB)
+
 	DEBUGPRINT_ELAPSED(referenceTime)
 
 	if(WaveExists(sweepWave))
@@ -291,20 +296,66 @@ Function DB_UpdateSweepPlot(win)
 	endif
 
 	Struct PostPlotSettings pps
-	pps.averageDataFolder = GetDeviceDataBrowserPath(device)
-	pps.averageTraces     = GetCheckboxState(bsPanel, "check_Calculation_AverageTraces")
-	pps.zeroTraces        = GetCheckBoxState(bsPanel, "check_Calculation_ZeroTraces")
-	pps.timeAlignRefTrace = ""
-	pps.timeAlignMode     = TIME_ALIGNMENT_NONE
-	pps.hideSweep         = tgs.hideSweep
-
-	PA_GatherSettings(win, pps)
-
-	FUNCREF FinalUpdateHookProto pps.finalUpdateHook = DB_GraphUpdate
+	DB_InitPostPlotSettings(win, pps)
 
 	PostPlotTransformations(graph, pps)
 	SetAxesRanges(graph, axesRanges)
 	DEBUGPRINT_ELAPSED(referenceTime)
+End
+
+/// @see SB_InitPostPlotSettings
+Function DB_InitPostPlotSettings(win, pps)
+	string win
+	STRUCT PostPlotSettings &pps
+
+	string bsPanel = BSP_GetPanel(win)
+
+	ASSERT(BSP_HasBoundDevice(win), "DataBrowser was not assigned to a specific device")
+
+	pps.averageDataFolder = GetDeviceDataBrowserPath(BSP_GetDevice(win))
+	pps.averageTraces     = GetCheckboxState(bsPanel, "check_Calculation_AverageTraces")
+	pps.zeroTraces        = GetCheckBoxState(bsPanel, "check_Calculation_ZeroTraces")
+	pps.hideSweep         = GetCheckBoxState(bsPanel, "check_SweepControl_HideSweep")
+	pps.timeAlignRefTrace = ""
+	pps.timeAlignMode     = TIME_ALIGNMENT_NONE
+
+	PA_GatherSettings(win, pps)
+
+	FUNCREF FinalUpdateHookProto pps.finalUpdateHook = DB_GraphUpdate
+End
+
+Function DB_DoTimeAlignment(ba) : ButtonControl
+	STRUCT WMButtonAction &ba
+
+	switch( ba.eventCode )
+		case 2: // mouse up
+			DB_HandleTimeAlignPropChange(ba.win)
+			break
+	endswitch
+
+	return 0
+End
+
+/// @see SB_HandleTimeAlignPropChange
+static Function DB_HandleTimeAlignPropChange(win)
+	string win
+
+	string bsPanel, graph
+
+	graph = GetMainWindow(win)
+	bsPanel = BSP_GetPanel(graph)
+
+	if(!BSP_HasBoundDevice(win))
+		UpdateSettingsPanel(win)
+		return NaN
+	endif
+
+	STRUCT PostPlotSettings pps
+	DB_InitPostPlotSettings(graph, pps)
+
+	TimeAlignGatherSettings(bsPanel, pps)
+
+	PostPlotTransformations(graph, pps)
 End
 
 static Function DB_ClearGraph(win)
@@ -420,6 +471,7 @@ Window DataBrowser() : Graph
 	PauseUpdate; Silent 1		// building window...
 	Display /W=(850.5,168.5,1284,473.75)/K=1  as "DataBrowser"
 	SetWindow kwTopWin,userdata(panelVersion)=  "7"
+	SetWindow kwTopWin,hook(TA_CURSOR_MOVED)=TimeAlignCursorMovedHook
 	ModifyGraph margin(left)=28,margin(bottom)=1
 	Button button_BSP_open,pos={5.00,5.00},size={25.00,25.00},proc=DB_ButtonProc_Panel,title="<<"
 	Button button_BSP_open,help={"Open Side Panel"}
@@ -840,13 +892,14 @@ Function DB_CheckProc_ScaleAxes(cba) : CheckBoxControl
 	return 0
 End
 
-static Function DB_GraphUpdate(win)
+/// @see SB_PanelUpdate
+Function DB_GraphUpdate(win)
 	string win
 
 	string bsPanel, graph
 
+	graph = GetMainWindow(win)
 	bsPanel = BSP_GetPanel(win)
-	graph = DB_GetMainGraph(win)
 
 	if(GetCheckBoxState(bsPanel, "check_Display_VisibleXrange"))
 		AutoscaleVertAxisVisXRange(graph)

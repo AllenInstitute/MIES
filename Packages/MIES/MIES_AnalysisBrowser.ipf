@@ -1711,7 +1711,7 @@ static Function AB_SortConfigSweeps(config)
 	string wavenote = Note(config)
 	variable numRows = DimSize(config, ROWS)
 
-	ASSERT(IsValidConfigWave(config), "Invalid config wave")
+	ASSERT(IsValidConfigWave(config, version=0), "Invalid config wave")
 	ASSERT(FindDimLabel(config, COLS, "type") != -2, "Config Wave has no column labels")
 	ASSERT(FindDimLabel(config, COLS, "number") != -2, "Config Wave has no column labels")
 

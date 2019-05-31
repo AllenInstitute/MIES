@@ -1519,6 +1519,8 @@ static Function/WAVE WB_PulseTrainSegment(pa, mode, pulseStartTimes, pulseToPuls
 	variable numRows, interPulseInterval, idx, firstStep, lastStep, dist
 	string str
 
+	pulseToPulseLength = NaN
+
 	ASSERT(pa.poisson + pa.mixedFreq <= 1, "Only one of Mixed Frequency or poisson can be checked")
 
 	if(!pa.mixedFreq)
@@ -1577,6 +1579,8 @@ static Function/WAVE WB_PulseTrainSegment(pa, mode, pulseStartTimes, pulseToPuls
 		if(pa.mixedFreqShuffle)
 			InPlaceRandomShuffle(interPulseIntervals, noiseGenMode = NOISE_GEN_MERSENNE_TWISTER)
 		endif
+
+		pulseToPulseLength = 0
 
 		pa.duration = (sum(interPulseIntervals) + pa.numberOfPulses * pa.pulseDuration)
 		WAVE segmentWave = GetSegmentWave(duration=pa.duration)
