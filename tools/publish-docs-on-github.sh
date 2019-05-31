@@ -41,12 +41,12 @@ fi
 
 cd $public_mies_repo
 
-git stash pop || true
+git stash || true
 git checkout gh-pages
 # get the commit hash for the boundary commit
 boundary=$(git log --grep="EMPTY_BOUNDARY_COMMIT_FOR_REWRITE" --pretty=format:%H gh-pages)
 git reset --hard $boundary
-git clean -fdx
+git clean -ffdx
 
 cp -r ${top_level}/Packages/doc/html/* .
 
