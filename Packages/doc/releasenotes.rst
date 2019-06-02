@@ -3,6 +3,311 @@ Release notes
 
 .. toctree::
 
+Release 2.0
+===========
+
+AnalysisBrowser
+---------------
+
+- Labnotebook browser: Fixes for new TPStorage wave layout
+- Add support for loading TPStorage waves from NWB
+- Make it possible to load version 2 PXP files, i.e. PXP files with NI hardware
+  acquired data can now be loaded
+- Allow loading TTL channel data from NI hardware
+
+DataBrowser
+-----------
+
+DataBrowser/SweepBrowser
+------------------------
+
+- Pulse Average:
+
+  - Use inf as default range for the PA deconvolution
+  - Use full resolution for diagonal traces only, show the other traces with
+    reduced resolution for speedup reasons
+  - Don't change the x axis range for deconvolution
+  - Automatic Time Alignment for Pulse Averaging
+  - Adapt individual traces' opacity and line size
+  - Speedup plot creation and resize behaviour
+  - Allow zeroing individual traces
+  - Add deconvolution support
+- Move TTL channel display to the bottom
+
+DA\_Ephys
+---------
+
+- Allow TP stopping/restarting to be much faster for special cases
+- Make "Pipette Offset" faster, especially for a large number of active headstages
+- Add "TP during DAQ" feature which allows to have a testpulse on some
+  headstages and DAQ on other headstages
+- TestPulseMarker is now saved in TPStorage as well as in the stored TPWaves
+- TestPulse: Implemented handling of Oscilloscope scaling depending of GUI setting
+- Minimize the number of amplifier select calls
+- Allow but delay clamp mode changes during DAQ
+- Add entries to DA_Ephys to record User Pressure during TP
+- GetTPStorage: Raise version to hold user pressure value and type as well
+- Use the correct order for testpulse stopping and calling DAP_CheckSettings
+  which fires the PRE_DAQ analysis event
+- SCOPE_CreateGraph replaced Tag approach for TP Resistance values
+- Testpulse analysis is now done in a separate thread
+- Add possibility to acquire data with fixed frequency
+- Fix inserted TP length with active TTL channels
+- When synchronizing MIES to the MCC we now ignore sendToAll state
+- Use one GUI control procedure for TP and DAQ
+- SWS_SweepSaving: Call SCOPE_UpdateOscilloscopeData with correct fifo position
+- Optimization: PowerSpectrum uses fast line draw on Igor Pro 8
+- oodDAQ: Make the optimizing code faster and cache everything possible and
+  nicify interface for callers
+- Enabled live view for peak+steadystate resistance graph in IP8
+- Ensure that the ITI is always reached for manual sweep starts as well
+
+ExperimentConfig
+----------------
+
+- Add user pressure settings
+- Add "Respect ITI for manual initialization"
+
+Downsample
+----------
+
+- Nothing
+
+Analysis Functions
+------------------
+
+- PSQ_Ramp: Added support for NI hardware
+- PSQ_Rheobase:
+
+  - Handle DaScale of zero better
+  - Search again with small DAScale values
+- PSQ_DAScale:
+
+  - Add optional analysis parameter to choose operator for Supra
+  - Fix average calculation for NI hardware
+  - Enable "TP inserting"
+- PSQ_SquarePulse:
+
+  - Catch spiking with DAScale of zero
+  - Handle known case better in Dashboard
+- Add support for optional parameters in `_GetParams`
+- Add MSQ_DA_SCALE analysis function
+- Add SetControlInEvent analysis function
+- Add PSQ_FastRheoEstimate
+- Better checks for analysis parameters before DAQ
+- PSQ_EvaluateBaselineProperties: Fix incorrect fifo time usage
+- Dashboard: Fix querying the scale exceeded value for Rheobase
+
+Foreign Function interface
+--------------------------
+
+- Nothing
+
+General
+-------
+
+- Make the repository `publically <https://github.com/AllenInstitute/MIES>`_
+  available. Due to restrictions on github's side we have compressed the NWB
+  and PXP files. See the README.md for instructions when checking out the
+  repository.
+- Making stopping the async framework more robust
+- ExtractOneDimDataFromSweep:
+
+  - Create a copy for NI hardware as well
+  - Make it compatible with mid-sweep NI layout
+- AFH_GetAnalysisParam*: Tighten logic and add tests
+- AFH_GetAnalysisParamType: Add support for requesting a specific type
+- GetListOfObjects: Return never empty list elements
+- Add support for NI PXI-6259 devices
+- Restore IP7 style responsive behaviour in IP8
+- ASSERT: Enhance diagnostic output
+- Use zero as TP amplitude for unassociated DACs
+- GetChannelClampMode: Extend to also hold headstage information
+- DAP_CheckHeadStage: Check AD/DA headstages more thorough
+- DQ_ApplyAutoBias: Modernize code
+- Query the values for the labnotebook earlier before starting the sweep
+- ToggleCheckBoxes/EqualizeCheckBoxes: Update GUI state wave as well
+- Documentation: Make all graphs zoomable
+- Change of InstResistance, SSResistance, BaseLineAverage to be double precision
+- Fixed a bug which resulted in a RTE for long stimsets with NI hardware
+- Enhance fWaveAveraging with MatrixOP
+- SCOPE_UpdateGraph: Use more accurate relative time axis update
+- Bugfix: Sweep SkipAhead resets to -1 in GUI on DAQ, following DAQ fails
+- DAP_CheckStimset: Check all reachable stimsets
+- Only stop the TP if we can start DAQ
+- DAP_CheckHeadStage: Check for empty waves in analysis parameters as well
+- Device Map: Drop internal device name
+- TP_RecordTP: Avoid erroring out on low memory condition
+- EnsureLargeEnoughWave: Add support for checking free memory before increasing the size of the wave
+- Rework TPStorage completly: Holds now NUM_HEADSTAGES columns and also holds
+  every Testpulse result. We now also always append to the current TPStorage
+  wave so there is only one now.
+- Acquisition support for NI DAC devices in multi device mode
+- DC_PlaceDataInITCDataWave: Don't use interpolation for gathering data from TTL stimsets
+- CheckInstallation: More thorough checks for NIDAQ XOP version
+- SI_CalculateMinSampInterval: Fix minimum sampling interval for ITC hardware with PCI cards
+- HW_ITC_MoreData/HW_ITC_MoreData_TS: Fix return value for offset usage
+- CalculateTPLikePropsFromSweep: Fix some edge cases found during evaluation
+- Add documentation for how the testpulse properties are calculated
+- Fix RTE at end of blowout protocol
+
+ITC XOP 2
+----------
+
+- Update help file
+
+ZeroMQ XOP
+----------
+
+- Nothing
+
+MCC XOP
+-------
+
+- Nothing
+
+MIESUtils XOP
+-------------
+
+- Update help file
+
+Labnotebook
+-----------
+
+New numerical keys
+~~~~~~~~~~~~~~~~~~
+
+- "oodDAQ member": This entry is a true/false entry denoting if a
+  headstage takes part in oodDAQ or not.
+- "DA ChannelType" and "AD ChannelType": Denotes if the channel was used
+  for TP or DAQ.
+- "Fixed Frequency acquisition"
+- "Igor Pro bitness"
+
+New textual keys
+~~~~~~~~~~~~~~~~
+
+- "TTL rack zero set sweep counts"
+- "TTL rack one set sweep counts"
+- "TTL set sweep counts (NI hardware)"
+- "TTL stim sets (NI hardware)"
+- "TTL channels (NI hardware)"
+- "Digitizer Hardware Name"
+- "Digitizer Serial Numbers"
+
+Changed numerical entries
+~~~~~~~~~~~~~~~~~~~~~~~~~
+
+- Change "Minimum Sampling Interval" to "Sampling Interval"
+- Document the correct TTL bits for RACK_ONE
+
+Changed textual entries
+~~~~~~~~~~~~~~~~~~~~~~~
+
+- Nothing
+
+NWB/IPNWB
+---------
+
+- Write the correct stimulus set for TTL channels for ITC hardware
+- Add more functions for reading NWB file information
+- Rename chunkedLayout parameter and add single chunk compression option
+- Clarify group naming in Readme.rst
+- Add an error message when loading NWB v2 files
+- NWB_ExportAllData: Make compression mode configurable
+- Set correct electrode number for associated DA/AD:
+  Bug introduced in 7c37bf08 (NWB: Use Labnotebook property electrodeName
+  if available, 2016-08-06).
+
+  With default electrode names, which are just strings with the electrode
+  numbers, the buggy source attributes are
+
+  ITC1600_Dev_0;Sweep=0;AD=10;ElectrodeNumber=0;ElectrodeName=6
+
+  (note the difference between the ElectrodeName and the ElectrodeNumber)
+
+  where as it should be
+
+  ITC1600_Dev_0;Sweep=0;AD=10;ElectrodeNumber=6;ElectrodeName=6
+
+  One side effect of that bug is also that all TimeSeries attributes
+  written by NWB_GetTimeSeriesProperties are fetched for the first
+  headstage and not for the correct ones.
+- Handle deleted stimsets gracefully when exporting the experiment
+- Flush file after every sweep in a separate thread
+- Compress stored testpulses using "single chunk compression" to make the NWB
+  files smaller
+
+File format
+~~~~~~~~~~~
+
+- Fix NWB group for unassociated DA channels. We need to store them
+  in /stimulus/presentation and not in /acquisition/timeseries as ADC data.
+
+Pressure Control
+----------------
+
+- Make manual mode respect user access (during TP)
+- P_UpdateSSRSlopeAndSSR: Extract correct layer from TPStorage
+- Only call P_PressureControl every 90ms during TP
+
+WaveBuilder
+-----------
+
+- Add required column to the analysis parameter panel
+- Add the required setting for all analysis parameters and don't loose it on
+  user changes.
+- Add wave note entry for empty epoch as well
+- Fix wave recreation logic for multiple modifications done in under a second
+- Invert log chirp setting written to wave note
+- Call WBP_UpdateITCPanelPopUps from all stimset loading functions
+- Update DAQ GUI controls on sampling interval change
+
+Work Sequencing Engine
+----------------------
+
+- Nothing
+
+Internal
+--------
+
+- Allow using NI USB 6001 devices in evil mode
+- Documentation: Make sphinx build pass without unexpected errors
+
+Tests
+-----
+
+- Hardware Tests:
+
+  - Make the test suite pass with NI hardware and ITC-1600
+  - Use multi data test case feature to run the tests for each device
+    see also `here <https://docs.byte-physics.de/igor-unit-testing-framework/advanced.html#multi-data-test-cases>`_
+  - Check the created NWB file thoroughly
+  - Use the new UTF reentry functionality, thus making the tests much easier
+    to understand, adapt and run for debugging.
+  - Add a test to ensure that TP is stopped before PRE_DAQ_EVENT
+  - Check that the sweep numbers are ascending in TEST_CASE_END_OVERRIDE
+  - Perform common checks after every test case
+  - Add tests which check the sampling interval for various combinations
+- Compilation Testing: Test evil mode as well
+- AI_QueryGainsFromMCC: Override safety check for holding potential during automated testing
+- BUG: Assert out during automated testing
+
+Async Framework
+---------------
+
+- Added a generic framework for executing code in a separate thread
+
+Installer
+---------
+
+- vc_redist package was not installed by the installer
+
+Tango
+-----
+
+- Nothing
+
 Release 1.7
 ===========
 
