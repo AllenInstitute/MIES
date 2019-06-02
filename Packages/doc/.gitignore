@@ -13,7 +13,6 @@ namespace
 namespacelist.rst
 IPNWB.rst
 ZeroMQ-XOP-Readme.rst
-reportingbugs.rst
 backup_*.dot
 *.zip
 *.dot.svg
