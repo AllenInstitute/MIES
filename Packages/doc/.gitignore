@@ -14,7 +14,6 @@ namespacelist.rst
 IPNWB.rst
 ZeroMQ-XOP-Readme.rst
 reportingbugs.rst
-manualinstallation.rst
 backup_*.dot
 *.zip
 *.dot.svg
