@@ -1,4 +1,4 @@
-# Readme
+# Developer
 
 ## Getting MIES
 
@@ -16,29 +16,22 @@ Pressure control may be implemented with ITC and/or NIDAQ hardware. For NIDAQ
 hardware, install the [NIDAQ Tool MX](https://www.wavemetrics.com/products/nidaqtools/nidaqtools.htm)
 package from Wavemetrics.
 
-Depending on the bitness (64 or 32) of the Igor Pro version you plan to use (64-bit is recommended)
-install either version 2.2.2 of the Multiclamp Commander (64bit) or
-version 2.1.0.16 (32-bit).
+Depending on the bitness (64 or 32) of the Igor Pro version you plan to use
+(64-bit is recommended) install either version 2.2.2 of the Multiclamp
+Commander (64bit) or version 2.1.0.16 (32-bit).
 Both can be downloaded from [here](http://mdc.custhelp.com/app/answers/detail/a_id/20059).
-
-## Support statement
-
-The following versions receive fixes for all critical bugs.
-
-* [1.7](http://bamboo.corp.alleninstitute.org/browse/MIES-RELEASE/latestSuccessful/artifact)
-* [1.6](http://bamboo.corp.alleninstitute.org/browse/MIES-CRV1/latestSuccessful/artifact)
-* [master](http://bamboo.corp.alleninstitute.org/browse/MIES-CM/latestSuccessful/artifact) intended for developer use
-
-## Bug reporting
-
-Please have a look at ReportingBugs.md.
 
 ## Arduino
 
 ### Setup
-Advanced measurement modes like Yoking require an Arduino for triggering the DAC hardware. The following steps have to be performed in order to get a working setup:
+Advanced measurement modes like Yoking require an Arduino for triggering the
+DAC hardware. The following steps have to be performed in order to get a
+working setup:
 
-* Get an [Arduino UNO](https://www.arduino.cc/en/Main/ArduinoBoardUno), for easier PIN access a [screw shield](http://www.robotshop.com/en/dfrobot-arduino-compatible-screw-shield.html) comes in handy too
+* Get an [Arduino UNO](https://www.arduino.cc/en/Main/ArduinoBoardUno), for
+  easier PIN access a [screw
+  shield](http://www.robotshop.com/en/dfrobot-arduino-compatible-screw-shield.html)
+  comes in handy too
 * Connect the device to the PC via USB
 * Install the Arduino studio from "Packages\Arduino\arduino-1.6.8-windows.exe"
 * Extract "Packages\Arduino\Arduino-libraries-and-sequencer.zip" into "C:\Users\$username\Documents\Arduino"
@@ -55,13 +48,6 @@ Advanced measurement modes like Yoking require an Arduino for triggering the DAC
 * Upload Sequence
 * The start of DAQ is done by MIES itself
 
-## Documentation
-
-Within the Allen Institute, the documentation can be reached at the following locations:
-
-* [Documentation for the master branch](http://10.128.24.29/master/index.html)
-* [Documentation for the latest release branch](http://10.128.24.29/release/index.html)
-
 ### Building the documentation
 
 #### Required 3rd party tools
@@ -70,10 +56,7 @@ Within the Allen Institute, the documentation can be reached at the following lo
 * [Dot](http://www.graphviz.org) 2.38 or later
 * [pandoc](https://github.com/jgm/pandoc/releases) 1.17.1 or later
 * [python](http://www.python.org) 2.7 or later
-* [breathe](https://github.com/michaeljones/breathe) 4.11.1 or later, via `pip install -U breathe`
-* [sphinx](http://www.sphinx-doc.org/en/stable) 1.8.3, via `pip install -U sphinx`
-* [sphinxcontrib-fulltoc](https://sphinxcontrib-fulltoc.readthedocs.io/en/latest/) via `pip install -U sphinxcontrib-fulltoc`
-* [sphinxcontrib-images](https://github.com/spinus/sphinxcontrib-images/) via `pip install -U sphinxcontrib-images`
+* `pip install -r Packages\doc\requirements-doc.txt`
 
 Execute `tools/build-documentation.sh`.
 
@@ -92,11 +75,7 @@ If guidelines are not followed, the MIES version will be unknown, and data acqui
 * Create the release branches:
 	* `git checkout -b release/X.Y`
 	* `git push -u origin release/X.Y`
-	* `git checkout -b release/X.Y-IVSCC`
-	* Patch the IVSCC branch using a commit similiar to e0a9df52 (Remove unneeded NIDAQmx.XOP, 2016-11-10)
-	* `git push -u origin release/X.Y-IVSCC`
 * Change the bamboo jobs using release branches to use the branch release/X.Y
-* Adapt the list of supported versions above
 
 ### Creating a release package manually
 * Open a git bash terminal by choosing Actions->"Open in terminal" in SourceTree
@@ -116,11 +95,11 @@ bamboo, provides the following services for MIES:
 
 ### Automatic release package building
 * The release branch, `release/$number` with the highest `$number`, is polled every 3 minutes for changes
-* If changes are detected, a shallow clone is fetched, and inside a checked
+* If changes are detected, a clone is fetched, and inside a checked
   out git working tree, the release script `tools/create-release.sh` is executed.
 * The result of the release script, called an artifact in CI-speech, is then
   available as zip package from the [Package section](http://bamboo.corp.alleninstitute.org/browse/MIES-RELEASE/latestSuccessful).
-* The release packaging job can only be run on a linux box (or on a windows box with git for windows installed).
+* The release packaging job can be run on a linux box or on a windows box with git for windows installed.
   This is ensured by a platform requirement for the job.
 
 ### Compilation testing (Igor Pro 7.x 64bit only)
@@ -148,10 +127,8 @@ For executing the tests manually perform the followings steps:
 * Watch the output
 
 ### Documentation building
-The documentation for the master and the latest release branch,
-`release/$number`, are automatically built by
-[MIES-BUILD](http://bamboo.corp.alleninstitute.org/browse/MIES-BUILD) and
-[MIES-BUILDRELEASE](http://bamboo.corp.alleninstitute.org/browse/MIES-BUILDRELEASE).
+The documentation for the master branch is automatically built and uploaded by
+[this](http://bamboo.corp.alleninstitute.org/browse/MIES-CM) bamboo job.
 
 ### Setting up a continous integration server (Linux)
 
