@@ -570,8 +570,7 @@ End
 
 /// @brief Analyse data in NWB file and sort as sweeps.
 ///
-/// Function uses source attribute of /acquisition/timeseries
-///                               and /stimulus/presentation
+/// @todo: Update this function for the use with SweepTable
 ///
 /// @param discLocation  location of NWB File on Disc.
 ///                      ID in AnalysisBrowserMap
@@ -580,7 +579,7 @@ End
 static Function AB_LoadSweepsFromNWB(discLocation, dataFolder, device)
 	string discLocation, dataFolder, device
 
-	variable h5_fileID, h5_groupID
+	variable h5_fileID, nwbVersion
 	string channelList
 
 	Wave/I sweeps = GetAnalysisChannelSweepWave(dataFolder, device)
@@ -588,34 +587,32 @@ static Function AB_LoadSweepsFromNWB(discLocation, dataFolder, device)
 	// open hdf5 file
 	h5_fileID = IPNWB#H5_OpenFile(discLocation)
 
-	// load from /acquisition/timeseries
-	channelList = IPNWB#ReadAcquisition(h5_fileID)
-	h5_groupID  = IPNWB#OpenAcquisition(h5_fileID)
+	// load from /acquisition
+	nwbVersion = IPNWB#GetNWBMajorVersion(IPNWB#ReadNWBVersion(h5_fileID))
+	channelList = IPNWB#ReadAcquisition(h5_fileID, nwbVersion)
 	Wave/T acquisition = GetAnalysisChannelAcqWave(dataFolder, device)
-	AB_StoreChannelsBySweep(h5_groupID, channelList, sweeps, acquisition)
-	HDF5CloseGroup/Z h5_groupID
+	AB_StoreChannelsBySweep(h5_fileID, nwbVersion, channelList, sweeps, acquisition)
 
 	// load from /stimulus/presentation
 	channelList = IPNWB#ReadStimulus(h5_fileID)
-	h5_groupID  = IPNWB#OpenStimulus(h5_fileID)
 	Wave/T stimulus = GetAnalysisChannelStimWave(dataFolder, device)
-	AB_StoreChannelsBySweep(h5_groupID, channelList, sweeps, stimulus)
-	HDF5CloseGroup/Z h5_groupID
+	AB_StoreChannelsBySweep(h5_fileID, nwbVersion, channelList, sweeps, stimulus)
 
 	// close hdf5 file
 	IPNWB#H5_CloseFile(h5_fileID)
 End
 
 /// @brief Store channelList in storage wave according to index in sweeps wave
-static Function AB_StoreChannelsBySweep(groupID, channelList, sweeps, storage)
-	variable groupID
+///
+/// @todo Update this function for the use with SweepTable
+static Function AB_StoreChannelsBySweep(groupID, nwbVersion, channelList, sweeps, storage)
+	variable groupID, nwbVersion
 	string channelList
 	Wave/I sweeps
 	Wave/T storage
 
-	variable numChannels, numSweeps, i
+	variable numChannels, numSweeps, i, sweepNo, sweep_table_id
 	string channelString
-	STRUCT IPNWB#ReadChannelParams channel
 
 	numChannels = ItemsInList(channelList)
 	numSweeps = GetNumberFromWaveNote(sweeps, NOTE_INDEX)
@@ -623,15 +620,28 @@ static Function AB_StoreChannelsBySweep(groupID, channelList, sweeps, storage)
 	EnsureLargeEnoughWave(storage, minimumSize = numSweeps, dimension = ROWS)
 	storage = ""
 
+	WAVE/Z SweepTableNumber
+	WAVE/Z/T SweepTableSeries
+	if(nwbVersion == 2)
+		[SweepTableNumber, SweepTableSeries] = IPNWB#LoadSweepTable(groupID, nwbVersion)
+	endif
+
 	for(i = 0; i < numChannels; i += 1)
 		channelString = StringFromList(i, channelList)
-		IPNWB#LoadSourceAttribute(groupID, channelString, channel)
-		FindValue/I=(channel.sweep)/S=0 sweeps
+		if(nwbVersion == 2)
+			WAVE indices = FindIndizes(SweepTableSeries, col = 0, str = channelString)
+			ASSERT(DimSize(indices, ROWS) == 1, "Invalid Amount of Sweep Number Associated in " + channelString)
+			sweepNo = SweepTableNumber[indices[0]]
+		else
+			sweepNo = IPNWB#LoadSweepNumber(groupID, channelString, nwbVersion)
+		endif
+		FindValue/I=(sweepNo)/S=0 sweeps
+		ASSERT(isFinite(sweepNo), "Invalid Sweep Number Associated in " + channelString)
 		if(V_Value == -1)
 			numSweeps += 1
 			EnsureLargeEnoughWave(sweeps, minimumSize = numSweeps, dimension = ROWS, initialValue = -1)
 			EnsureLargeEnoughWave(storage, minimumSize = numSweeps, dimension = ROWS)
-			sweeps[numSweeps - 1] = channel.sweep
+			sweeps[numSweeps - 1] = sweepNo
 			storage[numSweeps - 1] = AddListItem(channelString, "")
 		else
 			storage[V_Value] = AddListItem(channelString, storage[V_Value])
@@ -932,11 +942,6 @@ static Function/S AB_LoadLabNotebookFromNWB(discLocation)
 		IPNWB#H5_CloseFile(h5_fileID)
 		return ""
 	endtry
-
-	if(!IPNWB#CheckIntegrity(h5_fileID))
-		IPNWB#H5_CloseFile(h5_fileID)
-		return ""
-	endif
 
 	notebookList = IPNWB#ReadLabNoteBooks(h5_fileID)
 	h5_notebooksID = IPNWB#H5_OpenGroup(h5_fileID, "/general/labnotebook")
@@ -1567,7 +1572,7 @@ static Function AB_LoadSweepFromNWB(discLocation, sweepDFR, device, sweep)
 	variable sweep
 
 	string channelList
-	variable h5_fileID, h5_groupID, numSweeps
+	variable h5_fileID, h5_groupID, numSweeps, version
 
 	Wave/T nwb = AB_GetMap(discLocation)
 
@@ -1593,12 +1598,13 @@ static Function AB_LoadSweepFromNWB(discLocation, sweepDFR, device, sweep)
 
 	// open NWB file
 	h5_fileID = IPNWB#H5_OpenFile(discLocation)
+	version = IPNWB#GetNWBMajorVersion(IPNWB#ReadNWBVersion(h5_fileID))
 
 	// load acquisition
 	Wave/T acquisition = GetAnalysisChannelAcqWave(nwb[%DataFolder], device)
 	channelList = acquisition[V_Value]
-	h5_groupID = IPNWB#OpenAcquisition(h5_fileID)
-	if(AB_LoadSweepFromNWBgeneric(h5_groupID, channelList, sweepDFR, configSweep))
+	h5_groupID = IPNWB#OpenAcquisition(h5_fileID, version)
+	if(AB_LoadSweepFromNWBgeneric(h5_groupID, version, channelList, sweepDFR, configSweep))
 		return 1
 	endif
 
@@ -1606,7 +1612,7 @@ static Function AB_LoadSweepFromNWB(discLocation, sweepDFR, device, sweep)
 	Wave/T stimulus = GetAnalysisChannelStimWave(nwb[%DataFolder], device)
 	channelList = stimulus[V_Value]
 	h5_groupID = IPNWB#OpenStimulus(h5_fileID)
-	if(AB_LoadSweepFromNWBgeneric(h5_groupID, channelList, sweepDFR, configSweep))
+	if(AB_LoadSweepFromNWBgeneric(h5_groupID, version, channelList, sweepDFR, configSweep))
 		return 1
 	endif
 
@@ -1616,8 +1622,8 @@ static Function AB_LoadSweepFromNWB(discLocation, sweepDFR, device, sweep)
 	return 0
 End
 
-static Function AB_LoadSweepFromNWBgeneric(h5_groupID, channelList, sweepDFR, configSweep)
-	variable h5_groupID
+static Function AB_LoadSweepFromNWBgeneric(h5_groupID, nwbVersion, channelList, sweepDFR, configSweep)
+	variable h5_groupID, nwbVersion
 	string channelList
 	DFREF sweepDFR
 	Wave/I configSweep
@@ -1631,10 +1637,7 @@ static Function AB_LoadSweepFromNWBgeneric(h5_groupID, channelList, sweepDFR, co
 
 	for(i = 0; i < numChannels; i += 1)
 		channel = StringFromList(i, channelList)
-
-		// use AnalyseChannelName as a fallback if properties from the source attribute are missing
 		IPNWB#AnalyseChannelName(channel, p)
-		IPNWB#LoadSourceAttribute(h5_groupID, channel, p)
 
 		switch(p.channelType)
 			case ITC_XOP_CHANNEL_TYPE_DAC:
@@ -1645,7 +1648,7 @@ static Function AB_LoadSweepFromNWBgeneric(h5_groupID, channelList, sweepDFR, co
 				break
 			case ITC_XOP_CHANNEL_TYPE_ADC:
 				channelName = "AD"
-				wave loaded = IPNWB#LoadTimeseries(h5_groupID, channel)
+				wave loaded = IPNWB#LoadTimeseries(h5_groupID, channel, nwbVersion)
 				channelName += "_" + num2str(p.channelNumber)
 				fakeConfigWave = 1
 				break
@@ -1681,6 +1684,7 @@ static Function AB_LoadSweepFromNWBgeneric(h5_groupID, channelList, sweepDFR, co
 			default:
 				ASSERT(0, "unknown channel type " + num2str(p.channelType))
 		endswitch
+		ASSERT(WaveExists(loaded), "No Wave loaded")
 
 		if(waveNoteLoaded == 0)
 			SVAR/Z test = sweepDFR:note

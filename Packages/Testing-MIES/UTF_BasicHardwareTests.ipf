@@ -288,7 +288,8 @@ static Function AllTests(t, devices)
 		endfor
 	endfor
 
-	TestNwbExport()
+	TestNwbExportV1()
+	TestNwbExportV2()
 End
 
 Function/WAVE GetTrackActiveSetCount()
@@ -2389,7 +2390,8 @@ Function UnassociatedChannels_REENTRY([str])
 		endfor
 	endfor
 
-	TestNwbExport()
+	TestNwbExportV1()
+	TestNwbExportV2()
 End
 
 static Function GetMinSampInt_IGNORE([unit])

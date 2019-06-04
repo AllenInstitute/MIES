@@ -14,7 +14,7 @@ Table of Contents
   namespacelist
   CalculateTPLikePropsFromSweep
   SweepFormula
-  IPNWB
+  IPNWB/Readme
   TPAnalysis_algorithm
   asyncframework
   ZeroMQ-XOP-Readme

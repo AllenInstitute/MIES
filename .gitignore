@@ -1,4 +1,9 @@
+# Documentation files
 Packages/doc/html
+Packages/doc/IPNWB
+Packages/doc/doctrees
+Packages/doc/sphinx-output.log
+
 Packages/MIES/backup
 *.orig
 *.rej

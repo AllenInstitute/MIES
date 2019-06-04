@@ -3683,6 +3683,11 @@ Window DA_Ephys() : Panel
 	CheckBox Check_Settings_NwbExport,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	CheckBox Check_Settings_NwbExport,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
 	CheckBox Check_Settings_NwbExport,value= 0
+	PopupMenu Popup_Settings_NwbVersion,pos={139.00,231.00},size={69.00,19.00},proc=DAP_PopMenuProc_UpdateGuiState,title="version"
+	PopupMenu Popup_Settings_NwbVersion,help={"Set the NWB Version of the export when using triggered export from DA_Ephys"}
+	PopupMenu Popup_Settings_NwbVersion,userdata(tabcontrol)=  "ADC"
+	PopupMenu Popup_Settings_NwbVersion,userdata(tabnum)=  "5"
+	PopupMenu Popup_Settings_NwbVersion,mode=2,popvalue="2",value= #"\"1;2\""
 	SetVariable setvar_DataAcq_OnsetDelayUser,pos={296.00,656.00},size={167.00,18.00},bodyWidth=50,disable=1,proc=DAP_SetVar_UpdateGuiState,title="User onset delay (ms)"
 	SetVariable setvar_DataAcq_OnsetDelayUser,help={"A global parameter that delays the onset time of a set after the initiation of data acquistion. Data acquisition start time is NOT delayed. Useful when set(s) have insufficient baseline epoch."}
 	SetVariable setvar_DataAcq_OnsetDelayUser,userdata(tabnum)=  "0"

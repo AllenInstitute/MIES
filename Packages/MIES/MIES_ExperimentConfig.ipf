@@ -407,6 +407,8 @@ static Function ExpConfig_DAEphysSettings(panelTitle, UserSettings)
 	PGC_SetAndActivateControl(panelTitle,"check_Settings_TP_SaveTP", val = str2numSafe(UserSettings[V_value][%SettingValue]))
 	FindValue /TXOP = 4 /TEXT = EXPORT_NWB UserSettings
 	PGC_SetAndActivateControl(panelTitle,"Check_Settings_NwbExport", val = str2numSafe(UserSettings[V_value][%SettingValue]))
+	FindValue /TXOP = 4 /TEXT = NWB_VERSION UserSettings
+	PGC_SetAndActivateControl(panelTitle,"Popup_Settings_NwbVersion", val = str2numSafe(UserSettings[V_value][%SettingValue]))
 	FindValue /TXOP = 4 /TEXT = APPEND_ASYNC UserSettings
 	PGC_SetAndActivateControl(panelTitle,"Check_Settings_Append", val = str2numSafe(UserSettings[V_value][%SettingValue]))
 	FindValue /TXOP = 4 /TEXT = SYNC_MIES_MCC UserSettings

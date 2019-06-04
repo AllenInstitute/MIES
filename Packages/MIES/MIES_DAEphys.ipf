@@ -450,6 +450,7 @@ Function DAP_EphysPanelStartUpSettings()
 	CheckBox check_Settings_TPAfterDAQ WIN = $panelTitle, value= 0
 
 	CheckBox Check_Settings_NwbExport WIN = $panelTitle,value= 0
+	PopupMenu Popup_Settings_NwbVersion WIN = $panelTitle, mode=2, popvalue="2"
 
 	PopupMenu Popup_Settings_DecMethod, mode=2, popvalue="MinMax"
 	SetVariable setvar_Settings_DecMethodFac, WIN = $panelTitle, value = _NUM:-1
@@ -2464,7 +2465,7 @@ Function DAP_CheckSettings(panelTitle, mode)
 	endfor
 
 	if(DAG_GetNumericalValue(panelTitle, "Check_Settings_NwbExport"))
-		NWB_PrepareExport()
+		NWB_PrepareExport(DAG_GetNumericalValue(panelTitle, "Popup_Settings_NwbVersion"))
 	endif
 
 	return 0

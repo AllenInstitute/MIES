@@ -196,7 +196,8 @@ End
 Function RewriteAnalysisFunctions_IGNORE()
 	LoadStimsets()
 	ChangeAnalysisFunctions_IGNORE()
-	SaveStimsets()
+	SaveStimsets(1)
+	SaveStimsets(2)
 End
 
 Function/WAVE TrackAnalysisFunctionCalls([numHeadstages])
