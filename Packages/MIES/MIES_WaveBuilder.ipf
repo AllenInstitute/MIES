@@ -454,7 +454,7 @@ End
 /// @sa AddDimLabelsToWP()
 static Function/WAVE WB_GetControlWithDeltaIdx()
 
-	Make/FREE/B indizes = {0, 2, 4, 6, 10, 12, 14, 16, 20, 22, 24, 26, 28, 30, 45, 99}
+	Make/FREE/B indizes = {0, 2, 4, 6, 8, 10, 12, 14, 16, 20, 22, 24, 26, 28, 30, 45, 99}
 	return indizes
 End
 
@@ -464,7 +464,7 @@ End
 static Function/WAVE WB_GetControlWithDeltaWvs(WP, SegWvType)
 	WAVE WP, SegWvType
 
-	Make/FREE/WAVE locations = {WP, WP, WP, WP, WP, WP, WP, WP, WP, WP, WP, WP, WP, WP, WP, SegWvType}
+	Make/FREE/WAVE locations = {WP, WP, WP, WP, WP, WP, WP, WP, WP, WP, WP, WP, WP, WP, WP, WP, SegWvType}
 	return locations
 End
 
