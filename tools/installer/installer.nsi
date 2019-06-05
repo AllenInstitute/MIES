@@ -176,6 +176,13 @@ Var NSD_IF_CB4
   ReadRegStr $0 HKEY_LOCAL_MACHINE "Software\Microsoft\Windows\CurrentVersion\Uninstall\${COMPANYNAME} ${APPNAME}" "QuietUninstallString"
   StrLen $1 $0
   ${If} $1 <> 0
+    UserInfo::GetAccountType
+    pop $1
+    ${If} $1 != "admin"
+      ifSilent +2
+      MessageBox MB_OK|MB_ICONEXCLAMATION "There is a already a installation of MIES present that was installed with administrative privileges. Uninstallation requires administrative privileges as well and can not be done with your current rights. Please contact an administrator to uninstall MIES first."
+      Quit
+    ${EndIf}
     ExecWait '$0'
   ${EndIf}
 !macroend
@@ -587,12 +594,9 @@ Igor8CheckEnd:
   !insertmacro StopOnIgor32
   !insertmacro StopOnIgor64
 
-  UserInfo::GetAccountType
-  pop $0
-  ${If} $0 == "admin"
-    !insertmacro UninstallOnDemandAdmin
-    !insertmacro WaitForUninstaller
-  ${EndIf}
+  !insertmacro UninstallOnDemandAdmin
+  !insertmacro WaitForUninstaller
+
   !insertmacro UninstallOnDemandUser
   !insertmacro WaitForUninstaller
 functionEnd
