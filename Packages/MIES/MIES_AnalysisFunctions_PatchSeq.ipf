@@ -852,6 +852,8 @@ static Function/WAVE PSQ_SearchForSpikes(panelTitle, type, sweepWave, headstage,
 		if(type == PSQ_RAMP) // during midsweep
 			// use the first active AD channel
 			level = PSQ_SPIKE_LEVEL * SWS_GetChannelGains(panelTitle)[1]
+		elseif(type == PSQ_DA_SCALE)
+			level = -20
 		else
 			level = PSQ_SPIKE_LEVEL
 		endif
