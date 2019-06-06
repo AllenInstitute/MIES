@@ -91,6 +91,7 @@ Var INSTALL_I8PATH
 Var IGORBASEPATH
 Var FILEHANDLE
 Var LINESTR
+Var ISADMIN
 
 Var IGORDIRTEMPL
 Var IGORBITDIRTEMPL
@@ -124,26 +125,6 @@ Var NSD_IF_CB4
 
 !include "browsefolder.nsh"
 
-!macro AdjustInstdirIfUserIsNotAdmin
-  UserInfo::GetAccountType
-  pop $0
-  StrCpy $INSTDIR "$PROGRAMFILES64\${APPNAME}"
-  ${If} $0 != "admin"
-    StrCpy $INSTDIR "${USERINSTDIR}"
-  ${EndIf}
-!macroend
-
-!macro VerifyUserIsAdmin
-  UserInfo::GetAccountType
-  pop $0
-  ${If} $0 != "admin" ;Require admin rights on NT4+
-    IfSilent +2
-      MessageBox mb_iconstop "You selected installation for All Users, but you don't have Administrator rights."
-    SetErrorLevel 740 ;ERROR_ELEVATION_REQUIRED
-    Quit
-  ${EndIf}
-!macroend
-
 !macro PreventMultipleInstaller
   System::Call 'kernel32::CreateMutex(p 0, i 0, t "MIESINSTALLMutex") p .r1 ?e'
   Pop $R0
@@ -169,33 +150,61 @@ Var NSD_IF_CB4
   Pop ${result} ; The exit code
 !macroend
 
-!macro UninstallOnDemandAdmin
-  IfSilent +3
-    ReadRegStr $0 HKEY_LOCAL_MACHINE "Software\Microsoft\Windows\CurrentVersion\Uninstall\${COMPANYNAME} ${APPNAME}" "UninstallString"
-    Goto +2
-  ReadRegStr $0 HKEY_LOCAL_MACHINE "Software\Microsoft\Windows\CurrentVersion\Uninstall\${COMPANYNAME} ${APPNAME}" "QuietUninstallString"
+!macro CheckAllUninstalled
+  StrCpy $2 "0"
+  ReadRegStr $0 HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\${COMPANYNAME} ${APPNAME}" "DisplayName"
   StrLen $1 $0
   ${If} $1 <> 0
-    UserInfo::GetAccountType
-    pop $1
-    ${If} $1 != "admin"
-      ifSilent +2
-      MessageBox MB_OK|MB_ICONEXCLAMATION "There is a already a installation of MIES present that was installed with administrative privileges. Uninstallation requires administrative privileges as well and can not be done with your current rights. Please contact an administrator to uninstall MIES first."
+    StrCpy $2 "1"
+  ${EndIf}
+
+  ReadRegStr $0 HKCU "Software\Microsoft\Windows\CurrentVersion\Uninstall\${COMPANYNAME} ${APPNAME}" "DisplayName"
+  StrLen $1 $0
+  ${If} $1 <> 0
+    StrCpy $2 "1"
+  ${EndIf}
+
+  IfFileExists "${USERINSTDIR}\uninstall.exe" 0 +2
+    StrCpy $2 "1"
+
+  IntCmp $2 0 +4
+    ifSilent +2
+      MessageBox MB_OK|MB_ICONSTOP "There is a already a installation of MIES present that was installed with administrative privileges. Uninstallation requires administrative privileges as well and can not be done with your current rights. Please contact an administrator to uninstall MIES through Add/Remove Programs first."
       Quit
-    ${EndIf}
+!macroend
+
+!macro UninstallAttemptAdmin
+  IfSilent +3
+    ReadRegStr $0 HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\${COMPANYNAME} ${APPNAME}" "UninstallString"
+    Goto +2
+  ReadRegStr $0 HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\${COMPANYNAME} ${APPNAME}" "QuietUninstallString"
+  StrLen $1 $0
+  ${If} $1 <> 0
     ExecWait '$0'
   ${EndIf}
 !macroend
 
-!macro UninstallOnDemandUser
+!macro UninstallAttemptUser
+# this check is just for compatibility with old installations
 !define UODUID ${__LINE__}
-IfFileExists "${USERINSTDIR}\uninstall.exe" 0 UODUEnd_{UODUID}
-  IfSilent +3
-    ExecWait "${USERINSTDIR}\uninstall.exe"
-    Goto +2
-  ExecWait '"${USERINSTDIR}\uninstall.exe" /S'
-UODUEnd_{UODUID}:
+  IfFileExists "${USERINSTDIR}\uninstall.exe" 0 UODUEnd_{UODUID}
+    IfSilent +3
+      ExecWait "${USERINSTDIR}\uninstall.exe"
+      Goto +2
+    ExecWait '"${USERINSTDIR}\uninstall.exe" /S'
+  UODUEnd_{UODUID}:
 !undef UODUID
+  !insertmacro WaitForUninstaller
+
+# this is the current check against registry
+  IfSilent +3
+    ReadRegStr $0 HKCU "Software\Microsoft\Windows\CurrentVersion\Uninstall\${COMPANYNAME} ${APPNAME}" "UninstallString"
+    Goto +2
+  ReadRegStr $0 HKCU "Software\Microsoft\Windows\CurrentVersion\Uninstall\${COMPANYNAME} ${APPNAME}" "QuietUninstallString"
+  StrLen $1 $0
+  ${If} $1 <> 0
+    ExecWait '$0'
+  ${EndIf}
 !macroend
 
 !macro WaitForProc ProcName
@@ -297,12 +306,13 @@ Function DialogAllCur
     ${NSD_Check} $NSD_AC_RB2
   ${NSD_OnClick} $NSD_AC_RB2 ClickedAllUser
 
-  UserInfo::GetAccountType
-  pop $0
-  ${If} $0 != "admin"
+  IntCmp $ISADMIN 1 +2
     EnableWindow $NSD_AC_RB2 0
-  ${EndIf}
   nsDialogs::Show
+
+  StrCpy $INSTDIR "$PROGRAMFILES64\${APPNAME}"
+  IntCmp $ALLUSER 1 +2
+    StrCpy $INSTDIR "${USERINSTDIR}"
 FunctionEnd
 
 #---Installation Type Dialog---
@@ -511,7 +521,11 @@ function .onInit
   StrCpy $ALLUSER "0"
   StrCpy $XOPINST "1"
 
-  !insertmacro AdjustInstdirIfUserIsNotAdmin
+  StrCpy $ISADMIN "0"
+  UserInfo::GetAccountType
+  pop $0
+  StrCmp $0 "admin" 0 +2
+    StrCpy $ISADMIN "1"
 
   # Get Igor Path from Registry and check which version we have
   !insertmacro CheckIgor32
@@ -594,11 +608,13 @@ Igor8CheckEnd:
   !insertmacro StopOnIgor32
   !insertmacro StopOnIgor64
 
-  !insertmacro UninstallOnDemandAdmin
+  !insertmacro UninstallAttemptAdmin
   !insertmacro WaitForUninstaller
 
-  !insertmacro UninstallOnDemandUser
+  !insertmacro UninstallAttemptUser
   !insertmacro WaitForUninstaller
+
+  !insertmacro CheckAllUninstalled
 functionEnd
 
 !macro CheckLinkTarget LinkPath TargetName
@@ -628,42 +644,12 @@ CLTDone_${CLTID}:
 !macroend
 
 !macro CheckMIESPresent Path NiceInfo
-!define CMIESPID ${__LINE__}
-  ReadRegStr $0 HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\${COMPANYNAME} ${APPNAME}" "DisplayName"
-  StrLen $1 $0
-  IntCmp $1 0 +1 FinishMacro_${CMIESPID} FinishMacro_${CMIESPID}
-    !insertmacro CheckLinkTarget "${Path}\Igor Procedures" "MIES_Include.ipf"
-    Pop $1
-    IntCmp $1 0 +4
-      IfSilent +2
-        MessageBox MB_OK|MB_ICONSTOP "It appears that there is already MIES for ${NiceInfo} installed. Please remove MIES manually first."
-      Quit
-    !insertmacro CheckLinkTarget "${Path}\Igor Procedures" "MIES_AnalysisBrowser.ipf"
-    Pop $1
-    IntCmp $1 0 +4
-      IfSilent +2
-        MessageBox MB_OK|MB_ICONSTOP "It appears that there is already MIES Analysis Browser for ${NiceInfo} installed. Please remove MIES manually first."
-      Quit
-    !insertmacro CheckLinkTarget "${Path}\Igor Procedures" "MIES_DataBrowser.ipf"
-    Pop $1
-    IntCmp $1 0 +4
-      IfSilent +2
-        MessageBox MB_OK|MB_ICONSTOP "It appears that there is already MIES Data Browser for ${NiceInfo} installed. Please remove MIES manually first."
-      Quit
-    !insertmacro CheckLinkTarget "${Path}\Igor Procedures" "MIES_WaveBuilderPanel.ipf"
-    Pop $1
-    IntCmp $1 0 +4
-      IfSilent +2
-        MessageBox MB_OK|MB_ICONSTOP "It appears that there is already MIES Wave Builder Panel for ${NiceInfo} installed. Please remove MIES manually first."
-      Quit
-    !insertmacro CheckLinkTarget "${Path}\Igor Procedures" "MIES_Downsample.ipf"
-    Pop $1
-    IntCmp $1 0 +4
-      IfSilent +2
-        MessageBox MB_OK|MB_ICONSTOP "It appears that there is already MIES Downsample for ${NiceInfo} installed. Please remove MIES manually first."
-      Quit
-FinishMacro_${CMIESPID}:
-!undef CMIESPID
+  !insertmacro CheckLinkTarget "${Path}\Igor Procedures" "MIES_Include.ipf"
+  Pop $1
+  IntCmp $1 0 +4
+    IfSilent +2
+      MessageBox MB_OK|MB_ICONSTOP "It appears that there is already MIES for ${NiceInfo} installed. Please remove MIES manually first."
+    Quit
 !macroend
 
 !macro CreateIgorDirs
@@ -752,7 +738,11 @@ MIESCheck8:
 MIESCheck8End:
 
   IntCmp $ALLUSER 0 AdminCheckDone
-    !insertmacro VerifyUserIsAdmin
+    IntCmp $ISADMIN 1 AdminCheckDone
+    IfSilent +2
+      MessageBox mb_iconstop "You selected installation for All Users, but you don't have Administrator rights."
+    SetErrorLevel 740 ;ERROR_ELEVATION_REQUIRED
+    Quit
 AdminCheckDone:
 
   !include "${NSISINSTDIRLIST}"
@@ -867,6 +857,7 @@ EndOfLinks:
 
   File "${APPICON}"
   # Registry information for add/remove programs
+  IntCmp $ALLUSER 0 RegistryToHKCU
   WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\${COMPANYNAME} ${APPNAME}" "DisplayName" "${COMPANYNAME} - ${APPNAME} - ${DESCRIPTION}"
   WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\${COMPANYNAME} ${APPNAME}" "UninstallString" "$\"$INSTDIR\uninstall.exe$\""
   WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\${COMPANYNAME} ${APPNAME}" "QuietUninstallString" "$\"$INSTDIR\uninstall.exe$\" /S"
@@ -884,6 +875,26 @@ EndOfLinks:
   WriteRegDWORD HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\${COMPANYNAME} ${APPNAME}" "NoRepair" 1
   # Set the INSTALLSIZE constant (!defined at the top of this script) so Add/Remove Programs can accurately report the size
   WriteRegDWORD HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\${COMPANYNAME} ${APPNAME}" "EstimatedSize" ${INSTALLSIZE}
+  Goto AfterRegistrySetup
+RegistryToHKCU:
+  WriteRegStr HKCU "Software\Microsoft\Windows\CurrentVersion\Uninstall\${COMPANYNAME} ${APPNAME}" "DisplayName" "${COMPANYNAME} - ${APPNAME} - ${DESCRIPTION}"
+  WriteRegStr HKCU "Software\Microsoft\Windows\CurrentVersion\Uninstall\${COMPANYNAME} ${APPNAME}" "UninstallString" "$\"$INSTDIR\uninstall.exe$\""
+  WriteRegStr HKCU "Software\Microsoft\Windows\CurrentVersion\Uninstall\${COMPANYNAME} ${APPNAME}" "QuietUninstallString" "$\"$INSTDIR\uninstall.exe$\" /S"
+  WriteRegStr HKCU "Software\Microsoft\Windows\CurrentVersion\Uninstall\${COMPANYNAME} ${APPNAME}" "InstallLocation" "$\"$INSTDIR$\""
+  WriteRegStr HKCU "Software\Microsoft\Windows\CurrentVersion\Uninstall\${COMPANYNAME} ${APPNAME}" "DisplayIcon" "$\"$INSTDIR\${APPICON}$\""
+  WriteRegStr HKCU "Software\Microsoft\Windows\CurrentVersion\Uninstall\${COMPANYNAME} ${APPNAME}" "Publisher" "${COMPANYNAME}"
+  WriteRegStr HKCU "Software\Microsoft\Windows\CurrentVersion\Uninstall\${COMPANYNAME} ${APPNAME}" "HelpLink" "${HELPURL}"
+  WriteRegStr HKCU "Software\Microsoft\Windows\CurrentVersion\Uninstall\${COMPANYNAME} ${APPNAME}" "URLUpdateInfo" "${UPDATEURL}"
+  WriteRegStr HKCU "Software\Microsoft\Windows\CurrentVersion\Uninstall\${COMPANYNAME} ${APPNAME}" "URLInfoAbout" "${ABOUTURL}"
+  WriteRegStr HKCU "Software\Microsoft\Windows\CurrentVersion\Uninstall\${COMPANYNAME} ${APPNAME}" "DisplayVersion" "${PACKAGEVERSION}"
+  WriteRegDWORD HKCU "Software\Microsoft\Windows\CurrentVersion\Uninstall\${COMPANYNAME} ${APPNAME}" "VersionMajor" ${VERSIONMAJOR}
+  WriteRegDWORD HKCU "Software\Microsoft\Windows\CurrentVersion\Uninstall\${COMPANYNAME} ${APPNAME}" "VersionMinor" ${VERSIONMINOR}
+  # There is no option for modifying or repairing the install
+  WriteRegDWORD HKCU "Software\Microsoft\Windows\CurrentVersion\Uninstall\${COMPANYNAME} ${APPNAME}" "NoModify" 1
+  WriteRegDWORD HKCU "Software\Microsoft\Windows\CurrentVersion\Uninstall\${COMPANYNAME} ${APPNAME}" "NoRepair" 1
+  # Set the INSTALLSIZE constant (!defined at the top of this script) so Add/Remove Programs can accurately report the size
+  WriteRegDWORD HKCU "Software\Microsoft\Windows\CurrentVersion\Uninstall\${COMPANYNAME} ${APPNAME}" "EstimatedSize" ${INSTALLSIZE}
+AfterRegistrySetup:
 
   ExecWait '"$INSTDIR\vc_redist.x86.exe" /quiet'
   ExecWait '"$INSTDIR\vc_redist.x64.exe" /quiet'
@@ -927,7 +938,7 @@ EndReadLoop:
   Goto RemoveMain
 FileError:
   IfSilent +2
-    MessageBox MB_OK "Can find $INSTDIR\uninstall.lst. Some shortcuts in Igor Pro folders may remain after uninstallation."
+    MessageBox MB_OK "Can not find $INSTDIR\uninstall.lst. Some shortcuts in Igor Pro folders may remain after uninstallation."
 
 RemoveMain:
   !include "${NSISUNINSTFILELIST}"
@@ -936,5 +947,11 @@ RemoveMain:
   Delete $INSTDIR\uninstall.exe
   !include "${NSISUNINSTDIRLIST}"
   RMDir $INSTDIR
-  DeleteRegKey HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\${COMPANYNAME} ${APPNAME}"
+  StrCpy $1 "$\"$INSTDIR\uninstall.exe$\""
+  ReadRegStr $0 HKCU "Software\Microsoft\Windows\CurrentVersion\Uninstall\${COMPANYNAME} ${APPNAME}" "UninstallString"
+  StrCmp $0 $1 0 +2
+    DeleteRegKey HKCU "Software\Microsoft\Windows\CurrentVersion\Uninstall\${COMPANYNAME} ${APPNAME}"
+  ReadRegStr $0 HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\${COMPANYNAME} ${APPNAME}" "UninstallString"
+  StrCmp $0 $1 0 +2
+    DeleteRegKey HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\${COMPANYNAME} ${APPNAME}"
 SectionEnd
