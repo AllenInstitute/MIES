@@ -1031,7 +1031,7 @@ static Function DC_PlaceDataInHardwareDataWave(panelTitle, numActiveChannels, da
 					case HARDWARE_ITC_DAC:
 						Multithread ITCDataWave[][i] =   	                    \
 						limit(                                                  \
-						(DAGain[q] * DAScale[q]) * testPulse[mod(p, TPLength)], \
+						(DAGain[i] * DAScale[i]) * testPulse[mod(p, TPLength)], \
 						SIGNED_INT_16BIT_MIN,                                   \
 						SIGNED_INT_16BIT_MAX); AbortOnRTE
 						cutOff = mod(DimSize(ITCDataWave, ROWS), TPLength)
@@ -1067,7 +1067,7 @@ static Function DC_PlaceDataInHardwareDataWave(panelTitle, numActiveChannels, da
 							// space in ITCDataWave for the testpulse is allocated via an automatic increase
 							// of the onset delay
 							ITCDataWave[baselineFrac * testPulseLength, (1 - baselineFrac) * testPulseLength][i] = \
-							limit(testPulseAmplitude[q] * DAGain[q], SIGNED_INT_16BIT_MIN, SIGNED_INT_16BIT_MAX); AbortOnRTE
+							limit(testPulseAmplitude[i] * DAGain[i], SIGNED_INT_16BIT_MIN, SIGNED_INT_16BIT_MAX); AbortOnRTE
 						endif
 						break
 					case HARDWARE_NI_DAC:
