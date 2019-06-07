@@ -52,7 +52,7 @@ case "$branch" in
     git push --force origin $tag
     ;;
   release/*)
-    tag=$(git tag | tail -1)
+    tag=$(git tag --list "Release_*" | tail -1)
     ;;
   *)
     echo "Unexpected branch $branch"

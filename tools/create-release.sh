@@ -41,7 +41,7 @@ then
 fi
 
 git_dir=$(git rev-parse --git-dir)
-superproject_version=$(git --git-dir=$git_dir describe --tags --always)
+superproject_version=$(git --git-dir=$git_dir describe --tags --always --match "Release_*")
 submodule_status=$(git --git-dir=$git_dir submodule status)
 date_of_version=$(git --git-dir=$git_dir log -1 --pretty=format:%cI)
 output_file=${superproject_version}.zip
