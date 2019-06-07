@@ -43,13 +43,28 @@ then
   exit 1
 fi
 
+public_mies_repo=~/devel/public-mies-igor
+
+if [ ! -d $public_mies_repo ]
+then
+  echo "The folder $public_mies_repo does not exist"
+  exit 1
+fi
+
 branch=$(git rev-parse --abbrev-ref HEAD)
 
 case "$branch" in
   master)
     tag=latest
-    git tag --force $tag
-    git push --force origin $tag
+
+    cd $public_mies_repo
+
+    git stash || true
+    git fetch --all
+    git tag --force ${tag} origin/master
+    git push --force origin ${tag}
+
+    cd $top_level
     ;;
   release/*)
     tag=$(git tag --list "Release_*" | tail -1)
