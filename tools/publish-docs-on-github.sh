@@ -22,7 +22,7 @@ then
   exit 1
 fi
 
-project_version=$(git describe --tags --always)
+project_version=$(git describe --tags --always --match "Release_*")
 public_mies_repo=~/devel/public-mies-igor
 
 top_level=$(git rev-parse --show-toplevel)
