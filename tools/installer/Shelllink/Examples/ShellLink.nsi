@@ -3,7 +3,7 @@
 ;
 ; Created 12/16/2003
 ; Last Update: 03/06/2010
-; Copyright (c) 2004 Angelo Mandato. 
+; Copyright (c) 2004 Angelo Mandato.
 ;
 ; 01/14/2004 - First version
 ; 21/09/2005 - Shengalts Aleksander aka Instructor (Shengalts@mail.ru)
