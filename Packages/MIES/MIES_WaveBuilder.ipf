@@ -16,6 +16,30 @@ static Constant PULSE_TRAIN_MODE_PULSE = 0x02
 static Constant WB_PULSE_TRAIN_TYPE_SQUARE   = 0
 static Constant WB_PULSE_TRAIN_TYPE_TRIANGLE = 1
 
+/// @name Constants for WB_GetControlWithDeltaIdx
+/// @anchor ControlDeltaIndizes
+/// The numeric values are row indizes in the waves returned by
+/// WB_GetControlWithDeltaWvs().
+/// @{
+static Constant WB_IDX_DURATION                 = 0
+static Constant WB_IDX_AMPLITUDE                = 2
+static Constant WB_IDX_OFFSET                   = 4
+static Constant WB_IDX_SIN_CHIRP_SAW_FREQUENCY  = 6
+static Constant WB_IDX_TRAIN_PULSE_DURATION     = 8
+static Constant WB_IDX_PSC_EXP_RISE_TIME        = 10
+static Constant WB_IDX_PSC_EXP_DECAY_TIME_1_2   = 12
+static Constant WB_IDX_PSC_EXP_DECAY_TIME_2_2   = 14
+static Constant WB_IDX_PSC_RATIO_DECAY_TIMES    = 16
+static Constant WB_IDX_LOW_PASS_FILTER_CUT_OFF  = 20
+static Constant WB_IDX_HIGH_PASS_FILTER_CUT_OFF = 22
+static Constant WB_IDX_CHIRP_END_FREQUENCY      = 24
+static Constant WB_IDX_NOISE_FILTER_ORDER       = 26
+static Constant WB_IDX_PT_FIRST_MIXED_FREQUENCY = 28
+static Constant WB_IDX_PT_LAST_MIXED_FREQUENCY  = 30
+static Constant WB_IDX_NUMBER_OF_PULSES         = 45
+static Constant WB_IDX_ITI                      = 99
+/// @}
+
 static Constant DELTA_OPERATION_EXPLICIT  = 6
 /// @brief Return the stim set wave and create it permanently
 /// in the datafolder hierarchy
@@ -452,9 +476,28 @@ End
 ///
 /// Indizes are into `WP` and reference the entry with the value itself.
 /// @sa AddDimLabelsToWP()
+///
+/// Constants are defined at @ref ControlDeltaIndizes.
 static Function/WAVE WB_GetControlWithDeltaIdx()
 
-	Make/FREE/B indizes = {0, 2, 4, 6, 10, 12, 14, 16, 20, 22, 24, 26, 28, 30, 45, 99}
+	Make/FREE/B indizes = {WB_IDX_DURATION,                 \
+						   WB_IDX_AMPLITUDE,                \
+						   WB_IDX_OFFSET,                   \
+						   WB_IDX_SIN_CHIRP_SAW_FREQUENCY,  \
+						   WB_IDX_TRAIN_PULSE_DURATION,     \
+						   WB_IDX_PSC_EXP_RISE_TIME,        \
+						   WB_IDX_PSC_EXP_DECAY_TIME_1_2,   \
+						   WB_IDX_PSC_EXP_DECAY_TIME_2_2,   \
+						   WB_IDX_PSC_RATIO_DECAY_TIMES,    \
+						   WB_IDX_LOW_PASS_FILTER_CUT_OFF,  \
+						   WB_IDX_HIGH_PASS_FILTER_CUT_OFF, \
+						   WB_IDX_CHIRP_END_FREQUENCY,      \
+						   WB_IDX_NOISE_FILTER_ORDER,       \
+						   WB_IDX_PT_FIRST_MIXED_FREQUENCY, \
+						   WB_IDX_PT_LAST_MIXED_FREQUENCY,  \
+						   WB_IDX_NUMBER_OF_PULSES,         \
+						   WB_IDX_ITI}
+
 	return indizes
 End
 
@@ -464,7 +507,7 @@ End
 static Function/WAVE WB_GetControlWithDeltaWvs(WP, SegWvType)
 	WAVE WP, SegWvType
 
-	Make/FREE/WAVE locations = {WP, WP, WP, WP, WP, WP, WP, WP, WP, WP, WP, WP, WP, WP, WP, SegWvType}
+	Make/FREE/WAVE locations = {WP, WP, WP, WP, WP, WP, WP, WP, WP, WP, WP, WP, WP, WP, WP, WP, SegWvType}
 	return locations
 End
 
