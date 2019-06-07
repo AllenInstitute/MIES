@@ -185,6 +185,13 @@ Function/S CreateMiesVersion()
 
 	open/R/Z refNum as path + "version.txt"
 	if(V_flag != 0)
+		printf "Could not determine the MIES version.\r"
+		printf "Possible reasons:\r"
+		printf "- Borked up installation, please use the installer again."
+		printf "- If you are using a git clone, please ensure that you followed\r"    + \
+			   "the manual installation steps correctly, and ensure that files and\r" + \
+			   "folders must *not* be copied but a shortcut must be created.\r"
+		ControlWindowToFront()
 		return UNKNOWN_MIES_VERSION
 	endif
 
