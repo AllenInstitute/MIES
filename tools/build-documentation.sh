@@ -2,7 +2,7 @@
 
 top_level=$(git rev-parse --show-toplevel)
 branch=$(git rev-parse --abbrev-ref HEAD)
-version=$(git describe --always --tags)
+version=$(git describe --always --tags --match "Release_*")
 
 function Passed {
   cp "$top_level/tools/JU_Passed.xml" "$top_level/tools/unit-testing/"
