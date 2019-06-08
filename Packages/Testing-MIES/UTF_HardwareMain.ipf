@@ -117,6 +117,10 @@ Function TEST_BEGIN_OVERRIDE(name)
 //	DisableDebugOutput()
 //	EnableDebugoutput()
 
+	// cache the version string
+	SVAR miesVersion = $GetMIESVersion()
+	string/G root:miesVersion = miesVersion
+
 	NWB_LoadAllStimsets(filename = GetFolder(FunctionPath("")) + "_2017_09_01_192934-compressed.nwb", overwrite = 1)
 	KillDataFolder/Z root:WaveBuilder
 	DuplicateDataFolder	root:MIES:WaveBuilder, root:WaveBuilder
@@ -159,6 +163,9 @@ Function TEST_CASE_BEGIN_OVERRIDE(name)
 	GetMiesPath()
 	DuplicateDataFolder	root:WaveBuilder, root:MIES:WaveBuilder
 	REQUIRE(DataFolderExists("root:MIES:WaveBuilder:SavedStimulusSetParameters:DA"))
+
+	SVAR miesVersion = root:miesVersion
+	string/G $(GetMiesPathAsString() + ":version") = miesVersion
 
 	HW_ITC_CloseAllDevices()
 End
