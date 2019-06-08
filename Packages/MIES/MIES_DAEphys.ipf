@@ -1964,7 +1964,7 @@ Function DAP_CheckSettings(panelTitle, mode)
 	string panelTitle
 	variable mode
 
-	variable numDACs, numADCs, numHS, numEntries, i, clampMode
+	variable numDACs, numADCs, numHS, numEntries, i, clampMode, headstage
 	variable ampSerial, ampChannelID, minValue, maxValue, leftOverBytes, hardwareType
 	variable lastStartSeconds, lastITI, nextStart, leftTime, sweepNo, validSampInt
 	string ctrl, endWave, ttlWave, dacWave, refDacWave, reqParams
@@ -2315,6 +2315,15 @@ Function DAP_CheckSettings(panelTitle, mode)
 				if(GetValDisplayAsNum(panelTitle, "valdisp_DataAcq_SweepsInSet") == 0 \
 				   && CmpStr(allSetNames[i], STIMSET_TP_WHILE_DAQ))
 					printf "(%s) The calculated number of sweeps is zero. This is unexpected and very likely a bug.\r", panelTitle
+					ControlWindowToFront()
+					return 1
+				endif
+
+				headstage = AFH_GetHeadstageFromDAC(panelTitle, i)
+
+				if(IsFinite(headstage) && DAG_GetHeadstageMode(panelTitle, headstage) == I_EQUAL_ZERO_MODE \
+				   && !cmpstr(allSetNames[i], STIMSET_TP_WHILE_DAQ))
+					printf "(%s) When TP while DAQ is used the channel clamp mode for headstage %d can not be I=0.\r", panelTitle, headstage
 					ControlWindowToFront()
 					return 1
 				endif
