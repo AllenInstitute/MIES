@@ -94,7 +94,7 @@ static Function/S OOD_AddToRegionList(first, last, list)
 
 	string str
 
-	sprintf str, "%d-%d", first * WAVEBUILDER_MIN_SAMPINT, last * WAVEBUILDER_MIN_SAMPINT
+	sprintf str, "%g-%g", first * WAVEBUILDER_MIN_SAMPINT, last * WAVEBUILDER_MIN_SAMPINT
 
 	return AddListItem(str, list, ";", INF)
 End
