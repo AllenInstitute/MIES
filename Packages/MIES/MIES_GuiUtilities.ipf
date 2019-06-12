@@ -1498,3 +1498,29 @@ Function GetListBoxSelRow(win, ctrl)
 
 	return V_Value
 End
+
+/// @brief Check if the location `loc` is inside the rectangle `r`
+Function IsInsideRect(loc, r)
+	STRUCT Point& loc
+	STRUCT RectF& r
+
+	return loc.h >= r.left      \
+		   && loc.h <= r.right  \
+		   && loc.v >= r.top    \
+		   && loc.v <= r.bottom
+End
+
+/// @brief Return the coordinates of the control borders
+///        relative to the top left corner in pixels
+Function GetControlCoordinates(win, ctrl, s)
+	string win, ctrl
+	STRUCT RectF& s
+
+	ControlInfo/W=$win $ctrl
+	ASSERT(V_flag != 0, "Not an existing control")
+
+	s.top    = V_top
+	s.bottom = V_top + V_height
+	s.left   = V_left
+	s.right  = V_left + V_width
+End
