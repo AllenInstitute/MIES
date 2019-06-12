@@ -680,15 +680,37 @@ End
 Function DAP_WindowHook(s)
 	STRUCT WMWinHookStruct &s
 
-	string panelTitle
+	string panelTitle, ctrl
+	variable sgn, i
 
 	switch(s.eventCode)
 		case EVENT_KILL_WINDOW_HOOK:
 			panelTitle = s.winName
 			DAP_UnlockDevice(panelTitle)
-
 			return 1
-		break
+		case 22: // mouse wheel
+			panelTitle = s.winName
+
+			if(GetTabID(panelTitle, "ADC") != DATA_ACQU_TAB_NUM)
+				break
+			endif
+
+			for(i = 0; i < NUM_HEADSTAGES; i += 1)
+				ctrl = StringFromList(i, PRESSURE_CONTROL_LED_DASHBOARD)
+
+				STRUCT RectF ctrlRect
+				GetControlCoordinates(panelTitle, ctrl, ctrlRect)
+
+				// help the user by allowing some more vertical space
+				ctrlRect.top    -= 20
+				ctrlRect.bottom += 20
+
+				if(IsInsideRect(s.mouseLoc, ctrlRect))
+					P_SetPressureOffset(s.winName, i, 0.1 * sign(s.wheelDy))
+					break
+				endif
+			endfor
+			break
 	endswitch
 
 	return 0
