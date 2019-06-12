@@ -22,7 +22,6 @@ static StrConstant  PRESSURE_CONTROLS_BUTTON_LIST   = "button_DataAcq_Approach;b
 static StrConstant  PRESSURE_CONTROL_TITLE_LIST     = "Approach;Seal;Break In;Clear;Apply"
 static StrConstant  PRESSURE_CONTROL_CHECKBOX_LIST  = "check_DatAcq_ApproachAll;check_DatAcq_SealAll;check_DatAcq_BreakInAll;check_DatAcq_ClearEnable;check_DataAcq_ManPressureAll"
 static StrConstant  PRESSURE_CONTROL_PRESSURE_DISP  = "valdisp_DataAcq_P_0;valdisp_DataAcq_P_1;valdisp_DataAcq_P_2;valdisp_DataAcq_P_3;valdisp_DataAcq_P_4;valdisp_DataAcq_P_5;valdisp_DataAcq_P_6;valdisp_DataAcq_P_7"
-static StrConstant  PRESSURE_CONTROL_LED_DASHBOARD  = "valdisp_DataAcq_P_LED_0;valdisp_DataAcq_P_LED_1;valdisp_DataAcq_P_LED_2;valdisp_DataAcq_P_LED_3;valdisp_DataAcq_P_LED_4;valdisp_DataAcq_P_LED_5;valdisp_DataAcq_P_LED_6;valdisp_DataAcq_P_LED_7"
 static StrConstant  PRESSURE_CONTROL_LED_MODE_USER  = "valdisp_DataAcq_P_LED_Approach;valdisp_DataAcq_P_LED_Seal;valdisp_DataAcq_P_LED_BreakIn;valdisp_DataAcq_P_LED_Clear"
 static StrConstant  PRESSURE_CONTROL_USER_CHECBOXES = "check_Settings_UserP_Approach;check_Settings_UserP_Seal;check_Settings_UserP_BreakIn;check_Settings_UserP_Clear"
 static StrConstant  LOW_COLOR_HILITE                = "0;0;0"
