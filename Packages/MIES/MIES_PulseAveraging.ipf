@@ -605,7 +605,6 @@ Function PA_ShowPulses(win, dfr, pa)
 			WAVE/Z pulseStartTimes = PA_GetPulseStartTimes(traceData, j, region, channelTypeStr)
 
 			if(!WaveExists(pulseStartTimes))
-				printf "We tried to find pulse starting times but failed miserably. Trying the next headstage\r"
 				continue
 			endif
 
@@ -675,7 +674,6 @@ Function PA_ShowPulses(win, dfr, pa)
 					WAVE/Z plotWave = PA_CreateAndFillPulseWaveIfReq(wv, singlePulseFolder, channelType, channelNumber, region, l, first, length)
 
 					if(!WaveExists(plotWave))
-						printf "Not adding pulse %d of region %d from sweep %d because it could not be extracted due to invalid coordinates.\r", l, region, sweepNo
 						continue
 					endif
 
