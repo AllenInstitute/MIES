@@ -2850,7 +2850,7 @@ Function WBP_MainWindowHook(s)
 					ctrl = StringFromList(i, controls)
 					ControlInfo/W=$s.winName $ctrl
 
-					if(V_disable & HIDDEN_CONTROL_BIT)
+					if(IsControlDisabled(win, ctrl))
 						continue
 					endif
 
