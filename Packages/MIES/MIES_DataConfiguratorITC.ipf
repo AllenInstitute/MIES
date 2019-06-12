@@ -758,7 +758,7 @@ static Function DC_PlaceDataInHardwareDataWave(panelTitle, numActiveChannels, da
 	variable distributedDAQDelay, onSetDelay, onsetDelayAuto, onsetDelayUser, terminationDelay
 	variable decimationFactor, cutoff
 	variable multiplier, powerSpectrum, distributedDAQOptOv, distributedDAQOptPre, distributedDAQOptPost, headstage
-	variable lastValidRow, isoodDAQMember, channel, tpAmp, DAScale
+	variable lastValidRow, isoodDAQMember, channel, tpAmp, DAScale, stimsetCol, startOffset
 	variable/C ret
 	variable TPLength
 	variable epochBegin, epochEnd, epochOffset
@@ -1155,30 +1155,32 @@ static Function DC_PlaceDataInHardwareDataWave(panelTitle, numActiveChannels, da
 				DAScale = DACAmp[i][%DASCALE] * DAGain[i]
 				WAVE singleStimSet = stimSet[i]
 				singleSetLength = setLength[i]
+				stimsetCol = setColumn[i]
+				startOffset = insertStart[i]
 
-				epochBegin = insertStart[i] * samplingInterval
+				epochBegin = startOffset * samplingInterval
 				if(distributedDAQOptOv && offsets[i] > 0)
 					epochOffset = offsets[i] * 1000
 					DC_AddEpoch(panelTitle, channel, epochBegin, epochBegin + epochOffset, EPOCH_BASELINE_REGION_KEY, 0)
-					DC_AddEpochsFromStimSetNote(panelTitle, channel, singleStimSet, epochBegin + epochOffset, singleSetLength * samplingInterval - epochOffset, setColumn[i], DACAmp[i][%DASCALE])
+					DC_AddEpochsFromStimSetNote(panelTitle, channel, singleStimSet, epochBegin + epochOffset, singleSetLength * samplingInterval - epochOffset, stimsetCol, DACAmp[i][%DASCALE])
 				else
-					DC_AddEpochsFromStimSetNote(panelTitle, channel, singleStimSet, epochBegin, singleSetLength * samplingInterval, setColumn[i], DACAmp[i][%DASCALE])
+					DC_AddEpochsFromStimSetNote(panelTitle, channel, singleStimSet, epochBegin, singleSetLength * samplingInterval, stimsetCol, DACAmp[i][%DASCALE])
 				endif
 				if(distributedDAQOptOv)
 					DC_AddEpochsFromOodDAQRegions(panelTitle, channel, regions[i], epochBegin)
 				endif
 				// if dDAQ is on then channels 0 to numEntries - 1 have a trailing base line
-				epochBegin = insertStart[i] + setLength[i] + terminationDelay
+				epochBegin = startOffset + singleSetLength + terminationDelay
 				if(stopCollectionPoint > epochBegin)
 					DC_AddEpoch(panelTitle, channel, epochBegin * samplingInterval, stopCollectionPoint * samplingInterval, EPOCH_BASELINE_REGION_KEY, 0)
 				endif
 
 				switch(hardwareType)
 					case HARDWARE_ITC_DAC:
-						Multithread ITCDataWave[insertStart[i], insertStart[i] + singleSetLength - 1][i] =   \
-						limit(                                                                               \
-						DAScale * singleStimSet[decimationFactor * (p - insertStart[i])][setColumn[i]], \
-						SIGNED_INT_16BIT_MIN,                                                                \
+						Multithread ITCDataWave[startOffset, startOffset + singleSetLength - 1][i] = \
+						limit(                                                                       \
+						DAScale * singleStimSet[decimationFactor * (p - startOffset)][stimsetCol],   \
+						SIGNED_INT_16BIT_MIN,                                                        \
 						SIGNED_INT_16BIT_MAX); AbortOnRTE
 
 						if(globalTPInsert)
@@ -1200,10 +1202,10 @@ static Function DC_PlaceDataInHardwareDataWave(panelTitle, numActiveChannels, da
 						// for ITC decimationFactor is always >= 1 since the stimSets are generated for the ITC max. sample rate
 						WAVE NIChannel = NIDataWave[i]
 						lastValidRow = DimSize(singleStimSet, ROWS) - 1
-						MultiThread NIChannel[insertStart[i], insertStart[i] + singleSetLength - 1] =                                \
-						limit(                                                                                                       \
-						DAScale * singleStimSet[limit(decimationFactor * (p - insertStart[i]), 0, lastValidRow)][setColumn[i]], \
-						NI_DAC_MIN,                                                                                                  \
+						MultiThread NIChannel[startOffset, startOffset + singleSetLength - 1] =                            \
+						limit(                                                                                             \
+						DAScale * singleStimSet[limit(decimationFactor * (p - startOffset), 0, lastValidRow)][stimsetCol], \
+						NI_DAC_MIN,                                                                                        \
 						NI_DAC_MAX); AbortOnRTE
 
 						if(globalTPInsert)
