@@ -4,8 +4,6 @@ set -e
 
 export DISPLAY=:0
 
-rm -f *.txt *.log *.xml
-
 echo MIES_Include >> input.txt
 
 # test UTF includes as well
