@@ -142,8 +142,6 @@ Structure OOdDAQParams
 	///@{
 	WAVE preload                       ///< Data used for prefilling the optimization wave.
 	                                   ///< Allows to take previous runs into account.
-	WAVE/WAVE stimSetsSmeared          ///< StimSets (single set) with pre/post feature time applied. @sa OOD_SmearStimSet()
-	WAVE/WAVE stimSetsSmearedAndOffset ///< StimSets (single set) with pre/post feature time applied and offsets.
 	///@}
 
 	///@name Input
@@ -160,7 +158,7 @@ Structure OOdDAQParams
 	///@{
 	WAVE offsets               ///< Result of the optimization in points
 	WAVE/T regions             ///< List of the form `%begin-%end;...` which denotes the x-coordinates of
-	                           ///< the smeared regions in units of time of the ITCDataWave. @sa OOD_ExtractFeatureRegions()
+	                           ///< the smeared regions in units of time of the ITCDataWave. @sa OOD_GetFeatureRegions()
 	///@}
 EndStructure
 
