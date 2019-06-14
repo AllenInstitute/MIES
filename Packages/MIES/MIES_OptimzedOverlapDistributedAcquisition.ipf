@@ -9,6 +9,10 @@
 /// @file MIES_OptimzedOverlapDistributedAcquisition.ipf
 /// @brief __OOD__ This file holds functions related to oodDAQ.
 
+/// Signal threshold level in parts of dynamic range above minimum
+/// @sa OOD_GetThresholdLevel()
+static Constant OOD_SIGNAL_THRESHOLD = 0.1
+
 /// @brief returns the threshold level for ood region detection from a single column stimset
 /// @param[in] stimset 1d wave containing stimset data
 /// @return threshold level defining signal above baseline
@@ -16,7 +20,7 @@ static Function OOD_GetThresholdLevel(stimset)
 	WAVE stimset
 
 	variable minVal = WaveMin(stimset)
-	return minVal + (WaveMax(stimset) - minVal) * 0.10
+	return minVal + (WaveMax(stimset) - minVal) * OOD_SIGNAL_THRESHOLD
 End
 
 /// @brief retrieves regions with signal from a 1D data wave, used for stimsets
@@ -159,15 +163,13 @@ End
 
 /// @brief Calculates offsets for each stimset for OOD
 /// @param[in] setRegions wave reference wave of 2D region waves for each stimset
-/// @param[in] resolution resolution of offset in wave points, optimal 0
 /// @param[in] baseRegions 2D region wave that contains initial reserved regions,
 ///            e.g. when using with yoking the caller function can preload from the previous device
 ///            For the lead device where no previous regions are reserved, the wave can be 1D but must have zero rows
 /// @param[in] yoked 1 if yoked operation, 0 if not
 /// @return 1D wave with offsets for each stimset in points
-static Function/WAVE OOD_CalculateOffsets(setRegions, resolution, baseRegions, yoked)
+static Function/WAVE OOD_CalculateOffsets(setRegions, baseRegions, yoked)
 	WAVE/WAVE setRegions
-	variable resolution
 	WAVE baseRegions
 	variable yoked
 
@@ -175,7 +177,6 @@ static Function/WAVE OOD_CalculateOffsets(setRegions, resolution, baseRegions, y
 	variable bStart, bEnd, rStart, rEnd, noInitialRegion, overlap
 	variable numSets = DimSize(setRegions, ROWS)
 
-	resolution = round(resolution)
 	Make/FREE/D/N=(numSets) offsets
 
 	yoked = !!yoked
@@ -197,35 +198,28 @@ static Function/WAVE OOD_CalculateOffsets(setRegions, resolution, baseRegions, y
 
 		offsets[setNr] = offsets[setNr - 1]
 		do
-			do
-				overlap = 0
-				for(baseRegNr = 0; baseRegNr < baseRegCnt; baseRegNr += 1)
+			overlap = 0
+			for(baseRegNr = 0; baseRegNr < baseRegCnt; baseRegNr += 1)
 
-					bStart = baseRegions[baseRegNr][%STARTPOINT]
-					bEnd   = baseRegions[baseRegNr][%ENDPOINT]
-					newOff = 0
-					for(regNr = 0; regNr < regCnt; regNr += 1)
-						rStart = regions[regNr][%STARTPOINT] + offsets[setNr]
-						rEnd   = regions[regNr][%ENDPOINT]   + offsets[setNr]
+				bStart = baseRegions[baseRegNr][%STARTPOINT]
+				bEnd   = baseRegions[baseRegNr][%ENDPOINT]
+				newOff = 0
+				for(regNr = 0; regNr < regCnt; regNr += 1)
+					rStart = regions[regNr][%STARTPOINT] + offsets[setNr]
+					rEnd   = regions[regNr][%ENDPOINT]   + offsets[setNr]
 
-						if(bEnd <= rStart)
-							break
-						elseif(rEnd <= bStart)
-							continue
-						elseif(bStart < rEnd && rStart < bEnd)
-							newOff = max(newOff, bEnd - rStart)
-						endif
-					endfor
-					offsets[setNr] += newOff
-					overlap = overlap | newOff
+					if(bEnd <= rStart)
+						break
+					elseif(rEnd <= bStart)
+						continue
+					elseif(bStart < rEnd && rStart < bEnd)
+						newOff = max(newOff, bEnd - rStart)
+					endif
 				endfor
-			while(overlap)
-			// With resolution adjust, we have to do it again
-			if(resolution)
-				resAdjust = mod(offsets[setNr], resolution)
-				offsets[setNr] += resAdjust ? resolution - resAdjust : 0
-			endif
-		while(resAdjust)
+				offsets[setNr] += newOff
+				overlap = overlap | newOff
+			endfor
+		while(overlap)
 
 		if(yoked || setNr < numSets - 1)
 			Redimension/N=(baseRegCnt + regCnt, -1) baseRegions
@@ -249,12 +243,11 @@ static Function OOD_CalculateOffsetsYoked(panelTitle, params)
 	variable resolution
 
 	WAVE setRegions = OOD_GetRegionsFromStimsets(params)
-	resolution = params.resolution / DimDelta(params.stimSets[0], ROWS)
 	Make/FREE/N=0 params.preload
 
 	// normal acquisition
 	if(!DeviceHasFollower(panelTitle) && !DeviceIsFollower(panelTitle))
-		WAVE params.offsets = OOD_CalculateOffsets(setRegions, resolution, params.preload, 0)
+		WAVE params.offsets = OOD_CalculateOffsets(setRegions, params.preload, 0)
 
 	else
 
@@ -266,7 +259,7 @@ static Function OOD_CalculateOffsetsYoked(panelTitle, params)
 			ASSERT(0, "Impossible case")
 		endif
 
-		WAVE params.offsets = OOD_CalculateOffsets(setRegions, resolution, params.preload, 1)
+		WAVE params.offsets = OOD_CalculateOffsets(setRegions, params.preload, 1)
 		OOD_StorePreload(panelTitle, params.preload)
 	endif
 	WAVE/T params.regions = OOD_GetFeatureRegions(setRegions, params.offsets)

@@ -111,21 +111,18 @@ Structure WaveLocationMod
 	string newName ///< new name of the wave (can be null/empty)
 EndStructure
 
-Function InitOOdDAQParams(params, stimSets, setColumns, preFeatureTime, postFeatureTime, resolution)
+Function InitOOdDAQParams(params, stimSets, setColumns, preFeatureTime, postFeatureTime)
 	STRUCT OOdDAQParams &params
 	WAVE/WAVE stimSets
 	WAVE setColumns
-	variable preFeatureTime, postFeatureTime, resolution
+	variable preFeatureTime, postFeatureTime
 
 	ASSERT(DimSize(stimSets, ROWS) >= 1, "Stimsets wave is empty")
-	ASSERT(resolution >= 0, "Unexpected resolution")
 	ASSERT(preFeatureTime >= 0, "Unexpected pre feature time")
 	ASSERT(postFeatureTime >= 0, "Unexpected post feature time")
 	ASSERT(DimSize(stimSets, ROWS) == DimSize(setColumns, ROWS), "Mismatched simtSets and setColumns sizes")
-	ASSERT(resolution >= 1 && resolution <= 1000, "Invalid resolution")
 
 	WaveClear params.preload
-	WaveClear params.stimSetsSmeared
 	WaveClear params.offsets
 	WaveClear params.regions
 
@@ -133,7 +130,6 @@ Function InitOOdDAQParams(params, stimSets, setColumns, preFeatureTime, postFeat
 	WAVE params.setColumns      = setColumns
 	params.preFeaturePoints     = preFeatureTime  / WAVEBUILDER_MIN_SAMPINT
 	params.postFeaturePoints    = postFeatureTime / WAVEBUILDER_MIN_SAMPINT
-	params.resolution           = resolution
 End
 
 /// @brief Helper structure for Optimized overlap distributed acquisition (oodDAQ) functions
@@ -150,8 +146,6 @@ Structure OOdDAQParams
 	WAVE setColumns            ///< Set (aka column) to use for each stimset
 	variable preFeaturePoints  ///< Time in points which should be kept signal-free before features
 	variable postFeaturePoints ///< Time in points which should be kept signal-free after features
-	variable resolution        ///< Accuracy in ms used for searching an optimum, features in the stim set
-	                           ///< smaller than that *might* be ignored.
 	///@}
 
 	///@name Output

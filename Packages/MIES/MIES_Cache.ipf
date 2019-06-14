@@ -84,7 +84,6 @@ Function/S CA_DistDAQCreateCacheKey(params)
 
 	crc = StringCRC(crc, num2str(params.preFeaturePoints))
 	crc = StringCRC(crc, num2str(params.postFeaturePoints))
-	crc = StringCRC(crc, num2str(params.resolution))
 
 	if(WaveExists(params.preload))
 		crc = WaveCRC(crc, params.preload)
