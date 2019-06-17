@@ -1788,22 +1788,6 @@ End
 
 /// @}
 
-/// GetReproducibleRandom
-/// @{
-
-Function RandomTest()
-
-	NewRandomSeed()
-	Make/FREE/N=(1e4)/D data
-	Multithread data = GetReproducibleRandom()
-
-	Make/D/N=0 dupsWave
-	FindDuplicates/DN=dupsWave data
-	CHECK_EQUAL_VAR(DimSize(dupsWave, ROWS), 0)
-End
-
-/// @}
-
 /// GetListOfObjects
 /// @{
 
