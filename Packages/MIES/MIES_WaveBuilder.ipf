@@ -1388,6 +1388,13 @@ End
 /// - Epoch specific: (line 3 - 6)
 /// - Stimset specific: (line 12)
 ///
+/// Additional infos on selected entries:
+/// - `ITI` is in seconds
+/// - `Flipping` is done on a per stimset basis
+/// - `Durations` are in `stimset build ms`
+/// - `Pulse Train Pulses` are absolute pulse starting times in `epoch build ms`
+/// - `Pulse To Pulse Length` is in `stimset build ms`
+///
 /// Example:
 ///
 /// .. code-block:: none
