@@ -1455,6 +1455,7 @@ Function/S WB_GetWaveNoteEntry(stimset, entryType, [key, sweep, epoch])
 
 	switch(entryType)
 		case VERSION_ENTRY:
+			ASSERT(ParamIsDefault(key), "Unexpected key")
 			key = "Version"
 			sprintf re "^%s.*;$", key
 			break
