@@ -203,6 +203,11 @@ static Function WB_StimsetNeedsUpdate(setName)
 	string stimsets
 	variable lastModStimSet, numWaves, numStimsets, i
 
+	// stimset wave note is too old
+	if(!WB_StimsetHasLatestNoteVersion(setName))
+		return 1
+	endif
+
 	// check if parameter waves were modified
 	stimsets = WB_StimsetRecursion(parent = setName)
 	stimsets = AddListItem(setName, stimsets)
@@ -225,6 +230,17 @@ static Function WB_StimsetNeedsUpdate(setName)
 	endfor
 
 	return 0
+End
+
+/// @brief Check if the stimset wave note has the latest version
+static Function WB_StimsetHasLatestNoteVersion(setName)
+	string setName
+
+	DFREF dfr = GetSetFolder(GetStimSetType(setName))
+	WAVE/Z/SDFR=dfr stimSet = $setName
+	ASSERT(WaveExists(stimSet), "stimset must exist")
+
+	return WB_GetWaveNoteEntryAsNumber(stimset, VERSION_ENTRY) >= STIMSET_NOTE_VERSION
 End
 
 /// @brief Check if parameter waves' are newer than the saved stimset
