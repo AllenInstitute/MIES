@@ -1131,3 +1131,5 @@ Constant GUI_SETTING_OSCI_SCALE_AUTO      = 0
 Constant GUI_SETTING_OSCI_SCALE_FIXED     = 1
 Constant GUI_SETTING_OSCI_SCALE_INTERVAL  = 2
 /// @}
+
+StrConstant PRESSURE_CONTROL_LED_DASHBOARD = "valdisp_DataAcq_P_LED_0;valdisp_DataAcq_P_LED_1;valdisp_DataAcq_P_LED_2;valdisp_DataAcq_P_LED_3;valdisp_DataAcq_P_LED_4;valdisp_DataAcq_P_LED_5;valdisp_DataAcq_P_LED_6;valdisp_DataAcq_P_LED_7"

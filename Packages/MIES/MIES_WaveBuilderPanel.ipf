@@ -2848,9 +2848,8 @@ Function WBP_MainWindowHook(s)
 				numEntries = ItemsInList(controls)
 				for(i = 0; i < numEntries; i += 1)
 					ctrl = StringFromList(i, controls)
-					ControlInfo/W=$s.winName $ctrl
 
-					if(V_disable & HIDDEN_CONTROL_BIT)
+					if(IsControlDisabled(win, ctrl))
 						continue
 					endif
 
@@ -2858,32 +2857,34 @@ Function WBP_MainWindowHook(s)
 						continue
 					endif
 
-					if(s.mouseLoc.h >= V_left && s.mouseLoc.h <= V_left + V_width)
-						if(s.mouseLoc.v >= V_top && s.mouseLoc.v <= V_top + V_Height)
+					STRUCT RectF ctrlRect
+					GetControlCoordinates(win, ctrl, ctrlRect)
 
-							row = WBP_ExtractRowNumberFromControl(ctrl)
-
-							switch(WBP_GetWaveTypeFromControl(ctrl))
-								case WBP_WAVETYPE_WP:
-									WAVE WP = GetWaveBuilderWaveParam()
-									name = GetDimLabel(WP, ROWS, row)
-									break
-								case WBP_WAVETYPE_WPT:
-									WAVE/T WPT = GetWaveBuilderWaveTextParam()
-									name = GetDimLabel(WPT, ROWS, row)
-									break
-								case WBP_WAVETYPE_SEGWVTYPE:
-									WAVE SegWvType = GetSegmentTypeWave()
-									name = GetDimLabel(SegWvType, ROWS, row)
-									break
-								default:
-									name = "unknown type"
-									break
-							endswitch
-
-							printf "%s -> %s\r", ctrl, 	name
-						endif
+					if(!IsInsideRect(s.mouseLoc, ctrlRect))
+						continue
 					endif
+
+					row = WBP_ExtractRowNumberFromControl(ctrl)
+
+					switch(WBP_GetWaveTypeFromControl(ctrl))
+						case WBP_WAVETYPE_WP:
+							WAVE WP = GetWaveBuilderWaveParam()
+							name = GetDimLabel(WP, ROWS, row)
+							break
+						case WBP_WAVETYPE_WPT:
+							WAVE/T WPT = GetWaveBuilderWaveTextParam()
+							name = GetDimLabel(WPT, ROWS, row)
+							break
+						case WBP_WAVETYPE_SEGWVTYPE:
+							WAVE SegWvType = GetSegmentTypeWave()
+							name = GetDimLabel(SegWvType, ROWS, row)
+							break
+						default:
+							name = "unknown type"
+							break
+					endswitch
+
+					printf "%s -> %s\r", ctrl, 	name
 				endfor
 			endif
 			break
