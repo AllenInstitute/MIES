@@ -137,6 +137,7 @@ End
 
 /// @brief returns a 1D wave with regions as lists from the input regions waves, is used for the LNB
 /// @param[in] setRegions wave reference wave of 2D region waves
+/// @param[in] offsets offset wave storing the offsets per stimset
 /// @return 1D text wave with lists of regions
 static Function/WAVE OOD_GetFeatureRegions(setRegions, offsets)
 	WAVE/WAVE setRegions
@@ -270,7 +271,9 @@ static Function OOD_CalculateOffsetsYoked(panelTitle, params)
 
 End
 
-/// @brief Load the preload data into `params`
+/// @brief Load the preload data into `params.preload`
+/// @param[in] panelTitle title of the device panel
+/// @param[in] params     OOdDAQParams structure where the data is preloaded into
 static Function OOD_LoadPreload(panelTitle, params)
 	string panelTitle
 	STRUCT OOdDAQParams &params
@@ -280,6 +283,8 @@ static Function OOD_LoadPreload(panelTitle, params)
 End
 
 /// @brief Store the preload data so that the next device can use it.
+/// @param[in] panelTitle title of the device panel
+/// @param[in] preload    wave that is stored containing the preload data
 static Function OOD_StorePreload(panelTitle, preload)
 	string panelTitle
 	WAVE preload
@@ -296,7 +301,11 @@ static Function OOD_StorePreload(panelTitle, preload)
 	Duplicate/O preload, preloadPerm
 End
 
-/// @brief Return a list with `$first-$last` added
+/// @brief Return a list with `$first-$last` added at the end with `;` as separator
+/// @param[in] first sample point number in wavebuilder scale with start of region
+/// @param[in] last sample point number in wavebuilder scale with end of region
+/// @param[in] list list string where the element is added
+/// @return list string with added element
 static Function/S OOD_AddToRegionList(first, last, list)
 	variable first, last
 	string list
@@ -308,7 +317,8 @@ static Function/S OOD_AddToRegionList(first, last, list)
 	return AddListItem(str, list, ";", INF)
 End
 
-/// @brief Prints various internals useful for oodDAQ debugging
+/// @brief Prints various internals useful for oodDAQ debugging, called when DEBUGGING_ENABLED is set
+/// @param[in] params OOdDAQParams structure with oodDAQ internals
 static Function OOD_Debugging(params)
 	STRUCT OOdDAQParams &params
 
@@ -346,6 +356,10 @@ End
 ///
 /// The offsets and the regions are returned in `params` and all results are
 /// cached.
+///
+/// @param[in] panelTitle title of the device panel
+/// @param[in] params     OOdDAQParams structure with the initial settings
+/// @return one dimensional numberic wave with the offsets in points for each stimset
 Function/WAVE OOD_GetResultWaves(panelTitle, params)
 	string panelTitle
 	STRUCT OOdDAQParams &params
@@ -382,7 +396,9 @@ End
 /// @brief Generate a stimset for "overlapped dDAQ" from the calculated offsets
 ///        by OOD_CalculateOffsets().
 ///
-/// @return stimset with offsets, one wave per offset
+/// @param[in] params OOdDAQParams structure with the stimsets and offset information
+///
+/// @return stimsets with offsets, one wave per offset
 static Function/Wave OOD_CreateStimSet(params)
 	STRUCT OOdDAQParams &params
 
