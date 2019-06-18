@@ -240,7 +240,7 @@ static Function WB_StimsetHasLatestNoteVersion(setName)
 	WAVE/Z/SDFR=dfr stimSet = $setName
 	ASSERT(WaveExists(stimSet), "stimset must exist")
 
-	return WB_GetWaveNoteEntryAsNumber(stimset, VERSION_ENTRY) >= STIMSET_NOTE_VERSION
+	return WB_GetWaveNoteEntryAsNumber(note(stimset), VERSION_ENTRY) >= STIMSET_NOTE_VERSION
 End
 
 /// @brief Check if parameter waves' are newer than the saved stimset
@@ -1057,14 +1057,14 @@ Function WB_GetITI(stimset, sweep)
 	variable ITI
 
 	// per sweep ITI
-	ITI = WB_GetWaveNoteEntryAsNumber(stimset, SWEEP_ENTRY, key = "ITI", sweep = sweep)
+	ITI = WB_GetWaveNoteEntryAsNumber(note(stimset), SWEEP_ENTRY, key = "ITI", sweep = sweep)
 
 	if(IsFinite(ITI))
 		return ITI
 	endif
 
 	// per stimset ITI (legacy stimsets, which were not recreated)
-	ITI = WB_GetWaveNoteEntryAsNumber(stimset, STIMSET_ENTRY, key = "ITI")
+	ITI = WB_GetWaveNoteEntryAsNumber(note(stimset), STIMSET_ENTRY, key = "ITI")
 
 	if(IsFinite(ITI))
 		return ITI
@@ -1430,20 +1430,18 @@ End
 /// 	Stimset;Sweep Count = 2;Epoch Count = 4;Pre DAQ = ;Mid Sweep = ;Post Sweep = ;Post Set = ;Post DAQ = ;Pre Sweep = ;Generic = PSQ_Ramp;Pre Set = ;Function params = NumberOfSpikes:variable=5,Elements:string=Hidiho,;Flip = 0;Random Seed = 0.963638;Checksum = 65446509;
 /// \endrst
 ///
-/// @param stimset   stimulus set
+/// @param text      stimulus set wave note
 /// @param entryType one of @ref StimsetWaveNoteEntryTypes
 /// @param key       [optional] named entry to return, not required for #VERSION_ENTRY
 /// @param sweep     [optional] number of the sweep
 /// @param epoch     [optional] number of the epoch
-Function/S WB_GetWaveNoteEntry(stimset, entryType, [key, sweep, epoch])
-	WAVE stimset
+Function/S WB_GetWaveNoteEntry(text, entryType, [key, sweep, epoch])
+	string text
 	variable entryType
 	string key
 	variable sweep, epoch
 
 	string match, re
-
-	ASSERT(WaveExists(stimset), "Stimset wave must exist")
 
 	if(!ParamIsDefault(sweep))
 		ASSERT(IsValidSweepNumber(sweep), "Invalid sweep number")
@@ -1473,7 +1471,7 @@ Function/S WB_GetWaveNoteEntry(stimset, entryType, [key, sweep, epoch])
 			break
 	endswitch
 
-	match = GrepList(note(stimset), re, 0, "\r")
+	match = GrepList(text, re, 0, "\r")
 
 	if(IsEmpty(match))
 		return match
@@ -1485,8 +1483,8 @@ Function/S WB_GetWaveNoteEntry(stimset, entryType, [key, sweep, epoch])
 End
 
 // @copydoc WB_GetWaveNoteEntry
-Function WB_GetWaveNoteEntryAsNumber(stimset, entryType, [key, sweep, epoch])
-	WAVE stimset
+Function WB_GetWaveNoteEntryAsNumber(text, entryType, [key, sweep, epoch])
+	string text
 	variable entryType
 	string key
 	variable sweep, epoch
@@ -1494,21 +1492,21 @@ Function WB_GetWaveNoteEntryAsNumber(stimset, entryType, [key, sweep, epoch])
 	string str
 
 	if(ParamIsDefault(key) && ParamIsDefault(sweep) && ParamIsDefault(epoch))
-		str = WB_GetWaveNoteEntry(stimset, entryType)
+		str = WB_GetWaveNoteEntry(text, entryType)
 	elseif(ParamIsDefault(sweep) && ParamIsDefault(epoch))
-		str = WB_GetWaveNoteEntry(stimset, entryType, key = key)
+		str = WB_GetWaveNoteEntry(text, entryType, key = key)
 	elseif(ParamIsDefault(key) && ParamIsDefault(epoch))
-		str = WB_GetWaveNoteEntry(stimset, entryType, sweep = sweep)
+		str = WB_GetWaveNoteEntry(text, entryType, sweep = sweep)
 	elseif(ParamIsDefault(key) && ParamIsDefault(sweep))
-		str = WB_GetWaveNoteEntry(stimset, entryType, epoch = epoch)
+		str = WB_GetWaveNoteEntry(text, entryType, epoch = epoch)
 	elseif(ParamIsDefault(key))
-		str = WB_GetWaveNoteEntry(stimset, entryType, sweep = sweep, epoch = epoch)
+		str = WB_GetWaveNoteEntry(text, entryType, sweep = sweep, epoch = epoch)
 	elseif(ParamIsDefault(sweep))
-		str = WB_GetWaveNoteEntry(stimset, entryType, key = key, epoch = epoch)
+		str = WB_GetWaveNoteEntry(text, entryType, key = key, epoch = epoch)
 	elseif(ParamIsDefault(epoch))
-		str = WB_GetWaveNoteEntry(stimset, entryType, sweep = sweep, key = key)
+		str = WB_GetWaveNoteEntry(text, entryType, sweep = sweep, key = key)
 	else
-		str = WB_GetWaveNoteEntry(stimset, entryType, key = key, sweep = sweep, epoch = epoch)
+		str = WB_GetWaveNoteEntry(text, entryType, key = key, sweep = sweep, epoch = epoch)
 	endif
 
 	if(IsEmpty(str))
@@ -1525,35 +1523,39 @@ Function/WAVE WB_GetPulsesFromPulseTrains(stimset, sweep, pulseToPulseLength)
 	variable sweep
 	variable &pulseToPulseLength
 
-	string startTimesList
+	string startTimesList, text
 	variable i, epochType, flipping, pulseDuration, numEpochs, length
 
 	Make/FREE/D/N=(0) allStartTimes
 	pulseToPulseLength = NaN
 
+	text = note(stimset)
+
 	// passed stimset is from the testpulse or third party
-	if(!strlen(note(stimset)) || WB_StimsetIsFromThirdParty(NameOfWave(stimset)))
+	if(isEmpty(text) || WB_StimsetIsFromThirdParty(NameOfWave(stimset)))
 		return allStartTimes
 	endif
 
-	flipping = WB_GetWaveNoteEntryAsNumber(stimset, STIMSET_ENTRY, key = "Flip")
+	flipping = WB_GetWaveNoteEntryAsNumber(text, STIMSET_ENTRY, key = "Flip")
 	ASSERT(flipping == 0 || flipping == 1, "Invalid flipping value")
 
-	numEpochs = WB_GetWaveNoteEntryAsNumber(stimset, STIMSET_ENTRY, key = "Epoch Count")
+	numEpochs = WB_GetWaveNoteEntryAsNumber(text, STIMSET_ENTRY, key = "Epoch Count")
 	ASSERT(IsValidEpochNumber(numEpochs), "Invalid number of epochs")
 
+	Make/FREE/D/N=(numEpochs) pulseToPulseLengthPerEpoch = NaN
+
 	for(i = 0; i < numEpochs; i += 1)
-		epochType = WB_ToEpochType(WB_GetWaveNoteEntry(stimset, EPOCH_ENTRY, sweep = sweep, epoch = i, key = "Type"))
+		epochType = WB_ToEpochType(WB_GetWaveNoteEntry(text, EPOCH_ENTRY, sweep = sweep, epoch = i, key = "Type"))
 
 		/// @todo support combine stimsets as soon as mk/save/stimset is merged
 		if(epochType != EPOCH_TYPE_PULSE_TRAIN)
 			continue
 		endif
 
-		pulseToPulseLength = WB_GetWaveNoteEntryAsNumber(stimset, EPOCH_ENTRY, sweep = sweep, epoch = i, key = PULSE_TO_PULSE_LENGTH_KEY)
-		ASSERT(IsFinite(pulseToPulseLength), "Non-finite " + PULSE_TO_PULSE_LENGTH_KEY)
+		pulseToPulseLengthPerEpoch[i] = WB_GetWaveNoteEntryAsNumber(text, EPOCH_ENTRY, sweep = sweep, epoch = i, key = PULSE_TO_PULSE_LENGTH_KEY)
+		ASSERT(IsFinite(pulseToPulseLengthPerEpoch[i]), "Non-finite " + PULSE_TO_PULSE_LENGTH_KEY)
 
-		startTimesList = WB_GetWaveNoteEntry(stimset, EPOCH_ENTRY, sweep = sweep, epoch = i, key = PULSE_START_TIMES_KEY)
+		startTimesList = WB_GetWaveNoteEntry(text, EPOCH_ENTRY, sweep = sweep, epoch = i, key = PULSE_START_TIMES_KEY)
 		WAVE/Z/D startTimes = ListToNumericWave(startTimesList, ",")
 		ASSERT(WaveExists(startTimes) && DimSize(startTimes, ROWS) > 0, "Found no starting times")
 
@@ -1561,7 +1563,7 @@ Function/WAVE WB_GetPulsesFromPulseTrains(stimset, sweep, pulseToPulseLength)
 		ASSERT(V_Value == -1, "Unexpected NaN found in starting times")
 
 		if(flipping)
-			pulseDuration = WB_GetWaveNoteEntryAsNumber(stimset, EPOCH_ENTRY, sweep = sweep, epoch = i, key = "Pulse Duration")
+			pulseDuration = WB_GetWaveNoteEntryAsNumber(text, EPOCH_ENTRY, sweep = sweep, epoch = i, key = "Pulse Duration")
 
 			length = rightx(stimset)
 			// mirroring must also move the startTimes by the pulseDuration
