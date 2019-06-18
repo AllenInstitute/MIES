@@ -1973,7 +1973,7 @@ End
 /// -14: oodDAQ regions list
 ///      - Format: `$begin1-$end1;$begin2-$end2;...`.
 ///      - Unit: `stimset build ms`.
-/// -14: Electrode
+/// -15: Electrode
 /// -16: Pulse Train Pulses
 ///      - Format: `$begin1;$begin2;...`.
 ///      - Unit: `sweep ms`.
