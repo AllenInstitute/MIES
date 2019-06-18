@@ -1964,7 +1964,7 @@ Function DAP_CheckSettings(panelTitle, mode)
 	string panelTitle
 	variable mode
 
-	variable numDACs, numADCs, numHS, numEntries, i, clampMode
+	variable numDACs, numADCs, numHS, numEntries, i, clampMode, headstage
 	variable ampSerial, ampChannelID, minValue, maxValue, leftOverBytes, hardwareType
 	variable lastStartSeconds, lastITI, nextStart, leftTime, sweepNo, validSampInt
 	string ctrl, endWave, ttlWave, dacWave, refDacWave, reqParams
@@ -2304,24 +2304,31 @@ Function DAP_CheckSettings(panelTitle, mode)
 		endif
 
 		if(mode == DATA_ACQUISITION_MODE)
-			if(GetValDisplayAsNum(panelTitle, "valdisp_DataAcq_SweepsInSet") == 0)
-				// if there are no regular sweeps, check if all remaining active channels are set to a reserved mode (like TP)
-				WAVE/T allSetNames = DAG_GetChannelTextual(panelTitle, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_WAVE)
-				numEntries = DimSize(statusDA, ROWS)
-				for(i = 0; i < numEntries; i += 1)
+			WAVE/T allSetNames = DAG_GetChannelTextual(panelTitle, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_WAVE)
+			numEntries = DimSize(statusDA, ROWS)
+			for(i = 0; i < numEntries; i += 1)
 
-					if(!DC_ChannelIsActive(panelTitle, mode, CHANNEL_TYPE_DAC, i, statusDA, statusHS))
-						continue
-					endif
+				if(!DC_ChannelIsActive(panelTitle, mode, CHANNEL_TYPE_DAC, i, statusDA, statusHS))
+					continue
+				endif
 
-					if(CmpStr(allSetNames[i], STIMSET_TP_WHILE_DAQ))
-						printf "(%s) The calculated number of sweeps is zero. This is unexpected and very likely a bug.\r", panelTitle
-						ControlWindowToFront()
-						return 1
-						break
-					endif
-				endfor
-			endif
+				if(GetValDisplayAsNum(panelTitle, "valdisp_DataAcq_SweepsInSet") == 0 \
+				   && CmpStr(allSetNames[i], STIMSET_TP_WHILE_DAQ))
+					printf "(%s) The calculated number of sweeps is zero. This is unexpected and very likely a bug.\r", panelTitle
+					ControlWindowToFront()
+					return 1
+				endif
+
+				headstage = AFH_GetHeadstageFromDAC(panelTitle, i)
+
+				if(IsFinite(headstage) && DAG_GetHeadstageMode(panelTitle, headstage) == I_EQUAL_ZERO_MODE \
+				   && !cmpstr(allSetNames[i], STIMSET_TP_WHILE_DAQ))
+					printf "(%s) When TP while DAQ is used the channel clamp mode for headstage %d can not be I=0.\r", panelTitle, headstage
+					ControlWindowToFront()
+					return 1
+				endif
+			endfor
+
 			if(DC_GotTPChannelWhileDAQ(panelTitle))
 				if(DAG_GetNumericalValue(panelTitle, "Popup_Settings_SampIntMult") > 0)
 					printf "(%s) When TP while DAQ is used only sample multiplier of 1 is supported.\r", panelTitle
@@ -2419,7 +2426,7 @@ static Function DAP_CheckHeadStage(panelTitle, headStage, mode)
 			needResetting = 1
 		endif
 
-		if(!CheckIfClose(DAGain, DAGainMCC, tol=1e-4) || (clampMode == I_EQUAL_ZERO_MODE && DAGainMCC == 0.0))
+		if((!CheckIfClose(DAGain, DAGainMCC, tol=1e-4) && clampMode != I_EQUAL_ZERO_MODE) || (clampMode == I_EQUAL_ZERO_MODE && !CheckIfSmall(DAGainMCC)))
 			printf "(%s) The configured gain for the DA channel %d differs from the one in the \"DAC Channel and Device Associations\" menu (%g vs %g).\r", panelTitle, DACchannel, DAGain, DAGainMCC
 			needResetting = 1
 		endif
