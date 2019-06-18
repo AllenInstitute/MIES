@@ -367,7 +367,7 @@ Function/WAVE PA_GetPulseStartTimes(traceData, idx, region, channelTypeStr, [rem
 	return pulseStartTimes
 End
 
-static Function PA_GetAveragePulseLength(pulseStartTimes, startingPulse, endingPulse, fallbackPulseLength)
+static Function PA_GetPulseLength(pulseStartTimes, startingPulse, endingPulse, fallbackPulseLength)
 	WAVE pulseStartTimes
 	variable startingPulse, endingPulse, fallbackPulseLength
 
@@ -389,14 +389,9 @@ static Function PA_GetAveragePulseLength(pulseStartTimes, startingPulse, endingP
 		return minimum
 	endif
 
-	// remove outliers which are too large
-	// this happens with multiple epochs and space in between as then one
-	// pulse to pulse length is way too big
-	Extract/FREE pulseLengths, pulseLengthsClean, pulseLengths <= 2 * minimum
+	ASSERT(minimum == 0, "pulse length expected to be zero")
 
-	WaveStats/Q/M=1 pulseLengthsClean
-
-	return V_avg
+	return fallbackPulseLength
 End
 
 static Function/WAVE PA_CreateAndFillPulseWaveIfReq(wv, singleSweepFolder, channelType, channelNumber, region, pulseIndex, first, length)
@@ -583,7 +578,7 @@ Function PA_ShowPulses(win, dfr, pa)
 				endingPulse    = min(numPulsesTotal - 1, endingPulseSett)
 				numPulses = endingPulse - startingPulse + 1
 
-				pulseToPulseLength = PA_GetAveragePulseLength(pulseStartTimes, startingPulse, endingPulse, pa.fallbackPulseLength)
+				pulseToPulseLength = PA_GetPulseLength(pulseStartTimes, startingPulse, endingPulse, pa.fallbackPulseLength)
 
 				if(WhichListItem(channelNumberStr, channelList) == -1)
 					activeChanCount += 1
