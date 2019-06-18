@@ -153,7 +153,9 @@ Function ASSERT(var, errorMsg)
 #endif // AUTOMATED_TESTING
 
 		// --- Cleanup functions
+#if (IgorVersion() < 8.00)
 		ASYNC_Stop(timeout=1, fromAssert=1)
+#endif
 		// --- End of cleanup functions
 
 #ifndef AUTOMATED_TESTING

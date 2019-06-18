@@ -37,20 +37,22 @@ static StrConstant ASYNC_ERRORMSG_STR = "errmsg"
 /// @param numThreads number of threads to setup for processing data, must be >= 1 and <= ASYNC_MAX_THREADS
 ///
 /// @param disableTask [optional, default = 0] when set to 1 the background task processing readouts is not started
+///
+/// @return 1 if ASYNC framework was started, 0 if ASYNC framework was already running, in this case the number of threads is not changed
 Function ASYNC_Start(numThreads, [disableTask])
 	variable numThreads, disableTask
 
 	variable i
 
-	NVAR tgID = $GetThreadGroupID()
-	if(!isNaN(tgID))
-		// framework already running
+	DFREF dfr = GetAsyncHomeDF()
+	if(ASYNC_IsASYNCRunning())
 		return 0
 	endif
 
 	ASSERT(numThreads >= 1 && numThreads <= ASYNC_MAX_THREADS, "numThread must be > 0 and <= " + num2str(ASYNC_MAX_THREADS))
 	disableTask = ParamIsDefault(disableTask) ? 0 : !!disableTask
 
+	NVAR tgID = $GetThreadGroupID()
 	NVAR numT = $GetNumThreads()
 	numT = numThreads
 
@@ -65,6 +67,8 @@ Function ASYNC_Start(numThreads, [disableTask])
 	for(i = 0; i < numThreads; i += 1)
 		ThreadStart tgID, i, ASYNC_Thread()
 	endfor
+
+	return 1
 End
 
 /// @brief Prototype function for an async worker function
@@ -142,7 +146,7 @@ threadsafe static Function ASYNC_Thread()
 
 		elseif(DataFolderExistsDFR(dfrOut))
 
-#if (IgorVersion() >= 8.00 && NumberByKey("BUILD", igorinfo(0)) >= 32616)
+#if (IgorVersion() >= 8.00)
 			MoveDataFolder dfrOut, dfrAsync
 			RenameDataFolder dfrOut, freeroot
 #else
@@ -346,17 +350,17 @@ End
 /// Suppresses further assertions such that all required cleanup routines such as ThreadGroupRelease
 /// are executed.
 ///
-/// @return 1 if a timeout was encountered, 0 otherwise
+/// @return 2 if ASYNC framework was not running, 1 if a timeout was encountered, 0 otherwise
 Function ASYNC_Stop([timeout, fromAssert])
 	variable timeout, fromAssert
 
 	variable i, endtime, waitResult, localtgID, outatime, err
 
-	NVAR tgID = $GetThreadGroupID()
-	if(isNaN(tgID))
-		return 0
+	if(!ASYNC_IsASYNCRunning())
+		return 2
 	endif
 
+	NVAR tgID = $GetThreadGroupID()
 	fromAssert = ParamIsDefault(fromAssert) ? 0 : !!fromAssert
 
 	// Send abort to all threads
@@ -681,7 +685,9 @@ static Function ASSERT(var, errorMsg)
 #endif // AUTOMATED_TESTING
 
 		// --- Cleanup functions
+#if (IgorVersion() < 8.00)
 		ASYNC_Stop(timeout=1, fromAssert=1)
+#endif
 		// --- End of cleanup functions
 
 #ifndef AUTOMATED_TESTING
@@ -1030,4 +1036,21 @@ static Function/WAVE GetWorkloadOrder(dfr)
 	SetDimLabel 1, 0, $"orderID", wv
 	SetDimLabel 1, 1, $"orderGlobal", wv
 	return wv
+End
+
+/// @brief returns 1 if ASYNC framework is running, 0 otherwise
+static Function ASYNC_IsASYNCRunning()
+
+	variable waitResult, err, doe
+
+	NVAR tgID = $GetThreadGroupID()
+	doe = DisableDebugOnError()
+	try
+		waitResult = ThreadGroupWait(tgID, 0);AbortOnRTE
+	catch
+		err = GetRTError(1)
+		waitResult = 0
+	endtry
+	ResetDebugOnError(doe)
+	return waitResult != 0
 End
