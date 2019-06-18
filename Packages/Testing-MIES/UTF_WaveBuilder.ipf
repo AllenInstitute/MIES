@@ -164,6 +164,12 @@ Function WB_StimsetEntryParsing()
 	actual    = WB_GetWaveNoteEntry(text, STIMSET_ENTRY, key = "Generic")
 	reference = "PSQ_Ramp"
 	CHECK_EQUAL_STR(actual, reference)
+
+	// check that unknown keys report as "" or NaN
+	actual = WB_GetWaveNoteEntry(text, STIMSET_ENTRY, key = "Unknown Entry")
+	CHECK_EMPTY_STR(actual)
+
+	CHECK_EQUAL_VAR(WB_GetWaveNoteEntryAsNumber(text, STIMSET_ENTRY, key = "Unknown Entry"), NaN)
 End
 
 Function WB_StimsetRecreation1()
