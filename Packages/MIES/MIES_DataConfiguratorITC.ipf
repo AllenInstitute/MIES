@@ -1115,20 +1115,6 @@ static Function DC_PlaceDataInHardwareDataWave(panelTitle, numActiveChannels, da
 		DC_DocumentChannelProperty(panelTitle, "Stim set length", headstageDAC[i], DAC[i], var=setLength[i])
 		DC_DocumentChannelProperty(panelTitle, "Delay onset oodDAQ", headstageDAC[i], DAC[i], var=offsets[i])
 		DC_DocumentChannelProperty(panelTitle, "oodDAQ regions", headstageDAC[i], DAC[i], str=regions[i])
-
-		WAVE pulses = WB_GetPulsesFromPulseTrains(stimSet[i], setColumn[i], pulseToPulseLength)
-		// pulse positions are in ms, but not yet offsetted for the onset delays
-		switch(hardwareType)
-			case HARDWARE_NI_DAC:
-				WAVE NIChannel = NIDataWave[0]
-				pulses[] += IndexToScale(NIChannel, insertStart[i], ROWS) + offsets[i]
-				break
-			case HARDWARE_ITC_DAC:
-				pulses[] += IndexToScale(ITCDataWave, insertStart[i], ROWS) + offsets[i]
-				break
-		endswitch
-		DC_DocumentChannelProperty(panelTitle, PULSE_START_TIMES_KEY, headstageDAC[i], DAC[i], str=NumericWaveToList(pulses, ";", format="%.15g"))
-		DC_DocumentChannelProperty(panelTitle, PULSE_TO_PULSE_LENGTH_KEY, headstageDAC[i], DAC[i], var=pulseToPulseLength)
 	endfor
 
 	DC_DocumentChannelProperty(panelTitle, "Sampling interval multiplier", INDEP_HEADSTAGE, NaN, var=str2num(DAG_GetTextualValue(panelTitle, "Popup_Settings_SampIntMult")))

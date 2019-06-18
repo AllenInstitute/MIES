@@ -1518,68 +1518,6 @@ Function WB_GetWaveNoteEntryAsNumber(text, entryType, [key, sweep, epoch])
 	return str2num(str)
 End
 
-/// @brief Extract a list of [begin, end] ranges in `stimset build ms` denoting
-///        all pulses from all pulse train epochs in that sweep of the stimset
-Function/WAVE WB_GetPulsesFromPulseTrains(stimset, sweep, pulseToPulseLength)
-	WAVE stimset
-	variable sweep
-	variable &pulseToPulseLength
-
-	string startTimesList, text
-	variable i, epochType, flipping, pulseDuration, numEpochs, length
-
-	Make/FREE/D/N=(0) allStartTimes
-	pulseToPulseLength = NaN
-
-	text = note(stimset)
-
-	// passed stimset is from the testpulse or third party
-	if(isEmpty(text) || WB_StimsetIsFromThirdParty(NameOfWave(stimset)))
-		return allStartTimes
-	endif
-
-	flipping = WB_GetWaveNoteEntryAsNumber(text, STIMSET_ENTRY, key = "Flip")
-	ASSERT(flipping == 0 || flipping == 1, "Invalid flipping value")
-
-	numEpochs = WB_GetWaveNoteEntryAsNumber(text, STIMSET_ENTRY, key = "Epoch Count")
-	ASSERT(IsValidEpochNumber(numEpochs), "Invalid number of epochs")
-
-	Make/FREE/D/N=(numEpochs) pulseToPulseLengthPerEpoch = NaN
-
-	for(i = 0; i < numEpochs; i += 1)
-		epochType = WB_ToEpochType(WB_GetWaveNoteEntry(text, EPOCH_ENTRY, sweep = sweep, epoch = i, key = "Type"))
-
-		/// @todo support combine stimsets as soon as mk/save/stimset is merged
-		if(epochType != EPOCH_TYPE_PULSE_TRAIN)
-			continue
-		endif
-
-		pulseToPulseLengthPerEpoch[i] = WB_GetWaveNoteEntryAsNumber(text, EPOCH_ENTRY, sweep = sweep, epoch = i, key = PULSE_TO_PULSE_LENGTH_KEY)
-		ASSERT(IsFinite(pulseToPulseLengthPerEpoch[i]), "Non-finite " + PULSE_TO_PULSE_LENGTH_KEY)
-
-		startTimesList = WB_GetWaveNoteEntry(text, EPOCH_ENTRY, sweep = sweep, epoch = i, key = PULSE_START_TIMES_KEY)
-		WAVE/Z/D startTimes = ListToNumericWave(startTimesList, ",")
-		ASSERT(WaveExists(startTimes) && DimSize(startTimes, ROWS) > 0, "Found no starting times")
-
-		FindValue/FNAN startTimes
-		ASSERT(V_Value == -1, "Unexpected NaN found in starting times")
-
-		if(flipping)
-			pulseDuration = WB_GetWaveNoteEntryAsNumber(text, EPOCH_ENTRY, sweep = sweep, epoch = i, key = "Pulse Duration")
-
-			length = rightx(stimset)
-			// mirroring must also move the startTimes by the pulseDuration
-			startTimes[] = length - startTimes[p] - pulseDuration
-		endif
-
-		Concatenate/NP=0 {startTimes}, allStartTimes
-	endfor
-
-	Sort allStartTimes, allStartTimes
-
-	return allStartTimes
-End
-
 static Function/WAVE WB_PulseTrainSegment(pa, mode, pulseStartTimes, pulseToPulseLength)
 	struct SegmentParameters &pa
 	variable mode

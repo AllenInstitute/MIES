@@ -1510,7 +1510,7 @@ Function/WAVE GetLBNidCache(numericalValues)
 	return wv
 End
 
-static Constant SWEEP_SETTINGS_WAVE_VERSION = 22
+static Constant SWEEP_SETTINGS_WAVE_VERSION = 23
 
 /// @brief Uses the parameter names from the `sourceKey` columns and
 ///        write them as dimension into the columns of dest.
@@ -1974,21 +1974,18 @@ End
 ///      - Format: `$begin1-$end1;$begin2-$end2;...`.
 ///      - Unit: `stimset build ms`.
 /// -15: Electrode
-/// -16: Pulse Train Pulses
-///      - Format: `$begin1;$begin2;...`.
-///      - Unit: `sweep ms`.
-/// -17: High precision sweep start timestamp in ISO8601 format
-/// -18: Stimset wave note
-/// -19: TTL rack zero set sweep counts
-/// -20: TTL rack one set sweep counts
-/// -21: TTL set sweep counts (NI hardware)
-/// -22: TTL stim sets (NI hardware)
-/// -23: TTL channels (NI hardware)
-/// -24: Follower Device, list of follower devices
-/// -25: MIES version, multi line mies version string
-/// -26: Igor Pro version
-/// -27: Digitizer Hardware Name
-/// -28: Digitizer Serial Numbers
+/// -16: High precision sweep start timestamp in ISO8601 format
+/// -17: Stimset wave note
+/// -18: TTL rack zero set sweep counts
+/// -19: TTL rack one set sweep counts
+/// -20: TTL set sweep counts (NI hardware)
+/// -21: TTL stim sets (NI hardware)
+/// -22: TTL channels (NI hardware)
+/// -23: Follower Device, list of follower devices
+/// -24: MIES version, multi line mies version string
+/// -25: Igor Pro version
+/// -26: Digitizer Hardware Name
+/// -27: Digitizer Serial Numbers
 Function/Wave GetSweepSettingsTextKeyWave(panelTitle)
 	string panelTitle
 
@@ -2007,9 +2004,9 @@ Function/Wave GetSweepSettingsTextKeyWave(panelTitle)
 	if(ExistsWithCorrectLayoutVersion(wv, versionOfNewWave))
 		return wv
 	elseif(WaveExists(wv))
-		Redimension/N=(-1, 29, 0) wv
+		Redimension/N=(-1, 28, 0) wv
 	else
-		Make/T/N=(1, 29) newDFR:$newName/Wave=wv
+		Make/T/N=(1, 28) newDFR:$newName/Wave=wv
 	endif
 
 	SetDimLabel ROWS, 0, Parameter, wv
@@ -2032,19 +2029,18 @@ Function/Wave GetSweepSettingsTextKeyWave(panelTitle)
 	wv[0][13] = ANALYSIS_FUNCTION_PARAMS_LBN
 	wv[0][14] = "oodDAQ regions"
 	wv[0][15] = "Electrode"
-	wv[0][16] = PULSE_START_TIMES_KEY
-	wv[0][17] = HIGH_PREC_SWEEP_START_KEY
-	wv[0][18] = STIMSET_WAVE_NOTE_KEY
-	wv[0][19] = "TTL rack zero set sweep counts"
-	wv[0][20] = "TTL rack one set sweep counts"
-	wv[0][21] = "TTL set sweep counts"
-	wv[0][22] = "TTL stim sets"
-	wv[0][23] = "TTL channels"
-	wv[0][24] = "Follower Device"
-	wv[0][25] = "MIES version"
-	wv[0][26] = "Igor Pro version"
-	wv[0][27] = "Digitizer Hardware Name"
-	wv[0][28] = "Digitizer Serial Numbers"
+	wv[0][16] = HIGH_PREC_SWEEP_START_KEY
+	wv[0][17] = STIMSET_WAVE_NOTE_KEY
+	wv[0][18] = "TTL rack zero set sweep counts"
+	wv[0][19] = "TTL rack one set sweep counts"
+	wv[0][20] = "TTL set sweep counts"
+	wv[0][21] = "TTL stim sets"
+	wv[0][22] = "TTL channels"
+	wv[0][23] = "Follower Device"
+	wv[0][24] = "MIES version"
+	wv[0][25] = "Igor Pro version"
+	wv[0][26] = "Digitizer Hardware Name"
+	wv[0][27] = "Digitizer Serial Numbers"
 
 	SetSweepSettingsDimLabels(wv, wv)
 	SetWaveVersion(wv, versionOfNewWave)

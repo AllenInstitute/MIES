@@ -113,21 +113,6 @@ static Function PA_GetAxes(multipleGraphs, activeRegionCount, activeChanCount, v
 	endif
 End
 
-/// @brief Return a wave with the pulse starting times from the labnotebook
-///
-/// In case nothing could be found in the labnotebook an invalid wave reference is returned.
-static Function/WAVE PA_GetPulseStartTimesFromLB(textualValues, sweepNo, headstage)
-	WAVE/T textualValues
-	variable sweepNo, headstage
-
-	WAVE/Z/T pulseStartTimes = GetLastSetting(textualValues, sweepNo, PULSE_START_TIMES_KEY, DATA_ACQUISITION_MODE)
-	if(!WaveExists(pulseStartTimes))
-		return $""
-	endif
-
-	return ListToNumericWave(pulseStartTimes[headstage], ";")
-End
-
 /// @brief Derive the pulse starting times from a DA wave
 ///
 /// Uses plain FindLevels after the onset delay using 10% of the full range
@@ -356,19 +341,6 @@ Function/WAVE PA_GetPulseStartTimes(traceData, idx, region, channelTypeStr, [rem
 		totalOnsetDelay = GetTotalOnsetDelay(numericalValues, sweepNo)
 	endif
 
-	WAVE/Z pulseStartTimes = PA_GetPulseStartTimesFromLB(textualValues, sweepNo, region)
-
-	if(WaveExists(pulseStartTimes))
-		sprintf str, "Found pulse starting times for headstage %d", region
-		DEBUGPRINT(str)
-
-		pulseStartTimes[] -= totalOnsetDelay
-
-		return pulseStartTimes
-	endif
-
-	// old data/stimsets without the required entries
-
 	DFREF singleSweepFolder = GetWavesDataFolderDFR($traceData[idx][%fullPath])
 	ASSERT(DataFolderExistsDFR(singleSweepFolder), "Missing singleSweepFolder")
 
@@ -393,26 +365,6 @@ Function/WAVE PA_GetPulseStartTimes(traceData, idx, region, channelTypeStr, [rem
 	pulseStartTimes[] -= totalOnsetDelay
 
 	return pulseStartTimes
-End
-
-static Function PA_GetPulseToPulseLength(traceData, idx, region, pulseStartTimes, startingPulse, endingPulse, fallbackPulseLength)
-	WAVE/T traceData, pulseStartTimes
-	variable idx, region, startingPulse, endingPulse, fallbackPulseLength
-
-	variable sweepNo
-
-	WAVE numericalValues = $traceData[idx][%numericalValues]
-	sweepNo = str2num(traceData[idx][%sweepNumber])
-	WAVE/Z pulseToPulseLengths = GetLastSetting(numericalValues, sweepNo, PULSE_TO_PULSE_LENGTH_KEY, DATA_ACQUISITION_MODE)
-
-	if(!WaveExists(pulseToPulseLengths) || pulseToPulseLengths[region] == 0)
-		// either an old stim set without starting times or a new one
-		// with poission distribution/mixed frequency turned on
-		return PA_GetAveragePulseLength(pulseStartTimes, startingPulse, endingPulse, fallbackPulseLength)
-	else
-		// existing pulse train stimset and poisson distribution/mixed frequency turned off
-		return pulseToPulseLengths[region]
-	endif
 End
 
 static Function PA_GetAveragePulseLength(pulseStartTimes, startingPulse, endingPulse, fallbackPulseLength)
@@ -631,8 +583,7 @@ Function PA_ShowPulses(win, dfr, pa)
 				endingPulse    = min(numPulsesTotal - 1, endingPulseSett)
 				numPulses = endingPulse - startingPulse + 1
 
-				pulseToPulseLength = PA_GetPulseToPulseLength(traceData, idx, region, pulseStartTimes, \
-															  startingPulse, endingPulse, pa.fallbackPulseLength)
+				pulseToPulseLength = PA_GetAveragePulseLength(pulseStartTimes, startingPulse, endingPulse, pa.fallbackPulseLength)
 
 				if(WhichListItem(channelNumberStr, channelList) == -1)
 					activeChanCount += 1
