@@ -1469,6 +1469,8 @@ Function/S WB_GetWaveNoteEntry(text, entryType, [key, sweep, epoch])
 			ASSERT(!ParamIsDefault(key) && !IsEmpty(key), "Missing key")
 			re = "^Stimset;"
 			break
+		default:
+			ASSERT(0, "Unknown entryType")
 	endswitch
 
 	match = GrepList(text, re, 0, "\r")

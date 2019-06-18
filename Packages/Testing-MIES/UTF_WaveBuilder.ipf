@@ -170,6 +170,13 @@ Function WB_StimsetEntryParsing()
 	CHECK_EMPTY_STR(actual)
 
 	CHECK_EQUAL_VAR(WB_GetWaveNoteEntryAsNumber(text, STIMSET_ENTRY, key = "Unknown Entry"), NaN)
+
+	try
+		WB_GetWaveNoteEntry(text, 123); AbortOnRTE
+		FAIL()
+	catch
+		PASS()
+	endtry
 End
 
 Function WB_StimsetRecreation1()
