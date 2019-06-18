@@ -29,6 +29,7 @@ BuildLog.htm
 *.opendb
 *.bsc
 **/VC2015/*.xop
+.vs
 
 # Build results
 [Dd]ebug/
