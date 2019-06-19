@@ -593,14 +593,14 @@ Constant WAVEBUILDER_PANEL_VERSION  = 7
 /// Version of the labnotebooks (numerical and textual)
 ///
 /// Has to be increased on the following occasions:
-/// - New entries
+/// - New/Removed entries
 /// - Changed names of entries
 /// - Changed units or meaning of entries
 /// - New/Changed layers of entries
-Constant LABNOTEBOOK_VERSION = 32
+Constant LABNOTEBOOK_VERSION = 33
 
 /// Version of the stimset wave note
-Constant STIMSET_NOTE_VERSION = 4
+Constant STIMSET_NOTE_VERSION = 5
 
 /// @name The channel numbers for the different ITC devices used for accesssing
 ///       the TTLs

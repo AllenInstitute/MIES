@@ -113,21 +113,6 @@ static Function PA_GetAxes(multipleGraphs, activeRegionCount, activeChanCount, v
 	endif
 End
 
-/// @brief Return a wave with the pulse starting times from the labnotebook
-///
-/// In case nothing could be found in the labnotebook an invalid wave reference is returned.
-static Function/WAVE PA_GetPulseStartTimesFromLB(textualValues, sweepNo, headstage)
-	WAVE/T textualValues
-	variable sweepNo, headstage
-
-	WAVE/Z/T pulseStartTimes = GetLastSetting(textualValues, sweepNo, PULSE_START_TIMES_KEY, DATA_ACQUISITION_MODE)
-	if(!WaveExists(pulseStartTimes))
-		return $""
-	endif
-
-	return ListToNumericWave(pulseStartTimes[headstage], ";")
-End
-
 /// @brief Derive the pulse starting times from a DA wave
 ///
 /// Uses plain FindLevels after the onset delay using 10% of the full range
@@ -336,7 +321,7 @@ Function/WAVE PA_GetPulseStartTimes(traceData, idx, region, channelTypeStr, [rem
 	string channelTypeStr
 	variable removeOnsetDelay
 
-	variable sweepNo, totalOnsetDelay
+	variable sweepNo, totalOnsetDelay, channel
 	string str
 
 	if(ParamIsDefault(removeOnsetDelay))
@@ -345,8 +330,6 @@ Function/WAVE PA_GetPulseStartTimes(traceData, idx, region, channelTypeStr, [rem
 		removeOnsetDelay = !!removeOnsetDelay
 	endif
 
-	// we currently use the regions from the sweep with the lowest
-	// number, see the SortColumns invocation in PA_GetTraceInfos.
 	sweepNo = str2num(traceData[idx][%sweepNumber])
 
 	WAVE/Z textualValues   = $traceData[idx][%textualValues]
@@ -358,34 +341,18 @@ Function/WAVE PA_GetPulseStartTimes(traceData, idx, region, channelTypeStr, [rem
 		totalOnsetDelay = GetTotalOnsetDelay(numericalValues, sweepNo)
 	endif
 
-	WAVE/Z pulseStartTimes = PA_GetPulseStartTimesFromLB(textualValues, sweepNo, region)
-
-	if(WaveExists(pulseStartTimes))
-		sprintf str, "Found pulse starting times for headstage %d", region
-		DEBUGPRINT(str)
-
-		pulseStartTimes[] -= totalOnsetDelay
-
-		return pulseStartTimes
-	endif
-
-	// old data/stimsets without the required entries
-
-	// find the folder where the referenced trace is located
-	WAVE indizesCH    = FindIndizes(traceData, colLabel="channelType", str=channelTypeStr)
-	WAVE indizesSweep = FindIndizes(traceData, colLabel="sweepNumber", var=sweepNo)
-	WAVE indizesHS    = FindIndizes(traceData, colLabel="headstage", var=region)
-
-	WAVE/Z indizes = GetSetIntersection(indizesHS, GetSetIntersection(indizesCH, indizesSweep))
-	ASSERT(WaveExists(indizes) && DimSize(indizes, ROWS) == 1, "Unexpected state")
-
-	DFREF singleSweepFolder = GetWavesDataFolderDFR($traceData[indizes[0]][%fullPath])
+	DFREF singleSweepFolder = GetWavesDataFolderDFR($traceData[idx][%fullPath])
 	ASSERT(DataFolderExistsDFR(singleSweepFolder), "Missing singleSweepFolder")
 
 	// get the DA wave in that folder
 	WAVE DACs = GetLastSetting(numericalValues, sweepNo, "DAC", DATA_ACQUISITION_MODE)
-	WAVE DA = GetITCDataSingleColumnWave(singleSweepFolder, ITC_XOP_CHANNEL_TYPE_DAC, DACs[region])
 
+	channel = DACs[region]
+	if(IsNaN(channel))
+		return $""
+	endif
+
+	WAVE DA = GetITCDataSingleColumnWave(singleSweepFolder, ITC_XOP_CHANNEL_TYPE_DAC, channel)
 	WAVE/Z pulseStartTimes = PA_CalculatePulseStartTimes(DA, totalOnsetDelay)
 
 	if(!WaveExists(pulseStartTimes))
@@ -400,27 +367,7 @@ Function/WAVE PA_GetPulseStartTimes(traceData, idx, region, channelTypeStr, [rem
 	return pulseStartTimes
 End
 
-static Function PA_GetPulseToPulseLength(traceData, idx, region, pulseStartTimes, startingPulse, endingPulse, fallbackPulseLength)
-	WAVE/T traceData, pulseStartTimes
-	variable idx, region, startingPulse, endingPulse, fallbackPulseLength
-
-	variable sweepNo
-
-	WAVE numericalValues = $traceData[idx][%numericalValues]
-	sweepNo = str2num(traceData[idx][%sweepNumber])
-	WAVE/Z pulseToPulseLengths = GetLastSetting(numericalValues, sweepNo, PULSE_TO_PULSE_LENGTH_KEY, DATA_ACQUISITION_MODE)
-
-	if(!WaveExists(pulseToPulseLengths) || pulseToPulseLengths[region] == 0)
-		// either an old stim set without starting times or a new one
-		// with poission distribution/mixed frequency turned on
-		return PA_GetAveragePulseLength(pulseStartTimes, startingPulse, endingPulse, fallbackPulseLength)
-	else
-		// existing pulse train stimset and poisson distribution/mixed frequency turned off
-		return pulseToPulseLengths[region]
-	endif
-End
-
-static Function PA_GetAveragePulseLength(pulseStartTimes, startingPulse, endingPulse, fallbackPulseLength)
+static Function PA_GetPulseLength(pulseStartTimes, startingPulse, endingPulse, fallbackPulseLength)
 	WAVE pulseStartTimes
 	variable startingPulse, endingPulse, fallbackPulseLength
 
@@ -442,14 +389,9 @@ static Function PA_GetAveragePulseLength(pulseStartTimes, startingPulse, endingP
 		return minimum
 	endif
 
-	// remove outliers which are too large
-	// this happens with multiple epochs and space in between as then one
-	// pulse to pulse length is way too big
-	Extract/FREE pulseLengths, pulseLengthsClean, pulseLengths <= 2 * minimum
+	ASSERT(minimum == 0, "pulse length expected to be zero")
 
-	WaveStats/Q/M=1 pulseLengthsClean
-
-	return V_avg
+	return fallbackPulseLength
 End
 
 static Function/WAVE PA_CreateAndFillPulseWaveIfReq(wv, singleSweepFolder, channelType, channelNumber, region, pulseIndex, first, length)
@@ -602,26 +544,11 @@ Function PA_ShowPulses(win, dfr, pa)
 				continue
 			endif
 
-			WAVE/Z pulseStartTimes = PA_GetPulseStartTimes(traceData, j, region, channelTypeStr)
-
-			if(!WaveExists(pulseStartTimes))
-				printf "We tried to find pulse starting times but failed miserably. Trying the next headstage\r"
-				continue
-			endif
-
 			activeRegionCount += 1
 			activeChanCount    = 0
 			channelList        = ""
 
 			Make/FREE/T/N=(NUM_HEADSTAGES) wavesToAverage
-
-			numPulsesTotal = DimSize(pulseStartTimes, ROWS)
-			startingPulse  = max(0, startingPulseSett)
-			endingPulse    = min(numPulsesTotal - 1, endingPulseSett)
-			numPulses = endingPulse - startingPulse + 1
-
-			pulseToPulseLength = PA_GetPulseToPulseLength(traceData, idx, region, pulseStartTimes, startingPulse, endingPulse, pa.fallbackPulseLength)
-
 			Make/T/FREE/N=(GetNumberFromType(itcvar=channelType)) listOfWavesPerChannel = ""
 
 			// we have the starting times for one channel type and headstage combination
@@ -639,6 +566,19 @@ Function PA_ShowPulses(win, dfr, pa)
 				channelNumberStr     = traceData[idx][%channelNumber]
 				channelNumber        = str2num(channelNumberStr)
 				WAVE numericalValues = $traceData[idx][%numericalValues]
+
+				WAVE/Z pulseStartTimes = PA_GetPulseStartTimes(traceData, idx, region, channelTypeStr)
+
+				if(!WaveExists(pulseStartTimes))
+					continue
+				endif
+
+				numPulsesTotal = DimSize(pulseStartTimes, ROWS)
+				startingPulse  = max(0, startingPulseSett)
+				endingPulse    = min(numPulsesTotal - 1, endingPulseSett)
+				numPulses = endingPulse - startingPulse + 1
+
+				pulseToPulseLength = PA_GetPulseLength(pulseStartTimes, startingPulse, endingPulse, pa.fallbackPulseLength)
 
 				if(WhichListItem(channelNumberStr, channelList) == -1)
 					activeChanCount += 1
@@ -675,7 +615,6 @@ Function PA_ShowPulses(win, dfr, pa)
 					WAVE/Z plotWave = PA_CreateAndFillPulseWaveIfReq(wv, singlePulseFolder, channelType, channelNumber, region, l, first, length)
 
 					if(!WaveExists(plotWave))
-						printf "Not adding pulse %d of region %d from sweep %d because it could not be extracted due to invalid coordinates.\r", l, region, sweepNo
 						continue
 					endif
 

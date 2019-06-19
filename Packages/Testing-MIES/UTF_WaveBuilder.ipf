@@ -30,7 +30,7 @@ End
 Function WB_RegressionTest()
 
 	variable i, numEntries
-	string list, stimset
+	string list, stimset, text
 
 	DFREF ref = root:wavebuilder_misc:DAWaves
 	DFREF dfr = GetWBSvdStimSetParamDAPath()
@@ -60,56 +60,58 @@ Function WB_RegressionTest()
 		WAVE/SDFR=ref refWave = $stimset
 		CHECK_EQUAL_WAVES(refWave, wv, mode = WAVE_DATA | WAVE_DATA_TYPE | WAVE_SCALING | DIMENSION_LABELS | DIMENSION_UNITS | DIMENSION_SIZES | DATA_UNITS | DATA_FULL_SCALE, tol = 1e-12)
 
+		text = note(wv)
+
 		// check ITIs
 		strswitch(stimset)
 			case "RefSetITI1_DA_0":
-				CHECK_EQUAL_VAR(WB_GetWaveNoteEntryAsNumber(wv, SWEEP_ENTRY, key = "ITI", sweep = 0), 1)
-				CHECK_EQUAL_VAR(WB_GetWaveNoteEntryAsNumber(wv, SWEEP_ENTRY, key = "ITI", sweep = 1), 2)
-				CHECK_EQUAL_VAR(WB_GetWaveNoteEntryAsNumber(wv, SWEEP_ENTRY, key = "ITI", sweep = 2), 3)
-				CHECK_EQUAL_VAR(WB_GetWaveNoteEntryAsNumber(wv, SWEEP_ENTRY, key = "ITI", sweep = 3), 4)
-				CHECK_EQUAL_VAR(WB_GetWaveNoteEntryAsNumber(wv, SWEEP_ENTRY, key = "ITI", sweep = 4), 5)
+				CHECK_EQUAL_VAR(WB_GetWaveNoteEntryAsNumber(text, SWEEP_ENTRY, key = "ITI", sweep = 0), 1)
+				CHECK_EQUAL_VAR(WB_GetWaveNoteEntryAsNumber(text, SWEEP_ENTRY, key = "ITI", sweep = 1), 2)
+				CHECK_EQUAL_VAR(WB_GetWaveNoteEntryAsNumber(text, SWEEP_ENTRY, key = "ITI", sweep = 2), 3)
+				CHECK_EQUAL_VAR(WB_GetWaveNoteEntryAsNumber(text, SWEEP_ENTRY, key = "ITI", sweep = 3), 4)
+				CHECK_EQUAL_VAR(WB_GetWaveNoteEntryAsNumber(text, SWEEP_ENTRY, key = "ITI", sweep = 4), 5)
 				break
 			case "RefSetITI2_DA_0":
-				CHECK_EQUAL_VAR(WB_GetWaveNoteEntryAsNumber(wv, SWEEP_ENTRY, key = "ITI", sweep = 0), 1)
-				CHECK_EQUAL_VAR(WB_GetWaveNoteEntryAsNumber(wv, SWEEP_ENTRY, key = "ITI", sweep = 1), 2)
-				CHECK_EQUAL_VAR(WB_GetWaveNoteEntryAsNumber(wv, SWEEP_ENTRY, key = "ITI", sweep = 2), 4)
-				CHECK_EQUAL_VAR(WB_GetWaveNoteEntryAsNumber(wv, SWEEP_ENTRY, key = "ITI", sweep = 3), 8)
-				CHECK_EQUAL_VAR(WB_GetWaveNoteEntryAsNumber(wv, SWEEP_ENTRY, key = "ITI", sweep = 4), 16)
+				CHECK_EQUAL_VAR(WB_GetWaveNoteEntryAsNumber(text, SWEEP_ENTRY, key = "ITI", sweep = 0), 1)
+				CHECK_EQUAL_VAR(WB_GetWaveNoteEntryAsNumber(text, SWEEP_ENTRY, key = "ITI", sweep = 1), 2)
+				CHECK_EQUAL_VAR(WB_GetWaveNoteEntryAsNumber(text, SWEEP_ENTRY, key = "ITI", sweep = 2), 4)
+				CHECK_EQUAL_VAR(WB_GetWaveNoteEntryAsNumber(text, SWEEP_ENTRY, key = "ITI", sweep = 3), 8)
+				CHECK_EQUAL_VAR(WB_GetWaveNoteEntryAsNumber(text, SWEEP_ENTRY, key = "ITI", sweep = 4), 16)
 				break
 			case "RefSetITI3_DA_0":
-				CHECK_EQUAL_VAR(WB_GetWaveNoteEntryAsNumber(wv, SWEEP_ENTRY, key = "ITI", sweep = 0), 1)
-				CHECK_EQUAL_VAR(WB_GetWaveNoteEntryAsNumber(wv, SWEEP_ENTRY, key = "ITI", sweep = 1), 101)
-				CHECK_EQUAL_VAR(WB_GetWaveNoteEntryAsNumber(wv, SWEEP_ENTRY, key = "ITI", sweep = 2), 103)
-				CHECK_EQUAL_VAR(WB_GetWaveNoteEntryAsNumber(wv, SWEEP_ENTRY, key = "ITI", sweep = 3), 103.301)
-				CHECK_EQUAL_VAR(WB_GetWaveNoteEntryAsNumber(wv, SWEEP_ENTRY, key = "ITI", sweep = 4), 102.78)
+				CHECK_EQUAL_VAR(WB_GetWaveNoteEntryAsNumber(text, SWEEP_ENTRY, key = "ITI", sweep = 0), 1)
+				CHECK_EQUAL_VAR(WB_GetWaveNoteEntryAsNumber(text, SWEEP_ENTRY, key = "ITI", sweep = 1), 101)
+				CHECK_EQUAL_VAR(WB_GetWaveNoteEntryAsNumber(text, SWEEP_ENTRY, key = "ITI", sweep = 2), 103)
+				CHECK_EQUAL_VAR(WB_GetWaveNoteEntryAsNumber(text, SWEEP_ENTRY, key = "ITI", sweep = 3), 103.301)
+				CHECK_EQUAL_VAR(WB_GetWaveNoteEntryAsNumber(text, SWEEP_ENTRY, key = "ITI", sweep = 4), 102.78)
 				break
 			case "RefSetITI4_DA_0":
-				CHECK_EQUAL_VAR(WB_GetWaveNoteEntryAsNumber(wv, SWEEP_ENTRY, key = "ITI", sweep = 0), 1)
-				CHECK_EQUAL_VAR(WB_GetWaveNoteEntryAsNumber(wv, SWEEP_ENTRY, key = "ITI", sweep = 1), 3)
-				CHECK_EQUAL_VAR(WB_GetWaveNoteEntryAsNumber(wv, SWEEP_ENTRY, key = "ITI", sweep = 2), 7)
-				CHECK_EQUAL_VAR(WB_GetWaveNoteEntryAsNumber(wv, SWEEP_ENTRY, key = "ITI", sweep = 3), 23)
-				CHECK_EQUAL_VAR(WB_GetWaveNoteEntryAsNumber(wv, SWEEP_ENTRY, key = "ITI", sweep = 4), 279)
+				CHECK_EQUAL_VAR(WB_GetWaveNoteEntryAsNumber(text, SWEEP_ENTRY, key = "ITI", sweep = 0), 1)
+				CHECK_EQUAL_VAR(WB_GetWaveNoteEntryAsNumber(text, SWEEP_ENTRY, key = "ITI", sweep = 1), 3)
+				CHECK_EQUAL_VAR(WB_GetWaveNoteEntryAsNumber(text, SWEEP_ENTRY, key = "ITI", sweep = 2), 7)
+				CHECK_EQUAL_VAR(WB_GetWaveNoteEntryAsNumber(text, SWEEP_ENTRY, key = "ITI", sweep = 3), 23)
+				CHECK_EQUAL_VAR(WB_GetWaveNoteEntryAsNumber(text, SWEEP_ENTRY, key = "ITI", sweep = 4), 279)
 				break
 			case "RefSetITI5_DA_0":
-				CHECK_EQUAL_VAR(WB_GetWaveNoteEntryAsNumber(wv, SWEEP_ENTRY, key = "ITI", sweep = 0), 1)
-				CHECK_EQUAL_VAR(WB_GetWaveNoteEntryAsNumber(wv, SWEEP_ENTRY, key = "ITI", sweep = 1), 4)
-				CHECK_EQUAL_VAR(WB_GetWaveNoteEntryAsNumber(wv, SWEEP_ENTRY, key = "ITI", sweep = 2), 13)
-				CHECK_EQUAL_VAR(WB_GetWaveNoteEntryAsNumber(wv, SWEEP_ENTRY, key = "ITI", sweep = 3), 94)
-				CHECK_EQUAL_VAR(WB_GetWaveNoteEntryAsNumber(wv, SWEEP_ENTRY, key = "ITI", sweep = 4), 6655)
+				CHECK_EQUAL_VAR(WB_GetWaveNoteEntryAsNumber(text, SWEEP_ENTRY, key = "ITI", sweep = 0), 1)
+				CHECK_EQUAL_VAR(WB_GetWaveNoteEntryAsNumber(text, SWEEP_ENTRY, key = "ITI", sweep = 1), 4)
+				CHECK_EQUAL_VAR(WB_GetWaveNoteEntryAsNumber(text, SWEEP_ENTRY, key = "ITI", sweep = 2), 13)
+				CHECK_EQUAL_VAR(WB_GetWaveNoteEntryAsNumber(text, SWEEP_ENTRY, key = "ITI", sweep = 3), 94)
+				CHECK_EQUAL_VAR(WB_GetWaveNoteEntryAsNumber(text, SWEEP_ENTRY, key = "ITI", sweep = 4), 6655)
 				break
 			case "RefSetITI6_DA_0":
-				CHECK_EQUAL_VAR(WB_GetWaveNoteEntryAsNumber(wv, SWEEP_ENTRY, key = "ITI", sweep = 0), 1)
-				CHECK_EQUAL_VAR(WB_GetWaveNoteEntryAsNumber(wv, SWEEP_ENTRY, key = "ITI", sweep = 1), 5)
-				CHECK_EQUAL_VAR(WB_GetWaveNoteEntryAsNumber(wv, SWEEP_ENTRY, key = "ITI", sweep = 2), 1)
-				CHECK_EQUAL_VAR(WB_GetWaveNoteEntryAsNumber(wv, SWEEP_ENTRY, key = "ITI", sweep = 3), 5)
-				CHECK_EQUAL_VAR(WB_GetWaveNoteEntryAsNumber(wv, SWEEP_ENTRY, key = "ITI", sweep = 4), 1)
+				CHECK_EQUAL_VAR(WB_GetWaveNoteEntryAsNumber(text, SWEEP_ENTRY, key = "ITI", sweep = 0), 1)
+				CHECK_EQUAL_VAR(WB_GetWaveNoteEntryAsNumber(text, SWEEP_ENTRY, key = "ITI", sweep = 1), 5)
+				CHECK_EQUAL_VAR(WB_GetWaveNoteEntryAsNumber(text, SWEEP_ENTRY, key = "ITI", sweep = 2), 1)
+				CHECK_EQUAL_VAR(WB_GetWaveNoteEntryAsNumber(text, SWEEP_ENTRY, key = "ITI", sweep = 3), 5)
+				CHECK_EQUAL_VAR(WB_GetWaveNoteEntryAsNumber(text, SWEEP_ENTRY, key = "ITI", sweep = 4), 1)
 				break
 			case "RefSetITI7_DA_0":
-				CHECK_EQUAL_VAR(WB_GetWaveNoteEntryAsNumber(wv, SWEEP_ENTRY, key = "ITI", sweep = 0), 1)
-				CHECK_EQUAL_VAR(WB_GetWaveNoteEntryAsNumber(wv, SWEEP_ENTRY, key = "ITI", sweep = 1), 11)
-				CHECK_EQUAL_VAR(WB_GetWaveNoteEntryAsNumber(wv, SWEEP_ENTRY, key = "ITI", sweep = 2), 21)
-				CHECK_EQUAL_VAR(WB_GetWaveNoteEntryAsNumber(wv, SWEEP_ENTRY, key = "ITI", sweep = 3), 31)
-				CHECK_EQUAL_VAR(WB_GetWaveNoteEntryAsNumber(wv, SWEEP_ENTRY, key = "ITI", sweep = 4), 41)
+				CHECK_EQUAL_VAR(WB_GetWaveNoteEntryAsNumber(text, SWEEP_ENTRY, key = "ITI", sweep = 0), 1)
+				CHECK_EQUAL_VAR(WB_GetWaveNoteEntryAsNumber(text, SWEEP_ENTRY, key = "ITI", sweep = 1), 11)
+				CHECK_EQUAL_VAR(WB_GetWaveNoteEntryAsNumber(text, SWEEP_ENTRY, key = "ITI", sweep = 2), 21)
+				CHECK_EQUAL_VAR(WB_GetWaveNoteEntryAsNumber(text, SWEEP_ENTRY, key = "ITI", sweep = 3), 31)
+				CHECK_EQUAL_VAR(WB_GetWaveNoteEntryAsNumber(text, SWEEP_ENTRY, key = "ITI", sweep = 4), 41)
 				break
 			default:
 				// do nothing
@@ -120,10 +122,9 @@ End
 
 Function WB_StimsetEntryParsing()
 
-	string actual, reference
+	string actual, reference, text
 
-	Make/FREE wv
-	Note/K wv "Version = 2;\r" + \
+	text = "Version = 2;\r" + \
 	"Sweep = 0;Epoch = nan;ITI = 1;\r" + \
 	"Sweep = 0;Epoch = 0;Type = Square pulse;Duration = 500;Amplitude = 0;\r" + \
 	"Sweep = 0;Epoch = 1;Type = Ramp;Duration = 150;Amplitude = 1;Offset = 0;\r" + \
@@ -146,23 +147,36 @@ Function WB_StimsetEntryParsing()
 	"Sweep = 3;Epoch = 3;Type = Pulse Train;Duration = 960.005;Amplitude = 1;Offset = 0;Pulse Type = Square;Frequency = 20;Pulse To Pulse Length = 50;Pulse duration = 10;Number of pulses = 20;Mixed frequency = False;First mixed frequency = 0;Last mixed frequency = 0;Poisson distribution = False;Random seed = 0.963638;Pulse Train Pulses = 0,50,100,150,200,250,300,350,400,450,500,550,600,650,700,750,800,850,900,950,;Definition mode = Duration;\r" + \
 	"Stimset;Sweep Count = 4;Epoch Count = 4;Pre DAQ = ;Mid Sweep = ;Post Sweep = ;Post Set = ;Post DAQ = ;Pre Sweep = ;Generic = PSQ_Ramp;Pre Set = ;Function params = NumberOfSpikes:variable=5,Elements:string=Hidiho,;Flip = 0;Random Seed = 0.963638;Checksum = 65446509;"
 
-	CHECK_EQUAL_VAR(WB_GetWaveNoteEntryAsNumber(wv, VERSION_ENTRY), 2)
+	CHECK_EQUAL_VAR(WB_GetWaveNoteEntryAsNumber(text, VERSION_ENTRY), 2)
 
-	CHECK_EQUAL_VAR(WB_GetWaveNoteEntryAsNumber(wv, SWEEP_ENTRY, key = "ITI", sweep = 0), 1)
-	CHECK_EQUAL_VAR(WB_GetWaveNoteEntryAsNumber(wv, SWEEP_ENTRY, key = "ITI", sweep = 1), 2)
-	CHECK_EQUAL_VAR(WB_GetWaveNoteEntryAsNumber(wv, SWEEP_ENTRY, key = "ITI", sweep = 2), 3)
-	CHECK_EQUAL_VAR(WB_GetWaveNoteEntryAsNumber(wv, SWEEP_ENTRY, key = "ITI", sweep = 3), 4)
+	CHECK_EQUAL_VAR(WB_GetWaveNoteEntryAsNumber(text, SWEEP_ENTRY, key = "ITI", sweep = 0), 1)
+	CHECK_EQUAL_VAR(WB_GetWaveNoteEntryAsNumber(text, SWEEP_ENTRY, key = "ITI", sweep = 1), 2)
+	CHECK_EQUAL_VAR(WB_GetWaveNoteEntryAsNumber(text, SWEEP_ENTRY, key = "ITI", sweep = 2), 3)
+	CHECK_EQUAL_VAR(WB_GetWaveNoteEntryAsNumber(text, SWEEP_ENTRY, key = "ITI", sweep = 3), 4)
 
-	CHECK_EQUAL_VAR(WB_GetWaveNoteEntryAsNumber(wv, EPOCH_ENTRY, key = "Duration", epoch = 0, sweep = 0), 500)
-	CHECK_EQUAL_VAR(WB_GetWaveNoteEntryAsNumber(wv, EPOCH_ENTRY, key = "Duration", epoch = 1, sweep = 1), 150)
-	CHECK_EQUAL_VAR(WB_GetWaveNoteEntryAsNumber(wv, EPOCH_ENTRY, key = "Duration", epoch = 2, sweep = 2), 300)
-	CHECK_EQUAL_VAR(WB_GetWaveNoteEntryAsNumber(wv, EPOCH_ENTRY, key = "Duration", epoch = 3, sweep = 3), 960.005)
+	CHECK_EQUAL_VAR(WB_GetWaveNoteEntryAsNumber(text, EPOCH_ENTRY, key = "Duration", epoch = 0, sweep = 0), 500)
+	CHECK_EQUAL_VAR(WB_GetWaveNoteEntryAsNumber(text, EPOCH_ENTRY, key = "Duration", epoch = 1, sweep = 1), 150)
+	CHECK_EQUAL_VAR(WB_GetWaveNoteEntryAsNumber(text, EPOCH_ENTRY, key = "Duration", epoch = 2, sweep = 2), 300)
+	CHECK_EQUAL_VAR(WB_GetWaveNoteEntryAsNumber(text, EPOCH_ENTRY, key = "Duration", epoch = 3, sweep = 3), 960.005)
 
-	CHECK_EQUAL_VAR(WB_GetWaveNoteEntryAsNumber(wv, STIMSET_ENTRY, key = "Sweep Count"), 4)
+	CHECK_EQUAL_VAR(WB_GetWaveNoteEntryAsNumber(text, STIMSET_ENTRY, key = "Sweep Count"), 4)
 
-	actual    = WB_GetWaveNoteEntry(wv, STIMSET_ENTRY, key = "Generic")
+	actual    = WB_GetWaveNoteEntry(text, STIMSET_ENTRY, key = "Generic")
 	reference = "PSQ_Ramp"
 	CHECK_EQUAL_STR(actual, reference)
+
+	// check that unknown keys report as "" or NaN
+	actual = WB_GetWaveNoteEntry(text, STIMSET_ENTRY, key = "Unknown Entry")
+	CHECK_EMPTY_STR(actual)
+
+	CHECK_EQUAL_VAR(WB_GetWaveNoteEntryAsNumber(text, STIMSET_ENTRY, key = "Unknown Entry"), NaN)
+
+	try
+		WB_GetWaveNoteEntry(text, 123); AbortOnRTE
+		FAIL()
+	catch
+		PASS()
+	endtry
 End
 
 Function WB_StimsetRecreation1()

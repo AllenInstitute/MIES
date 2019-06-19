@@ -28,7 +28,7 @@ Function/S DB_OpenDataBrowser()
 	if(ItemsInList(devicesWithData) == 1)
 		device = StringFromList(0, devicesWithData)
 		bsPanel = BSP_GetPanel(win)
-		PGC_SetAndActivateControl(bsPanel, "popup_DB_lockedDevices", val = 0)
+		PGC_SetAndActivateControl(bsPanel, "popup_DB_lockedDevices", str = device)
 	endif
 
 	return GetMainWindow(GetCurrentWindow())
