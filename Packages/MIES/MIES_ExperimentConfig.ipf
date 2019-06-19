@@ -419,8 +419,6 @@ static Function ExpConfig_DAEphysSettings(panelTitle, UserSettings)
 	PGC_SetAndActivateControl(panelTitle,"Check_DataAcq1_dDAQOptOv", val = str2numSafe(UserSettings[V_value][%SettingValue]))
 	FindValue /TXOP = 4 /TEXT = OODAQ_POST_DELAY UserSettings
 	PGC_SetAndActivateControl(panelTitle,"setvar_DataAcq_dDAQOptOvPost", val = str2numSafe(UserSettings[V_value][%SettingValue]))
-	FindValue /TXOP = 4 /TEXT = OODAQ_RESOLUTION UserSettings
-	PGC_SetAndActivateControl(panelTitle,"setvar_DataAcq_dDAQOptOvRes", val = str2numSafe(UserSettings[V_value][%SettingValue]))
 	FindValue /TXOP = 4 /TEXT = USER_ONSET_DELAY UserSettings
 	PGC_SetAndActivateControl(panelTitle,"setvar_DataAcq_OnsetDelayUser", val = str2numSafe(UserSettings[V_value][%SettingValue]))
 	FindValue /TXOP = 4 /TEXT = TERMINATION_DELAY UserSettings

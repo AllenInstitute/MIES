@@ -449,7 +449,6 @@ Function DAP_EphysPanelStartUpSettings()
 	SetVariable SetVar_DataAcq_dDAQDelay WIN = $panelTitle,value= _NUM:0
 	SetVariable setvar_DataAcq_dDAQOptOvPost WIN = $panelTitle,value= _NUM:0
 	SetVariable setvar_DataAcq_dDAQOptOvPre WIN = $panelTitle,value= _NUM:0
-	SetVariable setvar_DataAcq_dDAQOptOvRes WIN = $panelTitle,value= _NUM:1
 	SetVariable SetVar_DataAcq_OnsetDelayUser WIN = $panelTitle,value= _NUM:0
 	ValDisplay valdisp_DataAcq_OnsetDelayAuto WIN = $panelTitle,value= _NUM:0
 	ValDisplay valdisp_DataAcq_SweepsInSet WIN = $panelTitle,value= _NUM:1

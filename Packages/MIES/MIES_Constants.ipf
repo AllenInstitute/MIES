@@ -585,7 +585,7 @@ Constant HARDWARE_DAC_EXTERNAL_TRIGGER = 0x1
 /// @}
 
 /// Used to upgrade the GuiStateWave as well as the DA Ephys panel
-Constant DA_EPHYS_PANEL_VERSION     = 39
+Constant DA_EPHYS_PANEL_VERSION     = 41
 Constant DATABROWSER_PANEL_VERSION  = 9
 Constant SWEEPBROWSER_PANEL_VERSION = 3
 Constant WAVEBUILDER_PANEL_VERSION  = 7
@@ -805,7 +805,6 @@ StrConstant GET_SET_ITI             = "Get stimulus set ITI"
 StrConstant DEFAULT_ITI             = "Default ITI (ms)"
 StrConstant ENABLE_OODAQ            = "Enable ooDAQ"
 StrConstant OODAQ_POST_DELAY        = "ooDAQ post sweep delay (ms)"
-StrConstant OODAQ_RESOLUTION        = "ooDAQ resolution (ms)"
 StrConstant HOLDING                 = "Initial Holding Potential"
 StrConstant AUTOBIAS                = "Enable I-clamp Autobias"
 StrConstant AUTOBIAS_RANGE          = "I-clamp Autobias range (mV)"

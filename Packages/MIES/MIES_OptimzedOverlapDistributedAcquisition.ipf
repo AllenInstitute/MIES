@@ -9,59 +9,271 @@
 /// @file MIES_OptimzedOverlapDistributedAcquisition.ipf
 /// @brief __OOD__ This file holds functions related to oodDAQ.
 
-static Constant OOD_BLOCK_SIZE = 1024
+/// Signal threshold level in parts of dynamic range above minimum
+/// @sa OOD_GetThresholdLevel()
+static Constant OOD_SIGNAL_THRESHOLD = 0.1
 
-/// @brief Create a wave reference wave with the smeared stim sets including offsets
-static Function/WAVE OOD_CreateStimSetWithSmear(params)
-	STRUCT OOdDAQParams &params
+/// @brief returns the threshold level for ood region detection from a single column stimset
+/// @param[in] stimset 1d wave containing stimset data
+/// @return threshold level defining signal above baseline
+static Function OOD_GetThresholdLevel(stimset)
+	WAVE stimset
 
-	STRUCT OOdDAQParams tempParams
-	tempParams = params
-	WAVE tempParams.stimSets = params.stimSetsSmeared
-
-	Duplicate/FREE params.setColumns, setColumns
-	setColumns[] = 0
-	WAVE tempParams.setColumns = setColumns
-
-	WAVE/WAVE params.stimSetsSmearedAndOffset = OOD_CreateStimSet(tempParams)
+	variable minVal = WaveMin(stimset)
+	return minVal + (WaveMax(stimset) - minVal) * OOD_SIGNAL_THRESHOLD
 End
 
-/// @brief Generate the preload data
-///
-/// Preload data consists of all stimsets smeared, offsetted and summed up into
-/// a 1D wave.
-static Function/WAVE OOD_GeneratePreload(params)
-	STRUCT OOdDAQParams &params
+/// @brief retrieves regions with signal from a 1D data wave, used for stimsets
+/// @param[in] stimset 1D wave containing stimset data
+/// @param[in] prePoints oodDAQ pre delay in points the regions get expanded at the rising edge
+/// @param[in] postPoints oodDAQ post delay in points the regions get expanded at the falling edge
+/// @return 2D wave with region information
+static Function/WAVE OOD_GetRegionsFromStimset(stimset, prePoints, postPoints)
+	WAVE stimset
+	variable prePoints, postPoints
 
-	variable i, numSets, maxLength, preloadLength, dataLength
+	variable size, level, expectFalling, position, rIndex
 
-	numSets = DimSize(params.stimSetsSmearedAndOffset, ROWS)
-	Make/FREE/N=(numSets) lengths = DimSize(params.stimSetsSmearedAndOffset[p], ROWS)
-	maxLength = WaveMax(lengths)
+	size = DimSize(stimset, ROWS)
 
-	if(WaveExists(params.preload))
-		preloadLength = DimSize(params.preload, ROWS)
-		maxLength = max(maxLength, preloadLength)
-		Make/FREE/R/N=(maxLength) preload
-		MultiThread preload[0, preloadLength - 1] = params.preload[p]
-	else
-		preloadLength = 0
-		Make/FREE/R/N=(maxLength) preload
-		FastOp preload = 0
+	level = OOD_GetThresholdLevel(stimset)
+	Make/FREE/D/N=(MINIMUM_WAVE_SIZE, 2) regions
+	SetDimLabel COLS, 0, STARTPOINT, regions
+	SetDimLabel COLS, 1, ENDPOINT, regions
+
+	for(;;)
+		FindLevel/Q/P/R=[position] stimSet, level
+
+		if(V_flag)
+
+			if(expectFalling)
+				regions[rIndex][%ENDPOINT] = size
+				rIndex += 1
+			endif
+			break
+
+		endif
+
+		position = ceil(V_levelx)
+
+		if(V_rising)
+
+			EnsureLargeEnoughWave(regions, minimumSize = rIndex + 1)
+			regions[rIndex][%STARTPOINT] = max(position - prePoints, 0)
+
+		else
+
+			if(!expectFalling)
+				EnsureLargeEnoughWave(regions, minimumSize = rIndex + 1)
+				regions[rIndex][%STARTPOINT] = 0
+			endif
+			regions[rIndex][%ENDPOINT] = min(position + postPoints, size)
+			rIndex += 1
+
+		endif
+
+		expectFalling = V_rising
+
+	endfor
+	Redimension/N=(rIndex, -1) regions
+
+	return regions
+End
+
+/// @brief Reduces a 2D region wave by joining overlapping regions to one
+/// @param[in] regions 2D wave containing region data
+/// @return 2D wave with compacted regions
+static Function/WAVE OOD_CompactRegions(regions)
+	WAVE regions
+
+	variable regionNr, size, rIndex, endPoint, startPoint
+
+	size = DimSize(regions, ROWS)
+	if(size < 2)
+		return regions
 	endif
 
-	for(i = 0; i < numSets; i += 1)
-		WAVE stimSet = params.stimSetsSmearedAndOffset[i]
-		dataLength = DimSize(stimSet, ROWS)
-		Multithread preload[0, dataLength - 1] += stimSet[p]
+	Make/FREE/D/N=(size, 2) regionsComp
+	SetDimLabel COLS, 0, STARTPOINT, regionsComp
+	SetDimLabel COLS, 1, ENDPOINT, regionsComp
+
+	regionsComp[0][%STARTPOINT] = regions[0][%STARTPOINT]
+	endPoint = regions[0][%ENDPOINT]
+	for(regionNr = 1; regionNr < size; regionNr += 1)
+		startPoint = regions[regionNr][%STARTPOINT]
+		if(startPoint <= endPoint)
+			endPoint = regions[regionNr][%ENDPOINT]
+		else
+			regionsComp[rIndex][%ENDPOINT] = endPoint
+			rIndex += 1
+			regionsComp[rIndex][%STARTPOINT] = startPoint
+			endPoint = regions[regionNr][%ENDPOINT]
+		endif
 	endfor
+	regionsComp[rIndex][%ENDPOINT] = endPoint
 
-	CopyScales/P stimSet, preload
+	Redimension/N=(rIndex + 1, -1) regionsComp
 
-	return preload
+	return regionsComp
 End
 
-/// @brief Load the preload data into `params`
+/// @brief generates regions data waves from stimsets taking the pre and post delay into account
+/// @param[in] params OOdDAQParams structure
+/// @return wave reference wave holding the 2D region waves for each stimset
+static Function/WAVE OOD_GetRegionsFromStimsets(params)
+	STRUCT OOdDAQParams &params
+
+	variable stimsetNr, numSets, stimsetCol
+	variable level, expectRising, position
+
+	numSets = DimSize(params.stimSets, ROWS)
+	Make/FREE/WAVE/N=(numSets) regions
+	WAVE/WAVE singleColumnStimsets = DeepCopyWaveRefWave(params.stimSets, dimension=COLS, indexWave=params.setColumns)
+
+	regions[] = OOD_CompactRegions(OOD_GetRegionsFromStimset(singleColumnStimsets[p], params.preFeaturePoints, params.postFeaturePoints))
+
+	return regions
+End
+
+/// @brief returns a 1D wave with regions as lists from the input regions waves, is used for the LNB
+/// @param[in] setRegions wave reference wave of 2D region waves
+/// @param[in] offsets offset wave storing the offsets per stimset
+/// @return 1D text wave with lists of regions
+static Function/WAVE OOD_GetFeatureRegions(setRegions, offsets)
+	WAVE/WAVE setRegions
+	WAVE offsets
+
+	string list
+	variable setNr, regNr, regCnt
+	variable numSets = DimSize(setRegions, ROWS)
+
+	Make/FREE/T/N=(numSets) lists
+	for(setNr = 0; setNr < numSets; setNr += 1)
+		WAVE region = setRegions[setNr]
+		regCnt = DimSize(region, ROWS)
+
+		list = ""
+		for(regNr = 0; regNr < regCnt; regNr += 1)
+			list = OOD_AddToRegionList(region[regNr][%STARTPOINT] + offsets[setNr], region[regNr][%ENDPOINT] + offsets[setNr], list)
+		endfor
+		lists[setNr] = list
+	endfor
+
+	return lists
+End
+
+/// @brief Calculates offsets for each stimset for OOD
+/// @param[in] setRegions wave reference wave of 2D region waves for each stimset
+/// @param[in] baseRegions 2D region wave that contains initial reserved regions,
+///            e.g. when using with yoking the caller function can preload from the previous device
+///            For the lead device where no previous regions are reserved, the wave can be 1D but must have zero rows
+/// @param[in] yoked 1 if yoked operation, 0 if not
+/// @return 1D wave with offsets for each stimset in points
+static Function/WAVE OOD_CalculateOffsets(setRegions, baseRegions, yoked)
+	WAVE/WAVE setRegions
+	WAVE baseRegions
+	variable yoked
+
+	variable setNr, regNr, regCnt, baseRegCnt, baseRegNr, newOff, resAdjust
+	variable bStart, bEnd, rStart, rEnd, noInitialRegion, overlap
+	variable numSets = DimSize(setRegions, ROWS)
+
+	Make/FREE/D/N=(numSets) offsets
+
+	yoked = !!yoked
+	if(yoked)
+		if(!DimSize(baseRegions, ROWS))
+			WAVE baseRegions = setRegions[0]
+			noInitialRegion = 1
+		endif
+	else
+		WAVE baseRegions = setRegions[0]
+		noInitialRegion = 1
+	endif
+
+	for(setNr = noInitialRegion; setNr < numSets; setNr += 1)
+
+		baseRegCnt = DimSize(baseRegions, ROWS)
+		WAVE regions = setRegions[setNr]
+		regCnt = DimSize(regions, ROWS)
+
+		offsets[setNr] = offsets[setNr - 1]
+		do
+			overlap = 0
+			for(baseRegNr = 0; baseRegNr < baseRegCnt; baseRegNr += 1)
+
+				bStart = baseRegions[baseRegNr][%STARTPOINT]
+				bEnd   = baseRegions[baseRegNr][%ENDPOINT]
+				newOff = 0
+				for(regNr = 0; regNr < regCnt; regNr += 1)
+					rStart = regions[regNr][%STARTPOINT] + offsets[setNr]
+					rEnd   = regions[regNr][%ENDPOINT]   + offsets[setNr]
+
+					if(bEnd <= rStart)
+						break
+					elseif(rEnd <= bStart)
+						continue
+					elseif(bStart < rEnd && rStart < bEnd)
+						newOff = max(newOff, bEnd - rStart)
+					endif
+				endfor
+				offsets[setNr] += newOff
+				overlap = overlap | newOff
+			endfor
+		while(overlap)
+
+		if(yoked || setNr < numSets - 1)
+			Redimension/N=(baseRegCnt + regCnt, -1) baseRegions
+			baseRegions[baseRegCnt,][] = regions[p - baseRegCnt][q] + offsets[setNr]
+			SortColumns/KNDX={0} sortWaves={baseRegions}
+			WAVE baseRegions1 = OOD_CompactRegions(baseRegions)
+			WAVE baseRegions = baseRegions1
+		endif
+	endfor
+
+	return offsets
+End
+
+/// @brief Calculated the offsets for normal acquisition and yoked mode
+/// @param[in] panelTitle title of the device panel
+/// @param[in] params     OOdDAQParams structure with oodDAQ setup data
+static Function OOD_CalculateOffsetsYoked(panelTitle, params)
+	string panelTitle
+	STRUCT OOdDAQParams &params
+
+	variable resolution
+
+	WAVE setRegions = OOD_GetRegionsFromStimsets(params)
+	Make/FREE/N=0 params.preload
+
+	// normal acquisition
+	if(!DeviceHasFollower(panelTitle) && !DeviceIsFollower(panelTitle))
+		WAVE params.offsets = OOD_CalculateOffsets(setRegions, params.preload, 0)
+
+	else
+
+		if(DeviceHasFollower(panelTitle))
+			KillOrMoveToTrash(dfr=GetDistDAQFolder())
+		elseif(DeviceIsFollower(panelTitle))
+			OOD_LoadPreload(panelTitle, params)
+		else
+			ASSERT(0, "Impossible case")
+		endif
+
+		WAVE params.offsets = OOD_CalculateOffsets(setRegions, params.preload, 1)
+		OOD_StorePreload(panelTitle, params.preload)
+	endif
+	WAVE/T params.regions = OOD_GetFeatureRegions(setRegions, params.offsets)
+
+#if defined(DEBUGGING_ENABLED)
+	OOD_Debugging(params)
+#endif
+
+End
+
+/// @brief Load the preload data into `params.preload`
+/// @param[in] panelTitle title of the device panel
+/// @param[in] params     OOdDAQParams structure where the data is preloaded into
 static Function OOD_LoadPreload(panelTitle, params)
 	string panelTitle
 	STRUCT OOdDAQParams &params
@@ -71,6 +283,8 @@ static Function OOD_LoadPreload(panelTitle, params)
 End
 
 /// @brief Store the preload data so that the next device can use it.
+/// @param[in] panelTitle title of the device panel
+/// @param[in] preload    wave that is stored containing the preload data
 static Function OOD_StorePreload(panelTitle, preload)
 	string panelTitle
 	WAVE preload
@@ -87,7 +301,11 @@ static Function OOD_StorePreload(panelTitle, preload)
 	Duplicate/O preload, preloadPerm
 End
 
-/// @brief Return a list with `$first-$last` added
+/// @brief Return a list with `$first-$last` added at the end with `;` as separator
+/// @param[in] first sample point number in wavebuilder scale with start of region
+/// @param[in] last sample point number in wavebuilder scale with end of region
+/// @param[in] list list string where the element is added
+/// @return list string with added element
 static Function/S OOD_AddToRegionList(first, last, list)
 	variable first, last
 	string list
@@ -99,172 +317,8 @@ static Function/S OOD_AddToRegionList(first, last, list)
 	return AddListItem(str, list, ";", INF)
 End
 
-/// @brief Return a text wave with a list marking the feature regions, see
-/// #OOdDAQParams.regions for more info.
-static Function/WAVE OOD_ExtractFeatureRegions(stimSets)
-	WAVE/WAVE stimSets
-
-	variable numSets, start, foundLevel, first, last, i, pLevel
-	variable dataLength, level, minVal, maxVal
-	string list, str
-
-	numSets = DimSize(stimSets, ROWS)
-	Make/FREE/T/N=(numSets) regions
-
-	for(i = 0; i < numSets; i += 1)
-
-		WAVE stimSet = stimSets[i]
-		dataLength = DimSize(stimSet, ROWS)
-		ASSERT(DimSize(stimSet, COLS) <= 1, "stimSet must be a 1D wave")
-
-		minVal = WaveMin(stimSet)
-		maxVal = WaveMax(stimSet)
-		level = minVal + (maxVal - minVal) * 0.10
-
-		list  = ""
-		first = 0
-		last  = NaN
-		start = 0
-		do
-			FindLevel/Q/P/R=[start] stimSet, level
-			foundLevel = !V_Flag
-			pLevel     = ceil(V_levelX)
-
-			if(!foundLevel || start >= dataLength || pLevel >= dataLength)
-				break
-			endif
-
-			if(V_rising)
-				first = pLevel
-			else
-				last  = pLevel
-				ASSERT(IsFinite(first), "Expected to have found an rising edge already")
-				list  = OOD_AddToRegionList(first, last, list)
-				first = NaN
-				last  = NaN
-			endif
-
-			start = pLevel
-		while(1)
-
-		// no falling edge as last level crossing
-		if(IsFinite(first))
-			last = dataLength - 1
-			list = OOD_AddToRegionList(first, last, list)
-		endif
-
-		regions[i] = list
-	endfor
-
-	return regions
-End
-
-/// @brief Find the offsets for the optimized overlap dDAQ mode
-///
-/// Given are `n` stimsets to align.
-///
-/// Classic dDAQ:
-/// 	- One set after another
-/// 	- The sets can have vertical space in between, configured with the dDAQ delay
-/// 	- Not possible to shift the sets so that they overlap
-///
-/// Optimized overlap dDAQ:
-///    - Allow sets to overlap
-///    - User determines how much space in ms (pre and post feature time) should be between various
-///      features of the sets
-///    - Find the total offset in points of each set which minimizes the total length of the combined
-///      sets
-static Function OOD_CalculateOffsets(params)
-	STRUCT OOdDAQParams &params
-
-	variable offset, i, j, numSets, maxDataLength, stimSetFeaturePos
-	variable dataLength, previousOffset, step, offsetToTest, accLength, preLoadLength
-	string msg, key
-
-	numSets = DimSize(params.stimSets, ROWS)
-	ASSERT(numSets >= 1, "Unexpected number of sets")
-
-	WAVEClear params.offsets
-
-	Make/D/FREE/N=(numSets) offsets = 0
-
-	Make/FREE/N=(numSets) dataLengths = DimSize(params.stimSets[p], ROWS)
-	maxDataLength = WaveMax(dataLengths)
-
-	if(WaveExists(params.preload))
-		preloadLength = DimSize(params.preload, ROWS)
-		maxDataLength = max(maxDataLength, preLoadLength)
-	endif
-
-	accLength = (numSets + 1) * maxDataLength
-	Make/FREE/R/N=(accLength) acc
-	FastOp acc = 0
-
-	WAVE smearedStimSet = params.stimSetsSmeared[0]
-	// all stim sets have the same delta x
-	step = 1 / DimDelta(smearedStimSet, ROWS) * params.resolution
-
-	// try to place the i-th smearedStimset into the (i - 1)-th smearedStimset
-	for(i = 0; i < numSets; i += 1)
-
-		WAVE smearedStimSet = params.stimSetsSmeared[i]
-		ASSERT(DimSize(smearedStimSet, COLS) <= 1, "Stim set must have only one column")
-
-		WAVE/Z smearedStimSetPrevious = $""
-
-		if(i > 0)
-			WAVE smearedStimSetPrevious = params.stimSetsSmeared[i - 1]
-			previousOffset = offsets[i - 1]
-		elseif(WaveExists(params.preload))
-			WAVE smearedStimSetPrevious = params.preload
-			previousOffset = 0
-		endif
-
-		if(WaveExists(smearedStimSetPrevious))
-			dataLength = DimSize(smearedStimSetPrevious, ROWS)
-			Multithread acc[previousOffset, previousOffset + dataLength - 1] += smearedStimSetPrevious[p - previousOffset]
-		endif
-
-		// ignore the feature-less begin of the stim set if present
-		FindValue/V=1/T=0.1/Z smearedStimSet
-		if(V_Value < 1)
-			stimSetFeaturePos = 0
-		else
-			stimSetFeaturePos = V_Value - 1
-		endif
-
-		offset = NaN
-		// 0th optimization: coarse search in steps of `params.resolution` ms
-		for(j = 0; j < accLength; j += step)
-
-			// 1st optimization: Search continues at the next zero
-			FindValue/V=0/S=(j)/T=0.1/Z acc
-			ASSERT(V_Value != -1, "Invalid acc without zero")
-			j = V_Value
-
-			if(j > stimSetFeaturePos)
-				offsetToTest = j - stimSetFeaturePos
-			else
-				offsetToTest = j
-			endif
-
-			if(!OOD_Optimizer(acc, smearedStimSet, offsetToTest))
-				// found a good offset in ms
-				offset = offsetToTest
-				break
-			endif
-		endfor
-
-		sprintf msg, "Found good offset at %g\r", offset
-		DEBUGPRINT(msg)
-
-		offsets[i] = offset
-	endfor
-
-	WAVE params.offsets = offsets
-End
-
-/// @brief Prints various internals useful for oodDAQ debugging
+/// @brief Prints various internals useful for oodDAQ debugging, called when DEBUGGING_ENABLED is set
+/// @param[in] params OOdDAQParams structure with oodDAQ internals
 static Function OOD_Debugging(params)
 	STRUCT OOdDAQParams &params
 
@@ -283,14 +337,6 @@ static Function OOD_Debugging(params)
 		Duplicate wv[i], dfr:$("stimSetAndOffset" + num2str(i))/Wave=result
 		CopyScales/P params.stimSets[i], result
 
-		WAVE smearedOrig = params.stimSetsSmeared[i]
-		Duplicate smearedOrig, dfr:$("smeared" + num2str(i))/Wave=smeared
-		CopyScales/P params.stimSets[i], smeared
-
-		WAVE smearedAndOffsetOrig = params.stimSetsSmearedAndOffset[i]
-		Duplicate smearedAndOffsetOrig, dfr:$("smearedAndOffset" + num2str(i))/Wave=smearedAndOffset
-		CopyScales/P params.stimSets[i], smearedAndOffset
-
 		Duplicate stimSetsSingleColumn[i], dfr:$("stimSet" + num2str(i))/Wave=stimSetCopy
 		CopyScales/P params.stimSets[i], stimSetCopy
 	endfor
@@ -306,177 +352,14 @@ static Function OOD_Debugging(params)
 	print params.setColumns
 End
 
-/// @brief Fitting function for optimized overlap dDAQ
-///
-/// Determines if `stimSet` can be placed without overlap into `baseStimSet`
-/// with the given `offset` in points. For performance reason a length of
-/// #OOD_BLOCK_SIZE points is checked at a time.
-///
-/// @return 1 if the stimsets would overlap, 0 if there is no overlap
-threadsafe static Function OOD_Optimizer(baseStimSet, stimSet, offset)
-	WAVE baseStimSet, stimSet
-	variable offset
-
-	variable dataLength, endIndex, first, last, i
-
-	dataLength = DimSize(stimSet, ROWS)
-
-	first = round(offset)
-	last  = first + dataLength
-
-	endIndex = OOD_BLOCK_SIZE - 1
-	for(i = first; i < last; i += OOD_BLOCK_SIZE)
-
-		// check for the last iteration
-		// endIndex can be different if BLOCK_SIZE is not a divider of dataLength
-		if(i + OOD_BLOCK_SIZE - first >= dataLength)
-			endIndex = mod(dataLength, OOD_BLOCK_SIZE) - 1
-		endif
-
-		MatrixOP/FREE maxValue = maxval(subrange(baseStimSet, i, i + endIndex, 0, 0) + subrange(stimSet, i - first, i + endIndex - first, 0, 0))
-
-		if(maxValue[0] > 1)
-			return 1
-		endif
-	endfor
-
-	return 0
-End
-
-
-/// @brief Find the offsets for the optimized overlap dDAQ mode including
-/// support for yoking
-///
-/// @sa OOD_CalculateOffsets()
-///
-/// For yoking we sort the lead and follower devices according to their device number.
-/// Each device will use the result of the previous device offset calculation as preloaded data.
-static Function OOD_CalculateOffsetsYoked(panelTitle, params)
-	string panelTitle
-	STRUCT OOdDAQParams &params
-
-	OOD_SmearStimSet(params)
-
-	// normal acquisition
-	if(!DeviceHasFollower(panelTitle) && !DeviceIsFollower(panelTitle))
-		OOD_CalculateOffsets(params)
-
-		OOD_CreateStimSetWithSmear(params)
-		WAVE/T params.regions = OOD_ExtractFeatureRegions(params.stimSetsSmearedAndOffset)
-
-#if defined(DEBUGGING_ENABLED)
-	OOD_Debugging(params)
-#endif
-		return NaN
-	endif
-
-	if(DeviceHasFollower(panelTitle))
-		KillOrMoveToTrash(dfr=GetDistDAQFolder())
-	elseif(DeviceIsFollower(panelTitle))
-		OOD_LoadPreload(panelTitle, params)
-	else
-		ASSERT(0, "Impossible case")
-	endif
-
-	OOD_CalculateOffsets(params)
-
-	OOD_CreateStimSetWithSmear(params)
-	WAVE/T params.regions = OOD_ExtractFeatureRegions(params.stimSetsSmearedAndOffset)
-
-	WAVE preload = OOD_GeneratePreload(params)
-	OOD_StorePreload(panelTitle, preload)
-
-#if defined(DEBUGGING_ENABLED)
-	OOD_Debugging(params)
-#endif
-
-End
-
-/// @brief Extend the edges of the stimsets by the requested time spans.
-///
-/// This can be used for "optimized overlap dDAQ" if you want to have more space
-/// between the features in the stim sets.
-///
-/// Normalizes the returned stimsets to 1 (feature present) and 0 (no feature present).
-static Function OOD_SmearStimSet(params)
-	STRUCT OOdDAQParams &params
-
-	variable i, numLevels, foundLevel, pLevel, preDelayWarnCount, postDelayWarnCount
-	variable dataLength, first, last, start, numSets
-	variable level = 0.25
-	string msg
-
-	numSets = DimSize(params.stimSets, ROWS)
-
-	WAVE/WAVE singleColumnStimsets = DeepCopyWaveRefWave(params.stimSets, dimension=COLS, indexWave=params.setColumns)
-	WAVE/WAVE stimSetsSmeared      = DeepCopyWaveRefWave(singleColumnStimsets)
-
-	for(i = 0; i < numSets; i += 1)
-
-		WAVE stimSetSmeared = stimSetsSmeared[i]
-		// normalize stimsets to 1/0
-		Multithread stimSetSmeared[] = (stimSetSmeared[p] != 0)
-
-		sprintf msg, "Smearing stimSet %s[%d]\r", NameOfWave(params.stimSets[i]), (params.setColumns[i])
-		DEBUGPRINT(msg)
-
-		if(params.preFeaturePoints != 0 || params.postFeaturePoints != 0)
-
-			WAVE stimSet = singleColumnStimsets[i]
-			WaveStats/M=1/Q stimSet
-			level = V_min + 0.10 * (V_max - V_min)
-			dataLength = DimSize(stimSet, ROWS)
-			start = 0
-
-			ASSERT(DimSize(stimSetSmeared, ROWS) == DimSize(stimSet, ROWS), "Row length mismatch")
-			ASSERT(DimSize(stimSet, COLS) <= 1, "StimSet must have only one column")
-
-			do
-				FindLevel/Q/P/R=[start] stimSet, level
-				foundLevel = !V_Flag
-				pLevel     = V_levelX
-
-				if(!foundLevel || start >= dataLength || pLevel >= dataLength)
-					break
-				endif
-
-				if(V_rising)
-					if(pLevel - params.preFeaturePoints < 0 && preDelayWarnCount == 0)
-						printf "Warning: Requested oodDAQ pre delay is longer than the baseline leading up to the pulse train.\r"
-						printf "         Either reduce the duration of the pre delay or (in the WaveBuilder) add more leading baseline.\r"
-						ControlWindowToFront()
-						preDelayWarnCount += 1
-					endif
-
-					first = max(pLevel - params.preFeaturePoints, 0)
-					last  = pLevel
-				else
-					if(pLevel + params.postFeaturePoints > dataLength - 1 && postDelayWarnCount == 0)
-						printf "Warning: Requested oodDAQ post delay is longer than the trailing baseline at the end of the pulse train.\r"
-						printf "         Either reduce the duration of the post delay or (in the WaveBuilder) add more trailing baseline at the end of the pulse train.\r"
-						ControlWindowToFront()
-						postDelayWarnCount += 1
-					endif
-
-					first = pLevel
-					last  = min(pLevel + params.postFeaturePoints, dataLength - 1)
-				endif
-				Multithread stimSetSmeared[first, last] = 1.0
-				start = pLevel + 1
-
-				sprintf msg, "Searched [%g, %g] and found level at %g and %s and will smear from [%g, %g]\r", start, inf, pLevel, SelectString(V_rising, "decreasing", "rising"), first, last
-				DEBUGPRINT(msg)
-			while(1)
-		endif
-	endfor
-
-	WAVE/WAVE params.stimSetsSmeared = stimSetsSmeared
-End
-
 /// @brief Return the oodDAQ optimized stimsets
 ///
 /// The offsets and the regions are returned in `params` and all results are
 /// cached.
+///
+/// @param[in] panelTitle title of the device panel
+/// @param[in] params     OOdDAQParams structure with the initial settings
+/// @return one dimensional numberic wave with the offsets in points for each stimset
 Function/WAVE OOD_GetResultWaves(panelTitle, params)
 	string panelTitle
 	STRUCT OOdDAQParams &params
@@ -513,7 +396,9 @@ End
 /// @brief Generate a stimset for "overlapped dDAQ" from the calculated offsets
 ///        by OOD_CalculateOffsets().
 ///
-/// @return stimset with offsets, one wave per offset
+/// @param[in] params OOdDAQParams structure with the stimsets and offset information
+///
+/// @return stimsets with offsets, one wave per offset
 static Function/Wave OOD_CreateStimSet(params)
 	STRUCT OOdDAQParams &params
 

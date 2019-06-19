@@ -118,7 +118,6 @@ static Constant ITI_LOCAL         = 15                      ///< Inter-trial-int
 /// @name Initial settings for oodDAQ stimulation
 ///@{
 static Constant POST_DELAY = 150									 ///< Delay after stimulation event in which no other event can occur in ms
-static Constant RESOLUTION = 25									 ///< Resolution of oodDAQ protocol in ms
 ///@}
 
 Function TestAnalysisFunction_V1(panelTitle, eventType, ITCDataWave, headStage)
@@ -494,7 +493,6 @@ Function InitoodDAQ()
    	PGC_SetAndActivateControl(DEFAULT_DEVICE, "Check_DataAcq_Get_Set_ITI", val = CHECKBOX_UNSELECTED)
 
    	PGC_SetAndActivateControl(DEFAULT_DEVICE, "setvar_DataAcq_dDAQOptOvPost", val = POST_DELAY)
-   	PGC_SetAndActivateControl(DEFAULT_DEVICE,"setvar_DataAcq_dDAQOptOvRes", val = RESOLUTION)
 
 End
 

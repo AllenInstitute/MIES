@@ -1206,7 +1206,7 @@ Function oodDAQRegTests_0()
 
 	// BEGIN CHANGE ME
 	index = 0
-	InitOOdDAQParams(params, stimSet, {0, 0}, 0, 0, 1)
+	InitOOdDAQParams(params, stimSet, {0, 0}, 0, 0)
 	// END CHANGE ME
 
 	WAVE/WAVE stimSet = OOD_GetResultWaves(panelTitle,params)
@@ -1230,7 +1230,7 @@ Function oodDAQRegTests_1()
 
 	// BEGIN CHANGE ME
 	index = 1
-	InitOOdDAQParams(params, stimSet, {1, 0}, 0, 0, 1)
+	InitOOdDAQParams(params, stimSet, {1, 0}, 0, 0)
 	// END CHANGE ME
 
 	WAVE/WAVE stimSet = OOD_GetResultWaves(panelTitle,params)
@@ -1254,7 +1254,7 @@ Function oodDAQRegTests_2()
 
 	// BEGIN CHANGE ME
 	index = 2
-	InitOOdDAQParams(params, stimSet, {0, 1}, 0, 0, 1)
+	InitOOdDAQParams(params, stimSet, {0, 1}, 0, 0)
 	// END CHANGE ME
 
 	WAVE/WAVE stimSet = OOD_GetResultWaves(panelTitle,params)
@@ -1278,7 +1278,7 @@ Function oodDAQRegTests_3()
 
 	// BEGIN CHANGE ME
 	index = 3
-	InitOOdDAQParams(params, stimSet, {0, 0}, 20, 0, 1)
+	InitOOdDAQParams(params, stimSet, {0, 0}, 20, 0)
 	// END CHANGE ME
 
 	WAVE/WAVE stimSet = OOD_GetResultWaves(panelTitle,params)
@@ -1302,7 +1302,7 @@ Function oodDAQRegTests_4()
 
 	// BEGIN CHANGE ME
 	index = 4
-	InitOOdDAQParams(params, stimSet, {0, 0}, 0, 20, 1)
+	InitOOdDAQParams(params, stimSet, {0, 0}, 0, 20)
 	// END CHANGE ME
 
 	WAVE/WAVE stimSet = OOD_GetResultWaves(panelTitle,params)
@@ -1326,7 +1326,7 @@ Function oodDAQRegTests_5()
 
 	// BEGIN CHANGE ME
 	index = 5
-	InitOOdDAQParams(params, stimSet, {0, 0}, 0, 0, 10)
+	InitOOdDAQParams(params, stimSet, {0, 0}, 0, 0)
 	// END CHANGE ME
 
 	WAVE/WAVE stimSet = OOD_GetResultWaves(panelTitle,params)
@@ -1350,7 +1350,7 @@ Function oodDAQRegTests_6()
 
 	// BEGIN CHANGE ME
 	index = 6
-	InitOOdDAQParams(params, stimSet, {0, 1}, 20, 30, 10)
+	InitOOdDAQParams(params, stimSet, {0, 1}, 20, 30)
 	// END CHANGE ME
 
 	WAVE/WAVE stimSet = OOD_GetResultWaves(panelTitle,params)
