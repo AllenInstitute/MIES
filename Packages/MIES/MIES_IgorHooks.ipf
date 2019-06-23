@@ -187,7 +187,16 @@ End
 
 static Function AfterCompiledHook()
 
+	variable modifiedBefore
+
+	ExperimentModified
+	modifiedBefore = V_flag
+
 	ASYNC_Start(threadprocessorCount, disableTask=1)
+
+	if(!modifiedBefore)
+		ExperimentModified 0
+	endif
 End
 
 #endif
