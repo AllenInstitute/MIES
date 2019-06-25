@@ -4129,12 +4129,12 @@ End
 
 /// @brief Return a sorted list of all DA/TTL stim set waves
 ///
-/// @param DAorTTL                  #CHANNEL_TYPE_DAC or #CHANNEL_TYPE_TTL
+/// @param channelType              #CHANNEL_TYPE_DAC or #CHANNEL_TYPE_TTL
 /// @param searchString             search string in wildcard syntax
 /// @param WBstimSetList            [optional] returns the list of stim sets built with the wavebuilder
 /// @param thirdPartyStimSetList    [optional] returns the list of third party stim sets not built with the wavebuilder
-Function/S ReturnListOfAllStimSets(DAorTTL, searchString, [WBstimSetList, thirdPartyStimSetList])
-	variable DAorTTL
+Function/S ReturnListOfAllStimSets(channelType, searchString, [WBstimSetList, thirdPartyStimSetList])
+	variable channelType
 	string searchString
 	string &WBstimSetList
 	string &thirdPartyStimSetList
@@ -4147,11 +4147,7 @@ Function/S ReturnListOfAllStimSets(DAorTTL, searchString, [WBstimSetList, thirdP
 	DFREF saveDFR = GetDataFolderDFR()
 
 	// fetch stim sets created with the WaveBuilder
-	if(!DAorTTL)
-		SetDataFolder GetWBSvdStimSetParamDAPath()
-	else
-		SetDataFolder GetWBSvdStimSetParamTTLPath()
-	endif
+	SetDataFolder GetSetParamFolder(channelType)
 
 	list = Wavelist("WP_" + searchstring, ";", "")
 
@@ -4161,11 +4157,7 @@ Function/S ReturnListOfAllStimSets(DAorTTL, searchString, [WBstimSetList, thirdP
 	endfor
 
 	// fetch third party stim sets
-	if(!DAorTTL)
-		SetDataFolder GetWBSvdStimSetDAPath()
-	else
-		SetDataFolder GetWBSvdStimSetTTLPath()
-	endif
+	SetDataFolder GetSetFolder(channelType)
 
 	list = Wavelist(searchstring, ";", "")
 	numWaves = ItemsInList(list)
@@ -4188,7 +4180,7 @@ Function/S ReturnListOfAllStimSets(DAorTTL, searchString, [WBstimSetList, thirdP
 
 	list = SortList(listInternal + listThirdParty, ";", 16)
 
-	if(!DAorTTL)
+	if(channelType == CHANNEL_TYPE_DAC)
 		list = AddListItem(STIMSET_TP_WHILE_DAQ, list, ";", 0)
 	endif
 
