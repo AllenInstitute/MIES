@@ -35,7 +35,8 @@
 /// Post Sweep   After each sweep (before possible ITI pause)   None
 /// Post Set     After a *full* set has been acquired           This event is not always reached as the user might not acquire all steps
 ///                                                             of a set or indexing on multiple headstages is used.
-/// Post DAQ     After all DAQ has been finished                None
+/// Post DAQ     After DAQ has finished and before potential    None
+///              "TP after DAQ"
 /// =========== ============================================== ===============================================================
 ///
 /// \endrst
@@ -43,6 +44,7 @@
 /// Useful helper functions are defined in MIES_AnalysisFunctionHelpers.ipf.
 ///
 /// The Post/Pre Sweep/Set/DAQ functions are *not* executed if a currently running sweep is aborted.
+/// Changing the stimset in the Post DAQ event is only possible without indexing active.
 ///
 /// @anchor AnalysisFunctionReturnTypes Analysis function return types
 ///

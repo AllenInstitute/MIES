@@ -1296,12 +1296,12 @@ Function DAP_OneTimeCallAfterDAQ(panelTitle, [forcedStop, startTPAfterDAQ])
 
 	DAP_ResetGUIAfterDAQ(panelTitle)
 
+	NVAR dataAcqRunMode = $GetDataAcqRunMode(panelTitle)
+	dataAcqRunMode = DAQ_NOT_RUNNING
+
 	if(!forcedStop)
 		AFM_CallAnalysisFunctions(panelTitle, POST_DAQ_EVENT)
 	endif
-
-	NVAR dataAcqRunMode = $GetDataAcqRunMode(panelTitle)
-	dataAcqRunMode = DAQ_NOT_RUNNING
 
 #if (IgorVersion() < 8.00)
 	StopAsyncIfDone()
