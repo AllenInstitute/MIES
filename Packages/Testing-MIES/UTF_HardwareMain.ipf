@@ -18,6 +18,7 @@
 #include "UTF_MultiPatchSeqFastRheoEstimate"
 #include "UTF_MultiPatchSeqDAScale"
 #include "UTF_TestNWBExportV1"
+#include "UTF_Epochs"
 
 Function run()
 
@@ -33,6 +34,7 @@ Function run()
 	list = AddListItem("UTF_PatchSeqRamp.ipf", list)
 	list = AddListItem("UTF_MultiPatchSeqFastRheoEstimate.ipf", list)
 	list = AddListItem("UTF_MultiPatchSeqDAScale.ipf", list)
+	list = AddListItem("UTF_Epochs.ipf", list)
 
 	RunTest(list, name = "MIES with Hardware", enableJU = 1, allowDebug = 0)
 End
