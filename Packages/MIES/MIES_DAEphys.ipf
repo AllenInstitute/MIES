@@ -842,9 +842,6 @@ Function DAP_SetVarProc_Channel_Search(sva) : SetVariableControl
 			ASSERT(!DAP_ParsePanelControl(ctrl, channelIndex, channelType, channelControl), "Invalid control format")
 			DAG_Update(sva.win, sva.ctrlName, val = sva.dval, str = sva.sval)
 
-			DFREF saveDFR = GetDataFolderDFR()
-			SetDataFolder GetSetFolder(channelType)
-
 			if(isEmpty(varstr))
 				searchString = GetSearchStringForChannelType(channelType)
 			else
@@ -852,9 +849,8 @@ Function DAP_SetVarProc_Channel_Search(sva) : SetVariableControl
 				searchString = varStr
 			endif
 
+			listOfWaves = ReturnListOfAllStimSets(channelType, searchString)
 			popupValue = DAP_FormatStimSetPopupValue(channelType, searchString)
-			listOfWaves = WaveList(searchString, ";", "")
-			SetDataFolder saveDFR
 
 			if(DAP_IsAllControl(channelIndex))
 				first = 0
