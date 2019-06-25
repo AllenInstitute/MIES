@@ -4141,7 +4141,7 @@ Function/S ReturnListOfAllStimSets(channelType, searchString, [WBstimSetList, th
 
 	variable i, numWaves
 	string list, item
-	string listInternal   = ""
+	string listInternal
 	string listThirdParty = ""
 
 	DFREF saveDFR = GetDataFolderDFR()
@@ -4150,11 +4150,7 @@ Function/S ReturnListOfAllStimSets(channelType, searchString, [WBstimSetList, th
 	SetDataFolder GetSetParamFolder(channelType)
 
 	list = Wavelist("WP_" + searchstring, ";", "")
-
-	numWaves = ItemsInList(list)
-	for(i = 0; i < numWaves; i += 1)
-		listInternal = AddListItem(RemovePrefix(StringFromList(i, list), startStr="WP_"), listInternal, ";", Inf)
-	endfor
+	listInternal = RemovePrefixFromListItem("WP_", list)
 
 	// fetch third party stim sets
 	SetDataFolder GetSetFolder(channelType)
