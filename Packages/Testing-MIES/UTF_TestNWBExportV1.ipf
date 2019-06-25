@@ -523,6 +523,7 @@ Function/S TestFileExport()
 	KillOrMoveToTrash(dfr = GetAnalysisFolder())
 
 	NWB_ExportAllData(compressionMode = IPNWB#GetNoCompression(), writeStoredTestPulses = 1)
+	CloseNWBFile()
 
 	GetFileFolderInfo/P=home/Q/Z nwbFile
 	CHECK(V_IsFile)
