@@ -4261,3 +4261,25 @@ Function DeleteWavePoint(wv, dim, index)
 	   ASSERT(0, "index out of range")
    endif
 End
+
+/// @brief Converts a number to a string with specified precision (digits after decimal dot).
+/// This function is an extension for the regular num2str that is limited to 5 digits.
+/// Input numbers are rounded using the "round-half-to-even" rule to the given precision.
+/// The default precision is 5.
+/// If val is complex only the real part is converted to a string.
+/// @param[in] val       number that should be converted to a string
+/// @param[in] precision [optional, default 5] number of precision digits after the decimal dot using "round-half-to-even" rounding rule.
+///                      Precision must be in the range 0 to 15.
+/// @return string with textual number representation
+Function/S num2strHighPrec(val, [precision])
+	variable val, precision
+
+	string str
+
+	precision = ParamIsDefault(precision) ? 5 : precision
+	ASSERT(precision >= 0 && precision <= 15, "Invalid precision, must be >= 0 and <= 15.")
+
+	sprintf str, "%.*f", precision, val
+
+	return str
+End

@@ -2282,3 +2282,103 @@ Function TextWaveToListWorks5()
 	CHECK_EQUAL_STR(list, refList)
 End
 /// @}
+
+/// num2strHighPrec
+/// @{
+
+/// @brief Fail due to negative precision
+Function num2strHighPrecFail0()
+
+	variable err
+
+	try
+		num2strHighPrec(NaN, precision = -1)
+		FAIL()
+	catch
+		err = getRTError(1)
+		PASS()
+	endtry
+End
+
+/// @brief Fail due to too high precision
+Function num2strHighPrecFail1()
+
+	variable err
+
+	try
+		num2strHighPrec(NaN, precision = 16)
+		FAIL()
+	catch
+		err = getRTError(1)
+		PASS()
+	endtry
+End
+
+/// @brief default
+Function num2strHighPrecWorks0()
+
+	string sref = "1.66667"
+	string s = num2strHighPrec(1.6666666)
+	CHECK_EQUAL_STR(s, sref)
+End
+
+/// @brief precision 0
+Function num2strHighPrecWorks1()
+
+	string sref = "2"
+	string s = num2strHighPrec(1.6666666, precision = 0)
+	CHECK_EQUAL_STR(s, sref)
+End
+
+/// @brief precision 15
+Function num2strHighPrecWorks2()
+
+//                  123456789012345
+	string sref = "1.666666666666667"
+//                              1234567890123456
+	string s = num2strHighPrec(1.6666666666666666, precision = 15)
+	CHECK_EQUAL_STR(s, sref)
+End
+
+/// @brief correct rounding of 1.5 -> 2 and 2.5 -> 2 with precision 0
+Function num2strHighPrecWorks3()
+
+	string sref = "2"
+	string s = num2strHighPrec(1.5, precision = 0)
+	CHECK_EQUAL_STR(s, sref)
+
+	s = num2strHighPrec(2.5, precision = 0)
+	CHECK_EQUAL_STR(s, sref)
+
+	sref = "-2"
+	s = num2strHighPrec(-2.5, precision = 0)
+	CHECK_EQUAL_STR(s, sref)
+	s = num2strHighPrec(-1.5, precision = 0)
+	CHECK_EQUAL_STR(s, sref)
+End
+
+/// @brief special cases nan, inf, -inf
+Function num2strHighPrecWorks4()
+
+	string sref = "nan"
+	string s = num2strHighPrec(NaN)
+	CHECK_EQUAL_STR(s, sref)
+
+	sref = "inf"
+	s = num2strHighPrec(Inf)
+	CHECK_EQUAL_STR(s, sref)
+
+	sref = "-inf"
+	s = num2strHighPrec(-Inf)
+	CHECK_EQUAL_STR(s, sref)
+End
+
+/// @brief Only real part of complex is returned
+Function num2strHighPrecWorks5()
+
+	variable/C c = cmplx(Inf, NaN)
+	string sref = "inf"
+	string s = num2strHighPrec(c)
+	CHECK_EQUAL_STR(s, sref)
+End
+/// @}
