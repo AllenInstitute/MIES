@@ -120,8 +120,6 @@ Enable ooDAQ = Yes
 
 ooDAQ post sweep delay (ms) = 150
 
-ooDAQ resolution (ms) = 25
-
 User onset delay (ms) = 500
 
 Termination delay (ms) = 1000
