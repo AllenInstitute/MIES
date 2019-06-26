@@ -829,7 +829,7 @@ Function DAP_SetVarProc_Channel_Search(sva) : SetVariableControl
 	variable i, isCustomSearchString
 	string ctrl, searchString, str
 	string popupValue, listOfWaves
-	string panelTitle, varstr
+	string panelTitle, varstr, sel
 
 	switch(sva.eventCode)
 		case 1: // mouse up
@@ -854,9 +854,13 @@ Function DAP_SetVarProc_Channel_Search(sva) : SetVariableControl
 
 			ctrl = GetPanelControl(channelIndex, channelType, CHANNEL_CONTROL_WAVE)
 			PopupMenu $ctrl win=$panelTitle, value=#popupValue, userdata(MenuExp)=listOfWaves
+			sel = GetPopupMenuString(panelTitle, ctrl)
+			PopupMenu $ctrl win=$panelTitle, popmatch=sel
 
 			ctrl = GetPanelControl(channelIndex, channelType, CHANNEL_CONTROL_INDEX_END)
 			PopupMenu $ctrl win=$panelTitle, value=#popupValue
+			sel = GetPopupMenuString(panelTitle, ctrl)
+			PopupMenu $ctrl win=$panelTitle, popmatch=sel
 
 			if(DAP_IsAllControl(channelIndex))
 				for(i = 0; i < GetNumberFromType(var=channelType); i += 1)
@@ -872,9 +876,13 @@ Function DAP_SetVarProc_Channel_Search(sva) : SetVariableControl
 
 					ctrl = GetPanelControl(i, channelType, CHANNEL_CONTROL_WAVE)
 					PopupMenu $ctrl win=$panelTitle, value=#popupValue, userdata(MenuExp)=listOfWaves
+					sel = GetPopupMenuString(panelTitle, ctrl)
+					PopupMenu $ctrl win=$panelTitle, popmatch=sel
 
 					ctrl = GetPanelControl(i, channelType, CHANNEL_CONTROL_INDEX_END)
 					PopupMenu $ctrl win=$panelTitle, value=#popupValue
+					sel = GetPopupMenuString(panelTitle, ctrl)
+					PopupMenu $ctrl win=$panelTitle, popmatch=sel
 				endfor
 			endif
 			break
