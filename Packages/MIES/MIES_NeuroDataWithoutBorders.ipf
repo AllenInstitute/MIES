@@ -377,8 +377,6 @@ Function NWB_ExportAllData([overrideFilePath, writeStoredTestPulses, writeIgorHi
 	if(writeIgorHistory)
 		NWB_AppendIgorHistory(locationID)
 	endif
-
-	CloseNWBFile()
 End
 
 Function NWB_ExportAllStimsets([overrideFilePath])
@@ -464,6 +462,8 @@ Function NWB_ExportWithDialog(exportType)
 	else
 		ASSERT(0, "unexpected exportType")
 	endif
+
+	CloseNWBFile()
 End
 
 /// @brief Write the stored test pulses to the NWB file
