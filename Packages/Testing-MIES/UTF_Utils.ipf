@@ -2382,3 +2382,126 @@ Function num2strHighPrecWorks5()
 	CHECK_EQUAL_STR(s, sref)
 End
 /// @}
+
+/// ListToTextWaveMD
+/// @{
+
+/// @brief Fail due to null string
+Function ListToTextWaveMDFail0()
+	string uninitialized
+	variable err
+
+	try
+		WAVE/T t = ListToTextWaveMD(uninitialized, 1)
+		FAIL()
+	catch
+		err = getRTError(1)
+		PASS()
+	endtry
+End
+
+/// @brief Fail due to wrong dims
+Function ListToTextWaveMDFail1()
+	try
+		WAVE/T t = ListToTextWaveMD("", 0)
+		FAIL()
+	catch
+		PASS()
+	endtry
+
+	try
+		WAVE/T t = ListToTextWaveMD("", 5)
+		FAIL()
+	catch
+		PASS()
+	endtry
+End
+
+/// @brief empty list to empty wave
+Function ListToTextWaveMDWorks10()
+
+	Make/FREE/T/N=0 ref
+	WAVE/T t = ListToTextWaveMD("", 1)
+	CHECK_EQUAL_WAVES(t, ref)
+End
+
+/// @brief 1D list, default sep
+Function ListToTextWaveMDWorks0()
+
+	Make/FREE/T ref = {"1", "2"}
+	WAVE/T t = ListToTextWaveMD("1;2;", 1)
+	CHECK_EQUAL_WAVES(t, ref)
+End
+
+/// @brief 2D list, default sep
+Function ListToTextWaveMDWorks1()
+
+	Make/FREE/T ref = {{"1", "3"} , {"2", "4"}}
+	WAVE/T t = ListToTextWaveMD("1,2,;3,4,;", 2)
+	CHECK_EQUAL_WAVES(t, ref)
+End
+
+/// @brief 2D list, default sep, short sub list 0
+Function ListToTextWaveMDWorks9()
+
+	Make/FREE/T ref = {{"1", "3"} , {"2", ""}}
+	WAVE/T t = ListToTextWaveMD("1,2,;3,;", 2)
+	CHECK_EQUAL_WAVES(t, ref)
+End
+
+/// @brief 3D list, default sep
+Function ListToTextWaveMDWorks2()
+
+	Make/FREE/T ref = {{{"1", "5"} , {"3", "7"}}, {{"2", "6"} , {"4", "8"}}}
+	WAVE/T t = ListToTextWaveMD("1:2:,3:4:,;5:6:,7:8:,;", 3)
+	CHECK_EQUAL_WAVES(t, ref)
+End
+
+/// @brief 3D list, default sep, short sub list 0
+Function ListToTextWaveMDWorks7()
+
+	Make/FREE/T ref = {{{"1", "5"} , {"3", ""}}, {{"2", "6"} , {"4", ""}}}
+	WAVE/T t = ListToTextWaveMD("1:2:,3:4:,;5:6:,;", 3)
+	CHECK_EQUAL_WAVES(t, ref)
+End
+
+/// @brief 3D list, default sep, short sub list 1
+Function ListToTextWaveMDWorks8()
+
+	Make/FREE/T ref = {{{"1", "5"} , {"3", "7"}}, {{"2", "6"} , {"4", ""}}}
+	WAVE/T t = ListToTextWaveMD("1:2:,3:4:,;5:6:,7:,;", 3)
+	CHECK_EQUAL_WAVES(t, ref)
+End
+
+/// @brief 4D list, default sep
+Function ListToTextWaveMDWorks3()
+
+	Make/FREE/T ref = {{{{"1", "9"} , {"5", "13"}}, {{"3", "11"} , {"7", "15"}}}, {{{"2", "10"} , {"6", "14"}}, {{"4", "12"} , {"8", "16"}}}}
+	WAVE/T t = ListToTextWaveMD("1/2/:3/4/:,5/6/:7/8/:,;9/10/:11/12/:,13/14/:15/16/:,;", 4)
+	CHECK_EQUAL_WAVES(t, ref)
+End
+
+/// @brief 4D list, default sep, short sub list 0
+Function ListToTextWaveMDWorks4()
+
+	Make/FREE/T ref = {{{{"1", "9"} , {"5", ""}}, {{"3", "11"} , {"7", ""}}}, {{{"2", "10"} , {"6", ""}}, {{"4", "12"} , {"8", ""}}}}
+	WAVE/T t = ListToTextWaveMD("1/2/:3/4/:,5/6/:7/8/:,;9/10/:11/12/:;", 4)
+	CHECK_EQUAL_WAVES(t, ref)
+End
+
+/// @brief 4D list, default sep, short sub list 1
+Function ListToTextWaveMDWorks5()
+
+	Make/FREE/T ref = {{{{"1", "9"} , {"5", "13"}}, {{"3", "11"} , {"7", ""}}}, {{{"2", "10"} , {"6", "14"}}, {{"4", "12"} , {"8", ""}}}}
+	WAVE/T t = ListToTextWaveMD("1/2/:3/4/:,5/6/:7/8/:,;9/10/:11/12/:,13/14/:,;", 4)
+	CHECK_EQUAL_WAVES(t, ref)
+End
+
+/// @brief 4D list, default sep, short sub list 2
+Function ListToTextWaveMDWorks6()
+
+	Make/FREE/T ref = {{{{"1", "9"} , {"5", "13"}}, {{"3", "11"} , {"7", "15"}}}, {{{"2", "10"} , {"6", "14"}}, {{"4", "12"} , {"8", ""}}}}
+	WAVE/T t = ListToTextWaveMD("1/2/:3/4/:,5/6/:7/8/:,;9/10/:11/12/:,13/14/:15/:,;", 4)
+	CHECK_EQUAL_WAVES(t, ref)
+End
+/// @}
