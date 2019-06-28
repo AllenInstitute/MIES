@@ -4096,35 +4096,46 @@ Function GetIndexForHeadstageIndepData(numericalValues)
 	return DimSize(numericalValues, LAYERS) == NUM_HEADSTAGES ? 0 : INDEP_HEADSTAGE
 End
 
-/// @brief Get the TTL stim sets from the labnotebook
+/// @brief Return a list of TTL stimsets which are indexed by DAEphys TTL channels
+///
+/// The indexing here is **hardware independent**.
+/// For ITC hardware the assertion "log(ttlBit)/log(2) == DAEphys TTL channel" holds.
+///
 /// @param numericalValues Numerical labnotebook values
 /// @param textualValues   Text labnotebook values
 /// @param sweep           Sweep number
-/// @param channel         TTL channel
-///
-/// @return list of stim sets, empty entries for non active TTL bits
-Function/S GetTTLStimSets(numericalValues, textualValues, sweep, channel)
-	WAVE numericalValues
-	WAVE/T textualValues
-	variable sweep, channel
+Function/WAVE GetTTLStimSets(numericalValues, textualValues, sweep)
+	WAVE numericalValues, textualValues
+	variable sweep
 
-	variable index = GetIndexForHeadstageIndepData(numericalValues)
+	variable index
 
-	WAVE/Z ttlRackZeroChannel = GetLastSetting(numericalValues, sweep, "TTL rack zero channel", DATA_ACQUISITION_MODE)
-	WAVE/Z ttlRackOneChannel  = GetLastSetting(numericalValues, sweep, "TTL rack one channel", DATA_ACQUISITION_MODE)
-	WAVE/Z ttlChannels        = GetLastSetting(textualValues, sweep, "TTL channels", DATA_ACQUISITION_MODE)
+	index = GetIndexForHeadstageIndepData(numericalValues)
 
-	if(WaveExists(ttlChannels))
+	WAVE/T/Z ttlStimsets = GetLastSetting(textualValues, sweep, "TTL stim sets", DATA_ACQUISITION_MODE)
+	WAVE/T/Z ttlStimsetsRackZero = GetLastSetting(textualValues, sweep, "TTL rack zero stim sets", DATA_ACQUISITION_MODE)
+	WAVE/T/Z ttlStimsetsRackOne = GetLastSetting(textualValues, sweep, "TTL rack one stim sets", DATA_ACQUISITION_MODE)
+
+	if(WaveExists(ttlStimsets))
+		// NI hardware
 		WAVE/T ttlStimsets = GetLastSetting(textualValues, sweep, "TTL stim sets", DATA_ACQUISITION_MODE)
-	elseif(WaveExists(ttlRackZeroChannel) && ttlRackZeroChannel[index] == channel)
-		WAVE/T ttlStimsets = GetLastSetting(textualValues, sweep, "TTL rack zero stim sets", DATA_ACQUISITION_MODE)
-	elseif(WaveExists(ttlRackOneChannel) && ttlRackOneChannel[index] == channel)
-		WAVE/T ttlStimsets = GetLastSetting(textualValues, sweep, "TTL rack one stim sets", DATA_ACQUISITION_MODE)
-	else
-		return ""
+		return ListToTextWave(ttlStimsets[index], ";")
+	elseif(WaveExists(ttlStimsetsRackZero) || WaveExists(ttlStimsetsRackOne))
+		// ITC hardware
+		Make/FREE/T/N=(NUM_DA_TTL_CHANNELS) entries
+		if(WaveExists(ttlStimsetsRackZero))
+			entries += StringFromList(p, ttlStimsetsRackZero[index])
+		endif
+
+		if(WaveExists(ttlStimsetsRackOne))
+			entries += StringFromList(p, ttlStimsetsRackOne[index])
+		endif
+
+		return entries
 	endif
 
-	return ttlStimSets[index]
+	// no TTL entries
+	return $""
 End
 
 /// @brief Return a sorted list of all DA/TTL stim set waves

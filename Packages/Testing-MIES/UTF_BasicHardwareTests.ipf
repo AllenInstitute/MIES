@@ -2160,6 +2160,9 @@ Function UnassociatedChannels_REENTRY([str])
 
 			WAVE TTLs = GetTTLListFromConfig(config)
 
+			WAVE/Z ttlStimSets = GetTTLstimSets(numericalValues, textualValues, j)
+			CHECK_EQUAL_TEXTWAVES(ttlStimSets, {"", "StimulusSetA_TTL_0", "", "StimulusSetB_TTL_0", "", "", "", ""})
+
 			switch(GetHardwareType(device))
 				case HARDWARE_ITC_DAC:
 					// check TTL LBN keys

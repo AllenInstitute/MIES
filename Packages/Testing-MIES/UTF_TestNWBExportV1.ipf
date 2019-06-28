@@ -284,7 +284,7 @@ Function TestTimeSeries(fileID, device, groupID, channel, sweep, pxpSweepsDFR)
 	variable channelGroupID, num_samples, starting_time, session_start_time, actual, scale, scale_ref
 	variable clampMode, gain, gain_ref, resolution, conversion
 	string stimulus, stimulus_expected, neurodata_type_ref, neurodata_type, channelName
-	string electrode_name, electrode_name_ref, key, unit_ref, unit, base_unit_ref, TTLStimsets
+	string electrode_name, electrode_name_ref, key, unit_ref, unit, base_unit_ref
 
 	STRUCT IPNWB#ReadChannelParams params
 	IPNWB#InitReadChannelParams(params)
@@ -316,12 +316,13 @@ Function TestTimeSeries(fileID, device, groupID, channel, sweep, pxpSweepsDFR)
 	elseif(params.channelType == ITC_XOP_CHANNEL_TYPE_ADC && IsNaN(params.electrodeNumber)) // unassoc AD
 		stimulus_expected = "PLACEHOLDER"
 	elseif(params.channelType == ITC_XOP_CHANNEL_TYPE_TTL)
-		TTLStimsets = GetTTLStimSets(numericalValues, textualValues, sweep, params.channelNumber)
+		WAVE/T/Z TTLStimsets = GetTTLStimSets(numericalValues, textualValues, sweep)
+		CHECK_WAVE(TTLStimsets, TEXT_WAVE)
 
 		if(IsNaN(params.ttlBit))
-			stimulus_expected = StringFromList(params.channelNumber, TTLStimsets)
+			stimulus_expected = TTLStimsets[params.channelNumber]
 		else
-			stimulus_expected = StringFromList(log(params.ttlBit)/log(2), TTLStimsets)
+			stimulus_expected = TTLStimsets[log(params.ttlBit)/log(2)]
 		endif
 	else
 		WAVE/Z/T wvText = GetLastSetting(textualValues, sweep, "Stim Wave Name", DATA_ACQUISITION_MODE)
