@@ -70,19 +70,26 @@ Function/S OVS_GetSweepSelectionChoices(win)
 
 	WAVE/T sweepSelChoices = GetOverlaySweepSelectionChoices(dfr)
 
-	Duplicate/FREE/R=[][][0]/T sweepSelChoices, sweepSelectionChoicesStimSets
+	Duplicate/FREE/R=[][][0]/T sweepSelChoices, sweepSelecChoicesDAStimSets
 
 	Make/FREE/T dupsRemovedStimSets
-	FindDuplicates/Z/RT=dupsRemovedStimSets sweepSelectionChoicesStimSets
+	FindDuplicates/Z/RT=dupsRemovedDAStimSets sweepSelecChoicesDAStimSets
 
-	Duplicate/FREE/R=[][][1]/T sweepSelChoices, sweepSelectionChoicesClamp
+	Duplicate/FREE/R=[][][1]/T sweepSelChoices, sweepSelecChoicesTTLStimSets
+
+	Make/FREE/T dupsRemovedStimSets
+	FindDuplicates/Z/RT=dupsRemovedTTLStimSets sweepSelecChoicesTTLStimSets
+
+	Duplicate/FREE/R=[][][2]/T sweepSelChoices, sweepSelecChoicesClamp
 
 	Make/FREE/T dupsRemovedStimSetsClamp
-	FindDuplicates/Z/RT=dupsRemovedStimSetsClamp sweepSelectionChoicesClamp
+	FindDuplicates/Z/RT=dupsRemovedStimSetsClamp sweepSelecChoicesClamp
 
-	return NONE + ";All;\\M1(-;\\M1(DA Stimulus Sets;"           \
-				+ TextWaveToList(dupsRemovedStimSets, ";")       \
-				+ "\\M1(-;\\M1(DA Stimulus Sets and Clamp Mode;" \
+	return NONE + ";All;\\M1(-;\\M1(DA Stimulus Sets;"             \
+				+ TextWaveToList(dupsRemovedDAStimSets, ";")       \
+				+ "\\M1(TTL Stimulus Sets;"                        \
+				+ TextWaveToList(dupsRemovedTTLStimSets, ";")      \
+				+ "\\M1(-;\\M1(DA Stimulus Sets and Clamp Mode;"   \
 				+ TextWaveToList(dupsRemovedStimSetsClamp, ";")
 End
 
@@ -116,7 +123,7 @@ Function OVS_UpdatePanel(win, listBoxWave, listBoxSelWave, sweepSelectionChoices
 	WAVE/T numericalValues
 
 	variable i, numEntries, sweepNo
-	string ttlStimSets, extPanel
+	string extPanel
 
 	extPanel = BSP_GetPanel(win)
 
@@ -154,6 +161,8 @@ Function OVS_UpdatePanel(win, listBoxWave, listBoxSelWave, sweepSelectionChoices
 	for(i = 0; i < numEntries; i += 1)
 		WAVE/T stimsets = GetLastSetting(allTextualValues[i], sweeps[i], STIM_WAVE_NAME_KEY, DATA_ACQUISITION_MODE)
 		sweepSelectionChoices[i][][%Stimset] = stimsets[q]
+		WAVE/T TTLStimSets = GetTTLstimSets(allNumericalValues[i], allTextualValues[i], sweeps[i])
+		sweepSelectionChoices[i][][%TTLStimSet] = TTLStimSets[q]
 
 		WAVE clampModes = GetLastSetting(allNumericalValues[i], sweeps[i], "Clamp Mode", DATA_ACQUISITION_MODE)
 		sweepSelectionChoices[i][][%StimsetAndClampMode] = SelectString(IsFinite(clampModes[q]), "", stimsets[q] + " (" + ConvertAmplifierModeShortStr(clampModes[q]) + ")")

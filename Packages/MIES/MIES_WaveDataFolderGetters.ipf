@@ -5710,7 +5710,7 @@ End
 Function/WAVE GetOverlaySweepSelectionChoices(dfr)
 	DFREF dfr
 
-	variable versionOfNewWave = 2
+	variable versionOfNewWave = 3
 
 	ASSERT(DataFolderExistsDFR(dfr), "Invalid dfr")
 	string newName = "overlaySweepSelectionChoices"
@@ -5725,12 +5725,13 @@ Function/WAVE GetOverlaySweepSelectionChoices(dfr)
 	if(ExistsWithCorrectLayoutVersion(wv, versionOfNewWave))
 		return wv
 	elseif(WaveExists(wv))
-		Redimension/N=(-1, -1, 2) wv
+		Redimension/N=(-1, -1, 3) wv
 	else
-		Make/T/N=(MINIMUM_WAVE_SIZE, NUM_HEADSTAGES, 2) dfr:$newName/Wave=wv
+		ASSERT(NUM_HEADSTAGES == NUM_DA_TTL_CHANNELS, "Unexpected channel count")
+		Make/T/N=(MINIMUM_WAVE_SIZE, NUM_HEADSTAGES, 3) dfr:$newName/Wave=wv
 	endif
 
-	SetWaveDimLabel(wv, "Stimset;StimsetAndClampMode", LAYERS)
+	SetWaveDimLabel(wv, "Stimset;TTLStimset;StimsetAndClampMode", LAYERS)
 
 	SetWaveVersion(wv, versionOfNewWave)
 	return wv
