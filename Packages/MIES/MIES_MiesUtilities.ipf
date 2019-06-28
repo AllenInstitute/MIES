@@ -4064,7 +4064,7 @@ End
 /// @brief Get the TTL bit mask from the labnotebook
 /// @param numericalValues Numerical labnotebook values
 /// @param sweep           Sweep number
-/// @param channel         TTL channel
+/// @param channel         TTL hardware channel
 Function GetTTLBits(numericalValues, sweep, channel)
 	WAVE numericalValues
 	variable sweep, channel
