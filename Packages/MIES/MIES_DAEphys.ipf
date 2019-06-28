@@ -4539,6 +4539,8 @@ Function DAP_LockDevice(panelTitle)
 
 	DoWindow/W=$panelTitle/C $panelTitleLocked
 
+	KillOrMoveToTrash(wv = GetDA_EphysGuiStateNum(panelTitleLocked))
+	KillOrMoveToTrash(wv = GetDA_EphysGuiStateTxT(panelTitleLocked))
 	// initial fill of the GUI state wave
 	// all other changes are propagated immediately to the GUI state waves
 	DAG_RecordGuiStateNum(panelTitleLocked)
@@ -4693,6 +4695,9 @@ static Function DAP_UnlockDevice(panelTitle)
 	DAP_ResetGUIAfterDAQ(panelTitle)
 	DAP_ToggleTestpulseButton(panelTitle, TESTPULSE_BUTTON_TO_START)
 
+	KillOrMoveToTrash(wv = GetDA_EphysGuiStateNum(panelTitle))
+	KillOrMoveToTrash(wv = GetDA_EphysGuiStateTxT(panelTitle))
+
 	string panelTitleUnlocked = BASE_WINDOW_TITLE
 	if(CheckName(panelTitleUnlocked,CONTROL_PANEL_TYPE))
 		panelTitleUnlocked = UniqueName(BASE_WINDOW_TITLE + "_",CONTROL_PANEL_TYPE,1)
@@ -4747,6 +4752,9 @@ static Function DAP_UnlockDevice(panelTitle)
 
 		KillOrMoveToTrash(wv = GetDeviceMapping())
 	endif
+
+	KillOrMoveToTrash(wv = GetDA_EphysGuiStateNum(panelTitleUnlocked))
+	KillOrMoveToTrash(wv = GetDA_EphysGuiStateTxT(panelTitleUnlocked))
 End
 
 /// @brief Return the number of ITC devices of the given `type`
