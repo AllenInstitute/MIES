@@ -2179,7 +2179,7 @@ Function UnassociatedChannels_REENTRY([str])
 					CHECK_EQUAL_VAR(DimSize(TTLs, ROWS), 1)
 					CHECK_EQUAL_WAVES(channels, {NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, TTLs[0]}, mode = WAVE_DATA)
 					WAVE/Z channels = GetLastSetting(numericalValues, j, "TTL rack one channel", DATA_ACQUISITION_MODE)
-					CHECK_WAVE(bits, NULL_WAVE)
+					CHECK_WAVE(channels, NULL_WAVE)
 
 					// set sweep count
 					WAVE/T/Z sweepCounts = GetLastSetting(textualValues, j, "TTL rack zero set sweep counts", DATA_ACQUISITION_MODE)
