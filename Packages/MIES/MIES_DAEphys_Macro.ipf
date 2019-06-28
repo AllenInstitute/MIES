@@ -11,7 +11,8 @@
 
 Window DA_Ephys() : Panel
 	PauseUpdate; Silent 1		// building window...
-	NewPanel /K=1 /W=(898,54,1402,940)
+	NewPanel /K=1 /W=(108,133,612,1019)
+	SetDrawLayer UserBack
 	ValDisplay valdisp_DataAcq_P_LED_Clear,pos={366.00,297.00},size={84.00,27.00},disable=1
 	ValDisplay valdisp_DataAcq_P_LED_Clear,help={"red:user"},userdata(tabnum)=  "0"
 	ValDisplay valdisp_DataAcq_P_LED_Clear,userdata(tabcontrol)=  "tab_DataAcq_Pressure"
@@ -2409,7 +2410,7 @@ Window DA_Ephys() : Panel
 	TabControl tab_DataAcq_Amp,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Duafnzzzzzzzzzzz"
 	TabControl tab_DataAcq_Amp,userdata(ResizeControlsInfo) += A"zzz!!#u:Duafnzzzzzzzzzzzzzz!!!"
 	TabControl tab_DataAcq_Amp,labelBack=(60928,60928,60928),fSize=10
-	TabControl tab_DataAcq_Amp,tabLabel(0)="\f01\Z11V-Clamp",tabLabel(1)="I-Clamp"
+	TabControl tab_DataAcq_Amp,tabLabel(0)="V-Clamp",tabLabel(1)="\f01\Z11I-Clamp"
 	TabControl tab_DataAcq_Amp,tabLabel(2)="I = 0",value= 0
 	TitleBox Title_DataAcq_Hold_IC,pos={96.00,186.00},size={69.00,15.00},disable=1,title="Holding (pA)"
 	TitleBox Title_DataAcq_Hold_IC,userdata(tabnum)=  "1"
@@ -3332,9 +3333,8 @@ Window DA_Ephys() : Panel
 	PopupMenu IndexEnd_TTL_All,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	PopupMenu IndexEnd_TTL_All,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
 	PopupMenu IndexEnd_TTL_All,mode=1,popvalue="- none -",value= #"\"- none -;\"+ReturnListOfAllStimSets(1,\"*TTL*\")"
-	CheckBox Check_TTL_ALL,pos={18.00,459.00},size={21.00,15.00},disable=1,proc=DAP_CheckProc_Channel_All,title="X"
-	CheckBox Check_TTL_ALL,userdata(tabnum)=  "3"
-	CheckBox Check_TTL_ALL,userdata(tabcontrol)=  "tab_DataAcq_Pressure"
+	CheckBox Check_TTL_ALL,pos={18.00,459.00},size={23.00,15.00},disable=1,proc=DAP_CheckProc_Channel_All,title="X"
+	CheckBox Check_TTL_ALL,userdata(tabnum)=  "3",userdata(tabcontrol)=  "ADC"
 	CheckBox Check_TTL_ALL,userdata(ResizeControlsInfo)= A"!!,BY!!#CKJ,hm>!!#<(z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	CheckBox Check_TTL_ALL,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	CheckBox Check_TTL_ALL,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
@@ -3543,7 +3543,7 @@ Window DA_Ephys() : Panel
 	SetVariable SetVar_DataAcq_skipAhead,userdata(tabnum)=  "0"
 	SetVariable SetVar_DataAcq_skipAhead,userdata(tabcontrol)=  "ADC"
 	SetVariable SetVar_DataAcq_skipAhead,limits={0,0,1},value= _NUM:0
-	CheckBox check_DA_applyOnModeSwitch,pos={345.00,690.00},size={99.00,12.00},disable=1,proc=DAP_CheckProc_UpdateGuiState,title="Apply on mode switch"
+	CheckBox check_DA_applyOnModeSwitch,pos={345.00,690.00},size={135.00,15.00},disable=1,proc=DAP_CheckProc_UpdateGuiState,title="Apply on mode switch"
 	CheckBox check_DA_applyOnModeSwitch,help={"Apply clamp mode all-channel DA settings on mode switch"}
 	CheckBox check_DA_applyOnModeSwitch,userdata(tabnum)=  "1"
 	CheckBox check_DA_applyOnModeSwitch,userdata(tabcontrol)=  "ADC"
@@ -3574,7 +3574,7 @@ Window DA_Ephys() : Panel
 	PopupMenu popup_Settings_UserPressure,help={"List of available DAC devices for pressure control"}
 	PopupMenu popup_Settings_UserPressure,userdata(tabnum)=  "6"
 	PopupMenu popup_Settings_UserPressure,userdata(tabcontrol)=  "ADC"
-	PopupMenu popup_Settings_UserPressure,mode=1,popvalue="- none -",value= #"\"- none -;ITC1600_Dev_0;USB_6001;\""
+	PopupMenu popup_Settings_UserPressure,mode=1,popvalue="- none -",value= #"\"- none -;Dev1;Dev2;\""
 	PopupMenu Popup_Settings_UserPressure_ADC,pos={267.00,618.00},size={47.00,19.00},proc=DAP_PopMenuProc_UpdateGuiState,title="AD"
 	PopupMenu Popup_Settings_UserPressure_ADC,userdata(tabnum)=  "6"
 	PopupMenu Popup_Settings_UserPressure_ADC,userdata(tabcontrol)=  "ADC"
