@@ -481,16 +481,16 @@ Function IDX_ApplyUnLockedIndexing(panelTitle, count)
 	endif
 End
 
-static Function IDX_TotalIndexingListSteps(panelTitle, channelNumber, DAorTTL)
+static Function IDX_TotalIndexingListSteps(panelTitle, channelNumber, channelType)
 	string panelTitle
-	variable channelNumber, DAorTTL
+	variable channelNumber, channelType
 
 	variable totalListSteps
 	variable i, first, last
 
-	if(DAOrTTL == CHANNEL_TYPE_DAC)
+	if(channelType == CHANNEL_TYPE_DAC)
 		WAVE indexingStorageWave = GetDACindexingStorageWave(panelTitle)
-	elseif(DAOrTTL == CHANNEL_TYPE_TTL)
+	elseif(channelType == CHANNEL_TYPE_TTL)
 		WAVE indexingStorageWave = GetTTLindexingStorageWave(panelTitle)
 	else
 		ASSERT(0, "Invalid value")
@@ -500,7 +500,7 @@ static Function IDX_TotalIndexingListSteps(panelTitle, channelNumber, DAorTTL)
 	first = min(indexingStorageWave[0][channelNumber], indexingStorageWave[1][channelNumber])
 	last  = max(indexingStorageWave[0][channelNumber], indexingStorageWave[1][channelNumber])
 
-	WAVE stimsets = IDX_GetStimsets(panelTitle, channelNumber, DAorTTL)
+	WAVE stimsets = IDX_GetStimsets(panelTitle, channelNumber, channelType)
 
 	for(i = first; i <= last; i += 1)
 		totalListSteps += IDX_NumberOfSweepsInSet(IDX_GetSingleStimset(stimsets, i))
@@ -509,22 +509,22 @@ static Function IDX_TotalIndexingListSteps(panelTitle, channelNumber, DAorTTL)
 	return totalListSteps
 End
 
-Function IDX_UnlockedIndexingStepNo(panelTitle, channelNumber, DAorTTL, count)
+Function IDX_UnlockedIndexingStepNo(panelTitle, channelNumber, channelType, count)
 	string paneltitle
-	variable channelNumber, DAorTTL, count
+	variable channelNumber, channelType, count
 
 	variable column, i, stepsInSummedSets, totalListSteps, direction
 
-	if(DAOrTTL == CHANNEL_TYPE_DAC)
+	if(channelType == CHANNEL_TYPE_DAC)
 		WAVE indexingStorageWave = GetDACindexingStorageWave(panelTitle)
-	elseif(DAOrTTL == CHANNEL_TYPE_TTL)
+	elseif(channelType == CHANNEL_TYPE_TTL)
 		WAVE indexingStorageWave = GetTTLindexingStorageWave(panelTitle)
 	else
 		ASSERT(0, "Invalid value")
 	endif
 
-	WAVE stimsets = IDX_GetStimsets(panelTitle, channelNumber, DAorTTL)
-	totalListSteps = IDX_TotalIndexingListSteps(panelTitle, channelNumber, DAorTTL)
+	WAVE stimsets = IDX_GetStimsets(panelTitle, channelNumber, channelType)
+	totalListSteps = IDX_TotalIndexingListSteps(panelTitle, channelNumber, channelType)
 	ASSERT(TotalListSteps > 0, "Expected strictly positive value")
 	ASSERT(indexingStorageWave[0][channelNumber] != indexingStorageWave[1][channelNumber], "Unexpected combo")
 
@@ -539,22 +539,22 @@ Function IDX_UnlockedIndexingStepNo(panelTitle, channelNumber, DAorTTL, count)
 	return count - StepsInSummedSets
 end
 
-static Function IDX_DetIfCountIsAtSetBorder(panelTitle, count, channelNumber, DAorTTL)
+static Function IDX_DetIfCountIsAtSetBorder(panelTitle, count, channelNumber, channelType)
 	string panelTitle
-	variable count, channelNumber, DAorTTL
+	variable count, channelNumber, channelType
 
 	variable i, stepsInSummedSets, totalListSteps, direction
 
-	if(DAOrTTL == CHANNEL_TYPE_DAC)
+	if(channelType == CHANNEL_TYPE_DAC)
 		WAVE indexingStorageWave = GetDACindexingStorageWave(panelTitle)
-	elseif(DAOrTTL == CHANNEL_TYPE_TTL)
+	elseif(channelType == CHANNEL_TYPE_TTL)
 		WAVE indexingStorageWave = GetTTLindexingStorageWave(panelTitle)
 	else
 		ASSERT(0, "Invalid value")
 	endif
 
-	WAVE stimsets = IDX_GetStimsets(panelTitle, channelNumber, DAorTTL)
-	TotalListSteps = IDX_TotalIndexingListSteps(panelTitle, ChannelNumber, DAorTTL)
+	WAVE stimsets = IDX_GetStimsets(panelTitle, channelNumber, channelType)
+	TotalListSteps = IDX_TotalIndexingListSteps(panelTitle, ChannelNumber, channelType)
 	ASSERT(TotalListSteps > 0, "Expected strictly positive value")
 	ASSERT(indexingStorageWave[0][channelNumber] != indexingStorageWave[1][channelNumber], "Unexpected combo")
 

@@ -1592,7 +1592,7 @@ End
 Function WBP_ButtonProc_DeleteSet(ba) : ButtonControl
 	STRUCT WMButtonAction &ba
 
-	string DAorTTL, setWaveToDelete, panelTitle, lockedDevices
+	string setWaveToDelete, panelTitle, lockedDevices
 	string popupMenuSelectedItemsStart, popupMenuSelectedItemsEnd
 	variable i, numPanels, channelType
 
