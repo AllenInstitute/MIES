@@ -1022,8 +1022,9 @@ End
 ///
 /// Usage:
 /// - Add analysis parameters named like the control
-/// - Their value must be a textwave with two elements
-/// - The first element is the event type, one of #EVENT_NAME_LIST without "Mid Sweep"
+/// - Their value must be a textwave with at least one tuple of event type and data.
+/// - Valid number of rows are therefore 2, 4, 6, ...
+/// - The first tuple element is the event type, one of #EVENT_NAME_LIST without "Mid Sweep"
 ///   and "Generic", and the second element the value to set
 /// - For PopupMenus the passed value is the menu item and *not* its index
 Function SetControlInEvent(panelTitle, s)
@@ -1031,7 +1032,7 @@ Function SetControlInEvent(panelTitle, s)
 	STRUCT AnalysisFunction_V3 &s
 
 	string ctrls, ctrl, type, valueStr, event, msg
-	variable numEntries, i, controlType
+	variable numEntries, i, controlType, j, numTuples
 
 	if(s.eventType == MID_SWEEP_EVENT)
 		return NaN
@@ -1068,48 +1069,51 @@ Function SetControlInEvent(panelTitle, s)
 			printf "(%s): The analysis parameter's %s payload is empty.\r", panelTitle, ctrl
 			ControlWindowToFront()
 			return 1
-		elseif(DimSize(data, ROWS) != 2 || DimSize(data, COLS) != 0)
-			printf "(%s): The analysis parameter's %s payload has not exactly two rows only.\r", panelTitle, ctrl
+		elseif(DimSize(data, ROWS) == 0 || mod(DimSize(data, ROWS), 2) != 0 || DimSize(data, COLS) != 0)
+			printf "(%s): The analysis parameter's %s payload has not a multiple of two rows.\r", panelTitle, ctrl
 			ControlWindowToFront()
 			return 1
 		endif
 
-		// check given event type
-		event = data[0]
+		numTuples = DimSize(data, ROWS)
+		for(j = 0; j < numTuples; j += 2)
 
-		if(WhichListItem(event, EVENT_NAME_LIST) == -1 || WhichListItem(event, "Mid Sweep;Generic") != -1)
-			printf "(%s): The analysis parameter's %s event \"%s\" is invalid.\r", panelTitle, ctrl, event
-			ControlWindowToFront()
-			return 1
-		elseif(WhichListItem(ctrl, CONTROLS_DISABLE_DURING_DAQ) != -1 && WhichListItem(event, "Pre DAQ;Post DAQ") == -1)
-			printf "(%s): The analysis parameter %s is a control which can only be changed in Pre/Post DAQ.\r", panelTitle, ctrl
-			ControlWindowToFront()
-			return 1
-		endif
+			// check given event type
+			event = data[j]
 
-		// now we can finally check if it is our turn
-		if(WhichListItem(event, EVENT_NAME_LIST) != s.eventType)
-			continue
-		endif
+			if(WhichListItem(event, EVENT_NAME_LIST) == -1 || WhichListItem(event, "Mid Sweep;Generic") != -1)
+				printf "(%s): The analysis parameter's %s event \"%s\" is invalid.\r", panelTitle, ctrl, event
+				ControlWindowToFront()
+				return 1
+			elseif(WhichListItem(ctrl, CONTROLS_DISABLE_DURING_DAQ) != -1 && WhichListItem(event, "Pre DAQ;Post DAQ") == -1)
+				printf "(%s): The analysis parameter %s is a control which can only be changed in Pre/Post DAQ.\r", panelTitle, ctrl
+				ControlWindowToFront()
+				return 1
+			endif
 
-		if(IsControlDisabled(panelTitle, ctrl))
-			printf "(%s): The analysis parameter %s is a control which is disabled. Therefore it can not be set.\r", panelTitle, ctrl
-			ControlWindowToFront()
-			return 1
-		endif
+			// now we can finally check if it is our turn
+			if(WhichListItem(event, EVENT_NAME_LIST) != s.eventType)
+				continue
+			endif
 
-		// set the control
-		valueStr = data[1]
+			if(IsControlDisabled(panelTitle, ctrl))
+				printf "(%s): The analysis parameter %s is a control which is disabled. Therefore it can not be set.\r", panelTitle, ctrl
+				ControlWindowToFront()
+				return 1
+			endif
 
-		sprintf msg, "%s: Setting control %s to %s in event %s\r", GetRTStackInfo(1), ctrl, valueStr, event
-		DEBUGPRINT(msg)
+			// set the control
+			valueStr = data[j + 1]
 
-		controlType = GetControlType(panelTitle, ctrl)
-		if(controlType == CONTROL_TYPE_SETVARIABLE || controlType == CONTROL_TYPE_POPUPMENU)
-			PGC_SetAndActivateControl(panelTitle, ctrl, str = valueStr)
-		else
-			PGC_SetAndActivateControl(panelTitle, ctrl, val = str2numSafe(valueStr))
-		endif
+			sprintf msg, "%s: Setting control %s to %s in event %s\r", GetRTStackInfo(1), ctrl, valueStr, event
+			DEBUGPRINT(msg)
 
+			controlType = GetControlType(panelTitle, ctrl)
+			if(controlType == CONTROL_TYPE_SETVARIABLE || controlType == CONTROL_TYPE_POPUPMENU)
+				PGC_SetAndActivateControl(panelTitle, ctrl, str = valueStr)
+			else
+				PGC_SetAndActivateControl(panelTitle, ctrl, val = str2numSafe(valueStr))
+			endif
+		endfor
 	endfor
 End
