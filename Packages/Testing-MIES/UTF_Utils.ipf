@@ -1819,7 +1819,7 @@ Function/S TrimVolatileFolderName_IGNORE(list)
 	return result
 End
 
-Function GetListOfObjectsWorks1()
+Function GetListOfObjectsWorksRE()
 
 	string result, expected
 
@@ -1844,6 +1844,36 @@ Function GetListOfObjectsWorks1()
 	CHECK_EQUAL_STR(result, expected)
 
 	result = GetListOfObjects(dfr, ".*", recursive = 0, fullpath = 1)
+	result = TrimVolatileFolderName_IGNORE(result)
+	expected = ""
+	CHECK_EQUAL_STR(result, expected)
+End
+
+Function GetListOfObjectsWorksWC()
+
+	string result, expected
+
+	NewDataFolder/O test
+	NewDataFolder/O :test:test2
+
+	DFREF dfr = $"test"
+
+	result = GetListOfObjects(dfr, "*", recursive = 0, fullpath = 0, exprType = MATCH_WILDCARD)
+	result = TrimVolatileFolderName_IGNORE(result)
+	expected = ""
+	CHECK_EQUAL_STR(result, expected)
+
+	result = GetListOfObjects(dfr, "*", recursive = 1, fullpath = 0, exprType = MATCH_WILDCARD)
+	result = TrimVolatileFolderName_IGNORE(result)
+	expected = ""
+	CHECK_EQUAL_STR(result, expected)
+
+	result = GetListOfObjects(dfr, "*", recursive = 1, fullpath = 1, exprType = MATCH_WILDCARD)
+	result = TrimVolatileFolderName_IGNORE(result)
+	expected = ""
+	CHECK_EQUAL_STR(result, expected)
+
+	result = GetListOfObjects(dfr, "*", recursive = 0, fullpath = 1, exprType = MATCH_WILDCARD)
 	result = TrimVolatileFolderName_IGNORE(result)
 	expected = ""
 	CHECK_EQUAL_STR(result, expected)
