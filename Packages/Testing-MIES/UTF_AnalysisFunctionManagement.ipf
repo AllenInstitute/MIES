@@ -1949,7 +1949,7 @@ End
 static Function AFT_SetControls3_Setter(device)
 	string device
 
-	Make/FREE/T wv
+	Make/FREE/T/N=3 wv
 	WBP_AddAnalysisParameter("AnaFuncSetCtrl_DA_0", "Check_DataAcq_Indexing", wv = wv)
 End
 
@@ -2209,4 +2209,42 @@ static Function AFT_SetControls6_REENTRY([str])
 	CHECK_EQUAL_VAR(GetSetVariable(str, "setvar_DataAcq_OnsetDelayUser"), 10)
 	// the third entry is four
 	CHECK_EQUAL_VAR(GetPopupMenuIndex(str, "Popup_Settings_SampIntMult"), 2)
+End
+
+static Function AFT_SetControls7_Setter(device)
+	string device
+
+	Make/FREE/T/N=4 wv
+	wv[] = {"Pre DAQ", "2", "Post DAQ", "1"}
+	WBP_AddAnalysisParameter("AnaFuncSetCtrl_DA_0", "SetVar_DataAcq_SetRepeats", wv = wv)
+
+	wv[] = {"Pre DAQ", "1"}
+	WBP_AddAnalysisParameter("AnaFuncSetCtrl_DA_0", "Check_DataAcq1_RepeatAcq", wv = wv)
+End
+
+// works with event/data tuples
+// UTF_TD_GENERATOR HardwareMain#DeviceNameGeneratorMD1
+static Function AFT_SetControls7([str])
+	string str
+
+	STRUCT DAQSettings s
+	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG_1")
+
+	AcquireData(s, "AnaFuncSetCtrl_DA_0", str, postInitializeFunc = AFT_SetControls7_Setter)
+End
+
+static Function AFT_SetControls7_REENTRY([str])
+	string str
+
+	variable sweepNo
+	string ref, actual
+
+	CHECK_EQUAL_VAR(GetSetVariable(str, "SetVar_Sweep"), 2)
+
+	sweepNo = AFH_GetLastSweepAcquired(str)
+	CHECK_EQUAL_VAR(sweepNo, 1)
+
+	CHECK_EQUAL_VAR(GetCheckBoxState(str, "Check_DataAcq1_RepeatAcq"), 1)
+	// before starting: 1, after "PRE DAQ" 2, after "POST DAQ" 1 again
+	CHECK_EQUAL_VAR(GetSetVariable(str, "SetVar_DataAcq_SetRepeats"), 1)
 End
