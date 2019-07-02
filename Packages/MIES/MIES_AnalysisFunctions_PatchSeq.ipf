@@ -801,7 +801,12 @@ static Function/WAVE PSQ_SearchForSpikes(panelTitle, type, sweepWave, headstage,
 		FindLevels/R=(totalOnsetDelay, inf)/Q/N=2/DEST=levels singleDA, level
 		ASSERT(V_LevelsFound == 2, "Could not find two levels")
 		first = levels[0]
-		last  = inf
+
+		if(type == PSQ_DA_SCALE)
+			last = levels[1]
+		else
+			last  = inf
+		endif
 	endif
 
 	if(PSQ_TestOverrideActive())
