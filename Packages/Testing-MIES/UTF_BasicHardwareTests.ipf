@@ -2160,6 +2160,9 @@ Function UnassociatedChannels_REENTRY([str])
 
 			WAVE TTLs = GetTTLListFromConfig(config)
 
+			WAVE/Z ttlStimSets = GetTTLstimSets(numericalValues, textualValues, j)
+			CHECK_EQUAL_TEXTWAVES(ttlStimSets, {"", "StimulusSetA_TTL_0", "", "StimulusSetB_TTL_0", "", "", "", ""})
+
 			switch(GetHardwareType(device))
 				case HARDWARE_ITC_DAC:
 					// check TTL LBN keys
@@ -2179,7 +2182,7 @@ Function UnassociatedChannels_REENTRY([str])
 					CHECK_EQUAL_VAR(DimSize(TTLs, ROWS), 1)
 					CHECK_EQUAL_WAVES(channels, {NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, TTLs[0]}, mode = WAVE_DATA)
 					WAVE/Z channels = GetLastSetting(numericalValues, j, "TTL rack one channel", DATA_ACQUISITION_MODE)
-					CHECK_WAVE(bits, NULL_WAVE)
+					CHECK_WAVE(channels, NULL_WAVE)
 
 					// set sweep count
 					WAVE/T/Z sweepCounts = GetLastSetting(textualValues, j, "TTL rack zero set sweep counts", DATA_ACQUISITION_MODE)
@@ -2189,6 +2192,15 @@ Function UnassociatedChannels_REENTRY([str])
 					break
 				case HARDWARE_NI_DAC:
 					CHECK_EQUAL_WAVES(TTLs, {1, 3}, mode = WAVE_DATA)
+
+					WAVE/T/Z channelsTxT = GetLastSetting(textualValues, j, "TTL channels", DATA_ACQUISITION_MODE)
+					CHECK_EQUAL_TEXTWAVES(channelsTxT, {"", "", "", "", "", "", "", "", ";1;;3;;;;;"}, mode = WAVE_DATA)
+
+					WAVE/T/Z foundStimSets = GetLastSetting(textualValues, j, "TTL stim sets", DATA_ACQUISITION_MODE)
+					CHECK_EQUAL_TEXTWAVES(foundStimSets, {"", "", "", "", "", "", "", "", ";StimulusSetA_TTL_0;;StimulusSetB_TTL_0;;;;;"})
+
+					WAVE/T/Z sweepCounts = GetLastSetting(textualValues, j, "TTL set sweep counts", DATA_ACQUISITION_MODE)
+					CHECK_EQUAL_TEXTWAVES(sweepCounts, {"", "", "", "", "", "", "", "", ";0;;0;;;;;"})
 					break
 			endswitch
 		endfor

@@ -1603,10 +1603,10 @@ End
 /// - 5:  Set sweep count
 /// - 6:  Insert TP on/off
 /// - 7:  Inter-trial interval (used after the sweep it is documented for)
-/// - 8:  TTL rack zero bits
-/// - 9:  TTL rack one bits
-/// - 10: TTL rack zero channel
-/// - 11: TTL rack one channel
+/// - 8:  TTL rack zero bits (ITC hardware), bit sum in `INDEP_HEADSTAGE` layer of the active DAEphys TTL channels (called TTLBit)
+/// - 9:  TTL rack one bits, same for the second rack
+/// - 10: TTL rack zero channel (ITC hardware), device type dependent hardware channel used for acquisition in `INDEP_HEADSTAGE` layer
+/// - 11: TTL rack one channel (ITC hardware), same for the second rack
 /// - 12: Delay onset user
 /// - 13: Delay onset auto
 /// - 14: Delay termination
@@ -1959,8 +1959,8 @@ End
 /// - 0: Stim set
 /// - 1: DA unit
 /// - 2: AD unit
-/// - 3: TTL rack zero stim sets
-/// - 4: TTL rack one stim sets
+/// - 3: TTL rack zero stim sets (ITC hardware), string list in `INDEP_HEADSTAGE` layer with empty entries indexed by [0, NUM_DA_TTL_CHANNELS[
+/// - 4: TTL rack one stim sets (ITC hardware), same for the second rack
 /// - 5: Analysis function pre daq
 /// - 6: Analysis function mid sweep
 /// - 7: Analysis function post sweep
@@ -1976,11 +1976,11 @@ End
 /// -15: Electrode
 /// -16: High precision sweep start timestamp in ISO8601 format
 /// -17: Stimset wave note
-/// -18: TTL rack zero set sweep counts
-/// -19: TTL rack one set sweep counts
-/// -20: TTL set sweep counts (NI hardware)
-/// -21: TTL stim sets (NI hardware)
-/// -22: TTL channels (NI hardware)
+/// -18: TTL rack zero set sweep counts (ITC hardware)
+/// -19: TTL rack one set sweep counts (ITC hardware)
+/// -20: TTL set sweep counts (NI hardware), string list in `INDEP_HEADSTAGE` layer with empty entries indexed by [0, NUM_DA_TTL_CHANNELS[
+/// -21: TTL stim sets (NI hardware), string list in `INDEP_HEADSTAGE` layer with empty entries indexed by [0, NUM_DA_TTL_CHANNELS[
+/// -22: TTL channels (NI hardware), string list  in `INDEP_HEADSTAGE` layer with empty entries indexed by [0, NUM_DA_TTL_CHANNELS[
 /// -23: Follower Device, list of follower devices
 /// -24: MIES version, multi line mies version string
 /// -25: Igor Pro version
@@ -5710,7 +5710,7 @@ End
 Function/WAVE GetOverlaySweepSelectionChoices(dfr)
 	DFREF dfr
 
-	variable versionOfNewWave = 2
+	variable versionOfNewWave = 3
 
 	ASSERT(DataFolderExistsDFR(dfr), "Invalid dfr")
 	string newName = "overlaySweepSelectionChoices"
@@ -5725,12 +5725,13 @@ Function/WAVE GetOverlaySweepSelectionChoices(dfr)
 	if(ExistsWithCorrectLayoutVersion(wv, versionOfNewWave))
 		return wv
 	elseif(WaveExists(wv))
-		Redimension/N=(-1, -1, 2) wv
+		Redimension/N=(-1, -1, 3) wv
 	else
-		Make/T/N=(MINIMUM_WAVE_SIZE, NUM_HEADSTAGES, 2) dfr:$newName/Wave=wv
+		ASSERT(NUM_HEADSTAGES == NUM_DA_TTL_CHANNELS, "Unexpected channel count")
+		Make/T/N=(MINIMUM_WAVE_SIZE, NUM_HEADSTAGES, 3) dfr:$newName/Wave=wv
 	endif
 
-	SetWaveDimLabel(wv, "Stimset;StimsetAndClampMode", LAYERS)
+	SetWaveDimLabel(wv, "Stimset;TTLStimset;StimsetAndClampMode", LAYERS)
 
 	SetWaveVersion(wv, versionOfNewWave)
 	return wv

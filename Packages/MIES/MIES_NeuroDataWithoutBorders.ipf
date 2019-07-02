@@ -629,20 +629,15 @@ static Function/S NWB_GetStimsetFromSweepGeneric(sweep, numericalValues, textual
 		stimsetList = AddListItem(name, stimsetList)
 	endfor
 
+	WAVE/Z/T ttlStimSets = GetTTLstimSets(numericalValues, textualValues, sweep)
+
 	// handle TTL channels
 	for(i = 0; i < NUM_DA_TTL_CHANNELS; i += 1)
-		ttlList = GetTTLstimSets(numericalValues, textualValues, sweep, i)
-		numEntries = ItemsInList(ttlList)
-		for(j = 0; j < numEntries; j += 1)
-			name = StringFromList(j, ttlList)
-
-			// work around empty TTL stim set bug in labnotebook
-			if(isEmpty(name))
-				continue
-			endif
-
-			stimsetList = AddListItem(name, stimsetList)
-		endfor
+		name = ttlStimSets[i]
+		if(isEmpty(name))
+			continue
+		endif
+		stimsetList = AddListItem(name, stimsetList)
 	endfor
 
 	return stimsetList
@@ -814,8 +809,16 @@ static Function NWB_AppendSweepLowLevel(locationID, panelTitle, ITCDataWave, ITC
 	// introduced in db531d20 (DC_PlaceDataInITCDataWave: Document the digitizer hardware type, 2018-07-30)
 	// before that we only had ITC hardware
 	hardwareType = GetLastSettingIndep(numericalValues, sweep, "Digitizer Hardware Type", DATA_ACQUISITION_MODE, defValue = HARDWARE_ITC_DAC)
+	WAVE/Z/T ttlStimsets = GetTTLStimSets(numericalValues, textualValues, sweep)
 
+	// i has the following meaning:
+	// - ITC hardware: hardware channel
+	// - NI hardware: DAEphys TTL channel
 	for(i = 0; i < NUM_DA_TTL_CHANNELS; i += 1)
+
+		if(!WaveExists(ttlStimsets))
+			break
+		endif
 
 		if(hardwareType == HARDWARE_ITC_DAC)
 			ttlBits = GetTTLBits(numericalValues, sweep, i)
@@ -823,12 +826,10 @@ static Function NWB_AppendSweepLowLevel(locationID, panelTitle, ITCDataWave, ITC
 				continue
 			endif
 
-			listOfStimsets = GetTTLstimSets(numericalValues, textualValues, sweep, i)
 		elseif(hardwareType == HARDWARE_NI_DAC)
 			ttlBits = NaN
 
-			listOfStimsets = GetTTLstimSets(numericalValues, textualValues, sweep, NaN)
-			stimset = StringFromList(i, listOfStimsets)
+			stimset = ttlStimsets[i]
 			if(IsEmpty(stimset))
 				continue
 			endif
@@ -860,7 +861,7 @@ static Function NWB_AppendSweepLowLevel(locationID, panelTitle, ITCDataWave, ITC
 				path                 = "/stimulus/presentation"
 				params.channelSuffix = num2str(ttlBit)
 				params.channelSuffixDesc = NWB_SOURCE_TTL_BIT
-				params.stimset       = StringFromList(log(ttlBit)/log(2), listOfStimsets)
+				params.stimset       = ttlStimsets[log(ttlBit)/log(2)]
 				NWB_GetTimeSeriesProperties(params, tsp)
 				params.groupIndex    = IsFinite(params.groupIndex) ? params.groupIndex : IPNWB#GetNextFreeGroupIndex(locationID, path)
 				IPNWB#WriteSingleChannel(locationID, path, params, tsp, compressionMode = compressionMode)
