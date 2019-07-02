@@ -1656,6 +1656,18 @@ Function SkipSweepsDuringITI_MD_REENTRY([str])
 	endfor
 End
 
+static Function CheckLastLBNEntryFromTP_IGNORE(device)
+	string device
+
+	variable index
+
+	// last LBN entry is from TP
+	WAVE numericalValues = GetLBNumericalValues(device)
+	index = GetNumberFromWaveNote(numericalValues, NOTE_INDEX)
+	CHECK(index >= 1)
+	CHECK_EQUAL_VAR(numericalValues[index - 1][%EntrySourceType], TEST_PULSE_MODE)
+End
+
 // UTF_TD_GENERATOR HardwareMain#DeviceNameGeneratorMD0
 Function Abort_ITI_TP_SD([str])
 	string str
@@ -1664,6 +1676,7 @@ Function Abort_ITI_TP_SD([str])
 	InitDAQSettingsFromString(s, "MD0_RA1_I0_L0_BKG_1_RES_5")
 	AcquireData(s, str)
 
+	CtrlNamedBackGround StopTPAfterSomeTime, start=(ticks + 420), period=60, proc=StopTP_IGNORE
 	CtrlNamedBackGround Abort_ITI_TP, start, period=30, proc=StartTPDuringITI_IGNORE
 
 	PGC_SetAndActivateControl(str, "Check_DataAcq_Get_Set_ITI", val = 0)
@@ -1673,20 +1686,14 @@ End
 Function Abort_ITI_TP_SD_REENTRY([str])
 	string str
 
-	string device
-	variable numEntries, i
+	NVAR runModeDAQ = $GetDataAcqRunMode(str)
+	CHECK_EQUAL_VAR(runModeDAQ, DAQ_NOT_RUNNING)
 
-	numEntries = ItemsInList(str)
-	for(i = 0; i < numEntries; i += 1)
-		device = stringFromList(i, str)
+	NVAR runModeTP = $GetTestpulseRunMode(str)
+	CHECK_EQUAL_VAR(runModeTP, TEST_PULSE_NOT_RUNNING)
 
-		NVAR runModeDAQ = $GetDataAcqRunMode(device)
-		CHECK_EQUAL_VAR(runModeDAQ, DAQ_NOT_RUNNING)
-
-		NVAR runModeTP = $GetTestpulseRunMode(device)
-		CHECK(runModeTP != TEST_PULSE_NOT_RUNNING)
-		CHECK(!(runModeTP & TEST_PULSE_DURING_RA_MOD))
-	endfor
+	// check that TP after DAQ really ran
+	CheckLastLBNEntryFromTP_IGNORE(str)
 End
 
 // UTF_TD_GENERATOR HardwareMain#DeviceNameGeneratorMD1
@@ -1697,6 +1704,7 @@ Function Abort_ITI_TP_MD([str])
 	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG_1_RES_5")
 	AcquireData(s, str)
 
+	CtrlNamedBackGround StopTPAfterSomeTime, start=(ticks + 420), period=60, proc=StopTP_IGNORE
 	CtrlNamedBackGround Abort_ITI_TP, start, period=30, proc=StartTPDuringITI_IGNORE
 
 	PGC_SetAndActivateControl(str, "Check_DataAcq_Get_Set_ITI", val = 0)
@@ -1706,20 +1714,14 @@ End
 Function Abort_ITI_TP_MD_REENTRY([str])
 	string str
 
-	string device
-	variable numEntries, i
+	NVAR runModeDAQ = $GetDataAcqRunMode(str)
+	CHECK_EQUAL_VAR(runModeDAQ, DAQ_NOT_RUNNING)
 
-	numEntries = ItemsInList(str)
-	for(i = 0; i < numEntries; i += 1)
-		device = stringFromList(i, str)
+	NVAR runModeTP = $GetTestpulseRunMode(str)
+	CHECK_EQUAL_VAR(runModeTP, TEST_PULSE_NOT_RUNNING)
 
-		NVAR runModeDAQ = $GetDataAcqRunMode(device)
-		CHECK_EQUAL_VAR(runModeDAQ, DAQ_NOT_RUNNING)
-
-		NVAR runModeTP = $GetTestpulseRunMode(device)
-		CHECK(runModeTP != TEST_PULSE_NOT_RUNNING)
-		CHECK(!(runModeTP & TEST_PULSE_DURING_RA_MOD))
-	endfor
+	// check that TP after DAQ really ran
+	CheckLastLBNEntryFromTP_IGNORE(str)
 End
 
 // UTF_TD_GENERATOR HardwareMain#DeviceNameGeneratorMD0
@@ -1730,6 +1732,7 @@ Function Abort_ITI_TP_A_TP_SD([str])
 	InitDAQSettingsFromString(s, "MD0_RA1_I0_L0_BKG_1_RES_5")
 	AcquireData(s, str)
 
+	CtrlNamedBackGround StopTPAfterSomeTime, start=(ticks + 420), period=60, proc=StopTP_IGNORE
 	CtrlNamedBackGround Abort_ITI_TP, start, period=30, proc=StartTPDuringITI_IGNORE
 
 	PGC_SetAndActivateControl(str, "Check_DataAcq_Get_Set_ITI", val = 0)
@@ -1740,21 +1743,14 @@ End
 Function Abort_ITI_TP_A_TP_SD_REENTRY([str])
 	string str
 
-	string device
-	variable numEntries, i
+	NVAR runModeDAQ = $GetDataAcqRunMode(str)
+	CHECK_EQUAL_VAR(runModeDAQ, DAQ_NOT_RUNNING)
 
-	numEntries = ItemsInList(str)
-	for(i = 0; i < numEntries; i += 1)
-		device = stringFromList(i, str)
+	NVAR runModeTP = $GetTestpulseRunMode(str)
+	CHECK_EQUAL_VAR(runModeTP, TEST_PULSE_NOT_RUNNING)
 
-		NVAR runModeDAQ = $GetDataAcqRunMode(device)
-
-		CHECK_EQUAL_VAR(runModeDAQ, DAQ_NOT_RUNNING)
-
-		NVAR runModeTP = $GetTestpulseRunMode(device)
-		CHECK(runModeTP != TEST_PULSE_NOT_RUNNING)
-		CHECK(!(runModeTP & TEST_PULSE_DURING_RA_MOD))
-	endfor
+	// check that TP after DAQ really ran
+	CheckLastLBNEntryFromTP_IGNORE(str)
 End
 
 Function StartDAQDuringTP_IGNORE(device)
@@ -1811,6 +1807,7 @@ Function Abort_ITI_TP_A_TP_MD([str])
 	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG_1_RES_5")
 	AcquireData(s, str)
 
+	CtrlNamedBackGround StopTPAfterSomeTime, start=(ticks + 420), period=60, proc=StopTP_IGNORE
 	CtrlNamedBackGround Abort_ITI_TP, start, period=30, proc=StartTPDuringITI_IGNORE
 
 	PGC_SetAndActivateControl(str, "Check_DataAcq_Get_Set_ITI", val = 0)
@@ -1821,21 +1818,14 @@ End
 Function Abort_ITI_TP_A_TP_MD_REENTRY([str])
 	string str
 
-	string device
-	variable numEntries, i
+	NVAR runModeDAQ = $GetDataAcqRunMode(str)
+	CHECK_EQUAL_VAR(runModeDAQ, DAQ_NOT_RUNNING)
 
-	numEntries = ItemsInList(str)
-	for(i = 0; i < numEntries; i += 1)
-		device = stringFromList(i, str)
+	NVAR runModeTP = $GetTestpulseRunMode(str)
+	CHECK_EQUAL_VAR(runModeTP, TEST_PULSE_NOT_RUNNING)
 
-		NVAR runModeDAQ = $GetDataAcqRunMode(device)
-
-		CHECK_EQUAL_VAR(runModeDAQ, DAQ_NOT_RUNNING)
-
-		NVAR runModeTP = $GetTestpulseRunMode(device)
-		CHECK(runModeTP != TEST_PULSE_NOT_RUNNING)
-		CHECK(!(runModeTP & TEST_PULSE_DURING_RA_MOD))
-	endfor
+	// check that TP after DAQ really ran
+	CheckLastLBNEntryFromTP_IGNORE(str)
 End
 
 // UTF_TD_GENERATOR HardwareMain#DeviceNameGeneratorMD0
@@ -1846,6 +1836,7 @@ Function Abort_ITI_PressAcq_SD([str])
 	InitDAQSettingsFromString(s, "MD0_RA1_I0_L0_BKG_1_RES_5")
 	AcquireData(s, str)
 
+	CtrlNamedBackGround StopTPAfterSomeTime, start=(ticks + 420), period=60, proc=StopTP_IGNORE
 	CtrlNamedBackGround Abort_ITI_PressAcq, start, period=30, proc=StopAcqDuringITI_IGNORE
 
 	PGC_SetAndActivateControl(str, "Check_DataAcq_Get_Set_ITI", val = 0)
@@ -1855,19 +1846,14 @@ End
 Function Abort_ITI_PressAcq_SD_REENTRY([str])
 	string str
 
-	string device
-	variable numEntries, i
+	NVAR runModeDAQ = $GetDataAcqRunMode(str)
+	CHECK_EQUAL_VAR(runModeDAQ, DAQ_NOT_RUNNING)
 
-	numEntries = ItemsInList(str)
-	for(i = 0; i < numEntries; i += 1)
-		device = stringFromList(i, str)
+	NVAR runModeTP = $GetTestpulseRunMode(str)
+	CHECK_EQUAL_VAR(runModeTP, TEST_PULSE_NOT_RUNNING)
 
-		NVAR runModeDAQ = $GetDataAcqRunMode(device)
-		CHECK_EQUAL_VAR(runModeDAQ, DAQ_NOT_RUNNING)
-
-		NVAR runModeTP = $GetTestpulseRunMode(device)
-		CHECK_EQUAL_VAR(runModeTP, TEST_PULSE_NOT_RUNNING)
-	endfor
+	// check that TP after DAQ really ran
+	CheckLastLBNEntryFromTP_IGNORE(str)
 End
 
 // UTF_TD_GENERATOR HardwareMain#DeviceNameGeneratorMD1
@@ -1878,6 +1864,7 @@ Function Abort_ITI_PressAcq_MD([str])
 	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG_1_RES_5")
 	AcquireData(s, str)
 
+	CtrlNamedBackGround StopTPAfterSomeTime, start=(ticks + 420), period=60, proc=StopTP_IGNORE
 	CtrlNamedBackGround Abort_ITI_PressAcq, start, period=30, proc=StopAcqDuringITI_IGNORE
 
 	PGC_SetAndActivateControl(str, "Check_DataAcq_Get_Set_ITI", val = 0)
@@ -1887,19 +1874,14 @@ End
 Function Abort_ITI_PressAcq_MD_REENTRY([str])
 	string str
 
-	string device
-	variable numEntries, i
+	NVAR runModeDAQ = $GetDataAcqRunMode(str)
+	CHECK_EQUAL_VAR(runModeDAQ, DAQ_NOT_RUNNING)
 
-	numEntries = ItemsInList(str)
-	for(i = 0; i < numEntries; i += 1)
-		device = stringFromList(i, str)
+	NVAR runModeTP = $GetTestpulseRunMode(str)
+	CHECK_EQUAL_VAR(runModeTP, TEST_PULSE_NOT_RUNNING)
 
-		NVAR runModeDAQ = $GetDataAcqRunMode(device)
-		CHECK_EQUAL_VAR(runModeDAQ, DAQ_NOT_RUNNING)
-
-		NVAR runModeTP = $GetTestpulseRunMode(device)
-		CHECK_EQUAL_VAR(runModeTP, TEST_PULSE_NOT_RUNNING)
-	endfor
+	// check that TP after DAQ really ran
+	CheckLastLBNEntryFromTP_IGNORE(str)
 End
 
 // UTF_TD_GENERATOR HardwareMain#DeviceNameGeneratorMD0
@@ -1910,6 +1892,7 @@ Function Abort_ITI_TP_A_PressAcq_SD([str])
 	InitDAQSettingsFromString(s, "MD0_RA1_I0_L0_BKG_1_RES_5")
 	AcquireData(s, str)
 
+	CtrlNamedBackGround StopTPAfterSomeTime, start=(ticks + 420), period=60, proc=StopTP_IGNORE
 	CtrlNamedBackGround Abort_ITI_PressAcq, start, period=30, proc=StopAcqDuringITI_IGNORE
 
 	PGC_SetAndActivateControl(str, "Check_DataAcq_Get_Set_ITI", val = 0)
@@ -1920,21 +1903,14 @@ End
 Function Abort_ITI_TP_A_Acq_SD_REENTRY([str])
 	string str
 
-	string device
-	variable numEntries, i
+	NVAR runModeDAQ = $GetDataAcqRunMode(str)
+	CHECK_EQUAL_VAR(runModeDAQ, DAQ_NOT_RUNNING)
 
-	numEntries = ItemsInList(str)
-	for(i = 0; i < numEntries; i += 1)
-		device = stringFromList(i, str)
+	NVAR runModeTP = $GetTestpulseRunMode(str)
+	CHECK_EQUAL_VAR(runModeTP, TEST_PULSE_NOT_RUNNING)
 
-		NVAR runModeDAQ = $GetDataAcqRunMode(device)
-
-		CHECK_EQUAL_VAR(runModeDAQ, DAQ_NOT_RUNNING)
-
-		NVAR runModeTP = $GetTestpulseRunMode(device)
-		CHECK(runModeTP != TEST_PULSE_NOT_RUNNING)
-		CHECK(!(runModeTP & TEST_PULSE_DURING_RA_MOD))
-	endfor
+	// check that TP after DAQ really ran
+	CheckLastLBNEntryFromTP_IGNORE(str)
 End
 
 // UTF_TD_GENERATOR HardwareMain#DeviceNameGeneratorMD1
@@ -1945,6 +1921,7 @@ Function Abort_ITI_TP_A_Acq_MD([str])
 	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG_1_RES_5")
 	AcquireData(s, str)
 
+	CtrlNamedBackGround StopTPAfterSomeTime, start=(ticks + 420), period=60, proc=StopTP_IGNORE
 	CtrlNamedBackGround Abort_ITI_Acq, start, period=30, proc=StopAcqDuringITI_IGNORE
 
 	PGC_SetAndActivateControl(str, "Check_DataAcq_Get_Set_ITI", val = 0)
@@ -1955,21 +1932,14 @@ End
 Function Abort_ITI_TP_A_Acq_MD_REENTRY([str])
 	string str
 
-	string device
-	variable numEntries, i
+	NVAR runModeDAQ = $GetDataAcqRunMode(str)
+	CHECK_EQUAL_VAR(runModeDAQ, DAQ_NOT_RUNNING)
 
-	numEntries = ItemsInList(str)
-	for(i = 0; i < numEntries; i += 1)
-		device = stringFromList(i, str)
+	NVAR runModeTP = $GetTestpulseRunMode(str)
+	CHECK_EQUAL_VAR(runModeTP, TEST_PULSE_NOT_RUNNING)
 
-		NVAR runModeDAQ = $GetDataAcqRunMode(device)
-
-		CHECK_EQUAL_VAR(runModeDAQ, DAQ_NOT_RUNNING)
-
-		NVAR runModeTP = $GetTestpulseRunMode(device)
-		CHECK(runModeTP != TEST_PULSE_NOT_RUNNING)
-		CHECK(!(runModeTP & TEST_PULSE_DURING_RA_MOD))
-	endfor
+	// check that TP after DAQ really ran
+	CheckLastLBNEntryFromTP_IGNORE(str)
 End
 
 static Function SetSingleDeviceDAQ_IGNORE(device)
