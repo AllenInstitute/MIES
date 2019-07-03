@@ -3048,7 +3048,7 @@ Function/Wave ExtractOneDimDataFromSweep(config, sweep, index)
 	WAVE sweep
 	variable index
 
-	ASSERT(IsValidSweepAndConfig(sweep, config), "Sweep and config are not compatible")
+	ASSERT(IsValidSweepAndConfig(sweep, config, configVersion = 0), "Sweep and config are not compatible")
 
 	if(IsWaveRefWave(sweep))
 		ASSERT(index < DimSize(sweep, ROWS), "The index is out of range")
@@ -4944,7 +4944,7 @@ Function SplitSweepIntoComponents(numericalValues, sweep, sweepWave, configWave,
 
 	ASSERT(DataFolderExistsDFR(targetDFR), "targetDFR must exist")
 	ASSERT(IsFinite(sweep), "Sweep number must be finite")
-	ASSERT(IsValidSweepAndConfig(sweepWave, configWave), "Sweep and config waves are not compatible")
+	ASSERT(IsValidSweepAndConfig(sweepWave, configWave, configVersion = 0), "Sweep and config waves are not compatible")
 
 	numRows = DimSize(configWave, ROWS)
 	for(i = 0; i < numRows; i += 1)
@@ -5279,16 +5279,25 @@ threadsafe Function IsValidSweepWave(sweep)
 End
 
 /// @brief Check if the two waves are valid and compatible
-threadsafe Function IsValidSweepAndConfig(sweep, config)
+///
+/// @param sweep         sweep wave
+/// @param config        config wave
+/// @param configVersion [optional, defaults to #ITC_CONFIG_WAVE_VERSION] minimum required version of the config wave
+threadsafe Function IsValidSweepAndConfig(sweep, config, [configVersion])
 	WAVE/Z sweep, config
+	variable configVersion
+
+	if(ParamIsDefault(configVersion))
+		configVersion = ITC_CONFIG_WAVE_VERSION
+	endif
 
 	if(IsWaveRefWave(sweep))
-		return IsValidConfigWave(config) &&                  \
-				 IsValidSweepWave(sweep) &&                    \
+		return IsValidConfigWave(config, version = configVersion) &&  \
+				 IsValidSweepWave(sweep) &&                           \
 				 DimSize(sweep, ROWS) == DimSize(config, ROWS)
 	else
-		return IsValidConfigWave(config) &&                  \
-				 IsValidSweepWave(sweep) &&                    \
+		return IsValidConfigWave(config, version = configVersion) &&  \
+				 IsValidSweepWave(sweep) &&                           \
 				 DimSize(sweep, COLS) == DimSize(config, ROWS)
 	endif
 End
