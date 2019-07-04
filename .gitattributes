@@ -51,3 +51,5 @@ Packages/Arduino/*exe export-ignore
 
 tools/unit-testing/*.pxp filter=compress
 *.nwb filter=compress
+
+tools/installer/nsis/* linguist-vendored
