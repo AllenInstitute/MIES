@@ -161,8 +161,12 @@ Function OVS_UpdatePanel(win, listBoxWave, listBoxSelWave, sweepSelectionChoices
 	for(i = 0; i < numEntries; i += 1)
 		WAVE/T stimsets = GetLastSetting(allTextualValues[i], sweeps[i], STIM_WAVE_NAME_KEY, DATA_ACQUISITION_MODE)
 		sweepSelectionChoices[i][][%Stimset] = stimsets[q]
-		WAVE/T TTLStimSets = GetTTLstimSets(allNumericalValues[i], allTextualValues[i], sweeps[i])
-		sweepSelectionChoices[i][][%TTLStimSet] = TTLStimSets[q]
+		WAVE/T/Z TTLStimSets = GetTTLstimSets(allNumericalValues[i], allTextualValues[i], sweeps[i])
+		if(WaveExists(TTLStimSets))
+			sweepSelectionChoices[i][][%TTLStimSet] = TTLStimSets[q]
+		else
+			sweepSelectionChoices[i][][%TTLStimSet] = ""
+		endif
 
 		WAVE clampModes = GetLastSetting(allNumericalValues[i], sweeps[i], "Clamp Mode", DATA_ACQUISITION_MODE)
 		sweepSelectionChoices[i][][%StimsetAndClampMode] = SelectString(IsFinite(clampModes[q]), "", stimsets[q] + " (" + ConvertAmplifierModeShortStr(clampModes[q]) + ")")

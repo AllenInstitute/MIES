@@ -2113,7 +2113,7 @@ static Function AB_SplitSweepIntoComponents(expFolder, device, sweep, sweepWave)
 	DFREF sweepFolder = GetAnalysisSweepDataPath(expFolder, device, sweep)
 	Wave configSweep  = GetAnalysisConfigWave(expFolder, device, sweep)
 
-	if(!IsValidSweepAndConfig(sweepWave, configSweep))
+	if(!IsValidSweepAndConfig(sweepWave, configSweep, configVersion = 0))
 		printf "The sweep %d of device %s in experiment %s does not match its configuration data. Therefore we ignore it.\r", sweep, device, expFolder
 		return 1
 	endif
