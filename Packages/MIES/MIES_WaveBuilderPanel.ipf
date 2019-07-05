@@ -2119,18 +2119,16 @@ Function WBP_GetOutputType()
 	return outputType
 End
 
-/// @brief Return a sorted list of all stim sets created by the wavebuilder
 Function/S WBP_ReturnListSavedSets()
 
-	string list = ""
+	string DAClist, TTLlist, searchString
 
-	DFREF dfr = GetSetParamFolder(CHANNEL_TYPE_DAC)
-	list += GetListOfObjects(dfr, "WP_.*")
+	searchString = "*"
 
-	DFREF dfr = GetSetParamFolder(CHANNEL_TYPE_TTL)
-	list += GetListOfObjects(dfr, "WP_.*")
+	ReturnListOfAllStimSets(CHANNEL_TYPE_DAC, searchString, WBstimSetList = DAClist)
+	ReturnListOfAllStimSets(CHANNEL_TYPE_TTL, searchString, WBstimSetList = TTLlist)
 
-	return NONE + ";" + SortList(RemovePrefixFromListItem("WP_", list), ";", 16)
+	return NONE + ";" + SortList(DAClist + TTLlist, ";", 16)
 end
 
 /// @brief Return true if the given stimset is a builtin, false otherwise
