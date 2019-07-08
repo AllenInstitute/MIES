@@ -4150,32 +4150,19 @@ Function/S ReturnListOfAllStimSets(channelType, searchString, [WBstimSetList, th
 	string &WBstimSetList
 	string &thirdPartyStimSetList
 
-	variable i, numWaves
-	string list, item
-	string listInternal
-	string listThirdParty = ""
-
-	DFREF saveDFR = GetDataFolderDFR()
+	string list, listInternal, listThirdParty
 
 	// fetch stim sets created with the WaveBuilder
-	SetDataFolder GetSetParamFolder(channelType)
+	DFREF dfr = GetSetParamFolder(channelType)
 
-	list = Wavelist("WP_" + searchstring, ";", "")
+	list = GetListOfObjects(dfr, "WP_" + searchString, exprType = MATCH_WILDCARD)
 	listInternal = RemovePrefixFromListItem("WP_", list)
 
 	// fetch third party stim sets
-	SetDataFolder GetSetFolder(channelType)
+	DFREF dfr = GetSetFolder(channelType)
 
-	list = Wavelist(searchstring, ";", "")
-	numWaves = ItemsInList(list)
-	for(i = 0; i < numWaves; i += 1)
-		item = StringFromList(i, list)
-		if(FindListItem(item, listInternal, ";", 0, 0) == -1)
-			listThirdParty = AddListItem(item, listThirdParty, ";", Inf)
-		endif
-	endfor
-
-	SetDataFolder saveDFR
+	list = GetListOfObjects(dfr, searchString, exprType = MATCH_WILDCARD)
+	listThirdParty = GetListDifference(list,listInternal)
 
 	if(!ParamIsDefault(WBstimSetList))
 		WBstimSetList = SortList(listInternal,";",16)

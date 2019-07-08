@@ -216,8 +216,8 @@ End
 /// does not require SetDataFolder calls.
 ///
 /// @param dfr                                  datafolder reference to search for the waves
-/// @param regExpStr                            regular expression matching the waves, see the help of GrepString
-///                                             for an introduction to regular expressions
+/// @param matchExpr                            expression matching the waves, either a regular (exprType == MATCH_REGEXP)
+///                                             or wildcard (exprType == MATCH_WILDCARD) expression
 /// @param typeFlag [optional, default: COUNTOBJECTS_WAVES] One of @ref TypeFlags
 /// @param matchList [optional, empty]          additional semicolon delimited list of wave names, allows to further
 ///                                             qualify the returned wave names.
@@ -225,19 +225,20 @@ End
 ///                                             currently implemented are `MINCOLS` and `TEXT`
 /// @param fullPath [optional, default: false]  should only the wavename or the absolute path of the wave be returned.
 /// @param recursive [optional, default: false] descent into all subfolders recursively
+/// @param exprType [optional, defaults: MATCH_REGEXP] convention used for matchExpr, one of @ref MatchExpressions
 ///
 /// @returns list of wave names matching regExpStr located in dfr
-Function/S GetListOfObjects(dfr, regExpStr, [typeFlag, matchList, waveProperty, fullPath, recursive])
+Function/S GetListOfObjects(dfr, matchExpr, [typeFlag, matchList, waveProperty, fullPath, recursive, exprType])
 	dfref dfr
-	string regExpStr, matchList, waveProperty
-	variable fullPath, recursive, typeFlag
+	string matchExpr, matchList, waveProperty
+	variable fullPath, recursive, typeFlag, exprType
 
 	variable i, j, numWaveProperties, numWaves, matches, val, numFolders
 	string name, str, prop, subList, basePath
 	string list = ""
 
 	ASSERT(DataFolderExistsDFR(dfr),"Non-existing datafolder")
-	ASSERT(!isEmpty(regExpStr),"regexpStr is empty or null")
+	ASSERT(!isEmpty(matchExpr),"matchExpr is empty or null")
 
 	if(ParamIsDefault(fullPath))
 		fullPath = 0
@@ -263,6 +264,12 @@ Function/S GetListOfObjects(dfr, regExpStr, [typeFlag, matchList, waveProperty, 
 		matchList = ""
 	endif
 
+	if(ParamIsDefault(exprType))
+		exprType = MATCH_REGEXP
+	else
+		ASSERT(exprType == MATCH_REGEXP || exprType == MATCH_WILDCARD, "Invalid exprType")
+	endif
+
 	basePath = GetDataFolder(1, dfr)
 
 	if(recursive)
@@ -270,8 +277,8 @@ Function/S GetListOfObjects(dfr, regExpStr, [typeFlag, matchList, waveProperty, 
 		for(i = 0; i < numFolders; i+=1)
 			name = basePath + GetIndexedObjNameDFR(dfr, COUNTOBJECTS_DATAFOLDER, i)
 			DFREF subFolder = $name
-			subList = GetListOfObjects(subFolder, regExpStr, matchList=matchList, waveProperty=waveProperty, \
-						               fullPath=fullPath, recursive=recursive)
+			subList = GetListOfObjects(subFolder, matchExpr, matchList=matchList, waveProperty=waveProperty, \
+						               fullPath=fullPath, recursive=recursive, exprType=exprType)
 			if(!IsEmpty(subList))
 				list = AddListItem(RemoveEnding(subList, ";"), list)
 			endif
@@ -282,7 +289,7 @@ Function/S GetListOfObjects(dfr, regExpStr, [typeFlag, matchList, waveProperty, 
 	for(i=0; i<numWaves; i+=1)
 		name = GetIndexedObjNameDFR(dfr, typeFlag, i)
 
-		if(!GrepString(name,regExpStr))
+		if(!StringMatchesExpr(name, matchExpr, exprType))
 			continue
 		endif
 
@@ -330,6 +337,22 @@ Function/S GetListOfObjects(dfr, regExpStr, [typeFlag, matchList, waveProperty, 
 	endfor
 
 	return list
+End
+
+/// @brief Matches `name` against the expression `matchExpr` using the given
+///        convention in `exprType`
+Function StringMatchesExpr(name, matchExpr, exprType)
+	string name, matchExpr
+	variable exprType
+
+	switch(exprType)
+		case MATCH_REGEXP:
+			return GrepString(name, matchExpr)
+		case MATCH_WILDCARD:
+			return StringMatch(name, matchExpr)
+		default:
+			ASSERT(0, "invalid exprType")
+	endswitch
 End
 
 /// @brief Redimension the wave to at least the given size.

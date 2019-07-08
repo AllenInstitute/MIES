@@ -1819,33 +1819,64 @@ Function/S TrimVolatileFolderName_IGNORE(list)
 	return result
 End
 
-Function GetListOfObjectsWorks1()
+Function GetListOfObjectsWorksRE()
 
 	string result, expected
 
 	NewDataFolder/O test
-	NewDataFolder/O :test:test2
 
 	DFREF dfr = $"test"
+	Make dfr:abcd
+	Make dfr:efgh
 
-	result = GetListOfObjects(dfr, ".*", recursive = 0, fullpath = 0)
+	result = GetListOfObjects(dfr, "a.*", recursive = 0, fullpath = 0)
 	result = TrimVolatileFolderName_IGNORE(result)
-	expected = ""
+	expected = "abcd;"
 	CHECK_EQUAL_STR(result, expected)
 
-	result = GetListOfObjects(dfr, ".*", recursive = 1, fullpath = 0)
+	result = GetListOfObjects(dfr, "a.*", recursive = 1, fullpath = 0)
 	result = TrimVolatileFolderName_IGNORE(result)
-	expected = ""
+	expected = "abcd;"
 	CHECK_EQUAL_STR(result, expected)
 
-	result = GetListOfObjects(dfr, ".*", recursive = 1, fullpath = 1)
+	result = GetListOfObjects(dfr, "a.*", recursive = 1, fullpath = 1)
 	result = TrimVolatileFolderName_IGNORE(result)
-	expected = ""
+	expected = ":test:abcd;"
 	CHECK_EQUAL_STR(result, expected)
 
-	result = GetListOfObjects(dfr, ".*", recursive = 0, fullpath = 1)
+	result = GetListOfObjects(dfr, "a.*", recursive = 0, fullpath = 1)
 	result = TrimVolatileFolderName_IGNORE(result)
-	expected = ""
+	expected = ":test:abcd;"
+	CHECK_EQUAL_STR(result, expected)
+End
+
+Function GetListOfObjectsWorksWC()
+
+	string result, expected
+
+	NewDataFolder/O test
+	DFREF dfr = $"test"
+	Make dfr:abcd
+	Make dfr:efgh
+
+	result = GetListOfObjects(dfr, "a*", recursive = 0, fullpath = 0, exprType = MATCH_WILDCARD)
+	result = TrimVolatileFolderName_IGNORE(result)
+	expected = "abcd;"
+	CHECK_EQUAL_STR(result, expected)
+
+	result = GetListOfObjects(dfr, "a*", recursive = 1, fullpath = 0, exprType = MATCH_WILDCARD)
+	result = TrimVolatileFolderName_IGNORE(result)
+	expected = "abcd;"
+	CHECK_EQUAL_STR(result, expected)
+
+	result = GetListOfObjects(dfr, "a*", recursive = 1, fullpath = 1, exprType = MATCH_WILDCARD)
+	result = TrimVolatileFolderName_IGNORE(result)
+	expected = ":test:abcd;"
+	CHECK_EQUAL_STR(result, expected)
+
+	result = GetListOfObjects(dfr, "a*", recursive = 0, fullpath = 1, exprType = MATCH_WILDCARD)
+	result = TrimVolatileFolderName_IGNORE(result)
+	expected = ":test:abcd;"
 	CHECK_EQUAL_STR(result, expected)
 End
 

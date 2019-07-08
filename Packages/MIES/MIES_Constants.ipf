@@ -588,7 +588,7 @@ Constant HARDWARE_DAC_EXTERNAL_TRIGGER = 0x1
 Constant DA_EPHYS_PANEL_VERSION     = 42
 Constant DATABROWSER_PANEL_VERSION  = 10
 Constant SWEEPBROWSER_PANEL_VERSION = 3
-Constant WAVEBUILDER_PANEL_VERSION  = 7
+Constant WAVEBUILDER_PANEL_VERSION  = 8
 
 /// Version of the labnotebooks (numerical and textual)
 ///
@@ -1135,3 +1135,10 @@ Constant GUI_SETTING_OSCI_SCALE_INTERVAL  = 2
 /// @}
 
 StrConstant PRESSURE_CONTROL_LED_DASHBOARD = "valdisp_DataAcq_P_LED_0;valdisp_DataAcq_P_LED_1;valdisp_DataAcq_P_LED_2;valdisp_DataAcq_P_LED_3;valdisp_DataAcq_P_LED_4;valdisp_DataAcq_P_LED_5;valdisp_DataAcq_P_LED_6;valdisp_DataAcq_P_LED_7"
+
+/// @name Match expression types for GetListOfObjects
+/// @anchor MatchExpressions
+/// @{
+Constant MATCH_REGEXP   = 0x1
+Constant MATCH_WILDCARD = 0x2
+/// @}
