@@ -6103,6 +6103,93 @@ Function/WAVE GetAnalysisFuncDAScaleResFit(panelTitle, headstage)
 	return wv
 End
 
+/// @brief Return a wave reference to the spikes frequency wave
+///
+/// Used by PSQ_AdjustDAScale().
+Function/WAVE GetAnalysisFuncDAScaleSpikeFreq(panelTitle, headstage)
+	string panelTitle
+	variable headstage
+
+	variable versionOfNewWave = 1
+	string name
+
+	DFREF dfr = GetDevicePath(panelTitle)
+	name = "analysisFuncDAScaleSpikeFreq" + "_" + num2str(headstage)
+
+	WAVE/D/Z/SDFR=dfr wv = $name
+
+	if(ExistsWithCorrectLayoutVersion(wv, versionOfNewWave))
+		return wv
+	elseif(WaveExists(wv))
+		// handle upgrade
+	else
+		Make/D/N=(0) dfr:$name/WAVE=wv
+	endif
+
+	SetScale d, 0, 0, "Hz", wv
+	SetWaveVersion(wv, versionOfNewWave)
+
+	return wv
+End
+
+/// @brief Return a wave reference to the spikes frequency wave
+///
+/// Used by PSQ_AdjustDAScale().
+Function/WAVE GetAnalysisFuncDAScaleFreqFit(panelTitle, headstage)
+	string panelTitle
+	variable headstage
+
+	variable versionOfNewWave = 1
+	string name
+
+	DFREF dfr = GetDevicePath(panelTitle)
+	name = "analysisFuncDAScaleFreqFit" + "_" + num2str(headstage)
+
+	WAVE/D/Z/SDFR=dfr wv = $name
+
+	if(ExistsWithCorrectLayoutVersion(wv, versionOfNewWave))
+		return wv
+	elseif(WaveExists(wv))
+		// handle upgrade
+	else
+		Make/D/N=(2) dfr:$name/WAVE=wv
+		wv = NaN
+	endif
+
+	SetWaveVersion(wv, versionOfNewWave)
+
+	return wv
+End
+
+/// @brief Return a wave reference to the DAScale wave
+///
+/// Used by PSQ_AdjustDAScale().
+Function/WAVE GetAnalysisFuncDAScales(panelTitle, headstage)
+	string panelTitle
+	variable headstage
+
+	variable versionOfNewWave = 1
+	string name
+
+	DFREF dfr = GetDevicePath(panelTitle)
+	name = "analysisFuncDAScales" + "_" + num2str(headstage)
+
+	WAVE/D/Z/SDFR=dfr wv = $name
+
+	if(ExistsWithCorrectLayoutVersion(wv, versionOfNewWave))
+		return wv
+	elseif(WaveExists(wv))
+		// handle upgrade
+	else
+		Make/D/N=(0) dfr:$name/WAVE=wv
+	endif
+
+	SetScale d, 0, 0, "A", wv
+	SetWaveVersion(wv, versionOfNewWave)
+
+	return wv
+End
+
 /// @}
 
 /// @brief Return the storage wave for the analysis functions

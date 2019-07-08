@@ -2505,3 +2505,43 @@ Function ListToTextWaveMDWorks6()
 	CHECK_EQUAL_WAVES(t, ref)
 End
 /// @}
+
+/// FloatWithMinSigDigits
+/// @{
+
+Function/WAVE InvalidSignDigits()
+
+	Make/FREE digits = {-1, NaN, Inf, -Inf}
+
+	return digits
+End
+
+// UTF_TD_GENERATOR InvalidSignDigits
+Function FloatWithMinSigDigitsAborts([var])
+	variable var
+	try
+		FloatWithMinSigDigits(1.234, numMinSignDigits = var)
+		FAIL()
+	catch
+		PASS()
+	endtry
+End
+
+Function FloatWithMinSigDigitsWorks()
+
+	string result, expected
+
+	result = FloatWithMinSigDigits(1.234, numMinSignDigits = 0)
+	expected = "1"
+	CHECK_EQUAL_STR(result, expected)
+
+	result = FloatWithMinSigDigits(-1.234, numMinSignDigits = 0)
+	expected = "-1"
+	CHECK_EQUAL_STR(result, expected)
+
+	result = FloatWithMinSigDigits(1e-2, numMinSignDigits = 2)
+	expected = "0.01"
+	CHECK_EQUAL_STR(result, expected)
+End
+
+/// @}

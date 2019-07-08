@@ -4006,10 +4006,10 @@ Function/S FloatWithMinSigDigits(var, [numMinSignDigits])
 	if(ParamIsDefault(numMinSignDigits))
 		numMinSignDigits = 6
 	else
-		ASSERT(numMinSignDigits >= 0, "Invalid numDecimalDigits")
+		ASSERT(numMinSignDigits >= 0 && Isfinite(numMinSignDigits), "Invalid numDecimalDigits")
 	endif
 
-	numMag = ceil(log(var))
+	numMag = ceil(log(abs(var)))
 
 	string str
 	sprintf str, "%.*g", max(numMag, numMinSignDigits), var

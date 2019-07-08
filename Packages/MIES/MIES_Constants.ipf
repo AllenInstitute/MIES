@@ -953,6 +953,7 @@ StrConstant PSQ_FMT_LBN_STEPSIZE           = "%s step size"
 StrConstant PSQ_FMT_LBN_STEPSIZE_FUTURE    = "%s step size (fut.)"
 StrConstant PSQ_FMT_LBN_SPIKE_DETECT       = "%s spike detected"
 StrConstant PSQ_FMT_LBN_SPIKE_POSITIONS    = "%s spike positions"
+StrConstant PSQ_FMT_LBN_SPIKE_COUNT        = "%s spike count"
 StrConstant PSQ_FMT_LBN_FINAL_SCALE        = "%s final DAScale"
 StrConstant PSQ_FMT_LBN_INITIAL_SCALE      = "%s initial DAScale"
 StrConstant PSQ_FMT_LBN_RMS_SHORT_PASS     = "%s Chk%d S-RMS QC"
@@ -965,6 +966,8 @@ StrConstant PSQ_FMT_LBN_SET_PASS           = "%s Set QC"
 StrConstant PSQ_FMT_LBN_PULSE_DUR          = "%s Pulse duration"
 StrConstant PSQ_FMT_LBN_SPIKE_DASCALE_ZERO = "%s spike with zero"
 StrConstant PSQ_FMT_LBN_RB_LIMITED_RES     = "%s limited resolut."
+StrConstant PSQ_FMT_LBN_DA_fI_SLOPE        = "%s f-I slope"
+StrConstant PSQ_FMT_LBN_DA_fI_SLOPE_REACHED= "%s f-I slope QC"
 /// @}
 
 /// @name PatchSeq types of analysis functions
@@ -1065,7 +1068,7 @@ Constant NUM_ENTRIES_FOR_MULTITHREAD = 16
 StrConstant DAQ_ALLOWED_FUNCTIONS = "DQ_RestartDAQ;DAP_ButtonProc_TPDAQ;RA_CounterMD"
 
 StrConstant RESISTANCE_GRAPH = "AnalysisFuncResistanceGraph"
-
+StrConstant SPIKE_FREQ_GRAPH = "SpikeFrequencyGraph"
 StrConstant CHANNEL_UNIT_KEY = "ChannelUnit"
 
 /// Maximum length of a sweep in the wavebuilder
