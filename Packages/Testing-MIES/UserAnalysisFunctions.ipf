@@ -514,3 +514,17 @@ Function WriteIntoLBNOnPreDAQ(panelTitle, s)
 
 	return 0
 End
+
+Function ChangeStimSet(panelTitle, s)
+	string panelTitle
+	STRUCT AnalysisFunction_V3& s
+
+	string ctrl
+
+	if(s.eventType == POST_DAQ_EVENT)
+		ctrl = GetPanelControl(0, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_WAVE)
+		PGC_SeTAndActivateControl(panelTitle, ctrl, str = "StimulusSetA_DA_0")
+	endif
+
+	return 0
+End

@@ -184,6 +184,12 @@ static Function ChangeAnalysisFunctions()
 
 	wv[][%Set] = ""
 	wv[%$"Analysis function (generic)"][%Set]    = "TotalOrdering"
+
+	WAVE/T wv = root:MIES:WaveBuilder:SavedStimulusSetParameters:DA:WPT_AnaFuncPostDAQ_DA_0
+	UpgradeWaveTextParam(wv)
+
+	wv[][%Set] = ""
+	wv[%$"Analysis function (generic)"][%Set]    = "ChangeStimSet"
 End
 
 Function RewriteAnalysisFunctions()
@@ -1810,6 +1816,39 @@ static Function AFT20_REENTRY([str])
 	Sort anaFuncOrderSorted, anaFuncOrderSorted
 
 	CHECK_EQUAL_WAVES(anaFuncOrderIndex, anaFuncOrderSorted)
+End
+
+// it possible to change the stimset in POST DAQ event
+// UTF_TD_GENERATOR HardwareMain#DeviceNameGeneratorMD1
+static Function AFT21([str])
+	string str
+
+	STRUCT DAQSettings s
+	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG_1")
+
+	AcquireData(s, "AnaFuncPostDAQ_DA_0", str)
+End
+
+static Function AFT21_REENTRY([str])
+	string str
+
+	variable sweepNo
+	string stimset, expected
+
+	CHECK_EQUAL_VAR(GetSetVariable(str, "SetVar_Sweep"), 1)
+
+	sweepNo = AFH_GetLastSweepAcquired(str)
+	CHECK_EQUAL_VAR(sweepNo, 0)
+
+	WAVE/T textualValues   = GetLBTextualValues(str)
+	WAVE/T/Z foundStimSets = GetLastSetting(textualValues, sweepNo, STIM_WAVE_NAME_KEY, DATA_ACQUISITION_MODE)
+
+	REQUIRE_WAVE(foundStimSets, TEXT_WAVE)
+	CHECK_EQUAL_TEXTWAVES(foundStimSets, {"AnaFuncPostDAQ_DA_0", "", "", "", "", "", "", "", ""})
+
+	stimset = AFH_GetStimSetName(str, 0, CHANNEL_TYPE_DAC)
+	expected = "StimulusSetA_DA_0"
+	REQUIRE_EQUAL_STR(stimset, expected)
 End
 
 static Function AFT_SetControls1_Setter(device)
