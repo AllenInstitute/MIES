@@ -633,6 +633,11 @@ static Function/S NWB_GetStimsetFromSweepGeneric(sweep, numericalValues, textual
 
 	// handle TTL channels
 	for(i = 0; i < NUM_DA_TTL_CHANNELS; i += 1)
+
+		if(!WaveExists(ttlStimsets))
+			break
+		endif
+
 		name = ttlStimSets[i]
 		if(isEmpty(name))
 			continue
