@@ -1476,14 +1476,38 @@ Function DAP_PopMenuChkProc_StimSetList(pa) : PopupMenuControl
 	string panelTitle, stimSet
 	variable channelIndex, channelType, channelControl, isAllControl, indexing
 	variable i, numEntries, idx, dataAcqRunMode, headstage, activeChannel
+	
+	print "event code",pa.eventcode
+	print "eventmod", pa.eventmod
+	
+	if(pa.eventmod == 19) // open selected stimulus set in wavebuild on shift-right-click
+		panelTitle = pa.win
+		ctrl       = pa.ctrlName
+		stimSet    = pa.popStr
 
+		WBP_CreateWaveBuilderPanel()
+		if(cmpstr(pa.popStr,"TestPulse"))
+			PGC_setAndActivateControl("WaveBuilder","popup_WaveBuilder_SetList", str=stimSet)
+		endif
+//		SetPopupMenuString(panelTitle, ctrl, stimset)
+					
+
+//		ControlUpdate/W=panelTitle ctrl
+		return 0
+	endif
+	
+	//is it possibe to prevent the popup menu from opening?
+	//force it to select the same item?
+	// work when unlocked
+	// don't interrupt data acquisition
+			
 	switch(pa.eventCode)
 		case 2:
 			panelTitle = pa.win
 			ctrl       = pa.ctrlName
 			stimSet    = pa.popStr
 			idx        = pa.popNum
-
+	
 			DAP_AbortIfUnlocked(panelTitle)
 			ASSERT(!DAP_ParsePanelControl(ctrl, channelIndex, channelType, channelControl), "Invalid control format")
 			DAG_Update(pa.win, pa.ctrlName, val = pa.popNum - 1, str = pa.popStr)
