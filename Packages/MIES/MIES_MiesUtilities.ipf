@@ -4306,13 +4306,16 @@ End
 /// @param ttlBits    bit mask of the active TTL channels form e.g. #GetTTLBits
 /// @param targetDFR  datafolder where to put the waves, can be a free datafolder
 /// @param wavePrefix prefix of the created wave names
+/// @param rescale    One of @ref TTLRescalingOptions. Rescales the data to be in the range [0, 1]
+///                   when on, does no rescaling when off.
 ///
 /// The created waves will be named `TTL_3_3` so the final suffix is the running TTL Bit.
-Function SplitTTLWaveIntoComponents(data, ttlBits, targetDFR, wavePrefix)
+Function SplitTTLWaveIntoComponents(data, ttlBits, targetDFR, wavePrefix, rescale)
 	WAVE data
 	variable ttlBits
 	DFREF targetDFR
 	string wavePrefix
+	variable rescale
 
 	variable i, bit
 
@@ -4328,7 +4331,13 @@ Function SplitTTLWaveIntoComponents(data, ttlBits, targetDFR, wavePrefix)
 		endif
 
 		Duplicate data, targetDFR:$(wavePrefix + num2str(i))/Wave=dest
-		MultiThread dest[] = dest[p] & bit
+		if(rescale == TTL_RESCALE_ON)
+			MultiThread dest[] = (dest[p] & bit) / bit
+		elseif(rescale == TTL_RESCALE_OFF)
+			MultiThread dest[] = dest[p] & bit
+		else
+			ASSERT(0, "Invalid rescale parameter")
+		endif
 	endfor
 End
 
@@ -4920,9 +4929,10 @@ End
 /// @param sweepWave       ITCDataWave
 /// @param configWave      ITCChanConfigWave
 /// @param targetDFR       [optional, defaults to the sweep wave DFR] datafolder where to put the waves, can be a free datafolder
-Function SplitSweepIntoComponents(numericalValues, sweep, sweepWave, configWave, [targetDFR])
+/// @param rescale         One of @ref TTLRescalingOptions
+Function SplitSweepIntoComponents(numericalValues, sweep, sweepWave, configWave, rescale, [targetDFR])
 	WAVE numericalValues, sweepWave, configWave
-	variable sweep
+	variable sweep, rescale
 	DFREF targetDFR
 
 	variable numRows, i, channelNumber, ttlBits
@@ -4949,7 +4959,7 @@ Function SplitSweepIntoComponents(numericalValues, sweep, sweepWave, configWave,
 		ttlBits = GetTTLBits(numericalValues, sweep, channelNumber)
 
 		if(!cmpstr(channelType, "TTL") && IsFinite(ttlBits))
-			SplitTTLWaveIntoComponents(data, ttlBits, targetDFR, str + "_")
+			SplitTTLWaveIntoComponents(data, ttlBits, targetDFR, str + "_", rescale)
 		endif
 
 		MoveWave data, targetDFR:$str
