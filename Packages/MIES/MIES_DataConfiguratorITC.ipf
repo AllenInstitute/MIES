@@ -1808,6 +1808,11 @@ Function DC_GetChannelTypefromHS(panelTitle, headstage)
 	WAVE config = GetITCChanConfigWave(panelTitle)
 
 	dac = AFH_GetDACFromHeadstage(panelTitle, headstage)
+
+	if(!IsFinite(dac))
+		return DAQ_CHANNEL_TYPE_UNKOWN
+	endif
+
 	row = AFH_GetITCDataColumn(config, dac, ITC_XOP_CHANNEL_TYPE_DAC)
 	ASSERT(IsFinite(row), "Invalid column")
 	return config[row][%DAQChannelType]
