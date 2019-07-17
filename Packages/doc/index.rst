@@ -18,6 +18,7 @@ Table of Contents
   asyncframework
   ZeroMQ-XOP-Readme
   labnotebook-docs
+  epoch_information
   mies-concepts
 
 Introduction
