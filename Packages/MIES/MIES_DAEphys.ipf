@@ -227,7 +227,7 @@ Function DAP_EphysPanelStartUpSettings()
 	SetVariable Scale_DA_AllVClamp WIN = $panelTitle, value = _NUM:1
 	SetVariable Scale_DA_AllIClamp WIN = $panelTitle, value = _NUM:1
 
-	SetVariable SetVar_DataAcq_Comment WIN = $panelTitle,fSize=8,value= _STR:""
+	SetVariable SetVar_DataAcq_Comment WIN = $panelTitle,value= _STR:""
 
 	CheckBox Check_DataAcq1_RepeatAcq Win = $panelTitle, value = 1
 	CheckBox Check_DataAcq1_DistribDaq Win = $panelTitle, value = 0
