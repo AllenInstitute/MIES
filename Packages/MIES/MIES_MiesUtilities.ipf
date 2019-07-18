@@ -4299,6 +4299,9 @@ Function/S ExtractAnalysisFunctionParams(stimSet)
 End
 
 /// @brief Split TTL data into a single wave for each bit
+///
+/// This function is only for data from ITC hardware.
+///
 /// @param data       1D channel data extracted by #ExtractOneDimDataFromSweep
 /// @param ttlBits    bit mask of the active TTL channels form e.g. #GetTTLBits
 /// @param targetDFR  datafolder where to put the waves, can be a free datafolder
