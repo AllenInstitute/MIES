@@ -2353,6 +2353,10 @@ Function CreateTiledChannelGraph(graph, config, sweepNo, numericalValues,  textu
 						endif
 
 						ModifyGraph/W=$graph lblPosMode = 1, standoff($vertAxis) = 0, freePos($vertAxis) = 0
+
+						if(channelTypes[i] == ITC_XOP_CHANNEL_TYPE_TTL && tgs.splitTTLBits)
+							ModifyGraph/W=$graph nticks($vertAxis)=2,manTick($vertAxis)={0,1,0,0},manMinor($vertAxis)={0,50}
+						endif
 					else
 						Label/W=$graph $vertAxis, "\\u#2"
 					endif
