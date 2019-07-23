@@ -3739,7 +3739,10 @@ Function TimeAlignmentIfReq(graphtrace, mode, level, pos1x, pos2x, [force])
 		pulseIndexStr = GetUserData(graph, trace, "pulseIndex")
 		indexStr = sweepNo + ":" + pulseIndexStr
 		idx = GetRowIndex(refIndex, str = indexStr)
-		ASSERT(IsFinite(idx), "Could not find index")
+
+		if(IsNaN(idx))
+			continue
+		endif
 
 		WAVE backup = CreateBackupWave(wv)
 		offset = - (refPos + featurePos[idx])
