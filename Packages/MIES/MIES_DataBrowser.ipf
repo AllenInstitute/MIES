@@ -984,7 +984,7 @@ static Function DB_SplitSweepsIfReq(win, sweepNo)
 
 	WAVE numericalValues = DB_GetNumericalValues(win)
 
-	SplitSweepIntoComponents(numericalValues, sweepNo, sweepWave, configWave, targetDFR=singleSweepDFR)
+	SplitSweepIntoComponents(numericalValues, sweepNo, sweepWave, configWave, TTL_RESCALE_ON, targetDFR=singleSweepDFR)
 End
 
 Function DB_ButtonProc_RestoreData(ba) : ButtonControl

@@ -854,7 +854,7 @@ static Function NWB_AppendSweepLowLevel(locationID, panelTitle, ITCDataWave, ITC
 
 		if(hardwareType == HARDWARE_ITC_DAC)
 			DFREF dfr = NewFreeDataFolder()
-			SplitTTLWaveIntoComponents(data, ttlBits, dfr, "_")
+			SplitTTLWaveIntoComponents(data, ttlBits, dfr, "_", TTL_RESCALE_OFF)
 
 			list = GetListOfObjects(dfr, ".*")
 			numEntries = ItemsInList(list)

@@ -2140,7 +2140,7 @@ static Function AB_SplitSweepIntoComponents(expFolder, device, sweep, sweepWave)
 	DFREF dfr = GetAnalysisLabNBFolder(expFolder, device)
 	WAVE/SDFR=dfr numericalValues
 
-	SplitSweepIntoComponents(numericalValues, sweep, sweepWave, configSweep, targetDFR=sweepFolder)
+	SplitSweepIntoComponents(numericalValues, sweep, sweepWave, configSweep, TTL_RESCALE_ON, targetDFR=sweepFolder)
 	KillOrMoveToTrash(wv=sweepWave)
 
 	return 0

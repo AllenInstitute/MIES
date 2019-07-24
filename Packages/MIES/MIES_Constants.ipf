@@ -1142,3 +1142,10 @@ StrConstant PRESSURE_CONTROL_LED_DASHBOARD = "valdisp_DataAcq_P_LED_0;valdisp_Da
 Constant MATCH_REGEXP   = 0x1
 Constant MATCH_WILDCARD = 0x2
 /// @}
+
+/// @name Options for SplitTTLWaveIntoComponents() and SplitSweepIntoComponents()
+/// @anchor TTLRescalingOptions
+/// @{
+Constant TTL_RESCALE_OFF = 0x0
+Constant TTL_RESCALE_ON  = 0x1
+/// @}
