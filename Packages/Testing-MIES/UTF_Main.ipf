@@ -13,6 +13,7 @@
 #include "UTF_WaveBuilder"
 #include "UTF_WaveVersioning"
 #include "UTF_AsynFrameworkTest"
+#include "UTF_SweepFormula"
 
 Function run()
 	// speeds up testing to start with a fresh copy
