@@ -11,8 +11,7 @@
 
 Window DA_Ephys() : Panel
 	PauseUpdate; Silent 1		// building window...
-	NewPanel /K=1 /W=(108,133,612,1019)
-	SetDrawLayer UserBack
+	NewPanel /K=1 /W=(135,218,639,1104)
 	ValDisplay valdisp_DataAcq_P_LED_Clear,pos={366.00,297.00},size={84.00,27.00},disable=1
 	ValDisplay valdisp_DataAcq_P_LED_Clear,help={"red:user"},userdata(tabnum)=  "0"
 	ValDisplay valdisp_DataAcq_P_LED_Clear,userdata(tabcontrol)=  "tab_DataAcq_Pressure"
@@ -556,14 +555,14 @@ Window DA_Ephys() : Panel
 	SetVariable Scale_DA_07,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	SetVariable Scale_DA_07,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
 	SetVariable Scale_DA_07,limits={-inf,inf,10},value= _NUM:1
-	SetVariable SetVar_DataAcq_Comment,pos={48.00,780.00},size={360.00,14.00},disable=1,proc=DAP_SetVar_UpdateGuiState,title="Comment"
+	SetVariable SetVar_DataAcq_Comment,pos={42.00,775.00},size={373.00,22.00},disable=1,proc=DAP_SetVar_UpdateGuiState,title="Comment"
 	SetVariable SetVar_DataAcq_Comment,help={"Appends a comment to wave note of next sweep"}
 	SetVariable SetVar_DataAcq_Comment,userdata(tabnum)=  "0"
 	SetVariable SetVar_DataAcq_Comment,userdata(tabcontrol)=  "ADC"
 	SetVariable SetVar_DataAcq_Comment,userdata(ResizeControlsInfo)= A"!!,DO!!#DS5QF0Z!!#;mz!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	SetVariable SetVar_DataAcq_Comment,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	SetVariable SetVar_DataAcq_Comment,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
-	SetVariable SetVar_DataAcq_Comment,fSize=8,value= _STR:""
+	SetVariable SetVar_DataAcq_Comment,fSize=14,value= _STR:""
 	Button DataAcquireButton,pos={42.00,798.00},size={405.00,42.00},disable=1,proc=DAP_ButtonProc_TPDAQ,title="\\Z14\\f01Acquire\rData"
 	Button DataAcquireButton,userdata(tabnum)=  "0",userdata(tabcontrol)=  "ADC"
 	Button DataAcquireButton,userdata(ResizeControlsInfo)= A"!!,D?!!#DW^]6aEJ,hnaz!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
@@ -3186,7 +3185,7 @@ Window DA_Ephys() : Panel
 	SetVariable setvar_DataAcq_dDAQOptOvPre,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	SetVariable setvar_DataAcq_dDAQOptOvPre,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
 	SetVariable setvar_DataAcq_dDAQOptOvPre,limits={0,inf,1},value= _NUM:0
-	Button button_DataAcq_OpenCommentNB,pos={408.00,777.00},size={36.00,18.00},disable=1,proc=DAP_ButtonProc_OpenCommentNB,title="NB"
+	Button button_DataAcq_OpenCommentNB,pos={415.00,777.00},size={41.00,19.00},disable=1,proc=DAP_ButtonProc_OpenCommentNB,title="NB"
 	Button button_DataAcq_OpenCommentNB,help={"Open a notebook displaying the comments of all sweeps and allowing free form additions by the user."}
 	Button button_DataAcq_OpenCommentNB,userdata(tabnum)=  "0"
 	Button button_DataAcq_OpenCommentNB,userdata(tabcontrol)=  "ADC"

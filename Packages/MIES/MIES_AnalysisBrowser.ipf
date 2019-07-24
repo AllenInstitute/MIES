@@ -237,6 +237,7 @@ static Function AB_LoadFile(discLocation)
 			case ANALYSISBROWSER_FILE_TYPE_NWB:
 				AB_LoadSweepsFromNWB(map[%DiscLocation], map[%DataFolder], device)
 				AB_LoadTPStorageFromNWB(map[%DiscLocation], map[%DataFolder], device)
+				AB_LoadUserCommentFromNWB(map[%DiscLocation], map[%DataFolder], device)
 				break
 			default:
 				ASSERT(0, "invalid file type")
@@ -710,6 +711,24 @@ static Function AB_LoadUserCommentFromFile(expFilePath, expFolder, device)
 
 	SetDataFolder saveDFR
 	return numStringsLoaded
+End
+
+static Function AB_LoadUserCommentFromNWB(nwbFilePath, expFolder, device)
+	string nwbFilePath, expFolder, device
+
+	string groupName, comment
+	variable h5_fileID, commentGroup
+
+	DFREF targetDFR = GetAnalysisDeviceFolder(expFolder, device)
+	h5_fileID = IPNWB#H5_OpenFile(nwbFilePath)
+
+	groupName = "/general/user_comment/" + device
+	commentGroup = IPNWB#H5_OpenGroup(h5_fileID, groupName)
+
+	comment = IPNWB#ReadTextDataSetAsString(commentGroup, "userComment")
+	HDF5CloseGroup/Z commentGroup
+
+	string/G targetDFR:userComment = comment
 End
 
 static Function/S AB_LoadLabNotebook(discLocation)
