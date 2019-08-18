@@ -140,7 +140,6 @@ do
   cp -r  "$base_folder"/Packages/MIES_include.ipf  "$user_proc"
   cp -r  "$base_folder"/Packages/MIES  "$user_proc"
   cp -r  "$base_folder"/Packages/Stimsets  "$user_proc"
-  cp -r  "$base_folder"/Packages/Tango  "$user_proc"
 
   mkdir -p "$user_proc/ZeroMQ"
   cp -r  "$base_folder"/Packages/ZeroMQ/procedures  "$user_proc/ZeroMQ"
@@ -154,10 +153,6 @@ do
   then
     cp -r  "$base_folder"/XOPs-IP${i}/*  "$xops32"
     cp -r  "$base_folder"/XOPs-IP${i}-64bit/*  "$xops64"
-
-    cp -r  "$base_folder"/XOP-tango/* "$xops32"
-    # no specific tango XOP version for IP8
-    cp -r  "$base_folder"/XOP-tango-IP7-64bit/* "$xops64"
   else
     cp -r  "$base_folder"/XOPs-IP${i}/HDF5*  "$xops32"
     cp -r  "$base_folder"/XOPs-IP${i}-64bit/HDF5*  "$xops64"
