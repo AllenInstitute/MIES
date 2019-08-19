@@ -5404,7 +5404,7 @@ Function SetupBackgroundTasks()
 	CtrlNamedBackground $TASKNAME_TIMERMD, period = 6, proc=DQM_Timer
 	CtrlNamedBackground $TASKNAME_FIFOMONMD, period=1, proc=DQM_FIFOMonitor
 	CtrlNamedBackground $TASKNAME_FIFOMON, period = 5, proc=DQS_FIFOMonitor
-	CtrlNamedBackground $TASKNAME_TIMER, period = 5, proc=DQS_Timer, start
+	CtrlNamedBackground $TASKNAME_TIMER, period = 5, proc=DQS_Timer
 	CtrlNamedBackground $TASKNAME_TPMD, period=5, proc=TPM_BkrdTPFuncMD
 	CtrlNamedBackground $TASKNAME_TP, period = 5, proc=TPS_TestPulseFunc
 	CtrlNamedBackground P_ITC_FIFOMonitor, period = 10, proc=P_ITC_FIFOMonitorProc
