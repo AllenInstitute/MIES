@@ -685,8 +685,8 @@ Function/S HW_ITC_ListDevices()
 				if(V_ITCError == 0x8D101000)
 					ITCGeterrorString2 V_ITCError
 					printf "Missing ITC initialization due to error \"%s\".\r", S_errorMessage
-					printf "Please run Igor Pro once as administrator to create the required registry keys.\r"
-					printf "Or run regedit.exe as administrator and allow READ/WRITE access to \"HKEY_LOCAL_MACHINE\SOFTWARE\Instrutech\".\r"
+					printf "Please run the ITCDemo applications once for 32bit and 64bit (ITCDemoG32.exe and ITCDemoG64.exe) as administrator to create the required registry keys.\r"
+					printf "And then run regedit.exe as administrator and allow READ/WRITE (better known as FULL) access to \"HKEY_LOCAL_MACHINE\SOFTWARE\Instrutech\" and \"HKEY_LOCAL_MACHINE\SOFTWARE\WOW6432Node\Instrutech\" for all users.\r"
 					ControlWindowToFront()
 					return ""
 				endif
