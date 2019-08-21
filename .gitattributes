@@ -27,8 +27,6 @@ LICENSE whitespace=cr-at-eol
 *.sh                  export-ignore
 tools                 export-ignore
 Packages/Testing-MIES export-ignore
-NIDAQmx.XOP           export-ignore
-NIDAQmx64.XOP         export-ignore
 Packages/Arduino/*zip export-ignore
 Packages/Arduino/*exe export-ignore
 
