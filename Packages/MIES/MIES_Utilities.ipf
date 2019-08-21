@@ -4464,6 +4464,20 @@ Function GetASLREnabledState()
 	return !cmpstr(setting, "OFF") ? 0 : 1
 End
 
+/// @brief Turn off ASLR
+///
+/// Requires administrative privileges via UAC. Only required once for ITC hardware.
+Function TurnOffASLR()
+	string cmd, path
+
+	path = GetFolder(FunctionPath("")) + "..:ITCXOP2:tools:Disable-ASLR-for-IP7-and-8.ps1"
+	GetFileFolderInfo/Q/Z path
+	ASSERT(V_IsFile, "Could not locate powershell script")
+	sprintf cmd, "powershell.exe -ExecutionPolicy Bypass \"%s\"", GetWindowsPath(path)
+	ExecuteScriptText/B/Z cmd
+	ASSERT(!V_flag, "Error executing ASLR script")
+End
+
 /// @brief Check if we are running on Windows 10
 Function IsWindows10()
 	string info, os

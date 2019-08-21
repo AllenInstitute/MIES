@@ -40,6 +40,7 @@ Menu "Mies Panels"
 	"-"
 	SubMenu "Advanced"
 		"Restart ZeroMQ Message Handler"           , /Q, StartZeroMQMessageHandler()
+		"Turn off ASLR (requires UAC elevation)"   , /Q, TurnOffASLR()
 		"Open debug panel"                         , /Q, DP_OpenDebugPanel()
 		"Check Installation"                       , /Q, CHI_CheckInstallation()
 		"Start Background Task watcher panel"      , /Q, BkgWatcher#BW_StartPanel()
