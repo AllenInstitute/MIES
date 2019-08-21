@@ -29,6 +29,9 @@ tools                 export-ignore
 Packages/Testing-MIES export-ignore
 Packages/Arduino/*zip export-ignore
 Packages/Arduino/*exe export-ignore
+.mailmap              export-ignore
+CODEOWNERS            export-ignore
+ctags.cnf             export-ignore
 
 *.dot !diff
 
