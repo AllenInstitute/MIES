@@ -2884,6 +2884,17 @@ Function/S GetIgorExtensionFolderName()
 #endif
 End
 
+/// @brief Return an Igor-style path to the Igor Pro executable
+Function/S GetIgorExecutable()
+	string path = SpecialDirPath("Igor Executable", 0, 0, 0)
+
+#ifdef IGOR64
+	return path + "Igor64.exe"
+#else
+	return path + "Igor.exe"
+#endif
+End
+
 /// @brief Recursively resolve shortcuts to files/directories
 ///
 /// @return full path or an empty string if the file does not exist or the
@@ -4423,4 +4434,41 @@ Function/S num2strHighPrec(val, [precision])
 	sprintf str, "%.*f", precision, val
 
 	return str
+End
+
+/// @brief Return the per application setting of ASLR for the Igor Pro executable
+///
+/// See https://docs.microsoft.com/en-us/windows/security/threat-protection/windows-defender-exploit-guard/enable-exploit-protection
+/// for the powershell cmdlet documentation.
+///
+/// @returns 0 or 1
+Function GetASLREnabledState()
+
+	string cmd, entry, list, setting, result
+
+	sprintf cmd, "powershell.exe -nologo -noprofile -command \"Get-ProcessMitigation -Name '%s'\"", GetWindowsPath(GetIgorExecutable())
+
+	ExecuteScriptText/B/Z cmd
+	ASSERT(!V_flag, "Error executing process mitigation querying script.")
+	result = S_Value
+
+	if(IsEmpty(S_Value))
+		return 1 // assuming system default is on
+	endif
+
+	entry = GrepList(S_value, "^[[:space:]]*BottomUp", 0, "\r\n")
+
+	SplitString/E="^[[:space:]]*BottomUp[[:space:]]*: ([[:alnum:]]+)$" trimstring(entry), setting
+	ASSERT(V_flag == 1, "Unexpected string")
+
+	return !cmpstr(setting, "OFF") ? 0 : 1
+End
+
+/// @brief Check if we are running on Windows 10
+Function IsWindows10()
+	string info, os
+
+	info = IgorInfo(3)
+	os = StringByKey("OS", info)
+	return GrepString(os, "^Windows 10 ")
 End
