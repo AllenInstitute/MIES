@@ -656,7 +656,7 @@ Window BrowserSettingsPanel() : Panel
 	PopupMenu popup_overlaySweeps_select,help={"Select sweeps according to various properties"}
 	PopupMenu popup_overlaySweeps_select,userdata(tabnum)=  "1"
 	PopupMenu popup_overlaySweeps_select,userdata(tabcontrol)=  "Settings"
-	PopupMenu popup_overlaySweeps_select,mode=1,popvalue="- none -",value= #"OVS_GetSweepSelectionChoices(\"DB_ITC18USB_Dev_0#BrowserSettingsPanel\")"
+	PopupMenu popup_overlaySweeps_select,mode=1,popvalue="- none -"
 	CheckBox check_overlaySweeps_disableHS,pos={99.00,160.00},size={117.00,16.00},disable=3,proc=OVS_CheckBoxProc_HS_Select,title="Headstage Removal"
 	CheckBox check_overlaySweeps_disableHS,help={"Toggle headstage removal"}
 	CheckBox check_overlaySweeps_disableHS,userdata(tabnum)=  "1"
@@ -994,7 +994,7 @@ Window BrowserSettingsPanel() : Panel
 	PopupMenu popup_DB_lockedDevices,help={"Select a data acquistion device to display data"}
 	PopupMenu popup_DB_lockedDevices,userdata(tabnum)=  "0"
 	PopupMenu popup_DB_lockedDevices,userdata(tabcontrol)=  "Settings"
-	PopupMenu popup_DB_lockedDevices,mode=1,popvalue="ITC18USB_Dev_0",value= #"DB_GetAllDevicesWithData()"
+	PopupMenu popup_DB_lockedDevices,mode=1,value= #"DB_GetAllDevicesWithData()"
 	ListBox list_dashboard,pos={4.00,90.00},size={353.00,311.00},disable=1,proc=AD_ListBoxProc
 	ListBox list_dashboard,userdata(tabnum)=  "6",userdata(tabcontrol)=  "Settings"
 	ListBox list_dashboard,fSize=12,mode= 1,selRow= -1,widths={141,109,500}
