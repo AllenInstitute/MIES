@@ -2060,6 +2060,18 @@ Function EnableUnassocChannels_IGNORE(device)
 	// enable TTL3
 	PGC_SetAndActivateControl(device, GetPanelControl(3, CHANNEL_TYPE_TTL, CHANNEL_CONTROL_CHECK), val=1)
 	PGC_SetAndActivateControl(device, GetPanelControl(3, CHANNEL_TYPE_TTL, CHANNEL_CONTROL_WAVE), str="StimulusSetB*")
+
+	if(HW_ITC_GetNumberOfRacks(device) > 1)
+		// enable TTL channels on rack two
+
+		// enable TTL5
+		PGC_SetAndActivateControl(device, GetPanelControl(5, CHANNEL_TYPE_TTL, CHANNEL_CONTROL_CHECK), val=1)
+		PGC_SetAndActivateControl(device, GetPanelControl(5, CHANNEL_TYPE_TTL, CHANNEL_CONTROL_WAVE), str="StimulusSetA*")
+
+		// enable TTL7
+		PGC_SetAndActivateControl(device, GetPanelControl(7, CHANNEL_TYPE_TTL, CHANNEL_CONTROL_CHECK), val=1)
+		PGC_SetAndActivateControl(device, GetPanelControl(7, CHANNEL_TYPE_TTL, CHANNEL_CONTROL_WAVE), str="StimulusSetB*")
+	endif
 End
 
 // Using unassociated channels works
@@ -2136,29 +2148,63 @@ Function UnassociatedChannels_REENTRY([str])
 			switch(GetHardwareType(device))
 				case HARDWARE_ITC_DAC:
 					// check TTL LBN keys
-					CHECK_EQUAL_WAVES(TTLs, {HW_ITC_GetITCXOPChannelForRack(device, RACK_ZERO)}, mode = WAVE_DATA)
+					if(HW_ITC_GetNumberOfRacks(device) > 1)
+						CHECK_EQUAL_WAVES(TTLs, {HW_ITC_GetITCXOPChannelForRack(device, RACK_ZERO), \
+												 HW_ITC_GetITCXOPChannelForRack(device, RACK_ONE)}, mode = WAVE_DATA)
+					else
+						CHECK_EQUAL_WAVES(TTLs, {HW_ITC_GetITCXOPChannelForRack(device, RACK_ZERO)}, mode = WAVE_DATA)
+					endif
+
 					WAVE/T/Z foundStimSets = GetLastSetting(textualValues, j, "TTL rack zero stim sets", DATA_ACQUISITION_MODE)
 					CHECK_EQUAL_TEXTWAVES(foundStimSets, {"", "", "", "", "", "", "", "", ";StimulusSetA_TTL_0;;StimulusSetB_TTL_0;"})
 					WAVE/T/Z foundStimSets = GetLastSetting(textualValues, j, "TTL rack one stim sets", DATA_ACQUISITION_MODE)
-					CHECK_WAVE(foundStimSets, NULL_WAVE)
+
+					if(HW_ITC_GetNumberOfRacks(device) > 1)
+						CHECK_EQUAL_TEXTWAVES(foundStimSets, {"", "", "", "", "", "", "", "", ";StimulusSetA_TTL_0;;StimulusSetB_TTL_0;"})
+					else
+						CHECK_WAVE(foundStimSets, NULL_WAVE)
+					endif
+
+					CHECK_EQUAL_VAR(NUM_ITC_TTL_BITS_PER_RACK, 4)
 
 					WAVE/Z bits = GetLastSetting(numericalValues, j, "TTL rack zero bits", DATA_ACQUISITION_MODE)
 					// TTL 1 and 3 are active -> 2^1 + 2^3 = 10
 					CHECK_EQUAL_WAVES(bits, {NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, 10}, mode = WAVE_DATA)
 					WAVE/Z bits = GetLastSetting(numericalValues, j, "TTL rack one bits", DATA_ACQUISITION_MODE)
-					CHECK_WAVE(bits, NULL_WAVE)
+
+
+					if(HW_ITC_GetNumberOfRacks(device) > 1)
+						// TTL 5 and 7 are active -> 2^(5 - 4) + 2^(7 - 4) = 10
+						CHECK_EQUAL_WAVES(bits, {NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, 10}, mode = WAVE_DATA)
+					else
+						CHECK_WAVE(bits, NULL_WAVE)
+					endif
 
 					WAVE/Z channels = GetLastSetting(numericalValues, j, "TTL rack zero channel", DATA_ACQUISITION_MODE)
-					CHECK_EQUAL_VAR(DimSize(TTLs, ROWS), 1)
+
+					if(HW_ITC_GetNumberOfRacks(device) > 1)
+						CHECK_EQUAL_VAR(DimSize(TTLs, ROWS), 2)
+					else
+						CHECK_EQUAL_VAR(DimSize(TTLs, ROWS), 1)
+					endif
+
 					CHECK_EQUAL_WAVES(channels, {NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, TTLs[0]}, mode = WAVE_DATA)
 					WAVE/Z channels = GetLastSetting(numericalValues, j, "TTL rack one channel", DATA_ACQUISITION_MODE)
-					CHECK_WAVE(channels, NULL_WAVE)
+					if(HW_ITC_GetNumberOfRacks(device) > 1)
+						CHECK_EQUAL_WAVES(channels, {NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN, TTLs[1]}, mode = WAVE_DATA)
+					else
+						CHECK_WAVE(channels, NULL_WAVE)
+					endif
 
 					// set sweep count
 					WAVE/T/Z sweepCounts = GetLastSetting(textualValues, j, "TTL rack zero set sweep counts", DATA_ACQUISITION_MODE)
 					CHECK_EQUAL_TEXTWAVES(sweepCounts, {"", "", "", "", "", "", "", "", ";0;;0;"})
 					WAVE/T/Z sweepCounts = GetLastSetting(textualValues, j, "TTL rack one set sweep counts", DATA_ACQUISITION_MODE)
-					CHECK_WAVE(sweepCounts, NULL_WAVE)
+					if(HW_ITC_GetNumberOfRacks(device) > 1)
+						CHECK_EQUAL_TEXTWAVES(sweepCounts, {"", "", "", "", "", "", "", "", ";0;;0;"})
+					else
+						CHECK_WAVE(sweepCounts, NULL_WAVE)
+					endif
 					break
 				case HARDWARE_NI_DAC:
 					CHECK_EQUAL_WAVES(TTLs, {1, 3}, mode = WAVE_DATA)
