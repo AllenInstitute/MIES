@@ -492,16 +492,10 @@ End
 static Function P_PrepareITCWaves(mainDevice, pressureDevice)
 	string mainDevice, pressureDevice
 
-	variable ret
-	string deviceType, deviceNumber
-
-	ret = ParseDeviceString(pressureDevice, deviceType, deviceNumber)
-	ASSERT(ret, "Could not parse device string")
-
 	WAVE ITCData    = P_GetITCData(mainDevice)
 	WAVE ITCConfig  = P_GetITCChanConfig(mainDevice)
 
-	if(!cmpstr(deviceType, "ITC1600")) // two racks
+	if(IsITC1600(pressureDevice)) // two racks
 		Redimension/N=(-1, 4) ITCData
 		Redimension/N=(4, -1) ITCConfig
 
@@ -1437,8 +1431,7 @@ static Function P_TTLforPpulse(panelTitle, headStage)
 	string panelTitle
 	variable headStage
 
-	variable rackZeroState, rackOneState, deviceID, hwType, rack, TTL, ret
-	string deviceType, deviceNumber
+	variable rackZeroState, rackOneState, deviceID, hwType, rack, TTL
 	string pressureDevice
 
 	WAVE ITCData             = P_GetITCData(panelTitle)
@@ -1456,8 +1449,7 @@ static Function P_TTLforPpulse(panelTitle, headStage)
 
 	ASSERT(IsFinite(TTL), "TTL A must be finite")
 
-	ret = ParseDeviceString(panelTitle, deviceType, deviceNumber)
-	if(!cmpstr(deviceType, "ITC1600"))
+	if(IsITC1600(panelTitle))
 		// request TTL bit definitly in rack zero
 		rackZeroState = HW_ReadDigital(hwType, deviceID, 0)
 		ITCData[][%TTL_R0] = rackZeroState

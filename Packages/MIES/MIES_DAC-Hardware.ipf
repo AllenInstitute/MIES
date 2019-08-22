@@ -1741,13 +1741,7 @@ End
 Function HW_ITC_CalculateDevChannelOff(panelTitle)
 	string panelTitle
 
-	variable ret
-	string deviceType, deviceNum
-
-	ret = ParseDeviceString(panelTitle, deviceType, deviceNum)
-	ASSERT(ret, "Could not parse device string")
-
-	if(!cmpstr(deviceType, "ITC1600"))
+	if(IsITC1600(panelTitle))
 		return 16
 	endif
 
@@ -1791,16 +1785,10 @@ Function HW_ITC_GetRackForTTLBit(panelTitle, ttlBit)
 	string panelTitle
 	variable ttlBit
 
-	string deviceType, deviceNumber
-	variable ret
-
 	ASSERT(ttlBit < NUM_DA_TTL_CHANNELS, "Invalid channel index")
 
 	if(ttlBit >= NUM_ITC_TTL_BITS_PER_RACK)
-		ret = ParseDeviceString(panelTitle, deviceType, deviceNumber)
-		ASSERT(ret, "Could not parse device string")
-		ASSERT(!cmpstr(deviceType, "ITC1600"), "Only the ITC1600 has multiple racks")
-
+		ASSERT(IsITC1600(panelTitle), "Only the ITC1600 has multiple racks")
 		return RACK_ONE
 	else
 		return RACK_ZERO
@@ -1828,7 +1816,7 @@ Function HW_ITC_GetITCXOPChannelForRack(panelTitle, rack)
 			return HARDWARE_ITC_TTL_1600_RACK_ZERO
 		endif
 	elseif(rack == RACK_ONE)
-		ASSERT(!cmpstr(deviceType, "ITC1600"), "Only the ITC1600 has multiple racks")
+		ASSERT(IsITC1600(panelTitle), "Only the ITC1600 has multiple racks")
 		return HARDWARE_ITC_TTL_1600_RACK_ONE
 	endif
 End
