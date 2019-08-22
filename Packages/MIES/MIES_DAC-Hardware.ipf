@@ -1803,21 +1803,17 @@ Function HW_ITC_GetITCXOPChannelForRack(panelTitle, rack)
 	string panelTitle
 	variable rack
 
-	string deviceType, deviceNumber
-	variable ret
-
-	ret = ParseDeviceString(panelTitle, deviceType, deviceNumber)
-	ASSERT(ret, "Could not parse device string")
-
 	if(rack == RACK_ZERO)
-		if(!cmpstr(deviceType, "ITC18USB") || !cmpstr(deviceType, "ITC18"))
-			return HARDWARE_ITC_TTL_DEF_RACK_ZERO
-		else
+		if(IsITC1600(panelTitle))
 			return HARDWARE_ITC_TTL_1600_RACK_ZERO
+		else
+			return HARDWARE_ITC_TTL_DEF_RACK_ZERO
 		endif
 	elseif(rack == RACK_ONE)
 		ASSERT(IsITC1600(panelTitle), "Only the ITC1600 has multiple racks")
 		return HARDWARE_ITC_TTL_1600_RACK_ONE
+	else
+		ASSERT(0, "Unknown rack")
 	endif
 End
 /// @}
