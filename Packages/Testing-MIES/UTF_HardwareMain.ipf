@@ -167,7 +167,9 @@ Function TEST_CASE_BEGIN_OVERRIDE(name)
 	SVAR miesVersion = root:miesVersion
 	string/G $(GetMiesPathAsString() + ":version") = miesVersion
 
+#ifndef TESTS_WITH_NI_HARDWARE
 	HW_ITC_CloseAllDevices()
+#endif
 End
 
 Function TEST_CASE_END_OVERRIDE(name)
