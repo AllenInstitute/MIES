@@ -126,6 +126,7 @@ Function CHI_CheckInstallation()
 	listOfXOPs = TextWaveToList(DeleteDuplicates(ListToTextWave(listOfXOPs, "|")), "|")
 
 	STRUCT CHI_InstallationState state
+	CHI_InitInstallationState(state)
 
 	info = IgorInfo(0)
 	igorBuild = StringByKey("BUILD", info)
@@ -144,7 +145,6 @@ Function CHI_CheckInstallation()
 		endif
 	endif
 
-	CHI_InitInstallationState(state)
 	printf "\rChecking base installation:\r"
 
 	SVAR miesVersion = $GetMiesVersion()
