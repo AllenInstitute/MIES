@@ -1196,6 +1196,14 @@ Function HW_ITC_StartAcq(deviceID, triggerMode, [flags])
 			break
 	endswitch
 
+	if(V_ITCError == 0x80421000 && GetASLREnabledState())
+		printf "DAQ with ITC hardware is broken as the installation is not complete.\r"
+		printf "Please call \"Mies Panels->Advanced->Turn off ASLR (requires UAC elevation)\" or\r"
+		printf "follow the steps at https://github.com/AllenInstitute/ITCXOP2#windows-10.\r"
+		printf "In both cases Igor Pro needs to be restarted.\r"
+		Abort
+	endif
+
 	HW_ITC_HandleReturnValues(flags, V_ITCError, V_ITCXOPError)
 End
 

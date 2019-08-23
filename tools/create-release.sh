@@ -87,4 +87,7 @@ version_file=$top_level/version.txt
 "$zip_exe" -qd $output_file "Packages/ZeroMQ/xop-stub-generator/*" > /dev/null
 "$zip_exe" -qd $output_file "Packages/doc/*" > /dev/null
 
+# readd files we want to have
+"$zip_exe" -qru $output_file "Packages/ITCXOP2/tools" > /dev/null
+
 exit 0
