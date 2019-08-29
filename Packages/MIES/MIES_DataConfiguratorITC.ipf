@@ -401,7 +401,7 @@ static Function DC_MakeOscilloscopeWave(panelTitle, numActiveChannels, dataAcqOr
 
 	switch(hardwareType)
 		case HARDWARE_ITC_DAC:
-			WAVE ITCDataWave      = GetHardwareDataWave(panelTitle)
+			WAVE ITCDataWave = GetHardwareDataWave(panelTitle)
 			if(dataAcqOrTP == TEST_PULSE_MODE)
 				numRows = testPulseLength
 			elseif(dataAcqOrTP == DATA_ACQUISITION_MODE)
@@ -412,7 +412,7 @@ static Function DC_MakeOscilloscopeWave(panelTitle, numActiveChannels, dataAcqOr
 			sampleIntervall = DimDelta(ITCDataWave, ROWS)
 			break
 		case HARDWARE_NI_DAC:
-			WAVE/WAVE NIDataWave      = GetHardwareDataWave(panelTitle)
+			WAVE/WAVE NIDataWave = GetHardwareDataWave(panelTitle)
 			if(dataAcqOrTP == TEST_PULSE_MODE)
 				numRows = testPulseLength
 			elseif(dataAcqOrTP == DATA_ACQUISITION_MODE)
