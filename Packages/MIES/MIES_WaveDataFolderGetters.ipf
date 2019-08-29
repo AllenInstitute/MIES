@@ -6507,3 +6507,31 @@ Function/WAVE GetDeviceInfoWave(panelTitle)
 
 	return wv
 End
+
+/// @brief Return a wave suitable for storing elapsed time
+///
+/// Helper function for DEBUGPRINT_ELAPSED_WAVE() and StoreElapsedTime().
+Function/WAVE GetElapsedTimeWave()
+
+	variable versionOfNewWave = 1
+
+	DFREF dfr = GetTempPath()
+	WAVE/D/Z/SDFR=dfr wv = elapsedTime
+
+	if(ExistsWithCorrectLayoutVersion(wv, versionOfNewWave))
+		return wv
+	elseif(WaveExists(wv))
+		// handle upgrade
+	else
+		Make/D/N=(MINIMUM_WAVE_SIZE) dfr:elapsedTime/Wave=wv
+	endif
+
+	wv = NaN
+
+	SetScale d, 0, 0, "s", wv
+	SetNumberInWaveNote(wv, NOTE_INDEX, 0)
+
+	SetWaveVersion(wv, versionOfNewWave)
+
+	return wv
+End
