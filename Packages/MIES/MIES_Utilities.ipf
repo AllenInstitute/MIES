@@ -4486,3 +4486,59 @@ Function IsWindows10()
 	os = StringByKey("OS", info)
 	return GrepString(os, "^Windows 10 ")
 End
+
+Function/WAVE WaveGetterPrototype()
+	ASSERT(0, "Prototype called")
+End
+
+Function/WAVE GetElapsedTimeWaveWrapper()
+
+	FUNCREF WaveGetterPrototype f = $"GetElapsedTimeWave"
+
+	return f()
+End
+
+/// @brief Start a timer for performance measurements
+///
+/// Usage:
+/// \rst
+/// .. code-block:: igorpro
+///
+/// 	variable referenceTime = GetReferenceTime()
+/// 	// part one to benchmark
+/// 	print GetReferenceTime(referenceTime)
+/// 	// part two to benchmark
+/// 	print GetReferenceTime(referenceTime)
+/// 	// you can also store all times via
+/// 	StoreElapsedTime(referenceTime)
+/// \endrst
+Function GetReferenceTime()
+	return stopmstimer(-2)
+End
+
+/// @brief Get the elapsed time in seconds
+Function GetElapsedTime(referenceTime)
+	variable referenceTime
+
+	return (stopmstimer(-2) - referenceTime) / 1e6
+End
+
+/// @brief Store the elapsed time in a wave
+Function StoreElapsedTime(referenceTime)
+	variable referenceTime
+
+	variable count, elapsed
+
+	WAVE/D elapsedTime = GetElapsedTimeWaveWrapper()
+
+	count = GetNumberFromWaveNote(elapsedTime, NOTE_INDEX)
+	EnsureLargeEnoughWave(elapsedTime, minimumSize=count, initialValue = NaN)
+
+	elapsed = GetElapsedTime(referenceTime)
+	elapsedTime[count] = elapsed
+	SetNumberInWaveNote(elapsedTime, NOTE_INDEX, count + 1)
+
+	DEBUGPRINT("timestamp: ", var=elapsed)
+
+	return elapsed
+End
