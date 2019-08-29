@@ -2586,9 +2586,17 @@ Function TestDecimateWithMethodInvalid()
 
 	Make/D/FREE data = {0.1, 1, 0.2, 2, 0.3, 3, 0.4, 4, 0.5, 5, 0.6, 6, 0.7, 7, 0.8, 8}
 	numRows = DimSize(data, ROWS)
-	decimationFactor = 1
+	decimationFactor = 2
 	method = DECIMATION_MINMAX
-	Make/FREE/N=(DimSize(data, ROWS)) output
+	Make/FREE/N=(DimSize(data, ROWS)/2) output
+
+	try
+		DecimateWithMethod(data, output, 1, method); AbortOnRTE
+		FAIL()
+	catch
+		err = GetRTError(-1)
+		PASS()
+	endtry
 
 	try
 		DecimateWithMethod(data, $"", decimationFactor, method); AbortOnRTE
@@ -2641,7 +2649,7 @@ Function TestDecimateWithMethodInvalid()
 	endtry
 
 	try
-		DecimateWithMethod(data, output, decimationFactor, method, firstRow = -1); AbortOnRTE
+		DecimateWithMethod(data, output, decimationFactor, method, firstRowInp = -1); AbortOnRTE
 		FAIL()
 	catch
 		err = GetRTError(-1)
@@ -2649,7 +2657,7 @@ Function TestDecimateWithMethodInvalid()
 	endtry
 
 	try
-		DecimateWithMethod(data, output, decimationFactor, method, firstRow = 100); AbortOnRTE
+		DecimateWithMethod(data, output, decimationFactor, method, firstRowInp = 100); AbortOnRTE
 		FAIL()
 	catch
 		err = GetRTError(-1)
@@ -2657,7 +2665,7 @@ Function TestDecimateWithMethodInvalid()
 	endtry
 
 	try
-		DecimateWithMethod(data, output, decimationFactor, method, lastRow = -1); AbortOnRTE
+		DecimateWithMethod(data, output, decimationFactor, method, lastRowInp = -1); AbortOnRTE
 		FAIL()
 	catch
 		err = GetRTError(-1)
@@ -2665,7 +2673,7 @@ Function TestDecimateWithMethodInvalid()
 	endtry
 
 	try
-		DecimateWithMethod(data, output, decimationFactor, method, lastRow = 100); AbortOnRTE
+		DecimateWithMethod(data, output, decimationFactor, method, lastRowInp = 100); AbortOnRTE
 		FAIL()
 	catch
 		err = GetRTError(-1)
@@ -2673,7 +2681,7 @@ Function TestDecimateWithMethodInvalid()
 	endtry
 
 	try
-		DecimateWithMethod(data, output, decimationFactor, method, lastRow = -1); AbortOnRTE
+		DecimateWithMethod(data, output, decimationFactor, method, lastRowInp = -1); AbortOnRTE
 		FAIL()
 	catch
 		err = GetRTError(-1)
@@ -2681,7 +2689,7 @@ Function TestDecimateWithMethodInvalid()
 	endtry
 
 	try
-		DecimateWithMethod(data, output, decimationFactor, method, lastRow = 100); AbortOnRTE
+		DecimateWithMethod(data, output, decimationFactor, method, lastRowInp = 100); AbortOnRTE
 		FAIL()
 	catch
 		err = GetRTError(-1)
@@ -2689,7 +2697,7 @@ Function TestDecimateWithMethodInvalid()
 	endtry
 
 	try
-		DecimateWithMethod(data, output, decimationFactor, method, firstCol = -1); AbortOnRTE
+		DecimateWithMethod(data, output, decimationFactor, method, firstColInp = -1); AbortOnRTE
 		FAIL()
 	catch
 		err = GetRTError(-1)
@@ -2697,7 +2705,7 @@ Function TestDecimateWithMethodInvalid()
 	endtry
 
 	try
-		DecimateWithMethod(data, output, decimationFactor, method, firstCol = 100); AbortOnRTE
+		DecimateWithMethod(data, output, decimationFactor, method, firstColInp = 100); AbortOnRTE
 		FAIL()
 	catch
 		err = GetRTError(-1)
@@ -2705,7 +2713,7 @@ Function TestDecimateWithMethodInvalid()
 	endtry
 
 	try
-		DecimateWithMethod(data, output, decimationFactor, method, lastCol = -1); AbortOnRTE
+		DecimateWithMethod(data, output, decimationFactor, method, lastColInp = -1); AbortOnRTE
 		FAIL()
 	catch
 		err = GetRTError(-1)
@@ -2713,7 +2721,7 @@ Function TestDecimateWithMethodInvalid()
 	endtry
 
 	try
-		DecimateWithMethod(data, output, decimationFactor, method, lastCol = 100); AbortOnRTE
+		DecimateWithMethod(data, output, decimationFactor, method, lastColInp = 100); AbortOnRTE
 		FAIL()
 	catch
 		err = GetRTError(-1)
@@ -2738,7 +2746,7 @@ Function TestDecimateWithMethodInvalid()
 	endtry
 End
 
-Function TestDecimateWithMethodWorks()
+Function TestDecimateWithMethodDec1()
 
 	variable newSize, numRows, decimationFactor, method
 
@@ -2753,25 +2761,10 @@ Function TestDecimateWithMethodWorks()
 	Make/FREE refOutput = {10, 800}
 	Make/N=(1) factor = {100}
 
-	DecimateWithMethod(data, output, decimationFactor, method, firstRow=1, lastRow=15, firstCol=0, lastCol = 0, factor=factor)
+	DecimateWithMethod(data, output, decimationFactor, method, firstRowInp = 1, lastRowInp = 15, firstColInp = 0, lastColInp = 0, factor = factor)
 	CHECK_EQUAL_WAVES(output, refOutput, mode = WAVE_DATA)
 	print output
 	print refoutput
-End
-
-Function TestDecimateWithMethodDec1()
-
-	variable newSize, numRows, decimationFactor, method
-
-	Make/D/FREE data = {0.1, 1, 0.2, 2, 0.3, 3, 0.4, 4, 0.5, 5, 0.6, 6, 0.7, 7, 0.8, 8}
-	numRows = DimSize(data, ROWS)
-	decimationFactor = 1
-	method = DECIMATION_MINMAX
-	newSize = GetDecimatedWaveSize(numRows, decimationFactor, method)
-	CHECK_EQUAL_VAR(numRows, newSize)
-	Make/FREE/D/N=(newSize) output
-	DecimateWithMethod(data, output, decimationFactor, method)
-	CHECK_EQUAL_WAVES(output, data)
 End
 
 Function TestDecimateWithMethodDec2()
@@ -2858,11 +2851,11 @@ Function TestDecimateWithMethodDec6()
 	Make/D/N=(newSize, 2) output
 	Make/D/FREE refOutput = {{0, 0, 0, 0}, {0.1, 4, 0.5, 8}}
 
-	DecimateWithMethod(data, output, decimationFactor, method, firstCol = 1)
+	DecimateWithMethod(data, output, decimationFactor, method, firstColInp = 1)
 	CHECK_EQUAL_WAVES(output, refOutput, mode = WAVE_DATA)
 End
 
-// respects factor
+// respects factor and has different output column
 Function TestDecimateWithMethodDec7()
 
 	variable newSize, numRows, decimationFactor, method
@@ -2873,12 +2866,12 @@ Function TestDecimateWithMethodDec7()
 	method = DECIMATION_MINMAX
 	newSize = GetDecimatedWaveSize(numRows, decimationFactor, method)
 	CHECK_EQUAL_VAR(newSize, 4)
-	Make/D/N=(newSize, 2) output = {{2, 2, 2, 2}, {-10, -400, -50, -800}}
+	Make/D/N=(newSize, 2) output = {{-10, -400, -50, -800}, {2, 2, 2, 2}}
 	// factor leaves first column untouched
-	Make/D/FREE refOutput = {{2, 2, 2, 2}, {-10, -400, -50, -800}}
+	Make/D/FREE refOutput = {{-10, -400, -50, -800}, {2, 2, 2, 2}}
 	Make/N=(1) factor = {-100}
 
-	DecimateWithMethod(data, output, decimationFactor, method, factor=factor, firstCol=1)
+	DecimateWithMethod(data, output, decimationFactor, method, factor=factor, firstColInp = 1, firstColOut = 0, lastColOut = 0)
 	CHECK_EQUAL_WAVES(output, refOutput, mode = WAVE_DATA)
 End
 
@@ -2899,7 +2892,7 @@ Function TestDecimateWithMethodDec8()
 	Make/FREE chunks = {{0, 2}, {3, 8}, {9, 15}}
 
 	for(i = 0; i < DimSize(chunks, COLS); i += 1)
-		DecimateWithMethod(data, output, decimationFactor, method, firstRow = chunks[0][i], lastRow = chunks[1][i])
+		DecimateWithMethod(data, output, decimationFactor, method, firstRowInp = chunks[0][i], lastRowInp = chunks[1][i])
 		switch(i)
 			case 0:
 				CHECK_EQUAL_WAVES(output, {0.1, 1, 0, 0}, mode = WAVE_DATA, tol=1e-10)

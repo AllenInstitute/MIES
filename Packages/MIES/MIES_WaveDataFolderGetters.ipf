@@ -2249,6 +2249,8 @@ Function/Wave GetScaledDataWave(panelTitle)
 End
 
 /// @brief Return a wave for displaying scaled data in the oscilloscope window
+///
+/// Contents can be decimated for faster display.
 Function/Wave GetOscilloscopeWave(panelTitle)
 	string panelTitle
 

@@ -5466,3 +5466,234 @@ Function StopAsyncIfDone()
 End
 #endif
 
+/// @name Decimation methods
+/// @anchor DecimationMethods
+/// @{
+Constant DECIMATION_NONE   = 0x0
+Constant DECIMATION_MINMAX = 0x1
+/// @}
+
+/// @brief Return the size of the decimated wave
+///
+/// Query that to create the output wave before calling DecimateWithMethod().
+///
+/// @param numRows 			number of rows in the input wave
+/// @param decimationFactor decimation factor, must be an integer and larger than 1
+/// @param method      	    one of @ref DecimationMethods
+Function GetDecimatedWaveSize(numRows, decimationFactor, method)
+	variable numRows, decimationFactor, method
+
+	variable decimatedSize
+
+	ASSERT(IsInteger(decimationFactor) && decimationFactor > 1, "decimationFactor must be an integer and larger as 1.")
+
+	switch(method)
+		case DECIMATION_NONE:
+			return numRows
+		case DECIMATION_MINMAX:
+			decimatedSize = ceil(numRows / decimationFactor)
+			// make it even
+			decimatedSize = mod(decimatedSize, 2) == 0 ? decimatedSize : ++decimatedSize
+			return decimatedSize
+		default:
+			ASSERT(0, "Invalid method")
+			break
+	endswitch
+End
+
+/// @brief Decimate the the given input wave
+///
+/// This allows to decimate a given input row range into output rows using the
+/// given method. The columns of input/output can be different. The input row
+/// coordinates can be used to do a chunked conversion, e.g. when receiving
+/// data from hardware. Incomplete chunks will be redone when necessary.
+///
+/// Algorithm visualized:
+///
+/// \rst
+/// .. code-block:: text
+///
+///    Input (16 entries): [ | | | | | | | | | | | | | | | ]
+///    Decimation factor: 4
+///    Method: MinMax
+///    Output (4 entries): [ min(input[0, 7]) | max(input[0, 7]) | min(input[8, 15]) | max(input[8, 15]) ]
+///
+/// \endrst
+///
+/// @param input             wave to decimate
+/// @param output            target wave which will be around `decimationFactor` smaller than input
+/// @param decimationFactor  decimation factor, must be an integer and larger than 1
+/// @param method            one of @ref DecimationMethods
+/// @param firstRowInp       [optional, defaults to 0] first row *input* coordinates
+/// @param lastRowInp        [optional, defaults to last element] last row in *input* coordinates
+/// @param firstColInp       [optional, defaults to 0] first col in *input* coordinates
+/// @param lastColInp        [optional, defaults to last element] last col in *input* coordinates
+/// @param firstColOut       [optional, defaults to firstColInp] first col in *output* coordinates
+/// @param lastColOut        [optional, defaults to lastColInp] last col in *output* coordinates
+/// @param factor            [optional, defaults to none] factor which is applied to
+///                          all input columns and written into the output columns
+Function DecimateWithMethod(input, output, decimationFactor, method, [firstRowInp, lastRowInp, firstColInp, lastColInp, firstColOut, lastColOut, factor])
+	WAVE input
+	WAVE output
+	variable decimationFactor, method
+	variable firstRowInp, lastRowInp, firstColInp, lastColInp, firstColOut, lastColOut
+	WAVE/Z factor
+
+	variable numRowsInp, numColsInp, numRowsOut, numColsOut, targetFirst, targetLast,  numOutputPairs, usedColumns, usedRows
+	variable numRowsDecimated, first, last
+	string msg, key
+
+	// BEGIN parameter checking
+
+	numRowsInp = DimSize(input, ROWS)
+	numColsInp = DimSize(input, COLS)
+
+	numRowsOut = DimSize(output, ROWS)
+	numColsOut = DimSize(output, COLS)
+
+	if(ParamIsDefault(firstRowInp))
+		firstRowInp = 0
+	else
+		ASSERT(firstRowInp >= 0 && firstRowInp < numRowsInp, "Invalid firstRowInp value")
+	endif
+
+	if(ParamIsDefault(lastRowInp))
+		lastRowInp = numRowsInp - 1
+	else
+		ASSERT(lastRowInp >= 0 && lastRowInp < numRowsInp, "Invalid lastRowInp value")
+	endif
+
+	firstRowInp = min(firstRowInp, lastRowInp)
+	lastRowInp  = max(firstRowInp, lastRowInp)
+
+	usedRows = lastRowInp - firstRowInp + 1
+
+	if(ParamIsDefault(firstColInp))
+		firstColInp = 0
+	else
+		ASSERT(firstColInp >= 0 && (firstColInp < numColsInp || (firstColInp == 0 && numColsInp <= 1)), "Invalid firstColInp value")
+	endif
+
+	if(ParamIsDefault(lastColInp))
+		lastColInp = max(numColsInp - 1, 0)
+	else
+		ASSERT(lastColInp >= 0 && (lastColInp < numColsInp || (lastColInp == 0 && numColsInp <= 1)), "Invalid lastColInp value")
+	endif
+
+	firstColInp = min(firstColInp, lastColInp)
+	lastColInp  = max(firstColInp, lastColInp)
+
+	usedColumns = lastColInp - firstColInp + 1
+
+	if(ParamIsDefault(firstColOut))
+		firstColOut = firstColInp
+	else
+		ASSERT(firstColOut >= 0 && (firstColOut < numColsOut || (firstColOut == 0 && numColsOut <= 1)), "Invalid firstColOut value")
+	endif
+
+	if(ParamIsDefault(lastColOut))
+		lastColOut = lastColInp
+	else
+		ASSERT(lastColOut >= 0 && (lastColOut < numColsOut || (lastColOut == 0 && numColsOut <= 1)), "Invalid lastColOut value")
+	endif
+
+	firstColOut = min(firstColOut, lastColOut)
+	lastColOut  = max(firstColOut, lastColOut)
+
+	ASSERT(usedColumns == (lastColOut - firstColOut + 1), "Non-matching column ranges")
+
+	if(!ParamIsDefault(factor))
+		ASSERT(WaveExists(factor) && usedColumns == DimSize(factor, ROWS), "Invalid size of factor")
+	endif
+
+	// END parameter checking
+
+	numRowsDecimated = GetDecimatedWaveSize(numRowsInp, decimationFactor, method)
+	ASSERT(mod(numRowsDecimated, 2) == 0, "numRowsDecimated must be even")
+	numOutputPairs = numRowsDecimated / 2
+
+	ASSERT(DimSize(output, ROWS) == numRowsDecimated, "Output wave has the wrong size.")
+
+	// This wave is only used to run the multithread assignment. We don't care about the values.
+
+	key = CA_TemporaryWaveKey({numOutputPairs, usedColumns})
+	WAVE/Z/B junkWave = CA_TryFetchingEntryFromCache(key, options = CA_OPTS_NO_DUPLICATE)
+
+	if(!WaveExists(junkWave))
+		Make/N=(numOutputPairs, usedColumns)/FREE/B junkWave
+		CA_StoreEntryIntoCache(key, junkWave, options = CA_OPTS_NO_DUPLICATE)
+	endif
+
+	targetFirst = floor(firstRowInp / (decimationFactor * 2))
+	targetLast  = min(ceil(lastRowInp / (decimationFactor * 2)), numOutputPairs - 1)
+
+	if(targetFirst > targetLast)
+		return NaN
+	endif
+
+	sprintf msg, "method %d, decFactor %d, numOutputPairs %d\r", method, decimationFactor, numOutputPairs
+	DEBUGPRINT(msg)
+	sprintf msg, "input[%08d][%08d], output[%08d][%08d]; rows [%08d, %08d] -> pairs [%08d, %08d]; cols [%d, %d] [%d, %d]\r", numRowsInp, numColsInp, DimSize(output, ROWS), DimSize(output, COLS), firstRowInp, lastRowInp, targetFirst, targetLast, firstColInp, lastColInp, firstColOut, lastColOut
+	DEBUGPRINT(msg)
+
+	switch(method)
+		case DECIMATION_MINMAX:
+			Multithread junkWave[targetFirst, targetLast][] = DecimateMinMax(input, output, p, firstRowInp, lastRowInp, firstColInp + q, firstColOut + q, decimationFactor)
+			break
+		default:
+			ASSERT(0, "Unsupported method")
+			break
+	endswitch
+
+	if(WaveExists(factor))
+		// same formulas as in DecimateMinMax
+		first = targetFirst * 2
+		last  = targetLast * 2 + 1
+
+		Multithread output[first, last][firstColOut, lastColOut] *= factor[q - firstColOut]
+	endif
+End
+
+/// @brief Threadsafe helper function for DecimateWithMethod
+///
+/// @param input            input wave
+/// @param output           output wave
+/// @param idx              output pair index
+/// @param firstRowInp      first row in *input* coordinates
+/// @param lastRowInp       last row in *input* coordinates
+/// @param colInp           column in *input* coordinates
+/// @param colOut           column in *output* coordinates
+/// @param decimationFactor decimation factor
+threadsafe static Function DecimateMinMax(input, output, idx, firstRowInp, lastRowInp, colInp, colOut, decimationFactor)
+	WAVE input, output
+	variable idx, colInp, colOut, decimationFactor, firstRowInp, lastRowInp
+
+	variable first, last, targetFirst, targetLast
+
+	first = idx * decimationFactor * 2
+	last  = (idx + 1) * decimationFactor * 2 - 1
+
+	if(first > lastRowInp)
+		return NaN
+	endif
+
+	last  = min(last, lastRowInp)
+
+	targetFirst = idx * 2
+	targetLast = (idx * 2) + 1
+
+	WaveStats/Q/M=1/RMD=[first, last][colInp] input
+	ASSERT_TS(V_numINFS == 0, "INFs are not supported.")
+	ASSERT_TS(V_numNaNS == 0, "NaNs are not supported.")
+	ASSERT_TS(last - first + 1 == V_npnts && V_npnts > 0, "Range got clipped")
+
+// comment in for debugging
+// #ifdef DEBUGGING_ENABLED
+//   if(DP_DebuggingEnabledForFile(GetFile(FunctionPath(""))))
+// 		printf "[%d, %d] -> [%d, %d]; min %g; max %g;\r", first, last, targetFirst, targetLast, V_min, V_max
+//   endif
+// #endif // DEBUGGING_ENABLED
+
+	output[targetFirst][colOut] = V_min
+	output[targetLast][colOut]  = V_max
+End

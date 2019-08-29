@@ -3572,6 +3572,21 @@ Function FindNextPower(a, p)
 	return ceil(log(a)/log(p))
 End
 
+/// @brief Find an integer `x` which is smaller than `a` but the
+/// largest possible power of `p`.
+///
+/// @f$ x < a @f$ where @f$ x = c^p @f$ holds and @f$ x @f$ is
+/// the largest possible value.
+Function FindPreviousPower(a, p)
+	variable a, p
+
+	ASSERT(p > 1, "Invalid power")
+	ASSERT(a > 0, "Invalid value")
+	ASSERT(IsInteger(a), "Value has to be an integer")
+
+	return floor(log(a)/log(p))
+End
+
 /// @brief Return a wave with deep copies of all referenced waves
 ///
 /// The deep copied waves will be free waves.
@@ -4551,4 +4566,22 @@ threadsafe Function/WAVE MapWaveRefWave(input, row)
 	variable row
 
 	return input[row]
+End
+
+Function GetPlotArea(win, s)
+	string win
+	STRUCT RectD &s
+
+	InitRectD(s)
+
+	if(!WindowExists(win))
+		return NaN
+	endif
+
+	GetWindow $win psizeDC
+
+	s.left   = V_left
+	s.right  = V_right
+	s.top    = V_top
+	s.bottom = V_bottom
 End

@@ -393,8 +393,8 @@ static Function DC_MakeHelperWaves(panelTitle, dataAcqOrTP)
 	string panelTitle
 	variable dataAcqOrTP
 
-	variable numRows, hardwareType, sampleInterval
-	variable tpLength, numADCs, numDACs, numTTLs
+	variable numRows, sampleInterval, col, hardwareType, decimatedNumRows, numPixels, dataPointsPerPixel
+	variable decMethod, decFactor, tpLength, numADCs, numDACs, numTTLs, decimatedSampleInterval
 
 	WAVE config = GetITCChanConfigWave(panelTitle)
 	WAVE OscilloscopeData = GetOscilloscopeWave(panelTitle)
@@ -422,6 +422,11 @@ static Function DC_MakeHelperWaves(panelTitle, dataAcqOrTP)
 	if(dataAcqOrTP == TEST_PULSE_MODE)
 		numRows = tpLength
 
+		decMethod = DECIMATION_NONE
+		decFactor = NaN
+
+		decimatedNumRows        = tpLength
+		decimatedSampleInterval = sampleInterval
 	elseif(dataAcqOrTP == DATA_ACQUISITION_MODE)
 		switch(hardwareType)
 			case HARDWARE_ITC_DAC:
@@ -431,14 +436,51 @@ static Function DC_MakeHelperWaves(panelTitle, dataAcqOrTP)
 				numRows = DimSize(NIDataWave[0], ROWS)
 				break
 		endswitch
+
+		NVAR stopCollectionPoint = $GetStopCollectionPoint(panelTitle)
+
+		decMethod = DAG_GetNumericalValue(panelTitle, "Popup_Settings_DecMethod")
+		decFactor = DAG_GetNumericalValue(panelTitle, "setvar_Settings_DecMethodFac")
+
+		switch(decMethod)
+			case DECIMATION_NONE:
+				decFactor = 1
+				decimatedNumRows = numRows
+				decimatedSampleInterval = sampleInterval
+				break
+			default:
+				if(decFactor == -1)
+					STRUCT RectD s
+					GetPlotArea(SCOPE_GetGraph(panelTitle), s)
+
+					// use twice as many pixels as we need
+					// but round to a power of two
+					numPixels = s.right - s.left
+					dataPointsPerPixel = trunc((stopCollectionPoint / (numPixels * 2)))
+					if(dataPointsPerPixel > 2)
+						decFactor = 2^FindPreviousPower(dataPointsPerPixel, 2)
+						decimatedNumRows = GetDecimatedWaveSize(numRows, decFactor, decMethod)
+						decimatedSampleInterval = sampleInterval * decFactor
+					else
+						// turn off decimation for very short stimsets
+						decMethod = DECIMATION_NONE
+						decFactor = 1
+						decimatedNumRows = numRows
+						decimatedSampleInterval = sampleInterval
+					endif
+				endif
+				break
+		endswitch
 	else
 		ASSERT(0, "Invalid dataAcqOrTP")
 	endif
 
-	DC_InitDataHoldingWave(TPOscilloscopeData, tpLength, sampleInterval, numDACs, numADCs, numTTLs)
-	DC_InitDataHoldingWave(OscilloscopeData, numRows, sampleInterval, numDACs, numADCs, numTTLs)
+	SetNumberInWaveNote(OscilloscopeData, "DecimationMethod", decMethod)
+	SetNumberInWaveNote(OscilloscopeData, "DecimationFactor", decFactor)
 
-	NVAR stopCollectionPoint = $GetStopCollectionPoint(panelTitle)
+	DC_InitDataHoldingWave(TPOscilloscopeData, tpLength, sampleInterval, numDACs, numADCs, numTTLs)
+	DC_InitDataHoldingWave(OscilloscopeData, decimatedNumRows, decimatedSampleInterval, numDACs, numADCs, numTTLs)
+
 	DC_InitDataHoldingWave(scaledDataWave, dataAcqOrTP == DATA_ACQUISITION_MODE ? stopCollectionPoint : tpLength, sampleInterval, numDACs, numADCs, numTTLs, type = SWS_GetRawDataFPType(panelTitle))
 End
 

@@ -623,12 +623,12 @@ static Function SCOPE_NI_UpdateOscilloscope(panelTitle, dataAcqOrTP, deviceiD, f
 	string panelTitle
 	variable dataAcqOrTP, deviceID, fifoPos
 
-	variable i, channel
+	variable i, channel, decMethod, decFactor
 	string fifoName
 
 	WAVE scaledDataWave    = GetScaledDataWave(panelTitle)
-	WAVE OscilloscopeData  = GetOscilloscopeWave(panelTitle)
-	WAVE/WAVE NIDataWave   = GetHardwareDataWave(panelTitle)
+	WAVE OscilloscopeData = GetOscilloscopeWave(panelTitle)
+	WAVE/WAVE NIDataWave = GetHardwareDataWave(panelTitle)
 
 	fifoName = GetNIFIFOName(deviceID)
 	FIFOStatus/Q $fifoName
@@ -649,10 +649,21 @@ static Function SCOPE_NI_UpdateOscilloscope(panelTitle, dataAcqOrTP, deviceiD, f
 		WAVE allGain = SWS_GetChannelGains(panelTitle, timing = GAIN_AFTER_DAQ)
 		Multithread scaledDataWave[fifoPosGlobal, fifoPos - 1][] = MapWaveRefWave(NIDataWave, q)[p] / allGain[q]
 
+		decMethod = GetNumberFromWaveNote(OscilloscopeData, "DecimationMethod")
+		decFactor = GetNumberFromWaveNote(OscilloscopeData, "DecimationFactor")
+
 		for(i = 0; i < V_FIFOnchans; i += 1)
 			channel = str2num(StringByKey("NAME" + num2str(i), S_Info))
 			WAVE NIChannel = NIDataWave[channel]
-			Multithread OscilloscopeData[fifoPosGlobal, fifoPos - 1][channel] = NIChannel[p]
+
+			switch(decMethod)
+				case DECIMATION_NONE:
+					Multithread OscilloscopeData[fifoPosGlobal, fifoPos - 1][channel] = NIChannel[p]
+					break
+				default:
+					DecimateWithMethod(NIChannel, OscilloscopeData, decFactor, decMethod, firstRowInp = fifoPosGlobal, lastRowInp = fifoPos - 1, firstColInp = 0, lastColInp = 0, firstColOut = channel, lastColOut = channel)
+					break
+			endswitch
 		endfor
 	endif
 End
@@ -663,7 +674,7 @@ static Function SCOPE_ITC_UpdateOscilloscope(panelTitle, dataAcqOrTP, chunk, fif
 
 	WAVE OscilloscopeData = GetOscilloscopeWave(panelTitle)
 	variable length, first, last
-	variable startOfADColumns, numEntries
+	variable startOfADColumns, numEntries, decMethod, decFactor
 	WAVE scaledDataWave    = GetScaledDataWave(panelTitle)
 	WAVE ITCDataWave       = GetHardwareDataWave(panelTitle)
 	WAVE ITCChanConfigWave = GetITCChanConfigWave(panelTitle)
@@ -715,8 +726,17 @@ static Function SCOPE_ITC_UpdateOscilloscope(panelTitle, dataAcqOrTP, chunk, fif
 
 		Multithread scaledDataWave[fifoPosGlobal, fifoPos][] = ITCDataWave[p][q] / allGain[q]
 
-		Multithread OscilloscopeData[fifoPosGlobal, fifoPos - 1][startOfADColumns, startOfADColumns + numEntries - 1] = ITCDataWave[p][q] / gain[q - startOfADColumns]
+		decMethod = GetNumberFromWaveNote(OscilloscopeData, "DecimationMethod")
+		decFactor = GetNumberFromWaveNote(OscilloscopeData, "DecimationFactor")
 
+		switch(decMethod)
+			case DECIMATION_NONE:
+				Multithread OscilloscopeData[fifoPosGlobal, fifoPos - 1][startOfADColumns, startOfADColumns + numEntries - 1] = ITCDataWave[p][q] / gain[q - startOfADColumns]
+				break
+			default:
+				gain[] = 1 / gain[p]
+				DecimateWithMethod(ITCDataWave, OscilloscopeData, decFactor, decMethod, firstRowInp = fifoPosGlobal, lastRowInp = fifoPos - 1, firstColInp = startOfADColumns, lastColInp = startOfADColumns + numEntries - 1, factor = gain)
+		endswitch
 	else
 		ASSERT(0, "Invalid dataAcqOrTP value")
 	endif

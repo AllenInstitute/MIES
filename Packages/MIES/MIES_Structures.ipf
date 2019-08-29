@@ -224,3 +224,20 @@ Structure TPAnalysisInput
 	variable measurementMarker
 	variable activeADCs
 EndStructure
+
+/// @brief Helper structure for GetPlotArea()
+Structure RectD
+	double top
+	double left
+	double bottom
+	double right
+EndStructure
+
+Function InitRectD(s)
+	STRUCT RectD &s
+
+	s.left   = NaN
+	s.right  = NaN
+	s.top    = NaN
+	s.bottom = NaN
+End
