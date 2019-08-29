@@ -214,6 +214,34 @@ Function TestAnalysisFunction_V3(panelTitle, s)
 	return 0
 End
 
+/// @brief Measure the time between mid sweep calls
+///
+/// Used mainly for debugging.
+Function MeasureMidSweepTiming_V3(panelTitle, s)
+	string panelTitle
+	STRUCT AnalysisFunction_V3& s
+
+	NVAR lastCall = $GetTemporaryVar()
+
+	switch(s.eventType)
+		case PRE_DAQ_EVENT:
+			lastCall = NaN
+			WAVE/D elapsedTime = GetElapsedTimeWave()
+			elapsedTime = NaN
+			SetNumberInWaveNote(elapsedTime, NOTE_INDEX, 0)
+			break
+		case MID_SWEEP_EVENT:
+			if(IsFinite(lastCall))
+				StoreElapsedTime(lastCall)
+			endif
+
+			lastCall = GetReferenceTime()
+			break
+	endswitch
+
+	return 0
+End
+
 Function Enforce_VC(panelTitle, eventType, ITCDataWave, headStage, realDataLength)
 	string panelTitle
 	variable eventType
