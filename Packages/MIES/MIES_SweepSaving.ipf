@@ -23,14 +23,11 @@ Function SWS_SaveAcquiredData(panelTitle, [forcedStop])
 
 	sweepNo = DAG_GetNumericalValue(panelTitle, "SetVar_Sweep")
 
-	NVAR stopCollectionPoint = $GetStopCollectionPoint(panelTitle)
 	WAVE hardwareDataWave = GetHardwareDataWave(panelTitle)
 	WAVE hardwareConfigWave = GetITCChanConfigWave(panelTitle)
 	WAVE scaledDataWave = GetScaledDataWave(panelTitle)
 
 	ASSERT(IsValidSweepAndConfig(hardwareDataWave, hardwareConfigWave), "Data and config wave are not compatible")
-
-	SCOPE_UpdateOscilloscopeData(panelTitle, DATA_ACQUISITION_MODE, fifoPos=stopCollectionPoint - GetDataOffset(hardwareConfigWave))
 
 	DFREF dfr = GetDeviceDataPath(panelTitle)
 	Duplicate hardwareConfigWave, dfr:$GetConfigWaveName(sweepNo)
