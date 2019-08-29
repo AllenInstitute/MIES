@@ -298,7 +298,6 @@ static Function DC_CalculateITCDataWaveLength(panelTitle, dataAcqOrTP)
 	return NaN
 end
 
-
 /// @brief Creates the ITCConfigALLConfigWave used to configure channels the ITC device
 ///
 /// @param panelTitle  panel title
@@ -311,6 +310,8 @@ static Function DC_MakeITCConfigAllConfigWave(panelTitle, numActiveChannels)
 
 	Redimension/N=(numActiveChannels, -1) config
 	FastOp config = 0
+
+	ASSERT(IsValidConfigWave(config), "Invalid config wave")
 End
 
 /// @brief Creates HardwareDataWave; The wave that the device takes DA and TTL data from and passes AD data to for all channels.
@@ -416,11 +417,7 @@ static Function DC_MakeOscilloscopeWave(panelTitle, numActiveChannels, dataAcqOr
 			if(dataAcqOrTP == TEST_PULSE_MODE)
 				numRows = testPulseLength
 			elseif(dataAcqOrTP == DATA_ACQUISITION_MODE)
-				if(numpnts(NIDataWave))
-					numRows = numpnts(NIDataWave[0])
-				else
-					ASSERT(0, "No channels in NIDataWave")
-				endif
+				numRows = DimSize(NIDataWave[0], ROWS)
 			else
 				ASSERT(0, "Invalid dataAcqOrTP value")
 			endif
