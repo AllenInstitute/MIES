@@ -126,6 +126,10 @@ Termination delay (ms) = 1000
 
 Skip analysis function calls = Yes
 
+Decimation method = MinMax
+
+Decimation factor = -1
+
 ###### Initial stimulus parameters apply to all channels ######
 
 Initial stim set VC = PulseTrain_20Hz_DA_0

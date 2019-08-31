@@ -835,6 +835,8 @@ StrConstant FIRST_STIM_AMP_IC_ALL   = "Initial stim set amplitude IC"
 StrConstant STIM_MODE_SWITCH        = "Enable stim set mode switch"
 StrConstant ANALYSIS_FUNC           = "Skip analysis function calls"
 StrConstant TP_BASELINE             = "Baseline %"
+StrConstant DECIMATION_METHOD       = "Decimation method"
+StrConstant DECIMATION_FACTOR       = "Decimation factor"
 ///@}
 
 StrConstant PULSE_START_TIMES_KEY     = "Pulse Train Pulses"
