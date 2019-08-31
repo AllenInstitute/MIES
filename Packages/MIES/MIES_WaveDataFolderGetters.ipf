@@ -5898,8 +5898,8 @@ Function/WAVE GetExpConfigKeyTypes()
 
 	Redimension/N=(numRows) stringKeys, numKeys, checkBoxKeys
 
-	keyTypes[][%StringKeys]       = stringKeys[p]
-	keyTypes[][%NumKeys]         = numKeys[p]
+	keyTypes[][%StringKeys]   = stringKeys[p]
+	keyTypes[][%NumKeys]      = numKeys[p]
 	keyTypes[][%CheckBoxKeys] = checkBoxKeys[p]
 
 	return keyTypes
@@ -5907,9 +5907,9 @@ End
 
 /// @brief Read User_Config NoteBook file and extract parameters as a KeyWordList
 ///
-/// @param  ConfigNB		Name of User Configuration Notebook as a string
-/// @param  KeyTypes		Text wave of key types to parse configuration notebook
-/// @return UserSettings	Text wave of configuration parameters
+/// @param  ConfigNB        Name of User Configuration Notebook as a string
+/// @param  KeyTypes        Text wave of key types to parse configuration notebook
+/// @return UserSettings    Text wave of configuration parameters
 Function /WAVE GetExpUserSettings(ConfigNB, KeyTypes)
 	string ConfigNB
 	Wave KeyTypes
