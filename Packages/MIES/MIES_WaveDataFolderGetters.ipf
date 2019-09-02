@@ -2240,6 +2240,13 @@ Function/Wave GetOscilloscopeWave(panelTitle)
 End
 
 /// @brief Return a wave for displaying scaled TP data in the oscilloscope window
+///        for the "TP during DAQ" channels
+///
+/// Rows:
+/// - Holds exactly one TP
+///
+/// Cols:
+/// - DA/AD/TTLs data, same order as GetHardwareDataWave()
 Function/Wave GetTPOscilloscopeWave(panelTitle)
 	string panelTitle
 
