@@ -514,12 +514,12 @@ static Function PSQ_GetNumberOfChunks(panelTitle, sweepNo, headstage, type)
 
 	variable length, nonBL, totalOnsetDelay
 
-	WAVE OscilloscopeData    = GetOscilloscopeWave(panelTitle)
+	WAVE HardwareDataWave    = GetHardwareDataWave(panelTitle)
 	NVAR stopCollectionPoint = $GetStopCollectionPoint(panelTitle)
 	totalOnsetDelay = DAG_GetNumericalValue(panelTitle, "setvar_DataAcq_OnsetDelayUser") \
 					  + GetValDisplayAsNum(panelTitle, "valdisp_DataAcq_OnsetDelayAuto")
 
-	length = stopCollectionPoint * DimDelta(OscilloscopeData, ROWS)
+	length = stopCollectionPoint * DimDelta(HardwareDataWave, ROWS)
 
 	switch(type)
 		case PSQ_DA_SCALE:
