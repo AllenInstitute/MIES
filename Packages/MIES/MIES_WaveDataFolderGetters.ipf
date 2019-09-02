@@ -2225,7 +2225,7 @@ End
 
 /// @brief Return a wave for displaying scaled data in the oscilloscope window
 Function/Wave GetOscilloscopeWave(panelTitle)
-	string 	panelTitle
+	string panelTitle
 
 	dfref dfr = GetDevicePath(panelTitle)
 	WAVE/Z/SDFR=dfr wv = OscilloscopeData
@@ -2241,7 +2241,7 @@ End
 
 /// @brief Return a wave for displaying scaled TP data in the oscilloscope window
 Function/Wave GetTPOscilloscopeWave(panelTitle)
-	string 	panelTitle
+	string panelTitle
 
 	dfref dfr = GetDevicePath(panelTitle)
 	WAVE/Z/SDFR=dfr wv = TPOscilloscopeData
