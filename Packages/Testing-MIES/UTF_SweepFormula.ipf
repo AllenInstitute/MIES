@@ -140,10 +140,7 @@ Function orderOfCalculation()
 	WARN_EQUAL_JSON(jsonID0, jsonID1)
 	REQUIRE_EQUAL_VAR(FormulaExecutor(jsonID1)[0], 2/3*4)
 
-	// combinations
-	jsonID0 = JSON_Parse("{\"+\":[{\"*\":[5,1]},{\"*\":[2,3]},4,{\"*\":[5,10]}]}")
 	jsonID1 = FormulaParser("5*1+2*3+4+5*10")
-	WARN_EQUAL_JSON(jsonID0, jsonID1)
 	REQUIRE_EQUAL_VAR(FormulaExecutor(jsonID1)[0], 5*1+2*3+4+5*10)
 End
 
@@ -200,37 +197,145 @@ Function brackets()
 	WARN_EQUAL_JSON(jsonID0, jsonID1)
 	REQUIRE_EQUAL_VAR(FormulaExecutor(jsonID1)[0], 2/(3+4)*5)
 
-	jsonID0 = JSON_Parse("{\"*\":[{\"*\":[5,{\"+\":[1,2]}]},{\"/\":[3,{\"+\":[4,{\"*\":[5,10]}]}]}]}")
 	jsonID1 = FormulaParser("5*(1+2)*3/(4+5*10)")
-	WARN_EQUAL_JSON(jsonID0, jsonID1)
 	REQUIRE_CLOSE_VAR(FormulaExecutor(jsonID1)[0], 5*(1+2)*3/(4+5*10))
 End
 
+Function array()
+	Variable jsonID0, jsonID1
+
+	jsonID0 = JSON_Parse("[1]")
+	jsonID1 = FormulaParser("[1]")
+	WARN_EQUAL_JSON(jsonID0, jsonID1)
+
+	jsonID0 = JSON_Parse("[1,2,3]")
+	jsonID1 = FormulaParser("1,2,3")
+	WARN_EQUAL_JSON(jsonID0, jsonID1)
+
+	jsonID1 = FormulaParser("[1,2,3]")
+	WARN_EQUAL_JSON(jsonID0, jsonID1)
+
+	jsonID0 = JSON_Parse("[[1,2],3,4]")
+	jsonID1 = FormulaParser("[[1,2],3,4]")
+	WARN_EQUAL_JSON(jsonID0, jsonID1)
+
+	jsonID0 = JSON_Parse("[1,[2,3],4]")
+	jsonID1 = FormulaParser("[1,[2,3],4]")
+	WARN_EQUAL_JSON(jsonID0, jsonID1)
+
+	jsonID0 = JSON_Parse("[1,2,[3,4]]")
+	jsonID1 = FormulaParser("[1,2,[3,4]]")
+	WARN_EQUAL_JSON(jsonID0, jsonID1)
+
+	jsonID0 = JSON_Parse("[[0,1],[1,2],[2,3]]")
+	jsonID1 = FormulaParser("[[0,1],[1,2],[2,3]]")
+	WARN_EQUAL_JSON(jsonID0, jsonID1)
+
+	jsonID0 = JSON_Parse("[[0,1],[2,3],[4,5]]")
+	jsonID1 = FormulaParser("[[0,1],[2,3],[4,5]]")
+	WARN_EQUAL_JSON(jsonID0, jsonID1)
+
+	jsonID0 = JSON_Parse("[[0],[2,3],[4,5]]")
+	jsonID1 = FormulaParser("[[0],[2,3],[4,5]]")
+	WARN_EQUAL_JSON(jsonID0, jsonID1)
+
+	jsonID0 = JSON_Parse("[[0,1],[2],[4,5]]")
+	jsonID1 = FormulaParser("[[0,1],[2],[4,5]]")
+	WARN_EQUAL_JSON(jsonID0, jsonID1)
+
+	jsonID0 = JSON_Parse("[[0,1],[2,3],[5]]")
+	jsonID1 = FormulaParser("[[0,1],[2,3],[5]]")
+	WARN_EQUAL_JSON(jsonID0, jsonID1)
+
+	jsonID0 = JSON_Parse("[1,{\"+\":[2,3]}]")
+	jsonID1 = FormulaParser("1,2+3")
+	WARN_EQUAL_JSON(jsonID0, jsonID1)
+
+	jsonID0 = JSON_Parse("[{\"+\":[1,2]},3]")
+	jsonID1 = FormulaParser("1+2,3")
+	WARN_EQUAL_JSON(jsonID0, jsonID1)
+
+	jsonID0 = JSON_Parse("[1,{\"/\":[5,{\"+\":[6,7]}]}]")
+	jsonID1 = FormulaParser("1,5/(6+7)")
+	WARN_EQUAL_JSON(jsonID0, jsonID1)
+End
+
+// test functions with 1..N arguments
 Function minimaximu()
 	Variable jsonID0, jsonID1
 
 	jsonID0 = JSON_Parse("{\"min\":[1]}")
-	jsonID1 = FormulaParser("min([1])")
+	jsonID1 = FormulaParser("min(1)")
 	WARN_EQUAL_JSON(jsonID0, jsonID1)
 	REQUIRE_EQUAL_VAR(FormulaExecutor(jsonID1)[0], 1)
 
-	jsonID0 = JSON_Parse("{\"max\":[1]}")
-	jsonID1 = FormulaParser("max([1])")
+	jsonID0 = JSON_Parse("{\"min\":[1,2]}")
+	jsonID1 = FormulaParser("min(1,2)")
 	WARN_EQUAL_JSON(jsonID0, jsonID1)
-	REQUIRE_EQUAL_VAR(FormulaExecutor(jsonID1)[0], 1)
+	REQUIRE_EQUAL_VAR(FormulaExecutor(jsonID1)[0], min(1,2))
 
-	jsonID0 = JSON_Parse("{\"min\":[1,2,3]}")
-	jsonID1 = FormulaParser("min([1,2,3])")
+	jsonID0 = JSON_Parse("{\"max\":[1,2]}")
+	jsonID1 = FormulaParser("max(1,2)")
 	WARN_EQUAL_JSON(jsonID0, jsonID1)
-	REQUIRE_EQUAL_VAR(FormulaExecutor(jsonID1)[0], 1)
-
-	jsonID0 = JSON_Parse("{\"max\":[1,2,3]}")
-	jsonID1 = FormulaParser("max([1,2,3])")
-	WARN_EQUAL_JSON(jsonID0, jsonID1)
-	REQUIRE_EQUAL_VAR(FormulaExecutor(jsonID1)[0], 3)
+	REQUIRE_EQUAL_VAR(FormulaExecutor(jsonID1)[0], max(1,2))
 
 	jsonID0 = JSON_Parse("{\"min\":[1,2,3]}")
 	jsonID1 = FormulaParser("min(1,2,3)")
 	WARN_EQUAL_JSON(jsonID0, jsonID1)
-	REQUIRE_EQUAL_VAR(FormulaExecutor(jsonID1)[0], 1)
+	REQUIRE_EQUAL_VAR(FormulaExecutor(jsonID1)[0], min(1,2,3))
+
+	jsonID0 = JSON_Parse("{\"max\":[1,{\"+\":[2,3]}]}")
+	jsonID1 = FormulaParser("max(1,(2+3))")
+	WARN_EQUAL_JSON(jsonID0, jsonID1)
+	REQUIRE_EQUAL_VAR(FormulaExecutor(jsonID1)[0], max(1,(2+3)))
+
+	jsonID0 = JSON_Parse("{\"min\":[{\"-\":[1,2]},3]}")
+	jsonID1 = FormulaParser("min((1-2),3)")
+	WARN_EQUAL_JSON(jsonID0, jsonID1)
+	REQUIRE_EQUAL_VAR(FormulaExecutor(jsonID1)[0], min((1-2),3))
+
+	jsonID0 = JSON_Parse("{\"min\":[{\"max\":[1,2]},3]}")
+	jsonID1 = FormulaParser("min(max(1,2),3)")
+	WARN_EQUAL_JSON(jsonID0, jsonID1)
+	REQUIRE_EQUAL_VAR(FormulaExecutor(jsonID1)[0], min(max(1,2),3))
+
+	jsonID0 = JSON_Parse("{\"max\":[1,{\"+\":[2,3]},2]}")
+	jsonID1 = FormulaParser("max(1,2+3,2)")
+	WARN_EQUAL_JSON(jsonID0, jsonID1)
+	REQUIRE_EQUAL_VAR(FormulaExecutor(jsonID1)[0], max(1,2+3,2))
+
+	jsonID0 = JSON_Parse("{\"max\":[{\"+\":[1,2]},{\"+\":[3,4]},{\"+\":[5,{\"/\":[6,7]}]}]}")
+	jsonID1 = FormulaParser("max(1+2,3+4,5+6/7)")
+	WARN_EQUAL_JSON(jsonID0, jsonID1)
+	REQUIRE_EQUAL_VAR(FormulaExecutor(jsonID1)[0], max(1+2,3+4,5+6/7))
+
+	jsonID0 = JSON_Parse("{\"max\":[{\"+\":[1,2]},{\"+\":[3,4]},{\"+\":[5,{\"/\":[6,7]}]}]}")
+	jsonID1 = FormulaParser("max(1+2,3+4,5+(6/7))")
+	WARN_EQUAL_JSON(jsonID0, jsonID1)
+	REQUIRE_EQUAL_VAR(FormulaExecutor(jsonID1)[0], max(1+2,3+4,5+(6/7)))
+
+	jsonID0 = JSON_Parse("{\"max\":[{\"max\":[1,{\"/\":[{\"+\":[2,3]},7]},4]},{\"min\":[3,4]}]}")
+	jsonID1 = FormulaParser("max(max(1,(2+3)/7,4),min(3,4))")
+	WARN_EQUAL_JSON(jsonID0, jsonID1)
+	REQUIRE_EQUAL_VAR(FormulaExecutor(jsonID1)[0], max(max(1,(2+3)/7,4),min(3,4)))
+
+	jsonID0 = JSON_Parse("{\"+\":[{\"max\":[1,2]},1]}")
+	jsonID1 = FormulaParser("max(1,2)+1")
+	WARN_EQUAL_JSON(jsonID0, jsonID1)
+	REQUIRE_EQUAL_VAR(FormulaExecutor(jsonID1)[0], max(1,2)+1)
+
+	jsonID0 = JSON_Parse("{\"+\":[1,{\"max\":[1,2]}]}")
+	jsonID1 = FormulaParser("1+max(1,2)")
+	WARN_EQUAL_JSON(jsonID0, jsonID1)
+	REQUIRE_EQUAL_VAR(FormulaExecutor(jsonID1)[0], 1+max(1,2))
+
+	jsonID0 = JSON_Parse("{\"+\":[1,{\"max\":[1,2]},1]}")
+	jsonID1 = FormulaParser("1+max(1,2)+1")
+	WARN_EQUAL_JSON(jsonID0, jsonID1)
+	REQUIRE_EQUAL_VAR(FormulaExecutor(jsonID1)[0], 1+max(1,2)+1)
+
+	jsonID0 = JSON_Parse("{\"-\":[{\"max\":[1,2]},{\"max\":[1,2]}]}")
+	jsonID1 = FormulaParser("max(1,2)-max(1,2)")
+	WARN_EQUAL_JSON(jsonID0, jsonID1)
+	REQUIRE_EQUAL_VAR(FormulaExecutor(jsonID1)[0], max(1,2)-max(1,2))
 End

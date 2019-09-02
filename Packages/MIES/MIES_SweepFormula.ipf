@@ -2,16 +2,26 @@
 #pragma rtGlobals=3 // Use modern global access method and strict wave access.
 #pragma rtFunctionErrors=1
 
-static Constant STATE_COLLECT = 0
-static Constant STATE_ADDITION = 1
-static Constant STATE_SUBTRACTION = 2
-static Constant STATE_MULTIPLICATION = 3
-static Constant STATE_DIVISION = 4
-static Constant STATE_PARENTHESIS = 5
-static Constant STATE_PARENTHESIS_END = 6
+static Constant STATE_DEFAULT = 0
+static Constant STATE_COLLECT = 1
+static Constant STATE_ADDITION = 2
+static Constant STATE_SUBTRACTION = 3
+static Constant STATE_MULTIPLICATION = 4
+static Constant STATE_DIVISION = 5
+static Constant STATE_PARENTHESIS = 6
 static Constant STATE_FUNCTION = 7
 static Constant STATE_ARRAY = 8
 static Constant STATE_ARRAYELEMENT = 9
+
+static Constant ACTION_SKIP = 0
+static Constant ACTION_COLLECT = 1
+static Constant ACTION_CALCULATION = 2
+static Constant ACTION_SAMECALCULATION = 3
+static Constant ACTION_HIGHERORDER = 4
+static Constant ACTION_ARRAYELEMENT = 5
+static Constant ACTION_PARENTHESIS = 6
+static Constant ACTION_FUNCTION = 7
+static Constant ACTION_ARRAY = 8
 
 /// @brief serialize a string formula into JSON
 ///
@@ -20,10 +30,15 @@ static Constant STATE_ARRAYELEMENT = 9
 Function FormulaParser(formula)
 	String formula
 
-	Variable i, parenthesisStart, parenthesisEnd
+	Variable i, parenthesisStart, parenthesisEnd, jsonIDdummy, jsonIDarray
+	String tempPath
+	Variable action = -1
 	String token = ""
-	Variable state = -1, lastState = -1
+	Variable state = STATE_DEFAULT
+	Variable lastState = STATE_DEFAULT
+	Variable lastCalculation = -1
 	Variable level = 0
+	Variable arrayLevel = 0
 
 	Variable jsonID = JSON_New()
 	String jsonPath = ""
@@ -51,105 +66,169 @@ Function FormulaParser(formula)
 				level += 1
 				break
 			case ")":
-				state = STATE_PARENTHESIS_END
 				level -= 1
+				if(!cmpstr(token[0], "("))
+					state = STATE_PARENTHESIS
+					break
+				endif
+				if(GrepString(token, "^[A-Za-z]"))
+					state = STATE_FUNCTION
+					break
+				endif
+				state = STATE_DEFAULT
 				break
 			case "[":
-				state = STATE_ARRAY
+				arrayLevel += 1
 				break
 			case "]":
+				arrayLevel -= 1
+				state = STATE_ARRAY
+				break
 			case ",":
 				state = STATE_ARRAYELEMENT
 				break
 			default:
 				state = STATE_COLLECT
+				ASSERT(GrepString(formula[i], "[A-Za-z0-9_\.]"), "undefined pattern in formula")
 		endswitch
-		if(level > 0)
-			state = STATE_PARENTHESIS
+		if(level > 0 || arrayLevel > 0)
+			state = STATE_DEFAULT
 		endif
 
-		// action
-		parenthesisStart = strsearch(formula, "(", i)
-		parenthesisEnd = parenthesisStart == -1 ? inf : strsearch(formula, ")", i)
-		parenthesisStart = parenthesisStart == -1 ? inf : parenthesisStart
-		switch(state)
-			case STATE_DIVISION:
-				if((strsearch(formula[i, parenthesisStart], "*", 0) != -1) || (strsearch(formula[parenthesisEnd, inf], "*", 1) != -1))
-					token += formula[i]
-					state = lastState
-					continue
-				endif
-			case STATE_MULTIPLICATION:
-				if((strsearch(formula[i, parenthesisStart], "-", 0) != -1) || (strsearch(formula[parenthesisEnd, inf], "-", 1) != -1))
-					token += formula[i]
-					state = lastState
-					continue
-				endif
-			case STATE_SUBTRACTION:
-				if((strsearch(formula[i, parenthesisStart], "+", 0) != -1) || (strsearch(formula[parenthesisEnd, inf], "+", 1) != -1))
-					token += formula[i]
-					state = lastState
-					continue
-				endif
-			case STATE_ADDITION:
-				ASSERT(!!cmpstr(token, ""), "Invalid action token.")
-				break
-			case STATE_COLLECT:
-				ASSERT(GrepString(formula[i], "[A-Za-z0-9_\.]"), "undefined pattern in formula")
-			case STATE_PARENTHESIS:
-				token += formula[i]
-				continue
-			case STATE_PARENTHESIS_END:
-				if(!cmpstr(token[0], "("))
-					token = token[1,inf] // evaluate
-					continue
-				elseif(GrepString(token, "[A-Za-z]"))
-					state = STATE_FUNCTION
-					break
-				else
-					token += formula[i] // delay
-					continue
-				endif
-			case STATE_ARRAY:
-				ASSERT(!cmpstr(token, ""), "Invalid action token.")
-				continue // wait for element
-			case STATE_ARRAYELEMENT:
-				break
-			default:
-				ASSERT(0, "Encountered undefined state " + num2str(state))
-		endswitch
-
-		// transition
+		// state transition
+		action = ACTION_COLLECT
 		if(state != lastState)
-			lastState = state
-			if(JSON_GetType(jsonID, jsonPath) == JSON_ARRAY)
-				JSON_AddObjects(jsonID, jsonPath) // prepare for decent
-				jsonPath += "/" + num2str(JSON_GetArraySize(jsonID, jsonPath) - 1)
-			endif
-
 			switch(state)
-				case STATE_DIVISION:
-				case STATE_MULTIPLICATION:
-				case STATE_SUBTRACTION:
 				case STATE_ADDITION:
-					jsonPath += "/" + EscapeJsonPath(formula[i])
-					JSON_AddTreeArray(jsonID, jsonPath)
+					if(lastCalculation == STATE_SUBTRACTION)
+						action = ACTION_HIGHERORDER
+						break
+					endif
+				case STATE_SUBTRACTION:
+					if(lastCalculation == STATE_MULTIPLICATION)
+						action = ACTION_HIGHERORDER
+						break
+					endif
+				case STATE_MULTIPLICATION:
+					if(lastCalculation == STATE_DIVISION)
+						action = ACTION_HIGHERORDER
+						break
+					endif
+				case STATE_DIVISION:
+					if(!cmpstr(token, ""))
+						if(lastCalculation == -1)
+							action = ACTION_HIGHERORDER
+						else
+							action = ACTION_SKIP
+						endif
+						break
+					endif
+					action = ACTION_CALCULATION
+					if(state == lastCalculation)
+						action = ACTION_SAMECALCULATION
+					endif
+					if(lastCalculation == STATE_ARRAYELEMENT)
+						action = ACTION_COLLECT
+					endif
+					break
+				case STATE_PARENTHESIS:
+					action = ACTION_PARENTHESIS
+					if(lastCalculation == STATE_ARRAYELEMENT)
+						action = ACTION_COLLECT
+					endif
 					break
 				case STATE_FUNCTION:
-					parenthesisStart = strsearch(formula, "(", 0)
-					jsonPath += "/" + EscapeJsonPath(token[0, parenthesisStart - 1])
-					token = token[parenthesisStart + 1, inf]
+					action = ACTION_FUNCTION
+					if(lastCalculation == STATE_ARRAYELEMENT)
+						action = ACTION_COLLECT
+					endif
 					break
 				case STATE_ARRAYELEMENT:
-					JSON_AddTreeArray(jsonID, jsonPath)
+					action = ACTION_ARRAYELEMENT
+					if(lastCalculation != STATE_ARRAYELEMENT)
+						action = ACTION_HIGHERORDER
+					endif
+					break
+				case STATE_ARRAY:
+					action = ACTION_ARRAY
+					break
+				case STATE_COLLECT:
+				case STATE_DEFAULT:
+					action = ACTION_COLLECT
 					break
 				default:
 					ASSERT(0, "Encountered undefined transition " + num2str(state))
-					break
 			endswitch
+			lastState = state
 		endif
 
-		JSON_AddJSON(jsonID, jsonPath, FormulaParser(token))
+		// action
+		switch(action)
+			case ACTION_COLLECT:
+				token += formula[i]
+			case ACTION_SKIP:
+				continue
+			case ACTION_FUNCTION:
+				tempPath = jsonPath
+				if(JSON_GetType(jsonID, jsonPath) == JSON_ARRAY)
+					JSON_AddObjects(jsonID, jsonPath)
+					tempPath += "/" + num2str(JSON_GetArraySize(jsonID, jsonPath) - 1)
+				endif
+				tempPath += "/"
+				parenthesisStart = strsearch(token, "(", 0, 0)
+				tempPath += EscapeJsonPath(token[0, parenthesisStart - 1])
+				jsonIDdummy = FormulaParser(token[parenthesisStart + 1, inf])
+				if(JSON_GetType(jsonIDdummy, "") != JSON_ARRAY)
+					JSON_AddTreeArray(jsonID, tempPath)
+				endif
+				JSON_AddJSON(jsonID, tempPath, jsonIDdummy)
+				JSON_Release(jsonIDdummy)
+				break
+			case ACTION_PARENTHESIS:
+				JSON_AddJSON(jsonID, jsonPath, FormulaParser(token[1, inf]))
+				break
+			case ACTION_HIGHERORDER:
+				lastCalculation = state
+				if(!!cmpstr(token, ""))
+					JSON_AddJSON(jsonID, jsonPath, FormulaParser(token))
+				endif
+				jsonPath = EscapeJsonPath(formula[i])
+				if(!cmpstr(jsonPath, ",") || !cmpstr(jsonPath, "]"))
+					jsonPath = ""
+				endif
+				jsonIDdummy = jsonID
+				jsonID = JSON_New()
+				JSON_AddTreeArray(jsonID, jsonPath)
+				JSON_AddJSON(jsonID, jsonPath, jsonIDdummy)
+				JSON_Release(jsonIDdummy)
+				break
+			case ACTION_ARRAY:
+				ASSERT(!cmpstr(token[0], "["), "Encountered array ending without array start.")
+				jsonIDarray = JSON_New()
+				jsonIDdummy = FormulaParser(token[1,inf])
+				if(JSON_GetType(jsonIDdummy, "") != JSON_ARRAY)
+					JSON_AddTreeArray(jsonIDarray, "")
+				endif
+				JSON_AddJSON(jsonIDarray, "", jsonIDdummy)
+				JSON_Release(jsonIDdummy)
+				JSON_AddJSON(jsonID, jsonPath, jsonIDarray)
+				JSON_Release(jsonIDarray)
+				break
+			case ACTION_CALCULATION:
+				if(JSON_GetType(jsonID, jsonPath) == JSON_ARRAY)
+					JSON_AddObjects(jsonID, jsonPath) // prepare for decent
+					jsonPath += "/" + num2str(JSON_GetArraySize(jsonID, jsonPath) - 1)
+				endif
+				jsonPath += "/" + EscapeJsonPath(formula[i])
+			case ACTION_ARRAYELEMENT:
+				JSON_AddTreeArray(jsonID, jsonPath)
+				lastCalculation = state
+			case ACTION_SAMECALCULATION:
+			default:
+				if(strlen(token) > 0)
+					JSON_AddJSON(jsonID, jsonPath, FormulaParser(token))
+				endif
+		endswitch
 		token = ""
 	endfor
 
