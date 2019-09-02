@@ -99,6 +99,7 @@ Function DC_ConfigureDataForITC(panelTitle, dataAcqOrTP, [multiDevice])
 		TP_CreateTPAvgBuffer(panelTitle)
 	endif
 
+	DC_MakeHelperWaves(panelTitle, dataAcqOrTP)
 	SCOPE_CreateGraph(panelTitle, dataAcqOrTP)
 
 	if(dataAcqOrTP == DATA_ACQUISITION_MODE)
@@ -383,61 +384,87 @@ static Function/WAVE DC_MakeNIChannelWave(dfr, numRows, samplingInterval, index,
 	return w
 End
 
-/// @brief Initializes the wave used for displaying DAQ/TP results in the
+/// @brief Initializes the waves used for displaying DAQ/TP results in the
 /// oscilloscope window
 ///
 /// @param panelTitle  panel title
-/// @param numActiveChannels number of active channels as returned by DC_ChanCalcForITCChanConfigWave()
 /// @param dataAcqOrTP one of #DATA_ACQUISITION_MODE or #TEST_PULSE_MODE
-static Function DC_MakeOscilloscopeWave(panelTitle, numActiveChannels, dataAcqOrTP)
+static Function DC_MakeHelperWaves(panelTitle, dataAcqOrTP)
 	string panelTitle
-	variable numActiveChannels, dataAcqOrTP
+	variable dataAcqOrTP
 
-	variable numRows, sampleIntervall, col, testPulseLength
+	variable numRows, hardwareType, sampleInterval
+	variable tpLength, numADCs, numDACs, numTTLs
 
 	WAVE config = GetITCChanConfigWave(panelTitle)
 	WAVE OscilloscopeData = GetOscilloscopeWave(panelTitle)
-	variable hardwareType = GetHardwareType(panelTitle)
+	WAVE TPOscilloscopeData = GetTPOscilloscopeWave(panelTitle)
+	WAVE ITCDataWave = GetHardwareDataWave(panelTitle)
+	WAVE/WAVE NIDataWave = GetHardwareDataWave(panelTitle)
 
-	testPulseLength = ROVar(GetTestPulseLengthInPoints(panelTitle, TEST_PULSE_MODE))
+	tpLength = ROVAR(GetTestPulseLengthInPoints(panelTitle, TEST_PULSE_MODE))
+	hardwareType = GetHardwareType(panelTitle)
+
+	numADCs = DimSize(GetADCListFromConfig(config), ROWS)
+	numDACs = DimSize(GetDACListFromConfig(config), ROWS)
+	numTTLs = DimSize(GetTTLListFromConfig(config), ROWS)
 
 	switch(hardwareType)
 		case HARDWARE_ITC_DAC:
-			WAVE ITCDataWave = GetHardwareDataWave(panelTitle)
-			if(dataAcqOrTP == TEST_PULSE_MODE)
-				numRows = testPulseLength
-			elseif(dataAcqOrTP == DATA_ACQUISITION_MODE)
-				numRows = DimSize(ITCDataWave, ROWS)
-			else
-				ASSERT(0, "Invalid dataAcqOrTP value")
-			endif
-			sampleIntervall = DimDelta(ITCDataWave, ROWS)
+			sampleInterval = DimDelta(ITCDataWave, ROWS)
 			break
 		case HARDWARE_NI_DAC:
-			WAVE/WAVE NIDataWave = GetHardwareDataWave(panelTitle)
-			if(dataAcqOrTP == TEST_PULSE_MODE)
-				numRows = testPulseLength
-			elseif(dataAcqOrTP == DATA_ACQUISITION_MODE)
-				numRows = DimSize(NIDataWave[0], ROWS)
-			else
-				ASSERT(0, "Invalid dataAcqOrTP value")
-			endif
-			sampleIntervall = DimDelta(NIDataWave[0], ROWS)
+			sampleInterval = DimDelta(NIDataWave[0], ROWS)
 			break
 	endswitch
 
-	Redimension/N=(numRows, numActiveChannels) OscilloscopeData
-	SetScale/P x, 0, sampleIntervall, "ms", OscilloscopeData
-	// 0/0 equals NaN, this is not accepted directly
-	WaveTransform/O/V=(0/0) setConstant OscilloscopeData
-	// set DAC channels to 0, this is required for PowerSpectrum as FFT source wave must not contain NaNs
-	for(col = 0; col < numActiveChannels; col += 1)
-		if(config[col][%ChannelType] == ITC_XOP_CHANNEL_TYPE_DAC)
-			MultiThread OscilloscopeData[][col] = 0
-		else
-			break
-		endif
-	endfor
+	if(dataAcqOrTP == TEST_PULSE_MODE)
+		numRows = tpLength
+
+	elseif(dataAcqOrTP == DATA_ACQUISITION_MODE)
+		switch(hardwareType)
+			case HARDWARE_ITC_DAC:
+				numRows = DimSize(ITCDataWave, ROWS)
+				break
+			case HARDWARE_NI_DAC:
+				numRows = DimSize(NIDataWave[0], ROWS)
+				break
+		endswitch
+	else
+		ASSERT(0, "Invalid dataAcqOrTP")
+	endif
+
+	DC_InitDataHoldingWave(TPOscilloscopeData, tpLength, sampleInterval, numDACs, numADCs, numTTLs)
+	DC_InitDataHoldingWave(OscilloscopeData, numRows, sampleInterval, numDACs, numADCs, numTTLs)
+End
+
+/// @brief Initialize data holding waves to the defaults for each channel type
+///
+/// - DA:  0
+/// - AD:  NaN
+/// - TTL: 0
+static Function DC_InitDataHoldingWave(wv, numRows, sampleInterval, numDACs, numADCs, numTTLs, [type])
+	WAVE wv
+	variable numRows, sampleInterval, numDACs, numADCs, numTTLs, type
+
+	ASSERT(numDACs > 0, "Invalid number of DACs")
+	ASSERT(numADCs > 0, "Invalid number of ADCs")
+
+	if(ParamIsDefault(type))
+		type = WaveType(wv)
+	endif
+
+	Redimension/N=(numRows, numDACs + numADCs + numTTLs)/Y=(type) wv
+	SetScale/P x, 0, sampleInterval, "ms", wv
+
+	ASSERT(IsFloatingPointWave(wv), "Wave is not of floating point type")
+
+	MultiThread wv[][0, numDACs - 1]                 = 0
+	MultiThread wv[][numDACs, numDACs + numADCs - 1] = NaN
+
+	if(numTTLs > 0)
+		MultiThread wv[][numDACs + numADCs, *] = 0
+	endif
 End
 
 /// @brief Check if the given channel is active
@@ -980,7 +1007,6 @@ static Function DC_PlaceDataInHardwareDataWave(panelTitle, numActiveChannels, da
 	stopCollectionPoint = DC_GetStopCollectionPoint(panelTitle, dataAcqOrTP, setLength)
 
 	DC_MakeHardwareDataWave(panelTitle, numActiveChannels, samplingInterval, dataAcqOrTP)
-	DC_MakeOscilloscopeWave(panelTitle, numActiveChannels, dataAcqOrTP)
 
 	NVAR fifoPosition = $GetFifoPosition(panelTitle)
 	fifoPosition = 0
