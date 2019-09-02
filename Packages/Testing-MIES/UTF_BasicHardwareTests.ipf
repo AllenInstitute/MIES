@@ -2905,6 +2905,115 @@ Function TPDuringDAQWithoodDAQ_REENTRY([str])
 	CHECK_EQUAL_TEXTWAVES(stimsets, {"TestPulse", "StimulusSetC_DA_0", "StimulusSetC_DA_0", "", "", "", "", "", ""}, mode = WAVE_DATA)
 End
 
+Function TPDuringDAQTPStoreCheck_IGNORE(device)
+	string device
+
+	PGC_SetAndActivateControl(device, "check_Settings_RequireAmpConn", val = 0)
+
+	PGC_SetAndActivateControl(device, "check_Settings_TP_SaveTP", val = 1)
+
+	PGC_SetAndActivateControl(device, GetPanelControl(0, CHANNEL_TYPE_HEADSTAGE, CHANNEL_CONTROL_CHECK), val = 1)
+	PGC_SetAndActivateControl(device, GetPanelControl(0, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_WAVE), str = "TestPulse")
+
+	PGC_SetAndActivateControl(device, GetPanelControl(1, CHANNEL_TYPE_HEADSTAGE, CHANNEL_CONTROL_CHECK), val = 1)
+	PGC_SetAndActivateControl(device, GetPanelControl(1, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_WAVE), str = "PulseTrain_10Hz_DA_0")
+
+	PGC_SetAndActivateControl(device, GetPanelControl(2, CHANNEL_TYPE_HEADSTAGE, CHANNEL_CONTROL_CHECK), val = 1)
+	PGC_SetAndActivateControl(device, GetPanelControl(2, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_WAVE), str = "TestPulse")
+End
+
+static Constant TP_WAIT_TIMEOUT = 5
+
+Function TPWaitForAsync_IGNORE(TPStorage, storedTP)
+	WAVE TPStorage
+	WAVE storedTP
+	variable timeOut
+
+	variable sizeAsyncOut, sizeMainThread, endTime
+
+	sizeMainThread = GetNumberFromWaveNote(storedTP, NOTE_INDEX)
+	endTime = DateTime + TP_WAIT_TIMEOUT
+	do
+		ASYNC_ThreadReadOut()
+		sizeAsyncOut = GetNumberFromWaveNote(TPStorage, NOTE_INDEX)
+		if(sizeMainThread == sizeAsyncOut)
+			return NaN
+		endif
+	while(DateTime < endTime)
+	FAIL() // TimeOut for TP data was reached
+End
+
+static Constant TP_WIDTH_EPSILON = 1
+static Constant TP_DYN_PERC_TRESHOLD = 0.2
+static Constant TP_EDGE_EPSILON = 0.2
+static Constant TP_SKIP_NUM_TPS_START = 1
+
+// UTF_TD_GENERATOR HardwareMain#DeviceNameGeneratorMD1
+Function TPDuringDAQTPStoreCheck([str])
+	string str
+
+	STRUCT DAQSettings s
+	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG_1_RES_1")
+	AcquireData(s, str, preAcquireFunc=TPDuringDAQTPStoreCheck_IGNORE)
+End
+
+Function TPDuringDAQTPStoreCheck_REENTRY([str])
+	string str
+
+	WaitAndCheckStoredTPs_IGNORE(str, 2)
+End
+
+Function WaitAndCheckStoredTPs_IGNORE(device, expectedNumTPchannels)
+	string device
+	variable expectedNumTPchannels
+
+	variable i, channel, numTPChan, numStored, numTP, tpLength
+	variable tresh, m, tpWidthInMS
+
+	WAVE/Z TPStorage = GetTPStorage(device)
+	CHECK_WAVE(TPStorage, NORMAL_WAVE)
+	numStored = GetNumberFromWaveNote(TPStorage, NOTE_INDEX)
+	CHECK(numStored > TP_SKIP_NUM_TPS_START)
+
+	WAVE/Z/WAVE storedTestPulses = GetStoredTestPulseWave(device)
+	CHECK_WAVE(storedTestPulses, WAVE_WAVE)
+	numTP = GetNumberFromWaveNote(storedTestPulses, NOTE_INDEX)
+
+	if(numTP != numStored)
+		TPWaitForAsync_IGNORE(TPStorage, storedTestPulses)
+	endif
+
+	tpLength = TP_GetTestPulseLengthInPoints(device, DATA_ACQUISITION_MODE)
+
+	NVAR duration = $GetTestpulseDuration(device)
+
+	for(i = TP_SKIP_NUM_TPS_START; i < numTP; i += 1)
+
+		WAVE/Z singleTPs = storedTestPulses[i]
+		CHECK_WAVE(singleTPs, NUMERIC_WAVE)
+
+		CHECK_EQUAL_VAR(tpLength, DimSize(singleTPs, ROWS))
+		numTPChan = DimSize(singleTPs, COLS)
+		CHECK_EQUAL_VAR(expectedNumTPchannels, numTPChan)
+
+		for(channel = 0; channel < numTPChan; channel += 1)
+
+			Duplicate/FREE/RMD=[][channel] singleTPs, singleTP
+			Redimension/N=(tpLength) singleTP
+
+			m = WaveMin(singleTP)
+			tresh = m + TP_DYN_PERC_TRESHOLD * (WaveMax(singleTP) - m)
+			FindLevels/Q/D=levels/M=(TP_EDGE_EPSILON) singleTP, tresh
+
+			CHECK_EQUAL_VAR(2, V_LevelsFound)
+			tpWidthInMS = duration * DimDelta(singleTP, ROWS)
+
+			CHECK(abs(tpWidthInMS - levels[1] + levels[0]) < TP_WIDTH_EPSILON)
+
+		endfor
+	endfor
+End
+
 static Constant TP_DURATION_S = 5
 
 Function CheckThatTPsCanBeFound_IGNORE(device)
@@ -2938,6 +3047,8 @@ Function CheckThatTPsCanBeFound_REENTRY([str])
 	duration = TPStorage[index - 1][0][%DeltaTimeInSeconds]
 	CHECK(duration > TP_DURATION_S * 0.9)
 
+	WaitAndCheckStoredTPs_IGNORE(str, 2)
+
 	col = FindDimLabel(TPStorage, LAYERS, "TPMarker")
 	Duplicate/FREE/RMD=[0, index - 1][0][col] TPStorage, TPMarker
 	Redimension/N=-1 TPMarker
@@ -2945,7 +3056,6 @@ Function CheckThatTPsCanBeFound_REENTRY([str])
 	// ensure that we have a one-to-one mapping between the stored Testpulses and our TPMarkers
 	WAVE/Z/WAVE storedTestPulses = GetStoredTestPulseWave(str)
 	CHECK_WAVE(storedTestPulses, WAVE_WAVE)
-	CHECK_EQUAL_VAR(index, GetNumberFromWaveNote(storedTestPulses, NOTE_INDEX))
 
 	Make/FREE/D/N=(index) TPMarkerTestpulses
 	Make/FREE/T/N=(index) Headstages
