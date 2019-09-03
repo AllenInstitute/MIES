@@ -1149,3 +1149,13 @@ Constant MATCH_WILDCARD = 0x2
 Constant TTL_RESCALE_OFF = 0x0
 Constant TTL_RESCALE_ON  = 0x1
 /// @}
+
+/// @brief Helper struct for storing the number of active channels per rack
+Structure ActiveChannels
+	int32 numDARack1
+	int32 numADRack1
+	int32 numTTLRack1
+	int32 numDARack2
+	int32 numADRack2
+	int32 numTTLRack2
+EndStructure
