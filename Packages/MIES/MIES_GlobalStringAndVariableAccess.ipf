@@ -10,7 +10,7 @@
 ///
 /// @brief Helper functions for accessing global variables and strings.
 ///
-/// The functions GetNVARAsString and GetSVARAsString are static as they should
+/// The functions GetNVARAsString() and GetSVARAsString() are static as they should
 /// not be used directly.
 ///
 /// Instead if you have a global variable named `iceCreamCounter` in `root:myfood` you
