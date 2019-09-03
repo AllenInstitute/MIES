@@ -93,14 +93,38 @@ End
 /// Rows:
 ///  - Active channels only (same as ITCChanConfigWave)
 ///
-/// Can be used to convert the ITCDataWave contents from bits to mV/pA
-/// The ITCDataWave uses digital ADC/DAC values while for NI devices the values represent actual voltages
-/// So the gain for NI devices is inverted (aka it is an actual voltage gain factor)
-Function/WAVE SWS_GetChannelGains(panelTitle)
+/// Different hardware has different requirements how the DA, AD and TLL
+/// channels are scaled. As general rule use `data * SWS_GetChannelGains` for
+/// GAIN_BEFORE_DAQ and `data / SWS_GetChannelGains` for GAIN_AFTER_DAQ, i.e.
+/// `before_gain * data(before_DAQ) == after_gain * data(after_DAQ)`.
+///
+/// \rst
+///
+/// ========== ========= ===============================================
+///  Hardware   Channel   Specialities
+/// ========== ========= ===============================================
+///  ITC        DA        None
+///  ITC        AD        None
+///  ITC        TTL       Multiple TTL bits are combined. See SplitTTLWaveIntoComponents() for details.
+///  NI         DA        None
+///  NI         AD        Scaled directly on acquisition.
+///  NI         TTL       One channel per TTL bit.
+/// ========== ========= ===============================================
+///
+/// \endrst
+///
+/// @param panelTitle device
+/// @param timing     One of @ref GainTimeParameter
+///
+/// @see GetHardwareDataWave()
+Function/WAVE SWS_GetChannelGains(panelTitle, [timing])
 	string panelTitle
+	variable timing
 
 	variable numDACs, numADCs, numTTLs
 	variable numCols, hardwareType
+
+	ASSERT(!ParamIsDefault(timing) && (timing == GAIN_BEFORE_DAQ || timing == GAIN_AFTER_DAQ), "time argument is missing or wrong")
 
 	WAVE ITCChanConfigWave = GetITCChanConfigWave(panelTitle)
 	numCols = DimSize(ITCChanConfigWave, ROWS)
@@ -126,7 +150,11 @@ Function/WAVE SWS_GetChannelGains(panelTitle)
 
 			// in pA / V, w'(pA) = w * g
 			if(numADCs > 0)
-				gain[numDACs, numDACs + numADCs - 1] = 1 / DA_EphysGuiState[ADCs[p - numDACs]][%$GetSpecialControlLabel(CHANNEL_TYPE_ADC, CHANNEL_CONTROL_GAIN)]
+				if(timing == GAIN_BEFORE_DAQ)
+					gain[numDACs, numDACs + numADCs - 1] = 1 / DA_EphysGuiState[ADCs[p - numDACs]][%$GetSpecialControlLabel(CHANNEL_TYPE_ADC, CHANNEL_CONTROL_GAIN)]
+				elseif(timing == GAIN_AFTER_DAQ)
+					gain[numDACs, numDACs + numADCs - 1] = 1
+				endif
 			endif
 
 			// no scaling done for TTL
@@ -167,7 +195,7 @@ static Function/WAVE SWS_StoreITCDataWaveScaled(panelTitle, dfr, sweepNo)
 	string sweepWaveName
 
 	WAVE ITCChanConfigWave = GetITCChanConfigWave(panelTitle)
-	WAVE gain = SWS_GetChannelGains(paneltitle)
+	WAVE gain = SWS_GetChannelGains(paneltitle, timing = GAIN_BEFORE_DAQ)
 	variable hardwareType = GetHardwareType(panelTitle)
 
 	switch(hardwareType)

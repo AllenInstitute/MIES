@@ -2010,7 +2010,7 @@ Function HW_NI_PrepareAcq(deviceID, [data, dataFunc, config, configFunc, flags, 
 		ASSERT(0, "Offset is not supported")
 	endif
 
-	WAVE gain = SWS_GetChannelGains(panelTitle)
+	WAVE gain = SWS_GetChannelGains(panelTitle, timing = GAIN_BEFORE_DAQ)
 
 	fifoName = GetNIFIFOName(deviceID)
 	channels = DimSize(config, ROWS)
