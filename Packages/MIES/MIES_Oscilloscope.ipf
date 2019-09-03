@@ -652,7 +652,6 @@ static Function SCOPE_NI_UpdateOscilloscope(panelTitle, dataAcqOrTP, deviceiD, f
 			Multithread OscilloscopeData[fifoPosGlobal, fifoPos - 1][channel] = NIChannel[p]
 		endfor
 	endif
-	SetScale/P y, DimOffset(NIChannel, ROWS), DimDelta(NIChannel, ROWS), "" OscilloscopeData
 End
 
 static Function SCOPE_ITC_UpdateOscilloscope(panelTitle, dataAcqOrTP, chunk, fifoPos)
