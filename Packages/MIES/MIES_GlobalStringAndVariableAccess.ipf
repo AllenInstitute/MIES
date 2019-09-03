@@ -32,6 +32,20 @@
 /// 		iceCreamCounter += 1
 /// 	End
 /// \endrst
+///
+/// if you want to ensure that you only get read-only access you can use ROVar() as in
+///
+/// \rst
+/// .. code-block:: igorpro
+///
+/// 	Function doStuffReadOnly()
+/// 		variable iceCreamCounter = ROVar(GetIceCreamCounterAsVariable())
+///
+/// 		iceCreamCounter += 1
+/// 	End
+/// \endrst
+///
+/// this avoids accidental changes.
 
 /// @brief Returns the full path to a global variable
 ///
@@ -85,6 +99,30 @@ threadsafe static Function/S GetSVARAsString(dfr, globalStrName, [initialValue])
 	endif
 
 	return GetDataFolder(1, dfr) + globalStrName
+End
+
+/// @brief Helper function to get read-only access to a global variable
+///
+/// @param path absolute path to a global variable
+Function ROVar(path)
+	string path
+
+	NVAR/Z var = $path
+	ASSERT(NVAR_Exists(var), "Could not recreate " + path)
+
+	return var
+End
+
+/// @brief Helper function to get read-only access to a global string
+///
+/// @param path absolute path to a global string
+Function/S ROStr(path)
+	string path
+
+	SVAR/Z str = $path
+	ASSERT(SVAR_Exists(str), "Could not recreate " + path)
+
+	return str
 End
 
 /// @brief Returns the full path to the mies-igor version string. Creating it when necessary.
