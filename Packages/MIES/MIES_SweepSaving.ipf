@@ -195,7 +195,7 @@ static Function/WAVE SWS_StoreITCDataWaveScaled(panelTitle, dfr, sweepNo)
 	string sweepWaveName
 
 	WAVE ITCChanConfigWave = GetITCChanConfigWave(panelTitle)
-	WAVE gain = SWS_GetChannelGains(paneltitle, timing = GAIN_BEFORE_DAQ)
+	WAVE gain = SWS_GetChannelGains(paneltitle, timing = GAIN_AFTER_DAQ)
 	variable hardwareType = GetHardwareType(panelTitle)
 
 	switch(hardwareType)
@@ -228,8 +228,11 @@ static Function/WAVE SWS_StoreITCDataWaveScaled(panelTitle, dfr, sweepNo)
 			Make/O/N=(numRows, numCols)/Y=(SWS_GetRawDataFPType(panelTitle)) dfr:$sweepWaveName/Wave=sweepWave
 			for(i = 0; i < numCols; i += 1)
 				WAVE NIChannel = NIDataWave[i]
-				// only DAC waves require gain applied, ADC waves were scaled by the FIFO used in acquisition
-				Multithread sweepWave[][i] = (i < numDACs) ? NIChannel[p] / gain[i] : NIChannel[p]
+				if(gain[i] == 1)
+					Multithread sweepWave[][i] = NIChannel[p]
+				else
+					Multithread sweepWave[][i] = NIChannel[p] / gain[i]
+				endif
 			endfor
 			CopyScales/P NIChannel, sweepWave
 			break
