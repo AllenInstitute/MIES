@@ -297,7 +297,7 @@ Function TPM_BkrdTPFuncMD(s)
 
 			// extract the last fully completed chunk
 			// for ITC only the last complete TP is evaluated, all earlier TPs get discarded
-			tpLengthPoints = TP_GetTestPulseLengthInPoints(panelTitle, TEST_PULSE_MODE)
+			tpLengthPoints = ROVAR(GetTestPulseLengthInPoints(panelTitle, TEST_PULSE_MODE))
 			lastTP = trunc(fifoLatest / tpLengthPoints) - 1
 
 			// Ensures that the new TP chunk isn't the same as the last one.

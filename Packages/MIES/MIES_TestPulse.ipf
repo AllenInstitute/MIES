@@ -74,6 +74,7 @@ End
 ///        chunk for the MD case, in points for the real sampling interval type for the given mode.
 ///
 /// See DAP_GetSampInt() for the difference regarding the modes
+/// Use GetTestpulseLengthInPoints() for fast access during DAQ/TP.
 ///
 /// @param panelTitle device
 /// @param mode       one of @ref DataAcqModes
@@ -502,7 +503,7 @@ static Function TP_RecordTP(panelTitle, BaselineSSAvg, InstResistance, SSResista
 
 		if(!count) // initial estimate
 			WAVE OscilloscopeData = GetOscilloscopeWave(panelTitle)
-			delta = TP_GetTestPulseLengthInPoints(panelTitle, TEST_PULSE_MODE) * DimDelta(OscilloscopeData, ROWS) / 1000
+			delta = ROVAR(GetTestPulseLengthInPoints(panelTitle, TEST_PULSE_MODE)) * DimDelta(OscilloscopeData, ROWS) / 1000
 		else
 			delta = TPStorage[count][0][%DeltaTimeInSeconds] / count
 		endif
@@ -857,7 +858,7 @@ Function TP_CreateTestPulseWave(panelTitle)
 
 	WAVE TestPulse = GetTestPulse()
 
-	length = TP_GetTestPulseLengthInPoints(panelTitle, TEST_PULSE_MODE)
+	length = ROVAR(GetTestPulseLengthInPoints(panelTitle, TEST_PULSE_MODE))
 
 	Redimension/N=(length) TestPulse
 	FastOp TestPulse = 0
