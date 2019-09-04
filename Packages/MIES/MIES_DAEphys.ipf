@@ -1661,16 +1661,17 @@ Function DAP_GetSampInt(panelTitle, dataAcqOrTP, [valid])
 	variable dataAcqOrTP
 	variable &valid
 
-	variable multiplier, fixedFreqkHz, sampInt
+	variable multiplier, sampInt
+	string fixedFreqkHzStr
 
 	if(!ParamIsDefault(valid))
 		valid = 1
 	endif
 
 	if(dataAcqOrTP == DATA_ACQUISITION_MODE)
-		fixedFreqkHz = str2numSafe(DAG_GetTextualValue(panelTitle, "Popup_Settings_FixedFreq"))
-		if(IsFinite(fixedFreqkHz))
-			sampInt = 1 / (fixedFreqkHz * 1e3) * 1e6
+		fixedFreqkHzStr = DAG_GetTextualValue(panelTitle, "Popup_Settings_FixedFreq")
+		if(cmpstr(fixedFreqkHzStr, "Maximum"))
+			sampInt = 1 / (str2num(fixedFreqkHzStr) * 1e3) * 1e6
 
 			if(!ParamIsDefault(valid))
 				valid = sampInt >= SI_CalculateMinSampInterval(panelTitle, DATA_ACQUISITION_MODE)

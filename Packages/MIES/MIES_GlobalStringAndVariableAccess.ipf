@@ -10,7 +10,7 @@
 ///
 /// @brief Helper functions for accessing global variables and strings.
 ///
-/// The functions GetNVARAsString and GetSVARAsString are static as they should
+/// The functions GetNVARAsString() and GetSVARAsString() are static as they should
 /// not be used directly.
 ///
 /// Instead if you have a global variable named `iceCreamCounter` in `root:myfood` you
@@ -32,6 +32,20 @@
 /// 		iceCreamCounter += 1
 /// 	End
 /// \endrst
+///
+/// if you want to ensure that you only get read-only access you can use ROVar() as in
+///
+/// \rst
+/// .. code-block:: igorpro
+///
+/// 	Function doStuffReadOnly()
+/// 		variable iceCreamCounter = ROVar(GetIceCreamCounterAsVariable())
+///
+/// 		iceCreamCounter += 1
+/// 	End
+/// \endrst
+///
+/// this avoids accidental changes.
 
 /// @brief Returns the full path to a global variable
 ///
@@ -85,6 +99,30 @@ threadsafe static Function/S GetSVARAsString(dfr, globalStrName, [initialValue])
 	endif
 
 	return GetDataFolder(1, dfr) + globalStrName
+End
+
+/// @brief Helper function to get read-only access to a global variable
+///
+/// @param path absolute path to a global variable
+Function ROVar(path)
+	string path
+
+	NVAR/Z var = $path
+	ASSERT(NVAR_Exists(var), "Could not recreate " + path)
+
+	return var
+End
+
+/// @brief Helper function to get read-only access to a global string
+///
+/// @param path absolute path to a global string
+Function/S ROStr(path)
+	string path
+
+	SVAR/Z str = $path
+	ASSERT(SVAR_Exists(str), "Could not recreate " + path)
+
+	return str
 End
 
 /// @brief Returns the full path to the mies-igor version string. Creating it when necessary.
@@ -558,4 +596,30 @@ Function/S GetPxPVersionForAB(dfr)
 	DFREF dfr
 
 	return GetNVARAsString(dfr, "pxpVersion", initialValue = NaN)
+End
+
+/// @brief Wrapper for fast access during DAQ/TP for TP_GetTestPulseLengthInPoints().
+///
+/// Can only be called during DAQ/TP, returns the same data as
+/// TP_GetTestPulseLengthInPoints().
+///
+/// @param panelTitle device
+/// @param mode       one of @ref DataAcqModes
+Function/S GetTestpulseLengthInPoints(panelTitle, mode)
+	string panelTitle
+	variable mode
+
+	switch(mode)
+		case TEST_PULSE_MODE:
+			DFREF dfr = GetDeviceTestPulse(panelTitle)
+			break
+		case DATA_ACQUISITION_MODE:
+			DFREF dfr = GetDevicePath(panelTitle)
+			break
+		default:
+			ASSERT(0, "Invalid mode")
+			break
+	endswitch
+
+	return GetNVARAsString(dfr, "testpulseLengthInPoints", initialValue=NaN)
 End

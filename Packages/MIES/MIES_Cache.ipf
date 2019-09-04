@@ -206,6 +206,27 @@ static Function/S CA_WaveCRCs(waveRefs, [crcMode])
 	return NumericWaveToList(crc, ";", format = "%d")
 End
 
+/// @brief Calculate the cache key for SI_FindMatchingTableEntry.
+///
+/// We are deliberatly not using a WaveCRC here as know that the wave is not
+/// changed in IP once loaded. Therefore using its name and ModDate is enough.
+Function/S CA_SamplingIntervalKey(lut, s)
+	WAVE lut
+	STRUCT ActiveChannels &s
+
+	variable crc
+
+	crc = StringCRC(crc, num2istr(s.numDARack1))
+	crc = StringCRC(crc, num2istr(s.numADRack1))
+	crc = StringCRC(crc, num2istr(s.numTTLRack1))
+	crc = StringCRC(crc, num2istr(s.numDARack2))
+	crc = StringCRC(crc, num2istr(s.numADRack2))
+	crc = StringCRC(crc, num2istr(s.numTTLRack2))
+
+	ASSERT(!IsFreeWave(lut), "lut can not be a free wave")
+	return num2istr(crc) + NameOfWave(lut) + num2str(ModDate(lut)) + "Version 1"
+End
+
 /// @}
 
 /// @brief Make space for one new entry in the cache waves

@@ -77,7 +77,7 @@ Function DQM_FIFOMonitor(s)
 				// Update ActiveChunk Entry for ITC, not used in DAQ mode
 				gotTPChannels = GotTPChannelsOnADCs(paneltitle)
 				if(gotTPChannels)
-					tpLengthPoints = TP_GetTestPulseLengthInPoints(panelTitle, DATA_ACQUISITION_MODE)
+					tpLengthPoints = ROVar(GetTestPulseLengthInPoints(panelTitle, DATA_ACQUISITION_MODE))
 					lastTP = trunc(fifoLatest / tpLengthPoints) - 1
 					if(lastTP >= 0 && lastTP != ActiveDeviceList[i][%ActiveChunk])
 						ActiveDeviceList[i][%ActiveChunk] = lastTP

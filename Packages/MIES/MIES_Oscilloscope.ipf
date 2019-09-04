@@ -383,7 +383,7 @@ Function SCOPE_CreateGraph(panelTitle, dataAcqOrTP)
 	elseif(gotTPChan)
 			Label/W=$graph bottomTP "Time TP (\\U)"
 			sampInt = DAP_GetSampInt(panelTitle, TEST_PULSE_MODE) / 1000
-			testPulseLength = TP_GetTestPulseLengthInPoints(panelTitle, TEST_PULSE_MODE) * sampInt
+			testPulseLength = ROVar(GetTestPulseLengthInPoints(panelTitle, TEST_PULSE_MODE)) * sampInt
 			NVAR duration = $GetTestpulseDuration(panelTitle)
 			NVAR baselineFrac = $GetTestpulseBaselineFraction(panelTitle)
 			cutOff = max(0, baseLineFrac * testPulseLength - duration/2 * sampInt)
@@ -507,21 +507,22 @@ Function SCOPE_UpdateOscilloscopeData(panelTitle, dataAcqOrTP, [chunk, fifoPos, 
 
 	// In DAQ mode, fifopos is NaN when ITC finishes
 	if(isFinite(fifopos))
-		WAVE GUIState = GetDA_EphysGuiStateNum(panelTitle)
-		saveTP = GUIState[0][%check_Settings_TP_SaveTP]
-
-		// send data to TP Analysis if TP present
-		NVAR fifoPosGlobal = $GetFifoPosition(panelTitle)
-
-		tpLengthPoints = TP_GetTestPulseLengthInPoints(panelTitle, dataAcqOrTP)
-		// use a 'virtual' end position for fifoLatest for TP Mode since the input data contains one TP only
-		fifoLatest = (dataAcqOrTP == TEST_PULSE_MODE) ? tpLengthPoints : fifoPos
 
 		WAVE config = GetITCChanConfigWave(panelTitle)
 		WAVE ADCmode = GetADCTypesFromConfig(config)
 		tpChannels = GetNrOfTypedChannels(ADCmode, DAQ_CHANNEL_TYPE_TP)
 
+		// send data to TP Analysis if TP present
+		NVAR fifoPosGlobal = $GetFifoPosition(panelTitle)
+
 		if(tpChannels)
+			WAVE GUIState = GetDA_EphysGuiStateNum(panelTitle)
+			saveTP = GUIState[0][%check_Settings_TP_SaveTP]
+
+			tpLengthPoints = ROVAR(GetTestPulseLengthInPoints(panelTitle, dataAcqOrTP))
+			// use a 'virtual' end position for fifoLatest for TP Mode since the input data contains one TP only
+			fifoLatest = (dataAcqOrTP == TEST_PULSE_MODE) ? tpLengthPoints : fifoPos
+
 			WAVE ADCs = GetADCListFromConfig(config)
 			WAVE hsProp = GetHSProperties(panelTitle)
 			NVAR duration = $GetTestpulseDuration(panelTitle)
@@ -672,7 +673,7 @@ static Function SCOPE_ITC_UpdateOscilloscope(panelTitle, dataAcqOrTP, chunk, fif
 	Make/FREE/N=(numEntries) gain = DA_EphysGuiState[ADCs[p]][%$GetSpecialControlLabel(CHANNEL_TYPE_ADC, CHANNEL_CONTROL_GAIN)] * HARDWARE_ITC_BITS_PER_VOLT
 
 	if(dataAcqOrTP == TEST_PULSE_MODE)
-		length = TP_GetTestPulseLengthInPoints(panelTitle, TEST_PULSE_MODE)
+		length = ROVAR(GetTestPulseLengthInPoints(panelTitle, TEST_PULSE_MODE))
 		first  = chunk * length
 		last   = first + length - 1
 		ASSERT(first >= 0 && last < DimSize(ITCDataWave, ROWS) && first < last, "Invalid wave subrange")

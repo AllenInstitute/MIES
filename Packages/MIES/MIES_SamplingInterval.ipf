@@ -19,16 +19,6 @@
 /// Set to 0 to deactivate
 static Constant MIN_CONSECUTIVE_SAMPINT = 6
 
-/// @brief Helper struct for storing the number of active channels per rack
-static Structure ActiveChannels
-	int32 numDARack1
-	int32 numADRack1
-	int32 numTTLRack1
-	int32 numDARack2
-	int32 numADRack2
-	int32 numTTLRack2
-EndStructure
-
 /// @brief Fill the passed wave to be used as ITCChanConfigWave
 static Function SI_FillITCConfig(wv, results, idx, totalNumDA, totalNumAD, totalNumTTL)
 	WAVE wv, results
@@ -179,6 +169,15 @@ static Function SI_FindMatchingTableEntry(wv, ac)
 	STRUCT ActiveChannels &ac
 
 	variable i, numRows, start
+	string key
+
+	key = CA_SamplingIntervalKey(wv, ac)
+
+	WAVE/Z result = CA_TryFetchingEntryFromCache(key)
+
+	if(WaveExists(result))
+		return result[0]
+	endif
 
 	numRows = DimSize(wv, ROWS)
 	FindValue/I=(ac.numDARack1) wv
@@ -188,6 +187,7 @@ static Function SI_FindMatchingTableEntry(wv, ac)
 	for(i = start; i < numRows; i += 1)
 		if(wv[i][0] == ac.numDARack1 && wv[i][1] == ac.numADRack1 && wv[i][2] == ac.numTTLRack1)
 			if(wv[i][3] == ac.numDARack2 && wv[i][4] == ac.numADRack2 && wv[i][5] == ac.numTTLRack2)
+				CA_StoreEntryIntoCache(key, {wv[i][%minSampInt]})
 				return wv[i][%minSampInt]
 			endif
 		endif

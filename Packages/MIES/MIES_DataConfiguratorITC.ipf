@@ -25,6 +25,12 @@ static Function DC_UpdateGlobals(panelTitle)
 
 	SVAR panelTitleG = $GetPanelTitleGlobal()
 	panelTitleG = panelTitle
+
+	NVAR tpLengthInPointsTP = $GetTestpulseLengthInPoints(panelTitle, TEST_PULSE_MODE)
+	tpLengthInPointsTP = TP_GetTestPulseLengthInPoints(panelTitle, TEST_PULSE_MODE)
+
+	NVAR tpLengthInPointsDAQ = $GetTestpulseLengthInPoints(panelTitle, DATA_ACQUISITION_MODE)
+	tpLengthInPointsDAQ = TP_GetTestPulseLengthInPoints(panelTitle, DATA_ACQUISITION_MODE)
 End
 
 /// @brief Prepare test pulse/data acquisition
@@ -401,15 +407,19 @@ static Function DC_MakeOscilloscopeWave(panelTitle, numActiveChannels, dataAcqOr
 	string panelTitle
 	variable numActiveChannels, dataAcqOrTP
 
-	variable numRows, sampleIntervall, col
+	variable numRows, sampleIntervall, col, testPulseLength
+
 	WAVE config = GetITCChanConfigWave(panelTitle)
 	WAVE OscilloscopeData = GetOscilloscopeWave(panelTitle)
 	variable hardwareType = GetHardwareType(panelTitle)
+
+	testPulseLength = ROVar(GetTestPulseLengthInPoints(panelTitle, TEST_PULSE_MODE))
+
 	switch(hardwareType)
 		case HARDWARE_ITC_DAC:
 			WAVE ITCDataWave      = GetHardwareDataWave(panelTitle)
 			if(dataAcqOrTP == TEST_PULSE_MODE)
-				numRows = TP_GetTestPulseLengthInPoints(panelTitle, TEST_PULSE_MODE)
+				numRows = testPulseLength
 			elseif(dataAcqOrTP == DATA_ACQUISITION_MODE)
 				numRows = DimSize(ITCDataWave, ROWS)
 			else
@@ -420,7 +430,7 @@ static Function DC_MakeOscilloscopeWave(panelTitle, numActiveChannels, dataAcqOr
 		case HARDWARE_NI_DAC:
 			WAVE/WAVE NIDataWave      = GetHardwareDataWave(panelTitle)
 			if(dataAcqOrTP == TEST_PULSE_MODE)
-				numRows = TP_GetTestPulseLengthInPoints(panelTitle, TEST_PULSE_MODE)
+				numRows = testPulseLength
 			elseif(dataAcqOrTP == DATA_ACQUISITION_MODE)
 				if(numpnts(NIDataWave))
 					numRows = numpnts(NIDataWave[0])
@@ -712,7 +722,7 @@ static Function DC_PlaceDataInHardwareDataWave(panelTitle, numActiveChannels, da
 	decimationFactor      = DC_GetDecimationFactor(panelTitle, dataAcqOrTP)
 	samplingInterval      = DAP_GetSampInt(panelTitle, dataAcqOrTP)
 	multiplier            = str2num(DAG_GetTextualValue(panelTitle, "Popup_Settings_SampIntMult"))
-	testPulseLength       = TP_GetTestPulseLengthInPoints(panelTitle, DATA_ACQUISITION_MODE)
+	testPulseLength       = ROVar(GetTestPulseLengthInPoints(panelTitle, DATA_ACQUISITION_MODE))
 	WAVE/T allSetNames    = DAG_GetChannelTextual(panelTitle, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_WAVE)
 	DC_ReturnTotalLengthIncrease(panelTitle, onsetdelayUser=onsetDelayUser, onsetDelayAuto=onsetDelayAuto, distributedDAQDelay=distributedDAQDelay)
 	onsetDelay            = onsetDelayUser + onsetDelayAuto
