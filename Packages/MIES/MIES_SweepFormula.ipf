@@ -263,49 +263,145 @@ Function/WAVE FormulaExecutor(jsonID, [jsonPath])
 		jsonPath = ""
 	endif
 
+	// object and array evaluation
 	JSONtype = JSON_GetType(jsonID, jsonPath)
 	if(JSONtype == JSON_NUMERIC)
 		Make/FREE out = { JSON_GetVariable(jsonID, jsonPath) }
 		return out
+	elseif(JSONtype == JSON_STRING)
+		Make/FREE/T outT = { JSON_GetString(jsonID, jsonPath) }
+		return outT
+	elseif(JSONtype == JSON_ARRAY)
+		WAVE topArraySize = JSON_GetMaxArraySize(jsonID, jsonPath)
+		Make/FREE/N=(topArraySize[0])/B types = JSON_GetType(jsonID, jsonPath + "/" + num2str(p))
+
+		if(topArraySize[0] != 0 && types[0] == JSON_STRING)
+			ASSERT(DimSize(topArraySize, ROWS) <= 1, "Text Waves Must Be 1-dimensional.")
+			return JSON_GetTextWave(jsonID, jsonPath)
+		endif
+		EXTRACT/FREE types, strings, types[p] == JSON_STRING
+		ASSERT(DimSize(strings, ROWS) == 0, "Object evaluation For Mixed Text/Numeric Arrays Is Not Allowed")
+		WaveClear strings
+
+		ASSERT(DimSize(topArraySize, ROWS) < 4, "Unhandled Data Alignment. Only 3 Dimensions Are Supported For Operations.")
+		WAVE out = JSON_GetWave(jsonID, jsonPath)
+
+		Redimension/N=4 topArraySize
+		topArraySize[] = topArraySize[p] != 0 ? topArraySize[p] : 1
+		Redimension/N=(topArraySize[0], topArraySize[1], topArraySize[2], topArraySize[3])/E=1 out
+
+		EXTRACT/FREE/INDX types, indices, (types[p] == JSON_OBJECT) || (types[p] == JSON_ARRAY)
+		if(DimSize(indices, ROWS) == 1 && DimSize(out, ROWS) == 1)
+			return FormulaExecutor(jsonID, jsonPath = jsonPath + "/" + num2str(indices[0]), graph = graph)
+		endif
+		for(i = 0; i < DimSize(indices, ROWS); i += 1)
+			WAVE element = FormulaExecutor(jsonID, jsonPath = jsonPath + "/" + num2str(indices[i]), graph = graph)
+			if(DimSize(element, CHUNKS) > 1)
+				DebugPrint("Merging Chunks To Layers for object: " + jsonPath + "/" + num2str(indices[i]))
+				Redimension/N=(-1, -1, max(1, DimSize(element, LAYERS)) * DimSize(element, CHUNKS), 0)/E=1 element
+			endif
+			topArraySize[1,*] = max(topArraySize[p], DimSize(element, p - 1))
+			if((DimSize(out, ROWS)   < topArraySize[0]) || \
+			   (DimSize(out, COLS)   < topArraySize[1]) || \
+			   (DimSize(out, LAYERS) < topArraySize[2]) || \
+			   (DimSize(out, CHUNKS) < topArraySize[3]))
+				Redimension/N=(topArraySize[0], topArraySize[1], topArraySize[2], topArraySize[3]) out
+			endif
+			FormulaWaveScaleTransfer(element, out, ROWS, COLS)
+			FormulaWaveScaleTransfer(element, out, COLS, LAYERS)
+			FormulaWaveScaleTransfer(element, out, LAYERS, CHUNKS)
+			out[indices[i]][0, max(0, DimSize(element, ROWS) - 1)][0, max(0, DimSize(element, COLS) - 1)][0, max(0, DimSize(element, LAYERS) - 1)] = element[q][r][s]
+		endfor
+
+		topArraySize[1,*] = topArraySize[p] == 1 ? 0 : topArraySize[p]
+		Redimension/N=(topArraySize[0], topArraySize[1], topArraySize[2], topArraySize[3])/E=1 out
+
+		return out
 	endif
 
+	// operation evaluation
 	ASSERT(JSONtype == JSON_OBJECT, "Topmost element needs to be an object")
 	WAVE/T operations = JSON_GetKeys(jsonID, jsonPath)
 	ASSERT(DimSize(operations, ROWS) == 1, "Only one operation is allowed")
-
 	jsonPath += "/" + EscapeJsonPath(operations[0])
-	ASSERT(JSON_GetType(jsonID, jsonPath) == JSON_ARRAY, "An array is required for operation evaluation.")
-	WAVE wv = JSON_GetWave(jsonID, jsonPath)
-	EXTRACT/FREE/INDX wv, indices, JSON_GetType(jsonID, jsonPath + "/" + num2str(p)) == JSON_OBJECT
-	numIndices = DimSize(indices, 0)
-	for(i = 0; i < numIndices; i += 1)
-		wv[indices[i]] = FormulaExecutor(jsonID, jsonPath = jsonPath + "/" + num2str(indices[i]))[0]
-	endfor
-
-	ASSERT(DimSize(wv, 1) < 2, "At least two operands are required")
-	// ASSERT for unequal wavesizes and different scalings
+	ASSERT(JSON_GetType(jsonID, jsonPath) == JSON_ARRAY, "An array is required to hold the operands of the operation.")
+	strswitch(operations[0])
+		default:
+			WAVE wv = FormulaExecutor(jsonID, jsonPath = jsonPath)
+	endswitch
 
 	strswitch(operations[0])
 		case "-":
+			ASSERT(DimSize(wv, ROWS) >= 2, "At least two operands are required")
 			MatrixOP/FREE out = row(wv, 0) + sumCols((-1) * subRange(wv, 1, numRows(wv) - 1, 0, numCols(wv) - 1))
+			Redimension/N=(-1, DimSize(out, LAYERS), DimSize(out, CHUNKS), 0)/E=1 out
 			break
 		case "+":
 			MatrixOP/FREE out = sumCols(wv)
+			Redimension/N=(-1, DimSize(out, LAYERS), DimSize(out, CHUNKS), 0)/E=1 out
 			break
 		case "~1": // division
+			ASSERT(DimSize(wv, ROWS) >= 2, "At least two operands are required")
 			MatrixOP/FREE out = row(wv, 0) / productCols(subRange(wv, 1, numRows(wv) - 1, 0, numCols(wv) - 1))
+			Redimension/N=(-1, DimSize(out, LAYERS), DimSize(out, CHUNKS), 0)/E=1 out
 			break
 		case "*":
 			MatrixOP/FREE out = productCols(wv)
+			Redimension/N=(-1, DimSize(out, LAYERS), DimSize(out, CHUNKS), 0)/E=1 out
 			break
 		case "min":
-			MatrixOP/FREE out = minCols(wv)
+			ASSERT(DimSize(wv, LAYERS) <= 1, "Unhandled dimension")
+			ASSERT(DimSize(wv, CHUNKS) <= 1, "Unhandled dimension")
+			MatrixOP/FREE out = minCols(wv)^t
 			break
 		case "max":
-			MatrixOP/FREE out = maxCols(wv)
+			ASSERT(DimSize(wv, LAYERS) <= 1, "Unhandled dimension")
+			ASSERT(DimSize(wv, CHUNKS) <= 1, "Unhandled dimension")
+			MatrixOP/FREE out = maxCols(wv)^t
+			break
+		case "merge":
+			ASSERT(DimSize(wv, LAYERS) <= 1, "Unhandled dimension")
+			ASSERT(DimSize(wv, CHUNKS) <= 1, "Unhandled dimension")
+			MatrixOP/FREE transposed = wv^T
+			Extract/FREE transposed, out, (p < (JSON_GetType(jsonID, jsonPath + "/" + num2str(q)) != JSON_ARRAY ? 1 : JSON_GetArraySize(jsonID, jsonPath + "/" + num2str(q))))
 			break
 		default:
+			ASSERT(0, "Undefined Operation")
 	endswitch
 
 	return out
 End
+
+/// @brief transfer the wave scaling from one wave to another
+///
+/// Note: wave scale transfer requires wave units for the first wave in the array that
+///
+/// @param source    Wave whos scaling should get transferred
+/// @param dest      Wave that accepts the new scaling
+/// @param dimSource dimension of the source wave
+/// @param dimDest   dimension of the destination wave
+///
+/// @return 0 if wave scaling was transferred, 1 if not
+Function FormulaWaveScaleTransfer(source, dest, dimSource, dimDest)
+	WAVE source, dest
+	Variable dimSource, dimDest
+
+	if(cmpstr(WaveUnits(source, dimSource), "") && cmpstr(WaveUnits(dest, dimDest), ""))
+		return 1
+	endif
+
+	switch(dimDest)
+		case ROWS:
+			SetScale/P x, DimOffset(source, dimSource), DimDelta(source, dimSource), WaveUnits(source, dimSource), dest
+			break
+		case COLS:
+			SetScale/P y, DimOffset(source, dimSource), DimDelta(source, dimSource), WaveUnits(source, dimSource), dest
+			break
+		case LAYERS:
+			SetScale/P z, DimOffset(source, dimSource), DimDelta(source, dimSource), WaveUnits(source, dimSource), dest
+			break
+		case CHUNKS:
+			SetScale/P t, DimOffset(source, dimSource), DimDelta(source, dimSource), WaveUnits(source, dimSource), dest
+			break
+		default:
+			return 1
