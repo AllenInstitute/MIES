@@ -1241,6 +1241,9 @@ End
 
 /// @brief get the x value of the cursors A and B
 ///
+/// @todo make this a generic cursor getter function and merge with
+///       `cursors()` in @see FormulaExecutor
+///
 /// @param[in]  graph where the cursor are
 /// @param[out] csrAx Position of cursor A
 /// @param[out] csrBx Position of cursor B

@@ -89,7 +89,7 @@ Function FormulaParser(formula)
 				break
 			default:
 				state = STATE_COLLECT
-				ASSERT(GrepString(formula[i], "[A-Za-z0-9_\.]"), "undefined pattern in formula")
+				ASSERT(GrepString(formula[i], "[A-Za-z0-9_\.;]"), "undefined pattern in formula")
 		endswitch
 		if(level > 0 || arrayLevel > 0)
 			state = STATE_DEFAULT
@@ -253,14 +253,18 @@ Function/S EscapeJsonPath(str)
 	return ReplaceString("/", str, "~1")
 End
 
-Function/WAVE FormulaExecutor(jsonID, [jsonPath])
+Function/WAVE FormulaExecutor(jsonID, [jsonPath, graph])
 	Variable jsonID
 	String jsonPath
+	String graph
 
 	Variable i, numIndices, JSONtype
 
 	if(ParamIsDefault(jsonPath))
 		jsonPath = ""
+	endif
+	if(ParamIsDefault(graph))
+		graph = ""
 	endif
 
 	// object and array evaluation
@@ -326,27 +330,33 @@ Function/WAVE FormulaExecutor(jsonID, [jsonPath])
 	jsonPath += "/" + EscapeJsonPath(operations[0])
 	ASSERT(JSON_GetType(jsonID, jsonPath) == JSON_ARRAY, "An array is required to hold the operands of the operation.")
 	strswitch(operations[0])
+		case "cursors":
+		case "channel":
+			WAVE/T wvT = JSON_GetTextWave(jsonID, jsonPath)
+			break
+		case "sweeps":
+			break
 		default:
-			WAVE wv = FormulaExecutor(jsonID, jsonPath = jsonPath)
+			WAVE wv = FormulaExecutor(jsonID, jsonPath = jsonPath, graph = graph)
 	endswitch
 
 	strswitch(operations[0])
 		case "-":
 			ASSERT(DimSize(wv, ROWS) >= 2, "At least two operands are required")
-			MatrixOP/FREE out = row(wv, 0) + sumCols((-1) * subRange(wv, 1, numRows(wv) - 1, 0, numCols(wv) - 1))
+			MatrixOP/FREE out = (row(wv, 0) + sumCols((-1) * subRange(wv, 1, numRows(wv) - 1, 0, numCols(wv) - 1)))^t
 			Redimension/N=(-1, DimSize(out, LAYERS), DimSize(out, CHUNKS), 0)/E=1 out
 			break
 		case "+":
-			MatrixOP/FREE out = sumCols(wv)
+			MatrixOP/FREE out = sumCols(wv)^t
 			Redimension/N=(-1, DimSize(out, LAYERS), DimSize(out, CHUNKS), 0)/E=1 out
 			break
 		case "~1": // division
 			ASSERT(DimSize(wv, ROWS) >= 2, "At least two operands are required")
-			MatrixOP/FREE out = row(wv, 0) / productCols(subRange(wv, 1, numRows(wv) - 1, 0, numCols(wv) - 1))
+			MatrixOP/FREE out = (row(wv, 0) / productCols(subRange(wv, 1, numRows(wv) - 1, 0, numCols(wv) - 1)))^t
 			Redimension/N=(-1, DimSize(out, LAYERS), DimSize(out, CHUNKS), 0)/E=1 out
 			break
 		case "*":
-			MatrixOP/FREE out = productCols(wv)
+			MatrixOP/FREE out = productCols(wv)^t
 			Redimension/N=(-1, DimSize(out, LAYERS), DimSize(out, CHUNKS), 0)/E=1 out
 			break
 		case "min":
@@ -365,11 +375,80 @@ Function/WAVE FormulaExecutor(jsonID, [jsonPath])
 			MatrixOP/FREE transposed = wv^T
 			Extract/FREE transposed, out, (p < (JSON_GetType(jsonID, jsonPath + "/" + num2str(q)) != JSON_ARRAY ? 1 : JSON_GetArraySize(jsonID, jsonPath + "/" + num2str(q))))
 			break
+		case "channel":
+			Make/N=(DimSize(wvT, ROWS))/FREE out = WhichListItem(wvT[p], ITC_CHANNEL_NAMES)
+			break
+		case "sweeps":
+			ASSERT(!ParamIsDefault(graph) && !!cmpstr(graph, ""), "Graph for extracting sweeps not specified.")
+			WAVE range = FormulaExecutor(jsonID, jsonPath = jsonPath + "/0", graph = graph)
+			ASSERT(DimSize(range, ROWS) == 2, "A range can not hold more than two points.")
+			WAVE channel = FormulaExecutor(jsonID, jsonPath = jsonPath + "/1")
+			ASSERT(DimSize(channel, ROWS) == 1, "Only one channel name is allowed.")
+			WAVE/T sweeps = FormulaExecutor(jsonID, jsonPath = jsonPath + "/2", graph = graph)
+			ASSERT(DimSize(sweeps, ROWS) == 1, "sweeps need to be given as a semicolon separated list.")
+			return GetSweepForFormula(graph, range[0], range[1], channel[0], sweeps[0])
+			break
+		case "cursors":
+			Make/FREE/N=(DimSize(wvT, ROWS)) out = NaN
+			for(i = 0; i < DimSize(wvT, ROWS); i += 1)
+				ASSERT(GrepString(wvT[i], "^(?i)[A-J]$"), "Invalid Cursor Name")
+				if(ParamIsDefault(graph))
+					out[i] = xcsr($wvT[i])
+				else
+					if(!cmpstr(CsrInfo($wvT[i], graph), ""))
+						continue
+					endif
+					out[i] = xcsr($wvT[i], graph)
+				endif
+			endfor
+			break
 		default:
 			ASSERT(0, "Undefined Operation")
 	endswitch
 
 	return out
+End
+
+Function/WAVE GetSweepForFormula(graph, rangeStart, rangeEnd, channelType, sweepList)
+	String graph
+	Variable rangeStart, rangeEnd
+	Variable channelType
+	String sweepList
+
+	Variable i, numSweeps
+	Variable pStart, pEnd
+
+	ASSERT(WindowExists(graph), "graph window does not exist")
+	ASSERT(isFinite(rangeStart) && isFinite(rangeEnd), "Specified range not valid.")
+
+	WAVE/T traces = PA_GetTraceInfos(graph, channelType = channelType)
+	Make/N=(DimSize(traces, ROWS))/FREE sweepListIndex = WhichListItem(traces[p][%sweepNumber], sweepList)
+	Extract/FREE/INDX sweepListIndex, indices, sweepListIndex[p] != -1
+	numSweeps = DimSize(indices, ROWS)
+	if(numSweeps == 0)
+		DebugPrint("No matching sweeps")
+		return $""
+	endif
+
+	WAVE reference = $(traces[indices[0]][%fullPath])
+	ASSERT(DimSize(reference, COLS) <= 1, "Unhandled Sweep Format.")
+
+	pStart = ScaleToIndex(reference, rangeStart, ROWS)
+	pEnd = ScaleToIndex(reference, rangeEnd, ROWS)
+	ASSERT(pEnd < DimSize(reference, ROWS) && pStart >= 0, "Invalid sweep range.")
+	Make/FREE/N=(abs(pStart - pEnd), numSweeps) sweeps
+	SetScale/P x, IndexToScale(reference, pStart, ROWS), DimDelta(reference, ROWS), sweeps
+	for(i = 0; i < numSweeps; i += 1)
+		WAVE sweep = $(traces[indices[i]][%fullPath])
+		pStart = IsFinite(rangeStart) ? ScaleToIndex(sweep, rangeStart, ROWS) : 0
+		pEnd = IsFinite(rangeEnd) ? ScaleToIndex(sweep, rangeEnd, ROWS) : DimSize(reference, ROWS) - 1
+		ASSERT(pEnd < DimSize(sweep, ROWS) && pStart >= 0, "Invalid sweep range.")
+		ASSERt(abs(pStart - pEnd) == DimSize(sweeps, ROWS), "Sweeps not equal.")
+		ASSERT(DimDelta(sweep, ROWS) == DimDelta(sweeps, ROWS), "Sweeps not equal.")
+		sweeps[][i] = sweep[pStart + p]
+	endfor
+
+	return sweeps
 End
 
 /// @brief transfer the wave scaling from one wave to another
