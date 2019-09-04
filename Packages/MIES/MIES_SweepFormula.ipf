@@ -388,6 +388,16 @@ Function/WAVE FormulaExecutor(jsonID, [jsonPath, graph])
 			ASSERT(DimSize(sweeps, ROWS) == 1, "sweeps need to be given as a semicolon separated list.")
 			return GetSweepForFormula(graph, range[0], range[1], channel[0], sweeps[0])
 			break
+		case "log": // JSON logic debug operation
+			print wv[0]
+			WAVE out = wv
+			break
+		case "log10": // decadic logarithm
+			ASSERT(DimSize(wv, LAYERS) <= 1, "Unhandled dimension")
+			ASSERT(DimSize(wv, CHUNKS) <= 1, "Unhandled dimension")
+			MatrixOP/FREE out = log(wv)
+			FormulaWaveScaleTransfer(wv, out, COLS, ROWS)
+			break
 		case "cursors":
 			Make/FREE/N=(DimSize(wvT, ROWS)) out = NaN
 			for(i = 0; i < DimSize(wvT, ROWS); i += 1)
