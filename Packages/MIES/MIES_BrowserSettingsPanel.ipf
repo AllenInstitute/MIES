@@ -8,7 +8,7 @@
 static strConstant EXT_PANEL_SUBWINDOW = "BrowserSettingsPanel"
 static strConstant EXT_PANEL_SWEEPCONTROL = "SweepControl"
 
-static Constant BROWSERSETTINGS_PANEL_VERSION = 5
+static Constant BROWSERSETTINGS_PANEL_VERSION = 6
 
 static strConstant BROWSERTYPE_DATABROWSER  = "D"
 static strConstant BROWSERTYPE_SWEEPBROWSER = "S"
@@ -189,6 +189,14 @@ Function BSP_DynamicStartupSettings(mainPanel)
 	SetControlProcedures(bsPanel, "check_SweepControl_HideSweep;", BSP_AddBrowserPrefix(mainPanel, "CheckProc_ChangedSetting"))
 	SetControlProcedures(bsPanel, "slider_BrowserSettings_dDAQ;", "BSP_SliderProc_ChangedSetting")
 	SetControlProcedures(bsPanel, "button_TimeAlignment_Action", BSP_AddBrowserPrefix(mainPanel, "DoTimeAlignment"))
+
+	// sweep formula tab
+	DFREF dfr = BSP_GetFolder(mainPanel, MIES_BSP_PANEL_FOLDER)
+	String/G dfr:sweepFormulaParseResult = ""
+	SetVariable setvar_sweepFormula_parseResult, win = $bsPanel, value = $(GetDataFolder(1, dfr) + "sweepFormulaParseResult")
+	Variable/G dfr:sweepFormulaParse = 0
+	ValDisplay status_sweepFormula_parser, value = #(GetDataFolder(1, dfr) + "sweepFormulaParse == 1")
+	Notebook $bsPanel#sweepFormula_formula text="sweeps(cursors(A,B),channel(AD),0;1;2;3;4;5)"
 
 	if(BSP_IsDataBrowser(mainPanel))
 		EnableControls(bsPanel, BROWSERSETTINGS_CONTROLS_DATABROWSER)

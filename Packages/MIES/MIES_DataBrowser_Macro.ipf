@@ -66,8 +66,8 @@ Window DataBrowser() : Graph
 	TabControl Settings,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	TabControl Settings,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
 	TabControl Settings,tabLabel(0)="Settings",tabLabel(1)="OVS",tabLabel(2)="CS"
-	TabControl Settings,tabLabel(3)="AR",tabLabel(4)="PA",tabLabel(5)="Note"
-	TabControl Settings,tabLabel(6)="Dashboard",value= 0
+	TabControl Settings,tabLabel(3)="AR",tabLabel(4)="PA",tabLabel(6)="Note"
+	TabControl Settings,tabLabel(5)="SF",tabLabel(7)="Dashboard",value= 0
 	ListBox list_of_ranges,pos={81.00,198.00},size={186.00,201.00},disable=3,proc=OVS_MainListBoxProc
 	ListBox list_of_ranges,help={"Select sweeps for overlay; The second column (\"Headstages\") allows to ignore some headstages for the graphing. Syntax is a semicolon \";\" separated list of subranges, e.g. \"0\", \"0,2\", \"1;4;2\""}
 	ListBox list_of_ranges,userdata(tabnum)=  "1",userdata(tabcontrol)=  "Settings"
@@ -768,22 +768,62 @@ Window DataBrowser() : Graph
 	PopupMenu popup_DB_lockedDevices,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	PopupMenu popup_DB_lockedDevices,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
 	PopupMenu popup_DB_lockedDevices,mode=1,popvalue="- none -",value= #"DB_GetAllDevicesWithData()"
+	GroupBox group_sweepFormula,pos={3.00,27.00},size={354.00,372.00},disable=1,title="SweepFormula"
+	GroupBox group_sweepFormula,userdata(tabnum)=  "5"
+	GroupBox group_sweepFormula,userdata(tabcontrol)=  "Settings"
+	SetVariable setvar_sweepFormula_parseResult,pos={85.80,237.00},size={249.00,13.80},disable=1,title="◀"
+	SetVariable setvar_sweepFormula_parseResult,help={"Error Message from Formula Parsing"}
+	SetVariable setvar_sweepFormula_parseResult,userdata(tabnum)=  "5"
+	SetVariable setvar_sweepFormula_parseResult,userdata(tabcontrol)=  "Settings"
+	SetVariable setvar_sweepFormula_parseResult,frame=0
+	SetVariable setvar_sweepFormula_parseResult,limits={-inf,inf,0},noedit= 1,live= 1
+	ValDisplay status_sweepFormula_parser,pos={337.20,238.80},size={9.60,9.00},bodyWidth=10,disable=1
+	ValDisplay status_sweepFormula_parser,help={"Current parsing status of the entered formula."}
+	ValDisplay status_sweepFormula_parser,userdata(tabnum)=  "5"
+	ValDisplay status_sweepFormula_parser,userdata(tabcontrol)=  "Settings"
+	ValDisplay status_sweepFormula_parser,limits={-1,1,0},barmisc={0,0},mode= 1,highColor= (0,65535,0),lowColor= (0,0,0),zeroColor= (65535,0,0)
+	ValDisplay status_sweepFormula_parser,value= #"NaN"
+	Button button_sweepFormula_display,pos={6.60,234.00},size={36.00,18.00},disable=1,proc=button_sweepFormula_display,title="Display"
+	Button button_sweepFormula_display,userdata(tabnum)=  "5"
+	Button button_sweepFormula_display,userdata(tabcontrol)=  "Settings"
+	Button button_sweepFormula_check,pos={46.80,234.00},size={36.00,18.00},disable=1,proc=button_sweepFormula_check,title="Check"
+	Button button_sweepFormula_check,userdata(tabnum)=  "5"
+	Button button_sweepFormula_check,userdata(tabcontrol)=  "Settings"
+	NewNotebook /F=1 /N=sweepFormula_info /W=(7,256,350,394) /HOST=# /V=0
+	Notebook kwTopWin, defaultTab=36, autoSave= 1, magnification=100, showRuler=0, rulerUnits=2
+	Notebook kwTopWin newRuler=Normal, justification=0, margins={0,0,325}, spacing={0,0,0}, tabs={}, rulerDefaults={"Arial",10,0,(0,0,0)}
+	Notebook kwTopWin, zdata= "Gasal9hWAh&=mK3;2XAL.NUVU%rH.q`)@15V&kl0$4>XC2-K63Z73CWr'9aiHM6Qpco&qrIS@\\2fcBY?RshVO4akca'4$eD,ll!P$RRNfWorltE$eU)gEnEt,EnaX!4Sj\"MlGT,^RWu'2>7(aHVnUpVHN@f(uY5?`;ojU.,6Sn<uO;M`nO+2%1Ga3Yt0OG\\$:YaG^p6T]p,i*+oam^'7m;gPcGu-6Z&>+W0<q[Qp]H18Rq!sp*n;XphV:8HSdEb8hfLMMIZVNaQ!TcYaj_p=!BA#R?1^3k?(NBrn6NNNe](G"
+	Notebook kwTopWin, zdata= "2:.>J%[F2>RO<68=%R[n,GnS)ZVe#Yf/1V,bk[,dZ'$#t''@5>'9f/5nA(j\\I]_(Im<2g>YBtD.[>n,(_&ZU1DT5PN2YX2(*)_f?AfOsmpjbBDT)D0?S<%bd0fe;hX(u=>HU:5F_VOXE]2[M(_j2YOA4j+>lF\\T(;;2l*5*)R_@p<g\"4:lDoLXK-d@)T_ecA1!B]`881$CD?XOmrHISRN'LX1#nbKf\\]'*V3Zdp]fth@<M"
+	Notebook kwTopWin, zdataEnd= 1
+	SetWindow kwTopWin,userdata(tabnum)=  "5"
+	SetWindow kwTopWin,userdata(tabcontrol)=  "Settings"
+	RenameWindow #,sweepFormula_info
+	SetActiveSubwindow ##
+	NewNotebook /F=0 /N=sweepFormula_formula /W=(8,42,350,230) /HOST=# /V=0
+	Notebook kwTopWin, defaultTab=20, autoSave= 1, magnification=100
+	Notebook kwTopWin font="Lucida Console", fSize=11, fStyle=0, textRGB=(0,0,0)
+	Notebook kwTopWin, zdata= "GaqDU%ejN7!Z)%D?io>lbN?PWL]d_/WWX="
+	Notebook kwTopWin, zdataEnd= 1
+	SetWindow kwTopWin,userdata(tabnum)=  "5"
+	SetWindow kwTopWin,userdata(tabcontrol)=  "Settings"
+	RenameWindow #,sweepFormula_formula
+	SetActiveSubwindow ##
 	ListBox list_dashboard,pos={3.00,90.00},size={351.00,311.00},disable=1,proc=AD_ListBoxProc
-	ListBox list_dashboard,userdata(tabnum)=  "6",userdata(tabcontrol)=  "Settings"
+	ListBox list_dashboard,userdata(tabnum)=  "7",userdata(tabcontrol)=  "Settings"
 	ListBox list_dashboard,userdata(ResizeControlsInfo)= A"!!,>M!!#?m!!#BiJ,hs*J,fQL!!#](Aon\"Qzzzzzzzzzzzzzz!!#o2B4uAezz"
 	ListBox list_dashboard,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	ListBox list_dashboard,userdata(ResizeControlsInfo) += A"zzz!!#?(FEDG<zzzzzzzzzzzzzz!!!"
 	ListBox list_dashboard,fSize=12,mode= 1,selRow= -1,widths={141,109,77}
 	ListBox list_dashboard,userColumnResize= 1
 	GroupBox group_enable_dashboard,pos={3.00,27.00},size={354.00,57.00},disable=1
-	GroupBox group_enable_dashboard,userdata(tabnum)=  "6"
+	GroupBox group_enable_dashboard,userdata(tabnum)=  "7"
 	GroupBox group_enable_dashboard,userdata(tabcontrol)=  "Settings"
 	GroupBox group_enable_dashboard,userdata(ResizeControlsInfo)= A"!!,>M!!#=;!!#Bk!!#>rz!!#](Aon\"Qzzzzzzzzzzzzzz!!#o2B4uAezz"
 	GroupBox group_enable_dashboard,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	GroupBox group_enable_dashboard,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
 	CheckBox check_BrowserSettings_DB_Passed,pos={159.00,39.00},size={36.00,12.00},disable=1,proc=AD_CheckProc_PassedSweeps,title="Passed"
 	CheckBox check_BrowserSettings_DB_Passed,help={"Show passed sweeps on double click into ListBox "}
-	CheckBox check_BrowserSettings_DB_Passed,userdata(tabnum)=  "6"
+	CheckBox check_BrowserSettings_DB_Passed,userdata(tabnum)=  "7"
 	CheckBox check_BrowserSettings_DB_Passed,userdata(tabcontrol)=  "Settings"
 	CheckBox check_BrowserSettings_DB_Passed,userdata(ResizeControlsInfo)= A"!!,G/!!#>*!!#=s!!#;Mz!!#`-A7TLfzzzzzzzzzzzzzz!!#r+D.OhkBk2=!z"
 	CheckBox check_BrowserSettings_DB_Passed,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
@@ -791,7 +831,7 @@ Window DataBrowser() : Graph
 	CheckBox check_BrowserSettings_DB_Passed,value= 0
 	CheckBox check_BrowserSettings_DB_Failed,pos={159.00,60.00},size={33.00,12.00},disable=1,proc=AD_CheckProc_FailedSweeps,title="Failed"
 	CheckBox check_BrowserSettings_DB_Failed,help={"Show failed sweeps on double click into ListBox "}
-	CheckBox check_BrowserSettings_DB_Failed,userdata(tabnum)=  "6"
+	CheckBox check_BrowserSettings_DB_Failed,userdata(tabnum)=  "7"
 	CheckBox check_BrowserSettings_DB_Failed,userdata(tabcontrol)=  "Settings"
 	CheckBox check_BrowserSettings_DB_Failed,userdata(ResizeControlsInfo)= A"!!,G/!!#?)!!#=g!!#;Mz!!#`-A7TLfzzzzzzzzzzzzzz!!#r+D.OhkBk2=!z"
 	CheckBox check_BrowserSettings_DB_Failed,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
@@ -805,7 +845,7 @@ Window DataBrowser() : Graph
 	NewNotebook /F=0 /N=WaveNoteDisplay /W=(200,24,600,561)/FG=(FL,$"",FR,FB) /HOST=# /V=0 /OPTS=10
 	Notebook kwTopWin, defaultTab=36, autoSave= 0, magnification=100
 	Notebook kwTopWin font="Lucida Console", fSize=11, fStyle=0, textRGB=(0,0,0)
-	SetWindow kwTopWin,userdata(tabnum)=  "5"
+	SetWindow kwTopWin,userdata(tabnum)=  "6"
 	SetWindow kwTopWin,userdata(tabcontrol)=  "Settings"
 	RenameWindow #,WaveNoteDisplay
 	SetActiveSubwindow ##

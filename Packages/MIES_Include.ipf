@@ -96,6 +96,7 @@
 #include "MIES_RepeatedAcquisition"
 #include "MIES_SamplingInterval"
 #include "MIES_Structures"
+#include "MIES_SweepFormula"
 #include "MIES_SweepSaving"
 #include "MIES_ThreadedFIFOHandling"
 #include "MIES_ThreadsafeUtilities"

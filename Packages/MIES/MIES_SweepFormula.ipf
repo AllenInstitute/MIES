@@ -450,6 +450,94 @@ Function/WAVE FormulaExecutor(jsonID, [jsonPath, graph])
 	return out
 End
 
+Function FormulaPlotter(graph, formula, [dfr])
+	String graph
+	String formula
+	DFREF dfr
+
+	String formula0, formula1, traces, trace, axes
+	Variable i, numTraces
+	String win = "FormulaPlot"
+	String traceName = "formula"
+
+	if(ParamIsDefault(dfr))
+		dfr = root:
+	endif
+
+	SplitString/E="^(.+?)(?:\s+vs\s+(.+))?$" formula, formula0, formula1
+	ASSERT(V_Flag == 2 || V_flag == 1, "Display command must follow the \"y[ vs x]\" pattern.")
+	if(V_Flag == 2)
+		WAVE wv = FormulaExecutor(FormulaParser(formula1), graph = graph)
+		ASSERT(WaveExists(wv), "Error in x part of formula.")
+		if(WaveType(wv, 1) == 2)
+			Duplicate/O wv dfr:xFormulaT/WAVE = wvX
+		else
+			Duplicate/O wv dfr:xFormula/WAVE = wvX
+		endif
+		WaveClear wv
+	endif
+	WAVE wv = FormulaExecutor(FormulaParser(formula0), graph = graph)
+	ASSERT(WaveExists(wv), "Error in y part of formula.")
+	if(WaveType(wv, 1) == 2)
+		Duplicate/O wv dfr:yFormulaT/WAVE = wvY
+	else
+		Duplicate/O wv dfr:yFormula/WAVE = wvY
+	endif
+	WaveClear wv
+
+	if(!WindowExists(win))
+		Display/N=$win as win
+		win = S_name
+	endif
+
+	traces = TraceNameList(win, ";", 1)
+
+	numTraces = WaveExists(wvY) ? max(DimSize(wvY, COLS), 1) : 0
+	if(WaveExists(wvX) && numTraces == DimSize(wvX, COLS))
+		DebugPrint("Size missmatch for plotting waves.")
+	endif
+	for(i = 0; i < numTraces; i += 1)
+		trace = traceName + num2istr(i)
+		if(WhichListItem(trace, traces) == -1)
+			if(WaveExists(wvX))
+				AppendTograph/W=$win wvY[][i]/TN=$trace vs wvX[][i]
+			else
+				AppendTograph/W=$win wvY[][i]/TN=$trace
+			endif
+		else
+			WAVE/Z wvX = XWaveRefFromTrace(win, trace)
+			if(WaveExists(wvX) && !EqualWaves(wv, wvX, 2))
+				RemoveFromGraph/W=$win $trace
+				if(WaveType(wv, 1) == 2)
+					AppendTograph/W=$win/B=bottomText wvY[][i]/TN=$trace vs wvX[][i]
+				else
+					AppendTograph/W=$win wvY[][i]/TN=$trace vs wvX[][i]
+				endif
+			elseif(WaveExists(wvX) && !WaveExists(wv))
+				ReplaceWave/W=$win/X trace=$trace, wvX[][i]
+			elseif(!WaveExists(wvX) && WaveExists(wv))
+				RemoveFromGraph/W=$win $trace
+				AppendTograph/W=$win wvY[][i]/TN=$trace
+			endif
+			traces = RemoveFromList(trace, traces)
+		endif
+	endfor
+
+	numTraces = ItemsInList(traces)
+	for(i = 0; i < numTraces; i += 1)
+		trace = StringFromList(i, traces)
+		RemoveFromGraph/W=$win $trace
+	endfor
+
+	axes = AxisList(win)
+	if(WhichListItem("bottomText", axes) != -1)
+		ModifyGraph/W=$win freePos(bottomText)={0,kwFraction}
+		ModifyGraph/W=$win mode=0
+	endif
+
+	DoWindow/F $win
+End
+
 Function/WAVE GetSweepForFormula(graph, rangeStart, rangeEnd, channelType, sweepList)
 	String graph
 	Variable rangeStart, rangeEnd
@@ -492,6 +580,75 @@ Function/WAVE GetSweepForFormula(graph, rangeStart, rangeEnd, channelType, sweep
 	return sweeps
 End
 
+Function button_sweepFormula_check(ba) : ButtonControl
+	STRUCT WMButtonAction &ba
+
+	String mainPanel, bsPanel, formula, yFormula, xFormula
+	Variable numFormulae
+
+	switch( ba.eventCode )
+		case 2: // mouse up
+			// click code here
+			mainPanel = GetMainWindow(ba.win)
+			bsPanel = BSP_GetPanel(mainPanel)
+			Notebook $bsPanel#sweepFormula_formula getData=2
+			formula = S_Value
+			DFREF dfr = BSP_GetFolder(mainPanel, MIES_BSP_PANEL_FOLDER)
+			NVAR/Z status = dfr:sweepFormulaParse
+			ASSERT(NVAR_EXISTS(status), "Global variable sweepFormulaParse not found")
+			status = 0
+			SVAR/Z result = dfr:sweepFormulaParseResult
+			ASSERT(SVAR_EXISTS(result), "Global variable sweepFormulaParseResult not found. Can not evaluate parsing status.")
+
+			SplitString/E="^(.+?)(?:\s+vs\s+(.+))?$" formula, yFormula, xFormula
+			numFormulae = V_flag
+			if(numFormulae != 2 && numFormulae != 1)
+				DebugPrint("Display command must follow the \"y[ vs x]\" pattern. Can not evaluate parsing status.")
+				return 0
+			endif
+
+			try
+				JSON_Release(FormulaParser(yFormula))
+				status = 1
+				if(numFormulae == 1)
+					return 0
+				endif
+				DebugPrint("y part of formula is valid.")
+				JSON_Release(FormulaParser(xFormula))
+			catch
+				status = 0
+			endtry
+			break
+		case -1: // control being killed
+			break
+	endswitch
+
+	return 0
+End
+
+Function button_sweepFormula_display(ba) : ButtonControl
+	STRUCT WMButtonAction &ba
+
+	String bsPanel, mainPanel, code
+
+	switch( ba.eventCode )
+		case 2: // mouse up
+			bsPanel = BSP_GetPanel(ba.win)
+			mainPanel = GetMainWindow(ba.win)
+
+			Notebook $bsPanel#sweepFormula_formula getData=2
+			code = S_Value
+			if(IsEmpty(code))
+				break
+			endif
+
+			FormulaPlotter(mainPanel, code, dfr = dfr)
+			break
+	endswitch
+
+	return 0
+End
+
 /// @brief transfer the wave scaling from one wave to another
 ///
 /// Note: wave scale transfer requires wave units for the first wave in the array that
@@ -525,3 +682,7 @@ Function FormulaWaveScaleTransfer(source, dest, dimSource, dimDest)
 			break
 		default:
 			return 1
+	endswitch
+
+	return 0
+End
