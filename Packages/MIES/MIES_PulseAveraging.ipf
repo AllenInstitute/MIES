@@ -229,6 +229,7 @@ End
 ///        refer to the same wave.
 ///
 ///        Columns have colum labels and include various userdata readout from the traces.
+/// 	   for @p channelType @see ItcXopChannelConstants
 Function/WAVE PA_GetTraceInfos(graph, [includeOtherADData, channelType])
 	string graph
 	variable includeOtherADData, channelType
