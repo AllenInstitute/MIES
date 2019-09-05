@@ -376,6 +376,16 @@ Function/WAVE FormulaExecutor(jsonID, [jsonPath, graph])
 			MatrixOP/FREE out = averageCols(wv)^t
 			FormulaWaveScaleTransfer(wv, out, COLS, ROWS)
 			break
+		case "variance":
+			ASSERT(DimSize(wv, LAYERS) <= 1, "Unhandled dimension")
+			ASSERT(DimSize(wv, CHUNKS) <= 1, "Unhandled dimension")
+			MatrixOP/FREE out = (sumCols(magSqr(wv - rowRepeat(averageCols(wv), numRows(wv))))/(numRows(wv) - 1))^t
+			break
+		case "stdev":
+			ASSERT(DimSize(wv, LAYERS) <= 1, "Unhandled dimension")
+			ASSERT(DimSize(wv, CHUNKS) <= 1, "Unhandled dimension")
+			MatrixOP/FREE out = (sqrt(sumCols(powR(wv - rowRepeat(averageCols(wv), numRows(wv)), 2))/(numRows(wv) - 1)))^t
+			break
 		case "merge":
 			ASSERT(DimSize(wv, LAYERS) <= 1, "Unhandled dimension")
 			ASSERT(DimSize(wv, CHUNKS) <= 1, "Unhandled dimension")

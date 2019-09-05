@@ -411,3 +411,28 @@ Function average()
 	Make/N=(3)/U/I/FREE testwave = 2 + p * 5
 	REQUIRE_EQUAL_WAVES(testwave, output, mode = WAVE_DATA)
 End
+
+Function statistical()
+	Variable jsonID
+
+	// row based evaluation
+	jsonID = FormulaParser("variance([0,1,2,3,4,5,6,7,8,9])")
+	WAVE output = FormulaExecutor(jsonID)
+	Make/N=10/U/I/FREE testwave = p
+	REQUIRE_EQUAL_VAR(output[0], variance(testwave))
+
+	jsonID = FormulaParser("stdev([0,1,2,3,4,5,6,7,8,9])")
+	WAVE output = FormulaExecutor(jsonID)
+	REQUIRE_EQUAL_VAR(output[0], sqrt(variance(testwave)))
+
+	// column based evaluation
+	jsonID = FormulaParser("variance([[0,1],[1,2],[2,3]])")
+	WAVE output = FormulaExecutor(jsonID)
+	REQUIRE_EQUAL_VAR(output[0], output[1])
+	Make/N=(3)/U/I/FREE testwave = p
+	REQUIRE_EQUAL_VAR(output[0], variance(testwave))
+
+	Make/N=(2,3)/U/I/FREE testwave = p + q
+	MatrixOP/FREE input = varCols(testwave^t)^t
+	REQUIRE_EQUAL_WAVES(input, output)
+End
