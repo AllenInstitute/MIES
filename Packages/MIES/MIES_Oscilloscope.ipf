@@ -593,6 +593,7 @@ Function SCOPE_UpdateOscilloscopeData(panelTitle, dataAcqOrTP, [chunk, fifoPos, 
 							if(TPChanIndex != j)
 								MultiThread StoreTPWave[][TPChanIndex] = channelData[p]
 							endif
+							TPChanIndex += 1
 						endif
 
 					endif
