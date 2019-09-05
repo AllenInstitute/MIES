@@ -391,3 +391,23 @@ Function merge()
 	jsonID1 = FormulaParser("merge(4/4,4/2,9/3,4*1)")
 	REQUIRE_EQUAL_WAVES(FormulaExecutor(jsonID0), FormulaExecutor(jsonID1))
 End
+
+Function average()
+	Variable jsonID
+
+	// row based evaluation
+	jsonID = FormulaParser("avg([0,1,2,3,4,5,6,7,8,9])")
+	WAVE output = FormulaExecutor(jsonID)
+	Make/N=10/U/I/FREE testwave = p
+	REQUIRE_EQUAL_VAR(output[0], mean(testwave))
+
+	jsonID = FormulaParser("mean([0,1,2,3,4,5,6,7,8,9])")
+	WAVE output = FormulaExecutor(jsonID)
+	REQUIRE_EQUAL_VAR(output[0], mean(testwave))
+
+	// column based evaluation
+	jsonID = FormulaParser("avg([[0,1,2,3,4],[5,6,7,8,9],[10,11,12,13,14]])")
+	WAVE output = FormulaExecutor(jsonID)
+	Make/N=(3)/U/I/FREE testwave = 2 + p * 5
+	REQUIRE_EQUAL_WAVES(testwave, output, mode = WAVE_DATA)
+End

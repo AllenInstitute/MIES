@@ -369,6 +369,13 @@ Function/WAVE FormulaExecutor(jsonID, [jsonPath, graph])
 			ASSERT(DimSize(wv, CHUNKS) <= 1, "Unhandled dimension")
 			MatrixOP/FREE out = maxCols(wv)^t
 			break
+		case "avg":
+		case "mean":
+			ASSERT(DimSize(wv, LAYERS) <= 1, "Unhandled dimension")
+			ASSERT(DimSize(wv, CHUNKS) <= 1, "Unhandled dimension")
+			MatrixOP/FREE out = averageCols(wv)^t
+			FormulaWaveScaleTransfer(wv, out, COLS, ROWS)
+			break
 		case "merge":
 			ASSERT(DimSize(wv, LAYERS) <= 1, "Unhandled dimension")
 			ASSERT(DimSize(wv, CHUNKS) <= 1, "Unhandled dimension")
