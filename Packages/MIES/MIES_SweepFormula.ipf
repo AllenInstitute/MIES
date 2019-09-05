@@ -386,6 +386,20 @@ Function/WAVE FormulaExecutor(jsonID, [jsonPath, graph])
 			ASSERT(DimSize(wv, CHUNKS) <= 1, "Unhandled dimension")
 			MatrixOP/FREE out = (sqrt(sumCols(powR(wv - rowRepeat(averageCols(wv), numRows(wv)), 2))/(numRows(wv) - 1)))^t
 			break
+		case "derivative":
+			Make/FREE out
+			ASSERT(DimSize(wv, ROWS) > 1, "Can not differentiate single point waves")
+			Differentiate/DIM=(ROWS) wv/D=out
+			CopyScales wv, out
+			SetScale/P x, DimOffset(wv, ROWS), DimDelta(wv, ROWS), "d/dx", out
+			break
+		case "integrate":
+			Make/FREE out
+			ASSERT(DimSize(wv, ROWS) > 1, "Can not integrate single point waves")
+			Integrate/METH=1/DIM=(ROWS) wv/D=out
+			CopyScales wv, out
+			SetScale/P x, DimOffset(wv, ROWS), DimDelta(wv, ROWS), "dx", out
+			break
 		case "merge":
 			ASSERT(DimSize(wv, LAYERS) <= 1, "Unhandled dimension")
 			ASSERT(DimSize(wv, CHUNKS) <= 1, "Unhandled dimension")
