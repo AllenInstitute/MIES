@@ -714,7 +714,7 @@ End
 Function TP_SetupCommon(panelTitle)
 	string panelTitle
 
-	variable now
+	variable now, index
 
 	// ticks are relative to OS start time
 	// so we can have "future" timestamps from existing experiments
@@ -732,6 +732,9 @@ Function TP_SetupCommon(panelTitle)
 	if(GetNumberFromWaveNote(TPStorage, PRESSURE_CTRL_LAST_INVOC) > now)
 		SetNumberInWaveNote(TPStorage, PRESSURE_CTRL_LAST_INVOC, 0)
 	endif
+
+	index = GetNumberFromWaveNote(TPStorage, NOTE_INDEX)
+	SetNumberInWaveNote(TPStorage, INDEX_ON_TP_START, index)
 
 	WAVE tpAsyncBuffer = GetTPResultAsyncBuffer(panelTitle)
 	KillOrMoveToTrash(wv=tpAsyncBuffer)
@@ -816,9 +819,13 @@ Function TP_TestPulseHasCycled(panelTitle, cycles)
 	string panelTitle
 	variable cycles
 
-	Wave TPStorage = GetTPStorage(panelTitle)
+	variable index, indexOnTPStart
 
-	return GetNumberFromWaveNote(TPStorage, NOTE_INDEX) > cycles
+	WAVE TPStorage = GetTPStorage(panelTitle)
+	index          = GetNumberFromWaveNote(TPStorage, NOTE_INDEX)
+	indexOnTPStart = GetNumberFromWaveNote(TPStorage, INDEX_ON_TP_START)
+
+	return (index - indexOnTPStart) > cycles
 End
 
 /// @brief Save the amplifier holding command in the TPStorage wave

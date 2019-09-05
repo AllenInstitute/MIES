@@ -2091,7 +2091,7 @@ Function/Wave GetTPStorage(panelTitle)
 	string 	panelTitle
 
 	dfref dfr = GetDeviceTestPulse(panelTitle)
-	variable versionOfNewWave = 11
+	variable versionOfNewWave = 12
 
 	WAVE/Z/SDFR=dfr/D wv = TPStorage
 
@@ -2144,6 +2144,7 @@ Function/Wave GetTPStorage(panelTitle)
 	SetNumberInWaveNote(wv, AUTOBIAS_LAST_INVOCATION_KEY, 0)
 	SetNumberInWaveNote(wv, DIMENSION_SCALING_LAST_INVOC, 0)
 	SetNumberInWaveNote(wv, PRESSURE_CTRL_LAST_INVOC, 0)
+	SetNumberInWaveNote(wv, INDEX_ON_TP_START, 0)
 
 	SetWaveVersion(wv, versionOfNewWave)
 
