@@ -2670,12 +2670,15 @@ Function/WAVE HW_NI_GetDeviceInfo(device, [flags])
 
 	DAQmx_DeviceInfo/DEV=device
 
-	Make/FREE/T/N=(5) deviceInfo
+	Make/FREE/T/N=(8) deviceInfo
 	SetDimLabel ROWS, 0, DeviceCategoryNum, deviceInfo
 	SetDimLabel ROWS, 1, ProductNumber, deviceInfo
 	SetDimLabel ROWS, 2, DeviceSerialNumber, deviceInfo
 	SetDimLabel ROWS, 3, DeviceCategoryStr, deviceInfo
 	SetDimLabel ROWS, 4, ProductType, deviceInfo
+	SetDimLabel ROWS, 5, AI, deviceInfo
+	SetDimLabel ROWS, 6, AO, deviceInfo
+	SetDimLabel ROWS, 7, DIOPortWidth, deviceInfo
 
 	deviceInfo[%DeviceCategoryNum]  = num2istr(V_NIDeviceCategory)
 	deviceInfo[%ProductNumber]      = num2istr(V_NIProductNumber)
@@ -2683,6 +2686,10 @@ Function/WAVE HW_NI_GetDeviceInfo(device, [flags])
 	deviceInfo[%DeviceCategoryStr]  = S_NIDeviceCategory
 	// S_NIProductType has a trailing \0
 	deviceInfo[%ProductType]        = RemoveEnding(S_NIProductType, num2char(0))
+
+	deviceInfo[%AI]           = num2str(fDAQmx_NumAnalogInputs(device))
+	deviceInfo[%AO]           = num2str(fDAQmx_NumAnalogOutputs(device))
+	deviceInfo[%DIOPortWidth] = num2str(fDAQmx_DIO_PortWidth(device, HARDWARE_NI_TTL_PORT))
 
 	return deviceInfo
 End
