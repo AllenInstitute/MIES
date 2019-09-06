@@ -2527,7 +2527,6 @@ Function HW_NI_ZeroDAC(deviceID, [flags])
 	endif
 End
 
-
 /// @brief Kill the FIFO of the given NI device
 ///
 /// @param deviceID device identifier
@@ -2597,7 +2596,6 @@ Function HW_NI_ResetTaskIDs(device)
 	taskIDDAC = NaN
 	taskIDTTL = NaN
 End
-
 
 /// @brief Check if the device is running
 ///
