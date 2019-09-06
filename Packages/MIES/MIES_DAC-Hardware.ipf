@@ -2661,7 +2661,7 @@ Function HW_NI_CloseDevice(deviceID, [flags])
 	endif
 End
 
-/// @see HW_NI_GetDeviceInfo
+/// @see HW_GetDeviceInfo
 Function/WAVE HW_NI_GetDeviceInfo(device, [flags])
 	string device
 	variable flags
