@@ -6431,3 +6431,33 @@ Function/WAVE GetAnaFuncDashboardColorWave(dfr)
 
 	return wv
 End
+
+/// @brief Return a wave with device information
+Function/WAVE GetDeviceInfoWave(panelTitle)
+	string panelTitle
+
+	variable versionOfNewWave = 1
+
+	DFREF dfr = GetDevicePath(panelTitle)
+	WAVE/D/Z/SDFR=dfr wv = deviceInfo
+
+	if(ExistsWithCorrectLayoutVersion(wv, versionOfNewWave))
+		return wv
+	elseif(WaveExists(wv))
+		// handle upgrade
+	else
+		Make/D/N=(5) dfr:deviceInfo/Wave=wv
+	endif
+
+	SetDimLabel ROWS, 0, AD, wv
+	SetDimLabel ROWS, 1, DA, wv
+	SetDimLabel ROWS, 2, TTL, wv
+	SetDimLabel ROWS, 3, Rack, wv
+	SetDimLabel ROWS, 4, HardwareType, wv
+
+	wv = NaN
+
+	SetWaveVersion(wv, versionOfNewWave)
+
+	return wv
+End

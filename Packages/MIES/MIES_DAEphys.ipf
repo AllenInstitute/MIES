@@ -4595,6 +4595,9 @@ Function DAP_LockDevice(panelTitle)
 		CtrlNamedBackground _all_, noevents=1
 #endif
 	endif
+
+	WAVE deviceInfo = GetDeviceInfoWave(panelTitle)
+	HW_WriteDeviceInfo(hardwareType, ITCDeviceIDGlobal, deviceInfo)
 End
 
 static Function DAP_LoadBuiltinStimsets()

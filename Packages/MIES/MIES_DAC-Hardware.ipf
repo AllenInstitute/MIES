@@ -441,6 +441,35 @@ Function/WAVE HW_GetDeviceInfo(hardwareType, deviceID, [flags])
 	endswitch
 End
 
+/// @brief Update the device info wave
+///
+/// Query the data via GetDeviceInfoWave().
+Function HW_WriteDeviceInfo(hardwareType, deviceID, deviceInfo)
+	variable hardwareType, deviceID
+	WAVE deviceInfo
+
+	HW_AssertOnInvalid(hardwareType, deviceID)
+
+	WAVE devInfoHW = HW_GetDeviceInfo(hardwareType, deviceID, flags = HARDWARE_ABORT_ON_ERROR)
+	deviceInfo[%HardwareType] = hardwareType
+
+	switch(hardwareType)
+		case HARDWARE_ITC_DAC:
+			deviceInfo[%AD]   = devInfoHW[%ADCCount]
+			deviceInfo[%DA]   = devInfoHW[%DACCount]
+			deviceInfo[%TTL]  = min(devInfoHW[%DOCount], devInfoHW[%DICount])
+			deviceInfo[%Rack] = ceil(deviceInfo[%TTL] / 3)
+			break
+		case HARDWARE_NI_DAC:
+			WAVE/T devInfoHWText = devInfoHW
+			deviceInfo[%AD]   = str2num(devInfoHWText[%AI])
+			deviceInfo[%DA]   = str2num(devInfoHWText[%AO])
+			deviceInfo[%TTL]  = str2num(devInfoHWText[%DIOPortWidth])
+			deviceInfo[%Rack] = NaN
+			break
+	endswitch
+End
+
 /// @brief Start data acquisition
 ///
 /// @param hardwareType One of @ref HardwareDACTypeConstants
