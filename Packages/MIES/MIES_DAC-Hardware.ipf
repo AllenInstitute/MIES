@@ -1845,6 +1845,22 @@ Function HW_ITC_GetITCXOPChannelForRack(panelTitle, rack)
 		ASSERT(0, "Unknown rack")
 	endif
 End
+
+/// @brief Get the number of racks for the given device
+///
+/// ITC:
+/// - ITC1600 can have 1 or 2 racks
+/// - other device types have 1
+///
+/// NI:
+/// - NaN (concept is not applicable)
+Function HW_ITC_GetNumberOfRacks(panelTitle)
+	string panelTitle
+
+	WAVE deviceInfo = GetDeviceInfoWave(panelTitle)
+
+	return deviceInfo[%Rack]
+End
 /// @}
 /// @}
 
