@@ -2004,7 +2004,7 @@ Function HW_NI_PrepareAcq(deviceID, [data, dataFunc, config, configFunc, flags, 
 					wavegenStr += tempStr + ";"
 					break
 				case ITC_XOP_CHANNEL_TYPE_TTL:
-					TTLStr += "/" + device + "/port0/line" + num2str(config[i][%ChannelNumber]) + ","
+					TTLStr += "/" + device + "/port" + num2str(HARDWARE_NI_TTL_PORT) +"/line" + num2str(config[i][%ChannelNumber]) + ","
 					TTLWaves[ttlCnt]= NIDataWave[i]
 					ttlCnt += 1
 					break
