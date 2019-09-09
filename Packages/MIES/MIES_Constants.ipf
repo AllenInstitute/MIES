@@ -635,6 +635,9 @@ Constant HARDWARE_UNSUPPORTED_DAC  = 1000
 StrConstant HARDWARE_NI_ADC_FIFO = "NI_AnalogIn"
 /// @}
 
+/// We always use this DIO port for NI hardware
+Constant HARDWARE_NI_TTL_PORT = 0
+
 Constant HARDWARE_MAX_DEVICES = 10
 
 /// @name Minimum possible sampling intervals in milliseconds (1e-3s)

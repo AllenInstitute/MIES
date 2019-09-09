@@ -105,8 +105,19 @@ Function/WAVE DeviceNameGeneratorMD0()
 
 #endif
 
-End
+#ifdef TESTS_WITH_ITC1600_HARDWARE
 
+#ifdef TESTS_WITH_YOKING
+	// Yoking with ITC hardware is only supported in multi device mode
+	Make/FREE/N=0 data
+	return data
+#else
+	return DeviceNameGeneratorMD1()
+#endif
+
+#endif
+
+End
 
 Function TEST_BEGIN_OVERRIDE(name)
 	string name
@@ -167,7 +178,9 @@ Function TEST_CASE_BEGIN_OVERRIDE(name)
 	SVAR miesVersion = root:miesVersion
 	string/G $(GetMiesPathAsString() + ":version") = miesVersion
 
+#ifndef TESTS_WITH_NI_HARDWARE
 	HW_ITC_CloseAllDevices()
+#endif
 End
 
 Function TEST_CASE_END_OVERRIDE(name)

@@ -464,7 +464,7 @@ static Function P_OpenDevice(mainDevice, pressureDevice)
 	HW_RegisterDevice(mainDevice, hwType, deviceID, pressureDevice=pressureDevice)
 
 	if(hwType == HARDWARE_ITC_DAC)
-		P_PrepareITCWaves(mainDevice, pressureDevice)
+		P_PrepareITCWaves(mainDevice, pressureDevice, deviceID)
 	endif
 
 	printf "Device used for pressure regulation: %s (%s)\r", pressureDevice, StringFromList(hwType, HARDWARE_DAC_TYPES)
@@ -489,19 +489,14 @@ static Function P_OpenDevice(mainDevice, pressureDevice)
 End
 
 /// @brief Adapt the ITC DAQ waves for hardware specialities
-static Function P_PrepareITCWaves(mainDevice, pressureDevice)
+static Function P_PrepareITCWaves(mainDevice, pressureDevice, deviceID)
 	string mainDevice, pressureDevice
-
-	variable ret
-	string deviceType, deviceNumber
-
-	ret = ParseDeviceString(pressureDevice, deviceType, deviceNumber)
-	ASSERT(ret, "Could not parse device string")
+	variable deviceID
 
 	WAVE ITCData    = P_GetITCData(mainDevice)
 	WAVE ITCConfig  = P_GetITCChanConfig(mainDevice)
 
-	if(!cmpstr(deviceType, "ITC1600")) // two racks
+	if(IsITC1600(pressureDevice)) // two racks
 		Redimension/N=(-1, 4) ITCData
 		Redimension/N=(4, -1) ITCConfig
 
@@ -510,6 +505,11 @@ static Function P_PrepareITCWaves(mainDevice, pressureDevice)
 
 		ITCConfig[3][0]  = ITC_XOP_CHANNEL_TYPE_TTL
 
+		Duplicate GetDeviceInfoWave(mainDevice), deviceInfo
+		deviceInfo[] = NaN
+
+		HW_WriteDeviceInfo(HARDWARE_ITC_DAC, deviceID, deviceInfo)
+		ASSERT(deviceInfo[%Rack] == 2, "Pressure with ITC1600 requires two racks")
 		ITCConfig[3][1]  = HW_ITC_GetITCXOPChannelForRack(pressureDevice, RACK_ONE)
 	else // one rack
 		Redimension/N=(-1, 3) ITCData
@@ -1437,8 +1437,7 @@ static Function P_TTLforPpulse(panelTitle, headStage)
 	string panelTitle
 	variable headStage
 
-	variable rackZeroState, rackOneState, deviceID, hwType, rack, TTL, ret
-	string deviceType, deviceNumber
+	variable rackZeroState, rackOneState, deviceID, hwType, rack, TTL
 	string pressureDevice
 
 	WAVE ITCData             = P_GetITCData(panelTitle)
@@ -1456,8 +1455,7 @@ static Function P_TTLforPpulse(panelTitle, headStage)
 
 	ASSERT(IsFinite(TTL), "TTL A must be finite")
 
-	ret = ParseDeviceString(panelTitle, deviceType, deviceNumber)
-	if(!cmpstr(deviceType, "ITC1600"))
+	if(IsITC1600(panelTitle))
 		// request TTL bit definitly in rack zero
 		rackZeroState = HW_ReadDigital(hwType, deviceID, 0)
 		ITCData[][%TTL_R0] = rackZeroState

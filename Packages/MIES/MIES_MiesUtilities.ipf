@@ -4723,6 +4723,19 @@ Function DeviceCanFollow(panelTitle)
 	return !cmpstr(deviceType, "ITC1600")
 End
 
+/// @brief Check that the device is of type ITC1600
+Function IsITC1600(panelTitle)
+	string panelTitle
+
+	string deviceType, deviceNumber
+	variable ret
+
+	ret = ParseDeviceString(panelTitle, deviceType, deviceNumber)
+	ASSERT(ret, "Could not parse panelTitle")
+
+	return !cmpstr(deviceType, "ITC1600")
+End
+
 /// @brief Check that the device is a follower
 Function DeviceIsFollower(panelTitle)
 	string panelTitle

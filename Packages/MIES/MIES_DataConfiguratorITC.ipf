@@ -164,8 +164,8 @@ static Function DC_ChanCalcForITCChanConfigWave(panelTitle, dataAcqOrTP)
 			if(dataAcqOrTP == DATA_ACQUISITION_MODE)
 				numDACs         = DC_NoOfChannelsSelected(panelTitle, CHANNEL_TYPE_DAC)
 				numADCs         = DC_NoOfChannelsSelected(panelTitle, CHANNEL_TYPE_ADC)
-				numTTLsRackZero = DC_AreTTLsInRackChecked(RACK_ZERO, panelTitle)
-				numTTLsRackOne  = DC_AreTTLsInRackChecked(RACK_ONE, panelTitle)
+				numTTLsRackZero = DC_AreTTLsInRackChecked(panelTitle, RACK_ZERO)
+				numTTLsRackOne  = DC_AreTTLsInRackChecked(panelTitle, RACK_ONE)
 			elseif(dataAcqOrTP == TEST_PULSE_MODE)
 				numActiveHeadstages = DC_NoOfChannelsSelected(panelTitle, CHANNEL_TYPE_HEADSTAGE)
 				numDACs         = numActiveHeadstages
@@ -199,34 +199,18 @@ END
 
 /// @brief Returns the ON/OFF status of the front TTLs on a specified rack.
 ///
-/// @param RackNo Only the ITC1600 can have two racks. For all other ITC devices RackNo = 0
-/// @param panelTitle  panel title
-static Function DC_AreTTLsInRackChecked(RackNo, panelTitle)
-	variable RackNo
+/// @param panelTitle  device
+/// @param rackNo      Only the ITC1600 can have two racks. For all other ITC devices RackNo = 0.
+static Function DC_AreTTLsInRackChecked(panelTitle, rackNo)
 	string panelTitle
+	variable rackNo
 
-	variable a
-	variable b
+	variable first, last
+
+	HW_ITC_GetRackRange(rackNo, first, last)
 	WAVE statusTTL = DAG_GetChannelState(panelTitle, CHANNEL_TYPE_TTL)
 
-	if(RackNo == 0)
-		 a = 0
-		 b = 3
-	endif
-
-	if(RackNo == 1)
-		 a = 4
-		 b = 7
-	endif
-
-	do
-		if(statusTTL[a])
-			return 1
-		endif
-		a += 1
-	while(a <= b)
-
-	return 0
+	return Sum(statusTTL, first, last) > 0
 End
 
 /// @brief Returns the number of points in the longest stimset
@@ -581,7 +565,7 @@ static Function DC_PlaceDataInITCChanConfigWave(panelTitle, dataAcqOrTP)
 			case HARDWARE_ITC_DAC:
 				WAVE sweepDataLNB = GetSweepSettingsWave(panelTitle)
 
-				if(DC_AreTTLsInRackChecked(RACK_ZERO, panelTitle))
+				if(DC_AreTTLsInRackChecked(panelTitle, RACK_ZERO))
 					ITCChanConfigWave[j][%ChannelType] = ITC_XOP_CHANNEL_TYPE_TTL
 
 					channel = HW_ITC_GetITCXOPChannelForRack(panelTitle, RACK_ZERO)
@@ -592,7 +576,7 @@ static Function DC_PlaceDataInITCChanConfigWave(panelTitle, dataAcqOrTP)
 					j += 1
 				endif
 
-				if(DC_AreTTLsInRackChecked(RACK_ONE, panelTitle))
+				if(DC_AreTTLsInRackChecked(panelTitle, RACK_ONE))
 					ITCChanConfigWave[j][%ChannelType] = ITC_XOP_CHANNEL_TYPE_TTL
 
 					channel = HW_ITC_GetITCXOPChannelForRack(panelTitle, RACK_ONE)
@@ -1230,7 +1214,7 @@ static Function DC_PlaceDataInHardwareDataWave(panelTitle, numActiveChannels, da
 			case HARDWARE_ITC_DAC:
 				WAVE TTLWaveITC = GetTTLWave(panelTitle)
 				// Place TTL waves into ITCDataWave
-				if(DC_AreTTLsInRackChecked(RACK_ZERO, panelTitle))
+				if(DC_AreTTLsInRackChecked(panelTitle, RACK_ZERO))
 					DC_MakeITCTTLWave(panelTitle, RACK_ZERO)
 					singleSetLength = DC_CalculateStimsetLength(TTLWaveITC, panelTitle, DATA_ACQUISITION_MODE)
 					MultiThread ITCDataWave[singleInsertStart, singleInsertStart + singleSetLength - 1][activeColumn] = \
@@ -1238,7 +1222,7 @@ static Function DC_PlaceDataInHardwareDataWave(panelTitle, numActiveChannels, da
 					activeColumn += 1
 				endif
 
-				if(DC_AreTTLsInRackChecked(RACK_ONE, panelTitle))
+				if(DC_AreTTLsInRackChecked(panelTitle, RACK_ONE))
 					DC_MakeITCTTLWave(panelTitle, RACK_ONE)
 					singleSetLength = DC_CalculateStimsetLength(TTLWaveITC, panelTitle, DATA_ACQUISITION_MODE)
 					MultiThread ITCDataWave[singleInsertStart, singleInsertStart + singleSetLength - 1][activeColumn] = \

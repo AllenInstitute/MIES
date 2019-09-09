@@ -441,6 +441,35 @@ Function/WAVE HW_GetDeviceInfo(hardwareType, deviceID, [flags])
 	endswitch
 End
 
+/// @brief Update the device info wave
+///
+/// Query the data via GetDeviceInfoWave().
+Function HW_WriteDeviceInfo(hardwareType, deviceID, deviceInfo)
+	variable hardwareType, deviceID
+	WAVE deviceInfo
+
+	HW_AssertOnInvalid(hardwareType, deviceID)
+
+	WAVE devInfoHW = HW_GetDeviceInfo(hardwareType, deviceID, flags = HARDWARE_ABORT_ON_ERROR)
+	deviceInfo[%HardwareType] = hardwareType
+
+	switch(hardwareType)
+		case HARDWARE_ITC_DAC:
+			deviceInfo[%AD]   = devInfoHW[%ADCCount]
+			deviceInfo[%DA]   = devInfoHW[%DACCount]
+			deviceInfo[%TTL]  = min(devInfoHW[%DOCount], devInfoHW[%DICount])
+			deviceInfo[%Rack] = ceil(deviceInfo[%TTL] / 3)
+			break
+		case HARDWARE_NI_DAC:
+			WAVE/T devInfoHWText = devInfoHW
+			deviceInfo[%AD]   = str2num(devInfoHWText[%AI])
+			deviceInfo[%DA]   = str2num(devInfoHWText[%AO])
+			deviceInfo[%TTL]  = str2num(devInfoHWText[%DIOPortWidth])
+			deviceInfo[%Rack] = NaN
+			break
+	endswitch
+End
+
 /// @brief Start data acquisition
 ///
 /// @param hardwareType One of @ref HardwareDACTypeConstants
@@ -1741,13 +1770,7 @@ End
 Function HW_ITC_CalculateDevChannelOff(panelTitle)
 	string panelTitle
 
-	variable ret
-	string deviceType, deviceNum
-
-	ret = ParseDeviceString(panelTitle, deviceType, deviceNum)
-	ASSERT(ret, "Could not parse device string")
-
-	if(!cmpstr(deviceType, "ITC1600"))
+	if(IsITC1600(panelTitle))
 		return 16
 	endif
 
@@ -1791,16 +1814,10 @@ Function HW_ITC_GetRackForTTLBit(panelTitle, ttlBit)
 	string panelTitle
 	variable ttlBit
 
-	string deviceType, deviceNumber
-	variable ret
-
 	ASSERT(ttlBit < NUM_DA_TTL_CHANNELS, "Invalid channel index")
 
 	if(ttlBit >= NUM_ITC_TTL_BITS_PER_RACK)
-		ret = ParseDeviceString(panelTitle, deviceType, deviceNumber)
-		ASSERT(ret, "Could not parse device string")
-		ASSERT(!cmpstr(deviceType, "ITC1600"), "Only the ITC1600 has multiple racks")
-
+		ASSERT(IsITC1600(panelTitle), "Only the ITC1600 has multiple racks")
 		return RACK_ONE
 	else
 		return RACK_ZERO
@@ -1815,22 +1832,34 @@ Function HW_ITC_GetITCXOPChannelForRack(panelTitle, rack)
 	string panelTitle
 	variable rack
 
-	string deviceType, deviceNumber
-	variable ret
-
-	ret = ParseDeviceString(panelTitle, deviceType, deviceNumber)
-	ASSERT(ret, "Could not parse device string")
-
 	if(rack == RACK_ZERO)
-		if(!cmpstr(deviceType, "ITC18USB") || !cmpstr(deviceType, "ITC18"))
-			return HARDWARE_ITC_TTL_DEF_RACK_ZERO
-		else
+		if(IsITC1600(panelTitle))
 			return HARDWARE_ITC_TTL_1600_RACK_ZERO
+		else
+			return HARDWARE_ITC_TTL_DEF_RACK_ZERO
 		endif
 	elseif(rack == RACK_ONE)
-		ASSERT(!cmpstr(deviceType, "ITC1600"), "Only the ITC1600 has multiple racks")
+		ASSERT(IsITC1600(panelTitle), "Only the ITC1600 has multiple racks")
 		return HARDWARE_ITC_TTL_1600_RACK_ONE
+	else
+		ASSERT(0, "Unknown rack")
 	endif
+End
+
+/// @brief Get the number of racks for the given device
+///
+/// ITC:
+/// - ITC1600 can have 1 or 2 racks
+/// - other device types have 1
+///
+/// NI:
+/// - NaN (concept is not applicable)
+Function HW_ITC_GetNumberOfRacks(panelTitle)
+	string panelTitle
+
+	WAVE deviceInfo = GetDeviceInfoWave(panelTitle)
+
+	return deviceInfo[%Rack]
 End
 /// @}
 /// @}
@@ -2020,7 +2049,7 @@ Function HW_NI_PrepareAcq(deviceID, [data, dataFunc, config, configFunc, flags, 
 					wavegenStr += tempStr + ";"
 					break
 				case ITC_XOP_CHANNEL_TYPE_TTL:
-					TTLStr += "/" + device + "/port0/line" + num2str(config[i][%ChannelNumber]) + ","
+					TTLStr += "/" + device + "/port" + num2str(HARDWARE_NI_TTL_PORT) +"/line" + num2str(config[i][%ChannelNumber]) + ","
 					TTLWaves[ttlCnt]= NIDataWave[i]
 					ttlCnt += 1
 					break
@@ -2543,7 +2572,6 @@ Function HW_NI_ZeroDAC(deviceID, [flags])
 	endif
 End
 
-
 /// @brief Kill the FIFO of the given NI device
 ///
 /// @param deviceID device identifier
@@ -2614,7 +2642,6 @@ Function HW_NI_ResetTaskIDs(device)
 	taskIDTTL = NaN
 End
 
-
 /// @brief Check if the device is running
 ///
 /// @param device name of the NI device
@@ -2679,7 +2706,7 @@ Function HW_NI_CloseDevice(deviceID, [flags])
 	endif
 End
 
-/// @see HW_NI_GetDeviceInfo
+/// @see HW_GetDeviceInfo
 Function/WAVE HW_NI_GetDeviceInfo(device, [flags])
 	string device
 	variable flags
@@ -2688,12 +2715,15 @@ Function/WAVE HW_NI_GetDeviceInfo(device, [flags])
 
 	DAQmx_DeviceInfo/DEV=device
 
-	Make/FREE/T/N=(5) deviceInfo
+	Make/FREE/T/N=(8) deviceInfo
 	SetDimLabel ROWS, 0, DeviceCategoryNum, deviceInfo
 	SetDimLabel ROWS, 1, ProductNumber, deviceInfo
 	SetDimLabel ROWS, 2, DeviceSerialNumber, deviceInfo
 	SetDimLabel ROWS, 3, DeviceCategoryStr, deviceInfo
 	SetDimLabel ROWS, 4, ProductType, deviceInfo
+	SetDimLabel ROWS, 5, AI, deviceInfo
+	SetDimLabel ROWS, 6, AO, deviceInfo
+	SetDimLabel ROWS, 7, DIOPortWidth, deviceInfo
 
 	deviceInfo[%DeviceCategoryNum]  = num2istr(V_NIDeviceCategory)
 	deviceInfo[%ProductNumber]      = num2istr(V_NIProductNumber)
@@ -2701,6 +2731,10 @@ Function/WAVE HW_NI_GetDeviceInfo(device, [flags])
 	deviceInfo[%DeviceCategoryStr]  = S_NIDeviceCategory
 	// S_NIProductType has a trailing \0
 	deviceInfo[%ProductType]        = RemoveEnding(S_NIProductType, num2char(0))
+
+	deviceInfo[%AI]           = num2str(fDAQmx_NumAnalogInputs(device))
+	deviceInfo[%AO]           = num2str(fDAQmx_NumAnalogOutputs(device))
+	deviceInfo[%DIOPortWidth] = num2str(fDAQmx_DIO_PortWidth(device, HARDWARE_NI_TTL_PORT))
 
 	return deviceInfo
 End
