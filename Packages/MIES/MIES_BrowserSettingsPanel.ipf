@@ -196,7 +196,7 @@ Function BSP_DynamicStartupSettings(mainPanel)
 	SetVariable setvar_sweepFormula_parseResult, win = $bsPanel, value = $(GetDataFolder(1, dfr) + "sweepFormulaParseResult")
 	Variable/G dfr:sweepFormulaParse = 0
 	ValDisplay status_sweepFormula_parser, value = #(GetDataFolder(1, dfr) + "sweepFormulaParse == 1")
-	Notebook $bsPanel#sweepFormula_formula text="sweeps(cursors(A,B),channel(AD),0;1;2;3;4;5)"
+	Notebook $bsPanel#sweepFormula_formula text="sweeps(\r\tcursors(A,B),\r\tchannel(AD),\r\t0;1;2;3;4;5\r)\r"
 
 	if(BSP_IsDataBrowser(mainPanel))
 		EnableControls(bsPanel, BROWSERSETTINGS_CONTROLS_DATABROWSER)

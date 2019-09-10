@@ -285,6 +285,37 @@ Function array()
 	WARN_EQUAL_JSON(jsonID0, jsonID1)
 End
 
+Function whiteSpace()
+	Variable jsonID0, jsonID1
+
+	jsonID0 = FormulaParser("1+(2*3)")
+	jsonID1 = FormulaParser(" 1 + (2 * 3) ")
+	WARN_EQUAL_JSON(jsonID0, jsonID1)
+
+	jsonID0 = FormulaParser("(2+3)")
+	jsonID1 = FormulaParser("(2+3)  ")
+	WARN_EQUAL_JSON(jsonID0, jsonID1)
+
+	jsonID0 = FormulaParser("1+(2*3)")
+	jsonID1 = FormulaParser("\r1\r+\r(\r2\r*\r3\r)\r")
+	WARN_EQUAL_JSON(jsonID0, jsonID1)
+
+	jsonID1 = FormulaParser("\t1\t+\t(\t2\t*\t3\t)\t")
+	WARN_EQUAL_JSON(jsonID0, jsonID1)
+
+	jsonID1 = FormulaParser("\r\t1+\r\t\t(2*3)")
+	WARN_EQUAL_JSON(jsonID0, jsonID1)
+
+	jsonID1 = FormulaParser("\r\t1+\r\t# this is a \t comment\r\t(2*3)")
+	WARN_EQUAL_JSON(jsonID0, jsonID1)
+
+	jsonID1 = FormulaParser("\r\t1+\r\t# this is a \t comment\n\t(2*3)#2")
+	WARN_EQUAL_JSON(jsonID0, jsonID1)
+
+	jsonID1 = FormulaParser("# this is a comment which does not calculate 1+1")
+	WARN_EQUAL_JSON(JSON_PARSE("null"), jsonID1)
+End
+
 // test functions with 1..N arguments
 Function minimaximu()
 	Variable jsonID0, jsonID1

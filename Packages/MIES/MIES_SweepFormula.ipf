@@ -12,6 +12,9 @@ static Constant STATE_PARENTHESIS = 6
 static Constant STATE_FUNCTION = 7
 static Constant STATE_ARRAY = 8
 static Constant STATE_ARRAYELEMENT = 9
+static Constant STATE_WHITESPACE = 10
+static Constant STATE_COMMENT = 11
+static Constant STATE_NEWLINE = 12
 
 static Constant ACTION_SKIP = 0
 static Constant ACTION_COLLECT = 1
@@ -37,8 +40,8 @@ Function FormulaParser(formula)
 	String tempPath
 	Variable action = -1
 	String token = ""
-	Variable state = STATE_DEFAULT
-	Variable lastState = STATE_DEFAULT
+	Variable state = -1
+	Variable lastState = -1
 	Variable lastCalculation = -1
 	Variable level = 0
 	Variable arrayLevel = 0
@@ -90,6 +93,17 @@ Function FormulaParser(formula)
 			case ",":
 				state = STATE_ARRAYELEMENT
 				break
+			case "#":
+				state = STATE_COMMENT
+				break
+			case "\r":
+			case "\n":
+				state = STATE_NEWLINE
+				break
+			case " ":
+			case "\t":
+				state = STATE_WHITESPACE
+				break
 			default:
 				state = STATE_COLLECT
 				ASSERT(GrepString(formula[i], "[A-Za-z0-9_\.;]"), "undefined pattern in formula")
@@ -99,8 +113,9 @@ Function FormulaParser(formula)
 		endif
 
 		// state transition
-		action = ACTION_COLLECT
-		if(state != lastState)
+		if(lastState == STATE_COMMENT && state != STATE_NEWLINE)
+			action = ACTION_SKIP
+		elseif(state != lastState)
 			switch(state)
 				case STATE_ADDITION:
 					if(lastCalculation == STATE_SUBTRACTION)
@@ -154,6 +169,11 @@ Function FormulaParser(formula)
 					break
 				case STATE_ARRAY:
 					action = ACTION_ARRAY
+					break
+				case STATE_NEWLINE:
+				case STATE_WHITESPACE:
+				case STATE_COMMENT:
+					action = ACTION_SKIP
 					break
 				case STATE_COLLECT:
 				case STATE_DEFAULT:
