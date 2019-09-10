@@ -278,6 +278,26 @@ Function ValidFunc_V3(panelTitle, s)
 			break
 	endswitch
 
+	CHECK_WAVE(s.scaledDACWave, NUMERIC_WAVE, minorType = FLOAT_WAVE)
+
+	if(s.eventType != PRE_DAQ_EVENT && s.eventType != PRE_SET_EVENT && s.eventType != POST_DAQ_EVENT)
+		switch(hardwareType)
+			case HARDWARE_ITC_DAC:
+				CHECK_EQUAL_VAR(DimSize(s.scaledDACWave, COLS), DimSize(s.rawDACWave, COLS))
+				CHECK(DimSize(s.scaledDACWave, ROWS) <= DimSize(s.rawDACWave, ROWS))
+				break
+			case HARDWARE_NI_DAC:
+				CHECK_EQUAL_VAR(DimSize(s.scaledDACWave, COLS), DimSize(s.rawDACWave, ROWS))
+				WAVE/WAVE rawDACWaveRef = s.rawDACWave
+				Make/FREE/N=(DimSize(rawDACWaveRef, ROWS)) sizes = DimSize(rawDACWaveRef[p], ROWS)
+				CHECK(DimSize(s.scaledDACWave, ROWS) <= WaveMax(sizes))
+				break
+			default:
+				FAIL()
+		endswitch
+	endif
+
+	CHECK_EQUAL_VAR(NumberByKey("LOCK", WaveInfo(s.scaledDACWAVE, 0)), 1)
 	CHECK_EQUAL_VAR(NumberByKey("LOCK", WaveInfo(s.rawDACWAVE, 0)), 1)
 	CHECK_EQUAL_VAR(s.headstage, 0)
 	CHECK_EQUAL_VAR(numType(s.sweepNo), 0)

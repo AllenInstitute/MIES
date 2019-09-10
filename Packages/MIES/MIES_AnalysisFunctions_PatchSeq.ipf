@@ -234,6 +234,7 @@ End
 /// @brief Evaluate one chunk of the baseline
 ///
 /// @param panelTitle        device
+/// @param scaledDACWave     the scaled DAC wave, usually just AnalysisFunctions_V3::scaledDacWave
 /// @param type              analysis function type, one of @ref PatchSeqAnalysisFunctionTypes
 /// @param sweepNo           sweep number
 /// @param chunk             chunk number, `chunk == 0` -> Pre pulse baseline chunk, `chunk >= 1` -> Post pulse baseline
@@ -243,8 +244,9 @@ End
 /// @return
 /// pre pulse baseline: 0 if the chunk passes, one of the possible @ref AnalysisFuncReturnTypesConstants values otherwise
 /// post pulse baseline: 0 if the chunk passes, NaN if it does not pass
-static Function PSQ_EvaluateBaselineProperties(panelTitle, type, sweepNo, chunk, fifoInStimsetTime, totalOnsetDelay)
+static Function PSQ_EvaluateBaselineProperties(panelTitle, scaledDACWave, type, sweepNo, chunk, fifoInStimsetTime, totalOnsetDelay)
 	string panelTitle
+	WAVE scaledDACWave
 	variable type, sweepNo, chunk, fifoInStimsetTime, totalOnsetDelay
 
 	variable , evalStartTime, evalRangeTime
@@ -306,8 +308,6 @@ static Function PSQ_EvaluateBaselineProperties(panelTitle, type, sweepNo, chunk,
 	testMatrix[PSQ_BL_PRE_PULSE][] = 1 // all tests
 	testMatrix[PSQ_BL_POST_PULSE][PSQ_TARGETV_TEST] = 1
 
-	WAVE OscilloscopeData = GetOscilloscopeWave(panelTitle)
-
 	sprintf msg, "We have some data to evaluate in chunk %d [%g, %g]:  %gms\r", chunk, chunkStartTimeMax, chunkStartTimeMax + chunkLengthTime, fifoInStimsetTime + totalOnsetDelay
 	DEBUGPRINT(msg)
 
@@ -352,7 +352,7 @@ static Function PSQ_EvaluateBaselineProperties(panelTitle, type, sweepNo, chunk,
 			evalRangeTime = 1.5
 
 			// check 1: RMS of the last 1.5ms of the baseline should be below 0.07mV
-			rmsShort[i]       = PSQ_CalculateRMS(OscilloscopeData, ADCol, evalStartTime, evalRangeTime)
+			rmsShort[i]       = PSQ_CalculateRMS(scaledDACWave, ADCol, evalStartTime, evalRangeTime)
 			rmsShortPassed[i] = rmsShort[i] < PSQ_RMS_SHORT_THRESHOLD
 
 			sprintf msg, "RMS noise short: %g (%s)\r", rmsShort[i], SelectString(rmsShortPassed[i], "failed", "passed")
@@ -373,7 +373,7 @@ static Function PSQ_EvaluateBaselineProperties(panelTitle, type, sweepNo, chunk,
 			evalRangeTime = chunkLengthTime
 
 			// check 2: RMS of the last 500ms of the baseline should be below 0.50mV
-			rmsLong[i]       = PSQ_CalculateRMS(OscilloscopeData, ADCol, evalStartTime, evalRangeTime)
+			rmsLong[i]       = PSQ_CalculateRMS(scaledDACWave, ADCol, evalStartTime, evalRangeTime)
 			rmsLongPassed[i] = rmsLong[i] < PSQ_RMS_LONG_THRESHOLD
 
 			sprintf msg, "RMS noise long: %g (%s)", rmsLong[i], SelectString(rmsLongPassed[i], "failed", "passed")
@@ -394,7 +394,7 @@ static Function PSQ_EvaluateBaselineProperties(panelTitle, type, sweepNo, chunk,
 			evalRangeTime = chunkLengthTime
 
 			// check 3: Average voltage within 1mV of auto bias target voltage
-			avgVoltage[i]    = PSQ_CalculateAvg(OscilloscopeData, ADCol, evalStartTime, evalRangeTime)
+			avgVoltage[i]    = PSQ_CalculateAvg(scaledDACWave, ADCol, evalStartTime, evalRangeTime)
 			targetVPassed[i] = abs(avgVoltage[i] - targetV) <= PSQ_TARGETV_THRESHOLD
 
 			sprintf msg, "Average voltage of %gms: %g (%s)", evalRangeTime, avgVoltage[i], SelectString(targetVPassed[i], "failed", "passed")
@@ -1521,7 +1521,7 @@ Function PSQ_DAScale(panelTitle, s)
 
 	for(i = 0; i < numBaselineChunks; i += 1)
 
-		ret = PSQ_EvaluateBaselineProperties(panelTitle, PSQ_DA_SCALE, s.sweepNo, i, fifoInStimsetTime, totalOnsetDelay)
+		ret = PSQ_EvaluateBaselineProperties(panelTitle, s.scaledDACWave, PSQ_DA_SCALE, s.sweepNo, i, fifoInStimsetTime, totalOnsetDelay)
 
 		if(IsNaN(ret))
 			// NaN: not enough data for check
@@ -2158,7 +2158,7 @@ Function PSQ_Rheobase(panelTitle, s)
 
 	for(i = 0; i < numBaselineChunks; i += 1)
 
-		ret = PSQ_EvaluateBaselineProperties(panelTitle, PSQ_RHEOBASE, s.sweepNo, i, fifoInStimsetTime, totalOnsetDelay)
+		ret = PSQ_EvaluateBaselineProperties(panelTitle, s.scaledDACWave, PSQ_RHEOBASE, s.sweepNo, i, fifoInStimsetTime, totalOnsetDelay)
 
 		if(IsNaN(ret))
 			// NaN: not enough data for check
@@ -2558,7 +2558,7 @@ Function PSQ_Ramp(panelTitle, s)
 	if(!baselineQCPassed)
 		for(i = 0; i < numBaselineChunks; i += 1)
 
-			ret = PSQ_EvaluateBaselineProperties(panelTitle, PSQ_RAMP, s.sweepNo, i, fifoInStimsetTime, totalOnsetDelay)
+			ret = PSQ_EvaluateBaselineProperties(panelTitle, s.scaledDACWave, PSQ_RAMP, s.sweepNo, i, fifoInStimsetTime, totalOnsetDelay)
 
 			if(IsNaN(ret))
 				// NaN: not enough data for check
