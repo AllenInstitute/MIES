@@ -1768,11 +1768,9 @@ End
 
 /// @brief Returns the config wave for a given sweep wave
 Function/Wave GetConfigWave(sweepWave)
-	Wave sweepWave
+	WAVE sweepWave
 
-	string name = "Config_" + NameOfWave(sweepWave)
-	Wave/SDFR=GetWavesDataFolderDFR(sweepWave) config = $name
-	ASSERT(IsValidConfigWave(config, version=0),"Invalid config wave")
+	WAVE/SDFR=GetWavesDataFolderDFR(sweepWave) config = $GetConfigWaveName(ExtractSweepNumber(NameOfWave(sweepWave)))
 
 	return config
 End
@@ -1785,6 +1783,13 @@ Function/Wave GetSweepWave(panelTitle, sweepNo)
 	Wave/Z/SDFR=GetDeviceDataPath(panelTitle) wv = $GetSweepWaveName(sweepNo)
 
 	return wv
+End
+
+/// @brief Return the config wave name
+Function/S GetConfigWaveName(sweepNo)
+	variable sweepNo
+
+	return "Config_" + GetSweepWaveName(sweepNo)
 End
 
 /// @brief Return the sweep wave name
