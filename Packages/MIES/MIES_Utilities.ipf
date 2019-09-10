@@ -4542,3 +4542,13 @@ Function StoreElapsedTime(referenceTime)
 
 	return elapsed
 End
+
+/// @brief Extracts a single wave from a wave ref wave
+///
+/// This can be used as helper function in multithread statements.
+threadsafe Function/WAVE MapWaveRefWave(input, row)
+	WAVE/WAVE input
+	variable row
+
+	return input[row]
+End
