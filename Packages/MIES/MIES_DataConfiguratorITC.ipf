@@ -369,7 +369,7 @@ End
 /// @param numRows          size of the 1D channel wave
 /// @param samplingInterval minimum sample intervall in microseconds
 /// @param index            number of NI channel
-/// @param type             number type of NI channel
+/// @param type             numeric data type of NI channel
 ///
 /// @return                 Wave Reference to NI Channel wave
 static Function/WAVE DC_MakeNIChannelWave(dfr, numRows, samplingInterval, index, type)
@@ -379,6 +379,7 @@ static Function/WAVE DC_MakeNIChannelWave(dfr, numRows, samplingInterval, index,
 	Make/O/N=(numRows)/Y=(type) dfr:$("NI_Channel" + num2str(index))/WAVE=w
 	FastOp w = 0
 	SetScale/P x 0, samplingInterval / 1000, "ms", w
+
 	return w
 End
 
