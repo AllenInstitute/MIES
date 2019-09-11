@@ -440,6 +440,7 @@ Function/WAVE FormulaExecutor(jsonID, [jsonPath, graph])
 			ASSERT(DimSize(channel, ROWS) == 1, "Only one channel name is allowed.")
 			WAVE/T sweeps = FormulaExecutor(jsonID, jsonPath = jsonPath + "/2", graph = graph)
 			ASSERT(DimSize(sweeps, ROWS) == 1, "sweeps need to be given as a semicolon separated list.")
+			range = !IsNaN(range[p]) ? range[p] : (p == 0 ? -1 : 1) * inf
 			return GetSweepForFormula(graph, range[0], range[1], channel[0], sweeps[0])
 			break
 		case "log": // JSON logic debug operation
@@ -571,7 +572,7 @@ Function/WAVE GetSweepForFormula(graph, rangeStart, rangeEnd, channelType, sweep
 	Variable pStart, pEnd
 
 	ASSERT(WindowExists(graph), "graph window does not exist")
-	ASSERT(isFinite(rangeStart) && isFinite(rangeEnd), "Specified range not valid.")
+	ASSERT(!IsNaN(rangeStart) && !IsNaN(rangeEnd), "Specified range not valid.")
 
 	WAVE/T traces = PA_GetTraceInfos(graph, channelType = channelType)
 	Make/N=(DimSize(traces, ROWS))/FREE sweepListIndex = WhichListItem(traces[p][%sweepNumber], sweepList)
@@ -585,8 +586,8 @@ Function/WAVE GetSweepForFormula(graph, rangeStart, rangeEnd, channelType, sweep
 	WAVE reference = $(traces[indices[0]][%fullPath])
 	ASSERT(DimSize(reference, COLS) <= 1, "Unhandled Sweep Format.")
 
-	pStart = ScaleToIndex(reference, rangeStart, ROWS)
-	pEnd = ScaleToIndex(reference, rangeEnd, ROWS)
+	pStart = IsFinite(rangeStart) ? ScaleToIndex(reference, rangeStart, ROWS) : 0
+	pEnd = IsFinite(rangeEnd) ? ScaleToIndex(reference, rangeEnd, ROWS) : DimSize(reference, ROWS) - 1
 	ASSERT(pEnd < DimSize(reference, ROWS) && pStart >= 0, "Invalid sweep range.")
 	Make/FREE/N=(abs(pStart - pEnd), numSweeps) sweeps
 	SetScale/P x, IndexToScale(reference, pStart, ROWS), DimDelta(reference, ROWS), sweeps
