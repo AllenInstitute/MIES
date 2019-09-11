@@ -185,6 +185,10 @@ static Function AllTests(t, devices)
 			WAVE/Z sweep  = $StringFromList(j, sweeps)
 			CHECK_WAVE(sweep, NUMERIC_WAVE, minorType = t.sweepWaveType)
 
+			WaveStats/M=1/Q sweep
+			CHECK_EQUAL_VAR(V_numNaNs, 0)
+			CHECK_EQUAL_VAR(V_numInfs, 0)
+
 			WAVE/Z config = $StringFromList(j, configs)
 			CHECK_WAVE(config, NUMERIC_WAVE)
 
