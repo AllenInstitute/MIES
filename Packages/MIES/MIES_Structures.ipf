@@ -177,7 +177,7 @@ Structure AnalysisFunction_V3
 	/// end of DAQ. The total number of rows in `rawDACWave` might be higher
 	/// due to alignment requirements of the data acquisition hardware.
 	///
-	/// Always `NaN` for #PRE_DAQ_EVENT events.
+	/// Always `NaN` for #PRE_DAQ_EVENT/#PRE_SET_EVENT events.
 	variable lastValidRowIndex
 
 	/// number of rows in `rawDACWave`/`scaledDACWave` with already acquired data

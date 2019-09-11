@@ -35,7 +35,7 @@ Function AFM_CallAnalysisFunctions(panelTitle, eventType)
 
 	WAVE/T analysisFunctions = GetAnalysisFunctionStorage(panelTitle)
 
-	if(eventType == PRE_DAQ_EVENT)
+	if(eventType == PRE_DAQ_EVENT || eventType == PRE_SET_EVENT)
 		realDataLength = NaN
 	else
 		realDataLength = stopCollectionPoint
