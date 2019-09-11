@@ -528,9 +528,9 @@ Function SCOPE_UpdateOscilloscopeData(panelTitle, dataAcqOrTP, [chunk, fifoPos, 
 			NVAR duration = $GetTestpulseDuration(panelTitle)
 			NVAR baselineFrac = $GetTestpulseBaselineFraction(panelTitle)
 
-			WAVE OscilloscopeData = GetOscilloscopeWave(panelTitle)
-			sampleInt = DimDelta(OscilloscopeData, ROWS)
-			osciUnits = WaveUnits(OscilloscopeData, ROWS)
+			WAVE scaledDataWave = GetScaledDataWave(panelTitle)
+			sampleInt = DimDelta(scaledDataWave, ROWS)
+			osciUnits = WaveUnits(scaledDataWave, ROWS)
 			numDACs = DimSize(GetDACListFromConfig(config), ROWS)
 			numADCs = DimSize(ADCs, ROWS)
 
@@ -562,7 +562,7 @@ Function SCOPE_UpdateOscilloscopeData(panelTitle, dataAcqOrTP, [chunk, fifoPos, 
 				tpStartPos = i * tpLengthPoints
 
 				if(saveTP)
-					Duplicate/FREE/R=[tpStartPos, tpStartPos + tpLengthPoints - 1][numDACs, numDACs + tpChannels - 1] OscilloscopeData, StoreTPWave
+					Duplicate/FREE/R=[tpStartPos, tpStartPos + tpLengthPoints - 1][numDACs, numDACs + tpChannels - 1] scaledDataWave, StoreTPWave
 					SetScale/P x, 0, sampleInt, osciUnits, StoreTPWave
 					TPChanIndex = 0
 					hsList = ""
@@ -571,7 +571,7 @@ Function SCOPE_UpdateOscilloscopeData(panelTitle, dataAcqOrTP, [chunk, fifoPos, 
 				for(j = 0; j < numADCs; j += 1)
 					if(ADCmode[j] == DAQ_CHANNEL_TYPE_TP)
 
-						MultiThread channelData[] = OscilloscopeData[tpStartPos + p][numDACs + j]
+						MultiThread channelData[] = scaledDataWave[tpStartPos + p][numDACs + j]
 
 						headstage = AFH_GetHeadstageFromADC(panelTitle, ADCs[j])
 						if(hsProp[headstage][%ClampMode] == I_CLAMP_MODE)
@@ -608,9 +608,8 @@ Function SCOPE_UpdateOscilloscopeData(panelTitle, dataAcqOrTP, [chunk, fifoPos, 
 			endfor
 
 			if(dataAcqOrTP == DATA_ACQUISITION_MODE)
-				// optimization for regular TP we use OscilloscopeData directly
 				WAVE TPOscilloscopeData = GetTPOscilloscopeWave(panelTitle)
-				Duplicate/O/R=[tpStartPos, tpStartPos + tpLengthPoints - 1][] OscilloscopeData TPOscilloscopeData
+				Duplicate/O/R=[tpStartPos, tpStartPos + tpLengthPoints - 1][] scaledDataWave TPOscilloscopeData
 				SetScale/P x, 0, sampleInt, osciUnits, TPOscilloscopeData
 			endif
 
@@ -631,8 +630,10 @@ static Function SCOPE_NI_UpdateOscilloscope(panelTitle, dataAcqOrTP, deviceiD, f
 
 	variable i, channel
 	string fifoName
-	WAVE OscilloscopeData = GetOscilloscopeWave(panelTitle)
-	WAVE/WAVE NIDataWave = GetHardwareDataWave(panelTitle)
+
+	WAVE scaledDataWave    = GetScaledDataWave(panelTitle)
+	WAVE OscilloscopeData  = GetOscilloscopeWave(panelTitle)
+	WAVE/WAVE NIDataWave   = GetHardwareDataWave(panelTitle)
 
 	fifoName = GetNIFIFOName(deviceID)
 	FIFOStatus/Q $fifoName
@@ -643,11 +644,16 @@ static Function SCOPE_NI_UpdateOscilloscope(panelTitle, dataAcqOrTP, deviceiD, f
 			channel = str2num(StringByKey("NAME" + num2str(i), S_Info))
 			WAVE NIChannel = NIDataWave[channel]
 			multithread OscilloscopeData[][channel] = NIChannel[p]
+			Multithread scaledDataWave[][] = OscilloscopeData
 		endfor
 		SCOPE_UpdatePowerSpectrum(panelTitle)
 	elseif(dataAcqOrTP == DATA_ACQUISITION_MODE)
 		// it is in this moment the previous fifo position, so the new data goes from here to fifoPos-1
 		NVAR fifoPosGlobal = $GetFifoPosition(panelTitle)
+
+		WAVE allGain = SWS_GetChannelGains(panelTitle, timing = GAIN_AFTER_DAQ)
+		Multithread scaledDataWave[fifoPosGlobal, fifoPos - 1][] = MapWaveRefWave(NIDataWave, q)[p] / allGain[q]
+
 		for(i = 0; i < V_FIFOnchans; i += 1)
 			channel = str2num(StringByKey("NAME" + num2str(i), S_Info))
 			WAVE NIChannel = NIDataWave[channel]
@@ -663,12 +669,15 @@ static Function SCOPE_ITC_UpdateOscilloscope(panelTitle, dataAcqOrTP, chunk, fif
 	WAVE OscilloscopeData = GetOscilloscopeWave(panelTitle)
 	variable length, first, last
 	variable startOfADColumns, numEntries
-	WAVE ITCDataWave      = GetHardwareDataWave(panelTitle)
+	WAVE scaledDataWave    = GetScaledDataWave(panelTitle)
+	WAVE ITCDataWave       = GetHardwareDataWave(panelTitle)
 	WAVE ITCChanConfigWave = GetITCChanConfigWave(panelTitle)
 	WAVE ADCs = GetADCListFromConfig(ITCChanConfigWave)
 	WAVE DA_EphysGuiState = GetDA_EphysGuiStateNum(panelTitle)
 	startOfADColumns = DimSize(GetDACListFromConfig(ITCChanConfigWave), ROWS)
 	numEntries = DimSize(ADCs, ROWS)
+
+	WAVE allGain = SWS_GETChannelGains(panelTitle, timing = GAIN_AFTER_DAQ)
 
 	//do the AD scaling here manually so that is can be as fast as possible
 	Make/FREE/N=(numEntries) gain = DA_EphysGuiState[ADCs[p]][%$GetSpecialControlLabel(CHANNEL_TYPE_ADC, CHANNEL_CONTROL_GAIN)] * HARDWARE_ITC_BITS_PER_VOLT
@@ -691,7 +700,10 @@ static Function SCOPE_ITC_UpdateOscilloscope(panelTitle, dataAcqOrTP, chunk, fif
 			Cursor/W=ITCDataWaveTPMD/H=2/P B HardwareDataWave last
 		endif
 #endif
+
 		Multithread OscilloscopeData[][startOfADColumns, startOfADColumns + numEntries - 1] = ITCDataWave[first + p][q] / gain[q - startOfADColumns]
+		Multithread scaledDataWave[][] = OscilloscopeData
+
 		SCOPE_UpdatePowerSpectrum(panelTitle)
 
 	elseif(dataAcqOrTP == DATA_ACQUISITION_MODE)
@@ -705,6 +717,8 @@ static Function SCOPE_ITC_UpdateOscilloscope(panelTitle, dataAcqOrTP, chunk, fif
 		if(fifoPosGlobal == fifoPos)
 			return NaN
 		endif
+
+		Multithread scaledDataWave[fifoPosGlobal, fifoPos][] = ITCDataWave[p][q] / allGain[q]
 
 		Multithread OscilloscopeData[fifoPosGlobal, fifoPos - 1][startOfADColumns, startOfADColumns + numEntries - 1] = ITCDataWave[p][q] / gain[q - startOfADColumns]
 

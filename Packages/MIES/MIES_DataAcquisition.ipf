@@ -84,7 +84,7 @@ static Function DQ_StopOngoingDAQHelper(panelTitle, [startTPAfterDAQ])
 		HW_StopAcq(HARDWARE_ITC_DAC, ITCDeviceIDGlobal, zeroDAC = 1)
 
 		if(!discardData)
-			SWS_SaveAndScaleITCData(panelTitle, forcedStop = 1)
+			SWS_SaveAcquiredData(panelTitle, forcedStop = 1)
 		endif
 
 		stopDeviceTimer  = stopDeviceTimer | 1
@@ -93,7 +93,7 @@ static Function DQ_StopOngoingDAQHelper(panelTitle, [startTPAfterDAQ])
 		DQM_TerminateOngoingDAQHelper(panelTitle)
 
 		if(!discardData)
-			SWS_SaveAndScaleITCData(panelTitle, forcedStop = 1)
+			SWS_SaveAcquiredData(panelTitle, forcedStop = 1)
 		endif
 
 		stopDeviceTimer  = stopDeviceTimer | 1

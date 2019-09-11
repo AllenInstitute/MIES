@@ -2223,6 +2223,31 @@ Function/S GetDeviceTestPulseAsString(panelTitle)
 	return GetDevicePathAsString(panelTitle) + ":TestPulse"
 End
 
+/// @brief Return a wave which holds undecimated and scaled data
+///
+/// Rows:
+/// - StopCollectionPoint
+///
+/// Cols:
+/// - Number of active channels
+///
+/// Type:
+/// - FP32 or FP64, as returned by SWS_GetRawDataFPType()
+Function/Wave GetScaledDataWave(panelTitle)
+	string panelTitle
+
+	dfref dfr = GetDevicePath(panelTitle)
+	WAVE/Z/SDFR=dfr wv = ScaledData
+
+	if(WaveExists(wv))
+		return wv
+	endif
+
+	Make/Y=(SWS_GetRawDataFPType(panelTitle))/N=(1, NUM_DA_TTL_CHANNELS) dfr:ScaledData/Wave=wv
+
+	return wv
+End
+
 /// @brief Return a wave for displaying scaled data in the oscilloscope window
 Function/Wave GetOscilloscopeWave(panelTitle)
 	string panelTitle

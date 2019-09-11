@@ -385,7 +385,7 @@ static Function/WAVE DC_MakeNIChannelWave(dfr, numRows, samplingInterval, index,
 End
 
 /// @brief Initializes the waves used for displaying DAQ/TP results in the
-/// oscilloscope window
+/// oscilloscope window and the scaled data wave
 ///
 /// @param panelTitle  panel title
 /// @param dataAcqOrTP one of #DATA_ACQUISITION_MODE or #TEST_PULSE_MODE
@@ -399,6 +399,7 @@ static Function DC_MakeHelperWaves(panelTitle, dataAcqOrTP)
 	WAVE config = GetITCChanConfigWave(panelTitle)
 	WAVE OscilloscopeData = GetOscilloscopeWave(panelTitle)
 	WAVE TPOscilloscopeData = GetTPOscilloscopeWave(panelTitle)
+	WAVE scaledDataWave = GetScaledDataWave(panelTitle)
 	WAVE ITCDataWave = GetHardwareDataWave(panelTitle)
 	WAVE/WAVE NIDataWave = GetHardwareDataWave(panelTitle)
 
@@ -436,6 +437,9 @@ static Function DC_MakeHelperWaves(panelTitle, dataAcqOrTP)
 
 	DC_InitDataHoldingWave(TPOscilloscopeData, tpLength, sampleInterval, numDACs, numADCs, numTTLs)
 	DC_InitDataHoldingWave(OscilloscopeData, numRows, sampleInterval, numDACs, numADCs, numTTLs)
+
+	NVAR stopCollectionPoint = $GetStopCollectionPoint(panelTitle)
+	DC_InitDataHoldingWave(scaledDataWave, dataAcqOrTP == DATA_ACQUISITION_MODE ? stopCollectionPoint : tpLength, sampleInterval, numDACs, numADCs, numTTLs, type = SWS_GetRawDataFPType(panelTitle))
 End
 
 /// @brief Initialize data holding waves to the defaults for each channel type
