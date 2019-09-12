@@ -136,12 +136,10 @@ End
 Function DQS_FIFOMonitor(s)
 	STRUCT WMBackgroundStruct &s
 
-	string oscilloscopeSubwindow
 	variable fifoPos, moreData, anaFuncReturn, result
 
 	SVAR panelTitleG       = $GetPanelTitleGlobal()
 	NVAR ITCDeviceIDGlobal = $GetITCDeviceIDGlobal(panelTitleG)
-	oscilloscopeSubwindow  = SCOPE_GetGraph(panelTitleG)
 
 	moreData = HW_ITC_MoreData(ITCDeviceIDGlobal, fifoPos=fifoPos, flags=HARDWARE_ABORT_ON_ERROR)
 
