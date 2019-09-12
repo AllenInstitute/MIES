@@ -679,14 +679,10 @@ static Function SCOPE_ITC_UpdateOscilloscope(panelTitle, dataAcqOrTP, chunk, fif
 	WAVE ITCDataWave       = GetHardwareDataWave(panelTitle)
 	WAVE ITCChanConfigWave = GetITCChanConfigWave(panelTitle)
 	WAVE ADCs = GetADCListFromConfig(ITCChanConfigWave)
-	WAVE DA_EphysGuiState = GetDA_EphysGuiStateNum(panelTitle)
 	startOfADColumns = DimSize(GetDACListFromConfig(ITCChanConfigWave), ROWS)
 	numEntries = DimSize(ADCs, ROWS)
 
 	WAVE allGain = SWS_GETChannelGains(panelTitle, timing = GAIN_AFTER_DAQ)
-
-	//do the AD scaling here manually so that is can be as fast as possible
-	Make/FREE/N=(numEntries) gain = DA_EphysGuiState[ADCs[p]][%$GetSpecialControlLabel(CHANNEL_TYPE_ADC, CHANNEL_CONTROL_GAIN)] * HARDWARE_ITC_BITS_PER_VOLT
 
 	if(dataAcqOrTP == TEST_PULSE_MODE)
 		length = ROVAR(GetTestPulseLengthInPoints(panelTitle, TEST_PULSE_MODE))
@@ -707,7 +703,7 @@ static Function SCOPE_ITC_UpdateOscilloscope(panelTitle, dataAcqOrTP, chunk, fif
 		endif
 #endif
 
-		Multithread OscilloscopeData[][startOfADColumns, startOfADColumns + numEntries - 1] = ITCDataWave[first + p][q] / gain[q - startOfADColumns]
+		Multithread OscilloscopeData[][startOfADColumns, startOfADColumns + numEntries - 1] = ITCDataWave[first + p][q] / allGain[q]
 		Multithread scaledDataWave[][] = OscilloscopeData
 
 		SCOPE_UpdatePowerSpectrum(panelTitle)
@@ -731,9 +727,10 @@ static Function SCOPE_ITC_UpdateOscilloscope(panelTitle, dataAcqOrTP, chunk, fif
 
 		switch(decMethod)
 			case DECIMATION_NONE:
-				Multithread OscilloscopeData[fifoPosGlobal, fifoPos - 1][startOfADColumns, startOfADColumns + numEntries - 1] = ITCDataWave[p][q] / gain[q - startOfADColumns]
+				Multithread OscilloscopeData[fifoPosGlobal, fifoPos - 1][startOfADColumns, startOfADColumns + numEntries - 1] = ITCDataWave[p][q] / allGain[q]
 				break
 			default:
+				Duplicate/FREE/RMD=[startOfADColumns, startOfADColumns + numEntries - 1] allGain, gain
 				gain[] = 1 / gain[p]
 				DecimateWithMethod(ITCDataWave, OscilloscopeData, decFactor, decMethod, firstRowInp = fifoPosGlobal, lastRowInp = fifoPos - 1, firstColInp = startOfADColumns, lastColInp = startOfADColumns + numEntries - 1, factor = gain)
 		endswitch
