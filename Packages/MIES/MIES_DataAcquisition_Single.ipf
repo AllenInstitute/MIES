@@ -49,7 +49,7 @@ End
 Function DQS_DataAcq(panelTitle)
 	string panelTitle
 
-	variable fifoPos, gotTPChannels
+	variable fifoPos, gotTPChannels, moreData
 	string oscilloscopeSubwindow = SCOPE_GetGraph(panelTitle)
 
 	NVAR ITCDeviceIDGlobal = $GetITCDeviceIDGlobal(panelTitle)
@@ -67,6 +67,8 @@ Function DQS_DataAcq(panelTitle)
 
 	do
 		DoXOPIdle
+
+		moreData = HW_ITC_MoreData(ITCDeviceIDGlobal, fifoPos=fifoPos)
 		SCOPE_UpdateOscilloscopeData(panelTitle, DATA_ACQUISITION_MODE, fifoPos=fifoPos)
 
 		if(gotTPChannels)
@@ -78,7 +80,7 @@ Function DQS_DataAcq(panelTitle)
 			DQS_StopDataAcq(panelTitle, forcedStop = 1)
 			return NaN
 		endif
-	while(HW_ITC_MoreData(ITCDeviceIDGlobal, fifoPos=fifoPos))
+	while(moreData)
 
 	DQS_StopDataAcq(panelTitle)
 End
