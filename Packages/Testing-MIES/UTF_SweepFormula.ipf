@@ -443,6 +443,45 @@ Function average()
 	REQUIRE_EQUAL_WAVES(testwave, output, mode = WAVE_DATA)
 End
 
+Function MIES_channel()
+
+	Make/FREE input = {{0}, {NaN}}
+	WAVE output = FormulaExecutor(FormulaParser("channels(AD)"))
+	REQUIRE_EQUAL_WAVES(input, output)
+
+	Make/FREE input = {{0}, {0}}
+	WAVE output = FormulaExecutor(FormulaParser("channels(AD0)"))
+	REQUIRE_EQUAL_WAVES(input, output)
+
+	Make/FREE input = {{0, 0}, {0, 1}}
+	WAVE output = FormulaExecutor(FormulaParser("channels(AD0,AD1)"))
+	REQUIRE_EQUAL_WAVES(input, output)
+
+	Make/FREE input = {{0, 1}, {0, 1}}
+	WAVE output = FormulaExecutor(FormulaParser("channels(AD0,DA1)"))
+	REQUIRE_EQUAL_WAVES(input, output)
+
+	Make/FREE input = {{1, 1}, {0, 0}}
+	WAVE output = FormulaExecutor(FormulaParser("channels(DA0,DA0)"))
+	REQUIRE_EQUAL_WAVES(input, output)
+
+	Make/FREE input = {{0, 1}, {NaN, NaN}}
+	WAVE output = FormulaExecutor(FormulaParser("channels(AD,DA)"))
+	REQUIRE_EQUAL_WAVES(input, output)
+
+	Make/FREE input = {{2}, {1}}
+	WAVE output = FormulaExecutor(FormulaParser("channels(1)"))
+	REQUIRE_EQUAL_WAVES(input, output)
+
+	Make/FREE input = {{2, 2}, {1, 3}}
+	WAVE output = FormulaExecutor(FormulaParser("channels(1,3)"))
+	REQUIRE_EQUAL_WAVES(input, output)
+
+	Make/FREE input = {{0,1,2},{1,2,3}}
+	WAVE output = FormulaExecutor(FormulaParser("channels(AD1,DA2,3)"))
+	REQUIRE_EQUAL_WAVES(input, output)
+End
+
 Function statistical()
 	Variable jsonID
 

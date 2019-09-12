@@ -281,7 +281,7 @@ Function/WAVE FormulaExecutor(jsonID, [jsonPath, graph])
 	String jsonPath
 	String graph
 
-	Variable i, numIndices, JSONtype
+	Variable i, j, numIndices, JSONtype
 
 	if(ParamIsDefault(jsonPath))
 		jsonPath = ""
@@ -354,15 +354,18 @@ Function/WAVE FormulaExecutor(jsonID, [jsonPath, graph])
 	ASSERT(JSON_GetType(jsonID, jsonPath) == JSON_ARRAY, "An array is required to hold the operands of the operation.")
 	strswitch(operations[0])
 		case "cursors":
-		case "channel":
 			WAVE/T wvT = JSON_GetTextWave(jsonID, jsonPath)
 			break
 		case "sweeps":
+		case "channels":
+		case "data":
 			break
 		default:
 			WAVE wv = FormulaExecutor(jsonID, jsonPath = jsonPath, graph = graph)
 	endswitch
 
+	/// @name SweepFormulaOperations
+	/// @{
 	strswitch(operations[0])
 		case "-":
 			ASSERT(DimSize(wv, ROWS) >= 2, "At least two operands are required")
@@ -429,19 +432,80 @@ Function/WAVE FormulaExecutor(jsonID, [jsonPath, graph])
 			MatrixOP/FREE transposed = wv^T
 			Extract/FREE transposed, out, (p < (JSON_GetType(jsonID, jsonPath + "/" + num2str(q)) != JSON_ARRAY ? 1 : JSON_GetArraySize(jsonID, jsonPath + "/" + num2str(q))))
 			break
-		case "channel":
-			Make/N=(DimSize(wvT, ROWS))/FREE out = WhichListItem(wvT[p], ITC_CHANNEL_NAMES)
+		case "channels":
+			/// `channels([str name]+)` converts a named channel from string to numbers.
+			///
+			/// returns [[channelName, channelNumber]+]
+			String channelName, channelNumber
+			String regExp = "^(?i)(" + ReplaceString(";", ITC_CHANNEL_NAMES, "|") + ")([0-9]+)?$"
+			numIndices = JSON_GetArraySize(jsonID, jsonPath)
+
+			Make/N=(numIndices, 2)/FREE out = NaN
+			for(i = 0; i < numIndices; i += 1)
+				JSONtype = JSON_GetType(jsonID, jsonPath + "/" + num2str(i))
+				channelName = ""
+				if(JSONtype == JSON_NUMERIC)
+					out[i][1] = JSON_GetVariable(jsonID, jsonPath + "/" + num2str(i))
+				elseif(JSONtype == JSON_STRING)
+					SplitString/E=regExp JSON_GetString(jsonID, jsonPath + "/" + num2str(i)), channelName, channelNumber
+					if(V_flag == 0)
+						continue
+					endif
+					out[i][1] = str2num(channelNumber)
+				endif
+				ASSERT(!isFinite(out[i][1]) || out[i][1] < NUM_MAX_CHANNELS, "Maximum Number Of Channels exceeded.")
+				out[i][0] = WhichListItem(channelName, ITC_CHANNEL_NAMES, ";", 0, 0)
+			endfor
+			out[][] = out[p][q] < 0 ? NaN : out[p][q]
 			break
 		case "sweeps":
+			/// `sweeps(list sweepNumbers)` convert a list to an array
+			///
+			/// returns array [sweepNumbers]
+			JSONtype = JSON_GetType(jsonID, jsonPath + "/0")
+			if(JSONtype == JSON_STRING)
+				ASSERT(JSON_GetArraySize(jsonID, jsonPath) == 1, "Use sweepLists like 1;2;3 as input.")
+				WAVE/T wvT = ListToTextWave(JSON_GetString(jsonID, jsonPath + "/0"), ";")
+				Make/FREE/N=(DimSize(wvT, ROWS)) out = str2num(wvT[p])
+			else
+				WAVE out = FormulaExecutor(jsonID, jsonPath = jsonPath, graph = graph)
+			endif
+			break
+		case "data":
+			/// `data(array range,array channels,array sweeps)`
+			///
+			/// returns [[sweeps][channel]] for all [sweeps] in list sweepNumbers, grouped by channels
 			ASSERT(!ParamIsDefault(graph) && !!cmpstr(graph, ""), "Graph for extracting sweeps not specified.")
+
 			WAVE range = FormulaExecutor(jsonID, jsonPath = jsonPath + "/0", graph = graph)
 			ASSERT(DimSize(range, ROWS) == 2, "A range can not hold more than two points.")
-			WAVE channel = FormulaExecutor(jsonID, jsonPath = jsonPath + "/1")
-			ASSERT(DimSize(channel, ROWS) == 1, "Only one channel name is allowed.")
-			WAVE/T sweeps = FormulaExecutor(jsonID, jsonPath = jsonPath + "/2", graph = graph)
-			ASSERT(DimSize(sweeps, ROWS) == 1, "sweeps need to be given as a semicolon separated list.")
 			range = !IsNaN(range[p]) ? range[p] : (p == 0 ? -1 : 1) * inf
-			return GetSweepForFormula(graph, range[0], range[1], channel[0], sweeps[0])
+
+			WAVE channels = FormulaExecutor(jsonID, jsonPath = jsonPath + "/1")
+			ASSERT(DimSize(channels, COLS) == 2, "A channel input consists of [[channelName, channelNumber]+].")
+
+			WAVE sweeps = FormulaExecutor(jsonID, jsonPath = jsonPath + "/2", graph = graph)
+			ASSERT(DimSize(sweeps, COLS) < 2, "Sweeps are one-dimensional.")
+
+			WAVE/Z out = GetSweepForFormula(graph, range[0], range[1], channels[0][0], channels[0][1], sweeps)
+			if(!WaveExists(out))
+				DebugPrint("Call to GetSweepForFormula returned no results")
+				Make/FREE/N=1 out = {NaN}
+				break
+			endif
+			numIndices = DimSize(channels, ROWS)
+			Redimension/N=(-1, -1, numIndices) out
+			j = 1
+			for(i = 1; i < numIndices; i += 1)
+				WAVE wv = GetSweepForFormula(graph, range[0], range[1], channels[i][0], channels[i][1], sweeps)
+				if(!WaveExists(wv))
+					continue
+				endif
+				out[][][j] = wv[p][q]
+				j += 1
+				WaveClear wv
+			endfor
+			Redimension/N=(-1, -1, j) out
 			break
 		case "log": // JSON logic debug operation
 			print wv[0]
@@ -470,6 +534,7 @@ Function/WAVE FormulaExecutor(jsonID, [jsonPath, graph])
 		default:
 			ASSERT(0, "Undefined Operation")
 	endswitch
+	/// @}
 
 	return out
 End
@@ -493,6 +558,7 @@ Function FormulaPlotter(graph, formula, [dfr])
 	if(V_Flag == 2)
 		WAVE wv = FormulaExecutor(FormulaParser(formula1), graph = graph)
 		ASSERT(WaveExists(wv), "Error in x part of formula.")
+		Redimension/N=(-1, DimSize(wv, LAYERS) * DimSize(wv, COLS))/E=1 wv
 		if(WaveType(wv, 1) == 2)
 			Duplicate/O wv dfr:xFormulaT/WAVE = wvX
 		else
@@ -502,6 +568,7 @@ Function FormulaPlotter(graph, formula, [dfr])
 	endif
 	WAVE wv = FormulaExecutor(FormulaParser(formula0), graph = graph)
 	ASSERT(WaveExists(wv), "Error in y part of formula.")
+	Redimension/N=(-1, max(1, DimSize(wv, LAYERS)) * DimSize(wv, COLS))/E=1 wv
 	if(WaveType(wv, 1) == 2)
 		Duplicate/O wv dfr:yFormulaT/WAVE = wvY
 	else
@@ -562,21 +629,35 @@ Function FormulaPlotter(graph, formula, [dfr])
 	DoWindow/F $win
 End
 
-Function/WAVE GetSweepForFormula(graph, rangeStart, rangeEnd, channelType, sweepList)
+Function/WAVE GetSweepForFormula(graph, rangeStart, rangeEnd, channelType, channelNumber, sweeps)
 	String graph
 	Variable rangeStart, rangeEnd
-	Variable channelType
-	String sweepList
+	Variable channelType, channelNumber
+	WAVE sweeps
 
 	Variable i, numSweeps
 	Variable pStart, pEnd
 
 	ASSERT(WindowExists(graph), "graph window does not exist")
 	ASSERT(!IsNaN(rangeStart) && !IsNaN(rangeEnd), "Specified range not valid.")
+	ASSERT(DimSize(sweeps, COLS) < 2, "Sweeps are one-dimensional.")
 
-	WAVE/T traces = PA_GetTraceInfos(graph, channelType = channelType)
-	Make/N=(DimSize(traces, ROWS))/FREE sweepListIndex = WhichListItem(traces[p][%sweepNumber], sweepList)
-	Extract/FREE/INDX sweepListIndex, indices, sweepListIndex[p] != -1
+	if(IsFinite(channelType))
+		WAVE/T/Z traces = PA_GetTraceInfos(graph, channelType = channelType)
+	else
+		WAVE/T/Z traces = PA_GetTraceInfos(graph)
+	endif
+	if(!WaveExists(traces) || DimSize(traces, ROWS) == 0)
+		DebugPrint("No matching sweeps for channel type: " + StringFromList(channelType, ITC_CHANNEL_NAMES))
+		return $""
+	endif
+	Make/N=(DimSize(traces, ROWS))/FREE sweepListIndex
+	for(i = 0; i < DimSize(traces, ROWS); i += 1)
+		FindValue/V=(trunc(str2num(traces[i][%sweepNumber])))/T=(0.1) sweeps
+		sweepListIndex[i] = V_Value != -1
+	endfor
+	Make/N=(DimSize(traces, ROWS))/FREE channelNumberIndex = IsFinite(channelNumber) ? str2num(traces[p][%channelNumber]) == channelNumber : 1
+	Extract/FREE/INDX sweepListIndex, indices, (sweepListIndex[p] == 1) && (channelNumberIndex[p] == 1)
 	numSweeps = DimSize(indices, ROWS)
 	if(numSweeps == 0)
 		DebugPrint("No matching sweeps")
@@ -589,19 +670,19 @@ Function/WAVE GetSweepForFormula(graph, rangeStart, rangeEnd, channelType, sweep
 	pStart = IsFinite(rangeStart) ? ScaleToIndex(reference, rangeStart, ROWS) : 0
 	pEnd = IsFinite(rangeEnd) ? ScaleToIndex(reference, rangeEnd, ROWS) : DimSize(reference, ROWS) - 1
 	ASSERT(pEnd < DimSize(reference, ROWS) && pStart >= 0, "Invalid sweep range.")
-	Make/FREE/N=(abs(pStart - pEnd), numSweeps) sweeps
-	SetScale/P x, IndexToScale(reference, pStart, ROWS), DimDelta(reference, ROWS), sweeps
+	Make/FREE/N=(abs(pStart - pEnd), numSweeps) sweepData
+	SetScale/P x, IndexToScale(reference, pStart, ROWS), DimDelta(reference, ROWS), sweepData
 	for(i = 0; i < numSweeps; i += 1)
 		WAVE sweep = $(traces[indices[i]][%fullPath])
 		pStart = IsFinite(rangeStart) ? ScaleToIndex(sweep, rangeStart, ROWS) : 0
 		pEnd = IsFinite(rangeEnd) ? ScaleToIndex(sweep, rangeEnd, ROWS) : DimSize(reference, ROWS) - 1
 		ASSERT(pEnd < DimSize(sweep, ROWS) && pStart >= 0, "Invalid sweep range.")
-		ASSERt(abs(pStart - pEnd) == DimSize(sweeps, ROWS), "Sweeps not equal.")
-		ASSERT(DimDelta(sweep, ROWS) == DimDelta(sweeps, ROWS), "Sweeps not equal.")
-		sweeps[][i] = sweep[pStart + p]
+		ASSERt(abs(pStart - pEnd) == DimSize(sweepData, ROWS), "Sweeps not equal.")
+		ASSERT(DimDelta(sweep, ROWS) == DimDelta(sweepData, ROWS), "Sweeps not equal.")
+		sweepData[][i] = sweep[pStart + p]
 	endfor
 
-	return sweeps
+	return sweepData
 End
 
 Function button_sweepFormula_check(ba) : ButtonControl
