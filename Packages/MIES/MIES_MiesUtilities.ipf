@@ -5454,18 +5454,6 @@ Function ZeroWave(wv)
 	SetNumberInWaveNote(wv, NOTE_KEY_ZEROED, 1)
 End
 
-#if (IgorVersion() < 8.00)
-/// @brief Stops the ASYNC framework if no TP or DAQ operation is running
-Function StopAsyncIfDone()
-
-	if(TP_GetNumDevicesWithTPRunning() + DQ_GetNumDevicesWithDAQRunning())
-		return NaN
-	endif
-
-	ASYNC_Stop(timeout=10)
-End
-#endif
-
 /// @name Decimation methods
 /// @anchor DecimationMethods
 /// @{

@@ -151,15 +151,7 @@ threadsafe Function TS_ThreadGroupPutVariable(tgID, varName, varValue)
 	string varName
 	variable varValue
 
-	string datafolder
-
-#if (IgorVersion() >= 8.00)
 	SetDataFolder NewFreeDataFolder()
-#else
-	datafolder = UniqueDataFolderName($":", "temp")
-	NewDataFolder/S/O $datafolder
-#endif
-
 	variable/G $varName = varValue
 
 	ThreadGroupPutDF tgID, :
@@ -176,20 +168,7 @@ threadsafe Function TS_ThreadGroupPutDFR(tgID, dfr)
 
 	ASSERT_TS(DataFolderExistsDFR(dfr), "ThreadGroupPutDFR: dfr does not exist")
 
-#if (IgorVersion() >= 8.00)
 	SetDataFolder dfr
-#else
-	if(DataFolderRefStatus(dfr) == 3)
-		dataFolder = UniqueDataFolderName($":", "temp")
-		MoveDataFolder dfr, $dataFolder
-		dfr = $""
-	else
-		dataFolder = GetDataFolder(1, dfr)
-	endif
-
-	SetDataFolder $dataFolder
-#endif
-
 	ThreadGroupPutDF tgId, :
 End
 

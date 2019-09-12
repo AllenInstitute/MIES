@@ -165,8 +165,6 @@ static Function IgorStartOrNewHook(igorApplicationNameStr)
 	return 0
 End
 
-#if (IgorVersion() >= 8.00)
-
 static Function BeforeUncompiledHook(changeCode, procedureWindowTitleStr, textChangeStr)
 	variable changeCode
 	string procedureWindowTitleStr
@@ -198,5 +196,3 @@ static Function AfterCompiledHook()
 		ExperimentModified 0
 	endif
 End
-
-#endif

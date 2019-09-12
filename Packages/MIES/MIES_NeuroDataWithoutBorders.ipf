@@ -1448,8 +1448,6 @@ static Function NWB_AppendIgorHistory(locationID)
 	HDF5CloseGroup/Z groupID
 End
 
-#if (IgorVersion() >= 8.00)
-
 /// @brief Start the thread group responsible for interacting with the NWB file
 Function NWB_StartThreadGroup()
 	string panelTitle
@@ -1490,5 +1488,3 @@ threadsafe Function NWB_SendFlush()
 		DEBUGPRINT_TS("NWB_SendFlush: flushing")
 	endfor
 End
-
-#endif

@@ -567,11 +567,7 @@ Constant COMMON_CONTROL_GROUP_COUNT_TXT = 10
 /// Equals 2^5 from `GetKeyState`
 Constant ESCAPE_KEY = 32
 
-#if (IgorVersion() >= 8.00)
-	Constant MAX_COMMANDLINE_LENGTH = 2500
-#else
-	Constant MAX_COMMANDLINE_LENGTH = 1000
-#endif
+Constant MAX_COMMANDLINE_LENGTH = 2500
 
 StrConstant WAVEBUILDER_COMBINE_FORMULA_VER = "1"
 

@@ -11,8 +11,6 @@ static Function TEST_CASE_BEGIN_OVERRIDE(testCase)
 	DuplicateDataFolder root:wavebuilder_misc:DAParameterWaves, $GetWBSvdStimSetParamDAPathAS()
 End
 
-#if (IgorVersion() > 8.0)
-
 // Copy stimset parameter waves into our own permanent location
 Function CopyParamWaves_IGNORE()
 	KillDataFolder/Z root:wavebuilder_misc:DAParameterWaves
@@ -24,8 +22,6 @@ Function CopyWaves_IGNORE()
 	KillDataFolder/Z root:wavebuilder_misc:DAWaves
 	DuplicateDataFolder/O=2 $GetWBSvdStimSetDAPathAsString(), root:wavebuilder_misc:DAWaves
 End
-
-#endif
 
 Function WB_RegressionTest()
 
