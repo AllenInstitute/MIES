@@ -597,7 +597,7 @@ Constant WAVEBUILDER_PANEL_VERSION  = 8
 /// - Changed names of entries
 /// - Changed units or meaning of entries
 /// - New/Changed layers of entries
-Constant LABNOTEBOOK_VERSION = 33
+Constant LABNOTEBOOK_VERSION = 34
 
 /// Version of the stimset wave note
 Constant STIMSET_NOTE_VERSION = 5
@@ -839,6 +839,7 @@ StrConstant PULSE_TO_PULSE_LENGTH_KEY = "Pulse To Pulse Length"
 StrConstant HIGH_PREC_SWEEP_START_KEY = "High precision sweep start"
 StrConstant STIMSET_SCALE_FACTOR_KEY  = "Stim Scale Factor"
 StrConstant STIMSET_WAVE_NOTE_KEY     = "Stim Wave Note"
+StrConstant EPOCHS_ENTRY_KEY          = "Epochs"
 
 /// DA_Ephys controls which should be disabled during DAQ
 StrConstant CONTROLS_DISABLE_DURING_DAQ = "Check_DataAcqHS_All;Radio_ClampMode_AllIClamp;Radio_ClampMode_AllVClamp;Radio_ClampMode_AllIZero;SetVar_Sweep;Check_DataAcq1_DistribDaq;Check_DataAcq1_dDAQOptOv;Check_DataAcq_Indexing;check_DataAcq_IndexRandom;Check_DataAcq1_IndexingLocked;check_DataAcq_RepAcqRandom;Check_DataAcq1_RepeatAcq"
@@ -1162,3 +1163,10 @@ Structure ActiveChannels
 	int32 numADRack2
 	int32 numTTLRack2
 EndStructure
+
+/// @name Epoch key constants
+/// @anchor EpochKeys
+/// @{
+StrConstant EPOCH_OODDAQ_REGION_KEY   = "oodDAQRegion"
+StrConstant EPOCH_BASELINE_REGION_KEY = "Baseline"
+/// @}

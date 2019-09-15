@@ -716,6 +716,47 @@ Function/Wave GetHardwareDataWave(panelTitle)
 	endswitch
 End
 
+static Constant EPOCHS_WAVE_VERSION = 1
+
+/// @brief Return the epochs text wave
+///
+/// Rows:
+/// - epochs
+///
+/// Columns:
+///   0 Start time in sec
+///   1 End time in sec
+///   2 Name
+///   3 Tree Level
+/// Layers:
+/// - NUM_DA_TTL_CHANNELS
+///
+/// Version 1:
+/// - Initial version
+Function/Wave GetEpochsWave(panelTitle)
+	string panelTitle
+
+	DFREF dfr = GetDevicePath(panelTitle)
+	WAVE/T/Z/SDFR=dfr wv = EpochsWave
+
+	if(ExistsWithCorrectLayoutVersion(wv, EPOCHS_WAVE_VERSION))
+	   return wv
+	elseif(WaveExists(wv))
+	   Redimension/N=(MINIMUM_WAVE_SIZE, 4, NUM_DA_TTL_CHANNELS) wv
+	else
+	  Make/T/N=(MINIMUM_WAVE_SIZE, 4, NUM_DA_TTL_CHANNELS) dfr:EpochsWave/Wave=wv
+	endif
+
+	SetDimLabel COLS, 0, StartTime, wv
+	SetDimLabel COLS, 1, EndTime, wv
+	SetDimLabel COLS, 2, Name, wv
+	SetDimLabel COLS, 3, TreeLevel, wv
+
+	SetWaveVersion(wv, EPOCHS_WAVE_VERSION)
+
+	return wv
+End
+
 /// @brief Return the ITC channel config wave
 ///
 /// Rows:
@@ -1510,7 +1551,7 @@ Function/WAVE GetLBNidCache(numericalValues)
 	return wv
 End
 
-static Constant SWEEP_SETTINGS_WAVE_VERSION = 23
+static Constant SWEEP_SETTINGS_WAVE_VERSION = 24
 
 /// @brief Uses the parameter names from the `sourceKey` columns and
 ///        write them as dimension into the columns of dest.
@@ -1986,6 +2027,7 @@ End
 /// -25: Igor Pro version
 /// -26: Digitizer Hardware Name
 /// -27: Digitizer Serial Numbers
+/// -28: Epochs
 Function/Wave GetSweepSettingsTextKeyWave(panelTitle)
 	string panelTitle
 
@@ -2004,9 +2046,9 @@ Function/Wave GetSweepSettingsTextKeyWave(panelTitle)
 	if(ExistsWithCorrectLayoutVersion(wv, versionOfNewWave))
 		return wv
 	elseif(WaveExists(wv))
-		Redimension/N=(-1, 28, 0) wv
+		Redimension/N=(-1, 29, 0) wv
 	else
-		Make/T/N=(1, 28) newDFR:$newName/Wave=wv
+		Make/T/N=(1, 29) newDFR:$newName/Wave=wv
 	endif
 
 	SetDimLabel ROWS, 0, Parameter, wv
@@ -2041,6 +2083,7 @@ Function/Wave GetSweepSettingsTextKeyWave(panelTitle)
 	wv[0][25] = "Igor Pro version"
 	wv[0][26] = "Digitizer Hardware Name"
 	wv[0][27] = "Digitizer Serial Numbers"
+	wv[0][28] = EPOCHS_ENTRY_KEY
 
 	SetSweepSettingsDimLabels(wv, wv)
 	SetWaveVersion(wv, versionOfNewWave)
