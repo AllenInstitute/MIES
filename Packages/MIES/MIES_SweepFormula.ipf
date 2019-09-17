@@ -340,6 +340,11 @@ Function/WAVE FormulaExecutor(jsonID, [jsonPath, graph])
 			out[indices[i]][0, max(0, DimSize(element, ROWS) - 1)][0, max(0, DimSize(element, COLS) - 1)][0, max(0, DimSize(element, LAYERS) - 1)] = element[q][r][s]
 		endfor
 
+		EXTRACT/FREE/INDX types, indices, types[p] == JSON_NUMERIC
+		for(i = 0; i < DimSize(indices, ROWS); i += 1)
+			out[indices[i]][][][] = out[indices[i]][0][0][0]
+		endfor
+
 		topArraySize[1,*] = topArraySize[p] == 1 ? 0 : topArraySize[p]
 		Redimension/N=(topArraySize[0], topArraySize[1], topArraySize[2], topArraySize[3])/E=1 out
 

@@ -46,29 +46,62 @@ Function primitiveOperations()
 	REQUIRE_EQUAL_VAR(FormulaExecutor(jsonID1)[0], 1/2)
 End
 
-Function primitiveOperations2D()
-	Variable jsonID
+Function arrayOperations(array2d, numeric)
 	String array2d
+	Variable numeric
 
-	array2d = "[[1,2],[3,4],[5,6]]"
-	Make/FREE input = {{1, 3, 5}, {2, 4, 6}}
+	Variable jsonID
+
+	WAVE input = JSON_GetWave(JSON_Parse(array2d), "")
 	REQUIRE_EQUAL_WAVES(input, FormulaExecutor(FormulaParser(array2d)), mode = WAVE_DATA)
 
 	Duplicate/FREE input input0
-	input0[][] = input[p][q] - input[p][q]
+	input0[][][][] = input[p][q][r][s] - input[p][q][r][s]
 	REQUIRE_EQUAL_WAVES(input0, FormulaExecutor(FormulaParser(array2d + "-" + array2d)), mode = WAVE_DATA)
 
 	Duplicate/FREE input input1
-	input1[][] = input[p][q] + input[p][q]
+	input1[][][][] = input[p][q][r][s] + input[p][q][r][s]
 	REQUIRE_EQUAL_WAVES(input1, FormulaExecutor(FormulaParser(array2d + "+" + array2d)), mode = WAVE_DATA)
 
 	Duplicate/FREE input input2
-	input2[][] = input[p][q] / input[p][q]
+	input2[][][][] = input[p][q][r][s] / input[p][q][r][s]
 	REQUIRE_EQUAL_WAVES(input2, FormulaExecutor(FormulaParser(array2d + "/" + array2d)), mode = WAVE_DATA)
 
 	Duplicate/FREE input input3
-	input3[][] = input[p][q] * input[p][q]
+	input3[][][][] = input[p][q][r][s] * input[p][q][r][s]
 	REQUIRE_EQUAL_WAVES(input3, FormulaExecutor(FormulaParser(array2d + "*" + array2d)), mode = WAVE_DATA)
+
+	Duplicate/FREE input input10
+	input10 -= numeric
+	REQUIRE_EQUAL_WAVES(input10, FormulaExecutor(FormulaParser(array2d + "-" + num2str(numeric))), mode = WAVE_DATA)
+	input10[][][][] = numeric - input[p][q][r][s]
+	REQUIRE_EQUAL_WAVES(input10, FormulaExecutor(FormulaParser(num2str(numeric) + "-" + array2d)), mode = WAVE_DATA)
+
+	Duplicate/FREE input input11
+	input11 += numeric
+	REQUIRE_EQUAL_WAVES(input11, FormulaExecutor(FormulaParser(num2str(numeric) + "+" + array2d)), mode = WAVE_DATA)
+	REQUIRE_EQUAL_WAVES(input11, FormulaExecutor(FormulaParser(array2d + "+" + num2str(numeric))), mode = WAVE_DATA)
+
+	Duplicate/FREE input input12
+	input12 /= numeric
+	REQUIRE_EQUAL_WAVES(input12, FormulaExecutor(FormulaParser(array2d + "/" + num2str(numeric))), mode = WAVE_DATA)
+	input12[][][][] = 1 / input12[p][q][r][s]
+	REQUIRE_EQUAL_WAVES(input12, FormulaExecutor(FormulaParser(num2str(numeric) + "/" + array2d)), mode = WAVE_DATA)
+
+	Duplicate/FREE input input13
+	input13 *= numeric
+	REQUIRE_EQUAL_WAVES(input13, FormulaExecutor(FormulaParser(num2str(numeric) + "*" + array2d)), mode = WAVE_DATA)
+	REQUIRE_EQUAL_WAVES(input13, FormulaExecutor(FormulaParser(array2d + "*" + num2str(numeric))), mode = WAVE_DATA)
+End
+
+Function primitiveOperations2D()
+	arrayOperations("[1,2]", 1)
+	arrayOperations("[[1,2],[3,4],[5,6]]", 1)
+	arrayOperations("[[1,2],[3,4],[5,6]]", 42)
+	arrayOperations("[[1],[3,4],[5,6]]", 1)
+	arrayOperations("[[1,2],[3],[5,6]]", 1)
+	arrayOperations("[[1,2],[3,4],[5]]", 1)
+	arrayOperations("[[1,2],[3,4],[5,6]]", 1.5)
 End
 
 Function concatenationOfOperations()
