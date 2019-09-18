@@ -389,6 +389,7 @@ Function/WAVE FormulaExecutor(jsonID, [jsonPath, graph])
 			WAVE/T wvT = JSON_GetTextWave(jsonID, jsonPath)
 			break
 		case "setscale":
+		case "butterworth":
 		case "sweeps":
 		case "channels":
 		case "data":
@@ -496,6 +497,23 @@ Function/WAVE FormulaExecutor(jsonID, [jsonPath, graph])
 			Integrate/METH=1/DIM=(ROWS) wv/D=out
 			CopyScales wv, out
 			SetScale/P x, DimOffset(wv, ROWS), DimDelta(wv, ROWS), "dx", out
+			break
+		case "butterworth":
+			/// `butterworth(data, lowPassCutoff, highPassCutoff, order)`
+			ASSERT(JSON_GetArraySize(jsonID, jsonPath) == 4, "The butterworth filter requires 4 arguments")
+			WAVE data = FormulaExecutor(jsonID, jsonPath = jsonPath + "/0", graph = graph)
+			WAVE lowPassCutoff = FormulaExecutor(jsonID, jsonPath = jsonPath + "/1")
+			ASSERT(DimSize(lowPassCutoff, ROWS) == 1, "Too many input values for parameter lowPassCutoff")
+			ASSERT(IsNumericWave(lowPassCutoff), "lowPassCutoff parameter must be numeric")
+			WAVE highPassCutoff = FormulaExecutor(jsonID, jsonPath = jsonPath + "/2")
+			ASSERT(DimSize(highPassCutoff, ROWS) == 1, "Too many input values for parameter highPassCutoff")
+			ASSERT(IsNumericWave(highPassCutoff), "highPassCutoff parameter must be numeric")
+			WAVE order = FormulaExecutor(jsonID, jsonPath = jsonPath + "/3")
+			ASSERT(DimSize(order, ROWS) == 1, "Too many input values for parameter order")
+			ASSERT(IsNumericWave(order), "order parameter must be numeric")
+			FilterIIR/HI=(highPassCutoff[0])/LO=(lowPassCutoff[0])/ORD=(order[0])/DIM=(ROWS) data
+			ASSERT(V_flag == 0, "FilterIIR returned error")
+			WAVE out = data
 			break
 		case "time":
 		case "xvalues":
