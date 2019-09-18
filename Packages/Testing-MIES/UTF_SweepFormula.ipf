@@ -599,7 +599,6 @@ Function testDifferentiales()
 	REQUIRE_EQUAL_WAVES(output, input, mode = WAVE_DATA)
 End
 
-
 static Function waveScaling()
 	Make/N=(10) waveX = p
 	SetScale x 0, 2, "unit", waveX
@@ -611,4 +610,29 @@ static Function waveScaling()
 	SetScale/P y 0, 4, "unitX", waveXY
 	WAVE wv = FormulaExecutor(FormulaParser("setscale(setscale([range(10),range(10)+1,range(10)+2,range(10)+3,range(10)+4,range(10)+5,range(10)+6,range(10)+7,range(10)+8,range(10)+9], x, 0, 2, unitX), y, 0, 4, unitX)"))
 	REQUIRE_EQUAL_WAVES(waveXY, wv, mode = WAVE_DATA | WAVE_SCALING | DATA_UNITS)
+End
+Function arrayExpansion()
+	Variable jsonID0, jsonID1
+
+	jsonID0 = FormulaParser("1…10")
+	jsonID1 = JSON_Parse("{\"…\":[1,10]}")
+	WARN_EQUAL_JSON(jsonID0, jsonID1)
+	WAVE output = FormulaExecutor(jsonID0)
+	Make/N=9/U/I/FREE testwave = 1 + p
+	REQUIRE_EQUAL_WAVES(output, testwave, mode = WAVE_DATA)
+
+	WAVE output = FormulaExecutor(FormulaParser("range(1,10)"))
+	REQUIRE_EQUAL_WAVES(output, testwave, mode = WAVE_DATA)
+
+	WAVE output = FormulaExecutor(FormulaParser("range(10)"))
+	Make/N=10/U/I/FREE testwave = p
+	REQUIRE_EQUAL_WAVES(output, testwave, mode = WAVE_DATA)
+
+	WAVE output = FormulaExecutor(FormulaParser("range(1,10,2)"))
+	Make/N=5/U/I/FREE testwave = 1 + p * 2
+	REQUIRE_EQUAL_WAVES(output, testwave, mode = WAVE_DATA)
+
+	WAVE output = FormulaExecutor(FormulaParser("1.5…10.5"))
+	Make/N=9/FREE floatwave = 1.5 + p
+	REQUIRE_EQUAL_WAVES(output, floatwave, mode = WAVE_DATA)
 End

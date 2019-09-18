@@ -15,6 +15,7 @@ static Constant STATE_ARRAYELEMENT = 9
 static Constant STATE_WHITESPACE = 10
 static Constant STATE_COMMENT = 11
 static Constant STATE_NEWLINE = 12
+static Constant STATE_OPERATION = 13
 
 static Constant ACTION_SKIP = 0
 static Constant ACTION_COLLECT = 1
@@ -40,6 +41,7 @@ Function FormulaParser(formula)
 	String tempPath
 	Variable action = -1
 	String token = ""
+	String buffer = ""
 	Variable state = -1
 	Variable lastState = -1
 	Variable lastCalculation = -1
@@ -54,8 +56,10 @@ Function FormulaParser(formula)
 	endif
 
 	for(i = 0; i < strlen(formula); i += 1)
+		token += formula[i]
+
 		// state
-		strswitch(formula[i])
+		strswitch(token)
 			case "/":
 				state = STATE_DIVISION
 				break
@@ -68,16 +72,19 @@ Function FormulaParser(formula)
 			case "+":
 				state = STATE_ADDITION
 				break
+			case "…":
+				state = STATE_OPERATION
+				break
 			case "(":
 				level += 1
 				break
 			case ")":
 				level -= 1
-				if(!cmpstr(token[0], "("))
+				if(!cmpstr(buffer[0], "("))
 					state = STATE_PARENTHESIS
 					break
 				endif
-				if(GrepString(token, "^[A-Za-z]"))
+				if(GrepString(buffer, "^[A-Za-z]"))
 					state = STATE_FUNCTION
 					break
 				endif
@@ -105,8 +112,11 @@ Function FormulaParser(formula)
 				state = STATE_WHITESPACE
 				break
 			default:
+				if(!(char2num(token) > 0))
+					continue
+				endif
 				state = STATE_COLLECT
-				ASSERT(GrepString(formula[i], "[A-Za-z0-9_\.;]"), "undefined pattern in formula")
+				ASSERT(GrepString(token, "[A-Za-z0-9_\.;]"), "undefined pattern in formula: " + formula[i,i+5])
 		endswitch
 		if(level > 0 || arrayLevel > 0)
 			state = STATE_DEFAULT
@@ -133,7 +143,8 @@ Function FormulaParser(formula)
 						break
 					endif
 				case STATE_DIVISION:
-					if(!cmpstr(token, ""))
+				case STATE_OPERATION:
+					if(!cmpstr(buffer, ""))
 						if(lastCalculation == -1)
 							action = ACTION_HIGHERORDER
 						else
@@ -188,8 +199,9 @@ Function FormulaParser(formula)
 		// action
 		switch(action)
 			case ACTION_COLLECT:
-				token += formula[i]
+				buffer += token
 			case ACTION_SKIP:
+				token = ""
 				continue
 			case ACTION_FUNCTION:
 				tempPath = jsonPath
@@ -198,9 +210,9 @@ Function FormulaParser(formula)
 					tempPath += "/" + num2str(JSON_GetArraySize(jsonID, jsonPath) - 1)
 				endif
 				tempPath += "/"
-				parenthesisStart = strsearch(token, "(", 0, 0)
-				tempPath += EscapeJsonPath(token[0, parenthesisStart - 1])
-				jsonIDdummy = FormulaParser(token[parenthesisStart + 1, inf])
+				parenthesisStart = strsearch(buffer, "(", 0, 0)
+				tempPath += EscapeJsonPath(buffer[0, parenthesisStart - 1])
+				jsonIDdummy = FormulaParser(buffer[parenthesisStart + 1, inf])
 				if(JSON_GetType(jsonIDdummy, "") != JSON_ARRAY)
 					JSON_AddTreeArray(jsonID, tempPath)
 				endif
@@ -208,14 +220,14 @@ Function FormulaParser(formula)
 				JSON_Release(jsonIDdummy)
 				break
 			case ACTION_PARENTHESIS:
-				JSON_AddJSON(jsonID, jsonPath, FormulaParser(token[1, inf]))
+				JSON_AddJSON(jsonID, jsonPath, FormulaParser(buffer[1, inf]))
 				break
 			case ACTION_HIGHERORDER:
 				lastCalculation = state
-				if(!!cmpstr(token, ""))
-					JSON_AddJSON(jsonID, jsonPath, FormulaParser(token))
+				if(!!cmpstr(buffer, ""))
+					JSON_AddJSON(jsonID, jsonPath, FormulaParser(buffer))
 				endif
-				jsonPath = EscapeJsonPath(formula[i])
+				jsonPath = EscapeJsonPath(token)
 				if(!cmpstr(jsonPath, ",") || !cmpstr(jsonPath, "]"))
 					jsonPath = ""
 				endif
@@ -226,9 +238,9 @@ Function FormulaParser(formula)
 				JSON_Release(jsonIDdummy)
 				break
 			case ACTION_ARRAY:
-				ASSERT(!cmpstr(token[0], "["), "Encountered array ending without array start.")
+				ASSERT(!cmpstr(buffer[0], "["), "Encountered array ending without array start.")
 				jsonIDarray = JSON_New()
-				jsonIDdummy = FormulaParser(token[1,inf])
+				jsonIDdummy = FormulaParser(buffer[1,inf])
 				if(JSON_GetType(jsonIDdummy, "") != JSON_ARRAY)
 					JSON_AddTreeArray(jsonIDarray, "")
 				endif
@@ -242,28 +254,29 @@ Function FormulaParser(formula)
 					JSON_AddObjects(jsonID, jsonPath) // prepare for decent
 					jsonPath += "/" + num2str(JSON_GetArraySize(jsonID, jsonPath) - 1)
 				endif
-				jsonPath += "/" + EscapeJsonPath(formula[i])
+				jsonPath += "/" + EscapeJsonPath(token)
 			case ACTION_ARRAYELEMENT:
 				JSON_AddTreeArray(jsonID, jsonPath)
 				lastCalculation = state
 			case ACTION_SAMECALCULATION:
 			default:
-				if(strlen(token) > 0)
-					JSON_AddJSON(jsonID, jsonPath, FormulaParser(token))
+				if(strlen(buffer) > 0)
+					JSON_AddJSON(jsonID, jsonPath, FormulaParser(buffer))
 				endif
 		endswitch
+		buffer = ""
 		token = ""
 	endfor
 
 	// last element (recursion)
-	if(!cmpstr(token, formula))
-		if(GrepString(token, "^(?i)[0-9]+(?:\.[0-9]+)?(?:[\+-]?E[0-9]+)?$"))
+	if(!cmpstr(buffer, formula))
+		if(GrepString(buffer, "^(?i)[0-9]+(?:\.[0-9]+)?(?:[\+-]?E[0-9]+)?$"))
 			JSON_AddVariable(jsonID, jsonPath, str2num(formula))
 		else
-			JSON_AddString(jsonID, jsonPath, token)
+			JSON_AddString(jsonID, jsonPath, buffer)
 		endif
-	elseif(strlen(token) > 0)
-		JSON_AddJSON(jsonID, jsonPath, FormulaParser(token))
+	elseif(strlen(buffer) > 0)
+		JSON_AddJSON(jsonID, jsonPath, FormulaParser(buffer))
 	endif
 
 	return jsonID
@@ -402,6 +415,22 @@ Function/WAVE FormulaExecutor(jsonID, [jsonPath, graph])
 			FormulaWaveScaleTransfer(wv, out, LAYERS, COLS)
 			FormulaWaveScaleTransfer(wv, out, CHUNKS, LAYERS)
 			Redimension/N=(-1, DimSize(out, LAYERS), DimSize(out, CHUNKS), 0)/E=1 out
+			break
+		case "range":
+			/// range (start[, stop[, step]])
+		case "…":
+			ASSERT(DimSize(wv, CHUNKS) <= 1, "Unhandled dimension")
+			ASSERT(DimSize(wv, LAYERS) <= 1, "Unhandled dimension")
+			ASSERT(DimSize(wv, COLS) <= 1, "Unhandled dimension")
+			if(DimSize(wv, ROWS) == 3)
+				Make/N=(ceil(abs((wv[0] - wv[1]) / wv[2])))/FREE out = wv[0] + p * wv[2]
+			elseif(DimSize(wv, ROWS) == 2)
+				Make/N=(abs(trunc(wv[0])-trunc(wv[1])))/FREE out = wv[0] + p
+			elseif(DimSize(wv, ROWS) == 1)
+				Make/N=(abs(trunc(wv[0])))/FREE out = p
+			else
+				ASSERT(0, "Operation accepts 2-3 operands")
+			endif
 			break
 		case "min":
 			ASSERT(DimSize(wv, LAYERS) <= 1, "Unhandled dimension")
