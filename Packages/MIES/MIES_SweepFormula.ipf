@@ -361,6 +361,7 @@ Function/WAVE FormulaExecutor(jsonID, [jsonPath, graph])
 		case "cursors":
 			WAVE/T wvT = JSON_GetTextWave(jsonID, jsonPath)
 			break
+		case "setscale":
 		case "sweeps":
 		case "channels":
 		case "data":
@@ -375,30 +376,44 @@ Function/WAVE FormulaExecutor(jsonID, [jsonPath, graph])
 		case "-":
 			ASSERT(DimSize(wv, ROWS) >= 2, "At least two operands are required")
 			MatrixOP/FREE out = (row(wv, 0) + sumCols((-1) * subRange(wv, 1, numRows(wv) - 1, 0, numCols(wv) - 1)))^t
+			FormulaWaveScaleTransfer(wv, out, COLS, ROWS)
+			FormulaWaveScaleTransfer(wv, out, LAYERS, COLS)
+			FormulaWaveScaleTransfer(wv, out, CHUNKS, LAYERS)
 			Redimension/N=(-1, DimSize(out, LAYERS), DimSize(out, CHUNKS), 0)/E=1 out
 			break
 		case "+":
 			MatrixOP/FREE out = sumCols(wv)^t
+			FormulaWaveScaleTransfer(wv, out, COLS, ROWS)
+			FormulaWaveScaleTransfer(wv, out, LAYERS, COLS)
+			FormulaWaveScaleTransfer(wv, out, CHUNKS, LAYERS)
 			Redimension/N=(-1, DimSize(out, LAYERS), DimSize(out, CHUNKS), 0)/E=1 out
 			break
 		case "~1": // division
 			ASSERT(DimSize(wv, ROWS) >= 2, "At least two operands are required")
 			MatrixOP/FREE out = (row(wv, 0) / productCols(subRange(wv, 1, numRows(wv) - 1, 0, numCols(wv) - 1)))^t
+			FormulaWaveScaleTransfer(wv, out, COLS, ROWS)
+			FormulaWaveScaleTransfer(wv, out, LAYERS, COLS)
+			FormulaWaveScaleTransfer(wv, out, CHUNKS, LAYERS)
 			Redimension/N=(-1, DimSize(out, LAYERS), DimSize(out, CHUNKS), 0)/E=1 out
 			break
 		case "*":
 			MatrixOP/FREE out = productCols(wv)^t
+			FormulaWaveScaleTransfer(wv, out, COLS, ROWS)
+			FormulaWaveScaleTransfer(wv, out, LAYERS, COLS)
+			FormulaWaveScaleTransfer(wv, out, CHUNKS, LAYERS)
 			Redimension/N=(-1, DimSize(out, LAYERS), DimSize(out, CHUNKS), 0)/E=1 out
 			break
 		case "min":
 			ASSERT(DimSize(wv, LAYERS) <= 1, "Unhandled dimension")
 			ASSERT(DimSize(wv, CHUNKS) <= 1, "Unhandled dimension")
 			MatrixOP/FREE out = minCols(wv)^t
+			FormulaWaveScaleTransfer(wv, out, COLS, ROWS)
 			break
 		case "max":
 			ASSERT(DimSize(wv, LAYERS) <= 1, "Unhandled dimension")
 			ASSERT(DimSize(wv, CHUNKS) <= 1, "Unhandled dimension")
 			MatrixOP/FREE out = maxCols(wv)^t
+			FormulaWaveScaleTransfer(wv, out, COLS, ROWS)
 			break
 		case "avg":
 		case "mean":
@@ -411,11 +426,13 @@ Function/WAVE FormulaExecutor(jsonID, [jsonPath, graph])
 			ASSERT(DimSize(wv, LAYERS) <= 1, "Unhandled dimension")
 			ASSERT(DimSize(wv, CHUNKS) <= 1, "Unhandled dimension")
 			MatrixOP/FREE out = (sumCols(magSqr(wv - rowRepeat(averageCols(wv), numRows(wv))))/(numRows(wv) - 1))^t
+			FormulaWaveScaleTransfer(wv, out, COLS, ROWS)
 			break
 		case "stdev":
 			ASSERT(DimSize(wv, LAYERS) <= 1, "Unhandled dimension")
 			ASSERT(DimSize(wv, CHUNKS) <= 1, "Unhandled dimension")
 			MatrixOP/FREE out = (sqrt(sumCols(powR(wv - rowRepeat(averageCols(wv), numRows(wv)), 2))/(numRows(wv) - 1)))^t
+			FormulaWaveScaleTransfer(wv, out, COLS, ROWS)
 			break
 		case "derivative":
 			Make/FREE out
@@ -431,11 +448,64 @@ Function/WAVE FormulaExecutor(jsonID, [jsonPath, graph])
 			CopyScales wv, out
 			SetScale/P x, DimOffset(wv, ROWS), DimDelta(wv, ROWS), "dx", out
 			break
+		case "time":
+		case "xvalues":
+			Make/FREE/N=(DimSize(wv, ROWS), DimSize(wv, COLS), DimSize(wv, LAYERS), DimSize(wv, CHUNKS)) out = DimOffset(wv, ROWS) + p * DimDelta(wv, ROWS)
+			break
+		case "setscale":
+			/// `setscale(data, [dim, [dimOffset, [dimDelta[, unit]]]])
+			numIndices = JSON_GetArraySize(jsonID, jsonPath)
+			ASSERT(numIndices < 6, "Maximum number of arguments exceeded.")
+			ASSERT(numIndices > 1, "At least two arguments.")
+			WAVE data = FormulaExecutor(jsonID, jsonPath = jsonPath + "/0", graph = graph)
+			WAVE/T dimension = FormulaExecutor(jsonID, jsonPath = jsonPath + "/1")
+			ASSERT(DimSize(dimension, ROWS) == 1 && GrepString(dimension[0], "[x,y,z,t]") , "undefined input for dimension")
+
+			if(numIndices >= 3)
+				WAVE offset = FormulaExecutor(jsonID, jsonPath = jsonPath + "/2")
+				ASSERT(DimSize(offset, ROWS) == 1, "wrong usage of argument")
+			else
+				Make/FREE/N=1 offset  = {0}
+			endif
+			if(numIndices >= 4)
+				WAVE delta = FormulaExecutor(jsonID, jsonPath = jsonPath + "/3")
+				ASSERT(DimSize(delta, ROWS) == 1, "wrong usage of argument")
+			else
+				Make/FREE/N=1 delta = {1}
+			endif
+			if(numIndices == 5)
+				WAVE/T unit = FormulaExecutor(jsonID, jsonPath = jsonPath + "/4")
+				ASSERT(DimSize(unit, ROWS) == 1, "wrong usage of argument")
+			else
+				Make/FREE/N=1/T unit = {""}
+			endif
+
+			strswitch(dimension[0])
+				case "x":
+					SetScale/P x, offset[0], delta[0], unit[0], data
+					ASSERT(DimDelta(data, ROWS) == delta[0], "Encountered Igor Bug.")
+					break
+				case "y":
+					SetScale/P y, offset[0], delta[0], unit[0], data
+					ASSERT(DimDelta(data, COLS) == delta[0], "Encountered Igor Bug.")
+					break
+				case "z":
+					SetScale/P z, offset[0], delta[0], unit[0], data
+					ASSERT(DimDelta(data, LAYERS) == delta[0], "Encountered Igor Bug.")
+					break
+				case "t":
+					SetScale/P t, offset[0], delta[0], unit[0], data
+					ASSERT(DimDelta(data, CHUNKS) == delta[0], "Encountered Igor Bug.")
+					break
+			endswitch
+			WAVE out = data
+			break
 		case "merge":
 			ASSERT(DimSize(wv, LAYERS) <= 1, "Unhandled dimension")
 			ASSERT(DimSize(wv, CHUNKS) <= 1, "Unhandled dimension")
 			MatrixOP/FREE transposed = wv^T
 			Extract/FREE transposed, out, (p < (JSON_GetType(jsonID, jsonPath + "/" + num2str(q)) != JSON_ARRAY ? 1 : JSON_GetArraySize(jsonID, jsonPath + "/" + num2str(q))))
+			SetScale/P x, 0, 1, "", out
 			break
 		case "channels":
 			/// `channels([str name]+)` converts a named channel from string to numbers.

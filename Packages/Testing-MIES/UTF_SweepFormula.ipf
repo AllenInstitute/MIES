@@ -598,3 +598,17 @@ Function testDifferentiales()
 	Deletepoints/M=(ROWS)   0, 1, input, output
 	REQUIRE_EQUAL_WAVES(output, input, mode = WAVE_DATA)
 End
+
+
+static Function waveScaling()
+	Make/N=(10) waveX = p
+	SetScale x 0, 2, "unit", waveX
+	WAVE wv = FormulaExecutor(FormulaParser("setscale([0,1,2,3,4,5,6,7,8,9], x, 0, 2, unit)"))
+	REQUIRE_EQUAL_WAVES(waveX, wv, mode = WAVE_DATA)
+
+	Make/N=(10, 10) waveXY = p + q
+	SetScale/P x 0, 2, "unitX", waveXY
+	SetScale/P y 0, 4, "unitX", waveXY
+	WAVE wv = FormulaExecutor(FormulaParser("setscale(setscale([range(10),range(10)+1,range(10)+2,range(10)+3,range(10)+4,range(10)+5,range(10)+6,range(10)+7,range(10)+8,range(10)+9], x, 0, 2, unitX), y, 0, 4, unitX)"))
+	REQUIRE_EQUAL_WAVES(waveXY, wv, mode = WAVE_DATA | WAVE_SCALING | DATA_UNITS)
+End
