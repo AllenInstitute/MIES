@@ -30,6 +30,20 @@ static Constant ACTION_ARRAY = 8
 /// Regular expression which extracts both formulas from `$a vs $b`
 static StrConstant SWEEPFORMULA_REGEXP = "^(.+?)(?:\\bvs\\b(.+))?$"
 
+/// @brief preparse user input to correct formula patterns
+///
+/// @return parsed formula
+Function/S FormulaPreParser(formula)
+	String formula
+
+	ASSERT(CountSubstrings(formula, "(") == CountSubstrings(formula, ")"), "Bracket missmatch in formula.")
+	ASSERT(CountSubstrings(formula, "[") == CountSubstrings(formula, "]"), "Array bracket missmatch in formula.")
+
+	formula = ReplaceString("...", formula, "…")
+
+	return formula
+End
+
 /// @brief serialize a string formula into JSON
 ///
 /// @param formula  string formula
@@ -660,7 +674,7 @@ Function FormulaPlotter(graph, formula, [dfr])
 	SplitString/E=SWEEPFORMULA_REGEXP formula, formula0, formula1
 	ASSERT(V_Flag == 2 || V_flag == 1, "Display command must follow the \"y[ vs x]\" pattern.")
 	if(V_Flag == 2)
-		WAVE wv = FormulaExecutor(FormulaParser(formula1), graph = graph)
+		WAVE wv = FormulaExecutor(FormulaParser(FormulaPreParser(formula1)), graph = graph)
 		ASSERT(WaveExists(wv), "Error in x part of formula.")
 		Redimension/N=(-1, DimSize(wv, LAYERS) * DimSize(wv, COLS))/E=1 wv
 		if(WaveType(wv, 1) == 2)
@@ -670,7 +684,7 @@ Function FormulaPlotter(graph, formula, [dfr])
 		endif
 		WaveClear wv
 	endif
-	WAVE wv = FormulaExecutor(FormulaParser(formula0), graph = graph)
+	WAVE wv = FormulaExecutor(FormulaParser(FormulaPreParser(formula0)), graph = graph)
 	ASSERT(WaveExists(wv), "Error in y part of formula.")
 	Redimension/N=(-1, max(1, DimSize(wv, LAYERS)) * DimSize(wv, COLS))/E=1 wv
 	if(WaveType(wv, 1) == 2)
@@ -817,13 +831,13 @@ Function button_sweepFormula_check(ba) : ButtonControl
 			endif
 
 			try
-				JSON_Release(FormulaParser(yFormula))
+				JSON_Release(FormulaParser(FormulaPreParser(yFormula)))
 				status = 1
 				if(numFormulae == 1)
 					return 0
 				endif
 				DebugPrint("y part of formula is valid.")
-				JSON_Release(FormulaParser(xFormula))
+				JSON_Release(FormulaParser(FormulaPreParser(xFormula)))
 			catch
 				status = 0
 			endtry
