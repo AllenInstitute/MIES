@@ -465,6 +465,12 @@ Function/WAVE FormulaExecutor(jsonID, [jsonPath, graph])
 			MatrixOP/FREE out = averageCols(wv)^t
 			FormulaWaveScaleTransfer(wv, out, COLS, ROWS)
 			break
+		case "rms":
+			ASSERT(DimSize(wv, LAYERS) <= 1, "Unhandled dimension")
+			ASSERT(DimSize(wv, CHUNKS) <= 1, "Unhandled dimension")
+			MatrixOP/FREE out = sqrt(averageCols(magsqr(wv)))^t
+			FormulaWaveScaleTransfer(wv, out, COLS, ROWS)
+			break
 		case "variance":
 			ASSERT(DimSize(wv, LAYERS) <= 1, "Unhandled dimension")
 			ASSERT(DimSize(wv, CHUNKS) <= 1, "Unhandled dimension")

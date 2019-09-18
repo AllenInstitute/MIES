@@ -476,6 +476,17 @@ Function average()
 	REQUIRE_EQUAL_WAVES(testwave, output, mode = WAVE_DATA)
 End
 
+Function rootmeansquare()
+	Make/N=(10)/FREE input = p
+	WaveStats/Q input
+	WAVE output = FormulaExecutor(FormulaParser("rms([0,1,2,3,4,5,6,7,8,9])"))
+	REQUIRE_EQUAL_VAR(output[0], V_rms)
+
+	WAVE output = FormulaExecutor(FormulaParser("rms(range(0,10),range(0,10))"))
+	REQUIRE_EQUAL_VAR(output[0], V_rms)
+	REQUIRE_EQUAL_VAR(output[0], output[1])
+End
+
 Function MIES_channel()
 
 	Make/FREE input = {{0}, {NaN}}
