@@ -190,14 +190,6 @@ Function BSP_DynamicStartupSettings(mainPanel)
 	SetControlProcedures(bsPanel, "slider_BrowserSettings_dDAQ;", "BSP_SliderProc_ChangedSetting")
 	SetControlProcedures(bsPanel, "button_TimeAlignment_Action", BSP_AddBrowserPrefix(mainPanel, "DoTimeAlignment"))
 
-	// sweep formula tab
-	DFREF dfr = BSP_GetFolder(mainPanel, MIES_BSP_PANEL_FOLDER)
-	String/G dfr:sweepFormulaParseResult = ""
-	SetVariable setvar_sweepFormula_parseResult, win = $bsPanel, value = $(GetDataFolder(1, dfr) + "sweepFormulaParseResult")
-	Variable/G dfr:sweepFormulaParse = 0
-	ValDisplay status_sweepFormula_parser, value = #(GetDataFolder(1, dfr) + "sweepFormulaParse == 1")
-	Notebook $bsPanel#sweepFormula_formula text="sweeps(\r\tcursors(A,B),\r\tchannel(AD),\r\t0;1;2;3;4;5\r)\r"
-
 	if(BSP_IsDataBrowser(mainPanel))
 		EnableControls(bsPanel, BROWSERSETTINGS_CONTROLS_DATABROWSER)
 		DisableControls(bsPanel, BROWSERSETTINGS_CONTROLS_SWEEPBROWSER)
@@ -266,6 +258,18 @@ Function BSP_BindListBoxWaves(win)
 	WAVE listBoxSelWave   = GetAnaFuncDashboardselWave(dfr)
 	WAVE/T listBoxWave    = GetAnaFuncDashboardListWave(dfr)
 	ListBox list_dashboard, win=$bsPanel, listWave=listBoxWave, colorWave=listBoxColorWave, selWave=listBoxSelWave
+
+	// sweep formula tab
+	DFREF dfr = BSP_GetFolder(mainPanel, MIES_BSP_PANEL_FOLDER)
+	String/G dfr:sweepFormulaParseResult = ""
+	SetVariable setvar_sweepFormula_parseResult, win = $bsPanel, value = $(GetDataFolder(1, dfr) + "sweepFormulaParseResult")
+	Variable/G dfr:sweepFormulaParse = 1
+	ValDisplay status_sweepFormula_parser, win = $bsPanel, value = #(GetDataFolder(1, dfr) + "sweepFormulaParse == 0")
+	String/G dfr:sweepFormulaText = "data(\r\tcursors(A,B),\r\tchannels(AD),\r\tsweeps(0;1;2;3;4;5)\r)\r"
+	SVAR formula = dfr:sweepFormulaText
+	Notebook $bsPanel#sweepFormula_formula selection={startOfFile, endOfFile},setData=""
+	Notebook $bsPanel#sweepFormula_formula text=(formula)
+	Variable/G dfr:sweepFormulaJSONid
 End
 
 /// @brief add SB_* or DB_* prefix to the input string depending on current window

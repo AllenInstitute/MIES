@@ -30,14 +30,23 @@ static Constant ACTION_ARRAY = 8
 /// Regular expression which extracts both formulas from `$a vs $b`
 static StrConstant SWEEPFORMULA_REGEXP = "^(.+?)(?:\\bvs\\b(.+))?$"
 
+Function FormulaCheck(condition, message)
+	Variable condition
+	String message
+
+	if(!condition)
+		Abort message
+	endif
+End
+
 /// @brief preparse user input to correct formula patterns
 ///
 /// @return parsed formula
 Function/S FormulaPreParser(formula)
 	String formula
 
-	ASSERT(CountSubstrings(formula, "(") == CountSubstrings(formula, ")"), "Bracket missmatch in formula.")
-	ASSERT(CountSubstrings(formula, "[") == CountSubstrings(formula, "]"), "Array bracket missmatch in formula.")
+	FormulaCheck(CountSubstrings(formula, "(") == CountSubstrings(formula, ")"), "Bracket missmatch in formula.")
+	FormulaCheck(CountSubstrings(formula, "[") == CountSubstrings(formula, "]"), "Array bracket missmatch in formula.")
 
 	formula = ReplaceString("...", formula, "…")
 
@@ -130,7 +139,7 @@ Function FormulaParser(formula)
 					continue
 				endif
 				state = STATE_COLLECT
-				ASSERT(GrepString(token, "[A-Za-z0-9_\.;]"), "undefined pattern in formula: " + formula[i,i+5])
+				FormulaCheck(GrepString(token, "[A-Za-z0-9_\.;]"), "undefined pattern in formula: " + formula[i,i+5])
 		endswitch
 		if(level > 0 || arrayLevel > 0)
 			state = STATE_DEFAULT
@@ -205,7 +214,7 @@ Function FormulaParser(formula)
 					action = ACTION_COLLECT
 					break
 				default:
-					ASSERT(0, "Encountered undefined transition " + num2str(state))
+					FormulaCheck(0, "Encountered undefined transition " + num2str(state))
 			endswitch
 			lastState = state
 		endif
@@ -254,7 +263,7 @@ Function FormulaParser(formula)
 				JSON_Release(jsonIDdummy)
 				break
 			case ACTION_ARRAY:
-				ASSERT(!cmpstr(buffer[0], "["), "Encountered array ending without array start.")
+				FormulaCheck(!cmpstr(buffer[0], "["), "Encountered array ending without array start.")
 				jsonIDarray = JSON_New()
 				jsonIDdummy = FormulaParser(buffer[1,inf])
 				if(JSON_GetType(jsonIDdummy, "") != JSON_ARRAY)
@@ -840,22 +849,30 @@ End
 Function button_sweepFormula_check(ba) : ButtonControl
 	STRUCT WMButtonAction &ba
 
-	String mainPanel, bsPanel, formula, yFormula, xFormula
-	Variable numFormulae
+	String mainPanel, bsPanel, yFormula, xFormula
+	Variable numFormulae, jsonIDx, jsonIDy
 
 	switch( ba.eventCode )
 		case 2: // mouse up
 			// click code here
 			mainPanel = GetMainWindow(ba.win)
 			bsPanel = BSP_GetPanel(mainPanel)
+			DFREF dfr = BSP_GetFolder(mainPanel, MIES_BSP_PANEL_FOLDER)
+
+			SVAR/Z formula = dfr:sweepFormulaText
+			ASSERT(SVAR_EXISTS(formula), "Global variable sweepFormulaText not found")
 			Notebook $bsPanel#sweepFormula_formula getData=2
 			formula = S_Value
-			DFREF dfr = BSP_GetFolder(mainPanel, MIES_BSP_PANEL_FOLDER)
+
 			NVAR/Z status = dfr:sweepFormulaParse
 			ASSERT(NVAR_EXISTS(status), "Global variable sweepFormulaParse not found")
 			status = 0
 			SVAR/Z result = dfr:sweepFormulaParseResult
 			ASSERT(SVAR_EXISTS(result), "Global variable sweepFormulaParseResult not found. Can not evaluate parsing status.")
+			result = ""
+
+			NVAR/Z jsonID = dfr:sweepFormulaJSONid
+			ASSERT(NVAR_EXISTS(jsonID), "Global variable sweepFormulaJSONid not found. Can not evaluate parsing status.")
 
 			SplitString/E=SWEEPFORMULA_REGEXP formula, yFormula, xFormula
 			numFormulae = V_flag
@@ -865,15 +882,24 @@ Function button_sweepFormula_check(ba) : ButtonControl
 			endif
 
 			try
-				JSON_Release(FormulaParser(FormulaPreParser(yFormula)))
-				status = 1
+				jsonIDy = FormulaParser(FormulaPreParser(yFormula))
 				if(numFormulae == 1)
+					jsonID = jsonIDy
 					return 0
 				endif
+				JSON_Release(jsonID, ignoreErr = 1)
+				jsonID = JSON_New()
+				JSON_AddObjects(jsonID, "")
+				JSON_AddJSON(jsonID, "/y", jsonIDy)
+				JSON_Release(jsonIDy)
 				DebugPrint("y part of formula is valid.")
-				JSON_Release(FormulaParser(FormulaPreParser(xFormula)))
+				jsonIDx = FormulaParser(FormulaPreParser(xFormula))
+				JSON_AddJSON(jsonID, "/x", jsonIDx)
+				JSON_Release(jsonIDx)
 			catch
-				status = 0
+				result = "Error Parsing Formula"
+				status = 1
+				JSON_Release(jsonID, ignoreErr = 1)
 			endtry
 			break
 		case -1: // control being killed
@@ -939,6 +965,45 @@ Function FormulaWaveScaleTransfer(source, dest, dimSource, dimDest)
 			break
 		default:
 			return 1
+	endswitch
+
+	return 0
+End
+
+Function SF_TabProc_Formula(tca) : TabControl
+	STRUCT WMTabControlAction &tca
+
+	String mainPanel, bsPanel
+
+	ACL_DisplayTab(tca)
+
+	switch( tca.eventCode )
+		case 2: // mouse up
+			mainPanel = GetMainWindow(tca.win)
+			bsPanel = BSP_GetPanel(mainPanel)
+
+			DFREF dfr = BSP_GetFolder(mainPanel, MIES_BSP_PANEL_FOLDER)
+
+			Notebook $bsPanel#sweepFormula_formula visible=(tca.tab == 0)
+			Notebook $bsPanel#sweepFormula_json visible=(tca.tab == 1)
+			Notebook $bsPanel#sweepFormula_help visible=(tca.tab == 2)
+
+			Notebook $bsPanel#sweepFormula_json selection={startOfFile, endOfFile},setData=""
+			if(tca.tab == 1)
+				PGC_SetAndActivateControl(bsPanel, "button_sweepFormula_check")
+			endif
+			NVAR status = dfr:sweepFormulaParse
+			if(status != 0) // error
+				return 1
+			endif
+
+			if(tca.tab == 1) // JSON
+				NVAR/Z jsonID = dfr:sweepFormulaJSONid
+				Notebook $bsPanel#sweepFormula_json text=(ReplaceString("\n", JSON_Dump(jsonID, indent = 2), "\r"))
+			endif
+			break
+		default:
+			break
 	endswitch
 
 	return 0
