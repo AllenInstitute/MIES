@@ -319,7 +319,7 @@ Function SB_UpdateSweepPlot(win, [newSweep])
 	string win
 	variable newSweep
 
-	string device, dataFolder, graph, bsPanel, scPanel, lbPanel
+	string device, dataFolder, graph, bsPanel, scPanel, lbPanel, experiment
 	variable mapIndex, i, numEntries, sweepNo, highlightSweep, traceIndex, currentSweep
 
 	graph = GetMainWindow(win)
@@ -375,6 +375,7 @@ Function SB_UpdateSweepPlot(win, [newSweep])
 
 		dataFolder = sweepMap[mapIndex][%DataFolder]
 		device     = sweepMap[mapIndex][%Device]
+		experiment = sweepMap[mapIndex][%FileName]
 		sweepNo    = str2num(sweepMap[mapIndex][%Sweep])
 
 		WAVE/Z activeHS = OVS_ParseIgnoreList(graph, highlightSweep, index=mapIndex)
@@ -393,7 +394,7 @@ Function SB_UpdateSweepPlot(win, [newSweep])
 		WAVE configWave = GetAnalysisConfigWave(dataFolder, device, sweepNo)
 		WAVE textualValues = GetAnalysLBTextualValues(dataFolder, device)
 
-		CreateTiledChannelGraph(graph, configWave, sweepNo, numericalValues, textualValues, tgs, sweepDFR, axisLabelCache, traceIndex, channelSelWave=sweepChannelSel)
+		CreateTiledChannelGraph(graph, configWave, sweepNo, numericalValues, textualValues, tgs, sweepDFR, axisLabelCache, traceIndex, experiment, channelSelWave=sweepChannelSel)
 		AR_UpdateTracesIfReq(graph, sweepDFR, numericalValues, sweepNo)
 	endfor
 

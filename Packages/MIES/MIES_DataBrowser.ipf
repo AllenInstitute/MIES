@@ -336,7 +336,7 @@ Function DB_UpdateSweepPlot(win)
 	string win
 
 	variable numEntries, i, sweepNo, highlightSweep, referenceTime, traceIndex
-	string device, mainPanel, lbPanel, bsPanel, scPanel, graph
+	string device, mainPanel, lbPanel, bsPanel, scPanel, graph, experiment
 
 	if(BSP_MainPanelNeedsUpdate(win))
 		DoAbortNow("Can not display data. The Databrowser panel is too old to be usable. Please close it and open a new one.")
@@ -344,11 +344,12 @@ Function DB_UpdateSweepPlot(win)
 
 	referenceTime = DEBUG_TIMER_START()
 
-	mainPanel = GetMainWindow(win)
-	lbPanel   = BSP_GetNotebookSubWindow(win)
-	bsPanel   = BSP_GetPanel(win)
-	scPanel   = BSP_GetSweepControlsPanel(win)
-	graph     = DB_GetMainGraph(win)
+	mainPanel  = GetMainWindow(win)
+	lbPanel    = BSP_GetNotebookSubWindow(win)
+	bsPanel    = BSP_GetPanel(win)
+	scPanel    = BSP_GetSweepControlsPanel(win)
+	graph      = DB_GetMainGraph(win)
+	experiment = GetExperimentName()
 
 	WAVE axesRanges = GetAxesRanges(graph)
 
@@ -410,7 +411,7 @@ Function DB_UpdateSweepPlot(win)
 		DB_SplitSweepsIfReq(win, sweepNo)
 		WAVE config = GetConfigWave(sweepWave)
 
-		CreateTiledChannelGraph(graph, config, sweepNo, numericalValues, textualValues, tgs, dfr, axisLabelCache, traceIndex, channelSelWave=sweepChannelSel)
+		CreateTiledChannelGraph(graph, config, sweepNo, numericalValues, textualValues, tgs, dfr, axisLabelCache, traceIndex, experiment, channelSelWave=sweepChannelSel)
 		AR_UpdateTracesIfReq(graph, dfr, numericalValues, sweepNo)
 	endfor
 
