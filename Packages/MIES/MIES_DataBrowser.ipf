@@ -571,6 +571,7 @@ Function DB_UpdateToLastSweep(win)
 
 	OVS_ChangeSweepSelectionState(win, CHECKBOX_SELECTED, sweepNo=last)
 	DB_UpdateSweepPlot(win)
+	PGC_SetAndActivateControl(bsPanel, "button_sweepFormula_display")
 End
 
 static Function DB_UpdateOverlaySweepWaves(win)
