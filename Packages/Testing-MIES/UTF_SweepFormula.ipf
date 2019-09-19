@@ -44,6 +44,16 @@ Function primitiveOperations()
 	jsonID1 = FormulaParser("1/2")
 	WARN_EQUAL_JSON(jsonID0, jsonID1)
 	REQUIRE_EQUAL_VAR(FormulaExecutor(jsonID1)[0], 1/2)
+
+	jsonID0 = JSON_Parse("{\"-\":[1]}")
+	jsonID1 = FormulaParser("-1")
+	WARN_EQUAL_JSON(jsonID0, jsonID1)
+	REQUIRE_EQUAL_VAR(FormulaExecutor(jsonID1)[0], -1)
+
+	jsonID0 = JSON_Parse("{\"+\":[1]}")
+	jsonID1 = FormulaParser("+1")
+	WARN_EQUAL_JSON(jsonID0, jsonID1)
+	REQUIRE_EQUAL_VAR(FormulaExecutor(jsonID1)[0], +1)
 End
 
 Function arrayOperations(array2d, numeric)

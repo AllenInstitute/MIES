@@ -248,7 +248,9 @@ Function FormulaParser(formula)
 				jsonIDdummy = jsonID
 				jsonID = JSON_New()
 				JSON_AddTreeArray(jsonID, jsonPath)
-				JSON_AddJSON(jsonID, jsonPath, jsonIDdummy)
+				if(JSON_GetType(jsonIDdummy, "") != JSON_NULL)
+					JSON_AddJSON(jsonID, jsonPath, jsonIDdummy)
+				endif
 				JSON_Release(jsonIDdummy)
 				break
 			case ACTION_ARRAY:
@@ -402,8 +404,11 @@ Function/WAVE FormulaExecutor(jsonID, [jsonPath, graph])
 	/// @{
 	strswitch(operations[0])
 		case "-":
-			ASSERT(DimSize(wv, ROWS) >= 2, "At least two operands are required")
-			MatrixOP/FREE out = (row(wv, 0) + sumCols((-1) * subRange(wv, 1, numRows(wv) - 1, 0, numCols(wv) - 1)))^t
+			if(DimSize(wv, ROWS) == 1)
+				MatrixOP/FREE out = sumCols((-1) * wv)^t
+			else
+				MatrixOP/FREE out = (row(wv, 0) + sumCols((-1) * subRange(wv, 1, numRows(wv) - 1, 0, numCols(wv) - 1)))^t
+			endif
 			FormulaWaveScaleTransfer(wv, out, COLS, ROWS)
 			FormulaWaveScaleTransfer(wv, out, LAYERS, COLS)
 			FormulaWaveScaleTransfer(wv, out, CHUNKS, LAYERS)
