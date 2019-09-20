@@ -235,6 +235,7 @@ Constant INITIAL_KEY_WAVE_COL_COUNT = 4
 StrConstant AUTOBIAS_LAST_INVOCATION_KEY   = "AutoBiasLastInvocation"
 StrConstant DIMENSION_SCALING_LAST_INVOC   = "DimensionScalingLastInvocation"
 StrConstant PRESSURE_CTRL_LAST_INVOC       = "PressureControlLastInvocation"
+StrConstant INDEX_ON_TP_START              = "IndexOnTestPulseStart"
 /// @}
 
 /// @name Modes for SaveExperimentSpecial
