@@ -139,7 +139,7 @@ Function FormulaParser(formula)
 					continue
 				endif
 				state = STATE_COLLECT
-				FormulaCheck(GrepString(token, "[A-Za-z0-9_\.;]"), "undefined pattern in formula: " + formula[i,i+5])
+				FormulaCheck(GrepString(token, "[A-Za-z0-9_\.:;]"), "undefined pattern in formula: " + formula[i,i+5])
 		endswitch
 		if(level > 0 || arrayLevel > 0)
 			state = STATE_DEFAULT
@@ -404,6 +404,7 @@ Function/WAVE FormulaExecutor(jsonID, [jsonPath, graph])
 		case "sweeps":
 		case "channels":
 		case "data":
+		case "wave":
 			break
 		default:
 			WAVE wv = FormulaExecutor(jsonID, jsonPath = jsonPath, graph = graph)
@@ -580,6 +581,11 @@ Function/WAVE FormulaExecutor(jsonID, [jsonPath, graph])
 					break
 			endswitch
 			WAVE out = data
+			break
+		case "wave":
+			ASSERT(JSON_GetArraySize(jsonID, jsonPath) == 1, "First argument is wave")
+			WAVE/T wavelocation = FormulaExecutor(jsonID, jsonPath = jsonPath + "/0")
+			WAVE out = $(wavelocation[0])
 			break
 		case "merge":
 			ASSERT(DimSize(wv, LAYERS) <= 1, "Unhandled dimension")

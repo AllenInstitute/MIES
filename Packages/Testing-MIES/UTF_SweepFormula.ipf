@@ -657,3 +657,12 @@ Function arrayExpansion()
 	Make/N=9/FREE floatwave = 1.5 + p
 	REQUIRE_EQUAL_WAVES(output, floatwave, mode = WAVE_DATA)
 End
+
+Function waveGetterFunction()
+	Make/O/N=(10) wave0 = p
+
+	WAVE wave1 = FormulaExecutor(FormulaParser("wave(wave0)"))
+	WAVE wave2 = FormulaExecutor(FormulaParser("range(0,10)"))
+	REQUIRE_EQUAL_WAVES(wave0, wave2, mode = WAVE_DATA)
+	REQUIRE_EQUAL_WAVES(wave1, wave2, mode = WAVE_DATA)
+End
