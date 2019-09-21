@@ -412,7 +412,7 @@ Function/WAVE FormulaExecutor(jsonID, [jsonPath, graph])
 
 	/// @name SweepFormulaOperations
 	/// @{
-	strswitch(operations[0])
+	strswitch(LowerStr(operations[0]))
 		case "-":
 			if(DimSize(wv, ROWS) == 1)
 				MatrixOP/FREE out = sumCols((-1) * wv)^t
