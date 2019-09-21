@@ -813,6 +813,10 @@ Function/WAVE GetSweepForFormula(graph, rangeStart, rangeEnd, channelType, chann
 		DebugPrint("No matching sweeps for channel type: " + StringFromList(channelType, ITC_CHANNEL_NAMES))
 		return $""
 	endif
+
+	// we want the sweeps sorted with ascending sweep numbers
+	SortColumns/A/DIML/KNDX={FindDimLabel(traces, COLS, "sweepNumber")} sortWaves=traces
+
 	Make/N=(DimSize(traces, ROWS))/FREE sweepListIndex
 	for(i = 0; i < DimSize(traces, ROWS); i += 1)
 		FindValue/V=(trunc(str2num(traces[i][%sweepNumber])))/T=(0.1) sweeps
