@@ -206,7 +206,7 @@ Function DB_UpdateSweepPlot(win)
 	string win
 
 	variable numEntries, i, sweepNo, highlightSweep, referenceTime, traceIndex
-	string device, mainPanel, lbPanel, bsPanel, scPanel, graph, csrA, csrB
+	string device, mainPanel, lbPanel, bsPanel, scPanel, graph
 
 	if(BSP_MainPanelNeedsUpdate(win))
 		DoAbortNow("Can not display data. The Databrowser panel is too old to be usable. Please close it and open a new one.")
@@ -222,8 +222,7 @@ Function DB_UpdateSweepPlot(win)
 
 	WAVE axesRanges = GetAxesRanges(graph)
 
-	csrA = CsrInfo(A, graph)
-	csrB = CsrInfo(B, graph)
+	WAVE/T cursorInfos = GetCursorInfos(graph)
 	RemoveTracesFromGraph(graph)
 
 	if(!BSP_HasBoundDevice(win))
@@ -285,8 +284,7 @@ Function DB_UpdateSweepPlot(win)
 		AR_UpdateTracesIfReq(graph, dfr, numericalValues, sweepNo)
 	endfor
 
-	RestoreCursor(graph, csrA)
-	RestoreCursor(graph, csrB)
+	RestoreCursors(graph, cursorInfos)
 
 	DEBUGPRINT_ELAPSED(referenceTime)
 

@@ -2952,8 +2952,6 @@ Function WBP_ShowFFTSpectrumIfReq(segmentWave, sweep)
 	DEBUGPRINT("sweep=", var=sweep)
 
 	string extPanel, graphMag, graphPhase, trace
-	string cursorInfoMagA, cursorInfoMagB
-	string cursorInfoPhaseA, cursorInfoPhaseB
 	variable red, green, blue
 
 	if(!WindowExists(panel))
@@ -3014,11 +3012,8 @@ Function WBP_ShowFFTSpectrumIfReq(segmentWave, sweep)
 
 	WAVE axesRangesMag   = GetAxesRanges(graphMag)
 	WAVE axesRangesPhase = GetAxesRanges(graphPhase)
-
-	cursorInfoMagA   = CsrInfo(A, graphMag)
-	cursorInfoMagB   = CsrInfo(B, graphMag)
-	cursorInfoPhaseA = CsrInfo(A, graphPhase)
-	cursorInfoPhaseB = CsrInfo(B, graphPhase)
+	WAVE/T cursorInfosMag = GetCursorInfos(graphMag)
+	WAVE/T cursorInfosPhase = GetCursorInfos(graphPhase)
 
 	if(sweep == 0)
 		RemoveTracesFromGraph(graphMag)
@@ -3041,12 +3036,8 @@ Function WBP_ShowFFTSpectrumIfReq(segmentWave, sweep)
 
 	SetAxesRanges(graphMag, axesRangesMag)
 	SetAxesRanges(graphPhase, axesRangesPhase)
-
-	RestoreCursor(graphMag, cursorInfoMagA)
-	RestoreCursor(graphMag, cursorInfoMagB)
-
-	RestoreCursor(graphPhase, cursorInfoPhaseA)
-	RestoreCursor(graphPhase, cursorInfoPhaseB)
+	RestoreCursors(graphMag, cursorInfosMag)
+	RestoreCursors(graphPhase, cursorInfosPhase)
 End
 
 /// @brief Return distinct colors the sweeps of the wavebuilder

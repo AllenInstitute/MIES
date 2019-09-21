@@ -481,7 +481,7 @@ Function PA_ShowPulses(win, dfr, pa)
 	variable red, green, blue, channelNumber, region, channelType, numHeadstages, length
 	variable numChannelTypeTraces, activeRegionCount, activeChanCount, totalOnsetDelay
 	string listOfWaves, channelList, vertAxis, horizAxis, channelNumberStr
-	string baseName, traceName, csrA, csrB
+	string baseName, traceName
 	string newlyCreatedGraphs = ""
 	string referenceTraceList = ""
 
@@ -597,8 +597,7 @@ Function PA_ShowPulses(win, dfr, pa)
 				PA_GetAxes(pa.multipleGraphs, activeRegionCount, activeChanCount, vertAxis, horizAxis)
 
 				if(WhichListItem(graph, newlyCreatedGraphs) == -1)
-					csrA = CsrInfo(A, graph)
-					csrB = CsrInfo(B, graph)
+					WAVE/T cursorInfos = GetCursorInfos(graph)
 					RemoveTracesFromGraph(graph)
 					SetWindow $graph, userData($PA_USERDATA_SPECIAL_TRACES) = ""
 					SetWindow $graph, userData($PA_USERDATA_REFERENCE_TRACES) = ""
@@ -637,10 +636,7 @@ Function PA_ShowPulses(win, dfr, pa)
 					listOfWavesPerChannel[channelNumber] = AddListItem(GetWavesDataFolder(plotWave, 2), listOfWavesPerChannel[channelNumber], ";", inf)
 				endfor
 
-				if(!isEmpty(csrA) && !isEmpty(csrB))
-					RestoreCursor(graph, csrA)
-					RestoreCursor(graph, csrB)
-				endif
+				RestoreCursors(graph, cursorInfos)
 			endfor
 
 			activeChanCount = 0

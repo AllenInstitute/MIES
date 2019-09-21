@@ -165,6 +165,8 @@ Constant CONTROL_TYPE_LISTBOX       = 11
 Constant CONTROL_TYPE_CUSTOMCONTROL = 12
 /// @}
 
+StrConstant CURSOR_NAMES = "A;B;C;D;E;F;G;H;I;J"
+
 // Conversion factor from ticks to seconds, exact value is 1/60
 Constant TICKS_TO_SECONDS = 0.0166666666666667
 

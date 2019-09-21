@@ -319,7 +319,7 @@ Function SB_UpdateSweepPlot(win, [newSweep])
 	string win
 	variable newSweep
 
-	string device, dataFolder, graph, bsPanel, scPanel, lbPanel, csrA, csrB
+	string device, dataFolder, graph, bsPanel, scPanel, lbPanel
 	variable mapIndex, i, numEntries, sweepNo, highlightSweep, traceIndex, currentSweep
 
 	graph = GetMainWindow(win)
@@ -356,8 +356,7 @@ Function SB_UpdateSweepPlot(win, [newSweep])
 
 	WAVE axesRanges = GetAxesRanges(graph)
 
-	csrA = CsrInfo(A, graph)
-	csrB = CsrInfo(B, graph)
+	WAVE/T cursorInfos = GetCursorInfos(graph)
 	RemoveTracesFromGraph(graph)
 
 	WAVE/T sweepMap = SB_GetSweepBrowserMap(sweepBrowserDFR)
@@ -398,8 +397,7 @@ Function SB_UpdateSweepPlot(win, [newSweep])
 		AR_UpdateTracesIfReq(graph, sweepDFR, numericalValues, sweepNo)
 	endfor
 
-	RestoreCursor(graph, csrA)
-	RestoreCursor(graph, csrB)
+	RestoreCursors(graph, cursorInfos)
 
 	dataFolder = sweepMap[currentSweep][%DataFolder]
 	device     = sweepMap[currentSweep][%Device]

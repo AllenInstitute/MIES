@@ -1067,27 +1067,38 @@ Function/S GetCurrentWindow()
 	return s_value
 End
 
-/// @brief Restore the given cursor
+/// @brief Return a 1D text wave with all infos about the cursors
 ///
-/// @param graph      name of the graph
-/// @param cursorInfo the returned string of `CsrInfo`
-Function RestoreCursor(graph, cursorInfo)
-	string graph, cursorInfo
+/// The data is sorted like `CURSOR_NAMES`.
+Function/WAVE GetCursorInfos(graph)
+	string graph
 
-	string cursorTrace, traceList
+	Make/T/FREE/N=(ItemsInList(CURSOR_NAMES)) info = CsrInfo($StringFromList(p, CURSOR_NAMES), graph)
 
-	if(isEmpty(cursorInfo))
-		return NaN
-	endif
+	return info
+End
 
-	cursorTrace = StringByKey("TNAME", cursorInfo)
+/// @brief Restore the cursors from the info of GetCursorInfos().
+Function RestoreCursors(graph, cursorInfos)
+	string graph
+	WAVE/T cursorInfos
+
+	string traceList, cursorTrace
+	variable i, numEntries
 
 	traceList = TraceNameList(graph, ";", 0 + 1)
-	if(FindListItem(cursorTrace, traceList) == -1)
-		return NaN
-	endif
 
-	Execute StringByKey("RECREATION", cursorInfo)
+	numEntries = DimSize(cursorInfos, ROWS)
+	for(i = 0; i < numEntries; i += 1)
+
+		cursorTrace = StringByKey("TNAME", cursorInfos[i])
+
+		if(FindListItem(cursorTrace, traceList) == -1)
+			continue
+		endif
+
+		Execute StringByKey("RECREATION", cursorInfos[i])
+	endfor
 End
 
 /// @brief Autoscale all vertical axes in the visible x range
