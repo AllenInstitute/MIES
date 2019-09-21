@@ -466,37 +466,6 @@ Function merge()
 	REQUIRE_EQUAL_WAVES(FormulaExecutor(jsonID0), FormulaExecutor(jsonID1))
 End
 
-Function average()
-	Variable jsonID
-
-	// row based evaluation
-	jsonID = FormulaParser("avg([0,1,2,3,4,5,6,7,8,9])")
-	WAVE output = FormulaExecutor(jsonID)
-	Make/N=10/U/I/FREE testwave = p
-	REQUIRE_EQUAL_VAR(output[0], mean(testwave))
-
-	jsonID = FormulaParser("mean([0,1,2,3,4,5,6,7,8,9])")
-	WAVE output = FormulaExecutor(jsonID)
-	REQUIRE_EQUAL_VAR(output[0], mean(testwave))
-
-	// column based evaluation
-	jsonID = FormulaParser("avg([[0,1,2,3,4],[5,6,7,8,9],[10,11,12,13,14]])")
-	WAVE output = FormulaExecutor(jsonID)
-	Make/N=(3)/U/I/FREE testwave = 2 + p * 5
-	REQUIRE_EQUAL_WAVES(testwave, output, mode = WAVE_DATA)
-End
-
-Function rootmeansquare()
-	Make/N=(10)/FREE input = p
-	WaveStats/Q input
-	WAVE output = FormulaExecutor(FormulaParser("rms([0,1,2,3,4,5,6,7,8,9])"))
-	REQUIRE_EQUAL_VAR(output[0], V_rms)
-
-	WAVE output = FormulaExecutor(FormulaParser("rms(range(0,10),range(0,10))"))
-	REQUIRE_EQUAL_VAR(output[0], V_rms)
-	REQUIRE_EQUAL_VAR(output[0], output[1])
-End
-
 Function MIES_channel()
 
 	Make/FREE input = {{0}, {NaN}}
@@ -535,32 +504,6 @@ Function MIES_channel()
 	WAVE output = FormulaExecutor(FormulaParser("channels(AD1,DA2,3)"))
 	REQUIRE_EQUAL_WAVES(input, output)
 End
-
-Function statistical()
-	Variable jsonID
-
-	// row based evaluation
-	jsonID = FormulaParser("variance([0,1,2,3,4,5,6,7,8,9])")
-	WAVE output = FormulaExecutor(jsonID)
-	Make/N=10/U/I/FREE testwave = p
-	REQUIRE_EQUAL_VAR(output[0], variance(testwave))
-
-	jsonID = FormulaParser("stdev([0,1,2,3,4,5,6,7,8,9])")
-	WAVE output = FormulaExecutor(jsonID)
-	REQUIRE_EQUAL_VAR(output[0], sqrt(variance(testwave)))
-
-	// column based evaluation
-	jsonID = FormulaParser("variance([[0,1],[1,2],[2,3]])")
-	WAVE output = FormulaExecutor(jsonID)
-	REQUIRE_EQUAL_VAR(output[0], output[1])
-	Make/N=(3)/U/I/FREE testwave = p
-	REQUIRE_EQUAL_VAR(output[0], variance(testwave))
-
-	Make/N=(2,3)/U/I/FREE testwave = p + q
-	MatrixOP/FREE input = varCols(testwave^t)^t
-	REQUIRE_EQUAL_WAVES(input, output)
-End
-
 
 Function testDifferentiales()
 	Variable jsonID, array
@@ -665,4 +608,66 @@ Function waveGetterFunction()
 	WAVE wave2 = FormulaExecutor(FormulaParser("range(0,10)"))
 	REQUIRE_EQUAL_WAVES(wave0, wave2, mode = WAVE_DATA)
 	REQUIRE_EQUAL_WAVES(wave1, wave2, mode = WAVE_DATA)
+End
+
+Function/WAVE FuncCommandGetter()
+
+	variable i, numEntries
+	string name
+
+	// Operation: Result 1D: Result 2D
+	Make/T/FREE data = {                                                                                                                                                                                                \
+						"min:0:0,1",                                                                                                                                                                                                  \
+						"max:4:4,5",                                                                                                                                                                                                  \
+						"avg:2:2,3",                                                                                                                                                                                                  \
+						"mean:2:2,3",                                                                                                                                                                                                 \
+						"rms:2.449489742783178:2.449489742783178,3.3166247903554",                                                                                                                                                    \
+						"variance:2.5:2.5,2.5",                                                                                                                                                                                       \
+						"stdev:1.58113883008419:1.58113883008419,1.58113883008419",                                                                                                                                                   \
+						"derivative:1,1,1,1,1:{1,1,1,1,1},{1,1,1,1,1}",                                                                                                                                                               \
+						"integrate:0,0.5,2,4.5,8:{0,0.5,2,4.5,8},{0,1.5,4,7.5,12}",                                                                                                                                                   \
+						"log10:-inf,0,0.301029995663981,0.477121254719662,0.602059991327962:{-inf,0,0.301029995663981,0.477121254719662,0.602059991327962},{0,0.301029995663981,0.477121254719662,0.602059991327962,0.698970004336019}" \
+					   }
+
+	numEntries = DimSize(data, ROWS)
+	for(i = 0; i < numEntries; i += 1)
+		name = StringFromList(0, data[i], ":")
+		SetDimLabel ROWS, i, $name, data
+	endfor
+
+	return data
+End
+
+// UTF_TD_GENERATOR FuncCommandGetter
+Function TestVariousFunctions([str])
+	string str
+
+	string func, command, oneDResult, twoDResult
+	variable jsonIDOneD, jsonIDTwoD
+
+	func = StringFromList(0, str, ":")
+	oneDResult = StringFromList(1, str, ":")
+	twoDResult = StringFromList(2, str, ":")
+
+	Make/D/N=5 oneD = p
+	Make/D/N=(5, 2) twoD = p + q
+
+	jsonIDOneD = JSON_NEW()
+	JSON_AddWave(jsonIDOneD, "", oneD)
+	jsonIDTwoD = JSON_NEW()
+	JSON_AddWave(jsonIDTwoD, "", twoD)
+
+	// 1D
+	WAVE output1D = FormulaExecutor(FormulaParser(func + "(" + JSON_Dump(jsonIDOneD) + ")" ))
+	Execute "Make/O output1D_mo = {" + oneDResult + "}"
+	WAVE output1D_mo
+
+	CHECK_EQUAL_WAVES(output1D, output1D_mo, mode = WAVE_DATA, tol = 1e-8)
+
+	// 2D
+	WAVE output2D = FormulaExecutor(FormulaParser(func + "(" + JSON_Dump(jsonIDTwoD) + ")" ))
+	Execute "Make/O output2D_mo = {" + twoDResult + "}"
+	WAVE output2D_mo
+
+	CHECK_EQUAL_WAVES(output2D, output2D_mo, mode = WAVE_DATA, tol = 1e-8)
 End
