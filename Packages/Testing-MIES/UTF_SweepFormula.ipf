@@ -1,10 +1,9 @@
 #pragma TextEncoding = "UTF-8"
-#pragma rtGlobals=3		// Use modern global access method and strict wave access.
-
-#include "unit-testing"
+#pragma rtGlobals=3	 // Use modern global access method and strict wave access.
+#pragma ModuleName=UTF_SweepFormula
 
 /// @brief test two jsonIDs for equal content
-Function WARN_EQUAL_JSON(jsonID0, jsonID1)
+static Function WARN_EQUAL_JSON(jsonID0, jsonID1)
 	variable jsonID0, jsonID1
 
 	string jsonDump0, jsonDump1
@@ -17,7 +16,7 @@ Function WARN_EQUAL_JSON(jsonID0, jsonID1)
 	WARN_EQUAL_STR(jsonDump0, jsonDump1)
 End
 
-Function primitiveOperations()
+static Function primitiveOperations()
 	Variable jsonID0, jsonID1
 
 	jsonID0 = JSON_Parse("1")
@@ -56,7 +55,7 @@ Function primitiveOperations()
 	REQUIRE_EQUAL_VAR(FormulaExecutor(jsonID1)[0], +1)
 End
 
-Function arrayOperations(array2d, numeric)
+static Function arrayOperations(array2d, numeric)
 	String array2d
 	Variable numeric
 
@@ -104,7 +103,7 @@ Function arrayOperations(array2d, numeric)
 	REQUIRE_EQUAL_WAVES(input13, FormulaExecutor(FormulaParser(array2d + "*" + num2str(numeric))), mode = WAVE_DATA)
 End
 
-Function primitiveOperations2D()
+static Function primitiveOperations2D()
 	arrayOperations("[1,2]", 1)
 	arrayOperations("[[1,2],[3,4],[5,6]]", 1)
 	arrayOperations("[[1,2],[3,4],[5,6]]", 42)
@@ -114,7 +113,7 @@ Function primitiveOperations2D()
 	arrayOperations("[[1,2],[3,4],[5,6]]", 1.5)
 End
 
-Function concatenationOfOperations()
+static Function concatenationOfOperations()
 	Variable jsonID0, jsonID1
 
 	jsonID0 = JSON_Parse("{\"+\":[1,2,3,4]}")
@@ -139,7 +138,7 @@ Function concatenationOfOperations()
 End
 
 // + > - > * > /
-Function orderOfCalculation()
+static Function orderOfCalculation()
 	Variable jsonID0, jsonID1
 
 	// + and -
@@ -212,7 +211,7 @@ Function orderOfCalculation()
 	REQUIRE_EQUAL_VAR(FormulaExecutor(jsonID1)[0], 5*1+2*3+4+5*10)
 End
 
-Function brackets()
+static Function brackets()
 	Variable jsonID0, jsonID1
 
 	jsonID0 = JSON_Parse("{\"+\":[1,2]}")
@@ -269,7 +268,7 @@ Function brackets()
 	REQUIRE_CLOSE_VAR(FormulaExecutor(jsonID1)[0], 5*(1+2)*3/(4+5*10))
 End
 
-Function array()
+static Function array()
 	Variable jsonID0, jsonID1
 
 	jsonID0 = JSON_Parse("[1]")
@@ -328,7 +327,7 @@ Function array()
 	WARN_EQUAL_JSON(jsonID0, jsonID1)
 End
 
-Function whiteSpace()
+static Function whiteSpace()
 	Variable jsonID0, jsonID1
 
 	jsonID0 = FormulaParser("1+(2*3)")
@@ -359,8 +358,8 @@ Function whiteSpace()
 	WARN_EQUAL_JSON(JSON_PARSE("null"), jsonID1)
 End
 
-// test functions with 1..N arguments
-Function minimaximu()
+// test static Functions with 1..N arguments
+static Function minimaximu()
 	Variable jsonID0, jsonID1
 
 	jsonID0 = JSON_Parse("{\"min\":[1]}")
@@ -439,8 +438,8 @@ Function minimaximu()
 	REQUIRE_EQUAL_VAR(FormulaExecutor(jsonID1)[0], max(1,2)-max(1,2))
 End
 
-// test functions with aribitrary length array returns
-Function merge()
+// test static Functions with aribitrary length array returns
+static Function merge()
 	Variable jsonID0, jsonID1
 
 	jsonID0 = JSON_Parse("{\"merge\":[1,[2,3],4]}")
@@ -466,7 +465,7 @@ Function merge()
 	REQUIRE_EQUAL_WAVES(FormulaExecutor(jsonID0), FormulaExecutor(jsonID1))
 End
 
-Function MIES_channel()
+static Function MIES_channel()
 
 	Make/FREE input = {{0}, {NaN}}
 	WAVE output = FormulaExecutor(FormulaParser("channels(AD)"))
@@ -505,7 +504,7 @@ Function MIES_channel()
 	REQUIRE_EQUAL_WAVES(input, output)
 End
 
-Function testDifferentiales()
+static Function testDifferentiales()
 	Variable jsonID, array
 	String str
 
@@ -575,7 +574,8 @@ static Function waveScaling()
 	WAVE wv = FormulaExecutor(FormulaParser("setscale(setscale([range(10),range(10)+1,range(10)+2,range(10)+3,range(10)+4,range(10)+5,range(10)+6,range(10)+7,range(10)+8,range(10)+9], x, 0, 2, unitX), y, 0, 4, unitX)"))
 	REQUIRE_EQUAL_WAVES(waveXY, wv, mode = WAVE_DATA | WAVE_SCALING | DATA_UNITS)
 End
-Function arrayExpansion()
+
+static Function arrayExpansion()
 	Variable jsonID0, jsonID1
 
 	jsonID0 = FormulaParser("1…10")
@@ -601,7 +601,7 @@ Function arrayExpansion()
 	REQUIRE_EQUAL_WAVES(output, floatwave, mode = WAVE_DATA)
 End
 
-Function waveGetterFunction()
+static Function waveGetterFunction()
 	Make/O/N=(10) wave0 = p
 
 	WAVE wave1 = FormulaExecutor(FormulaParser("wave(wave0)"))
@@ -610,7 +610,7 @@ Function waveGetterFunction()
 	REQUIRE_EQUAL_WAVES(wave1, wave2, mode = WAVE_DATA)
 End
 
-Function/WAVE FuncCommandGetter()
+static Function/WAVE FuncCommandGetter()
 
 	variable i, numEntries
 	string name
@@ -639,7 +639,7 @@ Function/WAVE FuncCommandGetter()
 End
 
 // UTF_TD_GENERATOR FuncCommandGetter
-Function TestVariousFunctions([str])
+static Function TestVariousFunctions([str])
 	string str
 
 	string func, command, oneDResult, twoDResult
