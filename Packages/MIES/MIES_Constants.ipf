@@ -916,6 +916,7 @@ Constant LABNOTEBOOK_GET_RANGE = -1
 /// @{
 Constant OVS_SWEEP_SELECTION_INDEX   = 0x0
 Constant OVS_SWEEP_SELECTION_SWEEPNO = 0x1
+Constant OVS_SWEEP_ALL_SWEEPNO       = 0x2
 /// @}
 
 /// @name Export type parameters for NWB_ExportWithDialog()

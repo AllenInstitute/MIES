@@ -319,7 +319,7 @@ Function/WAVE FormulaExecutor(jsonID, [jsonPath, graph])
 	String jsonPath
 	String graph
 
-	Variable i, j, numIndices, JSONtype
+	Variable i, j, numIndices, JSONtype, mode
 
 	if(ParamIsDefault(jsonPath))
 		jsonPath = ""
@@ -397,11 +397,11 @@ Function/WAVE FormulaExecutor(jsonID, [jsonPath, graph])
 	ASSERT(JSON_GetType(jsonID, jsonPath) == JSON_ARRAY, "An array is required to hold the operands of the operation.")
 	strswitch(operations[0])
 		case "cursors":
+		case "sweeps":
 			WAVE/T wvT = JSON_GetTextWave(jsonID, jsonPath)
 			break
 		case "setscale":
 		case "butterworth":
-		case "sweeps":
 		case "channels":
 		case "data":
 		case "wave":
@@ -621,9 +621,42 @@ Function/WAVE FormulaExecutor(jsonID, [jsonPath, graph])
 			out[][] = out[p][q] < 0 ? NaN : out[p][q]
 			break
 		case "sweeps":
-			/// `sweeps(list sweepNumbers)` convert a list to an array
+			/// `sweeps([str type])`
+			///  @p type: `|displayed|all`
+			///           displayed (default): get (selected) sweeps
+			///           al:                  get all possible sweeps
+			ASSERT(JSON_GetArraySize(jsonID, jsonPath) <= 1, "Function requires 1 argument at most.")
+
+			JSONtype = JSON_GetType(jsonID, jsonPath + "/0")
+			if(JSONtype == JSON_NULL)
+				wvT[0] = "displayed"
+			endif
+
+			strswitch(wvT[0])
+				case "all":
+					mode = OVS_SWEEP_ALL_SWEEPNO
+					break
+				case "displayed":
+					mode = OVS_SWEEP_SELECTION_SWEEPNO
+					break
+				default:
+					ASSERT(0, "Undefined argument")
+			endswitch
+
+			ASSERT(!ParamIsDefault(graph) && !!cmpstr(graph, ""), "Graph not specified.")
+			WAVE/Z out = OVS_GetSelectedSweeps(graph, mode)
+			if(!WaveExists(out) && mode == OVS_SWEEP_SELECTION_SWEEPNO)
+				WAVE/Z out = OVS_GetSelectedSweeps(graph, OVS_SWEEP_ALL_SWEEPNO)
+			endif
+			if(!WaveExists(out))
+				Make/N=1/FREE out = {NaN} // simulates [null]
+			endif
+			break
+		case "listtoarray":
+			/// `listtoarray(str list)` convert a semicolon spearated list to an array
 			///
-			/// returns array [sweepNumbers]
+			/// returns array [items]
+			ASSERT(DimSize(wv, ROWS)  == 1 , "Function requires 1 argument.")
 			JSONtype = JSON_GetType(jsonID, jsonPath + "/0")
 			if(JSONtype == JSON_STRING)
 				ASSERT(JSON_GetArraySize(jsonID, jsonPath) == 1, "Use sweepLists like 1;2;3 as input.")

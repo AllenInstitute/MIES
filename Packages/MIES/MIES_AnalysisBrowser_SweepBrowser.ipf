@@ -579,7 +579,7 @@ End
 /// @brief Returns a list of all sweeps of the form "Sweep_0;Sweep_1;...".
 ///
 /// Can contain duplicates!
-static Function/S SB_GetPlainSweepList(win)
+Function/S SB_GetPlainSweepList(win)
 	string win
 
 	string list = "", str
@@ -868,7 +868,7 @@ End
 Function SB_CheckProc_OverlaySweeps(cba) : CheckBoxControl
 	STRUCT WMCheckBoxAction &cba
 
-	string graph, bsPanel, scPanel, sweepWaveList
+	string graph, bsPanel, scPanel
 	variable index
 
 	graph   = GetMainWindow(cba.win)
@@ -887,8 +887,7 @@ Function SB_CheckProc_OverlaySweeps(cba) : CheckBoxControl
 			WAVE/WAVE allNumericalValues = SB_GetNumericalValuesWaves(graph)
 			WAVE/WAVE allTextualValues   = SB_GetTextualValuesWaves(graph)
 
-			sweepWaveList = SB_GetPlainSweepList(graph)
-			OVS_UpdatePanel(graph, listBoxWave, listBoxSelWave, sweepSelChoices, sweepWaveList, allTextualValues=allTextualValues, allNumericalValues=allNumericalValues)
+			OVS_UpdatePanel(graph, listBoxWave, listBoxSelWave, sweepSelChoices, allTextualValues=allTextualValues, allNumericalValues=allNumericalValues)
 			if(OVS_IsActive(graph))
 				index = GetPopupMenuIndex(scPanel, "popup_SweepControl_Selector")
 				OVS_ChangeSweepSelectionState(bsPanel, CHECKBOX_SELECTED, index=index)

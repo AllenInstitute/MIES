@@ -278,7 +278,7 @@ static Function DB_SetUserData(win, device)
 	BSP_SetFolder(win, dfr, MIES_BSP_PANEL_FOLDER)
 End
 
-static Function/S DB_GetPlainSweepList(win)
+Function/S DB_GetPlainSweepList(win)
 	string win
 
 	string device
@@ -577,7 +577,7 @@ End
 static Function DB_UpdateOverlaySweepWaves(win)
 	string win
 
-	string device, sweepWaveList, mainPanel
+	string device, mainPanel
 
 	if(!OVS_IsActive(win))
 		return NaN
@@ -592,9 +592,7 @@ static Function DB_UpdateOverlaySweepWaves(win)
 	WAVE numericalValues   = DB_GetNumericalValues(win)
 	WAVE/T sweepSelChoices = GetOverlaySweepSelectionChoices(dfr)
 
-	sweepWaveList = DB_GetPlainSweepList(win)
-
-	OVS_UpdatePanel(win, listBoxWave, listBoxSelWave, sweepSelChoices, sweepWaveList, textualValues=textualValues, numericalValues=numericalValues)
+	OVS_UpdatePanel(win, listBoxWave, listBoxSelWave, sweepSelChoices, textualValues=textualValues, numericalValues=numericalValues)
 End
 
 /// @brief procedure for the open button of the side panel
@@ -997,7 +995,7 @@ End
 Function DB_CheckProc_OverlaySweeps(cba) : CheckBoxControl
 	STRUCT WMCheckBoxAction &cba
 
-	string win, mainPanel, scPanel, device, sweepWaveList
+	string win, mainPanel, scPanel, device
 	variable sweepNo
 
 	win = cba.win
@@ -1016,8 +1014,7 @@ Function DB_CheckProc_OverlaySweeps(cba) : CheckBoxControl
 
 				WAVE/T numericalValues = DB_GetNumericalValues(win)
 				WAVE/T textualValues   = DB_GetTextualValues(win)
-				sweepWaveList = DB_GetPlainSweepList(win)
-				OVS_UpdatePanel(win, listBoxWave, listBoxSelWave, sweepSelChoices, sweepWaveList, textualValues=textualValues, numericalValues=numericalValues)
+				OVS_UpdatePanel(win, listBoxWave, listBoxSelWave, sweepSelChoices, textualValues=textualValues, numericalValues=numericalValues)
 			endif
 
 			if(OVS_IsActive(win))

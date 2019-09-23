@@ -5066,6 +5066,16 @@ Function UpdateSettingsPanel(win)
 	endif
 End
 
+Function/S GetPlainSweepList(win)
+	string win
+
+	if(BSP_IsDataBrowser(win))
+		return DB_GetPlainSweepList(win)
+	else
+		return SB_GetPlainSweepList(win)
+	endif
+End
+
 /// @brief Stringified short version of the clamp mode
 Function/S ConvertAmplifierModeShortStr(mode)
 	variable mode
