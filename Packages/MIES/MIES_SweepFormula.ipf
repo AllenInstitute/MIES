@@ -914,6 +914,12 @@ Function button_sweepFormula_check(ba) : ButtonControl
 			// click code here
 			mainPanel = GetMainWindow(ba.win)
 			bsPanel = BSP_GetPanel(mainPanel)
+
+			if(BSP_IsDataBrowser(bsPanel) && !BSP_HasBoundDevice(bsPanel))
+				DebugPrint("Unbound device in DataBrowser")
+				break
+			endif
+
 			DFREF dfr = BSP_GetFolder(mainPanel, MIES_BSP_PANEL_FOLDER)
 
 			SVAR/Z formula = dfr:sweepFormulaText
@@ -1039,8 +1045,6 @@ Function SF_TabProc_Formula(tca) : TabControl
 			mainPanel = GetMainWindow(tca.win)
 			bsPanel = BSP_GetPanel(mainPanel)
 
-			DFREF dfr = BSP_GetFolder(mainPanel, MIES_BSP_PANEL_FOLDER)
-
 			Notebook $bsPanel#sweepFormula_formula visible=(tca.tab == 0)
 			Notebook $bsPanel#sweepFormula_json visible=(tca.tab == 1)
 			Notebook $bsPanel#sweepFormula_help visible=(tca.tab == 2)
@@ -1049,6 +1053,14 @@ Function SF_TabProc_Formula(tca) : TabControl
 			if(tca.tab == 1)
 				PGC_SetAndActivateControl(bsPanel, "button_sweepFormula_check")
 			endif
+
+			if(BSP_IsDataBrowser(bsPanel) && !BSP_HasBoundDevice(bsPanel))
+				DebugPrint("Databrowser has unbound device")
+				break
+			endif
+
+			DFREF dfr = BSP_GetFolder(mainPanel, MIES_BSP_PANEL_FOLDER)
+
 			NVAR status = dfr:sweepFormulaParse
 			if(status != 0) // error
 				return 1
