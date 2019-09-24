@@ -739,7 +739,7 @@ Function FormulaPlotter(graph, formula, [dfr])
 	String formula
 	DFREF dfr
 
-	String formula0, formula1, traces, trace, axes
+	String formula0, formula1, trace, axes
 	Variable i, numTraces
 	String win = "FormulaPlot"
 	String traceName = "formula"
@@ -776,7 +776,9 @@ Function FormulaPlotter(graph, formula, [dfr])
 		win = S_name
 	endif
 
-	traces = TraceNameList(win, ";", 1)
+	WAVE cursorInfos = GetCursorInfos(win)
+	WAVE axesRanges = GetAxesRanges(win)
+	RemoveTracesFromGraph(win)
 
 	numTraces = WaveExists(wvY) ? max(DimSize(wvY, COLS), 1) : 0
 	if(WaveExists(wvX) && numTraces == DimSize(wvX, COLS))
@@ -784,35 +786,11 @@ Function FormulaPlotter(graph, formula, [dfr])
 	endif
 	for(i = 0; i < numTraces; i += 1)
 		trace = traceName + num2istr(i)
-		if(WhichListItem(trace, traces) == -1)
-			if(WaveExists(wvX))
-				AppendTograph/W=$win wvY[][i]/TN=$trace vs wvX[][i]
-			else
-				AppendTograph/W=$win wvY[][i]/TN=$trace
-			endif
+		if(WaveExists(wvX))
+			AppendTograph/W=$win wvY[][i]/TN=$trace vs wvX[][i]
 		else
-			WAVE/Z wvX = XWaveRefFromTrace(win, trace)
-			if(WaveExists(wvX) && !EqualWaves(wv, wvX, 2))
-				RemoveFromGraph/W=$win $trace
-				if(WaveType(wv, 1) == 2)
-					AppendTograph/W=$win/B=bottomText wvY[][i]/TN=$trace vs wvX[][i]
-				else
-					AppendTograph/W=$win wvY[][i]/TN=$trace vs wvX[][i]
-				endif
-			elseif(WaveExists(wvX) && !WaveExists(wv))
-				ReplaceWave/W=$win/X trace=$trace, wvX[][i]
-			elseif(!WaveExists(wvX) && WaveExists(wv))
-				RemoveFromGraph/W=$win $trace
-				AppendTograph/W=$win wvY[][i]/TN=$trace
-			endif
-			traces = RemoveFromList(trace, traces)
+			AppendTograph/W=$win wvY[][i]/TN=$trace
 		endif
-	endfor
-
-	numTraces = ItemsInList(traces)
-	for(i = 0; i < numTraces; i += 1)
-		trace = StringFromList(i, traces)
-		RemoveFromGraph/W=$win $trace
 	endfor
 
 	axes = AxisList(win)
@@ -821,6 +799,8 @@ Function FormulaPlotter(graph, formula, [dfr])
 		ModifyGraph/W=$win mode=0
 	endif
 
+	RestoreCursors(win, cursorInfos)
+	SetAxesRanges(win, axesRanges)
 	DoWindow/F $win
 End
 
