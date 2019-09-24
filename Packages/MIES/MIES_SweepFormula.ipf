@@ -23,6 +23,9 @@ static Constant ACTION_PARENTHESIS = 6
 static Constant ACTION_FUNCTION = 7
 static Constant ACTION_ARRAY = 8
 
+/// Regular expression which extracts both formulas from `$a vs $b`
+static StrConstant SWEEPFORMULA_REGEXP = "^(.+?)(?:\\bvs\\b(.+))?$"
+
 /// @brief serialize a string formula into JSON
 ///
 /// @param formula  string formula
@@ -464,7 +467,7 @@ Function FormulaPlotter(graph, formula, [dfr])
 		dfr = root:
 	endif
 
-	SplitString/E="^(.+?)(?:\s+vs\s+(.+))?$" formula, formula0, formula1
+	SplitString/E=SWEEPFORMULA_REGEXP formula, formula0, formula1
 	ASSERT(V_Flag == 2 || V_flag == 1, "Display command must follow the \"y[ vs x]\" pattern.")
 	if(V_Flag == 2)
 		WAVE wv = FormulaExecutor(FormulaParser(formula1), graph = graph)
@@ -600,7 +603,7 @@ Function button_sweepFormula_check(ba) : ButtonControl
 			SVAR/Z result = dfr:sweepFormulaParseResult
 			ASSERT(SVAR_EXISTS(result), "Global variable sweepFormulaParseResult not found. Can not evaluate parsing status.")
 
-			SplitString/E="^(.+?)(?:\s+vs\s+(.+))?$" formula, yFormula, xFormula
+			SplitString/E=SWEEPFORMULA_REGEXP formula, yFormula, xFormula
 			numFormulae = V_flag
 			if(numFormulae != 2 && numFormulae != 1)
 				DebugPrint("Display command must follow the \"y[ vs x]\" pattern. Can not evaluate parsing status.")
