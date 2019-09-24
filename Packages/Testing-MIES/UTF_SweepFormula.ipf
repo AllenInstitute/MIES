@@ -674,3 +674,100 @@ static Function TestVariousFunctions([str])
 
 	CHECK_EQUAL_WAVES(output2D, output2D_mo, mode = WAVE_DATA, tol = 1e-8)
 End
+
+static Function TestPlotting()
+	String traces
+
+	Variable minimum, maximum
+	String win = "FormulaPlot"
+
+	String strArray2D = "[range(10), range(10,20), range(10), range(10,20)]"
+	String strArray1D = "range(4)"
+	String strScale1D = "time(setscale(range(4),x,1,0.1))"
+	String strArray0D = "1"
+
+	WAVE array2D = FormulaExecutor(FormulaParser(strArray2D))
+	WAVE array1D = FormulaExecutor(FormulaParser(strArray1D))
+	WAVE scale1D = FormulaExecutor(FormulaParser(strScale1D))
+	WAVE array0D = FormulaExecutor(FormulaParser(strArray0D))
+
+	FormulaPlotter("", strArray2D)
+	REQUIRE_EQUAL_VAR(WindowExists(win), 1)
+	traces = TraceNameList(win, ";", 0x1)
+	REQUIRE_EQUAL_VAR(ItemsInList(traces), DimSize(array2D, COLS))
+	WAVE wvY = TraceNameToWaveRef(win, StringFromList(0, traces))
+	REQUIRE_EQUAL_WAVES(array2D, wvY)
+
+	// one to many
+	FormulaPlotter("", strArray1D + " vs " + strArray2D); DoUpdate
+	traces = TraceNameList(win, ";", 0x1)
+	REQUIRE_EQUAL_VAR(ItemsInList(traces), DimSize(array2D, COLS))
+	WAVE wvX = XWaveRefFromTrace(win, StringFromList(0, traces))
+	REQUIRE_EQUAL_WAVES(wvX, array2D)
+	WAVE wvY = TraceNameToWaveRef(win, StringFromList(0, traces))
+	Redimension/N=(-1, 0) wvY
+	REQUIRE_EQUAL_WAVES(wvY, array1D)
+	GetAxisRange(win, "bottom", minimum, maximum, mode=AXIS_RANGE_INC_AUTOSCALED)
+	REQUIRE_EQUAL_VAR(minimum, WaveMin(array2D))
+	REQUIRE_EQUAL_VAR(maximum, WaveMax(array2D))
+	GetAxisRange(win, "left", minimum, maximum, mode=AXIS_RANGE_INC_AUTOSCALED)
+	REQUIRE_EQUAL_VAR(minimum, WaveMin(array1D))
+	REQUIRE_EQUAL_VAR(maximum, WaveMax(array1D))
+	FormulaPlotter("", strScale1D + " vs " + strArray2D); DoUpdate
+	GetAxisRange(win, "left", minimum, maximum, mode=AXIS_RANGE_INC_AUTOSCALED)
+	REQUIRE_EQUAL_VAR(minimum, WaveMin(scale1D))
+	REQUIRE_CLOSE_VAR(maximum, WaveMax(scale1D))
+
+	// many to one
+	FormulaPlotter("", strArray2D + " vs " + strArray1D); DoUpdate
+	traces = TraceNameList(win, ";", 0x1)
+	REQUIRE_EQUAL_VAR(ItemsInList(traces), DimSize(array2D, COLS))
+	WAVE wvY = TraceNameToWaveRef(win, StringFromList(0, traces))
+	REQUIRE_EQUAL_WAVES(wvY, array2D)
+	WAVE wvX = XWaveRefFromTrace(win, StringFromList(0, traces))
+	Redimension/N=(-1, 0) wvX
+	REQUIRE_EQUAL_WAVES(wvX, array1D)
+	GetAxisRange(win, "bottom", minimum, maximum, mode=AXIS_RANGE_INC_AUTOSCALED)
+	REQUIRE_EQUAL_VAR(minimum, WaveMin(array1D))
+	REQUIRE_EQUAL_VAR(maximum, WaveMax(array1D))
+	GetAxisRange(win, "left", minimum, maximum, mode=AXIS_RANGE_INC_AUTOSCALED)
+	REQUIRE_EQUAL_VAR(minimum, WaveMin(array2D))
+	REQUIRE_EQUAL_VAR(maximum, WaveMax(array2D))
+
+	FormulaPlotter("", strArray2D + " vs range(3)"); DoUpdate
+	traces = TraceNameList(win, ";", 0x1)
+	REQUIRE_EQUAL_VAR(ItemsInList(traces), DimSize(array2D, COLS))
+	GetAxisRange(win, "bottom", minimum, maximum, mode=AXIS_RANGE_INC_AUTOSCALED)
+	REQUIRE_EQUAL_VAR(maximum, array1D[2])
+
+	FormulaPlotter("", "time(setscale(range(4),x,1,0.1)) vs [range(10), range(10,20), range(10), range(10,20)]"); DoUpdate
+	GetAxisRange(win, "left", minimum, maximum, mode=AXIS_RANGE_INC_AUTOSCALED)
+	REQUIRE_EQUAL_VAR(minimum, WaveMin(scale1D))
+	REQUIRE_CLOSE_VAR(maximum, WaveMax(scale1D))
+
+	FormulaPlotter("", strArray1D + " vs " + strArray1D); DoUpdate
+	traces = TraceNameList(win, ";", 0x1)
+	REQUIRE_EQUAL_VAR(ItemsInList(traces), 1)
+	GetAxisRange(win, "left", minimum, maximum, mode=AXIS_RANGE_INC_AUTOSCALED)
+	REQUIRE_EQUAL_VAR(minimum, WaveMin(array1D))
+	REQUIRE_CLOSE_VAR(maximum, WaveMax(array1D))
+	GetAxisRange(win, "bottom", minimum, maximum, mode=AXIS_RANGE_INC_AUTOSCALED)
+	REQUIRE_EQUAL_VAR(minimum, WaveMin(array1D))
+	REQUIRE_CLOSE_VAR(maximum, WaveMax(array1D))
+
+	FormulaPlotter("", strArray2D + " vs " + strArray2D); DoUpdate
+	traces = TraceNameList(win, ";", 0x1)
+	REQUIRE_EQUAL_VAR(ItemsInList(traces), DimSize(array2D, COLS))
+
+	FormulaPlotter("", strArray1D + " vs " + strArray1D); DoUpdate
+	REQUIRE_EQUAL_VAR(ItemsInList(TraceNameList(win, ";", 0x1)), 1)
+
+	FormulaPlotter("", strArray1D + " vs " + strArray0D); DoUpdate
+	REQUIRE_EQUAL_VAR(ItemsInList(TraceNameList(win, ";", 0x1)), DimSize(array1D, ROWS))
+
+	FormulaPlotter("", strArray0D + " vs " + strArray1D); DoUpdate
+	REQUIRE_EQUAL_VAR(ItemsInList(TraceNameList(win, ";", 0x1)), DimSize(array1D, ROWS))
+
+	FormulaPlotter("", strArray0D + " vs " + strArray0D); DoUpdate
+	REQUIRE_EQUAL_VAR(ItemsInList(TraceNameList(win, ";", 0x1)), DimSize(array0D, ROWS))
+End

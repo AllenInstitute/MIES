@@ -753,7 +753,7 @@ Function FormulaPlotter(graph, formula, [dfr])
 	if(V_Flag == 2)
 		WAVE wv = FormulaExecutor(FormulaParser(FormulaPreParser(formula1)), graph = graph)
 		ASSERT(WaveExists(wv), "Error in x part of formula.")
-		Redimension/N=(-1, DimSize(wv, LAYERS) * DimSize(wv, COLS))/E=1 wv
+		Redimension/N=(-1, max(1, DimSize(wv, LAYERS)) * max(1, DimSize(wv, COLS)))/E=1 wv
 		if(WaveType(wv, 1) == 2)
 			Duplicate/O wv dfr:xFormulaT/WAVE = wvX
 		else
@@ -763,7 +763,7 @@ Function FormulaPlotter(graph, formula, [dfr])
 	endif
 	WAVE wv = FormulaExecutor(FormulaParser(FormulaPreParser(formula0)), graph = graph)
 	ASSERT(WaveExists(wv), "Error in y part of formula.")
-	Redimension/N=(-1, max(1, DimSize(wv, LAYERS)) * DimSize(wv, COLS))/E=1 wv
+	Redimension/N=(-1, max(1, DimSize(wv, LAYERS)) * max(1, DimSize(wv, COLS)))/E=1 wv
 	if(WaveType(wv, 1) == 2)
 		Duplicate/O wv dfr:yFormulaT/WAVE = wvY
 	else
@@ -780,18 +780,66 @@ Function FormulaPlotter(graph, formula, [dfr])
 	WAVE axesRanges = GetAxesRanges(win)
 	RemoveTracesFromGraph(win)
 
-	numTraces = WaveExists(wvY) ? max(DimSize(wvY, COLS), 1) : 0
-	if(WaveExists(wvX) && numTraces == DimSize(wvX, COLS))
-		DebugPrint("Size missmatch for plotting waves.")
-	endif
-	for(i = 0; i < numTraces; i += 1)
-		trace = traceName + num2istr(i)
-		if(WaveExists(wvX))
-			AppendTograph/W=$win wvY[][i]/TN=$trace vs wvX[][i]
-		else
+	if(!WaveExists(wvX))
+		numTraces = DimSize(wvY, COLS)
+		for(i = 0; i < numTraces; i += 1)
+			trace = traceName + num2istr(i)
 			AppendTograph/W=$win wvY[][i]/TN=$trace
+		endfor
+	elseif((DimSize(wvX, COLS) == 1) && (DimSize(wvY, COLS) == 1)) // 1D
+		if(DimSize(wvY, ROWS) == 1) // 0D vs 1D
+			numTraces = DimSize(wvX, ROWS)
+			for(i = 0; i < numTraces; i += 1)
+				trace = traceName + num2istr(i)
+				AppendTograph/W=$win wvY[][0]/TN=$trace vs wvX[i][]
+			endfor
+			ModifyGraph/W=$win mode=3
+		elseif(DimSize(wvX, ROWS) == 1) // 1D vs 0D
+			numTraces = DimSize(wvY, ROWS)
+			for(i = 0; i < numTraces; i += 1)
+				trace = traceName + num2istr(i)
+				AppendTograph/W=$win wvY[i][]/TN=$trace vs wvX[][0]
+			endfor
+			ModifyGraph/W=$win mode=3
+		else // 1D vs 1D
+			trace = traceName + num2istr(i)
+			AppendTograph/W=$win wvY[][0]/TN=$trace vs wvX[][0]
 		endif
-	endfor
+	elseif(DimSize(wvY, COLS) == 1) // 1D vs 2D
+		numTraces = DimSize(wvX, COLS)
+		for(i = 0; i < numTraces; i += 1)
+			trace = traceName + num2istr(i)
+			AppendTograph/W=$win wvY[][0]/TN=$trace vs wvX[][i]
+		endfor
+		if(DimSize(wvY, ROWS) == 1)
+			ModifyGraph/W=$win mode=3
+		endif
+	elseif(DimSize(wvX, COLS) == 1) // 2D vs 1D
+		numTraces = DimSize(wvY, COLS)
+		for(i = 0; i < numTraces; i += 1)
+			trace = traceName + num2istr(i)
+			AppendTograph/W=$win wvY[][i]/TN=$trace vs wvX
+		endfor
+		if(DimSize(wvX, ROWS) == 1)
+			ModifyGraph/W=$win mode=3
+		endif
+	else // 2D vs 2D
+		numTraces = WaveExists(wvX) ? max(1, max(DimSize(wvY, COLS), DimSize(wvX, COLS))) : max(1, DimSize(wvY, COLS))
+		if(DimSize(wvY, ROWS) == DimSize(wvX, ROWS))
+			DebugPrint("Size missmatch in data rows for plotting waves.")
+		endif
+		if(DimSize(wvY, ROWS) == DimSize(wvX, ROWS))
+			DebugPrint("Size missmatch in entity columns for plotting waves.")
+		endif
+		for(i = 0; i < numTraces; i += 1)
+			trace = traceName + num2istr(i)
+			if(WaveExists(wvX))
+				AppendTograph/W=$win wvY[][min(max(1, DimSize(wvY, COLS)) - 1, i)]/TN=$trace vs wvX[][min(max(1, DimSize(wvX, COLS)) - 1, i)]
+			else
+				AppendTograph/W=$win wvY[][i]/TN=$trace
+			endif
+		endfor
+	endif
 
 	axes = AxisList(win)
 	if(WhichListItem("bottomText", axes) != -1)
