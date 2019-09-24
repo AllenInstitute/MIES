@@ -652,20 +652,6 @@ Function/WAVE FormulaExecutor(jsonID, [jsonPath, graph])
 				Make/N=1/FREE out = {NaN} // simulates [null]
 			endif
 			break
-		case "listtoarray":
-			/// `listtoarray(str list)` convert a semicolon spearated list to an array
-			///
-			/// returns array [items]
-			ASSERT(DimSize(wv, ROWS)  == 1 , "Function requires 1 argument.")
-			JSONtype = JSON_GetType(jsonID, jsonPath + "/0")
-			if(JSONtype == JSON_STRING)
-				ASSERT(JSON_GetArraySize(jsonID, jsonPath) == 1, "Use sweepLists like 1;2;3 as input.")
-				WAVE/T wvT = ListToTextWave(JSON_GetString(jsonID, jsonPath + "/0"), ";")
-				Make/FREE/N=(DimSize(wvT, ROWS)) out = str2num(wvT[p])
-			else
-				WAVE out = FormulaExecutor(jsonID, jsonPath = jsonPath, graph = graph)
-			endif
-			break
 		case "data":
 			/// `data(array range,array channels,array sweeps)`
 			///

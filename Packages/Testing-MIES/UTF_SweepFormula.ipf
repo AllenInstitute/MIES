@@ -592,9 +592,6 @@ static Function arrayExpansion()
 	Make/N=10/U/I/FREE testwave = p
 	REQUIRE_EQUAL_WAVES(output, testwave, mode = WAVE_DATA)
 
-	WAVE output = FormulaExecutor(FormulaParser(FormulaPreParser("listToArray(0;1;2;3;4;5;6;7;8;9;)")))
-	REQUIRE_EQUAL_WAVES(output, testwave, mode = WAVE_DATA)
-
 	WAVE output = FormulaExecutor(FormulaParser("range(1,10,2)"))
 	Make/N=5/U/I/FREE testwave = 1 + p * 2
 	REQUIRE_EQUAL_WAVES(output, testwave, mode = WAVE_DATA)
