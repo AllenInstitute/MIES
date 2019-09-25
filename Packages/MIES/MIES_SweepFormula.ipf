@@ -39,6 +39,23 @@ Function FormulaCheck(condition, message)
 	endif
 End
 
+/// @brief output an error message to a global variable in dfr
+Function FormulaError(dfr, condition, message)
+	DFREF dfr
+	Variable condition
+	String message
+
+	if(!condition)
+		SVAR/Z error = dfr:sweepFormulaParseResult
+		if(!SVAR_EXISTS(error))
+			String/G dfr:sweepFormulaParseResult
+			SVAR error = dfr:sweepFormulaParseResult
+		endif
+		error = message
+		Abort message
+	endif
+End
+
 /// @brief preparse user input to correct formula patterns
 ///
 /// @return parsed formula
@@ -735,10 +752,10 @@ Function FormulaPlotter(graph, formula, [dfr])
 	endif
 
 	SplitString/E=SWEEPFORMULA_REGEXP formula, formula0, formula1
-	ASSERT(V_Flag == 2 || V_flag == 1, "Display command must follow the \"y[ vs x]\" pattern.")
+	FormulaError(dfr, V_Flag == 2 || V_flag == 1, "Display command must follow the \"y[ vs x]\" pattern.")
 	if(V_Flag == 2)
-		WAVE wv = FormulaExecutor(FormulaParser(FormulaPreParser(formula1)), graph = graph)
-		ASSERT(WaveExists(wv), "Error in x part of formula.")
+		WAVE/Z wv = FormulaExecutor(FormulaParser(FormulaPreParser(formula1)), graph = graph)
+		FormulaError(dfr, WaveExists(wv), "Error in x part of formula.")
 		Redimension/N=(-1, max(1, DimSize(wv, LAYERS)) * max(1, DimSize(wv, COLS)))/E=1 wv
 		if(WaveType(wv, 1) == 2)
 			Duplicate/O wv dfr:xFormulaT/WAVE = wvX
@@ -747,8 +764,8 @@ Function FormulaPlotter(graph, formula, [dfr])
 		endif
 		WaveClear wv
 	endif
-	WAVE wv = FormulaExecutor(FormulaParser(FormulaPreParser(formula0)), graph = graph)
-	ASSERT(WaveExists(wv), "Error in y part of formula.")
+	WAVE/Z wv = FormulaExecutor(FormulaParser(FormulaPreParser(formula0)), graph = graph)
+	FormulaError(dfr, WaveExists(wv), "Error in y part of formula.")
 	Redimension/N=(-1, max(1, DimSize(wv, LAYERS)) * max(1, DimSize(wv, COLS)))/E=1 wv
 	if(WaveType(wv, 1) == 2)
 		Duplicate/O wv dfr:yFormulaT/WAVE = wvY
