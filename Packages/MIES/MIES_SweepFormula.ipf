@@ -782,6 +782,16 @@ Function FormulaPlotter(graph, formula, [dfr])
 	WAVE cursorInfos = GetCursorInfos(win)
 	WAVE axesRanges = GetAxesRanges(win)
 	RemoveTracesFromGraph(win)
+	ModifyGraph/W=$win swapXY = 0
+
+	FormulaError(dfr, !(WaveType(wvY, 1) == 2 && WaveType(wvX, 1) == 2), "One wave needs to be numeric for plotting")
+	if(WaveType(wvY, 1) == 2 && WaveExists(wvX))
+		FormulaError(dfr, WaveExists(wvX), "Cannot plot a single text wave")
+		ModifyGraph/W=$win swapXY = 1
+		WAVE dummy = wvY
+		WAVE wvY = wvX
+		WAVE wvX = dummy
+	endif
 
 	if(!WaveExists(wvX))
 		numTraces = DimSize(wvY, COLS)
