@@ -811,6 +811,11 @@ Function/WAVE GetSweepForFormula(graph, rangeStart, rangeEnd, channelType, chann
 		return $""
 	endif
 
+	Make/FREE/T/N=(numSweeps) experiments
+	experiments[] = traces[indices][%experiment]
+	WAVE/Z uniqueExperiments = GetUniqueEntries(experiments)
+	ASSERT(DimSize(uniqueExperiments, ROWS) == 1, "Sweep data is from more than one experiment. This is currently not supported.")
+
 	WAVE reference = $(traces[indices[0]][%fullPath])
 	ASSERT(DimSize(reference, COLS) <= 1, "Unhandled Sweep Format.")
 
