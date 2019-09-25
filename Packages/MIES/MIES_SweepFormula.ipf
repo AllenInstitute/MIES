@@ -744,6 +744,7 @@ Function FormulaPlotter(graph, formula, [dfr])
 
 	String formula0, formula1, trace, axes
 	Variable i, numTraces
+	Variable dim1Y, dim2Y, dim1X, dim2X
 	String win = "FormulaPlot"
 	String traceName = "formula"
 
@@ -756,6 +757,8 @@ Function FormulaPlotter(graph, formula, [dfr])
 	if(V_Flag == 2)
 		WAVE/Z wv = FormulaExecutor(FormulaParser(FormulaPreParser(formula1)), graph = graph)
 		FormulaError(dfr, WaveExists(wv), "Error in x part of formula.")
+		dim1X = DimSize(wv, COLS)
+		dim2X = DimSize(wv, LAYERS)
 		Redimension/N=(-1, max(1, DimSize(wv, LAYERS)) * max(1, DimSize(wv, COLS)))/E=1 wv
 		if(WaveType(wv, 1) == 2)
 			Duplicate/O wv dfr:xFormulaT/WAVE = wvX
@@ -766,6 +769,8 @@ Function FormulaPlotter(graph, formula, [dfr])
 	endif
 	WAVE/Z wv = FormulaExecutor(FormulaParser(FormulaPreParser(formula0)), graph = graph)
 	FormulaError(dfr, WaveExists(wv), "Error in y part of formula.")
+	dim1Y = DimSize(wv, COLS)
+	dim2Y = DimSize(wv, LAYERS)
 	Redimension/N=(-1, max(1, DimSize(wv, LAYERS)) * max(1, DimSize(wv, COLS)))/E=1 wv
 	if(WaveType(wv, 1) == 2)
 		Duplicate/O wv dfr:yFormulaT/WAVE = wvY
@@ -853,6 +858,10 @@ Function FormulaPlotter(graph, formula, [dfr])
 			endif
 		endfor
 	endif
+
+	// @todo preserve channel information in LAYERS
+	// Redimension/N=(-1, dim1Y, dim2Y)/E=1 wvY
+	// Redimension/N=(-1, dim1X, dim2X)/E=1 wvX
 
 	axes = AxisList(win)
 	if(WhichListItem("bottomText", axes) != -1)
