@@ -201,8 +201,14 @@ End
 Function RA_Counter(panelTitle)
 	string panelTitle
 
-	variable numTotalSweeps, indexing, indexingLocked
+	variable numTotalSweeps, indexing, indexingLocked, runMode
 	string str
+
+	runMode = ROVar(GetDataAcqRunMode(panelTitle))
+
+	if(runMode == DAQ_NOT_RUNNING)
+		return NaN
+	endif
 
 	DAP_ApplyDelayedClampModeChange(panelTitle)
 
@@ -326,8 +332,14 @@ Function RA_CounterMD(panelTitle)
 	variable numTotalSweeps, activeSetCountMax
 	NVAR count = $GetCount(panelTitle)
 	NVAR activeSetCount = $GetActiveSetCount(panelTitle)
-	variable i, indexing, indexingLocked, numFollower, followerActiveSetCount
+	variable i, indexing, indexingLocked, numFollower, followerActiveSetCount, runMode
 	string str, followerPanelTitle
+
+	runMode = ROVar(GetDataAcqRunMode(panelTitle))
+
+	if(runMode == DAQ_NOT_RUNNING)
+		return NaN
+	endif
 
 	DAP_ApplyDelayedClampModeChange(panelTitle)
 

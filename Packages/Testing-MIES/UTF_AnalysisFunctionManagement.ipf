@@ -1029,7 +1029,7 @@ static Function AFT9([str])
 	STRUCT DAQSettings s
 	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG_1")
 
-	AcquireData(s, "AnaFuncValid2_DA*", str)
+	AcquireData(s, "AnaFuncValid3Lon_DA*", str)
 	CtrlNamedBackGround Abort_ITI_PressAcq, start=(ticks + 3), period=30, proc=StopAcq_IGNORE
 End
 
@@ -1056,44 +1056,10 @@ static Function AFT9_REENTRY([str])
 	CHECK_EQUAL_VAR(anaFuncTracker[GENERIC_EVENT], 0)
 
 	WAVE/T textualValues = GetLBTextualValues(str)
-	key = StringFromList(PRE_DAQ_EVENT, EVENT_NAME_LIST_LBN)
-	WAVE/T/Z anaFuncs = GetLastSetting(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
-	CHECK_WAVE(anaFuncs, TEXT_WAVE)
-	CHECK_EQUAL_TEXTWAVES(anaFuncs, {"ValidFunc_V2", "", "", "", "", "", "", "", ""})
-
-	key = StringFromList(PRE_SET_EVENT, EVENT_NAME_LIST_LBN)
-	WAVE/T/Z anaFuncs = GetLastSetting(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
-	CHECK_WAVE(anaFuncs, TEXT_WAVE)
-	CHECK_EQUAL_TEXTWAVES(anaFuncs, {"ValidFunc_V2", "", "", "", "", "", "", "", ""})
-
-	key = StringFromList(PRE_SWEEP_EVENT, EVENT_NAME_LIST_LBN)
-	WAVE/T/Z anaFuncs = GetLastSetting(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
-	CHECK_WAVE(anaFuncs, TEXT_WAVE)
-	CHECK_EQUAL_TEXTWAVES(anaFuncs, {"ValidFunc_V2", "", "", "", "", "", "", "", ""})
-
-	key = StringFromList(MID_SWEEP_EVENT, EVENT_NAME_LIST_LBN)
-	WAVE/T/Z anaFuncs = GetLastSetting(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
-	CHECK_WAVE(anaFuncs, TEXT_WAVE)
-	CHECK_EQUAL_TEXTWAVES(anaFuncs, {"ValidFunc_V2", "", "", "", "", "", "", "", ""})
-
-	key = StringFromList(POST_SWEEP_EVENT, EVENT_NAME_LIST_LBN)
-	WAVE/T/Z anaFuncs = GetLastSetting(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
-	CHECK_WAVE(anaFuncs, TEXT_WAVE)
-	CHECK_EQUAL_TEXTWAVES(anaFuncs, {"ValidFunc_V2", "", "", "", "", "", "", "", ""})
-
-	key = StringFromList(POST_SET_EVENT, EVENT_NAME_LIST_LBN)
-	WAVE/T/Z anaFuncs = GetLastSetting(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
-	CHECK_WAVE(anaFuncs, TEXT_WAVE)
-	CHECK_EQUAL_TEXTWAVES(anaFuncs, {"ValidFunc_V2", "", "", "", "", "", "", "", ""})
-
-	key = StringFromList(POST_DAQ_EVENT, EVENT_NAME_LIST_LBN)
-	WAVE/T/Z anaFuncs = GetLastSetting(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
-	CHECK_WAVE(anaFuncs, TEXT_WAVE)
-	CHECK_EQUAL_TEXTWAVES(anaFuncs, {"ValidFunc_V2", "", "", "", "", "", "", "", ""})
-
 	key = StringFromList(GENERIC_EVENT, EVENT_NAME_LIST_LBN)
 	WAVE/T/Z anaFuncs = GetLastSetting(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
-	CHECK_WAVE(anaFuncs, NULL_WAVE)
+	CHECK_WAVE(anaFuncs, TEXT_WAVE)
+	CHECK_EQUAL_TEXTWAVES(anaFuncs, {"ValidFunc_V3", "", "", "", "", "", "", "", ""})
 End
 
 // DAQ works if the analysis function can not be found

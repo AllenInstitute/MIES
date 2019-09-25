@@ -390,6 +390,12 @@ Function StopAcq_IGNORE(s)
 
 	SVAR devices = $GetDevicePanelTitleList()
 	string device = StringFromList(0, devices)
+	variable runMode = ROVAR(GetDataAcqRunMode(device))
+
+	if(runMode == DAQ_NOT_RUNNING)
+		return 0
+	endif
+
 	PGC_SetAndActivateControl(device, "DataAcquireButton")
 
 	return 1
