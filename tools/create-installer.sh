@@ -54,16 +54,17 @@ echo "!define NSISINSTDIRLIST \"$NSISINSTDIRLIST\"" >> installer/$NSISDEFINCS
 echo "!define NSISUNINSTFILELIST \"$NSISUNINSTFILELIST\"" >> installer/$NSISDEFINCS
 echo "!define NSISUNINSTDIRLIST \"$NSISUNINSTDIRLIST\"" >> installer/$NSISDEFINCS
 
+# Create include to set installer file name
+echo "$zipfile" > installer/$NSISOUTFILE
+sed -i 's/.zip/.exe/;s/.*/outFile \"MIES-&\"/' installer/$NSISOUTFILE
+
 if [ "$#" -eq 0 ]
 then
   echo "RequestExecutionLevel admin" > installer/$NSISREQUEST
 else
   echo "RequestExecutionLevel user" > installer/$NSISREQUEST
+  sed -i 's/\.exe/-cis.exe/' installer/$NSISOUTFILE
 fi
-
-# Create include to set installer file name
-echo "$zipfile" > installer/$NSISOUTFILE
-sed -i 's/.zip/.exe/;s/.*/outFile \"MIES-&\"/' installer/$NSISOUTFILE
 
 # --- Extract Source Files ---
 tmpdir=$(mktemp --tmpdir=. -d)
