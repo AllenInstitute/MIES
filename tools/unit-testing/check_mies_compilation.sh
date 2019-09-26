@@ -2,6 +2,8 @@
 
 set -e
 
+rm -rf input.txt define.txt
+
 echo MIES_Include >> input.txt
 
 # test UTF includes as well
