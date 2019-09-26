@@ -4365,7 +4365,12 @@ Function GetASLREnabledState()
 
 	sprintf cmd, "powershell.exe -nologo -noprofile -command \"Get-ProcessMitigation -Name '%s'\"", GetWindowsPath(GetIgorExecutable())
 
+#ifdef IGOR64
 	ExecuteScriptText/B/Z cmd
+#else
+	ExecuteScriptText/Z cmd
+#endif
+
 	ASSERT(!V_flag, "Error executing process mitigation querying script.")
 	result = S_Value
 
