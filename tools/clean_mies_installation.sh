@@ -5,7 +5,7 @@
 
 usage()
 {
-  echo "Usage: $0 [-x skipHardwareXOPs] [-s [git|release]]" 1>&2
+  echo "Usage: $0 [-x skipHardwareXOPs] [-s [git|release|installer]]" 1>&2
   exit 1
 }
 
@@ -29,6 +29,9 @@ while getopts ":x:s:" o; do
             elif [ "${OPTARG}" = "release" ]
             then
               sourceLoc=release
+            elif [ "${OPTARG}" = "installer" ]
+            then
+              sourceLoc=installer
             else
               usage
             fi
@@ -83,6 +86,9 @@ then
 
   # install files from release package
   "$UNZIP_EXE" "$release_pkg" -d $base_folder
+elif [ "$sourceLoc" = "installer" ]
+then
+  base_folder=$top_level
 fi
 
 versions="8"
@@ -101,10 +107,32 @@ do
   rm -rf "$IGOR_USER_FILES"
 
   user_proc="$IGOR_USER_FILES/User Procedures"
+  igor_proc="$IGOR_USER_FILES/Igor Procedures"
   xops64="$IGOR_USER_FILES/Igor Extensions (64-bit)"
   xops32="$IGOR_USER_FILES/Igor Extensions"
 
   mkdir -p "$user_proc"
+
+  # install testing files from git repo
+  mkdir -p "$user_proc/unit-testing"
+  cp -r  "$top_level"/Packages/unit-testing/procedures "$user_proc/unit-testing"
+  cp -r  "$top_level"/Packages/Testing-MIES  "$user_proc"
+
+  if [ "$sourceLoc" = "installer" ]
+  then
+    # requires an installer which does not trigger UAC
+    if [ "$skipHardwareXOPs" = "1" ]
+    then
+      MSYS_NO_PATHCONV=1 $base_folder/MIES-*.exe /S /CIS /SKIPHWXOPS
+    else
+      MSYS_NO_PATHCONV=1 $base_folder/MIES-*.exe /S /CIS
+    fi
+
+    # move shortcut to the main include file
+    # into user procedures so that we can compilation test it
+    mv "$igor_proc"/MIES_include.lnk "$user_proc"
+    continue
+  fi
 
   cp -r  "$base_folder"/Packages/Arduino  "$user_proc"
   cp -r  "$base_folder"/Packages/HDF-IP${i}  "$user_proc"
@@ -119,11 +147,6 @@ do
 
   mkdir -p "$user_proc/ITCXOP2"
   cp -r  "$base_folder"/Packages/ITCXOP2/tools "$user_proc/ITCXOP2"
-
-  # install testing files from git repo
-  mkdir -p "$user_proc/unit-testing"
-  cp -r  "$top_level"/Packages/unit-testing/procedures "$user_proc/unit-testing"
-  cp -r  "$top_level"/Packages/Testing-MIES  "$user_proc"
 
   mkdir -p "$xops32" "$xops64"
 
