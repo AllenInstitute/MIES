@@ -139,12 +139,14 @@ Function CHI_CheckInstallation()
 
 	printf "Igor %dbit: %s%s\r", archBits, StringByKey("IGORVERS", info), igorBuild
 	printf "Windows 10: %s\r", ToTrueFalse(IsWindows10())
-	if(IsWindows10())
+	if(IsWindows10() && archBits == 64)
 		aslrEnabled = GetASLREnabledState()
 		printf "ASLR: %s (%s)\r" ToTrueFalse(aslrEnabled), SelectString(aslrEnabled, "Nice!", "Very Bad")
 		if(aslrEnabled != 0)
 			state.numErrors += 1
 		endif
+	else
+		printf "ASLR: (not relevant)\r"
 	endif
 
 	printf "\rChecking base installation:\r"
