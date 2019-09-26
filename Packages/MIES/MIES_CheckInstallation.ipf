@@ -107,7 +107,7 @@ Function CHI_CheckInstallation()
 
 	string symbPath, allFiles, path, extName, info, igorBuild
 	string allFilesSystem, allFilesUser, listOfXOPs
-	variable aslrEnabled
+	variable aslrEnabled, archBits
 
 	symbPath = GetUniqueSymbolicPath()
 	extName  = GetIgorExtensionFolderName()
@@ -135,7 +135,9 @@ Function CHI_CheckInstallation()
 		igorBuild = ", " + igorBuild
 	endif
 
-	printf "Igor %dbit: %s%s\r", GetArchitectureBits(), StringByKey("IGORVERS", info), igorBuild
+	archBits = GetArchitectureBits()
+
+	printf "Igor %dbit: %s%s\r", archBits, StringByKey("IGORVERS", info), igorBuild
 	printf "Windows 10: %s\r", ToTrueFalse(IsWindows10())
 	if(IsWindows10())
 		aslrEnabled = GetASLREnabledState()
