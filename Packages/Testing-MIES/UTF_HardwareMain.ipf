@@ -71,10 +71,10 @@ Function/WAVE DeviceNameGeneratorMD1()
 
 #ifdef TESTS_WITH_YOKING
 	devList = AddListItem("ITC1600_dev_0;ITC1600_dev_1", devList, ":")
-	lblList = AddListItem("ITC_YOKED", lblList)
+	lblList = AddListItem("ITC600_YOKED", lblList)
 #else
 	devList = AddListItem("ITC1600_dev_0", devList, ":")
-	lblList = AddListItem("ITC", lblList)
+	lblList = AddListItem("ITC600", lblList)
 #endif
 
 #endif
