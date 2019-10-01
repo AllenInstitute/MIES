@@ -1173,3 +1173,10 @@ EndStructure
 StrConstant EPOCH_OODDAQ_REGION_KEY   = "oodDAQRegion"
 StrConstant EPOCH_BASELINE_REGION_KEY = "Baseline"
 /// @}
+
+/// @name Time parameter for SWS_GetChannelGains()
+/// @anchor GainTimeParameter
+/// @{
+Constant GAIN_BEFORE_DAQ = 0x1
+Constant GAIN_AFTER_DAQ  = 0x2
+/// @}

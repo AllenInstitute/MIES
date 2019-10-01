@@ -688,6 +688,8 @@ End
 ///
 /// Columns:
 /// - one for each active DA, AD, TTL channel (in that order)
+///
+/// For scaling and gain information see SWS_GetChannelGains().
 Function/Wave GetHardwareDataWave(panelTitle)
 	string panelTitle
 

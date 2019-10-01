@@ -1994,7 +1994,6 @@ Function HW_NI_PrepareAcq(deviceID, [data, dataFunc, config, configFunc, flags, 
 		if(ParamIsDefault(dataFunc))
 			WAVE/WAVE NIDataWave = GetHardwareDataWave(panelTitle)
 		else
-		// TODO
 			WAVE/WAVE NIDataWave = dataFunc(panelTitle)
 		endif
 	endif
@@ -2008,12 +2007,10 @@ Function HW_NI_PrepareAcq(deviceID, [data, dataFunc, config, configFunc, flags, 
 	endif
 
 	if(!ParamIsDefault(offset))
-		config[][%Offset] = offset
+		ASSERT(0, "Offset is not supported")
 	endif
-// TODO MH case offset not 0
 
-// Get AD Scaling
-	WAVE gain = SWS_GetChannelGains(panelTitle)
+	WAVE gain = SWS_GetChannelGains(panelTitle, timing = GAIN_BEFORE_DAQ)
 
 	fifoName = GetNIFIFOName(deviceID)
 	channels = DimSize(config, ROWS)

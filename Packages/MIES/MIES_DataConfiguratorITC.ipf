@@ -720,7 +720,7 @@ static Function DC_PlaceDataInHardwareDataWave(panelTitle, numActiveChannels, da
 	WAVE/T cellElectrodeNames = GetCellElectrodeNames(panelTitle)
 	WAVE/T analysisFunctions  = GetAnalysisFunctionStorage(panelTitle)
 	WAVE setEventFlag         = GetSetEventFlag(panelTitle)
-	WAVE DAGain 				  = SWS_GetChannelGains(panelTitle)
+	WAVE DAGain               = SWS_GetChannelGains(panelTitle, timing = GAIN_BEFORE_DAQ)
 	WAVE config               = GetITCChanConfigWave(panelTitle)
 	WAVE/T epochsWave         = GetEpochsWave(panelTitle)
 	epochsWave = ""
