@@ -4,8 +4,6 @@ set -e
 
 export DISPLAY=:0
 
-rm -f *.log *.xml
-
 runner=autorun-test.sh
 
 if [ -e $runner ]

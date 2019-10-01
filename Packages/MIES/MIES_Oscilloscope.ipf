@@ -266,11 +266,8 @@ Function SCOPE_CreateGraph(panelTitle, dataAcqOrTP)
 				AppendToGraph/W=$graph/L=$leftAxis/B=bottomDAQ OscilloscopeData[][numActiveDACs + i]/TN=$oscilloscopeTrace
 			endif
 
-#if (IgorVersion() >= 8.00)
 			// use fast line drawing
 			ModifyGraph/W=$graph live($oscilloscopeTrace)=(2^1)
-#endif
-
 			ModifyGraph/W=$graph axisEnab($leftAxis) = {YaxisLow, YaxisHigh}, freepos($leftAxis) = {0, kwFraction}
 			ModifyGraph/W=$graph lblPosMode($leftAxis)=4, lblPos($leftAxis) = 50
 		endif
@@ -290,10 +287,8 @@ Function SCOPE_CreateGraph(panelTitle, dataAcqOrTP)
 				ModifyGraph/W=$graph freepos($leftAxis) = {0, kwFraction}, axisEnab($leftAxis)= {YaxisLow, YaxisHigh}
 				ModifyGraph/W=$graph lblPosMode($leftAxis)=4, lblPos($leftAxis) = 50, log($leftAxis)=1
 				SetAxis/W=$graph/A=2/N=2 $leftAxis
-#if (IgorVersion() >= 8.00)
 				// use fast line drawing
 				ModifyGraph/W=$graph live($powerSpectrumTrace)=(2^1)
-#endif
 			endif
 
 			rightAxis = "resistance" + adcStr
@@ -303,9 +298,7 @@ Function SCOPE_CreateGraph(panelTitle, dataAcqOrTP)
 				AppendToGraph/W=$graph/R=$rightAxis/T=$AXIS_SCOPE_TP_TIME TPStorage[][headstage][%PeakResistance]/TN=$peakTrace vs TPStorage[][headstage][%DeltaTimeInSeconds]
 				SetAxis/W=$graph/A=2/N=1 $rightAxis
 				ModifyGraph/W=$graph fSize($rightAxis)=10,grid($rightAxis)=1,gridStyle($rightAxis)=4,gridRGB($rightAxis)=(0,0,0,3277)
-#if (IgorVersion() >= 8.00)
 				ModifyGraph/W=$graph live($peakTrace)=(2^1)
-#endif
 				ModifyGraph/W=$graph lstyle($peakTrace)=1, rgb($peakTrace)=(peakColor.red, peakColor.green, peakColor.blue)
 				ModifyGraph/W=$graph mode($peakTrace)=2
 			endif
@@ -327,11 +320,9 @@ Function SCOPE_CreateGraph(panelTitle, dataAcqOrTP)
 				else
 					ModifyGraph/W=$graph lstyle($steadyStateTrace)=1, rgb($steadyStateTrace)=(steadyColor.red, steadyColor.green, steadyColor.blue)
 				endif
-#if (IgorVersion() >= 8.00)
-				ModifyGraph/W=$graph live($steadyStateTrace)=(2^1)
-#endif
-				ModifyGraph/W=$graph mode($steadyStateTrace)=2
 
+				ModifyGraph/W=$graph live($steadyStateTrace)=(2^1)
+				ModifyGraph/W=$graph mode($steadyStateTrace)=2
 			endif
 
 			if(showPeakResistance || showSteadyStateResistance)

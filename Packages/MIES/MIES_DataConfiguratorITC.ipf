@@ -1462,7 +1462,6 @@ static Function DC_CheckIfDataWaveHasBorderVals(panelTitle)
 			ASSERT(WaveExists(ITCDataWave), "Missing HardwareDataWave")
 			ASSERT(WaveType(ITCDataWave) == IGOR_TYPE_16BIT_INT, "Unexpected wave type: " + num2str(WaveType(ITCDataWave)))
 
-#if (IgorVersion() >= 8.00)
 			FindValue/UOFV/I=(SIGNED_INT_16BIT_MIN) ITCDataWave
 
 			if(V_Value != -1)
@@ -1476,11 +1475,6 @@ static Function DC_CheckIfDataWaveHasBorderVals(panelTitle)
 			endif
 
 			return 0
-#else
-			matrixop/FREE result = equal(minval(ITCDataWave), SIGNED_INT_16BIT_MIN) || equal(maxval(ITCDataWave), SIGNED_INT_16BIT_MAX)
-
-			return result[0] > 0
-#endif
 			break
 		case HARDWARE_NI_DAC:
 			WAVE/WAVE NIDataWave = GetHardwareDataWave(panelTitle)
@@ -1489,27 +1483,21 @@ static Function DC_CheckIfDataWaveHasBorderVals(panelTitle)
 			variable i
 			for(i = 0; i < channels; i += 1)
 				WAVE NIChannel = NIDataWave[i]
-#if (IgorVersion() >= 8.00)
-			FindValue/UOFV/V=(NI_DAC_MIN)/T=1E-6 NIChannel
 
-			if(V_Value != -1)
-				return 1
-			endif
+				FindValue/UOFV/V=(NI_DAC_MIN)/T=1E-6 NIChannel
 
-			FindValue/UOFV/V=(NI_DAC_MAX)/T=1E-6 NIChannel
+				if(V_Value != -1)
+					return 1
+				endif
 
-			if(V_Value != -1)
-				return 1
-			endif
+				FindValue/UOFV/V=(NI_DAC_MAX)/T=1E-6 NIChannel
 
-			return 0
-#else
-			// note: equal should work in the 10 V range ?!?
-			matrixop/FREE result = equal(minval(NIChannel), NI_DAC_MIN) || equal(maxval(NIChannel), NI_DAC_MAX)
+				if(V_Value != -1)
+					return 1
+				endif
 
-			return result[0] > 0
-#endif
-	endfor
+				return 0
+			endfor
 			break
 	endswitch
 End

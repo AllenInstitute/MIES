@@ -150,15 +150,7 @@ Function ASSERT(var, errorMsg)
 		print "MIES version:"
 		print miesVersionStr
 		print "################################"
-#endif // AUTOMATED_TESTING
 
-		// --- Cleanup functions
-#if (IgorVersion() < 8.00)
-		ASYNC_Stop(timeout=1, fromAssert=1)
-#endif
-		// --- End of cleanup functions
-
-#ifndef AUTOMATED_TESTING
 		ControlWindowToFront()
 		Debugger
 #endif // AUTOMATED_TESTING
@@ -1566,8 +1558,6 @@ Function/Wave FindIndizes(numericOrTextWave, [col, colLabel, var, str, prop, sta
 	return result
 End
 
-#if (IgorVersion() >= 8.00)
-
 /// @brief Returns a reference to a newly created datafolder
 ///
 /// Basically a datafolder aware version of UniqueName for datafolders
@@ -1630,74 +1620,6 @@ threadsafe Function/S UniqueDataFolderName(dfr, baseName)
 
 	return ""
 End
-
-#else
-
-/// @brief Returns a reference to a newly created datafolder
-///
-/// Basically a datafolder aware version of UniqueName for datafolders
-///
-/// @param dfr 	    datafolder reference where the new datafolder should be created
-/// @param baseName first part of the datafolder, might be shortend due to Igor Pro limitations
-Function/DF UniqueDataFolder(dfr, baseName)
-	dfref dfr
-	string baseName
-
-	string path
-
-	ASSERT(!isEmpty(baseName), "baseName must not be empty" )
-
-	// shorten basename so that we can attach some numbers
-	baseName = CleanupName(baseName[0, 26], 0)
-
-	path = UniqueDataFolderName(dfr, basename)
-
-	if(isEmpty(path))
-		return $""
-	endif
-
-	NewDataFolder $path
-	return $path
-End
-
-/// @brief Return a unique data folder name which does not exist in dfr
-///
-/// If you want to have the datafolder created for you and don't need a
-/// threadsafe function, use UniqueDataFolder() instead.
-///
-/// @param dfr      datafolder to search
-/// @param baseName first part of the datafolder, must be a *valid* Igor Pro object name
-///
-/// @todo use CleanupName for baseName once that is threadsafe
-threadsafe Function/S UniqueDataFolderName(dfr, baseName)
-	DFREF dfr
-	string baseName
-
-	variable index
-	string basePath, path
-
-	ASSERT_TS(!isEmpty(baseName), "baseName must not be empty" )
-	ASSERT_TS(DataFolderExistsDFR(dfr), "dfr does not exist")
-
-	basePath = GetDataFolder(1, dfr)
-	path = basePath + baseName
-
-	do
-		if(!DataFolderExists(path))
-			return path
-		endif
-
-		path = basePath + baseName + "_" + num2istr(index)
-
-		index += 1
-	while(index < 10000)
-
-	DEBUGPRINT_TS("Could not find a unique folder with 10000 trials")
-
-	return ""
-End
-
-#endif
 
 /// @brief Returns a wave name not used in the given datafolder
 ///
@@ -3533,8 +3455,6 @@ Function/WAVE ExtractFromSubrange(listOfRanges, dim)
 	return ranges
 End
 
-#if (IgorVersion() >= 8.00)
-
 /// @brief Check if a name for an object adheres to the strict naming rules
 ///
 /// @see `DisplayHelpTopic "ObjectName"`
@@ -3543,19 +3463,6 @@ threadsafe Function IsValidObjectName(wvName)
 
 	return !cmpstr(wvName, CleanupName(wvName, 0, MAX_OBJECT_NAME_LENGTH_IN_BYTES))
 End
-
-#else
-
-/// @brief Check if a name for an object adheres to the strict naming rules
-///
-/// @see `DisplayHelpTopic "ObjectName"`
-Function IsValidObjectName(wvName)
-	string wvName
-
-	return !cmpstr(wvName, CleanupName(wvName, 0))
-End
-
-#endif
 
 /// @brief Find an integer `x` which is larger than `a` but the
 /// smallest possible power of `p`.
@@ -4186,12 +4093,7 @@ Function WaveModCountWrapper(wv)
 
 	ASSERT(!IsFreeWave(wv), "Can not work with free waves")
 
-#if (IgorVersion() >= 8.00)
 	return WaveModCount(wv)
-#else
-	return MU_WaveModCount(wv)
-#endif
-
 End
 
 // @brief Convert a number to the strings `Passed` (!= 0) or `Failed` (0).
@@ -4463,7 +4365,12 @@ Function GetASLREnabledState()
 
 	sprintf cmd, "powershell.exe -nologo -noprofile -command \"Get-ProcessMitigation -Name '%s'\"", GetWindowsPath(GetIgorExecutable())
 
+#ifdef IGOR64
 	ExecuteScriptText/B/Z cmd
+#else
+	ExecuteScriptText/Z cmd
+#endif
+
 	ASSERT(!V_flag, "Error executing process mitigation querying script.")
 	result = S_Value
 

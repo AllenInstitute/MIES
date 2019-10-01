@@ -1,14 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<testsuites>
-	<testsuite package="Procedure" id="0" name="Procedure" timestamp="2018-11-11T15:26:38Z+01:00" hostname="THOMAS-WIN7-X64" tests="1" failures="0" errors="1" skipped="0" disabled="0" time="0.019">
-		<properties>
-		</properties>
-		<testcase name="TestRunTimedOut in Procedure (48)" classname="TestRunTimedOut" time="0.010">
-			<error message="0: is false  Assertion &quot;FAIL()&quot; failed in line 10, procedure &quot;Procedure&quot;" type="FAIL"></error>
-		<system-out>Entering test case &quot;TestRunTimedOut&quot;0: is falseAssertion &quot;FAIL()&quot; failed in line 10, procedure &quot;Procedure&quot;Leaving test case &quot;TestRunTimedOut&quot;</system-out>
-		<system-err>0: is false  Assertion &quot;FAIL()&quot; failed in line 10, procedure &quot;Procedure&quot;</system-err>
-		</testcase>
-		<system-out>Entering test case &quot;TestRunTimedOut&quot;0: is falseAssertion &quot;FAIL()&quot; failed in line 10, procedure &quot;Procedure&quot;Leaving test case &quot;TestRunTimedOut&quot;</system-out>
-		<system-err>0: is false  Assertion &quot;FAIL()&quot; failed in line 10, procedure &quot;Procedure&quot;</system-err>
-	</testsuite>
-</testsuites>

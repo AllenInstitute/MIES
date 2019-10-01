@@ -808,7 +808,7 @@ INPUT                  = . \
                          ../MIES \
                          ../IPNWB \
                          .. \
-                         ../../tools/compilation-testing \
+                         ../../tools/unit-testing \
                          ../ZeroMQ/xop-stub-generator/interface.h \
                          ../ZeroMQ/procedures/ZeroMQ_Interop.ipf
 

@@ -132,11 +132,6 @@ threadsafe static Function ASYNC_Thread()
 			dfrOut = f(dfrInp);AbortOnRTE
 		catch
 			err = GetRTError(1)
-#if (IgorVersion() >= 7.00 && IgorVersion() < 8.00)
-			if(!err)
-				return 0
-			endif
-#endif
 			errmsg = GetErrMessage(err)
 		endtry
 
@@ -146,40 +141,9 @@ threadsafe static Function ASYNC_Thread()
 
 		elseif(DataFolderExistsDFR(dfrOut))
 
-#if (IgorVersion() >= 8.00)
 			MoveDataFolder dfrOut, dfrAsync
 			RenameDataFolder dfrOut, freeroot
-#else
-			// MoveDataFolder does not work reliable with
-			// regular to free, WM bug report sent on 10/12/2018
-			// fixed in build 32616
-			SetDataFolder root:
-			dataFolder = UniqueDataFolderName($":", "temp")
-			NewDataFolder $dataFolder
-			DFREF dfrTemp = $dataFolder
-			MoveDataFolder dfrOut, dfrTemp
-			RenameDataFolder dfrOut, freeroot
 
-			WAVE w = dfrAsync:workerID
-			Duplicate w, dfrTemp:workerID
-			SVAR s = dfrAsync:$ASYNC_READOUTFUNC_STR
-			string/G dfrTemp:$ASYNC_READOUTFUNC_STR = s
-			SVAR s = dfrAsync:$ASYNC_WORKLOADID_STR
-			string/G dfrTemp:$ASYNC_WORKLOADID_STR = s
-			NVAR v = dfrAsync:$ASYNC_INORDER_STR
-			variable/G dfrTemp:$ASYNC_INORDER_STR = v
-			if(v)
-				NVAR v = dfrAsync:$ASYNC_ORDERID_STR
-				variable/G dfrTemp:$ASYNC_ORDERID_STR = v
-			endif
-
-			SVAR s = dfrAsync:$ASYNC_ERRORMSG_STR
-			string/G dfrTemp:$ASYNC_ERRORMSG_STR = s
-			NVAR v = dfrAsync:$ASYNC_ERROR_STR
-			variable/G dfrTemp:$ASYNC_ERROR_STR = v
-
-			dfrAsync = dfrTemp
-#endif
 		else
 
 			NewDataFolder dfrAsync:freeroot
@@ -682,15 +646,7 @@ static Function ASSERT(var, errorMsg)
 		print "################################"
 		print GetStackTrace()
 		print "################################"
-#endif // AUTOMATED_TESTING
 
-		// --- Cleanup functions
-#if (IgorVersion() < 8.00)
-		ASYNC_Stop(timeout=1, fromAssert=1)
-#endif
-		// --- End of cleanup functions
-
-#ifndef AUTOMATED_TESTING
 		DoWindow/H
 		Debugger
 #endif // AUTOMATED_TESTING
@@ -730,8 +686,6 @@ threadsafe static Function ASSERT_TS(var, errorMsg)
 	endtry
 End
 
-#if (IgorVersion() >= 8.00)
-
 /// @brief Return a unique data folder name which does not exist in dfr
 ///
 /// If you want to have the datafolder created for you and don't need a
@@ -770,47 +724,6 @@ threadsafe static Function/S UniqueDataFolderName(dfr, baseName)
 
 	return ""
 End
-
-#else
-
-/// @brief Return a unique data folder name which does not exist in dfr
-///
-/// If you want to have the datafolder created for you and don't need a
-/// threadsafe function, use UniqueDataFolder() instead.
-///
-/// @param dfr      datafolder to search
-/// @param baseName first part of the datafolder, must be a *valid* Igor Pro object name
-///
-/// @todo use CleanupName for baseName once that is threadsafe
-threadsafe static Function/S UniqueDataFolderName(dfr, baseName)
-	DFREF dfr
-	string baseName
-
-	variable index
-	string basePath, path
-
-	ASSERT_TS(!isEmpty(baseName), "baseName must not be empty" )
-	ASSERT_TS(DataFolderExistsDFR(dfr), "dfr does not exist")
-
-	basePath = GetDataFolder(1, dfr)
-	path = basePath + baseName
-
-	do
-		if(!DataFolderExists(path))
-			return path
-		endif
-
-		path = basePath + baseName + "_" + num2istr(index)
-
-		index += 1
-	while(index < 10000)
-
-	DEBUGPRINT_TS("Could not find a unique folder with 10000 trials")
-
-	return ""
-End
-
-#endif
 
 /// @brief Check wether the function reference points to
 /// the prototype function or to an assigned function

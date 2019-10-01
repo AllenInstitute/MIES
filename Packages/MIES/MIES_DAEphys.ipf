@@ -1220,18 +1220,12 @@ Function DAP_OneTimeCallBeforeDAQ(panelTitle, runMode)
 
 	RA_StepSweepsRemaining(panelTitle)
 
-#if (IgorVersion() >= 8.00)
 	NWB_StartThreadGroup()
-#endif
 
 	if(DC_GotTPChannelWhileDAQ(panelTitle))
 		TP_SetupCommon(panelTitle)
 		P_InitBeforeTP(panelTitle)
 	endif
-
-#if (IgorVersion() < 8.00)
-	ASYNC_Start(ThreadProcessorCount, disableTask=1)
-#endif
 End
 
 static Function DAP_ResetClampModeTitle(panelTitle, ctrl)
@@ -1306,10 +1300,6 @@ Function DAP_OneTimeCallAfterDAQ(panelTitle, [forcedStop, startTPAfterDAQ])
 		AFM_CallAnalysisFunctions(panelTitle, POST_DAQ_EVENT)
 	endif
 
-#if (IgorVersion() < 8.00)
-	StopAsyncIfDone()
-#endif
-
 	hardwareType = GetHardwareType(panelTitle)
 	switch(hardwareType)
 		case HARDWARE_NI_DAC:
@@ -1342,11 +1332,9 @@ Function DAP_OneTimeCallAfterDAQ(panelTitle, [forcedStop, startTPAfterDAQ])
 		IDX_ResetStartFinishForIndexing(panelTitle)
 	endif
 
-#if (IgorVersion() >= 8.00)
 	NVAR tgID = $GetNWBThreadID()
 	TS_StopThreadGroup(tgID)
 	tgID = NaN
-#endif
 
 	if(DC_GotTPChannelWhileDAQ(panelTitle))
 		TP_TeardownCommon(panelTitle)
@@ -4601,9 +4589,7 @@ Function DAP_LockDevice(panelTitle)
 		DAP_LoadBuiltinStimsets()
 		GetPxPVersion()
 		SetupBackgroundTasks()
-#if (IgorVersion() >= 8.00)
 		CtrlNamedBackground _all_, noevents=1
-#endif
 	endif
 
 	WAVE deviceInfo = GetDeviceInfoWave(panelTitle)

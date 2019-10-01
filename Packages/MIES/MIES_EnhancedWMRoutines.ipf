@@ -134,23 +134,13 @@ Function MIES_fWaveAverage(ListOfWaves, ListOfXWaves, ErrorType, ErrorInterval, 
 	if( doPointForPoint )
 		Make/N=(maxLength)/D/FREE AveW, TempNWave
 
-#if (IgorVersion() >= 8.00)
 		Concatenate/FREE ListOfWaves, fullWave
 		MatrixOP/FREE AveW      = sumRows(replaceNaNs(fp64(fullWave), 0))
 		MatrixOP/FREE TempNWave = sumRows(equal(numtype(fullWave), 0))
 		WaveClear fullWave
-#endif
 
 		Wave w=$StringFromList(0,ListOfWaves)
 		CopyScales/P w, AveW, TempNWave
-
-#if (IgorVersion() < 8.00)
-		for (i = 0; i < numWaves; i += 1)
-			WAVE w=$StringFromList(i,ListOfWaves)
-			MultiThread AveW[]      += !numtype(w[p]) * w[p]
-			MultiThread TempNWave[] += !numtype(w[p])
-		endfor
-#endif
 
 		MultiThread AveW /= TempNWave
 		Duplicate/O AveW, $AveName
