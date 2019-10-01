@@ -2223,9 +2223,36 @@ Function/S GetDeviceTestPulseAsString(panelTitle)
 	return GetDevicePathAsString(panelTitle) + ":TestPulse"
 End
 
+/// @brief Return a wave which holds undecimated and scaled data
+///
+/// Rows:
+/// - StopCollectionPoint
+///
+/// Cols:
+/// - Number of active channels
+///
+/// Type:
+/// - FP32 or FP64, as returned by SWS_GetRawDataFPType()
+Function/Wave GetScaledDataWave(panelTitle)
+	string panelTitle
+
+	dfref dfr = GetDevicePath(panelTitle)
+	WAVE/Z/SDFR=dfr wv = ScaledData
+
+	if(WaveExists(wv))
+		return wv
+	endif
+
+	Make/Y=(SWS_GetRawDataFPType(panelTitle))/N=(1, NUM_DA_TTL_CHANNELS) dfr:ScaledData/Wave=wv
+
+	return wv
+End
+
 /// @brief Return a wave for displaying scaled data in the oscilloscope window
+///
+/// Contents can be decimated for faster display.
 Function/Wave GetOscilloscopeWave(panelTitle)
-	string 	panelTitle
+	string panelTitle
 
 	dfref dfr = GetDevicePath(panelTitle)
 	WAVE/Z/SDFR=dfr wv = OscilloscopeData
@@ -2240,8 +2267,15 @@ Function/Wave GetOscilloscopeWave(panelTitle)
 End
 
 /// @brief Return a wave for displaying scaled TP data in the oscilloscope window
+///        for the "TP during DAQ" channels
+///
+/// Rows:
+/// - Holds exactly one TP
+///
+/// Cols:
+/// - DA/AD/TTLs data, same order as GetHardwareDataWave()
 Function/Wave GetTPOscilloscopeWave(panelTitle)
-	string 	panelTitle
+	string panelTitle
 
 	dfref dfr = GetDevicePath(panelTitle)
 	WAVE/Z/SDFR=dfr wv = TPOscilloscopeData
@@ -5881,12 +5915,12 @@ Function/WAVE GetExpConfigKeyTypes()
 	Make/FREE/T stringKeys = {ITC_DEV_TYPE, ITC_DEV_NUM, AMP_TITLE, AMP_SERIAL, PRESSURE_DEV, PRESSURE_CONST, \
 							  ACTIVE_HEADSTAGES, ASYNC_CH00, ASYNC_CH01, ASYNC_UNIT, SAVE_PATH,               \
 							  POSITION_MCC, STIMSET_NAME, FIRST_STIM_VC_ALL, FIRST_STIM_IC_ALL,               \
-							  USER_PRESSURE_DEV, USER_PRESSURE_DEV_ADC}
+							  USER_PRESSURE_DEV, USER_PRESSURE_DEV_ADC, DECIMATION_METHOD}
 	Make/FREE/T numKeys    = {CONFIG_VERSION, TEMP_GAIN, TEMP_MAX, TEMP_MIN,                   \
 							  PRESSURE_BATH, PRESSURE_STARTSEAL, PRESSURE_MAXSEAL, TP_AMP_VC,  \
 							  NUM_STIM_SETS, DEFAULT_ITI, OODAQ_POST_DELAY, \
 							  HOLDING, AUTOBIAS_RANGE, AUTOBIAS_MAXI, USER_ONSET_DELAY, TERMINATION_DELAY, \
-							  FIRST_STIM_AMP_VC_ALL, FIRST_STIM_AMP_IC_ALL, TP_BASELINE, TP_AMP_IC}
+							  FIRST_STIM_AMP_VC_ALL, FIRST_STIM_AMP_IC_ALL, TP_BASELINE, TP_AMP_IC, DECIMATION_FACTOR}
 	Make/FREE/T checkBoxKeys = {TP_AFTER_DAQ, EXPORT_NWB, APPEND_ASYNC,                                     \
 								SYNC_MIES_MCC, ENABLE_I_EQUAL_ZERO, PRESSURE_USER_ON_SEAL, PRESSURE_USER_FOLLOW_HS,  \
 								REPEAT_ACQ, GET_SET_ITI, ENABLE_OODAQ, ENABLE_MULTIPLE_ITC, SAVE_AMP_SETTINGS, REQUIRE_AMP, \
@@ -5898,8 +5932,8 @@ Function/WAVE GetExpConfigKeyTypes()
 
 	Redimension/N=(numRows) stringKeys, numKeys, checkBoxKeys
 
-	keyTypes[][%StringKeys]       = stringKeys[p]
-	keyTypes[][%NumKeys]         = numKeys[p]
+	keyTypes[][%StringKeys]   = stringKeys[p]
+	keyTypes[][%NumKeys]      = numKeys[p]
 	keyTypes[][%CheckBoxKeys] = checkBoxKeys[p]
 
 	return keyTypes
@@ -5907,9 +5941,9 @@ End
 
 /// @brief Read User_Config NoteBook file and extract parameters as a KeyWordList
 ///
-/// @param  ConfigNB		Name of User Configuration Notebook as a string
-/// @param  KeyTypes		Text wave of key types to parse configuration notebook
-/// @return UserSettings	Text wave of configuration parameters
+/// @param  ConfigNB        Name of User Configuration Notebook as a string
+/// @param  KeyTypes        Text wave of key types to parse configuration notebook
+/// @return UserSettings    Text wave of configuration parameters
 Function /WAVE GetExpUserSettings(ConfigNB, KeyTypes)
 	string ConfigNB
 	Wave KeyTypes
@@ -6502,6 +6536,34 @@ Function/WAVE GetDeviceInfoWave(panelTitle)
 	SetDimLabel ROWS, 4, HardwareType, wv
 
 	wv = NaN
+
+	SetWaveVersion(wv, versionOfNewWave)
+
+	return wv
+End
+
+/// @brief Return a wave suitable for storing elapsed time
+///
+/// Helper function for DEBUGPRINT_ELAPSED_WAVE() and StoreElapsedTime().
+Function/WAVE GetElapsedTimeWave()
+
+	variable versionOfNewWave = 1
+
+	DFREF dfr = GetTempPath()
+	WAVE/D/Z/SDFR=dfr wv = elapsedTime
+
+	if(ExistsWithCorrectLayoutVersion(wv, versionOfNewWave))
+		return wv
+	elseif(WaveExists(wv))
+		// handle upgrade
+	else
+		Make/D/N=(MINIMUM_WAVE_SIZE) dfr:elapsedTime/Wave=wv
+	endif
+
+	wv = NaN
+
+	SetScale d, 0, 0, "s", wv
+	SetNumberInWaveNote(wv, NOTE_INDEX, 0)
 
 	SetWaveVersion(wv, versionOfNewWave)
 

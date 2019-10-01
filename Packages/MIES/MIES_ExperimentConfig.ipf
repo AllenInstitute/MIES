@@ -443,7 +443,10 @@ static Function ExpConfig_DAEphysSettings(panelTitle, UserSettings)
 	PGC_SetAndActivateControl(panelTitle,"check_DA_applyOnModeSwitch", val = str2numSafe(UserSettings[V_value][%SettingValue]))
 	FindValue /TXOP = 4 /TEXT = ANALYSIS_FUNC UserSettings
 	PGC_SetAndActivateControl(panelTitle,"Check_Settings_SkipAnalysFuncs", val = str2numSafe(UserSettings[V_value][%SettingValue]))
-	
+	FindValue /TXOP = 4 /TEXT = DECIMATION_METHOD UserSettings
+	PGC_SetAndActivateControl(panelTitle,"Popup_Settings_DecMethod", str = UserSettings[V_value][%SettingValue])
+	FindValue /TXOP = 4 /TEXT = DECIMATION_FACTOR UserSettings
+	PGC_SetAndActivateControl(panelTitle,"setvar_Settings_DecMethodFac", str = UserSettings[V_value][%SettingValue])
 End
 
 #ifdef AMPLIFIER_XOPS_PRESENT

@@ -214,11 +214,12 @@ End
 /// @return
 /// pre pulse baseline: 0 if the chunk passes, one of the possible @ref AnalysisFuncReturnTypesConstants values otherwise
 /// post pulse baseline: 0 if the chunk passes, NaN if it does not pass
-static Function MSQ_EvaluateBaselineProperties(panelTitle, type, sweepNo, chunk, fifoInStimsetTime, totalOnsetDelay)
+static Function MSQ_EvaluateBaselineProperties(panelTitle, scaledDACWave, type, sweepNo, chunk, fifoInStimsetTime, totalOnsetDelay)
 	string panelTitle
+	WAVE scaledDACWave
 	variable type, sweepNo, chunk, fifoInStimsetTime, totalOnsetDelay
 
-	variable , evalStartTime, evalRangeTime
+	variable evalStartTime, evalRangeTime
 	variable i, ADC, ADcol, chunkStartTimeMax, chunkStartTime
 	variable targetV, index
 	variable rmsShortPassedAll, rmsLongPassedAll, chunkPassed
@@ -273,8 +274,6 @@ static Function MSQ_EvaluateBaselineProperties(panelTitle, type, sweepNo, chunk,
 	testMatrix[MSQ_BL_PRE_PULSE][] = 1 // all tests
 	testMatrix[MSQ_BL_POST_PULSE][MSQ_TARGETV_TEST] = 1
 
-	WAVE OscilloscopeData = GetOscilloscopeWave(panelTitle)
-
 	sprintf msg, "We have some data to evaluate in chunk %d [%g, %g]:  %gms\r", chunk, chunkStartTimeMax, chunkStartTimeMax + chunkLengthTime, fifoInStimsetTime
 	DEBUGPRINT(msg)
 
@@ -319,7 +318,7 @@ static Function MSQ_EvaluateBaselineProperties(panelTitle, type, sweepNo, chunk,
 			evalRangeTime = 1.5
 
 			// check 1: RMS of the last 1.5ms of the baseline should be below 0.07mV
-			rmsShort[i]       = MSQ_CalculateRMS(OscilloscopeData, ADCol, evalStartTime, evalRangeTime)
+			rmsShort[i]       = MSQ_CalculateRMS(scaledDACWave, ADCol, evalStartTime, evalRangeTime)
 			rmsShortPassed[i] = rmsShort[i] < MSQ_RMS_SHORT_THRESHOLD
 
 			sprintf msg, "RMS noise short: %g (%s)\r", rmsShort[i], SelectString(rmsShortPassed[i], "failed", "passed")
@@ -340,7 +339,7 @@ static Function MSQ_EvaluateBaselineProperties(panelTitle, type, sweepNo, chunk,
 			evalRangeTime = chunkLengthTime
 
 			// check 2: RMS of the last 500ms of the baseline should be below 0.50mV
-			rmsLong[i]       = MSQ_CalculateRMS(OscilloscopeData, ADCol, evalStartTime, evalRangeTime)
+			rmsLong[i]       = MSQ_CalculateRMS(scaledDACWave, ADCol, evalStartTime, evalRangeTime)
 			rmsLongPassed[i] = rmsLong[i] < MSQ_RMS_LONG_THRESHOLD
 
 			sprintf msg, "RMS noise long: %g (%s)", rmsLong[i], SelectString(rmsLongPassed[i], "failed", "passed")
@@ -361,7 +360,7 @@ static Function MSQ_EvaluateBaselineProperties(panelTitle, type, sweepNo, chunk,
 			evalRangeTime = chunkLengthTime
 
 			// check 3: Average voltage within 1mV of auto bias target voltage
-			avgVoltage[i]    = MSQ_CalculateAvg(OscilloscopeData, ADCol, evalStartTime, evalRangeTime)
+			avgVoltage[i]    = MSQ_CalculateAvg(scaledDACWave, ADCol, evalStartTime, evalRangeTime)
 			targetVPassed[i] = abs(avgVoltage[i] - targetV) <= MSQ_TARGETV_THRESHOLD
 
 			sprintf msg, "Average voltage of %gms: %g (%s)", evalRangeTime, avgVoltage[i], SelectString(targetVPassed[i], "failed", "passed")

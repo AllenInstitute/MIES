@@ -3572,6 +3572,21 @@ Function FindNextPower(a, p)
 	return ceil(log(a)/log(p))
 End
 
+/// @brief Find an integer `x` which is smaller than `a` but the
+/// largest possible power of `p`.
+///
+/// @f$ x < a @f$ where @f$ x = c^p @f$ holds and @f$ x @f$ is
+/// the largest possible value.
+Function FindPreviousPower(a, p)
+	variable a, p
+
+	ASSERT(p > 1, "Invalid power")
+	ASSERT(a > 0, "Invalid value")
+	ASSERT(IsInteger(a), "Value has to be an integer")
+
+	return floor(log(a)/log(p))
+End
+
 /// @brief Return a wave with deep copies of all referenced waves
 ///
 /// The deep copied waves will be free waves.
@@ -4485,4 +4500,88 @@ Function IsWindows10()
 	info = IgorInfo(3)
 	os = StringByKey("OS", info)
 	return GrepString(os, "^Windows 10 ")
+End
+
+Function/WAVE WaveGetterPrototype()
+	ASSERT(0, "Prototype called")
+End
+
+Function/WAVE GetElapsedTimeWaveWrapper()
+
+	FUNCREF WaveGetterPrototype f = $"GetElapsedTimeWave"
+
+	return f()
+End
+
+/// @brief Start a timer for performance measurements
+///
+/// Usage:
+/// \rst
+/// .. code-block:: igorpro
+///
+/// 	variable referenceTime = GetReferenceTime()
+/// 	// part one to benchmark
+/// 	print GetReferenceTime(referenceTime)
+/// 	// part two to benchmark
+/// 	print GetReferenceTime(referenceTime)
+/// 	// you can also store all times via
+/// 	StoreElapsedTime(referenceTime)
+/// \endrst
+Function GetReferenceTime()
+	return stopmstimer(-2)
+End
+
+/// @brief Get the elapsed time in seconds
+Function GetElapsedTime(referenceTime)
+	variable referenceTime
+
+	return (stopmstimer(-2) - referenceTime) / 1e6
+End
+
+/// @brief Store the elapsed time in a wave
+Function StoreElapsedTime(referenceTime)
+	variable referenceTime
+
+	variable count, elapsed
+
+	WAVE/D elapsedTime = GetElapsedTimeWaveWrapper()
+
+	count = GetNumberFromWaveNote(elapsedTime, NOTE_INDEX)
+	EnsureLargeEnoughWave(elapsedTime, minimumSize=count, initialValue = NaN)
+
+	elapsed = GetElapsedTime(referenceTime)
+	elapsedTime[count] = elapsed
+	SetNumberInWaveNote(elapsedTime, NOTE_INDEX, count + 1)
+
+	DEBUGPRINT("timestamp: ", var=elapsed)
+
+	return elapsed
+End
+
+/// @brief Extracts a single wave from a wave ref wave
+///
+/// This can be used as helper function in multithread statements.
+threadsafe Function/WAVE MapWaveRefWave(input, row)
+	WAVE/WAVE input
+	variable row
+
+	return input[row]
+End
+
+Function GetPlotArea(win, s)
+	string win
+	STRUCT RectD &s
+
+	InitRectD(s)
+
+	if(!WindowExists(win))
+		return NaN
+	endif
+
+	GetWindow $win psizeDC
+
+	s.left   = V_left
+	s.right  = V_right
+	s.top    = V_top
+	s.bottom = V_bottom
 End

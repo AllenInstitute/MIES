@@ -73,11 +73,13 @@ Function AFM_CallAnalysisFunctions(panelTitle, eventType)
 			case PRE_SET_EVENT:
 			case MID_SWEEP_EVENT: // fallthrough-by-design
 				sweepNo = DAG_GetNumericalValue(panelTitle, "SetVar_Sweep")
+				WAVE scaledDataWave = GetScaledDataWave(panelTitle)
 				break
 			case POST_SWEEP_EVENT:
 			case POST_SET_EVENT:
 			case POST_DAQ_EVENT: // fallthrough-by-design
 				sweepNo = DAG_GetNumericalValue(panelTitle, "SetVar_Sweep") - 1
+				WAVE scaledDataWave = GetSweepWave(panelTitle, sweepNo)
 				break
 			default:
 				ASSERT(0, "Invalid eventType")
@@ -96,6 +98,8 @@ Function AFM_CallAnalysisFunctions(panelTitle, eventType)
 		WAVE DAQDataWave = GetHardwareDataWave(panelTitle)
 		ChangeWaveLock(DAQDataWave, 1)
 
+		ChangeWaveLock(scaledDataWave, 1)
+
 		ret = NaN
 		try
 			ClearRTError()
@@ -104,14 +108,15 @@ Function AFM_CallAnalysisFunctions(panelTitle, eventType)
 			elseif(valid_f2)
 				ret = f2(panelTitle, eventType, DAQDataWave, i, realDataLength); AbortOnRTE
 			elseif(valid_f3)
-				s.eventType         = eventType
-				WAVE s.rawDACWave   = DAQDataWave
-				s.headstage         = i
-				s.lastValidRowIndex = realDataLength
-				s.lastKnownRowIndex = fifoPosition
-				s.sweepNo           = sweepNo
-				s.sweepsInSet       = sweepsInSet
-				s.params            = analysisFunctions[i][ANALYSIS_FUNCTION_PARAMS]
+				s.eventType          = eventType
+				WAVE s.rawDACWave    = DAQDataWave
+				WAVE s.scaledDACWave = scaledDataWave
+				s.headstage          = i
+				s.lastValidRowIndex  = realDataLength
+				s.lastKnownRowIndex  = fifoPosition
+				s.sweepNo            = sweepNo
+				s.sweepsInSet        = sweepsInSet
+				s.params             = analysisFunctions[i][ANALYSIS_FUNCTION_PARAMS]
 
 				ret = f3(panelTitle, s); AbortOnRTE
 			else
@@ -132,6 +137,7 @@ Function AFM_CallAnalysisFunctions(panelTitle, eventType)
 		endtry
 
 		ChangeWaveLock(DAQDataWave, 0)
+		ChangeWaveLock(scaledDataWave, 0)
 
 		sprintf msg, "Calling analysis function \"%s\" for event \"%s\" on headstage %d returned ret %d", func, StringFromList(eventType, EVENT_NAME_LIST), i, ret
 		DEBUGPRINT(msg)

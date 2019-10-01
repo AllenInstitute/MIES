@@ -49,7 +49,7 @@ End
 Function DQS_DataAcq(panelTitle)
 	string panelTitle
 
-	variable fifoPos, gotTPChannels
+	variable fifoPos, gotTPChannels, moreData
 	string oscilloscopeSubwindow = SCOPE_GetGraph(panelTitle)
 
 	NVAR ITCDeviceIDGlobal = $GetITCDeviceIDGlobal(panelTitle)
@@ -67,6 +67,8 @@ Function DQS_DataAcq(panelTitle)
 
 	do
 		DoXOPIdle
+
+		moreData = HW_ITC_MoreData(ITCDeviceIDGlobal, fifoPos=fifoPos)
 		SCOPE_UpdateOscilloscopeData(panelTitle, DATA_ACQUISITION_MODE, fifoPos=fifoPos)
 
 		if(gotTPChannels)
@@ -78,7 +80,7 @@ Function DQS_DataAcq(panelTitle)
 			DQS_StopDataAcq(panelTitle, forcedStop = 1)
 			return NaN
 		endif
-	while(HW_ITC_MoreData(ITCDeviceIDGlobal, fifoPos=fifoPos))
+	while(moreData)
 
 	DQS_StopDataAcq(panelTitle)
 End
@@ -115,7 +117,7 @@ static Function DQS_StopDataAcq(panelTitle, [forcedStop])
 
 	NVAR ITCDeviceIDGlobal = $GetITCDeviceIDGlobal(panelTitle)
 	HW_StopAcq(HARDWARE_ITC_DAC, ITCDeviceIDGlobal, prepareForDAQ=1, zeroDAC=1, flags=HARDWARE_ABORT_ON_ERROR)
-	SWS_SaveAndScaleITCData(panelTitle, forcedStop = forcedStop)
+	SWS_SaveAcquiredData(panelTitle, forcedStop = forcedStop)
 
 	if(forcedStop)
 		DQ_StopOngoingDAQ(panelTitle)
@@ -134,12 +136,10 @@ End
 Function DQS_FIFOMonitor(s)
 	STRUCT WMBackgroundStruct &s
 
-	string oscilloscopeSubwindow
 	variable fifoPos, moreData, anaFuncReturn, result
 
 	SVAR panelTitleG       = $GetPanelTitleGlobal()
 	NVAR ITCDeviceIDGlobal = $GetITCDeviceIDGlobal(panelTitleG)
-	oscilloscopeSubwindow  = SCOPE_GetGraph(panelTitleG)
 
 	moreData = HW_ITC_MoreData(ITCDeviceIDGlobal, fifoPos=fifoPos, flags=HARDWARE_ABORT_ON_ERROR)
 

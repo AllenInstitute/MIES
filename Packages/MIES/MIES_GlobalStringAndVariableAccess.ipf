@@ -503,6 +503,14 @@ Function/S GetTemporaryString()
 	return GetSVARAsString(GetTempPath(), "tempString")
 End
 
+/// @brief Return the absolute path to the temporary global variable
+///
+/// Callers should always assume that this variable contains garbage.
+Function/S GetTemporaryVar()
+
+	return GetNVARAsString(GetTempPath(), "tempVar")
+End
+
 /// @brief Return the absolute path to the RNG seed value
 ///
 /// This seed value can be used for deriving device dependent random numbers.

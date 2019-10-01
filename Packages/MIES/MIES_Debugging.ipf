@@ -369,7 +369,7 @@ End
 /// \endrst
 Function DEBUG_TIMER_START()
 
-	return stopmstimer(-2)
+	return GetReferenceTime()
 End
 
 /// @brief Print the elapsed time for performance measurements in seconds
@@ -377,7 +377,7 @@ End
 Function DEBUGPRINT_ELAPSED(referenceTime)
 	variable referenceTime
 
-	DEBUGPRINT("timestamp: ", var=(stopmstimer(-2) - referenceTime) / 1e6)
+	DEBUGPRINT("timestamp: ", var=GetElapsedTime(referenceTime))
 End
 
 /// @brief Print and store the elapsed time for performance measurements
@@ -385,25 +385,7 @@ End
 Function DEBUGPRINT_ELAPSED_WAVE(referenceTime)
 	variable referenceTime
 
-	variable count, elapsed
-
-	elapsed = (stopmstimer(-2) - referenceTime) / 1e6
-
-	WAVE/D/Z elapsedTime
-
-	if(!WaveExists(elapsedTime))
-		Make/D/N=(MINIMUM_WAVE_SIZE) elapsedTime
-		SetScale d, 0, 0, "s", elapsedTime
-		SetNumberInWaveNote(elapsedTime, NOTE_INDEX, 0)
-	endif
-
-	count = GetNumberFromWaveNote(elapsedTime, NOTE_INDEX)
-	EnsureLargeEnoughWave(elapsedTime, minimumSize=count)
-
-	elapsedTime[count] = elapsed
-	SetNumberInWaveNote(elapsedTime, NOTE_INDEX, count + 1)
-
-	DEBUGPRINT("timestamp: ", var=elapsed)
+	StoreElapsedTime(referenceTime)
 End
 
 #else

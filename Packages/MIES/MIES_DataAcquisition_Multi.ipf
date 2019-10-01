@@ -356,7 +356,7 @@ static Function DQM_StopDataAcq(panelTitle, ITCDeviceIDGlobal)
 	endif
 	HW_StopAcq(hardwareType, ITCDeviceIDGlobal, prepareForDAQ=1, zeroDAC = 1, flags=HARDWARE_ABORT_ON_ERROR)
 
-	SWS_SaveAndScaleITCData(panelTitle)
+	SWS_SaveAcquiredData(panelTitle)
 	RA_ContinueOrStop(panelTitle, multiDevice=1)
 End
 

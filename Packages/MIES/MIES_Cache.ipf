@@ -227,6 +227,25 @@ Function/S CA_SamplingIntervalKey(lut, s)
 	return num2istr(crc) + NameOfWave(lut) + num2str(ModDate(lut)) + "Version 1"
 End
 
+/// @brief Generic key generator for storing throw away waves used for
+///        Multithread assignments
+///
+/// Only the size is relevant, the rest is undefined.
+Function/S CA_TemporaryWaveKey(dims)
+	WAVE dims
+
+	variable numRows, crc, i
+
+	numRows = DimSize(dims, ROWS)
+	ASSERT(numRows > 0 && numRows <= MAX_DIMENSION_COUNT && DimSize(dims, COLS) <= 1, "Invalid dims dimensions")
+
+	for(i = 0; i < numRows; i += 1)
+		crc = StringCRC(crc, num2istr(dims[i]))
+	endfor
+
+	return num2istr(crc) + "Temporary waves Version 1"
+End
+
 /// @}
 
 /// @brief Make space for one new entry in the cache waves

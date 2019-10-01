@@ -166,6 +166,10 @@ Structure AnalysisFunction_V3
 	/// @sa GetHardwareDataWave()
 	WAVE rawDACWave
 
+	/// scaled and undecimated data from the DAC hardware, 2D floating-point wave
+	/// Rows has channel data, one column per channel, channels are in the order DA/AD/TTL
+	WAVE scaledDACWave
+
 	/// active headstage index, `[0, NUM_HEADSTAGES[`
 	variable headStage
 
@@ -176,7 +180,7 @@ Structure AnalysisFunction_V3
 	/// Always `NaN` for #PRE_DAQ_EVENT events.
 	variable lastValidRowIndex
 
-	/// number of rows in `rawDACWave` with already acquired data
+	/// number of rows in `rawDACWave`/`scaledDACWave` with already acquired data
 	variable lastKnownRowIndex
 
 	/// Potential *future* number of the sweep. Once the sweep is finished it will be
@@ -220,3 +224,20 @@ Structure TPAnalysisInput
 	variable measurementMarker
 	variable activeADCs
 EndStructure
+
+/// @brief Helper structure for GetPlotArea()
+Structure RectD
+	double top
+	double left
+	double bottom
+	double right
+EndStructure
+
+Function InitRectD(s)
+	STRUCT RectD &s
+
+	s.left   = NaN
+	s.right  = NaN
+	s.top    = NaN
+	s.bottom = NaN
+End

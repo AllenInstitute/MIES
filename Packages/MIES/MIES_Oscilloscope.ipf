@@ -469,7 +469,7 @@ End
 /// @param dataAcqOrTP One of #DATA_ACQUISITION_MODE or #TEST_PULSE_MODE
 /// @param chunk       Only for #TEST_PULSE_MODE and multi device mode; Selects
 ///                    the testpulse to extract
-/// @param fifoPos     Position of the fifo used by the ITC XOP to keep track of
+/// @param fifoPos     Position of the hardware DAQ fifo to keep track of
 ///                    the position which will be written next
 /// @param deviceID    device ID
 Function SCOPE_UpdateOscilloscopeData(panelTitle, dataAcqOrTP, [chunk, fifoPos, deviceID])
@@ -496,6 +496,7 @@ Function SCOPE_UpdateOscilloscopeData(panelTitle, dataAcqOrTP, [chunk, fifoPos, 
 				ASSERT(!ParamIsDefault(fifoPos), "optional parameter fifoPos missing")
 				ASSERT(ParamIsDefault(chunk), "optional parameter chunk is not possible with DATA_ACQUISITION_MODE")
 				fifopos = SCOPE_ITC_AdjustFIFOPos(panelTitle, fifopos)
+				ASSERT(IsFinite(fifopos), "Invalid fifo position")
 			endif
 			SCOPE_ITC_UpdateOscilloscope(panelTitle, dataAcqOrTP, chunk, fifoPos)
 			break;
@@ -505,132 +506,127 @@ Function SCOPE_UpdateOscilloscopeData(panelTitle, dataAcqOrTP, [chunk, fifoPos, 
 			break;
 	endswitch
 
-	// In DAQ mode, fifopos is NaN when ITC finishes
-	if(isFinite(fifopos))
+	WAVE config = GetITCChanConfigWave(panelTitle)
+	WAVE ADCmode = GetADCTypesFromConfig(config)
+	tpChannels = GetNrOfTypedChannels(ADCmode, DAQ_CHANNEL_TYPE_TP)
 
-		WAVE config = GetITCChanConfigWave(panelTitle)
-		WAVE ADCmode = GetADCTypesFromConfig(config)
-		tpChannels = GetNrOfTypedChannels(ADCmode, DAQ_CHANNEL_TYPE_TP)
+	// send data to TP Analysis if TP present
+	NVAR fifoPosGlobal = $GetFifoPosition(panelTitle)
 
-		// send data to TP Analysis if TP present
-		NVAR fifoPosGlobal = $GetFifoPosition(panelTitle)
+	if(tpChannels)
+		WAVE GUIState = GetDA_EphysGuiStateNum(panelTitle)
+		saveTP = GUIState[0][%check_Settings_TP_SaveTP]
 
-		if(tpChannels)
-			WAVE GUIState = GetDA_EphysGuiStateNum(panelTitle)
-			saveTP = GUIState[0][%check_Settings_TP_SaveTP]
+		tpLengthPoints = ROVAR(GetTestPulseLengthInPoints(panelTitle, dataAcqOrTP))
+		// use a 'virtual' end position for fifoLatest for TP Mode since the input data contains one TP only
+		fifoLatest = (dataAcqOrTP == TEST_PULSE_MODE) ? tpLengthPoints : fifoPos
 
-			tpLengthPoints = ROVAR(GetTestPulseLengthInPoints(panelTitle, dataAcqOrTP))
-			// use a 'virtual' end position for fifoLatest for TP Mode since the input data contains one TP only
-			fifoLatest = (dataAcqOrTP == TEST_PULSE_MODE) ? tpLengthPoints : fifoPos
+		WAVE ADCs = GetADCListFromConfig(config)
+		WAVE hsProp = GetHSProperties(panelTitle)
+		NVAR duration = $GetTestpulseDuration(panelTitle)
+		NVAR baselineFrac = $GetTestpulseBaselineFraction(panelTitle)
 
-			WAVE ADCs = GetADCListFromConfig(config)
-			WAVE hsProp = GetHSProperties(panelTitle)
-			NVAR duration = $GetTestpulseDuration(panelTitle)
-			NVAR baselineFrac = $GetTestpulseBaselineFraction(panelTitle)
+		WAVE scaledDataWave = GetScaledDataWave(panelTitle)
+		sampleInt = DimDelta(scaledDataWave, ROWS)
+		osciUnits = WaveUnits(scaledDataWave, ROWS)
+		numDACs = DimSize(GetDACListFromConfig(config), ROWS)
+		numADCs = DimSize(ADCs, ROWS)
 
-			WAVE OscilloscopeData = GetOscilloscopeWave(panelTitle)
-			sampleInt = DimDelta(OscilloscopeData, ROWS)
-			osciUnits = WaveUnits(OscilloscopeData, ROWS)
-			numDACs = DimSize(GetDACListFromConfig(config), ROWS)
-			numADCs = DimSize(ADCs, ROWS)
+		// note: currently this works for multiplier = 1 only, see DC_PlaceDataInHardwareDataWave
+		Make/FREE/N=(tpLengthPoints) channelData
+		WAVE tpInput.data = channelData
+		SetScale/P x, 0, sampleInt, osciUnits, channelData
 
-			// note: currently this works for multiplier = 1 only, see DC_PlaceDataInHardwareDataWave
-			Make/FREE/N=(tpLengthPoints) channelData
-			WAVE tpInput.data = channelData
-			SetScale/P x, 0, sampleInt, osciUnits, channelData
+		tpInput.panelTitle = panelTitle
+		tpInput.duration = duration
+		tpInput.baselineFrac = baselineFrac
+		tpInput.tpLengthPoints = tpLengthPoints
+		tpInput.readTimeStamp = ticks * TICKS_TO_SECONDS
+		tpInput.activeADCs = tpChannels
 
-			tpInput.panelTitle = panelTitle
-			tpInput.duration = duration
-			tpInput.baselineFrac = baselineFrac
-			tpInput.tpLengthPoints = tpLengthPoints
-			tpInput.readTimeStamp = ticks * TICKS_TO_SECONDS
-			tpInput.activeADCs = tpChannels
+		tpStart = trunc(fifoPosGlobal / tpLengthPoints)
+		tpEnd = trunc(fifoLatest / tpLengthPoints)
+		ASSERT(tpStart <= tpEnd, "New fifopos is smaller than previous fifopos")
+		Make/FREE/D/N=(tpEnd - tpStart) tpMarker
+		NewRandomSeed()
+		tpMarker[] = GetUniqueInteger()
 
-			tpStart = trunc(fifoPosGlobal / tpLengthPoints)
-			tpEnd = trunc(fifoLatest / tpLengthPoints)
-			ASSERT(tpStart <= tpEnd, "New fifopos is smaller than previous fifopos")
-			Make/FREE/D/N=(tpEnd - tpStart) tpMarker
-			NewRandomSeed()
-			tpMarker[] = GetUniqueInteger()
+		DEBUGPRINT("tpChannels: ", var = tpChannels)
+		DEBUGPRINT("tpLength: ", var = tpLengthPoints)
 
-			DEBUGPRINT("tpChannels: ", var = tpChannels)
-			DEBUGPRINT("tpLength: ", var = tpLengthPoints)
+		for(i = tpStart;i < tpEnd; i += 1)
 
-			for(i = tpStart;i < tpEnd; i += 1)
+			tpInput.measurementMarker = tpMarker[i - tpStart]
+			tpStartPos = i * tpLengthPoints
 
-				tpInput.measurementMarker = tpMarker[i - tpStart]
-				tpStartPos = i * tpLengthPoints
-
-				if(saveTP)
-					Duplicate/FREE/R=[tpStartPos, tpStartPos + tpLengthPoints - 1][numDACs, numDACs + tpChannels - 1] OscilloscopeData, StoreTPWave
-					SetScale/P x, 0, sampleInt, osciUnits, StoreTPWave
-					TPChanIndex = 0
-					hsList = ""
-				endif
-
-				for(j = 0; j < numADCs; j += 1)
-					if(ADCmode[j] == DAQ_CHANNEL_TYPE_TP)
-
-						MultiThread channelData[] = OscilloscopeData[tpStartPos + p][numDACs + j]
-
-						headstage = AFH_GetHeadstageFromADC(panelTitle, ADCs[j])
-						if(hsProp[headstage][%ClampMode] == I_CLAMP_MODE)
-							NVAR clampAmp=$GetTPAmplitudeIC(panelTitle)
-						else
-							NVAR clampAmp=$GetTPAmplitudeVC(panelTitle)
-						endif
-						tpInput.clampAmp = clampAmp
-						tpInput.clampMode = hsProp[headstage][%ClampMode]
-						tpInput.hsIndex = headstage
-
-						DEBUGPRINT("headstage: ", var = headstage)
-						DEBUGPRINT("channel: ", var = numDACs + j)
-
-						TP_SendToAnalysis(tpInput)
-
-						if(saveTP)
-							hsList = AddListItem(num2str(headstage), hsList, ",", Inf)
-							if(TPChanIndex != j)
-								MultiThread StoreTPWave[][TPChanIndex] = channelData[p]
-							endif
-							TPChanIndex += 1
-						endif
-
-					endif
-				endfor
-
-				if(saveTP)
-					DEBUGPRINT("Storing TP with marker: ", var = tpInput.measurementMarker)
-					TP_StoreTP(panelTitle, StoreTPWave, tpInput.measurementMarker, hsList)
-					WaveClear StoreTPWave
-				endif
-
-			endfor
-
-			if(dataAcqOrTP == DATA_ACQUISITION_MODE)
-				// optimization for regular TP we use OscilloscopeData directly
-				WAVE TPOscilloscopeData = GetTPOscilloscopeWave(panelTitle)
-				Duplicate/O/R=[tpStartPos, tpStartPos + tpLengthPoints - 1][] OscilloscopeData TPOscilloscopeData
-				SetScale/P x, 0, sampleInt, osciUnits, TPOscilloscopeData
+			if(saveTP)
+				Duplicate/FREE/R=[tpStartPos, tpStartPos + tpLengthPoints - 1][numDACs, numDACs + tpChannels - 1] scaledDataWave, StoreTPWave
+				SetScale/P x, 0, sampleInt, osciUnits, StoreTPWave
+				TPChanIndex = 0
+				hsList = ""
 			endif
 
-		endif
+			for(j = 0; j < numADCs; j += 1)
+				if(ADCmode[j] == DAQ_CHANNEL_TYPE_TP)
 
-		// Sync fifo position
-		fifoPosGlobal = fifoPos
+					MultiThread channelData[] = scaledDataWave[tpStartPos + p][numDACs + j]
+
+					headstage = AFH_GetHeadstageFromADC(panelTitle, ADCs[j])
+					if(hsProp[headstage][%ClampMode] == I_CLAMP_MODE)
+						NVAR clampAmp=$GetTPAmplitudeIC(panelTitle)
+					else
+						NVAR clampAmp=$GetTPAmplitudeVC(panelTitle)
+					endif
+					tpInput.clampAmp = clampAmp
+					tpInput.clampMode = hsProp[headstage][%ClampMode]
+					tpInput.hsIndex = headstage
+
+					DEBUGPRINT("headstage: ", var = headstage)
+					DEBUGPRINT("channel: ", var = numDACs + j)
+
+					TP_SendToAnalysis(tpInput)
+
+					if(saveTP)
+						hsList = AddListItem(num2str(headstage), hsList, ",", Inf)
+						if(TPChanIndex != j)
+							MultiThread StoreTPWave[][TPChanIndex] = channelData[p]
+						endif
+						TPChanIndex += 1
+					endif
+
+				endif
+			endfor
+
+			if(saveTP)
+				DEBUGPRINT("Storing TP with marker: ", var = tpInput.measurementMarker)
+				TP_StoreTP(panelTitle, StoreTPWave, tpInput.measurementMarker, hsList)
+				WaveClear StoreTPWave
+			endif
+
+		endfor
+
+		if(dataAcqOrTP == DATA_ACQUISITION_MODE)
+			WAVE TPOscilloscopeData = GetTPOscilloscopeWave(panelTitle)
+			Duplicate/O/R=[tpStartPos, tpStartPos + tpLengthPoints - 1][] scaledDataWave TPOscilloscopeData
+			SetScale/P x, 0, sampleInt, osciUnits, TPOscilloscopeData
+		endif
 
 	endif
 
-	ASYNC_ThreadReadOut()
+	// Sync fifo position
+	fifoPosGlobal = fifoPos
 
+	ASYNC_ThreadReadOut()
 End
 
 static Function SCOPE_NI_UpdateOscilloscope(panelTitle, dataAcqOrTP, deviceiD, fifoPos)
 	string panelTitle
 	variable dataAcqOrTP, deviceID, fifoPos
 
-	variable i, channel
+	variable i, channel, decMethod, decFactor
 	string fifoName
+
+	WAVE scaledDataWave    = GetScaledDataWave(panelTitle)
 	WAVE OscilloscopeData = GetOscilloscopeWave(panelTitle)
 	WAVE/WAVE NIDataWave = GetHardwareDataWave(panelTitle)
 
@@ -643,15 +639,31 @@ static Function SCOPE_NI_UpdateOscilloscope(panelTitle, dataAcqOrTP, deviceiD, f
 			channel = str2num(StringByKey("NAME" + num2str(i), S_Info))
 			WAVE NIChannel = NIDataWave[channel]
 			multithread OscilloscopeData[][channel] = NIChannel[p]
+			Multithread scaledDataWave[][] = OscilloscopeData
 		endfor
 		SCOPE_UpdatePowerSpectrum(panelTitle)
 	elseif(dataAcqOrTP == DATA_ACQUISITION_MODE)
 		// it is in this moment the previous fifo position, so the new data goes from here to fifoPos-1
 		NVAR fifoPosGlobal = $GetFifoPosition(panelTitle)
+
+		WAVE allGain = SWS_GetChannelGains(panelTitle, timing = GAIN_AFTER_DAQ)
+		Multithread scaledDataWave[fifoPosGlobal, fifoPos - 1][] = MapWaveRefWave(NIDataWave, q)[p] / allGain[q]
+
+		decMethod = GetNumberFromWaveNote(OscilloscopeData, "DecimationMethod")
+		decFactor = GetNumberFromWaveNote(OscilloscopeData, "DecimationFactor")
+
 		for(i = 0; i < V_FIFOnchans; i += 1)
 			channel = str2num(StringByKey("NAME" + num2str(i), S_Info))
 			WAVE NIChannel = NIDataWave[channel]
-			Multithread OscilloscopeData[fifoPosGlobal, fifoPos - 1][channel] = NIChannel[p]
+
+			switch(decMethod)
+				case DECIMATION_NONE:
+					Multithread OscilloscopeData[fifoPosGlobal, fifoPos - 1][channel] = NIChannel[p]
+					break
+				default:
+					DecimateWithMethod(NIChannel, OscilloscopeData, decFactor, decMethod, firstRowInp = fifoPosGlobal, lastRowInp = fifoPos - 1, firstColInp = 0, lastColInp = 0, firstColOut = channel, lastColOut = channel)
+					break
+			endswitch
 		endfor
 	endif
 End
@@ -662,16 +674,15 @@ static Function SCOPE_ITC_UpdateOscilloscope(panelTitle, dataAcqOrTP, chunk, fif
 
 	WAVE OscilloscopeData = GetOscilloscopeWave(panelTitle)
 	variable length, first, last
-	variable startOfADColumns, numEntries
-	WAVE ITCDataWave      = GetHardwareDataWave(panelTitle)
+	variable startOfADColumns, numEntries, decMethod, decFactor
+	WAVE scaledDataWave    = GetScaledDataWave(panelTitle)
+	WAVE ITCDataWave       = GetHardwareDataWave(panelTitle)
 	WAVE ITCChanConfigWave = GetITCChanConfigWave(panelTitle)
 	WAVE ADCs = GetADCListFromConfig(ITCChanConfigWave)
-	WAVE DA_EphysGuiState = GetDA_EphysGuiStateNum(panelTitle)
 	startOfADColumns = DimSize(GetDACListFromConfig(ITCChanConfigWave), ROWS)
 	numEntries = DimSize(ADCs, ROWS)
 
-	//do the AD scaling here manually so that is can be as fast as possible
-	Make/FREE/N=(numEntries) gain = DA_EphysGuiState[ADCs[p]][%$GetSpecialControlLabel(CHANNEL_TYPE_ADC, CHANNEL_CONTROL_GAIN)] * HARDWARE_ITC_BITS_PER_VOLT
+	WAVE allGain = SWS_GETChannelGains(panelTitle, timing = GAIN_AFTER_DAQ)
 
 	if(dataAcqOrTP == TEST_PULSE_MODE)
 		length = ROVAR(GetTestPulseLengthInPoints(panelTitle, TEST_PULSE_MODE))
@@ -691,12 +702,15 @@ static Function SCOPE_ITC_UpdateOscilloscope(panelTitle, dataAcqOrTP, chunk, fif
 			Cursor/W=ITCDataWaveTPMD/H=2/P B HardwareDataWave last
 		endif
 #endif
-		Multithread OscilloscopeData[][startOfADColumns, startOfADColumns + numEntries - 1] = ITCDataWave[first + p][q] / gain[q - startOfADColumns]
+
+		Multithread OscilloscopeData[][startOfADColumns, startOfADColumns + numEntries - 1] = ITCDataWave[first + p][q] / allGain[q]
+		Multithread scaledDataWave[][] = OscilloscopeData
+
 		SCOPE_UpdatePowerSpectrum(panelTitle)
 
 	elseif(dataAcqOrTP == DATA_ACQUISITION_MODE)
 
-		if(!IsFinite(fifopos) || fifopos <= 0)
+		if(fifopos <= 0)
 			return NaN
 		endif
 
@@ -706,8 +720,20 @@ static Function SCOPE_ITC_UpdateOscilloscope(panelTitle, dataAcqOrTP, chunk, fif
 			return NaN
 		endif
 
-		Multithread OscilloscopeData[fifoPosGlobal, fifoPos - 1][startOfADColumns, startOfADColumns + numEntries - 1] = ITCDataWave[p][q] / gain[q - startOfADColumns]
+		Multithread scaledDataWave[fifoPosGlobal, fifoPos][] = ITCDataWave[p][q] / allGain[q]
 
+		decMethod = GetNumberFromWaveNote(OscilloscopeData, "DecimationMethod")
+		decFactor = GetNumberFromWaveNote(OscilloscopeData, "DecimationFactor")
+
+		switch(decMethod)
+			case DECIMATION_NONE:
+				Multithread OscilloscopeData[fifoPosGlobal, fifoPos - 1][startOfADColumns, startOfADColumns + numEntries - 1] = ITCDataWave[p][q] / allGain[q]
+				break
+			default:
+				Duplicate/FREE/RMD=[startOfADColumns, startOfADColumns + numEntries - 1] allGain, gain
+				gain[] = 1 / gain[p]
+				DecimateWithMethod(ITCDataWave, OscilloscopeData, decFactor, decMethod, firstRowInp = fifoPosGlobal, lastRowInp = fifoPos - 1, firstColInp = startOfADColumns, lastColInp = startOfADColumns + numEntries - 1, factor = gain)
+		endswitch
 	else
 		ASSERT(0, "Invalid dataAcqOrTP value")
 	endif
@@ -715,32 +741,32 @@ End
 
 /// @brief Adjusts the fifo position when using ITC
 ///
-/// @param panelTitle panel title
-///
-/// @param fifopos fifo position
+/// @param panelTitle device
+/// @param fifopos    fifo position
 ///
 /// @return adjusted fifo position
 static Function SCOPE_ITC_AdjustFIFOPos(panelTitle, fifopos)
 	string panelTitle
 	variable fifopos
 
-	WAVE OscilloscopeData = GetOscilloscopeWave(panelTitle)
-	WAVE ITCDataWave      = GetHardwareDataWave(panelTitle)
+	variable stopCollectionPoint
+
+	WAVE scaledDataWave = GetScaledDataWave(panelTitle)
+
 	WAVE ITCChanConfigWave = GetITCChanConfigWave(panelTitle)
-	ASSERT(EqualWaves(ITCDataWave, OscilloscopeData, 512), "ITCDataWave and OscilloscopeData have differing dimensions")
+	fifopos += GetDataOffset(ITCChanConfigWave)
 
-	fifoPos += GetDataOffset(ITCChanConfigWave)
-
-	if(fifoPos == 0 || !IsFinite(fifoPos))
-		// nothing to do
-		return fifopos
+	if(fifoPos == 0)
+		return 0
+	elseif(IsNaN(fifoPos))
+		// we are done
+		// return the last valid point in the HardwareDataWave
+		stopCollectionPoint = ROVAR(GetStopCollectionPoint(panelTitle))
+		fifoPos = stopCollectionPoint - GetDataOffset(ITCChanConfigWave) - 1
 	elseif(fifoPos < 0)
 		printf "fifoPos was clipped to zero, old value %g\r", fifoPos
-		fifopos = 0
-	elseif(fifoPos >= DimSize(OscilloscopeData, ROWS))
-		printf "fifoPos was clipped to row size of OscilloscopeData, old value %g\r", fifoPos
-		fifoPos = DimSize(OscilloscopeData, ROWS) - 1
+		return 0
 	endif
 
-	return fifopos
+	return min(fifoPos, DimSize(scaledDataWave, ROWS) - 1)
 End
