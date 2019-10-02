@@ -2913,3 +2913,28 @@ Function TestDecimateWithMethodDec8()
 End
 
 /// @}
+
+/// GetNotebookText/ReplaceNotebookText
+/// @{
+
+Function GNT_Works()
+
+	string expected, result
+	string win = "nb0"
+	expected = "abcd 123"
+
+	KillWindow/Z $win
+
+	NewNotebook/N=$win/F=0
+	Notebook $win, setData=expected
+
+	result = GetNotebookText("nb0")
+	CHECK_EQUAL_STR(expected, result)
+
+	expected = "hi there!"
+	ReplaceNotebookText(win, expected)
+	result = GetNotebookText("nb0")
+	CHECK_EQUAL_STR(expected, result)
+End
+
+/// @}

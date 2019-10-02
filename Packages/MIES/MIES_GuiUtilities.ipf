@@ -1535,3 +1535,26 @@ Function GetControlCoordinates(win, ctrl, s)
 	s.left   = V_left
 	s.right  = V_left + V_width
 End
+
+/// @brief Get the text (plain or formatted) from the notebook
+Function/S GetNotebookText(win)
+	string win
+
+	ASSERT(WinType(win) == 5, "Passed win is not a notebook")
+
+	Notebook $win getData=1
+
+	return S_Value
+End
+
+/// @brief Replace the contents of the notebook
+Function ReplaceNotebookText(win, text)
+	string win, text
+
+	ASSERT(WinType(win) == 5, "Passed win is not a notebook")
+
+	Notebook $win selection={startOfFile, endOfFile}
+	ASSERT(!V_Flag, "Illegal selection")
+
+	Notebook $win setData=text
+End
