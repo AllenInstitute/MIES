@@ -275,7 +275,7 @@ Function ValidFunc_V3(panelTitle, s)
 
 	CHECK_NON_EMPTY_STR(panelTitle)
 
-	switch(GetHardwareType(panelTitle))
+	switch(hardwareType)
 		case HARDWARE_ITC_DAC:
 			CHECK_WAVE(s.rawDACWave, NUMERIC_WAVE)
 			break
