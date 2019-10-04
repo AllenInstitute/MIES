@@ -147,6 +147,10 @@ Function OVS_UpdatePanel(win, listBoxWave, listBoxSelWave, sweepSelectionChoices
 
 	Redimension/N=(numEntries, -1, -1) listBoxWave, listBoxSelWave, sweepSelectionChoices
 
+	if(numEntries == 0)
+		return NaN
+	endif
+
 	Make/FREE/U/I/N=(numEntries) sweeps = ExtractSweepNumber(StringFromList(p, sweepWaveList))
 	MultiThread listBoxWave[][%Sweep] = num2str(sweeps[p])
 
