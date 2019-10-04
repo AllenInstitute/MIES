@@ -279,8 +279,8 @@ static Function AcquireData(s, stimset, device, [numHeadstages, TTLStimset, post
 	WAVE ampMCC = GetAmplifierMultiClamps()
 	WAVE ampTel = GetAmplifierTelegraphServers()
 
-	CHECK_EQUAL_VAR(DimSize(ampMCC, ROWS), 2)
-	CHECK_EQUAL_VAR(DimSize(ampTel, ROWS), 2)
+	REQUIRE_EQUAL_VAR(DimSize(ampMCC, ROWS), 2)
+	REQUIRE_EQUAL_VAR(DimSize(ampTel, ROWS), 2)
 
 	PGC_SetAndActivateControl(device, "ADC", val=0)
 	DoUpdate/W=$device

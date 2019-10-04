@@ -40,8 +40,8 @@ static Function AcquireData(s, devices, stimSetName1, stimSetName2[, dDAQ, oodDA
 		WAVE ampMCC = GetAmplifierMultiClamps()
 		WAVE ampTel = GetAmplifierTelegraphServers()
 
-		CHECK_EQUAL_VAR(DimSize(ampMCC, ROWS), 2)
-		CHECK_EQUAL_VAR(DimSize(ampTel, ROWS), 2)
+		REQUIRE_EQUAL_VAR(DimSize(ampMCC, ROWS), 2)
+		REQUIRE_EQUAL_VAR(DimSize(ampTel, ROWS), 2)
 
 		// HS 0 with Amp
 		PGC_SetAndActivateControl(device, "Popup_Settings_HeadStage", val = 0)
