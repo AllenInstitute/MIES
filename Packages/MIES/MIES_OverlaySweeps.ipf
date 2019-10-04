@@ -122,7 +122,7 @@ Function OVS_UpdatePanel(win, listBoxWave, listBoxSelWave, sweepSelectionChoices
 	WAVE/WAVE allNumericalValues
 	WAVE/T numericalValues
 
-	variable i, numEntries, sweepNo
+	variable i, numEntries, sweepNo, lastEntry, newCycleHasStartedRAC, newCycleHasStartedSCI
 	string extPanel
 
 	extPanel = BSP_GetPanel(win)
@@ -154,8 +154,6 @@ Function OVS_UpdatePanel(win, listBoxWave, listBoxSelWave, sweepSelectionChoices
 	Make/FREE/U/I/N=(numEntries) sweeps = ExtractSweepNumber(StringFromList(p, sweepWaveList))
 	MultiThread listBoxWave[][%Sweep] = num2str(sweeps[p])
 
-	listBoxSelWave[][%Sweep] = listBoxSelWave[p] & LISTBOX_CHECKBOX_SELECTED ? LISTBOX_CHECKBOX | LISTBOX_CHECKBOX_SELECTED : LISTBOX_CHECKBOX
-
 	if(OVS_IsActive(win) && GetCheckBoxState(extPanel, "check_overlaySweeps_disableHS"))
 		listBoxSelWave[][%Headstages] = SetBit(listBoxSelWave[p][%Headstages], LISTBOX_CELL_EDITABLE)
 	else
@@ -175,6 +173,25 @@ Function OVS_UpdatePanel(win, listBoxWave, listBoxSelWave, sweepSelectionChoices
 		WAVE clampModes = GetLastSetting(allNumericalValues[i], sweeps[i], "Clamp Mode", DATA_ACQUISITION_MODE)
 		sweepSelectionChoices[i][][%StimsetAndClampMode] = SelectString(IsFinite(clampModes[q]), "", stimsets[q] + " (" + ConvertAmplifierModeShortStr(clampModes[q]) + ")")
 	endfor
+
+	lastEntry = numEntries - 1
+
+	if(GetCheckBoxState(extPanel, "check_ovs_clear_on_new_ra_cycle"))
+		WAVE RACSweeps = AFH_GetSweepsFromSameRACycle(allNumericalValues[lastEntry], sweeps[lastEntry])
+		newCycleHasStartedRAC = WaveExists(RACSweeps) && DimSize(RACSweeps, ROWS) == 1
+	endif
+	if(GetCheckBoxState(extPanel, "check_ovs_clear_on_new_stimset_cycle"))
+		Make/FREE/WAVE/N=(NUM_HEADSTAGES) sweepsInCycleForHS = AFH_GetSweepsFromSameSCI(allNumericalValues[lastEntry], sweeps[lastEntry], p)
+		Make/FREE/N=(NUM_HEADSTAGES) SCISweeps = WaveExists(sweepsInCycleForHS[p]) && DimSize(sweepsInCycleForHS[p], ROWS) == 1
+		newCycleHasStartedSCI = IsFinite(GetRowIndex(SCISweeps, val = 1))
+	endif
+
+	if(newCycleHasStartedRAC || newCycleHasStartedSCI)
+		listBoxSelWave[][%Sweep] = LISTBOX_CHECKBOX
+		listBoxSelWave[lastEntry][%Sweep] = LISTBOX_CHECKBOX | LISTBOX_CHECKBOX_SELECTED
+	else
+		listBoxSelWave[][%Sweep] = listBoxSelWave[p] & LISTBOX_CHECKBOX_SELECTED ? LISTBOX_CHECKBOX | LISTBOX_CHECKBOX_SELECTED : LISTBOX_CHECKBOX
+	endif
 End
 
 /// @brief Return the selected sweeps (either indizes or the real sweep numbers)
