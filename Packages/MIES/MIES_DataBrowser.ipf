@@ -648,10 +648,9 @@ Function DB_ButtonProc_ChangeSweep(ba) : ButtonControl
 		case 2: // mouse up
 			DB_FirstAndLastSweepAcquired(scPanel, firstSweep, lastSweep)
 
-			/// @todo this was called from DB_UpdateLastSweepControls. Is it really necessary?
 			formerLast = GetValDisplayAsNum(scPanel, "valdisp_SweepControl_LastSweep")
 			if(formerLast != lastSweep)
-				DB_UpdateOverlaySweepWaves(graph)
+				DB_UpdateLastSweepControls(scPanel, firstSweep, lastSweep)
 			endif
 
 			sweepNo = BSP_UpdateSweepControls(graph, ba.ctrlName, firstSweep, lastSweep)
