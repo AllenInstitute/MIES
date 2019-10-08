@@ -134,7 +134,8 @@ Function IDX_MaxSweepsLockedIndexing(panelTitle)
 	variable MaxCycleIndexSteps = IDX_MaxSets(panelTitle) + 1
 
 	do
-		MaxSteps += IDX_StepsInSetWithMaxSweeps(panelTitle,i)
+		MaxSteps += max(IDX_StepsInSetWithMaxSweeps(panelTitle, i, CHANNEL_TYPE_DAC), \
+							IDX_StepsInSetWithMaxSweeps(panelTitle, i, CHANNEL_TYPE_TTL))
 		i += 1
 	while(i < MaxCycleIndexSteps)
 
@@ -142,28 +143,27 @@ Function IDX_MaxSweepsLockedIndexing(panelTitle)
 End
 
 /// @brief Return the number of steps in the largest set for a particular index number
-static Function IDX_StepsInSetWithMaxSweeps(panelTitle,IndexNo)
+static Function IDX_StepsInSetWithMaxSweeps(panelTitle, IndexNo, channelType)
 	string panelTitle
-	variable IndexNo
+	variable IndexNo, channelType
 
-	variable MaxSteps = 0, SetSteps
+	variable MaxSteps, SetSteps
 	variable ListStartNo, ListEndNo, ListLength, Index
-	string setName
 	string popMenuIndexStartName, popMenuIndexEndName
-	variable i = 0
+	variable i
 
-	WAVE statusDA = DAG_GetChannelState(panelTitle, CHANNEL_TYPE_DAC)
+	WAVE status = DAG_GetChannelState(panelTitle, channelType)
 
 	for(i = 0; i < NUM_DA_TTL_CHANNELS; i += 1)
 
-		if(!statusDA[i])
+		if(!status[i])
 			continue
 		endif
 
-		popMenuIndexStartName = GetPanelControl(i, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_WAVE)
+		popMenuIndexStartName = GetPanelControl(i, channelType, CHANNEL_CONTROL_WAVE)
 		controlinfo /w = $panelTitle $popMenuIndexStartName
 		ListStartNo = v_value
-		popMenuIndexEndName = GetPanelControl(i, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_INDEX_END)
+		popMenuIndexEndName = GetPanelControl(i, channelType, CHANNEL_CONTROL_INDEX_END)
 		controlinfo /w = $panelTitle $popMenuIndexEndName
 		ListEndNo = v_value
 		ListLength = abs(ListStartNo - ListEndNo) + 1
@@ -176,41 +176,11 @@ static Function IDX_StepsInSetWithMaxSweeps(panelTitle,IndexNo)
 			index *= -1
 		endif
 
-		WAVE stimsets = IDX_GetStimsets(panelTitle, i, CHANNEL_TYPE_DAC)
+		WAVE stimsets = IDX_GetStimsets(panelTitle, i, channelType)
 		SetSteps = IDX_NumberOfSweepsInSet(IDX_GetSingleStimset(stimsets, ListStartNo + index))
 		MaxSteps = max(MaxSteps, SetSteps)
 	endfor
 
-	WAVE statusTTL = DAG_GetChannelState(panelTitle, CHANNEL_TYPE_TTL)
-
-	for(i = 0; i < NUM_DA_TTL_CHANNELS; i += 1)
-
-		if(!statusTTL[i])
-			continue
-		endif
-
-		popMenuIndexStartName = GetPanelControl(i, CHANNEL_TYPE_TTL, CHANNEL_CONTROL_WAVE)
-		controlinfo /w = $panelTitle $popMenuIndexStartName
-		ListStartNo = v_value
-		popMenuIndexEndName = GetPanelControl(i, CHANNEL_TYPE_TTL, CHANNEL_CONTROL_INDEX_END)
-		controlinfo /w = $panelTitle $popMenuIndexEndName
-		ListEndNo = v_value
-		ListLength = abs(ListStartNo - ListEndNo) + 1
-		index = indexNo
-
-		if(listLength <= IndexNo)
-			Index = mod(IndexNo, ListLength)
-		endif
-
-		if((ListStartNo - ListEndNo) > 0)
-			index *= -1
-		endif
-
-		WAVE stimsets = IDX_GetStimsets(panelTitle, i, CHANNEL_TYPE_TTL)
-		SetSteps = IDX_NumberOfSweepsInSet(IDX_GetSingleStimset(stimsets, ListStartNo + index))
-		MaxSteps = max(MaxSteps, SetSteps)
-	endfor
-	
 	return MaxSteps
 End
 
