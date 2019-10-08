@@ -124,11 +124,10 @@ static Function/S DB_LockToDevice(win, device)
 	DB_SetUserData(newWindow, device)
 	if(windowExists(BSP_GetPanel(newWindow)) && BSP_HasBoundDevice(newWindow))
 		BSP_DynamicStartupSettings(newWindow)
+		DB_DynamicSettingsHistory(newWindow)
+		DB_FirstAndLastSweepAcquired(newWindow, first, last)
+		DB_UpdateLastSweepControls(newWindow, first, last)
 	endif
-
-	DB_DynamicSettingsHistory(newWindow)
-	DB_FirstAndLastSweepAcquired(newWindow, first, last)
-	DB_UpdateLastSweepControls(newWindow, first, last)
 
 	DB_UpdateSweepPlot(newWindow)
 
