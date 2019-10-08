@@ -102,35 +102,37 @@ static Function/S DB_GetLabNoteBookGraph(win)
 	return DB_GetSettingsHistoryPanel(win) + "#Labnotebook"
 End
 
-static Function DB_LockToDevice(win, device)
-	string &win, device
+static Function/S DB_LockToDevice(win, device)
+	string win, device
 
-	string renameWin
+	string newWindow
 	variable first, last
 
-	renameWin = "DB_" + device
 	if(!cmpstr(device, NONE))
-		renameWin = "DataBrowser"
+		newWindow = "DataBrowser"
 		print "Please choose a device assignment for the data browser"
 		ControlWindowToFront()
+	else
+		newWindow = "DB_" + device
 	endif
 
-	if(windowExists(renameWin))
-		renameWin = UniqueName(renameWin, 9, 1)
+	if(windowExists(newWindow))
+		newWindow = UniqueName(newWindow, 9, 1)
 	endif
-	DoWindow/W=$win/C $renameWin
-	win = renameWin
+	DoWindow/W=$win/C $newWindow
 
-	DB_SetUserData(win, device)
-	if(windowExists(BSP_GetPanel(win)) && BSP_HasBoundDevice(win))
-		BSP_DynamicStartupSettings(win)
+	DB_SetUserData(newWindow, device)
+	if(windowExists(BSP_GetPanel(newWindow)) && BSP_HasBoundDevice(newWindow))
+		BSP_DynamicStartupSettings(newWindow)
 	endif
 
-	DB_DynamicSettingsHistory(win)
-	DB_FirstAndLastSweepAcquired(win, first, last)
-	DB_UpdateLastSweepControls(win, first, last)
+	DB_DynamicSettingsHistory(newWindow)
+	DB_FirstAndLastSweepAcquired(newWindow, first, last)
+	DB_UpdateLastSweepControls(newWindow, first, last)
 
-	DB_UpdateSweepPlot(win)
+	DB_UpdateSweepPlot(newWindow)
+
+	return newWindow
 End
 
 static Function DB_SetUserData(win, device)
@@ -694,7 +696,7 @@ Function DB_PopMenuProc_LockDBtoDevice(pa) : PopupMenuControl
 
 	switch(pa.eventcode)
 		case 2: // mouse up
-			DB_LockToDevice(mainPanel, pa.popStr)
+			mainPanel = DB_LockToDevice(mainPanel, pa.popStr)
 			DB_UpdateSweepPlot(mainPanel)
 			break
 	endswitch
