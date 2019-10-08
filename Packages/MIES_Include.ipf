@@ -62,6 +62,7 @@
 #include "MIES_DAEphys_Macro"
 #include "MIES_DAEphys_GuiState"
 #include "MIES_DataBrowser"
+#include "MIES_DataBrowser_Macro"
 #include "MIES_DataAcquisition"
 #include "MIES_DataAcquisition_Single"
 #include "MIES_DataAcquisition_Multi"

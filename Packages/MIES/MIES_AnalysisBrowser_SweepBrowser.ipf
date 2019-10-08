@@ -533,7 +533,7 @@ Function/DF SB_OpenSweepBrowser()
 
 	string mainWin, renameWin
 
-	Execute "SweepBrowser()"
+	Execute "DataBrowser()"
 
 	mainWin = GetMainWindow(GetCurrentWindow())
 
@@ -547,25 +547,16 @@ Function/DF SB_OpenSweepBrowser()
 	DFREF sweepBrowserDFR = BSP_GetFolder(mainWin, MIES_BSP_PANEL_FOLDER)
 	SB_GetSweepBrowserMap(sweepBrowserDFR)
 
-	renameWin = UniqueName("SweepBrowser", 9, 1)
+	renameWin = UniqueName(SWEEPBROWSER_WINDOW_TITLE, 9, 1)
 	DoWindow/W=$mainWin/C $renameWin
 	mainWin = renameWin
 
 	string/G sweepBrowserDFR:graph = mainWin
 
-	BSP_OpenPanel(mainWin)
+	BSP_InitPanel(mainWin)
 	SB_PanelUpdate(mainWin)
 	return sweepBrowserDFR
 End
-
-Window SweepBrowser() : Graph
-	PauseUpdate; Silent 1		// building window...
-	Display /W=(850.5,168.5,1284,473.75)/K=1  as "SweepBrowser"
-	SetWindow kwTopWin,userdata(panelVersion)=  "2"
-	SetWindow kwTopWin,hook(TA_CURSOR_MOVED)=TimeAlignCursorMovedHook
-	Button button_BSP_open,pos={5.00,5.00},size={25.00,25.00},proc=BSP_ButtonProc_Panel,title="<<"
-	Button button_BSP_open,help={"Open Side Panel"}
-EndMacro
 
 Function/S SB_GetSweepList(win)
 	string win

@@ -9,8 +9,6 @@
 /// @file MIES_DataBrowser.ipf
 /// @brief __DB__ Panel for browsing acquired data during acquisition
 
-static strConstant EXT_PANEL_SETTINGSHISTORY = "SettingsHistoryPanel"
-
 Function/S DB_OpenDataBrowser()
 	string win, device, devicesWithData, bsPanel
 
@@ -19,9 +17,8 @@ Function/S DB_OpenDataBrowser()
 
 	AddVersionToPanel(win, DATABROWSER_PANEL_VERSION)
 	BSP_SetDataBrowser(win)
-
-	BSP_OpenPanel(win)
-	DB_OpenSettingsHistory(win)
+	BSP_InitPanel(win)
+	DB_DynamicSettingsHistory(win)
 
 	// immediately lock if we have only data from one device
 	devicesWithData = ListMatch(DB_GetAllDevicesWithData(), "!" + NONE)
@@ -37,29 +34,158 @@ Function/S DB_OpenDataBrowser()
 	return GetMainWindow(GetCurrentWindow())
 End
 
+/// @brief Utility function to generate new window recreation macro of DataBrowser (also used for SweepBrowser)
+///        after GUI editor adapted controls in development process
+Function DB_ResetAndStoreCurrentDBPanel()
+	string panelTitle, bsPanel, scPanel, shPanel, recreationCode
+
+	panelTitle = GetMainWindow(GetCurrentWindow())
+	if(!windowExists(panelTitle))
+		print "The top panel does not exist"
+		ControlWindowToFront()
+		return NaN
+	endif
+	if(CmpStr(panelTitle, DATABROWSER_WINDOW_TITLE))
+		printf "The top window is not named \"%s\"\r", DATABROWSER_WINDOW_TITLE
+		return NaN
+	endif
+
+	bsPanel = BSP_GetPanel(panelTitle)
+	scPanel = BSP_GetSweepControlsPanel(panelTitle)
+	shPanel = DB_GetSettingsHistoryPanel(panelTitle)
+
+	ASSERT(WindowExists(bsPanel) && WindowExists(scPanel) && WindowExists(shPanel), "BrowserSettings or SweepControl or SettingsHistory panel subwindow does not exist.")
+
+	PGC_SetAndActivateControl(bsPanel, "popup_DB_lockedDevices", str = NONE)
+	panelTitle = GetMainWindow(GetCurrentWindow())
+
+	if(CmpStr(panelTitle, DATABROWSER_WINDOW_TITLE))
+		printf "The top window is not named \"%s\" after unlocking\r", DATABROWSER_WINDOW_TITLE
+		return NaN
+	endif
+
+	// The following block resets the GUI state of the window and subwindows
+	HideTools/W=$panelTitle/A
+	PGC_SetAndActivateControl(panelTitle, "button_BSP_open")
+	DB_ClearAllGraphs()
+	DB_ClearGraph(panelTitle)
+
+	BSP_InitPanel(panelTitle)
+	DB_DynamicSettingsHistory(panelTitle)
+
+	BSP_UnsetDynamicSweepControlOfDataBrowser(panelTitle)
+	BSP_UnsetDynamicStartupSettingsOfDataBrowser(panelTitle)
+	DB_UnsetDynamicSettingsHistory(panelTitle)
+
+	// invalidate main panel
+	SetWindow $panelTitle, userData(panelVersion) = ""
+
+	// static defaults for SweepControl subwindow
+	PopupMenu Popup_SweepControl_Selector WIN = $scPanel, mode=1,popvalue=" ", value= #"\" \""
+	CheckBox check_SweepControl_AutoUpdate WIN = $scPanel, value= 0
+	// static defaults for BrowserSettings subwindow
+	PGC_SetAndActivateControl(bsPanel, "Settings", val = 0)
+	CheckBox check_overlaySweeps_disableHS WIN = $bsPanel, value= 0
+	CheckBox check_overlaySweeps_non_commula WIN = $bsPanel, value= 0
+	SetVariable setvar_overlaySweeps_offset WIN = $bsPanel, value= _NUM:0
+	SetVariable setvar_overlaySweeps_step WIN = $bsPanel, value= _NUM:1
+	CheckBox check_channelSel_DA_0 WIN = $bsPanel, value= 1
+	CheckBox check_channelSel_DA_1 WIN = $bsPanel, value= 1
+	CheckBox check_channelSel_DA_2 WIN = $bsPanel, value= 1
+	CheckBox check_channelSel_DA_3 WIN = $bsPanel, value= 1
+	CheckBox check_channelSel_DA_4 WIN = $bsPanel, value= 1
+	CheckBox check_channelSel_DA_5 WIN = $bsPanel, value= 1
+	CheckBox check_channelSel_DA_6 WIN = $bsPanel, value= 1
+	CheckBox check_channelSel_DA_7 WIN = $bsPanel, value= 1
+	CheckBox check_channelSel_HEADSTAGE_0 WIN = $bsPanel, value= 1
+	CheckBox check_channelSel_HEADSTAGE_1 WIN = $bsPanel, value= 1
+	CheckBox check_channelSel_HEADSTAGE_2 WIN = $bsPanel, value= 1
+	CheckBox check_channelSel_HEADSTAGE_3 WIN = $bsPanel, value= 1
+	CheckBox check_channelSel_HEADSTAGE_4 WIN = $bsPanel, value= 1
+	CheckBox check_channelSel_HEADSTAGE_5 WIN = $bsPanel, value= 1
+	CheckBox check_channelSel_HEADSTAGE_6 WIN = $bsPanel, value= 1
+	CheckBox check_channelSel_HEADSTAGE_7 WIN = $bsPanel, value= 1
+	CheckBox check_channelSel_AD_0 WIN = $bsPanel, value= 1
+	CheckBox check_channelSel_AD_1 WIN = $bsPanel, value= 1
+	CheckBox check_channelSel_AD_2 WIN = $bsPanel, value= 1
+	CheckBox check_channelSel_AD_3 WIN = $bsPanel, value= 1
+	CheckBox check_channelSel_AD_4 WIN = $bsPanel, value= 1
+	CheckBox check_channelSel_AD_5 WIN = $bsPanel, value= 1
+	CheckBox check_channelSel_AD_6 WIN = $bsPanel, value= 1
+	CheckBox check_channelSel_AD_7 WIN = $bsPanel, value= 1
+	CheckBox check_channelSel_AD_8 WIN = $bsPanel, value= 1
+	CheckBox check_channelSel_AD_9 WIN = $bsPanel, value= 1
+	CheckBox check_channelSel_AD_10 WIN = $bsPanel, value= 1
+	CheckBox check_channelSel_AD_11 WIN = $bsPanel, value= 1
+	CheckBox check_channelSel_AD_12 WIN = $bsPanel, value= 1
+	CheckBox check_channelSel_AD_13 WIN = $bsPanel, value= 1
+	CheckBox check_channelSel_AD_14 WIN = $bsPanel, value= 1
+	CheckBox check_channelSel_AD_15 WIN = $bsPanel, value= 1
+	SetVariable setvar_cutoff_length_after WIN = $bsPanel, value= _NUM:0.2
+	SetVariable setvar_cutoff_length_before WIN = $bsPanel, value= _NUM:0.1
+	CheckBox check_auto_remove WIN = $bsPanel, value= 0
+	CheckBox check_highlightRanges WIN = $bsPanel, value= 0
+	SetVariable setvar_pulseAver_fallbackLength WIN = $bsPanel, value= _NUM:100
+	SetVariable setvar_pulseAver_endPulse WIN = $bsPanel, value= _NUM:inf
+	SetVariable setvar_pulseAver_startPulse WIN = $bsPanel, value= _NUM:0
+	CheckBox check_pulseAver_multGraphs WIN = $bsPanel, value= 0
+	CheckBox check_pulseAver_zeroTrac WIN = $bsPanel, value= 0
+	CheckBox check_pulseAver_showAver WIN = $bsPanel, value= 0
+	CheckBox check_pulseAver_indTraces WIN = $bsPanel, value= 1
+	CheckBox check_pulseAver_deconv WIN = $bsPanel, value= 0
+	CheckBox check_pulseAver_timeAlign WIN = $bsPanel, value= 0
+	SetVariable setvar_pulseAver_deconv_tau WIN = $bsPanel, value= _NUM:15
+	SetVariable setvar_pulseAver_deconv_smth WIN = $bsPanel, value= _NUM:1000
+	SetVariable setvar_pulseAver_deconv_range WIN = $bsPanel, value= _NUM:inf
+	CheckBox check_BrowserSettings_OVS WIN = $bsPanel, value= 0
+	CheckBox check_BrowserSettings_AR WIN = $bsPanel, value= 0
+	CheckBox check_BrowserSettings_PA WIN = $bsPanel, value= 0
+	CheckBox check_BrowserSettings_DAC WIN = $bsPanel, value= 0
+	CheckBox check_BrowserSettings_ADC WIN = $bsPanel, value= 1
+	CheckBox check_BrowserSettings_TTL WIN = $bsPanel, value= 0
+	CheckBox check_BrowserSettings_OChan WIN = $bsPanel, value= 0
+	CheckBox check_BrowserSettings_dDAQ WIN = $bsPanel, value= 0
+	CheckBox check_Calculation_ZeroTraces WIN = $bsPanel, value= 0
+	CheckBox check_Calculation_AverageTraces WIN = $bsPanel, value= 0
+	CheckBox check_BrowserSettings_TA WIN = $bsPanel, value= 0
+	CheckBox check_ovs_clear_on_new_ra_cycle WIN = $bsPanel, value= 0
+	CheckBox check_ovs_clear_on_new_stimset_cycle WIN = $bsPanel, value= 0
+	PopupMenu popup_TimeAlignment_Mode WIN = $bsPanel, mode=1, popvalue="Level (Raising)",value= #"\"Level (Raising);Level (Falling);Min;Max\""
+	SetVariable setvar_TimeAlignment_LevelCross WIN = $bsPanel, value= _NUM:0
+	CheckBox check_Display_VisibleXrange WIN = $bsPanel, value= 0
+	CheckBox check_Display_EqualYrange WIN = $bsPanel, value= 0
+	CheckBox check_Display_EqualYignore WIN = $bsPanel, value= 0
+	SetVariable setvar_Display_EqualYlevel WIN = $bsPanel, value= _NUM:0
+	Slider slider_BrowserSettings_dDAQ WIN = $bsPanel, value= -1
+	CheckBox check_SweepControl_HideSweep WIN = $bsPanel, value= 0
+	CheckBox check_BrowserSettings_splitTTL WIN = $bsPanel, value= 0
+	CheckBox check_BrowserSettings_DB_Passed WIN = $bsPanel, value= 0
+	CheckBox check_BrowserSettings_DB_Failed WIN = $bsPanel, value= 0
+
+	SearchForInvalidControlProcs(panelTitle)
+	print "Do not forget to increase DATABROWSER_PANEL_VERSION and/or SWEEPBROWSER_PANEL_VERSION and/or BROWSERSETTINGS_PANEL_VERSION."
+
+	Execute/P/Z "DoWindow/R " + DATABROWSER_WINDOW_TITLE
+	Execute/P/Q/Z "COMPILEPROCEDURES "
+End
+
 Function/S DB_GetMainGraph(win)
 	string win
 
 	return GetMainWindow(win)
 End
 
-Function DB_OpenSettingsHistory(win)
+Function DB_UnHideSettingsHistory(win)
 	string win
 
-	string mainPanel, shPanel
+	string settingsHistoryPanel
 
-	mainPanel = GetMainWindow(win)
-	ASSERT(WindowExists(mainPanel), "HOST panel does not exist")
+	ASSERT(WindowExists(GetMainWindow(win)), "HOST panel does not exist")
 
-	shPanel = DB_GetSettingsHistoryPanel(win)
-	if(windowExists(shPanel))
-		SetWindow $shPanel hide=0, needUpdate=1
-		return 1
+	settingsHistoryPanel = DB_GetSettingsHistoryPanel(win)
+	if(WindowExists(settingsHistoryPanel))
+		SetWindow $settingsHistoryPanel hide=0, needUpdate=1
 	endif
-
-	NewPanel/HOST=$mainPanel/EXT=2/W=(0,0,580,140)/N=$EXT_PANEL_SETTINGSHISTORY  as " "
-	Execute "SettingsHistoryPanel()"
-	DB_DynamicSettingsHistory(mainPanel)
 End
 
 Function/S DB_ClearAllGraphs()
@@ -90,7 +216,7 @@ Function/S DB_ClearAllGraphs()
 	endfor
 End
 
-static Function/S DB_GetSettingsHistoryPanel(win)
+Function/S DB_GetSettingsHistoryPanel(win)
 	string win
 
 	return GetMainWindow(win) + "#" + EXT_PANEL_SETTINGSHISTORY
@@ -109,17 +235,20 @@ static Function/S DB_LockToDevice(win, device)
 	variable first, last
 
 	if(!cmpstr(device, NONE))
-		newWindow = "DataBrowser"
+		newWindow = DATABROWSER_WINDOW_TITLE
 		print "Please choose a device assignment for the data browser"
 		ControlWindowToFront()
 	else
 		newWindow = "DB_" + device
 	endif
 
-	if(windowExists(newWindow))
-		newWindow = UniqueName(newWindow, 9, 1)
+	if(CmpStr(win, newWindow))
+		if(windowExists(newWindow))
+			newWindow = UniqueName(newWindow, 9, 1)
+		endif
+		DoWindow/W=$win/C $newWindow
+		win = newWindow
 	endif
-	DoWindow/W=$win/C $newWindow
 
 	DB_SetUserData(newWindow, device)
 	if(windowExists(BSP_GetPanel(newWindow)) && BSP_HasBoundDevice(newWindow))
@@ -141,6 +270,7 @@ static Function DB_SetUserData(win, device)
 	BSP_SetDevice(win, device)
 
 	if(!cmpstr(device, NONE))
+		SetWindow $win, userData($MIES_BSP_PANEL_FOLDER) = ""
 		return 0
 	endif
 
@@ -465,16 +595,6 @@ static Function DB_UpdateOverlaySweepWaves(win)
 	OVS_UpdatePanel(win, listBoxWave, listBoxSelWave, sweepSelChoices, sweepWaveList, textualValues=textualValues, numericalValues=numericalValues)
 End
 
-Window DataBrowser() : Graph
-	PauseUpdate; Silent 1		// building window...
-	Display /W=(850.5,168.5,1284,473.75)/K=1  as "DataBrowser"
-	SetWindow kwTopWin,userdata(panelVersion)=  "7"
-	SetWindow kwTopWin,hook(TA_CURSOR_MOVED)=TimeAlignCursorMovedHook
-	ModifyGraph margin(left)=28,margin(bottom)=1
-	Button button_BSP_open,pos={5.00,5.00},size={25.00,25.00},proc=DB_ButtonProc_Panel,title="<<"
-	Button button_BSP_open,help={"Open Side Panel"}
-EndMacro
-
 /// @brief procedure for the open button of the side panel
 Function DB_ButtonProc_Panel(ba) : ButtonControl
 	STRUCT WMButtonAction &ba
@@ -484,60 +604,13 @@ Function DB_ButtonProc_Panel(ba) : ButtonControl
 	switch(ba.eventcode)
 		case 2: // mouse up
 			win = GetMainWindow(ba.win)
-			DB_OpenSettingsHistory(win)
+			DB_UnHideSettingsHistory(win)
 			break
 	endswitch
 
 	BSP_ButtonProc_Panel(ba)
 	return 0
 End
-
-Window SettingsHistoryPanel() : Panel
-	PauseUpdate; Silent 1		// building window...
-	//NewPanel /W=(458,631,1041,778) as "Settings History"
-	PopupMenu popup_LBNumericalKeys,pos={411.00,26.00},size={150.00,19.00},bodyWidth=150,proc=DB_PopMenuProc_LabNotebook
-	PopupMenu popup_LBNumericalKeys,help={"Select numeric lab notebook data to display"}
-	PopupMenu popup_LBNumericalKeys,userdata(ResizeControlsInfo)= A"!!,I3J,hm^!!#A%!!#<Pz!!#N3Bk1ct<C^(Dzzzzzzzzzzzzz!!#N3Bk1ct<C^(Dz"
-	PopupMenu popup_LBNumericalKeys,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:DuaGl<C]S6zzzzzzzzzz"
-	PopupMenu popup_LBNumericalKeys,userdata(ResizeControlsInfo) += A"zzz!!#u:DuaGl<C]S6zzzzzzzzzzzzz!!!"
-	PopupMenu popup_LBNumericalKeys,mode=1,popvalue="- none -"
-	PopupMenu popup_LBTextualKeys,pos={411.00,55.00},size={150.00,19.00},bodyWidth=150,proc=DB_PopMenuProc_LabNotebook
-	PopupMenu popup_LBTextualKeys,help={"Select textual lab notebook data to display"}
-	PopupMenu popup_LBTextualKeys,userdata(ResizeControlsInfo)= A"!!,I3J,ho@!!#A%!!#<Pz!!#N3Bk1ct<C^(Dzzzzzzzzzzzzz!!#N3Bk1ct<C^(Dz"
-	PopupMenu popup_LBTextualKeys,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:DuaGl<C]S6zzzzzzzzzz"
-	PopupMenu popup_LBTextualKeys,userdata(ResizeControlsInfo) += A"zzz!!#u:DuaGl<C]S6zzzzzzzzzzzzz!!!"
-	PopupMenu popup_LBTextualKeys,mode=1,popvalue="- none -"
-	Button button_clearlabnotebookgraph,pos={402.00,85.00},size={80.00,25.00},proc=DB_ButtonProc_ClearGraph,title="Clear graph"
-	Button button_clearlabnotebookgraph,userdata(ResizeControlsInfo)= A"!!,I/!!#?c!!#?Y!!#=+z!!#N3Bk1ct<C^(Dzzzzzzzzzzzzz!!#N3Bk1ct<C^(Dz"
-	Button button_clearlabnotebookgraph,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:DuaGl<C]S6zzzzzzzzzz"
-	Button button_clearlabnotebookgraph,userdata(ResizeControlsInfo) += A"zzz!!#u:DuaGl<C]S6zzzzzzzzzzzzz!!!"
-	Button button_switchxaxis,pos={494.00,85.00},size={80.00,25.00},proc=DB_ButtonProc_SwitchXAxis,title="Switch X-axis"
-	Button button_switchxaxis,help={"Toggle lab notebook horizontal axis between time of day or sweep number"}
-	Button button_switchxaxis,userdata(ResizeControlsInfo)= A"!!,I]!!#?c!!#?Y!!#=+z!!#N3Bk1ct<C^(Dzzzzzzzzzzzzz!!#N3Bk1ct<C^(Dz"
-	Button button_switchxaxis,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:DuaGl<C]S6zzzzzzzzzz"
-	Button button_switchxaxis,userdata(ResizeControlsInfo) += A"zzz!!#u:DuaGl<C]S6zzzzzzzzzzzzz!!!"
-	GroupBox group_labnotebook_ctrls,pos={403.00,5.00},size={170.00,78.00},title="Settings History Column"
-	GroupBox group_labnotebook_ctrls,userdata(ResizeControlsInfo)= A"!!,I/J,hj-!!#A9!!#?Uz!!#N3Bk1ct<C^(Dzzzzzzzzzzzzz!!#N3Bk1ct<C^(Dz"
-	GroupBox group_labnotebook_ctrls,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:DuaGl<C]S6zzzzzzzzzz"
-	GroupBox group_labnotebook_ctrls,userdata(ResizeControlsInfo) += A"zzz!!#u:DuaGl<C]S6zzzzzzzzzzzzz!!!"
-	Button button_DataBrowser_setaxis,pos={401.00,114.00},size={171.00,25.00},proc=DB_ButtonProc_AutoScale,title="Autoscale"
-	Button button_DataBrowser_setaxis,help={"Autoscale sweep data"}
-	Button button_DataBrowser_setaxis,userdata(ResizeControlsInfo)= A"!!,I.J,hps!!#A:!!#=+z!!#N3Bk1ct<C^(Dzzzzzzzzzzzzz!!#N3Bk1ct<C^(Dz"
-	Button button_DataBrowser_setaxis,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Duafnzzzzzzzzzzz"
-	Button button_DataBrowser_setaxis,userdata(ResizeControlsInfo) += A"zzz!!#u:Duafnzzzzzzzzzzzzzz!!!"
-	DefineGuide UGV0={FR,-187}
-	SetWindow kwTopWin,hook(ResizeControls)=ResizeControls#ResizeControlsHook
-	SetWindow kwTopWin,userdata(ResizeControlsInfo)= A"!!*'\"z!!#D!^]6_8zzzzzzzzzzzzzzzzzzzzz"
-	SetWindow kwTopWin,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzzzzzzzzzzzzzzz"
-	SetWindow kwTopWin,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzzzzzzzzz!!!"
-	SetWindow kwTopWin,userdata(ResizeControlsGuides)=  "UGV0;"
-	SetWindow kwTopWin,userdata(ResizeControlsInfoUGV0)= A":-hTC3`S[N0KW?-:-)<bFED57B6-UXF*)>@Grnu.:dmEFF(KAR85E,T>#.mm5tj<n4&A^O8Q88W:-(0k2D-[;4%E:B6q&gk7T)<<<CoSI1-.Kp78-NR;b9q[:JNr&0fV*R"
-	Display/W=(200,187,395,501)/FG=(FL,FT,UGV0,FB)/HOST=#
-	ModifyGraph margin(right)=74
-	TextBox/C/N=text0/F=0/B=1/X=0.50/Y=2.02/E=2 ""
-	RenameWindow #,LabNoteBook
-	SetActiveSubwindow ##
-EndMacro
 
 static Function DB_DynamicSettingsHistory(win)
 	string win
@@ -562,8 +635,17 @@ static Function DB_DynamicSettingsHistory(win)
 
 	SetPopupMenuIndex(shPanel, "popup_LBNumericalKeys", 0)
 	SetPopupMenuIndex(shPanel, "popup_LBTextualKeys", 0)
+End
 
-	ModifyPanel/W=$shPanel fixedSize=0
+/// @brief Unsets all control properties that are set in DB_DynamicSettingsHistory
+static Function DB_UnsetDynamicSettingsHistory(win)
+	string win
+
+	string shPanel
+
+	shPanel = DB_GetSettingsHistoryPanel(win)
+	ASSERT(WindowExists(shPanel), "external SettingsHistory panel not found")
+	SetWindow $shPanel, hook(main)=$""
 End
 
 /// @brief panel close hook for settings history panel
@@ -576,6 +658,12 @@ Function DB_CloseSettingsHistoryHook(s)
 	switch(s.eventCode)
 		case 17: // killVote
 			mainPanel = GetMainWindow(s.winName)
+
+			if(!BSP_IsDataBrowser(mainPanel))
+				hookResult = 0
+				break
+			endif
+
 			shPanel = DB_GetSettingsHistoryPanel(mainPanel)
 
 			ASSERT(!cmpstr(s.winName, shPanel), "This hook is only available for Setting History Panel.")
@@ -596,7 +684,7 @@ Function DB_DataBrowserStartupSettings()
 	string allCheckBoxes, mainPanel, lbPanel, mainGraph, lbGraph, bsPanel
 	variable i, numCheckBoxes
 
-	mainPanel = "DataBrowser"
+	mainPanel = DATABROWSER_WINDOW_TITLE
 	lbPanel   = BSP_GetNotebookSubWindow(mainPanel)
 	mainGraph = DB_GetMainGraph(mainPanel)
 	lbGraph   = DB_GetLabNotebookGraph(mainPanel)
