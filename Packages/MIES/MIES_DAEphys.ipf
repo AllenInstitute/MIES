@@ -4208,6 +4208,10 @@ Function/S DAP_CreateDAEphysPanel()
 	// upgrade folder locations
 	GetITCDevicesFolder()
 
+	// fetch device lists
+	DAP_GetNIDeviceList()
+	DAP_GetITCDeviceList()
+
 	Execute "DA_Ephys()"
 	panel = GetCurrentWindow()
 	SCOPE_OpenScopeWindow(panel)
