@@ -225,14 +225,13 @@ static Function DC_LongestOutputWave(panelTitle, dataAcqOrTP, channelType)
 
 	variable maxNumRows, i, numEntries, numPulses, singlePulseLength
 
-	WAVE statusChannel = DAG_GetChannelState(panelTitle, channelType)
-	WAVE statusHS      = DAG_GetChannelState(panelTitle, CHANNEL_TYPE_HEADSTAGE)
-	WAVE/T stimsets    = DAG_GetChannelTextual(panelTitle, channelType, CHANNEL_CONTROL_WAVE)
+	WAVE statusFiltered = DC_GetFilteredChannelState(panelTitle, dataAcqOrTP, channelType)
+	WAVE/T stimsets     = DAG_GetChannelTextual(panelTitle, channelType, CHANNEL_CONTROL_WAVE)
 
-	numEntries = DimSize(statusChannel, ROWS)
+	numEntries = DimSize(statusFiltered, ROWS)
 	for(i = 0; i < numEntries; i += 1)
 
-		if(!DC_ChannelIsActive(panelTitle, dataAcqOrTP, channelType, i, statusChannel, statusHS))
+		if(!statusFiltered[i])
 			continue
 		endif
 
@@ -513,51 +512,43 @@ static Function DC_InitDataHoldingWave(wv, numRows, sampleInterval, numDACs, num
 	endif
 End
 
-/// @brief Check if the given channel is active
+/// @brief Return the list of active channels, filtered for various special cases
 ///
-/// For DAQ a channel is active if it is selected. For the testpulse it is active if it is connected with
-/// an active headstage.
-///
-/// `statusChannel` and `statusHS` are passed in for performance reasons.
-///
-/// @param panelTitle        panel title
-/// @param dataAcqOrTP       one of #DATA_ACQUISITION_MODE or #TEST_PULSE_MODE
-/// @param channelType       one of the channel type constants from @ref ChannelTypeAndControlConstants
-/// @param channelNumber     number of the channel
-/// @param statusChannel     status wave of the given channelType
-/// @param statusHS     	 status wave of the headstages
-Function DC_ChannelIsActive(panelTitle, dataAcqOrTP, channelType, channelNumber, statusChannel, statusHS)
+/// @param panelTitle  panel title
+/// @param dataAcqOrTP one of #DATA_ACQUISITION_MODE or #TEST_PULSE_MODE
+/// @param channelType one of the channel type constants from @ref ChannelTypeAndControlConstants
+Function/WAVE DC_GetFilteredChannelState(panelTitle, dataAcqOrTP, channelType)
 	string panelTitle
-	variable dataAcqOrTP, channelType, channelNumber
-	WAVE statusChannel, statusHS
+	variable dataAcqOrTP, channelType
 
-	variable headstage
-
-	if(!statusChannel[channelNumber])
-		return 0
-	endif
+	WAVE statusChannel = DAG_GetChannelState(panelTitle, channelType)
 
 	if(dataAcqOrTP == DATA_ACQUISITION_MODE)
-		return 1
+		return statusChannel
 	endif
 
 	switch(channelType)
 		case CHANNEL_TYPE_TTL:
 			// TTL channels are always considered inactive for the testpulse
-			return 0
+			Make/FREE/N=(NUM_DA_TTL_CHANNELS) result = 0
+			return result
 			break
 		case CHANNEL_TYPE_ADC:
-			headstage = AFH_GetHeadstageFromADC(panelTitle, channelNumber)
+			Make/FREE/N=(NUM_AD_CHANNELS) result = AFH_GetHeadstageFromADC(panelTitle, p)
 			break
 		case CHANNEL_TYPE_DAC:
-			headstage = AFH_GetHeadstageFromDAC(panelTitle, channelNumber)
+			Make/FREE/N=(NUM_DA_TTL_CHANNELS) result = AFH_GetHeadstageFromDAC(panelTitle, p)
 			break
 		default:
 			ASSERT(0, "unhandled case")
 			break
 	endswitch
 
-	return IsFinite(headstage) && statusHS[headstage]
+	WAVE statusHS = DAG_GetChannelState(panelTitle, CHANNEL_TYPE_HEADSTAGE)
+
+	result[] = IsFinite(result[p]) && statusHS[result[p]]
+
+	return result
 End
 
 /// @brief Places channel (DA, AD, and TTL) settings data into ITCChanConfigWave
@@ -574,17 +565,16 @@ static Function DC_PlaceDataInITCChanConfigWave(panelTitle, dataAcqOrTP)
 	string unitList = ""
 
 	WAVE ITCChanConfigWave = GetITCChanConfigWave(panelTitle)
-	WAVE statusHS = DAG_GetChannelState(panelTitle, CHANNEL_TYPE_HEADSTAGE)
 
 	// query DA properties
-	WAVE channelStatus = DAG_GetChannelState(panelTitle, CHANNEL_TYPE_DAC)
+	WAVE statusDAFiltered = DC_GetFilteredChannelState(panelTitle, dataAcqOrTP, CHANNEL_TYPE_DAC)
 	WAVE/T allSetNames    = DAG_GetChannelTextual(panelTitle, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_WAVE)
 	ctrl = GetSpecialControlLabel(CHANNEL_TYPE_DAC, CHANNEL_CONTROL_UNIT)
 
-	numEntries = DimSize(channelStatus, ROWS)
+	numEntries = DimSize(statusDAFiltered, ROWS)
 	for(i = 0; i < numEntries; i += 1)
 
-		if(!DC_ChannelIsActive(panelTitle, dataAcqOrTP, CHANNEL_TYPE_DAC, i, channelStatus, statusHS))
+		if(!statusDAFiltered[i])
 			continue
 		endif
 
@@ -596,14 +586,14 @@ static Function DC_PlaceDataInITCChanConfigWave(panelTitle, dataAcqOrTP)
 	endfor
 
 	// query AD properties
-	WAVE channelStatus = DAG_GetChannelState(panelTitle, CHANNEL_TYPE_ADC)
+	WAVE statusADFiltered = DC_GetFilteredChannelState(panelTitle, dataAcqOrTP, CHANNEL_TYPE_ADC)
 
 	ctrl = GetSpecialControlLabel(CHANNEL_TYPE_ADC, CHANNEL_CONTROL_UNIT)
 
-	numEntries = DimSize(channelStatus, ROWS)
+	numEntries = DimSize(statusADFiltered, ROWS)
 	for(i = 0; i < numEntries; i += 1)
 
-		if(!DC_ChannelIsActive(panelTitle, dataAcqOrTP, CHANNEL_TYPE_ADC, i, channelStatus, statusHS))
+		if(!statusADFiltered[i])
 			continue
 		endif
 
@@ -1602,8 +1592,7 @@ static Function DC_MakeITCTTLWave(panelTitle, rackNo)
 	string listOfSets = ""
 	string setSweepCounts = ""
 
-	WAVE statusTTL = DAG_GetChannelState(panelTitle, CHANNEL_TYPE_TTL)
-	WAVE statusHS = DAG_GetChannelState(panelTitle, CHANNEL_TYPE_HEADSTAGE)
+	WAVE statusTTLFiltered = DC_GetFilteredChannelState(panelTitle, DATA_ACQUISITION_MODE, CHANNEL_TYPE_TTL)
 
 	WAVE/T allSetNames = DAG_GetChannelTextual(panelTitle, CHANNEL_TYPE_TTL, CHANNEL_CONTROL_WAVE)
 
@@ -1614,7 +1603,7 @@ static Function DC_MakeITCTTLWave(panelTitle, rackNo)
 
 	for(i = first; i <= last; i += 1)
 
-		if(!DC_ChannelIsActive(panelTitle, DATA_ACQUISITION_MODE, CHANNEL_TYPE_TTL, i, statusTTL, statusHS))
+		if(!statusTTLFiltered[i])
 			listOfSets = AddListItem("", listOfSets, ";", inf)
 			continue
 		endif
@@ -1633,7 +1622,7 @@ static Function DC_MakeITCTTLWave(panelTitle, rackNo)
 
 	for(i = first; i <= last; i += 1)
 
-		if(!DC_ChannelIsActive(panelTitle, DATA_ACQUISITION_MODE, CHANNEL_TYPE_TTL, i, statusTTL, statusHS))
+		if(!statusTTLFiltered[i])
 			setSweepCounts = AddListItem("", setSweepCounts, ";", inf)
 			continue
 		endif
@@ -1667,8 +1656,7 @@ static Function DC_MakeNITTLWave(panelTitle)
 	string setSweepCounts = ""
 	string channels = ""
 
-	WAVE statusTTL = DAG_GetChannelState(panelTitle, CHANNEL_TYPE_TTL)
-	WAVE statusHS = DAG_GetChannelState(panelTitle, CHANNEL_TYPE_HEADSTAGE)
+	WAVE statusTTLFiltered = DC_GetFilteredChannelState(panelTitle, DATA_ACQUISITION_MODE, CHANNEL_TYPE_TTL)
 	WAVE/T allSetNames = DAG_GetChannelTextual(panelTitle, CHANNEL_TYPE_TTL, CHANNEL_CONTROL_WAVE)
 	WAVE/WAVE TTLWave = GetTTLWave(panelTitle)
 
@@ -1676,7 +1664,7 @@ static Function DC_MakeNITTLWave(panelTitle)
 
 	for(i = 0; i < NUM_DA_TTL_CHANNELS; i += 1)
 
-		if(!DC_ChannelIsActive(panelTitle, DATA_ACQUISITION_MODE, CHANNEL_TYPE_TTL, i, statusTTL, statusHS))
+		if(!statusTTLFiltered[i])
 			listOfSets = AddListItem("", listOfSets, ";", inf)
 			setSweepCounts = AddListItem("", setSweepCounts, ";", inf)
 			channels = AddListItem("", channels, ";", inf)
@@ -1881,14 +1869,13 @@ Function DC_GotTPChannelWhileDAQ(panelTitle)
 	string panelTitle
 
 	variable i, numEntries
-	WAVE statusHS = DAG_GetChannelState(panelTitle, CHANNEL_TYPE_HEADSTAGE)
-	WAVE statusDA = DAG_GetChannelState(panelTitle, CHANNEL_TYPE_DAC)
+	WAVE statusDAFiltered = DC_GetFilteredChannelState(panelTitle, DATA_ACQUISITION_MODE, CHANNEL_TYPE_DAC)
 	WAVE/T allSetNames = DAG_GetChannelTextual(panelTitle, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_WAVE)
-	numEntries = DimSize(statusDA, ROWS)
+	numEntries = DimSize(statusDAFiltered, ROWS)
 
 	for(i = 0; i < numEntries; i += 1)
 
-		if(!DC_ChannelIsActive(panelTitle, DATA_ACQUISITION_MODE, CHANNEL_TYPE_DAC, i, statusDA, statusHS))
+		if(!statusDAFiltered[i])
 			continue
 		endif
 
