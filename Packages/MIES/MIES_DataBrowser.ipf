@@ -125,7 +125,7 @@ static Function/S DB_LockToDevice(win, device)
 	if(windowExists(BSP_GetPanel(newWindow)) && BSP_HasBoundDevice(newWindow))
 		BSP_DynamicStartupSettings(newWindow)
 		DB_DynamicSettingsHistory(newWindow)
-		DB_FirstAndLastSweepAcquired(newWindow, first, last)
+		[first, last] = DB_FirstAndLastSweepAcquired(newWindow)
 		DB_UpdateLastSweepControls(newWindow, first, last)
 	endif
 
@@ -163,14 +163,8 @@ static Function/S DB_GetPlainSweepList(win)
 	return GetListOfObjects(dfr, DATA_SWEEP_REGEXP, waveProperty="MINCOLS:2")
 End
 
-static Function DB_FirstAndLastSweepAcquired(win, first, last)
-	string win
-	variable &first, &last
-
+static Function [variable first, variable last] DB_FirstAndLastSweepAcquired(string win)
 	string list
-
-	first = 0
-	last  = 0
 
 	list = DB_GetPlainSweepList(win)
 
@@ -178,6 +172,8 @@ static Function DB_FirstAndLastSweepAcquired(win, first, last)
 		first = NumberByKey("Sweep", list, "_")
 		last = ItemsInList(list) - 1 + first
 	endif
+
+	return [first, last]
 End
 
 static Function DB_UpdateLastSweepControls(win, first, last)
@@ -434,7 +430,7 @@ Function DB_UpdateToLastSweep(win)
 		return NaN
 	endif
 
-	DB_FirstAndLastSweepAcquired(win, first, last)
+	[first, last] = DB_FirstAndLastSweepAcquired(win)
 	DB_UpdateLastSweepControls(win, first, last)
 	SetSetVariable(scPanel, "setvar_SweepControl_SweepNo", last)
 
@@ -646,7 +642,7 @@ Function DB_ButtonProc_ChangeSweep(ba) : ButtonControl
 
 	switch(ba.eventcode)
 		case 2: // mouse up
-			DB_FirstAndLastSweepAcquired(scPanel, firstSweep, lastSweep)
+			[firstSweep, lastSweep] = DB_FirstAndLastSweepAcquired(scPanel)
 
 			formerLast = GetValDisplayAsNum(scPanel, "valdisp_SweepControl_LastSweep")
 			if(formerLast != lastSweep)
