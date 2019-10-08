@@ -177,7 +177,7 @@ static Function IDX_StepsInSetWithMaxSweeps(panelTitle, IndexNo, channelType)
 		endif
 
 		WAVE stimsets = IDX_GetStimsets(panelTitle, i, channelType)
-		setName  = IDX_GetSingleStimset(stimsets, ListStartNo + index)
+		setName  = IDX_GetSingleStimset(stimsets, ListStartNo + index, allowNone = 1)
 		SetSteps = IDX_NumberOfSweepsInSet(setName)
 		MaxSteps = max(MaxSteps, SetSteps)
 	endfor
