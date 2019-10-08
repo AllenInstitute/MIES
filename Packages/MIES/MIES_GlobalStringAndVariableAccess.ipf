@@ -379,6 +379,8 @@ Function/S GetTestpulseRunMode(panelTitle)
 End
 
 /// @brief Returns NI device list
+///
+/// Internal use only, prefer DAP_GetNIDeviceList() instead.
 Function/S GetNIDeviceList()
 
 	// note: this global gets killed in IH_KillTemporaries
