@@ -21,12 +21,7 @@ static Function AcquireData(s, devices, stimSetName1, stimSetName2[, dDAQ, oodDA
 
 		unlockedPanelTitle = DAP_CreateDAEphysPanel()
 
-#ifdef TESTS_WITH_YOKING
-		PGC_SetAndActivateControl(unlockedPanelTitle, "popup_MoreSettings_DeviceType", val=2)
-		PGC_SetAndActivateControl(unlockedPanelTitle, "popup_moreSettings_DeviceNo", val=i)
-#else
-		ChooseCorrectDevice(unlockedPanelTitle, device)
-#endif
+		PGC_SetAndActivateControl(unlockedPanelTitle, "popup_MoreSettings_Devices", str=device)
 		PGC_SetAndActivateControl(unlockedPanelTitle, "button_SettingsPlus_LockDevice")
 
 		REQUIRE(WindowExists(device))

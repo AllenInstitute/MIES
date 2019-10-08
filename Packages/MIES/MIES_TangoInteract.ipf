@@ -82,9 +82,10 @@ End
 Function TI_selectDeviceNumber(devNumber, [cmdID])
 	variable devNumber
 	string cmdID
-	
-	// Not the most elegant thing, but we know what the popup menu always is
-	PGC_SetAndActivateControl(BASE_WINDOW_TITLE, "popup_moreSettings_DeviceNo", val=devNumber)
+
+	// we used to only select the device number here, but now we are selecting the whole device
+	// this is also duplicated in TI_selectITCDevice
+	PGC_SetAndActivateControl(BASE_WINDOW_TITLE, "popup_moreSettings_Devices", str="ITC18USB_DEV_0")
 	
 	// determine if the cmdID was provided
 	if(!ParamIsDefault(cmdID))
@@ -99,8 +100,7 @@ Function TI_selectITCDevice(placeHolder, [cmdID])
 	variable placeHolder
 	string cmdID
 	
-	// Not the most elegant thing, but we know what the popup menu always is
-	PGC_SetAndActivateControl(BASE_WINDOW_TITLE, "popup_MoreSettings_DeviceType", val=5)
+	PGC_SetAndActivateControl(BASE_WINDOW_TITLE, "popup_moreSettings_Devices", str="ITC18USB_DEV_0")
 	
 	// determine if the cmdID was provided
 	if(!ParamIsDefault(cmdID))

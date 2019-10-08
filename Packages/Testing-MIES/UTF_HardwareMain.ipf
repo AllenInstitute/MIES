@@ -250,16 +250,6 @@ Function TEST_CASE_END_OVERRIDE(name)
 	endif
 End
 
-Function ChooseCorrectDevice(unlockedPanelTitle, dev)
-	string unlockedPanelTitle, dev
-
-	if(GetHardwareType(dev) == HARDWARE_ITC_DAC)
-		PGC_SetAndActivateControl(unlockedPanelTitle, "popup_MoreSettings_DeviceType", str=StringFromList(0, dev, "_") + "*")
-	else
-		PGC_SetAndActivateControl(unlockedPanelTitle, "popup_MoreSettings_DeviceType", str=dev)
-	endif
-End
-
 static Function/WAVE GetSweepsFromLBN_IGNORE(device, name)
 	string device, name
 

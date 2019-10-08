@@ -95,8 +95,7 @@ Function ExpConfig_ConfigureMIES([middleOfExperiment])
 				//			movewindow /W = $win 1500, -700,-1,-1				//position DA_Ephys window
 			endif
 	
-			PGC_SetAndActivateControl(win,"popup_MoreSettings_DeviceType", val = WhichListItem(ITCDevType,DEVICE_TYPES_ITC))
-			PGC_SetAndActivateControl(win,"popup_moreSettings_DeviceNo", val = WhichListItem(ITCDevNum,DEVICE_NUMBERS))
+			PGC_SetAndActivateControl(win,"popup_MoreSettings_Devices", str = device)
 			PGC_SetAndActivateControl(win,"button_SettingsPlus_LockDevice")
 	
 			win = BuildDeviceString(ITCDevType, ITCDevNum)

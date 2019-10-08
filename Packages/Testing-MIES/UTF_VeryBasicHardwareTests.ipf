@@ -13,9 +13,8 @@ static Function TestLocking([str])
 
 	string unlockedPanelTitle = DAP_CreateDAEphysPanel()
 
-	ChooseCorrectDevice(unlockedPanelTitle, str)
-
 	try
+		PGC_SetAndActivateControl(unlockedPanelTitle, "popup_MoreSettings_Devices", str=str)
 		PGC_SetAndActivateControl(unlockedPanelTitle, "button_SettingsPlus_LockDevice")
 		REQUIRE(WindowExists(str))
 	catch
