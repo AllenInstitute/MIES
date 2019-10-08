@@ -23,7 +23,7 @@ Function ExpConfig_ConfigureMIES([middleOfExperiment])
 	variable middleOfExperiment
 
 	string UserConfigNB, win, filename, ITCDevNum, ITCDevType, fullPath, StimSetPath, activeNotebooks, AmpSerialLocal, AmpTitleLocal, ConfigError, StimSetList
-	string path
+	string path, device
 	variable i, load
 //	movewindow /C 1450, 530,-1,-1								// position command window
 	
@@ -82,9 +82,11 @@ Function ExpConfig_ConfigureMIES([middleOfExperiment])
 		ITCDevType = UserSettings[V_value][%SettingValue]
 		FindValue /TXOP = 4 /TEXT = ITC_DEV_NUM UserSettings
 		ITCDevNum = UserSettings[V_value][%SettingValue]
-	
-		if(WindowExists(BuildDeviceString(ITCDevType, ITCDevNum)))
-			win = BuildDeviceString(ITCDevType, ITCDevNum)
+
+		device = BuildDeviceString(ITCDevType, ITCDevNum)
+
+		if(WindowExists(device))
+			win = device
 		else
 			if(WindowExists("DA_Ephys"))
 				win = BASE_WINDOW_TITLE
