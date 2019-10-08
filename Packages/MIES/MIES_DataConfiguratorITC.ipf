@@ -752,7 +752,7 @@ static Function DC_PlaceDataInHardwareDataWave(panelTitle, numActiveChannels, da
 	variable i, j
 	variable numDACEntries, numADCEntries, ttlIndex, setChecksum, stimsetCycleID, fingerprint, hardwareType, maxITI
 	string ctrl, str, list, func
-	variable setCycleCount, val, singleSetLength, singleInsertStart, samplingInterval
+	variable setCycleCount, val, singleSetLength, samplingInterval
 	variable channelMode, TPAmpVClamp, TPAmpIClamp, testPulseLength, maxStimSetLength
 	variable GlobalTPInsert, scalingZero, indexingLocked, indexing, distributedDAQ, pulseToPulseLength
 	variable distributedDAQDelay, onSetDelay, onsetDelayAuto, onsetDelayUser, terminationDelay
@@ -1319,7 +1319,7 @@ static Function DC_PlaceDataInHardwareDataWave(panelTitle, numActiveChannels, da
 
 	if(dataAcqOrTP == DATA_ACQUISITION_MODE)
 		// reset to the default value without distributedDAQ
-		singleInsertStart = onSetDelay
+		startOffset = onSetDelay
 		ttlIndex = numDACEntries + numADCEntries
 		switch(hardwareType)
 			case HARDWARE_NI_DAC:
@@ -1330,8 +1330,8 @@ static Function DC_PlaceDataInHardwareDataWave(panelTitle, numActiveChannels, da
 						WAVE NIChannel = NIDataWave[ttlIndex]
 						WAVE TTLWaveSingle = TTLWaveNI[config[i][%ChannelNumber]]
 						singleSetLength = DC_CalculateStimsetLength(TTLWaveSingle, panelTitle, DATA_ACQUISITION_MODE)
-						MultiThread NIChannel[singleInsertStart, singleInsertStart + singleSetLength - 1] = \
-						limit(TTLWaveSingle[trunc(decimationFactor * (p - singleInsertStart))], 0, 1); AbortOnRTE
+						MultiThread NIChannel[startOffset, startOffset + singleSetLength - 1] = \
+						limit(TTLWaveSingle[trunc(decimationFactor * (p - startOffset))], 0, 1); AbortOnRTE
 						ttlIndex += 1
 					endif
 				endfor
@@ -1342,16 +1342,16 @@ static Function DC_PlaceDataInHardwareDataWave(panelTitle, numActiveChannels, da
 				if(DC_AreTTLsInRackChecked(panelTitle, RACK_ZERO))
 					DC_MakeITCTTLWave(panelTitle, RACK_ZERO)
 					singleSetLength = DC_CalculateStimsetLength(TTLWaveITC, panelTitle, DATA_ACQUISITION_MODE)
-					MultiThread ITCDataWave[singleInsertStart, singleInsertStart + singleSetLength - 1][ttlIndex] = \
-					limit(TTLWaveITC[trunc(decimationFactor * (p - singleInsertStart))], SIGNED_INT_16BIT_MIN, SIGNED_INT_16BIT_MAX); AbortOnRTE
+					MultiThread ITCDataWave[startOffset, startOffset + singleSetLength - 1][ttlIndex] = \
+					limit(TTLWaveITC[trunc(decimationFactor * (p - startOffset))], SIGNED_INT_16BIT_MIN, SIGNED_INT_16BIT_MAX); AbortOnRTE
 					ttlIndex += 1
 				endif
 
 				if(DC_AreTTLsInRackChecked(panelTitle, RACK_ONE))
 					DC_MakeITCTTLWave(panelTitle, RACK_ONE)
 					singleSetLength = DC_CalculateStimsetLength(TTLWaveITC, panelTitle, DATA_ACQUISITION_MODE)
-					MultiThread ITCDataWave[singleInsertStart, singleInsertStart + singleSetLength - 1][ttlIndex] = \
-					limit(TTLWaveITC[trunc(decimationFactor * (p - singleInsertStart))], SIGNED_INT_16BIT_MIN, SIGNED_INT_16BIT_MAX); AbortOnRTE
+					MultiThread ITCDataWave[startOffset, startOffset + singleSetLength - 1][ttlIndex] = \
+					limit(TTLWaveITC[trunc(decimationFactor * (p - startOffset))], SIGNED_INT_16BIT_MIN, SIGNED_INT_16BIT_MAX); AbortOnRTE
 				endif
 				break
 		endswitch
