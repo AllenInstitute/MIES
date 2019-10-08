@@ -697,6 +697,12 @@ Function/S HW_ITC_ListDevices()
 			continue
 		endif
 
+#ifdef EVIL_KITTEN_EATING_MODE
+		device = BuildDeviceString(type, "0")
+		list = AddListItem(device, list, ";", inf)
+		continue
+#endif
+
 		do
 			ITCGetDevices2/Z=1/DTS=type
 		while(V_ITCXOPError == SLOT_LOCKED_TO_OTHER_THREAD && V_ITCError == 0)
