@@ -842,7 +842,7 @@ static Function DC_PlaceDataInHardwareDataWave(panelTitle, numActiveChannels, da
 
 		elseif(dataAcqOrTP == TEST_PULSE_MODE)
 
-			setName[i] = "testpulse"
+			setName[i] = LowerStr(STIMSET_TP_WHILE_DAQ)
 			stimSet[i] = GetTestPulse()
 
 		else
