@@ -724,7 +724,11 @@ Function/S HW_ITC_ListDevices()
 				if(V_ITCError == 0 && V_ITCXOPError == 0 && deviceID >= 0)
 					sprintf msg, "Found device type %s with number %s", type, number
 					DEBUGPRINT(msg)
-					HW_ITC_CloseDevice(deviceID)
+
+					do
+						ITCCloseDevice2/Z=1/DEV=(deviceID)
+					while(V_ITCXOPError == SLOT_LOCKED_TO_OTHER_THREAD && V_ITCError == 0)
+
 					list = AddListItem(device, list, ";", inf)
 				endif
 			endfor
