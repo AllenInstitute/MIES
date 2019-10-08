@@ -39,11 +39,11 @@ Function/S DAP_GetNIDeviceList()
 	SVAR globalNIDevList = $GetNIDeviceList()
 	devList = globalNIDevList
 
-	numPattern = ItemsInList(NI_DAC_PATTERNS, "|")
-
 	if(!isEmpty(devList))
 		return devList
 	endif
+
+	numPattern = ItemsInList(NI_DAC_PATTERNS, "|")
 
 	for(i = 0;i < HARDWARE_MAX_DEVICES;i += 1)
 		DAQmxDevice = HW_NI_GetPropertyListOfDevices(i)
