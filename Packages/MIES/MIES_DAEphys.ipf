@@ -4383,15 +4383,7 @@ End
 Function DAP_DeviceIsUnlocked(panelTitle)
 	string panelTitle
 
-	string deviceType, deviceNumber
-	if(ParseDeviceString(panelTitle, deviceType, deviceNumber))
-		if(!isEmpty(deviceNumber))
-			return !(WhichListItem(deviceType, DAP_GetDACDeviceList()) != -1 && WhichListItem(deviceNumber, DEVICE_NUMBERS) != -1)
-		else
-			return !(WhichListItem(deviceType, DAP_GetDACDeviceList()) != -1)
-		endif
-	endif
-	return NaN
+	return WhichListItem(panelTitle, GetListOfLockedDevices(), ";", 0, 0) == -1
 End
 
 Function DAP_AbortIfUnlocked(panelTitle)
