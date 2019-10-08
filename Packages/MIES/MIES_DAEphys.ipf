@@ -76,7 +76,25 @@ Function/S DAP_GetNIDeviceList()
 	return devList
 End
 
-/// @brief Returns a list of DAC devices for NI + ITC devices
+/// @brief Returns a list of ITC devices for DAC
+Function/S DAP_GetITCDeviceList()
+
+	string devList
+
+	SVAR globalITCDevList = $GetITCDeviceList()
+	devList = globalITCDevList
+
+	if(!isEmpty(devList))
+		return devList
+	endif
+
+	globalITCDevList = HW_ITC_ListDevices()
+
+	return globalITCDevList
+End
+
+/// @brief Returns a list of available ITC and NI devices
+///
 /// @return list of DAC devices
 Function/S DAP_GetDACDeviceList()
 
