@@ -149,7 +149,7 @@ static Function IDX_StepsInSetWithMaxSweeps(panelTitle, IndexNo, channelType)
 
 	variable MaxSteps, SetSteps
 	variable ListStartNo, ListEndNo, ListLength, Index
-	string popMenuIndexStartName, popMenuIndexEndName
+	string popMenuIndexStartName, popMenuIndexEndName, setName
 	variable i
 
 	WAVE status = DAG_GetChannelState(panelTitle, channelType)
@@ -177,7 +177,8 @@ static Function IDX_StepsInSetWithMaxSweeps(panelTitle, IndexNo, channelType)
 		endif
 
 		WAVE stimsets = IDX_GetStimsets(panelTitle, i, channelType)
-		SetSteps = IDX_NumberOfSweepsInSet(IDX_GetSingleStimset(stimsets, ListStartNo + index))
+		setName  = IDX_GetSingleStimset(stimsets, ListStartNo + index)
+		SetSteps = IDX_NumberOfSweepsInSet(setName)
 		MaxSteps = max(MaxSteps, SetSteps)
 	endfor
 
