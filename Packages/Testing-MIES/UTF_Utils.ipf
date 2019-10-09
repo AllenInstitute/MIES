@@ -293,12 +293,15 @@ End
 Function CreatesReproducibleResults()
 	NVAR rngSeed = $GetRNGSeed(device)
 
+	// Use GetNextRandomNumberForDevice directly
+	// as we don't have a locked device
+
 	rngSeed = 1
-	Make/FREE/N=1024/L dataInt = MIES_DAP#DAP_GetRAAcquisitionCycleID(device)
+	Make/FREE/N=1024/L dataInt = GetNextRandomNumberForDevice(device)
 	CHECK_EQUAL_VAR(998651135, WaveCRC(0, dataInt))
 
 	rngSeed = 1
-	Make/FREE/N=1024/D dataDouble = MIES_DAP#DAP_GetRAAcquisitionCycleID(device)
+	Make/FREE/N=1024/D dataDouble = GetNextRandomNumberForDevice(device)
 
 	// EqualWaves is currently (7.0.5.1) broken for different data types
 	Make/FREE/B/N=1024 equal = dataInt[p] - dataDouble[p]
