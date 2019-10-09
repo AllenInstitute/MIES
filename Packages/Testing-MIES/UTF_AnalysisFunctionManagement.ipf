@@ -321,6 +321,11 @@ static Function AcquireData(s, stimset, device, [numHeadstages, TTLStimset, post
 	PGC_SetAndActivateControl(device, "DataAcquireButton")
 End
 
+static Function EnsureCorrectUserAnalysis()
+
+	REQUIRE_EQUAL_VAR(ItemsInList(FunctionList("InvalidSignature", ";", "WIN:UserAnalysisFunctions.ipf")), 1)
+End
+
 // invalid analysis functions
 // UTF_TD_GENERATOR HardwareMain#DeviceNameGeneratorMD1
 static Function AFT1([str])
