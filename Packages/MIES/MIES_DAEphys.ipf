@@ -4517,7 +4517,7 @@ Function DAP_LockDevice(panelTitle)
 #endif
 	endif
 
-	DisableControls(panelTitle,"button_SettingsPlus_LockDevice;popup_MoreSettings_Devices")
+	DisableControls(panelTitle,"button_SettingsPlus_LockDevice;popup_MoreSettings_Devices;button_hardware_rescan")
 	EnableControl(panelTitle,"button_SettingsPlus_unLockDevic")
 
 	DoWindow/W=$panelTitle/C $panelTitleLocked
@@ -4645,7 +4645,7 @@ static Function DAP_UnlockDevice(panelTitle)
 		DAP_RemoveYokedDAC(panelTitle)
 	endif
 
-	EnableControls(panelTitle,"button_SettingsPlus_LockDevice;popup_MoreSettings_Devices")
+	EnableControls(panelTitle,"button_SettingsPlus_LockDevice;popup_MoreSettings_Devices;button_hardware_rescan")
 	DisableControl(panelTitle,"button_SettingsPlus_unLockDevic")
 	EnableControls(panelTitle, "StartTestPulseButton;DataAcquireButton;Check_DataAcq1_RepeatAcq;Check_DataAcq_Indexing;SetVar_DataAcq_ITI;SetVar_DataAcq_SetRepeats;Check_DataAcq_Get_Set_ITI")
 	SetVariable setvar_Hardware_Status Win = $panelTitle, value= _STR:"Independent"
@@ -5169,4 +5169,22 @@ Function DAP_ClearDelayedClampModeChange(panelTitle)
 
 	WAVE GuiState = GetDA_EphysGuiStateNum(panelTitle)
 	GuiState[][%HSmode_delayed] = NaN
+End
+
+Function ButtonProc_Hardware_rescan(ba) : ButtonControl
+	STRUCT WMButtonAction &ba
+
+	switch(ba.eventCode)
+		case 2: // mouse up
+			SVAR globalITCDevList = $GetITCDeviceList()
+			SVAR globalNIDevList = $GetNIDeviceList()
+
+			KillStrings/Z globalITCDevList, globalNIDevList
+
+			DAP_GetNIDeviceList()
+			DAP_GetITCDeviceList()
+			break
+	endswitch
+
+	return 0
 End
