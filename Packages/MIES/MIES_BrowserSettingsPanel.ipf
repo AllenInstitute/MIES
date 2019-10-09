@@ -475,7 +475,9 @@ End
 Function BSP_SetOVSControlStatus(win)
 	string win
 
-	string controlList = "group_properties_sweeps;popup_overlaySweeps_select;setvar_overlaySweeps_offset;setvar_overlaySweeps_step;check_overlaySweeps_disableHS;check_overlaySweeps_non_commula;list_of_ranges"
+	string controlList = "group_properties_sweeps;popup_overlaySweeps_select;setvar_overlaySweeps_offset;"            \
+						 + "setvar_overlaySweeps_step;check_overlaySweeps_disableHS;check_overlaySweeps_non_commula;" \
+						 + "list_of_ranges;check_ovs_clear_on_new_ra_cycle;check_ovs_clear_on_new_stimset_cycle"
 
 	BSP_SetControlStatus(win, controlList, OVS_IsActive(win))
 End
@@ -657,15 +659,25 @@ Window BrowserSettingsPanel() : Panel
 	PopupMenu popup_overlaySweeps_select,userdata(tabnum)=  "1"
 	PopupMenu popup_overlaySweeps_select,userdata(tabcontrol)=  "Settings"
 	PopupMenu popup_overlaySweeps_select,mode=1,popvalue="- none -"
-	CheckBox check_overlaySweeps_disableHS,pos={99.00,160.00},size={117.00,16.00},disable=3,proc=OVS_CheckBoxProc_HS_Select,title="Headstage Removal"
+	CheckBox check_overlaySweeps_disableHS,pos={39.00,160.00},size={117.00,16.00},disable=3,proc=OVS_CheckBoxProc_HS_Select,title="Headstage Removal"
 	CheckBox check_overlaySweeps_disableHS,help={"Toggle headstage removal"}
 	CheckBox check_overlaySweeps_disableHS,userdata(tabnum)=  "1"
 	CheckBox check_overlaySweeps_disableHS,userdata(tabcontrol)=  "Settings"
 	CheckBox check_overlaySweeps_disableHS,value= 0
-	CheckBox check_overlaySweeps_non_commula,pos={98.00,180.00},size={148.00,16.00},disable=3,title="Non-commulative update"
+	CheckBox check_overlaySweeps_non_commula,pos={38.00,180.00},size={148.00,16.00},disable=3,title="Non-commulative update"
 	CheckBox check_overlaySweeps_non_commula,help={"If \"Display Last sweep acquired\" is checked, this checkbox here allows to only add the newly acquired sweep and will remove the currently added last sweep."}
 	CheckBox check_overlaySweeps_non_commula,userdata(tabcontrol)=  "Settings"
 	CheckBox check_overlaySweeps_non_commula,userdata(tabnum)=  "1",value= 0
+	CheckBox check_ovs_clear_on_new_ra_cycle,pos={219.00,161.00},size={111.00,15.00},title="Clear on new RAC"
+	CheckBox check_ovs_clear_on_new_ra_cycle,help={"Clear the list of overlayed sweeps when a new repeated acquisition cycle has begun."}
+	CheckBox check_ovs_clear_on_new_ra_cycle,userdata(tabnum)=  "1"
+	CheckBox check_ovs_clear_on_new_ra_cycle,userdata(tabcontrol)=  "Settings"
+	CheckBox check_ovs_clear_on_new_ra_cycle,value= 0
+	CheckBox check_ovs_clear_on_new_stimset_cycle,pos={219.00,181.00},size={105.00,15.00},title="Clear on new SCI"
+	CheckBox check_ovs_clear_on_new_stimset_cycle,help={"Clear the list of overlayed sweeps when a new simset cycle has begun."}
+	CheckBox check_ovs_clear_on_new_stimset_cycle,userdata(tabnum)=  "1"
+	CheckBox check_ovs_clear_on_new_stimset_cycle,userdata(tabcontrol)=  "Settings"
+	CheckBox check_ovs_clear_on_new_stimset_cycle,value= 0
 	SetVariable setvar_overlaySweeps_offset,pos={97.00,126.00},size={81.00,19.00},bodyWidth=45,disable=3,proc=OVS_SetVarProc_SelectionRange,title="Offset"
 	SetVariable setvar_overlaySweeps_offset,help={"Offsets the first selected sweep from the selection menu"}
 	SetVariable setvar_overlaySweeps_offset,userdata(tabnum)=  "1"

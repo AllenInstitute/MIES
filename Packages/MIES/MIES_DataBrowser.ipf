@@ -27,9 +27,12 @@ Function/S DB_OpenDataBrowser()
 	devicesWithData = ListMatch(DB_GetAllDevicesWithData(), "!" + NONE)
 	if(ItemsInList(devicesWithData) == 1)
 		device = StringFromList(0, devicesWithData)
-		bsPanel = BSP_GetPanel(win)
-		PGC_SetAndActivateControl(bsPanel, "popup_DB_lockedDevices", str = device)
+	else
+		device = NONE
 	endif
+
+	bsPanel = BSP_GetPanel(win)
+	PGC_SetAndActivateControl(bsPanel, "popup_DB_lockedDevices", str = device)
 
 	return GetMainWindow(GetCurrentWindow())
 End
@@ -99,35 +102,36 @@ static Function/S DB_GetLabNoteBookGraph(win)
 	return DB_GetSettingsHistoryPanel(win) + "#Labnotebook"
 End
 
-static Function DB_LockToDevice(win, device)
-	string &win, device
+static Function/S DB_LockToDevice(win, device)
+	string win, device
 
-	string renameWin
+	string newWindow
 	variable first, last
 
-	renameWin = "DB_" + device
 	if(!cmpstr(device, NONE))
-		renameWin = "DataBrowser"
+		newWindow = "DataBrowser"
 		print "Please choose a device assignment for the data browser"
 		ControlWindowToFront()
+	else
+		newWindow = "DB_" + device
 	endif
 
-	if(windowExists(renameWin))
-		renameWin = UniqueName(renameWin, 9, 1)
+	if(windowExists(newWindow))
+		newWindow = UniqueName(newWindow, 9, 1)
 	endif
-	DoWindow/W=$win/C $renameWin
-	win = renameWin
+	DoWindow/W=$win/C $newWindow
 
-	DB_SetUserData(win, device)
-	if(windowExists(BSP_GetPanel(win)) && BSP_HasBoundDevice(win))
-		BSP_DynamicStartupSettings(win)
+	DB_SetUserData(newWindow, device)
+	if(windowExists(BSP_GetPanel(newWindow)) && BSP_HasBoundDevice(newWindow))
+		BSP_DynamicStartupSettings(newWindow)
+		DB_DynamicSettingsHistory(newWindow)
+		[first, last] = DB_FirstAndLastSweepAcquired(newWindow)
+		DB_UpdateLastSweepControls(newWindow, first, last)
 	endif
 
-	DB_DynamicSettingsHistory(win)
-	DB_FirstAndLastSweepAcquired(win, first, last)
-	DB_UpdateLastSweepControls(win, first, last)
+	DB_UpdateSweepPlot(newWindow)
 
-	DB_UpdateSweepPlot(win)
+	return newWindow
 End
 
 static Function DB_SetUserData(win, device)
@@ -159,14 +163,8 @@ static Function/S DB_GetPlainSweepList(win)
 	return GetListOfObjects(dfr, DATA_SWEEP_REGEXP, waveProperty="MINCOLS:2")
 End
 
-static Function DB_FirstAndLastSweepAcquired(win, first, last)
-	string win
-	variable &first, &last
-
+static Function [variable first, variable last] DB_FirstAndLastSweepAcquired(string win)
 	string list
-
-	first = 0
-	last  = 0
 
 	list = DB_GetPlainSweepList(win)
 
@@ -174,6 +172,8 @@ static Function DB_FirstAndLastSweepAcquired(win, first, last)
 		first = NumberByKey("Sweep", list, "_")
 		last = ItemsInList(list) - 1 + first
 	endif
+
+	return [first, last]
 End
 
 static Function DB_UpdateLastSweepControls(win, first, last)
@@ -430,7 +430,7 @@ Function DB_UpdateToLastSweep(win)
 		return NaN
 	endif
 
-	DB_FirstAndLastSweepAcquired(win, first, last)
+	[first, last] = DB_FirstAndLastSweepAcquired(win)
 	DB_UpdateLastSweepControls(win, first, last)
 	SetSetVariable(scPanel, "setvar_SweepControl_SweepNo", last)
 
@@ -642,12 +642,11 @@ Function DB_ButtonProc_ChangeSweep(ba) : ButtonControl
 
 	switch(ba.eventcode)
 		case 2: // mouse up
-			DB_FirstAndLastSweepAcquired(scPanel, firstSweep, lastSweep)
+			[firstSweep, lastSweep] = DB_FirstAndLastSweepAcquired(scPanel)
 
-			/// @todo this was called from DB_UpdateLastSweepControls. Is it really necessary?
 			formerLast = GetValDisplayAsNum(scPanel, "valdisp_SweepControl_LastSweep")
 			if(formerLast != lastSweep)
-				DB_UpdateOverlaySweepWaves(graph)
+				DB_UpdateLastSweepControls(scPanel, firstSweep, lastSweep)
 			endif
 
 			sweepNo = BSP_UpdateSweepControls(graph, ba.ctrlName, firstSweep, lastSweep)
@@ -691,7 +690,7 @@ Function DB_PopMenuProc_LockDBtoDevice(pa) : PopupMenuControl
 
 	switch(pa.eventcode)
 		case 2: // mouse up
-			DB_LockToDevice(mainPanel, pa.popStr)
+			mainPanel = DB_LockToDevice(mainPanel, pa.popStr)
 			DB_UpdateSweepPlot(mainPanel)
 			break
 	endswitch
