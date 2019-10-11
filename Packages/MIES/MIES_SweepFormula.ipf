@@ -193,7 +193,7 @@ Function SF_FormulaParser(formula)
 					endif
 				case SF_STATE_DIVISION:
 				case SF_STATE_OPERATION:
-					if(!cmpstr(buffer, ""))
+					if(IsEmpty(buffer))
 						if(lastCalculation == -1)
 							action = SF_ACTION_HIGHERORDER
 						else
@@ -273,7 +273,7 @@ Function SF_FormulaParser(formula)
 				break
 			case SF_ACTION_HIGHERORDER:
 				lastCalculation = state
-				if(!!cmpstr(buffer, ""))
+				if(!IsEmpty(buffer))
 					JSON_AddJSON(jsonID, jsonPath, SF_FormulaParser(buffer))
 				endif
 				jsonPath = SF_EscapeJsonPath(token)
@@ -353,6 +353,7 @@ Function/WAVE SF_FormulaExecutor(jsonID, [jsonPath, graph])
 	String graph
 
 	Variable i, j, numIndices, JSONtype, mode
+	string info
 
 	if(ParamIsDefault(jsonPath))
 		jsonPath = ""
@@ -676,7 +677,7 @@ Function/WAVE SF_FormulaExecutor(jsonID, [jsonPath, graph])
 					ASSERT(0, "Undefined argument")
 			endswitch
 
-			ASSERT(!ParamIsDefault(graph) && !!cmpstr(graph, ""), "Graph not specified.")
+			ASSERT(!ParamIsDefault(graph) && !IsEmpty(graph), "Graph not specified.")
 			WAVE/Z out = OVS_GetSelectedSweeps(graph, mode)
 			if(!WaveExists(out) && mode == OVS_SWEEP_SELECTION_SWEEPNO)
 				WAVE/Z out = OVS_GetSelectedSweeps(graph, OVS_SWEEP_ALL_SWEEPNO)
@@ -689,7 +690,7 @@ Function/WAVE SF_FormulaExecutor(jsonID, [jsonPath, graph])
 			/// `data(array range,array channels,array sweeps)`
 			///
 			/// returns [[sweeps][channel]] for all [sweeps] in list sweepNumbers, grouped by channels
-			ASSERT(!ParamIsDefault(graph) && !!cmpstr(graph, ""), "Graph for extracting sweeps not specified.")
+			ASSERT(!ParamIsDefault(graph) && !IsEmpty(graph), "Graph for extracting sweeps not specified.")
 
 			WAVE range = SF_FormulaExecutor(jsonID, jsonPath = jsonPath + "/0", graph = graph)
 			ASSERT(DimSize(range, ROWS) == 2, "A range can not hold more than two points.")
@@ -738,7 +739,8 @@ Function/WAVE SF_FormulaExecutor(jsonID, [jsonPath, graph])
 				if(ParamIsDefault(graph))
 					out[i] = xcsr($wvT[i])
 				else
-					if(!cmpstr(CsrInfo($wvT[i], graph), ""))
+					info = CsrInfo($wvT[i], graph)
+					if(IsEmpty(info))
 						continue
 					endif
 					out[i] = xcsr($wvT[i], graph)
@@ -974,7 +976,12 @@ static Function SF_FormulaWaveScaleTransfer(source, dest, dimSource, dimDest)
 	WAVE source, dest
 	Variable dimSource, dimDest
 
-	if(cmpstr(WaveUnits(source, dimSource), "") && cmpstr(WaveUnits(dest, dimDest), ""))
+	string sourceUnit, destUnit
+
+	sourceUnit = WaveUnits(source, dimSource)
+	destUnit = WaveUnits(dest, dimDest)
+
+	if(IsEmpty(sourceUnit) && IsEmpty(destUnit))
 		return 1
 	endif
 
