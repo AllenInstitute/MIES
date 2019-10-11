@@ -281,16 +281,8 @@ Function BSP_BindListBoxWaves(win)
 	ListBox list_dashboard, win=$bsPanel, listWave=listBoxWave, colorWave=listBoxColorWave, selWave=listBoxSelWave
 
 	// sweep formula tab
-	DFREF dfr = BSP_GetFolder(mainPanel, MIES_BSP_PANEL_FOLDER)
-	String/G dfr:sweepFormulaParseResult = ""
-	SetVariable setvar_sweepFormula_parseResult, win = $bsPanel, value = $(GetDataFolder(1, dfr) + "sweepFormulaParseResult")
-	Variable/G dfr:sweepFormulaParse = 1
-	ValDisplay status_sweepFormula_parser, win = $bsPanel, value = #(GetDataFolder(1, dfr) + "sweepFormulaParse == 0")
-	String/G dfr:sweepFormulaText = "data(\r\tcursors(A,B),\r\tchannels(AD),\r\tsweeps()\r)\r"
-	SVAR formula = dfr:sweepFormulaText
-	Notebook $bsPanel#sweepFormula_formula selection={startOfFile, endOfFile},setData=""
-	Notebook $bsPanel#sweepFormula_formula text=(formula)
-	Variable/G dfr:sweepFormulaJSONid
+	SetValDisplay(bsPanel, "status_sweepFormula_parser", var=1)
+	SetSetVariableString(bsPanel, "setvar_sweepFormula_parseResult", "")
 End
 
 /// @brief add SB_* or DB_* prefix to the input string depending on current window

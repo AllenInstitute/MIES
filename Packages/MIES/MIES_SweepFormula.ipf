@@ -55,11 +55,7 @@ static Function SF_FormulaError(dfr, condition, message)
 	String message
 
 	if(!condition)
-		SVAR/Z error = dfr:sweepFormulaParseresult
-		if(!SVAR_EXISTS(error))
-			String/G dfr:sweepFormulaParseresult
-			SVAR error = dfr:sweepFormulaParseresult
-		endif
+		SVAR error = $GetSweepFormulaParseErrorMessage(dfr)
 		error = message
 		Abort message
 	endif
@@ -1008,7 +1004,7 @@ End
 Function SF_button_sweepFormula_check(ba) : ButtonControl
 	STRUCT WMButtonAction &ba
 
-	String mainPanel, bsPanel, yFormula, xFormula, formula_nb
+	String mainPanel, bsPanel, yFormula, xFormula, formula_nb, formula
 	Variable numFormulae, jsonIDx, jsonIDy
 
 	switch(ba.eventCode)
@@ -1023,21 +1019,16 @@ Function SF_button_sweepFormula_check(ba) : ButtonControl
 
 			DFREF dfr = BSP_GetFolder(mainPanel, MIES_BSP_PANEL_FOLDER)
 
-			SVAR/Z formula = dfr:sweepFormulaText
-			ASSERT(SVAR_EXISTS(formula), "Global variable sweepFormulaText not found")
-
 			formula_nb = BSP_GetSFFormula(ba.win)
 			formula = GetNotebookText(formula_nb)
 
-			NVAR/Z status = dfr:sweepFormulaParse
-			ASSERT(NVAR_EXISTS(status), "Global variable sweepFormulaParse not found")
-			status = 0
-			SVAR/Z result = dfr:sweepFormulaParseresult
-			ASSERT(SVAR_EXISTS(result), "Global variable sweepFormulaParseresult not found. Can not evaluate parsing status.")
+			SetValDisplay(bsPanel, "status_sweepFormula_parser", var=1)
+			SetSetVariableString(bsPanel, "setvar_sweepFormula_parseResult", ":)")
+
+			SVAR result = $GetSweepFormulaParseErrorMessage(dfr)
 			result = ""
 
-			NVAR/Z jsonID = dfr:sweepFormulaJSONid
-			ASSERT(NVAR_EXISTS(jsonID), "Global variable sweepFormulaJSONid not found. Can not evaluate parsing status.")
+			NVAR jsonID = $GetSweepFormulaJSONid(dfr)
 
 			SplitString/E=SF_SWEEPFORMULA_REGEXP formula, yFormula, xFormula
 			numFormulae = V_flag
@@ -1062,9 +1053,10 @@ Function SF_button_sweepFormula_check(ba) : ButtonControl
 				JSON_AddJSON(jsonID, "/x", jsonIDx)
 				JSON_Release(jsonIDx)
 			catch
-				result = "Error Parsing Formula"
-				status = 1
+				SetValDisplay(bsPanel, "status_sweepFormula_parser", var=0)
 				JSON_Release(jsonID, ignoreErr = 1)
+				SVAR result = $GetSweepFormulaParseErrorMessage(dfr)
+				SetSetVariableString(bsPanel, "setvar_sweepFormula_parseResult", result)
 			endtry
 			break
 	endswitch
@@ -1075,12 +1067,14 @@ End
 Function SF_button_sweepFormula_display(ba) : ButtonControl
 	STRUCT WMButtonAction &ba
 
-	String mainPanel, code, formula_nb
+	String mainPanel, code, formula_nb, bsPanel
+	variable err
 
 	switch(ba.eventCode)
 		case 2: // mouse up
 			formula_nb = BSP_GetSFFormula(ba.win)
 			mainPanel = GetMainWindow(ba.win)
+			bsPanel = BSP_GetPanel(mainPanel)
 
 			code = GetNotebookText(formula_nb)
 
@@ -1088,7 +1082,25 @@ Function SF_button_sweepFormula_display(ba) : ButtonControl
 				break
 			endif
 
-			SF_FormulaPlotter(mainPanel, code, dfr = dfr)
+			if(BSP_IsDataBrowser(bsPanel) && !BSP_HasBoundDevice(bsPanel))
+				DebugPrint("Databrowser has unbound device")
+				break
+			endif
+
+			DFREF dfr = BSP_GetFolder(mainPanel, MIES_BSP_PANEL_FOLDER)
+
+			try
+				ClearRTError()
+				SF_FormulaPlotter(mainPanel, code, dfr = dfr); AbortONRTE
+			catch
+				err = getRTerror(1)
+				SVAR result = $GetSweepFormulaParseErrorMessage(dfr)
+				SetSetVariableString(bsPanel, "setvar_sweepFormula_parseResult", result)
+				break
+			endtry
+
+			SetSetVariableString(bsPanel, "setvar_sweepFormula_parseResult", ":)")
+
 			break
 	endswitch
 
@@ -1099,6 +1111,7 @@ Function SF_TabProc_Formula(tca) : TabControl
 	STRUCT WMTabControlAction &tca
 
 	String mainPanel, bsPanel, json_nb, text
+	variable jsonID
 
 	switch( tca.eventCode )
 		case 2: // mouse up
@@ -1119,13 +1132,8 @@ Function SF_TabProc_Formula(tca) : TabControl
 
 			DFREF dfr = BSP_GetFolder(mainPanel, MIES_BSP_PANEL_FOLDER)
 
-			NVAR status = dfr:sweepFormulaParse
-			if(status != 0) // error
-				return 1
-			endif
-
 			if(tca.tab == 1) // JSON
-				NVAR/Z jsonID = dfr:sweepFormulaJSONid
+				jsonID = ROVar(GetSweepFormulaJSONid(dfr))
 				text = JSON_Dump(jsonID, indent = 2)
 				text = NormalizeToEOL(text, "\r")
 				ReplaceNotebookText(json_nb, text)

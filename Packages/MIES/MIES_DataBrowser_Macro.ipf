@@ -799,7 +799,7 @@ Window DataBrowser() : Graph
 	SetVariable setvar_sweepFormula_parseResult,userdata(ResizeControlsInfo) += A"zzz!!#?(FEDG<zzzzzzzzzzzzzz!!!"
 	SetVariable setvar_sweepFormula_parseResult,frame=0
 	SetVariable setvar_sweepFormula_parseResult,limits={-inf,inf,0},value= root:MIES:HardwareDevices:ITC18USB:Device0:DataBrowser:sweepFormulaParseResult,noedit= 1,live= 1
-	ValDisplay status_sweepFormula_parser,pos={376.00,381.00},size={10.00,8.00},bodyWidth=10,disable=1
+	ValDisplay status_sweepFormula_parser,pos={376.00,381.00},size={10.00,8.00},bodyWidth=10,disable=1,value= _NUM:0
 	ValDisplay status_sweepFormula_parser,help={"Current parsing status of the entered formula."}
 	ValDisplay status_sweepFormula_parser,userdata(tabnum)=  "5"
 	ValDisplay status_sweepFormula_parser,userdata(tabcontrol)=  "Settings"
@@ -807,7 +807,6 @@ Window DataBrowser() : Graph
 	ValDisplay status_sweepFormula_parser,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#?(FEDG<zzzzzzzzzzz"
 	ValDisplay status_sweepFormula_parser,userdata(ResizeControlsInfo) += A"zzz!!#?(FEDG<zzzzzzzzzzzzzz!!!"
 	ValDisplay status_sweepFormula_parser,limits={-1,1,0},barmisc={0,0},mode= 1,highColor= (0,65535,0),lowColor= (0,0,0),zeroColor= (65535,0,0)
-	ValDisplay status_sweepFormula_parser,value= #"root:MIES:HardwareDevices:ITC18USB:Device0:DataBrowser:sweepFormulaParse == 0"
 	Button button_sweepFormula_display,pos={4.00,375.00},size={55.00,22.00},disable=1,proc=button_sweepFormula_display,title="Display"
 	Button button_sweepFormula_display,userdata(tabnum)=  "5"
 	Button button_sweepFormula_display,userdata(tabcontrol)=  "Settings"
