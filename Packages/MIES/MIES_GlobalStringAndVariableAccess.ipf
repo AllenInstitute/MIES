@@ -379,10 +379,21 @@ Function/S GetTestpulseRunMode(panelTitle)
 End
 
 /// @brief Returns NI device list
+///
+/// Internal use only, prefer DAP_GetNIDeviceList() instead.
 Function/S GetNIDeviceList()
 
 	// note: this global gets killed in IH_KillTemporaries
 	return GetSVARAsString(GetITCDevicesFolder(), "NIDeviceList", initialValue="")
+End
+
+/// @brief Returns ITC device list
+///
+/// Internal use only, prefer DAP_GetITCDeviceList() instead.
+Function/S GetITCDeviceList()
+
+	// note: this global gets killed in IH_KillTemporaries
+	return GetSVARAsString(GetITCDevicesFolder(), "ITCDeviceList", initialValue="")
 End
 
 /// @brief Returns the last time stamp HW_NI_RepeatAcqHook was called

@@ -11,8 +11,7 @@
 
 Window DA_Ephys() : Panel
 	PauseUpdate; Silent 1		// building window...
-	NewPanel /K=1 /W=(74,281,578,1167)
-	SetDrawLayer UserBack
+	NewPanel /K=1 /W=(157,759,661,1639)
 	ValDisplay valdisp_DataAcq_P_LED_Clear,pos={366.00,297.00},size={84.00,27.00},disable=1
 	ValDisplay valdisp_DataAcq_P_LED_Clear,help={"red:user"},userdata(tabnum)=  "0"
 	ValDisplay valdisp_DataAcq_P_LED_Clear,userdata(tabcontrol)=  "tab_DataAcq_Pressure"
@@ -1815,22 +1814,14 @@ Window DA_Ephys() : Panel
 	TitleBox title_Settings_SetCondition_03,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	TitleBox title_Settings_SetCondition_03,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
 	TitleBox title_Settings_SetCondition_03,frame=0
-	PopupMenu popup_MoreSettings_DeviceType,pos={19.00,72.00},size={164.00,19.00},bodyWidth=100,proc=DAP_PopMenuProc_DevTypeChk,title="Device type"
-	PopupMenu popup_MoreSettings_DeviceType,help={"Step 1. Select device type. Available number of devies for selected type are printed to history window."}
-	PopupMenu popup_MoreSettings_DeviceType,userdata(tabnum)=  "6"
-	PopupMenu popup_MoreSettings_DeviceType,userdata(tabcontrol)=  "ADC"
-	PopupMenu popup_MoreSettings_DeviceType,userdata(ResizeControlsInfo)= A"!!,CL!!#?K!!#A3!!#<Pz!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
-	PopupMenu popup_MoreSettings_DeviceType,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
-	PopupMenu popup_MoreSettings_DeviceType,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
-	PopupMenu popup_MoreSettings_DeviceType,mode=1,popvalue="ITC16",value= #"DAP_GetGUIDACDeviceList()"
-	PopupMenu popup_moreSettings_DeviceNo,pos={42.00,99.00},size={141.00,19.00},bodyWidth=58,title="Device number"
-	PopupMenu popup_moreSettings_DeviceNo,help={"Step 2. Guess a device number. 0 is a good initial guess. Device number is determined in hardware. Unfortunately, it cannot be predetermined. "}
-	PopupMenu popup_moreSettings_DeviceNo,userdata(tabnum)=  "6"
-	PopupMenu popup_moreSettings_DeviceNo,userdata(tabcontrol)=  "ADC"
-	PopupMenu popup_moreSettings_DeviceNo,userdata(ResizeControlsInfo)= A"!!,D_!!#@,!!#@q!!#<Pz!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
-	PopupMenu popup_moreSettings_DeviceNo,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
-	PopupMenu popup_moreSettings_DeviceNo,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
-	PopupMenu popup_moreSettings_DeviceNo,mode=1,popvalue="0",value= #"\"0;1;2;3;4;5;6;7;8;9;10\""
+	PopupMenu popup_MoreSettings_Devices,pos={81.00,82.00},size={182.00,19.00},bodyWidth=139,title="Devices"
+	PopupMenu popup_MoreSettings_Devices,help={"List of available devices for data acquisition"}
+	PopupMenu popup_MoreSettings_Devices,userdata(tabnum)=  "6"
+	PopupMenu popup_MoreSettings_Devices,userdata(tabcontrol)=  "ADC"
+	PopupMenu popup_MoreSettings_Devices,userdata(ResizeControlsInfo)= A"!!,CL!!#?K!!#A3!!#<Pz!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
+	PopupMenu popup_MoreSettings_Devices,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
+	PopupMenu popup_MoreSettings_Devices,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
+	PopupMenu popup_MoreSettings_Devices,mode=1,popvalue="- none -",value= #"DAP_GetDACDeviceList()"
 	SetVariable setvar_DataAcq_TerminationDelay,pos={288.00,675.00},size={175.00,18.00},bodyWidth=50,disable=1,proc=DAP_SetVar_UpdateGuiState,title="Termination delay (ms)"
 	SetVariable setvar_DataAcq_TerminationDelay,help={"Global set(s) termination delay. Continues recording after set sweep is complete. Useful when recorded phenomena continues after termination of final set epoch."}
 	SetVariable setvar_DataAcq_TerminationDelay,userdata(tabnum)=  "0"
@@ -1839,28 +1830,21 @@ Window DA_Ephys() : Panel
 	SetVariable setvar_DataAcq_TerminationDelay,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	SetVariable setvar_DataAcq_TerminationDelay,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
 	SetVariable setvar_DataAcq_TerminationDelay,value= _NUM:0
-	GroupBox group_Hardware_FolderPath,pos={21.00,48.00},size={444.00,105.00},title="Lock a device to generate device folder structure"
+	GroupBox group_Hardware_FolderPath,pos={21.00,48.00},size={443.00,76.00},title="Lock a device to generate device folder structure"
 	GroupBox group_Hardware_FolderPath,userdata(tabnum)=  "6"
 	GroupBox group_Hardware_FolderPath,userdata(tabcontrol)=  "ADC"
 	GroupBox group_Hardware_FolderPath,userdata(ResizeControlsInfo)= A"!!,Bq!!#>R!!#CCJ,hpaz!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	GroupBox group_Hardware_FolderPath,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Duafnzzzzzzzzzzz"
 	GroupBox group_Hardware_FolderPath,userdata(ResizeControlsInfo) += A"zzz!!#u:Duafnzzzzzzzzzzzzzz!!!"
 	GroupBox group_Hardware_FolderPath,fSize=12
-	Button button_SettingsPlus_PingDevice,pos={42.00,126.00},size={150.00,18.00},disable=2,proc=DAP_ButtonProc_Settings_OpenDev,title="Open device"
-	Button button_SettingsPlus_PingDevice,help={"Step 3. Use to determine device number for connected device. Look for device with Ready light ON. Device numbers are determined in hardware and do not change over time. "}
-	Button button_SettingsPlus_PingDevice,userdata(tabnum)=  "6"
-	Button button_SettingsPlus_PingDevice,userdata(tabcontrol)=  "ADC"
-	Button button_SettingsPlus_PingDevice,userdata(ResizeControlsInfo)= A"!!,D;!!#@`!!#A%!!#<Xz!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
-	Button button_SettingsPlus_PingDevice,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Duafnzzzzzzzzzzz"
-	Button button_SettingsPlus_PingDevice,userdata(ResizeControlsInfo) += A"zzz!!#u:Duafnzzzzzzzzzzzzzz!!!"
-	Button button_SettingsPlus_LockDevice,pos={201.00,72.00},size={84.00,45.00},proc=DAP_ButtonProc_LockDev,title="Lock device\r selection"
+	Button button_SettingsPlus_LockDevice,pos={276.00,69.00},size={84.00,45.00},proc=DAP_ButtonProc_LockDev,title="Lock device\r selection"
 	Button button_SettingsPlus_LockDevice,help={"Device must be locked to acquire data. Locking can take a few seconds (calls to amp hardware are slow)."}
 	Button button_SettingsPlus_LockDevice,userdata(tabnum)=  "6"
 	Button button_SettingsPlus_LockDevice,userdata(tabcontrol)=  "ADC"
 	Button button_SettingsPlus_LockDevice,userdata(ResizeControlsInfo)= A"!!,G[!!#?K!!#?c!!#>Fz!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	Button button_SettingsPlus_LockDevice,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Duafnzzzzzzzzzzz"
 	Button button_SettingsPlus_LockDevice,userdata(ResizeControlsInfo) += A"zzz!!#u:Duafnzzzzzzzzzzzzzz!!!"
-	Button button_SettingsPlus_unLockDevic,pos={294.00,72.00},size={84.00,45.00},disable=2,proc=DAP_ButProc_Hrdwr_UnlckDev,title="Unlock device\r selection"
+	Button button_SettingsPlus_unLockDevic,pos={369.00,69.00},size={84.00,45.00},disable=2,proc=DAP_ButProc_Hrdwr_UnlckDev,title="Unlock device\r selection"
 	Button button_SettingsPlus_unLockDevic,userdata(tabnum)=  "6"
 	Button button_SettingsPlus_unLockDevic,userdata(tabcontrol)=  "ADC"
 	Button button_SettingsPlus_unLockDevic,userdata(ResizeControlsInfo)= A"!!,HNJ,hp!!!#?c!!#>Fz!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
@@ -2316,7 +2300,7 @@ Window DA_Ephys() : Panel
 	GroupBox group_DataAcq_DataAcq,userdata(ResizeControlsInfo)= A"!!,C$!!#D+J,hso!!#Asz!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	GroupBox group_DataAcq_DataAcq,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Duafnzzzzzzzzzzz"
 	GroupBox group_DataAcq_DataAcq,userdata(ResizeControlsInfo) += A"zzz!!#u:Duafnzzzzzzzzzzzzzz!!!"
-	GroupBox group_Hardware_Yoke,pos={24.00,153.00},size={444.00,144.00},title="Yoke"
+	GroupBox group_Hardware_Yoke,pos={24.00,130.00},size={444.00,167.00},title="Yoke"
 	GroupBox group_Hardware_Yoke,help={"Yoking is only available for >1 ITC1600, however, It is not a requirement for the use of multiple ITC1600s asyncronously."}
 	GroupBox group_Hardware_Yoke,userdata(tabnum)=  "6",userdata(tabcontrol)=  "ADC"
 	GroupBox group_Hardware_Yoke,userdata(ResizeControlsInfo)= A"!!,C$!!#A*!!#CCJ,hqKz!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
@@ -2374,7 +2358,7 @@ Window DA_Ephys() : Panel
 	TitleBox title_hardware_Follow,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Duafnzzzzzzzzzzz"
 	TitleBox title_hardware_Follow,userdata(ResizeControlsInfo) += A"zzz!!#u:Duafnzzzzzzzzzzzzzz!!!"
 	TitleBox title_hardware_Follow,frame=0
-	SetVariable setvar_Hardware_YokeList,pos={27.00,270.00},size={300.00,18.00},proc=DAP_SetVar_UpdateGuiState,title="Yoked DACs:"
+	SetVariable setvar_Hardware_YokeList,pos={33.00,272.00},size={300.00,18.00},proc=DAP_SetVar_UpdateGuiState,title="Yoked DACs:"
 	SetVariable setvar_Hardware_YokeList,userdata(tabnum)=  "6"
 	SetVariable setvar_Hardware_YokeList,userdata(tabcontrol)=  "ADC"
 	SetVariable setvar_Hardware_YokeList,userdata(ResizeControlsInfo)= A"!!,CL!!#BB!!#BP!!#<Hz!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
@@ -3003,6 +2987,7 @@ Window DA_Ephys() : Panel
 	ValDisplay valdisp_DataAcq_P_0,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Duafnzzzzzzzzzzz"
 	ValDisplay valdisp_DataAcq_P_0,userdata(ResizeControlsInfo) += A"zzz!!#u:Duafnzzzzzzzzzzzzzz!!!"
 	ValDisplay valdisp_DataAcq_P_0,fSize=14,frame=0,fStyle=0
+	ValDisplay valdisp_DataAcq_P_0,valueColor=(65000,65000,65000)
 	ValDisplay valdisp_DataAcq_P_0,valueBackColor=(65535,65535,65535,0)
 	ValDisplay valdisp_DataAcq_P_0,limits={0,0,0},barmisc={0,1000},value= #"0.00"
 	ValDisplay valdisp_DataAcq_P_1,pos={149.00,351.00},size={35.00,21.00},bodyWidth=35,disable=1
@@ -3574,7 +3559,7 @@ Window DA_Ephys() : Panel
 	PopupMenu popup_Settings_UserPressure,help={"List of available DAC devices for pressure control"}
 	PopupMenu popup_Settings_UserPressure,userdata(tabnum)=  "6"
 	PopupMenu popup_Settings_UserPressure,userdata(tabcontrol)=  "ADC"
-	PopupMenu popup_Settings_UserPressure,mode=1,popvalue="- none -",value= #"\"- none -;Dev1;Dev2;\""
+	PopupMenu popup_Settings_UserPressure,mode=1,popvalue="- none -",value= #"\"- none -;;Dev1;;\""
 	PopupMenu Popup_Settings_UserPressure_ADC,pos={267.00,618.00},size={47.00,19.00},proc=DAP_PopMenuProc_UpdateGuiState,title="AD"
 	PopupMenu Popup_Settings_UserPressure_ADC,userdata(tabnum)=  "6"
 	PopupMenu Popup_Settings_UserPressure_ADC,userdata(tabcontrol)=  "ADC"
@@ -3616,6 +3601,12 @@ Window DA_Ephys() : Panel
 	GroupBox group_acq_tp,userdata(tabnum)=  "5",userdata(tabcontrol)=  "ADC"
 	GroupBox group_acq_daq,pos={31.00,554.00},size={208.00,62.00},disable=1,title="Data Acquisition"
 	GroupBox group_acq_daq,userdata(tabnum)=  "5",userdata(tabcontrol)=  "ADC"
+	Button button_hardware_rescan,pos={32.00,72.00},size={42.00,39.00},proc=ButtonProc_Hardware_rescan,title=""
+	Button button_hardware_rescan,help={"Rescan the PC for ITC and NI DAQ hardware"}
+	Button button_hardware_rescan,userdata(tabnum)=  "6"
+	Button button_hardware_rescan,userdata(tabcontrol)=  "ADC"
+	Button button_hardware_rescan,fColor=(65535,65535,65535)
+	Button button_hardware_rescan,picture= ProcGlobal#HardwareScanButton
 	DefineGuide UGV0={FR,-25},UGH0={FB,-27},UGV1={FL,481}
 	SetWindow kwTopWin,hook(cleanup)=DAP_WindowHook
 	SetWindow kwTopWin,userdata(ResizeControlsInfo)= A"!!*'\"z!!#CW!!#Dl5QCcbzzzzzzzzzzzzzzzzzzzz"

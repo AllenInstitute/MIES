@@ -134,6 +134,10 @@ Function TEST_BEGIN_OVERRIDE(name)
 	SVAR miesVersion = $GetMIESVersion()
 	string/G root:miesVersion = miesVersion
 
+	// cache the device lists
+	string/G root:ITCDeviceList = DAP_GetITCDeviceList()
+	string/G root:NIDeviceList = DAP_GetNIDeviceList()
+
 	NWB_LoadAllStimsets(filename = GetFolder(FunctionPath("")) + "_2017_09_01_192934-compressed.nwb", overwrite = 1)
 	KillDataFolder/Z root:WaveBuilder
 	DuplicateDataFolder	root:MIES:WaveBuilder, root:WaveBuilder
@@ -179,6 +183,14 @@ Function TEST_CASE_BEGIN_OVERRIDE(name)
 
 	SVAR miesVersion = root:miesVersion
 	string/G $(GetMiesPathAsString() + ":version") = miesVersion
+
+	GetITCDevicesFolder()
+
+	SVAR ITCDeviceList = root:ITCDeviceList
+	string/G $(GetITCDevicesFolderAsString() + ":ITCDeviceList") = ITCDeviceList
+
+	SVAR NIDeviceList = root:NIDeviceList
+	string/G $(GetITCDevicesFolderAsString() + ":NIDeviceList") = NIDeviceList
 
 #ifndef TESTS_WITH_NI_HARDWARE
 	HW_ITC_CloseAllDevices()
@@ -235,16 +247,6 @@ Function TEST_CASE_END_OVERRIDE(name)
 	if(NVAR_Exists(error_count) && error_count > 0)
 		CtrlNamedBackGround _all_, status
 		print s_info
-	endif
-End
-
-Function ChooseCorrectDevice(unlockedPanelTitle, dev)
-	string unlockedPanelTitle, dev
-
-	if(GetHardwareType(dev) == HARDWARE_ITC_DAC)
-		PGC_SetAndActivateControl(unlockedPanelTitle, "popup_MoreSettings_DeviceType", str=StringFromList(0, dev, "_") + "*")
-	else
-		PGC_SetAndActivateControl(unlockedPanelTitle, "popup_MoreSettings_DeviceType", str=dev)
 	endif
 End
 

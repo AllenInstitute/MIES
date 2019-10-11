@@ -1292,7 +1292,7 @@ Function SearchForInvalidControlProcs(win)
 	string controlList, control, controlProc
 	string subTypeStr
 	variable result, numEntries, i, subType
-	string/G funcList
+	string funcList
 
 	if(!windowExists(win))
 		printf "SearchForInvalidControlProcs: Panel \"%s\" does not exist.\r", win

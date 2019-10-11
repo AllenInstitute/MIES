@@ -2228,7 +2228,7 @@ Function ButtonProc_Hrdwr_P_UpdtDAClist(ba) : ButtonControl
 	switch(ba.eventCode)
 		case 2: // mouse up
 			string filteredList = ""
-			string DeviceList = NONE + ";" + HW_ITC_ListDevices() + HW_NI_ListDevices()
+			string DeviceList = DAP_GetDACDeviceList()
 			string lockedList = GetListOfLockedDevices()
 			string dev
 			variable nrDevs = ItemsInList(DeviceList)

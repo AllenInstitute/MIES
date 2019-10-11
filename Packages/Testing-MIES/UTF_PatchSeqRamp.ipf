@@ -20,7 +20,7 @@ static Function AcquireData(s, device)
 
 	string unlockedPanelTitle = DAP_CreateDAEphysPanel()
 
-	ChooseCorrectDevice(unlockedPanelTitle, device)
+	PGC_SetAndActivateControl(unlockedPanelTitle, "popup_MoreSettings_Devices", str=device)
 	PGC_SetAndActivateControl(unlockedPanelTitle, "button_SettingsPlus_LockDevice")
 
 	REQUIRE(WindowExists(device))

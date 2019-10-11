@@ -39,11 +39,11 @@ Function/S DAP_GetNIDeviceList()
 	SVAR globalNIDevList = $GetNIDeviceList()
 	devList = globalNIDevList
 
-	numPattern = ItemsInList(NI_DAC_PATTERNS, "|")
-
 	if(!isEmpty(devList))
 		return devList
 	endif
+
+	numPattern = ItemsInList(NI_DAC_PATTERNS, "|")
 
 	for(i = 0;i < HARDWARE_MAX_DEVICES;i += 1)
 		DAQmxDevice = HW_NI_GetPropertyListOfDevices(i)
@@ -76,20 +76,44 @@ Function/S DAP_GetNIDeviceList()
 	return devList
 End
 
-/// @brief Returns a list of DAC devices for NI + ITC devices
+/// @brief Returns a list of ITC devices for DAC
+Function/S DAP_GetITCDeviceList()
+
+	string devList
+
+	SVAR globalITCDevList = $GetITCDeviceList()
+	devList = globalITCDevList
+
+	if(!isEmpty(devList))
+		return devList
+	endif
+
+	globalITCDevList = HW_ITC_ListDevices()
+
+	return globalITCDevList
+End
+
+/// @brief Returns a list of available ITC and NI devices
+///
 /// @return list of DAC devices
 Function/S DAP_GetDACDeviceList()
 
-	return DEVICE_TYPES_ITC + ";" + DAP_GetNIDeviceList()
-End
+	string list = NONE
+	string devices
 
-/// @brief Returns a modified list of DAC devices for GUI panel
-/// @return string list for devices in GUI panel
-Function/S DAP_GetGUIDACDeviceList()
-	string deviceList
+	devices = DAP_GetITCDeviceList()
 
-	deviceList = DAP_GetDACDeviceList()
-	return ReplaceString("ITC00;", deviceList, "\\M1(ITC00;")
+	if(!IsEmpty(devices))
+		list = AddListItem(devices, list, ";", inf)
+	endif
+
+	devices = DAP_GetNIDeviceList()
+
+	if(!IsEmpty(devices))
+		list = AddListItem(devices, list, ";", inf)
+	endif
+
+	return list
 End
 
 /// @brief Restores the base state of the DA_Ephys panel.
@@ -444,8 +468,7 @@ Function DAP_EphysPanelStartUpSettings()
 	CheckBox check_Settings_ScalingZero WIN = $panelTitle,value= 0
 	CheckBox check_Settings_SetOption_04 WIN = $panelTitle,fColor=(65280,43520,0),value= 0
 
-	PGC_SetAndActivateControl(panelTitle, "popup_MoreSettings_DeviceType", val=0)
-	PGC_SetAndActivateControl(panelTitle, "popup_MoreSettings_DeviceNo", val=0)
+	PopupMenu popup_MoreSettings_Devices WIN=$paneltitle, mode=1
 
 	SetVariable SetVar_Sweep WIN = $panelTitle, limits={0,0,1}, value= _NUM:0
 
@@ -1720,17 +1743,6 @@ Function DAP_SetVarProc_TotSweepCount(sva) : SetVariableControl
 	endswitch
 
 	return 0
-End
-
-Function DAP_PopMenuProc_DevTypeChk(pa) : PopupMenuControl
-	struct WMPopupAction& pa
-
-	switch(pa.eventCode)
-		case 2: // mouse up
-			DAP_IsDeviceTypeConnected(pa.win)
-			DAP_UpdateYokeControls(pa.win)
-			break
-	endswitch
 End
 
 Function DAP_ButtonCtrlFindConnectedAmps(ba) : ButtonControl
@@ -4190,6 +4202,10 @@ Function/S DAP_CreateDAEphysPanel()
 	// upgrade folder locations
 	GetITCDevicesFolder()
 
+	// fetch device lists
+	DAP_GetNIDeviceList()
+	DAP_GetITCDeviceList()
+
 	Execute "DA_Ephys()"
 	panel = GetCurrentWindow()
 	SCOPE_OpenScopeWindow(panel)
@@ -4361,15 +4377,7 @@ End
 Function DAP_DeviceIsUnlocked(panelTitle)
 	string panelTitle
 
-	string deviceType, deviceNumber
-	if(ParseDeviceString(panelTitle, deviceType, deviceNumber))
-		if(!isEmpty(deviceNumber))
-			return !(WhichListItem(deviceType, DAP_GetDACDeviceList()) != -1 && WhichListItem(deviceNumber, DEVICE_NUMBERS) != -1)
-		else
-			return !(WhichListItem(deviceType, DAP_GetDACDeviceList()) != -1)
-		endif
-	endif
-	return NaN
+	return WhichListItem(panelTitle, GetListOfLockedDevices(), ";", 0, 0) == -1
 End
 
 Function DAP_AbortIfUnlocked(panelTitle)
@@ -4431,24 +4439,6 @@ Function DAP_CheckProc_Settings_PUser(cba) : CheckBoxControl
 	return 0
 End
 
-Function DAP_ButtonProc_Settings_OpenDev(ba) : ButtonControl
-	struct WMButtonAction& ba
-
-	string panelTitle, deviceToOpen
-	variable hwType, deviceID
-
-	switch(ba.eventCode)
-		case 2: // mouse up
-			deviceToOpen = BuildDeviceString(DAP_GetDeviceType(ba.win), DAP_GetDeviceNumber(ba.win))
-			deviceID = HW_OpenDevice(deviceToOpen, hwType)
-			DoAlert/T="Ready light check" 0, "Click \"OK\" when finished checking device"
-			HW_CloseDevice(hwType, deviceID)
-			break
-	endswitch
-
-	return 0
-End
-
 Function DAP_ButtonProc_LockDev(ba) : ButtonControl
 	struct WMButtonAction& ba
 
@@ -4501,24 +4491,17 @@ Function DAP_LockDevice(panelTitle)
 		DEBUGPRINT_OR_ABORT("The MIES version is unknown, locking devices is therefore only allowed in debug mode.")
 	endif
 
-	panelTitleLocked = BuildDeviceString(DAP_GetDeviceType(panelTitle), DAP_GetDeviceNumber(panelTitle))
+	panelTitleLocked = GetPopupMenuString(panelTitle, "popup_MoreSettings_Devices")
 	if(windowExists(panelTitleLocked))
 		DoAbortNow("Attempt to duplicate device connection! Please choose another device number as that one is already in use.")
 	endif
 
-	if(!HasPanelLatestVersion(panelTitle, DA_EPHYS_PANEL_VERSION))
-		DoAbortNow("Can not lock the device. The DA_Ephys panel is too old to be usable. Please close it and open a new one.")
+	if(!cmpstr(panelTitleLocked, NONE))
+		DoAbortNow("Please select a valid device.")
 	endif
 
-	if(GetHardwareType(panelTitleLocked) == HARDWARE_ITC_DAC)
-		if(!DAP_GetNumITCDevicesPerType(panelTitle))
-#ifndef EVIL_KITTEN_EATING_MODE
-			sprintf msg, "Can not lock the device \"%s\" as no devices of type \"%s\" are connected.", panelTitleLocked, DAP_GetDeviceType(panelTitle)
-			DoAbortNow(msg)
-#else
-			print "EVIL_KITTEN_EATING_MODE is ON: Allowing to lock altough no devices could be found."
-#endif
-		endif
+	if(!HasPanelLatestVersion(panelTitle, DA_EPHYS_PANEL_VERSION))
+		DoAbortNow("Can not lock the device. The DA_Ephys panel is too old to be usable. Please close it and open a new one.")
 	endif
 
 	NVAR ITCDeviceIDGlobal = $GetITCDeviceIDGlobal(paneltitleLocked)
@@ -4534,9 +4517,8 @@ Function DAP_LockDevice(panelTitle)
 #endif
 	endif
 
-	DisableControls(panelTitle,"popup_MoreSettings_DeviceType;popup_moreSettings_DeviceNo;button_SettingsPlus_PingDevice")
+	DisableControls(panelTitle,"button_SettingsPlus_LockDevice;popup_MoreSettings_Devices;button_hardware_rescan")
 	EnableControl(panelTitle,"button_SettingsPlus_unLockDevic")
-	DisableControl(panelTitle,"button_SettingsPlus_LockDevice")
 
 	DoWindow/W=$panelTitle/C $panelTitleLocked
 
@@ -4620,33 +4602,6 @@ static Function DAP_LoadBuiltinStimsets()
 	KillPath $symbPath
 End
 
-/// @brief Returns the device type as string, readout from the popup menu in the Hardware tab
-static Function/s DAP_GetDeviceType(panelTitle)
-	string panelTitle
-
-	ControlInfo /w = $panelTitle popup_MoreSettings_DeviceType
-	ASSERT(V_flag != 0, "Non-existing control or window")
-	return S_value
-End
-
-/// @brief Returns the device type as index into the popup menu in the Hardware tab
-static Function DAP_GetDeviceTypeIndex(panelTitle)
-	string panelTitle
-
-	ControlInfo /w = $panelTitle popup_MoreSettings_DeviceType
-	ASSERT(V_flag != 0, "Non-existing control or window")
-	return V_value - 1
-End
-
-/// @brief Returns the selected ITC device number from a DA_Ephys panel (locked or unlocked)
-static Function/s DAP_GetDeviceNumber(panelTitle)
-	string panelTitle
-
-	ControlInfo /w = $panelTitle popup_moreSettings_DeviceNo
-	ASSERT(V_flag != 0, "Non-existing control or window")
-	return S_value
-End
-
 static Function DAP_ClearWaveIfExists(wv)
 	WAVE/Z wv
 
@@ -4690,7 +4645,7 @@ static Function DAP_UnlockDevice(panelTitle)
 		DAP_RemoveYokedDAC(panelTitle)
 	endif
 
-	EnableControls(panelTitle,"button_SettingsPlus_LockDevice;popup_MoreSettings_DeviceType;popup_moreSettings_DeviceNo;button_SettingsPlus_PingDevice")
+	EnableControls(panelTitle,"button_SettingsPlus_LockDevice;popup_MoreSettings_Devices;button_hardware_rescan")
 	DisableControl(panelTitle,"button_SettingsPlus_unLockDevic")
 	EnableControls(panelTitle, "StartTestPulseButton;DataAcquireButton;Check_DataAcq1_RepeatAcq;Check_DataAcq_Indexing;SetVar_DataAcq_ITI;SetVar_DataAcq_SetRepeats;Check_DataAcq_Get_Set_ITI")
 	SetVariable setvar_Hardware_Status Win = $panelTitle, value= _STR:"Independent"
@@ -4757,47 +4712,6 @@ static Function DAP_UnlockDevice(panelTitle)
 
 	KillOrMoveToTrash(wv = GetDA_EphysGuiStateNum(panelTitleUnlocked))
 	KillOrMoveToTrash(wv = GetDA_EphysGuiStateTxT(panelTitleUnlocked))
-End
-
-/// @brief Return the number of ITC devices of the given `type`
-static Function DAP_GetNumITCDevicesPerType(panelTitle)
-	string panelTitle
-
-	return ItemsInList(ListMatch(HW_ITC_ListDevices(), DAP_GetDeviceType(panelTitle) + "_DEV_*"))
-End
-
-/// @brief Gets the selection from the Device popup menu of the DA_Ephys panel
-/// and checks of the device availability.
-/// Prints availability of the selected device to the history and en/dis 'Open Device' button in panel
-static Function DAP_IsDeviceTypeConnected(panelTitle)
-	string panelTitle
-
-	variable numDevices, hardwareType
-	string deviceName
-
-	deviceName = DAP_GetDeviceType(panelTitle)
-	hardwareType = GetHardwareType(deviceName)
-	switch(hardwareType)
-		case HARDWARE_NI_DAC:
-			EnableControl(panelTitle, "button_SettingsPlus_PingDevice")
-			print "National Instrument device " + deviceName + " is connected."
-			break
-		case HARDWARE_ITC_DAC:
-
-			numDevices = DAP_GetNumITCDevicesPerType(panelTitle)
-
-			if(!numDevices)
-				DisableControl(panelTitle, "button_SettingsPlus_PingDevice")
-			else
-				EnableControl(panelTitle, "button_SettingsPlus_PingDevice")
-			endif
-
-			printf "Available number of specified ITC devices = %d\r" numDevices
-			break
-		default:
-			print "Device type " + deviceName + " not supported."
-			break
-	endswitch
 End
 
 /// @brief Update the list of locked devices
@@ -5255,4 +5169,22 @@ Function DAP_ClearDelayedClampModeChange(panelTitle)
 
 	WAVE GuiState = GetDA_EphysGuiStateNum(panelTitle)
 	GuiState[][%HSmode_delayed] = NaN
+End
+
+Function ButtonProc_Hardware_rescan(ba) : ButtonControl
+	STRUCT WMButtonAction &ba
+
+	switch(ba.eventCode)
+		case 2: // mouse up
+			SVAR globalITCDevList = $GetITCDeviceList()
+			SVAR globalNIDevList = $GetNIDeviceList()
+
+			KillStrings/Z globalITCDevList, globalNIDevList
+
+			DAP_GetNIDeviceList()
+			DAP_GetITCDeviceList()
+			break
+	endswitch
+
+	return 0
 End
