@@ -711,7 +711,7 @@ static Function SCOPE_ITC_UpdateOscilloscope(panelTitle, dataAcqOrTP, chunk, fif
 			return NaN
 		endif
 
-		Multithread scaledDataWave[fifoPosGlobal, fifoPos][] = ITCDataWave[p][q] / allGain[q]
+		Multithread scaledDataWave[fifoPosGlobal, fifoPos - 1][] = ITCDataWave[p][q] / allGain[q]
 
 		decMethod = GetNumberFromWaveNote(OscilloscopeData, "DecimationMethod")
 		decFactor = GetNumberFromWaveNote(OscilloscopeData, "DecimationFactor")
@@ -751,13 +751,13 @@ static Function SCOPE_ITC_AdjustFIFOPos(panelTitle, fifopos)
 		return 0
 	elseif(IsNaN(fifoPos))
 		// we are done
-		// return the last valid point in the HardwareDataWave
+		// return the length of the HardwareDataWave
 		stopCollectionPoint = ROVAR(GetStopCollectionPoint(panelTitle))
-		fifoPos = stopCollectionPoint - GetDataOffset(ITCChanConfigWave) - 1
+		fifoPos = stopCollectionPoint - GetDataOffset(ITCChanConfigWave)
 	elseif(fifoPos < 0)
 		printf "fifoPos was clipped to zero, old value %g\r", fifoPos
 		return 0
 	endif
 
-	return min(fifoPos, DimSize(scaledDataWave, ROWS) - 1)
+	return min(fifoPos, DimSize(scaledDataWave, ROWS))
 End
