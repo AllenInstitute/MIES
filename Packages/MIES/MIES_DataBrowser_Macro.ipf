@@ -803,10 +803,8 @@ Window DataBrowser() : Graph
 	SetWindow kwTopWin,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzzzzzzzzz!!!"
 	Execute/Q/Z "SetWindow kwTopWin sizeLimit={279.75,330,inf,inf}" // sizeLimit requires Igor 7 or later
 	NewNotebook /F=0 /N=WaveNoteDisplay /W=(200,24,600,561)/FG=(FL,$"",FR,FB) /HOST=# /V=0 /OPTS=10
-	Notebook kwTopWin, defaultTab=36, autoSave= 1, magnification=100
+	Notebook kwTopWin, defaultTab=36, autoSave= 0, magnification=100
 	Notebook kwTopWin font="Lucida Console", fSize=11, fStyle=0, textRGB=(0,0,0)
-	Notebook kwTopWin, zdata= "GaqDU%ejN7!Z)%D?io>lbN?PWL]d_/WWX="
-	Notebook kwTopWin, zdataEnd= 1
 	SetWindow kwTopWin,userdata(tabnum)=  "5"
 	SetWindow kwTopWin,userdata(tabcontrol)=  "Settings"
 	RenameWindow #,WaveNoteDisplay
