@@ -421,11 +421,10 @@ Window DataBrowser() : Graph
 	CheckBox check_BrowserSettings_DB_Failed,userdata(tabnum)=  "6"
 	CheckBox check_BrowserSettings_DB_Failed,userdata(tabcontrol)=  "Settings"
 	CheckBox check_BrowserSettings_DB_Failed,value= 0
-	Execute/Q/Z "SetWindow kwTopWin sizeLimit={280,330,inf,inf}" // sizeLimit requires Igor 7 or later
-	NewNotebook /F=1 /N=WaveNoteDisplay /W=(200,24,600,561)/FG=(FL,$"",FR,FB) /HOST=# /V=0 /OPTS=10
-	Notebook kwTopWin, defaultTab=36, autoSave= 1, magnification=100, showRuler=0, rulerUnits=1
-	Notebook kwTopWin newRuler=Normal, justification=0, margins={0,0,252}, spacing={0,0,0}, tabs={}, rulerDefaults={"Arial",10,0,(0,0,0)}
-	Notebook kwTopWin, zdata= "GaqDU%ejN7!Z)u^\"(F_BAcguPHh4$ML]iZ-,W[?i6\"=DG6/B>,7,t^3QbfpT1GOXc!;*l0n,"
+	NewNotebook /F=0 /N=WaveNoteDisplay /W=(200,24,600,561)/FG=(FL,$"",FR,FB) /HOST=# /V=0 /OPTS=10
+	Notebook kwTopWin, defaultTab=36, autoSave= 1, magnification=100
+	Notebook kwTopWin font="Lucida Console", fSize=11, fStyle=0, textRGB=(0,0,0)
+	Notebook kwTopWin, zdata= "GaqDU%ejN7!Z)%D?io>lbN?PWL]d_/WWX="
 	Notebook kwTopWin, zdataEnd= 1
 	SetWindow kwTopWin,userdata(tabnum)=  "5"
 	SetWindow kwTopWin,userdata(tabcontrol)=  "Settings"
