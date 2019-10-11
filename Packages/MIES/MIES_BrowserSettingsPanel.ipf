@@ -7,8 +7,11 @@
 
 static strConstant EXT_PANEL_SUBWINDOW = "BrowserSettingsPanel"
 static strConstant EXT_PANEL_SWEEPCONTROL = "SweepControl"
+static strConstant EXT_PANEL_SF_FORMULA = "sweepFormula_formula"
+static strConstant EXT_PANEL_SF_JSON = "sweepFormula_json"
+static strConstant EXT_PANEL_SF_HELP = "sweepFormula_help"
 
-static Constant BROWSERSETTINGS_PANEL_VERSION = 7
+static Constant BROWSERSETTINGS_PANEL_VERSION = 5
 
 static strConstant BROWSERTYPE_DATABROWSER  = "D"
 static strConstant BROWSERTYPE_SWEEPBROWSER = "S"
@@ -50,6 +53,24 @@ Function/S BSP_GetSweepControlsPanel(mainPanel)
 	string mainPanel
 
 	return GetMainWindow(mainPanel) + "#" + EXT_PANEL_SWEEPCONTROL
+End
+
+Function /S BSP_GetSFFormula(mainPanel)
+	string mainPanel
+
+	return BSP_GetPanel(mainPanel) + "#" + EXT_PANEL_SF_FORMULA
+End
+
+Function /S BSP_GetSFJSON(mainPanel)
+	string mainPanel
+
+	return BSP_GetPanel(mainPanel) + "#" + EXT_PANEL_SF_JSON
+End
+
+Function /S BSP_GetSFHELP(mainPanel)
+	string mainPanel
+
+	return BSP_GetPanel(mainPanel) + "#" + EXT_PANEL_SF_HELP
 End
 
 /// @brief Inits controls of BrowserSettings side Panel

@@ -814,13 +814,13 @@ Window DataBrowser() : Graph
 	Button button_sweepFormula_display,userdata(ResizeControlsInfo)= A"!!,?8!!#Bu!!#>j!!#<hz!!#](Aon#azzzzzzzzzzzzzz!!#](Aon#SBk2=!z"
 	Button button_sweepFormula_display,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#?(FEDG<zzzzzzzzzzz"
 	Button button_sweepFormula_display,userdata(ResizeControlsInfo) += A"zzz!!#?(FEDG<zzzzzzzzzzzzzz!!!"
-	Button button_sweepFormula_check,pos={61.00,375.00},size={55.00,22.00},disable=1,proc=button_sweepFormula_check,title="Check"
+	Button button_sweepFormula_check,pos={61.00,375.00},size={55.00,22.00},disable=1,proc=SF_button_sweepFormula_check,title="Check"
 	Button button_sweepFormula_check,userdata(tabnum)=  "5"
 	Button button_sweepFormula_check,userdata(tabcontrol)=  "Settings"
 	Button button_sweepFormula_check,userdata(ResizeControlsInfo)= A"!!,E.!!#Bu!!#>j!!#<hz!!#](Aon#azzzzzzzzzzzzzz!!#](Aon#SBk2=!z"
 	Button button_sweepFormula_check,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#?(FEDG<zzzzzzzzzzz"
 	Button button_sweepFormula_check,userdata(ResizeControlsInfo) += A"zzz!!#?(FEDG<zzzzzzzzzzzzzz!!!"
-	TabControl SF_InfoTab,pos={7.00,46.00},size={383.00,324.00},disable=1,proc=SF_TabProc_Formula
+	TabControl SF_InfoTab,pos={7.00,46.00},size={383.00,324.00},disable=1,proc=ACL_DisplayTab, userdata(finalhook)="SF_TabProc_Formula"
 	TabControl SF_InfoTab,userdata(currenttab)=  "0",userdata(tabnum)=  "5"
 	TabControl SF_InfoTab,userdata(tabcontrol)=  "Settings"
 	TabControl SF_InfoTab,userdata(ResizeControlsInfo)= A"!!,@C!!#>F!!#C#!!#B[J,fQL!!#](Aon#azzzzzzzzzzzzzz!!#o2B4uAeBk2=!z"
@@ -865,6 +865,7 @@ Window DataBrowser() : Graph
 	NewNotebook /F=0 /N=sweepFormula_json /W=(12,72,379,358) /HOST=# /V=0 
 	Notebook kwTopWin, defaultTab=20, autoSave= 1, magnification=100
 	Notebook kwTopWin font="Lucida Console", fSize=11, fStyle=0, textRGB=(0,0,0)
+	Notebook kwTopWin font="Lucida Console", fSize=11, fStyle=0, textRGB=(0,0,0), autosave=0, writeProtect=1, changeableByCommandOnly=1
 	Notebook kwTopWin, zdata= "GaqDU%ejN7!Z)%D?io>lbN?PWL]d_/WWX="
 	Notebook kwTopWin, zdataEnd= 1
 	SetWindow kwTopWin,hook(ResizeControls)=ResizeControls#ResizeControlsHook

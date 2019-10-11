@@ -1008,7 +1008,7 @@ End
 Function SF_button_sweepFormula_check(ba) : ButtonControl
 	STRUCT WMButtonAction &ba
 
-	String mainPanel, bsPanel, yFormula, xFormula
+	String mainPanel, bsPanel, yFormula, xFormula, formula_nb
 	Variable numFormulae, jsonIDx, jsonIDy
 
 	switch(ba.eventCode)
@@ -1025,8 +1025,9 @@ Function SF_button_sweepFormula_check(ba) : ButtonControl
 
 			SVAR/Z formula = dfr:sweepFormulaText
 			ASSERT(SVAR_EXISTS(formula), "Global variable sweepFormulaText not found")
-			Notebook $bsPanel#sweepFormula_formula getData=2
-			formula = S_Value
+
+			formula_nb = BSP_GetSFFormula(ba.win)
+			formula = GetNotebookText(formula_nb)
 
 			NVAR/Z status = dfr:sweepFormulaParse
 			ASSERT(NVAR_EXISTS(status), "Global variable sweepFormulaParse not found")
@@ -1074,15 +1075,15 @@ End
 Function SF_button_sweepFormula_display(ba) : ButtonControl
 	STRUCT WMButtonAction &ba
 
-	String bsPanel, mainPanel, code
+	String mainPanel, code, formula_nb
 
 	switch(ba.eventCode)
 		case 2: // mouse up
-			bsPanel = BSP_GetPanel(ba.win)
+			formula_nb = BSP_GetSFFormula(ba.win)
 			mainPanel = GetMainWindow(ba.win)
 
-			Notebook $bsPanel#sweepFormula_formula getData=2
-			code = S_Value
+			code = GetNotebookText(formula_nb)
+
 			if(IsEmpty(code))
 				break
 			endif
@@ -1097,20 +1098,16 @@ End
 Function SF_TabProc_Formula(tca) : TabControl
 	STRUCT WMTabControlAction &tca
 
-	String mainPanel, bsPanel
-
-	ACL_DisplayTab(tca)
+	String mainPanel, bsPanel, json_nb, text
 
 	switch( tca.eventCode )
 		case 2: // mouse up
 			mainPanel = GetMainWindow(tca.win)
 			bsPanel = BSP_GetPanel(mainPanel)
+			json_nb = BSP_GetSFJSON(mainPanel)
 
-			Notebook $bsPanel#sweepFormula_formula visible=(tca.tab == 0)
-			Notebook $bsPanel#sweepFormula_json visible=(tca.tab == 1)
-			Notebook $bsPanel#sweepFormula_help visible=(tca.tab == 2)
+			ReplaceNotebookText(json_nb, "")
 
-			Notebook $bsPanel#sweepFormula_json selection={startOfFile, endOfFile},setData=""
 			if(tca.tab == 1)
 				PGC_SetAndActivateControl(bsPanel, "button_sweepFormula_check")
 			endif
@@ -1129,10 +1126,10 @@ Function SF_TabProc_Formula(tca) : TabControl
 
 			if(tca.tab == 1) // JSON
 				NVAR/Z jsonID = dfr:sweepFormulaJSONid
-				Notebook $bsPanel#sweepFormula_json text=(ReplaceString("\n", JSON_Dump(jsonID, indent = 2), "\r"))
+				text = JSON_Dump(jsonID, indent = 2)
+				text = NormalizeToEOL(text, "\r")
+				ReplaceNotebookText(json_nb, text)
 			endif
-			break
-		default:
 			break
 	endswitch
 
