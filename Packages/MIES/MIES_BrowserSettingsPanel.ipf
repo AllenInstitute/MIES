@@ -8,7 +8,7 @@
 static strConstant EXT_PANEL_SUBWINDOW = "BrowserSettingsPanel"
 static strConstant EXT_PANEL_SWEEPCONTROL = "SweepControl"
 
-static Constant BROWSERSETTINGS_PANEL_VERSION = 6
+static Constant BROWSERSETTINGS_PANEL_VERSION = 7
 
 static strConstant BROWSERTYPE_DATABROWSER  = "D"
 static strConstant BROWSERTYPE_SWEEPBROWSER = "S"

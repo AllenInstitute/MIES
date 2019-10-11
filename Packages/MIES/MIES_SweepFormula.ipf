@@ -2,35 +2,44 @@
 #pragma rtGlobals=3 // Use modern global access method and strict wave access.
 #pragma rtFunctionErrors=1
 
-static Constant STATE_DEFAULT = 0
-static Constant STATE_COLLECT = 1
-static Constant STATE_ADDITION = 2
-static Constant STATE_SUBTRACTION = 3
-static Constant STATE_MULTIPLICATION = 4
-static Constant STATE_DIVISION = 5
-static Constant STATE_PARENTHESIS = 6
-static Constant STATE_FUNCTION = 7
-static Constant STATE_ARRAY = 8
-static Constant STATE_ARRAYELEMENT = 9
-static Constant STATE_WHITESPACE = 10
-static Constant STATE_COMMENT = 11
-static Constant STATE_NEWLINE = 12
-static Constant STATE_OPERATION = 13
+#ifdef AUTOMATED_TESTING
+#pragma ModuleName=MIES_SF
+#endif
 
-static Constant ACTION_SKIP = 0
-static Constant ACTION_COLLECT = 1
-static Constant ACTION_CALCULATION = 2
-static Constant ACTION_SAMECALCULATION = 3
-static Constant ACTION_HIGHERORDER = 4
-static Constant ACTION_ARRAYELEMENT = 5
-static Constant ACTION_PARENTHESIS = 6
-static Constant ACTION_FUNCTION = 7
-static Constant ACTION_ARRAY = 8
+/// @file MIES_SweepFormula.ipf
+///
+/// @brief __SF__ Sweep formula allows to do analysis on sweeps with a
+/// dedicated formula language
+
+static Constant SF_STATE_DEFAULT = 0
+static Constant SF_STATE_COLLECT = 1
+static Constant SF_STATE_ADDITION = 2
+static Constant SF_STATE_SUBTRACTION = 3
+static Constant SF_STATE_MULTIPLICATION = 4
+static Constant SF_STATE_DIVISION = 5
+static Constant SF_STATE_PARENTHESIS = 6
+static Constant SF_STATE_FUNCTION = 7
+static Constant SF_STATE_ARRAY = 8
+static Constant SF_STATE_ARRAYELEMENT = 9
+static Constant SF_STATE_WHITESPACE = 10
+static Constant SF_STATE_COMMENT = 11
+static Constant SF_STATE_NEWLINE = 12
+static Constant SF_STATE_OPERATION = 13
+
+static Constant SF_ACTION_SKIP = 0
+static Constant SF_ACTION_COLLECT = 1
+static Constant SF_ACTION_CALCULATION = 2
+static Constant SF_ACTION_SAMECALCULATION = 3
+static Constant SF_ACTION_HIGHERORDER = 4
+static Constant SF_ACTION_ARRAYELEMENT = 5
+static Constant SF_ACTION_PARENTHESIS = 6
+static Constant SF_ACTION_FUNCTION = 7
+static Constant SF_ACTION_ARRAY = 8
 
 /// Regular expression which extracts both formulas from `$a vs $b`
-static StrConstant SWEEPFORMULA_REGEXP = "^(.+?)(?:\\bvs\\b(.+))?$"
+static StrConstant SF_SWEEPFORMULA_REGEXP = "^(.+?)(?:\\bvs\\b(.+))?$"
 
-Function FormulaCheck(condition, message)
+static Function SF_FormulaCheck(condition, message)
 	Variable condition
 	String message
 
@@ -40,16 +49,16 @@ Function FormulaCheck(condition, message)
 End
 
 /// @brief output an error message to a global variable in dfr
-Function FormulaError(dfr, condition, message)
+static Function SF_FormulaError(dfr, condition, message)
 	DFREF dfr
 	Variable condition
 	String message
 
 	if(!condition)
-		SVAR/Z error = dfr:sweepFormulaParseResult
+		SVAR/Z error = dfr:sweepFormulaParseresult
 		if(!SVAR_EXISTS(error))
-			String/G dfr:sweepFormulaParseResult
-			SVAR error = dfr:sweepFormulaParseResult
+			String/G dfr:sweepFormulaParseresult
+			SVAR error = dfr:sweepFormulaParseresult
 		endif
 		error = message
 		Abort message
@@ -59,11 +68,11 @@ End
 /// @brief preparse user input to correct formula patterns
 ///
 /// @return parsed formula
-Function/S FormulaPreParser(formula)
+static Function/S SF_FormulaPreParser(formula)
 	String formula
 
-	FormulaCheck(CountSubstrings(formula, "(") == CountSubstrings(formula, ")"), "Bracket missmatch in formula.")
-	FormulaCheck(CountSubstrings(formula, "[") == CountSubstrings(formula, "]"), "Array bracket missmatch in formula.")
+	SF_FormulaCheck(CountSubstrings(formula, "(") == CountSubstrings(formula, ")"), "Bracket missmatch in formula.")
+	SF_FormulaCheck(CountSubstrings(formula, "[") == CountSubstrings(formula, "]"), "Array bracket missmatch in formula.")
 
 	formula = ReplaceString("...", formula, "…")
 
@@ -74,7 +83,7 @@ End
 ///
 /// @param formula  string formula
 /// @returns a JSONid representation
-Function FormulaParser(formula)
+Function SF_FormulaParser(formula)
 	String formula
 
 	Variable i, parenthesisStart, parenthesisEnd, jsonIDdummy, jsonIDarray
@@ -101,19 +110,19 @@ Function FormulaParser(formula)
 		// state
 		strswitch(token)
 			case "/":
-				state = STATE_DIVISION
+				state = SF_STATE_DIVISION
 				break
 			case "*":
-				state = STATE_MULTIPLICATION
+				state = SF_STATE_MULTIPLICATION
 				break
 			case "-":
-				state = STATE_SUBTRACTION
+				state = SF_STATE_SUBTRACTION
 				break
 			case "+":
-				state = STATE_ADDITION
+				state = SF_STATE_ADDITION
 				break
 			case "…":
-				state = STATE_OPERATION
+				state = SF_STATE_OPERATION
 				break
 			case "(":
 				level += 1
@@ -121,129 +130,129 @@ Function FormulaParser(formula)
 			case ")":
 				level -= 1
 				if(!cmpstr(buffer[0], "("))
-					state = STATE_PARENTHESIS
+					state = SF_STATE_PARENTHESIS
 					break
 				endif
 				if(GrepString(buffer, "^[A-Za-z]"))
-					state = STATE_FUNCTION
+					state = SF_STATE_FUNCTION
 					break
 				endif
-				state = STATE_DEFAULT
+				state = SF_STATE_DEFAULT
 				break
 			case "[":
 				arrayLevel += 1
 				break
 			case "]":
 				arrayLevel -= 1
-				state = STATE_ARRAY
+				state = SF_STATE_ARRAY
 				break
 			case ",":
-				state = STATE_ARRAYELEMENT
+				state = SF_STATE_ARRAYELEMENT
 				break
 			case "#":
-				state = STATE_COMMENT
+				state = SF_STATE_COMMENT
 				break
 			case "\r":
 			case "\n":
-				state = STATE_NEWLINE
+				state = SF_STATE_NEWLINE
 				break
 			case " ":
 			case "\t":
-				state = STATE_WHITESPACE
+				state = SF_STATE_WHITESPACE
 				break
 			default:
 				if(!(char2num(token) > 0))
 					continue
 				endif
-				state = STATE_COLLECT
-				FormulaCheck(GrepString(token, "[A-Za-z0-9_\.:;]"), "undefined pattern in formula: " + formula[i,i+5])
+				state = SF_STATE_COLLECT
+				SF_FormulaCheck(GrepString(token, "[A-Za-z0-9_\.:;]"), "undefined pattern in formula: " + formula[i,i+5])
 		endswitch
 		if(level > 0 || arrayLevel > 0)
-			state = STATE_DEFAULT
+			state = SF_STATE_DEFAULT
 		endif
 
 		// state transition
-		if(lastState == STATE_COMMENT && state != STATE_NEWLINE)
-			action = ACTION_SKIP
+		if(lastState == SF_STATE_COMMENT && state != SF_STATE_NEWLINE)
+			action = SF_ACTION_SKIP
 		elseif(state != lastState)
 			switch(state)
-				case STATE_ADDITION:
-					if(lastCalculation == STATE_SUBTRACTION)
-						action = ACTION_HIGHERORDER
+				case SF_STATE_ADDITION:
+					if(lastCalculation == SF_STATE_SUBTRACTION)
+						action = SF_ACTION_HIGHERORDER
 						break
 					endif
-				case STATE_SUBTRACTION:
-					if(lastCalculation == STATE_MULTIPLICATION)
-						action = ACTION_HIGHERORDER
+				case SF_STATE_SUBTRACTION:
+					if(lastCalculation == SF_STATE_MULTIPLICATION)
+						action = SF_ACTION_HIGHERORDER
 						break
 					endif
-				case STATE_MULTIPLICATION:
-					if(lastCalculation == STATE_DIVISION)
-						action = ACTION_HIGHERORDER
+				case SF_STATE_MULTIPLICATION:
+					if(lastCalculation == SF_STATE_DIVISION)
+						action = SF_ACTION_HIGHERORDER
 						break
 					endif
-				case STATE_DIVISION:
-				case STATE_OPERATION:
+				case SF_STATE_DIVISION:
+				case SF_STATE_OPERATION:
 					if(!cmpstr(buffer, ""))
 						if(lastCalculation == -1)
-							action = ACTION_HIGHERORDER
+							action = SF_ACTION_HIGHERORDER
 						else
-							action = ACTION_SKIP
+							action = SF_ACTION_SKIP
 						endif
 						break
 					endif
-					action = ACTION_CALCULATION
+					action = SF_ACTION_CALCULATION
 					if(state == lastCalculation)
-						action = ACTION_SAMECALCULATION
+						action = SF_ACTION_SAMECALCULATION
 					endif
-					if(lastCalculation == STATE_ARRAYELEMENT)
-						action = ACTION_COLLECT
-					endif
-					break
-				case STATE_PARENTHESIS:
-					action = ACTION_PARENTHESIS
-					if(lastCalculation == STATE_ARRAYELEMENT)
-						action = ACTION_COLLECT
+					if(lastCalculation == SF_STATE_ARRAYELEMENT)
+						action = SF_ACTION_COLLECT
 					endif
 					break
-				case STATE_FUNCTION:
-					action = ACTION_FUNCTION
-					if(lastCalculation == STATE_ARRAYELEMENT)
-						action = ACTION_COLLECT
+				case SF_STATE_PARENTHESIS:
+					action = SF_ACTION_PARENTHESIS
+					if(lastCalculation == SF_STATE_ARRAYELEMENT)
+						action = SF_ACTION_COLLECT
 					endif
 					break
-				case STATE_ARRAYELEMENT:
-					action = ACTION_ARRAYELEMENT
-					if(lastCalculation != STATE_ARRAYELEMENT)
-						action = ACTION_HIGHERORDER
+				case SF_STATE_FUNCTION:
+					action = SF_ACTION_FUNCTION
+					if(lastCalculation == SF_STATE_ARRAYELEMENT)
+						action = SF_ACTION_COLLECT
 					endif
 					break
-				case STATE_ARRAY:
-					action = ACTION_ARRAY
+				case SF_STATE_ARRAYELEMENT:
+					action = SF_ACTION_ARRAYELEMENT
+					if(lastCalculation != SF_STATE_ARRAYELEMENT)
+						action = SF_ACTION_HIGHERORDER
+					endif
 					break
-				case STATE_NEWLINE:
-				case STATE_WHITESPACE:
-				case STATE_COMMENT:
-					action = ACTION_SKIP
+				case SF_STATE_ARRAY:
+					action = SF_ACTION_ARRAY
 					break
-				case STATE_COLLECT:
-				case STATE_DEFAULT:
-					action = ACTION_COLLECT
+				case SF_STATE_NEWLINE:
+				case SF_STATE_WHITESPACE:
+				case SF_STATE_COMMENT:
+					action = SF_ACTION_SKIP
+					break
+				case SF_STATE_COLLECT:
+				case SF_STATE_DEFAULT:
+					action = SF_ACTION_COLLECT
 					break
 				default:
-					FormulaCheck(0, "Encountered undefined transition " + num2str(state))
+					SF_FormulaCheck(0, "Encountered undefined transition " + num2str(state))
 			endswitch
 			lastState = state
 		endif
 
 		// action
 		switch(action)
-			case ACTION_COLLECT:
+			case SF_ACTION_COLLECT:
 				buffer += token
-			case ACTION_SKIP:
+			case SF_ACTION_SKIP:
 				token = ""
 				continue
-			case ACTION_FUNCTION:
+			case SF_ACTION_FUNCTION:
 				tempPath = jsonPath
 				if(JSON_GetType(jsonID, jsonPath) == JSON_ARRAY)
 					JSON_AddObjects(jsonID, jsonPath)
@@ -251,23 +260,23 @@ Function FormulaParser(formula)
 				endif
 				tempPath += "/"
 				parenthesisStart = strsearch(buffer, "(", 0, 0)
-				tempPath += EscapeJsonPath(buffer[0, parenthesisStart - 1])
-				jsonIDdummy = FormulaParser(buffer[parenthesisStart + 1, inf])
+				tempPath += SF_EscapeJsonPath(buffer[0, parenthesisStart - 1])
+				jsonIDdummy = SF_FormulaParser(buffer[parenthesisStart + 1, inf])
 				if(JSON_GetType(jsonIDdummy, "") != JSON_ARRAY)
 					JSON_AddTreeArray(jsonID, tempPath)
 				endif
 				JSON_AddJSON(jsonID, tempPath, jsonIDdummy)
 				JSON_Release(jsonIDdummy)
 				break
-			case ACTION_PARENTHESIS:
-				JSON_AddJSON(jsonID, jsonPath, FormulaParser(buffer[1, inf]))
+			case SF_ACTION_PARENTHESIS:
+				JSON_AddJSON(jsonID, jsonPath, SF_FormulaParser(buffer[1, inf]))
 				break
-			case ACTION_HIGHERORDER:
+			case SF_ACTION_HIGHERORDER:
 				lastCalculation = state
 				if(!!cmpstr(buffer, ""))
-					JSON_AddJSON(jsonID, jsonPath, FormulaParser(buffer))
+					JSON_AddJSON(jsonID, jsonPath, SF_FormulaParser(buffer))
 				endif
-				jsonPath = EscapeJsonPath(token)
+				jsonPath = SF_EscapeJsonPath(token)
 				if(!cmpstr(jsonPath, ",") || !cmpstr(jsonPath, "]"))
 					jsonPath = ""
 				endif
@@ -279,10 +288,10 @@ Function FormulaParser(formula)
 				endif
 				JSON_Release(jsonIDdummy)
 				break
-			case ACTION_ARRAY:
-				FormulaCheck(!cmpstr(buffer[0], "["), "Encountered array ending without array start.")
+			case SF_ACTION_ARRAY:
+				SF_FormulaCheck(!cmpstr(buffer[0], "["), "Encountered array ending without array start.")
 				jsonIDarray = JSON_New()
-				jsonIDdummy = FormulaParser(buffer[1,inf])
+				jsonIDdummy = SF_FormulaParser(buffer[1,inf])
 				if(JSON_GetType(jsonIDdummy, "") != JSON_ARRAY)
 					JSON_AddTreeArray(jsonIDarray, "")
 				endif
@@ -291,19 +300,19 @@ Function FormulaParser(formula)
 				JSON_AddJSON(jsonID, jsonPath, jsonIDarray)
 				JSON_Release(jsonIDarray)
 				break
-			case ACTION_CALCULATION:
+			case SF_ACTION_CALCULATION:
 				if(JSON_GetType(jsonID, jsonPath) == JSON_ARRAY)
 					JSON_AddObjects(jsonID, jsonPath) // prepare for decent
 					jsonPath += "/" + num2str(JSON_GetArraySize(jsonID, jsonPath) - 1)
 				endif
-				jsonPath += "/" + EscapeJsonPath(token)
-			case ACTION_ARRAYELEMENT:
+				jsonPath += "/" + SF_EscapeJsonPath(token)
+			case SF_ACTION_ARRAYELEMENT:
 				JSON_AddTreeArray(jsonID, jsonPath)
 				lastCalculation = state
-			case ACTION_SAMECALCULATION:
+			case SF_ACTION_SAMECALCULATION:
 			default:
 				if(strlen(buffer) > 0)
-					JSON_AddJSON(jsonID, jsonPath, FormulaParser(buffer))
+					JSON_AddJSON(jsonID, jsonPath, SF_FormulaParser(buffer))
 				endif
 		endswitch
 		buffer = ""
@@ -318,20 +327,27 @@ Function FormulaParser(formula)
 			JSON_AddString(jsonID, jsonPath, buffer)
 		endif
 	elseif(strlen(buffer) > 0)
-		JSON_AddJSON(jsonID, jsonPath, FormulaParser(buffer))
+		JSON_AddJSON(jsonID, jsonPath, SF_FormulaParser(buffer))
 	endif
 
 	return jsonID
 End
 
-// @brief add escape characters to a path element
-Function/S EscapeJsonPath(str)
+/// @brief add escape characters to a path element
+static Function/S SF_EscapeJsonPath(str)
 	String str
 
 	return ReplaceString("/", str, "~1")
 End
 
-Function/WAVE FormulaExecutor(jsonID, [jsonPath, graph])
+/// @brief Execute the formula parsed by SF_FormulaParser
+///
+/// Recursively executes the formula parsed into jsonID.
+///
+/// @param jsonID   JSON object ID from the JSON XOP
+/// @param jsonPath JSON pointer compliant path
+/// @param graph    graph to read from, mainly used by the `data` operation
+Function/WAVE SF_FormulaExecutor(jsonID, [jsonPath, graph])
 	Variable jsonID
 	String jsonPath
 	String graph
@@ -374,10 +390,10 @@ Function/WAVE FormulaExecutor(jsonID, [jsonPath, graph])
 
 		EXTRACT/FREE/INDX types, indices, (types[p] == JSON_OBJECT) || (types[p] == JSON_ARRAY)
 		if(DimSize(indices, ROWS) == 1 && DimSize(out, ROWS) == 1)
-			return FormulaExecutor(jsonID, jsonPath = jsonPath + "/" + num2str(indices[0]), graph = graph)
+			return SF_FormulaExecutor(jsonID, jsonPath = jsonPath + "/" + num2str(indices[0]), graph = graph)
 		endif
 		for(i = 0; i < DimSize(indices, ROWS); i += 1)
-			WAVE element = FormulaExecutor(jsonID, jsonPath = jsonPath + "/" + num2str(indices[i]), graph = graph)
+			WAVE element = SF_FormulaExecutor(jsonID, jsonPath = jsonPath + "/" + num2str(indices[i]), graph = graph)
 			if(DimSize(element, CHUNKS) > 1)
 				DebugPrint("Merging Chunks To Layers for object: " + jsonPath + "/" + num2str(indices[i]))
 				Redimension/N=(-1, -1, max(1, DimSize(element, LAYERS)) * DimSize(element, CHUNKS), 0)/E=1 element
@@ -389,9 +405,9 @@ Function/WAVE FormulaExecutor(jsonID, [jsonPath, graph])
 			   (DimSize(out, CHUNKS) < topArraySize[3]))
 				Redimension/N=(topArraySize[0], topArraySize[1], topArraySize[2], topArraySize[3]) out
 			endif
-			FormulaWaveScaleTransfer(element, out, ROWS, COLS)
-			FormulaWaveScaleTransfer(element, out, COLS, LAYERS)
-			FormulaWaveScaleTransfer(element, out, LAYERS, CHUNKS)
+			SF_FormulaWaveScaleTransfer(element, out, ROWS, COLS)
+			SF_FormulaWaveScaleTransfer(element, out, COLS, LAYERS)
+			SF_FormulaWaveScaleTransfer(element, out, LAYERS, CHUNKS)
 			out[indices[i]][0, max(0, DimSize(element, ROWS) - 1)][0, max(0, DimSize(element, COLS) - 1)][0, max(0, DimSize(element, LAYERS) - 1)] = element[q][r][s]
 		endfor
 
@@ -410,7 +426,7 @@ Function/WAVE FormulaExecutor(jsonID, [jsonPath, graph])
 	ASSERT(JSONtype == JSON_OBJECT, "Topmost element needs to be an object")
 	WAVE/T operations = JSON_GetKeys(jsonID, jsonPath)
 	ASSERT(DimSize(operations, ROWS) == 1, "Only one operation is allowed")
-	jsonPath += "/" + EscapeJsonPath(operations[0])
+	jsonPath += "/" + SF_EscapeJsonPath(operations[0])
 	ASSERT(JSON_GetType(jsonID, jsonPath) == JSON_ARRAY, "An array is required to hold the operands of the operation.")
 	strswitch(operations[0])
 		case "cursors":
@@ -424,7 +440,7 @@ Function/WAVE FormulaExecutor(jsonID, [jsonPath, graph])
 		case "wave":
 			break
 		default:
-			WAVE wv = FormulaExecutor(jsonID, jsonPath = jsonPath, graph = graph)
+			WAVE wv = SF_FormulaExecutor(jsonID, jsonPath = jsonPath, graph = graph)
 	endswitch
 
 	/// @name SweepFormulaOperations
@@ -436,31 +452,31 @@ Function/WAVE FormulaExecutor(jsonID, [jsonPath, graph])
 			else
 				MatrixOP/FREE out = (row(wv, 0) + sumCols((-1) * subRange(wv, 1, numRows(wv) - 1, 0, numCols(wv) - 1)))^t
 			endif
-			FormulaWaveScaleTransfer(wv, out, COLS, ROWS)
-			FormulaWaveScaleTransfer(wv, out, LAYERS, COLS)
-			FormulaWaveScaleTransfer(wv, out, CHUNKS, LAYERS)
+			SF_FormulaWaveScaleTransfer(wv, out, COLS, ROWS)
+			SF_FormulaWaveScaleTransfer(wv, out, LAYERS, COLS)
+			SF_FormulaWaveScaleTransfer(wv, out, CHUNKS, LAYERS)
 			Redimension/N=(-1, DimSize(out, LAYERS), DimSize(out, CHUNKS), 0)/E=1 out
 			break
 		case "+":
 			MatrixOP/FREE out = sumCols(wv)^t
-			FormulaWaveScaleTransfer(wv, out, COLS, ROWS)
-			FormulaWaveScaleTransfer(wv, out, LAYERS, COLS)
-			FormulaWaveScaleTransfer(wv, out, CHUNKS, LAYERS)
+			SF_FormulaWaveScaleTransfer(wv, out, COLS, ROWS)
+			SF_FormulaWaveScaleTransfer(wv, out, LAYERS, COLS)
+			SF_FormulaWaveScaleTransfer(wv, out, CHUNKS, LAYERS)
 			Redimension/N=(-1, DimSize(out, LAYERS), DimSize(out, CHUNKS), 0)/E=1 out
 			break
 		case "~1": // division
 			ASSERT(DimSize(wv, ROWS) >= 2, "At least two operands are required")
 			MatrixOP/FREE out = (row(wv, 0) / productCols(subRange(wv, 1, numRows(wv) - 1, 0, numCols(wv) - 1)))^t
-			FormulaWaveScaleTransfer(wv, out, COLS, ROWS)
-			FormulaWaveScaleTransfer(wv, out, LAYERS, COLS)
-			FormulaWaveScaleTransfer(wv, out, CHUNKS, LAYERS)
+			SF_FormulaWaveScaleTransfer(wv, out, COLS, ROWS)
+			SF_FormulaWaveScaleTransfer(wv, out, LAYERS, COLS)
+			SF_FormulaWaveScaleTransfer(wv, out, CHUNKS, LAYERS)
 			Redimension/N=(-1, DimSize(out, LAYERS), DimSize(out, CHUNKS), 0)/E=1 out
 			break
 		case "*":
 			MatrixOP/FREE out = productCols(wv)^t
-			FormulaWaveScaleTransfer(wv, out, COLS, ROWS)
-			FormulaWaveScaleTransfer(wv, out, LAYERS, COLS)
-			FormulaWaveScaleTransfer(wv, out, CHUNKS, LAYERS)
+			SF_FormulaWaveScaleTransfer(wv, out, COLS, ROWS)
+			SF_FormulaWaveScaleTransfer(wv, out, LAYERS, COLS)
+			SF_FormulaWaveScaleTransfer(wv, out, CHUNKS, LAYERS)
 			Redimension/N=(-1, DimSize(out, LAYERS), DimSize(out, CHUNKS), 0)/E=1 out
 			break
 		case "range":
@@ -483,38 +499,38 @@ Function/WAVE FormulaExecutor(jsonID, [jsonPath, graph])
 			ASSERT(DimSize(wv, LAYERS) <= 1, "Unhandled dimension")
 			ASSERT(DimSize(wv, CHUNKS) <= 1, "Unhandled dimension")
 			MatrixOP/FREE out = minCols(wv)^t
-			FormulaWaveScaleTransfer(wv, out, COLS, ROWS)
+			SF_FormulaWaveScaleTransfer(wv, out, COLS, ROWS)
 			break
 		case "max":
 			ASSERT(DimSize(wv, LAYERS) <= 1, "Unhandled dimension")
 			ASSERT(DimSize(wv, CHUNKS) <= 1, "Unhandled dimension")
 			MatrixOP/FREE out = maxCols(wv)^t
-			FormulaWaveScaleTransfer(wv, out, COLS, ROWS)
+			SF_FormulaWaveScaleTransfer(wv, out, COLS, ROWS)
 			break
 		case "avg":
 		case "mean":
 			ASSERT(DimSize(wv, LAYERS) <= 1, "Unhandled dimension")
 			ASSERT(DimSize(wv, CHUNKS) <= 1, "Unhandled dimension")
 			MatrixOP/FREE out = averageCols(wv)^t
-			FormulaWaveScaleTransfer(wv, out, COLS, ROWS)
+			SF_FormulaWaveScaleTransfer(wv, out, COLS, ROWS)
 			break
 		case "rms":
 			ASSERT(DimSize(wv, LAYERS) <= 1, "Unhandled dimension")
 			ASSERT(DimSize(wv, CHUNKS) <= 1, "Unhandled dimension")
 			MatrixOP/FREE out = sqrt(averageCols(magsqr(wv)))^t
-			FormulaWaveScaleTransfer(wv, out, COLS, ROWS)
+			SF_FormulaWaveScaleTransfer(wv, out, COLS, ROWS)
 			break
 		case "variance":
 			ASSERT(DimSize(wv, LAYERS) <= 1, "Unhandled dimension")
 			ASSERT(DimSize(wv, CHUNKS) <= 1, "Unhandled dimension")
 			MatrixOP/FREE out = (sumCols(magSqr(wv - rowRepeat(averageCols(wv), numRows(wv))))/(numRows(wv) - 1))^t
-			FormulaWaveScaleTransfer(wv, out, COLS, ROWS)
+			SF_FormulaWaveScaleTransfer(wv, out, COLS, ROWS)
 			break
 		case "stdev":
 			ASSERT(DimSize(wv, LAYERS) <= 1, "Unhandled dimension")
 			ASSERT(DimSize(wv, CHUNKS) <= 1, "Unhandled dimension")
 			MatrixOP/FREE out = (sqrt(sumCols(powR(wv - rowRepeat(averageCols(wv), numRows(wv)), 2))/(numRows(wv) - 1)))^t
-			FormulaWaveScaleTransfer(wv, out, COLS, ROWS)
+			SF_FormulaWaveScaleTransfer(wv, out, COLS, ROWS)
 			break
 		case "derivative":
 			Make/FREE out
@@ -533,14 +549,14 @@ Function/WAVE FormulaExecutor(jsonID, [jsonPath, graph])
 		case "butterworth":
 			/// `butterworth(data, lowPassCutoff, highPassCutoff, order)`
 			ASSERT(JSON_GetArraySize(jsonID, jsonPath) == 4, "The butterworth filter requires 4 arguments")
-			WAVE data = FormulaExecutor(jsonID, jsonPath = jsonPath + "/0", graph = graph)
-			WAVE lowPassCutoff = FormulaExecutor(jsonID, jsonPath = jsonPath + "/1")
+			WAVE data = SF_FormulaExecutor(jsonID, jsonPath = jsonPath + "/0", graph = graph)
+			WAVE lowPassCutoff = SF_FormulaExecutor(jsonID, jsonPath = jsonPath + "/1")
 			ASSERT(DimSize(lowPassCutoff, ROWS) == 1, "Too many input values for parameter lowPassCutoff")
 			ASSERT(IsNumericWave(lowPassCutoff), "lowPassCutoff parameter must be numeric")
-			WAVE highPassCutoff = FormulaExecutor(jsonID, jsonPath = jsonPath + "/2")
+			WAVE highPassCutoff = SF_FormulaExecutor(jsonID, jsonPath = jsonPath + "/2")
 			ASSERT(DimSize(highPassCutoff, ROWS) == 1, "Too many input values for parameter highPassCutoff")
 			ASSERT(IsNumericWave(highPassCutoff), "highPassCutoff parameter must be numeric")
-			WAVE order = FormulaExecutor(jsonID, jsonPath = jsonPath + "/3")
+			WAVE order = SF_FormulaExecutor(jsonID, jsonPath = jsonPath + "/3")
 			ASSERT(DimSize(order, ROWS) == 1, "Too many input values for parameter order")
 			ASSERT(IsNumericWave(order), "order parameter must be numeric")
 			FilterIIR/HI=(highPassCutoff[0] / WAVEBUILDER_MIN_SAMPINT_HZ)/LO=(lowPassCutoff[0] / WAVEBUILDER_MIN_SAMPINT_HZ)/ORD=(order[0])/DIM=(ROWS) data
@@ -556,24 +572,24 @@ Function/WAVE FormulaExecutor(jsonID, [jsonPath, graph])
 			numIndices = JSON_GetArraySize(jsonID, jsonPath)
 			ASSERT(numIndices < 6, "Maximum number of arguments exceeded.")
 			ASSERT(numIndices > 1, "At least two arguments.")
-			WAVE data = FormulaExecutor(jsonID, jsonPath = jsonPath + "/0", graph = graph)
-			WAVE/T dimension = FormulaExecutor(jsonID, jsonPath = jsonPath + "/1")
+			WAVE data = SF_FormulaExecutor(jsonID, jsonPath = jsonPath + "/0", graph = graph)
+			WAVE/T dimension = SF_FormulaExecutor(jsonID, jsonPath = jsonPath + "/1")
 			ASSERT(DimSize(dimension, ROWS) == 1 && GrepString(dimension[0], "[x,y,z,t]") , "undefined input for dimension")
 
 			if(numIndices >= 3)
-				WAVE offset = FormulaExecutor(jsonID, jsonPath = jsonPath + "/2")
+				WAVE offset = SF_FormulaExecutor(jsonID, jsonPath = jsonPath + "/2")
 				ASSERT(DimSize(offset, ROWS) == 1, "wrong usage of argument")
 			else
 				Make/FREE/N=1 offset  = {0}
 			endif
 			if(numIndices >= 4)
-				WAVE delta = FormulaExecutor(jsonID, jsonPath = jsonPath + "/3")
+				WAVE delta = SF_FormulaExecutor(jsonID, jsonPath = jsonPath + "/3")
 				ASSERT(DimSize(delta, ROWS) == 1, "wrong usage of argument")
 			else
 				Make/FREE/N=1 delta = {1}
 			endif
 			if(numIndices == 5)
-				WAVE/T unit = FormulaExecutor(jsonID, jsonPath = jsonPath + "/4")
+				WAVE/T unit = SF_FormulaExecutor(jsonID, jsonPath = jsonPath + "/4")
 				ASSERT(DimSize(unit, ROWS) == 1, "wrong usage of argument")
 			else
 				Make/FREE/N=1/T unit = {""}
@@ -601,7 +617,7 @@ Function/WAVE FormulaExecutor(jsonID, [jsonPath, graph])
 			break
 		case "wave":
 			ASSERT(JSON_GetArraySize(jsonID, jsonPath) == 1, "First argument is wave")
-			WAVE/T wavelocation = FormulaExecutor(jsonID, jsonPath = jsonPath + "/0")
+			WAVE/T wavelocation = SF_FormulaExecutor(jsonID, jsonPath = jsonPath + "/0")
 			WAVE out = $(wavelocation[0])
 			break
 		case "merge":
@@ -675,19 +691,19 @@ Function/WAVE FormulaExecutor(jsonID, [jsonPath, graph])
 			/// returns [[sweeps][channel]] for all [sweeps] in list sweepNumbers, grouped by channels
 			ASSERT(!ParamIsDefault(graph) && !!cmpstr(graph, ""), "Graph for extracting sweeps not specified.")
 
-			WAVE range = FormulaExecutor(jsonID, jsonPath = jsonPath + "/0", graph = graph)
+			WAVE range = SF_FormulaExecutor(jsonID, jsonPath = jsonPath + "/0", graph = graph)
 			ASSERT(DimSize(range, ROWS) == 2, "A range can not hold more than two points.")
 			range = !IsNaN(range[p]) ? range[p] : (p == 0 ? -1 : 1) * inf
 
-			WAVE channels = FormulaExecutor(jsonID, jsonPath = jsonPath + "/1")
+			WAVE channels = SF_FormulaExecutor(jsonID, jsonPath = jsonPath + "/1")
 			ASSERT(DimSize(channels, COLS) == 2, "A channel input consists of [[channelName, channelNumber]+].")
 
-			WAVE sweeps = FormulaExecutor(jsonID, jsonPath = jsonPath + "/2", graph = graph)
+			WAVE sweeps = SF_FormulaExecutor(jsonID, jsonPath = jsonPath + "/2", graph = graph)
 			ASSERT(DimSize(sweeps, COLS) < 2, "Sweeps are one-dimensional.")
 
-			WAVE/Z out = GetSweepForFormula(graph, range[0], range[1], channels[0][0], channels[0][1], sweeps)
+			WAVE/Z out = SF_GetSweepForFormula(graph, range[0], range[1], channels[0][0], channels[0][1], sweeps)
 			if(!WaveExists(out))
-				DebugPrint("Call to GetSweepForFormula returned no results")
+				DebugPrint("Call to SF_GetSweepForFormula returned no results")
 				Make/FREE/N=1 out = {NaN}
 				break
 			endif
@@ -695,7 +711,7 @@ Function/WAVE FormulaExecutor(jsonID, [jsonPath, graph])
 			Redimension/N=(-1, -1, numIndices) out
 			j = 1
 			for(i = 1; i < numIndices; i += 1)
-				WAVE wv = GetSweepForFormula(graph, range[0], range[1], channels[i][0], channels[i][1], sweeps)
+				WAVE wv = SF_GetSweepForFormula(graph, range[0], range[1], channels[i][0], channels[i][1], sweeps)
 				if(!WaveExists(wv))
 					continue
 				endif
@@ -713,7 +729,7 @@ Function/WAVE FormulaExecutor(jsonID, [jsonPath, graph])
 			ASSERT(DimSize(wv, LAYERS) <= 1, "Unhandled dimension")
 			ASSERT(DimSize(wv, CHUNKS) <= 1, "Unhandled dimension")
 			MatrixOP/FREE out = log(wv)
-			FormulaWaveScaleTransfer(wv, out, COLS, ROWS)
+			SF_FormulaWaveScaleTransfer(wv, out, COLS, ROWS)
 			break
 		case "cursors":
 			Make/FREE/N=(DimSize(wvT, ROWS)) out = NaN
@@ -737,7 +753,12 @@ Function/WAVE FormulaExecutor(jsonID, [jsonPath, graph])
 	return out
 End
 
-Function FormulaPlotter(graph, formula, [dfr])
+/// @brief  Plot the formula using the data from graph
+///
+/// @param graph  graph to pass to SF_FormulaExecutor
+/// @param formula formula to plot
+/// @param dfr working folder
+Function SF_FormulaPlotter(graph, formula, [dfr])
 	String graph
 	String formula
 	DFREF dfr
@@ -752,11 +773,11 @@ Function FormulaPlotter(graph, formula, [dfr])
 		dfr = root:
 	endif
 
-	SplitString/E=SWEEPFORMULA_REGEXP formula, formula0, formula1
-	FormulaError(dfr, V_Flag == 2 || V_flag == 1, "Display command must follow the \"y[ vs x]\" pattern.")
+	SplitString/E=SF_SWEEPFORMULA_REGEXP formula, formula0, formula1
+	SF_FormulaError(dfr, V_Flag == 2 || V_flag == 1, "Display command must follow the \"y[ vs x]\" pattern.")
 	if(V_Flag == 2)
-		WAVE/Z wv = FormulaExecutor(FormulaParser(FormulaPreParser(formula1)), graph = graph)
-		FormulaError(dfr, WaveExists(wv), "Error in x part of formula.")
+		WAVE/Z wv = SF_FormulaExecutor(SF_FormulaParser(SF_FormulaPreParser(formula1)), graph = graph)
+		SF_FormulaError(dfr, WaveExists(wv), "Error in x part of formula.")
 		dim1X = DimSize(wv, COLS)
 		dim2X = DimSize(wv, LAYERS)
 		Redimension/N=(-1, max(1, DimSize(wv, LAYERS)) * max(1, DimSize(wv, COLS)))/E=1 wv
@@ -767,8 +788,8 @@ Function FormulaPlotter(graph, formula, [dfr])
 		endif
 		WaveClear wv
 	endif
-	WAVE/Z wv = FormulaExecutor(FormulaParser(FormulaPreParser(formula0)), graph = graph)
-	FormulaError(dfr, WaveExists(wv), "Error in y part of formula.")
+	WAVE/Z wv = SF_FormulaExecutor(SF_FormulaParser(SF_FormulaPreParser(formula0)), graph = graph)
+	SF_FormulaError(dfr, WaveExists(wv), "Error in y part of formula.")
 	dim1Y = DimSize(wv, COLS)
 	dim2Y = DimSize(wv, LAYERS)
 	Redimension/N=(-1, max(1, DimSize(wv, LAYERS)) * max(1, DimSize(wv, COLS)))/E=1 wv
@@ -789,9 +810,9 @@ Function FormulaPlotter(graph, formula, [dfr])
 	RemoveTracesFromGraph(win)
 	ModifyGraph/W=$win swapXY = 0
 
-	FormulaError(dfr, !(WaveType(wvY, 1) == 2 && WaveType(wvX, 1) == 2), "One wave needs to be numeric for plotting")
+	SF_FormulaError(dfr, !(WaveType(wvY, 1) == 2 && WaveType(wvX, 1) == 2), "One wave needs to be numeric for plotting")
 	if(WaveType(wvY, 1) == 2 && WaveExists(wvX))
-		FormulaError(dfr, WaveExists(wvX), "Cannot plot a single text wave")
+		SF_FormulaError(dfr, WaveExists(wvX), "Cannot plot a single text wave")
 		ModifyGraph/W=$win swapXY = 1
 		WAVE dummy = wvY
 		WAVE wvY = wvX
@@ -874,7 +895,7 @@ Function FormulaPlotter(graph, formula, [dfr])
 	DoWindow/F $win
 End
 
-Function/WAVE GetSweepForFormula(graph, rangeStart, rangeEnd, channelType, channelNumber, sweeps)
+static Function/WAVE SF_GetSweepForFormula(graph, rangeStart, rangeEnd, channelType, channelNumber, sweeps)
 	String graph
 	Variable rangeStart, rangeEnd
 	Variable channelType, channelNumber
@@ -939,98 +960,6 @@ Function/WAVE GetSweepForFormula(graph, rangeStart, rangeEnd, channelType, chann
 	return sweepData
 End
 
-Function button_sweepFormula_check(ba) : ButtonControl
-	STRUCT WMButtonAction &ba
-
-	String mainPanel, bsPanel, yFormula, xFormula
-	Variable numFormulae, jsonIDx, jsonIDy
-
-	switch( ba.eventCode )
-		case 2: // mouse up
-			// click code here
-			mainPanel = GetMainWindow(ba.win)
-			bsPanel = BSP_GetPanel(mainPanel)
-
-			if(BSP_IsDataBrowser(bsPanel) && !BSP_HasBoundDevice(bsPanel))
-				DebugPrint("Unbound device in DataBrowser")
-				break
-			endif
-
-			DFREF dfr = BSP_GetFolder(mainPanel, MIES_BSP_PANEL_FOLDER)
-
-			SVAR/Z formula = dfr:sweepFormulaText
-			ASSERT(SVAR_EXISTS(formula), "Global variable sweepFormulaText not found")
-			Notebook $bsPanel#sweepFormula_formula getData=2
-			formula = S_Value
-
-			NVAR/Z status = dfr:sweepFormulaParse
-			ASSERT(NVAR_EXISTS(status), "Global variable sweepFormulaParse not found")
-			status = 0
-			SVAR/Z result = dfr:sweepFormulaParseResult
-			ASSERT(SVAR_EXISTS(result), "Global variable sweepFormulaParseResult not found. Can not evaluate parsing status.")
-			result = ""
-
-			NVAR/Z jsonID = dfr:sweepFormulaJSONid
-			ASSERT(NVAR_EXISTS(jsonID), "Global variable sweepFormulaJSONid not found. Can not evaluate parsing status.")
-
-			SplitString/E=SWEEPFORMULA_REGEXP formula, yFormula, xFormula
-			numFormulae = V_flag
-			if(numFormulae != 2 && numFormulae != 1)
-				DebugPrint("Display command must follow the \"y[ vs x]\" pattern. Can not evaluate parsing status.")
-				return 0
-			endif
-
-			try
-				jsonIDy = FormulaParser(FormulaPreParser(yFormula))
-				if(numFormulae == 1)
-					jsonID = jsonIDy
-					return 0
-				endif
-				JSON_Release(jsonID, ignoreErr = 1)
-				jsonID = JSON_New()
-				JSON_AddObjects(jsonID, "")
-				JSON_AddJSON(jsonID, "/y", jsonIDy)
-				JSON_Release(jsonIDy)
-				DebugPrint("y part of formula is valid.")
-				jsonIDx = FormulaParser(FormulaPreParser(xFormula))
-				JSON_AddJSON(jsonID, "/x", jsonIDx)
-				JSON_Release(jsonIDx)
-			catch
-				result = "Error Parsing Formula"
-				status = 1
-				JSON_Release(jsonID, ignoreErr = 1)
-			endtry
-			break
-		case -1: // control being killed
-			break
-	endswitch
-
-	return 0
-End
-
-Function button_sweepFormula_display(ba) : ButtonControl
-	STRUCT WMButtonAction &ba
-
-	String bsPanel, mainPanel, code
-
-	switch( ba.eventCode )
-		case 2: // mouse up
-			bsPanel = BSP_GetPanel(ba.win)
-			mainPanel = GetMainWindow(ba.win)
-
-			Notebook $bsPanel#sweepFormula_formula getData=2
-			code = S_Value
-			if(IsEmpty(code))
-				break
-			endif
-
-			FormulaPlotter(mainPanel, code, dfr = dfr)
-			break
-	endswitch
-
-	return 0
-End
-
 /// @brief transfer the wave scaling from one wave to another
 ///
 /// Note: wave scale transfer requires wave units for the first wave in the array that
@@ -1041,7 +970,7 @@ End
 /// @param dimDest   dimension of the destination wave
 ///
 /// @return 0 if wave scaling was transferred, 1 if not
-Function FormulaWaveScaleTransfer(source, dest, dimSource, dimDest)
+static Function SF_FormulaWaveScaleTransfer(source, dest, dimSource, dimDest)
 	WAVE source, dest
 	Variable dimSource, dimDest
 
@@ -1064,6 +993,95 @@ Function FormulaWaveScaleTransfer(source, dest, dimSource, dimDest)
 			break
 		default:
 			return 1
+	endswitch
+
+	return 0
+End
+
+Function SF_button_sweepFormula_check(ba) : ButtonControl
+	STRUCT WMButtonAction &ba
+
+	String mainPanel, bsPanel, yFormula, xFormula
+	Variable numFormulae, jsonIDx, jsonIDy
+
+	switch(ba.eventCode)
+		case 2: // mouse up
+			mainPanel = GetMainWindow(ba.win)
+			bsPanel = BSP_GetPanel(mainPanel)
+
+			if(BSP_IsDataBrowser(bsPanel) && !BSP_HasBoundDevice(bsPanel))
+				DebugPrint("Unbound device in DataBrowser")
+				break
+			endif
+
+			DFREF dfr = BSP_GetFolder(mainPanel, MIES_BSP_PANEL_FOLDER)
+
+			SVAR/Z formula = dfr:sweepFormulaText
+			ASSERT(SVAR_EXISTS(formula), "Global variable sweepFormulaText not found")
+			Notebook $bsPanel#sweepFormula_formula getData=2
+			formula = S_Value
+
+			NVAR/Z status = dfr:sweepFormulaParse
+			ASSERT(NVAR_EXISTS(status), "Global variable sweepFormulaParse not found")
+			status = 0
+			SVAR/Z result = dfr:sweepFormulaParseresult
+			ASSERT(SVAR_EXISTS(result), "Global variable sweepFormulaParseresult not found. Can not evaluate parsing status.")
+			result = ""
+
+			NVAR/Z jsonID = dfr:sweepFormulaJSONid
+			ASSERT(NVAR_EXISTS(jsonID), "Global variable sweepFormulaJSONid not found. Can not evaluate parsing status.")
+
+			SplitString/E=SF_SWEEPFORMULA_REGEXP formula, yFormula, xFormula
+			numFormulae = V_flag
+			if(numFormulae != 2 && numFormulae != 1)
+				DebugPrint("Display command must follow the \"y[ vs x]\" pattern. Can not evaluate parsing status.")
+				return 0
+			endif
+
+			try
+				jsonIDy = SF_FormulaParser(SF_FormulaPreParser(yFormula))
+				if(numFormulae == 1)
+					jsonID = jsonIDy
+					return 0
+				endif
+				JSON_Release(jsonID, ignoreErr = 1)
+				jsonID = JSON_New()
+				JSON_AddObjects(jsonID, "")
+				JSON_AddJSON(jsonID, "/y", jsonIDy)
+				JSON_Release(jsonIDy)
+				DebugPrint("y part of formula is valid.")
+				jsonIDx = SF_FormulaParser(SF_FormulaPreParser(xFormula))
+				JSON_AddJSON(jsonID, "/x", jsonIDx)
+				JSON_Release(jsonIDx)
+			catch
+				result = "Error Parsing Formula"
+				status = 1
+				JSON_Release(jsonID, ignoreErr = 1)
+			endtry
+			break
+	endswitch
+
+	return 0
+End
+
+Function SF_button_sweepFormula_display(ba) : ButtonControl
+	STRUCT WMButtonAction &ba
+
+	String bsPanel, mainPanel, code
+
+	switch(ba.eventCode)
+		case 2: // mouse up
+			bsPanel = BSP_GetPanel(ba.win)
+			mainPanel = GetMainWindow(ba.win)
+
+			Notebook $bsPanel#sweepFormula_formula getData=2
+			code = S_Value
+			if(IsEmpty(code))
+				break
+			endif
+
+			SF_FormulaPlotter(mainPanel, code, dfr = dfr)
+			break
 	endswitch
 
 	return 0

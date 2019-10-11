@@ -20,39 +20,39 @@ static Function primitiveOperations()
 	Variable jsonID0, jsonID1
 
 	jsonID0 = JSON_Parse("1")
-	jsonID1 = FormulaParser("1")
+	jsonID1 = SF_FormulaParser("1")
 	WARN_EQUAL_JSON(jsonID0, jsonID1)
-	REQUIRE_EQUAL_VAR(FormulaExecutor(jsonID1)[0], 1)
+	REQUIRE_EQUAL_VAR(SF_FormulaExecutor(jsonID1)[0], 1)
 
 	jsonID0 = JSON_Parse("{\"+\":[1,2]}")
-	jsonID1 = FormulaParser("1+2")
+	jsonID1 = SF_FormulaParser("1+2")
 	WARN_EQUAL_JSON(jsonID0, jsonID1)
-	REQUIRE_EQUAL_VAR(FormulaExecutor(jsonID1)[0], 1+2)
+	REQUIRE_EQUAL_VAR(SF_FormulaExecutor(jsonID1)[0], 1+2)
 
 	jsonID0 = JSON_Parse("{\"*\":[1,2]}")
-	jsonID1 = FormulaParser("1*2")
+	jsonID1 = SF_FormulaParser("1*2")
 	WARN_EQUAL_JSON(jsonID0, jsonID1)
-	REQUIRE_EQUAL_VAR(FormulaExecutor(jsonID1)[0], 1*2)
+	REQUIRE_EQUAL_VAR(SF_FormulaExecutor(jsonID1)[0], 1*2)
 
 	jsonID0 = JSON_Parse("{\"-\":[1,2]}")
-	jsonID1 = FormulaParser("1-2")
+	jsonID1 = SF_FormulaParser("1-2")
 	WARN_EQUAL_JSON(jsonID0, jsonID1)
-	REQUIRE_EQUAL_VAR(FormulaExecutor(jsonID1)[0], 1-2)
+	REQUIRE_EQUAL_VAR(SF_FormulaExecutor(jsonID1)[0], 1-2)
 
 	jsonID0 = JSON_Parse("{\"/\":[1,2]}")
-	jsonID1 = FormulaParser("1/2")
+	jsonID1 = SF_FormulaParser("1/2")
 	WARN_EQUAL_JSON(jsonID0, jsonID1)
-	REQUIRE_EQUAL_VAR(FormulaExecutor(jsonID1)[0], 1/2)
+	REQUIRE_EQUAL_VAR(SF_FormulaExecutor(jsonID1)[0], 1/2)
 
 	jsonID0 = JSON_Parse("{\"-\":[1]}")
-	jsonID1 = FormulaParser("-1")
+	jsonID1 = SF_FormulaParser("-1")
 	WARN_EQUAL_JSON(jsonID0, jsonID1)
-	REQUIRE_EQUAL_VAR(FormulaExecutor(jsonID1)[0], -1)
+	REQUIRE_EQUAL_VAR(SF_FormulaExecutor(jsonID1)[0], -1)
 
 	jsonID0 = JSON_Parse("{\"+\":[1]}")
-	jsonID1 = FormulaParser("+1")
+	jsonID1 = SF_FormulaParser("+1")
 	WARN_EQUAL_JSON(jsonID0, jsonID1)
-	REQUIRE_EQUAL_VAR(FormulaExecutor(jsonID1)[0], +1)
+	REQUIRE_EQUAL_VAR(SF_FormulaExecutor(jsonID1)[0], +1)
 End
 
 static Function arrayOperations(array2d, numeric)
@@ -62,45 +62,45 @@ static Function arrayOperations(array2d, numeric)
 	Variable jsonID
 
 	WAVE input = JSON_GetWave(JSON_Parse(array2d), "")
-	REQUIRE_EQUAL_WAVES(input, FormulaExecutor(FormulaParser(array2d)), mode = WAVE_DATA)
+	REQUIRE_EQUAL_WAVES(input, SF_FormulaExecutor(SF_FormulaParser(array2d)), mode = WAVE_DATA)
 
 	Duplicate/FREE input input0
 	input0[][][][] = input[p][q][r][s] - input[p][q][r][s]
-	REQUIRE_EQUAL_WAVES(input0, FormulaExecutor(FormulaParser(array2d + "-" + array2d)), mode = WAVE_DATA)
+	REQUIRE_EQUAL_WAVES(input0, SF_FormulaExecutor(SF_FormulaParser(array2d + "-" + array2d)), mode = WAVE_DATA)
 
 	Duplicate/FREE input input1
 	input1[][][][] = input[p][q][r][s] + input[p][q][r][s]
-	REQUIRE_EQUAL_WAVES(input1, FormulaExecutor(FormulaParser(array2d + "+" + array2d)), mode = WAVE_DATA)
+	REQUIRE_EQUAL_WAVES(input1, SF_FormulaExecutor(SF_FormulaParser(array2d + "+" + array2d)), mode = WAVE_DATA)
 
 	Duplicate/FREE input input2
 	input2[][][][] = input[p][q][r][s] / input[p][q][r][s]
-	REQUIRE_EQUAL_WAVES(input2, FormulaExecutor(FormulaParser(array2d + "/" + array2d)), mode = WAVE_DATA)
+	REQUIRE_EQUAL_WAVES(input2, SF_FormulaExecutor(SF_FormulaParser(array2d + "/" + array2d)), mode = WAVE_DATA)
 
 	Duplicate/FREE input input3
 	input3[][][][] = input[p][q][r][s] * input[p][q][r][s]
-	REQUIRE_EQUAL_WAVES(input3, FormulaExecutor(FormulaParser(array2d + "*" + array2d)), mode = WAVE_DATA)
+	REQUIRE_EQUAL_WAVES(input3, SF_FormulaExecutor(SF_FormulaParser(array2d + "*" + array2d)), mode = WAVE_DATA)
 
 	Duplicate/FREE input input10
 	input10 -= numeric
-	REQUIRE_EQUAL_WAVES(input10, FormulaExecutor(FormulaParser(array2d + "-" + num2str(numeric))), mode = WAVE_DATA)
+	REQUIRE_EQUAL_WAVES(input10, SF_FormulaExecutor(SF_FormulaParser(array2d + "-" + num2str(numeric))), mode = WAVE_DATA)
 	input10[][][][] = numeric - input[p][q][r][s]
-	REQUIRE_EQUAL_WAVES(input10, FormulaExecutor(FormulaParser(num2str(numeric) + "-" + array2d)), mode = WAVE_DATA)
+	REQUIRE_EQUAL_WAVES(input10, SF_FormulaExecutor(SF_FormulaParser(num2str(numeric) + "-" + array2d)), mode = WAVE_DATA)
 
 	Duplicate/FREE input input11
 	input11 += numeric
-	REQUIRE_EQUAL_WAVES(input11, FormulaExecutor(FormulaParser(num2str(numeric) + "+" + array2d)), mode = WAVE_DATA)
-	REQUIRE_EQUAL_WAVES(input11, FormulaExecutor(FormulaParser(array2d + "+" + num2str(numeric))), mode = WAVE_DATA)
+	REQUIRE_EQUAL_WAVES(input11, SF_FormulaExecutor(SF_FormulaParser(num2str(numeric) + "+" + array2d)), mode = WAVE_DATA)
+	REQUIRE_EQUAL_WAVES(input11, SF_FormulaExecutor(SF_FormulaParser(array2d + "+" + num2str(numeric))), mode = WAVE_DATA)
 
 	Duplicate/FREE input input12
 	input12 /= numeric
-	REQUIRE_EQUAL_WAVES(input12, FormulaExecutor(FormulaParser(array2d + "/" + num2str(numeric))), mode = WAVE_DATA)
+	REQUIRE_EQUAL_WAVES(input12, SF_FormulaExecutor(SF_FormulaParser(array2d + "/" + num2str(numeric))), mode = WAVE_DATA)
 	input12[][][][] = 1 / input12[p][q][r][s]
-	REQUIRE_EQUAL_WAVES(input12, FormulaExecutor(FormulaParser(num2str(numeric) + "/" + array2d)), mode = WAVE_DATA)
+	REQUIRE_EQUAL_WAVES(input12, SF_FormulaExecutor(SF_FormulaParser(num2str(numeric) + "/" + array2d)), mode = WAVE_DATA)
 
 	Duplicate/FREE input input13
 	input13 *= numeric
-	REQUIRE_EQUAL_WAVES(input13, FormulaExecutor(FormulaParser(num2str(numeric) + "*" + array2d)), mode = WAVE_DATA)
-	REQUIRE_EQUAL_WAVES(input13, FormulaExecutor(FormulaParser(array2d + "*" + num2str(numeric))), mode = WAVE_DATA)
+	REQUIRE_EQUAL_WAVES(input13, SF_FormulaExecutor(SF_FormulaParser(num2str(numeric) + "*" + array2d)), mode = WAVE_DATA)
+	REQUIRE_EQUAL_WAVES(input13, SF_FormulaExecutor(SF_FormulaParser(array2d + "*" + num2str(numeric))), mode = WAVE_DATA)
 End
 
 static Function primitiveOperations2D()
@@ -117,24 +117,24 @@ static Function concatenationOfOperations()
 	Variable jsonID0, jsonID1
 
 	jsonID0 = JSON_Parse("{\"+\":[1,2,3,4]}")
-	jsonID1 = FormulaParser("1+2+3+4")
+	jsonID1 = SF_FormulaParser("1+2+3+4")
 	WARN_EQUAL_JSON(jsonID0, jsonID1)
-	REQUIRE_EQUAL_VAR(FormulaExecutor(jsonID1)[0], 1+2+3+4)
+	REQUIRE_EQUAL_VAR(SF_FormulaExecutor(jsonID1)[0], 1+2+3+4)
 
 	jsonID0 = JSON_Parse("{\"-\":[1,2,3,4]}")
-	jsonID1 = FormulaParser("1-2-3-4")
+	jsonID1 = SF_FormulaParser("1-2-3-4")
 	WARN_EQUAL_JSON(jsonID0, jsonID1)
-	REQUIRE_EQUAL_VAR(FormulaExecutor(jsonID1)[0], 1-2-3-4)
+	REQUIRE_EQUAL_VAR(SF_FormulaExecutor(jsonID1)[0], 1-2-3-4)
 
 	jsonID0 = JSON_Parse("{\"/\":[1,2,3,4]}")
-	jsonID1 = FormulaParser("1/2/3/4")
+	jsonID1 = SF_FormulaParser("1/2/3/4")
 	WARN_EQUAL_JSON(jsonID0, jsonID1)
-	REQUIRE_EQUAL_VAR(FormulaExecutor(jsonID1)[0], 1/2/3/4)
+	REQUIRE_EQUAL_VAR(SF_FormulaExecutor(jsonID1)[0], 1/2/3/4)
 
 	jsonID0 = JSON_Parse("{\"*\":[1,2,3,4]}")
-	jsonID1 = FormulaParser("1*2*3*4")
+	jsonID1 = SF_FormulaParser("1*2*3*4")
 	WARN_EQUAL_JSON(jsonID0, jsonID1)
-	REQUIRE_EQUAL_VAR(FormulaExecutor(jsonID1)[0], 1*2*3*4)
+	REQUIRE_EQUAL_VAR(SF_FormulaExecutor(jsonID1)[0], 1*2*3*4)
 End
 
 // + > - > * > /
@@ -143,218 +143,218 @@ static Function orderOfCalculation()
 
 	// + and -
 	jsonID0 = JSON_Parse("{\"+\":[2,{\"-\":[3,4]}]}")
-	jsonID1 = FormulaParser("2+3-4")
+	jsonID1 = SF_FormulaParser("2+3-4")
 	WARN_EQUAL_JSON(jsonID0, jsonID1)
-	REQUIRE_EQUAL_VAR(FormulaExecutor(jsonID1)[0], 2+3-4)
+	REQUIRE_EQUAL_VAR(SF_FormulaExecutor(jsonID1)[0], 2+3-4)
 
 	jsonID0 = JSON_Parse("{\"+\":[{\"-\":[2,3]},4]}")
-	jsonID1 = FormulaParser("2-3+4")
+	jsonID1 = SF_FormulaParser("2-3+4")
 	WARN_EQUAL_JSON(jsonID0, jsonID1)
-	REQUIRE_EQUAL_VAR(FormulaExecutor(jsonID1)[0], 2-3+4)
+	REQUIRE_EQUAL_VAR(SF_FormulaExecutor(jsonID1)[0], 2-3+4)
 
 	// + and *
 	jsonID0 = JSON_Parse("{\"+\":[2,{\"*\":[3,4]}]}")
-	jsonID1 = FormulaParser("2+3*4")
+	jsonID1 = SF_FormulaParser("2+3*4")
 	WARN_EQUAL_JSON(jsonID0, jsonID1)
-	REQUIRE_EQUAL_VAR(FormulaExecutor(jsonID1)[0], 2+3*4)
+	REQUIRE_EQUAL_VAR(SF_FormulaExecutor(jsonID1)[0], 2+3*4)
 
 	jsonID0 = JSON_Parse("{\"+\":[{\"*\":[2,3]},4]}")
-	jsonID1 = FormulaParser("2*3+4")
+	jsonID1 = SF_FormulaParser("2*3+4")
 	WARN_EQUAL_JSON(jsonID0, jsonID1)
-	REQUIRE_EQUAL_VAR(FormulaExecutor(jsonID1)[0], 2*3+4)
+	REQUIRE_EQUAL_VAR(SF_FormulaExecutor(jsonID1)[0], 2*3+4)
 
 	// + and /
 	jsonID0 = JSON_Parse("{\"+\":[2,{\"/\":[3,4]}]}")
-	jsonID1 = FormulaParser("2+3/4")
+	jsonID1 = SF_FormulaParser("2+3/4")
 	WARN_EQUAL_JSON(jsonID0, jsonID1)
-	REQUIRE_EQUAL_VAR(FormulaExecutor(jsonID1)[0], 2+3/4)
+	REQUIRE_EQUAL_VAR(SF_FormulaExecutor(jsonID1)[0], 2+3/4)
 
 	jsonID0 = JSON_Parse("{\"+\":[{\"/\":[2,3]},4]}")
-	jsonID1 = FormulaParser("2/3+4")
+	jsonID1 = SF_FormulaParser("2/3+4")
 	WARN_EQUAL_JSON(jsonID0, jsonID1)
-	REQUIRE_EQUAL_VAR(FormulaExecutor(jsonID1)[0], 2/3+4)
+	REQUIRE_EQUAL_VAR(SF_FormulaExecutor(jsonID1)[0], 2/3+4)
 
 	// - and *
 	jsonID0 = JSON_Parse("{\"-\":[2,{\"*\":[3,4]}]}")
-	jsonID1 = FormulaParser("2-3*4")
+	jsonID1 = SF_FormulaParser("2-3*4")
 	WARN_EQUAL_JSON(jsonID0, jsonID1)
-	REQUIRE_EQUAL_VAR(FormulaExecutor(jsonID1)[0], 2-3*4)
+	REQUIRE_EQUAL_VAR(SF_FormulaExecutor(jsonID1)[0], 2-3*4)
 
 	jsonID0 = JSON_Parse("{\"-\":[{\"*\":[2,3]},4]}")
-	jsonID1 = FormulaParser("2*3-4")
+	jsonID1 = SF_FormulaParser("2*3-4")
 	WARN_EQUAL_JSON(jsonID0, jsonID1)
-	REQUIRE_EQUAL_VAR(FormulaExecutor(jsonID1)[0], 2*3-4)
+	REQUIRE_EQUAL_VAR(SF_FormulaExecutor(jsonID1)[0], 2*3-4)
 
 	// - and /
 	jsonID0 = JSON_Parse("{\"-\":[2,{\"/\":[3,4]}]}")
-	jsonID1 = FormulaParser("2-3/4")
+	jsonID1 = SF_FormulaParser("2-3/4")
 	WARN_EQUAL_JSON(jsonID0, jsonID1)
-	REQUIRE_EQUAL_VAR(FormulaExecutor(jsonID1)[0], 2-3/4)
+	REQUIRE_EQUAL_VAR(SF_FormulaExecutor(jsonID1)[0], 2-3/4)
 
 	jsonID0 = JSON_Parse("{\"-\":[{\"/\":[2,3]},4]}")
-	jsonID1 = FormulaParser("2/3-4")
+	jsonID1 = SF_FormulaParser("2/3-4")
 	WARN_EQUAL_JSON(jsonID0, jsonID1)
-	REQUIRE_EQUAL_VAR(FormulaExecutor(jsonID1)[0], 2/3-4)
+	REQUIRE_EQUAL_VAR(SF_FormulaExecutor(jsonID1)[0], 2/3-4)
 
 	// * and /
 	jsonID0 = JSON_Parse("{\"*\":[2,{\"/\":[3,4]}]}")
-	jsonID1 = FormulaParser("2*3/4")
+	jsonID1 = SF_FormulaParser("2*3/4")
 	WARN_EQUAL_JSON(jsonID0, jsonID1)
-	REQUIRE_EQUAL_VAR(FormulaExecutor(jsonID1)[0], 2*3/4)
+	REQUIRE_EQUAL_VAR(SF_FormulaExecutor(jsonID1)[0], 2*3/4)
 
 	jsonID0 = JSON_Parse("{\"*\":[{\"/\":[2,3]},4]}")
-	jsonID1 = FormulaParser("2/3*4")
+	jsonID1 = SF_FormulaParser("2/3*4")
 	WARN_EQUAL_JSON(jsonID0, jsonID1)
-	REQUIRE_EQUAL_VAR(FormulaExecutor(jsonID1)[0], 2/3*4)
+	REQUIRE_EQUAL_VAR(SF_FormulaExecutor(jsonID1)[0], 2/3*4)
 
-	jsonID1 = FormulaParser("5*1+2*3+4+5*10")
-	REQUIRE_EQUAL_VAR(FormulaExecutor(jsonID1)[0], 5*1+2*3+4+5*10)
+	jsonID1 = SF_FormulaParser("5*1+2*3+4+5*10")
+	REQUIRE_EQUAL_VAR(SF_FormulaExecutor(jsonID1)[0], 5*1+2*3+4+5*10)
 End
 
 static Function brackets()
 	Variable jsonID0, jsonID1
 
 	jsonID0 = JSON_Parse("{\"+\":[1,2]}")
-	jsonID1 = FormulaParser("(1+2)")
+	jsonID1 = SF_FormulaParser("(1+2)")
 	WARN_EQUAL_JSON(jsonID0, jsonID1)
-	REQUIRE_EQUAL_VAR(FormulaExecutor(jsonID1)[0], 1+2)
+	REQUIRE_EQUAL_VAR(SF_FormulaExecutor(jsonID1)[0], 1+2)
 
 	jsonID0 = JSON_Parse("{\"+\":[1,2]}")
-	jsonID1 = FormulaParser("((1+2))")
+	jsonID1 = SF_FormulaParser("((1+2))")
 	WARN_EQUAL_JSON(jsonID0, jsonID1)
-	REQUIRE_EQUAL_VAR(FormulaExecutor(jsonID1)[0], 1+2)
+	REQUIRE_EQUAL_VAR(SF_FormulaExecutor(jsonID1)[0], 1+2)
 
 	jsonID0 = JSON_Parse("{\"+\":[{\"+\":[1,2]},{\"+\":[3,4]}]}")
-	jsonID1 = FormulaParser("(1+2)+(3+4)")
+	jsonID1 = SF_FormulaParser("(1+2)+(3+4)")
 	WARN_EQUAL_JSON(jsonID0, jsonID1)
-	REQUIRE_EQUAL_VAR(FormulaExecutor(jsonID1)[0], (1+2)+(3+4))
+	REQUIRE_EQUAL_VAR(SF_FormulaExecutor(jsonID1)[0], (1+2)+(3+4))
 
 	jsonID0 = JSON_Parse("{\"+\":[{\"+\":[4,3]},{\"+\":[2,1]}]}")
-	jsonID1 = FormulaParser("(4+3)+(2+1)")
+	jsonID1 = SF_FormulaParser("(4+3)+(2+1)")
 	WARN_EQUAL_JSON(jsonID0, jsonID1)
-	REQUIRE_EQUAL_VAR(FormulaExecutor(jsonID1)[0], (4+3)+(2+1))
+	REQUIRE_EQUAL_VAR(SF_FormulaExecutor(jsonID1)[0], (4+3)+(2+1))
 
 	jsonID0 = JSON_Parse("{\"+\":[1,{\"+\":[2,3]},4]}")
-	jsonID1 = FormulaParser("1+(2+3)+4")
+	jsonID1 = SF_FormulaParser("1+(2+3)+4")
 	WARN_EQUAL_JSON(jsonID0, jsonID1)
-	REQUIRE_EQUAL_VAR(FormulaExecutor(jsonID1)[0], 1+(2+3)+4)
+	REQUIRE_EQUAL_VAR(SF_FormulaExecutor(jsonID1)[0], 1+(2+3)+4)
 
 	jsonID0 = JSON_Parse("{\"+\":[{\"*\":[3,2]},1]}")
-	jsonID1 = FormulaParser("(3*2)+1")
+	jsonID1 = SF_FormulaParser("(3*2)+1")
 	WARN_EQUAL_JSON(jsonID0, jsonID1)
-	REQUIRE_EQUAL_VAR(FormulaExecutor(jsonID1)[0], (3*2)+1)
+	REQUIRE_EQUAL_VAR(SF_FormulaExecutor(jsonID1)[0], (3*2)+1)
 
 	jsonID0 = JSON_Parse("{\"+\":[1,{\"*\":[2,3]}]}")
-	jsonID1 = FormulaParser("1+(2*3)")
+	jsonID1 = SF_FormulaParser("1+(2*3)")
 	WARN_EQUAL_JSON(jsonID0, jsonID1)
-	REQUIRE_EQUAL_VAR(FormulaExecutor(jsonID1)[0], 1+(2*3))
+	REQUIRE_EQUAL_VAR(SF_FormulaExecutor(jsonID1)[0], 1+(2*3))
 
 	jsonID0 = JSON_Parse("{\"*\":[{\"+\":[1,2]},3]}")
-	jsonID1 = FormulaParser("(1+2)*3")
+	jsonID1 = SF_FormulaParser("(1+2)*3")
 	WARN_EQUAL_JSON(jsonID0, jsonID1)
-	REQUIRE_EQUAL_VAR(FormulaExecutor(jsonID1)[0], (1+2)*3)
+	REQUIRE_EQUAL_VAR(SF_FormulaExecutor(jsonID1)[0], (1+2)*3)
 
 	jsonID0 = JSON_Parse("{\"*\":[3,{\"+\":[2,1]}]}")
-	jsonID1 = FormulaParser("3*(2+1)")
+	jsonID1 = SF_FormulaParser("3*(2+1)")
 	WARN_EQUAL_JSON(jsonID0, jsonID1)
-	REQUIRE_EQUAL_VAR(FormulaExecutor(jsonID1)[0], 3*(2+1))
+	REQUIRE_EQUAL_VAR(SF_FormulaExecutor(jsonID1)[0], 3*(2+1))
 
 	jsonID0 = JSON_Parse("{\"*\":[{\"/\":[2,{\"+\":[3,4]}]},5]}")
-	jsonID1 = FormulaParser("2/(3+4)*5")
+	jsonID1 = SF_FormulaParser("2/(3+4)*5")
 	WARN_EQUAL_JSON(jsonID0, jsonID1)
-	REQUIRE_EQUAL_VAR(FormulaExecutor(jsonID1)[0], 2/(3+4)*5)
+	REQUIRE_EQUAL_VAR(SF_FormulaExecutor(jsonID1)[0], 2/(3+4)*5)
 
-	jsonID1 = FormulaParser("5*(1+2)*3/(4+5*10)")
-	REQUIRE_CLOSE_VAR(FormulaExecutor(jsonID1)[0], 5*(1+2)*3/(4+5*10))
+	jsonID1 = SF_FormulaParser("5*(1+2)*3/(4+5*10)")
+	REQUIRE_CLOSE_VAR(SF_FormulaExecutor(jsonID1)[0], 5*(1+2)*3/(4+5*10))
 End
 
 static Function array()
 	Variable jsonID0, jsonID1
 
 	jsonID0 = JSON_Parse("[1]")
-	jsonID1 = FormulaParser("[1]")
+	jsonID1 = SF_FormulaParser("[1]")
 	WARN_EQUAL_JSON(jsonID0, jsonID1)
 
 	jsonID0 = JSON_Parse("[1,2,3]")
-	jsonID1 = FormulaParser("1,2,3")
+	jsonID1 = SF_FormulaParser("1,2,3")
 	WARN_EQUAL_JSON(jsonID0, jsonID1)
 
-	jsonID1 = FormulaParser("[1,2,3]")
+	jsonID1 = SF_FormulaParser("[1,2,3]")
 	WARN_EQUAL_JSON(jsonID0, jsonID1)
 
 	jsonID0 = JSON_Parse("[[1,2],3,4]")
-	jsonID1 = FormulaParser("[[1,2],3,4]")
+	jsonID1 = SF_FormulaParser("[[1,2],3,4]")
 	WARN_EQUAL_JSON(jsonID0, jsonID1)
 
 	jsonID0 = JSON_Parse("[1,[2,3],4]")
-	jsonID1 = FormulaParser("[1,[2,3],4]")
+	jsonID1 = SF_FormulaParser("[1,[2,3],4]")
 	WARN_EQUAL_JSON(jsonID0, jsonID1)
 
 	jsonID0 = JSON_Parse("[1,2,[3,4]]")
-	jsonID1 = FormulaParser("[1,2,[3,4]]")
+	jsonID1 = SF_FormulaParser("[1,2,[3,4]]")
 	WARN_EQUAL_JSON(jsonID0, jsonID1)
 
 	jsonID0 = JSON_Parse("[[0,1],[1,2],[2,3]]")
-	jsonID1 = FormulaParser("[[0,1],[1,2],[2,3]]")
+	jsonID1 = SF_FormulaParser("[[0,1],[1,2],[2,3]]")
 	WARN_EQUAL_JSON(jsonID0, jsonID1)
 
 	jsonID0 = JSON_Parse("[[0,1],[2,3],[4,5]]")
-	jsonID1 = FormulaParser("[[0,1],[2,3],[4,5]]")
+	jsonID1 = SF_FormulaParser("[[0,1],[2,3],[4,5]]")
 	WARN_EQUAL_JSON(jsonID0, jsonID1)
 
 	jsonID0 = JSON_Parse("[[0],[2,3],[4,5]]")
-	jsonID1 = FormulaParser("[[0],[2,3],[4,5]]")
+	jsonID1 = SF_FormulaParser("[[0],[2,3],[4,5]]")
 	WARN_EQUAL_JSON(jsonID0, jsonID1)
 
 	jsonID0 = JSON_Parse("[[0,1],[2],[4,5]]")
-	jsonID1 = FormulaParser("[[0,1],[2],[4,5]]")
+	jsonID1 = SF_FormulaParser("[[0,1],[2],[4,5]]")
 	WARN_EQUAL_JSON(jsonID0, jsonID1)
 
 	jsonID0 = JSON_Parse("[[0,1],[2,3],[5]]")
-	jsonID1 = FormulaParser("[[0,1],[2,3],[5]]")
+	jsonID1 = SF_FormulaParser("[[0,1],[2,3],[5]]")
 	WARN_EQUAL_JSON(jsonID0, jsonID1)
 
 	jsonID0 = JSON_Parse("[1,{\"+\":[2,3]}]")
-	jsonID1 = FormulaParser("1,2+3")
+	jsonID1 = SF_FormulaParser("1,2+3")
 	WARN_EQUAL_JSON(jsonID0, jsonID1)
 
 	jsonID0 = JSON_Parse("[{\"+\":[1,2]},3]")
-	jsonID1 = FormulaParser("1+2,3")
+	jsonID1 = SF_FormulaParser("1+2,3")
 	WARN_EQUAL_JSON(jsonID0, jsonID1)
 
 	jsonID0 = JSON_Parse("[1,{\"/\":[5,{\"+\":[6,7]}]}]")
-	jsonID1 = FormulaParser("1,5/(6+7)")
+	jsonID1 = SF_FormulaParser("1,5/(6+7)")
 	WARN_EQUAL_JSON(jsonID0, jsonID1)
 End
 
 static Function whiteSpace()
 	Variable jsonID0, jsonID1
 
-	jsonID0 = FormulaParser("1+(2*3)")
-	jsonID1 = FormulaParser(" 1 + (2 * 3) ")
+	jsonID0 = SF_FormulaParser("1+(2*3)")
+	jsonID1 = SF_FormulaParser(" 1 + (2 * 3) ")
 	WARN_EQUAL_JSON(jsonID0, jsonID1)
 
-	jsonID0 = FormulaParser("(2+3)")
-	jsonID1 = FormulaParser("(2+3)  ")
+	jsonID0 = SF_FormulaParser("(2+3)")
+	jsonID1 = SF_FormulaParser("(2+3)  ")
 	WARN_EQUAL_JSON(jsonID0, jsonID1)
 
-	jsonID0 = FormulaParser("1+(2*3)")
-	jsonID1 = FormulaParser("\r1\r+\r(\r2\r*\r3\r)\r")
+	jsonID0 = SF_FormulaParser("1+(2*3)")
+	jsonID1 = SF_FormulaParser("\r1\r+\r(\r2\r*\r3\r)\r")
 	WARN_EQUAL_JSON(jsonID0, jsonID1)
 
-	jsonID1 = FormulaParser("\t1\t+\t(\t2\t*\t3\t)\t")
+	jsonID1 = SF_FormulaParser("\t1\t+\t(\t2\t*\t3\t)\t")
 	WARN_EQUAL_JSON(jsonID0, jsonID1)
 
-	jsonID1 = FormulaParser("\r\t1+\r\t\t(2*3)")
+	jsonID1 = SF_FormulaParser("\r\t1+\r\t\t(2*3)")
 	WARN_EQUAL_JSON(jsonID0, jsonID1)
 
-	jsonID1 = FormulaParser("\r\t1+\r\t# this is a \t comment\r\t(2*3)")
+	jsonID1 = SF_FormulaParser("\r\t1+\r\t# this is a \t comment\r\t(2*3)")
 	WARN_EQUAL_JSON(jsonID0, jsonID1)
 
-	jsonID1 = FormulaParser("\r\t1+\r\t# this is a \t comment\n\t(2*3)#2")
+	jsonID1 = SF_FormulaParser("\r\t1+\r\t# this is a \t comment\n\t(2*3)#2")
 	WARN_EQUAL_JSON(jsonID0, jsonID1)
 
-	jsonID1 = FormulaParser("# this is a comment which does not calculate 1+1")
+	jsonID1 = SF_FormulaParser("# this is a comment which does not calculate 1+1")
 	WARN_EQUAL_JSON(JSON_PARSE("null"), jsonID1)
 End
 
@@ -363,79 +363,79 @@ static Function minimaximu()
 	Variable jsonID0, jsonID1
 
 	jsonID0 = JSON_Parse("{\"min\":[1]}")
-	jsonID1 = FormulaParser("min(1)")
+	jsonID1 = SF_FormulaParser("min(1)")
 	WARN_EQUAL_JSON(jsonID0, jsonID1)
-	REQUIRE_EQUAL_VAR(FormulaExecutor(jsonID1)[0], 1)
+	REQUIRE_EQUAL_VAR(SF_FormulaExecutor(jsonID1)[0], 1)
 
 	jsonID0 = JSON_Parse("{\"min\":[1,2]}")
-	jsonID1 = FormulaParser("min(1,2)")
+	jsonID1 = SF_FormulaParser("min(1,2)")
 	WARN_EQUAL_JSON(jsonID0, jsonID1)
-	REQUIRE_EQUAL_VAR(FormulaExecutor(jsonID1)[0], min(1,2))
+	REQUIRE_EQUAL_VAR(SF_FormulaExecutor(jsonID1)[0], min(1,2))
 
 	jsonID0 = JSON_Parse("{\"max\":[1,2]}")
-	jsonID1 = FormulaParser("max(1,2)")
+	jsonID1 = SF_FormulaParser("max(1,2)")
 	WARN_EQUAL_JSON(jsonID0, jsonID1)
-	REQUIRE_EQUAL_VAR(FormulaExecutor(jsonID1)[0], max(1,2))
+	REQUIRE_EQUAL_VAR(SF_FormulaExecutor(jsonID1)[0], max(1,2))
 
 	jsonID0 = JSON_Parse("{\"min\":[1,2,3]}")
-	jsonID1 = FormulaParser("min(1,2,3)")
+	jsonID1 = SF_FormulaParser("min(1,2,3)")
 	WARN_EQUAL_JSON(jsonID0, jsonID1)
-	REQUIRE_EQUAL_VAR(FormulaExecutor(jsonID1)[0], min(1,2,3))
+	REQUIRE_EQUAL_VAR(SF_FormulaExecutor(jsonID1)[0], min(1,2,3))
 
 	jsonID0 = JSON_Parse("{\"max\":[1,{\"+\":[2,3]}]}")
-	jsonID1 = FormulaParser("max(1,(2+3))")
+	jsonID1 = SF_FormulaParser("max(1,(2+3))")
 	WARN_EQUAL_JSON(jsonID0, jsonID1)
-	REQUIRE_EQUAL_VAR(FormulaExecutor(jsonID1)[0], max(1,(2+3)))
+	REQUIRE_EQUAL_VAR(SF_FormulaExecutor(jsonID1)[0], max(1,(2+3)))
 
 	jsonID0 = JSON_Parse("{\"min\":[{\"-\":[1,2]},3]}")
-	jsonID1 = FormulaParser("min((1-2),3)")
+	jsonID1 = SF_FormulaParser("min((1-2),3)")
 	WARN_EQUAL_JSON(jsonID0, jsonID1)
-	REQUIRE_EQUAL_VAR(FormulaExecutor(jsonID1)[0], min((1-2),3))
+	REQUIRE_EQUAL_VAR(SF_FormulaExecutor(jsonID1)[0], min((1-2),3))
 
 	jsonID0 = JSON_Parse("{\"min\":[{\"max\":[1,2]},3]}")
-	jsonID1 = FormulaParser("min(max(1,2),3)")
+	jsonID1 = SF_FormulaParser("min(max(1,2),3)")
 	WARN_EQUAL_JSON(jsonID0, jsonID1)
-	REQUIRE_EQUAL_VAR(FormulaExecutor(jsonID1)[0], min(max(1,2),3))
+	REQUIRE_EQUAL_VAR(SF_FormulaExecutor(jsonID1)[0], min(max(1,2),3))
 
 	jsonID0 = JSON_Parse("{\"max\":[1,{\"+\":[2,3]},2]}")
-	jsonID1 = FormulaParser("max(1,2+3,2)")
+	jsonID1 = SF_FormulaParser("max(1,2+3,2)")
 	WARN_EQUAL_JSON(jsonID0, jsonID1)
-	REQUIRE_EQUAL_VAR(FormulaExecutor(jsonID1)[0], max(1,2+3,2))
+	REQUIRE_EQUAL_VAR(SF_FormulaExecutor(jsonID1)[0], max(1,2+3,2))
 
 	jsonID0 = JSON_Parse("{\"max\":[{\"+\":[1,2]},{\"+\":[3,4]},{\"+\":[5,{\"/\":[6,7]}]}]}")
-	jsonID1 = FormulaParser("max(1+2,3+4,5+6/7)")
+	jsonID1 = SF_FormulaParser("max(1+2,3+4,5+6/7)")
 	WARN_EQUAL_JSON(jsonID0, jsonID1)
-	REQUIRE_EQUAL_VAR(FormulaExecutor(jsonID1)[0], max(1+2,3+4,5+6/7))
+	REQUIRE_EQUAL_VAR(SF_FormulaExecutor(jsonID1)[0], max(1+2,3+4,5+6/7))
 
 	jsonID0 = JSON_Parse("{\"max\":[{\"+\":[1,2]},{\"+\":[3,4]},{\"+\":[5,{\"/\":[6,7]}]}]}")
-	jsonID1 = FormulaParser("max(1+2,3+4,5+(6/7))")
+	jsonID1 = SF_FormulaParser("max(1+2,3+4,5+(6/7))")
 	WARN_EQUAL_JSON(jsonID0, jsonID1)
-	REQUIRE_EQUAL_VAR(FormulaExecutor(jsonID1)[0], max(1+2,3+4,5+(6/7)))
+	REQUIRE_EQUAL_VAR(SF_FormulaExecutor(jsonID1)[0], max(1+2,3+4,5+(6/7)))
 
 	jsonID0 = JSON_Parse("{\"max\":[{\"max\":[1,{\"/\":[{\"+\":[2,3]},7]},4]},{\"min\":[3,4]}]}")
-	jsonID1 = FormulaParser("max(max(1,(2+3)/7,4),min(3,4))")
+	jsonID1 = SF_FormulaParser("max(max(1,(2+3)/7,4),min(3,4))")
 	WARN_EQUAL_JSON(jsonID0, jsonID1)
-	REQUIRE_EQUAL_VAR(FormulaExecutor(jsonID1)[0], max(max(1,(2+3)/7,4),min(3,4)))
+	REQUIRE_EQUAL_VAR(SF_FormulaExecutor(jsonID1)[0], max(max(1,(2+3)/7,4),min(3,4)))
 
 	jsonID0 = JSON_Parse("{\"+\":[{\"max\":[1,2]},1]}")
-	jsonID1 = FormulaParser("max(1,2)+1")
+	jsonID1 = SF_FormulaParser("max(1,2)+1")
 	WARN_EQUAL_JSON(jsonID0, jsonID1)
-	REQUIRE_EQUAL_VAR(FormulaExecutor(jsonID1)[0], max(1,2)+1)
+	REQUIRE_EQUAL_VAR(SF_FormulaExecutor(jsonID1)[0], max(1,2)+1)
 
 	jsonID0 = JSON_Parse("{\"+\":[1,{\"max\":[1,2]}]}")
-	jsonID1 = FormulaParser("1+max(1,2)")
+	jsonID1 = SF_FormulaParser("1+max(1,2)")
 	WARN_EQUAL_JSON(jsonID0, jsonID1)
-	REQUIRE_EQUAL_VAR(FormulaExecutor(jsonID1)[0], 1+max(1,2))
+	REQUIRE_EQUAL_VAR(SF_FormulaExecutor(jsonID1)[0], 1+max(1,2))
 
 	jsonID0 = JSON_Parse("{\"+\":[1,{\"max\":[1,2]},1]}")
-	jsonID1 = FormulaParser("1+max(1,2)+1")
+	jsonID1 = SF_FormulaParser("1+max(1,2)+1")
 	WARN_EQUAL_JSON(jsonID0, jsonID1)
-	REQUIRE_EQUAL_VAR(FormulaExecutor(jsonID1)[0], 1+max(1,2)+1)
+	REQUIRE_EQUAL_VAR(SF_FormulaExecutor(jsonID1)[0], 1+max(1,2)+1)
 
 	jsonID0 = JSON_Parse("{\"-\":[{\"max\":[1,2]},{\"max\":[1,2]}]}")
-	jsonID1 = FormulaParser("max(1,2)-max(1,2)")
+	jsonID1 = SF_FormulaParser("max(1,2)-max(1,2)")
 	WARN_EQUAL_JSON(jsonID0, jsonID1)
-	REQUIRE_EQUAL_VAR(FormulaExecutor(jsonID1)[0], max(1,2)-max(1,2))
+	REQUIRE_EQUAL_VAR(SF_FormulaExecutor(jsonID1)[0], max(1,2)-max(1,2))
 End
 
 // test static Functions with aribitrary length array returns
@@ -443,64 +443,64 @@ static Function merge()
 	Variable jsonID0, jsonID1
 
 	jsonID0 = JSON_Parse("{\"merge\":[1,[2,3],4]}")
-	jsonID1 = FormulaParser("merge(1,[2,3],4)")
+	jsonID1 = SF_FormulaParser("merge(1,[2,3],4)")
 	WARN_EQUAL_JSON(jsonID0, jsonID1)
-	REQUIRE_EQUAL_VAR(FormulaExecutor(jsonID1)[2], 3)
-	REQUIRE_EQUAL_VAR(FormulaExecutor(jsonID1)[3], 4)
-	WAVE output = FormulaExecutor(jsonID1)
+	REQUIRE_EQUAL_VAR(SF_FormulaExecutor(jsonID1)[2], 3)
+	REQUIRE_EQUAL_VAR(SF_FormulaExecutor(jsonID1)[3], 4)
+	WAVE output = SF_FormulaExecutor(jsonID1)
 	Make/FREE/N=4/U/I numeric = p + 1
 	REQUIRE_EQUAL_WAVES(numeric, output, mode = WAVE_DATA)
 
-	jsonID0 = FormulaParser("[1,2,3,4]")
-	jsonID1 = FormulaParser("merge(1,[2,3],4)")
-	REQUIRE_EQUAL_WAVES(FormulaExecutor(jsonID0), FormulaExecutor(jsonID1))
+	jsonID0 = SF_FormulaParser("[1,2,3,4]")
+	jsonID1 = SF_FormulaParser("merge(1,[2,3],4)")
+	REQUIRE_EQUAL_WAVES(SF_FormulaExecutor(jsonID0), SF_FormulaExecutor(jsonID1))
 
-	jsonID1 = FormulaParser("merge([1,2],[3,4])")
-	REQUIRE_EQUAL_WAVES(FormulaExecutor(jsonID0), FormulaExecutor(jsonID1))
+	jsonID1 = SF_FormulaParser("merge([1,2],[3,4])")
+	REQUIRE_EQUAL_WAVES(SF_FormulaExecutor(jsonID0), SF_FormulaExecutor(jsonID1))
 
-	jsonID1 = FormulaParser("merge(1,2,[3,4])")
-	REQUIRE_EQUAL_WAVES(FormulaExecutor(jsonID0), FormulaExecutor(jsonID1))
+	jsonID1 = SF_FormulaParser("merge(1,2,[3,4])")
+	REQUIRE_EQUAL_WAVES(SF_FormulaExecutor(jsonID0), SF_FormulaExecutor(jsonID1))
 
-	jsonID1 = FormulaParser("merge(4/4,4/2,9/3,4*1)")
-	REQUIRE_EQUAL_WAVES(FormulaExecutor(jsonID0), FormulaExecutor(jsonID1))
+	jsonID1 = SF_FormulaParser("merge(4/4,4/2,9/3,4*1)")
+	REQUIRE_EQUAL_WAVES(SF_FormulaExecutor(jsonID0), SF_FormulaExecutor(jsonID1))
 End
 
 static Function MIES_channel()
 
 	Make/FREE input = {{0}, {NaN}}
-	WAVE output = FormulaExecutor(FormulaParser("channels(AD)"))
+	WAVE output = SF_FormulaExecutor(SF_FormulaParser("channels(AD)"))
 	REQUIRE_EQUAL_WAVES(input, output)
 
 	Make/FREE input = {{0}, {0}}
-	WAVE output = FormulaExecutor(FormulaParser("channels(AD0)"))
+	WAVE output = SF_FormulaExecutor(SF_FormulaParser("channels(AD0)"))
 	REQUIRE_EQUAL_WAVES(input, output)
 
 	Make/FREE input = {{0, 0}, {0, 1}}
-	WAVE output = FormulaExecutor(FormulaParser("channels(AD0,AD1)"))
+	WAVE output = SF_FormulaExecutor(SF_FormulaParser("channels(AD0,AD1)"))
 	REQUIRE_EQUAL_WAVES(input, output)
 
 	Make/FREE input = {{0, 1}, {0, 1}}
-	WAVE output = FormulaExecutor(FormulaParser("channels(AD0,DA1)"))
+	WAVE output = SF_FormulaExecutor(SF_FormulaParser("channels(AD0,DA1)"))
 	REQUIRE_EQUAL_WAVES(input, output)
 
 	Make/FREE input = {{1, 1}, {0, 0}}
-	WAVE output = FormulaExecutor(FormulaParser("channels(DA0,DA0)"))
+	WAVE output = SF_FormulaExecutor(SF_FormulaParser("channels(DA0,DA0)"))
 	REQUIRE_EQUAL_WAVES(input, output)
 
 	Make/FREE input = {{0, 1}, {NaN, NaN}}
-	WAVE output = FormulaExecutor(FormulaParser("channels(AD,DA)"))
+	WAVE output = SF_FormulaExecutor(SF_FormulaParser("channels(AD,DA)"))
 	REQUIRE_EQUAL_WAVES(input, output)
 
 	Make/FREE input = {{2}, {1}}
-	WAVE output = FormulaExecutor(FormulaParser("channels(1)"))
+	WAVE output = SF_FormulaExecutor(SF_FormulaParser("channels(1)"))
 	REQUIRE_EQUAL_WAVES(input, output)
 
 	Make/FREE input = {{2, 2}, {1, 3}}
-	WAVE output = FormulaExecutor(FormulaParser("channels(1,3)"))
+	WAVE output = SF_FormulaExecutor(SF_FormulaParser("channels(1,3)"))
 	REQUIRE_EQUAL_WAVES(input, output)
 
 	Make/FREE input = {{0,1,2},{1,2,3}}
-	WAVE output = FormulaExecutor(FormulaParser("channels(AD1,DA2,3)"))
+	WAVE output = SF_FormulaExecutor(SF_FormulaParser("channels(AD1,DA2,3)"))
 	REQUIRE_EQUAL_WAVES(input, output)
 End
 
@@ -509,16 +509,16 @@ static Function testDifferentiales()
 	String str
 
 	// differntiate/integrate 1D waves along rows
-	jsonID = FormulaParser("derivative([0,1,4,9,16,25,36,49,64,81])")
-	WAVE output = FormulaExecutor(jsonID)
+	jsonID = SF_FormulaParser("derivative([0,1,4,9,16,25,36,49,64,81])")
+	WAVE output = SF_FormulaExecutor(jsonID)
 	Make/N=10/U/I/FREE sourcewave = p^2
 	Differentiate/EP=0 sourcewave/D=testwave
 	REQUIRE_EQUAL_WAVES(output, testwave, mode = WAVE_DATA)
 
 	Make/N=10/U/I/FREE input = p^2
 	wfprintf str, "%d,", input
-	jsonID = FormulaParser("derivative([" + RemoveEnding(str, ",") + "])")
-	WAVE output = FormulaExecutor(jsonID)
+	jsonID = SF_FormulaParser("derivative([" + RemoveEnding(str, ",") + "])")
+	WAVE output = SF_FormulaExecutor(jsonID)
 	Make/N=10/FREE testwave = 2 * p
 	Deletepoints 9, 1, testwave, output
 	Deletepoints 0, 1, testwave, output
@@ -526,8 +526,8 @@ static Function testDifferentiales()
 
 	Make/N=10/U/I/FREE input = 2 * p
 	wfprintf str, "%d,", input
-	jsonID = FormulaParser("integrate([" + RemoveEnding(str, ",") + "])")
-	WAVE output = FormulaExecutor(jsonID)
+	jsonID = SF_FormulaParser("integrate([" + RemoveEnding(str, ",") + "])")
+	WAVE output = SF_FormulaExecutor(jsonID)
 	Make/N=10/FREE testwave = p^2
 	Deletepoints 9, 1, testwave, output
 	Deletepoints 0, 1, testwave, output
@@ -535,16 +535,16 @@ static Function testDifferentiales()
 
 	Make/N=(128)/U/I/FREE input = p
 	wfprintf str, "%d,", input
-	jsonID = FormulaParser("derivative(integrate([" + RemoveEnding(str, ",") + "]))")
-	WAVE output = FormulaExecutor(jsonID)
+	jsonID = SF_FormulaParser("derivative(integrate([" + RemoveEnding(str, ",") + "]))")
+	WAVE output = SF_FormulaExecutor(jsonID)
 	Deletepoints 127, 1, input, output
 	Deletepoints   0, 1, input, output
 	REQUIRE_EQUAL_WAVES(output, input, mode = WAVE_DATA)
 
 	Make/N=(128)/U/I/FREE input = p^2
 	wfprintf str, "%d,", input
-	jsonID = FormulaParser("integrate(derivative([" + RemoveEnding(str, ",") + "]))")
-	WAVE output = FormulaExecutor(jsonID)
+	jsonID = SF_FormulaParser("integrate(derivative([" + RemoveEnding(str, ",") + "]))")
+	WAVE output = SF_FormulaExecutor(jsonID)
 	output -= 0.5 // expected end point error from first point estimation
 	Deletepoints 127, 1, input, output
 	Deletepoints   0, 1, input, output
@@ -554,9 +554,9 @@ static Function testDifferentiales()
 	Make/N=(128,16)/U/I/FREE input = p + q
 	array = JSON_New()
 	JSON_AddWave(array, "", input)
-	jsonID = FormulaParser("derivative(integrate(" + JSON_Dump(array) + "))")
+	jsonID = SF_FormulaParser("derivative(integrate(" + JSON_Dump(array) + "))")
 	JSON_Release(array)
-	WAVE output = FormulaExecutor(jsonID)
+	WAVE output = SF_FormulaExecutor(jsonID)
 	Deletepoints/M=(ROWS) 127, 1, input, output
 	Deletepoints/M=(ROWS)   0, 1, input, output
 	REQUIRE_EQUAL_WAVES(output, input, mode = WAVE_DATA)
@@ -565,38 +565,38 @@ End
 static Function waveScaling()
 	Make/N=(10) waveX = p
 	SetScale x 0, 2, "unit", waveX
-	WAVE wv = FormulaExecutor(FormulaParser("setscale([0,1,2,3,4,5,6,7,8,9], x, 0, 2, unit)"))
+	WAVE wv = SF_FormulaExecutor(SF_FormulaParser("setscale([0,1,2,3,4,5,6,7,8,9], x, 0, 2, unit)"))
 	REQUIRE_EQUAL_WAVES(waveX, wv, mode = WAVE_DATA)
 
 	Make/N=(10, 10) waveXY = p + q
 	SetScale/P x 0, 2, "unitX", waveXY
 	SetScale/P y 0, 4, "unitX", waveXY
-	WAVE wv = FormulaExecutor(FormulaParser("setscale(setscale([range(10),range(10)+1,range(10)+2,range(10)+3,range(10)+4,range(10)+5,range(10)+6,range(10)+7,range(10)+8,range(10)+9], x, 0, 2, unitX), y, 0, 4, unitX)"))
+	WAVE wv = SF_FormulaExecutor(SF_FormulaParser("setscale(setscale([range(10),range(10)+1,range(10)+2,range(10)+3,range(10)+4,range(10)+5,range(10)+6,range(10)+7,range(10)+8,range(10)+9], x, 0, 2, unitX), y, 0, 4, unitX)"))
 	REQUIRE_EQUAL_WAVES(waveXY, wv, mode = WAVE_DATA | WAVE_SCALING | DATA_UNITS)
 End
 
 static Function arrayExpansion()
 	Variable jsonID0, jsonID1
 
-	jsonID0 = FormulaParser("1…10")
+	jsonID0 = SF_FormulaParser("1…10")
 	jsonID1 = JSON_Parse("{\"…\":[1,10]}")
 	WARN_EQUAL_JSON(jsonID0, jsonID1)
-	WAVE output = FormulaExecutor(jsonID0)
+	WAVE output = SF_FormulaExecutor(jsonID0)
 	Make/N=9/U/I/FREE testwave = 1 + p
 	REQUIRE_EQUAL_WAVES(output, testwave, mode = WAVE_DATA)
 
-	WAVE output = FormulaExecutor(FormulaParser("range(1,10)"))
+	WAVE output = SF_FormulaExecutor(SF_FormulaParser("range(1,10)"))
 	REQUIRE_EQUAL_WAVES(output, testwave, mode = WAVE_DATA)
 
-	WAVE output = FormulaExecutor(FormulaParser("range(10)"))
+	WAVE output = SF_FormulaExecutor(SF_FormulaParser("range(10)"))
 	Make/N=10/U/I/FREE testwave = p
 	REQUIRE_EQUAL_WAVES(output, testwave, mode = WAVE_DATA)
 
-	WAVE output = FormulaExecutor(FormulaParser("range(1,10,2)"))
+	WAVE output = SF_FormulaExecutor(SF_FormulaParser("range(1,10,2)"))
 	Make/N=5/U/I/FREE testwave = 1 + p * 2
 	REQUIRE_EQUAL_WAVES(output, testwave, mode = WAVE_DATA)
 
-	WAVE output = FormulaExecutor(FormulaParser("1.5…10.5"))
+	WAVE output = SF_FormulaExecutor(SF_FormulaParser("1.5…10.5"))
 	Make/N=9/FREE floatwave = 1.5 + p
 	REQUIRE_EQUAL_WAVES(output, floatwave, mode = WAVE_DATA)
 End
@@ -604,8 +604,8 @@ End
 static Function waveGetterFunction()
 	Make/O/N=(10) wave0 = p
 
-	WAVE wave1 = FormulaExecutor(FormulaParser("wave(wave0)"))
-	WAVE wave2 = FormulaExecutor(FormulaParser("range(0,10)"))
+	WAVE wave1 = SF_FormulaExecutor(SF_FormulaParser("wave(wave0)"))
+	WAVE wave2 = SF_FormulaExecutor(SF_FormulaParser("range(0,10)"))
 	REQUIRE_EQUAL_WAVES(wave0, wave2, mode = WAVE_DATA)
 	REQUIRE_EQUAL_WAVES(wave1, wave2, mode = WAVE_DATA)
 End
@@ -658,14 +658,14 @@ static Function TestVariousFunctions([str])
 	JSON_AddWave(jsonIDTwoD, "", twoD)
 
 	// 1D
-	WAVE output1D = FormulaExecutor(FormulaParser(func + "(" + JSON_Dump(jsonIDOneD) + ")" ))
+	WAVE output1D = SF_FormulaExecutor(SF_FormulaParser(func + "(" + JSON_Dump(jsonIDOneD) + ")" ))
 	Execute "Make/O output1D_mo = {" + oneDResult + "}"
 	WAVE output1D_mo
 
 	CHECK_EQUAL_WAVES(output1D, output1D_mo, mode = WAVE_DATA, tol = 1e-8)
 
 	// 2D
-	WAVE output2D = FormulaExecutor(FormulaParser(func + "(" + JSON_Dump(jsonIDTwoD) + ")" ))
+	WAVE output2D = SF_FormulaExecutor(SF_FormulaParser(func + "(" + JSON_Dump(jsonIDTwoD) + ")" ))
 	Execute "Make/O output2D_mo = {" + twoDResult + "}"
 	WAVE output2D_mo
 
@@ -683,12 +683,12 @@ static Function TestPlotting()
 	String strScale1D = "time(setscale(range(4),x,1,0.1))"
 	String strArray0D = "1"
 
-	WAVE array2D = FormulaExecutor(FormulaParser(strArray2D))
-	WAVE array1D = FormulaExecutor(FormulaParser(strArray1D))
-	WAVE scale1D = FormulaExecutor(FormulaParser(strScale1D))
-	WAVE array0D = FormulaExecutor(FormulaParser(strArray0D))
+	WAVE array2D = SF_FormulaExecutor(SF_FormulaParser(strArray2D))
+	WAVE array1D = SF_FormulaExecutor(SF_FormulaParser(strArray1D))
+	WAVE scale1D = SF_FormulaExecutor(SF_FormulaParser(strScale1D))
+	WAVE array0D = SF_FormulaExecutor(SF_FormulaParser(strArray0D))
 
-	FormulaPlotter("", strArray2D)
+	SF_FormulaPlotter("", strArray2D)
 	REQUIRE_EQUAL_VAR(WindowExists(win), 1)
 	traces = TraceNameList(win, ";", 0x1)
 	REQUIRE_EQUAL_VAR(ItemsInList(traces), DimSize(array2D, COLS))
@@ -696,7 +696,7 @@ static Function TestPlotting()
 	REQUIRE_EQUAL_WAVES(array2D, wvY)
 
 	// one to many
-	FormulaPlotter("", strArray1D + " vs " + strArray2D); DoUpdate
+	SF_FormulaPlotter("", strArray1D + " vs " + strArray2D); DoUpdate
 	traces = TraceNameList(win, ";", 0x1)
 	REQUIRE_EQUAL_VAR(ItemsInList(traces), DimSize(array2D, COLS))
 	WAVE wvX = XWaveRefFromTrace(win, StringFromList(0, traces))
@@ -710,13 +710,13 @@ static Function TestPlotting()
 	GetAxisRange(win, "left", minimum, maximum, mode=AXIS_RANGE_INC_AUTOSCALED)
 	REQUIRE_EQUAL_VAR(minimum, WaveMin(array1D))
 	REQUIRE_EQUAL_VAR(maximum, WaveMax(array1D))
-	FormulaPlotter("", strScale1D + " vs " + strArray2D); DoUpdate
+	SF_FormulaPlotter("", strScale1D + " vs " + strArray2D); DoUpdate
 	GetAxisRange(win, "left", minimum, maximum, mode=AXIS_RANGE_INC_AUTOSCALED)
 	REQUIRE_EQUAL_VAR(minimum, WaveMin(scale1D))
 	REQUIRE_CLOSE_VAR(maximum, WaveMax(scale1D))
 
 	// many to one
-	FormulaPlotter("", strArray2D + " vs " + strArray1D); DoUpdate
+	SF_FormulaPlotter("", strArray2D + " vs " + strArray1D); DoUpdate
 	traces = TraceNameList(win, ";", 0x1)
 	REQUIRE_EQUAL_VAR(ItemsInList(traces), DimSize(array2D, COLS))
 	WAVE wvY = TraceNameToWaveRef(win, StringFromList(0, traces))
@@ -731,18 +731,18 @@ static Function TestPlotting()
 	REQUIRE_EQUAL_VAR(minimum, WaveMin(array2D))
 	REQUIRE_EQUAL_VAR(maximum, WaveMax(array2D))
 
-	FormulaPlotter("", strArray2D + " vs range(3)"); DoUpdate
+	SF_FormulaPlotter("", strArray2D + " vs range(3)"); DoUpdate
 	traces = TraceNameList(win, ";", 0x1)
 	REQUIRE_EQUAL_VAR(ItemsInList(traces), DimSize(array2D, COLS))
 	GetAxisRange(win, "bottom", minimum, maximum, mode=AXIS_RANGE_INC_AUTOSCALED)
 	REQUIRE_EQUAL_VAR(maximum, array1D[2])
 
-	FormulaPlotter("", "time(setscale(range(4),x,1,0.1)) vs [range(10), range(10,20), range(10), range(10,20)]"); DoUpdate
+	SF_FormulaPlotter("", "time(setscale(range(4),x,1,0.1)) vs [range(10), range(10,20), range(10), range(10,20)]"); DoUpdate
 	GetAxisRange(win, "left", minimum, maximum, mode=AXIS_RANGE_INC_AUTOSCALED)
 	REQUIRE_EQUAL_VAR(minimum, WaveMin(scale1D))
 	REQUIRE_CLOSE_VAR(maximum, WaveMax(scale1D))
 
-	FormulaPlotter("", strArray1D + " vs " + strArray1D); DoUpdate
+	SF_FormulaPlotter("", strArray1D + " vs " + strArray1D); DoUpdate
 	traces = TraceNameList(win, ";", 0x1)
 	REQUIRE_EQUAL_VAR(ItemsInList(traces), 1)
 	GetAxisRange(win, "left", minimum, maximum, mode=AXIS_RANGE_INC_AUTOSCALED)
@@ -752,19 +752,19 @@ static Function TestPlotting()
 	REQUIRE_EQUAL_VAR(minimum, WaveMin(array1D))
 	REQUIRE_CLOSE_VAR(maximum, WaveMax(array1D))
 
-	FormulaPlotter("", strArray2D + " vs " + strArray2D); DoUpdate
+	SF_FormulaPlotter("", strArray2D + " vs " + strArray2D); DoUpdate
 	traces = TraceNameList(win, ";", 0x1)
 	REQUIRE_EQUAL_VAR(ItemsInList(traces), DimSize(array2D, COLS))
 
-	FormulaPlotter("", strArray1D + " vs " + strArray1D); DoUpdate
+	SF_FormulaPlotter("", strArray1D + " vs " + strArray1D); DoUpdate
 	REQUIRE_EQUAL_VAR(ItemsInList(TraceNameList(win, ";", 0x1)), 1)
 
-	FormulaPlotter("", strArray1D + " vs " + strArray0D); DoUpdate
+	SF_FormulaPlotter("", strArray1D + " vs " + strArray0D); DoUpdate
 	REQUIRE_EQUAL_VAR(ItemsInList(TraceNameList(win, ";", 0x1)), DimSize(array1D, ROWS))
 
-	FormulaPlotter("", strArray0D + " vs " + strArray1D); DoUpdate
+	SF_FormulaPlotter("", strArray0D + " vs " + strArray1D); DoUpdate
 	REQUIRE_EQUAL_VAR(ItemsInList(TraceNameList(win, ";", 0x1)), DimSize(array1D, ROWS))
 
-	FormulaPlotter("", strArray0D + " vs " + strArray0D); DoUpdate
+	SF_FormulaPlotter("", strArray0D + " vs " + strArray0D); DoUpdate
 	REQUIRE_EQUAL_VAR(ItemsInList(TraceNameList(win, ";", 0x1)), DimSize(array0D, ROWS))
 End
