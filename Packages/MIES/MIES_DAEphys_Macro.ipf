@@ -11,7 +11,7 @@
 
 Window DA_Ephys() : Panel
 	PauseUpdate; Silent 1		// building window...
-	NewPanel /K=1 /W=(142,182,646,1062)
+	NewPanel /K=1 /W=(157,759,661,1639)
 	ValDisplay valdisp_DataAcq_P_LED_Clear,pos={366.00,297.00},size={84.00,27.00},disable=1
 	ValDisplay valdisp_DataAcq_P_LED_Clear,help={"red:user"},userdata(tabnum)=  "0"
 	ValDisplay valdisp_DataAcq_P_LED_Clear,userdata(tabcontrol)=  "tab_DataAcq_Pressure"
@@ -1814,7 +1814,7 @@ Window DA_Ephys() : Panel
 	TitleBox title_Settings_SetCondition_03,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	TitleBox title_Settings_SetCondition_03,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
 	TitleBox title_Settings_SetCondition_03,frame=0
-	PopupMenu popup_MoreSettings_Devices,pos={86.00,83.00},size={182.00,19.00},bodyWidth=139,title="Devices"
+	PopupMenu popup_MoreSettings_Devices,pos={81.00,82.00},size={182.00,19.00},bodyWidth=139,title="Devices"
 	PopupMenu popup_MoreSettings_Devices,help={"List of available devices for data acquisition"}
 	PopupMenu popup_MoreSettings_Devices,userdata(tabnum)=  "6"
 	PopupMenu popup_MoreSettings_Devices,userdata(tabcontrol)=  "ADC"
@@ -1837,14 +1837,14 @@ Window DA_Ephys() : Panel
 	GroupBox group_Hardware_FolderPath,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Duafnzzzzzzzzzzz"
 	GroupBox group_Hardware_FolderPath,userdata(ResizeControlsInfo) += A"zzz!!#u:Duafnzzzzzzzzzzzzzz!!!"
 	GroupBox group_Hardware_FolderPath,fSize=12
-	Button button_SettingsPlus_LockDevice,pos={281.00,72.00},size={84.00,45.00},proc=DAP_ButtonProc_LockDev,title="Lock device\r selection"
+	Button button_SettingsPlus_LockDevice,pos={276.00,69.00},size={84.00,45.00},proc=DAP_ButtonProc_LockDev,title="Lock device\r selection"
 	Button button_SettingsPlus_LockDevice,help={"Device must be locked to acquire data. Locking can take a few seconds (calls to amp hardware are slow)."}
 	Button button_SettingsPlus_LockDevice,userdata(tabnum)=  "6"
 	Button button_SettingsPlus_LockDevice,userdata(tabcontrol)=  "ADC"
 	Button button_SettingsPlus_LockDevice,userdata(ResizeControlsInfo)= A"!!,G[!!#?K!!#?c!!#>Fz!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	Button button_SettingsPlus_LockDevice,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Duafnzzzzzzzzzzz"
 	Button button_SettingsPlus_LockDevice,userdata(ResizeControlsInfo) += A"zzz!!#u:Duafnzzzzzzzzzzzzzz!!!"
-	Button button_SettingsPlus_unLockDevic,pos={374.00,72.00},size={84.00,45.00},disable=2,proc=DAP_ButProc_Hrdwr_UnlckDev,title="Unlock device\r selection"
+	Button button_SettingsPlus_unLockDevic,pos={369.00,69.00},size={84.00,45.00},disable=2,proc=DAP_ButProc_Hrdwr_UnlckDev,title="Unlock device\r selection"
 	Button button_SettingsPlus_unLockDevic,userdata(tabnum)=  "6"
 	Button button_SettingsPlus_unLockDevic,userdata(tabcontrol)=  "ADC"
 	Button button_SettingsPlus_unLockDevic,userdata(ResizeControlsInfo)= A"!!,HNJ,hp!!!#?c!!#>Fz!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
@@ -3601,11 +3601,12 @@ Window DA_Ephys() : Panel
 	GroupBox group_acq_tp,userdata(tabnum)=  "5",userdata(tabcontrol)=  "ADC"
 	GroupBox group_acq_daq,pos={31.00,554.00},size={208.00,62.00},disable=1,title="Data Acquisition"
 	GroupBox group_acq_daq,userdata(tabnum)=  "5",userdata(tabcontrol)=  "ADC"
-	Button button_hardware_rescan,pos={40.00,75.00},size={37.00,36.00},proc=ButtonProc_Hardware_rescan,title="\\Z20🔄"
+	Button button_hardware_rescan,pos={32.00,72.00},size={42.00,39.00},proc=ButtonProc_Hardware_rescan,title=""
 	Button button_hardware_rescan,help={"Rescan the PC for ITC and NI DAQ hardware"}
 	Button button_hardware_rescan,userdata(tabnum)=  "6"
 	Button button_hardware_rescan,userdata(tabcontrol)=  "ADC"
 	Button button_hardware_rescan,fColor=(65535,65535,65535)
+	Button button_hardware_rescan,picture= ProcGlobal#HardwareScanButton
 	DefineGuide UGV0={FR,-25},UGH0={FB,-27},UGV1={FL,481}
 	SetWindow kwTopWin,hook(cleanup)=DAP_WindowHook
 	SetWindow kwTopWin,userdata(ResizeControlsInfo)= A"!!*'\"z!!#CW!!#Dl5QCcbzzzzzzzzzzzzzzzzzzzz"

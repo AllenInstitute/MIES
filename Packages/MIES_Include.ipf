@@ -85,6 +85,7 @@
 #include "MIES_OptimzedOverlapDistributedAcquisition"
 #include "MIES_Oscilloscope"
 #include "MIES_OverlaySweeps"
+#include "MIES_Pictures"
 #include "MIES_PressureControl"
 #include "MIES_ProgrammaticGuiControl"
 #include "MIES_PulseAveraging"
