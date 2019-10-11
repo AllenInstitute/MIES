@@ -543,7 +543,7 @@ Function/WAVE FormulaExecutor(jsonID, [jsonPath, graph])
 			WAVE order = FormulaExecutor(jsonID, jsonPath = jsonPath + "/3")
 			ASSERT(DimSize(order, ROWS) == 1, "Too many input values for parameter order")
 			ASSERT(IsNumericWave(order), "order parameter must be numeric")
-			FilterIIR/HI=(highPassCutoff[0])/LO=(lowPassCutoff[0])/ORD=(order[0])/DIM=(ROWS) data
+			FilterIIR/HI=(highPassCutoff[0] / WAVEBUILDER_MIN_SAMPINT_HZ)/LO=(lowPassCutoff[0] / WAVEBUILDER_MIN_SAMPINT_HZ)/ORD=(order[0])/DIM=(ROWS) data
 			ASSERT(V_flag == 0, "FilterIIR returned error")
 			WAVE out = data
 			break

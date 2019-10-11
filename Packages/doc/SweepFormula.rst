@@ -280,7 +280,7 @@ strictly accepts 4 parameters as follows:
 
 .. code-block:: bash
 
-   butterworth(data, lowPassCutoff, highPassCutoff, order)
+   butterworth(data, lowPassCutoffInHz, highPassCutoffInHz, order)
 
 The first parameter `data` is intended to be used with the `data()` function but
 can be an arbitrary numeric array.
