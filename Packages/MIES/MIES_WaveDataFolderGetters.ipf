@@ -6569,3 +6569,33 @@ Function/WAVE GetElapsedTimeWave()
 
 	return wv
 End
+
+/// @brief Return the X wave for the sweep formula
+Function/WAVE GetSweepFormulaX(dfr)
+	DFREF dfr
+
+	WAVE/Z/D/SDFR=dfr wv = sweepFormulaX
+
+	if(WaveExists(wv))
+		return wv
+	endif
+
+	Make/N=0/D dfr:sweepFormulaX/Wave=wv
+
+	return wv
+End
+
+/// @brief Return the Y wave for the sweep formula
+Function/WAVE GetSweepFormulaY(dfr)
+	DFREF dfr
+
+	WAVE/Z/D/SDFR=dfr wv = sweepFormulaY
+
+	if(WaveExists(wv))
+		return wv
+	endif
+
+	Make/N=0/D dfr:sweepFormulaY/Wave=wv
+
+	return wv
+End

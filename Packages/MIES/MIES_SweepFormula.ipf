@@ -779,24 +779,21 @@ Function SF_FormulaPlotter(graph, formula, [dfr])
 		dim1X = DimSize(wv, COLS)
 		dim2X = DimSize(wv, LAYERS)
 		Redimension/N=(-1, max(1, DimSize(wv, LAYERS)) * max(1, DimSize(wv, COLS)))/E=1 wv
-		if(WaveType(wv, 1) == 2)
-			Duplicate/O wv dfr:xFormulaT/WAVE = wvX
-		else
-			Duplicate/O wv dfr:xFormula/WAVE = wvX
-		endif
-		WaveClear wv
+
+		WAVE wvX = GetSweepFormulaX(dfr)
+		MoveWaveWithOverwrite(wvX, wv)
+		WAVE wvX = GetSweepFormulaX(dfr)
 	endif
+
 	WAVE/Z wv = SF_FormulaExecutor(SF_FormulaParser(SF_FormulaPreParser(formula0)), graph = graph)
 	SF_FormulaError(dfr, WaveExists(wv), "Error in y part of formula.")
 	dim1Y = DimSize(wv, COLS)
 	dim2Y = DimSize(wv, LAYERS)
 	Redimension/N=(-1, max(1, DimSize(wv, LAYERS)) * max(1, DimSize(wv, COLS)))/E=1 wv
-	if(WaveType(wv, 1) == 2)
-		Duplicate/O wv dfr:yFormulaT/WAVE = wvY
-	else
-		Duplicate/O wv dfr:yFormula/WAVE = wvY
-	endif
-	WaveClear wv
+
+	WAVE wvY = GetSweepFormulaY(dfr)
+	MoveWaveWithOverwrite(wvY, wv)
+	WAVE wvY = GetSweepFormulaY(dfr)
 
 	if(!WindowExists(win))
 		Display/N=$win as win
@@ -808,8 +805,8 @@ Function SF_FormulaPlotter(graph, formula, [dfr])
 	RemoveTracesFromGraph(win)
 	ModifyGraph/W=$win swapXY = 0
 
-	SF_FormulaError(dfr, !(WaveType(wvY, 1) == 2 && WaveType(wvX, 1) == 2), "One wave needs to be numeric for plotting")
-	if(WaveType(wvY, 1) == 2 && WaveExists(wvX))
+	SF_FormulaError(dfr, !(IsTextWave(wvY) && IsTextWave(wvX)), "One wave needs to be numeric for plotting")
+	if(IsTextWave(wvY) && WaveExists(wvX))
 		SF_FormulaError(dfr, WaveExists(wvX), "Cannot plot a single text wave")
 		ModifyGraph/W=$win swapXY = 1
 		WAVE dummy = wvY
