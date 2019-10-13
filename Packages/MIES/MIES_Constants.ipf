@@ -29,6 +29,9 @@ StrConstant DEVICE_NUMBERS   = "0;1;2;3;4;5;6;7;8;9;10"
 
 StrConstant ITC1600_FIRST_DEVICE = "ITC1600_Dev_0"
 StrConstant BASE_WINDOW_TITLE    = "DA_Ephys"
+StrConstant DATABROWSER_WINDOW_TITLE = "DataBrowser"
+StrConstant SWEEPBROWSER_WINDOW_TITLE = "SweepBrowser"
+StrConstant EXT_PANEL_SETTINGSHISTORY = "SettingsHistoryPanel"
 
 StrConstant amPanel = "analysisMaster"
 

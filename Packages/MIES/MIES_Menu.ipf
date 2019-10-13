@@ -46,6 +46,7 @@ Menu "Mies Panels"
 		"Start Background Task watcher panel"      , /Q, BkgWatcher#BW_StartPanel()
 		"Enable Independent Module editing"        , /Q, SetIgorOption IndependentModuleDev=1
 		"Reset and store current DA_EPHYS panel"   , /Q, DAP_EphysPanelStartUpSettings()
+		"Reset and store current DataBrowser panel", /Q, DB_ResetAndStoreCurrentDBPanel()
 		"Check GUI control procedures of top panel", /Q, SearchForInvalidControlProcs(GetCurrentWindow())
 		"Flush Cache"                              , /Q, CA_FlushCache()
 		"Output Cache statistics"                  , /Q, CA_OutputCacheStatistics()
