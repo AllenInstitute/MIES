@@ -38,6 +38,7 @@ End
 ///        after GUI editor adapted controls in development process
 Function DB_ResetAndStoreCurrentDBPanel()
 	string panelTitle, bsPanel, scPanel, shPanel, recreationCode
+	string sfFormula, sfJSON
 
 	panelTitle = GetMainWindow(GetCurrentWindow())
 	if(!windowExists(panelTitle))
@@ -161,6 +162,15 @@ Function DB_ResetAndStoreCurrentDBPanel()
 	CheckBox check_BrowserSettings_splitTTL WIN = $bsPanel, value= 0
 	CheckBox check_BrowserSettings_DB_Passed WIN = $bsPanel, value= 0
 	CheckBox check_BrowserSettings_DB_Failed WIN = $bsPanel, value= 0
+
+	sfFormula = BSP_GetSFFormula(panelTitle)
+	ReplaceNotebookText(sfFormula, "data(\rcursors(A,B),\rchannels(AD),\rsweeps(0;1;2;3;4;5)\r)")
+
+	sfJSON = BSP_GetSFJSON(panelTitle)
+	ReplaceNotebookText(sfJSON, "data(\rcursors(A,B),\rchannels(AD),\rsweeps(0;1;2;3;4;5)\r)")
+
+	SetVariable setvar_sweepFormula_parseResult WIN = $bsPanel, value=_STR:""
+	ValDisplay status_sweepFormula_parser, WIN = $bsPanel, value=1
 
 	SearchForInvalidControlProcs(panelTitle)
 	print "Do not forget to increase DATABROWSER_PANEL_VERSION and/or SWEEPBROWSER_PANEL_VERSION and/or BROWSERSETTINGS_PANEL_VERSION."
