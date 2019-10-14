@@ -67,6 +67,10 @@ Function DB_ResetAndStoreCurrentDBPanel()
 
 	// The following block resets the GUI state of the window and subwindows
 	HideTools/W=$panelTitle/A
+	HideTools/W=$bsPanel/A
+	HideTools/W=$scPanel/A
+	HideTools/W=$shPanel/A
+
 	PGC_SetAndActivateControl(panelTitle, "button_BSP_open")
 	DB_ClearAllGraphs()
 	DB_ClearGraph(panelTitle)
