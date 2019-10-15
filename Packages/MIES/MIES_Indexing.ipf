@@ -17,23 +17,19 @@ Function IDX_StoreStartFinishForIndexing(panelTitle)
 
 	WAVE DACIndexingStorageWave = GetDACIndexingStorageWave(panelTitle)
 	WAVE TTLIndexingStorageWave = GetTTLIndexingStorageWave(panelTitle)
-	
+
 	for(i = 0; i < NUM_DA_TTL_CHANNELS; i += 1)
 		ctrl = GetPanelControl(i, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_WAVE)
-		ControlInfo/W=$panelTitle $ctrl
-		DACIndexingStorageWave[0][i] = V_Value
+		DACIndexingStorageWave[0][i] = GetPopupMenuIndex(panelTitle, ctrl) + 1
 
 		ctrl = GetPanelControl(i, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_INDEX_END)
-		ControlInfo/W=$panelTitle $ctrl
-		DACIndexingStorageWave[1][i] = V_Value
+		DACIndexingStorageWave[1][i] = GetPopupMenuIndex(panelTitle, ctrl) + 1
 
 		ctrl = GetPanelControl(i, CHANNEL_TYPE_TTL, CHANNEL_CONTROL_WAVE)
-		ControlInfo/W=$panelTitle $ctrl
-		TTLIndexingStorageWave[0][i] = V_Value
+		TTLIndexingStorageWave[0][i] = GetPopupMenuIndex(panelTitle, ctrl) + 1
 
 		ctrl = GetPanelControl(i, CHANNEL_TYPE_TTL, CHANNEL_CONTROL_INDEX_END)
-		ControlInfo/W=$panelTitle $ctrl
-		TTLIndexingStorageWave[1][i] = V_Value
+		TTLIndexingStorageWave[1][i] = GetPopupMenuIndex(panelTitle, ctrl) + 1
 	endfor 
 End
 
@@ -149,7 +145,7 @@ static Function IDX_StepsInSetWithMaxSweeps(panelTitle, IndexNo, channelType)
 
 	variable MaxSteps, SetSteps
 	variable ListStartNo, ListEndNo, ListLength, Index
-	string popMenuIndexStartName, popMenuIndexEndName, setName
+	string ctrl, setName
 	variable i
 
 	WAVE status = DAG_GetChannelState(panelTitle, channelType)
@@ -160,12 +156,12 @@ static Function IDX_StepsInSetWithMaxSweeps(panelTitle, IndexNo, channelType)
 			continue
 		endif
 
-		popMenuIndexStartName = GetPanelControl(i, channelType, CHANNEL_CONTROL_WAVE)
-		controlinfo /w = $panelTitle $popMenuIndexStartName
-		ListStartNo = v_value
-		popMenuIndexEndName = GetPanelControl(i, channelType, CHANNEL_CONTROL_INDEX_END)
-		controlinfo /w = $panelTitle $popMenuIndexEndName
-		ListEndNo = v_value
+		ctrl = GetPanelControl(i, channelType, CHANNEL_CONTROL_WAVE)
+		ListStartNo = GetPopupMenuIndex(panelTitle, ctrl) + 1
+
+		ctrl = GetPanelControl(i, channelType, CHANNEL_CONTROL_INDEX_END)
+		ListEndNo = GetPopupMenuIndex(panelTitle, ctrl) + 1
+
 		ListLength = abs(ListStartNo - ListEndNo) + 1
 		index = indexNo
 		if(listLength <= IndexNo)
@@ -191,7 +187,7 @@ static Function IDX_MaxSets(panelTitle)
 
 	variable MaxSets = 0
 	variable ChannelSets
-	string popMenuIndexStartName, popMenuIndexEndName
+	string ctrl
 	variable i = 0
 
 	WAVE statusDA  = DAG_GetChannelState(panelTitle, CHANNEL_TYPE_DAC)
@@ -202,12 +198,12 @@ static Function IDX_MaxSets(panelTitle)
 			continue
 		endif
 
-		popMenuIndexStartName = GetPanelControl(i, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_WAVE)
-		controlinfo /w = $panelTitle $popMenuIndexStartName
-		ChannelSets = v_value
-		popMenuIndexEndName = GetPanelControl(i, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_INDEX_END)
-		controlinfo /w = $panelTitle $popMenuIndexEndName
-		ChannelSets -= v_value
+		ctrl = GetPanelControl(i, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_WAVE)
+		ChannelSets = GetPopupMenuIndex(panelTitle, ctrl) + 1
+
+		ctrl = GetPanelControl(i, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_INDEX_END)
+		ChannelSets -= GetPopupMenuIndex(panelTitle, ctrl) + 1
+
 		ChannelSets  = abs(ChannelSets)
 		MaxSets = max(MaxSets,ChannelSets)
 	endfor
@@ -220,12 +216,12 @@ static Function IDX_MaxSets(panelTitle)
 			continue
 		endif
 
-		popMenuIndexStartName = GetPanelControl(i, CHANNEL_TYPE_TTL, CHANNEL_CONTROL_WAVE)
-		controlinfo /w = $panelTitle $popMenuIndexStartName
-		ChannelSets = v_value
-		popMenuIndexEndName = GetPanelControl(i, CHANNEL_TYPE_TTL, CHANNEL_CONTROL_INDEX_END)
-		controlinfo/w=$panelTitle $popMenuIndexEndName
-		ChannelSets -= v_value
+		ctrl = GetPanelControl(i, CHANNEL_TYPE_TTL, CHANNEL_CONTROL_WAVE)
+		ChannelSets = GetPopupMenuIndex(panelTitle, ctrl) + 1
+
+		ctrl = GetPanelControl(i, CHANNEL_TYPE_TTL, CHANNEL_CONTROL_INDEX_END)
+		ChannelSets -= GetPopupMenuIndex(panelTitle, ctrl) + 1
+
 		ChannelSets = abs(ChannelSets)
 		MaxSets = max(MaxSets,ChannelSets)
 	endfor
