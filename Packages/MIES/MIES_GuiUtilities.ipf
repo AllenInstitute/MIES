@@ -1292,13 +1292,24 @@ Function SearchForInvalidControlProcs(win)
 	string controlList, control, controlProc
 	string subTypeStr
 	variable result, numEntries, i, subType
-	string funcList
+	string funcList, subwindowList, subwindow
 
 	if(!windowExists(win))
 		printf "SearchForInvalidControlProcs: Panel \"%s\" does not exist.\r", win
 		ControlWindowToFront()
 		return 1
 	endif
+
+	if(WinType(win) != 7 && WinType(win) != 1) // ignore everything except panels and graphs
+		return 0
+	endif
+
+	subwindowList = ChildWindowList(win)
+	numEntries = ItemsInList(subwindowList)
+	for(i = 0; i < numEntries; i += 1)
+		subwindow = win + "#" + StringFromList(i, subWindowList)
+		result = result || SearchForInvalidControlProcs(subwindow)
+	endfor
 
 	// we still have old style GUI control procedures so we can not restrict it to one parameter
 	funcList    = FunctionList("*", ";", "KIND:2")
