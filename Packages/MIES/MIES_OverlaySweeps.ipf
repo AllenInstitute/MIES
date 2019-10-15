@@ -62,11 +62,10 @@ End
 Function/S OVS_GetSweepSelectionChoices(win)
 	string win
 
-	DFREF dfr = OVS_GetFolder(win)
-
-	if(!DataFolderExistsDFR(dfr))
+	if(!OVS_IsActive(win))
 		return NONE
 	endif
+	DFREF dfr = OVS_GetFolder(win)
 
 	WAVE/T sweepSelChoices = GetOverlaySweepSelectionChoices(dfr)
 
@@ -101,32 +100,33 @@ End
 Function/DF OVS_GetFolder(win)
 	string win
 
-	if(!OVS_IsActive(win))
+	DFREF dfr = BSP_GetFolder(win, MIES_BSP_PANEL_FOLDER)
+	if(!DataFolderExistsDFR(dfr))
+		DebugPrint("OVS Folder does not exist")
 		return $""
 	endif
 
-	return BSP_GetFolder(win, MIES_BSP_PANEL_FOLDER)
+	return dfr
 End
 
 /// @brief Update the overlay sweep waves
 ///
 /// Must be called after the sweeps changed.
-Function OVS_UpdatePanel(win, listBoxWave, listBoxSelWave, sweepSelectionChoices, sweepWaveList, [allTextualValues, textualValues, allNumericalValues, numericalValues])
+Function OVS_UpdatePanel(win, listBoxWave, listBoxSelWave, sweepSelectionChoices, [allTextualValues, textualValues, allNumericalValues, numericalValues])
 	string win
 	WAVE/T listBoxWave
 	WAVE listBoxSelWave
 	WAVE/T sweepSelectionChoices
 	WAVE/T textualValues
 	WAVE/WAVE allTextualValues
-	string sweepWaveList
 	WAVE/WAVE allNumericalValues
 	WAVE/T numericalValues
 
 	variable i, numEntries, sweepNo, lastEntry, newCycleHasStartedRAC, newCycleHasStartedSCI
-	string extPanel
+	string extPanel, sweepWaveList
 
 	extPanel = BSP_GetPanel(win)
-
+	sweepWaveList = GetPlainSweepList(win)
 	numEntries = ItemsInList(sweepWaveList)
 
 	if(!ParamIsDefault(textualValues))
@@ -197,20 +197,35 @@ End
 /// @brief Return the selected sweeps (either indizes or the real sweep numbers)
 ///
 /// @param win  window (databrowser or sweepbrowser)
-/// @param mode one of #OVS_SWEEP_SELECTION_INDEX or #OVS_SWEEP_SELECTION_SWEEPNO
+/// @param mode sweep property
+///           -  #OVS_SWEEP_SELECTION_INDEX
+///           -  #OVS_SWEEP_SELECTION_SWEEPNO
+///           -  #OVS_SWEEP_ALL_SWEEPNO
 ///
-/// @return invalid wave reference in case nothing is selected or indizes/sweep numbers depending on mode parameter
+/// @return invalid wave reference in case nothing is selected or numeric indizes/sweep numbers depending on mode parameter
 Function/WAVE OVS_GetSelectedSweeps(win, mode)
 	string win
 	variable mode
 
-	ASSERT(mode == OVS_SWEEP_SELECTION_INDEX || mode == OVS_SWEEP_SELECTION_SWEEPNO, "Invalid mode")
+	string sweepList
 
+	ASSERT(mode == OVS_SWEEP_SELECTION_INDEX || \
+	       mode == OVS_SWEEP_SELECTION_SWEEPNO || \
+	       mode == OVS_SWEEP_ALL_SWEEPNO, "Invalid mode")
+
+	DFREF dfr = OVS_GetFolder(win)
+
+	if(mode == OVS_SWEEP_ALL_SWEEPNO)
+		sweepList = GetPlainSweepList(win)
+		Make/FREE/U/I/N=(ItemsInList(sweepList)) sweeps = ExtractSweepNumber(StringFromList(p, sweepList))
+		return sweeps
+	endif
+
+	// SWEEP_SELECTION_* modes
 	if(!OVS_IsActive(win))
 		return $""
 	endif
 
-	DFREF dfr = OVS_GetFolder(win)
 	WAVE/T listboxWave  = GetOverlaySweepsListWave(dfr)
 	WAVE listboxSelWave = GetOverlaySweepsListSelWave(dfr)
 
@@ -460,6 +475,8 @@ static Function OVS_HighlightSweep(win, index)
 	string win
 	variable index
 
+	ASSERT(OVS_IsActive(win), "Highlighting is only supported if OVS is enabled")
+
 	DFREF dfr = OVS_GetFolder(win)
 	WAVE/T listboxWave = GetOverlaySweepsListWave(dfr)
 
@@ -488,6 +505,8 @@ static Function OVS_ChangeSweepSelection(win, choiceString)
 
 	variable i, j, numEntries, numLayers, offset, step
 	string extPanel
+
+	ASSERT(OVS_IsActive(win), "Selecting sweeps is only supported if OVS is enabled")
 
 	extPanel  = BSP_GetPanel(win)
 

@@ -13,6 +13,7 @@ Table of Contents
   structlist
   namespacelist
   CalculateTPLikePropsFromSweep
+  SweepFormula
   IPNWB
   TPAnalysis_algorithm
   asyncframework

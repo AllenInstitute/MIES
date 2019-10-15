@@ -1931,8 +1931,9 @@ End
 /// @param sweepDFR        top datafolder to splitted 1D sweep waves
 /// @param axisLabelCache  store existing vertical axis labels
 /// @param traceIndex      [internal use only] set to zero on the first call in a row of successive calls
+/// @param experiment      name of the experiment the sweep stems from
 /// @param channelSelWave  [optional] channel selection wave
-Function CreateTiledChannelGraph(graph, config, sweepNo, numericalValues,  textualValues, tgs, sweepDFR, axisLabelCache, traceIndex, [channelSelWave])
+Function CreateTiledChannelGraph(graph, config, sweepNo, numericalValues,  textualValues, tgs, sweepDFR, axisLabelCache, traceIndex, experiment, [channelSelWave])
 	string graph
 	WAVE config
 	variable sweepNo
@@ -1942,6 +1943,7 @@ Function CreateTiledChannelGraph(graph, config, sweepNo, numericalValues,  textu
 	DFREF sweepDFR
 	WAVE/T axisLabelCache
 	variable &traceIndex
+	string experiment
 	WAVE/Z channelSelWave
 
 	variable red, green, blue, axisIndex, numChannels, offset
@@ -2393,7 +2395,7 @@ Function CreateTiledChannelGraph(graph, config, sweepNo, numericalValues,  textu
 					endif
 
 					GetTraceColor(colorIndex, red, green, blue)
-					ModifyGraph/W=$graph hideTrace($trace)=(tgs.hideSweep), rgb($trace)=(red, green, blue), userData($trace)={channelType, USERDATA_MODIFYGRAPH_REPLACE, channelID}, userData($trace)={channelNumber, USERDATA_MODIFYGRAPH_REPLACE, num2str(chan)}, userData($trace)={sweepNumber, USERDATA_MODIFYGRAPH_REPLACE, num2str(sweepNo)}, userData($trace)={headstage, USERDATA_MODIFYGRAPH_REPLACE, num2str(headstage)}, userData($trace)={textualValues, USERDATA_MODIFYGRAPH_REPLACE, GetWavesDataFolder(textualValues, 2)}, userData($trace)={numericalValues, USERDATA_MODIFYGRAPH_REPLACE, GetWavesDataFolder(numericalValues, 2)}, userData($trace)={clampMode, USERDATA_MODIFYGRAPH_REPLACE, num2str(IsFinite(headstage) ? clampModes[headstage] : NaN)}
+					ModifyGraph/W=$graph hideTrace($trace)=(tgs.hideSweep), rgb($trace)=(red, green, blue), userData($trace)={channelType, USERDATA_MODIFYGRAPH_REPLACE, channelID}, userData($trace)={channelNumber, USERDATA_MODIFYGRAPH_REPLACE, num2str(chan)}, userData($trace)={sweepNumber, USERDATA_MODIFYGRAPH_REPLACE, num2str(sweepNo)}, userData($trace)={headstage, USERDATA_MODIFYGRAPH_REPLACE, num2str(headstage)}, userData($trace)={textualValues, USERDATA_MODIFYGRAPH_REPLACE, GetWavesDataFolder(textualValues, 2)}, userData($trace)={numericalValues, USERDATA_MODIFYGRAPH_REPLACE, GetWavesDataFolder(numericalValues, 2)}, userData($trace)={clampMode, USERDATA_MODIFYGRAPH_REPLACE, num2str(IsFinite(headstage) ? clampModes[headstage] : NaN)}, userData($trace)={experiment, USERDATA_MODIFYGRAPH_REPLACE, experiment}
 
 					sprintf str, "colorIndex=%d", colorIndex
 					DEBUGPRINT(str)
@@ -5061,6 +5063,16 @@ Function UpdateSettingsPanel(win)
 		DB_GraphUpdate(win)
 	else
 		SB_PanelUpdate(win)
+	endif
+End
+
+Function/S GetPlainSweepList(win)
+	string win
+
+	if(BSP_IsDataBrowser(win))
+		return DB_GetPlainSweepList(win)
+	else
+		return SB_GetPlainSweepList(win)
 	endif
 End
 

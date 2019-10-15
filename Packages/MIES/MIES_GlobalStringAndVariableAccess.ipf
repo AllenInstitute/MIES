@@ -642,3 +642,17 @@ Function/S GetTestpulseLengthInPoints(panelTitle, mode)
 
 	return GetNVARAsString(dfr, "testpulseLengthInPoints", initialValue=NaN)
 End
+
+/// @brief Return the JSON ID for the sweep formula
+Function/S GetSweepFormulaJSONid(dfr)
+	DFREF dfr
+
+	return GetNVARAsString(dfr, "sweepFormulaJSONid", initialValue=NaN)
+End
+
+/// @brief Return the formula error message for the sweep formula
+Function/S GetSweepFormulaParseErrorMessage(dfr)
+	DFREF dfr
+
+	return GetSVARAsString(dfr, "sweepFormulaParseResult")
+End

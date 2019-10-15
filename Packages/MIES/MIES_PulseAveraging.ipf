@@ -229,6 +229,7 @@ End
 ///        refer to the same wave.
 ///
 ///        Columns have colum labels and include various userdata readout from the traces.
+/// 	   for @p channelType @see ItcXopChannelConstants
 Function/WAVE PA_GetTraceInfos(graph, [includeOtherADData, channelType])
 	string graph
 	variable includeOtherADData, channelType
@@ -267,9 +268,9 @@ Function/WAVE PA_GetTraceInfos(graph, [includeOtherADData, channelType])
 	WAVE indizes = FindIndizes(tracesFullPath, prop=PROP_NON_EMPTY, col=0)
 
 	numTraces = DimSize(indizes, ROWS)
-	Make/N=(numTraces, 8)/FREE/T traceData
+	Make/N=(numTraces, 9)/FREE/T traceData
 
-	SetWaveDimLabel(traceData, "traceName;fullPath;channelType;channelNumber;sweepNumber;headstage;textualValues;numericalValues", COLS)
+	SetWaveDimLabel(traceData, "traceName;fullPath;channelType;channelNumber;sweepNumber;headstage;textualValues;numericalValues;experiment", COLS)
 
 	traceData[][%traceName]        = StringFromList(indizes[p], traceList)
 	traceData[][%fullPath]         = GetWavesDataFolder(TraceNameToWaveRef(graph, traceData[p][%traceName]), 2)

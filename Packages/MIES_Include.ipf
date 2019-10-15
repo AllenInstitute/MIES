@@ -28,6 +28,9 @@
 #include "ACL_UserdataEditor"
 #include "Arduino_Sequencer_Vs1"
 
+// JSON XOP
+#include "json_functions"
+
 // NWB for Igor Pro
 #include "IPNWB_Include"
 
@@ -93,6 +96,7 @@
 #include "MIES_RepeatedAcquisition"
 #include "MIES_SamplingInterval"
 #include "MIES_Structures"
+#include "MIES_SweepFormula"
 #include "MIES_SweepSaving"
 #include "MIES_ThreadedFIFOHandling"
 #include "MIES_ThreadsafeUtilities"

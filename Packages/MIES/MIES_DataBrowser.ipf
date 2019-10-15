@@ -38,6 +38,7 @@ End
 ///        after GUI editor adapted controls in development process
 Function DB_ResetAndStoreCurrentDBPanel()
 	string panelTitle, bsPanel, scPanel, shPanel, recreationCode
+	string sfFormula, sfJSON
 
 	panelTitle = GetMainWindow(GetCurrentWindow())
 	if(!windowExists(panelTitle))
@@ -66,6 +67,10 @@ Function DB_ResetAndStoreCurrentDBPanel()
 
 	// The following block resets the GUI state of the window and subwindows
 	HideTools/W=$panelTitle/A
+	HideTools/W=$bsPanel/A
+	HideTools/W=$scPanel/A
+	HideTools/W=$shPanel/A
+
 	PGC_SetAndActivateControl(panelTitle, "button_BSP_open")
 	DB_ClearAllGraphs()
 	DB_ClearGraph(panelTitle)
@@ -161,6 +166,15 @@ Function DB_ResetAndStoreCurrentDBPanel()
 	CheckBox check_BrowserSettings_splitTTL WIN = $bsPanel, value= 0
 	CheckBox check_BrowserSettings_DB_Passed WIN = $bsPanel, value= 0
 	CheckBox check_BrowserSettings_DB_Failed WIN = $bsPanel, value= 0
+
+	sfFormula = BSP_GetSFFormula(panelTitle)
+	ReplaceNotebookText(sfFormula, "data(\rcursors(A,B),\rchannels(AD),\rsweeps(0;1;2;3;4;5)\r)")
+
+	sfJSON = BSP_GetSFJSON(panelTitle)
+	ReplaceNotebookText(sfJSON, "data(\rcursors(A,B),\rchannels(AD),\rsweeps(0;1;2;3;4;5)\r)")
+
+	SetVariable setvar_sweepFormula_parseResult WIN = $bsPanel, value=_STR:""
+	ValDisplay status_sweepFormula_parser, WIN = $bsPanel, value=1
 
 	SearchForInvalidControlProcs(panelTitle)
 	print "Do not forget to increase DATABROWSER_PANEL_VERSION and/or SWEEPBROWSER_PANEL_VERSION and/or BROWSERSETTINGS_PANEL_VERSION."
@@ -278,7 +292,7 @@ static Function DB_SetUserData(win, device)
 	BSP_SetFolder(win, dfr, MIES_BSP_PANEL_FOLDER)
 End
 
-static Function/S DB_GetPlainSweepList(win)
+Function/S DB_GetPlainSweepList(win)
 	string win
 
 	string device
@@ -336,7 +350,7 @@ Function DB_UpdateSweepPlot(win)
 	string win
 
 	variable numEntries, i, sweepNo, highlightSweep, referenceTime, traceIndex
-	string device, mainPanel, lbPanel, bsPanel, scPanel, graph
+	string device, mainPanel, lbPanel, bsPanel, scPanel, graph, experiment
 
 	if(BSP_MainPanelNeedsUpdate(win))
 		DoAbortNow("Can not display data. The Databrowser panel is too old to be usable. Please close it and open a new one.")
@@ -344,11 +358,12 @@ Function DB_UpdateSweepPlot(win)
 
 	referenceTime = DEBUG_TIMER_START()
 
-	mainPanel = GetMainWindow(win)
-	lbPanel   = BSP_GetNotebookSubWindow(win)
-	bsPanel   = BSP_GetPanel(win)
-	scPanel   = BSP_GetSweepControlsPanel(win)
-	graph     = DB_GetMainGraph(win)
+	mainPanel  = GetMainWindow(win)
+	lbPanel    = BSP_GetNotebookSubWindow(win)
+	bsPanel    = BSP_GetPanel(win)
+	scPanel    = BSP_GetSweepControlsPanel(win)
+	graph      = DB_GetMainGraph(win)
+	experiment = GetExperimentName()
 
 	WAVE axesRanges = GetAxesRanges(graph)
 
@@ -410,7 +425,7 @@ Function DB_UpdateSweepPlot(win)
 		DB_SplitSweepsIfReq(win, sweepNo)
 		WAVE config = GetConfigWave(sweepWave)
 
-		CreateTiledChannelGraph(graph, config, sweepNo, numericalValues, textualValues, tgs, dfr, axisLabelCache, traceIndex, channelSelWave=sweepChannelSel)
+		CreateTiledChannelGraph(graph, config, sweepNo, numericalValues, textualValues, tgs, dfr, axisLabelCache, traceIndex, experiment, channelSelWave=sweepChannelSel)
 		AR_UpdateTracesIfReq(graph, dfr, numericalValues, sweepNo)
 	endfor
 
@@ -570,12 +585,13 @@ Function DB_UpdateToLastSweep(win)
 
 	OVS_ChangeSweepSelectionState(win, CHECKBOX_SELECTED, sweepNo=last)
 	DB_UpdateSweepPlot(win)
+	PGC_SetAndActivateControl(bsPanel, "button_sweepFormula_display")
 End
 
 static Function DB_UpdateOverlaySweepWaves(win)
 	string win
 
-	string device, sweepWaveList, mainPanel
+	string device, mainPanel
 
 	if(!OVS_IsActive(win))
 		return NaN
@@ -590,9 +606,7 @@ static Function DB_UpdateOverlaySweepWaves(win)
 	WAVE numericalValues   = DB_GetNumericalValues(win)
 	WAVE/T sweepSelChoices = GetOverlaySweepSelectionChoices(dfr)
 
-	sweepWaveList = DB_GetPlainSweepList(win)
-
-	OVS_UpdatePanel(win, listBoxWave, listBoxSelWave, sweepSelChoices, sweepWaveList, textualValues=textualValues, numericalValues=numericalValues)
+	OVS_UpdatePanel(win, listBoxWave, listBoxSelWave, sweepSelChoices, textualValues=textualValues, numericalValues=numericalValues)
 End
 
 /// @brief procedure for the open button of the side panel
@@ -995,7 +1009,7 @@ End
 Function DB_CheckProc_OverlaySweeps(cba) : CheckBoxControl
 	STRUCT WMCheckBoxAction &cba
 
-	string win, mainPanel, scPanel, device, sweepWaveList
+	string win, mainPanel, scPanel, device
 	variable sweepNo
 
 	win = cba.win
@@ -1014,8 +1028,7 @@ Function DB_CheckProc_OverlaySweeps(cba) : CheckBoxControl
 
 				WAVE/T numericalValues = DB_GetNumericalValues(win)
 				WAVE/T textualValues   = DB_GetTextualValues(win)
-				sweepWaveList = DB_GetPlainSweepList(win)
-				OVS_UpdatePanel(win, listBoxWave, listBoxSelWave, sweepSelChoices, sweepWaveList, textualValues=textualValues, numericalValues=numericalValues)
+				OVS_UpdatePanel(win, listBoxWave, listBoxSelWave, sweepSelChoices, textualValues=textualValues, numericalValues=numericalValues)
 			endif
 
 			if(OVS_IsActive(win))

@@ -7,6 +7,9 @@
 
 static strConstant EXT_PANEL_SUBWINDOW = "BrowserSettingsPanel"
 static strConstant EXT_PANEL_SWEEPCONTROL = "SweepControl"
+static strConstant EXT_PANEL_SF_FORMULA = "sweepFormula_formula"
+static strConstant EXT_PANEL_SF_JSON = "sweepFormula_json"
+static strConstant EXT_PANEL_SF_HELP = "sweepFormula_help"
 
 static Constant BROWSERSETTINGS_PANEL_VERSION = 5
 
@@ -50,6 +53,24 @@ Function/S BSP_GetSweepControlsPanel(mainPanel)
 	string mainPanel
 
 	return GetMainWindow(mainPanel) + "#" + EXT_PANEL_SWEEPCONTROL
+End
+
+Function /S BSP_GetSFFormula(mainPanel)
+	string mainPanel
+
+	return BSP_GetPanel(mainPanel) + "#" + EXT_PANEL_SF_FORMULA
+End
+
+Function /S BSP_GetSFJSON(mainPanel)
+	string mainPanel
+
+	return BSP_GetPanel(mainPanel) + "#" + EXT_PANEL_SF_JSON
+End
+
+Function /S BSP_GetSFHELP(mainPanel)
+	string mainPanel
+
+	return BSP_GetPanel(mainPanel) + "#" + EXT_PANEL_SF_HELP
 End
 
 /// @brief Inits controls of BrowserSettings side Panel
@@ -258,6 +279,10 @@ Function BSP_BindListBoxWaves(win)
 	WAVE listBoxSelWave   = GetAnaFuncDashboardselWave(dfr)
 	WAVE/T listBoxWave    = GetAnaFuncDashboardListWave(dfr)
 	ListBox list_dashboard, win=$bsPanel, listWave=listBoxWave, colorWave=listBoxColorWave, selWave=listBoxSelWave
+
+	// sweep formula tab
+	SetValDisplay(bsPanel, "status_sweepFormula_parser", var=1)
+	SetSetVariableString(bsPanel, "setvar_sweepFormula_parseResult", "")
 End
 
 /// @brief add SB_* or DB_* prefix to the input string depending on current window

@@ -319,7 +319,7 @@ Function SB_UpdateSweepPlot(win, [newSweep])
 	string win
 	variable newSweep
 
-	string device, dataFolder, graph, bsPanel, scPanel, lbPanel
+	string device, dataFolder, graph, bsPanel, scPanel, lbPanel, experiment
 	variable mapIndex, i, numEntries, sweepNo, highlightSweep, traceIndex, currentSweep
 
 	graph = GetMainWindow(win)
@@ -375,6 +375,7 @@ Function SB_UpdateSweepPlot(win, [newSweep])
 
 		dataFolder = sweepMap[mapIndex][%DataFolder]
 		device     = sweepMap[mapIndex][%Device]
+		experiment = sweepMap[mapIndex][%FileName]
 		sweepNo    = str2num(sweepMap[mapIndex][%Sweep])
 
 		WAVE/Z activeHS = OVS_ParseIgnoreList(graph, highlightSweep, index=mapIndex)
@@ -393,7 +394,7 @@ Function SB_UpdateSweepPlot(win, [newSweep])
 		WAVE configWave = GetAnalysisConfigWave(dataFolder, device, sweepNo)
 		WAVE textualValues = GetAnalysLBTextualValues(dataFolder, device)
 
-		CreateTiledChannelGraph(graph, configWave, sweepNo, numericalValues, textualValues, tgs, sweepDFR, axisLabelCache, traceIndex, channelSelWave=sweepChannelSel)
+		CreateTiledChannelGraph(graph, configWave, sweepNo, numericalValues, textualValues, tgs, sweepDFR, axisLabelCache, traceIndex, experiment, channelSelWave=sweepChannelSel)
 		AR_UpdateTracesIfReq(graph, sweepDFR, numericalValues, sweepNo)
 	endfor
 
@@ -578,7 +579,7 @@ End
 /// @brief Returns a list of all sweeps of the form "Sweep_0;Sweep_1;...".
 ///
 /// Can contain duplicates!
-static Function/S SB_GetPlainSweepList(win)
+Function/S SB_GetPlainSweepList(win)
 	string win
 
 	string list = "", str
@@ -867,7 +868,7 @@ End
 Function SB_CheckProc_OverlaySweeps(cba) : CheckBoxControl
 	STRUCT WMCheckBoxAction &cba
 
-	string graph, bsPanel, scPanel, sweepWaveList
+	string graph, bsPanel, scPanel
 	variable index
 
 	graph   = GetMainWindow(cba.win)
@@ -886,8 +887,7 @@ Function SB_CheckProc_OverlaySweeps(cba) : CheckBoxControl
 			WAVE/WAVE allNumericalValues = SB_GetNumericalValuesWaves(graph)
 			WAVE/WAVE allTextualValues   = SB_GetTextualValuesWaves(graph)
 
-			sweepWaveList = SB_GetPlainSweepList(graph)
-			OVS_UpdatePanel(graph, listBoxWave, listBoxSelWave, sweepSelChoices, sweepWaveList, allTextualValues=allTextualValues, allNumericalValues=allNumericalValues)
+			OVS_UpdatePanel(graph, listBoxWave, listBoxSelWave, sweepSelChoices, allTextualValues=allTextualValues, allNumericalValues=allNumericalValues)
 			if(OVS_IsActive(graph))
 				index = GetPopupMenuIndex(scPanel, "popup_SweepControl_Selector")
 				OVS_ChangeSweepSelectionState(bsPanel, CHECKBOX_SELECTED, index=index)
