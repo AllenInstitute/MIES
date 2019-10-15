@@ -2190,25 +2190,9 @@ static Function DC_GetEpochCount(panelTitle, channel)
 	string panelTitle
 	variable channel
 
-	variable i, numEpochs
-	string entry
-
 	WAVE/T epochWave = GetEpochsWave(panelTitle)
-#if IgorVersion() >= 8.0
 	FindValue/Z/RMD=[][][channel]/TXOP=4/TEXT="" epochWave
-	i = V_row == -1 ? DimSize(epochWave, ROWS) : V_row
-
-#else
-	numEpochs = DimSize(epochWave, ROWS)
-	for(i = 0; i < numEpochs; i += 1)
-		entry = epochWave[i][%StartTime][channel]
-		if(isEmpty(entry))
-			break
-		endif
-	endfor
-#endif
-
-	return i
+	return V_row == -1 ? DimSize(epochWave, ROWS) : V_row
 End
 
 /// @brief Adds a epoch to the epochsWave
