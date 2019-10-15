@@ -127,7 +127,8 @@ Function IDX_MaxSweepsLockedIndexing(panelTitle)
 	string panelTitle
 
 	variable i, maxSteps
-	variable MaxCycleIndexSteps = IDX_MaxSets(panelTitle) + 1
+	variable MaxCycleIndexSteps = max(IDX_MaxSets(panelTitle, CHANNEL_TYPE_DAC), \
+									  IDX_MaxSets(panelTitle, CHANNEL_TYPE_TTL)) + 1
 
 	do
 		MaxSteps += max(IDX_StepsInSetWithMaxSweeps(panelTitle, i, CHANNEL_TYPE_DAC), \
@@ -182,48 +183,31 @@ static Function IDX_StepsInSetWithMaxSweeps(panelTitle, IndexNo, channelType)
 End
 
 /// @brief Return the number of sets on the active channel with the most sets.
-static Function IDX_MaxSets(panelTitle)
+static Function IDX_MaxSets(panelTitle, channelType)
 	string panelTitle
+	variable channelType
 
 	variable MaxSets
 	variable ChannelSets
 	string ctrl
 	variable i
 
-	WAVE statusDA  = DAG_GetChannelState(panelTitle, CHANNEL_TYPE_DAC)
+	WAVE status = DAG_GetChannelState(panelTitle, channelType)
 
 	for(i = 0; i < NUM_DA_TTL_CHANNELS; i += 1)
 
-		if(!statusDA[i])
+		if(!status[i])
 			continue
 		endif
 
-		ctrl = GetPanelControl(i, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_WAVE)
+		ctrl = GetPanelControl(i, channelType, CHANNEL_CONTROL_WAVE)
 		ChannelSets = GetPopupMenuIndex(panelTitle, ctrl) + 1
 
-		ctrl = GetPanelControl(i, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_INDEX_END)
-		ChannelSets -= GetPopupMenuIndex(panelTitle, ctrl) + 1
-
-		ChannelSets  = abs(ChannelSets)
-		MaxSets = max(MaxSets,ChannelSets)
-	endfor
-
-	WAVE statusTTL = DAG_GetChannelState(panelTitle, CHANNEL_TYPE_TTL)
-
-	for(i = 0; i < NUM_DA_TTL_CHANNELS; i += 1)
-
-		if(!statusTTL[i])
-			continue
-		endif
-
-		ctrl = GetPanelControl(i, CHANNEL_TYPE_TTL, CHANNEL_CONTROL_WAVE)
-		ChannelSets = GetPopupMenuIndex(panelTitle, ctrl) + 1
-
-		ctrl = GetPanelControl(i, CHANNEL_TYPE_TTL, CHANNEL_CONTROL_INDEX_END)
+		ctrl = GetPanelControl(i, channelType, CHANNEL_CONTROL_INDEX_END)
 		ChannelSets -= GetPopupMenuIndex(panelTitle, ctrl) + 1
 
 		ChannelSets = abs(ChannelSets)
-		MaxSets = max(MaxSets,ChannelSets)
+		MaxSets = max(MaxSets, ChannelSets)
 	endfor
 
 	return MaxSets // if the start and end set are the same, this returns 0
