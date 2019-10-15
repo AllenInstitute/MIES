@@ -602,7 +602,7 @@ Constant WAVEBUILDER_PANEL_VERSION  = 8
 Constant LABNOTEBOOK_VERSION = 34
 
 /// Version of the stimset wave note
-Constant STIMSET_NOTE_VERSION = 5
+Constant STIMSET_NOTE_VERSION = 6
 
 /// @name The channel numbers for the different ITC devices used for accesssing
 ///       the TTLs
