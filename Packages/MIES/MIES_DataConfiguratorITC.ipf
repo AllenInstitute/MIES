@@ -2008,7 +2008,7 @@ static Function DC_AddEpochsFromStimSetNote(panelTitle, channel, stimset, stimse
 	variable stimsetEnd, stimsetEndLogical
 	variable epochBegin, epochEnd, subEpochBegin, subEpochEnd
 	string epSweepName, epSubName, epSubSubName, epSpecifier
-	variable epochCount
+	variable epochCount, totalDuration
 	variable epochNr, pulseNr, numPulses, epochType, flipping, pulseToPulseLength, stimEpochAmplitude, amplitude
 	variable pulseDuration, wroteValidSubEpochOnce
 	string type, startTimesList
@@ -2023,7 +2023,11 @@ static Function DC_AddEpochsFromStimSetNote(panelTitle, channel, stimset, stimse
 
 	duration[] = WB_GetWaveNoteEntryAsNumber(stimNote, EPOCH_ENTRY, key="Duration", sweep=sweep, epoch=p)
 	duration *= 1000
-	stimsetEndLogical = stimsetBegin + sum(duration)
+	totalDuration = sum(duration)
+
+	ASSERT(IsFinite(totalDuration), "Expected finite totalDuration")
+	ASSERT(IsFinite(stimsetBegin), "Expected finite stimsetBegin")
+	stimsetEndLogical = stimsetBegin + totalDuration
 
 	if(epochCount > 1)
 		sweepOffset[0] = 0
