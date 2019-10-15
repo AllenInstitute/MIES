@@ -185,10 +185,10 @@ End
 static Function IDX_MaxSets(panelTitle)
 	string panelTitle
 
-	variable MaxSets = 0
+	variable MaxSets
 	variable ChannelSets
 	string ctrl
-	variable i = 0
+	variable i
 
 	WAVE statusDA  = DAG_GetChannelState(panelTitle, CHANNEL_TYPE_DAC)
 
