@@ -5121,67 +5121,44 @@ Function/S GetDevSpecAsynRspWaveAS(panelTitle)
 	return GetDevSpecLabNBFolderAsString(panelTitle) + ":cmdID"
 End
 
-/// @brief Return the indexing storage wave for the given channel type
-Function/WAVE GetIndexingStorageWave(panelTitle, channelType)
-	string panelTitle
-	variable channelType
-
-	switch(channelType)
-		case CHANNEL_TYPE_DAC:
-			return GetDACIndexingStorageWave(panelTitle)
-		case CHANNEL_TYPE_TTL:
-			return GetTTLIndexingStorageWave(panelTitle)
-		default:
-			ASSERT(0, "Unknown channelType")
-	endswitch
-End
-
-/// @brief Return the TTL indexing storage wave
+/// @brief Return the indexing storage wave
 ///
 /// Rows:
-/// 0: Popup menu index of TTL wave (1-based)
-/// 1: Popup menu index of Indexing end wave (1-based)
-/// 2-3: Unused
+/// 0: DA (#CHANNEL_TYPE_DAC)
+/// 0: TTL (#CHANNEL_TYPE_TTL)
 ///
-/// Columns:
-/// - TLL channels
-Function/Wave GetTTLIndexingStorageWave(panelTitle)
+/// Cols:
+/// 0: Popup menu index of Wave (stimset)
+/// 1: Popup menu index of Indexing end wave (stimset)
+///
+/// All zero-based as returned by GetPopupMenuIndex().
+///
+/// Layers:
+/// - Channels
+Function/Wave GetIndexingStorageWave(panelTitle)
 	string panelTitle
 
 	DFREF dfr = GetDevicePath(panelTitle)
+	variable versionOfNewWave = 1
 
-	WAVE/Z/SDFR=dfr wv = TTLIndexingStorageWave
+	WAVE/Z/SDFR=dfr wv = IndexingStorageWave
 
-	if(WaveExists(wv))
+	if(ExistsWithCorrectLayoutVersion(wv, versionOfNewWave))
+		return wv
+	elseif(WaveExists(wv))
+		// handle upgrade
 		return wv
 	endif
 
-	Make/N=(4, NUM_DA_TTL_CHANNELS) dfr:TTLIndexingStorageWave/Wave=wv
+	Make/N=(2, 2, NUM_DA_TTL_CHANNELS) dfr:IndexingStorageWave/Wave=wv
 
-	return wv
-End
+	SetDimLabel ROWS, 0, CHANNEL_TYPE_DAC, wv
+	SetDimLabel ROWS, 1, CHANNEL_TYPE_TTL, wv
 
-/// @brief Return the DAC indexing storage wave
-///
-/// Rows:
-/// 0: Popup menu index of DAC wave (1-based)
-/// 1: Popup menu index of Indexing end wave (1-based)
-/// 2-3: Unused
-///
-/// Columns:
-/// - DACs
-Function/Wave GetDACIndexingStorageWave(panelTitle)
-	string panelTitle
+	SetDimLabel COLS, 0, CHANNEL_CONTROL_WAVE, wv
+	SetDimLabel COLS, 1, CHANNEL_CONTROL_INDEX_END, wv
 
-	DFREF dfr = GetDevicePath(panelTitle)
-
-	WAVE/Z/SDFR=dfr wv = DACIndexingStorageWave
-
-	if(WaveExists(wv))
-		return wv
-	endif
-
-	Make/N=(4, NUM_DA_TTL_CHANNELS) dfr:DACIndexingStorageWave/Wave=wv
+	SetWaveVersion(wv, versionOfNewWave)
 
 	return wv
 End
