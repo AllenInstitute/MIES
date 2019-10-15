@@ -26,6 +26,7 @@ End
 Function WB_RegressionTest()
 
 	variable i, numEntries
+	variable j, sweepCount, duration, k, epochCount
 	string list, stimset, text
 
 	DFREF ref = root:wavebuilder_misc:DAWaves
@@ -57,6 +58,20 @@ Function WB_RegressionTest()
 		CHECK_EQUAL_WAVES(refWave, wv, mode = WAVE_DATA | WAVE_DATA_TYPE | WAVE_SCALING | DIMENSION_LABELS | DIMENSION_UNITS | DIMENSION_SIZES | DATA_UNITS | DATA_FULL_SCALE, tol = 1e-12)
 
 		text = note(wv)
+
+		// check that we have a duration for all sweeps/epochs
+		sweepCount = WB_GetWaveNoteEntryAsNumber(text, STIMSET_ENTRY, key = "Sweep Count")
+		CHECK(sweepCount > 0)
+
+		epochCount = WB_GetWaveNoteEntryAsNumber(text, STIMSET_ENTRY, key = "Epoch Count")
+		CHECK(epochCount > 0)
+
+		for(j = 0; j < sweepCount; j += 1)
+			for(k = 0; k < epochCount; k += 1)
+				duration = WB_GetWaveNoteEntryAsNumber(text, EPOCH_ENTRY, key = "Duration", sweep = j, epoch=k)
+				CHECK(duration > 0)
+			endfor
+		endfor
 
 		// check ITIs
 		strswitch(stimset)
