@@ -3678,8 +3678,7 @@ Function TimeAlignmentIfReq(graphtrace, mode, level, pos1x, pos2x, [force])
 	refTrace = StringFromList(1, graphtrace, "#")
 	ASSERT(windowExists(refGraph), "Graph must exist")
 
-	first = min(pos1x, pos2x)
-	last  = max(pos1x, pos2x)
+	[first, last] = MinMax(pos1x, pos2x)
 
 	sprintf str, "first=%g, last=%g", first, last
 	DEBUGPRINT(str)
@@ -5563,8 +5562,7 @@ Function DecimateWithMethod(input, output, decimationFactor, method, [firstRowIn
 		ASSERT(lastRowInp >= 0 && lastRowInp < numRowsInp, "Invalid lastRowInp value")
 	endif
 
-	firstRowInp = min(firstRowInp, lastRowInp)
-	lastRowInp  = max(firstRowInp, lastRowInp)
+	[firstRowInp, lastRowInp] = MinMax(firstRowInp, lastRowInp)
 
 	usedRows = lastRowInp - firstRowInp + 1
 
@@ -5580,8 +5578,7 @@ Function DecimateWithMethod(input, output, decimationFactor, method, [firstRowIn
 		ASSERT(lastColInp >= 0 && (lastColInp < numColsInp || (lastColInp == 0 && numColsInp <= 1)), "Invalid lastColInp value")
 	endif
 
-	firstColInp = min(firstColInp, lastColInp)
-	lastColInp  = max(firstColInp, lastColInp)
+	[firstColInp, lastColInp] = MinMax(firstColInp, lastColInp)
 
 	usedColumns = lastColInp - firstColInp + 1
 
@@ -5597,8 +5594,7 @@ Function DecimateWithMethod(input, output, decimationFactor, method, [firstRowIn
 		ASSERT(lastColOut >= 0 && (lastColOut < numColsOut || (lastColOut == 0 && numColsOut <= 1)), "Invalid lastColOut value")
 	endif
 
-	firstColOut = min(firstColOut, lastColOut)
-	lastColOut  = max(firstColOut, lastColOut)
+	[firstColOut, lastColOut] = MinMax(firstColOut, lastColOut)
 
 	ASSERT(usedColumns == (lastColOut - firstColOut + 1), "Non-matching column ranges")
 

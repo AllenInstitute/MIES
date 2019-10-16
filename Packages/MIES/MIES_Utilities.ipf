@@ -1995,6 +1995,13 @@ Function/S ListFromList(list, itemBegin, itemEnd, [listSep])
 	return list[start, stop - 1]
 End
 
+/// @brief Return the minimum and maximum of both values
+Function [variable minimum, variable maximum] MinMax(variable a, variable b)
+
+	minimum = min(a, b)
+	maximum = max(a, b)
+End
+
 /// @brief calculates the relative complement of list2 in list1
 ///
 /// Every list item of `list1` must be in `list2`.

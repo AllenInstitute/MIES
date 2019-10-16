@@ -444,8 +444,7 @@ static Function IDX_TotalIndexingListSteps(panelTitle, channelNumber, channelTyp
 	last  = indexingStorageWave[channelType][%CHANNEL_CONTROL_INDEX_END][channelNumber]
 
 	ASSERT(first != last, "Unexpected combo")
-	minimum = min(first, last)
-	maximum = max(first, last)
+	[minimum, maximum] = MinMax(first, last)
 
 	WAVE stimsets = IDX_GetStimsets(panelTitle, channelNumber, channelType)
 
