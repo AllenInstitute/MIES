@@ -2370,25 +2370,6 @@ Function InPlaceRandomShuffle(inwave, [noiseGenMode])
 	endfor
 end
 
-/// @brief Convert a 1D numeric wave to a list
-///
-/// Counterpart @see ListToNumericWave
-/// Similar @see NumericWaveToList
-/// @see ListToNumericWave
-Function/S Convert1DWaveToList(wv)
-	Wave wv
-
-	variable numEntries, i
-	string list = ""
-
-	numEntries = DimSize(wv, ROWS)
-	for(i = 0; i < numEntries; i += 1)
-		list = AddListItem(num2str(wv[i]), list, ";", Inf)
-	endfor
-
-	return list
-End
-
 /// @brief Return a unique trace name in the graph
 ///
 /// Remember that it might be necessary to call `DoUpdate`
