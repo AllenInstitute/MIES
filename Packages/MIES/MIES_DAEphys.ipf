@@ -1523,8 +1523,8 @@ Function DAP_PopMenuChkProc_StimSetList(pa) : PopupMenuControl
 
 			if(!isAllControl)
 				// check if this is a third party stim set which
-				// is not yet reflected in the "MenuExp" user data
-				list = GetUserData(panelTitle, ctrl, "MenuExp")
+				// is not yet reflected in the user data
+				list = GetUserData(panelTitle, ctrl, USER_DATA_MENU_EXP)
 				if(FindListItem(stimSet, list) == -1)
 					WBP_UpdateITCPanelPopUps()
 				endif
@@ -2641,11 +2641,11 @@ static Function DAP_CheckStimset(panelTitle, channelType, channel, headstage)
 		endif
 	endif
 
-	sets = IDX_GetSetsInRange(panelTitle, channel, channelType, 0)
+	WAVE/T stimsets = IDX_GetSetsInRange(panelTitle, channel, channelType, 0)
 
-	numSets = ItemsInList(sets)
+	numSets = DimSize(stimsets, ROWS)
 	for(i = 0; i < numSets; i += 1)
-		setName = StringFromList(i, sets)
+		setName = stimsets[i]
 
 		if(!CmpStr(setName, STIMSET_TP_WHILE_DAQ))
 			continue

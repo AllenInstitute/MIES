@@ -319,7 +319,7 @@ Function/S IDX_GetSetsInRange(panelTitle, channel, channelType, lockedIndexing)
 
 	waveCtrl = GetPanelControl(channel, channelType, CHANNEL_CONTROL_WAVE)
 	lastCtrl = GetPanelControl(channel, channelType, CHANNEL_CONTROL_INDEX_END)
-	list     = GetUserData(panelTitle, waveCtrl, "menuexp")
+	list     = GetUserData(panelTitle, waveCtrl, USER_DATA_MENU_EXP)
 
 	// deliberately not using the gui state wave
 	first = GetPopupMenuIndex(panelTitle, waveCtrl) - ListOffset
@@ -546,7 +546,7 @@ static Function/WAVE IDX_GetStimsets(panelTitle, channelIdx, channelType)
 
 	ctrl = GetPanelControl(channelIdx, channelType, CHANNEL_CONTROL_WAVE)
 	// does not include - None -
-	list = GetUserData(panelTitle, ctrl, "MenuExp")
+	list = GetUserData(panelTitle, ctrl, USER_DATA_MENU_EXP)
 	WAVE/T stimsets = ListToTextWave(list, ";")
 
 	return stimsets
