@@ -975,6 +975,7 @@ static Function/WAVE WB_MakeWaveBuilderWave(WP, WPT, SegWvType, stepCount, numEp
 
 				AddEntryIntoWaveNoteAsList(WaveBuilderWave, "Formula"         , str=formula)
 				AddEntryIntoWaveNoteAsList(WaveBuilderWave, "Formula Version" , str=formula_version)
+				AddEntryIntoWaveNoteAsList(WaveBuilderWave, "Duration", var=params.Duration)
 				break
 			default:
 				printf "Stimset %s: Ignoring unknown epoch type %d\r", stimset, type

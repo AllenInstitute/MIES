@@ -2008,7 +2008,7 @@ static Function DC_AddEpochsFromStimSetNote(panelTitle, channel, stimset, stimse
 	variable stimsetEnd, stimsetEndLogical
 	variable epochBegin, epochEnd, subEpochBegin, subEpochEnd
 	string epSweepName, epSubName, epSubSubName, epSpecifier
-	variable epochCount
+	variable epochCount, totalDuration
 	variable epochNr, pulseNr, numPulses, epochType, flipping, pulseToPulseLength, stimEpochAmplitude, amplitude
 	variable pulseDuration, wroteValidSubEpochOnce
 	string type, startTimesList
@@ -2023,7 +2023,11 @@ static Function DC_AddEpochsFromStimSetNote(panelTitle, channel, stimset, stimse
 
 	duration[] = WB_GetWaveNoteEntryAsNumber(stimNote, EPOCH_ENTRY, key="Duration", sweep=sweep, epoch=p)
 	duration *= 1000
-	stimsetEndLogical = stimsetBegin + sum(duration)
+	totalDuration = sum(duration)
+
+	ASSERT(IsFinite(totalDuration), "Expected finite totalDuration")
+	ASSERT(IsFinite(stimsetBegin), "Expected finite stimsetBegin")
+	stimsetEndLogical = stimsetBegin + totalDuration
 
 	if(epochCount > 1)
 		sweepOffset[0] = 0
@@ -2186,25 +2190,9 @@ static Function DC_GetEpochCount(panelTitle, channel)
 	string panelTitle
 	variable channel
 
-	variable i, numEpochs
-	string entry
-
 	WAVE/T epochWave = GetEpochsWave(panelTitle)
-#if IgorVersion() >= 8.0
 	FindValue/Z/RMD=[][][channel]/TXOP=4/TEXT="" epochWave
-	i = V_row == -1 ? DimSize(epochWave, ROWS) : V_row
-
-#else
-	numEpochs = DimSize(epochWave, ROWS)
-	for(i = 0; i < numEpochs; i += 1)
-		entry = epochWave[i][%StartTime][channel]
-		if(isEmpty(entry))
-			break
-		endif
-	endfor
-#endif
-
-	return i
+	return V_row == -1 ? DimSize(epochWave, ROWS) : V_row
 End
 
 /// @brief Adds a epoch to the epochsWave
