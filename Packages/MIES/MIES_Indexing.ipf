@@ -297,14 +297,14 @@ Function IDX_MinNoOfSweeps(panelTitle)
 	return MinNoOfSweeps == inf ? 0 : MinNoOfSweeps
 End
 
-/// @brief Returns a ";" seperated list of selected set names
+/// @brief Returns a 1D textwave of selected set names
 /// @param panelTitle panel
 /// @param channel channel
 /// @param channelType  CHANNEL_TYPE_DAC or CHANNEL_TYPE_TTL
 /// @param lockedIndexing defaults to false, true returns just the DAC/TTL setname
 ///
 /// Constants are defined at @ref ChannelTypeAndControlConstants
-Function/S IDX_GetSetsInRange(panelTitle, channel, channelType, lockedIndexing)
+Function/WAVE IDX_GetSetsInRange(panelTitle, channel, channelType, lockedIndexing)
 	string panelTitle
 	variable channel, channelType, lockedIndexing
 
@@ -317,40 +317,30 @@ Function/S IDX_GetSetsInRange(panelTitle, channel, channelType, lockedIndexing)
 	// Additional entries not in menuExp: None
 	listOffset = 1
 
-	waveCtrl = GetPanelControl(channel, channelType, CHANNEL_CONTROL_WAVE)
-	lastCtrl = GetPanelControl(channel, channelType, CHANNEL_CONTROL_INDEX_END)
-	list     = GetUserData(panelTitle, waveCtrl, USER_DATA_MENU_EXP)
+	WAVE/T stimsets = IDX_GetStimsets(panelTitle, channel, channelType)
 
-	// deliberately not using the gui state wave
-	first = GetPopupMenuIndex(panelTitle, waveCtrl) - ListOffset
+	waveCtrl = GetSpecialControlLabel(channelType, CHANNEL_CONTROL_WAVE)
+	first = DAG_GetNumericalValue(panelTitle, waveCtrl, index = channel) - ListOffset
 
-	if(lockedIndexing)
-		return DEBUGPRINTs(StringFromList(first, list))
+	lastCtrl = GetSpecialControlLabel(channelType, CHANNEL_CONTROL_INDEX_END)
+	last = DAG_GetNumericalValue(panelTitle, lastCtrl, index = channel) - ListOffset
+
+	if(lockedIndexing || !DAG_GetNumericalValue(panelTitle, "Check_DataAcq_Indexing"))
+		return DuplicateSubRange(stimsets, first, first)
 	endif
 
-	if(DAG_GetNumericalValue(panelTitle, "Check_DataAcq_Indexing"))
-		// deliberately not using the gui state wave
-		last = GetPopupMenuIndex(panelTitle, lastCtrl) - 1
-		if(last < 0) // - None - is selected
-			last = first
-		endif
-	else // without indexing
-		last = first
+	[indexStart, indexEnd] = MinMax(first, last)
+
+	 // - None - is selected
+	if(indexStart < 0 || indexEnd < 0)
+		Make/N=0/T/FREE result
+		return result
 	endif
 
-	indexStart = min(first, last)
-	indexEnd   = max(first, last)
+	sprintf msg, "indexStart %d, indexEnd %d", indexStart, indexEnd
+	DEBUGPRINT(msg)
 
-	DEBUGPRINT("Control ", str=waveCtrl)
-	DEBUGPRINT("UserData(MenuExp) ", str=list)
-
-	if(indexStart == indexEnd) // only one element
-		return DEBUGPRINTs(StringFromList(indexStart, list))
-	elseif(indexEnd + 1 == ItemsInList(list))
-		return DEBUGPRINTs(list[FindListItem(StringFromList(indexStart, list), list), strlen(list) - 2])
-	else // return the part of list from indexStart to indexEnd + 1
-		return DEBUGPRINTs(list[FindListItem(StringFromList(indexStart, list), list), FindListItem(StringFromList(indexEnd + 1, list), list) - 2])
-	endif
+	return DuplicateSubRange(stimsets, indexStart, indexEnd)
 End
 
 /// @brief Determine the number of sweeps for a DA or TTL channel
@@ -359,14 +349,13 @@ static Function IDX_NumberOfSweepsAcrossSets(panelTitle, channel, channelType, l
 	variable channel, channelType, lockedIndexing
 
 	variable numSweeps, numEntries, i
-	string setList, set
+	string setList
 
-	setList = IDX_GetSetsInRange(panelTitle, channel, channelType, lockedIndexing)
+	WAVE/T stimsets = IDX_GetSetsInRange(panelTitle, channel, channelType, lockedIndexing)
 
-	numEntries = ItemsInList(setList)
+	numEntries = DimSize(stimsets, ROWS)
 	for(i = 0; i < numEntries; i += 1)
-		set = StringFromList(i, setList)
-		numSweeps += IDX_NumberOfSweepsInSet(set)
+		numSweeps += IDX_NumberOfSweepsInSet(stimsets[i])
 	endfor
 
 	return DEBUGPRINTv(numSweeps)
