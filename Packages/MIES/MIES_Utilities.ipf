@@ -2002,6 +2002,18 @@ Function [variable minimum, variable maximum] MinMax(variable a, variable b)
 	maximum = max(a, b)
 End
 
+/// @brief Return a new wave from the subrange of the given 1D wave
+Function/WAVE DuplicateSubRange(wv, first, last)
+	WAVE wv
+	variable first, last
+
+	ASSERT(DimSize(wv, COLS) == 0, "Requires 1D wave")
+
+	Duplicate/RMD=[first, last]/FREE wv, result
+
+	return result
+End
+
 /// @brief calculates the relative complement of list2 in list1
 ///
 /// Every list item of `list1` must be in `list2`.
