@@ -83,43 +83,44 @@ End
 /// @brief Indexes a single channel - used when indexing is unlocked
 ///
 /// Callers need to call DAP_UpdateDAQControls() with #REASON_STIMSET_CHANGE_DUR_DAQ.
-static Function IDX_IndexSingleChannel(panelTitle, channelType, i)
+static Function IDX_IndexSingleChannel(panelTitle, channelType, channel)
 	string panelTitle
-	variable channelType, i
+	variable channelType, channel
 
-	variable popIdx, first, last
+	variable first, last
+	variable waveIdx, indexIdx
 	string ctrl
 
 	ctrl = GetSpecialControlLabel(channelType, CHANNEL_CONTROL_CHECK)
 
-	if(!DAG_GetNumericalValue(panelTitle, ctrl, index = i))
+	if(!DAG_GetNumericalValue(panelTitle, ctrl, index = channel))
 		return NaN
 	endif
 
 	WAVE indexingStorageWave = GetIndexingStorageWave(panelTitle)
-	first = indexingStorageWave[channelType][%CHANNEL_CONTROL_WAVE][i]
-	last  = indexingStorageWave[channelType][%CHANNEL_CONTROL_INDEX_END][i]
+	first = indexingStorageWave[channelType][%CHANNEL_CONTROL_WAVE][channel]
+	last  = indexingStorageWave[channelType][%CHANNEL_CONTROL_INDEX_END][channel]
 
-	ctrl   = GetPanelControl(i, channelType, CHANNEL_CONTROL_WAVE)
-	popIdx = GetPopupMenuIndex(panelTitle, ctrl)
+	[waveIdx, indexIdx] = IDX_GetCurrentSets(panelTitle, channelType, channel)
 
 	if(last > first)
-		if(popIdx < last)
-			popIdx += 1
+		if(waveIdx < last)
+			waveIdx += 1
 		else
-			popIdx  = first
+			waveIdx = first
 		endif
 	elseif(last < first)
-		if(popIdx > last)
-			popIdx -= 1
+		if(waveIdx > last)
+			waveIdx -= 1
 		else
-			popIdx  = first
+			waveIdx = first
 		endif
 	endif
 
-	SetPopupMenuIndex(panelTitle, ctrl, popIdx)
-	WAVE stimsets = IDX_GetStimsets(panelTitle, i, channelType)
-	DAG_Update(panelTitle, ctrl, val = popIdx, str = IDX_GetSingleStimset(stimsets, popIdx))
+	ctrl = GetPanelControl(channel, channelType, CHANNEL_CONTROL_WAVE)
+	SetPopupMenuIndex(panelTitle, ctrl, waveIdx)
+	WAVE stimsets = IDX_GetStimsets(panelTitle, channel, channelType)
+	DAG_Update(panelTitle, ctrl, val = waveIdx, str = IDX_GetSingleStimset(stimsets, waveIdx))
 End
 
 /// @brief Sum of the largest sets for each indexing step
@@ -146,7 +147,7 @@ static Function IDX_StepsInSetWithMaxSweeps(panelTitle, IndexNo, channelType)
 
 	variable MaxSteps, SetSteps
 	variable ListStartNo, ListEndNo, ListLength, Index
-	string ctrl, setName
+	string setName
 	variable i
 
 	WAVE status = DAG_GetChannelState(panelTitle, channelType)
@@ -157,11 +158,7 @@ static Function IDX_StepsInSetWithMaxSweeps(panelTitle, IndexNo, channelType)
 			continue
 		endif
 
-		ctrl = GetPanelControl(i, channelType, CHANNEL_CONTROL_WAVE)
-		ListStartNo = GetPopupMenuIndex(panelTitle, ctrl)
-
-		ctrl = GetPanelControl(i, channelType, CHANNEL_CONTROL_INDEX_END)
-		ListEndNo = GetPopupMenuIndex(panelTitle, ctrl)
+		[ListStartNo, ListEndNo] = IDX_GetCurrentSets(panelTitle, channelType, i)
 
 		ListLength = abs(ListStartNo - ListEndNo) + 1
 		index = indexNo
@@ -182,15 +179,26 @@ static Function IDX_StepsInSetWithMaxSweeps(panelTitle, IndexNo, channelType)
 	return MaxSteps
 End
 
+/// @brief Return the 0-based popup menu indizes of the current WAVE/INDEX_END stimsets
+static Function [variable waveIdx, variable indexIdx] IDX_GetCurrentSets(string panelTitle, variable channelType, variable channelNumber)
+
+	string lbl
+
+	lbl = GetSpecialControlLabel(channelType, CHANNEL_CONTROL_WAVE)
+	waveIdx = DAG_GetNumericalValue(panelTitle, lbl, index = channelNumber)
+
+	lbl = GetSpecialControlLabel(channelType, CHANNEL_CONTROL_INDEX_END)
+	indexIdx = DAG_GetNumericalValue(panelTitle, lbl, index = channelNumber)
+
+	return [waveIdx, indexIdx]
+End
+
 /// @brief Return the number of sets on the active channel with the most sets.
 static Function IDX_MaxSets(panelTitle, channelType)
 	string panelTitle
 	variable channelType
 
-	variable MaxSets
-	variable ChannelSets
-	string ctrl
-	variable i
+	variable i, waveIdx, indexIdx, MaxSets
 
 	WAVE status = DAG_GetChannelState(panelTitle, channelType)
 
@@ -200,14 +208,9 @@ static Function IDX_MaxSets(panelTitle, channelType)
 			continue
 		endif
 
-		ctrl = GetPanelControl(i, channelType, CHANNEL_CONTROL_WAVE)
-		ChannelSets = GetPopupMenuIndex(panelTitle, ctrl)
+		[waveIdx, indexIdx] = IDX_GetCurrentSets(panelTitle, channelType, i)
 
-		ctrl = GetPanelControl(i, channelType, CHANNEL_CONTROL_INDEX_END)
-		ChannelSets -= GetPopupMenuIndex(panelTitle, ctrl)
-
-		ChannelSets = abs(ChannelSets)
-		MaxSets = max(MaxSets, ChannelSets)
+		MaxSets = max(MaxSets, abs(indexIdx - waveIdx))
 	endfor
 
 	return MaxSets // if the start and end set are the same, this returns 0
