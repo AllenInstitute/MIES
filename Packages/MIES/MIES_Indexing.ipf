@@ -278,7 +278,7 @@ Function IDX_MinNoOfSweeps(panelTitle)
 			continue
 		endif
 
-		MinNoOfSweeps = min(MinNoOfSweeps, IDX_NumberOfSweepsAcrossSets(panelTitle, i, 0, 1))
+		MinNoOfSweeps = min(MinNoOfSweeps, IDX_NumberOfSweepsAcrossSets(panelTitle, i, CHANNEL_TYPE_DAC, 1))
 	endfor
 
 	WAVE statusTTL = DAG_GetChannelState(panelTitle, CHANNEL_TYPE_TTL)
@@ -289,7 +289,7 @@ Function IDX_MinNoOfSweeps(panelTitle)
 			continue
 		endif
 
-		MinNoOfSweeps = min(MinNoOfSweeps, IDX_NumberOfSweepsAcrossSets(panelTitle, i, 1, 1))
+		MinNoOfSweeps = min(MinNoOfSweeps, IDX_NumberOfSweepsAcrossSets(panelTitle, i, CHANNEL_TYPE_TTL, 1))
 	endfor
 
 	return MinNoOfSweeps == inf ? 0 : MinNoOfSweeps
