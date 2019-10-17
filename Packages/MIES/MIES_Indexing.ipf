@@ -12,49 +12,44 @@
 Function IDX_StoreStartFinishForIndexing(panelTitle)
 	string panelTitle
 
-	variable i
-	string ctrl
+	variable i, j, waveIdx, indexIdx, channelType
 
 	WAVE IndexingStorageWave = GetIndexingStorageWave(panelTitle)
+	Make/FREE channelTypes = {CHANNEL_TYPE_DAC, CHANNEL_TYPE_TTL}
 
 	for(i = 0; i < NUM_DA_TTL_CHANNELS; i += 1)
-		ctrl = GetPanelControl(i, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_WAVE)
-		IndexingStorageWave[%CHANNEL_TYPE_DAC][%CHANNEL_CONTROL_WAVE][i] = GetPopupMenuIndex(panelTitle, ctrl)
+		for(j = 0; j < 2; j += 1)
+			channelType = channelTypes[j]
 
-		ctrl = GetPanelControl(i, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_INDEX_END)
-		IndexingStorageWave[%CHANNEL_TYPE_DAC][%CHANNEL_CONTROL_INDEX_END][i] = GetPopupMenuIndex(panelTitle, ctrl)
-
-		ctrl = GetPanelControl(i, CHANNEL_TYPE_TTL, CHANNEL_CONTROL_WAVE)
-		IndexingStorageWave[%CHANNEL_TYPE_TTL][%CHANNEL_CONTROL_WAVE][i] = GetPopupMenuIndex(panelTitle, ctrl)
-
-		ctrl = GetPanelControl(i, CHANNEL_TYPE_TTL, CHANNEL_CONTROL_INDEX_END)
-		IndexingStorageWave[%CHANNEL_TYPE_TTL][%CHANNEL_CONTROL_INDEX_END][i] = GetPopupMenuIndex(panelTitle, ctrl)
-	endfor 
+			[waveIdx, indexIdx] = IDX_GetCurrentSets(panelTitle, channelType, i)
+			IndexingStorageWave[channelType][%CHANNEL_CONTROL_WAVE][i] = waveIdx
+			IndexingStorageWave[channelType][%CHANNEL_CONTROL_INDEX_END][i] = indexIdx
+		endfor
+	endfor
 End
 
 /// @brief Resets the selected set popupmenus stored by #IDX_StoreStartFinishForIndexing
 Function IDX_ResetStartFinishForIndexing(panelTitle)
 	string panelTitle
 
-	variable i, idx
-	string ctrl
+	variable i, j, idx, channelType
+	string ctrl, stimset
 
 	WAVE IndexingStorageWave = GetIndexingStorageWave(panelTitle)
+	Make/FREE channelTypes = {CHANNEL_TYPE_DAC, CHANNEL_TYPE_TTL}
 
 	for(i = 0; i < NUM_DA_TTL_CHANNELS; i += 1)
-		ctrl = GetPanelControl(i, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_WAVE)
-		idx = IndexingStorageWave[%CHANNEL_TYPE_DAC][%CHANNEL_CONTROL_WAVE][i]
-		SetPopupMenuIndex(paneltitle, ctrl, idx)
+		for(j = 0; j < 2; j += 1)
+			channelType = channelTypes[j]
 
-		WAVE stimsets = IDX_GetStimsets(panelTitle, i, CHANNEL_TYPE_DAC)
-		DAG_Update(panelTitle, ctrl, val = idx, str = IDX_GetSingleStimset(stimsets, idx, allowNone = 1))
+			ctrl = GetPanelControl(i, channelType, CHANNEL_CONTROL_WAVE)
+			idx = IndexingStorageWave[channelType][%CHANNEL_CONTROL_WAVE][i]
+			SetPopupMenuIndex(paneltitle, ctrl, idx)
 
-		ctrl = GetPanelControl(i, CHANNEL_TYPE_TTL, CHANNEL_CONTROL_WAVE)
-		idx = IndexingStorageWave[%CHANNEL_TYPE_TTL][%CHANNEL_CONTROL_WAVE][i]
-		SetPopupMenuIndex(paneltitle, ctrl, idx)
-
-		WAVE stimsets = IDX_GetStimsets(panelTitle, i, CHANNEL_TYPE_TTL)
-		DAG_Update(panelTitle, ctrl, val = idx, str = IDX_GetSingleStimset(stimsets, idx, allowNone = 1))
+			WAVE stimsets = IDX_GetStimsets(panelTitle, i, channelType)
+			stimset = IDX_GetSingleStimset(stimsets, idx, allowNone = 1)
+			DAG_Update(panelTitle, ctrl, val = idx, str = stimset)
+		endfor
 	endfor
 
 	DAP_UpdateDAQControls(panelTitle, REASON_STIMSET_CHANGE)
