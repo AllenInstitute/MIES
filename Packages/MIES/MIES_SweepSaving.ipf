@@ -81,7 +81,12 @@ static Function SWS_AfterSweepDataSaveHook(panelTitle)
 			scPanel = BSP_GetSweepControlsPanel(panel)
 
 			if(GetCheckBoxState(scPanel, "check_SweepControl_AutoUpdate"))
-				DB_UpdateToLastSweep(panel)
+				try
+					ClearRTError()
+					DB_UpdateToLastSweep(panel); AbortOnRTE
+				catch
+					ClearRTError()
+				endtry
 			endif
 		endif
 	endfor
