@@ -248,13 +248,21 @@ static Function AllTests(t, devices)
 			CHECK_EQUAL_VAR(setCycleCounts[0], t.setCycleCount_HS0[j])
 			CHECK_EQUAL_VAR(setCycleCounts[1], t.setCycleCount_HS1[j])
 
-			WAVE sciSweeps = AFH_GetSweepsFromSameSCI(numericalValues, j, 0)
-			Extract/FREE/INDX t.stimsetCycleID_HS0, indizes, t.stimsetCycleID_HS0 == t.stimsetCycleID_HS0[j]
-			CHECK_EQUAL_WAVES(sciSweeps, indizes, mode = WAVE_DATA)
+			WAVE/Z sciSweeps = AFH_GetSweepsFromSameSCI(numericalValues, j, 0)
+			if(WaveExists(sciSweeps))
+				Extract/FREE/INDX t.stimsetCycleID_HS0, indizes, t.stimsetCycleID_HS0 == t.stimsetCycleID_HS0[j]
+				CHECK_EQUAL_WAVES(sciSweeps, indizes, mode = WAVE_DATA)
+			else
+				CHECK_WAVE(t.stimsetCycleID_HS0, NULL_WAVE)
+			endif
 
-			WAVE sciSweeps = AFH_GetSweepsFromSameSCI(numericalValues, j, 1)
-			Extract/FREE/INDX t.stimsetCycleID_HS1, indizes, t.stimsetCycleID_HS1 == t.stimsetCycleID_HS1[j]
-			CHECK_EQUAL_WAVES(sciSweeps, indizes, mode = WAVE_DATA)
+			WAVE/Z sciSweeps = AFH_GetSweepsFromSameSCI(numericalValues, j, 1)
+			if(WaveExists(sciSweeps))
+				Extract/FREE/INDX t.stimsetCycleID_HS1, indizes, t.stimsetCycleID_HS1 == t.stimsetCycleID_HS1[j]
+				CHECK_EQUAL_WAVES(sciSweeps, indizes, mode = WAVE_DATA)
+			else
+				CHECK_WAVE(t.stimsetCycleID_HS1, NULL_WAVE)
+			endif
 
 			Duplicate/FREE/RMD=[j][][0] anaFuncSweepTracker, actualEvents_HS0
 			Duplicate/FREE/RMD=[j][] t.events_HS0, refEvents_HS0
