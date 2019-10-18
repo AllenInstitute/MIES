@@ -514,17 +514,49 @@ End
 
 /// @brief Return the list of active channels, filtered for various special cases
 ///
-/// @param panelTitle  panel title
-/// @param dataAcqOrTP one of #DATA_ACQUISITION_MODE or #TEST_PULSE_MODE
-/// @param channelType one of the channel type constants from @ref ChannelTypeAndControlConstants
-Function/WAVE DC_GetFilteredChannelState(panelTitle, dataAcqOrTP, channelType)
+/// @param panelTitle     panel title
+/// @param dataAcqOrTP    one of #DATA_ACQUISITION_MODE or #TEST_PULSE_MODE
+/// @param channelType    one of the channel type constants from @ref ChannelTypeAndControlConstants
+/// @param DAQChannelType only return channels as active if they have the desired DAQChannel type (only respected for DA channel)
+Function/WAVE DC_GetFilteredChannelState(panelTitle, dataAcqOrTP, channelType, [DAQChannelType])
 	string panelTitle
-	variable dataAcqOrTP, channelType
+	variable dataAcqOrTP, channelType, DAQChannelType
+
+	if(ParamIsDefault(DAQChannelType))
+		DAQChannelType = DAQ_CHANNEL_TYPE_UNKOWN
+	endif
+
+	ASSERT(DAQChannelType == DAQ_CHANNEL_TYPE_UNKOWN || DAQChannelType == DAQ_CHANNEL_TYPE_DAQ || DAQChannelType == DAQ_CHANNEL_TYPE_TP, "Invalid DAQChannelType")
 
 	WAVE statusChannel = DAG_GetChannelState(panelTitle, channelType)
 
 	if(dataAcqOrTP == DATA_ACQUISITION_MODE)
-		return statusChannel
+		switch(channelType)
+			case CHANNEL_TYPE_TTL:
+			case CHANNEL_TYPE_ADC:
+				// DAQChannelType does not matter
+				return statusChannel
+				break
+			case CHANNEL_TYPE_DAC:
+				if(DAQChannelType == DAQ_CHANNEL_TYPE_UNKOWN)
+					return statusChannel
+				endif
+
+				Make/FREE/N=(NUM_DA_TTL_CHANNELS) result = 0
+
+				WAVE/T allSetNames = DAG_GetChannelTextual(panelTitle, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_WAVE)
+
+				result[] = statusChannel[p] && (!cmpstr(allSetNames[p], STIMSET_TP_WHILE_DAQ, 1) \
+												? DAQChannelType == DAQ_CHANNEL_TYPE_TP          \
+												: DAQChannelType == DAQ_CHANNEL_TYPE_DAQ)
+
+				return result
+
+				break
+			default:
+				ASSERT(0, "unhandled case")
+				break
+		endswitch
 	endif
 
 	switch(channelType)
