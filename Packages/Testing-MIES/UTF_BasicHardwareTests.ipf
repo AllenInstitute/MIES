@@ -1546,6 +1546,96 @@ Function RepeatSets_7_REENTRY([str])
 	AllTests(t, str)
 End
 
+Function RepeatSets_8_IGNORE(device)
+	string device
+
+	PGC_SetAndActivateControl(device, GetPanelControl(1, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_WAVE), str = "TestPulse")
+	PGC_SetAndActivateControl(device, GetPanelControl(1, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_INDEX_END), str = NONE)
+End
+
+// Locked Indexing with TP during DAQ
+//
+// UTF_TD_GENERATOR HardwareMain#DeviceNameGeneratorMD1
+Function RepeatSets_8([str])
+	string str
+
+	STRUCT DAQSettings s
+	InitDAQSettingsFromString(s, "MD1_RA1_I1_L1_BKG_1_RES_1")
+	AcquireData(s, str, preAcquireFunc = RepeatSets_8_IGNORE)
+End
+
+Function RepeatSets_8_REENTRY([str])
+	string str
+
+	STRUCT TestSettings t
+
+	t.numSweeps     = 4
+	t.sweepWaveType = FLOAT_WAVE
+
+	InitTestStructure(t)
+
+	t.acquiredStimSets_HS0[0,2] = "StimulusSetA_DA_0"
+	t.acquiredStimSets_HS0[3]   = "StimulusSetB_DA_0"
+	t.sweepCount_HS0            = {0, 1, 2, 0}
+	t.setCycleCount_HS0         = {0, 0, 0, 0}
+	t.stimsetCycleID_HS0[]      = {0, 0, 0, 1}
+
+	t.acquiredStimSets_HS1      = "Testpulse"
+	t.sweepCount_HS1            = {0, 0, 0, 0}
+	t.setCycleCount_HS1         = {0, 0, 0, 0}
+	WAVEClear t.stimsetCycleID_HS1
+
+	t.DAQChannelTypeDA = {DAQ_CHANNEL_TYPE_DAQ, DAQ_CHANNEL_TYPE_TP, NaN, NaN, NaN, NaN, NaN, NaN, NaN}
+	t.DAQChannelTypeAD = {DAQ_CHANNEL_TYPE_DAQ, DAQ_CHANNEL_TYPE_TP, NaN, NaN, NaN, NaN, NaN, NaN, NaN}
+
+	AllTests(t, str)
+End
+
+Function RepeatSets_9_IGNORE(device)
+	string device
+
+	PGC_SetAndActivateControl(device, GetPanelControl(1, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_WAVE), str = "TestPulse")
+	PGC_SetAndActivateControl(device, GetPanelControl(1, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_INDEX_END), str = NONE)
+End
+
+// Unlocked Indexing with TP during DAQ
+//
+// UTF_TD_GENERATOR HardwareMain#DeviceNameGeneratorMD1
+Function RepeatSets_9([str])
+	string str
+
+	STRUCT DAQSettings s
+	InitDAQSettingsFromString(s, "MD1_RA1_I1_L0_BKG_1_RES_1")
+	AcquireData(s, str, preAcquireFunc = RepeatSets_9_IGNORE)
+End
+
+Function RepeatSets_9_REENTRY([str])
+	string str
+
+	STRUCT TestSettings t
+
+	t.numSweeps     = 4
+	t.sweepWaveType = FLOAT_WAVE
+
+	InitTestStructure(t)
+
+	t.acquiredStimSets_HS0[0,2] = "StimulusSetA_DA_0"
+	t.acquiredStimSets_HS0[3]   = "StimulusSetB_DA_0"
+	t.sweepCount_HS0            = {0, 1, 2, 0}
+	t.setCycleCount_HS0         = {0, 0, 0, 0}
+	t.stimsetCycleID_HS0[]      = {0, 0, 0, 1}
+
+	t.acquiredStimSets_HS1      = "Testpulse"
+	t.sweepCount_HS1            = {0, 0, 0, 0}
+	t.setCycleCount_HS1         = {0, 0, 0, 0}
+	WAVEClear t.stimsetCycleID_HS1
+
+	t.DAQChannelTypeDA = {DAQ_CHANNEL_TYPE_DAQ, DAQ_CHANNEL_TYPE_TP, NaN, NaN, NaN, NaN, NaN, NaN, NaN}
+	t.DAQChannelTypeAD = {DAQ_CHANNEL_TYPE_DAQ, DAQ_CHANNEL_TYPE_TP, NaN, NaN, NaN, NaN, NaN, NaN, NaN}
+
+	AllTests(t, str)
+End
+
 Function SkipSweepsStimsetsP_IGNORE(device)
 	string device
 

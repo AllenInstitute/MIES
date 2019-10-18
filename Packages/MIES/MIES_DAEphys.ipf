@@ -2631,7 +2631,7 @@ static Function DAP_CheckStimset(panelTitle, channelType, channel, headstage)
 		return 1
 	endif
 
-	if(DAG_GetNumericalValue(panelTitle, "Check_DataAcq_Indexing"))
+	if(DAG_GetNumericalValue(panelTitle, "Check_DataAcq_Indexing") && CmpStr(setName, STIMSET_TP_WHILE_DAQ))
 		setNameEnd = DAG_GetTextualValue(panelTitle, GetSpecialControlLabel(channelType, CHANNEL_CONTROL_INDEX_END), index = channel)
 		if(!CmpStr(setNameEnd, NONE))
 			printf "(%s) Please select a valid indexing end wave for %s channel %d referenced by headstage %g\r", panelTitle, channelTypeStr, channel, headStage

@@ -226,7 +226,7 @@ Function IDX_MaxNoOfSweeps(panelTitle, IndexOverRide)
 	variable i, numFollower
 	string followerPanelTitle
 
-	WAVE statusDAFiltered = DC_GetFilteredChannelState(panelTitle, DATA_ACQUISITION_MODE, CHANNEL_TYPE_DAC)
+	WAVE statusDAFiltered = DC_GetFilteredChannelState(panelTitle, DATA_ACQUISITION_MODE, CHANNEL_TYPE_DAC, DAQChannelType = DAQ_CHANNEL_TYPE_DAQ)
  
 	for(i = 0; i < NUM_DA_TTL_CHANNELS; i += 1)
 
@@ -237,7 +237,7 @@ Function IDX_MaxNoOfSweeps(panelTitle, IndexOverRide)
 		MaxNoOfSweeps = max(MaxNoOfSweeps, IDX_NumberOfSweepsAcrossSets(panelTitle, i, 0, IndexOverRide))
 	endfor
 
-	WAVE statusTTLFiltered = DC_GetFilteredChannelState(panelTitle, DATA_ACQUISITION_MODE, CHANNEL_TYPE_TTL)
+	WAVE statusTTLFiltered = DC_GetFilteredChannelState(panelTitle, DATA_ACQUISITION_MODE, CHANNEL_TYPE_TTL, DAQChannelType = DAQ_CHANNEL_TYPE_DAQ)
 
 	for(i = 0; i < NUM_DA_TTL_CHANNELS; i += 1)
 
@@ -270,7 +270,7 @@ Function IDX_MinNoOfSweeps(panelTitle)
 	variable MinNoOfSweeps = inf
 	variable i
 
-	WAVE statusDAFiltered = DC_GetFilteredChannelState(panelTitle, DATA_ACQUISITION_MODE, CHANNEL_TYPE_DAC)
+	WAVE statusDAFiltered = DC_GetFilteredChannelState(panelTitle, DATA_ACQUISITION_MODE, CHANNEL_TYPE_DAC, DAQChannelType = DAQ_CHANNEL_TYPE_DAQ)
 
 	for(i = 0; i < NUM_DA_TTL_CHANNELS; i += 1)
 
@@ -281,7 +281,7 @@ Function IDX_MinNoOfSweeps(panelTitle)
 		MinNoOfSweeps = min(MinNoOfSweeps, IDX_NumberOfSweepsAcrossSets(panelTitle, i, CHANNEL_TYPE_DAC, 1))
 	endfor
 
-	WAVE statusTTLFiltered = DC_GetFilteredChannelState(panelTitle, DATA_ACQUISITION_MODE, CHANNEL_TYPE_TTL)
+	WAVE statusTTLFiltered = DC_GetFilteredChannelState(panelTitle, DATA_ACQUISITION_MODE, CHANNEL_TYPE_TTL, DAQChannelType = DAQ_CHANNEL_TYPE_DAQ)
 
 	for(i = 0; i < NUM_DA_TTL_CHANNELS; i += 1)
 
@@ -385,8 +385,8 @@ Function IDX_ApplyUnLockedIndexing(panelTitle, count)
 
 	variable i, update
 
-	WAVE statusDAFiltered = DC_GetFilteredChannelState(panelTitle, DATA_ACQUISITION_MODE, CHANNEL_TYPE_DAC)
-	WAVE statusTTLFiltered = DC_GetFilteredChannelState(panelTitle, DATA_ACQUISITION_MODE, CHANNEL_TYPE_TTL)
+	WAVE statusDAFiltered = DC_GetFilteredChannelState(panelTitle, DATA_ACQUISITION_MODE, CHANNEL_TYPE_DAC, DAQChannelType = DAQ_CHANNEL_TYPE_DAQ)
+	WAVE statusTTLFiltered = DC_GetFilteredChannelState(panelTitle, DATA_ACQUISITION_MODE, CHANNEL_TYPE_TTL, DAQChannelType = DAQ_CHANNEL_TYPE_DAQ)
 
 	for(i = 0; i < NUM_DA_TTL_CHANNELS; i += 1)
 
