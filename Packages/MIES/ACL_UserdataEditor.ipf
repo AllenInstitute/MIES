@@ -59,9 +59,9 @@ Function BuildpnlUserDataEditor(panelName)
 	String &panelName
 	NewPanel /K=1 /W=(606,339,1337,1479) /N=$(panelName) as "Userdata Editor for Controls"
 	panelName = S_name
-	PopupMenu popupPanelSelect,pos={9.00,7.00},size={140.00,19.00},proc=PopMenuSelectPanel,title="Select Panel"
-	PopupMenu popupPanelSelect,help={"Select the panel that contains the controls for which you want to edit the userdata."}
-	PopupMenu popupPanelSelect,mode=3,popvalue="pnlUserDataEditor",value= #"SortList(WinList(\"*\", \";\", \"WIN:64\"), \";\", 0)"
+	PopupMenu popupPanelSelect,pos={9.00,7.00},size={140.00,19.00},proc=PopMenuSelectPanel,title="Select Panel/Graph"
+	PopupMenu popupPanelSelect,help={"Select the panel/graph that contains the controls for which you want to edit the userdata."}
+	PopupMenu popupPanelSelect,mode=3,popvalue="pnlUserDataEditor",value= #"SortList(WinList(\"*\", \";\", \"WIN:65\"), \";\", 0)"
 	ListBox listPanelControls,pos={9.00,68.00},size={711.00,1065.00},proc=ListBoxPanelControls
 	ListBox listPanelControls,help={"This list box contains the controls of a the selected type on the selected panel.\rSee the Userdata Editor for Controls help file for detailed information."}
 	ListBox listPanelControls,userdata(order0)=  "0",userdata(sortCol)=  "1"
@@ -130,7 +130,7 @@ Function InitializeUserDataEditor()
 		ControlInfo/W=$(panelName) popupPanelSelect
 
 		if (V_Flag == 3)		// popup control exists
-			String panelList = SortList(WinList("*", ";", "WIN:64"), ";", 0)
+			String panelList = SortList(WinList("*", ";", "WIN:65"), ";", 0)
 			Variable listPos =WhichListItem(currentPanel, panelList, ";")
 		
 			if (listPos >= 0)
