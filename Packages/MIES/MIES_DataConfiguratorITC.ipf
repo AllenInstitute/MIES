@@ -1783,7 +1783,7 @@ static Function/C DC_CalculateChannelColumnNo(panelTitle, SetName, channelNo, ch
 		endif
 	endif
 
-	ASSERT(IsFinite(column), "column has to be finite")
+	ASSERT(IsFinite(column) && column >=0, "column has to be finite and non-negative")
 
 	return cmplx(column, setCycleCount)
 End

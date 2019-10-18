@@ -1182,3 +1182,6 @@ StrConstant EPOCH_BASELINE_REGION_KEY = "Baseline"
 Constant GAIN_BEFORE_DAQ = 0x1
 Constant GAIN_AFTER_DAQ  = 0x2
 /// @}
+
+/// @brief User data on the stimset controls listing all stimsets in range
+StrConstant USER_DATA_MENU_EXP = "MenuExp"

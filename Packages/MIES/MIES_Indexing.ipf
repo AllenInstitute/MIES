@@ -12,55 +12,44 @@
 Function IDX_StoreStartFinishForIndexing(panelTitle)
 	string panelTitle
 
-	variable i
-	string ctrl
+	variable i, j, waveIdx, indexIdx, channelType
 
-	WAVE DACIndexingStorageWave = GetDACIndexingStorageWave(panelTitle)
-	WAVE TTLIndexingStorageWave = GetTTLIndexingStorageWave(panelTitle)
-	
+	WAVE IndexingStorageWave = GetIndexingStorageWave(panelTitle)
+	Make/FREE channelTypes = {CHANNEL_TYPE_DAC, CHANNEL_TYPE_TTL}
+
 	for(i = 0; i < NUM_DA_TTL_CHANNELS; i += 1)
-		ctrl = GetPanelControl(i, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_WAVE)
-		ControlInfo/W=$panelTitle $ctrl
-		DACIndexingStorageWave[0][i] = V_Value
+		for(j = 0; j < 2; j += 1)
+			channelType = channelTypes[j]
 
-		ctrl = GetPanelControl(i, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_INDEX_END)
-		ControlInfo/W=$panelTitle $ctrl
-		DACIndexingStorageWave[1][i] = V_Value
-
-		ctrl = GetPanelControl(i, CHANNEL_TYPE_TTL, CHANNEL_CONTROL_WAVE)
-		ControlInfo/W=$panelTitle $ctrl
-		TTLIndexingStorageWave[0][i] = V_Value
-
-		ctrl = GetPanelControl(i, CHANNEL_TYPE_TTL, CHANNEL_CONTROL_INDEX_END)
-		ControlInfo/W=$panelTitle $ctrl
-		TTLIndexingStorageWave[1][i] = V_Value
-	endfor 
+			[waveIdx, indexIdx] = IDX_GetCurrentSets(panelTitle, channelType, i)
+			IndexingStorageWave[channelType][%CHANNEL_CONTROL_WAVE][i] = waveIdx
+			IndexingStorageWave[channelType][%CHANNEL_CONTROL_INDEX_END][i] = indexIdx
+		endfor
+	endfor
 End
 
 /// @brief Resets the selected set popupmenus stored by #IDX_StoreStartFinishForIndexing
 Function IDX_ResetStartFinishForIndexing(panelTitle)
 	string panelTitle
 
-	variable i, idx
-	string ctrl
+	variable i, j, idx, channelType
+	string ctrl, stimset
 
-	WAVE DACIndexingStorageWave = GetDACIndexingStorageWave(panelTitle)
-	WAVE TTLIndexingStorageWave = GetTTLIndexingStorageWave(panelTitle)
+	WAVE IndexingStorageWave = GetIndexingStorageWave(panelTitle)
+	Make/FREE channelTypes = {CHANNEL_TYPE_DAC, CHANNEL_TYPE_TTL}
 
 	for(i = 0; i < NUM_DA_TTL_CHANNELS; i += 1)
-		ctrl = GetPanelControl(i, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_WAVE)
-		idx = DACIndexingStorageWave[0][i]
-		SetPopupMenuIndex(paneltitle, ctrl, idx - 1)
+		for(j = 0; j < 2; j += 1)
+			channelType = channelTypes[j]
 
-		WAVE stimsets = IDX_GetStimsets(panelTitle, i, CHANNEL_TYPE_DAC)
-		DAG_Update(panelTitle, ctrl, val = idx - 1, str = IDX_GetSingleStimset(stimsets, idx, allowNone = 1))
+			ctrl = GetPanelControl(i, channelType, CHANNEL_CONTROL_WAVE)
+			idx = IndexingStorageWave[channelType][%CHANNEL_CONTROL_WAVE][i]
+			SetPopupMenuIndex(paneltitle, ctrl, idx)
 
-		ctrl = GetPanelControl(i, CHANNEL_TYPE_TTL, CHANNEL_CONTROL_WAVE)
-		idx = TTLIndexingStorageWave[0][i]
-		SetPopupMenuIndex(paneltitle, ctrl, idx - 1)
-
-		WAVE stimsets = IDX_GetStimsets(panelTitle, i, CHANNEL_TYPE_TTL)
-		DAG_Update(panelTitle, ctrl, val = idx - 1, str = IDX_GetSingleStimset(stimsets, idx, allowNone = 1))
+			WAVE stimsets = IDX_GetStimsets(panelTitle, i, channelType)
+			stimset = IDX_GetSingleStimset(stimsets, idx, allowNone = 1)
+			DAG_Update(panelTitle, ctrl, val = idx, str = stimset)
+		endfor
 	endfor
 
 	DAP_UpdateDAQControls(panelTitle, REASON_STIMSET_CHANGE)
@@ -89,41 +78,44 @@ End
 /// @brief Indexes a single channel - used when indexing is unlocked
 ///
 /// Callers need to call DAP_UpdateDAQControls() with #REASON_STIMSET_CHANGE_DUR_DAQ.
-static Function IDX_IndexSingleChannel(panelTitle, channelType, i)
+static Function IDX_IndexSingleChannel(panelTitle, channelType, channel)
 	string panelTitle
-	variable channelType, i
+	variable channelType, channel
 
-	variable popIdx
+	variable first, last
+	variable waveIdx, indexIdx
 	string ctrl
 
 	ctrl = GetSpecialControlLabel(channelType, CHANNEL_CONTROL_CHECK)
 
-	if(!DAG_GetNumericalValue(panelTitle, ctrl, index = i))
+	if(!DAG_GetNumericalValue(panelTitle, ctrl, index = channel))
 		return NaN
 	endif
 
-	WAVE indexingStorageWave = GetIndexingStorageWave(panelTitle, channelType)
+	WAVE indexingStorageWave = GetIndexingStorageWave(panelTitle)
+	first = indexingStorageWave[channelType][%CHANNEL_CONTROL_WAVE][channel]
+	last  = indexingStorageWave[channelType][%CHANNEL_CONTROL_INDEX_END][channel]
 
-	ctrl   = GetPanelControl(i, channelType, CHANNEL_CONTROL_WAVE)
-	popIdx = GetPopupMenuIndex(panelTitle, ctrl) + 1
+	[waveIdx, indexIdx] = IDX_GetCurrentSets(panelTitle, channelType, channel)
 
-	if(indexingStorageWave[1][i] > indexingStorageWave[0][i])
-		if(popIdx < indexingStorageWave[1][i])
-			popIdx += 1
+	if(last > first)
+		if(waveIdx < last)
+			waveIdx += 1
 		else
-			popIdx  = indexingStorageWave[0][i]
+			waveIdx = first
 		endif
-	elseif(indexingStorageWave[1][i] < indexingStorageWave[0][i])
-		if(popIdx > indexingStorageWave[1][i])
-			popIdx -= 1
+	elseif(last < first)
+		if(waveIdx > last)
+			waveIdx -= 1
 		else
-			popIdx  = indexingStorageWave[0][i]
+			waveIdx = first
 		endif
 	endif
 
-	SetPopupMenuIndex(panelTitle, ctrl, popIdx - 1)
-	WAVE stimsets = IDX_GetStimsets(panelTitle, i, channelType)
-	DAG_Update(panelTitle, ctrl, val = popIdx - 1, str = IDX_GetSingleStimset(stimsets, popIdx))
+	ctrl = GetPanelControl(channel, channelType, CHANNEL_CONTROL_WAVE)
+	SetPopupMenuIndex(panelTitle, ctrl, waveIdx)
+	WAVE stimsets = IDX_GetStimsets(panelTitle, channel, channelType)
+	DAG_Update(panelTitle, ctrl, val = waveIdx, str = IDX_GetSingleStimset(stimsets, waveIdx))
 End
 
 /// @brief Sum of the largest sets for each indexing step
@@ -131,10 +123,12 @@ Function IDX_MaxSweepsLockedIndexing(panelTitle)
 	string panelTitle
 
 	variable i, maxSteps
-	variable MaxCycleIndexSteps = IDX_MaxSets(panelTitle) + 1
+	variable MaxCycleIndexSteps = max(IDX_MaxSets(panelTitle, CHANNEL_TYPE_DAC), \
+									  IDX_MaxSets(panelTitle, CHANNEL_TYPE_TTL)) + 1
 
 	do
-		MaxSteps += IDX_StepsInSetWithMaxSweeps(panelTitle,i)
+		MaxSteps += max(IDX_StepsInSetWithMaxSweeps(panelTitle, i, CHANNEL_TYPE_DAC), \
+							IDX_StepsInSetWithMaxSweeps(panelTitle, i, CHANNEL_TYPE_TTL))
 		i += 1
 	while(i < MaxCycleIndexSteps)
 
@@ -142,30 +136,25 @@ Function IDX_MaxSweepsLockedIndexing(panelTitle)
 End
 
 /// @brief Return the number of steps in the largest set for a particular index number
-static Function IDX_StepsInSetWithMaxSweeps(panelTitle,IndexNo)
+static Function IDX_StepsInSetWithMaxSweeps(panelTitle, IndexNo, channelType)
 	string panelTitle
-	variable IndexNo
+	variable IndexNo, channelType
 
-	variable MaxSteps = 0, SetSteps
+	variable MaxSteps, SetSteps
 	variable ListStartNo, ListEndNo, ListLength, Index
 	string setName
-	string popMenuIndexStartName, popMenuIndexEndName
-	variable i = 0
+	variable i
 
-	WAVE statusDA = DAG_GetChannelState(panelTitle, CHANNEL_TYPE_DAC)
+	WAVE status = DAG_GetChannelState(panelTitle, channelType)
 
 	for(i = 0; i < NUM_DA_TTL_CHANNELS; i += 1)
 
-		if(!statusDA[i])
+		if(!status[i])
 			continue
 		endif
 
-		popMenuIndexStartName = GetPanelControl(i, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_WAVE)
-		controlinfo /w = $panelTitle $popMenuIndexStartName
-		ListStartNo = v_value
-		popMenuIndexEndName = GetPanelControl(i, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_INDEX_END)
-		controlinfo /w = $panelTitle $popMenuIndexEndName
-		ListEndNo = v_value
+		[ListStartNo, ListEndNo] = IDX_GetCurrentSets(panelTitle, channelType, i)
+
 		ListLength = abs(ListStartNo - ListEndNo) + 1
 		index = indexNo
 		if(listLength <= IndexNo)
@@ -176,87 +165,47 @@ static Function IDX_StepsInSetWithMaxSweeps(panelTitle,IndexNo)
 			index *= -1
 		endif
 
-		WAVE stimsets = IDX_GetStimsets(panelTitle, i, CHANNEL_TYPE_DAC)
-		SetSteps = IDX_NumberOfSweepsInSet(IDX_GetSingleStimset(stimsets, ListStartNo + index))
+		WAVE stimsets = IDX_GetStimsets(panelTitle, i, channelType)
+		setName  = IDX_GetSingleStimset(stimsets, ListStartNo + index, allowNone = 1)
+		SetSteps = IDX_NumberOfSweepsInSet(setName)
 		MaxSteps = max(MaxSteps, SetSteps)
 	endfor
 
-	WAVE statusTTL = DAG_GetChannelState(panelTitle, CHANNEL_TYPE_TTL)
-
-	for(i = 0; i < NUM_DA_TTL_CHANNELS; i += 1)
-
-		if(!statusTTL[i])
-			continue
-		endif
-
-		popMenuIndexStartName = GetPanelControl(i, CHANNEL_TYPE_TTL, CHANNEL_CONTROL_WAVE)
-		controlinfo /w = $panelTitle $popMenuIndexStartName
-		ListStartNo = v_value
-		popMenuIndexEndName = GetPanelControl(i, CHANNEL_TYPE_TTL, CHANNEL_CONTROL_INDEX_END)
-		controlinfo /w = $panelTitle $popMenuIndexEndName
-		ListEndNo = v_value
-		ListLength = abs(ListStartNo - ListEndNo) + 1
-		index = indexNo
-
-		if(listLength <= IndexNo)
-			Index = mod(IndexNo, ListLength)
-		endif
-
-		if((ListStartNo - ListEndNo) > 0)
-			index *= -1
-		endif
-
-		WAVE stimsets = IDX_GetStimsets(panelTitle, i, CHANNEL_TYPE_TTL)
-		SetSteps = IDX_NumberOfSweepsInSet(IDX_GetSingleStimset(stimsets, ListStartNo + index))
-		MaxSteps = max(MaxSteps, SetSteps)
-	endfor
-	
 	return MaxSteps
 End
 
+/// @brief Return the 0-based popup menu indizes of the current WAVE/INDEX_END stimsets
+static Function [variable waveIdx, variable indexIdx] IDX_GetCurrentSets(string panelTitle, variable channelType, variable channelNumber)
+
+	string lbl
+
+	lbl = GetSpecialControlLabel(channelType, CHANNEL_CONTROL_WAVE)
+	waveIdx = DAG_GetNumericalValue(panelTitle, lbl, index = channelNumber)
+
+	lbl = GetSpecialControlLabel(channelType, CHANNEL_CONTROL_INDEX_END)
+	indexIdx = DAG_GetNumericalValue(panelTitle, lbl, index = channelNumber)
+
+	return [waveIdx, indexIdx]
+End
+
 /// @brief Return the number of sets on the active channel with the most sets.
-static Function IDX_MaxSets(panelTitle)
+static Function IDX_MaxSets(panelTitle, channelType)
 	string panelTitle
+	variable channelType
 
-	variable MaxSets = 0
-	variable ChannelSets
-	string popMenuIndexStartName, popMenuIndexEndName
-	variable i = 0
+	variable i, waveIdx, indexIdx, MaxSets
 
-	WAVE statusDA  = DAG_GetChannelState(panelTitle, CHANNEL_TYPE_DAC)
+	WAVE status = DAG_GetChannelState(panelTitle, channelType)
 
 	for(i = 0; i < NUM_DA_TTL_CHANNELS; i += 1)
 
-		if(!statusDA[i])
+		if(!status[i])
 			continue
 		endif
 
-		popMenuIndexStartName = GetPanelControl(i, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_WAVE)
-		controlinfo /w = $panelTitle $popMenuIndexStartName
-		ChannelSets = v_value
-		popMenuIndexEndName = GetPanelControl(i, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_INDEX_END)
-		controlinfo /w = $panelTitle $popMenuIndexEndName
-		ChannelSets -= v_value
-		ChannelSets  = abs(ChannelSets)
-		MaxSets = max(MaxSets,ChannelSets)
-	endfor
+		[waveIdx, indexIdx] = IDX_GetCurrentSets(panelTitle, channelType, i)
 
-	WAVE statusTTL = DAG_GetChannelState(panelTitle, CHANNEL_TYPE_TTL)
-
-	for(i = 0; i < NUM_DA_TTL_CHANNELS; i += 1)
-
-		if(!statusTTL[i])
-			continue
-		endif
-
-		popMenuIndexStartName = GetPanelControl(i, CHANNEL_TYPE_TTL, CHANNEL_CONTROL_WAVE)
-		controlinfo /w = $panelTitle $popMenuIndexStartName
-		ChannelSets = v_value
-		popMenuIndexEndName = GetPanelControl(i, CHANNEL_TYPE_TTL, CHANNEL_CONTROL_INDEX_END)
-		controlinfo/w=$panelTitle $popMenuIndexEndName
-		ChannelSets -= v_value
-		ChannelSets = abs(ChannelSets)
-		MaxSets = max(MaxSets,ChannelSets)
+		MaxSets = max(MaxSets, abs(indexIdx - waveIdx))
 	endfor
 
 	return MaxSets // if the start and end set are the same, this returns 0
@@ -329,7 +278,7 @@ Function IDX_MinNoOfSweeps(panelTitle)
 			continue
 		endif
 
-		MinNoOfSweeps = min(MinNoOfSweeps, IDX_NumberOfSweepsAcrossSets(panelTitle, i, 0, 1))
+		MinNoOfSweeps = min(MinNoOfSweeps, IDX_NumberOfSweepsAcrossSets(panelTitle, i, CHANNEL_TYPE_DAC, 1))
 	endfor
 
 	WAVE statusTTL = DAG_GetChannelState(panelTitle, CHANNEL_TYPE_TTL)
@@ -340,20 +289,20 @@ Function IDX_MinNoOfSweeps(panelTitle)
 			continue
 		endif
 
-		MinNoOfSweeps = min(MinNoOfSweeps, IDX_NumberOfSweepsAcrossSets(panelTitle, i, 1, 1))
+		MinNoOfSweeps = min(MinNoOfSweeps, IDX_NumberOfSweepsAcrossSets(panelTitle, i, CHANNEL_TYPE_TTL, 1))
 	endfor
 
 	return MinNoOfSweeps == inf ? 0 : MinNoOfSweeps
 End
 
-/// @brief Returns a ";" seperated list of selected set names
+/// @brief Returns a 1D textwave of selected set names
 /// @param panelTitle panel
 /// @param channel channel
 /// @param channelType  CHANNEL_TYPE_DAC or CHANNEL_TYPE_TTL
 /// @param lockedIndexing defaults to false, true returns just the DAC/TTL setname
 ///
 /// Constants are defined at @ref ChannelTypeAndControlConstants
-Function/S IDX_GetSetsInRange(panelTitle, channel, channelType, lockedIndexing)
+Function/WAVE IDX_GetSetsInRange(panelTitle, channel, channelType, lockedIndexing)
 	string panelTitle
 	variable channel, channelType, lockedIndexing
 
@@ -366,40 +315,30 @@ Function/S IDX_GetSetsInRange(panelTitle, channel, channelType, lockedIndexing)
 	// Additional entries not in menuExp: None
 	listOffset = 1
 
-	waveCtrl = GetPanelControl(channel, channelType, CHANNEL_CONTROL_WAVE)
-	lastCtrl = GetPanelControl(channel, channelType, CHANNEL_CONTROL_INDEX_END)
-	list     = GetUserData(panelTitle, waveCtrl, "menuexp")
+	WAVE/T stimsets = IDX_GetStimsets(panelTitle, channel, channelType)
 
-	// deliberately not using the gui state wave
-	first = GetPopupMenuIndex(panelTitle, waveCtrl) - ListOffset
+	waveCtrl = GetSpecialControlLabel(channelType, CHANNEL_CONTROL_WAVE)
+	first = DAG_GetNumericalValue(panelTitle, waveCtrl, index = channel) - ListOffset
 
-	if(lockedIndexing)
-		return DEBUGPRINTs(StringFromList(first, list))
+	lastCtrl = GetSpecialControlLabel(channelType, CHANNEL_CONTROL_INDEX_END)
+	last = DAG_GetNumericalValue(panelTitle, lastCtrl, index = channel) - ListOffset
+
+	if(lockedIndexing || !DAG_GetNumericalValue(panelTitle, "Check_DataAcq_Indexing"))
+		return DuplicateSubRange(stimsets, first, first)
 	endif
 
-	if(DAG_GetNumericalValue(panelTitle, "Check_DataAcq_Indexing"))
-		// deliberately not using the gui state wave
-		last = GetPopupMenuIndex(panelTitle, lastCtrl) - 1
-		if(last < 0) // - None - is selected
-			last = first
-		endif
-	else // without indexing
-		last = first
+	[indexStart, indexEnd] = MinMax(first, last)
+
+	 // - None - is selected
+	if(indexStart < 0 || indexEnd < 0)
+		Make/N=0/T/FREE result
+		return result
 	endif
 
-	indexStart = min(first, last)
-	indexEnd   = max(first, last)
+	sprintf msg, "indexStart %d, indexEnd %d", indexStart, indexEnd
+	DEBUGPRINT(msg)
 
-	DEBUGPRINT("Control ", str=waveCtrl)
-	DEBUGPRINT("UserData(MenuExp) ", str=list)
-
-	if(indexStart == indexEnd) // only one element
-		return DEBUGPRINTs(StringFromList(indexStart, list))
-	elseif(indexEnd + 1 == ItemsInList(list))
-		return DEBUGPRINTs(list[FindListItem(StringFromList(indexStart, list), list), strlen(list) - 2])
-	else // return the part of list from indexStart to indexEnd + 1
-		return DEBUGPRINTs(list[FindListItem(StringFromList(indexStart, list), list), FindListItem(StringFromList(indexEnd + 1, list), list) - 2])
-	endif
+	return DuplicateSubRange(stimsets, indexStart, indexEnd)
 End
 
 /// @brief Determine the number of sweeps for a DA or TTL channel
@@ -408,14 +347,13 @@ static Function IDX_NumberOfSweepsAcrossSets(panelTitle, channel, channelType, l
 	variable channel, channelType, lockedIndexing
 
 	variable numSweeps, numEntries, i
-	string setList, set
+	string setList
 
-	setList = IDX_GetSetsInRange(panelTitle, channel, channelType, lockedIndexing)
+	WAVE/T stimsets = IDX_GetSetsInRange(panelTitle, channel, channelType, lockedIndexing)
 
-	numEntries = ItemsInList(setList)
+	numEntries = DimSize(stimsets, ROWS)
 	for(i = 0; i < numEntries; i += 1)
-		set = StringFromList(i, setList)
-		numSweeps += IDX_NumberOfSweepsInSet(set)
+		numSweeps += IDX_NumberOfSweepsInSet(stimsets[i])
 	endfor
 
 	return DEBUGPRINTv(numSweeps)
@@ -486,23 +424,18 @@ static Function IDX_TotalIndexingListSteps(panelTitle, channelNumber, channelTyp
 	variable channelNumber, channelType
 
 	variable totalListSteps
-	variable i, first, last
+	variable i, first, last, minimum, maximum
 
-	if(channelType == CHANNEL_TYPE_DAC)
-		WAVE indexingStorageWave = GetDACindexingStorageWave(panelTitle)
-	elseif(channelType == CHANNEL_TYPE_TTL)
-		WAVE indexingStorageWave = GetTTLindexingStorageWave(panelTitle)
-	else
-		ASSERT(0, "Invalid value")
-	endif
+	WAVE indexingStorageWave = GetIndexingStorageWave(panelTitle)
+	first = indexingStorageWave[channelType][%CHANNEL_CONTROL_WAVE][channelNumber]
+	last  = indexingStorageWave[channelType][%CHANNEL_CONTROL_INDEX_END][channelNumber]
 
-	ASSERT(indexingStorageWave[0][channelNumber] != indexingStorageWave[1][channelNumber], "Unexpected combo")
-	first = min(indexingStorageWave[0][channelNumber], indexingStorageWave[1][channelNumber])
-	last  = max(indexingStorageWave[0][channelNumber], indexingStorageWave[1][channelNumber])
+	ASSERT(first != last, "Unexpected combo")
+	[minimum, maximum] = MinMax(first, last)
 
 	WAVE stimsets = IDX_GetStimsets(panelTitle, channelNumber, channelType)
 
-	for(i = first; i <= last; i += 1)
+	for(i = minimum; i <= maximum; i += 1)
 		totalListSteps += IDX_NumberOfSweepsInSet(IDX_GetSingleStimset(stimsets, i))
 	endfor
 
@@ -513,28 +446,25 @@ Function IDX_UnlockedIndexingStepNo(panelTitle, channelNumber, channelType, coun
 	string paneltitle
 	variable channelNumber, channelType, count
 
-	variable column, i, stepsInSummedSets, totalListSteps, direction
+	variable i, stepsInSummedSets, totalListSteps, direction
+	variable first, last
 
-	if(channelType == CHANNEL_TYPE_DAC)
-		WAVE indexingStorageWave = GetDACindexingStorageWave(panelTitle)
-	elseif(channelType == CHANNEL_TYPE_TTL)
-		WAVE indexingStorageWave = GetTTLindexingStorageWave(panelTitle)
-	else
-		ASSERT(0, "Invalid value")
-	endif
+	WAVE indexingStorageWave = GetIndexingStorageWave(panelTitle)
+	first = indexingStorageWave[channelType][%CHANNEL_CONTROL_WAVE][channelNumber]
+	last  = indexingStorageWave[channelType][%CHANNEL_CONTROL_INDEX_END][channelNumber]
 
 	WAVE stimsets = IDX_GetStimsets(panelTitle, channelNumber, channelType)
 	totalListSteps = IDX_TotalIndexingListSteps(panelTitle, channelNumber, channelType)
 	ASSERT(TotalListSteps > 0, "Expected strictly positive value")
-	ASSERT(indexingStorageWave[0][channelNumber] != indexingStorageWave[1][channelNumber], "Unexpected combo")
+	ASSERT(first != last, "Unexpected combo")
 
 	count     = mod(count, totalListSTeps)
-	direction = indexingStorageWave[0][channelNumber] < indexingStorageWave[1][channelNumber] ? +1 : -1
+	direction = first < last ? +1 : -1
 
 	for(i = 0; stepsInSummedSets <= count; i += direction)
-		stepsInSummedSets += IDX_NumberOfSweepsInSet(IDX_GetSingleStimset(stimsets, indexingStorageWave[0][channelNumber] + i))
+		stepsInSummedSets += IDX_NumberOfSweepsInSet(IDX_GetSingleStimset(stimsets, first + i))
 	endfor
-	stepsInSummedSets -= IDX_NumberOfSweepsInSet(IDX_GetSingleStimset(stimsets, indexingStorageWave[0][channelNumber] + i - direction))
+	stepsInSummedSets -= IDX_NumberOfSweepsInSet(IDX_GetSingleStimset(stimsets, first + i - direction))
 
 	return count - StepsInSummedSets
 end
@@ -544,27 +474,22 @@ static Function IDX_DetIfCountIsAtSetBorder(panelTitle, count, channelNumber, ch
 	variable count, channelNumber, channelType
 
 	variable i, stepsInSummedSets, totalListSteps, direction
+	variable first, last
 
-	if(channelType == CHANNEL_TYPE_DAC)
-		WAVE indexingStorageWave = GetDACindexingStorageWave(panelTitle)
-	elseif(channelType == CHANNEL_TYPE_TTL)
-		WAVE indexingStorageWave = GetTTLindexingStorageWave(panelTitle)
-	else
-		ASSERT(0, "Invalid value")
-	endif
+	WAVE indexingStorageWave = GetIndexingStorageWave(panelTitle)
+	first = indexingStorageWave[channelType][%CHANNEL_CONTROL_WAVE][channelNumber]
+	last  = indexingStorageWave[channelType][%CHANNEL_CONTROL_INDEX_END][channelNumber]
 
 	WAVE stimsets = IDX_GetStimsets(panelTitle, channelNumber, channelType)
 	TotalListSteps = IDX_TotalIndexingListSteps(panelTitle, ChannelNumber, channelType)
 	ASSERT(TotalListSteps > 0, "Expected strictly positive value")
-	ASSERT(indexingStorageWave[0][channelNumber] != indexingStorageWave[1][channelNumber], "Unexpected combo")
+	ASSERT(first != last, "Unexpected combo")
 
 	count = (mod(count, totalListSteps) == 0 ? totalListSteps : mod(count, totalListSTeps))
+	direction = first < last ? +1 : -1
 
-	direction = indexingStorageWave[0][channelNumber] < indexingStorageWave[1][channelNumber] ? +1 : -1
-
-	stepsInSummedSets = 0
 	for(i = 0; stepsInSummedSets <= count; i += direction)
-		stepsInSummedSets += IDX_NumberOfSweepsInSet(IDX_GetSingleStimset(stimsets, indexingStorageWave[0][channelNumber] + i))
+		stepsInSummedSets += IDX_NumberOfSweepsInSet(IDX_GetSingleStimset(stimsets, first + i))
 
 		if(stepsInSummedSets == count)
 			return 1
@@ -595,7 +520,7 @@ static Function/WAVE IDX_GetStimsets(panelTitle, channelIdx, channelType)
 
 	ctrl = GetPanelControl(channelIdx, channelType, CHANNEL_CONTROL_WAVE)
 	// does not include - None -
-	list = GetUserData(panelTitle, ctrl, "MenuExp")
+	list = GetUserData(panelTitle, ctrl, USER_DATA_MENU_EXP)
 	WAVE/T stimsets = ListToTextWave(list, ";")
 
 	return stimsets
@@ -605,8 +530,8 @@ End
 ///        returned by IDX_GetStimsets()
 ///
 /// @param listWave  list of stim sets returned by IDX_GetStimsets()
-/// @param idx       1-based index
-/// @param allowNone [optional, defaults to false] Return the `NONE` stimset for idx `1`.
+/// @param idx       0-based index
+/// @param allowNone [optional, defaults to false] Return the `NONE` stimset for idx `0`.
 ///                  Not allowed during DAQ.
 static Function/S IDX_GetSingleStimset(listWave, idx, [allowNone])
 	WAVE/T listWave
@@ -618,14 +543,13 @@ static Function/S IDX_GetSingleStimset(listWave, idx, [allowNone])
 		allowNone = !!allowNone
 	endif
 
-	if(allowNone && idx == 1)
+	if(allowNone && idx == 0)
 		return NONE
 	endif
 
-	// 2 because:
+	// 1 because:
 	// none is not part of MenuExp
-	// and idx is 1-based
-	string setName = listWave[idx - 2]
+	string setName = listWave[idx - 1]
 	ASSERT(!IsEmpty(setName), "Unexpected empty set")
 
 	return setName

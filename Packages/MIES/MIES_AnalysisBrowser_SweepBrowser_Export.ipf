@@ -246,8 +246,7 @@ static Function SBE_ExportSweepBrowser(sett)
 	elseif(sett.useCursorRange)
 		xcsrA  = xcsr(A, sett.sourceGraph)
 		xcsrB  = xcsr(B, sett.sourceGraph)
-		beginX = min(xcsrA, xcsrB)
-		endX   = max(xcsrA, xcsrB)
+		[beginX, endX] = MinMax(xcsrA, xcsrB)
 		clipXRange = 1
 	elseif(isFinite(sett.manualRangeBegin) && IsFinite(sett.manualRangeEnd))
 		beginX = sett.manualRangeBegin

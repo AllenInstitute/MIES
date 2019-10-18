@@ -769,8 +769,7 @@ Function SB_ButtonProc_FindMinis(ba) : ButtonControl
 
 			first = NumberByKey("POINT", CsrInfo(A, graph))
 			last  = NumberByKey("POINT", CsrInfo(B, graph))
-			first = min(first, last)
-			last  = max(first, last)
+			[first, last] = MinMax(first, last)
 
 			DFREF workDFR = UniqueDataFolder(SB_GetSweepBrowserFolder(graph), "findminis")
 

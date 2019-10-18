@@ -1995,6 +1995,25 @@ Function/S ListFromList(list, itemBegin, itemEnd, [listSep])
 	return list[start, stop - 1]
 End
 
+/// @brief Return the minimum and maximum of both values
+Function [variable minimum, variable maximum] MinMax(variable a, variable b)
+
+	minimum = min(a, b)
+	maximum = max(a, b)
+End
+
+/// @brief Return a new wave from the subrange of the given 1D wave
+Function/WAVE DuplicateSubRange(wv, first, last)
+	WAVE wv
+	variable first, last
+
+	ASSERT(DimSize(wv, COLS) == 0, "Requires 1D wave")
+
+	Duplicate/RMD=[first, last]/FREE wv, result
+
+	return result
+End
+
 /// @brief calculates the relative complement of list2 in list1
 ///
 /// Every list item of `list1` must be in `list2`.
@@ -2369,25 +2388,6 @@ Function InPlaceRandomShuffle(inwave, [noiseGenMode])
 		inwave[i-1]	= temp
 	endfor
 end
-
-/// @brief Convert a 1D numeric wave to a list
-///
-/// Counterpart @see ListToNumericWave
-/// Similar @see NumericWaveToList
-/// @see ListToNumericWave
-Function/S Convert1DWaveToList(wv)
-	Wave wv
-
-	variable numEntries, i
-	string list = ""
-
-	numEntries = DimSize(wv, ROWS)
-	for(i = 0; i < numEntries; i += 1)
-		list = AddListItem(num2str(wv[i]), list, ";", Inf)
-	endfor
-
-	return list
-End
 
 /// @brief Return a unique trace name in the graph
 ///
