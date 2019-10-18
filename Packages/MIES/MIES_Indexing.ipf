@@ -226,22 +226,22 @@ Function IDX_MaxNoOfSweeps(panelTitle, IndexOverRide)
 	variable i, numFollower
 	string followerPanelTitle
 
-	WAVE statusDA = DAG_GetChannelState(panelTitle, CHANNEL_TYPE_DAC)
+	WAVE statusDAFiltered = DC_GetFilteredChannelState(panelTitle, DATA_ACQUISITION_MODE, CHANNEL_TYPE_DAC)
  
 	for(i = 0; i < NUM_DA_TTL_CHANNELS; i += 1)
 
-		if(!statusDA[i])
+		if(!statusDAFiltered[i])
 			continue
 		endif
 
 		MaxNoOfSweeps = max(MaxNoOfSweeps, IDX_NumberOfSweepsAcrossSets(panelTitle, i, 0, IndexOverRide))
 	endfor
 
-	WAVE statusTTL = DAG_GetChannelState(panelTitle, CHANNEL_TYPE_TTL)
+	WAVE statusTTLFiltered = DC_GetFilteredChannelState(panelTitle, DATA_ACQUISITION_MODE, CHANNEL_TYPE_TTL)
 
 	for(i = 0; i < NUM_DA_TTL_CHANNELS; i += 1)
 
-		if(!statusTTL[i])
+		if(!statusTTLFiltered[i])
 			continue
 		endif
 
@@ -270,22 +270,22 @@ Function IDX_MinNoOfSweeps(panelTitle)
 	variable MinNoOfSweeps = inf
 	variable i
 
-	WAVE statusDA = DAG_GetChannelState(panelTitle, CHANNEL_TYPE_DAC)
+	WAVE statusDAFiltered = DC_GetFilteredChannelState(panelTitle, DATA_ACQUISITION_MODE, CHANNEL_TYPE_DAC)
 
 	for(i = 0; i < NUM_DA_TTL_CHANNELS; i += 1)
 
-		if(!statusDA[i])
+		if(!statusDAFiltered[i])
 			continue
 		endif
 
 		MinNoOfSweeps = min(MinNoOfSweeps, IDX_NumberOfSweepsAcrossSets(panelTitle, i, CHANNEL_TYPE_DAC, 1))
 	endfor
 
-	WAVE statusTTL = DAG_GetChannelState(panelTitle, CHANNEL_TYPE_TTL)
+	WAVE statusTTLFiltered = DC_GetFilteredChannelState(panelTitle, DATA_ACQUISITION_MODE, CHANNEL_TYPE_TTL)
 
 	for(i = 0; i < NUM_DA_TTL_CHANNELS; i += 1)
 
-		if(!statusTTL[i])
+		if(!statusTTLFiltered[i])
 			continue
 		endif
 
@@ -385,12 +385,12 @@ Function IDX_ApplyUnLockedIndexing(panelTitle, count)
 
 	variable i, update
 
-	WAVE statusDA = DAG_GetChannelState(panelTitle, CHANNEL_TYPE_DAC)
-	WAVE statusTTL = DAG_GetChannelState(panelTitle, CHANNEL_TYPE_TTL)
+	WAVE statusDAFiltered = DC_GetFilteredChannelState(panelTitle, DATA_ACQUISITION_MODE, CHANNEL_TYPE_DAC)
+	WAVE statusTTLFiltered = DC_GetFilteredChannelState(panelTitle, DATA_ACQUISITION_MODE, CHANNEL_TYPE_TTL)
 
 	for(i = 0; i < NUM_DA_TTL_CHANNELS; i += 1)
 
-		if(!statusDA[i])
+		if(!statusDAFiltered[i])
 			continue
 		endif
 
@@ -402,7 +402,7 @@ Function IDX_ApplyUnLockedIndexing(panelTitle, count)
 
 	for(i = 0; i < NUM_DA_TTL_CHANNELS; i += 1)
 
-		if(!statusTTL[i])
+		if(!statusTTLFiltered[i])
 			continue
 		endif
 
