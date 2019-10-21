@@ -173,14 +173,16 @@ Structure AnalysisFunction_V3
 	/// active headstage index, `[0, NUM_HEADSTAGES[`
 	variable headStage
 
-	/// number of rows in `rawDACWave` which will be filled with data at the
+	/// last valid row index in `rawDACWave` which will be filled with data at the
 	/// end of DAQ. The total number of rows in `rawDACWave` might be higher
 	/// due to alignment requirements of the data acquisition hardware.
 	///
-	/// Always `NaN` for #PRE_DAQ_EVENT events.
+	/// Always `NaN` for #PRE_DAQ_EVENT/#PRE_SET_EVENT events.
 	variable lastValidRowIndex
 
-	/// number of rows in `rawDACWave`/`scaledDACWave` with already acquired data
+	/// last written row index in `rawDACWave`/`scaledDACWave` with already acquired data
+	///
+	/// Always `NaN` for #PRE_DAQ_EVENT/#PRE_SET_EVENT/#PRE_SWEEP_EVENT.
 	variable lastKnownRowIndex
 
 	/// Potential *future* number of the sweep. Once the sweep is finished it will be

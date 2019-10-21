@@ -17,7 +17,7 @@ Function AFM_CallAnalysisFunctions(panelTitle, eventType)
 	variable eventType
 
 	variable error, i, valid_f1, valid_f2, valid_f3, ret, DAC, sweepsInSet
-	variable realDataLength, sweepNo
+	variable realDataLength, sweepNo, fifoPosition
 	string func, msg
 	struct AnalysisFunction_V3 s
 
@@ -29,16 +29,21 @@ Function AFM_CallAnalysisFunctions(panelTitle, eventType)
 
 	NVAR count = $GetCount(panelTitle)
 	NVAR stopCollectionPoint = $GetStopCollectionPoint(panelTitle)
-	NVAR fifoPosition = $GetFifoPosition(panelTitle)
 	WAVE statusHS = DAG_GetChannelState(panelTitle, CHANNEL_TYPE_HEADSTAGE)
 	WAVE setEventFlag = GetSetEventFlag(panelTitle)
+	fifoPosition = ROVar(GetFifoPosition(panelTitle))
 
 	WAVE/T analysisFunctions = GetAnalysisFunctionStorage(panelTitle)
 
-	if(eventType == PRE_DAQ_EVENT)
+	if(eventType == PRE_DAQ_EVENT || eventType == PRE_SET_EVENT)
 		realDataLength = NaN
 	else
 		realDataLength = stopCollectionPoint
+	endif
+
+	// use safe defaults
+	if(eventType == PRE_DAQ_EVENT || eventType == PRE_SET_EVENT || eventType == PRE_SWEEP_EVENT)
+		fifoPosition = NaN
 	endif
 
 	for(i = 0; i < NUM_HEADSTAGES; i += 1)
@@ -112,8 +117,8 @@ Function AFM_CallAnalysisFunctions(panelTitle, eventType)
 				WAVE s.rawDACWave    = DAQDataWave
 				WAVE s.scaledDACWave = scaledDataWave
 				s.headstage          = i
-				s.lastValidRowIndex  = realDataLength
-				s.lastKnownRowIndex  = fifoPosition
+				s.lastValidRowIndex  = realDataLength - 1
+				s.lastKnownRowIndex  = fifoPosition - 1
 				s.sweepNo            = sweepNo
 				s.sweepsInSet        = sweepsInSet
 				s.params             = analysisFunctions[i][ANALYSIS_FUNCTION_PARAMS]

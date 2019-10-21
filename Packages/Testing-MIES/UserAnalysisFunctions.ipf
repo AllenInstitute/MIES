@@ -275,7 +275,7 @@ Function ValidFunc_V3(panelTitle, s)
 
 	CHECK_NON_EMPTY_STR(panelTitle)
 
-	switch(GetHardwareType(panelTitle))
+	switch(hardwareType)
 		case HARDWARE_ITC_DAC:
 			CHECK_WAVE(s.rawDACWave, NUMERIC_WAVE)
 			break
@@ -312,12 +312,29 @@ Function ValidFunc_V3(panelTitle, s)
 
 	if(s.eventType == PRE_DAQ_EVENT || s.eventType == PRE_SET_EVENT)
 		CHECK_EQUAL_VAR(numType(s.lastValidRowIndex), 2)
-	elseif(hardwareType == HARDWARE_ITC_DAC)
-		CHECK(s.lastValidRowIndex >= 0 && s.lastValidRowIndex < DimSize(s.rawDACWave, ROWS))
-	elseif(hardwareType == HARDWARE_NI_DAC)
-		WAVE/WAVE rawDACWaveRef = s.rawDACWave
-		Make/FREE/N=(DimSize(rawDACWaveRef, ROWS)) sizes = DimSize(rawDACWaveRef[p], ROWS)
-		CHECK(s.lastValidRowIndex >= 0 && s.lastValidRowIndex <= WaveMax(sizes))
+		CHECK_EQUAL_VAR(numType(s.lastKnownRowIndex), 2)
+	elseif(s.eventType == PRE_SWEEP_EVENT)
+		CHECK_EQUAL_VAR(numType(s.lastKnownRowIndex), 2)
+		CHECK(s.lastValidRowIndex > 0)
+	elseif(s.eventType == MID_SWEEP_EVENT)
+		switch(hardwareType)
+			case HARDWARE_ITC_DAC:
+				CHECK(s.lastValidRowIndex >= 0 && s.lastValidRowIndex < DimSize(s.rawDACWave, ROWS))
+				break
+			case HARDWARE_NI_DAC:
+				WAVE/WAVE rawDACWaveRef = s.rawDACWave
+				Make/FREE/N=(DimSize(rawDACWaveRef, ROWS)) sizes = DimSize(rawDACWaveRef[p], ROWS)
+				CHECK(s.lastValidRowIndex >= 0 && s.lastValidRowIndex < WaveMax(sizes))
+				CHECK(s.lastKnownRowIndex >= 0 && s.lastKnownRowIndex < WaveMax(sizes))
+				break
+			default:
+				FAIL()
+		endswitch
+	elseif(s.eventType == POST_DAQ_EVENT || s.eventType == POST_SET_EVENT || s.eventType == POST_SWEEP_EVENT)
+		WAVE/Z sweepWave = GetSweepWave(panelTitle, s.sweepNo)
+		CHECK_WAVE(sweepWave, NUMERIC_WAVE)
+		CHECK_EQUAL_VAR(DimSize(sweepWave, ROWS) - 1, s.lastValidRowIndex)
+		CHECK_EQUAL_VAR(DimSize(sweepWave, ROWS) - 1, s.lastKnownRowIndex)
 	else
 		FAIL()
 	endif
