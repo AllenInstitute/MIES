@@ -33,7 +33,13 @@
 // *************************
 //	Date			Version #				Changes
 //	Jan 20, 2007		Version 1.0.0.0			Initial release
+//	Oct 17, 2019		Version 1.0.0.1			Michael Huth / byte physics: Added PopupMenus to select userdata key instead of fixed tabNum/tabControl
 //
+//
+// Known issues:
+//
+// - If both columns list the same key, after editing an entry the other column does not update. Workaround press 'Refresh Control List'
+// - After clicking at the column header for sorting the key selection resets
 //
 // ********************
 //  MENUS
@@ -44,29 +50,35 @@ Menu "Panel"
 	End
 End	
 
+static StrConstant EMPTY_USERDATA = "- empty -"
+
 // ********************
 //  PANEL
 // ********************
 Function BuildpnlUserDataEditor(panelName)
 	String &panelName
-	NewPanel /K=1 /W=(131,83,487,439) /N=$(panelName) as "Userdata Editor for Controls"
+	NewPanel /K=1 /W=(606,339,1337,1479) /N=$(panelName) as "Userdata Editor for Controls"
 	panelName = S_name
-	PopupMenu popupPanelSelect,pos={10,8},size={188,21},proc=PopMenuSelectPanel,title="Select Panel"
-	PopupMenu popupPanelSelect,help={"Select the panel that contains the controls for which you want to edit the userdata."}
-	PopupMenu popupPanelSelect,mode=3,popvalue="pnlUserDataEditor",value= #"SortList(WinList(\"*\", \";\", \"WIN:64\"), \";\", 0)"
-	ListBox listPanelControls,pos={10,68},size={336,281},proc=ListBoxPanelControls
+	PopupMenu popupPanelSelect,pos={9.00,7.00},size={140.00,19.00},proc=PopMenuSelectPanel,title="Select Panel/Graph"
+	PopupMenu popupPanelSelect,help={"Select the panel/graph that contains the controls for which you want to edit the userdata."}
+	PopupMenu popupPanelSelect,mode=3,popvalue="pnlUserDataEditor",value= #"SortList(WinList(\"*\", \";\", \"WIN:65\"), \";\", 0)"
+	ListBox listPanelControls,pos={9.00,68.00},size={711.00,1065.00},proc=ListBoxPanelControls
 	ListBox listPanelControls,help={"This list box contains the controls of a the selected type on the selected panel.\rSee the Userdata Editor for Controls help file for detailed information."}
 	ListBox listPanelControls,userdata(order0)=  "0",userdata(sortCol)=  "1"
 	ListBox listPanelControls,userdata(order1)=  "0"
 	ListBox listPanelControls,listWave=root:Packages:ACL_UserDataEditor:controlInfoWave
 	ListBox listPanelControls,selWave=root:Packages:ACL_UserDataEditor:controlInfoSelectWave
-	ListBox listPanelControls,mode= 8,widths={132,83,105},userColumnResize= 1
-	Button buttonRefreshControlList,pos={243,8},size={105,20},proc=ButtonRefresh,title="Refresh Control List"
+	ListBox listPanelControls,mode= 8,widths={264,216,1038},userColumnResize= 1
+	Button buttonRefreshControlList,pos={314.00,7.00},size={117.00,19.00},proc=ButtonRefresh,title="Refresh Control List"
 	Button buttonRefreshControlList,help={"Click this button if you add or remove a control on a panel after opening the Userdata Editor panel.  Doing so will update the list of controls on the target panel."}
-	PopupMenu popupControlType,pos={10,35},size={282,21},proc=PopMenuSelectControlType,title="Show Controls of Type"
+	PopupMenu popupControlType,pos={9.00,34.00},size={296.00,19.00},proc=PopMenuSelectControlType,title="Show Controls of Type"
 	PopupMenu popupControlType,help={"Use this popmenu to edit the userdata for only certain types of controls on a panel."}
 	PopupMenu popupControlType,userdata(controlType)=  "NaN"
 	PopupMenu popupControlType,mode=1,popvalue="All controls and subwindows",value= #"root:Packages:ACL_UserDataEditor:gsControlTypePopmenu"
+	PopupMenu popupSelectColumn0,pos={316.00,34.00},size={64.00,19.00},proc=PopMenuSelectColumn
+	PopupMenu popupSelectColumn0,mode=1,popvalue="",value= #"\"ContentHolder\""
+	PopupMenu popupSelectColumn1,pos={489.00,34.00},size={64.00,19.00},proc=PopMenuSelectColumn
+	PopupMenu popupSelectColumn1,mode=1,popvalue="",value= #"\"ContentHolder\""
 	SetWindow $(panelName),hook(ACLUserDataEditor)=ACL_UserDataEditorHook
 	SetWindow $(panelName),userdata=S_name
 End
@@ -91,8 +103,8 @@ Function InitializeUserDataEditor()
 		Make/T/O/N=(1,3) controlInfoWave
 		Make/O/N=(1,3) controlInfoSelectWave
 		SetDimLabel 1, 0, $("Control Name"), controlInfoWave, controlInfoSelectWave
-		SetDimLabel 1, 1, $("tabnum"), controlInfoWave, controlInfoSelectWave
-		SetDimLabel 1, 2, $("tabcontrol"), controlInfoWave, controlInfoSelectWave
+		SetDimLabel 1, 1, $("key left"), controlInfoWave, controlInfoSelectWave
+		SetDimLabel 1, 2, $("key right"), controlInfoWave, controlInfoSelectWave
 		
 		// create a wave that will store the types of controls and the value of V_flag that will be
 		// returned for that type of control
@@ -118,7 +130,7 @@ Function InitializeUserDataEditor()
 		ControlInfo/W=$(panelName) popupPanelSelect
 
 		if (V_Flag == 3)		// popup control exists
-			String panelList = SortList(WinList("*", ";", "WIN:64"), ";", 0)
+			String panelList = SortList(WinList("*", ";", "WIN:65"), ";", 0)
 			Variable listPos =WhichListItem(currentPanel, panelList, ";")
 		
 			if (listPos >= 0)
@@ -161,7 +173,11 @@ End
 // ********************
 Function PopMenuSelectPanel(pa) : PopupMenuControl
 	STRUCT WMPopupAction &pa
+
+	string userKeys, controlList
 	String curDataFolder = GetDataFolder(1)
+	variable controltypes
+
 	if (!DataFolderExists("root:Packages:ACL_UserDataEditor"))
 		NewDataFolder/O/S root:Packages:ACL_UserDataEditor
 	else
@@ -170,213 +186,255 @@ Function PopMenuSelectPanel(pa) : PopupMenuControl
 		
 	switch( pa.eventCode )
 		case 2: // mouse up
-			Variable popNum = pa.popNum
-			String popStr = pa.popStr
-			String panel = pa.win		// window that hosts the popup menu
-	
 			// make sure that window selected in popup menu (pa.popStr) still exists
-			DoWindow $(popStr)
+			DoWindow $(pa.popStr)
 			if (!V_Flag)
-				ControlUpdate/W=$(panel) $(pa.ctrlName)
-				ControlInfo/W=$(panel) $(pa.ctrlName)
+				ControlUpdate/W=$(pa.win) $(pa.ctrlName)
+				ControlInfo/W=$(pa.win) $(pa.ctrlName)
 				if (V_Flag == 3)		// this is a popup menu
 					pa.popStr = S_Value
 					PopMenuSelectPanel(pa)
 					return 0
 				EndIf
 			EndIf
+
+			controlTypes = str2num(GetUserData(pa.win, "popupControlType", "controlType"))
 		
-			// determine what types of controls should be listed based on the 
-			// controlType userdata in popupControlType
-			Variable controlTypes = str2num(GetUserData(pa.win, "popupControlType", "controlType"))
+			userKeys = ACL_GetUserdataKeys(StringFromList(0, pa.popStr), controltypes)
+			userKeys = AddListItem(EMPTY_USERDATA, userKeys, ";", 0)
+			userKeys = "\"" + userKeys + "\""
+			PopupMenu popupSelectColumn0,mode=1,popvalue="",value=#userKeys
+			PopupMenu popupSelectColumn1,mode=1,popvalue="",value=#userKeys
 			
-							
-			Variable showAllControls = 0, showSubwindows = 0
-			if (numtype(controlTypes) == 2)		// controlTypes = NaN
-				// get currently selected value of popupControlType using control info
-				ControlInfo/W=$(pa.win) popupControlType
-				if (abs(V_flag) == 3)		// this is a popup control
-					Switch (V_value)		// currently selected popup item
-						Case 1:			// show all controls and subwindows
-							showAllControls = 1
-							showSubwindows = 1						
-							break
-						Case 14:		// show only subwindows
-							showAllControls = 0
-							showSubwindows = 1
-							break
-						default:			// default:  show all controls and subwindows
-							showAllControls = 1
-							showSubwindows = 1
-					EndSwitch				
-				endif
-			endif
-			
-			// Make a list of all windows and child windows (recursively) on this panel, including
-			// this parent panel itself.
-			String allWindows = ""
-			GetAllWindows(popStr, allWindows)
+			ACL_SetupListControlWaves(pa.win, pa.popStr)
 
-			// Get a list of all controls on designated panel and any children.
-			String controlList = ""
-			Variable numWindows = ItemsInList(allWindows, ";")
-			String currentWindow
-			Variable n
-			For (n=0; n<numWindows; n+=1)
-				currentWindow = StringFromList(n, allWindows, ";")
-				controlList += GetAllControls(currentWindow)
-			EndFor
-
-			// Add all relevent windows and child windows to this list.
-			controlList += allWindows
-			
-			// Remove the parent panel from the list of "controls"
-			controlList = RemoveFromList(popStr, controlList, ";")
-
-			// populate list box wave with the new controls
-			Variable numControls = ItemsInList(controlList)
-			Variable windowType
-			WAVE/T controlInfoWave
-			String currentControlName
-			String potentialWindowName
-			
-			Redimension/N=(0,3) controlInfoWave		
-		
-			// create variables that represent the colum indices of the 3 columns of the wave
-			Variable ctrlNameCol, tabnumCol, tabcontrolCol
-			Variable numCols = DimSize(controlInfoWave, 1)
-			String currentDimLabel
-			For (n=0; n<numCols; n+=1)
-				currentDimLabel = GetDimLabel(controlInfoWave, 1, n)
-				if (stringmatch(currentDimLabel, "*Control Name*") == 1)
-					ctrlNameCol = n
-				elseif (stringmatch(currentDimLabel, "*tabnum*") == 1)
-					tabnumCol = n
-				elseif (stringmatch(currentDimLabel, "*tabcontrol*") == 1)
-					tabcontrolCol = n
-				endif
-			EndFor
-			
-			String windowName = "", controlName = "", displayName = ""
-			For (n=0; n<numControls; n+=1)
-				Variable waveRow = DimSize(controlInfoWave, 0)
-				currentControlName = StringFromList(n, controlList, ";")
-				
-				// Parse out the window name and the actual control name.
-				// Note that, if currentControlName is actually a subwindow, that
-				// the windowName and controlName values set in the call below
-				// may not be valid.  However, this possibility is accounted for
-				// in the else clause below.
-				ParseFullControlName(currentControlName, windowName, controlName, displayName)
-
-				// see if this is a control or a child window
-				ControlInfo/W=$(windowName) $(controlName)
-				if (abs(V_Flag) > 0)
-					if (showAllControls || (numtype(controlTypes) == 0 && controlTypes == abs(V_flag)))		// see if this control type should be shown
-						Redimension/N=(waveRow + 1, -1) controlInfoWave
-						// put in control names
-						controlInfoWave[waveRow][ctrlNameCol] = displayName
-						// put in tabnum values
-						controlInfoWave[waveRow][tabnumCol] = GetUserData(windowName, controlName, "tabnum")
-						// put in tabcontrol values
-						controlInfoWave[waveRow][tabcontrolCol] = GetUserData(windowName, controlName, "tabcontrol")
-					endif	
-				elseif (showSubwindows)
-					// see if this is a window
-					sprintf potentialWindowName, "%s#%s", windowName, controlName
-					windowType = WinType(potentialWindowName)
-					Switch (windowType)
-						Case 0:		// no window by that name
-							// do nothing
-							break
-						Case 1:		// window is a graph
-						Case 2:		// window is a table
-						Case 3:		// window is a layout
-						Case 5:		// window is a notebook
-						Case 7:		// window is a panel
-						Case 13:	// window is an XOP target window
-						default:
-							Redimension/N=(waveRow + 1, -1) controlInfoWave
-							// put in window name
-							controlInfoWave[waveRow][ctrlNameCol] = displayName		// should this be the complete window name instead?
-							// put in tabnum values
-							controlInfoWave[waveRow][tabnumCol] = GetUserData(potentialWindowName, "", "tabnum")
-							// put in tabcontrol values
-							controlInfoWave[waveRow][tabcontrolCol] = GetUserData(potentialWindowName, "", "tabcontrol")
-					EndSwitch
-				EndIf
-			EndFor
-		
-			// see if sorting information is present, and if so sort the controls based on those values
-			Variable sortCol = str2num(GetUserData(pa.win, "listPanelControls", "sortCol"))
-			if (numType(sortCol) == 0)		// we need to sort
-				Variable sortOrder = str2num(GetUserData(pa.win, "listPanelControls", "order" + num2str(sortCol)))
-				if (numType(sortOrder) != 0)
-					sortOrder = 0		// default sort: ascending
-				endif
-
-				// break each column of controlInfoWave into a 1D wave
-				String newWaveName
-				String waveListString = ""
-				For (n=0; n<DimSize(controlInfoWave, 1); n+=1)
-					newWaveName = "controlInfoWaveCol" + num2str(n)
-					Duplicate/O/R=[][n] controlInfoWave, $(newWaveName)		// copy column of controlInfoWave
-					Redimension/N=(-1, 0) $(newWaveName)
-					waveListString += newWaveName + ";"
-				EndFor
-			
-				// sort the waves
-				String sortKeyWaves = ""
-				Switch (sortCol)
-					Case 0:		// control name column
-						if (sortOrder == 1)		// descending		
-							Sort/A/R {controlInfoWaveCol0, controlInfoWaveCol2, controlInfoWaveCol1}, controlInfoWaveCol0, controlInfoWaveCol1, controlInfoWaveCol2
-						else					// ascending
-							Sort/A {controlInfoWaveCol0, controlInfoWaveCol2, controlInfoWaveCol1}, controlInfoWaveCol0, controlInfoWaveCol1, controlInfoWaveCol2 
-						endif
-						break
-					Case 1:		// tabnum column
-						if (sortOrder == 1)		// descending		
-							Sort/A/R {controlInfoWaveCol1, controlInfoWaveCol2, controlInfoWaveCol0}, controlInfoWaveCol0, controlInfoWaveCol1, controlInfoWaveCol2
-						else					// ascending
-							Sort/A {controlInfoWaveCol1, controlInfoWaveCol2, controlInfoWaveCol0}, controlInfoWaveCol0, controlInfoWaveCol1, controlInfoWaveCol2 
-						endif
-						break
-					Case 2:		// tabcontrol name column
-						if (sortOrder == 1)		// descending		
-							Sort/A/R {controlInfoWaveCol2, controlInfoWaveCol1, controlInfoWaveCol0}, controlInfoWaveCol0, controlInfoWaveCol1, controlInfoWaveCol2
-						else					// ascending
-							Sort/A {controlInfoWaveCol2, controlInfoWaveCol1, controlInfoWaveCol0}, controlInfoWaveCol0, controlInfoWaveCol1, controlInfoWaveCol2 
-						endif
-						break
-				EndSwitch
-				
-				// put waves back together
-				Concatenate/O/T/KILL waveListString, sortedWave
-				controlInfoWave[][] = sortedWave[p][q]
-				KillWaves sortedWave
-			
-			endif
-			
-			// make select wave for list box
-			WAVE controlInfoSelectWave
-			Redimension/N=(DimSize(controlInfoWave, 0),3) controlInfoSelectWave
-			// disable editing of Control Name values
-			controlInfoSelectWave[][ctrlNameCol] = controlInfoSelectWave[p][q] & ~2
-			// enable editing of tabnum values
-			controlInfoSelectWave[][tabnumCol] = controlInfoSelectWave[p][q] | 2
-			// enable editing of tabcontrol values
-			controlInfoSelectWave[][tabcontrolCol] = controlInfoSelectWave[p][q] | 2
-
-			
 			// put value of selected panel in the (unnamed) userdata of the window that contains the PopMenu box
-			SetWindow $(panel) userdata=popStr
+			SetWindow $(pa.win) userdata=pa.popStr
 			
 			break
 	endswitch
-	
+
 	SetDataFolder curDataFolder
 	return 0
+End
+
+Function PopMenuSelectColumn(pa) : PopupMenuControl
+	STRUCT WMPopupAction &pa
+
+	String curDataFolder = GetDataFolder(1)
+	if (!DataFolderExists("root:Packages:ACL_UserDataEditor"))
+		NewDataFolder/O/S root:Packages:ACL_UserDataEditor
+	else
+		SetDataFolder root:Packages:ACL_UserDataEditor
+	endif
+
+	ControlInfo/W=$pa.win popupPanelSelect
+	ACL_SetupListControlWaves(pa.win, S_Value)
+
+	SetDataFolder curDataFolder
+	return 0
+End
+
+Function/S ACL_GetAllControlsAndWindows(wName)
+	string wName
+
+	// Get a list of all controls on designated panel and any children.
+	String controlList = ""
+	Variable numWindows
+	String allWindows, currentWindow
+	Variable n
+
+	// Make a list of all windows and child windows (recursively) on this panel, including
+	// this parent panel itself.
+	allWindows = ""
+	GetAllWindows(wName, allWindows)
+
+	numWindows = ItemsInList(allWindows, ";")
+	For (n=0; n<numWindows; n+=1)
+		currentWindow = StringFromList(n, allWindows, ";")
+		controlList += GetAllControls(currentWindow)
+	EndFor
+
+	// Add all relevent windows and child windows to this list.
+	controlList += allWindows
+
+	// Remove the parent panel from the list of "controls"
+	controlList = RemoveFromList(wName, controlList, ";")
+
+	return controlList
+End
+
+Function ACL_SetupListControlWaves(wName, targetWin)
+	string wName, targetWin
+
+	Variable controlTypes, showAllControls, showSubwindows
+	string controlList, keyLeft, keyRight
+	variable n
+
+	ControlInfo/W=$wName popupSelectColumn0
+	keyLeft = S_Value
+	ControlInfo/W=$wName popupSelectColumn1
+	keyRight = S_Value
+	keyLeft = SelectString(!CmpStr(keyLeft, EMPTY_USERDATA), keyLeft, "")
+	keyRight = SelectString(!CmpStr(keyRight, EMPTY_USERDATA), keyRight, "")
+
+	controlTypes = str2num(GetUserData(wName, "popupControlType", "controlType"))
+	if (numtype(controlTypes) == 2)		// controlTypes = NaN
+		// get currently selected value of popupControlType using control info
+		ControlInfo/W=$(wName) popupControlType
+		if (abs(V_flag) == 3)		// this is a popup control
+			Switch (V_value)		// currently selected popup item
+				Case 1:			// show all controls and subwindows
+					showAllControls = 1
+					showSubwindows = 1
+					break
+				Case 14:		// show only subwindows
+					showAllControls = 0
+					showSubwindows = 1
+					break
+				default:			// default:  show all controls and subwindows
+					showAllControls = 1
+					showSubwindows = 1
+			EndSwitch
+		endif
+	endif
+
+	controlList = ACL_GetAllControlsAndWindows(targetWin)
+
+	// populate list box wave with the new controls
+	Variable numControls = ItemsInList(controlList)
+	Variable windowType
+	WAVE/T controlInfoWave
+	String currentControlName
+	String potentialWindowName
+			
+	Redimension/N=(0,3) controlInfoWave
+		
+	// create variables that represent the colum indices of the 3 columns of the wave
+	Variable ctrlNameCol, tabnumCol, tabcontrolCol
+	Variable numCols = DimSize(controlInfoWave, 1)
+	String currentDimLabel
+	For (n=0; n<numCols; n+=1)
+		currentDimLabel = GetDimLabel(controlInfoWave, 1, n)
+		if (stringmatch(currentDimLabel, "*Control Name*") == 1)
+			ctrlNameCol = n
+		elseif (stringmatch(currentDimLabel, "*key left*") == 1)
+			tabnumCol = n
+		elseif (stringmatch(currentDimLabel, "*key right*") == 1)
+			tabcontrolCol = n
+		endif
+	EndFor
+			
+	String windowName = "", controlName = "", displayName = ""
+	For (n=0; n<numControls; n+=1)
+		Variable waveRow = DimSize(controlInfoWave, 0)
+		currentControlName = StringFromList(n, controlList, ";")
+				
+		// Parse out the window name and the actual control name.
+		// Note that, if currentControlName is actually a subwindow, that
+		// the windowName and controlName values set in the call below
+		// may not be valid.  However, this possibility is accounted for
+		// in the else clause below.
+		ParseFullControlName(currentControlName, windowName, controlName, displayName)
+
+		// see if this is a control or a child window
+		ControlInfo/W=$(windowName) $(controlName)
+		if (abs(V_Flag) > 0)
+			if (showAllControls || (numtype(controlTypes) == 0 && controlTypes == abs(V_flag)))		// see if this control type should be shown
+				Redimension/N=(waveRow + 1, -1) controlInfoWave
+				// put in control names
+				controlInfoWave[waveRow][ctrlNameCol] = displayName
+				// put in tabnum values
+				controlInfoWave[waveRow][tabnumCol] = GetUserData(windowName, controlName, keyLeft)
+				// put in tabcontrol values
+				controlInfoWave[waveRow][tabcontrolCol] = GetUserData(windowName, controlName, keyRight)
+			endif
+		elseif (showSubwindows)
+			// see if this is a window
+			sprintf potentialWindowName, "%s#%s", windowName, controlName
+			windowType = WinType(potentialWindowName)
+			Switch (windowType)
+				Case 0:		// no window by that name
+					// do nothing
+					break
+				Case 1:		// window is a graph
+				Case 2:		// window is a table
+				Case 3:		// window is a layout
+				Case 5:		// window is a notebook
+				Case 7:		// window is a panel
+				Case 13:	// window is an XOP target window
+				default:
+					Redimension/N=(waveRow + 1, -1) controlInfoWave
+					// put in window name
+					controlInfoWave[waveRow][ctrlNameCol] = displayName		// should this be the complete window name instead?
+					// put in tabnum values
+					controlInfoWave[waveRow][tabnumCol] = GetUserData(potentialWindowName, "", keyLeft)
+					// put in tabcontrol values
+					controlInfoWave[waveRow][tabcontrolCol] = GetUserData(potentialWindowName, "", keyRight)
+			EndSwitch
+		EndIf
+	EndFor
+		
+	// see if sorting information is present, and if so sort the controls based on those values
+	Variable sortCol = str2num(GetUserData(wName, "listPanelControls", "sortCol"))
+	if (numType(sortCol) == 0)		// we need to sort
+		Variable sortOrder = str2num(GetUserData(wName, "listPanelControls", "order" + num2str(sortCol)))
+		if (numType(sortOrder) != 0)
+			sortOrder = 0		// default sort: ascending
+		endif
+
+		// break each column of controlInfoWave into a 1D wave
+		String newWaveName
+		String waveListString = ""
+		For (n=0; n<DimSize(controlInfoWave, 1); n+=1)
+			newWaveName = "controlInfoWaveCol" + num2str(n)
+			Duplicate/O/R=[][n] controlInfoWave, $(newWaveName)		// copy column of controlInfoWave
+			Redimension/N=(-1, 0) $(newWaveName)
+			waveListString += newWaveName + ";"
+		EndFor
+			
+		// sort the waves
+		String sortKeyWaves = ""
+		Switch (sortCol)
+			Case 0:		// control name column
+				if (sortOrder == 1)		// descending
+					Sort/A/R {controlInfoWaveCol0, controlInfoWaveCol2, controlInfoWaveCol1}, controlInfoWaveCol0, controlInfoWaveCol1, controlInfoWaveCol2
+				else					// ascending
+					Sort/A {controlInfoWaveCol0, controlInfoWaveCol2, controlInfoWaveCol1}, controlInfoWaveCol0, controlInfoWaveCol1, controlInfoWaveCol2
+				endif
+				break
+			Case 1:		// tabnum column
+				if (sortOrder == 1)		// descending
+					Sort/A/R {controlInfoWaveCol1, controlInfoWaveCol2, controlInfoWaveCol0}, controlInfoWaveCol0, controlInfoWaveCol1, controlInfoWaveCol2
+				else					// ascending
+					Sort/A {controlInfoWaveCol1, controlInfoWaveCol2, controlInfoWaveCol0}, controlInfoWaveCol0, controlInfoWaveCol1, controlInfoWaveCol2
+				endif
+				break
+			Case 2:		// tabcontrol name column
+				if (sortOrder == 1)		// descending
+					Sort/A/R {controlInfoWaveCol2, controlInfoWaveCol1, controlInfoWaveCol0}, controlInfoWaveCol0, controlInfoWaveCol1, controlInfoWaveCol2
+				else					// ascending
+					Sort/A {controlInfoWaveCol2, controlInfoWaveCol1, controlInfoWaveCol0}, controlInfoWaveCol0, controlInfoWaveCol1, controlInfoWaveCol2
+				endif
+				break
+		EndSwitch
+				
+		// put waves back together
+		Concatenate/O/T/KILL waveListString, sortedWave
+		controlInfoWave[][] = sortedWave[p][q]
+		KillWaves sortedWave
+			
+	endif
+			
+	// make select wave for list box
+	WAVE controlInfoSelectWave
+	Redimension/N=(DimSize(controlInfoWave, 0),3) controlInfoSelectWave
+	// disable editing of Control Name values
+	controlInfoSelectWave[][ctrlNameCol] = controlInfoSelectWave[p][q] & ~2
+	// enable editing of tabnum values
+	controlInfoSelectWave[][tabnumCol] = controlInfoSelectWave[p][q] | 2
+	// enable editing of tabcontrol values
+	controlInfoSelectWave[][tabcontrolCol] = controlInfoSelectWave[p][q] | 2
 End
 
 Function PopMenuSelectControlType(pa) : PopupMenuControl
@@ -432,6 +490,7 @@ Function ListBoxPanelControls(lba) : ListBoxControl
 	Variable windowType
 	String panel = GetUserData(lba.win, "", "")	// name of panel that is currently selected to set userdata of controls
 	String potentialWindowName
+	string keyLeft, keyRight
 	WAVE/T/Z controlInfoWave = lba.listWave
 	WAVE/Z selWave = lba.selWave
 
@@ -522,9 +581,9 @@ Function ListBoxPanelControls(lba) : ListBoxControl
 				currentDimLabel = GetDimLabel(controlInfoWave, 1, n)
 				if (stringmatch(currentDimLabel, "*Control Name*") == 1)
 					ctrlNameCol = n
-				elseif (stringmatch(currentDimLabel, "*tabnum*") == 1)
+				elseif (stringmatch(currentDimLabel, "*key left*") == 1)
 					tabnumCol = n
-				elseif (stringmatch(currentDimLabel, "*tabcontrol*") == 1)
+				elseif (stringmatch(currentDimLabel, "*key right*") == 1)
 					tabcontrolCol = n
 				endif
 			EndFor
@@ -537,30 +596,43 @@ Function ListBoxPanelControls(lba) : ListBoxControl
 			String windowName = "", controlName = "", displayName = ""
 			ParseFullControlName(currentControlName, windowName, controlName, displayName)
 			
+			ControlInfo/W=$lba.win popupSelectColumn0
+			keyLeft = S_Value
+			ControlInfo/W=$lba.win popupSelectColumn1
+			keyRight = S_Value
+			keyLeft = SelectString(!CmpStr(keyLeft, EMPTY_USERDATA), keyLeft, "")
+			keyRight = SelectString(!CmpStr(keyRight, EMPTY_USERDATA), keyRight, "")
+
 			// make sure the control exists and if not check to see if it is a window
 			ControlInfo/W=$(windowName) $(controlName)
 			if (abs(V_Flag) > 0)
 				// control exists
-				ModifyControl $(controlName), win=$(windowName), userdata(tabnum)=controlInfoWave[lba.row][tabnumCol]
-				ModifyControl $(controlName), win=$(windowName), userdata($"tabcontrol")=controlInfoWave[lba.row][tabcontrolCol]
+				if(lba.col == tabnumCol)
+					ModifyControl $(controlName), win=$(windowName), userdata($keyLeft)=controlInfoWave[lba.row][tabnumCol]
+				elseif(lba.col == tabcontrolCol)
+					ModifyControl $(controlName), win=$(windowName), userdata($keyRight)=controlInfoWave[lba.row][tabcontrolCol]
+				endif
 			else
 				// see if this is a window
-					sprintf potentialWindowName, "%s#%s", windowName, controlName
-					windowType = WinType(potentialWindowName)
-					Switch (windowType)
-						Case 0:		// no window by that name
-							// do nothing
-							break
-						Case 1:		// window is a graph
-						Case 2:		// window is a table
-						Case 3:		// window is a layout
-						Case 5:		// window is a notebook
-						Case 7:		// window is a panel
-						Case 13:	// window is an XOP target window
-						default:
-							SetWindow $(potentialWindowName), userdata(tabnum) = controlInfoWave[lba.row][tabnumCol]
-							SetWindow $(potentialWindowName), userdata($"tabcontrol") = controlInfoWave[lba.row][tabcontrolCol]
-					EndSwitch
+				sprintf potentialWindowName, "%s#%s", windowName, controlName
+				windowType = WinType(potentialWindowName)
+				Switch (windowType)
+					Case 0:		// no window by that name
+						// do nothing
+						break
+					Case 1:		// window is a graph
+					Case 2:		// window is a table
+					Case 3:		// window is a layout
+					Case 5:		// window is a notebook
+					Case 7:		// window is a panel
+					Case 13:	// window is an XOP target window
+					default:
+						if(lba.col == tabnumCol)
+							SetWindow $(potentialWindowName), userdata($keyLeft) = controlInfoWave[lba.row][tabnumCol]
+						elseif(lba.col == tabcontrolCol)
+							SetWindow $(potentialWindowName), userdata($keyRight) = controlInfoWave[lba.row][tabcontrolCol]
+						endif
+				EndSwitch
 			EndIf
 		
 			break
@@ -772,4 +844,100 @@ Function ACL_UserDataEditorHook(str)
 			
 	EndSwitch
 	return statusCode
+End
+
+// ********************
+//  UTILITY FUNCTIONS
+// ********************
+Function/S ACL_ControlTypeName(controlType)
+	variable controlType
+
+	if(numtype(controlType) == 2)
+		return ""
+	endif
+	controlType = abs(controlType)
+	if(controlType == 1)
+		return "Button"
+	elseif(controlType == 6)
+		return "Chart"
+	elseif(controlType == 2)
+		return "CheckBox"
+	elseif(controlType == 12)
+		return "CustomControl"
+	elseif(controlType == 9)
+		return "GroupBox"
+	elseif(controlType == 11)
+		return "ListBox"
+	elseif(controlType == 3)
+		return "PopupMenu"
+	elseif(controlType == 5)
+		return "SetVariable"
+	elseif(controlType == 7)
+		return "Slider"
+	elseif(controlType == 8)
+		return "TabControl"
+	elseif(controlType == 10)
+		return "TitleBox"
+	elseif(controlType == 4)
+		return "ValDisplay"
+	endif
+
+	return ""
+End
+
+Function/S ACL_RecreationFilter(recMacro, controlTypes)
+	string recMacro
+	variable controlTypes
+
+	string controlName, grepFilter
+
+	if(numtype(controlTypes) == 2)
+		return recMacro
+	endif
+
+	controlName = ACL_ControlTypeName(controlTypes)
+	grepFilter = "(?i)^[[:space:]](" + controlName + ").*"
+	return GrepList(recMacro, grepFilter, 0, "\r")
+End
+
+Function/S ACL_GetUserdataKeys(wName, controlTypes)
+	string wName
+	variable controlTypes
+
+	string userKeys = ""
+	string recMacro, key
+	variable pos1, pos2
+
+	recMacro = WinRecreation(wName, 0)
+	recMacro = ACL_RecreationFilter(recMacro, controlTypes)
+	do
+		pos1 = strsearch(recMacro, "userdata(", pos1)
+		if(pos1 == -1)
+			break
+		endif
+		pos2 = strsearch(recMacro, ")", pos1)
+		key = recMacro[pos1 + 9, pos2 - 1]
+		userKeys = AddListItem(key, userKeys, ";", Inf)
+		pos1 = pos2
+	while(1)
+
+	if(!isEmpty(userKeys))
+		Wave/T w = ListToTextWave(userKeys, ";")
+		FindDuplicates/FREE /RT=wClean w
+		wfprintf userKeys, "%s;", wClean
+	endif
+
+	return userKeys
+End
+
+/// @brief Returns one if str is empty or null, zero otherwise.
+/// @param str must not be a SVAR
+///
+/// @hidecallgraph
+/// @hidecallergraph
+threadsafe static Function IsEmpty(str)
+	string& str
+
+	variable len = strlen(str)
+	return numtype(len) == 2 || len <= 0
 End
