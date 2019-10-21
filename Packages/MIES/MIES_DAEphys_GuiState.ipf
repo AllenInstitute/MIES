@@ -134,7 +134,7 @@ Function DAG_RecordGuiStateTxT(panelTitle, [GUIState])
 
 	WAVE/T state = GetAllDAEphysSetVarTxT(panelTitle, CHANNEL_TYPE_ADC, CHANNEL_CONTROL_UNIT)
 	lbl          = GetSpecialControlLabel(CHANNEL_TYPE_ADC, CHANNEL_CONTROL_UNIT)
-	GUIStateTxT[0, NUM_DA_TTL_CHANNELS - 1][%$lbl] = state[p]
+	GUIStateTxT[0, NUM_AD_CHANNELS - 1][%$lbl] = state[p]
 
 	WAVE/T state = GetAllDAEphysPopMenuString(panelTitle, CHANNEL_TYPE_TTL, CHANNEL_CONTROL_WAVE)
 	lbl          = GetSpecialControlLabel(CHANNEL_TYPE_TTL, CHANNEL_CONTROL_WAVE)
