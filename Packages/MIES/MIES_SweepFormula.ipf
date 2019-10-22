@@ -887,7 +887,6 @@ Function SF_FormulaPlotter(graph, formula, [dfr])
 
 	RestoreCursors(win, cursorInfos)
 	SetAxesRanges(win, axesRanges)
-	DoWindow/F $win
 End
 
 static Function/WAVE SF_GetSweepForFormula(graph, rangeStart, rangeEnd, channelType, channelNumber, sweeps)
