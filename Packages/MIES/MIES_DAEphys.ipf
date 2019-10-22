@@ -4412,6 +4412,7 @@ Function DAP_SetVar_UpdateGuiState(sva) : SetVariableControl
 		case 1: // mouse up
 		case 2: // Enter key
 		case 3: // Live update
+		case 8: // end edit
 			DAG_Update(sva.win, sva.ctrlName, val = sva.dval, str = sva.sval)
 			break
 	endswitch
