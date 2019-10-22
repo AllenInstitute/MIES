@@ -111,6 +111,10 @@ Function TestStimsetParamWaves(fileID, device, sweeps)
 				break
 			endif
 
+			if(!cmpstr(stimset, STIMSET_TP_WHILE_DAQ))
+				continue
+			endif
+
 			WAVE/Z WP  = WB_GetWaveParamForSet(stimset)
 			WAVE/Z WPT = WB_GetWaveTextParamForSet(stimset)
 			WAVE/Z SegWvType = WB_GetSegWvTypeForSet(stimset)

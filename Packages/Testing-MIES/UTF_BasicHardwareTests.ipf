@@ -141,6 +141,7 @@ static Structure TestSettings
 	WAVE stimsetCycleID_HS0, stimsetCycleID_HS1
 	// store the sweep count where a event was fired
 	WAVE events_HS0, events_HS1
+	WAVE DAQChannelTypeAD, DAQChannelTypeDA
 EndStructure
 
 static Function InitTestStructure(t)
@@ -152,6 +153,8 @@ static Function InitTestStructure(t)
 	Make/FREE/N=(t.numSweeps) t.setCycleCount_HS0, t.setCycleCount_HS1
 	Make/FREE/N=(t.numSweeps) t.stimsetCycleID_HS0, t.stimsetCycleID_HS1
 	Make/FREE/N=(t.numSweeps, TOTAL_NUM_EVENTS) t.events_HS0 = NaN, t.events_HS1 = NaN
+	Make/FREE t.DAQChannelTypeAD = {DAQ_CHANNEL_TYPE_DAQ, DAQ_CHANNEL_TYPE_DAQ, NaN, NaN, NaN, NaN, NaN, NaN, NaN}
+	Make/FREE t.DAQChannelTypeDA = {DAQ_CHANNEL_TYPE_DAQ, DAQ_CHANNEL_TYPE_DAQ, NaN, NaN, NaN, NaN, NaN, NaN, NaN}
 End
 
 static Function AllTests(t, devices)
@@ -245,13 +248,21 @@ static Function AllTests(t, devices)
 			CHECK_EQUAL_VAR(setCycleCounts[0], t.setCycleCount_HS0[j])
 			CHECK_EQUAL_VAR(setCycleCounts[1], t.setCycleCount_HS1[j])
 
-			WAVE sciSweeps = AFH_GetSweepsFromSameSCI(numericalValues, j, 0)
-			Extract/FREE/INDX t.stimsetCycleID_HS0, indizes, t.stimsetCycleID_HS0 == t.stimsetCycleID_HS0[j]
-			CHECK_EQUAL_WAVES(sciSweeps, indizes, mode = WAVE_DATA)
+			WAVE/Z sciSweeps = AFH_GetSweepsFromSameSCI(numericalValues, j, 0)
+			if(WaveExists(sciSweeps))
+				Extract/FREE/INDX t.stimsetCycleID_HS0, indizes, t.stimsetCycleID_HS0 == t.stimsetCycleID_HS0[j]
+				CHECK_EQUAL_WAVES(sciSweeps, indizes, mode = WAVE_DATA)
+			else
+				CHECK_WAVE(t.stimsetCycleID_HS0, NULL_WAVE)
+			endif
 
-			WAVE sciSweeps = AFH_GetSweepsFromSameSCI(numericalValues, j, 1)
-			Extract/FREE/INDX t.stimsetCycleID_HS1, indizes, t.stimsetCycleID_HS1 == t.stimsetCycleID_HS1[j]
-			CHECK_EQUAL_WAVES(sciSweeps, indizes, mode = WAVE_DATA)
+			WAVE/Z sciSweeps = AFH_GetSweepsFromSameSCI(numericalValues, j, 1)
+			if(WaveExists(sciSweeps))
+				Extract/FREE/INDX t.stimsetCycleID_HS1, indizes, t.stimsetCycleID_HS1 == t.stimsetCycleID_HS1[j]
+				CHECK_EQUAL_WAVES(sciSweeps, indizes, mode = WAVE_DATA)
+			else
+				CHECK_WAVE(t.stimsetCycleID_HS1, NULL_WAVE)
+			endif
 
 			Duplicate/FREE/RMD=[j][][0] anaFuncSweepTracker, actualEvents_HS0
 			Duplicate/FREE/RMD=[j][] t.events_HS0, refEvents_HS0
@@ -266,10 +277,10 @@ static Function AllTests(t, devices)
 			CHECK_EQUAL_WAVES(refEvents_HS1, actualEvents_HS1, mode = WAVE_DATA)
 
 			WAVE DAChannelTypes = GetLastSetting(numericalValues, sweepNo, "DA ChannelType", DATA_ACQUISITION_MODE)
-			CHECK_EQUAL_WAVES(DAChannelTypes, {DAQ_CHANNEL_TYPE_DAQ, DAQ_CHANNEL_TYPE_DAQ, NaN, NaN, NaN, NaN, NaN, NaN, NaN}, mode = WAVE_DATA)
+			CHECK_EQUAL_WAVES(DAChannelTypes, t.DAQChannelTypeDA, mode = WAVE_DATA)
 
 			WAVE ADChannelTypes = GetLastSetting(numericalValues, sweepNo, "AD ChannelType", DATA_ACQUISITION_MODE)
-			CHECK_EQUAL_WAVES(ADChannelTypes, {DAQ_CHANNEL_TYPE_DAQ, DAQ_CHANNEL_TYPE_DAQ, NaN, NaN, NaN, NaN, NaN, NaN, NaN}, mode = WAVE_DATA)
+			CHECK_EQUAL_WAVES(ADChannelTypes, t.DAQChannelTypeAD, mode = WAVE_DATA)
 		endfor
 	endfor
 
@@ -1531,6 +1542,96 @@ Function RepeatSets_7_REENTRY([str])
 	t.sweepCount_HS1         = {0, 1, 0}
 	t.setCycleCount_HS1      = {0, 0, 1}
 	t.stimsetCycleID_HS1[]   = {0, 0, 1}
+
+	AllTests(t, str)
+End
+
+Function RepeatSets_8_IGNORE(device)
+	string device
+
+	PGC_SetAndActivateControl(device, GetPanelControl(1, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_WAVE), str = "TestPulse")
+	PGC_SetAndActivateControl(device, GetPanelControl(1, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_INDEX_END), str = NONE)
+End
+
+// Locked Indexing with TP during DAQ
+//
+// UTF_TD_GENERATOR HardwareMain#DeviceNameGeneratorMD1
+Function RepeatSets_8([str])
+	string str
+
+	STRUCT DAQSettings s
+	InitDAQSettingsFromString(s, "MD1_RA1_I1_L1_BKG_1_RES_1")
+	AcquireData(s, str, preAcquireFunc = RepeatSets_8_IGNORE)
+End
+
+Function RepeatSets_8_REENTRY([str])
+	string str
+
+	STRUCT TestSettings t
+
+	t.numSweeps     = 4
+	t.sweepWaveType = FLOAT_WAVE
+
+	InitTestStructure(t)
+
+	t.acquiredStimSets_HS0[0,2] = "StimulusSetA_DA_0"
+	t.acquiredStimSets_HS0[3]   = "StimulusSetB_DA_0"
+	t.sweepCount_HS0            = {0, 1, 2, 0}
+	t.setCycleCount_HS0         = {0, 0, 0, 0}
+	t.stimsetCycleID_HS0[]      = {0, 0, 0, 1}
+
+	t.acquiredStimSets_HS1      = "Testpulse"
+	t.sweepCount_HS1            = {0, 0, 0, 0}
+	t.setCycleCount_HS1         = {0, 0, 0, 0}
+	WAVEClear t.stimsetCycleID_HS1
+
+	t.DAQChannelTypeDA = {DAQ_CHANNEL_TYPE_DAQ, DAQ_CHANNEL_TYPE_TP, NaN, NaN, NaN, NaN, NaN, NaN, NaN}
+	t.DAQChannelTypeAD = {DAQ_CHANNEL_TYPE_DAQ, DAQ_CHANNEL_TYPE_TP, NaN, NaN, NaN, NaN, NaN, NaN, NaN}
+
+	AllTests(t, str)
+End
+
+Function RepeatSets_9_IGNORE(device)
+	string device
+
+	PGC_SetAndActivateControl(device, GetPanelControl(1, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_WAVE), str = "TestPulse")
+	PGC_SetAndActivateControl(device, GetPanelControl(1, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_INDEX_END), str = NONE)
+End
+
+// Unlocked Indexing with TP during DAQ
+//
+// UTF_TD_GENERATOR HardwareMain#DeviceNameGeneratorMD1
+Function RepeatSets_9([str])
+	string str
+
+	STRUCT DAQSettings s
+	InitDAQSettingsFromString(s, "MD1_RA1_I1_L0_BKG_1_RES_1")
+	AcquireData(s, str, preAcquireFunc = RepeatSets_9_IGNORE)
+End
+
+Function RepeatSets_9_REENTRY([str])
+	string str
+
+	STRUCT TestSettings t
+
+	t.numSweeps     = 4
+	t.sweepWaveType = FLOAT_WAVE
+
+	InitTestStructure(t)
+
+	t.acquiredStimSets_HS0[0,2] = "StimulusSetA_DA_0"
+	t.acquiredStimSets_HS0[3]   = "StimulusSetB_DA_0"
+	t.sweepCount_HS0            = {0, 1, 2, 0}
+	t.setCycleCount_HS0         = {0, 0, 0, 0}
+	t.stimsetCycleID_HS0[]      = {0, 0, 0, 1}
+
+	t.acquiredStimSets_HS1      = "Testpulse"
+	t.sweepCount_HS1            = {0, 0, 0, 0}
+	t.setCycleCount_HS1         = {0, 0, 0, 0}
+	WAVEClear t.stimsetCycleID_HS1
+
+	t.DAQChannelTypeDA = {DAQ_CHANNEL_TYPE_DAQ, DAQ_CHANNEL_TYPE_TP, NaN, NaN, NaN, NaN, NaN, NaN, NaN}
+	t.DAQChannelTypeAD = {DAQ_CHANNEL_TYPE_DAQ, DAQ_CHANNEL_TYPE_TP, NaN, NaN, NaN, NaN, NaN, NaN, NaN}
 
 	AllTests(t, str)
 End

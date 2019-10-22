@@ -30,6 +30,7 @@ Function AFM_CallAnalysisFunctions(panelTitle, eventType)
 	NVAR count = $GetCount(panelTitle)
 	NVAR stopCollectionPoint = $GetStopCollectionPoint(panelTitle)
 	WAVE statusHS = DAG_GetChannelState(panelTitle, CHANNEL_TYPE_HEADSTAGE)
+	WAVE/T allSetNames = DAG_GetChannelTextual(panelTitle, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_WAVE)
 	WAVE setEventFlag = GetSetEventFlag(panelTitle)
 	fifoPosition = ROVar(GetFifoPosition(panelTitle))
 
@@ -52,6 +53,12 @@ Function AFM_CallAnalysisFunctions(panelTitle, eventType)
 			continue
 		endif
 
+		DAC = AFH_GetDACFromHeadstage(panelTitle, i)
+
+		if(!cmpstr(allSetNames[DAC], STIMSET_TP_WHILE_DAQ, 1))
+			continue
+		endif
+
 		// always prefer the generic event over the specialized ones
 		func = analysisFunctions[i][GENERIC_EVENT]
 
@@ -63,7 +70,6 @@ Function AFM_CallAnalysisFunctions(panelTitle, eventType)
 			continue
 		endif
 
-		DAC = AFH_GetDACFromHeadstage(panelTitle, i)
 
 		if((eventType == PRE_SET_EVENT && !setEventFlag[DAC][%PRE_SET_EVENT]) \
 		   || (eventType == POST_SET_EVENT && !setEventFlag[DAC][%POST_SET_EVENT]))

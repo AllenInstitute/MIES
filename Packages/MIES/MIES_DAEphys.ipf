@@ -2151,10 +2151,10 @@ Function DAP_CheckSettings(panelTitle, mode)
 			endif
 
 			// check all selected TTLs
-			Wave statusTTL = DAG_GetChannelState(panelTitle, CHANNEL_TYPE_TTL)
-			numEntries = DimSize(statusTTL, ROWS)
+			WAVE statusTTLFiltered = DC_GetFilteredChannelState(panelTitle, mode, CHANNEL_TYPE_TTL)
+			numEntries = DimSize(statusTTLFiltered, ROWS)
 			for(i=0; i < numEntries; i+=1)
-				if(!DC_ChannelIsActive(panelTitle, mode, CHANNEL_TYPE_TTL, i, statusTTL, statusHS))
+				if(!statusTTLFiltered[i])
 					continue
 				endif
 
@@ -2179,9 +2179,10 @@ Function DAP_CheckSettings(panelTitle, mode)
 			// classic distributed acquisition requires that all stim sets are the same
 			// oodDAQ allows different stim sets
 			if(DAG_GetNumericalValue(panelTitle, "Check_DataAcq1_DistribDaq") || DAG_GetNumericalValue(panelTitle, "Check_DataAcq1_dDAQOptOv"))
-				numEntries = DimSize(statusDA, ROWS)
+				WAVE statusDAFiltered = DC_GetFilteredChannelState(panelTitle, mode, CHANNEL_TYPE_DAC)
+				numEntries = DimSize(statusDAFiltered, ROWS)
 				for(i=0; i < numEntries; i+=1)
-					if(!DC_ChannelIsActive(panelTitle, mode, CHANNEL_TYPE_DAC, i, statusDA, statusHS))
+					if(!statusDAFiltered[i])
 						continue
 					endif
 
@@ -2336,10 +2337,11 @@ Function DAP_CheckSettings(panelTitle, mode)
 
 		if(mode == DATA_ACQUISITION_MODE)
 			WAVE/T allSetNames = DAG_GetChannelTextual(panelTitle, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_WAVE)
-			numEntries = DimSize(statusDA, ROWS)
+			WAVE statusDAFiltered = DC_GetFilteredChannelState(panelTitle, DATA_ACQUISITION_MODE, CHANNEL_TYPE_DAC)
+			numEntries = DimSize(statusDAFiltered, ROWS)
 			for(i = 0; i < numEntries; i += 1)
 
-				if(!DC_ChannelIsActive(panelTitle, mode, CHANNEL_TYPE_DAC, i, statusDA, statusHS))
+				if(!statusDAFiltered[i])
 					continue
 				endif
 
@@ -2629,7 +2631,7 @@ static Function DAP_CheckStimset(panelTitle, channelType, channel, headstage)
 		return 1
 	endif
 
-	if(DAG_GetNumericalValue(panelTitle, "Check_DataAcq_Indexing"))
+	if(DAG_GetNumericalValue(panelTitle, "Check_DataAcq_Indexing") && CmpStr(setName, STIMSET_TP_WHILE_DAQ))
 		setNameEnd = DAG_GetTextualValue(panelTitle, GetSpecialControlLabel(channelType, CHANNEL_CONTROL_INDEX_END), index = channel)
 		if(!CmpStr(setNameEnd, NONE))
 			printf "(%s) Please select a valid indexing end wave for %s channel %d referenced by headstage %g\r", panelTitle, channelTypeStr, channel, headStage
