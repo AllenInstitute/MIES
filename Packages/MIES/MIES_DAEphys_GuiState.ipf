@@ -23,70 +23,70 @@ Function DAG_RecordGuiStateNum(panelTitle, [GUIState])
 
 	WAVE state = DAG_ControlStatusWave(panelTitle, CHANNEL_TYPE_HEADSTAGE)
 	lbl        = GetSpecialControlLabel(CHANNEL_TYPE_HEADSTAGE, CHANNEL_CONTROL_CHECK)
-	GUIState[0, NUM_HEADSTAGES - 1][%$lbl] = state[p]
+	GUIState[0, DimSize(state, ROWS) - 1][%$lbl] = state[p]
 
 	WAVE state = DAG_GetAllHSMode(panelTitle)
-	GUIState[0, NUM_HEADSTAGES - 1][%HSMode] = state[p]
+	GUIState[0, DimSize(state, ROWS) - 1][%HSMode] = state[p]
 
 	WAVE state = DAG_ControlStatusWave(panelTitle, CHANNEL_TYPE_DAC)
 	lbl        = GetSpecialControlLabel(CHANNEL_TYPE_DAC, CHANNEL_CONTROL_CHECK)
-	GUIState[0, NUM_DA_TTL_CHANNELS - 1][%$lbl] = state[p]
+	GUIState[0, DimSize(state, ROWS) - 1][%$lbl] = state[p]
 
 	WAVE state = GetAllDAEphysSetVarNum(panelTitle, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_GAIN)
 	lbl        = GetSpecialControlLabel(CHANNEL_TYPE_DAC, CHANNEL_CONTROL_GAIN)
-	GUIState[0, NUM_DA_TTL_CHANNELS - 1][%$lbl] = state[p]
+	GUIState[0, DimSize(state, ROWS) - 1][%$lbl] = state[p]
 
 	WAVE state = GetAllDAEphysSetVarNum(panelTitle, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_SCALE)
 	lbl        = GetSpecialControlLabel(CHANNEL_TYPE_DAC, CHANNEL_CONTROL_SCALE)
-	GUIState[0, NUM_DA_TTL_CHANNELS - 1][%$lbl] = state[p]
+	GUIState[0, DimSize(state, ROWS) - 1][%$lbl] = state[p]
 
 	WAVE state = GetAllDAEphysPopMenuIndex(panelTitle, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_WAVE)
 	lbl        = GetSpecialControlLabel(CHANNEL_TYPE_DAC, CHANNEL_CONTROL_WAVE)
-	GUIState[0, NUM_DA_TTL_CHANNELS - 1][%$lbl] = state[p]
+	GUIState[0, DimSize(state, ROWS) - 1][%$lbl] = state[p]
 
 	WAVE state = GetAllDAEphysPopMenuIndex(panelTitle, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_INDEX_END)
 	lbl        = GetSpecialControlLabel(CHANNEL_TYPE_DAC, CHANNEL_CONTROL_INDEX_END)
-	GUIState[0, NUM_DA_TTL_CHANNELS - 1][%$lbl] = state[p]
+	GUIState[0, DimSize(state, ROWS) - 1][%$lbl] = state[p]
 
 	WAVE state = DAG_ControlStatusWave(panelTitle, CHANNEL_TYPE_ADC)
 	lbl        = GetSpecialControlLabel(CHANNEL_TYPE_ADC, CHANNEL_CONTROL_CHECK)
-	GUIState[0, NUM_AD_CHANNELS - 1][%$lbl] = state[p]
+	GUIState[0, DimSize(state, ROWS) - 1][%$lbl] = state[p]
 
 	WAVE state = GetAllDAEphysSetVarNum(panelTitle, CHANNEL_TYPE_ADC, CHANNEL_CONTROL_GAIN)
 	lbl        = GetSpecialControlLabel(CHANNEL_TYPE_ADC, CHANNEL_CONTROL_GAIN)
-	GUIState[0, NUM_AD_CHANNELS - 1][%$lbl] = state[p]
+	GUIState[0, DimSize(state, ROWS) - 1][%$lbl] = state[p]
 
 	WAVE state = DAG_ControlStatusWave(panelTitle, CHANNEL_TYPE_TTL)
 	lbl        = GetSpecialControlLabel(CHANNEL_TYPE_TTL, CHANNEL_CONTROL_CHECK)
-	GUIState[0, NUM_DA_TTL_CHANNELS - 1][%$lbl] = state[p]
+	GUIState[0, DimSize(state, ROWS) - 1][%$lbl] = state[p]
 
 	WAVE state = GetAllDAEphysPopMenuIndex(panelTitle, CHANNEL_TYPE_TTL, CHANNEL_CONTROL_WAVE)
 	lbl        = GetSpecialControlLabel(CHANNEL_TYPE_TTL, CHANNEL_CONTROL_WAVE)
-	GUIState[0, NUM_DA_TTL_CHANNELS - 1][%$lbl] = state[p]
+	GUIState[0, DimSize(state, ROWS) - 1][%$lbl] = state[p]
 
 	WAVE state = GetAllDAEphysPopMenuIndex(panelTitle, CHANNEL_TYPE_TTL, CHANNEL_CONTROL_INDEX_END)
 	lbl        = GetSpecialControlLabel(CHANNEL_TYPE_TTL, CHANNEL_CONTROL_INDEX_END)
-	GUIState[0, NUM_DA_TTL_CHANNELS - 1][%$lbl] = state[p]
+	GUIState[0, DimSize(state, ROWS) - 1][%$lbl] = state[p]
 
 	WAVE state = DAG_ControlStatusWave(panelTitle, CHANNEL_TYPE_ASYNC)
 	lbl        = GetSpecialControlLabel(CHANNEL_TYPE_ASYNC, CHANNEL_CONTROL_CHECK)
-	GUIState[0, NUM_ASYNC_CHANNELS - 1][%$lbl] = state[p]
+	GUIState[0, DimSize(state, ROWS) - 1][%$lbl] = state[p]
 
 	WAVE state = GetAllDAEphysSetVarNum(panelTitle, CHANNEL_TYPE_ASYNC, CHANNEL_CONTROL_GAIN)
 	lbl        = GetSpecialControlLabel(CHANNEL_TYPE_ASYNC, CHANNEL_CONTROL_GAIN)
-	GUIState[0, NUM_ASYNC_CHANNELS - 1][%$lbl] = state[p]
+	GUIState[0, DimSize(state, ROWS) - 1][%$lbl] = state[p]
 
 	WAVE state = DAG_ControlStatusWave(panelTitle, CHANNEL_TYPE_ALARM)
 	lbl        = GetSpecialControlLabel(CHANNEL_TYPE_ALARM, CHANNEL_CONTROL_CHECK)
-	GUIState[0, NUM_ASYNC_CHANNELS - 1][%$lbl] = state[p]
+	GUIState[0, DimSize(state, ROWS) - 1][%$lbl] = state[p]
 
 	WAVE state = GetAllDAEphysSetVarNum(panelTitle, CHANNEL_TYPE_ASYNC, CHANNEL_CONTROL_ALARM_MIN)
 	lbl        = GetSpecialControlLabel(CHANNEL_TYPE_ASYNC, CHANNEL_CONTROL_ALARM_MIN)
-	GUIState[0, NUM_ASYNC_CHANNELS - 1][%$lbl] = state[p]
+	GUIState[0, DimSize(state, ROWS) - 1][%$lbl] = state[p]
 
 	WAVE state = GetAllDAEphysSetVarNum(panelTitle, CHANNEL_TYPE_ASYNC, CHANNEL_CONTROL_ALARM_MAX)
 	lbl        = GetSpecialControlLabel(CHANNEL_TYPE_ASYNC, CHANNEL_CONTROL_ALARM_MAX)
-	GUIState[0, NUM_ASYNC_CHANNELS - 1][%$lbl] = state[p]
+	GUIState[0, DimSize(state, ROWS) - 1][%$lbl] = state[p]
 
 	numEntries = DimSize(GUIState, COLS)
 	for(i = COMMON_CONTROL_GROUP_COUNT_NUM; i < numEntries; i += 1)
@@ -118,43 +118,43 @@ Function DAG_RecordGuiStateTxT(panelTitle, [GUIState])
 
 	WAVE/T state = GetAllDAEphysPopMenuString(panelTitle, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_WAVE)
 	lbl          = GetSpecialControlLabel(CHANNEL_TYPE_DAC, CHANNEL_CONTROL_WAVE)
-	GUIStateTxT[0, NUM_DA_TTL_CHANNELS - 1][%$lbl] = state[p]
+	GUIStateTxT[0, DimSize(state, ROWS) - 1][%$lbl] = state[p]
 
 	WAVE/T state = GetAllDAEphysPopMenuString(panelTitle, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_INDEX_END)
 	lbl          = GetSpecialControlLabel(CHANNEL_TYPE_DAC, CHANNEL_CONTROL_INDEX_END)
-	GUIStateTxT[0, NUM_DA_TTL_CHANNELS - 1][%$lbl] = state[p]
+	GUIStateTxT[0, DimSize(state, ROWS) - 1][%$lbl] = state[p]
 
 	WAVE/T state = GetAllDAEphysSetVarTxT(panelTitle, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_UNIT)
 	lbl          = GetSpecialControlLabel(CHANNEL_TYPE_DAC, CHANNEL_CONTROL_UNIT)
-	GUIStateTxT[0, NUM_DA_TTL_CHANNELS - 1][%$lbl] = state[p]
+	GUIStateTxT[0, DimSize(state, ROWS) - 1][%$lbl] = state[p]
 
 	WAVE/T state = GetAllDAEphysSetVarTxT(panelTitle, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_SEARCH)
 	lbl          = GetSpecialControlLabel(CHANNEL_TYPE_DAC, CHANNEL_CONTROL_SEARCH)
-	GUIStateTxT[0, NUM_DA_TTL_CHANNELS - 1][%$lbl] = state[p]
+	GUIStateTxT[0, DimSize(state, ROWS) - 1][%$lbl] = state[p]
 
 	WAVE/T state = GetAllDAEphysSetVarTxT(panelTitle, CHANNEL_TYPE_ADC, CHANNEL_CONTROL_UNIT)
 	lbl          = GetSpecialControlLabel(CHANNEL_TYPE_ADC, CHANNEL_CONTROL_UNIT)
-	GUIStateTxT[0, NUM_DA_TTL_CHANNELS - 1][%$lbl] = state[p]
+	GUIStateTxT[0, DimSize(state, ROWS) - 1][%$lbl] = state[p]
 
 	WAVE/T state = GetAllDAEphysPopMenuString(panelTitle, CHANNEL_TYPE_TTL, CHANNEL_CONTROL_WAVE)
 	lbl          = GetSpecialControlLabel(CHANNEL_TYPE_TTL, CHANNEL_CONTROL_WAVE)
-	GUIStateTxT[0, NUM_DA_TTL_CHANNELS - 1][%$lbl] = state[p]
+	GUIStateTxT[0, DimSize(state, ROWS) - 1][%$lbl] = state[p]
 
 	WAVE/T state = GetAllDAEphysPopMenuString(panelTitle, CHANNEL_TYPE_TTL, CHANNEL_CONTROL_INDEX_END)
 	lbl          = GetSpecialControlLabel(CHANNEL_TYPE_TTL, CHANNEL_CONTROL_INDEX_END)
-	GUIStateTxT[0, NUM_DA_TTL_CHANNELS - 1][%$lbl] = state[p]
+	GUIStateTxT[0, DimSize(state, ROWS) - 1][%$lbl] = state[p]
 
 	WAVE/T state = GetAllDAEphysSetVarTxT(panelTitle, CHANNEL_TYPE_TTL, CHANNEL_CONTROL_SEARCH)
 	lbl          = GetSpecialControlLabel(CHANNEL_TYPE_TTL, CHANNEL_CONTROL_SEARCH)
-	GUIStateTxT[0, NUM_DA_TTL_CHANNELS - 1][%$lbl] = state[p]
+	GUIStateTxT[0, DimSize(state, ROWS) - 1][%$lbl] = state[p]
 
 	WAVE/T state = GetAllDAEphysSetVarTxT(panelTitle, CHANNEL_TYPE_ASYNC, CHANNEL_CONTROL_TITLE)
 	lbl          = GetSpecialControlLabel(CHANNEL_TYPE_ASYNC, CHANNEL_CONTROL_TITLE)
-	GUIStateTxT[0, NUM_ASYNC_CHANNELS - 1][%$lbl] = state[p]
+	GUIStateTxT[0, DimSize(state, ROWS) - 1][%$lbl] = state[p]
 
 	WAVE/T state = GetAllDAEphysSetVarTxT(panelTitle, CHANNEL_TYPE_ASYNC, CHANNEL_CONTROL_UNIT)
 	lbl          = GetSpecialControlLabel(CHANNEL_TYPE_ASYNC, CHANNEL_CONTROL_UNIT)
-	GUIStateTxT[0, NUM_ASYNC_CHANNELS - 1][%$lbl] = state[p]
+	GUIStateTxT[0, DimSize(state, ROWS) - 1][%$lbl] = state[p]
 
 	numEntries = DimSize(GUIStateTxT, COLS)
 	for(i = COMMON_CONTROL_GROUP_COUNT_TXT; i < numEntries; i += 1)
