@@ -4012,6 +4012,7 @@ static Function/S DAP_FormatCommentString(panelTitle, comment, sweepNo)
 	variable length
 
 	ASSERT(!IsEmpty(comment), "Comment can not be empty")
+	sweepNo = IsNaN(sweepNo) ? -1 : sweepNo
 
 	sprintf str, "%s, % 5d: %s\r", GetTimeStamp(humanReadable=1), sweepNo, comment
 
