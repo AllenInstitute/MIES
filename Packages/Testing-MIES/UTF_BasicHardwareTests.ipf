@@ -3272,3 +3272,46 @@ Function CheckIZeroClampMode_REENTRY([str])
 	WAVE clampMode = GetLastSetting(numericalValues, 0, "Clamp Mode", DATA_ACQUISITION_MODE)
 	CHECK_EQUAL_WAVES(clampMode, {I_EQUAL_ZERO_MODE, V_CLAMP_MODE, NaN, NaN, NaN, NaN, NaN, NaN, NaN}, mode=WAVE_DATA)
 End
+
+Function HasNaNAsDefaultWhenAborted_IGNORE(device)
+	string device
+
+	// enable TTL1
+	PGC_SetAndActivateControl(device, GetPanelControl(1, CHANNEL_TYPE_TTL, CHANNEL_CONTROL_CHECK), val=1)
+	PGC_SetAndActivateControl(device, GetPanelControl(1, CHANNEL_TYPE_TTL, CHANNEL_CONTROL_WAVE), str="StimulusSetA*")
+End
+
+// check default values for data when aborting DAQ
+// UTF_TD_GENERATOR HardwareMain#DeviceNameGeneratorMD1
+Function HasNaNAsDefaultWhenAborted([str])
+	string str
+
+	STRUCT DAQSettings s
+	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG_1")
+
+	AcquireData(s, str, preAcquireFunc=HasNaNAsDefaultWhenAborted_IGNORE)
+	CtrlNamedBackGround Abort_ITI_PressAcq, start=(ticks + 3), period=30, proc=StopAcq_IGNORE
+End
+
+Function HasNaNAsDefaultWhenAborted_REENTRY([str])
+	string str
+
+	variable sweepNo
+
+	CHECK_EQUAL_VAR(GetSetVariable(str, "SetVar_Sweep"), 1)
+
+	sweepNo = AFH_GetLastSweepAcquired(str)
+	CHECK_EQUAL_VAR(sweepNo, 0)
+
+	WAVE/Z sweepWave = GetSweepWave(str, sweepNo)
+	CHECK_WAVE(sweepWave, NUMERIC_WAVE)
+
+	FindValue/FNAN/RMD=[][0] sweepWave
+	CHECK(V_row > 0)
+
+	// check that we have NaNs for all columns starting from the first unacquired point
+	Duplicate/FREE/RMD=[V_row,][] sweepWave, unacquiredData
+	WaveStats/M=1 unacquiredData
+	CHECK_EQUAL_VAR(V_numNans, DimSize(unacquiredData, ROWS) * DimSize(unacquiredData, COLS))
+	CHECK_EQUAL_VAR(V_npnts, 0)
+End
