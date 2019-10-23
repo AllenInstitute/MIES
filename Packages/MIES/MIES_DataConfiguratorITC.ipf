@@ -483,11 +483,7 @@ static Function DC_MakeHelperWaves(panelTitle, dataAcqOrTP)
 	DC_InitDataHoldingWave(scaledDataWave, dataAcqOrTP == DATA_ACQUISITION_MODE ? stopCollectionPoint : tpLength, sampleInterval, numDACs, numADCs, numTTLs, type = SWS_GetRawDataFPType(panelTitle))
 End
 
-/// @brief Initialize data holding waves to the defaults for each channel type
-///
-/// - DA:  0
-/// - AD:  NaN
-/// - TTL: 0
+/// @brief Initialize data holding waves to NaN
 static Function DC_InitDataHoldingWave(wv, numRows, sampleInterval, numDACs, numADCs, numTTLs, [type])
 	WAVE wv
 	variable numRows, sampleInterval, numDACs, numADCs, numTTLs, type
@@ -504,12 +500,7 @@ static Function DC_InitDataHoldingWave(wv, numRows, sampleInterval, numDACs, num
 
 	ASSERT(IsFloatingPointWave(wv), "Wave is not of floating point type")
 
-	MultiThread wv[][0, numDACs - 1]                 = 0
-	MultiThread wv[][numDACs, numDACs + numADCs - 1] = NaN
-
-	if(numTTLs > 0)
-		MultiThread wv[][numDACs + numADCs, *] = 0
-	endif
+	MultiThread wv[][] = NaN
 End
 
 /// @brief Return the list of active channels, filtered for various special cases
