@@ -1387,7 +1387,8 @@ static Function DC_DocumentHardwareProperties(panelTitle, hardwareType)
 	DC_DocumentChannelProperty(panelTitle, "Digitizer Hardware Type", INDEP_HEADSTAGE, NaN, var=hardwareType)
 
 	NVAR ITCDeviceIDGlobal = $GetITCDeviceIDGlobal(panelTitle)
-	WAVE devInfo = HW_GetDeviceInfo(hardwareType, ITCDeviceIDGlobal)
+
+	WAVE devInfo = HW_GetDeviceInfo(hardwareType, ITCDeviceIDGlobal, flags=HARDWARE_ABORT_ON_ERROR | HARDWARE_PREVENT_ERROR_POPUP)
 
 	switch(hardwareType)
 		case HARDWARE_ITC_DAC:
