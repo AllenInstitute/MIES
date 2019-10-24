@@ -246,6 +246,20 @@ Function/S CA_TemporaryWaveKey(dims)
 	return num2istr(crc) + "Temporary waves Version 1"
 End
 
+/// @brief Calculate the cache key for the hardware device info wave
+Function/S CA_HWDeviceInfoKey(panelTitle, hardwareType, deviceID)
+	string panelTitle
+	variable hardwareType, deviceID
+
+	variable crc
+
+	crc = StringCrc(crc, panelTitle)
+	crc = StringCrc(crc, num2str(hardwareType))
+	crc = StringCrc(crc, num2str(deviceID))
+
+	return num2istr(crc) + "HW Device Info Version 1"
+End
+
 /// @}
 
 /// @brief Make space for one new entry in the cache waves
