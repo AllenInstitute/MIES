@@ -324,29 +324,24 @@ End
 /// Config all refers to configuring all the channels at once
 ///
 /// @param panelTitle          panel title
+/// @param hardwareType        hardware type
 /// @param numActiveChannels   number of active channels as returned by DC_ChanCalcForITCChanConfigWave()
 /// @param samplingInterval    sampling interval as returned by DAP_GetSampInt()
 /// @param dataAcqOrTP         one of #DATA_ACQUISITION_MODE or #TEST_PULSE_MODE
-static Function DC_MakeHardwareDataWave(panelTitle, numActiveChannels, samplingInterval, dataAcqOrTP)
-	string panelTitle
-	variable numActiveChannels, samplingInterval, dataAcqOrTP
-
+static Function [WAVE/Z ITCDataWave, WAVE/WAVE NIDataWave] DC_MakeAndGetHardwareDataWave(string panelTitle, variable hardwareType, variable numActiveChannels, variable samplingInterval, variable dataAcqOrTP)
 	variable numRows, i
 
-	// prevent crash in ITC XOP as it must not run if we resize the ITCDataWave
-	NVAR ITCDeviceIDGlobal = $GetITCDeviceIDGlobal(panelTitle)
-	variable hardwareType = GetHardwareType(panelTitle)
-	ASSERT(!HW_IsRunning(hardwareType, ITCDeviceIDGlobal), "Hardware is still running and it shouldn't. Please report that as a bug.")
-
-	DFREF dfr = GetDevicePath(panelTitle)
-	numRows   = DC_CalculateITCDataWaveLength(panelTitle, dataAcqOrTP)
+	numRows = DC_CalculateITCDataWaveLength(panelTitle, dataAcqOrTP)
 	switch(hardwareType)
 		case HARDWARE_ITC_DAC:
+			WAVE ITCDataWave = GetHardwareDataWave(panelTitle)
 
-			Make/W/O/N=(numRows, numActiveChannels) dfr:HardwareDataWave/Wave=HardwareDataWave
+			Redimension/N=(numRows, numActiveChannels) ITCDataWave
 
-			FastOp HardwareDataWave = 0
-			SetScale/P x 0, samplingInterval / 1000, "ms", HardwareDataWave
+			FastOp ITCDataWave = 0
+			SetScale/P x 0, samplingInterval / 1000, "ms", ITCDataWave
+
+			return [ITCDataWave, $""]
 			break
 		case HARDWARE_NI_DAC:
 			WAVE/WAVE NIDataWave = GetHardwareDataWave(panelTitle)
@@ -362,6 +357,8 @@ static Function DC_MakeHardwareDataWave(panelTitle, numActiveChannels, samplingI
 			WAVE config = GetITCChanConfigWave(panelTitle)
 			type = config[p][%ChannelType] == ITC_XOP_CHANNEL_TYPE_TTL ? IGOR_TYPE_UNSIGNED | IGOR_TYPE_8BIT_INT : type[p]
 			NIDataWave = DC_MakeNIChannelWave(dfr, numRows, samplingInterval, p, type[p])
+
+			return [$"", NIDataWave]
 			break
 	endswitch
 End
@@ -1071,19 +1068,13 @@ static Function DC_PlaceDataInHardwareDataWave(panelTitle, numActiveChannels, da
 	NVAR stopCollectionPoint = $GetStopCollectionPoint(panelTitle)
 	stopCollectionPoint = DC_GetStopCollectionPoint(panelTitle, dataAcqOrTP, setLength)
 
-	DC_MakeHardwareDataWave(panelTitle, numActiveChannels, samplingInterval, dataAcqOrTP)
+	WAVE/Z ITCDataWave
+	WAVE/WAVE/Z NIDataWave
+
+	[ITCDataWave, NIDataWave] = DC_MakeAndGetHardwareDataWave(panelTitle, hardwareType, numActiveChannels, samplingInterval, dataAcqOrTP)
 
 	NVAR fifoPosition = $GetFifoPosition(panelTitle)
 	fifoPosition = 0
-
-	switch(hardwareType)
-		case HARDWARE_ITC_DAC:
-			WAVE ITCDataWave = GetHardwareDataWave(panelTitle)
-			break
-		case HARDWARE_NI_DAC:
-			WAVE/WAVE NIDataWave = GetHardwareDataWave(panelTitle)
-			break
-	endswitch
 
 	ClearRTError()
 
