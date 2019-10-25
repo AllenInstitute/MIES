@@ -68,6 +68,11 @@ Function DC_ConfigureDataForITC(panelTitle, dataAcqOrTP, [multiDevice])
 		endif
 	endif
 
+	// prevent crash in ITC XOP as it must not run if we resize the ITCDataWave
+	NVAR ITCDeviceIDGlobal = $GetITCDeviceIDGlobal(panelTitle)
+	variable hardwareType = GetHardwareType(panelTitle)
+	ASSERT(!HW_IsRunning(hardwareType, ITCDeviceIDGlobal), "Hardware is still running and it shouldn't. Please report that as a bug.")
+
 	KillOrMoveToTrash(wv=GetSweepSettingsWave(panelTitle))
 	KillOrMoveToTrash(wv=GetSweepSettingsTextWave(panelTitle))
 	KillOrMoveToTrash(wv=GetSweepSettingsKeyWave(panelTitle))
