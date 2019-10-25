@@ -243,3 +243,13 @@ Function InitRectD(s)
 	s.top    = NaN
 	s.bottom = NaN
 End
+
+/// @brief Helper structure for CA_HardwareDataTPKey()
+Structure HardwareDataTPInput
+	variable hardwareType
+	variable numDACs, numActiveChannels
+	variable numberOfRows
+	variable samplingInterval
+	WAVE DAGain, DACAmpTP
+	variable testPulseLength, baselineFrac
+EndStructure
