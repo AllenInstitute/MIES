@@ -68,6 +68,11 @@ Function DC_ConfigureDataForITC(panelTitle, dataAcqOrTP, [multiDevice])
 		endif
 	endif
 
+	// prevent crash in ITC XOP as it must not run if we resize the ITCDataWave
+	NVAR ITCDeviceIDGlobal = $GetITCDeviceIDGlobal(panelTitle)
+	variable hardwareType = GetHardwareType(panelTitle)
+	ASSERT(!HW_IsRunning(hardwareType, ITCDeviceIDGlobal, flags=HARDWARE_ABORT_ON_ERROR | HARDWARE_PREVENT_ERROR_POPUP), "Hardware is still running and it shouldn't. Please report that as a bug.")
+
 	KillOrMoveToTrash(wv=GetSweepSettingsWave(panelTitle))
 	KillOrMoveToTrash(wv=GetSweepSettingsTextWave(panelTitle))
 	KillOrMoveToTrash(wv=GetSweepSettingsKeyWave(panelTitle))
@@ -319,29 +324,24 @@ End
 /// Config all refers to configuring all the channels at once
 ///
 /// @param panelTitle          panel title
+/// @param hardwareType        hardware type
 /// @param numActiveChannels   number of active channels as returned by DC_ChanCalcForITCChanConfigWave()
 /// @param samplingInterval    sampling interval as returned by DAP_GetSampInt()
 /// @param dataAcqOrTP         one of #DATA_ACQUISITION_MODE or #TEST_PULSE_MODE
-static Function DC_MakeHardwareDataWave(panelTitle, numActiveChannels, samplingInterval, dataAcqOrTP)
-	string panelTitle
-	variable numActiveChannels, samplingInterval, dataAcqOrTP
-
+static Function [WAVE/Z ITCDataWave, WAVE/WAVE NIDataWave] DC_MakeAndGetHardwareDataWave(string panelTitle, variable hardwareType, variable numActiveChannels, variable samplingInterval, variable dataAcqOrTP)
 	variable numRows, i
 
-	// prevent crash in ITC XOP as it must not run if we resize the ITCDataWave
-	NVAR ITCDeviceIDGlobal = $GetITCDeviceIDGlobal(panelTitle)
-	variable hardwareType = GetHardwareType(panelTitle)
-	ASSERT(!HW_IsRunning(hardwareType, ITCDeviceIDGlobal), "Hardware is still running and it shouldn't. Please report that as a bug.")
-
-	DFREF dfr = GetDevicePath(panelTitle)
-	numRows   = DC_CalculateITCDataWaveLength(panelTitle, dataAcqOrTP)
+	numRows = DC_CalculateITCDataWaveLength(panelTitle, dataAcqOrTP)
 	switch(hardwareType)
 		case HARDWARE_ITC_DAC:
+			WAVE ITCDataWave = GetHardwareDataWave(panelTitle)
 
-			Make/W/O/N=(numRows, numActiveChannels) dfr:HardwareDataWave/Wave=HardwareDataWave
+			Redimension/N=(numRows, numActiveChannels) ITCDataWave
 
-			FastOp HardwareDataWave = 0
-			SetScale/P x 0, samplingInterval / 1000, "ms", HardwareDataWave
+			FastOp ITCDataWave = 0
+			SetScale/P x 0, samplingInterval / 1000, "ms", ITCDataWave
+
+			return [ITCDataWave, $""]
 			break
 		case HARDWARE_NI_DAC:
 			WAVE/WAVE NIDataWave = GetHardwareDataWave(panelTitle)
@@ -353,10 +353,12 @@ static Function DC_MakeHardwareDataWave(panelTitle, numActiveChannels, samplingI
 
 			SetScale/P x 0, samplingInterval / 1000, "ms", NIDataWave
 
-			make/FREE/N=(numActiveChannels) type = SWS_GetRawDataFPType(panelTitle)
+			Make/FREE/N=(numActiveChannels) type = SWS_GetRawDataFPType(panelTitle)
 			WAVE config = GetITCChanConfigWave(panelTitle)
 			type = config[p][%ChannelType] == ITC_XOP_CHANNEL_TYPE_TTL ? IGOR_TYPE_UNSIGNED | IGOR_TYPE_8BIT_INT : type[p]
 			NIDataWave = DC_MakeNIChannelWave(dfr, numRows, samplingInterval, p, type[p])
+
+			return [$"", NIDataWave]
 			break
 	endswitch
 End
@@ -764,7 +766,7 @@ static Function DC_PlaceDataInHardwareDataWave(panelTitle, numActiveChannels, da
 
 	variable i, j
 	variable numDACEntries, numADCEntries, ttlIndex, setChecksum, stimsetCycleID, fingerprint, hardwareType, maxITI
-	string ctrl, str, list, func
+	string ctrl, str, list, func, key
 	variable setCycleCount, val, singleSetLength, samplingInterval
 	variable channelMode, TPAmpVClamp, TPAmpIClamp, testPulseLength, maxStimSetLength
 	variable GlobalTPInsert, scalingZero, indexingLocked, indexing, distributedDAQ, pulseToPulseLength
@@ -794,6 +796,7 @@ static Function DC_PlaceDataInHardwareDataWave(panelTitle, numActiveChannels, da
 	multiplier            = str2num(DAG_GetTextualValue(panelTitle, "Popup_Settings_SampIntMult"))
 	testPulseLength       = ROVar(GetTestPulseLengthInPoints(panelTitle, DATA_ACQUISITION_MODE))
 	WAVE/T allSetNames    = DAG_GetChannelTextual(panelTitle, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_WAVE)
+	hardwareType          = GetHardwareType(panelTitle)
 
 	NVAR baselineFrac     = $GetTestpulseBaselineFraction(panelTitle)
 	WAVE ChannelClampMode = GetChannelClampMode(panelTitle)
@@ -1065,20 +1068,8 @@ static Function DC_PlaceDataInHardwareDataWave(panelTitle, numActiveChannels, da
 	NVAR stopCollectionPoint = $GetStopCollectionPoint(panelTitle)
 	stopCollectionPoint = DC_GetStopCollectionPoint(panelTitle, dataAcqOrTP, setLength)
 
-	DC_MakeHardwareDataWave(panelTitle, numActiveChannels, samplingInterval, dataAcqOrTP)
-
 	NVAR fifoPosition = $GetFifoPosition(panelTitle)
 	fifoPosition = 0
-
-	hardwareType = GetHardwareType(panelTitle)
-	switch(hardwareType)
-		case HARDWARE_ITC_DAC:
-			WAVE ITCDataWave = GetHardwareDataWave(panelTitle)
-			break
-		case HARDWARE_NI_DAC:
-			WAVE/WAVE NIDataWave = GetHardwareDataWave(panelTitle)
-			break
-	endswitch
 
 	ClearRTError()
 
@@ -1096,39 +1087,78 @@ static Function DC_PlaceDataInHardwareDataWave(panelTitle, numActiveChannels, da
 		WAVE testPulse = stimSet[0]
 		TPLength = setLength[0]
 		ASSERT(DimSize(testPulse, COLS) <= 1, "Expected a 1D testpulse wave")
-		switch(hardwareType)
-			case HARDWARE_ITC_DAC:
-				if(multiDevice)
-					Multithread ITCDataWave[][0, numDACEntries - 1] =              \
-					limit(                                                         \
-					(DAGain[q] * DACAmp[q][%TPAMP]) * testPulse[mod(p, TPLength)], \
-					SIGNED_INT_16BIT_MIN,                                          \
-					SIGNED_INT_16BIT_MAX); AbortOnRTE
-					cutOff = mod(DimSize(ITCDataWave, ROWS), TPLength)
-					if(cutOff > 0)
-						ITCDataWave[DimSize(ITCDataWave, ROWS) - cutoff, *][0, numDACEntries - 1] = 0
+
+		struct HardwareDataTPInput s
+		s.hardwareType = hardwareType
+		s.numDACs = numDACEntries
+		s.numActiveChannels = numActiveChannels
+		s.numberOfRows = DC_CalculateITCDataWaveLength(panelTitle, TEST_PULSE_MODE)
+		s.samplingInterval = samplingInterval
+		WAVE s.DAGain = DAGain
+		Duplicate/FREE/RMD=[][FindDimLabel(DACAmp, COLS, "TPAMP")] DACAmp, DACAmpTP
+		WAVE s.DACAmpTP = DACAmpTP
+		s.testPulseLength = testPulseLength
+		s.baseLineFrac = baselineFrac
+
+		key = CA_HardwareDataTPKey(s)
+
+		WAVE/Z result = CA_TryFetchingEntryFromCache(key)
+
+		if(WaveExists(result))
+			WAVE DAQDataWave = GetHardwareDataWave(panelTitle)
+			MoveWaveWithOverwrite(DAQDataWave, result)
+		else
+			WAVE/Z ITCDataWave
+			WAVE/WAVE/Z NIDataWave
+
+			[ITCDataWave, NIDataWave] = DC_MakeAndGetHardwareDataWave(panelTitle, hardwareType, numActiveChannels, \
+																				   samplingInterval, dataAcqOrTP)
+
+			switch(hardwareType)
+				case HARDWARE_ITC_DAC:
+					if(multiDevice)
+						Multithread ITCDataWave[][0, numDACEntries - 1] =              \
+						limit(                                                         \
+						(DAGain[q] * DACAmp[q][%TPAMP]) * testPulse[mod(p, TPLength)], \
+						SIGNED_INT_16BIT_MIN,                                          \
+						SIGNED_INT_16BIT_MAX); AbortOnRTE
+						cutOff = mod(DimSize(ITCDataWave, ROWS), TPLength)
+						if(cutOff > 0)
+							ITCDataWave[DimSize(ITCDataWave, ROWS) - cutoff, *][0, numDACEntries - 1] = 0
+						endif
+					else
+						Multithread ITCDataWave[0, TPLength - 1][0, numDACEntries - 1] = \
+						limit(                                                           \
+						DAGain[q] * DACAmp[q][%TPAMP] * testPulse[p],                    \
+						SIGNED_INT_16BIT_MIN,                                            \
+						SIGNED_INT_16BIT_MAX); AbortOnRTE
 					endif
-				else
-					Multithread ITCDataWave[0, TPLength - 1][0, numDACEntries - 1] = \
-					limit(                                                           \
-					DAGain[q] * DACAmp[q][%TPAMP] * testPulse[p],                    \
-					SIGNED_INT_16BIT_MIN,                                            \
-					SIGNED_INT_16BIT_MAX); AbortOnRTE
-				endif
-				break
-			case HARDWARE_NI_DAC:
-				for(i = 0;i < numDACEntries; i += 1)
-					WAVE NIChannel = NIDataWave[i]
-					tpAmp = DACAmp[i][%TPAMP] * DAGain[i]
-					Multithread NIChannel[0, TPLength - 1] = \
-					limit(                                   \
-					tpAmp * testPulse[p],                    \
-					NI_DAC_MIN,                              \
-					NI_DAC_MAX); AbortOnRTE
-				endfor
-				break
-		endswitch
+
+					CA_StoreEntryIntoCache(key, ITCDataWave)
+					break
+				case HARDWARE_NI_DAC:
+					for(i = 0;i < numDACEntries; i += 1)
+						WAVE NIChannel = NIDataWave[i]
+						tpAmp = DACAmp[i][%TPAMP] * DAGain[i]
+						Multithread NIChannel[0, TPLength - 1] = \
+						limit(                                   \
+						tpAmp * testPulse[p],                    \
+						NI_DAC_MIN,                              \
+						NI_DAC_MAX); AbortOnRTE
+					endfor
+
+					CA_StoreEntryIntoCache(key, NIDataWave)
+					break
+			endswitch
+		endif
 	elseif(dataAcqOrTP == DATA_ACQUISITION_MODE)
+
+		WAVE/Z ITCDataWave
+		WAVE/WAVE/Z NIDataWave
+
+		[ITCDataWave, NIDataWave] = DC_MakeAndGetHardwareDataWave(panelTitle, hardwareType, numActiveChannels, \
+																			   samplingInterval, dataAcqOrTP)
+
 		for(i = 0; i < numDACEntries; i += 1)
 			if(config[i][%DAQChannelType] == DAQ_CHANNEL_TYPE_TP)
 				// TP wave does not need to be decimated, it has already correct size reg. sample rate
@@ -1382,12 +1412,19 @@ static Function DC_DocumentHardwareProperties(panelTitle, hardwareType)
 	string panelTitle
 	variable hardwareType
 
-	string str
+	string str, key
 
 	DC_DocumentChannelProperty(panelTitle, "Digitizer Hardware Type", INDEP_HEADSTAGE, NaN, var=hardwareType)
 
 	NVAR ITCDeviceIDGlobal = $GetITCDeviceIDGlobal(panelTitle)
-	WAVE devInfo = HW_GetDeviceInfo(hardwareType, ITCDeviceIDGlobal)
+
+	key = CA_HWDeviceInfoKey(panelTitle, hardwareType, ITCDeviceIDGlobal)
+	WAVE/Z devInfo = CA_TryFetchingEntryFromCache(key)
+
+	if(!WaveExists(devInfo))
+		WAVE devInfo = HW_GetDeviceInfo(hardwareType, ITCDeviceIDGlobal, flags=HARDWARE_ABORT_ON_ERROR | HARDWARE_PREVENT_ERROR_POPUP)
+		CA_StoreEntryIntoCache(key, devInfo)
+	endif
 
 	switch(hardwareType)
 		case HARDWARE_ITC_DAC:

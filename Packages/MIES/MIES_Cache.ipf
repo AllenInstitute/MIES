@@ -246,6 +246,49 @@ Function/S CA_TemporaryWaveKey(dims)
 	return num2istr(crc) + "Temporary waves Version 1"
 End
 
+/// @brief Calculate the cache key for the hardware device info wave
+Function/S CA_HWDeviceInfoKey(panelTitle, hardwareType, deviceID)
+	string panelTitle
+	variable hardwareType, deviceID
+
+	variable crc
+
+	crc = StringCrc(crc, panelTitle)
+	crc = StringCrc(crc, num2str(hardwareType))
+	crc = StringCrc(crc, num2str(deviceID))
+
+	return num2istr(crc) + "HW Device Info Version 1"
+End
+
+/// @brief Generate a key for the HardwareDataWave in TEST_PULSE_MODE
+///
+/// Properties which influence the Testpulse:
+/// - hardwareType
+/// - numDA (filled columns)
+/// - numActiveChannels (number of columns)
+/// - number of rows, return from DC_CalculateITCDataWaveLength(panelTitle, TEST_PULSE_MODE)
+/// - samplingInterval
+/// - DAGain
+/// - DACAmp[][%TPAmp] column
+/// - testPulseLength, baselineFrac
+Function/S CA_HardwareDataTPKey(s)
+	STRUCT HardwareDataTPInput &s
+
+	variable crc
+
+	crc = StringCRC(crc, num2str(s.hardwareType))
+	crc = StringCRC(crc, num2str(s.numDACs))
+	crc = StringCRC(crc, num2str(s.numActiveChannels))
+	crc = StringCRC(crc, num2str(s.numberOfRows))
+	crc = StringCRC(crc, num2str(s.samplingInterval))
+	crc = WaveCRC(crc, s.DAGain)
+	crc = WaveCRC(crc, s.DACAmpTP)
+	crc = StringCRC(crc, num2str(s.testPulseLength))
+	crc = StringCRC(crc, num2str(s.baselineFrac))
+
+	return num2istr(crc) + "HW Datawave Testpulse Version 1"
+End
+
 /// @}
 
 /// @brief Make space for one new entry in the cache waves
