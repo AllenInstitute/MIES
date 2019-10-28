@@ -171,7 +171,7 @@ Function DB_ResetAndStoreCurrentDBPanel()
 	ReplaceNotebookText(sfFormula, "data(\rcursors(A,B),\rchannels(AD),\rsweeps(0;1;2;3;4;5)\r)")
 
 	sfJSON = BSP_GetSFJSON(panelTitle)
-	ReplaceNotebookText(sfJSON, "data(\rcursors(A,B),\rchannels(AD),\rsweeps(0;1;2;3;4;5)\r)")
+	ReplaceNotebookText(sfJSON, "")
 
 	SetVariable setvar_sweepFormula_parseResult WIN = $bsPanel, value=_STR:""
 	ValDisplay status_sweepFormula_parser, WIN = $bsPanel, value=1
