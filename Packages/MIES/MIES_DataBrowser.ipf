@@ -168,7 +168,7 @@ Function DB_ResetAndStoreCurrentDBPanel()
 	CheckBox check_BrowserSettings_DB_Failed WIN = $bsPanel, value= 0
 
 	sfFormula = BSP_GetSFFormula(panelTitle)
-	ReplaceNotebookText(sfFormula, "data(\rcursors(A,B),\rchannels(AD),\rsweeps(0;1;2;3;4;5)\r)")
+	ReplaceNotebookText(sfFormula, "data(\rcursors(A,B),\rchannels(AD),\rsweeps()\r)")
 
 	sfJSON = BSP_GetSFJSON(panelTitle)
 	ReplaceNotebookText(sfJSON, "")

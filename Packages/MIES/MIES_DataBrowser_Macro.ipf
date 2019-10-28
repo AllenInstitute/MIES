@@ -770,7 +770,7 @@ Window DataBrowser() : Graph
 	PopupMenu popup_DB_lockedDevices,userdata(ResizeControlsInfo)= A"!!,C$!!#BQJ,hr2!!#<Pz!!#`-A7TLfzzzzzzzzzzzzzz!!#r+D.OhkBk2=!z"
 	PopupMenu popup_DB_lockedDevices,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	PopupMenu popup_DB_lockedDevices,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
-	PopupMenu popup_DB_lockedDevices,mode=2,popvalue="- none -",value= #"DB_GetAllDevicesWithData()"
+	PopupMenu popup_DB_lockedDevices,mode=1,popvalue="- none -",value= #"DB_GetAllDevicesWithData()"
 	GroupBox group_sweepFormula,pos={3.00,27.00},size={385.00,374.00},disable=1,title="SweepFormula"
 	GroupBox group_sweepFormula,userdata(tabnum)=  "5"
 	GroupBox group_sweepFormula,userdata(tabcontrol)=  "Settings"
@@ -870,7 +870,7 @@ Window DataBrowser() : Graph
 	NewNotebook /F=0 /N=sweepFormula_formula /W=(12,71,378,358)/FG=(UGVL,UGVT,UGVR,UGVB) /HOST=# /V=0
 	Notebook kwTopWin, defaultTab=20, autoSave= 1, magnification=100
 	Notebook kwTopWin font="Lucida Console", fSize=11, fStyle=0, textRGB=(0,0,0)
-	Notebook kwTopWin, zdata= "GaqDU%ejN7!Z)t;B7Kt/+?%qo07\\UEOHN_/W54s.>#_#!<35&Wj.rZlS\",V.Q^=-CjLP>:`T=(u\"iVAaeqVaFf#H8feu\"nKRK/mk'D2"
+	Notebook kwTopWin, zdata= "GaqDU%ejN7!Z*!1@=S>)+F`2^BZWLb84b@(eDO%R/Lo%!.b8RgERN@q:!Q;Rb=g(\\Ea=4.iptUKJmo0`?;1F7@M*q"
 	Notebook kwTopWin, zdataEnd= 1
 	SetWindow kwTopWin,hook(ResizeControls)=ResizeControls#ResizeControlsHook
 	SetWindow kwTopWin,userdata(tabnum)=  "0"
