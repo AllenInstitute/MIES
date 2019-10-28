@@ -435,6 +435,7 @@ Function/WAVE SF_FormulaExecutor(jsonID, [jsonPath, graph])
 		case "channels":
 		case "data":
 		case "wave":
+		case "findlevel":
 			break
 		default:
 			WAVE wv = SF_FormulaExecutor(jsonID, jsonPath = jsonPath, graph = graph)
@@ -742,6 +743,25 @@ Function/WAVE SF_FormulaExecutor(jsonID, [jsonPath, graph])
 					out[i] = xcsr($wvT[i], graph)
 				endif
 			endfor
+			break
+		case "findlevel":
+			// findlevel(data, level, [edge])
+			numIndices = JSON_GetArraySize(jsonID, jsonPath)
+			ASSERT(numIndices <=3, "Maximum number of arguments exceeded.")
+			ASSERT(numIndices > 1, "At least two arguments.")
+			WAVE data = SF_FormulaExecutor(jsonID, jsonPath = jsonPath + "/0", graph = graph)
+			WAVE level = SF_FormulaExecutor(jsonID, jsonPath = jsonPath + "/1")
+			ASSERT(DimSize(level, ROWS) == 1, "Too many input values for parameter level")
+			ASSERT(IsNumericWave(level), "level parameter must be numeric")
+			if(numIndices == 3)
+				WAVE edge = SF_FormulaExecutor(jsonID, jsonPath = jsonPath + "/2")
+				ASSERT(DimSize(edge, ROWS) == 1, "Too many input values for parameter level")
+				ASSERT(IsNumericWave(edge), "level parameter must be numeric")
+			else
+				Make/FREE edge = {0}
+			endif
+
+			WAVE out = FindLevelWrapper(data, level[0], edge[0])
 			break
 		default:
 			ASSERT(0, "Undefined Operation")
