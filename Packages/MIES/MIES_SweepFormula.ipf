@@ -912,8 +912,9 @@ static Function/WAVE SF_GetSweepForFormula(graph, rangeStart, rangeEnd, channelT
 		return $""
 	endif
 
-	// we want the sweeps sorted with ascending sweep numbers
-	SortColumns/A/DIML/KNDX={FindDimLabel(traces, COLS, "sweepNumber")} sortWaves=traces
+	// This is a 2D-Wave sorted by sweeps and channels
+	// It can be redimensioned to restore channel information in the "3rd" dimension.
+	SortColumns/A/DIML/KNDX={FindDimLabel(traces, COLS, "channelType"), FindDimLabel(traces, COLS, "channelNumber"), FindDimLabel(traces, COLS, "sweepNumber")} sortWaves=traces
 
 	Make/N=(DimSize(traces, ROWS))/FREE sweepListIndex
 	for(i = 0; i < DimSize(traces, ROWS); i += 1)
