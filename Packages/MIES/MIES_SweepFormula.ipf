@@ -907,7 +907,7 @@ static Function SF_SplitPlotting(wv, dim, i, split)
 	WAVE wv
 	Variable dim, i, split
 
-	return min(i, floor(DimSize(wv, ROWS) / split) - 1) * split
+	return min(i, floor(DimSize(wv, dim) / split) - 1) * split
 End
 
 static Function/WAVE SF_GetSweepForFormula(graph, rangeStart, rangeEnd, channelType, channelNumber, sweeps)
