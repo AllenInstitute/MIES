@@ -407,6 +407,12 @@ Function StopAcq_IGNORE(s)
 	return 1
 End
 
+Function JustDelay_IGNORE(s)
+	STRUCT WMBackgroundStruct &s
+
+	return 1
+End
+
 Function StopTP_IGNORE(s)
 	STRUCT WMBackgroundStruct &s
 

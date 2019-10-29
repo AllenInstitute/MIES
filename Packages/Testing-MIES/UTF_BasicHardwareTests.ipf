@@ -1862,6 +1862,43 @@ Function StartDAQDuringTP_IGNORE(device)
 	wv[%$"Analysis function (generic)"][%Set] = "WriteIntoLBNOnPreDAQ"
 End
 
+// UTF_TD_GENERATOR HardwareMain#DeviceNameGeneratorMD1
+Function AbortTP([str])
+	string str
+
+	STRUCT DAQSettings s
+	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG_1_RES_0")
+	AcquireData(s, str, startTPInstead=1)
+
+	CtrlNamedBackGround DelayReentry, start=(ticks + 300), period=60, proc=JustDelay_IGNORE
+	RegisterUTFMonitor("DelayReentry", BACKGROUNDMONMODE_AND, "AbortTP_REENTRY", timeout = 600, failOnTimeout = 1)
+End
+
+Function AbortTP_REENTRY([str])
+	string str
+
+	string device
+	variable aborted, err
+
+	device = StringFromList(0, str)
+
+	KillWindow $device
+	try
+		ASYNC_STOP(timeout = 5)
+	catch
+		err = getRTError(1)
+		aborted = 1
+	endtry
+
+	ASYNC_Start(threadprocessorCount, disableTask=1)
+
+	if(aborted)
+		FAIL()
+	else
+		PASS()
+	endif
+End
+
 // UTF_TD_GENERATOR HardwareMain#DeviceNameGeneratorMD0
 Function StartDAQDuringTP([str])
 	string str
