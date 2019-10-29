@@ -1083,7 +1083,7 @@ Function RestoreCursors(graph, cursorInfos)
 	string graph
 	WAVE/T cursorInfos
 
-	string traceList, cursorTrace
+	string traceList, cursorTrace, info
 	variable i, numEntries, numTraces
 
 	traceList = TraceNameList(graph, ";", 0 + 1)
@@ -1095,14 +1095,19 @@ Function RestoreCursors(graph, cursorInfos)
 
 	numEntries = DimSize(cursorInfos, ROWS)
 	for(i = 0; i < numEntries; i += 1)
+		info = cursorInfos[i]
 
-		cursorTrace = StringByKey("TNAME", cursorInfos[i])
+		if(IsEmpty(info)) // cursor was not active
+			continue
+		endif
+
+		cursorTrace = StringByKey("TNAME", info)
 
 		if(FindListItem(cursorTrace, traceList) == -1)
 			continue
 		endif
 
-		Execute StringByKey("RECREATION", cursorInfos[i])
+		Execute StringByKey("RECREATION", info)
 	endfor
 End
 
