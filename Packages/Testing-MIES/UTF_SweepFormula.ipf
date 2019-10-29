@@ -767,4 +767,14 @@ static Function TestPlotting()
 
 	SF_FormulaPlotter("", strArray0D + " vs " + strArray0D); DoUpdate
 	REQUIRE_EQUAL_VAR(ItemsInList(TraceNameList(win, ";", 0x1)), DimSize(array0D, ROWS))
+
+	// plotting of unaligned data
+	SF_FormulaPlotter("", "range(10) vs range(5)"); DoUpdate
+	REQUIRE_EQUAL_VAR(ItemsInList(TraceNameList(win, ";", 0x1)), floor(10 / 5))
+	SF_FormulaPlotter("", "range(5) vs range(10)"); DoUpdate
+	REQUIRE_EQUAL_VAR(ItemsInList(TraceNameList(win, ";", 0x1)), floor(10 / 5))
+	SF_FormulaPlotter("", "range(3) vs range(90)"); DoUpdate
+	REQUIRE_EQUAL_VAR(ItemsInList(TraceNameList(win, ";", 0x1)), floor(90 / 3))
+	SF_FormulaPlotter("", "range(3) vs range(7)"); DoUpdate
+	REQUIRE_EQUAL_VAR(ItemsInList(TraceNameList(win, ";", 0x1)), floor(7 / 3))
 End

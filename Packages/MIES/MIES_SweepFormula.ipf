@@ -762,7 +762,7 @@ Function SF_FormulaPlotter(graph, formula, [dfr])
 	DFREF dfr
 
 	String formula0, formula1, trace, axes
-	Variable i, numTraces
+	Variable i, numTraces, splitTraces, splitY, splitX
 	Variable dim1Y, dim2Y, dim1X, dim2X
 	String win = "FormulaPlot"
 	String traceName = "formula"
@@ -836,8 +836,17 @@ Function SF_FormulaPlotter(graph, formula, [dfr])
 			endfor
 			ModifyGraph/W=$win mode=3
 		else // 1D vs 1D
-			trace = traceName + num2istr(i)
-			AppendTograph/W=$win wvY[][0]/TN=$trace vs wvX[][0]
+			splitTraces = min(DimSize(wvY, ROWS), DimSize(wvX, ROWS))
+			numTraces = floor(max(DimSize(wvY, ROWS), DimSize(wvX, ROWS)) / splitTraces)
+			if(mod(max(DimSize(wvY, ROWS), DimSize(wvX, ROWS)), splitTraces) == 0)
+				DebugPrint("Unmatched Data Alignment in ROWS.")
+			endif
+			for(i = 0; i < numTraces; i += 1)
+				trace = traceName + num2istr(i)
+				splitY = SF_SplitPlotting(wvY, ROWS, i, splitTraces)
+				splitX = SF_SplitPlotting(wvX, ROWS, i, splitTraces)
+				AppendTograph/W=$win wvY[splitY, splitY + splitTraces - 1][0]/TN=$trace vs wvX[splitX, splitX + splitTraces - 1][0]
+			endfor
 		endif
 	elseif(dim1Y * dim2Y == 1) // 1D vs 2D
 		numTraces = dim1X * dim2X
@@ -887,6 +896,18 @@ Function SF_FormulaPlotter(graph, formula, [dfr])
 
 	RestoreCursors(win, cursorInfos)
 	SetAxesRanges(win, axesRanges)
+End
+
+/// @brief utility function for @c SF_FormulaPlotter
+///
+/// split dimension @p dim of wave @p wv into slices of size @p split and get
+/// the starting index @p i
+///
+static Function SF_SplitPlotting(wv, dim, i, split)
+	WAVE wv
+	Variable dim, i, split
+
+	return min(i, floor(DimSize(wv, ROWS) / split) - 1) * split
 End
 
 static Function/WAVE SF_GetSweepForFormula(graph, rangeStart, rangeEnd, channelType, channelNumber, sweeps)
