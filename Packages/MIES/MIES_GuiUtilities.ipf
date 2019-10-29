@@ -1083,7 +1083,7 @@ Function RestoreCursors(graph, cursorInfos)
 	string graph
 	WAVE/T cursorInfos
 
-	string traceList, cursorTrace, info
+	string traceList, cursorTrace, info, replacementTrace
 	variable i, numEntries, numTraces
 
 	traceList = TraceNameList(graph, ";", 0 + 1)
@@ -1104,7 +1104,9 @@ Function RestoreCursors(graph, cursorInfos)
 		cursorTrace = StringByKey("TNAME", info)
 
 		if(FindListItem(cursorTrace, traceList) == -1)
-			continue
+			// trace is not present anymore, use the first one instead
+			replacementTrace = StringFromList(0, traceList)
+			info = ReplaceWordInString(cursorTrace, info, replacementTrace)
 		endif
 
 		Execute StringByKey("RECREATION", info)
