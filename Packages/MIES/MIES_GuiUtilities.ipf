@@ -1084,9 +1084,14 @@ Function RestoreCursors(graph, cursorInfos)
 	WAVE/T cursorInfos
 
 	string traceList, cursorTrace
-	variable i, numEntries
+	variable i, numEntries, numTraces
 
 	traceList = TraceNameList(graph, ";", 0 + 1)
+	numTraces = ItemsInList(traceList)
+
+	if(numTraces == 0)
+		return NaN
+	endif
 
 	numEntries = DimSize(cursorInfos, ROWS)
 	for(i = 0; i < numEntries; i += 1)
