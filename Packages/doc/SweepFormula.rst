@@ -398,7 +398,7 @@ merge
 """""
 
 `merge` reduces a 2-dimensional array to a 1-dimensional array similar to
-removing all sphare brackets:
+removing all inner square brackets:
 
 .. code-block:: bash
 
