@@ -375,9 +375,9 @@ Various
 range
 """""
 
-The range function is borrowed from
-[python](https://docs.python.org/3/library/functions.html#func-range). It
-expands values into a new array.
+The range function is borrowed from `python
+<https://docs.python.org/3/library/functions.html#func-range>`_. It expands
+values into a new array.
 
 This function can also be used as an operation with the "…" operator which is
 the Unicode Character 'HORIZONTAL ELLIPSIS' (U+2026).
