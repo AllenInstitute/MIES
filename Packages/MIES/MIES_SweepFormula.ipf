@@ -776,9 +776,9 @@ Function SF_FormulaPlotter(graph, formula, [dfr])
 	if(V_Flag == 2)
 		WAVE/Z wv = SF_FormulaExecutor(SF_FormulaParser(SF_FormulaPreParser(formula1)), graph = graph)
 		SF_FormulaError(dfr, WaveExists(wv), "Error in x part of formula.")
-		dim1X = DimSize(wv, COLS)
-		dim2X = DimSize(wv, LAYERS)
-		Redimension/N=(-1, max(1, DimSize(wv, LAYERS)) * max(1, DimSize(wv, COLS)))/E=1 wv
+		dim1X = max(1, DimSize(wv, COLS))
+		dim2X = max(1, DimSize(wv, LAYERS))
+		Redimension/N=(-1, dim1X * dim2X)/E=1 wv
 
 		WAVE wvX = GetSweepFormulaX(dfr)
 		MoveWaveWithOverwrite(wvX, wv)
@@ -787,9 +787,9 @@ Function SF_FormulaPlotter(graph, formula, [dfr])
 
 	WAVE/Z wv = SF_FormulaExecutor(SF_FormulaParser(SF_FormulaPreParser(formula0)), graph = graph)
 	SF_FormulaError(dfr, WaveExists(wv), "Error in y part of formula.")
-	dim1Y = DimSize(wv, COLS)
-	dim2Y = DimSize(wv, LAYERS)
-	Redimension/N=(-1, max(1, DimSize(wv, LAYERS)) * max(1, DimSize(wv, COLS)))/E=1 wv
+	dim1Y = max(1, DimSize(wv, COLS))
+	dim2Y = max(1, DimSize(wv, LAYERS))
+	Redimension/N=(-1, dim1Y * dim2Y)/E=1 wv
 
 	WAVE wvY = GetSweepFormulaY(dfr)
 	MoveWaveWithOverwrite(wvY, wv)
@@ -815,12 +815,12 @@ Function SF_FormulaPlotter(graph, formula, [dfr])
 	endif
 
 	if(!WaveExists(wvX))
-		numTraces = DimSize(wvY, COLS)
+		numTraces = dim1Y * dim2Y
 		for(i = 0; i < numTraces; i += 1)
 			trace = traceName + num2istr(i)
 			AppendTograph/W=$win wvY[][i]/TN=$trace
 		endfor
-	elseif((DimSize(wvX, COLS) == 1) && (DimSize(wvY, COLS) == 1)) // 1D
+	elseif((dim1X * dim2X == 1) && (dim1Y * dim2Y == 1)) // 1D
 		if(DimSize(wvY, ROWS) == 1) // 0D vs 1D
 			numTraces = DimSize(wvX, ROWS)
 			for(i = 0; i < numTraces; i += 1)
@@ -839,8 +839,8 @@ Function SF_FormulaPlotter(graph, formula, [dfr])
 			trace = traceName + num2istr(i)
 			AppendTograph/W=$win wvY[][0]/TN=$trace vs wvX[][0]
 		endif
-	elseif(DimSize(wvY, COLS) == 1) // 1D vs 2D
-		numTraces = DimSize(wvX, COLS)
+	elseif(dim1Y * dim2Y == 1) // 1D vs 2D
+		numTraces = dim1X * dim2X
 		for(i = 0; i < numTraces; i += 1)
 			trace = traceName + num2istr(i)
 			AppendTograph/W=$win wvY[][0]/TN=$trace vs wvX[][i]
@@ -848,8 +848,8 @@ Function SF_FormulaPlotter(graph, formula, [dfr])
 		if(DimSize(wvY, ROWS) == 1)
 			ModifyGraph/W=$win mode=3
 		endif
-	elseif(DimSize(wvX, COLS) == 1) // 2D vs 1D
-		numTraces = DimSize(wvY, COLS)
+	elseif(dim1X * dim2X == 1) // 2D vs 1D
+		numTraces = dim1Y * dim2Y
 		for(i = 0; i < numTraces; i += 1)
 			trace = traceName + num2istr(i)
 			AppendTograph/W=$win wvY[][i]/TN=$trace vs wvX
@@ -858,7 +858,7 @@ Function SF_FormulaPlotter(graph, formula, [dfr])
 			ModifyGraph/W=$win mode=3
 		endif
 	else // 2D vs 2D
-		numTraces = WaveExists(wvX) ? max(1, max(DimSize(wvY, COLS), DimSize(wvX, COLS))) : max(1, DimSize(wvY, COLS))
+		numTraces = WaveExists(wvX) ? max(1, max(dim1Y * dim2Y, dim1X * dim2X)) : max(1, dim1Y * dim2Y)
 		if(DimSize(wvY, ROWS) == DimSize(wvX, ROWS))
 			DebugPrint("Size missmatch in data rows for plotting waves.")
 		endif
@@ -868,7 +868,7 @@ Function SF_FormulaPlotter(graph, formula, [dfr])
 		for(i = 0; i < numTraces; i += 1)
 			trace = traceName + num2istr(i)
 			if(WaveExists(wvX))
-				AppendTograph/W=$win wvY[][min(max(1, DimSize(wvY, COLS)) - 1, i)]/TN=$trace vs wvX[][min(max(1, DimSize(wvX, COLS)) - 1, i)]
+				AppendTograph/W=$win wvY[][min(dim1Y * dim2Y - 1, i)]/TN=$trace vs wvX[][min(dim1X * dim2X - 1, i)]
 			else
 				AppendTograph/W=$win wvY[][i]/TN=$trace
 			endif
