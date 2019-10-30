@@ -3315,3 +3315,39 @@ Function HasNaNAsDefaultWhenAborted_REENTRY([str])
 	CHECK_EQUAL_VAR(V_numNans, DimSize(unacquiredData, ROWS) * DimSize(unacquiredData, COLS))
 	CHECK_EQUAL_VAR(V_npnts, 0)
 End
+
+Function TestPulseCachingWorks_IGNORE(device)
+	string device
+
+	PGC_SetAndActivateControl(device, "Check_DataAcq_Get_Set_ITI", val = 0)
+	PGC_SetAndActivateControl(device, "SetVar_DataAcq_ITI", val = 3)
+End
+
+// UTF_TD_GENERATOR HardwareMain#DeviceNameGeneratorMD1
+Function TestPulseCachingWorks([str])
+	string str
+
+	STRUCT DAQSettings s
+	InitDAQSettingsFromString(s, "MD1_RA3_I0_L0_BKG_1")
+
+	AcquireData(s, str, preAcquireFunc=TestPulseCachingWorks_IGNORE)
+End
+
+Function TestPulseCachingWorks_REENTRY([str])
+	string str
+
+	variable sweepNo
+
+	CHECK_EQUAL_VAR(GetSetVariable(str, "SetVar_Sweep"), 3)
+
+	sweepNo = AFH_GetLastSweepAcquired(str)
+	CHECK_EQUAL_VAR(sweepNo, 2)
+
+	WAVE/T keyWave = GetCacheKeyWave()
+	// approximate search
+	FindValue/TEXT=("HW Datawave Testpulse") keyWave
+	CHECK(V_Value >= 0)
+
+	WAVE stats = GetCacheStatsWave()
+	CHECK(stats[V_Value][%Hits] >= 1)
+End
