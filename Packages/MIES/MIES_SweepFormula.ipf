@@ -371,8 +371,8 @@ Function/WAVE SF_FormulaExecutor(jsonID, [jsonPath, graph])
 	String jsonPath
 	String graph
 
-	Variable i, j, numIndices, JSONtype, mode
-	string info
+	Variable i, j, k, l, numIndices, JSONtype, mode
+	string info, str
 
 	if(ParamIsDefault(jsonPath))
 		jsonPath = ""
@@ -457,6 +457,7 @@ Function/WAVE SF_FormulaExecutor(jsonID, [jsonPath, graph])
 		case "butterworth":
 		case "channels":
 		case "data":
+		case "labnotebook":
 		case "wave":
 		case "findlevel":
 			break
@@ -741,6 +742,80 @@ Function/WAVE SF_FormulaExecutor(jsonID, [jsonPath, graph])
 				WaveClear wv
 			endfor
 			Redimension/N=(-1, -1, j) out
+			break
+		case "labnotebook":
+			/// `labnotebook(string key, array channels, array sweeps)`
+			///
+			/// return lab notebook @p key for all @p sweeps that belong to the channels @p channels
+			ASSERT(!ParamIsDefault(graph) && !IsEmpty(graph), "Graph not specified.")
+
+			JSONtype = JSON_GetType(jsonID, jsonPath + "/0")
+			ASSERT(JSONtype == JSON_STRING, "first parameter needs to be a string labnotebook key")
+			str = JSON_GetString(jsonID, jsonPath + "/0")
+
+			WAVE channels = SF_FormulaExecutor(jsonID, jsonPath = jsonPath + "/1", graph = graph)
+			ASSERT(DimSize(channels, COLS) == 2, "A channel input consists of [[channelName, channelNumber]+].")
+
+			WAVE sweeps = SF_FormulaExecutor(jsonID, jsonPath = jsonPath + "/2", graph = graph)
+			ASSERT(DimSize(sweeps, COLS) < 2, "Sweeps are one-dimensional.")
+
+			if(BSP_IsDataBrowser(graph))
+				WAVE numericalValues = DB_GetNumericalValues(graph)
+			else
+				WAVE/WAVE temp = SB_GetNumericalValuesWaves(graph)
+				ASSERT(DimSize(temp, ROWS) == 1, "Unhandled number of devices in AnalysisBrowser map")
+				WAVE numericalValues = temp[0]
+				WaveClear temp
+			endif
+
+			Make/FREE/N=(DimSize(sweeps, ROWS), DimSize(channels, ROWS)) headstages
+			for(i = 0; i < DimSize(sweeps, ROWS); i += 1)
+				for(j = 0; j < DimSize(channels, ROWS); j += 1)
+					if(!cmpstr(StringFromList(channels[j][0], ITC_CHANNEL_NAMES), "AD"))
+						WAVE/Z sweepChannel = GetLastSetting(numericalValues, sweeps[i], "ADC", UNKNOWN_MODE)
+					elseif(!cmpstr(StringFromList(channels[j][0], ITC_CHANNEL_NAMES), "DA"))
+						WAVE/Z sweepChannel = GetLastSetting(numericalValues, sweeps[i], "DAC", UNKNOWN_MODE)
+					else
+						ASSERT(0, "Unhandled channel type in labnotebook channels")
+					endif
+
+					ASSERT(DimSize(sweepChannel, ROWS) == LABNOTEBOOK_LAYER_COUNT, "Unexpected LabNotebook format.")
+					ASSERT(IsNaN(sweepChannel[INDEP_HEADSTAGE]), "Undefined LabNotebook format for channels")
+					if(IsFinite(channels[j][1]))
+						FindValue/V=(channels[j][1])/T=0/Z sweepChannel
+						ASSERT(V_Value >= 0 && V_Value < INDEP_HEADSTAGE, "Channel number not found.")
+						headstages[i][j] = V_Value
+						FindValue/S=(V_Value + 1)/V=(channels[j][1])/T=0/Z sweepChannel
+						ASSERT(V_Value == -1, "More than one matching channel number found.")
+					else // all channel numbers
+						l = 0
+						for(k = 0; k < INDEP_HEADSTAGE; k += 1)
+							if(IsFinite(sweepChannel[k]))
+								Redimension/N=(DimSize(sweeps, ROWS), DimSize(headstages, COLS) + l) headstages
+								headstages[i][j + l] = k
+								l += 1
+							endif
+						endfor
+					endif
+					ASSERT(IsFinite(headstages[i][j]), "No active channel found for channel type.")
+					WaveClear sweepChannel
+				endfor
+			endfor
+
+			Make/D/FREE/N=(DimSize(headstages, ROWS), DimSize(headstages, COLS)) outD = NaN
+			for(i = 0; i < DimSize(sweeps, ROWS); i += 1)
+				WAVE/Z LBvalue = GetLastSetting(numericalValues, sweeps[i], str, UNKNOWN_MODE)
+				if(WaveExists(LBvalue))
+					if(!IsNaN(LBvalue[INDEP_HEADSTAGE]))
+						outD[i][] = LBvalue[INDEP_HEADSTAGE]
+					else
+						outD[i][] = LBvalue[headstages[i][q]]
+					endif
+				endif
+				WaveClear LBvalue
+			endfor
+			WAVE out = outD
+			WaveClear outD, channels, sweeps, numericalValues
 			break
 		case "log": // JSON logic debug operation
 			print wv[0]

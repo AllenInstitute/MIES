@@ -597,7 +597,7 @@ Function/S SB_GetPlainSweepList(win)
 End
 
 /// @brief Return a wave reference wave with all numerical value labnotebook waves
-static Function/WAVE SB_GetNumericalValuesWaves(win)
+Function/WAVE SB_GetNumericalValuesWaves(win)
 	string win
 
 	string list = ""

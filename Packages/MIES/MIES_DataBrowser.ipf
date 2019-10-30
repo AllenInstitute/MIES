@@ -519,7 +519,7 @@ static Function DB_ClearGraph(win)
 	UpdateLBGraphLegend(graph)
 End
 
-static Function/WAVE DB_GetNumericalValues(win)
+Function/WAVE DB_GetNumericalValues(win)
 	string win
 
 	string device
