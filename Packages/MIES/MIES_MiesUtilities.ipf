@@ -5252,6 +5252,7 @@ Function MoveWaveWithOverwrite(dest, src)
 
 	string path
 
+	ASSERT(!WaveRefsEqual(dest, src), "dest and src must be distinct waves")
 	ASSERT(!IsFreeWave(dest), "dest must be a global/permanent wave")
 
 	path = GetWavesDataFolder(dest, 2)
