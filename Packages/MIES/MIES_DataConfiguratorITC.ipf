@@ -1103,7 +1103,12 @@ static Function DC_PlaceDataInHardwareDataWave(panelTitle, numActiveChannels, da
 
 		if(WaveExists(result))
 			WAVE DAQDataWave = GetHardwareDataWave(panelTitle)
-			MoveWaveWithOverwrite(DAQDataWave, result)
+			if(IsWaveRefWave(DAQDataWave))
+				WAVE/WAVE DAQDataWaveRef = DAQDataWave
+				Redimension/N=(numActiveChannels) DAQDataWaveRef
+				DAQDataWaveRef[] = GetNIDAQChannelWave(panelTitle, p)
+			endif
+			MoveWaveWithOverwrite(DAQDataWave, result, recursive = 1)
 		else
 			WAVE/Z ITCDataWave
 			WAVE/WAVE/Z NIDataWave
