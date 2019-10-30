@@ -55,6 +55,44 @@ static Function primitiveOperations()
 	REQUIRE_EQUAL_VAR(SF_FormulaExecutor(jsonID1)[0], +1)
 End
 
+static Function stringHandling()
+	Variable jsonID0, jsonID1
+
+	// basic strings
+	jsonID0 = JSON_Parse("\"abc\"")
+	jsonID1 = SF_FormulaParser("abc")
+	WARN_EQUAL_JSON(jsonID0, jsonID1)
+
+	// ignore white spaces
+	jsonID0 = JSON_Parse("\"abcdef\"")
+	jsonID1 = SF_FormulaParser("abc def")
+	WARN_EQUAL_JSON(jsonID0, jsonID1)
+
+	// allow white space in strings
+	jsonID0 = JSON_Parse("\"abc def\"")
+	jsonID1 = SF_FormulaParser("\"abc def\"")
+	WARN_EQUAL_JSON(jsonID0, jsonID1)
+
+	// ignore comments
+	jsonID0 = JSON_Parse("null")
+	jsonID1 = SF_FormulaParser("# comment")
+	WARN_EQUAL_JSON(jsonID0, jsonID1)
+
+	// allow # inside strings
+	jsonID0 = JSON_Parse("\"#\"")
+	jsonID1 = SF_FormulaParser("\"#\"")
+	WARN_EQUAL_JSON(jsonID0, jsonID1)
+
+	// do not evaluate calculations in strings
+	jsonID0 = JSON_Parse("\"1+1\"")
+	jsonID1 = SF_FormulaParser("\"1+1\"")
+	WARN_EQUAL_JSON(jsonID0, jsonID1)
+
+	jsonID0 = JSON_Parse("\"\"")
+	jsonID1 = SF_FormulaParser("\"\"")
+	WARN_EQUAL_JSON(jsonID0, jsonID1)
+End
+
 static Function arrayOperations(array2d, numeric)
 	String array2d
 	Variable numeric

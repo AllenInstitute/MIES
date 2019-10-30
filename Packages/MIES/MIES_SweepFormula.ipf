@@ -25,6 +25,8 @@ static Constant SF_STATE_WHITESPACE = 10
 static Constant SF_STATE_COMMENT = 11
 static Constant SF_STATE_NEWLINE = 12
 static Constant SF_STATE_OPERATION = 13
+static Constant SF_STATE_STRING = 14
+static Constant SF_STATE_STRINGTERMINATOR = 15
 
 static Constant SF_ACTION_SKIP = 0
 static Constant SF_ACTION_COLLECT = 1
@@ -154,6 +156,9 @@ Function SF_FormulaParser(formula)
 			case "#":
 				state = SF_STATE_COMMENT
 				break
+			case "\"":
+				state = SF_STATE_STRINGTERMINATOR
+				break
 			case "\r":
 			case "\n":
 				state = SF_STATE_NEWLINE
@@ -174,7 +179,9 @@ Function SF_FormulaParser(formula)
 		endif
 
 		// state transition
-		if(lastState == SF_STATE_COMMENT && state != SF_STATE_NEWLINE)
+		if(lastState == SF_STATE_STRING && state != SF_STATE_STRINGTERMINATOR)
+			action = SF_ACTION_COLLECT
+		elseif(lastState == SF_STATE_COMMENT && state != SF_STATE_NEWLINE)
 			action = SF_ACTION_SKIP
 		elseif(state != lastState)
 			switch(state)
@@ -239,6 +246,12 @@ Function SF_FormulaParser(formula)
 					break
 				case SF_STATE_COLLECT:
 				case SF_STATE_DEFAULT:
+					action = SF_ACTION_COLLECT
+					break
+				case SF_STATE_STRINGTERMINATOR:
+					if(lastState != SF_STATE_STRING)
+						state = SF_STATE_STRING
+					endif
 					action = SF_ACTION_COLLECT
 					break
 				default:
@@ -325,6 +338,8 @@ Function SF_FormulaParser(formula)
 	if(!cmpstr(buffer, formula))
 		if(GrepString(buffer, "^(?i)[0-9]+(?:\.[0-9]+)?(?:[\+-]?E[0-9]+)?$"))
 			JSON_AddVariable(jsonID, jsonPath, str2num(formula))
+		elseif(GrepString(buffer, "^\".*\"$"))
+			JSON_AddString(jsonID, jsonPath, buffer[1, strlen(buffer) - 2])
 		else
 			JSON_AddString(jsonID, jsonPath, buffer)
 		endif
