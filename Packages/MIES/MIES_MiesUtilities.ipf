@@ -5247,13 +5247,31 @@ End
 ///
 /// @param dest permanent wave
 /// @param src  wave (free or permanent)
-Function MoveWaveWithOverwrite(dest, src)
+/// @param recursive [optional, defaults to false] Overwrite referenced waves
+///                                                in dest with the ones from src
+///                                                (wave reference waves only with matching sizes)
+Function MoveWaveWithOverwrite(dest, src, [recursive])
 	WAVE dest, src
+	variable recursive
 
 	string path
+	variable numEntries
+
+	recursive = ParamIsDefault(recursive) ? 0 : !!recursive
 
 	ASSERT(!WaveRefsEqual(dest, src), "dest and src must be distinct waves")
 	ASSERT(!IsFreeWave(dest), "dest must be a global/permanent wave")
+
+	if(IsWaveRefWave(dest) && IsWaveRefWave(src) && recursive)
+		numEntries = numpnts(dest)
+		ASSERT(numEntries == numpnts(src), "Unmatched sizes")
+		Make/N=(numEntries)/FREE entries
+
+		WAVE/WAVE destWaveRef = dest
+		WAVE/WAVE srcWaveRef = src
+
+		entries[] = MoveWaveWithOverWrite(destWaveRef[p], srcWaveRef[p], recursive = 1)
+	endif
 
 	path = GetWavesDataFolder(dest, 2)
 
