@@ -286,7 +286,7 @@ Function TestTimeSeries(fileID, device, groupID, channel, sweep, pxpSweepsDFR)
 	DFREF pxpSweepsDFR
 
 	variable channelGroupID, num_samples, starting_time, session_start_time, actual, scale, scale_ref
-	variable clampMode, gain, gain_ref, resolution, conversion
+	variable clampMode, gain, gain_ref, resolution, conversion, rate_ref, rate, samplingInterval, samplingInterval_ref
 	string stimulus, stimulus_expected, neurodata_type_ref, neurodata_type, channelName
 	string electrode_name, electrode_name_ref, key, unit_ref, unit, base_unit_ref
 
@@ -312,6 +312,24 @@ Function TestTimeSeries(fileID, device, groupID, channel, sweep, pxpSweepsDFR)
 	session_start_time = ParseISO8601Timestamp(IPNWB#ReadTextDataSetAsString(fileID, "/session_start_time"))
 	actual = ParseISO8601Timestamp(GetLastSettingTextIndep(textualValues, sweep, HIGH_PREC_SWEEP_START_KEY, DATA_ACQUISITION_MODE))
 	CHECK_EQUAL_VAR(session_start_time + starting_time, actual)
+
+	// its attributes: unit
+	unit = IPNWB#ReadTextAttributeAsString(groupID, channel + "/starting_time", "unit")
+	unit_ref = "Seconds"
+	CHECK_EQUAL_STR(unit, unit_ref)
+
+	unit = WaveUnits(loadedFromNWB, ROWS)
+	unit_ref = "ms"
+	CHECK_EQUAL_STR(unit, unit_ref)
+
+	// and rate
+	rate = IPNWB#ReadAttributeAsNumber(groupID, channel + "/starting_time", "rate")
+	rate_ref = 1 / (DimDelta(loadedFromNWB, ROWS)/1000)
+	CHECK_CLOSE_VAR(rate, rate_ref, tol=1e-7)
+
+	samplingInterval = GetLastSettingIndep(numericalValues, sweep, "Sampling interval", DATA_ACQUISITION_MODE)
+	samplingInterval_ref = DimDelta(loadedFromNWB, ROWS)
+	CHECK_CLOSE_VAR(samplingInterval, samplingInterval_ref, tol=1e-7)
 
 	// stimulus_description
 	stimulus = IPNWB#ReadTextDataSetAsString(channelGroupID, "stimulus_description")
