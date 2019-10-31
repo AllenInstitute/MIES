@@ -21,3 +21,11 @@ static Function TestLocking([str])
 		FAIL()
 	endtry
 End
+
+// stop testing if the disc is running full
+static Function EnsureEnoughDiscSpace()
+
+	PathInfo home
+	REQUIRE(V_flag)
+	REQUIRE(HasEnoughDiscspaceFree(S_path, MINIMUM_FREE_DISC_SPACE))
+End
