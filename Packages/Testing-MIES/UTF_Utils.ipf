@@ -2941,3 +2941,29 @@ Function GNT_Works()
 End
 
 /// @}
+
+/// RestoreCursors
+/// @{
+
+Function RC_WorksWithReplacementTrace()
+
+	string info, graph
+
+	Make data
+
+	Display data
+	graph = S_name
+
+	Cursor A, data, 30
+	WAVE/T cursorInfos = GetCursorInfos(graph)
+
+	RemoveTracesFromGraph(graph)
+
+	AppendToGraph data/TN=abcd
+	RestoreCursors(graph, cursorInfos)
+
+	info = CsrInfo(A, graph)
+	CHECK_PROPER_STR(info)
+End
+
+/// @}
