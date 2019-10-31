@@ -679,7 +679,7 @@ Constant NO_SLIDER_MOVEMENT    = 0x2
 /// @}
 
 /// Number of trials to find a suitable port for binding a ZeroMQ service
-Constant ZEROMQ_NUM_BIND_TRIALS = 4
+Constant ZEROMQ_NUM_BIND_TRIALS = 32
 
 Constant ZEROMQ_BIND_REP_PORT = 5670
 
