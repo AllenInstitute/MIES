@@ -23,7 +23,6 @@
 Function run()
 
 	string list = ""
-	list = AddListItem("UTF_VeryBasicHardwareTests.ipf", list)
 	list = AddListItem("UTF_BasicHardwareTests.ipf", list)
 	list = AddListItem("UTF_AnalysisFunctionManagement.ipf", list)
 	list = AddListItem("UTF_AnalysisFunctionParameters.ipf", list)
@@ -35,6 +34,11 @@ Function run()
 	list = AddListItem("UTF_MultiPatchSeqFastRheoEstimate.ipf", list)
 	list = AddListItem("UTF_MultiPatchSeqDAScale.ipf", list)
 	list = AddListItem("UTF_Epochs.ipf", list)
+
+	// the last will be first
+	// use this hack until https://github.com/byte-physics/igor-unit-testing-framework/issues/109
+	// is resolved
+	list = AddListItem("UTF_VeryBasicHardwareTests.ipf", list)
 
 	RunTest(list, name = "MIES with Hardware", enableJU = 1, allowDebug = 0)
 End

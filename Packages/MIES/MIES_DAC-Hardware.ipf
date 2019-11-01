@@ -1928,7 +1928,7 @@ Function HW_NI_StartAcq(deviceID, triggerMode, [flags, repeat])
 	variable deviceID, triggerMode, flags, repeat
 
 	string panelTitle, device, FIFONote, noteID, fifoName, errMsg
-	variable i, pos, endpos, channelTimeOffset, freeDiskSpace, err
+	variable i, pos, endpos, channelTimeOffset, err
 
 	DEBUGPRINTSTACKINFO()
 
@@ -1942,9 +1942,8 @@ Function HW_NI_StartAcq(deviceID, triggerMode, [flags, repeat])
 	fifoName = GetNIFIFOName(deviceID)
 	try
 		ClearRTError()
-		freeDiskSpace = MU_GetFreeDiskSpace(GetWindowsPath(SpecialDirPath("Temporary", 0, 0, 0)))
-		if(isNaN(freeDiskSpace) || freeDiskSpace < HW_NI_FIFO_MIN_FREE_DISC_SPACE)
-			printf "%s: Can not start acquisition. Not enough free disk space for data buffer.\rThe free disk space is less than %.0W0PB (%.1W0PB).\r", panelTitle, HW_NI_FIFO_MIN_FREE_DISC_SPACE, freeDiskSpace
+		if(!HasEnoughDiscspaceFree(SpecialDirPath("Temporary", 0, 0, 0), HW_NI_FIFO_MIN_FREE_DISC_SPACE))
+			printf "%s: Can not start acquisition. Not enough free disk space for data buffer.\rThe free disk space is less than %.0W0PB.\r", panelTitle, HW_NI_FIFO_MIN_FREE_DISC_SPACE
 			ControlWindowToFront()
 			return NaN
 		endif

@@ -1996,7 +1996,7 @@ Function DAP_CheckSettings(panelTitle, mode)
 	variable mode
 
 	variable numDACs, numADCs, numHS, numEntries, i, clampMode, headstage, decFactor
-	variable ampSerial, ampChannelID, minValue, maxValue, leftOverBytes, hardwareType
+	variable ampSerial, ampChannelID, minValue, maxValue, hardwareType
 	variable lastStartSeconds, lastITI, nextStart, leftTime, sweepNo, validSampInt
 	string ctrl, endWave, ttlWave, dacWave, refDacWave, reqParams
 	string list, lastStart
@@ -2013,9 +2013,8 @@ Function DAP_CheckSettings(panelTitle, mode)
 
 	PathInfo home
 	if(V_Flag) // saved experiment
-		leftOverBytes = MU_GetFreeDiskSpace(GetWindowsPath(S_path))
-		if(isNaN(leftOverBytes) || leftOverBytes < MINIMUM_FREE_DISC_SPACE)
-			printf "%s: The free disc space is less than %.0W0PB (%.1W0PB).\r", panelTitle, MINIMUM_FREE_DISC_SPACE, leftOverBytes
+		if(!HasEnoughDiscspaceFree(S_path, MINIMUM_FREE_DISC_SPACE))
+			printf "%s: The free disc space is less than %.0W0PB.\r", panelTitle, MINIMUM_FREE_DISC_SPACE
 			ControlWindowToFront()
 			return 1
 		endif

@@ -4495,3 +4495,21 @@ Function GetPlotArea(win, s)
 	s.top    = V_top
 	s.bottom = V_bottom
 End
+
+/// @brief Check that the given path on disc has enough free space
+///
+/// @param discPath          path on disc to check
+/// @param requiredFreeSpace required free space in GB
+Function HasEnoughDiscspaceFree(discPath, requiredFreeSpace)
+	string discPath
+	variable requiredFreeSpace
+
+	variable leftOverBytes
+
+	GetFileFolderInfo/Q/Z discPath
+	ASSERT(V_IsFolder, "discPath does not point to an existing folder")
+
+	leftOverBytes = MU_GetFreeDiskSpace(GetWindowsPath(discPath))
+
+	return IsFinite(leftOverBytes) && leftOverBytes >= requiredFreeSpace
+End
