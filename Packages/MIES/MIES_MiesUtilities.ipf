@@ -5693,3 +5693,11 @@ threadsafe static Function DecimateMinMax(input, output, idx, firstRowInp, lastR
 	output[targetFirst][colOut] = V_min
 	output[targetLast][colOut]  = V_max
 End
+
+/// @brief Starts with a new experiment.
+///
+/// You have to manually save before, see SaveExperimentWrapper()
+Function NewExperiment()
+
+	Execute/P/Q "NEWEXPERIMENT "
+End

@@ -183,10 +183,8 @@ Function CHI_CheckInstallation()
 	printf "\rChecking extended installation:\r"
 
 #if defined(IGOR64)
-	CHI_CheckXOP(listOfXOPs, "tango_binding-64.xop", "Tango XOP", state)
 	CHI_CheckXOP(listOfXOPs, "NIDAQmx64.xop", "NI-DAQ MX XOP", state, expectedHash = CHI_NIDAQ_XOP_64_HASH)
 #else
-	CHI_CheckXOP(listOfXOPs, "tango_binding.xop", "Tango XOP", state)
 	CHI_CheckXOP(listOfXOPs, "NIDAQmx.xop", "NI-DAQ MX XOP", state, expectedHash = CHI_NIDAQ_XOP_HASH)
 #endif
 

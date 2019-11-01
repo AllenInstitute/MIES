@@ -33,8 +33,6 @@ StrConstant DATABROWSER_WINDOW_TITLE = "DataBrowser"
 StrConstant SWEEPBROWSER_WINDOW_TITLE = "SweepBrowser"
 StrConstant EXT_PANEL_SETTINGSHISTORY = "SettingsHistoryPanel"
 
-StrConstant amPanel = "analysisMaster"
-
 /// @name Task names
 /// @anchor MiesTasknames
 /// @{

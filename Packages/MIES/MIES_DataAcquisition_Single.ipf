@@ -145,8 +145,6 @@ Function DQS_FIFOMonitor(s)
 
 	SCOPE_UpdateOscilloscopeData(panelTitleG, DATA_ACQUISITION_MODE, fifoPos=fifoPos)
 
-	AM_analysisMasterMidSweep(panelTitleG)
-
 	result = AFM_CallAnalysisFunctions(panelTitleG, MID_SWEEP_EVENT)
 
 	if(result == ANALYSIS_FUNC_RET_REPURP_TIME)
