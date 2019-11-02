@@ -2967,3 +2967,90 @@ Function RC_WorksWithReplacementTrace()
 End
 
 /// @}
+
+/// MoveWaveWithOverwrite
+/// @{
+
+Function MWWO_RequiresPermanentDestWave()
+
+	variable err
+
+	Make/FREE dest, src
+
+	try
+		MoveWaveWithOverwrite(dest, src)
+		FAIL()
+	catch
+		err = GetRtError(1)
+		PASS()
+	endtry
+End
+
+Function MWWO_RequiresDistinctWaves()
+
+	variable err
+
+	Make wv
+
+	try
+		MoveWaveWithOverwrite(wv, wv)
+		FAIL()
+	catch
+		err = GetRtError(1)
+		PASS()
+	endtry
+End
+
+Function MWWO_HandlesLockedDest()
+
+	variable err
+
+	Make dest = p
+	Make src = 0
+
+	Display dest
+
+	MoveWaveWithOverwrite(dest, src)
+
+	WAVE dest
+	CHECK_EQUAL_VAR(Sum(dest), 0)
+	WAVE/Z src
+	CHECK_WAVE(src, NULL_WAVE)
+End
+
+Function MWWO_RecursiveWorks()
+	variable err
+
+	Make/WAVE/N=2 dest
+	Make/D dest0 =   p
+	Make/D dest1 = 2*p
+
+	dest[0] = dest0
+	dest[1] = dest1
+
+	Make/WAVE/N=2 src
+	Make src0 = -1
+	Make src1 = -2
+
+	src[0] = src0
+	src[1] = src1
+
+	MoveWaveWithOverwrite(dest, src, recursive = 1)
+
+	// now we have the waves referenced in src
+	// at the same locations as they were in dest
+	WAVE/Z src, src0, src1
+	CHECK_WAVE(src, NULL_WAVE)
+	CHECK_WAVE(src0, NULL_WAVE)
+	CHECK_WAVE(src1, NULL_WAVE)
+
+	WAVE/Z dest, dest0, dest1
+	CHECK_WAVE(dest, WAVE_WAVE | NORMAL_WAVE)
+	CHECK_WAVE(dest0, NORMAL_WAVE, minorType = FLOAT_WAVE)
+	CHECK_WAVE(dest1, NORMAL_WAVE, minorType = FLOAT_WAVE)
+
+	CHECK_EQUAL_VAR(Sum(dest0), -128)
+	CHECK_EQUAL_VAR(Sum(dest1), -256)
+End
+
+/// @}

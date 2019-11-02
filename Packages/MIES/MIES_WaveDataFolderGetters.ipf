@@ -718,6 +718,30 @@ Function/Wave GetHardwareDataWave(panelTitle)
 	endswitch
 End
 
+/// @brief Get the single NI channel waves
+///
+/// Special use function, normal callers should use GetHardwareDataWave()
+/// instead.
+Function/WAVE GetNIDAQChannelWave(panelTitle, channel)
+	string panelTitle
+	variable channel
+
+	string name
+
+	name = "NI_Channel" + num2str(channel)
+	DFREF dfr = GetDevicePath(panelTitle)
+
+	WAVE/Z/SDFR=dfr wv = $name
+
+	if(WaveExists(wv))
+		return wv
+	endif
+
+	Make/N=(0) dfr:$name/WAVE=wv
+
+	return wv
+End
+
 static Constant EPOCHS_WAVE_VERSION = 1
 
 /// @brief Return the epochs text wave

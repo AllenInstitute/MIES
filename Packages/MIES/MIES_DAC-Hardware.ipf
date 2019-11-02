@@ -2035,6 +2035,7 @@ Function HW_NI_PrepareAcq(deviceID, [data, dataFunc, config, configFunc, flags, 
 		aiCnt = 0
 		ttlCnt = 0
 		for(i = 0;i < channels; i += 1)
+			ASSERT(!IsFreeWave(NIDataWave[i]), "Can not work with free waves")
 			switch(config[i][%ChannelType])
 				case ITC_XOP_CHANNEL_TYPE_ADC:
 					scanStr += num2str(config[i][%ChannelNumber]) + "/RSE,"

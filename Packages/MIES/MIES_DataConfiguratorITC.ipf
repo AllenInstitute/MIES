@@ -345,10 +345,6 @@ static Function [WAVE/Z ITCDataWave, WAVE/WAVE NIDataWave] DC_MakeAndGetHardware
 			break
 		case HARDWARE_NI_DAC:
 			WAVE/WAVE NIDataWave = GetHardwareDataWave(panelTitle)
-			for(i = numActiveChannels; i < numpnts(NIDataWave); i += 1)
-				WAVE/Z NIChannel = NIDataWave[i]
-				KillWaves/Z NIChannel
-			endfor
 			Redimension/N=(numActiveChannels) NIDataWave
 
 			SetScale/P x 0, samplingInterval / 1000, "ms", NIDataWave
@@ -356,7 +352,7 @@ static Function [WAVE/Z ITCDataWave, WAVE/WAVE NIDataWave] DC_MakeAndGetHardware
 			Make/FREE/N=(numActiveChannels) type = SWS_GetRawDataFPType(panelTitle)
 			WAVE config = GetITCChanConfigWave(panelTitle)
 			type = config[p][%ChannelType] == ITC_XOP_CHANNEL_TYPE_TTL ? IGOR_TYPE_UNSIGNED | IGOR_TYPE_8BIT_INT : type[p]
-			NIDataWave = DC_MakeNIChannelWave(dfr, numRows, samplingInterval, p, type[p])
+			NIDataWave = DC_MakeNIChannelWave(panelTitle, numRows, samplingInterval, p, type[p])
 
 			return [$"", NIDataWave]
 			break
@@ -367,22 +363,23 @@ End
 ///
 /// Config all refers to configuring all the channels at once
 ///
-/// @param dfr              Data Folder reference where the wave is created
+/// @param panelTitle       panel title
 /// @param numRows          size of the 1D channel wave
 /// @param samplingInterval minimum sample intervall in microseconds
 /// @param index            number of NI channel
 /// @param type             numeric data type of NI channel
 ///
 /// @return                 Wave Reference to NI Channel wave
-static Function/WAVE DC_MakeNIChannelWave(dfr, numRows, samplingInterval, index, type)
-	DFREF dfr
+static Function/WAVE DC_MakeNIChannelWave(panelTitle, numRows, samplingInterval, index, type)
 	variable numRows, samplingInterval, index, type
+	string panelTitle
 
-	Make/O/N=(numRows)/Y=(type) dfr:$("NI_Channel" + num2str(index))/WAVE=w
-	FastOp w = 0
-	SetScale/P x 0, samplingInterval / 1000, "ms", w
+	WAVE NIChannel = GetNIDAQChannelWave(panelTitle, index)
+	Redimension/N=(numRows)/Y=(type) NIChannel
+	FastOp NIChannel= 0
+	SetScale/P x 0, samplingInterval / 1000, "ms", NIChannel
 
-	return w
+	return NIChannel
 End
 
 /// @brief Initializes the waves used for displaying DAQ/TP results in the
@@ -1106,7 +1103,12 @@ static Function DC_PlaceDataInHardwareDataWave(panelTitle, numActiveChannels, da
 
 		if(WaveExists(result))
 			WAVE DAQDataWave = GetHardwareDataWave(panelTitle)
-			MoveWaveWithOverwrite(DAQDataWave, result)
+			if(IsWaveRefWave(DAQDataWave))
+				WAVE/WAVE DAQDataWaveRef = DAQDataWave
+				Redimension/N=(numActiveChannels) DAQDataWaveRef
+				DAQDataWaveRef[] = GetNIDAQChannelWave(panelTitle, p)
+			endif
+			MoveWaveWithOverwrite(DAQDataWave, result, recursive = 1)
 		else
 			WAVE/Z ITCDataWave
 			WAVE/WAVE/Z NIDataWave
