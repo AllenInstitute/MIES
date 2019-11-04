@@ -19,6 +19,10 @@ End
 static Function primitiveOperations()
 	Variable jsonID0, jsonID1
 
+	jsonID0 = JSON_Parse("null")
+	jsonID1 = SF_FormulaParser("")
+	WARN_EQUAL_JSON(jsonID0, jsonID1)
+
 	jsonID0 = JSON_Parse("1")
 	jsonID1 = SF_FormulaParser("1")
 	WARN_EQUAL_JSON(jsonID0, jsonID1)
