@@ -590,7 +590,7 @@ Function/WAVE SF_FormulaExecutor(jsonID, [jsonPath, graph])
 			Make/FREE/N=(DimSize(wv, ROWS), DimSize(wv, COLS), DimSize(wv, LAYERS), DimSize(wv, CHUNKS)) out = DimOffset(wv, ROWS) + p * DimDelta(wv, ROWS)
 			break
 		case "setscale":
-			/// `setscale(data, [dim, [dimOffset, [dimDelta[, unit]]]])
+			/// `setscale(data, [dim, [dimOffset, [dimDelta[, unit]]]])`
 			numIndices = JSON_GetArraySize(jsonID, jsonPath)
 			ASSERT(numIndices < 6, "Maximum number of arguments exceeded.")
 			ASSERT(numIndices > 1, "At least two arguments.")
