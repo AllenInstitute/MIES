@@ -588,6 +588,19 @@ Function BSP_SetPAControlStatus(win)
 	BSP_SetDeconvControlStatus(win)
 End
 
+/// @brief enable/disable the SF buttons
+///
+/// @param win 	specify mainPanel or bsPanel with OVS controls
+Function BSP_SetSFControlStatus(win)
+	string win
+
+	string controlList
+
+	controlList = "group_properties_sweepFormula;SF_InfoTab;button_sweepFormula_display;button_sweepFormula_check;setvar_sweepFormula_parseResult;status_sweepFormula_parser;"
+	BSP_SetControlStatus(win, controlList, SF_IsActive(win))
+	BSP_SetIndividualControlStatus(win)
+End
+
 /// @brief enable/disable the buttons that rely on displayed traces
 ///
 /// @param win 	specify mainPanel or bsPanel with OVS controls
@@ -711,6 +724,23 @@ Function BSP_CheckBoxProc_PerPulseAver(cba) : CheckBoxControl
 		case 2: // mouse up
 			mainPanel = GetMainWindow(cba.win)
 			BSP_SetPAControlStatus(mainPanel)
+			UpdateSweepPlot(mainPanel)
+			break
+	endswitch
+
+	return 0
+End
+
+/// @brief enable/disable checkbox control for side panel
+Function BSP_CheckBoxProc_SweepFormula(cba) : CheckBoxControl
+	STRUCT WMCheckBoxAction &cba
+
+	string mainPanel
+
+	switch(cba.eventCode)
+		case 2: // mouse up
+			mainPanel = GetMainWindow(cba.win)
+			BSP_SetSFControlStatus(mainPanel)
 			UpdateSweepPlot(mainPanel)
 			break
 	endswitch
@@ -901,6 +931,9 @@ Function BSP_IsActive(win, elementID)
 			break
 		case MIES_BSP_PA:
 			control = "check_BrowserSettings_PA"
+			break
+		case MIES_BSP_SF:
+			control = "check_BrowserSettings_SF"
 			break
 		default:
 			return 0
