@@ -86,9 +86,8 @@ static Function AD_FillWaves(panelTitle, list, info)
 		ASSERT(WaveExists(stimsetCycleIDs), "Unexpected invalid stimset cycle ID")
 		stimsetCycleID = stimsetCycleIDs[headstage]
 
-		/// @todo use RMD for IP8
-		FindValue/TXOP=4/TEXT=num2str(stimsetCycleID) info
-		if(V_Value >= 0 && floor(V_Value / DimSize(info, ROWS)) == 0) // already included
+		FindValue/RMD=[][0]/TXOP=4/TEXT=num2str(stimsetCycleID) info
+		if(V_Value >= 0) // already included
 			continue
 		endif
 
