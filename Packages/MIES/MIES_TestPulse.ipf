@@ -414,7 +414,6 @@ static Function TP_RecordTP(panelTitle, BaselineSSAvg, InstResistance, SSResista
 	variable delta, i, ret, lastPressureCtrl
 	WAVE TPStorage = GetTPStorage(panelTitle)
 	WAVE hsProp = GetHSProperties(panelTitle)
-	Wave GUIState  = GetDA_EphysGuiStateNum(panelTitle)
 	variable count = GetNumberFromWaveNote(TPStorage, NOTE_INDEX)
 	variable lastRescaling = GetNumberFromWaveNote(TPStorage, DIMENSION_SCALING_LAST_INVOC)
 

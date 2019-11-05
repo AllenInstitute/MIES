@@ -401,12 +401,16 @@ End
 Function/S DAG_GetUniqueSpecCtrlListNum(panelTitle)
 	string panelTitle
 
+	ASSERT(WindowExists(panelTitle), "Missing window")
+
 	return DAG_GetSpecificCtrlNum(panelTitle, DAG_GetUniqueCtrlList(panelTitle))
 End
 
 /// @brief Returns a list of unique and type specific controls with textual values
 Function/S DAG_GetUniqueSpecCtrlListTxT(panelTitle)
 	string panelTitle
+
+	ASSERT(WindowExists(panelTitle), "Missing window")
 
 	return DAG_GetSpecificCtrlTxT(panelTitle, DAG_GetUniqueCtrlList(panelTitle))
 End
