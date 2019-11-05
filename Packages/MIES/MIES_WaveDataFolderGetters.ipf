@@ -254,10 +254,8 @@ End
 ///		End
 /// \endrst
 ///
-/// @todo Make threadsafe once IP8 is mandatory
-///
 /// @return DFREF to the `newFolder` with the contents of `oldFolder`
-Function/DF UpgradeDataFolderLocation(oldFolder, newFolder)
+threadsafe Function/DF UpgradeDataFolderLocation(oldFolder, newFolder)
 	string oldFolder, newFolder
 
 	string oldName, newName, from, to, msg, tempFolder
@@ -270,7 +268,7 @@ Function/DF UpgradeDataFolderLocation(oldFolder, newFolder)
 	ASSERT_TS(GrepString(newFolder, "(?i)^root:"), "newFolder must be an absolute path")
 
 	sprintf msg, "%s -> %s", oldFolder, newFolder
-	DEBUGPRINT(msg)
+	DEBUGPRINT_TS(msg)
 
 	oldFolder = RemoveEnding(oldFolder, ":")
 	newFolder = RemoveEnding(newFolder, ":")
@@ -296,7 +294,7 @@ Function/DF UpgradeDataFolderLocation(oldFolder, newFolder)
 	KillOrMoveToTrash(dfr=$newFolder)
 
 	sprintf msg, "%s -> %s", oldName, newName
-	DEBUGPRINT(msg)
+	DEBUGPRINT_TS(msg)
 
 	tempFolder = UniqueDataFolderName($"root:", "temp")
 	NewDataFolder $tempFolder
@@ -308,7 +306,7 @@ Function/DF UpgradeDataFolderLocation(oldFolder, newFolder)
 	to   = RemoveEnding(newFolder, ":" + newName)
 
 	sprintf msg, "%s -> %s", from, to
-	DEBUGPRINT(msg)
+	DEBUGPRINT_TS(msg)
 
 	MoveDataFolder $from, $to
 	KillOrMoveToTrash(dfr=$tempFolder)
@@ -5167,7 +5165,7 @@ End
 ///
 /// As soon as you discard the latest reference to the folder it will
 /// be slated for removal at some point in the future.
-Function/DF GetUniqueTempPath()
+threadsafe Function/DF GetUniqueTempPath()
 
 	return UniqueDataFolder(GetMiesPath(), TRASH_FOLDER_PREFIX)
 End

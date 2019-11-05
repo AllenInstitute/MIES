@@ -1649,7 +1649,7 @@ Function/S GetAllDevicesWithContent([contentType])
 End
 
 /// @brief Convenience wrapper for KillOrMoveToTrashPath()
-Function KillOrMoveToTrash([wv, dfr])
+threadsafe Function KillOrMoveToTrash([wv, dfr])
 	WAVE/Z wv
 	DFREF dfr
 
@@ -1669,7 +1669,7 @@ End
 /// The trash folders will be removed, if possible, from KillTemporaries().
 ///
 /// @param path absolute path to a datafolder or wave
-Function KillOrMoveToTrashPath(path)
+threadsafe Function KillOrMoveToTrashPath(path)
 	string path
 
 	string dest
@@ -1695,7 +1695,7 @@ Function KillOrMoveToTrashPath(path)
 		DFREF tmpDFR = GetUniqueTempPath()
 		MoveWave wv, tmpDFR
 	else
-		DEBUGPRINT("Ignoring the datafolder/wave as it does not exist", str=path)
+		DEBUGPRINT_TS("Ignoring the datafolder/wave as it does not exist", str=path)
 	endif
 End
 
@@ -2901,7 +2901,7 @@ Function SaveExperimentSpecial(mode)
 		return NaN
 	endif
 
-	FUNCREF CALL_FUNCTION_LIST_PROTOTYPE killFunc = KillOrMoveToTrashPath
+	FUNCREF CALL_FUNCTION_LIST_PROTOTYPE_TS killFunc = KillOrMoveToTrashPath
 
 	// remove sweep data from all devices with data
 	devicesWithData = GetAllDevicesWithContent()
@@ -2938,11 +2938,11 @@ Function SaveExperimentSpecial(mode)
 
 			DFREF dfr = GetDevicePath(device)
 			list = GetListOfObjects(dfr, "ChanAmpAssign_Sweep_*", fullPath=1)
-			CallFunctionForEachListItem(killFunc, list)
+			CallFunctionForEachListItem_TS(killFunc, list)
 
 			DFREF dfr = GetDeviceTestPulse(device)
 			list = GetListOfObjects(dfr, "TPStorage_*", fullPath=1)
-			CallFunctionForEachListItem(killFunc, list)
+			CallFunctionForEachListItem_TS(killFunc, list)
 
 			path = GetDeviceDataBrowserPathAS(device)
 			killFunc(path)
@@ -3436,7 +3436,7 @@ static Function AverageWavesFromSameYAxisIfReq(graph, traces, averagingEnabled, 
 
 	if(!averagingEnabled)
 		listOfWaves = GetListOfObjects(averageDataFolder, "average.*", fullPath=1)
-		CallFunctionForEachListItem(KillOrMoveToTrashPath, listOfWaves)
+		CallFunctionForEachListItem_TS(KillOrMoveToTrashPath, listOfWaves)
 		RemoveEmptyDataFolder(averageDataFolder)
 		return NaN
 	endif

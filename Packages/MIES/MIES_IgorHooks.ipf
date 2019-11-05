@@ -41,7 +41,7 @@ static Function IH_KillTemporaries()
 
 	DFREF dfr = GetWaveBuilderDataPath()
 	list = GetListOfObjects(dfr, SEGMENTWAVE_SPECTRUM_PREFIX + ".*", fullPath=1)
-	CallFunctionForEachListItem(KillOrMoveToTrashPath, list)
+	CallFunctionForEachListItem_TS(KillOrMoveToTrashPath, list)
 End
 
 /// @brief Remove the amplifier connection waves
@@ -59,12 +59,12 @@ Function IH_KillStimSets()
 	ReturnListOfAllStimSets(CHANNEL_TYPE_DAC, "*", WBstimSetList=list)
 	path = GetDataFolder(1, GetWBSvdStimSetDAPath())
 	list = AddPrefixToEachListItem(path, list)
-	CallFunctionForEachListItem(KillOrMoveToTrashPath, list)
+	CallFunctionForEachListItem_TS(KillOrMoveToTrashPath, list)
 
 	ReturnListOfAllStimSets(CHANNEL_TYPE_TTL, "*", WBstimSetList=list)
 	path = GetDataFolder(1, GetWBSvdStimSetTTLPath())
 	list = AddPrefixToEachListItem(path, list)
-	CallFunctionForEachListItem(KillOrMoveToTrashPath, list)
+	CallFunctionForEachListItem_TS(KillOrMoveToTrashPath, list)
 End
 
 static Function BeforeExperimentSaveHook(rN, fileName, path, type, creator, kind)

@@ -58,7 +58,7 @@ static Function AB_ClearAnalysisFolder()
 
 	DFREF dfr = GetAnalysisFolder()
 	folders = GetListOfDataFolders(dfr, absolute=1)
-	CallFunctionForEachListItem(KillOrMoveToTrashPath, folders)
+	CallFunctionForEachListItem_TS(KillOrMoveToTrashPath, folders)
 End
 
 /// @brief Create relation (map) between file on disk and datafolder in current experiment
@@ -662,7 +662,7 @@ static Function AB_LoadTPStorageFromIgor(expFilePath, expFolder, device)
 		all      = GetListOfObjects(targetDFR, ".*", fullPath=1)
 		unwanted = RemoveFromList(wanted, all)
 
-		CallFunctionForEachListItem(KillOrMoveToTrashPath, unwanted)
+		CallFunctionForEachListItem_TS(KillOrMoveToTrashPath, unwanted)
 	endif
 
 	SetDataFolder saveDFR
