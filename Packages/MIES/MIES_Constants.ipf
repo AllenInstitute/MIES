@@ -401,10 +401,6 @@ Constant TIME_ALIGNMENT_MAX           = 3
 
 StrConstant WAVE_BACKUP_SUFFIX = "_bak"
 
-/// Define error/success values to be used with the WSE engine
-Constant TI_WRITEACK_SUCCESS = 0
-Constant TI_WRITEACK_FAILURE = -1
-
 /// @name Test pulse modes
 /// @anchor TestPulseRunModes
 /// @{
