@@ -168,7 +168,7 @@ Function/S CreateMiesVersion()
 	fullVersionPath = path + "version.txt"
 
 	// standard locations for 32bit and 64bit standalone git versions
-	gitPathCandidates = "C:\\Program Files\\Git\\mingw64\\bin\\git.exe;C:\\Program Files (x86)\\Git\\bin\\git.exe"
+	gitPathCandidates = "C:\\Program Files\\Git\\mingw64\\bin\\git.exe;C:\\Program Files (x86)\\Git\\bin\\git.exe;C:\\Program Files\\Git\\cmd\\git.exe"
 
 	// Atlassian Sourcetree (Embedded git)
 	userName = GetSystemUserName()
