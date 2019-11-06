@@ -168,7 +168,7 @@ Function/S CreateMiesVersion()
 	fullVersionPath = path + "version.txt"
 
 	// standard locations for 32bit and 64bit standalone git versions
-	gitPathCandidates = "C:\\Program Files\\Git\\mingw64\\bin\\git.exe;C:\\Program Files (x86)\\Git\\bin\\git.exe"
+	gitPathCandidates = "C:\\Program Files\\Git\\mingw64\\bin\\git.exe;C:\\Program Files (x86)\\Git\\bin\\git.exe;C:\\Program Files\\Git\\cmd\\git.exe"
 
 	// Atlassian Sourcetree (Embedded git)
 	userName = GetSystemUserName()
@@ -189,7 +189,7 @@ Function/S CreateMiesVersion()
 				DEBUGPRINT("Folder is a git repository: ", str=topDir)
 				// explanation:
 				// cmd /C "<full path to git.exe> --git-dir=<mies repository .git> describe <options> redirect everything into <mies respository>/version.txt"
-				sprintf cmd "cmd.exe /C \"\"%s\" --git-dir=\"%s\" describe --always --tags > \"%sversion.txt\" 2>&1\"", gitPath, gitDir, topDir
+				sprintf cmd "cmd.exe /C \"\"%s\" --git-dir=\"%s\" describe --always --tags --match \"Release_*\" > \"%sversion.txt\" 2>&1\"", gitPath, gitDir, topDir
 				DEBUGPRINT("Cmd to execute: ", str=cmd)
 				ExecuteScriptText/B/Z cmd
 				ASSERT(!V_flag, "We have git installed but could not regenerate version.txt")
