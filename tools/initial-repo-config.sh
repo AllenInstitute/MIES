@@ -13,5 +13,17 @@ git checkout .
 
 # do initial smudging
 git checkout .
+
+# fetch submodules
 git submodule init
 git submodule update --checkout
+
+# recursive submodule checkout can be done with
+# git submodule update --checkout --init --recursive
+
+# ignore git attributes on foreign submodules
+mkdir -p .git/modules/Packages/ZeroMQ-XOP/modules/src/libzmq/info
+echo '**/* !whitespace !eol' > .git/modules/Packages/ZeroMQ-XOP/modules/src/libzmq/info/attributes
+
+mkdir -p .git/modules/Packages/ITCXOP2/modules/src/SafeInt/info
+echo '**/* !whitespace !eol' > .git/modules/Packages/ITCXOP2/modules/src/SafeInt/info/attributes
