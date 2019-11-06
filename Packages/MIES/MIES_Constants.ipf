@@ -1179,3 +1179,11 @@ Constant GAIN_AFTER_DAQ  = 0x2
 
 /// @brief User data on the stimset controls listing all stimsets in range
 StrConstant USER_DATA_MENU_EXP = "MenuExp"
+
+/// @name Find level edge types
+/// @anchor FindLevelEdgeTypes
+/// @{
+Constant FINDLEVEL_EDGE_INCREASING = 1
+Constant FINDLEVEL_EDGE_DECREASING = 2
+Constant FINDLEVEL_EDGE_BOTH       = 0
+/// @}
