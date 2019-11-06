@@ -1567,13 +1567,13 @@ End
 ///
 /// @param dfr 	    datafolder reference where the new datafolder should be created
 /// @param baseName first part of the datafolder, might be shortend due to Igor Pro limitations
-Function/DF UniqueDataFolder(dfr, baseName)
+threadsafe Function/DF UniqueDataFolder(dfr, baseName)
 	dfref dfr
 	string baseName
 
 	string path
 
-	ASSERT(!isEmpty(baseName), "baseName must not be empty" )
+	ASSERT_TS(!isEmpty(baseName), "baseName must not be empty" )
 
 	path = UniqueDataFolderName(dfr, basename)
 
@@ -1784,12 +1784,39 @@ Function CALL_FUNCTION_LIST_PROTOTYPE(str)
 	string str
 End
 
+/// @brief Function prototype for use with #CallFunctionForEachListItem
+threadsafe Function CALL_FUNCTION_LIST_PROTOTYPE_TS(str)
+	string str
+End
+
 /// @brief Convenience function to call the function f with each list item
 ///
 /// The function's type must be #CALL_FUNCTION_LIST_PROTOTYPE where the return
 /// type is ignored.
 Function CallFunctionForEachListItem(f, list, [sep])
 	FUNCREF CALL_FUNCTION_LIST_PROTOTYPE f
+	string list, sep
+
+	variable i, numEntries
+	string entry
+
+	if(ParamIsDefault(sep))
+		sep = ";"
+	endif
+
+	numEntries = ItemsInList(list, sep)
+	for(i = 0; i < numEntries; i += 1)
+		entry = StringFromList(i, list, sep)
+
+		f(entry)
+	endfor
+End
+
+/// Compatibility wrapper for threadsafe functions `f`
+///
+/// @see CallFunctionForEachListItem()
+threadsafe Function CallFunctionForEachListItem_TS(f, list, [sep])
+	FUNCREF CALL_FUNCTION_LIST_PROTOTYPE_TS f
 	string list, sep
 
 	variable i, numEntries
