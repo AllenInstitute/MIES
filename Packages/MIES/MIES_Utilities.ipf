@@ -4383,6 +4383,33 @@ Function/S num2strHighPrec(val, [precision])
 	return str
 End
 
+/// @brief Converts a number to a string returning only effective digits after decimal dot
+/// This function is an extension for the regular num2str that is limited to 5 digits.
+/// It is generally better than num2str as it has not that limit but returns still only relevant digits.
+///
+/// @param[in] x number that is converted to a string
+/// @return string with textual number representation
+Function/S num2strEffective(x)
+	variable x
+
+	variable i, xTemp
+	string s
+
+	if(IsInteger(x) || !IsFinite(x))
+		return num2istr(x)
+	endif
+	xTemp = x * BASE_DEC
+	for(i = 1; i < PRECISION_DIGITS_DOUBLE_BEYOND; i += 1)
+		if(IsInteger(xTemp))
+			sprintf s, "%.*f", i, x
+			return s
+		endif
+		xTemp *= BASE_DEC
+	endfor
+	ASSERT(0, "Theoretically never happens.")
+End
+
+
 /// @brief Return the per application setting of ASLR for the Igor Pro executable
 ///
 /// See https://docs.microsoft.com/en-us/windows/security/threat-protection/windows-defender-exploit-guard/enable-exploit-protection

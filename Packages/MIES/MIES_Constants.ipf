@@ -1183,3 +1183,15 @@ Constant GAIN_AFTER_DAQ  = 0x2
 
 /// @brief User data on the stimset controls listing all stimsets in range
 StrConstant USER_DATA_MENU_EXP = "MenuExp"
+
+/// @brief Number higher than relevant digits of double
+Constant PRECISION_DIGITS_DOUBLE_BEYOND = 20
+
+/// @brief Base of common number systems
+Constant BASE_BIN = 2
+Constant BASE_OCT = 8
+Constant BASE_DEC = 10
+Constant BASE_DUODEC = 12
+Constant BASE_HEX = 16
+Constant BASE_VIGES = 20
+Constant BASE_SEXAGES = 60
