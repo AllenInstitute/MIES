@@ -189,7 +189,7 @@ Function/S CreateMiesVersion()
 				DEBUGPRINT("Folder is a git repository: ", str=topDir)
 				// explanation:
 				// cmd /C "<full path to git.exe> --git-dir=<mies repository .git> describe <options> redirect everything into <mies respository>/version.txt"
-				sprintf cmd "cmd.exe /C \"\"%s\" --git-dir=\"%s\" describe --always --tags > \"%sversion.txt\" 2>&1\"", gitPath, gitDir, topDir
+				sprintf cmd "cmd.exe /C \"\"%s\" --git-dir=\"%s\" describe --always --tags --match \"Release_*\" > \"%sversion.txt\" 2>&1\"", gitPath, gitDir, topDir
 				DEBUGPRINT("Cmd to execute: ", str=cmd)
 				ExecuteScriptText/B/Z cmd
 				ASSERT(!V_flag, "We have git installed but could not regenerate version.txt")
