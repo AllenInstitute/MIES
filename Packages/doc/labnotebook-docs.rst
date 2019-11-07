@@ -99,10 +99,12 @@ Caveats
 * Some entries are, for historical reasons, present in both the first layer and
   the headstage independent layer (nineth layer). New code should query the data
   from the headstage independent layer only.
-* In case unassociated DA/AD channels were used during acquisition there are
-  additional entries present which are formatted like `$entry UNASSOC_$channelNumber`
-  and only have entries in the nineth layer (as it is by definition headstage
-  independent data).
+* In case unassociated DA/AD channels were used (these are channels which are
+  not connected to a headstage) during acquisition there are additional entries
+  present which are formatted like `$entry UNASSOC_$channelNumber` and only
+  have entries in the ninth layer (as it is by definition headstage
+  independent data). The entry names also don't overlap for AD/DA so having
+  only the channel number in the name is enough.
 * One important concept is valid entries vs placeholder entries. All non-`NaN`
   or non-empty string entries are valid entries. Therefore only valid entries
   override other placeholder entries. But placeholder entries never override

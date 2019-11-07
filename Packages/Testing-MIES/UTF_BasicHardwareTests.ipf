@@ -3392,3 +3392,90 @@ Function TestPulseCachingWorks_REENTRY([str])
 	WAVE stats = GetCacheStatsWave()
 	CHECK(stats[V_Value][%Hits] >= 1)
 End
+
+Function UnassocChannelsDuplicatedEntry_IGNORE(device)
+	string device
+
+	// enable HS1 with associated DA/AD channels
+	PGC_SetAndActivateControl(device, GetPanelControl(1, CHANNEL_TYPE_HEADSTAGE, CHANNEL_CONTROL_CHECK), val=1)
+
+	// cut assocication
+	PGC_SetAndActivateControl(device, "Popup_Settings_HeadStage", str = "1")
+	PGC_SetAndActivateControl(device, "button_Hardware_ClearChanConn")
+
+	// disable HS1
+	PGC_SetAndActivateControl(device, GetPanelControl(1, CHANNEL_TYPE_HEADSTAGE, CHANNEL_CONTROL_CHECK), val=0)
+
+	// enable HS2 with associated DA/AD channels
+	PGC_SetAndActivateControl(device, GetPanelControl(2, CHANNEL_TYPE_HEADSTAGE, CHANNEL_CONTROL_CHECK), val=1)
+
+	// cut assocication
+	PGC_SetAndActivateControl(device, "Popup_Settings_HeadStage", str = "2")
+	PGC_SetAndActivateControl(device, "button_Hardware_ClearChanConn")
+
+	// disable HS2
+	PGC_SetAndActivateControl(device, GetPanelControl(2, CHANNEL_TYPE_HEADSTAGE, CHANNEL_CONTROL_CHECK), val=0)
+
+	PGC_SetAndActivateControl(device, GetPanelControl(1, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_WAVE), str = "StimulusSetA*")
+
+	// disable AD1
+	PGC_SetAndActivateControl(device, GetPanelControl(1, CHANNEL_TYPE_ADC, CHANNEL_CONTROL_CHECK), val = 0)
+
+	// disable DA2
+	PGC_SetAndActivateControl(device, GetPanelControl(2, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_CHECK), val = 0)
+End
+
+// Check that unassociated LBN entries for DA/AD don't overlap
+//
+// 1 HS
+// DA1 unassociated
+// AD2 unsassociated
+//
+// Now we should not find any unassoc labnotebook keys which only differ in the channel number.
+//
+// UTF_TD_GENERATOR HardwareMain#DeviceNameGeneratorMD1
+Function UnassocChannelsDuplicatedEntry([str])
+	string str
+
+	STRUCT DAQSettings s
+	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG_1_RES_1")
+	AcquireData(s, str, preAcquireFunc = UnassocChannelsDuplicatedEntry_IGNORE)
+End
+
+Function UnassocChannelsDuplicatedEntry_REENTRY([str])
+	string str
+
+	variable sweepNo, i, numEntries
+	string unassoc
+
+	CHECK_EQUAL_VAR(GetSetVariable(str, "SetVar_Sweep"), 1)
+
+	sweepNo = AFH_GetLastSweepAcquired(str)
+	CHECK_EQUAL_VAR(sweepNo, 0)
+
+	Make/WAVE/FREE keys = {GetLBNumericalKeys(str), GetLBTextualKeys(str)}
+
+	numEntries = DimSize(keys, ROWS)
+	for(i = 0; i < numEntries; i += 1)
+		WAVE/T wv = keys[i]
+		Duplicate/T/RMD=[0]/FREE wv, singleRow
+		Redimension/N=(DimSize(singleRow, ROWS) * DimSize(singleRow, COLS))/E=1 singleRow
+		Make/FREE/T unassocEntries
+		Grep/E=".* UNASSOC_\d$" singleRow as unassocEntries
+		CHECK(!V_Flag)
+		CHECK(V_Value > 0)
+
+		unassocEntries[] = RemoveTrailingNumber_IGNORE(unassocEntries[p])
+
+		FindDuplicates/FREE/Z/DT=dups unassocEntries
+		CHECK_EQUAL_VAR(DimSize(dups, ROWS), 0)
+	endfor
+End
+
+Function/S RemoveTrailingNumber_IGNORE(str)
+	string str
+
+	CHECK_EQUAL_VAR(ItemsInList(str, "_"), 2)
+
+	return StringFromList(0, str, "_")
+End
