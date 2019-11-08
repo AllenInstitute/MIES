@@ -28,6 +28,22 @@ Multiclamp Commander (64bit) or version 2.1.0.16 (32-bit). Both can be
 downloaded from
 `here <http://mdc.custhelp.com/app/answers/detail/a_id/20059>`__.
 
+Silent installation
+~~~~~~~~~~~~~~~~~~~
+
+The installer is developed using `NSIS <https://nsis.sourceforge.io>`__ which also
+supports silent installation. The installer requires admin privileges also with
+slient installation.
+
+To perform a silent installation pass the `/S` command line option which will
+install with the following settings:
+
+- Install for Igor Pro 8 64bit
+- Admin installation into `%PROGRAMFILES%\MIES` for the current user
+- Install all Hardware XOPs
+
+Possible existing MIES installations will be silently uninstalled.
+
 Arduino
 -------
 
