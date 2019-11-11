@@ -242,10 +242,15 @@ Function DQ_ApplyAutoBias(panelTitle, BaselineSSAvg, SSResistance)
 	Wave BaselineSSAvg, SSResistance
 
 	variable headStage, actualcurrent, current, targetVoltage, targetVoltageTol, setVoltage
-	variable resistance, maximumAutoBiasCurrent
+	variable resistance, maximumAutoBiasCurrent, lastInvocation, curTime
+
+	if(DAP_DeviceIsUnlocked(panelTitle))
+		return NaN
+	endif
+
 	Wave TPStorage = GetTPStorage(panelTitle)
-	variable lastInvocation = GetNumberFromWaveNote(TPStorage, AUTOBIAS_LAST_INVOCATION_KEY)
-	variable curTime = ticks * TICKS_TO_SECONDS
+	lastInvocation = GetNumberFromWaveNote(TPStorage, AUTOBIAS_LAST_INVOCATION_KEY)
+	curTime = ticks * TICKS_TO_SECONDS
 
 	WAVE guiStateWave = GetDA_EphysGuiStateNum(panelTitle)
 
