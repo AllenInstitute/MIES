@@ -179,6 +179,8 @@ End
 /// - `val` is mandatory and 0-based.
 /// - `str` must be the name of an entry, can include `*` using wildcard syntax.
 ///
+/// ValDisp: Setting a ValDisp control always changed its mode from 'internal number' to 'global expression'
+///
 /// `switchTab` [optional, defaults to false] Switches tabs so that the control is shown.
 ///
 /// @return 1 if val was modified by control limits, 0 if val was unmodified (only relevant for SetVariable controls)
