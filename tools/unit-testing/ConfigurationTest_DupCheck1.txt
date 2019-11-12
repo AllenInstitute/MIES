@@ -1,0 +1,66 @@
+{
+  "MainPanel": {
+    "Generic ControlGroup": {
+      "checkbox": {
+        "NumValue": true
+      },
+      "button": {
+        "NumValue": 0
+      },
+      "chart": {
+        "NumValue": 0,
+        "StrValue": "FNAME:;NCHANS:0;PPSTRIP:1;RHSAMP:0;LHSAMP:-100;"
+      },
+      "listbox": {
+        "DataSource": "",
+        "NumValue": 0,
+        "StrValue": ""
+      },
+      "popup": {
+        "NumValue": 1,
+        "StrValue": "Yes"
+      },
+      "setvar": {
+        "DataSource": ""
+      },
+      "slider": {
+        "DataSource": "",
+        "NumValue": 25,
+        "StrValue": ""
+      },
+      "tab": {
+        "NumValue": 3,
+        "StrValue": "Tab 3"
+      },
+      "valdisp": {
+        "NumValue": 1337,
+        "StrValue": "1337"
+      }
+    },
+    "The real important controls ControlGroup": {
+      "Check Me": {
+        "NumValue": 123
+      }
+    },
+    "The not important controls ControlGroup": {
+      "Check Me": {
+        "NumValue": true
+      }
+    }
+  },
+  "MainPanel#SubPanel": {
+    "Generic": {
+      "ctrlArray": {
+        "Values": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          null,
+          "Amiga"
+        ]
+      }
+    }
+  }
+}
