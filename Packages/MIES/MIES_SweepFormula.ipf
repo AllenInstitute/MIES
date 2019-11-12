@@ -801,7 +801,7 @@ Function SF_FormulaPlotter(graph, formula, [dfr])
 		Redimension/N=(-1, dim1X * dim2X)/E=1 wv
 
 		WAVE wvX = GetSweepFormulaX(dfr)
-		MoveWaveWithOverwrite(wvX, wv)
+		Duplicate/O wv $GetWavesDataFolder(wvX, 2)
 		WAVE wvX = GetSweepFormulaX(dfr)
 	endif
 
@@ -812,7 +812,7 @@ Function SF_FormulaPlotter(graph, formula, [dfr])
 	Redimension/N=(-1, dim1Y * dim2Y)/E=1 wv
 
 	WAVE wvY = GetSweepFormulaY(dfr)
-	MoveWaveWithOverwrite(wvY, wv)
+	Duplicate/O wv $GetWavesDataFolder(wvY, 2)
 	WAVE wvY = GetSweepFormulaY(dfr)
 
 	if(!WindowExists(win))
