@@ -601,6 +601,62 @@ static Function arrayExpansion()
 	REQUIRE_EQUAL_WAVES(output, floatwave, mode = WAVE_DATA)
 End
 
+static Function TestFindLevel()
+
+	// requires at least two arguments
+	try
+		WAVE output = SF_FormulaExecutor(SF_FormulaParser("findlevel()")); AbortOnRTE
+		FAIL()
+	catch
+		PASS()
+	endtry
+
+	try
+		WAVE output = SF_FormulaExecutor(SF_FormulaParser("findlevel([1])")); AbortOnRTE
+		FAIL()
+	catch
+		PASS()
+	endtry
+
+	// but no more than three
+	try
+		WAVE output = SF_FormulaExecutor(SF_FormulaParser("findlevel([1], 2, 3, 4)")); AbortOnRTE
+		FAIL()
+	catch
+		PASS()
+	endtry
+
+	// works
+	WAVE output = SF_FormulaExecutor(SF_FormulaParser("findlevel([10, 20, 30, 20], 25)"))
+	Make/FREE output_ref = {1.5}
+	REQUIRE_EQUAL_WAVES(output, output_ref, mode = WAVE_DATA)
+
+	// supports rising edge only
+	WAVE output = SF_FormulaExecutor(SF_FormulaParser("findlevel([10, 20, 30, 20], 25, 1)"))
+	Make/FREE output_ref = {1.5}
+	REQUIRE_EQUAL_WAVES(output, output_ref, mode = WAVE_DATA)
+
+	// supports falling edge only
+	WAVE output = SF_FormulaExecutor(SF_FormulaParser("findlevel([10, 20, 30, 20], 25, 2)"))
+	Make/FREE output_ref = {2.5}
+	REQUIRE_EQUAL_WAVES(output, output_ref, mode = WAVE_DATA)
+
+	// works with 2D data
+	WAVE output = SF_FormulaExecutor(SF_FormulaParser("findlevel([[10, 10], [20, 20], [30, 30]], 15)"))
+	Make/FREE output_ref = {0.5, 0.5}
+	REQUIRE_EQUAL_WAVES(output, output_ref, mode = WAVE_DATA)
+
+	// returns x coordinates and not indizes
+	WAVE output = SF_FormulaExecutor(SF_FormulaParser("findlevel(setscale([[10, 10], [20, 20], [30, 30]], x, 4, 0.5), 15)"))
+	Make/FREE output_ref = {4.25, 4.25}
+	REQUIRE_EQUAL_WAVES(output, output_ref, mode = WAVE_DATA)
+
+	// returns NaN if nothing found
+	WAVE output = SF_FormulaExecutor(SF_FormulaParser("findlevel([10, 20, 30, 20], 100)"))
+	Make/FREE output_ref = {NaN}
+	REQUIRE_EQUAL_WAVES(output, output_ref, mode = WAVE_DATA)
+End
+
 static Function waveGetterFunction()
 	Make/O/N=(10) wave0 = p
 

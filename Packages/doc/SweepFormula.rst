@@ -369,6 +369,17 @@ in the OVS tab.
 
 The function does not return errors for unmatched entries.
 
+findlevel
+"""""""""
+
+`findlevel(data, level, [edge])` will return the x position of the found level
+or `NaN` if nothing could be found. The edge type is by default rising
+and falling (`0`), other options are rising (`1`) or falling (`2`).
+
+.. code-block:: bash
+
+   findlevel([1, 2, 3], 1.5)
+
 Various
 ^^^^^^^
 

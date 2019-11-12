@@ -4540,3 +4540,45 @@ Function HasEnoughDiscspaceFree(discPath, requiredFreeSpace)
 
 	return IsFinite(leftOverBytes) && leftOverBytes >= requiredFreeSpace
 End
+
+/// @brief FindLevel wrapper which handles 2D data without copying data
+///
+/// @param data input data, can be either 1D or 2D
+/// @param level level to search
+/// @param edge type of the edge, one of @ref FindLevelEdgeTypes
+Function/WAVE FindLevelWrapper(data, level, edge)
+	WAVE data
+	variable level, edge
+
+	variable numCols, numColsFixed, numRows, xDelta
+	variable first, last, i
+
+	numCols = DimSize(data, COLS)
+	numRows = DimSize(data, ROWS)
+	numColsFixed = max(1, numCols)
+	xDelta = DimDelta(data, ROWS)
+
+	ASSERT(IsNumericWave(data), "Expected numeric wave")
+	ASSERT(numRows >= 2, "Expected wave with more than two rows")
+	ASSERT(IsFinite(level), "Expected finite level")
+	ASSERT(edge == FINDLEVEL_EDGE_INCREASING || edge == FINDLEVEL_EDGE_DECREASING || edge == FINDLEVEL_EDGE_BOTH, "Invalid edge type")
+
+	ASSERT(DimSize(data, LAYERS) <= 1, "Unexpected input dimension")
+	Redimension/N=(numColsFixed * numRows)/E=1 data
+
+	Make/D/FREE/N=(numColsFixed) result = NaN
+
+	for(i = 0; i < numColsFixed; i += 1)
+
+		first = i * numRows
+		last  = first + numRows - 1
+
+		FindLevel/Q/EDGE=(edge)/R=[first, last] data, level
+		result[i] = !V_flag ? (V_LevelX - xDelta * first) : NaN
+	endfor
+
+	// don't use numColsFixed here as we want to have the original shape
+	Redimension/N=(numRows, numCols)/E=1 data
+
+	return result
+End

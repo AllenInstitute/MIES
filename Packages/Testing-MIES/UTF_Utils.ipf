@@ -3054,3 +3054,122 @@ Function MWWO_RecursiveWorks()
 End
 
 /// @}
+
+/// FindLevelWrapper
+/// @{
+
+Function FLW_RequiresNumericWave()
+
+	try
+		Make/T/FREE data
+		FindLevelWrapper(data, FINDLEVEL_EDGE_BOTH, 0.1)
+		FAIL()
+	catch
+		PASS()
+	endtry
+End
+
+Function/WAVE InfiniteValues()
+
+	Make/FREE wv = {NaN, Inf, -Inf}
+
+	SetDimLabel ROWS, 0, $"NaN", wv
+	SetDimLabel ROWS, 1, $"Inf", wv
+	SetDimLabel ROWS, 2, $"-Inf", wv
+
+	return wv
+End
+
+// UTF_TD_GENERATOR InfiniteValues
+Function FLW_RequiresFiniteLevel([var])
+	variable var
+
+	try
+		Make/FREE data
+		FindLevelWrapper(data, FINDLEVEL_EDGE_BOTH, var)
+		FAIL()
+	catch
+		PASS()
+	endtry
+End
+
+Function FLW_Requires2DWave()
+
+	try
+		Make/FREE/N=(10, 20, 30) data
+		FindLevelWrapper(data, FINDLEVEL_EDGE_BOTH, 0.1)
+		FAIL()
+	catch
+		PASS()
+	endtry
+End
+
+Function FLW_RequiresBigEnoughWave()
+
+	try
+		Make/FREE/N=(1) data
+		FindLevelWrapper(data, FINDLEVEL_EDGE_BOTH, 0.1)
+		FAIL()
+	catch
+		PASS()
+	endtry
+End
+
+Function/WAVE FLWSampleData()
+
+	Make/FREE data1 = {10, 20, 30, 40}
+	SetScale/P x, 4, 0.5, data1
+	SetNumberInWaveNote(data1, "edge", FINDLEVEL_EDGE_INCREASING)
+	SetNumberInWaveNote(data1, "level", 15)
+
+	Make/FREE data2 = {10, 20, 30, 10}
+	SetScale/P x, -4, 0.5, data2
+	SetNumberInWaveNote(data2, "edge", FINDLEVEL_EDGE_DECREASING)
+	SetNumberInWaveNote(data2, "level", 11)
+
+	Make/FREE data3 = {{10, 20}, {10, 15}, {10, 5}}
+	SetScale/P x, 4, -0.5, data3
+	SetNumberInWaveNote(data3, "edge", FINDLEVEL_EDGE_INCREASING)
+	SetNumberInWaveNote(data3, "level", 14)
+
+	Make/FREE data4 = {{10, 20}, {10, 15}, {10, 5}}
+	SetScale/P x, 4, -0.5, data4
+	SetNumberInWaveNote(data4, "edge", FINDLEVEL_EDGE_DECREASING)
+	SetNumberInWaveNote(data4, "level", 11)
+
+	Make/FREE data5 = {{10, 20}, {10, 15}, {10, 5}}
+	SetScale/P x, 4, -0.5, data5
+	SetNumberInWaveNote(data5, "edge", FINDLEVEL_EDGE_BOTH)
+	SetNumberInWaveNote(data5, "level", 11)
+
+	Make/WAVE/FREE result = {data1, data2, data3, data4, data5}
+
+	return result
+End
+
+// UTF_TD_GENERATOR FLWSampleData
+Function FLW_SameResultsAsFindLevel([wv])
+	WAVE wv
+
+	variable i, edge, level, numCols
+
+	edge = GetNumberFromWaveNote(wv, "edge")
+	level = GetNumberFromWaveNote(wv, "level")
+
+	numCols = max(1, DimSize(wv, COLS))
+
+	Make/N=4 oldShape = DimSize(wv, p)
+
+	WAVE result = FindLevelWrapper(wv, level, edge)
+	Make/N=4 newshape = DimSize(wv, p)
+	CHECK_EQUAL_WAVES(oldShape, newShape)
+
+	for(i = 0; i < numCols; i += 1)
+		Duplicate/FREE/RMD=[][i, i] wv, singleColum
+
+		FindLevel/Q/EDGE=(edge) singleColum, level
+		CHECK_EQUAL_VAR(result[i], V_LevelX)
+	endfor
+End
+
+/// @}

@@ -11,7 +11,7 @@
 
 Window DataBrowser() : Graph
 	PauseUpdate; Silent 1		// building window...
-	Display /W=(363,179,795.75,484.25)/K=1  as "DataBrowser"
+	Display /W=(361.5,362,794.25,667.25)/K=1  as "DataBrowser"
 	Button button_BSP_open,pos={3.00,3.00},size={24.00,24.00},disable=1,proc=DB_ButtonProc_Panel,title="<<"
 	Button button_BSP_open,help={"Open Side Panel"}
 	Button button_BSP_open,userdata(ResizeControlsInfo)= A"!!,>M!!#8L!!#=#!!#=#z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
@@ -809,13 +809,13 @@ Window DataBrowser() : Graph
 	Button button_sweepFormula_check,userdata(ResizeControlsInfo) += A"zzz!!#?(FEDG<zzzzzzzzzzzzzz!!!"
 	TabControl SF_InfoTab,pos={7.00,46.00},size={376.00,323.00},disable=1,proc=ACL_DisplayTab
 	TabControl SF_InfoTab,userdata(finalhook)=  "SF_TabProc_Formula"
-	TabControl SF_InfoTab,userdata(currenttab)=  "2",userdata(tabnum)=  "5"
+	TabControl SF_InfoTab,userdata(currenttab)=  "0",userdata(tabnum)=  "5"
 	TabControl SF_InfoTab,userdata(tabcontrol)=  "Settings"
 	TabControl SF_InfoTab,userdata(ResizeControlsInfo)= A"!!,@C!!#>F!!#C$J,hs2z!!#](Aon#azzzzzzzzzzzzzz!!#o2B4uAeBk2=!z"
 	TabControl SF_InfoTab,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	TabControl SF_InfoTab,userdata(ResizeControlsInfo) += A"zzz!!#?(FEDG<zzzzzzzzzzzzzz!!!"
 	TabControl SF_InfoTab,tabLabel(0)="Formula",tabLabel(1)="JSON"
-	TabControl SF_InfoTab,tabLabel(2)="Help",value= 2
+	TabControl SF_InfoTab,tabLabel(2)="Help",value= 0
 	ListBox list_dashboard,pos={3.00,90.00},size={380.00,311.00},disable=1,proc=AD_ListBoxProc
 	ListBox list_dashboard,userdata(tabnum)=  "7",userdata(tabcontrol)=  "Settings"
 	ListBox list_dashboard,userdata(ResizeControlsInfo)= A"!!,>M!!#?m!!#C&J,hs,z!!#](Aon\"Qzzzzzzzzzzzzzz!!#o2B4uAezz"
@@ -880,19 +880,20 @@ Window DataBrowser() : Graph
 	SetWindow kwTopWin,userdata(ResizeControlsInfo) += A"zzz!!#?(FEDG<zzzzzzzzzzzzzz!!!"
 	RenameWindow #,sweepFormula_formula
 	SetActiveSubwindow ##
-	NewNotebook /F=1 /N=sweepFormula_help /W=(12,71,378,358)/FG=(UGVL,UGVT,UGVR,UGVB) /HOST=# /V=0
-	Notebook kwTopWin, defaultTab=36, autoSave= 1, magnification=100, showRuler=0, rulerUnits=2
+	NewNotebook /F=1 /N=sweepFormula_help /W=(12,71,378,358)/FG=(UGVL,UGVT,UGVR,UGVB) /HOST=# /V=0 /OPTS=4
+	Notebook kwTopWin, defaultTab=36, autoSave= 1, magnification=100, writeProtect=1, showRuler=0, rulerUnits=2
 	Notebook kwTopWin newRuler=Normal, justification=0, margins={0,0,245}, spacing={0,0,0}, tabs={}, rulerDefaults={"Arial",11,0,(0,0,0)}
-	Notebook kwTopWin, zdata= "Gb!Smc#;CW'rPlgQK,nTS03S(2$RcVXt\"1_Q\"=/+>+fn82[U2PW9ONM@KFf<Zb(l^%PoojLOlnJ(Bk0<g0B!jhpDBGaLsO'ndk@rot<:0Qb/cq7AGX4\"EqoKHh6cVo6VQ8)sXW@nDN#Sc]]<>[flGHn4C'<I+^UA[8d#U0+B!,*s8.!pH7ofl^mhbT\"g&-([`B^+<SCDbD!Y@cWb@<I)Gs'qj$?'H-X$VA%qAVVl*2WZ$/8?P^oDRZ#-Y*j?Y+,2j$eA9.0=K_tS'rJf,:D6p,(edUuek[d(1VTDd8PlWj^0"
-	Notebook kwTopWin, zdata= "a7M,$UF6j#)bJ\"n*&E&ZUR2R%O@4pr[;DIh9H<O]k=2[@`d*`Q+kIq)Oqi49kAd'L/:#]'+#\\6+QHi*/,>!ruZ6&m'lYd8j&aK=#X*\"2$Irdl$r_8aA4/>GOX8SOe(?o`4[p?S;eoaR;n)\"1HC=DXRhXia.Do'%BO5nbBT5LKIbJ-tHkl&<IJ(OBi\"8LA1Ne8SOrB(\"%dF2sI[fJ.jrSFEXQc7%Z99O]*/$;S\\_\"us3e\"EM[4BiSBc)s;EV6oRq5GH^FAotH^XVi.VKZR6:%+#Mk7nK;:,'oP\"p^)UPr4)'s"
-	Notebook kwTopWin, zdata= "l?pL<jbD'G(+d%'g<c8(HNbS4hdr:'s#4a5Iai)?>?T%dX49b1TX78Ubt?//&P60.mcu.W#@e.Bi2P7q?'c\"(Qb!q7+p<1MNf.\\j%j3-V`IDA\\?>Heef?2cj!*0']F-,ZdRXJ(f-.qc=-h0D>'Q)gbFuoia,)MK2=CCb[3<VT+MBAL'U8Qp`6>sSX*QBn/\\9N2#g=[d`'6:ul>$:PW8Ii7fGT$ikH>Pugi3M_k0r1d1a-.AEI%_!3E>:gWJD>`R`Pn<X#B-*Zqs:8o0k4>iNJ!.f7u\"YZI[6OO@n;.]Q\"45N"
-	Notebook kwTopWin, zdata= "SjDLT(H$&a%L&Y75j,r)/\"\\Th,E5j8e71s7VB(YL&ug^!INH[S$rf=<Y3^JN&V85fk?E#6>`@m)Ql;ejN1mfoNpQ72>DW?=ii.l'<pBa#fO8;;9Vbd!5Y[AqCRG;[)s9QR-ll5t_F?uR.^FqS50X`@-]pEfKATNf-r$cs9!d<W6O7VAbOu@&m-=YZL!$n\\\"S<E%+fL/V_2jI-'AFbTP_?Rn3,'\\V493tTaZ,TACO*oh0t5?S5ijX.\"M\\fY/oT$Eq@XdV*WT5l\\VF(NM.9ib8-]0ul*4)\"__]In=F-%\"p\\''\\"
-	Notebook kwTopWin, zdata= "7S5#/EX@[+4@$DhaP\"GI?d-iWD\"JSFqiGUl8T*U&[$Q7<e7XtY4IL[H's(\\&7$^DbKOq42%Q+1KrO+tdd\"+KMJYKVF5>KE(2Pl-qE<?IX+X(CU1QZTK6*uLd#dD>&V2*u/jn?(&G2h3Ip1>'37RQA+(@-\"KNm\\@)RaDS\\R>i%r)rn5`cGC\\:cH,c.b.+8Pj<@-p@;&LkiA4$BR\\Ku-,F1qK!E@%R`?@DfOhp]H,rC9RTCAH:j:G@GNJ1e,/0KMuI1L(P+Xj/8jlj9b@PbVJ[e\\4-c%K9Xa8YK#K@'s8p3B`X"
-	Notebook kwTopWin, zdata= ",g=`Y%,a064K_<uGVOSII?Le\"^#JaGk:m.T%?g@2FuY=fS)nWX`(MAD3G-1h;Vc'cAI!GAFl%!!ghQ&#e=&D6KVtf*[>R'&&T^PRFA\\uU0i5+hp^j_t@cNl2SZua(RO:HnnT3rL#D't#1\"LHaa=+3OCFR:DB=+ilqns('Mk_YOmHbIs]/qpeEL99PN)H/:TP6,%kk-XR<':r!0rt`:e)o?KWYb%:8jk_P4&.tFS^lHIh.RU1Im8iQn7W^k_(&!_JZXjXqL61U]FThoV=jT)pqc4q\\B#,Kn62Ee*-!mQ(CR`l"
-	Notebook kwTopWin, zdata= "hpM_,9@cH@Kufe.H=gY\"a\\,rkEEXVb+CVtA$%n6=P/XZc0&i)&q.lDQ+;SaLRFMLjSrRSsMc+Bp%hTmF#j`\"oO$F#O!jNj7ZLMB3)rI^LfV)HrZUJ389Kio+V584o;f*C\\jYkK:%L%k0V3j\"E(=#LoJ:nBJ:b[LeBJ\"jm?mSmK1+lX1*j`JG4,)B)`W-J?6OkYf`i;\\6CTh4(Sc6pgB7j2#1@NHNmJ(m,fE!t=J%$/MYLj1%dXd<thc+65W);SI=jF#S_0oS0HVu/oB`eDH0ih01;>T5fHb\\?K3YOe9!ai>5"
-	Notebook kwTopWin, zdata= "@1]LB8s#[Mnn@&f)jQ[/lO_!_^[R7=C6ZIb5@;XS]&\\'7^\"(?opMDjA1=cj<<L$RA8u<?PQn.>rB-o:QggJJ0nAe/`))-(jS\\,WD.uei2B^#AiTsNSW=mLcK_N%a\\m<5EEm0NkIKYr-Y<m7$D;jn/l!lr2f$2Kc*RgBd\"82YCO6.XMdW1RMu+u0\"R_q>=oHsS\\rMU.3/$4L37UPbp9JH7XH]E#.8,OT9M3-k5LP@oA,H1l(uPfbkE`<cKWMGm\"afJu94VN&g`-F*gJR74U:m<7s-M?gR1j@e[9N$tQd'SpXN"
-	Notebook kwTopWin, zdata= "URZ2(<Tt*q&PH_&^?6'k.#DE9:dKq+*`2h=T?u6o:TtsZ\"Ab[_rR`jj='D9:VKUn>*?E5u>K(:sS`IVj<leMg8M%ml>lIL.J.,%u3X3BR+%6MLS:Jkr.-e3DUoR=tEAU7k>_=VZ4UK1PlP*uZZs<ZPjZ3VTM[$.?1/k?@-Odf.;%?E3QjL_c+-.\"=aQl\\/`>loe)qb4nSQVu;q;A(^ND?\\=rnq8=ZFAdXnn1lM\"8d&O(5G]h4G:Z#_*<6JDdrsZl=1)]AjWEkOjUTalSdqkH2\"!O*d\\8JX7(?6>-,$f.fWX5"
-	Notebook kwTopWin, zdata= "rI[bSjLn00r/\\\"+rG_ako8gT*2=5J(It,WuVgk>1ro:lN^OcFbf69kigN_RH@6!-65LgB62jXJjf7T=CGuk21\"p\"3n>;/6=0meCZ9Vt$\\?\\d8];QRPVP8hmi\"/5<p2j3K/0<Nj,Wp[eNnb]ESs#fYSs6P1&mAL;hrHTGP+_RFg<6JBg?g$cWdS.G`*pp4\\fHS8]G[cOjiKV\"T!.UO\\NW"
+	Notebook kwTopWin, zdata= "Gb!Smc#;CW'rPlgG3[\"@S03ULUP#41<tW-ob48&S(8r5'NJ^+^l8h5B=?n*O\\2su<@5u/iA>$&#]bCVWo\\*PklebO3Vk/L1gRD\"7#C>X.mX&kC/pB<kMae4G$1'9ghOBT#S)=)[1=VqFm(p(3T1dE\"<oE]dI/`umh]I(j]N,s.eV0QTiFCg;gG_7`?Z4RTo;:^DiV+@[jDWrI]^r!!2fQM8^Lrr4O1uL&0]snR1=#]ik<4:,![%;Tf7=PG1aKNU\"d7Z_7*^ckWHRN:hKAVm`C)DDbGjPW;megL\\R92:]Ag/@"
+	Notebook kwTopWin, zdata= "ICA!FTQX\"gTnm5/65HPjnMk-.b%8d-@Z\\Z!UtYN;6RJZm0\";KE:iVVnm!rj`p;mZSB'X]4>#r:=b<%;HVPWmI(J$;hCM^e8`.jbVEe`_$QYW/N^u$,oSq#:eq'p*Af%TVn^I>_<rcORqLJ;&Pp4q6bQ21moCKLJZ[;4-T(3.!qjjR!Oh=>KK&o&N!`p_[PB`apHa*DV.IsAlG=cRU[+)F3[9n0D3*+_-NYE@n;JK<?3#-e-:M_qBrZH/?n>dHMRaHX+riCDDpbacsQ5\\j,Mjh_^WapcW-RUoABQ&+j.\"FkuA"
+	Notebook kwTopWin, zdata= "3BupnX?,1Ck'Thb63e:>?J3\\p_g<+A`rB&2k4ilJ55_A2m^KclM\\k]I2F2&Fek<E:<?dTJg>*Q:_P^lOX5Ku-RbsG@g6\\ZP\"!Rk:N/igC_l\"%Y`o=b<+\"q`gO3?)=H[r,Goa+1^C<[p$_A6t`[?LCSNQSu^G-`->09[Y_b#i'D(Bjq,2i?K_bs]mndtHRek9c-86?2hd^1162k[)=>?gVCW.jUPR>k0]_[.W.+@d:8d2DM#0]>0Uj\"`2NimW]d>_LUEn;8pMDo+'WcU\\Dl-\\MRr%%?6!uW(2S)\"+HQ,]44B_"
+	Notebook kwTopWin, zdata= "GB:_ec$9M]ZWkqd)*/InH3'S9P?0qZkkc:)DPbC4JkR+P+r@5@#X=AM3X2T)C0,RAj+orJa7JDH<A$f6BhXek&S%alKHiSV_c@r]UNiGBa=:I<%6Ked_F07r#1O?$GU692B&c3k/^lFS-7gV[=.*'io4acr3/K+M*W1ro6\"se^1<g0D%O&LL52.qgg?&CC7@s&)&C<5c%mW9/#_#a+Q.Q[OQ7H'AJr@oS=9RRYOc!XkGbrJ`'Q^l</QD`%6L`/.qsr/tVU*%dlN(B.R!YcP1NDd)0'OLo%6YKK)\"(P#_:%(["
+	Notebook kwTopWin, zdata= "^UsAa(?I#S[7amAhuU\\X8'VS[rciF2A>@HNfXkDS%go)+BK,nZJ^5Z`4BZK!3UC$17*_\"W#g68B*GGArqdkURW<8><\"%@-tI[lc/Ce>.liW]r:6:/c3HQ_@-JnPlR&7CL*9+Sk>bO&GpmDQ?umHlCe;G62<%f::OM:*C4g<gAGR?&14S)\\c5SV9?TS<<@9P]82_a@21i_pG,a_.Sja%7^Yf,F0gV!7[NiMaMkW,(o2o\\^1m_IDU>KO@.Y82AV#NZ%)spcTS3aL7jXR[\\N;KM='Z<gu]Ps2A9gm+31kJGG5@R"
+	Notebook kwTopWin, zdata= "p3oNM,V2i-7W=n@*]GBh]GSBK1!*Lt;=SnOMjT+R#\"]\"_4.OCEApKmYnIeE*NnM6gV=(_iGmAO/F^AkJ>\\iT:f9nY8KVtf*[>R%P'6>W4FA\\uU0i5+hp^j`/@cNl2PHe[s=sO?7iYU#P%g%l%B<:>-Urdn2gdjHf32:Op2($VA=Y)cRCjUrah:]4CNl+2H\".@l5#@5OK5];0]VB2FI`iprZ8=M!-X.FK4W\"A4\\CchH7EF*F-B;8[QrUi;@^nY&:\"KNZm#.?-Rl\\EAUE=WWP/*lrNpsIe$\\B#,Kn4'\"Q*H=9Z"
+	Notebook kwTopWin, zdata= "QQ*I,gsQA(F4N\\hKufe.H>$e$aX^\\KEEXVC:p=;GLI&r\\a^R5LQgr2Or0]$N&<!s5b\\@5E:WEpMa]'4q6c@#?!bXk;,KL$gJN/[5fm'rXNSeU*fV;Hp]gZ6l90NfB>cZYF:UObeQ.nRYGUROL.)f.WY]NW<\"se!jL4U\"B7r&i1JsBStb.&Y9nsJ7MgaVf@_AJqs^<;'rc<,4lF6uu1]/SNZo!?`4$^k)ZoX=^&X)&+QmGI2^icDO0LNMJ6g_]W>4Oe%`V(--L)Spd1Oge>^^nD2CG_!&V$BN=?5Ml@\\4f1\"I"
+	Notebook kwTopWin, zdata= "a9[1@Ne]p)#q/)g_TJX3Df+!)p8gUmp\\iN%Wi/en\\,:V7)k3!t;>&KoG;utIN2fu9)V%hg-*!>5/n:TF6_1d#TF-<;#J_GEWlT^Q#IDB2;7k1Yk?BO/+1-.@4!8<7?]e%\"=A20MnAF@9^T$Q!])R^uD26B#Q<!q$Q3d%(`&d/f_!^[]]mV64\"u?nq&Ir#\"5ZB4:#Xo\"B&+ZS_'P@RRbGD($%Kf2)6[7MChq2</bAp?hZffo9DJt$/^PW]N3c+5f]$AAmMhe_5pl(&HqX!LgB7p2kDXm41On'0W93$(\\MK%-1"
+	Notebook kwTopWin, zdata= "\"[ZjAm-NOh3\\7-@^fKP.*3l/*+4#tl\"H$:i#N@-6PVju;3,ll:R%hRYHkq.9n$d)IO%M%@eFbT^N!C>QU_dM.L8Of)`%7QGHMFC.&&3G_nB4_.no\"@\"jp\\/Z2K66_nlZosd>uA7eBeue6,2=7la5-L+4N-m?&9uuOVI`64u(u3o1E<*5fIC=%O\"&U#dd99b]?b)7A?[?)W6W:S\"KjKC_&^bPJm?Y<Bo(92)_cCR85J1r2oOH.QqX&J\";Z]6]tQ2*Ou$8Duggra66A0`=SG)&L(\\HLpEmqA>:%hS*Q4?_ZRE["
+	Notebook kwTopWin, zdata= "I9Mh#APbRGV'@\"BX3_#X=E[6SOdU3kH3sd;N!b(J;aDfAMX_P\"L\"]1S:iLL2[)aRkmAqSE4Ms<`U!Xg$4N!_lH4DhQ8H*QTARHU_fA[@!J;96AHh]@V%5q6)-pcK?'7/[_NOEtN^V*[ogOipZln,oP^?>H9\\]U)9HMdO52_O>%j=n794_jljp@PhlpV$N[p8RW]m!2d`^E5]>bF+&C[f?BZf.0sQHJYFFE;[]LhA(c_/H>II4\"7`3NX?+%!9C,fW5\"tFm-TWaR=9X6*FbX3nU)TV@75SRKJ!c2;QXG']ABW:"
+	Notebook kwTopWin, zdata= "q\\,13DmO3VdpDD>!U?3B>QV;t.KUK.p&Pj?.MglR\"oBa7.KR/rbO32$/sbOS.G'5Go)8_Vr2G#"
 	Notebook kwTopWin, zdataEnd= 1
 	SetWindow kwTopWin,hook(ResizeControls)=ResizeControls#ResizeControlsHook
 	SetWindow kwTopWin,userdata(tabnum)=  "2"
