@@ -338,6 +338,8 @@ Function SF_FormulaParser(formula)
 	if(!cmpstr(buffer, formula))
 		if(GrepString(buffer, "^(?i)[0-9]+(?:\.[0-9]+)?(?:[\+-]?E[0-9]+)?$"))
 			JSON_AddVariable(jsonID, jsonPath, str2num(formula))
+		elseif(!cmpstr(buffer, "\"\"")) // dummy check
+			JSON_AddString(jsonID, jsonPath, "")
 		elseif(GrepString(buffer, "^\".*\"$"))
 			JSON_AddString(jsonID, jsonPath, buffer[1, strlen(buffer) - 2])
 		else
