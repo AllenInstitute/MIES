@@ -1102,6 +1102,13 @@ Function SF_button_sweepFormula_check(ba) : ButtonControl
 	return 0
 End
 
+/// @brief checks if SweepFormula (SF) is active.
+Function SF_IsActive(win)
+	string win
+
+	return BSP_IsActive(win, MIES_BSP_SF)
+End
+
 Function SF_button_sweepFormula_display(ba) : ButtonControl
 	STRUCT WMButtonAction &ba
 

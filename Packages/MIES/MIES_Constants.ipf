@@ -361,6 +361,7 @@ Constant MIES_BSP_OVS = 1
 Constant MIES_BSP_CS  = 2
 Constant MIES_BSP_AR  = 3
 Constant MIES_BSP_PA  = 4
+Constant MIES_BSP_SF  = 5
 /// @}
 
 /// @name values for  UserData in BrowserSettings and derived windows
