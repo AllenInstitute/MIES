@@ -4103,10 +4103,10 @@ End
 /// Before dfe2d862 (Make the function AB_SplitTTLWaveIntoComponents available for all, 2015-10-07)
 /// we stored headstage independent data in either all entries or only the first one.
 /// Since that commit we store the data in `INDEP_HEADSTAGE`.
-Function GetIndexForHeadstageIndepData(numericalValues)
-	WAVE numericalValues
+Function GetIndexForHeadstageIndepData(values)
+	WAVE values
 
-	return DimSize(numericalValues, LAYERS) == NUM_HEADSTAGES ? 0 : INDEP_HEADSTAGE
+	return DimSize(values, LAYERS) == NUM_HEADSTAGES ? 0 : INDEP_HEADSTAGE
 End
 
 /// @brief Return a list of TTL stimsets which are indexed by DAEphys TTL channels
