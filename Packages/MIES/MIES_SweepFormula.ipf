@@ -790,14 +790,15 @@ Function/WAVE SF_FormulaExecutor(jsonID, [jsonPath, graph])
 						FindValue/S=(V_Value + 1)/V=(channels[j][1])/T=0/Z sweepChannel
 						ASSERT(V_Value == -1, "More than one matching channel number found.")
 					else // all channel numbers
+						Redimension/N=(-1, DimSize(headstages, COLS) + LABNOTEBOOK_LAYER_COUNT) headstages
 						l = 0
 						for(k = 0; k < INDEP_HEADSTAGE; k += 1)
 							if(IsFinite(sweepChannel[k]))
-								Redimension/N=(DimSize(sweeps, ROWS), DimSize(headstages, COLS) + l) headstages
 								headstages[i][j + l] = k
 								l += 1
 							endif
 						endfor
+						Redimension/N=(-1, DimSize(headstages, COLS) - LABNOTEBOOK_LAYER_COUNT + l) headstages
 					endif
 					ASSERT(IsFinite(headstages[i][j]), "No active channel found for channel type.")
 					WaveClear sweepChannel
