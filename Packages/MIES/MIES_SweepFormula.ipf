@@ -784,11 +784,9 @@ Function/WAVE SF_FormulaExecutor(jsonID, [jsonPath, graph])
 					ASSERT(DimSize(sweepChannel, ROWS) == LABNOTEBOOK_LAYER_COUNT, "Unexpected LabNotebook format.")
 					ASSERT(IsNaN(sweepChannel[INDEP_HEADSTAGE]), "Undefined LabNotebook format for channels")
 					if(IsFinite(channels[j][1]))
-						FindValue/V=(channels[j][1])/T=0/Z sweepChannel
-						ASSERT(V_Value >= 0 && V_Value < INDEP_HEADSTAGE, "Channel number not found.")
-						headstages[i][j] = V_Value
-						FindValue/S=(V_Value + 1)/V=(channels[j][1])/T=0/Z sweepChannel
-						ASSERT(V_Value == -1, "More than one matching channel number found.")
+						WAVE/Z indices = FindIndizes(sweepChannel, var = channels[j][1])
+						ASSERT(DimSize(indices, ROWS) == 1, "More than one or no matching channel number found.")
+						headstages[i][j] = indices[0]
 					else // all channel numbers
 						Redimension/N=(-1, DimSize(headstages, COLS) + LABNOTEBOOK_LAYER_COUNT) headstages
 						l = 0
