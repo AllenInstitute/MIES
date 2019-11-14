@@ -597,19 +597,29 @@ Function/S SB_GetPlainSweepList(win)
 End
 
 /// @brief Return a wave reference wave with all numerical value labnotebook waves
-Function/WAVE SB_GetNumericalValuesWaves(win)
+///
+/// @param win         SweepBrowser data window
+/// @param sweepNumber [optional, default: all] return the labnotebook only for a specific sweep
+Function/WAVE SB_GetNumericalValuesWaves(win, [sweepNumber])
 	string win
+	variable sweepNumber
 
-	string list = ""
-	string str
-	variable numRows, i
+	variable i
+	variable numRows = 0
 
 	WAVE/T map = SB_GetSweepBrowserMapFromGraph(win)
-
-	numRows = GetNumberFromWaveNote(map, NOTE_INDEX)
+	if(ParamIsDefault(sweepNumber))
+		numRows = GetNumberFromWaveNote(map, NOTE_INDEX)
+		Make/FREE/N=(numRows) indices = p
+	else
+		WAVE/Z indices = FindIndizes(map, colLabel = "Sweep", var = sweepNumber)
+		if(WaveExists(indices))
+			numRows = DimSize(indices, ROWS)
+		endif
+	endif
 
 	Make/WAVE/FREE/N=(numRows) allNumericalValues
-	allNumericalValues[] = GetAnalysLBNumericalValues(map[p][%DataFolder], map[p][%Device])
+	allNumericalValues[] = GetAnalysLBNumericalValues(map[indices][%DataFolder], map[indices][%Device])
 
 	return allNumericalValues
 End

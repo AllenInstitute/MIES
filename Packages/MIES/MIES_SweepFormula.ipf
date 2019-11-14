@@ -761,15 +761,17 @@ Function/WAVE SF_FormulaExecutor(jsonID, [jsonPath, graph])
 
 			if(BSP_IsDataBrowser(graph))
 				WAVE numericalValues = DB_GetNumericalValues(graph)
-			else
-				WAVE/WAVE temp = SB_GetNumericalValuesWaves(graph)
-				ASSERT(DimSize(temp, ROWS) == 1, "Unhandled number of devices in AnalysisBrowser map")
-				WAVE numericalValues = temp[0]
-				WaveClear temp
 			endif
 
 			Make/FREE/N=(DimSize(sweeps, ROWS), DimSize(channels, ROWS)) headstages
 			for(i = 0; i < DimSize(sweeps, ROWS); i += 1)
+				if(!BSP_IsDataBrowser(graph))
+					WAVE/WAVE temp = SB_GetNumericalValuesWaves(graph, sweepNumber = sweeps[i])
+					ASSERT(DimSize(temp, ROWS) == 1, "Unhandled number of sweeps in AnalysisBrowser map")
+					WAVE numericalValues = temp[0]
+					WaveClear temp
+				endif
+
 				for(j = 0; j < DimSize(channels, ROWS); j += 1)
 					if(!cmpstr(StringFromList(channels[j][0], ITC_CHANNEL_NAMES), "AD"))
 						WAVE/Z sweepChannel = GetLastSetting(numericalValues, sweeps[i], "ADC", UNKNOWN_MODE)
@@ -804,6 +806,12 @@ Function/WAVE SF_FormulaExecutor(jsonID, [jsonPath, graph])
 
 			Make/D/FREE/N=(DimSize(headstages, ROWS), DimSize(headstages, COLS)) outD = NaN
 			for(i = 0; i < DimSize(sweeps, ROWS); i += 1)
+				if(!BSP_IsDataBrowser(graph))
+					WAVE/WAVE temp = SB_GetNumericalValuesWaves(graph, sweepNumber = sweeps[i])
+					ASSERT(DimSize(temp, ROWS) == 1, "Unhandled number of sweeps in AnalysisBrowser map")
+					WAVE numericalValues = temp[0]
+					WaveClear temp
+				endif
 				WAVE/Z LBvalue = GetLastSetting(numericalValues, sweeps[i], str, UNKNOWN_MODE)
 				if(WaveExists(LBvalue))
 					if(!IsNaN(LBvalue[INDEP_HEADSTAGE]))
