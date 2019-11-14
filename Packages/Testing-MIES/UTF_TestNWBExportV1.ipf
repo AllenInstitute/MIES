@@ -186,7 +186,7 @@ Function/S GetChannelNameFromChannelType(groupID, device, channel, sweep, params
 			channelName += "_" + num2str(params.channelNumber)
 
 			if(IsNaN(params.electrodeNumber))
-				key = CreateLBNUnassocKey("DAC", params.channelNumber)
+				key = CreateLBNUnassocKey("DAC", params.channelNumber, params.channelType)
 				entry = GetLastSettingIndep(numericalValues, sweep, key, DATA_ACQUISITION_MODE)
 			else
 				WAVE/Z settings = GetLastSetting(numericalValues, sweep, "DAC", DATA_ACQUISITION_MODE)
@@ -202,7 +202,7 @@ Function/S GetChannelNameFromChannelType(groupID, device, channel, sweep, params
 			channelName += "_" + num2str(params.channelNumber)
 
 			if(IsNaN(params.electrodeNumber))
-				key = CreateLBNUnassocKey("ADC", params.channelNumber)
+				key = CreateLBNUnassocKey("ADC", params.channelNumber, params.channelType)
 				entry = GetLastSettingIndep(numericalValues, sweep, key, DATA_ACQUISITION_MODE)
 			else
 				WAVE/Z settings = GetLastSetting(numericalValues, sweep, "ADC", DATA_ACQUISITION_MODE)

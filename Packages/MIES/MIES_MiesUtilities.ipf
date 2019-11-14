@@ -4814,16 +4814,30 @@ Function/S GetDefaultElectrodeName(headstage)
 End
 
 /// @brief Create a labnotebook key for unassociated channels
-Function/S CreateLBNUnassocKey(setting, channelNumber)
+///
+/// We support two types of unassociated keys. Old style, prior to 403c8ec2
+/// (Merge pull request #370 from AllenInstitute/feature/sweepformula_enable,
+/// 2019-11-13) but after its introduction in ad8dc8ec (Allow AD/DA channels
+/// not associated with a headstage again, 2015-10-22) are written as "$Name UNASSOC_$ChannelNumber".
+///
+/// New style have the format "$Name u_(AD|DA)$ChannelNumber", these include
+/// the channel type to make them more self explaining.
+Function/S CreateLBNUnassocKey(setting, channelNumber, channelType)
 	string setting
-	variable channelNumber
+	variable channelNumber, channelType
 
 	ASSERT(!IsEmpty(setting), "Expected non empty string")
 	ASSERT(IsFinite(channelNumber), "Expected finite channel number")
 
 	string key
 
-	sprintf key, "%s UNASSOC_%d", setting, channelNumber
+	if(IsNaN(channelType))
+		sprintf key, "%s UNASSOC_%d", setting, channelNumber
+	else
+		ASSERT(channelType == ITC_XOP_CHANNEL_TYPE_DAC || channelType == ITC_XOP_CHANNEL_TYPE_ADC, "Invalid channel type")
+		ASSERT(IsInteger(channelNumber) && channelNumber >= 0 && channelNumber < GetNumberFromType(itcVar = channelType), "channelNumber is out of range")
+		sprintf key, "%s u_%s%d", setting, StringFromList(channelType, ITC_CHANNEL_NAMES), channelNumber
+	endif
 
 	return key
 End

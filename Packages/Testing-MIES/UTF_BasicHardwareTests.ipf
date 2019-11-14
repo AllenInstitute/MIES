@@ -2930,11 +2930,11 @@ Function TPDuringDAQTPAndAssoc_REENTRY([str])
 	WAVE ADChannelTypes = GetLastSetting(numericalValues, sweepNo, "AD ChannelType", DATA_ACQUISITION_MODE)
 	CHECK_EQUAL_WAVES(ADChannelTypes, {DAQ_CHANNEL_TYPE_TP, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN}, mode = WAVE_DATA)
 
-	key = CreateLBNUnassocKey("DA ChannelType", 1)
+	key = CreateLBNUnassocKey("DA ChannelType", 1, ITC_XOP_CHANNEL_TYPE_DAC)
 	channelTypeUnassoc = GetLastSettingIndep(numericalValues, sweepNo, key, DATA_ACQUISITION_MODE)
 	CHECK_EQUAL_VAR(channelTypeUnassoc, DAQ_CHANNEL_TYPE_TP)
 
-	key = CreateLBNUnassocKey("AD ChannelType", 1)
+	key = CreateLBNUnassocKey("AD ChannelType", 1, ITC_XOP_CHANNEL_TYPE_ADC)
 	channelTypeUnassoc = GetLastSettingIndep(numericalValues, sweepNo, key, DATA_ACQUISITION_MODE)
 	CHECK_EQUAL_VAR(channelTypeUnassoc, DAQ_CHANNEL_TYPE_DAQ)
 
@@ -2942,14 +2942,14 @@ Function TPDuringDAQTPAndAssoc_REENTRY([str])
 	tpAmplitude = GetLastSettingIndep(numericalValues, sweepNo, "TP Amplitude VC", DATA_ACQUISITION_MODE)
 	CHECK_EQUAL_WAVES(stimScale, {tpAmplitude, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN}, mode = WAVE_DATA)
 
-	key = CreateLBNUnassocKey(STIMSET_SCALE_FACTOR_KEY, 1)
+	key = CreateLBNUnassocKey(STIMSET_SCALE_FACTOR_KEY, 1, ITC_XOP_CHANNEL_TYPE_DAC)
 	stimScaleUnassoc = GetLastSettingIndep(numericalValues, sweepNo, key, DATA_ACQUISITION_MODE)
 	CHECK_EQUAL_VAR(stimScaleUnassoc, 0.0)
 
 	WAVE/Z/T stimsets = GetLastSetting(textualValues, sweepNo, STIM_WAVE_NAME_KEY, DATA_ACQUISITION_MODE)
 	CHECK_EQUAL_TEXTWAVES(stimsets, {"TestPulse", "", "", "", "", "", "", "", ""}, mode = WAVE_DATA)
 
-	key = CreateLBNUnassocKey(STIM_WAVE_NAME_KEY, 1)
+	key = CreateLBNUnassocKey(STIM_WAVE_NAME_KEY, 1, ITC_XOP_CHANNEL_TYPE_DAC)
 	stimsetUnassoc = GetLastSettingTextIndep(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
 	stimsetUnassocRef = "TestPulse"
 	CHECK_EQUAL_STR(stimsetUnassoc, stimsetUnassocRef)
@@ -3461,7 +3461,7 @@ Function UnassocChannelsDuplicatedEntry_REENTRY([str])
 		Duplicate/T/RMD=[0]/FREE wv, singleRow
 		Redimension/N=(DimSize(singleRow, ROWS) * DimSize(singleRow, COLS))/E=1 singleRow
 		Make/FREE/T unassocEntries
-		Grep/E=".* UNASSOC_\d$" singleRow as unassocEntries
+		Grep/E=".* u_(AD|DA)\d$" singleRow as unassocEntries
 		CHECK(!V_Flag)
 		CHECK(V_Value > 0)
 
