@@ -744,20 +744,44 @@ Function/WAVE SF_FormulaExecutor(jsonID, [jsonPath, graph])
 			Redimension/N=(-1, -1, j) out
 			break
 		case "labnotebook":
-			/// `labnotebook(string key, array channels, array sweeps)`
+			/// `labnotebook(string key, array channels, array sweeps [, string entrySourceType])`
 			///
 			/// return lab notebook @p key for all @p sweeps that belong to the channels @p channels
 			ASSERT(!ParamIsDefault(graph) && !IsEmpty(graph), "Graph not specified.")
 
+			numIndices = JSON_GetArraySize(jsonID, jsonPath)
+			ASSERT(numIndices <= 4, "Maximum number of arguments exceeded.")
+			ASSERT(numIndices >= 3, "At least three arguments are required.")
+
 			JSONtype = JSON_GetType(jsonID, jsonPath + "/0")
 			ASSERT(JSONtype == JSON_STRING, "first parameter needs to be a string labnotebook key")
-			str = JSON_GetString(jsonID, jsonPath + "/0")
 
 			WAVE channels = SF_FormulaExecutor(jsonID, jsonPath = jsonPath + "/1", graph = graph)
 			ASSERT(DimSize(channels, COLS) == 2, "A channel input consists of [[channelName, channelNumber]+].")
 
 			WAVE sweeps = SF_FormulaExecutor(jsonID, jsonPath = jsonPath + "/2", graph = graph)
 			ASSERT(DimSize(sweeps, COLS) < 2, "Sweeps are one-dimensional.")
+
+			mode = DATA_ACQUISITION_MODE
+			if(numIndices == 4)
+				JSONtype = JSON_GetType(jsonID, jsonPath + "/3")
+				ASSERT(JSONtype == JSON_STRING, "Last parameter needs to be a string.")
+				strswitch(JSON_GetString(jsonID, jsonPath + "/3"))
+					case "UNKNOWN_MODE":
+						mode = UNKNOWN_MODE
+						break
+					case "DATA_ACQUISITION_MODE":
+						break
+					case "TEST_PULSE_MODE":
+						mode = TEST_PULSE_MODE
+						break
+					case "NUMBER_OF_LBN_DAQ_MODES":
+						mode = NUMBER_OF_LBN_DAQ_MODES
+						break
+					default:
+						ASSERT(0, "Undefined labnotebook mode. Use one in group DataAcqModes")
+				endswitch
+			endif
 
 			if(BSP_IsDataBrowser(graph))
 				WAVE numericalValues = DB_GetNumericalValues(graph)
@@ -774,9 +798,9 @@ Function/WAVE SF_FormulaExecutor(jsonID, [jsonPath, graph])
 
 				for(j = 0; j < DimSize(channels, ROWS); j += 1)
 					if(!cmpstr(StringFromList(channels[j][0], ITC_CHANNEL_NAMES), "AD"))
-						WAVE/Z sweepChannel = GetLastSetting(numericalValues, sweeps[i], "ADC", UNKNOWN_MODE)
+						WAVE/Z sweepChannel = GetLastSetting(numericalValues, sweeps[i], "ADC", mode)
 					elseif(!cmpstr(StringFromList(channels[j][0], ITC_CHANNEL_NAMES), "DA"))
-						WAVE/Z sweepChannel = GetLastSetting(numericalValues, sweeps[i], "DAC", UNKNOWN_MODE)
+						WAVE/Z sweepChannel = GetLastSetting(numericalValues, sweeps[i], "DAC", mode)
 					else
 						ASSERT(0, "Unhandled channel type in labnotebook channels")
 					endif
@@ -811,7 +835,7 @@ Function/WAVE SF_FormulaExecutor(jsonID, [jsonPath, graph])
 					WAVE numericalValues = temp[0]
 					WaveClear temp
 				endif
-				WAVE/Z LBvalue = GetLastSetting(numericalValues, sweeps[i], str, UNKNOWN_MODE)
+				WAVE/Z LBvalue = GetLastSetting(numericalValues, sweeps[i], JSON_GetString(jsonID, jsonPath + "/0"), mode)
 				if(WaveExists(LBvalue))
 					if(!IsNaN(LBvalue[INDEP_HEADSTAGE]))
 						outD[i][] = LBvalue[INDEP_HEADSTAGE]
