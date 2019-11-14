@@ -788,6 +788,9 @@ Function/WAVE SF_FormulaExecutor(jsonID, [jsonPath, graph])
 			endif
 
 			Make/FREE/N=(DimSize(sweeps, ROWS), DimSize(channels, ROWS)) headstages
+			Make/FREE/T/N=(DimSize(sweeps, ROWS), DimSize(channels, ROWS)) LBkey
+			str = JSON_GetString(jsonID, jsonPath + "/0")
+			LBkey[][] = str
 			for(i = 0; i < DimSize(sweeps, ROWS); i += 1)
 				if(!BSP_IsDataBrowser(graph))
 					WAVE/WAVE temp = SB_GetNumericalValuesWaves(graph, sweepNumber = sweeps[i])
@@ -807,20 +810,39 @@ Function/WAVE SF_FormulaExecutor(jsonID, [jsonPath, graph])
 
 					ASSERT(DimSize(sweepChannel, ROWS) == LABNOTEBOOK_LAYER_COUNT, "Unexpected LabNotebook format.")
 					ASSERT(IsNaN(sweepChannel[INDEP_HEADSTAGE]), "Undefined LabNotebook format for channels")
+
+					// find LabNotebook key/headstage pairs for specified sweep and channel
+					// check for unassociated channels first
 					if(IsFinite(channels[j][1]))
-						WAVE/Z indices = FindIndizes(sweepChannel, var = channels[j][1])
-						ASSERT(DimSize(indices, ROWS) == 1, "More than one or no matching channel number found.")
-						headstages[i][j] = indices[0]
+						str = CreateLBNUnassocKey(StringFromList(channels[j][0], ITC_CHANNEL_NAMES) + "C", channels[j][1])
+						WAVE/Z unassocChannel = GetLastSetting(numericalValues, sweeps[i], str, mode)
+						if(WaveExists(unassocChannel) && !IsNaN(unassocChannel[INDEP_HEADSTAGE]))
+							LBkey[i][j] = str
+							headstages[i][j] = INDEP_HEADSTAGE
+						else
+							WAVE/Z indices = FindIndizes(sweepChannel, col = 0, var = channels[j][1])
+							ASSERT(DimSize(indices, ROWS) == 1, "More than one or no matching channel number found.")
+							headstages[i][j] = indices[0]
+						endif
+						WaveClear unassocChannel
 					else // all channel numbers
-						Redimension/N=(-1, DimSize(headstages, COLS) + LABNOTEBOOK_LAYER_COUNT) headstages
+						Redimension/N=(-1, DimSize(headstages, COLS) + LABNOTEBOOK_LAYER_COUNT) headstages, LBkey
 						l = 0
 						for(k = 0; k < INDEP_HEADSTAGE; k += 1)
-							if(IsFinite(sweepChannel[k]))
-								headstages[i][j + l] = k
+							if(IsFinite(sweepChannel[k])) // @todo cannot get unassociated channels for undefined channel numbers
+								str = CreateLBNUnassocKey(StringFromList(channels[j][0], ITC_CHANNEL_NAMES) + "C", sweepChannel[k])
+								WAVE/Z unassocChannel = GetLastSetting(numericalValues, sweeps[i], str, mode)
+								if(WaveExists(unassocChannel) && !IsNaN(unassocChannel[INDEP_HEADSTAGE]))
+									LBkey[i][j + l] = str
+									headstages[i][j + l] = INDEP_HEADSTAGE
+								else
+									headstages[i][j + l] = k
+								endif
 								l += 1
+								WaveClear unassocChannel
 							endif
 						endfor
-						Redimension/N=(-1, DimSize(headstages, COLS) - LABNOTEBOOK_LAYER_COUNT + l) headstages
+						Redimension/N=(-1, DimSize(headstages, COLS) - LABNOTEBOOK_LAYER_COUNT + l) headstages, LBkey
 					endif
 					ASSERT(IsFinite(headstages[i][j]), "No active channel found for channel type.")
 					WaveClear sweepChannel
@@ -835,15 +857,18 @@ Function/WAVE SF_FormulaExecutor(jsonID, [jsonPath, graph])
 					WAVE numericalValues = temp[0]
 					WaveClear temp
 				endif
-				WAVE/Z LBvalue = GetLastSetting(numericalValues, sweeps[i], JSON_GetString(jsonID, jsonPath + "/0"), mode)
-				if(WaveExists(LBvalue))
-					if(!IsNaN(LBvalue[INDEP_HEADSTAGE]))
-						outD[i][] = LBvalue[INDEP_HEADSTAGE]
-					else
-						outD[i][] = LBvalue[headstages[i][q]]
+
+				for(j = 0; j < DimSize(headstages, COLS); j += 1)
+					WAVE/Z LBvalue = GetLastSetting(numericalValues, sweeps[i], LBkey[i][j], mode)
+					if(WaveExists(LBvalue))
+						if(!IsNaN(LBvalue[INDEP_HEADSTAGE]))
+							outD[i][j] = LBvalue[INDEP_HEADSTAGE]
+						else
+							outD[i][j] = LBvalue[headstages[i][j]]
+						endif
 					endif
-				endif
-				WaveClear LBvalue
+					WaveClear LBvalue
+				endfor
 			endfor
 			WAVE out = outD
 			WaveClear outD, channels, sweeps, numericalValues
