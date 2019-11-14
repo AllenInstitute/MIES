@@ -372,7 +372,7 @@ Function/WAVE SF_FormulaExecutor(jsonID, [jsonPath, graph])
 	String graph
 
 	Variable i, j, k, l, numIndices, JSONtype, mode
-	string info, str
+	string info, msg, str
 
 	if(ParamIsDefault(jsonPath))
 		jsonPath = ""
@@ -821,7 +821,8 @@ Function/WAVE SF_FormulaExecutor(jsonID, [jsonPath, graph])
 							headstages[i][j] = INDEP_HEADSTAGE
 						else
 							WAVE/Z indices = FindIndizes(sweepChannel, col = 0, var = channels[j][1])
-							ASSERT(DimSize(indices, ROWS) == 1, "More than one or no matching channel number found.")
+							sprintf msg, "More than one or no matching channel number found for channel %s with channelNumber %d", StringFromList(channels[j][0], ITC_CHANNEL_NAMES), channels[j][1]
+							ASSERT(WaveExists(indices) && DimSize(indices, ROWS) == 1, msg)
 							headstages[i][j] = indices[0]
 						endif
 						WaveClear unassocChannel
