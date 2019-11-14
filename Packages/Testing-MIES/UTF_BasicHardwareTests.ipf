@@ -2224,8 +2224,8 @@ End
 Function UnassociatedChannels_REENTRY([str])
 	string str
 
-	string device, sweeps, configs, unit
-	variable numEntries, i, j, numSweeps
+	string device, sweeps, configs, unit, expectedStr
+	variable numEntries, i, j, k, numSweeps, value
 
 	numSweeps = 1
 
@@ -2356,6 +2356,25 @@ Function UnassociatedChannels_REENTRY([str])
 					CHECK_EQUAL_TEXTWAVES(sweepCounts, {"", "", "", "", "", "", "", "", ";0;;0;;;;;"})
 					break
 			endswitch
+
+			// fetch some labnotebook entries, the last channel is unassociated
+			for(k = 0; k < DimSize(ADCs, ROWS); k += 1)
+				value = GetLastSettingChannel(numericalValues, j, "AD ChannelType", ADCs[k], ITC_XOP_CHANNEL_TYPE_ADC, DATA_ACQUISITION_MODE)
+				CHECK_EQUAL_VAR(value, DAQ_CHANNEL_TYPE_DAQ)
+
+				str = GetLastSettingTextChannel(numericalValues, textualValues, j, "AD Unit", ADCs[k], ITC_XOP_CHANNEL_TYPE_ADC, DATA_ACQUISITION_MODE)
+				expectedStr= "pA"
+				CHECK_EQUAL_STR(str, expectedStr)
+			endfor
+
+			for(k = 0; k < DimSize(DACs, ROWS); k += 1)
+				value = GetLastSettingChannel(numericalValues, j, "DA ChannelType", DACs[k], ITC_XOP_CHANNEL_TYPE_DAC, DATA_ACQUISITION_MODE)
+				CHECK_EQUAL_VAR(value, DAQ_CHANNEL_TYPE_DAQ)
+
+				str = GetLastSettingTextChannel(numericalValues, textualValues, j, "DA Unit", DACs[k], ITC_XOP_CHANNEL_TYPE_DAC, DATA_ACQUISITION_MODE)
+				expectedStr= "mV"
+				CHECK_EQUAL_STR(str, expectedStr)
+			endfor
 		endfor
 	endfor
 
