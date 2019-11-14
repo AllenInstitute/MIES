@@ -371,7 +371,7 @@ Function/WAVE SF_FormulaExecutor(jsonID, [jsonPath, graph])
 	String jsonPath
 	String graph
 
-	Variable i, j, k, l, numIndices, JSONtype, mode
+	Variable i, j, numIndices, JSONtype, mode
 	string info, msg, str
 
 	if(ParamIsDefault(jsonPath))
@@ -755,9 +755,10 @@ Function/WAVE SF_FormulaExecutor(jsonID, [jsonPath, graph])
 
 			JSONtype = JSON_GetType(jsonID, jsonPath + "/0")
 			ASSERT(JSONtype == JSON_STRING, "first parameter needs to be a string labnotebook key")
+			str = JSON_GetString(jsonID, jsonPath + "/0")
 
 			WAVE channels = SF_FormulaExecutor(jsonID, jsonPath = jsonPath + "/1", graph = graph)
-			ASSERT(DimSize(channels, COLS) == 2, "A channel input consists of [[channelName, channelNumber]+].")
+			ASSERT(DimSize(channels, COLS) == 2, "A channel input consists of [[channelType, channelNumber]+].")
 
 			WAVE sweeps = SF_FormulaExecutor(jsonID, jsonPath = jsonPath + "/2", graph = graph)
 			ASSERT(DimSize(sweeps, COLS) < 2, "Sweeps are one-dimensional.")
@@ -783,14 +784,14 @@ Function/WAVE SF_FormulaExecutor(jsonID, [jsonPath, graph])
 				endswitch
 			endif
 
+			WAVE activeChannels = SF_GetActiveChannelNumbers(graph, channels, sweeps, mode)
+			WaveClear channels
+
 			if(BSP_IsDataBrowser(graph))
 				WAVE numericalValues = DB_GetNumericalValues(graph)
 			endif
 
-			Make/FREE/N=(DimSize(sweeps, ROWS), DimSize(channels, ROWS)) headstages
-			Make/FREE/T/N=(DimSize(sweeps, ROWS), DimSize(channels, ROWS)) LBkey
-			str = JSON_GetString(jsonID, jsonPath + "/0")
-			LBkey[][] = str
+			Make/D/FREE/N=(DimSize(sweeps, ROWS), DimSize(activeChannels, ROWS)) outD = NaN
 			for(i = 0; i < DimSize(sweeps, ROWS); i += 1)
 				if(!BSP_IsDataBrowser(graph))
 					WAVE/WAVE temp = SB_GetNumericalValuesWaves(graph, sweepNumber = sweeps[i])
@@ -799,80 +800,15 @@ Function/WAVE SF_FormulaExecutor(jsonID, [jsonPath, graph])
 					WaveClear temp
 				endif
 
-				for(j = 0; j < DimSize(channels, ROWS); j += 1)
-					if(!cmpstr(StringFromList(channels[j][0], ITC_CHANNEL_NAMES), "AD"))
-						WAVE/Z sweepChannel = GetLastSetting(numericalValues, sweeps[i], "ADC", mode)
-					elseif(!cmpstr(StringFromList(channels[j][0], ITC_CHANNEL_NAMES), "DA"))
-						WAVE/Z sweepChannel = GetLastSetting(numericalValues, sweeps[i], "DAC", mode)
-					else
-						ASSERT(0, "Unhandled channel type in labnotebook channels")
-					endif
-
-					ASSERT(DimSize(sweepChannel, ROWS) == LABNOTEBOOK_LAYER_COUNT, "Unexpected LabNotebook format.")
-					ASSERT(IsNaN(sweepChannel[INDEP_HEADSTAGE]), "Undefined LabNotebook format for channels")
-
-					// find LabNotebook key/headstage pairs for specified sweep and channel
-					// check for unassociated channels first
-					if(IsFinite(channels[j][1]))
-						str = CreateLBNUnassocKey(StringFromList(channels[j][0], ITC_CHANNEL_NAMES) + "C", channels[j][1])
-						WAVE/Z unassocChannel = GetLastSetting(numericalValues, sweeps[i], str, mode)
-						if(WaveExists(unassocChannel) && !IsNaN(unassocChannel[INDEP_HEADSTAGE]))
-							LBkey[i][j] = str
-							headstages[i][j] = INDEP_HEADSTAGE
-						else
-							WAVE/Z indices = FindIndizes(sweepChannel, col = 0, var = channels[j][1])
-							sprintf msg, "More than one or no matching channel number found for channel %s with channelNumber %d", StringFromList(channels[j][0], ITC_CHANNEL_NAMES), channels[j][1]
-							ASSERT(WaveExists(indices) && DimSize(indices, ROWS) == 1, msg)
-							headstages[i][j] = indices[0]
-						endif
-						WaveClear unassocChannel
-					else // all channel numbers
-						Redimension/N=(-1, DimSize(headstages, COLS) + LABNOTEBOOK_LAYER_COUNT) headstages, LBkey
-						l = 0
-						for(k = 0; k < INDEP_HEADSTAGE; k += 1)
-							if(IsFinite(sweepChannel[k])) // @todo cannot get unassociated channels for undefined channel numbers
-								str = CreateLBNUnassocKey(StringFromList(channels[j][0], ITC_CHANNEL_NAMES) + "C", sweepChannel[k])
-								WAVE/Z unassocChannel = GetLastSetting(numericalValues, sweeps[i], str, mode)
-								if(WaveExists(unassocChannel) && !IsNaN(unassocChannel[INDEP_HEADSTAGE]))
-									LBkey[i][j + l] = str
-									headstages[i][j + l] = INDEP_HEADSTAGE
-								else
-									headstages[i][j + l] = k
-								endif
-								l += 1
-								WaveClear unassocChannel
-							endif
-						endfor
-						Redimension/N=(-1, DimSize(headstages, COLS) - LABNOTEBOOK_LAYER_COUNT + l) headstages, LBkey
-					endif
-					ASSERT(IsFinite(headstages[i][j]), "No active channel found for channel type.")
-					WaveClear sweepChannel
-				endfor
+				outD[i][] = GetLastSettingChannel(numericalValues, sweeps[i], str, activeChannels[q][%channelNumber], activeChannels[q][%channelType], mode, defValue = NaN)
 			endfor
+			WaveClear sweeps, numericalValues
 
-			Make/D/FREE/N=(DimSize(headstages, ROWS), DimSize(headstages, COLS)) outD = NaN
-			for(i = 0; i < DimSize(sweeps, ROWS); i += 1)
-				if(!BSP_IsDataBrowser(graph))
-					WAVE/WAVE temp = SB_GetNumericalValuesWaves(graph, sweepNumber = sweeps[i])
-					ASSERT(DimSize(temp, ROWS) == 1, "Unhandled number of sweeps in AnalysisBrowser map")
-					WAVE numericalValues = temp[0]
-					WaveClear temp
-				endif
-
-				for(j = 0; j < DimSize(headstages, COLS); j += 1)
-					WAVE/Z LBvalue = GetLastSetting(numericalValues, sweeps[i], LBkey[i][j], mode)
-					if(WaveExists(LBvalue))
-						if(!IsNaN(LBvalue[INDEP_HEADSTAGE]))
-							outD[i][j] = LBvalue[INDEP_HEADSTAGE]
-						else
-							outD[i][j] = LBvalue[headstages[i][j]]
-						endif
-					endif
-					WaveClear LBvalue
-				endfor
+			for(i = 0; i < DimSize(activeChannels, ROWS); i += 1)
+				str = StringFromList(activeChannels[i][%channelType], ITC_CHANNEL_NAMES) + num2istr(activeChannels[i][%channelNumber])
+				SetDimLabel COLS, i, $str, outD
 			endfor
 			WAVE out = outD
-			WaveClear outD, channels, sweeps, numericalValues
 			break
 		case "log": // JSON logic debug operation
 			print wv[0]
@@ -1246,6 +1182,105 @@ static Function SF_FormulaWaveScaleTransfer(source, dest, dimSource, dimDest)
 	endswitch
 
 	return 0
+End
+
+/// @brief Use the labnotebook information to return the active channel numbers
+///        for a given set of sweeps
+///
+/// @param graph           DataBrowser or SweepBrowser reference graph
+/// @param channels        @c SF_FormulaExecutor style @c channels() wave
+/// @param sweeps          @c SF_FormulaExecutor style @c sweeps() wave
+/// @param entrySourceType type of the labnotebook entry, one of @ref DataAcqModes.
+///                        If you don't care about the entry source type pass #UNKNOWN_MODE.
+/// @return a @c SF_FormulaExecutor style @c channels() wave with two columns
+///         containing channelType and channelNumber
+static Function/WAVE SF_GetActiveChannelNumbers(graph, channels, sweeps, entrySourceType)
+	string graph
+	WAVE channels, sweeps
+	variable entrySourceType
+
+	variable i, j, k, channelType, channelNumber, numIndices
+	string setting, msg
+
+	ASSERT(windowExists(graph), "DB/SB not specified.")
+	ASSERT(DimSize(channels, COLS) == 2, "A channel input consists of [[channelName, channelNumber]+].")
+	ASSERT(DimSize(sweeps, COLS) < 2, "Sweeps are one-dimensional.")
+	ASSERT((IsNaN(UNKNOWN_MODE) && IsNaN(entrySourceType)) || \
+		entrySourceType == DATA_ACQUISITION_MODE || \
+		entrySourceType == TEST_PULSE_MODE || \
+		entrySourceType == NUMBER_OF_LBN_DAQ_MODES, \
+		"Undefined labnotebook mode. Use one in group DataAcqModes")
+
+	if(BSP_IsDataBrowser(graph))
+		WAVE numericalValues = DB_GetNumericalValues(graph)
+	endif
+
+	Make/FREE/WAVE/N=2 channelNumbers
+	Make/FREE/N=(GetNumberFromType(itcVar=ITC_XOP_CHANNEL_TYPE_ADC)) channelNumbersAD = NaN
+	channelNumbers[ITC_XOP_CHANNEL_TYPE_ADC] = channelNumbersAD
+	Make/FREE/N=(GetNumberFromType(itcVar=ITC_XOP_CHANNEL_TYPE_DAC)) channelNumbersDA = NaN
+	channelNumbers[ITC_XOP_CHANNEL_TYPE_DAC] = channelNumbersDA
+
+	// search sweeps for active channels
+	for(i = 0; i < DimSize(sweeps, ROWS); i += 1)
+		ASSERT(IsInteger(sweeps[i]), "Unsupported sweep number in sweeps() wave")
+		if(!BSP_IsDataBrowser(graph))
+			WAVE/WAVE temp = SB_GetNumericalValuesWaves(graph, sweepNumber = sweeps[i])
+			ASSERT(DimSize(temp, ROWS) == 1, "Unhandled number of sweeps in AnalysisBrowser map")
+			WAVE numericalValues = temp[0]
+			WaveClear temp
+		endif
+
+		for(j = 0; j < DimSize(channels, ROWS); j += 1)
+			channelType = channels[j][0]
+			switch(channelType)
+				case ITC_XOP_CHANNEL_TYPE_DAC:
+					setting = "DAC"
+					break
+				case ITC_XOP_CHANNEL_TYPE_ADC:
+					setting = "ADC"
+					break
+				default:
+					sprintf msg, "Unhandled channel type %d in channels() at position %d", channelType, j
+					ASSERT(0, msg)
+			endswitch
+
+			channelNumber = channels[j][1]
+			WAVE wv = channelNumbers[channelType]
+			for(k = 0; k < DimSize(wv, ROWS); k += 1)
+				if(!IsNaN(wv[k]))
+					continue
+				endif
+				if(!IsNaN(channelNumber) && channelNumber != k)
+					continue
+				endif
+				wv[k] = GetLastSettingChannel(numericalValues, sweeps[i], setting, k, channelType, entrySourceType, defValue = NaN)
+			endfor
+		endfor
+	endfor
+
+	// remove unmatched channel numbers
+	for(i = 0; i < DimSize(channelNumbers, ROWS); i += 1)
+		WAVE wv = channelNumbers[i]
+		WaveTransform zapNaNs, wv
+		numIndices += DimSize(wv, ROWS)
+	endfor
+
+	// create channels wave
+	Make/FREE/N=(numIndices, 2) out
+	SetDimLabel COLS, 0, channelType, out
+	SetDimLabel COLS, 1, channelNumber, out
+	numIndices = 0
+	for(i = 0; i < DimSize(channelNumbers, ROWS); i += 1)
+		WAVE wv = channelNumbers[i]
+		for(j = 0; j < DimSize(wv, ROWS); j += 1)
+			out[numIndices][%channelType] = i
+			out[numIndices][%channelNumber] = wv[j]
+			numIndices += 1
+		endfor
+	endfor
+
+	return out
 End
 
 Function SF_button_sweepFormula_check(ba) : ButtonControl
