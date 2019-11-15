@@ -1458,6 +1458,7 @@ Function AI_FillAndSendAmpliferSettings(panelTitle, sweepNo)
 		STRUCT AxonTelegraph_DataStruct tds
 		AI_InitAxonTelegraphStruct(tds)
 		AxonTelegraphGetDataStruct(axonSerial, channel, 1, tds)
+		ASSERT(clampMode == tds.OperatingMode, "A clamp mode mismatch was detected. Please describe the events leading up to that assertion. Thanks!")
 
 		if(clampMode == V_CLAMP_MODE)
 			ampSettingsWave[0][0][i]  = MCC_GetHoldingEnable()
