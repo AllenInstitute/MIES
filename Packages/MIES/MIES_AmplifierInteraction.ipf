@@ -1455,6 +1455,10 @@ Function AI_FillAndSendAmpliferSettings(panelTitle, sweepNo)
 		clampMode = DAG_GetHeadstageMode(panelTitle, i)
 		AI_AssertOnInvalidClampMode(clampMode)
 
+		STRUCT AxonTelegraph_DataStruct tds
+		AI_InitAxonTelegraphStruct(tds)
+		AxonTelegraphGetDataStruct(axonSerial, channel, 1, tds)
+
 		if(clampMode == V_CLAMP_MODE)
 			ampSettingsWave[0][0][i]  = MCC_GetHoldingEnable()
 			ampSettingsWave[0][1][i]  = MCC_GetHolding() * AI_GetMCCScale(V_CLAMP_MODE, MCC_GETHOLDING_FUNC)
@@ -1488,10 +1492,6 @@ Function AI_FillAndSendAmpliferSettings(panelTitle, sweepNo)
 			ampSettingsWave[0][46][i] = ampParamStorage[%AutoBiasEnable][0][i]
 		endif
 
-		STRUCT AxonTelegraph_DataStruct tds
-		AI_InitAxonTelegraphStruct(tds)
-
-		AxonTelegraphGetDataStruct(axonSerial, channel, 1, tds)
 		ampSettingsWave[0][16][i] = tds.SerialNum
 		ampSettingsWave[0][17][i] = tds.ChannelID
 		ampSettingsWave[0][18][i] = tds.ComPortID
