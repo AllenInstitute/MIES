@@ -2893,7 +2893,7 @@ Function TPDuringDAQTPAndAssoc_REENTRY([str])
 	string str
 
 	variable sweepNo, col, channelTypeUnassoc, tpAmplitude, stimScaleUnassoc
-	string ctrl, stimsetUnassoc, stimsetUnassocRef
+	string ctrl, stimsetUnassoc, stimsetUnassocRef, key
 
 	CHECK_EQUAL_VAR(GetSetVariable(str, "SetVar_Sweep"), 1)
 
@@ -2930,23 +2930,27 @@ Function TPDuringDAQTPAndAssoc_REENTRY([str])
 	WAVE ADChannelTypes = GetLastSetting(numericalValues, sweepNo, "AD ChannelType", DATA_ACQUISITION_MODE)
 	CHECK_EQUAL_WAVES(ADChannelTypes, {DAQ_CHANNEL_TYPE_TP, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN}, mode = WAVE_DATA)
 
-	channelTypeUnassoc = GetLastSettingIndep(numericalValues, sweepNo, "DA ChannelType UNASSOC_1", DATA_ACQUISITION_MODE)
+	key = CreateLBNUnassocKey("DA ChannelType", 1)
+	channelTypeUnassoc = GetLastSettingIndep(numericalValues, sweepNo, key, DATA_ACQUISITION_MODE)
 	CHECK_EQUAL_VAR(channelTypeUnassoc, DAQ_CHANNEL_TYPE_TP)
 
-	channelTypeUnassoc = GetLastSettingIndep(numericalValues, sweepNo, "AD ChannelType UNASSOC_1", DATA_ACQUISITION_MODE)
+	key = CreateLBNUnassocKey("AD ChannelType", 1)
+	channelTypeUnassoc = GetLastSettingIndep(numericalValues, sweepNo, key, DATA_ACQUISITION_MODE)
 	CHECK_EQUAL_VAR(channelTypeUnassoc, DAQ_CHANNEL_TYPE_DAQ)
 
 	WAVE/Z stimScale = GetLastSetting(numericalValues, sweepNo, STIMSET_SCALE_FACTOR_KEY, DATA_ACQUISITION_MODE)
 	tpAmplitude = GetLastSettingIndep(numericalValues, sweepNo, "TP Amplitude VC", DATA_ACQUISITION_MODE)
 	CHECK_EQUAL_WAVES(stimScale, {tpAmplitude, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN}, mode = WAVE_DATA)
 
-	stimScaleUnassoc = GetLastSettingIndep(numericalValues, sweepNo, STIMSET_SCALE_FACTOR_KEY + " UNASSOC_1", DATA_ACQUISITION_MODE)
+	key = CreateLBNUnassocKey(STIMSET_SCALE_FACTOR_KEY, 1)
+	stimScaleUnassoc = GetLastSettingIndep(numericalValues, sweepNo, key, DATA_ACQUISITION_MODE)
 	CHECK_EQUAL_VAR(stimScaleUnassoc, 0.0)
 
 	WAVE/Z/T stimsets = GetLastSetting(textualValues, sweepNo, STIM_WAVE_NAME_KEY, DATA_ACQUISITION_MODE)
 	CHECK_EQUAL_TEXTWAVES(stimsets, {"TestPulse", "", "", "", "", "", "", "", ""}, mode = WAVE_DATA)
 
-	stimsetUnassoc = GetLastSettingTextIndep(textualValues, sweepNo, STIM_WAVE_NAME_KEY + " UNASSOC_1", DATA_ACQUISITION_MODE)
+	key = CreateLBNUnassocKey(STIM_WAVE_NAME_KEY, 1)
+	stimsetUnassoc = GetLastSettingTextIndep(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
 	stimsetUnassocRef = "TestPulse"
 	CHECK_EQUAL_STR(stimsetUnassoc, stimsetUnassocRef)
 End
