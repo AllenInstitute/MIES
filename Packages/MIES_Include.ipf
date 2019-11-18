@@ -21,7 +21,10 @@
 #include <Resize Controls>
 #include <ZoomBrowser>
 #include <FunctionProfiling>
+
+#if IgorVersion() < 9.0
 #include <HDF5 Browser>
+#endif
 
 // third party includes
 #include "ACL_TabUtilities"
