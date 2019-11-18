@@ -65,6 +65,11 @@ Function P_PressureControl(panelTitle)
 	string panelTitle
 
 	variable headStage, manPressureAll
+
+	if(DAP_DeviceIsUnlocked(panelTitle))
+		return NaN
+	endif
+
 	WAVE PressureDataWv = P_GetPressureDataWaveRef(panelTitle)
 
 	manPressureAll = DAG_GetNumericalValue(panelTitle, "check_DataAcq_ManPressureAll")
