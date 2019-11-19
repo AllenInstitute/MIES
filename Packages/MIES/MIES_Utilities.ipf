@@ -4195,7 +4195,7 @@ End
 ///        a readable copy of the history starting from the time of the
 ///        notebook creation.
 Function CreateHistoryNotebook()
-	NewNotebook/V=0/F=0/N=HistoryCarbonCopy
+	NewNotebook/K=2/V=0/F=0/N=HistoryCarbonCopy
 End
 
 /// @brief Return the text of the history notebook
