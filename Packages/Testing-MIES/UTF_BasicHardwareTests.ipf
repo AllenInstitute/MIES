@@ -2224,8 +2224,8 @@ End
 Function UnassociatedChannels_REENTRY([str])
 	string str
 
-	string device, sweeps, configs, unit
-	variable numEntries, i, j, numSweeps
+	string device, sweeps, configs, unit, expectedStr
+	variable numEntries, i, j, k, numSweeps, value
 
 	numSweeps = 1
 
@@ -2356,6 +2356,25 @@ Function UnassociatedChannels_REENTRY([str])
 					CHECK_EQUAL_TEXTWAVES(sweepCounts, {"", "", "", "", "", "", "", "", ";0;;0;;;;;"})
 					break
 			endswitch
+
+			// fetch some labnotebook entries, the last channel is unassociated
+			for(k = 0; k < DimSize(ADCs, ROWS); k += 1)
+				value = GetLastSettingChannel(numericalValues, j, "AD ChannelType", ADCs[k], ITC_XOP_CHANNEL_TYPE_ADC, DATA_ACQUISITION_MODE)
+				CHECK_EQUAL_VAR(value, DAQ_CHANNEL_TYPE_DAQ)
+
+				str = GetLastSettingTextChannel(numericalValues, textualValues, j, "AD Unit", ADCs[k], ITC_XOP_CHANNEL_TYPE_ADC, DATA_ACQUISITION_MODE)
+				expectedStr= "pA"
+				CHECK_EQUAL_STR(str, expectedStr)
+			endfor
+
+			for(k = 0; k < DimSize(DACs, ROWS); k += 1)
+				value = GetLastSettingChannel(numericalValues, j, "DA ChannelType", DACs[k], ITC_XOP_CHANNEL_TYPE_DAC, DATA_ACQUISITION_MODE)
+				CHECK_EQUAL_VAR(value, DAQ_CHANNEL_TYPE_DAQ)
+
+				str = GetLastSettingTextChannel(numericalValues, textualValues, j, "DA Unit", DACs[k], ITC_XOP_CHANNEL_TYPE_DAC, DATA_ACQUISITION_MODE)
+				expectedStr= "mV"
+				CHECK_EQUAL_STR(str, expectedStr)
+			endfor
 		endfor
 	endfor
 
@@ -2893,7 +2912,7 @@ Function TPDuringDAQTPAndAssoc_REENTRY([str])
 	string str
 
 	variable sweepNo, col, channelTypeUnassoc, tpAmplitude, stimScaleUnassoc
-	string ctrl, stimsetUnassoc, stimsetUnassocRef
+	string ctrl, stimsetUnassoc, stimsetUnassocRef, key
 
 	CHECK_EQUAL_VAR(GetSetVariable(str, "SetVar_Sweep"), 1)
 
@@ -2930,23 +2949,27 @@ Function TPDuringDAQTPAndAssoc_REENTRY([str])
 	WAVE ADChannelTypes = GetLastSetting(numericalValues, sweepNo, "AD ChannelType", DATA_ACQUISITION_MODE)
 	CHECK_EQUAL_WAVES(ADChannelTypes, {DAQ_CHANNEL_TYPE_TP, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN}, mode = WAVE_DATA)
 
-	channelTypeUnassoc = GetLastSettingIndep(numericalValues, sweepNo, "DA ChannelType UNASSOC_1", DATA_ACQUISITION_MODE)
+	key = CreateLBNUnassocKey("DA ChannelType", 1, ITC_XOP_CHANNEL_TYPE_DAC)
+	channelTypeUnassoc = GetLastSettingIndep(numericalValues, sweepNo, key, DATA_ACQUISITION_MODE)
 	CHECK_EQUAL_VAR(channelTypeUnassoc, DAQ_CHANNEL_TYPE_TP)
 
-	channelTypeUnassoc = GetLastSettingIndep(numericalValues, sweepNo, "AD ChannelType UNASSOC_1", DATA_ACQUISITION_MODE)
+	key = CreateLBNUnassocKey("AD ChannelType", 1, ITC_XOP_CHANNEL_TYPE_ADC)
+	channelTypeUnassoc = GetLastSettingIndep(numericalValues, sweepNo, key, DATA_ACQUISITION_MODE)
 	CHECK_EQUAL_VAR(channelTypeUnassoc, DAQ_CHANNEL_TYPE_DAQ)
 
 	WAVE/Z stimScale = GetLastSetting(numericalValues, sweepNo, STIMSET_SCALE_FACTOR_KEY, DATA_ACQUISITION_MODE)
 	tpAmplitude = GetLastSettingIndep(numericalValues, sweepNo, "TP Amplitude VC", DATA_ACQUISITION_MODE)
 	CHECK_EQUAL_WAVES(stimScale, {tpAmplitude, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN}, mode = WAVE_DATA)
 
-	stimScaleUnassoc = GetLastSettingIndep(numericalValues, sweepNo, STIMSET_SCALE_FACTOR_KEY + " UNASSOC_1", DATA_ACQUISITION_MODE)
+	key = CreateLBNUnassocKey(STIMSET_SCALE_FACTOR_KEY, 1, ITC_XOP_CHANNEL_TYPE_DAC)
+	stimScaleUnassoc = GetLastSettingIndep(numericalValues, sweepNo, key, DATA_ACQUISITION_MODE)
 	CHECK_EQUAL_VAR(stimScaleUnassoc, 0.0)
 
 	WAVE/Z/T stimsets = GetLastSetting(textualValues, sweepNo, STIM_WAVE_NAME_KEY, DATA_ACQUISITION_MODE)
 	CHECK_EQUAL_TEXTWAVES(stimsets, {"TestPulse", "", "", "", "", "", "", "", ""}, mode = WAVE_DATA)
 
-	stimsetUnassoc = GetLastSettingTextIndep(textualValues, sweepNo, STIM_WAVE_NAME_KEY + " UNASSOC_1", DATA_ACQUISITION_MODE)
+	key = CreateLBNUnassocKey(STIM_WAVE_NAME_KEY, 1, ITC_XOP_CHANNEL_TYPE_DAC)
+	stimsetUnassoc = GetLastSettingTextIndep(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
 	stimsetUnassocRef = "TestPulse"
 	CHECK_EQUAL_STR(stimsetUnassoc, stimsetUnassocRef)
 End
@@ -3387,4 +3410,91 @@ Function TestPulseCachingWorks_REENTRY([str])
 
 	WAVE stats = GetCacheStatsWave()
 	CHECK(stats[V_Value][%Hits] >= 1)
+End
+
+Function UnassocChannelsDuplicatedEntry_IGNORE(device)
+	string device
+
+	// enable HS1 with associated DA/AD channels
+	PGC_SetAndActivateControl(device, GetPanelControl(1, CHANNEL_TYPE_HEADSTAGE, CHANNEL_CONTROL_CHECK), val=1)
+
+	// cut assocication
+	PGC_SetAndActivateControl(device, "Popup_Settings_HeadStage", str = "1")
+	PGC_SetAndActivateControl(device, "button_Hardware_ClearChanConn")
+
+	// disable HS1
+	PGC_SetAndActivateControl(device, GetPanelControl(1, CHANNEL_TYPE_HEADSTAGE, CHANNEL_CONTROL_CHECK), val=0)
+
+	// enable HS2 with associated DA/AD channels
+	PGC_SetAndActivateControl(device, GetPanelControl(2, CHANNEL_TYPE_HEADSTAGE, CHANNEL_CONTROL_CHECK), val=1)
+
+	// cut assocication
+	PGC_SetAndActivateControl(device, "Popup_Settings_HeadStage", str = "2")
+	PGC_SetAndActivateControl(device, "button_Hardware_ClearChanConn")
+
+	// disable HS2
+	PGC_SetAndActivateControl(device, GetPanelControl(2, CHANNEL_TYPE_HEADSTAGE, CHANNEL_CONTROL_CHECK), val=0)
+
+	PGC_SetAndActivateControl(device, GetPanelControl(1, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_WAVE), str = "StimulusSetA*")
+
+	// disable AD1
+	PGC_SetAndActivateControl(device, GetPanelControl(1, CHANNEL_TYPE_ADC, CHANNEL_CONTROL_CHECK), val = 0)
+
+	// disable DA2
+	PGC_SetAndActivateControl(device, GetPanelControl(2, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_CHECK), val = 0)
+End
+
+// Check that unassociated LBN entries for DA/AD don't overlap
+//
+// 1 HS
+// DA1 unassociated
+// AD2 unsassociated
+//
+// Now we should not find any unassoc labnotebook keys which only differ in the channel number.
+//
+// UTF_TD_GENERATOR HardwareMain#DeviceNameGeneratorMD1
+Function UnassocChannelsDuplicatedEntry([str])
+	string str
+
+	STRUCT DAQSettings s
+	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG_1_RES_1")
+	AcquireData(s, str, preAcquireFunc = UnassocChannelsDuplicatedEntry_IGNORE)
+End
+
+Function UnassocChannelsDuplicatedEntry_REENTRY([str])
+	string str
+
+	variable sweepNo, i, numEntries
+	string unassoc
+
+	CHECK_EQUAL_VAR(GetSetVariable(str, "SetVar_Sweep"), 1)
+
+	sweepNo = AFH_GetLastSweepAcquired(str)
+	CHECK_EQUAL_VAR(sweepNo, 0)
+
+	Make/WAVE/FREE keys = {GetLBNumericalKeys(str), GetLBTextualKeys(str)}
+
+	numEntries = DimSize(keys, ROWS)
+	for(i = 0; i < numEntries; i += 1)
+		WAVE/T wv = keys[i]
+		Duplicate/T/RMD=[0]/FREE wv, singleRow
+		Redimension/N=(DimSize(singleRow, ROWS) * DimSize(singleRow, COLS))/E=1 singleRow
+		Make/FREE/T unassocEntries
+		Grep/E=".* u_(AD|DA)\d$" singleRow as unassocEntries
+		CHECK(!V_Flag)
+		CHECK(V_Value > 0)
+
+		unassocEntries[] = RemoveTrailingNumber_IGNORE(unassocEntries[p])
+
+		FindDuplicates/FREE/Z/DT=dups unassocEntries
+		CHECK_EQUAL_VAR(DimSize(dups, ROWS), 0)
+	endfor
+End
+
+Function/S RemoveTrailingNumber_IGNORE(str)
+	string str
+
+	CHECK_EQUAL_VAR(ItemsInList(str, "_"), 2)
+
+	return StringFromList(0, str, "_")
 End

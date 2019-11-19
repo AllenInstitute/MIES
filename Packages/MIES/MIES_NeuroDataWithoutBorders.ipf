@@ -713,10 +713,10 @@ static Function NWB_AppendSweepLowLevel(locationID, panelTitle, ITCDataWave, ITC
 		// this can be a buggy headstage state
 		// we know that these AD/DA entries really belong to that headstate
 		// if no unassociated entry exists
-		key = CreateLBNUnassocKey("DAC", DACs[i])
+		key = CreateLBNUnassocKey("DAC", DACs[i], NaN)
 		DACUnassoc = GetLastSettingIndep(numericalValues, sweep, key, DATA_ACQUISITION_MODE)
 
-		key = CreateLBNUnassocKey("ADC", ADCs[i])
+		key = CreateLBNUnassocKey("ADC", ADCs[i], NaN)
 		ADCUnassoc = GetLastSettingIndep(numericalValues, sweep, key, DATA_ACQUISITION_MODE)
 
 		if(IsNaN(DACUnassoc) && IsNan(ADCUnassoc))
