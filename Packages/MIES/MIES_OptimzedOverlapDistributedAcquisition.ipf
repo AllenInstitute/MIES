@@ -178,15 +178,11 @@ static Function/WAVE OOD_CalculateOffsets(setRegions, baseRegions, yoked)
 	variable bStart, bEnd, rStart, rEnd, noInitialRegion, overlap
 	variable numSets = DimSize(setRegions, ROWS)
 
+	yoked = !!yoked
+
 	Make/FREE/D/N=(numSets) offsets
 
-	yoked = !!yoked
-	if(yoked)
-		if(!DimSize(baseRegions, ROWS))
-			WAVE baseRegions = setRegions[0]
-			noInitialRegion = 1
-		endif
-	else
+	if(DimSize(baseRegions, ROWS) == 0)
 		WAVE baseRegions = setRegions[0]
 		noInitialRegion = 1
 	endif
