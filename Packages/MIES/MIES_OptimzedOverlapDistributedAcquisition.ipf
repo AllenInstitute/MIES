@@ -350,6 +350,8 @@ static Function OOD_Debugging(params)
 	print params.regions
 	printf "setColumns\r"
 	print params.setColumns
+	printf "preload\r"
+	print params.preload
 End
 
 /// @brief Return the oodDAQ optimized stimsets
