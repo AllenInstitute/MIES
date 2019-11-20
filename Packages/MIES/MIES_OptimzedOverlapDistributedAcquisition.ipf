@@ -163,15 +163,17 @@ static Function/WAVE OOD_GetFeatureRegions(setRegions, offsets)
 End
 
 /// @brief Calculates offsets for each stimset for OOD
-/// @param[in] setRegions wave reference wave of 2D region waves for each stimset
-/// @param[in] baseRegions 2D region wave that contains initial reserved regions,
-///            e.g. when using with yoking the caller function can preload from the previous device
-///            For the lead device where no previous regions are reserved, the wave can be 1D but must have zero rows
-/// @param[in] yoked 1 if yoked operation, 0 if not
+///
+/// @param[in]      setRegions wave reference wave of 2D region waves for each stimset
+/// @param[in, out] baseRegions 2D region wave that contains initial reserved regions,
+///                 e.g. when using with yoking the caller function can preload from the previous device
+///                 For the lead device where no previous regions are reserved, the wave can be 1D but must have zero rows
+/// @param[in]      yoked 1 if yoked operation, 0 if not
+///
 /// @return 1D wave with offsets for each stimset in points
 static Function/WAVE OOD_CalculateOffsets(setRegions, baseRegions, yoked)
 	WAVE/WAVE setRegions
-	WAVE baseRegions
+	WAVE &baseRegions
 	variable yoked
 
 	variable setNr, regNr, regCnt, baseRegCnt, baseRegNr, newOff, resAdjust
@@ -183,7 +185,7 @@ static Function/WAVE OOD_CalculateOffsets(setRegions, baseRegions, yoked)
 	Make/FREE/D/N=(numSets) offsets
 
 	if(DimSize(baseRegions, ROWS) == 0)
-		WAVE baseRegions = setRegions[0]
+		Duplicate/FREE setRegions[0], baseRegions
 		noInitialRegion = 1
 	endif
 

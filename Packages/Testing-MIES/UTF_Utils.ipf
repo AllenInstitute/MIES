@@ -1380,6 +1380,31 @@ Function oodDAQRegTests_6()
 	CHECK_EQUAL_WAVES(refWave[0][%region], params.regions)
 End
 
+Function oodDAQRegTests_7()
+
+	variable index
+	STRUCT OOdDAQParams params
+	DFREF dfr = root:oodDAQ
+	string panelTitle = "ITC18USB_Dev_0"
+	WAVE singleStimset = root:oodDAQ:input:StimSetoodDAQ_DA_0
+	Make/FREE/N=3/WAVE stimset = singleStimset
+
+	// BEGIN CHANGE ME
+	index = 7
+	InitOOdDAQParams(params, stimSet, {0, 0, 0}, 0, 0)
+	// END CHANGE ME
+
+	WAVE/WAVE stimSet = OOD_GetResultWaves(panelTitle,params)
+
+//	oodDAQStore_IGNORE(stimSet, params.offsets, params.regions, index)
+	WAVE/WAVE refWave = GetoodDAQ_RefWaves_IGNORE(index)
+	CHECK_EQUAL_WAVES(refWave[0][%stimset], stimset[0])
+	CHECK_EQUAL_WAVES(refWave[1][%stimset], stimset[1])
+	CHECK_EQUAL_WAVES(refWave[2][%stimset], stimset[2])
+	CHECK_EQUAL_WAVES(refWave[0][%offset], params.offsets)
+	CHECK_EQUAL_WAVES(refWave[0][%region], params.regions)
+End
+
 /// @}
 
 /// @name CheckActiveHeadstages
