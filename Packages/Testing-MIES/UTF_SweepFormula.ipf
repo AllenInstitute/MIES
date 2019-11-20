@@ -510,40 +510,42 @@ End
 static Function MIES_channel()
 
 	Make/FREE input = {{0}, {NaN}}
+	SetDimLabel COLS, 0, channelType, input
+	SetDimLabel COLS, 1, channelNumber, input
 	WAVE output = SF_FormulaExecutor(SF_FormulaParser("channels(AD)"))
 	REQUIRE_EQUAL_WAVES(input, output)
 
 	Make/FREE input = {{0}, {0}}
 	WAVE output = SF_FormulaExecutor(SF_FormulaParser("channels(AD0)"))
-	REQUIRE_EQUAL_WAVES(input, output)
+	REQUIRE_EQUAL_WAVES(input, output, mode = WAVE_DATA)
 
 	Make/FREE input = {{0, 0}, {0, 1}}
 	WAVE output = SF_FormulaExecutor(SF_FormulaParser("channels(AD0,AD1)"))
-	REQUIRE_EQUAL_WAVES(input, output)
+	REQUIRE_EQUAL_WAVES(input, output, mode = WAVE_DATA)
 
 	Make/FREE input = {{0, 1}, {0, 1}}
 	WAVE output = SF_FormulaExecutor(SF_FormulaParser("channels(AD0,DA1)"))
-	REQUIRE_EQUAL_WAVES(input, output)
+	REQUIRE_EQUAL_WAVES(input, output, mode = WAVE_DATA)
 
 	Make/FREE input = {{1, 1}, {0, 0}}
 	WAVE output = SF_FormulaExecutor(SF_FormulaParser("channels(DA0,DA0)"))
-	REQUIRE_EQUAL_WAVES(input, output)
+	REQUIRE_EQUAL_WAVES(input, output, mode = WAVE_DATA)
 
 	Make/FREE input = {{0, 1}, {NaN, NaN}}
 	WAVE output = SF_FormulaExecutor(SF_FormulaParser("channels(AD,DA)"))
-	REQUIRE_EQUAL_WAVES(input, output)
+	REQUIRE_EQUAL_WAVES(input, output, mode = WAVE_DATA)
 
 	Make/FREE input = {{2}, {1}}
 	WAVE output = SF_FormulaExecutor(SF_FormulaParser("channels(1)"))
-	REQUIRE_EQUAL_WAVES(input, output)
+	REQUIRE_EQUAL_WAVES(input, output, mode = WAVE_DATA)
 
 	Make/FREE input = {{2, 2}, {1, 3}}
 	WAVE output = SF_FormulaExecutor(SF_FormulaParser("channels(1,3)"))
-	REQUIRE_EQUAL_WAVES(input, output)
+	REQUIRE_EQUAL_WAVES(input, output, mode = WAVE_DATA)
 
 	Make/FREE input = {{0,1,2},{1,2,3}}
 	WAVE output = SF_FormulaExecutor(SF_FormulaParser("channels(AD1,DA2,3)"))
-	REQUIRE_EQUAL_WAVES(input, output)
+	REQUIRE_EQUAL_WAVES(input, output, mode = WAVE_DATA)
 End
 
 static Function testDifferentiales()

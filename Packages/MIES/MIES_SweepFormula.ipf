@@ -658,20 +658,22 @@ Function/WAVE SF_FormulaExecutor(jsonID, [jsonPath, graph])
 			numIndices = JSON_GetArraySize(jsonID, jsonPath)
 
 			Make/N=(numIndices, 2)/FREE out = NaN
+			SetDimLabel COLS, 0, channelType, out
+			SetDimLabel COLS, 1, channelNumber, out
 			for(i = 0; i < numIndices; i += 1)
 				JSONtype = JSON_GetType(jsonID, jsonPath + "/" + num2str(i))
 				channelName = ""
 				if(JSONtype == JSON_NUMERIC)
-					out[i][1] = JSON_GetVariable(jsonID, jsonPath + "/" + num2str(i))
+					out[i][%channelNumber] = JSON_GetVariable(jsonID, jsonPath + "/" + num2str(i))
 				elseif(JSONtype == JSON_STRING)
 					SplitString/E=regExp JSON_GetString(jsonID, jsonPath + "/" + num2str(i)), channelName, channelNumber
 					if(V_flag == 0)
 						continue
 					endif
-					out[i][1] = str2num(channelNumber)
+					out[i][%channelNumber] = str2num(channelNumber)
 				endif
-				ASSERT(!isFinite(out[i][1]) || out[i][1] < NUM_MAX_CHANNELS, "Maximum Number Of Channels exceeded.")
-				out[i][0] = WhichListItem(channelName, ITC_CHANNEL_NAMES, ";", 0, 0)
+				ASSERT(!isFinite(out[i][%channelNumber]) || out[i][%channelNumber] < NUM_MAX_CHANNELS, "Maximum Number Of Channels exceeded.")
+				out[i][%channelType] = WhichListItem(channelName, ITC_CHANNEL_NAMES, ";", 0, 0)
 			endfor
 			out[][] = out[p][q] < 0 ? NaN : out[p][q]
 			break
@@ -718,7 +720,7 @@ Function/WAVE SF_FormulaExecutor(jsonID, [jsonPath, graph])
 			range = !IsNaN(range[p]) ? range[p] : (p == 0 ? -1 : 1) * inf
 
 			WAVE channels = SF_FormulaExecutor(jsonID, jsonPath = jsonPath + "/1")
-			ASSERT(DimSize(channels, COLS) == 2, "A channel input consists of [[channelName, channelNumber]+].")
+			ASSERT(DimSize(channels, COLS) == 2, "A channel input consists of [[channelType, channelNumber]+].")
 
 			WAVE sweeps = SF_FormulaExecutor(jsonID, jsonPath = jsonPath + "/2", graph = graph)
 			ASSERT(DimSize(sweeps, COLS) < 2, "Sweeps are one-dimensional.")
@@ -1203,7 +1205,9 @@ static Function/WAVE SF_GetActiveChannelNumbers(graph, channels, sweeps, entrySo
 	string setting, msg
 
 	ASSERT(windowExists(graph), "DB/SB not specified.")
-	ASSERT(DimSize(channels, COLS) == 2, "A channel input consists of [[channelName, channelNumber]+].")
+	ASSERT(DimSize(channels, COLS) == 2, "A channel input consists of [[channelType, channelNumber]+].")
+	SetDimLabel COLS, 0, channelType, channels
+	SetDimLabel COLS, 1, channelNumber, channels
 	ASSERT(DimSize(sweeps, COLS) < 2, "Sweeps are one-dimensional.")
 	ASSERT((IsNaN(UNKNOWN_MODE) && IsNaN(entrySourceType)) || \
 		entrySourceType == DATA_ACQUISITION_MODE || \
