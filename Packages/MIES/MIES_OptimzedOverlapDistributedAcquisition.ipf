@@ -244,11 +244,11 @@ static Function OOD_CalculateOffsetsYoked(panelTitle, params)
 	variable resolution
 
 	WAVE setRegions = OOD_GetRegionsFromStimsets(params)
-	Make/FREE/N=0 params.preload
+	Make/FREE/N=0 preload
 
 	// normal acquisition
 	if(!DeviceHasFollower(panelTitle) && !DeviceIsFollower(panelTitle))
-		WAVE params.offsets = OOD_CalculateOffsets(setRegions, params.preload, 0)
+		WAVE params.offsets = OOD_CalculateOffsets(setRegions, preload, 0)
 
 	else
 
@@ -260,10 +260,11 @@ static Function OOD_CalculateOffsetsYoked(panelTitle, params)
 			ASSERT(0, "Impossible case")
 		endif
 
-		WAVE params.offsets = OOD_CalculateOffsets(setRegions, params.preload, 1)
-		OOD_StorePreload(panelTitle, params.preload)
+		WAVE params.offsets = OOD_CalculateOffsets(setRegions, preload, 1)
+		OOD_StorePreload(panelTitle, preload)
 	endif
 	WAVE/T params.regions = OOD_GetFeatureRegions(setRegions, params.offsets)
+	WAVE params.preload = preload
 
 #if defined(DEBUGGING_ENABLED)
 	OOD_Debugging(params)
