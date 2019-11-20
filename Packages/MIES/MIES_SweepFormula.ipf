@@ -683,6 +683,7 @@ Function/WAVE SF_FormulaExecutor(jsonID, [jsonPath, graph])
 			///           displayed (default): get (selected) sweeps
 			///           al:                  get all possible sweeps
 			ASSERT(JSON_GetArraySize(jsonID, jsonPath) <= 1, "Function requires 1 argument at most.")
+			ASSERT(!ParamIsDefault(graph) && !IsEmpty(graph), "Graph not specified.")
 
 			JSONtype = JSON_GetType(jsonID, jsonPath + "/0")
 			if(JSONtype == JSON_NULL)
@@ -691,20 +692,17 @@ Function/WAVE SF_FormulaExecutor(jsonID, [jsonPath, graph])
 
 			strswitch(wvT[0])
 				case "all":
-					mode = OVS_SWEEP_ALL_SWEEPNO
+					WAVE out = OVS_GetSelectedSweeps(graph, OVS_SWEEP_ALL_SWEEPNO)
 					break
 				case "displayed":
-					mode = OVS_SWEEP_SELECTION_SWEEPNO
+					WAVE/T/Z traces = PA_GetTraceInfos(graph)
+					Make/N=(DimSize(traces, ROWS))/FREE traceSweeps = str2num(traces[p][%sweepNumber])
+					WAVE out = GetUniqueEntries(traceSweeps)
 					break
 				default:
 					ASSERT(0, "Undefined argument")
 			endswitch
 
-			ASSERT(!ParamIsDefault(graph) && !IsEmpty(graph), "Graph not specified.")
-			WAVE/Z out = OVS_GetSelectedSweeps(graph, mode)
-			if(!WaveExists(out) && mode == OVS_SWEEP_SELECTION_SWEEPNO)
-				WAVE/Z out = OVS_GetSelectedSweeps(graph, OVS_SWEEP_ALL_SWEEPNO)
-			endif
 			if(!WaveExists(out))
 				Make/N=1/FREE out = {NaN} // simulates [null]
 			endif
