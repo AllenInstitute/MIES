@@ -7,6 +7,14 @@ Function NoTestSuite()
 	FAIL()
 End
 
+Function TestHistory(fileID)
+	variable fileID
+
+	WAVE/Z/T history = IPNWB#H5_LoadDataSet(fileID, "/general/history")
+	CHECK_WAVE(history, TEXT_WAVE)
+	CHECK(DimSize(history, ROWS) > 0)
+end
+
 Function TestLabnotebooks(fileID, device)
 	variable fileID
 	string device
@@ -601,6 +609,9 @@ Function TestNwbExport()
 	CHECK_WAVE(stimuluses, TEXT_WAVE)
 
 	fileID = IPNWB#H5_OpenFile(discLocation)
+
+	// check history
+	TestHistory(fileID)
 
 	// check LBNs
 	TestLabnotebooks(fileID, device)

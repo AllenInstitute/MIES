@@ -324,7 +324,7 @@ Function NWB_ExportAllData([overrideFilePath, writeStoredTestPulses, writeIgorHi
 	endif
 
 	if(ParamIsDefault(writeIgorHistory))
-		writeIgorHistory = 0
+		writeIgorHistory = 1
 	else
 		writeIgorHistory = !!writeIgorHistory
 	endif
@@ -456,7 +456,7 @@ Function NWB_ExportWithDialog(exportType)
 	DeleteFile/Z S_filename
 
 	if(exportType == NWB_EXPORT_DATA)
-		NWB_ExportAllData(overrideFilePath=S_filename, writeStoredTestPulses = 1, writeIgorHistory = 1)
+		NWB_ExportAllData(overrideFilePath=S_filename, writeStoredTestPulses = 1)
 	elseif(exportType == NWB_EXPORT_STIMSETS)
 		NWB_ExportAllStimsets(overrideFilePath=S_filename)
 	else
