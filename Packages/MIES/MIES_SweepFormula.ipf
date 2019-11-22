@@ -1075,16 +1075,10 @@ Function SF_FormulaPlotter(graph, formula, [dfr])
 	// Redimension/N=(-1, dim1Y, dim2Y)/E=1 wvY
 	// Redimension/N=(-1, dim1X, dim2X)/E=1 wvX
 
-	axes = AxisList(win)
-	if(WhichListItem("bottomText", axes) != -1)
-		ModifyGraph/W=$win freePos(bottomText)={0,kwFraction}
-		ModifyGraph/W=$win mode=0
-	else
-		if(DimSize(wvy, ROWS) < SF_MAX_NUMPOINTS_FOR_MARKERS          \
-		   && (!WaveExists(wvx)                                       \
-		       || DimSize(wvx, ROWS) <  SF_MAX_NUMPOINTS_FOR_MARKERS))
-			ModifyGraph/W=$win mode=3,marker=19
-		endif
+	if(DimSize(wvY, ROWS) < SF_MAX_NUMPOINTS_FOR_MARKERS \
+		&& (!WaveExists(wvX) \
+		|| DimSize(wvx, ROWS) <  SF_MAX_NUMPOINTS_FOR_MARKERS))
+		ModifyGraph/W=$win mode=3,marker=19
 	endif
 
 	RestoreCursors(win, cursorInfos)
