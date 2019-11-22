@@ -351,6 +351,16 @@ especially.
 
    wave(root:mywave)
 
+text
+""""
+
+Convert the given numeric output wave to a text wave. This can be used to
+force, for example, a category plot.
+
+.. code-block:: bash
+
+   range(5) vs text(range(5))
+
 data
 """"
 

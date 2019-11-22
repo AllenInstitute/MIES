@@ -613,6 +613,11 @@ Function/WAVE SF_FormulaExecutor(jsonID, [jsonPath, graph])
 		case "xvalues":
 			Make/FREE/N=(DimSize(wv, ROWS), DimSize(wv, COLS), DimSize(wv, LAYERS), DimSize(wv, CHUNKS)) out = DimOffset(wv, ROWS) + p * DimDelta(wv, ROWS)
 			break
+		case "text":
+			Make/FREE/T/N=(DimSize(wv, ROWS), DimSize(wv, COLS), DimSize(wv, LAYERS), DimSize(wv, CHUNKS)) outT = num2str(wv[p][q][r][s])
+			CopyScales wv outT
+			WAVE out = outT
+			break
 		case "setscale":
 			/// `setscale(data, [dim, [dimOffset, [dimDelta[, unit]]]])`
 			numIndices = JSON_GetArraySize(jsonID, jsonPath)
@@ -961,7 +966,11 @@ Function SF_FormulaPlotter(graph, formula, [dfr])
 		Redimension/N=(-1, dim1X * dim2X)/E=1 wv
 
 		WAVE wvX = GetSweepFormulaX(dfr)
-		Duplicate/O wv $GetWavesDataFolder(wvX, 2)
+		if(WaveType(wv, 1) == WaveType(wvX, 1))
+			Duplicate/O wv $GetWavesDataFolder(wvX, 2)
+		else
+			MoveWaveWithOverWrite(wvX, wv)
+		endif
 		WAVE wvX = GetSweepFormulaX(dfr)
 	endif
 
@@ -972,7 +981,11 @@ Function SF_FormulaPlotter(graph, formula, [dfr])
 	Redimension/N=(-1, dim1Y * dim2Y)/E=1 wv
 
 	WAVE wvY = GetSweepFormulaY(dfr)
-	Duplicate/O wv $GetWavesDataFolder(wvY, 2)
+	if(WaveType(wv, 1) == WaveType(wvY, 1))
+		Duplicate/O wv $GetWavesDataFolder(wvY, 2)
+	else
+		MoveWaveWithOverWrite(wvY, wv)
+	endif
 	WAVE wvY = GetSweepFormulaY(dfr)
 
 	win = BSP_GetFormulaGraph(graph)
