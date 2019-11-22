@@ -963,7 +963,7 @@ Function SF_FormulaPlotter(graph, formula, [dfr])
 		SF_FormulaError(dfr, WaveExists(wv), "Error in x part of formula.")
 		dim1X = max(1, DimSize(wv, COLS))
 		dim2X = max(1, DimSize(wv, LAYERS))
-		Redimension/N=(-1, dim1X * dim2X)/E=1 wv
+		Redimension/N=(-1, dim1X * dim2X)/E=1 wv /// @todo Removes dimension labels in COLS and LAYERS
 
 		WAVE wvX = GetSweepFormulaX(dfr)
 		if(WaveType(wv, 1) == WaveType(wvX, 1))
@@ -978,7 +978,7 @@ Function SF_FormulaPlotter(graph, formula, [dfr])
 	SF_FormulaError(dfr, WaveExists(wv), "Error in y part of formula.")
 	dim1Y = max(1, DimSize(wv, COLS))
 	dim2Y = max(1, DimSize(wv, LAYERS))
-	Redimension/N=(-1, dim1Y * dim2Y)/E=1 wv
+	Redimension/N=(-1, dim1Y * dim2Y)/E=1 wv /// @todo Removes dimension labels in COLS and LAYERS
 
 	WAVE wvY = GetSweepFormulaY(dfr)
 	if(WaveType(wv, 1) == WaveType(wvY, 1))
