@@ -12,8 +12,6 @@
 ///
 /// All proc pictures should have a corresponding xcf file in Packages/Artwork.
 
-/// @cond DOXYGEN_SHOULD_IGNORE_THIS
-
 // PNG: width= 105, height= 34
 Picture HardwareScanButton
 	ASCII85Begin
@@ -42,5 +40,3 @@ Picture HardwareScanButton
 	"J
 	ASCII85End
 End
-
-/// @endcond
