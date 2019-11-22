@@ -518,23 +518,47 @@ Function/WAVE SF_FormulaExecutor(jsonID, [jsonPath, graph])
 			endif
 			break
 		case "min":
-			ASSERT(DimSize(wv, LAYERS) <= 1, "Unhandled dimension")
 			ASSERT(DimSize(wv, CHUNKS) <= 1, "Unhandled dimension")
-			MatrixOP/FREE out = minCols(wv)^t
+			if(DimSize(wv, LAYERS) > 1)
+				i = DimSize(wv, COLS)
+				j = DimSize(wv, LAYERS)
+				Redimension/E=1/N=(-1, i * j, 0) wv
+				MatrixOP/FREE out = minCols(wv)
+				Redimension/E=1/N=(i, j) out
+			else
+				MatrixOP/FREE out = minCols(wv)^t
+			endif
 			SF_FormulaWaveScaleTransfer(wv, out, COLS, ROWS)
+			SF_FormulaWaveScaleTransfer(wv, out, LAYERS, COLS)
 			break
 		case "max":
-			ASSERT(DimSize(wv, LAYERS) <= 1, "Unhandled dimension")
 			ASSERT(DimSize(wv, CHUNKS) <= 1, "Unhandled dimension")
-			MatrixOP/FREE out = maxCols(wv)^t
+			if(DimSize(wv, LAYERS) > 1)
+				i = DimSize(wv, COLS)
+				j = DimSize(wv, LAYERS)
+				Redimension/E=1/N=(-1, i * j, 0) wv
+				MatrixOP/FREE out = maxCols(wv)
+				Redimension/E=1/N=(i, j) out
+			else
+				MatrixOP/FREE out = maxCols(wv)^t
+			endif
 			SF_FormulaWaveScaleTransfer(wv, out, COLS, ROWS)
+			SF_FormulaWaveScaleTransfer(wv, out, LAYERS, COLS)
 			break
 		case "avg":
 		case "mean":
-			ASSERT(DimSize(wv, LAYERS) <= 1, "Unhandled dimension")
 			ASSERT(DimSize(wv, CHUNKS) <= 1, "Unhandled dimension")
-			MatrixOP/FREE out = averageCols(wv)^t
+			if(DimSize(wv, LAYERS) > 1)
+				i = DimSize(wv, COLS)
+				j = DimSize(wv, LAYERS)
+				Redimension/E=1/N=(-1, i * j, 0) wv
+				MatrixOP/FREE out = averageCols(wv)
+				Redimension/E=1/N=(i, j) out
+			else
+				MatrixOP/FREE out = averageCols(wv)^t
+			endif
 			SF_FormulaWaveScaleTransfer(wv, out, COLS, ROWS)
+			SF_FormulaWaveScaleTransfer(wv, out, LAYERS, COLS)
 			break
 		case "rms":
 			ASSERT(DimSize(wv, LAYERS) <= 1, "Unhandled dimension")
