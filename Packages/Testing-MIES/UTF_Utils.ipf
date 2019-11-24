@@ -3115,7 +3115,7 @@ Function FLW_RequiresBigEnoughWave()
 	endtry
 End
 
-Function/WAVE FLWSampleData()
+Function/WAVE FLW_SampleData()
 
 	Make/FREE data1 = {10, 20, 30, 40}
 	SetScale/P x, 4, 0.5, data1
@@ -3147,7 +3147,7 @@ Function/WAVE FLWSampleData()
 	return result
 End
 
-// UTF_TD_GENERATOR FLWSampleData
+// UTF_TD_GENERATOR FLW_SampleData
 Function FLW_SameResultsAsFindLevel([wv])
 	WAVE wv
 
