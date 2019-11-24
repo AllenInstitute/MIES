@@ -3158,11 +3158,10 @@ Function FLW_SameResultsAsFindLevel([wv])
 
 	numCols = max(1, DimSize(wv, COLS))
 
-	Make/N=4 oldShape = DimSize(wv, p)
+	Duplicate/FREE wv, wvCopy
 
-	WAVE result = FindLevelWrapper(wv, level, edge)
-	Make/N=4 newshape = DimSize(wv, p)
-	CHECK_EQUAL_WAVES(oldShape, newShape)
+	WAVE result = FindLevelWrapper(wv, level, edge, FINDLEVEL_MODE_SINGLE)
+	CHECK_EQUAL_WAVES(wv, wvCopy)
 
 	for(i = 0; i < numCols; i += 1)
 		Duplicate/FREE/RMD=[][i, i] wv, singleColum
