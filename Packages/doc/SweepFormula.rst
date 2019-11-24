@@ -380,6 +380,26 @@ and falling (`0`), other options are rising (`1`) or falling (`2`).
 
    findlevel([1, 2, 3], 1.5)
 
+apfrequency
+"""""""""""
+
+`apfrequency(data, [method, level])` will return the action potential frequency
+using the `full` (default or `0`), `instantaneous` (`1`) or
+`apcount` (`2`) method. The default level is `0`.
+
+The calculation for these methods are done using the below formulas where
+:math:`l` denotes the number of found levels, :math:`t_{i}` the timepoint in
+seconds of the level and :math:`T` the total x range of the data in seconds.
+
+.. math::
+   f_{\text{full}}          &= \frac{l}{T}                                                         \\
+   f_{\text{instantaneous}} &= \frac{1}{\sum_{i = 0}^{i = l - 1} \left( t_{i + 1} - t_{i} \right)} \\
+   f_{\text{apcount}}       &= l                                                                   \\
+
+.. code-block:: bash
+
+   apfrequency([10, 20, 30], 1, 15)
+
 Various
 ^^^^^^^
 
