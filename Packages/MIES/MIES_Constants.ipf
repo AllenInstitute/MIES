@@ -1188,3 +1188,10 @@ Constant FINDLEVEL_EDGE_INCREASING = 1
 Constant FINDLEVEL_EDGE_DECREASING = 2
 Constant FINDLEVEL_EDGE_BOTH       = 0
 /// @}
+
+/// @name Find level modes
+/// @anchor FindLevelModes
+/// @{
+Constant FINDLEVEL_MODE_SINGLE = 1
+Constant FINDLEVEL_MODE_MULTI  = 2
+/// @}

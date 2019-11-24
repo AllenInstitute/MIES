@@ -3062,7 +3062,7 @@ Function FLW_RequiresNumericWave()
 
 	try
 		Make/T/FREE data
-		FindLevelWrapper(data, FINDLEVEL_EDGE_BOTH, 0.1)
+		FindLevelWrapper(data, FINDLEVEL_EDGE_BOTH, 0.1, FINDLEVEL_MODE_SINGLE)
 		FAIL()
 	catch
 		PASS()
@@ -3086,7 +3086,7 @@ Function FLW_RequiresFiniteLevel([var])
 
 	try
 		Make/FREE data
-		FindLevelWrapper(data, FINDLEVEL_EDGE_BOTH, var)
+		FindLevelWrapper(data, FINDLEVEL_EDGE_BOTH, var, FINDLEVEL_MODE_SINGLE)
 		FAIL()
 	catch
 		PASS()
@@ -3097,7 +3097,7 @@ Function FLW_Requires2DWave()
 
 	try
 		Make/FREE/N=(10, 20, 30) data
-		FindLevelWrapper(data, FINDLEVEL_EDGE_BOTH, 0.1)
+		FindLevelWrapper(data, FINDLEVEL_EDGE_BOTH, 0.1, FINDLEVEL_MODE_SINGLE)
 		FAIL()
 	catch
 		PASS()
@@ -3108,7 +3108,7 @@ Function FLW_RequiresBigEnoughWave()
 
 	try
 		Make/FREE/N=(1) data
-		FindLevelWrapper(data, FINDLEVEL_EDGE_BOTH, 0.1)
+		FindLevelWrapper(data, FINDLEVEL_EDGE_BOTH, 0.1, FINDLEVEL_MODE_SINGLE)
 		FAIL()
 	catch
 		PASS()
@@ -3142,13 +3142,18 @@ Function/WAVE FLW_SampleData()
 	SetNumberInWaveNote(data5, "edge", FINDLEVEL_EDGE_BOTH)
 	SetNumberInWaveNote(data5, "level", 11)
 
-	Make/WAVE/FREE result = {data1, data2, data3, data4, data5}
+	Make/FREE data6 = {{10, 20, 30, 40, 50, 60}, {10, 15, 10, 15, 10, 15}, {10, 5, 10, 5, 10, 5}}
+	SetScale/P x, 4, -0.5, data6
+	SetNumberInWaveNote(data6, "edge", FINDLEVEL_EDGE_BOTH)
+	SetNumberInWaveNote(data6, "level", 11)
+
+	Make/WAVE/FREE result = {data1, data2, data3, data4, data5, data6}
 
 	return result
 End
 
 // UTF_TD_GENERATOR FLW_SampleData
-Function FLW_SameResultsAsFindLevel([wv])
+Function FLW_SameResultsAsFindLevelSingle([wv])
 	WAVE wv
 
 	variable i, edge, level, numCols
@@ -3168,7 +3173,78 @@ Function FLW_SameResultsAsFindLevel([wv])
 
 		FindLevel/Q/EDGE=(edge) singleColum, level
 		CHECK_EQUAL_VAR(result[i], V_LevelX)
+		CHECK_EQUAL_VAR(str2num(GetDimLabel(result, ROWS, i)), 1)
 	endfor
+End
+
+// Returns a wave reference wave with each entry holding a wave reference wave
+Function/WAVE FLW_SampleDataMulti()
+
+	WAVE/WAVE sampleData = FLW_SampleData()
+
+	// Attach the results
+	Make/FREE/D result1 = {4.25}
+	SetDimLabel ROWS, 0, $"1", result1
+
+	Make/FREE/D result2 = {-2.525}
+	SetDimLabel ROWS, 0, $"1", result2
+
+	Make/FREE/D result3 = {3.8, 3.6, NaN}
+	SetDimLabel ROWS, 0, $"1", result3
+	SetDimLabel ROWS, 1, $"1", result3
+	SetDimLabel ROWS, 2, $"0", result3
+
+	Make/FREE/D result4 = {NaN,NaN,NaN}
+	SetDimLabel ROWS, 0, $"0", result4
+	SetDimLabel ROWS, 1, $"0", result4
+	SetDimLabel ROWS, 2, $"0", result4
+
+	Make/FREE/D result5 = {3.95,3.9,NaN}
+	SetDimLabel ROWS, 0, $"1", result5
+	SetDimLabel ROWS, 1, $"1", result5
+	SetDimLabel ROWS, 2, $"0", result5
+
+	Make/FREE/D/N=(3, 5) result6
+	result6[0][0]= {3.95,3.9,NaN}
+	result6[0][1]= {NaN,3.1,NaN}
+	result6[0][2]= {NaN,2.9,NaN}
+	result6[0][3]= {NaN,2.1,NaN}
+	result6[0][4]= {NaN,1.9,NaN}
+	SetDimLabel ROWS, 0, $"1", result6
+	SetDimLabel ROWS, 1, $"5", result6
+	SetDimLabel ROWS, 2, $"0", result6
+
+	Make/FREE/WAVE pairs1 = {sampleData[0], result1}
+	Make/FREE/WAVE pairs2 = {sampleData[1], result2}
+	Make/FREE/WAVE pairs3 = {sampleData[2], result3}
+	Make/FREE/WAVE pairs4 = {sampleData[3], result4}
+	Make/FREE/WAVE pairs5 = {sampleData[4], result5}
+	Make/FREE/WAVE pairs6 = {sampleData[5], result6}
+
+	Make/FREE/WAVE sampleDataMulti = {pairs1, pairs2, pairs3, pairs4, pairs5, pairs6}
+
+	return sampleDataMulti
+End
+
+// UTF_TD_GENERATOR FLW_SampleDataMulti
+Function FLW_MultiWorks([wv])
+	WAVE wv
+
+	variable i, edge, level
+
+	WAVE/WAVE wvWave = wv
+
+	WAVE data      = wvWave[0]
+	WAVE resultRef = wvWave[1]
+
+	edge = GetNumberFromWaveNote(data, "edge")
+	level = GetNumberFromWaveNote(data, "level")
+
+	Duplicate/FREE data, dataCopy
+
+	WAVE result = FindLevelWrapper(data, level, edge, FINDLEVEL_MODE_MULTI)
+	CHECK_EQUAL_WAVES(data, dataCopy)
+	CHECK_EQUAL_WAVES(result, resultRef, tol=1e-8)
 End
 
 /// @}

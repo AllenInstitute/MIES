@@ -761,7 +761,7 @@ Function/WAVE SF_FormulaExecutor(jsonID, [jsonPath, graph])
 				Make/FREE edge = {0}
 			endif
 
-			WAVE out = FindLevelWrapper(data, level[0], edge[0])
+			WAVE out = FindLevelWrapper(data, level[0], edge[0], FINDLEVEL_MODE_SINGLE)
 			break
 		default:
 			ASSERT(0, "Undefined Operation")
