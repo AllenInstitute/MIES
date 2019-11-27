@@ -82,12 +82,15 @@ Function DB_ResetAndStoreCurrentDBPanel()
 	BSP_UnsetDynamicStartupSettingsOfDataBrowser(panelTitle)
 	DB_UnsetDynamicSettingsHistory(panelTitle)
 
+	TabControl SF_InfoTab, WIN = $bsPanel, disable=2
+
 	// invalidate main panel
 	SetWindow $panelTitle, userData(panelVersion) = ""
 
 	// static defaults for SweepControl subwindow
 	PopupMenu Popup_SweepControl_Selector WIN = $scPanel, mode=1,popvalue=" ", value= #"\" \""
 	CheckBox check_SweepControl_AutoUpdate WIN = $scPanel, value= 0
+
 	// static defaults for BrowserSettings subwindow
 	PGC_SetAndActivateControl(bsPanel, "Settings", val = 0)
 	CheckBox check_overlaySweeps_disableHS WIN = $bsPanel, value= 0
@@ -166,6 +169,7 @@ Function DB_ResetAndStoreCurrentDBPanel()
 	CheckBox check_BrowserSettings_splitTTL WIN = $bsPanel, value= 0
 	CheckBox check_BrowserSettings_DB_Passed WIN = $bsPanel, value= 0
 	CheckBox check_BrowserSettings_DB_Failed WIN = $bsPanel, value= 0
+	CheckBox check_BrowserSettings_SF WIN = $bsPanel, value= 0
 
 	sfFormula = BSP_GetSFFormula(panelTitle)
 	ReplaceNotebookText(sfFormula, "data(\rcursors(A,B),\rchannels(AD),\rsweeps()\r)")
