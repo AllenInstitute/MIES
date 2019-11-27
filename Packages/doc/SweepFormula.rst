@@ -448,3 +448,17 @@ log10
 """""
 
 Apply the decadic (base 10) logarithm to its input.
+
+Plotting
+^^^^^^^^
+
+Two formulas can be plotted against each other by using the vs operator.
+
+.. code-block:: bash
+
+   0...10 vs range(10, 100, 10)
+
+gives
+
+.. figure:: sweepFormulaPlot.svg
+   :align: center
