@@ -695,46 +695,6 @@ Function DB_CloseSettingsHistoryHook(s)
 	return hookResult
 End
 
-Function DB_DataBrowserStartupSettings()
-
-	string allCheckBoxes, mainPanel, lbPanel, mainGraph, lbGraph, bsPanel
-	variable i, numCheckBoxes
-
-	mainPanel = DATABROWSER_WINDOW_TITLE
-	lbPanel   = BSP_GetNotebookSubWindow(mainPanel)
-	mainGraph = DB_GetMainGraph(mainPanel)
-	lbGraph   = DB_GetLabNotebookGraph(mainPanel)
-	bsPanel   = BSP_GetPanel(mainPanel)
-
-	if(!windowExists(mainPanel))
-		print "A panel named \"DataBrowser\" does not exist"
-		ControlWindowToFront()
-		return NaN
-	endif
-
-	// remove tools
-	HideTools/A/W=$mainPanel
-
-	RemoveTracesFromGraph(mainGraph)
-	if(windowExists(lbGraph))
-		RemoveTracesFromGraph(lbGraph)
-	endif
-
-	Notebook $lbPanel selection={startOfFile, endOfFile}
-	Notebook $lbPanel text = ""
-
-	SetWindow $mainPanel, userdata(DataFolderPath) = ""
-
-	SetCheckBoxState(bsPanel, "check_BrowserSettings_ADC", CHECKBOX_SELECTED)
-
-	SetSliderPositionIndex(bsPanel, "slider_BrowserSettings_dDAQ", -1)
-	DisableControl(bsPanel, "slider_BrowserSettings_dDAQ")
-
-	DB_ClearGraph(mainPanel)
-
-	SearchForInvalidControlProcs(mainPanel)
-End
-
 Function DB_ButtonProc_ChangeSweep(ba) : ButtonControl
 	STRUCT WMButtonAction &ba
 
