@@ -4541,6 +4541,22 @@ Function HasEnoughDiscspaceFree(discPath, requiredFreeSpace)
 	return IsFinite(leftOverBytes) && leftOverBytes >= requiredFreeSpace
 End
 
+threadsafe static Function FindLevelSingle(data, level, edge, first, last)
+	WAVE data
+	variable level, edge, first, last
+
+	variable found, numLevels
+
+	FindLevel/Q/EDGE=(edge)/R=[first, last] data, level
+	found = !V_flag
+
+	if(!found)
+		return NaN
+	endif
+
+	return V_LevelX - DimDelta(data, ROWS) * first
+End
+
 /// @brief FindLevel wrapper which handles 2D data without copying data
 ///
 /// @param data input data, can be either 1D or 2D
@@ -4567,15 +4583,7 @@ Function/WAVE FindLevelWrapper(data, level, edge)
 	Redimension/N=(numColsFixed * numRows)/E=1 data
 
 	Make/D/FREE/N=(numColsFixed) result = NaN
-
-	for(i = 0; i < numColsFixed; i += 1)
-
-		first = i * numRows
-		last  = first + numRows - 1
-
-		FindLevel/Q/EDGE=(edge)/R=[first, last] data, level
-		result[i] = !V_flag ? (V_LevelX - xDelta * first) : NaN
-	endfor
+	result[] = FindLevelSingle(data, level, edge, p * numRows, (p + 1) * numRows - 1)
 
 	// don't use numColsFixed here as we want to have the original shape
 	Redimension/N=(numRows, numCols)/E=1 data
