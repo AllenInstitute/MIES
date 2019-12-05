@@ -39,6 +39,8 @@ static Constant SF_ACTION_ARRAY = 8
 /// Regular expression which extracts both formulas from `$a vs $b`
 static StrConstant SF_SWEEPFORMULA_REGEXP = "^(.+?)(?:\\bvs\\b(.+))?$"
 
+static Constant SF_MAX_NUMPOINTS_FOR_MARKERS = 1000
+
 static Constant SF_APFREQUENCY_FULL          = 0x0
 static Constant SF_APFREQUENCY_INSTANTANEOUS = 0x1
 static Constant SF_APFREQUENCY_APCOUNT       = 0x2
@@ -905,14 +907,12 @@ Function SF_FormulaPlotter(graph, formula, [dfr])
 				trace = traceName + num2istr(i)
 				AppendTograph/W=$win wvY[][0]/TN=$trace vs wvX[i][]
 			endfor
-			ModifyGraph/W=$win mode=3
 		elseif(DimSize(wvX, ROWS) == 1) // 1D vs 0D
 			numTraces = DimSize(wvY, ROWS)
 			for(i = 0; i < numTraces; i += 1)
 				trace = traceName + num2istr(i)
 				AppendTograph/W=$win wvY[i][]/TN=$trace vs wvX[][0]
 			endfor
-			ModifyGraph/W=$win mode=3
 		else // 1D vs 1D
 			splitTraces = min(DimSize(wvY, ROWS), DimSize(wvX, ROWS))
 			numTraces = floor(max(DimSize(wvY, ROWS), DimSize(wvX, ROWS)) / splitTraces)
@@ -932,18 +932,12 @@ Function SF_FormulaPlotter(graph, formula, [dfr])
 			trace = traceName + num2istr(i)
 			AppendTograph/W=$win wvY[][0]/TN=$trace vs wvX[][i]
 		endfor
-		if(DimSize(wvY, ROWS) == 1)
-			ModifyGraph/W=$win mode=3
-		endif
 	elseif(dim1X * dim2X == 1) // 2D vs 1D
 		numTraces = dim1Y * dim2Y
 		for(i = 0; i < numTraces; i += 1)
 			trace = traceName + num2istr(i)
 			AppendTograph/W=$win wvY[][i]/TN=$trace vs wvX
 		endfor
-		if(DimSize(wvX, ROWS) == 1)
-			ModifyGraph/W=$win mode=3
-		endif
 	else // 2D vs 2D
 		numTraces = WaveExists(wvX) ? max(1, max(dim1Y * dim2Y, dim1X * dim2X)) : max(1, dim1Y * dim2Y)
 		if(DimSize(wvY, ROWS) == DimSize(wvX, ROWS))
@@ -970,6 +964,12 @@ Function SF_FormulaPlotter(graph, formula, [dfr])
 	if(WhichListItem("bottomText", axes) != -1)
 		ModifyGraph/W=$win freePos(bottomText)={0,kwFraction}
 		ModifyGraph/W=$win mode=0
+	else
+		if(DimSize(wvy, ROWS) < SF_MAX_NUMPOINTS_FOR_MARKERS          \
+		   && (!WaveExists(wvx)                                       \
+		       || DimSize(wvx, ROWS) <  SF_MAX_NUMPOINTS_FOR_MARKERS))
+			ModifyGraph/W=$win mode=3,marker=19
+		endif
 	endif
 
 	RestoreCursors(win, cursorInfos)
