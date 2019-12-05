@@ -411,12 +411,12 @@ Function/WAVE SF_FormulaExecutor(jsonID, [jsonPath, graph])
 			SF_FormulaWaveScaleTransfer(element, out, ROWS, COLS)
 			SF_FormulaWaveScaleTransfer(element, out, COLS, LAYERS)
 			SF_FormulaWaveScaleTransfer(element, out, LAYERS, CHUNKS)
-			out[indices[i]][0, max(0, DimSize(element, ROWS) - 1)][0, max(0, DimSize(element, COLS) - 1)][0, max(0, DimSize(element, LAYERS) - 1)] = element[q][r][s]
+			Multithread out[indices[i]][0, max(0, DimSize(element, ROWS) - 1)][0, max(0, DimSize(element, COLS) - 1)][0, max(0, DimSize(element, LAYERS) - 1)] = element[q][r][s]
 		endfor
 
 		EXTRACT/FREE/INDX types, indices, types[p] == JSON_NUMERIC
 		for(i = 0; i < DimSize(indices, ROWS); i += 1)
-			out[indices[i]][][][] = out[indices[i]][0][0][0]
+			Multithread out[indices[i]][][][] = out[indices[i]][0][0][0]
 		endfor
 
 		topArraySize[1,*] = topArraySize[p] == 1 ? 0 : topArraySize[p]
@@ -1048,7 +1048,7 @@ static Function/WAVE SF_GetSweepForFormula(graph, rangeStart, rangeEnd, channelT
 		ASSERT(pEnd < DimSize(sweep, ROWS) && pStart >= 0, "Invalid sweep range.")
 		ASSERt(abs(pStart - pEnd) == DimSize(sweepData, ROWS), "Sweeps not equal.")
 		ASSERT(DimDelta(sweep, ROWS) == DimDelta(sweepData, ROWS), "Sweeps not equal.")
-		sweepData[][i] = sweep[pStart + p]
+		Multithread sweepData[][i] = sweep[pStart + p]
 	endfor
 
 	return sweepData
