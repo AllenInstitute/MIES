@@ -1167,13 +1167,14 @@ static Function oodDAQStore_IGNORE(stimset, offsets, regions, index)
 	WAVE offsets, regions
 	variable index
 
+	variable i
+
 	DFREF dfr = root:oodDAQ
 
-	WAVE singleStimset = stimset[0]
-	Duplicate/O singleStimset, dfr:$("stimset_oodDAQ_" + num2str(index) + "_0")
-
-	WAVE singleStimset = stimset[1]
-	Duplicate/O singleStimset, dfr:$("stimset_oodDAQ_" + num2str(index) + "_1")
+	for(i = 0; i < DimSize(stimset, ROWS); i += 1)
+		WAVE singleStimset = stimset[i]
+		Duplicate/O singleStimset, dfr:$("stimset_oodDAQ_" + num2str(index) + "_" + num2str(i))
+	endfor
 
 	Duplicate/O offsets, dfr:$("offsets_" + num2str(index))
 	Duplicate/O regions, dfr:$("regions_" + num2str(index))
@@ -1182,18 +1183,31 @@ End
 static Function/WAVE GetoodDAQ_RefWaves_IGNORE(index)
 	variable index
 
-	Make/FREE/WAVE/N=4 wv
+	variable i
+
+	Make/FREE/WAVE/N=(64, 3) wv
+
+	SetDimLabel COLS, 0, stimset, wv
+	SetDimLabel COLS, 1, offset,  wv
+	SetDimLabel COLS, 2, region,  wv
+
 	DFREF dfr = root:oodDAQ
 
-	WAVE/Z/SDFR=dfr ref_stimset_0 = $("stimset_oodDAQ_" + num2str(index) + "_0")
-	WAVE/Z/SDFR=dfr ref_stimset_1 = $("stimset_oodDAQ_" + num2str(index) + "_1")
+	for(i = 0; i < DimSize(wv, ROWS); i += 1)
+		WAVE/Z/SDFR=dfr ref_stimset = $("stimset_oodDAQ_" + num2str(index) + "_" + num2str(i))
+
+		if(!WaveExists(ref_stimset))
+			break
+		endif
+
+		wv[i][%stimset] = ref_stimset
+	endfor
+
 	WAVE/Z/SDFR=dfr ref_offsets   = $("offsets_" + num2str(index))
 	WAVE/Z/SDFR=dfr ref_regions   = $("regions_" + num2str(index))
 
-	wv[0] = ref_stimset_0
-	wv[1] = ref_stimset_1
-	wv[2] = ref_offsets
-	wv[3] = ref_regions
+	wv[0][%offset] = ref_offsets
+	wv[0][%region] = ref_regions
 
 	return wv
 End
@@ -1216,10 +1230,10 @@ Function oodDAQRegTests_0()
 
 //	oodDAQStore_IGNORE(stimSet, params.offsets, params.regions, index)
 	WAVE/WAVE refWave = GetoodDAQ_RefWaves_IGNORE(index)
-	CHECK_EQUAL_WAVES(refWave[0], stimset[0])
-	CHECK_EQUAL_WAVES(refWave[1], stimset[1])
-	CHECK_EQUAL_WAVES(refWave[2], params.offsets)
-	CHECK_EQUAL_WAVES(refWave[3], params.regions)
+	CHECK_EQUAL_WAVES(refWave[0][%stimset], stimset[0])
+	CHECK_EQUAL_WAVES(refWave[1][%stimset], stimset[1])
+	CHECK_EQUAL_WAVES(refWave[0][%offset], params.offsets)
+	CHECK_EQUAL_WAVES(refWave[0][%region], params.regions)
 End
 
 Function oodDAQRegTests_1()
@@ -1240,10 +1254,10 @@ Function oodDAQRegTests_1()
 
 //	oodDAQStore_IGNORE(stimSet, params.offsets, params.regions, index)
 	WAVE/WAVE refWave = GetoodDAQ_RefWaves_IGNORE(index)
-	CHECK_EQUAL_WAVES(refWave[0], stimset[0])
-	CHECK_EQUAL_WAVES(refWave[1], stimset[1])
-	CHECK_EQUAL_WAVES(refWave[2], params.offsets)
-	CHECK_EQUAL_WAVES(refWave[3], params.regions)
+	CHECK_EQUAL_WAVES(refWave[0][%stimset], stimset[0])
+	CHECK_EQUAL_WAVES(refWave[1][%stimset], stimset[1])
+	CHECK_EQUAL_WAVES(refWave[0][%offset], params.offsets)
+	CHECK_EQUAL_WAVES(refWave[0][%region], params.regions)
 End
 
 Function oodDAQRegTests_2()
@@ -1264,10 +1278,10 @@ Function oodDAQRegTests_2()
 
 //	oodDAQStore_IGNORE(stimSet, params.offsets, params.regions, index)
 	WAVE/WAVE refWave = GetoodDAQ_RefWaves_IGNORE(index)
-	CHECK_EQUAL_WAVES(refWave[0], stimset[0])
-	CHECK_EQUAL_WAVES(refWave[1], stimset[1])
-	CHECK_EQUAL_WAVES(refWave[2], params.offsets)
-	CHECK_EQUAL_WAVES(refWave[3], params.regions)
+	CHECK_EQUAL_WAVES(refWave[0][%stimset], stimset[0])
+	CHECK_EQUAL_WAVES(refWave[1][%stimset], stimset[1])
+	CHECK_EQUAL_WAVES(refWave[0][%offset], params.offsets)
+	CHECK_EQUAL_WAVES(refWave[0][%region], params.regions)
 End
 
 Function oodDAQRegTests_3()
@@ -1288,10 +1302,10 @@ Function oodDAQRegTests_3()
 
 //	oodDAQStore_IGNORE(stimSet, params.offsets, params.regions, index)
 	WAVE/WAVE refWave = GetoodDAQ_RefWaves_IGNORE(index)
-	CHECK_EQUAL_WAVES(refWave[0], stimset[0])
-	CHECK_EQUAL_WAVES(refWave[1], stimset[1])
-	CHECK_EQUAL_WAVES(refWave[2], params.offsets)
-	CHECK_EQUAL_WAVES(refWave[3], params.regions)
+	CHECK_EQUAL_WAVES(refWave[0][%stimset], stimset[0])
+	CHECK_EQUAL_WAVES(refWave[1][%stimset], stimset[1])
+	CHECK_EQUAL_WAVES(refWave[0][%offset], params.offsets)
+	CHECK_EQUAL_WAVES(refWave[0][%region], params.regions)
 End
 
 Function oodDAQRegTests_4()
@@ -1312,10 +1326,10 @@ Function oodDAQRegTests_4()
 
 //	oodDAQStore_IGNORE(stimSet, params.offsets, params.regions, index)
 	WAVE/WAVE refWave = GetoodDAQ_RefWaves_IGNORE(index)
-	CHECK_EQUAL_WAVES(refWave[0], stimset[0])
-	CHECK_EQUAL_WAVES(refWave[1], stimset[1])
-	CHECK_EQUAL_WAVES(refWave[2], params.offsets)
-	CHECK_EQUAL_WAVES(refWave[3], params.regions)
+	CHECK_EQUAL_WAVES(refWave[0][%stimset], stimset[0])
+	CHECK_EQUAL_WAVES(refWave[1][%stimset], stimset[1])
+	CHECK_EQUAL_WAVES(refWave[0][%offset], params.offsets)
+	CHECK_EQUAL_WAVES(refWave[0][%region], params.regions)
 End
 
 Function oodDAQRegTests_5()
@@ -1336,10 +1350,10 @@ Function oodDAQRegTests_5()
 
 //	oodDAQStore_IGNORE(stimSet, params.offsets, params.regions, index)
 	WAVE/WAVE refWave = GetoodDAQ_RefWaves_IGNORE(index)
-	CHECK_EQUAL_WAVES(refWave[0], stimset[0])
-	CHECK_EQUAL_WAVES(refWave[1], stimset[1])
-	CHECK_EQUAL_WAVES(refWave[2], params.offsets)
-	CHECK_EQUAL_WAVES(refWave[3], params.regions)
+	CHECK_EQUAL_WAVES(refWave[0][%stimset], stimset[0])
+	CHECK_EQUAL_WAVES(refWave[1][%stimset], stimset[1])
+	CHECK_EQUAL_WAVES(refWave[0][%offset], params.offsets)
+	CHECK_EQUAL_WAVES(refWave[0][%region], params.regions)
 End
 
 Function oodDAQRegTests_6()
@@ -1360,10 +1374,10 @@ Function oodDAQRegTests_6()
 
 //	oodDAQStore_IGNORE(stimSet, params.offsets, params.regions, index)
 	WAVE/WAVE refWave = GetoodDAQ_RefWaves_IGNORE(index)
-	CHECK_EQUAL_WAVES(refWave[0], stimset[0])
-	CHECK_EQUAL_WAVES(refWave[1], stimset[1])
-	CHECK_EQUAL_WAVES(refWave[2], params.offsets)
-	CHECK_EQUAL_WAVES(refWave[3], params.regions)
+	CHECK_EQUAL_WAVES(refWave[0][%stimset], stimset[0])
+	CHECK_EQUAL_WAVES(refWave[1][%stimset], stimset[1])
+	CHECK_EQUAL_WAVES(refWave[0][%offset], params.offsets)
+	CHECK_EQUAL_WAVES(refWave[0][%region], params.regions)
 End
 
 /// @}
