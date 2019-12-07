@@ -39,6 +39,12 @@ static Constant SF_ACTION_ARRAY = 8
 /// Regular expression which extracts both formulas from `$a vs $b`
 static StrConstant SF_SWEEPFORMULA_REGEXP = "^(.+?)(?:\\bvs\\b(.+))?$"
 
+static Constant SF_MAX_NUMPOINTS_FOR_MARKERS = 1000
+
+static Constant SF_APFREQUENCY_FULL          = 0x0
+static Constant SF_APFREQUENCY_INSTANTANEOUS = 0x1
+static Constant SF_APFREQUENCY_APCOUNT       = 0x2
+
 static Function SF_FormulaCheck(condition, message)
 	Variable condition
 	String message
@@ -405,12 +411,12 @@ Function/WAVE SF_FormulaExecutor(jsonID, [jsonPath, graph])
 			SF_FormulaWaveScaleTransfer(element, out, ROWS, COLS)
 			SF_FormulaWaveScaleTransfer(element, out, COLS, LAYERS)
 			SF_FormulaWaveScaleTransfer(element, out, LAYERS, CHUNKS)
-			out[indices[i]][0, max(0, DimSize(element, ROWS) - 1)][0, max(0, DimSize(element, COLS) - 1)][0, max(0, DimSize(element, LAYERS) - 1)] = element[q][r][s]
+			Multithread out[indices[i]][0, max(0, DimSize(element, ROWS) - 1)][0, max(0, DimSize(element, COLS) - 1)][0, max(0, DimSize(element, LAYERS) - 1)] = element[q][r][s]
 		endfor
 
 		EXTRACT/FREE/INDX types, indices, types[p] == JSON_NUMERIC
 		for(i = 0; i < DimSize(indices, ROWS); i += 1)
-			out[indices[i]][][][] = out[indices[i]][0][0][0]
+			Multithread out[indices[i]][][][] = out[indices[i]][0][0][0]
 		endfor
 
 		topArraySize[1,*] = topArraySize[p] == 1 ? 0 : topArraySize[p]
@@ -761,7 +767,61 @@ Function/WAVE SF_FormulaExecutor(jsonID, [jsonPath, graph])
 				Make/FREE edge = {0}
 			endif
 
-			WAVE out = FindLevelWrapper(data, level[0], edge[0])
+			WAVE out = FindLevelWrapper(data, level[0], edge[0], FINDLEVEL_MODE_SINGLE)
+			break
+		case "apfrequency":
+			// apfrequency(data, [frequency calculation method], [spike detection crossing level])
+			numIndices = JSON_GetArraySize(jsonID, jsonPath)
+			ASSERT(numIndices <=3, "Maximum number of arguments exceeded.")
+			ASSERT(numIndices >= 1, "At least one argument.")
+
+			WAVE data = SF_FormulaExecutor(jsonID, jsonPath = jsonPath + "/0", graph = graph)
+			if(numIndices == 3)
+				WAVE level = SF_FormulaExecutor(jsonID, jsonPath = jsonPath + "/2", graph = graph)
+				ASSERT(DimSize(level, ROWS) == 1, "Too many input values for parameter level")
+				ASSERT(IsNumericWave(level), "level parameter must be numeric")
+			else
+				Make/FREE/N=1 level = {0}
+			endif
+
+			if(numIndices >= 2)
+				WAVE method = SF_FormulaExecutor(jsonID, jsonPath = jsonPath + "/1", graph = graph)
+				ASSERT(DimSize(method, ROWS) == 1, "Too many input values for parameter method")
+				ASSERT(IsNumericWave(method), "method parameter must be numeric.")
+				ASSERT(method[0] == SF_APFREQUENCY_FULL || method[0] == SF_APFREQUENCY_INSTANTANEOUS ||  method[0] == SF_APFREQUENCY_APCOUNT, "method parameter is invalid")
+			else
+				Make/FREE method = {SF_APFREQUENCY_FULL}
+			endif
+
+			WAVE levels = FindLevelWrapper(data, level[0], FINDLEVEL_EDGE_INCREASING, FINDLEVEL_MODE_MULTI)
+			variable numSets = DimSize(levels, ROWS)
+			Make/FREE/N=(numSets) levelPerSet = str2num(GetDimLabel(levels, ROWS, p))
+
+			// @todo we assume that the x-axis of data has a ms scale for FULL/INSTANTANEOUS
+			switch(method[0])
+				case SF_APFREQUENCY_FULL:
+					Make/N=(numSets)/D/FREE outD = levelPerSet[p] / (DimDelta(data, ROWS) * DimSize(data, ROWS)) * 1e3
+					break
+				case SF_APFREQUENCY_INSTANTANEOUS:
+					Make/N=(numSets)/D/FREE outD
+
+					for(i = 0; i < numSets; i += 1)
+						if(levelPerSet[i] <= 1)
+							outD[i] = NaN
+						else
+							Make/FREE/D/N=(levelPerSet[i] - 1) distances
+							distances[0, levelPerSet[i] - 2] = levels[i][p + 1] - levels[i][p]
+							outD[i] = 1.0 / Mean(distances) * 1e3
+						endif
+					endfor
+					break
+				case SF_APFREQUENCY_APCOUNT:
+					Make/N=(numSets)/D/FREE outD = levelPerSet[p]
+					break
+			endswitch
+
+			WAVE out = outD
+
 			break
 		default:
 			ASSERT(0, "Undefined Operation")
@@ -847,14 +907,12 @@ Function SF_FormulaPlotter(graph, formula, [dfr])
 				trace = traceName + num2istr(i)
 				AppendTograph/W=$win wvY[][0]/TN=$trace vs wvX[i][]
 			endfor
-			ModifyGraph/W=$win mode=3
 		elseif(DimSize(wvX, ROWS) == 1) // 1D vs 0D
 			numTraces = DimSize(wvY, ROWS)
 			for(i = 0; i < numTraces; i += 1)
 				trace = traceName + num2istr(i)
 				AppendTograph/W=$win wvY[i][]/TN=$trace vs wvX[][0]
 			endfor
-			ModifyGraph/W=$win mode=3
 		else // 1D vs 1D
 			splitTraces = min(DimSize(wvY, ROWS), DimSize(wvX, ROWS))
 			numTraces = floor(max(DimSize(wvY, ROWS), DimSize(wvX, ROWS)) / splitTraces)
@@ -874,18 +932,12 @@ Function SF_FormulaPlotter(graph, formula, [dfr])
 			trace = traceName + num2istr(i)
 			AppendTograph/W=$win wvY[][0]/TN=$trace vs wvX[][i]
 		endfor
-		if(DimSize(wvY, ROWS) == 1)
-			ModifyGraph/W=$win mode=3
-		endif
 	elseif(dim1X * dim2X == 1) // 2D vs 1D
 		numTraces = dim1Y * dim2Y
 		for(i = 0; i < numTraces; i += 1)
 			trace = traceName + num2istr(i)
 			AppendTograph/W=$win wvY[][i]/TN=$trace vs wvX
 		endfor
-		if(DimSize(wvX, ROWS) == 1)
-			ModifyGraph/W=$win mode=3
-		endif
 	else // 2D vs 2D
 		numTraces = WaveExists(wvX) ? max(1, max(dim1Y * dim2Y, dim1X * dim2X)) : max(1, dim1Y * dim2Y)
 		if(DimSize(wvY, ROWS) == DimSize(wvX, ROWS))
@@ -912,6 +964,12 @@ Function SF_FormulaPlotter(graph, formula, [dfr])
 	if(WhichListItem("bottomText", axes) != -1)
 		ModifyGraph/W=$win freePos(bottomText)={0,kwFraction}
 		ModifyGraph/W=$win mode=0
+	else
+		if(DimSize(wvy, ROWS) < SF_MAX_NUMPOINTS_FOR_MARKERS          \
+		   && (!WaveExists(wvx)                                       \
+		       || DimSize(wvx, ROWS) <  SF_MAX_NUMPOINTS_FOR_MARKERS))
+			ModifyGraph/W=$win mode=3,marker=19
+		endif
 	endif
 
 	RestoreCursors(win, cursorInfos)
@@ -990,7 +1048,7 @@ static Function/WAVE SF_GetSweepForFormula(graph, rangeStart, rangeEnd, channelT
 		ASSERT(pEnd < DimSize(sweep, ROWS) && pStart >= 0, "Invalid sweep range.")
 		ASSERt(abs(pStart - pEnd) == DimSize(sweepData, ROWS), "Sweeps not equal.")
 		ASSERT(DimDelta(sweep, ROWS) == DimDelta(sweepData, ROWS), "Sweeps not equal.")
-		sweepData[][i] = sweep[pStart + p]
+		Multithread sweepData[][i] = sweep[pStart + p]
 	endfor
 
 	return sweepData

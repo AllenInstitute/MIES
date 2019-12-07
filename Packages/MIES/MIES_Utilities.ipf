@@ -4541,17 +4541,65 @@ Function HasEnoughDiscspaceFree(discPath, requiredFreeSpace)
 	return IsFinite(leftOverBytes) && leftOverBytes >= requiredFreeSpace
 End
 
+threadsafe static Function FindLevelSingle(data, level, edge, first, last)
+	WAVE data
+	variable level, edge, first, last
+
+	variable found, numLevels
+
+	FindLevel/Q/EDGE=(edge)/R=[first, last] data, level
+	found = !V_flag
+
+	if(!found)
+		return NaN
+	endif
+
+	return V_LevelX - DimDelta(data, ROWS) * first
+End
+
+threadsafe static Function/WAVE FindLevelsMult(data, level, edge, first, last)
+	WAVE data
+	variable level, edge, first, last
+
+	variable found, numLevels
+
+	Make/FREE/D/N=0 levels
+	FindLevels/Q/DEST=levels/EDGE=(edge)/R=[first, last] data, level
+	found = V_flag != 2
+	numLevels = found ? DimSize(levels, ROWS) : 0
+
+	Redimension/N=(numLevels) levels
+
+	if(numLevels > 0)
+		levels[] = levels[p] - DimDelta(data, ROWS) * first
+	endif
+
+	return levels
+End
+
 /// @brief FindLevel wrapper which handles 2D data without copying data
 ///
 /// @param data input data, can be either 1D or 2D
 /// @param level level to search
 /// @param edge type of the edge, one of @ref FindLevelEdgeTypes
-Function/WAVE FindLevelWrapper(data, level, edge)
+/// @param mode mode, one of @ref FindLevelEdgeTypes
+///
+/// FINDLEVEL_MODE_SINGLE:
+/// - Return a 1D wave with as many rows as columns in the input data
+/// - Contents are the x values of the first level or NaN if none could be found
+///
+/// FINDLEVEL_MODE_MULTI:
+/// - Returns a 2D WAVE rows being the number of columns in the input
+///   data and columns holding all found x values of the levels per data column.
+///
+/// In both cases the dimension label of the each column holds the number of found levels
+/// in each data colum. This will be always 1 for FINDLEVEL_MODE_SINGLE.
+Function/WAVE FindLevelWrapper(data, level, edge, mode)
 	WAVE data
-	variable level, edge
+	variable level, edge, mode
 
-	variable numCols, numColsFixed, numRows, xDelta
-	variable first, last, i
+	variable numCols, numColsFixed, numRows, xDelta, maxLevels, numLevels
+	variable first, last, i, xLevel, found, columnOffset
 
 	numCols = DimSize(data, COLS)
 	numRows = DimSize(data, ROWS)
@@ -4562,23 +4610,57 @@ Function/WAVE FindLevelWrapper(data, level, edge)
 	ASSERT(numRows >= 2, "Expected wave with more than two rows")
 	ASSERT(IsFinite(level), "Expected finite level")
 	ASSERT(edge == FINDLEVEL_EDGE_INCREASING || edge == FINDLEVEL_EDGE_DECREASING || edge == FINDLEVEL_EDGE_BOTH, "Invalid edge type")
+	ASSERT(mode == FINDLEVEL_MODE_SINGLE || mode == FINDLEVEL_MODE_MULTI, "Invalid mode type")
 
 	ASSERT(DimSize(data, LAYERS) <= 1, "Unexpected input dimension")
+
 	Redimension/N=(numColsFixed * numRows)/E=1 data
 
-	Make/D/FREE/N=(numColsFixed) result = NaN
+	// Algorithm:
+	//
+	// Both:
+	// - Find the linearized slice of data which represents one column in the input wave
+	//   and run a multi threaded function on it.
+	//
+	// FINDLEVEL_MODE_SINGLE:
+	// - Run FindLevel on that slice
+	//
+	// FINDLEVEL_MODE_MULTI:
+	// - Run FindLevels on that slice
 
-	for(i = 0; i < numColsFixed; i += 1)
+	if(mode == FINDLEVEL_MODE_SINGLE)
+		Make/D/FREE/N=(numColsFixed) resultSingle
+		Multithread resultSingle[] = FindLevelSingle(data, level, edge, p * numRows, (p + 1) * numRows - 1)
+	elseif(mode == FINDLEVEL_MODE_MULTI)
+		Make/WAVE/FREE/N=(numColsFixed) allLevels
+		Multithread allLevels[] = FindLevelsMult(data, level, edge, p * numRows, (p + 1) * numRows - 1)
 
-		first = i * numRows
-		last  = first + numRows - 1
+		Make/D/FREE/N=(numColsFixed) numMaxLevels = DimSize(allLevels[p], ROWS)
 
-		FindLevel/Q/EDGE=(edge)/R=[first, last] data, level
-		result[i] = !V_flag ? (V_LevelX - xDelta * first) : NaN
-	endfor
+		maxLevels = WaveMax(numMaxLevels)
+		Make/D/FREE/N=(numColsFixed, maxLevels) resultMulti
+
+		resultMulti[][] = q < numMaxLevels[p] ? MapWaveRefWave(allLevels, p)[q] : NaN
+	endif
 
 	// don't use numColsFixed here as we want to have the original shape
 	Redimension/N=(numRows, numCols)/E=1 data
 
-	return result
+	switch(mode)
+		case FINDLEVEL_MODE_SINGLE:
+			Make/D/FREE/N=(DimSize(resultSingle, ROWS)) numMaxLevels = 1
+			SetWaveDimLabel(resultSingle, NumericWaveToList(numMaxLevels, ";", format = "%d"), ROWS)
+			return resultSingle
+		case FINDLEVEL_MODE_MULTI:
+			SetWaveDimLabel(resultMulti, NumericWaveToList(numMaxLevels, ";", format = "%d"), ROWS)
+
+			// avoid single column waves
+			if(DimSize(resultMulti, COLS) == 1)
+				Redimension/N=(-1, 0) resultMulti
+			endif
+
+			return resultMulti
+		default:
+			ASSERT(0, "Impossible case")
+	endswitch
 End

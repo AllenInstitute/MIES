@@ -657,6 +657,73 @@ static Function TestFindLevel()
 	REQUIRE_EQUAL_WAVES(output, output_ref, mode = WAVE_DATA)
 End
 
+static Function TestAPFrequency()
+
+	// requires at least one arguments
+	try
+		WAVE output = SF_FormulaExecutor(SF_FormulaParser("apfrequency()")); AbortOnRTE
+		FAIL()
+	catch
+		PASS()
+	endtry
+
+	// but no more than three
+	try
+		WAVE output = SF_FormulaExecutor(SF_FormulaParser("apfrequency([1], 0, 3, 4)")); AbortOnRTE
+		FAIL()
+	catch
+		PASS()
+	endtry
+
+	// requires valid method
+	try
+		WAVE output = SF_FormulaExecutor(SF_FormulaParser("apfrequency([1], 3)")); AbortOnRTE
+		FAIL()
+	catch
+		PASS()
+	endtry
+
+	// works with full
+	WAVE output = SF_FormulaExecutor(SF_FormulaParser("apfrequency(setscale([10, 20, 10, 20, 10, 20], x, 0, 5, ms), 0, 15)"))
+	Make/FREE/D output_ref = {100}
+	REQUIRE_EQUAL_WAVES(output, output_ref, mode = WAVE_DATA)
+
+	// works with apcount
+	WAVE output = SF_FormulaExecutor(SF_FormulaParser("apfrequency(setscale([10, 20, 10, 20, 10, 20], x, 0, 5, ms), 2, 15)"))
+	Make/FREE/D output_ref = {3}
+	REQUIRE_EQUAL_WAVES(output, output_ref, mode = WAVE_DATA)
+
+	// works with 2D data and instantaneous
+	WAVE output = SF_FormulaExecutor(SF_FormulaParser("apfrequency(setscale([[10, 5], [20, 40], [10, 5], [20, 30]], x, 0, 5, ms), 0, 15)"))
+	Make/FREE/D output_ref = {100, 100}
+	REQUIRE_EQUAL_WAVES(output, output_ref, mode = WAVE_DATA)
+
+	// works with instantaneous
+	WAVE output = SF_FormulaExecutor(SF_FormulaParser("apfrequency(setscale([10, 20, 30, 10, 20, 30, 40, 10, 20], x, 0, 5, ms), 1, 15)"))
+	Make/FREE/D output_ref = {57.14285714285714}
+	REQUIRE_EQUAL_WAVES(output, output_ref, mode = WAVE_DATA)
+
+	// works with 2D data and instantaneous
+	WAVE output = SF_FormulaExecutor(SF_FormulaParser("apfrequency(setscale([[10, 5], [20, 40], [10, 5], [20, 30]], x, 0, 5, ms), 1, 15)"))
+	Make/FREE/D output_ref = {100, 94.59459459459458}
+	REQUIRE_EQUAL_WAVES(output, output_ref, mode = WAVE_DATA)
+
+	// x offset does not play any role
+	WAVE output = SF_FormulaExecutor(SF_FormulaParser("apfrequency(setscale([[10, 5], [20, 40], [10, 5], [20, 30]], x, 0, 5, ms), 1, 15)"))
+	Make/FREE/D output_ref = {100, 94.59459459459458}
+	REQUIRE_EQUAL_WAVES(output, output_ref, mode = WAVE_DATA)
+
+	// returns 0 if nothing found for Full
+	WAVE output = SF_FormulaExecutor(SF_FormulaParser("apfrequency([10, 20, 30, 20], 0, 100)"))
+	Make/FREE/D output_ref = {0}
+
+	// returns NaN if nothing found for Instantaneous
+	WAVE output = SF_FormulaExecutor(SF_FormulaParser("apfrequency([10, 20, 30, 20], 1, 100)"))
+	Make/FREE/D output_ref = {NaN}
+
+	REQUIRE_EQUAL_WAVES(output, output_ref, mode = WAVE_DATA)
+End
+
 static Function waveGetterFunction()
 	Make/O/N=(10) wave0 = p
 

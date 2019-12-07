@@ -23,7 +23,7 @@ Function run()
 	string procList = ""
 	procList += "UTF_AnalysisFunctionHelpers.ipf;UTF_WaveVersioning.ipf;UTF_UpgradeWaveLocationAndGetIt.ipf;"
 	procList += "UTF_Utils.ipf;UTF_Labnotebook.ipf;UTF_WaveBuilder.ipf;UTF_PGCSetAndActivateControl.ipf;"
-	procList += "UTF_UpgradeDataFolderLocation.ipf;UTF_AsynFrameworkTest.ipf"
+	procList += "UTF_UpgradeDataFolderLocation.ipf;UTF_AsynFrameworkTest.ipf;UTF_SweepFormula.ipf;"
 
 	RunTest(procList, enableJU = 1)
 End

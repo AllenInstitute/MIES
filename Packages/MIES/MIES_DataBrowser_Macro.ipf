@@ -592,7 +592,7 @@ Window DataBrowser() : Graph
 	CheckBox check_BrowserSettings_ADC,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	CheckBox check_BrowserSettings_ADC,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
 	CheckBox check_BrowserSettings_ADC,value= 1
-	CheckBox check_BrowserSettings_TTL,pos={144.00,36.00},size={36.00,15.00},title="TTL"
+	CheckBox check_BrowserSettings_TTL,pos={144.00,36.00},size={34.00,15.00},title="TTL"
 	CheckBox check_BrowserSettings_TTL,help={"Display the TTL channels"}
 	CheckBox check_BrowserSettings_TTL,userdata(tabnum)=  "0"
 	CheckBox check_BrowserSettings_TTL,userdata(tabcontrol)=  "Settings"
@@ -616,7 +616,7 @@ Window DataBrowser() : Graph
 	CheckBox check_BrowserSettings_dDAQ,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	CheckBox check_BrowserSettings_dDAQ,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
 	CheckBox check_BrowserSettings_dDAQ,value= 0
-	CheckBox check_Calculation_ZeroTraces,pos={36.00,219.00},size={76.00,15.00},title="Zero Traces"
+	CheckBox check_Calculation_ZeroTraces,pos={36.00,219.00},size={75.00,15.00},title="Zero Traces"
 	CheckBox check_Calculation_ZeroTraces,help={"Remove the offset of all traces"}
 	CheckBox check_Calculation_ZeroTraces,userdata(tabnum)=  "0"
 	CheckBox check_Calculation_ZeroTraces,userdata(tabcontrol)=  "Settings"
@@ -624,7 +624,7 @@ Window DataBrowser() : Graph
 	CheckBox check_Calculation_ZeroTraces,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	CheckBox check_Calculation_ZeroTraces,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
 	CheckBox check_Calculation_ZeroTraces,value= 0
-	CheckBox check_Calculation_AverageTraces,pos={36.00,198.00},size={95.00,15.00},title="Average Traces"
+	CheckBox check_Calculation_AverageTraces,pos={36.00,198.00},size={94.00,15.00},title="Average Traces"
 	CheckBox check_Calculation_AverageTraces,help={"Average all traces which belong to the same y axis"}
 	CheckBox check_Calculation_AverageTraces,userdata(tabnum)=  "0"
 	CheckBox check_Calculation_AverageTraces,userdata(tabcontrol)=  "Settings"
@@ -761,7 +761,7 @@ Window DataBrowser() : Graph
 	CheckBox check_SweepControl_HideSweep,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	CheckBox check_SweepControl_HideSweep,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
 	CheckBox check_SweepControl_HideSweep,value= 0
-	CheckBox check_BrowserSettings_splitTTL,pos={249.00,36.00},size={60.00,15.00},title="sep. TTL"
+	CheckBox check_BrowserSettings_splitTTL,pos={249.00,36.00},size={58.00,15.00},title="sep. TTL"
 	CheckBox check_BrowserSettings_splitTTL,help={"Display the TTL channel data as single traces for each TTL bit"}
 	CheckBox check_BrowserSettings_splitTTL,userdata(tabnum)=  "0"
 	CheckBox check_BrowserSettings_splitTTL,userdata(tabcontrol)=  "Settings"
@@ -899,20 +899,8 @@ Window DataBrowser() : Graph
 	RenameWindow #,sweepFormula_formula
 	SetActiveSubwindow ##
 	NewNotebook /F=1 /N=sweepFormula_help /W=(12,71,378,358)/FG=(UGVL,UGVT,UGVR,UGVB) /HOST=# /V=0 /OPTS=4
-	Notebook kwTopWin, defaultTab=36, autoSave= 1, magnification=100, writeProtect=1, showRuler=0, rulerUnits=2
+	Notebook kwTopWin, defaultTab=36, autoSave= 0, magnification=100, writeProtect=1, showRuler=0, rulerUnits=2
 	Notebook kwTopWin newRuler=Normal, justification=0, margins={0,0,245}, spacing={0,0,0}, tabs={}, rulerDefaults={"Arial",11,0,(0,0,0)}
-	Notebook kwTopWin, zdata= "Gb!Smc#;CW'rPlgG3[\"@S03ULUP#41<tW-ob48&S(8r5'NJ^+^l8h5B=?n*O\\2su<@5u/iA>$&#]bCVWo\\*PklebO3Vk/L1gRD\"7#C>X.mX&kC/pB<kMae4G$1'9ghOBT#S)=)[1=VqFm(p(3T1dE\"<oE]dI/`umh]I(j]N,s.eV0QTiFCg;gG_7`?Z4RTo;:^DiV+@[jDWrI]^r!!2fQM8^Lrr4O1uL&0]snR1=#]ik<4:,![%;Tf7=PG1aKNU\"d7Z_7*^ckWHRN:hKAVm`C)DDbGjPW;megL\\R92:]Ag/@"
-	Notebook kwTopWin, zdata= "ICA!FTQX\"gTnm5/65HPjnMk-.b%8d-@Z\\Z!UtYN;6RJZm0\";KE:iVVnm!rj`p;mZSB'X]4>#r:=b<%;HVPWmI(J$;hCM^e8`.jbVEe`_$QYW/N^u$,oSq#:eq'p*Af%TVn^I>_<rcORqLJ;&Pp4q6bQ21moCKLJZ[;4-T(3.!qjjR!Oh=>KK&o&N!`p_[PB`apHa*DV.IsAlG=cRU[+)F3[9n0D3*+_-NYE@n;JK<?3#-e-:M_qBrZH/?n>dHMRaHX+riCDDpbacsQ5\\j,Mjh_^WapcW-RUoABQ&+j.\"FkuA"
-	Notebook kwTopWin, zdata= "3BupnX?,1Ck'Thb63e:>?J3\\p_g<+A`rB&2k4ilJ55_A2m^KclM\\k]I2F2&Fek<E:<?dTJg>*Q:_P^lOX5Ku-RbsG@g6\\ZP\"!Rk:N/igC_l\"%Y`o=b<+\"q`gO3?)=H[r,Goa+1^C<[p$_A6t`[?LCSNQSu^G-`->09[Y_b#i'D(Bjq,2i?K_bs]mndtHRek9c-86?2hd^1162k[)=>?gVCW.jUPR>k0]_[.W.+@d:8d2DM#0]>0Uj\"`2NimW]d>_LUEn;8pMDo+'WcU\\Dl-\\MRr%%?6!uW(2S)\"+HQ,]44B_"
-	Notebook kwTopWin, zdata= "GB:_ec$9M]ZWkqd)*/InH3'S9P?0qZkkc:)DPbC4JkR+P+r@5@#X=AM3X2T)C0,RAj+orJa7JDH<A$f6BhXek&S%alKHiSV_c@r]UNiGBa=:I<%6Ked_F07r#1O?$GU692B&c3k/^lFS-7gV[=.*'io4acr3/K+M*W1ro6\"se^1<g0D%O&LL52.qgg?&CC7@s&)&C<5c%mW9/#_#a+Q.Q[OQ7H'AJr@oS=9RRYOc!XkGbrJ`'Q^l</QD`%6L`/.qsr/tVU*%dlN(B.R!YcP1NDd)0'OLo%6YKK)\"(P#_:%(["
-	Notebook kwTopWin, zdata= "^UsAa(?I#S[7amAhuU\\X8'VS[rciF2A>@HNfXkDS%go)+BK,nZJ^5Z`4BZK!3UC$17*_\"W#g68B*GGArqdkURW<8><\"%@-tI[lc/Ce>.liW]r:6:/c3HQ_@-JnPlR&7CL*9+Sk>bO&GpmDQ?umHlCe;G62<%f::OM:*C4g<gAGR?&14S)\\c5SV9?TS<<@9P]82_a@21i_pG,a_.Sja%7^Yf,F0gV!7[NiMaMkW,(o2o\\^1m_IDU>KO@.Y82AV#NZ%)spcTS3aL7jXR[\\N;KM='Z<gu]Ps2A9gm+31kJGG5@R"
-	Notebook kwTopWin, zdata= "p3oNM,V2i-7W=n@*]GBh]GSBK1!*Lt;=SnOMjT+R#\"]\"_4.OCEApKmYnIeE*NnM6gV=(_iGmAO/F^AkJ>\\iT:f9nY8KVtf*[>R%P'6>W4FA\\uU0i5+hp^j`/@cNl2PHe[s=sO?7iYU#P%g%l%B<:>-Urdn2gdjHf32:Op2($VA=Y)cRCjUrah:]4CNl+2H\".@l5#@5OK5];0]VB2FI`iprZ8=M!-X.FK4W\"A4\\CchH7EF*F-B;8[QrUi;@^nY&:\"KNZm#.?-Rl\\EAUE=WWP/*lrNpsIe$\\B#,Kn4'\"Q*H=9Z"
-	Notebook kwTopWin, zdata= "QQ*I,gsQA(F4N\\hKufe.H>$e$aX^\\KEEXVC:p=;GLI&r\\a^R5LQgr2Or0]$N&<!s5b\\@5E:WEpMa]'4q6c@#?!bXk;,KL$gJN/[5fm'rXNSeU*fV;Hp]gZ6l90NfB>cZYF:UObeQ.nRYGUROL.)f.WY]NW<\"se!jL4U\"B7r&i1JsBStb.&Y9nsJ7MgaVf@_AJqs^<;'rc<,4lF6uu1]/SNZo!?`4$^k)ZoX=^&X)&+QmGI2^icDO0LNMJ6g_]W>4Oe%`V(--L)Spd1Oge>^^nD2CG_!&V$BN=?5Ml@\\4f1\"I"
-	Notebook kwTopWin, zdata= "a9[1@Ne]p)#q/)g_TJX3Df+!)p8gUmp\\iN%Wi/en\\,:V7)k3!t;>&KoG;utIN2fu9)V%hg-*!>5/n:TF6_1d#TF-<;#J_GEWlT^Q#IDB2;7k1Yk?BO/+1-.@4!8<7?]e%\"=A20MnAF@9^T$Q!])R^uD26B#Q<!q$Q3d%(`&d/f_!^[]]mV64\"u?nq&Ir#\"5ZB4:#Xo\"B&+ZS_'P@RRbGD($%Kf2)6[7MChq2</bAp?hZffo9DJt$/^PW]N3c+5f]$AAmMhe_5pl(&HqX!LgB7p2kDXm41On'0W93$(\\MK%-1"
-	Notebook kwTopWin, zdata= "\"[ZjAm-NOh3\\7-@^fKP.*3l/*+4#tl\"H$:i#N@-6PVju;3,ll:R%hRYHkq.9n$d)IO%M%@eFbT^N!C>QU_dM.L8Of)`%7QGHMFC.&&3G_nB4_.no\"@\"jp\\/Z2K66_nlZosd>uA7eBeue6,2=7la5-L+4N-m?&9uuOVI`64u(u3o1E<*5fIC=%O\"&U#dd99b]?b)7A?[?)W6W:S\"KjKC_&^bPJm?Y<Bo(92)_cCR85J1r2oOH.QqX&J\";Z]6]tQ2*Ou$8Duggra66A0`=SG)&L(\\HLpEmqA>:%hS*Q4?_ZRE["
-	Notebook kwTopWin, zdata= "I9Mh#APbRGV'@\"BX3_#X=E[6SOdU3kH3sd;N!b(J;aDfAMX_P\"L\"]1S:iLL2[)aRkmAqSE4Ms<`U!Xg$4N!_lH4DhQ8H*QTARHU_fA[@!J;96AHh]@V%5q6)-pcK?'7/[_NOEtN^V*[ogOipZln,oP^?>H9\\]U)9HMdO52_O>%j=n794_jljp@PhlpV$N[p8RW]m!2d`^E5]>bF+&C[f?BZf.0sQHJYFFE;[]LhA(c_/H>II4\"7`3NX?+%!9C,fW5\"tFm-TWaR=9X6*FbX3nU)TV@75SRKJ!c2;QXG']ABW:"
-	Notebook kwTopWin, zdata= "q\\,13DmO3VdpDD>!U?3B>QV;t.KUK.p&Pj?.MglR\"oBa7.KR/rbO32$/sbOS.G'5Go)8_Vr2G#"
-	Notebook kwTopWin, zdataEnd= 1
 	SetWindow kwTopWin,hook(ResizeControls)=ResizeControls#ResizeControlsHook
 	SetWindow kwTopWin,userdata(tabnum)=  "2"
 	SetWindow kwTopWin,userdata(tabcontrol)=  "SF_InfoTab"

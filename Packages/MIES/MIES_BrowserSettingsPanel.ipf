@@ -224,6 +224,9 @@ Function BSP_DynamicStartupSettings(mainPanel)
 	BSP_InitMainCheckboxes(bsPanel)
 
 	PGC_SetAndActivateControl(bsPanel, "Settings", val = 0)
+	PGC_SetAndActivateControl(bsPanel, "SF_InfoTab", val = 0)
+
+	BSP_UpdateHelpNotebook(mainPanel)
 End
 
 /// @brief Unsets all control properties that are set in BSP_DynamicStartupSettings for DataBrowser type
@@ -940,4 +943,24 @@ Function BSP_IsActive(win, elementID)
 	endswitch
 
 	return GetCheckboxState(bsPanel, control) == CHECKBOX_SELECTED
+End
+
+/// @brief Fill the SweepFormula help notebook
+///        with the contents of the stored file
+Function BSP_UpdateHelpNotebook(win)
+	string win
+
+	variable helpVersion
+	string name, text, helpNotebook, path
+
+	name = UniqueName("notebook", 10, 0)
+	path = GetFolder(FunctionPath("")) + "SweepFormulaHelp.ifn"
+
+	OpenNotebook/Z/V=0/N=$name path
+	ASSERT(!V_Flag, "Error opening sweepformula help notebook")
+
+	helpNotebook = BSP_GetSFHELP(win)
+	text = GetNotebookText(name)
+	ReplaceNotebookText(helpNotebook, text)
+	KillWindow/Z $name
 End

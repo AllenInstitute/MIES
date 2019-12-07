@@ -583,7 +583,7 @@ Constant HARDWARE_DAC_EXTERNAL_TRIGGER = 0x1
 
 /// Used to upgrade the GuiStateWave as well as the DA Ephys panel
 Constant DA_EPHYS_PANEL_VERSION     = 44
-Constant DATABROWSER_PANEL_VERSION  = 11
+Constant DATABROWSER_PANEL_VERSION  = 12
 Constant SWEEPBROWSER_PANEL_VERSION = 3
 Constant WAVEBUILDER_PANEL_VERSION  = 8
 
@@ -1187,4 +1187,11 @@ StrConstant USER_DATA_MENU_EXP = "MenuExp"
 Constant FINDLEVEL_EDGE_INCREASING = 1
 Constant FINDLEVEL_EDGE_DECREASING = 2
 Constant FINDLEVEL_EDGE_BOTH       = 0
+/// @}
+
+/// @name Find level modes
+/// @anchor FindLevelModes
+/// @{
+Constant FINDLEVEL_MODE_SINGLE = 1
+Constant FINDLEVEL_MODE_MULTI  = 2
 /// @}
