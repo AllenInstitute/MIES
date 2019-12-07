@@ -163,31 +163,29 @@ static Function/WAVE OOD_GetFeatureRegions(setRegions, offsets)
 End
 
 /// @brief Calculates offsets for each stimset for OOD
-/// @param[in] setRegions wave reference wave of 2D region waves for each stimset
-/// @param[in] baseRegions 2D region wave that contains initial reserved regions,
-///            e.g. when using with yoking the caller function can preload from the previous device
-///            For the lead device where no previous regions are reserved, the wave can be 1D but must have zero rows
-/// @param[in] yoked 1 if yoked operation, 0 if not
+///
+/// @param[in]      setRegions wave reference wave of 2D region waves for each stimset
+/// @param[in, out] baseRegions 2D region wave that contains initial reserved regions,
+///                 e.g. when using with yoking the caller function can preload from the previous device
+///                 For the lead device where no previous regions are reserved, the wave can be 1D but must have zero rows
+/// @param[in]      yoked 1 if yoked operation, 0 if not
+///
 /// @return 1D wave with offsets for each stimset in points
 static Function/WAVE OOD_CalculateOffsets(setRegions, baseRegions, yoked)
 	WAVE/WAVE setRegions
-	WAVE baseRegions
+	WAVE &baseRegions
 	variable yoked
 
 	variable setNr, regNr, regCnt, baseRegCnt, baseRegNr, newOff, resAdjust
 	variable bStart, bEnd, rStart, rEnd, noInitialRegion, overlap
 	variable numSets = DimSize(setRegions, ROWS)
 
+	yoked = !!yoked
+
 	Make/FREE/D/N=(numSets) offsets
 
-	yoked = !!yoked
-	if(yoked)
-		if(!DimSize(baseRegions, ROWS))
-			WAVE baseRegions = setRegions[0]
-			noInitialRegion = 1
-		endif
-	else
-		WAVE baseRegions = setRegions[0]
+	if(DimSize(baseRegions, ROWS) == 0)
+		Duplicate/FREE setRegions[0], baseRegions
 		noInitialRegion = 1
 	endif
 
@@ -244,11 +242,11 @@ static Function OOD_CalculateOffsetsYoked(panelTitle, params)
 	variable resolution
 
 	WAVE setRegions = OOD_GetRegionsFromStimsets(params)
-	Make/FREE/N=0 params.preload
+	Make/FREE/N=0 preload
 
 	// normal acquisition
 	if(!DeviceHasFollower(panelTitle) && !DeviceIsFollower(panelTitle))
-		WAVE params.offsets = OOD_CalculateOffsets(setRegions, params.preload, 0)
+		WAVE params.offsets = OOD_CalculateOffsets(setRegions, preload, 0)
 
 	else
 
@@ -260,10 +258,11 @@ static Function OOD_CalculateOffsetsYoked(panelTitle, params)
 			ASSERT(0, "Impossible case")
 		endif
 
-		WAVE params.offsets = OOD_CalculateOffsets(setRegions, params.preload, 1)
-		OOD_StorePreload(panelTitle, params.preload)
+		WAVE params.offsets = OOD_CalculateOffsets(setRegions, preload, 1)
+		OOD_StorePreload(panelTitle, preload)
 	endif
 	WAVE/T params.regions = OOD_GetFeatureRegions(setRegions, params.offsets)
+	WAVE params.preload = preload
 
 #if defined(DEBUGGING_ENABLED)
 	OOD_Debugging(params)
@@ -350,6 +349,8 @@ static Function OOD_Debugging(params)
 	print params.regions
 	printf "setColumns\r"
 	print params.setColumns
+	printf "preload\r"
+	print params.preload
 End
 
 /// @brief Return the oodDAQ optimized stimsets

@@ -89,7 +89,7 @@ Function/S CA_DistDAQCreateCacheKey(params)
 		crc = WaveCRC(crc, params.preload)
 	endif
 
-	return num2istr(crc) + "Version 3"
+	return num2istr(crc) + "Version 4"
 End
 
 /// @brief Cache key generator for @c FindLevel in PA_CalculatePulseStartTimes()
