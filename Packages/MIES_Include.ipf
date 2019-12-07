@@ -2,11 +2,16 @@
 #pragma rtGlobals=3 // Use modern global access method and strict wave access.
 #pragma rtFunctionErrors=1
 
-#pragma IgorVersion=8.04
-
+// Igor Pro nightly installation:
+// - Download from https://www.byte-physics.de/Downloads/WinIgor8_05DEC2019.zip
+// - Close Igor Pro 8
+// - Extract the contents into C:\Program Files\WaveMetrics\Igor Pro 8 Folder (overwriting existing files, requires Administrator access)
+// - Restart Igor Pro 8
+//
 // By ignoring the error and *commenting out* the below check you will certainly break MIES.
-#if (NumberByKey("BUILD", IgorInfo(0)) < 34722)
-#define *** MIES requires a more recent version of Igor Pro 8, please install the latest version. ***
+#if (NumberByKey("BUILD", IgorInfo(0)) < 34795)
+#define *** Too old Igor Pro 8 version, click "Edit procedure" for instructions
+#pragma IgorVersion=8.04
 #endif
 
 /// @file MIES_Include.ipf
