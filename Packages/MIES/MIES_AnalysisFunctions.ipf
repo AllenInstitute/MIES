@@ -1123,18 +1123,18 @@ Function SetControlInEvent(panelTitle, s)
 			// check given event type
 			event = data[j]
 
-			if(WhichListItem(event, EVENT_NAME_LIST) == -1 || WhichListItem(event, "Mid Sweep;Generic") != -1)
+			if(WhichListItem(event, EVENT_NAME_LIST, ";", 0, 0) == -1 || WhichListItem(event, "Mid Sweep;Generic", ";", 0, 0) != -1)
 				printf "(%s): The analysis parameter's %s event \"%s\" is invalid.\r", panelTitle, ctrl, event
 				ControlWindowToFront()
 				return 1
-			elseif(WhichListItem(ctrl, CONTROLS_DISABLE_DURING_DAQ) != -1 && WhichListItem(event, "Pre DAQ;Post DAQ") == -1)
+			elseif(WhichListItem(ctrl, CONTROLS_DISABLE_DURING_DAQ, ";", 0, 0) != -1 && WhichListItem(event, "Pre DAQ;Post DAQ", ";", 0, 0) == -1)
 				printf "(%s): The analysis parameter %s is a control which can only be changed in Pre/Post DAQ.\r", panelTitle, ctrl
 				ControlWindowToFront()
 				return 1
 			endif
 
 			// now we can finally check if it is our turn
-			if(WhichListItem(event, EVENT_NAME_LIST) != s.eventType)
+			if(WhichListItem(event, EVENT_NAME_LIST, ";", 0, 0) != s.eventType)
 				continue
 			endif
 

@@ -2225,14 +2225,14 @@ static Function AFT_SetControls7_Setter(device)
 	string device
 
 	Make/FREE/T/N=4 wv
-	wv[] = {"Pre DAQ", "2", "Post DAQ", "1"}
+	wv[] = {"PRE daq", "2", "post DAQ", "1"}
 	WBP_AddAnalysisParameter("AnaFuncSetCtrl_DA_0", "SetVar_DataAcq_SetRepeats", wv = wv)
 
 	wv[] = {"Pre DAQ", "1"}
 	WBP_AddAnalysisParameter("AnaFuncSetCtrl_DA_0", "Check_DataAcq1_RepeatAcq", wv = wv)
 End
 
-// works with event/data tuples
+// works with event/data tuples and also accepts incorrect casing for the event names
 // UTF_TD_GENERATOR HardwareMain#DeviceNameGeneratorMD1
 static Function AFT_SetControls7([str])
 	string str
