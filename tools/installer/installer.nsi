@@ -36,9 +36,7 @@
 !define IGOR964XOPSOURCETEMPL "XOPs-IP9-64bit"
 # source file names for HDF for installation without Hardware XOPs
 !define IGOR832HDFXOPSOURCETEMPL "HDF5.xop - Shortcut"
-!define IGOR932HDFXOPSOURCETEMPL "HDF5.xop - Shortcut"
 !define IGOR864HDFXOPSOURCETEMPL "HDF5-64.xop - Shortcut"
-!define IGOR964HDFXOPSOURCETEMPL "HDF5-64.xop - Shortcut"
 # source file names for Utils for installation without Hardware XOPs
 !define IGOR832UTILXOPSOURCETEMPL "MIESUtils.xop"
 !define IGOR932UTILXOPSOURCETEMPL "MIESUtils.xop"
@@ -377,7 +375,7 @@ Function ClickedIgor832
   IntCmp $2 0 BrowseCancel
     GetDLLVersion "$1\IgorBinaries_Win32\Igor.exe" $R0 $R1
     IntOp $R2 $R0 / 0x00010000
-    IntCmp $R2 7 +3
+    IntCmp $R2 8 +3
       MessageBox MB_OK "Could not find the Igor Pro 8 executable. (at $1\IgorBinaries_Win32\Igor.exe)"
       Goto BrowseCancel
     StrCpy $INSTALL_I8PATH "$1"
@@ -406,7 +404,7 @@ Function ClickedIgor864
   IntCmp $2 0 BrowseCancel
     GetDLLVersion "$1\IgorBinaries_x64\Igor64.exe" $R0 $R1
     IntOp $R2 $R0 / 0x00010000
-    IntCmp $R2 7 +3
+    IntCmp $R2 8 +3
       MessageBox MB_OK "Could not find the Igor Pro 8 executable. (at $1\IgorBinaries_x64\Igor64.exe)"
       Goto BrowseCancel
     StrCpy $INSTALL_I8PATH "$1"
@@ -435,7 +433,7 @@ Function ClickedIGOR932
   IntCmp $2 0 BrowseCancel
     GetDLLVersion "$1\IgorBinaries_Win32\Igor.exe" $R0 $R1
     IntOp $R2 $R0 / 0x00010000
-    IntCmp $R2 8 +3
+    IntCmp $R2 9 +3
       MessageBox MB_OK "Could not find the Igor Pro 9 executable. (at $1\IgorBinaries_Win32\Igor.exe)"
       Goto BrowseCancel
     StrCpy $INSTALL_I9PATH "$1"
@@ -464,7 +462,7 @@ Function ClickedIGOR964
   IntCmp $2 0 BrowseCancel
     GetDLLVersion "$1\IgorBinaries_x64\Igor64.exe" $R0 $R1
     IntOp $R2 $R0 / 0x00010000
-    IntCmp $R2 8 +3
+    IntCmp $R2 9 +3
       MessageBox MB_OK "Could not find the Igor Pro 9 executable. (at $1\IgorBinaries_x64\Igor64.exe)"
       Goto BrowseCancel
     StrCpy $INSTALL_I9PATH "$1"
@@ -577,14 +575,14 @@ NoRegIgor64:
     Goto IGOR8CheckEnd
   GetDLLVersion "${IGOR8DEFPATH}\IgorBinaries_x64\Igor64.exe" $R0 $R1
   IntOp $R2 $R0 / 0x00010000
-  IntCmp $R2 7 +2
+  IntCmp $R2 8 +2
     Goto Igor864CheckEnd
   StrCpy $INSTALL_I8PATH "${IGOR8DEFPATH}"
   StrCpy $INSTALL_I864 "1"
 Igor864CheckEnd:
   GetDLLVersion "${IGOR8DEFPATH}\IgorBinaries_Win32\Igor.exe" $R0 $R1
   IntOp $R2 $R0 / 0x00010000
-  IntCmp $R2 7 +2
+  IntCmp $R2 8 +2
     Goto IGOR8CheckEnd
   StrCpy $INSTALL_I8PATH "${IGOR8DEFPATH}"
   StrCpy $INSTALL_I832 "1"
@@ -595,14 +593,14 @@ IGOR8CheckEnd:
     Goto IGOR9CheckEnd
   GetDLLVersion "${IGOR9DEFPATH}\IgorBinaries_x64\Igor64.exe" $R0 $R1
   IntOp $R2 $R0 / 0x00010000
-  IntCmp $R2 8 +2
+  IntCmp $R2 9 +2
     Goto IGOR964CheckEnd
   StrCpy $INSTALL_I9PATH "${IGOR9DEFPATH}"
   StrCpy $INSTALL_I964 "1"
 IGOR964CheckEnd:
   GetDLLVersion "${IGOR9DEFPATH}\IgorBinaries_Win32\Igor.exe" $R0 $R1
   IntOp $R2 $R0 / 0x00010000
-  IntCmp $R2 8 +2
+  IntCmp $R2 9 +2
     Goto IGOR9CheckEnd
   StrCpy $INSTALL_I9PATH "${IGOR9DEFPATH}"
   StrCpy $INSTALL_I932 "1"
@@ -720,8 +718,11 @@ ProcInst_${CREALNKSID}:
     CreateShortCut "$IGORBASEPATH\User Procedures\MIES.lnk" "$INSTDIR\Packages\MIES"
     FileWrite $FILEHANDLE "$IGORBASEPATH\User Procedures\MIES.lnk$\n"
 
-    CreateShortCut "$IGORBASEPATH\User Procedures\HDF-$IGORDIRTEMPL.lnk" "$INSTDIR\Packages\HDF-$IGORDIRTEMPL"
-    FileWrite $FILEHANDLE "$IGORBASEPATH\User Procedures\HDF-$IGORDIRTEMPL.lnk$\n"
+    StrLen $0 $IGORHDFSOURCETEMPL
+    ${If} $0 != 0
+      CreateShortCut "$IGORBASEPATH\User Procedures\HDF-$IGORDIRTEMPL.lnk" "$INSTDIR\Packages\HDF-$IGORDIRTEMPL"
+      FileWrite $FILEHANDLE "$IGORBASEPATH\User Procedures\HDF-$IGORDIRTEMPL.lnk$\n"
+    ${EndIf}
 
     CreateShortCut "$IGORBASEPATH\Igor Help Files\HelpFiles-$IGORDIRTEMPL.lnk" "$INSTDIR\HelpFiles-$IGORDIRTEMPL"
     FileWrite $FILEHANDLE "$IGORBASEPATH\Igor Help Files\HelpFiles-$IGORDIRTEMPL.lnk$\n"
@@ -804,7 +805,7 @@ InstallEnd864:
     IntCmp $INSTALL_I932 0 InstallEnd932
       StrCpy $IGORDIRTEMPL "${IGOR9DIRTEMPL}"
       StrCpy $IGORBITDIRTEMPL "${IGOR932XOPSOURCETEMPL}"
-      StrCpy $IGORHDFSOURCETEMPL "${IGOR932HDFXOPSOURCETEMPL}"
+      StrCpy $IGORHDFSOURCETEMPL ""
       StrCpy $IGORUTILSOURCETEMPL "${IGOR932UTILXOPSOURCETEMPL}"
       StrCpy $IGORJSONSOURCETEMPL "${IGOR932JSONXOPSOURCETEMPL}"
       StrCpy $IGOREXTENSIONPATH "${IGOR932EXTENSIONPATH}"
@@ -815,7 +816,7 @@ InstallEnd932:
     IntCmp $INSTALL_I964 0 InstallEnd964
       StrCpy $IGORDIRTEMPL "${IGOR9DIRTEMPL}"
       StrCpy $IGORBITDIRTEMPL "${IGOR964XOPSOURCETEMPL}"
-      StrCpy $IGORHDFSOURCETEMPL "${IGOR964HDFXOPSOURCETEMPL}"
+      StrCpy $IGORHDFSOURCETEMPL ""
       StrCpy $IGORUTILSOURCETEMPL "${IGOR964UTILXOPSOURCETEMPL}"
       StrCpy $IGORJSONSOURCETEMPL "${IGOR964JSONXOPSOURCETEMPL}"
       StrCpy $IGOREXTENSIONPATH "${IGOR964EXTENSIONPATH}"
@@ -849,7 +850,7 @@ InstallAEnd864:
   IntCmp $INSTALL_I932 0 InstallAEnd932
     StrCpy $IGORDIRTEMPL "${IGOR9DIRTEMPL}"
     StrCpy $IGORBITDIRTEMPL "${IGOR932XOPSOURCETEMPL}"
-    StrCpy $IGORHDFSOURCETEMPL "${IGOR932HDFXOPSOURCETEMPL}"
+    StrCpy $IGORHDFSOURCETEMPL ""
     StrCpy $IGORUTILSOURCETEMPL "${IGOR932UTILXOPSOURCETEMPL}"
     StrCpy $IGORJSONSOURCETEMPL "${IGOR932JSONXOPSOURCETEMPL}"
     StrCpy $IGOREXTENSIONPATH "${IGOR932EXTENSIONPATH}"
@@ -859,7 +860,7 @@ InstallAEnd932:
   IntCmp $INSTALL_I964 0 InstallAEnd964
     StrCpy $IGORDIRTEMPL "${IGOR9DIRTEMPL}"
     StrCpy $IGORBITDIRTEMPL "${IGOR964XOPSOURCETEMPL}"
-    StrCpy $IGORHDFSOURCETEMPL "${IGOR964HDFXOPSOURCETEMPL}"
+    StrCpy $IGORHDFSOURCETEMPL ""
     StrCpy $IGORUTILSOURCETEMPL "${IGOR964UTILXOPSOURCETEMPL}"
     StrCpy $IGORJSONSOURCETEMPL "${IGOR964JSONXOPSOURCETEMPL}"
     StrCpy $IGOREXTENSIONPATH "${IGOR964EXTENSIONPATH}"
