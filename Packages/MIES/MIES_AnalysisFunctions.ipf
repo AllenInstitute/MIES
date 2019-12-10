@@ -1057,6 +1057,18 @@ End
 /// - The first tuple element is the event type, one of #EVENT_NAME_LIST without "Mid Sweep"
 ///   and "Generic", and the second element the value to set
 /// - For PopupMenus the passed value is the menu item and *not* its index
+///
+/// Examples:
+///
+/// \rst
+/// .. code-block:: none
+///
+/// 	setvar_DataAcq_OnsetDelayUser -> Pre DAQ|20|
+/// 	Popup_Settings_FixedFreq -> Pre Sweep|100|Post Sweep|Maximum|
+/// 	sweepFormula_formula -> Pre Set|data(cursors(A,B), channels(AD), sweeps())
+///
+/// \endrst
+///
 Function SetControlInEvent(panelTitle, s)
 	string panelTitle
 	STRUCT AnalysisFunction_V3 &s
