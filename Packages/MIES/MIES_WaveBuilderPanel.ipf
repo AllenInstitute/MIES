@@ -3114,13 +3114,13 @@ static Function WBP_AddAnalysisParameterIntoWPT(WPT, name, [var, str, wv])
 	ASSERT(!GrepString(value, "[=:,;]+"), "Written entry contains invalid characters (one of `=:,;`)")
 	ASSERT(AFH_IsValidAnalysisParamType(type), "Invalid type")
 
-	params = WPT[10][%Set][INDEP_EPOCH_TYPE]
+	params = WPT[%$"Analysis function params"][%Set][INDEP_EPOCH_TYPE]
 
 	if(WhichListItem(name, AFH_GetListOfAnalysisParamNames(params)) != -1)
 		printf "Parameter \"%s\" is already present and will be overwritten!\r", name
 	endif
 
-	WPT[10][%Set][INDEP_EPOCH_TYPE] = ReplaceStringByKey(name, params , type + "=" + value, ":", ",", 0)
+	WPT[%$"Analysis function params"][%Set][INDEP_EPOCH_TYPE] = ReplaceStringByKey(name, params , type + "=" + value, ":", ",", 0)
 End
 
 /// @brief Delete the given analysis parameter

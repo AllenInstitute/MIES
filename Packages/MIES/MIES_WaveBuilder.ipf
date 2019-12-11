@@ -1023,7 +1023,7 @@ static Function/WAVE WB_MakeWaveBuilderWave(WP, WPT, SegWvType, stepCount, numEp
 		AddEntryIntoWaveNoteAsList(WaveBuilderWave, StringFromList(PRE_SWEEP_EVENT, EVENT_NAME_LIST), str=WPT[8][%Set][INDEP_EPOCH_TYPE])
 		AddEntryIntoWaveNoteAsList(WaveBuilderWave, StringFromList(GENERIC_EVENT, EVENT_NAME_LIST), str=WPT[9][%Set][INDEP_EPOCH_TYPE])
 		AddEntryIntoWaveNoteAsList(WaveBuilderWave, StringFromList(PRE_SET_EVENT, EVENT_NAME_LIST), str=WPT[27][%Set][INDEP_EPOCH_TYPE])
-		AddEntryIntoWaveNoteAsList(WaveBuilderWave, ANALYSIS_FUNCTION_PARAMS_LBN, str=WPT[10][%Set][INDEP_EPOCH_TYPE])
+		AddEntryIntoWaveNoteAsList(WaveBuilderWave, ANALYSIS_FUNCTION_PARAMS_LBN, str=WPT[%$"Analysis function params"][%Set][INDEP_EPOCH_TYPE])
 
 		AddEntryIntoWaveNoteAsList(WaveBuilderWave, "Flip", var=SegWvType[98])
 		AddEntryIntoWaveNoteAsList(WaveBuilderWave, "Random Seed", var=SegWvType[97])
