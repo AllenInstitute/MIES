@@ -1190,8 +1190,8 @@ static Function/WAVE SF_GetSweepForFormula(graph, range, channels, sweeps)
 			endif
 			ASSERT(!IsNaN(rangeStart) && !IsNaN(rangeEnd), "Specified range not valid.")
 
-			pStart[i][j] = max(0, ScaleToIndex(sweep, rangeStart, ROWS))
-			pEnd[i][j] = min(DimSize(sweep, ROWS) - 1, ScaleToIndex(sweep, rangeEnd, ROWS))
+			pStart[i][j] = ScaleToIndexWrapper(sweep, rangeStart, ROWS)
+			pEnd[i][j] = ScaleToIndexWrapper(sweep, rangeEnd, ROWS)
 
 			if(IsNaN(xStart) && IsNaN(xEnd))
 				xStart = IndexToScale(sweep, pStart[i][j], ROWS)
@@ -1213,7 +1213,7 @@ static Function/WAVE SF_GetSweepForFormula(graph, range, channels, sweeps)
 			endif
 			WAVE sweep = $(traces[indices[i][j]][%fullPath])
 
-			pOffset = max(0, ScaleToIndex(sweepData, IndexToScale(sweep, pStart[i][j], ROWS), ROWS))
+			pOffset = ScaleToIndexWrapper(sweepData, IndexToScale(sweep, pStart[i][j], ROWS), ROWS)
 			MultiThread sweepData[pOffset, pOffSet + (pEnd[i][j] - pStart[i][j])][i][j] = sweep[pStart[i][j] + (p - pOffset)]
 
 			if(i == 0)
