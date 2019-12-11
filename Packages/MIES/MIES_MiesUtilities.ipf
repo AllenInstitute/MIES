@@ -4445,15 +4445,12 @@ Function/S ExtractAnalysisFuncFromStimSet(stimSet, eventType)
 	WAVE stimSet
 	variable eventType
 
-	string eventName, wvNote
-
-	wvnote = note(stimSet)
-	wvnote = ReplaceString(" = ", wvnote, "=")
+	string eventName
 
 	eventName = StringFromList(eventType, EVENT_NAME_LIST)
 	ASSERT(!IsEmpty(eventName), "Unknown event type")
 
-	return StringByKey(eventName, wvnote, "=", ";")
+	return WB_GetWaveNoteEntry(note(stimset), STIMSET_ENTRY, key = eventName)
 End
 
 /// @brief Return the analysis function parameters as comma (`,`) separated list
