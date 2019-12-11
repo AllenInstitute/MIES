@@ -765,7 +765,11 @@ static Function [WAVE/Z wv, variable index] GetLastSettingChannelInternal(WAVE n
 			WAVE/Z settings = GetLastSetting(values, sweepNo, setting, entrySourceType)
 
 			if(WaveExists(settings))
-				return [settings, indizes[0]]
+				if(IsNumericWave(values) && IsNaN(settings[indizes[0]]))
+					return [settings, GetIndexForHeadstageIndepData(values)]
+				else
+					return [settings, indizes[0]]
+				endif
 			endif
 
 			return [$"", NaN]
