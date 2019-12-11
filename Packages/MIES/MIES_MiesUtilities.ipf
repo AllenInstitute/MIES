@@ -4455,7 +4455,7 @@ End
 
 /// @brief Return the analysis function parameters as comma (`,`) separated list
 ///
-/// @sa WBP_AddAnalysisParameter() for the exact format.
+/// @sa GetWaveBuilderWaveTextParam() for the exact format.
 Function/S ExtractAnalysisFunctionParams(stimSet)
 	WAVE stimSet
 
