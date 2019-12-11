@@ -502,7 +502,6 @@ End
 /// functions are helpful. They also take care of unassociated channels
 /// automatically.
 /// - GetLastSettingChannel()
-/// - GetLastSettingTextChannel()
 ///
 /// Return the data of *one* of the sweeps of a repeated acquistion cycle
 /// (RAC). The functions return only the *first* valid setting searching the
@@ -660,67 +659,38 @@ Function/S GetLastSettingTextIndepRAC(numericalValues, textualValues, sweepNo, s
 	endif
 End
 
-/// @brief Return a textual setting for the given channel
+/// @brief Return a numerical or text setting for the given channel
 ///
-/// @return the setting or `defValue`
-///
-/// @ingroup LabnotebookQueryFunctions
-/// @sa GetLastSettingChannelInternal()
-Function/S GetLastSettingTextChannel(numericalValues, textualValues, sweepNo, setting, channelNumber, channelType, entrySourceType, [defValue])
-	WAVE numericalValues
-	WAVE/T textualValues
-	variable sweepNo
-	string setting
-	variable channelNumber, channelType, entrySourceType
-	string defValue
-
-	string channelName
-
-	if(ParamIsDefault(defValue))
-		defValue = ""
-	endif
-
-	WAVE/Z settings
-	variable index
-
-	[settings, index] = GetLastSettingChannelInternal(numericalValues, textualValues, sweepNo, setting, channelNumber, channelType, entrySourceType)
-
-	if(WaveExists(settings))
-		WAVE/Z/T settingsText = settings
-		return settingsText[index]
-	endif
-
-	return defValue
-End
-
-/// @brief Return a numerical setting for the given channel
-///
-/// @return the setting or `defValue`
+/// @return the wave containing the setting and the index into it.
 ///
 /// @ingroup LabnotebookQueryFunctions
 /// @sa GetLastSettingChannelInternal()
-Function GetLastSettingChannel(numericalValues, sweepNo, setting, channelNumber, channelType, entrySourceType, [defValue])
-	WAVE numericalValues
-	variable sweepNo
-	string setting
-	variable channelNumber, channelType, entrySourceType
-	variable defValue
-
-	string channelName
-	WAVE/Z settings
-	variable index
-
-	if(ParamIsDefault(defValue))
-		defValue = NaN
-	endif
+Function [WAVE/Z settings, variable index] GetLastSettingChannel(WAVE numericalValues, WAVE/T/Z textualValues, variable sweepNo, string setting, variable channelNumber, variable channelType, variable entrySourceType)
 
 	[settings, index] = GetLastSettingChannelInternal(numericalValues, numericalValues, sweepNo, setting, channelNumber, channelType, entrySourceType)
-
 	if(WaveExists(settings))
-		return settings[index]
+		if(IsNaN(settings[index]))
+			return [settings, GetIndexForHeadstageIndepData(numericalValues)]
+		else
+			return [settings, index]
+		endif
 	endif
 
-	return defValue
+	if(!WaveExists(textualValues))
+		return [$"", NaN]
+	endif
+
+	[settings, index] = GetLastSettingChannelInternal(numericalValues, textualValues, sweepNo, setting, channelNumber, channelType, entrySourceType)
+	if(WaveExists(settings))
+		WAVE/T settingsT = settings
+		if(!cmpstr(settingsT[index], ""))
+			return [settingsT, GetIndexForHeadstageIndepData(textualValues)]
+		else
+			return [settingsT, index]
+		endif
+	endif
+
+	return [$"", NaN]
 End
 
 /// @brief Return a numerical/textual setting for the given channel
@@ -765,11 +735,7 @@ static Function [WAVE/Z wv, variable index] GetLastSettingChannelInternal(WAVE n
 			WAVE/Z settings = GetLastSetting(values, sweepNo, setting, entrySourceType)
 
 			if(WaveExists(settings))
-				if(IsNumericWave(values) && IsNaN(settings[indizes[0]]))
-					return [settings, GetIndexForHeadstageIndepData(values)]
-				else
-					return [settings, indizes[0]]
-				endif
+				return [settings, indizes[0]]
 			endif
 
 			return [$"", NaN]

@@ -529,7 +529,7 @@ Function/WAVE DB_GetNumericalValues(win)
 	return GetLBNumericalValues(device)
 End
 
-static Function/WAVE DB_GetTextualValues(win)
+Function/WAVE DB_GetTextualValues(win)
 	string win
 
 	string device

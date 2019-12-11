@@ -807,28 +807,53 @@ Function/WAVE SF_FormulaExecutor(jsonID, [jsonPath, graph])
 			WAVE activeChannels = SF_GetActiveChannelNumbers(graph, channels, sweeps, mode)
 			WaveClear channels
 
+			WAVE/Z settings
+			Variable index
+
 			if(BSP_IsDataBrowser(graph))
 				WAVE numericalValues = DB_GetNumericalValues(graph)
+				WAVE/T textualValues = DB_GetTextualValues(graph)
 			endif
 
 			Make/D/FREE/N=(DimSize(sweeps, ROWS), DimSize(activeChannels, ROWS)) outD = NaN
+			Make/T/FREE/N=(DimSize(sweeps, ROWS), DimSize(activeChannels, ROWS)) outT
 			for(i = 0; i < DimSize(sweeps, ROWS); i += 1)
 				if(!BSP_IsDataBrowser(graph))
 					WAVE/WAVE temp = SB_GetNumericalValuesWaves(graph, sweepNumber = sweeps[i])
 					ASSERT(DimSize(temp, ROWS) == 1, "Unhandled number of sweeps in AnalysisBrowser map")
 					WAVE numericalValues = temp[0]
-					WaveClear temp
+
+					WAVE/WAVE temp = SB_GetTextualValuesWaves(graph, sweepNumber = sweeps[i])
+					ASSERT(DimSize(temp, ROWS) == 1, "Unhandled number of sweeps in AnalysisBrowser map")
+					WAVE/T textualValues = temp[0]
 				endif
 
-				outD[i][] = GetLastSettingChannel(numericalValues, sweeps[i], str, activeChannels[q][%channelNumber], activeChannels[q][%channelType], mode, defValue = NaN)
+				for(j = 0; j <  DimSize(activeChannels, ROWS); j += 1)
+					[settings, index] = GetLastSettingChannel(numericalValues, textualValues, sweeps[i], str, activeChannels[j][%channelNumber], activeChannels[j][%channelType], mode)
+					if(!WaveExists(settings))
+						continue
+					endif
+					if(IsNumericWave(settings))
+						outD[i][j] = settings[index]
+						WAVE out = outD
+					elseif(IsTextWave(settings))
+						WAVE/T settingsT = settings
+						outT[i][j] = settingsT[index]
+						WAVE out = outT
+					endif
+				endfor
 			endfor
-			WaveClear sweeps, numericalValues
+
+			if(!WaveExists(out))
+				DebugPrint("labnotebook entry not found.")
+				Make/FREE/N=1 out = {NaN}
+				break
+			endif
 
 			for(i = 0; i < DimSize(activeChannels, ROWS); i += 1)
 				str = StringFromList(activeChannels[i][%channelType], ITC_CHANNEL_NAMES) + num2istr(activeChannels[i][%channelNumber])
-				SetDimLabel COLS, i, $str, outD
+				SetDimLabel COLS, i, $str, out
 			endfor
-			WAVE out = outD
 			break
 		case "log": // JSON logic debug operation
 			print wv[0]
@@ -1290,6 +1315,9 @@ static Function/WAVE SF_GetActiveChannelNumbers(graph, channels, sweeps, entrySo
 	variable i, j, k, channelType, channelNumber, numIndices
 	string setting, msg
 
+	WAVE/Z settings
+	Variable index
+
 	ASSERT(windowExists(graph), "DB/SB not specified.")
 	ASSERT(DimSize(channels, COLS) == 2, "A channel input consists of [[channelType, channelNumber]+].")
 	SetDimLabel COLS, 0, channelType, channels
@@ -1344,7 +1372,11 @@ static Function/WAVE SF_GetActiveChannelNumbers(graph, channels, sweeps, entrySo
 				if(!IsNaN(channelNumber) && channelNumber != k)
 					continue
 				endif
-				wv[k] = GetLastSettingChannel(numericalValues, sweeps[i], setting, k, channelType, entrySourceType, defValue = NaN)
+				[settings, index] = GetLastSettingChannel(numericalValues, $"", sweeps[i], setting, k, channelType, entrySourceType)
+				if(!WaveExists(settings))
+					continue
+				endif
+				wv[k] = settings[index]
 			endfor
 		endfor
 	endfor
