@@ -565,6 +565,68 @@ Function ControlExists(win, control)
 	return V_flag != 0
 End
 
+/// @brief Return the full subwindow path to the windows the control belongs to
+Function/S FindControl(control)
+	string control
+
+	string windows, childWindows, childWindow, win
+	variable i, j, numWindows, numChildWindows
+	string matches = ""
+
+	// search in all panels and graphs
+	windows = WinList("*", ";", "WIN:65")
+
+	numWindows = ItemsInList(windows)
+	for(i = 0; i < numWindows; i += 1)
+		win = StringFromList(i, windows)
+
+		childWindows = GetAllWindows(win)
+
+		numChildWindows = ItemsInList(childWindows)
+		for(j = 0; j < numChildWindows; j += 1)
+			childWindow = StringFromList(j, childWindows)
+
+			if(ControlExists(childWindow, control))
+				matches = AddListItem(childWindow, matches, ";", Inf)
+			endif
+		endfor
+	endfor
+
+	return matches
+End
+
+/// @brief Return the full subwindow path to the given notebook
+Function/S FindNotebook(nb)
+	string nb
+
+	string windows, childWindows, childWindow, win, leaf
+	variable i, j, numWindows, numChildWindows
+	string matches = ""
+
+	// search in all panels and graphs
+	windows = WinList("*", ";", "WIN:65")
+
+	numWindows = ItemsInList(windows)
+	for(i = 0; i < numWindows; i += 1)
+		win = StringFromList(i, windows)
+
+		childWindows = GetAllWindows(win)
+
+		numChildWindows = ItemsInList(childWindows)
+		for(j = 0; j < numChildWindows; j += 1)
+			childWindow = StringFromList(j, childWindows)
+
+			leaf = StringFromList(ItemsInList(childWindow, "#") - 1, childWindow, "#")
+
+			if(!cmpstr(leaf, nb))
+				matches = AddListItem(childWindow, matches, ";", Inf)
+			endif
+		endfor
+	endfor
+
+	return matches
+End
+
 /// @brief Returns the number of the current tab
 ///
 /// @param win	window name
