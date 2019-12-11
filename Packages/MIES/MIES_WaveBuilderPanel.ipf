@@ -3123,7 +3123,6 @@ static Function WBP_AddAnalysisParameterIntoWPT(WPT, name, [var, str, wv])
 	WPT[10][%Set][INDEP_EPOCH_TYPE] = ReplaceStringByKey(name, params , type + "=" + value, ":", ",", 0)
 End
 
-
 /// @brief Delete the given analysis parameter
 ///
 /// @param name    name of the parameter
