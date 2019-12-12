@@ -4201,6 +4201,10 @@ Function/S DAP_CreateDAEphysPanel()
 
 	string panel
 
+	if(!WindowExists("HistoryCarbonCopy"))
+		CreateHistoryNotebook()
+	endif
+
 	// upgrade folder locations
 	GetITCDevicesFolder()
 
@@ -4212,10 +4216,6 @@ Function/S DAP_CreateDAEphysPanel()
 	panel = GetCurrentWindow()
 	SCOPE_OpenScopeWindow(panel)
 	AddVersionToPanel(panel, DA_EPHYS_PANEL_VERSION)
-
-	if(!WindowExists("HistoryCarbonCopy"))
-		CreateHistoryNotebook()
-	endif
 
 	return panel
 End
