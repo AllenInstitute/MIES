@@ -3148,7 +3148,7 @@ Function/S WBP_GetParameterTypes()
 End
 
 /// @brief Return the analysis parameters
-Function/S WBP_GetAnalysisParameters()
+static Function/S WBP_GetAnalysisParameters()
 
 	WAVE/T WPT = GetWaveBuilderWaveTextParam()
 
