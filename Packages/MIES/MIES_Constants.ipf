@@ -521,7 +521,7 @@ Constant TOTAL_NUM_EVENTS   = 8
 /// but more readable.
 Constant ANALYSIS_FUNCTION_PARAMS = 8
 
-StrConstant ANALYSIS_FUNCTION_PARAMS_LBN = "Function params"
+StrConstant ANALYSIS_FUNCTION_PARAMS_LBN = "Function params (encoded)"
 StrConstant ANALYSIS_FUNCTION_PARAMS_STIMSET = "Function params (encoded)"
 
 /// Human readable names for @ref EVENT_TYPE_ANALYSIS_FUNCTIONS
