@@ -6248,7 +6248,7 @@ End
 /// @brief Return the storage wave for the analysis functions
 ///
 /// Only contains *valid* functions. An analysis function is valid if it has
-/// a compatible signature and can be found with in the locations searched by
+/// a compatible signature and can be found within the locations searched by
 /// AFH_GetAnalysisFunctions().
 ///
 /// Rows:
