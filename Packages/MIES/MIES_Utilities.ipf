@@ -4664,3 +4664,152 @@ Function/WAVE FindLevelWrapper(data, level, edge, mode)
 			ASSERT(0, "Impossible case")
 	endswitch
 End
+
+
+/// @brief Saves string data to a file
+///
+/// @param[in] data string containing data to save
+/// @param[in] fileName fileName to use. If the fileName is empty or invalid a file save dialog will be shown.
+/// @param[in] fileFilter [optional, default = "Plain Text Files (*.txt):.txt;All Files:.*;"] file filter string in Igor specific notation.
+/// @param[in] message [optional, default = "Create file"] window title of the save file dialog.
+/// @returns NaN if file open dialog was aborted or an error was encountered, 0 otherwise
+Function SaveTextFile(data, fileName,[ fileFilter, message])
+	string data, fileName, fileFilter, message
+
+	variable fNum
+
+	if(ParamIsDefault(fileFilter) && ParamIsDefault(message))
+		Open/P=home/D=2 fnum as fileName
+	elseif(ParamIsDefault(fileFilter) && !ParamIsDefault(message))
+		Open/P=home/D=2/M=message fnum as fileName
+	elseif(!ParamIsDefault(fileFilter) && ParamIsDefault(message))
+		Open/P=home/D=2/F=fileFilter fnum as fileName
+	else
+		Open/P=home/D=2/F=fileFilter/M=message fnum as fileName
+	endif
+
+	if(IsEmpty(S_fileName))
+		return NaN
+	endif
+
+	Open/Z fnum as S_fileName
+	if(V_flag)
+		return NaN
+	endif
+	FBinWrite fnum, data
+	Close fnum
+
+	return 0
+End
+
+/// @brief Saves string data to a file
+///
+/// @param[in] fileName fileName to use. If the fileName is empty or invalid a file load dialog will be shown.
+/// @param[in] fileFilter [optional, default = "Plain Text Files (*.txt):.txt;All Files:.*;"] file filter string in Igor specific notation.
+/// @param[in] message [optional, default = "Select file"] window title of the save file dialog.
+/// @returns loaded string data and full path fileName
+Function [string data, string fName] LoadTextFile(string fileName[, string fileFilter, string message])
+
+	variable fNum
+
+	if(ParamIsDefault(fileFilter) && ParamIsDefault(message))
+		Open/R/P=home/Z=2 fnum as fileName
+	elseif(ParamIsDefault(fileFilter) && !ParamIsDefault(message))
+		Open/R/P=home/Z=2/M=message fnum as fileName
+	elseif(!ParamIsDefault(fileFilter) && ParamIsDefault(message))
+		Open/R/P=home/Z=2/F=fileFilter fnum as fileName
+	else
+		Open/R/P=home/Z=2/F=fileFilter/M=message fnum as fileName
+	endif
+
+	if(IsEmpty(S_fileName))
+		return ["", ""]
+	endif
+
+	Open/Z fnum as S_fileName
+	if(V_flag)
+		return ["", S_fileName]
+	endif
+	FStatus fnum
+	data = ""
+	data = PadString(data, V_logEOF, 0x20)
+	FBinRead fnum, data
+	Close fnum
+
+	return [data, S_Path + S_fileName]
+End
+
+/// @brief Removes first found entry from a 1D text wave
+///
+/// @param w 1D text wave
+/// @param[in] entry element content to compare
+Function RemoveTextWaveEntry1D(w, entry)
+	WAVE/T w
+	string entry
+
+	if(IsNull(entry))
+		return NaN
+	endif
+
+	ASSERT(IsTextWave(w), "Input wave must be a text wave")
+
+	FindValue/TXOP=4/TEXT=entry w
+	if(V_Value >= 0)
+		DeletePoints V_Value, 1, w
+	endif
+End
+
+/// @brief Checks if a string ends with a specific suffix
+///
+/// @param[in] str string to check for suffix
+/// @param[in] suffix to check for
+/// @returns 1 if str ends with suffix, 0 otherwise. If str and/or suffix are empty or null 0 is returned.
+Function StringEndsWith(str, suffix)
+	string str, suffix
+
+	variable pos
+
+	if(IsNull(str) || IsNull(suffix))
+		return 0
+	endif
+
+	pos = strsearch(str, suffix, Inf, 1)
+	if(pos == -1)
+		return 0
+	endif
+
+	if(pos == strlen(str) - strlen(suffix))
+		return 1
+	endif
+
+	return 0
+End
+
+/// @brief Splits a 1d text wave into two waves. The first contains elements with a suffix, the second elements without.
+///
+/// @param[in] source 1d text wave
+/// @param[in] suffix string suffix to distinguish elements
+/// @returns two 1d text waves, the first contains all elements with the suffix, the second all elements without
+Function [WAVE/T withSuffix, WAVE/T woSuffix] SplitTextWaveBySuffix(WAVE/T source, string suffix)
+
+	variable i, numElems
+
+	if(IsNull(suffix))
+		Make/FREE/T woSuffix = {""}
+		return [source, woSuffix]
+	endif
+
+	Duplicate/FREE/T source, withSuffix, woSuffix
+
+	numElems = DimSize(source, ROWS)
+	for(i = numElems - 1; i >= 0; i -= 1)
+		if(!StringEndsWith(withSuffix[i], suffix))
+			DeletePoints i, 1, withSuffix
+		endif
+		if(StringEndsWith(woSuffix[i], suffix))
+			DeletePoints i, 1, woSuffix
+		endif
+	endfor
+
+	return [withSuffix, woSuffix]
+End
