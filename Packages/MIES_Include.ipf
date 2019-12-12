@@ -58,6 +58,7 @@
 #include "MIES_BackgroundWatchdog"
 #include "MIES_Cache"
 #include "MIES_CheckInstallation"
+#include "MIES_Configuration"
 #include "MIES_Constants"
 #include "MIES_DAC-Hardware"
 #include "MIES_DAEphys"

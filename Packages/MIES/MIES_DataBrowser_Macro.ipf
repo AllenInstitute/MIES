@@ -21,6 +21,7 @@ Window DataBrowser() : Graph
 	SetWindow kwTopWin,hook(ResizeControls)=ResizeControls#ResizeControlsHook
 	SetWindow kwTopWin,userdata(BROWSER)=  "D"
 	SetWindow kwTopWin,userdata(DEVICE)=  "- none -"
+	SetWindow kwTopWin,userdata(Config_PanelType)=  "DataBrowser"
 	SetWindow kwTopWin,userdata(ResizeControlsInfo)= A"!!*'\"z!!#C=?iWQ]TE\"rlzzzzzzzzzzzzzzzzzzzz"
 	SetWindow kwTopWin,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzzzzzzzzzzzzzzz"
 	SetWindow kwTopWin,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzzzzzzzzz!!!"
