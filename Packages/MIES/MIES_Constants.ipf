@@ -522,6 +522,7 @@ Constant TOTAL_NUM_EVENTS   = 8
 Constant ANALYSIS_FUNCTION_PARAMS = 8
 
 StrConstant ANALYSIS_FUNCTION_PARAMS_LBN = "Function params"
+StrConstant ANALYSIS_FUNCTION_PARAMS_STIMSET = "Function params (encoded)"
 
 /// Human readable names for @ref EVENT_TYPE_ANALYSIS_FUNCTIONS
 StrConstant EVENT_NAME_LIST = "Pre DAQ;Mid Sweep;Post Sweep;Post Set;Post DAQ;Pre Sweep;Generic;Pre Set"
@@ -598,7 +599,7 @@ Constant WAVEBUILDER_PANEL_VERSION  = 8
 Constant LABNOTEBOOK_VERSION = 35
 
 /// Version of the stimset wave note
-Constant STIMSET_NOTE_VERSION = 6
+Constant STIMSET_NOTE_VERSION = 7
 
 /// @name The channel numbers for the different ITC devices used for accesssing
 ///       the TTLs

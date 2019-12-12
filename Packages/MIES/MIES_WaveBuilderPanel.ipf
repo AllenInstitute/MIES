@@ -3080,7 +3080,8 @@ Function WBP_AddAnalysisParameter(stimset, name, [var, str, wv])
 	endif
 End
 
-static Function WBP_AddAnalysisParameterIntoWPT(WPT, name, [var, str, wv])
+/// @brief Internal use only
+Function WBP_AddAnalysisParameterIntoWPT(WPT, name, [var, str, wv])
 	WAVE/T WPT
 	string name
 	variable var
@@ -3093,34 +3094,36 @@ static Function WBP_AddAnalysisParameterIntoWPT(WPT, name, [var, str, wv])
 
 	if(!ParamIsDefault(var))
 		type = "variable"
+		// numbers never need URL encoding
 		value = num2str(var)
 	elseif(!ParamIsDefault(str))
 		type = "string"
-		value = str
+		value = URLEncode(str)
 	elseif(!ParamIsDefault(wv))
 		ASSERT(DimSize(wv, ROWS) > 0, "Expected non-empty wave")
 		if(IsTextWave(wv))
 			type  = "textwave"
-			FindValue/TEXT="|" wv
-			ASSERT(V_Value == -1, "textwave can not hold \"|\" character")
-			value = TextWaveToList(wv, "|")
+			Duplicate/T/FREE wv, wvText
+			wvText = UrlEncode(wvText)
+			value = TextWaveToList(wvText, "|")
 		else
 			type = "wave"
+			// numbers never need URL encoding
 			value = NumericWaveToList(wv, "|", format = "%.15g")
 		endif
 	endif
 
 	ASSERT(AFH_IsValidAnalysisParameter(name), "Name is not a legal non-liberal igor object name")
-	ASSERT(!GrepString(value, "[=:,;]+"), "Written entry contains invalid characters (one of `=:,;`)")
+	ASSERT(!GrepString(value, "[=:,;]+"), "Broken URL encoding. Written entry contains invalid characters (one of `=:,;`)")
 	ASSERT(AFH_IsValidAnalysisParamType(type), "Invalid type")
 
-	params = WPT[%$"Analysis function params"][%Set][INDEP_EPOCH_TYPE]
+	params = WPT[%$"Analysis function params (encoded)"][%Set][INDEP_EPOCH_TYPE]
 
 	if(WhichListItem(name, AFH_GetListOfAnalysisParamNames(params)) != -1)
 		printf "Parameter \"%s\" is already present and will be overwritten!\r", name
 	endif
 
-	WPT[%$"Analysis function params"][%Set][INDEP_EPOCH_TYPE] = ReplaceStringByKey(name, params , type + "=" + value, ":", ",", 0)
+	WPT[%$"Analysis function params (encoded)"][%Set][INDEP_EPOCH_TYPE] = ReplaceStringByKey(name, params , type + "=" + value, ":", ",", 0)
 End
 
 /// @brief Delete the given analysis parameter
@@ -3133,9 +3136,9 @@ static Function WBP_DeleteAnalysisParameter(name)
 
 	WAVE/T WPT = GetWaveBuilderWaveTextParam()
 
-	params = WPT[%$"Analysis function params"][%Set][INDEP_EPOCH_TYPE]
+	params = WPT[%$"Analysis function params (encoded)"][%Set][INDEP_EPOCH_TYPE]
 	params = AFH_RemoveAnalysisParameter(name, params)
-	WPT[%$"Analysis function params"][%Set][INDEP_EPOCH_TYPE] = params
+	WPT[%$"Analysis function params (encoded)"][%Set][INDEP_EPOCH_TYPE] = params
 End
 
 /// @brief Return a list of all possible analysis parameter types
@@ -3149,7 +3152,7 @@ Function/S WBP_GetAnalysisParameters()
 
 	WAVE/T WPT = GetWaveBuilderWaveTextParam()
 
-	return WPT[%$"Analysis function params"][%Set][INDEP_EPOCH_TYPE]
+	return WPT[%$"Analysis function params (encoded)"][%Set][INDEP_EPOCH_TYPE]
 End
 
 /// @brief Return the analysis parameter names for the currently

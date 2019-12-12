@@ -4459,7 +4459,7 @@ End
 Function/S ExtractAnalysisFunctionParams(stimSet)
 	WAVE stimSet
 
-	return WB_GetWaveNoteEntry(note(stimset), STIMSET_ENTRY, key = ANALYSIS_FUNCTION_PARAMS_LBN)
+	return WB_GetWaveNoteEntry(note(stimset), STIMSET_ENTRY, key = ANALYSIS_FUNCTION_PARAMS_STIMSET)
 End
 
 /// @brief Split TTL data into a single wave for each bit
