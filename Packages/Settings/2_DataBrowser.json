@@ -1,0 +1,353 @@
+{
+    "DataBrowser": {
+        "Generic ControlGroup": {
+            "button_BSP_open": {
+                "NumValue": 0
+            }
+        }
+    },
+    "DataBrowser#BrowserSettingsPanel": {
+        "Generic ControlGroup": {
+            "SF_InfoTab": {
+                "NumValue": 0,
+                "StrValue": "Formula"
+            },
+            "Settings": {
+                "NumValue": 0,
+                "StrValue": "Settings"
+            },
+            "button_BrowserSettings_Export": {
+                "NumValue": 0
+            },
+            "button_Calculation_RestoreData": {
+                "NumValue": 0
+            },
+            "button_RemoveRanges": {
+                "NumValue": 0
+            },
+            "button_TimeAlignment_Action": {
+                "NumValue": 0
+            },
+            "button_sweepFormula_check": {
+                "NumValue": 0
+            },
+            "button_sweepFormula_display": {
+                "NumValue": 0
+            },
+            "check_BrowserSettings_ADC": {
+                "NumValue": true
+            },
+            "check_BrowserSettings_AR": {
+                "NumValue": false
+            },
+            "check_BrowserSettings_DAC": {
+                "NumValue": false
+            },
+            "check_BrowserSettings_DB_Failed": {
+                "NumValue": false
+            },
+            "check_BrowserSettings_DB_Passed": {
+                "NumValue": false
+            },
+            "check_BrowserSettings_OChan": {
+                "NumValue": false
+            },
+            "check_BrowserSettings_OVS": {
+                "NumValue": false
+            },
+            "check_BrowserSettings_PA": {
+                "NumValue": false
+            },
+            "check_BrowserSettings_TA": {
+                "NumValue": false
+            },
+            "check_BrowserSettings_TTL": {
+                "NumValue": false
+            },
+            "check_BrowserSettings_dDAQ": {
+                "NumValue": false
+            },
+            "check_BrowserSettings_splitTTL": {
+                "NumValue": false
+            },
+            "check_Calculation_AverageTraces": {
+                "NumValue": false
+            },
+            "check_Calculation_ZeroTraces": {
+                "NumValue": false
+            },
+            "check_Display_EqualYignore": {
+                "NumValue": false
+            },
+            "check_Display_EqualYrange": {
+                "NumValue": false
+            },
+            "check_Display_VisibleXrange": {
+                "NumValue": false
+            },
+            "check_SweepControl_HideSweep": {
+                "NumValue": false
+            },
+            "check_auto_remove": {
+                "NumValue": false
+            },
+            "check_channelSel_AD_0": {
+                "NumValue": true
+            },
+            "check_channelSel_AD_1": {
+                "NumValue": true
+            },
+            "check_channelSel_AD_10": {
+                "NumValue": true
+            },
+            "check_channelSel_AD_11": {
+                "NumValue": true
+            },
+            "check_channelSel_AD_12": {
+                "NumValue": true
+            },
+            "check_channelSel_AD_13": {
+                "NumValue": true
+            },
+            "check_channelSel_AD_14": {
+                "NumValue": true
+            },
+            "check_channelSel_AD_15": {
+                "NumValue": true
+            },
+            "check_channelSel_AD_2": {
+                "NumValue": true
+            },
+            "check_channelSel_AD_3": {
+                "NumValue": true
+            },
+            "check_channelSel_AD_4": {
+                "NumValue": true
+            },
+            "check_channelSel_AD_5": {
+                "NumValue": true
+            },
+            "check_channelSel_AD_6": {
+                "NumValue": true
+            },
+            "check_channelSel_AD_7": {
+                "NumValue": true
+            },
+            "check_channelSel_AD_8": {
+                "NumValue": true
+            },
+            "check_channelSel_AD_9": {
+                "NumValue": true
+            },
+            "check_channelSel_DA_0": {
+                "NumValue": true
+            },
+            "check_channelSel_DA_1": {
+                "NumValue": true
+            },
+            "check_channelSel_DA_2": {
+                "NumValue": true
+            },
+            "check_channelSel_DA_3": {
+                "NumValue": true
+            },
+            "check_channelSel_DA_4": {
+                "NumValue": true
+            },
+            "check_channelSel_DA_5": {
+                "NumValue": true
+            },
+            "check_channelSel_DA_6": {
+                "NumValue": true
+            },
+            "check_channelSel_DA_7": {
+                "NumValue": true
+            },
+            "check_channelSel_HEADSTAGE_0": {
+                "NumValue": true
+            },
+            "check_channelSel_HEADSTAGE_1": {
+                "NumValue": true
+            },
+            "check_channelSel_HEADSTAGE_2": {
+                "NumValue": true
+            },
+            "check_channelSel_HEADSTAGE_3": {
+                "NumValue": true
+            },
+            "check_channelSel_HEADSTAGE_4": {
+                "NumValue": true
+            },
+            "check_channelSel_HEADSTAGE_5": {
+                "NumValue": true
+            },
+            "check_channelSel_HEADSTAGE_6": {
+                "NumValue": true
+            },
+            "check_channelSel_HEADSTAGE_7": {
+                "NumValue": true
+            },
+            "check_highlightRanges": {
+                "NumValue": false
+            },
+            "check_overlaySweeps_disableHS": {
+                "NumValue": false
+            },
+            "check_overlaySweeps_non_commula": {
+                "NumValue": false
+            },
+            "check_ovs_clear_on_new_ra_cycle": {
+                "NumValue": false
+            },
+            "check_ovs_clear_on_new_stimset_cycle": {
+                "NumValue": false
+            },
+            "check_pulseAver_deconv": {
+                "NumValue": false
+            },
+            "check_pulseAver_indTraces": {
+                "NumValue": true
+            },
+            "check_pulseAver_multGraphs": {
+                "NumValue": false
+            },
+            "check_pulseAver_showAver": {
+                "NumValue": false
+            },
+            "check_pulseAver_timeAlign": {
+                "NumValue": false
+            },
+            "check_pulseAver_zeroTrac": {
+                "NumValue": false
+            },
+            "list_dashboard": {
+                "DataSource": "",
+                "NumValue": -1,
+                "StrValue": ""
+            },
+            "list_of_ranges": {
+                "DataSource": "",
+                "NumValue": 0,
+                "StrValue": ""
+            },
+            "list_of_ranges1": {
+                "DataSource": "",
+                "NumValue": 0,
+                "StrValue": ""
+            },
+            "popup_DB_lockedDevices": {
+                "NumValue": 1,
+                "StrValue": "- none -"
+            },
+            "popup_TimeAlignment_Master": {
+                "NumValue": 1,
+                "StrValue": "AD0"
+            },
+            "popup_TimeAlignment_Mode": {
+                "NumValue": 1,
+                "StrValue": "Level (Raising)"
+            },
+            "popup_overlaySweeps_select": {
+                "NumValue": 1,
+                "StrValue": "- none -"
+            },
+            "setvar_Display_EqualYlevel": {
+                "NumValue": 0
+            },
+            "setvar_TimeAlignment_LevelCross": {
+                "NumValue": 0
+            },
+            "setvar_cutoff_length_after": {
+                "NumValue": 0.2
+            },
+            "setvar_cutoff_length_before": {
+                "NumValue": 0.1
+            },
+            "setvar_overlaySweeps_offset": {
+                "NumValue": 0
+            },
+            "setvar_overlaySweeps_step": {
+                "NumValue": 1
+            },
+            "setvar_pulseAver_deconv_range": {
+                "NumValue": "Inf"
+            },
+            "setvar_pulseAver_deconv_smth": {
+                "NumValue": 1000
+            },
+            "setvar_pulseAver_deconv_tau": {
+                "NumValue": 15
+            },
+            "setvar_pulseAver_endPulse": {
+                "NumValue": "Inf"
+            },
+            "setvar_pulseAver_fallbackLength": {
+                "NumValue": 100
+            },
+            "setvar_pulseAver_startPulse": {
+                "NumValue": 0
+            },
+            "setvar_sweepFormula_parseResult": {
+                "StrValue": ""
+            },
+            "slider_BrowserSettings_dDAQ": {
+                "DataSource": "",
+                "NumValue": -1,
+                "StrValue": ""
+            },
+            "status_sweepFormula_parser": {
+                "NumValue": 1,
+                "StrValue": "1"
+            }
+        }
+    },
+    "DataBrowser#SettingsHistoryPanel": {
+        "Generic ControlGroup": {
+            "button_DataBrowser_setaxis": {
+                "NumValue": 0
+            },
+            "button_clearlabnotebookgraph": {
+                "NumValue": 0
+            },
+            "button_switchxaxis": {
+                "NumValue": 0
+            },
+            "popup_LBNumericalKeys": {
+                "NumValue": 1,
+                "StrValue": "- none -"
+            },
+            "popup_LBTextualKeys": {
+                "NumValue": 1,
+                "StrValue": "- none -"
+            }
+        }
+    },
+    "DataBrowser#SweepControl": {
+        "Generic ControlGroup": {
+            "Popup_SweepControl_Selector": {
+                "NumValue": 1,
+                "StrValue": " "
+            },
+            "button_SweepControl_NextSweep": {
+                "NumValue": 0
+            },
+            "button_SweepControl_PrevSweep": {
+                "NumValue": 0
+            },
+            "check_SweepControl_AutoUpdate": {
+                "NumValue": false
+            },
+            "setvar_SweepControl_SweepNo": {
+                "NumValue": 0
+            },
+            "setvar_SweepControl_SweepStep": {
+                "NumValue": 1
+            },
+            "valdisp_SweepControl_LastSweep": {
+                "NumValue": 0,
+                "StrValue": "0"
+            }
+        }
+    },
+    "Target Window Type": "DataBrowser"
+}
