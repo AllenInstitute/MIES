@@ -726,8 +726,9 @@ End
 Function/S AFH_GetAnalysisParameter(name, params)
 	string name, params
 
-	string type = AFH_GetAnalysisParamType(name, params)
-	ASSERT(AFH_IsValidAnalysisParamType(type), "Invalid type")
+	string type
+
+	type = AFH_GetAnalysisParamType(name, params)
 
 	return StringByKey(name + ":" + type, params, "=", ",", 0)
 End
