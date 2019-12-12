@@ -62,32 +62,26 @@ End
 static Function SWS_AfterSweepDataSaveHook(panelTitle)
 	string panelTitle
 
-	string panelList, panel, scPanel
-	variable numPanels, i
+	string databrowser, scPanel
 
-	panelList = WinList("DB_*", ";", "WIN:1")
+	databrowser = DB_FindDataBrowser(panelTitle)
 
-	numPanels = ItemsInList(panelList)
-	for(i = 0; i < numPanels; i += 1)
-		panel = StringFromList(i, panelList)
+	if(IsEmpty(databrowser))
+		return NaN
+	endif
 
-		if(!BSP_IsDataBrowser(panel))
-			continue
-		endif
+	scPanel = BSP_GetSweepControlsPanel(databrowser)
 
-		if(!cmpstr(panelTitle, BSP_GetDevice(panel)))
-			scPanel = BSP_GetSweepControlsPanel(panel)
+	if(!GetCheckBoxState(scPanel, "check_SweepControl_AutoUpdate"))
+		return NaN
+	endif
 
-			if(GetCheckBoxState(scPanel, "check_SweepControl_AutoUpdate"))
-				try
-					ClearRTError()
-					DB_UpdateToLastSweep(panel); AbortOnRTE
-				catch
-					ClearRTError()
-				endtry
-			endif
-		endif
-	endfor
+	try
+		ClearRTError()
+		DB_UpdateToLastSweep(databrowser); AbortOnRTE
+	catch
+		ClearRTError()
+	endtry
 End
 
 /// @brief Return a free wave with all channel gains
