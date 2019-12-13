@@ -22,8 +22,7 @@ Menu "Mies Panels"
 	End
 	"-"
 	SubMenu "Automation"
-		"Configure MIES/1"                     , /Q, ExpConfig_ConfigureMIES()
-		"Load Standard Configuration"          , /Q, CONF_AutoLoader()
+		"Load Standard Configuration/1"        , /Q, CONF_AutoLoader()
 		"Load Window Configuration"            , /Q, CONF_RestoreWindow("", usePanelTypeFromFile = 1)
 		"Save Window Configuration"            , /Q, CONF_SaveWindow("")
 		"Blowout/8"                            , /Q, BWO_SelectDevice()
