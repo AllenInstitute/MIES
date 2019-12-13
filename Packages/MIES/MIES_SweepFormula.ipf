@@ -965,7 +965,7 @@ End
 ///
 /// @param graph  graph to pass to SF_FormulaExecutor
 /// @param formula formula to plot
-/// @param dfr working folder
+/// @param dfr     [optional, default current] working dataFolder
 Function SF_FormulaPlotter(graph, formula, [dfr])
 	String graph
 	String formula
@@ -978,7 +978,7 @@ Function SF_FormulaPlotter(graph, formula, [dfr])
 	String traceName = "formula"
 
 	if(ParamIsDefault(dfr))
-		dfr = root:
+		dfr = GetDataFolderDFR()
 	endif
 
 	SplitString/E=SF_SWEEPFORMULA_REGEXP formula, formula0, formula1
