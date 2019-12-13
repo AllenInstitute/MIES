@@ -109,4 +109,5 @@
 #include "MIES_Utilities"
 #include "MIES_WaveBuilder"
 #include "MIES_WaveBuilderPanel"
+#include "MIES_WaveBuilder_Macro"
 #include "MIES_WaveDataFolderGetters"
