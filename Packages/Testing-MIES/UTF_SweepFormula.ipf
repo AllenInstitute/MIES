@@ -945,3 +945,69 @@ static Function TestPlotting()
 	SF_FormulaPlotter("", "range(3) vs range(7)"); DoUpdate
 	REQUIRE_EQUAL_VAR(ItemsInList(TraceNameList(win, ";", 0x1)), floor(7 / 3))
 End
+
+Function TestLabNotebook()
+	Variable i, j, sweepNumber, channelNumber
+	String str, trace, key, name
+
+	Variable numSweeps = 10
+	Variable numChannels = 5
+	Variable mode = DATA_ACQUISITION_MODE
+	String channelType = StringFromList(ITC_XOP_CHANNEL_TYPE_ADC, ITC_CHANNEL_NAMES)
+	String win = DATABROWSER_WINDOW_TITLE
+	String device = BuildDeviceString(StringFromList(0, DEVICE_TYPES_ITC), StringFromList(0, DEVICE_NUMBERS))
+
+	String channelTypeC = channelType + "C"
+
+	if(windowExists(win))
+		DoWindow/K $win
+	endif
+
+	Display/N=$win as device
+	BSP_SetDataBrowser(win)
+	BSP_SetDevice(win, device)
+
+	WAVE/T numericalKeys = GetLBNumericalKeys(device)
+	WAVE numericalValues = GetLBNumericalValues(device)
+	KillWaves numericalKeys, numericalValues
+
+	Make/FREE/T/N=(1, 1) keys = {{channelTypeC}}
+	Make/U/I/N=(numChannels) connections = {7,5,3,1,0}
+	Make/U/I/N=(numSweeps, numChannels) channels = q * 2
+	Make/D/FREE/N=(LABNOTEBOOK_LAYER_COUNT) values = NaN
+
+	Make/FREE/N=(128, numSweeps, numChannels) input = q + p^r // + gnoise(1)
+
+	for(i = 0; i < numSweeps; i += 1)
+		sweepNumber = i
+		for(j = 0; j < numChannels; j += 1)
+			name = UniqueName("data", 1, 0)
+			trace = "trace_" + name
+			Extract input, $name, q == i && r == j
+			WAVE wv = $name
+			AppendToGraph/W=$win wv/TN=$trace
+			ModifyGraph/W=$win userData($trace)={channelType, USERDATA_MODIFYGRAPH_APPEND, channelType}
+			ModifyGraph/W=$win userData($trace)={channelNumber, USERDATA_MODIFYGRAPH_APPEND, num2str(channels[i][j])}
+			ModifyGraph/W=$win userData($trace)={sweepNumber, USERDATA_MODIFYGRAPH_APPEND, num2str(sweepNumber)}
+			values[connections[j]] = channels[i][j]
+		endfor
+
+		Redimension/N=(1, 1, LABNOTEBOOK_LAYER_COUNT)/E=1 values
+		ED_AddEntriesToLabnotebook(values, keys, sweepNumber, device, mode)
+		Redimension/N=(LABNOTEBOOK_LAYER_COUNT)/E=1 values
+		ED_AddEntryToLabnotebook(device, keys[0], values, overrideSweepNo = sweepNumber)
+	endfor
+	ModifyGraph/W=$win log(left)=1
+
+	str = "labnotebook(" + channelTypeC + ",channels(AD),sweeps())"
+	WAVE data = SF_FormulaExecutor(SF_FormulaParser(str), graph = win)
+	REQUIRE_EQUAL_WAVES(data, channels, mode = WAVE_DATA)
+
+	str = "labnotebook(" + LABNOTEBOOK_USER_PREFIX + channelTypeC + ",channels(AD),sweeps(),UNKNOWN_MODE)"
+	WAVE data = SF_FormulaExecutor(SF_FormulaParser(str), graph = win)
+	REQUIRE_EQUAL_WAVES(data, channels, mode = WAVE_DATA)
+
+	str = "data(cursors(A,B),channels(AD),sweeps())"
+	WAVE data = SF_FormulaExecutor(SF_FormulaParser(str), graph = win)
+	REQUIRE_EQUAL_WAVES(input, data, mode = WAVE_DATA)
+End
