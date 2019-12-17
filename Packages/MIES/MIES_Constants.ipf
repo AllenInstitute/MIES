@@ -1232,6 +1232,8 @@ StrConstant PANELTAG_DAEPHYS = "DA_Ephys"
 StrConstant PANELTAG_DATABROWSER = "DataBrowser"
 /// @}
 
+StrConstant EXPCONFIG_UDATA_SOURCEFILE = "Config_FileName"
+
 /// @name Bit mask constants for properties for window control saving/restore
 /// @anchor WindowControlSavingMask
 /// @{

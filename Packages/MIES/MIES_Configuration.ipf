@@ -122,7 +122,6 @@ static StrConstant EXPCONFIG_UDATA_WINHANDLE = "Config_WindowHandle"
 static StrConstant EXPCONFIG_UDATA_RADIOCOUPLING = "Config_RadioCouplingFunc"
 static StrConstant EXPCONFIG_UDATA_CTRLARRAY = "ControlArray"
 static StrConstant EXPCONFIG_UDATA_CTRLARRAYINDEX = "ControlArrayIndex"
-static StrConstant EXPCONFIG_UDATA_SOURCEFILE = "Config_FileName"
 
 static Constant EXPCONFIG_UDATA_MAXCTRLARRAYINDEX = 100
 static Constant EXPCONFIG_JSON_INDENT = 4
@@ -301,7 +300,7 @@ Function CONF_RestoreWindow(fName[, usePanelTypeFromFile])
 				wName = GetMainWindow(GetCurrentWindow())
 				SetWindow $wName, userData($EXPCONFIG_UDATA_SOURCEFILE)=""
 				wName = CONF_JSONToWindow(wName, restoreMask, jsonID)
-				SetWindow $wName, userData($EXPCONFIG_UDATA_SOURCEFILE)=fullFilePath
+				CONF_AddConfigFileUserData(wName, fullFilePath)
 				print "Configuration restored for " + wName
 			else
 				ASSERT(0, "Configuration file entry for panel type has an unknown panel tag (" + panelType + ").")
@@ -324,7 +323,7 @@ Function CONF_RestoreWindow(fName[, usePanelTypeFromFile])
 				jsonID = CONF_ParseJSON(input)
 				SetWindow $wName, userData($EXPCONFIG_UDATA_SOURCEFILE)=""
 				wName = CONF_JSONToWindow(wName, restoreMask, jsonID)
-				SetWindow $wName, userData($EXPCONFIG_UDATA_SOURCEFILE)=fullFilePath
+				CONF_AddConfigFileUserData(wName, fullFilePath)
 				print "Configuration restored for " + wName
 			endif
 		endif
@@ -471,8 +470,7 @@ Function CONF_RestoreDAEphys(jsonID, fullFilePath, [middleOfExperiment, forceNew
 
 		CONF_RestoreHeadstageAssociation(panelTitle, jsonID, middleOfExperiment)
 		CONF_RestoreUserPressure(panelTitle, jsonID)
-
-		SetWindow $panelTitle, userData($EXPCONFIG_UDATA_SOURCEFILE)=fullFilePath
+		CONF_AddConfigFileUserData(panelTitle, fullFilePath)
 
 		filename = GetTimeStamp() + PACKED_FILE_EXPERIMENT_SUFFIX
 		path = CONF_GetStringFromSettings(jsonID, SAVE_PATH)
@@ -510,6 +508,13 @@ Function CONF_RestoreDAEphys(jsonID, fullFilePath, [middleOfExperiment, forceNew
 			Abort
 		endif
 	endtry
+End
+
+/// @brief Add the config file path to the panel as user data
+static Function CONF_AddConfigFileUserData(win, fullFilePath)
+	string win, fullFilePath
+
+	SetWindow $win, userData($EXPCONFIG_UDATA_SOURCEFILE)=fullFilePath
 End
 
 /// @brief Parses a json formatted string to a json object. This function shows a helpful error message if the parse fails
