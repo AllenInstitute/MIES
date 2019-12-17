@@ -2027,7 +2027,7 @@ static Function WBP_UpdateParameterWave()
 		name = StringFromList(i, names)
 		listWave[i][%Name]     = name
 		listWave[i][%Type]     = AFH_GetAnalysisParamType(name, params)
-		listWave[i][%Value]    = AFH_GetAnalysisParameter(name, params)
+		listWave[i][%Value]    = URLDecode(AFH_GetAnalysisParameter(name, params))
 		listWave[i][%Required] = ToTrueFalse(WhichListItem(name, reqNames) != -1)
 	endfor
 
