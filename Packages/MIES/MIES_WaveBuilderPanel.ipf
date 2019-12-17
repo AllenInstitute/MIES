@@ -2242,7 +2242,7 @@ Function WBP_ListBoxProc_AnalysisParams(lba) : ListBoxControl
 			params = WBP_GetAnalysisParameters()
 			name   = listWave[row][%Name]
 
-			value = listWave[row][%Value]
+			value = ""
 			type  = listWave[row][%Type]
 			if(!IsEmpty(type))
 				strswitch(type)
