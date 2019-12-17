@@ -53,6 +53,7 @@ End
 
 /// @addtogroup JSONXOP_Dump
 ///@{
+
 /// @brief Dump a JSON id to its string representation
 ///
 /// @param jsonID     numeric identifier of the main object
@@ -108,6 +109,29 @@ Function JSON_Release(jsonID, [ignoreErr])
 	ignoreErr = ParamIsDefault(ignoreErr) ? JSON_ZFLAG_DEFAULT : !!ignoreErr
 
 	JSONXOP_Release/Z=(ignoreErr)/Q=(JSON_QFLAG_DEFAULT) jsonID; AbortOnRTE
+	if(V_flag)
+		return NaN
+	endif
+	return 0
+End
+///@}
+
+/// @addtogroup JSONXOP_Remove
+///@{
+/// @brief Remove a path element from a JSON string representation
+///
+/// @param jsonID     numeric identifier of the main object
+/// @param jsonPath   RFC 6901 compliant JSON Pointer
+/// @param ignoreErr  [optional, default 0] set to ignore runtime errors
+/// @returns 0 on success, NaN otherwise
+Function JSON_Remove(jsonID, jsonPath [ignoreErr])
+	Variable jsonID
+	String jsonPath
+	Variable ignoreErr
+
+	ignoreErr = ParamIsDefault(ignoreErr) ? JSON_ZFLAG_DEFAULT : !!ignoreErr
+
+	JSONXOP_Remove/Z=(ignoreErr)/Q=(JSON_QFLAG_DEFAULT) jsonID, jsonPath; AbortOnRTE
 	if(V_flag)
 		return NaN
 	endif
@@ -428,7 +452,7 @@ Function JSON_AddVariable(jsonID, jsonPath, value, [significance, ignoreErr])
 
 	ignoreErr = ParamIsDefault(ignoreErr) ? JSON_ZFLAG_DEFAULT : !!ignoreErr
 
-	if(trunc(value) == value)
+	if(trunc(value) == value && !numtype(value))
 		JSONXOP_AddValue/Z=(ignoreErr)/Q=(JSON_QFLAG_DEFAULT)/I=(value) jsonID, jsonPath; AbortOnRTE
 	elseif(ParamIsDefault(significance))
 		JSONXOP_AddValue/Z=(ignoreErr)/Q=(JSON_QFLAG_DEFAULT)/V=(value) jsonID, jsonPath; AbortOnRTE
@@ -885,3 +909,20 @@ Function/S JSON_Version([ignoreErr])
 End
 
 /// @}
+
+/// @brief check if the given jsonID is valid
+Function JSON_Exists(jsonID, jsonPath)
+	Variable jsonID
+	String jsonPath
+
+	Variable jsonType, err
+
+	try
+		jsonType = JSON_GetType(jsonID, jsonPath); AbortOnRTE
+	catch
+		err = GetRTError(1)
+		jsonType = -1
+	endtry
+
+	return jsonType != -1
+End
