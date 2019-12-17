@@ -595,7 +595,7 @@ Constant WAVEBUILDER_PANEL_VERSION  = 8
 /// - Changed names of entries
 /// - Changed units or meaning of entries
 /// - New/Changed layers of entries
-Constant LABNOTEBOOK_VERSION = 34
+Constant LABNOTEBOOK_VERSION = 35
 
 /// Version of the stimset wave note
 Constant STIMSET_NOTE_VERSION = 6
@@ -1232,7 +1232,8 @@ StrConstant PANELTAG_DAEPHYS = "DA_Ephys"
 StrConstant PANELTAG_DATABROWSER = "DataBrowser"
 /// @}
 
-StrConstant EXPCONFIG_UDATA_SOURCEFILE = "Config_FileName"
+StrConstant EXPCONFIG_UDATA_SOURCEFILE_PATH = "Config_FileName"
+StrConstant EXPCONFIG_UDATA_SOURCEFILE_HASH = "Config_FileHash"
 
 /// @name Bit mask constants for properties for window control saving/restore
 /// @anchor WindowControlSavingMask

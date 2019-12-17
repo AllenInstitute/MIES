@@ -298,7 +298,8 @@ Function CONF_RestoreWindow(fName[, usePanelTypeFromFile])
 			elseif(!CmpStr(panelType, PANELTAG_DATABROWSER))
 				DB_OpenDataBrowser()
 				wName = GetMainWindow(GetCurrentWindow())
-				SetWindow $wName, userData($EXPCONFIG_UDATA_SOURCEFILE)=""
+				SetWindow $wName, userData($EXPCONFIG_UDATA_SOURCEFILE_PATH)=""
+				SetWindow $wName, userData($EXPCONFIG_UDATA_SOURCEFILE_HASH)=""
 				wName = CONF_JSONToWindow(wName, restoreMask, jsonID)
 				CONF_AddConfigFileUserData(wName, fullFilePath)
 				print "Configuration restored for " + wName
@@ -321,7 +322,8 @@ Function CONF_RestoreWindow(fName[, usePanelTypeFromFile])
 					return 0
 				endif
 				jsonID = CONF_ParseJSON(input)
-				SetWindow $wName, userData($EXPCONFIG_UDATA_SOURCEFILE)=""
+				SetWindow $wName, userData($EXPCONFIG_UDATA_SOURCEFILE_PATH)=""
+				SetWindow $wName, userData($EXPCONFIG_UDATA_SOURCEFILE_HASH)=""
 				wName = CONF_JSONToWindow(wName, restoreMask, jsonID)
 				CONF_AddConfigFileUserData(wName, fullFilePath)
 				print "Configuration restored for " + wName
@@ -433,7 +435,8 @@ Function CONF_RestoreDAEphys(jsonID, fullFilePath, [middleOfExperiment, forceNew
 			endif
 		endif
 
-		SetWindow $panelTitle, userData($EXPCONFIG_UDATA_SOURCEFILE)=""
+		SetWindow $panelTitle, userData($EXPCONFIG_UDATA_SOURCEFILE_PATH)=""
+		SetWindow $panelTitle, userData($EXPCONFIG_UDATA_SOURCEFILE_HASH)=""
 
 		if(middleOfExperiment)
 			PGC_SetAndActivateControl(panelTitle, "check_Settings_SyncMiesToMCC", val = CHECKBOX_UNSELECTED)
@@ -510,11 +513,12 @@ Function CONF_RestoreDAEphys(jsonID, fullFilePath, [middleOfExperiment, forceNew
 	endtry
 End
 
-/// @brief Add the config file path to the panel as user data
+/// @brief Add the config file path and SHA-256 hash to the panel as user data
 static Function CONF_AddConfigFileUserData(win, fullFilePath)
 	string win, fullFilePath
 
-	SetWindow $win, userData($EXPCONFIG_UDATA_SOURCEFILE)=fullFilePath
+	SetWindow $win, userData($EXPCONFIG_UDATA_SOURCEFILE_PATH)=fullFilePath
+	SetWindow $win, userData($EXPCONFIG_UDATA_SOURCEFILE_HASH)=CalcHashForFile(fullFilePath)
 End
 
 /// @brief Parses a json formatted string to a json object. This function shows a helpful error message if the parse fails
