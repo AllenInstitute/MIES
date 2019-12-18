@@ -4665,6 +4665,15 @@ Function/WAVE FindLevelWrapper(data, level, edge, mode)
 	endswitch
 End
 
+/// @brief Return a `/Z` flag value for the `Open` operation which works with
+/// automated testing
+Function GetOpenZFlag()
+#ifdef AUTOMATED_TESTING
+	return 1 // no dialog if the file does not exist
+#else
+	return 2
+#endif
+End
 
 /// @brief Saves string data to a file
 ///
@@ -4710,16 +4719,18 @@ End
 /// @returns loaded string data and full path fileName
 Function [string data, string fName] LoadTextFile(string fileName[, string fileFilter, string message])
 
-	variable fNum
+	variable fNum, zFlag
+
+	zFlag = GetOpenZFlag()
 
 	if(ParamIsDefault(fileFilter) && ParamIsDefault(message))
-		Open/R/P=home/Z=2 fnum as fileName
+		Open/R/P=home/Z=(zFlag) fnum as fileName
 	elseif(ParamIsDefault(fileFilter) && !ParamIsDefault(message))
-		Open/R/P=home/Z=2/M=message fnum as fileName
+		Open/R/P=home/Z=(zFlag)/M=message fnum as fileName
 	elseif(!ParamIsDefault(fileFilter) && ParamIsDefault(message))
-		Open/R/P=home/Z=2/F=fileFilter fnum as fileName
+		Open/R/P=home/Z=(zFlag)/F=fileFilter fnum as fileName
 	else
-		Open/R/P=home/Z=2/F=fileFilter/M=message fnum as fileName
+		Open/R/P=home/Z=(zFlag)/F=fileFilter/M=message fnum as fileName
 	endif
 
 	if(IsEmpty(S_fileName))
