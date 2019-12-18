@@ -4726,7 +4726,7 @@ Function [string data, string fName] LoadTextFile(string fileName[, string fileF
 		return ["", ""]
 	endif
 
-	Open/Z fnum as S_fileName
+	Open/Z/R fnum as S_fileName
 	if(V_flag)
 		return ["", S_fileName]
 	endif
