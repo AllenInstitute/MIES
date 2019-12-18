@@ -459,7 +459,7 @@ Function DB_InitPostPlotSettings(win, pps)
 
 	ASSERT(BSP_HasBoundDevice(win), "DataBrowser was not assigned to a specific device")
 
-	pps.averageDataFolder = GetDeviceDataBrowserPath(BSP_GetDevice(win))
+	pps.averageDataFolder = BSP_GetFolder(win, MIES_BSP_PANEL_FOLDER)
 	pps.averageTraces     = GetCheckboxState(bsPanel, "check_Calculation_AverageTraces")
 	pps.zeroTraces        = GetCheckBoxState(bsPanel, "check_Calculation_ZeroTraces")
 	pps.hideSweep         = GetCheckBoxState(bsPanel, "check_SweepControl_HideSweep")
@@ -597,14 +597,11 @@ End
 static Function DB_UpdateOverlaySweepWaves(win)
 	string win
 
-	string device, mainPanel
-
 	if(!OVS_IsActive(win))
 		return NaN
 	endif
 
-	device = BSP_GetDevice(win)
-	DFREF dfr = GetDeviceDataBrowserPath(device)
+	DFREF dfr = BSP_GetFolder(win, MIES_BSP_PANEL_FOLDER)
 
 	WAVE listBoxWave       = GetOverlaySweepsListWave(dfr)
 	WAVE listBoxSelWave    = GetOverlaySweepsListSelWave(dfr)
