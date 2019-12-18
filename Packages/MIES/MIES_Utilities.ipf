@@ -4702,7 +4702,7 @@ Function SaveTextFile(data, fileName,[ fileFilter, message])
 	return 0
 End
 
-/// @brief Saves string data to a file
+/// @brief Load string data from file
 ///
 /// @param[in] fileName fileName to use. If the fileName is empty or invalid a file load dialog will be shown.
 /// @param[in] fileFilter [optional, default = "Plain Text Files (*.txt):.txt;All Files:.*;"] file filter string in Igor specific notation.
