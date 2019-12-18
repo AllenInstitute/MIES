@@ -14,6 +14,8 @@
 #include ":MIES_Structures"
 #include ":MIES_Async"
 #include ":MIES_Utilities"
+// JSON XOP
+#include "json_functions"
 
 /// @endcond
 

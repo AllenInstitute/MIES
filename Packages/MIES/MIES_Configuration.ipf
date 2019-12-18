@@ -168,6 +168,8 @@ static StrConstant EXPCONFIG_JSON_USERPRESSBLOCK = "User Pressure Devices"
 static StrConstant EXPCONFIG_JSON_USERPRESSDEV = "DAC Device"
 static StrConstant EXPCONFIG_JSON_USERPRESSDA = "Pressure DA"
 
+static StrConstant EXPCONFIG_RIGFILESUFFIX = "_rig.json"
+
 static Constant EXPCONFIG_MIDDLEEXP_OFF = 0
 static Constant EXPCONFIG_MIDDLEEXP_ON = 1
 
@@ -188,21 +190,33 @@ static Function CONF_DefaultSettings()
 End
 
 /// @brief Automatically loads all *.json files from MIES Settings folder and opens and restores the corresponding windows
-///        Files are restored in case-insensitive alphanumeric order.
+///        Files are restored in case-insensitive alphanumeric order. Associated *_rig.json files are taken into account.
 Function CONF_AutoLoader()
 
 	variable i, numFiles
-	string fileList, fullFilePath
+	string fileList, fullFilePath, rigCandidate
 	string settingsPath = CONF_GetSettingsPath()
 
 	ASSERT(!IsEmpty(settingsPath), "Unable to resolve MIES Settings folder path. Is it present and readable in Packages\\Settings ?")
 	NewPath/O/Q PathSettings, settingsPath
 	fileList = GetAllFilesRecursivelyFromPath("PathSettings", extension = ".json")
-	fileList = SortList(fileList, "|", 4)
-	numFiles = ItemsInList(fileList, "|")
+
+	WAVE/T rawFileList = ListToTextWave(fileList, "|")
+	rawFileList[] = LowerStr(rawFileList[p])
+	WAVE/T/Z mainFileList
+	WAVE/T/Z rigFileList
+	[rigFileList, mainFileList] = SplitTextWaveBySuffix(rawFileList, LowerStr(EXPCONFIG_RIGFILESUFFIX))
+
+	Sort mainFileList, mainFileList
+	numFiles = DimSize(mainFileList, ROWS)
 	for(i = 0; i < numFiles; i += 1)
-		fullFilePath = StringFromList(i, fileList, "|")
-		CONF_RestoreWindow(fullFilePath, usePanelTypeFromFile = 1)
+		rigCandidate = mainFileList[i]
+		rigCandidate = rigCandidate[0, strlen(rigCandidate) - 6] + EXPCONFIG_RIGFILESUFFIX
+		FindValue/TXOP=4/TEXT=rigCandidate rigFileList
+		if(V_Value == -1)
+			rigCandidate = ""
+		endif
+		CONF_RestoreWindow(mainFileList[i], rigFile = rigCandidate, usePanelTypeFromFile = 1)
 	endfor
 End
 
@@ -273,14 +287,17 @@ End
 ///
 /// @param fName file name of configuration file to read configuration
 /// @param usePanelTypeFromFile [optional, default = 0] if set to 1 then the panel type from the json is interpreted and a new panel of that type is opened
-Function CONF_RestoreWindow(fName[, usePanelTypeFromFile])
+/// @param rigFile [optional, default = ""] name of secondary rig configuration file with complementary data. This parameter is valid when loading for a DA_Ephys panel
+Function CONF_RestoreWindow(fName[, usePanelTypeFromFile, rigFile])
 	string fName
 	variable usePanelTypeFromFile
+	string rigFile
 
 	variable jsonID, restoreMask
 	string input, wName, errMsg, fullFilePath, panelType
 
 	usePanelTypeFromFile = ParamIsDefault(usePanelTypeFromFile) ? 0 : !!usePanelTypeFromFile
+	rigFile = SelectString(ParamIsDefault(rigFile), rigFile, "")
 
 	jsonID = NaN
 	restoreMask = EXPCONFIG_SAVE_VALUE | EXPCONFIG_SAVE_USERDATA | EXPCONFIG_SAVE_DISABLED
@@ -294,6 +311,9 @@ Function CONF_RestoreWindow(fName[, usePanelTypeFromFile])
 			panelType = JSON_GetString(jsonID, "/" + EXPCONFIG_RESERVED_TAGENTRY)
 			ASSERT(!IsEmpty(panelType), "Configuration file entry for panel type (" + EXPCONFIG_RESERVED_TAGENTRY + ") is empty.")
 			if(!CmpStr(panelType, PANELTAG_DAEPHYS))
+				if(!IsEmpty(rigFile))
+					CONF_JoinRigFile(jsonID, rigFile)
+				endif
 				CONF_RestoreDAEphys(jsonID, fullFilePath, forceNewPanel = 1)
 			elseif(!CmpStr(panelType, PANELTAG_DATABROWSER))
 				DB_OpenDataBrowser()
@@ -315,6 +335,9 @@ Function CONF_RestoreWindow(fName[, usePanelTypeFromFile])
 					return 0
 				endif
 				jsonID = CONF_ParseJSON(input)
+				if(!IsEmpty(rigFile))
+					CONF_JoinRigFile(jsonID, rigFile)
+				endif
 				CONF_RestoreDAEphys(jsonID, fullFilePath)
 			else
 				[input, fullFilePath] = LoadTextFile(fName, fileFilter = EXPCONFIG_FILEFILTER, message = "Open configuration file for frontmost window")
@@ -2076,4 +2099,23 @@ Function CONF_Position_MCC_Win(serialNum, winTitle, winPosition)
 	else
 		printf "Message: If you would like to position the MCC windows please select a monitor in the Configuration text file"
 	endif
+End
+
+/// @brief Loads, parses and joins a *_rig.json file to a main configuration file.
+/// @param[in] jsonID jsonID of main configuration
+/// @param[in] rigFileName full file path of rig file
+static Function CONF_JoinRigFile(jsonID, rigFileName)
+	variable jsonID
+	string rigFileName
+
+	string input
+	variable jsonIDRig
+
+	[input, rigFileName] = LoadTextFile(rigFileName)
+	if(IsEmpty(input))
+		return 0
+	endif
+	jsonIDRig = CONF_ParseJSON(input)
+	SyncJSON(jsonIDRig, jsonID, "", "")
+	JSON_Release(jsonIDRig)
 End
