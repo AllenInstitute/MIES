@@ -3098,8 +3098,9 @@ Function SaveExperimentSpecial(mode)
 			list = GetListOfObjects(dfr, "TPStorage_*", fullPath=1)
 			CallFunctionForEachListItem_TS(killFunc, list)
 
-			path = GetDeviceDataBrowserPathAS(device)
-			killFunc(path)
+			DFREF dfr = GetDevicePath(device)
+			list = GetListOfObjects(dfr, "Databrowser*", typeFlag = COUNTOBJECTS_DATAFOLDER, fullPath=1)
+			CallFunctionForEachListItem_TS(killFunc, list)
 
 			RemoveTracesFromGraph(SCOPE_GetGraph(device))
 		endfor
