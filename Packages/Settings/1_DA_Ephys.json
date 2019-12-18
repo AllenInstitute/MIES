@@ -1,0 +1,796 @@
+{
+    "Common configuration data": {
+        "Headstage Association": {
+            "0": {
+                "Amplifier Serial": 0,
+                "Amplifier Title": "0,1",
+                "IC AD": 0,
+                "IC DA": 0,
+                "Pressure AD": 0,
+                "Pressure AD Gain": 0.5,
+                "Pressure AD Unit": "psi",
+                "Pressure Constant Negative": 0,
+                "Pressure Constant Positive": 0,
+                "Pressure DA": 0,
+                "Pressure DA Gain": 2,
+                "Pressure DA Unit": "psi",
+                "Pressure Device": "- none -",
+                "Pressure TTLA": 0,
+                "Pressure TTLB": 1,
+                "VC AD": 0,
+                "VC DA": 0
+            },
+            "1": {
+                "Amplifier Serial": 0,
+                "Amplifier Title": "0,1",
+                "IC AD": 1,
+                "IC DA": 1,
+                "Pressure AD": 1,
+                "Pressure AD Gain": 0.5,
+                "Pressure AD Unit": "psi",
+                "Pressure Constant Negative": 0,
+                "Pressure Constant Positive": 0,
+                "Pressure DA": 1,
+                "Pressure DA Gain": 2,
+                "Pressure DA Unit": "psi",
+                "Pressure Device": "- none -",
+                "Pressure TTLA": 2,
+                "Pressure TTLB": 3,
+                "VC AD": 1,
+                "VC DA": 1
+            },
+            "2": null,
+            "3": null,
+            "4": null,
+            "5": null,
+            "6": null,
+            "7": null
+        },
+        "Position MCCs": "- none -",
+        "Save data to": "C:MiesSave",
+        "Stim set file name": "",
+        "User Pressure Devices": {
+            "DAC Device": "- none -",
+            "Pressure DA": 0
+        }
+    },
+    "Dev1": {
+        "Generic ControlGroup": {
+            "ADC": {
+                "NumValue": 0
+            },
+            "Check_AD": {
+                "Values": [
+                    true,
+                    true,
+                    false,
+                    false,
+                    false,
+                    false,
+                    false,
+                    false,
+                    false,
+                    false,
+                    false,
+                    false,
+                    false,
+                    false,
+                    false,
+                    false
+                ]
+            },
+            "Check_AD_All": {
+                "NumValue": false
+            },
+            "Check_AsyncAD": {
+                "Values": [
+                    false,
+                    false,
+                    true,
+                    true,
+                    false,
+                    false,
+                    false,
+                    false
+                ]
+            },
+            "Check_DA": {
+                "Values": [
+                    true,
+                    true,
+                    false,
+                    false,
+                    false,
+                    false,
+                    false,
+                    false
+                ]
+            },
+            "Check_DA_ALL": {
+                "NumValue": false
+            },
+            "Check_DA_AllIClamp": {
+                "NumValue": false
+            },
+            "Check_DA_AllVClamp": {
+                "NumValue": false
+            },
+            "Check_DataAcq1_DistribDaq": {
+                "NumValue": false
+            },
+            "Check_DataAcq1_RepeatAcq": {
+                "NumValue": true
+            },
+            "Check_DataAcq1_dDAQOptOv": {
+                "NumValue": true
+            },
+            "Check_DataAcqHS": {
+                "Values": [
+                    true,
+                    true,
+                    false,
+                    false,
+                    false,
+                    false,
+                    false,
+                    false
+                ]
+            },
+            "Check_DataAcqHS_All": {
+                "NumValue": false
+            },
+            "Check_DataAcq_Get_Set_ITI": {
+                "NumValue": true
+            },
+            "Check_DataAcq_Indexing": {
+                "NumValue": false
+            },
+            "Check_DataAcq_SendToAllAmp": {
+                "NumValue": true
+            },
+            "Check_Settings_AlarmAutoRepeat": {
+                "NumValue": false
+            },
+            "Check_Settings_AlarmPauseAcq": {
+                "NumValue": false
+            },
+            "Check_Settings_Append": {
+                "NumValue": false
+            },
+            "Check_Settings_BackgrndDataAcq": {
+                "NumValue": true
+            },
+            "Check_Settings_BkgTP": {
+                "NumValue": true
+            },
+            "Check_Settings_ITImanualStart": {
+                "NumValue": false
+            },
+            "Check_Settings_InsertTP": {
+                "NumValue": true
+            },
+            "Check_Settings_NwbExport": {
+                "NumValue": false
+            },
+            "Check_Settings_SkipAnalysFuncs": {
+                "NumValue": true
+            },
+            "Check_Settings_TrigIn": {
+                "NumValue": false
+            },
+            "Check_Settings_TrigOut": {
+                "NumValue": false
+            },
+            "Check_Settings_UseDoublePrec": {
+                "NumValue": false
+            },
+            "Check_TTL": {
+                "Values": [
+                    false,
+                    false,
+                    false,
+                    false,
+                    false,
+                    false,
+                    false,
+                    false
+                ]
+            },
+            "Check_TTL_ALL": {
+                "NumValue": false
+            },
+            "Gain_AD": {
+                "Values": [
+                    0.0005000000237487257,
+                    0.05000000074505806,
+                    1,
+                    1,
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    0
+                ]
+            },
+            "Gain_AsyncAD": {
+                "Values": [
+                    1,
+                    1,
+                    0.01,
+                    0.01,
+                    1,
+                    1,
+                    1,
+                    1
+                ]
+            },
+            "Gain_DA": {
+                "Values": [
+                    20,
+                    400,
+                    1,
+                    1,
+                    0,
+                    0,
+                    0,
+                    0
+                ]
+            },
+            "Headstage_0_VC": {
+                "NumValue": true
+            },
+            "Headstage_1_IC": {
+                "NumValue": true
+            },
+            "Headstage_2_VC": {
+                "NumValue": true
+            },
+            "Headstage_3_VC": {
+                "NumValue": true
+            },
+            "Headstage_4_VC": {
+                "NumValue": true
+            },
+            "Headstage_5_VC": {
+                "NumValue": true
+            },
+            "Headstage_6_VC": {
+                "NumValue": true
+            },
+            "Headstage_7_VC": {
+                "NumValue": true
+            },
+            "IndexEnd_DA": {
+                "Values": [
+                    "- none -",
+                    "- none -",
+                    "- none -",
+                    "- none -",
+                    "- none -",
+                    "- none -",
+                    "- none -",
+                    "- none -"
+                ]
+            },
+            "IndexEnd_DA_All": {
+                "StrValue": "- none -"
+            },
+            "IndexEnd_DA_AllIClamp": {
+                "StrValue": "- none -"
+            },
+            "IndexEnd_DA_AllVClamp": {
+                "StrValue": "- none -"
+            },
+            "IndexEnd_TTL": {
+                "Values": [
+                    "- none -",
+                    "- none -",
+                    "- none -",
+                    "- none -",
+                    "- none -",
+                    "- none -",
+                    "- none -",
+                    "- none -"
+                ]
+            },
+            "IndexEnd_TTL_All": {
+                "StrValue": "- none -"
+            },
+            "Popup_Settings_DecMethod": {
+                "StrValue": "MinMax"
+            },
+            "Popup_Settings_FixedFreq": {
+                "StrValue": "Maximum"
+            },
+            "Popup_Settings_OsciUpdMode": {
+                "StrValue": "Interval"
+            },
+            "Popup_Settings_SampIntMult": {
+                "StrValue": "1"
+            },
+            "Scale_DA": {
+                "Values": [
+                    70,
+                    1500,
+                    1,
+                    1,
+                    1,
+                    1,
+                    1,
+                    1
+                ]
+            },
+            "Scale_DA_All": {
+                "NumValue": 1
+            },
+            "Scale_DA_AllIClamp": {
+                "NumValue": 1500
+            },
+            "Scale_DA_AllVClamp": {
+                "NumValue": 70
+            },
+            "Search_DA": {
+                "Values": [
+                    "",
+                    "",
+                    "",
+                    "",
+                    "",
+                    "",
+                    "",
+                    ""
+                ]
+            },
+            "Search_DA_All": {
+                "StrValue": ""
+            },
+            "Search_DA_AllIClamp": {
+                "StrValue": ""
+            },
+            "Search_DA_AllVClamp": {
+                "StrValue": ""
+            },
+            "Search_TTL": {
+                "Values": [
+                    "",
+                    "",
+                    "",
+                    "",
+                    "",
+                    "",
+                    "",
+                    ""
+                ]
+            },
+            "Search_TTL_All": {
+                "StrValue": ""
+            },
+            "SetVar_DataAcq_Comment": {
+                "StrValue": ""
+            },
+            "SetVar_DataAcq_ITI": {
+                "NumValue": 0.015
+            },
+            "SetVar_DataAcq_ListRepeats": {
+                "NumValue": 1
+            },
+            "SetVar_DataAcq_SetRepeats": {
+                "NumValue": 5
+            },
+            "SetVar_DataAcq_skipAhead": {
+                "NumValue": 0
+            },
+            "SetVar_Hardware_Pressur_AD_Unit": {
+                "StrValue": "psi"
+            },
+            "SetVar_Hardware_Pressur_DA_Unit": {
+                "StrValue": "psi"
+            },
+            "SetVar_Sweep": {
+                "NumValue": 0
+            },
+            "Setvar_DataAcq_dDAQDelay": {
+                "NumValue": 0
+            },
+            "Title_AsyncAD": {
+                "Values": [
+                    "",
+                    "",
+                    "Set Temperature",
+                    "Bath Temperature",
+                    "",
+                    "",
+                    "",
+                    ""
+                ]
+            },
+            "Unit_AD": {
+                "Values": [
+                    "pA",
+                    "mV",
+                    "pA",
+                    "pA",
+                    "",
+                    "",
+                    "",
+                    "",
+                    "",
+                    "",
+                    "",
+                    "",
+                    "",
+                    "",
+                    "",
+                    ""
+                ]
+            },
+            "Unit_AsyncAD": {
+                "Values": [
+                    "",
+                    "",
+                    "degC",
+                    "degC",
+                    "",
+                    "",
+                    "",
+                    ""
+                ]
+            },
+            "Unit_DA": {
+                "Values": [
+                    "mV",
+                    "pA",
+                    "mV",
+                    "mV",
+                    "",
+                    "",
+                    "",
+                    ""
+                ]
+            },
+            "Wave_DA": {
+                "Values": [
+                    "PulseTrain_20Hz_DA_0",
+                    "PulseTrain_20Hz_DA_0",
+                    "- none -",
+                    "- none -",
+                    "- none -",
+                    "- none -",
+                    "- none -",
+                    "- none -"
+                ]
+            },
+            "Wave_DA_All": {
+                "StrValue": "- none -"
+            },
+            "Wave_DA_AllIClamp": {
+                "StrValue": "PulseTrain_20Hz_DA_0"
+            },
+            "Wave_DA_AllVClamp": {
+                "StrValue": "PulseTrain_20Hz_DA_0"
+            },
+            "Wave_TTL": {
+                "Values": [
+                    "- none -",
+                    "- none -",
+                    "- none -",
+                    "- none -",
+                    "- none -",
+                    "- none -",
+                    "- none -",
+                    "- none -"
+                ]
+            },
+            "Wave_TTL_All": {
+                "StrValue": "- none -"
+            },
+            "button_SettingsPlus_LockDevice": {
+                "NumValue": 1
+            },
+            "check_AsyncAlarm": {
+                "Values": [
+                    false,
+                    false,
+                    false,
+                    false,
+                    false,
+                    false,
+                    false,
+                    false
+                ]
+            },
+            "check_DA_applyOnModeSwitch": {
+                "NumValue": false
+            },
+            "check_DatAcq_ApproachAll": {
+                "NumValue": false
+            },
+            "check_DatAcq_ApproachNear": {
+                "NumValue": false
+            },
+            "check_DatAcq_BBEnable": {
+                "NumValue": false
+            },
+            "check_DatAcq_BreakInAll": {
+                "NumValue": false
+            },
+            "check_DatAcq_CNEnable": {
+                "NumValue": false
+            },
+            "check_DatAcq_ClearEnable": {
+                "NumValue": false
+            },
+            "check_DatAcq_HoldEnable": {
+                "NumValue": false
+            },
+            "check_DatAcq_HoldEnableVC": {
+                "NumValue": false
+            },
+            "check_DatAcq_RsCompEnable": {
+                "NumValue": false
+            },
+            "check_DatAcq_SealALl": {
+                "NumValue": false
+            },
+            "check_DatAcq_SealAtm": {
+                "NumValue": false
+            },
+            "check_DatAcq_WholeCellEnable": {
+                "NumValue": false
+            },
+            "check_DataACq_Pressure_AutoOFF": {
+                "NumValue": false
+            },
+            "check_DataACq_Pressure_User": {
+                "NumValue": false
+            },
+            "check_DataAcq_Amp_Chain": {
+                "NumValue": false
+            },
+            "check_DataAcq_AutoBias": {
+                "NumValue": false
+            },
+            "check_DataAcq_IndexRandom": {
+                "NumValue": false
+            },
+            "check_DataAcq_ManPressureAll": {
+                "NumValue": false
+            },
+            "check_DataAcq_RepAcqRandom": {
+                "NumValue": false
+            },
+            "check_Settings_AmpIEQZstep": {
+                "NumValue": true
+            },
+            "check_Settings_AmpMCCdefault": {
+                "NumValue": false
+            },
+            "check_Settings_DisablePressure": {
+                "NumValue": false
+            },
+            "check_Settings_ITITP": {
+                "NumValue": true
+            },
+            "check_Settings_MD": {
+                "NumValue": true
+            },
+            "check_Settings_Option_3": {
+                "NumValue": false
+            },
+            "check_Settings_RequireAmpConn": {
+                "NumValue": true
+            },
+            "check_Settings_SaveAmpSettings": {
+                "NumValue": true
+            },
+            "check_Settings_ScalingZero": {
+                "NumValue": false
+            },
+            "check_Settings_SetOption_04": {
+                "NumValue": false
+            },
+            "check_Settings_ShowScopeWindow": {
+                "NumValue": true
+            },
+            "check_Settings_SyncMiesToMCC": {
+                "NumValue": false
+            },
+            "check_Settings_TPAfterDAQ": {
+                "NumValue": true
+            },
+            "check_Settings_TP_SaveTP": {
+                "NumValue": false
+            },
+            "check_Settings_UserP_Approach": {
+                "NumValue": false
+            },
+            "check_Settings_UserP_BreakIn": {
+                "NumValue": false
+            },
+            "check_Settings_UserP_Clear": {
+                "NumValue": false
+            },
+            "check_Settings_UserP_Seal": {
+                "NumValue": false
+            },
+            "check_settings_TP_show_peak": {
+                "NumValue": true
+            },
+            "check_settings_TP_show_steady": {
+                "NumValue": true
+            },
+            "check_settings_show_power": {
+                "NumValue": false
+            },
+            "max_AsyncAD": {
+                "Values": [
+                    0,
+                    0,
+                    34,
+                    34,
+                    0,
+                    0,
+                    0,
+                    0
+                ]
+            },
+            "min_AsyncAD": {
+                "Values": [
+                    0,
+                    0,
+                    -1,
+                    -1,
+                    0,
+                    0,
+                    0,
+                    0
+                ]
+            },
+            "popup_MoreSettings_Devices": {
+                "StrValue": "Dev1"
+            },
+            "setvar_DataAcq_AutoBiasV": {
+                "NumValue": 0
+            },
+            "setvar_DataAcq_AutoBiasVrange": {
+                "NumValue": 0
+            },
+            "setvar_DataAcq_BB": {
+                "NumValue": 0
+            },
+            "setvar_DataAcq_CN": {
+                "NumValue": 0
+            },
+            "setvar_DataAcq_Hold_IC": {
+                "NumValue": 0
+            },
+            "setvar_DataAcq_Hold_VC": {
+                "NumValue": 0
+            },
+            "setvar_DataAcq_IbiasMax": {
+                "NumValue": 0
+            },
+            "setvar_DataAcq_OnsetDelayUser": {
+                "NumValue": 500
+            },
+            "setvar_DataAcq_PPDuration": {
+                "NumValue": 0
+            },
+            "setvar_DataAcq_PPPressure": {
+                "NumValue": 0
+            },
+            "setvar_DataAcq_PipetteOffset_IC": {
+                "NumValue": 0
+            },
+            "setvar_DataAcq_PipetteOffset_VC": {
+                "NumValue": 0
+            },
+            "setvar_DataAcq_RsCorr": {
+                "NumValue": 0
+            },
+            "setvar_DataAcq_RsPred": {
+                "NumValue": 0
+            },
+            "setvar_DataAcq_SSPressure": {
+                "NumValue": 0
+            },
+            "setvar_DataAcq_TerminationDelay": {
+                "NumValue": 1000
+            },
+            "setvar_DataAcq_WCC": {
+                "NumValue": 0
+            },
+            "setvar_DataAcq_WCR": {
+                "NumValue": 0
+            },
+            "setvar_DataAcq_dDAQOptOvPost": {
+                "NumValue": 150
+            },
+            "setvar_DataAcq_dDAQOptOvPre": {
+                "NumValue": 0
+            },
+            "setvar_Settings_AutoBiasInt": {
+                "NumValue": 1
+            },
+            "setvar_Settings_AutoBiasPerc": {
+                "NumValue": 15
+            },
+            "setvar_Settings_DecMethodFac": {
+                "NumValue": -1
+            },
+            "setvar_Settings_InAirP": {
+                "NumValue": 3.799999952316284
+            },
+            "setvar_Settings_InBathP": {
+                "NumValue": 0.5
+            },
+            "setvar_Settings_InSliceP": {
+                "NumValue": 0.20000000298023224
+            },
+            "setvar_Settings_NearCellP": {
+                "NumValue": 0.6000000238418579
+            },
+            "setvar_Settings_OsciUpdExt": {
+                "NumValue": 10
+            },
+            "setvar_Settings_OsciUpdInt": {
+                "NumValue": 500
+            },
+            "setvar_Settings_Pressure_ADgain": {
+                "NumValue": 0.5
+            },
+            "setvar_Settings_Pressure_DAgain": {
+                "NumValue": 2
+            },
+            "setvar_Settings_SealMaxP": {
+                "NumValue": -1.399999976158142
+            },
+            "setvar_Settings_SealStartP": {
+                "NumValue": -0.10000000149011612
+            },
+            "setvar_Settings_SliceSurfHeight": {
+                "NumValue": 350
+            },
+            "setvar_Settings_SurfaceHeight": {
+                "NumValue": 3500
+            },
+            "setvar_Settings_TPBuffer": {
+                "NumValue": 1
+            },
+            "setvar_Settings_TP_RTolerance": {
+                "NumValue": 1
+            },
+            "slider_DataAcq_ActiveHeadstage": {
+                "NumValue": 1
+            },
+            "tab_DataAcq_Amp": {
+                "NumValue": 1
+            },
+            "tab_DataAcq_Pressure": {
+                "NumValue": 0
+            }
+        },
+        "Test Pulse ControlGroup": {
+            "SetVar_DataAcq_TPAmplitude": {
+                "NumValue": -10
+            },
+            "SetVar_DataAcq_TPAmplitudeIC": {
+                "NumValue": -50
+            },
+            "SetVar_DataAcq_TPBaselinePerc": {
+                "NumValue": 30
+            },
+            "SetVar_DataAcq_TPDuration": {
+                "NumValue": 10
+            }
+        }
+    },
+    "Target Window Type": "DA_Ephys"
+}

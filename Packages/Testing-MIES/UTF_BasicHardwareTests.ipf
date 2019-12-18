@@ -4,6 +4,9 @@
 
 /// @file UTF_BasicHardWareTests.ipf Implement some basic tests using the ITC hardware.
 
+static StrConstant REF_DAEPHYS_CONFIG_FILE = "DA_Ephys.json"
+static StrConstant REF_TMP1_CONFIG_FILE = "UserConfigTemplate_Temp1.txt"
+
 static Function SetAnalysisFunctions_IGNORE()
 
 	WAVE/T wv = root:MIES:WaveBuilder:SavedStimulusSetParameters:DA:WPT_StimulusSetA_DA_0
@@ -3497,4 +3500,28 @@ Function/S RemoveTrailingNumber_IGNORE(str)
 	CHECK_EQUAL_VAR(ItemsInList(str, "_"), 2)
 
 	return StringFromList(0, str, "_")
+End
+
+// UTF_TD_GENERATOR HardwareMain#DeviceNameGeneratorMD1
+Function RestoreDAEphysPanel([str])
+	string str
+
+	variable jsonID
+	string stimSetPath, jPath, data, fName
+
+	[data, fName] = LoadTextFile(REF_DAEPHYS_CONFIG_FILE)
+
+	jsonID = JSON_Parse(data)
+	PathInfo home
+	jPath = MIES_CONF#CONF_FindControl(jsonID, "popup_MoreSettings_Devices")
+	JSON_SetString(jsonID, jPath + "/StrValue", str)
+	JSON_SetString(jsonID, "/Common configuration data/Save data to", S_path)
+	stimSetPath = S_path + "..:..:Packages:Testing-MIES:_2017_09_01_192934-compressed.nwb"
+	JSON_SetString(jsonID, "/Common configuration data/Stim set file name", stimSetPath)
+
+	CONF_RestoreDAEphys(jsonID, "")
+	MIES_CONF#CONF_SaveDAEphys(REF_TMP1_CONFIG_FILE)
+
+	CONF_RestoreDAEphys(jsonID, "", middleOfExperiment = 1)
+	MIES_CONF#CONF_SaveDAEphys(REF_TMP1_CONFIG_FILE)
 End

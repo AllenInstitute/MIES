@@ -799,7 +799,7 @@ End
 /// @brief Opens Multi-clamp commander software
 ///
 /// @param ampSerialNumList A text list of amplifier serial numbers without leading zeroes
-/// Ex. "834001;435003;836059"
+/// Ex. "834001;435003;836059", "0;" starts the MCC in Demo mode
 /// @param ampTitleList [optional, defaults to blank] MCC gui window title
 /// @param maxAttempts [optional, defaults to inf] Maximum number of attempts made to open specified MCCs
 /// @return 1 if all MCCs specified in ampSerialNumList were opened, 0 if one or more MCCs specified in ampSerialNumList were not able to be opened
@@ -828,7 +828,11 @@ Function AI_OpenMCCs(ampSerialNumList, [ampTitleList, maxAttempts])
 			title = stringfromlist(i, AmpTitleList)
 			findvalue/I=(serialNum) OpenMCCList
 			if( V_value == -1)
-				sprintf cmd, "\"%s\" /S00%g /T%s(%s)", AI_GetMCCWinFilePath(), SerialNum, title, SerialStr
+				if(!serialNum)
+					sprintf cmd, "\"%s\" /T%s(%s)", AI_GetMCCWinFilePath(), title, SerialStr
+				else
+					sprintf cmd, "\"%s\" /S00%g /T%s(%s)", AI_GetMCCWinFilePath(), SerialNum, title, SerialStr
+				endif
 				executeScriptText cmd
 			endif
 		endfor

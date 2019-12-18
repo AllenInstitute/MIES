@@ -29,6 +29,27 @@ static StrConstant GUI_CONTROLSAVESTATE_DISABLED = "oldDisabledState"
 // PCIe-6343 | PXI-6259
 static StrConstant NI_DAC_PATTERNS = "AI:32;AO:4;COUNTER:4;DIOPORTS:3;LINES:32,8,8|AI:32;AO:4;COUNTER:2;DIOPORTS:3;LINES:32,8,8"
 
+/// @brief Creates meta information about coupled CheckBoxes (Radio Button) controls
+///        Used for saving/restoring the GUI state
+/// @return Free text wave with lists of coupled CheckBox controls
+Function/WAVE DAP_GetRadioButtonCoupling()
+
+	Make/FREE/T/N=10 w
+
+	w[0] = "Radio_ClampMode_0;Radio_ClampMode_1;Radio_ClampMode_1IZ;"
+	w[1] = "Radio_ClampMode_2;Radio_ClampMode_3;Radio_ClampMode_3IZ;"
+	w[2] = "Radio_ClampMode_4;Radio_ClampMode_5;Radio_ClampMode_5IZ;"
+	w[3] = "Radio_ClampMode_6;Radio_ClampMode_7;Radio_ClampMode_7IZ;"
+	w[4] = "Radio_ClampMode_8;Radio_ClampMode_9;Radio_ClampMode_9IZ;"
+	w[5] = "Radio_ClampMode_10;Radio_ClampMode_11;Radio_ClampMode_11IZ;"
+	w[6] = "Radio_ClampMode_12;Radio_ClampMode_13;Radio_ClampMode_13IZ;"
+	w[7] = "Radio_ClampMode_14;Radio_ClampMode_15;Radio_ClampMode_15IZ;"
+	w[8] = "Radio_ClampMode_AllVClamp;Radio_ClampMode_AllIClamp;Radio_ClampMode_AllIZero;"
+	w[9] = "check_Settings_Option_3;check_Settings_SetOption_5;"
+
+	return w
+End
+
 /// @brief Returns a list of DAC devices for NI devices
 /// @return list of NI DAC devices
 Function/S DAP_GetNIDeviceList()
@@ -4201,6 +4222,10 @@ Function/S DAP_CreateDAEphysPanel()
 
 	string panel
 
+	if(!WindowExists("HistoryCarbonCopy"))
+		CreateHistoryNotebook()
+	endif
+
 	// upgrade folder locations
 	GetITCDevicesFolder()
 
@@ -4212,10 +4237,6 @@ Function/S DAP_CreateDAEphysPanel()
 	panel = GetCurrentWindow()
 	SCOPE_OpenScopeWindow(panel)
 	AddVersionToPanel(panel, DA_EPHYS_PANEL_VERSION)
-
-	if(!WindowExists("HistoryCarbonCopy"))
-		CreateHistoryNotebook()
-	endif
 
 	return panel
 End

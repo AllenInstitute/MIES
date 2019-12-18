@@ -158,6 +158,7 @@ Constant CONTROL_TYPE_CHECKBOX      = 2
 Constant CONTROL_TYPE_POPUPMENU     = 3
 Constant CONTROL_TYPE_VALDISPLAY    = 4
 Constant CONTROL_TYPE_SETVARIABLE   = 5
+Constant CONTROL_TYPE_CHART         = 6
 Constant CONTROL_TYPE_SLIDER        = 7
 Constant CONTROL_TYPE_TAB           = 8
 Constant CONTROL_TYPE_GROUPBOX      = 9
@@ -582,7 +583,7 @@ Constant HARDWARE_DAC_EXTERNAL_TRIGGER = 0x1
 /// @}
 
 /// Used to upgrade the GuiStateWave as well as the DA Ephys panel
-Constant DA_EPHYS_PANEL_VERSION     = 44
+Constant DA_EPHYS_PANEL_VERSION     = 45
 Constant DATABROWSER_PANEL_VERSION  = 12
 Constant SWEEPBROWSER_PANEL_VERSION = 3
 Constant WAVEBUILDER_PANEL_VERSION  = 8
@@ -594,7 +595,7 @@ Constant WAVEBUILDER_PANEL_VERSION  = 8
 /// - Changed names of entries
 /// - Changed units or meaning of entries
 /// - New/Changed layers of entries
-Constant LABNOTEBOOK_VERSION = 34
+Constant LABNOTEBOOK_VERSION = 35
 
 /// Version of the stimset wave note
 Constant STIMSET_NOTE_VERSION = 6
@@ -1194,4 +1195,71 @@ Constant FINDLEVEL_EDGE_BOTH       = 0
 /// @{
 Constant FINDLEVEL_MODE_SINGLE = 1
 Constant FINDLEVEL_MODE_MULTI  = 2
+/// @}
+
+/// @name Return codes of the Igor exists function
+/// @anchor existsReturnCodes
+/// @{
+Constant EXISTS_NAME_NOT_USED = 0
+Constant EXISTS_AS_WAVE = 1
+Constant EXISTS_AS_VAR_OR_STR = 2
+Constant EXISTS_AS_FUNCTION = 3
+Constant EXISTS_AS_OPERATION = 4
+Constant EXISTS_AS_MACRO = 5
+Constant EXISTS_AS_USERFUNCTION = 6
+/// @}
+
+/// @name Return codes of the Igor WinType function
+/// @anchor wintypeReturnCodes
+/// @{
+Constant WINTYPE_NOWINDOW = 0
+Constant WINTYPE_GRAPH = 1
+Constant WINTYPE_TABLE = 2
+Constant WINTYPE_LAYOUT = 3
+Constant WINTYPE_NOTEBOOK = 5
+Constant WINTYPE_PANEL = 7
+Constant WINTYPE_XOP = 13
+Constant WINTYPE_CAMERA = 15
+Constant WINTYPE_GIZMO = 17
+/// @}
+
+/// @name Panel tag codes to identify panel types, set in creation macro as main window userdata($EXPCONFIG_UDATA_PANELTYPE)
+/// @anchor panelTags
+/// @{
+StrConstant EXPCONFIG_UDATA_PANELTYPE = "Config_PanelType"
+
+StrConstant PANELTAG_DAEPHYS = "DA_Ephys"
+StrConstant PANELTAG_DATABROWSER = "DataBrowser"
+/// @}
+
+StrConstant EXPCONFIG_UDATA_SOURCEFILE_PATH = "Config_FileName"
+StrConstant EXPCONFIG_UDATA_SOURCEFILE_HASH = "Config_FileHash"
+
+/// @name Bit mask constants for properties for window control saving/restore
+/// @anchor WindowControlSavingMask
+/// @{
+Constant EXPCONFIG_SAVE_VALUE = 1
+Constant EXPCONFIG_SAVE_POSITION = 2
+Constant EXPCONFIG_SAVE_USERDATA = 4
+Constant EXPCONFIG_SAVE_DISABLED = 8
+Constant EXPCONFIG_SAVE_CTRLTYPE = 16
+Constant EXPCONFIG_SAVE_POPUPMENU_AS_STRING_ONLY = 32
+Constant EXPCONFIG_SAVE_POPUPMENU_AS_INDEX_ONLY = 64
+Constant EXPCONFIG_MINIMIZE_ON_RESTORE = 128
+Constant EXPCONFIG_SAVE_BUTTONS_ONLY_PRESSED = 256
+Constant EXPCONFIG_SAVE_ONLY_RELEVANT = 512
+/// @}
+
+/// @name Correlated control name/type/valuetype list for use with e.g. ControlInfo
+/// @anchor IgorControlData
+/// @{
+StrConstant EXPCONFIG_GUI_CTRLLIST = "Button;Chart;CheckBox;CustomControl;GroupBox;ListBox;PopupMenu;SetVariable;Slider;TabControl;TitleBox;ValDisplay;"
+StrConstant EXPCONFIG_GUI_CTRLTYPES = "1;6;2;12;9;11;3;5;7;8;10;4;"
+StrConstant EXPCONFIG_GUI_VVALUE =      "1;1;1;1;0;1;1;1;1;1;0;1;"
+StrConstant EXPCONFIG_GUI_SVALUE =      "0;1;0;0;1;1;1;1;1;1;0;1;"
+StrConstant EXPCONFIG_GUI_SDATAFOLDER = "0;0;0;0;0;1;0;1;1;0;1;0;"
+/// 0 does not apply, 1 V_Value, 2 S_Value, 3 S_DataFolder for EXPCONFIG_SAVE_ONLY_RELEVANT
+StrConstant EXPCONFIG_GUI_PREFERRED =   "0;2;0;0;0;3;2;0;1;1;0;1;"
+
+StrConstant EXPCONFIG_GUI_SUSERDATA =   "1;0;1;1;0;1;1;1;1;1;0;0;"
 /// @}

@@ -9,6 +9,9 @@
 /// @file MIES_GuiUtilities.ipf
 /// @brief Helper functions related to GUI controls
 
+static StrConstant USERDATA_PREFIX = "userdata("
+static StrConstant USERDATA_SUFFIX = ")"
+
 /// @brief Show a GUI control in the given window
 Function ShowControl(win, control)
 	string win, control
@@ -1580,4 +1583,126 @@ Function ReplaceNotebookText(win, text)
 	ASSERT(!V_Flag, "Illegal selection")
 
 	Notebook $win setData=text
+End
+
+/// @brief Retrieves named userdata keys from a recreation macro string
+///
+/// @param recMacro recreation macro string
+/// @returns List of userdata keys
+Function/S GetUserdataKeys(recMacro)
+	string recMacro
+
+	string userKeys = ""
+	string key
+	variable pos1, pos2
+	variable prefixLength = strlen(USERDATA_PREFIX)
+
+	do
+		pos1 = strsearch(recMacro, USERDATA_PREFIX, pos1)
+		if(pos1 == -1)
+			break
+		endif
+		pos2 = strsearch(recMacro, USERDATA_SUFFIX, pos1)
+		key = recMacro[pos1 + prefixLength, pos2 - 1]
+		userKeys = AddListItem(key, userKeys, ";", Inf)
+		pos1 = pos2
+	while(1)
+
+	if(ItemsInList(userKeys) > 1)
+		WAVE/T w = ListToTextWave(userKeys, ";")
+		FindDuplicates/FREE /RT=wClean w
+		wfprintf userKeys, "%s;", wClean
+	endif
+
+	return userKeys
+End
+
+/// @brief Converts an Igor control type number to control name
+///
+/// @param ctrlType ctrl type of Igor control
+/// @returns Igor name of control type
+Function/S ControlTypeToName(ctrlType)
+	variable ctrlType
+
+	variable pos
+	if(numtype(ctrlType) == 2)
+		return ""
+	endif
+	pos = WhichListItem(num2str(abs(ctrlType)), EXPCONFIG_GUI_CTRLTYPES)
+	if(pos < 0)
+	  return ""
+	endif
+	return StringFromList(pos, EXPCONFIG_GUI_CTRLLIST)
+End
+
+/// @brief Converts an Igor control name to control type number
+///
+/// @param ctrlName Name of Igor control
+/// @returns Igor control type number
+Function Name2ControlType(ctrlName)
+	string ctrlName
+
+	variable pos
+	pos = WhichListItem(ctrlName, EXPCONFIG_GUI_CTRLLIST)
+	if(pos < 0)
+	  return NaN
+	endif
+	return str2num(StringFromList(pos, EXPCONFIG_GUI_CTRLTYPES))
+End
+
+/// @brief Checks if a certain window can act as valid host for subwindows
+///        developer note: The only integrated Igor function that does this is ChildWindowList.
+///        Though, ChildWindowList generates an RTE for non-valid windows, where this check function does not.
+///
+/// @param wName window name that should be checked to be a valid host for subwindows
+/// @returns 1 if window is a valid host, 0 otherwise
+Function WindowTypeCanHaveChildren(wName)
+	string wName
+
+	Make/FREE/I typeCanHaveChildren = {WINTYPE_GRAPH, WINTYPE_PANEL}
+	FindValue/I=(WinType(wName)) typeCanHaveChildren
+
+	return V_value != -1
+End
+
+/// @brief Recursively build a list of windows, including all child
+///        windows, starting with wName.
+///
+/// @param wName      parent window name to start with
+/// @param windowList A string containing names of windows.  This list is a semicolon separated list.  It will include the window
+///                   wName and all of its children and children of children, etc.
+Function GetAllWindows(wName, windowList)
+	string wName
+	string &windowList
+
+	string children
+	variable i, numChildren, err
+
+	windowList = AddListItem(wName, windowList, ";", inf)
+
+	if(!WindowTypeCanHaveChildren(wName))
+		return NaN
+	endif
+
+	children = ChildWindowList(wName)
+	numChildren = ItemsInList(children, ";")
+	for(i = 0; i < numChildren; i += 1)
+		GetAllWindows(wName + "#" + StringFromList(i, children, ";"), windowList)
+	endfor
+End
+
+/// @brief Checks if a window is tagged as certain type
+///
+/// @param[in] panelTitle Window name to check
+/// @param[in] typeTag one of PANELTAG_* constants @sa panelTags
+/// returns 1 if window is a DA_Ephys panel
+Function PanelIsType(panelTitle, typeTag)
+	string panelTitle
+	string typeTag
+
+	if(!WindowExists(panelTitle))
+		return 0
+	endif
+
+	return !CmpStr(GetUserData(panelTitle, "", EXPCONFIG_UDATA_PANELTYPE), typeTag)
 End

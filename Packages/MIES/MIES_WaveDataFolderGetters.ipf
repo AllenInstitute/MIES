@@ -1575,7 +1575,7 @@ Function/WAVE GetLBNidCache(numericalValues)
 	return wv
 End
 
-static Constant SWEEP_SETTINGS_WAVE_VERSION = 24
+static Constant SWEEP_SETTINGS_WAVE_VERSION = 25
 
 /// @brief Uses the parameter names from the `sourceKey` columns and
 ///        write them as dimension into the columns of dest.
@@ -2052,6 +2052,8 @@ End
 /// -26: Digitizer Hardware Name
 /// -27: Digitizer Serial Numbers
 /// -28: Epochs
+/// -29: JSON config file: path
+/// -30: JSON config file: SHA-256 hash
 Function/Wave GetSweepSettingsTextKeyWave(panelTitle)
 	string panelTitle
 
@@ -2070,9 +2072,9 @@ Function/Wave GetSweepSettingsTextKeyWave(panelTitle)
 	if(ExistsWithCorrectLayoutVersion(wv, versionOfNewWave))
 		return wv
 	elseif(WaveExists(wv))
-		Redimension/N=(-1, 29, 0) wv
+		Redimension/N=(-1, 31, 0) wv
 	else
-		Make/T/N=(1, 29) newDFR:$newName/Wave=wv
+		Make/T/N=(1, 31) newDFR:$newName/Wave=wv
 	endif
 
 	SetDimLabel ROWS, 0, Parameter, wv
@@ -2108,6 +2110,8 @@ Function/Wave GetSweepSettingsTextKeyWave(panelTitle)
 	wv[0][26] = "Digitizer Hardware Name"
 	wv[0][27] = "Digitizer Serial Numbers"
 	wv[0][28] = EPOCHS_ENTRY_KEY
+	wv[0][29] = "JSON config file: path"
+	wv[0][30] = "JSON config file: SHA-256 hash"
 
 	SetSweepSettingsDimLabels(wv, wv)
 	SetWaveVersion(wv, versionOfNewWave)

@@ -1,0 +1,64 @@
+{
+    "MainPanel": {
+        "Generic ControlGroup": {
+            "Check Me": {
+                "NumValue": true
+            },
+            "Radio3": {
+                "NumValue": true
+            },
+            "button": {
+                "NumValue": 0
+            },
+            "chart": {
+                "NumValue": 0,
+                "StrValue": "FNAME:;NCHANS:0;PPSTRIP:1;RHSAMP:0;LHSAMP:-100;"
+            },
+            "listbox": {
+                "DataSource": "",
+                "NumValue": 0,
+                "StrValue": ""
+            },
+            "popup": {
+                "NumValue": 1,
+                "StrValue": "Yes"
+            },
+            "setvar": {
+                "DataSource": ""
+            },
+            "tab": {
+                "NumValue": 3,
+                "StrValue": "Tab 3"
+            },
+            "valdisp": {
+                "NumValue": 1337,
+                "StrValue": "1337"
+            }
+        },
+        "level1 ControlGroup": {
+            "level2 ControlGroup": {
+                "slider": {
+                    "DataSource": "",
+                    "NumValue": 25,
+                    "StrValue": ""
+                }
+            }
+        }
+    },
+    "MainPanel#SubPanel": {
+        "Generic ControlGroup": {
+            "ctrlArray": {
+                "Values": [
+                    false,
+                    false,
+                    false,
+                    false,
+                    0,
+                    null,
+                    "Amiga"
+                ]
+            }
+        }
+    },
+    "Target Window Type": ""
+}
