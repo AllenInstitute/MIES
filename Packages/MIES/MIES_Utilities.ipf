@@ -4831,3 +4831,25 @@ Function [WAVE/T withSuffix, WAVE/T woSuffix] SplitTextWaveBySuffix(WAVE/T sourc
 
 	return [withSuffix, woSuffix]
 End
+
+/// @brief Check wether the given path points to an existing file
+///
+/// Resolves shortcuts and symlinks recursively.
+Function FileExists(filepath)
+	string filepath
+
+	filepath = ResolveAlias(filepath)
+	GetFileFolderInfo/Q/Z filepath
+
+	return !V_Flag && V_IsFile
+End
+
+/// @brief Check wether the given path points to an existing folder
+Function FolderExists(folderpath)
+	string folderpath
+
+	folderpath = ResolveAlias(folderpath)
+	GetFileFolderInfo/Q/Z folderpath
+
+	return !V_Flag && V_isFolder
+End
