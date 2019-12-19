@@ -471,12 +471,11 @@ static Function AB_LoadDataWrapper(tmpDFR, expFilePath, datafolderPath, listOfNa
 	// also with "/Q" LoadData still complains if the subfolder path does not exist
 	try
 		ClearRTError()
-		GetFileFolderInfo/Q/Z expFileOrFolder
-		if(V_isFile)
+		if(FileExists(expFileOrFolder))
 			LoadData/Q/R/L=(typeFlags)/S=dataFolderPath/J=listOfNames/O=1 expFileOrFolder; AbortOnRTE
-		elseif(V_isFolder)
+		elseif(FolderExists(expFileOrFolder))
 			LoadData/Q/D/R/L=(typeFlags)/J=listOfNames/O=1 expFileOrFolder + ":" + dataFolderPath; AbortOnRTE
-		elseif(V_flag != 0)
+		else
 			sprintf str, "The experiment file/folder \"%s\" could not be found!\r", ParseFilePath(5, expFileOrFolder, "\\", 0, 0)
 			DoAlert/T="Error in AB_LoadDataWrapper" 0, str
 			Abort

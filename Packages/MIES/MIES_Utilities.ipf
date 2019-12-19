@@ -1844,9 +1844,7 @@ Function IsDriveValid(absPath)
 	path  = ParseFilePath(5, absPath, ":", 0, 0)
 	drive = StringFromList(0, path, ":")
 
-	GetFileFolderInfo/Q/Z drive
-
-	return !V_flag
+	return FolderExists(drive)
 End
 
 /// @brief Create a folder recursively on disk given an absolute path
@@ -1861,11 +1859,7 @@ Function CreateFolderOnDisk(absPath)
 	// convert to ":" folder separators
 	path = ParseFilePath(5, absPath, ":", 0, 0)
 
-	GetFileFolderInfo/Q/Z path
-	if(!V_flag)
-		ASSERT(V_isFolder, "The path which we should create exists, but points to a file")
-		return NaN
-	endif
+	ASSERT(!FileExists(path), "The path which we should create exists, but points to a file")
 
 	tempPath = UniqueName("tempPath", 12, 0)
 
@@ -1877,24 +1871,14 @@ Function CreateFolderOnDisk(absPath)
 	for(i = 1; i < numParts; i += 1)
 		partialPath += ":" + StringFromList(i, path, ":")
 
-		GetFileFolderInfo/Q/Z partialPath
-		if(!V_flag)
-			ASSERT(V_isFolder, "The partial path which we should create exists, but points to a file")
-			continue
-		endif
+		ASSERT(!FileExists(partialPath), "The path which we should create exists, but points to a file")
 
 		NewPath/O/C/Q/Z $tempPath partialPath
 	endfor
 
 	KillPath/Z $tempPath
 
-	GetFileFolderInfo/Q/Z partialPath
-	if(!V_flag)
-		ASSERT(V_isFolder, "The path which we should create exists, but points to a file")
-		return NaN
-	endif
-
-	ASSERT(0, "Could not create the path, maybe the permissions were insufficient")
+	ASSERT(FolderExists(partialPath), "Could not create the path, maybe the permissions were insufficient")
 End
 
 /// @brief Return the row index of the given value, string converted to a variable, or wv
@@ -4431,8 +4415,7 @@ Function TurnOffASLR()
 	string cmd, path
 
 	path = GetFolder(FunctionPath("")) + "..:ITCXOP2:tools:Disable-ASLR-for-IP7-and-8.ps1"
-	GetFileFolderInfo/Q/Z path
-	ASSERT(V_IsFile, "Could not locate powershell script")
+	ASSERT(FileExists(path), "Could not locate powershell script")
 	sprintf cmd, "powershell.exe -ExecutionPolicy Bypass \"%s\"", GetWindowsPath(path)
 	ExecuteScriptText/B/Z cmd
 	ASSERT(!V_flag, "Error executing ASLR script")
@@ -4541,8 +4524,7 @@ Function HasEnoughDiscspaceFree(discPath, requiredFreeSpace)
 
 	variable leftOverBytes
 
-	GetFileFolderInfo/Q/Z discPath
-	ASSERT(V_IsFolder, "discPath does not point to an existing folder")
+	ASSERT(FolderExists(discPath), "discPath does not point to an existing folder")
 
 	leftOverBytes = MU_GetFreeDiskSpace(GetWindowsPath(discPath))
 

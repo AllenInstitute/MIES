@@ -220,8 +220,8 @@ static Function/S CONF_GetSettingsPath()
 	endif
 	reflectedProcpath = RemoveListItem(numItems - 1, reflectedProcpath, ":")
 	reflectedProcpath = RemoveListItem(numItems - 2, reflectedProcpath, ":") + EXPCONFIG_SETTINGS_FOLDER + ":"
-	GetFileFolderInfo/Q/Z reflectedProcpath
-	if(!V_Flag && V_isFolder)
+
+	if(FolderExists(reflectedProcpath))
 		return reflectedProcpath
 	endif
 

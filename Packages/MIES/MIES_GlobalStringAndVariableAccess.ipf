@@ -177,48 +177,52 @@ Function/S CreateMiesVersion()
 	numEntries = ItemsInList(gitPathCandidates)
 	for(i = 0; i < numEntries; i += 1)
 		gitPath = StringFromList(i, gitPathCandidates)
-		GetFileFolderInfo/Z/Q gitPath
-		if(!V_flag) // git is installed, try to regenerate version.txt
-			DEBUGPRINT("Found git at: ", str=gitPath)
-			topDir = ParseFilePath(5, path, "*", 0, 0)
-			gitDir = topDir + ".git"
-			GetFileFolderInfo/Z/Q gitDir
-			if(!V_flag) // topDir is a git repository
-				// delete the old version.txt so that we can be sure to get the correct one afterwards
-				DeleteFile/Z fullVersionPath
-				DEBUGPRINT("Folder is a git repository: ", str=topDir)
-				// explanation:
-				// cmd /C "<full path to git.exe> --git-dir=<mies repository .git> describe <options> redirect everything into <mies respository>/version.txt"
-				sprintf cmd "cmd.exe /C \"\"%s\" --git-dir=\"%s\" describe --always --tags --match \"Release_*\" > \"%sversion.txt\" 2>&1\"", gitPath, gitDir, topDir
-				DEBUGPRINT("Cmd to execute: ", str=cmd)
-				ExecuteScriptText/B/Z cmd
-				ASSERT(!V_flag, "We have git installed but could not regenerate version.txt")
+		if(!FileExists(gitPath))
+			continue
+		endif
 
-				sprintf cmd "cmd.exe /C \"echo | set /p=\"Date and time of last commit: \" >> \"%sversion.txt\" 2>&1\"", topDir
-				DEBUGPRINT("Cmd to execute: ", str=cmd)
-				ExecuteScriptText/B/Z cmd
-				ASSERT(!V_flag, "We have git installed but could not regenerate version.txt")
-
-				sprintf cmd "cmd.exe /C \"\"%s\" --git-dir=\"%s\" log -1 --pretty=format:%%cI%%n >> \"%sversion.txt\" 2>&1\"", gitPath, gitDir, topDir
-				DEBUGPRINT("Cmd to execute: ", str=cmd)
-				ExecuteScriptText/B/Z cmd
-				ASSERT(!V_flag, "We have git installed but could not regenerate version.txt")
-
-				sprintf cmd "cmd.exe /C \"echo Submodule status: >> \"%sversion.txt\" 2>&1\"", topDir
-				DEBUGPRINT("Cmd to execute: ", str=cmd)
-				ExecuteScriptText/B/Z cmd
-				ASSERT(!V_flag, "We have git installed but could not regenerate version.txt")
-
-				// git submodule status can not be used here as submodule is currently a sh script and executing that with --git-dir does not work
-				// but we can use the helper command which outputs a slightly uglier version, but is much faster
-				// the submodule helper is shipped with git 2.7 and later, therefore its failed execution is not fatal
-				sprintf cmd "cmd.exe /C \"\"%s\" --git-dir=\"%s\" submodule--helper list >> \"%sversion.txt\" 2>&1\"", gitPath, gitDir, topDir
-				DEBUGPRINT("Cmd to execute: ", str=cmd)
-				ExecuteScriptText/B/Z cmd
-			endif
-
+		// git is installed, try to regenerate version.txt
+		DEBUGPRINT("Found git at: ", str=gitPath)
+		topDir = ParseFilePath(5, path, "*", 0, 0)
+		gitDir = topDir + ".git"
+		if(!FolderExists(gitDir))
 			break
 		endif
+
+		// topDir is a git repository
+		// delete the old version.txt so that we can be sure to get the correct one afterwards
+		DeleteFile/Z fullVersionPath
+		DEBUGPRINT("Folder is a git repository: ", str=topDir)
+		// explanation:
+		// cmd /C "<full path to git.exe> --git-dir=<mies repository .git> describe <options> redirect everything into <mies respository>/version.txt"
+		sprintf cmd "cmd.exe /C \"\"%s\" --git-dir=\"%s\" describe --always --tags --match \"Release_*\" > \"%sversion.txt\" 2>&1\"", gitPath, gitDir, topDir
+		DEBUGPRINT("Cmd to execute: ", str=cmd)
+		ExecuteScriptText/B/Z cmd
+		ASSERT(!V_flag, "We have git installed but could not regenerate version.txt")
+
+		sprintf cmd "cmd.exe /C \"echo | set /p=\"Date and time of last commit: \" >> \"%sversion.txt\" 2>&1\"", topDir
+		DEBUGPRINT("Cmd to execute: ", str=cmd)
+		ExecuteScriptText/B/Z cmd
+		ASSERT(!V_flag, "We have git installed but could not regenerate version.txt")
+
+		sprintf cmd "cmd.exe /C \"\"%s\" --git-dir=\"%s\" log -1 --pretty=format:%%cI%%n >> \"%sversion.txt\" 2>&1\"", gitPath, gitDir, topDir
+		DEBUGPRINT("Cmd to execute: ", str=cmd)
+		ExecuteScriptText/B/Z cmd
+		ASSERT(!V_flag, "We have git installed but could not regenerate version.txt")
+
+		sprintf cmd "cmd.exe /C \"echo Submodule status: >> \"%sversion.txt\" 2>&1\"", topDir
+		DEBUGPRINT("Cmd to execute: ", str=cmd)
+		ExecuteScriptText/B/Z cmd
+		ASSERT(!V_flag, "We have git installed but could not regenerate version.txt")
+
+		// git submodule status can not be used here as submodule is currently a sh script and executing that with --git-dir does not work
+		// but we can use the helper command which outputs a slightly uglier version, but is much faster
+		// the submodule helper is shipped with git 2.7 and later, therefore its failed execution is not fatal
+		sprintf cmd "cmd.exe /C \"\"%s\" --git-dir=\"%s\" submodule--helper list >> \"%sversion.txt\" 2>&1\"", gitPath, gitDir, topDir
+		DEBUGPRINT("Cmd to execute: ", str=cmd)
+		ExecuteScriptText/B/Z cmd
+
+		break
 	endfor
 
 	open/R/Z refNum as path + "version.txt"

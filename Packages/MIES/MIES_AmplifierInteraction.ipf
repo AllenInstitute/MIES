@@ -891,8 +891,7 @@ static Function/S AI_GetMCCWinFilePath()
 	for(i = 0; i < numEntries; i += 1)
 		path = progFolder + locations[i]
 
-		GetFileFolderInfo/Z/Q path
-		if(!V_flag) // exists
+		if(FileExists(path))
 			return path
 		endif
 	endfor

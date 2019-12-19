@@ -4575,15 +4575,13 @@ Function/S CalcHashForFile(path, [method])
 	string path
 	variable method
 
-	variable refNum
 	string contents, loadedFilePath
 
 	if(ParamIsDefault(method))
 		method = 1
 	endif
 
-	GetFileFolderInfo/Q path
-	ASSERT(V_IsFile, "Expected a file")
+	ASSERT(FileExists(path), "Expected a file")
 
 	[contents, loadedFilePath] = LoadTextFile(path)
 
