@@ -27,16 +27,6 @@ static Function CHI_InitInstallationState(state)
 	state.numTries  = 0
 End
 
-/// @brief Return the file version
-static Function/S CHI_GetFileVersion(path)
-	string path
-
-	GetFileFolderInfo/Q path
-	ASSERT(V_IsFile, "Expected a file")
-
-	return S_FileVersion
-End
-
 /// @brief Search list for matches of item and print the results
 static Function CHI_CheckXOP(list, item, name, state, [expectedHash])
 	string &list, item, name
@@ -66,7 +56,7 @@ static Function CHI_CheckXOP(list, item, name, state, [expectedHash])
 			break
 		case 1:
 			filepath = StringFromList(0, matches, "|")
-			fileVersion = CHI_GetFileVersion(filepath)
+			fileVersion = GetFileVersion(filepath)
 			if(ParamIsDefault(expectedHash))
 				printf "%s: Found version %s (Nice!)\r", name, fileVersion
 			else
@@ -82,7 +72,7 @@ static Function CHI_CheckXOP(list, item, name, state, [expectedHash])
 			printf "%s: Duplicates are:\r", name
 			for(i = 0; i < numMatches; i += 1)
 				filepath = StringFromList(i, matches, "|")
-				fileVersion = CHI_GetFileVersion(filepath)
+				fileVersion = GetFileVersion(filepath)
 				if(ParamIsDefault(expectedHash))
 					printf "%s: Found version %s\r", name, fileVersion
 				else

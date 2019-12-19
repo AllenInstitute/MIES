@@ -4853,3 +4853,17 @@ Function FolderExists(folderpath)
 
 	return !V_Flag && V_isFolder
 End
+
+/// @brief Return the file version
+Function/S GetFileVersion(filepath)
+	string filepath
+
+	filepath = ResolveAlias(filepath)
+	GetFileFolderInfo/Q/Z filepath
+
+	if(V_flag || !V_isFile)
+		return ""
+	endif
+
+	return S_FileVersion
+End
