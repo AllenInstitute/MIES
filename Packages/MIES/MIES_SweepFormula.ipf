@@ -807,7 +807,7 @@ Function/WAVE SF_FormulaExecutor(jsonID, [jsonPath, graph])
 
 					for(i = 0; i < numSets; i += 1)
 						if(levelPerSet[i] <= 1)
-							outD[i] = NaN
+							outD[i] = 0
 						else
 							Make/FREE/D/N=(levelPerSet[i] - 1) distances
 							distances[0, levelPerSet[i] - 2] = levels[i][p + 1] - levels[i][p]

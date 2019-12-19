@@ -717,9 +717,9 @@ static Function TestAPFrequency()
 	WAVE output = SF_FormulaExecutor(SF_FormulaParser("apfrequency([10, 20, 30, 20], 0, 100)"))
 	Make/FREE/D output_ref = {0}
 
-	// returns NaN if nothing found for Instantaneous
+	// returns 0 if nothing found for Instantaneous
 	WAVE output = SF_FormulaExecutor(SF_FormulaParser("apfrequency([10, 20, 30, 20], 1, 100)"))
-	Make/FREE/D output_ref = {NaN}
+	Make/FREE/D output_ref = {0}
 
 	REQUIRE_EQUAL_WAVES(output, output_ref, mode = WAVE_DATA)
 End
