@@ -3507,7 +3507,7 @@ Function RestoreDAEphysPanel([str])
 	string str
 
 	variable jsonID
-	string stimSetPath, jPath, data, fName
+	string stimSetPath, jPath, data, fName, rewrittenConfigPath
 
 	[data, fName] = LoadTextFile(REF_DAEPHYS_CONFIG_FILE)
 
@@ -3519,9 +3519,12 @@ Function RestoreDAEphysPanel([str])
 	stimSetPath = S_path + "..:..:Packages:Testing-MIES:_2017_09_01_192934-compressed.nwb"
 	JSON_SetString(jsonID, "/Common configuration data/Stim set file name", stimSetPath)
 
-	CONF_RestoreDAEphys(jsonID, "")
+	rewrittenConfigPath = S_Path + "rewritten_config.json"
+	SaveTextFile(JSON_Dump(jsonID), rewrittenConfigPath)
+
+	CONF_RestoreDAEphys(jsonID, rewrittenConfigPath)
 	MIES_CONF#CONF_SaveDAEphys(REF_TMP1_CONFIG_FILE)
 
-	CONF_RestoreDAEphys(jsonID, "", middleOfExperiment = 1)
+	CONF_RestoreDAEphys(jsonID, rewrittenConfigPath, middleOfExperiment = 1)
 	MIES_CONF#CONF_SaveDAEphys(REF_TMP1_CONFIG_FILE)
 End
