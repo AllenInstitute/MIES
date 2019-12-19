@@ -2851,20 +2851,28 @@ End
 ///
 /// @return full path or an empty string if the file does not exist or the
 /// 		shortcut points to a non existing file/folder
-Function/S ResolveAlias(pathName, path)
+Function/S ResolveAlias(path, [pathName])
 	string pathName, path
 
-	GetFileFolderInfo/P=$pathName/Q/Z path
+	if(ParamIsDefault(pathName))
+		GetFileFolderInfo/Q/Z path
+	else
+		GetFileFolderInfo/P=$pathName/Q/Z path
+	endif
 
 	if(V_flag)
 		return ""
 	endif
 
-	if(V_isAliasShortcut)
-		return ResolveAlias(pathName, S_aliasPath)
+	if(!V_IsAliasShortcut)
+		return path
 	endif
 
-	return path
+	if(ParamIsDefault(pathName))
+		return ResolveAlias(S_aliasPath)
+	else
+		return ResolveAlias(S_aliasPath, pathName = pathName)
+	endif
 End
 
 /// @brief Return a text or numeric free wave with all duplicates deleted, might change the
@@ -2989,7 +2997,7 @@ Function/S GetAllFilesRecursivelyFromPath(pathName, [extension])
 			break
 		endif
 
-		fileOrPath = ResolveAlias(pathName, fileOrPath)
+		fileOrPath = ResolveAlias(fileOrPath, pathName = pathName)
 
 		if(isEmpty(fileOrPath))
 			// invalid shortcut, try next file
