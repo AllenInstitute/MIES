@@ -844,7 +844,7 @@ Function SF_FormulaPlotter(graph, formula, [dfr])
 	String formula0, formula1, trace, axes
 	Variable i, numTraces, splitTraces, splitY, splitX
 	Variable dim1Y, dim2Y, dim1X, dim2X
-	String win = "FormulaPlot"
+	String win
 	String traceName = "formula"
 
 	if(ParamIsDefault(dfr))
@@ -874,6 +874,8 @@ Function SF_FormulaPlotter(graph, formula, [dfr])
 	WAVE wvY = GetSweepFormulaY(dfr)
 	Duplicate/O wv $GetWavesDataFolder(wvY, 2)
 	WAVE wvY = GetSweepFormulaY(dfr)
+
+	win = BSP_GetFormulaGraph(graph)
 
 	if(!WindowExists(win))
 		Display/N=$win as win
