@@ -469,14 +469,16 @@ Function CONF_RestoreDAEphys(jsonID, fullFilePath, [middleOfExperiment, forceNew
 		endif
 
 		StimSetPath = CONF_GetStringFromSettings(jsonID, STIMSET_NAME)
-		if(IsEmpty(StimSetPath))
-			err = NWB_LoadAllStimSets(overwrite = 1)
-		else
-			err = NWB_LoadAllStimSets(overwrite = 1, fileName = StimSetPath)
-		endif
-		if(err)
-			print "Stim set failed to load, check file path"
-			ControlWindowToFront()
+		if(!IsEmpty(StimSetPath))
+			if(FileExists(StimSetPath))
+				err = NWB_LoadAllStimSets(overwrite = 1, fileName = StimSetPath)
+				if(err)
+					print "Stim set failed to load, check file path"
+					ControlWindowToFront()
+				endif
+			else
+				print "Specified StimSet file at " + StimSetPath + " not found! No file was loaded."
+			endif
 		endif
 
 		restoreMask = EXPCONFIG_SAVE_VALUE | EXPCONFIG_SAVE_POPUPMENU_AS_STRING_ONLY | EXPCONFIG_SAVE_DISABLED | EXPCONFIG_SAVE_ONLY_RELEVANT | EXPCONFIG_MINIMIZE_ON_RESTORE
