@@ -1717,9 +1717,9 @@ End
 /// @warning This function must *not* be used for security relevant purposes,
 /// as for that the check-and-file-creation must be an atomic operation.
 ///
-/// @param symbPath		symbolic path
-/// @param baseName		base name of the file, must not be empty
-/// @param suffix		file suffix, e.g. ".txt", must not be empty
+/// @param symbPath  symbolic path
+/// @param baseName  base name of the file, must not be empty
+/// @param suffix    file suffix, e.g. ".txt", must not be empty
 Function/S UniqueFile(symbPath, baseName, suffix)
 	string symbPath, baseName, suffix
 
