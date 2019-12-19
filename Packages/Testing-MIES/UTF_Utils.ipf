@@ -3287,3 +3287,52 @@ Function FLW_MultiWorks([wv])
 End
 
 /// @}
+
+// FileRoutines
+/// @{
+
+Function FR_FileExistsWorks()
+
+	CHECK(FileExists(FunctionPath("")))
+	CHECK(!FileExists("C:\\I_DON_EXIST"))
+	CHECK(!FileExists("C:\\"))
+End
+
+Function FR_FolderExistsWorks()
+
+	CHECK(!FolderExists(FunctionPath("")))
+	CHECK(!FolderExists("C:\\I_DON_EXIST"))
+	CHECK(FolderExists("C:\\"))
+End
+
+Function FR_WorksWithAliasFiles()
+
+	string target, alias
+	string expected, ref
+
+	// alias is a folder
+	target = 	GetFolder(FunctionPath(""))
+	alias  = GetFolder(target) + "alias"
+	CreateAliasShortCut target as alias
+	CHECK(!V_flag)
+	CHECK(!FileExists(S_path))
+	CHECK(FolderExists(S_path))
+
+	expected = target
+	ref = ResolveAlias(S_path)
+	CHECK_EQUAL_STR(expected, ref)
+
+	// alias is a file
+	target = 	FunctionPath("")
+	alias  = GetFolder(target) + "alias.ipf"
+	CreateAliasShortCut/Z target as alias
+	CHECK(!V_flag)
+	CHECK(FileExists(S_path))
+	CHECK(!FolderExists(S_path))
+
+	expected = target
+	ref = ResolveAlias(S_path)
+	CHECK_EQUAL_STR(expected, ref)
+End
+
+/// @}
