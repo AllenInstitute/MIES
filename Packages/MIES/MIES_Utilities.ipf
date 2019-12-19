@@ -4702,9 +4702,8 @@ Function SaveTextFile(data, fileName,[ fileFilter, message])
 	endif
 
 	Open/Z fnum as S_fileName
-	if(V_flag)
-		return NaN
-	endif
+	ASSERT(!V_flag, "Could not open file for writing!")
+
 	FBinWrite fnum, data
 	Close fnum
 
