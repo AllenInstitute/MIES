@@ -4576,7 +4576,7 @@ Function/S CalcHashForFile(path, [method])
 	variable method
 
 	variable refNum
-	string contents = ""
+	string contents, loadedFilePath
 
 	if(ParamIsDefault(method))
 		method = 1
@@ -4585,12 +4585,7 @@ Function/S CalcHashForFile(path, [method])
 	GetFileFolderInfo/Q path
 	ASSERT(V_IsFile, "Expected a file")
 
-	Open/R refNum as path
-
-	contents = PadString(contents, V_logEOF, 0)
-
-	FBinRead refNum, contents
-	Close refNum
+	[contents, loadedFilePath] = LoadTextFile(path)
 
 	return Hash(contents, method)
 End

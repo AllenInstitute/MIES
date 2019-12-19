@@ -964,8 +964,7 @@ static Function/S CONF_FindWindow(winHandle[, uKey])
 	numWin = ItemsInList(wList)
 	for(i = 0; i < numWin; i += 1)
 		wName = StringFromList(i, wList)
-		wSubList = ""
-		GetAllWindows(wName, wSubList)
+		wSubList = GetAllWindows(wName)
 		numSubWin = ItemsInList(wSubList)
 		for(j = 0; j < numSubWin; j += 1)
 			wName = StringFromList(j, wSubList)
@@ -1211,7 +1210,7 @@ Function CONF_AllWindowsToJSON(wName, saveMask[, excCtrlTypes])
 	variable saveMask
 	string excCtrlTypes
 
-	string wList = "", curWinName, errMsg
+	string wList, curWinName, errMsg
 	variable i, numWins, jsonID, jsonIDWin
 
 	try
@@ -1219,7 +1218,7 @@ Function CONF_AllWindowsToJSON(wName, saveMask[, excCtrlTypes])
 
 		ASSERT(!CmpStr(wName, GetMainWindow(wName)), "Windows name is not a main window, use function CONF_WindowToJSON instead.")
 
-		GetAllWindows(wName, wList)
+		wList= GetAllWindows(wName)
 
 		jsonID = JSON_New()
 

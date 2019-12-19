@@ -4665,6 +4665,15 @@ Function/WAVE FindLevelWrapper(data, level, edge, mode)
 	endswitch
 End
 
+/// @brief Return a `/Z` flag value for the `Open` operation which works with
+/// automated testing
+Function GetOpenZFlag()
+#ifdef AUTOMATED_TESTING
+	return 1 // no dialog if the file does not exist
+#else
+	return 2
+#endif
+End
 
 /// @brief Saves string data to a file
 ///
@@ -4693,16 +4702,15 @@ Function SaveTextFile(data, fileName,[ fileFilter, message])
 	endif
 
 	Open/Z fnum as S_fileName
-	if(V_flag)
-		return NaN
-	endif
+	ASSERT(!V_flag, "Could not open file for writing!")
+
 	FBinWrite fnum, data
 	Close fnum
 
 	return 0
 End
 
-/// @brief Saves string data to a file
+/// @brief Load string data from file
 ///
 /// @param[in] fileName fileName to use. If the fileName is empty or invalid a file load dialog will be shown.
 /// @param[in] fileFilter [optional, default = "Plain Text Files (*.txt):.txt;All Files:.*;"] file filter string in Igor specific notation.
@@ -4710,23 +4718,25 @@ End
 /// @returns loaded string data and full path fileName
 Function [string data, string fName] LoadTextFile(string fileName[, string fileFilter, string message])
 
-	variable fNum
+	variable fNum, zFlag
+
+	zFlag = GetOpenZFlag()
 
 	if(ParamIsDefault(fileFilter) && ParamIsDefault(message))
-		Open/R/P=home/Z=2 fnum as fileName
+		Open/R/P=home/Z=(zFlag) fnum as fileName
 	elseif(ParamIsDefault(fileFilter) && !ParamIsDefault(message))
-		Open/R/P=home/Z=2/M=message fnum as fileName
+		Open/R/P=home/Z=(zFlag)/M=message fnum as fileName
 	elseif(!ParamIsDefault(fileFilter) && ParamIsDefault(message))
-		Open/R/P=home/Z=2/F=fileFilter fnum as fileName
+		Open/R/P=home/Z=(zFlag)/F=fileFilter fnum as fileName
 	else
-		Open/R/P=home/Z=2/F=fileFilter/M=message fnum as fileName
+		Open/R/P=home/Z=(zFlag)/F=fileFilter/M=message fnum as fileName
 	endif
 
 	if(IsEmpty(S_fileName))
 		return ["", ""]
 	endif
 
-	Open/Z fnum as S_fileName
+	Open/Z/R fnum as S_fileName
 	if(V_flag)
 		return ["", S_fileName]
 	endif

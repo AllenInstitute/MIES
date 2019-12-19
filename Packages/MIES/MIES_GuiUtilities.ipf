@@ -1668,10 +1668,19 @@ End
 /// @brief Recursively build a list of windows, including all child
 ///        windows, starting with wName.
 ///
-/// @param wName      parent window name to start with
-/// @param windowList A string containing names of windows.  This list is a semicolon separated list.  It will include the window
-///                   wName and all of its children and children of children, etc.
-Function GetAllWindows(wName, windowList)
+/// @param wName parent window name to start with
+/// @return A string containing names of windows.  This list is a semicolon separated list.  It will include the window
+///         wName and all of its children and children of children, etc.
+Function/S GetAllWindows(wName)
+	string wName
+
+	string windowList = ""
+	GetAllWindowsImpl(wName, windowList)
+
+	return windowList
+End
+
+static Function GetAllWindowsImpl(wName, windowList)
 	string wName
 	string &windowList
 
@@ -1687,7 +1696,7 @@ Function GetAllWindows(wName, windowList)
 	children = ChildWindowList(wName)
 	numChildren = ItemsInList(children, ";")
 	for(i = 0; i < numChildren; i += 1)
-		GetAllWindows(wName + "#" + StringFromList(i, children, ";"), windowList)
+		GetAllWindowsImpl(wName + "#" + StringFromList(i, children, ";"), windowList)
 	endfor
 End
 
