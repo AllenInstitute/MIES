@@ -2,7 +2,7 @@
 #pragma rtGlobals=3 // Use modern global access method and strict wave access.
 #pragma ModuleName=AnalysisFunctionTesting
 
-static Function ChangeAnalysisFunctions()
+static Function ChangeAnalysisFunctions_IGNORE()
 
 	WAVE/T wv = root:MIES:WaveBuilder:SavedStimulusSetParameters:DA:WPT_AnaFuncAbortPre_DA_0
 	UpgradeWaveTextParam(wv)
@@ -192,9 +192,9 @@ static Function ChangeAnalysisFunctions()
 	wv[%$"Analysis function (generic)"][%Set]    = "ChangeStimSet"
 End
 
-Function RewriteAnalysisFunctions()
+Function RewriteAnalysisFunctions_IGNORE()
 	LoadStimsets()
-	ChangeAnalysisFunctions()
+	ChangeAnalysisFunctions_IGNORE()
 	SaveStimsets()
 End
 
