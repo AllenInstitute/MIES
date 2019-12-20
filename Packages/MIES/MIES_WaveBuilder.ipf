@@ -1023,7 +1023,7 @@ static Function/WAVE WB_MakeWaveBuilderWave(WP, WPT, SegWvType, stepCount, numEp
 		AddEntryIntoWaveNoteAsList(WaveBuilderWave, StringFromList(PRE_SWEEP_EVENT, EVENT_NAME_LIST), str=WPT[8][%Set][INDEP_EPOCH_TYPE])
 		AddEntryIntoWaveNoteAsList(WaveBuilderWave, StringFromList(GENERIC_EVENT, EVENT_NAME_LIST), str=WPT[9][%Set][INDEP_EPOCH_TYPE])
 		AddEntryIntoWaveNoteAsList(WaveBuilderWave, StringFromList(PRE_SET_EVENT, EVENT_NAME_LIST), str=WPT[27][%Set][INDEP_EPOCH_TYPE])
-		AddEntryIntoWaveNoteAsList(WaveBuilderWave, ANALYSIS_FUNCTION_PARAMS_LBN, str=WPT[10][%Set][INDEP_EPOCH_TYPE])
+		AddEntryIntoWaveNoteAsList(WaveBuilderWave, ANALYSIS_FUNCTION_PARAMS_STIMSET, str=WPT[%$"Analysis function params (encoded)"][%Set][INDEP_EPOCH_TYPE])
 
 		AddEntryIntoWaveNoteAsList(WaveBuilderWave, "Flip", var=SegWvType[98])
 		AddEntryIntoWaveNoteAsList(WaveBuilderWave, "Random Seed", var=SegWvType[97])
@@ -1411,6 +1411,7 @@ End
 /// - `Durations` are in `stimset build ms`
 /// - `Pulse Train Pulses` are absolute pulse starting times in `epoch build ms`
 /// - `Pulse To Pulse Length` is in `stimset build ms`
+/// - `Function params (encoded)` contains the analysis function parameters. The values have the format described at GetWaveBuilderWaveTextParam().
 ///
 /// Example:
 ///
@@ -1428,7 +1429,7 @@ End
 /// 	Sweep = 1;Epoch = 1;Type = Ramp;Duration = 150;Amplitude = 1;Offset = 0;
 /// 	Sweep = 1;Epoch = 2;Type = Square pulse;Duration = 300;Amplitude = 0;
 /// 	Sweep = 1;Epoch = 3;Type = Pulse Train;Duration = 960.005;Amplitude = 1;Offset = 0;Pulse Type = Square;Frequency = 20;Pulse To Pulse Length = 50;Pulse duration = 10;Number of pulses = 20;Mixed frequency = False;First mixed frequency = 0;Last mixed frequency = 0;Poisson distribution = False;Random seed = 0.963638;Pulse Train Pulses = 0,50,100,150,200,250,300,350,400,450,500,550,600,650,700,750,800,850,900,950,;Definition mode = Duration;
-/// 	Stimset;Sweep Count = 2;Epoch Count = 4;Pre DAQ = ;Mid Sweep = ;Post Sweep = ;Post Set = ;Post DAQ = ;Pre Sweep = ;Generic = PSQ_Ramp;Pre Set = ;Function params = NumberOfSpikes:variable=5,Elements:string=Hidiho,;Flip = 0;Random Seed = 0.963638;Checksum = 65446509;
+/// 	Stimset;Sweep Count = 2;Epoch Count = 4;Pre DAQ = ;Mid Sweep = ;Post Sweep = ;Post Set = ;Post DAQ = ;Pre Sweep = ;Generic = PSQ_Ramp;Pre Set = ;Function params (encoded)= NumberOfSpikes:variable=5,Elements:string=%20%3B%2C;Flip = 0;Random Seed = 0.963638;Checksum = 65446509;
 /// \endrst
 ///
 /// @param text      stimulus set wave note

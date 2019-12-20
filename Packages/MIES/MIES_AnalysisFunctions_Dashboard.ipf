@@ -284,7 +284,13 @@ static Function/S AD_GetDAScaleFailMsg(numericalValues, textualValues, sweepNo, 
 
 	numPasses = PSQ_NumPassesInSet(numericalValues, PSQ_DA_SCALE, sweepNo, headstage)
 
-	WAVE/T params = GetLastSettingTextSCI(numericalValues, textualValues, sweepNo, ANALYSIS_FUNCTION_PARAMS_LBN, headstage, DATA_ACQUISITION_MODE)
+	WAVE/T/Z params = GetLastSettingTextSCI(numericalValues, textualValues, sweepNo, "Function params (encoded)", headstage, DATA_ACQUISITION_MODE)
+
+	// fallback to old names
+	if(!WaveExists(params))
+		WAVE/T params = GetLastSettingTextSCI(numericalValues, textualValues, sweepNo, "Function params", headstage, DATA_ACQUISITION_MODE)
+	endif
+
 	WAVE/Z DAScales = AFH_GetAnalysisParamWave("DAScales", params[headstage])
 	ASSERT(WaveExists(DASCales), "analysis function parameters don't have a DAScales entry")
 	numRequiredPasses = DimSize(DAScales, ROWS)

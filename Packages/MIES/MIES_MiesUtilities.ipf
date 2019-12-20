@@ -4445,24 +4445,21 @@ Function/S ExtractAnalysisFuncFromStimSet(stimSet, eventType)
 	WAVE stimSet
 	variable eventType
 
-	string eventName, wvNote
-
-	wvnote = note(stimSet)
-	wvnote = ReplaceString(" = ", wvnote, "=")
+	string eventName
 
 	eventName = StringFromList(eventType, EVENT_NAME_LIST)
 	ASSERT(!IsEmpty(eventName), "Unknown event type")
 
-	return StringByKey(eventName, wvnote, "=", ";")
+	return WB_GetWaveNoteEntry(note(stimset), STIMSET_ENTRY, key = eventName)
 End
 
 /// @brief Return the analysis function parameters as comma (`,`) separated list
 ///
-/// @sa WBP_AddAnalysisParameter() for the exact format.
+/// @sa GetWaveBuilderWaveTextParam() for the exact format.
 Function/S ExtractAnalysisFunctionParams(stimSet)
 	WAVE stimSet
 
-	return GetStringFromWaveNote(stimSet, ANALYSIS_FUNCTION_PARAMS_LBN, keySep = "=", listSep = ";")
+	return WB_GetWaveNoteEntry(note(stimset), STIMSET_ENTRY, key = ANALYSIS_FUNCTION_PARAMS_STIMSET)
 End
 
 /// @brief Split TTL data into a single wave for each bit

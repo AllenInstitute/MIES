@@ -3308,7 +3308,7 @@ Function/WAVE GetWaveBuilderWaveParam()
 	return wv
 End
 
-static Constant WPT_WAVE_LAYOUT_VERSION = 9
+static Constant WPT_WAVE_LAYOUT_VERSION = 10
 
 /// @brief Automated testing helper
 static Function GetWPTVersion()
@@ -3320,6 +3320,9 @@ End
 ///        as defined in `WPT_WAVE_LAYOUT_VERSION`
 Function UpgradeWaveTextParam(wv)
 	WAVE/T wv
+
+	string params, names, name, type
+	variable numEntries, i
 
 	if(ExistsWithCorrectLayoutVersion(wv, WPT_WAVE_LAYOUT_VERSION))
 		return NaN
@@ -3340,6 +3343,41 @@ Function UpgradeWaveTextParam(wv)
 
 		wv[%$("Combine epoch formula version")][][EPOCH_TYPE_COMBINE] = wv[%$("Combine epoch formula version")][q][INDEP_EPOCH_TYPE]
 		wv[%$("Combine epoch formula version")][][INDEP_EPOCH_TYPE]   = ""
+	endif
+
+	// upgrade analysis parmeters
+	// we need to URL encode the string/textwave entries, this is done by
+	// WBP_AddAnalysisParameterIntoWPT, and that also takes care of moving it
+	// into the right place
+	if(WaveVersionIsSmaller(wv, 10))
+		params = wv[10][%Set][INDEP_EPOCH_TYPE]
+		names = AFH_GetListOfAnalysisParamNames(params)
+
+		numEntries = ItemsInList(names)
+		for(i = 0; i < numEntries; i += 1)
+			name = Stringfromlist(i, names)
+			type = AFH_GetAnalysisParamType(name, params)
+			strswitch(type)
+				case "string":
+					WBP_AddAnalysisParameterIntoWPT(wv, name, str = AFH_GetAnalysisParamTextual(name, params, percentDecoded = 0))
+					break
+				case "textwave":
+					WBP_AddAnalysisParameterIntoWPT(wv, name, wv = AFH_GetAnalysisParamTextWave(name, params, percentDecoded = 0))
+					break
+				case "variable":
+					WBP_AddAnalysisParameterIntoWPT(wv, name, var = AFH_GetAnalysisParamNumerical(name, params))
+					break
+				case "wave":
+					WBP_AddAnalysisParameterIntoWPT(wv, name, wv = AFH_GetAnalysisParamWave(name, params))
+					break
+				default:
+					ASSERT(0, "Unknown type")
+					break
+			endswitch
+		endfor
+
+		// clear old entry
+		wv[10][%Set][INDEP_EPOCH_TYPE] = ""
 	endif
 
 	SetWaveVersion(wv, WPT_WAVE_LAYOUT_VERSION)
@@ -3363,7 +3401,7 @@ static Function AddDimLabelsToWPT(wv)
 	SetDimLabel ROWS, 7 , $("Combine epoch formula version") , wv
 	SetDimLabel ROWS, 8 , $("Analysis pre sweep function")   , wv
 	SetDimLabel ROWS, 9 , $("Analysis function (generic)")   , wv
-	SetDimLabel ROWS, 10, $("Analysis function params")      , wv
+	// empty: was "Analysis function params"
 	SetDimLabel ROWS, 11, $("Amplitude ldel")                , wv
 	SetDimLabel ROWS, 12, $("Offset ldel")                   , wv
 	SetDimLabel ROWS, 13, $("Duration ldel")                 , wv
@@ -3382,6 +3420,7 @@ static Function AddDimLabelsToWPT(wv)
 	SetDimLabel ROWS, 26, $("Number of pulses ldel")         , wv
 	SetDimLabel ROWS, 27, $("Analysis pre set function")     , wv
 	SetDimLabel ROWS, 28, $("Inter trial interval ldel")     , wv
+	SetDimLabel ROWS, 29, $("Analysis function params (encoded)"), wv
 
 	for(i = 0; i <= SEGMENT_TYPE_WAVE_LAST_IDX; i += 1)
 		SetDimLabel COLS, i, $("Epoch " + num2str(i)), wv
@@ -3415,11 +3454,12 @@ End
 /// - 7: Formula version: "[[:digit:]]+"
 /// - 8: Analysis function, pre sweep
 /// - 9: Analysis function, generic
-/// -10: Analysis function parameters. See below for a detailed explanation.
+/// -10: Unused
 /// -11-26: Explicit delta values. ";" separated list as long as the number of sweeps.
 /// -27: Analysis function, pre set
 /// -28: Explicit delta value for "Inter trial interval"
-/// -29-50: unused
+/// -29: Analysis function parameters. See below for a detailed explanation.
+/// -30-50: unused
 ///
 /// `Formula` and `Formula Version` are in the #EPOCH_TYPE_COMBINE layer, the
 /// custom wave name is in the #EPOCH_TYPE_CUSTOM layer. 11 to 26 are for all
@@ -3448,7 +3488,10 @@ End
 ///
 /// For these building blocks the following restrictions hold
 /// - `name`: Must be a valid non-liberal igor object name
-/// - `value`: Must not contain one of the characters `:=,|;`
+/// - `value`: URL-encoded payload, see
+///            [URL-encoding](https://en.wikipedia.org/wiki/Percent-encoding) for
+///            background information. Decoding is done by
+///            AFH_GetAnalysisParamTextual() and AFH_GetAnalysisParamNumerical().
 ///
 /// Multiple entries are separated by comma (`,`).
 Function/WAVE GetWaveBuilderWaveTextParam()
@@ -6248,7 +6291,7 @@ End
 /// @brief Return the storage wave for the analysis functions
 ///
 /// Only contains *valid* functions. An analysis function is valid if it has
-/// a compatible signature and can be found with in the locations searched by
+/// a compatible signature and can be found within the locations searched by
 /// AFH_GetAnalysisFunctions().
 ///
 /// Rows:

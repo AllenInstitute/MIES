@@ -1084,3 +1084,29 @@ Function DB_ButtonProc_RestoreData(ba) : ButtonControl
 
 	return 0
 End
+
+/// @brief Find a Databrowser which is locked to the given DAEphys panel
+Function/S DB_FindDataBrowser(panelTitle)
+	string panelTitle
+
+	string panelList
+	string panel
+	variable numPanels, i
+
+	panelList = WinList("DB_*", ";", "WIN:1")
+
+	numPanels = ItemsInList(panelList)
+	for(i = 0; i < numPanels; i += 1)
+		panel = StringFromList(i, panelList)
+
+		if(!BSP_IsDataBrowser(panel))
+			continue
+		endif
+
+		if(!cmpstr(panelTitle, BSP_GetDevice(panel)))
+			return panel
+		endif
+	endfor
+
+	return ""
+End

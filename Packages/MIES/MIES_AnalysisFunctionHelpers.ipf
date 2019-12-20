@@ -588,7 +588,7 @@ Function AFH_GetAnalysisParamNumerical(name, params, [defValue])
 	string name, params
 	variable defValue
 
-	string type
+	string contents
 
 	ASSERT(AFH_IsValidAnalysisParameter(name), "Name is not a legal non-liberal igor object name")
 
@@ -600,25 +600,33 @@ Function AFH_GetAnalysisParamNumerical(name, params, [defValue])
 		endif
 	endif
 
-	type = AFH_GetAnalysisParamType(name, params, expectedType = "variable")
+	contents = AFH_GetAnalysisParameter(name, params, expectedType = "variable")
 
-	return NumberByKey(name + ":" + type, params, "=", ",", 0)
+	return str2num(contents)
 End
 
 /// @brief Return a textual user parameter
 ///
-/// @param name     parameter name
-/// @param params   serialized parameters, usually just #AnalysisFunction_V3.params
-/// @param defValue [optional, defaults to an empty string] return this value if the parameter could not be found
+/// @param name           parameter name
+/// @param params         serialized parameters, usually just #AnalysisFunction_V3.params
+/// @param defValue       [optional, defaults to an empty string] return this value if the parameter could not be found
+/// @param percentDecoded [optional, defaults to true] if the return value should be percent decoded or not.
 ///
 /// @ingroup AnalysisFunctionParameterHelpers
-Function/S AFH_GetAnalysisParamTextual(name, params, [defValue])
+Function/S AFH_GetAnalysisParamTextual(name, params, [defValue, percentDecoded])
 	string name, params
 	string defValue
+	variable percentDecoded
 
-	string type
+	string contents
 
 	ASSERT(AFH_IsValidAnalysisParameter(name), "Name is not a legal non-liberal igor object name")
+
+	if(ParamIsDefault(percentDecoded))
+		percentDecoded = 1
+	else
+		percentDecoded = !!percentDecoded
+	endif
 
 	if(WhichListItem(name, AFH_GetListOfAnalysisParamNames(params)) == -1)
 		if(ParamIsDefault(defValue))
@@ -628,9 +636,13 @@ Function/S AFH_GetAnalysisParamTextual(name, params, [defValue])
 		endif
 	endif
 
-	type = AFH_GetAnalysisParamType(name, params, expectedType = "string")
+	contents = AFH_GetAnalysisParameter(name, params, expectedType = "string")
 
-	return StringByKey(name + ":" + type, params, "=", ",", 0)
+	if(percentDecoded)
+		return URLDecode(contents)
+	endif
+
+	return contents
 End
 
 /// @brief Return a numerical wave user parameter
@@ -647,7 +659,7 @@ Function/WAVE AFH_GetAnalysisParamWave(name, params, [defValue])
 	string name, params
 	WAVE defValue
 
-	string type, contents
+	string contents
 
 	ASSERT(AFH_IsValidAnalysisParameter(name), "Name is not a legal non-liberal igor object name")
 
@@ -659,30 +671,36 @@ Function/WAVE AFH_GetAnalysisParamWave(name, params, [defValue])
 		endif
 	endif
 
-	type = AFH_GetAnalysisParamType(name, params, expectedType = "wave")
-
-	contents = StringByKey(name + ":" + type, params, "=", ",", 0)
+	contents = AFH_GetAnalysisParameter(name, params, expectedType = "wave")
 
 	return ListToNumericWave(contents, "|")
 End
 
 /// @brief Return a textual wave user parameter
 ///
-/// @param name     parameter name
-/// @param params   serialized parameters, usually just #AnalysisFunction_V3.params
-/// @param defValue [optional, defaults to an invalid wave ref] return this value if the parameter could not be found
+/// @param name           parameter name
+/// @param params         serialized parameters, usually just #AnalysisFunction_V3.params
+/// @param defValue       [optional, defaults to an invalid wave ref] return this value if the parameter could not be found
+/// @param percentDecoded [optional, defaults to true] if the return value should be percent decoded or not.
 ///
 /// @ingroup AnalysisFunctionParameterHelpers
 ///
 /// @return wave reference to free text wave, or invalid wave ref in case the
 /// parameter could not be found.
-Function/WAVE AFH_GetAnalysisParamTextWave(name, params, [defValue])
+Function/WAVE AFH_GetAnalysisParamTextWave(name, params, [defValue, percentDecoded])
 	string name, params
 	WAVE/T defValue
+	variable percentDecoded
 
-	string type, contents
+	string contents
 
 	ASSERT(AFH_IsValidAnalysisParameter(name), "Name is not a legal non-liberal igor object name")
+
+	if(ParamIsDefault(percentDecoded))
+		percentDecoded = 1
+	else
+		percentDecoded = !!percentDecoded
+	endif
 
 	if(WhichListItem(name, AFH_GetListOfAnalysisParamNames(params)) == -1)
 		if(ParamIsDefault(defValue))
@@ -692,11 +710,16 @@ Function/WAVE AFH_GetAnalysisParamTextWave(name, params, [defValue])
 		endif
 	endif
 
-	type = AFH_GetAnalysisParamType(name, params, expectedType = "textwave")
+	contents = AFH_GetAnalysisParameter(name, params, expectedType = "textwave")
 
-	contents = StringByKey(name + ":" + type, params, "=", ",", 0)
+	WAVE/T wv = ListToTextWave(contents, "|")
 
-	return ListToTextWave(contents, "|")
+	if(percentDecoded)
+		wv = URLDecode(wv)
+		return wv
+	endif
+
+	return wv
 End
 
 /// @brief Check if the given name is a valid user parameter name
@@ -719,15 +742,23 @@ End
 
 /// @brief Return an user parameter's value as string
 ///
-/// @param name   parameter name
-/// @param params serialized parameters, usually just #AnalysisFunction_V3.params
+/// @param name         parameter name
+/// @param params       serialized parameters, usually just #AnalysisFunction_V3.params
+/// @param expectedType [optional, defaults to nothing] Expected type, one of @ref ANALYSIS_FUNCTION_PARAMS_TYPES,
+///                     aborts if the type does not match.
 ///
 /// @ingroup AnalysisFunctionParameterHelpers
-Function/S AFH_GetAnalysisParameter(name, params)
+Function/S AFH_GetAnalysisParameter(name, params, [expectedType])
 	string name, params
+	string expectedType
 
-	string type = AFH_GetAnalysisParamType(name, params)
-	ASSERT(AFH_IsValidAnalysisParamType(type), "Invalid type")
+	string type, value
+
+	if(ParamIsDefault(expectedType))
+		type = AFH_GetAnalysisParamType(name, params)
+	else
+		type = AFH_GetAnalysisParamType(name, params, expectedType = expectedType)
+	endif
 
 	return StringByKey(name + ":" + type, params, "=", ",", 0)
 End
