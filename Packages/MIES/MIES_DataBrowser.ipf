@@ -15,6 +15,8 @@ Function/S DB_OpenDataBrowser()
 	Execute "DataBrowser()"
 	win = GetCurrentWindow()
 
+	SetWindow $win, hook(cleanup)=DB_SweepBrowserWindowHook
+
 	AddVersionToPanel(win, DATABROWSER_PANEL_VERSION)
 	BSP_SetDataBrowser(win)
 	BSP_InitPanel(win)
@@ -292,7 +294,7 @@ static Function DB_SetUserData(win, device)
 		return 0
 	endif
 
-	DFREF dfr = GetDeviceDataBrowserPath(device)
+	DFREF dfr = UniqueDataFolder(GetDevicePath(device), "Databrowser")
 	BSP_SetFolder(win, dfr, MIES_BSP_PANEL_FOLDER)
 End
 
@@ -459,7 +461,7 @@ Function DB_InitPostPlotSettings(win, pps)
 
 	ASSERT(BSP_HasBoundDevice(win), "DataBrowser was not assigned to a specific device")
 
-	pps.averageDataFolder = GetDeviceDataBrowserPath(BSP_GetDevice(win))
+	pps.averageDataFolder = BSP_GetFolder(win, MIES_BSP_PANEL_FOLDER)
 	pps.averageTraces     = GetCheckboxState(bsPanel, "check_Calculation_AverageTraces")
 	pps.zeroTraces        = GetCheckBoxState(bsPanel, "check_Calculation_ZeroTraces")
 	pps.hideSweep         = GetCheckBoxState(bsPanel, "check_SweepControl_HideSweep")
@@ -597,14 +599,11 @@ End
 static Function DB_UpdateOverlaySweepWaves(win)
 	string win
 
-	string device, mainPanel
-
 	if(!OVS_IsActive(win))
 		return NaN
 	endif
 
-	device = BSP_GetDevice(win)
-	DFREF dfr = GetDeviceDataBrowserPath(device)
+	DFREF dfr = BSP_GetFolder(win, MIES_BSP_PANEL_FOLDER)
 
 	WAVE listBoxWave       = GetOverlaySweepsListWave(dfr)
 	WAVE listBoxSelWave    = GetOverlaySweepsListSelWave(dfr)
@@ -1109,4 +1108,34 @@ Function/S DB_FindDataBrowser(panelTitle)
 	endfor
 
 	return ""
+End
+
+Function DB_SweepBrowserWindowHook(s)
+	STRUCT WMWinHookStruct &s
+
+	variable hookResult
+	string win
+
+	switch(s.eventCode)
+		case 2: // Kill
+
+			win = s.winName
+			if(!BSP_HasBoundDevice(win))
+				break
+			endif
+
+			try
+				DFREF dfr = BSP_GetFolder(win, MIES_BSP_PANEL_FOLDER); AbortOnRTE
+
+				KillWindow/Z $s.winName
+				KillOrMoveToTrash(dfr = dfr); AbortOnRTE
+			catch
+				ClearRTError()
+			endtry
+
+			hookResult = 1
+			break
+	endswitch
+
+	return hookResult // 0 if nothing done, else 1
 End

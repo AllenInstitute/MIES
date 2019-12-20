@@ -604,23 +604,6 @@ threadsafe Function/S GetDevicePathAsString(panelTitle)
 	endswitch
 End
 
-/// @name DataBrowser
-/// @{
-
-/// @brief Return a datafolder reference to the device data browser folder
-Function/DF GetDeviceDataBrowserPath(panelTitle)
-	string panelTitle
-	return createDFWithAllParents(GetDeviceDataBrowserPathAS(panelTitle))
-End
-
-/// @brief Return the path to the device folder, e.g. root:mies:HardwareDevices:ITC1600:Device0:DataBrowser
-Function/S GetDeviceDataBrowserPathAS(panelTitle)
-	string panelTitle
-
-	return GetDevicePathAsString(panelTitle) + ":DataBrowser"
-End
-/// @}
-
 /// @brief Return a datafolder reference to the device data folder
 Function/DF GetDeviceDataPath(panelTitle)
 	string panelTitle

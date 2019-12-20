@@ -964,3 +964,16 @@ Function BSP_UpdateHelpNotebook(win)
 	ReplaceNotebookText(helpNotebook, text)
 	KillWindow/Z $name
 End
+
+/// @brief Return a sweep formula graph name unique for that sweepbrowser/databrowser
+Function/S BSP_GetFormulaGraph(win)
+	string win
+
+	if(!BSP_HasBoundDevice(win))
+		return "FormulaPlot"
+	endif
+
+	DFREF dfr = BSP_GetFolder(win, MIES_BSP_PANEL_FOLDER)
+
+	return CleanupName("FormulaPlot_" + GetDataFolder(0, dfr), 0)
+End
