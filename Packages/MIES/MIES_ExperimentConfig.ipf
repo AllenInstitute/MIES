@@ -581,19 +581,19 @@ End
 /// @param winPosition One of 4 monitors to position MCCs in
 Function ExpConfig_Position_MCC_Win(serialNum, winTitle, winPosition)
 	string serialNum, winTitle, winPosition
+
 	Make /T /FREE winNm
-	string cmd, fullPath, cmdPath
+	string cmd, cmdPath
 	variable w
 	
 	if(cmpstr(winPosition, NONE) == 0)
 		return 0
 	endif
-	
-	fullPath = GetFolder(FunctionPath("")) + "..:..:tools:nircmd:nircmd.exe"
-	GetFileFolderInfo /Q/Z fullPath
-	cmdPath = S_Creator
-	if(V_flag != 0)
+
+	cmdPath = GetWindowsPath(GetFolder(FunctionPath("")) + "..:..:tools:nircmd:nircmd.exe")
+	if(!FileExists(cmdPath))
 		printf "nircmd.exe is not installed, please download it here: %s", "http://www.nirsoft.net/utils/nircmd.html"
+		return NaN
 	endif
 	
 	for(w = 0; w<NUM_HEADSTAGES/2; w+=1)

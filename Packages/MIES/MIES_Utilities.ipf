@@ -1717,9 +1717,9 @@ End
 /// @warning This function must *not* be used for security relevant purposes,
 /// as for that the check-and-file-creation must be an atomic operation.
 ///
-/// @param symbPath		symbolic path
-/// @param baseName		base name of the file, must not be empty
-/// @param suffix		file suffix, e.g. ".txt", must not be empty
+/// @param symbPath  symbolic path
+/// @param baseName  base name of the file, must not be empty
+/// @param suffix    file suffix, e.g. ".txt", must not be empty
 Function/S UniqueFile(symbPath, baseName, suffix)
 	string symbPath, baseName, suffix
 
@@ -1844,9 +1844,7 @@ Function IsDriveValid(absPath)
 	path  = ParseFilePath(5, absPath, ":", 0, 0)
 	drive = StringFromList(0, path, ":")
 
-	GetFileFolderInfo/Q/Z drive
-
-	return !V_flag
+	return FolderExists(drive)
 End
 
 /// @brief Create a folder recursively on disk given an absolute path
@@ -1861,11 +1859,7 @@ Function CreateFolderOnDisk(absPath)
 	// convert to ":" folder separators
 	path = ParseFilePath(5, absPath, ":", 0, 0)
 
-	GetFileFolderInfo/Q/Z path
-	if(!V_flag)
-		ASSERT(V_isFolder, "The path which we should create exists, but points to a file")
-		return NaN
-	endif
+	ASSERT(!FileExists(path), "The path which we should create exists, but points to a file")
 
 	tempPath = UniqueName("tempPath", 12, 0)
 
@@ -1877,24 +1871,14 @@ Function CreateFolderOnDisk(absPath)
 	for(i = 1; i < numParts; i += 1)
 		partialPath += ":" + StringFromList(i, path, ":")
 
-		GetFileFolderInfo/Q/Z partialPath
-		if(!V_flag)
-			ASSERT(V_isFolder, "The partial path which we should create exists, but points to a file")
-			continue
-		endif
+		ASSERT(!FileExists(partialPath), "The path which we should create exists, but points to a file")
 
 		NewPath/O/C/Q/Z $tempPath partialPath
 	endfor
 
 	KillPath/Z $tempPath
 
-	GetFileFolderInfo/Q/Z partialPath
-	if(!V_flag)
-		ASSERT(V_isFolder, "The path which we should create exists, but points to a file")
-		return NaN
-	endif
-
-	ASSERT(0, "Could not create the path, maybe the permissions were insufficient")
+	ASSERT(FolderExists(partialPath), "Could not create the path, maybe the permissions were insufficient")
 End
 
 /// @brief Return the row index of the given value, string converted to a variable, or wv
@@ -2851,20 +2835,28 @@ End
 ///
 /// @return full path or an empty string if the file does not exist or the
 /// 		shortcut points to a non existing file/folder
-Function/S ResolveAlias(pathName, path)
+Function/S ResolveAlias(path, [pathName])
 	string pathName, path
 
-	GetFileFolderInfo/P=$pathName/Q/Z path
+	if(ParamIsDefault(pathName))
+		GetFileFolderInfo/Q/Z path
+	else
+		GetFileFolderInfo/P=$pathName/Q/Z path
+	endif
 
 	if(V_flag)
 		return ""
 	endif
 
-	if(V_isAliasShortcut)
-		return ResolveAlias(pathName, S_aliasPath)
+	if(!V_IsAliasShortcut)
+		return path
 	endif
 
-	return path
+	if(ParamIsDefault(pathName))
+		return ResolveAlias(S_aliasPath)
+	else
+		return ResolveAlias(S_aliasPath, pathName = pathName)
+	endif
 End
 
 /// @brief Return a text or numeric free wave with all duplicates deleted, might change the
@@ -2989,7 +2981,7 @@ Function/S GetAllFilesRecursivelyFromPath(pathName, [extension])
 			break
 		endif
 
-		fileOrPath = ResolveAlias(pathName, fileOrPath)
+		fileOrPath = ResolveAlias(fileOrPath, pathName = pathName)
 
 		if(isEmpty(fileOrPath))
 			// invalid shortcut, try next file
@@ -4423,8 +4415,7 @@ Function TurnOffASLR()
 	string cmd, path
 
 	path = GetFolder(FunctionPath("")) + "..:ITCXOP2:tools:Disable-ASLR-for-IP7-and-8.ps1"
-	GetFileFolderInfo/Q/Z path
-	ASSERT(V_IsFile, "Could not locate powershell script")
+	ASSERT(FileExists(path), "Could not locate powershell script")
 	sprintf cmd, "powershell.exe -ExecutionPolicy Bypass \"%s\"", GetWindowsPath(path)
 	ExecuteScriptText/B/Z cmd
 	ASSERT(!V_flag, "Error executing ASLR script")
@@ -4533,8 +4524,7 @@ Function HasEnoughDiscspaceFree(discPath, requiredFreeSpace)
 
 	variable leftOverBytes
 
-	GetFileFolderInfo/Q/Z discPath
-	ASSERT(V_IsFolder, "discPath does not point to an existing folder")
+	ASSERT(FolderExists(discPath), "discPath does not point to an existing folder")
 
 	leftOverBytes = MU_GetFreeDiskSpace(GetWindowsPath(discPath))
 
@@ -4822,4 +4812,40 @@ Function [WAVE/T withSuffix, WAVE/T woSuffix] SplitTextWaveBySuffix(WAVE/T sourc
 	endfor
 
 	return [withSuffix, woSuffix]
+End
+
+/// @brief Check wether the given path points to an existing file
+///
+/// Resolves shortcuts and symlinks recursively.
+Function FileExists(filepath)
+	string filepath
+
+	filepath = ResolveAlias(filepath)
+	GetFileFolderInfo/Q/Z filepath
+
+	return !V_Flag && V_IsFile
+End
+
+/// @brief Check wether the given path points to an existing folder
+Function FolderExists(folderpath)
+	string folderpath
+
+	folderpath = ResolveAlias(folderpath)
+	GetFileFolderInfo/Q/Z folderpath
+
+	return !V_Flag && V_isFolder
+End
+
+/// @brief Return the file version
+Function/S GetFileVersion(filepath)
+	string filepath
+
+	filepath = ResolveAlias(filepath)
+	GetFileFolderInfo/Q/Z filepath
+
+	if(V_flag || !V_isFile)
+		return ""
+	endif
+
+	return S_FileVersion
 End

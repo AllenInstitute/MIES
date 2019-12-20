@@ -121,8 +121,7 @@ static Function NWB_GetFileForExport([overrideFilePath, createdNewNWBFile])
 
 	ASSERT(!IsEmpty(filePath), "filePath can not be empty")
 
-	GetFileFolderInfo/Q/Z filePath
-	if(!V_flag)
+	if(FileExists(filePath))
 		fileID = IPNWB#H5_OpenFile(filePath, write = 1)
 
 		sessionStartTimeReadBack = NWB_ReadSessionStartTime(fileID)

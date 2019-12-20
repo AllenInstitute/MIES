@@ -220,8 +220,8 @@ static Function/S CONF_GetSettingsPath()
 	endif
 	reflectedProcpath = RemoveListItem(numItems - 1, reflectedProcpath, ":")
 	reflectedProcpath = RemoveListItem(numItems - 2, reflectedProcpath, ":") + EXPCONFIG_SETTINGS_FOLDER + ":"
-	GetFileFolderInfo/Q/Z reflectedProcpath
-	if(!V_Flag && V_isFolder)
+
+	if(FolderExists(reflectedProcpath))
 		return reflectedProcpath
 	endif
 
@@ -1983,6 +1983,7 @@ End
 /// @param winPosition One of 4 monitors to position MCCs in
 Function CONF_Position_MCC_Win(serialNum, winTitle, winPosition)
 	string serialNum, winTitle, winPosition
+
 	Make /T /FREE winNm
 	string cmd, fullPath, cmdPath
 	variable w
@@ -1991,11 +1992,10 @@ Function CONF_Position_MCC_Win(serialNum, winTitle, winPosition)
 		return 0
 	endif
 
-	fullPath = GetFolder(FunctionPath("")) + "..:..:tools:nircmd:nircmd.exe"
-	GetFileFolderInfo /Q/Z fullPath
-	cmdPath = S_Creator
-	if(V_flag != 0)
+	cmdPath = GetWindowsPath(GetFolder(FunctionPath("")) + "..:..:tools:nircmd:nircmd.exe")
+	if(!FileExists(cmdPath))
 		printf "nircmd.exe is not installed, please download it here: %s", "http://www.nirsoft.net/utils/nircmd.html"
+		return NaN
 	endif
 
 	for(w = 0; w<NUM_HEADSTAGES/2; w+=1)

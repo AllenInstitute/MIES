@@ -2752,8 +2752,8 @@ Function WBP_ButtonProc_OpenAnaFuncs(ba) : ButtonControl
 			baseName = "UserAnalysisFunctions"
 			fileName = baseName + ".ipf"
 			userFile = GetFolder(FunctionPath("")) + fileName
-			GetFileFolderInfo/Q/Z userFile
-			if(V_Flag) // create a default file
+
+			if(!FileExists(userFile))
 				Open refNum as userFile
 
 				fprintf refNum, "#pragma rtGlobals=3 // Use modern global access method and strict wave access.\n"
