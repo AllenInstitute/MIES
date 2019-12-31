@@ -204,7 +204,8 @@ Constant CHANNEL_TYPE_ALARM        = 0x110
 Constant CHANNEL_CONTROL_ALARM_MIN = 0x120
 Constant CHANNEL_CONTROL_ALARM_MAX = 0x130
 Constant CHANNEL_CONTROL_SEARCH    = 0x140
-Constant CHANNEL_CONTROL_TITLE     = 0x150
+Constant CHANNEL_TYPE_UNKNOWN      = 0x150
+Constant CHANNEL_CONTROL_TITLE     = 0x160
 /// @}
 
 /// @name Controls for multiple channels have negative channel indizes
@@ -214,8 +215,6 @@ Constant CHANNEL_INDEX_ALL         = -1
 Constant CHANNEL_INDEX_ALL_V_CLAMP = -2
 Constant CHANNEL_INDEX_ALL_I_CLAMP = -3
 Constant CHANNEL_INDEX_ALL_I_ZERO  = -4
-/// @}
-Constant CHANNEL_TYPE_UNKNOWN      = 0x150
 /// @}
 
 /// @name Constants for the bitmask entries stored in the selection wave
@@ -390,6 +389,7 @@ Constant SAMPLING_INTERVAL_FALLBACK = 0.050
 Constant LOAD_DATA_TYPE_WAVES   = 1
 Constant LOAD_DATA_TYPE_NUMBERS = 2
 Constant LOAD_DATA_TYPE_STRING  = 4
+/// @}
 
 /// @name Constants for the time alignment mode of TimeAlignmentIfReq
 /// @anchor TimeAlignmentConstants
