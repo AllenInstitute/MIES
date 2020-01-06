@@ -318,8 +318,6 @@ Function CONF_RestoreWindow(fName[, usePanelTypeFromFile, rigFile])
 			elseif(!CmpStr(panelType, PANELTAG_DATABROWSER))
 				DB_OpenDataBrowser()
 				wName = GetMainWindow(GetCurrentWindow())
-				SetWindow $wName, userData($EXPCONFIG_UDATA_SOURCEFILE_PATH)=""
-				SetWindow $wName, userData($EXPCONFIG_UDATA_SOURCEFILE_HASH)=""
 				wName = CONF_JSONToWindow(wName, restoreMask, jsonID)
 				CONF_AddConfigFileUserData(wName, fullFilePath)
 				print "Configuration restored for " + wName
@@ -345,8 +343,6 @@ Function CONF_RestoreWindow(fName[, usePanelTypeFromFile, rigFile])
 					return 0
 				endif
 				jsonID = CONF_ParseJSON(input)
-				SetWindow $wName, userData($EXPCONFIG_UDATA_SOURCEFILE_PATH)=""
-				SetWindow $wName, userData($EXPCONFIG_UDATA_SOURCEFILE_HASH)=""
 				wName = CONF_JSONToWindow(wName, restoreMask, jsonID)
 				CONF_AddConfigFileUserData(wName, fullFilePath)
 				print "Configuration restored for " + wName
@@ -457,9 +453,6 @@ Function CONF_RestoreDAEphys(jsonID, fullFilePath, [middleOfExperiment, forceNew
 				panelTitle = DAP_CreateDAEphysPanel()
 			endif
 		endif
-
-		SetWindow $panelTitle, userData($EXPCONFIG_UDATA_SOURCEFILE_PATH)=""
-		SetWindow $panelTitle, userData($EXPCONFIG_UDATA_SOURCEFILE_HASH)=""
 
 		if(middleOfExperiment)
 			PGC_SetAndActivateControl(panelTitle, "check_Settings_SyncMiesToMCC", val = CHECKBOX_UNSELECTED)
@@ -841,6 +834,9 @@ Function/S CONF_JSONToWindow(wName, restoreMask, jsonID)
 
 		ASSERT(WinType(wName), "Window " + wName + " does not exist!")
 		ASSERT(restoreMask & (EXPCONFIG_SAVE_VALUE | EXPCONFIG_SAVE_POSITION | EXPCONFIG_SAVE_USERDATA | EXPCONFIG_SAVE_DISABLED | EXPCONFIG_SAVE_CTRLTYPE), "No property class enabled to restore in restoreMask.")
+
+		SetWindow $wName, userData($EXPCONFIG_UDATA_SOURCEFILE_PATH)=""
+		SetWindow $wName, userData($EXPCONFIG_UDATA_SOURCEFILE_HASH)=""
 
 		if(restoreMask & EXPCONFIG_MINIMIZE_ON_RESTORE)
 			SetWindow $wName, hide=1
