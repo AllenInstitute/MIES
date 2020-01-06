@@ -314,12 +314,11 @@ Function CONF_RestoreWindow(fName[, usePanelTypeFromFile, rigFile])
 				if(!IsEmpty(rigFile))
 					CONF_JoinRigFile(jsonID, rigFile)
 				endif
-				CONF_RestoreDAEphys(jsonID, fullFilePath, forceNewPanel = 1)
+				wName = CONF_RestoreDAEphys(jsonID, fullFilePath, forceNewPanel = 1)
 			elseif(!CmpStr(panelType, PANELTAG_DATABROWSER))
 				DB_OpenDataBrowser()
 				wName = GetMainWindow(GetCurrentWindow())
 				wName = CONF_JSONToWindow(wName, restoreMask, jsonID)
-				CONF_AddConfigFileUserData(wName, fullFilePath)
 				print "Configuration restored for " + wName
 			else
 				ASSERT(0, "Configuration file entry for panel type has an unknown panel tag (" + panelType + ").")
@@ -336,7 +335,7 @@ Function CONF_RestoreWindow(fName[, usePanelTypeFromFile, rigFile])
 				if(!IsEmpty(rigFile))
 					CONF_JoinRigFile(jsonID, rigFile)
 				endif
-				CONF_RestoreDAEphys(jsonID, fullFilePath)
+				wName = CONF_RestoreDAEphys(jsonID, fullFilePath)
 			else
 				[input, fullFilePath] = LoadTextFile(fName, fileFilter = EXPCONFIG_FILEFILTER, message = "Open configuration file for frontmost window")
 				if(IsEmpty(input))
@@ -344,10 +343,11 @@ Function CONF_RestoreWindow(fName[, usePanelTypeFromFile, rigFile])
 				endif
 				jsonID = CONF_ParseJSON(input)
 				wName = CONF_JSONToWindow(wName, restoreMask, jsonID)
-				CONF_AddConfigFileUserData(wName, fullFilePath)
 				print "Configuration restored for " + wName
 			endif
 		endif
+
+		CONF_AddConfigFileUserData(wName, fullFilePath)
 	catch
 		errMsg = getRTErrMessage()
 		if(!IsNaN(jsonID))
@@ -408,7 +408,9 @@ End
 ///                      - Reuses locked DA_Ephys panel with same device as saved in configuration
 ///                      - Uses open unlocked DA_Ephys panel
 ///                      - Opens new DA_Ephys panel
-Function CONF_RestoreDAEphys(jsonID, fullFilePath, [middleOfExperiment, forceNewPanel])
+///
+/// @return name of the created DAEphys panel
+Function/S CONF_RestoreDAEphys(jsonID, fullFilePath, [middleOfExperiment, forceNewPanel])
 	variable jsonID
 	string fullFilePath
 	variable middleOfExperiment, forceNewPanel
@@ -491,7 +493,6 @@ Function CONF_RestoreDAEphys(jsonID, fullFilePath, [middleOfExperiment, forceNew
 
 		CONF_RestoreHeadstageAssociation(panelTitle, jsonID, middleOfExperiment)
 		CONF_RestoreUserPressure(panelTitle, jsonID)
-		CONF_AddConfigFileUserData(panelTitle, fullFilePath)
 
 		filename = GetTimeStamp() + PACKED_FILE_EXPERIMENT_SUFFIX
 		path = CONF_GetStringFromSettings(jsonID, SAVE_PATH)
@@ -510,7 +511,7 @@ Function CONF_RestoreDAEphys(jsonID, fullFilePath, [middleOfExperiment, forceNew
 
 		print "Start Sciencing"
 		SetWindow $panelTitle, hide=0, needUpdate=1
-
+		return panelTitle
 	catch
 		if(isTagged)
 			panelTitle = CONF_FindWindow(winHandle, uKey = DAEPHYS_UDATA_WINHANDLE)
