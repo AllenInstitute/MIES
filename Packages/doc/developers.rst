@@ -39,7 +39,7 @@ To perform a silent installation pass the `/S` command line option which will
 install with the following settings:
 
 - Install for Igor Pro 8 64bit
-- Admin installation into `%PROGRAMFILES%\MIES` for the current user
+- Admin installation into `%PROGRAMFILES%\MIES` for the current user, pass `/ALLUSER` to install for all users
 - Install all Hardware XOPs
 
 Possible existing MIES installations will be silently uninstalled.

@@ -258,6 +258,12 @@ WFUEndWaitUninstA_${WFPID}:
     Quit
 !macroend
 
+!macro SetInstallPath
+  StrCpy $INSTDIR "$PROGRAMFILES64\${APPNAME}"
+  IntCmp $ALLUSER 1 +2
+    StrCpy $INSTDIR "${USERINSTDIR}"
+!macroend
+
 #---Target User Dialog---
 
 Function ClickedCurrentUser
@@ -309,9 +315,7 @@ Function DialogAllCur
     EnableWindow $NSD_AC_RB2 0
   nsDialogs::Show
 
-  StrCpy $INSTDIR "$PROGRAMFILES64\${APPNAME}"
-  IntCmp $ALLUSER 1 +2
-    StrCpy $INSTDIR "${USERINSTDIR}"
+  !insertmacro SetInstallPath
 FunctionEnd
 
 #---Installation Type Dialog---
@@ -517,7 +521,14 @@ Function DialogInstallFor89
 FunctionEnd
 
 function .onInit
-  StrCpy $ALLUSER "0"
+  ClearErrors
+  ${GetOptions} $CMDLINE /ALLUSER $0
+  ${If} ${Errors}
+    # default setting
+    StrCpy $ALLUSER "0"
+  ${Else}
+    StrCpy $ALLUSER "1"
+  ${EndIf}
 
   ClearErrors
   # Setting if /SKIPHWXOPS was encountered
@@ -632,9 +643,9 @@ IGOR9CheckEnd:
     !insertmacro WaitForUninstaller
 
     !insertmacro CheckAllUninstalled
-  ${Else}
-    StrCpy $INSTDIR "${USERINSTDIR}"
   ${EndIf}
+
+  !insertmacro SetInstallPath
 functionEnd
 
 !macro CheckLinkTarget LinkPath TargetName
@@ -933,7 +944,7 @@ function un.onInit
   UserInfo::GetAccountType
   pop $0
   ${If} $0 == "admin"
-    IfSilent +3
+    IfSilent Next
       MessageBox MB_OKCANCEL "Permanently remove ${APPNAME}?" IDOK Next
     Quit
 Next:
