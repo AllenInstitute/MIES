@@ -347,7 +347,7 @@ Function CONF_RestoreWindow(fName[, usePanelTypeFromFile, rigFile])
 			endif
 		endif
 
-		CONF_AddConfigFileUserData(wName, fullFilePath)
+		CONF_AddConfigFileUserData(wName, fullFilePath, rigFile)
 	catch
 		errMsg = getRTErrMessage()
 		if(!IsNaN(jsonID))
@@ -532,12 +532,17 @@ Function/S CONF_RestoreDAEphys(jsonID, fullFilePath, [middleOfExperiment, forceN
 	endtry
 End
 
-/// @brief Add the config file path and SHA-256 hash to the panel as user data
-static Function CONF_AddConfigFileUserData(win, fullFilePath)
-	string win, fullFilePath
+/// @brief Add the config file paths and SHA-256 hashes to the panel as user data
+static Function CONF_AddConfigFileUserData(win, fullFilePath, rigFile)
+	string win, fullFilePath, rigFile
 
-	SetWindow $win, userData($EXPCONFIG_UDATA_SOURCEFILE_PATH)=fullFilePath
-	SetWindow $win, userData($EXPCONFIG_UDATA_SOURCEFILE_HASH)=CalcHashForFile(fullFilePath)
+	SetWindow $win, userData($EXPCONFIG_UDATA_SOURCEFILE_PATH)=fullFilePath + "|" + rigFile
+
+	if(FileExists(rigFile))
+		SetWindow $win, userData($EXPCONFIG_UDATA_SOURCEFILE_HASH)=CalcHashForFile(fullFilePath) + "|" + CalcHashForFile(rigFile)
+	else
+		SetWindow $win, userData($EXPCONFIG_UDATA_SOURCEFILE_HASH)=CalcHashForFile(fullFilePath) + "|"
+	endif
 End
 
 /// @brief Parses a json formatted string to a json object. This function shows a helpful error message if the parse fails
