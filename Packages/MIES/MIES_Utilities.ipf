@@ -4849,3 +4849,33 @@ Function/S GetFileVersion(filepath)
 
 	return S_FileVersion
 End
+
+/// @brief wrapper to `ScaleToIndex`
+///
+/// `ScaleToIndex` treats input `inf` to @p scale always as the last point in a
+/// wave. `-inf` on the other hand is undefined. This wrapper function respects
+/// the scaled point wave. `-inf` refers to the negative end of the scaled wave
+/// and `+inf` is the positive end of the scaled wave.  This means that this
+/// wrapper function also respects the `DimDelta` direction of the wave scaling.
+/// and always returns the closest matching (existing) point in the wave. This
+/// also means that the returned values cannot be negative or larger than the
+/// numer of points in the wave.
+///
+/// @returns an existing index in @p wv between 0 and `DimSize(wv, dim) - 1`
+Function ScaleToIndexWrapper(wv, scale, dim)
+	WAVE wv
+	variable scale, dim
+
+	variable index
+
+	ASSERT(dim >= 0 && dim < 4, "Dimension out of range")
+	ASSERT(trunc(dim) == dim, "invalid format for dimension")
+
+	if(IsFinite(scale))
+		index = ScaleToIndex(wv, scale, dim)
+	else
+		index = sign(scale) * sign(DimDelta(wv, dim)) * inf
+	endif
+
+	return min(DimSize(wv, dim) - 1, max(0, trunc(index)))
+End

@@ -3336,3 +3336,67 @@ Function FR_WorksWithAliasFiles()
 End
 
 /// @}
+
+/// ScaleToIndexWrapper
+/// @{
+
+Function STIW_TestDimensions()
+	Make testwave
+
+	SetScale/P x, 0, 0.1, testwave
+	REQUIRE_EQUAL_VAR(ScaleToIndexWrapper(testwave, 0, ROWS), ScaleToIndex(testWave, 0, ROWS))
+	REQUIRE_EQUAL_VAR(ScaleToIndexWrapper(testwave, 1, ROWS), ScaleToIndex(testWave, 1, ROWS))
+	SetScale/P y, 0, 0.01, testwave
+	REQUIRE_EQUAL_VAR(ScaleToIndexWrapper(testwave, 0, COLS), ScaleToIndex(testWave, 0, COLS))
+	REQUIRE_EQUAL_VAR(ScaleToIndexWrapper(testwave, 1, COLS), ScaleToIndex(testWave, 1, COLS))
+	SetScale/P z, 0, 0.001, testwave
+	REQUIRE_EQUAL_VAR(ScaleToIndexWrapper(testwave, 0, LAYERS), ScaleToIndex(testWave, 0, LAYERS))
+	REQUIRE_EQUAL_VAR(ScaleToIndexWrapper(testwave, 1, LAYERS), ScaleToIndex(testWave, 1, LAYERS))
+	SetScale/P t, 0, 0.0001, testwave
+	REQUIRE_EQUAL_VAR(ScaleToIndexWrapper(testwave, 0, CHUNKS), ScaleToIndex(testWave, 0, CHUNKS))
+	REQUIRE_EQUAL_VAR(ScaleToIndexWrapper(testwave, 0.1, CHUNKS), ScaleToIndex(testWave, 0.1, CHUNKS))
+
+	REQUIRE_EQUAL_VAR(ScaleToIndex(testWave, -1, ROWS), DimOffset(testwave, ROWS) - 1 / DimDelta(testwave, ROWS))
+	REQUIRE_EQUAL_VAR(ScaleToIndexWrapper(testWave, -1, ROWS), 0)
+	REQUIRE_EQUAL_VAR(ScaleToIndex(testWave, -inf, ROWS), DimSize(testwave, ROWS) - 1)
+	REQUIRE_EQUAL_VAR(ScaleToIndexWrapper(testWave, -inf, ROWS), 0)
+
+	REQUIRE_EQUAL_VAR(ScaleToIndex(testWave, 1e3, ROWS), DimOffset(testwave, ROWS) + 1e3 / DimDelta(testwave, ROWS))
+	REQUIRE_EQUAL_VAR(ScaleToIndexWrapper(testWave, 1e3, ROWS), DimSize(testwave, ROWS) - 1)
+	REQUIRE_EQUAL_VAR(ScaleToIndex(testWave, inf, ROWS), ScaleToIndexWrapper(testWave, inf, ROWS))
+
+	SetScale/P x, 0, -0.1, testwave
+	REQUIRE_EQUAL_VAR(ScaleToIndex(testWave, -1, ROWS), DimOffset(testwave, ROWS) - 1 / DimDelta(testwave, ROWS))
+	REQUIRE_EQUAL_VAR(ScaleToIndexWrapper(testWave, 1, ROWS), 0)
+	REQUIRE_EQUAL_VAR(ScaleToIndex(testWave, -inf, ROWS), ScaleToIndexWrapper(testWave, -inf, ROWS))
+
+	REQUIRE_EQUAL_VAR(ScaleToIndex(testWave, 1, ROWS), DimOffset(testwave, ROWS) + 1 / DimDelta(testwave, ROWS))
+	REQUIRE_EQUAL_VAR(ScaleToIndexWrapper(testWave, 1, ROWS), 0)
+	REQUIRE_EQUAL_VAR(ScaleToIndex(testWave, inf, ROWS), DimSize(testwave, ROWS) - 1)
+	REQUIRE_EQUAL_VAR(ScaleToIndexWrapper(testWave, inf, ROWS), 0)
+End
+
+Function/WAVE STIW_TestAbortGetter()
+	Make/D/FREE data = {4, -1, 0.1, NaN, Inf, -Inf}
+	return data
+End
+
+// UTF_TD_GENERATOR STIW_TestAbortGetter
+Function STIW_TestAbort([var])
+	variable var
+
+	variable err
+
+	Make testwave
+	SetScale/P x, 0, 0.1, testwave
+
+	try
+		ScaleToIndexWrapper(testwave, 0, var); AbortOnRTE
+		FAIL()
+	catch
+		err = GetRtError(1)
+		PASS()
+	endtry
+End
+
+/// @}

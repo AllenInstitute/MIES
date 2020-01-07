@@ -351,6 +351,16 @@ especially.
 
    wave(root:mywave)
 
+text
+""""
+
+Convert the given numeric output wave to a text wave. This can be used to
+force, for example, a category plot.
+
+.. code-block:: bash
+
+   range(5) vs text(range(5))
+
 data
 """"
 
@@ -368,6 +378,41 @@ The sweeps that you want to return need to be displayed in the graph. Do this
 in the OVS tab.
 
 The function does not return errors for unmatched entries.
+
+labnotebook
+"""""""""""
+
+`labnotebook(string key, array channels, array sweeps [, string
+entrySourceType])` returns the (case insensitive) `key` entry from the
+labnotebook for the given channel and sweep combination. The optional
+`entrySourceType` can be one of the constants `DataAcqModes` for data
+acquisition modes as defined in `../MIES/MIES_Constants.ipf`. If the
+`entrySourceType` is omitted it defaults to `DATA_ACQUISITION_MODE`.
+
+The `labnotebook()` function has the same data layouting as the `data()`
+function. It returns the notebook entry in the rows for all `[sweeps]` with the
+corresponding `[channel]` (`[[sweeps][channel]]`).
+
+.. code-block:: bash
+
+   max(
+      data(
+         cursors(AB)
+         channels(AD),
+         sweeps()
+      )
+   )
+   vs
+   labnotebook(
+      "set cycle count",
+      channels(AD),
+      sweeps(),
+      DATA_ACQUISITION_MODE
+   )
+
+The function searches for numeric entries in the labnotebook first and then for
+text entries. It returns `NaN` if no match was found. It adds dimension labels
+to the columns to indicate to indicate the channel names.
 
 findlevel
 """""""""

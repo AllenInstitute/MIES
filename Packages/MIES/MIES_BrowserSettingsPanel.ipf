@@ -365,6 +365,9 @@ Function/S BSP_GetDevice(win)
 	string mainPanel
 
 	mainPanel = GetMainWindow(win)
+	if(IsEmpty(mainPanel))
+		return ""
+	endif
 	ASSERT(WindowExists(mainPanel), "specified panel does not exist.")
 
 	// upgrade folder locations

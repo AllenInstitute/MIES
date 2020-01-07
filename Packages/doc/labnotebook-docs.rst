@@ -4,18 +4,28 @@ Labnotebook documentation for developers
 Overview
 ========
 
-In MIES we store all metadata of the sweeps and the testpulse in a data
-structure we call the "labnotebook". The general handling
-is like an old-school paper lab journal where each entry has a date and time and
-nothing is ever erased. Our digital version consists of four multi dimensional
-arrays, one pair of `key`/`value` arrays for numerical data and another for
-textual data.
+In MIES, metadata of sweeps and test pulses get stored in a data structure
+called a *labnotebook*. The general structure is like a paper-based lab journal
+with columnar data entry storage. Each measurement has an associated date and
+time of the data acquisition and nothing is ever erased. After data
+acquisition, setup specific settings, and other metadata are written to the
+*labnotebook*.
 
-Assuming you read the data from NWB files these arrays are located in
-`/general/labnotebook/$device` and are called `numericalKeys`,
-`numericalValues`, `textualKeys` and `textualValues`. Each pair, the `key` and
-`value` array, is used to describe all metadata entries and also hold the value
-of each entry.
+Our digital version consists of an array of (`key`,`value`) pairs. Each
+(`key`,`value`) pair is used to describe one metadata entry of a sweep. The
+data values get separated by their type into numerical and textual data storage
+containers.  Each storage container consists of a `*Keys` and a corresponding
+`*Values` dataset.  While `*Keys` contains textual, unique references to the
+data entities, `*Values` contains numeric or text values to the corresponding
+key.  Such separation means that four multidimensional data waves contain the
+data for this digital *labnotebook*.  The available data storage containers,
+therefore, are `numericalKeys`, `numericalValues`, `textualKeys`, and
+`textualValues`.
+
+In PXP files, the *analysis browser* stores *labnotebooks* in
+`root:MIES:Analysis:$fileName:$device:labnotebook:` whereas the *data browser*
+stores files in `root:MIES:LabNoteBook:$hardware:$device:`.  In NWB files, the
+*labnotebook* arrays reside in `/general/labnotebook/$device`.
 
 Layout
 ======

@@ -19,6 +19,10 @@ End
 static Function primitiveOperations()
 	Variable jsonID0, jsonID1
 
+	jsonID0 = JSON_Parse("null")
+	jsonID1 = SF_FormulaParser("")
+	WARN_EQUAL_JSON(jsonID0, jsonID1)
+
 	jsonID0 = JSON_Parse("1")
 	jsonID1 = SF_FormulaParser("1")
 	WARN_EQUAL_JSON(jsonID0, jsonID1)
@@ -53,6 +57,44 @@ static Function primitiveOperations()
 	jsonID1 = SF_FormulaParser("+1")
 	WARN_EQUAL_JSON(jsonID0, jsonID1)
 	REQUIRE_EQUAL_VAR(SF_FormulaExecutor(jsonID1)[0], +1)
+End
+
+static Function stringHandling()
+	Variable jsonID0, jsonID1
+
+	// basic strings
+	jsonID0 = JSON_Parse("\"abc\"")
+	jsonID1 = SF_FormulaParser("abc")
+	WARN_EQUAL_JSON(jsonID0, jsonID1)
+
+	// ignore white spaces
+	jsonID0 = JSON_Parse("\"abcdef\"")
+	jsonID1 = SF_FormulaParser("abc def")
+	WARN_EQUAL_JSON(jsonID0, jsonID1)
+
+	// allow white space in strings
+	jsonID0 = JSON_Parse("\"abc def\"")
+	jsonID1 = SF_FormulaParser("\"abc def\"")
+	WARN_EQUAL_JSON(jsonID0, jsonID1)
+
+	// ignore comments
+	jsonID0 = JSON_Parse("null")
+	jsonID1 = SF_FormulaParser("# comment")
+	WARN_EQUAL_JSON(jsonID0, jsonID1)
+
+	// allow # inside strings
+	jsonID0 = JSON_Parse("\"#\"")
+	jsonID1 = SF_FormulaParser("\"#\"")
+	WARN_EQUAL_JSON(jsonID0, jsonID1)
+
+	// do not evaluate calculations in strings
+	jsonID0 = JSON_Parse("\"1+1\"")
+	jsonID1 = SF_FormulaParser("\"1+1\"")
+	WARN_EQUAL_JSON(jsonID0, jsonID1)
+
+	jsonID0 = JSON_Parse("\"\"")
+	jsonID1 = SF_FormulaParser("\"\"")
+	WARN_EQUAL_JSON(jsonID0, jsonID1)
 End
 
 static Function arrayOperations(array2d, numeric)
@@ -468,40 +510,42 @@ End
 static Function MIES_channel()
 
 	Make/FREE input = {{0}, {NaN}}
+	SetDimLabel COLS, 0, channelType, input
+	SetDimLabel COLS, 1, channelNumber, input
 	WAVE output = SF_FormulaExecutor(SF_FormulaParser("channels(AD)"))
 	REQUIRE_EQUAL_WAVES(input, output)
 
 	Make/FREE input = {{0}, {0}}
 	WAVE output = SF_FormulaExecutor(SF_FormulaParser("channels(AD0)"))
-	REQUIRE_EQUAL_WAVES(input, output)
+	REQUIRE_EQUAL_WAVES(input, output, mode = WAVE_DATA)
 
 	Make/FREE input = {{0, 0}, {0, 1}}
 	WAVE output = SF_FormulaExecutor(SF_FormulaParser("channels(AD0,AD1)"))
-	REQUIRE_EQUAL_WAVES(input, output)
+	REQUIRE_EQUAL_WAVES(input, output, mode = WAVE_DATA)
 
 	Make/FREE input = {{0, 1}, {0, 1}}
 	WAVE output = SF_FormulaExecutor(SF_FormulaParser("channels(AD0,DA1)"))
-	REQUIRE_EQUAL_WAVES(input, output)
+	REQUIRE_EQUAL_WAVES(input, output, mode = WAVE_DATA)
 
 	Make/FREE input = {{1, 1}, {0, 0}}
 	WAVE output = SF_FormulaExecutor(SF_FormulaParser("channels(DA0,DA0)"))
-	REQUIRE_EQUAL_WAVES(input, output)
+	REQUIRE_EQUAL_WAVES(input, output, mode = WAVE_DATA)
 
 	Make/FREE input = {{0, 1}, {NaN, NaN}}
 	WAVE output = SF_FormulaExecutor(SF_FormulaParser("channels(AD,DA)"))
-	REQUIRE_EQUAL_WAVES(input, output)
+	REQUIRE_EQUAL_WAVES(input, output, mode = WAVE_DATA)
 
 	Make/FREE input = {{2}, {1}}
 	WAVE output = SF_FormulaExecutor(SF_FormulaParser("channels(1)"))
-	REQUIRE_EQUAL_WAVES(input, output)
+	REQUIRE_EQUAL_WAVES(input, output, mode = WAVE_DATA)
 
 	Make/FREE input = {{2, 2}, {1, 3}}
 	WAVE output = SF_FormulaExecutor(SF_FormulaParser("channels(1,3)"))
-	REQUIRE_EQUAL_WAVES(input, output)
+	REQUIRE_EQUAL_WAVES(input, output, mode = WAVE_DATA)
 
 	Make/FREE input = {{0,1,2},{1,2,3}}
 	WAVE output = SF_FormulaExecutor(SF_FormulaParser("channels(AD1,DA2,3)"))
-	REQUIRE_EQUAL_WAVES(input, output)
+	REQUIRE_EQUAL_WAVES(input, output, mode = WAVE_DATA)
 End
 
 static Function testDifferentiales()
@@ -900,4 +944,70 @@ static Function TestPlotting()
 	REQUIRE_EQUAL_VAR(ItemsInList(TraceNameList(win, ";", 0x1)), floor(90 / 3))
 	SF_FormulaPlotter("", "range(3) vs range(7)"); DoUpdate
 	REQUIRE_EQUAL_VAR(ItemsInList(TraceNameList(win, ";", 0x1)), floor(7 / 3))
+End
+
+Function TestLabNotebook()
+	Variable i, j, sweepNumber, channelNumber
+	String str, trace, key, name
+
+	Variable numSweeps = 10
+	Variable numChannels = 5
+	Variable mode = DATA_ACQUISITION_MODE
+	String channelType = StringFromList(ITC_XOP_CHANNEL_TYPE_ADC, ITC_CHANNEL_NAMES)
+	String win = DATABROWSER_WINDOW_TITLE
+	String device = BuildDeviceString(StringFromList(0, DEVICE_TYPES_ITC), StringFromList(0, DEVICE_NUMBERS))
+
+	String channelTypeC = channelType + "C"
+
+	if(windowExists(win))
+		DoWindow/K $win
+	endif
+
+	Display/N=$win as device
+	BSP_SetDataBrowser(win)
+	BSP_SetDevice(win, device)
+
+	WAVE/T numericalKeys = GetLBNumericalKeys(device)
+	WAVE numericalValues = GetLBNumericalValues(device)
+	KillWaves numericalKeys, numericalValues
+
+	Make/FREE/T/N=(1, 1) keys = {{channelTypeC}}
+	Make/U/I/N=(numChannels) connections = {7,5,3,1,0}
+	Make/U/I/N=(numSweeps, numChannels) channels = q * 2
+	Make/D/FREE/N=(LABNOTEBOOK_LAYER_COUNT) values = NaN
+
+	Make/FREE/N=(128, numSweeps, numChannels) input = q + p^r // + gnoise(1)
+
+	for(i = 0; i < numSweeps; i += 1)
+		sweepNumber = i
+		for(j = 0; j < numChannels; j += 1)
+			name = UniqueName("data", 1, 0)
+			trace = "trace_" + name
+			Extract input, $name, q == i && r == j
+			WAVE wv = $name
+			AppendToGraph/W=$win wv/TN=$trace
+			ModifyGraph/W=$win userData($trace)={channelType, USERDATA_MODIFYGRAPH_APPEND, channelType}
+			ModifyGraph/W=$win userData($trace)={channelNumber, USERDATA_MODIFYGRAPH_APPEND, num2str(channels[i][j])}
+			ModifyGraph/W=$win userData($trace)={sweepNumber, USERDATA_MODIFYGRAPH_APPEND, num2str(sweepNumber)}
+			values[connections[j]] = channels[i][j]
+		endfor
+
+		Redimension/N=(1, 1, LABNOTEBOOK_LAYER_COUNT)/E=1 values
+		ED_AddEntriesToLabnotebook(values, keys, sweepNumber, device, mode)
+		Redimension/N=(LABNOTEBOOK_LAYER_COUNT)/E=1 values
+		ED_AddEntryToLabnotebook(device, keys[0], values, overrideSweepNo = sweepNumber)
+	endfor
+	ModifyGraph/W=$win log(left)=1
+
+	str = "labnotebook(" + channelTypeC + ",channels(AD),sweeps())"
+	WAVE data = SF_FormulaExecutor(SF_FormulaParser(str), graph = win)
+	REQUIRE_EQUAL_WAVES(data, channels, mode = WAVE_DATA)
+
+	str = "labnotebook(" + LABNOTEBOOK_USER_PREFIX + channelTypeC + ",channels(AD),sweeps(),UNKNOWN_MODE)"
+	WAVE data = SF_FormulaExecutor(SF_FormulaParser(str), graph = win)
+	REQUIRE_EQUAL_WAVES(data, channels, mode = WAVE_DATA)
+
+	str = "data(cursors(A,B),channels(AD),sweeps())"
+	WAVE data = SF_FormulaExecutor(SF_FormulaParser(str), graph = win)
+	REQUIRE_EQUAL_WAVES(input, data, mode = WAVE_DATA)
 End
