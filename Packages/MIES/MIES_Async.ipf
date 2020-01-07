@@ -318,11 +318,13 @@ End
 Function ASYNC_Stop([timeout, fromAssert])
 	variable timeout, fromAssert
 
-	variable i, endtime, waitResult, localtgID, outatime, err
+	variable i, endtime, waitResult, localtgID, outatime, err, doe
 
 	if(!ASYNC_IsASYNCRunning())
 		return 2
 	endif
+
+	doe = DisableDebugOnError()
 
 	NVAR tgID = $GetThreadGroupID()
 	fromAssert = ParamIsDefault(fromAssert) ? 0 : !!fromAssert
@@ -353,15 +355,20 @@ Function ASYNC_Stop([timeout, fromAssert])
 	if(ParamIsDefault(timeout))
 		timeout = Inf
 	endif
+
 	endTime = dateTime + timeout
 	do
-		waitResult = ThreadGroupWait(tgID, 0)
+		try
+			waitResult = ThreadGroupWait(tgID, 0); AbortOnRTE
+		catch
+			err = GetRTError(1)
+			waitResult = 0
+		endtry
 
 		if(dateTime >= endtime)
 			outatime = 1
 			break
 		endif
-
 	while(waitResult != 0)
 
 	NVAR noTask = $GetTaskDisableStatus()
@@ -395,6 +402,8 @@ Function ASYNC_Stop([timeout, fromAssert])
 		while(!outatime)
 
 	endif
+
+	ResetDebugOnError(doe)
 
 	localtgID = tgID
 	KillDataFolder GetAsyncHomeDF()
