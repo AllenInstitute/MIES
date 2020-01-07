@@ -263,8 +263,8 @@ static Function TestTimeSeries(fileID, device, groupID, channel, sweep, pxpSweep
 
 	variable channelGroupID, starting_time, session_start_time, actual, scale, scale_ref
 	variable clampMode, gain, gain_ref, headstage, rate_ref, rate, samplingInterval, samplingInterval_ref
-	string electrode_name, electrode_name_ref, key, unit_ref, unit, base_unit_ref
 	string stimulus, stimulus_expected, channelName, str, path, neurodata_type
+	string electrode_name, electrode_name_ref, key, unit_ref, unit, base_unit_ref, filePath
 
 	STRUCT IPNWB#ReadChannelParams params
 	IPNWB#InitReadChannelParams(params)
@@ -338,8 +338,18 @@ static Function TestTimeSeries(fileID, device, groupID, channel, sweep, pxpSweep
 
 	// electrode_name, only present for associated channels
 	if(IsFinite(params.electrodeNumber))
+
+		/// Reading HDF5 links in Igor Pro requires a known filePath instead of
+		/// a fileID.
+		///
+		/// Since the fileName is unknown at this point, it is guessed.
 		PathInfo home
-		electrode_name = IPNWB#ReadElectrodeName(S_path + "HardwareTests.nwb", channel, NWB_VERSION)
+		filePath = S_path + CleanupExperimentName(GetExperimentName()) + ".nwb" /// @see NWB_GetFileForExport
+		if(!FileExists(filePath))
+			filePath = S_path + "HardwareTests.nwb" // legacy fallback for fixed test file.
+		endif
+		electrode_name = IPNWB#ReadElectrodeName(filePath, channel, NWB_VERSION)
+
 		electrode_name_ref = num2str(params.electrodeNumber)
 		CHECK_EQUAL_STR(electrode_name, electrode_name_ref)
 	endif
