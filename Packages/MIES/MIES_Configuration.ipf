@@ -1761,10 +1761,12 @@ static Function CONF_RestoreHeadstageAssociation(panelTitle, jsonID, midExp)
 			PGC_SetAndActivateControl(panelTitle, "popup_Settings_Pressure_dev", str = NONE)
 		elseif(type == JSON_OBJECT)
 			ampSerial = JSON_GetVariable(jsonID, jsonHSPath + EXPCONFIG_JSON_AMPSERIAL)
-			ampIndex = WhichListItem(num2istr(ampSerial), ampSerialList)
-			ASSERT(ampIDTracker[ampIndex] <= 2, "More than two headstages are configured for the same amplifier serial.")
-			PGC_SetAndActivateControl(panelTitle, "popup_Settings_Amplifier", val = CONF_FindAmpInList(ampSerial, ampIDTracker[ampIndex]))
-			ampIDTracker[ampIndex] += 1
+			if(IsFinite(ampSerial))
+				ampIndex = WhichListItem(num2istr(ampSerial), ampSerialList)
+				ASSERT(ampIDTracker[ampIndex] <= 2, "More than two headstages are configured for the same amplifier serial.")
+				PGC_SetAndActivateControl(panelTitle, "popup_Settings_Amplifier", val = CONF_FindAmpInList(ampSerial, ampIDTracker[ampIndex]))
+				ampIDTracker[ampIndex] += 1
+			endif
 			PGC_SetAndActivateControl(panelTitle, "Popup_Settings_VC_DA", val = JSON_GetVariable(jsonID, jsonHSPath + EXPCONFIG_JSON_AMPVCDA))
 			PGC_SetAndActivateControl(panelTitle, "Popup_Settings_VC_AD", val = JSON_GetVariable(jsonID, jsonHSPath + EXPCONFIG_JSON_AMPVCAD))
 			PGC_SetAndActivateControl(panelTitle, "Popup_Settings_IC_DA", val = JSON_GetVariable(jsonID, jsonHSPath + EXPCONFIG_JSON_AMPICDA))
@@ -1795,10 +1797,12 @@ static Function CONF_RestoreHeadstageAssociation(panelTitle, jsonID, midExp)
 			pressureDataWv[index][%NegCalConst] = JSON_GetVariable(jsonID, jsonHSPath + EXPCONFIG_JSON_PRESSCONSTNEG)
 			pressureDataWv[index][%PosCalConst] = JSON_GetVariable(jsonID, jsonHSPath + EXPCONFIG_JSON_PRESSCONSTPOS)
 
-			if(!midExp)
-				CONF_MCC_InitParams(panelTitle, i)
-			else
-				CONF_MCC_MidExp(panelTitle, i, jsonID)
+			if(IsFinite(ampSerial))
+				if(!midExp)
+					CONF_MCC_InitParams(panelTitle, i)
+				else
+					CONF_MCC_MidExp(panelTitle, i, jsonID)
+				endif
 			endif
 		endif
 	endfor
