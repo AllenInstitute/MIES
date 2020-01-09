@@ -542,3 +542,25 @@ Function GetSizeOfAllWavesInExperiment()
 
 	Edit/K=1 root:list
 End
+
+// see tools/functionprofiling.sh
+Function DEBUG_STOREFUNCTION()
+	string funcName = GetRTStackInfo(2)
+	string callchain = GetRTStackInfo(0)
+	string caller = StringFromList(0, callchain)
+
+	WAVE/Z wv = root:functionids
+	if(!WaveExists(wv))
+		WAVE/T functionids = ListToTextWave(FunctionList("*", ";", "KIND:18,WIN:"), ";")
+		Duplicate functionids root:functionids/WAVE=wv
+	endif
+	WAVE/Z count = root:functioncount
+	if(!WaveExists(count))
+		Make/U/L/N=(DimSize(wv, 0)) root:functioncount = 0
+		WAVE count = root:functioncount
+	endif
+	FindValue/TEXT=(funcName) wv
+	if(V_Value != -1)
+		count[V_Value] += 1
+	endif
+End
