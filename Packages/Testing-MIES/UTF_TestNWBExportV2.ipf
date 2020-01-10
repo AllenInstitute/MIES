@@ -655,7 +655,7 @@ static Function/WAVE NWBVersionStrings()
 	variable i, numEntries
 	string name
 
-	Make/T/FREE data = {"2.0b", "2.0.1", "2.1.0"}
+	Make/T/FREE data = {"2.0b", "2.0.1", "2.1.0", "2.2.0"}
 	return data
 End
 
