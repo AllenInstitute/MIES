@@ -262,7 +262,7 @@ static Function TestTimeSeries(fileID, device, groupID, channel, sweep, pxpSweep
 	DFREF pxpSweepsDFR
 
 	variable channelGroupID, starting_time, session_start_time, actual, scale, scale_ref
-	variable clampMode, gain, gain_ref, headstage, rate_ref, rate, samplingInterval, samplingInterval_ref
+	variable clampMode, gain, gain_ref, resolution, conversion, headstage, rate_ref, rate, samplingInterval, samplingInterval_ref
 	string stimulus, stimulus_expected, channelName, str, path, neurodata_type
 	string electrode_name, electrode_name_ref, key, unit_ref, unit, base_unit_ref, filePath
 
@@ -416,20 +416,34 @@ static Function TestTimeSeries(fileID, device, groupID, channel, sweep, pxpSweep
 		CHECK_EQUAL_VAR(scale, scale_ref)
 	endif
 
+	// data.resolution
+	resolution = IPNWB#ReadDatasetAsNumber(channelGroupID, "resolution")
+	CHECK_EQUAL_VAR(resolution, NaN)
+
+	// data.conversion
 	// data.unit
 	WAVE/Z/SDFR=pxpSweepsDFR pxpWave = $channelName
 	REQUIRE_WAVE(pxpWave, NUMERIC_WAVE)
 	unit_ref = WaveUnits(pxpWave, -1)
 
 	if(!cmpstr(unit_ref, "pA"))
+		conversion = IPNWB#ReadAttributeAsNumber(channelGroupID, "data", "conversion")
+		CHECK_CLOSE_VAR(conversion, 1e-12)
+
 		unit = IPNWB#ReadTextAttributeAsString(channelGroupID, "data", "unit")
 		base_unit_ref = "A"
 		CHECK_EQUAL_STR(unit, base_unit_ref)
 	elseif(!cmpstr(unit_ref, "mV"))
+		conversion = IPNWB#ReadAttributeAsNumber(channelGroupID, "data", "conversion")
+		CHECK_CLOSE_VAR(conversion, 1e-3, tol = 1e-5)
+
 		unit = IPNWB#ReadTextAttributeAsString(channelGroupID, "data", "unit")
 		base_unit_ref = "V"
 		CHECK_EQUAL_STR(unit, base_unit_ref)
 	elseif(IsEmpty(unit_ref)) // TTL data
+		conversion = IPNWB#ReadAttributeAsNumber(channelGroupID, "data", "conversion")
+		CHECK_CLOSE_VAR(conversion, 1)
+
 		unit = IPNWB#ReadTextAttributeAsString(channelGroupID, "data", "unit")
 		base_unit_ref = "a.u."
 		CHECK_EQUAL_STR(unit, base_unit_ref)
@@ -641,7 +655,7 @@ static Function/WAVE NWBVersionStrings()
 	variable i, numEntries
 	string name
 
-	Make/T/FREE data = {"2.0b", "2.0.1"}
+	Make/T/FREE data = {"2.0b", "2.0.1", "2.1.0"}
 	return data
 End
 

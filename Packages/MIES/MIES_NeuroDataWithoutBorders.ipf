@@ -1392,6 +1392,7 @@ static Function NWB_GetTimeSeriesProperties(p, tsp)
 	STRUCT IPNWB#WriteChannelParams &p
 	STRUCT IPNWB#TimeSeriesProperties &tsp
 
+	WAVE/T numericalKeys = GetLBNumericalKeys(p.device)
 	WAVE numericalValues = GetLBNumericalValues(p.device)
 
 	IPNWB#InitTimeSeriesProperties(tsp, p.channelType, p.clampMode)
@@ -1408,23 +1409,23 @@ static Function NWB_GetTimeSeriesProperties(p, tsp)
 	if(p.channelType == ITC_XOP_CHANNEL_TYPE_ADC)
 		if(p.clampMode == V_CLAMP_MODE)
 			// VoltageClampSeries: datasets
-			NWB_AddSweepDataSets(numericalValues, p.sweep, "Fast compensation capacitance", "capacitance_fast", p.electrodeNumber, tsp)
-			NWB_AddSweepDataSets(numericalValues, p.sweep, "Slow compensation capacitance", "capacitance_slow", p.electrodeNumber, tsp)
-			NWB_AddSweepDataSets(numericalValues, p.sweep, "RsComp Bandwidth", "resistance_comp_bandwidth", p.electrodeNumber, tsp, factor=1e3, enabledProp="RsComp Enable")
-			NWB_AddSweepDataSets(numericalValues, p.sweep, "RsComp Correction", "resistance_comp_correction", p.electrodeNumber, tsp, enabledProp="RsComp Enable")
-			NWB_AddSweepDataSets(numericalValues, p.sweep, "RsComp Prediction", "resistance_comp_prediction", p.electrodeNumber, tsp, enabledProp="RsComp Enable")
-			NWB_AddSweepDataSets(numericalValues, p.sweep, "Whole Cell Comp Cap", "whole_cell_capacitance_comp", p.electrodeNumber, tsp, factor=1e-12, enabledProp="Whole Cell Comp Enable")
-			NWB_AddSweepDataSets(numericalValues, p.sweep, "Whole Cell Comp Resist", "whole_cell_series_resistance_comp", p.electrodeNumber, tsp, factor=1e6, enabledProp="Whole Cell Comp Enable")
+			NWB_AddSweepDataSets(numericalKeys, numericalValues, p.sweep, "Fast compensation capacitance", "capacitance_fast", p.electrodeNumber, tsp)
+			NWB_AddSweepDataSets(numericalKeys, numericalValues, p.sweep, "Slow compensation capacitance", "capacitance_slow", p.electrodeNumber, tsp)
+			NWB_AddSweepDataSets(numericalKeys, numericalValues, p.sweep, "RsComp Bandwidth", "resistance_comp_bandwidth", p.electrodeNumber, tsp, factor=1e3, enabledProp="RsComp Enable")
+			NWB_AddSweepDataSets(numericalKeys, numericalValues, p.sweep, "RsComp Correction", "resistance_comp_correction", p.electrodeNumber, tsp, enabledProp="RsComp Enable")
+			NWB_AddSweepDataSets(numericalKeys, numericalValues, p.sweep, "RsComp Prediction", "resistance_comp_prediction", p.electrodeNumber, tsp, enabledProp="RsComp Enable")
+			NWB_AddSweepDataSets(numericalKeys, numericalValues, p.sweep, "Whole Cell Comp Cap", "whole_cell_capacitance_comp", p.electrodeNumber, tsp, factor=1e-12, enabledProp="Whole Cell Comp Enable")
+			NWB_AddSweepDataSets(numericalKeys, numericalValues, p.sweep, "Whole Cell Comp Resist", "whole_cell_series_resistance_comp", p.electrodeNumber, tsp, factor=1e6, enabledProp="Whole Cell Comp Enable")
 		elseif(p.clampMode == I_CLAMP_MODE)
 			// CurrentClampSeries: datasets
-			NWB_AddSweepDataSets(numericalValues, p.sweep, "I-Clamp Holding Level", "bias_current", p.electrodeNumber, tsp, enabledProp="I-Clamp Holding Enable")
-			NWB_AddSweepDataSets(numericalValues, p.sweep, "Bridge Bal Value", "bridge_balance", p.electrodeNumber, tsp, enabledProp="Bridge Bal Enable")
-			NWB_AddSweepDataSets(numericalValues, p.sweep, "Neut Cap Value", "capacitance_compensation", p.electrodeNumber, tsp, enabledProp="Neut Cap Enabled")
+			NWB_AddSweepDataSets(numericalKeys, numericalValues, p.sweep, "I-Clamp Holding Level", "bias_current", p.electrodeNumber, tsp, enabledProp="I-Clamp Holding Enable")
+			NWB_AddSweepDataSets(numericalKeys, numericalValues, p.sweep, "Bridge Bal Value", "bridge_balance", p.electrodeNumber, tsp, enabledProp="Bridge Bal Enable")
+			NWB_AddSweepDataSets(numericalKeys, numericalValues, p.sweep, "Neut Cap Value", "capacitance_compensation", p.electrodeNumber, tsp, enabledProp="Neut Cap Enabled")
 		endif
 
-		NWB_AddSweepDataSets(numericalValues, p.sweep, "AD Gain", "gain", p.electrodeNumber, tsp)
+		NWB_AddSweepDataSets(numericalKeys, numericalValues, p.sweep, "AD Gain", "gain", p.electrodeNumber, tsp)
 	elseif(p.channelType == ITC_XOP_CHANNEL_TYPE_DAC)
-		NWB_AddSweepDataSets(numericalValues, p.sweep, "DA Gain", "gain", p.electrodeNumber, tsp)
+		NWB_AddSweepDataSets(numericalKeys, numericalValues, p.sweep, "DA Gain", "gain", p.electrodeNumber, tsp)
 
 		WAVE/Z values = GetLastSetting(numericalValues, p.sweep, STIMSET_SCALE_FACTOR_KEY, DATA_ACQUISITION_MODE)
 		if(WaveExists(values) || IsFinite(values[p.electrodeNumber]))
@@ -1433,7 +1434,8 @@ static Function NWB_GetTimeSeriesProperties(p, tsp)
 	endif
 End
 
-static Function NWB_AddSweepDataSets(numericalValues, sweep, settingsProp, nwbProp, headstage, tsp, [factor, enabledProp])
+static Function NWB_AddSweepDataSets(numericalKeys, numericalValues, sweep, settingsProp, nwbProp, headstage, tsp, [factor, enabledProp])
+	WAVE/T numericalKeys
 	WAVE numericalValues
 	variable sweep
 	string settingsProp, nwbProp
@@ -1441,6 +1443,9 @@ static Function NWB_AddSweepDataSets(numericalValues, sweep, settingsProp, nwbPr
 	STRUCT IPNWB#TimeSeriesProperties &tsp
 	variable factor
 	string enabledProp
+
+	string lbl, unit
+	variable col
 
 	if(ParamIsDefault(factor))
 		factor = 1
@@ -1458,7 +1463,11 @@ static Function NWB_AddSweepDataSets(numericalValues, sweep, settingsProp, nwbPr
 		return NaN
 	endif
 
-	IPNWB#AddProperty(tsp, nwbProp, values[headstage] * factor)
+	if(GetKeyWaveParameterAndUnit(numericalKeys, settingsProp, lbl, unit, col))
+		IPNWB#AddProperty(tsp, nwbProp, values[headstage] * factor)
+	else
+		IPNWB#AddProperty(tsp, nwbProp, values[headstage] * factor, unit = unit)
+	endif
 End
 
 /// @brief function saves contents of specified notebook to data folder
