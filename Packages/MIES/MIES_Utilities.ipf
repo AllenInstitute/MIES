@@ -4722,14 +4722,10 @@ Function [string data, string fName] LoadTextFile(string fileName[, string fileF
 		Open/R/P=home/Z=(zFlag)/F=fileFilter/M=message fnum as fileName
 	endif
 
-	if(IsEmpty(S_fileName))
+	if(IsEmpty(S_fileName) || V_flag)
 		return ["", ""]
 	endif
 
-	Open/Z/R fnum as S_fileName
-	if(V_flag)
-		return ["", S_fileName]
-	endif
 	FStatus fnum
 	data = ""
 	data = PadString(data, V_logEOF, 0x20)
