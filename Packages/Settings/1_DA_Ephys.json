@@ -2,8 +2,6 @@
     "Common configuration data": {
         "Headstage Association": {
             "0": {
-                "Amplifier Serial": 0,
-                "Amplifier Title": "0,1",
                 "IC AD": 0,
                 "IC DA": 0,
                 "Pressure AD": 0,
@@ -21,8 +19,6 @@
                 "VC DA": 0
             },
             "1": {
-                "Amplifier Serial": 0,
-                "Amplifier Title": "0,1",
                 "IC AD": 1,
                 "IC DA": 1,
                 "Pressure AD": 1,

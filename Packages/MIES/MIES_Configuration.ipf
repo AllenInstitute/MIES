@@ -168,6 +168,8 @@ static StrConstant EXPCONFIG_JSON_USERPRESSBLOCK = "User Pressure Devices"
 static StrConstant EXPCONFIG_JSON_USERPRESSDEV = "DAC Device"
 static StrConstant EXPCONFIG_JSON_USERPRESSDA = "Pressure DA"
 
+static StrConstant EXPCONFIG_RIGFILESUFFIX = "_rig.json"
+
 static Constant EXPCONFIG_MIDDLEEXP_OFF = 0
 static Constant EXPCONFIG_MIDDLEEXP_ON = 1
 
@@ -188,21 +190,33 @@ static Function CONF_DefaultSettings()
 End
 
 /// @brief Automatically loads all *.json files from MIES Settings folder and opens and restores the corresponding windows
-///        Files are restored in case-insensitive alphanumeric order.
+///        Files are restored in case-insensitive alphanumeric order. Associated *_rig.json files are taken into account.
 Function CONF_AutoLoader()
 
 	variable i, numFiles
-	string fileList, fullFilePath
+	string fileList, fullFilePath, rigCandidate
 	string settingsPath = CONF_GetSettingsPath()
 
 	ASSERT(!IsEmpty(settingsPath), "Unable to resolve MIES Settings folder path. Is it present and readable in Packages\\Settings ?")
 	NewPath/O/Q PathSettings, settingsPath
 	fileList = GetAllFilesRecursivelyFromPath("PathSettings", extension = ".json")
-	fileList = SortList(fileList, "|", 4)
-	numFiles = ItemsInList(fileList, "|")
+
+	WAVE/T rawFileList = ListToTextWave(fileList, "|")
+	rawFileList[] = LowerStr(rawFileList[p])
+	WAVE/T/Z mainFileList
+	WAVE/T/Z rigFileList
+	[rigFileList, mainFileList] = SplitTextWaveBySuffix(rawFileList, LowerStr(EXPCONFIG_RIGFILESUFFIX))
+
+	Sort mainFileList, mainFileList
+	numFiles = DimSize(mainFileList, ROWS)
 	for(i = 0; i < numFiles; i += 1)
-		fullFilePath = StringFromList(i, fileList, "|")
-		CONF_RestoreWindow(fullFilePath, usePanelTypeFromFile = 1)
+		rigCandidate = mainFileList[i]
+		rigCandidate = rigCandidate[0, strlen(rigCandidate) - 6] + EXPCONFIG_RIGFILESUFFIX
+		FindValue/TXOP=4/TEXT=rigCandidate rigFileList
+		if(V_Value == -1)
+			rigCandidate = ""
+		endif
+		CONF_RestoreWindow(mainFileList[i], rigFile = rigCandidate, usePanelTypeFromFile = 1)
 	endfor
 End
 
@@ -273,14 +287,17 @@ End
 ///
 /// @param fName file name of configuration file to read configuration
 /// @param usePanelTypeFromFile [optional, default = 0] if set to 1 then the panel type from the json is interpreted and a new panel of that type is opened
-Function CONF_RestoreWindow(fName[, usePanelTypeFromFile])
+/// @param rigFile [optional, default = ""] name of secondary rig configuration file with complementary data. This parameter is valid when loading for a DA_Ephys panel
+Function CONF_RestoreWindow(fName[, usePanelTypeFromFile, rigFile])
 	string fName
 	variable usePanelTypeFromFile
+	string rigFile
 
 	variable jsonID, restoreMask
 	string input, wName, errMsg, fullFilePath, panelType
 
 	usePanelTypeFromFile = ParamIsDefault(usePanelTypeFromFile) ? 0 : !!usePanelTypeFromFile
+	rigFile = SelectString(ParamIsDefault(rigFile), rigFile, "")
 
 	jsonID = NaN
 	restoreMask = EXPCONFIG_SAVE_VALUE | EXPCONFIG_SAVE_USERDATA | EXPCONFIG_SAVE_DISABLED
@@ -294,14 +311,14 @@ Function CONF_RestoreWindow(fName[, usePanelTypeFromFile])
 			panelType = JSON_GetString(jsonID, "/" + EXPCONFIG_RESERVED_TAGENTRY)
 			ASSERT(!IsEmpty(panelType), "Configuration file entry for panel type (" + EXPCONFIG_RESERVED_TAGENTRY + ") is empty.")
 			if(!CmpStr(panelType, PANELTAG_DAEPHYS))
-				CONF_RestoreDAEphys(jsonID, fullFilePath, forceNewPanel = 1)
+				if(!IsEmpty(rigFile))
+					CONF_JoinRigFile(jsonID, rigFile)
+				endif
+				wName = CONF_RestoreDAEphys(jsonID, fullFilePath, forceNewPanel = 1)
 			elseif(!CmpStr(panelType, PANELTAG_DATABROWSER))
 				DB_OpenDataBrowser()
 				wName = GetMainWindow(GetCurrentWindow())
-				SetWindow $wName, userData($EXPCONFIG_UDATA_SOURCEFILE_PATH)=""
-				SetWindow $wName, userData($EXPCONFIG_UDATA_SOURCEFILE_HASH)=""
 				wName = CONF_JSONToWindow(wName, restoreMask, jsonID)
-				CONF_AddConfigFileUserData(wName, fullFilePath)
 				print "Configuration restored for " + wName
 			else
 				ASSERT(0, "Configuration file entry for panel type has an unknown panel tag (" + panelType + ").")
@@ -315,20 +332,22 @@ Function CONF_RestoreWindow(fName[, usePanelTypeFromFile])
 					return 0
 				endif
 				jsonID = CONF_ParseJSON(input)
-				CONF_RestoreDAEphys(jsonID, fullFilePath)
+				if(!IsEmpty(rigFile))
+					CONF_JoinRigFile(jsonID, rigFile)
+				endif
+				wName = CONF_RestoreDAEphys(jsonID, fullFilePath)
 			else
 				[input, fullFilePath] = LoadTextFile(fName, fileFilter = EXPCONFIG_FILEFILTER, message = "Open configuration file for frontmost window")
 				if(IsEmpty(input))
 					return 0
 				endif
 				jsonID = CONF_ParseJSON(input)
-				SetWindow $wName, userData($EXPCONFIG_UDATA_SOURCEFILE_PATH)=""
-				SetWindow $wName, userData($EXPCONFIG_UDATA_SOURCEFILE_HASH)=""
 				wName = CONF_JSONToWindow(wName, restoreMask, jsonID)
-				CONF_AddConfigFileUserData(wName, fullFilePath)
 				print "Configuration restored for " + wName
 			endif
 		endif
+
+		CONF_AddConfigFileUserData(wName, fullFilePath, rigFile)
 	catch
 		errMsg = getRTErrMessage()
 		if(!IsNaN(jsonID))
@@ -389,7 +408,9 @@ End
 ///                      - Reuses locked DA_Ephys panel with same device as saved in configuration
 ///                      - Uses open unlocked DA_Ephys panel
 ///                      - Opens new DA_Ephys panel
-Function CONF_RestoreDAEphys(jsonID, fullFilePath, [middleOfExperiment, forceNewPanel])
+///
+/// @return name of the created DAEphys panel
+Function/S CONF_RestoreDAEphys(jsonID, fullFilePath, [middleOfExperiment, forceNewPanel])
 	variable jsonID
 	string fullFilePath
 	variable middleOfExperiment, forceNewPanel
@@ -435,9 +456,6 @@ Function CONF_RestoreDAEphys(jsonID, fullFilePath, [middleOfExperiment, forceNew
 			endif
 		endif
 
-		SetWindow $panelTitle, userData($EXPCONFIG_UDATA_SOURCEFILE_PATH)=""
-		SetWindow $panelTitle, userData($EXPCONFIG_UDATA_SOURCEFILE_HASH)=""
-
 		if(middleOfExperiment)
 			PGC_SetAndActivateControl(panelTitle, "check_Settings_SyncMiesToMCC", val = CHECKBOX_UNSELECTED)
 			rStateSync = GetUserData(panelTitle, "check_Settings_SyncMiesToMCC", EXPCONFIG_UDATA_EXCLUDE_RESTORE)
@@ -446,14 +464,16 @@ Function CONF_RestoreDAEphys(jsonID, fullFilePath, [middleOfExperiment, forceNew
 		endif
 
 		StimSetPath = CONF_GetStringFromSettings(jsonID, STIMSET_NAME)
-		if(IsEmpty(StimSetPath))
-			err = NWB_LoadAllStimSets(overwrite = 1)
-		else
-			err = NWB_LoadAllStimSets(overwrite = 1, fileName = StimSetPath)
-		endif
-		if(err)
-			print "Stim set failed to load, check file path"
-			ControlWindowToFront()
+		if(!IsEmpty(StimSetPath))
+			if(FileExists(StimSetPath))
+				err = NWB_LoadAllStimSets(overwrite = 1, fileName = StimSetPath)
+				if(err)
+					print "Stim set failed to load, check file path"
+					ControlWindowToFront()
+				endif
+			else
+				print "Specified StimSet file at " + StimSetPath + " not found! No file was loaded."
+			endif
 		endif
 
 		restoreMask = EXPCONFIG_SAVE_VALUE | EXPCONFIG_SAVE_POPUPMENU_AS_STRING_ONLY | EXPCONFIG_SAVE_DISABLED | EXPCONFIG_SAVE_ONLY_RELEVANT | EXPCONFIG_MINIMIZE_ON_RESTORE
@@ -473,7 +493,6 @@ Function CONF_RestoreDAEphys(jsonID, fullFilePath, [middleOfExperiment, forceNew
 
 		CONF_RestoreHeadstageAssociation(panelTitle, jsonID, middleOfExperiment)
 		CONF_RestoreUserPressure(panelTitle, jsonID)
-		CONF_AddConfigFileUserData(panelTitle, fullFilePath)
 
 		filename = GetTimeStamp() + PACKED_FILE_EXPERIMENT_SUFFIX
 		path = CONF_GetStringFromSettings(jsonID, SAVE_PATH)
@@ -492,7 +511,7 @@ Function CONF_RestoreDAEphys(jsonID, fullFilePath, [middleOfExperiment, forceNew
 
 		print "Start Sciencing"
 		SetWindow $panelTitle, hide=0, needUpdate=1
-
+		return panelTitle
 	catch
 		if(isTagged)
 			panelTitle = CONF_FindWindow(winHandle, uKey = DAEPHYS_UDATA_WINHANDLE)
@@ -513,12 +532,17 @@ Function CONF_RestoreDAEphys(jsonID, fullFilePath, [middleOfExperiment, forceNew
 	endtry
 End
 
-/// @brief Add the config file path and SHA-256 hash to the panel as user data
-static Function CONF_AddConfigFileUserData(win, fullFilePath)
-	string win, fullFilePath
+/// @brief Add the config file paths and SHA-256 hashes to the panel as user data
+static Function CONF_AddConfigFileUserData(win, fullFilePath, rigFile)
+	string win, fullFilePath, rigFile
 
-	SetWindow $win, userData($EXPCONFIG_UDATA_SOURCEFILE_PATH)=fullFilePath
-	SetWindow $win, userData($EXPCONFIG_UDATA_SOURCEFILE_HASH)=CalcHashForFile(fullFilePath)
+	SetWindow $win, userData($EXPCONFIG_UDATA_SOURCEFILE_PATH)=fullFilePath + "|" + rigFile
+
+	if(FileExists(rigFile))
+		SetWindow $win, userData($EXPCONFIG_UDATA_SOURCEFILE_HASH)=CalcHashForFile(fullFilePath) + "|" + CalcHashForFile(rigFile)
+	else
+		SetWindow $win, userData($EXPCONFIG_UDATA_SOURCEFILE_HASH)=CalcHashForFile(fullFilePath) + "|"
+	endif
 End
 
 /// @brief Parses a json formatted string to a json object. This function shows a helpful error message if the parse fails
@@ -816,6 +840,9 @@ Function/S CONF_JSONToWindow(wName, restoreMask, jsonID)
 
 		ASSERT(WinType(wName), "Window " + wName + " does not exist!")
 		ASSERT(restoreMask & (EXPCONFIG_SAVE_VALUE | EXPCONFIG_SAVE_POSITION | EXPCONFIG_SAVE_USERDATA | EXPCONFIG_SAVE_DISABLED | EXPCONFIG_SAVE_CTRLTYPE), "No property class enabled to restore in restoreMask.")
+
+		SetWindow $wName, userData($EXPCONFIG_UDATA_SOURCEFILE_PATH)=""
+		SetWindow $wName, userData($EXPCONFIG_UDATA_SOURCEFILE_HASH)=""
 
 		if(restoreMask & EXPCONFIG_MINIMIZE_ON_RESTORE)
 			SetWindow $wName, hide=1
@@ -2080,4 +2107,23 @@ Function CONF_Position_MCC_Win(serialNum, winTitle, winPosition)
 	else
 		printf "Message: If you would like to position the MCC windows please select a monitor in the Configuration text file"
 	endif
+End
+
+/// @brief Loads, parses and joins a *_rig.json file to a main configuration file.
+/// @param[in] jsonID jsonID of main configuration
+/// @param[in] rigFileName full file path of rig file
+static Function CONF_JoinRigFile(jsonID, rigFileName)
+	variable jsonID
+	string rigFileName
+
+	string input
+	variable jsonIDRig
+
+	[input, rigFileName] = LoadTextFile(rigFileName)
+	if(IsEmpty(input))
+		return 0
+	endif
+	jsonIDRig = CONF_ParseJSON(input)
+	SyncJSON(jsonIDRig, jsonID, "", "")
+	JSON_Release(jsonIDRig)
 End

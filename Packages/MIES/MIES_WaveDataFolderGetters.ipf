@@ -2035,8 +2035,8 @@ End
 /// -26: Digitizer Hardware Name
 /// -27: Digitizer Serial Numbers
 /// -28: Epochs
-/// -29: JSON config file: path
-/// -30: JSON config file: SHA-256 hash
+/// -29: JSON config file: path (`|` separated list of full file paths)
+/// -30: JSON config file: SHA-256 hash (`|` separated list of hashes)
 Function/Wave GetSweepSettingsTextKeyWave(panelTitle)
 	string panelTitle
 
