@@ -522,15 +522,6 @@ FunctionEnd
 
 function .onInit
   ClearErrors
-  ${GetOptions} $CMDLINE /ALLUSER $0
-  ${If} ${Errors}
-    # default setting
-    StrCpy $ALLUSER "0"
-  ${Else}
-    StrCpy $ALLUSER "1"
-  ${EndIf}
-
-  ClearErrors
   # Setting if /SKIPHWXOPS was encountered
   StrCpy $XOPINST "0"
   ${GetOptions} $CMDLINE /SKIPHWXOPS $0
@@ -545,6 +536,22 @@ function .onInit
   StrCmp $0 "admin" 0 +2
     StrCpy $ISADMIN "1"
 
+  ClearErrors
+  ${GetOptions} $CMDLINE /ALLUSER $0
+  ${If} ${Errors}
+    # default setting
+    StrCpy $ALLUSER "0"
+  ${Else}
+    IntCmp $ISADMIN 0 QuitCantAlluser
+    StrCpy $ALLUSER "1"
+    Goto CheckIgorPaths
+QuitCantAlluser:
+    IfSilent +2
+      MessageBox MB_OK|MB_ICONEXCLAMATION "Aborting: You need to administrator privileges for /ALLUSER installation."
+    Quit
+  ${EndIf}
+
+CheckIgorPaths:
   # Get Igor Path from Registry and check which version we have
   !insertmacro CheckIgor32
   IntCmp $IGOR32 0 NoRegIgor32
