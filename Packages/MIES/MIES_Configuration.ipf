@@ -200,6 +200,11 @@ Function CONF_AutoLoader()
 	ASSERT(!IsEmpty(settingsPath), "Unable to resolve MIES Settings folder path. Is it present and readable in Packages\\Settings ?")
 	NewPath/O/Q PathSettings, settingsPath
 	fileList = GetAllFilesRecursivelyFromPath("PathSettings", extension = ".json")
+	if(IsEmpty(fileList))
+		printf "There are no files to load from the %s folder.\r", EXPCONFIG_SETTINGS_FOLDER
+		ControlWindowToFront()
+		Abort
+	endif
 
 	WAVE/T rawFileList = ListToTextWave(fileList, "|")
 	rawFileList[] = LowerStr(rawFileList[p])
