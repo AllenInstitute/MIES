@@ -800,17 +800,19 @@ End
 ///
 /// @param ampSerialNumList A text list of amplifier serial numbers without leading zeroes
 /// Ex. "834001;435003;836059", "0;" starts the MCC in Demo mode
+/// Duplicate serial numbers are ignored as well as amplifier titles for the duplicates.
+/// For each unique serial number one MCC is opened.
 /// @param ampTitleList [optional, defaults to blank] MCC gui window title
 /// @param maxAttempts [optional, defaults to inf] Maximum number of attempts made to open specified MCCs
-/// @return 1 if all MCCs specified in ampSerialNumList were opened, 0 if one or more MCCs specified in ampSerialNumList were not able to be opened
+/// @return 1 if all unique MCCs specified in ampSerialNumList were opened, 0 if one or more MCCs specified in ampSerialNumList were not able to be opened
 Function AI_OpenMCCs(ampSerialNumList, [ampTitleList, maxAttempts])
 	string ampSerialNumList
 	string ampTitleList
 	variable maxAttempts
 
 	string cmd, serialStr, title
-	variable i, j, serialNum, failedToOpenCount
-	variable ItemsInAmpSerialNumList = itemsinlist(AmpSerialNumList)
+	variable i, j, numDups, serialNum, failedToOpenCount
+	variable ItemsInAmpSerialNumList = ItemsInList(AmpSerialNumList)
 
 	if(paramIsDefault(maxAttempts))
 		maxAttempts = inf
@@ -818,7 +820,27 @@ Function AI_OpenMCCs(ampSerialNumList, [ampTitleList, maxAttempts])
 
 	if(paramIsDefault(AmpTitleList))
 		AmpTitleList = ""
+	else
+		ASSERT(ItemsInAmpSerialNumList == ItemsInList(ampTitleList), "Number of amplifier serials does not match number of amplifier titles.")
 	endIf
+
+	if(ItemsInAmpSerialNumList > 1)
+		WAVE/T ampSerialListRaw = ConvertListToTextWave(ampSerialNumList)
+		FindDuplicates/FREE/RT=ampSerialList/INDX=dupIndices ampSerialListRaw
+		numDups = DimSize(dupIndices, ROWS)
+		if(numDups)
+			if(numDups > 1)
+				Sort/R dupIndices, dupIndices
+				for(i = 0; i < numDups; i += 1)
+					AmpTitleList = RemoveListItem(dupIndices[i], AmpTitleList)
+				endfor
+			else
+				AmpTitleList = RemoveListItem(dupIndices[0], AmpTitleList)
+			endif
+		endif
+		AmpSerialNumList = TextWaveToList(ampSerialList, ";")
+		ItemsInAmpSerialNumList = ItemsInList(AmpSerialNumList)
+	endif
 
 	WAVE OpenMCCList = AI_GetMCCSerialNumbers()
 	Do
