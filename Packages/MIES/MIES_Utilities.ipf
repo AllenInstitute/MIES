@@ -4881,9 +4881,11 @@ End
 /// @param[in] tgtJsonID json Id of target object
 /// @param[in] srcPath root path for sync in source object
 /// @param[in] tgtPath root path for sync in target
-Function SyncJSON(srcJsonID, tgtJsonID, srcPath, tgtPath)
+/// @param[in] srcFile file name of source JSON rig file, used for more specific error message
+///                    in case of conflict. If "" is given then a more unspecific error message is given.
+Function SyncJSON(srcJsonID, tgtJsonID, srcPath, tgtPath, srcFile)
 	variable srcJsonID, tgtJsonID
-	string srcPath, tgtPath
+	string srcPath, tgtPath, srcFile
 
 	variable type, i, numKeys, arraySize, parentIsArray
 	string localTgtPath
@@ -4895,7 +4897,16 @@ Function SyncJSON(srcJsonID, tgtJsonID, srcPath, tgtPath)
 	parentIsArray = IsJsonParentArray(srcJsonID, srcPath)
 	type = JSON_GetType(srcJsonID, srcPath)
 	if(type != JSON_OBJECT && !parentIsArray)
-		ASSERT(!JSON_Exists(tgtJsonID, localTgtPath), "Overwrite to non object attempted.")
+		if(JSON_Exists(tgtJsonID, localTgtPath))
+			if(IsEmpty(srcFile))
+				printf "Aborting: JSON element in source at\r%s\rconflicts with element at\r%s\rin main file.\r", srcPath, localTgtPath
+			else
+				printf "Aborting: Found conflict in file %s.\r", srcFile
+				printf "JSON element in source at\r%s\rconflicts with element at\r%s\rin main file.\r", srcPath, localTgtPath
+			endif
+			ControlWindowToFront()
+			Abort
+		endif
 	endif
 
 	if(type == JSON_OBJECT)
@@ -4908,20 +4919,29 @@ Function SyncJSON(srcJsonID, tgtJsonID, srcPath, tgtPath)
 		WAVE/T keys = JSON_GetKeys(srcJsonID, srcPath)
 		numKeys = DimSize(keys, ROWS)
 		for(i = 0; i < numKeys; i += 1)
-			SyncJSON(srcJsonID, tgtJsonID, srcPath + "/" + keys[i], tgtPath)
+			SyncJSON(srcJsonID, tgtJsonID, srcPath + "/" + keys[i], tgtPath, srcFile)
 		endfor
 	elseif(type == JSON_ARRAY)
 		if(parentIsArray)
 			JsonSetEmptyArray(tgtJsonID, localTgtPath)
 		else
-			ASSERT(!JSON_Exists(tgtJsonID, localTgtPath), "Overwrite attempted with array.")
+			if(JSON_Exists(tgtJsonID, localTgtPath))
+				if(IsEmpty(srcFile))
+					printf "Aborting: JSON array in source at\r%s\rconflicts with element at\r%s\rin main file.\r", srcPath, localTgtPath
+				else
+					printf "Aborting: Found conflict in file %s.\r", srcFile
+					printf "JSON array in source at\r%s\rconflicts with element at\r%s\rin main file.\r", srcPath, localTgtPath
+				endif
+				ControlWindowToFront()
+				Abort
+			endif
 			JSON_AddTreeArray(tgtJsonID, localTgtPath)
 		endif
 
 		arraySize = JSON_GetArraySize(srcJsonID, srcPath)
 		JSON_AddObjects(tgtJsonID, localTgtPath, objCount = arraySize)
 		for(i = 0; i < arraySize; i += 1)
-			SyncJSON(srcJsonID, tgtJsonID, srcPath + "/" + num2istr(i), tgtPath)
+			SyncJSON(srcJsonID, tgtJsonID, srcPath + "/" + num2istr(i), tgtPath, srcFile)
 		endfor
 	elseif(type == JSON_NUMERIC)
 		JSON_SetVariable(tgtJsonID, localTgtPath, JSON_GetVariable(srcJsonID, srcPath))
