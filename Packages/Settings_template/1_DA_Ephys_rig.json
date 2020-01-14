@@ -3,11 +3,13 @@
         "Headstage Association": {
             "0": {
                 "Amplifier Serial": 0,
-                "Amplifier Title": "0,1"
+                "Amplifier Title": "0,1",
+                "Amplifier Channel": 1
             },
             "1": {
                 "Amplifier Serial": 0,
-                "Amplifier Title": "0,1"
+                "Amplifier Title": "0,1",
+                "Amplifier Channel": 2
             }
         }
     }
