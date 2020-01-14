@@ -887,8 +887,7 @@ static Function/WAVE AI_GetMCCSerialNumbers()
 		AI_FindConnectedAmps()
 		WAVE W_TelegraphServers = GetAmplifierTelegraphServers()
 		Duplicate/FREE/R=[][FindDimLabel(W_TelegraphServers, COLS, "SerialNum")] W_TelegraphServers, OpenMCCList
-		DeleteDuplicates(OpenMCCList)
-		return OpenMCCList
+		return DeleteDuplicates(OpenMCCList)
 End
 
 /// @brief Return a path to the MCC.
