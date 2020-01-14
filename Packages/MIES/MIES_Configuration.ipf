@@ -2124,6 +2124,6 @@ static Function CONF_JoinRigFile(jsonID, rigFileName)
 		return 0
 	endif
 	jsonIDRig = CONF_ParseJSON(input)
-	SyncJSON(jsonIDRig, jsonID, "", "")
+	SyncJSON(jsonIDRig, jsonID, "", "", rigFileName)
 	JSON_Release(jsonIDRig)
 End
