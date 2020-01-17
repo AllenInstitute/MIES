@@ -33,16 +33,79 @@ Silent installation
 
 The installer is developed using `NSIS <https://nsis.sourceforge.io>`__ which also
 supports silent installation. The installer requires admin privileges also with
-slient installation.
+silent installation.
 
 To perform a silent installation pass the `/S` command line option which will
 install with the following settings:
 
 - Install for Igor Pro 8 64bit
-- Admin installation into `%PROGRAMFILES%\MIES` for the current user
+- Admin installation into `%PROGRAMFILES%\MIES` for the current user, pass `/ALLUSER` to install for all users
 - Install all Hardware XOPs
 
-Possible existing MIES installations will be silently uninstalled.
+Previously existing MIES installations of the admin will be silently uninstalled.
+
+Installer details and limitations
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+The installer uses the Nullsoft Installer System `NSIS <https://nsis.sourceforge.io>`__.
+NSIS allows to create installers that require admin privileges and installers that
+run with user privileges only. By default an installer requiring admin privileges
+is created by executing ``tools/create-installer.sh`` from a MingW64 bash.
+With ``tools/create-installer.sh 1`` a user mode installer can be created.
+
+The installer tries to detect if and where Igor Pro 8 and/or Igor Pro 9 is installed.
+It defaults then to the 64-bit version if the found Igor Pro(s) which is reflected
+in the default selection of the corresponding installer dialog. In silent mode the
+found defaults are automatically used. If in silent mode no Igor Pro installations are
+detected then only the main MIES files get installed.
+
+Installer with admin privileges
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+When run as user the installer asks for privilege elevation.
+
+Installs by default to the user folder e.g. `\\Users\\Admin\\Documents\\MIES folder`.
+Igor Pro integration through shortcuts is put to the user Igor Pro procedures/extension folders in
+`\\Users\\Admin\\Documents\\WaveMetrics\\Igor Pro X Folder`.
+
+Installs with `/ALLUSER` or corresponding dialog selection to the `\\Program Files\\MIES folder`.
+Igor Pro integration through shortcuts is put to the global Igor Pro procedures/extension folders in
+`\\Program Files\\Wavemetrics\\Igor Pro X Folder`.
+
+Prior installation it is detected by checking the installed programs list of windows (Apps & Features)
+if MIES is already installed. If it is installed then the uninstaller is called first.
+If the installation was run silent then the uninstaller is also called silent.
+
+A limitation is that the installer can not detect if another user has a user installation of MIES.
+Thus such installation will remain in parallel and result in a double installation for that user (global and local).
+The local installation of this user has to be uninstalled. This can be done when the user is logged in through
+windows Apps & Features.
+
+Installer with user privileges
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Installs by default to the user folder e.g. `\\Users\\User\\Documents\\MIES folder`.
+Igor Pro integration through shortcuts is put to the user Igor Pro procedures/extension folders in
+`\\Users\\User\\Documents\\WaveMetrics\\Igor Pro X Folder`.
+
+Installation for all users is not supported as it would require administrative privileges.
+Thus the dialog option is greyed out. When `/ALLUSER` is specified an error message is shown.
+If `/ALLUSER` and `/S` for silent installation is specified the installer silently quits.
+
+Prior installation it is detected by checking the installed programs list of windows (Apps & Features)
+if MIES is already installed. If it is installed then the uninstaller is called first.
+If the installation was run silent then the uninstaller is also called silent.
+The user can only uninstall previous installations from himself. If the previous installation
+was done by an admin the uninstaller will ask for privilege elevation.
+
+Corrupted installations
+^^^^^^^^^^^^^^^^^^^^^^^
+
+After the installer has called a potential uninstaller it checks if the target Igor Pro procedures folder
+for the MIES integration has no shortcut to MIES. If there still exists a shortcut to MIES then further installation
+is aborted. The graphical installer gives a message box requesting a manual cleanup.
+Such case typically happens if shortcuts in the Igor Pro folders for integrating MIES were created manually.
+Then the shortcuts have to be removed manually first before a MIES installation is run.
 
 Arduino
 -------
