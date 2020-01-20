@@ -1772,7 +1772,7 @@ static Function CONF_RestoreHeadstageAssociation(panelTitle, jsonID, midExp)
 	WAVE telegraphServers = GetAmplifierTelegraphServers()
 	numRows = DimSize(telegraphServers, ROWS)
 	if(!numRows)
-		Assert(AI_OpenMCCs(ampSerialList, ampTitleList = ampTitleList, maxAttempts = ATTEMPTS), "Evil kittens prevented MultiClamp from opening - FULL STOP" )
+		Assert(AI_OpenMCCs(ampSerialList, ampTitleList = ampTitleList), "Evil kittens prevented MultiClamp from opening - FULL STOP" )
 	endif
 
 	winPositionMCC = CONF_GetStringFromSettings(jsonID, POSITION_MCC)

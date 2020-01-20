@@ -76,7 +76,7 @@ Function ExpConfig_ConfigureMIES([middleOfExperiment])
 		AmpTitleLocal = UserSettings[V_value][%SettingValue]
 	
 		printf "Openning MCC amplifiers\r"
-		Assert(AI_OpenMCCs(AmpSerialLocal, ampTitleList = AmpTitleLocal, maxAttempts = ATTEMPTS),"Evil kittens prevented MultiClamp from opening - FULL STOP" )
+		Assert(AI_OpenMCCs(AmpSerialLocal, ampTitleList = AmpTitleLocal),"Evil kittens prevented MultiClamp from opening - FULL STOP" )
 		
 		FindValue /TXOP = 4 /TEXT = ITC_DEV_TYPE UserSettings
 		ITCDevType = UserSettings[V_value][%SettingValue]
@@ -192,7 +192,7 @@ static Function ExpConfig_Amplifiers(panelTitle, UserSettings, midExp)
 	numRows = DimSize(telegraphServers, ROWS)
 	if(!numRows)
 		printf "Openning MCC amplifiers\r"
-		Assert(AI_OpenMCCs(AmpSerialLocal, ampTitleList = AmpTitleLocal, maxAttempts = ATTEMPTS),"Evil kittens prevented MultiClamp from opening - FULL STOP" )
+		Assert(AI_OpenMCCs(AmpSerialLocal, ampTitleList = AmpTitleLocal),"Evil kittens prevented MultiClamp from opening - FULL STOP" )
 	endif
 	
 	FindValue /TXOP = 4 /TEXT = POSITION_MCC UserSettings

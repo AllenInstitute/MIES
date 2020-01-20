@@ -773,7 +773,6 @@ Constant DA_EPHYS_PANEL_PRESSURE_USER = 2
 ///@{
 Constant    EXPCONFIG_VERSION_NUM   = 1
 StrConstant USER_CONFIG_PATH        = "..:..:UserConfig.txt"
-Constant    ATTEMPTS                = 5
 StrConstant CONFIG_VERSION          = "Version"
 StrConstant SAVE_PATH               = "Save data to"
 StrConstant STIMSET_PATH            = "Load stim set from"

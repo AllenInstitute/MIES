@@ -803,20 +803,15 @@ End
 /// Duplicate serial numbers are ignored as well as amplifier titles for the duplicates.
 /// For each unique serial number one MCC is opened.
 /// @param ampTitleList [optional, defaults to blank] MCC gui window title
-/// @param maxAttempts [optional, defaults to inf] Maximum number of attempts made to open specified MCCs
 /// @return 1 if all unique MCCs specified in ampSerialNumList were opened, 0 if one or more MCCs specified in ampSerialNumList were not able to be opened
-Function AI_OpenMCCs(ampSerialNumList, [ampTitleList, maxAttempts])
+Function AI_OpenMCCs(ampSerialNumList, [ampTitleList])
 	string ampSerialNumList
 	string ampTitleList
-	variable maxAttempts
 
 	string cmd, serialStr, title
 	variable i, j, numDups, serialNum, failedToOpenCount
 	variable ItemsInAmpSerialNumList = ItemsInList(AmpSerialNumList)
-
-	if(paramIsDefault(maxAttempts))
-		maxAttempts = inf
-	endif
+	variable maxAttempts = 3
 
 	if(paramIsDefault(AmpTitleList))
 		AmpTitleList = ""
