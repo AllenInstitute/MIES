@@ -1762,7 +1762,13 @@ static Function CONF_RestoreHeadstageAssociation(panelTitle, jsonID, midExp)
 		if(type == JSON_NULL)
 			continue
 		elseif(type == JSON_OBJECT)
-			ampSerialList = AddListItem(num2istr(JSON_GetVariable(jsonID, jsonHSPath + "/" + EXPCONFIG_JSON_AMPSERIAL)), ampSerialList)
+			ampSerial = JSON_GetVariable(jsonID, jsonHSPath + "/" + EXPCONFIG_JSON_AMPSERIAL)
+
+			if(IsNaN(ampSerial))
+				continue
+			endif
+
+			ampSerialList = AddListItem(num2istr(ampSerial), ampSerialList)
 			ampTitleList = AddListItem(JSON_GetString(jsonID, jsonHSPath + "/" + EXPCONFIG_JSON_AMPTITLE), ampTitleList)
 		else
 			ASSERT(0, "Unexpected entry for headstage data in Headstage Association block")
