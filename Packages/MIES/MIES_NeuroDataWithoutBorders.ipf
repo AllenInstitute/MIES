@@ -281,7 +281,8 @@ static Function NWB_AddDeviceSpecificData(locationID, panelTitle, nwbVersion, [c
 
 	path = "/general/labnotebook/" + panelTitle
 
-	IPNWB#H5_CreateGroupsRecursively(locationID, path, groupID=groupID)
+	IPNWB#H5_CreateGroupsRecursively(locationID, path)
+	groupID = IPNWB#H5_OpenGroup(locationID, path)
 
 	if(nwbVersion == 1)
 		IPNWB#MarkAsCustomEntry(locationID, "/general/labnotebook")
@@ -297,7 +298,8 @@ static Function NWB_AddDeviceSpecificData(locationID, panelTitle, nwbVersion, [c
 
 	path = "/general/user_comment/" + panelTitle
 
-	IPNWB#H5_CreateGroupsRecursively(locationID, path, groupID=groupID)
+	IPNWB#H5_CreateGroupsRecursively(locationID, path)
+	groupID = IPNWB#H5_OpenGroup(locationID, path)
 
 	if(nwbVersion == 1)
 		IPNWB#MarkAsCustomEntry(locationID, "/general/user_comment")
@@ -311,11 +313,13 @@ static Function NWB_AddDeviceSpecificData(locationID, panelTitle, nwbVersion, [c
 
 	path = "/general/testpulse/" + panelTitle
 
-	IPNWB#H5_CreateGroupsRecursively(locationID, path, groupID=groupID)
+	IPNWB#H5_CreateGroupsRecursively(locationID, path)
+	groupID = IPNWB#H5_OpenGroup(locationID, path)
 
 	if(nwbVersion == 1)
 		IPNWB#MarkAsCustomEntry(locationID, "/general/testpulse")
 	endif
+
 
 	DFREF dfr = GetDeviceTestPulse(panelTitle)
 	list = GetListOfObjects(dfr, TP_STORAGE_REGEXP)
@@ -1049,7 +1053,9 @@ static Function NWB_WriteStimsetCustomWave(locationID, custom_wave, compressionM
 
 	custom_wave_name = NameOfWave(custom_wave)
 
-	IPNWB#H5_CreateGroupsRecursively(locationID, pathInNWB, groupID = groupID)
+	IPNWB#H5_CreateGroupsRecursively(locationID, pathInNWB)
+	groupID = IPNWB#H5_OpenGroup(locationID, pathInNWB)
+
 	IPNWB#H5_WriteDataset(groupID, custom_wave_name, wv=custom_wave, compressionMode = compressionMode, overwrite=1, writeIgorAttr=1)
 
 	HDF5CloseGroup groupID
@@ -1061,9 +1067,11 @@ static Function NWB_WriteStimsetTemplateWaves(locationID, stimSet, compressionMo
 	variable compressionMode
 
 	variable groupID
-	string name
+	string name, path
 
-	IPNWB#H5_CreateGroupsRecursively(locationID, "/general/stimsets", groupID = groupID)
+	path = "/general/stimsets"
+	IPNWB#H5_CreateGroupsRecursively(locationID, path)
+	groupID = IPNWB#H5_OpenGroup(locationID, path)
 
 	// write the stim set parameter waves only if all three exist
 	if(WB_StimsetIsFromThirdParty(stimSet))
@@ -1526,7 +1534,8 @@ static Function NWB_AppendIgorHistory(nwbVersion, locationID)
 		name = "data_collection"
 	endif
 
-	IPNWB#H5_CreateGroupsRecursively(locationID, "/general", groupID=groupID)
+	groupID = IPNWB#H5_OpenGroup(locationID, "/general")
+	ASSERT(!IsNaN(groupID), "IPNWB#CreateCommonGroups() needs to be called prior to this call")
 	history = NormalizeToEOL(history, "\n")
 	IPNWB#H5_WriteTextDataset(groupID, name, str=history, compressionMode = IPNWB#GetChunkedCompression(), overwrite=1, writeIgorAttr=0)
 
