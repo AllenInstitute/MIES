@@ -1436,9 +1436,15 @@ static Function NWB_GetTimeSeriesProperties(p, tsp)
 			IPNWB#AddProperty(tsp, "capacitance_compensation", 0.0, unit = "F")
 		endif
 
-		NWB_AddSweepDataSets(numericalKeys, numericalValues, p.sweep, "AD Gain", "gain", p.electrodeNumber, tsp)
+		// PatchClampSeries
+		if(WhichListItem("PatchClampSeries", IPNWB#DetermineDataTypeRefTree(IPNWB#DetermineDataTypeFromProperties(p.channelType, p.clampMode))) != -1)
+			NWB_AddSweepDataSets(numericalKeys, numericalValues, p.sweep, "AD Gain", "gain", p.electrodeNumber, tsp)
+		endif
 	elseif(p.channelType == ITC_XOP_CHANNEL_TYPE_DAC)
-		NWB_AddSweepDataSets(numericalKeys, numericalValues, p.sweep, "DA Gain", "gain", p.electrodeNumber, tsp)
+		// PatchClampSeries
+		if(WhichListItem("PatchClampSeries", IPNWB#DetermineDataTypeRefTree(IPNWB#DetermineDataTypeFromProperties(p.channelType, p.clampMode))) != -1)
+			NWB_AddSweepDataSets(numericalKeys, numericalValues, p.sweep, "DA Gain", "gain", p.electrodeNumber, tsp)
+		endif
 
 		WAVE/Z values = GetLastSetting(numericalValues, p.sweep, STIMSET_SCALE_FACTOR_KEY, DATA_ACQUISITION_MODE)
 		if(WaveExists(values) || IsFinite(values[p.electrodeNumber]))
