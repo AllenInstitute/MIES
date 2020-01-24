@@ -1429,6 +1429,11 @@ static Function NWB_GetTimeSeriesProperties(p, tsp)
 			NWB_AddSweepDataSets(numericalKeys, numericalValues, p.sweep, "I-Clamp Holding Level", "bias_current", p.electrodeNumber, tsp, enabledProp="I-Clamp Holding Enable")
 			NWB_AddSweepDataSets(numericalKeys, numericalValues, p.sweep, "Bridge Bal Value", "bridge_balance", p.electrodeNumber, tsp, enabledProp="Bridge Bal Enable")
 			NWB_AddSweepDataSets(numericalKeys, numericalValues, p.sweep, "Neut Cap Value", "capacitance_compensation", p.electrodeNumber, tsp, enabledProp="Neut Cap Enabled")
+		elseif(p.clampMode == I_EQUAL_ZERO_MODE)
+			// IZeroClampSeries: datasets
+			IPNWB#AddProperty(tsp, "bias_current", 0.0, unit = "A")
+			IPNWB#AddProperty(tsp, "bridge_balance", 0.0, unit = "Ohm")
+			IPNWB#AddProperty(tsp, "capacitance_compensation", 0.0, unit = "F")
 		endif
 
 		NWB_AddSweepDataSets(numericalKeys, numericalValues, p.sweep, "AD Gain", "gain", p.electrodeNumber, tsp)
