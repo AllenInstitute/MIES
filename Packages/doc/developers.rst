@@ -223,8 +223,8 @@ Automatic release package building
    box with git for windows installed. This is ensured by a platform
    requirement for the job.
 
-Compilation testing (Igor Pro 7.x 64bit only)
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Compilation testing
+~~~~~~~~~~~~~~~~~~~
 
 The full MIES installation and the partial installations are IGOR Pro
 compiled using a bamboo job. This allows to catch compile time errors
@@ -235,7 +235,7 @@ early on. For testing compilation manually perform the following steps:
 -  Remove the shortcut ``Packages\MIES_Include.ipf`` in
    ``Igor Procedures``
 -  Close all Igor Pro instances
--  Execute ``tools\compilation-testing\check_mies_compilation.bat``
+-  Execute ``tools\unit-testing\check_mies_compilation.sh``
 -  Watch the output
 
 Unit testing
@@ -243,7 +243,7 @@ Unit testing
 
 One of the bamboo jobs is responsible for executing our unit tests. All
 tests must be written using the `Igor Unit Testing
-Framework <http://www.igorexchange.com/project/unitTesting>`__ and
+Framework <https://docs.byte-physics.de/igor-unit-testing-framework>`__ and
 referenced in the main test experiment located in
 ``tools\unit-testing\RunAllTests.pxp`` For executing the tests manually
 perform the followings steps:
@@ -261,9 +261,7 @@ Documentation building
 ~~~~~~~~~~~~~~~~~~~~~~
 
 The documentation for the master branch is automatically built and
-uploaded by
-`this <http://bamboo.corp.alleninstitute.org/browse/MIES-CM>`__ bamboo
-job.
+uploaded by `this <http://bamboo.corp.alleninstitute.org/browse/MIES-CM>`__ bamboo job.
 
 Setting up a continous integration server (Linux)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -274,31 +272,14 @@ Preliminaries
 -  Linux box with fixed IP
 -  Choose a user, here named ``john``, for running the tests.
 
-Enable remote access and auto login
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Enable SSH access
+^^^^^^^^^^^^^^^^^
 
--  Setup autologin into X for this user. E.g. for ``mdm`` add the
-   following lines to ``/etc/mdm/mdm.conf``:
-
-   .. code:: text
-
-       [daemon]
-       AutomaticLoginEnable=true
-       AutomaticLogin=john
-
--  Restart the PC and test that autologin works.
 -  Setup remote SSH access with public keys. On the client (your PC!)
-   try logging into using SSH. Enable port forwarding
-   (``local: 5900 to localhost:5900``).
--  ``apt-get install  gawk graphviz pandoc apache2 texlive-full tmux git x11vnc wget``.
+   try logging into using SSH.
+-  ``apt-get install python gawk graphviz pandoc texlive-full tmux git wget``.
 -  Checkout the mies repository
--  Copy the scripts ``tools/start*.sh`` to ``/home/john``.
--  Open a ssh terminal, execute ``~/start_x11vnc.sh`` and try connecting
-   to the remote X session using e.g. TightVNC and ``localhost:5900`` as
-   destination address.
--  Install Multi Clamp Commander from
-   `here <http://mdc.custhelp.com/app/answers/detail/a_id/20059/session/L2F2LzIvdGltZS8xNTIyMTU1MzY1L3NpZC9jc3NxKkZJbg%3D%3D>`__
-   via ``env WINEPREFIX=$HOME/.wine-igor wine MultiClamp_2_2_2.exe``
+-  Copy the scripts ``tools/start-bamboo-agent-linux*.sh`` to ``/home/john``.
 
 Install required software
 ^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -315,57 +296,70 @@ Install required software
 
 -  ``sudo apt-get update``
 -  ``sudo apt-get install wine openjdk-8-jre``
--  Download and install doxygen (version 1.8.12 or later) from
+-  Download and install doxygen (version 1.8.15 or later) from
    `here <http://www.doxygen.org>`__.
--  ``pip install -U breathe sphinx sphinxcontrib-fulltoc``
+-  ``pip install -r Packages\doc\requirements-doc.txt``
 -  Test if building the mies documentation works.
--  Install the script ``tools/mies_deploy_documentation.sh`` as
-   described in its file header comment.
-
-Install Igor Pro
-^^^^^^^^^^^^^^^^
-
--  Install Igor Pro 7 using wine as described
-   `here <http://www.igorexchange.com/node/1098#comment-12432>`__. The
-   last tested version was 7.01.
 
 Setup bamboo agent
 ^^^^^^^^^^^^^^^^^^
 
 -  ``wget http://bamboo.corp.alleninstitute.org/agentServer/agentInstaller/atlassian-bamboo-agent-installer-5.14.1.jar``
--  ``~/start_bamboo_agent.sh``
+-  ``~/start-bamboo-agent.sh``
 -  In the bamboo web app search the agents list and add the capability
-   ``Igor`` to the newly created agent.
+   ``Igor Pro (new)`` to the newly created agent.
 -  Add the line ``su -c /home/john/start_bamboo_agent_wrapper.sh john``
    to ``/etc/rc.local``. This ensures that the bamboo agent
    automatically starts after a reboot.
 -  Reboot the PC and check that ``tmux attach bamboo-agent`` opens an
    existing tmux session and that the bamboo agent is running.
 
-Bamboo jobs
-^^^^^^^^^^^
-
--  Add bamboo jobs requiring the capability ``Igor``.
--  Done!
-
 Setting up a continous integration server (Windows)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 -  Windows 10 with "Remote Desktop" enabled user
 -  Install the folllowing programs:
--  Java 8
--  Git (choose the installer option which will make the Unix tools
-   available in cmd as well)
--  Multiclamp Commander (see above for specifics)
--  NIDAQ-mx driver package 19.0 or later
--  NIDAQ-mx XOP from WaveMetrics
--  HEKA Harware Drivers 2014-03 Windows.zip
--  Igor Pro 7 and 8
--  Install bamboo remote agent according to
-   http://bamboo.corp.alleninstitute.org/admin/agent/addRemoteAgent.action.
+
+   -  Java 8
+   -  Git (choose the installer option which will make the Unix tools
+      available in cmd as well)
+   -  Multiclamp Commander (see above for specifics)
+   -  NIDAQ-mx driver package 19.0 or later
+   -  NIDAQ-mx XOP from WaveMetrics
+   -  HEKA Harware Drivers 2014-03 Windows.zip
+   -  Igor Pro 8 (and a possible nightly version on top of it)
+   -  Install bamboo remote agent according to
+      http://bamboo.corp.alleninstitute.org/admin/agent/addRemoteAgent.action.
+
 -  Start Igor Pro and open a DA\_Ephys panel, lock the device. This will
-   not work, so follow the posted suggestions to get it working.
--  Start the bamboo agent as normal user (not using the NT service)
--  Add a new "Igor Pro" style capability to the agent in bamboo
--  Be sure that the "git" capability and the "bash" capability are
+   not work, so follow the posted suggestions to get it working (registry fix and ASLR fix).
+-  Add a fitting ``Igor Pro (new)`` capability to the agent in bamboo.
+-  Make the agent dedicated to the ``MIES-Igor`` project.
+-  Be sure that the "git" capability and the "bash" executable capability are
    present as well
+-  Create the folder ``$HOME/.credentials`` and place the file ``github_api_token`` from an existing CI machine there
+-  Copy ``tools/start-bamboo-agent-windows.sh`` and ``tools/start-bamboo-agent-windows.bat`` to ``$HOME``
+-  Edit ``tools/start-bamboo-agent-windows.bat`` so that is points to the existing Git location
+-  Add shortcuts to ``$HOME/start-bamboo-agent-windows.bat`` and ``MC700B.exe`` into ``C:\Users\$User\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\Startup``
+
+Available CI servers
+~~~~~~~~~~~~~~~~~~~~
+
+Linux:
+
+- Used for documentation building only
+- No Hardware
+- No Igor Pro
+
+Windows 10 (1):
+
+- ITC-1600 hardware with one rack, 2 AD/DA channels are looped
+- NI PCIe-6343, 2 AD/DA channels are looped
+- MCC demo amplifier only
+- Latest required nightly version of Igor Pro 8
+
+Windows 10 (2):
+
+- ITC18-USB hardware, 2 AD/DA channels are looped
+- MCC demo amplifier only
+- Latest required nightly version of Igor Pro 8
