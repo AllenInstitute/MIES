@@ -584,7 +584,7 @@ Constant HARDWARE_DAC_EXTERNAL_TRIGGER = 0x1
 /// @}
 
 /// Used to upgrade the GuiStateWave as well as the DA Ephys panel
-Constant DA_EPHYS_PANEL_VERSION     = 45
+Constant DA_EPHYS_PANEL_VERSION     = 46
 Constant DATABROWSER_PANEL_VERSION  = 13
 Constant SWEEPBROWSER_PANEL_VERSION = 3
 Constant WAVEBUILDER_PANEL_VERSION  = 8
@@ -773,7 +773,6 @@ Constant DA_EPHYS_PANEL_PRESSURE_USER = 2
 ///@{
 Constant    EXPCONFIG_VERSION_NUM   = 1
 StrConstant USER_CONFIG_PATH        = "..:..:UserConfig.txt"
-Constant    ATTEMPTS                = 5
 StrConstant CONFIG_VERSION          = "Version"
 StrConstant SAVE_PATH               = "Save data to"
 StrConstant STIMSET_PATH            = "Load stim set from"

@@ -2858,6 +2858,8 @@ Window DA_Ephys() : Panel
 	Slider slider_DataAcq_ActiveHeadstage,pos={129.00,129.00},size={255.00,22.00},disable=1,proc=DAP_SliderProc_MIESHeadStage
 	Slider slider_DataAcq_ActiveHeadstage,userdata(tabnum)=  "0"
 	Slider slider_DataAcq_ActiveHeadstage,userdata(tabcontrol)=  "ADC"
+	Slider slider_DataAcq_ActiveHeadstage,userdata(Config_DontRestore)= "1"
+	Slider slider_DataAcq_ActiveHeadstage,userdata(Config_DontSave)= "1"
 	Slider slider_DataAcq_ActiveHeadstage,userdata(ResizeControlsInfo)= A"!!,Ff!!#@e!!#B9!!#<Xz!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	Slider slider_DataAcq_ActiveHeadstage,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Duafnzzzzzzzzzzz"
 	Slider slider_DataAcq_ActiveHeadstage,userdata(ResizeControlsInfo) += A"zzz!!#u:Duafnzzzzzzzzzzzzzz!!!"

@@ -148,6 +148,7 @@ static StrConstant EXPCONFIG_SETTINGS_AMPTITLE = "0,1;2,3;4,5;6,7"
 static StrConstant EXPCONFIG_JSON_HSASSOCBLOCK = "Headstage Association"
 static StrConstant EXPCONFIG_JSON_AMPSERIAL = "Amplifier Serial"
 static StrConstant EXPCONFIG_JSON_AMPTITLE = "Amplifier Title"
+static StrConstant EXPCONFIG_JSON_AMPCHANNEL = "Amplifier Channel"
 static StrConstant EXPCONFIG_JSON_AMPVCDA = "VC DA"
 static StrConstant EXPCONFIG_JSON_AMPVCAD = "VC AD"
 static StrConstant EXPCONFIG_JSON_AMPICDA = "IC DA"
@@ -1703,8 +1704,10 @@ static Function CONF_GetHeadstageAssociation(panelTitle)
 			DAP_ParseAmplifierDef(amplifierDef, ampSerial, ampChannelID)
 			if(IsFinite(ampSerial) && IsFinite(ampChannelID))
 				JSON_AddVariable(jsonID, jsonPath + EXPCONFIG_JSON_AMPSERIAL, ampSerial)
+				JSON_AddVariable(jsonID, jsonPath + EXPCONFIG_JSON_AMPCHANNEL, ampChannelID)
 			else
 				JSON_AddNull(jsonID, jsonPath + EXPCONFIG_JSON_AMPSERIAL)
+				JSON_AddNull(jsonID, jsonPath + EXPCONFIG_JSON_AMPCHANNEL)
 			endif
 			JSON_AddString(jsonID, jsonPath + EXPCONFIG_JSON_AMPTITLE, StringFromList(trunc(i / 2), EXPCONFIG_SETTINGS_AMPTITLE))
 
@@ -1743,7 +1746,7 @@ static Function CONF_RestoreHeadstageAssociation(panelTitle, jsonID, midExp)
 	string panelTitle
 	variable jsonID, midExp
 
-	variable i, type, numRows, ampSerial, ampIndex, index, value
+	variable i, type, numRows, ampSerial, ampChannel, index, value
 	string jsonPath, jsonHSPath, winPositionMCC
 	string ampSerialList = ""
 	string ampTitleList = ""
@@ -1759,7 +1762,13 @@ static Function CONF_RestoreHeadstageAssociation(panelTitle, jsonID, midExp)
 		if(type == JSON_NULL)
 			continue
 		elseif(type == JSON_OBJECT)
-			ampSerialList = AddListItem(num2istr(JSON_GetVariable(jsonID, jsonHSPath + "/" + EXPCONFIG_JSON_AMPSERIAL)), ampSerialList)
+			ampSerial = JSON_GetVariable(jsonID, jsonHSPath + "/" + EXPCONFIG_JSON_AMPSERIAL)
+
+			if(IsNaN(ampSerial))
+				continue
+			endif
+
+			ampSerialList = AddListItem(num2istr(ampSerial), ampSerialList)
 			ampTitleList = AddListItem(JSON_GetString(jsonID, jsonHSPath + "/" + EXPCONFIG_JSON_AMPTITLE), ampTitleList)
 		else
 			ASSERT(0, "Unexpected entry for headstage data in Headstage Association block")
@@ -1769,7 +1778,7 @@ static Function CONF_RestoreHeadstageAssociation(panelTitle, jsonID, midExp)
 	WAVE telegraphServers = GetAmplifierTelegraphServers()
 	numRows = DimSize(telegraphServers, ROWS)
 	if(!numRows)
-		Assert(AI_OpenMCCs(ampSerialList, ampTitleList = ampTitleList, maxAttempts = ATTEMPTS), "Evil kittens prevented MultiClamp from opening - FULL STOP" )
+		Assert(AI_OpenMCCs(ampSerialList, ampTitleList = ampTitleList), "Evil kittens prevented MultiClamp from opening - FULL STOP" )
 	endif
 
 	winPositionMCC = CONF_GetStringFromSettings(jsonID, POSITION_MCC)
@@ -1779,8 +1788,6 @@ static Function CONF_RestoreHeadstageAssociation(panelTitle, jsonID, midExp)
 
 	PGC_SetAndActivateControl(panelTitle, "button_Settings_UpdateAmpStatus")
 	PGC_SetAndActivateControl(panelTitle, "button_Settings_UpdateDACList")
-
-	Make/FREE/U/I/N=(ItemsInList(ampSerialList)) ampIDTracker = 1
 
 	for(i = 0; i < NUM_HEADSTAGES; i += 1)
 		jsonHSPath = jsonPath + num2istr(i)
@@ -1793,11 +1800,9 @@ static Function CONF_RestoreHeadstageAssociation(panelTitle, jsonID, midExp)
 			PGC_SetAndActivateControl(panelTitle, "popup_Settings_Pressure_dev", str = NONE)
 		elseif(type == JSON_OBJECT)
 			ampSerial = JSON_GetVariable(jsonID, jsonHSPath + EXPCONFIG_JSON_AMPSERIAL)
-			if(IsFinite(ampSerial))
-				ampIndex = WhichListItem(num2istr(ampSerial), ampSerialList)
-				ASSERT(ampIDTracker[ampIndex] <= 2, "More than two headstages are configured for the same amplifier serial.")
-				PGC_SetAndActivateControl(panelTitle, "popup_Settings_Amplifier", val = CONF_FindAmpInList(ampSerial, ampIDTracker[ampIndex]))
-				ampIDTracker[ampIndex] += 1
+			ampChannel = JSON_GetVariable(jsonID, jsonHSPath + EXPCONFIG_JSON_AMPCHANNEL)
+			if(IsFinite(ampSerial) && IsFinite(ampChannel))
+				PGC_SetAndActivateControl(panelTitle, "popup_Settings_Amplifier", val = CONF_FindAmpInList(ampSerial, ampChannel))
 			endif
 			PGC_SetAndActivateControl(panelTitle, "Popup_Settings_VC_DA", val = JSON_GetVariable(jsonID, jsonHSPath + EXPCONFIG_JSON_AMPVCDA))
 			PGC_SetAndActivateControl(panelTitle, "Popup_Settings_VC_AD", val = JSON_GetVariable(jsonID, jsonHSPath + EXPCONFIG_JSON_AMPVCAD))
