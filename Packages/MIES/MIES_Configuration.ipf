@@ -91,10 +91,6 @@
 /// - Only most relevant data of a control is saved.
 ///******************************************************************************************************************************
 
-#if exists("MCC_GetMode") && exists("AxonTelegraphGetDataStruct")
-#define AMPLIFIER_XOPS_PRESENT
-#endif
-
 static StrConstant EXPCONFIG_FIELD_CTRLTYPE = "Type"
 static StrConstant EXPCONFIG_FIELD_CTRLVVALUE = "NumValue"
 static StrConstant EXPCONFIG_FIELD_CTRLSVALUE = "StrValue"
@@ -144,30 +140,63 @@ static StrConstant EXPCONFIG_EXCLUDE_CTRLTYPES = "12;9;10;"
 
 static StrConstant EXPCONFIG_SETTINGS_AMPTITLE = "0,1;2,3;4,5;6,7"
 
-
 static StrConstant EXPCONFIG_JSON_HSASSOCBLOCK = "Headstage Association"
-static StrConstant EXPCONFIG_JSON_AMPSERIAL = "Amplifier Serial"
-static StrConstant EXPCONFIG_JSON_AMPTITLE = "Amplifier Title"
-static StrConstant EXPCONFIG_JSON_AMPCHANNEL = "Amplifier Channel"
-static StrConstant EXPCONFIG_JSON_AMPVCDA = "VC DA"
-static StrConstant EXPCONFIG_JSON_AMPVCAD = "VC AD"
-static StrConstant EXPCONFIG_JSON_AMPICDA = "IC DA"
-static StrConstant EXPCONFIG_JSON_AMPICAD = "IC AD"
-static StrConstant EXPCONFIG_JSON_PRESSDEV = "Pressure Device"
-static StrConstant EXPCONFIG_JSON_PRESSDA = "Pressure DA"
-static StrConstant EXPCONFIG_JSON_PRESSAD = "Pressure AD"
-static StrConstant EXPCONFIG_JSON_PRESSDAGAIN = "Pressure DA Gain"
-static StrConstant EXPCONFIG_JSON_PRESSADGAIN = "Pressure AD Gain"
-static StrConstant EXPCONFIG_JSON_PRESSDAUNIT = "Pressure DA Unit"
-static StrConstant EXPCONFIG_JSON_PRESSADUNIT = "Pressure AD Unit"
-static StrConstant EXPCONFIG_JSON_PRESSTTLA = "Pressure TTLA"
-static StrConstant EXPCONFIG_JSON_PRESSTTLB = "Pressure TTLB"
-static StrConstant EXPCONFIG_JSON_PRESSCONSTNEG = "Pressure Constant Negative"
-static StrConstant EXPCONFIG_JSON_PRESSCONSTPOS = "Pressure Constant Positive"
+static StrConstant EXPCONFIG_JSON_AMPBLOCK = "Amplifier"
+static StrConstant EXPCONFIG_JSON_ICBLOCK = "IC"
+static StrConstant EXPCONFIG_JSON_VCBLOCK = "VC"
+static StrConstant EXPCONFIG_JSON_PRESSUREBLOCK = "Pressure"
+static StrConstant EXPCONFIG_JSON_AMPSERIAL = "Serial"
+static StrConstant EXPCONFIG_JSON_AMPTITLE = "Title"
+static StrConstant EXPCONFIG_JSON_AMPCHANNEL = "Channel"
+static StrConstant EXPCONFIG_JSON_AMPVCDA = "DA"
+static StrConstant EXPCONFIG_JSON_AMPVCAD = "AD"
+static StrConstant EXPCONFIG_JSON_AMPICDA = "DA"
+static StrConstant EXPCONFIG_JSON_AMPICAD = "AD"
+static StrConstant EXPCONFIG_JSON_PRESSDEV = "Device"
+static StrConstant EXPCONFIG_JSON_PRESSDA = "DA"
+static StrConstant EXPCONFIG_JSON_PRESSAD = "AD"
+static StrConstant EXPCONFIG_JSON_PRESSDAGAIN = "DA Gain"
+static StrConstant EXPCONFIG_JSON_PRESSADGAIN = "AD Gain"
+static StrConstant EXPCONFIG_JSON_PRESSDAUNIT = "DA Unit"
+static StrConstant EXPCONFIG_JSON_PRESSADUNIT = "AD Unit"
+static StrConstant EXPCONFIG_JSON_PRESSTTLA = "TTLA"
+static StrConstant EXPCONFIG_JSON_PRESSTTLB = "TTLB"
+static StrConstant EXPCONFIG_JSON_PRESSCONSTNEG = "Constant Negative"
+static StrConstant EXPCONFIG_JSON_PRESSCONSTPOS = "Constant Positive"
 
 static StrConstant EXPCONFIG_JSON_USERPRESSBLOCK = "User Pressure Devices"
 static StrConstant EXPCONFIG_JSON_USERPRESSDEV = "DAC Device"
-static StrConstant EXPCONFIG_JSON_USERPRESSDA = "Pressure DA"
+static StrConstant EXPCONFIG_JSON_USERPRESSDA = "DA"
+
+static StrConstant EXPCONFIG_JSON_AMP_HOLD_VC = "Holding"
+static StrConstant EXPCONFIG_JSON_AMP_HOLD_ENABLE_VC = "Holding Enable"
+
+static StrConstant EXPCONFIG_JSON_AMP_PIPETTE_OFFSET_VC = "Pipette Offset"
+
+static StrConstant EXPCONFIG_JSON_AMP_WHOLE_CELL_CAPACITANCE = "Whole Cell Capacitance"
+static StrConstant EXPCONFIG_JSON_AMP_WHOLE_CELL_RESISTANCE = "Whole Cell Resistance"
+static StrConstant EXPCONFIG_JSON_AMP_WHOLE_CELL_ENABLE = "Whole Cell Enable"
+
+static StrConstant EXPCONFIG_JSON_AMP_RS_COMP_CORRECTION = "RS Compensation Correction"
+static StrConstant EXPCONFIG_JSON_AMP_RS_COMP_PREDICTION = "RS Compensation Prediction"
+static StrConstant EXPCONFIG_JSON_AMP_RS_COMP_ENABLE = "RS Compensation Enable"
+static StrConstant EXPCONFIG_JSON_AMP_COMP_CHAIN = "RS Compensation Chain"
+
+static StrConstant EXPCONFIG_JSON_AMP_HOLD_IC = "Holding"
+static StrConstant EXPCONFIG_JSON_AMP_HOLD_ENABLE_IC = "Holding Enable"
+
+static StrConstant EXPCONFIG_JSON_AMP_BRIDGE_BALANCE = "Bridge Balance"
+static StrConstant EXPCONFIG_JSON_AMP_BRIDGE_BALANCE_ENABLE = "Bridge Balance Enable"
+
+static StrConstant EXPCONFIG_JSON_AMP_CAP_NEUTRALIZATION = "Capacitance Neutralization"
+static StrConstant EXPCONFIG_JSON_AMP_CAP_NEUTRALIZATION_ENABLE = "Capacitance Neutralization Enable"
+
+static StrConstant EXPCONFIG_JSON_AMP_AUTOBIAS_V = "Autobias Voltage"
+static StrConstant EXPCONFIG_JSON_AMP_AUTOBIAS_V_RANGE = "Autobias Voltage Range"
+static StrConstant EXPCONFIG_JSON_AMP_AUTOBIAS_I_BIAS_MAX = "Autobias Current Max"
+static StrConstant EXPCONFIG_JSON_AMP_AUTOBIAS = "Autobias Enable"
+
+static StrConstant EXPCONFIG_JSON_AMP_PIPETTE_OFFSET_IC = "Pipette Offset"
 
 static StrConstant EXPCONFIG_RIGFILESUFFIX = "_rig.json"
 
@@ -385,7 +414,7 @@ static Function CONF_SaveDAEphys(fName)
 		jsonID = CONF_AllWindowsToJSON(wName, saveMask, excCtrlTypes = DAEPHYS_EXCLUDE_CTRLTYPES)
 
 		JSON_SetJSON(jsonID, EXPCONFIG_RESERVED_DATABLOCK, CONF_DefaultSettings())
-		JSON_SetJSON(jsonID, EXPCONFIG_RESERVED_DATABLOCK + "/" + EXPCONFIG_JSON_HSASSOCBLOCK, CONF_GetHeadstageAssociation(wName))
+		JSON_SetJSON(jsonID, EXPCONFIG_RESERVED_DATABLOCK + "/" + EXPCONFIG_JSON_HSASSOCBLOCK, CONF_GetAmplifierSettings(wName))
 		JSON_SetJSON(jsonID, EXPCONFIG_RESERVED_DATABLOCK + "/" + EXPCONFIG_JSON_USERPRESSBLOCK, CONF_GetUserPressure(wName))
 
 		out = JSON_Dump(jsonID, indent = EXPCONFIG_JSON_INDENT)
@@ -1680,64 +1709,6 @@ static Function CONF_ControlToJSON(wName, ctrlName, saveMask, jsonID, excCtrlTyp
 	endif
 End
 
-/// @brief Retrieves current Headstage Association settings (amplifiers, pressure) )to json
-/// @param[in] panelTitle panel title of DA_Ephys panel
-/// @returns jsonID ID of json object with Headstage Association configuration data
-static Function CONF_GetHeadstageAssociation(panelTitle)
-	string panelTitle
-
-	variable i, jsonID, ampSerial, ampChannelID, index
-	string ctrl, amplifierDef, jsonPath, popupStr
-
-	jsonID = JSON_New()
-
-	for(i = 0; i < NUM_HEADSTAGES; i += 1)
-		jsonPath = num2istr(i)
-		ctrl = GetPanelControl(i, CHANNEL_TYPE_HEADSTAGE, CHANNEL_CONTROL_CHECK)
-		if(GetCheckBoxState(panelTitle, ctrl))
-
-			JSON_AddTreeObject(jsonID, jsonPath)
-			jsonPath = jsonPath + "/"
-			PGC_SetAndActivateControl(panelTitle,"Popup_Settings_HeadStage", val = i)
-
-			amplifierDef = GetPopupMenuString(panelTitle, "popup_Settings_Amplifier")
-			DAP_ParseAmplifierDef(amplifierDef, ampSerial, ampChannelID)
-			if(IsFinite(ampSerial) && IsFinite(ampChannelID))
-				JSON_AddVariable(jsonID, jsonPath + EXPCONFIG_JSON_AMPSERIAL, ampSerial)
-				JSON_AddVariable(jsonID, jsonPath + EXPCONFIG_JSON_AMPCHANNEL, ampChannelID)
-			else
-				JSON_AddNull(jsonID, jsonPath + EXPCONFIG_JSON_AMPSERIAL)
-				JSON_AddNull(jsonID, jsonPath + EXPCONFIG_JSON_AMPCHANNEL)
-			endif
-			JSON_AddString(jsonID, jsonPath + EXPCONFIG_JSON_AMPTITLE, StringFromList(trunc(i / 2), EXPCONFIG_SETTINGS_AMPTITLE))
-
-			JSON_AddVariable(jsonID, jsonPath + EXPCONFIG_JSON_AMPVCDA, str2num(GetPopupMenuString(panelTitle, "Popup_Settings_VC_DA")))
-			JSON_AddVariable(jsonID, jsonPath + EXPCONFIG_JSON_AMPVCAD, str2num(GetPopupMenuString(panelTitle, "Popup_Settings_VC_AD")))
-			JSON_AddVariable(jsonID, jsonPath + EXPCONFIG_JSON_AMPICDA, str2num(GetPopupMenuString(panelTitle, "Popup_Settings_IC_DA")))
-			JSON_AddVariable(jsonID, jsonPath + EXPCONFIG_JSON_AMPICAD, str2num(GetPopupMenuString(panelTitle, "Popup_Settings_IC_AD")))
-
-			JSON_AddString(jsonID, jsonPath + EXPCONFIG_JSON_PRESSDEV, GetPopupMenuString(panelTitle, "popup_Settings_Pressure_dev"))
-			JSON_AddVariable(jsonID, jsonPath + EXPCONFIG_JSON_PRESSDA, str2num(GetPopupMenuString(panelTitle, "Popup_Settings_Pressure_DA")))
-			JSON_AddVariable(jsonID, jsonPath + EXPCONFIG_JSON_PRESSAD, str2num(GetPopupMenuString(panelTitle, "Popup_Settings_Pressure_AD")))
-			JSON_AddVariable(jsonID, jsonPath + EXPCONFIG_JSON_PRESSDAGAIN, GetSetVariable(panelTitle, "setvar_Settings_Pressure_DAgain"))
-			JSON_AddVariable(jsonID, jsonPath + EXPCONFIG_JSON_PRESSADGAIN, GetSetVariable(panelTitle, "setvar_Settings_Pressure_ADgain"))
-			JSON_AddString(jsonID, jsonPath + EXPCONFIG_JSON_PRESSDAUNIT, GetSetVariableString(panelTitle, "SetVar_Hardware_Pressur_DA_Unit"))
-			JSON_AddString(jsonID, jsonPath + EXPCONFIG_JSON_PRESSADUNIT, GetSetVariableString(panelTitle, "SetVar_Hardware_Pressur_AD_Unit"))
-			JSON_AddVariable(jsonID, jsonPath + EXPCONFIG_JSON_PRESSTTLA, str2numsafe(GetPopupMenuString(panelTitle, "Popup_Settings_Pressure_TTLA")))
-			JSON_AddVariable(jsonID, jsonPath + EXPCONFIG_JSON_PRESSTTLB, str2numsafe(GetPopupMenuString(panelTitle, "Popup_Settings_Pressure_TTLB")))
-			WAVE pressureDataWv = P_GetPressureDataWaveRef(panelTitle)
-			index = FindDimLabel(pressureDataWv, ROWS, "headStage_" + num2str(i))
-			JSON_AddVariable(jsonID, jsonPath + EXPCONFIG_JSON_PRESSCONSTNEG, pressureDataWv[index][%NegCalConst])
-			JSON_AddVariable(jsonID, jsonPath + EXPCONFIG_JSON_PRESSCONSTPOS, pressureDataWv[index][%PosCalConst])
-
-		else
-			JSON_AddNull(jsonID, jsonPath)
-		endif
-	endfor
-
-	return jsonID
-End
-
 /// @brief Opens MCCs and restores Headstage Association from configuration data to DA_Ephys panel
 /// @param[in] panelTitle panel title of DA_Ephys panel
 /// @param[in] jsonID ID of json object with configuration data
@@ -1747,7 +1718,7 @@ static Function CONF_RestoreHeadstageAssociation(panelTitle, jsonID, midExp)
 	variable jsonID, midExp
 
 	variable i, type, numRows, ampSerial, ampChannel, index, value
-	string jsonPath, jsonHSPath, jsonBasePath
+	string jsonPath, jsonBasePath
 	string ampSerialList = ""
 	string ampTitleList = ""
 
@@ -1755,21 +1726,23 @@ static Function CONF_RestoreHeadstageAssociation(panelTitle, jsonID, midExp)
 	WAVE/T keys = JSON_GetKeys(jsonID, EXPCONFIG_RESERVED_DATABLOCK)
 	FindValue/TXOP=4/TEXT=EXPCONFIG_JSON_HSASSOCBLOCK keys
 	ASSERT(V_Value >= 0, "Headstage Association block not found in configuration.")
-	jsonPath = EXPCONFIG_RESERVED_DATABLOCK + "/" + EXPCONFIG_JSON_HSASSOCBLOCK + "/"
+
 	for(i = 0; i < NUM_HEADSTAGES; i += 1)
-		jsonHSPath = jsonPath + num2istr(i)
-		type = JSON_GetType(jsonID, jsonHSPath)
+		jsonBasePath = EXPCONFIG_RESERVED_DATABLOCK + "/" + EXPCONFIG_JSON_HSASSOCBLOCK + "/" + num2istr(i)
+		jsonPath = jsonBasePath
+		type = JSON_GetType(jsonID, jsonPath)
 		if(type == JSON_NULL)
 			continue
 		elseif(type == JSON_OBJECT)
-			ampSerial = JSON_GetVariable(jsonID, jsonHSPath + "/" + EXPCONFIG_JSON_AMPSERIAL)
+			jsonPath = jsonBasePath  + "/" + EXPCONFIG_JSON_AMPBLOCK
+			ampSerial = JSON_GetVariable(jsonID, jsonPath + "/" + EXPCONFIG_JSON_AMPSERIAL)
 
 			if(IsNaN(ampSerial))
 				continue
 			endif
 
 			ampSerialList = AddListItem(num2istr(ampSerial), ampSerialList)
-			ampTitleList = AddListItem(JSON_GetString(jsonID, jsonHSPath + "/" + EXPCONFIG_JSON_AMPTITLE), ampTitleList)
+			ampTitleList = AddListItem(JSON_GetString(jsonID, jsonPath + "/" + EXPCONFIG_JSON_AMPTITLE), ampTitleList)
 		else
 			ASSERT(0, "Unexpected entry for headstage data in Headstage Association block")
 		endif
@@ -1787,40 +1760,47 @@ static Function CONF_RestoreHeadstageAssociation(panelTitle, jsonID, midExp)
 	PGC_SetAndActivateControl(panelTitle, "button_Settings_UpdateDACList")
 
 	for(i = 0; i < NUM_HEADSTAGES; i += 1)
-		jsonHSPath = jsonPath + num2istr(i)
 		PGC_SetAndActivateControl(panelTitle, "Popup_Settings_HeadStage", val = i)
 
-		type = JSON_GetType(jsonID, jsonHSPath)
-		jsonHSPath = jsonHSPath + "/"
+		jsonBasePath = EXPCONFIG_RESERVED_DATABLOCK + "/" + EXPCONFIG_JSON_HSASSOCBLOCK + "/" + num2istr(i)
+		jsonPath = jsonBasePath
+		type = JSON_GetType(jsonID, jsonPath)
+
 		if(type == JSON_NULL)
 			PGC_SetAndActivateControl(panelTitle, "popup_Settings_Amplifier", str = NONE)
 			PGC_SetAndActivateControl(panelTitle, "popup_Settings_Pressure_dev", str = NONE)
 		elseif(type == JSON_OBJECT)
-			ampSerial = JSON_GetVariable(jsonID, jsonHSPath + EXPCONFIG_JSON_AMPSERIAL)
-			ampChannel = JSON_GetVariable(jsonID, jsonHSPath + EXPCONFIG_JSON_AMPCHANNEL)
+			jsonPath = jsonBasePath + "/" + EXPCONFIG_JSON_AMPBLOCK
+			ampSerial = JSON_GetVariable(jsonID, jsonPath + "/" + EXPCONFIG_JSON_AMPSERIAL)
+			ampChannel = JSON_GetVariable(jsonID, jsonPath + "/" + EXPCONFIG_JSON_AMPCHANNEL)
 			if(IsFinite(ampSerial) && IsFinite(ampChannel))
 				PGC_SetAndActivateControl(panelTitle, "popup_Settings_Amplifier", val = CONF_FindAmpInList(ampSerial, ampChannel))
 			endif
-			PGC_SetAndActivateControl(panelTitle, "Popup_Settings_VC_DA", val = JSON_GetVariable(jsonID, jsonHSPath + EXPCONFIG_JSON_AMPVCDA))
-			PGC_SetAndActivateControl(panelTitle, "Popup_Settings_VC_AD", val = JSON_GetVariable(jsonID, jsonHSPath + EXPCONFIG_JSON_AMPVCAD))
-			PGC_SetAndActivateControl(panelTitle, "Popup_Settings_IC_DA", val = JSON_GetVariable(jsonID, jsonHSPath + EXPCONFIG_JSON_AMPICDA))
-			PGC_SetAndActivateControl(panelTitle, "Popup_Settings_IC_AD", val = JSON_GetVariable(jsonID, jsonHSPath + EXPCONFIG_JSON_AMPICAD))
+
+			jsonPath = jsonBasePath + "/" + EXPCONFIG_JSON_AMPBLOCK + "/" + EXPCONFIG_JSON_VCBLOCK + "/"
+			PGC_SetAndActivateControl(panelTitle, "Popup_Settings_VC_DA", val = JSON_GetVariable(jsonID, jsonPath + EXPCONFIG_JSON_AMPVCDA))
+			PGC_SetAndActivateControl(panelTitle, "Popup_Settings_VC_AD", val = JSON_GetVariable(jsonID, jsonPath + EXPCONFIG_JSON_AMPVCAD))
+
+			jsonPath = jsonBasePath + "/" + EXPCONFIG_JSON_AMPBLOCK + "/" + EXPCONFIG_JSON_ICBLOCK + "/"
+			PGC_SetAndActivateControl(panelTitle, "Popup_Settings_IC_DA", val = JSON_GetVariable(jsonID, jsonPath + EXPCONFIG_JSON_AMPICDA))
+			PGC_SetAndActivateControl(panelTitle, "Popup_Settings_IC_AD", val = JSON_GetVariable(jsonID, jsonPath + EXPCONFIG_JSON_AMPICAD))
 			PGC_SetAndActivateControl(panelTitle,"button_Hardware_AutoGainAndUnit")
 
-			PGC_SetAndActivateControl(panelTitle, "popup_Settings_Pressure_dev", str = JSON_GetString(jsonID, jsonHSPath + EXPCONFIG_JSON_PRESSDEV))
-			PGC_SetAndActivateControl(panelTitle, "Popup_Settings_Pressure_DA", val = JSON_GetVariable(jsonID, jsonHSPath + EXPCONFIG_JSON_PRESSDA))
-			PGC_SetAndActivateControl(panelTitle, "Popup_Settings_Pressure_AD", val = JSON_GetVariable(jsonID, jsonHSPath + EXPCONFIG_JSON_PRESSAD))
-			PGC_SetAndActivateControl(panelTitle, "setvar_Settings_Pressure_DAgain", val = JSON_GetVariable(jsonID, jsonHSPath + EXPCONFIG_JSON_PRESSDAGAIN))
-			PGC_SetAndActivateControl(panelTitle, "setvar_Settings_Pressure_ADgain", val = JSON_GetVariable(jsonID, jsonHSPath + EXPCONFIG_JSON_PRESSADGAIN))
-			PGC_SetAndActivateControl(panelTitle, "SetVar_Hardware_Pressur_DA_Unit", str = JSON_GetString(jsonID, jsonHSPath + EXPCONFIG_JSON_PRESSDAUNIT))
-			PGC_SetAndActivateControl(panelTitle, "SetVar_Hardware_Pressur_AD_Unit", str = JSON_GetString(jsonID, jsonHSPath + EXPCONFIG_JSON_PRESSADUNIT))
-			value = JSON_GetVariable(jsonID, jsonHSPath + EXPCONFIG_JSON_PRESSTTLA)
+			jsonPath = jsonBasePath + "/" + EXPCONFIG_JSON_PRESSUREBLOCK + "/"
+			PGC_SetAndActivateControl(panelTitle, "popup_Settings_Pressure_dev", str = JSON_GetString(jsonID, jsonPath + EXPCONFIG_JSON_PRESSDEV))
+			PGC_SetAndActivateControl(panelTitle, "Popup_Settings_Pressure_DA", val = JSON_GetVariable(jsonID, jsonPath + EXPCONFIG_JSON_PRESSDA))
+			PGC_SetAndActivateControl(panelTitle, "Popup_Settings_Pressure_AD", val = JSON_GetVariable(jsonID, jsonPath + EXPCONFIG_JSON_PRESSAD))
+			PGC_SetAndActivateControl(panelTitle, "setvar_Settings_Pressure_DAgain", val = JSON_GetVariable(jsonID, jsonPath + EXPCONFIG_JSON_PRESSDAGAIN))
+			PGC_SetAndActivateControl(panelTitle, "setvar_Settings_Pressure_ADgain", val = JSON_GetVariable(jsonID, jsonPath + EXPCONFIG_JSON_PRESSADGAIN))
+			PGC_SetAndActivateControl(panelTitle, "SetVar_Hardware_Pressur_DA_Unit", str = JSON_GetString(jsonID, jsonPath + EXPCONFIG_JSON_PRESSDAUNIT))
+			PGC_SetAndActivateControl(panelTitle, "SetVar_Hardware_Pressur_AD_Unit", str = JSON_GetString(jsonID, jsonPath + EXPCONFIG_JSON_PRESSADUNIT))
+			value = JSON_GetVariable(jsonID, jsonPath + EXPCONFIG_JSON_PRESSTTLA)
 			if(IsNaN(value))
 				PGC_SetAndActivateControl(panelTitle, "Popup_Settings_Pressure_TTLA", str = NONE)
 			else
 				PGC_SetAndActivateControl(panelTitle, "Popup_Settings_Pressure_TTLA", str = num2istr(value))
 			endif
-			value = JSON_GetVariable(jsonID, jsonHSPath + EXPCONFIG_JSON_PRESSTTLB)
+			value = JSON_GetVariable(jsonID, jsonPath + EXPCONFIG_JSON_PRESSTTLB)
 			if(IsNaN(value))
 				PGC_SetAndActivateControl(panelTitle, "Popup_Settings_Pressure_TTLB", str = NONE)
 			else
@@ -1828,12 +1808,12 @@ static Function CONF_RestoreHeadstageAssociation(panelTitle, jsonID, midExp)
 			endif
 			WAVE pressureDataWv = P_GetPressureDataWaveRef(panelTitle)
 			index = FindDimLabel(pressureDataWv, ROWS, "headStage_" + num2str(i))
-			pressureDataWv[index][%NegCalConst] = JSON_GetVariable(jsonID, jsonHSPath + EXPCONFIG_JSON_PRESSCONSTNEG)
-			pressureDataWv[index][%PosCalConst] = JSON_GetVariable(jsonID, jsonHSPath + EXPCONFIG_JSON_PRESSCONSTPOS)
+			pressureDataWv[index][%NegCalConst] = JSON_GetVariable(jsonID, jsonPath + EXPCONFIG_JSON_PRESSCONSTNEG)
+			pressureDataWv[index][%PosCalConst] = JSON_GetVariable(jsonID, jsonPath + EXPCONFIG_JSON_PRESSCONSTPOS)
 
 			if(IsFinite(ampSerial))
 				if(!midExp)
-					CONF_MCC_InitParams(panelTitle, i)
+					CONF_RestoreAmplifierSettings(panelTitle, i, jsonID, jsonBasePath)
 				else
 					CONF_MCC_MidExp(panelTitle, i, jsonID)
 				endif
@@ -1879,71 +1859,192 @@ static Function CONF_RestoreUserPressure(panelTitle, jsonID)
 	PGC_SetAndActivateControl(panelTitle, "button_Hardware_PUser_Enable")
 End
 
-
-#ifdef AMPLIFIER_XOPS_PRESENT
-
-/// @brief Intiate MCC parameters for active headstages
+/// @brief Retrieves current amplifier and pressure settings to json
 ///
-/// @param panelTitle ITC device panel
-/// @param headStage  MIES headstage number, must be in the range [0, NUM_HEADSTAGES]
-static Function CONF_MCC_InitParams(panelTitle, headStage)
+/// @param[in] panelTitle ITC device panel
+/// @returns jsonID ID of json object with user pressure configuration data
+static Function CONF_GetAmplifierSettings(panelTitle)
 	string panelTitle
-	variable headStage
+
+	variable jsonID, i, clampMode, ampSerial, ampChannelID, index
+	string jsonPath, amplifierDef, basePath
+
+	jsonID = JSON_New()
+
+	WAVE chanAmpAssign = GetChanAmpAssign(panelTitle)
+
+	WAVE statusHS = DAG_GetChannelState(panelTitle, CHANNEL_TYPE_HEADSTAGE)
+
+	for(i = 0; i < NUM_HEADSTAGES; i += 1)
+
+		basePath = num2istr(i)
+
+		if(!statusHS[i])
+			JSON_AddNull(jsonID, basePath)
+			continue
+		endif
+
+		PGC_SetAndActivateControl(panelTitle, "Popup_Settings_HeadStage", val = i)
+
+		clampMode = DAG_GetHeadstageMode(panelTitle, i)
+
+		jsonPath = basePath + "/" + EXPCONFIG_JSON_AMPBLOCK
+		JSON_AddTreeObject(jsonID, jsonPath)
+		jsonPath += "/"
+
+		ampSerial    = ChanAmpAssign[%AmpSerialNo][i]
+		ampChannelID = ChanAmpAssign[%AmpChannelID][i]
+		JSON_AddString(jsonID, jsonPath + EXPCONFIG_JSON_AMPTITLE, StringFromList(trunc(i / 2), EXPCONFIG_SETTINGS_AMPTITLE))
+
+		if(IsFinite(ampSerial) && IsFinite(ampChannelID))
+
+			JSON_AddVariable(jsonID, jsonPath + EXPCONFIG_JSON_AMPSERIAL, ampSerial)
+			JSON_AddVariable(jsonID, jsonPath + EXPCONFIG_JSON_AMPCHANNEL, ampChannelID)
+
+			jsonPath = basePath + "/" + EXPCONFIG_JSON_AMPBLOCK + "/" + EXPCONFIG_JSON_VCBLOCK
+			JSON_AddTreeObject(jsonID, jsonPath)
+			jsonPath += "/"
+
+			// read VC settings
+			DAP_ChangeHeadStageMode(panelTitle, V_CLAMP_MODE, i, DO_MCC_MIES_SYNCING)
+
+			JSON_AddVariable(jsonID, jsonPath + EXPCONFIG_JSON_AMP_HOLD_VC, DAG_GetNumericalValue(panelTitle, "setvar_DataAcq_Hold_VC"))
+			JSON_AddBoolean(jsonID, jsonPath + EXPCONFIG_JSON_AMP_HOLD_ENABLE_VC, DAG_GetNumericalValue(panelTitle, "check_DatAcq_HoldEnableVC"))
+			JSON_AddVariable(jsonID, jsonPath + EXPCONFIG_JSON_AMP_PIPETTE_OFFSET_VC, DAG_GetNumericalValue(panelTitle, "setvar_DataAcq_PipetteOffset_VC"))
+
+			JSON_AddVariable(jsonID, jsonPath + EXPCONFIG_JSON_AMP_WHOLE_CELL_CAPACITANCE, DAG_GetNumericalValue(panelTitle,"setvar_DataAcq_WCC"))
+			JSON_AddVariable(jsonID, jsonPath + EXPCONFIG_JSON_AMP_WHOLE_CELL_RESISTANCE, DAG_GetNumericalValue(panelTitle,"setvar_DataAcq_WCR"))
+			JSON_AddBoolean(jsonID, jsonPath + EXPCONFIG_JSON_AMP_WHOLE_CELL_ENABLE, DAG_GetNumericalValue(panelTitle,"check_DatAcq_WholeCellEnable"))
+
+			JSON_AddVariable(jsonID, jsonPath + EXPCONFIG_JSON_AMP_RS_COMP_CORRECTION, DAG_GetNumericalValue(panelTitle, "setvar_DataAcq_RsCorr"))
+			JSON_AddVariable(jsonID, jsonPath + EXPCONFIG_JSON_AMP_RS_COMP_PREDICTION, DAG_GetNumericalValue(panelTitle, "setvar_DataAcq_RsPred"))
+			JSON_AddBoolean(jsonID, jsonPath + EXPCONFIG_JSON_AMP_RS_COMP_ENABLE, DAG_GetNumericalValue(panelTitle, "check_DatAcq_RsCompEnable"))
+			JSON_AddBoolean(jsonID, jsonPath + EXPCONFIG_JSON_AMP_COMP_CHAIN, DAG_GetNumericalValue(panelTitle, "check_DataAcq_Amp_Chain"))
+
+			JSON_AddVariable(jsonID, jsonPath + EXPCONFIG_JSON_AMPVCDA, str2num(GetPopupMenuString(panelTitle, "Popup_Settings_VC_DA")))
+			JSON_AddVariable(jsonID, jsonPath + EXPCONFIG_JSON_AMPVCAD, str2num(GetPopupMenuString(panelTitle, "Popup_Settings_VC_AD")))
+
+			jsonPath = basePath + "/" + EXPCONFIG_JSON_AMPBLOCK + "/" + EXPCONFIG_JSON_ICBLOCK
+			JSON_AddTreeObject(jsonID, jsonPath)
+			jsonPath += "/"
+
+			// read IC settings
+			DAP_ChangeHeadStageMode(panelTitle, I_CLAMP_MODE, i, DO_MCC_MIES_SYNCING)
+
+			JSON_AddVariable(jsonID, jsonPath + EXPCONFIG_JSON_AMP_HOLD_IC, DAG_GetNumericalValue(panelTitle, "setvar_DataAcq_Hold_IC"))
+			JSON_AddBoolean(jsonID, jsonPath + EXPCONFIG_JSON_AMP_HOLD_ENABLE_IC, DAG_GetNumericalValue(panelTitle, "check_DatAcq_HoldEnable"))
+
+			JSON_AddVariable(jsonID, jsonPath + EXPCONFIG_JSON_AMP_BRIDGE_BALANCE, DAG_GetNumericalValue(panelTitle, "setvar_DataAcq_BB"))
+			JSON_AddBoolean(jsonID,  jsonPath + EXPCONFIG_JSON_AMP_BRIDGE_BALANCE_ENABLE, DAG_GetNumericalValue(panelTitle, "check_DatAcq_BBEnable"))
+
+			JSON_AddVariable(jsonID, jsonPath + EXPCONFIG_JSON_AMP_CAP_NEUTRALIZATION, DAG_GetNumericalValue(panelTitle, "setvar_DataAcq_CN"))
+			JSON_AddBoolean(jsonID,  jsonPath + EXPCONFIG_JSON_AMP_CAP_NEUTRALIZATION_ENABLE, DAG_GetNumericalValue(panelTitle, "check_DatAcq_CNEnable"))
+
+			JSON_AddVariable(jsonID, jsonPath + EXPCONFIG_JSON_AMP_AUTOBIAS_V, DAG_GetNumericalValue(panelTitle, "setvar_DataAcq_AutoBiasV"))
+			JSON_AddVariable(jsonID, jsonPath + EXPCONFIG_JSON_AMP_AUTOBIAS_V_RANGE, DAG_GetNumericalValue(panelTitle, "setvar_DataAcq_AutoBiasVrange"))
+			JSON_AddVariable(jsonID, jsonPath + EXPCONFIG_JSON_AMP_AUTOBIAS_I_BIAS_MAX, DAG_GetNumericalValue(panelTitle, "setvar_DataAcq_IbiasMax"))
+			JSON_AddBoolean(jsonID,  jsonPath + EXPCONFIG_JSON_AMP_AUTOBIAS, DAG_GetNumericalValue(panelTitle, "check_DataAcq_AutoBias"))
+
+			JSON_AddVariable(jsonID,  jsonPath + EXPCONFIG_JSON_AMP_PIPETTE_OFFSET_IC, DAG_GetNumericalValue(panelTitle, "setvar_DataAcq_PipetteOffset_IC"))
+
+			JSON_AddVariable(jsonID, jsonPath + EXPCONFIG_JSON_AMPICDA, str2num(GetPopupMenuString(panelTitle, "Popup_Settings_IC_DA")))
+			JSON_AddVariable(jsonID, jsonPath + EXPCONFIG_JSON_AMPICAD, str2num(GetPopupMenuString(panelTitle, "Popup_Settings_IC_AD")))
+
+			if(clampMode != I_CLAMP_MODE)
+				DAP_ChangeHeadStageMode(panelTitle, clampMode, i, DO_MCC_MIES_SYNCING)
+			endif
+		else
+			JSON_AddNull(jsonID, jsonPath + EXPCONFIG_JSON_AMPSERIAL)
+			JSON_AddNull(jsonID, jsonPath + EXPCONFIG_JSON_AMPCHANNEL)
+		endif
+
+		// the following GUI values are *not* stored in the GUI state wave
+
+		jsonPath = basePath + "/" + EXPCONFIG_JSON_PRESSUREBLOCK
+		JSON_AddTreeObject(jsonID, jsonPath)
+		jsonPath += "/"
+
+		JSON_AddString(jsonID, jsonPath + EXPCONFIG_JSON_PRESSDEV, GetPopupMenuString(panelTitle, "popup_Settings_Pressure_dev"))
+		JSON_AddVariable(jsonID, jsonPath + EXPCONFIG_JSON_PRESSDA, str2num(GetPopupMenuString(panelTitle, "Popup_Settings_Pressure_DA")))
+		JSON_AddVariable(jsonID, jsonPath + EXPCONFIG_JSON_PRESSAD, str2num(GetPopupMenuString(panelTitle, "Popup_Settings_Pressure_AD")))
+		JSON_AddVariable(jsonID, jsonPath + EXPCONFIG_JSON_PRESSDAGAIN, GetSetVariable(panelTitle, "setvar_Settings_Pressure_DAgain"))
+		JSON_AddVariable(jsonID, jsonPath + EXPCONFIG_JSON_PRESSADGAIN, GetSetVariable(panelTitle, "setvar_Settings_Pressure_ADgain"))
+		JSON_AddString(jsonID, jsonPath + EXPCONFIG_JSON_PRESSDAUNIT, GetSetVariableString(panelTitle, "SetVar_Hardware_Pressur_DA_Unit"))
+		JSON_AddString(jsonID, jsonPath + EXPCONFIG_JSON_PRESSADUNIT, GetSetVariableString(panelTitle, "SetVar_Hardware_Pressur_AD_Unit"))
+		JSON_AddVariable(jsonID, jsonPath + EXPCONFIG_JSON_PRESSTTLA, str2numsafe(GetPopupMenuString(panelTitle, "Popup_Settings_Pressure_TTLA")))
+		JSON_AddVariable(jsonID, jsonPath + EXPCONFIG_JSON_PRESSTTLB, str2numsafe(GetPopupMenuString(panelTitle, "Popup_Settings_Pressure_TTLB")))
+
+		WAVE pressureDataWv = P_GetPressureDataWaveRef(panelTitle)
+		index = FindDimLabel(pressureDataWv, ROWS, "headStage_" + num2str(i))
+		JSON_AddVariable(jsonID, jsonPath + EXPCONFIG_JSON_PRESSCONSTNEG, pressureDataWv[index][%NegCalConst])
+		JSON_AddVariable(jsonID, jsonPath + EXPCONFIG_JSON_PRESSCONSTPOS, pressureDataWv[index][%PosCalConst])
+	endfor
+
+	return jsonID
+End
+
+/// @brief Restore the per headstage amplifier settings
+///
+/// @param[in] panelTitle ITC device panel
+/// @param[in] headStage  MIES headstage number, must be in the range [0, NUM_HEADSTAGES]
+/// @param[in] jsonID     ID of json object with configuration data
+/// @param[in] basePath   absolute path in the json file to search the entries
+static Function CONF_RestoreAmplifierSettings(panelTitle, headStage, jsonID, basePath)
+	string panelTitle
+	variable headStage, jsonID
+	string basePath
 
 	variable clampMode
+	string path
 
-	WAVE GuiState = GetDA_EphysGuiStateNum(panelTitle)
-	clampMode = GuiState[headStage][%HSmode]
+	clampMode = DAG_GetHeadstageMode(panelTitle, headstage)
 
-	// Set initial parameters within MCC itself.
-	AI_SelectMultiClamp(panelTitle, headStage)
+	PGC_SetAndActivateControl(panelTitle,"slider_DataAcq_ActiveHeadstage", val = headStage)
 
-	//Set V-clamp parameters
+	// set VC settings
 	DAP_ChangeHeadStageMode(panelTitle, V_CLAMP_MODE, headStage, DO_MCC_MIES_SYNCING)
 
-	MCC_SetHoldingEnable(0)
-	MCC_SetOscKillerEnable(0)
-	MCC_SetFastCompTau(1.8e-6)
-	MCC_SetSlowCompTau(1e-5)
-	MCC_SetSlowCompTauX20Enable(0)
-	MCC_SetRsCompBandwidth(1.02e3)
-	MCC_SetRSCompCorrection(0)
-	MCC_SetPrimarySignalGain(1)
-	MCC_SetPrimarySignalLPF(10e3)
-	MCC_SetPrimarySignalHPF(0)
-	MCC_SetSecondarySignalGain(1)
-	MCC_SetSecondarySignalLPF(10e3)
+	path = basePath + "/" + EXPCONFIG_JSON_AMPBLOCK + "/" + EXPCONFIG_JSON_VCBLOCK + "/"
 
-	//Set I-Clamp Parameters
+	PGC_SetAndActivateControl(panelTitle, "setvar_DataAcq_Hold_VC", val = JSON_GetVariable(jsonID, path + EXPCONFIG_JSON_AMP_HOLD_VC))
+	PGC_SetAndActivateControl(panelTitle, "check_DatAcq_HoldEnableVC", val = !!JSON_GetVariable(jsonID, path + EXPCONFIG_JSON_AMP_HOLD_ENABLE_VC))
+
+	PGC_SetAndActivateControl(panelTitle, "setvar_DataAcq_PipetteOffset_VC", val = JSON_GetVariable(jsonID, path + EXPCONFIG_JSON_AMP_PIPETTE_OFFSET_VC))
+
+	PGC_SetAndActivateControl(panelTitle,"setvar_DataAcq_WCC", val = JSON_GetVariable(jsonID, path + EXPCONFIG_JSON_AMP_WHOLE_CELL_CAPACITANCE))
+	PGC_SetAndActivateControl(panelTitle,"setvar_DataAcq_WCR", val = JSON_GetVariable(jsonID, path + EXPCONFIG_JSON_AMP_WHOLE_CELL_RESISTANCE))
+	PGC_SetAndActivateControl(panelTitle,"check_DatAcq_WholeCellEnable", val = !!JSON_GetVariable(jsonID, path + EXPCONFIG_JSON_AMP_WHOLE_CELL_ENABLE))
+
+	PGC_SetAndActivateControl(panelTitle,"setvar_DataAcq_RsCorr", val = JSON_GetVariable(jsonID, path + EXPCONFIG_JSON_AMP_RS_COMP_CORRECTION))
+	PGC_SetAndActivateControl(panelTitle,"setvar_DataAcq_RsPred", val = JSON_GetVariable(jsonID, path + EXPCONFIG_JSON_AMP_RS_COMP_PREDICTION))
+	PGC_SetAndActivateControl(panelTitle,"check_DatAcq_RsCompEnable", val = !!JSON_GetVariable(jsonID, path + EXPCONFIG_JSON_AMP_RS_COMP_ENABLE))
+	PGC_SetAndActivateControl(panelTitle,"check_DataAcq_Amp_Chain", val = !!JSON_GetVariable(jsonID, path + EXPCONFIG_JSON_AMP_COMP_CHAIN))
+
+	// set IC settings
 	DAP_ChangeHeadStageMode(panelTitle, I_CLAMP_MODE, headStage, DO_MCC_MIES_SYNCING)
 
-	MCC_SetHoldingEnable(0)
-	MCC_SetSlowCurrentInjEnable(0)
-	MCC_SetNeutralizationEnable(0)
-	MCC_SetOscKillerEnable(0)
-	MCC_SetPrimarySignalGain(5)
-	MCC_SetPrimarySignalLPF(10e3)
-	MCC_SetPrimarySignalHPF(0)
-	MCC_SetSecondarySignalGain(1)
-	MCC_SetSecondarySignalLPF(10e3)
+	path = basePath + "/" + EXPCONFIG_JSON_AMPBLOCK + "/" + EXPCONFIG_JSON_ICBLOCK + "/"
+
+	PGC_SetAndActivateControl(panelTitle, "setvar_DataAcq_Hold_IC", val = JSON_GetVariable(jsonID, path + EXPCONFIG_JSON_AMP_HOLD_IC))
+	PGC_SetAndActivateControl(panelTitle, "check_DatAcq_HoldEnable", val = !!JSON_GetVariable(jsonID, path + EXPCONFIG_JSON_AMP_HOLD_ENABLE_IC))
+
+	PGC_SetAndActivateControl(panelTitle, "setvar_DataAcq_BB", val = JSON_GetVariable(jsonID, path + EXPCONFIG_JSON_AMP_BRIDGE_BALANCE))
+	PGC_SetAndActivateControl(panelTitle, "check_DatAcq_BBEnable", val = !!JSON_GetVariable(jsonID, path + EXPCONFIG_JSON_AMP_BRIDGE_BALANCE_ENABLE))
+
+	PGC_SetAndActivateControl(panelTitle, "setvar_DataAcq_CN", val = JSON_GetVariable(jsonID, path + EXPCONFIG_JSON_AMP_CAP_NEUTRALIZATION))
+	PGC_SetAndActivateControl(panelTitle, "check_DatAcq_CNEnable", val = !!JSON_GetVariable(jsonID, path + EXPCONFIG_JSON_AMP_CAP_NEUTRALIZATION_ENABLE))
+
+	PGC_SetAndActivateControl(panelTitle, "setvar_DataAcq_AutoBiasV", val = JSON_GetVariable(jsonID, path + EXPCONFIG_JSON_AMP_AUTOBIAS_V))
+	PGC_SetAndActivateControl(panelTitle, "setvar_DataAcq_AutoBiasVrange", val = JSON_GetVariable(jsonID, path + EXPCONFIG_JSON_AMP_AUTOBIAS_V_RANGE))
+	PGC_SetAndActivateControl(panelTitle, "setvar_DataAcq_IbiasMax", val = JSON_GetVariable(jsonID, path + EXPCONFIG_JSON_AMP_AUTOBIAS_I_BIAS_MAX))
+	PGC_SetAndActivateControl(panelTitle, "check_DataAcq_AutoBias", val = !!JSON_GetVariable(jsonID, path + EXPCONFIG_JSON_AMP_AUTOBIAS))
+
+	PGC_SetAndActivateControl(panelTitle, "setvar_DataAcq_PipetteOffset_IC", val = JSON_GetVariable(jsonID, path + EXPCONFIG_JSON_AMP_PIPETTE_OFFSET_IC))
 
 	if(clampMode != I_CLAMP_MODE)
 		DAP_ChangeHeadStageMode(panelTitle, clampMode, headStage, DO_MCC_MIES_SYNCING)
 	endif
 End
-
-#else
-
-static Function CONF_MCC_InitParams(panelTitle, headStage)
-	string panelTitle
-	variable headStage
-
-	DEBUGPRINT("Unimplemented")
-
-	return NaN
-End
-
-#endif
 
 /// @brief Find the list index of a connected amplifier serial number
 ///
