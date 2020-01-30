@@ -2022,7 +2022,6 @@ End
 Function CONF_Position_MCC_Win(serialNum, winTitle, winPosition)
 	string serialNum, winTitle, winPosition
 
-	Make /T /FREE winNm
 	string cmd, fullPath, cmdPath
 	variable w
 
@@ -2036,6 +2035,7 @@ Function CONF_Position_MCC_Win(serialNum, winTitle, winPosition)
 		return NaN
 	endif
 
+	Make/T/FREE/N=(NUM_HEADSTAGES/2) winNm
 	for(w = 0; w<NUM_HEADSTAGES/2; w+=1)
 
 		winNm[w] = {stringfromlist(w,winTitle) + "(" + stringfromlist(w,serialNum) + ")"}
