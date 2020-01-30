@@ -1747,7 +1747,7 @@ static Function CONF_RestoreHeadstageAssociation(panelTitle, jsonID, midExp)
 	variable jsonID, midExp
 
 	variable i, type, numRows, ampSerial, ampChannel, index, value
-	string jsonPath, jsonHSPath, winPositionMCC
+	string jsonPath, jsonHSPath, jsonBasePath
 	string ampSerialList = ""
 	string ampTitleList = ""
 
@@ -1781,10 +1781,7 @@ static Function CONF_RestoreHeadstageAssociation(panelTitle, jsonID, midExp)
 		Assert(AI_OpenMCCs(ampSerialList, ampTitleList = ampTitleList), "Evil kittens prevented MultiClamp from opening - FULL STOP" )
 	endif
 
-	winPositionMCC = CONF_GetStringFromSettings(jsonID, POSITION_MCC)
-	if(!CmpStr(NONE, winPositionMCC))
-		CONF_Position_MCC_Win(ampSerialList, ampTitleList, winPositionMCC)
-	endif
+	CONF_Position_MCC_Win(ampSerialList, ampTitleList, CONF_GetStringFromSettings(jsonID, POSITION_MCC))
 
 	PGC_SetAndActivateControl(panelTitle, "button_Settings_UpdateAmpStatus")
 	PGC_SetAndActivateControl(panelTitle, "button_Settings_UpdateDACList")
