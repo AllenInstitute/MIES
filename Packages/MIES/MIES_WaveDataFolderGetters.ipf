@@ -2629,8 +2629,8 @@ Function/Wave GetAmplifierParamStorageWave(panelTitle)
 	SetDimLabel ROWS  , 13, VClampPlaceHolder     , wv
 	SetDimLabel ROWS  , 14, VClampPlaceHolder     , wv
 	SetDimLabel ROWS  , 15, VClampPlaceHolder     , wv
-	SetDimLabel ROWS  , 16, BiasCurrent           , wv
-	SetDimLabel ROWS  , 17, BiasCurrentEnable     , wv
+	SetDimLabel ROWS  , 16, BiasCurrent           , wv // Hold IC
+	SetDimLabel ROWS  , 17, BiasCurrentEnable     , wv // Hold Enable IC
 	SetDimLabel ROWS  , 18, BridgeBalance         , wv
 	SetDimLabel ROWS  , 19, BridgeBalanceEnable   , wv
 	SetDimLabel ROWS  , 20, CapNeut               , wv
