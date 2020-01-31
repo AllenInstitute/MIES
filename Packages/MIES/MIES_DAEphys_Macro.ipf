@@ -3683,7 +3683,7 @@ Window DA_Ephys() : Panel
 	CheckBox Check_Settings_NwbExport,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	CheckBox Check_Settings_NwbExport,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
 	CheckBox Check_Settings_NwbExport,value= 0
-	PopupMenu Popup_Settings_NwbVersion,pos={139.00,231.00},size={69.00,19.00},proc=DAP_PopMenuProc_UpdateGuiState,title="version"
+	PopupMenu Popup_Settings_NwbVersion,pos={139.00,229.00},size={69.00,19.00},disable=1,proc=DAP_PopMenuProc_UpdateGuiState,title="version"
 	PopupMenu Popup_Settings_NwbVersion,help={"Set the NWB Version of the export when using triggered export from DA_Ephys"}
 	PopupMenu Popup_Settings_NwbVersion,userdata(tabcontrol)=  "ADC"
 	PopupMenu Popup_Settings_NwbVersion,userdata(tabnum)=  "5"
@@ -4070,7 +4070,7 @@ Window DA_Ephys() : Panel
 	PopupMenu popup_Settings_UserPressure,userdata(Config_RestorePriority)=  "60"
 	PopupMenu popup_Settings_UserPressure,userdata(Config_DontSave)=  "1"
 	PopupMenu popup_Settings_UserPressure,userdata(Config_DontRestore)=  "1"
-	PopupMenu popup_Settings_UserPressure,mode=1,popvalue="- none -",value= #"\"- none -;\""
+	PopupMenu popup_Settings_UserPressure,mode=1,popvalue="- none -",value= #"\"- none -;Dev1;Dev2;\""
 	PopupMenu Popup_Settings_UserPressure_ADC,pos={267.00,618.00},size={47.00,19.00},proc=DAP_PopMenuProc_UpdateGuiState,title="AD"
 	PopupMenu Popup_Settings_UserPressure_ADC,userdata(tabnum)=  "6"
 	PopupMenu Popup_Settings_UserPressure_ADC,userdata(tabcontrol)=  "ADC"
