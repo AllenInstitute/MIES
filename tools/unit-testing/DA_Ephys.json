@@ -2,42 +2,102 @@
     "Common configuration data": {
         "Headstage Association": {
             "0": {
-                "Amplifier Serial": 0,
-                "Amplifier Title": "0,1",
-                "IC AD": 0,
-                "IC DA": 0,
-                "Pressure AD": 0,
-                "Pressure AD Gain": 0.5,
-                "Pressure AD Unit": "psi",
-                "Pressure Constant Negative": 0,
-                "Pressure Constant Positive": 0,
-                "Pressure DA": 0,
-                "Pressure DA Gain": 2,
-                "Pressure DA Unit": "psi",
-                "Pressure Device": "- none -",
-                "Pressure TTLA": 0,
-                "Pressure TTLB": 1,
-                "VC AD": 0,
-                "VC DA": 0
+                "Amplifier": {
+                    "Channel": 1,
+                    "IC": {
+                        "AD": 0,
+                        "Autobias Current Max": 1,
+                        "Autobias Enable": false,
+                        "Autobias Voltage": 0,
+                        "Autobias Voltage Range": 0,
+                        "Bridge Balance": 0,
+                        "Bridge Balance Enable": false,
+                        "Capacitance Neutralization": 0,
+                        "Capacitance Neutralization Enable": false,
+                        "DA": 0,
+                        "Holding": 0,
+                        "Holding Enable": false,
+                        "Pipette Offset": 0
+                    },
+                    "Serial": 0,
+                    "Title": "0,1",
+                    "VC": {
+                        "AD": 0,
+                        "DA": 0,
+                        "Holding": 0,
+                        "Holding Enable": false,
+                        "Pipette Offset": 0,
+                        "RS Compensation Chain": false,
+                        "RS Compensation Correction": 0,
+                        "RS Compensation Enable": false,
+                        "RS Compensation Prediction": 0,
+                        "Whole Cell Capacitance": 1,
+                        "Whole Cell Enable": false,
+                        "Whole Cell Resistance": 0
+                    }
+                },
+                "Pressure": {
+                    "AD": 0,
+                    "AD Gain": 0.5,
+                    "AD Unit": "psi",
+                    "Constant Negative": "NaN",
+                    "Constant Positive": "NaN",
+                    "DA": 0,
+                    "DA Gain": 2,
+                    "DA Unit": "psi",
+                    "Device": "- none -",
+                    "TTLA": 0,
+                    "TTLB": "NaN"
+                }
             },
             "1": {
-                "Amplifier Serial": 0,
-                "Amplifier Title": "0,1",
-                "IC AD": 1,
-                "IC DA": 1,
-                "Pressure AD": 1,
-                "Pressure AD Gain": 0.5,
-                "Pressure AD Unit": "psi",
-                "Pressure Constant Negative": 0,
-                "Pressure Constant Positive": 0,
-                "Pressure DA": 1,
-                "Pressure DA Gain": 2,
-                "Pressure DA Unit": "psi",
-                "Pressure Device": "- none -",
-                "Pressure TTLA": 2,
-                "Pressure TTLB": 3,
-                "VC AD": 1,
-                "VC DA": 1
+                "Amplifier": {
+                    "Channel": 2,
+                    "IC": {
+                        "AD": 1,
+                        "Autobias Current Max": 1,
+                        "Autobias Enable": false,
+                        "Autobias Voltage": 0,
+                        "Autobias Voltage Range": 0,
+                        "Bridge Balance": 0,
+                        "Bridge Balance Enable": false,
+                        "Capacitance Neutralization": 0,
+                        "Capacitance Neutralization Enable": false,
+                        "DA": 1,
+                        "Holding": 0,
+                        "Holding Enable": false,
+                        "Pipette Offset": 0
+                    },
+                    "Serial": 0,
+                    "Title": "0,1",
+                    "VC": {
+                        "AD": 1,
+                        "DA": 1,
+                        "Holding": 0,
+                        "Holding Enable": false,
+                        "Pipette Offset": 0,
+                        "RS Compensation Chain": false,
+                        "RS Compensation Correction": 0,
+                        "RS Compensation Enable": false,
+                        "RS Compensation Prediction": 0,
+                        "Whole Cell Capacitance": 1,
+                        "Whole Cell Enable": false,
+                        "Whole Cell Resistance": 0
+                    }
+                },
+                "Pressure": {
+                    "AD": 1,
+                    "AD Gain": 0.5,
+                    "AD Unit": "psi",
+                    "Constant Negative": "NaN",
+                    "Constant Positive": "NaN",
+                    "DA": 1,
+                    "DA Gain": 2,
+                    "DA Unit": "psi",
+                    "Device": "- none -",
+                    "TTLA": 0,
+                    "TTLB": "NaN"
+                }
             },
             "2": null,
             "3": null,
@@ -51,7 +111,7 @@
         "Stim set file name": "",
         "User Pressure Devices": {
             "DAC Device": "- none -",
-            "Pressure DA": 0
+            "DA": 0
         }
     },
     "Dev1": {

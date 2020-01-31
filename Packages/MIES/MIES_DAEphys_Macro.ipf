@@ -11,7 +11,7 @@
 
 Window DA_Ephys() : Panel
 	PauseUpdate; Silent 1		// building window...
-	NewPanel /K=1 /W=(1098,1078,1602,1958)
+	NewPanel /K=1 /W=(1338,627,1842,1507)
 	ValDisplay valdisp_DataAcq_P_LED_Clear,pos={366.00,297.00},size={84.00,27.00},disable=1
 	ValDisplay valdisp_DataAcq_P_LED_Clear,help={"red:user"},userdata(tabnum)=  "0"
 	ValDisplay valdisp_DataAcq_P_LED_Clear,userdata(tabcontrol)=  "tab_DataAcq_Pressure"
@@ -156,7 +156,8 @@ Window DA_Ephys() : Panel
 	GroupBox group_DataAcq_WholeCell,userdata(ResizeControlsInfo)= A"!!,D3!!#AW!!#A%!!#?1z!!,c)Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	GroupBox group_DataAcq_WholeCell,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	GroupBox group_DataAcq_WholeCell,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
-	GroupBox group_DataAcq_WholeCell,userdata(Config_RestorePriority)=  "40"
+	GroupBox group_DataAcq_WholeCell,userdata(Config_DontRestore)=  "1"
+	GroupBox group_DataAcq_WholeCell,userdata(Config_DontSave)=  "1"
 	TitleBox Title_settings_SetManagement,pos={948.00,-99.00},size={390.00,213.00},disable=1,title="Set Management Decision Tree"
 	TitleBox Title_settings_SetManagement,userdata(tabnum)=  "5"
 	TitleBox Title_settings_SetManagement,userdata(tabcontrol)=  "ADC"
@@ -2784,7 +2785,8 @@ Window DA_Ephys() : Panel
 	TabControl tab_DataAcq_Amp,userdata(ResizeControlsInfo)= A"!!,Cd!!#A#!!#C9J,hq*z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	TabControl tab_DataAcq_Amp,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Duafnzzzzzzzzzzz"
 	TabControl tab_DataAcq_Amp,userdata(ResizeControlsInfo) += A"zzz!!#u:Duafnzzzzzzzzzzzzzz!!!"
-	TabControl tab_DataAcq_Amp,userdata(Config_RestorePriority)=  "40"
+	TabControl tab_DataAcq_Amp,userdata(Config_DontRestore)=  "1"
+	TabControl tab_DataAcq_Amp,userdata(Config_DontSave)=  "1"
 	TabControl tab_DataAcq_Amp,labelBack=(60928,60928,60928),fSize=10
 	TabControl tab_DataAcq_Amp,tabLabel(0)="V-Clamp",tabLabel(1)="\f01\Z11I-Clamp"
 	TabControl tab_DataAcq_Amp,tabLabel(2)="I = 0",value= 0
@@ -2808,15 +2810,16 @@ Window DA_Ephys() : Panel
 	SetVariable setvar_DataAcq_Hold_IC,userdata(ResizeControlsInfo)= A"!!,G7!!#AH!!#>V!!#<Hz!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	SetVariable setvar_DataAcq_Hold_IC,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Duafnzzzzzzzzzzz"
 	SetVariable setvar_DataAcq_Hold_IC,userdata(ResizeControlsInfo) += A"zzz!!#u:Duafnzzzzzzzzzzzzzz!!!"
-	SetVariable setvar_DataAcq_Hold_IC,userdata(Config_RestorePriority)=  "40"
-	SetVariable setvar_DataAcq_Hold_IC,value= _NUM:0
+	SetVariable setvar_DataAcq_Hold_IC,userdata(Config_DontRestore)=  "1"
+	SetVariable setvar_DataAcq_Hold_IC,userdata(Config_DontSave)=  "1",value= _NUM:0
 	SetVariable setvar_DataAcq_BB,pos={160.00,207.00},size={50.00,18.00},bodyWidth=50,disable=1,proc=DAP_SetVarProc_AmpCntrls
 	SetVariable setvar_DataAcq_BB,userdata(tabnum)=  "1"
 	SetVariable setvar_DataAcq_BB,userdata(tabcontrol)=  "tab_DataAcq_Amp"
 	SetVariable setvar_DataAcq_BB,userdata(ResizeControlsInfo)= A"!!,G7!!#A_!!#>V!!#<Hz!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	SetVariable setvar_DataAcq_BB,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Duafnzzzzzzzzzzz"
 	SetVariable setvar_DataAcq_BB,userdata(ResizeControlsInfo) += A"zzz!!#u:Duafnzzzzzzzzzzzzzz!!!"
-	SetVariable setvar_DataAcq_BB,userdata(Config_RestorePriority)=  "40"
+	SetVariable setvar_DataAcq_BB,userdata(Config_DontRestore)=  "1"
+	SetVariable setvar_DataAcq_BB,userdata(Config_DontSave)=  "1"
 	SetVariable setvar_DataAcq_BB,limits={0,inf,1},value= _NUM:0
 	SetVariable setvar_DataAcq_CN,pos={160.00,231.00},size={50.00,18.00},bodyWidth=50,disable=1,proc=DAP_SetVarProc_AmpCntrls
 	SetVariable setvar_DataAcq_CN,userdata(tabnum)=  "1"
@@ -2824,7 +2827,8 @@ Window DA_Ephys() : Panel
 	SetVariable setvar_DataAcq_CN,userdata(ResizeControlsInfo)= A"!!,G7!!#B!!!#>V!!#<Hz!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	SetVariable setvar_DataAcq_CN,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Duafnzzzzzzzzzzz"
 	SetVariable setvar_DataAcq_CN,userdata(ResizeControlsInfo) += A"zzz!!#u:Duafnzzzzzzzzzzzzzz!!!"
-	SetVariable setvar_DataAcq_CN,userdata(Config_RestorePriority)=  "40"
+	SetVariable setvar_DataAcq_CN,userdata(Config_DontRestore)=  "1"
+	SetVariable setvar_DataAcq_CN,userdata(Config_DontSave)=  "1"
 	SetVariable setvar_DataAcq_CN,limits={-8,16,1},value= _NUM:0
 	CheckBox check_DatAcq_HoldEnable,pos={222.00,186.00},size={14.00,14.00},disable=1,proc=DAP_CheckProc_AmpCntrls,title=""
 	CheckBox check_DatAcq_HoldEnable,userdata(tabnum)=  "1"
@@ -2832,22 +2836,24 @@ Window DA_Ephys() : Panel
 	CheckBox check_DatAcq_HoldEnable,userdata(ResizeControlsInfo)= A"!!,Go!!#AJ!!#;]!!#;]z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	CheckBox check_DatAcq_HoldEnable,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Duafnzzzzzzzzzzz"
 	CheckBox check_DatAcq_HoldEnable,userdata(ResizeControlsInfo) += A"zzz!!#u:Duafnzzzzzzzzzzzzzz!!!"
-	CheckBox check_DatAcq_HoldEnable,userdata(Config_RestorePriority)=  "40"
-	CheckBox check_DatAcq_HoldEnable,value= 0
+	CheckBox check_DatAcq_HoldEnable,userdata(Config_DontRestore)=  "1"
+	CheckBox check_DatAcq_HoldEnable,userdata(Config_DontSave)=  "1",value= 0
 	CheckBox check_DatAcq_BBEnable,pos={222.00,210.00},size={14.00,14.00},disable=1,proc=DAP_CheckProc_AmpCntrls,title=""
 	CheckBox check_DatAcq_BBEnable,userdata(tabnum)=  "1"
 	CheckBox check_DatAcq_BBEnable,userdata(tabcontrol)=  "tab_DataAcq_Amp"
 	CheckBox check_DatAcq_BBEnable,userdata(ResizeControlsInfo)= A"!!,Go!!#Aa!!#;]!!#;]z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	CheckBox check_DatAcq_BBEnable,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Duafnzzzzzzzzzzz"
 	CheckBox check_DatAcq_BBEnable,userdata(ResizeControlsInfo) += A"zzz!!#u:Duafnzzzzzzzzzzzzzz!!!"
-	CheckBox check_DatAcq_BBEnable,userdata(Config_RestorePriority)=  "40",value= 0
+	CheckBox check_DatAcq_BBEnable,userdata(Config_DontRestore)=  "1"
+	CheckBox check_DatAcq_BBEnable,userdata(Config_DontSave)=  "1",value= 0
 	CheckBox check_DatAcq_CNEnable,pos={222.00,231.00},size={14.00,14.00},disable=1,proc=DAP_CheckProc_AmpCntrls,title=""
 	CheckBox check_DatAcq_CNEnable,userdata(tabnum)=  "1"
 	CheckBox check_DatAcq_CNEnable,userdata(tabcontrol)=  "tab_DataAcq_Amp"
 	CheckBox check_DatAcq_CNEnable,userdata(ResizeControlsInfo)= A"!!,Go!!#B#!!#;]!!#;]z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	CheckBox check_DatAcq_CNEnable,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Duafnzzzzzzzzzzz"
 	CheckBox check_DatAcq_CNEnable,userdata(ResizeControlsInfo) += A"zzz!!#u:Duafnzzzzzzzzzzzzzz!!!"
-	CheckBox check_DatAcq_CNEnable,userdata(Config_RestorePriority)=  "40",value= 0
+	CheckBox check_DatAcq_CNEnable,userdata(Config_DontRestore)=  "1"
+	CheckBox check_DatAcq_CNEnable,userdata(Config_DontSave)=  "1",value= 0
 	TitleBox Title_DataAcq_CN,pos={42.00,231.00},size={122.00,15.00},disable=1,title="Cap Neutralization (pF)"
 	TitleBox Title_DataAcq_CN,userdata(tabnum)=  "1"
 	TitleBox Title_DataAcq_CN,userdata(tabcontrol)=  "tab_DataAcq_Amp"
@@ -2871,7 +2877,8 @@ Window DA_Ephys() : Panel
 	SetVariable setvar_DataAcq_AutoBiasV,userdata(ResizeControlsInfo)= A"!!,HJJ,hr?!!#@.!!#<Hz!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	SetVariable setvar_DataAcq_AutoBiasV,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Duafnzzzzzzzzzzz"
 	SetVariable setvar_DataAcq_AutoBiasV,userdata(ResizeControlsInfo) += A"zzz!!#u:Duafnzzzzzzzzzzzzzz!!!"
-	SetVariable setvar_DataAcq_AutoBiasV,userdata(Config_RestorePriority)=  "40"
+	SetVariable setvar_DataAcq_AutoBiasV,userdata(Config_DontRestore)=  "1"
+	SetVariable setvar_DataAcq_AutoBiasV,userdata(Config_DontSave)=  "1"
 	SetVariable setvar_DataAcq_AutoBiasV,limits={-99,99,1},value= _NUM:-70
 	CheckBox check_DataAcq_AutoBias,pos={321.00,198.00},size={66.00,15.00},disable=1,proc=DAP_CheckProc_AmpCntrls,title="Auto Bias"
 	CheckBox check_DataAcq_AutoBias,help={"Just prior to a sweep the Vm is checked and the bias current is adjusted to maintain desired Vm."}
@@ -2880,15 +2887,16 @@ Window DA_Ephys() : Panel
 	CheckBox check_DataAcq_AutoBias,userdata(ResizeControlsInfo)= A"!!,H[J,hr+!!#?;!!#<(z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	CheckBox check_DataAcq_AutoBias,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Duafnzzzzzzzzzzz"
 	CheckBox check_DataAcq_AutoBias,userdata(ResizeControlsInfo) += A"zzz!!#u:Duafnzzzzzzzzzzzzzz!!!"
-	CheckBox check_DataAcq_AutoBias,userdata(Config_RestorePriority)=  "40"
-	CheckBox check_DataAcq_AutoBias,value= 0,side= 1
+	CheckBox check_DataAcq_AutoBias,userdata(Config_DontRestore)=  "1"
+	CheckBox check_DataAcq_AutoBias,userdata(Config_DontSave)=  "1",value= 0,side= 1
 	SetVariable setvar_DataAcq_IbiasMax,pos={290.00,240.00},size={136.00,20.00},bodyWidth=50,disable=1,proc=DAP_SetVarProc_AmpCntrls,title="max I \\Bbias\\M (pA) ±"
 	SetVariable setvar_DataAcq_IbiasMax,userdata(tabcontrol)=  "tab_DataAcq_Amp"
 	SetVariable setvar_DataAcq_IbiasMax,userdata(tabnum)=  "1"
 	SetVariable setvar_DataAcq_IbiasMax,userdata(ResizeControlsInfo)= A"!!,HP!!#B+!!#@l!!#<Xz!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	SetVariable setvar_DataAcq_IbiasMax,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Duafnzzzzzzzzzzz"
 	SetVariable setvar_DataAcq_IbiasMax,userdata(ResizeControlsInfo) += A"zzz!!#u:Duafnzzzzzzzzzzzzzz!!!"
-	SetVariable setvar_DataAcq_IbiasMax,userdata(Config_RestorePriority)=  "40"
+	SetVariable setvar_DataAcq_IbiasMax,userdata(Config_DontRestore)=  "1"
+	SetVariable setvar_DataAcq_IbiasMax,userdata(Config_DontSave)=  "1"
 	SetVariable setvar_DataAcq_IbiasMax,limits={1,1500,1},value= _NUM:200
 	SetVariable setvar_DataAcq_AutoBiasVrange,pos={385.00,216.00},size={62.00,18.00},bodyWidth=50,disable=1,proc=DAP_SetVarProc_AmpCntrls,title="±"
 	SetVariable setvar_DataAcq_AutoBiasVrange,userdata(tabcontrol)=  "tab_DataAcq_Amp"
@@ -2896,7 +2904,8 @@ Window DA_Ephys() : Panel
 	SetVariable setvar_DataAcq_AutoBiasVrange,userdata(ResizeControlsInfo)= A"!!,I*!!#Ai!!#?1!!#<Hz!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	SetVariable setvar_DataAcq_AutoBiasVrange,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Duafnzzzzzzzzzzz"
 	SetVariable setvar_DataAcq_AutoBiasVrange,userdata(ResizeControlsInfo) += A"zzz!!#u:Duafnzzzzzzzzzzzzzz!!!"
-	SetVariable setvar_DataAcq_AutoBiasVrange,userdata(Config_RestorePriority)=  "40"
+	SetVariable setvar_DataAcq_AutoBiasVrange,userdata(Config_DontRestore)=  "1"
+	SetVariable setvar_DataAcq_AutoBiasVrange,userdata(Config_DontSave)=  "1"
 	SetVariable setvar_DataAcq_AutoBiasVrange,limits={0,inf,1},value= _NUM:0.5
 	TitleBox Title_DataAcq_Hold_VC,pos={0.00,207.00},size={48.00,18.00},disable=1
 	TitleBox Title_DataAcq_Hold_VC,userdata(tabnum)=  "0"
@@ -2911,8 +2920,8 @@ Window DA_Ephys() : Panel
 	SetVariable setvar_DataAcq_Hold_VC,userdata(ResizeControlsInfo)= A"!!,D7!!#A<!!#?s!!#<Hz!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	SetVariable setvar_DataAcq_Hold_VC,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Duafnzzzzzzzzzzz"
 	SetVariable setvar_DataAcq_Hold_VC,userdata(ResizeControlsInfo) += A"zzz!!#u:Duafnzzzzzzzzzzzzzz!!!"
-	SetVariable setvar_DataAcq_Hold_VC,userdata(Config_RestorePriority)=  "40"
-	SetVariable setvar_DataAcq_Hold_VC,value= _NUM:0
+	SetVariable setvar_DataAcq_Hold_VC,userdata(Config_DontRestore)=  "1"
+	SetVariable setvar_DataAcq_Hold_VC,userdata(Config_DontSave)=  "1",value= _NUM:0
 	TitleBox Title_DataAcq_PipOffset_VC,pos={243.00,174.00},size={101.00,15.00},disable=1,title="Pipette Offset (mV)"
 	TitleBox Title_DataAcq_PipOffset_VC,userdata(tabnum)=  "0"
 	TitleBox Title_DataAcq_PipOffset_VC,userdata(tabcontrol)=  "tab_DataAcq_Amp"
@@ -2926,7 +2935,8 @@ Window DA_Ephys() : Panel
 	SetVariable setvar_DataAcq_PipetteOffset_VC,userdata(ResizeControlsInfo)= A"!!,Hi!!#A>!!#>V!!#<Hz!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	SetVariable setvar_DataAcq_PipetteOffset_VC,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Duafnzzzzzzzzzzz"
 	SetVariable setvar_DataAcq_PipetteOffset_VC,userdata(ResizeControlsInfo) += A"zzz!!#u:Duafnzzzzzzzzzzzzzz!!!"
-	SetVariable setvar_DataAcq_PipetteOffset_VC,userdata(Config_RestorePriority)=  "40"
+	SetVariable setvar_DataAcq_PipetteOffset_VC,userdata(Config_DontRestore)=  "1"
+	SetVariable setvar_DataAcq_PipetteOffset_VC,userdata(Config_DontSave)=  "1"
 	SetVariable setvar_DataAcq_PipetteOffset_VC,value= _NUM:0
 	Button button_DataAcq_AutoPipOffset_VC,pos={399.00,174.00},size={39.00,18.00},disable=1,proc=DAP_ButtonProc_AmpCntrls,title="Auto"
 	Button button_DataAcq_AutoPipOffset_VC,help={"Automatically calculate the pipette offset"}
@@ -2935,21 +2945,24 @@ Window DA_Ephys() : Panel
 	Button button_DataAcq_AutoPipOffset_VC,userdata(ResizeControlsInfo)= A"!!,I.J,hqi!!#>.!!#<Xz!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	Button button_DataAcq_AutoPipOffset_VC,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Duafnzzzzzzzzzzz"
 	Button button_DataAcq_AutoPipOffset_VC,userdata(ResizeControlsInfo) += A"zzz!!#u:Duafnzzzzzzzzzzzzzz!!!"
-	Button button_DataAcq_AutoPipOffset_VC,userdata(Config_RestorePriority)=  "41"
+	Button button_DataAcq_AutoPipOffset_VC,userdata(Config_DontRestore)=  "1"
+	Button button_DataAcq_AutoPipOffset_VC,userdata(Config_DontSave)=  "1"
 	GroupBox group_pipette_offset_VC,pos={237.00,171.00},size={210.00,27.00},disable=1
 	GroupBox group_pipette_offset_VC,userdata(tabnum)=  "0"
 	GroupBox group_pipette_offset_VC,userdata(tabcontrol)=  "tab_DataAcq_Amp"
 	GroupBox group_pipette_offset_VC,userdata(ResizeControlsInfo)= A"!!,H)!!#A:!!#Aa!!#=Cz!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	GroupBox group_pipette_offset_VC,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Duafnzzzzzzzzzzz"
 	GroupBox group_pipette_offset_VC,userdata(ResizeControlsInfo) += A"zzz!!#u:Duafnzzzzzzzzzzzzzz!!!"
-	GroupBox group_pipette_offset_VC,userdata(Config_RestorePriority)=  "40"
+	GroupBox group_pipette_offset_VC,userdata(Config_DontRestore)=  "1"
+	GroupBox group_pipette_offset_VC,userdata(Config_DontSave)=  "1"
 	GroupBox group_pipette_offset_IC,pos={243.00,171.00},size={210.00,27.00},disable=1
 	GroupBox group_pipette_offset_IC,userdata(tabnum)=  "1"
 	GroupBox group_pipette_offset_IC,userdata(tabcontrol)=  "tab_DataAcq_Amp"
 	GroupBox group_pipette_offset_IC,userdata(ResizeControlsInfo)= A"!!,H/!!#A:!!#Aa!!#=Cz!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	GroupBox group_pipette_offset_IC,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Duafnzzzzzzzzzzz"
 	GroupBox group_pipette_offset_IC,userdata(ResizeControlsInfo) += A"zzz!!#u:Duafnzzzzzzzzzzzzzz!!!"
-	GroupBox group_pipette_offset_IC,userdata(Config_RestorePriority)=  "40"
+	GroupBox group_pipette_offset_IC,userdata(Config_DontRestore)=  "1"
+	GroupBox group_pipette_offset_IC,userdata(Config_DontSave)=  "1"
 	Button button_DataAcq_AutoPipOffset_IC,pos={405.00,174.00},size={39.00,18.00},disable=1,proc=DAP_ButtonProc_AmpCntrls,title="Auto"
 	Button button_DataAcq_AutoPipOffset_IC,help={"Automatically calculate the pipette offset"}
 	Button button_DataAcq_AutoPipOffset_IC,userdata(tabnum)=  "1"
@@ -2957,7 +2970,8 @@ Window DA_Ephys() : Panel
 	Button button_DataAcq_AutoPipOffset_IC,userdata(ResizeControlsInfo)= A"!!,I1J,hqi!!#>.!!#<Xz!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	Button button_DataAcq_AutoPipOffset_IC,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Duafnzzzzzzzzzzz"
 	Button button_DataAcq_AutoPipOffset_IC,userdata(ResizeControlsInfo) += A"zzz!!#u:Duafnzzzzzzzzzzzzzz!!!"
-	Button button_DataAcq_AutoPipOffset_IC,userdata(Config_RestorePriority)=  "41"
+	Button button_DataAcq_AutoPipOffset_IC,userdata(Config_DontRestore)=  "1"
+	Button button_DataAcq_AutoPipOffset_IC,userdata(Config_DontSave)=  "1"
 	TitleBox Title_DataAcq_PipOffset_IC,pos={249.00,174.00},size={101.00,15.00},disable=1,title="Pipette Offset (mV)"
 	TitleBox Title_DataAcq_PipOffset_IC,userdata(tabnum)=  "1"
 	TitleBox Title_DataAcq_PipOffset_IC,userdata(tabcontrol)=  "tab_DataAcq_Amp"
@@ -2971,7 +2985,8 @@ Window DA_Ephys() : Panel
 	SetVariable setvar_DataAcq_PipetteOffset_IC,userdata(ResizeControlsInfo)= A"!!,Hl!!#A>!!#>V!!#<Hz!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	SetVariable setvar_DataAcq_PipetteOffset_IC,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Duafnzzzzzzzzzzz"
 	SetVariable setvar_DataAcq_PipetteOffset_IC,userdata(ResizeControlsInfo) += A"zzz!!#u:Duafnzzzzzzzzzzzzzz!!!"
-	SetVariable setvar_DataAcq_PipetteOffset_IC,userdata(Config_RestorePriority)=  "40"
+	SetVariable setvar_DataAcq_PipetteOffset_IC,userdata(Config_DontRestore)=  "1"
+	SetVariable setvar_DataAcq_PipetteOffset_IC,userdata(Config_DontSave)=  "1"
 	SetVariable setvar_DataAcq_PipetteOffset_IC,value= _NUM:0
 	CheckBox check_DatAcq_HoldEnableVC,pos={137.00,172.00},size={51.00,15.00},disable=1,proc=DAP_CheckProc_AmpCntrls,title="Enable"
 	CheckBox check_DatAcq_HoldEnableVC,userdata(tabnum)=  "0"
@@ -2979,31 +2994,32 @@ Window DA_Ephys() : Panel
 	CheckBox check_DatAcq_HoldEnableVC,userdata(ResizeControlsInfo)= A"!!,Fs!!#A=!!#>V!!#<(z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	CheckBox check_DatAcq_HoldEnableVC,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Duafnzzzzzzzzzzz"
 	CheckBox check_DatAcq_HoldEnableVC,userdata(ResizeControlsInfo) += A"zzz!!#u:Duafnzzzzzzzzzzzzzz!!!"
-	CheckBox check_DatAcq_HoldEnableVC,userdata(Config_RestorePriority)=  "40"
-	CheckBox check_DatAcq_HoldEnableVC,value= 0
+	CheckBox check_DatAcq_HoldEnableVC,userdata(Config_DontRestore)=  "1"
+	CheckBox check_DatAcq_HoldEnableVC,userdata(Config_DontSave)=  "1",value= 0
 	SetVariable setvar_DataAcq_WCR,pos={112.00,219.00},size={74.00,18.00},bodyWidth=50,disable=1,proc=DAP_SetVarProc_AmpCntrls,title="MΩ"
 	SetVariable setvar_DataAcq_WCR,userdata(tabnum)=  "0"
 	SetVariable setvar_DataAcq_WCR,userdata(tabcontrol)=  "tab_DataAcq_Amp"
 	SetVariable setvar_DataAcq_WCR,userdata(ResizeControlsInfo)= A"!!,FE!!#Aj!!#?M!!#<Hz!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	SetVariable setvar_DataAcq_WCR,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Duafnzzzzzzzzzzz"
 	SetVariable setvar_DataAcq_WCR,userdata(ResizeControlsInfo) += A"zzz!!#u:Duafnzzzzzzzzzzzzzz!!!"
-	SetVariable setvar_DataAcq_WCR,userdata(Config_RestorePriority)=  "40"
-	SetVariable setvar_DataAcq_WCR,value= _NUM:0
+	SetVariable setvar_DataAcq_WCR,userdata(Config_DontRestore)=  "1"
+	SetVariable setvar_DataAcq_WCR,userdata(Config_DontSave)=  "1",value= _NUM:0
 	CheckBox check_DatAcq_WholeCellEnable,pos={63.00,198.00},size={14.00,14.00},disable=1,proc=DAP_CheckProc_AmpCntrls,title=""
 	CheckBox check_DatAcq_WholeCellEnable,userdata(tabnum)=  "0"
 	CheckBox check_DatAcq_WholeCellEnable,userdata(tabcontrol)=  "tab_DataAcq_Amp"
 	CheckBox check_DatAcq_WholeCellEnable,userdata(ResizeControlsInfo)= A"!!,E6!!#AV!!#;]!!#;]z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	CheckBox check_DatAcq_WholeCellEnable,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Duafnzzzzzzzzzzz"
 	CheckBox check_DatAcq_WholeCellEnable,userdata(ResizeControlsInfo) += A"zzz!!#u:Duafnzzzzzzzzzzzzzz!!!"
-	CheckBox check_DatAcq_WholeCellEnable,userdata(Config_RestorePriority)=  "40"
-	CheckBox check_DatAcq_WholeCellEnable,value= 0
+	CheckBox check_DatAcq_WholeCellEnable,userdata(Config_DontRestore)=  "1"
+	CheckBox check_DatAcq_WholeCellEnable,userdata(Config_DontSave)=  "1",value= 0
 	SetVariable setvar_DataAcq_WCC,pos={41.00,219.00},size={67.00,18.00},bodyWidth=50,disable=1,proc=DAP_SetVarProc_AmpCntrls,title="pF"
 	SetVariable setvar_DataAcq_WCC,userdata(tabnum)=  "0"
 	SetVariable setvar_DataAcq_WCC,userdata(tabcontrol)=  "tab_DataAcq_Amp"
 	SetVariable setvar_DataAcq_WCC,userdata(ResizeControlsInfo)= A"!!,D;!!#Ak!!#??!!#<Hz!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	SetVariable setvar_DataAcq_WCC,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Duafnzzzzzzzzzzz"
 	SetVariable setvar_DataAcq_WCC,userdata(ResizeControlsInfo) += A"zzz!!#u:Duafnzzzzzzzzzzzzzz!!!"
-	SetVariable setvar_DataAcq_WCC,userdata(Config_RestorePriority)=  "40"
+	SetVariable setvar_DataAcq_WCC,userdata(Config_DontRestore)=  "1"
+	SetVariable setvar_DataAcq_WCC,userdata(Config_DontSave)=  "1"
 	SetVariable setvar_DataAcq_WCC,limits={1,inf,1},value= _NUM:0
 	Button button_DataAcq_WCAuto,pos={108.00,237.00},size={39.00,15.00},disable=1,proc=DAP_ButtonProc_AmpCntrls,title="Auto"
 	Button button_DataAcq_WCAuto,userdata(tabnum)=  "0"
@@ -3011,29 +3027,32 @@ Window DA_Ephys() : Panel
 	Button button_DataAcq_WCAuto,userdata(ResizeControlsInfo)= A"!!,F'!!#B)!!#>.!!#<(z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	Button button_DataAcq_WCAuto,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Duafnzzzzzzzzzzz"
 	Button button_DataAcq_WCAuto,userdata(ResizeControlsInfo) += A"zzz!!#u:Duafnzzzzzzzzzzzzzz!!!"
-	Button button_DataAcq_WCAuto,userdata(Config_RestorePriority)=  "41"
+	Button button_DataAcq_WCAuto,userdata(Config_DontRestore)=  "1"
+	Button button_DataAcq_WCAuto,userdata(Config_DontSave)=  "1"
 	GroupBox group_DataAcq_RsCompensation,pos={198.00,198.00},size={183.00,60.00},disable=1,title="       Rs Compensation"
 	GroupBox group_DataAcq_RsCompensation,userdata(tabnum)=  "0"
 	GroupBox group_DataAcq_RsCompensation,userdata(tabcontrol)=  "tab_DataAcq_Amp"
 	GroupBox group_DataAcq_RsCompensation,userdata(ResizeControlsInfo)= A"!!,GX!!#AW!!#AH!!#?1z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	GroupBox group_DataAcq_RsCompensation,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Duafnzzzzzzzzzzz"
 	GroupBox group_DataAcq_RsCompensation,userdata(ResizeControlsInfo) += A"zzz!!#u:Duafnzzzzzzzzzzzzzz!!!"
-	GroupBox group_DataAcq_RsCompensation,userdata(Config_RestorePriority)=  "40"
+	GroupBox group_DataAcq_RsCompensation,userdata(Config_DontRestore)=  "1"
+	GroupBox group_DataAcq_RsCompensation,userdata(Config_DontSave)=  "1"
 	CheckBox check_DatAcq_RsCompEnable,pos={222.00,198.00},size={14.00,14.00},disable=1,proc=DAP_CheckProc_AmpCntrls,title=""
 	CheckBox check_DatAcq_RsCompEnable,userdata(tabnum)=  "0"
 	CheckBox check_DatAcq_RsCompEnable,userdata(tabcontrol)=  "tab_DataAcq_Amp"
 	CheckBox check_DatAcq_RsCompEnable,userdata(ResizeControlsInfo)= A"!!,Go!!#AV!!#;]!!#;]z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	CheckBox check_DatAcq_RsCompEnable,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Duafnzzzzzzzzzzz"
 	CheckBox check_DatAcq_RsCompEnable,userdata(ResizeControlsInfo) += A"zzz!!#u:Duafnzzzzzzzzzzzzzz!!!"
-	CheckBox check_DatAcq_RsCompEnable,userdata(Config_RestorePriority)=  "40"
-	CheckBox check_DatAcq_RsCompEnable,value= 0
+	CheckBox check_DatAcq_RsCompEnable,userdata(Config_DontRestore)=  "1"
+	CheckBox check_DatAcq_RsCompEnable,userdata(Config_DontSave)=  "1",value= 0
 	SetVariable setvar_DataAcq_RsCorr,pos={200.00,216.00},size={121.00,18.00},bodyWidth=40,disable=1,proc=DAP_SetVarProc_AmpCntrls,title="Correction (%)"
 	SetVariable setvar_DataAcq_RsCorr,userdata(tabnum)=  "0"
 	SetVariable setvar_DataAcq_RsCorr,userdata(tabcontrol)=  "tab_DataAcq_Amp"
 	SetVariable setvar_DataAcq_RsCorr,userdata(ResizeControlsInfo)= A"!!,G^!!#Ai!!#@V!!#<Hz!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	SetVariable setvar_DataAcq_RsCorr,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Duafnzzzzzzzzzzz"
 	SetVariable setvar_DataAcq_RsCorr,userdata(ResizeControlsInfo) += A"zzz!!#u:Duafnzzzzzzzzzzzzzz!!!"
-	SetVariable setvar_DataAcq_RsCorr,userdata(Config_RestorePriority)=  "40"
+	SetVariable setvar_DataAcq_RsCorr,userdata(Config_DontRestore)=  "1"
+	SetVariable setvar_DataAcq_RsCorr,userdata(Config_DontSave)=  "1"
 	SetVariable setvar_DataAcq_RsCorr,limits={0,100,1},value= _NUM:0
 	SetVariable setvar_DataAcq_RsPred,pos={202.00,237.00},size={119.00,18.00},bodyWidth=40,disable=1,proc=DAP_SetVarProc_AmpCntrls,title="Prediction (%)"
 	SetVariable setvar_DataAcq_RsPred,userdata(tabnum)=  "0"
@@ -3041,7 +3060,8 @@ Window DA_Ephys() : Panel
 	SetVariable setvar_DataAcq_RsPred,userdata(ResizeControlsInfo)= A"!!,G`!!#B(!!#@R!!#<Hz!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	SetVariable setvar_DataAcq_RsPred,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Duafnzzzzzzzzzzz"
 	SetVariable setvar_DataAcq_RsPred,userdata(ResizeControlsInfo) += A"zzz!!#u:Duafnzzzzzzzzzzzzzz!!!"
-	SetVariable setvar_DataAcq_RsPred,userdata(Config_RestorePriority)=  "40"
+	SetVariable setvar_DataAcq_RsPred,userdata(Config_DontRestore)=  "1"
+	SetVariable setvar_DataAcq_RsPred,userdata(Config_DontSave)=  "1"
 	SetVariable setvar_DataAcq_RsPred,limits={0,100,1},value= _NUM:0
 	Button button_DataAcq_FastComp_VC,pos={393.00,213.00},size={54.00,18.00},disable=1,proc=DAP_ButtonProc_AmpCntrls,title="Cp Fast"
 	Button button_DataAcq_FastComp_VC,help={"Activates MCC auto fast capacitance compensation"}
@@ -3050,7 +3070,8 @@ Window DA_Ephys() : Panel
 	Button button_DataAcq_FastComp_VC,userdata(ResizeControlsInfo)= A"!!,I+!!#Ae!!#>j!!#<Xz!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	Button button_DataAcq_FastComp_VC,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Duafnzzzzzzzzzzz"
 	Button button_DataAcq_FastComp_VC,userdata(ResizeControlsInfo) += A"zzz!!#u:Duafnzzzzzzzzzzzzzz!!!"
-	Button button_DataAcq_FastComp_VC,userdata(Config_RestorePriority)=  "41"
+	Button button_DataAcq_FastComp_VC,userdata(Config_DontRestore)=  "1"
+	Button button_DataAcq_FastComp_VC,userdata(Config_DontSave)=  "1"
 	Button button_Hardware_AutoGainAndUnit,pos={399.00,408.00},size={39.00,45.00},proc=DAP_ButtonProc_AutoFillGain,title="Auto\rFill"
 	Button button_Hardware_AutoGainAndUnit,help={"Queries the MultiClamp Commander for the gains of all connected amplifiers of this device."}
 	Button button_Hardware_AutoGainAndUnit,userdata(tabnum)=  "6"
@@ -3102,8 +3123,8 @@ Window DA_Ephys() : Panel
 	CheckBox check_DataAcq_Amp_Chain,userdata(ResizeControlsInfo)= A"!!,H`J,hrK!!#>F!!#<(z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	CheckBox check_DataAcq_Amp_Chain,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Duafnzzzzzzzzzzz"
 	CheckBox check_DataAcq_Amp_Chain,userdata(ResizeControlsInfo) += A"zzz!!#u:Duafnzzzzzzzzzzzzzz!!!"
-	CheckBox check_DataAcq_Amp_Chain,userdata(Config_RestorePriority)=  "40"
-	CheckBox check_DataAcq_Amp_Chain,value= 0
+	CheckBox check_DataAcq_Amp_Chain,userdata(Config_DontRestore)=  "1"
+	CheckBox check_DataAcq_Amp_Chain,userdata(Config_DontSave)=  "1",value= 0
 	GroupBox group_Settings_MDSupport,pos={21.00,24.00},size={444.00,39.00},disable=1,title="Multiple Device Support"
 	GroupBox group_Settings_MDSupport,help={"Multiple device support includes yoking and multiple independent devices"}
 	GroupBox group_Settings_MDSupport,userdata(tabnum)=  "5"
@@ -3163,7 +3184,8 @@ Window DA_Ephys() : Panel
 	Button button_DataAcq_AutoBridgeBal_IC,userdata(ResizeControlsInfo)= A"!!,H+!!#A`!!#>.!!#<(z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	Button button_DataAcq_AutoBridgeBal_IC,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Duafnzzzzzzzzzzz"
 	Button button_DataAcq_AutoBridgeBal_IC,userdata(ResizeControlsInfo) += A"zzz!!#u:Duafnzzzzzzzzzzzzzz!!!"
-	Button button_DataAcq_AutoBridgeBal_IC,userdata(Config_RestorePriority)=  "41"
+	Button button_DataAcq_AutoBridgeBal_IC,userdata(Config_DontRestore)=  "1"
+	Button button_DataAcq_AutoBridgeBal_IC,userdata(Config_DontSave)=  "1"
 	CheckBox Check_DataAcq_SendToAllAmp,pos={339.00,147.00},size={105.00,15.00},disable=1,proc=DAP_CheckProc_UpdateGuiState,title="Send to all Amps"
 	CheckBox Check_DataAcq_SendToAllAmp,userdata(tabnum)=  "0"
 	CheckBox Check_DataAcq_SendToAllAmp,userdata(tabcontrol)=  "ADC"
@@ -3307,7 +3329,7 @@ Window DA_Ephys() : Panel
 	TitleBox Title_Hardware_Pressure_AD_Div,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Duafnzzzzzzzzzzz"
 	TitleBox Title_Hardware_Pressure_AD_Div,userdata(ResizeControlsInfo) += A"zzz!!#u:Duafnzzzzzzzzzzzzzz!!!"
 	TitleBox Title_Hardware_Pressure_AD_Div,frame=0
-	PopupMenu Popup_Settings_Pressure_TTLA,pos={218.00,528.00},size={104.00,19.00},bodyWidth=70,proc=DAP_PopMenuProc_CAA,title="TTL A"
+	PopupMenu Popup_Settings_Pressure_TTLA,pos={220.00,528.00},size={102.00,19.00},bodyWidth=70,proc=DAP_PopMenuProc_CAA,title="TTL A"
 	PopupMenu Popup_Settings_Pressure_TTLA,help={"Select TTL channel for solenoid command"}
 	PopupMenu Popup_Settings_Pressure_TTLA,userdata(tabnum)=  "6"
 	PopupMenu Popup_Settings_Pressure_TTLA,userdata(tabcontrol)=  "ADC"
@@ -3566,7 +3588,8 @@ Window DA_Ephys() : Panel
 	Button button_DataAcq_SlowComp_VC,userdata(ResizeControlsInfo)= A"!!,I+!!#B&!!#>j!!#<Xz!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	Button button_DataAcq_SlowComp_VC,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Duafnzzzzzzzzzzz"
 	Button button_DataAcq_SlowComp_VC,userdata(ResizeControlsInfo) += A"zzz!!#u:Duafnzzzzzzzzzzzzzz!!!"
-	Button button_DataAcq_SlowComp_VC,userdata(Config_RestorePriority)=  "41"
+	Button button_DataAcq_SlowComp_VC,userdata(Config_DontRestore)=  "1"
+	Button button_DataAcq_SlowComp_VC,userdata(Config_DontSave)=  "1"
 	CheckBox check_DatAcq_SealAtm,pos={186.00,327.00},size={42.00,15.00},disable=1,proc=P_Check_SealAtm,title="Atm."
 	CheckBox check_DatAcq_SealAtm,help={"Seals all headstates with active test pulse"}
 	CheckBox check_DatAcq_SealAtm,userdata(tabnum)=  "0"
@@ -3779,7 +3802,7 @@ Window DA_Ephys() : Panel
 	CheckBox check_settings_show_power,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Duafnzzzzzzzzzzz"
 	CheckBox check_settings_show_power,userdata(ResizeControlsInfo) += A"zzz!!#u:Duafnzzzzzzzzzzzzzz!!!"
 	CheckBox check_settings_show_power,value= 0
-	PopupMenu Popup_Settings_Pressure_TTLB,pos={224.00,555.00},size={103.00,19.00},bodyWidth=70,proc=DAP_PopMenuProc_CAA,title="TTL B"
+	PopupMenu Popup_Settings_Pressure_TTLB,pos={226.00,555.00},size={101.00,19.00},bodyWidth=70,proc=DAP_PopMenuProc_CAA,title="TTL B"
 	PopupMenu Popup_Settings_Pressure_TTLB,help={"Select TTL channel for solenoid command"}
 	PopupMenu Popup_Settings_Pressure_TTLB,userdata(tabnum)=  "6"
 	PopupMenu Popup_Settings_Pressure_TTLB,userdata(tabcontrol)=  "ADC"
