@@ -12,7 +12,7 @@
 static Constant SCOPE_TIMEAXIS_RESISTANCE_RANGE = 120
 static Constant SCOPE_GREEN                     = 26122
 static Constant SCOPE_BLUE                      = 39168
-static StrConstant RES_FORMAT_STR               = "\\[1\\K(%d, %d, %d)\\{\"%%s\", FloatWithMinSigDigits(%s[%d], numMinSignDigits = 2)}\\]1\K(0, 0, 0)"
+static StrConstant RES_FORMAT_STR               = "\\[1\\K(%d, %d, %d)\\{\"%%s\", FloatWithMinSigDigits(%s[%d], numMinSignDigits = 2)}\\]1\\K(0, 0, 0)"
 static Constant PRESSURE_SPECTRUM_PERCENT       = 0.05
 
 Function/S SCOPE_GetGraph(panelTitle)
