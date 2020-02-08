@@ -3653,7 +3653,7 @@ End
 /// @}
 
 /// @name Asynchronous Measurements
-/// @}
+/// @{
 
 /// @brief Return a *free* wave for the async settings, data wave
 ///

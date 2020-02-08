@@ -185,7 +185,7 @@ Function/S GetChannelNameFromChannelType(groupID, device, channel, sweep, params
 	WAVE numericalValues = GetLBNumericalValues(device)
 
 	string channelName, key
-	variable entry
+	variable entry, index
 
 	switch(params.channelType)
 		case ITC_XOP_CHANNEL_TYPE_DAC:
@@ -194,8 +194,9 @@ Function/S GetChannelNameFromChannelType(groupID, device, channel, sweep, params
 			channelName += "_" + num2str(params.channelNumber)
 
 			if(IsNaN(params.electrodeNumber))
-				key = CreateLBNUnassocKey("DAC", params.channelNumber, params.channelType)
-				entry = GetLastSettingIndep(numericalValues, sweep, key, DATA_ACQUISITION_MODE)
+				WAVE/Z settings
+				[settings, index] = GetLastSettingChannel(numericalValues, $"", sweep, "DAC", params.channelNumber, params.channelType, DATA_ACQUISITION_MODE)
+				entry = settings[index]
 			else
 				WAVE/Z settings = GetLastSetting(numericalValues, sweep, "DAC", DATA_ACQUISITION_MODE)
 				CHECK_WAVE(settings, NUMERIC_WAVE)
@@ -210,8 +211,9 @@ Function/S GetChannelNameFromChannelType(groupID, device, channel, sweep, params
 			channelName += "_" + num2str(params.channelNumber)
 
 			if(IsNaN(params.electrodeNumber))
-				key = CreateLBNUnassocKey("ADC", params.channelNumber, params.channelType)
-				entry = GetLastSettingIndep(numericalValues, sweep, key, DATA_ACQUISITION_MODE)
+				WAVE/Z settings
+				[settings, index] = GetLastSettingChannel(numericalValues, $"", sweep, "ADC", params.channelNumber, params.channelType, DATA_ACQUISITION_MODE)
+				entry = settings[index]
 			else
 				WAVE/Z settings = GetLastSetting(numericalValues, sweep, "ADC", DATA_ACQUISITION_MODE)
 				CHECK_WAVE(settings, NUMERIC_WAVE)
