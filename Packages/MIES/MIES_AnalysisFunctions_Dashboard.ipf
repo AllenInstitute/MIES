@@ -73,6 +73,12 @@ static Function AD_FillWaves(panelTitle, list, info)
 	for(i = 0; i <= lastSweep; i += 1)
 
 		WAVE/Z headstages = GetLastSetting(numericalValues, i, "Headstage Active", DATA_ACQUISITION_MODE)
+
+		// present since 602debb9 (Record the active headstage in the settingsHistory, 2014-11-04)
+		if(!WaveExists(headstages))
+			return 0
+		endif
+
 		ASSERT(WaveExists(headstages), "No headstages active")
 
 		WaveStats/Q/M=1 headstages
