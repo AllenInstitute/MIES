@@ -164,7 +164,7 @@ static Function NWB_GetFileForExport(nwbVersion, [overrideFilePath, createdNewNW
 			ti.session_start_time = min(sessionStartTime, floor(oldestData))
 		endif
 
-		IPNWB#CreateCommonGroups(fileID, toplevelInfo=ti)
+		IPNWB#CreateCommonGroups(fileID, ti)
 
 		NWB_AddGeneratorString(fileID, nwbVersion)
 		NWB_AddSpecifications(fileID, nwbVersion)
