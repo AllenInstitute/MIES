@@ -166,6 +166,7 @@ static Function NWB_GetFileForExport([overrideFilePath, createdNewNWBFile])
 		NWB_AddGeneratorString(fileID)
 
 		sessionStartTimeReadBack = NWB_ReadSessionStartTime(fileID)
+		ASSERT(ti.session_start_time == sessionStartTimeReadBack, "Buggy timestamp handling")
 
 		fileIDExport   = fileID
 		filePathExport = filePath
