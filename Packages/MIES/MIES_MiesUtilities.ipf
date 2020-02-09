@@ -2792,7 +2792,7 @@ Function AddTraceToLBGraph(graph, keys, values, key)
 	WAVE values, keys
 	string key
 
-	string unit, lbl, axis, trace, text, tagString
+	string unit, lbl, axis, trace, text, tagString, tmp
 	string traceList = ""
 	variable i, j, numEntries, row, col, numRows, sweepCol
 	variable red, green, blue, isTimeAxis, isTextData, xPos
@@ -2869,8 +2869,8 @@ Function AddTraceToLBGraph(graph, keys, values, key)
 				endif
 
 				GetTraceColor(j, red, green, blue)
-				sprintf text, "\\K(%d, %d, %d)%d:\\K(0, 0, 0)%s\r", red, green, blue, j + 1, text
-				tagString += text
+				sprintf tmp, "\\K(%d, %d, %d)%d:\\K(0, 0, 0)", red, green, blue, j + 1
+				tagString = tagString + tmp + text + "\r"
 			endfor
 
 			if(IsEmpty(tagString))
