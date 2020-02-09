@@ -261,7 +261,7 @@ static Function TestTimeSeries(fileID, device, groupID, channel, sweep, pxpSweep
 	string channel, device
 	DFREF pxpSweepsDFR
 
-	variable channelGroupID, starting_time, session_start_time, actual, scale, scale_ref
+	variable channelGroupID, starting_time, session_start_time, actual
 	variable clampMode, gain, gain_ref, resolution, conversion, headstage, rate_ref, rate, samplingInterval, samplingInterval_ref
 	string stimulus, stimulus_expected, channelName, str, path, neurodata_type
 	string electrode_name, electrode_name_ref, key, unit_ref, unit, base_unit_ref, filePath
@@ -272,7 +272,6 @@ static Function TestTimeSeries(fileID, device, groupID, channel, sweep, pxpSweep
 
 	channelGroupID = IPNWB#H5_OpenGroup(groupID, channel)
 
-	// @TODO FIXME HACKY
 	string headstageDesc = IPNWB#ReadTextDataSetAsString(channelGroupID, "electrode/description")
 	if(!cmpstr(headstageDesc, "PLACEHOLDER"))
 		headstage = NaN
@@ -404,16 +403,6 @@ static Function TestTimeSeries(fileID, device, groupID, channel, sweep, pxpSweep
 		gain_ref = gains[params.electrodeNumber]
 		gain = IPNWB#ReadDatasetAsNumber(channelGroupID, "gain")
 		CHECK_EQUAL_VAR(gain, gain_ref)
-	endif
-
-	// scale
-	if(params.channelType == ITC_XOP_CHANNEL_TYPE_DAC && IsFinite(params.electrodeNumber))
-		WAVE/Z scales = GetLastSetting(numericalValues, sweep, STIMSET_SCALE_FACTOR_KEY, DATA_ACQUISITION_MODE)
-		CHECK_WAVE(scales, NUMERIC_WAVE)
-
-		scale_ref = scales[params.electrodeNumber]
-		scale = IPNWB#ReadDatasetAsNumber(channelGroupID, "scale")
-		CHECK_EQUAL_VAR(scale, scale_ref)
 	endif
 
 	// data.resolution
