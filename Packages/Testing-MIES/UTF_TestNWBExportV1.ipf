@@ -552,14 +552,14 @@ static Function/S TestFileExport()
 	PathInfo home
 	baseFolder = S_path
 
-	nwbFile = GetExperimentName() + ".nwb"
+	nwbFile = GetExperimentName() + "-V1.nwb"
 	discLocation = baseFolder + nwbFile
 
 	HDF5CloseFile/Z/A 0
 	DeleteFile/Z/P=home nwbFile
 	KillOrMoveToTrash(dfr = GetAnalysisFolder())
 
-	NWB_ExportAllData(NWB_VERSION, compressionMode = IPNWB#GetNoCompression(), writeStoredTestPulses = 1)
+	NWB_ExportAllData(NWB_VERSION, compressionMode = IPNWB#GetNoCompression(), writeStoredTestPulses = 1, overrideFilePath=discLocation)
 	CloseNWBFile()
 
 	GetFileFolderInfo/P=home/Q/Z nwbFile
