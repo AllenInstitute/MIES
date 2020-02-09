@@ -204,13 +204,86 @@ Function AcceptsValid10()
 	CHECK_EQUAL_VAR(actual, expected)
 End
 
-Function FailsWithLocalTimeZone()
+Function AcceptsValid11()
 
-	variable actual = ParseISO8601TimeStamp(GetIso8601TimeStamp(localtimeZone = 1))
-	CHECK_EQUAL_VAR(actual, NaN)
+	variable now = DateTime
+	string actual   = GetIso8601TimeStamp(secondsSinceIgorEpoch = now, localTimeZone = 1)
+	string expected = GetIso8601TimeStamp(secondsSinceIgorEpoch = now  - Date2Secs(-1, -1, -1))
+
+	CHECK_EQUAL_VAR(ParseISO8601TimeStamp(actual), ParseISO8601TimeStamp(expected))
+End
+
+Function AcceptsValid12()
+
+	variable now      = DateTime
+	variable expected = trunc(now) - Date2Secs(-1, -1, -1)
+	variable actual   = ParseISO8601TimeStamp(GetIso8601TimeStamp(secondsSinceIgorEpoch = now, localTimeZone = 1))
+
+	CHECK_EQUAL_VAR(actual, expected)
+End
+
+Function AcceptsValid13()
+
+	variable expected = ParseISO8601TimeStamp("2017-05-23T9:20:52-08:00")
+	variable actual   = ParseISO8601TimeStamp("2017-05-23T18:20:52+01:00")
+	CHECK_EQUAL_VAR(actual, expected)
+
+	expected = ParseISO8601TimeStamp("2017-05-23T09:20:52-08:00")
+	actual   = ParseISO8601TimeStamp("2017-05-23T17:20:52Z")
+	CHECK_EQUAL_VAR(actual, expected)
+End
+
+Function AcceptsValid14()
+
+	variable expected = 1
+	variable actual
+
+	actual = ParseISO8601Timestamp("1904-01-1T00:00:01")
+	CHECK_EQUAL_VAR(actual, expected)
+	actual = ParseISO8601Timestamp("1904-01-1T00:00:01Z")
+	CHECK_EQUAL_VAR(actual, expected)
+	actual = ParseISO8601Timestamp("1904-01-1T00:00:01+00:00")
+	CHECK_EQUAL_VAR(actual, expected)
+	actual = ParseISO8601Timestamp("1904-01-1T01:00:01+01:00")
+	CHECK_EQUAL_VAR(actual, expected)
 End
 
 /// @}
+
+/// ISO8601Tests
+/// @{
+
+Function/WAVE ISO8601_timestamps()
+
+	Make/FREE/T wv = {\
+		GetIso8601TimeStamp(), \
+		GetIso8601TimeStamp(localTimeZone = 0), \
+		GetIso8601TimeStamp(localTimeZone = 1), \
+		GetIso8601TimeStamp(numFracSecondsDigits = 1), \
+		GetIso8601TimeStamp(numFracSecondsDigits = 2), \
+		GetIso8601TimeStamp(numFracSecondsDigits = 2, localTimeZone = 1), \
+		"2007-08-31T16:47+00:00", \
+		"2007-12-24T18:21Z", \
+		"2008-02-01T09:00:22+05", \
+		"2009-01-01T12:00:00+01:00", \
+		"2009-06-30T18:30:00+02:00" \
+		}
+
+	return wv
+End
+
+// UTF_TD_GENERATOR ISO8601_timestamps
+Function ISO8601_teststamps([str])
+	string str
+
+	variable secondsSinceIgorEpoch
+
+	secondsSinceIgorEpoch = ParseISO8601TimeStamp(str)
+	REQUIRE_NEQ_VAR(NaN, secondsSinceIgorEpoch)
+End
+
+/// @}
+
 
 /// GetSetIntersection
 /// @{
