@@ -174,6 +174,9 @@ Function/S CreateMiesVersion()
 	userName = GetSystemUserName()
 	gitPathCandidates = AddListItem("C:\\Users\\" + userName + "\\AppData\\Local\\Atlassian\\SourceTree\\git_local\\mingw32\\bin\\git.exe", gitPathCandidates, ";", Inf)
 
+	// user installation of git for windows
+	gitPathCandidates = AddListItem("C:\\Users\\" + userName + "\\AppData\\Local\\Programs\\Git\\cmd\\git.exe", gitPathCandidates, ";", Inf)
+
 	numEntries = ItemsInList(gitPathCandidates)
 	for(i = 0; i < numEntries; i += 1)
 		gitPath = StringFromList(i, gitPathCandidates)
