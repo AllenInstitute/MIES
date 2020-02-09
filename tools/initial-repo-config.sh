@@ -21,6 +21,9 @@ git submodule update --checkout
 # recursive submodule checkout can be done with
 # git submodule update --checkout --init --recursive
 
+# set remote URL of submodules to ssh for push/pull
+# git remote set-url origin git@github.com:AllenInstitute/IPNWB
+
 # ignore git attributes on foreign submodules
 mkdir -p .git/modules/Packages/ZeroMQ-XOP/modules/src/libzmq/info
 echo '**/* !whitespace !eol' > .git/modules/Packages/ZeroMQ-XOP/modules/src/libzmq/info/attributes
