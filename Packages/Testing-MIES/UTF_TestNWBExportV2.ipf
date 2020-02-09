@@ -373,6 +373,14 @@ static Function TestTimeSeries(fileID, filepath, device, groupID, channel, sweep
 				FAIL()
 			endif
 			break
+		case I_EQUAL_ZERO_MODE:
+			if(params.channelType == ITC_XOP_CHANNEL_TYPE_ADC)
+				str = "IZeroClampSeries"
+				CHECK_EQUAL_STR(neurodata_type, str)
+			else
+				FAIL()
+			endif
+			break
 		default:
 			if(IsNaN(clampMode))
 				str = "TimeSeries"
