@@ -3,6 +3,298 @@ Release notes
 
 .. toctree::
 
+Release 2.1
+===========
+
+Sweep Formula
+-------------
+
+- Add an easy to use scripting language to evaluate acquired data termed `Sweep Formula <https://alleninstitute.github.io/MIES/SweepFormula.html#the-sweep-formula-module>`_
+
+AnalysisBrowser
+---------------
+
+- Load user comments from NWB files
+- Store the starting directory in the package settings
+
+DataBrowser
+-----------
+
+- Use a per-instance folder. Now users can have multiple databrowsers open with
+  different settings as each databrowser graph has its own folder.
+- Enable resizing for BrowserHistorySettings Panel
+- Properly select NONE with multiple devices with data
+- Make all axes scaling options available from SweepBrowser
+
+DataBrowser/SweepBrowser
+------------------------
+
+- Fix loading and displaying of old experiments
+- Make it much faster by custom trace user data handling, incremental sweep
+  updates and avoiding full updates when they are not necessary.
+- The graph is now always plotted correctly even when using overlay sweeps with
+  headstage removal and special sweeps.
+- Make the highlightning for overlay sweeps much more responsive.
+- Allow to only overlay the sweeps from the current RAC/SCI
+- Adapt tick labels for splitted TTL axis
+- Pulse Average:
+
+   - Fetch the pulse times for each sweep
+   - Make it much faster
+   - Never grey out controls, this allows tweaking the settings while it is disabled
+
+- Restore always all cursors
+- Show the headstage number in the graph as well
+- Replace Labnotebook popup menus with our own cascaded solution which avoids
+  long menues.
+- Add all channel checkboxes
+- Default "Display last sweep acquired" to ON
+- Ignore invalid headstages in removal list of overlay sweeps
+
+DA\_Ephys
+---------
+
+- Fix oodDAQ offset bug introduced in 88323d8d (Replacement of oodDAQ offset
+  calculation routines, 2019-06-13) with more than two stimsets.
+- Cache the HardwareDataWave for the Testpulse
+- Initialize all channel data to NaN
+- Fix AD unit querying bug for ADs above 8
+- Allow TP during DAQ for Indexing
+- Fix an off-by-one error for the fifo position
+- Rework device selection logic: This is now more intuitive.
+- Add a button for rescanning the list of changed hardware devices. This is
+  required as that list is now cached.
+- Add support for decimated oscilloscope wave which greatly speeds up the display
+- Handle stopped DAQ properly and avoid "Uninitialized raCycleID detected" assertions
+- Fix that with TP during DAQ all test pulse channels are stored
+- Apply search string for all controls as well
+- Rework oodDAQ algorithm: The new algorithm is much faster and does not require a resolution parameter anymore
+- Make I=0 clamp mode work again
+- Reset the session start time on "Save and Clear Experiment"
+- Perform analysis parameter checks very early (even before "PRE DAQ" event)
+- Add increment selection to "DA Scale" and manual pressure set variables via context menu
+- Avoid using async channels for DAQ as well
+- Make it usable with lots of sweeps much better
+- Handle changing power spectrum checkbox during TP
+- Parallelize curve fits on TPStorage data
+
+ExperimentConfig
+----------------
+
+- Introduce `new configuration management <https://alleninstitute.github.io/MIES/file/_m_i_e_s___configuration_8ipf.html?highlight=json#file-mies-configuration-ipf>`_:
+
+  - Support all panels and controls
+  - Support setting all amplifier entries per headstage
+  - Configuration files are in standard JSON format
+  - Support for global and rig specific config files which complement each other
+
+- Fix MCC opening bug in demo mode
+- Add configuration field Amplifier Channel to specify channel explicitly
+- Support multiple locations for the json settings files
+
+Downsample
+----------
+
+None
+
+Analysis Functions
+------------------
+
+- Parameters now have no restrictions anymore on the type of content.
+  Previously some characters were not allowed.
+- Explicitly ignore TP during DAQ channels
+- Fix an off-by-one issue as we use the lastKnownRowIndex/lastValidRowIndex as
+  zero-based indizes and not as length. We now also pass these values as NaN
+  if they do not make sense for the current event.
+- AnalysisFunctions_V3: Introduce scaledDataWave member
+- Add an analysis function for measuring the mid sweep event timings
+- Fix level calculation for NI hardware in ``PSQ_Ramp``
+- Adapt Supra mode for ``PSQ_DAScale``:
+   - Plot the spike frequency vs DAScale
+   - Add new LBN entry of the slope of that plot
+   - Support new FinalSlopePercent parameter as additional set passing
+     criteria
+   - Add new LBN entry which denotes if the FinalSlopePercent was reached
+     or not
+   - Store pulse duration in LBN
+- SetControlInEvent: Add support setting notebook contents
+- Add support for check and help functions. Port the existing analysis
+  functions to use that new feature.
+- Fixed the analysis function parameter check routine
+
+Foreign Function interface
+--------------------------
+
+None
+
+General
+-------
+
+- Drop support for Igor Pro 7
+- Enhance the first time usage ITC error message
+- Added ``MIES_MassExperimentProcessing.ipf`` for batch converting Igor experiment files to NWBv2.
+- Upload Igor Pro crash dumps every day
+- Nicify About MIES dialog
+- Add MIES settings which are persistent across restarts
+- Add menu option to open the diagnostics directory
+- Switch the default branch to ``main`` from ``master`` to foster inclusive
+  terminology. For existing clones execute ``git remote set-head origin main``
+  to switch the remote HEAD to ``main`` as well.
+
+ITC XOP 2
+----------
+
+- Remove unnecessary ITCMM DLLs
+- Add powershell scripts for disabling ASLR
+
+ZeroMQ XOP
+----------
+
+- Don't restart the message handler if not required. This makes it possible to
+  create a new experiment via ZeroMQ.
+
+MCC XOP
+-------
+
+None
+
+MIESUtils XOP
+-------------
+
+None
+
+Labnotebook
+-----------
+
+- Add functions for querying labnotebook data via channel number and type
+- Change naming scheme of unassociated channels:
+
+   We support two types of unassociated keys. Old style, prior to 403c8ec2
+   (Merge pull request #370 from AllenInstitute/feature/sweepformula_enable,
+   2019-11-13) but after its introduction in ad8dc8ec (Allow AD/DA channels
+   not associated with a headstage again, 2015-10-22) are written as ``$Name UNASSOC_$ChannelNumber``.
+   New style has the format ``$Name u_(AD|DA)$ChannelNumber``, this includes
+   the channel type to make them more self explaining.
+- Remove "Pulse Train Pulses" and "Pulse to Pulse Length" labnotebook entries due severe bugs in the calculation
+- Fix too short dimension labels
+- Some units and tolerances were fixed for the numerical labnotebook
+
+New numerical keys
+~~~~~~~~~~~~~~~~~~
+
+- ``PSQ_FMT_LBN_DA_fI_SLOPE`` for fitted slope in the f-I plot for ``PSQ_DAScale``
+- ``PSQ_FMT_LBN_DA_fI_SLOPE_REACHED`` for fitted slope in the f-I plot exceeds target value for ``PSQ_DAScale``
+- ``PSQ_FMT_LBN_PULSE_DUR`` for ``PSQ_DAScale``
+- ``PSQ_FMT_LBN_SPIKE_DETECT`` for ``PSQ_DAScale``
+
+New textual keys
+~~~~~~~~~~~~~~~~
+
+- ``JSON config file: path``: List of absolute paths to the JSON configuration files
+- ``JSON config file: SHA-256 hash``: List of hash values
+- ``Epochs``: , `Add epoch information from the stimulus set into the labnotebook <https://alleninstitute.github.io/MIES/epoch_information.html#epoch-information>`_.
+
+Changed numerical entries
+~~~~~~~~~~~~~~~~~~~~~~~~~
+
+- ``oodDAQ regions``: Now uses floating point numbers instead of intergers
+
+Changed textual entries
+~~~~~~~~~~~~~~~~~~~~~~~
+
+- ``Function params`` -> ``Function params (encoded)``: This entry now holds the serialized analysis function
+  parameter strings where the values are `percent encoded <https://en.wikipedia.org/wiki/Percent-encoding>`_.
+
+NWB/IPNWB
+---------
+
+- Write the Igor Pro history by default
+- Add support for exporting into NWBv2 (2.2.4 to be exact). Additional MIES
+  data and metadata is tagged using `ndx-MIES <https://github.com/t-b/ndx-MIES>`_.
+  Export support into NWBv1 is unchanged.
+- Various bugfixes for exporting really old or buggy MIES data into NWB.
+- Support export of I=0 data better
+- Don't delete third party stimsets after exporting into NWB.
+- Mark ``/general/stimsets`` as custom for NWBv1
+
+File format
+~~~~~~~~~~~
+
+None
+
+Pressure Control
+----------------
+
+- Allow adjusting the pressure with the mouse wheel
+
+WaveBuilder
+-----------
+
+- Raise the stimset wave note version
+- Make the analysis function paramter panel nicer and resizable
+- Changed encoding of the analysis function parameters to use percent-encoding
+- Add duration entry for combined stimset
+- Add a search string for the wavebuilder stimsets for loading
+- Add wave note entry for mixed frequency shuffle
+- Force stimset rebuilding on too old wave note version
+- Fix forgotten delta mode for pulse duration for pulse train pulse
+
+Work Sequencing Engine
+----------------------
+
+- Remove AnalyaisMaster panel and HDF5 operations
+
+Internal
+--------
+
+- Packages/doc/developers.rst: Update CI section
+- Add JSON-XOP
+- Add preliminary support for Igor Pro 9
+- Use mathjax instead of images for the documentation
+- Fix version generation with latest tag
+- CreateMiesVersion: Support more git install locations
+- Started cleanup of DC_PlaceDataInHardwareDataWave
+- Check that ASLR is turned off on Windows 10 64-bit. This is required for ITC hardware to work, see https://github.com/AllenInstitute/ITCXOP2/#windows-10.
+- Add generic wave cache accessor ``CA_TemporaryWaveKey`` for using the returned wave in multihread statements as target junk wave
+- Add ROVar/ROStr for mapping global variables and strings to a read-only version
+- Update our documentation toolchain to sphinx 3
+- Remove Tango procedure files
+- Fixed some minor memory leaks
+
+Tango
+-----
+
+- Remove it completely
+- Add empty ``MIES_TangoInteract.ipf`` to avoid compile errors on old experiments
+
+Tests
+-----
+
+- Lots of additions and fixes
+- TTL channels are now much more checked on ITC1600
+- Switch to Windows 10 on CI server and greatly cleanup the test scripts
+- Perform compile testing on 32bit and 64bit Igor Pro
+- Added test and pynwb validation tests for NWBV2
+- Port tests to use rtFunctionErrors=1
+
+Async Framework
+---------------
+
+- Make ``ASYNC_Start`` and ``ASYNC_Stop`` idempotent
+- Start and Stop of ASYNC framework is now globally done by CompileHooks
+
+Installer
+---------
+
+- Add more documentation for admins how it works
+- Added support for ``/ALLUSER`` parameter to installer
+- Switch installer to support Igor Pro 8 and 9
+- Add special installation mode for CI server via ``/CIS`` and ``/SKIPHWXOP`` flags
+- Fix edge case of user vs admin installations due to NSIS ShellLink plugin
+- Enhance deinstallation logic to catch more edge cases
+- Make ITC hardware work out of the box on new Windowses. Requires that
+  unsigned powershell scripts can be executed.
+
 Release 2.0
 ===========
 
@@ -86,6 +378,7 @@ Analysis Functions
   - Add optional analysis parameter to choose operator for Supra
   - Fix average calculation for NI hardware
   - Enable "TP inserting"
+  - Add optional support adjusting DAScale when out of band
 - PSQ_SquarePulse:
 
   - Catch spiking with DAScale of zero
