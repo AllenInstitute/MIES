@@ -3400,3 +3400,22 @@ Function STIW_TestAbort([var])
 End
 
 /// @}
+
+/// MiesUtils XOP functions
+/// @{
+
+Function RunningInMainThread_Thread()
+
+	make/FREE data
+	multithread data = MU_RunningInMainThread()
+	CHECK_EQUAL_VAR(Sum(data), 0)
+End
+
+Function RunningInMainThread_Main()
+
+	make/FREE data
+	data = MU_RunningInMainThread()
+	CHECK_EQUAL_VAR(Sum(data), 128)
+End
+
+/// @}
