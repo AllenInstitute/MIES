@@ -4983,3 +4983,25 @@ static Function JsonSetEmptyArray(jsonID, path)
 	JSON_SetWave(jsonID, path, w)
 	JSON_Remove(jsonID, path + "/0")
 End
+
+/// @brief Return the name of a symbolic path which points to the crash dump
+/// directory on windows
+Function/S GetSymbolicPathForDiagnosticsDirectory()
+
+	string userName, path, symbPath
+
+	userName = GetSystemUserName()
+
+	sprintf path, "C:Users:%s:AppData:Roaming:WaveMetrics:Igor Pro %s:Diagnostics:", userName, GetIgorProVersion()[0]
+	symbPath = "crashInfo"
+
+	NewPath/O $symbPath, path
+
+	return symbPath
+End
+
+Function ShowDiagnosticsDirectory()
+
+	string symbPath = GetSymbolicPathForDiagnosticsDirectory()
+	PathInfo/SHOW $symbPath
+End
