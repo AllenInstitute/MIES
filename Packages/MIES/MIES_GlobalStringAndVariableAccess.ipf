@@ -367,12 +367,13 @@ End
 
 /// @brief Return the interactive mode
 ///
-/// By default MIES operates in interactive mode (1). The user can change
-/// that to non-interactive mode where all dialog/popups etc. are avoided
-/// and replaced with sensible defaults.
+/// By default MIES operates in interactive mode (1) in the main thread and in
+/// non-interactive mode in preemptive threads. The user can change that to
+/// non-interactive mode where all dialog/popups etc. are avoided and replaced
+/// with sensible defaults.
 threadsafe Function/S GetInteractiveMode()
 
-	return GetNVARAsString(GetMiesPath(), "interactiveMode", initialValue=1)
+	return GetNVARAsString(GetMiesPath(), "interactiveMode", initialValue=!!MU_RunningInMainThread())
 End
 
 /// @brief Returns the absolute path to the testpulse running modes, holds one of @ref TestPulseRunModes
