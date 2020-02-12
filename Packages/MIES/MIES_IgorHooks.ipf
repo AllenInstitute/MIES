@@ -84,6 +84,46 @@ static Function PS_SerializeSettings()
 	JSONid = NaN
 End
 
+// Support not saving the experiments at all
+// the *only* use case is for mass converting PXPs to NWBv2 from a read-only filesystem
+
+#ifdef MIES_PXP_NWB_CONVERSION_SKIP_SAVING
+
+static Function IgorBeforeNewHook(igorApplicationNameStr)
+	string igorApplicationNameStr
+
+	ExperimentModified 0
+
+	return 0
+End
+
+static Function IgorStartOrNewHook(igorApplicationNameStr)
+	string igorApplicationNameStr
+
+	ExperimentModified 0
+
+	return 0
+End
+
+static Function BeforeExperimentSaveHook(rN, fileName, path, type, creator, kind)
+	Variable rN, kind
+	String fileName, path, type, creator
+
+	ExperimentModified 0
+
+	return 0
+End
+
+static Function IgorBeforeQuitHook(unsavedExp, unsavedNotebooks, unsavedProcedures)
+	variable unsavedExp, unsavedNotebooks, unsavedProcedures
+
+	ExperimentModified 0
+
+	return 0
+End
+
+#else
+
 static Function BeforeExperimentSaveHook(rN, fileName, path, type, creator, kind)
 	Variable rN, kind
 	String fileName, path, type, creator
@@ -212,3 +252,5 @@ static Function AfterCompiledHook()
 		ExperimentModified 0
 	endif
 End
+
+#endif
