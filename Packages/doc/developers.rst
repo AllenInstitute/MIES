@@ -323,7 +323,10 @@ Setting up a continous integration server (Windows)
    -  Java 8
    -  Git (choose the installer option which will make the Unix tools
       available in cmd as well)
-   -  Multiclamp Commander (see above for specifics)
+   -  Multiclamp Commander (see above for specifics). After installing the
+      32-bit version, save the folder ``c:\Program Files (x86)\Molecular Devices``
+      somewhere, reinstall the 64-bit version and put the saved folder back. In
+      that way you can use both versions at the same time.
    -  NIDAQ-mx driver package 19.0 or later
    -  NIDAQ-mx XOP from WaveMetrics
    -  HEKA Harware Drivers 2014-03 Windows.zip
