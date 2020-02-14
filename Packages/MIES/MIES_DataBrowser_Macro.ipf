@@ -54,7 +54,7 @@ Window DataBrowser() : Graph
 	PopupMenu Popup_SweepControl_Selector,mode=1,popvalue=" ",value= #"\" \""
 	CheckBox check_SweepControl_AutoUpdate,pos={345.00,42.00},size={160.00,15.00},title="Display last sweep acquired"
 	CheckBox check_SweepControl_AutoUpdate,help={"Displays the last sweep acquired when data acquistion is ongoing"}
-	CheckBox check_SweepControl_AutoUpdate,value= 0
+	CheckBox check_SweepControl_AutoUpdate,value= 1
 	RenameWindow #,SweepControl
 	SetActiveSubwindow ##
 	NewPanel/HOST=#/EXT=1/W=(391,0,0,406)  as " "
