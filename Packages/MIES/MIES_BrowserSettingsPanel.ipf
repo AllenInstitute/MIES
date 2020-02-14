@@ -227,6 +227,32 @@ Function BSP_DynamicStartupSettings(mainPanel)
 	PGC_SetAndActivateControl(bsPanel, "SF_InfoTab", val = 0)
 
 	BSP_UpdateHelpNotebook(mainPanel)
+
+	SetWindow $bsPanel, hook(sweepFormula)=BSP_SweepFormulaHook
+End
+
+/// @brief Hook function for the Sweep Formula Notebook
+Function BSP_SweepFormulaHook(s)
+	STRUCT WMWinHookStruct &s
+
+	string win, bsPanel
+
+	switch(s.eventCode)
+		case 11: // keyboard
+			if(s.specialKeyCode == 200 && s.eventMod & 0x2) // Enter + Shift
+				win = GetMainWindow(s.winName)
+				bsPanel = BSP_GetPanel(win)
+
+				if(SF_IsActive(win))
+					PGC_SetAndActivateControl(bsPanel, "button_sweepFormula_display")
+					return 1
+				endif
+			endif
+
+			break
+	endswitch
+
+	return 0
 End
 
 /// @brief Unsets all control properties that are set in BSP_DynamicStartupSettings for DataBrowser type
