@@ -223,8 +223,8 @@ Function BSP_DynamicStartupSettings(mainPanel)
 
 	BSP_InitMainCheckboxes(bsPanel)
 
-	PGC_SetAndActivateControl(bsPanel, "Settings", val = 0)
 	PGC_SetAndActivateControl(bsPanel, "SF_InfoTab", val = 0)
+	PGC_SetAndActivateControl(bsPanel, "Settings", val = 0)
 
 	BSP_UpdateHelpNotebook(mainPanel)
 
