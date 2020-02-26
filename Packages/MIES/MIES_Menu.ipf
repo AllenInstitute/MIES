@@ -52,6 +52,7 @@ Menu "Mies Panels"
 		"Check GUI control procedures of top panel", /Q, SearchForInvalidControlProcs(GetCurrentWindow())
 		"Flush Cache"                              , /Q, CA_FlushCache()
 		"Output Cache statistics"                  , /Q, CA_OutputCacheStatistics()
+		"Show Diagnostics (crash dumps) directory" , /Q, ShowDiagnosticsDirectory()
 	End
 End
 
