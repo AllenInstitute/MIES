@@ -2611,7 +2611,8 @@ Function DateTimeInUTC()
 End
 
 /// @brief Return a string in ISO 8601 format with timezone UTC
-/// @param secondsSinceIgorEpoch [optional, defaults to number of seconds until now] Seconds since the Igor Pro epoch (1/1/1904) in UTC
+/// @param secondsSinceIgorEpoch [optional, defaults to number of seconds until now] Seconds since the Igor Pro epoch (1/1/1904)
+///                              in UTC (or local time zone depending on `localTimeZone`)
 /// @param numFracSecondsDigits  [optional, defaults to zero] Number of sub-second digits
 /// @param localTimeZone         [optional, defaults to false] Use the local time zone instead of UTC
 Function/S GetISO8601TimeStamp([secondsSinceIgorEpoch, numFracSecondsDigits, localTimeZone])
@@ -2787,19 +2788,36 @@ End
 Function ParseISO8601TimeStamp(timestamp)
 	string timestamp
 
-	string year, month, day, hour, minute, second, regexp, fracSeconds
-	variable secondsSinceEpoch
+	string year, month, day, hour, minute, second, regexp, fracSeconds, tzOffsetSign, tzOffsetHour, tzOffsetMinute
+	variable secondsSinceEpoch, timeOffset
 
-	regexp = "^([[:digit:]]+)-([[:digit:]]+)-([[:digit:]]+)[T ]{1}([[:digit:]]+):([[:digit:]]+):([[:digit:]]+)([.,][[:digit:]]+)?Z?$"
-	SplitString/E=regexp timestamp, year, month, day, hour, minute, second, fracSeconds
+	regexp = "^([[:digit:]]+)-([[:digit:]]+)-([[:digit:]]+)[T ]{1}([[:digit:]]+):([[:digit:]]+)(?::([[:digit:]]+)([.,][[:digit:]]+)?)?(?:Z|([\+-])([[:digit:]]+)(?::([[:digit:]]+))?)?$"
+	SplitString/E=regexp timestamp, year, month, day, hour, minute, second, fracSeconds, tzOffsetSign, tzOffsetHour, tzOffsetMinute
 
-	if(V_flag < 6)
+	if(V_flag < 5)
 		return NaN
 	endif
 
-	secondsSinceEpoch  = date2secs(str2num(year), str2num(month), str2num(day))          // date
-	secondsSinceEpoch += 60 * 60* str2num(hour) + 60 * str2num(minute) + str2num(second) // time
-	// timetstamp is in UTC so we don't need to add/subtract anything
+	secondsSinceEpoch  = date2secs(str2num(year), str2num(month), str2num(day))
+	secondsSinceEpoch += 60 * 60 * str2num(hour) + 60 * str2num(minute)
+	if(!IsEmpty(second))
+		secondsSinceEpoch += str2num(second)
+	endif
+
+	if(!IsEmpty(tzOffsetSign) && !IsEmpty(tzOffsetHour))
+		timeOffset = str2num(tzOffsetHour) * 3600
+		if(!IsEmpty(tzOffsetMinute))
+			timeOffset -= str2num(tzOffsetMinute) * 60
+		endif
+
+		if(!cmpstr(tzOffsetSign, "+"))
+			secondsSinceEpoch -= timeOffset
+		elseif(!cmpstr(tzOffsetSign, "-"))
+			secondsSinceEpoch += timeOffset
+		else
+			ASSERT(0, "Invalid case")
+		endif
+	endif
 
 	if(!IsEmpty(fracSeconds))
 		secondsSinceEpoch += str2num(ReplaceString(",", fracSeconds, "."))
