@@ -334,8 +334,7 @@ from overlay sweeps will be automatically enabled.
 cursors
 """""""
 
-`cursors([A-J]+)` will return the x value of the named cursor in the graph
-associated with the current `BrowserSettingsPanel`.
+`cursors([A-J]+)` will return the x values of the named cursor in the graph.
 
 .. code-block:: bash
 
@@ -376,6 +375,10 @@ sweep numbers. The output is grouped by channels.
 
 The sweeps that you want to return need to be displayed in the graph. Do this
 in the OVS tab.
+
+The range can be either supplied explicitly using `[100, 300]` which would
+select `100 ms` to `300 ms` or by using `cursors()`. In case `cursors()` is
+used but there are no cursors on the graph, the full x-range is used.
 
 The function does not return errors for unmatched entries.
 
