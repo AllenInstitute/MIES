@@ -365,7 +365,7 @@ Function SCOPE_CreateGraph(panelTitle, dataAcqOrTP)
 		SetAxesRanges(graph, previousADAxesRanges, axesRegexp=AXIS_SCOPE_AD_REGEXP, orientation=AXIS_ORIENTATION_LEFT, mode=AXIS_RANGE_USE_MINMAX)
 	endif
 
-	SCOPE_SetADAxisLabel(panelTitle,activeHeadStage)
+	SCOPE_SetADAxisLabel(panelTitle, dataAcqOrTP, activeHeadStage)
 
 	if(showPowerSpectrum)
 			Label/W=$graph bottomPS "Frequency (\\U)"
@@ -390,9 +390,9 @@ Function SCOPE_CreateGraph(panelTitle, dataAcqOrTP)
 	endif
 End
 
-Function SCOPE_SetADAxisLabel(panelTitle,activeHeadStage)
+Function SCOPE_SetADAxisLabel(panelTitle, dataAcqOrTP, activeHeadStage)
 	string panelTitle
-	variable activeHeadStage
+	variable dataAcqOrTP, activeHeadStage
 
 	WAVE ITCChanConfigWave = GetITCChanConfigWave(panelTitle)
 	WAVE ADCs = GetADCListFromConfig(ITCChanConfigWave)
@@ -431,7 +431,7 @@ Function SCOPE_SetADAxisLabel(panelTitle,activeHeadStage)
 			style = ""
 		endif
 
-		if(DAG_GetNumericalValue(panelTitle, "check_settings_show_power"))
+		if(DAG_GetNumericalValue(panelTitle, "check_settings_show_power") && dataAcqOrTP == TEST_PULSE_MODE)
 			unit = "a. u."
 		else
 			unit = AFH_GetChannelUnit(ITCChanConfigWave, adc, ITC_XOP_CHANNEL_TYPE_ADC)

@@ -3639,7 +3639,7 @@ Function DAP_SliderProc_MIESHeadStage(sc) : SliderControl
 		P_LoadPressureButtonState(panelTitle)
 		P_UpdatePressureModeTabs(panelTitle, headStage)
 		DAP_UpdateClampmodeTabs(panelTitle, headStage, mode, DO_MCC_MIES_SYNCING)
-		SCOPE_SetADAxisLabel(panelTitle,HeadStage)
+		SCOPE_SetADAxisLabel(panelTitle, UNKNOWN_MODE, HeadStage)
 		P_RunP_ControlIfTPOFF(panelTitle)
 	endif
 
