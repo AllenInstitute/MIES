@@ -156,6 +156,17 @@ static Function TCONF_SaveJSON(jsonID, fName)
 	SaveTextFile(out, fName)
 End
 
+/// @brief Normalize a JSON encoded string
+static Function/S TCONF_NormalizeJSON(s)
+	string s
+
+	variable jsonID = JSON_Parse(s)
+	s = JSON_Dump(jsonID)
+	JSON_Release(jsonID)
+
+	return s
+End
+
 /// @brief helper function to compare two text files
 static Function TCONF_CompareTextFiles(fName1, fName2)
 	string fName1, fName2
@@ -165,8 +176,10 @@ static Function TCONF_CompareTextFiles(fName1, fName2)
 	[s1, fName1] = LoadTextFile(fName1)
 	[s2, fName2] = LoadTextFile(fName2)
 
-	Make/FREE/T w1 = { TrimString(s1) }
-	Make/FREE/T w2 = { TrimString(s2) }
+	// work around CHECK_EQUAL_STR: fails for very long strings
+	// see https://github.com/byte-physics/igor-unit-testing-framework/issues/76
+	Make/FREE/T w1 = { TCONF_NormalizeJSON(s1) }
+	Make/FREE/T w2 = { TCONF_NormalizeJSON(s2) }
 
 	CHECK_EQUAL_WAVES(w1, w2)
 End
