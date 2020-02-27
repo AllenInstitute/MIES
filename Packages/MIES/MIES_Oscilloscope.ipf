@@ -120,7 +120,8 @@ Function SCOPE_UpdateGraph(panelTitle, dataAcqOrTP)
 		return 0
 	endif
 
-	SCOPE_GetCheckBoxesForAddons(panelTitle, showSteadyStateResistance, showPeakResistance, showPowerSpectrum)
+	[showSteadyStateResistance, showPeakResistance, showPowerSpectrum] = SCOPE_GetCheckBoxesForAddons(panelTitle, dataAcqOrTP)
+
 	if(showPowerSpectrum)
 		return NaN
 	endif
@@ -185,9 +186,7 @@ Function SCOPE_UpdateGraph(panelTitle, dataAcqOrTP)
 	endfor
 End
 
-static Function SCOPE_GetCheckBoxesForAddons(panelTitle, showSteadyStateResistance, showPeakResistance, showPowerSpectrum)
-	string panelTitle
-	variable &showSteadyStateResistance, &showPeakResistance, &showPowerSpectrum
+static Function [variable showSteadyStateResistance, variable showPeakResistance, variable showPowerSpectrum] SCOPE_GetCheckBoxesForAddons(string panelTitle, variable dataAcqOrTP)
 
 	showPeakResistance        = DAG_GetNumericalValue(panelTitle, "check_settings_TP_show_peak")
 	showSteadyStateResistance = DAG_GetNumericalValue(panelTitle, "check_settings_TP_show_steady")
@@ -242,7 +241,7 @@ Function SCOPE_CreateGraph(panelTitle, dataAcqOrTP)
 	RemoveTracesFromGraph(graph)
 	RemoveAnnotationsFromGraph(graph)
 
-	SCOPE_GetCheckBoxesForAddons(panelTitle, showSteadyStateResistance, showPeakResistance, showPowerSpectrum)
+	[showSteadyStateResistance, showPeakResistance, showPowerSpectrum] = SCOPE_GetCheckBoxesForAddons(panelTitle, dataAcqOrTP)
 
 	for(i = 0; i < numADChannels; i += 1)
 		chanTPmode = (ADCmode[i] == DAQ_CHANNEL_TYPE_TP)
