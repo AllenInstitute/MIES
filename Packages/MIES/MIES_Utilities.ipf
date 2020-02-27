@@ -2948,6 +2948,8 @@ Function/S GetUniqueSymbolicPath([prefix])
 
 	if(ParamIsDefault(prefix))
 		prefix = "temp_"
+	else
+		prefix = CleanupName(prefix, 0)
 	endif
 
 	NewRandomSeed()
