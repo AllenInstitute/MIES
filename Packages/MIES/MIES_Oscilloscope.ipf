@@ -190,7 +190,7 @@ static Function [variable showSteadyStateResistance, variable showPeakResistance
 
 	showPeakResistance        = DAG_GetNumericalValue(panelTitle, "check_settings_TP_show_peak")
 	showSteadyStateResistance = DAG_GetNumericalValue(panelTitle, "check_settings_TP_show_steady")
-	showPowerSpectrum         = DAG_GetNumericalValue(panelTitle, "check_settings_show_power")
+	showPowerSpectrum         = dataAcqOrTP == TEST_PULSE_MODE && DAG_GetNumericalValue(panelTitle, "check_settings_show_power")
 End
 
 Function SCOPE_CreateGraph(panelTitle, dataAcqOrTP)

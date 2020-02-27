@@ -911,9 +911,7 @@ static Function DC_PlaceDataInHardwareDataWave(panelTitle, numActiveChannels, da
 					DACAmp[i][%TPAMP] = 0
 				endif
 			elseif(config[i][%DAQChannelType] == DAQ_CHANNEL_TYPE_TP)
-				if(powerSpectrum)
-					DACAmp[i][%TPAMP] = 0
-				endif
+				// do nothing
 			endif
 		elseif(dataAcqOrTP == TEST_PULSE_MODE)
 			if(powerSpectrum)
