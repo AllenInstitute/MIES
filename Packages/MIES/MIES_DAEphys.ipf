@@ -3998,7 +3998,7 @@ static Function DAP_OpenCommentPanel(panelTitle)
 
 	commentNotebook = DAP_GetCommentNotebook(panelTitle)
 
-	NewPanel/HOST=$panelTitle/N=$COMMENT_PANEL/EXT=2/W=(0,0,483,373)
+	NewPanel/HOST=$panelTitle/N=$COMMENT_PANEL/EXT=1/W=(400,0,0,200)
 	NewNotebook/HOST=$commentPanel/F=0/N=$COMMENT_PANEL_NOTEBOOK/FG=(FL,FT,FR,FB)
 	SetWindow $commentPanel, hook(mainHook)=DAP_CommentPanelHook
 
