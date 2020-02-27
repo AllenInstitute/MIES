@@ -227,9 +227,7 @@ Function CONF_AutoLoader()
 	string fileList, fullFilePath, rigCandidate
 	string settingsPath = CONF_GetSettingsPath()
 
-	ASSERT(!IsEmpty(settingsPath), "Unable to resolve MIES Settings folder path. Is it present and readable in Packages\\Settings ?")
-	NewPath/O/Q PathSettings, settingsPath
-	fileList = GetAllFilesRecursivelyFromPath("PathSettings", extension = ".json")
+	fileList = GetAllFilesRecursivelyFromPath(settingsPath, extension = ".json")
 	if(IsEmpty(fileList))
 		printf "There are no files to load from the %s folder.\r", EXPCONFIG_SETTINGS_FOLDER
 		ControlWindowToFront()
@@ -255,12 +253,13 @@ Function CONF_AutoLoader()
 	endfor
 End
 
-/// @brief Returns the path to the settings folder
+/// @brief Returns a symbolic path to the settings folder
 ///
-/// @returns string with full path to MIES Settings folder
+/// @returns name of an igor symbolic path to the MIES Settings folder
 static Function/S CONF_GetSettingsPath()
 
 	variable numItems
+	string symbPath
 	string reflectedProcpath = FunctionPath("CONF_GetSettingsPath")
 
 	numItems = ItemsInList(reflectedProcpath, ":")
@@ -271,8 +270,13 @@ static Function/S CONF_GetSettingsPath()
 	reflectedProcpath = RemoveListItem(numItems - 2, reflectedProcpath, ":") + EXPCONFIG_SETTINGS_FOLDER + ":"
 
 	if(FolderExists(reflectedProcpath))
-		return reflectedProcpath
+		symbPath = "PathSettings"
+		NewPath/O/Q $symbPath, reflectedProcpath
+
+		return symbPath
 	endif
+
+	ASSERT(0, "Unable to resolve MIES Settings folder path. Is it present and readable in Packages\\Settings ?")
 
 	return ""
 End
