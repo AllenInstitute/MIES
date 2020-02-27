@@ -88,6 +88,8 @@ Function DB_ResetAndStoreCurrentDBPanel()
 
 	// invalidate main panel
 	SetWindow $panelTitle, userData(panelVersion) = ""
+	SetWindow $panelTitle, userdata(Config_FileName) = ""
+	SetWindow $panelTitle, userdata(Config_FileHash) = ""
 
 	// static defaults for SweepControl subwindow
 	PopupMenu Popup_SweepControl_Selector WIN = $scPanel, mode=1,popvalue=" ", value= #"\" \""
