@@ -91,7 +91,7 @@ Function DB_ResetAndStoreCurrentDBPanel()
 
 	// static defaults for SweepControl subwindow
 	PopupMenu Popup_SweepControl_Selector WIN = $scPanel, mode=1,popvalue=" ", value= #"\" \""
-	CheckBox check_SweepControl_AutoUpdate WIN = $scPanel, value= 0
+	CheckBox check_SweepControl_AutoUpdate WIN = $scPanel, value= 1
 
 	// static defaults for BrowserSettings subwindow
 	PGC_SetAndActivateControl(bsPanel, "Settings", val = 0)
