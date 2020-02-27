@@ -305,6 +305,8 @@ Function CONF_SaveWindow(fName)
 			out = JSON_Dump(jsonID, indent = EXPCONFIG_JSON_INDENT)
 			JSON_Release(jsonID)
 
+			PathInfo/S $CONF_GetSettingsPath()
+
 			saveResult = SaveTextFile(out, fName, fileFilter = EXPCONFIG_FILEFILTER, message = "Save configuration file for window")
 			if(!IsNaN(saveResult))
 				print "Configuration saved."
@@ -337,6 +339,8 @@ Function CONF_RestoreWindow(fName[, usePanelTypeFromFile, rigFile])
 
 	usePanelTypeFromFile = ParamIsDefault(usePanelTypeFromFile) ? 0 : !!usePanelTypeFromFile
 	rigFile = SelectString(ParamIsDefault(rigFile), rigFile, "")
+
+	PathInfo/S $CONF_GetSettingsPath()
 
 	jsonID = NaN
 	restoreMask = EXPCONFIG_SAVE_VALUE | EXPCONFIG_SAVE_USERDATA | EXPCONFIG_SAVE_DISABLED
@@ -423,6 +427,8 @@ static Function CONF_SaveDAEphys(fName)
 
 		out = JSON_Dump(jsonID, indent = EXPCONFIG_JSON_INDENT)
 		JSON_Release(jsonID)
+
+		PathInfo/S $CONF_GetSettingsPath()
 
 		saveResult = SaveTextFile(out, fName, fileFilter = EXPCONFIG_FILEFILTER, message = "Save configuration file for DA_Ephys panel")
 		if(!IsNaN(saveResult))
