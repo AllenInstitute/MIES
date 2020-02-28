@@ -3492,3 +3492,53 @@ Function RunningInMainThread_Main()
 End
 
 /// @}
+
+/// HexToNumber, NumberToHex, HexToBinary
+/// @{
+
+Function HexAndNumbersWorks()
+	string str, expected
+
+	CHECK_EQUAL_VAR(HexToNumber("0a"), 10)
+	CHECK_EQUAL_VAR(HexToNumber("0f"), 15)
+	CHECK_EQUAL_VAR(HexToNumber("00"), 0)
+	CHECK_EQUAL_VAR(HexToNumber("ff"), 255)
+
+	str = NumberToHex(0)
+	expected = "00"
+	CHECK_EQUAL_STR(str, expected)
+
+	str = NumberToHex(10)
+	expected = "0a"
+	CHECK_EQUAL_STR(str, expected)
+
+	str = NumberToHex(15)
+	expected = "0f"
+	CHECK_EQUAL_STR(str, expected)
+
+	str = NumberToHex(255)
+	expected = "ff"
+	CHECK_EQUAL_STR(str, expected)
+
+	CHECK_EQUAL_WAVES(HexToBinary("ff000110"), {255, 0, 16, 1}, mode=WAVE_DATA)
+End
+
+Function CheckUUIDs()
+
+	Make/FREE/T/N=128 data = GenerateRFC4122UUID()
+
+	// check correct size
+	Make/FREE/N=128 sizes = strlen(data[p])
+	Make/FREE/N=128 refSizes = 36
+	CHECK_EQUAL_WAVES(sizes, refSizes)
+
+	// no duplicates
+	FindDuplicates/Z/DT=dups/FREE data
+	CHECK_EQUAL_VAR(DimSize(dups, ROWS), 0)
+
+	// correct format
+	Make/FREE/N=128 checkFormat = GrepString(data[p], "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$")
+	CHECK_EQUAL_VAR(Sum(checkFormat), 128)
+End
+
+/// @}

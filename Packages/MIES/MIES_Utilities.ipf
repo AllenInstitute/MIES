@@ -5023,3 +5023,171 @@ Function ShowDiagnosticsDirectory()
 	string symbPath = GetSymbolicPathForDiagnosticsDirectory()
 	PathInfo/SHOW $symbPath
 End
+
+/// @brief Helper structure for GenerateRFC4122UUID()
+static Structure Uuid
+	uint32  time_low
+	uint16  time_mid
+	uint16  time_hi_and_version
+	uint16  clock_seq
+	uint16  node0
+	uint16  node1
+	uint16  node2
+EndStructure
+
+/// @brief Generate a version 4 UUID according to https://tools.ietf.org/html/rfc4122
+///
+/// \rst
+/// .. code-block:: text
+///
+///     4.4.  Algorithms for Creating a UUID from Truly Random or
+///           Pseudo-Random Numbers
+///
+///        The version 4 UUID is meant for generating UUIDs from truly-random or
+///        pseudo-random numbers.
+///
+///        The algorithm is as follows:
+///
+///        o  Set the two most significant bits (bits 6 and 7) of the
+///           clock_seq_hi_and_reserved to zero and one, respectively.
+///
+///        o  Set the four most significant bits (bits 12 through 15) of the
+///           time_hi_and_version field to the 4-bit version number from
+///           Section 4.1.3.
+///
+///        o  Set all the other bits to randomly (or pseudo-randomly) chosen
+///           values.
+///
+///     See Section 4.5 for a discussion on random numbers.
+///
+///     [...]
+///
+///      In the absence of explicit application or presentation protocol
+///      specification to the contrary, a UUID is encoded as a 128-bit object,
+///      as follows:
+///
+///      The fields are encoded as 16 octets, with the sizes and order of the
+///      fields defined above, and with each field encoded with the Most
+///      Significant Byte first (known as network byte order).  Note that the
+///      field names, particularly for multiplexed fields, follow historical
+///      practice.
+///
+///      0                   1                   2                   3
+///       0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
+///      +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+///      |                          time_low                             |
+///      +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+///      |       time_mid                |         time_hi_and_version   |
+///      +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+///      |clk_seq_hi_res |  clk_seq_low  |         node (0-1)            |
+///      +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+///      |                         node (2-5)                            |
+///      +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+///
+///     [...]
+///
+///     4.1.3.  Version
+///
+///        The version number is in the most significant 4 bits of the time
+///        stamp (bits 4 through 7 of the time_hi_and_version field).
+///
+///        The following table lists the currently-defined versions for this
+///        UUID variant.
+///
+///        Msb0  Msb1  Msb2  Msb3   Version  Description
+///
+///         0     0     0     1        1     The time-based version
+///                                          specified in this document.
+///
+///         0     0     1     0        2     DCE Security version, with
+///                                          embedded POSIX UIDs.
+///
+///         0     0     1     1        3     The name-based version
+///                                          specified in this document
+///                                          that uses MD5 hashing.
+///
+///         0     1     0     0        4     The randomly or pseudo-
+///                                          randomly generated version
+///                                          specified in this document.
+///
+///         0     1     0     1        5     The name-based version
+///                                          specified in this document
+///                                          that uses SHA-1 hashing.
+///
+///        The version is more accurately a sub-type; again, we retain the term
+///        for compatibility.
+///
+/// \endrst
+///
+/// See also https://www.rfc-editor.org/errata/eid3546 and https://www.rfc-editor.org/errata/eid1957
+/// for some clarifications.
+Function/S GenerateRFC4122UUID()
+
+	string str, randomness
+	STRUCT Uuid uu
+
+	NewRandomSeed()
+	randomness = Hash(num2str(GetReproducibleRandom()), 1)
+
+	WAVE binary = HexToBinary(randomness)
+
+	uu.time_low = binary[0] | (binary[1] << 8) | (binary[2] << 16) | (binary[3] << 24)
+	uu.time_mid = binary[4] | (binary[5] << 8)
+	uu.time_hi_and_version = binary[6] | (binary[7] << 8)
+	uu.clock_seq = binary[8] | (binary[9] << 8)
+
+	uu.node0 = binary[10] | (binary[11] << 8)
+	uu.node1 = binary[12] | (binary[13] << 8)
+	uu.node2 = binary[14] | (binary[15] << 8)
+
+	// set the version
+	uu.clock_seq = (uu.clock_seq & 0x3FFF) | 0x8000
+	uu.time_hi_and_version = (uu.time_hi_and_version & 0x0FFF) | 0x4000
+
+	sprintf str, "%8.8x-%4.4x-%4.4x-%4.4x-%4.4x%4.4x%4.4x", uu.time_low, uu.time_mid, uu.time_hi_and_version, uu.clock_seq, uu.node0, uu.node1, uu.node2
+
+	return str
+End
+
+/// @brief Convert a hexadecimal character into a number
+Function HexToNumber(ch)
+	string ch
+
+	variable var
+
+	ASSERT(strlen(ch) <= 2, "Expected only up to two characters")
+
+	sscanf ch, "%x", var
+	ASSERT(V_flag == 1, "Unexpected string")
+
+	return var
+End
+
+/// @brief Convert a number into hexadecimal
+Function/S NumberToHex(var)
+	variable var
+
+	string str
+
+	ASSERT(IsInteger(var) && var >= 0 && var < 256 , "Invalid input")
+
+	sprintf str, "%02x", var
+
+	return str
+End
+
+/// @brief Convert a string in hex format to an unsigned binary wave
+///
+/// This function works on a byte level so it does not care about endianess.
+Function/WAVE HexToBinary(str)
+	string str
+
+	variable length
+
+	length = strlen(str)
+	ASSERT(mod(length, 2) == 0, "Expected a string with a power of 2 length")
+
+	Make/N=(length / 2)/FREE/B/U bin = HexToNumber(str[p * 2]) | (HexToNumber(str[p * 2 + 1]) << 4)
+
+	return bin
+End
