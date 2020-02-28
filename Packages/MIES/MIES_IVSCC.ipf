@@ -367,14 +367,13 @@ Function IVS_RunGigOhmSealQC()
 	CtrlNamedBackground IVS_finishGigOhmSealQCCheck, start
 End
 
-// @brief Loads a single stimulus for the user when using the ZMQ Proxy
+/// @brief Loads a single stimulus for the user when using the ZMQ Proxy
 Function IVS_Load_StimSet(stim_filename)
 
 	string stim_filename
-	
+
 	print "Stimulus loading...." + stim_filename
 	NWB_LoadAllStimSets(overwrite = 1, fileName = stim_filename)
-	
 End
 
 /// @brief finish the Gig Ohm Seal QC in the background
