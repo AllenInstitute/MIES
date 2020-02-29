@@ -2413,10 +2413,8 @@ Function P_GetAutoUserOff(panelTitle)
 	string panelTitle
 	WAVE pressureDataWv = P_GetPressureDataWaveRef(panelTitle)
 
-	WAVE GuiState = GetDA_EphysGuiStateNum(panelTitle)
 	if(DAG_GetNumericalValue(panelTitle, "check_DataACq_Pressure_AutoOFF") && DAG_GetNumericalValue(panelTitle, "check_DataACq_Pressure_User"))
 		PGC_SetAndActivateControl(panelTitle,"check_DataACq_Pressure_User", val = CHECKBOX_UNSELECTED)
-		GuiState[0][%check_DataACq_Pressure_User] = 0
 	endif
 End
 
