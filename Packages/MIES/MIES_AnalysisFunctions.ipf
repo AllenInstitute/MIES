@@ -481,11 +481,10 @@ Function switchHolding(Vm2)
                     PGC_SetAndActivateControl(DEFAULT_DEVICE, "setvar_DataAcq_Hold_VC", val = Vm2)
 				elseif(clampMode == I_CLAMP_MODE)
                     PGC_SetAndActivateControl(DEFAULT_DEVICE, "setvar_DataAcq_Hold_IC", val = Vm2)
-				else
-						printf "Unsupported clamp mode \r"
-						return GuiState[i][%HSMode]
+					else
+						ASSERT(0, "Unsupported clamp mode")
+					endif
 				endif
-			endif
         endfor
 		printf "Half-way through stim set, changing holding potential to: %d\r", Vm2
     endif
