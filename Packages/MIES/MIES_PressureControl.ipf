@@ -653,11 +653,10 @@ Function P_GetUserAccess(panelTitle, headStage, pressureMode)
 	variable headStage
 	variable pressureMode
 
-	WAVE GuiState = GetDA_EphysGuiStateNum(panelTitle)
 	WAVE pressureDataWv = P_GetPressureDataWaveRef(panelTitle)
 
 	if(PressureDataWv[0][%UserSelectedHeadStage] == headStage) // does the slider selected headstage match the headstage being passed
-		if(GuiState[0][%check_DataAcq_Pressure_User]) // if user access is checked
+		if(DAG_GetNumericalValue(panelTitle, "check_DataAcq_Pressure_User")) // if user access is checked
 			return ACCESS_USER
 		endif
 
@@ -666,28 +665,28 @@ Function P_GetUserAccess(panelTitle, headStage, pressureMode)
 				return ACCESS_ATM
 				break
 			case PRESSURE_METHOD_APPROACH:
-				if(GuiState[0][%check_Settings_UserP_Approach])
+				if(DAG_GetNumericalValue(panelTitle, "check_Settings_UserP_Approach"))
 					return ACCESS_USER
 				else
 					return ACCESS_REGULATOR
 				endif
 				break
 			case PRESSURE_METHOD_SEAL:
-				if(GuiState[0][%check_Settings_UserP_Seal])
+				if(DAG_GetNumericalValue(panelTitle, "check_Settings_UserP_Seal"))
 					return ACCESS_USER
 				else
 					return ACCESS_REGULATOR
 				endif
 				break
 			case PRESSURE_METHOD_BREAKIN:
-				if(GuiState[0][%check_Settings_UserP_BreakIn])
+				if(DAG_GetNumericalValue(panelTitle, "check_Settings_UserP_BreakIn"))
 					return ACCESS_USER
 				else
 					return ACCESS_ATM
 				endif
 				break
 			case PRESSURE_METHOD_CLEAR:
-				if(GuiState[0][%check_Settings_UserP_Clear])
+				if(DAG_GetNumericalValue(panelTitle, "check_Settings_UserP_Clear"))
 					return ACCESS_USER
 				else
 					return ACCESS_ATM
@@ -2415,7 +2414,7 @@ Function P_GetAutoUserOff(panelTitle)
 	WAVE pressureDataWv = P_GetPressureDataWaveRef(panelTitle)
 
 	WAVE GuiState = GetDA_EphysGuiStateNum(panelTitle)
-	if(GuiState[0][%check_DataACq_Pressure_AutoOFF] && GuiState[0][%check_DataACq_Pressure_User])
+	if(DAG_GetNumericalValue(panelTitle, "check_DataACq_Pressure_AutoOFF") && DAG_GetNumericalValue(panelTitle, "check_DataACq_Pressure_User"))
 		PGC_SetAndActivateControl(panelTitle,"check_DataACq_Pressure_User", val = CHECKBOX_UNSELECTED)
 		GuiState[0][%check_DataACq_Pressure_User] = 0
 	endif

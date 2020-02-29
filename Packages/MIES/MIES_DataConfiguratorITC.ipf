@@ -123,7 +123,6 @@ static Function DC_UpdateHSProperties(panelTitle, ADCs)
 
 	variable i, numChannels, headStage
 
-	WAVE GUIState = GetDA_EphysGuiStateNum(panelTitle)
 	WAVE hsProp = GetHSProperties(panelTitle)
 
 	hsProp = NaN
@@ -140,7 +139,7 @@ static Function DC_UpdateHSProperties(panelTitle, ADCs)
 		hsProp[headStage][%Enabled]   = 1
 		hsProp[headStage][%ADC]       = ADCs[i]
 		hsProp[headStage][%DAC]       = AFH_GetDACFromHeadstage(panelTitle, headstage)
-		hsProp[headStage][%ClampMode] = GUIState[headStage][%HSMode]
+		hsProp[headStage][%ClampMode] = DAG_GetHeadstageMode(panelTitle, headStage)
 
 	endfor
 End
