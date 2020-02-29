@@ -4000,6 +4000,7 @@ static Function DAP_OpenCommentPanel(panelTitle)
 
 	NewPanel/HOST=$panelTitle/N=$COMMENT_PANEL/EXT=1/W=(400,0,0,200)
 	NewNotebook/HOST=$commentPanel/F=0/N=$COMMENT_PANEL_NOTEBOOK/FG=(FL,FT,FR,FB)
+	ModifyPanel/W=$commentPanel fixedSize=0
 	SetWindow $commentPanel, hook(mainHook)=DAP_CommentPanelHook
 
 	SVAR userComment = $GetUserComment(panelTitle)
