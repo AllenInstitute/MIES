@@ -279,8 +279,7 @@ Function SCOPE_CreateGraph(panelTitle, dataAcqOrTP)
 
 			if(showPowerSpectrum)
 				powerSpectrumTrace = "powerSpectra" + adcStr
-				WAVE powerSpectrum = GetTPPowerSpectrumWave(panelTitle)
-				AppendToGraph/W=$graph/L=$leftAxis/B=bottomPS powerSpectrum[][numActiveDACs + i]/TN=$powerSpectrumTrace
+				AppendToGraph/W=$graph/L=$leftAxis/B=bottomPS TPOscilloscopeData[][numActiveDACs + i]/TN=$powerSpectrumTrace
 				ModifyGraph/W=$graph lstyle=0, mode($powerSpectrumTrace)=0
 				ModifyGraph/W=$graph rgb($powerSpectrumTrace)=(65535,0,0,13107)
 				ModifyGraph/W=$graph freepos($leftAxis) = {0, kwFraction}, axisEnab($leftAxis)= {YaxisLow, YaxisHigh}
@@ -439,16 +438,24 @@ Function SCOPE_SetADAxisLabel(panelTitle, dataAcqOrTP, activeHeadStage)
 	endfor
 End
 
-Function SCOPE_UpdatePowerSpectrum(panelTitle)
+static Function SCOPE_UpdatePowerSpectrum(panelTitle)
 	String panelTitle
 
-	if(GetDA_EphysGuiStateNum(panelTitle)[0][%check_settings_show_power])
+	variable startOfADColumns
+
+	if(DAG_GetNumericalValue(panelTitle, "check_settings_show_power"))
 		WAVE OscilloscopeData = GetOscilloscopeWave(panelTitle)
-		WAVE powerSpectrum = GetTPPowerSpectrumWave(panelTitle)
-		// FFT knows how to transform units without prefix so transform them it temporarly
+		WAVE TPOscilloscopeData = GetTPOscilloscopeWave(panelTitle)
+		startOfADColumns = ROVar(GetADChannelToMonitor(panelTitle))
+
+		// FFT knows how to transform units without prefix so transform them temporarly
 		SetScale/P x, DimOffset(OscilloscopeData, ROWS) / 1000, DimDelta(OscilloscopeData, ROWS) / 1000, "s", OscilloscopeData
-		FFT/OUT=4/DEST=powerSpectrum/COLS/PAD={2^ceil(log(DimSize(OscilloscopeData, ROWS)) / log(2))} OscilloscopeData
+
+		// work around an IP8 bug where we can't reuse an existing permanent wave
+		FFT/DEST=powerSpectrum/COLS/FREE OscilloscopeData
 		SetScale/P x, DimOffset(OscilloscopeData, ROWS) * 1000, DimDelta(OscilloscopeData, ROWS) * 1000, "ms", OscilloscopeData
+
+		MultiThread TPOscilloscopeData[][startOfADColumns, DimSize(powerSpectrum, COLS) - 1] = magsqr(powerSpectrum[p][q])
 	endif
 End
 

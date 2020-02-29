@@ -392,6 +392,7 @@ static Function DC_MakeHelperWaves(panelTitle, dataAcqOrTP)
 
 	variable numRows, sampleInterval, col, hardwareType, decimatedNumRows, numPixels, dataPointsPerPixel
 	variable decMethod, decFactor, tpLength, numADCs, numDACs, numTTLs, decimatedSampleInterval
+	variable tpOrPowerSpectrumLength
 
 	WAVE config = GetITCChanConfigWave(panelTitle)
 	WAVE OscilloscopeData = GetOscilloscopeWave(panelTitle)
@@ -424,6 +425,13 @@ static Function DC_MakeHelperWaves(panelTitle, dataAcqOrTP)
 
 		decimatedNumRows        = tpLength
 		decimatedSampleInterval = sampleInterval
+
+		if(DAG_GetNumericalValue(panelTitle, "check_settings_show_power"))
+			tpOrPowerSpectrumLength  = floor(tpLength / 2) + 1
+		else
+			tpOrPowerSpectrumLength = tpLength
+		endif
+
 	elseif(dataAcqOrTP == DATA_ACQUISITION_MODE)
 		switch(hardwareType)
 			case HARDWARE_ITC_DAC:
@@ -475,16 +483,16 @@ static Function DC_MakeHelperWaves(panelTitle, dataAcqOrTP)
 	SetNumberInWaveNote(OscilloscopeData, "DecimationMethod", decMethod)
 	SetNumberInWaveNote(OscilloscopeData, "DecimationFactor", decFactor)
 
-	DC_InitDataHoldingWave(TPOscilloscopeData, tpLength, sampleInterval, numDACs, numADCs, numTTLs)
+	DC_InitDataHoldingWave(TPOscilloscopeData, tpOrPowerSpectrumLength, sampleInterval, numDACs, numADCs, numTTLs, isFourierTransform=DAG_GetNumericalValue(panelTitle, "check_settings_show_power") && dataAcqOrTP == TEST_PULSE_MODE)
 	DC_InitDataHoldingWave(OscilloscopeData, decimatedNumRows, decimatedSampleInterval, numDACs, numADCs, numTTLs)
 
 	DC_InitDataHoldingWave(scaledDataWave, dataAcqOrTP == DATA_ACQUISITION_MODE ? stopCollectionPoint : tpLength, sampleInterval, numDACs, numADCs, numTTLs, type = SWS_GetRawDataFPType(panelTitle))
 End
 
 /// @brief Initialize data holding waves to NaN
-static Function DC_InitDataHoldingWave(wv, numRows, sampleInterval, numDACs, numADCs, numTTLs, [type])
+static Function DC_InitDataHoldingWave(wv, numRows, sampleInterval, numDACs, numADCs, numTTLs, [type, isFourierTransform])
 	WAVE wv
-	variable numRows, sampleInterval, numDACs, numADCs, numTTLs, type
+	variable numRows, sampleInterval, numDACs, numADCs, numTTLs, type, isFourierTransform
 
 	ASSERT(numDACs > 0, "Invalid number of DACs")
 	ASSERT(numADCs > 0, "Invalid number of ADCs")
@@ -493,8 +501,19 @@ static Function DC_InitDataHoldingWave(wv, numRows, sampleInterval, numDACs, num
 		type = WaveType(wv)
 	endif
 
+	if(ParamIsDefault(isFourierTransform))
+		isFourierTransform = 0
+	else
+		isFourierTransform = !!isFourierTransform
+	endif
+
 	Redimension/N=(numRows, numDACs + numADCs + numTTLs)/Y=(type) wv
-	SetScale/P x, 0, sampleInterval, "ms", wv
+
+	if(isFourierTransform)
+		SetScale/I x, 0, 1 / (2 * (sampleInterval / 1000)), "Hz", wv
+	else
+		SetScale/P x, 0, sampleInterval, "ms", wv
+	endif
 
 	ASSERT(IsFloatingPointWave(wv), "Wave is not of floating point type")
 
