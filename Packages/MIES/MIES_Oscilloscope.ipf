@@ -53,7 +53,7 @@ Function SCOPE_KillScopeWindowIfRequest(panelTitle)
 
 	string win = SCOPE_GetPanel(panelTitle)
 
-	if(!GetCheckBoxState(panelTitle, "check_Settings_ShowScopeWindow") && windowExists(win))
+	if(!DAG_GetNumericalValue(panelTitle, "check_Settings_ShowScopeWindow") && windowExists(win))
 		KillWindow $win
 	endif
 End
