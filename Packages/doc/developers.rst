@@ -270,49 +270,68 @@ Preliminaries
 ^^^^^^^^^^^^^
 
 -  Linux box with fixed IP
--  Choose a user, here named ``john``, for running the tests.
+-  Choose a user, here named ``ci``, for running the tests.
+-  Make sure that the user is **not** a member of the ``wheel`` group so that
+   it can not gain root access.
+-  Install the bare-minimum packages and use the latest debian stable
 
 Enable SSH access
 ^^^^^^^^^^^^^^^^^
 
 -  Setup remote SSH access with public keys. On the client (your PC!)
    try logging into using SSH.
--  ``apt-get install python gawk graphviz pandoc texlive-full tmux git wget``.
--  Checkout the mies repository
--  Copy the scripts ``tools/start-bamboo-agent-linux*.sh`` to ``/home/john``.
+-  Disable password authentication in ``/etc/ssh/sshd_config``
 
 Install required software
 ^^^^^^^^^^^^^^^^^^^^^^^^^
 
--  (Relevant for Linux Mint 17 Qiana only) Add a file with the following
+-  Install `Docker <https://docker.io>`__
+-  Wine 64-bit: ``apt install wine``
+-  Wine 32-bit: ``dpkg --add-architecture i386 && apt update && apt install wine32``
+-  Misc required software: ``apt install git cron-apt``
+-  Enable automatic updates: ``echo "dist-upgrade -y -o APT::Get::Show-Upgraded=true" > /etc/cron-apt/action.d/4-upgrade``
+-  Install OpenJDK 8 by adding a file with the following
    sources in ``/etc/apt/sources.list.d/``:
 
    .. code:: text
 
-       deb http://ppa.launchpad.net/openjdk-r/ppa/ubuntu trusty main
-       deb-src http://ppa.launchpad.net/openjdk-r/ppa/ubuntu trusty main
-       deb http://ppa.launchpad.net/ubuntu-wine/ppa/ubuntu trusty main
-       deb-src http://ppa.launchpad.net/ubuntu-wine/ppa/ubuntu trusty main
+      deb https://adoptopenjdk.jfrog.io/adoptopenjdk/deb/ buster main
 
--  ``sudo apt-get update``
--  ``sudo apt-get install wine openjdk-8-jre``
--  Download and install doxygen (version 1.8.15 or later) from
-   `here <http://www.doxygen.org>`__.
--  ``pip install -r Packages\doc\requirements-doc.txt``
--  Test if building the mies documentation works.
+-  ``apt update``
+-  ``apt install adoptopenjdk-8-hotspot-jre``
+-  ``update-alternatives --config java`` and select version 8
 
 Setup bamboo agent
 ^^^^^^^^^^^^^^^^^^
 
--  ``wget http://bamboo.corp.alleninstitute.org/agentServer/agentInstaller/atlassian-bamboo-agent-installer-5.14.1.jar``
--  ``~/start-bamboo-agent.sh``
--  In the bamboo web app search the agents list and add the capability
-   ``Igor Pro (new)`` to the newly created agent.
--  Add the line ``su -c /home/john/start_bamboo_agent_wrapper.sh john``
-   to ``/etc/rc.local``. This ensures that the bamboo agent
-   automatically starts after a reboot.
--  Reboot the PC and check that ``tmux attach bamboo-agent`` opens an
-   existing tmux session and that the bamboo agent is running.
+-  Install the bamboo agent according to the
+   `instructions <http://bamboo.corp.alleninstitute.org/admin/agent/addRemoteAgent.action>`__
+   and run it once to create the ``bamboo-agent-home`` directory
+-  Create a file ``/etc/systemd/system/bamboo.service`` with the following contents
+
+   .. code:: text
+
+      [Unit]
+      Description=Atlassian Bamboo
+      After=syslog.target network.target
+
+      [Service]
+      Type=forking
+      User=ci
+      ExecStart=/home/ci/bamboo-agent-home/bin/bamboo-agent.sh start
+      ExecStop=/home/ci/bamboo-agent-home/bin/bamboo-agent.sh stop
+      SuccessExitStatus=143
+      Environment="PATH=/home/ci/.local/bin:/usr/local/bin:/usr/bin:/bin"
+
+      [Install]
+      WantedBy=multi-user.target
+
+-  Enable it with ``systemctl enable bamboo.service``
+-  Reboot the system and check that the agent runs
+-  Add a fitting ``Igor Pro (new)`` capability to the agent in bamboo.
+-  Make the agent dedicated to the ``MIES-Igor`` project.
+-  Be sure that the "git" capability and the "bash" executable capability are
+   present as well
 
 Setting up a continous integration server (Windows)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -350,9 +369,10 @@ Available CI servers
 
 Linux:
 
-- Used for documentation building only
 - No Hardware
 - No Igor Pro
+- Docker
+- Wine (32bit and 64bit)
 
 Windows 10 (1):
 
