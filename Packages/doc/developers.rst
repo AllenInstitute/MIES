@@ -145,17 +145,10 @@ Usage
 Building the documentation
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Required 3rd party tools
-^^^^^^^^^^^^^^^^^^^^^^^^
+(Currently only tested on Linux.)
 
--  `Doxygen <http://doxygen.org>`__ 1.8.15
--  `Gawk <http://sourceforge.net/projects/ezwinports/files/gawk-4.1.3-w32-bin.zip/download>`__
-   4.1.3 or later
--  `Dot <http://www.graphviz.org>`__ 2.38 or later
--  `python <http://www.python.org>`__ 2.7 or later
--  ``pip install -r Packages\doc\requirements-doc.txt``
-
-Execute ``tools/build-documentation.sh``.
+- Install `Docker <https://docker.io>`__
+- Execute ``tools/docker/build-documentation.sh``
 
 Release Handling
 ----------------
