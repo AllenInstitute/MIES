@@ -4834,7 +4834,7 @@ Function/S GetSymbolicPathForDiagnosticsDirectory()
 	sprintf path, "C:Users:%s:AppData:Roaming:WaveMetrics:Igor Pro %s:Diagnostics:", userName, GetIgorProVersion()[0]
 	symbPath = "crashInfo"
 
-	NewPath/O $symbPath, path
+	NewPath/O/Q $symbPath, path
 
 	return symbPath
 End
