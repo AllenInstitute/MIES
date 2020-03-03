@@ -83,7 +83,11 @@ static Function AD_FillWaves(panelTitle, list, info)
 		headstage = headstages[V_minloc]
 
 		WAVE/Z stimsetCycleIDs = GetLastSetting(numericalValues, i, STIMSET_ACQ_CYCLE_ID_KEY, DATA_ACQUISITION_MODE)
-		ASSERT(WaveExists(stimsetCycleIDs), "Unexpected invalid stimset cycle ID")
+
+		if(!WaveExists(stimsetCycleIDs)) // TP during DAQ
+			continue
+		endif
+
 		stimsetCycleID = stimsetCycleIDs[headstage]
 
 		FindValue/RMD=[][0]/TXOP=4/TEXT=num2str(stimsetCycleID) info
