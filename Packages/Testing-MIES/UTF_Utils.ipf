@@ -284,6 +284,97 @@ End
 
 /// @}
 
+/// GetSetDifference
+/// @{
+Function GSD_ExpectsSameWaveType()
+
+	Make/Free/D data1
+	Make/Free/R data2
+
+	try
+		WAVE/Z matches = GetSetDifference(data1, data2)
+		FAIL()
+	catch
+		PASS()
+	endtry
+End
+
+Function GSD_ExpectsFPWaveType()
+
+	Make/Free/D data1
+	Make/Free/T data2
+
+	try
+		WAVE/Z matches = GetSetDifference(data1, data2)
+		FAIL()
+	catch
+		PASS()
+	endtry
+End
+
+Function GSD_Works1()
+
+	Make/Free data1 = {1, 2, 3, 4}
+	Make/Free data2 = {4, 5, 6}
+
+	WAVE/Z matches = GetSetDifference(data1, data2)
+	CHECK_EQUAL_WAVES(matches, {1, 2, 3})
+End
+
+Function GSD_Works2()
+
+	Make/Free data1 = {1, 2, 3, 4}
+	Make/Free data2 = {5, 6, 7}
+
+	WAVE/Z matches = GetSetDifference(data1, data2)
+	CHECK_EQUAL_WAVES(matches, {1, 2, 3, 4})
+End
+
+Function GSD_Works3()
+
+	Make/Free data1 = {1, 2, 3, 4}
+	Make/Free data2 = {4, 3, 2}
+
+	WAVE/Z matches = GetSetDifference(data1, data2)
+	CHECK_EQUAL_WAVES(matches, {1})
+End
+
+Function GSD_Works4()
+
+	Make/Free/D data1
+	Make/Free/D data2
+
+	WAVE/Z matches = GetSetDifference(data1, data2)
+	CHECK_WAVE(matches, NULL_WAVE)
+End
+
+Function GSD_Works5()
+
+	Make/Free/D data1
+	Make/Free/D/N=0 data2
+
+	WAVE matches = GetSetDifference(data1, data2)
+	CHECK_EQUAL_WAVES(matches, data1)
+End
+
+Function GSD_Works6()
+
+	Make/Free/D data1 = p
+	Make/Free/D data2 = -1
+
+	WAVE matches = GetSetDifference(data1, data2)
+	CHECK_EQUAL_WAVES(matches, data1)
+End
+
+Function GSD_ReturnsInvalidWaveRefWOMatches()
+
+	Make/Free/D/N=0 data1
+	Make/Free/D data2
+
+	WAVE/Z matches = GetSetDifference(data1, data2)
+	CHECK_WAVE(matches, NULL_WAVE)
+End
+/// @}
 
 /// GetSetIntersection
 /// @{
