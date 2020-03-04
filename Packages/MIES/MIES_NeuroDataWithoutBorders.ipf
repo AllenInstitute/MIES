@@ -166,6 +166,7 @@ static Function NWB_GetFileForExport([overrideFilePath, createdNewNWBFile])
 		NWB_AddGeneratorString(fileID)
 
 		sessionStartTimeReadBack = NWB_ReadSessionStartTime(fileID)
+		ASSERT(ti.session_start_time == sessionStartTimeReadBack, "Buggy timestamp handling")
 
 		fileIDExport   = fileID
 		filePathExport = filePath
@@ -687,13 +688,13 @@ static Function NWB_AppendSweepLowLevel(locationID, panelTitle, ITCDataWave, ITC
 	ASSERT(WaveExists(ADCs), "Labnotebook is too old for NWB export.")
 
 	// dito
-	WAVE DACs = GetLastSetting(numericalValues, sweep, "DAC", DATA_ACQUISITION_MODE)
+	WAVE/Z DACs = GetLastSetting(numericalValues, sweep, "DAC", DATA_ACQUISITION_MODE)
 	ASSERT(WaveExists(DACs), "Labnotebook is too old for NWB export.")
 
 	// 602debb9 (Record the active headstage in the settingsHistory, 2014-11-04)
 	WAVE/D/Z statusHS = GetLastSetting(numericalValues, sweep, "Headstage Active", DATA_ACQUISITION_MODE)
 	if(!WaveExists(statusHS))
-		Make/FREE/D/N=(LABNOTEBOOK_LAYER_COUNT) statusHS
+		Make/FREE/D/N=(LABNOTEBOOK_LAYER_COUNT) statusHS = IsFinite(ADCs[p]) && IsFinite(DACs[p])
 	endif
 
 	for(i = 0; i < NUM_HEADSTAGES; i += 1)
