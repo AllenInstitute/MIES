@@ -52,6 +52,31 @@ Function GetLastSettingEntrySourceTypes()
 
 	CHECK_EQUAL_WAVES(DAQSettings, {0,NaN,NaN,NaN,NaN,NaN,NaN,NaN,NaN}, mode = WAVE_DATA)
 	CHECK_EQUAL_WAVES(TPSettings,  {1,NaN,NaN,NaN,NaN,NaN,NaN,NaN,NaN}, mode = WAVE_DATA)
+
+	// contains two times sweep 73, created with sweep rollback and a trailing TP
+	// and does not have entry source type information
+	WAVE/SDFR=dfr numericalValues_no_type_with_sweep_rb_with_tp
+	WAVE/Z DAQSettings = GetLastSetting(numericalValues_no_type_with_sweep_rb_with_tp, 73, "DAC", DATA_ACQUISITION_MODE)
+
+	WAVE/Z TPSettings  = GetLastSetting(numericalValues_no_type_with_sweep_rb_with_tp, 73, "DAC", TEST_PULSE_MODE)
+	CHECK_WAVE(TPSettings, NULL_WAVE)
+
+	WAVE/Z TPSettings  = GetLastSetting(numericalValues_no_type_with_sweep_rb_with_tp, 73, "TP Steady State Resistance", TEST_PULSE_MODE)
+
+	CHECK_EQUAL_WAVES(DAQSettings, {0,NaN,NaN,NaN,NaN,NaN,NaN,NaN,NaN}, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(TPSettings,  {119.7,NaN,NaN,NaN,NaN,NaN,NaN,NaN,NaN}, mode = WAVE_DATA, tol=0.1)
+
+	// no entry source type and two trailing TP entries
+	WAVE/SDFR=dfr numericalValues_no_type_with_two_tp_entries
+	WAVE/Z DAQSettings = GetLastSetting(numericalValues_no_type_with_two_tp_entries, 0, "DAC", DATA_ACQUISITION_MODE)
+	WAVE/Z TPSettings  = GetLastSetting(numericalValues_no_type_with_two_tp_entries, 0, "DAC", TEST_PULSE_MODE)
+
+	CHECK_EQUAL_WAVES(DAQSettings, {0,NaN,NaN,NaN,NaN,NaN,NaN,NaN,NaN}, mode = WAVE_DATA)
+	CHECK_EQUAL_WAVES(TPSettings,  {0,NaN,NaN,NaN,NaN,NaN,NaN,NaN,NaN}, mode = WAVE_DATA)
+
+	// this entry is treated as TP
+	WAVE/Z DAQSettings = GetLastSetting(numericalValues_no_type_with_two_tp_entries, 0, "TP Steady State Resistance", DATA_ACQUISITION_MODE)
+	CHECK_WAVE(DAQSettings, NULL_WAVE)
 End
 
 Function GetLastSettingAbortsInvalid1()

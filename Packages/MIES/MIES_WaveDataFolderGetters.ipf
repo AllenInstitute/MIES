@@ -1427,7 +1427,7 @@ Function/WAVE GetLBRowCache(values)
 	variable actual
 	string key, name
 
-	variable versionOfNewWave = 1
+	variable versionOfNewWave = 2
 
 	actual = WaveModCountWrapper(values)
 	name   = GetWavesDataFolder(values, 2)
@@ -1477,7 +1477,7 @@ Function/WAVE GetLBIndexCache(values)
 	variable actual
 	string key, name
 
-	variable versionOfNewWave = 1
+	variable versionOfNewWave = 2
 
 	actual = WaveModCountWrapper(values)
 	name   = GetWavesDataFolder(values, 2)
@@ -1524,7 +1524,7 @@ Function/WAVE GetLBNidCache(numericalValues)
 	variable actual
 	string key, name
 
-	variable versionOfNewWave = 1
+	variable versionOfNewWave = 2
 
 	ASSERT(!IsTextWave(numericalValues), "Expected numerical labnotebook")
 
