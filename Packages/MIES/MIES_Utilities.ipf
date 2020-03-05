@@ -5037,3 +5037,107 @@ Function/S ConvertListToRegexpWithAlternations(list)
 
 	return regexpList
 End
+
+/// @brief Convert the Igor Pro crash dumps and the report file to JSON and upload them
+///
+/// Does nothing if none of these files exists.
+///
+/// The uploaded files are moved out of the way afterwards.
+///
+/// See `tools/http-upload/upload-json-payload-v1.php` for the JSON format description.
+///
+/// @return 1 if crash dumps had been uploaded, 0 otherwise
+Function UploadCrashDumps()
+
+	string diagSymbPath, basePath, diagPath
+	variable jsonID, numFiles, numLogs
+
+	diagSymbPath = GetSymbolicPathForDiagnosticsDirectory()
+
+	WAVE/T files = ListTotextWave(GetAllFilesRecursivelyFromPath(diagSymbPath, extension=".dmp"), "|")
+	WAVE/T logs = ListTotextWave(GetAllFilesRecursivelyFromPath(diagSymbPath, extension=".txt"), "|")
+	numFiles = DimSize(files, ROWS)
+	numLogs = DimSize(logs, ROWS)
+
+	if(!numFiles && !numLogs)
+		return 0
+	endif
+
+	jsonID = JSON_New()
+
+	JSON_AddString(jsonID, "/computer", GetEnvironmentVariable("COMPUTERNAME"))
+	JSON_AddString(jsonID, "/user", IgorInfo(7))
+	JSON_AddString(jsonID, "/timestamp", GetISO8601TimeStamp())
+
+	JSON_AddTreeArray(jsonID, "/payload")
+
+	if(numFiles > 0)
+		AddPayloadEntries(jsonID, files, isBinary = 1)
+	endif
+
+	if(numLogs > 0)
+		AddPayloadEntries(jsonID, logs, isBinary = 1)
+	endif
+
+	UploadJSONPayload(jsonID)
+	JSON_Release(jsonID)
+
+	PathInfo $diagSymbPath
+	diagPath = S_path
+
+	basePath = GetUniqueSymbolicPath()
+	NewPath/Q/O/Z $basePath diagPath + ":"
+
+	MoveFolder/P=$basePath "Diagnostics" as UniqueFileOrFolder(basePath, "Diagnostics_old")
+
+	return 1
+End
+
+/// @brief Helper function for UploadCrashDumps
+///
+/// Fill `payload` array
+static Function AddPayloadEntries(jsonID, paths, [isBinary])
+	variable jsonID
+	WAVE/T paths
+	variable isBinary
+
+	string data, fName, filepath, jsonpath
+	variable numEntries, i, offset
+
+	if(ParamIsDefault(isBinary))
+		isBinary = 0
+	else
+		isBinary = !!isBinary
+	endif
+
+	numEntries = DimSize(paths, ROWS)
+
+	offset = JSON_GetArraySize(jsonID, "/payload")
+	JSON_AddObjects(jsonID, "/payload", objCount = numEntries)
+
+	for(i = 0; i < numEntries; i += 1)
+		jsonpath = "/payload/" + num2str(offset + i) + "/"
+		filepath = paths[i]
+
+		JSON_AddString(jsonID, jsonpath + "name", GetFile(filepath))
+
+		[data, fName] = LoadTextFile(filepath)
+
+		if(isBinary)
+			JSON_AddString(jsonID, jsonpath + "encoding", "base64")
+			JSON_AddString(jsonID, jsonpath + "contents", Base64Encode(data))
+		else
+			JSON_AddString(jsonID, jsonpath + "contents", data)
+		endif
+	endfor
+End
+
+/// @brief Upload the given JSON document
+///
+/// See `tools/http-upload/upload-json-payload-v1.php` for the JSON format description.
+Function UploadJSONPayload(jsonID)
+	variable jsonID
+
+	URLrequest/DSTR=JSON_Dump(jsonID) url="https://ai.customers.byte-physics.de/upload-json-payload-v1.php", method=put
+	ASSERT(!V_Flag, "ULRRequest did not succeed due to: " + S_ServerResponse)
+End
