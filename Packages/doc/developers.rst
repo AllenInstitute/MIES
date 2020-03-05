@@ -15,7 +15,7 @@ Installation
 ------------
 
 Select the installer for the latest release in the next section (Support
-statement). For manual installation instructions see `here <manualinstallation>`_.
+statement). For manual installation instructions see `here <installation>`_.
 
 Pressure control may be implemented with ITC and/or NIDAQ hardware. For
 NIDAQ hardware, install the `NIDAQ Tool

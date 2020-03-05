@@ -4,8 +4,8 @@ Table of Contents
 .. toctree::
   :maxdepth: 1
 
+  installation
   developers
-  manualinstallation
   reportingbugs
   releasenotes
   grouplist
