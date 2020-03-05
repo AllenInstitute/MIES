@@ -157,7 +157,7 @@ End
 /// or #UNKNOWN_MIES_VERSION on error
 ///
 /// @returns the mies version
-Function/S CreateMiesVersion()
+static Function/S CreateMiesVersion()
 
 	string path, cmd, topDir, version, gitPathCandidates, gitPath
 	string userName, gitDir, fullVersionPath
