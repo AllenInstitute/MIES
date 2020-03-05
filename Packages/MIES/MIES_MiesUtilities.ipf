@@ -6022,3 +6022,40 @@ Function/S GetLastNonEmptyEntry(wv, colLabel, endRow)
 
 	return wv[indizes[DimSize(indizes, ROWS) - 1]][%$colLabel]
 End
+
+/// @brief Generate a default settings file in JSON format
+///
+/// \rst
+/// .. code-block:: json
+///
+/// 	{
+/// 	  "diagnostics": {
+/// 	    "last upload": "2020-03-05T13:43:32Z"
+/// 	  },
+/// 	  "version": 1
+/// 	}
+///
+///	\endrst
+///
+/// Explanation:
+/// - "version": Major version number to track breaking changes
+/// - "diagnostics": Groups settings related to diagnostics and crash dump handling
+/// - "diagnostics/last upload": ISO8601 timestamp when the last successfull
+///                              upload of crash dumps was tried. This is also set
+///                              when no crash dumps have been uploadad.
+///
+/// @return JSONid
+///
+/// Caller is responsible for releasing the document.
+Function GenerateSettingsDefaults()
+
+	variable JSONid
+
+	JSONid = JSON_New()
+
+	JSON_AddVariable(JSONid, "version", 1)
+	JSON_AddTreeObject(JSONid, "/diagnostics")
+	JSON_AddString(JSONid, "/diagnostics/last upload", GetIso8601TimeStamp(secondsSinceIgorEpoch=0))
+
+	return JSONid
+End

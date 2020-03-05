@@ -666,3 +666,17 @@ Function/S GetSweepFormulaParseErrorMessage(dfr)
 
 	return GetSVARAsString(dfr, "sweepFormulaParseResult")
 End
+
+/// @brief Return the JSON id of the settings file
+///
+/// Loads the stored settings on disc if required.
+Function/S GetSettingsJSONid()
+	string path = GetNVARAsString(GetMiesPath(), "settingsJSONid", initialValue = NaN)
+	NVAR JSONid = $path
+
+	if(IsNaN(JSONid))
+		JSONid = PS_ReadSettings("MIES", GenerateSettingsDefaults)
+	endif
+
+	return path
+End
