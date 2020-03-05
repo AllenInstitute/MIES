@@ -6059,3 +6059,30 @@ Function GenerateSettingsDefaults()
 
 	return JSONid
 End
+
+/// @brief Call UploadCrashDumps() if we haven't called it since at least a day.
+Function UploadCrashDumpsDaily()
+
+	variable lastWrite
+
+	try
+		ClearRTError()
+		NVAR JSONid = $GetSettingsJSONid()
+
+		lastWrite = ParseISO8601TimeStamp(JSON_GetString(jsonID, "/diagnostics/last upload"))
+
+		if((lastWrite + 24 * 3600) > DateTimeInUTC())
+			// nothing to do
+			return NaN
+		endif
+
+		if(UploadCrashDumps())
+			printf "Crash dumps have been successfully uploaded.\r"
+		endif
+
+		JSON_SetString(jsonID, "/diagnostics/last upload", GetIso8601TimeStamp())
+	catch
+		ClearRTError()
+		BUG("Could not upload crash dumps!")
+	endtry
+End

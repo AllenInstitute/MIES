@@ -4599,6 +4599,7 @@ Function DAP_LockDevice(panelTitle)
 		GetPxPVersion()
 		SetupBackgroundTasks()
 		CtrlNamedBackground _all_, noevents=1
+		UploadCrashDumpsDaily()
 	endif
 
 	WAVE deviceInfo = GetDeviceInfoWave(panelTitle)
