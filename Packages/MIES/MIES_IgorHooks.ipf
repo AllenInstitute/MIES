@@ -136,6 +136,8 @@ static Function IgorQuitHook(igorApplicationNameStr)
 	IH_Cleanup()
 End
 
+/// Called before a new experiment is opened, in response to the New Experiment,
+/// Revert Experiment, or Open Experiment menu items in the File menu.
 static Function IgorBeforeNewHook(igorApplicationNameStr)
 	string igorApplicationNameStr
 
@@ -158,6 +160,7 @@ static Function IgorBeforeNewHook(igorApplicationNameStr)
 	return 0
 End
 
+/// Called when Igor is first launched and then whenever a new experiment is being created.
 static Function IgorStartOrNewHook(igorApplicationNameStr)
 	string igorApplicationNameStr
 
