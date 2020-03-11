@@ -9,6 +9,22 @@
 /// @file MIES_DataAcquisition.ipf
 /// @brief __DQ__ Routines for Data acquisition
 
+/// @brief Stop DAQ and TP on all locked devices
+Function DQ_StopOngoingDAQAllLocked()
+	string panelTitle
+
+	variable i, numDev
+	string device
+
+	SVAR devices = $GetDevicePanelTitleList()
+	numDev = ItemsInList(devices)
+	for(i = 0; i < numDev; i += 1)
+		device = StringFromList(i, devices)
+
+		DQ_StopOngoingDAQ(device, startTPAfterDAQ = 0)
+	endfor
+End
+
 /// @brief Stop the DAQ and testpulse
 ///
 /// Works with single/multi device mode and on yoked devices simultaneously.

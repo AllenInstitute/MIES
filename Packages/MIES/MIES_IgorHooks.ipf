@@ -171,15 +171,7 @@ static Function BeforeUncompiledHook(changeCode, procedureWindowTitleStr, textCh
 	string procedureWindowTitleStr
 	string textChangeStr
 
-	variable i, numDev
-	string device
-
-	SVAR devices = $GetDevicePanelTitleList()
-	numDev = ItemsInList(devices)
-	for(i = 0; i < numDev; i += 1)
-		device = StringFromList(i, devices)
-		DQ_StopOngoingDAQ(device, startTPAfterDAQ = 0)
-	endfor
+	DQ_StopOngoingDAQAllLocked()
 
 	ASYNC_Stop(timeout=5)
 End
