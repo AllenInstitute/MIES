@@ -21,7 +21,12 @@ Function DQ_StopOngoingDAQAllLocked()
 	for(i = 0; i < numDev; i += 1)
 		device = StringFromList(i, devices)
 
-		DQ_StopOngoingDAQ(device, startTPAfterDAQ = 0)
+		try
+			ClearRTError()
+			DQ_StopOngoingDAQ(device, startTPAfterDAQ = 0)
+		catch
+			ClearRTError()
+		endtry
 	endfor
 End
 
