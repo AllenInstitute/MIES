@@ -5041,6 +5041,13 @@ Function StartZeroMQMessageHandler()
 
 #if exists("zeromq_stop")
 
+	// do nothing if we are already running
+	zeromq_handler_start(); err = GetRTError(1)
+	if(ConvertXOPErrorCode(err) == ZeroMQ_HANDLER_ALREADY_RUNNING)
+		DEBUGPRINT("Already running, nothing to do.")
+		return NaN
+	endif
+
 	zeromq_stop()
 
 #if defined(DEBUGGING_ENABLED)
