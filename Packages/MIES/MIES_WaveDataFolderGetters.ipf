@@ -1106,6 +1106,8 @@ End
 
 /// @brief Handle upgrades of the numerical/textual labnotebooks in one step
 ///
+/// This function is idempotent and must stay that way.
+///
 /// Supported upgrades:
 /// - Addition of the third column "TimeStampSinceIgorEpochUTC"
 /// - Addition of nineth layer for headstage independent data

@@ -250,6 +250,7 @@ static Function NWB_AddDeviceSpecificData(locationID, panelTitle, [compressionMo
 
 	IPNWB#AddDevice(locationID, panelTitle, NWB_GenerateDeviceDescription(panelTitle))
 
+	// keys getter functions handle labnotebook wave upgrades
 	WAVE numericalValues = GetLBNumericalValues(panelTitle)
 	WAVE/T numericalKeys = GetLBNumericalKeys(panelTitle)
 	WAVE/T textualValues = GetLBTextualValues(panelTitle)
