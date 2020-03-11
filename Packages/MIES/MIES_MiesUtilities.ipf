@@ -5849,3 +5849,14 @@ Function NewExperiment()
 
 	Execute/P/Q "NEWEXPERIMENT "
 End
+
+/// @brief Remove the volatile part of the XOP error code
+///
+/// The result is constant and can therefore be compared with constants.
+///
+///	 From http://www.igorexchange.com/node/7286
+threadsafe Function ConvertXOPErrorCode(xopError)
+	variable xopError
+
+	return xopError == 0 ? 0 : ((xopError & 0xFFFF) + 10000)
+End
