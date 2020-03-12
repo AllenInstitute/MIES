@@ -252,8 +252,7 @@ Function Enforce_VC(panelTitle, eventType, ITCDataWave, headStage, realDataLengt
 	   return 0
 	endif
 
-	Wave GuiState = GetDA_EphysGuiStateNum(panelTitle)
-	if(GuiState[headStage][%HSmode] != V_CLAMP_MODE)
+	if(DAG_GetHeadstageMode(panelTitle, headStage) != V_CLAMP_MODE)
 		variable DAC = AFH_GetDACFromHeadstage(panelTitle, headstage)
 
 		string stimSetName = AFH_GetStimSetName(paneltitle, DAC, CHANNEL_TYPE_DAC)
@@ -274,8 +273,7 @@ Function Enforce_IC(panelTitle, eventType, ITCDataWave, headStage, realDataLengt
 	   return 0
 	endif
 
-	Wave GuiState = GetDA_EphysGuiStateNum(panelTitle)
-	if(GuiState[headStage][%HSmode] != I_CLAMP_MODE)
+	if(DAG_GetHeadstageMode(panelTitle, headStage) != I_CLAMP_MODE)
 		variable DAC = AFH_GetDACFromHeadstage(panelTitle, headstage)
 		string stimSetName = AFH_GetStimSetName(paneltitle, DAC, CHANNEL_TYPE_DAC)
 		printf "Stimulus set: %s on DAC: %d of headstage: %d requires current clamp mode. Change clamp mode to current clamp to allow data acquistion\r" stimSetName, DAC, headStage
@@ -460,11 +458,10 @@ End
 Function switchHolding(Vm2)
 	variable Vm2
 
-	variable numSweeps, SweepsRemaining, switchSweep, i
+	variable numSweeps, SweepsRemaining, switchSweep, i, clampMode
 	
 	numSweeps = GetValDisplayAsNum(DEFAULT_DEVICE, "valdisp_DataAcq_SweepsInSet")
-	WAVE GuiState = GetDA_EphysGuiStateNum(DEFAULT_DEVICE)
-	SweepsRemaining = GuiState[0][%valdisp_DataAcq_TrialsCountdown]-1
+	SweepsRemaining = DAG_GetNumericalValue(DEFAULT_DEVICE, "valdisp_DataAcq_TrialsCountdown") - 1
 
 	if(numSweeps <= 1)
 		PGC_SetAndActivateControl(DEFAULT_DEVICE, "check_Settings_TPAfterDAQ", val = CHECKBOX_SELECTED)
@@ -478,16 +475,16 @@ Function switchHolding(Vm2)
     if(SweepsRemaining == switchSweep)
         for(i=0; i<NUM_HEADSTAGES; i+=1)
             if(statusHS[i])
+				clampMode = DAG_GetHeadstageMode(DEFAULT_DEVICE, i)
                 PGC_SetAndActivateControl(DEFAULT_DEVICE, "slider_DataAcq_ActiveHeadstage", val = i)
-                if(GuiState[i][%HSMode] == V_CLAMP_MODE)
+				if(clampMode == V_CLAMP_MODE)
                     PGC_SetAndActivateControl(DEFAULT_DEVICE, "setvar_DataAcq_Hold_VC", val = Vm2)
-                elseif(GuiState[i][%HSMode] == I_CLAMP_MODE)
+				elseif(clampMode == I_CLAMP_MODE)
                     PGC_SetAndActivateControl(DEFAULT_DEVICE, "setvar_DataAcq_Hold_IC", val = Vm2)
-				else
-						printf "Unsupported clamp mode \r"
-						return GuiState[i][%HSMode]
+					else
+						ASSERT(0, "Unsupported clamp mode")
+					endif
 				endif
-			endif
         endfor
 		printf "Half-way through stim set, changing holding potential to: %d\r", Vm2
     endif
@@ -507,8 +504,6 @@ End
 
 /// @brief Initialize oodDAQ settings
 Function InitoodDAQ()
-
-	WAVE GuiState = GetDA_EphysGuiStateNum(DEFAULT_DEVICE)
 
 	// disable dDAQ
 
@@ -664,8 +659,7 @@ Function AdjustDAScale(panelTitle, eventType, ITCDataWave, headStage, realDataLe
 	switch(eventType)
 		case PRE_DAQ_EVENT:
 
-			WAVE GuiState = GetDA_EphysGuiStateNum(panelTitle)
-			if(GuiState[headStage][%HSmode] != I_CLAMP_MODE)
+			if(DAG_GetHeadstageMode(panelTitle, headStage) != I_CLAMP_MODE)
 				printf "The analysis function \"%s\" can only be used in Current Clamp mode.\r", GetRTStackInfo(1)
 				return 1
 			endif

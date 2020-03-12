@@ -53,7 +53,7 @@ Function SCOPE_KillScopeWindowIfRequest(panelTitle)
 
 	string win = SCOPE_GetPanel(panelTitle)
 
-	if(!GetCheckBoxState(panelTitle, "check_Settings_ShowScopeWindow") && windowExists(win))
+	if(!DAG_GetNumericalValue(panelTitle, "check_Settings_ShowScopeWindow") && windowExists(win))
 		KillWindow $win
 	endif
 End
@@ -232,7 +232,7 @@ Function SCOPE_CreateGraph(panelTitle, dataAcqOrTP)
 	YaxisLow = YaxisHigh - YaxisSpacing + 0.025
 	peakColor.green = SCOPE_GREEN
 	steadyColor.blue = SCOPE_BLUE
-	activeHeadStage = GetDA_EphysGuiStateNum(panelTitle)[0][%slider_DataAcq_ActiveHeadstage]
+	activeHeadStage = DAG_GetNumericalValue(panelTitle, "slider_DataAcq_ActiveHeadstage")
 
 	GetAxisRange(graph, AXIS_SCOPE_TP_TIME, axisMinTop, axisMaxTop, mode=AXIS_RANGE_INC_AUTOSCALED)
 	if(dataAcqOrTP != TEST_PULSE_MODE || !showPowerSpectrum && scopeScaleMode == GUI_SETTING_OSCI_SCALE_FIXED)
@@ -505,8 +505,7 @@ Function SCOPE_UpdateOscilloscopeData(panelTitle, dataAcqOrTP, [chunk, fifoPos, 
 	NVAR fifoPosGlobal = $GetFifoPosition(panelTitle)
 
 	if(tpChannels)
-		WAVE GUIState = GetDA_EphysGuiStateNum(panelTitle)
-		saveTP = GUIState[0][%check_Settings_TP_SaveTP]
+		saveTP = DAG_GetNumericalValue(panelTitle, "check_Settings_TP_SaveTP")
 
 		tpLengthPoints = ROVAR(GetTestPulseLengthInPoints(panelTitle, dataAcqOrTP))
 		// use a 'virtual' end position for fifoLatest for TP Mode since the input data contains one TP only

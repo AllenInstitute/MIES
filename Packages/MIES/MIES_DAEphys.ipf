@@ -4900,7 +4900,7 @@ static Function DAP_AllChanDASettings(panelTitle, headStage, [delayed])
 	variable headStage, delayed
 
 	string ctrl
-	variable scalar, index, indexEnd, DAC
+	variable scalar, index, indexEnd, DAC, clampMode
 
 	if(!DAG_GetNumericalValue(panelTitle, "check_DA_applyOnModeSwitch"))
 		return NaN
@@ -4918,13 +4918,13 @@ static Function DAP_AllChanDASettings(panelTitle, headStage, [delayed])
 		return NaN
 	endif
 
-	WAVE GuiState = GetDA_EphysGuiStateNum(panelTitle)
+	clampMode = DAG_GetHeadstageMode(panelTitle, headStage)
 
-	if(GuiState[headStage][%HSmode] == V_CLAMP_MODE)
+	if(clampMode == V_CLAMP_MODE)
 		scalar = DAG_GetNumericalValue(panelTitle, GetPanelControl(CHANNEL_INDEX_ALL_V_CLAMP,CHANNEL_TYPE_DAC,CHANNEL_CONTROL_SCALE))
 		index = DAG_GetNumericalValue(panelTitle, GetPanelControl(CHANNEL_INDEX_ALL_V_CLAMP,CHANNEL_TYPE_DAC,CHANNEL_CONTROL_WAVE))
 		indexEnd = DAG_GetNumericalValue(panelTitle, GetPanelControl(CHANNEL_INDEX_ALL_V_CLAMP,CHANNEL_TYPE_DAC,CHANNEL_CONTROL_INDEX_END))
-	elseif(GuiState[headStage][%HSmode] == I_CLAMP_MODE)
+	elseif(clampMode == I_CLAMP_MODE)
 		scalar = DAG_GetNumericalValue(panelTitle, GetPanelControl(CHANNEL_INDEX_ALL_I_CLAMP,CHANNEL_TYPE_DAC,CHANNEL_CONTROL_SCALE))
 		index = DAG_GetNumericalValue(panelTitle, GetPanelControl(CHANNEL_INDEX_ALL_I_CLAMP,CHANNEL_TYPE_DAC,CHANNEL_CONTROL_WAVE))
 		indexEnd = DAG_GetNumericalValue(panelTitle, GetPanelControl(CHANNEL_INDEX_ALL_I_CLAMP,CHANNEL_TYPE_DAC,CHANNEL_CONTROL_INDEX_END))

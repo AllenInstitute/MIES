@@ -273,9 +273,7 @@ Function DQ_ApplyAutoBias(panelTitle, BaselineSSAvg, SSResistance)
 	lastInvocation = GetNumberFromWaveNote(TPStorage, AUTOBIAS_LAST_INVOCATION_KEY)
 	curTime = ticks * TICKS_TO_SECONDS
 
-	WAVE guiStateWave = GetDA_EphysGuiStateNum(panelTitle)
-
-	if( (curTime - lastInvocation) < GuiStateWave[0][%setvar_Settings_AutoBiasInt] )
+	if( (curTime - lastInvocation) < DAG_GetNumericalValue(panelTitle, "setvar_Settings_AutoBiasInt"))
 		return NaN
 	endif
 
@@ -329,7 +327,7 @@ Function DQ_ApplyAutoBias(panelTitle, BaselineSSAvg, SSResistance)
 		DEBUGPRINT("current[A]=", var=current)
 		// only use part of the calculated current, as BaselineSSAvg holds
 		// an overestimate for small buffer sizes
-		current *= GuiStateWave[0][%setvar_Settings_AutoBiasPerc] / 100
+		current *= DAG_GetNumericalValue(panelTitle, "setvar_Settings_AutoBiasPerc") / 100
 
 		// check if holding is enabled. If it is not, ignore holding current value.
 		if(AI_SendToAmp(panelTitle, headStage, I_CLAMP_MODE, MCC_GETHOLDINGENABLE_FUNC, NaN))

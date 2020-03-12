@@ -21,9 +21,7 @@ Function AFM_CallAnalysisFunctions(panelTitle, eventType)
 	string func, msg
 	struct AnalysisFunction_V3 s
 
-	WAVE GuiState = GetDA_EphysGuiStateNum(panelTitle)
-
-	if(GuiState[0][%Check_Settings_SkipAnalysFuncs])
+	if(DAG_GetNumericalValue(panelTitle, "Check_Settings_SkipAnalysFuncs"))
 		return 0
 	endif
 
