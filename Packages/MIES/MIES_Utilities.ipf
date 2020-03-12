@@ -5126,8 +5126,7 @@ Function/S GenerateRFC4122UUID()
 	string str, randomness
 	STRUCT Uuid uu
 
-	NewRandomSeed()
-	randomness = Hash(num2str(GetReproducibleRandom()), 1)
+	randomness = Hash(num2strHighPrec(GetReproducibleRandom(), precision=15), 1)
 
 	WAVE binary = HexToBinary(randomness)
 
