@@ -150,7 +150,7 @@ threadsafe static Function ASYNC_Thread()
 
 		endif
 
-		ASYNC_putDF(dfrAsync, 0)
+		TS_ThreadGroupPutDFR(0, dfrAsync)
 		KillDataFolder dfr
 	endfor
 End
@@ -499,25 +499,7 @@ Function ASYNC_Execute(dfr)
 
 	workerIDCounter[0] += 1
 
-	ASYNC_putDF(dfr, tgID)
-End
-
-/// @brief Puts a data folder to/from a threadgroup
-threadsafe static Function ASYNC_putDF(dfr, tgID)
-	DFREF dfr
-	variable tgID
-
-	string dataFolder
-	DFREF dfrSave
-
-	dataFolder = UniqueDataFolderName($":", "temp")
-	DuplicateDataFolder dfr, $dataFolder
-	dfrSave = GetDataFolderDFR()
-
-	SetDataFolder $dataFolder
-	ThreadGroupPutDF tgID, :
-
-	SetDatafolder dfrSave
+	TS_ThreadGroupPutDFR(tgID, dfr)
 End
 
 /// @brief Returns 1 if var is a finite/normal number, 0 otherwise
