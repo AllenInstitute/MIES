@@ -1949,19 +1949,6 @@ Function/WAVE ConvertListOfWaves(list)
 	return waves
 End
 
-/// @brief Convert a list of strings to a text wave.
-///
-/// Counterpart @see TextWaveToList
-/// @see ListToNumericWave
-Function/WAVE ConvertListToTextWave(list, [listSepString])
-	string list, listSepString
-	if(ParamIsDefault(listSepString))
-		listSepString = ";"
-	endif
-
-	return ListToTextWave(list, listSepString)
-End
-
 /// @brief return a subset of the input list
 ///
 /// @param list       input list

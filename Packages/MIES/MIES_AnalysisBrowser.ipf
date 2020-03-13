@@ -165,7 +165,7 @@ Function/Wave AB_SaveDeviceList(deviceList, dataFolder)
 	Variable numDevices
 	Wave/T wv = GetAnalysisDeviceWave(dataFolder)
 
-	Wave/T deviceListWave = ConvertListToTextWave(deviceList)
+	Wave/T deviceListWave = ListToTextWave(deviceList, ";")
 	numDevices = DimSize(deviceListWave, ROWS)
 	if(numDevices > 0)
 		EnsureLargeEnoughWave(wv, minimumSize=numDevices, dimension=ROWS)
