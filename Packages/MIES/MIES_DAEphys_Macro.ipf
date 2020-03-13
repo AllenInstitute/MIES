@@ -3794,7 +3794,7 @@ Window DA_Ephys() : Panel
 	CheckBox Check_TTL_ALL,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	CheckBox Check_TTL_ALL,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
 	CheckBox Check_TTL_ALL,userdata(Config_RestorePriority)=  "60",value= 0
-	CheckBox check_settings_show_power,pos={27.00,157.00},size={134.00,15.00},disable=1,proc=DAP_CheckProc_UpdateGuiState,title="Show power spectrum"
+	CheckBox check_settings_show_power,pos={27.00,157.00},size={134.00,15.00},disable=1,proc=DAP_CheckProc_PowerSpectrum,title="Show power spectrum"
 	CheckBox check_settings_show_power,help={"Show the power spectrum (Fourier Transform) of the testpulse"}
 	CheckBox check_settings_show_power,userdata(tabnum)=  "5"
 	CheckBox check_settings_show_power,userdata(tabcontrol)=  "ADC"

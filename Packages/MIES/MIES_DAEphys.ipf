@@ -5213,3 +5213,22 @@ Function ButtonProc_Hardware_rescan(ba) : ButtonControl
 
 	return 0
 End
+
+Function DAP_CheckProc_PowerSpectrum(cba) : CheckBoxControl
+	STRUCT WMCheckboxAction &cba
+
+	variable testPulseMode
+	string panelTitle
+
+	switch(cba.eventCode)
+		case 2: // mouse up
+			panelTitle = cba.win
+			DAG_Update(panelTitle, cba.ctrlName, val = cba.checked)
+
+			testPulseMode = TP_StopTestPulse(panelTitle)
+			TP_RestartTestPulse(panelTitle, testPulseMode)
+			break
+	endswitch
+
+	return 0
+End
