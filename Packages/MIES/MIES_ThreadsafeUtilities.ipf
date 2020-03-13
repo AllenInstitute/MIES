@@ -151,10 +151,13 @@ threadsafe Function TS_ThreadGroupPutVariable(tgID, varName, varValue)
 	string varName
 	variable varValue
 
+	DFREF dfrSave = GetDataFolderDFR()
 	SetDataFolder NewFreeDataFolder()
 	variable/G $varName = varValue
 
 	ThreadGroupPutDF tgID, :
+
+	SetDataFolder dfrSave
 End
 
 /// @brief Push a datafolder to the thread queue
