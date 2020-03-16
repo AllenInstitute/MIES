@@ -1585,7 +1585,7 @@ threadsafe Function/DF UniqueDataFolder(dfr, baseName)
 	return $path
 End
 
-/// @brief Return a unique data folder name which does not exist in dfr
+/// @brief Return an absolute unique data folder name which does not exist in dfr
 ///
 /// If you want to have the datafolder created for you and don't need a
 /// threadsafe function, use UniqueDataFolder() instead.
@@ -1601,6 +1601,7 @@ threadsafe Function/S UniqueDataFolderName(dfr, baseName)
 
 	ASSERT_TS(!isEmpty(baseName), "baseName must not be empty" )
 	ASSERT_TS(DataFolderExistsDFR(dfr), "dfr does not exist")
+	ASSERT_TS(DataFolderRefStatus(dfr) != 3, "dfr can not be a free DF")
 
 	numRuns = 10000
 	// shorten basename so that we can attach some numbers
