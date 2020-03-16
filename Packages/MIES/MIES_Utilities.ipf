@@ -3630,6 +3630,13 @@ threadsafe Function IsGlobalWave(wv)
 	return WaveType(wv, 2) == 1
 End
 
+/// @brief Return 1 if the wave is a complex wave
+threadsafe Function IsComplexWave(wv)
+	WAVE wv
+
+	return WaveType(wv) & IGOR_TYPE_COMPLEX
+End
+
 /// @brief Return the user name of the running user
 Function/S GetSystemUserName()
 

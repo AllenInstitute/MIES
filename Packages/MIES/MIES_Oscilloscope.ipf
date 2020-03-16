@@ -120,7 +120,8 @@ Function SCOPE_UpdateGraph(panelTitle, dataAcqOrTP)
 		return 0
 	endif
 
-	SCOPE_GetCheckBoxesForAddons(panelTitle, showSteadyStateResistance, showPeakResistance, showPowerSpectrum)
+	[showSteadyStateResistance, showPeakResistance, showPowerSpectrum] = SCOPE_GetCheckBoxesForAddons(panelTitle, dataAcqOrTP)
+
 	if(showPowerSpectrum)
 		return NaN
 	endif
@@ -185,13 +186,11 @@ Function SCOPE_UpdateGraph(panelTitle, dataAcqOrTP)
 	endfor
 End
 
-static Function SCOPE_GetCheckBoxesForAddons(panelTitle, showSteadyStateResistance, showPeakResistance, showPowerSpectrum)
-	string panelTitle
-	variable &showSteadyStateResistance, &showPeakResistance, &showPowerSpectrum
+static Function [variable showSteadyStateResistance, variable showPeakResistance, variable showPowerSpectrum] SCOPE_GetCheckBoxesForAddons(string panelTitle, variable dataAcqOrTP)
 
 	showPeakResistance        = DAG_GetNumericalValue(panelTitle, "check_settings_TP_show_peak")
 	showSteadyStateResistance = DAG_GetNumericalValue(panelTitle, "check_settings_TP_show_steady")
-	showPowerSpectrum         = DAG_GetNumericalValue(panelTitle, "check_settings_show_power")
+	showPowerSpectrum         = dataAcqOrTP == TEST_PULSE_MODE && DAG_GetNumericalValue(panelTitle, "check_settings_show_power")
 End
 
 Function SCOPE_CreateGraph(panelTitle, dataAcqOrTP)
@@ -242,7 +241,7 @@ Function SCOPE_CreateGraph(panelTitle, dataAcqOrTP)
 	RemoveTracesFromGraph(graph)
 	RemoveAnnotationsFromGraph(graph)
 
-	SCOPE_GetCheckBoxesForAddons(panelTitle, showSteadyStateResistance, showPeakResistance, showPowerSpectrum)
+	[showSteadyStateResistance, showPeakResistance, showPowerSpectrum] = SCOPE_GetCheckBoxesForAddons(panelTitle, dataAcqOrTP)
 
 	for(i = 0; i < numADChannels; i += 1)
 		chanTPmode = (ADCmode[i] == DAQ_CHANNEL_TYPE_TP)
@@ -280,8 +279,7 @@ Function SCOPE_CreateGraph(panelTitle, dataAcqOrTP)
 
 			if(showPowerSpectrum)
 				powerSpectrumTrace = "powerSpectra" + adcStr
-				WAVE powerSpectrum = GetTPPowerSpectrumWave(panelTitle)
-				AppendToGraph/W=$graph/L=$leftAxis/B=bottomPS powerSpectrum[][numActiveDACs + i]/TN=$powerSpectrumTrace
+				AppendToGraph/W=$graph/L=$leftAxis/B=bottomPS TPOscilloscopeData[][numActiveDACs + i]/TN=$powerSpectrumTrace
 				ModifyGraph/W=$graph lstyle=0, mode($powerSpectrumTrace)=0
 				ModifyGraph/W=$graph rgb($powerSpectrumTrace)=(65535,0,0,13107)
 				ModifyGraph/W=$graph freepos($leftAxis) = {0, kwFraction}, axisEnab($leftAxis)= {YaxisLow, YaxisHigh}
@@ -365,7 +363,7 @@ Function SCOPE_CreateGraph(panelTitle, dataAcqOrTP)
 		SetAxesRanges(graph, previousADAxesRanges, axesRegexp=AXIS_SCOPE_AD_REGEXP, orientation=AXIS_ORIENTATION_LEFT, mode=AXIS_RANGE_USE_MINMAX)
 	endif
 
-	SCOPE_SetADAxisLabel(panelTitle,activeHeadStage)
+	SCOPE_SetADAxisLabel(panelTitle, dataAcqOrTP, activeHeadStage)
 
 	if(showPowerSpectrum)
 			Label/W=$graph bottomPS "Frequency (\\U)"
@@ -390,9 +388,9 @@ Function SCOPE_CreateGraph(panelTitle, dataAcqOrTP)
 	endif
 End
 
-Function SCOPE_SetADAxisLabel(panelTitle,activeHeadStage)
+Function SCOPE_SetADAxisLabel(panelTitle, dataAcqOrTP, activeHeadStage)
 	string panelTitle
-	variable activeHeadStage
+	variable dataAcqOrTP, activeHeadStage
 
 	WAVE ITCChanConfigWave = GetITCChanConfigWave(panelTitle)
 	WAVE ADCs = GetADCListFromConfig(ITCChanConfigWave)
@@ -431,7 +429,7 @@ Function SCOPE_SetADAxisLabel(panelTitle,activeHeadStage)
 			style = ""
 		endif
 
-		if(DAG_GetNumericalValue(panelTitle, "check_settings_show_power"))
+		if(DAG_GetNumericalValue(panelTitle, "check_settings_show_power") && dataAcqOrTP == TEST_PULSE_MODE)
 			unit = "a. u."
 		else
 			unit = AFH_GetChannelUnit(ITCChanConfigWave, adc, ITC_XOP_CHANNEL_TYPE_ADC)
@@ -440,16 +438,24 @@ Function SCOPE_SetADAxisLabel(panelTitle,activeHeadStage)
 	endfor
 End
 
-Function SCOPE_UpdatePowerSpectrum(panelTitle)
+static Function SCOPE_UpdatePowerSpectrum(panelTitle)
 	String panelTitle
 
-	if(GetDA_EphysGuiStateNum(panelTitle)[0][%check_settings_show_power])
+	variable startOfADColumns
+
+	if(DAG_GetNumericalValue(panelTitle, "check_settings_show_power"))
 		WAVE OscilloscopeData = GetOscilloscopeWave(panelTitle)
-		WAVE powerSpectrum = GetTPPowerSpectrumWave(panelTitle)
-		// FFT knows how to transform units without prefix so transform them it temporarly
+		WAVE TPOscilloscopeData = GetTPOscilloscopeWave(panelTitle)
+		startOfADColumns = ROVar(GetADChannelToMonitor(panelTitle))
+
+		// FFT knows how to transform units without prefix so transform them temporarly
 		SetScale/P x, DimOffset(OscilloscopeData, ROWS) / 1000, DimDelta(OscilloscopeData, ROWS) / 1000, "s", OscilloscopeData
-		FFT/OUT=4/DEST=powerSpectrum/COLS/PAD={2^ceil(log(DimSize(OscilloscopeData, ROWS)) / log(2))} OscilloscopeData
+
+		// work around an IP8 bug where we can't reuse an existing permanent wave
+		FFT/DEST=powerSpectrum/COLS/FREE OscilloscopeData
 		SetScale/P x, DimOffset(OscilloscopeData, ROWS) * 1000, DimDelta(OscilloscopeData, ROWS) * 1000, "ms", OscilloscopeData
+
+		MultiThread TPOscilloscopeData[][startOfADColumns, DimSize(powerSpectrum, COLS) - 1] = magsqr(powerSpectrum[p][q])
 	endif
 End
 

@@ -368,8 +368,6 @@ static Function DQM_BkrdDataAcq(panelTitle, [triggerMode])
 		triggerMode = HARDWARE_DAC_DEFAULT_TRIGGER
 	endif
 
-	NVAR stopCollectionPoint = $GetStopCollectionPoint(panelTitle)
-	NVAR ADChannelToMonitor  = $GetADChannelToMonitor(panelTitle)
 	NVAR ITCDeviceIDGlobal   = $GetITCDeviceIDGlobal(panelTitle)
 
 	if(triggerMode == HARDWARE_DAC_DEFAULT_TRIGGER && DAG_GetNumericalValue(panelTitle, "Check_DataAcq1_RepeatAcq"))

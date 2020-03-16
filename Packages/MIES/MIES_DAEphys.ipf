@@ -3639,7 +3639,7 @@ Function DAP_SliderProc_MIESHeadStage(sc) : SliderControl
 		P_LoadPressureButtonState(panelTitle)
 		P_UpdatePressureModeTabs(panelTitle, headStage)
 		DAP_UpdateClampmodeTabs(panelTitle, headStage, mode, DO_MCC_MIES_SYNCING)
-		SCOPE_SetADAxisLabel(panelTitle,HeadStage)
+		SCOPE_SetADAxisLabel(panelTitle, UNKNOWN_MODE, HeadStage)
 		P_RunP_ControlIfTPOFF(panelTitle)
 	endif
 
@@ -5208,6 +5208,25 @@ Function ButtonProc_Hardware_rescan(ba) : ButtonControl
 
 			DAP_GetNIDeviceList()
 			DAP_GetITCDeviceList()
+			break
+	endswitch
+
+	return 0
+End
+
+Function DAP_CheckProc_PowerSpectrum(cba) : CheckBoxControl
+	STRUCT WMCheckboxAction &cba
+
+	variable testPulseMode
+	string panelTitle
+
+	switch(cba.eventCode)
+		case 2: // mouse up
+			panelTitle = cba.win
+			DAG_Update(panelTitle, cba.ctrlName, val = cba.checked)
+
+			testPulseMode = TP_StopTestPulse(panelTitle)
+			TP_RestartTestPulse(panelTitle, testPulseMode)
 			break
 	endswitch
 

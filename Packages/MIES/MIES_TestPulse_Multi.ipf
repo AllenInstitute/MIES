@@ -179,7 +179,7 @@ Function TPM_BkrdTPFuncMD(s)
 
 	variable i, j, deviceID, fifoPos, hardwareType, checkAgain, updateInt, endOfPulse
 	variable fifoLatest, lastTP, now
-	variable channelNr, startOfADColumns, tpLengthPoints, err
+	variable channelNr, tpLengthPoints, err
 	string panelTitle, fifoChannelName, fifoName, errMsg
 
 	variable debTime
