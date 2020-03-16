@@ -517,7 +517,12 @@ static Function OVS_ChangeSweepSelection(win, choiceString)
 	extPanel  = BSP_GetPanel(win)
 
 	DFREF dfr = OVS_GetFolder(win)
-	WAVE listboxSelWave          = GetOverlaySweepsListSelWave(dfr)
+	WAVE listboxSelWave = GetOverlaySweepsListSelWave(dfr)
+
+	if(DimSize(listboxSelWave, ROWS) == 0)
+		return NaN
+	endif
+
 	WAVE/T sweepSelectionChoices = GetOverlaySweepSelectionChoices(dfr)
 
 	offset = GetSetVariable(extPanel, "setvar_overlaySweeps_offset")
