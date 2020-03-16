@@ -52,7 +52,7 @@ Function IH_RemoveAmplifierConnWaves()
 End
 
 /// @brief Delete all wavebuilder stim sets to save memory
-Function IH_KillStimSets()
+static Function IH_KillStimSets()
 
 	string list, path
 
