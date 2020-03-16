@@ -820,7 +820,7 @@ Function AI_OpenMCCs(ampSerialNumList, [ampTitleList])
 	endIf
 
 	if(ItemsInAmpSerialNumList > 1)
-		WAVE/T ampSerialListRaw = ConvertListToTextWave(ampSerialNumList)
+		WAVE/T ampSerialListRaw = ListToTextWave(ampSerialNumList, ";")
 		FindDuplicates/FREE/RT=ampSerialList/INDX=dupIndices ampSerialListRaw
 		numDups = DimSize(dupIndices, ROWS)
 		if(numDups)
