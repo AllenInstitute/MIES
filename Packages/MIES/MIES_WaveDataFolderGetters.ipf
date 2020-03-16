@@ -5502,35 +5502,47 @@ End
 /// Dimension sizes and `NOTE_INDEX` value must coincide with other two cache waves.
 Function/Wave GetCacheStatsWave()
 
-	variable versionOfNewWave = 2
-	variable numRows
-	DFREF dfr = GetCacheFolder()
+	variable versionOfNewWave = 3
 
+	variable numRows, index, oldNumRows
+	DFREF dfr = GetCacheFolder()
 	WAVE/D/Z/SDFR=dfr wv = stats
 
 	if(ExistsWithCorrectLayoutVersion(wv, versionOfNewWave))
 		return wv
 	else
-
 		WAVE/T keys      = GetCacheKeyWave()
 		WAVE/WAVE values = GetCacheValueWave()
 		numRows = DimSize(values, ROWS)
 		ASSERT(DimSize(keys, ROWS) == numRows, "Mismatched row sizes")
 
-		// experiments prior to ab795b55 (Cache: Add statistics for each entry, 2018-03-23)
-		// don't hold this wave, but we still have to ensure that the stats wave has the right number of rows
-		if(WaveExists(wv) && DimSize(wv, ROWS) < numRows)
-			Redimension/D/N=(numRows, 4) wv
+		if(WaveExists(wv))
+			// experiments prior to efebc382 (Merge pull request #490 from AllenInstitute/mh_fix_uniquedatafoldername, 2020-03-16)
+			// have the wrong value of NOTE_INDEX of the stats wave
+			if(WaveVersionIsAtLeast(wv, 1))
+				index = GetNumberFromWaveNote(keys, NOTE_INDEX)
+				SetNumberInWaveNote(wv, NOTE_INDEX, index)
+			endif
+
+			oldNumRows = DimSize(wv, ROWS)
+			if(numRows != oldNumRows)
+				Redimension/D/N=(numRows, 4) wv
+				wv[oldNumRows, numRows - 1][] = NaN
+			endif
+
 			SetWaveVersion(wv, versionOfNewWave)
 			return wv
 		else
+			// experiments prior to ab795b55 (Cache: Add statistics for each entry, 2018-03-23)
+			// don't hold this wave, but we still have to ensure that the stats wave has the right number of rows
 			Make/D/N=(numRows, 4) dfr:stats/Wave=wv
 		endif
 	endif
 
 	wv = NaN
 
-	SetNumberInWaveNote(wv, NOTE_INDEX, 0)
+	index = GetNumberFromWaveNote(keys, NOTE_INDEX)
+	SetNumberInWaveNote(wv, NOTE_INDEX, index)
 	SetWaveVersion(wv, versionOfNewWave)
 
 	SetDimLabel COLS, 0, Hits, wv
