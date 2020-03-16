@@ -1106,6 +1106,8 @@ End
 
 /// @brief Handle upgrades of the numerical/textual labnotebooks in one step
 ///
+/// This function is idempotent and must stay that way.
+///
 /// Supported upgrades:
 /// - Addition of the third column "TimeStampSinceIgorEpochUTC"
 /// - Addition of nineth layer for headstage independent data
@@ -1427,7 +1429,7 @@ Function/WAVE GetLBRowCache(values)
 	variable actual
 	string key, name
 
-	variable versionOfNewWave = 1
+	variable versionOfNewWave = 2
 
 	actual = WaveModCountWrapper(values)
 	name   = GetWavesDataFolder(values, 2)
@@ -1477,7 +1479,7 @@ Function/WAVE GetLBIndexCache(values)
 	variable actual
 	string key, name
 
-	variable versionOfNewWave = 1
+	variable versionOfNewWave = 2
 
 	actual = WaveModCountWrapper(values)
 	name   = GetWavesDataFolder(values, 2)
@@ -1524,7 +1526,7 @@ Function/WAVE GetLBNidCache(numericalValues)
 	variable actual
 	string key, name
 
-	variable versionOfNewWave = 1
+	variable versionOfNewWave = 2
 
 	ASSERT(!IsTextWave(numericalValues), "Expected numerical labnotebook")
 

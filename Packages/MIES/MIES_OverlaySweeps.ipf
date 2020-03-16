@@ -170,8 +170,14 @@ Function OVS_UpdatePanel(win, listBoxWave, listBoxSelWave, sweepSelectionChoices
 			sweepSelectionChoices[i][][%TTLStimSet] = ""
 		endif
 
-		WAVE clampModes = GetLastSetting(allNumericalValues[i], sweeps[i], "Clamp Mode", DATA_ACQUISITION_MODE)
-		sweepSelectionChoices[i][][%StimsetAndClampMode] = SelectString(IsFinite(clampModes[q]), "", stimsets[q] + " (" + ConvertAmplifierModeShortStr(clampModes[q]) + ")")
+		WAVE/Z clampMode = GetLastSetting(allNumericalValues[i], sweeps[i], "Clamp Mode", DATA_ACQUISITION_MODE)
+
+		if(!WaveExists(clampMode))
+			WAVE/Z clampMode = GetLastSetting(allNumericalValues[i], sweeps[i], "Operating Mode", DATA_ACQUISITION_MODE)
+			ASSERT(WaveExists(clampMode), "Labnotebook is too old for NWB export.")
+		endif
+
+		sweepSelectionChoices[i][][%StimsetAndClampMode] = SelectString(IsFinite(clampMode[q]), "", stimsets[q] + " (" + ConvertAmplifierModeShortStr(clampMode[q]) + ")")
 	endfor
 
 	lastEntry = numEntries - 1

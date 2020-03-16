@@ -3695,6 +3695,38 @@ Function GetMarkerSkip(numPoints, numMarkers)
 	return trunc(limit(numPoints / numMarkers, 1, 2^15 - 1))
 End
 
+/// @brief Return a wave were all elements which are in both wave1 and wave2 have been removed from wave1
+///
+/// @sa GetListDifference for string lists
+Function/WAVE GetSetDifference(wave1, wave2)
+	WAVE wave1
+	WAVE wave2
+
+	variable numEntries, i, j, value
+
+	ASSERT(IsFloatingPointWave(wave1) && IsFloatingPointWave(wave2), "Can only work with floating point waves.")
+	ASSERT(WaveType(wave1) == WaveType(wave2), "Wave type mismatch")
+
+	Duplicate/FREE wave1, result
+
+	numEntries = DimSize(wave1, ROWS)
+	for(i = 0; i < numEntries; i += 1)
+		value = wave1[i]
+		FindValue/UOFV/V=(value) wave2
+		if(V_Value == -1)
+			result[j++] = value
+		endif
+	endfor
+
+	if(j == 0)
+		return $""
+	endif
+
+	Redimension/N=(j) result
+
+	return result
+End
+
 /// @brief Return a wave with the set theory style intersection of wave1 and wave2
 ///
 /// Given {1, 2, 4, 10} and {2, 5, 11} this will return {2}.

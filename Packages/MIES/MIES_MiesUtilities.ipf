@@ -399,6 +399,31 @@ Function FindRange(wv, col, val, forwardORBackward, entrySourceType, first, last
 
 		if(sourceTypeCol >= 0) // labnotebook has a entrySourceType column
 			WAVE/Z indizesSourceType = FindIndizes(wv, col=sourceTypeCol, var=entrySourceType, startRow = WaveMin(indizesSetting), endRow = WaveMax(indizesSetting))
+
+			// we don't have an entry source type in the labnotebook set
+			// throw away entries which are obviously from a different (guessed) entry source type
+			if(!WaveExists(indizesSourceType))
+				if(entrySourceType == DATA_ACQUISITION_MODE)
+
+					// "TP Peak Resistance" introduced in 666d761a (TP documenting is implemented using David Reid's documenting functions, 2014-07-28)
+					if(FindDimLabel(wv, COLS, "TP Peak Resistance") >= 0)
+						WAVE/Z indizesDefinitlyTP = FindIndizes(wv, colLabel="TP Peak Resistance", prop=PROP_NON_EMPTY, startRow = WaveMin(indizesSetting), endRow = WaveMax(indizesSetting), startLayer = 0, endLayer = LABNOTEBOOK_LAYER_COUNT - 1)
+						if(WaveExists(indizesDefinitlyTP) && WaveExists(indizesSetting))
+							WAVE/Z indizesSettingRemoved = GetSetDifference(indizesSetting, indizesDefinitlyTP)
+							WAVE/Z indizesSetting = indizesSettingRemoved
+						endif
+					endif
+
+					// "TP Baseline Fraction" introduced in 4f4649a2 (Document the testpulse settings in the labnotebook, 2015-07-28)
+					if(FindDimLabel(wv, COLS, "TP Baseline Fraction") >= 0)
+						WAVE/Z indizesDefinitlyTP = FindIndizes(wv, colLabel="TP Baseline Fraction", prop=PROP_NON_EMPTY, startRow = WaveMin(indizesSetting), endRow = WaveMax(indizesSetting), startLayer = 0, endLayer = LABNOTEBOOK_LAYER_COUNT - 1)
+						if(WaveExists(indizesDefinitlyTP) && WaveExists(indizesSetting))
+							WAVE/Z indizesSettingRemoved = GetSetDifference(indizesSetting, indizesDefinitlyTP)
+							WAVE/Z indizesSetting = indizesSettingRemoved
+						endif
+					endif
+				endif
+			endif
 		endif
 	endif
 
