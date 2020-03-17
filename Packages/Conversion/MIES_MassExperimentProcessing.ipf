@@ -7,6 +7,8 @@
 /// - Stop Igor Pro
 /// - Create a shortcut to this file and place it in the `Igor Procedures` folder
 /// - Ensure that only MIES is installed and no other Igor Pro packages
+/// - In the MIES installation folder (All Users: `C:\Program Files\MIES`, User: `C:\Users\$User\Documents\MIES`)
+///   create an empty file named `UserConfig.txt`.
 ///
 /// Running:
 /// - Start Igor Pro
