@@ -1101,6 +1101,11 @@ Function WB_UpgradeCustomWaveInWPT(wv, channelType, i)
 			Wave/Z/SDFR=customWaveDFR customWave = $customWaveName
 		endif
 
+		if(!WaveExists(customWave))
+			DFREF customWaveDFR = root:
+			Wave/Z/SDFR=customWaveDFR customWave = $customWaveName
+		endif
+
 		if(WaveExists(customWave))
 			printf "Upgraded custom wave format successfully.\r"
 			wv[0][i][EPOCH_TYPE_CUSTOM] = GetWavesDataFolder(customWave, 2)
