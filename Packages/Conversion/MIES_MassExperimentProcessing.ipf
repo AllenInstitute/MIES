@@ -132,8 +132,8 @@ End
 static Function PerformMiesTasks(outputFilePath)
 	string outputFilePath
 
-	string folder
-	variable nwbVersion
+	string folder, message
+	variable nwbVersion, error
 
 	printf "Free Memory: %g GB\r", GetFreeMemory()
 
@@ -148,10 +148,15 @@ static Function PerformMiesTasks(outputFilePath)
 		CreateFolderOnDisk(folder)
 	endif
 
+	ClearRTError()
+
 	nwbVersion = 2
 	NWB_ExportAllData(nwbVersion, overrideFilePath=outputFilePath)
-
 	HDF5CloseFile/A/Z 0
+
+	message = GetRTErrMessage()
+	error = GetRTError(1)
+	ASSERT(error == 0, "Encountered lingering RTE of " + num2str(error) + "(message: " + message + ") after executing NWB_ExportAllData.")
 End
 
 static Function IsAppropriateExperiment()
