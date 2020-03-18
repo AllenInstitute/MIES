@@ -149,7 +149,7 @@ static Function BSP_DynamicSweepControls(mainPanel)
 
 	SetSetVariable(scPanel, "setvar_SweepControl_SweepNo", 0)
 	SetSetVariableLimits(scPanel, "setvar_SweepControl_SweepNo", 0, 0, 1)
-	SetValDisplay(scPanel, "valdisp_SweepControl_LastSweep", var=0)
+	SetValDisplay(scPanel, "valdisp_SweepControl_LastSweep", var=NaN)
 	SetSetVariable(scPanel, "setvar_SweepControl_SweepStep", 1)
 
 	if(BSP_IsDataBrowser(mainPanel))

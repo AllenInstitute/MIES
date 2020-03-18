@@ -321,6 +321,9 @@ static Function [variable first, variable last] DB_FirstAndLastSweepAcquired(str
 
 	list = DB_GetPlainSweepList(win)
 
+	first = NaN
+	last  = NaN
+
 	if(!isEmpty(list))
 		first = NumberByKey("Sweep", list, "_")
 		last = ItemsInList(list) - 1 + first
@@ -342,10 +345,10 @@ static Function DB_UpdateLastSweepControls(win, first, last)
 	endif
 
 	formerLast = GetValDisplayAsNum(scPanel, "valdisp_SweepControl_LastSweep")
-	SetSetVariableLimits(scPanel, "setvar_SweepControl_SweepNo", first, last, 1)
 
-	if(formerLast != last)
+	if(formerLast != last || (IsNaN(formerLast) && IsFinite(last)))
 		SetValDisplay(scPanel, "valdisp_SweepControl_LastSweep", var=last)
+		SetSetVariableLimits(scPanel, "setvar_SweepControl_SweepNo", first, last, 1)
 		DB_UpdateOverlaySweepWaves(win)
 		AD_Update(win)
 	endif
