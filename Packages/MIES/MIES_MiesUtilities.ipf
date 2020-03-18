@@ -3042,7 +3042,7 @@ Function SaveExperimentSpecial(mode)
 
 	// saved experiments are stored in the symbolic path "home"
 	expLoc  = "home"
-	expName = UniqueFile(expLoc, expName, PACKED_FILE_EXPERIMENT_SUFFIX)
+	expName = UniqueFileOrFolder(expLoc, expName, suffix = PACKED_FILE_EXPERIMENT_SUFFIX)
 
 	ret = SaveExperimentWrapper(expLoc, expName, overrideInteractiveMode = showSaveDialog)
 

@@ -1527,15 +1527,15 @@ Function SetDimensionLabels(keys, values)
 	endfor
 End
 
-/// @brief Returns a unique and non-existing file name
+/// @brief Returns a unique and non-existing file or folder name
 ///
 /// @warning This function must *not* be used for security relevant purposes,
 /// as for that the check-and-file-creation must be an atomic operation.
 ///
 /// @param symbPath  symbolic path
 /// @param baseName  base name of the file, must not be empty
-/// @param suffix    file suffix, e.g. ".txt", must not be empty
-Function/S UniqueFile(symbPath, baseName, suffix)
+/// @param suffix    file/folder suffix
+Function/S UniqueFileOrFolder(symbPath, baseName, [suffix])
 	string symbPath, baseName, suffix
 
 	string file
@@ -1544,7 +1544,10 @@ Function/S UniqueFile(symbPath, baseName, suffix)
 	PathInfo $symbPath
 	ASSERT(V_flag == 1, "Symbolic path does not exist")
 	ASSERT(!isEmpty(baseName), "baseName must not be empty")
-	ASSERT(!isEmpty(suffix), "suffix must not be empty")
+
+	if(ParamIsDefault(suffix))
+		suffix = ""
+	endif
 
 	file = baseName + suffix
 
