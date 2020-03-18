@@ -141,7 +141,7 @@ Constant EVENT_KILL_WINDOW_HOOK = 2
 /// Used by CheckName and UniqueName
 Constant CONTROL_PANEL_TYPE = 9
 
-/// @name CountObjects and CountObjectsDFR constant
+/// @name CountObjects, CountObjectsDFR, GetIndexedObjName, GetIndexedObjNameDFR constants
 /// @anchor TypeFlags
 /// @{
 Constant COUNTOBJECTS_WAVES      = 1

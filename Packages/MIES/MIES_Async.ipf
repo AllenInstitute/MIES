@@ -150,7 +150,7 @@ threadsafe static Function ASYNC_Thread()
 
 		endif
 
-		ASYNC_putDF(dfrAsync, 0)
+		TS_ThreadGroupPutDFR(0, dfrAsync)
 		KillDataFolder dfr
 	endfor
 End
@@ -499,25 +499,7 @@ Function ASYNC_Execute(dfr)
 
 	workerIDCounter[0] += 1
 
-	ASYNC_putDF(dfr, tgID)
-End
-
-/// @brief Puts a data folder to/from a threadgroup
-threadsafe static Function ASYNC_putDF(dfr, tgID)
-	DFREF dfr
-	variable tgID
-
-	string dataFolder
-	DFREF dfrSave
-
-	dataFolder = UniqueDataFolderName($":", "temp")
-	DuplicateDataFolder dfr, $dataFolder
-	dfrSave = GetDataFolderDFR()
-
-	SetDataFolder $dataFolder
-	ThreadGroupPutDF tgID, :
-
-	SetDatafolder dfrSave
+	TS_ThreadGroupPutDFR(tgID, dfr)
 End
 
 /// @brief Returns 1 if var is a finite/normal number, 0 otherwise
@@ -693,45 +675,6 @@ threadsafe static Function ASSERT_TS(var, errorMsg)
 		printf "Assertion FAILED with message %s\r", errorMsg
 		AbortOnValue 1, 1
 	endtry
-End
-
-/// @brief Return a unique data folder name which does not exist in dfr
-///
-/// If you want to have the datafolder created for you and don't need a
-/// threadsafe function, use UniqueDataFolder() instead.
-///
-/// @param dfr      datafolder to search
-/// @param baseName first part of the datafolder, must be a *valid* Igor Pro object name
-threadsafe static Function/S UniqueDataFolderName(dfr, baseName)
-	DFREF dfr
-	string baseName
-
-	variable index, numRuns
-	string basePath, path
-
-	ASSERT_TS(!isEmpty(baseName), "baseName must not be empty" )
-	ASSERT_TS(DataFolderExistsDFR(dfr), "dfr does not exist")
-
-	numRuns = 10000
-	// shorten basename so that we can attach some numbers
-	baseName = baseName[0, MAX_OBJECT_NAME_LENGTH_IN_BYTES - (ceil(log(numRuns)) + 1)]
-	baseName = CleanupName(baseName, 0)
-	basePath = GetDataFolder(1, dfr)
-	path = basePath + baseName
-
-	do
-		if(!DataFolderExists(path))
-			return path
-		endif
-
-		path = basePath + baseName + "_" + num2istr(index)
-
-		index += 1
-	while(index < numRuns)
-
-	DEBUGPRINT_TS("Could not find a unique folder with trials:", var = numRuns)
-
-	return ""
 End
 
 /// @brief Check wether the function reference points to
