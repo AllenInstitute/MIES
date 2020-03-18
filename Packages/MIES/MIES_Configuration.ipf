@@ -1773,18 +1773,19 @@ static Function CONF_RestoreHeadstageAssociation(panelTitle, jsonID, midExp)
 			jsonPath = jsonBasePath + "/" + EXPCONFIG_JSON_AMPBLOCK
 			ampSerial = JSON_GetVariable(jsonID, jsonPath + "/" + EXPCONFIG_JSON_AMPSERIAL)
 			ampChannel = JSON_GetVariable(jsonID, jsonPath + "/" + EXPCONFIG_JSON_AMPCHANNEL)
+
 			if(IsFinite(ampSerial) && IsFinite(ampChannel))
 				PGC_SetAndActivateControl(panelTitle, "popup_Settings_Amplifier", val = CONF_FindAmpInList(ampSerial, ampChannel))
+
+				jsonPath = jsonBasePath + "/" + EXPCONFIG_JSON_AMPBLOCK + "/" + EXPCONFIG_JSON_VCBLOCK + "/"
+				PGC_SetAndActivateControl(panelTitle, "Popup_Settings_VC_DA", val = JSON_GetVariable(jsonID, jsonPath + EXPCONFIG_JSON_AMPVCDA))
+				PGC_SetAndActivateControl(panelTitle, "Popup_Settings_VC_AD", val = JSON_GetVariable(jsonID, jsonPath + EXPCONFIG_JSON_AMPVCAD))
+
+				jsonPath = jsonBasePath + "/" + EXPCONFIG_JSON_AMPBLOCK + "/" + EXPCONFIG_JSON_ICBLOCK + "/"
+				PGC_SetAndActivateControl(panelTitle, "Popup_Settings_IC_DA", val = JSON_GetVariable(jsonID, jsonPath + EXPCONFIG_JSON_AMPICDA))
+				PGC_SetAndActivateControl(panelTitle, "Popup_Settings_IC_AD", val = JSON_GetVariable(jsonID, jsonPath + EXPCONFIG_JSON_AMPICAD))
+				PGC_SetAndActivateControl(panelTitle,"button_Hardware_AutoGainAndUnit")
 			endif
-
-			jsonPath = jsonBasePath + "/" + EXPCONFIG_JSON_AMPBLOCK + "/" + EXPCONFIG_JSON_VCBLOCK + "/"
-			PGC_SetAndActivateControl(panelTitle, "Popup_Settings_VC_DA", val = JSON_GetVariable(jsonID, jsonPath + EXPCONFIG_JSON_AMPVCDA))
-			PGC_SetAndActivateControl(panelTitle, "Popup_Settings_VC_AD", val = JSON_GetVariable(jsonID, jsonPath + EXPCONFIG_JSON_AMPVCAD))
-
-			jsonPath = jsonBasePath + "/" + EXPCONFIG_JSON_AMPBLOCK + "/" + EXPCONFIG_JSON_ICBLOCK + "/"
-			PGC_SetAndActivateControl(panelTitle, "Popup_Settings_IC_DA", val = JSON_GetVariable(jsonID, jsonPath + EXPCONFIG_JSON_AMPICDA))
-			PGC_SetAndActivateControl(panelTitle, "Popup_Settings_IC_AD", val = JSON_GetVariable(jsonID, jsonPath + EXPCONFIG_JSON_AMPICAD))
-			PGC_SetAndActivateControl(panelTitle,"button_Hardware_AutoGainAndUnit")
 
 			jsonPath = jsonBasePath + "/" + EXPCONFIG_JSON_PRESSUREBLOCK + "/"
 			PGC_SetAndActivateControl(panelTitle, "popup_Settings_Pressure_dev", str = JSON_GetString(jsonID, jsonPath + EXPCONFIG_JSON_PRESSDEV))
