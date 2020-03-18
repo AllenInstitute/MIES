@@ -713,18 +713,11 @@ Function DB_ButtonProc_ChangeSweep(ba) : ButtonControl
 	switch(ba.eventcode)
 		case 2: // mouse up
 			[firstSweep, lastSweep] = DB_FirstAndLastSweepAcquired(scPanel)
-
-			formerLast = GetValDisplayAsNum(scPanel, "valdisp_SweepControl_LastSweep")
-			if(formerLast != lastSweep)
-				DB_UpdateLastSweepControls(scPanel, firstSweep, lastSweep)
-			endif
+			DB_UpdateLastSweepControls(scPanel, firstSweep, lastSweep)
 
 			sweepNo = BSP_UpdateSweepControls(graph, ba.ctrlName, firstSweep, lastSweep)
 
-			if(OVS_IsActive(graph))
-				OVS_ChangeSweepSelectionState(graph, CHECKBOX_SELECTED, sweepNO=sweepNo)
-			endif
-
+			OVS_ChangeSweepSelectionState(graph, CHECKBOX_SELECTED, sweepNO=sweepNo)
 			DB_UpdateSweepPlot(graph)
 			break
 	endswitch
