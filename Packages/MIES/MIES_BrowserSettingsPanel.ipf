@@ -855,7 +855,7 @@ End
 /// @param win 		  name of external panel or main window
 /// @param ctrl       name of the button that was pressed and is initiating the update
 /// @param firstSweep first available sweep(DB) or index(SB)
-/// @param lastSweep  first available sweep(DB) or index(SB)
+/// @param lastSweep  last available sweep(DB) or index(SB)
 /// @returns the new sweep number in case of DB or the index for SB
 Function BSP_UpdateSweepControls(win, ctrl, firstSweep, lastSweep)
 	string win, ctrl
