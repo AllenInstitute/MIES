@@ -760,8 +760,7 @@ Function DB_PopMenuProc_LockDBtoDevice(pa) : PopupMenuControl
 
 	switch(pa.eventcode)
 		case 2: // mouse up
-			mainPanel = DB_LockToDevice(mainPanel, pa.popStr)
-			DB_UpdateSweepPlot(mainPanel)
+			DB_LockToDevice(mainPanel, pa.popStr)
 			break
 	endswitch
 
