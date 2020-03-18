@@ -5066,6 +5066,13 @@ Function StartZeroMQMessageHandler()
 
 #if exists("zeromq_stop")
 
+	// do nothing if we are already running
+	zeromq_handler_start(); err = GetRTError(1)
+	if(ConvertXOPErrorCode(err) == ZeroMQ_HANDLER_ALREADY_RUNNING)
+		DEBUGPRINT("Already running, nothing to do.")
+		return NaN
+	endif
+
 	zeromq_stop()
 
 #if defined(DEBUGGING_ENABLED)
@@ -5873,4 +5880,15 @@ End
 Function NewExperiment()
 
 	Execute/P/Q "NEWEXPERIMENT "
+End
+
+/// @brief Remove the volatile part of the XOP error code
+///
+/// The result is constant and can therefore be compared with constants.
+///
+///	 From http://www.igorexchange.com/node/7286
+threadsafe Function ConvertXOPErrorCode(xopError)
+	variable xopError
+
+	return xopError == 0 ? 0 : ((xopError & 0xFFFF) + 10000)
 End

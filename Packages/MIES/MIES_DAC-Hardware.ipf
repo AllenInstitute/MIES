@@ -752,6 +752,7 @@ threadsafe Function HW_ITC_HandleReturnValues_TS(flags, ITCError, ITCXOPError)
 
 	// we only need the lower 32bits of the error
 	ITCError = ITCError & 0x00000000ffffffff
+	ITCXOPError = ConvertXOPErrorCode(ITCXOPError)
 
 	if(ITCError != 0 && !(flags & HARDWARE_PREVENT_ERROR_MESSAGE))
 		printf "The ITC XOP returned the following errors: ITCError=%#x, ITCXOPError=%d\r", ITCError, ITCXOPError
@@ -794,6 +795,7 @@ Function HW_ITC_HandleReturnValues(flags, ITCError, ITCXOPError)
 
 	// we only need the lower 32bits of the error
 	ITCError = ITCError & 0x00000000ffffffff
+	ITCXOPError = ConvertXOPErrorCode(ITCXOPError)
 
 	if(ITCError != 0 && !(flags & HARDWARE_PREVENT_ERROR_MESSAGE))
 		printf "The ITC XOP returned the following errors: ITCError=%#x, ITCXOPError=%d\r", ITCError, ITCXOPError
