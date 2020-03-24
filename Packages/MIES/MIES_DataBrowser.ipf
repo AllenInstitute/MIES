@@ -88,10 +88,13 @@ Function DB_ResetAndStoreCurrentDBPanel()
 
 	// invalidate main panel
 	SetWindow $panelTitle, userData(panelVersion) = ""
+	SetWindow $panelTitle, userdata(Config_FileName) = ""
+	SetWindow $panelTitle, userdata(Config_FileHash) = ""
 
 	// static defaults for SweepControl subwindow
 	PopupMenu Popup_SweepControl_Selector WIN = $scPanel, mode=1,popvalue=" ", value= #"\" \""
-	CheckBox check_SweepControl_AutoUpdate WIN = $scPanel, value= 0
+	CheckBox check_SweepControl_AutoUpdate WIN = $scPanel, value= 1
+
 
 	// static defaults for BrowserSettings subwindow
 	PGC_SetAndActivateControl(bsPanel, "Settings", val = 0)
@@ -318,6 +321,9 @@ static Function [variable first, variable last] DB_FirstAndLastSweepAcquired(str
 
 	list = DB_GetPlainSweepList(win)
 
+	first = NaN
+	last  = NaN
+
 	if(!isEmpty(list))
 		first = NumberByKey("Sweep", list, "_")
 		last = ItemsInList(list) - 1 + first
@@ -339,10 +345,10 @@ static Function DB_UpdateLastSweepControls(win, first, last)
 	endif
 
 	formerLast = GetValDisplayAsNum(scPanel, "valdisp_SweepControl_LastSweep")
-	SetSetVariableLimits(scPanel, "setvar_SweepControl_SweepNo", first, last, 1)
 
-	if(formerLast != last)
+	if(formerLast != last || (IsNaN(formerLast) && IsFinite(last)))
 		SetValDisplay(scPanel, "valdisp_SweepControl_LastSweep", var=last)
+		SetSetVariableLimits(scPanel, "setvar_SweepControl_SweepNo", first, last, 1)
 		DB_UpdateOverlaySweepWaves(win)
 		AD_Update(win)
 	endif
@@ -710,18 +716,11 @@ Function DB_ButtonProc_ChangeSweep(ba) : ButtonControl
 	switch(ba.eventcode)
 		case 2: // mouse up
 			[firstSweep, lastSweep] = DB_FirstAndLastSweepAcquired(scPanel)
-
-			formerLast = GetValDisplayAsNum(scPanel, "valdisp_SweepControl_LastSweep")
-			if(formerLast != lastSweep)
-				DB_UpdateLastSweepControls(scPanel, firstSweep, lastSweep)
-			endif
+			DB_UpdateLastSweepControls(scPanel, firstSweep, lastSweep)
 
 			sweepNo = BSP_UpdateSweepControls(graph, ba.ctrlName, firstSweep, lastSweep)
 
-			if(OVS_IsActive(graph))
-				OVS_ChangeSweepSelectionState(graph, CHECKBOX_SELECTED, sweepNO=sweepNo)
-			endif
-
+			OVS_ChangeSweepSelectionState(graph, CHECKBOX_SELECTED, sweepNO=sweepNo)
 			DB_UpdateSweepPlot(graph)
 			break
 	endswitch
@@ -757,8 +756,7 @@ Function DB_PopMenuProc_LockDBtoDevice(pa) : PopupMenuControl
 
 	switch(pa.eventcode)
 		case 2: // mouse up
-			mainPanel = DB_LockToDevice(mainPanel, pa.popStr)
-			DB_UpdateSweepPlot(mainPanel)
+			DB_LockToDevice(mainPanel, pa.popStr)
 			break
 	endswitch
 

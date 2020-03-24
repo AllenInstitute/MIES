@@ -71,17 +71,17 @@ Function/S OVS_GetSweepSelectionChoices(win)
 
 	Duplicate/FREE/R=[][][0]/T sweepSelChoices, sweepSelecChoicesDAStimSets
 
-	Make/FREE/T dupsRemovedStimSets
+	Make/FREE/T/N=0 dupsRemovedDAStimSets
 	FindDuplicates/Z/RT=dupsRemovedDAStimSets sweepSelecChoicesDAStimSets
 
 	Duplicate/FREE/R=[][][1]/T sweepSelChoices, sweepSelecChoicesTTLStimSets
 
-	Make/FREE/T dupsRemovedStimSets
+	Make/FREE/T/N=0  dupsRemovedTTLStimSets
 	FindDuplicates/Z/RT=dupsRemovedTTLStimSets sweepSelecChoicesTTLStimSets
 
 	Duplicate/FREE/R=[][][2]/T sweepSelChoices, sweepSelecChoicesClamp
 
-	Make/FREE/T dupsRemovedStimSetsClamp
+	Make/FREE/T/N=0 dupsRemovedStimSetsClamp
 	FindDuplicates/Z/RT=dupsRemovedStimSetsClamp sweepSelecChoicesClamp
 
 	return NONE + ";All;\\M1(-;\\M1(DA Stimulus Sets;"             \
@@ -517,7 +517,12 @@ static Function OVS_ChangeSweepSelection(win, choiceString)
 	extPanel  = BSP_GetPanel(win)
 
 	DFREF dfr = OVS_GetFolder(win)
-	WAVE listboxSelWave          = GetOverlaySweepsListSelWave(dfr)
+	WAVE listboxSelWave = GetOverlaySweepsListSelWave(dfr)
+
+	if(DimSize(listboxSelWave, ROWS) == 0)
+		return NaN
+	endif
+
 	WAVE/T sweepSelectionChoices = GetOverlaySweepSelectionChoices(dfr)
 
 	offset = GetSetVariable(extPanel, "setvar_overlaySweeps_offset")

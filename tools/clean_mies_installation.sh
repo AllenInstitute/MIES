@@ -139,6 +139,7 @@ do
   cp -r  "$base_folder"/Packages/IPNWB  "$user_proc"
   cp -r  "$base_folder"/Packages/MIES_include.ipf  "$user_proc"
   cp -r  "$base_folder"/Packages/MIES  "$user_proc"
+  cp -r  "$base_folder"/Packages/Settings  "$user_proc"
   cp -r  "$base_folder"/Packages/Stimsets  "$user_proc"
 
   mkdir -p "$user_proc/ZeroMQ"

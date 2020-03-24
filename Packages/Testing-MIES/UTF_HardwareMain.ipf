@@ -19,6 +19,7 @@
 #include "UTF_MultiPatchSeqDAScale"
 #include "UTF_TestNWBExportV1"
 #include "UTF_Epochs"
+#include "UTF_HelperFunctions"
 
 Function run()
 

@@ -725,8 +725,10 @@ Function/WAVE SF_FormulaExecutor(jsonID, [jsonPath, graph])
 					break
 				case "displayed":
 					WAVE/T/Z traces = PA_GetTraceInfos(graph)
-					Make/N=(DimSize(traces, ROWS))/FREE traceSweeps = str2num(traces[p][%sweepNumber])
-					WAVE out = GetUniqueEntries(traceSweeps)
+					if(WaveExists(traces))
+						Make/N=(DimSize(traces, ROWS))/FREE traceSweeps = str2num(traces[p][%sweepNumber])
+						WAVE out = GetUniqueEntries(traceSweeps)
+					endif
 					break
 				default:
 					ASSERT(0, "Undefined argument")

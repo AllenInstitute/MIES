@@ -167,6 +167,8 @@ Function DAP_EphysPanelStartUpSettings()
 	HideTools/W=$panelTitle/A
 
 	SetWindow $panelTitle, userData(panelVersion) = ""
+	SetWindow $panelTitle, userdata(Config_FileName) = ""
+	SetWindow $panelTitle, userdata(Config_FileHash) = ""
 
 	CheckBox Check_AD_00 WIN = $panelTitle,value= 0
 	CheckBox Check_AD_01 WIN = $panelTitle,value= 0

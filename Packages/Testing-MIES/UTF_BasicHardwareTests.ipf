@@ -3516,7 +3516,9 @@ Function RestoreDAEphysPanel([str])
 	variable jsonID
 	string stimSetPath, jPath, data, fName, rewrittenConfigPath
 
-	[data, fName] = LoadTextFile(REF_DAEPHYS_CONFIG_FILE)
+	fName = PrependExperimentFolder_IGNORE(REF_DAEPHYS_CONFIG_FILE)
+
+	[data, fName] = LoadTextFile(fname)
 
 	jsonID = JSON_Parse(data)
 	PathInfo home
@@ -3530,8 +3532,8 @@ Function RestoreDAEphysPanel([str])
 	SaveTextFile(JSON_Dump(jsonID), rewrittenConfigPath)
 
 	CONF_RestoreDAEphys(jsonID, rewrittenConfigPath)
-	MIES_CONF#CONF_SaveDAEphys(REF_TMP1_CONFIG_FILE)
+	MIES_CONF#CONF_SaveDAEphys(fname)
 
 	CONF_RestoreDAEphys(jsonID, rewrittenConfigPath, middleOfExperiment = 1)
-	MIES_CONF#CONF_SaveDAEphys(REF_TMP1_CONFIG_FILE)
+	MIES_CONF#CONF_SaveDAEphys(fname)
 End

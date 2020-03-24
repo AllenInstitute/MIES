@@ -153,7 +153,7 @@ static Function TCONF_SaveJSON(jsonID, fName)
 	variable fnum
 
 	out = JSON_Dump(jsonID, indent = 2)
-	SaveTextFile(out, fName)
+	SaveTextFile(out, PrependExperimentFolder_IGNORE(fName))
 End
 
 /// @brief Normalize a JSON encoded string
@@ -173,8 +173,8 @@ static Function TCONF_CompareTextFiles(fName1, fName2)
 
 	string s1, s2
 
-	[s1, fName1] = LoadTextFile(fName1)
-	[s2, fName2] = LoadTextFile(fName2)
+	[s1, fName1] = LoadTextFile(PrependExperimentFolder_IGNORE(fName1))
+	[s2, fName2] = LoadTextFile(PrependExperimentFolder_IGNORE(fName2))
 
 	// work around CHECK_EQUAL_STR: fails for very long strings
 	// see https://github.com/byte-physics/igor-unit-testing-framework/issues/76
@@ -189,7 +189,7 @@ static Function TCONF_Save()
 
 	string fName1 = "ConfigurationTest_compare1.txt"
 	
-	CONF_SaveWindow(fName1)
+	CONF_SaveWindow(PrependExperimentFolder_IGNORE(fName1))
 
 	TCONF_CompareTextFiles(fName1, REF_CONFIG_FILE)
 End
@@ -203,12 +203,12 @@ static Function TCONF_Load()
 	
 	TCONF_ChangeGUIValues_IGNORE()
 	
-	CONF_RestoreWindow(REF_CONFIG_FILE)
+	CONF_RestoreWindow(PrependExperimentFolder_IGNORE(REF_CONFIG_FILE))
 
 	NVAR priorityFlag
 	CHECK_EQUAL_VAR(priorityFlag, RADIO3_CLICKED)
 
-	CONF_SaveWindow(fName1)
+	CONF_SaveWindow(PrependExperimentFolder_IGNORE(fName1))
 
 	TCONF_CompareTextFiles(fName1, REF_CONFIG_FILE)
 End
@@ -262,7 +262,7 @@ static Function TCONF_DupNiceName()
 	wName = GetMainWindow(GetCurrentWindow())
 	CheckBox CheckBox win=$wName, userdata(Config_NiceName)=  "BUTTON"
 	try
-		CONF_SaveWindow(REF_TMP1_CONFIG_FILE)
+		CONF_SaveWindow(PrependExperimentFolder_IGNORE(REF_TMP1_CONFIG_FILE))
 		FAIL()
 	catch
 		PASS()
@@ -277,7 +277,7 @@ static Function TCONF_ReservedNiceName()
 	wName = GetMainWindow(GetCurrentWindow())
 	CheckBox CheckBox win=$wName, userdata(Config_NiceName)=  "BUTTON ControlGroup"
 	try
-		CONF_SaveWindow(REF_TMP1_CONFIG_FILE)
+		CONF_SaveWindow(PrependExperimentFolder_IGNORE(REF_TMP1_CONFIG_FILE))
 		FAIL()
 	catch
 		PASS()
@@ -292,7 +292,7 @@ static Function TCONF_DupCtrlArrayName()
 	wName = GetMainWindow(GetCurrentWindow())
 	CheckBox CheckBox win=$wName, userdata(ControlArray)=  "BUTTON"
 	try
-		CONF_SaveWindow(REF_TMP1_CONFIG_FILE)
+		CONF_SaveWindow(PrependExperimentFolder_IGNORE(REF_TMP1_CONFIG_FILE))
 		FAIL()
 	catch
 		PASS()
@@ -303,7 +303,7 @@ End
 static Function TCONF_DupNiceNameRestore()
 
 	try
-		CONF_RestoreWindow(REF_DUP1_CONFIG_FILE)
+		CONF_RestoreWindow(PrependExperimentFolder_IGNORE(REF_DUP1_CONFIG_FILE))
 		FAIL()
 	catch
 		PASS()
@@ -314,7 +314,7 @@ End
 static Function TCONF_DupCtrlArrayNameRestore()
 
 	try
-		CONF_RestoreWindow(REF_DUP2_CONFIG_FILE)
+		CONF_RestoreWindow(PrependExperimentFolder_IGNORE(REF_DUP2_CONFIG_FILE))
 		FAIL()
 	catch
 		PASS()

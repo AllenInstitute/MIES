@@ -149,7 +149,7 @@ static Function BSP_DynamicSweepControls(mainPanel)
 
 	SetSetVariable(scPanel, "setvar_SweepControl_SweepNo", 0)
 	SetSetVariableLimits(scPanel, "setvar_SweepControl_SweepNo", 0, 0, 1)
-	SetValDisplay(scPanel, "valdisp_SweepControl_LastSweep", var=0)
+	SetValDisplay(scPanel, "valdisp_SweepControl_LastSweep", var=NaN)
 	SetSetVariable(scPanel, "setvar_SweepControl_SweepStep", 1)
 
 	if(BSP_IsDataBrowser(mainPanel))
@@ -855,7 +855,7 @@ End
 /// @param win 		  name of external panel or main window
 /// @param ctrl       name of the button that was pressed and is initiating the update
 /// @param firstSweep first available sweep(DB) or index(SB)
-/// @param lastSweep  first available sweep(DB) or index(SB)
+/// @param lastSweep  last available sweep(DB) or index(SB)
 /// @returns the new sweep number in case of DB or the index for SB
 Function BSP_UpdateSweepControls(win, ctrl, firstSweep, lastSweep)
 	string win, ctrl

@@ -227,9 +227,7 @@ Function CONF_AutoLoader()
 	string fileList, fullFilePath, rigCandidate
 	string settingsPath = CONF_GetSettingsPath()
 
-	ASSERT(!IsEmpty(settingsPath), "Unable to resolve MIES Settings folder path. Is it present and readable in Packages\\Settings ?")
-	NewPath/O/Q PathSettings, settingsPath
-	fileList = GetAllFilesRecursivelyFromPath("PathSettings", extension = ".json")
+	fileList = GetAllFilesRecursivelyFromPath(settingsPath, extension = ".json")
 	if(IsEmpty(fileList))
 		printf "There are no files to load from the %s folder.\r", EXPCONFIG_SETTINGS_FOLDER
 		ControlWindowToFront()
@@ -255,12 +253,13 @@ Function CONF_AutoLoader()
 	endfor
 End
 
-/// @brief Returns the path to the settings folder
+/// @brief Returns a symbolic path to the settings folder
 ///
-/// @returns string with full path to MIES Settings folder
+/// @returns name of an igor symbolic path to the MIES Settings folder
 static Function/S CONF_GetSettingsPath()
 
 	variable numItems
+	string symbPath
 	string reflectedProcpath = FunctionPath("CONF_GetSettingsPath")
 
 	numItems = ItemsInList(reflectedProcpath, ":")
@@ -271,8 +270,13 @@ static Function/S CONF_GetSettingsPath()
 	reflectedProcpath = RemoveListItem(numItems - 2, reflectedProcpath, ":") + EXPCONFIG_SETTINGS_FOLDER + ":"
 
 	if(FolderExists(reflectedProcpath))
-		return reflectedProcpath
+		symbPath = "PathSettings"
+		NewPath/O/Q $symbPath, reflectedProcpath
+
+		return symbPath
 	endif
+
+	ASSERT(0, "Unable to resolve MIES Settings folder path. Is it present and readable in Packages\\Settings ?")
 
 	return ""
 End
@@ -300,6 +304,8 @@ Function CONF_SaveWindow(fName)
 			jsonID = CONF_AllWindowsToJSON(wName, saveMask, excCtrlTypes = EXPCONFIG_EXCLUDE_CTRLTYPES)
 			out = JSON_Dump(jsonID, indent = EXPCONFIG_JSON_INDENT)
 			JSON_Release(jsonID)
+
+			PathInfo/S $CONF_GetSettingsPath()
 
 			saveResult = SaveTextFile(out, fName, fileFilter = EXPCONFIG_FILEFILTER, message = "Save configuration file for window")
 			if(!IsNaN(saveResult))
@@ -333,6 +339,8 @@ Function CONF_RestoreWindow(fName[, usePanelTypeFromFile, rigFile])
 
 	usePanelTypeFromFile = ParamIsDefault(usePanelTypeFromFile) ? 0 : !!usePanelTypeFromFile
 	rigFile = SelectString(ParamIsDefault(rigFile), rigFile, "")
+
+	PathInfo/S $CONF_GetSettingsPath()
 
 	jsonID = NaN
 	restoreMask = EXPCONFIG_SAVE_VALUE | EXPCONFIG_SAVE_USERDATA | EXPCONFIG_SAVE_DISABLED
@@ -419,6 +427,8 @@ static Function CONF_SaveDAEphys(fName)
 
 		out = JSON_Dump(jsonID, indent = EXPCONFIG_JSON_INDENT)
 		JSON_Release(jsonID)
+
+		PathInfo/S $CONF_GetSettingsPath()
 
 		saveResult = SaveTextFile(out, fName, fileFilter = EXPCONFIG_FILEFILTER, message = "Save configuration file for DA_Ephys panel")
 		if(!IsNaN(saveResult))

@@ -15,6 +15,7 @@
 #include "UTF_AsynFrameworkTest"
 #include "UTF_SweepFormula"
 #include "UTF_Configuration"
+#include "UTF_HelperFunctions"
 
 Function run()
 	// speeds up testing to start with a fresh copy
