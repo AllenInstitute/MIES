@@ -29,7 +29,9 @@ Function AD_Update(win)
 	string win
 
 	string device, mainPanel
-	variable numEntries
+	variable numEntries, refTime
+
+	refTime = DEBUG_TIMER_START()
 
 	DFREF dfr = BSP_GetFolder(win, MIES_BSP_PANEL_FOLDER)
 
@@ -48,6 +50,8 @@ Function AD_Update(win)
 		mainPanel = BSP_GetPanel(win)
 		EnableControls(mainPanel, "list_dashboard;check_BrowserSettings_DB_Failed;check_BrowserSettings_DB_Passed")
 	endif
+
+	DEBUGPRINT_ELAPSED(refTime)
 End
 
 /// @brief Get result list of analysis function runs
