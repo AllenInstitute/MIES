@@ -235,6 +235,10 @@ static Function ED_WriteChangedValuesToNote(panelTitle, sweepNo)
 	WAVE/T numericalKeys = GetLBNumericalKeys(panelTitle)
 	WAVE numericalValues = GetLBNumericalValues(panelTitle)
 
+	// prefill the row cache for the labnotebook
+	WAVE/Z junk = GetLastSetting(numericalValues, sweepNo, "TimeStamp", UNKNOWN_MODE)
+	WAVE/Z junk = GetLastSetting(numericalValues, sweepNo - 1, "TimeStamp", UNKNOWN_MODE)
+
 	numCols = DimSize(numericalKeys, COLS)
 	for (j = INITIAL_KEY_WAVE_COL_COUNT + 1; j < numCols; j += 1)
 		key    = numericalKeys[0][j]
@@ -323,6 +327,10 @@ static Function ED_WriteChangedValuesToNoteText(panelTitle, sweepNo)
 
 	WAVE/T textualValues = GetLBTextualValues(panelTitle)
 	WAVE/T textualKeys   = GetLBTextualKeys(panelTitle)
+
+	// prefill the row cache for the labnotebook
+	WAVE/Z junk = GetLastSetting(textualValues, sweepNo, "TimeStamp", UNKNOWN_MODE)
+	WAVE/Z junk = GetLastSetting(textualValues, sweepNo - 1, "TimeStamp", UNKNOWN_MODE)
 
 	numCols = DimSize(textualKeys, COLS)
 	for (j = INITIAL_KEY_WAVE_COL_COUNT + 1; j < numCols; j += 1)
