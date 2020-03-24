@@ -83,8 +83,6 @@ static Function AD_FillWaves(panelTitle, list, info)
 			return 0
 		endif
 
-		ASSERT(WaveExists(headstages), "No headstages active")
-
 		WaveStats/Q/M=1 headstages
 		if(V_sum > 1) // more than one headstage active
 			continue
