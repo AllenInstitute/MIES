@@ -5143,10 +5143,12 @@ Function SplitSweepIntoComponents(numericalValues, sweep, sweepWave, configWave,
 
 		WAVE data = ExtractOneDimDataFromSweep(configWave, sweepWave, i)
 
-		ttlBits = GetTTLBits(numericalValues, sweep, channelNumber)
+		if(!cmpstr(channelType, "TTL"))
+			ttlBits = GetTTLBits(numericalValues, sweep, channelNumber)
 
-		if(!cmpstr(channelType, "TTL") && IsFinite(ttlBits))
-			SplitTTLWaveIntoComponents(data, ttlBits, targetDFR, str + "_", rescale)
+			if(IsFinite(ttlBits))
+				SplitTTLWaveIntoComponents(data, ttlBits, targetDFR, str + "_", rescale)
+			endif
 		endif
 
 		MoveWave data, targetDFR:$str
