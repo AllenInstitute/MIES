@@ -5928,6 +5928,7 @@ Function/Wave FindIndizes(numericOrTextWave, [col, colLabel, var, str, prop, sta
 	variable startLayer, endLayer
 
 	variable numCols, numRows, numLayers
+	string key
 
 	ASSERT(ParamIsDefault(col) + ParamIsDefault(colLabel) == 1, "Expected exactly one col/colLabel argument")
 	ASSERT(ParamIsDefault(prop) + ParamIsDefault(var) + ParamIsDefault(str) == 2              \
@@ -6019,7 +6020,16 @@ Function/Wave FindIndizes(numericOrTextWave, [col, colLabel, var, str, prop, sta
 	//   wave in each colum transpose back and replace -1 with NaN
 	// * This gives a 1D wave with NaN in the rows with no match, and the row index of the match otherwise
 	// * Delete all NaNs in the wave and return it
-	Make/FREE/R/N=(numRows, numLayers) matches = -1
+
+	key = CA_TemporaryWaveKey({numRows, numLayers})
+	WAVE/Z matches = CA_TryFetchingEntryFromCache(key, options = CA_OPTS_NO_DUPLICATE)
+
+	if(!WaveExists(matches))
+		Make/N=(numRows, numLayers)/FREE/R matches
+		CA_StoreEntryIntoCache(key, matches, options = CA_OPTS_NO_DUPLICATE)
+	endif
+
+	FastOp matches = -1
 
 	if(WaveExists(wv))
 		if(!ParamIsDefault(prop))
