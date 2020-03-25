@@ -6062,7 +6062,8 @@ Function/Wave FindIndizes(numericOrTextWave, [col, colLabel, var, str, prop, sta
 		endif
 	endif
 
-	MatrixOp/Free result = replace(maxCols(matches^t)^t, -1, NaN)
+	endRow = numRows - 1
+	MatrixOp/Free result = replace(maxCols(subRange(matches, startRow, endRow, startLayer, endLayer)^t)^t, -1, NaN)
 	WaveTransform/O zapNaNs, result
 
 	if(DimSize(result, ROWS) == 0)
