@@ -1444,7 +1444,7 @@ Function/WAVE GetLBRowCache(values)
 			return wv
 		endif
 	else
-		Make/N=(256, 2, NUMBER_OF_LBN_DAQ_MODES)/D/FREE wv
+		Make/N=(MINIMUM_WAVE_SIZE_LARGE, 2, NUMBER_OF_LBN_DAQ_MODES)/D/FREE wv
 		CA_StoreEntryIntoCache(key, wv, options = CA_OPTS_NO_DUPLICATE)
 	endif
 
@@ -1494,7 +1494,7 @@ Function/WAVE GetLBIndexCache(values)
 			return wv
 		endif
 	else
-		Make/FREE/N=(256, 256, NUMBER_OF_LBN_DAQ_MODES)/D wv
+		Make/FREE/N=(MINIMUM_WAVE_SIZE_LARGE, 256, NUMBER_OF_LBN_DAQ_MODES)/D wv
 		CA_StoreEntryIntoCache(key, wv, options = CA_OPTS_NO_DUPLICATE)
 	endif
 
