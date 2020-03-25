@@ -5990,7 +5990,7 @@ Function/Wave FindIndizes(numericOrTextWave, [col, colLabel, var, str, prop, sta
 	endif
 
 	if(ParamIsDefault(endRow))
-		endRow  = inf
+		endRow = inf
 	else
 		ASSERT(endRow >= 0 && endRow < numRows, "Invalid endRow")
 	endif
