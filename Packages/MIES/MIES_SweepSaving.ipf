@@ -184,28 +184,53 @@ End
 Function SWS_DeleteDataWaves(panelTitle)
 	string panelTitle
 
-	string list, path, name
-	variable i, numItems, waveSweepNo, sweepNo
+	string list, path, name, absolutePath, msg
+	variable i, numItems, waveSweepNo, sweepNo, refTime
+
+	refTime = DEBUG_TIMER_START()
+
+	WAVE numericalValues = GetLBNumericalValues(panelTitle)
+	WAVE/Z sweepRollbackUsed = GetSweepsWithSetting(numericalValues, "Sweep Rollback")
+
+	if(!WaveExists(sweepRollbackUsed))
+		return NaN
+	endif
 
 	sweepNo   = DAG_GetNumericalValue(panelTitle, "SetVar_Sweep")
-	path      = GetDeviceDataPathAsString(panelTitle)
 	DFREF dfr = GetDeviceDataPath(panelTitle)
-	list      = GetListOfObjects(dfr, DATA_SWEEP_REGEXP)
-	list     += GetListOfObjects(dfr, DATA_SWEEP_REGEXP_BAK)
-	list     += GetListOfObjects(dfr, DATA_CONFIG_REGEXP)
-	list     += GetListOfObjects(dfr, DATA_CONFIG_REGEXP_BAK)
+	list      = GetListOfObjects(dfr, DATA_SWEEP_REGEXP + "|" + DATA_SWEEP_REGEXP_BAK + "|" + DATA_CONFIG_REGEXP + "|" + DATA_CONFIG_REGEXP_BAK)
 	list     += GetListOfObjects(dfr, ".*", typeFlag=COUNTOBJECTS_DATAFOLDER)
 
 	numItems = ItemsInList(list)
-	for(i = 0; i < numItems; i += 1)
-		name = StringFromList(i, list)
-		waveSweepNo = ExtractSweepNumber(name)
 
-		if(waveSweepNo < sweepNo)
-			continue
-		endif
-		KillOrMoveToTrashPath(path + ":" + name)
+	if(!numItems)
+		return NaN
+	endif
+
+	Make/FREE/N=(numItems) matches
+	MultiThread matches[] = ExtractSweepNumber(StringFromList(p, list)) >= sweepNo ? p : NaN
+
+	WaveTransForm/Z zapNaNs, matches
+
+	DEBUGPRINT_ELAPSED(refTime)
+
+	if(DimSize(matches, ROWS) == 0)
+		return NaN
+	endif
+
+	path = GetDeviceDataPathAsString(panelTitle)
+
+	numItems = DimSize(matches, ROWS)
+	for(i = 0; i < numItems; i += 1)
+		absolutePath = path + ":" + StringFromList(i, list)
+
+		sprintf msg, "Will delete %s\r", absolutePath
+		DEBUGPRINT(msg)
+
+		KillOrMoveToTrashPath(absolutePath)
 	endfor
+
+	DEBUGPRINT_ELAPSED(refTime)
 End
 
 /// @brief Return the floating point type for storing the raw data
