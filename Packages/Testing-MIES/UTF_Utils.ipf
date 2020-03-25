@@ -2132,7 +2132,41 @@ Function GetListOfObjectsWorks2()
 	CHECK_EQUAL_STR(result, expected)
 End
 
-// Not checked: typeFlag, matchList and waveProperty
+Function GetListOfObjectsWorksWithFolder()
+
+	string result, expected
+
+	NewDataFolder/O test1
+	NewDataFolder/O :test1:test2
+	NewDataFolder/O :test1:test2:test3
+
+	DFREF dfr = $":test1"
+	CHECK(DataFolderExistsDFR(dfr))
+
+	DFREF dfrDeep = $":test1:test2"
+	CHECK(DataFolderExistsDFR(dfrDeep))
+
+	result = GetListOfObjects(dfr, ".*", recursive = 0, fullpath = 0, typeFlag = COUNTOBJECTS_DATAFOLDER)
+	expected = "test2"
+	result = SortList(result)
+	expected = SortList(expected)
+	CHECK_EQUAL_STR(result, expected)
+
+	result = GetListOfObjects(dfr, ".*", recursive = 1, fullpath = 0, typeFlag = COUNTOBJECTS_DATAFOLDER)
+	expected = "test2;test3"
+	result = SortList(result)
+	expected = SortList(expected)
+	CHECK_EQUAL_STR(result, expected)
+
+	result = GetListOfObjects(dfr, ".*", recursive = 1, fullpath = 1, typeFlag = COUNTOBJECTS_DATAFOLDER)
+	result = TrimVolatileFolderName_IGNORE(result)
+	expected = ":test1:test2;:test1:test2:test3"
+	result = SortList(result)
+	expected = SortList(expected)
+	CHECK_EQUAL_STR(result, expected)
+End
+
+// Not checked: typeFlag
 /// @}
 
 /// @{

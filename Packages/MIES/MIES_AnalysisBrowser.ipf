@@ -490,7 +490,7 @@ static Function AB_LoadDataWrapper(tmpDFR, expFilePath, datafolderPath, listOfNa
 
 	RemoveAllEmptyDataFolders(tmpDFR)
 
-	list = GetListOfObjects(tmpDFR, ".*", matchList=listOfNames, recursive=1, typeFlag=typeFlags)
+	list = GetListOfObjects(tmpDFR, ConvertListToRegexpWithAlternations(listOfNames), recursive=1, typeFlag=typeFlags)
 
 	return ItemsInList(list)
 End
