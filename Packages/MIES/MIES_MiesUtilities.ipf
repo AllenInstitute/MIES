@@ -3149,6 +3149,7 @@ Function GetNumberFromType([var, str, itcVar])
 				return NUM_DA_TTL_CHANNELS
 				break
 			case "DataAcqHS":
+			case "Headstage":
 				return NUM_HEADSTAGES
 				break
 			case "AD":
