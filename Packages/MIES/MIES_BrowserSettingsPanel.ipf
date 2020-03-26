@@ -11,7 +11,7 @@ static strConstant EXT_PANEL_SF_FORMULA = "sweepFormula_formula"
 static strConstant EXT_PANEL_SF_JSON = "sweepFormula_json"
 static strConstant EXT_PANEL_SF_HELP = "sweepFormula_help"
 
-static Constant BROWSERSETTINGS_PANEL_VERSION = 5
+static Constant BROWSERSETTINGS_PANEL_VERSION = 6
 
 static strConstant BROWSERTYPE_DATABROWSER  = "D"
 static strConstant BROWSERTYPE_SWEEPBROWSER = "S"
@@ -574,6 +574,8 @@ static Function BSP_SetCSButtonProc(win, procedure)
 		controlList += "check_channelSel_AD_" + num2str(i) + ";"
 	endfor
 
+	controlList += "check_channelSel_AD_All;check_channelSel_DA_All;check_channelSel_HEADSTAGE_All"
+
 	SetControlProcedures(bsPanel, controlList, procedure)
 	if(IsEmpty(procedure))
 		DisableControls(bsPanel, controlList)
@@ -1008,14 +1010,22 @@ Function/S BSP_GetFormulaGraph(win)
 End
 
 /// @brief Parse a control name for the "Channel Selection Panel" and return
-///        its channel type and number.
+///        its channel type and number. The number will be NaN for the ALL control.
 Function BSP_ParseChannelSelectionControl(ctrl, channelType, channelNum)
 	string ctrl
 	string &channelType
 	variable &channelNum
 
-	sscanf ctrl, "check_channelSel_%[^_]_%d", channelType, channelNum
+	string channelNumStr
+
+	sscanf ctrl, "check_channelSel_%[^_]_%s", channelType, channelNumStr
 	ASSERT(V_flag == 2, "Unexpected control name format")
+
+	if(!cmpstr(channelNumStr, "All"))
+		channelNum = NaN
+	else
+		channelNum = str2num(channelNumStr); AbortOnRTE
+	endif
 End
 
 /// @brief Set the channel selection dialog controls according to the channel
@@ -1032,6 +1042,11 @@ Function BSP_ChannelSelectionWaveToGUI(panel, channelSel)
 	for(i = 0; i < numEntries; i += 1)
 		ctrl = StringFromList(i, list)
 		BSP_ParseChannelSelectionControl(ctrl, channelType, channelNum)
+
+		if(IsNaN(channelNum))
+			continue
+		endif
+
 		SetCheckBoxState(panel, ctrl, channelSel[channelNum][%$channelType])
 	endfor
 End
@@ -1042,12 +1057,19 @@ Function BSP_GUIToChannelSelectionWave(win, ctrl, checked)
 	string win, ctrl
 	variable checked
 
-	variable channelNum
+	variable channelNum, numEntries
 	string channelType
 
 	WAVE channelSel = BSP_GetChannelSelectionWave(win)
 	BSP_ParseChannelSelectionControl(ctrl, channelType, channelNum)
-	channelSel[channelNum][%$channelType] = checked
+
+	if(isNaN(channelNum))
+		numEntries = GetNumberFromType(str=channelType)
+		channelSel[0, numEntries - 1][%$channelType] = checked
+		Make/FREE/N=(numEntries) junkWave = SetCheckBoxState(win, "check_channelSel_" + channelType + "_" + num2str(p), checked)
+	else
+		channelSel[channelNum][%$channelType] = checked
+	endif
 End
 
 /// @brief Removes the disabled channels and headstages from `ADCs` and `DACs`
