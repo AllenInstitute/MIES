@@ -1036,6 +1036,20 @@ Function BSP_ChannelSelectionWaveToGUI(panel, channelSel)
 	endfor
 End
 
+/// @brief Set the channel selection wave acccording to the channel selection
+///        controls
+Function BSP_GUIToChannelSelectionWave(win, ctrl, checked)
+	string win, ctrl
+	variable checked
+
+	variable channelNum
+	string channelType
+
+	WAVE channelSel = BSP_GetChannelSelectionWave(win)
+	BSP_ParseChannelSelectionControl(ctrl, channelType, channelNum)
+	channelSel[channelNum][%$channelType] = checked
+End
+
 /// @brief Removes the disabled channels and headstages from `ADCs` and `DACs`
 Function BSP_RemoveDisabledChannels(channelSel, ADCs, DACs, numericalValues, sweepNo)
 	WAVE/Z channelSel

@@ -812,24 +812,21 @@ End
 Function SB_CheckProc_ChangedSetting(cba) : CheckBoxControl
 	STRUCT WMCheckBoxAction &cba
 
-	string graph, bsPanel, scPanel, ctrl, channelType, device
-	variable checked, channelNum
-	DFREF sweepDFR
-
-	graph   = GetMainWindow(cba.win)
-	bsPanel = BSP_GetPanel(graph)
-	scPanel = BSP_GetSweepControlsPanel(graph)
+	string graph, bsPanel, scPanel, ctrl
+	variable checked
 
 	switch(cba.eventCode)
 		case 2: // mouse up
-			ctrl      = cba.ctrlName
-			checked   = cba.checked
+			ctrl    = cba.ctrlName
+			checked = cba.checked
+			graph   = GetMainWindow(cba.win)
+			bsPanel = BSP_GetPanel(graph)
+			scPanel = BSP_GetSweepControlsPanel(graph)
 
 			if(BSP_MainPanelNeedsUpdate(graph))
 				DoAbortNow("The main panel is too old to be usable. Please close it and open a new one.")
 			endif
 
-			DFREF dfr = SB_GetSweepBrowserFolder(graph)
 			strswitch(ctrl)
 				case "check_BrowserSettings_dDAQ":
 					if(checked)
@@ -840,9 +837,7 @@ Function SB_CheckProc_ChangedSetting(cba) : CheckBoxControl
 					break
 				default:
 					if(StringMatch(ctrl, "check_channelSel_*"))
-						WAVE channelSel = GetChannelSelectionWave(dfr)
-						BSP_ParseChannelSelectionControl(cba.ctrlName, channelType, channelNum)
-						channelSel[channelNum][%$channelType] = checked
+						BSP_GUIToChannelSelectionWave(bsPanel, ctrl, checked)
 					endif
 					break
 			endswitch

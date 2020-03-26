@@ -907,16 +907,15 @@ End
 Function DB_CheckProc_ChangedSetting(cba) : CheckBoxControl
 	STRUCT WMCheckboxAction &cba
 
-	variable checked, channelNum
-	string win, bsPanel, ctrl, channelType, device
-
-	win = cba.win
-	bsPanel = BSP_GetPanel(win)
+	variable checked
+	string win, bsPanel, ctrl
 
 	switch(cba.eventCode)
 		case 2: // mouse up
-			ctrl       = cba.ctrlName
-			checked    = cba.checked
+			ctrl    = cba.ctrlName
+			checked = cba.checked
+			win     = cba.win
+			bsPanel = BSP_GetPanel(win)
 
 			strswitch(ctrl)
 				case "check_BrowserSettings_dDAQ":
@@ -928,9 +927,7 @@ Function DB_CheckProc_ChangedSetting(cba) : CheckBoxControl
 					break
 				default:
 					if(StringMatch(ctrl, "check_channelSel_*"))
-						WAVE channelSel = BSP_GetChannelSelectionWave(win)
-						BSP_ParseChannelSelectionControl(cba.ctrlName, channelType, channelNum)
-						channelSel[channelNum][%$channelType] = checked
+						BSP_GUIToChannelSelectionWave(win, ctrl, checked)
 					endif
 					break
 			endswitch
