@@ -301,7 +301,7 @@ Function BSP_BindListBoxWaves(win)
 
 	// channel selection
 	WAVE channelSelection = BSP_GetChannelSelectionWave(mainPanel)
-	ChannelSelectionWaveToGUI(bsPanel, channelSelection)
+	BSP_ChannelSelectionWaveToGUI(bsPanel, channelSelection)
 
 	// dashboard
 	WAVE listBoxColorWave = GetAnaFuncDashboardColorWave(dfr)
@@ -1005,4 +1005,77 @@ Function/S BSP_GetFormulaGraph(win)
 	DFREF dfr = BSP_GetFolder(win, MIES_BSP_PANEL_FOLDER)
 
 	return CleanupName("FormulaPlot_" + GetDataFolder(0, dfr), 0)
+End
+
+/// @brief Parse a control name for the "Channel Selection Panel" and return
+///        its channel type and number.
+Function BSP_ParseChannelSelectionControl(ctrl, channelType, channelNum)
+	string ctrl
+	string &channelType
+	variable &channelNum
+
+	sscanf ctrl, "check_channelSel_%[^_]_%d", channelType, channelNum
+	ASSERT(V_flag == 2, "Unexpected control name format")
+End
+
+/// @brief Set the channel selection dialog controls according to the channel
+///        selection wave
+Function BSP_ChannelSelectionWaveToGUI(panel, channelSel)
+	string panel
+	WAVE channelSel
+
+	string list, channelType, ctrl
+	variable channelNum, numEntries, i
+
+	list = ControlNameList(panel, ";", "check_channelSel_*")
+	numEntries = ItemsInList(list)
+	for(i = 0; i < numEntries; i += 1)
+		ctrl = StringFromList(i, list)
+		BSP_ParseChannelSelectionControl(ctrl, channelType, channelNum)
+		SetCheckBoxState(panel, ctrl, channelSel[channelNum][%$channelType])
+	endfor
+End
+
+/// @brief Removes the disabled channels and headstages from `ADCs` and `DACs`
+Function BSP_RemoveDisabledChannels(channelSel, ADCs, DACs, numericalValues, sweepNo)
+	WAVE/Z channelSel
+	WAVE ADCs, DACs, numericalValues
+	variable sweepNo
+
+	variable numADCs, numDACs, i
+
+	if(!WaveExists(channelSel) || (WaveMin(channelSel) == 1 && WaveMax(channelSel) == 1))
+		return NaN
+	endif
+
+	Duplicate/FREE channelSel, channelSelMod
+
+	numADCs = DimSize(ADCs, ROWS)
+	numDACs = DimSize(DACs, ROWS)
+
+	WAVE/Z statusDAC = GetLastSetting(numericalValues, sweepNo, "DAC", DATA_ACQUISITION_MODE)
+	WAVE/Z statusADC = GetLastSetting(numericalValues, sweepNo, "ADC", DATA_ACQUISITION_MODE)
+	WAVE/Z statusHS  = GetLastSetting(numericalValues, sweepNo, "Headstage Active", DATA_ACQUISITION_MODE)
+
+	// disable the AD/DA channels not wanted by the headstage setting first
+	for(i = 0; i < NUM_HEADSTAGES; i += 1)
+		if(!channelSelMod[i][%HEADSTAGE] && statusHS[i])
+			channelSelMod[statusADC[i]][%AD] = 0
+			channelSelMod[statusDAC[i]][%DA] = 0
+		endif
+	endfor
+
+	// start at the end of the config wave
+	// we always have the order DA/AD/TTLs
+	for(i = numADCs - 1; i >= 0; i -= 1)
+		if(!channelSelMod[ADCs[i]][%AD])
+			DeletePoints/M=(ROWS) i, 1, ADCs
+		endif
+	endfor
+
+	for(i = numDACs - 1; i >= 0; i -= 1)
+		if(!channelSelMod[DACs[i]][%DA])
+			DeletePoints/M=(ROWS) i, 1, DACs
+		endif
+	endfor
 End

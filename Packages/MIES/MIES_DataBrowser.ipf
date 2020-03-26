@@ -929,7 +929,7 @@ Function DB_CheckProc_ChangedSetting(cba) : CheckBoxControl
 				default:
 					if(StringMatch(ctrl, "check_channelSel_*"))
 						WAVE channelSel = BSP_GetChannelSelectionWave(win)
-						ParseChannelSelectionControl(cba.ctrlName, channelType, channelNum)
+						BSP_ParseChannelSelectionControl(cba.ctrlName, channelType, channelNum)
 						channelSel[channelNum][%$channelType] = checked
 					endif
 					break
