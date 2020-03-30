@@ -358,6 +358,7 @@ Function SB_UpdateSweepPlot(win, [newSweep])
 
 	WAVE/T cursorInfos = GetCursorInfos(graph)
 	RemoveTracesFromGraph(graph)
+	RemoveFreeAxisFromGraph(graph)
 
 	WAVE/T sweepMap = SB_GetSweepBrowserMap(sweepBrowserDFR)
 	WAVE channelSel = GetChannelSelectionWave(sweepBrowserDFR)
