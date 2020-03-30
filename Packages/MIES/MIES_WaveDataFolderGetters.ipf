@@ -6603,3 +6603,23 @@ Function/WAVE GetSweepFormulaY(dfr)
 
 	return wv
 End
+
+/// @brief Return the global temporary wave for extended popup menu
+Function/WAVE GetPopupExtMenuWave()
+
+	variable versionOfNewWave = 1
+	DFREF dfr = GetMiesPath()
+	WAVE/T/Z/SDFR=dfr wv = popupExtMenuInfo
+
+	if(ExistsWithCorrectLayoutVersion(wv, versionOfNewWave))
+		return wv
+	elseif(WaveExists(wv))
+		// handle upgrade
+	else
+		Make/T/N=1 dfr:popupExtMenuInfo/WAVE=wv
+	endif
+
+	SetWaveVersion(wv, versionOfNewWave)
+
+	return wv
+End

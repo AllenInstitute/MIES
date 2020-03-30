@@ -1266,3 +1266,23 @@ StrConstant EXPCONFIG_GUI_PREFERRED =   "0;2;0;0;0;3;2;0;1;1;0;1;"
 
 StrConstant EXPCONFIG_GUI_SUSERDATA =   "1;0;1;1;0;1;1;1;1;1;0;0;"
 /// @}
+
+/// @name PopupMenu extension keys for userdata definition of procedures
+/// @anchor PopupMenuExtension
+/// @{
+StrConstant PEXT_UDATA_ITEMGETTER = "Items"
+StrConstant PEXT_UDATA_POPUPPROC = "popupProc"
+/// @}
+
+/// @name PopupMenu extension sub menu splitting methods
+/// @anchor PEXT_SubMenuSplitting
+/// @{
+Constant PEXT_SUBSPLIT_DEFAULT = 0
+Constant PEXT_SUBSPLIT_ALPHA = 1
+/// @}
+
+/// @name PopupMenu extension sub menu name generation methods
+/// @anchor PEXT_SubMenuNameGeneration
+/// @{
+Constant PEXT_SUBNAMEGEN_DEFAULT = 0
+/// @}
