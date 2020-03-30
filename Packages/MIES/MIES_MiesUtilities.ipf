@@ -2535,7 +2535,7 @@ Function CreateTiledChannelGraph(graph, config, sweepNo, numericalValues,  textu
 					// 11-14: TTL bits (single) rack zero
 					// 15:    TTL bits (sum) rack one
 					// 16-19: TTL bits (single) rack one
-					if(WaveExists(status) && IsFinite(headstage))
+					if(IsFinite(headstage))
 						colorIndex = headstage
 					elseif(!cmpstr(channelID, "TTL"))
 						colorIndex = 10 + activeChanCount[i] * 5 + j
