@@ -537,3 +537,39 @@ Window IVSCCControlPanel() : Panel
 	Button button_runBaselineQC,pos={48.00,61.00},size={190.00,30.00},proc=IVS_ButtonProc_BaselineQC,title="Run baseline QC"
 	Button button_runAccessResisQC,pos={48.00,145.00},size={190.00,30.00},proc=IVS_ButtonProc_AccessResist,title="Run access resistance QC check"
 EndMacro
+
+/// @brief Return the Set QC passed/failed state for the given sweep
+///
+/// @return 1 if passed, 0 if not (or not yet) and
+/// asserts out on all other errors.
+Function IVS_GetSetQCForSweep(panelTitle, sweepNo)
+	string panelTitle
+	variable sweepNo
+
+	string key
+	variable headstage, anaFuncType
+
+	WAVE numericalValues = GetLBNumericalValues(panelTitle)
+	WAVE/T textualValues = GetLBTextualValues(panelTitle)
+
+	WAVE/Z headstages = GetLastSetting(numericalValues, sweepNo, "Headstage Active", DATA_ACQUISITION_MODE)
+	ASSERT(WaveExists(headstages), "The given sweep number does not exist.")
+
+	WaveStats/Q/M=1 headstages
+	ASSERT(V_sum == 1, "More than one headstage active")
+
+	headstage = headstages[V_minloc]
+
+	key = StringFromList(GENERIC_EVENT, EVENT_NAME_LIST_LBN)
+	WAVE/Z/T anaFuncs = GetLastSetting(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
+
+	ASSERT(WaveExists(anaFuncs), "The queried sweep did not use an analysis function.")
+
+	Make/N=(LABNOTEBOOK_LAYER_COUNT)/FREE anaFuncTypes = PSQ_MapFunctionToConstant(anaFuncs[p])
+
+	anaFuncType = anaFuncTypes[headstage]
+	ASSERT(IsFinite(anaFuncType), "The used analysis function is not a patch-seq one.")
+
+	key = PSQ_CreateLBNKey(anaFuncType, PSQ_FMT_LBN_SET_PASS, query = 1)
+	return GetLastSettingIndepSCI(numericalValues, sweepNo, key, headstage, UNKNOWN_MODE) == 1
+End
