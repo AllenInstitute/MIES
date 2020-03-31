@@ -80,6 +80,7 @@ End
 
 Function OpenAboutDialog()
 
+	string version, nb
 	string panel = "AboutMIES"
 
 	DoWindow/F $panel
@@ -87,21 +88,40 @@ Function OpenAboutDialog()
 		return NaN
 	endif
 
-	Execute panel + "()"
-	SVAR miesVersion = $GetMiesVersion()
-	Notebook AboutMIES#MiesVersionNB selection={startOfFile, endOfFile}
-	Notebook AboutMIES#MiesVersionNB setData=miesVersion
-End
+	NewPanel/N=$panel/K=1 /W=(382,741,796,935) as "About MIES"
 
-Window AboutMies() : Panel
-	PauseUpdate; Silent 1		// building window...
-	NewPanel /K=1 /W=(348,491,982,661) as "About MIES"
-	Button button_okay,pos={246.00,136.00},size={50.00,20.00},proc=ButtonProc_AboutMIESClose,title="OK"
-	Button button_copy_to_clipboard,pos={328.00,136.00},size={50.00,20.00},proc=ButtonProc_AboutMIESCopy,title="Copy"
-	NewNotebook /F=0 /N=MiesVersionNB /W=(14,7,309,124)/FG=(FL,FT,FR,$"") /HOST=# /OPTS=15
-	Notebook kwTopWin, defaultTab=20, autoSave= 0, writeProtect=1
-	Notebook kwTopWin font="Lucida Console", fSize=11, fStyle=0, textRGB=(0,0,0)
-	RenameWindow #,MiesVersionNB
+	nb = "MiesVersionNB"
+	NewNotebook /F=1 /N=MiesVersionNB/FG=(FL,FT,FR,FB)/HOST=#/OPTS=3
+	nb = panel + "#" + nb
+
+	Notebook $nb defaultTab=36, magnification=100
+	Notebook $nb showRuler=0, rulerUnits=2, updating={1, 1},writeProtect=1
+	Notebook $nb newRuler=Normal, justification=0, margins={0,0,468}, spacing={0,0,0}, tabs={}, rulerDefaults={"Arial",11,0,(0,0,0)}
+	Notebook $nb ruler=Normal, text="MIES is a sweep based data acquisition tool written in Igor Pro.\r"
+	Notebook $nb text="\r"
+
+	version = ROStr(GetMiesVersion())
+	version = StringFromList(0, version, "\r")
+	version = RemovePrefix(version, startStr = "Release_")
+	Notebook $nb text="Version: " + version  + "\r"
+	Notebook $nb text="\r"
+	NotebookAction/W=$nb name=Action1, title="Report an Issue/Enhancement proposal", ignoreErrors=1
+	NotebookAction/W=$nb name=Action1, commands="CreateIssueOnGithub()"
+	Notebook $nb text="\r"
+	Notebook $nb text="\r"
+	Notebook $nb text="Location: "
+	NotebookAction/W=$nb name=Action2, title="github.com/AllenInstitute/MIES", ignoreErrors=1
+	NotebookAction/W=$nb name=Action2, commands="BrowseURL(\"https://github.com/AllenInstitute/MIES\")"
+	Notebook $nb text="\r"
+	Notebook $nb text="\r"
+	Notebook $nb text="License: "
+	NotebookAction/W=$nb name=Action0, title="2-clause BSD license plus a third clause", ignoreErrors=1
+	NotebookAction/W=$nb name=Action0, commands="BrowseURL(\"https://github.com/AllenInstitute/MIES/blob/master/LICENSE\")"
+	Notebook $nb text="\r"
+	Notebook $nb text="\r"
+	Notebook $nb text="Sponsors: "
+	NotebookAction/W=$nb name=Action3, title="www.alleninstitute.org", ignoreErrors=1
+	NotebookAction/W=$nb name=Action3, commands="BrowseURL(\"https://www.alleninstitute.org\")"
 	SetActiveSubwindow ##
 EndMacro
 
@@ -129,4 +149,35 @@ Function ButtonProc_AboutMIESCopy(ba) : ButtonControl
 	endswitch
 
 	return 0
+End
+
+/// @brief Custom notebook action for the "About MIES" dialog
+///
+/// Opens a prefilled new issue on github.
+Function CreateIssueOnGithub()
+	string url, body, title, version, str
+
+	title = "Please summarize your issue here"
+	body = ""
+
+	version = ROStr(GetMiesVersion())
+
+	body += "Description:\n"
+	body += "- What was MIES doing at the time of the unexpected behavior?\n\n"
+	body += "- Did user input immediately precede the unexpected behavior?\n\n"
+	body += "- What did you expect to happen?\n\n"
+	body += "\n"
+	body += "Igor Pro Experiment files can be attached as zip file if needed.\n"
+	body += "\n"
+	body += "The following contains version information (keep unchanged):\n"
+
+	sprintf str, "```\nMIES version: %s\n```\n\n", version
+	body += str
+
+	sprintf str, "```\nIgor Pro version: %s\n```\n\n", IgorInfo(3)
+	body += str
+
+	sprintf url, "https://github.com/AllenInstitute/MIES/issues/new?title=%s&body=%s", URLEncode(title), URLEncode(body)
+
+	BrowseURL(url)
 End
