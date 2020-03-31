@@ -185,7 +185,7 @@ Function AFH_GetLastSweepAcquired(panelTitle)
 	string list, name
 	variable numItems, i, sweep
 
-	list = GetListOfObjects(GetDeviceDataPath(panelTitle), DATA_SWEEP_REGEXP, waveProperty="MINCOLS:2")
+	list = GetListOfObjects(GetDeviceDataPath(panelTitle), DATA_SWEEP_REGEXP)
 	list = SortList(list, ";", 1 + 16) // descending and case-insensitive alphanumeric
 
 	numItems = ItemsInList(list)

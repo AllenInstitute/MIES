@@ -29,7 +29,9 @@ Function AD_Update(win)
 	string win
 
 	string device, mainPanel
-	variable numEntries
+	variable numEntries, refTime
+
+	refTime = DEBUG_TIMER_START()
 
 	DFREF dfr = BSP_GetFolder(win, MIES_BSP_PANEL_FOLDER)
 
@@ -48,6 +50,8 @@ Function AD_Update(win)
 		mainPanel = BSP_GetPanel(win)
 		EnableControls(mainPanel, "list_dashboard;check_BrowserSettings_DB_Failed;check_BrowserSettings_DB_Passed")
 	endif
+
+	DEBUGPRINT_ELAPSED(refTime)
 End
 
 /// @brief Get result list of analysis function runs
@@ -55,7 +59,7 @@ static Function AD_FillWaves(panelTitle, list, info)
 	string panelTitle
 	WAVE/T list, info
 
-	variable lastSweep, i, headstage, passed
+	variable lastSweep, i, headstage, passed, sweepNo, numEntries
 	variable index, anaFuncType, stimsetCycleID, firstValid, lastValid
 	string key, anaFunc, stimset, msg
 
@@ -70,16 +74,37 @@ static Function AD_FillWaves(panelTitle, list, info)
 
 	index = GetNumberFromWaveNote(list, NOTE_INDEX)
 
-	for(i = 0; i <= lastSweep; i += 1)
+	key = StringFromList(GENERIC_EVENT, EVENT_NAME_LIST_LBN)
+	WAVE/Z sweeps = GetSweepsWithSetting(textualValues, key)
 
-		WAVE/Z headstages = GetLastSetting(numericalValues, i, "Headstage Active", DATA_ACQUISITION_MODE)
+	if(!WaveExists(sweeps))
+		return 0
+	endif
+
+	numEntries = DimSize(sweeps, ROWS)
+	for(i = 0; i < numEntries; i += 1)
+
+		sweepNo = sweeps[i]
+
+		key = StringFromList(GENERIC_EVENT, EVENT_NAME_LIST_LBN)
+		WAVE/Z/T anaFuncs = GetLastSetting(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
+
+		if(!WaveExists(anaFuncs))
+			continue
+		endif
+
+		Make/N=(LABNOTEBOOK_LAYER_COUNT)/FREE anaFuncTypes = PSQ_MapFunctionToConstant(anaFuncs[p])
+
+		if(!HasOneValidEntry(anaFuncTypes))
+			continue
+		endif
+
+		WAVE/Z headstages = GetLastSetting(numericalValues, sweepNo, "Headstage Active", DATA_ACQUISITION_MODE)
 
 		// present since 602debb9 (Record the active headstage in the settingsHistory, 2014-11-04)
 		if(!WaveExists(headstages))
 			return 0
 		endif
-
-		ASSERT(WaveExists(headstages), "No headstages active")
 
 		WaveStats/Q/M=1 headstages
 		if(V_sum > 1) // more than one headstage active
@@ -88,7 +113,14 @@ static Function AD_FillWaves(panelTitle, list, info)
 
 		headstage = headstages[V_minloc]
 
-		WAVE/Z stimsetCycleIDs = GetLastSetting(numericalValues, i, STIMSET_ACQ_CYCLE_ID_KEY, DATA_ACQUISITION_MODE)
+		anaFuncType = anaFuncTypes[headstage]
+		anaFunc = anaFuncs[headstage]
+
+		if(IsNaN(anaFuncType)) // non patch-seq analysis function
+			continue
+		endif
+
+		WAVE/Z stimsetCycleIDs = GetLastSetting(numericalValues, sweepNo, STIMSET_ACQ_CYCLE_ID_KEY, DATA_ACQUISITION_MODE)
 
 		if(!WaveExists(stimsetCycleIDs)) // TP during DAQ
 			continue
@@ -101,27 +133,13 @@ static Function AD_FillWaves(panelTitle, list, info)
 			continue
 		endif
 
-		key = StringFromList(GENERIC_EVENT, EVENT_NAME_LIST_LBN)
-		WAVE/Z/T anaFuncs = GetLastSetting(textualValues, i, key, DATA_ACQUISITION_MODE)
-
-		if(!WaveExists(anaFuncs))
-			continue
-		endif
-
-		anaFunc = anaFuncs[headstage]
-		anaFuncType = PSQ_MapFunctionToConstant(anaFunc)
-
-		if(IsNaN(anaFuncType)) // non patch-seq analysis function
-			continue
-		endif
-
-		WAVE/Z/T stimsets = GetLastSetting(textualValues, i, STIM_WAVE_NAME_KEY, DATA_ACQUISITION_MODE)
+		WAVE/Z/T stimsets = GetLastSetting(textualValues, sweepNo, STIM_WAVE_NAME_KEY, DATA_ACQUISITION_MODE)
 		ASSERT(WaveExists(stimsets), "No stimsets found")
 
 		stimset = stimsets[headstage]
 
 		key = PSQ_CreateLBNKey(anaFuncType, PSQ_FMT_LBN_SET_PASS, query = 1)
-		passed = GetLastSettingIndepSCI(numericalValues, i, key, headstage, UNKNOWN_MODE)
+		passed = GetLastSettingIndepSCI(numericalValues, sweepNo, key, headstage, UNKNOWN_MODE)
 
 		if(isNaN(passed))
 			// the set is not yet finished
@@ -153,16 +171,16 @@ static Function AD_FillWaves(panelTitle, list, info)
 
 			switch(anaFuncType)
 				case PSQ_RHEOBASE:
-					msg = AD_GetRheobaseFailMsg(numericalValues, i, headstage)
+					msg = AD_GetRheobaseFailMsg(numericalValues, sweepNo, headstage)
 					break
 				case PSQ_RAMP:
-					msg = AD_GetRampFailMsg(numericalValues, i, headstage)
+					msg = AD_GetRampFailMsg(numericalValues, sweepNo, headstage)
 					break
 				case PSQ_SQUARE_PULSE:
-					msg = AD_GetSquarePulseFailMsg(numericalValues, i, headstage)
+					msg = AD_GetSquarePulseFailMsg(numericalValues, sweepNo, headstage)
 					break
 				case PSQ_DA_SCALE:
-					msg = AD_GetDaScaleFailMsg(numericalValues, textualValues, i, headstage)
+					msg = AD_GetDaScaleFailMsg(numericalValues, textualValues, sweepNo, headstage)
 					break
 				default:
 					ASSERT(0, "Unsupported analysis function")
@@ -181,7 +199,7 @@ static Function AD_FillWaves(panelTitle, list, info)
 		// RB: If passed use last spiking/non-spiking duo
 		//     If not passed, all are failing
 
-		WAVE sweeps = AFH_GetSweepsFromSameSCI(numericalValues, i, headstage)
+		WAVE sweeps = AFH_GetSweepsFromSameSCI(numericalValues, sweepNo, headstage)
 
 		switch(anaFuncType)
 			case PSQ_DA_SCALE:
@@ -189,7 +207,7 @@ static Function AD_FillWaves(panelTitle, list, info)
 			case PSQ_SQUARE_PULSE:
 
 				key = PSQ_CreateLBNKey(anaFuncType, PSQ_FMT_LBN_SWEEP_PASS, query = 1)
-				WAVE sweepPass = GetLastSettingIndepEachSCI(numericalValues, i, key, headstage, UNKNOWN_MODE)
+				WAVE sweepPass = GetLastSettingIndepEachSCI(numericalValues, sweepNo, key, headstage, UNKNOWN_MODE)
 				ASSERT(DimSize(sweeps, ROWS) == DimSize(sweepPass, ROWS), "Unexpected wave sizes")
 
 				Duplicate/FREE sweeps, passingSweeps, failingSweeps
@@ -203,7 +221,7 @@ static Function AD_FillWaves(panelTitle, list, info)
 			case PSQ_RHEOBASE:
 				key = PSQ_CreateLBNKey(anaFuncType, PSQ_FMT_LBN_SPIKE_DETECT, query = 1)
 				if(passed)
-					WAVE spikeDetection = GetLastSettingEachSCI(numericalValues, i, key, headstage, UNKNOWN_MODE)
+					WAVE spikeDetection = GetLastSettingEachSCI(numericalValues, sweepNo, key, headstage, UNKNOWN_MODE)
 					ASSERT(DimSize(sweeps, ROWS) == DimSize(spikeDetection, ROWS), "Unexpected wave sizes")
 
 					firstValid = DimSize(spikeDetection, ROWS) - 2

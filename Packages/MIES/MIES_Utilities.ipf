@@ -207,26 +207,22 @@ End
 /// @brief Alternative implementation for WaveList/VariableList/etc. which honours a dfref and thus
 /// does not require SetDataFolder calls.
 ///
-/// @param dfr                                  datafolder reference to search for the waves
-/// @param matchExpr                            expression matching the waves, either a regular (exprType == MATCH_REGEXP)
+/// @param dfr                                  datafolder reference to search for the objects
+/// @param matchExpr                            expression matching the objects, either a regular (exprType == MATCH_REGEXP)
 ///                                             or wildcard (exprType == MATCH_WILDCARD) expression
 /// @param typeFlag [optional, default: COUNTOBJECTS_WAVES] One of @ref TypeFlags
-/// @param matchList [optional, empty]          additional semicolon delimited list of wave names, allows to further
-///                                             qualify the returned wave names.
-/// @param waveProperty [optional, empty]       additional properties of matching waves, inspired by WaveList,
-///                                             currently implemented are `MINCOLS` and `TEXT`
-/// @param fullPath [optional, default: false]  should only the wavename or the absolute path of the wave be returned.
+/// @param fullPath [optional, default: false]  should only the object name or the absolute path of the object be returned
 /// @param recursive [optional, default: false] descent into all subfolders recursively
 /// @param exprType [optional, defaults: MATCH_REGEXP] convention used for matchExpr, one of @ref MatchExpressions
 ///
-/// @returns list of wave names matching regExpStr located in dfr
-Function/S GetListOfObjects(dfr, matchExpr, [typeFlag, matchList, waveProperty, fullPath, recursive, exprType])
+/// @returns list of object names matching matchExpr
+Function/S GetListOfObjects(dfr, matchExpr, [typeFlag, fullPath, recursive, exprType])
 	dfref dfr
-	string matchExpr, matchList, waveProperty
+	string matchExpr
 	variable fullPath, recursive, typeFlag, exprType
 
-	variable i, j, numWaveProperties, numWaves, matches, val, numFolders
-	string name, str, prop, subList, basePath
+	variable i, numFolders
+	string name, folders, basePath, subList
 	string list = ""
 
 	ASSERT(DataFolderExistsDFR(dfr),"Non-existing datafolder")
@@ -248,14 +244,6 @@ Function/S GetListOfObjects(dfr, matchExpr, [typeFlag, matchList, waveProperty, 
 		typeFlag = COUNTOBJECTS_WAVES
 	endif
 
-	if(ParamIsDefault(waveProperty))
-		waveProperty = ""
-	endif
-
-	if(ParamIsDefault(matchList))
-		matchList = ""
-	endif
-
 	if(ParamIsDefault(exprType))
 		exprType = MATCH_REGEXP
 	else
@@ -264,84 +252,77 @@ Function/S GetListOfObjects(dfr, matchExpr, [typeFlag, matchList, waveProperty, 
 
 	basePath = GetDataFolder(1, dfr)
 
+	list = ListMatchesExpr(GetAllObjects(dfr, typeFlag), matchExpr, exprType)
+
+	if(fullPath)
+		list = AddPrefixToEachListItem(basePath, list)
+	endif
+
 	if(recursive)
-		numFolders = CountObjectsDFR(dfr, COUNTOBJECTS_DATAFOLDER)
+		folders = GetAllObjects(dfr, COUNTOBJECTS_DATAFOLDER)
+		numFolders = ItemsInList(folders)
 		for(i = 0; i < numFolders; i+=1)
-			name = basePath + GetIndexedObjNameDFR(dfr, COUNTOBJECTS_DATAFOLDER, i)
+			name = basePath + StringFromList(i, folders)
 			DFREF subFolder = $name
-			subList = GetListOfObjects(subFolder, matchExpr, matchList=matchList, waveProperty=waveProperty, \
-						               fullPath=fullPath, recursive=recursive, exprType=exprType)
+			subList = GetListOfObjects(subFolder, matchExpr, typeFlag = typeFlag, fullPath=fullPath, recursive=recursive, exprType=exprType)
 			if(!IsEmpty(subList))
 				list = AddListItem(RemoveEnding(subList, ";"), list)
 			endif
 		endfor
 	endif
 
-	numWaves = CountObjectsDFR(dfr, typeFlag)
-	for(i=0; i<numWaves; i+=1)
-		name = GetIndexedObjNameDFR(dfr, typeFlag, i)
+	return list
+End
 
-		if(!StringMatchesExpr(name, matchExpr, exprType))
-			continue
-		endif
+/// @brief Return a list of all objects of the given type from dfr
+///
+/// Does not work for datafolders which have a comma (`,`) in them.
+static Function/S GetAllObjects(dfr, typeFlag)
+	DFREF dfr
+	variable typeFlag
 
-		if(!IsEmpty(matchList) && WhichListItem(name, matchList, ";", 0, 0) == -1)
-			continue
-		endif
+	string list
 
-		matches = 1
-		if(!isEmpty(waveProperty))
-			ASSERT(typeFlag == COUNTOBJECTS_WAVES, "waveProperty does not make sense for type flags other than COUNTOBJECTS_WAVES")
-			WAVE/SDFR=dfr wv = $name
-			numWaveProperties = ItemsInList(waveProperty)
-			for(j = 0; j < numWaveProperties; j += 1)
-				str  = StringFromList(j, waveProperty)
-				prop = StringFromList(0, str, ":")
-				val  = str2num(StringFromList(1, str, ":"))
-				ASSERT(IsFinite(val), "non finite value")
-				ASSERT(!IsEmpty(prop), "empty option")
+	DFREF oldDFR = GetDataFolderDFR()
 
-				strswitch(prop)
-					case "MINCOLS":
-						matches = matches & DimSize(wv, COLS) >= val
-						break
-					case "TEXT":
-						matches = matches & IsTextWave(wv) == !!val
-						break
-					default:
-						ASSERT(0, "property not implemented")
-						break
-				endswitch
+	SetDataFolder dfr
 
-				if(!matches) // no need to check the other properties
-					break
-				endif
-			endfor
-		endif
+	switch(typeFlag)
+		case COUNTOBJECTS_WAVES:
+			list = WaveList("*", ";", "")
+			break
+		case COUNTOBJECTS_VAR:
+			list = VariableList("*", ";", 11)
+			break
+		case COUNTOBJECTS_STR:
+			list = StringList("*", ";")
+			break
+		case COUNTOBJECTS_DATAFOLDER:
+			list = DataFolderDir(2^0)
+			list = StringByKey("FOLDERS", list)
+			list = ReplaceString(",", list, ";")
+			break
+		default:
+			SetDataFolder oldDFR
+			ASSERT(0, "Invalid type flag")
+	endswitch
 
-		if(matches)
-			if(fullPath)
-				list = AddListItem(basePath + name, list, ";", Inf)
-			else
-				list = AddListItem(name, list, ";", Inf)
-			endif
-		endif
-	endfor
+	SetDataFolder oldDFR
 
 	return list
 End
 
-/// @brief Matches `name` against the expression `matchExpr` using the given
+/// @brief Matches `list` against the expression `matchExpr` using the given
 ///        convention in `exprType`
-Function StringMatchesExpr(name, matchExpr, exprType)
-	string name, matchExpr
+Function/S ListMatchesExpr(list, matchExpr, exprType)
+	string list, matchExpr
 	variable exprType
 
 	switch(exprType)
 		case MATCH_REGEXP:
-			return GrepString(name, matchExpr)
+			return GrepList(list, matchExpr)
 		case MATCH_WILDCARD:
-			return StringMatch(name, matchExpr)
+			return ListMatch(list, matchExpr)
 		default:
 			ASSERT(0, "invalid exprType")
 	endswitch
@@ -1394,173 +1375,6 @@ Function/S LineBreakingIntoParWithMinWidth(str)
 	return output
 End
 
-/// @brief Extended version of `FindValue`
-///
-/// Allows to search only the specified column for a value
-/// and returns all matching row indizes in a wave. By defaults only looks into the first layer
-/// for backward compatibility reasons.
-///
-/// Exactly one of `var`/`str`/`prop` has to be given except for
-/// `prop == PROP_MATCHES_VAR_BIT_MASK` and `prop == PROP_NOT_MATCHES_VAR_BIT_MASK`
-/// which requires a `var`/`str` parameter as well.
-///
-/// Exactly one of `col`/`colLabel` has to be given.
-///
-/// @param numericOrTextWave   wave to search in
-/// @param col [optional]      column to search in only
-/// @param colLabel [optional] column label to search in only
-/// @param var [optional]      numeric value to search
-/// @param str [optional]      string value to search
-/// @param prop [optional]     property to search, see @ref FindIndizesProps
-/// @param startRow [optional] starting row to restrict the search to
-/// @param endRow [optional]   ending row to restrict the search to
-/// @param startLayer [optional, defaults to zero] starting layer to restrict search to
-/// @param endLayer [optional, defaults to zero] ending layer to restrict search to
-///
-/// @returns A wave with the row indizes of the found values. An invalid wave reference if the
-/// value could not be found.
-Function/Wave FindIndizes(numericOrTextWave, [col, colLabel, var, str, prop, startRow, endRow, startLayer, endLayer])
-	WAVE numericOrTextWave
-	variable col, var, prop
-	string str, colLabel
-	variable startRow, endRow
-	variable startLayer, endLayer
-
-	variable numCols, numRows, numLayers
-
-	ASSERT(ParamIsDefault(col) + ParamIsDefault(colLabel) == 1, "Expected exactly one col/colLabel argument")
-	ASSERT(ParamIsDefault(prop) + ParamIsDefault(var) + ParamIsDefault(str) == 2              \
-		   || (!ParamIsDefault(prop)                                                          \
-			  && (prop == PROP_MATCHES_VAR_BIT_MASK || prop == PROP_NOT_MATCHES_VAR_BIT_MASK) \
-			  && (ParamIsDefault(var) + ParamIsDefault(str)) == 1),                           \
-			  "Invalid combination of var/str/prop arguments")
-
-	ASSERT(WaveExists(numericOrTextWave), "numericOrTextWave does not exist")
-
-	if(DimSize(numericOrTextWave, ROWS) == 0)
-		return $""
-	endif
-
-	numRows   = DimSize(numericOrTextWave, ROWS)
-	numCols   = DimSize(numericOrTextWave, COLS)
-	numLayers = DimSize(numericOrTextWave, LAYERS)
-	ASSERT(DimSize(numericOrTextWave, CHUNKS) <= 1, "No support for chunks")
-
-	if(!ParamIsDefault(colLabel))
-		col = FindDimLabel(numericOrTextWave, COLS, colLabel)
-		ASSERT(col >= 0, "invalid column label")
-	endif
-
-	ASSERT(col == 0 || (col > 0 && col < numCols), "Invalid column")
-
-	if(IsTextWave(numericOrTextWave))
-		WAVE/T wvText = numericOrTextWave
-		WAVE/Z wv     = $""
-	else
-		WAVE/T/Z wvText = $""
-		WAVE wv         = numericOrTextWave
-	endif
-
-	if(!ParamIsDefault(prop))
-		ASSERT(prop == PROP_NON_EMPTY                    \
-			   || prop == PROP_EMPTY                     \
-			   || prop == PROP_MATCHES_VAR_BIT_MASK      \
-			   || prop == PROP_NOT_MATCHES_VAR_BIT_MASK, \
-			   "Invalid property")
-
-		if(prop == PROP_MATCHES_VAR_BIT_MASK || prop == PROP_NOT_MATCHES_VAR_BIT_MASK)
-			if(ParamIsDefault(var))
-				var = str2numSafe(str)
-			elseif(ParamIsDefault(str))
-				str = num2str(var)
-			endif
-		endif
-	elseif(!ParamIsDefault(var))
-		str = num2str(var)
-	elseif(!ParamIsDefault(str))
-		var = str2numSafe(str)
-	endif
-
-	if(ParamIsDefault(startRow))
-		startRow = 0
-	else
-		ASSERT(startRow >= 0 && startRow < numRows, "Invalid startRow")
-	endif
-
-	if(ParamIsDefault(endRow))
-		endRow  = inf
-	else
-		ASSERT(endRow >= 0 && endRow < numRows, "Invalid endRow")
-	endif
-
-	ASSERT(startRow <= endRow, "endRow must be larger than startRow")
-
-	if(ParamIsDefault(startLayer))
-		startLayer = 0
-	else
-		ASSERT(startLayer >= 0 && (numLayers == 0 || startLayer < numLayers), "Invalid startLayer")
-	endif
-
-	if(ParamIsDefault(endLayer))
-		// only look in the first layer by default
-		endLayer = 0
-	else
-		ASSERT(endLayer >= 0 && (numLayers == 0 || endLayer < numLayers), "Invalid endLayer")
-	endif
-
-	ASSERT(startLayer <= endLayer, "endLayer must be larger than startLayer")
-
-	// Algorithm:
-	// * The matches wave has the same size as one column of the input wave
-	// * -1 means no match, every value larger or equal than zero is the row index of the match
-	// * There is no distinction between different layers matching
-	// * After the matches have been calculated we take the maximum of the transposed matches
-	//   wave in each colum transpose back and replace -1 with NaN
-	// * This gives a 1D wave with NaN in the rows with no match, and the row index of the match otherwise
-	// * Delete all NaNs in the wave and return it
-	Make/FREE/R/N=(numRows, numLayers) matches = -1
-
-	if(WaveExists(wv))
-		if(!ParamIsDefault(prop))
-			if(prop == PROP_EMPTY)
-				MultiThread matches[startRow, endRow][startLayer, endLayer] = (numtype(wv[p][col][q]) == 2 ? p : -1)
-			elseif(prop == PROP_NON_EMPTY)
-				MultiThread matches[startRow, endRow][startLayer, endLayer] = (numtype(wv[p][col][q]) != 2 ? p : -1)
-			elseif(prop == PROP_MATCHES_VAR_BIT_MASK)
-				MultiThread matches[startRow, endRow][startLayer, endLayer] = (wv[p][col][q] & var ? p : -1)
-			elseif(prop == PROP_NOT_MATCHES_VAR_BIT_MASK)
-				MultiThread matches[startRow, endRow][startLayer, endLayer] = (!(wv[p][col][q] & var) ? p : -1)
-			endif
-		else
-			ASSERT(!IsNaN(var), "Use PROP_EMPTY to search for NaN")
-			MultiThread matches[startRow, endRow][startLayer, endLayer] = ((wv[p][col][q] == var) ? p : -1)
-		endif
-	else
-		if(!ParamIsDefault(prop))
-			if(prop == PROP_EMPTY)
-				MultiThread matches[startRow, endRow][startLayer, endLayer] = (!cmpstr(wvText[p][col][q], "") ? p : -1)
-			elseif(prop == PROP_NON_EMPTY)
-				MultiThread matches[startRow, endRow][startLayer, endLayer] = (cmpstr(wvText[p][col][q], "") ? p : -1)
-			elseif(prop == PROP_MATCHES_VAR_BIT_MASK)
-				MultiThread matches[startRow, endRow][startLayer, endLayer] = (str2num(wvText[p][col][q]) & var ? p : -1)
-			elseif(prop == PROP_NOT_MATCHES_VAR_BIT_MASK)
-				MultiThread matches[startRow, endRow][startLayer, endLayer] = (!(str2num(wvText[p][col][q]) & var) ? p : -1)
-			endif
-		else
-			MultiThread matches[startRow, endRow][startLayer, endLayer] = (!cmpstr(wvText[p][col][q], str) ? p : -1)
-		endif
-	endif
-
-	MatrixOp/Free result = replace(maxCols(matches^t)^t, -1, NaN)
-	WaveTransform/O zapNaNs, result
-
-	if(DimSize(result, ROWS) == 0)
-		return $""
-	endif
-
-	return result
-End
-
 /// @brief Returns a reference to a newly created datafolder
 ///
 /// Basically a datafolder aware version of UniqueName for datafolders
@@ -2177,28 +1991,6 @@ Function/S BuildList(format, start, step, stop)
 	endfor
 
 	return list
-End
-
-/// @brief Searches the column colLabel in wv for an non-empty
-/// entry with a row number smaller or equal to endRow
-///
-/// Return an empty string if nothing could be found.
-///
-/// @param wv         text wave to search in
-/// @param colLabel   column label from wv
-/// @param endRow     maximum row index to consider
-Function/S GetLastNonEmptyEntry(wv, colLabel, endRow)
-	Wave/T wv
-	string colLabel
-	variable endRow
-
-	WAVE/Z indizes = FindIndizes(wv, colLabel=colLabel, prop=PROP_NON_EMPTY, endRow=endRow)
-
-	if(!WaveExists(indizes))
-		return ""
-	endif
-
-	return wv[indizes[DimSize(indizes, ROWS) - 1]][%$colLabel]
 End
 
 /// @brief Return the amount of free memory in GB
@@ -5218,4 +5010,22 @@ Function/WAVE HexToBinary(str)
 	Make/N=(length / 2)/FREE/B/U bin = HexToNumber(str[p * 2]) | (HexToNumber(str[p * 2 + 1]) << 4)
 
 	return bin
+End
+
+/// @brief Turn a list of entries into a regular expression with alternations.
+///
+/// Can be used for GetListOfObjects() if you know in advance which entries to filter out.
+Function/S ConvertListToRegexpWithAlternations(list)
+	string list
+
+	variable i, numEntries
+	string entry
+	string regexpList = ""
+
+	numEntries = ItemsInList(list)
+	for(i = 0; i < numEntries; i += 1)
+		regexpList = AddListItem("\\Q" + StringFromList(i, list) + "\\E", regexpList, "|", inf)
+	endfor
+
+	return regexpList
 End

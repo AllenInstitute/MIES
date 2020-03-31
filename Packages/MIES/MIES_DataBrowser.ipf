@@ -313,7 +313,7 @@ Function/S DB_GetPlainSweepList(win)
 
 	device = BSP_GetDevice(win)
 	dfr = GetDeviceDataPath(device)
-	return GetListOfObjects(dfr, DATA_SWEEP_REGEXP, waveProperty="MINCOLS:2")
+	return GetListOfObjects(dfr, DATA_SWEEP_REGEXP)
 End
 
 static Function [variable first, variable last] DB_FirstAndLastSweepAcquired(string win)
