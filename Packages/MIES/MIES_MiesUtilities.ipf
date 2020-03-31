@@ -3042,7 +3042,7 @@ Function SaveExperimentSpecial(mode)
 
 	// saved experiments are stored in the symbolic path "home"
 	expLoc  = "home"
-	expName = UniqueFile(expLoc, expName, PACKED_FILE_EXPERIMENT_SUFFIX)
+	expName = UniqueFileOrFolder(expLoc, expName, suffix = PACKED_FILE_EXPERIMENT_SUFFIX)
 
 	ret = SaveExperimentWrapper(expLoc, expName, overrideInteractiveMode = showSaveDialog)
 
@@ -6021,4 +6021,68 @@ Function/S GetLastNonEmptyEntry(wv, colLabel, endRow)
 	endif
 
 	return wv[indizes[DimSize(indizes, ROWS) - 1]][%$colLabel]
+End
+
+/// @brief Generate a default settings file in JSON format
+///
+/// \rst
+/// .. code-block:: json
+///
+/// 	{
+/// 	  "diagnostics": {
+/// 	    "last upload": "2020-03-05T13:43:32Z"
+/// 	  },
+/// 	  "version": 1
+/// 	}
+///
+///	\endrst
+///
+/// Explanation:
+/// - "version": Major version number to track breaking changes
+/// - "diagnostics": Groups settings related to diagnostics and crash dump handling
+/// - "diagnostics/last upload": ISO8601 timestamp when the last successfull
+///                              upload of crash dumps was tried. This is also set
+///                              when no crash dumps have been uploadad.
+///
+/// @return JSONid
+///
+/// Caller is responsible for releasing the document.
+Function GenerateSettingsDefaults()
+
+	variable JSONid
+
+	JSONid = JSON_New()
+
+	JSON_AddVariable(JSONid, "version", 1)
+	JSON_AddTreeObject(JSONid, "/diagnostics")
+	JSON_AddString(JSONid, "/diagnostics/last upload", GetIso8601TimeStamp(secondsSinceIgorEpoch=0))
+
+	return JSONid
+End
+
+/// @brief Call UploadCrashDumps() if we haven't called it since at least a day.
+Function UploadCrashDumpsDaily()
+
+	variable lastWrite
+
+	try
+		ClearRTError()
+		NVAR JSONid = $GetSettingsJSONid()
+
+		lastWrite = ParseISO8601TimeStamp(JSON_GetString(jsonID, "/diagnostics/last upload"))
+
+		if((lastWrite + 24 * 3600) > DateTimeInUTC())
+			// nothing to do
+			return NaN
+		endif
+
+		if(UploadCrashDumps())
+			printf "Crash dumps have been successfully uploaded.\r"
+		endif
+
+		JSON_SetString(jsonID, "/diagnostics/last upload", GetIso8601TimeStamp())
+	catch
+		ClearRTError()
+		BUG("Could not upload crash dumps!")
+	endtry
 End

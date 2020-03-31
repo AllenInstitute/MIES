@@ -52,7 +52,7 @@ Function IH_RemoveAmplifierConnWaves()
 End
 
 /// @brief Delete all wavebuilder stim sets to save memory
-Function IH_KillStimSets()
+static Function IH_KillStimSets()
 
 	string list, path
 
@@ -67,6 +67,23 @@ Function IH_KillStimSets()
 	CallFunctionForEachListItem_TS(KillOrMoveToTrashPath, list)
 End
 
+/// @brief Write the current JSON settings to disc
+///
+/// We also invalidate the stored json ID, so that on the next access
+/// it is read again.
+static Function PS_SerializeSettings()
+	NVAR JSONid = $GetSettingsJSONid()
+
+	try
+		ClearRTError()
+		PS_WriteSettings("MIES", JSONid); AbortOnRTE
+	catch
+		ClearRTError()
+	endtry
+
+	JSONid = NaN
+End
+
 static Function BeforeExperimentSaveHook(rN, fileName, path, type, creator, kind)
 	Variable rN, kind
 	String fileName, path, type, creator
@@ -77,6 +94,8 @@ static Function BeforeExperimentSaveHook(rN, fileName, path, type, creator, kind
 	endif
 
 	DAP_SerializeAllCommentNBs()
+	PS_SerializeSettings()
+
 	IH_KillTemporaries()
 #if !defined(IGOR64)
 	IH_KillStimSets()
@@ -106,6 +125,7 @@ static Function IH_Cleanup()
 		IH_KillTemporaries(); AbortOnRTE
 		IH_KillStimSets(); AbortOnRTE
 		CA_FlushCache(); AbortOnRTE
+		PS_SerializeSettings(); AbortOnRTE
 
 		DFREF dfrNWB = GetNWBFolder()
 		KilLVariables/Z dfrNWB:histRefNumber

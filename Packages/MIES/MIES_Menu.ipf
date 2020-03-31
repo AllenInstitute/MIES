@@ -53,6 +53,7 @@ Menu "Mies Panels"
 		"Flush Cache"                              , /Q, CA_FlushCache()
 		"Output Cache statistics"                  , /Q, CA_OutputCacheStatistics()
 		"Show Diagnostics (crash dumps) directory" , /Q, ShowDiagnosticsDirectory()
+		"Upload crash dumps"                       , /Q, UploadCrashDumps()
 	End
 End
 

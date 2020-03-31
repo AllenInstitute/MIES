@@ -1527,15 +1527,15 @@ Function SetDimensionLabels(keys, values)
 	endfor
 End
 
-/// @brief Returns a unique and non-existing file name
+/// @brief Returns a unique and non-existing file or folder name
 ///
 /// @warning This function must *not* be used for security relevant purposes,
 /// as for that the check-and-file-creation must be an atomic operation.
 ///
 /// @param symbPath  symbolic path
 /// @param baseName  base name of the file, must not be empty
-/// @param suffix    file suffix, e.g. ".txt", must not be empty
-Function/S UniqueFile(symbPath, baseName, suffix)
+/// @param suffix    file/folder suffix
+Function/S UniqueFileOrFolder(symbPath, baseName, [suffix])
 	string symbPath, baseName, suffix
 
 	string file
@@ -1544,7 +1544,10 @@ Function/S UniqueFile(symbPath, baseName, suffix)
 	PathInfo $symbPath
 	ASSERT(V_flag == 1, "Symbolic path does not exist")
 	ASSERT(!isEmpty(baseName), "baseName must not be empty")
-	ASSERT(!isEmpty(suffix), "suffix must not be empty")
+
+	if(ParamIsDefault(suffix))
+		suffix = ""
+	endif
 
 	file = baseName + suffix
 
@@ -4832,9 +4835,14 @@ Function/S GetSymbolicPathForDiagnosticsDirectory()
 	userName = GetSystemUserName()
 
 	sprintf path, "C:Users:%s:AppData:Roaming:WaveMetrics:Igor Pro %s:Diagnostics:", userName, GetIgorProVersion()[0]
+
+	if(!FolderExists(path))
+		CreateFolderOnDisk(path)
+	endif
+
 	symbPath = "crashInfo"
 
-	NewPath/O $symbPath, path
+	NewPath/O/Q $symbPath, path
 
 	return symbPath
 End
@@ -5028,4 +5036,108 @@ Function/S ConvertListToRegexpWithAlternations(list)
 	endfor
 
 	return regexpList
+End
+
+/// @brief Convert the Igor Pro crash dumps and the report file to JSON and upload them
+///
+/// Does nothing if none of these files exists.
+///
+/// The uploaded files are moved out of the way afterwards.
+///
+/// See `tools/http-upload/upload-json-payload-v1.php` for the JSON format description.
+///
+/// @return 1 if crash dumps had been uploaded, 0 otherwise
+Function UploadCrashDumps()
+
+	string diagSymbPath, basePath, diagPath
+	variable jsonID, numFiles, numLogs
+
+	diagSymbPath = GetSymbolicPathForDiagnosticsDirectory()
+
+	WAVE/T files = ListTotextWave(GetAllFilesRecursivelyFromPath(diagSymbPath, extension=".dmp"), "|")
+	WAVE/T logs = ListTotextWave(GetAllFilesRecursivelyFromPath(diagSymbPath, extension=".txt"), "|")
+	numFiles = DimSize(files, ROWS)
+	numLogs = DimSize(logs, ROWS)
+
+	if(!numFiles && !numLogs)
+		return 0
+	endif
+
+	jsonID = JSON_New()
+
+	JSON_AddString(jsonID, "/computer", GetEnvironmentVariable("COMPUTERNAME"))
+	JSON_AddString(jsonID, "/user", IgorInfo(7))
+	JSON_AddString(jsonID, "/timestamp", GetISO8601TimeStamp())
+
+	JSON_AddTreeArray(jsonID, "/payload")
+
+	if(numFiles > 0)
+		AddPayloadEntries(jsonID, files, isBinary = 1)
+	endif
+
+	if(numLogs > 0)
+		AddPayloadEntries(jsonID, logs, isBinary = 1)
+	endif
+
+	UploadJSONPayload(jsonID)
+	JSON_Release(jsonID)
+
+	PathInfo $diagSymbPath
+	diagPath = S_path
+
+	basePath = GetUniqueSymbolicPath()
+	NewPath/Q/O/Z $basePath diagPath + ":"
+
+	MoveFolder/P=$basePath "Diagnostics" as UniqueFileOrFolder(basePath, "Diagnostics_old")
+
+	return 1
+End
+
+/// @brief Helper function for UploadCrashDumps
+///
+/// Fill `payload` array
+static Function AddPayloadEntries(jsonID, paths, [isBinary])
+	variable jsonID
+	WAVE/T paths
+	variable isBinary
+
+	string data, fName, filepath, jsonpath
+	variable numEntries, i, offset
+
+	if(ParamIsDefault(isBinary))
+		isBinary = 0
+	else
+		isBinary = !!isBinary
+	endif
+
+	numEntries = DimSize(paths, ROWS)
+
+	offset = JSON_GetArraySize(jsonID, "/payload")
+	JSON_AddObjects(jsonID, "/payload", objCount = numEntries)
+
+	for(i = 0; i < numEntries; i += 1)
+		jsonpath = "/payload/" + num2str(offset + i) + "/"
+		filepath = paths[i]
+
+		JSON_AddString(jsonID, jsonpath + "name", GetFile(filepath))
+
+		[data, fName] = LoadTextFile(filepath)
+
+		if(isBinary)
+			JSON_AddString(jsonID, jsonpath + "encoding", "base64")
+			JSON_AddString(jsonID, jsonpath + "contents", Base64Encode(data))
+		else
+			JSON_AddString(jsonID, jsonpath + "contents", data)
+		endif
+	endfor
+End
+
+/// @brief Upload the given JSON document
+///
+/// See `tools/http-upload/upload-json-payload-v1.php` for the JSON format description.
+Function UploadJSONPayload(jsonID)
+	variable jsonID
+
+	URLrequest/DSTR=JSON_Dump(jsonID) url="https://ai.customers.byte-physics.de/upload-json-payload-v1.php", method=put
+	ASSERT(!V_Flag, "ULRRequest did not succeed due to: " + S_ServerResponse)
 End
