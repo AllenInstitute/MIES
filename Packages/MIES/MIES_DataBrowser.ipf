@@ -110,6 +110,7 @@ Function DB_ResetAndStoreCurrentDBPanel()
 	CheckBox check_channelSel_DA_5 WIN = $bsPanel, value= 1
 	CheckBox check_channelSel_DA_6 WIN = $bsPanel, value= 1
 	CheckBox check_channelSel_DA_7 WIN = $bsPanel, value= 1
+	CheckBox check_channelSel_DA_ALL WIN = $bsPanel, value= 0
 	CheckBox check_channelSel_HEADSTAGE_0 WIN = $bsPanel, value= 1
 	CheckBox check_channelSel_HEADSTAGE_1 WIN = $bsPanel, value= 1
 	CheckBox check_channelSel_HEADSTAGE_2 WIN = $bsPanel, value= 1
@@ -118,6 +119,7 @@ Function DB_ResetAndStoreCurrentDBPanel()
 	CheckBox check_channelSel_HEADSTAGE_5 WIN = $bsPanel, value= 1
 	CheckBox check_channelSel_HEADSTAGE_6 WIN = $bsPanel, value= 1
 	CheckBox check_channelSel_HEADSTAGE_7 WIN = $bsPanel, value= 1
+	CheckBox check_channelSel_HEADSTAGE_ALL WIN = $bsPanel, value= 0
 	CheckBox check_channelSel_AD_0 WIN = $bsPanel, value= 1
 	CheckBox check_channelSel_AD_1 WIN = $bsPanel, value= 1
 	CheckBox check_channelSel_AD_2 WIN = $bsPanel, value= 1
@@ -134,6 +136,7 @@ Function DB_ResetAndStoreCurrentDBPanel()
 	CheckBox check_channelSel_AD_13 WIN = $bsPanel, value= 1
 	CheckBox check_channelSel_AD_14 WIN = $bsPanel, value= 1
 	CheckBox check_channelSel_AD_15 WIN = $bsPanel, value= 1
+	CheckBox check_channelSel_AD_ALL WIN = $bsPanel, value= 0
 	SetVariable setvar_cutoff_length_after WIN = $bsPanel, value= _NUM:0.2
 	SetVariable setvar_cutoff_length_before WIN = $bsPanel, value= _NUM:0.1
 	CheckBox check_auto_remove WIN = $bsPanel, value= 0
@@ -907,16 +910,15 @@ End
 Function DB_CheckProc_ChangedSetting(cba) : CheckBoxControl
 	STRUCT WMCheckboxAction &cba
 
-	variable checked, channelNum
-	string win, bsPanel, ctrl, channelType, device
-
-	win = cba.win
-	bsPanel = BSP_GetPanel(win)
+	variable checked
+	string win, bsPanel, ctrl
 
 	switch(cba.eventCode)
 		case 2: // mouse up
-			ctrl       = cba.ctrlName
-			checked    = cba.checked
+			ctrl    = cba.ctrlName
+			checked = cba.checked
+			win     = cba.win
+			bsPanel = BSP_GetPanel(win)
 
 			strswitch(ctrl)
 				case "check_BrowserSettings_dDAQ":
@@ -928,9 +930,7 @@ Function DB_CheckProc_ChangedSetting(cba) : CheckBoxControl
 					break
 				default:
 					if(StringMatch(ctrl, "check_channelSel_*"))
-						WAVE channelSel = BSP_GetChannelSelectionWave(win)
-						ParseChannelSelectionControl(cba.ctrlName, channelType, channelNum)
-						channelSel[channelNum][%$channelType] = checked
+						BSP_GUIToChannelSelectionWave(win, ctrl, checked)
 					endif
 					break
 			endswitch
