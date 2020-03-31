@@ -13,6 +13,7 @@
 
 static StrConstant CHI_NIDAQ_XOP_64_HASH = "1c33075538a1a1d745b56459576c9d41c29602e6fc8d4d048b42ada0a97d58e0"
 static StrConstant CHI_NIDAQ_XOP_HASH    = "a35030f8d403a6c2c029e0a92618be26a90f2a1ea5b8531920f19385d4a28611"
+static StrConstant CHI_JSON_XOP_VERSION  = "version-604-g839d5f2"
 
 /// @brief Collection of counters used for installation checking
 static Structure CHI_InstallationState
@@ -25,6 +26,24 @@ static Function CHI_InitInstallationState(state)
 
 	state.numErrors = 0
 	state.numTries  = 0
+End
+
+static Function CHI_CheckJSONXOPVersion(state)
+	STRUCT CHI_InstallationState &state
+
+	variable id
+	string info, version
+
+	info = JSON_Version()
+	id = JSON_Parse(info)
+	version = JSON_GetString(id, "/XOP/version", ignoreErr = 1)
+
+	if(!cmpstr(version, CHI_JSON_XOP_VERSION))
+		printf "JSON XOP: Present in the right version (%s) (Nice!)\r", version
+	else
+		printf "JSON XOP: Present in the wrong version (expected: %s vs present: %s) (Very Bad)\r", version, CHI_JSON_XOP_VERSION
+		state.numErrors += 1
+	endif
 End
 
 /// @brief Search list for matches of item and print the results
@@ -155,6 +174,7 @@ Function CHI_CheckInstallation()
 
 #if defined(IGOR64)
 	CHI_CheckXOP(listOfXOPs, "itcxop2-64.xop", "ITC XOP", state)
+	CHI_CheckXOP(listOfXOPs, "JSON-64.xop", "JSON XOP", state)
 	CHI_CheckXOP(listOfXOPs, "VDT2-64.xop", "VDT2 XOP", state)
 	CHI_CheckXOP(listOfXOPs, "HDF5-64.xop", "HDF5 XOP", state)
 	CHI_CheckXOP(listOfXOPs, "AxonTelegraph64.xop", "Axon Telegraph XOP", state)
@@ -162,12 +182,15 @@ Function CHI_CheckInstallation()
 	CHI_CheckXOP(listOfXOPs, "ZeroMQ-64.xop", "ZeroMQ XOP", state)
 #else
 	CHI_CheckXOP(listOfXOPs, "itcxop2.xop", "ITC XOP", state)
+	CHI_CheckXOP(listOfXOPs, "JSON.xop", "JSON XOP", state)
 	CHI_CheckXOP(listOfXOPs, "VDT2.xop", "VDT2 XOP", state)
 	CHI_CheckXOP(listOfXOPs, "HDF5.xop", "HDF5 XOP", state)
 	CHI_CheckXOP(listOfXOPs, "AxonTelegraph.xop", "Axon Telegraph XOP", state)
 	CHI_CheckXOP(listOfXOPs, "MultiClamp700xCommander.xop", "Multi Clamp Commander XOP", state)
 	CHI_CheckXOP(listOfXOPs, "ZeroMQ.xop", "ZeroMQ XOP", state)
 #endif
+
+	CHI_CheckJSONXOPVersion(state)
 
 	printf "Results: %d checks, %d number of errors\r", state.numTries, state.numErrors
 
