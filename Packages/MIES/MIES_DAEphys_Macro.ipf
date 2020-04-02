@@ -600,69 +600,77 @@ Window DA_Ephys() : Panel
 	PopupMenu Wave_DA_07,userdata(ControlArray)=  "Wave_DA"
 	PopupMenu Wave_DA_07,userdata(ControlArrayIndex)=  "7",fSize=10
 	PopupMenu Wave_DA_07,mode=1,popvalue="- none -",value= #"\"- none -;\"+ReturnListOfAllStimSets(0,\"*DA*\")"
-	SetVariable Scale_DA_00,pos={288.00,75.00},size={48.00,18.00},disable=1,proc=DAP_SetVar_UpdateGuiState
+	SetVariable Scale_DA_00,pos={288.00,75.00},size={48.00,18.00},disable=1,proc=DAP_SetVar_SetScale
 	SetVariable Scale_DA_00,userdata(tabnum)=  "1",userdata(tabcontrol)=  "ADC"
 	SetVariable Scale_DA_00,userdata(ResizeControlsInfo)= A"!!,HL!!#?O!!#>V!!#<Hz!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	SetVariable Scale_DA_00,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	SetVariable Scale_DA_00,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
 	SetVariable Scale_DA_00,userdata(ControlArray)=  "Scale_DA"
 	SetVariable Scale_DA_00,userdata(ControlArrayIndex)=  "0"
+	SetVariable Scale_DA_00,userdata(DefaultIncrement)=  "10"
 	SetVariable Scale_DA_00,limits={-inf,inf,10},value= _NUM:1
-	SetVariable Scale_DA_01,pos={288.00,120.00},size={48.00,18.00},disable=1,proc=DAP_SetVar_UpdateGuiState
+	SetVariable Scale_DA_01,pos={288.00,120.00},size={48.00,18.00},disable=1,proc=DAP_SetVar_SetScale
 	SetVariable Scale_DA_01,userdata(tabnum)=  "1",userdata(tabcontrol)=  "ADC"
 	SetVariable Scale_DA_01,userdata(ResizeControlsInfo)= A"!!,HL!!#@V!!#>V!!#<Hz!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	SetVariable Scale_DA_01,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	SetVariable Scale_DA_01,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
 	SetVariable Scale_DA_01,userdata(ControlArray)=  "Scale_DA"
 	SetVariable Scale_DA_01,userdata(ControlArrayIndex)=  "1"
+	SetVariable Scale_DA_01,userdata(DefaultIncrement)=  "10"
 	SetVariable Scale_DA_01,limits={-inf,inf,10},value= _NUM:1
-	SetVariable Scale_DA_02,pos={288.00,165.00},size={48.00,18.00},disable=1,proc=DAP_SetVar_UpdateGuiState
+	SetVariable Scale_DA_02,pos={288.00,165.00},size={48.00,18.00},disable=1,proc=DAP_SetVar_SetScale
 	SetVariable Scale_DA_02,userdata(tabnum)=  "1",userdata(tabcontrol)=  "ADC"
 	SetVariable Scale_DA_02,userdata(ResizeControlsInfo)= A"!!,HL!!#A6!!#>V!!#<Hz!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	SetVariable Scale_DA_02,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	SetVariable Scale_DA_02,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
 	SetVariable Scale_DA_02,userdata(ControlArray)=  "Scale_DA"
 	SetVariable Scale_DA_02,userdata(ControlArrayIndex)=  "2"
+	SetVariable Scale_DA_02,userdata(DefaultIncrement)=  "10"
 	SetVariable Scale_DA_02,limits={-inf,inf,10},value= _NUM:1
-	SetVariable Scale_DA_03,pos={288.00,213.00},size={48.00,18.00},disable=1,proc=DAP_SetVar_UpdateGuiState
+	SetVariable Scale_DA_03,pos={288.00,213.00},size={48.00,18.00},disable=1,proc=DAP_SetVar_SetScale
 	SetVariable Scale_DA_03,userdata(tabnum)=  "1",userdata(tabcontrol)=  "ADC"
 	SetVariable Scale_DA_03,userdata(ResizeControlsInfo)= A"!!,HL!!#Ae!!#>V!!#<Hz!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	SetVariable Scale_DA_03,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	SetVariable Scale_DA_03,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
 	SetVariable Scale_DA_03,userdata(ControlArray)=  "Scale_DA"
 	SetVariable Scale_DA_03,userdata(ControlArrayIndex)=  "3"
+	SetVariable Scale_DA_03,userdata(DefaultIncrement)=  "10"
 	SetVariable Scale_DA_03,limits={-inf,inf,10},value= _NUM:1
-	SetVariable Scale_DA_04,pos={288.00,258.00},size={48.00,18.00},disable=1,proc=DAP_SetVar_UpdateGuiState
+	SetVariable Scale_DA_04,pos={288.00,258.00},size={48.00,18.00},disable=1,proc=DAP_SetVar_SetScale
 	SetVariable Scale_DA_04,userdata(tabnum)=  "1",userdata(tabcontrol)=  "ADC"
 	SetVariable Scale_DA_04,userdata(ResizeControlsInfo)= A"!!,HL!!#B<!!#>V!!#<Hz!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	SetVariable Scale_DA_04,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	SetVariable Scale_DA_04,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
 	SetVariable Scale_DA_04,userdata(ControlArray)=  "Scale_DA"
 	SetVariable Scale_DA_04,userdata(ControlArrayIndex)=  "4"
+	SetVariable Scale_DA_04,userdata(DefaultIncrement)=  "10"
 	SetVariable Scale_DA_04,limits={-inf,inf,10},value= _NUM:1
-	SetVariable Scale_DA_05,pos={288.00,306.00},size={48.00,18.00},disable=1,proc=DAP_SetVar_UpdateGuiState
+	SetVariable Scale_DA_05,pos={288.00,306.00},size={48.00,18.00},disable=1,proc=DAP_SetVar_SetScale
 	SetVariable Scale_DA_05,userdata(tabnum)=  "1",userdata(tabcontrol)=  "ADC"
 	SetVariable Scale_DA_05,userdata(ResizeControlsInfo)= A"!!,HL!!#BSJ,ho,!!#<Hz!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	SetVariable Scale_DA_05,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	SetVariable Scale_DA_05,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
 	SetVariable Scale_DA_05,userdata(ControlArray)=  "Scale_DA"
 	SetVariable Scale_DA_05,userdata(ControlArrayIndex)=  "5"
+	SetVariable Scale_DA_05,userdata(DefaultIncrement)=  "10"
 	SetVariable Scale_DA_05,limits={-inf,inf,10},value= _NUM:1
-	SetVariable Scale_DA_06,pos={288.00,351.00},size={48.00,18.00},disable=1,proc=DAP_SetVar_UpdateGuiState
+	SetVariable Scale_DA_06,pos={288.00,351.00},size={48.00,18.00},disable=1,proc=DAP_SetVar_SetScale
 	SetVariable Scale_DA_06,userdata(tabnum)=  "1",userdata(tabcontrol)=  "ADC"
 	SetVariable Scale_DA_06,userdata(ResizeControlsInfo)= A"!!,HL!!#BjJ,ho,!!#<Hz!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	SetVariable Scale_DA_06,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	SetVariable Scale_DA_06,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
 	SetVariable Scale_DA_06,userdata(ControlArray)=  "Scale_DA"
 	SetVariable Scale_DA_06,userdata(ControlArrayIndex)=  "6"
+	SetVariable Scale_DA_06,userdata(DefaultIncrement)=  "10"
 	SetVariable Scale_DA_06,limits={-inf,inf,10},value= _NUM:1
-	SetVariable Scale_DA_07,pos={283.00,399.00},size={50.00,18.00},bodyWidth=50,disable=1,proc=DAP_SetVar_UpdateGuiState
+	SetVariable Scale_DA_07,pos={283.00,399.00},size={50.00,18.00},bodyWidth=50,disable=1,proc=DAP_SetVar_SetScale
 	SetVariable Scale_DA_07,userdata(tabnum)=  "1",userdata(tabcontrol)=  "ADC"
 	SetVariable Scale_DA_07,userdata(ResizeControlsInfo)= A"!!,HL!!#C-!!#>V!!#<Hz!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	SetVariable Scale_DA_07,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	SetVariable Scale_DA_07,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
 	SetVariable Scale_DA_07,userdata(ControlArray)=  "Scale_DA"
 	SetVariable Scale_DA_07,userdata(ControlArrayIndex)=  "7"
+	SetVariable Scale_DA_07,userdata(DefaultIncrement)=  "10"
 	SetVariable Scale_DA_07,limits={-inf,inf,10},value= _NUM:1
 	SetVariable SetVar_DataAcq_Comment,pos={42.00,775.00},size={373.00,22.00},disable=1,proc=DAP_SetVar_UpdateGuiState,title="Comment"
 	SetVariable SetVar_DataAcq_Comment,help={"Appends a comment to wave note of next sweep"}
@@ -686,7 +694,7 @@ Window DA_Ephys() : Panel
 	CheckBox Check_DataAcq1_RepeatAcq,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	CheckBox Check_DataAcq1_RepeatAcq,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
 	CheckBox Check_DataAcq1_RepeatAcq,value= 1
-	SetVariable SetVar_DataAcq_ITI,pos={56.00,711.00},size={80.00,18.00},bodyWidth=35,disable=1,proc=DAP_SetVarProc_SyncCtrl,title="\\JCITl (sec)"
+	SetVariable SetVar_DataAcq_ITI,pos={57.00,711.00},size={79.00,18.00},bodyWidth=35,disable=1,proc=DAP_SetVarProc_SyncCtrl,title="\\JCITl (sec)"
 	SetVariable SetVar_DataAcq_ITI,userdata(tabnum)=  "0"
 	SetVariable SetVar_DataAcq_ITI,userdata(tabcontrol)=  "ADC"
 	SetVariable SetVar_DataAcq_ITI,userdata(ResizeControlsInfo)= A"!!,E*!!#D?!!#?Y!!#<Hz!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
@@ -1665,7 +1673,7 @@ Window DA_Ephys() : Panel
 	SetVariable Search_TTL_07,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
 	SetVariable Search_TTL_07,userdata(ControlArray)=  "Search_TTL"
 	SetVariable Search_TTL_07,userdata(ControlArrayIndex)=  "7",value= _STR:""
-	CheckBox Check_DataAcq_Indexing,pos={179.00,637.00},size={61.00,15.00},disable=1,proc=DAP_CheckProc_IndexingState,title="Indexing"
+	CheckBox Check_DataAcq_Indexing,pos={179.00,637.00},size={62.00,15.00},disable=1,proc=DAP_CheckProc_IndexingState,title="Indexing"
 	CheckBox Check_DataAcq_Indexing,help={"Data acquisition proceeds to next wave in DAC or TTL popup menu list"}
 	CheckBox Check_DataAcq_Indexing,userdata(tabnum)=  "0"
 	CheckBox Check_DataAcq_Indexing,userdata(tabcontrol)=  "ADC"
@@ -2148,7 +2156,7 @@ Window DA_Ephys() : Panel
 	PopupMenu popup_MoreSettings_Devices,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
 	PopupMenu popup_MoreSettings_Devices,userdata(Config_RestorePriority)=  "10"
 	PopupMenu popup_MoreSettings_Devices,mode=1,popvalue="- none -",value= #"DAP_GetDACDeviceList()"
-	SetVariable setvar_DataAcq_TerminationDelay,pos={287.00,675.00},size={176.00,18.00},bodyWidth=50,disable=1,proc=DAP_SetVar_UpdateGuiState,title="Termination delay (ms)"
+	SetVariable setvar_DataAcq_TerminationDelay,pos={288.00,675.00},size={175.00,18.00},bodyWidth=50,disable=1,proc=DAP_SetVar_UpdateGuiState,title="Termination delay (ms)"
 	SetVariable setvar_DataAcq_TerminationDelay,help={"Global set(s) termination delay. Continues recording after set sweep is complete. Useful when recorded phenomena continues after termination of final set epoch."}
 	SetVariable setvar_DataAcq_TerminationDelay,userdata(tabnum)=  "0"
 	SetVariable setvar_DataAcq_TerminationDelay,userdata(tabcontrol)=  "ADC"
@@ -2700,7 +2708,7 @@ Window DA_Ephys() : Panel
 	Button button_Hardware_Lead1600,userdata(ResizeControlsInfo)= A"!!,CL!!#AR!!#?Y!!#<`z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	Button button_Hardware_Lead1600,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Duafnzzzzzzzzzzz"
 	Button button_Hardware_Lead1600,userdata(ResizeControlsInfo) += A"zzz!!#u:Duafnzzzzzzzzzzzzzz!!!"
-	PopupMenu popup_Hardware_AvailITC1600s,pos={1.00,240.00},size={200.00,19.00},bodyWidth=110,disable=3,title="Locked ITC1600s"
+	PopupMenu popup_Hardware_AvailITC1600s,pos={2.00,240.00},size={199.00,19.00},bodyWidth=110,disable=3,title="Locked ITC1600s"
 	PopupMenu popup_Hardware_AvailITC1600s,userdata(tabnum)=  "6"
 	PopupMenu popup_Hardware_AvailITC1600s,userdata(tabcontrol)=  "ADC"
 	PopupMenu popup_Hardware_AvailITC1600s,userdata(ResizeControlsInfo)= A"!!,CL!!#B*!!#@@!!#<Pz!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
@@ -2716,7 +2724,7 @@ Window DA_Ephys() : Panel
 	Button button_Hardware_AddFollower,userdata(ResizeControlsInfo)= A"!!,Fr!!#B*!!#?Y!!#<`z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	Button button_Hardware_AddFollower,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Duafnzzzzzzzzzzz"
 	Button button_Hardware_AddFollower,userdata(ResizeControlsInfo) += A"zzz!!#u:Duafnzzzzzzzzzzzzzz!!!"
-	TitleBox title_hardware_1600inst,pos={27.00,174.00},size={229.00,15.00},disable=3,title="To yoke devices go to panel: ITC1600_Dev_0"
+	TitleBox title_hardware_1600inst,pos={27.00,174.00},size={227.00,15.00},disable=3,title="To yoke devices go to panel: ITC1600_Dev_0"
 	TitleBox title_hardware_1600inst,help={"If the device is designated to follow, the test pulse and data aquisition will be triggered from the lead panel."}
 	TitleBox title_hardware_1600inst,userdata(tabnum)=  "6"
 	TitleBox title_hardware_1600inst,userdata(tabcontrol)=  "ADC"
@@ -2740,7 +2748,7 @@ Window DA_Ephys() : Panel
 	SetVariable setvar_Hardware_Status,fStyle=1,fColor=(65280,0,0)
 	SetVariable setvar_Hardware_Status,valueBackColor=(60928,60928,60928)
 	SetVariable setvar_Hardware_Status,value= _STR:"Independent",noedit= 1
-	TitleBox title_hardware_Follow,pos={27.00,222.00},size={176.00,15.00},disable=3,title="Assign ITC1600 DACs as followers"
+	TitleBox title_hardware_Follow,pos={27.00,222.00},size={175.00,15.00},disable=3,title="Assign ITC1600 DACs as followers"
 	TitleBox title_hardware_Follow,help={"If the device is designated to follow, the test pulse and data aquisition will be triggered from the lead panel."}
 	TitleBox title_hardware_Follow,userdata(tabnum)=  "6"
 	TitleBox title_hardware_Follow,userdata(tabcontrol)=  "ADC"
@@ -2757,7 +2765,7 @@ Window DA_Ephys() : Panel
 	SetVariable setvar_Hardware_YokeList,userdata(Config_DontSave)=  "1"
 	SetVariable setvar_Hardware_YokeList,userdata(Config_DontRestore)=  "1"
 	SetVariable setvar_Hardware_YokeList,labelBack=(60928,60928,60928),frame=0
-	SetVariable setvar_Hardware_YokeList,value= _STR:"No Yoked Devices",noedit= 1
+	SetVariable setvar_Hardware_YokeList,value= _STR:"Device is not yokeable",noedit= 1
 	Button button_Hardware_RemoveYoke,pos={333.00,240.00},size={78.00,21.00},disable=3,proc=DAP_ButtonProc_YokeRelease,title="Release"
 	Button button_Hardware_RemoveYoke,userdata(tabnum)=  "6"
 	Button button_Hardware_RemoveYoke,userdata(tabcontrol)=  "ADC"
@@ -2773,7 +2781,7 @@ Window DA_Ephys() : Panel
 	PopupMenu popup_Hardware_YokedDACs,userdata(Config_DontSave)=  "1"
 	PopupMenu popup_Hardware_YokedDACs,userdata(Config_DontRestore)=  "1"
 	PopupMenu popup_Hardware_YokedDACs,mode=0,value= #"DAP_GUIListOfYokedDevices()"
-	TitleBox title_hardware_Release,pos={225.00,222.00},size={161.00,15.00},disable=3,title="Release follower ITC1600 DACs"
+	TitleBox title_hardware_Release,pos={225.00,222.00},size={160.00,15.00},disable=3,title="Release follower ITC1600 DACs"
 	TitleBox title_hardware_Release,help={"If the device is designated to follow, the test pulse and data aquisition will be triggered from the lead panel."}
 	TitleBox title_hardware_Release,userdata(tabnum)=  "6"
 	TitleBox title_hardware_Release,userdata(tabcontrol)=  "ADC"
@@ -2866,8 +2874,8 @@ Window DA_Ephys() : Panel
 	Slider slider_DataAcq_ActiveHeadstage,pos={129.00,129.00},size={255.00,22.00},disable=1,proc=DAP_SliderProc_MIESHeadStage
 	Slider slider_DataAcq_ActiveHeadstage,userdata(tabnum)=  "0"
 	Slider slider_DataAcq_ActiveHeadstage,userdata(tabcontrol)=  "ADC"
-	Slider slider_DataAcq_ActiveHeadstage,userdata(Config_DontRestore)= "1"
-	Slider slider_DataAcq_ActiveHeadstage,userdata(Config_DontSave)= "1"
+	Slider slider_DataAcq_ActiveHeadstage,userdata(Config_DontRestore)=  "1"
+	Slider slider_DataAcq_ActiveHeadstage,userdata(Config_DontSave)=  "1"
 	Slider slider_DataAcq_ActiveHeadstage,userdata(ResizeControlsInfo)= A"!!,Ff!!#@e!!#B9!!#<Xz!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	Slider slider_DataAcq_ActiveHeadstage,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Duafnzzzzzzzzzzz"
 	Slider slider_DataAcq_ActiveHeadstage,userdata(ResizeControlsInfo) += A"zzz!!#u:Duafnzzzzzzzzzzzzzz!!!"
@@ -3148,7 +3156,7 @@ Window DA_Ephys() : Panel
 	CheckBox Check_Settings_InsertTP,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Duafnzzzzzzzzzzz"
 	CheckBox Check_Settings_InsertTP,userdata(ResizeControlsInfo) += A"zzz!!#u:Duafnzzzzzzzzzzzzzz!!!"
 	CheckBox Check_Settings_InsertTP,value= 1
-	CheckBox Check_DataAcq_Get_Set_ITI,pos={141.00,705.00},size={47.00,30.00},disable=1,proc=DAP_CheckProc_UpdateGuiState,title="Get\rset ITI"
+	CheckBox Check_DataAcq_Get_Set_ITI,pos={141.00,705.00},size={46.00,30.00},disable=1,proc=DAP_CheckProc_UpdateGuiState,title="Get\rset ITI"
 	CheckBox Check_DataAcq_Get_Set_ITI,help={"When checked the stimulus set ITIs are used. The ITI is calculated as the maximum of all active stimulus set ITIs."}
 	CheckBox Check_DataAcq_Get_Set_ITI,userdata(tabnum)=  "0"
 	CheckBox Check_DataAcq_Get_Set_ITI,userdata(tabcontrol)=  "ADC"
@@ -3537,6 +3545,7 @@ Window DA_Ephys() : Panel
 	SetVariable setvar_DataAcq_SSPressure,userdata(ResizeControlsInfo)= A"!!,F_!!#BSJ,hon!!#<Hz!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	SetVariable setvar_DataAcq_SSPressure,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Duafnzzzzzzzzzzz"
 	SetVariable setvar_DataAcq_SSPressure,userdata(ResizeControlsInfo) += A"zzz!!#u:Duafnzzzzzzzzzzzzzz!!!"
+	SetVariable setvar_DataAcq_SSPressure,userdata(DefaultIncrement)=  "1"
 	SetVariable setvar_DataAcq_SSPressure,limits={-10,10,1},value= _NUM:0
 	SetVariable setvar_DataAcq_PPPressure,pos={291.00,306.00},size={69.00,18.00},bodyWidth=50,disable=1,proc=DAP_SetVarProc_CAA,title="psi"
 	SetVariable setvar_DataAcq_PPPressure,userdata(tabnum)=  "1"
@@ -3544,6 +3553,7 @@ Window DA_Ephys() : Panel
 	SetVariable setvar_DataAcq_PPPressure,userdata(ResizeControlsInfo)= A"!!,HLJ,hs)J,hon!!#<Hz!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	SetVariable setvar_DataAcq_PPPressure,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Duafnzzzzzzzzzzz"
 	SetVariable setvar_DataAcq_PPPressure,userdata(ResizeControlsInfo) += A"zzz!!#u:Duafnzzzzzzzzzzzzzz!!!"
+	SetVariable setvar_DataAcq_PPPressure,userdata(DefaultIncrement)=  "1"
 	SetVariable setvar_DataAcq_PPPressure,limits={-10,10,1},value= _NUM:0
 	SetVariable setvar_DataAcq_PPDuration,pos={360.00,306.00},size={87.00,18.00},bodyWidth=40,disable=1,proc=DAP_SetVarProc_CAA,title="Dur(ms)"
 	SetVariable setvar_DataAcq_PPDuration,userdata(tabnum)=  "1"
@@ -3551,6 +3561,7 @@ Window DA_Ephys() : Panel
 	SetVariable setvar_DataAcq_PPDuration,userdata(ResizeControlsInfo)= A"!!,Hp!!#BSJ,hp=!!#<Hz!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	SetVariable setvar_DataAcq_PPDuration,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Duafnzzzzzzzzzzz"
 	SetVariable setvar_DataAcq_PPDuration,userdata(ResizeControlsInfo) += A"zzz!!#u:Duafnzzzzzzzzzzzzzz!!!"
+	SetVariable setvar_DataAcq_PPDuration,userdata(DefaultIncrement)=  "1"
 	SetVariable setvar_DataAcq_PPDuration,limits={0,300,1},value= _NUM:0
 	CheckBox check_DataAcq_ManPressureAll,pos={69.00,330.00},size={30.00,15.00},disable=3,proc=DAP_CheckProc_UpdateGuiState,title="All"
 	CheckBox check_DataAcq_ManPressureAll,userdata(tabnum)=  "1"
@@ -3757,6 +3768,7 @@ Window DA_Ephys() : Panel
 	SetVariable Scale_DA_All,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	SetVariable Scale_DA_All,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
 	SetVariable Scale_DA_All,userdata(Config_RestorePriority)=  "60"
+	SetVariable Scale_DA_All,userdata(DefaultIncrement)=  "10"
 	SetVariable Scale_DA_All,limits={-inf,inf,10},value= _NUM:1
 	PopupMenu IndexEnd_DA_All,pos={346.00,456.00},size={125.00,19.00},bodyWidth=125,disable=1,proc=DAP_PopMenuChkProc_StimSetList
 	PopupMenu IndexEnd_DA_All,userdata(tabnum)=  "1",userdata(tabcontrol)=  "ADC"
@@ -3902,6 +3914,7 @@ Window DA_Ephys() : Panel
 	SetVariable Scale_DA_AllVClamp,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	SetVariable Scale_DA_AllVClamp,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
 	SetVariable Scale_DA_AllVClamp,userdata(Config_RestorePriority)=  "60"
+	SetVariable Scale_DA_AllVClamp,userdata(DefaultIncrement)=  "10"
 	SetVariable Scale_DA_AllVClamp,limits={-inf,inf,10},value= _NUM:1
 	PopupMenu IndexEnd_DA_AllVClamp,pos={346.00,543.00},size={125.00,19.00},bodyWidth=125,disable=1,proc=DAP_PopMenuChkProc_StimSetList
 	PopupMenu IndexEnd_DA_AllVClamp,userdata(tabnum)=  "1"
@@ -3945,6 +3958,7 @@ Window DA_Ephys() : Panel
 	SetVariable Scale_DA_AllIClamp,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	SetVariable Scale_DA_AllIClamp,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
 	SetVariable Scale_DA_AllIClamp,userdata(Config_RestorePriority)=  "60"
+	SetVariable Scale_DA_AllIClamp,userdata(DefaultIncrement)=  "10"
 	SetVariable Scale_DA_AllIClamp,limits={-inf,inf,10},value= _NUM:1
 	PopupMenu IndexEnd_DA_AllIClamp,pos={346.00,627.00},size={125.00,19.00},bodyWidth=125,disable=1,proc=DAP_PopMenuChkProc_StimSetList
 	PopupMenu IndexEnd_DA_AllIClamp,userdata(tabnum)=  "1"

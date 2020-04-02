@@ -1612,6 +1612,9 @@ Function DAP_SetVarProc_DA_Scale(sva) : SetVariableControl
 			endfor
 
 			break
+		case 9: // mouse down
+			ShowSetVariableLimitsSelectionPopup(sva)
+			break
 	endswitch
 
 	return 0
@@ -1900,6 +1903,15 @@ Function DAP_SetVarProc_CAA(sva) : SetVariableControl
 
 			DAP_UpdateChanAmpAssignStorWv(panelTitle)
 			P_UpdatePressureDataStorageWv(panelTitle)
+			break
+		case 9: // mouse down
+			strswitch(sva.ctrlName)
+				case "setvar_DataAcq_SSPressure":
+				case "setvar_DataAcq_PPPressure":
+				case "setvar_DataAcq_PPDuration":
+					ShowSetVariableLimitsSelectionPopup(sva)
+					break
+			endswitch
 			break
 	endswitch
 
@@ -4434,6 +4446,24 @@ Function DAP_CheckProc_UpdateGuiState(cba) : CheckBoxControl
 	switch( cba.eventCode )
 		case 2: // mouse up
 			DAG_Update(cba.win, cba.ctrlName, val = cba.checked)
+			break
+	endswitch
+
+	return 0
+End
+
+Function DAP_SetVar_SetScale(sva) : SetVariableControl
+	STRUCT WMSetVariableAction &sva
+
+	switch(sva.eventCode)
+		case 1: // mouse up
+		case 2: // Enter key
+		case 3: // Live update
+		case 8: // end edit
+			DAG_Update(sva.win, sva.ctrlName, val = sva.dval, str = sva.sval)
+			break
+		case 9: // mouse down
+			ShowSetVariableLimitsSelectionPopup(sva)
 			break
 	endswitch
 
