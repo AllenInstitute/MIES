@@ -1286,3 +1286,11 @@ Constant PEXT_SUBSPLIT_ALPHA = 1
 /// @{
 Constant PEXT_SUBNAMEGEN_DEFAULT = 0
 /// @}
+
+/// @name Lab notebook entry types
+/// @anchor LNBEntryTypes
+/// @{
+Constant LNB_TYPE_NONE = 0
+Constant LNB_TYPE_NUMERICAL = 1
+Constant LNB_TYPE_TEXTUAL = 2
+/// @}

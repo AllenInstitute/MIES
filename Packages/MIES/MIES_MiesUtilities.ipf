@@ -2570,23 +2570,43 @@ Function CreateTiledChannelGraph(graph, config, sweepNo, numericalValues,  textu
 	endif
 End
 
-/// @brief Return a sorted list of all keys in the labnotebook key wave
-Function/S GetLabNotebookSortedKeys(keyWave)
+/// @brief Return a wave with all keys in the labnotebook key wave
+Function/WAVE GetLabNotebookKeys(keyWave)
 	WAVE/Z/T keyWave
 
-	string list = ""
-	variable numCols, i
+	variable numCols
 
 	if(!WaveExists(keyWave))
-		return list
+		return $""
 	endif
 
-	numCols = DimSize(keyWave, COLS)
-	for(i = INITIAL_KEY_WAVE_COL_COUNT; i < numCols; i += 1)
-		list = AddListItem(keyWave[%Parameter][i], list, ";", Inf)
-	endfor
+	numCols = DimSize(keyWave, COLS) - INITIAL_KEY_WAVE_COL_COUNT
+	if(numCols <= 0)
+		return $""
+	endif
 
-	return SortList(list)
+	Make/FREE/T/N=(numCols) keys
+	keys[] = keyWave[%Parameter][INITIAL_KEY_WAVE_COL_COUNT + p]
+
+	return keys
+End
+
+/// @brief Return a sorted wave with all keys in the labnotebook key wave
+Function/WAVE GetLabNotebookSortedKeys(keyWave)
+	WAVE/Z/T keyWave
+
+	if(!WaveExists(keyWave))
+		return $""
+	endif
+
+	WAVE/Z/T keys = GetLabNotebookKeys(keyWave)
+	if(!WaveExists(keys))
+		return $""
+	endif
+
+	Sort/A keys, keys
+
+	return keys
 End
 
 /// @brief Check if the x wave belonging to the first trace in the
