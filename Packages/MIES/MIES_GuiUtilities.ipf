@@ -1777,3 +1777,67 @@ Function PanelIsType(panelTitle, typeTag)
 
 	return !CmpStr(GetUserData(panelTitle, "", EXPCONFIG_UDATA_PANELTYPE), typeTag)
 End
+
+/// @brief Show a contextual popup menu which allows the user to change the set variable limit's increment
+///
+/// - Expects the ctrl to have the named user data "DefaultIncrement"
+/// - Works only on right mouse click on the title or the value field, *not* the up/down arrow buttons
+Function ShowSetVariableLimitsSelectionPopup(sva)
+	STRUCT WMSetVariableAction &sva
+
+	string win, ctrl, items, defaultIncrementStr, elem
+	variable minVal, maxVal, incVal, defaultIncrement, index
+
+	win = sva.win
+	ctrl = sva.ctrlName
+
+	ASSERT(sva.eventCode == 9, "Unexpected event code")
+
+	if(sva.eventMod != 16)
+		// not the right mouse button
+		return NaN
+	endif
+
+	if(sva.mousePart == 1 || sva.mousePart == 2)
+		// clicked at the up/down arrow buttons
+		return NaN
+	endif
+
+	defaultIncrementStr = GetUserData(win, ctrl, "DefaultIncrement")
+	defaultIncrement = str2numSafe(defaultIncrementStr)
+	ASSERT(IsFinite(defaultIncrement), "Missing DefaultIncrement user data")
+
+	Make/D/FREE increments = {1e-3, 1e-2, 0.1, 1.0, 10, 1e2, 1e3}
+
+	// find the default value or add it
+	FindValue/V=(defaultIncrement) increments
+	index = V_Value
+
+	items = NumericWaveToList(increments, ";")
+
+	if(index != -1)
+		elem  = StringFromList(index, items)
+		items = RemoveFromList(elem, items)
+	else
+		index = Inf
+	endif
+
+	items = AddListItem(defaultIncrementStr + " (default)", items, ";", index)
+
+	// highlight the current value
+	ExtractLimits(win, ctrl, minVal, maxVal, incVal)
+	ASSERT(!IsNaN(minVal) && !IsNaN(maxVal) && !IsNaN(incVal), "Invalid limits")
+	FindValue/V=(incVal) increments
+	index = V_Value
+
+	if(index != -1)
+		elem  = StringFromList(index, items)
+		items = RemoveFromList(elem, items)
+		items = AddListItem("\\M1! " + elem, items, ";", index)
+	endif
+
+	PopupContextualMenu items
+	if(V_flag != 0)
+		SetSetVariableLimits(win, ctrl, minVal, maxVal, increments[V_flag - 1])
+	endif
+End
