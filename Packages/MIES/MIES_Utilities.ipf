@@ -5086,7 +5086,7 @@ Function UploadCrashDumps()
 	diagPath = S_path
 
 	basePath = GetUniqueSymbolicPath()
-	NewPath/Q/O/Z $basePath diagPath + ":"
+	NewPath/Q/O/Z $basePath diagPath + "..:"
 
 	MoveFolder/P=$basePath "Diagnostics" as UniqueFileOrFolder(basePath, "Diagnostics_old")
 
