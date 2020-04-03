@@ -257,28 +257,24 @@ End
 ///
 /// @returns name of an igor symbolic path to the MIES Settings folder
 static Function/S CONF_GetSettingsPath()
+	variable type
 
 	variable numItems
-	string symbPath
-	string reflectedProcpath = FunctionPath("CONF_GetSettingsPath")
+	string symbPath, path
 
-	numItems = ItemsInList(reflectedProcpath, ":")
-	if(numItems < 2)
-		return ""
-	endif
-	reflectedProcpath = RemoveListItem(numItems - 1, reflectedProcpath, ":")
-	reflectedProcpath = RemoveListItem(numItems - 2, reflectedProcpath, ":") + EXPCONFIG_SETTINGS_FOLDER + ":"
+	path = FunctionPath("CONF_GetSettingsPath")
 
-	if(FolderExists(reflectedProcpath))
-		symbPath = "PathSettings"
-		NewPath/O/Q $symbPath, reflectedProcpath
+	numItems = ItemsInList(path, ":")
+	ASSERT(numItems >= 2, "Invalid path")
 
-		return symbPath
-	endif
+	path = RemoveListItem(numItems - 1, path, ":")
+	path = RemoveListItem(numItems - 2, path, ":") + EXPCONFIG_SETTINGS_FOLDER + ":"
+	ASSERT(FolderExists(path), "Unable to resolve MIES Settings folder path. Is it present and readable in Packages\\Settings ?")
 
-	ASSERT(0, "Unable to resolve MIES Settings folder path. Is it present and readable in Packages\\Settings ?")
+	symbPath = "PathSettings"
+	NewPath/O/Q $symbPath, path
 
-	return ""
+	return symbPath
 End
 
 /// @brief Saves the GUI state of a window and all of its subwindows to a configuration file
