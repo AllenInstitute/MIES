@@ -203,6 +203,14 @@ static StrConstant EXPCONFIG_RIGFILESUFFIX = "_rig.json"
 static Constant EXPCONFIG_MIDDLEEXP_OFF = 0
 static Constant EXPCONFIG_MIDDLEEXP_ON = 1
 
+/// @brief Parameters for CONF_GetSettingsPath()
+/// @{
+static Constant CONF_AUTO_LOADER_GLOBAL = 0x0
+static Constant CONF_AUTO_LOADER_USER   = 0x1
+/// @}
+
+static StrConstant CONF_AUTO_LOADER_USER_PATH = "C:ProgramData:AllenInstitute:MIES:Settings"
+
 /// @brief Creates a json with default experiment configuration block
 ///
 /// @returns json with default experiment configuration
@@ -225,13 +233,17 @@ Function CONF_AutoLoader()
 
 	variable i, numFiles
 	string fileList, fullFilePath, rigCandidate
-	string settingsPath = CONF_GetSettingsPath()
+	string settingsPath = CONF_GetSettingsPath(CONF_AUTO_LOADER_GLOBAL)
 
 	fileList = GetAllFilesRecursivelyFromPath(settingsPath, extension = ".json")
 	if(IsEmpty(fileList))
-		printf "There are no files to load from the %s folder.\r", EXPCONFIG_SETTINGS_FOLDER
-		ControlWindowToFront()
-		Abort
+		settingsPath = CONF_GetSettingsPath(CONF_AUTO_LOADER_USER)
+		fileList = GetAllFilesRecursivelyFromPath(settingsPath, extension = ".json")
+		if(IsEmpty(fileList))
+			printf "There are no files to load from the %s folder.\r", EXPCONFIG_SETTINGS_FOLDER
+			ControlWindowToFront()
+			Abort
+		endif
 	endif
 
 	WAVE/T rawFileList = ListToTextWave(fileList, "|")
@@ -255,26 +267,45 @@ End
 
 /// @brief Returns a symbolic path to the settings folder
 ///
-/// @returns name of an igor symbolic path to the MIES Settings folder
-static Function/S CONF_GetSettingsPath()
+/// @param type One of #CONF_AUTO_LOADER_GLOBAL or CONF_AUTO_LOADER_USER
+/// @returns name of an igor symbolic path to the settings folder
+static Function/S CONF_GetSettingsPath(type)
 	variable type
 
 	variable numItems
 	string symbPath, path
 
-	path = FunctionPath("CONF_GetSettingsPath")
+	switch(type)
+		case CONF_AUTO_LOADER_GLOBAL:
+			path = FunctionPath("CONF_GetSettingsPath")
 
-	numItems = ItemsInList(path, ":")
-	ASSERT(numItems >= 2, "Invalid path")
+			numItems = ItemsInList(path, ":")
+			ASSERT(numItems >= 2, "Invalid path")
 
-	path = RemoveListItem(numItems - 1, path, ":")
-	path = RemoveListItem(numItems - 2, path, ":") + EXPCONFIG_SETTINGS_FOLDER + ":"
-	ASSERT(FolderExists(path), "Unable to resolve MIES Settings folder path. Is it present and readable in Packages\\Settings ?")
+			path = RemoveListItem(numItems - 1, path, ":")
+			path = RemoveListItem(numItems - 2, path, ":") + EXPCONFIG_SETTINGS_FOLDER + ":"
+			ASSERT(FolderExists(path), "Unable to resolve MIES Settings folder path. Is it present and readable in Packages\\Settings ?")
+			break
+		case CONF_AUTO_LOADER_USER:
+			path = CONF_AUTO_LOADER_USER_PATH
+			if(!FolderExists(path))
+				CreateFolderOnDisk(path)
+			endif
+			break
+		default:
+			ASSERT(0, "Invalid type parameter")
+			break
+	endswitch
 
-	symbPath = "PathSettings"
-	NewPath/O/Q $symbPath, path
+	if(FolderExists(path))
+		symbPath = "PathSettings"
+		NewPath/O/Q $symbPath, path
 
-	return symbPath
+		return symbPath
+	endif
+
+
+	return ""
 End
 
 /// @brief Saves the GUI state of a window and all of its subwindows to a configuration file
@@ -301,7 +332,7 @@ Function CONF_SaveWindow(fName)
 			out = JSON_Dump(jsonID, indent = EXPCONFIG_JSON_INDENT)
 			JSON_Release(jsonID)
 
-			PathInfo/S $CONF_GetSettingsPath()
+			PathInfo/S $CONF_GetSettingsPath(CONF_AUTO_LOADER_GLOBAL)
 
 			saveResult = SaveTextFile(out, fName, fileFilter = EXPCONFIG_FILEFILTER, message = "Save configuration file for window")
 			if(!IsNaN(saveResult))
@@ -336,7 +367,7 @@ Function CONF_RestoreWindow(fName[, usePanelTypeFromFile, rigFile])
 	usePanelTypeFromFile = ParamIsDefault(usePanelTypeFromFile) ? 0 : !!usePanelTypeFromFile
 	rigFile = SelectString(ParamIsDefault(rigFile), rigFile, "")
 
-	PathInfo/S $CONF_GetSettingsPath()
+	PathInfo/S $CONF_GetSettingsPath(CONF_AUTO_LOADER_GLOBAL)
 
 	jsonID = NaN
 	restoreMask = EXPCONFIG_SAVE_VALUE | EXPCONFIG_SAVE_USERDATA | EXPCONFIG_SAVE_DISABLED
@@ -424,7 +455,7 @@ static Function CONF_SaveDAEphys(fName)
 		out = JSON_Dump(jsonID, indent = EXPCONFIG_JSON_INDENT)
 		JSON_Release(jsonID)
 
-		PathInfo/S $CONF_GetSettingsPath()
+		PathInfo/S $CONF_GetSettingsPath(CONF_AUTO_LOADER_GLOBAL)
 
 		saveResult = SaveTextFile(out, fName, fileFilter = EXPCONFIG_FILEFILTER, message = "Save configuration file for DA_Ephys panel")
 		if(!IsNaN(saveResult))
