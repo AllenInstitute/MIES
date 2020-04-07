@@ -35,6 +35,7 @@ Packages/Arduino/*exe export-ignore
 CODEOWNERS            export-ignore
 ctags.cnf             export-ignore
 .editorconfig         export-ignore
+Packages/Artwork      export-ignore
 
 *.dot !diff
 
