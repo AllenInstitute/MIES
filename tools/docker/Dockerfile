@@ -32,7 +32,6 @@ RUN DEBIAN_FRONTEND=noninteractive \
 RUN DEBIAN_FRONTEND=noninteractive \
   apt-get update &&                \
   apt-get install -y               \
-    git                            \
     jq &&                          \
   apt-get clean
 
