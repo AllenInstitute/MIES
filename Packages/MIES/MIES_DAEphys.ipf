@@ -2019,7 +2019,7 @@ Function DAP_CheckSettings(panelTitle, mode)
 	variable mode
 
 	variable numDACs, numADCs, numHS, numEntries, i, clampMode, headstage, decFactor
-	variable ampSerial, ampChannelID, minValue, maxValue, hardwareType
+	variable ampSerial, ampChannelID, minValue, maxValue, hardwareType, hwChannel
 	variable lastStartSeconds, lastITI, nextStart, leftTime, sweepNo, validSampInt
 	string ctrl, endWave, ttlWave, dacWave, refDacWave, reqParams
 	string list, lastStart
@@ -2230,11 +2230,21 @@ Function DAP_CheckSettings(panelTitle, mode)
 			endif
 
 			WAVE statusAsync = DAG_GetChannelState(panelTitle, CHANNEL_TYPE_ASYNC)
+			WAVE statusAD = DAG_GetChannelState(panelTitle, CHANNEL_TYPE_ADC)
 
 			for(i = 0; i < NUM_ASYNC_CHANNELS ; i += 1)
 
 				if(!statusAsync[i])
 					continue
+				endif
+
+				hwChannel = HW_ITC_CalculateDevChannelOff(panelTitle) + i
+
+				// AD channel already used
+				if(hwChannel < NUM_ASYNC_CHANNELS && statusAD[hwChannel])
+					printf "(%s) The Async channel %d is already used for DAQ.\r", panelTitle, i
+					ControlWindowToFront()
+					return 1
 				endif
 
 				// active async channel
