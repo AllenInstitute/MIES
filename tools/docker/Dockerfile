@@ -13,17 +13,17 @@ RUN DEBIAN_FRONTEND=noninteractive \
       git                          \
       graphviz                     \
       pandoc                       \
-      python2                      \
-      python-pip                   \
+      python3                      \
+      python3-pip                  \
       zip &&                       \
     apt-get clean
 
 RUN DEBIAN_FRONTEND=noninteractive \
-  pip2 install                     \
-    breathe==4.11.0                \
-    sphinx==1.8.3                  \
+  pip3 install                     \
+    breathe==4.15.0                \
+    sphinx==3.0.0                  \
     sphinxcontrib-fulltoc==1.1     \
-    sphinxcontrib-images==0.8.0
+    sphinxcontrib-images==0.9.2
 
 # [optional] IPNWB submodule script
 #
@@ -32,12 +32,11 @@ RUN DEBIAN_FRONTEND=noninteractive \
 RUN DEBIAN_FRONTEND=noninteractive \
   apt-get update &&                \
   apt-get install -y               \
-    git                            \
     jq &&                          \
   apt-get clean
 
 RUN DEBIAN_FRONTEND=noninteractive \
-  pip2 install                     \
+  pip3 install                     \
     json2yaml==1.1.1               \
     yq==2.10.0
 

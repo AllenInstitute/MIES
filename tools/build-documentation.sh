@@ -85,7 +85,7 @@ if hash sphinx-build 2>/dev/null; then
   echo "Start sphinx-build"
 
   sphinx_version=$(sphinx-build --version 2>&1 | cut -f 2 -d " ")
-  sphinx_version_required=1.8.3
+  sphinx_version_required=3.0.0
 
   if [[ "$sphinx_version" != "$sphinx_version_required" ]]; then
     echo "Errors building the documentation" 1>&2
