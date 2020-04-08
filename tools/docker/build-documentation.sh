@@ -1,5 +1,7 @@
 #/bin/bash
 
+set -e
+
 # checks for correct installation
 if [ ! $(docker -v | grep -c -w version) -eq 1 ]; then
 	echo "docker not found."
