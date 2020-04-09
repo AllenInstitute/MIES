@@ -1,3 +1,5 @@
+# Keep in sync with .editorconfig
+
 *.bat whitespace=cr-at-eol
 *.bat eol=crlf
 *.vcproj eol=crlf
@@ -32,6 +34,8 @@ Packages/Arduino/*exe export-ignore
 .mailmap              export-ignore
 CODEOWNERS            export-ignore
 ctags.cnf             export-ignore
+.editorconfig         export-ignore
+Packages/Artwork      export-ignore
 
 *.dot !diff
 
