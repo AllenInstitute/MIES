@@ -439,7 +439,7 @@ static Function AB_LoadDataWrapper(tmpDFR, expFilePath, datafolderPath, listOfNa
 
 	variable err, numEntries, i, debugOnError
 	string cdf, fileNameWOExtension, baseFolder, extension, expFileOrFolder
-	string str, list
+	string str, list, regexp
 
 	ASSERT(DataFolderExistsDFR(tmpDFR), "tmpDFR does not exist")
 	ASSERT(!isEmpty(expFilePath), "empty path")
@@ -490,7 +490,8 @@ static Function AB_LoadDataWrapper(tmpDFR, expFilePath, datafolderPath, listOfNa
 
 	RemoveAllEmptyDataFolders(tmpDFR)
 
-	list = GetListOfObjects(tmpDFR, ConvertListToRegexpWithAlternations(listOfNames), recursive=1, typeFlag=typeFlags)
+	regexp = ConvertListToRegexpWithAlternations(listOfNames)
+	list = GetListOfObjects(tmpDFR, regexp, recursive=1, typeFlag=typeFlags)
 
 	return ItemsInList(list)
 End
