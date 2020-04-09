@@ -638,14 +638,16 @@ Window DA_Ephys() : Panel
 	SetVariable Scale_DA_04,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	SetVariable Scale_DA_04,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
 	SetVariable Scale_DA_04,userdata(ControlArray)=  "Scale_DA"
-	SetVariable Scale_DA_04,userdata(ControlArrayIndex)=  "4",value= _NUM:1
+	SetVariable Scale_DA_04,userdata(ControlArrayIndex)=  "4"
+	SetVariable Scale_DA_04,limits={-inf,inf,10},value= _NUM:1
 	SetVariable Scale_DA_05,pos={288.00,306.00},size={48.00,18.00},disable=1,proc=DAP_SetVar_UpdateGuiState
 	SetVariable Scale_DA_05,userdata(tabnum)=  "1",userdata(tabcontrol)=  "ADC"
 	SetVariable Scale_DA_05,userdata(ResizeControlsInfo)= A"!!,HL!!#BSJ,ho,!!#<Hz!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	SetVariable Scale_DA_05,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	SetVariable Scale_DA_05,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
 	SetVariable Scale_DA_05,userdata(ControlArray)=  "Scale_DA"
-	SetVariable Scale_DA_05,userdata(ControlArrayIndex)=  "5",value= _NUM:1
+	SetVariable Scale_DA_05,userdata(ControlArrayIndex)=  "5"
+	SetVariable Scale_DA_05,limits={-inf,inf,10},value= _NUM:1
 	SetVariable Scale_DA_06,pos={288.00,351.00},size={48.00,18.00},disable=1,proc=DAP_SetVar_UpdateGuiState
 	SetVariable Scale_DA_06,userdata(tabnum)=  "1",userdata(tabcontrol)=  "ADC"
 	SetVariable Scale_DA_06,userdata(ResizeControlsInfo)= A"!!,HL!!#BjJ,ho,!!#<Hz!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
