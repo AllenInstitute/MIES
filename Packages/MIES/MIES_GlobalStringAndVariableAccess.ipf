@@ -678,5 +678,7 @@ Function/S GetSettingsJSONid()
 		JSONid = PS_ReadSettings("MIES", GenerateSettingsDefaults)
 	endif
 
+	UpgradeSettings(JSONid)
+
 	return path
 End

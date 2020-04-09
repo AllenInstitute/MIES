@@ -2196,6 +2196,7 @@ End
 Function AB_OpenAnalysisBrowser()
 
 	string panel = "AnalysisBrowser"
+	string directory
 
 	if(windowExists(panel))
 		DoWindow/F $panel
@@ -2209,6 +2210,10 @@ Function AB_OpenAnalysisBrowser()
 
 	Execute "AnalysisBrowser()"
 	GetMiesVersion()
+
+	NVAR JSONid = $GetSettingsJSONid()
+	directory = JSON_GetString(jsonID, "/analysisbrowser/directory")
+	SetSetVariableString(panel, "setvar_baseFolder", directory)
 End
 
 Window AnalysisBrowser() : Panel
@@ -2382,6 +2387,8 @@ Function AB_ButtonProc_SelectDirectory(ba) : ButtonControl
 			baseFolder = GetSetVariableString(win, "setvar_baseFolder")
 			folder = AskUserForExistingFolder(baseFolder=baseFolder)
 			SetSetVariableString(win, "setvar_baseFolder", folder)
+			NVAR JSONid = $GetSettingsJSONid()
+			JSON_SetString(jsonID, "/analysisbrowser/directory", folder)
 			AB_ScanFolder(win)
 			break
 	endswitch
