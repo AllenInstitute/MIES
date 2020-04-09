@@ -62,27 +62,35 @@ analyzed with Igor Pro or with other tools using `NeurodataWithoutBorders (NWB)
 
 MIES has two primary modes: The Test Pulse (TP) and Data Acquisition.
 
+.. _Figure Repeated Acquisition Explained:
+
 .. figure:: acquisition-repeated-indexing-explained.svg
    :align: center
 
    Data acquisition modes
 
+.. _Figure Normal Delays:
 
 .. figure:: normal-delays.svg
    :align: center
 
    Normal delays
 
+.. _Figure dDAQ Delays:
 
 .. figure:: ddaq-delay.svg
    :align: center
 
    Ddaq delay
 
+.. _Figure oodDAQ Delays:
+
 .. figure:: oodDAQ-delays.svg
    :align: center
 
    oodDAQ delays
+
+.. _Figure Testpulse Visualization:
 
 .. figure:: testPulse-visualization.svg
    :align: center

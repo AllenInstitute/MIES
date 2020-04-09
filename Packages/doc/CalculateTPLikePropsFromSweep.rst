@@ -275,5 +275,7 @@ The following is **done for each head stage**:
 Then the loop continues to the next head stage of this sweep with
 `Finding square pulse`_
 
+.. _Figure Calculate Testpulse Like Properties from Sweep:
+
 .. figure:: CalculateTPLikePropsFromSweep.svg
    :align: center
