@@ -883,8 +883,8 @@ Constant NI_ADC_MIN = -10
 Constant NI_ADC_MAX =  10
 /// @}
 
-/// Maximum length of a valid name in bytes in Igor Pro.
-Constant MAX_OBJECT_NAME_LENGTH_IN_BYTES = 31
+/// Maximum length of a valid object name in bytes in Igor Pro >= 8
+Constant MAX_OBJECT_NAME_LENGTH_IN_BYTES = 255
 
 StrConstant LABNOTEBOOK_NO_TOLERANCE = "-"
 StrConstant LABNOTEBOOK_BINARY_UNIT  = "On/Off"

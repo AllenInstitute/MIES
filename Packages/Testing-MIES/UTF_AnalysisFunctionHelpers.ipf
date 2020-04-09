@@ -78,7 +78,7 @@ Function AE_ThrowsWithTooLongKey()
 
 	try
 		WAVE values = AE_GenerateValidNum_IGNORE()
-		ED_AddEntryToLabnotebook(device, "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa" , values)
+		ED_AddEntryToLabnotebook(device, PadString("", MAX_OBJECT_NAME_LENGTH_IN_BYTES + 1, char2num("a")) , values)
 		FAIL()
 	catch
 		PASS()

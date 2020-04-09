@@ -14,7 +14,7 @@
 /// \endrst
 
 static StrConstant ASYNC_BACKGROUND = "AsyncFramework"
-static Constant MAX_OBJECT_NAME_LENGTH_IN_BYTES = 31
+static Constant MAX_OBJECT_NAME_LENGTH_IN_BYTES = 255
 static Constant ASYNC_THREAD_MARKER = 299792458
 static Constant ASYNC_MAX_THREADS = 64
 
