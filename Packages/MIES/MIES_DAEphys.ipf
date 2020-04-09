@@ -655,12 +655,14 @@ Function DAP_EphysPanelStartUpSettings()
 	SetVariable setvar_DataAcq_SSPressure, win=$panelTitle, value= _NUM:0,limits={-10,10,1}
 
 	// user pressure
-	PopupMenu popup_Settings_UserPressure WIN = $panelTitle, mode=1
+	PGC_SetAndActivateControl(panelTitle, "tab_DataAcq_Pressure", val = 0, switchtab = 1)
+	PopupMenu popup_Settings_UserPressure WIN = $panelTitle, mode=1,value= #"\"- none -;\""
 	EnableControl(panelTitle, "popup_Settings_UserPressure")
 	PopupMenu Popup_Settings_UserPressure_ADC  WIN = $panelTitle, mode=1
 	EnableControl(panelTitle, "Popup_Settings_UserPressure_ADC")
 	EnableControl(panelTitle, "button_Hardware_PUser_Enable")
 	DisableControl(panelTitle, "button_Hardware_PUser_Disable")
+	PGC_SetAndActivateControl(panelTitle, "ADC", val = 6)
 
    ValDisplay valdisp_DataAcq_P_LED_0 WIN = $panelTitle, value= _NUM:-1
    ValDisplay valdisp_DataAcq_P_LED_1 WIN = $panelTitle, value= _NUM:-1
