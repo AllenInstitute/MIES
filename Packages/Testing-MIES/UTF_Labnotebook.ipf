@@ -502,7 +502,7 @@ Function LBNCache_Reliable()
 
 	numKeys = DimSize(numericalKeys, COLS)
 	for(i = 1; i < numSweeps; i += 1)
-		for(j = 4; j < numKeys; j += 1) // don't ask for the four always present
+		for(j = INITIAL_KEY_WAVE_COL_COUNT; j < numKeys; j += 1) // don't ask for the four always present
 
 			key = numericalKeys[0][j]
 			WAVE/Z settingsNoCache = MIES_MIESUTILS#GetLastSettingNoCache(numericalValues, i, key, DATA_ACQUISITION_MODE)
@@ -522,7 +522,7 @@ Function LBNCache_Reliable()
 
 	numKeys = DimSize(textualKeys, COLS)
 	for(i = 1; i < numSweeps; i += 1)
-		for(j = 4; j < numKeys; j += 1) // don't ask for the four always present
+		for(j = INITIAL_KEY_WAVE_COL_COUNT; j < numKeys; j += 1) // don't ask for the four always present
 
 			key = textualKeys[0][j]
 			WAVE/Z settingsNoCache = MIES_MIESUTILS#GetLastSettingNoCache(textualValues, i, key, DATA_ACQUISITION_MODE)
