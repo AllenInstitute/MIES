@@ -26,30 +26,31 @@
 ///
 /// \rst
 ///
-/// =============================== ========================================================= ======================== =====================  =====================
-/// Naming constant                 Description                                               Analysis function        Per Chunk?             Headstage dependent?
-/// =============================== ========================================================= ======================== =====================  =====================
-/// PSQ_FMT_LBN_SPIKE_DETECT        The required number of spikes were detected on the sweep  SP, RB, RA, DA (Supra)   No                     Yes
-/// PSQ_FMT_LBN_SPIKE_POSITIONS     Spike positions in ms                                     RA                       No                     Yes
-/// PSQ_FMT_LBN_SPIKE_COUNT         Spike count                                               DA (Supra)               No                     Yes
-/// PSQ_FMT_LBN_STEPSIZE            Current DAScale step size                                 SP, RB                   No                     No
-/// PSQ_FMT_LBN_STEPSIZE_FUTURE     Future DAScale step size                                  RB                       No                     No
-/// PSQ_FMT_LBN_RB_DASCALE_EXC      Range for valid DAScale values is exceeded                RB                       No                     Yes
-/// PSQ_FMT_LBN_RB_LIMITED_RES      Failed due to limited DAScale resolution                  RB                       No                     Yes
-/// PSQ_FMT_LBN_FINAL_SCALE         Final DAScale of the given headstage, only set on success SP, RB                   No                     No
-/// PSQ_FMT_LBN_SPIKE_DASCALE_ZERO  Sweep spiked with DAScale of 0                            SP                       No                     No
-/// PSQ_FMT_LBN_INITIAL_SCALE       Initial DAScale                                           RB                       No                     No
-/// PSQ_FMT_LBN_RMS_SHORT_PASS      Short RMS baseline QC result                              DA, RB, RA               Yes                    Yes
-/// PSQ_FMT_LBN_RMS_LONG_PASS       Long RMS baseline QC result                               DA, RB, RA               Yes                    Yes
-/// PSQ_FMT_LBN_TARGETV_PASS        Target voltage baseline QC result                         DA, RB, RA               Yes                    Yes
-/// PSQ_FMT_LBN_CHUNK_PASS          Which chunk passed/failed baseline QC                     DA, RB, RA               Yes                    Yes
-/// PSQ_FMT_LBN_BL_QC_PASS          Pass/fail state of the complete baseline                  DA, RB, RA               No                     Yes
-/// PSQ_FMT_LBN_SWEEP_PASS          Pass/fail state of the complete sweep                     DA, SP, RA               No                     No
-/// PSQ_FMT_LBN_SET_PASS            Pass/fail state of the complete set                       DA, RB, RA, SP           No                     No
-/// PSQ_FMT_LBN_PULSE_DUR           Pulse duration as determined experimentally               RB, DA (Supra)           No                     Yes
-/// PSQ_FMT_LBN_DA_fI_SLOPE         Fitted slope in the f-I plot                              DA (Supra)               No                     Yes
-/// PSQ_FMT_LBN_DA_fI_SLOPE_REACHED Fitted slope in the f-I plot exceeds target value         DA (Supra)               No                     No
-/// =============================== ========================================================= ======================== =====================  =====================
+/// =============================== ========================================================= ======================== ======================== =====================  =====================
+/// Naming constant                 Description                                               Labnotebook              Analysis function        Per Chunk?             Headstage dependent?
+/// =============================== ========================================================= ======================== ======================== =====================  =====================
+/// PSQ_FMT_LBN_SPIKE_DETECT        The required number of spikes were detected on the sweep  Numerical                SP, RB, RA, DA (Supra)   No                     Yes
+/// PSQ_FMT_LBN_SPIKE_POSITIONS     Spike positions in ms                                     Numerical                RA                       No                     Yes
+/// PSQ_FMT_LBN_SPIKE_COUNT         Spike count                                               Numerical                DA (Supra)               No                     Yes
+/// PSQ_FMT_LBN_STEPSIZE            Current DAScale step size                                 Numerical                SP, RB                   No                     No
+/// PSQ_FMT_LBN_STEPSIZE_FUTURE     Future DAScale step size                                  Numerical                RB                       No                     No
+/// PSQ_FMT_LBN_RB_DASCALE_EXC      Range for valid DAScale values is exceeded                Numerical                RB                       No                     Yes
+/// PSQ_FMT_LBN_RB_LIMITED_RES      Failed due to limited DAScale resolution                  Numerical                RB                       No                     Yes
+/// PSQ_FMT_LBN_FINAL_SCALE         Final DAScale of the given headstage, only set on success Numerical                SP, RB                   No                     No
+/// PSQ_FMT_LBN_SPIKE_DASCALE_ZERO  Sweep spiked with DAScale of 0                            Numerical                SP                       No                     No
+/// PSQ_FMT_LBN_INITIAL_SCALE       Initial DAScale                                           Numerical                RB                       No                     No
+/// PSQ_FMT_LBN_RMS_SHORT_PASS      Short RMS baseline QC result                              Numerical                DA, RB, RA               Yes                    Yes
+/// PSQ_FMT_LBN_RMS_LONG_PASS       Long RMS baseline QC result                               Numerical                DA, RB, RA               Yes                    Yes
+/// PSQ_FMT_LBN_TARGETV_PASS        Target voltage baseline QC result                         Numerical                DA, RB, RA               Yes                    Yes
+/// PSQ_FMT_LBN_CHUNK_PASS          Which chunk passed/failed baseline QC                     Numerical                DA, RB, RA               Yes                    Yes
+/// PSQ_FMT_LBN_BL_QC_PASS          Pass/fail state of the complete baseline                  Numerical                DA, RB, RA               No                     Yes
+/// PSQ_FMT_LBN_SWEEP_PASS          Pass/fail state of the complete sweep                     Numerical                DA, SP, RA               No                     No
+/// PSQ_FMT_LBN_SET_PASS            Pass/fail state of the complete set                       Numerical                DA, RB, RA, SP           No                     No
+/// PSQ_FMT_LBN_PULSE_DUR           Pulse duration as determined experimentally               Numerical                RB, DA (Supra)           No                     Yes
+/// PSQ_FMT_LBN_DA_fI_SLOPE         Fitted slope in the f-I plot                              Numerical                DA (Supra)               No                     Yes
+/// PSQ_FMT_LBN_DA_OPMODE           Operation Mode: One of #PSQ_DS_SUB/#PSQ_DS_SUPRA          Textual                  DA                       No                     No
+/// PSQ_FMT_LBN_DA_fI_SLOPE_REACHED Fitted slope in the f-I plot exceeds target value         Numerical                DA (Supra)               No                     No
+/// =============================== ========================================================= ======================== ======================== =====================  =====================
 ///
 /// \endrst
 ///
@@ -1366,6 +1367,11 @@ Function PSQ_DAScale(panelTitle, s)
 		case POST_SWEEP_EVENT:
 			WAVE numericalValues = GetLBNumericalValues(panelTitle)
 			WAVE textualValues   = GetLBTextualValues(panelTitle)
+
+			Make/T/FREE/N=(LABNOTEBOOK_LAYER_COUNT) opModeLBN
+			opModeLBN[INDEP_HEADSTAGE] = opMode
+			key = PSQ_CreateLBNKey(PSQ_DA_SCALE, PSQ_FMT_LBN_DA_OPMODE)
+			ED_AddEntryToLabnotebook(panelTitle, key, opModeLBN, overrideSweepNo = s.sweepNo)
 
 			daScaleOffset = PSQ_DS_GetDAScaleOffset(panelTitle, s.headstage, opMode)
 
