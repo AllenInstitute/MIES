@@ -75,6 +75,7 @@ Function/WAVE GetLBNEntries_IGNORE(device, sweepNo, name)
 	string key
 
 	WAVE numericalValues = GetLBNumericalValues(device)
+	WAVE textualValues = GetLBTextualValues(device)
 	key = CreateAnaFuncLBNKey(PSQ_DA_SCALE, name, query = 1)
 
 	strswitch(name)
@@ -84,6 +85,9 @@ Function/WAVE GetLBNEntries_IGNORE(device, sweepNo, name)
 		case PSQ_FMT_LBN_SWEEP_PASS:
 		case PSQ_FMT_LBN_DA_fI_SLOPE_REACHED:
 			return GetLastSettingIndepEachSCI(numericalValues, sweepNo, key, HEADSTAGE, UNKNOWN_MODE)
+			break
+		case PSQ_FMT_LBN_DA_OPMODE:
+			return GetLastSettingTextIndepEachSCI(numericalValues, textualValues, sweepNo, HEADSTAGE, key, UNKNOWN_MODE)
 			break
 		case PSQ_FMT_LBN_BL_QC_PASS:
 		case PSQ_FMT_LBN_SPIKE_DETECT:
@@ -145,6 +149,9 @@ Function PS_DS_Sub1_REENTRY([str])
 
 	WAVE/Z fISlopeReached = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_DA_fI_SLOPE_REACHED)
 	CHECK_EQUAL_WAVES(fISlopeReached, {0, 0, 0, 0, 0}, mode = WAVE_DATA)
+
+	WAVE/T/Z opMode = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_DA_OPMODE)
+	CHECK_EQUAL_TEXTWAVES(opMode, {PSQ_DS_SUB, PSQ_DS_SUB, PSQ_DS_SUB, PSQ_DS_SUB, PSQ_DS_SUB}, mode = WAVE_DATA)
 
 	WAVE/Z sweeps = AFH_GetSweepsFromSameRACycle(numericalValues, sweepNo)
 	CHECK_WAVE(sweeps, NUMERIC_WAVE)
@@ -210,6 +217,9 @@ Function PS_DS_Sub2_REENTRY([str])
 	WAVE/Z fISlopeReached = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_DA_fI_SLOPE_REACHED)
 	CHECK_EQUAL_WAVES(fISlopeReached, {0, 0, 0, 0, 0}, mode = WAVE_DATA)
 
+	WAVE/T/Z opMode = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_DA_OPMODE)
+	CHECK_EQUAL_TEXTWAVES(opMode, {PSQ_DS_SUB, PSQ_DS_SUB, PSQ_DS_SUB, PSQ_DS_SUB, PSQ_DS_SUB}, mode = WAVE_DATA)
+
 	WAVE/Z sweeps = AFH_GetSweepsFromSameRACycle(numericalValues, sweepNo)
 	CHECK_WAVE(sweeps, NUMERIC_WAVE)
 	numEntries = DimSize(sweeps, ROWS)
@@ -274,6 +284,9 @@ Function PS_DS_Sub3_REENTRY([str])
 
 	WAVE/Z fISlopeReached = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_DA_fI_SLOPE_REACHED)
 	CHECK_EQUAL_WAVES(fISlopeReached, {0, 0, 0, 0, 0}, mode = WAVE_DATA)
+
+	WAVE/T/Z opMode = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_DA_OPMODE)
+	CHECK_EQUAL_TEXTWAVES(opMode, {PSQ_DS_SUB, PSQ_DS_SUB, PSQ_DS_SUB, PSQ_DS_SUB, PSQ_DS_SUB}, mode = WAVE_DATA)
 
 	WAVE/Z sweeps = AFH_GetSweepsFromSameRACycle(numericalValues, sweepNo)
 	CHECK_WAVE(sweeps, NUMERIC_WAVE)
@@ -341,6 +354,9 @@ Function PS_DS_Sub4_REENTRY([str])
 	WAVE/Z fISlopeReached = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_DA_fI_SLOPE_REACHED)
 	CHECK_EQUAL_WAVES(fISlopeReached, {0, 0, 0, 0, 0}, mode = WAVE_DATA)
 
+	WAVE/T/Z opMode = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_DA_OPMODE)
+	CHECK_EQUAL_TEXTWAVES(opMode, {PSQ_DS_SUB, PSQ_DS_SUB, PSQ_DS_SUB, PSQ_DS_SUB, PSQ_DS_SUB}, mode = WAVE_DATA)
+
 	WAVE/Z sweeps = AFH_GetSweepsFromSameRACycle(numericalValues, sweepNo)
 	CHECK_WAVE(sweeps, NUMERIC_WAVE)
 	numEntries = DimSize(sweeps, ROWS)
@@ -403,6 +419,9 @@ Function PS_DS_Sub5_REENTRY([str])
 
 	WAVE/Z fISlopeReached = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_DA_fI_SLOPE_REACHED)
 	CHECK_EQUAL_WAVES(fISlopeReached, {0, 0, 0, 0, 0}, mode = WAVE_DATA)
+
+	WAVE/T/Z opMode = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_DA_OPMODE)
+	CHECK_EQUAL_TEXTWAVES(opMode, {PSQ_DS_SUB, PSQ_DS_SUB, PSQ_DS_SUB, PSQ_DS_SUB, PSQ_DS_SUB}, mode = WAVE_DATA)
 
 	WAVE/Z sweeps = AFH_GetSweepsFromSameRACycle(numericalValues, sweepNo)
 	CHECK_WAVE(sweeps, NUMERIC_WAVE)
@@ -468,6 +487,9 @@ Function PS_DS_Sub6_REENTRY([str])
 
 	WAVE/Z fISlopeReached = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_DA_fI_SLOPE_REACHED)
 	CHECK_EQUAL_WAVES(fISlopeReached, {0, 0, 0, 0, 0}, mode = WAVE_DATA)
+
+	WAVE/T/Z opMode = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_DA_OPMODE)
+	CHECK_EQUAL_TEXTWAVES(opMode, {PSQ_DS_SUB, PSQ_DS_SUB, PSQ_DS_SUB, PSQ_DS_SUB, PSQ_DS_SUB}, mode = WAVE_DATA)
 
 	WAVE/Z sweeps = AFH_GetSweepsFromSameRACycle(numericalValues, sweepNo)
 	CHECK_WAVE(sweeps, NUMERIC_WAVE)
@@ -535,6 +557,9 @@ Function PS_DS_Sub7_REENTRY([str])
 
 	WAVE/Z fISlopeReached = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_DA_fI_SLOPE_REACHED)
 	CHECK_EQUAL_WAVES(fISlopeReached, {0, 0, 0, 0, 0, 0, 0}, mode = WAVE_DATA)
+
+	WAVE/T/Z opMode = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_DA_OPMODE)
+	CHECK_EQUAL_TEXTWAVES(opMode, {PSQ_DS_SUB, PSQ_DS_SUB, PSQ_DS_SUB, PSQ_DS_SUB, PSQ_DS_SUB, PSQ_DS_SUB, PSQ_DS_SUB}, mode = WAVE_DATA)
 
 	WAVE/Z sweeps = AFH_GetSweepsFromSameRACycle(numericalValues, sweepNo)
 	CHECK_WAVE(sweeps, NUMERIC_WAVE)
@@ -606,6 +631,9 @@ Function PS_DS_Sub8_REENTRY([str])
 
 	WAVE/Z fISlopeReached = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_DA_fI_SLOPE_REACHED)
 	CHECK_EQUAL_WAVES(fISlopeReached, {0, 0, 0, 0, 0, 0, 0, 0, 0}, mode = WAVE_DATA)
+
+	WAVE/T/Z opMode = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_DA_OPMODE)
+	CHECK_EQUAL_TEXTWAVES(opMode, {PSQ_DS_SUB, PSQ_DS_SUB, PSQ_DS_SUB, PSQ_DS_SUB, PSQ_DS_SUB, PSQ_DS_SUB, PSQ_DS_SUB, PSQ_DS_SUB, PSQ_DS_SUB}, mode = WAVE_DATA)
 
 	WAVE/Z sweeps = AFH_GetSweepsFromSameRACycle(numericalValues, sweepNo)
 	CHECK_WAVE(sweeps, NUMERIC_WAVE)
@@ -681,6 +709,9 @@ Function PS_DS_Supra1_REENTRY([str])
 
 	WAVE/Z fISlopeReached = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_DA_fI_SLOPE_REACHED)
 	CHECK_EQUAL_WAVES(fISlopeReached, {0, 0}, mode = WAVE_DATA)
+
+	WAVE/T/Z opMode = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_DA_OPMODE)
+	CHECK_EQUAL_TEXTWAVES(opMode, {PSQ_DS_SUPRA, PSQ_DS_SUPRA}, mode = WAVE_DATA)
 
 	WAVE/Z sweeps = AFH_GetSweepsFromSameRACycle(numericalValues, sweepNo)
 	CHECK_WAVE(sweeps, NUMERIC_WAVE)
@@ -760,6 +791,9 @@ Function PS_DS_Supra2_REENTRY([str])
 
 	WAVE/Z fISlopeReached = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_DA_fI_SLOPE_REACHED)
 	CHECK_EQUAL_WAVES(fISlopeReached, {0, 0}, mode = WAVE_DATA)
+
+	WAVE/T/Z opMode = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_DA_OPMODE)
+	CHECK_EQUAL_TEXTWAVES(opMode, {PSQ_DS_SUPRA, PSQ_DS_SUPRA}, mode = WAVE_DATA)
 
 	WAVE/Z sweeps = AFH_GetSweepsFromSameRACycle(numericalValues, sweepNo)
 	CHECK_WAVE(sweeps, NUMERIC_WAVE)
@@ -841,6 +875,9 @@ Function PS_DS_Supra3_REENTRY([str])
 	WAVE/Z fISlopeReached = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_DA_fI_SLOPE_REACHED)
 	CHECK_EQUAL_WAVES(fISlopeReached, {0, 0, 0, 0, 0}, mode = WAVE_DATA)
 
+	WAVE/T/Z opMode = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_DA_OPMODE)
+	CHECK_EQUAL_TEXTWAVES(opMode, {PSQ_DS_SUPRA, PSQ_DS_SUPRA, PSQ_DS_SUPRA, PSQ_DS_SUPRA, PSQ_DS_SUPRA}, mode = WAVE_DATA)
+
 	WAVE/Z sweeps = AFH_GetSweepsFromSameRACycle(numericalValues, sweepNo)
 	CHECK_WAVE(sweeps, NUMERIC_WAVE)
 	numEntries = DimSize(sweeps, ROWS)
@@ -920,6 +957,9 @@ Function PS_DS_Supra4_REENTRY([str])
 
 	WAVE/Z fISlopeReached = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_DA_fI_SLOPE_REACHED)
 	CHECK_EQUAL_WAVES(fISlopeReached, {0, 0, 0, 0, 1}, mode = WAVE_DATA)
+
+	WAVE/T/Z opMode = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_DA_OPMODE)
+	CHECK_EQUAL_TEXTWAVES(opMode, {PSQ_DS_SUPRA, PSQ_DS_SUPRA, PSQ_DS_SUPRA, PSQ_DS_SUPRA, PSQ_DS_SUPRA}, mode = WAVE_DATA)
 
 	WAVE/Z sweeps = AFH_GetSweepsFromSameRACycle(numericalValues, sweepNo)
 	CHECK_WAVE(sweeps, NUMERIC_WAVE)
