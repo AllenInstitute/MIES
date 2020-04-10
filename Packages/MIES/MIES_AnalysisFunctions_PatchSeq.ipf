@@ -666,7 +666,7 @@ End
 /// - x position in ms where the spike is in each sweep/step
 ///   For convenience the values `0` always means no spike and `1` spike detected (at the appropriate position).
 ///
-/// #PSQ_RHEOBASE/#PSQ_RAMP/#PSQ_DA_SCALE:
+/// #PSQ_RHEOBASE/#PSQ_RAMP:
 ///
 /// Rows:
 /// - chunk indizes
@@ -678,7 +678,20 @@ End
 /// - 0: 1 if the chunk has passing baseline QC or not
 /// - 1: x position in ms where the spike is in each sweep/step
 ///      For convenience the values `0` always means no spike and `1` spike detected (at the appropriate position).
-/// - 2 (#PSQ_DA_SCALE only): Number of spikes
+///
+/// #PSQ_DA_SCALE:
+///
+/// Rows:
+/// - chunk indizes
+///
+/// Cols:
+/// - sweeps/steps
+///
+/// Layers:
+/// - 0: 1 if the chunk has passing baseline QC or not
+/// - 1: x position in ms where the spike is in each sweep/step
+///      For convenience the values `0` always means no spike and `1` spike detected (at the appropriate position).
+/// - 2: Number of spikes
 Function/WAVE PSQ_CreateOverrideResults(panelTitle, headstage, type)
 	string panelTitle
 	variable headstage, type
