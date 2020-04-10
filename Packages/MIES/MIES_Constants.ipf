@@ -972,6 +972,7 @@ StrConstant PSQ_FMT_LBN_SPIKE_DASCALE_ZERO = "%s spike with zero"
 StrConstant PSQ_FMT_LBN_RB_LIMITED_RES     = "%s limited resolut."
 StrConstant PSQ_FMT_LBN_DA_fI_SLOPE        = "%s f-I slope"
 StrConstant PSQ_FMT_LBN_DA_fI_SLOPE_REACHED= "%s f-I slope QC"
+StrConstant PSQ_FMT_LBN_DA_OPMODE          = "%s operation mode"
 /// @}
 
 /// @name PatchSeq and MultiPatchSeq types of analysis functions
