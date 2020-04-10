@@ -600,7 +600,7 @@ static Function PSQ_CalculateRMS(wv, column, startTime, rangeTime)
 End
 
 /// @brief Return the number of already acquired sweeps from the given
-///        repeated acquisition cycle.
+///        stimset cycle
 static Function PSQ_NumAcquiredSweepsInSet(panelTitle, sweepNo, headstage)
 	string panelTitle
 	variable sweepNo, headstage
@@ -617,7 +617,7 @@ static Function PSQ_NumAcquiredSweepsInSet(panelTitle, sweepNo, headstage)
 End
 
 /// @brief Return the number of passed sweeps in all sweeps from the given
-///        repeated acquisition cycle.
+///        stimset cycle
 Function PSQ_NumPassesInSet(numericalValues, type, sweepNo, headstage)
 	WAVE numericalValues
 	variable type, sweepNo, headstage
