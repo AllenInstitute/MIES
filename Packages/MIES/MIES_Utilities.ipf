@@ -5035,6 +5035,8 @@ Function/S ConvertListToRegexpWithAlternations(list)
 		regexpList = AddListItem("\\Q" + StringFromList(i, list) + "\\E", regexpList, "|", inf)
 	endfor
 
+	regexpList = "(?:" + RemoveEnding(regexpList, "|") + ")"
+
 	return regexpList
 End
 

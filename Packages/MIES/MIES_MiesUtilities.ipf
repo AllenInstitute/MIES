@@ -6043,6 +6043,8 @@ End
 /// - "diagnostics/last upload": ISO8601 timestamp when the last successfull
 ///                              upload of crash dumps was tried. This is also set
 ///                              when no crash dumps have been uploadad.
+/// - "analysisbrowser": Groups settings related to the Analysisbrowser
+/// - "analysisbrowser/directory": The directory initially opened for browsing existing NWB/PXP files
 ///
 /// @return JSONid
 ///
@@ -6057,7 +6059,18 @@ Function GenerateSettingsDefaults()
 	JSON_AddTreeObject(JSONid, "/diagnostics")
 	JSON_AddString(JSONid, "/diagnostics/last upload", GetIso8601TimeStamp(secondsSinceIgorEpoch=0))
 
+	UpgradeSettings(JSONid)
+
 	return JSONid
+End
+
+Function UpgradeSettings(JSONid)
+	variable JSONid
+
+	if(!JSON_Exists(JSONid, "/analysisbrowser"))
+		JSON_AddTreeObject(JSONid, "/analysisbrowser")
+		JSON_AddString(JSONid, "/analysisbrowser/directory", "C:")
+	endif
 End
 
 /// @brief Call UploadCrashDumps() if we haven't called it since at least a day.

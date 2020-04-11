@@ -439,7 +439,7 @@ static Function AB_LoadDataWrapper(tmpDFR, expFilePath, datafolderPath, listOfNa
 
 	variable err, numEntries, i, debugOnError
 	string cdf, fileNameWOExtension, baseFolder, extension, expFileOrFolder
-	string str, list
+	string str, list, regexp
 
 	ASSERT(DataFolderExistsDFR(tmpDFR), "tmpDFR does not exist")
 	ASSERT(!isEmpty(expFilePath), "empty path")
@@ -490,7 +490,8 @@ static Function AB_LoadDataWrapper(tmpDFR, expFilePath, datafolderPath, listOfNa
 
 	RemoveAllEmptyDataFolders(tmpDFR)
 
-	list = GetListOfObjects(tmpDFR, ConvertListToRegexpWithAlternations(listOfNames), recursive=1, typeFlag=typeFlags)
+	regexp = ConvertListToRegexpWithAlternations(listOfNames)
+	list = GetListOfObjects(tmpDFR, regexp, recursive=1, typeFlag=typeFlags)
 
 	return ItemsInList(list)
 End
@@ -2195,6 +2196,7 @@ End
 Function AB_OpenAnalysisBrowser()
 
 	string panel = "AnalysisBrowser"
+	string directory
 
 	if(windowExists(panel))
 		DoWindow/F $panel
@@ -2208,6 +2210,10 @@ Function AB_OpenAnalysisBrowser()
 
 	Execute "AnalysisBrowser()"
 	GetMiesVersion()
+
+	NVAR JSONid = $GetSettingsJSONid()
+	directory = JSON_GetString(jsonID, "/analysisbrowser/directory")
+	SetSetVariableString(panel, "setvar_baseFolder", directory)
 End
 
 Window AnalysisBrowser() : Panel
@@ -2381,6 +2387,8 @@ Function AB_ButtonProc_SelectDirectory(ba) : ButtonControl
 			baseFolder = GetSetVariableString(win, "setvar_baseFolder")
 			folder = AskUserForExistingFolder(baseFolder=baseFolder)
 			SetSetVariableString(win, "setvar_baseFolder", folder)
+			NVAR JSONid = $GetSettingsJSONid()
+			JSON_SetString(jsonID, "/analysisbrowser/directory", folder)
 			AB_ScanFolder(win)
 			break
 	endswitch
