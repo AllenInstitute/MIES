@@ -208,6 +208,8 @@ threading loop.
      // further error handler
    endtry
 
+.. _Figure Async Framework:
+
 .. figure:: async_framework.svg
    :align: center
 
