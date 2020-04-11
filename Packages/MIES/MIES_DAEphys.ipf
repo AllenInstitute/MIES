@@ -262,17 +262,17 @@ Function DAP_EphysPanelStartUpSettings()
 	PopupMenu Wave_DA_AllVClamp WIN = $panelTitle,mode=1, userdata(MenuExp) = "", value=#popValue
 	PopupMenu Wave_DA_AllIClamp WIN = $panelTitle,mode=1, userdata(MenuExp) = "", value=#popValue
 
-	SetVariable Scale_DA_00 WIN = $panelTitle, value = _NUM:1
-	SetVariable Scale_DA_01 WIN = $panelTitle, value = _NUM:1
-	SetVariable Scale_DA_02 WIN = $panelTitle, value = _NUM:1
-	SetVariable Scale_DA_03 WIN = $panelTitle, value = _NUM:1
-	SetVariable Scale_DA_04 WIN = $panelTitle, value = _NUM:1
-	SetVariable Scale_DA_05 WIN = $panelTitle, value = _NUM:1
-	SetVariable Scale_DA_06 WIN = $panelTitle, value = _NUM:1
-	SetVariable Scale_DA_07 WIN = $panelTitle, value = _NUM:1
-	SetVariable Scale_DA_All WIN = $panelTitle, value = _NUM:1
-	SetVariable Scale_DA_AllVClamp WIN = $panelTitle, value = _NUM:1
-	SetVariable Scale_DA_AllIClamp WIN = $panelTitle, value = _NUM:1
+	SetVariable Scale_DA_00 WIN = $panelTitle, value = _NUM:1,limits={-inf,inf,10}
+	SetVariable Scale_DA_01 WIN = $panelTitle, value = _NUM:1,limits={-inf,inf,10}
+	SetVariable Scale_DA_02 WIN = $panelTitle, value = _NUM:1,limits={-inf,inf,10}
+	SetVariable Scale_DA_03 WIN = $panelTitle, value = _NUM:1,limits={-inf,inf,10}
+	SetVariable Scale_DA_04 WIN = $panelTitle, value = _NUM:1,limits={-inf,inf,10}
+	SetVariable Scale_DA_05 WIN = $panelTitle, value = _NUM:1,limits={-inf,inf,10}
+	SetVariable Scale_DA_06 WIN = $panelTitle, value = _NUM:1,limits={-inf,inf,10}
+	SetVariable Scale_DA_07 WIN = $panelTitle, value = _NUM:1,limits={-inf,inf,10}
+	SetVariable Scale_DA_All WIN = $panelTitle, value = _NUM:1,limits={-inf,inf,10}
+	SetVariable Scale_DA_AllVClamp WIN = $panelTitle, value = _NUM:1,limits={-inf,inf,10}
+	SetVariable Scale_DA_AllIClamp WIN = $panelTitle, value = _NUM:1,limits={-inf,inf,10}
 
 	SetVariable SetVar_DataAcq_Comment WIN = $panelTitle,value= _STR:""
 
@@ -650,17 +650,19 @@ Function DAP_EphysPanelStartUpSettings()
 	CheckBox check_DatAcq_ApproachNear         , win=$panelTitle, value= 0
 	CheckBox check_DataAcq_ManPressureAll      , win=$panelTitle, value= 0
 	CheckBox check_Settings_SaveAmpSettings    , win=$panelTitle, value= 1
-	SetVariable setvar_DataAcq_PPDuration, win=$panelTitle, value= _NUM:0
-	SetVariable setvar_DataAcq_PPPressure, win=$panelTitle, value= _NUM:0
-	SetVariable setvar_DataAcq_SSPressure, win=$panelTitle, value= _NUM:0
+	SetVariable setvar_DataAcq_PPDuration, win=$panelTitle, value= _NUM:0,limits={0,300,1}
+	SetVariable setvar_DataAcq_PPPressure, win=$panelTitle, value= _NUM:0,limits={-10,10,1}
+	SetVariable setvar_DataAcq_SSPressure, win=$panelTitle, value= _NUM:0,limits={-10,10,1}
 
 	// user pressure
-	PopupMenu popup_Settings_UserPressure WIN = $panelTitle, mode=1
+	PGC_SetAndActivateControl(panelTitle, "tab_DataAcq_Pressure", val = 0, switchtab = 1)
+	PopupMenu popup_Settings_UserPressure WIN = $panelTitle, mode=1,value= #"\"- none -;\""
 	EnableControl(panelTitle, "popup_Settings_UserPressure")
 	PopupMenu Popup_Settings_UserPressure_ADC  WIN = $panelTitle, mode=1
 	EnableControl(panelTitle, "Popup_Settings_UserPressure_ADC")
 	EnableControl(panelTitle, "button_Hardware_PUser_Enable")
 	DisableControl(panelTitle, "button_Hardware_PUser_Disable")
+	PGC_SetAndActivateControl(panelTitle, "ADC", val = 6)
 
    ValDisplay valdisp_DataAcq_P_LED_0 WIN = $panelTitle, value= _NUM:-1
    ValDisplay valdisp_DataAcq_P_LED_1 WIN = $panelTitle, value= _NUM:-1
@@ -1610,6 +1612,9 @@ Function DAP_SetVarProc_DA_Scale(sva) : SetVariableControl
 			endfor
 
 			break
+		case 9: // mouse down
+			ShowSetVariableLimitsSelectionPopup(sva)
+			break
 	endswitch
 
 	return 0
@@ -1898,6 +1903,15 @@ Function DAP_SetVarProc_CAA(sva) : SetVariableControl
 
 			DAP_UpdateChanAmpAssignStorWv(panelTitle)
 			P_UpdatePressureDataStorageWv(panelTitle)
+			break
+		case 9: // mouse down
+			strswitch(sva.ctrlName)
+				case "setvar_DataAcq_SSPressure":
+				case "setvar_DataAcq_PPPressure":
+				case "setvar_DataAcq_PPDuration":
+					ShowSetVariableLimitsSelectionPopup(sva)
+					break
+			endswitch
 			break
 	endswitch
 
@@ -4432,6 +4446,24 @@ Function DAP_CheckProc_UpdateGuiState(cba) : CheckBoxControl
 	switch( cba.eventCode )
 		case 2: // mouse up
 			DAG_Update(cba.win, cba.ctrlName, val = cba.checked)
+			break
+	endswitch
+
+	return 0
+End
+
+Function DAP_SetVar_SetScale(sva) : SetVariableControl
+	STRUCT WMSetVariableAction &sva
+
+	switch(sva.eventCode)
+		case 1: // mouse up
+		case 2: // Enter key
+		case 3: // Live update
+		case 8: // end edit
+			DAG_Update(sva.win, sva.ctrlName, val = sva.dval, str = sva.sval)
+			break
+		case 9: // mouse down
+			ShowSetVariableLimitsSelectionPopup(sva)
 			break
 	endswitch
 
