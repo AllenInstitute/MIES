@@ -11,14 +11,13 @@
 
 Window DataBrowser() : Graph
 	PauseUpdate; Silent 1		// building window...
-	Display /W=(346.5,343.25,779.25,648.5)/K=1  as "DataBrowser"
+	Display /W=(564,166.25,996.75,471.5)/K=1  as "DataBrowser"
 	Button button_BSP_open,pos={3.00,3.00},size={24.00,24.00},disable=1,proc=DB_ButtonProc_Panel,title="<<"
 	Button button_BSP_open,help={"Open Side Panel"}
 	Button button_BSP_open,userdata(ResizeControlsInfo)= A"!!,>M!!#8L!!#=#!!#=#z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	Button button_BSP_open,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	Button button_BSP_open,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
 	SetWindow kwTopWin,hook(TA_CURSOR_MOVED)=TimeAlignCursorMovedHook
-	SetWindow kwTopWin,hook(ResizeControls)=ResizeControls#ResizeControlsHook
 	SetWindow kwTopWin,hook(cleanup)=DB_SweepBrowserWindowHook
 	SetWindow kwTopWin,userdata(BROWSER)=  "D"
 	SetWindow kwTopWin,userdata(DEVICE)=  "- none -"
@@ -26,6 +25,7 @@ Window DataBrowser() : Graph
 	SetWindow kwTopWin,userdata(ResizeControlsInfo)= A"!!*'\"z!!#C=?iWQ]TE\"rlzzzzzzzzzzzzzzzzzzzz"
 	SetWindow kwTopWin,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzzzzzzzzzzzzzzz"
 	SetWindow kwTopWin,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzzzzzzzzz!!!"
+	SetWindow kwTopWin,userdata(ResizeControlsHookStash)=  "ResizeControls#ResizeControlsHook"
 	Execute/Q/Z "SetWindow kwTopWin sizeLimit={324,228,inf,inf}" // sizeLimit requires Igor 7 or later
 	NewPanel/HOST=#/EXT=2/W=(0,0,580,66)  as "Sweep Control"
 	Button button_SweepControl_NextSweep,pos={333.00,0.00},size={150.00,36.00},title="Next  \\W649"
@@ -824,7 +824,7 @@ Window DataBrowser() : Graph
 	PopupMenu popup_DB_lockedDevices,userdata(ResizeControlsInfo)= A"!!,C$!!#BQJ,hr2!!#<Pz!!#`-A7TLfzzzzzzzzzzzzzz!!#r+D.OhkBk2=!z"
 	PopupMenu popup_DB_lockedDevices,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	PopupMenu popup_DB_lockedDevices,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
-	PopupMenu popup_DB_lockedDevices,mode=3,popvalue="- none -",value= #"DB_GetAllDevicesWithData()"
+	PopupMenu popup_DB_lockedDevices,mode=1,popvalue="- none -",value= #"DB_GetAllDevicesWithData()"
 	GroupBox group_enable_sweepFormula,pos={5.00,25.00},size={380.00,50.00},disable=1,title="SweepFormula"
 	GroupBox group_enable_sweepFormula,userdata(tabnum)=  "5"
 	GroupBox group_enable_sweepFormula,userdata(tabcontrol)=  "Settings"
@@ -994,40 +994,40 @@ Window DataBrowser() : Graph
 	SetActiveSubwindow ##
 	RenameWindow #,BrowserSettingsPanel
 	SetActiveSubwindow ##
-	NewPanel/HOST=#/EXT=2/W=(0,0,588,154)  as " "
+	NewPanel/HOST=#/EXT=2/W=(0,0,588,113)  as " "
 	ModifyPanel fixedSize=0
-	Button popupext_LBKeys,pos={416.00,26.00},size={150.00,19.00},bodyWidth=150,proc=PEXT_ButtonProc
-	Button popupext_LBKeys,title="Lab Notebook Entries ▼", userdata=(PEXT_UDATA_ITEMGETTER + ":DB_PopupExtGetLBKeys;" + PEXT_UDATA_POPUPPROC + ":DB_PopMenuProc_LabNotebook")
+	Button popupext_LBKeys,pos={416.00,26.00},size={150.00,19.00},bodyWidth=150,proc=PEXT_ButtonProc,title="Lab Notebook Entries ▼"
 	Button popupext_LBKeys,help={"Select lab notebook data to display"}
-	Button popupext_LBKeys,userdata(ResizeControlsInfo)= A"!!,I3J,hm^!!#A%!!#<Pz!!#N3Bk1ct<C^(Dzzzzzzzzzzzzz!!#N3Bk1ct<C^(Dz"
+	Button popupext_LBKeys,userdata=  "Items:DB_PopupExtGetLBKeys;popupProc:DB_PopMenuProc_LabNotebook"
+	Button popupext_LBKeys,userdata(ResizeControlsInfo)= A"!!,I6!!#=3!!#A%!!#<Pz!!#N3Bk1ct<C^(Dzzzzzzzzzzzzz!!#N3Bk1ct<C^(Dz"
 	Button popupext_LBKeys,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:DuaGl<C]S6zzzzzzzzzz"
 	Button popupext_LBKeys,userdata(ResizeControlsInfo) += A"zzz!!#u:DuaGl<C]S6zzzzzzzzzzzzz!!!"
-	Button button_clearlabnotebookgraph,pos={407.00,85.00},size={80.00,25.00},proc=DB_ButtonProc_ClearGraph,title="Clear graph"
-	Button button_clearlabnotebookgraph,userdata(ResizeControlsInfo)= A"!!,I/!!#?c!!#?Y!!#=+z!!#N3Bk1ct<C^(Dzzzzzzzzzzzzz!!#N3Bk1ct<C^(Dz"
+	Button button_clearlabnotebookgraph,pos={407.00,55.00},size={80.00,25.00},proc=DB_ButtonProc_ClearGraph,title="Clear graph"
+	Button button_clearlabnotebookgraph,userdata(ResizeControlsInfo)= A"!!,I1J,ho@!!#?Y!!#=+z!!#N3Bk1ct<C^(Dzzzzzzzzzzzzz!!#N3Bk1ct<C^(Dz"
 	Button button_clearlabnotebookgraph,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:DuaGl<C]S6zzzzzzzzzz"
 	Button button_clearlabnotebookgraph,userdata(ResizeControlsInfo) += A"zzz!!#u:DuaGl<C]S6zzzzzzzzzzzzz!!!"
-	Button button_switchxaxis,pos={499.00,85.00},size={80.00,25.00},proc=DB_ButtonProc_SwitchXAxis,title="Switch X-axis"
+	Button button_switchxaxis,pos={499.00,55.00},size={80.00,25.00},proc=DB_ButtonProc_SwitchXAxis,title="Switch X-axis"
 	Button button_switchxaxis,help={"Toggle lab notebook horizontal axis between time of day or sweep number"}
-	Button button_switchxaxis,userdata(ResizeControlsInfo)= A"!!,I]!!#?c!!#?Y!!#=+z!!#N3Bk1ct<C^(Dzzzzzzzzzzzzz!!#N3Bk1ct<C^(Dz"
+	Button button_switchxaxis,userdata(ResizeControlsInfo)= A"!!,I_J,ho@!!#?Y!!#=+z!!#N3Bk1ct<C^(Dzzzzzzzzzzzzz!!#N3Bk1ct<C^(Dz"
 	Button button_switchxaxis,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:DuaGl<C]S6zzzzzzzzzz"
 	Button button_switchxaxis,userdata(ResizeControlsInfo) += A"zzz!!#u:DuaGl<C]S6zzzzzzzzzzzzz!!!"
-	GroupBox group_labnotebook_ctrls,pos={408.00,5.00},size={170.00,78.00},title="Settings History Column"
-	GroupBox group_labnotebook_ctrls,userdata(ResizeControlsInfo)= A"!!,I/J,hj-!!#A9!!#?Uz!!#N3Bk1ct<C^(Dzzzzzzzzzzzzz!!#N3Bk1ct<C^(Dz"
+	GroupBox group_labnotebook_ctrls,pos={408.00,5.00},size={170.00,47.00},title="Settings History Column"
+	GroupBox group_labnotebook_ctrls,userdata(ResizeControlsInfo)= A"!!,I2!!#9W!!#A9!!#>Jz!!#N3Bk1ct<C^(Dzzzzzzzzzzzzz!!#N3Bk1ct<C^(Dz"
 	GroupBox group_labnotebook_ctrls,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:DuaGl<C]S6zzzzzzzzzz"
 	GroupBox group_labnotebook_ctrls,userdata(ResizeControlsInfo) += A"zzz!!#u:DuaGl<C]S6zzzzzzzzzzzzz!!!"
-	Button button_DataBrowser_setaxis,pos={406.00,114.00},size={171.00,25.00},proc=DB_ButtonProc_AutoScale,title="Autoscale"
+	Button button_DataBrowser_setaxis,pos={406.00,84.00},size={171.00,25.00},proc=DB_ButtonProc_AutoScale,title="Autoscale"
 	Button button_DataBrowser_setaxis,help={"Autoscale sweep data"}
-	Button button_DataBrowser_setaxis,userdata(ResizeControlsInfo)= A"!!,I.J,hps!!#A:!!#=+z!!#N3Bk1ct<C^(Dzzzzzzzzzzzzz!!#N3Bk1ct<C^(Dz"
+	Button button_DataBrowser_setaxis,userdata(ResizeControlsInfo)= A"!!,I1!!#?a!!#A:!!#=+z!!#N3Bk1ct<C^(Dzzzzzzzzzzzzz!!#N3Bk1ct<C^(Dz"
 	Button button_DataBrowser_setaxis,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Duafnzzzzzzzzzzz"
 	Button button_DataBrowser_setaxis,userdata(ResizeControlsInfo) += A"zzz!!#u:Duafnzzzzzzzzzzzzzz!!!"
 	DefineGuide UGV0={FR,-187}
 	SetWindow kwTopWin,hook(ResizeControls)=ResizeControls#ResizeControlsHook
-	SetWindow kwTopWin,userdata(ResizeControlsInfo)= A"!!*'\"z!!#D!^]6_8zzzzzzzzzzzzzzzzzzzzz"
+	SetWindow kwTopWin,userdata(ResizeControlsInfo)= A"!!*'\"z!!#D#!!#@Fzzzzzzzzzzzzzzzzzzzzz"
 	SetWindow kwTopWin,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzzzzzzzzzzzzzzz"
 	SetWindow kwTopWin,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzzzzzzzzz!!!"
 	SetWindow kwTopWin,userdata(ResizeControlsGuides)=  "UGV0;"
-	SetWindow kwTopWin,userdata(ResizeControlsInfoUGV0)=  "NAME:UGV0;WIN:SettingsHistory;TYPE:User;HORIZONTAL:0;POSITION:396.00;GUIDE1:FR;GUIDE2:;RELPOSITION:-187;"
-	Execute/Q/Z "SetWindow kwTopWin sizeLimit={447,135,inf,inf}" // sizeLimit requires Igor 7 or later
+	SetWindow kwTopWin,userdata(ResizeControlsInfoUGV0)=  "NAME:UGV0;WIN:DataBrowser#SettingsHistoryPanel;TYPE:User;HORIZONTAL:0;POSITION:401.00;GUIDE1:FR;GUIDE2:;RELPOSITION:-187;"
+	Execute/Q/Z "SetWindow kwTopWin sizeLimit={447,110.25,inf,inf}" // sizeLimit requires Igor 7 or later
 	Display/W=(200,187,395,501)/FG=(FL,FT,UGV0,FB)/HOST=# 
 	ModifyGraph margin(right)=74
 	TextBox/C/N=text0/F=0/B=1/X=0.50/Y=2.02/E=2 ""
