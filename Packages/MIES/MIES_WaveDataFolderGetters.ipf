@@ -1115,6 +1115,7 @@ End
 /// - Removal of invalid units for "Stim Scale Factor", "DA Gain" and "AD Gain"
 /// - Addition of fourth column "EntrySourceType"
 /// - Fix unit and tolerance of "Repeat Sets"
+/// - Reapplying the dimension labels as the old ones were cut off after 31 bytes
 static Function UpgradeLabNotebook(panelTitle)
 	string panelTitle
 
@@ -1256,6 +1257,12 @@ static Function UpgradeLabNotebook(panelTitle)
 	// no upgrade for async entries also in the INDEP_HEADSTAGE layer
 
 	// no upgrade for basic entries like sweepNum only in first layer due to IP7 semantics change
+
+	if(WaveVersionIsSmaller(numericalKeys, 37))
+		// reapply the dimension labels as the old ones were cut off after 31 bytes
+		SetDimensionLabels(numericalKeys, numericalValues)
+		SetDimensionLabels(textualKeys, textualValues)
+	endif
 End
 
 /// @brief Return a wave reference to the text labnotebook keys

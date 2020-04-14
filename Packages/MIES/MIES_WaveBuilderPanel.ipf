@@ -900,11 +900,13 @@ static Function/S WBP_AssembleSetName([modName])
 	string modName
 	string AssembledBaseName = ""
 
+	variable maxLength = (MAX_OBJECT_NAME_LENGTH_IN_BYTES_SHORT - 1) / 2
+
 	ControlInfo/W=$panel setvar_WaveBuilder_baseName
 	if(ParamIsDefault(modName))
-		AssembledBaseName += s_value[0,15]
+		AssembledBaseName += s_value[0,maxLength]
 	else
-		AssembledBaseName += s_value[0,(15 - strlen(modName))]
+		AssembledBaseName += s_value[0,(maxLength - strlen(modName))]
 		AssembledBaseName += modName
 	endif
 	ControlInfo/W=$panel popup_WaveBuilder_OutputType

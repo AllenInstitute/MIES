@@ -3537,3 +3537,57 @@ Function RestoreDAEphysPanel([str])
 	CONF_RestoreDAEphys(jsonID, rewrittenConfigPath, middleOfExperiment = 1)
 	MIES_CONF#CONF_SaveDAEphys(fname)
 End
+
+static Function CheckLabnotebookKeys_IGNORE(keys, values)
+	WAVE/T keys
+	WAVE values
+
+	string lblKeys, lblValues, entry
+	variable i, numKeys
+
+	numKeys = DimSize(keys, COLS)
+	for(i = 0; i < numKeys; i += 1)
+		entry = keys[0][i]
+		lblKeys = GetDimLabel(keys, COLS, i)
+		lblValues = GetDimLabel(values, COLS, i)
+		CHECK_EQUAL_STR(entry, lblValues)
+		CHECK_EQUAL_STR(entry, lblKeys)
+	endfor
+end
+
+Function LabnotebookEntriesCanBeQueried_IGNORE(device)
+	string device
+
+	PGC_SetAndActivateControl(device, DAP_GetClampModeControl(I_CLAMP_MODE, 1), val = 1)
+End
+
+// UTF_TD_GENERATOR HardwareMain#DeviceNameGeneratorMD1
+Function LabnotebookEntriesCanBeQueried([str])
+	string str
+
+	STRUCT DAQSettings s
+	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG_1")
+
+	AcquireData(s, str, preAcquireFunc = LabnotebookEntriesCanBeQueried_IGNORE)
+End
+
+Function LabnotebookEntriesCanBeQueried_REENTRY([str])
+	string str
+
+	variable sweepNo, numKeys, i, j
+
+	CHECK_EQUAL_VAR(GetSetVariable(str, "SetVar_Sweep"), 1)
+
+	sweepNo = AFH_GetLastSweepAcquired(str)
+	CHECK_EQUAL_VAR(sweepNo, 0)
+
+	WAVE numericalKeys = GetLBNumericalKeys(str)
+	WAVE numericalValues = GetLBNumericalValues(str)
+
+	CheckLabnotebookKeys_IGNORE(numericalKeys, numericalValues)
+
+	WAVE textualKeys = GetLBTextualKeys(str)
+	WAVE textualValues = GetLBTextualValues(str)
+
+	CheckLabnotebookKeys_IGNORE(textualKeys, textualValues)
+End
