@@ -124,6 +124,7 @@ Function AE_WorksWithValidInput()
 
 	Make/FREE/N=(LABNOTEBOOK_LAYER_COUNT) values = NaN
 	ED_AddEntryToLabnotebook(device, "myKey" , values)
+	PASS()
 End
 
 Function AE_Works1()
