@@ -4673,6 +4673,9 @@ Function RemoveTracesFromGraph(graph, [kill, trace, wv, dfr])
 
 	// remove without calling TraceNameList or TraceNameToWaveRef
 	if(!kill && remove_all_traces)
+#if IgorVersion() >= 9.0
+		RemoveFromGraph/ALL/W=$graph
+#else
 		debugOnError = DisableDebugOnError()
 		do
 			try
@@ -4684,6 +4687,7 @@ Function RemoveTracesFromGraph(graph, [kill, trace, wv, dfr])
 				return removals
 			endtry
 		while(1)
+#endif
 	endif
 
 	traceList  = TraceNameList(graph, ";", 1 )
