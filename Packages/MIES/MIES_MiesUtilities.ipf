@@ -2164,6 +2164,8 @@ Function CreateTiledChannelGraph(graph, config, sweepNo, numericalValues,  textu
 			numSlots        += numDACs
 			totalVertBlocks += numDACs
 		endif
+	else
+		tgs.displayDAC = 0
 	endif
 	if(tgs.displayADC && numADCs > 0)
 
@@ -2174,6 +2176,8 @@ Function CreateTiledChannelGraph(graph, config, sweepNo, numericalValues,  textu
 			numSlots        += ADC_SLOT_MULTIPLIER * numADCs
 			totalVertBlocks += numADCs
 		endif
+	else
+		tgs.displayADC = 0
 	endif
 	if(tgs.displayTTL && numTTLs > 0)
 		if(tgs.overlayChannels)
@@ -2188,6 +2192,8 @@ Function CreateTiledChannelGraph(graph, config, sweepNo, numericalValues,  textu
 				totalVertBlocks += numTTLs
 			endif
 		endif
+	else
+		tgs.displayTTL = 0
 	endif
 
 	spacePerSlot = (1.0 - (totalVertBlocks - 1) * GRAPH_DIV_SPACING) / numSlots
