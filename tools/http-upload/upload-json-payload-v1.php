@@ -56,6 +56,12 @@ function create_unique_folder($basefolder)
 /// @brief Extract the file contents from the elements of the `payload` array
 function decode_contents($elem)
 {
+    // handle empty elements correctly which claim to be encoded
+    if(strlen($elem["contents"]) == 0)
+    {
+      return $elem["contents"];
+    }
+
     $encoding = get_array_value($elem, "encoding", "plain");
 
     if($encoding == "plain")
@@ -112,10 +118,13 @@ foreach($input["payload"] as $elem)
     $filename = tempnam($folder, sanitize_filename($elem["name"]) . ".");
     $contents = decode_contents($elem);
 
-    $ret = file_put_contents($filename, $contents);
-    if($ret == 0 || $ret == FALSE)
+    if(strlen($contents) > 0)
     {
-      die("Problem writing file " . $filename);
+      $ret = file_put_contents($filename, $contents);
+      if($ret == 0 || $ret == FALSE)
+      {
+        die("Problem writing file " . $filename);
+      }
     }
   }
 }
