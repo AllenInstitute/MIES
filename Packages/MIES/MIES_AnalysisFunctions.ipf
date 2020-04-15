@@ -88,6 +88,9 @@
 /// default, optional parameters, and their types, must be enclosed with `[]`.
 /// The list at #ANALYSIS_FUNCTION_PARAMS_TYPES holds all valid types.
 ///
+/// The optional function `_GetHelp` allows you to create per parameter help
+/// text which is shown in the Wavebuilder.
+///
 /// Example:
 ///
 /// \rst
@@ -102,6 +105,22 @@
 ///
 ///    Function/S MyAnalysisFunction_GetParams()
 ///        return "param1:variable,[optParam1:wave]"
+///    End
+///
+///    Function/S MyAnalysisFunction_GetHelp(name)
+///        string name, params
+///
+///        strswitch(name)
+///            case "param1":
+///                 return "This parameter helps in finding pink unicorns"
+///                 break
+///            case "optParam1":
+///                 return "This parameter delivers food right to your door"
+///                 break
+///            default:
+///                 ASSERT(0, "Unimplemented for parameter " + name)
+///                 break
+///        endswitch
 ///    End
 ///
 /// \endrst

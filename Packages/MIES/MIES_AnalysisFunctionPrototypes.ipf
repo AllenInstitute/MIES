@@ -63,3 +63,10 @@ End
 Function/S AF_PROTO_PARAM_GETTER_V3()
 
 End
+
+/// @brief Prototype function for the user supplied parameter help functions
+///
+Function/S AF_PROTO_PARAM_HELP_GETTER_V3(name)
+	string name
+
+End

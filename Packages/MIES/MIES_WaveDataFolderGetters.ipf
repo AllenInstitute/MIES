@@ -6370,22 +6370,23 @@ End
 /// @brief Return the list wave for the analysis parameter GUI
 Function/WAVE WBP_GetAnalysisParamGUIListWave()
 
-	variable versionOfWave = 2
+	variable versionOfWave = 3
 	DFREF dfr = GetWaveBuilderDataPath()
 	WAVE/T/Z/SDFR=dfr wv = analysisGUIListWave
 
 	if(ExistsWithCorrectLayoutVersion(wv, versionOfWave))
 		return wv
 	elseif(WaveExists(wv))
-		Redimension/N=(-1, 4) wv
+		Redimension/N=(-1, 5) wv
 	else
-		Make/T/N=(0, 4) dfr:analysisGUIListWave/WAVE=wv
+		Make/T/N=(0, 5) dfr:analysisGUIListWave/WAVE=wv
 	endif
 
 	SetDimLabel COLS, 0, Name, wv
 	SetDimLabel COLS, 1, Type, wv
 	SetDimLabel COLS, 2, Value, wv
 	SetDimLabel COLS, 3, Required, wv
+	SetDimLabel COLS, 4, Help, wv
 
 	SetWaveVersion(wv, versionOfWave)
 
@@ -6404,6 +6405,30 @@ Function/WAVE WBP_GetAnalysisParamGUISelWave()
 	endif
 
 	Make/B/N=(0) dfr:analysisGUISelWave/WAVE=wv
+
+	SetWaveVersion(wv, versionOfWave)
+
+	return wv
+End
+
+/// @brief Return the help wave for the analysis parameter GUI
+Function/WAVE WBP_GetAnalysisParamGUIHelpWave()
+
+	variable versionOfWave = 1
+	DFREF dfr = GetWaveBuilderDataPath()
+	WAVE/T/Z/SDFR=dfr wv = analysisGUIHelpWave
+
+	if(ExistsWithCorrectLayoutVersion(wv, versionOfWave))
+		return wv
+	endif
+
+	Make/T/N=(0, 5) dfr:analysisGUIHelpWave/WAVE=wv
+
+	SetDimLabel COLS, 0, Name, wv
+	SetDimLabel COLS, 1, Type, wv
+	SetDimLabel COLS, 2, Value, wv
+	SetDimLabel COLS, 3, Required, wv
+	SetDimLabel COLS, 4, Help, wv
 
 	SetWaveVersion(wv, versionOfWave)
 
