@@ -727,6 +727,7 @@ static Function AB_LoadUserCommentFromNWB(nwbFilePath, expFolder, device)
 
 	comment = IPNWB#ReadTextDataSetAsString(commentGroup, "userComment")
 	HDF5CloseGroup/Z commentGroup
+	IPNWB#H5_CloseFile(h5_fileID)
 
 	string/G targetDFR:userComment = comment
 End
