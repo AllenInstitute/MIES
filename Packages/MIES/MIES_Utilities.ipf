@@ -5065,6 +5065,9 @@ Function UploadCrashDumps()
 		return 0
 	endif
 
+	printf "Please wait while we upload %d crash dumps. This might take a while.\r", numFiles + numLogs
+	ControlWindowToFront()
+
 	jsonID = JSON_New()
 
 	JSON_AddString(jsonID, "/computer", GetEnvironmentVariable("COMPUTERNAME"))
