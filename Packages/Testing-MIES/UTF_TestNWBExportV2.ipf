@@ -10,6 +10,45 @@ static Function NoTestSuite()
 	FAIL()
 End
 
+// We want to check that the stored specification versions are the correct ones compared to the
+// `/nwb_version` attribute and the path components in `/specifications/core/X.Y.Z` and `/specifications/hdmf-common/A.B.C`
+//
+// In case that fails here check NWB_SPEC_VERSION, HDMF_SPEC_VERSION, NWB_VERSION in IPNWB
+static Function TestSpecVersions(fileID)
+	variable fileID
+
+	string groups, expected, version, group, groupVersion, namespaceVersion, globalVersion
+	string path, spec
+	variable numEntries, i, jsonID
+
+	globalVersion = IPNWB#ReadTextAttributeAsString(fileID, "/", "nwb_version")
+
+	groups = IPNWB#H5_ListGroups(fileID, "/specifications")
+	groups = SortList(groups)
+	expected = "core;hdmf-common;"
+	CHECK_EQUAL_STR(groups, expected)
+
+	numEntries = ItemsInList(groups)
+	for(i = 0; i < numEntries; i += 1)
+		group = StringFromList(i, groups)
+
+		path = "/specifications/" + group
+		groupVersion = IPNWB#H5_ListGroups(fileID, path)
+		groupVersion = RemoveEnding(groupVersion, ";")
+
+		if(!cmpstr(group, "core"))
+			CHECK_EQUAL_STR(groupVersion, globalVersion)
+		endif
+
+		path += "/" + groupVersion + "/namespace"
+		spec = IPNWB#ReadTextDataSetAsString(fileID, path)
+		jsonID = JSON_Parse(spec)
+		namespaceVersion = JSON_GetString(jsonID, "/namespaces/0/version")
+		CHECK_EQUAL_STR(groupVersion, namespaceVersion)
+		JSON_Release(jsonID)
+	endfor
+End
+
 static Function TestHistory(fileID)
 	variable fileID
 
@@ -577,6 +616,9 @@ Function TestNwbExportV2()
 
 	fileID = IPNWB#H5_OpenFile(discLocation)
 	CHECK_EQUAL_VAR(IPNWB#GetNWBMajorVersion(IPNWB#ReadNWBVersion(fileID)), NWB_VERSION)
+
+	// check stored specification versions
+	TestSpecVersions(fileID)
 
 	// check history
 	TestHistory(fileID)
