@@ -9,6 +9,16 @@
 /// @file MIES_AnalysisFunctions_PatchSeq.ipf
 /// @brief __PSQ__ Analysis functions for patch sequence
 ///
+/// The stimsets with the analysis functions attached are executed in the following order:
+/// - PSQ_DaScale (sub threshold)
+/// - PSQ_SquarePulse (long pulse)
+/// - PSQ_Rheobase (long pulse)
+/// - PSQ_DaScale (supra threshold)
+/// - PSQ_SquarePulse (short pulse)
+/// - PSQ_Rheobase (short pulse)
+/// - PSQ_Ramp
+/// - PSQ_Chirp
+///
 /// The Patch Seq analysis functions store various results in the labnotebook.
 ///
 /// For orientation the following table shows their relation. All labnotebook
