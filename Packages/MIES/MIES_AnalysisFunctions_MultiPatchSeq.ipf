@@ -833,23 +833,6 @@ static Function MSQ_GetLBNEntryForHeadstageSCI(numericalValues, sweepNo, type, s
 End
 
 /// @brief Return a list of required parameters for MSQ_FastRheoEst()
-///
-/// \rst
-///
-/// =========================== ========= ====================================================================
-/// Name                        Type      Description
-/// =========================== ========= ====================================================================
-/// SamplingMultiplier          variable  Sampling multiplier, use 1 for no multiplier
-/// MaximumDAScale              variable  Maximum allowed DAScale, set to NaN to turn the check off [pA]
-/// PostDAQDAScaleForFailedHS   variable  Failed headstages will be set to this DAScale value [pA]
-///                                       in the post set event
-/// PostDAQDAScale              variable  If true the found DAScale value will be set at the end of the set
-/// PostDAQDAScaleFactor        variable  Scaling factor for setting the DAScale of passed headstages
-///                                       at the end of the set
-/// PostDAQDAScaleMinOffset     variable  Mininum absolute offset value applied to the found DAScale [pA]
-/// =========================== ========= ====================================================================
-///
-/// \endrst
 Function/S MSQ_FastRheoEst_GetParams()
 	return "SamplingMultiplier:variable,"        + \
 		   "PostDAQDAScaleForFailedHS:variable," + \
@@ -857,6 +840,34 @@ Function/S MSQ_FastRheoEst_GetParams()
 		   "PostDAQDAScale:variable,"            + \
 		   "PostDAQDAScaleFactor:variable,"      + \
 		   "MaximumDAScale:variable"
+End
+
+Function/S MSQ_FastRheoEst_GetHelp(name)
+	string name
+
+	strswitch(name)
+		case "SamplingMultiplier":
+			return "Sampling multiplier, use 1 for no multiplier"
+			break
+		case "MaximumDAScale":
+			return "Maximum allowed DAScale, set to NaN to turn the check off [pA]"
+			break
+		case "PostDAQDAScaleMinOffset":
+			return "Mininum absolute offset value applied to the found DAScale [pA]"
+			break
+		case "PostDAQDAScaleForFailedHS":
+			return "Failed headstages will be set to this DAScale value [pA] in the post set event"
+			break
+		case "PostDAQDAScale":
+			return "If true the found DAScale value will be set at the end of the set"
+			break
+		case "PostDAQDAScaleFactor":
+			return "Scaling factor for setting the DAScale of passed headstages at the end of the set"
+			break
+		default:
+			ASSERT(0, "Unimplemented for parameter " + name)
+			break
+	endswitch
 End
 
 /// @brief Analysis function to find the smallest DAScale where the cell spikes
@@ -1351,10 +1362,21 @@ static Function MSQ_GetLastPassingLongRHSweep(panelTitle, headstage)
 End
 
 /// @brief Require parameters from stimset
-///
-/// - DAScales (Numeric wave): DA Scale Factors in pA
 Function/S MSQ_DAScale_GetParams()
 	return "DAScales:wave"
+End
+
+Function/S MSQ_DAScale_GetHelp(name)
+	string name
+
+	strswitch(name)
+		case "DAScales":
+			return "DA Scale Factors in pA"
+			break
+		default:
+			ASSERT(0, "Unimplemented for parameter " + name)
+			break
+	endswitch
 End
 
 /// @brief Analysis function to apply a list of DAScale values to a range of sweeps
