@@ -2766,9 +2766,9 @@ static Function DAP_CheckStimset(panelTitle, channelType, channel, headstage)
 						return 1
 					endif
 
-					numEntries = ItemsInList(reqNames, ",")
-					for(k = 0; j < numEntries; k += 1)
-						reqName = StringFromList(j, reqNames, ",")
+					numEntries = ItemsInList(reqNames)
+					for(k = 0; k < numEntries; k += 1)
+						reqName = StringFromList(k, reqNames)
 
 						if(!AFH_IsValidAnalysisParameter(reqName))
 							printf "(%s) The required analysis parameter %s for %s in stim set %s has the invalid name %s.\r", panelTitle, name, func, setName, reqName
