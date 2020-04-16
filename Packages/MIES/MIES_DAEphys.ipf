@@ -2168,15 +2168,15 @@ Function DAP_CheckSettings(panelTitle, mode)
 				WAVE numericalValues = GetLBNumericalValues(panelTitle)
 				WAVE textualValues   = GetLBTextualValues(panelTitle)
 				lastITI   = GetLastSweepWithSettingIndep(numericalValues, "Inter-trial interval", sweepNo)
-				
+
 				if(IsFinite(lastITI))
 					lastStart = GetLastSettingTextIndep(textualValues, sweepNo, HIGH_PREC_SWEEP_START_KEY, DATA_ACQUISITION_MODE)
-	
+
 					if(IsFinite(lastITI) && !IsEmpty(lastStart))
 						lastStartSeconds = ParseISO8601TimeStamp(lastStart)
 						nextStart        = DateTimeInUTC()
 						leftTime         = lastStartSeconds + lastITI - nextStart
-	
+
 						if(leftTime > 0)
 							printf "(%s) The next sweep can not be started as that would break the required inter trial interval. Please wait another %g seconds.\r", panelTitle, leftTime
 							ControlWindowToFront()
