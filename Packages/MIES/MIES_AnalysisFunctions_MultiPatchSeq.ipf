@@ -870,6 +870,35 @@ Function/S MSQ_FastRheoEst_GetHelp(name)
 	endswitch
 End
 
+Function/S MSQ_FastRheoEst_CheckParam(string name, string params)
+
+	variable val
+
+	strswitch(name)
+		case "PostDAQDAScaleMinOffset":
+			val = AFH_GetAnalysisParamNumerical(name, params)
+			if(!(val >= 0))
+				return "Must be zero or positive."
+			endif
+			break
+		case "PostDAQDAScaleForFailedHS":
+			val = AFH_GetAnalysisParamNumerical(name, params)
+			if(!IsFinite(val))
+				return "Must be finite."
+			endif
+			break
+		case "SamplingMultiplier":
+			val = AFH_GetAnalysisParamNumerical(name, params)
+			if(!IsValidSamplingMultiplier(val))
+				return "Not valid."
+			endif
+			break
+	endswitch
+
+	// other parameters are not checked
+	return ""
+End
+
 /// @brief Analysis function to find the smallest DAScale where the cell spikes
 ///
 /// Prerequisites:
@@ -939,12 +968,6 @@ Function MSQ_FastRheoEst(panelTitle, s)
 
 			multiplier = AFH_GetAnalysisParamNumerical("SamplingMultiplier", s.params)
 
-			if(!IsValidSamplingMultiplier(multiplier))
-				printf "(%s): The sampling multiplier of %g passed as analysis parameter is invalid.\r", panelTitle, multiplier
-				ControlWindowToFront()
-				return 1
-			endif
-
 			PGC_SetAndActivateControl(panelTitle, "Popup_Settings_SampIntMult", str = num2str(multiplier))
 
 			DisableControls(panelTitle, "Button_DataAcq_SkipBackwards;Button_DataAcq_SkipForward")
@@ -976,12 +999,6 @@ Function MSQ_FastRheoEst(panelTitle, s)
 			endif
 
 			minRheoOffset = AFH_GetAnalysisParamNumerical("PostDAQDAScaleMinOffset", s.params)
-
-			if(!(minRheoOffset >= 0))
-				printf "(%s): Analysis parameter \"PostDAQDAScaleMinOffset\" must be zero or positive.\r", panelTitle
-				ControlWindowToFront()
-				return 1
-			endif
 
 			WAVE statusHSIC = MSQ_GetActiveHeadstages(panelTitle, I_CLAMP_MODE)
 
@@ -1223,7 +1240,6 @@ Function MSQ_FastRheoEst(panelTitle, s)
 					val = max(postDAQDAScaleFactor * finalDAScale[0], minRheoOffset * 1e-12 + finalDAScale[0])
 				else
 					val = AFH_GetAnalysisParamNumerical("PostDAQDAScaleForFailedHS", s.params) * 1e-12
-					ASSERT(IsFinite(val), "PostDAQDAScaleForFailedHS is not finite.")
 				endif
 
 				SetDAScale(panelTitle, i, val)
