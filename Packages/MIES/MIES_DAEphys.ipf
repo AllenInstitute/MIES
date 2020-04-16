@@ -2035,6 +2035,7 @@ Function DAP_CheckSettings(panelTitle, mode)
 	variable numDACs, numADCs, numHS, numEntries, i, clampMode, headstage, decFactor
 	variable ampSerial, ampChannelID, minValue, maxValue, hardwareType, hwChannel
 	variable lastStartSeconds, lastITI, nextStart, leftTime, sweepNo, validSampInt
+	variable DACchannel
 	string ctrl, endWave, ttlWave, dacWave, refDacWave, reqParams
 	string list, lastStart
 
@@ -2055,6 +2056,29 @@ Function DAP_CheckSettings(panelTitle, mode)
 			ControlWindowToFront()
 			return 1
 		endif
+	endif
+
+	if(mode == DATA_ACQUISITION_MODE)
+		WAVE statusHS = DAG_GetChannelState(panelTitle, CHANNEL_TYPE_HEADSTAGE)
+		numEntries = DimSize(statusHS, ROWS)
+		for(i = 0; i < numEntries; i += 1)
+			if(!statusHS[i])
+				continue
+			endif
+
+			DACchannel = AFH_GetDACFromHeadstage(panelTitle, i)
+
+			if(!IsFinite(DACchannel))
+				continue
+			endif
+
+			WAVE/T stimsets = IDX_GetSetsInRange(panelTitle, DACchannel, CHANNEL_TYPE_DAC, 1)
+			ASSERT(DimSize(stimsets, ROWS) == 1, "Unexpected stimsets size")
+
+			if(DAP_CheckAnalysisFunctionAndParameter(panelTitle, stimsets[0]))
+				return 1
+			endif
+		endfor
 	endif
 
 	if(mode == DATA_ACQUISITION_MODE && AFM_CallAnalysisFunctions(panelTitle, PRE_DAQ_EVENT))
@@ -2668,6 +2692,10 @@ static Function DAP_CheckAnalysisFunctionAndParameter(panelTitle, setName)
 	WAVE/Z stimSet = WB_CreateAndGetStimSet(setName)
 	if(!WaveExists(stimSet))
 		// we complain later on this error
+		return 0
+	endif
+
+	if(DAG_GetNumericalValue(panelTitle, "Check_Settings_SkipAnalysFuncs"))
 		return 0
 	endif
 

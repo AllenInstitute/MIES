@@ -1511,7 +1511,7 @@ static Function AFT14b_REENTRY([str])
 
 	WAVE anaFuncTracker = TrackAnalysisFunctionCalls()
 
-	CHECK_EQUAL_VAR(anaFuncTracker[PRE_DAQ_EVENT], 1)
+	CHECK_EQUAL_VAR(anaFuncTracker[PRE_DAQ_EVENT], 0)
 	CHECK_EQUAL_VAR(anaFuncTracker[PRE_SET_EVENT], 0)
 	CHECK_EQUAL_VAR(anaFuncTracker[PRE_SWEEP_EVENT], 0)
 	CHECK(anaFuncTracker[MID_SWEEP_EVENT] >= 0)
@@ -1561,7 +1561,7 @@ static Function AFT14c_REENTRY([str])
 
 	WAVE anaFuncTracker = TrackAnalysisFunctionCalls()
 
-	CHECK_EQUAL_VAR(anaFuncTracker[PRE_DAQ_EVENT], 1)
+	CHECK_EQUAL_VAR(anaFuncTracker[PRE_DAQ_EVENT], 0)
 	CHECK_EQUAL_VAR(anaFuncTracker[PRE_SET_EVENT], 0)
 	CHECK_EQUAL_VAR(anaFuncTracker[PRE_SWEEP_EVENT], 0)
 	CHECK(anaFuncTracker[MID_SWEEP_EVENT] >= 0)

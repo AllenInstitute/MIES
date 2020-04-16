@@ -25,8 +25,10 @@
 /// =========== ============================================== ===============================================================
 /// Event        Description                                    Specialities
 /// =========== ============================================== ===============================================================
-/// Pre DAQ      Before any DAQ occurs                          Called before the settings are validated. With Indexing on only
-///                                                             the analysis function of the first stimset will receive that event.
+/// Pre DAQ      Before any DAQ occurs                          Called before the settings are validated completely, only the
+///                                                             analysis parameters are validated if present. With Indexing ON,
+///                                                             only the analysis function of the first stimset will receive
+///                                                             that event.
 /// Mid Sweep    Each time when new data is polled              Available for background DAQ only.
 ///                                                             Will always be called at least once and
 ///                                                             also with the full stimset acquired.
