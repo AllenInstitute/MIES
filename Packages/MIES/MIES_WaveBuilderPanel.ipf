@@ -1986,6 +1986,13 @@ static Function/S WBP_GetAnalysisParameters()
 	return WPT[%$"Analysis function params (encoded)"][%Set][INDEP_EPOCH_TYPE]
 End
 
+static Function/S WBP_GetAnalysisGenericFunction()
+
+	WAVE/T WPT = GetWaveBuilderWaveTextParam()
+
+	return WPT[%$("Analysis function (generic)")][%Set][INDEP_EPOCH_TYPE]
+End
+
 /// @brief Return the analysis parameter names for the currently
 ///        selected stimset
 Function/S WBP_GetAnalysisParameterNames()
@@ -2011,9 +2018,7 @@ static Function WBP_UpdateParameterWave()
 	WAVE   selWave  = WBP_GetAnalysisParamGUISelWave()
 	WAVE/T helpWave = WBP_GetAnalysisParamGUIHelpWave()
 
-	WAVE/T WPT = GetWaveBuilderWaveTextParam()
-
-	genericFunc = WPT[%$("Analysis function (generic)")][%Set][INDEP_EPOCH_TYPE]
+	genericFunc = WBP_GetAnalysisGenericFunction()
 
 	suggParams = AFH_GetListOfAnalysisParams(genericFunc, REQUIRED_PARAMS | OPTIONAL_PARAMS)
 	suggNames = AFH_GetListOfAnalysisParamNames(suggParams)
