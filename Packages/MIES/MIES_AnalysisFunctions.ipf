@@ -90,6 +90,13 @@
 /// default, optional parameters, and their types, must be enclosed with `[]`.
 /// The list at #ANALYSIS_FUNCTION_PARAMS_TYPES holds all valid types.
 ///
+/// The optional function `_CheckParam` allows you to validate passed
+/// parameters. In case of a valid parameter it must return an emtpy string and
+/// an error message in case of failure. Parameters which don't pass can
+/// neither be added to stimsets nor can they be used for data acquisition.
+/// Optional parameters are only checked if they are present in the stimulus
+/// set so you don't need to handle that case special.
+///
 /// The optional function `_GetHelp` allows you to create per parameter help
 /// text which is shown in the Wavebuilder.
 ///
@@ -107,6 +114,29 @@
 ///
 ///    Function/S MyAnalysisFunction_GetParams()
 ///        return "param1:variable,[optParam1:wave]"
+///    End
+///
+///    Function/S MyAnalysisFunction_CheckParam(name, params)
+///        string name, params
+///
+///        variable value
+///
+///        strswitch(name)
+///            case "param1":
+///                value = AFH_GetAnalysisParamNumerical(name, params)
+///                if(!IsFinite(value) || !(value >= 0 && value <= 100))
+///                    return "Needs to be between 0 and 100."
+///                endif
+///                break
+///            case "optParam1":
+///                WAVE/Z wv = AFH_GetAnalysisParamWave(name, params)
+///                if(!WaveExists(wv) || !IsFloatingPointWave(wv))
+///                    return "Needs to be an existing floating point wave."
+///                break
+///        endswitch
+///
+///        // default to passing for other parameters
+///        return ""
 ///    End
 ///
 ///    Function/S MyAnalysisFunction_GetHelp(name)

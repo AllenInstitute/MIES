@@ -1,4 +1,4 @@
-﻿#pragma TextEncoding = "UTF-8"
+#pragma TextEncoding = "UTF-8"
 #pragma rtGlobals=3 // Use modern global access method and strict wave access.
 #pragma ModuleName=AnalysisFunctionTesting
 
@@ -1568,6 +1568,203 @@ static Function AFT14c_REENTRY([str])
 	CHECK_EQUAL_VAR(anaFuncTracker[POST_SWEEP_EVENT], 0)
 	CHECK_EQUAL_VAR(anaFuncTracker[POST_SET_EVENT], 0)
 	CHECK_EQUAL_VAR(anaFuncTracker[POST_DAQ_EVENT], 0)
+	CHECK_EQUAL_VAR(anaFuncTracker[GENERIC_EVENT], 0)
+End
+
+static Function SetParams5_IGNORE(device)
+	string device
+
+	string stimSet = "AnaFuncParams5_DA_0"
+	WBP_AddAnalysisParameter(stimSet, "MyStr", str = "INVALIDCONTENT")
+	WBP_AddAnalysisParameter(stimSet, "MyNum", var = 123)
+End
+
+// test parameter handling with analysis parameter check and help function and
+// non-passing check
+// UTF_TD_GENERATOR HardwareMain#DeviceNameGeneratorMD1
+static Function AFT14d([str])
+	string str
+
+	STRUCT DAQSettings s
+	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG_1")
+
+	FUNCREF CALLABLE_PROTO f = SetParams5_IGNORE
+
+	try
+		ClearRTError()
+		AcquireData(s, "AnaFuncParams5_DA_0", str, postInitializeFunc = f); AbortOnRTE
+		FAIL()
+	catch
+		ClearRTError()
+		PASS()
+	endtry
+End
+
+static Function AFT14d_REENTRY([str])
+	string str
+
+	variable sweepNo
+	string key
+
+	CHECK_EQUAL_VAR(GetSetVariable(str, "SetVar_Sweep"), 0)
+
+	sweepNo = AFH_GetLastSweepAcquired(str)
+	CHECK_EQUAL_VAR(sweepNo, NaN)
+
+	WAVE anaFuncTracker = TrackAnalysisFunctionCalls()
+
+	CHECK_EQUAL_VAR(anaFuncTracker[PRE_DAQ_EVENT], 0)
+	CHECK_EQUAL_VAR(anaFuncTracker[PRE_SET_EVENT], 0)
+	CHECK_EQUAL_VAR(anaFuncTracker[PRE_SWEEP_EVENT], 0)
+	CHECK_EQUAL_VAR(anaFuncTracker[MID_SWEEP_EVENT], 0)
+	CHECK_EQUAL_VAR(anaFuncTracker[POST_SWEEP_EVENT], 0)
+	CHECK_EQUAL_VAR(anaFuncTracker[POST_SET_EVENT], 0)
+	CHECK_EQUAL_VAR(anaFuncTracker[POST_DAQ_EVENT], 0)
+	CHECK_EQUAL_VAR(anaFuncTracker[GENERIC_EVENT], 0)
+End
+
+static Function SetParams6_IGNORE(device)
+	string device
+
+	string stimSet = "AnaFuncParams5_DA_0"
+	WBP_AddAnalysisParameter(stimSet, "MyStr", str = "ValidContent")
+	WBP_AddAnalysisParameter(stimSet, "MyNum", var = NaN)
+End
+
+// Test parameter handling with analysis parameter check and help function
+// - Check asserts out on MyNum == NaN
+// - Help also asserts out but that is silently ignored
+// - Asserting out is equal to not passing the check function
+// UTF_TD_GENERATOR HardwareMain#DeviceNameGeneratorMD1
+static Function AFT14e([str])
+	string str
+
+	STRUCT DAQSettings s
+	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG_1")
+
+	FUNCREF CALLABLE_PROTO f = SetParams6_IGNORE
+
+	try
+		ClearRTError()
+		AcquireData(s, "AnaFuncParams5_DA_0", str, postInitializeFunc = f); AbortOnRTE
+		FAIL()
+	catch
+		ClearRTError()
+		PASS()
+	endtry
+End
+
+static Function AFT14e_REENTRY([str])
+	string str
+
+	variable sweepNo
+	string key
+
+	CHECK_EQUAL_VAR(GetSetVariable(str, "SetVar_Sweep"), 0)
+
+	sweepNo = AFH_GetLastSweepAcquired(str)
+	CHECK_EQUAL_VAR(sweepNo, NaN)
+
+	WAVE anaFuncTracker = TrackAnalysisFunctionCalls()
+
+	CHECK_EQUAL_VAR(anaFuncTracker[PRE_DAQ_EVENT], 0)
+	CHECK_EQUAL_VAR(anaFuncTracker[PRE_SET_EVENT], 0)
+	CHECK_EQUAL_VAR(anaFuncTracker[PRE_SWEEP_EVENT], 0)
+	CHECK_EQUAL_VAR(anaFuncTracker[MID_SWEEP_EVENT], 0)
+	CHECK_EQUAL_VAR(anaFuncTracker[POST_SWEEP_EVENT], 0)
+	CHECK_EQUAL_VAR(anaFuncTracker[POST_SET_EVENT], 0)
+	CHECK_EQUAL_VAR(anaFuncTracker[POST_DAQ_EVENT], 0)
+	CHECK_EQUAL_VAR(anaFuncTracker[GENERIC_EVENT], 0)
+End
+
+static Function SetParams7_IGNORE(device)
+	string device
+
+	string stimSet = "AnaFuncParams5_DA_0"
+	WBP_AddAnalysisParameter(stimSet, "MyStr", str = "ValidContent")
+	WBP_AddAnalysisParameter(stimSet, "MyNum", var = 1)
+End
+
+// test parameter handling with analysis parameter check and help function
+// - Checks pass
+// UTF_TD_GENERATOR HardwareMain#DeviceNameGeneratorMD1
+static Function AFT14f([str])
+	string str
+
+	STRUCT DAQSettings s
+	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG_1")
+
+	FUNCREF CALLABLE_PROTO f = SetParams7_IGNORE
+
+	AcquireData(s, "AnaFuncParams5_DA_0", str, postInitializeFunc = f)
+End
+
+static Function AFT14f_REENTRY([str])
+	string str
+
+	variable sweepNo
+	string key
+
+	CHECK_EQUAL_VAR(GetSetVariable(str, "SetVar_Sweep"), 1)
+
+	sweepNo = AFH_GetLastSweepAcquired(str)
+	CHECK_EQUAL_VAR(sweepNo, 0)
+
+	WAVE anaFuncTracker = TrackAnalysisFunctionCalls()
+
+	CHECK_EQUAL_VAR(anaFuncTracker[PRE_DAQ_EVENT], 1)
+	CHECK_EQUAL_VAR(anaFuncTracker[PRE_SET_EVENT], 1)
+	CHECK_EQUAL_VAR(anaFuncTracker[PRE_SWEEP_EVENT], 1)
+	CHECK(anaFuncTracker[MID_SWEEP_EVENT] >= 1)
+	CHECK_EQUAL_VAR(anaFuncTracker[POST_SWEEP_EVENT], 1)
+	CHECK_EQUAL_VAR(anaFuncTracker[POST_SET_EVENT], 0)
+	CHECK_EQUAL_VAR(anaFuncTracker[POST_DAQ_EVENT], 1)
+	CHECK_EQUAL_VAR(anaFuncTracker[GENERIC_EVENT], 0)
+End
+
+static Function SetParams8_IGNORE(device)
+	string device
+
+	string stimSet = "AnaFuncParams5_DA_0"
+	WBP_AddAnalysisParameter(stimSet, "MyStr", str = "ValidContent")
+	WBP_AddAnalysisParameter(stimSet, "MyNum", var = 1)
+End
+
+// test parameter handling with analysis parameter check and help function
+// - Checks pass, MyNum is not present and optional and is therefore not checked
+//   (the check would assert out)
+// UTF_TD_GENERATOR HardwareMain#DeviceNameGeneratorMD1
+static Function AFT14g([str])
+	string str
+
+	STRUCT DAQSettings s
+	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG_1")
+
+	FUNCREF CALLABLE_PROTO f = SetParams8_IGNORE
+
+	AcquireData(s, "AnaFuncParams5_DA_0", str, postInitializeFunc = f)
+End
+
+static Function AFT14g_REENTRY([str])
+	string str
+
+	variable sweepNo
+	string key
+
+	CHECK_EQUAL_VAR(GetSetVariable(str, "SetVar_Sweep"), 1)
+
+	sweepNo = AFH_GetLastSweepAcquired(str)
+	CHECK_EQUAL_VAR(sweepNo, 0)
+
+	WAVE anaFuncTracker = TrackAnalysisFunctionCalls()
+
+	CHECK_EQUAL_VAR(anaFuncTracker[PRE_DAQ_EVENT], 1)
+	CHECK_EQUAL_VAR(anaFuncTracker[PRE_SET_EVENT], 1)
+	CHECK_EQUAL_VAR(anaFuncTracker[PRE_SWEEP_EVENT], 1)
+	CHECK(anaFuncTracker[MID_SWEEP_EVENT] >= 1)
+	CHECK_EQUAL_VAR(anaFuncTracker[POST_SWEEP_EVENT], 1)
+	CHECK_EQUAL_VAR(anaFuncTracker[POST_SET_EVENT], 0)
+	CHECK_EQUAL_VAR(anaFuncTracker[POST_DAQ_EVENT], 1)
 	CHECK_EQUAL_VAR(anaFuncTracker[GENERIC_EVENT], 0)
 End
 

@@ -2682,7 +2682,7 @@ static Function DAP_CheckAnalysisFunctionAndParameter(panelTitle, setName)
 
 	string func, listOfAnalysisFunctions
 	string info, str, suppParams, suppName, suppType, reqNamesAndTypesFromFunc, reqNames, reqName
-	string diff, name, type, suppNames, reqType
+	string diff, name, type, suppNames, reqType, errorMessage
 	variable i, j, numEntries
 
 	if(!CmpStr(setName, STIMSET_TP_WHILE_DAQ))
@@ -2799,6 +2799,14 @@ static Function DAP_CheckAnalysisFunctionAndParameter(panelTitle, setName)
 					break
 			endswitch
 		endfor
+
+		errorMessage = AFH_CheckAnalysisParameter(func, suppParams)
+		if(!IsEmpty(errorMessage))
+			printf "(%s) The analysis parameter check for function %s in stim set %s did not pass.\r", panelTitle, func, setName
+			print errorMessage
+			ControlWindowToFront()
+			return 1
+		endif
 	endfor
 End
 

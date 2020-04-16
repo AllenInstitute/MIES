@@ -562,7 +562,7 @@ End
 Function WBP_ButtonProc_SaveSet(ba) : ButtonControl
 	STRUCT WMButtonAction &ba
 
-	string setName
+	string setName, genericFunc, params, errorMessage
 
 	switch(ba.eventCode)
 		case 2: // mouse up
@@ -572,6 +572,17 @@ Function WBP_ButtonProc_SaveSet(ba) : ButtonControl
 				printf "The stimset %s can not be saved as it violates the naming scheme "       + \
 					   "for user stimsets. Check the checkbox above if you really want to save " + \
 					   "a builtin stimset.\r", setName
+				ControlWindowToFront()
+				break
+			endif
+
+			genericFunc = WBP_GetAnalysisGenericFunction()
+			params = WBP_GetAnalysisParameters()
+			errorMessage = AFH_CheckAnalysisParameter(genericFunc, params)
+
+			if(!IsEmpty(errorMessage))
+				printf "The analysis parameters are not valid and the stimset can therefore not be saved.\r"
+				print errorMessage
 				ControlWindowToFront()
 				break
 			endif

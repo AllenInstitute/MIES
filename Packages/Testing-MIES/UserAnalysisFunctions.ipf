@@ -435,6 +435,62 @@ Function Params4_V3(panelTitle, s)
 	anaFuncTracker[s.eventType] += 1
 End
 
+Function/S Params5_V3_CheckParam(name, params)
+	string name, params
+
+	string str
+	variable var
+
+	strswitch(name)
+		case "MyStr":
+			str = AFH_GetAnalysisParamTextual(name, params)
+			if(!cmpstr(str, "INVALIDCONTENT"))
+				return "Nope that is not valid content"
+			endif
+			break
+		case "MyNum":
+			var = AFH_GetAnalysisParamNumerical(name, params)
+			if(!IsFinite(var))
+				ASSERT(0, "trying to bug out")
+			endif
+		default:
+			// default to passing for other parameters
+			return ""
+			break
+	endswitch
+
+	return ""
+End
+
+Function/S Params5_V3_GetHelp(string name)
+	string str
+
+	strswitch(name)
+		case "MyStr":
+			return "That is actually a useless parameter"
+		case "MyNum":
+			ASSERT(0, "trying to bug out")
+			break
+	endswitch
+
+	return ""
+End
+
+Function/S Params5_V3_GetParams()
+	return "MyStr:string,[MyNum:variable]"
+End
+
+Function Params5_V3(panelTitle, s)
+	string panelTitle
+	STRUCT AnalysisFunction_V3& s
+
+	WAVE anaFuncTracker = TrackAnalysisFunctionCalls()
+
+	CHECK(s.eventType >= 0 && s.eventType < TOTAL_NUM_EVENTS && s.eventType != GENERIC_EVENT)
+	CHECK(s.eventType >= 0 && s.eventType < DimSize(anaFuncTracker, ROWS))
+	anaFuncTracker[s.eventType] += 1
+End
+
 Function ChangeToSingleDeviceDAQAF(panelTitle, eventType, HardwareDataWave, headStage, realDataLength)
 	string panelTitle
 	variable eventType
