@@ -5052,7 +5052,9 @@ End
 Function UploadCrashDumps()
 
 	string diagSymbPath, basePath, diagPath
-	variable jsonID, numFiles, numLogs
+	variable jsonID, numFiles, numLogs, referenceTime
+
+	referenceTime = DEBUG_TIMER_START()
 
 	diagSymbPath = GetSymbolicPathForDiagnosticsDirectory()
 
@@ -5084,16 +5086,24 @@ Function UploadCrashDumps()
 		AddPayloadEntries(jsonID, logs, isBinary = 1)
 	endif
 
-	UploadJSONPayload(jsonID)
-	JSON_Release(jsonID)
-
 	PathInfo $diagSymbPath
 	diagPath = S_path
 
 	basePath = GetUniqueSymbolicPath()
 	NewPath/Q/O/Z $basePath diagPath + "..:"
 
+#ifdef DEBUGGING_ENABLED
+	SaveTextFile(JSON_dump(jsonID, indent=4), diagPath + "..:" + UniqueFileOrFolder(basePath, "crash-dumps", suffix = ".json"))
+#endif // DEBUGGING_ENABLED
+
+	UploadJSONPayload(jsonID)
+	JSON_Release(jsonID)
+
+#ifndef DEBUGGING_ENABLED
 	MoveFolder/P=$basePath "Diagnostics" as UniqueFileOrFolder(basePath, "Diagnostics_old")
+#endif // DEBUGGING_ENABLED
+
+	DEBUGPRINT_ELAPSED(referenceTime)
 
 	return 1
 End
