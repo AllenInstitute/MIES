@@ -6,6 +6,9 @@
 // - Create an `uploads` folder and place the `.htaccess` file there
 // - Try it out with curl
 //   curl -X PUT -d '{"payload" : [{"name" : "abcd.txt", "contents" : "abcd"}]}' https://ai.customers.byte-physics.de/upload-json-payload-v1.php
+// - Uploading full JSON files can be done with
+//   curl -X PUT -d "@e:\crash-dumps.json"  https://ai.customers.byte-physics.de/upload-json-payload-v1.php
+// - Adding -o output.txt to the curl commands will enable the progress meter.
 //
 // Example JSON file
 //
