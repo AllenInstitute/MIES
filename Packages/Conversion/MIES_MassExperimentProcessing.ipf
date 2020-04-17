@@ -116,6 +116,8 @@ static Function ProcessCurrentExperiment(prefs)
 			print "Caught an RTE"
 			JSON_AddBoolean(jsonID, "/log/" + num2str(index) + "/error", 1)
 			JSON_SetVariable(jsonID, "/errors", JSON_GetVariable(jsonID, "/errors") + 1)
+			HDF5CloseFile/A/Z 0
+			DeleteFile/Z outputFilePath
 		endtry
 
 		Notebook HistoryCarbonCopy getData=1
