@@ -6,6 +6,9 @@
 // - Create an `uploads` folder and place the `.htaccess` file there
 // - Try it out with curl
 //   curl -X PUT -d '{"payload" : [{"name" : "abcd.txt", "contents" : "abcd"}]}' https://ai.customers.byte-physics.de/upload-json-payload-v1.php
+// - Uploading full JSON files can be done with
+//   curl -X PUT -d "@e:\crash-dumps.json"  https://ai.customers.byte-physics.de/upload-json-payload-v1.php
+// - Adding -o output.txt to the curl commands will enable the progress meter.
 //
 // Example JSON file
 //
@@ -56,6 +59,12 @@ function create_unique_folder($basefolder)
 /// @brief Extract the file contents from the elements of the `payload` array
 function decode_contents($elem)
 {
+    // handle empty elements correctly which claim to be encoded
+    if(strlen($elem["contents"]) == 0)
+    {
+      return $elem["contents"];
+    }
+
     $encoding = get_array_value($elem, "encoding", "plain");
 
     if($encoding == "plain")
@@ -112,10 +121,13 @@ foreach($input["payload"] as $elem)
     $filename = tempnam($folder, sanitize_filename($elem["name"]) . ".");
     $contents = decode_contents($elem);
 
-    $ret = file_put_contents($filename, $contents);
-    if($ret == 0 || $ret == FALSE)
+    if(strlen($contents) > 0)
     {
-      die("Problem writing file " . $filename);
+      $ret = file_put_contents($filename, $contents);
+      if($ret == 0 || $ret == FALSE)
+      {
+        die("Problem writing file " . $filename);
+      }
     }
   }
 }
