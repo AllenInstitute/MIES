@@ -730,7 +730,7 @@ static Function NWB_AppendSweepLowLevel(locationID, panelTitle, ITCDataWave, ITC
 	ASSERT(Sum(statusHS, 0, NUM_HEADSTAGES - 1) >= 1, "Expected at least one active headstage.")
 
 	// 1a4b8e59 (Changes to Tango Interact, 2014-09-03)
-	WAVE/T stimSets = GetLastSetting(textualValues, sweep, STIM_WAVE_NAME_KEY, DATA_ACQUISITION_MODE)
+	WAVE/T/Z stimSets = GetLastSetting(textualValues, sweep, STIM_WAVE_NAME_KEY, DATA_ACQUISITION_MODE)
 	ASSERT(WaveExists(stimSets), "Labnotebook is too old for NWB export.")
 
 	// 95402da6 (NWB: Allow documenting the physical electrode, 2016-08-05)
