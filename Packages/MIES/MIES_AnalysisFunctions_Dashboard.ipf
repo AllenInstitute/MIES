@@ -75,16 +75,16 @@ static Function AD_FillWaves(panelTitle, list, info)
 	index = GetNumberFromWaveNote(list, NOTE_INDEX)
 
 	key = StringFromList(GENERIC_EVENT, EVENT_NAME_LIST_LBN)
-	WAVE/Z sweeps = GetSweepsWithSetting(textualValues, key)
+	WAVE/Z sweepsWithGenericFunc = GetSweepsWithSetting(textualValues, key)
 
-	if(!WaveExists(sweeps))
+	if(!WaveExists(sweepsWithGenericFunc))
 		return 0
 	endif
 
-	numEntries = DimSize(sweeps, ROWS)
+	numEntries = DimSize(sweepsWithGenericFunc, ROWS)
 	for(i = 0; i < numEntries; i += 1)
 
-		sweepNo = sweeps[i]
+		sweepNo = sweepsWithGenericFunc[i]
 
 		key = StringFromList(GENERIC_EVENT, EVENT_NAME_LIST_LBN)
 		WAVE/Z/T anaFuncs = GetLastSetting(textualValues, sweepNo, key, DATA_ACQUISITION_MODE)
