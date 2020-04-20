@@ -584,7 +584,7 @@ Function/S LBN_GetLBTextualKeys(graph)
 
 	WAVE/T textualKeys = GetAnalysLBTextualKeys(expFolder, device)
 
-	return GetLabNotebookSortedKeys(textualKeys)
+	return TextWaveToList(GetLabNotebookSortedKeys(textualKeys), ";")
 End
 
 Function/S LBN_GetLBNumericalKeys(graph)
@@ -608,7 +608,7 @@ Function/S LBN_GetLBNumericalKeys(graph)
 
 	WAVE/T numericalKeys = GetAnalysLBNumericalKeys(expFolder, device)
 
-	return GetLabNotebookSortedKeys(numericalKeys)
+	return TextWaveToList(GetLabNotebookSortedKeys(numericalKeys), ";")
 End
 
 Function/S LBN_TPStorageViewAbleCols(graph)

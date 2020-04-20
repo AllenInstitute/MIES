@@ -528,6 +528,7 @@ static Function DB_ClearGraph(win)
 	UpdateLBGraphLegend(graph)
 End
 
+/// @brief returns the MD numeric labnotebook values wave associated with the device of win
 Function/WAVE DB_GetNumericalValues(win)
 	string win
 
@@ -538,6 +539,7 @@ Function/WAVE DB_GetNumericalValues(win)
 	return GetLBNumericalValues(device)
 End
 
+/// @brief returns the MD textual labnotebook values wave associated with the device of win
 Function/WAVE DB_GetTextualValues(win)
 	string win
 
@@ -548,6 +550,7 @@ Function/WAVE DB_GetTextualValues(win)
 	return GetLBTextualValues(device)
 End
 
+/// @brief returns the MD numeric labnotebook keys wave associated with the device of win
 static Function/WAVE DB_GetNumericalKeys(win)
 	string win
 
@@ -558,6 +561,7 @@ static Function/WAVE DB_GetNumericalKeys(win)
 	return GetLBNumericalKeys(device)
 End
 
+/// @brief returns the MD textual labnotebook keys wave associated with the device of win
 static Function/WAVE DB_GetTextualKeys(win)
 	string win
 
@@ -640,6 +644,45 @@ Function DB_ButtonProc_Panel(ba) : ButtonControl
 	return 0
 End
 
+/// @brief returns the combined keys from the numerical and textual MD key labnotebook waves as 1D text wave
+static Function/WAVE DB_GetLBKeys(mainPanel)
+	string mainPanel
+
+	variable s
+	variable existText, existNum
+
+	WAVE/Z/T textualKeys = GetLabNotebookKeys(DB_GetTextualKeys(mainPanel))
+	WAVE/Z/T numericalKeys = GetLabNotebookKeys(DB_GetNumericalKeys(mainPanel))
+	existText = WaveExists(textualKeys)
+	existNum = WaveExists(numericalKeys)
+	if(existText && existNum)
+		s = DimSize(numericalKeys, ROWS)
+		Redimension/N=(s + DimSize(textualKeys, ROWS)) numericalKeys
+		numericalKeys[s, Inf] = textualKeys[p - s]
+		return numericalKeys
+	elseif(existText && !existNum)
+		return textualKeys
+	elseif(!existText && existNum)
+		return numericalKeys
+	endif
+
+	return $""
+End
+
+/// @brief Returns the list of LNB keys for the settings history window menu
+Function/WAVE DB_PopupExtGetLBKeys(panelTitle)
+	string panelTitle
+
+	string mainPanel = GetMainWindow(panelTitle)
+	if(BSP_HasBoundDevice(mainPanel))
+		WAVE/T/Z splittedMenu = PEXT_SplitToSubMenus(DB_GetLBKeys(mainPanel), method = PEXT_SUBSPLIT_ALPHA)
+		PEXT_GenerateSubMenuNames(splittedMenu)
+		return splittedMenu
+	endif
+
+	return $""
+End
+
 static Function DB_DynamicSettingsHistory(win)
 	string win
 
@@ -652,17 +695,6 @@ static Function DB_DynamicSettingsHistory(win)
 	endif
 
 	SetWindow $shPanel, hook(main)=DB_CloseSettingsHistoryHook
-
-	if(BSP_HasBoundDevice(win))
-		PopupMenu popup_LBNumericalKeys, win=$shPanel, value=#("DB_GetLBNumericalKeys(\"" + mainPanel + "\")")
-		PopupMenu popup_LBTextualKeys, win=$shPanel, value=#("DB_GetLBTextualKeys(\"" + mainPanel + "\")")
-	else
-		PopupMenu popup_LBNumericalKeys, win=$shPanel, value=#("\"" + NONE + "\"")
-		PopupMenu popup_LBTextualKeys, win=$shPanel, value=#("\"" + NONE + "\"")
-	endif
-
-	SetPopupMenuIndex(shPanel, "popup_LBNumericalKeys", 0)
-	SetPopupMenuIndex(shPanel, "popup_LBTextualKeys", 0)
 End
 
 /// @brief Unsets all control properties that are set in DB_DynamicSettingsHistory
@@ -770,6 +802,7 @@ Function DB_PopMenuProc_LabNotebook(pa) : PopupMenuControl
 	STRUCT WMPopupAction &pa
 
 	string lbGraph, popStr, win, device, ctrl
+	variable lnbType
 
 	win = pa.win
 	lbGraph = DB_GetLabNoteBookGraph(win)
@@ -782,19 +815,16 @@ Function DB_PopMenuProc_LabNotebook(pa) : PopupMenuControl
 				break
 			endif
 
-			strswitch(ctrl)
-				case "popup_LBNumericalKeys":
-					Wave values = DB_GetNumericalValues(win)
-					WAVE keys   = DB_GetNumericalKeys(win)
-				break
-				case "popup_LBTextualKeys":
-					Wave values = DB_GetTextualValues(win)
-					WAVE keys   = DB_GetTextualKeys(win)
-				break
-				default:
-					ASSERT(0, "Unknown ctrl")
-					break
-			endswitch
+			lnbType = DB_GetLNBKeyEntryType(win, popStr)
+			if(lnbType == LNB_TYPE_NUMERICAL)
+				WAVE values = DB_GetNumericalValues(win)
+				WAVE keys   = DB_GetNumericalKeys(win)
+			elseif(lnbType == LNB_TYPE_TEXTUAL)
+				WAVE values = DB_GetTextualValues(win)
+				WAVE keys   = DB_GetTextualKeys(win)
+			else
+				ASSERT(0, "Unknown key in this labnotebook")
+			endif
 
 			AddTraceToLBGraph(lbGraph, keys, values, popStr)
 		break
@@ -836,42 +866,25 @@ Function DB_ButtonProc_ClearGraph(ba) : ButtonControl
 	return 0
 End
 
-Function/S DB_GetLBTextualKeys(win)
-	string win
+/// @brief Returns a type constant for the labnotebook entry
+/// @param[in] panelTitle panel title
+/// @param[in] key key of labnotebook entry
+/// @returns one of @sa LNBEntryTypes constants
+Function DB_GetLNBKeyEntryType(panelTitle, key)
+	string panelTitle, key
 
-	string device, mainPanel
+	variable col
 
-	if(!windowExists(win))
-		return NONE
-	endif
+   col = FindDimLabel(DB_GetNumericalValues(panelTitle), COLS, key)
+   if(col >= 0)
+	   return LNB_TYPE_NUMERICAL
+   endif
+   col = FindDimLabel(DB_GetTextualValues(panelTitle), COLS, key)
+   if(col >= 0)
+	   return LNB_TYPE_TEXTUAL
+   endif
 
-	device = BSP_GetDevice(win)
-	if(!CmpStr(device, NONE))
-		return NONE
-	endif
-
-	WAVE/T keyWave = DB_GetTextualKeys(win)
-
-	return AddListItem(NONE, GetLabNotebookSortedKeys(keyWave), ";", 0)
-End
-
-Function/S DB_GetLBNumericalKeys(win)
-	string win
-
-	string device, mainPanel
-
-	if(!windowExists(win))
-		return NONE
-	endif
-
-	device = BSP_GetDevice(win)
-	if(!CmpStr(device, NONE))
-		return NONE
-	endif
-
-	WAVE/T keyWave = DB_GetNumericalKeys(win)
-
-	return AddListItem(NONE, GetLabNotebookSortedKeys(keyWave), ";", 0)
+	return LNB_TYPE_NONE
 End
 
 Function/S DB_GetAllDevicesWithData()

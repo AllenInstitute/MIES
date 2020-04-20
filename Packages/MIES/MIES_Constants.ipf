@@ -585,7 +585,7 @@ Constant HARDWARE_DAC_EXTERNAL_TRIGGER = 0x1
 
 /// Used to upgrade the GuiStateWave as well as the DA Ephys panel
 Constant DA_EPHYS_PANEL_VERSION     = 49
-Constant DATABROWSER_PANEL_VERSION  = 14
+Constant DATABROWSER_PANEL_VERSION  = 15
 Constant SWEEPBROWSER_PANEL_VERSION = 3
 Constant WAVEBUILDER_PANEL_VERSION  = 8
 
@@ -1265,4 +1265,32 @@ StrConstant EXPCONFIG_GUI_SDATAFOLDER = "0;0;0;0;0;1;0;1;1;0;1;0;"
 StrConstant EXPCONFIG_GUI_PREFERRED =   "0;2;0;0;0;3;2;0;1;1;0;1;"
 
 StrConstant EXPCONFIG_GUI_SUSERDATA =   "1;0;1;1;0;1;1;1;1;1;0;0;"
+/// @}
+
+/// @name PopupMenu extension keys for userdata definition of procedures
+/// @anchor PopupMenuExtension
+/// @{
+StrConstant PEXT_UDATA_ITEMGETTER = "Items"
+StrConstant PEXT_UDATA_POPUPPROC = "popupProc"
+/// @}
+
+/// @name PopupMenu extension sub menu splitting methods
+/// @anchor PEXT_SubMenuSplitting
+/// @{
+Constant PEXT_SUBSPLIT_DEFAULT = 0
+Constant PEXT_SUBSPLIT_ALPHA = 1
+/// @}
+
+/// @name PopupMenu extension sub menu name generation methods
+/// @anchor PEXT_SubMenuNameGeneration
+/// @{
+Constant PEXT_SUBNAMEGEN_DEFAULT = 0
+/// @}
+
+/// @name Lab notebook entry types
+/// @anchor LNBEntryTypes
+/// @{
+Constant LNB_TYPE_NONE = 0
+Constant LNB_TYPE_NUMERICAL = 1
+Constant LNB_TYPE_TEXTUAL = 2
 /// @}
