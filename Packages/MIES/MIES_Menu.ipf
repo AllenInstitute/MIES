@@ -88,7 +88,7 @@ Function OpenAboutDialog()
 		return NaN
 	endif
 
-	NewPanel/N=$panel/K=1 /W=(382,741,796,935) as "About MIES"
+	NewPanel/N=$panel/K=1/W=(332,252,887,724) as "About MIES"
 
 	nb = "MiesVersionNB"
 	NewNotebook /F=1 /N=MiesVersionNB/FG=(FL,FT,FR,FB)/HOST=#/OPTS=3
@@ -122,6 +122,12 @@ Function OpenAboutDialog()
 	Notebook $nb text="Sponsors: "
 	NotebookAction/W=$nb name=Action3, title="www.alleninstitute.org", ignoreErrors=1
 	NotebookAction/W=$nb name=Action3, commands="BrowseURL(\"https://www.alleninstitute.org\")"
+	Notebook $nb text="\r"
+	Notebook $nb text="\r"
+	Notebook $nb text="Data products:"
+	Notebook $nb text="\r"
+	NotebookAction/W=$nb name=Action5, title="", showmode=3, linkStyle=0,scaling={40,40}, procPICTName=SynPhys, ignoreErrors=1, padding={0,0,0,0,5}, commands="BrowseURL(\"https://portal.brain-map.org/explore/connectivity/synaptic-physiology\")"
+	NotebookAction/W=$nb name=Action6, title="", showmode=3, linkStyle=0,scaling={40,40}, procPICTName=CellTypes, ignoreErrors=1, padding={0,0,0,0,0}, commands="BrowseURL(\"http://celltypes.brain-map.org/\")"
 	SetActiveSubwindow ##
 EndMacro
 
