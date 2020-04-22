@@ -2658,7 +2658,7 @@ static Function DAP_CheckStimset(panelTitle, channelType, channel, headstage)
 	variable channelType, channel, headstage
 
 	string setName, setNameEnd, func, listOfAnalysisFunctions
-	string info, str, suppParams, suppName, suppType, reqParams, reqNames, reqName
+	string info, str, suppParams, suppName, suppType, reqNamesAndTypesFromFunc, reqNames, reqName
 	string diff, name, type, suppNames, reqType, channelTypeStr, sets
 	variable i, j, k, numEntries, numSets
 
@@ -2754,9 +2754,9 @@ static Function DAP_CheckStimset(panelTitle, channelType, channel, headstage)
 				return 1
 			elseif(j == GENERIC_EVENT)
 				// check that all required user parameters are supplied
-				reqParams = AFH_GetListOfAnalysisParams(func, REQUIRED_PARAMS)
-				if(!IsEmpty(reqParams))
-					reqNames   = AFH_GetListOfAnalysisParamNames(reqParams)
+				reqNamesAndTypesFromFunc = AFH_GetListOfAnalysisParams(func, REQUIRED_PARAMS)
+				if(!IsEmpty(reqNamesAndTypesFromFunc))
+					reqNames   = AFH_GetListOfAnalysisParamNames(reqNamesAndTypesFromFunc)
 					suppParams = ExtractAnalysisFunctionParams(stimSet)
 					suppNames  = AFH_GetListOfAnalysisParamNames(suppParams)
 					diff = GetListDifference(reqNames, suppNames)
@@ -2776,7 +2776,7 @@ static Function DAP_CheckStimset(panelTitle, channelType, channel, headstage)
 							return 1
 						endif
 
-						reqType = AFH_GetAnalysisParamType(reqName, reqParams, typeCheck = 0)
+						reqType = AFH_GetAnalysisParamType(reqName, reqNamesAndTypesFromFunc, typeCheck = 0)
 						// no type specification is allowed
 						if(IsEmpty(reqType))
 							continue
@@ -2799,7 +2799,7 @@ static Function DAP_CheckStimset(panelTitle, channelType, channel, headstage)
 
 						strswitch(reqType)
 							case "wave":
-								WAVE/Z wv = AFH_GetAnalysisParamWave(reqName, reqParams)
+								WAVE/Z wv = AFH_GetAnalysisParamWave(reqName, suppParams)
 								if(!WaveExists(wv) || DimSize(wv, ROWS) == 0)
 									printf "(%s) The analysis parameter %s for %s in stim set %s is a non-existing or empty numeric wave.\r", panelTitle, reqName, func, setName
 									ControlWindowToFront()
@@ -2807,7 +2807,7 @@ static Function DAP_CheckStimset(panelTitle, channelType, channel, headstage)
 								endif
 								break
 							case "textwave":
-								WAVE/Z wv = AFH_GetAnalysisParamTextWave(reqName, reqParams)
+								WAVE/Z wv = AFH_GetAnalysisParamTextWave(reqName, suppParams)
 								if(!WaveExists(wv) || DimSize(wv, ROWS) == 0)
 									printf "(%s) The analysis parameter %s for %s in stim set %s is a non-existing or empty text wave.\r", panelTitle, reqName, func, setName
 									ControlWindowToFront()
