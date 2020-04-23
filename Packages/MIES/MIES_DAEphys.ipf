@@ -2168,15 +2168,15 @@ Function DAP_CheckSettings(panelTitle, mode)
 				WAVE numericalValues = GetLBNumericalValues(panelTitle)
 				WAVE textualValues   = GetLBTextualValues(panelTitle)
 				lastITI   = GetLastSweepWithSettingIndep(numericalValues, "Inter-trial interval", sweepNo)
-				
+
 				if(IsFinite(lastITI))
 					lastStart = GetLastSettingTextIndep(textualValues, sweepNo, HIGH_PREC_SWEEP_START_KEY, DATA_ACQUISITION_MODE)
-	
+
 					if(IsFinite(lastITI) && !IsEmpty(lastStart))
 						lastStartSeconds = ParseISO8601TimeStamp(lastStart)
 						nextStart        = DateTimeInUTC()
 						leftTime         = lastStartSeconds + lastITI - nextStart
-	
+
 						if(leftTime > 0)
 							printf "(%s) The next sweep can not be started as that would break the required inter trial interval. Please wait another %g seconds.\r", panelTitle, leftTime
 							ControlWindowToFront()
@@ -2658,7 +2658,7 @@ static Function DAP_CheckStimset(panelTitle, channelType, channel, headstage)
 	variable channelType, channel, headstage
 
 	string setName, setNameEnd, func, listOfAnalysisFunctions
-	string info, str, suppParams, suppName, suppType, reqParams, reqNames, reqName
+	string info, str, suppParams, suppName, suppType, reqNamesAndTypesFromFunc, reqNames, reqName
 	string diff, name, type, suppNames, reqType, channelTypeStr, sets
 	variable i, j, k, numEntries, numSets
 
@@ -2754,9 +2754,9 @@ static Function DAP_CheckStimset(panelTitle, channelType, channel, headstage)
 				return 1
 			elseif(j == GENERIC_EVENT)
 				// check that all required user parameters are supplied
-				reqParams = AFH_GetListOfAnalysisParams(func, REQUIRED_PARAMS)
-				if(!IsEmpty(reqParams))
-					reqNames   = AFH_GetListOfAnalysisParamNames(reqParams)
+				reqNamesAndTypesFromFunc = AFH_GetListOfAnalysisParams(func, REQUIRED_PARAMS)
+				if(!IsEmpty(reqNamesAndTypesFromFunc))
+					reqNames   = AFH_GetListOfAnalysisParamNames(reqNamesAndTypesFromFunc)
 					suppParams = ExtractAnalysisFunctionParams(stimSet)
 					suppNames  = AFH_GetListOfAnalysisParamNames(suppParams)
 					diff = GetListDifference(reqNames, suppNames)
@@ -2766,9 +2766,9 @@ static Function DAP_CheckStimset(panelTitle, channelType, channel, headstage)
 						return 1
 					endif
 
-					numEntries = ItemsInList(reqNames, ",")
-					for(k = 0; j < numEntries; k += 1)
-						reqName = StringFromList(j, reqNames, ",")
+					numEntries = ItemsInList(reqNames)
+					for(k = 0; k < numEntries; k += 1)
+						reqName = StringFromList(k, reqNames)
 
 						if(!AFH_IsValidAnalysisParameter(reqName))
 							printf "(%s) The required analysis parameter %s for %s in stim set %s has the invalid name %s.\r", panelTitle, name, func, setName, reqName
@@ -2776,7 +2776,7 @@ static Function DAP_CheckStimset(panelTitle, channelType, channel, headstage)
 							return 1
 						endif
 
-						reqType = AFH_GetAnalysisParamType(reqName, reqParams, typeCheck = 0)
+						reqType = AFH_GetAnalysisParamType(reqName, reqNamesAndTypesFromFunc, typeCheck = 0)
 						// no type specification is allowed
 						if(IsEmpty(reqType))
 							continue
@@ -2784,7 +2784,7 @@ static Function DAP_CheckStimset(panelTitle, channelType, channel, headstage)
 
 						// invalid types are not allowed
 						if(WhichListItem(reqType, ANALYSIS_FUNCTION_PARAMS_TYPES) == -1)
-						printf "(%s) The required analysis parameter %s for %s in stim set %s has type %s which is unknown.\r", panelTitle, reqName, func, setName, type
+							printf "(%s) The required analysis parameter %s for %s in stim set %s has type %s which is unknown.\r", panelTitle, reqName, func, setName, type
 							ControlWindowToFront()
 							return 1
 						endif
@@ -2792,14 +2792,14 @@ static Function DAP_CheckStimset(panelTitle, channelType, channel, headstage)
 						// non matching type
 						suppType = AFH_GetAnalysisParamType(reqName, suppParams, typeCheck = 0)
 						if(cmpstr(reqType, suppType))
-						printf "(%s) The analysis parameter %s for %s in stim set %s has type %s but the required type is %s which is unknown.\r", panelTitle, reqName, func, setName, suppType, reqType
+							printf "(%s) The analysis parameter %s for %s in stim set %s has type %s but the required type is %s.\r", panelTitle, reqName, func, setName, suppType, reqType
 							ControlWindowToFront()
 							return 1
 						endif
 
 						strswitch(reqType)
 							case "wave":
-								WAVE/Z wv = AFH_GetAnalysisParamWave(reqName, reqParams)
+								WAVE/Z wv = AFH_GetAnalysisParamWave(reqName, suppParams)
 								if(!WaveExists(wv) || DimSize(wv, ROWS) == 0)
 									printf "(%s) The analysis parameter %s for %s in stim set %s is a non-existing or empty numeric wave.\r", panelTitle, reqName, func, setName
 									ControlWindowToFront()
@@ -2807,7 +2807,7 @@ static Function DAP_CheckStimset(panelTitle, channelType, channel, headstage)
 								endif
 								break
 							case "textwave":
-								WAVE/Z wv = AFH_GetAnalysisParamTextWave(reqName, reqParams)
+								WAVE/Z wv = AFH_GetAnalysisParamTextWave(reqName, suppParams)
 								if(!WaveExists(wv) || DimSize(wv, ROWS) == 0)
 									printf "(%s) The analysis parameter %s for %s in stim set %s is a non-existing or empty text wave.\r", panelTitle, reqName, func, setName
 									ControlWindowToFront()

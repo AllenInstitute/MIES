@@ -1487,7 +1487,15 @@ static Function AFT14b([str])
 	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG_1")
 
 	FUNCREF CALLABLE_PROTO f = SetParams3_IGNORE
-	AcquireData(s, "AnaFuncParams3_DA_0", str, postInitializeFunc = f)
+
+	try
+		ClearRTError()
+		AcquireData(s, "AnaFuncParams3_DA_0", str, postInitializeFunc = f); AbortOnRTE
+		FAIL()
+	catch
+		ClearRTError()
+		PASS()
+	endtry
 End
 
 static Function AFT14b_REENTRY([str])
@@ -1496,20 +1504,20 @@ static Function AFT14b_REENTRY([str])
 	variable sweepNo
 	string key
 
-	CHECK_EQUAL_VAR(GetSetVariable(str, "SetVar_Sweep"), 1)
+	CHECK_EQUAL_VAR(GetSetVariable(str, "SetVar_Sweep"), 0)
 
 	sweepNo = AFH_GetLastSweepAcquired(str)
-	CHECK_EQUAL_VAR(sweepNo, 0)
+	CHECK_EQUAL_VAR(sweepNo, NaN)
 
 	WAVE anaFuncTracker = TrackAnalysisFunctionCalls()
 
 	CHECK_EQUAL_VAR(anaFuncTracker[PRE_DAQ_EVENT], 1)
-	CHECK_EQUAL_VAR(anaFuncTracker[PRE_SET_EVENT], 1)
-	CHECK_EQUAL_VAR(anaFuncTracker[PRE_SWEEP_EVENT], 1)
-	CHECK(anaFuncTracker[MID_SWEEP_EVENT] >= 1)
-	CHECK_EQUAL_VAR(anaFuncTracker[POST_SWEEP_EVENT], 1)
+	CHECK_EQUAL_VAR(anaFuncTracker[PRE_SET_EVENT], 0)
+	CHECK_EQUAL_VAR(anaFuncTracker[PRE_SWEEP_EVENT], 0)
+	CHECK(anaFuncTracker[MID_SWEEP_EVENT] >= 0)
+	CHECK_EQUAL_VAR(anaFuncTracker[POST_SWEEP_EVENT], 0)
 	CHECK_EQUAL_VAR(anaFuncTracker[POST_SET_EVENT], 0)
-	CHECK_EQUAL_VAR(anaFuncTracker[POST_DAQ_EVENT], 1)
+	CHECK_EQUAL_VAR(anaFuncTracker[POST_DAQ_EVENT], 0)
 	CHECK_EQUAL_VAR(anaFuncTracker[GENERIC_EVENT], 0)
 End
 
@@ -1529,7 +1537,15 @@ static Function AFT14c([str])
 	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG_1")
 
 	FUNCREF CALLABLE_PROTO f = SetParams4_IGNORE
-	AcquireData(s, "AnaFuncParams4_DA_0", str, postInitializeFunc = f)
+
+	try
+		ClearRTError()
+		AcquireData(s, "AnaFuncParams4_DA_0", str, postInitializeFunc = f); AbortOnRTE
+		FAIL()
+	catch
+		ClearRTError()
+		PASS()
+	endtry
 End
 
 static Function AFT14c_REENTRY([str])
@@ -1538,20 +1554,20 @@ static Function AFT14c_REENTRY([str])
 	variable sweepNo
 	string key
 
-	CHECK_EQUAL_VAR(GetSetVariable(str, "SetVar_Sweep"), 1)
+	CHECK_EQUAL_VAR(GetSetVariable(str, "SetVar_Sweep"), 0)
 
 	sweepNo = AFH_GetLastSweepAcquired(str)
-	CHECK_EQUAL_VAR(sweepNo, 0)
+	CHECK_EQUAL_VAR(sweepNo, NaN)
 
 	WAVE anaFuncTracker = TrackAnalysisFunctionCalls()
 
 	CHECK_EQUAL_VAR(anaFuncTracker[PRE_DAQ_EVENT], 1)
-	CHECK_EQUAL_VAR(anaFuncTracker[PRE_SET_EVENT], 1)
-	CHECK_EQUAL_VAR(anaFuncTracker[PRE_SWEEP_EVENT], 1)
-	CHECK(anaFuncTracker[MID_SWEEP_EVENT] >= 1)
-	CHECK_EQUAL_VAR(anaFuncTracker[POST_SWEEP_EVENT], 1)
+	CHECK_EQUAL_VAR(anaFuncTracker[PRE_SET_EVENT], 0)
+	CHECK_EQUAL_VAR(anaFuncTracker[PRE_SWEEP_EVENT], 0)
+	CHECK(anaFuncTracker[MID_SWEEP_EVENT] >= 0)
+	CHECK_EQUAL_VAR(anaFuncTracker[POST_SWEEP_EVENT], 0)
 	CHECK_EQUAL_VAR(anaFuncTracker[POST_SET_EVENT], 0)
-	CHECK_EQUAL_VAR(anaFuncTracker[POST_DAQ_EVENT], 1)
+	CHECK_EQUAL_VAR(anaFuncTracker[POST_DAQ_EVENT], 0)
 	CHECK_EQUAL_VAR(anaFuncTracker[GENERIC_EVENT], 0)
 End
 
