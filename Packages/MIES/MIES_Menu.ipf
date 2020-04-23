@@ -88,7 +88,7 @@ Function OpenAboutDialog()
 		return NaN
 	endif
 
-	NewPanel/N=$panel/K=1/W=(332,252,887,724) as "About MIES"
+	NewPanel/N=$panel/K=1/W=(332,252,928,724) as "About MIES"
 
 	nb = "MiesVersionNB"
 	NewNotebook /F=1 /N=MiesVersionNB/FG=(FL,FT,FR,FB)/HOST=#/OPTS=3
