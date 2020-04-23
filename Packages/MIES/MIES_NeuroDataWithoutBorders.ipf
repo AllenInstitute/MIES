@@ -710,6 +710,12 @@ static Function NWB_AppendSweepLowLevel(locationID, panelTitle, ITCDataWave, ITC
 			continue
 		endif
 
+		// only one channel is associated with a headstage
+		if(IsNaN(ADCs[i]) || IsNaN(DACs[i]))
+			// let's just export it as unassociated channel
+			continue
+		endif
+
 		// now if the headstage is turned off but one of the AD/DA entries exist
 		// this can be a buggy headstage state
 		// we know that these AD/DA entries really belong to that headstate
