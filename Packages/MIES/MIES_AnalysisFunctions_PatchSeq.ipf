@@ -1869,11 +1869,38 @@ Function PSQ_SquarePulse(panelTitle, s)
 	return NaN
 End
 
-/// @brief Return a list of required parameters for PSQ_Rheobase()
-///
-/// - SamplingMultiplier (Variable): Sampling multiplier, use 1 for no multiplier
+/// @brief Return a list of required parameters
 Function/S PSQ_Rheobase_GetParams()
 	return "SamplingMultiplier:variable"
+End
+
+Function/S PSQ_Rheobase_GetHelp(string name)
+
+	strswitch(name)
+		case "SamplingMultiplier":
+			 return "Use 1 for no multiplier"
+			 break
+		default:
+			 ASSERT(0, "Unimplemented for parameter " + name)
+			 break
+	endswitch
+End
+
+Function/S PSQ_Rheobase_CheckParam(string name, string params)
+
+	variable val
+
+	strswitch(name)
+		case "SamplingMultiplier":
+			val = AFH_GetAnalysisParamNumerical(name, params)
+			if(!IsValidSamplingMultiplier(val))
+				return "Invalid value " + num2str(val)
+			endif
+			break
+		default:
+			ASSERT(0, "Unimplemented for parameter " + name)
+			break
+	endswitch
 End
 
 /// @brief Analysis function for finding the exact DAScale value between spiking and non-spiking
@@ -1925,7 +1952,6 @@ Function PSQ_Rheobase(panelTitle, s)
 	string key, msg
 
 	multiplier = AFH_GetAnalysisParamNumerical("SamplingMultiplier", s.params)
-	ASSERT(multiplier > 0, "Missing or non-positive SamplingMultiplier parameter.")
 
 	switch(s.eventType)
 		case PRE_DAQ_EVENT:
@@ -1972,14 +1998,7 @@ Function PSQ_Rheobase(panelTitle, s)
 				return 1
 			endif
 
-			val = WhichListItem(num2str(multiplier), DAP_GetSamplingMultiplier())
-			if(val == -1)
-				printf "(%s): The passed sampling multiplier of %d is invalid.\r", panelTitle, multiplier
-				ControlWindowToFront()
-				return 1
-			endif
-
-			PGC_SetAndActivateControl(panelTitle, "Popup_Settings_SampIntMult", val = val)
+			PGC_SetAndActivateControl(panelTitle, "Popup_Settings_SampIntMult", str = num2str(multiplier))
 
 			DisableControls(panelTitle, "Button_DataAcq_SkipBackwards;Button_DataAcq_SkipForward")
 
