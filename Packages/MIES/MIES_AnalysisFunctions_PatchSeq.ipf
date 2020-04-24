@@ -1031,24 +1031,40 @@ Function PSQ_FoundAtLeastOneSpike(panelTitle, sweepNo)
 End
 
 /// @brief Require parameters from stimset
-///
-/// - DAScales (Numeric wave):       DA Scale Factors in pA
-/// - OperationMode (String):        Operation mode of the analayis function. Can be
-///                                  either #PSQ_DS_SUB or #PSQ_DS_SUPRA.
-/// - SamplingMultiplier (Variable): Sampling multiplier, use 1 for no multiplier
-/// - OffsetOperator (String):       [Optional, defaults to "+"] Set the math operator to use for
-///                                  combining the rheobase DAScale value from the previous run and
-///                                  the DAScales values. Valid strings are "+" (addition) and "*" (multiplication).
-///                                  Ignored for #PSQ_DS_SUB.
-/// - ShowPlot (Variable):           [Optional, defaults to true] Show the resistance (#PSQ_DS_SUB) or
-///                                  the f-I (#PSQ_DS_SUPRA) plot.
-/// - FinalSlopePercent (Variable):  [Optional] As additional passing criteria the slope of the f-I plot
-///                                  must be larger than this value.
-///                                  Note: The slope is used in percent.
-///                                  Ignored for #PSQ_DS_SUB.
 Function/S PSQ_DAScale_GetParams()
 	return "DAScales:wave,OperationMode:string,SamplingMultiplier:variable,[ShowPlot:variable],[OffsetOperator:string]," + \
 		   "[FinalSlopePercent:variable]"
+End
+
+Function/S PSQ_DAScale_GetHelp(string name)
+
+	strswitch(name)
+		case "DAScales":
+			 return "DA Scale Factors in pA"
+			 break
+		case "OperationMode":
+			 return "Operation mode of the analysis function. Can be either \"Sub\" or \"Supra\"."
+			 break
+		case "SamplingMultiplier":
+			 return "Sampling multiplier, use 1 for no multiplier"
+			 break
+		case "OffsetOperator":
+			 return "[Optional, defaults to \"+\"] Set the math operator to use for "      \
+					+ "combining the rheobase DAScale value from the previous run and "    \
+					+ "the DAScales values. Valid strings are \"+\" (addition) and \"*\" " \
+					+ "(multiplication). Ignored for \"Sub\"."
+			 break
+		case "ShowPlot":
+			 return "[Optional, defaults to true] Show the resistance (\"Sub\") or the f-I (\"Supra\") plot."
+			 break
+		case "FinalSlopePercent":
+			 return "[Optional] As additional passing criteria the slope of the f-I plot must be larger than this value. " \
+					+ "Note: The slope is used in percent. Ignored for \"Sub\"."
+			 break
+		default:
+			 ASSERT(0, "Unimplemented for parameter " + name)
+			 break
+	endswitch
 End
 
 /// @brief Patch Seq Analysis function to find a suitable DAScale
