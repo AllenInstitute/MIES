@@ -1395,6 +1395,26 @@ Function/S MSQ_DAScale_GetHelp(name)
 	endswitch
 End
 
+Function/S MSQ_DAScale_CheckParam(string name, string params)
+
+	strswitch(name)
+		case "DAScales":
+			WAVE/Z wv = AFH_GetAnalysisParamWave(name, params)
+			if(!WaveExists(wv))
+				return "Wave must exist"
+			endif
+
+			WaveStats/Q/M=1 wv
+			if(V_numNans > 0 || V_numInfs > 0)
+				return "Wave must neither have NaNs nor Infs"
+			endif
+			break
+	endswitch
+
+	// other parameters are not checked
+	return ""
+End
+
 /// @brief Analysis function to apply a list of DAScale values to a range of sweeps
 ///
 /// Decision logic flowchart:
