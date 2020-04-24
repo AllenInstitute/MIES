@@ -132,6 +132,18 @@ digraph G {
     "Calculate TP-like properties\nand store them in the\nlabnotebook" -> "Check if $NUM_DA_SCALES\nsweeps passed from RA cycle";
     "Get OperationMode [3]" -> "Search for spikes\n(x range: pulse onset to end of sweep\ny condition: max above 0.01mV)"  [label="Supra"];
     "Search for spikes\n(x range: pulse onset to end of sweep\ny condition: max above 0.01mV)" -> "Write number of spikes\ninto labnotebook";
+    "Analysis parameters MinimumSpikeCount,\n MaximumSpikeCount,\n DAScaleModifier\n present?";
+    "Write number of spikes\ninto labnotebook" -> "Analysis parameters MinimumSpikeCount,\n MaximumSpikeCount,\n DAScaleModifier\n present?";
+    "Analysis parameters MinimumSpikeCount,\n MaximumSpikeCount,\n DAScaleModifier\n present?" -> "Use next DAScale value" [label="No"];
+    "Spike count relative to\nMin and Max?";
+    "Analysis parameters MinimumSpikeCount,\n MaximumSpikeCount,\n DAScaleModifier\n present?" -> "Spike count relative to\nMin and Max?" [label="Yes"];
+    "Adapt DAScale\n by a factor of 1 - Modifier";
+    "Adapt DAScale\n by a factor of 1 + Modifier";
+    "Spike count relative to\nMin and Max?" -> "Adapt DAScale\n by a factor of 1 - Modifier" [label="Above"];
+    "Spike count relative to\nMin and Max?" -> "Adapt DAScale\n by a factor of 1 + Modifier" [label="Below"];
+    "Adapt DAScale\n by a factor of 1 + Modifier" -> "Use next DAScale value";
+    "Adapt DAScale\n by a factor of 1 - Modifier" -> "Use next DAScale value";
+    "Spike count relative to\nMin and Max?" -> "Use next DAScale value" [label="In-between"];
     "Write number of spikes\ninto labnotebook" -> "Determine pulse duration\nand write it into the labnotebook";
     "Determine pulse duration\nand write it into the labnotebook" -> "Create spike frequency vs DAScale (fI) data\nand peform linear regression";
     "Create spike frequency vs DAScale (fI) data\nand peform linear regression" -> "Optional parameter ShowPlot\nis true or missing";

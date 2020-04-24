@@ -1033,7 +1033,7 @@ End
 /// @brief Require parameters from stimset
 Function/S PSQ_DAScale_GetParams()
 	return "DAScales:wave,OperationMode:string,SamplingMultiplier:variable,[ShowPlot:variable],[OffsetOperator:string]," + \
-		   "[FinalSlopePercent:variable]"
+		   "[FinalSlopePercent:variable],[MinimumSpikeCount:variable],[MaximumSpikeCount:variable],[DAScaleModifier:variable]"
 End
 
 Function/S PSQ_DAScale_GetHelp(string name)
@@ -1061,6 +1061,13 @@ Function/S PSQ_DAScale_GetHelp(string name)
 			 return "[Optional] As additional passing criteria the slope of the f-I plot must be larger than this value. " \
 					+ "Note: The slope is used in percent. Ignored for \"Sub\"."
 			 break
+		 case "MinimumSpikeCount":
+			 return "[Optional] The lower limit of the number of spikes. Ignored for \"Sub\"."
+		 case "MaximumSpikeCount":
+			 return "[Optional] The upper limit of the number of spikes. Ignored for \"Sub\"."
+		 case "DAScaleModifier":
+			 return "[Optional] Percentage how the DAScale value is adapted if it is outside of the " \
+					+ "MinimumSpikeCount\"/\"MaximumSpikeCount\" band. Ignored for \"Sub\"."
 		default:
 			 ASSERT(0, "Unimplemented for parameter " + name)
 			 break
@@ -1114,10 +1121,54 @@ Function/S PSQ_DAScale_CheckParam(string name, string params)
 				return "Not a precentage"
 			endif
 			break
+		case "MinimumSpikeCount":
+			val = AFH_GetAnalysisParamNumerical(name, params)
+			if(!(val >= 0))
+				return "Not a positive integer or zero"
+			endif
+			break
+		case "MaximumSpikeCount":
+			val = AFH_GetAnalysisParamNumerical(name, params)
+			if(!(val >= 0))
+				return "Not a positive integer or zero"
+			endif
+			break
+		case "DAScaleModifier":
+			val = AFH_GetAnalysisParamNumerical(name, params)
+			if(!(val >= 0 && val <= 1000))
+				return "Not a precentage"
+			endif
+			break
 		default:
 			ASSERT(0, "Unimplemented for parameter " + name)
 			break
 	endswitch
+
+	// check ordering of min/max
+	strswitch(name)
+		case "MinimumSpikeCount":
+		case "MaximumSpikeCount":
+			if(AFH_GetAnalysisParamNumerical("MinimumSpikeCount", params)    \
+			   >= AFH_GetAnalysisParamNumerical("MaximumSpikeCount", params))
+			   return "The minimum/maximum spike counts are not ordered properly"
+		   endif
+		   break
+	endswitch
+
+	// check that all three are present
+	strswitch(name)
+		case "MinimumSpikeCount":
+		case "MaximumSpikeCount":
+		case "DAScaleModifier":
+			if(IsNaN(AFH_GetAnalysisParamNumerical("MinimumSpikeCount", params))    \
+			   || IsNaN(AFH_GetAnalysisParamNumerical("MaximumSpikeCount", params)) \
+			   || IsNaN(AFH_GetAnalysisParamNumerical("DAScaleModifier", params)))
+			   return "One of MinimumSpikeCount/MaximumSpikeCount/DAScaleModifier is not present"
+		   endif
+		   break
+   endswitch
+
+   return ""
 End
 
 /// @brief Patch Seq Analysis function to find a suitable DAScale
@@ -1207,17 +1258,18 @@ Function PSQ_DAScale(panelTitle, s)
 	variable i, fifoInStimsetPoint, fifoInStimsetTime, numberOfSpikes
 	variable index, ret, showPlot, V_AbortCode, V_FitError, err, enoughSweepsPassed
 	variable sweepPassed, setPassed, numSweepsPass, length, minLength
+	variable minimumSpikeCount, maximumSpikeCount, daScaleModifierParam
 	variable sweepsInSet, passesInSet, acquiredSweepsInSet, numBaselineChunks, multiplier
 	string msg, stimset, key, opMode, offsetOp, textboxString, str
 	variable daScaleOffset = NaN
 	variable finalSlopePercent = NaN
+	variable daScaleModifier
 
 	WAVE/D/Z DAScales = AFH_GetAnalysisParamWave("DAScales", s.params)
 	opMode = AFH_GetAnalysisParamTextual("OperationMode", s.params)
 	multiplier = AFH_GetAnalysisParamNumerical("SamplingMultiplier", s.params)
 
 	if(!cmpstr(opMode, PSQ_DS_SUPRA))
-
 		offsetOp = AFH_GetAnalysisParamTextual("OffsetOperator", s.params, defValue = "+")
 		finalSlopePercent = AFH_GetAnalysisParamNumerical("FinalSlopePercent", s.params, defValue = NaN)
 	else
@@ -1354,6 +1406,17 @@ Function PSQ_DAScale(panelTitle, s)
 					numberOfSpikesLBN[s.headstage] = numberOfSpikes
 					key = PSQ_CreateLBNKey(PSQ_DA_SCALE, PSQ_FMT_LBN_SPIKE_COUNT)
 					ED_AddEntryToLabnotebook(panelTitle, key, numberOfSpikesLBN, overrideSweepNo = s.sweepNo)
+
+					minimumSpikeCount = AFH_GetAnalysisParamNumerical("MinimumSpikeCount", s.params)
+					maximumSpikeCount = AFH_GetAnalysisParamNumerical("MaximumSpikeCount", s.params)
+					daScaleModifierParam = AFH_GetAnalysisParamNumerical("DAScaleModifier", s.params) / 100
+					if(!IsNaN(daScaleModifierParam))
+						if(numberOfSpikes < minimumSpikeCount)
+							daScaleModifier = +daScaleModifierParam
+						elseif(numberOfSpikes > maximumSpikeCount)
+							daScaleModifier = -daScaleModifierParam
+						endif
+					endif
 
 					WAVE durations = PSQ_DeterminePulseDuration(panelTitle, s.sweepNo, totalOnsetDelay)
 					key = PSQ_CreateLBNKey(PSQ_DA_SCALE, PSQ_FMT_LBN_PULSE_DUR)
@@ -1545,10 +1608,10 @@ Function PSQ_DAScale(panelTitle, s)
 
 				strswitch(offsetOp)
 					case "+":
-						DAScale = DAScales[index] + daScaleOffset
+						DAScale = DAScales[index] * (1 + daScaleModifier) + daScaleOffset
 						break
 					case "*":
-						DAScale = DAScales[index] * daScaleOffset
+						DAScale = DAScales[index] * (1 + daScaleModifier) * daScaleOffset
 						break
 					default:
 						ASSERT(0, "Invalid case")
