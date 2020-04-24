@@ -1067,6 +1067,59 @@ Function/S PSQ_DAScale_GetHelp(string name)
 	endswitch
 End
 
+Function/S PSQ_DAScale_CheckParam(string name, string params)
+
+	variable val
+	string str
+
+	strswitch(name)
+		case "DAScales":
+			WAVE/D/Z wv = AFH_GetAnalysisParamWave(name, params)
+			if(!WaveExists(wv))
+				return "Wave must exist"
+			endif
+
+			WaveStats/Q/M=1 wv
+			if(V_numNans > 0 || V_numInfs > 0)
+				return "Wave must neither have NaNs nor Infs"
+			endif
+			break
+		case "OperationMode":
+			str = AFH_GetAnalysisParamTextual(name, params)
+			if(cmpstr(str, PSQ_DS_SUB) && cmpstr(str, PSQ_DS_SUPRA))
+				return "Invalid string " + str
+			endif
+			break
+		case "SamplingMultiplier":
+			val = AFH_GetAnalysisParamNumerical(name, params)
+			if(!IsValidSamplingMultiplier(val))
+				return "Invalid value " + num2str(val)
+			endif
+			break
+		case "OffsetOperator":
+			str = AFH_GetAnalysisParamTextual(name, params)
+			if(cmpstr(str, "+") && cmpstr(str, "*"))
+				return "Invalid string " + str
+			endif
+			break
+		case "ShowPlot":
+			val = AFH_GetAnalysisParamNumerical(name, params)
+			if(val != 0 && val != 1)
+				return "Invalid string " + num2str(val)
+			endif
+			break
+		case "FinalSlopePercent":
+			val = AFH_GetAnalysisParamNumerical(name, params)
+			if(!(val >= 0 && val <= 100))
+				return "Not a precentage"
+			endif
+			break
+		default:
+			ASSERT(0, "Unimplemented for parameter " + name)
+			break
+	endswitch
+End
+
 /// @brief Patch Seq Analysis function to find a suitable DAScale
 ///
 /// Prerequisites:
@@ -1160,24 +1213,13 @@ Function PSQ_DAScale(panelTitle, s)
 	variable finalSlopePercent = NaN
 
 	WAVE/D/Z DAScales = AFH_GetAnalysisParamWave("DAScales", s.params)
-	ASSERT(WaveExists(DAScales), "Missing DAScale parameter")
-
 	opMode = AFH_GetAnalysisParamTextual("OperationMode", s.params)
-	ASSERT(!cmpstr(opMode, PSQ_DS_SUB) || !cmpstr(opMode, PSQ_DS_SUPRA), "Invalid opMode")
-
 	multiplier = AFH_GetAnalysisParamNumerical("SamplingMultiplier", s.params)
-	ASSERT(multiplier > 0, "Missing or non-positive SamplingMultiplier parameter.")
 
 	if(!cmpstr(opMode, PSQ_DS_SUPRA))
 
 		offsetOp = AFH_GetAnalysisParamTextual("OffsetOperator", s.params, defValue = "+")
-		ASSERT(!cmpstr(offsetOp, "+") || !cmpstr(offsetOp, "*"), "Invalid offset operator")
-
 		finalSlopePercent = AFH_GetAnalysisParamNumerical("FinalSlopePercent", s.params, defValue = NaN)
-
-		if(IsFinite(finalSlopePercent))
-			ASSERT(finalSlopePercent >= 0 && finalSlopePercent <= 100, "Invalid final slope percent value")
-		endif
 	else
 		offsetOp = "+"
 	endif
@@ -1231,14 +1273,7 @@ Function PSQ_DAScale(panelTitle, s)
 				return 1
 			endif
 
-			val = WhichListItem(num2str(multiplier), DAP_GetSamplingMultiplier())
-			if(val == -1)
-				printf "(%s): The passed sampling multiplier of %d is invalid.\r", panelTitle, multiplier
-				ControlWindowToFront()
-				return 1
-			endif
-
-			PGC_SetAndActivateControl(panelTitle, "Popup_Settings_SampIntMult", val = val)
+			PGC_SetAndActivateControl(panelTitle, "Popup_Settings_SampIntMult", str = num2str(multiplier))
 
 			DisableControls(panelTitle, "Button_DataAcq_SkipBackwards;Button_DataAcq_SkipForward")
 
