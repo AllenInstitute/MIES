@@ -2326,14 +2326,47 @@ Function PSQ_GetFinalDAScaleFake()
 	return daScale
 End
 
-/// @brief Return a list of required parameters for PSQ_Ramp()
-///
-/// - NumberOfSpikes (variable):     Number of spikes required to be found after
-///                                  the pulse onset in order to label the cell
-///                                  as having "spiked".
-/// - SamplingMultiplier (Variable): Sampling multiplier, use 1 for no multiplier
+/// @brief Return a list of required parameters
 Function/S PSQ_Ramp_GetParams()
 	return "NumberOfSpikes:variable,SamplingMultiplier:variable"
+End
+
+Function/S PSQ_Ramp_GetHelp(string name)
+
+	strswitch(name)
+		case "SamplingMultiplier":
+			 return "Use 1 for no multiplier"
+			 break
+		 case "NumberOfSpikes":
+			return "Number of spikes required to be found after the pulse onset " \
+			 + "in order to label the cell as having \"spiked\"."
+		 default:
+			ASSERT(0, "Unimplemented for parameter " + name)
+			break
+	endswitch
+End
+
+Function/S PSQ_Ramp_CheckParam(string name, string params)
+
+	variable val
+
+	strswitch(name)
+		case "SamplingMultiplier":
+			val = AFH_GetAnalysisParamNumerical(name, params)
+			if(!IsValidSamplingMultiplier(val))
+				return "Invalid value " + num2str(val)
+			endif
+			break
+		case "NumberOfSpikes":
+			val = AFH_GetAnalysisParamNumerical(name, params)
+			if(!(val > 0))
+				return "Invalid value " + num2str(val)
+			endif
+			break
+		default:
+			ASSERT(0, "Unimplemented for parameter " + name)
+			break
+	endswitch
 End
 
 /// @brief Analysis function for applying a ramp stim set and finding the position were it spikes.
@@ -2389,10 +2422,7 @@ Function PSQ_Ramp(panelTitle, s)
 	variable hardwareType
 
 	numberOfSpikes = AFH_GetAnalysisParamNumerical("NumberOfSpikes", s.params)
-	ASSERT(numberOfSpikes > 0, "Missing or non-positive NumberOfSpikes parameter.")
-
 	multiplier = AFH_GetAnalysisParamNumerical("SamplingMultiplier", s.params)
-	ASSERT(multiplier > 0, "Missing or non-positive SamplingMultiplier parameter.")
 
 	switch(s.eventType)
 		case PRE_DAQ_EVENT:
@@ -2438,14 +2468,7 @@ Function PSQ_Ramp(panelTitle, s)
 				return 1
 			endif
 
-			val = WhichListItem(num2str(multiplier), DAP_GetSamplingMultiplier())
-			if(val == -1)
-				printf "(%s): The passed sampling multiplier of %d is invalid.\r", panelTitle, multiplier
-				ControlWindowToFront()
-				return 1
-			endif
-
-			PGC_SetAndActivateControl(panelTitle, "Popup_Settings_SampIntMult", val = val)
+			PGC_SetAndActivateControl(panelTitle, "Popup_Settings_SampIntMult", str = num2str(multiplier))
 
 			DAC = AFH_GetDACFromHeadstage(panelTitle, s.headstage)
 			stimset = AFH_GetStimSetName(panelTitle, DAC, CHANNEL_TYPE_DAC)
