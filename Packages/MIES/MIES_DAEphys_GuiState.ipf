@@ -380,8 +380,6 @@ Function DAG_Update(panelTitle, controlName, [val, str])
 		endif
 	endif
 
-	WaveClear GuiState
-
 	if(!ParamIsDefault(str))
 		WAVE/T GUIStateTxT = GetDA_EphysGuiStateTxT(panelTitle)
 		col = FindDimLabel(GUIStateTxT, COLS, controlName)
