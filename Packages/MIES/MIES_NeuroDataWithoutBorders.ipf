@@ -656,7 +656,7 @@ static Function NWB_AppendSweepLowLevel(locationID, panelTitle, ITCDataWave, ITC
 	variable sweep, compressionMode
 
 	variable groupID, numEntries, i, j, ttlBits, dac, adc, col, refTime
-	variable ttlBit, hardwareType, DACUnassoc, ADCUnassoc
+	variable ttlBit, hardwareType, DACUnassoc, ADCUnassoc, index
 	string group, path, list, name, stimset, key
 	string channelSuffix, listOfStimsets, contents
 
@@ -685,12 +685,31 @@ static Function NWB_AppendSweepLowLevel(locationID, panelTitle, ITCDataWave, ITC
 	endif
 
 	// 5872e556 (Modified files: DR_MIES_TangoInteract:  changes recommended by Thomas ..., 2014-09-11)
-	WAVE/Z ADCs = GetLastSetting(numericalValues, sweep, "ADC", DATA_ACQUISITION_MODE)
-	ASSERT(WaveExists(ADCs), "Labnotebook is too old for NWB export.")
-
-	// dito
 	WAVE/Z DACs = GetLastSetting(numericalValues, sweep, "DAC", DATA_ACQUISITION_MODE)
 	ASSERT(WaveExists(DACs), "Labnotebook is too old for NWB export.")
+
+	// 5872e556 (Modified files: DR_MIES_TangoInteract:  changes recommended by Thomas ..., 2014-09-11)
+	WAVE/D/Z ADCs = GetLastSetting(numericalValues, sweep, "ADC", DATA_ACQUISITION_MODE)
+
+	if(!WaveExists(ADCs))
+		WAVE/D/Z statusHS = GetLastSetting(numericalValues, sweep, "Headstage Active", DATA_ACQUISITION_MODE)
+		ASSERT(WaveExists(statusHS), "Labnotebook is too old for NWB export (ADCs is missing and statusHS fixup is also broken.")
+
+		WAVE configADCs = GetADCListFromConfig(ITCChanConfigWave)
+		WAVE configDACs = GetDACListFromConfig(ITCChanConfigWave)
+
+		if(DimSize(configADCs, ROWS) == 1 && DimSize(configDACs, ROWS) == 1 && Sum(statusHS, 0, NUM_HEADSTAGES - 1) == 1)
+			// we have excactly one active headstage with one DA/AD, so we can fix things up
+			index = GetRowIndex(statusHS, val=1)
+
+			Make/D/FREE/N=(LABNOTEBOOK_LAYER_COUNT) ADCs = NaN
+			ADCs[index] = configADCs[0]
+
+			printf "Encountered an incorrect ADC state HS %d in sweep %d. Fixing it up locally.\r", index, sweep
+			ControlWindowToFront()
+		endif
+	endif
+
 
 	// 602debb9 (Record the active headstage in the settingsHistory, 2014-11-04)
 	WAVE/D/Z statusHS = GetLastSetting(numericalValues, sweep, "Headstage Active", DATA_ACQUISITION_MODE)
@@ -698,6 +717,8 @@ static Function NWB_AppendSweepLowLevel(locationID, panelTitle, ITCDataWave, ITC
 		Make/FREE/D/N=(LABNOTEBOOK_LAYER_COUNT) statusHS = IsFinite(ADCs[p]) && IsFinite(DACs[p])
 	endif
 
+	// Turn on inadvertently turned off headstages again, see also
+	// a4958aec (NWB_AppendSweepLowLevel: Fixup buggy active headstage states, 2019-02-28)
 	for(i = 0; i < NUM_HEADSTAGES; i += 1)
 		if(statusHS[i])
 			// we don't fixup this case
@@ -707,6 +728,12 @@ static Function NWB_AppendSweepLowLevel(locationID, panelTitle, ITCDataWave, ITC
 		// check that the headstage is really turned off
 		if(IsNaN(ADCs[i]) && IsNaN(DACs[i]))
 			// no AD/DA channels for that headstage
+			continue
+		endif
+
+		// only one channel is associated with a headstage
+		if(IsNaN(ADCs[i]) || IsNaN(DACs[i]))
+			// let's just export it as unassociated channel
 			continue
 		endif
 
