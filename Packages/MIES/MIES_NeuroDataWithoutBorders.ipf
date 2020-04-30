@@ -717,6 +717,8 @@ static Function NWB_AppendSweepLowLevel(locationID, panelTitle, ITCDataWave, ITC
 		Make/FREE/D/N=(LABNOTEBOOK_LAYER_COUNT) statusHS = IsFinite(ADCs[p]) && IsFinite(DACs[p])
 	endif
 
+	// Turn on inadvertently turned off headstages again, see also
+	// a4958aec (NWB_AppendSweepLowLevel: Fixup buggy active headstage states, 2019-02-28)
 	for(i = 0; i < NUM_HEADSTAGES; i += 1)
 		if(statusHS[i])
 			// we don't fixup this case
