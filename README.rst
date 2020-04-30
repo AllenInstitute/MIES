@@ -23,7 +23,7 @@ Required Software:
 
 Installation:
 
-- Download the latest release from `here <https://github.com/AllenInstitute/MIES/releases/latest>`_
+- Download the latest release from `here <https://github.com/AllenInstitute/MIES/releases/tag/latest>`_
 - Run the installer
 - View the documentation `here <https://alleninstitute.github.io/MIES/index.html>`_
 
