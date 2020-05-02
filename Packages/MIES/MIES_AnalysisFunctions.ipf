@@ -418,11 +418,11 @@ End
 
 /// @brief Called by StimParamGUI to set initial stimulus parameters
 ///
-/// @param stimSet	Stimulus set to run
-/// @param Vm1		Holding potential
-/// @param Scale		Stimulus amplitude in mV
-/// @param Sweeps	Number of sweeps
-/// @param ITI		Inter-trial-interval
+/// @param stimSet Stimulus set to run
+/// @param Vm1     Holding potential
+/// @param Scale   Stimulus amplitude in mV
+/// @param Sweeps  Number of sweeps
+/// @param ITI     Inter-trial-interval
 Function SetStimParam(stimSet, Vm1, Scale, Sweeps, ITI)
 	variable Vm1, scale, sweeps, ITI
 	string stimSet
