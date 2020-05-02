@@ -427,28 +427,17 @@ Function SetStimParam(stimSet, Vm1, Scale, Sweeps, ITI)
 	variable Vm1, scale, sweeps, ITI
 	string stimSet
 
-	variable stimSetIndex
-
 	setHolding(Vm1)
-	stimSetIndex = GetStimSet(stimSet)
+	PGC_SetAndActivateControl(DEFAULT_DEVICE, "Wave_DA_All",  str = stimset)
+	PGC_SetAndActivateControl(DEFAULT_DEVICE, "Scale_DA_All", val = scale)
+	PGC_SetAndActivateControl(DEFAULT_DEVICE, "SetVar_DataAcq_SetRepeats", val = sweeps)
+	PGC_SetAndActivateControl(DEFAULT_DEVICE, "SetVar_DataAcq_ITI", val = ITI)
 
-	if(stimSetIndex > 0)
-
-		PGC_SetAndActivateControl(DEFAULT_DEVICE, "Wave_DA_All", val = stimSetIndex + 1)
-		PGC_SetAndActivateControl(DEFAULT_DEVICE, "Scale_DA_All", val = scale)
-		PGC_SetAndActivateControl(DEFAULT_DEVICE, "SetVar_DataAcq_SetRepeats", val = sweeps)
-		PGC_SetAndActivateControl(DEFAULT_DEVICE, "SetVar_DataAcq_ITI", val = ITI)
-
-		InitoodDAQ()
-	else
-		printf "Requested non-existent stim set"
-		return stimSetIndex
-	endif
+	InitoodDAQ()
 
 	if(sweeps > 1)
 		PGC_SetAndActivateControl(DEFAULT_DEVICE, "Check_DataAcq1_RepeatAcq", val = CHECKBOX_SELECTED)
 	endif
-
 End
 
 /// @brief Set holding potential for active headstages
@@ -541,16 +530,6 @@ Function switchHolding(Vm2)
     endif
 
 	return SweepsRemaining
-End
-
-/// @brief Get index of stim set from stim set list
-Function GetStimSet(stimSet)
-	string stimSet
-
-	string StimSetList = ReturnListOfAllStimSets(CHANNEL_TYPE_DAC, CHANNEL_DA_SEARCH_STRING)
-	variable stimSetIndex = whichlistitem(stimSet,StimSetList)
-
-	return stimSetIndex
 End
 
 /// @brief Initialize oodDAQ settings
