@@ -1,5 +1,6 @@
 #pragma TextEncoding = "UTF-8"
 #pragma rtGlobals=3 // Use modern global access method and strict wave access.
+#pragma rtFunctionErrors=1
 #pragma ModuleName=LBNEntrySourceTypeHandling
 
 static Function TEST_CASE_BEGIN_OVERRIDE(testCase)
