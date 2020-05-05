@@ -3248,9 +3248,33 @@ Function MWWO_RequiresDistinctWaves()
 	endtry
 End
 
-Function MWWO_HandlesLockedDest()
+Function MWWO_Works()
 
-	variable err
+	Make dest = p
+	Make src = 0
+
+	MoveWaveWithOverwrite(dest, src)
+
+	WAVE dest
+	CHECK_EQUAL_VAR(Sum(dest), 0)
+	WAVE/Z src
+	CHECK_WAVE(src, NULL_WAVE)
+End
+
+Function MWWO_WorksWithFreeSource()
+
+	Make dest = p
+	Make/FREE src = 0
+
+	MoveWaveWithOverwrite(dest, src)
+
+	WAVE dest
+	CHECK_EQUAL_VAR(Sum(dest), 0)
+	WAVE/Z src
+	CHECK_WAVE(src, NULL_WAVE)
+End
+
+Function MWWO_HandlesLockedDest()
 
 	Make dest = p
 	Make src = 0
