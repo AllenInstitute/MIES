@@ -14,3 +14,25 @@ Function/S PrependExperimentFolder_IGNORE(filename)
 
 	return S_path + filename
 End
+
+/// Kill all left-over windows and remove the trash
+Function AdditionalExperimentCleanupAfterTest()
+
+	string win, list
+	variable i, numWindows
+
+	list = WinList("*", ";", "WIN:67") // Panels, Graphs and tables
+
+	numWindows = ItemsInList(list)
+	for(i = 0; i < numWindows; i += 1)
+		win = StringFromList(i, list)
+
+		if(!cmpstr(win, "BW_MiesBackgroundWatchPanel"))
+			continue
+		endif
+
+		KillWindow $win
+	endfor
+
+	KillOrMoveToTrash(dfr=root:MIES)
+End
