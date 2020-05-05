@@ -1,6 +1,15 @@
 #pragma TextEncoding = "UTF-8"
 #pragma rtGlobals=3 // Use modern global access method and strict wave access.
 #pragma rtFunctionErrors=1
+#pragma ModuleName=UtilsTest
+
+static Function TEST_CASE_BEGIN_OVERRIDE(name)
+	string name
+
+	AdditionalExperimentCleanupAfterTest()
+
+	CA_FlushCache()
+End
 
 /// RemoveAllEmptyDataFolders
 /// @{
