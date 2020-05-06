@@ -131,8 +131,8 @@ threadsafe static Function ASYNC_Thread()
 		try
 			dfrOut = f(dfrInp);AbortOnRTE
 		catch
-			err = GetRTError(1)
-			errmsg = GetErrMessage(err)
+			errmsg = GetRTErrMessage()
+			err = ClearRTError()
 		endtry
 
 		if(DataFolderRefStatus(dfrOut) == 3)
