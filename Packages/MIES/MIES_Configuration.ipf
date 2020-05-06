@@ -318,6 +318,7 @@ Function CONF_SaveWindow(fName)
 	string out, wName, errMsg
 
 	try
+		ClearRTError()
 		wName = GetMainWindow(GetCurrentWindow())
 		if(!CmpStr(wName, "HistoryCarbonCopy"))
 			printf "Please select a window.\r"
@@ -372,6 +373,7 @@ Function CONF_RestoreWindow(fName[, usePanelTypeFromFile, rigFile])
 	jsonID = NaN
 	restoreMask = EXPCONFIG_SAVE_VALUE | EXPCONFIG_SAVE_USERDATA | EXPCONFIG_SAVE_DISABLED
 	try
+		ClearRTError()
 		if(usePanelTypeFromFile)
 			[input, fullFilePath] = LoadTextFile(fName, fileFilter = EXPCONFIG_FILEFILTER, message = "Open configuration file")
 			if(IsEmpty(input))
@@ -442,6 +444,7 @@ static Function CONF_SaveDAEphys(fName)
 	string out, wName, errMsg
 
 	try
+		ClearRTError()
 		wName = GetMainWindow(GetCurrentWindow())
 		ASSERT(PanelIsType(wName, PANELTAG_DAEPHYS), "Current window is no DA_Ephys panel")
 
@@ -493,6 +496,7 @@ Function/S CONF_RestoreDAEphys(jsonID, fullFilePath, [middleOfExperiment, forceN
 	string input = ""
 
 	try
+		ClearRTError()
 		middleOfExperiment = ParamIsDefault(middleOfExperiment) ? 0 : !!middleOfExperiment
 		forceNewPanel = ParamIsDefault(forceNewPanel) ? 0 : !!forceNewPanel
 
@@ -625,6 +629,7 @@ static Function CONF_ParseJSON(str)
 	string str
 
 	try
+		ClearRTError()
 		JSONXOP_Parse/Z=0/Q=0 str; AbortOnRTE
 		return V_Value
 	catch
@@ -907,7 +912,7 @@ Function/S CONF_JSONToWindow(wName, restoreMask, jsonID)
 	string ctrlName, niceName, arrayName, ctrlList, wList, uData, winHandle, jsonCtrlGroupPath, subWinTarget, str, errMsg
 
 	try
-
+		ClearRTError()
 		ASSERT(WinType(wName), "Window " + wName + " does not exist!")
 		ASSERT(restoreMask & (EXPCONFIG_SAVE_VALUE | EXPCONFIG_SAVE_POSITION | EXPCONFIG_SAVE_USERDATA | EXPCONFIG_SAVE_DISABLED | EXPCONFIG_SAVE_CTRLTYPE), "No property class enabled to restore in restoreMask.")
 
@@ -1366,6 +1371,7 @@ Function CONF_WindowToJSON(wName, saveMask[, excCtrlTypes])
 	variable rbcIndex
 
 	try
+		ClearRTError()
 		excCtrlTypes = SelectString(ParamIsDefault(excCtrlTypes), excCtrlTypes, "")
 		ASSERT(WinType(wName), "Window " + wName + " does not exist!")
 		jsonID = JSON_New()
@@ -1665,6 +1671,7 @@ static Function CONF_ControlToJSON(wName, ctrlName, saveMask, jsonID, excCtrlTyp
 					endif
 					uData = GetUserData(wName, ctrlName, uDataKey)
 					try
+						ClearRTError()
 						s = ConvertTextEncoding(uData, TextEncodingCode("UTF-8"), TextEncodingCode("UTF-8"), 1, 0); AbortOnRTE
 					catch
 						ClearRTError()

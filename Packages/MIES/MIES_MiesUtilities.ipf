@@ -4676,6 +4676,7 @@ Function RemoveTracesFromGraph(graph, [kill, trace, wv, dfr])
 		debugOnError = DisableDebugOnError()
 		do
 			try
+				ClearRTError()
 				RemoveFromGraph/W=$graph $("#0"); AbortOnRTE
 				removals += 1
 			catch

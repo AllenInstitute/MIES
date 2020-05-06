@@ -129,6 +129,7 @@ threadsafe static Function ASYNC_Thread()
 		err = 0
 		dfrOut = $""
 		try
+			ClearRTError()
 			dfrOut = f(dfrInp);AbortOnRTE
 		catch
 			errmsg = GetRTErrMessage()
@@ -233,6 +234,7 @@ Function ASYNC_ThreadReadOut()
 
 		statCnt += 1
 		try
+			ClearRTError()
 			f(dfrOut, err, errmsg);AbortOnRTE
 		catch
 			rterrmsg = GetRTErrMessage()
@@ -342,6 +344,7 @@ Function ASYNC_Stop([timeout, fromAssert])
 		marker = ASYNC_THREAD_MARKER
 		if(fromAssert)
 			try
+				ClearRTError()
 				ASYNC_Execute(dfr);AbortOnRTE
 			catch
 				ClearRTError()
@@ -359,6 +362,7 @@ Function ASYNC_Stop([timeout, fromAssert])
 	endTime = dateTime + timeout
 	do
 		try
+			ClearRTError()
 			waitResult = ThreadGroupWait(tgID, 0); AbortOnRTE
 		catch
 			ClearRTError()
@@ -384,6 +388,7 @@ Function ASYNC_Stop([timeout, fromAssert])
 			if(ReadOutCounter < workerIDCOunter[0] - numThreads)
 				if(fromAssert)
 					try
+						ClearRTError()
 						ASYNC_ThreadReadOut();AbortOnRTE
 					catch
 						ClearRTError()
@@ -911,6 +916,7 @@ static Function ASYNC_IsASYNCRunning()
 	NVAR tgID = $GetThreadGroupID()
 	doe = DisableDebugOnError()
 	try
+		ClearRTError()
 		waitResult = ThreadGroupWait(tgID, 0);AbortOnRTE
 	catch
 		ClearRTError()
