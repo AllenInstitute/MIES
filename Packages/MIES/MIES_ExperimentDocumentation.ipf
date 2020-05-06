@@ -276,7 +276,7 @@ static Function ED_WriteChangedValuesToNote(panelTitle, sweepNo)
 				continue
 			endif
 
-			tolerance = str2num(factor); err = GetRTError(1)
+			tolerance = str2numSafe(factor)
 
 			// in case we have tolerance as LABNOTEBOOK_NO_TOLERANCE we get tolerance == NaN
 			// and the following check is false
