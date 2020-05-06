@@ -109,7 +109,7 @@ End
 /// reload anyway (amplifier connection details) and removes temporary waves.
 static Function IH_Cleanup()
 
-	variable error, debuggerState
+	variable debuggerState
 
 	// don't try cleaning up if the user never used MIES
 	if(!DataFolderExists(GetMiesPathAsString()))
@@ -130,7 +130,7 @@ static Function IH_Cleanup()
 		DFREF dfrNWB = GetNWBFolder()
 		KilLVariables/Z dfrNWB:histRefNumber
 	catch
-		error = GetRTError(1)
+		ClearRTError()
 		DEBUGPRINT("Caught runtime error or assertion")
 	endtry
 

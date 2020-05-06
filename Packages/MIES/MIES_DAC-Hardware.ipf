@@ -1971,7 +1971,7 @@ Function HW_NI_StartAcq(deviceID, triggerMode, [flags, repeat])
 		endif
 	catch
 		errMsg = GetRTErrMessage() + "\r" + fDAQmx_ErrorString()
-		err = getRTError(1)
+		err = ClearRTError()
 		HW_NI_StopAcq(deviceID)
 		HW_NI_KillFifo(deviceID)
 		ASSERT(0, "Start acquisition of NI device " + panelTitle + " failed with code: " + num2str(err) + "\r" + errMsg)
@@ -2120,7 +2120,7 @@ Function HW_NI_PrepareAcq(deviceID, [data, dataFunc, config, configFunc, flags, 
 
 	catch
 		errMsg = GetRTErrMessage() + "\r" + fDAQmx_ErrorString()
-		err = getRTError(1)
+		err = ClearRTError()
 		HW_NI_StopAcq(deviceID)
 		HW_NI_KillFifo(deviceID)
 		ASSERT(0, "Prepare acquisition of NI device " + panelTitle + " failed with code: " + num2str(err) + "\r" + errMsg)
@@ -2246,7 +2246,7 @@ Function HW_NI_ReadDigital(device, [DIOPort, DIOLine, flags])
 	string device
 	variable DIOPort, DIOLine, flags
 
-	variable taskID, ret, result, lineGrouping, err
+	variable taskID, ret, result, lineGrouping
 	string line
 
 	DEBUGPRINTSTACKINFO()
@@ -2264,10 +2264,10 @@ Function HW_NI_ReadDigital(device, [DIOPort, DIOLine, flags])
 		sprintf line "/%s/port%d/line%d", device, DIOPort, DIOline
 	endif
 
-	// clear RTE
-	err = GetRTError(1)
+	ClearRTError()
 	DAQmx_DIO_Config/DEV=device/DIR=1/LGRP=(lineGrouping) line
-	if (GetRTError(1))
+
+	if(ClearRTError())
 		print fDAQmx_ErrorString()
 		ControlWindowToFront()
 		if(flags & HARDWARE_ABORT_ON_ERROR)
@@ -2306,7 +2306,7 @@ Function HW_NI_WriteDigital(device, value, [DIOPort, DIOLine, flags])
 	string device
 	variable DIOPort, DIOLine, value, flags
 
-	variable taskID, ret, lineGrouping, err
+	variable taskID, ret, lineGrouping
 	string line
 
 	DEBUGPRINTSTACKINFO()
@@ -2324,10 +2324,10 @@ Function HW_NI_WriteDigital(device, value, [DIOPort, DIOLine, flags])
 		sprintf line "/%s/port%d/line%d", device, DIOPort, DIOline
 	endif
 
-	// clear RTE
-	err = GetRTError(1)
+	ClearRTError()
 	DAQmx_DIO_Config/DEV=device/DIR=1/LGRP=(lineGrouping) line
-	if (GetRTError(1))
+
+	if(ClearRTError())
 		print fDAQmx_ErrorString()
 		ControlWindowToFront()
 		if(flags & HARDWARE_ABORT_ON_ERROR)
@@ -2568,10 +2568,11 @@ Function HW_NI_ZeroDAC(deviceID, [flags])
 			paraStr += "0," + num2str(config[i][%ChannelNumber]) + ";"
 		endif
 	endfor
-	// clear RTE
-	err = GetRTError(1)
+
+	ClearRTError()
 	DAQmx_AO_SetOutputs/DEV=device paraStr
-	if(GetRTError(1))
+
+	if(ClearRTError())
 		print fDAQmx_ErrorString()
 		ControlWindowToFront()
 		if(flags & HARDWARE_ABORT_ON_ERROR)
@@ -2590,6 +2591,7 @@ Function HW_NI_KillFifo(deviceID)
 	DEBUGPRINTSTACKINFO()
 
 	string fifoName, errMsg, panelTitle
+	variable err
 
 	panelTitle = HW_GetMainDeviceName(HARDWARE_NI_DAC, deviceID)
 	fifoName = GetNIFIFOName(deviceID)
@@ -2608,7 +2610,8 @@ Function HW_NI_KillFifo(deviceID)
 		KillFIFO $fifoName; AbortOnRTE
 	catch
 		errMsg = GetRTErrMessage()
-		print "Could not cleanup FIFO of NI device " + panelTitle + ", failed with code: " + num2str(getRTError(1)) + "\r" + errMsg
+		err = ClearRTError()
+		print "Could not cleanup FIFO of NI device " + panelTitle + ", failed with code: " + num2str(err) + "\r" + errMsg
 		ControlWindowToFront()
 	endtry
 End

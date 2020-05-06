@@ -20,7 +20,6 @@ Function TS_GetNewestFromThreadQueue(tgID, varName)
 	string varName
 
 	variable var = NaN
-	variable err
 
 	ASSERT_TS(!isEmpty(varName), "varName must not be empty")
 
@@ -33,7 +32,7 @@ Function TS_GetNewestFromThreadQueue(tgID, varName)
 			ClearRTError()
 			DFREF dfr = ThreadGroupGetDFR(tgID, TS_GET_REPEAT_TIMEOUT_IN_MS); AbortOnRTE
 		catch
-			err = GetRTError(1)
+			ClearRTError()
 			return NaN
 		endtry
 
@@ -68,7 +67,7 @@ Function/WAVE TS_GetNewestFromThreadQueueMult(tgID, varNames)
 	variable tgID
 	Wave/T varNames
 
-	variable numEntries, i, oneValidEntry, err
+	variable numEntries, i, oneValidEntry
 	string varName
 
 	ASSERT_TS(DimSize(varNames, COLS) == 0, "Expected a 1D wave")
@@ -92,7 +91,7 @@ Function/WAVE TS_GetNewestFromThreadQueueMult(tgID, varNames)
 			ClearRTError()
 			DFREF dfr = ThreadGroupGetDFR(tgID, TS_GET_REPEAT_TIMEOUT_IN_MS); AbortOnRTE
 		catch
-			err = GetRTError(1)
+			ClearRTError()
 			return $""
 		endtry
 

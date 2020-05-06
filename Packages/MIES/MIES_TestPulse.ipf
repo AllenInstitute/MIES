@@ -556,7 +556,7 @@ static Function TP_AnalyzeTP(panelTitle, TPStorage, endRow)
 			DEBUGPRINT("V_FitQuitReason=", var=V_FitQuitReason)
 			DEBUGPRINT("V_AbortCode=", var=V_AbortCode)
 			if(V_AbortCode == -4)
-				DEBUGPRINT(GetErrMessage(GetRTError(1)))
+				DEBUGPRINT(GetErrMessage(ClearRTError()))
 			endif
 		endtry
 	endfor

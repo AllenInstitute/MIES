@@ -60,7 +60,7 @@ Function DQM_FIFOMonitor(s)
 					endfor
 				catch
 					errMsg = GetRTErrMessage()
-					err = getRTError(1)
+					err = ClearRTError()
 					DQ_StopOngoingDAQ(panelTitle, startTPAfterDAQ = 0)
 					if(err == 18)
 						ASSERT(0, "Acquisition FIFO overflow, data lost. This may happen if the computer is too slow.")

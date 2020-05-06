@@ -4396,7 +4396,7 @@ End
 Function/Wave GetAllDAEphysSetVarNum(panelTitle, channelType, controlType)
 	string panelTitle
 	variable channelType, controlType
-	
+
 	variable CtrlNum = GetNumberFromType(var=channelType)
 	string ctrl
 	make/FREE/n=(CtrlNum) Wv
@@ -4428,7 +4428,7 @@ End
 Function/Wave GetAllDAEphysPopMenuIndex(panelTitle, channelType, controlType)
 	string panelTitle
 	variable channelType, controlType
-	
+
 	variable CtrlNum = GetNumberFromType(var=channelType)
 	string ctrl
 	make/FREE/n=(CtrlNum) Wv
@@ -4651,7 +4651,7 @@ Function RemoveTracesFromGraph(graph, [kill, trace, wv, dfr])
 	WAVE/Z wv
 	DFREF dfr
 
-	variable i, numEntries, removals, tryKillingTheWave, numOptArgs, remove_all_traces, error, debugOnError
+	variable i, numEntries, removals, tryKillingTheWave, numOptArgs, remove_all_traces, debugOnError
 	string traceList, refTrace
 
 	if(ParamIsDefault(kill))
@@ -4679,7 +4679,7 @@ Function RemoveTracesFromGraph(graph, [kill, trace, wv, dfr])
 				RemoveFromGraph/W=$graph $("#0"); AbortOnRTE
 				removals += 1
 			catch
-				error = GetRTError(1)
+				ClearRTError()
 				ResetDebugOnError(debugOnError)
 				return removals
 			endtry

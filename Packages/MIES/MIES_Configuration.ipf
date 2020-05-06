@@ -343,7 +343,7 @@ Function CONF_SaveWindow(fName)
 		endif
 	catch
 		errMsg = getRTErrMessage()
-		if(getRTError(1))
+		if(ClearRTError())
 			ASSERT(0, errMsg)
 		else
 			Abort
@@ -423,7 +423,7 @@ Function CONF_RestoreWindow(fName[, usePanelTypeFromFile, rigFile])
 		if(!IsNaN(jsonID))
 			JSON_Release(jsonID)
 		endif
-		if(getRTError(1))
+		if(ClearRTError())
 			ASSERT(0, errMsg)
 		else
 			Abort
@@ -463,7 +463,7 @@ static Function CONF_SaveDAEphys(fName)
 		endif
 	catch
 		errMsg = getRTErrMessage()
-		if(getRTError(1))
+		if(ClearRTError())
 			ASSERT(0, errMsg)
 		else
 			Abort
@@ -596,7 +596,7 @@ Function/S CONF_RestoreDAEphys(jsonID, fullFilePath, [middleOfExperiment, forceN
 			SetWindow $panelTitle, hide=0, needUpdate=1
 		endif
 		errMsg = getRTErrMessage()
-		if(getRTError(1))
+		if(ClearRTError())
 			ASSERT(0, errMsg)
 		else
 			Abort
@@ -624,13 +624,11 @@ End
 static Function CONF_ParseJSON(str)
 	string str
 
-	variable err
-
 	try
 		JSONXOP_Parse/Z=0/Q=0 str; AbortOnRTE
 		return V_Value
 	catch
-		err = getRTError(1)
+		ClearRTError()
 		ASSERT(0, "The text from the configuration file could not be parsed.\rThe above information helps to find the problematic location.\r")
 	endtry
 
@@ -1037,7 +1035,7 @@ Function/S CONF_JSONToWindow(wName, restoreMask, jsonID)
 			SetWindow $wName, hide=0, needUpdate=1
 		endif
 		errMsg = getRTErrMessage()
-		if(getRTError(1))
+		if(ClearRTError())
 			ASSERT(0, errMsg)
 		else
 			Abort
@@ -1338,7 +1336,7 @@ Function CONF_AllWindowsToJSON(wName, saveMask[, excCtrlTypes])
 
 	catch
 		errMsg = getRTErrMessage()
-		if(getRTError(1))
+		if(ClearRTError())
 			ASSERT(0, errMsg)
 		else
 			Abort
@@ -1496,7 +1494,7 @@ Function CONF_WindowToJSON(wName, saveMask[, excCtrlTypes])
 
 	catch
 		errMsg = getRTErrMessage()
-		if(getRTError(1))
+		if(ClearRTError())
 			ASSERT(0, errMsg)
 		else
 			Abort
@@ -1532,7 +1530,7 @@ static Function CONF_ControlToJSON(wName, ctrlName, saveMask, jsonID, excCtrlTyp
 	variable jsonID
 	string excCtrlTypes, excUserKeys
 
-	variable ctrlType, pos, i, numUdataKeys, setVarType, err, arrayIndex, oldSize, preferCode, arrayElemType
+	variable ctrlType, pos, i, numUdataKeys, setVarType, arrayIndex, oldSize, preferCode, arrayElemType
 	string wList, ctrlPath, controlPath, niceName, jsonPath, udataPath, udataKeys, uDataKey, uData, s, arrayName, arrayElemPath
 
 
@@ -1669,7 +1667,7 @@ static Function CONF_ControlToJSON(wName, ctrlName, saveMask, jsonID, excCtrlTyp
 					try
 						s = ConvertTextEncoding(uData, TextEncodingCode("UTF-8"), TextEncodingCode("UTF-8"), 1, 0); AbortOnRTE
 					catch
-						err = GetRTError(1)
+						ClearRTError()
 						uData = Base64Encode(udata)
 						JSON_AddString(jsonID, udataPath + EXPCONFIG_FIELD_BASE64PREFIX + uDataKey, "1")
 					endtry

@@ -161,7 +161,7 @@ Function ASYNC_ThreadReadOut()
 	variable bufferSize, i
 	variable justBuffered
 
-	variable orderIndex, rterr, statCnt
+	variable orderIndex, statCnt
 	string rterrmsg
 	NVAR tgID = $GetThreadGroupID()
 	ASSERT(!isNaN(tgID), "Async frame work is not running")
@@ -236,7 +236,7 @@ Function ASYNC_ThreadReadOut()
 			f(dfrOut, err, errmsg);AbortOnRTE
 		catch
 			rterrmsg = GetRTErrMessage()
-			rterr = GetRTError(1)
+			ClearRTError()
 			ASSERT(0, "ReadOut function " + RFunc + " aborted with: " + rterrmsg)
 		endtry
 
@@ -344,7 +344,7 @@ Function ASYNC_Stop([timeout, fromAssert])
 			try
 				ASYNC_Execute(dfr);AbortOnRTE
 			catch
-				err = GetRTError(1)
+				ClearRTError()
 			endtry
 		else
 			ASYNC_Execute(dfr)
@@ -361,7 +361,7 @@ Function ASYNC_Stop([timeout, fromAssert])
 		try
 			waitResult = ThreadGroupWait(tgID, 0); AbortOnRTE
 		catch
-			err = GetRTError(1)
+			ClearRTError()
 			waitResult = 0
 		endtry
 
@@ -386,7 +386,7 @@ Function ASYNC_Stop([timeout, fromAssert])
 					try
 						ASYNC_ThreadReadOut();AbortOnRTE
 					catch
-						err = GetRTError(1)
+						ClearRTError()
 					endtry
 				else
 					ASYNC_ThreadReadOut()
@@ -906,14 +906,14 @@ End
 /// @brief returns 1 if ASYNC framework is running, 0 otherwise
 static Function ASYNC_IsASYNCRunning()
 
-	variable waitResult, err, doe
+	variable waitResult, doe
 
 	NVAR tgID = $GetThreadGroupID()
 	doe = DisableDebugOnError()
 	try
 		waitResult = ThreadGroupWait(tgID, 0);AbortOnRTE
 	catch
-		err = GetRTError(1)
+		ClearRTError()
 		waitResult = 0
 	endtry
 	ResetDebugOnError(doe)
