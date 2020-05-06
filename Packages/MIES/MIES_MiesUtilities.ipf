@@ -6115,6 +6115,7 @@ Function UploadCrashDumpsDaily()
 		endif
 
 		JSON_SetString(jsonID, "/diagnostics/last upload", GetIso8601TimeStamp())
+		AbortOnRTE
 	catch
 		ClearRTError()
 		BUG("Could not upload crash dumps!")
