@@ -22,9 +22,9 @@
 ///    Function SetupPopupMenuExt()
 ///        KillWindow/Z panel0
 ///        NewPanel/N=$"panel0"/K=1
-///        Button popupext_menu1, pos={3.00, 20.00}, size={200,20},proc=PEXT_ButtonProc,title="DropDownMenu1 ▼", userdata=(PEXT_UDATA_ITEMGETTER + ":GetMenuList1;" + PEXT_UDATA_POPUPPROC + ":DemoProc")
-///        Button popupext_menu2, pos={3.00, 55.00}, size={200,20},proc=PEXT_ButtonProc,title="DropDownMenu2 ▼", userdata=(PEXT_UDATA_ITEMGETTER + ":GetMenuList2;" + PEXT_UDATA_POPUPPROC + ":DemoProc")
-///        Button popupext_menu3, pos={3.00, 90.00}, size={200,20},proc=PEXT_ButtonProc,title="DropDownMenu3 ▼", userdata=(PEXT_UDATA_ITEMGETTER + ":GetMenuList3;" + PEXT_UDATA_POPUPPROC + ":DemoProc")
+///        Button popupext_menu1, pos={3.00, 20.00}, size={200,20},proc=PEXT_ButtonProc,title="DropDownMenu1 ▼", userdata($PEXT_UDATA_POPUPPROC)="DemoProc, userdata($PEXT_UDATA_ITEMGETTER)="GetMenuList1"
+///        Button popupext_menu2, pos={3.00, 55.00}, size={200,20},proc=PEXT_ButtonProc,title="DropDownMenu2 ▼", userdata($PEXT_UDATA_POPUPPROC)="DemoProc, userdata($PEXT_UDATA_ITEMGETTER)="GetMenuList2"
+///        Button popupext_menu3, pos={3.00, 90.00}, size={200,20},proc=PEXT_ButtonProc,title="DropDownMenu3 ▼", userdata($PEXT_UDATA_POPUPPROC)="DemoProc, userdata($PEXT_UDATA_ITEMGETTER)="GetMenuList3"
 ///    End
 ///
 ///    Function DemoProc(pa) : PopupMenuControl
@@ -426,10 +426,11 @@ Function PEXT_ButtonProc(ba) : ButtonControl
 
 			WAVE/T itemListWave = GetPopupExtMenuWave()
 			SetStringInWaveNote(itemListWave, WAVE_NOTE_WINDOWNAME, ba.win)
-			SetStringInWaveNote(itemListWave, WAVE_NOTE_PROCNAME, StringByKey(PEXT_UDATA_POPUPPROC, ba.userdata))
+
+			SetStringInWaveNote(itemListWave, WAVE_NOTE_PROCNAME, GetUserData(ba.win, ba.ctrlName, PEXT_UDATA_POPUPPROC))
 			SetStringInWaveNote(itemListWave, WAVE_NOTE_CTRLNAME, ba.ctrlName)
 
-			itemGetter = StringByKey(PEXT_UDATA_ITEMGETTER, ba.userdata)
+			itemGetter = GetUserData(ba.win, ba.ctrlName, PEXT_UDATA_ITEMGETTER)
 			FUNCREF PEXT_ITEMGETTER_LIST_PROTO GetItemList = $itemGetter
 			if(FuncRefIsAssigned(FuncRefInfo(GetItemList)))
 				itemList = GetItemList()
