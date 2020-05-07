@@ -1033,7 +1033,7 @@ Function SetGuiControlValue(win, control, value)
 	elseif(controlType == CONTROL_TYPE_POPUPMENU)
 		SetPopupMenuIndex(win, control, str2num(value))
 	elseif(controlType == CONTROL_TYPE_SLIDER)
-		Slider $control, value = str2num(value)		
+		Slider $control, win = $win, value = str2num(value)
 	else
 		ASSERT(0, "Unsupported control type") // if I get this, something's really gone pear shaped
 	endif
