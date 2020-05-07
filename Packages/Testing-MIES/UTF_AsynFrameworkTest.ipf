@@ -1150,6 +1150,9 @@ threadsafe Function/DF RunWorkerOfDOOM(dfr)
 	SVAR/SDFR=dfr testDF=param2
 	string/G dfrOut:myDF = testDF
 
+	NVAR/SDFR=dfr v=param0
+	variable/G dfrOut:outV = v
+
 	WAVE/Z w=$""
 	w[0] = 0xCAFEBABE
 	return dfrOut
