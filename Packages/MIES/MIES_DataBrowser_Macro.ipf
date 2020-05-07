@@ -998,7 +998,8 @@ Window DataBrowser() : Graph
 	ModifyPanel fixedSize=0
 	Button popupext_LBKeys,pos={416.00,26.00},size={150.00,19.00},bodyWidth=150,proc=PEXT_ButtonProc,title="Lab Notebook Entries ▼"
 	Button popupext_LBKeys,help={"Select lab notebook data to display"}
-	Button popupext_LBKeys,userdata=  "Items:DB_PopupExtGetLBKeys;popupProc:DB_PopMenuProc_LabNotebook"
+	Button popupext_LBKeys,userdata($PEXT_UDATA_POPUPPROC)="DB_PopMenuProc_LabNotebook"
+	Button popupext_LBKeys,userdata($PEXT_UDATA_ITEMGETTER)="DB_PopupExtGetLBKeys"
 	Button popupext_LBKeys,userdata(ResizeControlsInfo)= A"!!,I6!!#=3!!#A%!!#<Pz!!#N3Bk1ct<C^(Dzzzzzzzzzzzzz!!#N3Bk1ct<C^(Dz"
 	Button popupext_LBKeys,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:DuaGl<C]S6zzzzzzzzzz"
 	Button popupext_LBKeys,userdata(ResizeControlsInfo) += A"zzz!!#u:DuaGl<C]S6zzzzzzzzzzzzz!!!"
