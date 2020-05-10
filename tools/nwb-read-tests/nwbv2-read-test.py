@@ -29,7 +29,7 @@ def checkFile(path):
     print(f"Validation output: {comp.stdout}", file=sys.stdout)
 
     # 2.) Read test
-    with NWBHDF5IO(path, 'r') as io:
+    with NWBHDF5IO(path, mode='r', load_namespaces=True) as io:
         nwbfile = io.read()
 
         print(nwbfile)

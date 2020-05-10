@@ -213,6 +213,7 @@ static Function NWB_AddGeneratorString(fileID, nwbVersion)
 		IPNWB#MarkAsCustomEntry(fileID, "/general/generated_by")
 	elseif(nwbVersion == 2)
 		IPNWB#H5_WriteTextDataset(fileID, "/general/generated_by", wvText=props)
+		IPNWB#WriteNeuroDataType(fileID, "/general/generated_by", "GeneratedBy")
 		IPNWB#H5_WriteTextDataset(fileID, "/general/source_script", str=props[3][1])
 		IPNWB#H5_WriteTextAttribute(fileID, "file_name", "/general/source_script", str=IgorInfo(1))
 	endif
@@ -279,6 +280,10 @@ static Function NWB_AddDeviceSpecificData(locationID, panelTitle, nwbVersion, [c
 	WAVE/T textualValues = GetLBTextualValues(panelTitle)
 	WAVE/T textualKeys   = GetLBTextualKeys(panelTitle)
 
+	if(nwbVersion == 2)
+		IPNWB#WriteNeuroDataType(locationID, "/general", "MIESMetaData")
+	endif
+
 	path = "/general/labnotebook/" + panelTitle
 
 	IPNWB#H5_CreateGroupsRecursively(locationID, path)
@@ -286,12 +291,22 @@ static Function NWB_AddDeviceSpecificData(locationID, panelTitle, nwbVersion, [c
 
 	if(nwbVersion == 1)
 		IPNWB#MarkAsCustomEntry(locationID, "/general/labnotebook")
+	elseif(nwbVersion == 2)
+		IPNWB#WriteNeuroDataType(locationID, "/general/labnotebook", "LabNotebook")
+		IPNWB#WriteNeuroDataType(locationID, path, "LabNotebookDevice")
 	endif
 
 	IPNWB#H5_WriteDataset(groupID, "numericalValues", wv=numericalValues, writeIgorAttr=1, overwrite=1, compressionMode = compressionMode)
 	IPNWB#H5_WriteTextDataset(groupID, "numericalKeys", wvText=numericalKeys, writeIgorAttr=1, overwrite=1, compressionMode = compressionMode)
 	IPNWB#H5_WriteTextDataset(groupID, "textualValues", wvText=textualValues, writeIgorAttr=1, overwrite=1, compressionMode = compressionMode)
 	IPNWB#H5_WriteTextDataset(groupID, "textualKeys", wvText=textualKeys, writeIgorAttr=1, overwrite=1, compressionMode = compressionMode)
+
+	if(nwbVersion == 2)
+		IPNWB#WriteNeuroDataType(groupID, "numericalValues", "LabNotebookNumericalValues")
+		IPNWB#WriteNeuroDataType(groupID, "numericalKeys", "LabNotebookNumericalKeys")
+		IPNWB#WriteNeuroDataType(groupID, "textualValues", "LabNotebookTextualValues")
+		IPNWB#WriteNeuroDataType(groupID, "textualKeys", "LabNotebookTextualKeys")
+	endif
 
 	HDF5CloseGroup/Z groupID
 	DEBUGPRINT_ELAPSED(refTime)
@@ -301,12 +316,16 @@ static Function NWB_AddDeviceSpecificData(locationID, panelTitle, nwbVersion, [c
 	IPNWB#H5_CreateGroupsRecursively(locationID, path)
 	groupID = IPNWB#H5_OpenGroup(locationID, path)
 
-	if(nwbVersion == 1)
-		IPNWB#MarkAsCustomEntry(locationID, "/general/user_comment")
-	endif
-
 	SVAR userComment = $GetUserComment(panelTitle)
 	IPNWB#H5_WriteTextDataset(groupID, "userComment", str=userComment, overwrite=1, compressionMode = compressionMode)
+
+	if(nwbVersion == 1)
+		IPNWB#MarkAsCustomEntry(locationID, "/general/user_comment")
+	elseif(nwbVersion == 2)
+		IPNWB#WriteNeuroDataType(locationID, "/general/user_comment", "UserComment")
+		IPNWB#WriteNeuroDataType(locationID, path, "UserCommentDevice")
+		IPNWB#WriteNeuroDataType(groupID, "userComment", "UserCommentString")
+	endif
 
 	HDF5CloseGroup/Z groupID
 	DEBUGPRINT_ELAPSED(refTime)
@@ -318,8 +337,10 @@ static Function NWB_AddDeviceSpecificData(locationID, panelTitle, nwbVersion, [c
 
 	if(nwbVersion == 1)
 		IPNWB#MarkAsCustomEntry(locationID, "/general/testpulse")
+	elseif(nwbVersion == 2)
+		IPNWB#WriteNeuroDataType(locationID, "/general/testpulse", "Testpulse")
+		IPNWB#WriteNeuroDataType(locationID, path, "TestpulseDevice")
 	endif
-
 
 	DFREF dfr = GetDeviceTestPulse(panelTitle)
 	list = GetListOfObjects(dfr, TP_STORAGE_REGEXP)
@@ -328,10 +349,14 @@ static Function NWB_AddDeviceSpecificData(locationID, panelTitle, nwbVersion, [c
 		name = StringFromList(i, list)
 		WAVE/SDFR=dfr wv = $name
 		IPNWB#H5_WriteDataset(groupID, name, wv=wv, writeIgorAttr=1, overwrite=1, compressionMode = compressionMode)
+
+		if(nwbVersion == 2)
+			IPNWB#WriteNeuroDataType(groupID, name, "TestpulseMetadata")
+		endif
 	endfor
 
 	if(writeStoredTestPulses)
-		NWB_AppendStoredTestPulses(panelTitle, groupID)
+		NWB_AppendStoredTestPulses(panelTitle, nwbVersion, groupID)
 	endif
 
 	HDF5CloseGroup/Z groupID
@@ -410,7 +435,7 @@ Function NWB_ExportAllData(nwbVersion, [overrideFilePath, writeStoredTestPulses,
 		endfor
 	endfor
 
-	NWB_AppendStimset(locationID, stimsetList, compressionMode)
+	NWB_AppendStimset(nwbVersion, locationID, stimsetList, compressionMode)
 
 	if(writeIgorHistory)
 		NWB_AppendIgorHistory(nwbVersion, locationID)
@@ -447,7 +472,7 @@ Function NWB_ExportAllStimsets(nwbVersion, [overrideFilePath])
 	print "Please be patient while we export all existing stimsets to NWB"
 	ControlWindowToFront()
 
-	NWB_AppendStimset(locationID, stimsets, IPNWB#GetChunkedCompression())
+	NWB_AppendStimset(nwbVersion, locationID, stimsets, IPNWB#GetChunkedCompression())
 	CloseNWBFile()
 End
 
@@ -512,9 +537,9 @@ Function NWB_ExportWithDialog(exportType, [nwbVersion])
 End
 
 /// @brief Write the stored test pulses to the NWB file
-static Function NWB_AppendStoredTestPulses(panelTitle, locationID)
+static Function NWB_AppendStoredTestPulses(panelTitle, nwbVersion, locationID)
 	string panelTitle
-	variable locationID
+	variable locationID, nwbVersion
 
 	variable index, numZeros, i
 	string name
@@ -530,17 +555,22 @@ static Function NWB_AppendStoredTestPulses(panelTitle, locationID)
 	for(i = 0; i < index; i += 1)
 		sprintf name, "StoredTestPulses_%d", i
 		IPNWB#H5_WriteDataset(locationID, name, wv = storedTP[i], compressionMode = IPNWB#GetSingleChunkCompression(), overwrite = 1, writeIgorAttr = 1)
+
+		if(nwbVersion == 2)
+			IPNWB#WriteNeuroDataType(locationID, name, "TestpulseRawData")
+		endif
 	endfor
 End
 
 /// @brief Export given stimsets to NWB file
 ///
+/// @param nwbVersion      major NWB version
 /// @param locationID      Identifier of open hdf5 group or file
 /// @param stimsets        Single stimset as string
 ///                        or list of stimsets sparated by ;
 /// @param compressionMode Type of compression to use, one of @ref CompressionMode
-static Function NWB_AppendStimset(locationID, stimsets, compressionMode)
-	variable locationID, compressionMode
+static Function NWB_AppendStimset(nwbVersion, locationID, stimsets, compressionMode)
+	variable nwbVersion, locationID, compressionMode
 	string stimsets
 
 	variable i, numStimsets, numWaves
@@ -551,14 +581,14 @@ static Function NWB_AppendStimset(locationID, stimsets, compressionMode)
 	stimsets = WB_StimsetRecursionForList(stimsets)
 	numStimsets = ItemsInList(stimsets)
 	for(i = 0; i < numStimsets; i += 1)
-		NWB_WriteStimsetTemplateWaves(locationID, StringFromList(i, stimsets), compressionMode)
+		NWB_WriteStimsetTemplateWaves(nwbVersion, locationID, StringFromList(i, stimsets), compressionMode)
 	endfor
 
 	// process custom waves
 	WAVE/WAVE wv = WB_CustomWavesFromStimSet(stimsetList = stimsets)
 	numWaves = DimSize(wv, ROWS)
 	for(i = 0; i < numWaves; i += 1)
-		NWB_WriteStimsetCustomWave(locationID, wv[i], compressionMode)
+		NWB_WriteStimsetCustomWave(nwbVersion, locationID, wv[i], compressionMode)
 	endfor
 End
 
@@ -606,7 +636,7 @@ Function NWB_AppendSweep(panelTitle, ITCDataWave, ITCChanConfigWave, sweep, nwbV
 	NWB_AddDeviceSpecificData(locationID, panelTitle, nwbVersion)
 	NWB_AppendSweepLowLevel(locationID, nwbVersion, panelTitle, ITCDataWave, ITCChanConfigWave, sweep)
 	stimsets = NWB_GetStimsetFromPanel(panelTitle, sweep)
-	NWB_AppendStimset(locationID, stimsets, IPNWB#GetChunkedCompression())
+	NWB_AppendStimset(nwbVersion, locationID, stimsets, IPNWB#GetChunkedCompression())
 
 	NVAR nwbThreadID = $GetNWBThreadID()
 	if(IsFinite(nwbThreadID) && !TS_ThreadGroupFinished(nwbThreadID))
@@ -1034,15 +1064,16 @@ End
 
 /// @brief Save Custom Wave (from stimset) in NWB file
 ///
+/// @param nwbVersion                                             major NWB version
 /// @param locationID		                                      Open HDF5 group or file identifier
 /// @param custom_wave		                                      Wave reference to the wave that is to be saved
 /// @param compressionMode [optional, defaults to NO_COMPRESSION] Type of compression to use, one of @ref CompressionMode
-static Function NWB_WriteStimsetCustomWave(locationID, custom_wave, compressionMode)
-	variable locationID, compressionMode
+static Function NWB_WriteStimsetCustomWave(nwbVersion, locationID, custom_wave, compressionMode)
+	variable nwbVersion, locationID, compressionMode
 	WAVE custom_wave
 
-	variable groupID
-	string pathInNWB, custom_wave_name
+	variable groupID, i, numEntries
+	string pathInNWB, custom_wave_name, path
 
 	// build path for NWB file
 	pathInNWB = GetWavesDataFolder(custom_wave, 1)
@@ -1058,11 +1089,25 @@ static Function NWB_WriteStimsetCustomWave(locationID, custom_wave, compressionM
 
 	IPNWB#H5_WriteDataset(groupID, custom_wave_name, wv=custom_wave, compressionMode = compressionMode, overwrite=1, writeIgorAttr=1)
 
+	if(nwbVersion == 2)
+		IPNWB#WriteNeuroDataType(locationID, "/general/stimsets/referenced", "StimulusSetReferenced")
+
+		path = ""
+		numEntries = ItemsInList(pathInNWB, "/")
+		for(i = 4; i < numEntries; i += 1)
+			path += StringFromList(i, pathInNWB, "/")
+			IPNWB#WriteNeuroDataType(locationID, "/general/stimsets/referenced/" + path, "StimulusSetReferencedFolder")
+			path += "/"
+		endfor
+
+		IPNWB#WriteNeuroDataType(groupID, custom_wave_name, "StimulusSetReferencedWaveform")
+	endif
+
 	HDF5CloseGroup groupID
 End
 
-static Function NWB_WriteStimsetTemplateWaves(locationID, stimSet, compressionMode)
-	variable locationID
+static Function NWB_WriteStimsetTemplateWaves(nwbVersion, locationID, stimSet, compressionMode)
+	variable nwbVersion, locationID
 	string stimSet
 	variable compressionMode
 
@@ -1072,6 +1117,10 @@ static Function NWB_WriteStimsetTemplateWaves(locationID, stimSet, compressionMo
 	path = "/general/stimsets"
 	IPNWB#H5_CreateGroupsRecursively(locationID, path)
 	groupID = IPNWB#H5_OpenGroup(locationID, path)
+
+	if(nwbVersion == 2)
+		IPNWB#WriteNeuroDataType(locationID, path, "StimulusSets")
+	endif
 
 	// write the stim set parameter waves only if all three exist
 	if(WB_StimsetIsFromThirdParty(stimSet))
@@ -1087,6 +1136,10 @@ static Function NWB_WriteStimsetTemplateWaves(locationID, stimSet, compressionMo
 		stimset = NameOfWave(stimSetWave)
 		IPNWB#H5_WriteDataset(groupID, stimset, wv=stimSetWave, compressionMode = compressionMode, overwrite=1, writeIgorAttr=1)
 
+		if(nwbVersion == 2)
+			IPNWB#WriteNeuroDataType(groupID, stimset, "StimulusSetWaveform")
+		endif
+
 		HDF5CloseGroup groupID
 		return NaN
 	endif
@@ -1097,12 +1150,21 @@ static Function NWB_WriteStimsetTemplateWaves(locationID, stimSet, compressionMo
 
 	name = WB_GetParameterWaveName(stimset, STIMSET_PARAM_WP, nwbFormat = 1)
 	IPNWB#H5_WriteDataset(groupID, name, wv=WP, compressionMode = compressionMode, overwrite=1, writeIgorAttr=1)
+	if(nwbVersion == 2)
+		IPNWB#WriteNeuroDataType(groupID, name, "StimulusSetWavebuilderParameter")
+	endif
 
 	name = WB_GetParameterWaveName(stimset, STIMSET_PARAM_WPT, nwbFormat = 1)
 	IPNWB#H5_WriteDataset(groupID, name, wv=WPT, compressionMode = compressionMode, overwrite=1, writeIgorAttr=1)
+	if(nwbVersion == 2)
+		IPNWB#WriteNeuroDataType(groupID, name, "StimulusSetWavebuilderParameterText")
+	endif
 
 	name = WB_GetParameterWaveName(stimset, STIMSET_PARAM_SEGWVTYPE, nwbFormat = 1)
 	IPNWB#H5_WriteDataset(groupID, name, wv=SegWVType, compressionMode = compressionMode, overwrite=1, writeIgorAttr=1)
+	if(nwbVersion == 2)
+		IPNWB#WriteNeuroDataType(groupID, name, "StimulusSetWavebuilderSegmentTypes")
+	endif
 
 	HDF5CloseGroup groupID
 End

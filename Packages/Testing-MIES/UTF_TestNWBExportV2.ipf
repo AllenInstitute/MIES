@@ -25,7 +25,7 @@ static Function TestSpecVersions(fileID)
 
 	groups = IPNWB#H5_ListGroups(fileID, "/specifications")
 	groups = SortList(groups)
-	expected = "core;hdmf-common;"
+	expected = "core;hdmf-common;ndx-mies;"
 	CHECK_EQUAL_STR(groups, expected)
 
 	numEntries = ItemsInList(groups)

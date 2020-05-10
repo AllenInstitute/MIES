@@ -52,6 +52,7 @@ else
 fi
 
 ln -s "${top_level}/Packages/IPNWB" "${top_level}/Packages/doc/"
+rm -rf "${top_level}/Packages/doc/IPNWB/ndx-MIES"
 trap "rm -rf ${top_level}/Packages/doc/IPNWB" EXIT
 
 # IPNWB script has dependencies. Disabling it for CI.
