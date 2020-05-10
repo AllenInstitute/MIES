@@ -1037,9 +1037,6 @@ static Function NWB_WriteStimsetTemplateWaves(locationID, stimSet, compressionMo
 
 		stimset = NameOfWave(stimSetWave)
 		IPNWB#H5_WriteDataset(groupID, stimset, wv=stimSetWave, compressionMode = compressionMode, overwrite=1, writeIgorAttr=1)
-		// @todo remove once IP7 64bit is mandatory
-		// save memory by deleting the stimset again
-		KillOrMoveToTrash(wv=stimSetWave)
 
 		HDF5CloseGroup groupID
 		return NaN
