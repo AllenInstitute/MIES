@@ -457,14 +457,20 @@ static Function TestTimeSeries(fileID, filepath, device, groupID, channel, sweep
 		CHECK_CLOSE_VAR(conversion, 1e-12)
 
 		unit = IPNWB#ReadTextAttributeAsString(channelGroupID, "data", "unit")
-		base_unit_ref = "A"
+
+		// translate back to hardcoded units
+		base_unit_ref = "amperes"
+
 		CHECK_EQUAL_STR(unit, base_unit_ref)
 	elseif(!cmpstr(unit_ref, "mV"))
 		conversion = IPNWB#ReadAttributeAsNumber(channelGroupID, "data", "conversion")
 		CHECK_CLOSE_VAR(conversion, 1e-3, tol = 1e-5)
 
 		unit = IPNWB#ReadTextAttributeAsString(channelGroupID, "data", "unit")
-		base_unit_ref = "V"
+
+		// translate back to hardcoded units
+		base_unit_ref = "volts"
+
 		CHECK_EQUAL_STR(unit, base_unit_ref)
 	elseif(IsEmpty(unit_ref)) // TTL data
 		conversion = IPNWB#ReadAttributeAsNumber(channelGroupID, "data", "conversion")
