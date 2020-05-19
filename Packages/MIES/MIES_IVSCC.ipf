@@ -9,7 +9,7 @@
 /// @file MIES_IVSCC.ipf
 /// @brief __IVS__ Routines for IVSCC/PatchSeq automation
 
-static Constant    IVS_DEFAULT_NWBVERSION = 1
+static Constant    IVS_DEFAULT_NWBVERSION = 2
 static Constant    IVS_DEFAULT_HEADSTAGE  = 0
 static StrConstant IVS_DEFAULT_PANELTITLE = "ITC18USB_Dev_0"
 
