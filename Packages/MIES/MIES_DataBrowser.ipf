@@ -238,6 +238,7 @@ Function/S DB_ClearAllGraphs()
 
 		if(WindowExists(graph))
 			RemoveTracesFromGraph(graph)
+			RemoveFreeAxisFromGraph(graph)
 		endif
 	endfor
 End
@@ -384,6 +385,7 @@ Function DB_UpdateSweepPlot(win)
 
 	WAVE/T cursorInfos = GetCursorInfos(graph)
 	RemoveTracesFromGraph(graph)
+	RemoveFreeAxisFromGraph(graph)
 
 	if(!BSP_HasBoundDevice(win))
 		return NaN
@@ -525,6 +527,7 @@ static Function DB_ClearGraph(win)
 	endif
 
 	RemoveTracesFromGraph(graph)
+	RemoveFreeAxisFromGraph(graph)
 	UpdateLBGraphLegend(graph)
 End
 

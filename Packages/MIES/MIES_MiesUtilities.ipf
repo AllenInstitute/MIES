@@ -2085,12 +2085,12 @@ Function CreateTiledChannelGraph(graph, config, sweepNo, numericalValues,  textu
 	variable moreData, low, high, step, spacePerSlot, chan, numSlots, numHorizWaves, numVertWaves, idx
 	variable numTTLBits, colorIndex, totalVertBlocks, headstage
 	variable delayOnsetUser, delayOnsetAuto, delayTermination, delaydDAQ, dDAQEnabled, oodDAQEnabled
-	variable stimSetLength, samplingInt, xRangeStart, xRangeEnd, first, last, count
+	variable stimSetLength, samplingInt, xRangeStart, xRangeEnd, first, last, count, freeAxisHigh
 	variable numDACsOriginal, numADCsOriginal, numTTLsOriginal, numRegions, numEntries, numRangesPerEntry
 	variable totalXRange = NaN
 
 	string trace, traceType, channelID, axisLabel, entry, range
-	string unit, name, str, vertAxis, oodDAQRegionsAll, dDAQActiveHeadstageAll, horizAxis
+	string unit, name, str, vertAxis, oodDAQRegionsAll, dDAQActiveHeadstageAll, horizAxis, freeAxis
 
 	ASSERT(!isEmpty(graph), "Empty graph")
 	ASSERT(IsFinite(sweepNo), "Non-finite sweepNo")
@@ -2164,6 +2164,8 @@ Function CreateTiledChannelGraph(graph, config, sweepNo, numericalValues,  textu
 			numSlots        += numDACs
 			totalVertBlocks += numDACs
 		endif
+	else
+		tgs.displayDAC = 0
 	endif
 	if(tgs.displayADC && numADCs > 0)
 
@@ -2174,6 +2176,8 @@ Function CreateTiledChannelGraph(graph, config, sweepNo, numericalValues,  textu
 			numSlots        += ADC_SLOT_MULTIPLIER * numADCs
 			totalVertBlocks += numADCs
 		endif
+	else
+		tgs.displayADC = 0
 	endif
 	if(tgs.displayTTL && numTTLs > 0)
 		if(tgs.overlayChannels)
@@ -2188,6 +2192,8 @@ Function CreateTiledChannelGraph(graph, config, sweepNo, numericalValues,  textu
 				totalVertBlocks += numTTLs
 			endif
 		endif
+	else
+		tgs.displayTTL = 0
 	endif
 
 	spacePerSlot = (1.0 - (totalVertBlocks - 1) * GRAPH_DIV_SPACING) / numSlots
@@ -2480,6 +2486,21 @@ Function CreateTiledChannelGraph(graph, config, sweepNo, numericalValues,  textu
 						sprintf str, "vert axis=[%g, %g]", low, high
 						DEBUGPRINT(str)
 						ModifyGraph/W=$graph axisEnab($vertAxis) = {low, high}
+
+						if(channelTypes[i] == ITC_XOP_CHANNEL_TYPE_ADC || (!tgs.displayADC && channelTypes[i] == ITC_XOP_CHANNEL_TYPE_DAC) && IsFinite(headstage))
+							if(tgs.displayDAC && tgs.displayADC)
+								freeAxisHigh = high * (1 + 1 / ADC_SLOT_MULTIPLIER) + GRAPH_DIV_SPACING
+							else
+								freeAxisHigh = high
+							endif
+
+							freeAxisHigh = min(1, freeAxisHigh)
+
+							freeAxis = "freeaxis_hs" + num2str(headstage)
+							NewFreeAxis/O $freeAxis
+							ModifyGraph/W=$graph axisEnab($freeAxis)={low,freeAxisHigh}, standoff($freeAxis)=0, lblPosMode($freeAxis)=2, axRGB($freeAxis)=(65535,65535,65535,0), tlblRGB($freeAxis)=(65535,65535,65535,0), alblRGB($freeAxis)=(0,0,0), lblMargin($freeAxis)=0, lblLatPos($freeAxis)=0
+							Label/W=$graph $freeAxis "HS" + num2str(headstage)
+						endif
 					endif
 
 					if(k == 0) // first column, add labels
@@ -2489,7 +2510,7 @@ Function CreateTiledChannelGraph(graph, config, sweepNo, numericalValues,  textu
 							unit = "a.u."
 						endif
 
-						axisLabel = traceType + "\r(" + unit + ")"
+						axisLabel = "\Z08"+ traceType + "\r(" + unit + ")"
 
 						FindValue/TXOP=4/TEXT=(vertAxis) axisLabelCache
 						axisIndex = V_Value
@@ -2508,7 +2529,7 @@ Function CreateTiledChannelGraph(graph, config, sweepNo, numericalValues,  textu
 							SetNumberInWaveNote(axisLabelCache, NOTE_INDEX, count + 1)
 						endif
 
-						ModifyGraph/W=$graph lblPosMode = 1, standoff($vertAxis) = 0, freePos($vertAxis) = 0
+						ModifyGraph/W=$graph lblPosMode($vertAxis) = 2, standoff($vertAxis) = 0, freePos($vertAxis) = 0, lblLatPos($vertAxis) = 3, lblMargin($vertAxis) = 15
 
 						if(channelTypes[i] == ITC_XOP_CHANNEL_TYPE_TTL && tgs.splitTTLBits)
 							ModifyGraph/W=$graph nticks($vertAxis)=2,manTick($vertAxis)={0,1,0,0},manMinor($vertAxis)={0,50}
@@ -2535,7 +2556,7 @@ Function CreateTiledChannelGraph(graph, config, sweepNo, numericalValues,  textu
 					// 11-14: TTL bits (single) rack zero
 					// 15:    TTL bits (sum) rack one
 					// 16-19: TTL bits (single) rack one
-					if(WaveExists(status) && IsFinite(headstage))
+					if(IsFinite(headstage))
 						colorIndex = headstage
 					elseif(!cmpstr(channelID, "TTL"))
 						colorIndex = 10 + activeChanCount[i] * 5 + j
@@ -4633,6 +4654,28 @@ Function CheckIfPathsRefIdenticalFiles(list)
 	return 1
 End
 
+/// @brief Remove all free axis from the given graph
+Function RemoveFreeAxisFromGraph(graph)
+	string graph
+
+	string list, name, info
+	variable i, numEntries
+
+	list = AxisList(graph)
+	numEntries = ItemsInList(list)
+
+	for(i = 0; i < numEntries; i += 1)
+		name = StringFromList(i, list)
+		info = AxisInfo(graph, name)
+
+		if(!NumberByKey("ISTFREE", info))
+			continue
+		endif
+
+		KillFreeAxis/W=$graph $name
+	endfor
+End
+
 /// @brief Remove traces from a graph and optionally try to kill their waves
 ///
 /// @param graph                            graph
@@ -4673,6 +4716,9 @@ Function RemoveTracesFromGraph(graph, [kill, trace, wv, dfr])
 
 	// remove without calling TraceNameList or TraceNameToWaveRef
 	if(!kill && remove_all_traces)
+#if IgorVersion() >= 9.0
+		RemoveFromGraph/ALL/W=$graph
+#else
 		debugOnError = DisableDebugOnError()
 		do
 			try
@@ -4684,6 +4730,7 @@ Function RemoveTracesFromGraph(graph, [kill, trace, wv, dfr])
 				return removals
 			endtry
 		while(1)
+#endif
 	endif
 
 	traceList  = TraceNameList(graph, ";", 1 )
