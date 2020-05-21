@@ -280,10 +280,6 @@ static Function NWB_AddDeviceSpecificData(locationID, panelTitle, nwbVersion, [c
 	WAVE/T textualValues = GetLBTextualValues(panelTitle)
 	WAVE/T textualKeys   = GetLBTextualKeys(panelTitle)
 
-	if(nwbVersion == 2)
-		IPNWB#WriteNeuroDataType(locationID, "/general", "MIESMetaData")
-	endif
-
 	path = "/general/labnotebook/" + panelTitle
 
 	IPNWB#H5_CreateGroupsRecursively(locationID, path)
