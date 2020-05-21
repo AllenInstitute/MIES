@@ -2867,7 +2867,7 @@ Function AddTraceToLBGraph(graph, keys, values, key)
 		return NaN
 	endif
 
-	lbl = LineBreakingIntoParWithMinWidth(lbl)
+	lbl = LineBreakingIntoPar(lbl)
 
 	WAVE valuesDat = ExtractLBColumnTimeStamp(values)
 

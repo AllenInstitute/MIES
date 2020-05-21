@@ -3667,3 +3667,37 @@ Function CheckUUIDs()
 End
 
 /// @}
+
+/// LineBreakingIntoPar
+/// @{
+
+Function/WAVE LBP_NonFiniteValues()
+	Make/D/FREE data = {NaN, Inf, -Inf}
+	return data
+End
+
+// UTF_TD_GENERATOR LBP_NonFiniteValues
+Function LBP_Aborts([var])
+	variable var
+
+	try
+		LineBreakingIntoPar("", minimumWidth=var); AbortOnRTE
+		FAIL()
+	catch
+		PASS()
+	endtry
+End
+
+Function LBP_Works()
+	string str, expected
+
+	str = LineBreakingIntoPar("abcd efgh 123 one two\tfour")
+	expected = "abcd\refgh 123\rone\rtwo\rfour"
+	CHECK_EQUAL_STR(str, expected)
+
+	str = LineBreakingIntoPar("abcd efgh 123 one two\tfour", minimumWidth = 10)
+	expected = "abcd efgh 123\rone two\tfour"
+	CHECK_EQUAL_STR(str, expected)
+End
+
+/// @}

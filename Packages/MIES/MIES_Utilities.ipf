@@ -1335,11 +1335,10 @@ Function MDsort(w, keyColPrimary, [keyColSecondary, keyColTertiary, reversed])
 	endif
 End
 
-/// @brief Breaking a string into multiple lines
+/// @brief Break a string into multiple lines
 ///
-/// Currently all spaces and tabs which are not followed by numbers are
-/// replace by carriage returns (\\r). Therefore the algorithm creates
-/// a paragraph with minimum width.
+/// All spaces and tabs which are not followed by numbers are
+/// replace by carriage returns (\\r) if the minimum width was reached.
 ///
 /// A generic solution would either implement the real deal
 ///
@@ -1351,22 +1350,36 @@ End
 /// or translate [1] from C++ to Igor Pro.
 ///
 /// [1]: http://api.kde.org/4.x-api/kdelibs-apidocs/kdeui/html/classKWordWrap.html
-Function/S LineBreakingIntoParWithMinWidth(str)
+///
+/// @param str          string to break into lines
+/// @param minimumWidth [optional, defaults to zero] Each line, except the last one,
+///                     will have at least this length
+Function/S LineBreakingIntoPar(str, [minimumWidth])
 	string str
+	variable minimumWidth
 
-	variable len, i
+	variable len, i, width
 	string output = ""
 	string curr, next
 
+	if(ParamIsDefault(minimumWidth))
+		minimumWidth = 0
+	else
+		ASSERT(IsFinite(minimumWidth), "Non finite minimum width")
+	endif
+
 	len = strlen(str)
-	for(i = 0; i < len; i += 1)
+	for(i = 0; i < len; i += 1, width += 1)
 		curr = str[i]
 		next = SelectString(i < len, "", str[i + 1])
 
 		// str2num skips leading spaces and tabs
-		if((!cmpstr(curr, " ") || !cmpstr(curr, "\t")) && !IsFinite(str2numSafe(next)) && cmpstr(next, " ") && cmpstr(next, "\t"))
-			output += "\r"
-			continue
+		if((!cmpstr(curr, " ") || !cmpstr(curr, "\t"))                            \
+		   && IsNaN(str2numSafe(next)) && cmpstr(next, " ") && cmpstr(next, "\t") \
+		   && width >= minimumWidth)
+				output += "\r"
+				width = 0
+				continue
 		endif
 
 		output += curr
