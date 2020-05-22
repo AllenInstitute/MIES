@@ -437,7 +437,7 @@ static Function AB_LoadDataWrapper(tmpDFR, expFilePath, datafolderPath, listOfNa
 	string expFilePath, datafolderPath, listOfNames
 	variable typeFlags
 
-	variable err, numEntries, i, debugOnError
+	variable numEntries, i, debugOnError
 	string cdf, fileNameWOExtension, baseFolder, extension, expFileOrFolder
 	string str, list, regexp
 
@@ -481,7 +481,7 @@ static Function AB_LoadDataWrapper(tmpDFR, expFilePath, datafolderPath, listOfNa
 			Abort
 		endif
 	catch
-		err = GetRTError(1)
+		ClearRTError()
 		ResetDebugOnError(debugOnError)
 		return 0
 	endtry

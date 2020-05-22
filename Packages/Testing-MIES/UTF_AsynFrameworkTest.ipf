@@ -1,5 +1,6 @@
 #pragma TextEncoding = "UTF-8"
 #pragma rtGlobals=3 // Use modern global access method and strict wave access.
+#pragma rtFunctionErrors=1
 #pragma ModuleName=AsynTest
 
 // If this moves to an independend test, uncomment the following line
@@ -1148,6 +1149,9 @@ threadsafe Function/DF RunWorkerOfDOOM(dfr)
 
 	SVAR/SDFR=dfr testDF=param2
 	string/G dfrOut:myDF = testDF
+
+	NVAR/SDFR=dfr v=param0
+	variable/G dfrOut:outV = v
 
 	WAVE/Z w=$""
 	w[0] = 0xCAFEBABE

@@ -1391,7 +1391,7 @@ Function PSQ_DAScale(panelTitle, s)
 							TextBox/A=RB/C/N=text/W=$SPIKE_FREQ_GRAPH RemoveEnding(textBoxString, "\r")
 						endif
 					catch
-						err = GetRTError(1)
+						err = ClearRTError()
 						DEBUGPRINT("CurveFit failed with " + num2str(err))
 					endtry
 				endif

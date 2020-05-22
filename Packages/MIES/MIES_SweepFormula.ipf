@@ -1481,7 +1481,6 @@ Function SF_button_sweepFormula_display(ba) : ButtonControl
 	STRUCT WMButtonAction &ba
 
 	String mainPanel, code, formula_nb, bsPanel
-	variable err
 
 	switch(ba.eventCode)
 		case 2: // mouse up
@@ -1506,7 +1505,7 @@ Function SF_button_sweepFormula_display(ba) : ButtonControl
 				ClearRTError()
 				SF_FormulaPlotter(mainPanel, code, dfr = dfr); AbortONRTE
 			catch
-				err = getRTerror(1)
+				ClearRTError()
 				SVAR result = $GetSweepFormulaParseErrorMessage(dfr)
 				SetSetVariableString(bsPanel, "setvar_sweepFormula_parseResult", result)
 				break

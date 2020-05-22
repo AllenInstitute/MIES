@@ -1,4 +1,5 @@
 #pragma rtGlobals=3 // Use modern global access method and strict wave access.
+#pragma rtFunctionErrors=1
 
 #ifndef AUTOMATED_TESTING
 

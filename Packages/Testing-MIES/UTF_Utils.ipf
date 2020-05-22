@@ -1,5 +1,15 @@
 #pragma TextEncoding = "UTF-8"
 #pragma rtGlobals=3 // Use modern global access method and strict wave access.
+#pragma rtFunctionErrors=1
+#pragma ModuleName=UtilsTest
+
+static Function TEST_CASE_BEGIN_OVERRIDE(name)
+	string name
+
+	AdditionalExperimentCleanupAfterTest()
+
+	CA_FlushCache()
+End
 
 /// RemoveAllEmptyDataFolders
 /// @{
@@ -3238,9 +3248,33 @@ Function MWWO_RequiresDistinctWaves()
 	endtry
 End
 
-Function MWWO_HandlesLockedDest()
+Function MWWO_Works()
 
-	variable err
+	Make dest = p
+	Make src = 0
+
+	MoveWaveWithOverwrite(dest, src)
+
+	WAVE dest
+	CHECK_EQUAL_VAR(Sum(dest), 0)
+	WAVE/Z src
+	CHECK_WAVE(src, NULL_WAVE)
+End
+
+Function MWWO_WorksWithFreeSource()
+
+	Make dest = p
+	Make/FREE src = 0
+
+	MoveWaveWithOverwrite(dest, src)
+
+	WAVE dest
+	CHECK_EQUAL_VAR(Sum(dest), 0)
+	WAVE/Z src
+	CHECK_WAVE(src, NULL_WAVE)
+End
+
+Function MWWO_HandlesLockedDest()
 
 	Make dest = p
 	Make src = 0

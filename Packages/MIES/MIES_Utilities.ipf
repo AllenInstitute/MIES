@@ -4050,8 +4050,9 @@ End
 
 /// @brief Helper function for try/catch with AbortOnRTE
 ///
-/// Not clearing the RTE before calling `AbortOnRTE` will always trigger the RTE no
-/// matter what you do in that line.
+/// Not clearing the RTE before calling `AbortOnRTE` will always trigger the
+/// RTE no matter what you do in that line. Any call to GetRTErrMessage() must
+/// be done prior to clearing the runtime error in the catch block.
 ///
 /// Usage:
 /// \rst
@@ -4061,14 +4062,13 @@ End
 ///       ClearRTError()
 ///       myFunc(); AbortOnRTE
 ///    catch
-///      err = GetRTError(1)
+///      err = ClearRTError()
 ///    endtry
 ///
 /// \endrst
 threadsafe Function ClearRTError()
 
-	variable err = GetRTError(1)
-	DEBUGPRINT_TS("Clearing RTE", var = err)
+	return GetRTError(1)
 End
 
 /// @brief Convert the DAQ run mode to a string

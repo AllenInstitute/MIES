@@ -16,7 +16,7 @@ Function AFM_CallAnalysisFunctions(panelTitle, eventType)
 	string panelTitle
 	variable eventType
 
-	variable error, i, valid_f1, valid_f2, valid_f3, ret, DAC, sweepsInSet
+	variable i, valid_f1, valid_f2, valid_f3, ret, DAC, sweepsInSet
 	variable realDataLength, sweepNo, fifoPosition
 	string func, msg
 	struct AnalysisFunction_V3 s
@@ -133,7 +133,7 @@ Function AFM_CallAnalysisFunctions(panelTitle, eventType)
 			endif
 		catch
 			msg   = GetRTErrMessage()
-			error = GetRTError(1)
+			ClearRTError()
 			printf "The analysis function %s aborted with error \"%s\", this is dangerous and must *not* happen!\r", func, msg
 
 			NVAR errorCounter = $GetAnalysisFuncErrorCounter(panelTitle)

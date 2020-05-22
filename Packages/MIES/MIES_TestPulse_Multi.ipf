@@ -233,7 +233,7 @@ Function TPM_BkrdTPFuncMD(s)
 							SCOPE_UpdateOscilloscopeData(panelTitle, TEST_PULSE_MODE, deviceID=deviceID)
 						catch
 							errMsg = GetRTErrMessage()
-							err = getRTError(1)
+							err = ClearRTError()
 							DQ_StopOngoingDAQ(panelTitle)
 							if(err == 18)
 								ASSERT(0, "Acquisition FIFO overflow, data lost. This may happen if the computer is too slow.")

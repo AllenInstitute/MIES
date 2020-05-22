@@ -1,5 +1,6 @@
 ﻿#pragma TextEncoding = "UTF-8"
 #pragma rtGlobals=3 // Use modern global access method and strict wave access.
+#pragma rtFunctionErrors=1
 #pragma ModuleName=HardwareMain
 
 #include "MIES_include"
@@ -167,20 +168,7 @@ Function TEST_CASE_BEGIN_OVERRIDE(name)
 		RegisterUTFMonitor(TASKNAMES + "DAQWatchdog;TPWatchdog", BACKGROUNDMONMODE_AND, reentryFuncName, timeout = 600, failOnTimeout = 1)
 	endif
 
-	list = WinList("*", ";", "WIN:67") // Panels, Graphs and tables
-
-	numWindows = ItemsInList(list)
-	for(i = 0; i < numWindows; i += 1)
-		win = StringFromList(i, list)
-
-		if(!cmpstr(win, "BW_MiesBackgroundWatchPanel"))
-			continue
-		endif
-
-		KillWindow $win
-	endfor
-
-	KillOrMoveToTrash(dfr=root:MIES)
+	AdditionalExperimentCleanupAfterTest()
 
 	GetMiesPath()
 	DuplicateDataFolder	root:WaveBuilder, root:MIES:WaveBuilder
