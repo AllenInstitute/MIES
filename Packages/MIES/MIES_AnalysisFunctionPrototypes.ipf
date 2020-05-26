@@ -63,3 +63,15 @@ End
 Function/S AF_PROTO_PARAM_GETTER_V3()
 
 End
+
+/// @brief Prototype function for the user supplied parameter help functions
+///
+Function/S AF_PROTO_PARAM_HELP_GETTER_V3(name)
+	string name
+
+End
+
+/// @brief Prototype function for the user supplied parameter check function
+///
+Function/S AF_PROTO_PARAM_CHECK(string name, string params)
+End

@@ -18,6 +18,7 @@
 #include "UTF_PatchSeqRamp"
 #include "UTF_MultiPatchSeqFastRheoEstimate"
 #include "UTF_MultiPatchSeqDAScale"
+#include "UTF_SetControls"
 #include "UTF_TestNWBExportV1"
 #include "UTF_Epochs"
 #include "UTF_HelperFunctions"
@@ -36,6 +37,7 @@ Function run()
 	list = AddListItem("UTF_MultiPatchSeqFastRheoEstimate.ipf", list)
 	list = AddListItem("UTF_MultiPatchSeqDAScale.ipf", list)
 	list = AddListItem("UTF_Epochs.ipf", list)
+	list = AddListItem("UTF_SetControls.ipf", list)
 
 	// the last will be first
 	// use this hack until https://github.com/byte-physics/igor-unit-testing-framework/issues/109

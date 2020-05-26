@@ -562,7 +562,7 @@ End
 Function WBP_ButtonProc_SaveSet(ba) : ButtonControl
 	STRUCT WMButtonAction &ba
 
-	string setName
+	string setName, genericFunc, params, errorMessage
 
 	switch(ba.eventCode)
 		case 2: // mouse up
@@ -572,6 +572,17 @@ Function WBP_ButtonProc_SaveSet(ba) : ButtonControl
 				printf "The stimset %s can not be saved as it violates the naming scheme "       + \
 					   "for user stimsets. Check the checkbox above if you really want to save " + \
 					   "a builtin stimset.\r", setName
+				ControlWindowToFront()
+				break
+			endif
+
+			genericFunc = WBP_GetAnalysisGenericFunction()
+			params = WBP_GetAnalysisParameters()
+			errorMessage = AFH_CheckAnalysisParameter(genericFunc, params)
+
+			if(!IsEmpty(errorMessage))
+				printf "The analysis parameters are not valid and the stimset can therefore not be saved.\r"
+				print errorMessage
 				ControlWindowToFront()
 				break
 			endif
@@ -1986,6 +1997,13 @@ static Function/S WBP_GetAnalysisParameters()
 	return WPT[%$"Analysis function params (encoded)"][%Set][INDEP_EPOCH_TYPE]
 End
 
+static Function/S WBP_GetAnalysisGenericFunction()
+
+	WAVE/T WPT = GetWaveBuilderWaveTextParam()
+
+	return WPT[%$("Analysis function (generic)")][%Set][INDEP_EPOCH_TYPE]
+End
+
 /// @brief Return the analysis parameter names for the currently
 ///        selected stimset
 Function/S WBP_GetAnalysisParameterNames()
@@ -2004,15 +2022,14 @@ End
 static Function WBP_UpdateParameterWave()
 
 	string params, names, name, type, genericFunc, suggParams
-	string missingParams, suggNames, reqNames
+	string missingParams, suggNames, reqNames, help
 	variable i, numEntries, offset
 
 	Wave/T listWave = WBP_GetAnalysisParamGUIListWave()
 	WAVE   selWave  = WBP_GetAnalysisParamGUISelWave()
+	WAVE/T helpWave = WBP_GetAnalysisParamGUIHelpWave()
 
-	WAVE/T WPT = GetWaveBuilderWaveTextParam()
-
-	genericFunc = WPT[%$("Analysis function (generic)")][%Set][INDEP_EPOCH_TYPE]
+	genericFunc = WBP_GetAnalysisGenericFunction()
 
 	suggParams = AFH_GetListOfAnalysisParams(genericFunc, REQUIRED_PARAMS | OPTIONAL_PARAMS)
 	suggNames = AFH_GetListOfAnalysisParamNames(suggParams)
@@ -2023,7 +2040,7 @@ static Function WBP_UpdateParameterWave()
 	names  = AFH_GetListOfAnalysisParamNames(params)
 
 	numEntries = ItemsInList(names)
-	Redimension/N=(numEntries, -1) listWave, selWave
+	Redimension/N=(numEntries, -1) listWave, selWave, helpWave
 
 	for(i = 0; i < numEntries; i += 1)
 		name = StringFromList(i, names)
@@ -2037,7 +2054,7 @@ static Function WBP_UpdateParameterWave()
 
 	missingParams = GetListDifference(suggNames, names)
 	numEntries = ItemsInList(missingParams)
-	Redimension/N=(offset + numEntries, -1) listWave, selWave
+	Redimension/N=(offset + numEntries, -1) listWave, selWave, helpWave
 
 	for(i = 0; i < numEntries; i += 1)
 		name = StringFromList(i, missingParams)
@@ -2045,6 +2062,31 @@ static Function WBP_UpdateParameterWave()
 		listWave[offset + i][%Type]     = AFH_GetAnalysisParamType(name, suggParams, typeCheck = 0)
 		listWave[offset + i][%Required] = ToTrueFalse(WhichListItem(name, reqNames) != -1)
 	endfor
+
+	listWave[][%Help] = ""
+	helpWave[][] = ""
+
+	FUNCREF AF_PROTO_PARAM_HELP_GETTER_V3 f = $(genericFunc + "_GetHelp")
+
+	if(FuncRefIsAssigned(FuncRefInfo(f)))
+
+		numEntries = DimSize(listWave, ROWS)
+		for(i = 0; i < numEntries; i += 1)
+			name = listWave[i][%Name]
+
+			if(WhichListItem(name, suggNames) != -1)
+				try
+					ClearRTError()
+					help = f(name); AbortOnRTE
+					listWave[i][%Help] = help
+					helpWave[i][%Help] = LineBreakingIntoPar(help, minimumWidth = 40)
+				catch
+					ClearRTError()
+					// ignoring errors here
+				endtry
+			endif
+		endfor
+	endif
 End
 
 /// @brief Toggle the analysis parameter GUI
@@ -2059,54 +2101,56 @@ static Function WBP_ToggleAnalysisParamGUI()
 
 	Wave/T listWave = WBP_GetAnalysisParamGUIListWave()
 	WAVE   selWave  = WBP_GetAnalysisParamGUISelWave()
+	WAVE/T helpWave = WBP_GetAnalysisParamGUIHelpWave()
 
-	NewPanel/EXT=2/HOST=$panel/N=AnalysisParamGUI/W=(0,0,672,233)/K=2 as " "
+	NewPanel/EXT=2/HOST=$panel/N=AnalysisParamGUI/W=(0,0,785,233)/K=2 as " "
 	ModifyPanel fixedSize=0
-	GroupBox group_main,pos={5.00,11.00},size={245.00,208.00}
-	GroupBox group_main,userdata(ResizeControlsInfo)= A"!!,?X!!#;=!!#B<J,hr,z!!#](Aon\"Qzzzzzzzzzzzzzz!!#N3Bk1ct<C]MV0`V1R"
+	GroupBox group_main,pos={5.00,11.00},size={365,252}
+	GroupBox group_main,userdata(ResizeControlsInfo)= A"!!,?X!!#;=!!#BpJ,hraz!!#](Aon\"Qzzzzzzzzzzzzzz!!#N3Bk1ct<C]MV0`V1R"
 	GroupBox group_main,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Duafnzzzzzzzzzzz"
 	GroupBox group_main,userdata(ResizeControlsInfo) += A"zzz!!#?(FEDG<zzzzzzzzzzzzzz!!!"
-	Button button_delete_parameter,pos={40.00,188.00},size={160.00,25.00},proc=WBP_ButtonProc_DeleteParam,title="Delete"
+	Button button_delete_parameter,pos={40,232},size={280,25},proc=WBP_ButtonProc_DeleteParam,title="Delete"
 	Button button_delete_parameter,help={"Delete the selected parameter"}
-	Button button_delete_parameter,userdata(ResizeControlsInfo)= A"!!,D/!!#AB!!#A?!!#=+z!!#](Aon\"Qzzzzzzzzzzzzzz!!#N3Bk1ct<C]MV0`V1R"
+	Button button_delete_parameter,userdata(ResizeControlsInfo)= A"!!,D/!!#B\"!!#BF!!#=+z!!#](Aon\"Qzzzzzzzzzzzzzz!!#N3Bk1ct<C]MV0`V1R"
 	Button button_delete_parameter,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#N3Bk1ct<C]MF0`V1Rzzzzzzzzz"
 	Button button_delete_parameter,userdata(ResizeControlsInfo) += A"zzz!!#N3Bk1ct<C]MF0`V1Rzzzzzzzzzzzz!!!"
-	Button button_add_parameter,pos={40.00,161.00},size={160.00,25.00},proc=WBP_ButtonProc_AddParam,title="Add"
+	Button button_add_parameter,pos={40,205},size={280,25},proc=WBP_ButtonProc_AddParam,title="Add"
 	Button button_add_parameter,help={"Add the parameter with type and value to the stimset"}
-	Button button_add_parameter,userdata(ResizeControlsInfo)= A"!!,D/!!#A'!!#A?!!#=+z!!#](Aon\"Qzzzzzzzzzzzzzz!!#N3Bk1ct<C]MV0`V1R"
+	Button button_add_parameter,userdata(ResizeControlsInfo)= A"!!,D/!!#A\\!!#BF!!#=+z!!#](Aon\"Qzzzzzzzzzzzzzz!!#N3Bk1ct<C]MV0`V1R"
 	Button button_add_parameter,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#N3Bk1ct<C]MF0`V1Rzzzzzzzzz"
 	Button button_add_parameter,userdata(ResizeControlsInfo) += A"zzz!!#N3Bk1ct<C]MF0`V1Rzzzzzzzzzzzz!!!"
-	PopupMenu popup_param_types,pos={49.00,42.00},size={100.00,19.00},bodyWidth=70,title="Type:"
+	PopupMenu popup_param_types,pos={136,42},size={100.00,19.00},bodyWidth=70,title="Type:"
 	PopupMenu popup_param_types,help={"Choose the parameter type"}
-	PopupMenu popup_param_types,userdata(ResizeControlsInfo)= A"!!,Ds!!#>6!!#@,!!#<Pz!!#`-A7TLfzzzzzzzzzzzzzz!!#`-A7TLf!(TLV0`V1R"
-	PopupMenu popup_param_types,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Duafnzzzzzzzzzzz"
-	PopupMenu popup_param_types,userdata(ResizeControlsInfo) += A"zzz!!#u:Duafnzzzzzzzzzzzzzz!!!"
 	PopupMenu popup_param_types,mode=4,popvalue="textwave",value= #"WBP_GetParameterTypes()"
-	SetVariable setvar_param_name,pos={15.00,19.00},size={230.00,18.00}
+	PopupMenu popup_param_types,userdata(ResizeControlsInfo)= A"!!,Fm!!#>6!!#@,!!#<Pz!!#](Aon\"q<C]MP0`V1Rzzzzzzzzzzzz!!#N3Bk1ct<C]MV0`V1R"
+	PopupMenu popup_param_types,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#N3Bk1ct<C]MX0`V1Rzzzzzzzzz"
+	PopupMenu popup_param_types,userdata(ResizeControlsInfo) += A"zzz!!#N3Bk1ct<C]MX0`V1Rzzzzzzzzzzzz!!!"
+	SetVariable setvar_param_name,pos={15.00,19.00},size={350,18}
 	SetVariable setvar_param_name,help={"The parameter name"}
-	SetVariable setvar_param_name,userdata(ResizeControlsInfo)= A"!!,B)!!#<P!!#B0!!#<Hz!!#N3Bk1ct<C]MP0`V1Rzzzzzzzzzzzz!!#N3Bk1ct<C]MV0`V1R"
+	SetVariable setvar_param_name,value= _STR:""
+	SetVariable setvar_param_name,userdata(ResizeControlsInfo)= A"!!,B)!!#<P!!#Bi!!#<Hz!!#N3Bk1ct<C]MP0`V1Rzzzzzzzzzzzz!!#N3Bk1ct<C]MV0`V1R"
 	SetVariable setvar_param_name,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Duafnzzzzzzzzzzz"
 	SetVariable setvar_param_name,userdata(ResizeControlsInfo) += A"zzz!!#u:Duafnzzzzzzzzzzzzzz!!!"
-	SetVariable setvar_param_name,value= _STR:""
-	ListBox list_params,pos={255.00,11.00},size={405.00,203.00},proc=WBP_ListBoxProc_AnalysisParams
+	ListBox list_params,pos={375,11},size={644,247},proc=WBP_ListBoxProc_AnalysisParams
 	ListBox list_params,help={"Visualization of all parameters with types and values"}
-	ListBox list_params,userdata(ResizeControlsInfo)= A"!!,HBJ,hkh!!#C/J,hr'z!!#N3Bk1ct<C]MV0`V1Rzzzzzzzzzzzz!!#o2B4uAezz"
+	ListBox list_params,listWave=listWave
+	ListBox list_params,selWave=selWave
+	ListBox list_params,helpWave=helpWave
+	ListBox list_params,mode= 4,widths={180, 60, 120, 60, 600}, userColumnResize=1
+	ListBox list_params,userdata(ResizeControlsInfo)= A"!!,I!J,hkh!!#D1!!#B1z!!#N3Bk1ct<C]MV0`V1Rzzzzzzzzzzzz!!#o2B4uAezz"
 	ListBox list_params,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Duafnzzzzzzzzzzz"
 	ListBox list_params,userdata(ResizeControlsInfo) += A"zzz!!#?(FEDG<zzzzzzzzzzzzzz!!!"
-	ListBox list_params,listWave=root:MIES:WaveBuilder:Data:analysisGUIListWave
-	ListBox list_params,selWave=root:MIES:WaveBuilder:Data:analysisGUISelWave
-	ListBox list_params,mode= 4,widths={25,15,40,13}, userColumnResize=1
-	DefineGuide UGFR1={FL,0.5, FR},UGFL1={FL,12},UGFT1={FT,68},UGFB1={FB,-78}
+	DefineGuide UGFR1={FL,0.35, FR},UGFL1={FL,12},UGFT1={FT,68},UGFB1={FB,-78}
 	SetWindow kwTopWin,hook(ResizeControls)=ResizeControls#ResizeControlsHook
-	SetWindow kwTopWin,userdata(ResizeControlsInfo)= A"!!*'\"z!!#D<!!#Aozzzzzzzzzzzzzzzzzzzzz"
+	SetWindow kwTopWin,userdata(ResizeControlsInfo)= A"!!*'\"z!!#E<5QF0/J,fQLzzzzzzzzzzzzzzzzzzzz"
 	SetWindow kwTopWin,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzzzzzzzzzzzzzzz"
 	SetWindow kwTopWin,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzzzzzzzzz!!!"
 	SetWindow kwTopWin,userdata(ResizeControlsGuides)=  "UGFR1;UGFL1;UGFT1;UGFB1;"
-	SetWindow kwTopWin,userdata(ResizeControlsInfoUGFR1)=  "NAME:UGFR1;WIN:WaveBuilder#AnalysisParamGUI;TYPE:User;HORIZONTAL:0;POSITION:257.00;GUIDE1:FR;GUIDE2:;RELPOSITION:-431;"
+	SetWindow kwTopWin,userdata(ResizeControlsInfoUGFR1)=  "NAME:UGFR1;WIN:WaveBuilder#AnalysisParamGUI;TYPE:User;HORIZONTAL:0;POSITION:351.00;GUIDE1:FL;GUIDE2:FR;RELPOSITION:0.339357;"
 	SetWindow kwTopWin,userdata(ResizeControlsInfoUGFL1)=  "NAME:UGFL1;WIN:WaveBuilder#AnalysisParamGUI;TYPE:User;HORIZONTAL:0;POSITION:12.00;GUIDE1:FL;GUIDE2:;RELPOSITION:12;"
 	SetWindow kwTopWin,userdata(ResizeControlsInfoUGFT1)=  "NAME:UGFT1;WIN:WaveBuilder#AnalysisParamGUI;TYPE:User;HORIZONTAL:1;POSITION:68.00;GUIDE1:FT;GUIDE2:;RELPOSITION:68;"
-	SetWindow kwTopWin,userdata(ResizeControlsInfoUGFB1)=  "NAME:UGFB1;WIN:WaveBuilder#AnalysisParamGUI;TYPE:User;HORIZONTAL:1;POSITION:146.00;GUIDE1:FB;GUIDE2:;RELPOSITION:-78;"
-	Execute/Q/Z "SetWindow kwTopWin sizeLimit={672,233,inf,inf}" // sizeLimit requires Igor 7 or later
+	SetWindow kwTopWin,userdata(ResizeControlsInfoUGFB1)=  "NAME:UGFB1;WIN:WaveBuilder#AnalysisParamGUI;TYPE:User;HORIZONTAL:1;POSITION:199.00;GUIDE1:FB;GUIDE2:;RELPOSITION:-78;"
+	Execute/Q/Z "SetWindow kwTopWin sizeLimit={785,233,inf,inf}" // sizeLimit requires Igor 7 or later
 	NewNotebook /F=0 /N=nb_param_value /W=(16,76,216,120)/FG=(UGFL1,UGFT1,UGFR1,UGFB1) /HOST=# /OPTS=3
 	Notebook kwTopWin, defaultTab=20, autoSave= 0, magnification=100
 	Notebook kwTopWin font="Lucida Console", fSize=11, fStyle=0, textRGB=(0,0,0)

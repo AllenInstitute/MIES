@@ -777,3 +777,76 @@ Function/S AFH_RemoveAnalysisParameter(name, params)
 	ASSERT(AFH_IsValidAnalysisParameter(name), "Name is not a valid analysis parameter")
 	return GrepList(params, "(?i)\\Q" + name + "\\E" + ":.*", 1, ",")
 End
+
+/// @brief Check the analysis parameters according to the optionally present check function
+///
+/// @param genericFunc Name of an analysis V3 function
+/// @param params      Analysis parameter (encoded)
+///
+/// @return multiline error messages, an empty string on success
+Function/S AFH_CheckAnalysisParameter(genericFunc, params)
+	string genericFunc, params
+
+	string suggNames, presentNames, message, name
+	string reqNamesAndTypesFromFunc, reqNames
+	string optNamesAndTypesFromFunc, optNames
+	variable index, numParams, i
+	string header, text
+
+	FUNCREF AF_PROTO_PARAM_CHECK f = $(genericFunc + "_CheckParam")
+
+	if(!FuncRefIsAssigned(FuncRefInfo(f)))
+		return ""
+	endif
+
+	reqNamesAndTypesFromFunc = AFH_GetListOfAnalysisParams(genericFunc, REQUIRED_PARAMS)
+	reqNames = AFH_GetListOfAnalysisParamNames(reqNamesAndTypesFromFunc)
+
+	optNamesAndTypesFromFunc = AFH_GetListOfAnalysisParams(genericFunc, OPTIONAL_PARAMS)
+	optNames = AFH_GetListOfAnalysisParamNames(optNamesAndTypesFromFunc)
+
+	suggNames = optNames + reqNames
+
+	presentNames = AFH_GetListOfAnalysisParamNames(params)
+
+	numParams = ItemsInList(suggNames)
+	Make/FREE/T/N=(numParams) errorMessages
+
+	for(i = 0; i < numParams; i += 1)
+		name = StringFromList(i, suggNames)
+
+		if(WhichListItem(name, presentNames) == -1)
+			if(WhichListItem(name, optNames) != -1)
+				// non present optional parameters should not be checked
+				continue
+			endif
+
+			// non present required parameters are an error
+			errorMessages[index++] = name + ": is required but missing"
+			continue
+		endif
+
+		try
+			ClearRTError()
+			message = f(name, params); AbortOnRTE
+
+			if(!IsEmpty(message))
+				errorMessages[index++] = name + ": " + trimstring(message)
+			endif
+		catch
+			ClearRTError()
+			errorMessages[index++] = name + ": Check was aborted"
+		endtry
+	endfor
+
+	if(!index)
+		return ""
+	endif
+
+	Redimension/N=(index) errorMessages
+
+	sprintf header, "The error message%s are:\r", SelectString(index != 1, "", "s")
+	wfprintf text, "\t- %s\r", errorMessages
+
+	return header + text
+End

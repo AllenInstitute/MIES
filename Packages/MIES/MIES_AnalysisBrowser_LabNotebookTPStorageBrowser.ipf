@@ -105,7 +105,7 @@ static Function LBN_AddTraceToTPStorage(panel, TPStorage, activeADC, adc, key)
 		return NaN
 	endif
 
-	lbl = LineBreakingIntoParWithMinWidth(key)
+	lbl = LineBreakingIntoPar(key)
 
 	axis = GetNextFreeAxisName(graph, VERT_AXIS_BASE_NAME)
 

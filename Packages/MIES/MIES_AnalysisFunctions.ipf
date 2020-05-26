@@ -25,8 +25,10 @@
 /// =========== ============================================== ===============================================================
 /// Event        Description                                    Specialities
 /// =========== ============================================== ===============================================================
-/// Pre DAQ      Before any DAQ occurs                          Called before the settings are validated. With Indexing on only
-///                                                             the analysis function of the first stimset will receive that event.
+/// Pre DAQ      Before any DAQ occurs                          Called before the settings are validated completely, only the
+///                                                             analysis parameters are validated if present. With Indexing ON,
+///                                                             only the analysis function of the first stimset will receive
+///                                                             that event.
 /// Mid Sweep    Each time when new data is polled              Available for background DAQ only.
 ///                                                             Will always be called at least once and
 ///                                                             also with the full stimset acquired.
@@ -88,6 +90,16 @@
 /// default, optional parameters, and their types, must be enclosed with `[]`.
 /// The list at #ANALYSIS_FUNCTION_PARAMS_TYPES holds all valid types.
 ///
+/// The optional function `_CheckParam` allows you to validate passed
+/// parameters. In case of a valid parameter it must return an emtpy string and
+/// an error message in case of failure. Parameters which don't pass can
+/// neither be added to stimsets nor can they be used for data acquisition.
+/// Optional parameters are only checked if they are present in the stimulus
+/// set so you don't need to handle that case special.
+///
+/// The optional function `_GetHelp` allows you to create per parameter help
+/// text which is shown in the Wavebuilder.
+///
 /// Example:
 ///
 /// \rst
@@ -102,6 +114,45 @@
 ///
 ///    Function/S MyAnalysisFunction_GetParams()
 ///        return "param1:variable,[optParam1:wave]"
+///    End
+///
+///    Function/S MyAnalysisFunction_CheckParam(name, params)
+///        string name, params
+///
+///        variable value
+///
+///        strswitch(name)
+///            case "param1":
+///                value = AFH_GetAnalysisParamNumerical(name, params)
+///                if(!IsFinite(value) || !(value >= 0 && value <= 100))
+///                    return "Needs to be between 0 and 100."
+///                endif
+///                break
+///            case "optParam1":
+///                WAVE/Z wv = AFH_GetAnalysisParamWave(name, params)
+///                if(!WaveExists(wv) || !IsFloatingPointWave(wv))
+///                    return "Needs to be an existing floating point wave."
+///                break
+///        endswitch
+///
+///        // default to passing for other parameters
+///        return ""
+///    End
+///
+///    Function/S MyAnalysisFunction_GetHelp(name)
+///        string name, params
+///
+///        strswitch(name)
+///            case "param1":
+///                 return "This parameter helps in finding pink unicorns"
+///                 break
+///            case "optParam1":
+///                 return "This parameter delivers food right to your door"
+///                 break
+///            default:
+///                 ASSERT(0, "Unimplemented for parameter " + name)
+///                 break
+///        endswitch
 ///    End
 ///
 /// \endrst

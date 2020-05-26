@@ -1031,24 +1031,93 @@ Function PSQ_FoundAtLeastOneSpike(panelTitle, sweepNo)
 End
 
 /// @brief Require parameters from stimset
-///
-/// - DAScales (Numeric wave):       DA Scale Factors in pA
-/// - OperationMode (String):        Operation mode of the analayis function. Can be
-///                                  either #PSQ_DS_SUB or #PSQ_DS_SUPRA.
-/// - SamplingMultiplier (Variable): Sampling multiplier, use 1 for no multiplier
-/// - OffsetOperator (String):       [Optional, defaults to "+"] Set the math operator to use for
-///                                  combining the rheobase DAScale value from the previous run and
-///                                  the DAScales values. Valid strings are "+" (addition) and "*" (multiplication).
-///                                  Ignored for #PSQ_DS_SUB.
-/// - ShowPlot (Variable):           [Optional, defaults to true] Show the resistance (#PSQ_DS_SUB) or
-///                                  the f-I (#PSQ_DS_SUPRA) plot.
-/// - FinalSlopePercent (Variable):  [Optional] As additional passing criteria the slope of the f-I plot
-///                                  must be larger than this value.
-///                                  Note: The slope is used in percent.
-///                                  Ignored for #PSQ_DS_SUB.
 Function/S PSQ_DAScale_GetParams()
 	return "DAScales:wave,OperationMode:string,SamplingMultiplier:variable,[ShowPlot:variable],[OffsetOperator:string]," + \
 		   "[FinalSlopePercent:variable]"
+End
+
+Function/S PSQ_DAScale_GetHelp(string name)
+
+	strswitch(name)
+		case "DAScales":
+			 return "DA Scale Factors in pA"
+			 break
+		case "OperationMode":
+			 return "Operation mode of the analysis function. Can be either \"Sub\" or \"Supra\"."
+			 break
+		case "SamplingMultiplier":
+			 return "Sampling multiplier, use 1 for no multiplier"
+			 break
+		case "OffsetOperator":
+			 return "[Optional, defaults to \"+\"] Set the math operator to use for "      \
+					+ "combining the rheobase DAScale value from the previous run and "    \
+					+ "the DAScales values. Valid strings are \"+\" (addition) and \"*\" " \
+					+ "(multiplication). Ignored for \"Sub\"."
+			 break
+		case "ShowPlot":
+			 return "[Optional, defaults to true] Show the resistance (\"Sub\") or the f-I (\"Supra\") plot."
+			 break
+		case "FinalSlopePercent":
+			 return "[Optional] As additional passing criteria the slope of the f-I plot must be larger than this value. " \
+					+ "Note: The slope is used in percent. Ignored for \"Sub\"."
+			 break
+		default:
+			 ASSERT(0, "Unimplemented for parameter " + name)
+			 break
+	endswitch
+End
+
+Function/S PSQ_DAScale_CheckParam(string name, string params)
+
+	variable val
+	string str
+
+	strswitch(name)
+		case "DAScales":
+			WAVE/D/Z wv = AFH_GetAnalysisParamWave(name, params)
+			if(!WaveExists(wv))
+				return "Wave must exist"
+			endif
+
+			WaveStats/Q/M=1 wv
+			if(V_numNans > 0 || V_numInfs > 0)
+				return "Wave must neither have NaNs nor Infs"
+			endif
+			break
+		case "OperationMode":
+			str = AFH_GetAnalysisParamTextual(name, params)
+			if(cmpstr(str, PSQ_DS_SUB) && cmpstr(str, PSQ_DS_SUPRA))
+				return "Invalid string " + str
+			endif
+			break
+		case "SamplingMultiplier":
+			val = AFH_GetAnalysisParamNumerical(name, params)
+			if(!IsValidSamplingMultiplier(val))
+				return "Invalid value " + num2str(val)
+			endif
+			break
+		case "OffsetOperator":
+			str = AFH_GetAnalysisParamTextual(name, params)
+			if(cmpstr(str, "+") && cmpstr(str, "*"))
+				return "Invalid string " + str
+			endif
+			break
+		case "ShowPlot":
+			val = AFH_GetAnalysisParamNumerical(name, params)
+			if(val != 0 && val != 1)
+				return "Invalid string " + num2str(val)
+			endif
+			break
+		case "FinalSlopePercent":
+			val = AFH_GetAnalysisParamNumerical(name, params)
+			if(!(val >= 0 && val <= 100))
+				return "Not a precentage"
+			endif
+			break
+		default:
+			ASSERT(0, "Unimplemented for parameter " + name)
+			break
+	endswitch
 End
 
 /// @brief Patch Seq Analysis function to find a suitable DAScale
@@ -1144,24 +1213,13 @@ Function PSQ_DAScale(panelTitle, s)
 	variable finalSlopePercent = NaN
 
 	WAVE/D/Z DAScales = AFH_GetAnalysisParamWave("DAScales", s.params)
-	ASSERT(WaveExists(DAScales), "Missing DAScale parameter")
-
 	opMode = AFH_GetAnalysisParamTextual("OperationMode", s.params)
-	ASSERT(!cmpstr(opMode, PSQ_DS_SUB) || !cmpstr(opMode, PSQ_DS_SUPRA), "Invalid opMode")
-
 	multiplier = AFH_GetAnalysisParamNumerical("SamplingMultiplier", s.params)
-	ASSERT(multiplier > 0, "Missing or non-positive SamplingMultiplier parameter.")
 
 	if(!cmpstr(opMode, PSQ_DS_SUPRA))
 
 		offsetOp = AFH_GetAnalysisParamTextual("OffsetOperator", s.params, defValue = "+")
-		ASSERT(!cmpstr(offsetOp, "+") || !cmpstr(offsetOp, "*"), "Invalid offset operator")
-
 		finalSlopePercent = AFH_GetAnalysisParamNumerical("FinalSlopePercent", s.params, defValue = NaN)
-
-		if(IsFinite(finalSlopePercent))
-			ASSERT(finalSlopePercent >= 0 && finalSlopePercent <= 100, "Invalid final slope percent value")
-		endif
 	else
 		offsetOp = "+"
 	endif
@@ -1215,14 +1273,7 @@ Function PSQ_DAScale(panelTitle, s)
 				return 1
 			endif
 
-			val = WhichListItem(num2str(multiplier), DAP_GetSamplingMultiplier())
-			if(val == -1)
-				printf "(%s): The passed sampling multiplier of %d is invalid.\r", panelTitle, multiplier
-				ControlWindowToFront()
-				return 1
-			endif
-
-			PGC_SetAndActivateControl(panelTitle, "Popup_Settings_SampIntMult", val = val)
+			PGC_SetAndActivateControl(panelTitle, "Popup_Settings_SampIntMult", str = num2str(multiplier))
 
 			DisableControls(panelTitle, "Button_DataAcq_SkipBackwards;Button_DataAcq_SkipForward")
 
@@ -1584,11 +1635,38 @@ Function PSQ_DAScale(panelTitle, s)
 	return baselineQCPassed ? ANALYSIS_FUNC_RET_EARLY_STOP : ret
 End
 
-/// @brief Return a list of required parameters for PSQ_SquarePulse()
-///
-/// - SamplingMultiplier (Variable): Sampling multiplier, use 1 for no multiplier
+/// @brief Return a list of required parameters
 Function/S PSQ_SquarePulse_GetParams()
 	return "SamplingMultiplier:variable"
+End
+
+Function/S PSQ_SquarePulse_GetHelp(string name)
+
+	strswitch(name)
+		case "SamplingMultiplier":
+			 return "Use 1 for no multiplier"
+			 break
+		default:
+			 ASSERT(0, "Unimplemented for parameter " + name)
+			 break
+	endswitch
+End
+
+Function/S PSQ_SquarePulse_CheckParam(string name, string params)
+
+	variable val
+
+	strswitch(name)
+		case "SamplingMultiplier":
+			val = AFH_GetAnalysisParamNumerical(name, params)
+			if(!IsValidSamplingMultiplier(val))
+				return "Invalid value " + num2str(val)
+			endif
+			break
+		default:
+			ASSERT(0, "Unimplemented for parameter " + name)
+			break
+	endswitch
 End
 
 /// @brief Analysis function to find the smallest DAScale where the cell spikes
@@ -1636,7 +1714,6 @@ Function PSQ_SquarePulse(panelTitle, s)
 	string key, msg
 
 	multiplier = AFH_GetAnalysisParamNumerical("SamplingMultiplier", s.params)
-	ASSERT(multiplier > 0, "Missing or non-positive SamplingMultiplier parameter.")
 
 	switch(s.eventType)
 		case PRE_DAQ_EVENT:
@@ -1665,14 +1742,7 @@ Function PSQ_SquarePulse(panelTitle, s)
 				return 1
 			endif
 
-			val = WhichListItem(num2str(multiplier), DAP_GetSamplingMultiplier())
-			if(val == -1)
-				printf "(%s): The passed sampling multiplier of %d is invalid.\r", panelTitle, multiplier
-				ControlWindowToFront()
-				return 1
-			endif
-
-			PGC_SetAndActivateControl(panelTitle, "Popup_Settings_SampIntMult", val = val)
+			PGC_SetAndActivateControl(panelTitle, "Popup_Settings_SampIntMult", str = num2str(multiplier))
 
 			DisableControls(panelTitle, "Button_DataAcq_SkipBackwards;Button_DataAcq_SkipForward")
 
@@ -1799,11 +1869,38 @@ Function PSQ_SquarePulse(panelTitle, s)
 	return NaN
 End
 
-/// @brief Return a list of required parameters for PSQ_Rheobase()
-///
-/// - SamplingMultiplier (Variable): Sampling multiplier, use 1 for no multiplier
+/// @brief Return a list of required parameters
 Function/S PSQ_Rheobase_GetParams()
 	return "SamplingMultiplier:variable"
+End
+
+Function/S PSQ_Rheobase_GetHelp(string name)
+
+	strswitch(name)
+		case "SamplingMultiplier":
+			 return "Use 1 for no multiplier"
+			 break
+		default:
+			 ASSERT(0, "Unimplemented for parameter " + name)
+			 break
+	endswitch
+End
+
+Function/S PSQ_Rheobase_CheckParam(string name, string params)
+
+	variable val
+
+	strswitch(name)
+		case "SamplingMultiplier":
+			val = AFH_GetAnalysisParamNumerical(name, params)
+			if(!IsValidSamplingMultiplier(val))
+				return "Invalid value " + num2str(val)
+			endif
+			break
+		default:
+			ASSERT(0, "Unimplemented for parameter " + name)
+			break
+	endswitch
 End
 
 /// @brief Analysis function for finding the exact DAScale value between spiking and non-spiking
@@ -1855,7 +1952,6 @@ Function PSQ_Rheobase(panelTitle, s)
 	string key, msg
 
 	multiplier = AFH_GetAnalysisParamNumerical("SamplingMultiplier", s.params)
-	ASSERT(multiplier > 0, "Missing or non-positive SamplingMultiplier parameter.")
 
 	switch(s.eventType)
 		case PRE_DAQ_EVENT:
@@ -1902,14 +1998,7 @@ Function PSQ_Rheobase(panelTitle, s)
 				return 1
 			endif
 
-			val = WhichListItem(num2str(multiplier), DAP_GetSamplingMultiplier())
-			if(val == -1)
-				printf "(%s): The passed sampling multiplier of %d is invalid.\r", panelTitle, multiplier
-				ControlWindowToFront()
-				return 1
-			endif
-
-			PGC_SetAndActivateControl(panelTitle, "Popup_Settings_SampIntMult", val = val)
+			PGC_SetAndActivateControl(panelTitle, "Popup_Settings_SampIntMult", str = num2str(multiplier))
 
 			DisableControls(panelTitle, "Button_DataAcq_SkipBackwards;Button_DataAcq_SkipForward")
 
@@ -2237,14 +2326,47 @@ Function PSQ_GetFinalDAScaleFake()
 	return daScale
 End
 
-/// @brief Return a list of required parameters for PSQ_Ramp()
-///
-/// - NumberOfSpikes (variable):     Number of spikes required to be found after
-///                                  the pulse onset in order to label the cell
-///                                  as having "spiked".
-/// - SamplingMultiplier (Variable): Sampling multiplier, use 1 for no multiplier
+/// @brief Return a list of required parameters
 Function/S PSQ_Ramp_GetParams()
 	return "NumberOfSpikes:variable,SamplingMultiplier:variable"
+End
+
+Function/S PSQ_Ramp_GetHelp(string name)
+
+	strswitch(name)
+		case "SamplingMultiplier":
+			 return "Use 1 for no multiplier"
+			 break
+		 case "NumberOfSpikes":
+			return "Number of spikes required to be found after the pulse onset " \
+			 + "in order to label the cell as having \"spiked\"."
+		 default:
+			ASSERT(0, "Unimplemented for parameter " + name)
+			break
+	endswitch
+End
+
+Function/S PSQ_Ramp_CheckParam(string name, string params)
+
+	variable val
+
+	strswitch(name)
+		case "SamplingMultiplier":
+			val = AFH_GetAnalysisParamNumerical(name, params)
+			if(!IsValidSamplingMultiplier(val))
+				return "Invalid value " + num2str(val)
+			endif
+			break
+		case "NumberOfSpikes":
+			val = AFH_GetAnalysisParamNumerical(name, params)
+			if(!(val > 0))
+				return "Invalid value " + num2str(val)
+			endif
+			break
+		default:
+			ASSERT(0, "Unimplemented for parameter " + name)
+			break
+	endswitch
 End
 
 /// @brief Analysis function for applying a ramp stim set and finding the position were it spikes.
@@ -2300,10 +2422,7 @@ Function PSQ_Ramp(panelTitle, s)
 	variable hardwareType
 
 	numberOfSpikes = AFH_GetAnalysisParamNumerical("NumberOfSpikes", s.params)
-	ASSERT(numberOfSpikes > 0, "Missing or non-positive NumberOfSpikes parameter.")
-
 	multiplier = AFH_GetAnalysisParamNumerical("SamplingMultiplier", s.params)
-	ASSERT(multiplier > 0, "Missing or non-positive SamplingMultiplier parameter.")
 
 	switch(s.eventType)
 		case PRE_DAQ_EVENT:
@@ -2349,14 +2468,7 @@ Function PSQ_Ramp(panelTitle, s)
 				return 1
 			endif
 
-			val = WhichListItem(num2str(multiplier), DAP_GetSamplingMultiplier())
-			if(val == -1)
-				printf "(%s): The passed sampling multiplier of %d is invalid.\r", panelTitle, multiplier
-				ControlWindowToFront()
-				return 1
-			endif
-
-			PGC_SetAndActivateControl(panelTitle, "Popup_Settings_SampIntMult", val = val)
+			PGC_SetAndActivateControl(panelTitle, "Popup_Settings_SampIntMult", str = num2str(multiplier))
 
 			DAC = AFH_GetDACFromHeadstage(panelTitle, s.headstage)
 			stimset = AFH_GetStimSetName(panelTitle, DAC, CHANNEL_TYPE_DAC)
