@@ -158,7 +158,18 @@ static Function NWB_GetFileForExport([overrideFilePath, createdNewNWBFile])
 		// timestamp of the last device locking are to be exported
 		// not adjusting it would result in negative starting times for the lastest sweep
 		if(IsFinite(oldestData))
-			ti.session_start_time = min(sessionStartTime, floor(oldestData))
+			// workaround "Save and Clear" not resetting the sessionStartTime
+			// fixed since previous commit (SaveExperimentSpecial: Reset session start
+			// time in "Save and clear" mode, 2020-05-28)
+			// we ignore session start times which are older (45min) than oldestData
+			// as these are most probably due to the above bug. It is very
+			// unlikely that the time between device locking (session start
+			// time) and first data acquisition is larger than 45min.
+			if((oldestData - sessionStartTime) > 0.75 * 3600)
+				ti.session_start_time = floor(oldestData)
+			else
+				ti.session_start_time = min(sessionStartTime, floor(oldestData))
+			endif
 		endif
 
 		IPNWB#CreateCommonGroups(fileID, toplevelInfo=ti)
