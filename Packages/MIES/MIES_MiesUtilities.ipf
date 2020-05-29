@@ -2497,7 +2497,7 @@ Function CreateTiledChannelGraph(graph, config, sweepNo, numericalValues,  textu
 							freeAxisHigh = min(1, freeAxisHigh)
 
 							freeAxis = "freeaxis_hs" + num2str(headstage)
-							NewFreeAxis/O $freeAxis
+							NewFreeAxis/O/W=$graph $freeAxis
 							ModifyGraph/W=$graph axisEnab($freeAxis)={low,freeAxisHigh}, standoff($freeAxis)=0, lblPosMode($freeAxis)=2, axRGB($freeAxis)=(65535,65535,65535,0), tlblRGB($freeAxis)=(65535,65535,65535,0), alblRGB($freeAxis)=(0,0,0), lblMargin($freeAxis)=0, lblLatPos($freeAxis)=0
 							Label/W=$graph $freeAxis "HS" + num2str(headstage)
 						endif
