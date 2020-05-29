@@ -13,8 +13,10 @@
 Function DQ_StopOngoingDAQAllLocked()
 	string panelTitle
 
-	variable i, numDev
+	variable i, numDev, debuggerState
 	string device
+
+	debuggerState = DisableDebugger()
 
 	SVAR devices = $GetDevicePanelTitleList()
 	numDev = ItemsInList(devices)
@@ -23,11 +25,13 @@ Function DQ_StopOngoingDAQAllLocked()
 
 		try
 			ClearRTError()
-			DQ_StopOngoingDAQ(device, startTPAfterDAQ = 0)
+			DQ_StopOngoingDAQ(device, startTPAfterDAQ = 0); AbortOnRTE
 		catch
 			ClearRTError()
 		endtry
 	endfor
+
+	ResetDebuggerState(debuggerState)
 End
 
 /// @brief Stop the DAQ and testpulse
