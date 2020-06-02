@@ -1,0 +1,155 @@
+digraph G {
+    fontname="sans-serif";
+    compound="true";
+    ratio="0,01";
+    center="true";
+    penwidth="0.1";
+    edge [comment="Wildcard edge",
+          fontname="sans-serif",
+          fontsize=10,
+          colorscheme="blues3",
+          color=2,
+          fontcolor=3];
+    node [fontname="serif",
+          fontsize=13,
+          fillcolor="1",
+          colorscheme="blues4",
+          color="2",
+          fontcolor="4",
+          style="filled"];
+    "Start DAQ/RA";
+    "Mid Sweep Event";
+    "Post DAQ Event";
+    "Post Set Event";
+    "Post Sweep Event";
+    "Prepare DAQ/Pre Set Event";
+    "Start DAQ/RA" -> "Mid Sweep Event";
+    "Start DAQ/RA" -> "Post DAQ Event";
+    "Start DAQ/RA" -> "Prepare DAQ/Pre Set Event";
+    "Start DAQ/RA" -> "Post Set Event";
+    "Start DAQ/RA" -> "Post Sweep Event";
+    subgraph cluster_preDAQ {
+        color="invis";
+        edge [comment="Wildcard node added automatic in EG."];
+        node [comment="Wildcard node added automatic in EG."];
+        "Enable \"TP during ITI\"";
+        "Enable \"Autobias\"";
+        "Enable \"Multidevice DAQ\"";
+        "Valid Autobias voltage (finite and non-zero)";
+        "Disable \"dDAQ\"/\"oodDAQ\"";
+        "Enable \"Repeated Acquisition\"";
+        "Enable \"Insert TP\"";
+        "Check if no TTL channels are active";
+        "Check if only one headstage is active";
+        "Stimset is large enough";
+        "Check if mode is IC";
+        "Prepare DAQ/Pre Set Event" -> "Enable \"Autobias\"";
+        "Enable \"Autobias\"" -> "Enable \"TP during ITI\"";
+        "Enable \"TP during ITI\"" -> "Enable \"Multidevice DAQ\"";
+        "Enable \"Multidevice DAQ\"" -> "Disable \"dDAQ\"/\"oodDAQ\"";
+        "Disable \"dDAQ\"/\"oodDAQ\"" -> "Enable \"Repeated Acquisition\"";
+        "Enable \"Repeated Acquisition\"" -> "Enable \"Insert TP\"";
+        "All checks passed";
+        "Prepare DAQ/Pre Set Event" -> "Valid Autobias voltage (finite and non-zero)";
+        "Valid Autobias voltage (finite and non-zero)" -> "Check if no TTL channels are active";
+        "Check if no TTL channels are active" -> "Stimset is large enough";
+        "Stimset is large enough" -> "Check if mode is IC";
+        "Check if mode is IC" -> "Check if only one headstage is active";
+        "Check if only one headstage is active" -> "All checks passed";
+        "All checks passed" -> "Abort"  [label="No"];
+        "Look for an existing and passing PSQ_DAScale sweep\n in subthreshold mode";
+        "All checks passed" -> "Look for an existing and passing PSQ_DAScale sweep\n in subthreshold mode" [label="Yes"];
+        "Look for an existing and passing PSQ_DAScale sweep\n in subthreshold mode" -> "Abort"  [label="Not found"];
+        "Enable \"Insert TP\"" -> "At least three sweeps" -> "All checks passed";
+        "Get DeltaI/DeltaV from labnotebook";
+        "Calculate Resistance from it\n store in labnotebook";
+        "Calculate initial DAScale\n store in labnotebook";
+        "Set DAScale";
+        "Look for an existing and passing PSQ_DAScale sweep\n in subthreshold mode" -> "Get DeltaI/DeltaV from labnotebook" [label="Found"];
+        "Get DeltaI/DeltaV from labnotebook" -> "Calculate Resistance from it\n store in labnotebook" -> "Calculate initial DAScale\n store in labnotebook" -> "Set DAScale";
+    }
+
+    "Post DAQ Event" -> "Update Dashboard";
+    "Abort";
+    "BL QC passed?";
+    "Mid Sweep Event" -> "BL QC passed?";
+    "Grab next completely acquired chunk\n(500ms) of stimset baseline";
+    "BL QC passed?" -> "Grab next completely acquired chunk\n(500ms) of stimset baseline"  [label="No"];
+    "Baseline chunk type";
+    "Chunk already evaluated?";
+    "Grab next completely acquired chunk\n(500ms) of stimset baseline" -> "Chunk already evaluated?"  [label="Have one"];
+    "Grab next completely acquired chunk\n(500ms) of stimset baseline" -> "Last chunk?"  [label="None left"];
+    "Last chunk?" -> "Mark Sweep as failed"  [label="Yes"];
+    "Chunk already evaluated?" -> "Grab next completely acquired chunk\n(500ms) of stimset baseline"  [label="Yes"];
+    "Chunk already evaluated?" -> "Baseline chunk type"  [label="No"];
+    "Check RMS short";
+    "Check RMS long";
+    "Check target voltage [1]";
+    "Check target voltage [2]";
+    "Baseline chunk type" -> "Check RMS short"  [label="pre pulse"];
+    "Check RMS short" -> "Check RMS long"  [label="Passed"];
+    "Add BL QC passed labnotebook entry";
+    "Add BL QC failed labnotebook entry";
+    "Check RMS short" -> "Add BL QC failed labnotebook entry"  [label="Failed"];
+    "Check RMS long" -> "Add BL QC failed labnotebook entry"  [label="Failed"];
+    "Check RMS long" -> "Check target voltage [1]"  [label="Passed"];
+    "Mark chunk as passed/failed [1]";
+    "Check target voltage [1]" -> "Mark chunk as passed/failed [1]";
+    "Mark chunk as passed/failed [1]" -> "Grab next completely acquired chunk\n(500ms) of stimset baseline"  [label="Passed"];
+    "Early sweep stop, repurpose ITI and add 10s to ITI";
+    "Mark chunk as passed/failed [1]" -> "Early sweep stop, repurpose ITI and add 10s to ITI"  [label="Failed"];
+    "Baseline chunk type" -> "Check target voltage [2]"  [label="post pulse"];
+    "Check target voltage [2]" -> "Mark chunk as passed/failed [2]";
+    "Mark chunk as passed/failed [2]" -> "Grab next completely acquired chunk\n(500ms) of stimset baseline"  [label="Failed"];
+    "Mark chunk as passed/failed [2]" -> "Add BL QC passed labnotebook entry"  [label="Passed"];
+    "Add BL QC passed labnotebook entry" -> "Early Sweep stop";
+    "Add BL QC failed labnotebook entry" -> "Early Sweep stop";
+    "Post Set Event" -> "Update Dashboard";
+    "Mid Sweep Event" -> "\"Inside Bounds\" labnotebook\n entry present?";
+    "Calculate number of cycles\n in chirp, store in labnotebook";
+    "\"Inside Bounds\" labnotebook\n entry present?" -> "Calculate number of cycles\n in chirp, store in labnotebook"  [label="No"];
+    "Acquired requested number of cycles?\n(Given by optional analysis parameter\n\"NumberOfChirpCycles\" defaulting to 1.)";
+    "Calculate number of cycles\n in chirp, store in labnotebook" -> "Acquired requested number of cycles?\n(Given by optional analysis parameter\n\"NumberOfChirpCycles\" defaulting to 1.)";
+    "Calculate min/max of AD data during these cycles";
+    "Acquired requested number of cycles?\n(Given by optional analysis parameter\n\"NumberOfChirpCycles\" defaulting to 1.)" -> "Calculate min/max of AD data during these cycles" [label="Yes"];
+    "Determine bounds state and action\n from min/max values and table\n store in labnotebook";
+    "Store \"Inside Bounds\" as true in labnotebook";
+    "Calculate min/max of AD data during these cycles" -> "Determine bounds state and action\n from min/max values and table\n store in labnotebook";
+    "Determine bounds state and action\n from min/max values and table\n store in labnotebook" -> "Store \"Inside Bounds\" as true in labnotebook" [label="PASS"];
+    "Store \"Inside Bounds\" as false in labnotebook";
+    "Determine bounds state and action\n from min/max values and table\n store in labnotebook" -> "Store \"Inside Bounds\" as false in labnotebook" [label="RERUN"];
+    "Determine bounds state and action\n from min/max values and table\n store in labnotebook" -> "Store \"Inside Bounds\" as false in labnotebook" [label="INCREASE"];
+    "Determine bounds state and action\n from min/max values and table\n store in labnotebook" -> "Store \"Inside Bounds\" as false in labnotebook" [label="DECREASE"];
+    "Abort Sweep";
+    "Determine bounds state and action\n from min/max values and table\n store in labnotebook" -> "Abort Sweep" [label="RERUN"];
+    "Calculate scaling factor\n to be inside the bounds";
+    "Determine bounds state and action\n from min/max values and table\n store in labnotebook" -> "Calculate scaling factor\n to be inside the bounds" [label="INCREASE"];
+    "Determine bounds state and action\n from min/max values and table\n store in labnotebook" -> "Calculate scaling factor\n to be inside the bounds" [label="DECREASE"];
+    "Adjust DAScale (rounded to full pA)\n according to scaling factor";
+    "Calculate scaling factor\n to be inside the bounds" -> "Adjust DAScale (rounded to full pA)\n according to scaling factor";
+    "Adjust DAScale (rounded to full pA)\n according to scaling factor" -> "Abort Sweep";
+    "Has three passing sweeps in set\n with the same DAScale value? [1]";
+    "Post Set Event" -> "Has three passing sweeps in set\n with the same DAScale value? [1]";
+    "Mark set as failed\n in labnotebook";
+    "Has three passing sweeps in set\n with the same DAScale value? [1]" -> "Mark set as failed\n in labnotebook" [label="No"];
+    "Mark set as passed\n in labnotebook";
+    "Has three passing sweeps in set\n with the same DAScale value? [1]" -> "Mark set as passed\n in labnotebook" [label="Yes"];
+    "Has BL QC and \"Inside Bounds\"\n entries being true in labnotebook?";
+    "Post Sweep Event" -> "Has BL QC and \"Inside Bounds\"\n entries being true in labnotebook?";
+    "Mark sweep as failed\n in labnotebook";
+    "Mark sweep as passed\n in labnotebook";
+    "Has BL QC and \"Inside Bounds\"\n entries being true in labnotebook?" -> "Mark sweep as failed\n in labnotebook" [label="No"];
+    "Has BL QC and \"Inside Bounds\"\n entries being true in labnotebook?" -> "Mark sweep as passed\n in labnotebook" [label="Yes"];
+    "Has three passing sweeps in set\n with the same DAScale value? [2]";
+    "Mark sweep as passed\n in labnotebook" -> "Has three passing sweeps in set\n with the same DAScale value? [2]";
+    "Mark sweep as failed\n in labnotebook" -> "Has three passing sweeps in set\n with the same DAScale value? [2]";
+    "Skip to end of set";
+    "Has three passing sweeps in set\n with the same DAScale value? [2]" -> "Skip to end of set" [label="Yes"];
+    "Have three sweeps failed?";
+    "Has three passing sweeps in set\n with the same DAScale value? [2]" -> "Have three sweeps failed?" [label="No"];
+    "Skip to end of DAQ";
+    "Have three sweeps failed?" -> "Skip to end of DAQ" [label="Yes"];
+    "Set can still pass?";
+    "Have three sweeps failed?" -> "Set can still pass?" [label="No"];
+    "Set can still pass?" -> "Skip to end of DAQ" [label="No"];
+}
