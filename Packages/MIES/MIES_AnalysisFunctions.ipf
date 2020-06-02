@@ -897,13 +897,23 @@ End
 ///
 /// @param panelTitle device
 /// @param headstage  MIES headstage
-/// @param DAScale    DA scale value in `A` (Amperes)
-Function SetDAScale(panelTitle, headstage, DAScale)
+/// @param absolute   (optional) DAScale value in `A` (Amperes)
+/// @param relative   (optional) relative DAScale modifier
+/// @param roundTopA  (optional, defaults to false) round the set DAScale to integer pA values
+Function SetDAScale(panelTitle, headstage, [absolute, relative, roundTopA])
 	string panelTitle
-	variable headstage, DAScale
+	variable headstage, absolute, relative, roundTopA
 
 	variable amps, DAC
-	string DAUnit, ctrl
+	string DAUnit, ctrl, lbl
+
+	ASSERT(ParamIsDefault(absolute) + ParamIsDefault(relative) == 1, "One of absolute or relative has to be present")
+
+	if(ParamIsDefault(roundTopA))
+		roundTopA = 0
+	else
+		roundTopA = !!roundTopA
+	endif
 
 	DAC = AFH_GetDACFromHeadstage(panelTitle, headstage)
 	ASSERT(IsFinite(DAC), "This analysis function does not work with unassociated DA channels")
@@ -913,11 +923,18 @@ Function SetDAScale(panelTitle, headstage, DAScale)
 	// check for correct units
 	ASSERT(!cmpstr(DAunit, "pA"), "Unexpected DA Unit")
 
-	amps = DAScale / 1e-12
 	ctrl = GetPanelControl(DAC, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_SCALE)
-	PGC_SetAndActivateControl(panelTitle, ctrl, val = amps)
 
-	return 0
+	if(!ParamIsDefault(absolute))
+		amps = absolute / 1e-12
+	elseif(!ParamIsDefault(relative))
+		lbl = GetSpecialControlLabel(CHANNEL_TYPE_DAC, CHANNEL_CONTROL_SCALE)
+		amps = DAG_GetNumericalValue(paneltitle, lbl, index = DAC) * relative
+	endif
+
+	amps = roundTopA ? round(amps) : amps
+	ASSERT(IsFinite(amps), "Invalid non-finite value")
+	PGC_SetAndActivateControl(panelTitle, ctrl, val = amps)
 End
 
 /// @brief Analysis function to experimentally determine the cell resistance by sweeping
@@ -991,7 +1008,7 @@ Function ReachTargetVoltage(panelTitle, eventType, ITCDataWave, headStage, realD
 			KillOrMoveToTrash(wv = GetAnalysisFuncDAScaleRes(panelTitle))
 			KillWindow/Z $RESISTANCE_GRAPH
 
-			SetDAScale(panelTitle, headstage, -20e-12)
+			SetDAScale(panelTitle, headstage, absolute=-20e-12)
 
 			PGC_SetAndActivateControl(panelTitle,"Check_DataAcq1_DistribDaq", val = 1)
 
@@ -1068,7 +1085,7 @@ Function ReachTargetVoltage(panelTitle, eventType, ITCDataWave, headStage, realD
 		sprintf msg, "(%s, %d): ΔR = %.0W1PΩ, V_target = %.0W1PV, I = %.0W1PA", panelTitle, i, resistanceFitted[i], targetVoltages[targetVoltagesIndex[i]], amps
 		DEBUGPRINT(msg)
 
-		SetDAScale(panelTitle, i, amps)
+		SetDAScale(panelTitle, i, absolute=amps)
 	endfor
 End
 
