@@ -157,7 +157,7 @@ static Function PSQ_GetPulseSettingsForType(type, s)
 	DEBUGPRINT(msg)
 End
 
-/// Return the pulse durations from the labnotebook or calculate them before if required.
+/// Return the pulse durations from the labnotebook or calculate them before if required in ms.
 /// For convenience unused headstages will have 0 instead of NaN in the returned wave.
 static Function/WAVE PSQ_GetPulseDurations(panelTitle, type, sweepNo, totalOnsetDelay, [forceRecalculation])
 	string panelTitle
