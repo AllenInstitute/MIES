@@ -12,6 +12,7 @@
 #include "UTF_VeryBasicHardwareTests"
 #include "UTF_DAEphys"
 #include "UTF_BasicHardwareTests"
+#include "UTF_PatchSeqChirp"
 #include "UTF_PatchSeqDAScale"
 #include "UTF_PatchSeqSquarePulse"
 #include "UTF_PatchSeqRheobase"
@@ -31,6 +32,7 @@ Function run()
 	list = AddListItem("UTF_AnalysisFunctionManagement.ipf", list)
 	list = AddListItem("UTF_AnalysisFunctionParameters.ipf", list)
 	list = AddListItem("UTF_DAEphys.ipf", list)
+	list = AddListItem("UTF_PatchSeqChirp.ipf", list)
 	list = AddListItem("UTF_PatchSeqDAScale.ipf", list)
 	list = AddListItem("UTF_PatchSeqSquarePulse.ipf", list)
 	list = AddListItem("UTF_PatchSeqRheobase.ipf", list)
