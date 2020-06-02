@@ -962,7 +962,7 @@ Function MSQ_FastRheoEst(panelTitle, s)
 					continue
 				endif
 
-				SetDAScale(panelTitle, i, MSQ_FRE_INIT_AMP_p100)
+				SetDAScale(panelTitle, i, absolute=MSQ_FRE_INIT_AMP_p100)
 			endfor
 
 			PGC_SetAndActivateControl(panelTitle, "Check_DataAcq1_DistribDaq", val = 0)
@@ -1091,7 +1091,7 @@ Function MSQ_FastRheoEst(panelTitle, s)
 					ASSERT(headstagePassed[i] != 1, "Unexpected headstage passing")
 					headstagePassed[i] = 0
 				else
-					SetDAScale(panelTitle, i, newDAScaleValue)
+					SetDAScale(panelTitle, i, absolute=newDAScaleValue)
 				endif
 			endfor
 
@@ -1196,7 +1196,7 @@ Function MSQ_FastRheoEst(panelTitle, s)
 					val = AFH_GetAnalysisParamNumerical("PostDAQDAScaleForFailedHS", s.params) * 1e-12
 				endif
 
-				SetDAScale(panelTitle, i, val)
+				SetDAScale(panelTitle, i, absolute=val)
 			endfor
 
 			AD_UpdateAllDatabrowser()
@@ -1520,7 +1520,7 @@ Function MSQ_DAScale(panelTitle, s)
 			index = mod(DAScalesIndex[i], DimSize(DAScales, ROWS))
 
 			ASSERT(isFinite(daScaleOffset[i]), "DAScale offset is non-finite")
-			SetDAScale(panelTitle, i, (DAScales[index] + daScaleOffset[i]) * 1e-12)
+			SetDAScale(panelTitle, i, absolute=(DAScales[index] + daScaleOffset[i]) * 1e-12)
 			DAScalesIndex[i] += 1
 		endfor
 	endif

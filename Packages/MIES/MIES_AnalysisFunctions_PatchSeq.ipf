@@ -1576,7 +1576,7 @@ Function PSQ_DAScale(panelTitle, s)
 						ASSERT(0, "Invalid case")
 						break
 				endswitch
-				SetDAScale(panelTitle, i, DAScale * 1e-12)
+				SetDAScale(panelTitle, i, absolute=DAScale * 1e-12)
 			endif
 		endfor
 	endif
@@ -1776,7 +1776,7 @@ Function PSQ_SquarePulse(panelTitle, s)
 			PGC_SetAndActivateControl(panelTitle, "check_Settings_ITITP", val = 0)
 
 			PSQ_StoreStepSizeInLBN(panelTitle, PSQ_SQUARE_PULSE, s.sweepNo, PSQ_SP_INIT_AMP_p100)
-			SetDAScale(panelTitle, s.headstage, PSQ_SP_INIT_AMP_p100)
+			SetDAScale(panelTitle, s.headstage, absolute=PSQ_SP_INIT_AMP_p100)
 
 			return 0
 
@@ -1816,7 +1816,7 @@ Function PSQ_SquarePulse(panelTitle, s)
 						RA_SkipSweeps(panelTitle, inf, limitToSetBorder = 1)
 					endif
 				elseif(CheckIfClose(stepSize, PSQ_SP_INIT_AMP_m50))
-					SetDAScale(panelTitle, s.headstage, DAScale + stepsize)
+					SetDAScale(panelTitle, s.headstage, absolute=DAScale + stepsize)
 				elseif(CheckIfClose(stepSize, PSQ_SP_INIT_AMP_p10))
 					Make/FREE/D/N=(LABNOTEBOOK_LAYER_COUNT) value = NaN
 					value[INDEP_HEADSTAGE] = DAScale
@@ -1830,7 +1830,7 @@ Function PSQ_SquarePulse(panelTitle, s)
 				elseif(CheckIfClose(stepSize, PSQ_SP_INIT_AMP_p100))
 					PSQ_StoreStepSizeInLBN(panelTitle, PSQ_SQUARE_PULSE, s.sweepNo, PSQ_SP_INIT_AMP_m50)
 					stepsize = PSQ_SP_INIT_AMP_m50
-					SetDAScale(panelTitle, s.headstage, DAScale + stepsize)
+					SetDAScale(panelTitle, s.headstage, absolute=DAScale + stepsize)
 				else
 					ASSERT(0, "Unknown stepsize")
 				endif
@@ -1846,7 +1846,7 @@ Function PSQ_SquarePulse(panelTitle, s)
 					ASSERT(0, "Unknown stepsize")
 				endif
 
-				SetDAScale(panelTitle, s.headstage, DAScale + stepsize)
+				SetDAScale(panelTitle, s.headstage, absolute=DAScale + stepsize)
 			endif
 
 			sprintf msg, "Sweep has %s\r", SelectString(sweepPassed, "failed", "passed")
@@ -2045,7 +2045,7 @@ Function PSQ_Rheobase(panelTitle, s)
 				endif
 			endif
 
-			SetDAScale(panelTitle, s.headstage, finalDAScale)
+			SetDAScale(panelTitle, s.headstage, absolute=finalDAScale)
 
 			return 0
 
@@ -2210,7 +2210,7 @@ Function PSQ_Rheobase(panelTitle, s)
 				break
 			endif
 
-			SetDAScale(panelTitle, s.headstage, DAScale)
+			SetDAScale(panelTitle, s.headstage, absolute=DAScale)
 			break
 		case POST_SET_EVENT:
 			WAVE numericalValues = GetLBNumericalValues(panelTitle)
@@ -2508,7 +2508,7 @@ Function PSQ_Ramp(panelTitle, s)
 			PGC_SetAndActivateControl(panelTitle, "check_Settings_ITITP", val = 1)
 			PGC_SetAndActivateControl(panelTitle, "Check_Settings_InsertTP", val = 1)
 
-			SetDAScale(panelTitle, s.headstage, PSQ_RA_DASCALE_DEFAULT * 1e-12)
+			SetDAScale(panelTitle, s.headstage, absolute=PSQ_RA_DASCALE_DEFAULT * 1e-12)
 
 			return 0
 
