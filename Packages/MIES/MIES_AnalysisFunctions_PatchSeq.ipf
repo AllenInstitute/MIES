@@ -3283,7 +3283,13 @@ End
 /// Decision logic flowchart:
 ///
 /// \rst
-///	.. TODO image:: ../patch-seq-chirp.dot.svg
+///	.. image:: /dot/patch-seq-chirp.svg
+/// \endrst
+///
+/// The bounds action is derived from the state according to the following sketch:
+///
+/// \rst
+///	.. image:: ../patch-seq-chirp-bounds-state-action.png
 /// \endrst
 ///
 /// @verbatim
