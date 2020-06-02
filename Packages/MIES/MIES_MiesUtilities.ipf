@@ -3150,6 +3150,9 @@ Function SaveExperimentSpecial(mode)
 		CreateHistoryNotebook()
 
 		CloseNWBFile()
+
+		NVAR sesssionStartTime = $GetSessionStartTime()
+		sesssionStartTime = DateTimeInUTC()
 	endif
 End
 
