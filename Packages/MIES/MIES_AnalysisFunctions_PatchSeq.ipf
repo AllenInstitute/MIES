@@ -38,18 +38,22 @@
 /// PSQ_FMT_LBN_RB_LIMITED_RES      Failed due to limited DAScale resolution                  Numerical                RB                       No                     Yes
 /// PSQ_FMT_LBN_FINAL_SCALE         Final DAScale of the given headstage, only set on success Numerical                SP, RB                   No                     No
 /// PSQ_FMT_LBN_SPIKE_DASCALE_ZERO  Sweep spiked with DAScale of 0                            Numerical                SP                       No                     No
-/// PSQ_FMT_LBN_INITIAL_SCALE       Initial DAScale                                           Numerical                RB                       No                     No
-/// PSQ_FMT_LBN_RMS_SHORT_PASS      Short RMS baseline QC result                              Numerical                DA, RB, RA               Yes                    Yes
-/// PSQ_FMT_LBN_RMS_LONG_PASS       Long RMS baseline QC result                               Numerical                DA, RB, RA               Yes                    Yes
-/// PSQ_FMT_LBN_TARGETV_PASS        Target voltage baseline QC result                         Numerical                DA, RB, RA               Yes                    Yes
-/// PSQ_FMT_LBN_CHUNK_PASS          Which chunk passed/failed baseline QC                     Numerical                DA, RB, RA               Yes                    Yes
-/// PSQ_FMT_LBN_BL_QC_PASS          Pass/fail state of the complete baseline                  Numerical                DA, RB, RA               No                     Yes
-/// PSQ_FMT_LBN_SWEEP_PASS          Pass/fail state of the complete sweep                     Numerical                DA, SP, RA               No                     No
-/// PSQ_FMT_LBN_SET_PASS            Pass/fail state of the complete set                       Numerical                DA, RB, RA, SP           No                     No
-/// PSQ_FMT_LBN_PULSE_DUR           Pulse duration as determined experimentally               Numerical                RB, DA (Supra)           No                     Yes
+/// PSQ_FMT_LBN_INITIAL_SCALE       Initial DAScale                                           Numerical                RB, CR                   No                     No
+/// PSQ_FMT_LBN_RMS_SHORT_PASS      Short RMS baseline QC result                              Numerical                DA, RB, RA, CR           Yes                    Yes
+/// PSQ_FMT_LBN_RMS_LONG_PASS       Long RMS baseline QC result                               Numerical                DA, RB, RA, CR           Yes                    Yes
+/// PSQ_FMT_LBN_TARGETV_PASS        Target voltage baseline QC result                         Numerical                DA, RB, RA, CR           Yes                    Yes
+/// PSQ_FMT_LBN_CHUNK_PASS          Which chunk passed/failed baseline QC                     Numerical                DA, RB, RA, CR           Yes                    Yes
+/// PSQ_FMT_LBN_BL_QC_PASS          Pass/fail state of the complete baseline                  Numerical                DA, RB, RA, CR           No                     Yes
+/// PSQ_FMT_LBN_SWEEP_PASS          Pass/fail state of the complete sweep                     Numerical                DA, SP, RA, CR           No                     No
+/// PSQ_FMT_LBN_SET_PASS            Pass/fail state of the complete set                       Numerical                DA, RB, RA, SP, CR       No                     No
+/// PSQ_FMT_LBN_PULSE_DUR           Pulse duration as determined experimentally               Numerical                RB, DA (Supra), CR       No                     Yes
 /// PSQ_FMT_LBN_DA_fI_SLOPE         Fitted slope in the f-I plot                              Numerical                DA (Supra)               No                     Yes
-/// PSQ_FMT_LBN_DA_OPMODE           Operation Mode: One of #PSQ_DS_SUB/#PSQ_DS_SUPRA          Textual                  DA                       No                     No
 /// PSQ_FMT_LBN_DA_fI_SLOPE_REACHED Fitted slope in the f-I plot exceeds target value         Numerical                DA (Supra)               No                     No
+/// PSQ_FMT_LBN_DA_OPMODE           Operation Mode: One of PSQ_DS_SUB/PSQ_DS_SUPRA            Textual                  DA                       No                     No
+/// PSQ_FMT_LBN_CR_INSIDE_BOUNDS    AD response is inside the given bands                     Numerical                CR                       No                     No
+/// PSQ_FMT_LBN_CR_RESISTANCE       Calculated resistance in Ohm from DAScale sub threshold   Numerical                CR                       No                     No
+/// PSQ_FMT_LBN_CR_BOUNDS_ACTION    Action according to min/max positions                     Numerical                CR                       No                     No
+/// PSQ_FMT_LBN_CR_BOUNDS_STATE     Upper and Lower bounds state according to min/max pos.    Textual                  CR                       No                     No
 /// =============================== ========================================================= ======================== ======================== =====================  =====================
 ///
 /// \endrst
@@ -67,6 +71,7 @@ static StrConstant PSQ_SP_LBN_PREFIX = "Squ. Pul."
 static StrConstant PSQ_DS_LBN_PREFIX = "DA Scale"
 static StrConstant PSQ_RB_LBN_PREFIX = "Rheobase"
 static StrConstant PSQ_RA_LBN_PREFIX = "Ramp"
+static StrConstant PSQ_CR_LBN_PREFIX = "Chirp"
 
 static Constant PSQ_DEFAULT_SAMPLING_MULTIPLIER = 4
 
@@ -94,6 +99,9 @@ Function/S PSQ_CreateLBNKey(type, formatString, [chunk, query])
 			break
 		case PSQ_RAMP:
 			prefix = PSQ_RA_LBN_PREFIX
+			break
+		case PSQ_CHIRP:
+			prefix = PSQ_CR_LBN_PREFIX
 			break
 		default:
 			ASSERT(0, "unsupported type")
@@ -147,6 +155,11 @@ static Function PSQ_GetPulseSettingsForType(type, s)
 		case PSQ_RAMP:
 			s.prePulseChunkLength  = PSQ_RA_BL_EVAL_RANGE
 			s.postPulseChunkLength = PSQ_RA_BL_EVAL_RANGE
+			s.pulseDuration        = NaN
+			break
+		case PSQ_CHIRP:
+			s.prePulseChunkLength  = PSQ_CR_BL_EVAL_RANGE
+			s.postPulseChunkLength = PSQ_CR_BL_EVAL_RANGE
 			s.pulseDuration        = NaN
 			break
 		default:
@@ -218,17 +231,30 @@ static Function/WAVE PSQ_DeterminePulseDuration(panelTitle, sweepNo, type, total
 		endif
 
 		WAVE singleDA = AFH_ExtractOneDimDataFromSweep(panelTitle, sweepWave, i, ITC_XOP_CHANNEL_TYPE_DAC, config = config)
-		level = WaveMin(singleDA, totalOnsetDelay, inf) + GetMachineEpsilon(WaveType(singleDA))
 
-		FindLevel/Q/R=(totalOnsetDelay, inf)/EDGE=1 singleDA, level
-		ASSERT(!V_Flag, "Could not find a rising edge")
-		first = V_LevelX
+		if(type == PSQ_CHIRP)
+			// search something above/below zero from front and back
+			FindLevel/Q/R=(totalOnsetDelay, inf) singleDA, 0
+			ASSERT(!V_Flag, "Could not find an edge")
+			first = V_LevelX
 
-		FindLevel/Q/R=(totalOnsetDelay, inf)/EDGE=2 singleDA, level
-		ASSERT(!V_Flag, "Could not find a falling edge")
-		last = V_LevelX
+			FindLevel/Q/R=(inf, totalOnsetDelay) singleDA, 0
+			ASSERT(!V_Flag, "Could not find an edge")
+			last = V_LevelX
+		else
+			level = WaveMin(singleDA, totalOnsetDelay, inf) + GetMachineEpsilon(WaveType(singleDA))
 
-		if(level > 0)
+			// search a square pulse
+			FindLevel/Q/R=(totalOnsetDelay, inf)/EDGE=1 singleDA, level
+			ASSERT(!V_Flag, "Could not find a rising edge")
+			first = V_LevelX
+
+			FindLevel/Q/R=(totalOnsetDelay, inf)/EDGE=2 singleDA, level
+			ASSERT(!V_Flag, "Could not find a falling edge")
+			last = V_LevelX
+		endif
+
+		if(level > 0 || type == PSQ_CHIRP)
 			duration = last - first - DimDelta(singleDA, ROWS)
 		else
 			duration = first - last + DimDelta(singleDA, ROWS)
@@ -275,7 +301,7 @@ static Function PSQ_EvaluateBaselineProperties(panelTitle, scaledDACWave, type, 
 		chunkLengthTime    = s.prePulseChunkLength
 		baselineType       = PSQ_BL_PRE_PULSE
 	else // post pulse baseline
-		 if(type == PSQ_RHEOBASE || type == PSQ_RAMP)
+		 if(type == PSQ_RHEOBASE || type == PSQ_RAMP || type == PSQ_CHIRP)
 			 WAVE durations = PSQ_GetPulseDurations(panelTitle, type, sweepNo, totalOnsetDelay)
 		 else
 			 Make/FREE/N=(LABNOTEBOOK_LAYER_COUNT) durations = s.pulseDuration
@@ -518,7 +544,10 @@ End
 
 /// @brief Return the number of chunks
 ///
-/// A chunk is #PSQ_DS_BL_EVAL_RANGE_MS/#PSQ_RB_POST_BL_EVAL_RANGE/#PSQ_RB_PRE_BL_EVAL_RANGE/#PSQ_RA_BL_EVAL_RANGE [ms] of baseline
+/// A chunk is #PSQ_DS_BL_EVAL_RANGE_MS/#PSQ_RB_POST_BL_EVAL_RANGE/#PSQ_RB_PRE_BL_EVAL_RANGE/#PSQ_RA_BL_EVAL_RANGE
+/// #PSQ_CR_BL_EVAL_RANGE [ms] of baseline
+///
+/// For calculating the number of chunks we ignore the one chunk after the pulse which we don't evaluate!
 static Function PSQ_GetNumberOfChunks(panelTitle, sweepNo, headstage, type)
 	string panelTitle
 	variable type, sweepNo, headstage
@@ -548,6 +577,12 @@ static Function PSQ_GetNumberOfChunks(panelTitle, sweepNo, headstage, type)
 			ASSERT(durations[headstage] != 0, "Pulse duration can not be zero")
 			nonBL = totalOnsetDelay + durations[headstage] + PSQ_RA_BL_EVAL_RANGE
 			return DEBUGPRINTv(floor((length - nonBL - PSQ_RA_BL_EVAL_RANGE) / PSQ_RA_BL_EVAL_RANGE) + 1)
+			break
+		case PSQ_CHIRP:
+			WAVE durations = PSQ_GetPulseDurations(panelTitle, PSQ_CHIRP, sweepNo, totalOnsetDelay)
+			ASSERT(durations[headstage] != 0, "Pulse duration can not be zero")
+			nonBL = totalOnsetDelay + durations[headstage] + PSQ_CR_BL_EVAL_RANGE
+			return DEBUGPRINTv(floor((length - nonBL - PSQ_CR_BL_EVAL_RANGE) / PSQ_CR_BL_EVAL_RANGE) + 1)
 			break
 		default:
 			ASSERT(0, "unsupported type")
@@ -693,6 +728,21 @@ End
 /// - 1: x position in ms where the spike is in each sweep/step
 ///      For convenience the values `0` always means no spike and `1` spike detected (at the appropriate position).
 /// - 2: Number of spikes
+///
+/// #PSQ_CHIRP:
+///
+/// Rows:
+/// - chunk indizes
+///
+/// Cols:
+/// - sweeps/steps
+///
+/// Layers:
+/// - 0: 1 if the chunk has passing baseline QC or not
+/// - 1: maximum of AD data in chirp region [first row only,
+///      others are ignored], use NaN to use the real values
+/// - 2: minimum of AD data in chirp region [first row only,
+///      others are ignored], use NaN to use the real values
 Function/WAVE PSQ_CreateOverrideResults(panelTitle, headstage, type)
 	string panelTitle
 	variable headstage, type
@@ -720,6 +770,11 @@ Function/WAVE PSQ_CreateOverrideResults(panelTitle, headstage, type)
 		case PSQ_SQUARE_PULSE:
 			numRows = IDX_NumberOfSweepsInSet(stimset)
 			numCols = 0
+			break
+		case PSQ_CHIRP:
+			numLayers = 3
+			numRows = PSQ_GetNumberOfChunks(panelTitle, 0, headstage, type)
+			numCols = IDX_NumberOfSweepsInSet(stimset)
 			break
 		default:
 			ASSERT(0, "invalid type")
@@ -985,6 +1040,42 @@ static Function PSQ_GetLastPassingLongRHSweep(panelTitle, headstage)
 		WAVE/Z setting = GetLastSettingSCI(numericalValues, sweepNo, key, headstage, UNKNOWN_MODE)
 
 		if(WaveExists(setting) && setting[headstage] > 500)
+			return sweepNo
+		endif
+	endfor
+
+	return -1
+End
+
+/// @brief Return the sweep number of the last sweep using the PSQ_DaScale()
+///        analysis function, where the set passes and was in subthreshold mode.
+static Function PSQ_GetLastPassingDAScaleSub(panelTitle, headstage)
+	string panelTitle
+	variable headstage
+
+	variable numEntries, sweepNo, i
+	string key
+
+	WAVE numericalValues = GetLBNumericalValues(panelTitle)
+	WAVE textualValues = GetLBTextualValues(panelTitle)
+
+	// dascale sweeps passing
+	key = PSQ_CreateLBNKey(PSQ_DA_SCALE, PSQ_FMT_LBN_SET_PASS, query = 1)
+	WAVE/Z sweeps = GetSweepsWithSetting(numericalValues, key)
+
+	if(!WaveExists(sweeps))
+		return -1
+	endif
+
+	// check for subthreshold operation mode
+	key = PSQ_CreateLBNKey(PSQ_DA_SCALE, PSQ_FMT_LBN_DA_OPMODE, query = 1)
+
+	numEntries = DimSize(sweeps, ROWS)
+	for(i = numEntries - 1; i >= 0; i -= 1)
+		sweepNo = sweeps[i]
+		WAVE/T/Z setting = GetLastSettingTextSCI(numericalValues, textualValues, sweepNo, key, headstage, UNKNOWN_MODE)
+
+		if(!cmpstr(setting[headstage], PSQ_DS_SUB))
 			return sweepNo
 		endif
 	endfor
@@ -2830,6 +2921,755 @@ Function PSQ_Ramp(panelTitle, s)
 	endif
 End
 
+/// @brief Determine if we have three passing sweeps with the same DAScale value
+///
+/// @returns result        set passing state (0/1)
+/// @returns maxOccurences maximum number of passing sets with the same DASCale value
+Function [variable result, variable maxOccurences] PSQ_CR_SetHasPassed(WAVE numericalValues, variable sweepNo, variable headstage)
+	variable i, numEntries, scaleFactor, index, maxValue
+	string key
+
+	key = PSQ_CreateLBNKey(PSQ_CHIRP, PSQ_FMT_LBN_SWEEP_PASS, query = 1)
+	WAVE sweepPassedSCI = GetLastSettingIndepEachSCI(numericalValues, sweepNo, key, headstage, UNKNOWN_MODE)
+
+	WAVE scaleFactorSCI = GetLastSettingEachSCI(numericalValues, sweepNo, STIMSET_SCALE_FACTOR_KEY, headstage, DATA_ACQUISITION_MODE)
+	numEntries = DimSize(sweepPassedSCI, ROWS)
+	ASSERT(numEntries == DimSize(scaleFactorSCI, ROWS), "Mismatching sizes")
+
+	Make/I/FREE/N=(numEntries) numberOfOccurences, scaleFactors
+
+	for(i = 0; i < numEntries; i += 1)
+
+		if(!sweepPassedSCI[i])
+			continue
+		endif
+
+		scaleFactor = round(scaleFactorSCI[i])
+
+		FindValue/I=(scaleFactor) scaleFactors
+		if(V_Value == -1)
+			scaleFactors[index]= scaleFactor
+			numberOfOccurences[index] = 1
+			index += 1
+		else
+			numberOfOccurences[V_Value] += 1
+
+			if(numberOfOccurences[V_Value] == PSQ_CR_NUM_SWEEPS_PASS)
+				return [1, PSQ_CR_NUM_SWEEPS_PASS]
+			endif
+		endif
+	endfor
+
+	if(!index)
+		return [0, 0]
+	endif
+
+	// keep only NumberOfOccurences column
+	maxValue = WaveMax(numberOfOccurences)
+	ASSERT(maxValue < PSQ_CR_NUM_SWEEPS_PASS, "Should have exited earlier!")
+
+	return [0, maxValue]
+End
+
+/// @brief Returns the two letter states "AA", "AB" and "BA" for the value and
+/// the scaling factors to reach min/center/max
+static Function [STRUCT ChirpBoundsInfo s] PSQ_CR_DetermineBoundsState(variable minimum, variable maximum, variable value)
+
+	variable center
+
+	ASSERT(minimum < maximum, "Invalid ordering")
+
+	s.minimumFac = minimum/value
+	s.maximumFac = maximum/value
+	center = minimum + (maximum - minimum) / 2
+	s.centerFac = center/value
+
+	if(value >= maximum)
+		s.state = "AA"
+	elseif(value <= minimum)
+		s.state = "BB"
+	else
+		s.state = "BA"
+	endif
+
+	return [s]
+End
+
+static Function/S PSQ_CR_BoundsActionToString(variable boundsAction)
+
+	switch(boundsAction)
+		case PSQ_CR_PASS:
+			return "PSQ_CR_PASS"
+		case PSQ_CR_INCREASE:
+			return "PSQ_CR_INCREASE"
+		case PSQ_CR_DECREASE:
+			return "PSQ_CR_DECREASE"
+		case PSQ_CR_RERUN:
+			return "PSQ_CR_RERUN"
+		default:
+			ASSERT(0, "Invalid case")
+	endswitch
+End
+
+static Function PSQ_CR_DetermineBoundsActionHelper(Wave wv, string state, variable action)
+
+	variable index = GetNumberFromWaveNote(wv, NOTE_INDEX)
+	SetDimLabel ROWS, index, $state, wv
+	wv[index] = action
+	SetNumberInWaveNote(wv, NOTE_INDEX, ++index)
+End
+
+/// @brief Returns an action depending on the upper and lower states, see @ref ChirpBoundsAction
+static Function PSQ_CR_DetermineBoundsActionFromState(string upperState, string lowerState)
+
+	variable action
+
+	Make/FREE/N=9 comb
+	SetNumberInWaveNote(comb, NOTE_INDEX, 0)
+
+	PSQ_CR_DetermineBoundsActionHelper(comb, "BA" + "BA", PSQ_CR_PASS)
+	PSQ_CR_DetermineBoundsActionHelper(comb, "AA" + "BA", PSQ_CR_DECREASE)
+	PSQ_CR_DetermineBoundsActionHelper(comb, "BA" + "BB", PSQ_CR_DECREASE)
+	PSQ_CR_DetermineBoundsActionHelper(comb, "AA" + "BB", PSQ_CR_DECREASE)
+	PSQ_CR_DetermineBoundsActionHelper(comb, "BB" + "BA", PSQ_CR_INCREASE)
+	PSQ_CR_DetermineBoundsActionHelper(comb, "BA" + "AA", PSQ_CR_INCREASE)
+	PSQ_CR_DetermineBoundsActionHelper(comb, "BB" + "AA", PSQ_CR_INCREASE)
+	PSQ_CR_DetermineBoundsActionHelper(comb, "AA" + "AA", PSQ_CR_RERUN)
+	PSQ_CR_DetermineBoundsActionHelper(comb, "BB" + "BB", PSQ_CR_RERUN)
+
+	action = comb[%$(upperState + lowerState)]
+	ASSERT(IsFinite(action), "Invalid action")
+	return action
+End
+
+/// @brief Determine the scaling factor for DAScale which is required for being inside the bounds
+static Function PSQ_CR_DetermineScalingFactor(STRUCT ChirpBoundsInfo &lowerInfo, STRUCT ChirpBoundsInfo &upperInfo)
+
+	variable minimum, maximum
+
+	minimum = min(lowerInfo.maximumFac, upperInfo.maximumFac)
+	maximum = max(lowerInfo.minimumFac, upperInfo.minimumFac)
+
+	ASSERT(minimum < maximum, "Invalid bounds situation")
+
+	return (minimum + maximum) / 2
+End
+
+/// @brief Determine the bounds action given the requested chirp slice
+///
+/// @param panelTitle                  device
+/// @param scaledDACWave               DAQ data wave with correct units and scaling
+/// @param headstage                   headstage
+/// @param sweepNo                     sweep number
+/// @param chirpStart                  x-position relative to stimset start where the chirp starts
+/// @param cycleEnd                    x-position relative to stimset start where the requested number of cycles finish
+/// @param lowerRelativeBound analysis parameter
+/// @param upperRelativeBound analysis parameter
+///
+/// @return boundsAction, one of @ref ChirpBoundsAction
+/// @return scalingFactorDAScale, scaling factor to be inside the bounds for actions PSQ_CR_INCREASE/PSQ_CR_DECREASE
+static Function [variable boundsAction, variable scalingFactorDAScale] PSQ_CR_DetermineBoundsAction(string panelTitle, WAVE scaledDACWave, variable headstage, variable sweepNo, variable chirpStart, variable cycleEnd, variable lowerRelativeBound, variable upperRelativeBound)
+
+	variable targetV, minimum, maximum, upperMax, upperMin, lowerMax, lowerMin
+	variable minimumOverride, maximumOverride, totalOnsetDelay, scalingFactor
+	string msg, str, graph, key
+
+	WAVE config = GetITCChanConfigWave(panelTitle)
+	WAVE singleAD = AFH_ExtractOneDimDataFromSweep(panelTitle, scaledDACWave, headstage, ITC_XOP_CHANNEL_TYPE_ADC, config = config)
+
+#if IgorVersion() < 9.0
+	minimum = WaveMin(singleAD, chirpStart, cycleEnd)
+	maximum = WaveMax(singleAD, chirpStart, cycleEnd)
+#else
+	[minimum, maximum] = WaveMinAndMax(singleAD, chirpStart, cycleEnd)
+#endif
+
+	if(PSQ_TestOverrideActive())
+		WAVE/SDFR=root: overrideResults
+		NVAR count = $GetCount(panelTitle)
+		maximumOverride = overrideResults[0][count][1]
+		minimumOverride = overrideResults[0][count][2]
+
+		if(!IsNaN(minimumOverride))
+			minimum = minimumOverride
+		endif
+		if(!IsNaN(maximumOverride))
+			maximum = maximumOverride
+		endif
+	endif
+
+	totalOnsetDelay = DAG_GetNumericalValue(panelTitle, "setvar_DataAcq_OnsetDelayUser") \
+						+ GetValDisplayAsNum(panelTitle, "valdisp_DataAcq_OnsetDelayAuto")
+
+	if(PSQ_TestOverrideActive())
+		targetV = mean(singleAD, totalOnsetDelay, chirpStart)
+	else
+		targetV = DAG_GetNumericalValue(panelTitle, "setvar_DataAcq_AutoBiasV")
+	endif
+
+	sprintf msg, "targetV %g, minium %g, maximum %g", targetV, minimum, maximum
+	DEBUGPRINT(msg)
+
+	upperMax = targetV + upperRelativeBound
+	upperMin = targetV + lowerRelativeBound
+	lowerMax = targetV - lowerRelativeBound
+	lowerMin = targetV - upperRelativeBound
+
+	STRUCT ChirpBoundsInfo upperInfo
+	STRUCT ChirpBoundsInfo lowerInfo
+
+	[upperInfo] = PSQ_CR_DetermineBoundsState(upperMin, upperMax, maximum)
+	[lowerInfo] = PSQ_CR_DetermineBoundsState(lowerMin, lowerMax, minimum)
+	boundsAction = PSQ_CR_DetermineBoundsActionFromState(upperInfo.state, lowerInfo.state)
+
+	sprintf msg, "upper: value %g, info: min %g, center %g, max %g, state %s", maximum, upperInfo.minimumFac, upperInfo.centerFac, upperInfo.maximumFac, upperInfo.state
+	DEBUGPRINT(msg)
+
+	sprintf msg, "lower: value %g, info: min %g, center %g, max %g, state %s", minimum, lowerInfo.minimumFac, lowerInfo.centerFac, lowerInfo.maximumFac, lowerInfo.state
+	DEBUGPRINT(msg)
+
+	sprintf msg, "boundsAction %s", PSQ_CR_BoundsActionToString(boundsAction)
+	DEBUGPRINT(msg)
+
+	Make/FREE/N=(LABNOTEBOOK_LAYER_COUNT)/T resultText
+	resultText[INDEP_HEADSTAGE] = upperInfo.state + lowerInfo.state
+	key = PSQ_CreateLBNKey(PSQ_CHIRP, PSQ_FMT_LBN_CR_BOUNDS_STATE)
+	ED_AddEntryToLabnotebook(panelTitle, key, resultText, overrideSweepNo = sweepNo)
+
+#ifdef DEBUGGING_ENABLED
+	if(DP_DebuggingEnabledForFile(GetFile(FunctionPath(""))))
+		Make/O/N=7/D $("chirpVisDebug_" + num2str(sweepNo))/Wave=chirpVisDebug
+		Make/O/N=7/D $("chirpVisDebugX_" + num2str(sweepNo))/Wave=chirpVisDebugX
+
+		chirpVisDebug = NaN
+		chirpVisDebugX = 0
+
+		chirpVisDebug[0] = lowerMin
+		chirpVisDebug[1] = lowerMax
+		chirpVisDebug[2] = upperMin
+		chirpVisDebug[3] = upperMax
+		chirpVisDebug[4] = minimum
+		chirpVisDebug[5] = maximum
+
+		graph = "ChirpVisDebugGraph_" + num2str(sweepNo)
+		KillWindow/Z $graph
+		Display/N=$graph chirpVisDebug/TN=chirpVisDebug vs chirpVisDebugX
+		ModifyGraph/W=$graph mode=3, marker(chirpVisDebug[4])=19, marker(chirpVisDebug[5])=19, nticks(bottom)=0, rgb(chirpVisDebug[5])=(0,0,65535), grid(left)=1,nticks(left)=10
+		sprintf str "State: Upper %s, Lower %s\r\\s(chirpVisDebug) borders\r\n\\s(chirpVisDebug[5]) maximum\r\\s(chirpVisDebug[4]) minimum", upperInfo.state, lowerInfo.state
+		Legend/C/N=text2/J str
+	endif
+#endif // DEBUGGING_ENABLED
+
+	switch(boundsAction)
+		case PSQ_CR_PASS:
+		case PSQ_CR_RERUN:
+			scalingFactor = NaN
+			// do nothing
+			break
+		case PSQ_CR_INCREASE:
+		case PSQ_CR_DECREASE:
+				scalingFactor = PSQ_CR_DetermineScalingFactor(upperInfo, lowerInfo)
+				if(!IsFinite(scalingFactor))
+					// unlikely edge case
+					boundsAction = PSQ_CR_Rerun
+					scalingFactor = NaN
+				endif
+				break
+		default:
+			ASSERT(0, "impossible case")
+	endswitch
+
+	Make/FREE/N=(LABNOTEBOOK_LAYER_COUNT)/D result = NaN
+	result[INDEP_HEADSTAGE] = boundsAction
+	key = PSQ_CreateLBNKey(PSQ_CHIRP, PSQ_FMT_LBN_CR_BOUNDS_ACTION)
+	ED_AddEntryToLabnotebook(panelTitle, key, result, overrideSweepNo = sweepNo)
+
+	return [boundsAction, scalingFactor]
+End
+
+/// @brief Return the x position of the end of the given cycle relative to the stimset start
+static Function PSQ_CR_GetXPosFromCycles(variable cycle, WAVE cycleXValues, variable totalOnsetDelay)
+	variable index
+
+	// we have all crossings in cycleXValues
+	// 0: start
+	// 1: half cycle
+	// 2: full cycle
+	//
+	// so the first cycle ranges from cycleXValues[0] to cycleXValues[2] and so on
+
+	index = cycle * 2
+
+	ASSERT(index < DimSize(cycleXValues, ROWS), "Not enough cycles present in the stimulus set.")
+
+	return cycleXValues[index] - totalOnsetDelay
+End
+
+static Function/WAVE PSQ_CR_GetCycles(string panelTitle, variable sweepNo, WAVE rawDACWave, variable xstart)
+	string key
+
+	WAVE textualValues = GetLBTextualValues(panelTitle)
+
+	key = PSQ_CreateLBNKey(PSQ_CHIRP, PSQ_FMT_LBN_CR_CYCLES, query = 1)
+	WAVE/Z cycles = GetLastSetting(textualValues, sweepNo, key, UNKNOWN_MODE)
+
+	if(!WaveExists(cycles))
+		WAVE cycles = PSQ_CR_DetermineCycles(panelTitle, rawDACWave, xstart)
+
+		key = PSQ_CreateLBNKey(PSQ_CHIRP, PSQ_FMT_LBN_CR_CYCLES)
+		ED_AddEntryToLabnotebook(panelTitle, key, cycles, overrideSweepNo = sweepNo)
+	endif
+
+	return cycles
+end
+
+/// @brief Find all x values where DA channels have the same value as rawDACWave[xstart]
+///
+/// We search starting from xstart, where `matches` have a minimum of 1ms between them.
+///
+/// @param panelTitle device
+/// @param rawDACWave unscaled DAQDataWave (aka GetHardwareDataWave(panelTitle))
+/// @param xstart     position of reference value and starting point for the search
+///
+/// @return Labnotebook entry wave
+static Function/WAVE PSQ_CR_DetermineCycles(string panelTitle, WAVE rawDACWave, variable xstart)
+
+	variable yval, minimumWidthX, i
+
+	minimumWidthX = 1
+
+	WAVE config = GetITCChanConfigWave(panelTitle)
+
+	WAVE statusHS = DAG_GetChannelState(panelTitle, CHANNEL_TYPE_HEADSTAGE)
+	MAKE/FREE/T/N=(LABNOTEBOOK_LAYER_COUNT) cycles
+
+	WAVE gains = SWS_GetChannelGains(panelTitle, timing = GAIN_AFTER_DAQ)
+
+	for(i = 0; i < NUM_HEADSTAGES; i += 1)
+
+		if(!statusHS[i])
+			continue
+		endif
+
+		WAVE singleDA = AFH_ExtractOneDimDataFromSweep(panelTitle, rawDACWave, i, ITC_XOP_CHANNEL_TYPE_DAC, config = config)
+
+		yval = singleDA[xstart] * gains[i]
+
+		Make/FREE/R matches
+		FindLevels/DEST=matches/R=(xstart - minimumWidthX / 2, inf)/M=(minimumWidthX)/Q singleDA, yval
+
+		cycles[i] = NumericWaveToList(matches, ";")
+	endfor
+
+	return cycles
+End
+
+Function/S PSQ_Chirp_GetHelp(string name)
+
+	strswitch(name)
+		case "LowerRelativeBound":
+			return "Lower bound of a confidence band for the acquired data relative to the pre pulse baseline in mV."
+		case "UpperRelativeBound":
+			return "Upper bound of a confidence band for the acquired data relative to the pre pulse baseline in mV."
+		case "NumberOfChirpCycles":
+			return "[Optional] Number of acquired chirp cycles for the bounds evaluation to start."
+		default:
+			ASSERT(0, "Unimplemented for parameter " + name)
+			break
+	endswitch
+End
+
+Function/S PSQ_Chirp_CheckParam(string name, string params)
+	variable val
+
+	strswitch(name)
+		case "LowerRelativeBound":
+			if(AFH_GetAnalysisParamNumerical("LowerRelativeBound", params) >= AFH_GetAnalysisParamNumerical("UpperRelativeBound", params))
+				return "LowerRelativeBound must be larger than UpperRelativeBound"
+			endif
+		case "UpperRelativeBound": // fallthrough-by-design
+			val = AFH_GetAnalysisParamNumerical(name, params)
+			if(!IsFinite(val) || val < PSQ_CR_LIMIT_BAND_LOW || val > PSQ_CR_LIMIT_BAND_HIGH)
+				return "Out of bounds with value " + num2str(val)
+			endif
+			break
+		case "NumberOfChirpCycles":
+			val = AFH_GetAnalysisParamNumerical(name, params)
+			if(!IsFinite(val) || !IsInteger(val) || val <= 0)
+				return "Must be a finite non-zero integer"
+			endif
+			break
+		default:
+			ASSERT(0, "Unimplemented for parameter " + name)
+			break
+	endswitch
+End
+
+/// @brief Return a list of required analysis functions for PSQ_Chirp()
+Function/S PSQ_Chirp_GetParams()
+	return "LowerRelativeBound:variable,UpperRelativeBound:variable,[NumberOfChirpCycles:variable]"
+End
+
+/// @brief Analysis function for determining the impedance of the cell using a sine chirp stim set
+///
+/// Prerequisites:
+/// - Does only work for one headstage
+/// - Assumes that the stimset has a chirp of non-zero and arbitrary length
+/// - Pre pulse baseline length is #PSQ_CR_BL_EVAL_RANGE
+/// - Post pulse baseline length is at least two times #PSQ_CR_BL_EVAL_RANGE
+///
+/// Testing:
+/// For testing the range detection logic, the results can be defined in the wave
+/// root:overrideResults. @see PSQ_CreateOverrideResults()
+///
+/// Decision logic flowchart:
+///
+/// \rst
+///	.. TODO image:: ../patch-seq-chirp.dot.svg
+/// \endrst
+///
+/// @verbatim
+///
+/// Sketch of a stimset with pre pulse baseline (-), sine chirp (~), and post pulse baseline (-).
+///
+///
+///
+///                     ~               ~
+///                   ~  ~             ~ ~
+///                  ~    ~           ~   ~
+///                 ~      ~         ~     ~
+/// ---------------~        ~       ~       ~--------------------------------
+///                          ~     ~
+///                           ~   ~
+///                             ~
+///
+/// @endverbatim
+Function PSQ_Chirp(panelTitle, s)
+	string panelTitle
+	STRUCT AnalysisFunction_V3 &s
+
+	variable lowerRelativeBound, upperRelativeBound, sweepPassed, setPassed, boundsAction, failsInSet, leftSweeps
+	variable length, minLength, DAC, resistance, passingDaScaleSweep, sweepsInSet, passesInSet, acquiredSweepsInSet
+	variable targetVoltage, initialDAScale, baselineQCPassed, insideBounds, totalOnsetDelay, scalingFactorDAScale
+	variable fifoInStimsetPoint, fifoInStimsetTime, i, ret, range, numBaselineChunks, chirpStart, chirpDuration
+	variable numberOfChirpCycles, cycleEnd, maxOccurences
+	string setName, key, msg, stimset, str
+
+	lowerRelativeBound = AFH_GetAnalysisParamNumerical("LowerRelativeBound", s.params)
+	numberOfChirpCycles = AFH_GetAnalysisParamNumerical("NumberOfChirpCycles", s.params, defValue = 1)
+	upperRelativeBound = AFH_GetAnalysisParamNumerical("UpperRelativeBound", s.params)
+
+	switch(s.eventType)
+		case PRE_DAQ_EVENT:
+			PGC_SetAndActivateControl(panelTitle, "check_DataAcq_AutoBias", val = 1)
+			PGC_SetAndActivateControl(panelTitle, "check_Settings_MD", val = 1)
+			PGC_SetAndActivateControl(panelTitle, "Check_DataAcq1_DistribDaq", val = 0)
+			PGC_SetAndActivateControl(panelTitle, "Check_DataAcq1_dDAQOptOv", val = 0)
+			PGC_SetAndActivateControl(panelTitle, "Check_DataAcq1_RepeatAcq", val = 1)
+
+			if(DAG_GetHeadstageMode(panelTitle, s.headstage) != I_CLAMP_MODE)
+				printf "(%s) Clamp mode must be current clamp.\r", panelTitle
+				ControlWindowToFront()
+				return 1
+			endif
+
+			WAVE statusHS = DAG_GetChannelState(panelTitle, CHANNEL_TYPE_HEADSTAGE)
+			if(sum(statusHS) != 1)
+				printf "(%s) Analysis function only supports one headstage.\r", panelTitle
+				ControlWindowToFront()
+				return 1
+			endif
+
+			WAVE statusTTL = DAG_GetChannelState(panelTitle, CHANNEL_TYPE_TTL)
+			if(sum(statusTTL) != 0)
+				printf "(%s) Analysis function does not support TTL channels.\r", panelTitle
+				ControlWindowToFront()
+				return 1
+			endif
+
+			length = PSQ_GetDAStimsetLength(panelTitle, s.headstage)
+			minLength = 3 * PSQ_CR_BL_EVAL_RANGE
+			if(length < minLength)
+				printf "(%s) Stimset of headstage %d is too short, it must be at least %g ms long.\r", panelTitle, s.headstage, minLength
+				ControlWindowToFront()
+				return 1
+			endif
+
+			DAC = AFH_GetDACFromHeadstage(panelTitle, s.headstage)
+			setName = AFH_GetStimSetName(panelTitle, DAC, CHANNEL_TYPE_DAC)
+			if(IDX_NumberOfSweepsInSet(setName) < PSQ_CR_NUM_SWEEPS_PASS)
+				printf "(%s): The stimset must have at least %d sweeps\r", panelTitle, PSQ_CR_NUM_SWEEPS_PASS
+				ControlWindowToFront()
+				return 1
+			endif
+
+			DisableControls(panelTitle, "Button_DataAcq_SkipBackwards;Button_DataAcq_SkipForward")
+
+		case PRE_SET_EVENT: // fallthrough-by-design
+			WAVE numericalValues = GetLBNumericalValues(panelTitle)
+			WAVE textualValues   = GetLBTextualValues(panelTitle)
+
+			PGC_SetAndActivateControl(panelTitle, "SetVar_DataAcq_ITI", val = 0)
+			PGC_SetAndActivateControl(panelTitle, "check_Settings_ITITP", val = 1)
+			PGC_SetAndActivateControl(panelTitle, "Check_Settings_InsertTP", val = 1)
+
+			if(s.eventType == PRE_SET_EVENT)
+				if(PSQ_TestOverrideActive())
+					resistance = PSQ_CR_RESISTANCE_FAKE * 1e9
+				else
+					passingDaScaleSweep = PSQ_GetLastPassingDAScaleSub(panelTitle, s.headstage)
+
+					if(!IsValidSweepNumber(passingDaScaleSweep))
+						printf "(%s): We could not find a passing sweep with DAScale analysis function in Subthreshold mode.\r", panelTitle
+						ControlWindowToFront()
+						return 1
+					endif
+
+					// these LBN entries predate PSQ_CreateLBNKey(), so we use the hardcoded names
+					WAVE/Z deltaI = GetLastSetting(numericalValues, passingDaScaleSweep, LABNOTEBOOK_USER_PREFIX + "Delta I", UNKNOWN_MODE)
+					WAVE/Z deltaV = GetLastSetting(numericalValues, passingDaScaleSweep, LABNOTEBOOK_USER_PREFIX + "Delta V", UNKNOWN_MODE)
+
+					if(!WaveExists(deltaI) || !WaveExists(deltaV))
+						printf "(%s): The Delta I/V labnotebook entries could not be found.\r", panelTitle
+						ControlWindowToFront()
+						return 1
+					endif
+
+					resistance = deltaV[s.headstage] / deltaI[s.headstage]
+				endif
+
+				sprintf msg, "Resistance: %g [Ohm]\r", resistance
+				DEBUGPRINT(msg)
+
+				Make/FREE/N=(LABNOTEBOOK_LAYER_COUNT)/D result = NaN
+				result[INDEP_HEADSTAGE] = resistance
+
+				key = PSQ_CreateLBNKey(PSQ_CHIRP, PSQ_FMT_LBN_CR_RESISTANCE)
+				ED_AddEntryToLabnotebook(panelTitle, key, result, overrideSweepNo = s.sweepNo, unit = "Ohm")
+
+				targetVoltage = ((upperRelativeBound + lowerRelativeBound) / 2) * 1e-3
+				initialDAScale = targetVoltage / resistance
+
+				sprintf msg, "Initial DAScale: %g [Amperes]\r", initialDAScale
+				DEBUGPRINT(msg)
+
+				Make/FREE/N=(LABNOTEBOOK_LAYER_COUNT)/D result = NaN
+				key = PSQ_CreateLBNKey(PSQ_CHIRP, PSQ_FMT_LBN_INITIAL_SCALE)
+				result[INDEP_HEADSTAGE] = initialDAScale
+				ED_AddEntryToLabnotebook(panelTitle, key, result, overrideSweepNo = s.sweepNo, unit = "Amperes")
+
+				SetDAScale(panelTitle, s.headstage, absolute=initialDAScale, roundTopA = 1)
+			endif
+			break
+		case POST_SWEEP_EVENT:
+			WAVE numericalValues = GetLBNumericalValues(panelTitle)
+			WAVE textualValues   = GetLBTextualValues(panelTitle)
+
+			totalOnsetDelay = DAG_GetNumericalValue(panelTitle, "setvar_DataAcq_OnsetDelayUser") \
+				  + GetValDisplayAsNum(panelTitle, "valdisp_DataAcq_OnsetDelayAuto")
+
+			key = PSQ_CreateLBNKey(PSQ_CHIRP, PSQ_FMT_LBN_BL_QC_PASS, query = 1)
+			WAVE/Z baselineQCPassedLBN = GetLastSetting(numericalValues, s.sweepNo, key, UNKNOWN_MODE)
+			// if we don't have a PSQ_FMT_LBN_BL_QC_PASS entry this means it did not pass
+			baselineQCPassed = WaveExists(baselineQCPassedLBN) ? baselineQCPassedLBN[s.headstage] : 0
+
+			key = PSQ_CreateLBNKey(PSQ_CHIRP, PSQ_FMT_LBN_CR_INSIDE_BOUNDS, query = 1)
+			insideBounds = GetLastSettingIndep(numericalValues, s.sweepNo, key, UNKNOWN_MODE)
+
+			sweepPassed = (baselineQCPassed == 1 && insideBounds == 1)
+
+			Make/D/FREE/N=(LABNOTEBOOK_LAYER_COUNT) result = NaN
+			result[INDEP_HEADSTAGE] = sweepPassed
+			key = PSQ_CreateLBNKey(PSQ_CHIRP, PSQ_FMT_LBN_SWEEP_PASS)
+			ED_AddEntryToLabnotebook(panelTitle, key, result, unit = LABNOTEBOOK_BINARY_UNIT)
+
+			WAVE/T stimsets = GetLastSetting(textualValues, s.sweepNo, STIM_WAVE_NAME_KEY, DATA_ACQUISITION_MODE)
+			stimset = stimsets[s.headstage]
+
+			sweepsInSet         = IDX_NumberOfSweepsInSet(stimset)
+			passesInSet         = PSQ_NumPassesInSet(numericalValues, PSQ_CHIRP, s.sweepNo, s.headstage)
+			acquiredSweepsInSet = PSQ_NumAcquiredSweepsInSet(panelTitle, s.sweepNo, s.headstage)
+			failsInSet          = acquiredSweepsInSet - passesInSet
+			leftSweeps          = sweepsInSet - acquiredSweepsInSet
+
+			[setPassed, maxOccurences] = PSQ_CR_SetHasPassed(numericalValues, s.sweepNo, s.headstage)
+
+			if(setPassed)
+				PSQ_ForceSetEvent(panelTitle, s.headstage)
+				RA_SkipSweeps(panelTitle, inf, limitToSetBorder = 1)
+			else
+
+				// not enough sweeps left to pass the set
+				// we need PSQ_CR_NUM_SWEEPS_PASS with the same
+				// DAScale value
+				if((maxOccurences + leftSweeps) < PSQ_CR_NUM_SWEEPS_PASS)
+					PSQ_ForceSetEvent(panelTitle, s.headstage)
+					RA_SkipSweeps(panelTitle, inf)
+				endif
+
+				// failed too many sweeps
+				if(failsInSet >= PSQ_CR_NUM_SWEEPS_FAIL)
+					PSQ_ForceSetEvent(panelTitle, s.headstage)
+					RA_SkipSweeps(panelTitle, inf)
+				endif
+			endif
+
+			sprintf msg, "Sweep %s, Set %s, total sweeps %g, acquired sweeps %g, sweeps passed %g, sweeps passed with same DAScale %g\r", ToPassFail(sweepPassed), ToPassFail(setPassed), sweepsInSet, acquiredSweepsInSet, passesInSet, maxOccurences
+			DEBUGPRINT(msg)
+
+			break
+		case POST_SET_EVENT:
+			WAVE numericalValues = GetLBNumericalValues(panelTitle)
+
+			[setPassed, maxOccurences] = PSQ_CR_SetHasPassed(numericalValues, s.sweepNo, s.headstage)
+
+			sprintf msg, "Set has %s\r", ToPassFail(setPassed)
+			DEBUGPRINT(msg)
+
+			Make/FREE/N=(LABNOTEBOOK_LAYER_COUNT)/D result = NaN
+			result[INDEP_HEADSTAGE] = setPassed
+			key = PSQ_CreateLBNKey(PSQ_CHIRP, PSQ_FMT_LBN_SET_PASS)
+			ED_AddEntryToLabnotebook(panelTitle, key, result, unit = LABNOTEBOOK_BINARY_UNIT)
+
+			AD_UpdateAllDatabrowser()
+
+			break
+		case POST_DAQ_EVENT:
+			EnableControls(panelTitle, "Button_DataAcq_SkipBackwards;Button_DataAcq_SkipForward")
+			AD_UpdateAllDatabrowser()
+			break
+	endswitch
+
+	if(s.eventType != MID_SWEEP_EVENT)
+		return NaN
+	endif
+
+	WAVE numericalValues = GetLBNumericalValues(panelTitle)
+	key = PSQ_CreateLBNKey(PSQ_CHIRP, PSQ_FMT_LBN_BL_QC_PASS, query = 1)
+	baselineQCPassed = GetLastSettingIndep(numericalValues, s.sweepNo, key, UNKNOWN_MODE)
+
+	key = PSQ_CreateLBNKey(PSQ_CHIRP, PSQ_FMT_LBN_CR_INSIDE_BOUNDS, query = 1)
+	insideBounds = GetLastSettingIndep(numericalValues, s.sweepNo, key, UNKNOWN_MODE)
+
+	sprintf msg, "Midsweep: insideBounds %g, baselineQCPassed %g", insideBounds, baselineQCPassed
+	DEBUGPRINT(msg)
+
+	if(IsFinite(insideBounds) && IsFinite(baselineQCPassed)) // nothing more to do
+		return NaN
+	endif
+
+	totalOnsetDelay = DAG_GetNumericalValue(panelTitle, "setvar_DataAcq_OnsetDelayUser") \
+					  + GetValDisplayAsNum(panelTitle, "valdisp_DataAcq_OnsetDelayAuto")
+
+	fifoInStimsetPoint = s.lastKnownRowIndex - totalOnsetDelay / DimDelta(s.rawDACWAVE, ROWS)
+	fifoInStimsetTime  = fifoInStimsetPoint * DimDelta(s.rawDACWAVE, ROWS)
+
+	if(IsNaN(baselineQCPassed))
+		numBaselineChunks = PSQ_GetNumberOfChunks(panelTitle, s.sweepNo, s.headstage, PSQ_CHIRP)
+		ASSERT(numBaselineChunks >= 3, "Unexpected number of baseline chunks")
+
+		for(i = 0; i < numBaselineChunks; i += 1)
+
+			ret = PSQ_EvaluateBaselineProperties(panelTitle, s.scaledDACWave, PSQ_CHIRP, s.sweepNo, i, fifoInStimsetTime, totalOnsetDelay)
+
+			if(IsNaN(ret))
+				// NaN: not enough data for check
+				//
+				// not last chunk: retry on next invocation
+				// last chunk: mark sweep as failed
+				if(i == numBaselineChunks - 1)
+					ret = 1
+				endif
+
+				break
+			elseif(ret)
+				// != 0: failed with special mid sweep return value (on first failure)
+				if(i == 0)
+					// pre pulse baseline
+					// fail sweep
+					break
+				else
+					// post pulse baseline
+					// try next chunk
+					continue
+				endif
+			else
+				// 0: passed
+				if(i == 0)
+					// pre pulse baseline
+					// try next chunks
+					continue
+				else
+					// post baseline
+					// we're done!
+					break
+				endif
+			endif
+		endfor
+
+		if(IsFinite(ret))
+			baselineQCPassed = (ret == 0)
+
+			sprintf msg, "BL QC %s, last evaluated chunk %d returned with %g", ToPassFail(baselineQCPassed), i, ret
+			DEBUGPRINT(msg)
+
+			// document BL QC results
+			Make/FREE/D/N=(LABNOTEBOOK_LAYER_COUNT) result = NaN
+			result[s.headstage] = baselineQCPassed
+
+			key = PSQ_CreateLBNKey(PSQ_CHIRP, PSQ_FMT_LBN_BL_QC_PASS)
+			ED_AddEntryToLabnotebook(panelTitle, key, result, unit = LABNOTEBOOK_BINARY_UNIT, overrideSweepNo = s.sweepNo)
+		endif
+	endif
+
+	WAVE/T cycleXValuesLBN = PSQ_CR_GetCycles(panelTitle, s.sweepNo, s.rawDACWave, totalonsetDelay + PSQ_CR_BL_EVAL_RANGE)
+	WAVE cycleXValues = ListToNumericWave(cycleXValuesLBN[s.headstage], ";")
+
+	chirpStart = PSQ_CR_BL_EVAL_RANGE
+	cycleEnd = PSQ_CR_GetXPosFromCycles(numberOfChirpCycles, cycleXValues, totalOnsetDelay)
+
+	sprintf msg, "chirpStart %g, fifoInStimsetTime %g, cycleEnd %g", chirpStart, fifoInStimsetTime, cycleEnd
+	DEBUGPRINT(msg)
+
+	if((IsNaN(baselineQCPassed) || baselineQCPassed) && IsNaN(insideBounds) && fifoInStimsetTime >= cycleEnd)
+		// inside bounds search was inconclusive up to now
+		// and we have acquired enough cycles
+		// and baselineQC is not failing
+
+		[boundsAction, scalingFactorDaScale] = PSQ_CR_DetermineBoundsAction(panelTitle, s.scaledDACWave, s.headstage, s.sweepNo, chirpStart, cycleEnd, lowerRelativeBound, upperRelativeBound)
+
+		insideBounds = (boundsAction == PSQ_CR_PASS)
+		Make/FREE/N=(LABNOTEBOOK_LAYER_COUNT)/D result = NaN
+		result[INDEP_HEADSTAGE] = insideBounds
+		key = PSQ_CreateLBNKey(PSQ_CHIRP, PSQ_FMT_LBN_CR_INSIDE_BOUNDS)
+		ED_AddEntryToLabnotebook(panelTitle, key, result, overrideSweepNo = s.sweepNo, unit = LABNOTEBOOK_BINARY_UNIT)
+
+		switch(boundsAction)
+			case PSQ_CR_PASS:
+			case PSQ_CR_RERUN: // fallthrough-by-design
+				// nothing to do
+				break
+			case PSQ_CR_INCREASE:
+			case PSQ_CR_DECREASE: // fallthrough-by-design
+				SetDAScale(panelTitle, s.headstage, relative = scalingFactorDAScale, roundTopA = 1)
+				break
+			default:
+				ASSERT(0, "impossible case")
+		endswitch
+	endif
+
+	if(IsFinite(baselineQCPassed) && baselineQCPassed)
+		ASSERT(IsFinite(insideBounds), "Must be already checked")
+		return ANALYSIS_FUNC_RET_EARLY_STOP
+	elseif(IsFinite(baselineQCPassed) && !baselineQCPassed)
+		return ret
+	elseif(!insideBounds)
+		return ANALYSIS_FUNC_RET_EARLY_STOP
+	endif
+
+	return NaN
+End
+
 /// @brief Map from analysis function name to numeric constant
 ///
 /// @return One of @ref PatchSeqAnalysisFunctionTypes
@@ -2837,6 +3677,8 @@ Function PSQ_MapFunctionToConstant(anaFunc)
 	string anaFunc
 
 	strswitch(anaFunc)
+		case "PSQ_Chirp":
+			return PSQ_CHIRP
 		case "PSQ_Ramp":
 			return PSQ_RAMP
 		case "PSQ_DaScale":

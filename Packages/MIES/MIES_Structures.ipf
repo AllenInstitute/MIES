@@ -253,3 +253,9 @@ Structure HardwareDataTPInput
 	WAVE DAGain, DACAmpTP
 	variable testPulseLength, baselineFrac
 EndStructure
+
+/// @brief Helper strucuture for PSQ_CR_DetermineBoundsState()
+Structure ChirpBoundsInfo
+	variable minimumFac, centerFac, maximumFac
+	string state
+EndStructure
