@@ -958,7 +958,7 @@ End
 /// And as usual we want the *last* matching sweep.
 ///
 /// @return existing sweep number or -1 in case no such sweep could be found
-Function PSQ_GetLastPassingLongRHSweep(panelTitle, headstage)
+static Function PSQ_GetLastPassingLongRHSweep(panelTitle, headstage)
 	string panelTitle
 	variable headstage
 
