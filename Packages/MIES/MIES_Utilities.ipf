@@ -3028,7 +3028,6 @@ End
 /// @brief Convert a numeric wave to string list
 ///
 /// Counterpart @see ListToNumericWave
-/// Similar @see Convert1DWaveToList
 /// @see TextWaveToList
 ///
 /// @param wv     numeric wave
