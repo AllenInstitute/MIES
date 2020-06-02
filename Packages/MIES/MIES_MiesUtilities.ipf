@@ -22,6 +22,7 @@ static Constant GET_LB_MODE_READ  = 1
 
 static Constant GET_LB_MODE_WRITE = 2
 
+static StrConstant PSQ_CR_LBN_PREFIX = "Chirp"
 static StrConstant PSQ_SP_LBN_PREFIX = "Squ. Pul."
 static StrConstant PSQ_DS_LBN_PREFIX = "DA Scale"
 static StrConstant PSQ_RB_LBN_PREFIX = "Rheobase"
@@ -7186,6 +7187,8 @@ Function MapAnaFuncToConstant(anaFunc)
 	strswitch(anaFunc)
 		case "PSQ_Ramp":
 			return PSQ_RAMP
+		case "PSQ_Chirp":
+			return PSQ_CHIRP
 		case "PSQ_DaScale":
 			return PSQ_DA_SCALE
 		case "PSQ_Rheobase":
@@ -7224,6 +7227,9 @@ Function/S CreateAnaFuncLBNKey(type, formatString, [chunk, query])
 			break
 		case SC_SPIKE_CONTROL:
 			prefix = MSQ_SC_LBN_PREFIX
+			break
+		case PSQ_CHIRP:
+			prefix = PSQ_CR_LBN_PREFIX
 			break
 		case PSQ_DA_SCALE:
 			prefix = PSQ_DS_LBN_PREFIX

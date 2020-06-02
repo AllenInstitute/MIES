@@ -938,6 +938,8 @@ Constant PSQ_DS_PULSE_DUR        = 1000
 
 Constant PSQ_RA_BL_EVAL_RANGE = 500
 
+Constant PSQ_CR_BL_EVAL_RANGE = 500
+
 Constant PSQ_SPIKE_LEVEL         = 0.01 // mV
 Constant PSQ_RMS_SHORT_THRESHOLD = 0.07 // mV
 Constant PSQ_RMS_LONG_THRESHOLD  = 0.5  // mV
@@ -974,6 +976,11 @@ StrConstant PSQ_FMT_LBN_RB_LIMITED_RES     = "%s limited resolut."
 StrConstant PSQ_FMT_LBN_DA_fI_SLOPE        = "%s f-I slope"
 StrConstant PSQ_FMT_LBN_DA_fI_SLOPE_REACHED= "%s f-I slope QC"
 StrConstant PSQ_FMT_LBN_DA_OPMODE          = "%s operation mode"
+StrConstant PSQ_FMT_LBN_CR_RESISTANCE      = "%s input resistance"
+StrConstant PSQ_FMT_LBN_CR_INSIDE_BOUNDS   = "%s inside bounds"
+StrConstant PSQ_FMT_LBN_CR_BOUNDS_ACTION   = "%s bounds action"
+StrConstant PSQ_FMT_LBN_CR_CYCLES          = "%s cycle x values"
+StrConstant PSQ_FMT_LBN_CR_BOUNDS_STATE    = "%s bounds state"
 /// @}
 
 /// @name PatchSeq and MultiPatchSeq types of analysis functions
@@ -988,6 +995,7 @@ Constant PSQ_DA_SCALE      = 0x01
 Constant PSQ_SQUARE_PULSE  = 0x02
 Constant PSQ_RHEOBASE      = 0x04
 Constant PSQ_RAMP          = 0x08
+Constant PSQ_CHIRP         = 0x80
 /// @}
 
 /// @anchor MultiPatchSeqAnalysisFunctionTypes
@@ -1021,6 +1029,25 @@ StrConstant PSQ_DS_SUPRA         = "Supra"
 /// @{
 Constant PSQ_RA_DASCALE_DEFAULT = 1 // pA
 Constant PSQ_RA_NUM_SWEEPS_PASS = 3
+/// @}
+
+/// @name PatchSeq Chirp
+/// @{
+Constant PSQ_CR_NUM_SWEEPS_PASS = 3
+Constant PSQ_CR_NUM_SWEEPS_FAIL = 3
+Constant PSQ_CR_RESISTANCE_FAKE = 1 // GOhm
+Constant PSQ_CR_BASELINE_V_FAKE = 1 // mV
+Constant PSQ_CR_LIMIT_BAND_LOW  = 1 // mV
+Constant PSQ_CR_LIMIT_BAND_HIGH = 100 // mV
+/// @}
+
+/// @name Bounds action values, see also PSQ_CR_BoundsActionToString()
+/// @anchor ChirpBoundsAction
+/// @{
+Constant PSQ_CR_PASS     = 0x1
+Constant PSQ_CR_DECREASE = 0x2
+Constant PSQ_CR_INCREASE = 0x4
+Constant PSQ_CR_RERUN    = 0x8
 /// @}
 
 /// @name MultiPatchSeq various constants
