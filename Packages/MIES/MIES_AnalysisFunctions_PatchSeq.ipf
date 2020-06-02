@@ -177,7 +177,7 @@ static Function/WAVE PSQ_GetPulseDurations(panelTitle, type, sweepNo, totalOnset
 	WAVE/Z durations = GetLastSetting(numericalValues, sweepNo, key, UNKNOWN_MODE)
 
 	if(!WaveExists(durations) || forceRecalculation)
-		WAVE durations = PSQ_DeterminePulseDuration(panelTitle, sweepNo, totalOnsetDelay)
+		WAVE durations = PSQ_DeterminePulseDuration(panelTitle, sweepNo, type, totalOnsetDelay)
 
 		key = PSQ_CreateLBNKey(type, PSQ_FMT_LBN_PULSE_DUR)
 		ED_AddEntryToLabnotebook(panelTitle, key, durations, unit = "ms", overrideSweepNo = sweepNo)
@@ -191,9 +191,9 @@ End
 /// @brief Determine the pulse duration on each headstage
 ///
 /// Returns the labnotebook wave as well.
-static Function/WAVE PSQ_DeterminePulseDuration(panelTitle, sweepNo, totalOnsetDelay)
+static Function/WAVE PSQ_DeterminePulseDuration(panelTitle, sweepNo, type, totalOnsetDelay)
 	string panelTitle
-	variable sweepNo, totalOnsetDelay
+	variable sweepNo, type, totalOnsetDelay
 
 	variable i, level, first, last, duration
 	string key
@@ -1431,7 +1431,7 @@ Function PSQ_DAScale(panelTitle, s)
 						endif
 					endif
 
-					WAVE durations = PSQ_DeterminePulseDuration(panelTitle, s.sweepNo, totalOnsetDelay)
+					WAVE durations = PSQ_DeterminePulseDuration(panelTitle, s.sweepNo, PSQ_DA_SCALE, totalOnsetDelay)
 					key = PSQ_CreateLBNKey(PSQ_DA_SCALE, PSQ_FMT_LBN_PULSE_DUR)
 					ED_AddEntryToLabnotebook(panelTitle, key, durations, unit = "ms", overrideSweepNo = s.sweepNo)
 
