@@ -3872,7 +3872,7 @@ Function/S GetStackTrace([prefix])
 	string prefix
 
 	string stacktrace, entry, func, line, file, str
-	string output
+	string output, module
 	variable i, numCallers
 
 	if(ParamIsDefault(prefix))
@@ -3892,6 +3892,12 @@ Function/S GetStackTrace([prefix])
 	for(i = 0; i < numCallers - 2; i += 1)
 		entry = StringFromList(i, stacktrace)
 		func  = StringFromList(0, entry, ",")
+		module = StringByKey("MODULE", FunctionInfo(func))
+
+		if(!IsEmpty(module))
+			func = module + "#" + func
+		endif
+
 		file  = StringFromList(1, entry, ",")
 		line  = StringFromList(2, entry, ",")
 		sprintf str, "%s%s(...)#L%s [%s]\r", prefix, func, line, file
