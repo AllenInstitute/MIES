@@ -351,3 +351,9 @@ Structure BufferedDrawInfo
 	variable jsonID
 	WAVE/WAVE traceWaves
 EndStructure
+
+/// @brief Helper strucuture for PSQ_CR_DetermineBoundsState()
+Structure ChirpBoundsInfo
+	variable minimumFac, centerFac, maximumFac
+	string state
+EndStructure
