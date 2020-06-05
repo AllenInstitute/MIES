@@ -1125,7 +1125,9 @@ static Function NWB_WriteStimsetTemplateWaves(nwbVersion, locationID, stimSet, c
 	IPNWB#H5_CreateGroupsRecursively(locationID, path)
 	groupID = IPNWB#H5_OpenGroup(locationID, path)
 
-	if(nwbVersion == 2)
+	if(nwbVersion == 1)
+		IPNWB#MarkAsCustomEntry(locationID, path)
+	elseif(nwbVersion == 2)
 		IPNWB#WriteNeuroDataType(locationID, path, "StimulusSets")
 	endif
 
