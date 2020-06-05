@@ -33,9 +33,11 @@ Menu "Mies Panels"
 	"-"
 	SubMenu "Neurodata Without Borders (NWB)"
 		"Export all data into NWB"             , /Q, NWB_ExportWithDialog(NWB_EXPORT_DATA)
+		"-"
+		"Export all data into NWBv1 (legacy)"  , /Q, NWB_ExportWithDialog(NWB_EXPORT_DATA, nwbVersion = 1)
+		"-"
 		"Export all stimsets into NWB"         , /Q, NWB_ExportWithDialog(NWB_EXPORT_STIMSETS)
 		"Load Stimsets from NWB"               , /Q, NWB_LoadAllStimsets()
-		"-"
 	End
 	"-"
 	"About MIES"                               , /Q, OpenAboutDialog()

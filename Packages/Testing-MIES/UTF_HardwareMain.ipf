@@ -1,4 +1,4 @@
-﻿#pragma TextEncoding = "UTF-8"
+#pragma TextEncoding = "UTF-8"
 #pragma rtGlobals=3 // Use modern global access method and strict wave access.
 #pragma rtFunctionErrors=1
 #pragma ModuleName=HardwareMain
@@ -20,6 +20,7 @@
 #include "UTF_MultiPatchSeqDAScale"
 #include "UTF_SetControls"
 #include "UTF_TestNWBExportV1"
+#include "UTF_TestNWBExportV2"
 #include "UTF_Epochs"
 #include "UTF_HelperFunctions"
 
@@ -537,10 +538,12 @@ Function LoadStimsets()
 	NWB_LoadAllStimsets(filename = filename, overwrite = 1)
 End
 
-Function SaveStimsets()
+Function SaveStimsets(nwbVersion)
+	variable nwbVersion
+
 	string filename = GetFolder(FunctionPath("")) + "_2017_09_01_192934-compressed.nwb"
 	DeleteFile filename
-	NWB_ExportAllStimsets(overrideFilePath = filename)
+	NWB_ExportAllStimsets(nwbVersion, overrideFilePath = filename)
 End
 
 Function StopAllBackgroundTasks()

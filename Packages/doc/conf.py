@@ -15,13 +15,12 @@ def get_version():
 
     return "({branch}) {version}".format(branch=branchString.decode('ascii'), version=revString.decode('ascii'))
 
-
 # sphinx config
 extensions = ['sphinx.ext.mathjax', 'sphinx.ext.todo', 'breathe', 'sphinxcontrib.fulltoc', 'sphinxcontrib.images']
 master_doc = "index"
 project= "MIES Igor"
 
-exclude_patterns = [ 'releasenotes_template.rst']
+exclude_patterns = [ 'releasenotes_template.rst', 'IPNWB/specifications']
 
 cpp_id_attributes = [ 'threadsafe' ]
 

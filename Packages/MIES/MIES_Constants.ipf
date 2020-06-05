@@ -666,6 +666,7 @@ Constant AMPLIFIER_CONNECTION_MCC_FAILED = 2 ///< calling MCC_SelectMultiClamp70
 
 /// Additional entry in the NWB source attribute for TTL data
 StrConstant NWB_SOURCE_TTL_BIT = "TTLBit"
+StrConstant IPNWB_PLACEHOLDER = "PLACEHOLDER"
 
 /// @name Convenience constants for DAP_UpdateClampmodeTabs() and DAP_ChangeHeadStageMode()
 /// @anchor MCCSyncOverrides
@@ -793,6 +794,7 @@ StrConstant PRESSURE_STARTSEAL      = "Initial Seal Pressure (psi)"
 StrConstant PRESSURE_MAXSEAL        = "Maximum Seal Pressure (psi)"
 StrConstant TP_AFTER_DAQ            = "Activate TP after DAQ"
 StrConstant EXPORT_NWB              = "Export to NWB"
+StrConstant NWB_VERSION             = "NWB Version"
 StrConstant APPEND_ASYNC            = "Append Asynchronous reading to wave note"
 StrConstant SYNC_MIES_MCC           = "Sync MIES to MCC"
 StrConstant ENABLE_I_EQUAL_ZERO     = "Switch clamp modes via I equal zero"

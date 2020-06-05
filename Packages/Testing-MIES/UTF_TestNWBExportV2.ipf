@@ -1,22 +1,61 @@
 #pragma TextEncoding = "UTF-8"
 #pragma rtGlobals=3 // Use modern global access method and strict wave access.
 #pragma rtFunctionErrors=1
-#pragma ModuleName=TestNWBExportV1
+#pragma ModuleName=TestNWBExportV2
 
-static Constant NWB_VERSION = 1
+static Constant NWB_VERSION = 2
 
  // This file does not hold test suites
 static Function NoTestSuite()
 	FAIL()
 End
 
+// We want to check that the stored specification versions are the correct ones compared to the
+// `/nwb_version` attribute and the path components in `/specifications/core/X.Y.Z` and `/specifications/hdmf-common/A.B.C`
+//
+// In case that fails here check NWB_SPEC_VERSION, HDMF_SPEC_VERSION, NWB_VERSION in IPNWB
+static Function TestSpecVersions(fileID)
+	variable fileID
+
+	string groups, expected, version, group, groupVersion, namespaceVersion, globalVersion
+	string path, spec
+	variable numEntries, i, jsonID
+
+	globalVersion = IPNWB#ReadTextAttributeAsString(fileID, "/", "nwb_version")
+
+	groups = IPNWB#H5_ListGroups(fileID, "/specifications")
+	groups = SortList(groups)
+	expected = "core;hdmf-common;ndx-mies;"
+	CHECK_EQUAL_STR(groups, expected)
+
+	numEntries = ItemsInList(groups)
+	for(i = 0; i < numEntries; i += 1)
+		group = StringFromList(i, groups)
+
+		path = "/specifications/" + group
+		groupVersion = IPNWB#H5_ListGroups(fileID, path)
+		groupVersion = RemoveEnding(groupVersion, ";")
+
+		if(!cmpstr(group, "core"))
+			CHECK_EQUAL_STR(groupVersion, globalVersion)
+		endif
+
+		path += "/" + groupVersion + "/namespace"
+		spec = IPNWB#ReadTextDataSetAsString(fileID, path)
+		jsonID = JSON_Parse(spec)
+		namespaceVersion = JSON_GetString(jsonID, "/namespaces/0/version")
+		CHECK_EQUAL_STR(groupVersion, namespaceVersion)
+		JSON_Release(jsonID)
+	endfor
+End
+
 static Function TestHistory(fileID)
 	variable fileID
 
-	WAVE/Z/T history = IPNWB#H5_LoadDataSet(fileID, "/general/history")
+	WAVE/Z/T history = IPNWB#H5_LoadDataSet(fileID, "/general/data_collection")
 	CHECK_WAVE(history, TEXT_WAVE)
 	CHECK(DimSize(history, ROWS) > 0)
-end
+End
 
 static Function TestLabnotebooks(fileID, device)
 	variable fileID
@@ -30,6 +69,8 @@ static Function TestLabnotebooks(fileID, device)
 	WAVE/T textualKeys = GetLBTextualKeys(device)
 
 	lbnDevices = RemoveEnding(IPNWB#ReadLabNoteBooks(fileID), ";")
+	WARN_EQUAL_STR(lbnDevices, device)
+	lbnDevices = StringFromList(0, lbnDevices)
 	CHECK_EQUAL_STR(lbnDevices, device)
 
 	prefix = "/general/labnotebook/" + device + "/"
@@ -152,22 +193,12 @@ static Function TestTimeSeriesProperties(groupID, channel)
 	string channel
 
 	variable numEntries, i, value, channelGroupID
-	string missing_fields_ref, missing_fields
 
 	channelGroupID = IPNWB#H5_OpenGroup(groupID, channel)
 
 	// TimeSeries properties
 	STRUCT IPNWB#TimeSeriesProperties tsp
 	IPNWB#ReadTimeSeriesProperties(groupID, channel, tsp)
-
-	if(strlen(tsp.missing_fields) == 0)
-		missing_fields = "PLACEHOLDER;"
-	else
-		missing_fields = tsp.missing_fields
-	endif
-
-	missing_fields_ref = IPNWB#ReadTextAttributeAsList(groupID, channel, "missing_fields")
-	CHECK_EQUAL_STR(missing_fields, missing_fields_ref)
 
 	numEntries = DimSize(tsp.names, ROWS)
 	for(i = 0; i < numEntries; i += 1)
@@ -264,62 +295,39 @@ static Function/WAVE LoadTimeSeries(groupID, channel, channelType)
 	endswitch
 End
 
-/// @brief Test NWBv1 specific source attribute (dropped since NWBv2)
-static Function TestSourceAttribute(groupID, device, channel, sweep, pxpSweepsDFR)
-	variable groupID, sweep
-	string device, channel
-	DFREF pxpSweepsDFR
-
-	string deviceFromSource, channelName
-
-	WAVE numericalValues = GetLBNumericalValues(device)
-
-	STRUCT IPNWB#ReadChannelParams params
-	IPNWB#InitReadChannelParams(params)
-	IPNWB#AnalyseChannelName(channel, params)
-	IPNWB#LoadSourceAttribute(groupID, channel, params)
-
-	deviceFromSource = params.device
-	CHECK_EQUAL_STR(deviceFromSource, device)
-	CHECK_EQUAL_VAR(params.sweep, sweep)
-
-	channelName = GetChannelNameFromChannelType(groupID, device, channel, sweep, params)
-
-	// check that we stored it under the correct name
-	WAVE/Z/SDFR=pxpSweepsDFR pxpWave = $channelName
-	WAVE loadedFromNWB = LoadTimeSeries(groupID, channel, params.channelType)
-	CHECK_EQUAL_WAVES(pxpWave, loadedFromNWB)
-
-	// groupIndex is written by IPNWB#AnalyseChannelName
-	CHECK(params.groupIndex >= 0)
-End
-
-static Function TestTimeSeries(fileID, device, groupID, channel, sweep, pxpSweepsDFR)
+static Function TestTimeSeries(fileID, filepath, device, groupID, channel, sweep, pxpSweepsDFR)
 	variable fileID, groupID, sweep
+	string filepath
 	string channel, device
 	DFREF pxpSweepsDFR
 
-	variable channelGroupID, num_samples, starting_time, session_start_time, actual, scale, scale_ref
-	variable clampMode, gain, gain_ref, resolution, conversion, rate_ref, rate, samplingInterval, samplingInterval_ref
-	string stimulus, stimulus_expected, neurodata_type_ref, neurodata_type, channelName
+	variable channelGroupID, starting_time, session_start_time, actual
+	variable clampMode, gain, gain_ref, resolution, conversion, headstage, rate_ref, rate, samplingInterval, samplingInterval_ref
+	string stimulus, stimulus_expected, channelName, str, path, neurodata_type
 	string electrode_name, electrode_name_ref, key, unit_ref, unit, base_unit_ref
 
 	STRUCT IPNWB#ReadChannelParams params
 	IPNWB#InitReadChannelParams(params)
 	IPNWB#AnalyseChannelName(channel, params)
-	IPNWB#LoadSourceAttribute(groupID, channel, params)
-
-	channelName = GetChannelNameFromChannelType(groupID, device, channel, sweep, params)
 
 	channelGroupID = IPNWB#H5_OpenGroup(groupID, channel)
+
+	string headstageDesc = IPNWB#ReadTextDataSetAsString(channelGroupID, "electrode/description")
+	if(!cmpstr(headstageDesc, "PLACEHOLDER"))
+		headstage = NaN
+	else
+		headstage = str2num(RemovePrefix(headstageDesc, startStr="Headstage "))
+		REQUIRE(headstage >= 0 && headstage < NUM_HEADSTAGES)
+	endif
+
+	params.electrodeNumber = headstage
+
+	channelName = GetChannelNameFromChannelType(groupID, device, channel, sweep, params)
 
 	WAVE numericalValues = GetLBNumericalValues(device)
 	WAVE/T textualValues = GetLBTextualValues(device)
 
-	// num_samples
-	num_samples = IPNWB#ReadDataSetAsNumber(channelGroupID, "num_samples")
 	WAVE loadedFromNWB = LoadTimeSeries(groupID, channel, params.channelType)
-	CHECK_EQUAL_VAR(num_samples, DimSize(loadedFromNWB, ROWS))
 
 	// starting_time
 	starting_time = IPNWB#ReadDataSetAsNumber(channelGroupID, "starting_time")
@@ -346,7 +354,7 @@ static Function TestTimeSeries(fileID, device, groupID, channel, sweep, pxpSweep
 	CHECK_CLOSE_VAR(samplingInterval, samplingInterval_ref, tol=1e-7)
 
 	// stimulus_description
-	stimulus = IPNWB#ReadTextDataSetAsString(channelGroupID, "stimulus_description")
+	stimulus = IPNWB#ReadTextAttributeAsString(channelGroupID, ".", "stimulus_description")
 	if(params.channelType == ITC_XOP_CHANNEL_TYPE_DAC && IsNaN(params.electrodeNumber))
 		stimulus_expected = "PLACEHOLDER"
 	elseif(params.channelType == ITC_XOP_CHANNEL_TYPE_ADC && IsNaN(params.electrodeNumber)) // unassoc AD
@@ -369,61 +377,62 @@ static Function TestTimeSeries(fileID, device, groupID, channel, sweep, pxpSweep
 
 	// electrode_name, only present for associated channels
 	if(IsFinite(params.electrodeNumber))
-		electrode_name = IPNWB#ReadTextDataSetAsString(channelGroupID, "electrode_name")
-		electrode_name_ref = "electrode_" + num2str(params.electrodeNumber)
+		electrode_name = IPNWB#ReadElectrodeName(filePath, channel, NWB_VERSION)
+		electrode_name_ref = num2str(params.electrodeNumber)
 		CHECK_EQUAL_STR(electrode_name, electrode_name_ref)
 	endif
 
-	// ancestry
+	// neurodata_type
 	WAVE/Z wv = GetLastSetting(numericalValues, sweep, "Clamp Mode", DATA_ACQUISITION_MODE)
 	CHECK_WAVE(wv, NUMERIC_WAVE)
 
 	clampMode = IsFinite(params.electrodeNumber) ? wv[params.electrodeNumber] : NaN
 
-	WAVE/T ancestry = IPNWB#ReadTextAttribute(groupID, channel, "ancestry")
-
+	neurodata_type = IPNWB#ReadNeuroDataType(groupID, channel)
 	switch(clampMode)
 		case V_CLAMP_MODE:
 			if(params.channelType == ITC_XOP_CHANNEL_TYPE_ADC)
-				CHECK_EQUAL_TEXTWAVES(ancestry, {"TimeSeries", "PatchClampSeries", "VoltageClampSeries"})
+				str = "VoltageClampSeries"
+				CHECK_EQUAL_STR(neurodata_type, str)
 			elseif(params.channelType == ITC_XOP_CHANNEL_TYPE_DAC)
-				CHECK_EQUAL_TEXTWAVES(ancestry, {"TimeSeries", "PatchClampSeries", "VoltageClampStimulusSeries"})
+				str = "VoltageClampStimulusSeries"
+				CHECK_EQUAL_STR(neurodata_type, str)
 			else
 				FAIL()
 			endif
 			break
 		case  I_CLAMP_MODE:
 			if(params.channelType == ITC_XOP_CHANNEL_TYPE_ADC)
-				CHECK_EQUAL_TEXTWAVES(ancestry, {"TimeSeries", "PatchClampSeries", "CurrentClampSeries"})
+				str = "CurrentClampSeries"
+				CHECK_EQUAL_STR(neurodata_type, str)
 			elseif(params.channelType == ITC_XOP_CHANNEL_TYPE_DAC)
-				CHECK_EQUAL_TEXTWAVES(ancestry, {"TimeSeries", "PatchClampSeries", "CurrentClampStimulusSeries"})
+				str = "CurrentClampStimulusSeries"
+				CHECK_EQUAL_STR(neurodata_type, str)
 			else
 				FAIL()
 			endif
 			break
 		case I_EQUAL_ZERO_MODE:
 			if(params.channelType == ITC_XOP_CHANNEL_TYPE_ADC)
-				CHECK_EQUAL_TEXTWAVES(ancestry, {"TimeSeries", "PatchClampSeries", "CurrentClampSeries", "IZeroClampSeries"})
+				str = "IZeroClampSeries"
+				CHECK_EQUAL_STR(neurodata_type, str)
 			else
 				FAIL()
 			endif
 			break
 		default:
 			if(IsNaN(clampMode))
-				CHECK_EQUAL_TEXTWAVES(ancestry, {"TimeSeries"})
+				str = "TimeSeries"
+				CHECK_EQUAL_STR(neurodata_type, str)
 			else
 				ASSERT(0, "unknown clamp mode")
 			endif
 			break
 	endswitch
 
-	// neurodata_type
-	neurodata_type = IPNWB#ReadTextAttributeAsString(groupID, channel, "neurodata_type")
-	neurodata_type_ref = "TimeSeries"
-	CHECK_EQUAL_STR(neurodata_type, neurodata_type_ref)
-
 	// gain
 	if(IsFinite(params.electrodeNumber))
+		REQUIRE_NEQ_VAR(params.channelType, NaN)
 		key = StringFromList(params.channelType, ITC_CHANNEL_NAMES) + " Gain"
 		WAVE/Z gains = GetLastSetting(numericalValues, sweep, key, DATA_ACQUISITION_MODE)
 		CHECK_WAVE(gains, NUMERIC_WAVE)
@@ -431,16 +440,6 @@ static Function TestTimeSeries(fileID, device, groupID, channel, sweep, pxpSweep
 		gain_ref = gains[params.electrodeNumber]
 		gain = IPNWB#ReadDatasetAsNumber(channelGroupID, "gain")
 		CHECK_EQUAL_VAR(gain, gain_ref)
-	endif
-
-	// scale
-	if(params.channelType == ITC_XOP_CHANNEL_TYPE_DAC && IsFinite(params.electrodeNumber))
-		WAVE/Z scales = GetLastSetting(numericalValues, sweep, STIMSET_SCALE_FACTOR_KEY, DATA_ACQUISITION_MODE)
-		CHECK_WAVE(scales, NUMERIC_WAVE)
-
-		scale_ref = scales[params.electrodeNumber]
-		scale = IPNWB#ReadDatasetAsNumber(channelGroupID, "scale")
-		CHECK_EQUAL_VAR(scale, scale_ref)
 	endif
 
 	// data.resolution
@@ -458,14 +457,20 @@ static Function TestTimeSeries(fileID, device, groupID, channel, sweep, pxpSweep
 		CHECK_CLOSE_VAR(conversion, 1e-12)
 
 		unit = IPNWB#ReadTextAttributeAsString(channelGroupID, "data", "unit")
-		base_unit_ref = "A"
+
+		// translate back to hardcoded units
+		base_unit_ref = "amperes"
+
 		CHECK_EQUAL_STR(unit, base_unit_ref)
 	elseif(!cmpstr(unit_ref, "mV"))
 		conversion = IPNWB#ReadAttributeAsNumber(channelGroupID, "data", "conversion")
 		CHECK_CLOSE_VAR(conversion, 1e-3, tol = 1e-5)
 
 		unit = IPNWB#ReadTextAttributeAsString(channelGroupID, "data", "unit")
-		base_unit_ref = "V"
+
+		// translate back to hardcoded units
+		base_unit_ref = "volts"
+
 		CHECK_EQUAL_STR(unit, base_unit_ref)
 	elseif(IsEmpty(unit_ref)) // TTL data
 		conversion = IPNWB#ReadAttributeAsNumber(channelGroupID, "data", "conversion")
@@ -547,23 +552,23 @@ End
 
 static Function/S TestFileExport()
 
-	string baseFolder, nwbFile, discLocation
+	string nwbFile, discLocation, baseFolder
 
 	PathInfo home
+	REQUIRE(V_flag)
 	baseFolder = S_path
 
-	nwbFile = GetExperimentName() + "-V1.nwb"
+	nwbFile = UniqueFileOrFolder("home", GetExperimentName(), suffix = "-V2.nwb")
 	discLocation = baseFolder + nwbFile
 
 	HDF5CloseFile/Z/A 0
-	DeleteFile/Z/P=home nwbFile
 	KillOrMoveToTrash(dfr = GetAnalysisFolder())
 
 	NWB_ExportAllData(NWB_VERSION, compressionMode = IPNWB#GetNoCompression(), writeStoredTestPulses = 1, overrideFilePath=discLocation)
 	CloseNWBFile()
 
 	GetFileFolderInfo/P=home/Q/Z nwbFile
-	CHECK(V_IsFile)
+	REQUIRE(V_IsFile)
 
 	CHECK_EQUAL_VAR(MIES_AB#AB_AddFile(baseFolder, discLocation), 0)
 
@@ -588,8 +593,8 @@ static Function TestListOfGroups(groupList, wv)
 	CHECK_EQUAL_STR(groupList, list)
 End
 
-Function TestNwbExportV1()
-	string discLocation, device, acquisition
+Function TestNwbExportV2()
+	string discLocation, device
 	string channel
 	variable fileID, numEntries, i, sweep, numGroups, j, groupID
 
@@ -600,7 +605,8 @@ Function TestNwbExportV1()
 
 	WAVE/T/Z devices = GetAnalysisDeviceWave(entry[%DataFolder])
 	CHECK_WAVE(devices, NORMAL_WAVE)
-	CHECK_EQUAL_VAR(GetNumberFromWaveNote(devices, NOTE_INDEX), 1)
+	CHECK_EQUAL_VAR(GetNumberFromWaveNote(devices, NOTE_INDEX), ItemsInList(Getalldevices()))
+	WARN_EQUAL_VAR(GetNumberFromWaveNote(devices, NOTE_INDEX), 1)
 
 	device = devices[0]
 
@@ -615,7 +621,10 @@ Function TestNwbExportV1()
 	CHECK_WAVE(stimuluses, TEXT_WAVE)
 
 	fileID = IPNWB#H5_OpenFile(discLocation)
-	CHECK_EQUAL_VAR(IPNWB#GetNWBmajorVersion(IPNWB#ReadNWBVersion(fileID)), NWB_VERSION)
+	CHECK_EQUAL_VAR(IPNWB#GetNWBMajorVersion(IPNWB#ReadNWBVersion(fileID)), NWB_VERSION)
+
+	// check stored specification versions
+	TestSpecVersions(fileID)
 
 	// check history
 	TestHistory(fileID)
@@ -655,13 +664,10 @@ Function TestNwbExportV1()
 			channel = StringFromList(j, acquisitions[i])
 			groupID = IPNWB#OpenAcquisition(fileID, NWB_VERSION)
 
-			// test all of ReadChannelParams aka source
-			TestSourceAttribute(groupID, device, channel, sweep, pxpSweepsDFR)
-
 			// TimeSeries properties
 			TestTimeSeriesProperties(groupID, channel)
 
-			TestTimeSeries(fileID, device, groupID, channel, sweep, pxpSweepsDFR)
+			TestTimeSeries(fileID, discLocation, device, groupID, channel, sweep, pxpSweepsDFR)
 		endfor
 
 		// check presentation/stimulus TimeSeries of NWB
@@ -670,15 +676,60 @@ Function TestNwbExportV1()
 			channel = StringFromList(j, stimuluses[i])
 			groupID = IPNWB#OpenStimulus(fileID)
 
-			// test all of ReadChannelParams aka source
-			TestSourceAttribute(groupID, device, channel, sweep, pxpSweepsDFR)
-
 			// TimeSeries properties
 			TestTimeSeriesProperties(groupID, channel)
 
-			TestTimeSeries(fileID, device, groupID, channel, sweep, pxpSweepsDFR)
+			TestTimeSeries(fileID, discLocation, device, groupID, channel, sweep, pxpSweepsDFR)
 		endfor
 	endfor
 
 	HDF5CloseFile/Z fileID
+End
+
+static Function/WAVE NWBVersionStrings()
+	variable i, numEntries
+	string name
+
+	Make/T/FREE data = {"2.0b", "2.0.1", "2.1.0", "2.2.0"}
+	return data
+End
+
+// UTF_TD_GENERATOR NWBVersionStrings
+Function TestNWBVersionStrings([str])
+	string str
+
+	variable version0, version1, version2
+
+	IPNWB#AnalyzeNWBVersion(str, version0, version1, version2)
+	REQUIRE_NEQ_VAR(version0, NaN)
+	IPNWB#EnsureValidNWBVersion(version0)
+
+	REQUIRE_NEQ_VAR(version1, NaN)
+End
+
+static Function/WAVE NeuroDataRefTree()
+	variable i, numEntries
+	string name
+
+	Make/T/FREE data = {"VoltageClampSeries:TimeSeries;PatchClampSeries;VoltageClampSeries;", \
+						"CurrentClampSeries:TimeSeries;PatchClampSeries;CurrentClampSeries;", \
+						"IZeroClampSeries:TimeSeries;PatchClampSeries;CurrentClampSeries;IZeroClampSeries;" \
+						}
+	return data
+End
+
+// UTF_TD_GENERATOR NeuroDataRefTree
+Function TestNeuroDataRefTree([str])
+	string str
+
+	string neurodata_type, ancestry
+
+	neurodata_type = StringFromList(0, str, ":")
+	ancestry = StringFromList(1, str, ":")
+
+	str = IPNWB#DetermineDataTypeRefTree(neurodata_type)
+	REQUIRE_EQUAL_STR(ancestry, str)
+
+	str = StringFromList(ItemsInList(ancestry) - 1, ancestry)
+	REQUIRE_EQUAL_STR(neurodata_type, str)
 End
