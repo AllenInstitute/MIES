@@ -389,6 +389,7 @@ static Function PS_CR4_REENTRY([str])
 	CHECK_EQUAL_WAVES(initialDAScale, {30e-12, NaN, NaN, NaN, NaN, NaN}, mode = WAVE_DATA, tol = 1e-14)
 
 	WAVE/Z DAScale = GetLBNEntries_IGNORE(str, sweepNo, STIMSET_SCALE_FACTOR_KEY)
+	print/D DAScale
 	CHECK_EQUAL_WAVES(DAScale, {30, 57, 57, 79, 79, 79}, mode = WAVE_DATA, tol = 1e-14)
 
 	WAVE/Z resistance = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_CR_RESISTANCE)
@@ -483,6 +484,7 @@ static Function PS_CR5_REENTRY([str])
 
 	WAVE/Z DAScale = GetLBNEntries_IGNORE(str, sweepNo, STIMSET_SCALE_FACTOR_KEY)
 	CHECK_EQUAL_WAVES(DAScale, {30, 35, 35, 23, 23, 23}, mode = WAVE_DATA, tol = 1e-14)
+	print/D DAScale
 
 	WAVE/Z resistance = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_CR_RESISTANCE)
 	CHECK_EQUAL_WAVES(resistance, {1e9, NaN, NaN, NaN, NaN, NaN}, mode = WAVE_DATA)
@@ -576,6 +578,7 @@ static Function PS_CR6_REENTRY([str])
 
 	WAVE/Z DAScale = GetLBNEntries_IGNORE(str, sweepNo, STIMSET_SCALE_FACTOR_KEY)
 	CHECK_EQUAL_WAVES(DAScale, {30, 58, 58, 38, 38, 38}, mode = WAVE_DATA, tol = 1e-14)
+	print/D DAScale
 
 	WAVE/Z resistance = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_CR_RESISTANCE)
 	CHECK_EQUAL_WAVES(resistance, {1e9, NaN, NaN, NaN, NaN, NaN}, mode = WAVE_DATA)
