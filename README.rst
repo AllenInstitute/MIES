@@ -18,7 +18,7 @@ Supported Hardware:
 
 Required Software:
 
-- `Igor Pro 8.03 or later <https://www.wavemetrics.com/>`_
+- `Igor Pro 8.04 (nightly) or later <https://www.wavemetrics.com/>`_
 - `NIDAQ MX XOP <https://www.wavemetrics.com/products/nidaqtools/nidaqtools.htm>`_
 
 Installation:
