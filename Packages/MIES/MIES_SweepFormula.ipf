@@ -1217,6 +1217,9 @@ static Function/WAVE SF_GetSweepForFormula(graph, range, channels, sweeps)
 			endif
 			ASSERT(!IsNaN(rangeStart) && !IsNaN(rangeEnd), "Specified range not valid.")
 
+			ASSERT(rangeStart == -inf || (IsFinite(rangeStart) && rangeStart >= leftx(sweep) && rangeStart < rightx(sweep)), "Specified starting range does not lie completely inside the sweep.")
+			ASSERT(rangeEnd == inf || (IsFinite(rangeEnd) && rangeEnd >= leftx(sweep) && rangeEnd < rightx(sweep)), "Specified ending range does not lie completely inside the sweep.")
+
 			pStart[i][j] = ScaleToIndexWrapper(sweep, rangeStart, ROWS)
 			pEnd[i][j] = ScaleToIndexWrapper(sweep, rangeEnd, ROWS)
 
