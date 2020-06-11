@@ -592,6 +592,13 @@ Function/WAVE SF_FormulaExecutor(jsonID, [jsonPath, graph])
 			CopyScales wv, out
 			SetScale/P x, DimOffset(wv, ROWS), DimDelta(wv, ROWS), "dx", out
 			break
+		case "area":
+			Make/FREE out_integrate
+			ASSERT(DimSize(wv, ROWS) > 1, "Can not integrate single point waves")
+			Multithread wv = abs(wv)
+			Integrate/METH=1/DIM=(ROWS) wv/D=out_integrate
+			Make/FREE/N=(max(1, DimSize(out_integrate, COLS)), DimSize(out_integrate, LAYERS)) out = out_integrate[DimSize(wv, ROWS) - 1][p][q]
+			break
 		case "butterworth":
 			/// `butterworth(data, lowPassCutoff, highPassCutoff, order)`
 			ASSERT(JSON_GetArraySize(jsonID, jsonPath) == 4, "The butterworth filter requires 4 arguments")

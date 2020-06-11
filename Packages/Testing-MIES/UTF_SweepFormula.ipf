@@ -607,6 +607,36 @@ static Function testDifferentiales()
 	REQUIRE_EQUAL_WAVES(output, input, mode = WAVE_DATA)
 End
 
+static Function testArea()
+	Variable jsonID, array
+
+	// rectangular triangle has area 1/2 * a * b
+	jsonID = SF_FormulaParser("area([0,1,2,3,4])")
+	WAVE output = SF_FormulaExecutor(jsonID)
+	Make/FREE testwave = {8}
+	REQUIRE_EQUAL_WAVES(output, testwave, mode = WAVE_DATA)
+
+	// x scaling is taken into account
+	jsonID = SF_FormulaParser("area(setscale([0,1,2,3,4], x, 0, 2, unit))")
+	WAVE output = SF_FormulaExecutor(jsonID)
+	Make/FREE testwave = {16}
+	REQUIRE_EQUAL_WAVES(output, testwave, mode = WAVE_DATA)
+
+	// does operate column wise
+	Make/N=(5, 2) input
+	input[][0] = p
+	input[][1] = p + 1
+	array = JSON_New()
+	JSON_AddWave(array, "", input)
+	jsonID = SF_FormulaParser("area(" + JSON_Dump(array) + ")")
+	JSON_Release(array)
+	WAVE output = SF_FormulaExecutor(jsonID)
+	// 0th column: see above
+	// 1st column: imagine 0...5 and remove 0..1 which gives 12.5 - 0.5
+	Make/FREE testwave = {8, 12}
+	REQUIRE_EQUAL_WAVES(output, testwave, mode = WAVE_DATA)
+End
+
 static Function waveScaling()
 	Make/N=(10) waveX = p
 	SetScale x 0, 2, "unit", waveX

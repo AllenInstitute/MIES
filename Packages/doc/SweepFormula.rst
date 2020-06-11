@@ -259,6 +259,12 @@ variance and stdev
 Igor Pro Wrappers
 ^^^^^^^^^^^^^^^^^
 
+area
+""""
+
+Use `area` to calculate the area below a 1D array using trapezoidal integration.
+Does work on a per column-basis for 2D arrays.
+
 derivative
 """"""""""
 
