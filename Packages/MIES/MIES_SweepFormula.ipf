@@ -371,7 +371,7 @@ Function/WAVE SF_FormulaExecutor(jsonID, [jsonPath, graph])
 	String jsonPath
 	String graph
 
-	Variable i, j, numIndices, JSONtype, mode
+	Variable i, j, numIndices, JSONtype, mode, zero, numArgs
 	string info, msg, str
 
 	if(ParamIsDefault(jsonPath))
@@ -453,6 +453,7 @@ Function/WAVE SF_FormulaExecutor(jsonID, [jsonPath, graph])
 		case "sweeps":
 			WAVE/T wvT = JSON_GetTextWave(jsonID, jsonPath)
 			break
+		case "area":
 		case "setscale":
 		case "butterworth":
 		case "channels":
@@ -591,6 +592,30 @@ Function/WAVE SF_FormulaExecutor(jsonID, [jsonPath, graph])
 			Integrate/METH=1/DIM=(ROWS) wv/D=out
 			CopyScales wv, out
 			SetScale/P x, DimOffset(wv, ROWS), DimDelta(wv, ROWS), "dx", out
+			break
+		case "area":
+			WAVE wv = SF_FormulaExecutor(jsonID, jsonPath = jsonPath + "/0", graph = graph)
+			ASSERT(DimSize(wv, ROWS) > 1, "Can not integrate single point waves")
+
+			numArgs = JSON_GetArraySize(jsonID, jsonPath)
+			if(numArgs == 1)
+				zero = 1
+			else
+				ASSERT(numArgs == 2, "area requires at most 2 arguments")
+				WAVE zeroWave = SF_FormulaExecutor(jsonID, jsonPath = jsonPath + "/1")
+				ASSERT(DimSize(zeroWave, ROWS) == 1, "Too many input values for parameter zero")
+				ASSERT(IsNumericWave(zeroWave), "zero parameter must be numeric")
+				zero = !!zeroWave[0]
+			endif
+
+			if(zero)
+				Differentiate/DIM=0/EP=1 wv
+				Integrate/DIM=0 wv
+			endif
+
+			Make/FREE out_integrate
+			Integrate/METH=1/DIM=(ROWS) wv/D=out_integrate
+			Make/FREE/N=(max(1, DimSize(out_integrate, COLS)), DimSize(out_integrate, LAYERS)) out = out_integrate[DimSize(wv, ROWS) - 1][p][q]
 			break
 		case "butterworth":
 			/// `butterworth(data, lowPassCutoff, highPassCutoff, order)`
