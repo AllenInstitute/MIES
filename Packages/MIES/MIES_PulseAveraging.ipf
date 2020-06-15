@@ -802,16 +802,17 @@ static Function PA_ZeroTraces(listOfWaves, setZero)
 	if(IsEmpty(listOfWaves))
 		return NaN
 	endif
+
 	setZero = !!setZero
+
+	if(!setZero)
+		return NaN
+	endif
 
 	numWaves = ItemsInList(listOfWaves)
 	for(i = 0; i < numWaves; i += 1)
 		WAVE wv = $StringFromList(i, listOfWaves)
-		if(setZero)
-			ZeroWave(wv)
-		else
-			ReplaceWaveWithBackup(wv, nonExistingBackupIsFatal = 0)
-		endif
+		ZeroWave(wv)
 	endfor
 End
 
