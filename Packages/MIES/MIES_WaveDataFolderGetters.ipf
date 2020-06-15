@@ -5654,13 +5654,14 @@ End
 /// @brief Return a wave reference to the single pulse defined by the given parameters
 ///
 /// @param dfr           datafolder reference where to create the empty wave if it does not exist
+/// @param length        Length in points of the new wave
 /// @param channelType   ITC XOP numeric channel type
 /// @param channelNumber channel number
 /// @param region        region index (a region is the range with data in a dDAQ/oodDAQ measurement)
 /// @param pulseIndex    pulse number, 0-based
-Function/WAVE GetPulseAverageWave(dfr, channelType, channelNumber, region, pulseIndex)
+Function/WAVE GetPulseAverageWave(dfr, length, channelType, channelNumber, region, pulseIndex)
 	DFREF dfr
-	variable channelType, pulseIndex, channelNumber, region
+	variable length, channelType, pulseIndex, channelNumber, region
 
 	string wvName
 
@@ -5676,7 +5677,7 @@ Function/WAVE GetPulseAverageWave(dfr, channelType, channelNumber, region, pulse
 	if(WaveExists(wv))
 		return wv
 	else
-		Make/N=(0) dfr:$wvName/WAVE=wv
+		Make/N=(length) dfr:$wvName/WAVE=wv
 	endif
 
 	return wv

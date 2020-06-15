@@ -403,7 +403,7 @@ static Function/WAVE PA_CreateAndFillPulseWaveIfReq(wv, singleSweepFolder, chann
 	DFREF singleSweepFolder
 	variable channelType, pulseIndex, first, length, channelNumber, region
 
-	WAVE singlePulseWave = GetPulseAverageWave(singleSweepFolder, channelType, channelNumber, region, pulseIndex)
+	variable existingLength
 
 	if(first < 0 || length <= 0 || (DimSize(wv, ROWS) - first) <= length)
 		return $""
@@ -411,14 +411,17 @@ static Function/WAVE PA_CreateAndFillPulseWaveIfReq(wv, singleSweepFolder, chann
 
 	length = limit(length, 1, DimSize(wv, ROWS) - first)
 
-	if(GetNumberFromWaveNote(singlePulseWave, "PulseLength") == length \
-	   && GetNumberFromWaveNote(wv, SOURCE_WAVE_TIMESTAMP) == ModDate(wv))
+	WAVE singlePulseWave = GetPulseAverageWave(singleSweepFolder, length, channelType, channelNumber, region, pulseIndex)
+
+	existingLength = GetNumberFromWaveNote(singlePulseWave, "PulseLength")
+
+	if(existingLength != length)
+		Redimension/N=(length) singlePulseWave
+	elseif(GetNumberFromWaveNote(wv, SOURCE_WAVE_TIMESTAMP) == ModDate(wv))
 		return singlePulseWave
 	endif
 
 	KillOrMoveToTrash(wv = GetBackupWave(singlePulseWave))
-
-	Redimension/N=(length) singlePulseWave
 
 	MultiThread singlePulseWave[] = wv[first + p]
 	SetScale/P x, 0.0, DimDelta(wv, ROWS), WaveUnits(wv, ROWS), singlePulseWave
