@@ -119,15 +119,17 @@ End
 /// above the minimum as threshold
 ///
 /// @return wave with pulse starting times, or an invalid wave reference if none could be found.
-static Function/WAVE PA_CalculatePulseStartTimes(DA, totalOnsetDelay)
+static Function/WAVE PA_CalculatePulseStartTimes(DA, fullPath, channelNumber, totalOnsetDelay)
 	WAVE DA
+	variable channelNumber
+	string fullPath
 	variable totalOnsetDelay
 
 	variable level, delta
 	string key
 	ASSERT(totalOnsetDelay >= 0, "Invalid onsetDelay")
 
-	key = CA_PulseStartTimes(DA, totalOnsetDelay)
+	key = CA_PulseStartTimes(DA, fullPath, channelNumber, totalOnsetDelay)
 	WAVE/Z cache = CA_TryFetchingEntryFromCache(key)
 	if(WaveExists(cache))
 		return cache
@@ -323,7 +325,7 @@ Function/WAVE PA_GetPulseStartTimes(traceData, idx, region, channelTypeStr, [rem
 	variable removeOnsetDelay
 
 	variable sweepNo, totalOnsetDelay, channel
-	string str
+	string str, fullPath
 
 	if(ParamIsDefault(removeOnsetDelay))
 		removeOnsetDelay = 1
@@ -342,7 +344,8 @@ Function/WAVE PA_GetPulseStartTimes(traceData, idx, region, channelTypeStr, [rem
 		totalOnsetDelay = GetTotalOnsetDelay(numericalValues, sweepNo)
 	endif
 
-	DFREF singleSweepFolder = GetWavesDataFolderDFR($traceData[idx][%fullPath])
+	fullPath = traceData[idx][%fullPath]
+	DFREF singleSweepFolder = GetWavesDataFolderDFR($fullPath)
 	ASSERT(DataFolderExistsDFR(singleSweepFolder), "Missing singleSweepFolder")
 
 	// get the DA wave in that folder
@@ -354,7 +357,7 @@ Function/WAVE PA_GetPulseStartTimes(traceData, idx, region, channelTypeStr, [rem
 	endif
 
 	WAVE DA = GetITCDataSingleColumnWave(singleSweepFolder, ITC_XOP_CHANNEL_TYPE_DAC, channel)
-	WAVE/Z pulseStartTimes = PA_CalculatePulseStartTimes(DA, totalOnsetDelay)
+	WAVE/Z pulseStartTimes = PA_CalculatePulseStartTimes(DA, fullPath, channel, totalOnsetDelay)
 
 	if(!WaveExists(pulseStartTimes))
 		return $""
