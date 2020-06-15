@@ -2104,11 +2104,15 @@ Function CreateTiledChannelGraph(graph, config, sweepNo, numericalValues,  textu
 	variable numDACsOriginal, numADCsOriginal, numTTLsOriginal, numRegions, numEntries, numRangesPerEntry
 	variable totalXRange = NaN
 
-	string trace, traceType, channelID, axisLabel, entry, range
+	string trace, traceType, channelID, axisLabel, entry, range, traceRange
 	string unit, name, str, vertAxis, oodDAQRegionsAll, dDAQActiveHeadstageAll, horizAxis, freeAxis
 
 	ASSERT(!isEmpty(graph), "Empty graph")
 	ASSERT(IsFinite(sweepNo), "Non-finite sweepNo")
+
+	Make/T/FREE userDataKeys = {"fullPath", "channelType", "channelNumber", "sweepNumber", "headstage",     \
+								"textualValues", "numericalValues", "clampMode", "experiment", "traceType", \
+								"occurence", "XAXIS", "YAXIS", "YRANGE"}
 
 	WAVE ADCs = GetADCListFromConfig(config)
 	WAVE DACs = GetDACListFromConfig(config)
@@ -2498,15 +2502,19 @@ Function CreateTiledChannelGraph(graph, config, sweepNo, numericalValues,  textu
 						SetScale/P x, offset, DimDelta(wv, ROWS), WaveUnits(wv, ROWS), wv
 					endif
 
-					trace = "trace" + num2str(traceIndex)
+					sprintf trace, "T%0*d", TRACE_NAME_NUM_DIGITS, traceIndex
 					traceIndex += 1
+
 					sprintf str, "i=%d, j=%d, k=%d, vertAxis=%s, traceType=%s, name=%s", i, j, k, vertAxis, traceType, name
 					DEBUGPRINT(str)
 
 					if(!IsFinite(xRangeStart) && !IsFinite(XRangeEnd))
+						horizAxis = "bottom"
+						traceRange = "[][0]"
 						AppendToGraph/W=$graph/B=$horizAxis/L=$vertAxis/C=(red, green, blue, alpha) wv[][0]/TN=$trace
 					else
 						horizAxis = vertAxis + "_b"
+						sprintf traceRange, "[%g,%g][0]", xRangeStart, xRangeEnd
 						AppendToGraph/W=$graph/L=$vertAxis/B=$horizAxis/C=(red, green, blue, alpha) wv[xRangeStart, xRangeEnd][0]/TN=$trace
 						first = first
 						last  = first + (xRangeEnd - xRangeStart) / totalXRange
@@ -2586,7 +2594,15 @@ Function CreateTiledChannelGraph(graph, config, sweepNo, numericalValues,  textu
 						endif
 					endif
 
-					ModifyGraph/W=$graph hideTrace($trace)=(tgs.hideSweep), userData($trace)={channelType, USERDATA_MODIFYGRAPH_REPLACE, channelID}, userData($trace)={channelNumber, USERDATA_MODIFYGRAPH_REPLACE, num2str(chan)}, userData($trace)={sweepNumber, USERDATA_MODIFYGRAPH_REPLACE, num2str(sweepNo)}, userData($trace)={headstage, USERDATA_MODIFYGRAPH_REPLACE, num2str(headstage)}, userData($trace)={textualValues, USERDATA_MODIFYGRAPH_REPLACE, GetWavesDataFolder(textualValues, 2)}, userData($trace)={numericalValues, USERDATA_MODIFYGRAPH_REPLACE, GetWavesDataFolder(numericalValues, 2)}, userData($trace)={clampMode, USERDATA_MODIFYGRAPH_REPLACE, num2str(IsFinite(headstage) ? clampModes[headstage] : NaN)}, userData($trace)={experiment, USERDATA_MODIFYGRAPH_REPLACE, experiment}
+					if(tgs.hideSweep)
+						ModifyGraph/W=$graph hideTrace($trace)=1
+					endif
+
+					TUD_SetUserDataFromWaves(graph, trace, userDataKeys,                                                                   \
+					                         {GetWavesDataFolder(wv, 2), channelID, num2str(chan), num2str(sweepNo), num2str(headstage),   \
+					                          GetWavesDataFolder(textualValues, 2), GetWavesDataFolder(numericalValues, 2),                \
+					                          num2str(IsFinite(headstage) ? clampModes[headstage] : NaN), experiment, "Sweep",             \
+					                          num2str(k), horizAxis, vertAxis, traceRange})
 				endfor
 
 				if(!tgs.OverlayChannels || activeChanCount[i] == 0)
@@ -3303,7 +3319,11 @@ Function PostPlotTransformations(graph, pps)
 
 	variable csrAx, csrBx
 
-	WAVE/T traces = ListToTextWave(GetAllSweepTraces(graph), ";")
+	WAVE/T/Z traces = GetAllSweepTraces(graph)
+
+	if(!WaveExists(traces))
+		return NaN
+	endif
 
 	ZeroTracesIfReq(graph, traces, pps.zeroTraces)
 	TimeAlignMainWindow(graph, pps)
@@ -3338,7 +3358,13 @@ End
 Function/S TimeAlignGetAllTraces(graph)
 	string graph
 
-	return GetAllSweepTracesFromGraphs(graph)
+	WAVE/T/Z traces = GetAllSweepTraces(graph)
+
+	if(!WaveExists(traces))
+		return ""
+	endif
+
+	return TextWaveToList(traces, ";")
 End
 
 /// @brief return a list of all graphs included in TimeAlignment
@@ -3454,8 +3480,8 @@ End
 Function TimeAlignCursorMovedHook(s)
 	STRUCT WMWinHookStruct &s
 
-	string trace, graphtrace, graphtraces, xAxis, yAxis, traceData, traceList, fullTraceList, bsPanel, mainPanel
-	variable numTrace, numAxes
+	string trace, graphtrace, graphtraces, xAxis, yAxis, bsPanel, mainPanel
+	variable numTraces, i
 
 	strswitch(s.eventName)
 		case "cursormoved":
@@ -3484,34 +3510,21 @@ Function TimeAlignCursorMovedHook(s)
 			graphtrace = s.winName + "#" + trace
 			graphtraces = TimeAlignGetAllTraces(mainPanel)
 			if(FindListItem(graphtrace, graphtraces) == -1)
-				numAxes = ItemsInList(AxisList(s.winName))
-				if(numAxes > 2)
-					traceData = TraceInfo(s.winName, trace, 0)
-					xAxis = StringByKey("XAXIS", traceData)
-					yAxis = StringByKey("YAXIS", traceData)
-				endif
-				traceList = TraceNameList(s.winName, ";", 0x01)
-				numTrace = WhichListItem(trace, traceList)
-				do
-					traceList = RemoveListItem(numTrace, traceList)
-					if(numTrace == -1 || ItemsInList(traceList) == 0)
-						graphtrace = StringFromList(0, graphtraces)
+				xAxis = TUD_GetUserData(s.winName, trace, "XAXIS")
+				yAxis = TUD_GetUserData(s.winName, trace, "YAXIS")
+
+				WAVE/T traces = TUD_GetUserDataAsWave(s.winName, "tracename", keys = {"XAXIS", "YAXIS"}, \
+				                                      values = {xAxis, yAxis})
+
+				numTraces = DimSize(traces, ROWS)
+				for(i = 0; i < numTraces; i += 1)
+					trace = traces[i]
+					graphtrace = s.winName + "#" + trace
+
+					if(FindListItem(graphtrace, graphtraces) != -1)
 						break
 					endif
-					if(numTrace > 0)
-						numTrace -= 1
-					endif
-					trace = StringFromList(numTrace, traceList)
-					if(numAxes > 2)
-						traceData = TraceInfo(s.winName, trace, 0)
-						if(cmpstr(xAxis, StringByKey("XAXIS", traceData)))
-							continue
-						elseif(cmpstr(yAxis, StringByKey("YAXIS", traceData)))
-							continue
-						endif
-					endif
-					graphtrace = s.winName + "#" + trace
-				while(FindListItem(graphtrace, graphtraces) == -1)
+				endfor
 			endif
 
 			PGC_SetAndActivateControl(bsPanel, "popup_TimeAlignment_Master", str = graphtrace)
@@ -3522,102 +3535,84 @@ Function TimeAlignCursorMovedHook(s)
 End
 
 /// @brief Replace all waves from the traces in the graph with their backup
-Function ReplaceAllWavesWithBackup(graph, traceList)
+Function ReplaceAllWavesWithBackup(graph, tracePaths)
 	string graph
-	string traceList
+	WAVE/T/Z tracePaths
 
 	variable numTraces, i
-	string trace
 
-	numTraces = ItemsInList(traceList)
+	if(!WaveExists(tracePaths))
+		return NaN
+	endif
+
 	for(i = 0; i < numTraces; i += 1)
-		trace = StringFromList(i, traceList)
-		WAVE wv = TraceNameToWaveRef(graph, trace)
+		WAVE wv = $tracePaths[i]
 		ReplaceWaveWithBackup(wv, nonExistingBackupIsFatal=0)
 	endfor
 End
 
-/// @brief Return all traces with real sweep data.
-///
-/// The traces must have correct user data as created by CreateTiledChannelGraph().
-///
-/// @param graph graph
-/// @param channelType [optional, defaults to all] restrict the returned traces
-///                    to the given channel type
-/// @param region      [optional] return only traces of the specified region
-Function/S GetAllSweepTraces(graph, [channelType, region])
-	string graph
-	variable channelType
-	string region
-
-	string traceList, trace, channelTypeAct, channelTypeRef, regionAct
-	string traceListClean = ""
-	variable numTraces, i
-
-	ASSERT(ParamIsDefault(channelType) || ParamIsDefault(region), "Only one parameter can be set")
-
-	traceList = TraceNameList(graph, ";", 0+1)
-	traceList = ListMatch(traceList, "!average*")
-
-	if(ParamIsDefault(channelType) && ParamIsDefault(region))
-		return traceList
-	endif
-
-	if(!ParamIsDefault(channelType))
-		channelTypeRef = StringFromList(channelType, ITC_CHANNEL_NAMES)
-		ASSERT(!IsEmpty(channelTypeRef), "Invalid channelType")
-	endif
-
-	if(!ParamIsDefault(region))
-		ASSERT(!IsEmpty(region), "Invalid region")
-	endif
-
-	numTraces = ItemsInList(traceList)
-	for(i = 0; i < numTraces; i += 1)
-		trace = StringFromList(i, traceList)
-
-		if(!ParamIsDefault(region))
-			regionAct = GetUserData(graph, trace, "region")
-			if(!cmpstr(regionAct, region))
-				traceListClean = AddListItem(trace, traceListClean, ";", inf)
-			endif
-		elseif(!ParamIsDefault(channelType))
-			channelTypeAct = GetUserData(graph, trace, "channelType")
-			if(!cmpstr(channelTypeAct, channelTypeRef))
-				traceListClean = AddListItem(trace, traceListClean, ";", inf)
-			endif
-		endif
-	endfor
-
-	return traceListClean
-End
-
-/// @brief get a list of all traces from a list of graphs
+/// @brief Get a textwave of all traces from a list of graphs
 ///
 /// @param graphs semicolon separated list of graph names
 /// @param region [optional] return only traces with the specified region
 ///               userdata entry
-/// @returns graph#trace named patterns in a semicolon separated list
-Function/S GetAllSweepTracesFromGraphs(graphs, [region])
-	string graphs
-	string region
-
-	string graph, traces
-	variable i, numGraphs
-	string graphtraces = ""
+/// @param channelType [optional] return only the traces with the given channel type
+///
+/// @returns graph#trace named patterns
+Function/WAVE GetAllSweepTraces(string graphs, [variable region, variable channelType])
+	string graph
+	variable i, idx, numGraphs
 
 	numGraphs = ItemsInList(graphs)
+
+	Make/FREE/N=(numGraphs)/WAVE resultWave
+
 	for(i = 0; i < numGraphs; i += 1)
 		graph = StringFromList(i, graphs)
-		if(ParamIsDefault(region))
-			traces = GetAllSweepTraces(graph)
-		else
-			traces = GetAllSweepTraces(graph, region = region)
+		if(ParamIsDefault(region) && ParamIsDefault(channelType))
+			WAVE/Z/T traces = GetSweepUserData(graph, "traceName")
+		elseif(!ParamIsDefault(region))
+			WAVE/Z/T traces = GetSweepUserData(graph, "traceName", region = region)
+		elseif(!ParamIsDefault(channelType))
+			WAVE/Z/T traces = GetSweepUserData(graph, "traceName", channelType = channelType)
+		elseif(!ParamIsDefault(region) && !ParamIsDefault(channelType))
+			WAVE/Z/T traces = GetSweepUserData(graph, "traceName", channelType = channelType, region = region)
 		endif
-		graphtraces += AddPrefixToEachListItem(graph + "#", traces)
+
+		if(!WaveExists(traces))
+			continue
+		endif
+
+		traces[] = graph + "#" + traces[p]
+
+		resultWave[idx++] = traces
 	endfor
 
-	return graphtraces
+	if(idx == 0)
+		return $""
+	elseif(idx == 1)
+		return resultWave[0]
+	endif
+
+	Redimension/N=(idx) resultWave
+
+	Concatenate/FREE {resultWave}, graphTraces
+
+	return graphTraces
+End
+
+// @brief Return a 1D text wave with the given property of all sweep waves without duplicates
+Function/WAVE GetSweepUserData(string graph, string key, [variable channelType, variable region])
+
+	if(ParamIsDefault(channelType) && ParamIsDefault(region))
+		return TUD_GetUserDataAsWave(graph, key, keys = {"traceType", "occurence"}, values = {"sweep", "0"})
+	elseif(!ParamIsDefault(channelType))
+		return TUD_GetUserDataAsWave(graph, key, keys = {"traceType", "occurence", "channelType"},            \
+		                             values = {"sweep", "0", StringFromList(channelType, ITC_CHANNEL_NAMES)})
+	elseif(!ParamIsDefault(region))
+		return TUD_GetUserDataAsWave(graph, key, keys = {"traceType", "occurence", "region"}, \
+		                             values = {"sweep", "0", num2str(region)})
+	endif
 End
 
 /// @brief Average traces in the graph from the same y-axis and append them to the graph
@@ -3636,7 +3631,7 @@ static Function AverageWavesFromSameYAxisIfReq(graph, traces, averagingEnabled, 
 
 	variable referenceTime, traceIndex
 	string averageWaveName, listOfWaves, listOfChannelTypes, listOfChannelNumbers, listOfHeadstages
-	string xRange, listOfXRanges, firstXAxis, listOfClampModes
+	string range, listOfRanges, firstXAxis, listOfClampModes, xAxis, yAxis
 	variable i, j, k, l, numAxes, numTraces, numWaves, ret
 	variable red, green, blue, column, first, last, orientation
 	string axis, trace, axList, baseName, clampMode, traceName, headstage
@@ -3655,15 +3650,12 @@ static Function AverageWavesFromSameYAxisIfReq(graph, traces, averagingEnabled, 
 	numAxes = ItemsInList(axList)
 	numTraces = DimSize(traces, ROWS)
 
-	// precompute traceInfo data
-	Make/FREE/T/N=(numTraces) allTraceInfo = TraceInfo(graph, traces[p], 0)
-
 	for(i = 0; i < numAxes; i += 1)
 		axis = StringFromList(i, axList)
 		listOfWaves          = ""
 		listOfChannelTypes   = ""
 		listOfChannelNumbers = ""
-		listOfXRanges        = ""
+		listOfRanges         = ""
 		listOfClampModes     = ""
 		listOfHeadstages     = ""
 		firstXAxis           = ""
@@ -3674,26 +3666,29 @@ static Function AverageWavesFromSameYAxisIfReq(graph, traces, averagingEnabled, 
 		endif
 
 		for(j = 0; j < numTraces; j += 1)
-			if(!cmpstr(axis, StringByKey("YAXIS", allTraceInfo[j])))
-				trace = traces[j]
+			trace = traces[j]
+			yAxis = TUD_GetUserData(graph, trace, "YAXIS")
 
-				fullPath      = GetWavesDataFolder(TraceNameToWaveRef(graph, trace), 2)
-				channelType   = GetUserData(graph, trace, "channelType")
-				channelNumber = GetUserData(graph, trace, "channelNumber")
-				clampMode     = GetUserData(graph, trace, "clampMode")
-				headstage     = GetUserData(graph, trace, "headstage")
-				xRange        = StringByKey("YRANGE", allTraceInfo[j])
+			if(cmpstr(axis, yaxis))
+				continue
+			endif
 
-				listOfWaves          = AddListItem(fullPath, listOfWaves, ";", Inf)
-				listOfChannelTypes   = AddListItem(channelType, listOfChannelTypes, ";", Inf)
-				listOfChannelNumbers = AddListItem(channelNumber, listOfChannelNumbers, ";", Inf)
-				listOfXRanges        = AddListItem(xRange, listOfXRanges, "_", Inf)
-				listOfClampModes     = AddListItem(clampMode, listOfClampModes, ";", Inf)
-				listOfHeadstages     = AddListItem(headstage, listOfHeadstages, ";", Inf)
+			fullPath      = TUD_GetUserData(graph, trace, "fullPath")
+			channelType   = TUD_GetUserData(graph, trace, "channelType")
+			channelNumber = TUD_GetUserData(graph, trace, "channelNumber")
+			clampMode     = TUD_GetUserData(graph, trace, "clampMode")
+			headstage     = TUD_GetUserData(graph, trace, "headstage")
+			range         = TUD_GetUserData(graph, trace, "YRANGE")
 
-				if(IsEmpty(firstXAxis))
-					firstXAxis = StringByKey("XAXIS", allTraceInfo[j])
-				endif
+			listOfWaves          = AddListItem(fullPath, listOfWaves, ";", Inf)
+			listOfChannelTypes   = AddListItem(channelType, listOfChannelTypes, ";", Inf)
+			listOfChannelNumbers = AddListItem(channelNumber, listOfChannelNumbers, ";", Inf)
+			listOfRanges         = AddListItem(range, listOfRanges, "_", Inf)
+			listOfClampModes     = AddListItem(clampMode, listOfClampModes, ";", Inf)
+			listOfHeadstages     = AddListItem(headstage, listOfHeadstages, ";", Inf)
+
+			if(IsEmpty(firstXAxis))
+				firstXAxis = TUD_GetUserData(graph, trace, "XAXIS")
 			endif
 		endfor
 
@@ -3717,10 +3712,10 @@ static Function AverageWavesFromSameYAxisIfReq(graph, traces, averagingEnabled, 
 			k += 1
 		endif
 
-		traceName = averageWaveName + "_" + num2str(traceIndex)
+		sprintf traceName, "T%0*d%s", TRACE_NAME_NUM_DIGITS, (numTraces + traceIndex), averageWaveName
 		traceIndex += 1
 
-		WAVE ranges = ExtractFromSubrange(listOfXRanges, ROWS)
+		WAVE ranges = ExtractFromSubrange(listOfRanges, ROWS)
 
 		// convert ranges from points to ms
 		Redimension/D ranges
@@ -3759,7 +3754,9 @@ static Function AverageWavesFromSameYAxisIfReq(graph, traces, averagingEnabled, 
 		endif
 
 		if(ListHasOnlyOneUniqueEntry(listOfClampModes))
-			ModifyGraph/W=$graph userData($traceName)={clampMode, USERDATA_MODIFYGRAPH_REPLACE, StringFromList(0, listOfClampModes)}
+			TUD_SetUserData(graph, traceName, "clampMode", StringFromList(0, listOfClampModes))
+			TUD_SetUserData(graph, traceName, "fullPath", GetWavesDataFolder(averageWave, 2))
+			TUD_SetUserData(graph, traceName, "traceType", "Average")
 		endif
 	endfor
 
@@ -3849,7 +3846,7 @@ static Function ZeroTracesIfReq(graph, traces, zeroTraces)
 	numTraces = DimSize(traces, ROWS)
 	for(i = 0; i < numTraces; i += 1)
 		trace = traces[i]
-		WAVE wv = TraceNameToWaveRef(graph, trace)
+		WAVE wv = $TUD_GetUserData(graph, trace, "fullPath")
 		ZeroWave(wv)
 	endfor
 End
@@ -3893,17 +3890,16 @@ Function TimeAlignmentIfReq(graphtrace, mode, level, pos1x, pos2x, [force])
 
 	// now determine the feature's time position
 	// using the traces from the same axis as the reference trace
-	refGraph = refGraph
-	refAxis = StringByKey("YAXIS", TraceInfo(refGraph, refTrace, 0))
+	refAxis = TUD_GetUserData(refGraph, refTrace, "YAXIS")
 
 	paGraphs = PA_GetAverageGraphs()
 	if(WhichListItem(refGraph, paGraphs) == -1)
-		WAVE/T graphtraces = ListToTextWave(GetAllSweepTracesFromGraphs(refGraph), ";")
+		WAVE/T graphtraces = GetAllSweepTraces(refGraph)
 	else
 		// only do PA for sweeps with same region
-		refRegion = GetUserData(refGraph, refTrace, "region")
+		refRegion = TUD_GetUserData(refGraph, refTrace, "region")
 		ASSERT(!isEmpty(refRegion), "region is empty. Set \"region\" in userData entry for trace.")
-		WAVE/T graphtraces = ListToTextWave(GetAllSweepTracesFromGraphs(paGraphs, region = refRegion), ";")
+		WAVE/T graphtraces = GetAllSweepTraces(paGraphs, region = str2num(refRegion))
 	endif
 
 	refPos = NaN
@@ -3914,13 +3910,13 @@ Function TimeAlignmentIfReq(graphtrace, mode, level, pos1x, pos2x, [force])
 	for(i = 0; i < numTraces; i += 1)
 		graph = StringFromList(0, graphtraces[i], "#")
 		trace = StringFromList(1, graphtraces[i], "#")
-		axis = StringByKey("YAXIS", TraceInfo(graph, trace, 0))
+		axis = TUD_GetUserData(graph, trace, "YAXIS")
 
 		if(cmpstr(axis, refAxis) || cmpstr(graph, refGraph))
 			continue
 		endif
 
-		WAVE wv = TraceNameToWaveRef(graph, trace)
+		WAVE wv = $TUD_GetUserData(graph, trace, "fullPath")
 
 		pos = CalculateFeatureLoc(wv, mode, level, first, last)
 
@@ -3934,10 +3930,10 @@ Function TimeAlignmentIfReq(graphtrace, mode, level, pos1x, pos2x, [force])
 		endif
 
 		featurePos[i]  = pos
-		sweepNo = GetUserData(graph, trace, "sweepNumber")
+		sweepNo = TUD_GetUserData(graph, trace, "sweepNumber")
 		ASSERT(!isEmpty(sweepNo), "Sweep number is empty. Set \"sweepNumber\" userData entry for trace.")
 		sweepNumber[i] = str2num(sweepNo)
-		pulseIndexStr = GetUserData(graph, trace, "pulseIndex")
+		pulseIndexStr = TUD_GetUserData(graph, trace, "pulseIndex")
 		refIndex[i] = sweepNo + ":" + pulseIndexStr
 	endfor
 
@@ -3946,15 +3942,15 @@ Function TimeAlignmentIfReq(graphtrace, mode, level, pos1x, pos2x, [force])
 	for(i = 0; i < numTraces; i += 1)
 		graph = StringFromList(0, graphtraces[i], "#")
 		trace = StringFromList(1, graphtraces[i], "#")
-		WAVE wv = TraceNameToWaveRef(graph, trace)
+		WAVE/Z wv = $TUD_GetUserData(graph, trace, "fullPath")
 		ASSERT(WaveExists(wv), "Could not resolve trace to wave")
 
 		if(GetNumberFromWaveNote(wv, NOTE_KEY_TIMEALIGN) == 1 && force == 0)
 			continue
 		endif
 
-		sweepNo = GetUserData(graph, trace, "sweepNumber")
-		pulseIndexStr = GetUserData(graph, trace, "pulseIndex")
+		sweepNo = TUD_GetUserData(graph, trace, "sweepNumber")
+		pulseIndexStr = TUD_GetUserData(graph, trace, "pulseIndex")
 		indexStr = sweepNo + ":" + pulseIndexStr
 		idx = GetRowIndex(refIndex, str = indexStr)
 
@@ -4020,7 +4016,7 @@ Function EqualizeVerticalAxesRanges(graph, [ignoreAxesWithLevelCrossing, level, 
 	variable ignoreAxesWithLevelCrossing
 	variable level, rangePerClampMode
 
-	string axList, axis, traceList, trace, info
+	string axList, axis, trace
 	variable i, j, numAxes, axisOrient, xRangeBegin, xRangeEnd
 	variable beginY, endY, clampMode
 	variable maxYRange, numTraces , range, refClampMode, err
@@ -4052,8 +4048,13 @@ Function EqualizeVerticalAxesRanges(graph, [ignoreAxesWithLevelCrossing, level, 
 		xRangeEnd   = NaN
 	endif
 
-	traceList = GetAllSweepTraces(graph)
-	numTraces = ItemsInList(traceList)
+	WAVE/T/Z traces = TUD_GetUserDataAsWave(graph, "traceName")
+
+	if(!WaveExists(traces))
+		return NaN
+	endif
+
+	numTraces = DimSize(traces, ROWS)
 	axList = AxisList(graph)
 	numAxes = ItemsInList(axList)
 
@@ -4080,13 +4081,12 @@ Function EqualizeVerticalAxesRanges(graph, [ignoreAxesWithLevelCrossing, level, 
 		refClampMode = NaN
 
 		for(j = 0; j < numTraces; j += 1)
-			trace = StringFromList(j, traceList)
-			info = TraceInfo(graph, trace, 0)
-			if(cmpstr(axis, StringByKey("YAXIS", info)))
+			trace = traces[j]
+			if(cmpstr(axis, TUD_GetUserData(graph, trace, "YAXIS")))
 				continue
 			endif
 
-			WAVE wv = TraceNameToWaveRef(graph, trace)
+			WAVE wv = $TUD_GetUserData(graph, trace, "fullPath")
 
 			if(!IsFinite(xRangeBegin) || !IsFinite(xRangeEnd))
 				xRangeBegin = leftx(wv)
@@ -4100,7 +4100,7 @@ Function EqualizeVerticalAxesRanges(graph, [ignoreAxesWithLevelCrossing, level, 
 				endif
 			endif
 
-			clampMode = str2num(GetUserData(graph, trace, "clampMode"))
+			clampMode = str2num(TUD_GetUserData(graph, trace, "clampMode"))
 
 			if(!IsFinite(clampMode))
 				// TTL data has NaN for the clamp mode, map that to something which
@@ -6177,4 +6177,27 @@ Function UploadCrashDumpsDaily()
 		ClearRTError()
 		BUG("Could not upload crash dumps!")
 	endtry
+End
+
+/// @brief Return the graph user data as 2D text wave
+///
+/// Only returns infos for sweep traces without duplicates.
+/// Duplicates are present with oodDAQ display mode.
+Function/WAVE GetTraceInfos(string graph)
+
+	if(TUD_GetTraceCount(graph) == 0)
+		return $""
+	endif
+
+	WAVE matches = TUD_GetUserDataAsWave(graph, "fullPath", returnIndizes = 1, keys = {"traceType", "occurence"}, values = {"Sweep", "0"})
+
+	WAVE/T graphUserData = GetGraphUserData(graph)
+
+	Make/FREE/T/N=(DimSize(matches, ROWS), DimSize(graphUserData, COLS)) graphUserDataSelection
+	CopyDimLabels graphUserData, graphUserDataSelection
+	Multithread graphUserDataSelection[][] = graphUserData[matches[p]][q]
+
+	SortColumns/A/DIML/KNDX={2, 3, 4, 5} sortWaves=graphUserDataSelection
+
+	return graphUserDataSelection
 End

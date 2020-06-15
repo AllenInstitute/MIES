@@ -191,7 +191,7 @@ static Function/WAVE SBE_GetPulseStartTimesForSel()
 
 	ADC = str2num(GetPopupMenuString(SBE_EXPORT_PANEL, "popup_sweep_export_pulse_AD"))
 
-	WAVE/Z/T traceData = PA_GetTraceInfos(graph)
+	WAVE/Z/T traceData = GetGraphUserData(graph)
 	if(!WaveExists(traceData))
 		return $""
 	endif
@@ -257,7 +257,13 @@ Function/S SBE_GetSourceGraphADTraces()
 		return ""
 	endif
 
-	return GetAllSweepTraces(sourceGraph, channelType = ITC_XOP_CHANNEL_TYPE_ADC)
+	WAVE/Z/T result = GetAllSweepTraces(sourceGraph, channelType = ITC_XOP_CHANNEL_TYPE_ADC)
+
+	if(!WaveExists(result))
+		return ""
+	endif
+
+	return TextWaveToList(result, ";")
 End
 
 /// @brief Export the sweep browser traces to a user given folder
@@ -436,20 +442,20 @@ static Function SBE_ExportSweepBrowser(sett)
 
 		for(j = 0; j < numTraces; j += 1)
 			trace = StringFromList(j, traceList)
-			traceAxis = StringByKey("YAXIS", TraceInfo(sett.sourceGraph, trace, 0))
+			traceAxis = TUD_GetUserData(sett.sourceGraph, trace, "YAXIS")
 
 			if(cmpstr(traceAxis, axis))
 				continue
 			endif
 
-			WAVE/Z textualValues = $GetUserData(sett.sourceGraph, trace, "textualValues")
+			WAVE/Z textualValues = $TUD_GetUserData(sett.sourceGraph, trace, "textualValues")
 
 			if(!WaveExists(textualValues)) // non-sweep waves
 				continue
 			endif
 
-			headstage = str2num(GetUserData(sett.sourceGraph, trace, "headstage"))
-			sweep = str2num(GetUserData(sett.sourceGraph, trace, "sweepNumber"))
+			headstage = str2num(TUD_GetUserData(sett.sourceGraph, trace, "headstage"))
+			sweep = str2num(TUD_GetUserData(sett.sourceGraph, trace, "sweepNumber"))
 
 			WAVE/T stimSets = GetLastSetting(textualValues, sweep, STIM_WAVE_NAME_KEY, DATA_ACQUISITION_MODE)
 

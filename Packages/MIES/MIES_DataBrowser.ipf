@@ -386,6 +386,7 @@ Function DB_UpdateSweepPlot(win)
 	WAVE/T/Z cursorInfos = GetCursorInfos(graph)
 	RemoveTracesFromGraph(graph)
 	RemoveFreeAxisFromGraph(graph)
+	TUD_Clear(graph)
 
 	if(!BSP_HasBoundDevice(win))
 		return NaN
@@ -1112,8 +1113,9 @@ Function DB_ButtonProc_RestoreData(ba) : ButtonControl
 
 	switch(ba.eventCode)
 		case 2: // mouse up
-			traceList = GetAllSweepTraces(graph)
-			ReplaceAllWavesWithBackup(graph, traceList)
+
+			WAVE/T/Z tracePaths = GetSweepUserData(graph, "fullPath")
+			ReplaceAllWavesWithBackup(graph, tracePaths)
 
 			zeroTracesOldState = GetCheckBoxState(bsPanel, "check_Calculation_ZeroTraces")
 			SetCheckBoxState(bsPanel, "check_Calculation_ZeroTraces", CHECKBOX_UNSELECTED)

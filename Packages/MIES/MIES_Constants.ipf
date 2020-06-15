@@ -1299,3 +1299,6 @@ Constant LNB_TYPE_TEXTUAL = 2
 
 /// @brief Wave note key for the indexing helper JSON document
 StrConstant TUD_INDEX_JSON = "INDEX_JSON"
+
+/// @brief sprintf field width for trace names
+Constant TRACE_NAME_NUM_DIGITS = 6

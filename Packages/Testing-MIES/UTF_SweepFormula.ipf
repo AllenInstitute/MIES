@@ -968,6 +968,8 @@ Function TestLabNotebook()
 	BSP_SetDataBrowser(win)
 	BSP_SetDevice(win, device)
 
+	TUD_Clear(win)
+
 	WAVE/T numericalKeys = GetLBNumericalKeys(device)
 	WAVE numericalValues = GetLBNumericalValues(device)
 	KillWaves numericalKeys, numericalValues
@@ -987,9 +989,8 @@ Function TestLabNotebook()
 			Extract input, $name, q == i && r == j
 			WAVE wv = $name
 			AppendToGraph/W=$win wv/TN=$trace
-			ModifyGraph/W=$win userData($trace)={channelType, USERDATA_MODIFYGRAPH_APPEND, channelType}
-			ModifyGraph/W=$win userData($trace)={channelNumber, USERDATA_MODIFYGRAPH_APPEND, num2str(channels[i][j])}
-			ModifyGraph/W=$win userData($trace)={sweepNumber, USERDATA_MODIFYGRAPH_APPEND, num2str(sweepNumber)}
+			TUD_SetUserDataFromWaves(win, trace, {"experiment", "fullPath", "traceType", "occurence", "channelType", "channelNumber", "sweepNumber"},         \
+						             {"blah", GetWavesDataFolder(wv, 2), "Sweep", "0", channelType, num2str(channels[i][j]), num2str(sweepNumber)})
 			values[connections[j]] = channels[i][j]
 		endfor
 

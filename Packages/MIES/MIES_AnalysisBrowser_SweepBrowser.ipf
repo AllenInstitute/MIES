@@ -359,6 +359,7 @@ Function SB_UpdateSweepPlot(win, [newSweep])
 	WAVE/T/Z cursorInfos = GetCursorInfos(graph)
 	RemoveTracesFromGraph(graph)
 	RemoveFreeAxisFromGraph(graph)
+	TUD_Clear(graph)
 
 	WAVE/T sweepMap = SB_GetSweepBrowserMap(sweepBrowserDFR)
 	WAVE channelSel = GetChannelSelectionWave(sweepBrowserDFR)
@@ -783,7 +784,12 @@ Function SB_ButtonProc_FindMinis(ba) : ButtonControl
 
 	switch(ba.eventCode)
 		case 2: // mouse up
-			list = GetAllSweepTraces(graph)
+
+			WAVE/T/Z tracePaths = GetAllSweepTraces(graph)
+
+			if(!WaveExists(tracePaths))
+				break
+			endif
 
 			first = NumberByKey("POINT", CsrInfo(A, graph))
 			last  = NumberByKey("POINT", CsrInfo(B, graph))
@@ -791,10 +797,9 @@ Function SB_ButtonProc_FindMinis(ba) : ButtonControl
 
 			DFREF workDFR = UniqueDataFolder(SB_GetSweepBrowserFolder(graph), "findminis")
 
-			numTraces = ItemsInList(list)
+			numTraces = DimSize(tracePaths, ROWS)
 			for(i = 0; i < numTraces; i += 1)
-				trace = StringFromList(i, list)
-				WAVE full = TraceNameToWaveRef(graph, trace)
+				WAVE full = $tracePaths[i]
 				if(IsFinite(first) && isFinite(last))
 					Duplicate/R=[first, last] full, workDFR:$(NameOfWave(full) + "_res")/Wave=wv
 				else
@@ -852,7 +857,7 @@ End
 Function SB_ButtonProc_RestoreData(ba) : ButtonControl
 	STRUCT WMButtonAction &ba
 
-	string graph, bsPanel, traceList
+	string graph, bsPanel
 	variable autoRemoveOldState
 
 	graph   = GetMainWindow(ba.win)
@@ -860,8 +865,9 @@ Function SB_ButtonProc_RestoreData(ba) : ButtonControl
 
 	switch(ba.eventCode)
 		case 2: // mouse up
-			traceList = GetAllSweepTraces(graph)
-			ReplaceAllWavesWithBackup(graph, traceList)
+
+			WAVE/T/Z tracePaths = GetAllSweepTraces(graph)
+			ReplaceAllWavesWithBackup(graph, tracePaths)
 
 			if(!AR_IsActive(graph))
 				SB_UpdateSweepPlot(graph)
