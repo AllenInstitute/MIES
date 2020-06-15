@@ -601,11 +601,14 @@ Function PA_ShowPulses(win, dfr, pa)
 				PA_GetAxes(pa.multipleGraphs, activeRegionCount, activeChanCount, vertAxis, horizAxis)
 
 				if(WhichListItem(graph, newlyCreatedGraphs) == -1)
-					WAVE/T cursorInfos = GetCursorInfos(graph)
+					WAVE/T/Z cursorInfos = GetCursorInfos(graph)
+
 					RemoveTracesFromGraph(graph)
 					SetWindow $graph, userData($PA_USERDATA_SPECIAL_TRACES) = ""
 					SetWindow $graph, userData($PA_USERDATA_REFERENCE_TRACES) = ""
 					newlyCreatedGraphs = AddListItem(graph, newlyCreatedGraphs, ";", inf)
+				else
+					Wave/T/Z cursorInfos =  $""
 				endif
 
 				for(l = startingPulse; l <= endingPulse; l += 1)

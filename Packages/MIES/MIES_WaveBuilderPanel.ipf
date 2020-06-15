@@ -1854,8 +1854,8 @@ Function WBP_ShowFFTSpectrumIfReq(segmentWave, sweep)
 
 	WAVE axesRangesMag   = GetAxesRanges(graphMag)
 	WAVE axesRangesPhase = GetAxesRanges(graphPhase)
-	WAVE/T cursorInfosMag = GetCursorInfos(graphMag)
-	WAVE/T cursorInfosPhase = GetCursorInfos(graphPhase)
+	WAVE/T/Z cursorInfosMag = GetCursorInfos(graphMag)
+	WAVE/T/Z cursorInfosPhase = GetCursorInfos(graphPhase)
 
 	if(sweep == 0)
 		RemoveTracesFromGraph(graphMag)

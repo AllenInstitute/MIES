@@ -1022,7 +1022,7 @@ Function SF_FormulaPlotter(graph, formula, [dfr])
 		win = S_name
 	endif
 
-	WAVE cursorInfos = GetCursorInfos(win)
+	WAVE/T/Z cursorInfos = GetCursorInfos(win)
 	WAVE axesRanges = GetAxesRanges(win)
 	RemoveTracesFromGraph(win)
 	ModifyGraph/W=$win swapXY = 0

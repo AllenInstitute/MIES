@@ -356,7 +356,7 @@ Function SB_UpdateSweepPlot(win, [newSweep])
 
 	WAVE axesRanges = GetAxesRanges(graph)
 
-	WAVE/T cursorInfos = GetCursorInfos(graph)
+	WAVE/T/Z cursorInfos = GetCursorInfos(graph)
 	RemoveTracesFromGraph(graph)
 	RemoveFreeAxisFromGraph(graph)
 

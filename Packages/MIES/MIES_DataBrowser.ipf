@@ -383,7 +383,7 @@ Function DB_UpdateSweepPlot(win)
 
 	WAVE axesRanges = GetAxesRanges(graph)
 
-	WAVE/T cursorInfos = GetCursorInfos(graph)
+	WAVE/T/Z cursorInfos = GetCursorInfos(graph)
 	RemoveTracesFromGraph(graph)
 	RemoveFreeAxisFromGraph(graph)
 
