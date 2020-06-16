@@ -3082,13 +3082,13 @@ Function/WAVE ListToNumericWave(list, sep, [type])
 End
 
 /// @brief Returns the column from a multidimensional wave using the dimlabel
-Function/WAVE GetColfromWavewithDimLabel(waveRef, dimLabel)
-	WAVE waveRef
+Function/WAVE GetColfromWavewithDimLabel(waveRefs, dimLabel)
+	WAVE waveRefs
 	string dimLabel
 	
-	variable column = FindDimLabel(waveRef, COLS, dimLabel)
+	variable column = FindDimLabel(waveRefs, COLS, dimLabel)
 	ASSERT(column != -2, "dimLabel:" + dimLabel + "cannot be found")
-	matrixOp/FREE OneDWv = col(waveRef, column)
+	matrixOp/FREE OneDWv = col(waveRefs, column)
 	return OneDWv
 End
 
