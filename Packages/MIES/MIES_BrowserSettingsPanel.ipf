@@ -817,11 +817,7 @@ Function BSP_TimeAlignmentProc(cba) : CheckBoxControl
 
 	switch(cba.eventCode)
 		case 2: // mouse up
-			if(cba.checked)
-				UpdateSettingsPanel(cba.win)
-			else
-				PGC_SetAndActivateControl(cba.win, "button_TimeAlignment_Action")
-			endif
+			UpdateSettingsPanel(cba.win)
 			break
 	endswitch
 End
