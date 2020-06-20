@@ -450,9 +450,7 @@ Function DB_UpdateSweepPlot(win)
 
 	DEBUGPRINT_ELAPSED(referenceTime)
 
-	if(WaveExists(sweepWave))
-		ReplaceNotebookText(lbPanel, note(sweepWave))
-	endif
+	DB_UpdateSweepNote(mainPanel)
 
 	Struct PostPlotSettings pps
 	DB_InitPostPlotSettings(win, pps)
@@ -460,6 +458,38 @@ Function DB_UpdateSweepPlot(win)
 	PostPlotTransformations(graph, pps)
 	SetAxesRanges(graph, axesRanges)
 	DEBUGPRINT_ELAPSED(referenceTime)
+End
+
+static Function DB_UpdateSweepNote(win)
+	string win
+
+	string scPanel, lbPanel, bsPanel, device
+	variable sweepNo
+
+	if(!BSP_HasBoundDevice(win))
+		return NaN
+	endif
+
+	bsPanel = BSP_GetPanel(win)
+
+	if(GetTabID(bsPanel, "Settings") != 6)
+		// nothing to do
+		return NaN
+	endif
+
+	device = BSP_GetDevice(win)
+	DFREF dfr = GetDeviceDataPath(device)
+
+	scPanel = BSP_GetSweepControlsPanel(win)
+	sweepNo = GetSetVariable(scPanel, "setvar_SweepControl_SweepNo")
+
+	WAVE/Z/SDFR=dfr sweepWave = $GetSweepWaveName(sweepNo)
+	if(!WaveExists(sweepWave))
+		return NaN
+	endif
+
+	lbPanel = BSP_GetNotebookSubWindow(win)
+	ReplaceNotebookText(lbPanel, note(sweepWave))
 End
 
 /// @see SB_InitPostPlotSettings
@@ -967,6 +997,13 @@ Function DB_CheckProc_ScaleAxes(cba) : CheckBoxControl
 	endswitch
 
 	return 0
+End
+
+// Called from ACL_DisplayTab after the new tab is selected
+Function DB_MainTabControlFinal(tca)
+	STRUCT WMTabControlAction &tca
+
+	DB_UpdateSweepNote(tca.win)
 End
 
 /// @see SB_PanelUpdate
