@@ -4057,13 +4057,7 @@ Function/S GetHistoryNotebookText()
 		return ""
 	endif
 
-	Notebook HistoryCarbonCopy selection={startOfFile, endOfFile}
-	ASSERT(!V_Flag, "Illegal selection")
-
-	GetSelection notebook, HistoryCarbonCopy, 2
-	ASSERT(V_Flag, "Illegal selection")
-
-	return S_Selection
+	return GetNotebookText("HistoryCarbonCopy")
 End
 
 /// @brief Helper function for try/catch with AbortOnRTE

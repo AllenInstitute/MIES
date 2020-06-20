@@ -1667,6 +1667,29 @@ Function ReplaceNotebookText(win, text)
 	Notebook $win setData=text
 End
 
+/// @brief Append to a notebook
+Function AppendToNotebookText(win, text)
+	string win, text
+
+	ASSERT(WinType(win) == 5, "Passed win is not a notebook")
+
+	Notebook $win selection={endOfFile, endOfFile}
+	ASSERT(!V_Flag, "Illegal selection")
+
+	Notebook $win setData=text
+End
+
+/// @brief Select the end in the given notebook.
+///
+/// The selection is the place where the user would naïvely enter new text.
+Function NotebookSelectionAtEnd(win)
+	string win
+
+	ASSERT(WinType(win) == 5, "Passed win is not a notebook")
+
+	Notebook $win selection={endOfFile,endOfFile}, findText={"",1}
+End
+
 /// @brief Retrieves named userdata keys from a recreation macro string
 ///
 /// @param recMacro recreation macro string

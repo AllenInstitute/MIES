@@ -407,9 +407,8 @@ Function SB_UpdateSweepPlot(win, [newSweep])
 	DFREF sweepDATAdfr = GetAnalysisSweepDataPath(dataFolder, device, sweepNo)
 	SVAR/Z sweepNote = sweepDATAdfr:note
 	if(SVAR_EXISTS(sweepNote))
-		Notebook $lbPanel text = "Sweep note: \r " + sweepNote
+		ReplaceNotebookText(lbPanel, "Sweep note: \r " + sweepNote)
 	endif
-	Notebook $lbPanel selection={startOfFile, endOfFile} // select entire contents of notebook
 
 	PostPlotTransformations(graph, pps)
 	SetAxesRanges(graph, axesRanges)
