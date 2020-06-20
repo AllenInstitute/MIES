@@ -3417,12 +3417,13 @@ Function TimeAlignUpdateControls(win)
 		else
 			DisableControl(bsPanel, "setvar_TimeAlignment_LevelCross")
 		endif
+
+		ControlUpdate/W=$bsPanel popup_TimeAlignment_Master
 	else
 		DisableControls(bsPanel, "popup_TimeAlignment_Mode;setvar_TimeAlignment_LevelCross;popup_TimeAlignment_Master;button_TimeAlignment_Action")
 	endif
 
 	TimeAlignHandleCursorDisplay(graph)
-	ControlUpdate/W=$bsPanel popup_TimeAlignment_Master
 End
 
 Function TimeAlignGatherSettings(bsPanel, pps)
