@@ -30,3 +30,6 @@ echo '**/* !whitespace !eol' > .git/modules/Packages/ZeroMQ-XOP/modules/src/libz
 
 mkdir -p .git/modules/Packages/ITCXOP2/modules/src/SafeInt/info
 echo '**/* !whitespace !eol' > .git/modules/Packages/ITCXOP2/modules/src/SafeInt/info/attributes
+
+# set revision file to ignore for git blame
+git config blame.ignoreRevsFile .git-blame-ignore-revs
