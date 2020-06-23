@@ -1740,12 +1740,12 @@ Function/Wave GetSweepSettingsKeyWave(panelTitle)
 	wv[%Tolerance][0] = ".0001"
 
 	wv[%Parameter][1] = "DAC"
-	wv[%Units][1]     = ""
-	wv[%Tolerance][1] = ".0001"
+	wv[%Units][1]     = "a. u."
+	wv[%Tolerance][1] = "1"
 
 	wv[%Parameter][2] = "ADC"
-	wv[%Units][2]     = ""
-	wv[%Tolerance][2] = ".0001"
+	wv[%Units][2]     = "a. u."
+	wv[%Tolerance][2] = "1"
 
 	wv[%Parameter][3] = "DA Gain"
 	wv[%Units][3]     = ""
@@ -1756,9 +1756,9 @@ Function/Wave GetSweepSettingsKeyWave(panelTitle)
 	wv[%Tolerance][4] = ".000001"
 
 	wv[%Parameter][5] = "Set Sweep Count"
-	wv[%Units][5]     = ""
-	wv[%Tolerance][5] = ".0001"
-	
+	wv[%Units][5]     = "a. u."
+	wv[%Tolerance][5] = "1"
+
 	wv[%Parameter][6] = "TP Insert Checkbox"
 	wv[%Units][6]     = LABNOTEBOOK_BINARY_UNIT
 	wv[%Tolerance][6] = LABNOTEBOOK_NO_TOLERANCE
@@ -1776,11 +1776,11 @@ Function/Wave GetSweepSettingsKeyWave(panelTitle)
 	wv[%Tolerance][9] = LABNOTEBOOK_NO_TOLERANCE
 
 	wv[%Parameter][10] = "TTL rack zero channel"
-	wv[%Units][10]     = ""
+	wv[%Units][10]     = "a. u."
 	wv[%Tolerance][10] = LABNOTEBOOK_NO_TOLERANCE
 
 	wv[%Parameter][11] = "TTL rack one channel"
-	wv[%Units][11]     = ""
+	wv[%Units][11]     = "a. u."
 	wv[%Tolerance][11] = LABNOTEBOOK_NO_TOLERANCE
 
 	wv[%Parameter][12] = "Delay onset user"
@@ -1804,8 +1804,8 @@ Function/Wave GetSweepSettingsKeyWave(panelTitle)
 	wv[%Tolerance][16] = LABNOTEBOOK_NO_TOLERANCE
 
 	wv[%Parameter][17] = "Repeat Sets"
-	wv[%Units][17]     = ""
-	wv[%Tolerance][17] = ".0001"
+	wv[%Units][17]     = "a. u."
+	wv[%Tolerance][17] = "1"
 
 	wv[%Parameter][18] = "Scaling zero"
 	wv[%Units][18]     = LABNOTEBOOK_BINARY_UNIT
@@ -1832,7 +1832,7 @@ Function/Wave GetSweepSettingsKeyWave(panelTitle)
 	wv[%Tolerance][23] = "1"
 
 	wv[%Parameter][24] = "Sampling interval multiplier"
-	wv[%Units][24]     = ""
+	wv[%Units][24]     = "a. u."
 	wv[%Tolerance][24] = "0.1"
 
 	wv[%Parameter][25] = "Stim set length"
@@ -1860,11 +1860,11 @@ Function/Wave GetSweepSettingsKeyWave(panelTitle)
 	wv[%Tolerance][30] = "1"
 
 	wv[%Parameter][31] = RA_ACQ_CYCLE_ID_KEY
-	wv[%Units][31]     = ""
+	wv[%Units][31]     = "a. u."
 	wv[%Tolerance][31] = "1"
 
 	wv[%Parameter][32] = "Stim Wave Checksum"
-	wv[%Units][32]     = ""
+	wv[%Units][32]     = "a. u."
 	wv[%Tolerance][32] = "1"
 
 	wv[%Parameter][33] = "Multi Device mode"
@@ -1928,7 +1928,7 @@ Function/Wave GetSweepSettingsKeyWave(panelTitle)
 	wv[%Tolerance][47] = LABNOTEBOOK_NO_TOLERANCE
 
 	wv[%Parameter][48] = "Igor Pro bitness"
-	wv[%Units][48]     = ""
+	wv[%Units][48]     = "a. u."
 	wv[%Tolerance][48] = LABNOTEBOOK_NO_TOLERANCE
 
 	wv[%Parameter][49] = "DA ChannelType"
