@@ -17,12 +17,12 @@ static Constant FIFTEEN_SECONDS = 900 // ticks in fifteen seconds
 
 /// @brief Initiates blowout protocol on single locked device
 Function BWO_SelectDevice()
-	
+
 	string panelTitle
 	string lockedDeviceList = GetListOfLockedDevices()
 	variable noOfLockedDevices = ItemsInList(lockedDeviceList)
 	NVAR interactiveMode = $GetInteractiveMode()
-	
+
 	If(noOfLockedDevices == 0)
 		return NaN
 	elseif(noOfLockedDevices == 1)
@@ -43,11 +43,11 @@ End
 /// @brief Executes blowout protocol
 Function BWO_Go(panelTitle)
 	string panelTitle
-	
+
 	If(!BWO_CheckGlobalSettings(panelTitle))
 		return NaN
 	endif
-	
+
 	//configure MIES for blowout
 	BWO_SetMIESSettings(panelTitle)
 	BWO_AllMCCCtrlsOFF(panelTitle)
@@ -59,7 +59,7 @@ Function BWO_Go(panelTitle)
 	BWO_CheckAndClearPipettes(panelTitle)
 	// acquire blowout sweep
 	BWO_AcquireSweep(panelTitle)
-	
+
 	SaveExperiment
 End
 
@@ -68,7 +68,7 @@ End
 /// @returns one if settings are valid, zero otherwise
 static Function BWO_CheckGlobalSettings(panelTitle)
 	string panelTitle
-	
+
 	string stimSetList
 	variable PressureModeStorageCol, Connected, i
 	WAVE pressure = P_GetPressureDataWaveRef(panelTitle)
@@ -90,7 +90,7 @@ static Function BWO_CheckGlobalSettings(panelTitle)
 		print "Background TP must be enabled"
 		return 0
 	endif
-	
+
 	// check that pressure is set to Atomospheric on all headstages
 	PressureModeStorageCol = findDimLabel(pressure, COLS, "Approach_Seal_BrkIn_Clear")
 	wavestats/Q/RMD=[][PressureModeStorageCol,PressureModeStorageCol] pressure
@@ -98,34 +98,34 @@ static Function BWO_CheckGlobalSettings(panelTitle)
 		print "Turn off pressure on all headstages"
 		return 0
 	endif
-	
+
 	for(i=0; i < NUM_HEADSTAGES; i += 1)
 		connected = min(connected, AI_SelectMultiClamp(panelTitle, i))
 	endfor
-	
+
 	if(connected != AMPLIFIER_CONNECTION_SUCCESS)
 		print "No amplifiers are configured. Cannot proceed with automated blowout protocol"
 		return 0
 	endif
-	
+
 	return 1
 End
 
 /// @brief Initates test pulse
 static Function BWO_ConfigureTP(panelTitle)
 	string panelTitle
-			
+
 	if(!TP_CheckIfTestpulseIsRunning(panelTitle))
 		PGC_SetAndActivateControl(panelTitle,"StartTestPulseButton", switchTab = 1)
 	endif
-	
+
 	DoUpdate/W=$SCOPE_GetPanel(panelTitle)
 End
 
 /// @brief Configures data acquisition settings for blowout
 static Function BWO_SetMIESSettings(panelTitle)
 	string panelTitle
-	
+
 	// turn on insert TP
 	PGC_SetAndActivateControl(panelTitle, "Check_Settings_InsertTP", val = 1)
 	// select blowout stim set
@@ -144,7 +144,7 @@ End
 /// @brief Applies a pressure pulse to all headstages with valid pressure settings
 static Function BWO_InitParaPipetteClear(panelTitle)
 	string panelTitle
-	
+
 	variable 	startTime
 	STRUCT BackgroundStruct s
 	s.wmbs.name = "TestPulseMD"
@@ -164,7 +164,7 @@ End
 /// @brief Attempts to clear pipettes that have a resistance larger than MAX_RESISTANCE
 static Function BWO_CheckAndClearPipettes(panelTitle)
 	string panelTitle
-	
+
 	variable i, j, col, initPressure, startTime, pressurePulseStartTime, pressurePulseTime
 	wave SSResistance = GetSSResistanceWave(panelTitle)
 	WAVE pressure = P_GetPressureDataWaveRef(panelTitle)
@@ -190,7 +190,7 @@ static Function BWO_CheckAndClearPipettes(panelTitle)
 		PGC_SetAndActivateControl(panelTitle, "setvar_DataAcq_SSPressure", val = PressureTracking[i])
 		pressurePulseStartTime = ticks
 		PressureTracking[i] += BWO_PRESSURE_INCREMENT
-		
+
 		do
 			pressurePulseTime = ticks - pressurePulseStartTime
 			if(pressurePulseTime >= TWO_SECONDS)
@@ -213,25 +213,25 @@ static Function BWO_CheckAndClearPipettes(panelTitle)
 		endif
 	endfor
 End
-	
+
 /// @brief Turns OFF all relevant MCC amplifier controls in I- and V-clamp modes
 static Function BWO_AllMCCCtrlsOFF(panelTitle)
 	string panelTitle
-	
-	PGC_SetAndActivateControl(panelTitle, "Check_DataAcq_SendToAllAmp", val = CHECKBOX_SELECTED)	
+
+	PGC_SetAndActivateControl(panelTitle, "Check_DataAcq_SendToAllAmp", val = CHECKBOX_SELECTED)
 	BWO_SetClampModeAll(panelTitle, I_CLAMP_MODE)
 	DoUpdate/W=$panelTitle
 	BWO_DisableMCCIClampCtrls(panelTitle)
 	BWO_SetClampModeAll(panelTitle, V_CLAMP_MODE)
 	BWO_DisableMCCVClampCtrls(panelTitle)
-	PGC_SetAndActivateControl(panelTitle, "Check_DataAcq_SendToAllAmp", val = CHECKBOX_UNSELECTED)	
+	PGC_SetAndActivateControl(panelTitle, "Check_DataAcq_SendToAllAmp", val = CHECKBOX_UNSELECTED)
 End
 
 /// @brief Wrapper function for setting the clamp mode on all headstages (T̶h̶o̶m̶a̶s̶ ̶p̶r̶o̶b̶a̶b̶l̶y̶ ̶w̶o̶n̶'̶t̶ ̶l̶i̶k̶e̶ ̶i̶t̶  He liked it!! :/ ).
 static Function BWO_SetClampModeAll(panelTitle, mode)
 	string panelTitle
 	variable mode
-	
+
 	switch(mode)
 		case V_CLAMP_MODE:
 			PGC_SetAndActivateControl(panelTitle, "Radio_ClampMode_AllVClamp", val = CHECKBOX_SELECTED)
@@ -260,7 +260,7 @@ End
 /// @brief Turns OFF V-clamp controls
 static Function BWO_DisableMCCVClampCtrls(panelTitle)
 	string panelTitle
-	
+
 	PGC_SetAndActivateControl(panelTitle, "check_DatAcq_HoldEnableVC", val = CHECKBOX_UNSELECTED)
 	PGC_SetAndActivateControl(panelTitle, "check_DatAcq_WholeCellEnable", val = CHECKBOX_UNSELECTED)
 	PGC_SetAndActivateControl(panelTitle, "check_DatAcq_RsCompEnable", val = CHECKBOX_UNSELECTED)

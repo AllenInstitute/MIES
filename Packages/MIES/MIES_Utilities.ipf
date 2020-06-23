@@ -2679,7 +2679,7 @@ Function/WAVE DeleteDuplicates(Wv)
 	WAVE wv
 
 	switch(WaveType(wv, 1))
-		case 1: 
+		case 1:
 			return DeleteDuplicatesNum(wv)
 			break
 		case 2:

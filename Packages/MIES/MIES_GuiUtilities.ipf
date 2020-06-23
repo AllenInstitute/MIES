@@ -177,24 +177,24 @@ End
 Function/S GetTitle(recMacro, [supress])
  	string recMacro
  	variable supress
- 
+
  	string title, errorMessage
 
  	if(ParamIsDefault(supress))
  		supress = 0
  	endif
-    
+
     // [^\"\\\\] matches everything except escaped quotes
     // \\\\.     eats backslashes
     // [^\"\\\\] up to the next escaped quote
     // does only match valid strings
  	SplitString/E="(?i)title=\"([^\"\\\\]*(?:\\\\.[^\"\\\\]*)*)\"" recMacro, title
- 
+
  	if(!V_Flag)
 	 	sprintf errorMessage, "recreation macro %.30s does not contain a title", recMacro
  		ASSERT(supress, errorMessage)
  	endif
- 
+
   	return title
 End
 
@@ -227,10 +227,10 @@ End
 Function ChangeControlColor(win, controlName, R, G, B)
 	string win, controlName
 	variable R, G, B
-	
+
 	ControlInfo/W=$win $controlName
-	ASSERT(V_flag != 0, "Non-existing control or window")	
-	
+	ASSERT(V_flag != 0, "Non-existing control or window")
+
 	ModifyControl $ControlName WIN = $win, fColor = (R,G,B)
 
 End
@@ -239,10 +239,10 @@ End
 Function ChangeControlValueColor(win, controlName, R, G, B)
 	string win, controlName
 	variable R, G, B
-	
+
 	ControlInfo/W=$win $controlName
-	ASSERT(V_flag != 0, "Non-existing control or window")	
-	
+	ASSERT(V_flag != 0, "Non-existing control or window")
+
 	ModifyControl $ControlName WIN = $win, valueColor = (R,G,B)
 
 End
@@ -257,12 +257,12 @@ Function ChangeControlValueColors(win, controlList, R, G, B)
 	for(i=0; i < numItems; i+=1)
 		ctrl = StringFromList(i,controlList)
 		ControlInfo/W=$win $ctrl
-		ASSERT(V_flag != 0, "Non-existing control or window")	
+		ASSERT(V_flag != 0, "Non-existing control or window")
 	//	ChangeControlValueColor(win, ctrl, R, G, B)
 	endfor
-	
+
 	ModifyControlList controlList, WIN = $win, valueColor = (R,G,B)
-	
+
 End
 
 /// @brief Changes the background color of a control
@@ -276,14 +276,14 @@ End
 Function SetControlBckgColor(win, controlName, R, G, B, [Alpha])
 	string win, controlName
 	variable R, G, B, Alpha
-	
+
 	if(paramIsDefault(Alpha))
 		Alpha = 1
 	Endif
 	ASSERT(Alpha > 0 && Alpha <= 1, "Alpha must be between 0 and 1")
 	Alpha *= 65535
 	ControlInfo/W=$win $controlName
-	ASSERT(V_flag != 0, "Non-existing control or window")	
+	ASSERT(V_flag != 0, "Non-existing control or window")
 
 	ModifyControl $ControlName WIN = $win, valueBackColor = (R,G,B,Alpha)
 End
@@ -298,12 +298,12 @@ Function ChangeControlBckgColors(win, controlList, R, G, B)
 	for(i=0; i < numItems; i+=1)
 		ctrl = StringFromList(i,controlList)
 		ControlInfo/W=$win $ctrl
-		ASSERT(V_flag != 0, "Non-existing control or window")	
+		ASSERT(V_flag != 0, "Non-existing control or window")
 	//	ChangeControlValueColor(win, ctrl, R, G, B)
 	endfor
-	
+
 	ModifyControlList controlList, WIN = $win, valueBackColor = (R,G,B)
-	
+
 End
 
 /// @brief Returns one if the checkbox is selected or zero if it is unselected
@@ -322,11 +322,11 @@ Function SetSetVariable(win,Control, newValue, [respectLimits])
 	string win, control
 	variable newValue
 	variable respectLimits
-	
+
 	if(ParamIsDefault(respectLimits))
 		respectLimits = 0
 	endif
-	
+
 	ControlInfo/W=$win $control
 	ASSERT(V_flag != 0, "Non-existing control or window")
 	ASSERT(abs(V_flag) == CONTROL_TYPE_SETVARIABLE, "Control is not a setvariable")
@@ -338,7 +338,7 @@ Function SetSetVariable(win,Control, newValue, [respectLimits])
 	if(newValue != v_value)
 		SetVariable $control, win = $win, value =_NUM:newValue
 	endif
-	
+
 	return newValue
 End
 
@@ -360,13 +360,13 @@ Function SetCheckBoxState(win,control,state)
 	ControlInfo/W=$win $control
 	ASSERT(V_flag != 0, "Non-existing control or window")
 	ASSERT(abs(V_flag) == CONTROL_TYPE_CHECKBOX, "Control is not a checkbox")
-	
+
 	state = !!state
-	
+
 	if(state != V_Value)
 		CheckBox $control, win=$win, value=(state==CHECKBOX_SELECTED)
 	endif
-	
+
 End
 
 /// @brief Set the input limits for a setVariable control
@@ -385,7 +385,7 @@ End
 Function GetSetVariable(win, control)
 	string win, control
 
-	ControlInfo/W=$win $control	
+	ControlInfo/W=$win $control
 	ASSERT(V_flag != 0, "Non-existing control or window")
 	ASSERT(abs(V_flag) == CONTROL_TYPE_SETVARIABLE, "Control is not a setvariable")
 	return V_Value
@@ -507,7 +507,7 @@ End
 Function SetSliderPositionIndex(win, control, index)
 	string win, control
 	variable index
-	
+
 	ControlInfo/W=$win $control
 	ASSERT(V_flag != 0, "Non-existing control or window")
 	ASSERT(abs(V_flag) == CONTROL_TYPE_SLIDER, "Control is not a slider")
@@ -633,7 +633,7 @@ End
 /// @param ctrl	name of the control
 Function GetTabID(win, ctrl)
 	string win, ctrl
-	
+
 	ControlInfo/W=$win $ctrl
 	ASSERT(V_flag != 0, "Non-existing control or window")
 	return V_value
@@ -1273,12 +1273,12 @@ Function GetLimitConstrainedSetVar(win, control, val)
 	string win
 	string control
 	variable val
-	
+
 	variable minVal, maxVal, incVal
 	if(!ExtractLimits(win, control, minVal, maxVal, incVal))
 		val = limit(val, minVal, maxVal)
    	endif
-   	
+
    	return val
 End
 

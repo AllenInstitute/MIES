@@ -401,7 +401,7 @@ Function StimParamGUI()
 	Scale = SCALE_LOCAL
 	sweeps = NUM_SWEEPS_LOCAL
 	ITI = ITI_LOCAL
-	
+
 	Prompt stimSet, "Choose which stimulus set to run:", popup, StimSetList
 	Prompt Vm1, "Enter initial holding potential: "
 	Prompt Scale, "Enter scale of stimulation [mV]: "
@@ -428,7 +428,7 @@ Function SetStimParam(stimSet, Vm1, Scale, Sweeps, ITI)
 	string stimSet
 
 	variable stimSetIndex
-	
+
 	setHolding(Vm1)
 	stimSetIndex = GetStimSet(stimSet)
 
@@ -487,7 +487,7 @@ End
 
 /// @brief Set active headstages into I-clamp
 Function setIClampMode()
-	
+
 	variable i
 	string ctrl
 
@@ -510,7 +510,7 @@ Function switchHolding(Vm2)
 	variable Vm2
 
 	variable numSweeps, SweepsRemaining, switchSweep, i, clampMode
-	
+
 	numSweeps = GetValDisplayAsNum(DEFAULT_DEVICE, "valdisp_DataAcq_SweepsInSet")
 	SweepsRemaining = DAG_GetNumericalValue(DEFAULT_DEVICE, "valdisp_DataAcq_TrialsCountdown") - 1
 
@@ -563,7 +563,7 @@ Function InitoodDAQ()
    // make sure oodDAQ is enabled
 
    	PGC_SetAndActivateControl(DEFAULT_DEVICE, "Check_DataAcq1_dDAQOptOv", val = CHECKBOX_SELECTED)
-   
+
    // make sure Get/Set ITI is disabled
 
    	PGC_SetAndActivateControl(DEFAULT_DEVICE, "Check_DataAcq_Get_Set_ITI", val = CHECKBOX_UNSELECTED)
@@ -577,7 +577,7 @@ Function LastStimSetRun()
 
 	variable LastSweep, i, holding_i
 	string StimSet_i, clampHS_i
-	
+
 	WAVE /T textualValues = GetLBTextualValues(DEFAULT_DEVICE)
 	WAVE  numericalValues = GetLBNumericalValues(DEFAULT_DEVICE)
 	WAVE statusHS = DAG_GetChannelState(DEFAULT_DEVICE, CHANNEL_TYPE_HEADSTAGE)
@@ -967,9 +967,9 @@ Function ReachTargetVoltage(panelTitle, eventType, ITCDataWave, headStage, realD
 	// END CHANGE ME
 
 	WAVE targetVoltagesIndex = GetAnalysisFuncIndexingHelper(panelTitle)
-	
+
 	WAVE statusHS = DAG_GetChannelState(panelTitle, CHANNEL_TYPE_HEADSTAGE)
-	
+
 	WAVE ampParam = GetAmplifierParamStorageWave(panelTitle)
 
 	switch(eventType)
@@ -981,21 +981,21 @@ Function ReachTargetVoltage(panelTitle, eventType, ITCDataWave, headStage, realD
 				ControlWindowToFront()
 				return 1
 			endif
-			
+
 			for(i = 0; i < NUM_HEADSTAGES; i += 1)
 				if(!statusHS[i])
 					continue
 				endif
-				
+
 				autoBiasCheck = ampParam[%AutoBiasEnable][0][i]
 				holdingPotential = ampParam[%AutoBiasVcom][0][i]
-				
+
 				if(autoBiasCheck != 1)
 					printf "Abort: Autobias for headstage %d not enabled.\r", i
 					ControlWindowToFront()
 					return 1
 				endif
-				
+
 				if(CheckIfClose(holdingPotential, -70, tol=1) != 1)
 					if(holdingPotential > -75 && holdingPotential < -65)
 						printf "Warning: Holding potential for headstage %d is not -70mV but is within acceptable range, targetV continuing.\r", i
@@ -1013,13 +1013,13 @@ Function ReachTargetVoltage(panelTitle, eventType, ITCDataWave, headStage, realD
 			KillWindow/Z $RESISTANCE_GRAPH
 
 			SetDAScale(panelTitle, headstage, -20e-12)
-			
+
 			PGC_SetAndActivateControl(panelTitle,"Check_DataAcq1_DistribDaq", val = 1)
 
 			PGC_SetAndActivateControl(panelTitle,"Check_DataAcq1_dDAQOptOv", val = 0)
-			
+
 			PGC_SetAndActivateControl(panelTitle,"Setvar_DataAcq_dDAQDelay", val = 500)
-			
+
 			return Nan
 			break
 		case POST_SWEEP_EVENT:

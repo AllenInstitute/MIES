@@ -73,7 +73,7 @@ Window MainPanel() : Panel
 	CheckBox Radio3,pos={290.00,259.00},size={52.00,15.00},title="Radio3"
 	CheckBox Radio3,value= 1,mode=1
 	CheckBox Radio3 proc=TCONF_CheckProc
-	NewPanel/W=(11,203,273,387)/HOST=# 
+	NewPanel/W=(11,203,273,387)/HOST=#
 	ModifyPanel cbRGB=(32768,40777,65535)
 	CheckBox checkbox1,pos={10.00,10.00},size={70.00,15.00},title="TrueColor"
 	CheckBox checkbox1,userdata(ControlArray)=  "ctrlArray"
@@ -107,7 +107,7 @@ EndMacro
 
 /// @brief RadioCoupling function for MainPanel, referred checkboxes are not actually implemented coupled.
 Function/WAVE TCONF_RadioCoupling()
-	
+
 	Make/FREE/T/N=1 w
 	w[0] = "Radio1;Radio2;Radio3;"
 	return w
@@ -189,7 +189,7 @@ End
 static Function TCONF_Save()
 
 	string fName1 = "ConfigurationTest_compare1.txt"
-	
+
 	CONF_SaveWindow(PrependExperimentFolder_IGNORE(fName1))
 
 	TCONF_CompareTextFiles(fName1, REF_CONFIG_FILE)
@@ -199,11 +199,11 @@ End
 static Function TCONF_Load()
 
 	string fName1 = "ConfigurationTest_compare1.txt"
-	
+
 	variable/G setvarTest
-	
+
 	TCONF_ChangeGUIValues_IGNORE()
-	
+
 	CONF_RestoreWindow(PrependExperimentFolder_IGNORE(REF_CONFIG_FILE))
 
 	NVAR priorityFlag

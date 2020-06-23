@@ -14,12 +14,12 @@ Function/S ControlNameListByType(winNameStr, listSepStr, matchStr, controlTypeVa
 	// All parameters are required.
 	String winNameStr, listSepStr, matchStr
 	Variable controlTypeVal
-	
+
 	// make sure window exists
 	if (WinType(winNameStr) == 0)
 		return ""		// window doesn't exist
 	endif
-	
+
 	String controls = ControlNameList(winNameStr, listSepStr, matchStr)
 	Variable n, numControls
 	String typeControls = ""		// list of controls of the specified type
@@ -30,9 +30,9 @@ Function/S ControlNameListByType(winNameStr, listSepStr, matchStr, controlTypeVa
 		ControlInfo/W=$(winNameStr) $(currentControlName)
 		if (abs(V_Flag) == controlTypeVal)
 			typeControls += currentControlName + listSepStr
-		endif	
+		endif
 	EndFor
-	return typeControls	
+	return typeControls
 End
 
 Function ACL_SetControlDisableStatus(panel, currentControl, tabControlName, newTabNum)
@@ -41,32 +41,32 @@ Function ACL_SetControlDisableStatus(panel, currentControl, tabControlName, newT
 	String &tabControlName	// REFERENCE:  name of tab control that originally prompted the action procedure
 	Variable &newTabNum	// REFERENCE:  number of the new tab that has been selected
 
-	// declare variables	
+	// declare variables
 	Variable tabNumber
 	Variable windowType
 	Variable windowHide
 	Variable controlDisable
 	String potentialWindowName
 	String controllingTab
-	
+
 	ControlInfo/W=$(panel) $(currentControl)
 	// tabs are a special case since we want to change the value, not the disable status
 	if (abs(V_flag == 8) && cmpstr(currentControl, tabControlName) == 0)		// this control is a tab
-		TabControl $(currentControl) win=$(panel), value=(newTabNum)	
+		TabControl $(currentControl) win=$(panel), value=(newTabNum)
 	elseif (abs(V_flag) > 0)		// the control exists--this should always be positive unless it's a window
 		// see if this control is "controlled" by the current tab control
 		// and if so, change it's disable status.  If it's not controlled by the current
 		// tab control, then check to see if the tab that controls it is visible.  If so display; if not, ignore
 		controllingTab = GetUserData(panel, currentControl, "tabcontrol")
 		tabNumber = str2num(GetUserData(panel, currentControl, "tabnum"))
-		if (cmpstr(tabControlName, controllingTab) == 0)						
+		if (cmpstr(tabControlName, controllingTab) == 0)
 			if (numtype(tabNumber) == 0)	// tabnumber userdata is defined
 				ModifyControl $(currentControl), win=$(panel), disable=((tabNumber == newTabNum) ? (V_disable & ~0x1) : (V_disable | 0x1))		// clear the hide bit/set the hide bit
 			else		// display the control since it's controlled by this tab but should be visible whenever the controlling tab control is visible
 				ModifyControl $(currentControl), win=$(panel), disable=(V_disable & ~0x1)		// clear the hide bit
 			endif
 		elseif (cmpstr(controllingTab, "") != 0)
-			// store the V_disable value of the control 
+			// store the V_disable value of the control
 			controlDisable = V_disable
 			// determine status of controlling tab
 			ControlInfo/W=$(panel) $(controllingTab)
@@ -91,7 +91,7 @@ Function ACL_SetControlDisableStatus(panel, currentControl, tabControlName, newT
 		// see if this is a window, and if so see if it is "controlled" by the current tab control
 		// and if so, change the "disable" status.  If it's not controlled by the current
 		// tab control, then ignore it.
-		
+
 		sprintf potentialWindowName, "%s#%s", panel, currentControl
 		windowType = WinType(potentialWindowName)
 		Switch (windowType)
@@ -108,7 +108,7 @@ Function ACL_SetControlDisableStatus(panel, currentControl, tabControlName, newT
 				controllingTab = GetUserData(potentialWindowName, "", "tabcontrol")
 				tabNumber = str2num(GetUserData(potentialWindowName, "", "tabnum"))
 				GetWindow $(potentialWindowName) hide
-				windowHide = V_Value		
+				windowHide = V_Value
 				if (cmpstr(tabControlName, controllingTab) == 0)
 					if (numtype(tabNumber) == 0)	// tabnumber userdata is defined
 						SetWindow $(potentialWindowName) hide=((tabNumber == newTabNum) ? (windowHide & ~0x1) : (windowHide | 0x1)), needUpdate=1		// clear the hide bit/set the hide bit and force update of window
@@ -130,7 +130,7 @@ Function ACL_SetControlDisableStatus(panel, currentControl, tabControlName, newT
 		// ************************************
 		// ***** END NOTICE
 		// ************************************
-	endif	
+	endif
 	return 0	// input parameters are passed by reference so there is no need to return the values themselves
 End
 
@@ -166,18 +166,18 @@ Function ACL_DisplayTab(tca): TabControl
 	//	tca.win			-->	window (panel) containing the tab control to be switched
 	//	tca.eventCode	-->	pass a value of 2 for tab to be switched.  other values will be ignored
 	//	tca.tab			-->	new tab to switch to
-	//	
+	//
 	//	OPTIONAL
 	//	tca.eventMod		-->	bitfield of modifiers.  See command help for TabControl for more info
 	//	tca.userdata		-->	primary (unnamed) user data.  If this is not set correctly this function may not work properly
-	
+
 	STRUCT WMTabControlAction &tca
-	
+
 	// Don't do anything unless tca.eventCode is 2, which is the mouse up event.
 	if (tca.eventCode != 2)
 		return 0
 	endif
-	
+
 	String panel = tca.win
 	String tabControlName = tca.ctrlName
 
@@ -188,17 +188,17 @@ Function ACL_DisplayTab(tca): TabControl
 	if (WinType(panel) == 0)
 		return -1
 	endif
-	
+
 	// make sure tab control exists
 	ControlInfo/W=$(panel) $(tabControlName)
-	
+
 	if (abs(V_Flag != 8))		// this is not a tab control or the control doesn't exist)
 		return -1
 	endif
-	
-	//	This function supports setting a separate hook function for a tab control that will be executed before the 
+
+	//	This function supports setting a separate hook function for a tab control that will be executed before the
 	//	tab event handling code is executed.  The function name should be stored in the named userdata(initialhook) value
-	//	of the tab control.  The function must exist and must return a numerical parameter.  If the returned value is 
+	//	of the tab control.  The function must exist and must return a numerical parameter.  If the returned value is
 	//	anything but zero the rest of the tab handling code will not execute.  This could be used to prevent
 	//	clicking on a tab from acutally activating the tab, for example.
 	String initialhook = (GetUserData(panel, tabControlName, "initialhook"))
@@ -212,7 +212,7 @@ Function ACL_DisplayTab(tca): TabControl
 				FUNCREF ACLTabControlHookProtoFunc InitialHookFunction =$(initialhook)
 					initialReturnValue = InitialHookFunction(tca)
 					if (initialReturnValue != 0)		// don't allow changing of tab
-						// the tab itself has already changed, so we have to reset the selected tab to the value 
+						// the tab itself has already changed, so we have to reset the selected tab to the value
 						// stored in the tab controls userdata(currenttab)
 						Variable originalTab = str2num(GetUserData(panel, tabControlName, "currenttab"))
 						TabControl $(tabControlName) win=$(panel), value=originalTab		// reset selected tab
@@ -233,7 +233,7 @@ Function ACL_DisplayTab(tca): TabControl
 	Variable windowHide
 	Variable controlDisable
 	Variable newTabNum = tca.tab
-	
+
 	// first go through and change the disable status of any tabs on the control
 	controls = ControlNameListByType(panel, ";", "*", 8)
 	numControls = ItemsInList(controls, ";")
@@ -241,7 +241,7 @@ Function ACL_DisplayTab(tca): TabControl
 		currentControl = StringFromList(n, controls, ";")
 		ACL_SetControlDisableStatus(panel, currentControl, tabControlName, newTabNum)
 	EndFor
-	
+
 	controls = ControlNameList(panel, ";", "*")
 	// add to the list of controls any child windows of the panel (ie. graphs, etc.)
 	controls += ChildWindowList(panel)
@@ -254,8 +254,8 @@ Function ACL_DisplayTab(tca): TabControl
 	if (newTabNum >= 0)
 		TabControl $(tabControlName) win=$(panel), userdata(currenttab)=num2str(newTabNum)
 	EndIf
-	
-	//	This function supports setting a separate hook function for a tab control that will be executed after the 
+
+	//	This function supports setting a separate hook function for a tab control that will be executed after the
 	//	tab event handling code is executed.  The function name should be stored in the named userdata(finalhook) value
 	//	of the tab control.  The function must exist and must return a numerical parameter.  The value returned by this
 	// 	hook function, if it exists, will also be returned by this main tab handling action procedure.
