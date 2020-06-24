@@ -1683,30 +1683,29 @@ End
 /// - 28: oodDAQ Resolution
 /// - 29: Optimized Overlap dDAQ
 /// - 30: Delay onset oodDAQ
-/// - 31: Pulse To Pulse Length for pulse Train stimsets
-/// - 32: Repeated Acquisition Cycle ID
-/// - 33: Stim Wave Checksum (can be used to disambiguate cases
+/// - 31: Repeated Acquisition Cycle ID
+/// - 32: Stim Wave Checksum (can be used to disambiguate cases
 ///                           where two stimsets are named the same
 ///                           but have different contents)
-/// - 34: Multi Device mode
-/// - 35: Background Testpulse
-/// - 36: Background DAQ
-/// - 37: Sampling interval multiplier
-/// - 38: TP buffer size
-/// - 39: TP during ITI
-/// - 40: Amplifier change via I=0
-/// - 41: Skip analysis functions
-/// - 42: Repeat sweep on async alarm
-/// - 43: Set Cycle Count
-/// - 44: Stimset cycle ID
-/// - 45: Digitizer Hardware Type, one of @ref HardwareDACTypeConstants
-/// - 46: Fixed frequency acquisition
-/// - 47: Headstage Active
-/// - 48: Clamp Mode
-/// - 49: Igor Pro bitness
-/// - 50: DA ChannelType, one of @ref DaqChannelTypeConstants
-/// - 51: AD ChannelType, one of @ref DaqChannelTypeConstants
-/// - 52: oodDAQ member, true if headstage takes part in oodDAQ mode, false otherwise
+/// - 33: Multi Device mode
+/// - 34: Background Testpulse
+/// - 35: Background DAQ
+/// - 36: Sampling interval multiplier
+/// - 37: TP buffer size
+/// - 38: TP during ITI
+/// - 39: Amplifier change via I=0
+/// - 40: Skip analysis functions
+/// - 41: Repeat sweep on async alarm
+/// - 42: Set Cycle Count
+/// - 43: Stimset cycle ID
+/// - 44: Digitizer Hardware Type, one of @ref HardwareDACTypeConstants
+/// - 45: Fixed frequency acquisition
+/// - 46: Headstage Active
+/// - 47: Clamp Mode
+/// - 48: Igor Pro bitness
+/// - 49: DA ChannelType, one of @ref DaqChannelTypeConstants
+/// - 50: AD ChannelType, one of @ref DaqChannelTypeConstants
+/// - 51: oodDAQ member, true if headstage takes part in oodDAQ mode, false otherwise
 Function/Wave GetSweepSettingsKeyWave(panelTitle)
 	string panelTitle
 
@@ -1725,9 +1724,9 @@ Function/Wave GetSweepSettingsKeyWave(panelTitle)
 	if(ExistsWithCorrectLayoutVersion(wv, versionOfNewWave))
 		return wv
 	elseif(WaveExists(wv))
-		Redimension/N=(-1, 53) wv
+		Redimension/N=(-1, 52) wv
 	else
-		Make/T/N=(3, 53) newDFR:$newName/Wave=wv
+		Make/T/N=(3, 52) newDFR:$newName/Wave=wv
 	endif
 
 	wv = ""
@@ -1741,12 +1740,12 @@ Function/Wave GetSweepSettingsKeyWave(panelTitle)
 	wv[%Tolerance][0] = ".0001"
 
 	wv[%Parameter][1] = "DAC"
-	wv[%Units][1]     = ""
-	wv[%Tolerance][1] = ".0001"
+	wv[%Units][1]     = "a. u."
+	wv[%Tolerance][1] = "1"
 
 	wv[%Parameter][2] = "ADC"
-	wv[%Units][2]     = ""
-	wv[%Tolerance][2] = ".0001"
+	wv[%Units][2]     = "a. u."
+	wv[%Tolerance][2] = "1"
 
 	wv[%Parameter][3] = "DA Gain"
 	wv[%Units][3]     = ""
@@ -1757,9 +1756,9 @@ Function/Wave GetSweepSettingsKeyWave(panelTitle)
 	wv[%Tolerance][4] = ".000001"
 
 	wv[%Parameter][5] = "Set Sweep Count"
-	wv[%Units][5]     = ""
-	wv[%Tolerance][5] = ".0001"
-	
+	wv[%Units][5]     = "a. u."
+	wv[%Tolerance][5] = "1"
+
 	wv[%Parameter][6] = "TP Insert Checkbox"
 	wv[%Units][6]     = LABNOTEBOOK_BINARY_UNIT
 	wv[%Tolerance][6] = LABNOTEBOOK_NO_TOLERANCE
@@ -1777,11 +1776,11 @@ Function/Wave GetSweepSettingsKeyWave(panelTitle)
 	wv[%Tolerance][9] = LABNOTEBOOK_NO_TOLERANCE
 
 	wv[%Parameter][10] = "TTL rack zero channel"
-	wv[%Units][10]     = ""
+	wv[%Units][10]     = "a. u."
 	wv[%Tolerance][10] = LABNOTEBOOK_NO_TOLERANCE
 
 	wv[%Parameter][11] = "TTL rack one channel"
-	wv[%Units][11]     = ""
+	wv[%Units][11]     = "a. u."
 	wv[%Tolerance][11] = LABNOTEBOOK_NO_TOLERANCE
 
 	wv[%Parameter][12] = "Delay onset user"
@@ -1805,8 +1804,8 @@ Function/Wave GetSweepSettingsKeyWave(panelTitle)
 	wv[%Tolerance][16] = LABNOTEBOOK_NO_TOLERANCE
 
 	wv[%Parameter][17] = "Repeat Sets"
-	wv[%Units][17]     = ""
-	wv[%Tolerance][17] = ".0001"
+	wv[%Units][17]     = "a. u."
+	wv[%Tolerance][17] = "1"
 
 	wv[%Parameter][18] = "Scaling zero"
 	wv[%Units][18]     = LABNOTEBOOK_BINARY_UNIT
@@ -1833,7 +1832,7 @@ Function/Wave GetSweepSettingsKeyWave(panelTitle)
 	wv[%Tolerance][23] = "1"
 
 	wv[%Parameter][24] = "Sampling interval multiplier"
-	wv[%Units][24]     = ""
+	wv[%Units][24]     = "a. u."
 	wv[%Tolerance][24] = "0.1"
 
 	wv[%Parameter][25] = "Stim set length"
@@ -1860,93 +1859,89 @@ Function/Wave GetSweepSettingsKeyWave(panelTitle)
 	wv[%Units][30]     = "ms"
 	wv[%Tolerance][30] = "1"
 
-	wv[%Parameter][31] = PULSE_TO_PULSE_LENGTH_KEY
-	wv[%Units][31]     = "ms"
+	wv[%Parameter][31] = RA_ACQ_CYCLE_ID_KEY
+	wv[%Units][31]     = "a. u."
 	wv[%Tolerance][31] = "1"
 
-	wv[%Parameter][32] = RA_ACQ_CYCLE_ID_KEY
-	wv[%Units][32]     = ""
+	wv[%Parameter][32] = "Stim Wave Checksum"
+	wv[%Units][32]     = "a. u."
 	wv[%Tolerance][32] = "1"
 
-	wv[%Parameter][33] = "Stim Wave Checksum"
-	wv[%Units][33]     = ""
-	wv[%Tolerance][33] = "1"
+	wv[%Parameter][33] = "Multi Device mode"
+	wv[%Units][33]     = LABNOTEBOOK_BINARY_UNIT
+	wv[%Tolerance][33] = LABNOTEBOOK_NO_TOLERANCE
 
-	wv[%Parameter][34] = "Multi Device mode"
+	wv[%Parameter][34] = "Background Testpulse"
 	wv[%Units][34]     = LABNOTEBOOK_BINARY_UNIT
 	wv[%Tolerance][34] = LABNOTEBOOK_NO_TOLERANCE
 
-	wv[%Parameter][35] = "Background Testpulse"
+	wv[%Parameter][35] = "Background DAQ"
 	wv[%Units][35]     = LABNOTEBOOK_BINARY_UNIT
 	wv[%Tolerance][35] = LABNOTEBOOK_NO_TOLERANCE
 
-	wv[%Parameter][36] = "Background DAQ"
-	wv[%Units][36]     = LABNOTEBOOK_BINARY_UNIT
-	wv[%Tolerance][36] = LABNOTEBOOK_NO_TOLERANCE
+	wv[%Parameter][36] = "Sampling interval multiplier"
+	wv[%Units][36]     = "a. u."
+	wv[%Tolerance][36] = "1"
 
-	wv[%Parameter][37] = "Sampling interval multiplier"
+	wv[%Parameter][37] = "TP buffer size"
 	wv[%Units][37]     = "a. u."
 	wv[%Tolerance][37] = "1"
 
-	wv[%Parameter][38] = "TP buffer size"
-	wv[%Units][38]     = "a. u."
-	wv[%Tolerance][38] = "1"
+	wv[%Parameter][38] = "TP during ITI"
+	wv[%Units][38]     = LABNOTEBOOK_BINARY_UNIT
+	wv[%Tolerance][38] = LABNOTEBOOK_NO_TOLERANCE
 
-	wv[%Parameter][39] = "TP during ITI"
+	wv[%Parameter][39] = "Amplifier change via I=0"
 	wv[%Units][39]     = LABNOTEBOOK_BINARY_UNIT
 	wv[%Tolerance][39] = LABNOTEBOOK_NO_TOLERANCE
 
-	wv[%Parameter][40] = "Amplifier change via I=0"
+	wv[%Parameter][40] = "Skip analysis functions"
 	wv[%Units][40]     = LABNOTEBOOK_BINARY_UNIT
 	wv[%Tolerance][40] = LABNOTEBOOK_NO_TOLERANCE
 
-	wv[%Parameter][41] = "Skip analysis functions"
+	wv[%Parameter][41] = "Repeat sweep on async alarm"
 	wv[%Units][41]     = LABNOTEBOOK_BINARY_UNIT
 	wv[%Tolerance][41] = LABNOTEBOOK_NO_TOLERANCE
 
-	wv[%Parameter][42] = "Repeat sweep on async alarm"
-	wv[%Units][42]     = LABNOTEBOOK_BINARY_UNIT
-	wv[%Tolerance][42] = LABNOTEBOOK_NO_TOLERANCE
+	wv[%Parameter][42] = "Set Cycle Count"
+	wv[%Units][42]     = "a. u."
+	wv[%Tolerance][42] = "1"
 
-	wv[%Parameter][43] = "Set Cycle Count"
+	wv[%Parameter][43] = STIMSET_ACQ_CYCLE_ID_KEY
 	wv[%Units][43]     = "a. u."
 	wv[%Tolerance][43] = "1"
 
-	wv[%Parameter][44] = STIMSET_ACQ_CYCLE_ID_KEY
+	wv[%Parameter][44] = "Digitizer Hardware Type"
 	wv[%Units][44]     = "a. u."
 	wv[%Tolerance][44] = "1"
 
-	wv[%Parameter][45] = "Digitizer Hardware Type"
-	wv[%Units][45]     = "a. u."
+	wv[%Parameter][45] = "Fixed frequency acquisition"
+	wv[%Units][45]     = "kHz"
 	wv[%Tolerance][45] = "1"
 
-	wv[%Parameter][46] = "Fixed frequency acquisition"
-	wv[%Units][46]     = "kHz"
-	wv[%Tolerance][46] = "1"
+	wv[%Parameter][46] = "Headstage Active"
+	wv[%Units][46]     = LABNOTEBOOK_BINARY_UNIT
+	wv[%Tolerance][46] = LABNOTEBOOK_NO_TOLERANCE
 
-	wv[%Parameter][47] = "Headstage Active"
-	wv[%Units][47]     = LABNOTEBOOK_BINARY_UNIT
+	wv[%Parameter][47] = "Clamp Mode"
+	wv[%Units][47]     = "a. u."
 	wv[%Tolerance][47] = LABNOTEBOOK_NO_TOLERANCE
 
-	wv[%Parameter][48] = "Clamp Mode"
+	wv[%Parameter][48] = "Igor Pro bitness"
 	wv[%Units][48]     = "a. u."
 	wv[%Tolerance][48] = LABNOTEBOOK_NO_TOLERANCE
 
-	wv[%Parameter][49] = "Igor Pro bitness"
-	wv[%Units][49]     = ""
-	wv[%Tolerance][49] = LABNOTEBOOK_NO_TOLERANCE
+	wv[%Parameter][49] = "DA ChannelType"
+	wv[%Units][49]     = "a. u."
+	wv[%Tolerance][49] = "1"
 
-	wv[%Parameter][50] = "DA ChannelType"
+	wv[%Parameter][50] = "AD ChannelType"
 	wv[%Units][50]     = "a. u."
 	wv[%Tolerance][50] = "1"
 
-	wv[%Parameter][51] = "AD ChannelType"
-	wv[%Units][51]     = "a. u."
-	wv[%Tolerance][51] = "1"
-
-	wv[%Parameter][52] = "oodDAQ member"
-	wv[%Units][52]     = LABNOTEBOOK_BINARY_UNIT
-	wv[%Tolerance][52] = LABNOTEBOOK_NO_TOLERANCE
+	wv[%Parameter][51] = "oodDAQ member"
+	wv[%Units][51]     = LABNOTEBOOK_BINARY_UNIT
+	wv[%Tolerance][51] = LABNOTEBOOK_NO_TOLERANCE
 
 	SetSweepSettingsDimLabels(wv, wv)
 	SetWaveVersion(wv, versionOfNewWave)
