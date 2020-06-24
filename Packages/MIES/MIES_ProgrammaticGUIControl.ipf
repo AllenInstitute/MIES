@@ -366,7 +366,7 @@ Function PGC_SetAndActivateControl(win, control, [val, str, switchTab])
 			ASSERT(0, "Unsupported control type")
 			break
 	endswitch
-	
+
 	if(switchTab)
 		PGC_ShowControlInTab(win, control)
 	endif

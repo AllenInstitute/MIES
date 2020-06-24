@@ -227,7 +227,7 @@ Function IDX_MaxNoOfSweeps(panelTitle, IndexOverRide)
 	string followerPanelTitle
 
 	WAVE statusDAFiltered = DC_GetFilteredChannelState(panelTitle, DATA_ACQUISITION_MODE, CHANNEL_TYPE_DAC, DAQChannelType = DAQ_CHANNEL_TYPE_DAQ)
- 
+
 	for(i = 0; i < NUM_DA_TTL_CHANNELS; i += 1)
 
 		if(!statusDAFiltered[i])

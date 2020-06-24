@@ -946,7 +946,7 @@ Window DataBrowser() : Graph
 	SetWindow kwTopWin,userdata(ResizeControlsInfoMainBoxBottom)=  "NAME:MainBoxBottom;WIN:DataBrowser#BrowserSettingsPanel;TYPE:User;HORIZONTAL:1;POSITION:414.00;GUIDE1:FB;GUIDE2:;RELPOSITION:3;"
 	SetWindow kwTopWin,userdata(ResizeControlsInfoMainBoxTop)=  "NAME:MainBoxTop;WIN:DataBrowser#BrowserSettingsPanel;TYPE:User;HORIZONTAL:1;POSITION:85.00;GUIDE1:enableBoxBottom;GUIDE2:;RELPOSITION:10;"
 	Execute/Q/Z "SetWindow kwTopWin sizeLimit={305.25,330,inf,inf}" // sizeLimit requires Igor 7 or later
-	NewNotebook /F=0 /N=sweepFormula_json /W=(12,71,378,358)/FG=(UGVL,UGVT,UGVR,UGVB) /HOST=# /V=0 /OPTS=12 
+	NewNotebook /F=0 /N=sweepFormula_json /W=(12,71,378,358)/FG=(UGVL,UGVT,UGVR,UGVB) /HOST=# /V=0 /OPTS=12
 	Notebook kwTopWin, defaultTab=20, autoSave= 0, magnification=100, writeProtect=1
 	Notebook kwTopWin font="Lucida Console", fSize=11, fStyle=0, textRGB=(0,0,0)
 	SetWindow kwTopWin,hook(ResizeControls)=ResizeControls#ResizeControlsHook
@@ -957,7 +957,7 @@ Window DataBrowser() : Graph
 	SetWindow kwTopWin,userdata(ResizeControlsInfo) += A"zzz!!#?(FEDG<zzzzzzzzzzzzzz!!!"
 	RenameWindow #,sweepFormula_json
 	SetActiveSubwindow ##
-	NewNotebook /F=0 /N=sweepFormula_formula /W=(12,71,378,358)/FG=(UGVL,UGVT,UGVR,UGVB) /HOST=# /V=0 
+	NewNotebook /F=0 /N=sweepFormula_formula /W=(12,71,378,358)/FG=(UGVL,UGVT,UGVR,UGVB) /HOST=# /V=0
 	Notebook kwTopWin, defaultTab=20, autoSave= 1, magnification=100
 	Notebook kwTopWin font="Lucida Console", fSize=11, fStyle=0, textRGB=(0,0,0)
 	Notebook kwTopWin, zdata= "GaqDU%ejN7!Z*!1@=S>)+F`2^BZWLb84b@(eDO%R/Lo%!.b8RgERN@q:!Q;Rb=g(\\Ea=4.iptUKJmo0`?;1F7@M*q"
@@ -981,7 +981,7 @@ Window DataBrowser() : Graph
 	SetWindow kwTopWin,userdata(ResizeControlsInfo) += A"zzz!!#?(FEDG<zzzzzzzzzzzzzz!!!"
 	RenameWindow #,sweepFormula_help
 	SetActiveSubwindow ##
-	NewNotebook /F=0 /N=WaveNoteDisplay /W=(200,24,600,561)/FG=(FL,$"",FR,FB) /HOST=# /V=0 /OPTS=10 
+	NewNotebook /F=0 /N=WaveNoteDisplay /W=(200,24,600,561)/FG=(FL,$"",FR,FB) /HOST=# /V=0 /OPTS=10
 	Notebook kwTopWin, defaultTab=36, autoSave= 0, magnification=100
 	Notebook kwTopWin font="Lucida Console", fSize=11, fStyle=0, textRGB=(0,0,0)
 	SetWindow kwTopWin,hook(ResizeControls)=ResizeControls#ResizeControlsHook
@@ -1029,7 +1029,7 @@ Window DataBrowser() : Graph
 	SetWindow kwTopWin,userdata(ResizeControlsGuides)=  "UGV0;"
 	SetWindow kwTopWin,userdata(ResizeControlsInfoUGV0)=  "NAME:UGV0;WIN:DataBrowser#SettingsHistoryPanel;TYPE:User;HORIZONTAL:0;POSITION:401.00;GUIDE1:FR;GUIDE2:;RELPOSITION:-187;"
 	Execute/Q/Z "SetWindow kwTopWin sizeLimit={447,110.25,inf,inf}" // sizeLimit requires Igor 7 or later
-	Display/W=(200,187,395,501)/FG=(FL,FT,UGV0,FB)/HOST=# 
+	Display/W=(200,187,395,501)/FG=(FL,FT,UGV0,FB)/HOST=#
 	ModifyGraph margin(right)=74
 	TextBox/C/N=text0/F=0/B=1/X=0.50/Y=2.02/E=2 ""
 	RenameWindow #,LabNoteBook

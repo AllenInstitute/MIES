@@ -43,7 +43,7 @@ Function/WAVE FFI_ReturnTPValues()
 
 		//make sure we get a valid TPCycleCount value
 		if (TPCycleCount == 0)
-			return $""	
+			return $""
 		endif
 
 		acqStorageWave[%PeakResistance][][n]        = tpStorageWave[tpCycleCount-1][q][%PeakResistance]

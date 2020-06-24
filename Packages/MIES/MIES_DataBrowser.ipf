@@ -1041,7 +1041,7 @@ static Function DB_SplitSweepsIfReq(win, sweepNo)
 	WAVE configWave = GetConfigWave(sweepWave)
 
 	sweepModTime = max(ModDate(sweepWave), ModDate(configWave))
-	numWaves = CountObjectsDFR(singleSweepDFR, COUNTOBJECTS_WAVES)	
+	numWaves = CountObjectsDFR(singleSweepDFR, COUNTOBJECTS_WAVES)
 	requireNewSplit = (numWaves == 0)
 
 	for(i = 0; i < numWaves; i += 1)

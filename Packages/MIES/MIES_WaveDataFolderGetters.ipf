@@ -3715,15 +3715,15 @@ Function/Wave GetAsyncMeasurementKeyWave()
 	wv[%Parameter][1] = "Async AD 1"
 	wv[%Units][1]     = ""
 	wv[%Tolerance][1] = ".0001"
-	
+
 	wv[%Parameter][2] = "Async AD 2"
 	wv[%Units][2]     = ""
 	wv[%Tolerance][2] = ".0001"
-	
+
 	wv[%Parameter][3] = "Async AD 3"
 	wv[%Units][3]     = ""
 	wv[%Tolerance][3] = ".0001"
-	
+
 	wv[%Parameter][4] = "Async AD 4"
 	wv[%Units][4]     = ""
 	wv[%Tolerance][4] = ".0001"
@@ -3840,7 +3840,7 @@ Function/Wave GetAsyncSettingsWave()
 	SetDimLabel 1, 37, AlarmMax5, wv
 	SetDimLabel 1, 38, AlarmMax6, wv
 	SetDimLabel 1, 39, AlarmMax7, wv
-	
+
 	return wv
 End
 
@@ -3907,31 +3907,31 @@ Function/Wave GetAsyncSettingsKeyWave()
 	wv[%Parameter][0] = "Async 0 On/Off"
 	wv[%Units][0]     = LABNOTEBOOK_BINARY_UNIT
 	wv[%Tolerance][0] = LABNOTEBOOK_NO_TOLERANCE
-	
+
 	wv[%Parameter][1] = "Async 1 On/Off"
 	wv[%Units][1]     = LABNOTEBOOK_BINARY_UNIT
 	wv[%Tolerance][1] = LABNOTEBOOK_NO_TOLERANCE
-	
+
 	wv[%Parameter][2] = "Async 2 On/Off"
 	wv[%Units][2]     = LABNOTEBOOK_BINARY_UNIT
 	wv[%Tolerance][2] = LABNOTEBOOK_NO_TOLERANCE
-	
+
 	wv[%Parameter][3] = "Async 3 On/Off"
 	wv[%Units][3]     = LABNOTEBOOK_BINARY_UNIT
 	wv[%Tolerance][3] = LABNOTEBOOK_NO_TOLERANCE
-	
+
 	wv[%Parameter][4] = "Async 4 On/Off"
 	wv[%Units][4]     = LABNOTEBOOK_BINARY_UNIT
 	wv[%Tolerance][4] = LABNOTEBOOK_NO_TOLERANCE
-	
+
 	wv[%Parameter][5] = "Async 5 On/Off"
 	wv[%Units][5]     = LABNOTEBOOK_BINARY_UNIT
 	wv[%Tolerance][5] = LABNOTEBOOK_NO_TOLERANCE
-	
+
 	wv[%Parameter][6] = "Async 6 On/Off"
 	wv[%Units][6]     = LABNOTEBOOK_BINARY_UNIT
 	wv[%Tolerance][6] = LABNOTEBOOK_NO_TOLERANCE
-	
+
 	wv[%Parameter][7] = "Async 7 On/Off"
 	wv[%Units][7]     = LABNOTEBOOK_BINARY_UNIT
 	wv[%Tolerance][7] = LABNOTEBOOK_NO_TOLERANCE
@@ -3943,7 +3943,7 @@ Function/Wave GetAsyncSettingsKeyWave()
 	wv[%Parameter][9] = "Async 1 Gain"
 	wv[%Units][9]     = ""
 	wv[%Tolerance][9] = ".001"
-	
+
 	wv[%Parameter][10] = "Async 2 Gain"
 	wv[%Units][10]     = ""
 	wv[%Tolerance][10] = ".001"
@@ -3951,7 +3951,7 @@ Function/Wave GetAsyncSettingsKeyWave()
 	wv[%Parameter][11] = "Async 3 Gain"
 	wv[%Units][11]     = ""
 	wv[%Tolerance][11] = ".001"
-	
+
 	wv[%Parameter][12] = "Async 4 Gain"
 	wv[%Units][12]     = ""
 	wv[%Tolerance][12] = ".001"
@@ -3959,7 +3959,7 @@ Function/Wave GetAsyncSettingsKeyWave()
 	wv[%Parameter][13] = "Async 5 Gain"
 	wv[%Units][13]     = ""
 	wv[%Tolerance][13] = ".001"
-	
+
 	wv[%Parameter][14] = "Async 6 Gain"
 	wv[%Units][14]     = ""
 	wv[%Tolerance][14] = ".001"
@@ -3971,31 +3971,31 @@ Function/Wave GetAsyncSettingsKeyWave()
 	wv[%Parameter][16] = "Async Alarm 0 On/Off"
 	wv[%Units][16]     = LABNOTEBOOK_BINARY_UNIT
 	wv[%Tolerance][16] = LABNOTEBOOK_NO_TOLERANCE
-	
+
 	wv[%Parameter][17] = "Async Alarm 1 On/Off"
 	wv[%Units][17]     = LABNOTEBOOK_BINARY_UNIT
 	wv[%Tolerance][17] = LABNOTEBOOK_NO_TOLERANCE
-	
+
 	wv[%Parameter][18] = "Async Alarm 2 On/Off"
 	wv[%Units][18]     = LABNOTEBOOK_BINARY_UNIT
 	wv[%Tolerance][18] = LABNOTEBOOK_NO_TOLERANCE
-	
+
 	wv[%Parameter][19] = "Async Alarm 3 On/Off"
 	wv[%Units][19]     = LABNOTEBOOK_BINARY_UNIT
 	wv[%Tolerance][19] = LABNOTEBOOK_NO_TOLERANCE
-	
+
 	wv[%Parameter][20] = "Async Alarm 4 On/Off"
 	wv[%Units][20]     = LABNOTEBOOK_BINARY_UNIT
 	wv[%Tolerance][20] = LABNOTEBOOK_NO_TOLERANCE
-	
+
 	wv[%Parameter][21] = "Async Alarm 5 On/Off"
 	wv[%Units][21]     = LABNOTEBOOK_BINARY_UNIT
 	wv[%Tolerance][21] = LABNOTEBOOK_NO_TOLERANCE
-	
+
 	wv[%Parameter][22] = "Async Alarm 6 On/Off"
 	wv[%Units][22]     = LABNOTEBOOK_BINARY_UNIT
 	wv[%Tolerance][22] = LABNOTEBOOK_NO_TOLERANCE
-	
+
 	wv[%Parameter][23] = "Async Alarm 7 On/Off"
 	wv[%Units][23]     = LABNOTEBOOK_BINARY_UNIT
 	wv[%Tolerance][23] = LABNOTEBOOK_NO_TOLERANCE
@@ -4003,31 +4003,31 @@ Function/Wave GetAsyncSettingsKeyWave()
 	wv[%Parameter][24] = "Async Alarm 0 Min"
 	wv[%Units][24]     = ""
 	wv[%Tolerance][24] = ".001"
-	
+
 	wv[%Parameter][25] = "Async Alarm 1 Min"
 	wv[%Units][25]     = ""
 	wv[%Tolerance][25] = ".001"
-	
+
 	wv[%Parameter][26] = "Async Alarm 2 Min"
 	wv[%Units][26]     = ""
 	wv[%Tolerance][26] = ".001"
-	
+
 	wv[%Parameter][27] = "Async Alarm 3 Min"
 	wv[%Units][27]     = ""
 	wv[%Tolerance][27] = ".001"
-	
+
 	wv[%Parameter][28] = "Async Alarm 4 Min"
 	wv[%Units][28]     = ""
 	wv[%Tolerance][28] = ".001"
-	
+
 	wv[%Parameter][29] = "Async Alarm 5 Min"
 	wv[%Units][29]     = ""
 	wv[%Tolerance][29] = ".001"
-	
+
 	wv[%Parameter][30] = "Async Alarm 6 Min"
 	wv[%Units][30]     = ""
 	wv[%Tolerance][30] = ".001"
-	
+
 	wv[%Parameter][31] = "Async Alarm 7 Min"
 	wv[%Units][31]     = ""
 	wv[%Tolerance][31] = ".001"
@@ -4035,35 +4035,35 @@ Function/Wave GetAsyncSettingsKeyWave()
 	wv[%Parameter][32] = "Async Alarm  0 Max"
 	wv[%Units][32]     = ""
 	wv[%Tolerance][32] = ".001"
-	
+
 	wv[%Parameter][33] = "Async Alarm  1 Max"
 	wv[%Units][33]     = ""
 	wv[%Tolerance][33] = ".001"
-	
+
 	wv[%Parameter][34] = "Async Alarm  2 Max"
 	wv[%Units][34]     = ""
 	wv[%Tolerance][34] = ".001"
-	
+
 	wv[%Parameter][35] = "Async Alarm  3 Max"
 	wv[%Units][35]     = ""
 	wv[%Tolerance][35] = ".001"
-	
+
 	wv[%Parameter][36] = "Async Alarm  4 Max"
 	wv[%Units][36]     = ""
 	wv[%Tolerance][36] = ".001"
-	
+
 	wv[%Parameter][37] = "Async Alarm  5 Max"
 	wv[%Units][37]     = ""
 	wv[%Tolerance][37] = ".001"
-	
+
 	wv[%Parameter][38] = "Async Alarm  6 Max"
 	wv[%Units][38]     = ""
 	wv[%Tolerance][38] = ".001"
-	
+
 	wv[%Parameter][39] = "Async Alarm  7 Max"
 	wv[%Units][39]     = ""
 	wv[%Tolerance][39] = ".001"
-	
+
 	return wv
 End
 
@@ -4525,15 +4525,15 @@ Function/Wave GetAnalysisSettingsWaveRef(panelTitle)
 
 	Make/T/N=(NUM_HEADSTAGES,9) dfr:analysisSettingsWave/Wave=wv
 	wv = ""
-	
+
 	SetDimLabel 0, -1, HeadStage, wv
-	
+
 	SetDimLabel 1, 0, PSAOnOff, wv
 	SetDimLabel 1, 1, PSAType, wv
 	SetDimLabel 1, 2, PSAResult, wv
 	SetDimLabel 1, 3, PAAOnOff, wv
-	SetDimLabel 1, 4, PAAType, wv 
-	SetDimLabel 1, 5, PAAResult, wv 
+	SetDimLabel 1, 4, PAAType, wv
+	SetDimLabel 1, 5, PAAResult, wv
 	SetDimLabel 1, 6, MSAOnOff, wv
 	SetDimLabel 1, 7, MSAType, wv
 	SetDimLabel 1, 8, MSAResult, wv
@@ -4554,8 +4554,8 @@ Function/Wave GetActionScaleSettingsWaveRef(panelTitle)
 	endif
 
 	Make/N=(NUM_HEADSTAGES,7) dfr:actionScaleSettingsWave/Wave=wv
-	
-	SetDimLabel 0, -1, HeadStage, wv	
+
+	SetDimLabel 0, -1, HeadStage, wv
 	SetDimLabel 1, 0, coarseScaleValue, wv
 	SetDimLabel 1, 1, fineScaleValue, wv
 	SetDimLabel 1, 2, apThreshold, wv
@@ -4563,16 +4563,16 @@ Function/Wave GetActionScaleSettingsWaveRef(panelTitle)
 	SetDimLabel 1, 4, fineTuneUse, wv
 	SetDimLabel 1, 5, result, wv
 	SetDimLabel 1, 6, elapsedTime, wv
-	
+
 	// put the coarse scale value to a default
-	wv[][%coarseScaleValue] = 0.10 
-	
+	wv[][%coarseScaleValue] = 0.10
+
 	// put the fine scale value to a default
 	wv[][%fineScaleValue] = 0.05
-	
+
 	// put the apThreshold to a default
 	wv[][%apThreshold] = 0.0
-	
+
 	// put the coarse tune use factor to 1 as an initial state
 	wv[][%coarseTuneUse] = 1
 
@@ -5076,12 +5076,12 @@ Function/Wave GetConfigSettingsWaveRef(panelTitle)
 	// Make this a 2 by 1 wave...the 1st row will have the name of the thing saved, the 2nd row will have the value, and the third will have the control state.  This wave will get redimensioned and
 	// expanded and new things are added
 	Make/T/N=(3,1) dfr:configSettings/Wave=wv
-	
+
 	SetDimLabel 0, 0, settingName, wv
 	SetDimLabel 0, 1, settingValue, wv
 	SetDimLabel 0, 2, controlState, wv
 	SetDimLabel 1, 0, version, wv
-	
+
 	return wv
 End
 
@@ -5110,8 +5110,8 @@ Function/Wave GetAsynRspWaveRef(panelTitle)
 	endif
 
 	Make/T/N=(NUM_HEADSTAGES,1) dfr:asynRspWave/Wave=wv
-	
-	SetDimLabel 0, -1, HeadStage, wv	
+
+	SetDimLabel 0, -1, HeadStage, wv
 	SetDimLabel 1, 0, cmdID, wv
 
 	return wv

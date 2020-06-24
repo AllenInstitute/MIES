@@ -26,24 +26,24 @@ Function ExpConfig_ConfigureMIES([middleOfExperiment])
 	string path, device
 	variable i, load
 //	movewindow /C 1450, 530,-1,-1								// position command window
-	
+
 	if(ParamIsDefault(middleOfExperiment))
 		middleOfExperiment = 0
 	else
 		middleOfExperiment = !!middleOfExperiment
 	endif
-	
+
 	if(middleOfExperiment)
 		HW_ITC_CloseAllDevices(flags = HARDWARE_PREVENT_ERROR_POPUP | HARDWARE_PREVENT_ERROR_MESSAGE)
 	endif
-	
+
 	activeNotebooks = WinList("*",";","WIN:16")
 	if(!isempty(activeNotebooks))
 		for(i = 0; i < ItemsInList(activeNotebooks); i += 1)
 			KillWindow /Z $StringFromList(i, activeNotebooks)
 		endfor
 	endif
-	
+
 	fullPath = GetFolder(FunctionPath("")) + USER_CONFIG_PATH
 	ASSERT(!cmpstr(GetFileSuffix(fullPath), "txt"), "Only plain notebooks are supported")
 	printf "Opening User Configuration Notebook\r"
@@ -59,25 +59,25 @@ Function ExpConfig_ConfigureMIES([middleOfExperiment])
 				 "#### end ####\r" + \
 				 "Add a strConstant for each configurable control text and use that strConstant in GetExpConfigKeyTypes to extract Control:Value pairs\r", fullPath
 		ControlWindowToFront()
-		
+
 	else
-	
+
 		printf "Configuration Notebook successfully loaded, extracting user settings\r"
-		
+
 		UserConfigNB = winname(0,16)
 		Wave /T KeyTypes = GetExpConfigKeyTypes()
 		Wave /T UserSettings = GetExpUserSettings(UserConfigNB, KeyTypes)
 
 		KillWindow/Z $UserConfigNB
-		
+
 		FindValue /TXOP = 4 /TEXT = AMP_SERIAL UserSettings
 		AmpSerialLocal = UserSettings[V_value][%SettingValue]
 		FindValue /TXOP = 4 /TEXT = AMP_TITLE UserSettings
 		AmpTitleLocal = UserSettings[V_value][%SettingValue]
-	
+
 		printf "Openning MCC amplifiers\r"
 		Assert(AI_OpenMCCs(AmpSerialLocal, ampTitleList = AmpTitleLocal),"Evil kittens prevented MultiClamp from opening - FULL STOP" )
-		
+
 		FindValue /TXOP = 4 /TEXT = ITC_DEV_TYPE UserSettings
 		ITCDevType = UserSettings[V_value][%SettingValue]
 		FindValue /TXOP = 4 /TEXT = ITC_DEV_NUM UserSettings
@@ -94,27 +94,27 @@ Function ExpConfig_ConfigureMIES([middleOfExperiment])
 				win = DAP_CreateDAEphysPanel() 									//open DA_Ephys
 				//			movewindow /W = $win 1500, -700,-1,-1				//position DA_Ephys window
 			endif
-	
+
 			PGC_SetAndActivateControl(win,"popup_MoreSettings_Devices", str = device)
 			PGC_SetAndActivateControl(win,"button_SettingsPlus_LockDevice")
-	
+
 			win = BuildDeviceString(ITCDevType, ITCDevNum)
 		endif
-		
+
 		if(middleOfExperiment)
 			PGC_SetAndActivateControl(win,"check_Settings_SyncMiesToMCC", val = CHECKBOX_UNSELECTED)
 		endif
-		
+
 		ExpConfig_Amplifiers(win, UserSettings, middleOfExperiment)
-	
+
 		ExpConfig_Pressure(win, UserSettings)
-	
+
 		ExpConfig_ClampModes(win, UserSettings, middleOfExperiment)
-	
+
 		ExpConfig_AsyncTemp(win, UserSettings)
-	
+
 		ExpConfig_DAEphysSettings(win, UserSettings)
-	
+
 		FindValue /TXOP = 4 /TEXT = STIMSET_NAME UserSettings
 		if(V_value != -1)
 			StimSetPath = UserSettings[V_value][%SettingValue]
@@ -122,7 +122,7 @@ Function ExpConfig_ConfigureMIES([middleOfExperiment])
 		else
 			load = NWB_LoadAllStimSets(overwrite = 1)
 		endif
-		
+
 		if (!load)
 			print "Stim set successfully loaded"
 			StimSetList = "- none -;"+ReturnListOfAllStimSets(0, CHANNEL_DA_SEARCH_STRING)
@@ -138,11 +138,11 @@ Function ExpConfig_ConfigureMIES([middleOfExperiment])
 			print "Stim set failed to load, check file path"
 			ControlWindowToFront()
 		endif
-		
+
 		PGC_SetAndActivateControl(win,"ADC", val = DA_EPHYS_PANEL_DATA_ACQUISITION)
 		PGC_SetAndActivateControl(win, "tab_DataAcq_Amp", val = DA_EPHYS_PANEL_VCLAMP)
 		PGC_SetAndActivateControl(win, "tab_DataAcq_Pressure", val = DA_EPHYS_PANEL_PRESSURE_AUTO)
-	
+
 		filename = GetTimeStamp() + PACKED_FILE_EXPERIMENT_SUFFIX
 		FindValue /TXOP = 4 /TEXT = SAVE_PATH UserSettings
 		path = UserSettings[V_value][%SettingValue]
@@ -156,9 +156,9 @@ Function ExpConfig_ConfigureMIES([middleOfExperiment])
 		SaveExperiment /P=SavePath as filename
 
 		KillPath/Z SavePath
-	
+
 		PGC_SetAndActivateControl(win,"StartTestPulseButton")
-	
+
 		print "Start Sciencing"
 	endif
 End
@@ -175,7 +175,7 @@ static Function ExpConfig_Amplifiers(panelTitle, UserSettings, midExp)
 
 	string AmpSerialLocal, AmpTitleLocal, ctrl, HeadstagesToConfigure, MCCWinPosition
 	variable i, ii, ampSerial, numRows, RequireAmpConnection
-	
+
 	FindValue /TXOP = 4 /TEXT = AMP_SERIAL UserSettings
 	AmpSerialLocal = UserSettings[V_value][%SettingValue]
 	FindValue /TXOP = 4 /TEXT = AMP_TITLE UserSettings
@@ -194,7 +194,7 @@ static Function ExpConfig_Amplifiers(panelTitle, UserSettings, midExp)
 		printf "Openning MCC amplifiers\r"
 		Assert(AI_OpenMCCs(AmpSerialLocal, ampTitleList = AmpTitleLocal),"Evil kittens prevented MultiClamp from opening - FULL STOP" )
 	endif
-	
+
 	FindValue /TXOP = 4 /TEXT = POSITION_MCC UserSettings
 	MCCWinPosition = UserSettings[V_Value][%SettingValue]
 	if(cmpstr(NONE, MCCWinPosition) != 0)
@@ -207,7 +207,7 @@ static Function ExpConfig_Amplifiers(panelTitle, UserSettings, midExp)
 	for(i = 0; i<NUM_HEADSTAGES; i+=1)
 
 		PGC_SetAndActivateControl(panelTitle,"Popup_Settings_HeadStage", val = i)
-		
+
 		if(WhichListItem(num2str(i), HeadstagesToConfigure) != -1)
 			if(IsInteger(str2numSafe(StringFromList(ii, AmpSerialLocal))))
 				if(!mod(i,2)) // even
@@ -218,32 +218,32 @@ static Function ExpConfig_Amplifiers(panelTitle, UserSettings, midExp)
 					PGC_SetAndActivateControl(panelTitle,"popup_Settings_Amplifier", val = ExpConfig_FindAmpInList(ampSerial, 2))
 					ii+=1
 				endif
-		
+
 				PGC_SetAndActivateControl(panelTitle,"Popup_Settings_VC_DA", val = i)
-		
+
 				if(i>3)
 					PGC_SetAndActivateControl(panelTitle,"Popup_Settings_VC_AD", val = i+4)
 				else
 					PGC_SetAndActivateControl(panelTitle,"Popup_Settings_VC_AD", val = i)
 				endif
-				
+
 				if(!midExp)
 					ExpConfig_MCC_InitParams(panelTitle, i)
 				else
 					ExpConfig_MCC_MidExp(panelTitle, i, UserSettings)
 				endif
-				
+
 				ctrl = GetPanelControl(i, CHANNEL_TYPE_HEADSTAGE, CHANNEL_CONTROL_CHECK)
 				PGC_SetAndActivateControl(panelTitle, ctrl, val = CHECKBOX_SELECTED)
 				PGC_SetAndActivateControl(panelTitle,"ADC", val = DA_EPHYS_PANEL_DATA_ACQUISITION)
 				PGC_SetAndActivateControl(panelTitle,"ADC", val = DA_EPHYS_PANEL_HARDWARE)
-		
+
 				printf "%d successful\r", i
-			elseif(!RequireAmpConnection)  
+			elseif(!RequireAmpConnection)
 				PGC_SetAndActivateControl(panelTitle,"popup_Settings_Amplifier", val = WhichListItem(NONE, DAP_GetNiceAmplifierChannelList()))
 				ctrl = GetPanelControl(i, CHANNEL_TYPE_HEADSTAGE, CHANNEL_CONTROL_CHECK)
 				PGC_SetAndActivateControl(panelTitle, ctrl, val = CHECKBOX_SELECTED)
-				printf "%d not connected to amplifier but configured\r", i	
+				printf "%d not connected to amplifier but configured\r", i
 			else
 				PGC_SetAndActivateControl(panelTitle,"popup_Settings_Amplifier", val = WhichListItem(NONE, DAP_GetNiceAmplifierChannelList()))
 				printf "%d not active\r", i
@@ -276,12 +276,12 @@ static Function ExpConfig_Pressure(panelTitle, UserSettings)
 	HeadstagesToConfigure = UserSettings[V_value][%SettingValue]
 	FindValue /TXOP = 4 /TEXT = AMP_SERIAL UserSettings
 	AmpSerialLocal = UserSettings[V_value][%SettingValue]
-	
+
 	printf "Configuring pressure device for headstage:\r"
 	for(i = 0; i<NUM_HEADSTAGES; i+=1)
-		
+
 		PGC_SetAndActivateControl(panelTitle,"Popup_Settings_HeadStage", val = i)
-		
+
 		if(WhichListItem(num2str(i), HeadstagesToConfigure) != -1)
 			if(IsInteger(str2numSafe(StringFromList(ii, AmpSerialLocal))))
 				PressDevVal = WhichListItem(StringFromList(ii,PressureDevLocal),NIDev)
@@ -334,7 +334,7 @@ static Function ExpConfig_Pressure(panelTitle, UserSettings)
 	Make /D/FREE PressureConstants = str2numSafe(PressureConstantTextWv)
 	WAVE pressureDataWv = P_GetPressureDataWaveRef(panelTitle)
 	printf "Setting pressure calibration constants\r"
-	
+
 	pressureDataWv[%headStage_0][%PosCalConst] = PressureConstants[0]
 	pressureDataWv[%headStage_1][%PosCalConst] = PressureConstants[1]
 	pressureDataWv[%headStage_2][%PosCalConst] = PressureConstants[2]
@@ -363,7 +363,7 @@ static Function ExpConfig_AsyncTemp(panelTitle, UserSettings)
 	string panelTitle
 	Wave /T UserSettings
 	printf "Setting Asynchronous Temperature monitoring\r"
-	
+
 	PGC_SetAndActivateControl(panelTitle,"ADC", val = DA_EPHYS_PANEL_ASYNCHRONOUS)
 	FindValue /TXOP = 4 /TEXT = ASYNC_CH00 UserSettings
 	PGC_SetAndActivateControl(panelTitle, GetPanelControl(0, CHANNEL_TYPE_ASYNC, CHANNEL_CONTROL_TITLE), str = UserSettings[V_value][%SettingValue])
@@ -461,7 +461,7 @@ End
 static Function ExpConfig_MCC_InitParams(panelTitle, headStage)
 	string panelTitle
 	variable headStage
-	
+
 	// Set initial parameters within MCC itself.
 
 	AI_SelectMultiClamp(panelTitle, headStage)
@@ -520,14 +520,14 @@ Function ExpConfig_MCC_MidExp(panelTitle, headStage, UserSettings)
 	Wave /T UserSettings
 
 	variable settingValue, clampMode
-	
+
 	PGC_SetAndActivateControl(panelTitle,"ADC", val = DA_EPHYS_PANEL_DATA_ACQUISITION)
 	PGC_SetAndActivateControl(panelTitle,"slider_DataAcq_ActiveHeadstage", val = headStage)
 
 	clampMode = AI_GetMode(panelTitle, headstage)
 
 	if(clampMode == V_CLAMP_MODE)
-		
+
 		DAP_ChangeHeadStageMode(panelTitle, V_CLAMP_MODE, headStage, SKIP_MCC_MIES_SYNCING)
 		settingValue = AI_SendToAmp(panelTitle, headStage, V_CLAMP_MODE, MCC_GETPIPETTEOFFSET_FUNC, NaN, checkBeforeWrite = 1)
 		PGC_SetAndActivateControl(panelTitle, "setvar_DataAcq_PipetteOffset_VC", val = settingValue)
@@ -587,7 +587,7 @@ Function ExpConfig_Position_MCC_Win(serialNum, winTitle, winPosition)
 	Make /T /FREE winNm
 	string cmd, cmdPath
 	variable w
-	
+
 	if(cmpstr(winPosition, NONE) == 0)
 		return 0
 	endif
@@ -597,7 +597,7 @@ Function ExpConfig_Position_MCC_Win(serialNum, winTitle, winPosition)
 		printf "nircmd.exe is not installed, please download it here: %s", "http://www.nirsoft.net/utils/nircmd.html"
 		return NaN
 	endif
-	
+
 	for(w = 0; w<NUM_HEADSTAGES/2; w+=1)
 
 		winNm[w] = {stringfromlist(w,winTitle) + "(" + stringfromlist(w,serialNum) + ")"}
@@ -690,7 +690,7 @@ static Function ExpConfig_ClampModes(panelTitle, UserSettings, midExp)
 	variable midExp
 
 	if(!midExp)
-	
+
 		// Set initial values for V-Clamp and I-Clamp in MIES
 		PGC_SetAndActivateControl(panelTitle,"Check_DataAcq_SendToAllAmp", val = CHECKBOX_SELECTED)
 		PGC_SetAndActivateControl(panelTitle,"check_DatAcq_HoldEnableVC", val = CHECKBOX_UNSELECTED)

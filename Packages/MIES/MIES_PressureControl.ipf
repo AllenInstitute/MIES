@@ -632,7 +632,7 @@ Function P_SetAndGetPressure(panelTitle, headStage, psi)
 	if(psi && isFinite(PressureDataWv[headStage][%PosCalConst]))
 		CalPsi = PressureDataWv[headStage][%PosCalConst] + psi
 	elseif(isFinite(PressureDataWv[headStage][%NegCalConst]))
-		CalPsi = PressureDataWv[headStage][%NegCalConst] + psi 
+		CalPsi = PressureDataWv[headStage][%NegCalConst] + psi
 	endif
 
 	sprintf msg, "panelTitle=%s, hwtype=%d, deviceID=%d, channel=%d, headstage=%d, psi=%g\r", panelTitle, hwType, deviceID, channel, headStage, CalPsi
@@ -1513,7 +1513,7 @@ Function P_UpdatePressureMode(panelTitle, pressureMode, pressureControlName, che
 	variable checkAll
 
 	WAVE PressureDataWv = P_GetPressureDataWaveRef(panelTitle)
-	variable headStageNo = PressureDataWv[0][%UserSelectedHeadStage]	
+	variable headStageNo = PressureDataWv[0][%UserSelectedHeadStage]
 	variable SavedPressureMode = PressureDataWv[headStageNo][%Approach_Seal_BrkIn_Clear]
 
 	if(P_ValidatePressureSetHeadstage(panelTitle, headStageNo)) // check if headStage pressure settings are valid
@@ -1561,18 +1561,18 @@ End
 static Function P_ResetPressureData(panelTitle, [headStageNo])
 	string panelTitle
 	variable headStageNo
-	
+
 	WAVE PressureDataWv = P_GetPressureDataWaveRef(panelTitle)
 	if(paramIsDefault(headStageNo))
 		PressureDataWv[][%TimeOfLastRSlopeCheck]     = 0.0
 		PressureDataWv[][%UserPressureOffset]        = 0.0
 		PressureDataWv[][%UserPressureOffsetTotal]   = NaN
-		PressureDataWv[][%UserPressureOffsetPeriod]  = 0.0		
+		PressureDataWv[][%UserPressureOffsetPeriod]  = 0.0
 	else
 		PressureDataWv[headStageNo][%TimeOfLastRSlopeCheck]     = 0.0
 		PressureDataWv[headStageNo][%UserPressureOffset]        = 0.0
 		PressureDataWv[headStageNo][%UserPressureOffsetTotal]   = NaN
-		PressureDataWv[headStageNo][%UserPressureOffsetPeriod]  = 0.0	
+		PressureDataWv[headStageNo][%UserPressureOffsetPeriod]  = 0.0
 	endif
 End
 
@@ -1668,7 +1668,7 @@ Function P_InitBeforeTP(panelTitle)
 	string panelTitle
 
 	variable headstage
-	
+
 	WAVE PressureDataWv = P_GetPressureDataWaveRef(panelTitle)
 	headstage = PressureDataWv[0][%UserSelectedHeadStage]
 	P_ResetPressureData(panelTitle)
@@ -1911,7 +1911,7 @@ End
 Function P_PressureDisplayHighlite(panelTitle, hilite)
 	string panelTitle
 	variable hilite
-	
+
 	variable RGB
 	string Zero, Low, High
 	if(hilite)
@@ -1925,7 +1925,7 @@ Function P_PressureDisplayHighlite(panelTitle, hilite)
 		high = HIGH_COLOR
 		RGB = 0
 	endif
-	
+
 	wave PressureDataWv = P_GetPressureDataWaveRef(panelTitle)
 	variable Rz = str2num(stringFromList(0,Zero))
 	variable Gz = str2num(stringFromList(1,Zero))
@@ -1935,12 +1935,12 @@ Function P_PressureDisplayHighlite(panelTitle, hilite)
 	variable Bl = str2num(stringFromList(2,Low))
 	variable Rh = str2num(stringFromList(0,High))
 	variable Gh = str2num(stringFromList(1,High))
-	variable Bh = str2num(stringFromList(2,High))	
+	variable Bh = str2num(stringFromList(2,High))
 
 	string controlName
 	sprintf controlName, "valdisp_DataAcq_P_LED_%d" pressureDataWv[0][%userSelectedHeadStage]
 	ValDisplay $controlName zeroColor=(Rz, Gz, Bz), lowColor=(Rl, Gl, Bl), highColor=(Rh, Gh, Bh), win=$panelTitle
-	
+
 	sprintf controlName, "valdisp_DataAcq_P_%d" pressureDataWv[0][%userSelectedHeadStage]
 	ChangeControlValueColor(panelTitle, controlName, RGB, RGB, RGB)
 
@@ -2062,7 +2062,7 @@ End
 ///
 Function P_SetAllHStoAtmospheric(panelTitle)
 	string panelTitle
-	
+
 	DFREF dfr=P_DeviceSpecificPressureDFRef(panelTitle)
 	WAVE/Z/SDFR=dfr PressureData
 
@@ -2079,7 +2079,7 @@ End
 Function P_GetPressureMode(panelTitle, headStage)
 	string panelTitle
 	variable headstage
-	
+
 	return P_GetPressureDataWaveRef(panelTitle)[headStage][%Approach_Seal_BrkIn_Clear]
 End
 
@@ -2095,14 +2095,14 @@ Function P_SetPressureMode(panelTitle, headStage, pressureMode, [pressure])
 	variable headstage
 	variable pressureMode
 	variable pressure
-	
+
 	ASSERT(headstage < NUM_HEADSTAGES && headStage >= 0,  "Select headstage number between 0 and 7")
 	ASSERT(pressureMode >= PRESSURE_METHOD_ATM && pressureMode <= PRESSURE_METHOD_MANUAL, "Select a pressure mode between -1 and 4")
-	
+
 	WAVE PressureDataWv = P_GetPressureDataWaveRef(panelTitle)
 	variable activePressureMode = P_GetPressureMode(panelTitle, headStage)
 	variable UserSelectedHS = PressureDataWv[headStage][%UserSelectedHeadStage]
-	
+
 	if(!paramIsDefault(pressure) && pressureMode == PRESSURE_METHOD_MANUAL)
 		ASSERT(pressure > MIN_REGULATOR_PRESSURE && pressure < MAX_REGULATOR_PRESSURE, "Use pressure value greater than -10 psi and less than 10 psi")
 		if(UserSelectedHS == headStage)
@@ -2110,14 +2110,14 @@ Function P_SetPressureMode(panelTitle, headStage, pressureMode, [pressure])
 		endif
 		PressureDataWv[headStage][%ManSSPressure] = pressure
 	endif
-		
+
 	if(activePressureMode != pressureMode)
 		if(UserSelectedHS == headStage)
 			if(pressureMode == PRESSURE_METHOD_ATM)
-				P_UpdatePressureMode(panelTitle, activePressureMode, stringFromList(activePressureMode,PRESSURE_CONTROLS_BUTTON_LIST), 0)	
+				P_UpdatePressureMode(panelTitle, activePressureMode, stringFromList(activePressureMode,PRESSURE_CONTROLS_BUTTON_LIST), 0)
 				P_ResetPressureData(panelTitle, headStageNo = headStage)
 			else
-				P_UpdatePressureMode(panelTitle, PressureMode, stringFromList(PressureMode,PRESSURE_CONTROLS_BUTTON_LIST), 0)	
+				P_UpdatePressureMode(panelTitle, PressureMode, stringFromList(PressureMode,PRESSURE_CONTROLS_BUTTON_LIST), 0)
 			endif
 		else
 			PressureDataWv[headStage][%Approach_Seal_BrkIn_Clear] = pressureMode
@@ -2126,7 +2126,7 @@ Function P_SetPressureMode(panelTitle, headStage, pressureMode, [pressure])
 			endif
 		endif
 	endif
-	
+
 	P_RunP_ControlIfTPOFF(panelTitle)
 End
 
@@ -2434,7 +2434,7 @@ static Function P_SetLEDValueAssoc(panelTitle)
 		controlName = stringfromlist(i, PRESSURE_CONTROL_LED_DASHBOARD)
 		SetValDisplay(panelTitle, controlName, str=pathAndCell)
 	endfor
-	
+
 	stringPath = GetWavesDataFolder(GuiState, 2)
 	for(i = 0; i < 4; i += 1)
 		controlName = stringFromList(i,PRESSURE_CONTROL_USER_CHECBOXES)

@@ -6,7 +6,7 @@
 //  LICENSE
 // ********************
 //	Copyright (c) 2007 by Adam Light
-//	
+//
 //	Permission is hereby granted, free of charge, to any person
 //	obtaining a copy of this software and associated documentation
 //	files (the "Software"), to deal in the Software without
@@ -15,10 +15,10 @@
 //	copies of the Software, and to permit persons to whom the
 //	Software is furnished to do so, subject to the following
 //	conditions:
-//	
+//
 //	The above copyright notice and this permission notice shall be
 //	included in all copies or substantial portions of the Software.
-//	
+//
 //	THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
 //	EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES
 //	OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
@@ -48,7 +48,7 @@ Menu "Panel"
 	SubMenu "Packages"
 		"Userdata Editor for Controls",/Q,InitializeUserDataEditor()
 	End
-End	
+End
 
 static StrConstant EMPTY_USERDATA = "- empty -"
 
@@ -98,32 +98,32 @@ Function InitializeUserDataEditor()
 		else
 			SetDataFolder root:Packages:ACL_UserDataEditor
 		endif
-		
+
 		// create list box wave
 		Make/T/O/N=(1,3) controlInfoWave
 		Make/O/N=(1,3) controlInfoSelectWave
 		SetDimLabel 1, 0, $("Control Name"), controlInfoWave, controlInfoSelectWave
 		SetDimLabel 1, 1, $("key left"), controlInfoWave, controlInfoSelectWave
 		SetDimLabel 1, 2, $("key right"), controlInfoWave, controlInfoSelectWave
-		
+
 		// create a wave that will store the types of controls and the value of V_flag that will be
 		// returned for that type of control
 		Make/O/T/N=(15,2) controlTypes
 		// set control types names
 		controlTypes[0,7][0] = {"", "All controls and subwindows", "Button", "Chart", "Check Box", "Custom Control", "Group Box", "List Box"}
 		controlTypes[8,14][0] = {"Popup Menu", "Set Variable", "Slider", "Tab Control", "Title Box", "Value Display", "Subwindow"}
-		
+
 		// set control types V_flag values returned from ControlInfo
 		controlTypes[0,7][1] = {"", "", "1", "6", "2", "12", "9", "11"}
 		controlTypes[8,14][1] = {"3", "5", "7", "8", "10", "4", ""}
-		
+
 		// create string that will contain the menu choices for the control type popmenu
 		String/G gsControlTypePopmenu = ""
 		Variable n
 		For (n=1; n<DimSize(controlTypes, 0); n+=1)
 			gsControlTypePopmenu += controlTypes[n][0] + ";"
 		EndFor
-	
+
 		// activate panel
 		BuildpnlUserDataEditor(panelName)
 		SetDataFolder curDataFolder
@@ -132,7 +132,7 @@ Function InitializeUserDataEditor()
 		if (V_Flag == 3)		// popup control exists
 			String panelList = SortList(WinList("*", ";", "WIN:65"), ";", 0)
 			Variable listPos =WhichListItem(currentPanel, panelList, ";")
-		
+
 			if (listPos >= 0)
 				ModifyControl popupPanelSelect, win=$(panelName), mode=listPos + 1
 			else
@@ -183,7 +183,7 @@ Function PopMenuSelectPanel(pa) : PopupMenuControl
 	else
 		SetDataFolder root:Packages:ACL_UserDataEditor
 	endif
-		
+
 	switch( pa.eventCode )
 		case 2: // mouse up
 			// make sure that window selected in popup menu (pa.popStr) still exists
@@ -199,18 +199,18 @@ Function PopMenuSelectPanel(pa) : PopupMenuControl
 			EndIf
 
 			controlTypes = str2num(GetUserData(pa.win, "popupControlType", "controlType"))
-		
+
 			userKeys = ACL_GetUserdataKeys(StringFromList(0, pa.popStr), controltypes)
 			userKeys = AddListItem(EMPTY_USERDATA, userKeys, ";", 0)
 			userKeys = "\"" + userKeys + "\""
 			PopupMenu popupSelectColumn0,mode=1,popvalue="",value=#userKeys
 			PopupMenu popupSelectColumn1,mode=1,popvalue="",value=#userKeys
-			
+
 			ACL_SetupListControlWaves(pa.win, pa.popStr)
 
 			// put value of selected panel in the (unnamed) userdata of the window that contains the PopMenu box
 			SetWindow $(pa.win) userdata=pa.popStr
-			
+
 			break
 	endswitch
 
@@ -307,9 +307,9 @@ Function ACL_SetupListControlWaves(wName, targetWin)
 	WAVE/T controlInfoWave
 	String currentControlName
 	String potentialWindowName
-			
+
 	Redimension/N=(0,3) controlInfoWave
-		
+
 	// create variables that represent the colum indices of the 3 columns of the wave
 	Variable ctrlNameCol, tabnumCol, tabcontrolCol
 	Variable numCols = DimSize(controlInfoWave, 1)
@@ -324,12 +324,12 @@ Function ACL_SetupListControlWaves(wName, targetWin)
 			tabcontrolCol = n
 		endif
 	EndFor
-			
+
 	String windowName = "", controlName = "", displayName = ""
 	For (n=0; n<numControls; n+=1)
 		Variable waveRow = DimSize(controlInfoWave, 0)
 		currentControlName = StringFromList(n, controlList, ";")
-				
+
 		// Parse out the window name and the actual control name.
 		// Note that, if currentControlName is actually a subwindow, that
 		// the windowName and controlName values set in the call below
@@ -374,7 +374,7 @@ Function ACL_SetupListControlWaves(wName, targetWin)
 			EndSwitch
 		EndIf
 	EndFor
-		
+
 	// see if sorting information is present, and if so sort the controls based on those values
 	Variable sortCol = str2num(GetUserData(wName, "listPanelControls", "sortCol"))
 	if (numType(sortCol) == 0)		// we need to sort
@@ -392,7 +392,7 @@ Function ACL_SetupListControlWaves(wName, targetWin)
 			Redimension/N=(-1, 0) $(newWaveName)
 			waveListString += newWaveName + ";"
 		EndFor
-			
+
 		// sort the waves
 		String sortKeyWaves = ""
 		Switch (sortCol)
@@ -418,14 +418,14 @@ Function ACL_SetupListControlWaves(wName, targetWin)
 				endif
 				break
 		EndSwitch
-				
+
 		// put waves back together
 		Concatenate/O/T/KILL waveListString, sortedWave
 		controlInfoWave[][] = sortedWave[p][q]
 		KillWaves sortedWave
-			
+
 	endif
-			
+
 	// make select wave for list box
 	WAVE controlInfoSelectWave
 	Redimension/N=(DimSize(controlInfoWave, 0),3) controlInfoSelectWave
@@ -446,21 +446,21 @@ Function PopMenuSelectControlType(pa) : PopupMenuControl
 	else
 		SetDataFolder root:Packages:ACL_UserDataEditor
 	endif
-	
+
 	switch( pa.eventCode )
 		case 2: // mouse up
 			Variable popNum = pa.popNum
 			String popStr = pa.popStr
 			String panel = pa.win		// window that hosts the popup menu
-			
+
 			WAVE/T controlTypes		// text wave that matches the popNum value to the ControlInfo V_flag type
-			
+
 			// put V_flag type of newly selected control type into userdata of this popup control
 			Variable controlType = str2num(controlTypes[pa.popNum][1])
 			PopupMenu $(pa.ctrlName) win=$(pa.win), userdata(controlType) = num2str(controlType)
-			
+
 			// simulate a click on the Select Panel popmenu that will force a refresh of the list of controls
-			
+
 			// determine the currently selected panel and execute the popup action procedure so that the
 			// list box will be filled in correctly
 			ControlInfo/W=$(panel) popupPanelSelect
@@ -474,10 +474,10 @@ Function PopMenuSelectControlType(pa) : PopupMenuControl
 				FUNCREF ACLUserDataEditorProtoFunc actionproc = PopMenuSelectPanel
 				actionproc(pa2)
 			endif
-			
+
 			break
 	endswitch
-	
+
 	SetDataFolder curDataFolder
 	return 0
 End
@@ -500,7 +500,7 @@ Function ListBoxPanelControls(lba) : ListBoxControl
 	else
 		SetDataFolder root:Packages:ACL_UserDataEditor
 	endif
-	
+
 	String currentDimLabel
 	Variable n, numCols
 	switch( lba.eventCode )
@@ -516,7 +516,7 @@ Function ListBoxPanelControls(lba) : ListBoxControl
 					lastSortCol = -1
 				endif
 				ListBox $(lba.ctrlName) win=$(lba.win), userdata(sortCol) = num2str(lba.col)		// indicate which column to sort by
-				
+
 				// now, toggle the ascending/descending sort flag for this column (but only if this column was already selected)
 				Variable sortOrder = str2num(GetUserData(lba.win, lba.ctrlName, "order"+num2str(lba.col)))
 				if (numtype(sortOrder) != 0)
@@ -525,7 +525,7 @@ Function ListBoxPanelControls(lba) : ListBoxControl
 					sortOrder = !sortOrder
 				endif
 				ListBox $(lba.ctrlName) win=$(lba.win), userdata($("order" + num2str(lba.col)))=num2str(sortOrder)
-				
+
 				// now change the dimension labels of the list box text wave so that the column controlling the
 				// sort has the up or down arrow icon on it, depending on the order of the sort
 				numCols = DimSize(controlInfoWave, 1)
@@ -545,12 +545,12 @@ Function ListBoxPanelControls(lba) : ListBoxControl
 						endif
 //						SetDimLabel 1, n, $(currentDimLabel), controlInfoWave
 					else
-//						SetDimLabel 1, n, $(currentDimLabel), controlInfoWave					
+//						SetDimLabel 1, n, $(currentDimLabel), controlInfoWave
 					endif
 				EndFor
-				
+
 				// simulate a click on the Select Panel popmenu that will force a refresh of the list of controls
-			
+
 				// determine the currently selected panel and execute the popup action procedure so that the
 				// list box will be filled in correctly
 				ControlInfo/W=$(lba.win) popupPanelSelect
@@ -564,7 +564,7 @@ Function ListBoxPanelControls(lba) : ListBoxControl
 					FUNCREF ACLUserDataEditorProtoFunc actionproc = PopMenuSelectPanel
 					actionproc(pa)
 				endif
-			
+
 			endif
 		case 3: // double click
 			break
@@ -587,7 +587,7 @@ Function ListBoxPanelControls(lba) : ListBoxControl
 					tabcontrolCol = n
 				endif
 			EndFor
-			
+
 			// Build the full control name, including parent panel, and then parse into full window
 			// path and actual control name of selected row.  If "control" in selected row is a window
 			// and not actually a control, this call will return incorrect values, however that possibility
@@ -595,7 +595,7 @@ Function ListBoxPanelControls(lba) : ListBoxControl
 			String currentControlName = panel + "#" + controlInfoWave[lba.row][ctrlNameCol]
 			String windowName = "", controlName = "", displayName = ""
 			ParseFullControlName(currentControlName, windowName, controlName, displayName)
-			
+
 			ControlInfo/W=$lba.win popupSelectColumn0
 			keyLeft = S_Value
 			ControlInfo/W=$lba.win popupSelectColumn1
@@ -634,7 +634,7 @@ Function ListBoxPanelControls(lba) : ListBoxControl
 						endif
 				EndSwitch
 			EndIf
-		
+
 			break
 	endswitch
 
@@ -650,7 +650,7 @@ Function ButtonRefresh(ba) : ButtonControl
 			// determine the currently selected panel and execute the popup action procedure so that the
 			// list box will be filled in correctly
 			ControlInfo/W=$(ba.win) popupPanelSelect
-	
+
 			if (V_flag == 3)		// this is actually a popup menu--should always be true
 				STRUCT WMPopupAction pa
 				pa.ctrlName = "popupPanelSelect"
@@ -673,13 +673,13 @@ End
 Function ACL_FitListToWindow(win, ctrlName)
 	// modified from original Wavemetrics function
 	String win, ctrlName
-	
+
 	GetWindow $win wsize
 	Variable winHeight= V_bottom-V_top	// points
 	Variable winWidth = V_right-V_left
 	winHeight *= ScreenResolution/72	// points to pixels
 	winWidth *= ScreenResolution/72	// points to pixels
-	
+
 	// make the list span the entire height and width of the panel
 	// with the exception of the area for the PopupMenu and the refresh button at the top
 	ControlInfo/W=$win $ctrlName
@@ -692,21 +692,21 @@ Function ACL_FitListToWindow(win, ctrlName)
 		Variable xpos= str2num(posInfo[1,inf])	// pixels
 		String sizeInfo= StringByKey("size", S_recreation,"=",",")	// {338,246}
 		//Variable width= str2num(sizeInfo[1,inf])	// pixels
-		
+
 		// if the window is tall enough that there is extra space at the bottom of the listbox
 		// that is not filled in with rows, change the top displayed row so that all space is
 		// taken up
-		String waveNameStr = StringByKey("listwave", S_recreation, "=", ",")		
+		String waveNameStr = StringByKey("listwave", S_recreation, "=", ",")
 		if (strlen(waveNameStr) > 0)	// the name of the list wave is set
 			WAVE/T listWave = $(waveNameStr)
 			Variable numRows = DimSize(listWave, 0)
 			if ((numRows - V_StartRow) < (round(V_height/V_RowHeight)))
 				Variable newStartRow = ceil(numRows - (V_height/V_RowHeight)) + 1		// scroll box up automatically
 			else
-				newStartRow = V_StartRow		// don't change starting row			
+				newStartRow = V_StartRow		// don't change starting row
 			endif
-		endif	
-		// save changes to list box		
+		endif
+		// save changes to list box
 		ListBox $ctrlName, win=$(win), pos={xpos,68},size={winWidth - 20,winHeight-75}, row=newStartRow	// leave some margin for focus rectangle
 	endif
 End
@@ -737,10 +737,10 @@ End
 Function GetAllWindows(wName, windowList)
 	String wName
 	String &windowList
-	
+
 	// Add the target window to the list of windows.
 	windowList = AddListItem(wName, windowList, ";", inf)
-	
+
 	// Recursively call this function on any children windows.
 	String children = ChildWindowList(wName)
 	Variable numChildren = ItemsInList(children, ";")
@@ -758,7 +758,7 @@ End
 // For example, if wName is "Panel1#Child1#Child2", then
 // the listOfControls might look like this:
 // "Panel1#Child1#Child2#button0;Panel1#Child1#Child2#button1;"
-//  
+//
 // @param wName
 // 	Target window name, using standard subwindow syntax if necessary.
 //
@@ -767,7 +767,7 @@ End
 //*
 Function/S GetAllControls(wName)
 	String wName
-	
+
 	String controls = ControlNameList(wName, ";", "*")
 	Variable numControls = ItemsInList(controls, ";")
 	String listOfControls = ""
@@ -775,7 +775,7 @@ Function/S GetAllControls(wName)
 	For (n=0; n<numControls; n+=1)
 		listOfControls = AddListItem(wName + "#" + StringFromList(n, controls, ";"), listOfControls, ";", inf)
 	EndFor
-	return listOfControls	
+	return listOfControls
 End
 
 //**
@@ -809,10 +809,10 @@ Function ParseFullControlName(fullName, windowName, controlName, displayName)
 	String &windowName
 	String &controlName
 	String &displayName
-	
+
 	Variable numParts = ItemsInList(fullName, "#")
 	controlName = StringFromList(numParts - 1, fullName, "#")
-	windowName = RemoveEnding(RemoveListItem(numParts -1, fullName, "#"), "#")	
+	windowName = RemoveEnding(RemoveListItem(numParts -1, fullName, "#"), "#")
 	displayName = RemoveListItem(0, fullName, "#")
 End
 
@@ -841,7 +841,7 @@ Function ACL_UserDataEditorHook(str)
 			statusCode=1
 			break;
 		default:
-			
+
 	EndSwitch
 	return statusCode
 End

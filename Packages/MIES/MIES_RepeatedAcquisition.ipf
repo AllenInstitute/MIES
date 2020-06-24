@@ -181,7 +181,7 @@ End
 /// acquired and if repeated acquisition is on
 static Function RA_Start(panelTitle)
 	string panelTitle
-	
+
 	variable numTotalSweeps
 
 #ifdef PERFING_RA
@@ -571,7 +571,7 @@ static Function RA_SkipSweepCalc(panelTitle, skipCount)
 	if(DAG_GetNumericalValue(panelTitle, "Check_DataAcq1_RepeatAcq"))
 		// RA_counter and RA_counterMD increment count at initialization, -1 accounts for this and allows a skipping back to sweep 0
 		return DEBUGPRINTv(min(totSweeps - 1, max(count + skipCount, -1)))
-	else 
+	else
 		return DEBUGPRINTv(0)
 	endif
 End

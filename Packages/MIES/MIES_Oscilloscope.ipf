@@ -249,7 +249,7 @@ Function SCOPE_CreateGraph(panelTitle, dataAcqOrTP)
 		adc    = ADCs[i]
 		adcStr = num2str(adc)
 		leftAxis = AXIS_SCOPE_AD + adcStr
-		
+
 		if((chanTPmode && !showPowerSpectrum) || !chanTPmode)
 
 			oscilloscopeTrace = "osci" + adcStr

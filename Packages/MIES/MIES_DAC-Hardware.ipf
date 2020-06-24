@@ -943,7 +943,7 @@ Function HW_ITC_OpenDevice(deviceType, deviceNumber, [flags])
 	return deviceID
 End
 
-/// @brief Close all ITC devices 
+/// @brief Close all ITC devices
 Function HW_ITC_CloseAllDevices([flags])
 	variable flags
 
