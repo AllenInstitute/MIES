@@ -928,3 +928,100 @@ Function PS_DS_Supra4_REENTRY([str])
 	Make/FREE/D/N=(numEntries) stimScaleRef = {PSQ_DS_OFFSETSCALE_FAKE + 20, PSQ_DS_OFFSETSCALE_FAKE + 40, PSQ_DS_OFFSETSCALE_FAKE + 60, PSQ_DS_OFFSETSCALE_FAKE + 80, PSQ_DS_OFFSETSCALE_FAKE + 100}
 	CHECK_EQUAL_WAVES(stimScale, stimScaleRef, mode = WAVE_DATA, tol = 1e-14)
 End
+
+static Constant DAScaleModifierPerc = 25
+
+// MinimumSpikeCount, MaximumSpikeCount, DAScaleModifier present
+static Function PS_DS_Supra5_IGNORE(device)
+	string device
+
+	string stimSet = "PSQ_DS_SupraLong_DA_0"
+	WBP_AddAnalysisParameter(stimSet, "MinimumSpikeCount", var = 3)
+	WBP_AddAnalysisParameter(stimSet, "MaximumSpikeCount", var = 6)
+	WBP_AddAnalysisParameter(stimSet, "DAScaleModifier", var = DAScaleModifierPerc)
+End
+
+// UTF_TD_GENERATOR HardwareMain#DeviceNameGeneratorMD1
+Function PS_DS_Supra5([str])
+	string str
+
+	STRUCT DAQSettings s
+	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG_1")
+	AcquireData(s, "PSQ_DS_SupraLong_DA_0", str, preAcquireFunc = PS_DS_Supra5_IGNORE)
+
+	WAVE wv = PSQ_CreateOverrideResults(str, HEADSTAGE, PSQ_DA_SCALE)
+	// pre pulse chunk pass
+	// second post pulse chunk pass
+	wv = 0
+	wv[0][][0] = 1
+	wv[1][][0] = 1
+	// Spiking
+	wv[0][][1] = 1
+	// increasing number of spikes
+	wv[0][][2] = q^2 + 1
+End
+
+Function PS_DS_Supra5_REENTRY([str])
+	string str
+
+	variable sweepNo, setPassed, numEntries
+	string key
+
+	CHECK_EQUAL_VAR(GetSetVariable(str, "SetVar_Sweep"), 5)
+
+	sweepNo = AFH_GetLastSweepAcquired(str)
+	CHECK_EQUAL_VAR(sweepNo, 4)
+
+	WAVE numericalValues = GetLBNumericalValues(str)
+
+	key = PSQ_CreateLBNKey(PSQ_DA_SCALE, PSQ_FMT_LBN_SET_PASS, query = 1)
+	setPassed = GetLastSettingIndep(numericalValues, sweepNo, key, UNKNOWN_MODE)
+	CHECK_EQUAL_VAR(setPassed, 1)
+
+	WAVE/Z sweepPassed = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_SWEEP_PASS)
+	CHECK_EQUAL_WAVES(sweepPassed, {1, 1, 1, 1, 1}, mode = WAVE_DATA)
+
+	WAVE/Z baselineQCPassed = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_BL_QC_PASS)
+	CHECK_EQUAL_WAVES(baselineQCPassed, {1, 1, 1, 1, 1}, mode = WAVE_DATA)
+
+	WAVE/Z spikeDetection = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_SPIKE_DETECT)
+	CHECK_EQUAL_WAVES(spikeDetection, {1, 1, 1, 1, 1}, mode = WAVE_DATA, tol = 1e-3)
+
+	WAVE/Z spikeCount = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_SPIKE_COUNT)
+	CHECK_EQUAL_WAVES(spikeCount, {1 ,2, 5, 10, 17}, mode = WAVE_DATA, tol = 1e-3)
+
+	WAVE/Z pulseDuration = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_PULSE_DUR)
+	CHECK_EQUAL_WAVES(pulseDuration, {1000, 1000, 1000, 1000, 1000}, mode = WAVE_DATA, tol = 1e-3)
+
+	WAVE/Z spikeFreq = GetAnalysisFuncDAScaleSpikeFreq(str, HEADSTAGE)
+	CHECK_EQUAL_WAVES(spikeFreq, {1 ,2, 5, 10, 17}, mode = WAVE_DATA, tol = 1e-3)
+
+	WAVE/Z fISlope = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_DA_fI_SLOPE)
+	CHECK_EQUAL_WAVES(fISlope, {0,3.33333333333334,7.14285714285714,12.4517906336088,18.4313725490196}, mode = WAVE_DATA, tol = 1e-3)
+
+	WAVE/Z fISlopeReached = GetLBNEntries_IGNORE(str, sweepNo, PSQ_FMT_LBN_DA_fI_SLOPE_REACHED)
+	CHECK_EQUAL_WAVES(fISlopeReached, {0, 0, 0, 0, 0}, mode = WAVE_DATA)
+
+	WAVE/Z sweeps = AFH_GetSweepsFromSameRACycle(numericalValues, sweepNo)
+	CHECK_WAVE(sweeps, NUMERIC_WAVE)
+	numEntries = DimSize(sweeps, ROWS)
+	CHECK_EQUAL_VAR(numEntries, 5)
+
+	numEntries = DimSize(sweepPassed, ROWS)
+	Make/FREE/D/N=(numEntries) stimScale = GetLastSetting(numericalValues, sweeps[p], STIMSET_SCALE_FACTOR_KEY, DATA_ACQUISITION_MODE)[HEADSTAGE]
+
+
+	Make/FREE/D/N=(numEntries) stimScaleRef = {20 + PSQ_DS_OFFSETSCALE_FAKE,                                 \
+														 40 * (1 + DAScaleModifierPerc/100) + PSQ_DS_OFFSETSCALE_FAKE, \
+														 60 * (1 + DAScaleModifierPerc/100) + PSQ_DS_OFFSETSCALE_FAKE, \
+														 80 + PSQ_DS_OFFSETSCALE_FAKE,                                 \
+														 100 * (1 - DAScaleModifierPerc/100) + PSQ_DS_OFFSETSCALE_FAKE}
+
+	// Explanations for the stimscale:
+	// 1. initial
+	// 2. last below min
+	// 3. last below min again
+	// 4. last inside
+	// 5. last above
+	CHECK_EQUAL_WAVES(stimScale, stimScaleRef, mode = WAVE_DATA, tol = 1e-14)
+End
