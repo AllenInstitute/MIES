@@ -1135,7 +1135,7 @@ static Function/WAVE SF_GetSweepForFormula(graph, range, channels, sweeps)
 	String graph
 	WAVE range, channels, sweeps
 
-	variable i, j, rangeStart, rangeEnd, pOffset, delta
+	variable i, j, rangeStart, rangeEnd, pOffset, delta, numRows
 	string dimLabel
 	variable channelType = -1
 	variable xStart = NaN, xEnd = NaN
@@ -1237,8 +1237,10 @@ static Function/WAVE SF_GetSweepForFormula(graph, range, channels, sweeps)
 		endfor
 	endfor
 
+	numRows = round((xEnd - xStart) / delta + 1)
+
 	// combine sweeps to data wave
-	Make/FREE/D/N=((xEnd - xStart + 1) / delta, DimSize(sweeps, ROWS), DimSize(channels, ROWS)) sweepData = NaN
+	Make/FREE/D/N=(numRows, DimSize(sweeps, ROWS), DimSize(channels, ROWS)) sweepData = NaN
 	SetScale/P x, xStart, delta, sweepData
 	for(i = 0; i < DimSize(sweeps, ROWS); i += 1)
 		for(j = 0; j < DimSize(channels, ROWS); j += 1)
