@@ -2,6 +2,7 @@
 !include "FileFunc.nsh"
 !include "MUI2.nsh"
 !include "nsDialogs.nsh"
+!include "x64.nsh"
 !include "setincnames.inc"
 !include "${NSISVERSION}"
 
@@ -262,6 +263,11 @@ WFUEndWaitUninstA_${WFPID}:
   StrCpy $INSTDIR "$PROGRAMFILES64\${APPNAME}"
   IntCmp $ALLUSER 1 +2
     StrCpy $INSTDIR "${USERINSTDIR}"
+!macroend
+
+!macro WriteITCRegistry
+  WriteRegStr HKLM "Software\Instrutech" "" ""
+  AccessControl::GrantOnRegKey HKLM "Software\Instrutech" "(BU)" "FullAccess"
 !macroend
 
 #---Target User Dialog---
@@ -942,6 +948,23 @@ AfterRegistrySetup:
   Sleep 1000
   Delete "$INSTDIR\vc_redist.x86.exe"
   Delete "$INSTDIR\vc_redist.x64.exe"
+
+  IntCmp $ISADMIN 0 SkipASLRSetup
+    IntCmp $XOPINST 0  SkipASLRSetup
+      ExecWait 'Powershell.exe -executionPolicy bypass -File "$INSTDIR\Packages\ITCXOP2\tools\Disable-ASLR-for-IP7-and-8.ps1"'
+SkipASLRSetup:
+
+  IntCmp $ISADMIN 0 SkipITCSetup
+    IntCmp $XOPINST 0  SkipITCSetup
+      ExecWait 'Powershell.exe -executionPolicy bypass -File "$INSTDIR\Packages\ITCXOP2\tools\FixOffice365.ps1"'
+      !insertmacro WriteITCRegistry
+      ${If} ${RunningX64}
+        SetRegView 64
+        !insertmacro WriteITCRegistry
+        SetRegView default
+      ${EndIf}
+SkipITCSetup:
+
 SectionEnd
 
 # Uninstaller
