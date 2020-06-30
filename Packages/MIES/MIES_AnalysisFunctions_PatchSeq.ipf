@@ -157,7 +157,7 @@ static Function PSQ_GetPulseSettingsForType(type, s)
 	DEBUGPRINT(msg)
 End
 
-/// Return the pulse durations from the labnotebook or calculate them before if required.
+/// Return the pulse durations from the labnotebook or calculate them before if required in ms.
 /// For convenience unused headstages will have 0 instead of NaN in the returned wave.
 static Function/WAVE PSQ_GetPulseDurations(panelTitle, type, sweepNo, totalOnsetDelay, [forceRecalculation])
 	string panelTitle
@@ -177,7 +177,7 @@ static Function/WAVE PSQ_GetPulseDurations(panelTitle, type, sweepNo, totalOnset
 	WAVE/Z durations = GetLastSetting(numericalValues, sweepNo, key, UNKNOWN_MODE)
 
 	if(!WaveExists(durations) || forceRecalculation)
-		WAVE durations = PSQ_DeterminePulseDuration(panelTitle, sweepNo, totalOnsetDelay)
+		WAVE durations = PSQ_DeterminePulseDuration(panelTitle, sweepNo, type, totalOnsetDelay)
 
 		key = PSQ_CreateLBNKey(type, PSQ_FMT_LBN_PULSE_DUR)
 		ED_AddEntryToLabnotebook(panelTitle, key, durations, unit = "ms", overrideSweepNo = sweepNo)
@@ -191,9 +191,9 @@ End
 /// @brief Determine the pulse duration on each headstage
 ///
 /// Returns the labnotebook wave as well.
-static Function/WAVE PSQ_DeterminePulseDuration(panelTitle, sweepNo, totalOnsetDelay)
+static Function/WAVE PSQ_DeterminePulseDuration(panelTitle, sweepNo, type, totalOnsetDelay)
 	string panelTitle
-	variable sweepNo, totalOnsetDelay
+	variable sweepNo, type, totalOnsetDelay
 
 	variable i, level, first, last, duration
 	string key
@@ -600,7 +600,7 @@ static Function PSQ_CalculateRMS(wv, column, startTime, rangeTime)
 End
 
 /// @brief Return the number of already acquired sweeps from the given
-///        repeated acquisition cycle.
+///        stimset cycle
 static Function PSQ_NumAcquiredSweepsInSet(panelTitle, sweepNo, headstage)
 	string panelTitle
 	variable sweepNo, headstage
@@ -617,7 +617,7 @@ static Function PSQ_NumAcquiredSweepsInSet(panelTitle, sweepNo, headstage)
 End
 
 /// @brief Return the number of passed sweeps in all sweeps from the given
-///        repeated acquisition cycle.
+///        stimset cycle
 Function PSQ_NumPassesInSet(numericalValues, type, sweepNo, headstage)
 	WAVE numericalValues
 	variable type, sweepNo, headstage
@@ -666,7 +666,7 @@ End
 /// - x position in ms where the spike is in each sweep/step
 ///   For convenience the values `0` always means no spike and `1` spike detected (at the appropriate position).
 ///
-/// #PSQ_RHEOBASE/#PSQ_RAMP/#PSQ_DA_SCALE:
+/// #PSQ_RHEOBASE/#PSQ_RAMP:
 ///
 /// Rows:
 /// - chunk indizes
@@ -678,7 +678,20 @@ End
 /// - 0: 1 if the chunk has passing baseline QC or not
 /// - 1: x position in ms where the spike is in each sweep/step
 ///      For convenience the values `0` always means no spike and `1` spike detected (at the appropriate position).
-/// - 2 (#PSQ_DA_SCALE only): Number of spikes
+///
+/// #PSQ_DA_SCALE:
+///
+/// Rows:
+/// - chunk indizes
+///
+/// Cols:
+/// - sweeps/steps
+///
+/// Layers:
+/// - 0: 1 if the chunk has passing baseline QC or not
+/// - 1: x position in ms where the spike is in each sweep/step
+///      For convenience the values `0` always means no spike and `1` spike detected (at the appropriate position).
+/// - 2: Number of spikes
 Function/WAVE PSQ_CreateOverrideResults(panelTitle, headstage, type)
 	string panelTitle
 	variable headstage, type
@@ -945,7 +958,7 @@ End
 /// And as usual we want the *last* matching sweep.
 ///
 /// @return existing sweep number or -1 in case no such sweep could be found
-Function PSQ_GetLastPassingLongRHSweep(panelTitle, headstage)
+static Function PSQ_GetLastPassingLongRHSweep(panelTitle, headstage)
 	string panelTitle
 	variable headstage
 
@@ -1418,7 +1431,7 @@ Function PSQ_DAScale(panelTitle, s)
 						endif
 					endif
 
-					WAVE durations = PSQ_DeterminePulseDuration(panelTitle, s.sweepNo, totalOnsetDelay)
+					WAVE durations = PSQ_DeterminePulseDuration(panelTitle, s.sweepNo, PSQ_DA_SCALE, totalOnsetDelay)
 					key = PSQ_CreateLBNKey(PSQ_DA_SCALE, PSQ_FMT_LBN_PULSE_DUR)
 					ED_AddEntryToLabnotebook(panelTitle, key, durations, unit = "ms", overrideSweepNo = s.sweepNo)
 

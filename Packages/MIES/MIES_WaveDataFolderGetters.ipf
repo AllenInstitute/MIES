@@ -267,9 +267,6 @@ threadsafe Function/DF UpgradeDataFolderLocation(oldFolder, newFolder)
 	ASSERT_TS(GrepString(oldFolder, "(?i)^root:"), "oldFolder must be an absolute path")
 	ASSERT_TS(GrepString(newFolder, "(?i)^root:"), "newFolder must be an absolute path")
 
-	sprintf msg, "%s -> %s", oldFolder, newFolder
-	DEBUGPRINT_TS(msg)
-
 	oldFolder = RemoveEnding(oldFolder, ":")
 	newFolder = RemoveEnding(newFolder, ":")
 
@@ -284,6 +281,9 @@ threadsafe Function/DF UpgradeDataFolderLocation(oldFolder, newFolder)
 
 		return $newFolder
 	endif
+
+	sprintf msg, "%s -> %s", oldFolder, newFolder
+	DEBUGPRINT_TS(msg)
 
 	// oldFolder exists and newFolder not -> move it
 	// 1: Rename to unique name

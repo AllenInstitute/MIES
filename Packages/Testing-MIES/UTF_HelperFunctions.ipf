@@ -18,7 +18,7 @@ End
 /// Kill all left-over windows and remove the trash
 Function AdditionalExperimentCleanupAfterTest()
 
-	string win, list
+	string win, list, name
 	variable i, numWindows
 
 	list = WinList("*", ";", "WIN:67") // Panels, Graphs and tables
@@ -27,12 +27,19 @@ Function AdditionalExperimentCleanupAfterTest()
 	for(i = 0; i < numWindows; i += 1)
 		win = StringFromList(i, list)
 
-		if(!cmpstr(win, "BW_MiesBackgroundWatchPanel"))
+		if(!cmpstr(win, "BW_MiesBackgroundWatchPanel") || !cmpstr(win, "DP_DebugPanel"))
 			continue
 		endif
 
 		KillWindow $win
 	endfor
 
+	DFREF dfr = GetDebugPanelFolder()
+	name = GetDataFolder(0, dfr)
+	MoveDataFolder/O=1 dfr, root:
+
 	KillOrMoveToTrash(dfr=root:MIES)
+
+	NewDataFolder root:MIES
+	MoveDataFolder root:$name, root:MIES
 End
