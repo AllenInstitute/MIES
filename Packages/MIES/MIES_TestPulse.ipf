@@ -505,6 +505,35 @@ static Function TP_RecordTP(panelTitle, BaselineSSAvg, InstResistance, SSResista
 	SetNumberInWaveNote(TPStorage, NOTE_INDEX, count + 1)
 End
 
+/// @brief Threadsafe wrapper for performing CurveFits on the TPStorage wave
+threadsafe static Function CurveFitWrapper(TPStorage, startRow, endRow, headstage)
+	WAVE TPStorage
+	variable startRow, endRow, headstage
+
+	variable V_FitQuitReason, V_FitOptions, V_FitError, V_AbortCode
+
+	// finish early on missing data
+	if(!IsFinite(TPStorage[startRow][headstage][%SteadyStateResistance])   \
+	   || !IsFinite(TPStorage[endRow][headstage][%SteadyStateResistance]))
+		return NaN
+	endif
+
+	Make/FREE/D/N=2 coefWave
+	V_FitOptions = 4
+
+	try
+		ClearRTError()
+		V_FitError  = 0
+		V_AbortCode = 0
+		CurveFit/Q/N=1/NTHR=1/M=0/W=2 line, kwCWave=coefWave, TPStorage[startRow,endRow][headstage][%SteadyStateResistance]/X=TPStorage[startRow,endRow][headstage][%TimeInSeconds]/AD=0/AR=0; AbortOnRTE
+		return coefWave[1]
+	catch
+		ClearRTError()
+	endtry
+
+	return NaN
+End
+
 /// @brief Determine the slope of the steady state resistance
 /// over a user defined window (in seconds)
 ///
@@ -516,7 +545,7 @@ static Function TP_AnalyzeTP(panelTitle, TPStorage, endRow)
 	Wave/Z TPStorage
 	variable endRow
 
-	variable i, startRow, V_FitQuitReason, V_FitOptions, V_FitError, V_AbortCode, headstage
+	variable i, startRow, headstage
 
 	startRow = endRow - ceil(TP_FIT_POINTS / TP_TPSTORAGE_EVAL_INTERVAL)
 
@@ -524,8 +553,7 @@ static Function TP_AnalyzeTP(panelTitle, TPStorage, endRow)
 		return NaN
 	endif
 
-	Make/FREE/D/N=2 coefWave
-	V_FitOptions = 4
+	Make/FREE/N=(NUM_HEADSTAGES) statusHS = 0
 
 	for(i = 0; i < NUM_HEADSTAGES; i += 1)
 
@@ -535,31 +563,10 @@ static Function TP_AnalyzeTP(panelTitle, TPStorage, endRow)
 			continue
 		endif
 
-		// finish early on missing data
-		if(!IsFinite(TPStorage[startRow][headstage][%SteadyStateResistance])   \
-		   || !IsFinite(TPStorage[endRow][headstage][%SteadyStateResistance]))
-			TPStorage[0][headstage][%Rss_Slope] = NaN
-			continue
-		endif
-
-		try
-			ClearRTError()
-			V_FitError  = 0
-			V_AbortCode = 0
-			CurveFit/Q/N=1/NTHR=1/M=0/W=2 line, kwCWave=coefWave, TPStorage[startRow,endRow][headstage][%SteadyStateResistance]/X=TPStorage[startRow,endRow][headstage][%TimeInSeconds]/AD=0/AR=0; AbortOnRTE
-			TPStorage[0][headstage][%Rss_Slope] = coefWave[1]
-		catch
-			/// @todo - add code that let's functions which rely on this data know to wait for good data
-			TPStorage[0][headstage][%Rss_Slope] = NaN
-			DEBUGPRINT("Fit was not successfull")
-			DEBUGPRINT("V_FitError=", var=V_FitError)
-			DEBUGPRINT("V_FitQuitReason=", var=V_FitQuitReason)
-			DEBUGPRINT("V_AbortCode=", var=V_AbortCode)
-			if(V_AbortCode == -4)
-				DEBUGPRINT(GetErrMessage(ClearRTError()))
-			endif
-		endtry
+		statusHS[i] = 1
 	endfor
+
+	Multithread TPStorage[0][][%Rss_Slope] = statusHS[q] ? CurveFitWrapper(TPStorage, startRow, endRow, q) : NaN; AbortOnRTE
 End
 
 /// @brief Stop running background testpulse on all locked devices

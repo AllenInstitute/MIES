@@ -2118,7 +2118,7 @@ End
 /// - One entry per step
 ///
 /// COLS:
-/// - NUM_AD_CHANNELS
+/// - NUM_HEADSTAGES
 ///
 /// LAYERS:
 /// -  0: Amplifier holding command (Voltage Clamp)
