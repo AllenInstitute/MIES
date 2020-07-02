@@ -107,6 +107,79 @@ Function/S SBE_GetSelectedAxis(graphPopup, axisOrientation)
    return list + GetAllAxesWithOrientation(graph, axisOrientation)
 End
 
+/// @brief Add all available sweep data to traceData
+///
+/// This function can fill in the available data for traces which are *not*
+/// shown.
+static Function SBE_AddMissingADTraceInfo(traceData)
+	WAVE/T traceData
+
+	variable numPaths, i, j, idx, cnt, sweepNumber
+	variable numEntries, headstage
+	string folder
+
+	Duplicate/FREE/T traceData, newData
+	newData = ""
+
+	// get a list of folders holding the sweep data
+	numPaths = DimSize(traceData, ROWS)
+	Make/FREE/WAVE/N=(numPaths) shownWaves = $traceData[p][%fullPath]
+
+	for(i = 0; i < numPaths; i += 1)
+		DFREF sweepDFR = $GetWavesDataFolder(shownWaves[i], 1)
+		WAVE/WAVE allWaves = GetITCDataSingleColumnWaves(sweepDFR, ITC_XOP_CHANNEL_TYPE_ADC)
+
+		WAVE numericalValues = $traceData[i][%numericalValues]
+		sweepNumber = str2num(traceData[i][%sweepNumber])
+
+		WAVE ADCs = GetLastSetting(numericalValues, sweepNumber, "ADC", DATA_ACQUISITION_MODE)
+		WAVE HS = GetLastSetting(numericalValues, sweepNumber, "Headstage Active", DATA_ACQUISITION_MODE)
+
+		numEntries = DimSize(allWaves, ROWS)
+		for(j = 0; j < numEntries; j += 1)
+			WAVE/Z wv = allWaves[j]
+
+			// no sweep data for this channel
+			if(!WaveExists(wv))
+				continue
+			endif
+
+			idx = GetRowIndex(shownWaves, refWave = allWaves[j])
+
+			if(IsFinite(idx)) // single sweep data already in traceData
+				continue
+			endif
+
+			// labnotebook layer where the ADC can be found is the headstage number
+			headstage = GetRowIndex(ADCs, val=j)
+
+			if(!IsFinite(headstage)) // unassociated ADC
+				continue
+			endif
+
+			EnsureLargeEnoughWave(newData, minimumSize=cnt)
+			newData[cnt][] = traceData[i][q]
+
+			newData[cnt][%traceName]     = ""
+			newData[cnt][%fullPath]      = GetWavesDataFolder(wv, 2)
+			newData[cnt][%channelType]   = StringFromList(ITC_XOP_CHANNEL_TYPE_ADC, ITC_CHANNEL_NAMES)
+			newData[cnt][%channelNumber] = num2str(j)
+			newData[cnt][%headstage]     = num2str(headstage)
+			cnt += 1
+		endfor
+	endfor
+
+	if(cnt == 0)
+		return NaN
+	endif
+
+	Redimension/N=(numPaths + cnt, -1) traceData
+
+	traceData[numPaths, inf][] = newData[p - numPaths][q]
+
+	SortColumns/A/DIML/KNDX={2, 3, 4, 5} sortWaves=traceData
+End
+
 static Function/WAVE SBE_GetPulseStartTimesForSel()
 	string graph, traceName
 	variable region, idx, ADC
@@ -118,10 +191,12 @@ static Function/WAVE SBE_GetPulseStartTimesForSel()
 
 	ADC = str2num(GetPopupMenuString(SBE_EXPORT_PANEL, "popup_sweep_export_pulse_AD"))
 
-	WAVE/Z/T traceData = PA_GetTraceInfos(graph, includeOtherADData = 1)
+	WAVE/Z/T traceData = PA_GetTraceInfos(graph)
 	if(!WaveExists(traceData))
 		return $""
 	endif
+
+	SBE_AddMissingADTraceInfo(traceData)
 
 	WAVE/Z indizesType   = FindIndizes(traceData, colLabel="channelType", str="AD")
 	WAVE/Z indizesNumber = FindIndizes(traceData, colLabel="channelNumber", var=ADC)
