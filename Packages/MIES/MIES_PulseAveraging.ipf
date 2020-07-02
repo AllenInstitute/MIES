@@ -1025,10 +1025,11 @@ static Function PA_ResetWavesIfRequired(listOfWaves, pa)
 	string listOfWaves
 	STRUCT PulseAverageSettings &pa
 
-	variable i, statusZero, statusTimeAlign
+	variable i, statusZero, statusTimeAlign, numEntries
 	WAVE/WAVE wv = ListToWaveRefWave(listOfWaves, 1)
 
-	for(i = 0; i < DimSize(wv, ROWS); i += 1)
+	numEntries = DimSize(wv, ROWS)
+	for(i = 0; i < numEntries; i += 1)
 		statusZero = GetNumberFromWaveNote(wv[i], NOTE_KEY_ZEROED)
 		statusTimeAlign = GetNumberFromWaveNote(wv[i], NOTE_KEY_TIMEALIGN)
 
