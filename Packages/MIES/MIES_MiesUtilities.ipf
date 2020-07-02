@@ -4843,13 +4843,20 @@ End
 /// @param nonExistingBackupIsFatal [optional, defaults to true] behaviour for the case that there is no backup.
 ///                                 Passing a non-zero value will abort if the backup wave does not exist, with
 ///                                 zero it will just do nothing.
+/// @param keepBackup               [optional, defaults to false] don't delete the backup after restoring from it
 /// @returns wave reference to the restored data, in case of no backup an invalid wave reference
-Function/Wave ReplaceWaveWithBackup(wv, [nonExistingBackupIsFatal])
+Function/Wave ReplaceWaveWithBackup(wv, [nonExistingBackupIsFatal, keepBackup])
 	Wave wv
-	variable nonExistingBackupIsFatal
+	variable nonExistingBackupIsFatal, keepBackup
 
 	if(ParamIsDefault(nonExistingBackupIsFatal))
 		nonExistingBackupIsFatal = 1
+	endif
+
+	if(ParamIsDefault(keepBackup))
+		keepBackup = 0
+	else
+		keepBackup = !!keepBackup
 	endif
 
 	WAVE/Z backup = GetBackupWave(wv)
@@ -4863,7 +4870,10 @@ Function/Wave ReplaceWaveWithBackup(wv, [nonExistingBackupIsFatal])
 	endif
 
 	Duplicate/O backup, wv
-	KillOrMoveToTrash(wv=backup)
+
+	if(!keepBackup)
+		KillOrMoveToTrash(wv=backup)
+	endif
 
 	return wv
 End
