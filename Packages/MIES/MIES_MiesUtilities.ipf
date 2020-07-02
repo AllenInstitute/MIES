@@ -2095,7 +2095,7 @@ Function CreateTiledChannelGraph(graph, config, sweepNo, numericalValues,  textu
 	string experiment
 	WAVE/Z channelSelWave
 
-	variable red, green, blue, axisIndex, numChannels, offset
+	variable red, green, blue, alpha, axisIndex, numChannels, offset
 	variable numDACs, numADCs, numTTLs, i, j, k, hasPhysUnit, slotMult, hardwareType
 	variable moreData, low, high, step, spacePerSlot, chan, numSlots, numHorizWaves, numVertWaves, idx
 	variable numTTLBits, colorIndex, totalVertBlocks, headstage
@@ -2415,6 +2415,29 @@ Function CreateTiledChannelGraph(graph, config, sweepNo, numericalValues,  textu
 					continue
 				endif
 
+				// Color scheme:
+				// 0-7:   Different headstages
+				// 8:     Unknown headstage
+				// 9:     Averaged trace
+				// 10:    TTL bits (sum) rack zero
+				// 11-14: TTL bits (single) rack zero
+				// 15:    TTL bits (sum) rack one
+				// 16-19: TTL bits (single) rack one
+				if(IsFinite(headstage))
+					colorIndex = headstage
+				elseif(!cmpstr(channelID, "TTL"))
+					colorIndex = 10 + activeChanCount[i] * 5 + j
+				else
+					colorIndex = NUM_HEADSTAGES
+				endif
+
+				GetTraceColor(colorIndex, red, green, blue)
+
+				sprintf str, "colorIndex=%d", colorIndex
+				DEBUGPRINT(str)
+
+				alpha = (tgs.highlightSweep == -1 || tgs.highlightSweep == 1) ? 65535 : 0.05 * 65535
+
 				DEBUGPRINT("")
 				first = 0
 
@@ -2481,10 +2504,10 @@ Function CreateTiledChannelGraph(graph, config, sweepNo, numericalValues,  textu
 					DEBUGPRINT(str)
 
 					if(!IsFinite(xRangeStart) && !IsFinite(XRangeEnd))
-						AppendToGraph/W=$graph/L=$vertAxis wv[][0]/TN=$trace
+						AppendToGraph/W=$graph/B=$horizAxis/L=$vertAxis/C=(red, green, blue, alpha) wv[][0]/TN=$trace
 					else
 						horizAxis = vertAxis + "_b"
-						AppendToGraph/W=$graph/L=$vertAxis/B=$horizAxis wv[xRangeStart, xRangeEnd][0]/TN=$trace
+						AppendToGraph/W=$graph/L=$vertAxis/B=$horizAxis/C=(red, green, blue, alpha) wv[xRangeStart, xRangeEnd][0]/TN=$trace
 						first = first
 						last  = first + (xRangeEnd - xRangeStart) / totalXRange
 						ModifyGraph/W=$graph axisEnab($horizAxis)={first, min(last, 1.0)}
@@ -2563,31 +2586,7 @@ Function CreateTiledChannelGraph(graph, config, sweepNo, numericalValues,  textu
 						endif
 					endif
 
-					// Color scheme:
-					// 0-7:   Different headstages
-					// 8:     Unknown headstage
-					// 9:     Averaged trace
-					// 10:    TTL bits (sum) rack zero
-					// 11-14: TTL bits (single) rack zero
-					// 15:    TTL bits (sum) rack one
-					// 16-19: TTL bits (single) rack one
-					if(IsFinite(headstage))
-						colorIndex = headstage
-					elseif(!cmpstr(channelID, "TTL"))
-						colorIndex = 10 + activeChanCount[i] * 5 + j
-					else
-						colorIndex = NUM_HEADSTAGES
-					endif
-
-					GetTraceColor(colorIndex, red, green, blue)
-					ModifyGraph/W=$graph hideTrace($trace)=(tgs.hideSweep), rgb($trace)=(red, green, blue), userData($trace)={channelType, USERDATA_MODIFYGRAPH_REPLACE, channelID}, userData($trace)={channelNumber, USERDATA_MODIFYGRAPH_REPLACE, num2str(chan)}, userData($trace)={sweepNumber, USERDATA_MODIFYGRAPH_REPLACE, num2str(sweepNo)}, userData($trace)={headstage, USERDATA_MODIFYGRAPH_REPLACE, num2str(headstage)}, userData($trace)={textualValues, USERDATA_MODIFYGRAPH_REPLACE, GetWavesDataFolder(textualValues, 2)}, userData($trace)={numericalValues, USERDATA_MODIFYGRAPH_REPLACE, GetWavesDataFolder(numericalValues, 2)}, userData($trace)={clampMode, USERDATA_MODIFYGRAPH_REPLACE, num2str(IsFinite(headstage) ? clampModes[headstage] : NaN)}, userData($trace)={experiment, USERDATA_MODIFYGRAPH_REPLACE, experiment}
-
-					sprintf str, "colorIndex=%d", colorIndex
-					DEBUGPRINT(str)
-
-					if(tgs.highlightSweep == 0)
-						ModifyGraph/W=$graph rgb($trace)=(red, green, blue, 0.05 * 65535)
-					endif
+					ModifyGraph/W=$graph hideTrace($trace)=(tgs.hideSweep), userData($trace)={channelType, USERDATA_MODIFYGRAPH_REPLACE, channelID}, userData($trace)={channelNumber, USERDATA_MODIFYGRAPH_REPLACE, num2str(chan)}, userData($trace)={sweepNumber, USERDATA_MODIFYGRAPH_REPLACE, num2str(sweepNo)}, userData($trace)={headstage, USERDATA_MODIFYGRAPH_REPLACE, num2str(headstage)}, userData($trace)={textualValues, USERDATA_MODIFYGRAPH_REPLACE, GetWavesDataFolder(textualValues, 2)}, userData($trace)={numericalValues, USERDATA_MODIFYGRAPH_REPLACE, GetWavesDataFolder(numericalValues, 2)}, userData($trace)={clampMode, USERDATA_MODIFYGRAPH_REPLACE, num2str(IsFinite(headstage) ? clampModes[headstage] : NaN)}, userData($trace)={experiment, USERDATA_MODIFYGRAPH_REPLACE, experiment}
 				endfor
 
 				if(!tgs.OverlayChannels || activeChanCount[i] == 0)
