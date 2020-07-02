@@ -1085,7 +1085,6 @@ End
 /// traces are plotted on the diagonal graphs/axes of the PA graph(s).
 ///
 /// @param refTraces list of graph#trace entries as reference for time alignment
-///                  fill complete list using @see PA_GetReferenceTraces(win)
 Function PA_AutomaticTimeAlignment(refTraces)
 	string refTraces
 
@@ -1097,31 +1096,6 @@ Function PA_AutomaticTimeAlignment(refTraces)
 		graphtrace = StringFromList(i, refTraces)
 		TimeAlignmentIfReq(graphtrace, TIME_ALIGNMENT_MAX, 0, -inf, inf)
 	endfor
-End
-
-/// @brief Get a list of all reference traces in all PA graphs
-///
-/// @param win  main DB/SB graph or any subwindow panel.
-/// @returns graphtraces in the form graph#trace
-static Function/S PA_GetReferenceTraces(win)
-	string win
-
-	string graph, graphs
-	variable i, numGraphs
-	string graphTraces = ""
-
-	if(!PA_IsActive(win))
-		return ""
-	endif
-
-	graphs = PA_GetAverageGraphs()
-	numGraphs = ItemsInList(graphs)
-	for(i = 0; i < numGraphs; i += 1)
-		graph = StringFromList(i, graphs)
-		graphtraces += PA_GetReferenceTracesFromGraph(graph)
-	endfor
-
-	return graphtraces
 End
 
 /// @brief Get all traces marked as reference traces for the current graph.
