@@ -4704,8 +4704,6 @@ End
 /// @param dfr [optional, default: ignored] remove all traces which stem from one of the waves in dfr
 ///
 /// Only one of trace/wv/dfr may be supplied.
-///
-/// @return number of traces/waves removed from the graph
 Function RemoveTracesFromGraph(graph, [kill, trace, wv, dfr])
 	string graph
 	variable kill
@@ -4713,7 +4711,7 @@ Function RemoveTracesFromGraph(graph, [kill, trace, wv, dfr])
 	WAVE/Z wv
 	DFREF dfr
 
-	variable i, numEntries, removals, tryKillingTheWave, numOptArgs, remove_all_traces, debugOnError
+	variable i, numEntries, tryKillingTheWave, numOptArgs, remove_all_traces, debugOnError
 	string traceList, refTrace
 
 	if(ParamIsDefault(kill))
@@ -4737,17 +4735,17 @@ Function RemoveTracesFromGraph(graph, [kill, trace, wv, dfr])
 	if(!kill && remove_all_traces)
 #if IgorVersion() >= 9.0
 		RemoveFromGraph/ALL/W=$graph
+		return NaN
 #else
 		debugOnError = DisableDebugOnError()
 		do
 			try
 				ClearRTError()
 				RemoveFromGraph/W=$graph $("#0"); AbortOnRTE
-				removals += 1
 			catch
 				ClearRTError()
 				ResetDebugOnError(debugOnError)
-				return removals
+				return NaN
 			endtry
 		while(1)
 #endif
@@ -4764,24 +4762,20 @@ Function RemoveTracesFromGraph(graph, [kill, trace, wv, dfr])
 
 		if(remove_all_traces)
 			RemoveFromGraph/W=$graph $refTrace
-			removals += 1
 			tryKillingTheWave = 1
 		elseif(!ParamIsDefault(trace))
 			if(!cmpstr(refTrace, trace))
 				RemoveFromGraph/W=$graph $refTrace
-				removals += 1
 				tryKillingTheWave = 1
 			endif
 		elseif(!ParamIsDefault(wv))
 			if(WaveRefsEqual(refWave, wv))
 				RemoveFromGraph/W=$graph $refTrace
-				removals += 1
 				tryKillingTheWave = 1
 			endif
 		elseif(!ParamIsDefault(dfr))
 			if(GetRowIndex(candidates, refWave=refWave) >= 0)
 				RemoveFromGraph/W=$graph $refTrace
-				removals += 1
 				tryKillingTheWave = 1
 			endif
 		endif
@@ -4793,7 +4787,7 @@ Function RemoveTracesFromGraph(graph, [kill, trace, wv, dfr])
 		tryKillingTheWave = 0
 	endfor
 
-	return removals
+	return NaN
 End
 
 /// @brief Create a backup of the wave wv if it does not already
