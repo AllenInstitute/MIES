@@ -6645,3 +6645,42 @@ Function/WAVE GetPopupExtMenuWave()
 
 	return wv
 End
+
+/// @brief Return the reference to the graph user data datafolder as string
+Function/S GetGraphUserDataFolderAsString()
+
+	return GetMiesPathAsString() + ":GraphUserData"
+End
+
+/// @brief Return the reference to the graph user data datafolder
+Function/DF GetGraphUserDataFolderDFR()
+
+	return createDFWithAllParents(GetGraphUserDataFolderAsString())
+End
+
+/// @brief Return the text wave for the graph user data
+///
+/// @param graph existing graph
+Function/WAVE GetGraphUserData(string graph)
+
+	variable versionOfNewWave = 1
+	DFREF dfr = GetGraphUserDataFolderDFR()
+	string name = graph + "_wave"
+	WAVE/T/Z/SDFR=dfr wv = $name
+
+	if(ExistsWithCorrectLayoutVersion(wv, versionOfNewWave))
+		return wv
+	elseif(WaveExists(wv))
+		// handle upgrade
+	else
+		Make/T/N=(MINIMUM_WAVE_SIZE_LARGE, 0) dfr:$name/WAVE=wv
+		ASSERT(WinType(graph) == 1, "Expected graph")
+		SetWindow $graph, hook(traceUserDataCleanup) = TUD_RemoveUserDataWave
+	endif
+
+	SetWaveVersion(wv, versionOfNewWave)
+	SetNumberInWaveNote(wv, NOTE_INDEX, 0)
+	SetNumberInWaveNote(wv, TUD_INDEX_JSON, JSON_New())
+
+	return wv
+End

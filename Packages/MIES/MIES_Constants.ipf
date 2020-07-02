@@ -1296,3 +1296,6 @@ Constant LNB_TYPE_NONE = 0
 Constant LNB_TYPE_NUMERICAL = 1
 Constant LNB_TYPE_TEXTUAL = 2
 /// @}
+
+/// @brief Wave note key for the indexing helper JSON document
+StrConstant TUD_INDEX_JSON = "INDEX_JSON"

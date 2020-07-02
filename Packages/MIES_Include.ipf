@@ -108,6 +108,7 @@
 #include "MIES_TestPulse"
 #include "MIES_TestPulse_Single"
 #include "MIES_TestPulse_Multi"
+#include "MIES_TraceUserData"
 #include "MIES_Utilities"
 #include "MIES_WaveBuilder"
 #include "MIES_WaveBuilderPanel"
