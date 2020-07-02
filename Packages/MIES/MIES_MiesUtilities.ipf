@@ -1815,21 +1815,36 @@ threadsafe Function KillOrMoveToTrashPath(path)
 			return NaN
 		endif
 
-		DFREF tmpDFR = GetUniqueTempPath()
-		dest = RemoveEnding(GetDataFolder(1, tmpDFR), ":")
-		MoveDataFolder $path, $dest
+		MoveToTrash(dfr = $path)
 	elseif(WaveExists($path))
-		KillWaves/F/Z $path
+		KillWaves/Z $path
 
 		WAVE/Z wv = $path
 		if(!WaveExists(wv))
 			return NaN
 		endif
 
-		DFREF tmpDFR = GetUniqueTempPath()
-		MoveWave wv, tmpDFR
+		MoveToTrash(wv = wv)
 	else
 		DEBUGPRINT_TS("Ignoring the datafolder/wave as it does not exist", str=path)
+	endif
+End
+
+threadsafe Function MoveToTrash([wv, dfr])
+	WAVE/Z wv
+	DFREF dfr
+
+	string dest
+
+	if(!ParamIsDefault(wv) && WaveExists(wv))
+		DFREF tmpDFR = GetUniqueTempPath()
+		MoveWave wv, tmpDFR
+	endif
+
+	if(!ParamIsDefault(dfr) && DataFolderExistsDFR(dfr))
+		DFREF tmpDFR = GetUniqueTempPath()
+		dest = RemoveEnding(GetDataFolder(1, tmpDFR), ":")
+		MoveDataFolder dfr, $dest
 	endif
 End
 
