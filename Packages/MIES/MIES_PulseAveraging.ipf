@@ -1040,6 +1040,6 @@ static Function PA_ResetWavesIfRequired(listOfWaves, pa)
 		if(statusZero == pa.zeroTraces && statusTimeAlign == pa.autoTimeAlignment)
 			continue // wave is up to date
 		endif
-		ReplaceWaveWithBackup(wv[i], nonExistingBackupIsFatal = 1)
+		ReplaceWaveWithBackup(wv[i], nonExistingBackupIsFatal = 1, keepBackup = 1)
 	endfor
 End
