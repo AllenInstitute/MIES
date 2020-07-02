@@ -3742,27 +3742,25 @@ static Function AverageWavesFromSameYAxisIfReq(graph, traces, averagingEnabled, 
 
 		WAVE averageWave = CalculateAverage(listOfWaves, averageDataFolder, averageWaveName)
 
-		if(IsFinite(first) && IsFinite(last))
-			// and now convert it back to points in the average wave
-			first = ScaleToIndex(averageWave, first, ROWS)
-			last  = ScaleToIndex(averageWave, last, ROWS)
-
-			AppendToGraph/Q/W=$graph/L=$axis/B=$firstXAxis averageWave[first, last]/TN=$traceName
-		else
-			AppendToGraph/Q/W=$graph/L=$axis/B=$firstXAxis averageWave/TN=$traceName
-		endif
-
-		if(ListHasOnlyOneUniqueEntry(listOfClampModes))
-			ModifyGraph/W=$graph userData($traceName)={clampMode, USERDATA_MODIFYGRAPH_REPLACE, StringFromList(0, listOfClampModes)}
-		endif
-
 		if(WaveListHasSameWaveNames(listOfHeadstages, headstage)&& hideSweep)
 			GetTraceColor(str2num(headstage), red, green, blue)
 		else
 			GetTraceColor(NUM_HEADSTAGES + 1, red, green, blue)
 		endif
 
-		ModifyGraph/W=$graph rgb($traceName)=(red, green, blue, 0.80 * 65535)
+		if(IsFinite(first) && IsFinite(last))
+			// and now convert it back to points in the average wave
+			first = ScaleToIndex(averageWave, first, ROWS)
+			last  = ScaleToIndex(averageWave, last, ROWS)
+
+			AppendToGraph/Q/W=$graph/L=$axis/B=$firstXAxis/C=(red, green, blue, 0.80 * 65535) averageWave[first, last]/TN=$traceName
+		else
+			AppendToGraph/Q/W=$graph/L=$axis/B=$firstXAxis/C=(red, green, blue, 0.80 * 65535) averageWave/TN=$traceName
+		endif
+
+		if(ListHasOnlyOneUniqueEntry(listOfClampModes))
+			ModifyGraph/W=$graph userData($traceName)={clampMode, USERDATA_MODIFYGRAPH_REPLACE, StringFromList(0, listOfClampModes)}
+		endif
 	endfor
 
 	DEBUGPRINT_ELAPSED(referenceTime)
