@@ -372,7 +372,7 @@ End
 ///
 ///
 /// The expected format of the ignore list entries is a semicolon (";") separated
-/// list of subranges (without the possibility denoting the step size).
+/// list of subranges (without the possibility of denoting the step size).
 ///
 /// Examples:
 /// - 0 (ignore HS 0)
