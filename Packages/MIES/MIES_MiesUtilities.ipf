@@ -2440,8 +2440,7 @@ Function CreateTiledChannelGraph(graph, config, sweepNo, numericalValues,  textu
 				sprintf str, "colorIndex=%d", colorIndex
 				DEBUGPRINT(str)
 
-				alpha = (tgs.highlightSweep == -1 || tgs.highlightSweep == 1) ? 65535 : 0.05 * 65535
-
+				alpha = (IsNaN(tgs.highlightSweep) || tgs.highlightSweep == 1) ? 65535 : 0.05 * 65535
 				DEBUGPRINT("")
 				first = 0
 

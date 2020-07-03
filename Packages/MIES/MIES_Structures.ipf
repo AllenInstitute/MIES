@@ -84,7 +84,7 @@ Structure TiledGraphSettings
 	int16 overlayChannels
 	int16 dDAQDisplayMode
 	int16 dDAQHeadstageRegions
-	int16 highlightSweep
+	variable highlightSweep // NaN if disabled, otherwise 0/1, see also OVS_IsSweepHighlighted()
 	int16 hideSweep
 EndStructure
 
