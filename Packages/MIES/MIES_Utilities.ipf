@@ -1726,7 +1726,7 @@ Function GetRowIndex(wv, [val, str, refWave])
 	ASSERT(ParamIsDefault(val) + ParamIsDefault(str) + ParamIsDefault(refWave) == 2, "Expected exactly one argument")
 
 	if(!ParamIsDefault(refWave))
-		ASSERT(IsWaveRefWave(refWave), "wv must be a wave holding wave references")
+		ASSERT(IsWaveRefWave(wv), "wv must be a wave holding wave references")
 		numEntries = DimSize(wv, ROWS)
 		for(i = 0; i < numEntries; i += 1)
 			WAVE/WAVE cmpWave = wv
