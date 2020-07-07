@@ -93,13 +93,17 @@ Function/S CA_DistDAQCreateCacheKey(params)
 End
 
 /// @brief Cache key generator for @c FindLevel in PA_CalculatePulseStartTimes()
-Function/S CA_PulseStartTimes(wv, totalOnsetDelay)
+Function/S CA_PulseStartTimes(wv, fullPath, channelNumber, totalOnsetDelay)
 	WAVE wv
-	variable totalOnsetDelay
+	string fullPath
+	variable channelNumber, totalOnsetDelay
 
 	variable crc
 
-	crc = WaveCRC(0, wv)
+	crc = StringCRC(crc, num2str(ModDate(wv)))
+	crc = StringCRC(crc, num2str(WaveModCountWrapper(wv)))
+	crc = StringCRC(crc, fullPath)
+	crc = StringCRC(crc, num2str(channelNumber))
 	crc = StringCRC(crc, num2str(totalOnsetDelay))
 
 	return num2istr(crc) + "Version 1"

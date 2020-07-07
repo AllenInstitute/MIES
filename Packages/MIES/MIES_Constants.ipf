@@ -585,8 +585,8 @@ Constant HARDWARE_DAC_EXTERNAL_TRIGGER = 0x1
 
 /// Used to upgrade the GuiStateWave as well as the DA Ephys panel
 Constant DA_EPHYS_PANEL_VERSION     = 49
-Constant DATABROWSER_PANEL_VERSION  = 15
-Constant SWEEPBROWSER_PANEL_VERSION = 3
+Constant DATABROWSER_PANEL_VERSION  = 17
+Constant SWEEPBROWSER_PANEL_VERSION = 4
 Constant WAVEBUILDER_PANEL_VERSION  = 8
 
 /// Version of the labnotebooks (numerical and textual)
@@ -1296,3 +1296,9 @@ Constant LNB_TYPE_NONE = 0
 Constant LNB_TYPE_NUMERICAL = 1
 Constant LNB_TYPE_TEXTUAL = 2
 /// @}
+
+/// @brief Wave note key for the indexing helper JSON document
+StrConstant TUD_INDEX_JSON = "INDEX_JSON"
+
+/// @brief sprintf field width for trace names
+Constant TRACE_NAME_NUM_DIGITS = 6

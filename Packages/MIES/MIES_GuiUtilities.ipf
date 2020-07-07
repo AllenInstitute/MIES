@@ -1132,11 +1132,27 @@ Function/S GetCurrentWindow()
 	return s_value
 End
 
+/// @brief Return 1 if there are cursors on the graph, 0 if not
+Function GraphHasCursors(graph)
+	string graph
+
+	Make/FREE/N=(ItemsInList(CURSOR_NAMES)) info = WaveExists(CsrWaveRef($StringFromList(p, CURSOR_NAMES), graph))
+
+	return WaveMax(info) > 0
+End
+
 /// @brief Return a 1D text wave with all infos about the cursors
+///
+/// Returns an invalid wave reference when no cursors are present. Counterpart
+/// to RestoreCursors().
 ///
 /// The data is sorted like `CURSOR_NAMES`.
 Function/WAVE GetCursorInfos(graph)
 	string graph
+
+	if(!GraphHasCursors(graph))
+		return $""
+	endif
 
 	Make/T/FREE/N=(ItemsInList(CURSOR_NAMES)) info = CsrInfo($StringFromList(p, CURSOR_NAMES), graph)
 
@@ -1146,10 +1162,14 @@ End
 /// @brief Restore the cursors from the info of GetCursorInfos().
 Function RestoreCursors(graph, cursorInfos)
 	string graph
-	WAVE/T cursorInfos
+	WAVE/T/Z cursorInfos
 
 	string traceList, cursorTrace, info, replacementTrace
 	variable i, numEntries, numTraces
+
+	if(!WaveExists(cursorInfos))
+		return NaN
+	endif
 
 	traceList = TraceNameList(graph, ";", 0 + 1)
 	numTraces = ItemsInList(traceList)
@@ -1645,6 +1665,29 @@ Function ReplaceNotebookText(win, text)
 	ASSERT(!V_Flag, "Illegal selection")
 
 	Notebook $win setData=text
+End
+
+/// @brief Append to a notebook
+Function AppendToNotebookText(win, text)
+	string win, text
+
+	ASSERT(WinType(win) == 5, "Passed win is not a notebook")
+
+	Notebook $win selection={endOfFile, endOfFile}
+	ASSERT(!V_Flag, "Illegal selection")
+
+	Notebook $win setData=text
+End
+
+/// @brief Select the end in the given notebook.
+///
+/// The selection is the place where the user would naïvely enter new text.
+Function NotebookSelectionAtEnd(win)
+	string win
+
+	ASSERT(WinType(win) == 5, "Passed win is not a notebook")
+
+	Notebook $win selection={endOfFile,endOfFile}, findText={"",1}
 End
 
 /// @brief Retrieves named userdata keys from a recreation macro string

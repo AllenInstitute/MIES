@@ -146,6 +146,7 @@ Function AR_RemoveTraces(graph)
 	for(i = 0; i < numEntries; i += 1)
 		trace = StringFromList(i, traces)
 		RemoveFromGraph/W=$graph $trace
+		TUD_RemoveUserData(graph, trace)
 	endfor
 End
 
@@ -153,7 +154,13 @@ End
 Function/S AR_GetHighlightTraces(graph)
 	string graph
 
-	return ListMatch(TraceNameList(graph, ";", 1), "AR_*")
+	WAVE/Z/T traces = TUD_GetUserDataAsWave(graph, "traceName", keys = {"traceType"}, values = {"ArtefactRemoval"})
+
+	if(!WaveExists(traces))
+		return ""
+	endif
+
+	return TextWaveToList(traces, ";")
 End
 
 Function AR_HighlightArtefactsEntry(graph)
@@ -183,7 +190,7 @@ Function AR_HighlightArtefactsEntry(graph)
 	numEntries = ItemsInList(traces)
 	for(i = 0; i < numEntries; i += 1)
 		trace = StringFromList(i, traces)
-		index = str2num(GetUserData(graph, trace, "AR_INDEX"))
+		index = str2num(TUD_GetUserData(graph, trace, "AR_INDEX"))
 
 		if(row == index)
 			ModifyGraph/W=$graph rgb($trace)=(1,39321,19939,32768)
@@ -199,8 +206,8 @@ Function AR_HandleRanges(graph, [removeRange])
 	variable removeRange
 
 	variable first, last, substituteValue
-	variable i, j, k, l, numEntries
-	string traceName, leftAxis, bottomAxis, extPanel, yRangeStr
+	variable i, j, k, traceIndex, numEntries
+	string traceName, leftAxis, bottomAxis, extPanel
 
 	extPanel = BSP_GetPanel(graph)
 
@@ -223,14 +230,6 @@ Function AR_HandleRanges(graph, [removeRange])
 	DFREF sweepDFR = AR_GetSweepFolder(graph)
 	WAVE/WAVE ADCs = GetITCDataSingleColumnWaves(sweepDFR, ITC_XOP_CHANNEL_TYPE_ADC)
 
-	WAVE/T/Z traceData = PA_GetTraceInfos(graph, channelType = ITC_XOP_CHANNEL_TYPE_ADC)
-
-	if(!WaveExists(traceData))
-		return NaN
-	endif
-
-	Make/FREE/T/N=(DimSize(traceData, ROWS)) leftAxisData = StringByKey("YAXIS", TraceInfo(graph, traceData[p][%traceName], 0))
-
 	ASSERT(DimSize(listBoxWave, ROWS) == DimSize(artefactWave, ROWS), "Unexpected dimension sizes")
 
 	numEntries = DimSize(listBoxWave, ROWS)
@@ -248,10 +247,10 @@ Function AR_HandleRanges(graph, [removeRange])
 				continue
 			endif
 
-			WAVE/Z indizes = FindIndizes(traceData, colLabel="channelNumber",var = j)
-			ASSERT(WaveExists(indizes) && DimSize(indizes, ROWS) >= 1, "Expected one hit")
-
-			leftAxis = leftAxisData[indizes[0]]
+			WAVE/T/Z leftAxisMatches = TUD_GetUserDataAsWave(graph, "YAXIS", keys = {"channelType", "channelNumber"}, \
+						                                     values = {"AD", num2str(j)})
+			ASSERT(WaveExists(leftAxisMatches) && DimSize(leftAxisMatches, ROWS) >= 1, "Expected one hit")
+			leftAxis = leftAxisMatches[0]
 
 			// skip that AD as the range originated from the DA of the same headstage
 			if(j == artefactWave[i][%ADC])
@@ -272,12 +271,13 @@ Function AR_HandleRanges(graph, [removeRange])
 				substituteValue = AD[first]
 				AD[first, last] = substituteValue
 			else
-				sprintf traceName, "AR_%d_AD_%d_HS_%d", l, j, i
+				sprintf traceName, "T%0*d_HS_%d", TRACE_NAME_NUM_DIGITS, traceIndex, j, i
+				traceIndex += 1
 				AppendToGraph/W=$graph/L=$leftAxis/B=$bottomAxis AD[first, last]/TN=$traceName
 				ModifyGraph/W=$graph mode($traceName)=3, marker($traceName)=8
 				ModifyGraph/W=$graph msize($traceName)=0.5,rgb($traceName)=(65535,0,0,32768)
-				ModifyGraph/W=$graph userData($traceName)={AR_INDEX, USERDATA_MODIFYGRAPH_REPLACE, num2str(i)}
-				l += 1
+				TUD_SetUserData(graph, traceName, "AR_INDEX", num2str(i))
+				TUD_SetUserData(graph, traceName, "traceType", "ArtefactRemoval")
 			endif
 		endfor
 	endfor

@@ -5654,13 +5654,14 @@ End
 /// @brief Return a wave reference to the single pulse defined by the given parameters
 ///
 /// @param dfr           datafolder reference where to create the empty wave if it does not exist
+/// @param length        Length in points of the new wave
 /// @param channelType   ITC XOP numeric channel type
 /// @param channelNumber channel number
 /// @param region        region index (a region is the range with data in a dDAQ/oodDAQ measurement)
 /// @param pulseIndex    pulse number, 0-based
-Function/WAVE GetPulseAverageWave(dfr, channelType, channelNumber, region, pulseIndex)
+Function/WAVE GetPulseAverageWave(dfr, length, channelType, channelNumber, region, pulseIndex)
 	DFREF dfr
-	variable channelType, pulseIndex, channelNumber, region
+	variable length, channelType, pulseIndex, channelNumber, region
 
 	string wvName
 
@@ -5676,7 +5677,7 @@ Function/WAVE GetPulseAverageWave(dfr, channelType, channelNumber, region, pulse
 	if(WaveExists(wv))
 		return wv
 	else
-		Make/N=(0) dfr:$wvName/WAVE=wv
+		Make/N=(length) dfr:$wvName/WAVE=wv
 	endif
 
 	return wv
@@ -5736,6 +5737,9 @@ End
 
 /// @brief Return the overlay sweeps listbox wave for the
 ///        databrowser or the sweepbrowser
+///
+/// The dimension label for all ROWS (-1) stores the index
+/// of the sweep to be highlighted.
 Function/WAVE GetOverlaySweepsListWave(dfr)
 	DFREF dfr
 
@@ -6641,6 +6645,45 @@ Function/WAVE GetPopupExtMenuWave()
 	endif
 
 	SetWaveVersion(wv, versionOfNewWave)
+
+	return wv
+End
+
+/// @brief Return the reference to the graph user data datafolder as string
+Function/S GetGraphUserDataFolderAsString()
+
+	return GetMiesPathAsString() + ":GraphUserData"
+End
+
+/// @brief Return the reference to the graph user data datafolder
+Function/DF GetGraphUserDataFolderDFR()
+
+	return createDFWithAllParents(GetGraphUserDataFolderAsString())
+End
+
+/// @brief Return the text wave for the graph user data
+///
+/// @param graph existing graph
+Function/WAVE GetGraphUserData(string graph)
+
+	variable versionOfNewWave = 1
+	DFREF dfr = GetGraphUserDataFolderDFR()
+	string name = graph + "_wave"
+	WAVE/T/Z/SDFR=dfr wv = $name
+
+	if(ExistsWithCorrectLayoutVersion(wv, versionOfNewWave))
+		return wv
+	elseif(WaveExists(wv))
+		// handle upgrade
+	else
+		Make/T/N=(MINIMUM_WAVE_SIZE_LARGE, 0) dfr:$name/WAVE=wv
+		ASSERT(WinType(graph) == 1, "Expected graph")
+		SetWindow $graph, hook(traceUserDataCleanup) = TUD_RemoveUserDataWave
+	endif
+
+	SetWaveVersion(wv, versionOfNewWave)
+	SetNumberInWaveNote(wv, NOTE_INDEX, 0)
+	SetNumberInWaveNote(wv, TUD_INDEX_JSON, JSON_New())
 
 	return wv
 End

@@ -12,7 +12,6 @@ static StrConstant SOURCE_WAVE_TIMESTAMP      = "SOURCE_WAVE_TS"
 static StrConstant PA_AVERAGE_WAVE_PREFIX       = "average_"
 static StrConstant PA_DECONVOLUTION_WAVE_PREFIX = "deconv_"
 
-static StrConstant PA_USERDATA_SPECIAL_TRACES = "SPECIAL_TRACES"
 static StrConstant PA_USERDATA_REFERENCE_TRACES = "REFERENCE_TRACES"
 static StrConstant PA_USERDATA_REFERENCE_GRAPH  = "REFERENCE"
 
@@ -119,15 +118,17 @@ End
 /// above the minimum as threshold
 ///
 /// @return wave with pulse starting times, or an invalid wave reference if none could be found.
-static Function/WAVE PA_CalculatePulseStartTimes(DA, totalOnsetDelay)
+static Function/WAVE PA_CalculatePulseStartTimes(DA, fullPath, channelNumber, totalOnsetDelay)
 	WAVE DA
+	variable channelNumber
+	string fullPath
 	variable totalOnsetDelay
 
 	variable level, delta
 	string key
 	ASSERT(totalOnsetDelay >= 0, "Invalid onsetDelay")
 
-	key = CA_PulseStartTimes(DA, totalOnsetDelay)
+	key = CA_PulseStartTimes(DA, fullPath, channelNumber, totalOnsetDelay)
 	WAVE/Z cache = CA_TryFetchingEntryFromCache(key)
 	if(WaveExists(cache))
 		return cache
@@ -152,137 +153,6 @@ static Function/WAVE PA_CalculatePulseStartTimes(DA, totalOnsetDelay)
 
 	CA_StoreEntryIntoCache(key, levels)
 	return levels
-End
-
-/// @brief Add all available sweep data to traceData
-///
-/// This function can fill in the available data for traces which are *not*
-/// shown.
-static Function PA_AddMissingADTraceInfo(traceData)
-	WAVE/T traceData
-
-	variable numPaths, i, j, idx, cnt, sweepNumber
-	variable numEntries, headstage
-	string folder
-
-	Duplicate/FREE/T traceData, newData
-	newData = ""
-
-	// get a list of folders holding the sweep data
-	numPaths = DimSize(traceData, ROWS)
-	Make/FREE/WAVE/N=(numPaths) shownWaves = $traceData[p][%fullPath]
-
-	for(i = 0; i < numPaths; i += 1)
-		DFREF sweepDFR = $GetWavesDataFolder(shownWaves[i], 1)
-		WAVE/WAVE allWaves = GetITCDataSingleColumnWaves(sweepDFR, ITC_XOP_CHANNEL_TYPE_ADC)
-
-		WAVE numericalValues = $traceData[i][%numericalValues]
-		sweepNumber = str2num(traceData[i][%sweepNumber])
-
-		WAVE ADCs = GetLastSetting(numericalValues, sweepNumber, "ADC", DATA_ACQUISITION_MODE)
-		WAVE HS = GetLastSetting(numericalValues, sweepNumber, "Headstage Active", DATA_ACQUISITION_MODE)
-
-		numEntries = DimSize(allWaves, ROWS)
-		for(j = 0; j < numEntries; j += 1)
-			WAVE/Z wv = allWaves[j]
-
-			// no sweep data for this channel
-			if(!WaveExists(wv))
-				continue
-			endif
-
-			idx = GetRowIndex(shownWaves, refWave = allWaves[j])
-
-			if(IsFinite(idx)) // single sweep data already in traceData
-				continue
-			endif
-
-			// labnotebook layer where the ADC can be found is the headstage number
-			headstage = GetRowIndex(ADCs, val=j)
-
-			if(!IsFinite(headstage)) // unassociated ADC
-				continue
-			endif
-
-			EnsureLargeEnoughWave(newData, minimumSize=cnt)
-			newData[cnt][] = traceData[i][q]
-
-			newData[cnt][%traceName]     = ""
-			newData[cnt][%fullPath]      = GetWavesDataFolder(wv, 2)
-			newData[cnt][%channelType]   = StringFromList(ITC_XOP_CHANNEL_TYPE_ADC, ITC_CHANNEL_NAMES)
-			newData[cnt][%channelNumber] = num2str(j)
-			newData[cnt][%headstage]     = num2str(headstage)
-			cnt += 1
-		endfor
-	endfor
-
-	if(cnt == 0)
-		return NaN
-	endif
-
-	Redimension/N=(numPaths + cnt, -1) traceData
-
-	traceData[numPaths, inf][] = newData[p - numPaths][q]
-End
-
-/// @brief Return a list of all sweep traces in the graph skipping traces which
-///        refer to the same wave.
-///
-///        Columns have colum labels and include various userdata readout from the traces.
-/// 	   for @p channelType @see ItcXopChannelConstants
-Function/WAVE PA_GetTraceInfos(graph, [includeOtherADData, channelType])
-	string graph
-	variable includeOtherADData, channelType
-
-	variable numTraces, numEntries, i
-	string trace, traceList, traceListClean, traceFullPath
-
-	if(ParamIsDefault(includeOtherADData))
-		includeOtherADData = 0
-	else
-		includeOtherADData = !!includeOtherADData
-	endif
-
-	if(ParamIsDefault(channelType))
-		traceList = GetAllSweepTraces(graph)
-	else
-		traceList = GetAllSweepTraces(graph, channelType = channelType)
-	endif
-
-	numTraces = ItemsInList(traceList)
-
-	if(numTraces == 0)
-		return $""
-	endif
-
-	Make/FREE/T/N=(numTraces) traceWaveList = GetWavesDataFolder(TraceNameToWaveRef(graph, StringFromList(p, traceList)), 2)
-
-	if(numTraces > 1)
-		// replace duplicates with empty entries
-		Make/T/FREE tracesFullPath
-		FindDuplicates/Z/ST=""/STDS=tracesFullPath traceWaveList
-	else
-		WAVE/T tracesFullPath = traceWaveList
-	endif
-
-	WAVE indizes = FindIndizes(tracesFullPath, prop=PROP_NON_EMPTY, col=0)
-
-	numTraces = DimSize(indizes, ROWS)
-	Make/N=(numTraces, 9)/FREE/T traceData
-
-	SetWaveDimLabel(traceData, "traceName;fullPath;channelType;channelNumber;sweepNumber;headstage;textualValues;numericalValues;experiment", COLS)
-
-	traceData[][%traceName]        = StringFromList(indizes[p], traceList)
-	traceData[][%fullPath]         = GetWavesDataFolder(TraceNameToWaveRef(graph, traceData[p][%traceName]), 2)
-	traceData[][%channelType, inf] = GetUserData(graph, traceData[p][%traceName], GetDimLabel(traceData, COLS, q))
-
-	if(includeOtherADData)
-		PA_AddMissingADTraceInfo(traceData)
-	endif
-
-	SortColumns/A/DIML/KNDX={2, 3, 4, 5} sortWaves=traceData
-
-	return traceData
 End
 
 /// @brief Return a wave with headstage numbers, duplicates replaced with NaN
@@ -311,7 +181,7 @@ End
 
 /// @brief Return the pulse starting times
 ///
-/// @param traceData        2D wave with trace information, usually generated by PA_GetTraceInfos()
+/// @param traceData        2D wave with trace information, from GetTraceInfos()
 /// @param idx              Index into traceData, used for determining sweep numbers, labnotebooks, etc.
 /// @param region           Region (headstage) to get pulse starting times for
 /// @param channelTypeStr   Type of the channel, one of @ref ITC_CHANNEL_NAMES
@@ -323,7 +193,7 @@ Function/WAVE PA_GetPulseStartTimes(traceData, idx, region, channelTypeStr, [rem
 	variable removeOnsetDelay
 
 	variable sweepNo, totalOnsetDelay, channel
-	string str
+	string str, fullPath
 
 	if(ParamIsDefault(removeOnsetDelay))
 		removeOnsetDelay = 1
@@ -342,7 +212,8 @@ Function/WAVE PA_GetPulseStartTimes(traceData, idx, region, channelTypeStr, [rem
 		totalOnsetDelay = GetTotalOnsetDelay(numericalValues, sweepNo)
 	endif
 
-	DFREF singleSweepFolder = GetWavesDataFolderDFR($traceData[idx][%fullPath])
+	fullPath = traceData[idx][%fullPath]
+	DFREF singleSweepFolder = GetWavesDataFolderDFR($fullPath)
 	ASSERT(DataFolderExistsDFR(singleSweepFolder), "Missing singleSweepFolder")
 
 	// get the DA wave in that folder
@@ -354,7 +225,7 @@ Function/WAVE PA_GetPulseStartTimes(traceData, idx, region, channelTypeStr, [rem
 	endif
 
 	WAVE DA = GetITCDataSingleColumnWave(singleSweepFolder, ITC_XOP_CHANNEL_TYPE_DAC, channel)
-	WAVE/Z pulseStartTimes = PA_CalculatePulseStartTimes(DA, totalOnsetDelay)
+	WAVE/Z pulseStartTimes = PA_CalculatePulseStartTimes(DA, fullPath, channel, totalOnsetDelay)
 
 	if(!WaveExists(pulseStartTimes))
 		return $""
@@ -400,7 +271,7 @@ static Function/WAVE PA_CreateAndFillPulseWaveIfReq(wv, singleSweepFolder, chann
 	DFREF singleSweepFolder
 	variable channelType, pulseIndex, first, length, channelNumber, region
 
-	WAVE singlePulseWave = GetPulseAverageWave(singleSweepFolder, channelType, channelNumber, region, pulseIndex)
+	variable existingLength
 
 	if(first < 0 || length <= 0 || (DimSize(wv, ROWS) - first) <= length)
 		return $""
@@ -408,14 +279,17 @@ static Function/WAVE PA_CreateAndFillPulseWaveIfReq(wv, singleSweepFolder, chann
 
 	length = limit(length, 1, DimSize(wv, ROWS) - first)
 
-	if(GetNumberFromWaveNote(singlePulseWave, "PulseLength") == length \
-	   && GetNumberFromWaveNote(wv, SOURCE_WAVE_TIMESTAMP) == ModDate(wv))
+	WAVE singlePulseWave = GetPulseAverageWave(singleSweepFolder, length, channelType, channelNumber, region, pulseIndex)
+
+	existingLength = GetNumberFromWaveNote(singlePulseWave, "PulseLength")
+
+	if(existingLength != length)
+		Redimension/N=(length) singlePulseWave
+	elseif(GetNumberFromWaveNote(wv, SOURCE_WAVE_TIMESTAMP) == ModDate(wv))
 		return singlePulseWave
 	endif
 
 	KillOrMoveToTrash(wv = GetBackupWave(singlePulseWave))
-
-	Redimension/N=(length) singlePulseWave
 
 	MultiThread singlePulseWave[] = wv[first + p]
 	SetScale/P x, 0.0, DimDelta(wv, ROWS), WaveUnits(wv, ROWS), singlePulseWave
@@ -477,12 +351,12 @@ Function PA_ShowPulses(win, dfr, pa)
 	string graph, preExistingGraphs
 	string averageWaveName, convolutionWaveName, pulseTrace, channelTypeStr, str, traceList, traceFullPath
 	variable numChannels, i, j, k, l, idx, numTraces, sweepNo, headstage, numPulsesTotal, numPulses
-	variable first, numEntries, startingPulse, endingPulse, numGraphs, traceCount, step
+	variable first, numEntries, startingPulse, endingPulse, numGraphs, traceCount, step, isDiagonalElement
 	variable startingPulseSett, endingPulseSett, ret, pulseToPulseLength, numSweeps, numRegions
 	variable red, green, blue, channelNumber, region, channelType, numHeadstages, length
 	variable numChannelTypeTraces, activeRegionCount, activeChanCount, totalOnsetDelay
 	string listOfWaves, channelList, vertAxis, horizAxis, channelNumberStr
-	string baseName, traceName
+	string baseName, traceName, fullPath
 	string newlyCreatedGraphs = ""
 	string referenceTraceList = ""
 
@@ -503,14 +377,22 @@ Function PA_ShowPulses(win, dfr, pa)
 		endingPulseSett = pa.endingPulse
 	endif
 
-	WAVE/T/Z traceData = PA_GetTraceInfos(win)
+	WAVE/T/Z traceData = GetTraceInfos(win)
 
 	if(!WaveExists(traceData)) // no traces
 		KillWindows(preExistingGraphs)
 		return NaN
 	endif
 
+	numEntries = ItemsInList(preExistingGraphs)
+	for(i = 0; i < numEntries; i += 1)
+		graph = StringFromList(i, preExistingGraphs)
+		TUD_Clear(graph)
+	endfor
+
 	DFREF pulseAverageDFR = GetDevicePulseAverageFolder(dfr)
+	Make/FREE/T userDataKeys = {"fullPath", "sweepNumber", "region", "channelNumber", "channelType",         \
+								"pulseIndex", "traceType", "occurence", "XAXIS", "YAXIS", "DiagonalElement"}
 
 	// iterate over all channel types we want to have pulse averaging for
 	for(i = 0; i < 2; i += 1)
@@ -586,6 +468,8 @@ Function PA_ShowPulses(win, dfr, pa)
 					channelList = AddListItem(channelNumberStr, channelList, ";", inf)
 				endif
 
+				isDiagonalElement = (activeRegionCount == activeChanCount)
+
 				DFREF singleSweepFolder = GetWavesDataFolderDFR($traceData[idx][%fullPath])
 				ASSERT(DataFolderExistsDFR(singleSweepFolder), "Missing singleSweepFolder")
 				WAVE wv = GetITCDataSingleColumnWave(singleSweepFolder, channelType, channelNumber)
@@ -596,13 +480,16 @@ Function PA_ShowPulses(win, dfr, pa)
 
 				graph = PA_GetGraph(win, pa.multipleGraphs, channelTypeStr, channelNumber, region, activeRegionCount, activeChanCount)
 				PA_GetAxes(pa.multipleGraphs, activeRegionCount, activeChanCount, vertAxis, horizAxis)
+				traceCount = TUD_GetTraceCount(graph)
 
 				if(WhichListItem(graph, newlyCreatedGraphs) == -1)
-					WAVE/T cursorInfos = GetCursorInfos(graph)
+					WAVE/T/Z cursorInfos = GetCursorInfos(graph)
+
 					RemoveTracesFromGraph(graph)
-					SetWindow $graph, userData($PA_USERDATA_SPECIAL_TRACES) = ""
 					SetWindow $graph, userData($PA_USERDATA_REFERENCE_TRACES) = ""
 					newlyCreatedGraphs = AddListItem(graph, newlyCreatedGraphs, ";", inf)
+				else
+					Wave/T/Z cursorInfos =  $""
 				endif
 
 				for(l = startingPulse; l <= endingPulse; l += 1)
@@ -618,23 +505,29 @@ Function PA_ShowPulses(win, dfr, pa)
 						continue
 					endif
 
-					if(pa.showIndividualTraces)
-						sprintf pulseTrace, "T%06d%s_IDX%d", traceCount, NameOfWave(plotWave), idx
+					fullPath = GetWavesDataFolder(plotWave, 2)
 
-						step = activeRegionCount == activeChanCount ? 1 : PA_PLOT_STEPPING
+					if(pa.showIndividualTraces)
+						sprintf pulseTrace, "T%0*d%s_IDX%d", TRACE_NAME_NUM_DIGITS, traceCount, NameOfWave(plotWave), idx
+						traceCount += 1
+
+						step = isDiagonalElement ? 1 : PA_PLOT_STEPPING
 
 						GetTraceColor(headstage, red, green, blue)
 						AppendToGraph/Q/W=$graph/L=$vertAxis/B=$horizAxis/C=(red, green, blue, 65535 * 0.2) plotWave[0,inf;step]/TN=$pulseTrace
-						ModifyGraph/W=$graph userData($pulseTrace) = {sweepNumber, USERDATA_MODIFYGRAPH_REPLACE, num2str(sweepNo)}, userData($pulseTrace) = {region, USERDATA_MODIFYGRAPH_REPLACE, num2str(region)}, userData($pulseTrace) = {channelNumber, USERDATA_MODIFYGRAPH_REPLACE, channelNumberStr}, userData($pulseTrace) = {channelType, USERDATA_MODIFYGRAPH_REPLACE, channelTypeStr}, userData($pulseTrace) = {pulseIndex, USERDATA_MODIFYGRAPH_REPLACE, num2str(l)}
-						traceCount += 1
 
-						if(l == startingPulse && activeRegionCount == activeChanCount && WhichListItem(channelNumberStr, referenceTraceList) == -1)
+						TUD_SetUserDataFromWaves(graph, pulseTrace, userDataKeys,                                \
+						                         {fullPath, num2str(sweepNo), num2str(region), channelNumberStr, \
+												  channelTypeStr, num2str(l), "Sweep", "0",                      \
+                                                  horizAxis, vertAxis, num2str(isDiagonalElement)})
+
+						if(l == startingPulse && IsDiagonalElement && WhichListItem(channelNumberStr, referenceTraceList) == -1)
 							SetWindow $graph, userData($PA_USERDATA_REFERENCE_TRACES) += pulseTrace + ";"
 							referenceTraceList = AddListItem(channelNumberStr, referenceTraceList)
 						endif
 					endif
 
-					listOfWavesPerChannel[channelNumber] = AddListItem(GetWavesDataFolder(plotWave, 2), listOfWavesPerChannel[channelNumber], ";", inf)
+					listOfWavesPerChannel[channelNumber] = AddListItem(fullPath, listOfWavesPerChannel[channelNumber], ";", inf)
 				endfor
 
 				RestoreCursors(graph, cursorInfos)
@@ -678,82 +571,96 @@ Function PA_ShowPulses(win, dfr, pa)
 			activeChanCount = 0
 			channelList     = ""
 
-			// handle graph legends and average calculation
-			for(k = 0; k < numChannelTypeTraces; k += 1)
-				idx       = indizesChannelType[k]
-				headstage = str2num(traceData[idx][%headstage])
+			if(pa.showAverageTrace || pa.deconvolution.enable || pa.multipleGraphs)
+				// handle graph legends and average calculation
+				for(k = 0; k < numChannelTypeTraces; k += 1)
+					idx       = indizesChannelType[k]
+					headstage = str2num(traceData[idx][%headstage])
 
-				if(!IsFinite(headstage)) // ignore unassociated channels or duplicated headstages in traceData
-					continue
-				endif
-
-				sweepNo          = str2num(traceData[idx][%sweepNumber])
-				channelNumberStr = traceData[idx][%channelNumber]
-				channelNumber    = str2num(channelNumberStr)
-
-				if(WhichListItem(channelNumberStr, channelList) == -1)
-					activeChanCount += 1
-					channelList = AddListItem(channelNumberStr, channelList, ";", inf)
-				endif
-
-				listOfWaves = listOfWavesPerChannel[channelNumber]
-				numSweeps   = ItemsInList(listOfWaves) / numPulses
-
-				graph = PA_GetGraph(win, pa.multipleGraphs, channelTypeStr, channelNumber, region, activeRegionCount, activeChanCount)
-				PA_GetAxes(pa.multipleGraphs, activeRegionCount, activeChanCount, vertAxis, horizAxis)
-
-				baseName = PA_BaseName(channelTypeStr, channelNumber, region)
-				WAVE/Z averageWave = $""
-				if(pa.showAverageTrace && !IsEmpty(listOfWaves))
-					pulseTrace = PA_AVERAGE_WAVE_PREFIX + baseName
-					WAVE averageWave = PA_Average(listOfWaves, pulseAverageDFR, pulseTrace)
-
-					traceName = PA_AVERAGE_WAVE_PREFIX + baseName
-
-					GetTraceColor(NUM_HEADSTAGES + 1, red, green, blue)
-					AppendToGraph/Q/W=$graph/L=$vertAxis/B=$horizAxis/C=(red, green, blue) averageWave
-					SetWindow $graph, userData($PA_USERDATA_SPECIAL_TRACES) += NameOfWave(averageWave) + ";"
-					ModifyGraph/W=$graph lsize($traceName)=1.5
-
-					listOfWavesPerChannel[channelNumber] = ""
-				endif
-
-				if(pa.deconvolution.enable && (activeRegionCount != activeChanCount) && !IsEmpty(listOfWaves))
-					if(!WaveExists(averageWave))
-						WAVE averageWave = PA_Average(listOfWaves, pulseAverageDFR, PA_AVERAGE_WAVE_PREFIX + baseName)
+					if(!IsFinite(headstage)) // ignore unassociated channels or duplicated headstages in traceData
+						continue
 					endif
 
-					traceName = PA_DECONVOLUTION_WAVE_PREFIX + baseName
-					WAVE deconv = PA_Deconvolution(averageWave, pulseAverageDFR, traceName, pa.deconvolution)
+					sweepNo          = str2num(traceData[idx][%sweepNumber])
+					channelNumberStr = traceData[idx][%channelNumber]
+					channelNumber    = str2num(channelNumberStr)
 
-					AppendToGraph/Q/W=$graph/L=$vertAxis/B=$horizAxis/C=(0,0,0) deconv[0,inf;PA_PLOT_STEPPING]/TN=$traceName
-					ModifyGraph/W=$graph lsize($traceName)=2
+					if(WhichListItem(channelNumberStr, channelList) == -1)
+						activeChanCount += 1
+						channelList = AddListItem(channelNumberStr, channelList, ";", inf)
+					endif
 
-					SetWindow $graph, userData($PA_USERDATA_SPECIAL_TRACES) += NameOfWave(deconv) + ";"
-				endif
+					isDiagonalElement = (activeRegionCount == activeChanCount)
 
-				if(pa.multipleGraphs)
-					sprintf str, "\\Z08\\Zr075#Pulses %g / #Swps. %d", numPulses, numSweeps
-					Legend/W=$graph/C/N=leg/X=-5.00/Y=-5.00 str
+					listOfWaves = listOfWavesPerChannel[channelNumber]
+					numSweeps   = ItemsInList(listOfWaves) / numPulses
 
-					GetTraceColor(headstage, red, green, blue)
-					sprintf str, "\\k(%d, %d, %d)\\K(%d, %d, %d)\\W555\\k(0, 0, 0)\\K(0, 0, 0)", red, green, blue, red, green, blue
+					graph = PA_GetGraph(win, pa.multipleGraphs, channelTypeStr, channelNumber, region, activeRegionCount, activeChanCount)
+					PA_GetAxes(pa.multipleGraphs, activeRegionCount, activeChanCount, vertAxis, horizAxis)
+					traceCount = TUD_GetTraceCount(graph)
 
-					sprintf str, "%s%d / Reg. %d HS%s", channelTypeStr, channelNumber, region, str
-					AppendText/W=$graph str
-				endif
+					baseName = PA_BaseName(channelTypeStr, channelNumber, region)
+					WAVE/Z averageWave = $""
+					if(pa.showAverageTrace && !IsEmpty(listOfWaves))
+						WAVE averageWave = PA_Average(listOfWaves, pulseAverageDFR, PA_AVERAGE_WAVE_PREFIX + baseName)
 
-				ModifyGraph/W=$graph nticks=0, noLabel=2, axthick=0, margin=5
-			endfor // channels
+						sprintf traceName, "T%0*d%s%s", TRACE_NAME_NUM_DIGITS, traceCount, PA_AVERAGE_WAVE_PREFIX, baseName
+						traceCount += 1
+
+						GetTraceColor(NUM_HEADSTAGES + 1, red, green, blue)
+						AppendToGraph/Q/W=$graph/L=$vertAxis/B=$horizAxis/C=(red, green, blue) averageWave/TN=$traceName
+						ModifyGraph/W=$graph lsize($traceName)=1.5
+
+						TUD_SetUserDataFromWaves(graph, traceName, {"traceType", "occurence", "XAXIS", "YAXIS", "DiagonalElement"}, \
+									             {"Average", "0", horizAxis, vertAxis, num2str(isDiagonalElement)})
+						TUD_SetUserData(graph, traceName, "fullPath", GetWavesDataFolder(averageWave, 2))
+
+						listOfWavesPerChannel[channelNumber] = ""
+					endif
+
+					if(pa.deconvolution.enable && !isDiagonalElement && !IsEmpty(listOfWaves))
+						if(!WaveExists(averageWave))
+							WAVE averageWave = PA_Average(listOfWaves, pulseAverageDFR, PA_AVERAGE_WAVE_PREFIX + baseName)
+						endif
+
+						WAVE deconv = PA_Deconvolution(averageWave, pulseAverageDFR, traceName, pa.deconvolution)
+
+						sprintf traceName, "T%0*d%s%s", TRACE_NAME_NUM_DIGITS, traceCount, PA_DECONVOLUTION_WAVE_PREFIX, baseName
+						traceCount += 1
+
+						AppendToGraph/Q/W=$graph/L=$vertAxis/B=$horizAxis/C=(0,0,0) deconv[0,inf;PA_PLOT_STEPPING]/TN=$traceName
+						ModifyGraph/W=$graph lsize($traceName)=2
+
+						TUD_SetUserDataFromWaves(graph, traceName, {"traceType", "occurence", "XAXIS", "YAXIS", "DiagonalElement"}, \
+									             {"Deconvolution", "0", horizAxis, vertAxis, num2str(isDiagonalElement)})
+						TUD_SetUserData(graph, traceName, "fullPath", GetWavesDataFolder(deconv, 2))
+					endif
+
+					if(pa.multipleGraphs)
+						sprintf str, "\\Z08\\Zr075#Pulses %g / #Swps. %d", numPulses, numSweeps
+						Legend/W=$graph/C/N=leg/X=-5.00/Y=-5.00 str
+
+						GetTraceColor(headstage, red, green, blue)
+						sprintf str, "\\k(%d, %d, %d)\\K(%d, %d, %d)\\W555\\k(0, 0, 0)\\K(0, 0, 0)", red, green, blue, red, green, blue
+
+						sprintf str, "%s%d / Reg. %d HS%s", channelTypeStr, channelNumber, region, str
+						AppendText/W=$graph str
+
+						ModifyGraph/W=$graph mode=0, nticks=0, noLabel=2, axthick=0, margin=5
+					endif
+				endfor // channels
+			endif
 
 			if(!pa.multipleGraphs)
 				EquallySpaceAxis(graph, axisRegExp="left_R" + num2str(activeRegionCount) + ".*", sortOrder=1)
 				EquallySpaceAxis(graph, axisRegExp="bottom.*", sortOrder=0)
 			endif
-
-			ModifyGraph/W=$graph mode=0
 		endfor // headstages
 	endfor // channelType
+
+	if(!pa.multipleGraphs)
+		ModifyGraph/W=$graph mode=0, nticks=0, noLabel=2, axthick=0, margin=5
+	endif
 
 	// kill all graphs from earlier runs which were not created anymore
 	numGraphs = ItemsInList(preExistingGraphs)
@@ -793,16 +700,17 @@ static Function PA_ZeroTraces(listOfWaves, setZero)
 	if(IsEmpty(listOfWaves))
 		return NaN
 	endif
+
 	setZero = !!setZero
+
+	if(!setZero)
+		return NaN
+	endif
 
 	numWaves = ItemsInList(listOfWaves)
 	for(i = 0; i < numWaves; i += 1)
 		WAVE wv = $StringFromList(i, listOfWaves)
-		if(setZero)
-			ZeroWave(wv)
-		else
-			ReplaceWaveWithBackup(wv, nonExistingBackupIsFatal = 0)
-		endif
+		ZeroWave(wv)
 	endfor
 End
 
@@ -991,10 +899,10 @@ Function PA_UpdateSweepPlotDeconvolution(win, show)
 	string win
 	variable show
 
-	string graph, graphs, horizAxis, vertAxis, axisFlags
-	string traceList, traceListOut, traceName, traceMatch, traceInformation
+	string graph, graphs, horizAxis, vertAxis
+	string traceName, fullPath, avgTrace
 	string baseName, bsPanel
-	variable i, numGraphs, j, numTraces, numDiagonalElements
+	variable i, numGraphs, j, numTraces, traceIndex
 	STRUCT PulseAverageDeconvSettings deconvolution
 
 	win = GetMainWindow(win)
@@ -1005,67 +913,55 @@ Function PA_UpdateSweepPlotDeconvolution(win, show)
 	bsPanel = BSP_GetPanel(win)
 	PA_DeconvGatherSettings(bsPanel, deconvolution)
 
-	if(!!show)
-		traceMatch = PA_AVERAGE_WAVE_PREFIX
-	else
-		traceMatch = PA_DECONVOLUTION_WAVE_PREFIX
-	endif
+	show = !!show
 
 	graphs = PA_GetAverageGraphs()
 	numGraphs = ItemsInList(graphs)
-
 	for(i = 0; i < numGraphs; i += 1)
 		graph = StringFromList(i, graphs)
 
-		traceList = GetUserData(graph, "", PA_USERDATA_SPECIAL_TRACES)
-		traceListOut = traceList
-		ASSERT(ItemsInList(traceList) > 0, "UserData empty. No average Traces? You could call TraceNameList to check.")
-		traceList = ListMatch(traceList, traceMatch + "*")
-
-		numTraces = ItemsInList(traceList)
 		if(show)
-			numDiagonalElements = round(sqrt(numTraces)) // assume square matrix
-		endif
-		for(j = 0; j < numTraces; j += 1)
-			traceName = StringFromList(j, traceList)
+			WAVE/T traces = TUD_GetUserDataAsWave(graph, "traceName", keys = {"traceType", "DiagonalElement"}, values = {"Average", "0"})
 
-			traceInformation = TraceInfo(graph, traceName, 0)
-			vertAxis  = StringByKey("YAXIS", traceInformation)
-			horizAxis = StringByKey("XAXIS", traceInformation)
-			axisFlags = StringByKey("AXISFLAGS", traceInformation)
-			if(!IsEmpty(axisFlags))
-				ASSERT(StringMatch(axisFlags, "*/B*"), "Axis not handled.")
-				ASSERT(StringMatch(axisFlags, "*/L*"), "Axis not handled.")
-			endif
+			traceIndex = TUD_GetTraceCount(graph)
+	
+			numTraces = DimSize(traces, ROWS)
+			for(j = 0; j < numTraces; j += 1)
+				avgTrace = traces[j]
+	
+				vertAxis  = TUD_GetUserData(graph, avgTrace, "YAXIS")
+				horizAxis = TUD_GetUserData(graph, avgTrace, "XAXIS")
+	
+				fullPath = TUD_GetUserData(graph, avgTrace, "fullPath")
+				WAVE averageWave = $fullPath
+				DFREF pulseAverageDFR = GetWavesDataFolderDFR(averageWave)
+	
+				SplitString/E=(PA_AVERAGE_WAVE_PREFIX + "(.*)") NameOfWave(averageWave), baseName
+				ASSERT(V_flag == 1, "Unexpected Trace Name")
+	
+				sprintf traceName, "T%0*d%s%s", TRACE_NAME_NUM_DIGITS, traceIndex, PA_DECONVOLUTION_WAVE_PREFIX, baseName
+				traceIndex += 1
+	
+				WAVE deconv = PA_Deconvolution(averageWave, pulseAverageDFR, traceName, deconvolution)
+	
+				AppendToGraph/Q/W=$graph/L=$vertAxis/B=$horizAxis/C=(0,0,0) deconv/TN=$traceName
+				ModifyGraph/W=$graph lsize($traceName)=2
+	
+				TUD_SetUserDataFromWaves(graph, traceName, {"traceType", "occurence", "XAXIS", "YAXIS", "DiagonalElement"}, \
+							             {"Deconvolution", "0", horizAxis, vertAxis, "0"})
+				TUD_SetUserData(graph, traceName, "fullPath", GetWavesDataFolder(deconv, 2))
+			endfor
+		else // !show
+			WAVE/T traces = TUD_GetUserDataAsWave(graph, "traceName", keys = {"traceType"}, values = {"Deconvolution"})
 
-			if(!show)
+			numTraces = DimSize(traces, ROWS)
+			for(j = 0; j < numTraces; j += 1)
+				traceName = traces[j]
+	
 				RemoveFromGraph/W=$graph $traceName
-				traceListOut = RemoveFromList(traceName, traceListOut)
-				continue
-			endif
-
-			// skip diagonal elements
-			if(mod(j, numDiagonalElements) == floor(j / numDiagonalElements))
-				continue
-			endif
-
-			WAVE averageWave = TraceNameToWaveRef(graph, traceName)
-			DFREF pulseAverageDFR = GetWavesDataFolderDFR(averageWave)
-
-			SplitString/E=(traceMatch + "(.*)") NameOfWave(averageWave), baseName
-			ASSERT(V_flag == 1, "Unexpected Trace Name")
-
-			traceName = PA_DECONVOLUTION_WAVE_PREFIX + baseName
-			ASSERT(WhichListItem(traceName, traceList) == -1, "Unexpected Behavior: Trace already in graph.")
-			WAVE deconv = PA_Deconvolution(averageWave, pulseAverageDFR, traceName, deconvolution)
-
-			AppendToGraph/Q/W=$graph/L=$vertAxis/B=$horizAxis/C=(0,0,0) deconv/TN=$traceName
-			ModifyGraph/W=$graph lsize($traceName)=2
-
-			traceListOut = AddListItem(NameOfWave(deconv), traceListOut)
-		endfor
-
-		SetWindow $graph, userData($PA_USERDATA_SPECIAL_TRACES) = traceListOut
+				TUD_RemoveUserData(graph, traceName)
+			endfor
+		endif
 	endfor
 End
 
@@ -1076,7 +972,6 @@ End
 /// traces are plotted on the diagonal graphs/axes of the PA graph(s).
 ///
 /// @param refTraces list of graph#trace entries as reference for time alignment
-///                  fill complete list using @see PA_GetReferenceTraces(win)
 Function PA_AutomaticTimeAlignment(refTraces)
 	string refTraces
 
@@ -1088,31 +983,6 @@ Function PA_AutomaticTimeAlignment(refTraces)
 		graphtrace = StringFromList(i, refTraces)
 		TimeAlignmentIfReq(graphtrace, TIME_ALIGNMENT_MAX, 0, -inf, inf)
 	endfor
-End
-
-/// @brief Get a list of all reference traces in all PA graphs
-///
-/// @param win  main DB/SB graph or any subwindow panel.
-/// @returns graphtraces in the form graph#trace
-static Function/S PA_GetReferenceTraces(win)
-	string win
-
-	string graph, graphs
-	variable i, numGraphs
-	string graphTraces = ""
-
-	if(!PA_IsActive(win))
-		return ""
-	endif
-
-	graphs = PA_GetAverageGraphs()
-	numGraphs = ItemsInList(graphs)
-	for(i = 0; i < numGraphs; i += 1)
-		graph = StringFromList(i, graphs)
-		graphtraces += PA_GetReferenceTracesFromGraph(graph)
-	endfor
-
-	return graphtraces
 End
 
 /// @brief Get all traces marked as reference traces for the current graph.
@@ -1155,10 +1025,11 @@ static Function PA_ResetWavesIfRequired(listOfWaves, pa)
 	string listOfWaves
 	STRUCT PulseAverageSettings &pa
 
-	variable i, statusZero, statusTimeAlign
+	variable i, statusZero, statusTimeAlign, numEntries
 	WAVE/WAVE wv = ListToWaveRefWave(listOfWaves, 1)
 
-	for(i = 0; i < DimSize(wv, ROWS); i += 1)
+	numEntries = DimSize(wv, ROWS)
+	for(i = 0; i < numEntries; i += 1)
 		statusZero = GetNumberFromWaveNote(wv[i], NOTE_KEY_ZEROED)
 		statusTimeAlign = GetNumberFromWaveNote(wv[i], NOTE_KEY_TIMEALIGN)
 
@@ -1169,6 +1040,6 @@ static Function PA_ResetWavesIfRequired(listOfWaves, pa)
 		if(statusZero == pa.zeroTraces && statusTimeAlign == pa.autoTimeAlignment)
 			continue // wave is up to date
 		endif
-		ReplaceWaveWithBackup(wv[i], nonExistingBackupIsFatal = 1)
+		ReplaceWaveWithBackup(wv[i], nonExistingBackupIsFatal = 1, keepBackup = 1)
 	endfor
 End

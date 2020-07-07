@@ -724,10 +724,10 @@ Function/WAVE SF_FormulaExecutor(jsonID, [jsonPath, graph])
 					WAVE out = OVS_GetSelectedSweeps(graph, OVS_SWEEP_ALL_SWEEPNO)
 					break
 				case "displayed":
-					WAVE/T/Z traces = PA_GetTraceInfos(graph)
-					if(WaveExists(traces))
-						Make/N=(DimSize(traces, ROWS))/FREE traceSweeps = str2num(traces[p][%sweepNumber])
-						WAVE out = GetUniqueEntries(traceSweeps)
+					WAVE/T/Z sweepNumbers = GetSweepUserData(graph, "sweepNumber")
+					if(WaveExists(sweepNumbers))
+						Make/N=(DimSize(sweepNumbers, ROWS))/FREE sweepNumbersNumeric = str2num(sweepNumbers[p])
+						WAVE out = GetUniqueEntries(sweepNumbersNumeric)
 					endif
 					break
 				default:
@@ -1022,7 +1022,7 @@ Function SF_FormulaPlotter(graph, formula, [dfr])
 		win = S_name
 	endif
 
-	WAVE cursorInfos = GetCursorInfos(win)
+	WAVE/T/Z cursorInfos = GetCursorInfos(win)
 	WAVE axesRanges = GetAxesRanges(win)
 	RemoveTracesFromGraph(win)
 	ModifyGraph/W=$win swapXY = 0
@@ -1139,12 +1139,12 @@ static Function/WAVE SF_GetSweepForFormula(graph, range, channels, sweeps)
 	ASSERT(DimSize(sweeps, COLS) < 2, "Sweeps are one-dimensional.")
 	ASSERT(DimSize(range, COLS) <= 1, "Multidimensional ranges not fully implemented.")
 
-	// @todo calls cost intense graph functions to get wave locations
-	WAVE/T/Z traces = PA_GetTraceInfos(graph)
-	if(!WaveExists(traces) || DimSize(traces, ROWS) == 0)
+	WAVE/T/Z traces = GetTraceInfos(graph)
+	if(!WaveExists(traces))
 		DebugPrint("No traces found for extracting sweep wave locations.")
 		return $""
 	endif
+
 	SortColumns/A/DIML/KNDX={FindDimLabel(traces, COLS, "channelType"), FindDimLabel(traces, COLS, "channelNumber"), FindDimLabel(traces, COLS, "sweepNumber")} sortWaves=traces
 
 	Make/FREE/N=(DimSize(sweeps, ROWS), DimSize(channels, ROWS)) indices = NaN

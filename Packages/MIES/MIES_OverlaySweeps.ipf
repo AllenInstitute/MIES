@@ -24,7 +24,7 @@ Function OVS_IgnoreHeadstageInOverlay()
 		return NaN
 	endif
 
-	sweepNo = str2num(GetUserData(graph, trace, "sweepNumber"))
+	sweepNo = str2num(TUD_GetUserData(graph, trace, "sweepNumber"))
 
 	if(!IsValidSweepNumber(sweepNo))
 		printf "Could not extract sweep number information from trace \"%s\".\r", trace
@@ -32,7 +32,7 @@ Function OVS_IgnoreHeadstageInOverlay()
 		return NaN
 	endif
 
-	headstage = str2num(GetUserData(graph, trace, "headstage"))
+	headstage = str2num(TUD_GetUserData(graph, trace, "headstage"))
 
 	if(!IsFinite(headstage))
 		printf "Ignoring trace \"%s\" as it is not associated with a headstage.\r", trace
@@ -47,7 +47,7 @@ Function OVS_IgnoreHeadstageInOverlay()
 	folder = GetUserData(graph, "", "folder")
 
 	if(!IsEmpty(folder))
-		WAVE traceWave     = TraceNameToWaveRef(graph, trace)
+		WAVE traceWave = $TUD_GetUserData(graph, trace, "fullPath")
 		DFREF sweepDataDFR = GetWavesDataFolderDFR(traceWave)
 		index = SB_GetIndexFromSweepDataPath(graph, sweepDataDFR)
 		OVS_AddToIgnoreList(extPanel, headstage, index=index)
@@ -372,7 +372,7 @@ End
 ///
 ///
 /// The expected format of the ignore list entries is a semicolon (";") separated
-/// list of subranges (without the possibility denoting the step size).
+/// list of subranges (without the possibility of denoting the step size).
 ///
 /// Examples:
 /// - 0 (ignore HS 0)

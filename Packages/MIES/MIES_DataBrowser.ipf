@@ -383,9 +383,10 @@ Function DB_UpdateSweepPlot(win)
 
 	WAVE axesRanges = GetAxesRanges(graph)
 
-	WAVE/T cursorInfos = GetCursorInfos(graph)
+	WAVE/T/Z cursorInfos = GetCursorInfos(graph)
 	RemoveTracesFromGraph(graph)
 	RemoveFreeAxisFromGraph(graph)
+	TUD_Clear(graph)
 
 	if(!BSP_HasBoundDevice(win))
 		return NaN
@@ -450,10 +451,7 @@ Function DB_UpdateSweepPlot(win)
 
 	DEBUGPRINT_ELAPSED(referenceTime)
 
-	if(WaveExists(sweepWave))
-		Notebook $lbPanel selection={startOfFile, endOfFile} // select entire contents of notebook
-		Notebook $lbPanel text = note(sweepWave) // replaces selected notebook content with new wave note.
-	endif
+	DB_UpdateSweepNote(mainPanel)
 
 	Struct PostPlotSettings pps
 	DB_InitPostPlotSettings(win, pps)
@@ -461,6 +459,38 @@ Function DB_UpdateSweepPlot(win)
 	PostPlotTransformations(graph, pps)
 	SetAxesRanges(graph, axesRanges)
 	DEBUGPRINT_ELAPSED(referenceTime)
+End
+
+static Function DB_UpdateSweepNote(win)
+	string win
+
+	string scPanel, lbPanel, bsPanel, device
+	variable sweepNo
+
+	if(!BSP_HasBoundDevice(win))
+		return NaN
+	endif
+
+	bsPanel = BSP_GetPanel(win)
+
+	if(GetTabID(bsPanel, "Settings") != 6)
+		// nothing to do
+		return NaN
+	endif
+
+	device = BSP_GetDevice(win)
+	DFREF dfr = GetDeviceDataPath(device)
+
+	scPanel = BSP_GetSweepControlsPanel(win)
+	sweepNo = GetSetVariable(scPanel, "setvar_SweepControl_SweepNo")
+
+	WAVE/Z/SDFR=dfr sweepWave = $GetSweepWaveName(sweepNo)
+	if(!WaveExists(sweepWave))
+		return NaN
+	endif
+
+	lbPanel = BSP_GetNotebookSubWindow(win)
+	ReplaceNotebookText(lbPanel, note(sweepWave))
 End
 
 /// @see SB_InitPostPlotSettings
@@ -970,6 +1000,13 @@ Function DB_CheckProc_ScaleAxes(cba) : CheckBoxControl
 	return 0
 End
 
+// Called from ACL_DisplayTab after the new tab is selected
+Function DB_MainTabControlFinal(tca)
+	STRUCT WMTabControlAction &tca
+
+	DB_UpdateSweepNote(tca.win)
+End
+
 /// @see SB_PanelUpdate
 Function DB_GraphUpdate(win)
 	string win
@@ -1076,8 +1113,9 @@ Function DB_ButtonProc_RestoreData(ba) : ButtonControl
 
 	switch(ba.eventCode)
 		case 2: // mouse up
-			traceList = GetAllSweepTraces(graph)
-			ReplaceAllWavesWithBackup(graph, traceList)
+
+			WAVE/T/Z tracePaths = GetSweepUserData(graph, "fullPath")
+			ReplaceAllWavesWithBackup(graph, tracePaths)
 
 			zeroTracesOldState = GetCheckBoxState(bsPanel, "check_Calculation_ZeroTraces")
 			SetCheckBoxState(bsPanel, "check_Calculation_ZeroTraces", CHECKBOX_UNSELECTED)

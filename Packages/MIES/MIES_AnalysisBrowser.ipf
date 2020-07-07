@@ -2532,7 +2532,7 @@ Function AB_ButtonProc_OpenCommentNB(ba) : ButtonControl
 			sprintf titleString, "Experiment %s and Device %s", fileName, device
 			commentNotebook = UniqueName("EB_UserComment", 10, 0)
 			NewNoteBook/K=1/F=0/OPTS=(2^2 + 2^3)/N=$commentNotebook/W=(0,0,300,400) as titleString
-			Notebook $commentNotebook text=comment
+			ReplaceNotebookText(commentNotebook, comment)
 			break
 	endswitch
 

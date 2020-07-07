@@ -4092,7 +4092,7 @@ static Function DAP_OpenCommentPanel(panelTitle)
 	SetWindow $commentPanel, hook(mainHook)=DAP_CommentPanelHook
 
 	SVAR userComment = $GetUserComment(panelTitle)
-	Notebook $commentNotebook, text=userComment
+	ReplaceNotebookText(commentNotebook, userComment)
 End
 
 Function DAP_ButtonProc_OpenCommentNB(ba) : ButtonControl
@@ -4127,9 +4127,7 @@ static Function/S DAP_FormatCommentString(panelTitle, comment, sweepNo)
 
 	DAP_OpenCommentPanel(panelTitle)
 	commentNotebook = DAP_GetCommentNotebook(panelTitle)
-	Notebook $commentNotebook selection={endOfFile,endOfFile}, findText={"",1}
-	Notebook $commentNotebook getData=2
-	contents = S_value
+	contents = GetNotebookText(commentNotebook)
 
 	// add a carriage return if the last line does not end with one
 	length = strlen(contents)
@@ -4159,11 +4157,10 @@ Function DAP_AddUserComment(panelTitle)
 		return NaN
 	endif
 
-	formattedComment = DAP_FormatCommentString(panelTitle, comment, sweepNo)
-
 	commentNotebook = DAP_GetCommentNotebook(panelTitle)
-	Notebook $commentNotebook text=formattedComment
-	Notebook $commentNotebook selection={endOfFile,endOfFile}, findText={"",1}
+	formattedComment = DAP_FormatCommentString(panelTitle, comment, sweepNo)
+	AppendToNotebookText(commentNotebook, formattedComment)
+	NotebookSelectionAtEnd(commentNotebook)
 
 	// after writing the user comment, clear it
 	ED_WriteUserCommentToLabNB(panelTitle, comment, sweepNo)
@@ -4218,8 +4215,7 @@ Function DAP_ClearCommentNotebook(panelTitle)
 	endif
 
 	commentNotebook = DAP_GetCommentNotebook(panelTitle)
-	Notebook $commentNotebook selection={startOfFile, endOfFile}
-	Notebook $commentNotebook, text=""
+	ReplaceNotebookText(commentNotebook, "")
 End
 
 /// @brief Serialize all comment notebooks
@@ -4233,7 +4229,7 @@ End
 Function DAP_SerializeCommentNotebook(panelTitle)
 	string panelTitle
 
-	string commentPanel, commentNotebook
+	string commentPanel, commentNotebook, text
 
 	commentPanel = DAP_GetCommentPanel(panelTitle)
 	if(!windowExists(commentPanel))
@@ -4241,18 +4237,16 @@ Function DAP_SerializeCommentNotebook(panelTitle)
 	endif
 
 	commentNotebook = DAP_GetCommentNotebook(panelTitle)
-	Notebook $commentNotebook selection={startOfFile, endOfFile}
-	GetSelection notebook, $commentNotebook, 2
+	text = GetNotebookText(commentNotebook)
 
-	if(isEmpty(S_Selection))
+	if(isEmpty(text))
 		return NaN
 	endif
 
 	SVAR userComment = $GetUserComment(panelTitle)
-	userComment = S_Selection
+	userComment = text
 
-	// move selection to end of file
-	Notebook $commentNotebook selection={endOfFile,endOfFile}, findText={"",1}
+	NotebookSelectionAtEnd(commentNotebook)
 End
 
 Function DAP_CommentPanelHook(s)
