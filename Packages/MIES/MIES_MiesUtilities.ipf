@@ -5190,7 +5190,7 @@ Function HasPanelLatestVersion(win, expectedVersion)
 	return 1
 #endif
 
-	version = GetPanelVersion(win)
+	version = GetPanelVersion(GetMainWindow(win))
 
 	return version == expectedVersion
 End

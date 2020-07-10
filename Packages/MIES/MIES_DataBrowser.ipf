@@ -366,7 +366,7 @@ Function DB_UpdateSweepPlot(win)
 	string win
 
 	variable numEntries, i, sweepNo, highlightSweep, referenceTime, traceIndex
-	string device, mainPanel, lbPanel, bsPanel, scPanel, graph, experiment
+	string device, lbPanel, bsPanel, scPanel, graph, experiment
 
 	if(BSP_MainPanelNeedsUpdate(win))
 		DoAbortNow("Can not display data. The Databrowser panel is too old to be usable. Please close it and open a new one.")
@@ -374,7 +374,6 @@ Function DB_UpdateSweepPlot(win)
 
 	referenceTime = DEBUG_TIMER_START()
 
-	mainPanel  = GetMainWindow(win)
 	lbPanel    = BSP_GetNotebookSubWindow(win)
 	bsPanel    = BSP_GetPanel(win)
 	scPanel    = BSP_GetSweepControlsPanel(win)
@@ -401,7 +400,7 @@ Function DB_UpdateSweepPlot(win)
 	tgs.displayDAC      = GetCheckBoxState(bsPanel, "check_BrowserSettings_DAC")
 	tgs.displayTTL      = GetCheckBoxState(bsPanel, "check_BrowserSettings_TTL")
 	tgs.displayADC      = GetCheckBoxState(bsPanel, "check_BrowserSettings_ADC")
-	tgs.overlaySweep 	= OVS_IsActive(mainPanel)
+	tgs.overlaySweep    = OVS_IsActive(bsPanel)
 	tgs.splitTTLBits    = GetCheckBoxState(bsPanel, "check_BrowserSettings_splitTTL")
 	tgs.overlayChannels = GetCheckBoxState(bsPanel, "check_BrowserSettings_OChan")
 	tgs.dDAQDisplayMode = GetCheckBoxState(bsPanel, "check_BrowserSettings_dDAQ")
@@ -452,7 +451,7 @@ Function DB_UpdateSweepPlot(win)
 
 	DEBUGPRINT_ELAPSED(referenceTime)
 
-	DB_UpdateSweepNote(mainPanel)
+	DB_UpdateSweepNote(bsPanel)
 
 	Struct PostPlotSettings pps
 	DB_InitPostPlotSettings(win, pps)
@@ -608,19 +607,18 @@ Function DB_UpdateToLastSweep(win)
 	string win
 
 	variable first, last
-	string mainPanel, bsPanel, scPanel
+	string bsPanel, scPanel
 
-	mainPanel = GetMainWindow(win)
 	bsPanel   = BSP_GetPanel(win)
 	scPanel   = BSP_GetSweepControlsPanel(win)
 
-	if(!HasPanelLatestVersion(mainPanel, DATABROWSER_PANEL_VERSION))
+	if(!HasPanelLatestVersion(win, DATABROWSER_PANEL_VERSION))
 		print "Can not display data. The Databrowser panel is too old to be usable. Please close it and open a new one."
 		ControlWindowToFront()
 		return NaN
 	endif
 
-	if(!BSP_HasBoundDevice(mainPanel))
+	if(!BSP_HasBoundDevice(win))
 		return NaN
 	endif
 
