@@ -17,7 +17,7 @@ static strConstant BROWSERTYPE_DATABROWSER  = "D"
 static strConstant BROWSERTYPE_SWEEPBROWSER = "S"
 
 /// @brief List of controls that have specific control procedures set
-static StrConstant BROWSERSETTING_UNSET_CONTROLPROCEDURES = "check_BrowserSettings_DAC;check_BrowserSettings_ADC;check_BrowserSettings_TTL;check_BrowserSettings_splitTTL;check_BrowserSettings_OChan;check_BrowserSettings_dDAQ;check_Calculation_AverageTraces;check_Calculation_ZeroTraces;button_Calculation_RestoreData;check_SweepControl_HideSweep;slider_BrowserSettings_dDAQ;button_TimeAlignment_Action;"
+static StrConstant BROWSERSETTING_UNSET_CONTROLPROCEDURES = "check_BrowserSettings_DAC;check_BrowserSettings_ADC;check_BrowserSettings_TTL;check_BrowserSettings_splitTTL;check_BrowserSettings_OChan;check_BrowserSettings_dDAQ;check_Calculation_AverageTraces;check_Calculation_ZeroTraces;button_Calculation_RestoreData;check_SweepControl_HideSweep;slider_BrowserSettings_dDAQ;"
 
 /// @brief exclusive controls that are enabled/disabled for the specific browser window type
 static StrConstant BROWSERSETTINGS_CONTROLS_DATABROWSER = "popup_DB_lockedDevices;"
@@ -208,7 +208,6 @@ Function BSP_DynamicStartupSettings(mainPanel)
 	SetControlProcedure(bsPanel, "button_Calculation_RestoreData", BSP_AddBrowserPrefix(mainPanel, "ButtonProc_RestoreData"))
 	SetControlProcedures(bsPanel, "check_SweepControl_HideSweep;", BSP_AddBrowserPrefix(mainPanel, "CheckProc_ChangedSetting"))
 	SetControlProcedures(bsPanel, "slider_BrowserSettings_dDAQ;", "BSP_SliderProc_ChangedSetting")
-	SetControlProcedures(bsPanel, "button_TimeAlignment_Action", BSP_AddBrowserPrefix(mainPanel, "DoTimeAlignment"))
 
 	if(BSP_IsDataBrowser(mainPanel))
 		EnableControls(bsPanel, BROWSERSETTINGS_CONTROLS_DATABROWSER)
@@ -808,7 +807,6 @@ Function BSP_SliderProc_ChangedSetting(spa) : SliderControl
 	return 0
 End
 
-/// @see SB_DoTimeAlignment DB_DoTimeAlignment
 Function BSP_TimeAlignmentProc(cba) : CheckBoxControl
 	STRUCT WMCheckBoxAction &cba
 
@@ -839,6 +837,29 @@ Function BSP_TimeAlignmentLevel(sva) : SetVariableControl
 		case 2: // Enter key
 		case 3: // Live update
 			UpdateSettingsPanel(sva.win)
+			break
+	endswitch
+
+	return 0
+End
+
+Function BSP_DoTimeAlignment(ba) : ButtonControl
+	STRUCT WMButtonAction &ba
+
+	string graph, win
+
+	switch(ba.eventCode)
+		case 2: // mouse up
+
+			win = ba.win
+			graph = GetMainWindow(win)
+
+			if(!BSP_HasBoundDevice(win))
+				UpdateSettingsPanel(win)
+				return NaN
+			endif
+
+			PostPlotTransformations(graph)
 			break
 	endswitch
 

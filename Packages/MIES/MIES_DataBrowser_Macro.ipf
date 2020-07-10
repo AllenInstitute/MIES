@@ -723,7 +723,7 @@ Window DataBrowser() : Graph
 	SetVariable setvar_TimeAlignment_LevelCross,limits={-inf,inf,0},value= _NUM:0
 	Button button_TimeAlignment_Action,pos={208.00,159.00},size={30.00,18.00},disable=2,title="Do!"
 	Button button_TimeAlignment_Action,help={"Perform the time alignment, needs the cursors A and B to have a selected feature"}
-	Button button_TimeAlignment_Action,userdata(tabnum)=  "0"
+	Button button_TimeAlignment_Action,userdata(tabnum)=  "0",proc=BSP_DoTimeAlignment
 	Button button_TimeAlignment_Action,userdata(tabcontrol)=  "Settings"
 	Button button_TimeAlignment_Action,userdata(ResizeControlsInfo)= A"!!,G`!!#A.!!#=S!!#<Hz!!#`-A7TLfzzzzzzzzzzzzzz!!#r+D.OhkBk2=!z"
 	Button button_TimeAlignment_Action,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"

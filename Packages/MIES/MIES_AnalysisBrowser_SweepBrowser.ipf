@@ -419,18 +419,6 @@ Function SB_AddToSweepBrowser(sweepBrowser, fileName, dataFolder, device, sweep)
 	SetNumberInWaveNote(map, NOTE_INDEX, index + 1)
 End
 
-/// @see DB_HandleTimeAlignPropChange
-static Function SB_HandleTimeAlignPropChange(win)
-	string win
-
-	string bsPanel, graph
-
-	graph = GetMainWindow(win)
-	bsPanel = BSP_GetPanel(graph)
-
-	PostPlotTransformations(graph)
-End
-
 Function SB_SweepBrowserWindowHook(s)
 	STRUCT WMWinHookStruct &s
 
@@ -628,18 +616,6 @@ Function SB_ButtonProc_ChangeSweep(ba) : ButtonControl
 			endif
 
 			SB_UpdateSweepPlot(graph, newSweep=index)
-			break
-	endswitch
-
-	return 0
-End
-
-Function SB_DoTimeAlignment(ba) : ButtonControl
-	STRUCT WMButtonAction &ba
-
-	switch( ba.eventCode )
-		case 2: // mouse up
-			SB_HandleTimeAlignPropChange(ba.win)
 			break
 	endswitch
 

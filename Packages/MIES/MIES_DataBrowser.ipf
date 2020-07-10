@@ -491,35 +491,6 @@ static Function DB_UpdateSweepNote(win)
 	ReplaceNotebookText(lbPanel, note(sweepWave))
 End
 
-Function DB_DoTimeAlignment(ba) : ButtonControl
-	STRUCT WMButtonAction &ba
-
-	switch( ba.eventCode )
-		case 2: // mouse up
-			DB_HandleTimeAlignPropChange(ba.win)
-			break
-	endswitch
-
-	return 0
-End
-
-/// @see SB_HandleTimeAlignPropChange
-static Function DB_HandleTimeAlignPropChange(win)
-	string win
-
-	string bsPanel, graph
-
-	graph = GetMainWindow(win)
-	bsPanel = BSP_GetPanel(graph)
-
-	if(!BSP_HasBoundDevice(win))
-		UpdateSettingsPanel(win)
-		return NaN
-	endif
-
-	PostPlotTransformations(graph)
-End
-
 static Function DB_ClearGraph(win)
 	string win
 
