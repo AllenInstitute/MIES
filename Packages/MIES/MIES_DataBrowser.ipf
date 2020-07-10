@@ -391,6 +391,7 @@ Function DB_UpdateSweepPlot(win)
 	if(!BSP_HasBoundDevice(win))
 		return NaN
 	endif
+
 	device = BSP_GetDevice(win)
 
 	WAVE numericalValues = DB_GetNumericalValues(win)
@@ -607,7 +608,7 @@ Function DB_UpdateToLastSweep(win)
 	string win
 
 	variable first, last
-	string device, mainPanel, bsPanel, scPanel
+	string mainPanel, bsPanel, scPanel
 
 	mainPanel = GetMainWindow(win)
 	bsPanel   = BSP_GetPanel(win)
@@ -619,9 +620,7 @@ Function DB_UpdateToLastSweep(win)
 		return NaN
 	endif
 
-	device = BSP_GetDevice(win)
-
-	if(!cmpstr(device, NONE))
+	if(!BSP_HasBoundDevice(mainPanel))
 		return NaN
 	endif
 
@@ -1038,10 +1037,11 @@ static Function DB_SplitSweepsIfReq(win, sweepNo)
 	string device, mainPanel
 	variable sweepModTime, numWaves, requireNewSplit, i
 
-	device = BSP_GetDevice(win)
-	if(!cmpstr(device, NONE))
+	if(!BSP_HasBoundDevice(win))
 		return NaN
 	endif
+
+	device = BSP_GetDevice(win)
 
 	DFREF deviceDFR = GetDeviceDataPath(device)
 	DFREF singleSweepDFR = GetSingleSweepFolder(deviceDFR, sweepNo)
