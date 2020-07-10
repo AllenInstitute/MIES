@@ -510,8 +510,6 @@ Function DB_InitPostPlotSettings(win, pps)
 	pps.timeAlignMode     = TIME_ALIGNMENT_NONE
 
 	PA_GatherSettings(win, pps)
-
-	FUNCREF FinalUpdateHookProto pps.finalUpdateHook = DB_GraphUpdate
 End
 
 Function DB_DoTimeAlignment(ba) : ButtonControl
@@ -988,37 +986,11 @@ Function DB_CheckProc_ChangedSetting(cba) : CheckBoxControl
 	return 0
 End
 
-Function DB_CheckProc_ScaleAxes(cba) : CheckBoxControl
-	STRUCT WMCheckboxAction &cba
-
-	switch(cba.eventCode)
-		case 2: // mouse up
-			DB_GraphUpdate(cba.win)
-			break
-	endswitch
-
-	return 0
-End
-
 // Called from ACL_DisplayTab after the new tab is selected
 Function DB_MainTabControlFinal(tca)
 	STRUCT WMTabControlAction &tca
 
 	DB_UpdateSweepNote(tca.win)
-End
-
-/// @see SB_PanelUpdate
-Function DB_GraphUpdate(win)
-	string win
-
-	string bsPanel, graph
-
-	graph = GetMainWindow(win)
-	bsPanel = BSP_GetPanel(win)
-
-	if(GetCheckBoxState(bsPanel, "check_Display_VisibleXrange"))
-		AutoscaleVertAxisVisXRange(graph)
-	endif
 End
 
 /// @brief enable/disable checkbox control for side panel

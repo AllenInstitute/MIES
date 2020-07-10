@@ -3330,8 +3330,7 @@ Function PostPlotTransformations(graph, pps)
 	AverageWavesFromSameYAxisIfReq(graph, traces, pps.averageTraces, pps.averageDataFolder, pps.hideSweep)
 	AR_HighlightArtefactsEntry(graph)
 	PA_ShowPulses(graph, pps.averageDataFolder, pps.pulseAverSett)
-
-	pps.finalUpdateHook(graph)
+	BSP_ScaleAxes(graph)
 End
 
 /// @brief Time Alignment for the BrowserSettingsPanel
@@ -5229,18 +5228,12 @@ End
 Function UpdateSettingsPanel(win)
 	string win
 
-	string graph, bsPanel, controls
+	string bsPanel
 
-	graph = GetMainWindow(win)
 	bsPanel = BSP_GetPanel(win)
 
 	TimeAlignUpdateControls(bsPanel)
-
-	if(BSP_IsDataBrowser(win))
-		DB_GraphUpdate(win)
-	else
-		SB_PanelUpdate(win)
-	endif
+	BSP_ScaleAxes(bsPanel)
 End
 
 Function/S GetPlainSweepList(win)

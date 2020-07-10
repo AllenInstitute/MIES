@@ -9,7 +9,6 @@
 /// @file MIES_AnalysisBrowser_SweepBrowser.ipf
 /// @brief __SB__  Visualization of sweep data in the analysis browser
 
-static StrConstant AXES_SCALING_CHECKBOXES = "check_Display_VisibleXrange;check_Display_EqualYrange;check_Display_EqualYignore"
 static StrConstant WAVE_NOTE_LAYOUT_KEY    = "WAVE_LAYOUT_VERSION"
 
 Function/S SB_GetSweepBrowserLeftPanel(win)
@@ -113,13 +112,6 @@ Function SB_GetIndexFromSweepDataPath(win, dataDFR)
 	return matches[0]
 End
 
-/// @see DB_GraphUpdate
-Function SB_PanelUpdate(win)
-	string win
-
-	SB_ScaleAxes(win)
-End
-
 /// @brief set graph userdata similar to DB_SetUserData()
 ///
 /// @param win 	name of main window or external subwindow in SweepBrowser
@@ -147,8 +139,6 @@ static Function SB_InitPostPlotSettings(graph, pps)
 	pps.hideSweep         = GetCheckBoxState(bsPanel, "check_SweepControl_HideSweep")
 
 	PA_GatherSettings(graph, pps)
-
-	FUNCREF FinalUpdateHookProto pps.finalUpdateHook = SB_PanelUpdate
 End
 
 /// @brief Return numeric labnotebook entries
@@ -466,32 +456,6 @@ static Function SB_HandleTimeAlignPropChange(win)
 	PostPlotTransformations(graph, pps)
 End
 
-static Function SB_ScaleAxes(win)
-	string win
-
-	string graph, bsPanel
-	variable visXRange, equalY, equalYIgn, level
-
-	graph      = GetMainWindow(win)
-	bsPanel    = BSP_GetPanel(win)
-	visXRange  = GetCheckBoxState(bsPanel, "check_Display_VisibleXrange")
-	equalY     = GetCheckBoxState(bsPanel, "check_Display_EqualYrange")
-	equalYIgn  = GetCheckBoxState(bsPanel, "check_Display_EqualYignore")
-
-	ASSERT(visXRange + equalY + equalYIgn <= 1, "Only one scaling mode is allowed to be selected")
-
-	if(visXRange)
-		AutoscaleVertAxisVisXRange(graph)
-	elseif(equalY)
-		EqualizeVerticalAxesRanges(graph, ignoreAxesWithLevelCrossing=0)
-	elseif(equalYIgn)
-		level = GetSetVariable(bsPanel, "setvar_Display_EqualYlevel")
-		EqualizeVerticalAxesRanges(graph, ignoreAxesWithLevelCrossing=1, level=level)
-	else
-		// do nothing
-	endif
-End
-
 Function SB_SweepBrowserWindowHook(s)
 	STRUCT WMWinHookStruct &s
 
@@ -556,7 +520,7 @@ Function/DF SB_OpenSweepBrowser()
 	string/G sweepBrowserDFR:graph = mainWin
 
 	BSP_InitPanel(mainWin)
-	SB_PanelUpdate(mainWin)
+	BSP_ScaleAxes(mainWin)
 	return sweepBrowserDFR
 End
 
@@ -701,59 +665,6 @@ Function SB_DoTimeAlignment(ba) : ButtonControl
 	switch( ba.eventCode )
 		case 2: // mouse up
 			SB_HandleTimeAlignPropChange(ba.win)
-			break
-	endswitch
-
-	return 0
-End
-
-Function SB_CheckProc_ScaleAxes(cba) : CheckBoxControl
-	STRUCT WMCheckboxAction &cba
-
-	string ctrls, graph, bsPanel
-	variable numCtrls, i
-
-	graph   = GetMainWindow(cba.win)
-	bsPanel = BSP_GetPanel(graph)
-
-	switch( cba.eventCode )
-		case 2: // mouse up
-			if(cba.checked)
-				ctrls = ListMatch(AXES_SCALING_CHECKBOXES, "!" + cba.ctrlName)
-				numCtrls = ItemsInList(ctrls)
-				for(i = 0; i < numCtrls; i += 1)
-					SetCheckBoxState(bsPanel, StringFromList(i, ctrls), CHECKBOX_UNSELECTED)
-				endfor
-			endif
-
-			if(GetCheckBoxState(bsPanel, "check_Display_EqualYignore"))
-				EnableControl(bsPanel, "setvar_Display_EqualYlevel")
-			else
-				DisableControl(bsPanel, "setvar_Display_EqualYlevel")
-			endif
-
-			SB_ScaleAxes(graph)
-			break
-	endswitch
-
-	return 0
-End
-
-Function SB_AxisScalingLevelCross(sva) : SetVariableControl
-	STRUCT WMSetVariableAction &sva
-
-	string graph, bsPanel
-
-	graph   = GetMainWindow(sva.win)
-	bsPanel = BSP_GetPanel(graph)
-
-	switch(sva.eventCode)
-		case 1: // mouse up
-		case 2: // Enter key
-		case 3: // Live update
-			if(GetCheckBoxState(bsPanel, "check_Display_EqualYignore"))
-				SB_ScaleAxes(graph)
-			endif
 			break
 	endswitch
 
