@@ -235,18 +235,25 @@ End
 
 static Function TUD_RemoveTrace(WAVE/T graphUserData, string trace)
 
-	variable row, index, jsonID
+	variable row, index, jsonID, tracesNeedingUpdate
 
 	row = TUD_ConvertTraceNameToRowIndex(graphUserData, trace, create = 0)
 
 	DeletePoints/M=(ROWS) row, 1, graphUserData
 
 	index = GetNumberFromWaveNote(graphUserData, NOTE_INDEX)
-	SetNumberInWaveNote(graphUserData, NOTE_INDEX, index - 1)
+	SetNumberInWaveNote(graphUserData, NOTE_INDEX, --index)
 
 	jsonID = TUD_GetIndexJSON(graphUserData)
 
 	JSON_Remove(jsonID, "/" + trace)
+
+	tracesNeedingUpdate = index - row
+	if(tracesNeedingUpdate == 0)
+		return NaN
+	endif
+
+	Make/FREE/N=(tracesNeedingUpdate) junkWave = JSON_SetVariable(jsonID, "/" + graphUserData[row + p][%traceName], row + p)
 End
 
 static Function TUD_ConvertTraceNameToRowIndex(WAVE/T graphUserData, string trace, [variable create])

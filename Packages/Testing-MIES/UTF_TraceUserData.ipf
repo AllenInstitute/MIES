@@ -562,6 +562,8 @@ Function RemoveUserDataWorks()
 	jsonID = GetNumberFromWaveNote(graphUserData, TUD_INDEX_JSON)
 	WAVE/T/Z traces = JSON_GetKeys(jsonID, "", esc = 0)
 	CHECK_EQUAL_TEXTWAVES(traces, {"trace2", "trace3"})
+	CHECK_EQUAL_VAR(JSON_GetVariable(jsonID, "/trace2"), 0)
+	CHECK_EQUAL_VAR(JSON_GetVariable(jsonID, "/trace3"), 1)
 
 	PrepareUserDataWaveForRemoval_IGNORE()
 
@@ -576,6 +578,8 @@ Function RemoveUserDataWorks()
 	jsonID = GetNumberFromWaveNote(graphUserData, TUD_INDEX_JSON)
 	WAVE/T/Z traces = JSON_GetKeys(jsonID, "", esc = 0)
 	CHECK_EQUAL_TEXTWAVES(traces, {"trace1", "trace3"})
+	CHECK_EQUAL_VAR(JSON_GetVariable(jsonID, "/trace1"), 0)
+	CHECK_EQUAL_VAR(JSON_GetVariable(jsonID, "/trace3"), 1)
 
 	PrepareUserDataWaveForRemoval_IGNORE()
 
@@ -590,4 +594,6 @@ Function RemoveUserDataWorks()
 	jsonID = GetNumberFromWaveNote(graphUserData, TUD_INDEX_JSON)
 	WAVE/T/Z traces = JSON_GetKeys(jsonID, "", esc = 0)
 	CHECK_EQUAL_TEXTWAVES(traces, {"trace1", "trace2"})
+	CHECK_EQUAL_VAR(JSON_GetVariable(jsonID, "/trace1"), 0)
+	CHECK_EQUAL_VAR(JSON_GetVariable(jsonID, "/trace2"), 1)
 End
