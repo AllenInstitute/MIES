@@ -453,10 +453,8 @@ Function DB_UpdateSweepPlot(win)
 
 	DB_UpdateSweepNote(bsPanel)
 
-	Struct PostPlotSettings pps
-	DB_InitPostPlotSettings(win, pps)
+	PostPlotTransformations(graph)
 
-	PostPlotTransformations(graph, pps)
 	SetAxesRanges(graph, axesRanges)
 	DEBUGPRINT_ELAPSED(referenceTime)
 End
@@ -493,25 +491,6 @@ static Function DB_UpdateSweepNote(win)
 	ReplaceNotebookText(lbPanel, note(sweepWave))
 End
 
-/// @see SB_InitPostPlotSettings
-Function DB_InitPostPlotSettings(win, pps)
-	string win
-	STRUCT PostPlotSettings &pps
-
-	string bsPanel = BSP_GetPanel(win)
-
-	ASSERT(BSP_HasBoundDevice(win), "DataBrowser was not assigned to a specific device")
-
-	pps.averageDataFolder = BSP_GetFolder(win, MIES_BSP_PANEL_FOLDER)
-	pps.averageTraces     = GetCheckboxState(bsPanel, "check_Calculation_AverageTraces")
-	pps.zeroTraces        = GetCheckBoxState(bsPanel, "check_Calculation_ZeroTraces")
-	pps.hideSweep         = GetCheckBoxState(bsPanel, "check_SweepControl_HideSweep")
-	pps.timeAlignRefTrace = ""
-	pps.timeAlignMode     = TIME_ALIGNMENT_NONE
-
-	PA_GatherSettings(win, pps)
-End
-
 Function DB_DoTimeAlignment(ba) : ButtonControl
 	STRUCT WMButtonAction &ba
 
@@ -538,12 +517,7 @@ static Function DB_HandleTimeAlignPropChange(win)
 		return NaN
 	endif
 
-	STRUCT PostPlotSettings pps
-	DB_InitPostPlotSettings(graph, pps)
-
-	TimeAlignGatherSettings(bsPanel, pps)
-
-	PostPlotTransformations(graph, pps)
+	PostPlotTransformations(graph)
 End
 
 static Function DB_ClearGraph(win)

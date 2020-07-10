@@ -124,23 +124,6 @@ static Function SB_SetUserData(win)
 	BSP_SetFolder(win, dfr, MIES_BSP_PANEL_FOLDER)
 End
 
-/// @see DB_InitPostPlotSettings
-static Function SB_InitPostPlotSettings(graph, pps)
-	string graph
-	STRUCT PostPlotSettings &pps
-
-	string bsPanel = BSP_GetPanel(graph)
-
-	pps.averageDataFolder = SB_GetSweepBrowserFolder(graph)
-	pps.averageTraces     = GetCheckboxState(bsPanel, "check_Calculation_AverageTraces")
-	pps.zeroTraces        = GetCheckBoxState(bsPanel, "check_Calculation_ZeroTraces")
-	pps.timeAlignRefTrace = ""
-	pps.timeAlignMode     = TIME_ALIGNMENT_NONE
-	pps.hideSweep         = GetCheckBoxState(bsPanel, "check_SweepControl_HideSweep")
-
-	PA_GatherSettings(graph, pps)
-End
-
 /// @brief Return numeric labnotebook entries
 ///
 /// @param graph    sweep browser graph
@@ -339,9 +322,6 @@ Function SB_UpdateSweepPlot(win, [newSweep])
 	tgs.dDAQHeadstageRegions = BSP_GetDDAQ(win)
 	tgs.hideSweep       = GetCheckBoxState(bsPanel, "check_SweepControl_HideSweep")
 
-	STRUCT PostPlotSettings pps
-	SB_InitPostPlotSettings(graph, pps)
-
 	WAVE/Z sweepsToOverlay = OVS_GetSelectedSweeps(graph, OVS_SWEEP_SELECTION_INDEX)
 
 	WAVE axesRanges = GetAxesRanges(graph)
@@ -401,7 +381,7 @@ Function SB_UpdateSweepPlot(win, [newSweep])
 		ReplaceNotebookText(lbPanel, "Sweep note: \r " + sweepNote)
 	endif
 
-	PostPlotTransformations(graph, pps)
+	PostPlotTransformations(graph)
 	SetAxesRanges(graph, axesRanges)
 End
 
@@ -448,12 +428,7 @@ static Function SB_HandleTimeAlignPropChange(win)
 	graph = GetMainWindow(win)
 	bsPanel = BSP_GetPanel(graph)
 
-	STRUCT PostPlotSettings pps
-	SB_InitPostPlotSettings(graph, pps)
-
-	TimeAlignGatherSettings(bsPanel, pps)
-
-	PostPlotTransformations(graph, pps)
+	PostPlotTransformations(graph)
 End
 
 Function SB_SweepBrowserWindowHook(s)

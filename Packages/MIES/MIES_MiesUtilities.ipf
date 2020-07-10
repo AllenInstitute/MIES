@@ -3311,10 +3311,8 @@ End
 /// the operations, backups, etc.
 ///
 /// @param graph graph with sweep traces
-/// @param pps   settings
-Function PostPlotTransformations(graph, pps)
+Function PostPlotTransformations(graph)
 	string graph
-	STRUCT PostPlotSettings &pps
 
 	variable csrAx, csrBx
 
@@ -3324,6 +3322,9 @@ Function PostPlotTransformations(graph, pps)
 		return NaN
 	endif
 
+	STRUCT PostPlotSettings pps
+	InitPostPlotSettings(graph, pps)
+
 	ZeroTracesIfReq(graph, traces, pps.zeroTraces)
 	TimeAlignMainWindow(graph, pps)
 
@@ -3331,6 +3332,26 @@ Function PostPlotTransformations(graph, pps)
 	AR_HighlightArtefactsEntry(graph)
 	PA_ShowPulses(graph, pps.averageDataFolder, pps.pulseAverSett)
 	BSP_ScaleAxes(graph)
+End
+
+static Function InitPostPlotSettings(win, pps)
+	string win
+	STRUCT PostPlotSettings &pps
+
+	string bsPanel = BSP_GetPanel(win)
+
+	pps.averageDataFolder = BSP_GetFolder(win, MIES_BSP_PANEL_FOLDER)
+	pps.averageTraces     = GetCheckboxState(bsPanel, "check_Calculation_AverageTraces")
+	pps.zeroTraces        = GetCheckBoxState(bsPanel, "check_Calculation_ZeroTraces")
+	pps.hideSweep         = GetCheckBoxState(bsPanel, "check_SweepControl_HideSweep")
+
+	pps.timeAlignment     = GetCheckBoxState(bsPanel, "check_BrowserSettings_TA")
+	pps.timeAlignMode     = GetPopupMenuIndex(bsPanel, "popup_TimeAlignment_Mode")
+	pps.timeAlignLevel    = GetSetVariable(bsPanel, "setvar_TimeAlignment_LevelCross")
+	pps.timeAlignRefTrace = GetPopupMenuString(bsPanel, "popup_TimeAlignment_Master")
+	pps.timeAlignment     = GetCheckBoxState(bsPanel, "check_BrowserSettings_TA")
+
+	PA_GatherSettings(win, pps)
 End
 
 /// @brief Time Alignment for the BrowserSettingsPanel
@@ -3462,17 +3483,6 @@ Function TimeAlignUpdateControls(win)
 	endif
 
 	TimeAlignHandleCursorDisplay(graph)
-End
-
-Function TimeAlignGatherSettings(bsPanel, pps)
-	String bsPanel
-	STRUCT PostPlotSettings &pps
-
-	pps.timeAlignment     = GetCheckBoxState(bsPanel, "check_BrowserSettings_TA")
-	pps.timeAlignMode     = GetPopupMenuIndex(bsPanel, "popup_TimeAlignment_Mode")
-	pps.timeAlignLevel    = GetSetVariable(bsPanel, "setvar_TimeAlignment_LevelCross")
-	pps.timeAlignRefTrace = GetPopupMenuString(bsPanel, "popup_TimeAlignment_Master")
-	pps.timeAlignment     = GetCheckBoxState(bsPanel, "check_BrowserSettings_TA")
 End
 
 Function TimeAlignCursorMovedHook(s)
