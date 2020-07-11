@@ -52,8 +52,7 @@ Function SB_GetIndexFromSweepDataPath(win, dataDFR)
 	variable mapIndex, sweepNo
 	string device, expFolder, sweepFolder
 
-	DFREF sweepBrowserDFR = SB_GetSweepBrowserFolder(win)
-	WAVE/T sweepMap = SB_GetSweepBrowserMap(sweepBrowserDFR)
+	WAVE/T sweepMap = SB_GetSweepBrowserMapFromGraph(win)
 
 	SplitSTring/E="root:MIES:Analysis:([^:]+):([^:]+):sweep:([^:]+):" GetDataFolder(1, dataDFR), expFolder, device, sweepFolder
 	ASSERT(V_flag == 3, "Unmatched string")
@@ -104,8 +103,7 @@ static Function/WAVE SB_GetSweepPropertyFromNumLBN(graph, mapIndex, key)
 	string device, expFolder
 	variable sweep
 
-	DFREF sweepBrowserDFR = SB_GetSweepBrowserFolder(graph)
-	WAVE/T sweepMap = SB_GetSweepBrowserMap(sweepBrowserDFR)
+	WAVE/T sweepMap = SB_GetSweepBrowserMapFromGraph(graph)
 
 	if(!IsFinite(mapIndex) || mapIndex < 0 || mapIndex >= DimSize(sweepMap, ROWS))
 		return $""
@@ -127,8 +125,7 @@ End
 Function/S SB_GetListOfExperiments(graph)
 	string graph
 
-	DFREF sweepBrowserDFR = SB_GetSweepBrowserFolder(graph)
-	WAVE/T sweepMap = SB_GetSweepBrowserMap(sweepBrowserDFR)
+	WAVE/T sweepMap = SB_GetSweepBrowserMapFromGraph(graph)
 
 	variable numEntries, i
 	string experiment
@@ -187,8 +184,7 @@ Function/WAVE SB_GetChannelInfoFromGraph(graph, channel, [experiment])
 
 	ASSERT(FindListitem(channel, ITC_CHANNEL_NAMES) != -1, "Given channel could not be found in ITC_CHANNEL_NAMES")
 
-	DFREF sweepBrowserDFR = SB_GetSweepBrowserFolder(graph)
-	WAVE/T sweepMap = SB_GetSweepBrowserMap(sweepBrowserDFR)
+	WAVE/T sweepMap = SB_GetSweepBrowserMapFromGraph(graph)
 
 	Make/FREE/T/N=(MINIMUM_WAVE_SIZE, 3) channelMap
 
