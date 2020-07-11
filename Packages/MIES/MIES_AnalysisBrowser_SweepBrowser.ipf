@@ -11,12 +11,6 @@
 
 static StrConstant WAVE_NOTE_LAYOUT_KEY    = "WAVE_LAYOUT_VERSION"
 
-Function/S SB_GetSweepBrowserLeftPanel(win)
-	string win
-
-	return BSP_GetPanel(win)
-End
-
 static Function/Wave SB_GetSweepBrowserMapFromGraph(win)
 	string win
 
