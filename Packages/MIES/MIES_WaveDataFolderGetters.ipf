@@ -5861,6 +5861,32 @@ Function/WAVE GetAxisLabelCacheWave()
 	return wv
 End
 
+/// @brief Return the sweepBrowser map wave from the given DFR
+Function/Wave GetSweepBrowserMap(dfr)
+	DFREF dfr
+
+	variable versionOfNewWave = 1
+
+	ASSERT(DataFolderExistsDFR(dfr), "Missing SweepBrowser DFR")
+
+	WAVE/T/Z/SDFR=dfr wv = map
+	if(ExistsWithCorrectLayoutVersion(wv, versionOfNewWave))
+		return wv
+	else
+		Make/T/N=(MINIMUM_WAVE_SIZE, 4) dfr:map/Wave=wv
+		SetNumberInWaveNote(wv, NOTE_INDEX, 0)
+	endif
+
+	SetDimLabel COLS, 0, FileName, wv
+	SetDimLabel COLS, 1, DataFolder, wv
+	SetDimLabel COLS, 2, Device, wv
+	SetDimLabel COLS, 3, Sweep, wv
+
+	SetNumberInWaveNote(wv, WAVE_NOTE_LAYOUT_KEY, versionOfNewWave)
+
+	return wv
+End
+
 /// @name Getters related to debugging
 /// @{
 /// @brief Return the datafolder reference to the debug folder

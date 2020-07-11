@@ -9,39 +9,10 @@
 /// @file MIES_AnalysisBrowser_SweepBrowser.ipf
 /// @brief __SB__  Visualization of sweep data in the analysis browser
 
-static StrConstant WAVE_NOTE_LAYOUT_KEY    = "WAVE_LAYOUT_VERSION"
-
 static Function/Wave SB_GetSweepBrowserMapFromGraph(win)
 	string win
 
-	return SB_GetSweepBrowserMap(SB_GetSweepBrowserFolder(win))
-End
-
-static Function/Wave SB_GetSweepBrowserMap(sweepBrowser)
-	DFREF sweepBrowser
-
-	ASSERT(DataFolderExistsDFR(sweepBrowser), "Missing SweepBrowser DFR")
-
-	Variable versionOfWave = 1
-
-	WAVE/T/Z/SDFR=sweepBrowser wv = map
-	if(WaveExists(wv))
-		if(GetNumberFromWaveNote(wv, WAVE_NOTE_LAYOUT_KEY) == versionOfWave)
-			return wv
-		endif
-	else
-		Make/T/N=(MINIMUM_WAVE_SIZE, 4) sweepBrowser:map/Wave=wv
-		SetNumberInWaveNote(wv, NOTE_INDEX, 0)
-	endif
-
-	SetDimLabel COLS, 0, FileName, wv
-	SetDimLabel COLS, 1, DataFolder, wv
-	SetDimLabel COLS, 2, Device, wv
-	SetDimLabel COLS, 3, Sweep, wv
-
-	SetNumberInWaveNote(wv, WAVE_NOTE_LAYOUT_KEY, versionOfWave)
-
-	return wv
+	return GetSweepBrowserMap(SB_GetSweepBrowserFolder(win))
 End
 
 Function/DF SB_GetSweepBrowserFolder(win)
@@ -57,7 +28,7 @@ static Function/DF SB_GetSweepDataPathFromIndex(sweepBrowserDFR, mapIndex)
 	string device, expFolder
 	variable sweep
 
-	WAVE/T sweepMap = SB_GetSweepBrowserMap(sweepBrowserDFR)
+	WAVE/T sweepMap = GetSweepBrowserMap(sweepBrowserDFR)
 
 	if(!IsFinite(mapIndex) || mapIndex < 0 || mapIndex >= DimSize(sweepMap, ROWS))
 		return $""
@@ -325,7 +296,7 @@ Function SB_UpdateSweepPlot(win, [newSweep])
 	RemoveFreeAxisFromGraph(graph)
 	TUD_Clear(graph)
 
-	WAVE/T sweepMap = SB_GetSweepBrowserMap(sweepBrowserDFR)
+	WAVE/T sweepMap = GetSweepBrowserMap(sweepBrowserDFR)
 	WAVE channelSel = GetChannelSelectionWave(sweepBrowserDFR)
 
 	currentSweep = GetPopupMenuIndex(scPanel, "popup_SweepControl_Selector")
@@ -387,7 +358,7 @@ Function SB_AddToSweepBrowser(sweepBrowser, fileName, dataFolder, device, sweep)
 	variable index
 	string sweepStr = num2str(sweep)
 
-	WAVE/T map = SB_GetSweepBrowserMap(sweepBrowser)
+	WAVE/T map = GetSweepBrowserMap(sweepBrowser)
 
 	index = GetNumberFromWaveNote(map, NOTE_INDEX)
 	EnsureLargeEnoughWave(map, minimumSize=index)
@@ -468,7 +439,7 @@ Function/DF SB_OpenSweepBrowser()
 
 
 	DFREF sweepBrowserDFR = BSP_GetFolder(mainWin, MIES_BSP_PANEL_FOLDER)
-	SB_GetSweepBrowserMap(sweepBrowserDFR)
+	GetSweepBrowserMap(sweepBrowserDFR)
 
 	renameWin = UniqueName(SWEEPBROWSER_WINDOW_TITLE, 9, 1)
 	DoWindow/W=$mainWin/C $renameWin
