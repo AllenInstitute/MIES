@@ -325,7 +325,7 @@ Function/S BSP_AddBrowserPrefix(win, str)
 	endif
 End
 
-/// @brief get the channel selection wave stored in main window property CSW_FOLDER
+/// @brief Get the channel selection wave
 ///
 /// @param win 	name of external panel or main window
 /// @returns channel selection wave
