@@ -421,8 +421,7 @@ Function DB_UpdateSweepPlot(win)
 			continue
 		endif
 
-		WAVE/Z activeHS = OVS_ParseIgnoreList(win, highlightSweep, sweepNo=sweepNo)
-		tgs.highlightSweep = highlightSweep
+		WAVE/Z activeHS = OVS_ParseIgnoreList(win, sweepNo=sweepNo)
 
 		if(WaveExists(activeHS))
 			Duplicate/FREE channelSel, sweepChannelSel

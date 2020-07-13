@@ -2636,7 +2636,6 @@ Function CreateTiledChannelGraph(graph, config, sweepNo, numericalValues,  textu
 				sprintf str, "colorIndex=%d", colorIndex
 				DEBUGPRINT(str)
 
-				alpha = (IsNaN(tgs.highlightSweep) || tgs.highlightSweep == 1) ? 65535 : 0.05 * 65535
 				DEBUGPRINT("")
 				first = 0
 
@@ -2719,11 +2718,11 @@ Function CreateTiledChannelGraph(graph, config, sweepNo, numericalValues,  textu
 					if(!IsFinite(xRangeStart) && !IsFinite(XRangeEnd))
 						horizAxis = "bottom"
 						traceRange = "[][0]"
-						AppendToGraph/W=$graph/B=$horizAxis/L=$vertAxis/C=(red, green, blue, alpha) wv[][0]/TN=$trace
+						AppendToGraph/W=$graph/B=$horizAxis/L=$vertAxis/C=(red, green, blue, 65535) wv[][0]/TN=$trace
 					else
 						horizAxis = vertAxis + "_b"
 						sprintf traceRange, "[%g,%g][0]", xRangeStart, xRangeEnd
-						AppendToGraph/W=$graph/L=$vertAxis/B=$horizAxis/C=(red, green, blue, alpha) wv[xRangeStart, xRangeEnd][0]/TN=$trace
+						AppendToGraph/W=$graph/L=$vertAxis/B=$horizAxis/C=(red, green, blue, 65535) wv[xRangeStart, xRangeEnd][0]/TN=$trace
 						first = first
 						last  = first + (xRangeEnd - xRangeStart) / totalXRange
 						ModifyGraph/W=$graph axisEnab($horizAxis)={first, min(last, 1.0)}

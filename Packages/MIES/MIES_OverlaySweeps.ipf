@@ -380,20 +380,17 @@ End
 /// - * (ignore all headstages)
 ///
 /// @param[in] 		win				name of mainPanel
-/// @param[out] 	highlightSweep 	return of OVS_IsSweepHighlighted, defaults to no sweep highlighted
 /// @param[in] 		sweepNo 		[optional] search sweepNo in list to get index
 /// @param[in] 		index 			[optional] specify sweep directly by index
 /// @return free wave of size `NUM_HEADSTAGES` denoting with 0/1 the active state
 ///         of the headstage
-Function/WAVE OVS_ParseIgnoreList(win, highlightSweep, [sweepNo, index])
+Function/WAVE OVS_ParseIgnoreList(win, [sweepNo, index])
 	string win
-	variable sweepNo, index, &highlightSweep
+	variable sweepNo, index
 
 	variable numEntries, i, start, stop, step
 	string ignoreList, subRangeStr, extPanel
 
-	// set default
-	highlightSweep = NaN // no sweep highlighted
 	if(!OVS_IsActive(win))
 		return $""
 	endif
@@ -418,8 +415,6 @@ Function/WAVE OVS_ParseIgnoreList(win, highlightSweep, [sweepNo, index])
 	if(index < 0 || index >= DimSize(listBoxWave, ROWS) || !IsFinite(index))
 		ASSERT(index != -1, "Invalid sweepNo/index")
 	endif
-
-	highlightSweep = OVS_IsSweepHighlighted(listboxWave, index)
 
 	ignoreList = listboxWave[index][%headstages]
 	numEntries = ItemsInList(ignoreList)
@@ -481,28 +476,70 @@ static Function OVS_HighlightSweep(win, index)
 	string win
 	variable index
 
+	variable sweepNo, i, numTraces
+	string experiment, graph, trace, msg
+	STRUCT RGBAColor c
+
 	ASSERT(OVS_IsActive(win), "Highlighting is only supported if OVS is enabled")
 
-	DFREF dfr = OVS_GetFolder(win)
-	WAVE/T listboxWave = GetOverlaySweepsListWave(dfr)
+	graph = GetMainWindow(win)
+	WAVE/T traces = TUD_GetUserDataAsWave(graph, "traceName", keys = {"traceType"}, values = {"Sweep"})
 
-	SetDimLabel ROWS, -1, $num2str(index), listboxWave
-End
+	if(IsFinite(index))
+		[sweepNo, experiment] = OVS_GetSweepAndExperiment(win, index)
+		WAVE/T/Z highlightTraces = TUD_GetUserDataAsWave(graph, "traceName", keys = {"traceType", "sweepNumber", "experiment"}, values = {"Sweep", num2str(sweepNo), experiment})
 
-/// @brief Return the state of the sweep highlightning
-///
-/// @return NaN no sweep highlighted, or 1/0 if index needs highlightning or not
-static Function OVS_IsSweepHighlighted(listBoxWave, index)
-	WAVE/T listBoxWave
-	variable index
-
-	variable state = str2num(GetDimLabel(listBoxWave, ROWS, -1))
-
-	if(!IsFinite(state))
-		return NaN
+		if(!WaveExists(highlightTraces))
+			// the to-be-highlighted traces are not plotted
+			return NaN
+		endif
 	endif
 
-	return state == index
+	// index >= 0:
+	// adjust alpha of all traces not belonging to (experiment, sweepNo)
+	//
+	// index NaN:
+	// reset alpha of all traces
+
+	numTraces = DimSize(traces, ROWS)
+	for(i = 0; i < numTraces; i += 1)
+		trace = traces[i]
+		[c] = ParseColorSpec(TUD_GetUserData(graph, trace, "TRACECOLOR"))
+
+		if(IsFinite(index) && IsNaN(GetRowIndex(highlightTraces, str = trace)))
+			c.alpha = c.alpha * 0.05
+		endif
+
+		ModifyGraph/W=$graph rgb($trace)=(c.red, c.green, c.blue, c.alpha)
+
+		sprintf msg, "trace: %s, (%d, %d, %d, %d)\r", trace, c.red, c.green, c.blue, c.alpha
+		DEBUGPRINT(msg)
+	endfor
+End
+
+/// @brief Return the sweep number and experiment name for the given list index
+Function [variable sweepNo, string experiment] OVS_GetSweepAndExperiment(string win, variable index)
+
+	string graph
+
+	if(!BSP_HasBoundDevice(win))
+		return [NaN, ""]
+	endif
+
+	DFREF dfr = BSP_GetFolder(win, MIES_BSP_PANEL_FOLDER)
+
+	WAVE/T listBoxWave = GetOverlaySweepsListWave(dfr)
+
+	if(BSP_IsDataBrowser(win))
+		return [str2num(listBoxWave[index][%Sweep]), GetExperimentName()]
+	endif
+
+	// SweepBrowser
+	graph = GetMainWindow(win)
+	DFREF sweepBrowserDFR = SB_GetSweepBrowserFolder(graph)
+	WAVE/T sweepMap = GetSweepBrowserMap(sweepBrowserDFR)
+
+	return [str2num(sweepMap[index][%Sweep]), sweepMap[index][%Experiment]]
 End
 
 /// @brief Change the selected sweep according to one of the popup menu options
@@ -565,7 +602,6 @@ Function OVS_MainListBoxProc(lba) : ListBoxControl
 		case 6: //begin edit
 			win = lba.win
 			OVS_HighlightSweep(win, lba.row)
-			UpdateSweepPlot(win)
 			break
 		case 7:  // end edit
 			win = lba.win

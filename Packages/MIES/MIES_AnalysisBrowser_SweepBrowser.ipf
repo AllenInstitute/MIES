@@ -254,7 +254,7 @@ Function SB_UpdateSweepPlot(win, [newSweep])
 	variable newSweep
 
 	string device, dataFolder, graph, scPanel, lbPanel, experiment
-	variable mapIndex, i, numEntries, sweepNo, highlightSweep, traceIndex, currentSweep
+	variable mapIndex, i, numEntries, sweepNo, traceIndex, currentSweep
 	STRUCT TiledGraphSettings tgs
 
 	graph = GetMainWindow(win)
@@ -302,8 +302,7 @@ Function SB_UpdateSweepPlot(win, [newSweep])
 		experiment = sweepMap[mapIndex][%FileName]
 		sweepNo    = str2num(sweepMap[mapIndex][%Sweep])
 
-		WAVE/Z activeHS = OVS_ParseIgnoreList(graph, highlightSweep, index=mapIndex)
-		tgs.highlightSweep = highlightSweep
+		WAVE/Z activeHS = OVS_ParseIgnoreList(graph, index=mapIndex)
 
 		if(WaveExists(activeHS))
 			Duplicate/FREE channelSel, sweepChannelSel
