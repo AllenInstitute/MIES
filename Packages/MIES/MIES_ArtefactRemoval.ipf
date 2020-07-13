@@ -19,7 +19,7 @@ static Constant AR_MIN_RANGE_FACTOR = 0.1
 /// - DAC
 /// - ADC
 /// - Headstage
-Function/WAVE AR_ComputeRanges(sweepDFR, sweepNo, numericalValues)
+static Function/WAVE AR_ComputeRanges(sweepDFR, sweepNo, numericalValues)
 	DFREF sweepDFR
 	variable sweepNo
 	WAVE numericalValues
@@ -98,7 +98,7 @@ Function/WAVE AR_ComputeRanges(sweepDFR, sweepNo, numericalValues)
 	return ranges
 End
 
-Function AR_UpdatePanel(panelTitle, ranges, sweepDFR)
+static Function AR_UpdatePanel(panelTitle, ranges, sweepDFR)
 	string panelTitle
 	WAVE ranges
 	DFREF sweepDFR
@@ -115,7 +115,7 @@ Function AR_UpdatePanel(panelTitle, ranges, sweepDFR)
 	AR_UpdateListBoxWave(panelTitle)
 End
 
-Function AR_UpdateListBoxWave(panelTitle)
+static Function AR_UpdateListBoxWave(panelTitle)
 	string panelTitle
 
 	variable cutoffLength_before, cutoffLength_after
@@ -134,7 +134,7 @@ Function AR_UpdateListBoxWave(panelTitle)
 End
 
 /// @brief Remove the traces used for highlightning the to-be-removed ranges
-Function AR_RemoveTraces(graph)
+static Function AR_RemoveTraces(graph)
 	string graph
 
 	string traces, trace
@@ -151,7 +151,7 @@ Function AR_RemoveTraces(graph)
 End
 
 /// @brief Return a list of the traces used for highlightning the to-be-removed ranges
-Function/S AR_GetHighlightTraces(graph)
+static Function/S AR_GetHighlightTraces(graph)
 	string graph
 
 	WAVE/Z/T traces = TUD_GetUserDataAsWave(graph, "traceName", keys = {"traceType"}, values = {"ArtefactRemoval"})
@@ -201,7 +201,7 @@ Function AR_HighlightArtefactsEntry(graph)
 	endfor
 End
 
-Function AR_HandleRanges(graph, [removeRange])
+static Function AR_HandleRanges(graph, [removeRange])
 	string graph
 	variable removeRange
 
@@ -286,7 +286,7 @@ End
 /// @brief Return the datafolder reference to the folder storing the listbox wave and the artefact data wave
 ///
 /// Requires the user data `PANEL_FOLDER` of the external artefact removal panel.
-Function/DF AR_GetFolder(panelTitle)
+static Function/DF AR_GetFolder(panelTitle)
 	string panelTitle
 
 	if(!AR_IsActive(panelTitle))
@@ -299,7 +299,7 @@ End
 /// @brief Return the datafolder reference to the folder storing the single 1D sweep waves
 ///
 /// Requires the user data `AR_SWEEPFOLDER` of the external artefact removal panel.
-Function/DF AR_GetSweepFolder(panelTitle)
+static Function/DF AR_GetSweepFolder(panelTitle)
 	string panelTitle
 
 	if(!AR_IsActive(panelTitle))
