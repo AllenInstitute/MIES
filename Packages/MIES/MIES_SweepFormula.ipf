@@ -1418,7 +1418,7 @@ Function SF_button_sweepFormula_check(ba) : ButtonControl
 			mainPanel = GetMainWindow(ba.win)
 			bsPanel = BSP_GetPanel(mainPanel)
 
-			if(BSP_IsDataBrowser(bsPanel) && !BSP_HasBoundDevice(bsPanel))
+			if(!BSP_HasBoundDevice(bsPanel))
 				DebugPrint("Unbound device in DataBrowser")
 				break
 			endif
@@ -1494,7 +1494,7 @@ Function SF_button_sweepFormula_display(ba) : ButtonControl
 				break
 			endif
 
-			if(BSP_IsDataBrowser(bsPanel) && !BSP_HasBoundDevice(bsPanel))
+			if(!BSP_HasBoundDevice(bsPanel))
 				DebugPrint("Databrowser has unbound device")
 				break
 			endif
@@ -1537,7 +1537,7 @@ Function SF_TabProc_Formula(tca) : TabControl
 				PGC_SetAndActivateControl(bsPanel, "button_sweepFormula_check")
 			endif
 
-			if(BSP_IsDataBrowser(bsPanel) && !BSP_HasBoundDevice(bsPanel))
+			if(!BSP_HasBoundDevice(bsPanel))
 				DebugPrint("Databrowser has unbound device")
 				break
 			endif

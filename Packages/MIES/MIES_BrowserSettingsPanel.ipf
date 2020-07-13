@@ -202,7 +202,7 @@ Function BSP_DynamicStartupSettings(mainPanel)
 
 	BSP_SetCSButtonProc(bsPanel, BSP_AddBrowserPrefix(mainPanel, "CheckProc_ChangedSetting"))
 
-	if(!BSP_IsDataBrowser(mainPanel) || BSP_HasBoundDevice(mainPanel))
+	if(BSP_HasBoundDevice(mainPanel))
 		BSP_BindListBoxWaves(mainPanel)
 	endif
 
@@ -488,7 +488,7 @@ Function BSP_HasBoundDevice(win)
 
 	string device = BSP_GetDevice(win)
 
-	return !(IsEmpty(device) || !cmpstr(device, NONE))
+	return !BSP_IsDataBrowser(win) || !(IsEmpty(device) || !cmpstr(device, NONE))
 End
 
 /// @brief get the selected headstage from the slider position
