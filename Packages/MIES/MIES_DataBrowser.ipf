@@ -366,7 +366,8 @@ Function DB_UpdateSweepPlot(win)
 	string win
 
 	variable numEntries, i, sweepNo, highlightSweep, referenceTime, traceIndex
-	string device, lbPanel, bsPanel, scPanel, graph, experiment
+	string device, lbPanel, scPanel, graph, experiment
+	STRUCT TiledGraphSettings tgs
 
 	if(BSP_MainPanelNeedsUpdate(win))
 		DoAbortNow("Can not display data. The Databrowser panel is too old to be usable. Please close it and open a new one.")
@@ -375,10 +376,11 @@ Function DB_UpdateSweepPlot(win)
 	referenceTime = DEBUG_TIMER_START()
 
 	lbPanel    = BSP_GetNotebookSubWindow(win)
-	bsPanel    = BSP_GetPanel(win)
 	scPanel    = BSP_GetSweepControlsPanel(win)
 	graph      = DB_GetMainGraph(win)
 	experiment = GetExperimentName()
+
+	[tgs] = BSP_GatherTiledGraphSettings(graph)
 
 	WAVE axesRanges = GetAxesRanges(graph)
 
@@ -396,22 +398,11 @@ Function DB_UpdateSweepPlot(win)
 	WAVE numericalValues = DB_GetNumericalValues(win)
 	WAVE textualValues   = DB_GetTextualValues(win)
 
-	STRUCT TiledGraphSettings tgs
-	tgs.displayDAC      = GetCheckBoxState(bsPanel, "check_BrowserSettings_DAC")
-	tgs.displayTTL      = GetCheckBoxState(bsPanel, "check_BrowserSettings_TTL")
-	tgs.displayADC      = GetCheckBoxState(bsPanel, "check_BrowserSettings_ADC")
-	tgs.overlaySweep    = OVS_IsActive(bsPanel)
-	tgs.splitTTLBits    = GetCheckBoxState(bsPanel, "check_BrowserSettings_splitTTL")
-	tgs.overlayChannels = GetCheckBoxState(bsPanel, "check_BrowserSettings_OChan")
-	tgs.dDAQDisplayMode = GetCheckBoxState(bsPanel, "check_BrowserSettings_dDAQ")
-	tgs.dDAQHeadstageRegions = GetSliderPositionIndex(bsPanel, "slider_BrowserSettings_dDAQ")
-	tgs.hideSweep       = GetCheckBoxState(bsPanel, "check_SweepControl_HideSweep")
-
 	WAVE channelSel        = BSP_GetChannelSelectionWave(win)
 	WAVE/Z sweepsToOverlay = OVS_GetSelectedSweeps(win, OVS_SWEEP_SELECTION_SWEEPNO)
 
 	if(!WaveExists(sweepsToOverlay))
-		if(GetCheckBoxState(bsPanel, "check_BrowserSettings_OVS"))
+		if(tgs.overlaySweep)
 			return NaN
 		else
 			Make/FREE/N=1 sweepsToOverlay = GetSetVariable(scPanel, "setvar_SweepControl_SweepNo")
@@ -451,7 +442,7 @@ Function DB_UpdateSweepPlot(win)
 
 	DEBUGPRINT_ELAPSED(referenceTime)
 
-	DB_UpdateSweepNote(bsPanel)
+	DB_UpdateSweepNote(win)
 
 	PostPlotTransformations(graph)
 

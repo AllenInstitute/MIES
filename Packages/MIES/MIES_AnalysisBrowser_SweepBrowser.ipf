@@ -253,11 +253,11 @@ Function SB_UpdateSweepPlot(win, [newSweep])
 	string win
 	variable newSweep
 
-	string device, dataFolder, graph, bsPanel, scPanel, lbPanel, experiment
+	string device, dataFolder, graph, scPanel, lbPanel, experiment
 	variable mapIndex, i, numEntries, sweepNo, highlightSweep, traceIndex, currentSweep
+	STRUCT TiledGraphSettings tgs
 
 	graph = GetMainWindow(win)
-	bsPanel   = BSP_GetPanel(graph)
 	scPanel   = BSP_GetSweepControlsPanel(win)
 	lbPanel   = BSP_GetNotebookSubWindow(win)
 
@@ -272,16 +272,7 @@ Function SB_UpdateSweepPlot(win, [newSweep])
 		SetPopupMenuIndex(scPanel, "popup_SweepControl_Selector", newSweep)
 	endif
 
-	STRUCT TiledGraphSettings tgs
-	tgs.overlaySweep 	= OVS_IsActive(graph)
-	tgs.displayDAC      = GetCheckBoxState(bsPanel, "check_BrowserSettings_DAC")
-	tgs.displayADC      = GetCheckBoxState(bsPanel, "check_BrowserSettings_ADC")
-	tgs.displayTTL      = GetCheckBoxState(bsPanel, "check_BrowserSettings_TTL")
-	tgs.overlayChannels = GetCheckBoxState(bsPanel, "check_BrowserSettings_OChan")
-	tgs.splitTTLBits    = GetCheckBoxState(bsPanel, "check_BrowserSettings_splitTTL")
-	tgs.dDAQDisplayMode = GetCheckBoxState(bsPanel, "check_BrowserSettings_dDAQ")
-	tgs.dDAQHeadstageRegions = BSP_GetDDAQ(win)
-	tgs.hideSweep       = GetCheckBoxState(bsPanel, "check_SweepControl_HideSweep")
+	[tgs] = BSP_GatherTiledGraphSettings(graph)
 
 	WAVE/Z sweepsToOverlay = OVS_GetSelectedSweeps(graph, OVS_SWEEP_SELECTION_INDEX)
 

@@ -1208,3 +1208,24 @@ Function BSP_ScaleAxes(win)
 		// do nothing
 	endif
 End
+
+Function [STRUCT TiledGraphSettings tgs] BSP_GatherTiledGraphSettings(string win)
+
+	string bsPanel
+
+	bsPanel = BSP_GetPanel(win)
+
+	tgs.displayDAC           = GetCheckBoxState(bsPanel, "check_BrowserSettings_DAC")
+	tgs.displayTTL           = GetCheckBoxState(bsPanel, "check_BrowserSettings_TTL")
+	tgs.displayADC           = GetCheckBoxState(bsPanel, "check_BrowserSettings_ADC")
+	tgs.overlaySweep         = GetCheckBoxState(bsPanel, "check_BrowserSettings_OVS")
+	tgs.splitTTLBits         = GetCheckBoxState(bsPanel, "check_BrowserSettings_splitTTL")
+	tgs.overlayChannels      = GetCheckBoxState(bsPanel, "check_BrowserSettings_OChan")
+	tgs.dDAQDisplayMode      = GetCheckBoxState(bsPanel, "check_BrowserSettings_dDAQ")
+	tgs.dDAQHeadstageRegions = GetSliderPositionIndex(bsPanel, "slider_BrowserSettings_dDAQ")
+	tgs.hideSweep            = GetCheckBoxState(bsPanel, "check_SweepControl_HideSweep")
+
+	if(tgs.overlayChannels)
+		tgs.splitTTLBits = 0
+	endif
+End

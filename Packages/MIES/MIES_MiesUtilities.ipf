@@ -2143,10 +2143,6 @@ Function CreateTiledChannelGraph(graph, config, sweepNo, numericalValues,  textu
 			print "Turning off tgs.splitTTLBits as some labnotebook entries could not be found"
 			ControlWindowToFront()
 			tgs.splitTTLBits = 0
-		elseif(tgs.overlayChannels)
-			print "Turning off tgs.splitTTLBits as it is overriden by tgs.overlayChannels"
-			ControlWindowToFront()
-			tgs.splitTTLBits = 0
 		elseif(WaveExists(ttlChannels))
 			// NI hardware does use one channel per bit so we don't need that here
 			tgs.splitTTLBits = 0
