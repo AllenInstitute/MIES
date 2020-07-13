@@ -2360,19 +2360,19 @@ Function CreateTiledChannelGraph(graph, config, sweepNo, numericalValues,  textu
 	variable moreData, chan, numHorizWaves, numVertWaves, idx
 	variable numTTLBits, colorIndex, headstage
 	variable delayOnsetUser, delayOnsetAuto, delayTermination, delaydDAQ, dDAQEnabled, oodDAQEnabled
-	variable stimSetLength, samplingInt, xRangeStart, xRangeEnd, first, last, count
+	variable stimSetLength, samplingInt, xRangeStart, xRangeEnd, first, last, count, ttlBit
 	variable numDACsOriginal, numADCsOriginal, numTTLsOriginal, numRegions, numEntries, numRangesPerEntry
 	variable totalXRange = NaN
 
-	string trace, traceType, channelID, axisLabel, entry, range, traceRange
+	string trace, traceType, channelID, axisLabel, entry, range, traceRange, traceColor
 	string unit, name, str, vertAxis, oodDAQRegionsAll, dDAQActiveHeadstageAll, horizAxis, freeAxis
 
 	ASSERT(!isEmpty(graph), "Empty graph")
 	ASSERT(IsFinite(sweepNo), "Non-finite sweepNo")
 
-	Make/T/FREE userDataKeys = {"fullPath", "channelType", "channelNumber", "sweepNumber", "headstage",     \
-								"textualValues", "numericalValues", "clampMode", "experiment", "traceType", \
-								"occurence", "XAXIS", "YAXIS", "YRANGE"}
+	Make/T/FREE userDataKeys = {"fullPath", "channelType", "channelNumber", "sweepNumber", "headstage",               \
+			  					"textualValues", "numericalValues", "clampMode", "TTLBit", "experiment", "traceType", \
+								"occurence", "XAXIS", "YAXIS", "YRANGE", "TRACECOLOR"}
 
 	WAVE ADCs = GetADCListFromConfig(config)
 	WAVE DACs = GetDACListFromConfig(config)
@@ -2599,8 +2599,10 @@ Function CreateTiledChannelGraph(graph, config, sweepNo, numericalValues,  textu
 			for(j = 0; j < numVertWaves; j += 1)
 
 				if(!cmpstr(channelID, "TTL") && tgs.splitTTLBits)
-					name = channelID + num2str(chan) + "_" + num2str(j)
+					ttlBit = j
+					name = channelID + num2str(chan) + "_" + num2str(ttlBit)
 				else
+					ttlBit = NaN
 					name = channelID + num2str(chan)
 				endif
 
@@ -2701,6 +2703,8 @@ Function CreateTiledChannelGraph(graph, config, sweepNo, numericalValues,  textu
 					sprintf str, "i=%d, j=%d, k=%d, vertAxis=%s, traceType=%s, name=%s", i, j, k, vertAxis, traceType, name
 					DEBUGPRINT(str)
 
+					sprintf traceColor, "(%d, %d, %d, %d)", red, green, blue, 65535
+
 					if(!IsFinite(xRangeStart) && !IsFinite(XRangeEnd))
 						horizAxis = "bottom"
 						traceRange = "[][0]"
@@ -2758,8 +2762,8 @@ Function CreateTiledChannelGraph(graph, config, sweepNo, numericalValues,  textu
 					TUD_SetUserDataFromWaves(graph, trace, userDataKeys,                                                                   \
 					                         {GetWavesDataFolder(wv, 2), channelID, num2str(chan), num2str(sweepNo), num2str(headstage),   \
 					                          GetWavesDataFolder(textualValues, 2), GetWavesDataFolder(numericalValues, 2),                \
-					                          num2str(IsFinite(headstage) ? clampModes[headstage] : NaN), experiment, "Sweep",             \
-					                          num2str(k), horizAxis, vertAxis, traceRange})
+								              num2str(IsFinite(headstage) ? clampModes[headstage] : NaN), num2str(ttlBit), experiment, "Sweep",             \
+												  num2str(k), horizAxis, vertAxis, traceRange, traceColor})
 				endfor
 			endfor
 
