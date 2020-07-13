@@ -5168,3 +5168,65 @@ Function UploadJSONPayload(jsonID)
 	URLrequest/DSTR=JSON_Dump(jsonID) url="https://ai.customers.byte-physics.de/upload-json-payload-v1.php", method=put
 	ASSERT(!V_Flag, "URLrequest did not succeed due to: " + S_ServerResponse)
 End
+
+/// @brief Convert a text wave to a double wave with optional support for removing NaNs and sorting
+Function/WAVE ConvertToUniqueNumber(WAVE/T wv, [variable zapNaNs, variable doSort])
+
+	if(ParamIsDefault(zapNaNs))
+		zapNaNs = 0
+	else
+		zapNaNs = !!zapNaNs
+	endif
+
+	if(ParamIsDefault(doSort))
+		doSort = 0
+	else
+		doSort = !!doSort
+	endif
+
+	WAVE/T unique = GetUniqueEntries(wv)
+
+	Make/D/FREE/N=(DimSize(unique, ROWS)) numeric = str2num(unique[p])
+
+	if(zapNaNs)
+		WaveTransform/O zapNaNs, numeric
+	endif
+
+	if(DimSize(numeric, ROWS) == 0)
+		return $""
+	endif
+
+	if(DoSort)
+		Sort numeric, numeric
+	endif
+
+	return numeric
+End
+
+/// @brief Wrapper for `Grep` which uses a textwave for input and ouput
+Function/WAVE GrepWave(WAVE/T wv, string regex)
+
+	Make/FREE/T/N=0 result
+	Grep/E=regex wv as result
+
+	if(DimSize(result, ROWS) == 0)
+		return $""
+	endif
+
+	return result
+End
+
+/// @brief Parse a color specification as used by ModifyGraph having an optionl
+/// translucency part
+Function [STRUCT RGBAColor result] ParseColorSpec(string str)
+
+	string str1, str2, str3, str4
+
+	SplitString/E="^[[:space:]]*\([[:space:]]*([[:digit:]]+)[[:space:]]*,[[:space:]]*([[:digit:]]+)[[:space:]]*,[[:space:]]*([[:digit:]]+)[[:space:]]*(?:,[[:space:]]*([[:digit:]]+))*[[:space:]]*\)$" str, str1, str2, str3, str4
+	ASSERT(V_Flag == 3 || V_Flag == 4, "Invalid color spec")
+
+	result.red   = str2num(str1)
+	result.green = str2num(str2)
+	result.blue  = str2num(str3)
+	result.alpha = (V_Flag == 4) ? str2num(str4) : 655356
+End
