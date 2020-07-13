@@ -2649,8 +2649,19 @@ Function CreateTiledChannelGraph(graph, config, sweepNo, numericalValues,  textu
 					if(!tgs.overlayChannels)
 						vertAxis   += "_" + num2str(chan)
 						traceType   = name
+						if(!cmpstr(channelID, "TTL"))
+							if(tgs.splitTTLBits)
+								vertAxis += "_" + num2str(j)
+							else
+								vertAxis += "_NaN"
+							endif
+						endif
 					else
 						traceType   = channelID
+					endif
+
+					if(!tgs.overlayChannels)
+						vertAxis += "_HS_" + num2str(headstage)
 					endif
 
 					if(tgs.dDAQDisplayMode && channelTypes[i] != ITC_XOP_CHANNEL_TYPE_TTL) // TTL channels don't have dDAQ mode
