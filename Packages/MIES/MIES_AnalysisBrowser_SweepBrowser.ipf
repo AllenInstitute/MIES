@@ -335,6 +335,8 @@ Function SB_UpdateSweepPlot(win, [newSweep])
 
 	PostPlotTransformations(graph)
 	SetAxesRanges(graph, axesRanges)
+
+	LayoutGraph(graph, tgs)
 End
 
 Function SB_AddToSweepBrowser(sweepBrowser, fileName, dataFolder, device, sweep)

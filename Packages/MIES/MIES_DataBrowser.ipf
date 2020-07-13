@@ -448,6 +448,10 @@ Function DB_UpdateSweepPlot(win)
 
 	SetAxesRanges(graph, axesRanges)
 	DEBUGPRINT_ELAPSED(referenceTime)
+
+	LayoutGraph(graph, tgs)
+
+	DEBUGPRINT_ELAPSED(referenceTime)
 End
 
 static Function DB_UpdateSweepNote(win)
