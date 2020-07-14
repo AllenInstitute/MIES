@@ -1277,21 +1277,7 @@ Function BSP_CheckProc_OverlaySweeps(cba) : CheckBoxControl
 			scPanel = BSP_GetSweepControlsPanel(graph)
 
 			BSP_SetOVSControlStatus(bsPanel)
-
-			DFREF dfr = BSP_GetFolder(graph, MIES_BSP_PANEL_FOLDER)
-			WAVE/T listBoxWave        = GetOverlaySweepsListWave(dfr)
-			WAVE listBoxSelWave       = GetOverlaySweepsListSelWave(dfr)
-			WAVE/WAVE sweepSelChoices = GetOverlaySweepSelectionChoices(dfr)
-
-			if(BSP_IsDataBrowser(graph))
-				WAVE/T numericalValues = DB_GetNumericalValues(graph)
-				WAVE/T textualValues   = DB_GetTextualValues(graph)
-				OVS_UpdatePanel(graph, listBoxWave, listBoxSelWave, sweepSelChoices, textualValues=textualValues, numericalValues=numericalValues)
-			else
-				WAVE/WAVE allNumericalValues = SB_GetNumericalValuesWaves(graph)
-				WAVE/WAVE allTextualValues   = SB_GetTextualValuesWaves(graph)
-				OVS_UpdatePanel(graph, listBoxWave, listBoxSelWave, sweepSelChoices, allTextualValues=allTextualValues, allNumericalValues=allNumericalValues)
-			endif
+			OVS_UpdatePanel(graph)
 
 			if(OVS_IsActive(graph))
 				if(BSP_IsDataBrowser(graph))
@@ -1308,4 +1294,54 @@ Function BSP_CheckProc_OverlaySweeps(cba) : CheckBoxControl
 	endswitch
 
 	return 0
+End
+
+/// @brief Generic numerical values labnotebook getter
+///
+/// Returns a wave reference wave by default, or the requested labnotebook wave
+/// when `sweepNumber` is present.
+Function/WAVE BSP_GetNumericalValues(string win, [variable sweepNumber])
+
+	if(BSP_IsDataBrowser(win))
+		// for all sweep numbers the same LBN
+		if(ParamIsDefault(sweepNumber))
+			WAVE sweeps = GetPlainSweepList(win)
+			Make/FREE/WAVE/N=(DimSize(sweeps, ROWS)) numericalValuesWave = DB_GetNumericalValues(win)
+			return numericalValuesWave
+		else
+			ASSERT(IsValidSweepNumber(sweepNumber), "Unsupported sweep number in sweeps() wave")
+			return DB_GetNumericalValues(win)
+		endif
+	else
+		if(ParamIsDefault(sweepNumber))
+			return SB_GetNumericalValuesWaves(win)
+		else
+			ASSERT(IsValidSweepNumber(sweepNumber), "Unsupported sweep number in sweeps() wave")
+			return SB_GetNumericalValuesWaves(win, sweepNumber = sweepNumber)
+		endif
+	endif
+End
+
+/// @brief Generic textual values labnotebook getter
+///
+/// Returns a wave reference wave by default, or the requested labnotebook wave
+/// when `sweepNumber` is present.
+Function/WAVE BSP_GetTextualValues(string win, [variable sweepNumber])
+
+	if(BSP_IsDataBrowser(win))
+		// for all sweep numbers the same LBN
+		if(ParamIsDefault(sweepNumber))
+			WAVE sweeps = GetPlainSweepList(win)
+			Make/FREE/WAVE/N=(DimSize(sweeps, ROWS)) textualValuesWave = DB_GetTextualValues(win)
+			return textualValuesWave
+		else
+			return DB_GetTextualValues(win)
+		endif
+	else
+		if(ParamIsDefault(sweepNumber))
+			return SB_GetTextualValuesWaves(win)
+		else
+			return SB_GetTextualValuesWaves(win, sweepNumber = sweepNumber)
+		endif
+	endif
 End

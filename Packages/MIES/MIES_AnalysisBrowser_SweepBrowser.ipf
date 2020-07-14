@@ -477,7 +477,10 @@ Function/WAVE SB_GetPlainSweepList(win)
 	return sweeps
 End
 
-/// @brief Return a wave reference wave with all numerical value labnotebook waves
+/// @brief Return a wave with numerical value labnotebook waves
+///
+/// If `sweepNumber` is present the labnotebook wave is returned, otherwise a
+/// wave reference wave is returned.
 ///
 /// @param win         SweepBrowser data window
 /// @param sweepNumber [optional, default: all] return the labnotebook only for a specific sweep
@@ -485,26 +488,29 @@ Function/WAVE SB_GetNumericalValuesWaves(win, [sweepNumber])
 	string win
 	variable sweepNumber
 
-	variable numRows = 0
+	variable numRows
 
 	WAVE/T map = SB_GetSweepBrowserMapFromGraph(win)
-	if(ParamIsDefault(sweepNumber))
-		numRows = GetNumberFromWaveNote(map, NOTE_INDEX)
-		Make/FREE/N=(numRows) indices = p
-	else
+
+	if(!ParamIsDefault(sweepNumber))
 		WAVE/Z indices = FindIndizes(map, colLabel = "Sweep", var = sweepNumber)
-		if(WaveExists(indices))
-			numRows = DimSize(indices, ROWS)
+		if(!WaveExists(indices))
+			return $""
 		endif
+
+		return GetAnalysLBNumericalValues(map[indices[0]][%DataFolder], map[indices[0]][%Device])
 	endif
 
-	Make/WAVE/FREE/N=(numRows) allNumericalValues
-	allNumericalValues[] = GetAnalysLBNumericalValues(map[indices][%DataFolder], map[indices][%Device])
+	numRows = GetNumberFromWaveNote(map, NOTE_INDEX)
+	Make/WAVE/FREE/N=(numRows) allNumericalValues = GetAnalysLBNumericalValues(map[p][%DataFolder], map[p][%Device])
 
 	return allNumericalValues
 End
 
-/// @brief Return a wave reference wave with all textual value labnotebook waves
+/// @brief Return a wave with numerical value numerical waves
+///
+/// If `sweepNumber` is present the labnotebook wave is returned, otherwise a
+/// wave reference wave is returned.
 ///
 /// @param win         SweepBrowser data window
 /// @param sweepNumber [optional, default: all] return the labnotebook only for a specific sweep
@@ -512,21 +518,21 @@ Function/WAVE SB_GetTextualValuesWaves(win, [sweepNumber])
 	string win
 	variable sweepNumber
 
-	variable numRows = 0
+	variable numRows
 
 	WAVE/T map = SB_GetSweepBrowserMapFromGraph(win)
-	if(ParamIsDefault(sweepNumber))
-		numRows = GetNumberFromWaveNote(map, NOTE_INDEX)
-		Make/FREE/N=(numRows) indices = p
-	else
+
+	if(!ParamIsDefault(sweepNumber))
 		WAVE/Z indices = FindIndizes(map, colLabel = "Sweep", var = sweepNumber)
-		if(WaveExists(indices))
-			numRows = DimSize(indices, ROWS)
+		if(!WaveExists(indices))
+			return $""
 		endif
+
+		return GetAnalysLBNumericalValues(map[indices[0]][%DataFolder], map[indices[0]][%Device])
 	endif
 
-	Make/WAVE/FREE/N=(numRows) allTextualValues
-	allTextualValues[] = GetAnalysLBTextualValues(map[p][%DataFolder], map[p][%Device])
+	numRows = GetNumberFromWaveNote(map, NOTE_INDEX)
+	Make/WAVE/FREE/N=(numRows) allTextualValues = GetAnalysLBTextualValues(map[p][%DataFolder], map[p][%Device])
 
 	return allTextualValues
 End

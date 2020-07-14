@@ -112,21 +112,23 @@ End
 /// @brief Update the overlay sweep waves
 ///
 /// Must be called after the sweeps changed.
-Function OVS_UpdatePanel(win, listBoxWave, listBoxSelWave, sweepSelectionChoices, [allTextualValues, textualValues, allNumericalValues, numericalValues])
+Function OVS_UpdatePanel(win)
 	string win
-	WAVE/T listBoxWave
-	WAVE listBoxSelWave
-	WAVE/T sweepSelectionChoices
-	WAVE/T textualValues
-	WAVE/WAVE allTextualValues
-	WAVE/WAVE allNumericalValues
-	WAVE/T numericalValues
 
 	variable i, numEntries, sweepNo, lastEntry, newCycleHasStartedRAC, newCycleHasStartedSCI
 	string extPanel
 
 	extPanel = BSP_GetPanel(win)
 	WAVE/Z sweeps = GetPlainSweepList(win)
+
+	DFREF dfr = BSP_GetFolder(win, MIES_BSP_PANEL_FOLDER)
+
+	WAVE/T listBoxWave           = GetOverlaySweepsListWave(dfr)
+	WAVE listBoxSelWave          = GetOverlaySweepsListSelWave(dfr)
+	WAVE/T sweepSelectionChoices = GetOverlaySweepSelectionChoices(dfr)
+
+	WAVE/WAVE allNumericalValues = BSP_GetNumericalValues(win)
+	WAVE/WAVE allTextualValues   = BSP_GetTextualValues(win)
 
 	if(!WaveExists(sweeps))
 		Redimension/N=(0, -1, -1) listBoxWave, listBoxSelWave, sweepSelectionChoices
@@ -135,22 +137,6 @@ Function OVS_UpdatePanel(win, listBoxWave, listBoxSelWave, sweepSelectionChoices
 
 	numEntries = DimSize(sweeps, ROWS)
 	Redimension/N=(numEntries, -1, -1) listBoxWave, listBoxSelWave, sweepSelectionChoices
-
-	if(!ParamIsDefault(textualValues))
-		Make/WAVE/FREE/N=(numEntries) allTextualValues = textualValues
-	elseif(!ParamIsDefault(allTextualValues))
-		ASSERT(numEntries == DimSize(allTextualValues, ROWS), "allTextualValues number of rows is not matching")
-	else
-		ASSERT(0, "Expected exactly one of textualValues or allTextualValues")
-	endif
-
-	if(!ParamIsDefault(numericalValues))
-		Make/WAVE/FREE/N=(numEntries) allNumericalValues = numericalValues
-	elseif(!ParamIsDefault(allNumericalValues))
-		ASSERT(numEntries == DimSize(allNumericalValues, ROWS), "allNumericalValues number of rows is not matching")
-	else
-		ASSERT(0, "Expected exactly one of numericalValues or allNumericalValues")
-	endif
 
 	MultiThread listBoxWave[][%Sweep] = num2str(sweeps[p])
 

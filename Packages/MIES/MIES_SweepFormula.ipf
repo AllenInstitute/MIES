@@ -812,23 +812,11 @@ Function/WAVE SF_FormulaExecutor(jsonID, [jsonPath, graph])
 			WAVE/Z settings
 			Variable index
 
-			if(BSP_IsDataBrowser(graph))
-				WAVE numericalValues = DB_GetNumericalValues(graph)
-				WAVE/T textualValues = DB_GetTextualValues(graph)
-			endif
-
 			Make/D/FREE/N=(DimSize(sweeps, ROWS), DimSize(activeChannels, ROWS)) outD = NaN
 			Make/T/FREE/N=(DimSize(sweeps, ROWS), DimSize(activeChannels, ROWS)) outT
 			for(i = 0; i < DimSize(sweeps, ROWS); i += 1)
-				if(!BSP_IsDataBrowser(graph))
-					WAVE/WAVE temp = SB_GetNumericalValuesWaves(graph, sweepNumber = sweeps[i])
-					ASSERT(DimSize(temp, ROWS) == 1, "Unhandled number of sweeps in AnalysisBrowser map")
-					WAVE numericalValues = temp[0]
-
-					WAVE/WAVE temp = SB_GetTextualValuesWaves(graph, sweepNumber = sweeps[i])
-					ASSERT(DimSize(temp, ROWS) == 1, "Unhandled number of sweeps in AnalysisBrowser map")
-					WAVE/T textualValues = temp[0]
-				endif
+				WAVE numericalValues = BSP_GetNumericalValues(graph, sweepNumber = sweeps[i])
+				WAVE textualValues = BSP_GetTextualValues(graph, sweepNumber = sweeps[i])
 
 				for(j = 0; j <  DimSize(activeChannels, ROWS); j += 1)
 					[settings, index] = GetLastSettingChannel(numericalValues, textualValues, sweeps[i], str, activeChannels[j][%channelNumber], activeChannels[j][%channelType], mode)
@@ -1331,10 +1319,6 @@ static Function/WAVE SF_GetActiveChannelNumbers(graph, channels, sweeps, entrySo
 		entrySourceType == NUMBER_OF_LBN_DAQ_MODES, \
 		"Undefined labnotebook mode. Use one in group DataAcqModes")
 
-	if(BSP_IsDataBrowser(graph))
-		WAVE numericalValues = DB_GetNumericalValues(graph)
-	endif
-
 	Make/FREE/WAVE/N=2 channelNumbers
 	Make/FREE/N=(GetNumberFromType(itcVar=ITC_XOP_CHANNEL_TYPE_ADC)) channelNumbersAD = NaN
 	channelNumbers[ITC_XOP_CHANNEL_TYPE_ADC] = channelNumbersAD
@@ -1343,13 +1327,7 @@ static Function/WAVE SF_GetActiveChannelNumbers(graph, channels, sweeps, entrySo
 
 	// search sweeps for active channels
 	for(i = 0; i < DimSize(sweeps, ROWS); i += 1)
-		ASSERT(IsInteger(sweeps[i]), "Unsupported sweep number in sweeps() wave")
-		if(!BSP_IsDataBrowser(graph))
-			WAVE/WAVE temp = SB_GetNumericalValuesWaves(graph, sweepNumber = sweeps[i])
-			ASSERT(DimSize(temp, ROWS) == 1, "Unhandled number of sweeps in AnalysisBrowser map")
-			WAVE numericalValues = temp[0]
-			WaveClear temp
-		endif
+		WAVE numericalValues = BSP_GetNumericalValues(graph, sweepNumber = sweeps[i])
 
 		for(j = 0; j < DimSize(channels, ROWS); j += 1)
 			channelType = channels[j][0]

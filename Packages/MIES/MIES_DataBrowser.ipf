@@ -357,7 +357,7 @@ static Function DB_UpdateLastSweepControls(win, first, last)
 	if(formerLast != last || (IsNaN(formerLast) && IsFinite(last)))
 		SetValDisplay(scPanel, "valdisp_SweepControl_LastSweep", var=last)
 		SetSetVariableLimits(scPanel, "setvar_SweepControl_SweepNo", first, last, 1)
-		DB_UpdateOverlaySweepWaves(win)
+		OVS_UpdatePanel(win)
 		AD_Update(win)
 	endif
 End
@@ -578,24 +578,6 @@ Function DB_UpdateToLastSweep(win)
 	if(SF_IsActive(win))
 		PGC_SetAndActivateControl(bsPanel, "button_sweepFormula_display")
 	endif
-End
-
-static Function DB_UpdateOverlaySweepWaves(win)
-	string win
-
-	if(!OVS_IsActive(win))
-		return NaN
-	endif
-
-	DFREF dfr = BSP_GetFolder(win, MIES_BSP_PANEL_FOLDER)
-
-	WAVE listBoxWave       = GetOverlaySweepsListWave(dfr)
-	WAVE listBoxSelWave    = GetOverlaySweepsListSelWave(dfr)
-	WAVE/T textualValues   = DB_GetTextualValues(win)
-	WAVE numericalValues   = DB_GetNumericalValues(win)
-	WAVE/T sweepSelChoices = GetOverlaySweepSelectionChoices(dfr)
-
-	OVS_UpdatePanel(win, listBoxWave, listBoxSelWave, sweepSelChoices, textualValues=textualValues, numericalValues=numericalValues)
 End
 
 /// @brief procedure for the open button of the side panel
