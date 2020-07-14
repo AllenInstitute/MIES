@@ -1388,7 +1388,7 @@ Function SearchForInvalidControlProcs(win)
 
 	string controlList, control, controlProc
 	string subTypeStr
-	variable result, numEntries, i, subType
+	variable result, numEntries, i, subType, controlType
 	string funcList, subwindowList, subwindow
 
 	if(!windowExists(win))
@@ -1415,6 +1415,12 @@ Function SearchForInvalidControlProcs(win)
 
 	for(i = 0; i < numEntries; i += 1)
 		control = StringFromList(i, controlList)
+
+		controlType = GetControlType(win, control)
+
+		if(controlType == CONTROL_TYPE_VALDISPLAY || controlType == CONTROL_TYPE_GROUPBOX)
+			continue
+		endif
 
 		controlProc = GetControlProcedure(win, control)
 
