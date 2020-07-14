@@ -305,35 +305,39 @@ static Function DB_SetUserData(win, device)
 	BSP_SetFolder(win, dfr, MIES_BSP_PANEL_FOLDER)
 End
 
-Function/S DB_GetPlainSweepList(win)
+Function/WAVE DB_GetPlainSweepList(win)
 	string win
 
-	string device
+	string device, list
 	DFREF dfr
 
 	if(!BSP_HasBoundDevice(win))
-		return ""
+		return $""
 	endif
 
 	device = BSP_GetDevice(win)
 	dfr = GetDeviceDataPath(device)
-	return GetListOfObjects(dfr, DATA_SWEEP_REGEXP)
+	list = GetListOfObjects(dfr, DATA_SWEEP_REGEXP)
+
+	if(IsEmpty(list))
+		return $""
+	endif
+
+	Make/FREE/R/N=(ItemsInList(list)) sweeps = ExtractSweepNumber(StringFromList(p, list))
+
+	return sweeps
 End
 
 static Function [variable first, variable last] DB_FirstAndLastSweepAcquired(string win)
 	string list
 
-	list = DB_GetPlainSweepList(win)
+	WAVE/Z sweeps = DB_GetPlainSweepList(win)
 
-	first = NaN
-	last  = NaN
-
-	if(!isEmpty(list))
-		first = NumberByKey("Sweep", list, "_")
-		last = ItemsInList(list) - 1 + first
+	if(!WaveExists(sweeps))
+		return [NaN, NaN]
 	endif
 
-	return [first, last]
+	return [sweeps[0], sweeps[DimSize(sweeps, ROWS) - 1]]
 End
 
 static Function DB_UpdateLastSweepControls(win, first, last)

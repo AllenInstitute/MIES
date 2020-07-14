@@ -123,11 +123,18 @@ Function OVS_UpdatePanel(win, listBoxWave, listBoxSelWave, sweepSelectionChoices
 	WAVE/T numericalValues
 
 	variable i, numEntries, sweepNo, lastEntry, newCycleHasStartedRAC, newCycleHasStartedSCI
-	string extPanel, sweepWaveList
+	string extPanel
 
 	extPanel = BSP_GetPanel(win)
-	sweepWaveList = GetPlainSweepList(win)
-	numEntries = ItemsInList(sweepWaveList)
+	WAVE/Z sweeps = GetPlainSweepList(win)
+
+	if(!WaveExists(sweeps))
+		Redimension/N=(0, -1, -1) listBoxWave, listBoxSelWave, sweepSelectionChoices
+		return NaN
+	endif
+
+	numEntries = DimSize(sweeps, ROWS)
+	Redimension/N=(numEntries, -1, -1) listBoxWave, listBoxSelWave, sweepSelectionChoices
 
 	if(!ParamIsDefault(textualValues))
 		Make/WAVE/FREE/N=(numEntries) allTextualValues = textualValues
@@ -145,13 +152,6 @@ Function OVS_UpdatePanel(win, listBoxWave, listBoxSelWave, sweepSelectionChoices
 		ASSERT(0, "Expected exactly one of numericalValues or allNumericalValues")
 	endif
 
-	Redimension/N=(numEntries, -1, -1) listBoxWave, listBoxSelWave, sweepSelectionChoices
-
-	if(numEntries == 0)
-		return NaN
-	endif
-
-	Make/FREE/U/I/N=(numEntries) sweeps = ExtractSweepNumber(StringFromList(p, sweepWaveList))
 	MultiThread listBoxWave[][%Sweep] = num2str(sweeps[p])
 
 	if(OVS_IsActive(win) && GetCheckBoxState(extPanel, "check_overlaySweeps_disableHS"))
@@ -213,8 +213,6 @@ Function/WAVE OVS_GetSelectedSweeps(win, mode)
 	string win
 	variable mode
 
-	string sweepList
-
 	ASSERT(mode == OVS_SWEEP_SELECTION_INDEX || \
 	       mode == OVS_SWEEP_SELECTION_SWEEPNO || \
 	       mode == OVS_SWEEP_ALL_SWEEPNO, "Invalid mode")
@@ -222,9 +220,7 @@ Function/WAVE OVS_GetSelectedSweeps(win, mode)
 	DFREF dfr = OVS_GetFolder(win)
 
 	if(mode == OVS_SWEEP_ALL_SWEEPNO)
-		sweepList = GetPlainSweepList(win)
-		Make/FREE/U/I/N=(ItemsInList(sweepList)) sweeps = ExtractSweepNumber(StringFromList(p, sweepList))
-		return sweeps
+		return GetPlainSweepList(win)
 	endif
 
 	// SWEEP_SELECTION_* modes

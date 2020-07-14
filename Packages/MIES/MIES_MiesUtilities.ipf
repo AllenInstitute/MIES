@@ -5406,7 +5406,7 @@ Function UpdateSettingsPanel(win)
 	BSP_ScaleAxes(bsPanel)
 End
 
-Function/S GetPlainSweepList(win)
+Function/WAVE GetPlainSweepList(win)
 	string win
 
 	if(BSP_IsDataBrowser(win))

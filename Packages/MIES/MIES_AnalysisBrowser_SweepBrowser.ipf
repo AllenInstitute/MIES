@@ -457,24 +457,24 @@ Function/S SB_GetSweepList(win)
 	return list
 End
 
-/// @brief Returns a list of all sweeps of the form "Sweep_0;Sweep_1;...".
+/// @brief Returns a numeric wave with all sweep numbers
 ///
 /// Can contain duplicates!
-Function/S SB_GetPlainSweepList(win)
+Function/WAVE SB_GetPlainSweepList(win)
 	string win
 
-	string list = "", str
-	variable numRows, i
+	variable numRows
 
 	WAVE/T map = SB_GetSweepBrowserMapFromGraph(win)
-
 	numRows = GetNumberFromWaveNote(map, NOTE_INDEX)
-	for(i = 0; i < numRows; i += 1)
-		str  = GetSweepWaveName(str2num(map[i][%Sweep]))
-		list = AddListItem(str, list, ";", Inf)
-	endfor
 
-	return list
+	if(numRows == 0)
+		return $""
+	endif
+
+	Make/FREE/R/N=(numRows) sweeps = str2num(map[p][%Sweep])
+
+	return sweeps
 End
 
 /// @brief Return a wave reference wave with all numerical value labnotebook waves
