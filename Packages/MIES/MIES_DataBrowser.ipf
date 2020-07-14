@@ -77,6 +77,8 @@ Function DB_ResetAndStoreCurrentDBPanel()
 	DB_ClearAllGraphs()
 	DB_ClearGraph(panelTitle)
 
+	Checkbox check_BrowserSettings_OVS WIN = $bsPanel, value= 0
+
 	BSP_InitPanel(panelTitle)
 	DB_DynamicSettingsHistory(panelTitle)
 
@@ -95,11 +97,11 @@ Function DB_ResetAndStoreCurrentDBPanel()
 	PopupMenu Popup_SweepControl_Selector WIN = $scPanel, mode=1,popvalue=" ", value= #"\" \""
 	CheckBox check_SweepControl_AutoUpdate WIN = $scPanel, value= 1
 
-
 	// static defaults for BrowserSettings subwindow
 	PGC_SetAndActivateControl(bsPanel, "Settings", val = 0)
 	CheckBox check_overlaySweeps_disableHS WIN = $bsPanel, value= 0
 	CheckBox check_overlaySweeps_non_commula WIN = $bsPanel, value= 0
+	PopupMenu popup_overlaySweeps_select, WIN = $bsPanel, mode=1
 	SetVariable setvar_overlaySweeps_offset WIN = $bsPanel, value= _NUM:0
 	SetVariable setvar_overlaySweeps_step WIN = $bsPanel, value= _NUM:1
 	CheckBox check_channelSel_DA_0 WIN = $bsPanel, value= 1
