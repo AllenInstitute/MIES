@@ -20,9 +20,6 @@ static Constant BROWSERSETTINGS_PANEL_VERSION = 6
 static strConstant BROWSERTYPE_DATABROWSER  = "D"
 static strConstant BROWSERTYPE_SWEEPBROWSER = "S"
 
-/// @brief List of controls that have specific control procedures set
-static StrConstant BROWSERSETTING_UNSET_CONTROLPROCEDURES = "check_BrowserSettings_OVS"
-
 /// @brief exclusive controls that are enabled/disabled for the specific browser window type
 static StrConstant BROWSERSETTINGS_CONTROLS_DATABROWSER = "popup_DB_lockedDevices;"
 static StrConstant BROWSERSETTINGS_AXES_SCALING_CHECKBOXES = "check_Display_VisibleXrange;check_Display_EqualYrange;check_Display_EqualYignore"
@@ -197,7 +194,6 @@ Function BSP_DynamicStartupSettings(mainPanel)
 	SetWindow $bsPanel, hook(main)=BSP_ClosePanelHook
 	AddVersionToPanel(bsPanel, BROWSERSETTINGS_PANEL_VERSION)
 
-	SetControlProcedure(bsPanel, "check_BrowserSettings_OVS", BSP_AddBrowserPrefix(mainPanel, "CheckProc_OverlaySweeps"))
 	PopupMenu popup_overlaySweeps_select, win=$bsPanel, value= #("OVS_GetSweepSelectionChoices(\"" + bsPanel + "\")")
 
 	if(BSP_HasBoundDevice(mainPanel))
@@ -260,7 +256,6 @@ Function BSP_UnsetDynamicStartupSettingsOfDataBrowser(mainPanel)
 	SetWindow $bsPanel, hook(main)=$""
 	SetWindow $bsPanel, userData(panelVersion) = ""
 	PopupMenu popup_overlaySweeps_select, win=$bsPanel, value=""
-	SetControlProcedures(bsPanel, BROWSERSETTING_UNSET_CONTROLPROCEDURES, "")
 	PopupMenu popup_TimeAlignment_Master win=$bsPanel, value = ""
 	ListBox list_of_ranges, win=$bsPanel, listWave=$"", selWave=$""
 	ListBox list_of_ranges1, win=$bsPanel, listWave=$"", selWave=$""
@@ -1263,6 +1258,52 @@ Function BSP_ButtonProc_RestoreData(ba) : ButtonControl
 
 			SetCheckBoxState(bsPanel, "check_auto_remove", autoRemoveOldState)
 			SetCheckBoxState(bsPanel, "check_Calculation_ZeroTraces", zeroTracesOldState)
+			break
+	endswitch
+
+	return 0
+End
+
+Function BSP_CheckProc_OverlaySweeps(cba) : CheckBoxControl
+	STRUCT WMCheckBoxAction &cba
+
+	string graph, bsPanel, scPanel
+	variable index, sweepNo
+
+	switch(cba.eventCode)
+		case 2: // mouse up
+			graph   = GetMainWindow(cba.win)
+			bsPanel = BSP_GetPanel(graph)
+			scPanel = BSP_GetSweepControlsPanel(graph)
+
+			BSP_SetOVSControlStatus(bsPanel)
+
+			DFREF dfr = BSP_GetFolder(graph, MIES_BSP_PANEL_FOLDER)
+			WAVE/T listBoxWave        = GetOverlaySweepsListWave(dfr)
+			WAVE listBoxSelWave       = GetOverlaySweepsListSelWave(dfr)
+			WAVE/WAVE sweepSelChoices = GetOverlaySweepSelectionChoices(dfr)
+
+			if(BSP_IsDataBrowser(graph))
+				WAVE/T numericalValues = DB_GetNumericalValues(graph)
+				WAVE/T textualValues   = DB_GetTextualValues(graph)
+				OVS_UpdatePanel(graph, listBoxWave, listBoxSelWave, sweepSelChoices, textualValues=textualValues, numericalValues=numericalValues)
+			else
+				WAVE/WAVE allNumericalValues = SB_GetNumericalValuesWaves(graph)
+				WAVE/WAVE allTextualValues   = SB_GetTextualValuesWaves(graph)
+				OVS_UpdatePanel(graph, listBoxWave, listBoxSelWave, sweepSelChoices, allTextualValues=allTextualValues, allNumericalValues=allNumericalValues)
+			endif
+
+			if(OVS_IsActive(graph))
+				if(BSP_IsDataBrowser(graph))
+					sweepNo = GetSetVariable(scPanel, "setvar_SweepControl_SweepNo")
+					OVS_ChangeSweepSelectionState(bsPanel, CHECKBOX_SELECTED, sweepNo=sweepNo)
+				else
+					index = GetPopupMenuIndex(scPanel, "popup_SweepControl_Selector")
+					OVS_ChangeSweepSelectionState(bsPanel, CHECKBOX_SELECTED, index=index)
+				endif
+			endif
+
+			UpdateSweepPlot(graph)
 			break
 	endswitch
 

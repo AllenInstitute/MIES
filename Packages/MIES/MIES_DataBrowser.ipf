@@ -898,44 +898,6 @@ Function DB_MainTabControlFinal(tca)
 	DB_UpdateSweepNote(tca.win)
 End
 
-/// @brief enable/disable checkbox control for side panel
-Function DB_CheckProc_OverlaySweeps(cba) : CheckBoxControl
-	STRUCT WMCheckBoxAction &cba
-
-	string win, mainPanel, scPanel, device
-	variable sweepNo
-
-	win = cba.win
-	mainPanel = GetMainWindow(win)
-	scPanel   = BSP_GetSweepControlsPanel(win)
-
-	switch(cba.eventCode)
-		case 2: // mouse up
-			BSP_SetOVSControlStatus(win)
-
-			if(BSP_HasBoundDevice(win))
-				DFREF dfr = BSP_GetFolder(win, MIES_BSP_PANEL_FOLDER)
-				WAVE/T listBoxWave        = GetOverlaySweepsListWave(dfr)
-				WAVE listBoxSelWave       = GetOverlaySweepsListSelWave(dfr)
-				WAVE/WAVE sweepSelChoices = GetOverlaySweepSelectionChoices(dfr)
-
-				WAVE/T numericalValues = DB_GetNumericalValues(win)
-				WAVE/T textualValues   = DB_GetTextualValues(win)
-				OVS_UpdatePanel(win, listBoxWave, listBoxSelWave, sweepSelChoices, textualValues=textualValues, numericalValues=numericalValues)
-			endif
-
-			if(OVS_IsActive(win))
-				sweepNo = GetSetVariable(scPanel, "setvar_SweepControl_SweepNo")
-				OVS_ChangeSweepSelectionState(win, CHECKBOX_SELECTED, sweepNo=sweepNo)
-			endif
-
-			DB_UpdateSweepPlot(win)
-			break
-	endswitch
-
-	return 0
-End
-
 static Function DB_SplitSweepsIfReq(win, sweepNo)
 	string win
 	variable sweepNo

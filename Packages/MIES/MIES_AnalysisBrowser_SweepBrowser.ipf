@@ -628,37 +628,3 @@ Function SB_ButtonProc_FindMinis(ba) : ButtonControl
 
 	return 0
 End
-
-Function SB_CheckProc_OverlaySweeps(cba) : CheckBoxControl
-	STRUCT WMCheckBoxAction &cba
-
-	string graph, bsPanel, scPanel
-	variable index
-
-	graph   = GetMainWindow(cba.win)
-	bsPanel = BSP_GetPanel(graph)
-	scPanel = BSP_GetSweepControlsPanel(graph)
-
-	switch(cba.eventCode)
-		case 2: // mouse up
-			BSP_SetOVSControlStatus(bsPanel)
-
-			DFREF dfr = SB_GetSweepBrowserFolder(graph)
-			WAVE/T listBoxWave        = GetOverlaySweepsListWave(dfr)
-			WAVE listBoxSelWave       = GetOverlaySweepsListSelWave(dfr)
-			WAVE/WAVE sweepSelChoices = GetOverlaySweepSelectionChoices(dfr)
-
-			WAVE/WAVE allNumericalValues = SB_GetNumericalValuesWaves(graph)
-			WAVE/WAVE allTextualValues   = SB_GetTextualValuesWaves(graph)
-
-			OVS_UpdatePanel(graph, listBoxWave, listBoxSelWave, sweepSelChoices, allTextualValues=allTextualValues, allNumericalValues=allNumericalValues)
-			if(OVS_IsActive(graph))
-				index = GetPopupMenuIndex(scPanel, "popup_SweepControl_Selector")
-				OVS_ChangeSweepSelectionState(bsPanel, CHECKBOX_SELECTED, index=index)
-			endif
-			SB_UpdateSweepPlot(graph)
-			break
-	endswitch
-
-	return 0
-End
