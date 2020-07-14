@@ -375,15 +375,13 @@ End
 Function SB_SweepBrowserWindowHook(s)
 	STRUCT WMWinHookStruct &s
 
-	string graph, bsPanel, scPanel, ctrl
+	string graph, scPanel, ctrl
 	variable hookResult
-
-	graph   = GetMainWindow(s.winName)
-	bsPanel = BSP_GetPanel(graph)
-	scPanel = BSP_GetSweepControlsPanel(graph)
 
 	switch(s.eventCode)
 		case 2:	 // Kill
+			graph = GetMainWindow(s.winName)
+
 			DFREF sweepBrowserDFR = SB_GetSweepBrowserFolder(graph)
 
 			KillWindow $graph
@@ -392,9 +390,13 @@ Function SB_SweepBrowserWindowHook(s)
 			hookResult = 1
 			break
 		case 22: // mouse wheel
+			graph = GetMainWindow(s.winName)
+
 			if(!windowExists(graph))
 				break
 			endif
+
+			scPanel = BSP_GetSweepControlsPanel(graph)
 
 			if(sign(s.wheelDy) == 1) // positive
 				ctrl = "button_SweepControl_PrevSweep"
@@ -559,13 +561,14 @@ End
 Function SB_ButtonProc_ChangeSweep(ba) : ButtonControl
 	STRUCT WMButtonAction &ba
 
-	string graph
+	string graph, scPanel
 	variable firstSweep, lastSweep, index
-
-	graph = GetMainWindow(ba.win)
 
 	switch(ba.eventCode)
 		case 2: // mouse up
+			graph   = GetMainWindow(ba.win)
+			scPanel = BSP_GetSweepControlsPanel(graph)
+
 			firstSweep = 0
 			lastSweep = ItemsInList(SB_GetSweepList(graph)) - 1
 			index = BSP_UpdateSweepControls(graph, ba.ctrlName, firstSweep, lastSweep)
@@ -584,10 +587,11 @@ End
 Function SB_ButtonProc_ExportTraces(ba) : ButtonControl
 	STRUCT WMButtonAction &ba
 
-	string graph = GetMainWindow(ba.win)
+	string graph
 
 	switch(ba.eventCode)
 		case 2: // mouse up
+			graph = GetMainWindow(ba.win)
 			SBE_ShowExportPanel(graph)
 			break
 	endswitch
@@ -601,10 +605,9 @@ Function SB_ButtonProc_FindMinis(ba) : ButtonControl
 	variable numTraces, i, first, last
 	string graph, list, trace
 
-	graph = GetMainWindow(ba.win)
-
 	switch(ba.eventCode)
 		case 2: // mouse up
+			graph = GetMainWindow(ba.win)
 
 			WAVE/T/Z tracePaths = GetAllSweepTraces(graph)
 

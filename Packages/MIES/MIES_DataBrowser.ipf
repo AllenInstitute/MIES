@@ -700,11 +700,11 @@ Function DB_ButtonProc_ChangeSweep(ba) : ButtonControl
 	string graph, scPanel
 	variable firstSweep, lastSweep, formerLast, sweepNo
 
-	graph = GetMainWindow(ba.win)
-	scPanel = BSP_GetSweepControlsPanel(graph)
-
 	switch(ba.eventcode)
 		case 2: // mouse up
+			graph = GetMainWindow(ba.win)
+			scPanel = BSP_GetSweepControlsPanel(graph)
+
 			[firstSweep, lastSweep] = DB_FirstAndLastSweepAcquired(scPanel)
 			DB_UpdateLastSweepControls(scPanel, firstSweep, lastSweep)
 
@@ -723,11 +723,11 @@ Function DB_ButtonProc_AutoScale(ba) : ButtonControl
 
 	string win, mainGraph, lbGraph
 
-	win = ba.win
-	lbGraph   = DB_GetLabNotebookGraph(win)
-
 	switch(ba.eventcode)
 		case 2: // mouse up
+			win     = ba.win
+			lbGraph = DB_GetLabNotebookGraph(win)
+
 			if(WindowExists(lbGraph))
 				SetAxis/A=2/W=$lbGraph
 			endif
@@ -742,10 +742,9 @@ Function DB_PopMenuProc_LockDBtoDevice(pa) : PopupMenuControl
 
 	string mainPanel
 
-	mainPanel = GetMainWindow(pa.win)
-
 	switch(pa.eventcode)
 		case 2: // mouse up
+			mainPanel = GetMainWindow(pa.win)
 			DB_LockToDevice(mainPanel, pa.popStr)
 			break
 	endswitch
@@ -759,11 +758,10 @@ Function DB_PopMenuProc_LabNotebook(pa) : PopupMenuControl
 	string lbGraph, popStr, win, device, ctrl
 	variable lnbType
 
-	win = pa.win
-	lbGraph = DB_GetLabNoteBookGraph(win)
-
 	switch(pa.eventCode)
 		case 2: // mouse up
+			win = pa.win
+			lbGraph = DB_GetLabNoteBookGraph(win)
 			popStr     = pa.popStr
 			ctrl       = pa.ctrlName
 			if(!CmpStr(popStr, NONE))
@@ -857,17 +855,16 @@ Function DB_ButtonProc_SwitchXAxis(ba) : ButtonControl
 
 	string win, lbGraph
 
-	win = ba.win
-	lbGraph = DB_GetLabNoteBookGraph(win)
-
 	switch(ba.eventCode)
 		case 2: // mouse up
+			win = ba.win
 			if(!BSP_HasBoundDevice(win))
 				break
 			endif
 			WAVE numericalValues = DB_GetNumericalValues(win)
 			WAVE textualValues   = DB_GetTextualValues(win)
 
+			lbGraph = DB_GetLabNoteBookGraph(win)
 			SwitchLBGraphXAxis(lbGraph, numericalValues, textualValues)
 			break
 	endswitch

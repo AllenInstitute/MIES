@@ -836,11 +836,11 @@ Function BSP_CheckProc_ScaleAxes(cba) : CheckBoxControl
 	string ctrls, graph, bsPanel
 	variable numCtrls, i
 
-	graph   = GetMainWindow(cba.win)
-	bsPanel = BSP_GetPanel(graph)
-
-	switch( cba.eventCode )
+	switch(cba.eventCode)
 		case 2: // mouse up
+			graph   = GetMainWindow(cba.win)
+			bsPanel = BSP_GetPanel(graph)
+
 			if(cba.checked)
 				ctrls = ListMatch(BROWSERSETTINGS_AXES_SCALING_CHECKBOXES, "!" + cba.ctrlName)
 				numCtrls = ItemsInList(ctrls)
@@ -867,13 +867,13 @@ Function BSP_AxisScalingLevelCross(sva) : SetVariableControl
 
 	string graph, bsPanel
 
-	graph   = GetMainWindow(sva.win)
-	bsPanel = BSP_GetPanel(graph)
-
 	switch(sva.eventCode)
 		case 1: // mouse up
 		case 2: // Enter key
 		case 3: // Live update
+			graph   = GetMainWindow(sva.win)
+			bsPanel = BSP_GetPanel(graph)
+
 			if(GetCheckBoxState(bsPanel, "check_Display_EqualYignore"))
 				BSP_ScaleAxes(graph)
 			endif
