@@ -379,9 +379,9 @@ End
 /// - 1,3;0 (ignore HS 0 to 3)
 /// - * (ignore all headstages)
 ///
-/// @param[in] 		win				name of mainPanel
-/// @param[in] 		sweepNo 		[optional] search sweepNo in list to get index
-/// @param[in] 		index 			[optional] specify sweep directly by index
+/// @param[in] win     name of mainPanel
+/// @param[in] sweepNo [optional] search sweepNo in list to get index
+/// @param[in] index   [optional] specify sweep directly by index
 /// @return free wave of size `NUM_HEADSTAGES` denoting with 0/1 the active state
 ///         of the headstage
 Function/WAVE OVS_ParseIgnoreList(win, [sweepNo, index])
