@@ -891,41 +891,6 @@ Function DB_ButtonProc_SwitchXAxis(ba) : ButtonControl
 	return 0
 End
 
-Function DB_CheckProc_ChangedSetting(cba) : CheckBoxControl
-	STRUCT WMCheckboxAction &cba
-
-	variable checked
-	string win, bsPanel, ctrl
-
-	switch(cba.eventCode)
-		case 2: // mouse up
-			ctrl    = cba.ctrlName
-			checked = cba.checked
-			win     = cba.win
-			bsPanel = BSP_GetPanel(win)
-
-			strswitch(ctrl)
-				case "check_BrowserSettings_dDAQ":
-					if(checked)
-						EnableControl(bsPanel, "slider_BrowserSettings_dDAQ")
-					else
-						DisableControl(bsPanel, "slider_BrowserSettings_dDAQ")
-					endif
-					break
-				default:
-					if(StringMatch(ctrl, "check_channelSel_*"))
-						BSP_GUIToChannelSelectionWave(win, ctrl, checked)
-					endif
-					break
-			endswitch
-
-			DB_UpdateSweepPlot(win)
-			break
-	endswitch
-
-	return 0
-End
-
 // Called from ACL_DisplayTab after the new tab is selected
 Function DB_MainTabControlFinal(tca)
 	STRUCT WMTabControlAction &tca
@@ -1012,41 +977,6 @@ static Function DB_SplitSweepsIfReq(win, sweepNo)
 	WAVE numericalValues = DB_GetNumericalValues(win)
 
 	SplitSweepIntoComponents(numericalValues, sweepNo, sweepWave, configWave, TTL_RESCALE_ON, targetDFR=singleSweepDFR)
-End
-
-Function DB_ButtonProc_RestoreData(ba) : ButtonControl
-	STRUCT WMButtonAction &ba
-
-	string mainPanel, graph, bsPanel, traceList
-	variable autoRemoveOldState, zeroTracesOldState
-
-	mainPanel = GetMainWindow(ba.win)
-	graph     = DB_GetMainGraph(mainPanel)
-	bsPanel   = BSP_GetPanel(mainPanel)
-
-	switch(ba.eventCode)
-		case 2: // mouse up
-
-			WAVE/T/Z tracePaths = GetSweepUserData(graph, "fullPath")
-			ReplaceAllWavesWithBackup(graph, tracePaths)
-
-			zeroTracesOldState = GetCheckBoxState(bsPanel, "check_Calculation_ZeroTraces")
-			SetCheckBoxState(bsPanel, "check_Calculation_ZeroTraces", CHECKBOX_UNSELECTED)
-
-			if(!AR_IsActive(mainPanel))
-				DB_UpdateSweepPlot(mainPanel)
-			else
-				autoRemoveOldState = GetCheckBoxState(bsPanel, "check_auto_remove")
-				SetCheckBoxState(bsPanel, "check_auto_remove", CHECKBOX_UNSELECTED)
-				DB_UpdateSweepPlot(mainPanel)
-				SetCheckBoxState(bsPanel, "check_auto_remove", autoRemoveOldState)
-			endif
-
-			SetCheckBoxState(bsPanel, "check_Calculation_ZeroTraces", zeroTracesOldState)
-			break
-	endswitch
-
-	return 0
 End
 
 /// @brief Find a Databrowser which is locked to the given DAEphys panel

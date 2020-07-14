@@ -21,7 +21,7 @@ static strConstant BROWSERTYPE_DATABROWSER  = "D"
 static strConstant BROWSERTYPE_SWEEPBROWSER = "S"
 
 /// @brief List of controls that have specific control procedures set
-static StrConstant BROWSERSETTING_UNSET_CONTROLPROCEDURES = "check_BrowserSettings_DAC;check_BrowserSettings_ADC;check_BrowserSettings_TTL;check_BrowserSettings_splitTTL;check_BrowserSettings_OChan;check_BrowserSettings_dDAQ;check_Calculation_AverageTraces;check_Calculation_ZeroTraces;button_Calculation_RestoreData;check_SweepControl_HideSweep;slider_BrowserSettings_dDAQ;"
+static StrConstant BROWSERSETTING_UNSET_CONTROLPROCEDURES = "check_BrowserSettings_OVS"
 
 /// @brief exclusive controls that are enabled/disabled for the specific browser window type
 static StrConstant BROWSERSETTINGS_CONTROLS_DATABROWSER = "popup_DB_lockedDevices;"
@@ -190,7 +190,7 @@ Function BSP_DynamicStartupSettings(mainPanel)
 	string mainPanel
 
 	variable sweepNo
-	string bsPanel, controls
+	string bsPanel
 
 	bsPanel = BSP_GetPanel(mainPanel)
 
@@ -200,19 +200,11 @@ Function BSP_DynamicStartupSettings(mainPanel)
 	SetControlProcedure(bsPanel, "check_BrowserSettings_OVS", BSP_AddBrowserPrefix(mainPanel, "CheckProc_OverlaySweeps"))
 	PopupMenu popup_overlaySweeps_select, win=$bsPanel, value= #("OVS_GetSweepSelectionChoices(\"" + bsPanel + "\")")
 
-	BSP_SetCSButtonProc(bsPanel, BSP_AddBrowserPrefix(mainPanel, "CheckProc_ChangedSetting"))
-
 	if(BSP_HasBoundDevice(mainPanel))
 		BSP_BindListBoxWaves(mainPanel)
 	endif
 
-	// settings tab
-	controls = "check_BrowserSettings_DAC;check_BrowserSettings_ADC;check_BrowserSettings_TTL;check_BrowserSettings_splitTTL;check_BrowserSettings_OChan;check_BrowserSettings_dDAQ;check_Calculation_AverageTraces;check_Calculation_ZeroTraces;"
-	SetControlProcedures(bsPanel, controls, BSP_AddBrowserPrefix(mainPanel, "CheckProc_ChangedSetting"))
-	SetControlProcedure(bsPanel, "button_Calculation_RestoreData", BSP_AddBrowserPrefix(mainPanel, "ButtonProc_RestoreData"))
-	SetControlProcedures(bsPanel, "check_SweepControl_HideSweep;", BSP_AddBrowserPrefix(mainPanel, "CheckProc_ChangedSetting"))
 	SetControlProcedures(bsPanel, "slider_BrowserSettings_dDAQ;", "BSP_SliderProc_ChangedSetting")
-
 	if(BSP_IsDataBrowser(mainPanel))
 		EnableControls(bsPanel, BROWSERSETTINGS_CONTROLS_DATABROWSER)
 	else
@@ -554,32 +546,6 @@ static Function BSP_InitMainCheckboxes(win)
 	BSP_SetPAControlStatus(bsPanel)
 
 	return 1
-End
-
-/// @brief overwrite the control action of all Channel Selection Buttons
-static Function BSP_SetCSButtonProc(win, procedure)
-	string win, procedure
-
-	string bsPanel
-	variable i
-	string controlList = ""
-
-	bsPanel = BSP_GetPanel(win)
-
-	for(i = 0; i < 8; i += 1)
-		controlList += "check_channelSel_HEADSTAGE_" + num2str(i) + ";"
-		controlList += "check_channelSel_DA_" + num2str(i) + ";"
-	endfor
-	for(i = 0; i < 16; i += 1)
-		controlList += "check_channelSel_AD_" + num2str(i) + ";"
-	endfor
-
-	controlList += "check_channelSel_AD_All;check_channelSel_DA_All;check_channelSel_HEADSTAGE_All"
-
-	SetControlProcedures(bsPanel, controlList, procedure)
-	if(IsEmpty(procedure))
-		DisableControls(bsPanel, controlList)
-	endif
 End
 
 /// @brief enable/disable the OVS buttons
@@ -1232,4 +1198,74 @@ Function [STRUCT TiledGraphSettings tgs] BSP_GatherTiledGraphSettings(string win
 	if(tgs.overlayChannels)
 		tgs.splitTTLBits = 0
 	endif
+End
+
+Function BSP_CheckProc_ChangedSetting(cba) : CheckBoxControl
+	STRUCT WMCheckBoxAction &cba
+
+	string graph, bsPanel, ctrl
+	variable checked
+
+	switch(cba.eventCode)
+		case 2: // mouse up
+			ctrl    = cba.ctrlName
+			checked = cba.checked
+			graph   = GetMainWindow(cba.win)
+			bsPanel = BSP_GetPanel(graph)
+
+			if(BSP_MainPanelNeedsUpdate(graph))
+				DoAbortNow("The main panel is too old to be usable. Please close it and open a new one.")
+			endif
+
+			strswitch(ctrl)
+				case "check_BrowserSettings_dDAQ":
+					if(checked)
+						EnableControl(bsPanel, "slider_BrowserSettings_dDAQ")
+					else
+						DisableControl(bsPanel, "slider_BrowserSettings_dDAQ")
+					endif
+					break
+				default:
+					if(StringMatch(ctrl, "check_channelSel_*"))
+						BSP_GUIToChannelSelectionWave(bsPanel, ctrl, checked)
+					endif
+					break
+			endswitch
+
+			UpdateSweepPlot(graph)
+			break
+	endswitch
+
+	return 0
+End
+
+Function BSP_ButtonProc_RestoreData(ba) : ButtonControl
+	STRUCT WMButtonAction &ba
+
+	string mainPanel, graph, bsPanel
+	variable autoRemoveOldState, zeroTracesOldState
+
+	switch(ba.eventCode)
+		case 2: // mouse up
+			mainPanel = GetMainWindow(ba.win)
+			graph     = DB_GetMainGraph(mainPanel)
+			bsPanel   = BSP_GetPanel(mainPanel)
+
+			WAVE/T/Z tracePaths = GetSweepUserData(graph, "fullPath")
+			ReplaceAllWavesWithBackup(graph, tracePaths)
+
+			zeroTracesOldState = GetCheckBoxState(bsPanel, "check_Calculation_ZeroTraces")
+			SetCheckBoxState(bsPanel, "check_Calculation_ZeroTraces", CHECKBOX_UNSELECTED)
+
+			autoRemoveOldState = GetCheckBoxState(bsPanel, "check_auto_remove")
+			SetCheckBoxState(bsPanel, "check_auto_remove", CHECKBOX_UNSELECTED)
+
+			UpdateSweepPlot(mainPanel)
+
+			SetCheckBoxState(bsPanel, "check_auto_remove", autoRemoveOldState)
+			SetCheckBoxState(bsPanel, "check_Calculation_ZeroTraces", zeroTracesOldState)
+			break
+	endswitch
+
+	return 0
 End
