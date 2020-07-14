@@ -204,7 +204,6 @@ Function BSP_DynamicStartupSettings(mainPanel)
 		BSP_BindListBoxWaves(mainPanel)
 	endif
 
-	SetControlProcedures(bsPanel, "slider_BrowserSettings_dDAQ;", "BSP_SliderProc_ChangedSetting")
 	if(BSP_IsDataBrowser(mainPanel))
 		EnableControls(bsPanel, BROWSERSETTINGS_CONTROLS_DATABROWSER)
 	else

@@ -794,7 +794,7 @@ Window DataBrowser() : Graph
 	GroupBox group_timealignment,userdata(ResizeControlsInfo)= A"!!,CD!!#?g!!#BHJ,hpUz!!#`-A7TLfzzzzzzzzzzzzzz!!#r+D.OhkBk2=!z"
 	GroupBox group_timealignment,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	GroupBox group_timealignment,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
-	Slider slider_BrowserSettings_dDAQ,pos={316.00,36.00},size={56.00,300.00},disable=2
+	Slider slider_BrowserSettings_dDAQ,pos={316.00,36.00},size={56.00,300.00},disable=2,proc=BSP_SliderProc_ChangedSetting
 	Slider slider_BrowserSettings_dDAQ,help={"Allows to view only regions from the selected headstage (oodDAQ) resp. the selected headstage (dDAQ). Choose -1 to display all."}
 	Slider slider_BrowserSettings_dDAQ,userdata(tabnum)=  "0"
 	Slider slider_BrowserSettings_dDAQ,userdata(tabcontrol)=  "Settings"
