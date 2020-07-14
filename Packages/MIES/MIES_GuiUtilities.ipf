@@ -1382,9 +1382,18 @@ Function/S GetValueFromRecMacro(key, recMacro)
 	return procedure
 End
 
+/// @brief Search for invalid control procedures in the given panel or graph
+///
+/// Searches recursively in all subwindows.
+///
+/// @param win         panel or graph
+/// @param warnOnEmpty [optional, default to false] print out controls which don't have a control procedure
+///                    but can have one.
+///
 /// @returns 1 on error, 0 if everything is fine.
-Function SearchForInvalidControlProcs(win)
+Function SearchForInvalidControlProcs(win, [warnOnEmpty])
 	string win
+	variable warnOnEmpty
 
 	string controlList, control, controlProc
 	string subTypeStr
@@ -1397,6 +1406,12 @@ Function SearchForInvalidControlProcs(win)
 		return 1
 	endif
 
+	if(ParamIsDefault(warnOnEmpty))
+		warnOnEmpty = 0
+	else
+		warnOnEmpty = !!	warnOnEmpty
+	endif
+
 	if(WinType(win) != 7 && WinType(win) != 1) // ignore everything except panels and graphs
 		return 0
 	endif
@@ -1405,7 +1420,7 @@ Function SearchForInvalidControlProcs(win)
 	numEntries = ItemsInList(subwindowList)
 	for(i = 0; i < numEntries; i += 1)
 		subwindow = win + "#" + StringFromList(i, subWindowList)
-		result = result || SearchForInvalidControlProcs(subwindow)
+		result = result || SearchForInvalidControlProcs(subwindow, warnOnEmpty = warnOnEmpty)
 	endfor
 
 	// we still have old style GUI control procedures so we can not restrict it to one parameter
@@ -1425,6 +1440,9 @@ Function SearchForInvalidControlProcs(win)
 		controlProc = GetControlProcedure(win, control)
 
 		if(IsEmpty(controlProc))
+			if(warnOnEmpty)
+				printf "SearchForInvalidControlProcs: Panel \"%s\" has the control \"%s\" which does not have a GUI procedure.\r", win, control
+			endif
 			continue
 		endif
 
