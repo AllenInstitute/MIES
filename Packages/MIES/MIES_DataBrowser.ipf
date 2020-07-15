@@ -868,6 +868,43 @@ Function DB_MainTabControlFinal(tca)
 	DB_UpdateSweepNote(tca.win)
 End
 
+Function DB_AddSweepToGraph(string win, variable index)
+	STRUCT TiledGraphSettings tgs
+
+	variable sweepNo, traceIndex
+	string experiment, device, graph
+
+	graph  = GetMainWindow(win)
+	device = BSP_GetDevice(win)
+
+	WAVE channelSel = BSP_GetChannelSelectionWave(win)
+	WAVE numericalValues = DB_GetNumericalValues(win)
+	WAVE textualValues   = DB_GetTextualValues(win)
+
+	[tgs] = BSP_GatherTiledGraphSettings(graph)
+	[sweepNo, experiment] = OVS_GetSweepAndExperiment(win, index)
+
+	DFREF dfr = GetDeviceDataPath(device)
+	WAVE/Z/SDFR=dfr sweepWave = $GetSweepWaveName(sweepNo)
+
+	if(!WaveExists(sweepWave))
+		return NaN
+	endif
+
+	WAVE sweepChannelSel = BSP_FetchSelectedChannels(graph, sweepNo=sweepNo)
+
+	DB_SplitSweepsIfReq(win, sweepNo)
+	WAVE config = GetConfigWave(sweepWave)
+
+	WAVE axisLabelCache = GetAxisLabelCacheWave()
+
+	traceIndex = GetNextTraceIndex(graph)
+	CreateTiledChannelGraph(graph, config, sweepNo, numericalValues, textualValues, tgs, dfr, axisLabelCache, \
+							traceIndex, experiment, sweepChannelSel)
+
+	AR_UpdateTracesIfReq(graph, dfr, sweepNo)
+End
+
 static Function DB_SplitSweepsIfReq(win, sweepNo)
 	string win
 	variable sweepNo

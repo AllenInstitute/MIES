@@ -628,3 +628,37 @@ Function SB_ButtonProc_FindMinis(ba) : ButtonControl
 
 	return 0
 End
+
+Function SB_AddSweepToGraph(string win, variable index)
+	STRUCT TiledGraphSettings tgs
+
+	variable sweepNo, traceIndex
+	string experiment, graph
+	string device, dataFolder
+
+	graph = GetMainWindow(win)
+	WAVE/T map = SB_GetSweepBrowserMapFromGraph(graph)
+
+	dataFolder = map[index][%DataFolder]
+	device     = map[index][%Device]
+	experiment = map[index][%FileName]
+	sweepNo    = str2num(map[index][%Sweep])
+
+	WAVE numericalValues = GetAnalysLBNumericalValues(dataFolder, device)
+	WAVE textualValues   = GetAnalysLBTextualValues(dataFolder, device)
+	DFREF sweepDFR       = GetAnalysisSweepPath(dataFolder, device)
+
+	[tgs] = BSP_GatherTiledGraphSettings(graph)
+
+	WAVE sweepChannelSel = BSP_FetchSelectedChannels(graph, index=index)
+
+	WAVE config = GetAnalysisConfigWave(dataFolder, device, sweepNo)
+
+	WAVE axisLabelCache = GetAxisLabelCacheWave()
+
+	traceIndex = GetNextTraceIndex(graph)
+	CreateTiledChannelGraph(graph, config, sweepNo, numericalValues, textualValues, tgs, sweepDFR,\
+	                        axisLabelCache, traceIndex, experiment,sweepChannelSel)
+
+	AR_UpdateTracesIfReq(graph, dfr, sweepNo)
+End

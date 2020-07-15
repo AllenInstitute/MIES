@@ -2318,6 +2318,29 @@ static Function EnableAxis(string graph, WAVE/T axes, variable spacePerSlot, var
 	last = first - GRAPH_DIV_SPACING
 End
 
+/// @brief Helper function for CreateTiledChannelGraph and friends
+///
+/// Return the next trace index for a graph which uses our trace data storage
+/// wave.
+Function GetNextTraceIndex(string graph)
+
+	variable traceCount, traceIndex
+	string lastTraceName
+
+	traceCount = TUD_GetTraceCount(graph)
+
+	if(traceCount == 0)
+		return 0
+	endif
+
+	WAVE/T graphUserData = GetGraphUserData(graph)
+	lastTraceName = graphUserData[traceCount - 1][%traceName]
+	traceIndex = str2num(lastTraceName[1, inf]) + 1
+	ASSERT(IsFinite(traceIndex), "Non finite trace index")
+
+	return traceIndex
+End
+
 /// @brief Create a vertically tiled graph for displaying AD and DA channels
 ///
 /// For preservering the axis scaling callers should do the following:
@@ -3471,6 +3494,9 @@ End
 ///
 /// Keeps track of all internal details wrt. to the order of
 /// the operations, backups, etc.
+///
+/// Needs to be called after adding/removing/updating sweeps via
+/// AddSweepToGraph(), RemoveSweepFromGraph(), UpdateSweepInGraph().
 ///
 /// @param win graph with sweep traces
 Function PostPlotTransformations(string win)
@@ -6376,4 +6402,92 @@ Function/WAVE GetTraceInfos(string graph)
 	SortColumns/A/DIML/KNDX={2, 3, 4, 5} sortWaves=graphUserDataSelection
 
 	return graphUserDataSelection
+End
+
+/// @brief Remove the given sweep from the Databrowser/Sweepbrowser
+///
+/// Needs a manual call to PostPlotTransformations() afterwards.
+///
+/// @param win              graph
+/// @param index            overlay sweeps listbox index
+Function RemoveSweepFromGraph(string win, variable index)
+	string device, graph, dataFolder, experiment
+	string trace
+	variable sweepNo, i, numTraces
+
+	graph = GetMainWindow(win)
+
+	if(BSP_MainPanelNeedsUpdate(graph))
+		DoAbortNow("Can not display data. The panel is too old to be usable. Please close it and open a new one.")
+	endif
+
+	if(!BSP_HasBoundDevice(graph))
+		return NaN
+	endif
+
+	DEBUGPRINT("Removing sweep with index ", var = index)
+
+	[sweepNo, experiment] = OVS_GetSweepAndExperiment(graph, index)
+
+	WAVE/T/Z traces = TUD_GetUserDataAsWave(graph, "tracename", keys = {"traceType", "sweepNumber", "experiment"}, \
+	                                        values = {"sweep", num2str(sweepNo), experiment})
+
+	if(!WaveExists(traces))
+		return NaN
+	endif
+
+	numTraces = DimSize(traces, ROWS)
+	for(i = 0; i < numTraces; i += 1)
+		trace = traces[i]
+
+		RemoveFromGraph/W=$graph $trace
+		TUD_RemoveUserData(graph, trace)
+	endfor
+End
+
+/// @brief Add the given sweep to the Databrowser/Sweepbrowser
+///
+/// Needs a manual call to PostPlotTransformations() afterwards.
+///
+/// @param win   graph
+/// @param index overlay sweeps listbox index
+Function AddSweepToGraph(string win, variable index)
+
+	if(BSP_MainPanelNeedsUpdate(win))
+		DoAbortNow("Can not display data. The panel is too old to be usable. Please close it and open a new one.")
+	endif
+
+	if(!BSP_HasBoundDevice(win))
+		return NaN
+	endif
+
+	DEBUGPRINT("Adding sweep with index ", var = index)
+
+	if(BSP_IsDataBrowser(win))
+		DB_AddSweepToGraph(win, index)
+	else
+		SB_AddSweepToGraph(win, index)
+	endif
+End
+
+/// @brief Update the given sweep in the Databrowser/Sweepbrowser plot
+///
+/// Needs a manual call to PostPlotTransformations() afterwards.
+///
+/// @param win   graph
+/// @param index overlay sweeps listbox index
+Function UpdateSweepInGraph(string win, variable index)
+
+	string graph
+
+	graph = GetMainWindow(win)
+
+	WAVE axesRanges = GetAxesRanges(graph)
+	WAVE/T/Z cursorInfos = GetCursorInfos(graph)
+
+	RemoveSweepFromGraph(win, index)
+	AddSweepToGraph(win, index)
+
+	RestoreCursors(graph, cursorInfos)
+	SetAxesRanges(graph, axesRanges)
 End
