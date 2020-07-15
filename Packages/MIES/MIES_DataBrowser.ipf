@@ -440,7 +440,7 @@ Function DB_UpdateSweepPlot(win)
 		WAVE config = GetConfigWave(sweepWave)
 
 		CreateTiledChannelGraph(graph, config, sweepNo, numericalValues, textualValues, tgs, dfr, axisLabelCache, traceIndex, experiment, channelSelWave=sweepChannelSel)
-		AR_UpdateTracesIfReq(graph, dfr, numericalValues, sweepNo)
+		AR_UpdateTracesIfReq(graph, dfr, sweepNo)
 	endfor
 
 	RestoreCursors(graph, cursorInfos)

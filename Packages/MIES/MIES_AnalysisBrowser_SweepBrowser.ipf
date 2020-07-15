@@ -318,7 +318,7 @@ Function SB_UpdateSweepPlot(win, [newSweep])
 		WAVE textualValues = GetAnalysLBTextualValues(dataFolder, device)
 
 		CreateTiledChannelGraph(graph, configWave, sweepNo, numericalValues, textualValues, tgs, sweepDFR, axisLabelCache, traceIndex, experiment, channelSelWave=sweepChannelSel)
-		AR_UpdateTracesIfReq(graph, sweepDFR, numericalValues, sweepNo)
+		AR_UpdateTracesIfReq(graph, sweepDFR, sweepNo)
 	endfor
 
 	RestoreCursors(graph, cursorInfos)

@@ -370,11 +370,10 @@ Function AR_ButtonProc_RemoveRanges(ba) : ButtonControl
 	return 0
 End
 
-Function AR_UpdateTracesIfReq(graph, sweepFolder, numericalValues, sweepNo)
+Function AR_UpdateTracesIfReq(graph, sweepFolder, sweepNo)
 	string graph
 	variable sweepNo
 	DFREF sweepFolder
-	WAVE numericalValues
 
 	string panelTitle
 
@@ -383,6 +382,8 @@ Function AR_UpdateTracesIfReq(graph, sweepFolder, numericalValues, sweepNo)
 	if(!AR_IsActive(panelTitle))
 		return NaN
 	endif
+
+	WAVE numericalValues = BSP_GetNumericalValues(graph, sweepNumber = sweepNo)
 
 	DFREF singleSweepDFR = GetSingleSweepFolder(sweepFolder, sweepNo)
 	WAVE ranges = AR_ComputeRanges(singleSweepDFR, sweepNo, numericalValues)
