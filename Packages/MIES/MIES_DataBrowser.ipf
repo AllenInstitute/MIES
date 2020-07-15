@@ -553,7 +553,7 @@ Function DB_UpdateToLastSweep(win)
 	endif
 
 	OVS_ChangeSweepSelectionState(win, CHECKBOX_SELECTED, sweepNo=last)
-	DB_UpdateSweepPlot(win)
+	UpdateSweepPlot(win)
 	if(SF_IsActive(win))
 		PGC_SetAndActivateControl(bsPanel, "button_sweepFormula_display")
 	endif
@@ -688,7 +688,7 @@ Function DB_ButtonProc_ChangeSweep(ba) : ButtonControl
 			sweepNo = BSP_UpdateSweepControls(graph, ba.ctrlName, first, last)
 
 			OVS_ChangeSweepSelectionState(graph, CHECKBOX_SELECTED, sweepNO=sweepNo)
-			DB_UpdateSweepPlot(graph)
+			UpdateSweepPlot(graph)
 			break
 	endswitch
 
@@ -776,7 +776,7 @@ Function DB_SetVarProc_SweepNo(sva) : SetVariableControl
 			sweepNo = sva.dval
 			win = sva.win
 
-			DB_UpdateSweepPlot(win)
+			UpdateSweepPlot(win)
 			OVS_ChangeSweepSelectionState(win, CHECKBOX_SELECTED, sweepNO=sweepNo)
 			break
 	endswitch
