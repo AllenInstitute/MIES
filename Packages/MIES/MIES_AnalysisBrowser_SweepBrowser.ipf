@@ -249,9 +249,8 @@ Function/WAVE SB_GetChannelInfoFromGraph(graph, channel, [experiment])
 	return channelMap
 End
 
-Function SB_UpdateSweepPlot(win, [newSweep])
+Function SB_UpdateSweepPlot(win)
 	string win
-	variable newSweep
 
 	string device, dataFolder, graph, scPanel, lbPanel, experiment
 	variable mapIndex, i, numEntries, sweepNo, traceIndex, currentSweep
@@ -267,10 +266,6 @@ Function SB_UpdateSweepPlot(win, [newSweep])
 
 	DFREF sweepBrowserDFR = SB_GetSweepBrowserFolder(graph)
 	ASSERT(DataFolderExistsDFR(sweepBrowserDFR), "sweepBrowserDFR must exist")
-
-	if(!ParamIsDefault(newSweep))
-		SetPopupMenuIndex(scPanel, "popup_SweepControl_Selector", newSweep)
-	endif
 
 	[tgs] = BSP_GatherTiledGraphSettings(graph)
 
@@ -533,18 +528,20 @@ End
 Function SB_PopupMenuSelectSweep(pa) : PopupMenuControl
 	STRUCT WMPopupAction &pa
 
-	string win
+	string win, scPanel
 	variable newSweep
 
 	switch(pa.eventCode)
 		case 2: // mouse up
 			win = pa.win
 			newSweep = pa.popNum - 1
+
 			if(OVS_IsActive(win))
 				OVS_ChangeSweepSelectionState(win, CHECKBOX_SELECTED, index=newSweep)
 			endif
+
 			SetSetVariable(win, "setvar_SweepControl_SweepNo", newSweep)
-			SB_UpdateSweepPlot(win)
+			UpdateSweepPlot(win)
 			break
 	endswitch
 End
@@ -552,13 +549,13 @@ End
 Function SB_ButtonProc_ChangeSweep(ba) : ButtonControl
 	STRUCT WMButtonAction &ba
 
-	string graph, scPanel
+	string graph, win
 	variable firstSweep, lastSweep, index
 
 	switch(ba.eventCode)
 		case 2: // mouse up
+			win     = ba.win
 			graph   = GetMainWindow(ba.win)
-			scPanel = BSP_GetSweepControlsPanel(graph)
 
 			firstSweep = 0
 			lastSweep = ItemsInList(SB_GetSweepList(graph)) - 1
@@ -568,7 +565,8 @@ Function SB_ButtonProc_ChangeSweep(ba) : ButtonControl
 				OVS_ChangeSweepSelectionState(graph, CHECKBOX_SELECTED, index=index)
 			endif
 
-			SB_UpdateSweepPlot(graph, newSweep=index)
+			SetPopupMenuIndex(win, "popup_SweepControl_Selector", index)
+			UpdateSweepPlot(graph)
 			break
 	endswitch
 
