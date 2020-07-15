@@ -6,6 +6,8 @@ Menu "TracePopup"
 	"Ignore Headstage in Overlay Sweeps", /Q, OVS_IgnoreHeadstageInOverlay()
 End
 
+static StrConstant OVS_FULL_UPDATE_NOTE = "FullUpdate"
+
 /// @brief This user trace menu function allows the user to select a trace
 ///        in overlay sweeps mode which should be ignored.
 Function OVS_IgnoreHeadstageInOverlay()
@@ -112,11 +114,18 @@ End
 /// @brief Update the overlay sweep waves
 ///
 /// Must be called after the sweeps changed.
-Function OVS_UpdatePanel(win)
+Function OVS_UpdatePanel(win, [fullUpdate])
 	string win
+	variable fullUpdate
 
 	variable i, numEntries, sweepNo, lastEntry, newCycleHasStartedRAC, newCycleHasStartedSCI
 	string extPanel
+
+	if(ParamIsDefault(fullUpdate))
+		fullUpdate = 0
+	else
+		fullUpdate = !!fullUpdate
+	endif
 
 	extPanel = BSP_GetPanel(win)
 	WAVE/Z sweeps = GetPlainSweepList(win)
@@ -130,8 +139,11 @@ Function OVS_UpdatePanel(win)
 	WAVE/WAVE allNumericalValues = BSP_GetNumericalValues(win)
 	WAVE/WAVE allTextualValues   = BSP_GetTextualValues(win)
 
+	WAVE updateHandle = OVS_BeginIncrementalUpdate(win, fullUpdate = fullUpdate)
+
 	if(!WaveExists(sweeps))
 		Redimension/N=(0, -1, -1) listBoxWave, listBoxSelWave, sweepSelectionChoices
+		OVS_EndIncrementalUpdate(win, updateHandle)
 		return NaN
 	endif
 
@@ -184,6 +196,8 @@ Function OVS_UpdatePanel(win)
 	else
 		listBoxSelWave[][%Sweep] = listBoxSelWave[p] & LISTBOX_CHECKBOX_SELECTED ? LISTBOX_CHECKBOX | LISTBOX_CHECKBOX_SELECTED : LISTBOX_CHECKBOX
 	endif
+
+	OVS_EndIncrementalUpdate(win, updateHandle)
 End
 
 /// @brief Return the selected sweeps (either indizes or the real sweep numbers)
@@ -417,6 +431,7 @@ Function OVS_CheckBoxProc_HS_Select(cba) : CheckBoxControl
 			win = cba.win
 
 			DFREF dfr = OVS_GetFolder(win)
+			WAVE updateHandle = OVS_BeginIncrementalUpdate(win)
 			WAVE listboxSelWave = GetOverlaySweepsListSelWave(dfr)
 
 			if(cba.checked)
@@ -425,8 +440,8 @@ Function OVS_CheckBoxProc_HS_Select(cba) : CheckBoxControl
 				listBoxSelWave[][%Headstages] = ClearBit(listBoxSelWave[p][%Headstages], LISTBOX_CELL_EDITABLE)
 			endif
 
-			UpdateSweepPlot(win)
-		break
+			OVS_EndIncrementalUpdate(win, updateHandle)
+			break
 	endswitch
 
 	return 0
@@ -528,6 +543,8 @@ static Function OVS_ChangeSweepSelection(win, choiceString)
 		return NaN
 	endif
 
+	WAVE updateHandle = OVS_BeginIncrementalUpdate(win)
+
 	WAVE/T sweepSelectionChoices = GetOverlaySweepSelectionChoices(dfr)
 
 	offset = GetSetVariable(extPanel, "setvar_overlaySweeps_offset")
@@ -558,7 +575,152 @@ static Function OVS_ChangeSweepSelection(win, choiceString)
 		endfor
 	endif
 
-	UpdateSweepPlot(win)
+	OVS_EndIncrementalUpdate(win, updateHandle)
+End
+
+/// @brief Incremental sweep plot updates for overlay sweeps
+///
+/// When modifying the listbox selection and contents wave this function can be
+/// called before doing so. After the modifications OVS_EndIncrementalUpdate()
+/// will take care of updating all sweeps which got changed.
+///
+/// The returned wave should be considered an opaque handle and *not* modified.
+///
+/// Usage:
+///
+/// \rst
+/// .. code-block:: igorpro
+///
+///		WAVE updateHandle = OVS_BeginIncrementalUpdate(win)
+///
+///		// modify list waves
+///		// ...
+///
+///		OVS_EndIncrementalUpdate(win, updateHandle)
+///
+/// \endrst
+///
+/// By setting `fullUpdate` to true a conventional full, that means non-incremental,
+/// update will be performed.
+///
+/// @param win        graph
+/// @param fullUpdate [optional, defaults to true when OVS is off, false otherwise]
+///                   allows to force a full update in OVS_EndIncrementalUpdate()
+static Function/WAVE OVS_BeginIncrementalUpdate(string win, [variable fullUpdate])
+
+	if(ParamIsDefault(fullUpdate))
+		fullUpdate = !OVS_IsActive(win)
+	else
+		fullUpdate = !!fullUpdate
+	endif
+
+	DFREF dfr = BSP_GetFolder(win, MIES_BSP_PANEL_FOLDER)
+
+	WAVE/T listBoxWave = GetOverlaySweepsListWave(dfr)
+	WAVE listSelWave   = GetOverlaySweepsListSelWave(dfr)
+
+	Make/FREE/N=2/WAVE handle
+
+	SetNumberInWaveNote(handle, OVS_FULL_UPDATE_NOTE, fullUpdate)
+
+	if(!fullUpdate)
+		SetDimLabel ROWS, 0, contents, handle
+		SetDimLabel ROWS, 1, selection, handle
+
+		Duplicate/FREE listBoxWave, listBoxWaveDuplicate
+		handle[%contents] = listBoxWaveDuplicate
+
+		Duplicate/FREE listSelWave, listSelWaveDuplicate
+		handle[%selection] = listSelWaveDuplicate
+	endif
+
+	return handle
+End
+
+/// @brief Perform the update of all changed sweeps
+///
+/// Counterpart to OVS_BeginIncrementalUpdate().
+static Function OVS_EndIncrementalUpdate(string win, WAVE/WAVE updateHandle)
+
+	variable newSize, i, displayedBefore, displayedAfter, needsPostProcessing
+	variable editableAfter, editableBefore, changedHeadstages
+	string headstageBefore, headstageAfter, msg
+
+	if(GetNumberFromWaveNote(updateHandle, OVS_FULL_UPDATE_NOTE) == 1)
+		UpdateSweepPlot(win)
+		return NaN
+	endif
+
+	DFREF dfr = BSP_GetFolder(win, MIES_BSP_PANEL_FOLDER)
+
+	WAVE/T listBoxWaveBefore = updateHandle[%contents]
+	WAVE listSelWaveBefore   = updateHandle[%selection]
+
+	WAVE/T listBoxWaveAfterOriginal = GetOverlaySweepsListWave(dfr)
+	Duplicate/FREE/T listBoxWaveAfterOriginal, listBoxWaveAfter
+	WaveClear listBoxWaveAfterOriginal
+
+	WAVE listSelWaveAfterOriginal = GetOverlaySweepsListSelWave(dfr)
+	Duplicate/FREE listSelWaveAfterOriginal, listSelWaveAfter
+	WaveClear listSelWaveAfterOriginal
+
+	// need to update all sweeps which are:
+	// - newly selected
+	// - newly deselected
+	// - have a changed headstage removal list
+	// - changed editable style (aka headstage removal turned on/off)
+	//   with non empty headstages removal list)
+
+	newSize = max(DimSize(listBoxWaveBefore, ROWS), DimSize(listBoxWaveAfter, ROWS))
+
+	Redimension/N=(newSize, -1) listBoxWaveBefore, listSelWaveBefore, listBoxWaveAfter, listSelWaveAfter
+
+	// now we have the list of changed sweeps
+	// so let's figure out what to do
+	for(i = 0; i < newSize; i += 1)
+
+		displayedBefore = (listSelWaveBefore[i][%Sweep] & LISTBOX_CHECKBOX_SELECTED) == LISTBOX_CHECKBOX_SELECTED
+		displayedAfter  = (listSelWaveAfter[i][%Sweep] & LISTBOX_CHECKBOX_SELECTED) == LISTBOX_CHECKBOX_SELECTED
+
+		editableBefore = (listSelWaveBefore[i][%Headstages] & LISTBOX_CELL_EDITABLE) == LISTBOX_CELL_EDITABLE
+		editableAfter  = (listSelWaveAfter[i][%Headstages] & LISTBOX_CELL_EDITABLE) == LISTBOX_CELL_EDITABLE
+
+		headstageBefore = listBoxWaveBefore[i][%Headstages]
+		headstageAfter  = listBoxWaveAfter[i][%Headstages]
+
+		changedHeadstages = (cmpstr(headstageBefore, headstageAfter) != 0)                  \
+		                     || ((editableBefore != editableAfter)                          \
+		                         && (!IsEmpty(headstageBefore) || !IsEmpty(headstageAfter)))
+
+#ifdef DEBUGGING_ENABLED
+		sprintf msg, "%d: display %d vs %d, edit: %d vs %d, HS: \"%5s\" vs \"%5s\" (HS changed: %d)\r", i, displayedBefore, displayedAfter, editableBefore, editableAfter, headstageBefore, headstageAfter, changedHeadstages
+		DEBUGPRINT(msg)
+#endif // DEBUGGING_ENABLED
+
+		if(displayedBefore == displayedAfter && !changedHeadstages)
+			// nothing changed
+			continue
+		elseif(!displayedBefore && !displayedAfter)
+			// nothing to do
+			continue
+		elseif(displayedBefore && displayedAfter && changedHeadstages)
+			// needs just an update
+			needsPostProcessing += 1
+			UpdateSweepInGraph(win, i)
+		elseif(displayedBefore && !displayedAfter)
+			needsPostProcessing += 1
+			RemoveSweepFromGraph(win, i)
+		elseif(!displayedBefore && displayedAfter)
+			needsPostProcessing += 1
+			AddSweepToGraph(win, i)
+		else
+			ASSERT(0, "Impossible case")
+		endif
+	endfor
+
+	if(needsPostProcessing)
+		PostPlotTransformations(win)
+	endif
 End
 
 Function OVS_MainListBoxProc(lba) : ListBoxControl

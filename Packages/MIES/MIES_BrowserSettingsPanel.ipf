@@ -1264,7 +1264,7 @@ Function BSP_CheckProc_OverlaySweeps(cba) : CheckBoxControl
 			scPanel = BSP_GetSweepControlsPanel(graph)
 
 			BSP_SetOVSControlStatus(bsPanel)
-			OVS_UpdatePanel(graph)
+			OVS_UpdatePanel(graph, fullUpdate = 1)
 
 			if(OVS_IsActive(graph))
 				if(BSP_IsDataBrowser(graph))
@@ -1274,8 +1274,6 @@ Function BSP_CheckProc_OverlaySweeps(cba) : CheckBoxControl
 					index = GetPopupMenuIndex(scPanel, "popup_SweepControl_Selector")
 					OVS_ChangeSweepSelectionState(bsPanel, CHECKBOX_SELECTED, index=index)
 				endif
-			else
-				UpdateSweepPlot(graph)
 			endif
 
 			break
