@@ -231,42 +231,6 @@ Function/WAVE OVS_GetSelectedSweeps(win, mode)
 	return selectedSweepsIndizes
 End
 
-/// @brief Invert the selection of the given sweep in the listbox wave
-Function OVS_InvertSweepSelection(win, [sweepNo, index])
-	string win
-	variable sweepNo, index
-
-	variable selectionState
-
-	if(!OVS_IsActive(win))
-		return NaN
-	endif
-
-	DFREF dfr = OVS_GetFolder(win)
-	WAVE/T listboxWave  = GetOverlaySweepsListWave(dfr)
-	WAVE listboxSelWave = GetOverlaySweepsListSelWave(dfr)
-
-	if(!ParamIsDefault(sweepNo))
-		FindValue/TEXT=num2str(sweepNo)/TXOP=4 listboxWave
-		index = V_Value
-	elseif(!ParamIsDefault(index))
-		// do nothing
-	else
-		ASSERT(0, "Requires one of index or sweepNo")
-	endif
-
-	if(index < 0 || index >= DimSize(listBoxWave, ROWS) || !IsFinite(index))
-		return NaN
-	endif
-
-	selectionState = listboxSelWave[index][0]
-	if(selectionState & LISTBOX_CHECKBOX_SELECTED)
-		listboxSelWave[index][0] = ClearBit(selectionState, LISTBOX_CHECKBOX_SELECTED)
-	else
-		listboxSelWave[index][0] = SetBit(selectionState, LISTBOX_CHECKBOX_SELECTED)
-	endif
-End
-
 /// @brief Change the selection state of the the given sweep in the listbox wave
 ///
 /// @param win      panel
