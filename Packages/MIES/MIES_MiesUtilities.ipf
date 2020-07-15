@@ -2341,8 +2341,8 @@ End
 /// @param axisLabelCache  store existing vertical axis labels
 /// @param traceIndex      [internal use only] set to zero on the first call in a row of successive calls
 /// @param experiment      name of the experiment the sweep stems from
-/// @param channelSelWave  [optional] channel selection wave
-Function CreateTiledChannelGraph(graph, config, sweepNo, numericalValues,  textualValues, tgs, sweepDFR, axisLabelCache, traceIndex, experiment, [channelSelWave])
+/// @param channelSelWave  channel selection wave
+Function CreateTiledChannelGraph(graph, config, sweepNo, numericalValues,  textualValues, tgs, sweepDFR, axisLabelCache, traceIndex, experiment, channelSelWave)
 	string graph
 	WAVE config
 	variable sweepNo
@@ -2353,7 +2353,7 @@ Function CreateTiledChannelGraph(graph, config, sweepNo, numericalValues,  textu
 	WAVE/T axisLabelCache
 	variable &traceIndex
 	string experiment
-	WAVE/Z channelSelWave
+	WAVE channelSelWave
 
 	variable red, green, blue, axisIndex, numChannels, offset
 	variable numDACs, numADCs, numTTLs, i, j, k, hasPhysUnit, hardwareType

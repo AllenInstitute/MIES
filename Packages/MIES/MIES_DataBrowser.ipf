@@ -439,7 +439,8 @@ Function DB_UpdateSweepPlot(win)
 		DB_SplitSweepsIfReq(win, sweepNo)
 		WAVE config = GetConfigWave(sweepWave)
 
-		CreateTiledChannelGraph(graph, config, sweepNo, numericalValues, textualValues, tgs, dfr, axisLabelCache, traceIndex, experiment, channelSelWave=sweepChannelSel)
+		CreateTiledChannelGraph(graph, config, sweepNo, numericalValues, textualValues, tgs, dfr, \
+		                        axisLabelCache, traceIndex, experiment, sweepChannelSel)
 		AR_UpdateTracesIfReq(graph, dfr, sweepNo)
 	endfor
 
