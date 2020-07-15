@@ -466,7 +466,7 @@ static Function/S AD_GetBaselineFailMsg(anaFuncType, numericalValues, sweepNo, h
 End
 
 /// @brief Show the sweeps of the given `index` entry into the listbox
-Function AD_SelectResult(win, [index])
+static Function AD_SelectResult(win, [index])
 	string win
 	variable index
 
