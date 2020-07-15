@@ -722,7 +722,6 @@ Function BSP_CheckBoxProc_SweepFormula(cba) : CheckBoxControl
 		case 2: // mouse up
 			mainPanel = GetMainWindow(cba.win)
 			BSP_SetSFControlStatus(mainPanel)
-			UpdateSweepPlot(mainPanel)
 			break
 	endswitch
 
