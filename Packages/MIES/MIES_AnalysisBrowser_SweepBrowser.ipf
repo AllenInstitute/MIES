@@ -535,41 +535,16 @@ Function SB_PopupMenuSelectSweep(pa) : PopupMenuControl
 		case 2: // mouse up
 			win = pa.win
 			newSweep = pa.popNum - 1
+			SetSetVariable(win, "setvar_SweepControl_SweepNo", newSweep)
 
 			if(OVS_IsActive(win))
 				OVS_ChangeSweepSelectionState(win, CHECKBOX_SELECTED, index=newSweep)
+			else
+				UpdateSweepPlot(win)
 			endif
 
-			SetSetVariable(win, "setvar_SweepControl_SweepNo", newSweep)
-			UpdateSweepPlot(win)
 			break
 	endswitch
-End
-
-Function SB_ButtonProc_ChangeSweep(ba) : ButtonControl
-	STRUCT WMButtonAction &ba
-
-	string graph, win
-	variable first, last, index
-
-	switch(ba.eventCode)
-		case 2: // mouse up
-			win     = ba.win
-			graph   = GetMainWindow(ba.win)
-
-			[first, last] = BSP_FirstAndLastSweepAcquired(win)
-			index = BSP_UpdateSweepControls(graph, ba.ctrlName, first, last)
-
-			if(OVS_IsActive(graph))
-				OVS_ChangeSweepSelectionState(graph, CHECKBOX_SELECTED, index=index)
-			endif
-
-			SetPopupMenuIndex(win, "popup_SweepControl_Selector", index)
-			UpdateSweepPlot(graph)
-			break
-	endswitch
-
-	return 0
 End
 
 Function SB_ButtonProc_ExportTraces(ba) : ButtonControl

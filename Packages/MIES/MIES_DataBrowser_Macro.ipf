@@ -29,7 +29,7 @@ Window DataBrowser() : Graph
 	SetWindow kwTopWin,userdata(ResizeControlsHookStash)=  "ResizeControls#ResizeControlsHook"
 	Execute/Q/Z "SetWindow kwTopWin sizeLimit={324,231,inf,inf}" // sizeLimit requires Igor 7 or later
 	NewPanel/HOST=#/EXT=2/W=(0,0,580,66)  as "Sweep Control"
-	Button button_SweepControl_NextSweep,pos={333.00,0.00},size={150.00,36.00},title="Next  \\W649"
+	Button button_SweepControl_NextSweep,pos={333.00,0.00},size={150.00,36.00},proc=BSP_ButtonProc_ChangeSweep,title="Next  \\W649"
 	Button button_SweepControl_NextSweep,help={"Displays the next sweep (sweep no. = last sweep number + step)"}
 	Button button_SweepControl_NextSweep,fSize=20
 	ValDisplay valdisp_SweepControl_LastSweep,pos={231.00,3.00},size={89.00,34.00},bodyWidth=60,title="of"
@@ -48,7 +48,7 @@ Window DataBrowser() : Graph
 	SetVariable setvar_SweepControl_SweepStep,help={"Set the increment between sweeps"}
 	SetVariable setvar_SweepControl_SweepStep,userdata(lastSweep)=  "0",fSize=24
 	SetVariable setvar_SweepControl_SweepStep,limits={1,inf,1},value= _NUM:1
-	Button button_SweepControl_PrevSweep,pos={0.00,0.00},size={150.00,36.00},title="\\W646 Previous"
+	Button button_SweepControl_PrevSweep,pos={0.00,0.00},size={150.00,36.00},proc=BSP_ButtonProc_ChangeSweep,title="\\W646 Previous"
 	Button button_SweepControl_PrevSweep,help={"Displays the previous sweep (sweep no. = last sweep number - step)"}
 	Button button_SweepControl_PrevSweep,fSize=20
 	PopupMenu Popup_SweepControl_Selector,pos={144.00,39.00},size={175.00,19.00},bodyWidth=175,disable=2

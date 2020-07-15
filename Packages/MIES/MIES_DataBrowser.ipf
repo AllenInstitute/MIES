@@ -330,7 +330,7 @@ Function/WAVE DB_GetPlainSweepList(win)
 	return sweeps
 End
 
-static Function DB_UpdateLastSweepControls(win, first, last)
+Function DB_UpdateLastSweepControls(win, first, last)
 	string win
 	variable first, last
 
@@ -669,30 +669,6 @@ Function DB_CloseSettingsHistoryHook(s)
 	endswitch
 
 	return hookResult
-End
-
-Function DB_ButtonProc_ChangeSweep(ba) : ButtonControl
-	STRUCT WMButtonAction &ba
-
-	string graph, scPanel
-	variable first, last, formerLast, sweepNo
-
-	switch(ba.eventcode)
-		case 2: // mouse up
-			graph = GetMainWindow(ba.win)
-			scPanel = BSP_GetSweepControlsPanel(graph)
-
-			[first, last] = BSP_FirstAndLastSweepAcquired(scPanel)
-			DB_UpdateLastSweepControls(scPanel, first, last)
-
-			sweepNo = BSP_UpdateSweepControls(graph, ba.ctrlName, first, last)
-
-			OVS_ChangeSweepSelectionState(graph, CHECKBOX_SELECTED, sweepNO=sweepNo)
-			UpdateSweepPlot(graph)
-			break
-	endswitch
-
-	return 0
 End
 
 Function DB_ButtonProc_AutoScale(ba) : ButtonControl

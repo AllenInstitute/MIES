@@ -25,7 +25,7 @@ static StrConstant BROWSERSETTINGS_CONTROLS_DATABROWSER = "popup_DB_lockedDevice
 static StrConstant BROWSERSETTINGS_AXES_SCALING_CHECKBOXES = "check_Display_VisibleXrange;check_Display_EqualYrange;check_Display_EqualYignore"
 
 /// @brief List of controls that have specific control procedures set
-static StrConstant SWEEPCONTROL_UNSET_CONTROLPROCEDURES = "button_SweepControl_PrevSweep;button_SweepControl_NextSweep;setvar_SweepControl_SweepNo;"
+static StrConstant SWEEPCONTROL_UNSET_CONTROLPROCEDURES = "setvar_SweepControl_SweepNo"
 
 /// @brief exclusive controls that are enabled/disabled for the specific browser window type
 static StrConstant SWEEPCONTROL_CONTROLS_DATABROWSER = "check_SweepControl_AutoUpdate;setvar_SweepControl_SweepNo;"
@@ -145,8 +145,6 @@ static Function BSP_DynamicSweepControls(mainPanel)
 	ASSERT(WindowExists(scPanel), "external SweepControl Panel not found")
 
 	SetWindow $scPanel, hook(main)=BSP_ClosePanelHook
-
-	SetControlProcedures(scPanel, "button_SweepControl_PrevSweep;button_SweepControl_NextSweep", BSP_AddBrowserPrefix(mainPanel, "ButtonProc_ChangeSweep"))
 
 	SetSetVariable(scPanel, "setvar_SweepControl_SweepNo", 0)
 	SetSetVariableLimits(scPanel, "setvar_SweepControl_SweepNo", 0, 0, 1)
@@ -298,17 +296,6 @@ Function BSP_BindListBoxWaves(win)
 	// sweep formula tab
 	SetValDisplay(bsPanel, "status_sweepFormula_parser", var=1)
 	SetSetVariableString(bsPanel, "setvar_sweepFormula_parseResult", "")
-End
-
-/// @brief add SB_* or DB_* prefix to the input string depending on current window
-Function/S BSP_AddBrowserPrefix(win, str)
-	string win, str
-
-	if(BSP_IsDataBrowser(win))
-		return "DB_" + str
-	else
-		return "SB_" + str
-	endif
 End
 
 /// @brief Get the channel selection wave
@@ -1382,4 +1369,35 @@ Function [variable first, variable last] BSP_FirstAndLastSweepAcquired(string wi
 	endif
 
 	return [sweeps[0], sweeps[DimSize(sweeps, ROWS) - 1]]
+End
+
+Function BSP_ButtonProc_ChangeSweep(ba) : ButtonControl
+	STRUCT WMButtonAction &ba
+
+	string graph, scPanel
+	variable first, last, formerLast, sweepNo
+	variable index
+
+	switch(ba.eventcode)
+		case 2: // mouse up
+			graph = GetMainWindow(ba.win)
+			scPanel = BSP_GetSweepControlsPanel(graph)
+
+			[first, last] = BSP_FirstAndLastSweepAcquired(graph)
+
+			if(BSP_IsDataBrowser(graph))
+				DB_UpdateLastSweepControls(graph, first, last)
+				sweepNo = BSP_UpdateSweepControls(graph, ba.ctrlName, first, last)
+				OVS_ChangeSweepSelectionState(graph, CHECKBOX_SELECTED, sweepNo=sweepNo)
+			else
+				index = BSP_UpdateSweepControls(graph, ba.ctrlName, first, last)
+				SetPopupMenuIndex(scPanel, "popup_SweepControl_Selector", index)
+				OVS_ChangeSweepSelectionState(graph, CHECKBOX_SELECTED, index=index)
+			endif
+
+			UpdateSweepPlot(graph)
+			break
+	endswitch
+
+	return 0
 End
