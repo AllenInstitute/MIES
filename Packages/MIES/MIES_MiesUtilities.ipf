@@ -2384,7 +2384,7 @@ Function CreateTiledChannelGraph(graph, config, sweepNo, numericalValues,  textu
 	variable numTTLBits, colorIndex, headstage
 	variable delayOnsetUser, delayOnsetAuto, delayTermination, delaydDAQ, dDAQEnabled, oodDAQEnabled
 	variable stimSetLength, samplingInt, xRangeStart, xRangeEnd, first, last, count, ttlBit
-	variable numDACsOriginal, numADCsOriginal, numTTLsOriginal, numRegions, numEntries, numRangesPerEntry
+	variable numRegions, numEntries, numRangesPerEntry
 	variable totalXRange = NaN
 
 	string trace, traceType, channelID, axisLabel, entry, range, traceRange, traceColor
@@ -2401,14 +2401,8 @@ Function CreateTiledChannelGraph(graph, config, sweepNo, numericalValues,  textu
 	WAVE DACs = GetDACListFromConfig(config)
 	WAVE TTLs = GetTTLListFromConfig(config)
 
-	Duplicate/FREE ADCs, ADCsOriginal
-	Duplicate/FREE DACs, DACsOriginal
-	Duplicate/FREE TTLs, TTLsOriginal
-	numDACsOriginal = DimSize(DACs, ROWS)
-	numADCsOriginal = DimSize(ADCs, ROWS)
-	numTTLsOriginal = DimSize(TTLs, ROWS)
-
 	BSP_RemoveDisabledChannels(channelSelWave, ADCs, DACs, numericalValues, sweepNo)
+
 	numDACs = DimSize(DACs, ROWS)
 	numADCs = DimSize(ADCs, ROWS)
 	numTTLs = DimSize(TTLs, ROWS)
