@@ -485,6 +485,10 @@ Function [variable sweepNo, string experiment] OVS_GetSweepAndExperiment(string 
 	WAVE/T listBoxWave = GetOverlaySweepsListWave(dfr)
 
 	if(BSP_IsDataBrowser(win))
+		if(index < 0 || index >= DimSize(listBoxWave, ROWS) || !IsFinite(index))
+			return [NaN, ""]
+		endif
+
 		return [str2num(listBoxWave[index][%Sweep]), GetExperimentName()]
 	endif
 
@@ -493,7 +497,11 @@ Function [variable sweepNo, string experiment] OVS_GetSweepAndExperiment(string 
 	DFREF sweepBrowserDFR = SB_GetSweepBrowserFolder(graph)
 	WAVE/T sweepMap = GetSweepBrowserMap(sweepBrowserDFR)
 
-	return [str2num(sweepMap[index][%Sweep]), sweepMap[index][%Experiment]]
+	if(index < 0 || index >= DimSize(sweepMap, ROWS) || !IsFinite(index))
+		return [NaN, ""]
+	endif
+
+	return [str2num(sweepMap[index][%Sweep]), sweepMap[index][%FileName]]
 End
 
 /// @brief Change the selected sweep according to one of the popup menu options
