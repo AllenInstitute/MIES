@@ -574,11 +574,19 @@ Function OVS_MainListBoxProc(lba) : ListBoxControl
 		case 7:  // end edit
 			win = lba.win
 			OVS_HighlightSweep(win, NaN)
-			UpdateSweepPlot(win)
+			if(lba.selWave[lba.row] & LISTBOX_CHECKBOX_SELECTED)
+				UpdateSweepInGraph(win, lba.row)
+				PostPlotTransformations(win)
+			endif
 			break
 		case 13: // checkbox clicked
 			win = lba.win
-			UpdateSweepPlot(win)
+			if(lba.selWave[lba.row] & LISTBOX_CHECKBOX_SELECTED)
+				AddSweepToGraph(win, lba.row)
+			else
+				RemoveSweepFromGraph(win, lba.row)
+			endif
+			PostPlotTransformations(win)
 			break
 	endswitch
 
