@@ -550,16 +550,15 @@ Function SB_ButtonProc_ChangeSweep(ba) : ButtonControl
 	STRUCT WMButtonAction &ba
 
 	string graph, win
-	variable firstSweep, lastSweep, index
+	variable first, last, index
 
 	switch(ba.eventCode)
 		case 2: // mouse up
 			win     = ba.win
 			graph   = GetMainWindow(ba.win)
 
-			firstSweep = 0
-			lastSweep = ItemsInList(SB_GetSweepList(graph)) - 1
-			index = BSP_UpdateSweepControls(graph, ba.ctrlName, firstSweep, lastSweep)
+			[first, last] = BSP_FirstAndLastSweepAcquired(win)
+			index = BSP_UpdateSweepControls(graph, ba.ctrlName, first, last)
 
 			if(OVS_IsActive(graph))
 				OVS_ChangeSweepSelectionState(graph, CHECKBOX_SELECTED, index=index)

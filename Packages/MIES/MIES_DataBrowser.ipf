@@ -283,7 +283,7 @@ static Function/S DB_LockToDevice(win, device)
 	if(windowExists(BSP_GetPanel(newWindow)) && BSP_HasBoundDevice(newWindow))
 		BSP_DynamicStartupSettings(newWindow)
 		DB_DynamicSettingsHistory(newWindow)
-		[first, last] = DB_FirstAndLastSweepAcquired(newWindow)
+		[first, last] = BSP_FirstAndLastSweepAcquired(newWindow)
 		DB_UpdateLastSweepControls(newWindow, first, last)
 	endif
 
@@ -328,18 +328,6 @@ Function/WAVE DB_GetPlainSweepList(win)
 	Make/FREE/R/N=(ItemsInList(list)) sweeps = ExtractSweepNumber(StringFromList(p, list))
 
 	return sweeps
-End
-
-static Function [variable first, variable last] DB_FirstAndLastSweepAcquired(string win)
-	string list
-
-	WAVE/Z sweeps = DB_GetPlainSweepList(win)
-
-	if(!WaveExists(sweeps))
-		return [NaN, NaN]
-	endif
-
-	return [sweeps[0], sweeps[DimSize(sweeps, ROWS) - 1]]
 End
 
 static Function DB_UpdateLastSweepControls(win, first, last)
@@ -556,7 +544,7 @@ Function DB_UpdateToLastSweep(win)
 		return NaN
 	endif
 
-	[first, last] = DB_FirstAndLastSweepAcquired(win)
+	[first, last] = BSP_FirstAndLastSweepAcquired(win)
 	DB_UpdateLastSweepControls(win, first, last)
 	SetSetVariable(scPanel, "setvar_SweepControl_SweepNo", last)
 
@@ -687,17 +675,17 @@ Function DB_ButtonProc_ChangeSweep(ba) : ButtonControl
 	STRUCT WMButtonAction &ba
 
 	string graph, scPanel
-	variable firstSweep, lastSweep, formerLast, sweepNo
+	variable first, last, formerLast, sweepNo
 
 	switch(ba.eventcode)
 		case 2: // mouse up
 			graph = GetMainWindow(ba.win)
 			scPanel = BSP_GetSweepControlsPanel(graph)
 
-			[firstSweep, lastSweep] = DB_FirstAndLastSweepAcquired(scPanel)
-			DB_UpdateLastSweepControls(scPanel, firstSweep, lastSweep)
+			[first, last] = BSP_FirstAndLastSweepAcquired(scPanel)
+			DB_UpdateLastSweepControls(scPanel, first, last)
 
-			sweepNo = BSP_UpdateSweepControls(graph, ba.ctrlName, firstSweep, lastSweep)
+			sweepNo = BSP_UpdateSweepControls(graph, ba.ctrlName, first, last)
 
 			OVS_ChangeSweepSelectionState(graph, CHECKBOX_SELECTED, sweepNO=sweepNo)
 			DB_UpdateSweepPlot(graph)

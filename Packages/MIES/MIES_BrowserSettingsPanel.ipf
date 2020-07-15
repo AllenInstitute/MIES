@@ -1370,3 +1370,16 @@ Function/WAVE BSP_FetchSelectedChannels(string graph, [variable index, variable 
 
 	return channelSel
 End
+
+/// @brief Return the last and first sweep numbers
+Function [variable first, variable last] BSP_FirstAndLastSweepAcquired(string win)
+	string list
+
+	WAVE/Z sweeps = GetPlainSweepList(win)
+
+	if(!WaveExists(sweeps))
+		return [NaN, NaN]
+	endif
+
+	return [sweeps[0], sweeps[DimSize(sweeps, ROWS) - 1]]
+End
