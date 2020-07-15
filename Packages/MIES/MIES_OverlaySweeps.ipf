@@ -379,7 +379,19 @@ Function/WAVE OVS_ParseIgnoreList(win, [sweepNo, index])
 		if(start == -1 && stop == -1) // ignore all
 			activeHS = 0
 			return activeHS
-		elseif(stop == -1)
+		endif
+
+		if(stop != -1 && (stop < 0 || stop >= NUM_HEADSTAGES))
+			printf "Overlay sweeps ignore list invalid for sweep %d", sweepNo
+			ControlWindowToFront()
+			continue
+		elseif(start < 0 || start >= NUM_HEADSTAGES)
+			printf "Overlay sweeps ignore list invalid for sweep %d", sweepNo
+			ControlWindowToFront()
+			continue
+		endif
+
+		if(stop == -1)
 			activeHS[start, inf]  = 0
 		else
 			activeHS[start, stop] = 0
