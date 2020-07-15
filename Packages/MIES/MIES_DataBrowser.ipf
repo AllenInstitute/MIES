@@ -548,12 +548,16 @@ Function DB_UpdateToLastSweep(win)
 	DB_UpdateLastSweepControls(win, first, last)
 	SetSetVariable(scPanel, "setvar_SweepControl_SweepNo", last)
 
-	if(OVS_IsActive(win) && GetCheckBoxState(bsPanel, "check_overlaySweeps_non_commula"))
-		OVS_ChangeSweepSelectionState(win, CHECKBOX_UNSELECTED, sweepNo=last - 1)
+	if(OVS_IsActive(win))
+		if(GetCheckBoxState(bsPanel, "check_overlaySweeps_non_commula"))
+			OVS_ChangeSweepSelectionState(win, CHECKBOX_UNSELECTED, sweepNo=last - 1)
+		endif
+
+		OVS_ChangeSweepSelectionState(win, CHECKBOX_SELECTED, sweepNo=last)
+	else
+		UpdateSweepPlot(win)
 	endif
 
-	OVS_ChangeSweepSelectionState(win, CHECKBOX_SELECTED, sweepNo=last)
-	UpdateSweepPlot(win)
 	if(SF_IsActive(win))
 		PGC_SetAndActivateControl(bsPanel, "button_sweepFormula_display")
 	endif
@@ -752,8 +756,11 @@ Function DB_SetVarProc_SweepNo(sva) : SetVariableControl
 			sweepNo = sva.dval
 			win = sva.win
 
-			UpdateSweepPlot(win)
-			OVS_ChangeSweepSelectionState(win, CHECKBOX_SELECTED, sweepNO=sweepNo)
+			if(OVS_IsActive(win))
+				OVS_ChangeSweepSelectionState(win, CHECKBOX_SELECTED, sweepNo=sweepNo)
+			else
+				UpdateSweepPlot(win)
+			endif
 			break
 	endswitch
 

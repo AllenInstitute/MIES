@@ -233,6 +233,8 @@ End
 
 /// @brief Change the selection state of the the given sweep in the listbox wave
 ///
+/// Triggers a update for the affected sweep.
+///
 /// @param win      panel
 /// @param sweepNo  [optional] sweep number
 /// @param index    [optional] index into the listbox wave
@@ -272,6 +274,9 @@ Function OVS_ChangeSweepSelectionState(win, newState, [sweepNo, index])
 	else
 		listboxSelWave[index] = ClearBit(listboxSelWave[index], LISTBOX_CHECKBOX_SELECTED)
 	endif
+
+	UpdateSweepInGraph(win, index)
+	PostPlotTransformations(win)
 End
 
 /// checks if OVS is active.

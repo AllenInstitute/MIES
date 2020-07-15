@@ -1275,9 +1275,10 @@ Function BSP_CheckProc_OverlaySweeps(cba) : CheckBoxControl
 					index = GetPopupMenuIndex(scPanel, "popup_SweepControl_Selector")
 					OVS_ChangeSweepSelectionState(bsPanel, CHECKBOX_SELECTED, index=index)
 				endif
+			else
+				UpdateSweepPlot(graph)
 			endif
 
-			UpdateSweepPlot(graph)
 			break
 	endswitch
 
@@ -1375,13 +1376,14 @@ Function BSP_ButtonProc_ChangeSweep(ba) : ButtonControl
 	STRUCT WMButtonAction &ba
 
 	string graph, scPanel
-	variable first, last, formerLast, sweepNo
+	variable first, last, formerLast, sweepNo, overlaySweeps
 	variable index
 
 	switch(ba.eventcode)
 		case 2: // mouse up
 			graph = GetMainWindow(ba.win)
 			scPanel = BSP_GetSweepControlsPanel(graph)
+			overlaySweeps = OVS_IsActive(graph)
 
 			[first, last] = BSP_FirstAndLastSweepAcquired(graph)
 
@@ -1395,7 +1397,9 @@ Function BSP_ButtonProc_ChangeSweep(ba) : ButtonControl
 				OVS_ChangeSweepSelectionState(graph, CHECKBOX_SELECTED, index=index)
 			endif
 
-			UpdateSweepPlot(graph)
+			if(!overlaySweeps)
+				UpdateSweepPlot(graph)
+			endif
 			break
 	endswitch
 
