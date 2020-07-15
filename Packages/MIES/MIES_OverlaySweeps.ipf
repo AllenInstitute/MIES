@@ -243,8 +243,6 @@ Function OVS_ChangeSweepSelectionState(win, newState, [sweepNo, index])
 	string win
 	variable sweepNo, index, newState
 
-	variable selectionState
-
 	if(!OVS_IsActive(win))
 		return NaN
 	endif
@@ -287,8 +285,6 @@ End
 static Function OVS_AddToIgnoreList(win, headstage, [sweepNo, index])
 	string win
 	variable headstage, sweepNo, index
-
-	variable row
 
 	if(!OVS_IsActive(win))
 		return NaN
