@@ -554,8 +554,8 @@ Function DB_UpdateToLastSweep(win)
 	variable first, last
 	string bsPanel, scPanel
 
-	bsPanel   = BSP_GetPanel(win)
-	scPanel   = BSP_GetSweepControlsPanel(win)
+	bsPanel = BSP_GetPanel(win)
+	scPanel = BSP_GetSweepControlsPanel(win)
 
 	if(!HasPanelLatestVersion(win, DATABROWSER_PANEL_VERSION))
 		print "Can not display data. The Databrowser panel is too old to be usable. Please close it and open a new one."
