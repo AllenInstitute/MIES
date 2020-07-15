@@ -487,6 +487,8 @@ Function CA_OutputCacheStatistics()
 	WAVE stats = GetCacheStatsWave()
 	index = GetNumberFromWaveNote(stats, NOTE_INDEX)
 
+	printf "Number of entries: %d\r", index
+
 	printf "\r"
 	printf "%s   | %s | %s | %s (MB)\r",  GetDimLabel(stats, COLS, 0), GetDimLabel(stats, COLS, 1), GetDimLabel(stats, COLS, 2), GetDimLabel(stats, COLS, 3)
 	printf "---------------------------------------------------\r"

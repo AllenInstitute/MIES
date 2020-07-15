@@ -17,11 +17,11 @@ static strConstant BROWSERTYPE_DATABROWSER  = "D"
 static strConstant BROWSERTYPE_SWEEPBROWSER = "S"
 
 /// @brief List of controls that have specific control procedures set
-static StrConstant BROWSERSETTING_UNSET_CONTROLPROCEDURES = "check_BrowserSettings_DAC;check_BrowserSettings_ADC;check_BrowserSettings_TTL;check_BrowserSettings_splitTTL;check_BrowserSettings_OChan;check_BrowserSettings_dDAQ;check_Calculation_AverageTraces;check_Calculation_ZeroTraces;button_Calculation_RestoreData;check_Display_VisibleXrange;check_SweepControl_HideSweep;slider_BrowserSettings_dDAQ;button_TimeAlignment_Action;"
+static StrConstant BROWSERSETTING_UNSET_CONTROLPROCEDURES = "check_BrowserSettings_DAC;check_BrowserSettings_ADC;check_BrowserSettings_TTL;check_BrowserSettings_splitTTL;check_BrowserSettings_OChan;check_BrowserSettings_dDAQ;check_Calculation_AverageTraces;check_Calculation_ZeroTraces;button_Calculation_RestoreData;check_SweepControl_HideSweep;slider_BrowserSettings_dDAQ;"
 
 /// @brief exclusive controls that are enabled/disabled for the specific browser window type
 static StrConstant BROWSERSETTINGS_CONTROLS_DATABROWSER = "popup_DB_lockedDevices;"
-static StrConstant BROWSERSETTINGS_CONTROLS_SWEEPBROWSER = "check_Display_EqualYrange;check_Display_EqualYignore;"
+static StrConstant BROWSERSETTINGS_AXES_SCALING_CHECKBOXES = "check_Display_VisibleXrange;check_Display_EqualYrange;check_Display_EqualYignore"
 
 /// @brief List of controls that have specific control procedures set
 static StrConstant SWEEPCONTROL_UNSET_CONTROLPROCEDURES = "button_SweepControl_PrevSweep;button_SweepControl_NextSweep;setvar_SweepControl_SweepNo;"
@@ -206,16 +206,12 @@ Function BSP_DynamicStartupSettings(mainPanel)
 	controls = "check_BrowserSettings_DAC;check_BrowserSettings_ADC;check_BrowserSettings_TTL;check_BrowserSettings_splitTTL;check_BrowserSettings_OChan;check_BrowserSettings_dDAQ;check_Calculation_AverageTraces;check_Calculation_ZeroTraces;"
 	SetControlProcedures(bsPanel, controls, BSP_AddBrowserPrefix(mainPanel, "CheckProc_ChangedSetting"))
 	SetControlProcedure(bsPanel, "button_Calculation_RestoreData", BSP_AddBrowserPrefix(mainPanel, "ButtonProc_RestoreData"))
-	SetControlProcedure(bsPanel, "check_Display_VisibleXrange", BSP_AddBrowserPrefix(mainPanel, "CheckProc_ScaleAxes"))
 	SetControlProcedures(bsPanel, "check_SweepControl_HideSweep;", BSP_AddBrowserPrefix(mainPanel, "CheckProc_ChangedSetting"))
 	SetControlProcedures(bsPanel, "slider_BrowserSettings_dDAQ;", "BSP_SliderProc_ChangedSetting")
-	SetControlProcedures(bsPanel, "button_TimeAlignment_Action", BSP_AddBrowserPrefix(mainPanel, "DoTimeAlignment"))
 
 	if(BSP_IsDataBrowser(mainPanel))
 		EnableControls(bsPanel, BROWSERSETTINGS_CONTROLS_DATABROWSER)
-		DisableControls(bsPanel, BROWSERSETTINGS_CONTROLS_SWEEPBROWSER)
 	else
-		EnableControls(bsPanel, BROWSERSETTINGS_CONTROLS_SWEEPBROWSER)
 		DisableControls(bsPanel, BROWSERSETTINGS_CONTROLS_DATABROWSER)
 		DisableControls(bsPanel, "list_dashboard;check_BrowserSettings_DB_Failed;check_BrowserSettings_DB_Passed")
 	endif
@@ -325,7 +321,7 @@ Function/S BSP_AddBrowserPrefix(win, str)
 	endif
 End
 
-/// @brief get the channel selection wave stored in main window property CSW_FOLDER
+/// @brief Get the channel selection wave
 ///
 /// @param win 	name of external panel or main window
 /// @returns channel selection wave
@@ -811,7 +807,6 @@ Function BSP_SliderProc_ChangedSetting(spa) : SliderControl
 	return 0
 End
 
-/// @see SB_DoTimeAlignment DB_DoTimeAlignment
 Function BSP_TimeAlignmentProc(cba) : CheckBoxControl
 	STRUCT WMCheckBoxAction &cba
 
@@ -842,6 +837,82 @@ Function BSP_TimeAlignmentLevel(sva) : SetVariableControl
 		case 2: // Enter key
 		case 3: // Live update
 			UpdateSettingsPanel(sva.win)
+			break
+	endswitch
+
+	return 0
+End
+
+Function BSP_DoTimeAlignment(ba) : ButtonControl
+	STRUCT WMButtonAction &ba
+
+	string graph, win
+
+	switch(ba.eventCode)
+		case 2: // mouse up
+
+			win = ba.win
+			graph = GetMainWindow(win)
+
+			if(!BSP_HasBoundDevice(win))
+				UpdateSettingsPanel(win)
+				return NaN
+			endif
+
+			PostPlotTransformations(graph)
+			break
+	endswitch
+
+	return 0
+End
+
+Function BSP_CheckProc_ScaleAxes(cba) : CheckBoxControl
+	STRUCT WMCheckboxAction &cba
+
+	string ctrls, graph, bsPanel
+	variable numCtrls, i
+
+	graph   = GetMainWindow(cba.win)
+	bsPanel = BSP_GetPanel(graph)
+
+	switch( cba.eventCode )
+		case 2: // mouse up
+			if(cba.checked)
+				ctrls = ListMatch(BROWSERSETTINGS_AXES_SCALING_CHECKBOXES, "!" + cba.ctrlName)
+				numCtrls = ItemsInList(ctrls)
+				for(i = 0; i < numCtrls; i += 1)
+					SetCheckBoxState(bsPanel, StringFromList(i, ctrls), CHECKBOX_UNSELECTED)
+				endfor
+			endif
+
+			if(GetCheckBoxState(bsPanel, "check_Display_EqualYignore"))
+				EnableControl(bsPanel, "setvar_Display_EqualYlevel")
+			else
+				DisableControl(bsPanel, "setvar_Display_EqualYlevel")
+			endif
+
+			BSP_ScaleAxes(graph)
+			break
+	endswitch
+
+	return 0
+End
+
+Function BSP_AxisScalingLevelCross(sva) : SetVariableControl
+	STRUCT WMSetVariableAction &sva
+
+	string graph, bsPanel
+
+	graph   = GetMainWindow(sva.win)
+	bsPanel = BSP_GetPanel(graph)
+
+	switch(sva.eventCode)
+		case 1: // mouse up
+		case 2: // Enter key
+		case 3: // Live update
+			if(GetCheckBoxState(bsPanel, "check_Display_EqualYignore"))
+				BSP_ScaleAxes(graph)
+			endif
 			break
 	endswitch
 
@@ -1110,4 +1181,51 @@ Function BSP_RemoveDisabledChannels(channelSel, ADCs, DACs, numericalValues, swe
 			DeletePoints/M=(ROWS) i, 1, DACs
 		endif
 	endfor
+End
+
+Function BSP_ScaleAxes(win)
+	string win
+
+	string graph, bsPanel
+	variable visXRange, equalY, equalYIgn, level
+
+	graph      = GetMainWindow(win)
+	bsPanel    = BSP_GetPanel(win)
+	visXRange  = GetCheckBoxState(bsPanel, "check_Display_VisibleXrange")
+	equalY     = GetCheckBoxState(bsPanel, "check_Display_EqualYrange")
+	equalYIgn  = GetCheckBoxState(bsPanel, "check_Display_EqualYignore")
+
+	ASSERT(visXRange + equalY + equalYIgn <= 1, "Only one scaling mode is allowed to be selected")
+
+	if(visXRange)
+		AutoscaleVertAxisVisXRange(graph)
+	elseif(equalY)
+		EqualizeVerticalAxesRanges(graph, ignoreAxesWithLevelCrossing=0)
+	elseif(equalYIgn)
+		level = GetSetVariable(bsPanel, "setvar_Display_EqualYlevel")
+		EqualizeVerticalAxesRanges(graph, ignoreAxesWithLevelCrossing=1, level=level)
+	else
+		// do nothing
+	endif
+End
+
+Function [STRUCT TiledGraphSettings tgs] BSP_GatherTiledGraphSettings(string win)
+
+	string bsPanel
+
+	bsPanel = BSP_GetPanel(win)
+
+	tgs.displayDAC           = GetCheckBoxState(bsPanel, "check_BrowserSettings_DAC")
+	tgs.displayTTL           = GetCheckBoxState(bsPanel, "check_BrowserSettings_TTL")
+	tgs.displayADC           = GetCheckBoxState(bsPanel, "check_BrowserSettings_ADC")
+	tgs.overlaySweep         = GetCheckBoxState(bsPanel, "check_BrowserSettings_OVS")
+	tgs.splitTTLBits         = GetCheckBoxState(bsPanel, "check_BrowserSettings_splitTTL")
+	tgs.overlayChannels      = GetCheckBoxState(bsPanel, "check_BrowserSettings_OChan")
+	tgs.dDAQDisplayMode      = GetCheckBoxState(bsPanel, "check_BrowserSettings_dDAQ")
+	tgs.dDAQHeadstageRegions = GetSliderPositionIndex(bsPanel, "slider_BrowserSettings_dDAQ")
+	tgs.hideSweep            = GetCheckBoxState(bsPanel, "check_SweepControl_HideSweep")
+
+	if(tgs.overlayChannels)
+		tgs.splitTTLBits = 0
+	endif
 End

@@ -2058,6 +2058,266 @@ Function/S BuildDeviceString(deviceType, deviceNumber)
 	endif
 End
 
+/// @brief Layout the DataBrowser/SweepBrowser graph
+///
+/// Takes also care of adding free axis for the headstage display.
+///
+/// Concept:
+/// - Block [#]: One axis with surrounded GRAPH_DIV_SPACING space
+/// - Slot [#]: Unit of vertical space, a block can occupy multiple slots
+/// - We have 100% space for all axes
+/// - AD axes should occupy four times the space of DA/TTL channels
+/// - So DA/TTL occupy one slot, AD occupy four slots
+/// - Between each axes we want GRAPH_DIV_SPACING clear space
+/// - Count the number of vertical blocks and slots to be used
+/// - Derive the space per slot
+/// - For overlay channels we reserve only one slot times slot multiplier
+///   per channel
+///
+/// The display order from top to bottom:
+/// - Associated channels (above: DA, below: AD) with increasing headstage number
+/// - Unassociated channels (above: DA, below: AD)
+/// - TTL channels
+///
+/// For overlayed channels we have up to three blocks (DA, AD, TTL) in that order.
+Function LayoutGraph(string win, STRUCT TiledGraphSettings &tgs)
+
+	variable i, numSlots, headstage,  numBlocksTTL, numBlocks, spacePerSlot
+	variable numBlocksDA, numBlocksAD, first, firstFreeAxis, lastFreeAxis, orientation
+	variable numBlocksUnassocDA, numBlocksUnassocAD, numBlocksHS
+	string graph, regex, freeAxis, axis
+	variable last = 1.0
+
+	graph = GetMainWindow(win)
+	RemoveFreeAxisFromGraph(graph)
+
+	WAVE/T/Z allVerticalAxesNonUnique = TUD_GetUserDataAsWave(graph, "YAXIS")
+
+	if(!WaveExists(allVerticalAxesNonUnique))
+		// empty graph
+		return NaN
+	endif
+
+	WAVE/T allVerticalAxes = GetUniqueEntries(allVerticalAxesNonUnique)
+
+	WAVE/T allHorizontalAxesNonUnique = TUD_GetUserDataAsWave(graph, "XAXIS")
+	WAVE/T allHorizontalAxes = GetUniqueEntries(allHorizontalAxesNonUnique)
+
+	if(tgs.overLayChannels)
+		// up to three blocks
+
+		regex = ".*DA$"
+		WAVE/T/Z DAaxes = GrepWave(allVerticalAxes, regex)
+		numBlocksDA = WaveExists(DAaxes) ? DimSize(DAaxes, ROWS) : 0
+
+		regex = ".*AD$"
+		WAVE/T/Z ADaxes = GrepWave(allVerticalAxes, regex)
+		numBlocksAD = WaveExists(ADaxes) ? DimSize(ADaxes, ROWS) : 0
+
+		regex = ".*TTL$"
+		WAVE/T/Z TTLaxes = GrepWave(allVerticalAxes, regex)
+		numBlocksTTL = WaveExists(TTLaxes) ? DimSize(TTLaxes, ROWS) : 0
+
+		numBlocks = numBlocksAD + numBlocksDA + numBlocksTTL
+		numSlots = ADC_SLOT_MULTIPLIER * numBlocksAD + numBlocksDA + numBlocksTTL
+
+		spacePerSlot = (1.0 - (numBlocks - 1) * GRAPH_DIV_SPACING) / numSlots
+
+		if(WaveExists(DAaxes))
+			EnableAxis(graph, DAaxes, spacePerSlot, first, last)
+		endif
+
+		if(WaveExists(ADaxes))
+			EnableAxis(graph, ADaxes, ADC_SLOT_MULTIPLIER * spacePerSlot, first, last)
+		endif
+
+		if(WaveExists(TTLaxes))
+			EnableAxis(graph, TTLaxes, spacePerSlot, first, last)
+		endif
+
+		ASSERT(first < 1e-15, "Left over space")
+		TweakAxes(graph, tgs, allVerticalAxes, allHorizontalAxes)
+
+		return NaN
+	endif
+
+	// unassociated DA
+
+	WAVE/T/Z unassocDANonUnique = TUD_GetUserDataAsWave(graph, "channelNumber", keys = {"channelType", "headstage"}, values = {"DA", "NaN"})
+	if(WaveExists(unassocDANonUnique))
+		WAVE/Z unassocDA = ConvertToUniqueNumber(unAssocDANonUnique, doSort = 1)
+	endif
+
+	numBlocksUnassocDA = WaveExists(unassocDA) ? DimSize(unassocDA, ROWS) : 0
+
+	// unassociated AD
+
+	WAVE/T/Z unassocADNonUnique = TUD_GetUserDataAsWave(graph, "channelNumber", keys = {"channelType", "headstage"}, values = {"AD", "NaN"})
+	if(WaveExists(unassocADNonUnique))
+		WAVE/Z unassocAD = ConvertToUniqueNumber(unassocADNonUnique, doSort = 1)
+	endif
+
+	numBlocksUnassocAD = WaveExists(unassocAD) ? DimSize(unassocAD, ROWS) : 0
+
+	// number of headstages
+	WAVE/T/Z headstagesNonUnique = TUD_GetUserDataAsWave(graph, "headstage")
+	WAVE/Z headstages = ConvertToUniqueNumber(headstagesNonUnique, zapNaNs = 1, doSort = 1)
+
+	numBlocksHS = WaveExists(headstages) ? DimSize(headstages, ROWS) : 0
+
+	// associated DA channels
+	regex = ".*col0_DA_(?:[[:digit:]]{1,2})_HS_(?:[[:digit:]]{1,2})$"
+	WAVE/T/Z axes = GrepWave(allVerticalAxes, regex)
+	numBlocksDA = WaveExists(axes) ? DimSize(axes, ROWS) : 0
+
+	// associated AD channels
+	regex = ".*col0_AD_(?:[[:digit:]]{1,2})_HS_(?:[[:digit:]]{1,2})$"
+	WAVE/T/Z axes = GrepWave(allVerticalAxes, regex)
+	numBlocksAD = WaveExists(axes) ? DimSize(axes, ROWS) : 0
+
+	// create a text wave with all plotted TTL data in the form `TTL_$channel(_$ttlBit)?`
+	WAVE/Z TTLsIndizes = TUD_GetUserDataAsWave(graph, "channelNumber", keys = {"channelType"}, values = {"TTL"}, returnIndizes = 1)
+
+	if(WaveExists(TTLsIndizes))
+		WAVE/T graphUserData = GetGraphUserData(graph)
+		Make/FREE/T/N=(DimSize(TTLsIndizes, ROWS)) ttlsWithBitsUnsorted = "TTL_" + graphUserData[TTLsIndizes[p]][%channelNumber] + \
+					                                                      "_" + graphUserData[TTLsIndizes[p]][%TTLBit]
+		WAVE/T ttlsWithBits = GetUniqueEntries(ttlsWithBitsUnsorted)
+	endif
+
+	numBlocksTTL = WaveExists(ttlsWithBits) ? DimSize(ttlsWithBits, ROWS) : 0
+
+	// Headstage: 5 slots
+	// Unassoc DA: 1 slot
+	// Unassoc DA: 4 slots
+	// TTL: 1 slot per ttlsWithBits
+
+	numBlocks = numBlocksAD + numBlocksDA + numBlocksUnassocDA + numBlocksUnassocAD + numBlocksTTL
+	numSlots = ADC_SLOT_MULTIPLIER * numBlocksAD + numBlocksDA + numBlocksUnassocDA + ADC_SLOT_MULTIPLIER * numBlocksUnassocAD + numBlocksTTL
+
+	spacePerSlot = (1.0 - (numBlocks - 1) * GRAPH_DIV_SPACING) / numSlots
+
+	// starting from the top
+	// headstages with associated channels
+	for(i = 0; i < numBlocksHS; i += 1)
+		headstage = headstages[i]
+		regex = ".*DA_(?:[[:digit:]]{1,2})_HS_" + num2str(headstage)
+		WAVE/T/Z axes = GrepWave(allVerticalAxes, regex)
+
+		lastFreeAxis = last
+
+		if(WaveExists(axes))
+			EnableAxis(graph, axes, spacePerSlot, first, last)
+		endif
+
+		regex = ".*AD_(?:[[:digit:]]{1,2})_HS_" + num2str(headstage)
+		WAVE/T/Z axes = GrepWave(allVerticalAxes, regex)
+		if(WaveExists(axes))
+			EnableAxis(graph, axes, ADC_SLOT_MULTIPLIER * spacePerSlot, first, last)
+		endif
+
+		firstFreeAxis = first
+
+		freeAxis = "freeaxis_hs" + num2str(headstage)
+		NewFreeAxis/W=$graph $freeAxis
+		ModifyGraph/W=$graph standoff($freeAxis)=0, lblPosMode($freeAxis)=2, axRGB($freeAxis)=(65535,65535,65535,0), tlblRGB($freeAxis)=(65535,65535,65535,0), alblRGB($freeAxis)=(0,0,0), lblMargin($freeAxis)=0, lblLatPos($freeAxis)=0
+		ModifyGraph/W=$graph axisEnab($freeAxis)={firstFreeAxis, lastFreeAxis}
+		Label/W=$graph $freeAxis "HS" + num2str(headstage)
+	endfor
+
+	// unassoc DA
+	for(i = 0; i < numBlocksUnassocDA; i += 1)
+		regex = ".*DA_" + num2str(unassocDA[i]) + "_HS_NaN"
+		WAVE/T/Z axes = GrepWave(allVerticalAxes, regex)
+		ASSERT(WaveExists(axes), "Unexpected number of matches")
+		EnableAxis(graph, axes, spacePerSlot, first, last)
+	endfor
+
+	// unassoc AD
+	for(i = 0; i < numBlocksUnassocAD; i += 1)
+		regex = ".*AD_" + num2str(unassocAD[i]) + "_HS_NaN"
+		WAVE/T/Z axes = GrepWave(allVerticalAxes, regex)
+		ASSERT(WaveExists(axes), "Unexpected number of matches")
+		EnableAxis(graph, axes, ADC_SLOT_MULTIPLIER * spacePerSlot, first, last)
+	endfor
+
+	// TTLs
+	for(i = 0; i < numBlocksTTL; i += 1)
+		regex = ttlsWithBits[i]
+		WAVE/T/Z axes = GrepWave(allVerticalAxes, regex)
+		ASSERT(WaveExists(axes), "Unexpected number of matches")
+		EnableAxis(graph, axes, spacePerSlot, first, last)
+
+		if(tgs.splitTTLBits)
+			axis = axes[0]
+			ModifyGraph/W=$graph nticks($axis)=2, manTick($axis)={0,1,0,0}, manMinor($axis)={0,50}
+		endif
+	endfor
+
+	ASSERT(first < 1e-15, "Left over space")
+	TweakAxes(graph, tgs, allVerticalAxes, allHorizontalAxes)
+End
+
+static Function TweakAxes(string graph, STRUCT TiledGraphSettings &tgs, WAVE/T allVerticalAxes, WAVE/T allHorizontalAxes)
+
+	variable i, numAxes
+	string axis
+
+	numAxes = DimSize(allVerticalAxes, ROWS)
+	for(i = 0; i < numAxes; i += 1)
+		axis = allVerticalAxes[i]
+
+		ModifyGraph/W=$graph tickUnit($axis) = 1
+		ModifyGraph/W=$graph lblPosMode($axis) = 2, standoff($axis) = 0, freePos($axis) = 0
+		ModifyGraph/W=$graph lblLatPos($axis) = 3, lblMargin($axis) = 15
+
+		if(tgs.dDAQDisplayMode)
+			ModifyGraph/W=$graph freePos($axis) = 20
+		endif
+	endfor
+
+	if(tgs.dDAQDisplayMode)
+		numAxes = DimSize(allHorizontalAxes, ROWS)
+		for(i = 0; i < numAxes; i += 1)
+			axis = allHorizontalAxes[i]
+
+			ModifyGraph/W=$graph alblRGB($axis)=(65535,65535,65535)
+			Label/W=$graph $axis, "\u#2"
+		endfor
+
+		ModifyGraph/W=$graph axRGB=(65535,65535,65535), tlblRGB=(65535,65535,65535)
+		ModifyGraph/W=$graph axThick=0
+		ModifyGraph/W=$graph margin(left)=40, margin(bottom)=1
+	else
+		ModifyGraph/W=$graph margin(left)=0, margin(bottom)=0
+	endif
+End
+
+/// @brief Helper function for LayoutGraph()
+///
+/// Enables the given axis between [last - spacePerSlot, last] and updates both on return.
+/// Expects `last` to be 1.0 on the first call.
+static Function EnableAxis(string graph, WAVE/T axes, variable spacePerSlot, variable &first, variable &last)
+
+	string axis
+	variable i, numAxes
+
+	first = last - spacePerSlot
+
+	first = max(0.0, first)
+	last  = min(1.0, last)
+
+	ASSERT(first < last, "Invalid order")
+
+	numAxes = DimSize(axes, ROWS)
+	ASSERT(numAxes >= 0, "Invalid number of axes")
+	for(i = 0; i < numAxes; i += 1)
+		ModifyGraph/W=$graph axisEnab($axes[i])={first, last}
+	endfor
+
+	last = first - GRAPH_DIV_SPACING
+End
+
 /// @brief Create a vertically tiled graph for displaying AD and DA channels
 ///
 /// For preservering the axis scaling callers should do the following:
@@ -2095,24 +2355,24 @@ Function CreateTiledChannelGraph(graph, config, sweepNo, numericalValues,  textu
 	string experiment
 	WAVE/Z channelSelWave
 
-	variable red, green, blue, alpha, axisIndex, numChannels, offset
-	variable numDACs, numADCs, numTTLs, i, j, k, hasPhysUnit, slotMult, hardwareType
-	variable moreData, low, high, step, spacePerSlot, chan, numSlots, numHorizWaves, numVertWaves, idx
-	variable numTTLBits, colorIndex, totalVertBlocks, headstage
+	variable red, green, blue, axisIndex, numChannels, offset
+	variable numDACs, numADCs, numTTLs, i, j, k, hasPhysUnit, hardwareType
+	variable moreData, chan, numHorizWaves, numVertWaves, idx
+	variable numTTLBits, colorIndex, headstage
 	variable delayOnsetUser, delayOnsetAuto, delayTermination, delaydDAQ, dDAQEnabled, oodDAQEnabled
-	variable stimSetLength, samplingInt, xRangeStart, xRangeEnd, first, last, count, freeAxisHigh
+	variable stimSetLength, samplingInt, xRangeStart, xRangeEnd, first, last, count, ttlBit
 	variable numDACsOriginal, numADCsOriginal, numTTLsOriginal, numRegions, numEntries, numRangesPerEntry
 	variable totalXRange = NaN
 
-	string trace, traceType, channelID, axisLabel, entry, range, traceRange
+	string trace, traceType, channelID, axisLabel, entry, range, traceRange, traceColor
 	string unit, name, str, vertAxis, oodDAQRegionsAll, dDAQActiveHeadstageAll, horizAxis, freeAxis
 
 	ASSERT(!isEmpty(graph), "Empty graph")
 	ASSERT(IsFinite(sweepNo), "Non-finite sweepNo")
 
-	Make/T/FREE userDataKeys = {"fullPath", "channelType", "channelNumber", "sweepNumber", "headstage",     \
-								"textualValues", "numericalValues", "clampMode", "experiment", "traceType", \
-								"occurence", "XAXIS", "YAXIS", "YRANGE"}
+	Make/T/FREE userDataKeys = {"fullPath", "channelType", "channelNumber", "sweepNumber", "headstage",               \
+			  					"textualValues", "numericalValues", "clampMode", "TTLBit", "experiment", "traceType", \
+								"occurence", "XAXIS", "YAXIS", "YRANGE", "TRACECOLOR"}
 
 	WAVE ADCs = GetADCListFromConfig(config)
 	WAVE DACs = GetDACListFromConfig(config)
@@ -2143,10 +2403,6 @@ Function CreateTiledChannelGraph(graph, config, sweepNo, numericalValues,  textu
 			print "Turning off tgs.splitTTLBits as some labnotebook entries could not be found"
 			ControlWindowToFront()
 			tgs.splitTTLBits = 0
-		elseif(tgs.overlayChannels)
-			print "Turning off tgs.splitTTLBits as it is overriden by tgs.overlayChannels"
-			ControlWindowToFront()
-			tgs.splitTTLBits = 0
 		elseif(WaveExists(ttlChannels))
 			// NI hardware does use one channel per bit so we don't need that here
 			tgs.splitTTLBits = 0
@@ -2162,65 +2418,6 @@ Function CreateTiledChannelGraph(graph, config, sweepNo, numericalValues,  textu
 			 endif
 		endif
 	endif
-
-	// The display order from top to bottom is DA/AD/TTL
-	// with increasing channel number
-	//
-	// idea:
-	// - we have 100% space for all axes
-	// - AD axes should occupy four times the space of DA/TTL channels.
-	// - So DA/TTL occupy one slot, AD occupy four slots
-	// - between each axes we want GRAPH_DIV_SPACING clear space
-	// - Count the number of vertical blocks (= number of vertical axis in the first column) and slots to be used
-	// - Derive the space per slot
-	// - For overlay channels we reserve only one slot times slot multiplier
-	//   per channel
-	if(tgs.displayDAC && numDACs > 0)
-		if(tgs.overlayChannels)
-			numSlots        += 1
-			totalVertBlocks += 1
-		else
-			numSlots        += numDACs
-			totalVertBlocks += numDACs
-		endif
-	else
-		tgs.displayDAC = 0
-	endif
-	if(tgs.displayADC && numADCs > 0)
-
-		if(tgs.overlayChannels)
-			numSlots        += ADC_SLOT_MULTIPLIER
-			totalVertBlocks += 1
-		else
-			numSlots        += ADC_SLOT_MULTIPLIER * numADCs
-			totalVertBlocks += numADCs
-		endif
-	else
-		tgs.displayADC = 0
-	endif
-	if(tgs.displayTTL && numTTLs > 0)
-		if(tgs.overlayChannels)
-			numSlots        += 1
-			totalVertBlocks += 1
-		else
-			if(tgs.splitTTLBits)
-				numSlots += numTTLBits
-				totalVertBlocks += numTTLBits
-			else
-				numSlots += numTTLs
-				totalVertBlocks += numTTLs
-			endif
-		endif
-	else
-		tgs.displayTTL = 0
-	endif
-
-	spacePerSlot = (1.0 - (totalVertBlocks - 1) * GRAPH_DIV_SPACING) / numSlots
-
-	sprintf str, "numSlots=%d, totalVertBlocks=%d, spacePerSlot=%g", numSlots, totalVertBlocks, spacePerSlot
-	DEBUGPRINT(str)
-
-	high = 1.0
 
 	dDAQEnabled   = GetLastSettingIndep(numericalValues, sweepNo, "Distributed DAQ", DATA_ACQUISITION_MODE, defValue=0)
 	oodDAQEnabled = GetLastSettingIndep(numericalValues, sweepNo, "Optimized Overlap dDAQ", DATA_ACQUISITION_MODE, defValue=0)
@@ -2343,7 +2540,6 @@ Function CreateTiledChannelGraph(graph, config, sweepNo, numericalValues,  textu
 					WAVE channelList = DACs
 					channelID        = "DA"
 					hasPhysUnit      = 1
-					slotMult         = 1
 					numHorizWaves    = tgs.dDAQDisplayMode ? numRegions : 1
 					numVertWaves     = 1
 					numChannels      = numDACs
@@ -2357,7 +2553,6 @@ Function CreateTiledChannelGraph(graph, config, sweepNo, numericalValues,  textu
 					WAVE channelList = ADCs
 					channelID        = "AD"
 					hasPhysUnit      = 1
-					slotMult         = ADC_SLOT_MULTIPLIER
 					numHorizWaves    = tgs.dDAQDisplayMode ? numRegions : 1
 					numVertWaves     = 1
 					numChannels      = numADCs
@@ -2373,7 +2568,6 @@ Function CreateTiledChannelGraph(graph, config, sweepNo, numericalValues,  textu
 					WAVE channelList = TTLs
 					channelID        = "TTL"
 					hasPhysUnit      = 0
-					slotMult         = 1
 					numHorizWaves    = 1
 
 					if(hardwareType == HARDWARE_ITC_DAC)
@@ -2405,8 +2599,10 @@ Function CreateTiledChannelGraph(graph, config, sweepNo, numericalValues,  textu
 			for(j = 0; j < numVertWaves; j += 1)
 
 				if(!cmpstr(channelID, "TTL") && tgs.splitTTLBits)
-					name = channelID + num2str(chan) + "_" + num2str(j)
+					ttlBit = j
+					name = channelID + num2str(chan) + "_" + num2str(ttlBit)
 				else
+					ttlBit = NaN
 					name = channelID + num2str(chan)
 				endif
 
@@ -2440,7 +2636,6 @@ Function CreateTiledChannelGraph(graph, config, sweepNo, numericalValues,  textu
 				sprintf str, "colorIndex=%d", colorIndex
 				DEBUGPRINT(str)
 
-				alpha = (IsNaN(tgs.highlightSweep) || tgs.highlightSweep == 1) ? 65535 : 0.05 * 65535
 				DEBUGPRINT("")
 				first = 0
 
@@ -2453,8 +2648,19 @@ Function CreateTiledChannelGraph(graph, config, sweepNo, numericalValues,  textu
 					if(!tgs.overlayChannels)
 						vertAxis   += "_" + num2str(chan)
 						traceType   = name
+						if(!cmpstr(channelID, "TTL"))
+							if(tgs.splitTTLBits)
+								vertAxis += "_" + num2str(j)
+							else
+								vertAxis += "_NaN"
+							endif
+						endif
 					else
 						traceType   = channelID
+					endif
+
+					if(!tgs.overlayChannels)
+						vertAxis += "_HS_" + num2str(headstage)
 					endif
 
 					if(tgs.dDAQDisplayMode && channelTypes[i] != ITC_XOP_CHANNEL_TYPE_TTL) // TTL channels don't have dDAQ mode
@@ -2507,14 +2713,16 @@ Function CreateTiledChannelGraph(graph, config, sweepNo, numericalValues,  textu
 					sprintf str, "i=%d, j=%d, k=%d, vertAxis=%s, traceType=%s, name=%s", i, j, k, vertAxis, traceType, name
 					DEBUGPRINT(str)
 
+					sprintf traceColor, "(%d, %d, %d, %d)", red, green, blue, 65535
+
 					if(!IsFinite(xRangeStart) && !IsFinite(XRangeEnd))
 						horizAxis = "bottom"
 						traceRange = "[][0]"
-						AppendToGraph/W=$graph/B=$horizAxis/L=$vertAxis/C=(red, green, blue, alpha) wv[][0]/TN=$trace
+						AppendToGraph/W=$graph/B=$horizAxis/L=$vertAxis/C=(red, green, blue, 65535) wv[][0]/TN=$trace
 					else
 						horizAxis = vertAxis + "_b"
 						sprintf traceRange, "[%g,%g][0]", xRangeStart, xRangeEnd
-						AppendToGraph/W=$graph/L=$vertAxis/B=$horizAxis/C=(red, green, blue, alpha) wv[xRangeStart, xRangeEnd][0]/TN=$trace
+						AppendToGraph/W=$graph/L=$vertAxis/B=$horizAxis/C=(red, green, blue, 65535) wv[xRangeStart, xRangeEnd][0]/TN=$trace
 						first = first
 						last  = first + (xRangeEnd - xRangeStart) / totalXRange
 						ModifyGraph/W=$graph axisEnab($horizAxis)={first, min(last, 1.0)}
@@ -2522,30 +2730,6 @@ Function CreateTiledChannelGraph(graph, config, sweepNo, numericalValues,  textu
 
 						sprintf str, "horiz axis: stimset=[%d, %d] aka (%g, %g)", xRangeStart, xRangeEnd, pnt2x(wv,xRangeStart), pnt2x(wv,xRangeEnd)
 						DEBUGPRINT(str)
-					endif
-
-					ModifyGraph/W=$graph tickUnit($vertAxis)=1
-
-					if(activeChanCount[i] == 0 || !tgs.OverlayChannels)
-						low = max(high - slotMult * spacePerSlot, 0)
-						sprintf str, "vert axis=[%g, %g]", low, high
-						DEBUGPRINT(str)
-						ModifyGraph/W=$graph axisEnab($vertAxis) = {low, high}
-
-						if(channelTypes[i] == ITC_XOP_CHANNEL_TYPE_ADC || (!tgs.displayADC && channelTypes[i] == ITC_XOP_CHANNEL_TYPE_DAC) && IsFinite(headstage))
-							if(tgs.displayDAC && tgs.displayADC)
-								freeAxisHigh = high * (1 + 1 / ADC_SLOT_MULTIPLIER) + GRAPH_DIV_SPACING
-							else
-								freeAxisHigh = high
-							endif
-
-							freeAxisHigh = min(1, freeAxisHigh)
-
-							freeAxis = "freeaxis_hs" + num2str(headstage)
-							NewFreeAxis/O/W=$graph $freeAxis
-							ModifyGraph/W=$graph axisEnab($freeAxis)={low,freeAxisHigh}, standoff($freeAxis)=0, lblPosMode($freeAxis)=2, axRGB($freeAxis)=(65535,65535,65535,0), tlblRGB($freeAxis)=(65535,65535,65535,0), alblRGB($freeAxis)=(0,0,0), lblMargin($freeAxis)=0, lblLatPos($freeAxis)=0
-							Label/W=$graph $freeAxis "HS" + num2str(headstage)
-						endif
 					endif
 
 					if(k == 0) // first column, add labels
@@ -2573,24 +2757,12 @@ Function CreateTiledChannelGraph(graph, config, sweepNo, numericalValues,  textu
 							axisLabelCache[count][%Lbl]  = axisLabel
 							SetNumberInWaveNote(axisLabelCache, NOTE_INDEX, count + 1)
 						endif
-
-						ModifyGraph/W=$graph lblPosMode($vertAxis) = 2, standoff($vertAxis) = 0, freePos($vertAxis) = 0, lblLatPos($vertAxis) = 3, lblMargin($vertAxis) = 15
-
-						if(channelTypes[i] == ITC_XOP_CHANNEL_TYPE_TTL && tgs.splitTTLBits)
-							ModifyGraph/W=$graph nticks($vertAxis)=2,manTick($vertAxis)={0,1,0,0},manMinor($vertAxis)={0,50}
-						endif
 					else
 						Label/W=$graph $vertAxis, "\\u#2"
 					endif
 
 					if(tgs.dDAQDisplayMode)
-						ModifyGraph/W=$graph axRGB($vertAxis)=(65535,65535,65535), tlblRGB($vertAxis)=(65535,65535,65535)
-						ModifyGraph/W=$graph axThick($vertAxis)=0
-						if(!IsEmpty(horizAxis))
-							ModifyGraph/W=$graph axRGB($horizAxis)=(65535,65535,65535), tlblRGB($horizAxis)=(65535,65535,65535)
-							ModifyGraph/W=$graph alblRGB($horizAxis)=(65535,65535,65535), axThick($horizAxis)=0
-							ModifyGraph/W=$graph freePos($vertAxis)={1 / numHorizWaves * k,kwFraction}, freePos($horizAxis)={0,$vertAxis}
-						endif
+						ModifyGraph/W=$graph freePos($vertAxis)={1 / numHorizWaves * k,kwFraction}, freePos($horizAxis)={0,$vertAxis}
 					endif
 
 					if(tgs.hideSweep)
@@ -2600,24 +2772,14 @@ Function CreateTiledChannelGraph(graph, config, sweepNo, numericalValues,  textu
 					TUD_SetUserDataFromWaves(graph, trace, userDataKeys,                                                                   \
 					                         {GetWavesDataFolder(wv, 2), channelID, num2str(chan), num2str(sweepNo), num2str(headstage),   \
 					                          GetWavesDataFolder(textualValues, 2), GetWavesDataFolder(numericalValues, 2),                \
-					                          num2str(IsFinite(headstage) ? clampModes[headstage] : NaN), experiment, "Sweep",             \
-					                          num2str(k), horizAxis, vertAxis, traceRange})
+								              num2str(IsFinite(headstage) ? clampModes[headstage] : NaN), num2str(ttlBit), experiment, "Sweep",             \
+												  num2str(k), horizAxis, vertAxis, traceRange, traceColor})
 				endfor
-
-				if(!tgs.OverlayChannels || activeChanCount[i] == 0)
-					high -= slotMult * spacePerSlot + GRAPH_DIV_SPACING
-				endif
 			endfor
 
 			activeChanCount[i] += 1
 		endfor
 	while(moreData)
-
-	if(tgs.dDAQDisplayMode)
-		ModifyGraph/W=$graph margin(left)=28, margin(bottom)=1
-	else
-		ModifyGraph/W=$graph margin(left)=0, margin(bottom)=0
-	endif
 End
 
 /// @brief Return a wave with all keys in the labnotebook key wave
@@ -3311,10 +3473,8 @@ End
 /// the operations, backups, etc.
 ///
 /// @param graph graph with sweep traces
-/// @param pps   settings
-Function PostPlotTransformations(graph, pps)
+Function PostPlotTransformations(graph)
 	string graph
-	STRUCT PostPlotSettings &pps
 
 	variable csrAx, csrBx
 
@@ -3324,14 +3484,36 @@ Function PostPlotTransformations(graph, pps)
 		return NaN
 	endif
 
+	STRUCT PostPlotSettings pps
+	InitPostPlotSettings(graph, pps)
+
 	ZeroTracesIfReq(graph, traces, pps.zeroTraces)
 	TimeAlignMainWindow(graph, pps)
 
 	AverageWavesFromSameYAxisIfReq(graph, traces, pps.averageTraces, pps.averageDataFolder, pps.hideSweep)
 	AR_HighlightArtefactsEntry(graph)
 	PA_ShowPulses(graph, pps.averageDataFolder, pps.pulseAverSett)
+	BSP_ScaleAxes(graph)
+End
 
-	pps.finalUpdateHook(graph)
+static Function InitPostPlotSettings(win, pps)
+	string win
+	STRUCT PostPlotSettings &pps
+
+	string bsPanel = BSP_GetPanel(win)
+
+	pps.averageDataFolder = BSP_GetFolder(win, MIES_BSP_PANEL_FOLDER)
+	pps.averageTraces     = GetCheckboxState(bsPanel, "check_Calculation_AverageTraces")
+	pps.zeroTraces        = GetCheckBoxState(bsPanel, "check_Calculation_ZeroTraces")
+	pps.hideSweep         = GetCheckBoxState(bsPanel, "check_SweepControl_HideSweep")
+
+	pps.timeAlignment     = GetCheckBoxState(bsPanel, "check_BrowserSettings_TA")
+	pps.timeAlignMode     = GetPopupMenuIndex(bsPanel, "popup_TimeAlignment_Mode")
+	pps.timeAlignLevel    = GetSetVariable(bsPanel, "setvar_TimeAlignment_LevelCross")
+	pps.timeAlignRefTrace = GetPopupMenuString(bsPanel, "popup_TimeAlignment_Master")
+	pps.timeAlignment     = GetCheckBoxState(bsPanel, "check_BrowserSettings_TA")
+
+	PA_GatherSettings(win, pps)
 End
 
 /// @brief Time Alignment for the BrowserSettingsPanel
@@ -3463,17 +3645,6 @@ Function TimeAlignUpdateControls(win)
 	endif
 
 	TimeAlignHandleCursorDisplay(graph)
-End
-
-Function TimeAlignGatherSettings(bsPanel, pps)
-	String bsPanel
-	STRUCT PostPlotSettings &pps
-
-	pps.timeAlignment     = GetCheckBoxState(bsPanel, "check_BrowserSettings_TA")
-	pps.timeAlignMode     = GetPopupMenuIndex(bsPanel, "popup_TimeAlignment_Mode")
-	pps.timeAlignLevel    = GetSetVariable(bsPanel, "setvar_TimeAlignment_LevelCross")
-	pps.timeAlignRefTrace = GetPopupMenuString(bsPanel, "popup_TimeAlignment_Master")
-	pps.timeAlignment     = GetCheckBoxState(bsPanel, "check_BrowserSettings_TA")
 End
 
 Function TimeAlignCursorMovedHook(s)
@@ -5191,7 +5362,7 @@ Function HasPanelLatestVersion(win, expectedVersion)
 	return 1
 #endif
 
-	version = GetPanelVersion(win)
+	version = GetPanelVersion(GetMainWindow(win))
 
 	return version == expectedVersion
 End
@@ -5229,18 +5400,12 @@ End
 Function UpdateSettingsPanel(win)
 	string win
 
-	string graph, bsPanel, controls
+	string bsPanel
 
-	graph = GetMainWindow(win)
 	bsPanel = BSP_GetPanel(win)
 
 	TimeAlignUpdateControls(bsPanel)
-
-	if(BSP_IsDataBrowser(win))
-		DB_GraphUpdate(win)
-	else
-		SB_PanelUpdate(win)
-	endif
+	BSP_ScaleAxes(bsPanel)
 End
 
 Function/S GetPlainSweepList(win)

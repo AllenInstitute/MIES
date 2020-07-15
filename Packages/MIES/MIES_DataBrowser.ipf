@@ -366,7 +366,8 @@ Function DB_UpdateSweepPlot(win)
 	string win
 
 	variable numEntries, i, sweepNo, highlightSweep, referenceTime, traceIndex
-	string device, mainPanel, lbPanel, bsPanel, scPanel, graph, experiment
+	string device, lbPanel, scPanel, graph, experiment
+	STRUCT TiledGraphSettings tgs
 
 	if(BSP_MainPanelNeedsUpdate(win))
 		DoAbortNow("Can not display data. The Databrowser panel is too old to be usable. Please close it and open a new one.")
@@ -374,12 +375,12 @@ Function DB_UpdateSweepPlot(win)
 
 	referenceTime = DEBUG_TIMER_START()
 
-	mainPanel  = GetMainWindow(win)
 	lbPanel    = BSP_GetNotebookSubWindow(win)
-	bsPanel    = BSP_GetPanel(win)
 	scPanel    = BSP_GetSweepControlsPanel(win)
 	graph      = DB_GetMainGraph(win)
 	experiment = GetExperimentName()
+
+	[tgs] = BSP_GatherTiledGraphSettings(graph)
 
 	WAVE axesRanges = GetAxesRanges(graph)
 
@@ -391,27 +392,17 @@ Function DB_UpdateSweepPlot(win)
 	if(!BSP_HasBoundDevice(win))
 		return NaN
 	endif
+
 	device = BSP_GetDevice(win)
 
 	WAVE numericalValues = DB_GetNumericalValues(win)
 	WAVE textualValues   = DB_GetTextualValues(win)
 
-	STRUCT TiledGraphSettings tgs
-	tgs.displayDAC      = GetCheckBoxState(bsPanel, "check_BrowserSettings_DAC")
-	tgs.displayTTL      = GetCheckBoxState(bsPanel, "check_BrowserSettings_TTL")
-	tgs.displayADC      = GetCheckBoxState(bsPanel, "check_BrowserSettings_ADC")
-	tgs.overlaySweep 	= OVS_IsActive(mainPanel)
-	tgs.splitTTLBits    = GetCheckBoxState(bsPanel, "check_BrowserSettings_splitTTL")
-	tgs.overlayChannels = GetCheckBoxState(bsPanel, "check_BrowserSettings_OChan")
-	tgs.dDAQDisplayMode = GetCheckBoxState(bsPanel, "check_BrowserSettings_dDAQ")
-	tgs.dDAQHeadstageRegions = GetSliderPositionIndex(bsPanel, "slider_BrowserSettings_dDAQ")
-	tgs.hideSweep       = GetCheckBoxState(bsPanel, "check_SweepControl_HideSweep")
-
 	WAVE channelSel        = BSP_GetChannelSelectionWave(win)
 	WAVE/Z sweepsToOverlay = OVS_GetSelectedSweeps(win, OVS_SWEEP_SELECTION_SWEEPNO)
 
 	if(!WaveExists(sweepsToOverlay))
-		if(GetCheckBoxState(bsPanel, "check_BrowserSettings_OVS"))
+		if(tgs.overlaySweep)
 			return NaN
 		else
 			Make/FREE/N=1 sweepsToOverlay = GetSetVariable(scPanel, "setvar_SweepControl_SweepNo")
@@ -430,8 +421,7 @@ Function DB_UpdateSweepPlot(win)
 			continue
 		endif
 
-		WAVE/Z activeHS = OVS_ParseIgnoreList(win, highlightSweep, sweepNo=sweepNo)
-		tgs.highlightSweep = highlightSweep
+		WAVE/Z activeHS = OVS_ParseIgnoreList(win, sweepNo=sweepNo)
 
 		if(WaveExists(activeHS))
 			Duplicate/FREE channelSel, sweepChannelSel
@@ -451,13 +441,15 @@ Function DB_UpdateSweepPlot(win)
 
 	DEBUGPRINT_ELAPSED(referenceTime)
 
-	DB_UpdateSweepNote(mainPanel)
+	DB_UpdateSweepNote(win)
 
-	Struct PostPlotSettings pps
-	DB_InitPostPlotSettings(win, pps)
+	PostPlotTransformations(graph)
 
-	PostPlotTransformations(graph, pps)
 	SetAxesRanges(graph, axesRanges)
+	DEBUGPRINT_ELAPSED(referenceTime)
+
+	LayoutGraph(graph, tgs)
+
 	DEBUGPRINT_ELAPSED(referenceTime)
 End
 
@@ -491,61 +483,6 @@ static Function DB_UpdateSweepNote(win)
 
 	lbPanel = BSP_GetNotebookSubWindow(win)
 	ReplaceNotebookText(lbPanel, note(sweepWave))
-End
-
-/// @see SB_InitPostPlotSettings
-Function DB_InitPostPlotSettings(win, pps)
-	string win
-	STRUCT PostPlotSettings &pps
-
-	string bsPanel = BSP_GetPanel(win)
-
-	ASSERT(BSP_HasBoundDevice(win), "DataBrowser was not assigned to a specific device")
-
-	pps.averageDataFolder = BSP_GetFolder(win, MIES_BSP_PANEL_FOLDER)
-	pps.averageTraces     = GetCheckboxState(bsPanel, "check_Calculation_AverageTraces")
-	pps.zeroTraces        = GetCheckBoxState(bsPanel, "check_Calculation_ZeroTraces")
-	pps.hideSweep         = GetCheckBoxState(bsPanel, "check_SweepControl_HideSweep")
-	pps.timeAlignRefTrace = ""
-	pps.timeAlignMode     = TIME_ALIGNMENT_NONE
-
-	PA_GatherSettings(win, pps)
-
-	FUNCREF FinalUpdateHookProto pps.finalUpdateHook = DB_GraphUpdate
-End
-
-Function DB_DoTimeAlignment(ba) : ButtonControl
-	STRUCT WMButtonAction &ba
-
-	switch( ba.eventCode )
-		case 2: // mouse up
-			DB_HandleTimeAlignPropChange(ba.win)
-			break
-	endswitch
-
-	return 0
-End
-
-/// @see SB_HandleTimeAlignPropChange
-static Function DB_HandleTimeAlignPropChange(win)
-	string win
-
-	string bsPanel, graph
-
-	graph = GetMainWindow(win)
-	bsPanel = BSP_GetPanel(graph)
-
-	if(!BSP_HasBoundDevice(win))
-		UpdateSettingsPanel(win)
-		return NaN
-	endif
-
-	STRUCT PostPlotSettings pps
-	DB_InitPostPlotSettings(graph, pps)
-
-	TimeAlignGatherSettings(bsPanel, pps)
-
-	PostPlotTransformations(graph, pps)
 End
 
 static Function DB_ClearGraph(win)
@@ -609,21 +546,18 @@ Function DB_UpdateToLastSweep(win)
 	string win
 
 	variable first, last
-	string device, mainPanel, bsPanel, scPanel
+	string bsPanel, scPanel
 
-	mainPanel = GetMainWindow(win)
 	bsPanel   = BSP_GetPanel(win)
 	scPanel   = BSP_GetSweepControlsPanel(win)
 
-	if(!HasPanelLatestVersion(mainPanel, DATABROWSER_PANEL_VERSION))
+	if(!HasPanelLatestVersion(win, DATABROWSER_PANEL_VERSION))
 		print "Can not display data. The Databrowser panel is too old to be usable. Please close it and open a new one."
 		ControlWindowToFront()
 		return NaN
 	endif
 
-	device = BSP_GetDevice(win)
-
-	if(!cmpstr(device, NONE))
+	if(!BSP_HasBoundDevice(win))
 		return NaN
 	endif
 
@@ -988,37 +922,11 @@ Function DB_CheckProc_ChangedSetting(cba) : CheckBoxControl
 	return 0
 End
 
-Function DB_CheckProc_ScaleAxes(cba) : CheckBoxControl
-	STRUCT WMCheckboxAction &cba
-
-	switch(cba.eventCode)
-		case 2: // mouse up
-			DB_GraphUpdate(cba.win)
-			break
-	endswitch
-
-	return 0
-End
-
 // Called from ACL_DisplayTab after the new tab is selected
 Function DB_MainTabControlFinal(tca)
 	STRUCT WMTabControlAction &tca
 
 	DB_UpdateSweepNote(tca.win)
-End
-
-/// @see SB_PanelUpdate
-Function DB_GraphUpdate(win)
-	string win
-
-	string bsPanel, graph
-
-	graph = GetMainWindow(win)
-	bsPanel = BSP_GetPanel(win)
-
-	if(GetCheckBoxState(bsPanel, "check_Display_VisibleXrange"))
-		AutoscaleVertAxisVisXRange(graph)
-	endif
 End
 
 /// @brief enable/disable checkbox control for side panel
@@ -1066,10 +974,11 @@ static Function DB_SplitSweepsIfReq(win, sweepNo)
 	string device, mainPanel
 	variable sweepModTime, numWaves, requireNewSplit, i
 
-	device = BSP_GetDevice(win)
-	if(!cmpstr(device, NONE))
+	if(!BSP_HasBoundDevice(win))
 		return NaN
 	endif
+
+	device = BSP_GetDevice(win)
 
 	DFREF deviceDFR = GetDeviceDataPath(device)
 	DFREF singleSweepDFR = GetSingleSweepFolder(deviceDFR, sweepNo)

@@ -17,10 +17,6 @@ Structure BackgroundStruct
 	int32 threadDeadCount ///< TP-MD only: Number of successive tries to get data from the thread
 EndStructure
 
-Function FinalUpdateHookProto(graph)
-	string graph
-End
-
 Structure PostPlotSettings
 	/// @name Trace averaging settings
 	/// @{
@@ -42,9 +38,6 @@ Structure PostPlotSettings
 	/// @}
 
 	STRUCT PulseAverageSettings pulseAverSett
-
-	/// Hook function which is called at the very end of #PostPlotTransformations
-	FUNCREF FinalUpdateHookProto finalUpdateHook
 EndStructure
 
 Function InitPulseAverageSettings(pa)
@@ -84,7 +77,6 @@ Structure TiledGraphSettings
 	int16 overlayChannels
 	int16 dDAQDisplayMode
 	int16 dDAQHeadstageRegions
-	variable highlightSweep // NaN if disabled, otherwise 0/1, see also OVS_IsSweepHighlighted()
 	int16 hideSweep
 EndStructure
 
