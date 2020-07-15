@@ -284,7 +284,6 @@ Function SB_UpdateSweepPlot(win, [newSweep])
 	TUD_Clear(graph)
 
 	WAVE/T sweepMap = GetSweepBrowserMap(sweepBrowserDFR)
-	WAVE channelSel = GetChannelSelectionWave(sweepBrowserDFR)
 
 	currentSweep = GetPopupMenuIndex(scPanel, "popup_SweepControl_Selector")
 	if(!WaveExists(sweepsToOverlay))
@@ -302,14 +301,7 @@ Function SB_UpdateSweepPlot(win, [newSweep])
 		experiment = sweepMap[mapIndex][%FileName]
 		sweepNo    = str2num(sweepMap[mapIndex][%Sweep])
 
-		WAVE/Z activeHS = OVS_ParseIgnoreList(graph, index=mapIndex)
-
-		if(WaveExists(activeHS))
-			Duplicate/FREE channelSel, sweepChannelSel
-			sweepChannelSel[0, NUM_HEADSTAGES - 1][%HEADSTAGE] = sweepChannelSel[p][%HEADSTAGE] && activeHS[p]
-		else
-			WAVE sweepChannelSel = channelSel
-		endif
+		WAVE sweepChannelSel = BSP_FetchSelectedChannels(graph, index=mapIndex)
 
 		WAVE numericalValues = GetAnalysLBNumericalValues(dataFolder, device)
 		DFREF sweepDFR       = GetAnalysisSweepPath(dataFolder, device)

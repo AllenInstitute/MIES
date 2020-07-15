@@ -1104,6 +1104,9 @@ Function BSP_GUIToChannelSelectionWave(win, ctrl, checked)
 End
 
 /// @brief Removes the disabled channels and headstages from `ADCs` and `DACs`
+///
+/// `channelSel` will be the result from BSP_FetchSelectedChannels() which is a
+/// copy of the permanent channel selection wave.
 Function BSP_RemoveDisabledChannels(channelSel, ADCs, DACs, numericalValues, sweepNo)
 	WAVE channelSel
 	WAVE ADCs, DACs, numericalValues
@@ -1115,8 +1118,6 @@ Function BSP_RemoveDisabledChannels(channelSel, ADCs, DACs, numericalValues, swe
 		return NaN
 	endif
 
-	Duplicate/FREE channelSel, channelSelMod
-
 	numADCs = DimSize(ADCs, ROWS)
 	numDACs = DimSize(DACs, ROWS)
 
@@ -1126,22 +1127,22 @@ Function BSP_RemoveDisabledChannels(channelSel, ADCs, DACs, numericalValues, swe
 
 	// disable the AD/DA channels not wanted by the headstage setting first
 	for(i = 0; i < NUM_HEADSTAGES; i += 1)
-		if(!channelSelMod[i][%HEADSTAGE] && statusHS[i])
-			channelSelMod[statusADC[i]][%AD] = 0
-			channelSelMod[statusDAC[i]][%DA] = 0
+		if(!channelSel[i][%HEADSTAGE] && statusHS[i])
+			channelSel[statusADC[i]][%AD] = 0
+			channelSel[statusDAC[i]][%DA] = 0
 		endif
 	endfor
 
 	// start at the end of the config wave
 	// we always have the order DA/AD/TTLs
 	for(i = numADCs - 1; i >= 0; i -= 1)
-		if(!channelSelMod[ADCs[i]][%AD])
+		if(!channelSel[ADCs[i]][%AD])
 			DeletePoints/M=(ROWS) i, 1, ADCs
 		endif
 	endfor
 
 	for(i = numDACs - 1; i >= 0; i -= 1)
-		if(!channelSelMod[DACs[i]][%DA])
+		if(!channelSel[DACs[i]][%DA])
 			DeletePoints/M=(ROWS) i, 1, DACs
 		endif
 	endfor
@@ -1344,4 +1345,28 @@ Function/WAVE BSP_GetTextualValues(string win, [variable sweepNumber])
 			return SB_GetTextualValuesWaves(win, sweepNumber = sweepNumber)
 		endif
 	endif
+End
+
+/// @brief Return the wave with the selected channels respecting the overlay
+/// sweeps headstage ignore list. The wave has the same layout as B
+Function/WAVE BSP_FetchSelectedChannels(string graph, [variable index, variable sweepNo])
+
+	if(ParamIsDefault(index) && !ParamIsDefault(sweepNo))
+		WAVE/Z activeHS = OVS_ParseIgnoreList(graph, sweepNo=sweepNo)
+	elseif(!ParamIsDefault(index) && ParamIsDefault(sweepNo))
+		WAVE/Z activeHS = OVS_ParseIgnoreList(graph, index=index)
+	else
+		ASSERT(0, "Invalid optional flags")
+	endif
+
+	WAVE channelSelOriginal = BSP_GetChannelSelectionWave(graph)
+	Duplicate/FREE channelSelOriginal, channelSel
+
+	if(!WaveExists(activeHS))
+		return channelSel
+	endif
+
+	channelSel[0, NUM_HEADSTAGES - 1][%HEADSTAGE] = channelSel[p][%HEADSTAGE] && activeHS[p]
+
+	return channelSel
 End

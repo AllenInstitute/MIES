@@ -404,7 +404,6 @@ Function DB_UpdateSweepPlot(win)
 	WAVE numericalValues = DB_GetNumericalValues(win)
 	WAVE textualValues   = DB_GetTextualValues(win)
 
-	WAVE channelSel        = BSP_GetChannelSelectionWave(win)
 	WAVE/Z sweepsToOverlay = OVS_GetSelectedSweeps(win, OVS_SWEEP_SELECTION_SWEEPNO)
 
 	if(!WaveExists(sweepsToOverlay))
@@ -427,14 +426,7 @@ Function DB_UpdateSweepPlot(win)
 			continue
 		endif
 
-		WAVE/Z activeHS = OVS_ParseIgnoreList(win, sweepNo=sweepNo)
-
-		if(WaveExists(activeHS))
-			Duplicate/FREE channelSel, sweepChannelSel
-			sweepChannelSel[0, NUM_HEADSTAGES - 1][%HEADSTAGE] = sweepChannelSel[p][%HEADSTAGE] && activeHS[p]
-		else
-			WAVE sweepChannelSel = channelSel
-		endif
+		WAVE sweepChannelSel = BSP_FetchSelectedChannels(graph, sweepNo=sweepNo)
 
 		DB_SplitSweepsIfReq(win, sweepNo)
 		WAVE config = GetConfigWave(sweepWave)
