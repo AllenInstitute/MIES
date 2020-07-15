@@ -307,7 +307,8 @@ static Function OVS_AddToIgnoreList(win, headstage, [sweepNo, index])
 	endif
 
 	listboxWave[index][%headstages] = AddListItem(num2str(headstage), listboxWave[index][%headstages], ";", inf)
-	UpdateSweepPlot(win)
+	UpdateSweepInGraph(win, index)
+	PostPlotTransformations(win)
 End
 
 /// @brief Parse the ignore list of the given sweep.
