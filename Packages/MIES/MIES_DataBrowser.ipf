@@ -287,7 +287,7 @@ static Function/S DB_LockToDevice(win, device)
 		DB_UpdateLastSweepControls(newWindow, first, last)
 	endif
 
-	DB_UpdateSweepPlot(newWindow)
+	UpdateSweepPlot(newWindow)
 
 	return newWindow
 End
