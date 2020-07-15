@@ -1105,13 +1105,13 @@ End
 
 /// @brief Removes the disabled channels and headstages from `ADCs` and `DACs`
 Function BSP_RemoveDisabledChannels(channelSel, ADCs, DACs, numericalValues, sweepNo)
-	WAVE/Z channelSel
+	WAVE channelSel
 	WAVE ADCs, DACs, numericalValues
 	variable sweepNo
 
 	variable numADCs, numDACs, i
 
-	if(!WaveExists(channelSel) || (WaveMin(channelSel) == 1 && WaveMax(channelSel) == 1))
+	if(WaveMin(channelSel) == 1 && WaveMax(channelSel) == 1)
 		return NaN
 	endif
 
