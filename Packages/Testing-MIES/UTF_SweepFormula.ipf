@@ -3,6 +3,20 @@
 #pragma rtFunctionErrors=1
 #pragma ModuleName=UTF_SweepFormula
 
+Function/S CreateFakeSweepBrowser_IGNORE()
+
+	string win
+
+	Display
+	win = S_name
+	DFREF dfr = GetDataFolderDFR()
+	AddVersionToPanel(win, SWEEPBROWSER_PANEL_VERSION)
+	BSP_SetFolder(win, dfr, MIES_BSP_PANEL_FOLDER)
+	BSP_SetSweepBrowser(win)
+
+	return win
+End
+
 /// @brief test two jsonIDs for equal content
 static Function WARN_EQUAL_JSON(jsonID0, jsonID1)
 	variable jsonID0, jsonID1
@@ -844,7 +858,8 @@ static Function TestPlotting()
 	String traces
 
 	Variable minimum, maximum
-	String win = "FormulaPlot"
+	string sweepBrowser = CreateFakeSweepBrowser_IGNORE()
+	String win = BSP_GetFormulaGraph(sweepBrowser)
 
 	String strArray2D = "[range(10), range(10,20), range(10), range(10,20)]"
 	String strArray1D = "range(4)"
@@ -856,7 +871,7 @@ static Function TestPlotting()
 	WAVE scale1D = SF_FormulaExecutor(SF_FormulaParser(strScale1D))
 	WAVE array0D = SF_FormulaExecutor(SF_FormulaParser(strArray0D))
 
-	SF_FormulaPlotter("", strArray2D)
+	SF_FormulaPlotter(sweepBrowser, strArray2D)
 	REQUIRE_EQUAL_VAR(WindowExists(win), 1)
 	traces = TraceNameList(win, ";", 0x1)
 	REQUIRE_EQUAL_VAR(ItemsInList(traces), DimSize(array2D, COLS))
@@ -864,7 +879,7 @@ static Function TestPlotting()
 	REQUIRE_EQUAL_WAVES(array2D, wvY)
 
 	// one to many
-	SF_FormulaPlotter("", strArray1D + " vs " + strArray2D); DoUpdate
+	SF_FormulaPlotter(sweepBrowser, strArray1D + " vs " + strArray2D); DoUpdate
 	traces = TraceNameList(win, ";", 0x1)
 	REQUIRE_EQUAL_VAR(ItemsInList(traces), DimSize(array2D, COLS))
 	WAVE wvX = XWaveRefFromTrace(win, StringFromList(0, traces))
@@ -878,13 +893,13 @@ static Function TestPlotting()
 	GetAxisRange(win, "left", minimum, maximum, mode=AXIS_RANGE_INC_AUTOSCALED)
 	REQUIRE_EQUAL_VAR(minimum, WaveMin(array1D))
 	REQUIRE_EQUAL_VAR(maximum, WaveMax(array1D))
-	SF_FormulaPlotter("", strScale1D + " vs " + strArray2D); DoUpdate
+	SF_FormulaPlotter(sweepBrowser, strScale1D + " vs " + strArray2D); DoUpdate
 	GetAxisRange(win, "left", minimum, maximum, mode=AXIS_RANGE_INC_AUTOSCALED)
 	REQUIRE_EQUAL_VAR(minimum, WaveMin(scale1D))
 	REQUIRE_CLOSE_VAR(maximum, WaveMax(scale1D))
 
 	// many to one
-	SF_FormulaPlotter("", strArray2D + " vs " + strArray1D); DoUpdate
+	SF_FormulaPlotter(sweepBrowser, strArray2D + " vs " + strArray1D); DoUpdate
 	traces = TraceNameList(win, ";", 0x1)
 	REQUIRE_EQUAL_VAR(ItemsInList(traces), DimSize(array2D, COLS))
 	WAVE wvY = TraceNameToWaveRef(win, StringFromList(0, traces))
@@ -899,18 +914,18 @@ static Function TestPlotting()
 	REQUIRE_EQUAL_VAR(minimum, WaveMin(array2D))
 	REQUIRE_EQUAL_VAR(maximum, WaveMax(array2D))
 
-	SF_FormulaPlotter("", strArray2D + " vs range(3)"); DoUpdate
+	SF_FormulaPlotter(sweepBrowser, strArray2D + " vs range(3)"); DoUpdate
 	traces = TraceNameList(win, ";", 0x1)
 	REQUIRE_EQUAL_VAR(ItemsInList(traces), DimSize(array2D, COLS))
 	GetAxisRange(win, "bottom", minimum, maximum, mode=AXIS_RANGE_INC_AUTOSCALED)
 	REQUIRE_EQUAL_VAR(maximum, array1D[2])
 
-	SF_FormulaPlotter("", "time(setscale(range(4),x,1,0.1)) vs [range(10), range(10,20), range(10), range(10,20)]"); DoUpdate
+	SF_FormulaPlotter(sweepBrowser, "time(setscale(range(4),x,1,0.1)) vs [range(10), range(10,20), range(10), range(10,20)]"); DoUpdate
 	GetAxisRange(win, "left", minimum, maximum, mode=AXIS_RANGE_INC_AUTOSCALED)
 	REQUIRE_EQUAL_VAR(minimum, WaveMin(scale1D))
 	REQUIRE_CLOSE_VAR(maximum, WaveMax(scale1D))
 
-	SF_FormulaPlotter("", strArray1D + " vs " + strArray1D); DoUpdate
+	SF_FormulaPlotter(sweepBrowser, strArray1D + " vs " + strArray1D); DoUpdate
 	traces = TraceNameList(win, ";", 0x1)
 	REQUIRE_EQUAL_VAR(ItemsInList(traces), 1)
 	GetAxisRange(win, "left", minimum, maximum, mode=AXIS_RANGE_INC_AUTOSCALED)
@@ -920,30 +935,30 @@ static Function TestPlotting()
 	REQUIRE_EQUAL_VAR(minimum, WaveMin(array1D))
 	REQUIRE_CLOSE_VAR(maximum, WaveMax(array1D))
 
-	SF_FormulaPlotter("", strArray2D + " vs " + strArray2D); DoUpdate
+	SF_FormulaPlotter(sweepBrowser, strArray2D + " vs " + strArray2D); DoUpdate
 	traces = TraceNameList(win, ";", 0x1)
 	REQUIRE_EQUAL_VAR(ItemsInList(traces), DimSize(array2D, COLS))
 
-	SF_FormulaPlotter("", strArray1D + " vs " + strArray1D); DoUpdate
+	SF_FormulaPlotter(sweepBrowser, strArray1D + " vs " + strArray1D); DoUpdate
 	REQUIRE_EQUAL_VAR(ItemsInList(TraceNameList(win, ";", 0x1)), 1)
 
-	SF_FormulaPlotter("", strArray1D + " vs " + strArray0D); DoUpdate
+	SF_FormulaPlotter(sweepBrowser, strArray1D + " vs " + strArray0D); DoUpdate
 	REQUIRE_EQUAL_VAR(ItemsInList(TraceNameList(win, ";", 0x1)), DimSize(array1D, ROWS))
 
-	SF_FormulaPlotter("", strArray0D + " vs " + strArray1D); DoUpdate
+	SF_FormulaPlotter(sweepBrowser, strArray0D + " vs " + strArray1D); DoUpdate
 	REQUIRE_EQUAL_VAR(ItemsInList(TraceNameList(win, ";", 0x1)), DimSize(array1D, ROWS))
 
-	SF_FormulaPlotter("", strArray0D + " vs " + strArray0D); DoUpdate
+	SF_FormulaPlotter(sweepBrowser, strArray0D + " vs " + strArray0D); DoUpdate
 	REQUIRE_EQUAL_VAR(ItemsInList(TraceNameList(win, ";", 0x1)), DimSize(array0D, ROWS))
 
 	// plotting of unaligned data
-	SF_FormulaPlotter("", "range(10) vs range(5)"); DoUpdate
+	SF_FormulaPlotter(sweepBrowser, "range(10) vs range(5)"); DoUpdate
 	REQUIRE_EQUAL_VAR(ItemsInList(TraceNameList(win, ";", 0x1)), floor(10 / 5))
-	SF_FormulaPlotter("", "range(5) vs range(10)"); DoUpdate
+	SF_FormulaPlotter(sweepBrowser, "range(5) vs range(10)"); DoUpdate
 	REQUIRE_EQUAL_VAR(ItemsInList(TraceNameList(win, ";", 0x1)), floor(10 / 5))
-	SF_FormulaPlotter("", "range(3) vs range(90)"); DoUpdate
+	SF_FormulaPlotter(sweepBrowser, "range(3) vs range(90)"); DoUpdate
 	REQUIRE_EQUAL_VAR(ItemsInList(TraceNameList(win, ";", 0x1)), floor(90 / 3))
-	SF_FormulaPlotter("", "range(3) vs range(7)"); DoUpdate
+	SF_FormulaPlotter(sweepBrowser, "range(3) vs range(7)"); DoUpdate
 	REQUIRE_EQUAL_VAR(ItemsInList(TraceNameList(win, ";", 0x1)), floor(7 / 3))
 End
 
