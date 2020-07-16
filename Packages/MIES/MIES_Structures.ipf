@@ -43,6 +43,7 @@ EndStructure
 Function InitPulseAverageSettings(pa)
 	STRUCT PulseAverageSettings &pa
 
+	pa.enabled              = 0
 	pa.showIndividualTraces = NaN
 	pa.showAverageTrace     = NaN
 	pa.startingPulse        = NaN
@@ -59,7 +60,7 @@ Structure PulseAverageSettings
 	variable showIndividualTraces, showAverageTrace
 	variable startingPulse, endingPulse, regionSlider
 	variable fallbackPulseLength, multipleGraphs
-	variable zeroTraces, autoTimeAlignment
+	variable zeroTraces, autoTimeAlignment, enabled
 	DFREF dfr
 
 	STRUCT PulseAverageDeconvSettings deconvolution

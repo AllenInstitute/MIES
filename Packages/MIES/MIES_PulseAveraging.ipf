@@ -318,6 +318,7 @@ static Function PA_GatherSettings(win, s)
 	endif
 
 	s.dfr                  = BSP_GetFolder(win, MIES_BSP_PANEL_FOLDER)
+	s.enabled              = GetCheckboxState(extPanel, "check_BrowserSettings_PA")
 	s.showIndividualTraces = GetCheckboxState(extPanel, "check_pulseAver_indTraces")
 	s.showAverageTrace     = GetCheckboxState(extPanel, "check_pulseAver_showAver")
 	s.multipleGraphs       = GetCheckboxState(extPanel, "check_pulseAver_multGraphs")
@@ -374,7 +375,7 @@ static Function PA_ShowPulses(win, pa)
 
 	preExistingGraphs = PA_GetAverageGraphs()
 
-	if(!PA_IsActive(win))
+	if(!pa.enabled)
 		KillWindows(preExistingGraphs)
 		return NaN
 	endif
