@@ -303,9 +303,9 @@ static Function/WAVE PA_CreateAndFillPulseWaveIfReq(wv, singleSweepFolder, chann
 End
 
 /// @brief Populates pps.pulseAverSett with the user selection from the panel
-Function PA_GatherSettings(win, pps)
+Function PA_GatherSettings(win, s)
 	string win
-	STRUCT PostPlotSettings &pps
+	STRUCT PulseAverageSettings &s
 
 	string extPanel
 
@@ -313,21 +313,21 @@ Function PA_GatherSettings(win, pps)
 	extPanel = BSP_GetPanel(win)
 
 	if(!PA_IsActive(win))
-		InitPulseAverageSettings(pps.pulseAverSett)
+		InitPulseAverageSettings(s)
 		return 0
 	endif
 
-	pps.pulseAverSett.showIndividualTraces = GetCheckboxState(extPanel, "check_pulseAver_indTraces")
-	pps.pulseAverSett.showAverageTrace     = GetCheckboxState(extPanel, "check_pulseAver_showAver")
-	pps.pulseAverSett.multipleGraphs       = GetCheckboxState(extPanel, "check_pulseAver_multGraphs")
-	pps.pulseAverSett.startingPulse        = GetSetVariable(extPanel, "setvar_pulseAver_startPulse")
-	pps.pulseAverSett.endingPulse          = GetSetVariable(extPanel, "setvar_pulseAver_endPulse")
-	pps.pulseAverSett.fallbackPulseLength  = GetSetVariable(extPanel, "setvar_pulseAver_fallbackLength")
-	pps.pulseAverSett.regionSlider         = BSP_GetDDAQ(win)
-	pps.pulseAverSett.zeroTraces           = GetCheckboxState(extPanel, "check_pulseAver_zeroTrac")
-	pps.pulseAverSett.autoTimeAlignment    = GetCheckboxState(extPanel, "check_pulseAver_timeAlign")
+	s.showIndividualTraces = GetCheckboxState(extPanel, "check_pulseAver_indTraces")
+	s.showAverageTrace     = GetCheckboxState(extPanel, "check_pulseAver_showAver")
+	s.multipleGraphs       = GetCheckboxState(extPanel, "check_pulseAver_multGraphs")
+	s.startingPulse        = GetSetVariable(extPanel, "setvar_pulseAver_startPulse")
+	s.endingPulse          = GetSetVariable(extPanel, "setvar_pulseAver_endPulse")
+	s.fallbackPulseLength  = GetSetVariable(extPanel, "setvar_pulseAver_fallbackLength")
+	s.regionSlider         = BSP_GetDDAQ(win)
+	s.zeroTraces           = GetCheckboxState(extPanel, "check_pulseAver_zeroTrac")
+	s.autoTimeAlignment    = GetCheckboxState(extPanel, "check_pulseAver_timeAlign")
 
-	PA_DeconvGatherSettings(win, pps.pulseAverSett.deconvolution)
+	PA_DeconvGatherSettings(win, s.deconvolution)
 End
 
 /// @brief gather deconvolution settings from PA section in BSP

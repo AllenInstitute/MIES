@@ -3513,7 +3513,7 @@ static Function InitPostPlotSettings(win, pps)
 	pps.timeAlignRefTrace = GetPopupMenuString(bsPanel, "popup_TimeAlignment_Master")
 	pps.timeAlignment     = GetCheckBoxState(bsPanel, "check_BrowserSettings_TA")
 
-	PA_GatherSettings(win, pps)
+	PA_GatherSettings(win, pps.pulseAverSett)
 End
 
 /// @brief Time Alignment for the BrowserSettingsPanel
