@@ -317,6 +317,7 @@ Function PA_GatherSettings(win, s)
 		return 0
 	endif
 
+	s.dfr                  = BSP_GetFolder(win, MIES_BSP_PANEL_FOLDER)
 	s.showIndividualTraces = GetCheckboxState(extPanel, "check_pulseAver_indTraces")
 	s.showAverageTrace     = GetCheckboxState(extPanel, "check_pulseAver_showAver")
 	s.multipleGraphs       = GetCheckboxState(extPanel, "check_pulseAver_multGraphs")
@@ -343,9 +344,8 @@ Function PA_DeconvGatherSettings(win, deconvolution)
 	deconvolution.range  = GetSetVariable(bsPanel, "setvar_pulseAver_deconv_range")
 End
 
-Function PA_ShowPulses(win, dfr, pa)
+Function PA_ShowPulses(win, pa)
 	string win
-	DFREF dfr
 	STRUCT PulseAverageSettings &pa
 
 	string graph, preExistingGraphs
@@ -390,7 +390,7 @@ Function PA_ShowPulses(win, dfr, pa)
 		TUD_Clear(graph)
 	endfor
 
-	DFREF pulseAverageDFR = GetDevicePulseAverageFolder(dfr)
+	DFREF pulseAverageDFR = GetDevicePulseAverageFolder(pa.dfr)
 	Make/FREE/T userDataKeys = {"fullPath", "sweepNumber", "region", "channelNumber", "channelType",         \
 								"pulseIndex", "traceType", "occurence", "XAXIS", "YAXIS", "DiagonalElement"}
 

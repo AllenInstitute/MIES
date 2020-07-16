@@ -3492,7 +3492,7 @@ Function PostPlotTransformations(graph)
 
 	AverageWavesFromSameYAxisIfReq(graph, traces, pps.averageTraces, pps.averageDataFolder, pps.hideSweep)
 	AR_HighlightArtefactsEntry(graph)
-	PA_ShowPulses(graph, pps.averageDataFolder, pps.pulseAverSett)
+	PA_ShowPulses(graph, pps.pulseAverSett)
 	BSP_ScaleAxes(graph)
 End
 
