@@ -4,7 +4,7 @@ Developer
 Getting MIES
 ------------
 
-Latest development version from master branch
+Latest development version from main branch
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 -  ``git clone https://github.com/AllenInstitute/MIES``
@@ -159,7 +159,7 @@ data acquisition is blocked.
 Cutting a new release
 ~~~~~~~~~~~~~~~~~~~~~
 
--  Checkout the master branch
+-  Checkout the main branch
 -  Check that MIES compiles
 -  Check that doxygen/sphinx/breathe returns neither errors nor warnings
 -  Paste the contents of ``Packages\doc\releasenotes_template.rst`` to
@@ -253,7 +253,7 @@ perform the followings steps:
 Documentation building
 ~~~~~~~~~~~~~~~~~~~~~~
 
-The documentation for the master branch is automatically built and
+The documentation for the main branch is automatically built and
 uploaded by `this <http://bamboo.corp.alleninstitute.org/browse/MIES-CM>`__ bamboo job.
 
 Setting up a continous integration server (Linux)
