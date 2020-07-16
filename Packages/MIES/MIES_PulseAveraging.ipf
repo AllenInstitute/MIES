@@ -730,7 +730,7 @@ End
 /// Note: MIES_fWaveAverage() usually takes 5 times longer than CA_AveragingKey()
 ///
 /// @returns wave reference to the average wave specified by @p outputDFR and @p outputWaveName
-Function/WAVE PA_Average(listOfWaves, outputDFR, outputWaveName)
+static Function/WAVE PA_Average(listOfWaves, outputDFR, outputWaveName)
 	string listOfWaves
 	DFREF outputDFR
 	string outputWaveName
@@ -763,7 +763,7 @@ Function/WAVE PA_SmoothDeconv(input, deconvolution)
 	return wv
 End
 
-Function/WAVE PA_Deconvolution(average, outputDFR, outputWaveName, deconvolution)
+static Function/WAVE PA_Deconvolution(average, outputDFR, outputWaveName, deconvolution)
 	WAVE average
 	DFREF outputDFR
 	string outputWaveName
@@ -906,7 +906,7 @@ Function PA_DeconvolutionIsActive(win)
 End
 
 /// @brief Update deconvolution traces in Sweep Plots
-Function PA_UpdateSweepPlotDeconvolution(win, show)
+static Function PA_UpdateSweepPlotDeconvolution(win, show)
 	string win
 	variable show
 
@@ -983,7 +983,7 @@ End
 /// traces are plotted on the diagonal graphs/axes of the PA graph(s).
 ///
 /// @param refTraces list of graph#trace entries as reference for time alignment
-Function PA_AutomaticTimeAlignment(refTraces)
+static Function PA_AutomaticTimeAlignment(refTraces)
 	string refTraces
 
 	string graphtrace
