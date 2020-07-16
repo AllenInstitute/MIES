@@ -303,7 +303,7 @@ static Function/WAVE PA_CreateAndFillPulseWaveIfReq(wv, singleSweepFolder, chann
 End
 
 /// @brief Populates pps.pulseAverSett with the user selection from the panel
-Function PA_GatherSettings(win, s)
+static Function PA_GatherSettings(win, s)
 	string win
 	STRUCT PulseAverageSettings &s
 
@@ -332,7 +332,7 @@ Function PA_GatherSettings(win, s)
 End
 
 /// @brief gather deconvolution settings from PA section in BSP
-Function PA_DeconvGatherSettings(win, deconvolution)
+static Function PA_DeconvGatherSettings(win, deconvolution)
 	string win
 	STRUCT PulseAverageDeconvSettings &deconvolution
 
@@ -344,7 +344,17 @@ Function PA_DeconvGatherSettings(win, deconvolution)
 	deconvolution.range  = GetSetVariable(bsPanel, "setvar_pulseAver_deconv_range")
 End
 
-Function PA_ShowPulses(win, pa)
+/// @brief Update the PA plot to accomodate changed settings
+Function PA_Update(string win)
+
+	string graph = GetMainWindow(win)
+
+	STRUCT PulseAverageSettings s
+	PA_GatherSettings(graph, s)
+	PA_ShowPulses(graph, s)
+End
+
+static Function PA_ShowPulses(win, pa)
 	string win
 	STRUCT PulseAverageSettings &pa
 
