@@ -919,25 +919,25 @@ static Function PA_UpdateSweepPlotDeconvolution(win)
 			numTraces = WaveExists(traces) ? DimSize(traces, ROWS) : 0
 			for(j = 0; j < numTraces; j += 1)
 				avgTrace = traces[j]
-	
+
 				vertAxis  = TUD_GetUserData(graph, avgTrace, "YAXIS")
 				horizAxis = TUD_GetUserData(graph, avgTrace, "XAXIS")
-	
+
 				fullPath = TUD_GetUserData(graph, avgTrace, "fullPath")
 				WAVE averageWave = $fullPath
 				DFREF pulseAverageDFR = GetWavesDataFolderDFR(averageWave)
-	
+
 				SplitString/E=(PA_AVERAGE_WAVE_PREFIX + "(.*)") NameOfWave(averageWave), baseName
 				ASSERT(V_flag == 1, "Unexpected Trace Name")
-	
+
 				sprintf traceName, "T%0*d%s%s", TRACE_NAME_NUM_DIGITS, traceIndex, PA_DECONVOLUTION_WAVE_PREFIX, baseName
 				traceIndex += 1
-	
+
 				WAVE deconv = PA_Deconvolution(averageWave, pulseAverageDFR, traceName, deconvolution)
-	
+
 				AppendToGraph/Q/W=$graph/L=$vertAxis/B=$horizAxis/C=(0,0,0) deconv/TN=$traceName
 				ModifyGraph/W=$graph lsize($traceName)=2
-	
+
 				TUD_SetUserDataFromWaves(graph, traceName, {"traceType", "occurence", "XAXIS", "YAXIS", "DiagonalElement"}, \
 							             {"Deconvolution", "0", horizAxis, vertAxis, "0"})
 				TUD_SetUserData(graph, traceName, "fullPath", GetWavesDataFolder(deconv, 2))
@@ -948,7 +948,7 @@ static Function PA_UpdateSweepPlotDeconvolution(win)
 			numTraces = WaveExists(traces) ? DimSize(traces, ROWS) : 0
 			for(j = 0; j < numTraces; j += 1)
 				traceName = traces[j]
-	
+
 				RemoveFromGraph/W=$graph $traceName
 				TUD_RemoveUserData(graph, traceName)
 			endfor
