@@ -5737,9 +5737,6 @@ End
 
 /// @brief Return the overlay sweeps listbox wave for the
 ///        databrowser or the sweepbrowser
-///
-/// The dimension label for all ROWS (-1) stores the index
-/// of the sweep to be highlighted.
 Function/WAVE GetOverlaySweepsListWave(dfr)
 	DFREF dfr
 
