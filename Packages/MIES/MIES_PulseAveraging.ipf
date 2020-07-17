@@ -577,7 +577,6 @@ static Function PA_ShowPulses(win, pa)
 			channelList     = ""
 
 			// do calculations on traces
-			String testList = ""
 			for(k = 0; k < numChannelTypeTraces; k += 1)
 				idx = indizesChannelType[k]
 
