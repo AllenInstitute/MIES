@@ -303,9 +303,9 @@ static Function/WAVE PA_CreateAndFillPulseWaveIfReq(wv, singleSweepFolder, chann
 End
 
 /// @brief Populates pps.pulseAverSett with the user selection from the panel
-Function PA_GatherSettings(win, pps)
+static Function PA_GatherSettings(win, s)
 	string win
-	STRUCT PostPlotSettings &pps
+	STRUCT PulseAverageSettings &s
 
 	string extPanel
 
@@ -313,25 +313,27 @@ Function PA_GatherSettings(win, pps)
 	extPanel = BSP_GetPanel(win)
 
 	if(!PA_IsActive(win))
-		InitPulseAverageSettings(pps.pulseAverSett)
+		InitPulseAverageSettings(s)
 		return 0
 	endif
 
-	pps.pulseAverSett.showIndividualTraces = GetCheckboxState(extPanel, "check_pulseAver_indTraces")
-	pps.pulseAverSett.showAverageTrace     = GetCheckboxState(extPanel, "check_pulseAver_showAver")
-	pps.pulseAverSett.multipleGraphs       = GetCheckboxState(extPanel, "check_pulseAver_multGraphs")
-	pps.pulseAverSett.startingPulse        = GetSetVariable(extPanel, "setvar_pulseAver_startPulse")
-	pps.pulseAverSett.endingPulse          = GetSetVariable(extPanel, "setvar_pulseAver_endPulse")
-	pps.pulseAverSett.fallbackPulseLength  = GetSetVariable(extPanel, "setvar_pulseAver_fallbackLength")
-	pps.pulseAverSett.regionSlider         = BSP_GetDDAQ(win)
-	pps.pulseAverSett.zeroTraces           = GetCheckboxState(extPanel, "check_pulseAver_zeroTrac")
-	pps.pulseAverSett.autoTimeAlignment    = GetCheckboxState(extPanel, "check_pulseAver_timeAlign")
+	s.dfr                  = BSP_GetFolder(win, MIES_BSP_PANEL_FOLDER)
+	s.enabled              = GetCheckboxState(extPanel, "check_BrowserSettings_PA")
+	s.showIndividualTraces = GetCheckboxState(extPanel, "check_pulseAver_indTraces")
+	s.showAverageTrace     = GetCheckboxState(extPanel, "check_pulseAver_showAver")
+	s.multipleGraphs       = GetCheckboxState(extPanel, "check_pulseAver_multGraphs")
+	s.startingPulse        = GetSetVariable(extPanel, "setvar_pulseAver_startPulse")
+	s.endingPulse          = GetSetVariable(extPanel, "setvar_pulseAver_endPulse")
+	s.fallbackPulseLength  = GetSetVariable(extPanel, "setvar_pulseAver_fallbackLength")
+	s.regionSlider         = BSP_GetDDAQ(win)
+	s.zeroTraces           = GetCheckboxState(extPanel, "check_pulseAver_zeroTrac")
+	s.autoTimeAlignment    = GetCheckboxState(extPanel, "check_pulseAver_timeAlign")
 
-	PA_DeconvGatherSettings(win, pps.pulseAverSett.deconvolution)
+	PA_DeconvGatherSettings(win, s.deconvolution)
 End
 
 /// @brief gather deconvolution settings from PA section in BSP
-Function PA_DeconvGatherSettings(win, deconvolution)
+static Function PA_DeconvGatherSettings(win, deconvolution)
 	string win
 	STRUCT PulseAverageDeconvSettings &deconvolution
 
@@ -343,9 +345,18 @@ Function PA_DeconvGatherSettings(win, deconvolution)
 	deconvolution.range  = GetSetVariable(bsPanel, "setvar_pulseAver_deconv_range")
 End
 
-Function PA_ShowPulses(win, dfr, pa)
+/// @brief Update the PA plot to accomodate changed settings
+Function PA_Update(string win)
+
+	string graph = GetMainWindow(win)
+
+	STRUCT PulseAverageSettings s
+	PA_GatherSettings(graph, s)
+	PA_ShowPulses(graph, s)
+End
+
+static Function PA_ShowPulses(win, pa)
 	string win
-	DFREF dfr
 	STRUCT PulseAverageSettings &pa
 
 	string graph, preExistingGraphs
@@ -364,7 +375,7 @@ Function PA_ShowPulses(win, dfr, pa)
 
 	preExistingGraphs = PA_GetAverageGraphs()
 
-	if(!PA_IsActive(win))
+	if(!pa.enabled)
 		KillWindows(preExistingGraphs)
 		return NaN
 	endif
@@ -390,7 +401,7 @@ Function PA_ShowPulses(win, dfr, pa)
 		TUD_Clear(graph)
 	endfor
 
-	DFREF pulseAverageDFR = GetDevicePulseAverageFolder(dfr)
+	DFREF pulseAverageDFR = GetDevicePulseAverageFolder(pa.dfr)
 	Make/FREE/T userDataKeys = {"fullPath", "sweepNumber", "region", "channelNumber", "channelType",         \
 								"pulseIndex", "traceType", "occurence", "XAXIS", "YAXIS", "DiagonalElement"}
 
@@ -719,7 +730,7 @@ End
 /// Note: MIES_fWaveAverage() usually takes 5 times longer than CA_AveragingKey()
 ///
 /// @returns wave reference to the average wave specified by @p outputDFR and @p outputWaveName
-Function/WAVE PA_Average(listOfWaves, outputDFR, outputWaveName)
+static Function/WAVE PA_Average(listOfWaves, outputDFR, outputWaveName)
 	string listOfWaves
 	DFREF outputDFR
 	string outputWaveName
@@ -752,7 +763,7 @@ Function/WAVE PA_SmoothDeconv(input, deconvolution)
 	return wv
 End
 
-Function/WAVE PA_Deconvolution(average, outputDFR, outputWaveName, deconvolution)
+static Function/WAVE PA_Deconvolution(average, outputDFR, outputWaveName, deconvolution)
 	WAVE average
 	DFREF outputDFR
 	string outputWaveName
@@ -783,7 +794,7 @@ Function PA_CheckProc_Common(cba) : CheckBoxControl
 
 	switch(cba.eventCode)
 		case 2: // mouse up
-			UpdateSweepPlot(cba.win)
+			PA_Update(cba.win)
 			break
 	endswitch
 
@@ -796,7 +807,7 @@ Function PA_CheckProc_Individual(cba) : CheckBoxControl
 	switch(cba.eventCode)
 		case 2: // mouse up
 			BSP_SetIndividualControlStatus(cba.win)
-			UpdateSweepPlot(cba.win)
+			PA_Update(cba.win)
 			break
 	endswitch
 
@@ -809,7 +820,7 @@ Function PA_CheckProc_Average(cba) : CheckBoxControl
 	switch(cba.eventCode)
 		case 2: // mouse up
 			BSP_SetDeconvControlStatus(cba.win)
-			UpdateSweepPlot(cba.win)
+			PA_Update(cba.win)
 			break
 	endswitch
 
@@ -838,7 +849,7 @@ Function PA_SetVarProc_Common(sva) : SetVariableControl
 		case 1: // mouse up
 		case 2: // Enter key
 		case 3: // Live update
-			UpdateSweepPlot(sva.win)
+			PA_Update(sva.win)
 			break
 	endswitch
 
@@ -895,7 +906,7 @@ Function PA_DeconvolutionIsActive(win)
 End
 
 /// @brief Update deconvolution traces in Sweep Plots
-Function PA_UpdateSweepPlotDeconvolution(win, show)
+static Function PA_UpdateSweepPlotDeconvolution(win, show)
 	string win
 	variable show
 
@@ -972,7 +983,7 @@ End
 /// traces are plotted on the diagonal graphs/axes of the PA graph(s).
 ///
 /// @param refTraces list of graph#trace entries as reference for time alignment
-Function PA_AutomaticTimeAlignment(refTraces)
+static Function PA_AutomaticTimeAlignment(refTraces)
 	string refTraces
 
 	string graphtrace

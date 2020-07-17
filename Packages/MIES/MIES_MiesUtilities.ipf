@@ -3492,7 +3492,7 @@ Function PostPlotTransformations(graph)
 
 	AverageWavesFromSameYAxisIfReq(graph, traces, pps.averageTraces, pps.averageDataFolder, pps.hideSweep)
 	AR_HighlightArtefactsEntry(graph)
-	PA_ShowPulses(graph, pps.averageDataFolder, pps.pulseAverSett)
+	PA_Update(graph)
 	BSP_ScaleAxes(graph)
 End
 
@@ -3512,8 +3512,6 @@ static Function InitPostPlotSettings(win, pps)
 	pps.timeAlignLevel    = GetSetVariable(bsPanel, "setvar_TimeAlignment_LevelCross")
 	pps.timeAlignRefTrace = GetPopupMenuString(bsPanel, "popup_TimeAlignment_Master")
 	pps.timeAlignment     = GetCheckBoxState(bsPanel, "check_BrowserSettings_TA")
-
-	PA_GatherSettings(win, pps)
 End
 
 /// @brief Time Alignment for the BrowserSettingsPanel
