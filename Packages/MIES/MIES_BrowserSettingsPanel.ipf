@@ -524,7 +524,6 @@ static Function BSP_InitMainCheckboxes(win)
 
 	BSP_SetOVSControlStatus(bsPanel)
 	BSP_SetARControlStatus(bsPanel)
-	BSP_SetPAControlStatus(bsPanel)
 
 	return 1
 End
@@ -553,22 +552,6 @@ Function BSP_SetARControlStatus(win)
 	BSP_SetControlStatus(win, controlList, AR_IsActive(win))
 End
 
-/// @brief enable/disable the PA buttons
-///
-/// @param win 	specify mainPanel or bsPanel with OVS controls
-Function BSP_SetPAControlStatus(win)
-	string win
-
-	string controlList
-
-	controlList = "group_properties_pulse;check_pulseAver_indTraces;check_pulseAver_showAver;check_pulseAver_zeroTrac;check_pulseAver_multGraphs;check_pulseAver_deconv;check_pulseAver_timeAlign;setvar_pulseAver_startPulse;setvar_pulseAver_endPulse;setvar_pulseAver_fallbackLength;"
-	BSP_SetControlStatus(win, controlList, PA_IsActive(win))
-	BSP_SetIndividualControlStatus(win)
-	BSP_SetDeconvControlStatus(win)
-
-	BSP_SetDeconvControlStatus(win)
-End
-
 /// @brief enable/disable the SF buttons
 ///
 /// @param win 	specify mainPanel or bsPanel with OVS controls
@@ -579,31 +562,6 @@ Function BSP_SetSFControlStatus(win)
 
 	controlList = "group_properties_sweepFormula;SF_InfoTab;button_sweepFormula_display;button_sweepFormula_check;setvar_sweepFormula_parseResult;status_sweepFormula_parser;"
 	BSP_SetControlStatus(win, controlList, SF_IsActive(win))
-	BSP_SetIndividualControlStatus(win)
-End
-
-/// @brief enable/disable the buttons that rely on displayed traces
-///
-/// @param win 	specify mainPanel or bsPanel with OVS controls
-Function BSP_SetIndividualControlStatus(win)
-	string win
-
-	BSP_SetControlStatus(win, "check_pulseAver_timeAlign", PA_IndividualIsActive(win))
-End
-
-/// @brief enable/disable deconvolution buttons depending on the status of @c check_pulseAver_showAver
-///
-/// @param win 	specify mainPanel or bsPanel with OVS controls
-Function BSP_SetDeconvControlStatus(win)
-	string win
-
-	string controlList
-
-	controlList = "group_pulseAver_deconv;check_pulseAver_deconv;"
-	BSP_SetControlStatus(win, controlList, PA_AverageIsActive(win))
-
-	controlList = "setvar_pulseAver_deconv_tau;setvar_pulseAver_deconv_smth;setvar_pulseAver_deconv_range;"
-	BSP_SetControlStatus(win, controlList, PA_DeconvolutionIsActive(win))
 End
 
 /// @brief enable/disable a list of controls

@@ -339,7 +339,8 @@ static Function PA_DeconvGatherSettings(win, deconvolution)
 
 	string bsPanel = BSP_GetPanel(win)
 
-	deconvolution.enable = PA_DeconvolutionIsActive(win)
+	deconvolution.enable = GetCheckboxState(bsPanel, "check_pulseAver_deconv") \
+	                       && GetCheckboxState(bsPanel, "check_pulseAver_showAver")
 	deconvolution.smth   = GetSetVariable(bsPanel, "setvar_pulseAver_deconv_smth")
 	deconvolution.tau    = GetSetVariable(bsPanel, "setvar_pulseAver_deconv_tau")
 	deconvolution.range  = GetSetVariable(bsPanel, "setvar_pulseAver_deconv_range")
@@ -806,7 +807,6 @@ Function PA_CheckProc_Individual(cba) : CheckBoxControl
 
 	switch(cba.eventCode)
 		case 2: // mouse up
-			BSP_SetIndividualControlStatus(cba.win)
 			PA_Update(cba.win)
 			break
 	endswitch
@@ -819,7 +819,6 @@ Function PA_CheckProc_Average(cba) : CheckBoxControl
 
 	switch(cba.eventCode)
 		case 2: // mouse up
-			BSP_SetDeconvControlStatus(cba.win)
 			PA_Update(cba.win)
 			break
 	endswitch
@@ -832,7 +831,6 @@ Function PA_CheckProc_Deconvolution(cba) : CheckBoxControl
 
 	switch( cba.eventCode )
 		case 2: // mouse up
-			BSP_SetDeconvControlStatus(cba.win)
 			PA_UpdateSweepPlotDeconvolution(cba.win)
 			break
 		case -1: // control being killed
@@ -861,48 +859,6 @@ Function PA_IsActive(win)
 	string win
 
 	return BSP_IsActive(win, MIES_BSP_PA)
-End
-
-/// @brief checks if "show individual traces" in PA is activated.
-Function PA_IndividualIsActive(win)
-	string win
-
-	string bsPanel
-
-	if(!PA_IsActive(win))
-		return 0
-	endif
-
-	bsPanel = BSP_GetPanel(win)
-	return GetCheckBoxState(bsPanel, "check_pulseAver_indTraces")
-End
-
-/// @brief checks if "show average trace" in PA is activated.
-Function PA_AverageIsActive(win)
-	string win
-
-	string bsPanel
-
-	if(!PA_IsActive(win))
-		return 0
-	endif
-
-	bsPanel = BSP_GetPanel(win)
-	return GetCheckboxState(bsPanel, "check_pulseAver_showAver")
-End
-
-/// @brief checks if "show average trace" in PA is activated.
-Function PA_DeconvolutionIsActive(win)
-	string win
-
-	string bsPanel
-
-	if(!PA_AverageIsActive(win))
-		return 0
-	endif
-
-	bsPanel = BSP_GetPanel(win)
-	return GetCheckboxState(bsPanel, "check_pulseAver_deconv")
 End
 
 /// @brief Update deconvolution traces in Sweep Plots
