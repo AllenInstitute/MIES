@@ -4045,6 +4045,13 @@ End
 
 /// @brief Perform time alignment of features in the sweep traces
 ///
+/// PA time alignment:
+/// - Get the feature position of the reference trace and store it in `refPos`
+/// - Get them also for all pulses which belong to the same set. Store these
+///   feature positions using their sweep number and pulse index as key.
+/// - Now shift *all* pulses in all sets from the same region by `- (refPos +
+///   featurePos)` where `featurePos` is used from the same sweep and pulse index.
+///
 /// @param graphtrace reference trace in the form of graph#trace
 /// @param mode       time alignment mode
 /// @param level      level input to the @c FindLevel operation in @see CalculateFeatureLoc
