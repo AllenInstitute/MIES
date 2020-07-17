@@ -3472,11 +3472,12 @@ End
 /// Keeps track of all internal details wrt. to the order of
 /// the operations, backups, etc.
 ///
-/// @param graph graph with sweep traces
-Function PostPlotTransformations(graph)
+/// @param win graph with sweep traces
+Function PostPlotTransformations(string win)
+	STRUCT TiledGraphSettings tgs
 	string graph
 
-	variable csrAx, csrBx
+	graph = GetMainWindow(win)
 
 	WAVE/T/Z traces = GetAllSweepTraces(graph)
 
@@ -3494,6 +3495,9 @@ Function PostPlotTransformations(graph)
 	AR_HighlightArtefactsEntry(graph)
 	PA_Update(graph)
 	BSP_ScaleAxes(graph)
+
+	[tgs] = BSP_GatherTiledGraphSettings(graph)
+	LayoutGraph(graph, tgs)
 End
 
 static Function InitPostPlotSettings(win, pps)
