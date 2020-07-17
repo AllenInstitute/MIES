@@ -5,6 +5,34 @@
 /// @file MIES_PulseAveraging.ipf
 ///
 /// @brief __PA__ Routines for dealing with pulse averaging.
+///
+/// A pulse average (PA) plot allows to visualize multiple parts of data on different headstages.
+///
+/// Assume you have acquired a pulse train with oodDAQ on 5 different headstages.
+/// This means you have 5 active headstages with each a DA and AD channel. We
+/// only visualize the AD data in the PA plot.
+///
+/// The PA plot will then have 25 = 5 x 5 PA sets (either in one big graph or in multiple graphs).
+///
+/// Each set will have one source of pulse starting times (called "region")
+/// and one source of the visualized data. The pulse starting times are always
+/// extracted from the DA channel of the region.
+///
+/// That means the top left set is from the first region and the first
+/// active headstage, the one to the right is from the second region and the
+/// first active headstage. Or to put it differently, regions are the columns.
+///
+/// - Averaging is done for all pulses in a set
+/// - Zeroing is done for all pulses
+/// - Deconvolution is done for the average wave only
+/// - Time alignment is done for all pulses of a region against the reference
+///   pulse which is the first pulse from the set where `activeRegionCount
+///   == activeChannelCount` (aka the diagonal trace set). The graph user data
+///   `REFERENCE` denotes if the graph has references pulses and
+///   `REFERENCE_TRACES` holds the names of the reference traces.
+///
+/// The dDAQ slider in the Databrowse/Sweepbrowser is respected as is the
+/// channel selection.
 
 static StrConstant PULSE_AVERAGE_GRAPH_PREFIX = "PulseAverage"
 static StrConstant SOURCE_WAVE_TIMESTAMP      = "SOURCE_WAVE_TS"
