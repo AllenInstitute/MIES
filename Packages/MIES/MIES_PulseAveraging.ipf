@@ -833,7 +833,7 @@ Function PA_CheckProc_Deconvolution(cba) : CheckBoxControl
 	switch( cba.eventCode )
 		case 2: // mouse up
 			BSP_SetDeconvControlStatus(cba.win)
-			PA_UpdateSweepPlotDeconvolution(cba.win, cba.checked)
+			PA_UpdateSweepPlotDeconvolution(cba.win)
 			break
 		case -1: // control being killed
 			break
@@ -906,9 +906,8 @@ Function PA_DeconvolutionIsActive(win)
 End
 
 /// @brief Update deconvolution traces in Sweep Plots
-static Function PA_UpdateSweepPlotDeconvolution(win, show)
+static Function PA_UpdateSweepPlotDeconvolution(win)
 	string win
-	variable show
 
 	string graph, graphs, horizAxis, vertAxis
 	string traceName, fullPath, avgTrace
@@ -916,7 +915,6 @@ static Function PA_UpdateSweepPlotDeconvolution(win, show)
 	variable i, numGraphs, j, numTraces, traceIndex
 	STRUCT PulseAverageDeconvSettings deconvolution
 
-	win = GetMainWindow(win)
 	if(!PA_IsActive(win))
 		return 0
 	endif
@@ -924,14 +922,12 @@ static Function PA_UpdateSweepPlotDeconvolution(win, show)
 	bsPanel = BSP_GetPanel(win)
 	PA_DeconvGatherSettings(bsPanel, deconvolution)
 
-	show = !!show
-
 	graphs = PA_GetAverageGraphs()
 	numGraphs = ItemsInList(graphs)
 	for(i = 0; i < numGraphs; i += 1)
 		graph = StringFromList(i, graphs)
 
-		if(show)
+		if(deconvolution.enable)
 			WAVE/T traces = TUD_GetUserDataAsWave(graph, "traceName", keys = {"traceType", "DiagonalElement"}, values = {"Average", "0"})
 
 			traceIndex = TUD_GetTraceCount(graph)
@@ -962,7 +958,7 @@ static Function PA_UpdateSweepPlotDeconvolution(win, show)
 							             {"Deconvolution", "0", horizAxis, vertAxis, "0"})
 				TUD_SetUserData(graph, traceName, "fullPath", GetWavesDataFolder(deconv, 2))
 			endfor
-		else // !show
+		else // !deconvolution.enable
 			WAVE/T traces = TUD_GetUserDataAsWave(graph, "traceName", keys = {"traceType"}, values = {"Deconvolution"})
 
 			numTraces = DimSize(traces, ROWS)
