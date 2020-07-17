@@ -662,8 +662,7 @@ Function BSP_CheckBoxProc_PerPulseAver(cba) : CheckBoxControl
 	switch(cba.eventCode)
 		case 2: // mouse up
 			mainPanel = GetMainWindow(cba.win)
-			BSP_SetPAControlStatus(mainPanel)
-			UpdateSweepPlot(mainPanel)
+			PA_Update(mainPanel)
 			break
 	endswitch
 
