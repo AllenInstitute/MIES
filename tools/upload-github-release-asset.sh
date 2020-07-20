@@ -54,14 +54,14 @@ fi
 branch=$(git rev-parse --abbrev-ref HEAD)
 
 case "$branch" in
-  master)
+  main)
     tag=latest
 
     cd $public_mies_repo
 
     git stash || true
     git fetch --all
-    git tag --force ${tag} origin/master
+    git tag --force ${tag} origin/main
     git push --force origin ${tag}
 
     cd $top_level

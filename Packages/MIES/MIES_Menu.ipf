@@ -118,7 +118,7 @@ Function OpenAboutDialog()
 	Notebook $nb text="\r"
 	Notebook $nb text="License: "
 	NotebookAction/W=$nb name=Action0, title="2-clause BSD license plus a third clause", ignoreErrors=1
-	NotebookAction/W=$nb name=Action0, commands="BrowseURL(\"https://github.com/AllenInstitute/MIES/blob/master/LICENSE\")"
+	NotebookAction/W=$nb name=Action0, commands="BrowseURL(\"https://github.com/AllenInstitute/MIES/blob/main/LICENSE\")"
 	Notebook $nb text="\r"
 	Notebook $nb text="\r"
 	Notebook $nb text="Sponsors: "
