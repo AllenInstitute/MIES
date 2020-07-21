@@ -54,6 +54,9 @@ Function InitPulseAverageSettings(pa)
 	pa.zeroTraces           = NaN
 	pa.autoTimeAlignment    = NaN
 	pa.dfr                  = $""
+	pa.hideFailedPulses     = NaN
+	pa.searchFailedPulses   = NaN
+	pa.failedPulsesLevel    = NaN
 End
 
 Structure PulseAverageSettings
@@ -61,6 +64,9 @@ Structure PulseAverageSettings
 	variable startingPulse, endingPulse, regionSlider
 	variable fallbackPulseLength, multipleGraphs
 	variable zeroTraces, autoTimeAlignment, enabled
+	variable hideFailedPulses, searchFailedPulses
+	variable failedPulsesLevel
+
 	DFREF dfr
 
 	STRUCT PulseAverageDeconvSettings deconvolution

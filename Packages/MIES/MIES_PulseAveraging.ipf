@@ -356,6 +356,9 @@ static Function PA_GatherSettings(win, s)
 	s.regionSlider         = BSP_GetDDAQ(win)
 	s.zeroTraces           = GetCheckboxState(extPanel, "check_pulseAver_zeroTrac")
 	s.autoTimeAlignment    = GetCheckboxState(extPanel, "check_pulseAver_timeAlign")
+	s.searchFailedPulses   = GetCheckboxState(extPanel, "check_pulseAver_searchFailedPulses")
+	s.hideFailedPulses     = GetCheckboxState(extPanel, "check_pulseAver_hideFailedPulses")
+	s.failedPulsesLevel    = GetSetVariable(extPanel, "setvar_pulseAver_failedPulses_level")
 
 	PA_DeconvGatherSettings(win, s.deconvolution)
 End
