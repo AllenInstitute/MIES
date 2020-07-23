@@ -4039,6 +4039,7 @@ static Function ZeroTracesIfReq(graph, traces, zeroTraces)
 	for(i = 0; i < numTraces; i += 1)
 		trace = traces[i]
 		WAVE wv = $TUD_GetUserData(graph, trace, "fullPath")
+		CreateBackupWave(wv)
 		ZeroWave(wv)
 	endfor
 End
@@ -5836,7 +5837,7 @@ End
 /// Preserves the WaveNote and adds the entry NOTE_KEY_ZEROED
 ///
 /// 2D waves are zeroed along each row
-Function ZeroWave(wv)
+threadsafe Function ZeroWave(wv)
 	WAVE wv
 
 	string wavenote
@@ -5844,8 +5845,6 @@ Function ZeroWave(wv)
 	if(GetNumberFromWaveNote(wv, NOTE_KEY_ZEROED) == 1)
 		return NaN
 	endif
-
-	CreateBackupWave(wv)
 
 	wavenote = note(wv)
 

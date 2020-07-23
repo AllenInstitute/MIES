@@ -750,6 +750,7 @@ static Function PA_ZeroTraces(listOfWaves, setZero)
 	numWaves = ItemsInList(listOfWaves)
 	for(i = 0; i < numWaves; i += 1)
 		WAVE wv = $StringFromList(i, listOfWaves)
+		CreateBackupWave(wv)
 		ZeroWave(wv)
 	endfor
 End
