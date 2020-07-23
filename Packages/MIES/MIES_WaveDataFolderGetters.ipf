@@ -4499,86 +4499,6 @@ Function/WAVE P_PressureDataTxtWaveRef(panelTitle)
 End
 /// @}
 
-/// @brief Returns a wave reference to the Analysis Master Wave
-///
-/// Analysis Master Wave is used to store routines for doing post-sweep analysis and post analysis actions.
-///
-/// Rows:
-/// - Headstages
-///
-/// Columns:
-/// - 0: Analysis On/Off
-/// - 1: Analysis Function
-/// - 2: Action On/Off
-/// - 3: Action Function
-///
-Function/Wave GetAnalysisSettingsWaveRef(panelTitle)
-	string panelTitle
-
-	DFREF dfr = GetDevSpecAnlyssSttngsWavePath(panelTitle)
-
-	Wave/Z/T/SDFR=dfr wv = analysisSettingsWave
-
-	if(WaveExists(wv))
-		return wv
-	endif
-
-	Make/T/N=(NUM_HEADSTAGES,9) dfr:analysisSettingsWave/Wave=wv
-	wv = ""
-
-	SetDimLabel 0, -1, HeadStage, wv
-
-	SetDimLabel 1, 0, PSAOnOff, wv
-	SetDimLabel 1, 1, PSAType, wv
-	SetDimLabel 1, 2, PSAResult, wv
-	SetDimLabel 1, 3, PAAOnOff, wv
-	SetDimLabel 1, 4, PAAType, wv
-	SetDimLabel 1, 5, PAAResult, wv
-	SetDimLabel 1, 6, MSAOnOff, wv
-	SetDimLabel 1, 7, MSAType, wv
-	SetDimLabel 1, 8, MSAResult, wv
-
-	return wv
-End
-
-///@brief Returns a wave reference to the ActionScaleSettings Wave
-Function/Wave GetActionScaleSettingsWaveRef(panelTitle)
-	string panelTitle
-
-	DFREF dfr = GetDevSpecAnlyssSttngsWavePath(panelTitle)
-
-	Wave/Z/SDFR=dfr wv = actionScaleSettingsWave
-
-	if(WaveExists(wv))
-		return wv
-	endif
-
-	Make/N=(NUM_HEADSTAGES,7) dfr:actionScaleSettingsWave/Wave=wv
-
-	SetDimLabel 0, -1, HeadStage, wv
-	SetDimLabel 1, 0, coarseScaleValue, wv
-	SetDimLabel 1, 1, fineScaleValue, wv
-	SetDimLabel 1, 2, apThreshold, wv
-	SetDimLabel 1, 3, coarseTuneUse, wv
-	SetDimLabel 1, 4, fineTuneUse, wv
-	SetDimLabel 1, 5, result, wv
-	SetDimLabel 1, 6, elapsedTime, wv
-
-	// put the coarse scale value to a default
-	wv[][%coarseScaleValue] = 0.10
-
-	// put the fine scale value to a default
-	wv[][%fineScaleValue] = 0.05
-
-	// put the apThreshold to a default
-	wv[][%apThreshold] = 0.0
-
-	// put the coarse tune use factor to 1 as an initial state
-	wv[][%coarseTuneUse] = 1
-
-	return wv
-End
-
 /// @brief Returns a wave reference to the QC Wave
 ///
 /// Used for completing QC functions background tasks.
@@ -4615,20 +4535,6 @@ Function/S GetDevSpecLabNBTempFolderAS(panelTitle)
 	   string panelTitle
 
 	   return GetDevSpecLabNBFolderAsString(panelTitle) + ":Temp"
-End
-
-/// @brief Return the datafolder reference to the device specific text documentation
-Function/DF GetDevSpecAnlyssSttngsWavePath(panelTitle)
-	string panelTitle
-
-	return createDFWithAllParents(GetDevSpecAnlyssSttngsWaveAS(panelTitle))
-End
-
-/// @brief Return the full path to the device specific text documentation, e.g. root:mies:LabNoteBook:ITC18USB:Device0:analysisSettings
-Function/S GetDevSpecAnlyssSttngsWaveAS(panelTitle)
-	string panelTitle
-
-	return GetDevSpecLabNBFolderAsString(panelTitle) + ":analysisSettings"
 End
 
 /// @name Analysis Browser
@@ -5060,76 +4966,6 @@ Function/WAVE GetAnalysLBTextualKeys(expFolder, device)
 End
 
 /// @}
-
-///@brief Returns a wave reference to the new config settings Wave
-Function/Wave GetConfigSettingsWaveRef(panelTitle)
-	string panelTitle
-
-	DFREF dfr = GetDevSpecConfigSttngsWavePath(panelTitle)
-
-	Wave/Z/T/SDFR=dfr wv = configSettings
-
-	if(WaveExists(wv))
-		return wv
-	endif
-
-	// Make this a 2 by 1 wave...the 1st row will have the name of the thing saved, the 2nd row will have the value, and the third will have the control state.  This wave will get redimensioned and
-	// expanded and new things are added
-	Make/T/N=(3,1) dfr:configSettings/Wave=wv
-
-	SetDimLabel 0, 0, settingName, wv
-	SetDimLabel 0, 1, settingValue, wv
-	SetDimLabel 0, 2, controlState, wv
-	SetDimLabel 1, 0, version, wv
-
-	return wv
-End
-
-/// @brief Return the datafolder reference to the device specific config settings wave
-Function/DF GetDevSpecConfigSttngsWavePath(panelTitle)
-	string panelTitle
-	return createDFWithAllParents(GetDevSpecConfigSttngsWaveAS(panelTitle))
-End
-
-/// @brief Return the full path to the device specific config settings wave
-Function/S GetDevSpecConfigSttngsWaveAS(panelTitle)
-	string panelTitle
-	return GetDevSpecLabNBFolderAsString(panelTitle) + ":configSettings"
-End
-
-///@brief Returns a wave reference to the Asynch response wave
-Function/Wave GetAsynRspWaveRef(panelTitle)
-	string panelTitle
-
-	DFREF dfr = GetDevSpecAsynRspWavePath(panelTitle)
-
-	Wave/T/Z/SDFR=dfr wv = asynRspWave
-
-	if(WaveExists(wv))
-		return wv
-	endif
-
-	Make/T/N=(NUM_HEADSTAGES,1) dfr:asynRspWave/Wave=wv
-
-	SetDimLabel 0, -1, HeadStage, wv
-	SetDimLabel 1, 0, cmdID, wv
-
-	return wv
-End
-
-/// @brief Return the datafolder reference to the device specific Asyn Response Wave..used for holding the cmd_id required by the workflow sequencing engine
-Function/DF GetDevSpecAsynRspWavePath(panelTitle)
-	string panelTitle
-
-	return createDFWithAllParents(GetDevSpecAsynRspWaveAS(panelTitle))
-End
-
-/// @brief Return the full path to the device specific Asyn Response wave for holding the cmd_id value
-Function/S GetDevSpecAsynRspWaveAS(panelTitle)
-	string panelTitle
-
-	return GetDevSpecLabNBFolderAsString(panelTitle) + ":cmdID"
-End
 
 /// @brief Return the indexing storage wave
 ///
