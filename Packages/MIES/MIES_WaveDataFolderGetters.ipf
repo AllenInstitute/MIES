@@ -5501,13 +5501,8 @@ Function/WAVE GetPulseAverageWave(dfr, length, channelType, channelNumber, regio
 
 	string wvName
 
-	ASSERT(channelType < ItemsInList(ITC_CHANNEL_NAMES), "Invalid channel type")
-	ASSERT(channelNumber < GetNumberFromType(itcVar=channelType) , "Invalid channel number")
 	ASSERT(DataFolderExistsDFR(dfr), "Missing dfr")
-	ASSERT(IsInteger(pulseIndex) && pulseIndex >= 0, "Invalid pulseIndex")
-
-	wvName  = StringFromList(channelType, ITC_CHANNEL_NAMES) + num2str(channelNumber)
-	wvName += "_R" + num2str(region) + "_P" + num2str(pulseIndex)
+	wvName = PA_GeneratePulseWaveName(channelType, channelNumber, region, pulseIndex)
 
 	WAVE/SDFR=dfr/Z wv = $wvName
 	if(WaveExists(wv))

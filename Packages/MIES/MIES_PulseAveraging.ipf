@@ -712,6 +712,16 @@ static Function PA_ShowPulses(win, pa)
 	endfor
 End
 
+/// @brief Generate the wave name for a single pulse
+Function/S PA_GeneratePulseWaveName(variable channelType, variable channelNumber, variable region, variable pulseIndex)
+	ASSERT(channelType < ItemsInList(ITC_CHANNEL_NAMES), "Invalid channel type")
+	ASSERT(channelNumber < GetNumberFromType(itcVar=channelType) , "Invalid channel number")
+	ASSERT(IsInteger(pulseIndex) && pulseIndex >= 0, "Invalid pulseIndex")
+
+	return StringFromList(channelType, ITC_CHANNEL_NAMES) + num2str(channelNumber) + \
+	       "_R" + num2str(region) + "_P" + num2str(pulseIndex)
+End
+
 /// @brief Generate a static base name for objects in the current averaging folder
 static Function/S PA_BaseName(channelTypeStr, channelNumber, headStage)
 	string channelTypeStr
