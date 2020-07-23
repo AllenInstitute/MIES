@@ -127,9 +127,7 @@ static Function/S PA_GetGraph(mainWin, multipleGraphs, channelTypeStr, channelNu
 End
 
 /// @brief Return the names of the vertical and horizontal axes
-static Function PA_GetAxes(multipleGraphs, activeRegionCount, activeChanCount, vertAxis, horizAxis)
-	variable multipleGraphs, activeRegionCount, activeChanCount
-	string &vertAxis, &horizAxis
+static Function [string vertAxis, string horizAxis] PA_GetAxes(variable multipleGraphs, variable activeRegionCount, variable activeChanCount)
 
 	if(multipleGraphs)
 		vertAxis  = "left"
@@ -522,7 +520,7 @@ static Function PA_ShowPulses(win, pa)
 				totalOnsetDelay = GetTotalOnsetDelay(numericalValues, sweepNo)
 
 				graph = PA_GetGraph(win, pa.multipleGraphs, channelTypeStr, channelNumber, region, activeRegionCount, activeChanCount)
-				PA_GetAxes(pa.multipleGraphs, activeRegionCount, activeChanCount, vertAxis, horizAxis)
+				[vertAxis, horizAxis] = PA_GetAxes(pa.multipleGraphs, activeRegionCount, activeChanCount)
 				traceCount = TUD_GetTraceCount(graph)
 
 				if(WhichListItem(graph, newlyCreatedGraphs) == -1)
@@ -638,7 +636,7 @@ static Function PA_ShowPulses(win, pa)
 					numSweeps   = ItemsInList(listOfWaves) / numPulses
 
 					graph = PA_GetGraph(win, pa.multipleGraphs, channelTypeStr, channelNumber, region, activeRegionCount, activeChanCount)
-					PA_GetAxes(pa.multipleGraphs, activeRegionCount, activeChanCount, vertAxis, horizAxis)
+					[vertAxis, horizAxis] = PA_GetAxes(pa.multipleGraphs, activeRegionCount, activeChanCount)
 					traceCount = TUD_GetTraceCount(graph)
 
 					baseName = PA_BaseName(channelTypeStr, channelNumber, region)
