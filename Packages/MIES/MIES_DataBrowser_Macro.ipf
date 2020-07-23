@@ -937,7 +937,7 @@ Window DataBrowser() : Graph
 	GroupBox group_pulseAver_searchFailedSweeps,userdata(ResizeControlsInfo)= A"!!,GX!!#BCJ,hqS!!#@$z!!#`-A7TLfzzzzzzzzzzzzzz!!#r+D.OhkBk2=!z"
 	GroupBox group_pulseAver_searchFailedSweeps,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	GroupBox group_pulseAver_searchFailedSweeps,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
-	CheckBox check_pulseAver_searchFailedPulses,pos={209.00,282.00},size={124.00,15.00},disable=1,proc=PA_CheckProc_Common,title="Search failed sweeps"
+	CheckBox check_pulseAver_searchFailedPulses,pos={209.00,282.00},size={124.00,15.00},disable=1,proc=PA_CheckProc_Common,title="Search failed pulses"
 	CheckBox check_pulseAver_searchFailedPulses,help={"Failed pulses don't have a signal above the given level in the diagonal elements"}
 	CheckBox check_pulseAver_searchFailedPulses,userdata(tabnum)=  "4"
 	CheckBox check_pulseAver_searchFailedPulses,userdata(tabcontrol)=  "Settings"

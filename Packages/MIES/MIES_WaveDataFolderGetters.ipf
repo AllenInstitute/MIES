@@ -5487,6 +5487,22 @@ Function/S GetDevicePulseAverageFolderAS(dfr)
 	return GetDataFolder(1, dfr) + "PulseAveraging"
 End
 
+/// @brief Return the pulse averaging helper folder
+///
+/// This holds various helper waves for the graph generation.
+Function/DF GetDevicePulseAverageHelperFolder(dfr)
+	DFREF dfr
+
+	return createDFWithAllParents(GetDevicePulseAverageHelperFolderAS(dfr))
+End
+
+/// @brief Return the full path to the pulse averaging helper folder, e.g. dfr:Helper
+Function/S GetDevicePulseAverageHelperFolderAS(dfr)
+	DFREF dfr
+
+	return GetDevicePulseAverageFolderAS(dfr) + ":Helper"
+End
+
 /// @brief Return a wave reference to the single pulse defined by the given parameters
 ///
 /// @param dfr           datafolder reference where to create the empty wave if it does not exist
@@ -5511,6 +5527,97 @@ Function/WAVE GetPulseAverageWave(dfr, length, channelType, channelNumber, regio
 		Make/N=(length) dfr:$wvName/WAVE=wv
 	endif
 
+	return wv
+End
+
+/// @brief Returns the pulse average set properties wave
+///
+/// These are row indizes into GetPulseAverageProperties()/GetPulseAveragePropertiesWaves()
+/// for the pulses which belong to the given set.
+Function/WAVE GetPulseAverageSetIndizes(DFREF dfr, variable channelNumber, variable region)
+
+	string name
+	variable versionOfNewWave = 2
+
+	sprintf name, "setProperties_AD%d_R%d", channelNumber, region
+
+	ASSERT(DataFolderExistsDFR(dfr), "Invalid dfr")
+	WAVE/Z/SDFR=dfr wv = $name
+
+	if(ExistsWithCorrectLayoutVersion(wv, versionOfNewWave))
+		return wv
+	elseif(WaveExists(wv))
+		// handle upgrade
+	else
+		Make/R/N=(MINIMUM_WAVE_SIZE, 1) dfr:$name/Wave=wv
+		Multithread wv[] = NaN
+	endif
+
+	SetDimLabel COLS, 0, $"Index", wv
+
+	SetWaveVersion(wv, versionOfNewWave)
+	SetNumberInWaveNote(wv, NOTE_INDEX, 0)
+
+	return wv
+End
+
+/// @brief Return the pulse average properties wave
+///
+/// It is filled by PA_GenerateAllPulseWaves() and consumed by others.
+Function/WAVE GetPulseAverageProperties(DFREF dfr)
+
+	variable versionOfNewWave = 1
+
+	ASSERT(DataFolderExistsDFR(dfr), "Invalid dfr")
+	WAVE/Z/SDFR=dfr wv = properties
+
+	if(ExistsWithCorrectLayoutVersion(wv, versionOfNewWave))
+		return wv
+	elseif(WaveExists(wv))
+		// handle upgrade
+	else
+		Make/R/N=(MINIMUM_WAVE_SIZE_LARGE, 12) dfr:properties/Wave=wv
+		Multithread wv[] = NaN
+	endif
+
+	SetDimLabel COLS,  0, $"Sweep", wv
+	SetDimLabel COLS,  1, $"ChannelType", wv
+	SetDimLabel COLS,  2, $"ChannelNumber", wv
+	SetDimLabel COLS,  3, $"Region", wv
+	SetDimLabel COLS,  4, $"Headstage", wv
+	SetDimLabel COLS,  5, $"Pulse", wv
+	SetDimLabel COLS,  6, $"DiagonalElement", wv
+	SetDimLabel COLS,  7, $"ActiveRegionCount", wv
+	SetDimLabel COLS,  8, $"ActiveChanCount", wv
+	SetDimLabel COLS,  9, $"PulseHasFailed", wv
+	SetDimLabel COLS, 10, $"TimeAlignmentReferencePulse", wv
+	SetDimLabel COLS, 11, $"LastSweep", wv
+
+	SetWaveVersion(wv, versionOfNewWave)
+	SetNumberInWaveNote(wv, NOTE_INDEX, 0)
+
+	return wv
+End
+
+/// @brief Return the pulse average properties wave with wave references
+///
+/// Belongs to GetPulseAverageProperties() and also has the same
+/// `NOTE_INDEX` count stored there.
+Function/WAVE GetPulseAveragePropertiesWaves(DFREF dfr)
+	variable versionOfNewWave = 1
+
+	ASSERT(DataFolderExistsDFR(dfr), "Invalid dfr")
+	WAVE/WAVE/Z/SDFR=dfr wv = propertiesWaves
+
+	if(ExistsWithCorrectLayoutVersion(wv, versionOfNewWave))
+		return wv
+	elseif(WaveExists(wv))
+		// handle upgrade
+	else
+		Make/WAVE/N=(MINIMUM_WAVE_SIZE_LARGE) dfr:propertiesWaves/Wave=wv
+	endif
+
+	SetWaveVersion(wv, versionOfNewWave)
 	return wv
 End
 
