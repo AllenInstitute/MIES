@@ -177,6 +177,8 @@ Cutting a new release
 
 -  Change the bamboo jobs using release branches to use the branch
    release/X.Y
+-  Create a new release on github and check that the bamboo job correctly
+   uploads the artifacts
 
 Creating a release package manually
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
