@@ -3414,23 +3414,23 @@ End
 /// @brief Return the parameter text wave for the wave builder panel
 ///
 /// Rows:
-/// - 0: Name of the custom wave for #EPOCH_TYPE_CUSTOM (legacy format: wave
-///      name only, current format: absolute path including the wave name)
-/// - 1: Analysis function, pre daq
-/// - 2: Analysis function, mid sweep
-/// - 3: Analysis function, post sweep
-/// - 4: Analysis function, post set
-/// - 5: Analysis function, post daq
-/// - 6: Formula
-/// - 7: Formula version: "[[:digit:]]+"
-/// - 8: Analysis function, pre sweep
-/// - 9: Analysis function, generic
-/// -10: Unused
-/// -11-26: Explicit delta values. ";" separated list as long as the number of sweeps.
-/// -27: Analysis function, pre set
-/// -28: Explicit delta value for "Inter trial interval"
-/// -29: Analysis function parameters. See below for a detailed explanation.
-/// -30-50: unused
+/// -  0: Name of the custom wave for #EPOCH_TYPE_CUSTOM (legacy format: wave
+///       name only, current format: absolute path including the wave name)
+/// -  1: Analysis function, pre daq
+/// -  2: Analysis function, mid sweep
+/// -  3: Analysis function, post sweep
+/// -  4: Analysis function, post set
+/// -  5: Analysis function, post daq
+/// -  6: Formula
+/// -  7: Formula version: "[[:digit:]]+"
+/// -  8: Analysis function, pre sweep
+/// -  9: Analysis function, generic
+/// - 10: Unused
+/// - 11-26: Explicit delta values. ";" separated list as long as the number of sweeps.
+/// - 27: Analysis function, pre set
+/// - 28: Explicit delta value for "Inter trial interval"
+/// - 29: Analysis function parameters. See below for a detailed explanation.
+/// - 30-50: unused
 ///
 /// `Formula` and `Formula Version` are in the #EPOCH_TYPE_COMBINE layer, the
 /// custom wave name is in the #EPOCH_TYPE_CUSTOM layer. 11 to 26 are for all
