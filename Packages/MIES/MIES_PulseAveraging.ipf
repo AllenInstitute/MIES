@@ -884,11 +884,11 @@ static Function PA_UpdateSweepPlotDeconvolution(win)
 		graph = StringFromList(i, graphs)
 
 		if(deconvolution.enable)
-			WAVE/T traces = TUD_GetUserDataAsWave(graph, "traceName", keys = {"traceType", "DiagonalElement"}, values = {"Average", "0"})
+			WAVE/T/Z traces = TUD_GetUserDataAsWave(graph, "traceName", keys = {"traceType", "DiagonalElement"}, values = {"Average", "0"})
 
 			traceIndex = TUD_GetTraceCount(graph)
-	
-			numTraces = DimSize(traces, ROWS)
+
+			numTraces = WaveExists(traces) ? DimSize(traces, ROWS) : 0
 			for(j = 0; j < numTraces; j += 1)
 				avgTrace = traces[j]
 	
@@ -915,9 +915,9 @@ static Function PA_UpdateSweepPlotDeconvolution(win)
 				TUD_SetUserData(graph, traceName, "fullPath", GetWavesDataFolder(deconv, 2))
 			endfor
 		else // !deconvolution.enable
-			WAVE/T traces = TUD_GetUserDataAsWave(graph, "traceName", keys = {"traceType"}, values = {"Deconvolution"})
+			WAVE/T/Z traces = TUD_GetUserDataAsWave(graph, "traceName", keys = {"traceType"}, values = {"Deconvolution"})
 
-			numTraces = DimSize(traces, ROWS)
+			numTraces = WaveExists(traces) ? DimSize(traces, ROWS) : 0
 			for(j = 0; j < numTraces; j += 1)
 				traceName = traces[j]
 	
