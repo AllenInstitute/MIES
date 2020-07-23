@@ -5849,8 +5849,8 @@ Function ZeroWave(wv)
 
 	wavenote = note(wv)
 
-	Differentiate/DIM=0/EP=1 wv/D=wv
-	Integrate/DIM=0 wv/D=wv
+	Differentiate/DIM=0/EP=1 wv
+	Integrate/DIM=0 wv
 
 	Note/K wv, wavenote + "\r"
 	SetNumberInWaveNote(wv, NOTE_KEY_ZEROED, 1)
