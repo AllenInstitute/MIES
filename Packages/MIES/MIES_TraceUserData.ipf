@@ -266,6 +266,8 @@ static Function TUD_ConvertTraceNameToRowIndex(WAVE/T graphUserData, string trac
 		create = !!create
 	endif
 
+	ASSERT(IsValidObjectName(trace), "trace is not a valid object name")
+
 	jsonID = TUD_GetIndexJSON(graphUserData)
 
 	if(create == 0)
