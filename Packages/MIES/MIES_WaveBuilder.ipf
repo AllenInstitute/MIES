@@ -1774,7 +1774,7 @@ Function WB_UpdateEpochCombineList(channelType)
 	endif
 
 	Make/D/FREE/N=(numEntries) creationDates
-	Make/T/FREE/N=(numEntries) stimsets = StringFromList(p, list)
+	WAVE/T stimsets = ListToTextWave(list, ";")
 
 	DFREF dfr = GetSetFolder(channelType)
 
