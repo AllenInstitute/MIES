@@ -562,45 +562,6 @@ Function SB_ButtonProc_ExportTraces(ba) : ButtonControl
 	return 0
 End
 
-Function SB_ButtonProc_FindMinis(ba) : ButtonControl
-	STRUCT WMButtonAction &ba
-
-	variable numTraces, i, first, last
-	string graph, list, trace
-
-	switch(ba.eventCode)
-		case 2: // mouse up
-			graph = GetMainWindow(ba.win)
-
-			WAVE/T/Z tracePaths = GetSweepUserData(graph, "fullPath")
-
-			if(!WaveExists(tracePaths))
-				break
-			endif
-
-			first = NumberByKey("POINT", CsrInfo(A, graph))
-			last  = NumberByKey("POINT", CsrInfo(B, graph))
-			[first, last] = MinMax(first, last)
-
-			DFREF workDFR = UniqueDataFolder(SB_GetSweepBrowserFolder(graph), "findminis")
-
-			numTraces = DimSize(tracePaths, ROWS)
-			for(i = 0; i < numTraces; i += 1)
-				WAVE full = $tracePaths[i]
-				if(IsFinite(first) && isFinite(last))
-					Duplicate/R=[first, last] full, workDFR:$(NameOfWave(full) + "_res")/Wave=wv
-				else
-					WAVE wv = full
-				endif
-
-				EDC_FindMinis(workDFR, wv)
-			endfor
-			break
-	endswitch
-
-	return 0
-End
-
 Function SB_AddSweepToGraph(string win, variable index)
 	STRUCT TiledGraphSettings tgs
 
