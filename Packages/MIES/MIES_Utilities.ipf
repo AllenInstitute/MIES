@@ -3303,10 +3303,10 @@ End
 /// @brief Check if a name for an object adheres to the strict naming rules
 ///
 /// @see `DisplayHelpTopic "ObjectName"`
-threadsafe Function IsValidObjectName(wvName)
-	string wvName
+threadsafe Function IsValidObjectName(name)
+	string name
 
-	return !cmpstr(wvName, CleanupName(wvName, 0, MAX_OBJECT_NAME_LENGTH_IN_BYTES))
+	return !cmpstr(name, CleanupName(name, 0, MAX_OBJECT_NAME_LENGTH_IN_BYTES))
 End
 
 /// @brief Find an integer `x` which is larger than `a` but the
