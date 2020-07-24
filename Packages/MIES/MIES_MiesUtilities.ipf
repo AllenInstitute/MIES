@@ -3960,6 +3960,8 @@ static Function AverageWavesFromSameYAxisIfReq(graph, traces, averagingEnabled, 
 			TUD_SetUserData(graph, traceName, "clampMode", StringFromList(0, listOfClampModes))
 			TUD_SetUserData(graph, traceName, "fullPath", GetWavesDataFolder(averageWave, 2))
 			TUD_SetUserData(graph, traceName, "traceType", "Average")
+			TUD_SetUserData(graph, traceName, "XAXIS", firstXAxis)
+			TUD_SetUserData(graph, traceName, "YAXIS", axis)
 		endif
 	endfor
 
