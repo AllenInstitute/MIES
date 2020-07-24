@@ -572,7 +572,7 @@ Function SB_ButtonProc_FindMinis(ba) : ButtonControl
 		case 2: // mouse up
 			graph = GetMainWindow(ba.win)
 
-			WAVE/T/Z tracePaths = GetAllSweepTraces(graph)
+			WAVE/T/Z tracePaths = GetSweepUserData(graph, "fullPath")
 
 			if(!WaveExists(tracePaths))
 				break
