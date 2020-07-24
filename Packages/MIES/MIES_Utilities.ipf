@@ -2743,6 +2743,14 @@ Function/S GetIgorProVersion()
 	return StringByKey("IGORFILEVERSION", IgorInfo(3))
 End
 
+/// @brief Return the Igor Pro build version string
+///
+/// This allows to distinguish different builds from the same major/minor
+/// version.
+Function/S GetIgorProBuildVersion()
+	return StringByKey("BUILD", IgorInfo(0))
+End
+
 /// @brief Return a unique symbolic path name
 ///
 /// \rst

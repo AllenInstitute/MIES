@@ -202,7 +202,7 @@ static Function NWB_AddGeneratorString(fileID, nwbVersion)
 
 	IPNWB#EnsureValidNWBVersion(nwbVersion)
 
-	Make/FREE/T/N=(5, 2) props
+	Make/FREE/T/N=(6, 2) props
 
 	props[0][0] = "Program"
 	props[0][1] = "Igor Pro " + num2str(GetArchitectureBits()) + "bit"
@@ -210,14 +210,17 @@ static Function NWB_AddGeneratorString(fileID, nwbVersion)
 	props[1][0] = "Program Version"
 	props[1][1] = GetIgorProVersion()
 
-	props[2][0] = "Package"
-	props[2][1] = "MIES"
+	props[2][0] = "Program Build Version"
+	props[2][1] = GetIgorProBuildVersion()
 
-	props[3][0] = "Package Version"
-	props[3][1] = GetMIESVersionAsString()
+	props[3][0] = "Package"
+	props[3][1] = "MIES"
 
-	props[4][0] = "Labnotebook Version"
-	props[4][1] = num2str(LABNOTEBOOK_VERSION)
+	props[4][0] = "Package Version"
+	props[4][1] = GetMIESVersionAsString()
+
+	props[5][0] = "Labnotebook Version"
+	props[5][1] = num2str(LABNOTEBOOK_VERSION)
 
 	if(nwbVersion == 1)
 		IPNWB#H5_WriteTextDataset(fileID, "/general/generated_by", wvText=props)
