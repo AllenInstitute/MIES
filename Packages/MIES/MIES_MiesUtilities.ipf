@@ -3499,7 +3499,7 @@ Function PostPlotTransformations(string win)
 
 	graph = GetMainWindow(win)
 
-	WAVE/T/Z traces = GetAllSweepTraces(graph)
+	WAVE/T/Z traces = GetAllSweepTraces(graph, prefixTraces = 0)
 
 	if(!WaveExists(traces))
 		return NaN
@@ -3745,15 +3745,22 @@ End
 
 /// @brief Get a textwave of all traces from a list of graphs
 ///
-/// @param graphs semicolon separated list of graph names
-/// @param region [optional] return only traces with the specified region
-///               userdata entry
-/// @param channelType [optional] return only the traces with the given channel type
+/// @param graphs       semicolon separated list of graph names
+/// @param region       [optional] return only traces with the specified region
+///                     userdata entry
+/// @param channelType  [optional] return only the traces with the given channel type
+/// @param prefixTraces [optional, defaults to true] prefix the traces names with the graph name and a `#`
 ///
 /// @returns graph#trace named patterns
-Function/WAVE GetAllSweepTraces(string graphs, [variable region, variable channelType])
+Function/WAVE GetAllSweepTraces(string graphs, [variable region, variable channelType, variable prefixTraces])
 	string graph
 	variable i, idx, numGraphs
+
+	if(ParamIsDefault(prefixTraces))
+		prefixTraces = 1
+	else
+		prefixTraces = !!prefixTraces
+	endif
 
 	numGraphs = ItemsInList(graphs)
 
@@ -3775,7 +3782,9 @@ Function/WAVE GetAllSweepTraces(string graphs, [variable region, variable channe
 			continue
 		endif
 
-		traces[] = graph + "#" + traces[p]
+		if(prefixTraces)
+			traces[] = graph + "#" + traces[p]
+		endif
 
 		resultWave[idx++] = traces
 	endfor
