@@ -3737,6 +3737,8 @@ Function ReplaceAllWavesWithBackup(graph, tracePaths)
 		return NaN
 	endif
 
+	numTraces = DimSize(tracePaths, ROWS)
+
 	for(i = 0; i < numTraces; i += 1)
 		WAVE wv = $tracePaths[i]
 		ReplaceWaveWithBackup(wv, nonExistingBackupIsFatal=0)
