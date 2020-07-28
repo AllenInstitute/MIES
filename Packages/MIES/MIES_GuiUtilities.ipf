@@ -468,7 +468,8 @@ Function/S SetPopupMenuString(win, control, str)
 	PopupMenu $control win=$win, popmatch = str
 
 	result = GetPopupMenuString(win, control)
-	ASSERT(stringMatch(result, str), "str is not in the popupmenu list")
+
+	ASSERT(stringMatch(result, str), "str: \"" + str + "\" is not in the popupmenus \"" + control + "\" list")
 
 	return result
 End
