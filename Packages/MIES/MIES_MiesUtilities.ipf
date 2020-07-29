@@ -3799,7 +3799,7 @@ Function/WAVE GetAllSweepTraces(string graphs, [variable region, variable channe
 
 	Redimension/N=(idx) resultWave
 
-	Concatenate/FREE {resultWave}, graphTraces
+	Concatenate/FREE/NP {resultWave}, graphTraces
 
 	return graphTraces
 End
