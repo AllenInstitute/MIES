@@ -5864,7 +5864,7 @@ threadsafe Function ZeroWave(wv)
 	Differentiate/DIM=0/EP=1 wv
 	Integrate/DIM=0 wv
 
-	Note/K wv, wavenote + "\r"
+	Note/K wv, wavenote
 	SetNumberInWaveNote(wv, NOTE_KEY_ZEROED, 1)
 End
 
