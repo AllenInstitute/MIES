@@ -715,7 +715,7 @@ Window DA_Ephys() : Panel
 	CheckBox Check_DataAcqHS_00,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
 	CheckBox Check_DataAcqHS_00,userdata(ControlArray)=  "Check_DataAcqHS"
 	CheckBox Check_DataAcqHS_00,userdata(ControlArrayIndex)=  "0"
-	CheckBox Check_DataAcqHS_00,labelBack=(65280,0,0),value= 0
+	CheckBox Check_DataAcqHS_00,value= 0
 	SetVariable SetVar_DataAcq_TPDuration,pos={30.00,417.00},size={127.00,18.00},bodyWidth=50,disable=1,proc=DAP_SetVarProc_TestPulseSett,title="Duration (ms)"
 	SetVariable SetVar_DataAcq_TPDuration,help={"Duration of the testpulse in milliseconds"}
 	SetVariable SetVar_DataAcq_TPDuration,userdata(tabnum)=  "0"

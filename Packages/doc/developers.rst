@@ -168,7 +168,8 @@ Cutting a new release
    fill ``releasenotes.rst`` with a cleaned up version of it.
 -  Tag the current state with ``git tag Release_X.Y_*``, see ``git tag``
    for how the asterisk should look like
--  Push the tag: ``git push --tags``
+-  Push the tag: ``git push origin $tag``. You can pass ``--dry-run`` for
+   testing out what is getting pushed without pushing anything.
 -  Create the release branches:
 
    -  ``git checkout -b release/X.Y``
@@ -176,6 +177,8 @@ Cutting a new release
 
 -  Change the bamboo jobs using release branches to use the branch
    release/X.Y
+-  Create a new release on github and check that the bamboo job correctly
+   uploads the artifacts
 
 Creating a release package manually
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

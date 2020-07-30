@@ -960,7 +960,7 @@ End
 ///               the conversion to string for `val`
 ///
 /// The expected wave note format is: `key1:val1;key2:val2;`
-Function SetNumberInWaveNote(wv, key, val, [format])
+threadsafe Function SetNumberInWaveNote(wv, key, val, [format])
 	Wave wv
 	string key
 	variable val
@@ -968,11 +968,11 @@ Function SetNumberInWaveNote(wv, key, val, [format])
 
 	string str
 
-	ASSERT(WaveExists(wv), "Missing wave")
-	ASSERT(!IsEmpty(key), "Empty key")
+	ASSERT_TS(WaveExists(wv), "Missing wave")
+	ASSERT_TS(!IsEmpty(key), "Empty key")
 
 	if(!ParamIsDefault(format))
-		ASSERT(!IsEmpty(format), "Empty format")
+		ASSERT_TS(!IsEmpty(format), "Empty format")
 		sprintf str, format, val
 		Note/K wv, ReplaceStringByKey(key, note(wv), str)
 	else
@@ -3303,10 +3303,10 @@ End
 /// @brief Check if a name for an object adheres to the strict naming rules
 ///
 /// @see `DisplayHelpTopic "ObjectName"`
-threadsafe Function IsValidObjectName(wvName)
-	string wvName
+threadsafe Function IsValidObjectName(name)
+	string name
 
-	return !cmpstr(wvName, CleanupName(wvName, 0, MAX_OBJECT_NAME_LENGTH_IN_BYTES))
+	return !cmpstr(name, CleanupName(name, 0, MAX_OBJECT_NAME_LENGTH_IN_BYTES))
 End
 
 /// @brief Find an integer `x` which is larger than `a` but the

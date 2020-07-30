@@ -257,7 +257,7 @@ Function/S SBE_GetSourceGraphADTraces()
 		return ""
 	endif
 
-	WAVE/Z/T result = GetAllSweepTraces(sourceGraph, channelType = ITC_XOP_CHANNEL_TYPE_ADC)
+	WAVE/Z/T result = GetAllSweepTraces(sourceGraph, prefixTraces = 0, channelType = ITC_XOP_CHANNEL_TYPE_ADC)
 
 	if(!WaveExists(result))
 		return ""

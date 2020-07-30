@@ -751,9 +751,11 @@ Constant NOISE_TYPE_BROWN = 2
 StrConstant NOISE_TYPES_STRINGS = "White;Pink;Brown"
 StrConstant PULSE_TYPES_STRINGS = "Square;Triangle"
 
-StrConstant NOTE_KEY_ZEROED           = "Zeroed"
-StrConstant NOTE_KEY_TIMEALIGN        = "TimeAlign"
-StrConstant NOTE_KEY_ARTEFACT_REMOVAL = "ArtefactRemoval"
+StrConstant NOTE_KEY_ZEROED               = "Zeroed"
+StrConstant NOTE_KEY_TIMEALIGN            = "TimeAlign"
+StrConstant NOTE_KEY_ARTEFACT_REMOVAL     = "ArtefactRemoval"
+StrConstant NOTE_KEY_SEARCH_FAILED_PULSE  = "SearchFailedPulses"
+StrConstant NOTE_KEY_FAILED_PULSE_LEVEL   = "FailedPulseLevel"
 
 /// DA_Ephys Panel Tabs
 Constant DA_EPHYS_PANEL_DATA_ACQUISITION = 0

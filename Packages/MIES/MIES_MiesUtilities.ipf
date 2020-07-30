@@ -3499,7 +3499,7 @@ Function PostPlotTransformations(string win)
 
 	graph = GetMainWindow(win)
 
-	WAVE/T/Z traces = GetAllSweepTraces(graph)
+	WAVE/T/Z traces = GetAllSweepTraces(graph, prefixTraces = 0)
 
 	if(!WaveExists(traces))
 		return NaN
@@ -3737,6 +3737,8 @@ Function ReplaceAllWavesWithBackup(graph, tracePaths)
 		return NaN
 	endif
 
+	numTraces = DimSize(tracePaths, ROWS)
+
 	for(i = 0; i < numTraces; i += 1)
 		WAVE wv = $tracePaths[i]
 		ReplaceWaveWithBackup(wv, nonExistingBackupIsFatal=0)
@@ -3745,15 +3747,22 @@ End
 
 /// @brief Get a textwave of all traces from a list of graphs
 ///
-/// @param graphs semicolon separated list of graph names
-/// @param region [optional] return only traces with the specified region
-///               userdata entry
-/// @param channelType [optional] return only the traces with the given channel type
+/// @param graphs       semicolon separated list of graph names
+/// @param region       [optional] return only traces with the specified region
+///                     userdata entry
+/// @param channelType  [optional] return only the traces with the given channel type
+/// @param prefixTraces [optional, defaults to true] prefix the traces names with the graph name and a `#`
 ///
 /// @returns graph#trace named patterns
-Function/WAVE GetAllSweepTraces(string graphs, [variable region, variable channelType])
+Function/WAVE GetAllSweepTraces(string graphs, [variable region, variable channelType, variable prefixTraces])
 	string graph
 	variable i, idx, numGraphs
+
+	if(ParamIsDefault(prefixTraces))
+		prefixTraces = 1
+	else
+		prefixTraces = !!prefixTraces
+	endif
 
 	numGraphs = ItemsInList(graphs)
 
@@ -3775,7 +3784,9 @@ Function/WAVE GetAllSweepTraces(string graphs, [variable region, variable channe
 			continue
 		endif
 
-		traces[] = graph + "#" + traces[p]
+		if(prefixTraces)
+			traces[] = graph + "#" + traces[p]
+		endif
 
 		resultWave[idx++] = traces
 	endfor
@@ -3788,7 +3799,7 @@ Function/WAVE GetAllSweepTraces(string graphs, [variable region, variable channe
 
 	Redimension/N=(idx) resultWave
 
-	Concatenate/FREE {resultWave}, graphTraces
+	Concatenate/FREE/NP {resultWave}, graphTraces
 
 	return graphTraces
 End
@@ -3949,6 +3960,8 @@ static Function AverageWavesFromSameYAxisIfReq(graph, traces, averagingEnabled, 
 			TUD_SetUserData(graph, traceName, "clampMode", StringFromList(0, listOfClampModes))
 			TUD_SetUserData(graph, traceName, "fullPath", GetWavesDataFolder(averageWave, 2))
 			TUD_SetUserData(graph, traceName, "traceType", "Average")
+			TUD_SetUserData(graph, traceName, "XAXIS", firstXAxis)
+			TUD_SetUserData(graph, traceName, "YAXIS", axis)
 		endif
 	endfor
 
@@ -4039,11 +4052,19 @@ static Function ZeroTracesIfReq(graph, traces, zeroTraces)
 	for(i = 0; i < numTraces; i += 1)
 		trace = traces[i]
 		WAVE wv = $TUD_GetUserData(graph, trace, "fullPath")
+		CreateBackupWave(wv)
 		ZeroWave(wv)
 	endfor
 End
 
 /// @brief Perform time alignment of features in the sweep traces
+///
+/// PA time alignment:
+/// - Get the feature position of the reference trace and store it in `refPos`
+/// - Get them also for all pulses which belong to the same set. Store these
+///   feature positions using their sweep number and pulse index as key.
+/// - Now shift *all* pulses in all sets from the same region by `- (refPos +
+///   featurePos)` where `featurePos` is used from the same sweep and pulse index.
 ///
 /// @param graphtrace reference trace in the form of graph#trace
 /// @param mode       time alignment mode
@@ -5829,7 +5850,7 @@ End
 /// Preserves the WaveNote and adds the entry NOTE_KEY_ZEROED
 ///
 /// 2D waves are zeroed along each row
-Function ZeroWave(wv)
+threadsafe Function ZeroWave(wv)
 	WAVE wv
 
 	string wavenote
@@ -5838,14 +5859,12 @@ Function ZeroWave(wv)
 		return NaN
 	endif
 
-	CreateBackupWave(wv)
-
 	wavenote = note(wv)
 
-	Differentiate/DIM=0/EP=1 wv/D=wv
-	Integrate/DIM=0 wv/D=wv
+	Differentiate/DIM=0/EP=1 wv
+	Integrate/DIM=0 wv
 
-	Note/K wv, wavenote + "\r"
+	Note/K wv, wavenote
 	SetNumberInWaveNote(wv, NOTE_KEY_ZEROED, 1)
 End
 
