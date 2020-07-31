@@ -762,50 +762,47 @@ End
 /// For none existing graph or axis
 /// NaN is returned for minimum and high.
 ///
-/// @param[in]  graph    graph name
-/// @param[in]  axis     axis name
-/// @param[out] minimum  minimum value of the axis range
-/// @param[out] maximum  maximum value of the axis range
-/// @param[in] mode [optional:default 0] optional mode option, see @ref AxisRangeModeConstants
-Function GetAxisRange(graph, axis, minimum, maximum[, mode])
-	string graph, axis
-	variable &minimum, &maximum, mode
-
+/// The return value for autoscale axis depends on the mode flag:
+/// AXIS_RANGE_INC_AUTOSCALED -> [0, 0]
+/// AXIS_RANGE_DEFAULT -> [NaN, NaN]
+///
+/// @param[in] graph graph name
+/// @param[in] axis  axis name
+/// @param[in] mode  [optional:default #AXIS_RANGE_DEFAULT] optional mode option, see @ref AxisRangeModeConstants
+///
+/// @return minimum and maximum value of the axis range
+Function [variable minimum, variable maximum] GetAxisRange(string graph, string axis, [variable mode])
 	string info, flags
 
-
 	if(!windowExists(graph))
-		return NaN
+		return [NaN, NaN]
 	endif
 
 	if(ParamIsDefault(mode))
-		mode = 0
+		mode = AXIS_RANGE_DEFAULT
 	endif
 
-	minimum  = NaN
-	maximum = NaN
+	info = AxisInfo(graph, axis)
 
-	info  = AxisInfo(graph, axis)
+	// axis does not exist
+	if(isEmpty(info))
+		return [NaN, NaN]
+	endif
 
-	// only set the axis range if the specified axis exists
-	if(!isEmpty(info))
-
-		if(mode & AXIS_RANGE_INC_AUTOSCALED)
-
-		elseif(mode == 0)
-			flags = StringByKey("SETAXISFLAGS", info)
-			if(!isEmpty(flags))
-				// axis is in auto scale mode
-				return 0
-			endif
-		else
-			ASSERT(0, "Unknown mode from AxisRangeModeConstants for this function")
+	if(mode == AXIS_RANGE_DEFAULT)
+		flags = StringByKey("SETAXISFLAGS", info)
+		if(!isEmpty(flags))
+			// axis is in auto scale mode
+			return [NaN, NaN]
 		endif
-
-		GetAxis/W=$graph/Q $axis
-		minimum = V_min
-		maximum = V_max
+	elseif(mode & AXIS_RANGE_INC_AUTOSCALED)
+		// do nothing
+	else
+		ASSERT(0, "Unknown mode from AxisRangeModeConstants for this function")
 	endif
+
+	GetAxis/W=$graph/Q $axis
+	return [V_min, V_max]
 End
 
 /// @brief Return the orientation of the axis as numeric value
@@ -843,7 +840,7 @@ End
 /// @param[in] graph Name of graph
 /// @param[in] axesRegexp [optional: default not set] filter axes names list by this optional regular expression
 /// @param[in] orientation [optional: default not set] filter orientation of axes see @ref AxisOrientationConstants
-/// @param[in] mode [optional: default 0] filter returned axis information by mode see @ref AxisRangeModeConstants
+/// @param[in] mode [optional: default #AXIS_RANGE_DEFAULT] filter returned axis information by mode see @ref AxisRangeModeConstants
 /// @return free wave with rows = axes, cols = axes info, dimlabel of rows is axis name
 Function/Wave GetAxesRanges(graph[, axesRegexp, orientation, mode])
 	string graph, axesRegexp
@@ -853,7 +850,7 @@ Function/Wave GetAxesRanges(graph[, axesRegexp, orientation, mode])
 	variable numAxes, i, countAxes, minimum, maximum, axisOrientation
 
 	if(ParamIsDefault(mode))
-		mode = 0
+		mode = AXIS_RANGE_DEFAULT
 	endif
 
 	list    = AxisList(graph)
@@ -875,7 +872,7 @@ Function/Wave GetAxesRanges(graph[, axesRegexp, orientation, mode])
 			continue
 		endif
 
-		GetAxisRange(graph, axis, minimum, maximum, mode=mode)
+		[minimum, maximum] = GetAxisRange(graph, axis, mode=mode)
 		ranges[countAxes][%axisType] = axisOrientation
 		ranges[countAxes][%minimum] = minimum
 		ranges[countAxes][%maximum] = maximum
@@ -913,7 +910,7 @@ Function SetAxesRanges(graph, ranges[, axesRegexp, orientation, mode])
 	ASSERT(windowExists(graph), "Graph does not exist")
 
 	if(ParamIsDefault(mode))
-		mode = 0
+		mode = AXIS_RANGE_DEFAULT
 	endif
 
 	prevAxisMin = NaN
@@ -954,7 +951,7 @@ Function SetAxesRanges(graph, ranges[, axesRegexp, orientation, mode])
 				endif
 				minimum = prevAxisMin
 				maximum = prevAxisMax
-			elseif(mode == 0)
+			elseif(mode == AXIS_RANGE_DEFAULT)
 				// probably just name has changed, try the axis at the current index and check if the orientation is correct
 				if(i < numRows && axisOrientation == ranges[i][%axisType])
 					minimum = ranges[i][%minimum]

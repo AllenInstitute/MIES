@@ -233,7 +233,7 @@ Function SCOPE_CreateGraph(panelTitle, dataAcqOrTP)
 	steadyColor.blue = SCOPE_BLUE
 	activeHeadStage = DAG_GetNumericalValue(panelTitle, "slider_DataAcq_ActiveHeadstage")
 
-	GetAxisRange(graph, AXIS_SCOPE_TP_TIME, axisMinTop, axisMaxTop, mode=AXIS_RANGE_INC_AUTOSCALED)
+	[axisMinTop, axisMaxTop] = GetAxisRange(graph, AXIS_SCOPE_TP_TIME, mode=AXIS_RANGE_INC_AUTOSCALED)
 	if(dataAcqOrTP != TEST_PULSE_MODE || !showPowerSpectrum && scopeScaleMode == GUI_SETTING_OSCI_SCALE_FIXED)
 		WAVE previousADAxesRanges = GetAxesRanges(graph, axesRegexp=AXIS_SCOPE_AD_REGEXP, orientation=AXIS_ORIENTATION_LEFT, mode=AXIS_RANGE_INC_AUTOSCALED)
 	endif
