@@ -5515,17 +5515,24 @@ Function/WAVE GetPulseAverageWave(dfr, length, channelType, channelNumber, regio
 	DFREF dfr
 	variable length, channelType, pulseIndex, channelNumber, region
 
+	variable versionOfNewWave = 1
 	string wvName
 
 	ASSERT(DataFolderExistsDFR(dfr), "Missing dfr")
 	wvName = PA_GeneratePulseWaveName(channelType, channelNumber, region, pulseIndex)
 
 	WAVE/SDFR=dfr/Z wv = $wvName
-	if(WaveExists(wv))
+	if(ExistsWithCorrectLayoutVersion(wv, versionOfNewWave))
 		return wv
+	elseif(WaveExists(wv))
+		// clear the wave note so that it is regenerated
+		// by PA_CreateAndFillPulseWaveIfReq()
+		Note/K wv
 	else
 		Make/N=(length) dfr:$wvName/WAVE=wv
 	endif
+
+	SetWaveVersion(wv, versionOfNewWave)
 
 	return wv
 End
