@@ -163,7 +163,7 @@ End
 Function/S CA_AveragingKey(waveRefs)
 	WAVE/WAVE waveRefs
 
-	return CA_WaveCRCs(waveRefs, crcMode=2) + "Version 3"
+	return CA_WaveCRCs(waveRefs, crcMode=2) + "Version 4"
 End
 
 /// @brief Calculate the CRC of all metadata of a dimension

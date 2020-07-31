@@ -4033,6 +4033,7 @@ Function/WAVE CalculateAverage(listOfWaves, averageDataFolder, averageWaveName, 
 	endif
 
 	AddEntryIntoWaveNoteAsList(averageWave, "SourceWavesForAverage", str=ReplaceString(";", listOfWaves, "|"))
+	SetNumberInWaveNote(averageWave, "WaveMaximum", WaveMax(averageWave), format = "%.15f")
 	CA_StoreEntryIntoCache(key, averageWave)
 
 	return averageWave
