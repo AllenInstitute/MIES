@@ -43,6 +43,9 @@ static StrConstant PA_DECONVOLUTION_WAVE_PREFIX = "deconv_"
 static StrConstant PA_USERDATA_REFERENCE_TRACES = "REFERENCE_TRACES"
 static StrConstant PA_USERDATA_REFERENCE_GRAPH  = "REFERENCE"
 
+static Constant PA_USE_WAVE_SCALES = 0x01
+static Constant PA_USE_AXIS_SCALES = 0x02
+
 static Constant PA_PLOT_STEPPING = 16
 
 // comment out to show all the axes, useful for debugging
@@ -995,7 +998,195 @@ static Function PA_ShowPulses(win, pa, recreatePulses)
 		endfor
 	endfor
 
+	PA_DrawScaleBars(win, pa, PA_USE_WAVE_SCALES)
+
 	PA_LayoutGraphs(win, pulseAverageHelperDFR, regions, channels, pa)
+End
+
+Function PA_AxisHook(s)
+	STRUCT WMAxisHookStruct &s
+
+	// Called during experiment load
+	// so it needs to be robust
+	try
+		ClearRTError()
+		PA_UpdateScaleBars(s.win); AbortOnRTE
+	catch
+		printf "Encountered error/abort (%s)\r", GetRTErrMessage()
+		ClearRTError()
+	endtry
+
+	return 0
+End
+
+Function PA_UpdateScaleBars(string win)
+
+	if(GrepString(win, PULSE_AVERAGE_GRAPH_PREFIX))
+		win = GetUserData(win, "", MIES_BSP_PA_MAINPANEL)
+	endif
+
+	STRUCT PulseAverageSettings pa
+	PA_GatherSettings(win, pa)
+	PA_DrawScaleBars(win, pa, PA_USE_AXIS_SCALES)
+End
+
+static Function PA_DrawScaleBars(string win, STRUCT PulseAverageSettings &pa, variable mode)
+
+	variable i, j, numChannels, numRegions, region, channelNumber
+	variable activeChanCount, activeRegionCount, maximum, length
+	string graph, vertAxis, horizAxis, listOfWaves, baseName
+
+	if(!pa.showIndividualTraces && !pa.showAverageTrace && !pa.deconvolution.enable)
+		// blank graph
+		return NaN
+	endif
+
+	DFREF pulseAverageDFR = GetDevicePulseAverageFolder(pa.dfr)
+	DFREF pulseAverageHelperDFR = GetDevicePulseAverageHelperFolder(pa.dfr)
+
+	WAVE properties = GetPulseAverageProperties(pulseAverageHelperDFR)
+
+	WAVE channels = ListToNumericWave(GetStringFromWaveNote(properties, "Channels"), ",")
+	numChannels = DimSize(channels, ROWS)
+
+	WAVE regions = ListToNumericWave(GetStringFromWaveNote(properties, "Regions"), ",")
+	numRegions = DimSize(regions, ROWS)
+
+	numChannels = DimSize(channels, ROWS)
+	numRegions = DimSize(regions, ROWS)
+	for(i = 0; i < numChannels; i += 1)
+		channelNumber = channels[i]
+		for(j = 0; j < numRegions; j += 1)
+			region = regions[j]
+
+			activeChanCount = i + 1
+			activeRegionCount = j + 1
+			graph = PA_GetGraph(win, pa.multipleGraphs, channelNumber, region, activeRegionCount, activeChanCount)
+			[vertAxis, horizAxis] = PA_GetAxes(pa.multipleGraphs, activeRegionCount, activeChanCount)
+
+			if(!pa.multipleGraphs && activeChanCount == 1 && activeRegionCount == 1 || pa.multipleGraphs)
+				NewFreeAxis/R/O/W=$graph fakeAxis
+				ModifyFreeAxis/W=$graph fakeAxis, master=$horizAxis, hook=PA_AxisHook
+				ModifyGraph/W=$graph nticks(fakeAxis)=0, noLabel(fakeAxis)=2, axthick(fakeAxis)=0
+				SetDrawLayer/K/W=$graph ProgFront
+			endif
+
+			WAVE/WAVE/Z setWaves = PA_GetSetWaves(pulseAverageHelperDFR, channelNumber, region, removeFailedPulses = 1)
+
+			if(!WaveExists(setWaves))
+				continue
+			endif
+
+			listOfWaves = WaveRefWaveToList(setWaves, 0)
+
+			baseName = PA_BaseName(channelNumber, region)
+			WAVE averageWave = PA_Average(listOfWaves, pulseAverageDFR, PA_AVERAGE_WAVE_PREFIX + baseName)
+
+			maximum = GetNumberFromWaveNote(averageWave, "WaveMaximum")
+			ASSERT(IsFinite(maximum), "Invalid average maximum")
+			length = pa.yScaleBarLength * sign(maximum)
+			PA_DrawScaleBarsHelper(graph, mode, setWaves, vertAxis, horizAxis, length, WaveUnits(averageWave, ROWS), WaveUnits(averageWave, -1), activeChanCount, numChannels, activeRegionCount, numRegions)
+		endfor
+	endfor
+End
+
+static Function	[variable vert_min, variable vert_max, variable horiz_min, variable horiz_max] PA_GetMinAndMax(WAVE/WAVE setWaves)
+
+	Make/D/FREE/N=(DimSize(setWaves, ROWS)) vertDataMin = GetNumberFromWaveNote(setWaves[p], "WaveMinimum")
+	Make/D/FREE/N=(DimSize(setWaves, ROWS)) vertDataMax = GetNumberFromWaveNote(setWaves[p], "WaveMaximum")
+
+	Make/D/FREE/N=(DimSize(setWaves, ROWS)) horizDataMin = leftx(setWaves[p])
+	Make/D/FREE/N=(DimSize(setWaves, ROWS)) horizDataMax = pnt2x(setWaves[p], DimSize(setWaves[p], ROWS) - 1)
+
+	return [WaveMin(vertDataMin), WaveMax(vertDataMax), WaveMin(horizDataMin), WaveMax(horizDataMax)]
+End
+
+static Function PA_DrawScaleBarsHelper(string win, variable mode, WAVE/WAVE setWaves, string vertAxis, string horizAxis, variable ylength, string xUnit, string yUnit, variable activeChanCount, variable numChannels, variable activeRegionCount, variable numRegions)
+
+	string graph, msg, str
+	variable vertAxis_y, vertAxis_x, xLength
+	variable vert_min, vert_max, horiz_min, horiz_max, drawLength
+	variable xBarBottom, xBarTop, yBarBottom, yBarTop, labelOffset
+	variable xBarLeft, xBarRight, yBarLeft, yBarRight, drawXScaleBar, drawYScaleBar
+
+	drawXScaleBar = (activeChanCount == numChannels)
+	drawYScaleBar = (activeChanCount != activeRegionCount)
+
+	if(!drawXScaleBar && !drawYScaleBar)
+		return NaN
+	endif
+
+	graph = GetMainWindow(win)
+
+	switch(mode)
+		case PA_USE_WAVE_SCALES:
+			[vert_min, vert_max, horiz_min, horiz_max] = PA_GetMinAndMax(setWaves)
+			break
+		case PA_USE_AXIS_SCALES:
+			[vert_min, vert_max] = GetAxisRange(graph, vertAxis, mode=AXIS_RANGE_INC_AUTOSCALED)
+			[horiz_min, horiz_max] = GetAxisRange(graph, horizAxis, mode=AXIS_RANGE_INC_AUTOSCALED)
+			break
+		default:
+			ASSERT(0, "Unknown mode")
+	endswitch
+
+	SetDrawEnv/W=$graph push
+	SetDrawEnv/W=$graph xcoord=$horizAxis, ycoord=$vertAxis
+	SetDrawEnv/W=$graph linefgc=(0,0,0), textrgb=(0,0,0), fsize=10, linethick=1.5
+	SetDrawEnv/W=$graph save
+
+	if(drawYScaleBar)
+		// only for non-diagonal elements
+
+		// Y scale
+
+		labelOffset = horiz_min - AxisValFromPixel(graph, horizAxis, PixelFromAxisVal(graph, horizAxis, horiz_min) - 4)
+
+		sprintf str, "scalebar_Y_R%d_C%d", activeRegionCount, activeChanCount
+		SetDrawEnv/W=$graph gstart, gname=$str
+
+		xBarBottom = AxisValFromPixel(graph, horizAxis, PixelFromAxisVal(graph, horizAxis, horiz_min) - 4)
+		xBarTop    = xBarBottom
+		yBarBottom = 0
+		yBarTop    = ylength
+
+		sprintf msg, "Y: (R%d, C%d)\r", activeRegionCount, activeChanCount
+		DEBUGPRINT(msg)
+
+		drawLength = (activeChanCount == numChannels) && (activeRegionCount == 1)
+
+		DrawScaleBar(graph, xBarBottom, yBarBottom, xBarTop, yBarTop, unit=yUnit, drawLength=drawLength, labelOffset=labelOffset, newlineBeforeUnit=1)
+
+		SetDrawEnv/W=$graph gstop
+	endif
+
+	if(drawXScaleBar)
+
+		// X scale
+
+		sprintf str, "scalebar_X_R%d_C%d", activeRegionCount, activeChanCount
+		SetDrawEnv/W=$graph gstart, gname=$str
+
+		// find a multiple of 5 which is closest to 10% of the full range
+		xLength = round(0.10 * abs(horiz_max - horiz_min) / 5) * 5
+		xLength = xLength == 0 ? 5 : xLength
+
+		xBarRight = horiz_max
+		xBarLeft  = horiz_max - xLength
+		yBarLeft  = vert_min
+		yBarRight = yBarLeft
+
+		sprintf msg, "X: (R%d, C%d)\r", activeRegionCount, activeChanCount
+		DEBUGPRINT(msg)
+
+		drawLength = (activeChanCount == numChannels) && (activeRegionCount == numRegions)
+
+		DrawScaleBar(graph, xBarLeft, yBarLeft, xBarRight, yBarRight, unit=xUnit, drawLength=drawLength)
+
+		SetDrawEnv/W=$graph gstop
+	endif
+
+	SetDrawEnv/W=$graph pop
 End
 
 static Function PA_PulseHasFailed(WAVE singlePulseWave, STRUCT PulseAverageSettings &s)
