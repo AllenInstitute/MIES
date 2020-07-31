@@ -906,64 +906,62 @@ static Function PA_ShowPulses(win, pa, recreatePulses)
 		PA_AutomaticTimeAlignment(graph)
 	endif
 
-	if(pa.showAverageTrace || pa.deconvolution.enable)
-		numChannels = DimSize(channels, ROWS)
-		numRegions = DimSize(regions, ROWS)
-		for(i = 0; i < numChannels; i += 1)
-			channelNumber = channels[i]
-			for(j = 0; j < numRegions; j += 1)
-				region = regions[j]
+	numChannels = DimSize(channels, ROWS)
+	numRegions = DimSize(regions, ROWS)
+	for(i = 0; i < numChannels; i += 1)
+		channelNumber = channels[i]
+		for(j = 0; j < numRegions; j += 1)
+			region = regions[j]
 
-				isDiagonalElement = (i == j)
+			isDiagonalElement = (i == j)
 
-				WAVE/WAVE/Z setWaves = PA_GetSetWaves(pulseAverageHelperDFR, channelNumber, region, removeFailedPulses = 1)
+			WAVE/WAVE/Z setWaves = PA_GetSetWaves(pulseAverageHelperDFR, channelNumber, region, removeFailedPulses = 1)
 
-				if(!WaveExists(setWaves))
-					continue
-				endif
+			if(!WaveExists(setWaves))
+				continue
+			endif
 
-				listOfWaves = WaveRefWaveToList(setWaves, 0)
+			listOfWaves = WaveRefWaveToList(setWaves, 0)
 
-				baseName = PA_BaseName(channelTypeStr, channelNumber, region)
-				WAVE averageWave = PA_Average(listOfWaves, pulseAverageDFR, PA_AVERAGE_WAVE_PREFIX + baseName)
+			baseName = PA_BaseName(channelTypeStr, channelNumber, region)
+			WAVE averageWave = PA_Average(listOfWaves, pulseAverageDFR, PA_AVERAGE_WAVE_PREFIX + baseName)
 
-				activeChanCount = i + 1
-				activeRegionCount = j + 1
-				graph = PA_GetGraph(win, pa.multipleGraphs, channelNumber, region, activeRegionCount, activeChanCount)
-				[vertAxis, horizAxis] = PA_GetAxes(pa.multipleGraphs, activeRegionCount, activeChanCount)
+			activeChanCount = i + 1
+			activeRegionCount = j + 1
+			graph = PA_GetGraph(win, pa.multipleGraphs, channelNumber, region, activeRegionCount, activeChanCount)
+			[vertAxis, horizAxis] = PA_GetAxes(pa.multipleGraphs, activeRegionCount, activeChanCount)
 
-				if(pa.showAverageTrace)
-					traceCount = TUD_GetTraceCount(graph)
+			if(pa.showAverageTrace)
+				traceCount = TUD_GetTraceCount(graph)
 
-					sprintf traceName, "T%0*d%s%s", TRACE_NAME_NUM_DIGITS, traceCount, PA_AVERAGE_WAVE_PREFIX, baseName
-					traceCount += 1
+				sprintf traceName, "T%0*d%s%s", TRACE_NAME_NUM_DIGITS, traceCount, PA_AVERAGE_WAVE_PREFIX, baseName
+				traceCount += 1
 
-					GetTraceColor(NUM_HEADSTAGES + 1, red, green, blue)
-					AppendToGraph/Q/W=$graph/L=$vertAxis/B=$horizAxis/C=(red, green, blue) averageWave/TN=$traceName
-					ModifyGraph/W=$graph lsize($traceName)=1.5
+				GetTraceColor(NUM_HEADSTAGES + 1, red, green, blue)
+				AppendToGraph/Q/W=$graph/L=$vertAxis/B=$horizAxis/C=(red, green, blue) averageWave/TN=$traceName
+				ModifyGraph/W=$graph lsize($traceName)=1.5
 
-					TUD_SetUserDataFromWaves(graph, traceName, {"traceType", "occurence", "XAXIS", "YAXIS", "DiagonalElement"}, \
-											 {"Average", "0", horizAxis, vertAxis, num2str(isDiagonalElement)})
-					TUD_SetUserData(graph, traceName, "fullPath", GetWavesDataFolder(averageWave, 2))
-				endif
+				TUD_SetUserDataFromWaves(graph, traceName, {"traceType", "occurence", "XAXIS", "YAXIS", "DiagonalElement"}, \
+										 {"Average", "0", horizAxis, vertAxis, num2str(isDiagonalElement)})
+				TUD_SetUserData(graph, traceName, "fullPath", GetWavesDataFolder(averageWave, 2))
+			endif
 
-				if(pa.deconvolution.enable && !isDiagonalElement)
+			if(pa.deconvolution.enable && !isDiagonalElement)
 
-					WAVE deconv = PA_Deconvolution(averageWave, pulseAverageDFR, PA_DECONVOLUTION_WAVE_PREFIX + baseName, pa.deconvolution)
+				WAVE deconv = PA_Deconvolution(averageWave, pulseAverageDFR, PA_DECONVOLUTION_WAVE_PREFIX + baseName, pa.deconvolution)
 
-					sprintf traceName, "T%0*d%s%s", TRACE_NAME_NUM_DIGITS, traceCount, PA_DECONVOLUTION_WAVE_PREFIX, baseName
-					traceCount += 1
+				sprintf traceName, "T%0*d%s%s", TRACE_NAME_NUM_DIGITS, traceCount, PA_DECONVOLUTION_WAVE_PREFIX, baseName
+				traceCount += 1
 
-					AppendToGraph/Q/W=$graph/L=$vertAxis/B=$horizAxis/C=(0,0,0) deconv[0,inf;PA_PLOT_STEPPING]/TN=$traceName
-					ModifyGraph/W=$graph lsize($traceName)=2
+				AppendToGraph/Q/W=$graph/L=$vertAxis/B=$horizAxis/C=(0,0,0) deconv[0,inf;PA_PLOT_STEPPING]/TN=$traceName
+				ModifyGraph/W=$graph lsize($traceName)=2
 
-					TUD_SetUserDataFromWaves(graph, traceName, {"traceType", "occurence", "XAXIS", "YAXIS", "DiagonalElement"}, \
-											 {"Deconvolution", "0", horizAxis, vertAxis, num2str(isDiagonalElement)})
-					TUD_SetUserData(graph, traceName, "fullPath", GetWavesDataFolder(deconv, 2))
-				endif
-			endfor
+				TUD_SetUserDataFromWaves(graph, traceName, {"traceType", "occurence", "XAXIS", "YAXIS", "DiagonalElement"}, \
+										 {"Deconvolution", "0", horizAxis, vertAxis, num2str(isDiagonalElement)})
+				TUD_SetUserData(graph, traceName, "fullPath", GetWavesDataFolder(deconv, 2))
+			endif
 		endfor
-	endif
+	endfor
 
 	PA_LayoutGraphs(pulseAverageHelperDFR, regions, channels, pa)
 End
