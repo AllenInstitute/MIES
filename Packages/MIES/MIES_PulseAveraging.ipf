@@ -45,6 +45,9 @@ static StrConstant PA_USERDATA_REFERENCE_GRAPH  = "REFERENCE"
 
 static Constant PA_PLOT_STEPPING = 16
 
+// comment out to show all the axes, useful for debugging
+#define PA_HIDE_AXIS
+
 /// @brief Return a list of all average graphs
 Function/S PA_GetAverageGraphs()
 	return WinList(PULSE_AVERAGE_GRAPH_PREFIX + "*", ";", "WIN:1")
@@ -1323,7 +1326,9 @@ static Function PA_LayoutGraphs(DFREF dfr, WAVE regions, WAVE channels, STRUCT P
 	if(!pa.multipleGraphs)
 		graph = PA_GetGraphName(pa.multipleGraphs, NaN, NaN)
 
+#ifdef PA_HIDE_AXIS
 		ModifyGraph/W=$graph mode=0, nticks=0, noLabel=2, axthick=0, margin=5, margin(right)=14
+#endif
 		EquallySpaceAxis(graph, axisRegExp="bottom.*", sortOrder=0)
 
 		for(i = 0; i < numRegions; i += 1)
@@ -1367,7 +1372,9 @@ static Function PA_LayoutGraphs(DFREF dfr, WAVE regions, WAVE channels, STRUCT P
 			sprintf str, "AD%d / Reg. %d HS%s", channelNumber, region, str
 			AppendText/W=$graph str
 
+#ifdef PA_HIDE_AXIS
 			ModifyGraph/W=$graph mode=0, nticks=0, noLabel=2, axthick=0, margin=5
+#endif
 		endfor
 	endfor
 End
