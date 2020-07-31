@@ -57,6 +57,7 @@ Function InitPulseAverageSettings(pa)
 	pa.hideFailedPulses     = NaN
 	pa.searchFailedPulses   = NaN
 	pa.failedPulsesLevel    = NaN
+	pa.yScaleBarLength      = NaN
 End
 
 Structure PulseAverageSettings
@@ -65,7 +66,7 @@ Structure PulseAverageSettings
 	variable fallbackPulseLength, multipleGraphs
 	variable zeroTraces, autoTimeAlignment, enabled
 	variable hideFailedPulses, searchFailedPulses
-	variable failedPulsesLevel
+	variable failedPulsesLevel, yScaleBarLength
 
 	DFREF dfr
 
