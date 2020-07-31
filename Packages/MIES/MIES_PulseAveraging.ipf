@@ -722,7 +722,7 @@ static Function PA_ShowPulses(win, pa, recreatePulses)
 	variable first, numEntries, startingPulse, endingPulse, traceCount, step, isDiagonalElement
 	variable red, green, blue, channelNumber, region, channelType, length
 	variable numChannelTypeTraces, activeRegionCount, activeChanCount, totalOnsetDelay, pulseHasFailed
-	variable numRegions, hideTrace, timeAlignmentReferencePulse, lastSweep
+	variable numRegions, hideTrace, timeAlignmentReferencePulse, lastSweep, alpha
 	string listOfWaves, vertAxis, horizAxis, channelNumberStr
 	string baseName, traceName, fullPath, tagName
 	string newlyCreatedGraphs = ""
@@ -832,12 +832,14 @@ static Function PA_ShowPulses(win, pa, recreatePulses)
 				red   = 65535
 				green = 0
 				blue  = 0
+				alpha = 65535
 			else
 				hideTrace = 0
 				GetTraceColor(headstage, red, green, blue)
+				alpha = 65535 * 0.2
 			endif
 
-			AppendToGraph/Q/W=$graph/L=$vertAxis/B=$horizAxis/C=(red, green, blue, 65535 * 0.2) plotWave[0,inf;step]/TN=$pulseTrace
+			AppendToGraph/Q/W=$graph/L=$vertAxis/B=$horizAxis/C=(red, green, blue, alpha) plotWave[0,inf;step]/TN=$pulseTrace
 
 			if(hideTrace)
 				ModifyGraph/W=$graph hideTrace($pulseTrace)=hideTrace
