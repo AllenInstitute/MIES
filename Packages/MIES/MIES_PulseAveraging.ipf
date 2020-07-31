@@ -1318,9 +1318,9 @@ End
 
 static Function PA_LayoutGraphs(DFREF dfr, WAVE regions, WAVE channels, STRUCT PulseAverageSettings &pa)
 
-	variable i, j, numRegions, numChannels, activeRegionCount, numPulsesInSet
+	variable i, j, numRegions, numChannels, activeRegionCount, activeChanCount, numPulsesInSet
 	variable channelNumber, headstage, red, green, blue, region
-	string graph, str
+	string graph, str, horizAxis, vertAxis
 
 	numRegions = DimSize(regions, ROWS)
 	numChannels = DimSize(channels, ROWS)
@@ -1335,8 +1335,19 @@ static Function PA_LayoutGraphs(DFREF dfr, WAVE regions, WAVE channels, STRUCT P
 
 		for(i = 0; i < numRegions; i += 1)
 			activeRegionCount = i + 1
+
 			EquallySpaceAxis(graph, axisRegExp="left_R" + num2str(activeRegionCount) + ".*", sortOrder=1)
+
+			for(j = 0; j < numChannels; j += 1)
+
+				activeChanCount = j + 1
+				[vertAxis, horizAxis] = PA_GetAxes(pa.multipleGraphs, activeRegionCount, activeChanCount)
+				ModifyGraph/W=$graph/Z freePos($vertAxis)={0, $horizAxis}
+			endfor
+
+			ModifyGraph/W=$graph/Z freePos($horizAxis)=0
 		endfor
+
 		return NaN
 	endif
 
@@ -1377,6 +1388,7 @@ static Function PA_LayoutGraphs(DFREF dfr, WAVE regions, WAVE channels, STRUCT P
 #ifdef PA_HIDE_AXIS
 			ModifyGraph/W=$graph mode=0, nticks=0, noLabel=2, axthick=0, margin=5
 #endif
+			ModifyGraph/W=$graph/Z freePos(bottom)=0
 		endfor
 	endfor
 End
