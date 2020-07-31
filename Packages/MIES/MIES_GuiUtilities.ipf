@@ -1906,3 +1906,80 @@ Function ShowSetVariableLimitsSelectionPopup(sva)
 		SetSetVariableLimits(win, ctrl, minVal, maxVal, increments[V_flag - 1])
 	endif
 End
+
+/// @brief Draw a scale bar on a graph
+///
+/// @param graph graph
+/// @param x0                horizontal coordinate of first point
+/// @param y0                vertical coordinate of first point
+/// @param x1                horizontal coordinate of second point
+/// @param y1                vertical coordinate of second point
+/// @param unit              [optional] data unit when drawing the label
+/// @param drawLength        [optional, defaults to false] true/false for outputting the label
+/// @param labelOffset       [optional] offset in current coordinates of the label
+/// @param newlineBeforeUnit [optional] Use a newline before the unit instead of a space
+Function DrawScaleBar(string graph, variable x0, variable y0, variable x1, variable y1, [string unit, variable drawLength, variable labelOffset, variable newlineBeforeUnit])
+
+	string msg, str
+	variable length, xPos, yPos, subDigits
+
+	if(ParamIsDefault(drawLength))
+		drawLength = 0
+	else
+		drawLength = !!drawLength
+
+		if(ParamIsDefault(unit))
+			unit = ""
+		endif
+
+		if(ParamIsDefault(labelOffset))
+			labelOffset = 0
+		endif
+
+		if(ParamIsDefault(newlineBeforeUnit))
+			newlineBeforeUnit = 0
+		endif
+	endif
+
+	sprintf msg, "(%g, %g), (%g, %g)\r", x0, y0, x1, y1
+	DEBUGPRINT(msg)
+
+	if(drawLength)
+
+		if(x0 == x1)
+			length = abs(y0 - y1)
+
+			ASSERT(!IsEmpty(unit), "empty unit")
+			subDigits = length > 1 ? 0 : abs(floor(log(length)/log(10)))
+			sprintf str, "%.*f%s%s", subDigits, length, SelectString(newlineBeforeUnit, NUMBER_UNIT_SPACE, "\r"), unit
+
+			xPos = x0 - labelOffset
+			yPos = min(y0, y1) + abs(y0 - y1) / 2
+
+			sprintf msg, "Text: (%g, %g)\r", xPos, yPos
+			DEBUGPRINT(msg)
+
+			SetDrawEnv/W=$graph textxjust = 2,textyjust = 1
+		elseif(y0 == y1)
+			length = abs(x0 - x1)
+
+			ASSERT(!IsEmpty(unit), "empty unit")
+			subDigits = length > 1 ? 0 : abs(floor(log(length)/log(10)))
+			sprintf str, "%.*f%s%s", subDigits, length, SelectString(newlineBeforeUnit, NUMBER_UNIT_SPACE, "\r"), unit
+
+			xPos = min(x0, x1) + abs(x0 - x1) / 2
+			yPos = y0 - labelOffset
+
+			sprintf msg, "Text: (%g, %g)\r", xPos, yPos
+			DEBUGPRINT(msg)
+
+			SetDrawEnv/W=$graph textxjust = 1,textyjust = 2
+		else
+			ASSERT(0, "Unexpected combination")
+		endif
+
+		DrawText/W=$graph xPos, yPos, str
+	endif
+
+	DrawLine/W=$graph x0, y0, x1, y1
+End
