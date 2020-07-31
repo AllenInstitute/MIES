@@ -1305,3 +1305,6 @@ StrConstant TUD_INDEX_JSON = "INDEX_JSON"
 
 /// @brief sprintf field width for trace names
 Constant TRACE_NAME_NUM_DIGITS = 6
+
+/// Space used between numbers and their units
+StrConstant NUMBER_UNIT_SPACE = "\u2006"
