@@ -3987,7 +3987,7 @@ Function/WAVE CalculateAverage(listOfWaves, averageDataFolder, averageWaveName, 
 	variable skipCRC
 
 	variable ret, crc
-	string key, wvName
+	string key, wvName, dataUnit
 
 	skipCRC = ParamIsDefault(skipCRC) ? 0 : !!skipCRC
 
@@ -4016,6 +4016,9 @@ Function/WAVE CalculateAverage(listOfWaves, averageDataFolder, averageWaveName, 
 	ASSERT(ret != -1, "Wave averaging failed")
 
 	WAVE/SDFR=averageDataFolder averageWave = $averageWaveName
+
+	dataUnit = WaveUnits($StringFromList(0, listOfWaves), -1)
+	SetScale d, 0, 0, dataUnit, averageWave
 
 	wvName = averageWaveName
 
