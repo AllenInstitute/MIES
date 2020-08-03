@@ -304,6 +304,8 @@ End
 /// - `$NOTE_KEY_TIMEALIGN`: Time alignment was active and applied
 /// - `TimeAlignmentTotalOffset`: Calculated offset from time alignment
 /// - `$NOTE_KEY_ZEROED`: Zeroing was active and applied
+/// - `WaveMinimum`: Minimum value of the data
+/// - `WaveMaximum`: Maximum value of the data
 static Function/WAVE PA_CreateAndFillPulseWaveIfReq(wv, singleSweepFolder, channelType, channelNumber, region, pulseIndex, first, length)
 	WAVE/Z wv
 	DFREF singleSweepFolder
@@ -337,6 +339,8 @@ static Function/WAVE PA_CreateAndFillPulseWaveIfReq(wv, singleSweepFolder, chann
 	SetNumberInWaveNote(singlePulseWave, NOTE_KEY_TIMEALIGN, 0)
 	SetNumberInWaveNote(singlePulseWave, NOTE_KEY_ZEROED, 0)
 
+	PA_UpdateMinAndMax(singlePulseWave)
+
 	SetNumberInWaveNote(singlePulseWave, "PulseLength", length)
 
 	SetNumberInWaveNote(wv, SOURCE_WAVE_TIMESTAMP, ModDate(wv))
@@ -344,6 +348,15 @@ static Function/WAVE PA_CreateAndFillPulseWaveIfReq(wv, singleSweepFolder, chann
 	CreateBackupWave(singlePulseWave)
 
 	return singlePulseWave
+End
+
+threadsafe static Function PA_UpdateMinAndMax(WAVE wv)
+
+	variable minimum, maximum
+
+	[minimum, maximum] = WaveMinAndMax(wv)
+	SetNumberInWaveNote(wv, "WaveMinimum", minimum, format="%.15f")
+	SetNumberInWaveNote(wv, "WaveMaximum", maximum, format="%.15f")
 End
 
 /// @brief Generate a key for a pulse
@@ -1036,7 +1049,7 @@ static Function PA_ZeroTraces(WAVE/WAVE set, STRUCT PulseAverageSettings &pa)
 	endif
 
 	Make/FREE/N=(DimSize(set, ROWS)) junkWave
-	MultiThread junkWave = ZeroWave(set[p])
+	MultiThread junkWave = ZeroWave(set[p]) + PA_UpdateMinAndMax(set[p])
 End
 
 /// @brief calculate the average wave from a @p listOfWaves
