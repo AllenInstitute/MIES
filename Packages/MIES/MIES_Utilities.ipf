@@ -5238,3 +5238,16 @@ Function [STRUCT RGBAColor result] ParseColorSpec(string str)
 	result.blue  = str2num(str3)
 	result.alpha = (V_Flag == 4) ? str2num(str4) : 655356
 End
+
+#if IgorVersion() < 9.0
+
+/// @brief Compatibility function for older IP versions
+///
+/// This function is builtin in IP9.
+threadsafe Function [variable minimum, variable maximum] WaveMinAndMax(WAVE wv)
+
+	minimum = WaveMin(wv)
+	maximum = WaveMax(wv)
+End
+
+#endif
