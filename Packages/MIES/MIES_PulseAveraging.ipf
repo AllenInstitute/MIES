@@ -628,6 +628,10 @@ static Function/WAVE PA_GetSetWaves(DFREF dfr, variable channelNumber, variable 
 
 	numWaves = GetNumberFromWaveNote(setIndizes, NOTE_INDEX)
 
+	if(numWaves == 0)
+		return $""
+	endif
+
 	Make/FREE/N=(numWaves)/WAVE setWaves = propertiesWaves[setIndizes[p]]
 
 	if(!removeFailedPulses)
@@ -785,7 +789,11 @@ static Function PA_ShowPulses(win, pa, recreatePulses)
 		for(j = 0; j < numRegions; j += 1)
 			region = regions[j]
 
-			WAVE/WAVE setWaves = PA_GetSetWaves(pulseAverageHelperDFR, channelNumber, region)
+			WAVE/WAVE/Z setWaves = PA_GetSetWaves(pulseAverageHelperDFR, channelNumber, region)
+
+			if(!WaveExists(setWaves))
+				continue
+			endif
 
 			PA_ResetWavesIfRequired(setWaves, pa)
 		endfor
@@ -889,7 +897,11 @@ static Function PA_ShowPulses(win, pa, recreatePulses)
 		for(j = 0; j < numRegions; j += 1)
 			region = regions[j]
 
-			WAVE/WAVE setWaves = PA_GetSetWaves(pulseAverageHelperDFR, channelNumber, region)
+			WAVE/WAVE/Z setWaves = PA_GetSetWaves(pulseAverageHelperDFR, channelNumber, region)
+
+			if(!WaveExists(setWaves))
+				continue
+			endif
 
 			PA_ZeroTraces(setWaves, pa)
 
