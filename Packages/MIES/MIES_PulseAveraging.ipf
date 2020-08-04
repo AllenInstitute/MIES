@@ -1352,7 +1352,7 @@ static Function PA_LayoutGraphs(DFREF dfr, WAVE regions, WAVE channels, STRUCT P
 		graph = PA_GetGraphName(pa.multipleGraphs, NaN, NaN)
 
 #ifdef PA_HIDE_AXIS
-		ModifyGraph/W=$graph mode=0, nticks=0, noLabel=2, axthick=0, margin=5, margin(right)=14
+		ModifyGraph/W=$graph mode=0, nticks=0, noLabel=2, axthick=0, margin(left)=30, margin(top)=20, margin(right)=14, margin(bottom)=14
 #endif
 		EquallySpaceAxis(graph, axisRegExp="bottom.*", sortOrder=0)
 
