@@ -948,7 +948,7 @@ static Function PA_ShowPulses(win, pa, recreatePulses)
 
 			listOfWaves = WaveRefWaveToList(setWaves, 0)
 
-			baseName = PA_BaseName(channelTypeStr, channelNumber, region)
+			baseName = PA_BaseName(channelNumber, region)
 			WAVE averageWave = PA_Average(listOfWaves, pulseAverageDFR, PA_AVERAGE_WAVE_PREFIX + baseName)
 
 			activeChanCount = i + 1
@@ -1030,12 +1030,11 @@ Function/S PA_GeneratePulseWaveName(variable channelType, variable channelNumber
 End
 
 /// @brief Generate a static base name for objects in the current averaging folder
-static Function/S PA_BaseName(channelTypeStr, channelNumber, headStage)
-	string channelTypeStr
+static Function/S PA_BaseName(channelNumber, headStage)
 	variable channelNumber, headStage
 
 	string baseName
-	baseName = channelTypeStr + num2str(channelNumber)
+	baseName = "AD" + num2str(channelNumber)
 	baseName += "_HS" + num2str(headStage)
 
 	return baseName
