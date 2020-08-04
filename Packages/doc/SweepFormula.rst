@@ -259,6 +259,19 @@ variance and stdev
 Igor Pro Wrappers
 ^^^^^^^^^^^^^^^^^
 
+area
+""""
+
+Use `area` to calculate the area below a 1D array using trapezoidal integration.
+Does work on a per column-basis for 2D arrays. Does zeroing by default, pass
+`0` as second argument to turn zeroing off.
+
+.. code-block:: bash
+
+   area([0, 1, 2, 3, 4], 0) == [8]
+
+   area([0, 1, 2, 3, 4], 1) == [4]
+
 derivative
 """"""""""
 
