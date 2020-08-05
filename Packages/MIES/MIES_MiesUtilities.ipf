@@ -3578,7 +3578,7 @@ Function/S TimeAlignGetAllGraphs(graph)
 
 	graphs = AddListItem(graph, "")
 	if(PA_IsActive(graph))
-		graphs += PA_GetAverageGraphs()
+		graphs += PA_GetAverageGraphs(graph)
 	endif
 
 	return graphs
@@ -3685,7 +3685,7 @@ Function TimeAlignCursorMovedHook(s)
 			bsPanel = BSP_GetPanel(s.winName)
 			if(!windowExists(bsPanel))
 				// check if hook was called from a PA graph
-				if(WhichListItem(s.winName, PA_GetAverageGraphs()) == -1)
+				if(WhichListItem(s.winName, PA_GetAverageGraphs(bsPanel)) == -1)
 					return 0
 				endif
 				bsPanel = BSP_GetPanel(GetUserData(s.winName, "", MIES_BSP_PA_MAINPANEL))
@@ -4087,7 +4087,7 @@ Function TimeAlignmentIfReq(graphtrace, mode, level, pos1x, pos2x, [force])
 	endif
 
 	string str, refAxis, axis
-	string trace, refTrace, graph, refGraph, paGraphs, refRegion
+	string trace, refTrace, graph, refGraph, paGraphs, refRegion, browserGraph
 	variable offset, refPos
 	variable first, last, pos, numTraces, i, idx
 	string sweepNo, pulseIndexStr, indexStr
@@ -4109,7 +4109,8 @@ Function TimeAlignmentIfReq(graphtrace, mode, level, pos1x, pos2x, [force])
 	// using the traces from the same axis as the reference trace
 	refAxis = TUD_GetUserData(refGraph, refTrace, "YAXIS")
 
-	paGraphs = PA_GetAverageGraphs()
+	browserGraph = GetUserData(refGraph, "", MIES_BSP_PA_MAINPANEL)
+	paGraphs = PA_GetAverageGraphs(browserGraph)
 	if(WhichListItem(refGraph, paGraphs) == -1)
 		WAVE/T graphtraces = GetAllSweepTraces(refGraph)
 	else

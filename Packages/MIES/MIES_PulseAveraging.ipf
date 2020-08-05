@@ -49,18 +49,25 @@ static Constant PA_PLOT_STEPPING = 16
 #define PA_HIDE_AXIS
 
 /// @brief Return a list of all average graphs
-Function/S PA_GetAverageGraphs()
-	return WinList(PULSE_AVERAGE_GRAPH_PREFIX + "*", ";", "WIN:1")
+Function/S PA_GetAverageGraphs(string win)
+	return WinList(PA_GetGraphPrefix(win) + "*", ";", "WIN:1")
 End
 
-static Function/S PA_GetGraphName(multipleGraphs, channelNumber, activeRegionCount)
+static Function/S PA_GetGraphName(win, multipleGraphs, channelNumber, activeRegionCount)
 	variable multipleGraphs, channelNumber, activeRegionCount
+	string win
 
 	if(multipleGraphs)
-		return PULSE_AVERAGE_GRAPH_PREFIX + "_AD" + num2str(channelNumber) + "_R" + num2str(activeRegionCount)
+		return PA_GetGraphPrefix(win) + "_AD" + num2str(channelNumber) + "_R" + num2str(activeRegionCount)
 	else
-		return PULSE_AVERAGE_GRAPH_PREFIX
+		return PA_GetGraphPrefix(win)
 	endif
+End
+
+// @brief Return the window name prefix of all PA graphs for the given Browser window
+static Function/S PA_GetGraphPrefix(string win)
+
+	return GetMainWindow(win) + "_" + PULSE_AVERAGE_GRAPH_PREFIX
 End
 
 /// @brief Return the name of the pulse average graph
@@ -79,7 +86,7 @@ static Function/S PA_GetGraph(mainWin, multipleGraphs, channelNumber, region, ac
 	variable width, height, width_spacing, height_spacing, width_offset, height_offset
 	string win, winAbove
 
-	win = PA_GetGraphName(multipleGraphs, channelNumber, activeRegionCount)
+	win = PA_GetGraphName(mainWin, multipleGraphs, channelNumber, activeRegionCount)
 
 	if(!WindowExists(win))
 
@@ -112,10 +119,10 @@ static Function/S PA_GetGraph(mainWin, multipleGraphs, channelNumber, region, ac
 		SetWindow $win, userdata($PA_USERDATA_REFERENCE_GRAPH) = num2str(activeRegionCount == activeChanCount)
 
 		if(multipleGraphs)
-			winAbove = PA_GetGraphName(multipleGraphs, channelNumber - 1, activeRegionCount)
+			winAbove = PA_GetGraphName(mainWin, multipleGraphs, channelNumber - 1, activeRegionCount)
 
 			for(i = channelNumber - 1; i >=0; i -= 1)
-				winAbove = PA_GetGraphName(multipleGraphs, i, activeRegionCount)
+				winAbove = PA_GetGraphName(mainWin, multipleGraphs, i, activeRegionCount)
 
 				if(WindowExists(winAbove))
 					DoWindow/B=$winAbove $win
@@ -752,7 +759,7 @@ static Function PA_ShowPulses(win, pa, recreatePulses)
 
 	graph = GetMainWindow(win)
 
-	preExistingGraphs = PA_GetAverageGraphs()
+	preExistingGraphs = PA_GetAverageGraphs(win)
 
 	if(!pa.enabled)
 		KillWindows(preExistingGraphs)
@@ -920,14 +927,14 @@ static Function PA_ShowPulses(win, pa, recreatePulses)
 
 			if(pa.autoTimeAlignment && pa.multipleGraphs)
 				activeRegionCount = j + 1
-				graph = PA_GetGraphName(pa.multipleGraphs, channelNumber, activeRegionCount)
+				graph = PA_GetGraphName(win, pa.multipleGraphs, channelNumber, activeRegionCount)
 				PA_AutomaticTimeAlignment(PA_GetReferenceTracesFromGraph(graph))
 			endif
 		endfor
 	endfor
 
 	if(pa.autoTimeAlignment && !pa.multipleGraphs)
-		graph = PA_GetReferenceTracesFromGraph(PULSE_AVERAGE_GRAPH_PREFIX)
+		graph = PA_GetReferenceTracesFromGraph(PA_GetGraphPrefix(win))
 		PA_AutomaticTimeAlignment(graph)
 	endif
 
@@ -988,7 +995,7 @@ static Function PA_ShowPulses(win, pa, recreatePulses)
 		endfor
 	endfor
 
-	PA_LayoutGraphs(pulseAverageHelperDFR, regions, channels, pa)
+	PA_LayoutGraphs(win, pulseAverageHelperDFR, regions, channels, pa)
 End
 
 static Function PA_PulseHasFailed(WAVE singlePulseWave, STRUCT PulseAverageSettings &s)
@@ -1203,7 +1210,7 @@ static Function PA_UpdateSweepPlotDeconvolution(win)
 	bsPanel = BSP_GetPanel(win)
 	PA_DeconvGatherSettings(bsPanel, deconvolution)
 
-	graphs = PA_GetAverageGraphs()
+	graphs = PA_GetAverageGraphs(win)
 	numGraphs = ItemsInList(graphs)
 	for(i = 0; i < numGraphs; i += 1)
 		graph = StringFromList(i, graphs)
@@ -1338,7 +1345,7 @@ static Function PA_ResetWavesIfRequired(WAVE/WAVE wv, STRUCT PulseAverageSetting
 	endfor
 End
 
-static Function PA_LayoutGraphs(DFREF dfr, WAVE regions, WAVE channels, STRUCT PulseAverageSettings &pa)
+static Function PA_LayoutGraphs(string win, DFREF dfr, WAVE regions, WAVE channels, STRUCT PulseAverageSettings &pa)
 
 	variable i, j, numRegions, numChannels, activeRegionCount, activeChanCount, numPulsesInSet
 	variable channelNumber, headstage, red, green, blue, region
@@ -1348,7 +1355,7 @@ static Function PA_LayoutGraphs(DFREF dfr, WAVE regions, WAVE channels, STRUCT P
 	numChannels = DimSize(channels, ROWS)
 
 	if(!pa.multipleGraphs)
-		graph = PA_GetGraphName(pa.multipleGraphs, NaN, NaN)
+		graph = PA_GetGraphName(win, pa.multipleGraphs, NaN, NaN)
 
 #ifdef PA_HIDE_AXIS
 		ModifyGraph/W=$graph mode=0, nticks=0, noLabel=2, axthick=0, margin(left)=30, margin(top)=20, margin(right)=14, margin(bottom)=14
@@ -1381,7 +1388,7 @@ static Function PA_LayoutGraphs(DFREF dfr, WAVE regions, WAVE channels, STRUCT P
 			region = regions[j]
 
 			activeRegionCount = j + 1
-			graph = PA_GetGraphName(pa.multipleGraphs, channelNumber, activeRegionCount)
+			graph = PA_GetGraphName(win, pa.multipleGraphs, channelNumber, activeRegionCount)
 
 			WAVE setIndizes = GetPulseAverageSetIndizes(dfr, channelNumber, region)
 			numPulsesInSet = GetnumberFromWaveNote(setIndizes, NOTE_INDEX)
