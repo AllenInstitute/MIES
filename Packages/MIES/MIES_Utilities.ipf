@@ -575,7 +575,7 @@ threadsafe Function/DF createDFWithAllParents(dataFolder)
 end
 
 /// @brief Returns one if var is an integer and zero otherwise
-Function IsInteger(var)
+threadsafe Function IsInteger(var)
 	variable var
 
 	return IsFinite(var) && trunc(var) == var
