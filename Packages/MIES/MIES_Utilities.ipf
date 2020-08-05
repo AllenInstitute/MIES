@@ -3891,6 +3891,44 @@ Function/S NormalizeToEOL(str, eol)
 	return str
 End
 
+#if IgorVersion() >= 9.0
+
+/// @brief Return a nicely formatted multiline stacktrace
+threadsafe Function/S GetStackTrace([prefix])
+	string prefix
+
+	string stacktrace, entry, func, line, file, str
+	string output
+	variable i, numCallers
+
+	if(ParamIsDefault(prefix))
+		prefix = ""
+	endif
+
+	stacktrace = GetRTStackInfo(3)
+	numCallers = ItemsInList(stacktrace)
+
+	if(numCallers < 3)
+		// our caller was called directly
+		return "Stacktrace not available"
+	endif
+
+	output = prefix + "Stacktrace:\r"
+
+	for(i = 0; i < numCallers - 2; i += 1)
+		entry = StringFromList(i, stacktrace)
+		func  = StringFromList(0, entry, ",")
+		file  = StringFromList(1, entry, ",")
+		line  = StringFromList(2, entry, ",")
+		sprintf str, "%s%s(...)#L%s [%s]\r", prefix, func, line, file
+		output += str
+	endfor
+
+	return output
+End
+
+#else
+
 /// @brief Return a nicely formatted multiline stacktrace
 Function/S GetStackTrace([prefix])
 	string prefix
@@ -3930,6 +3968,8 @@ Function/S GetStackTrace([prefix])
 
 	return output
 End
+
+#endif
 
 /// @brief Stop all millisecond Igor Pro timers
 Function StopAllMSTimers()
