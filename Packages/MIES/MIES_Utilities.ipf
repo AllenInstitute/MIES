@@ -145,7 +145,7 @@ Function ASSERT(var, errorMsg)
 		printf "Current sweep: [%s]\r", RemoveEnding(TextWaveToList(sweeps, ";"), ";")
 		printf "DAQ: [%s]\r", RemoveEnding(TextWaveToList(daqStates, ";"), ";")
 		printf "Testpulse: [%s]\r", RemoveEnding(TextWaveToList(tpStates, ";"), ";")
-		printf "Experiment: %s.pxp\r", GetExperimentName()
+		printf "Experiment: %s (%s)\r", GetExperimentName(), GetExperimentFileType()
 		printf "Igor Pro version: %s (%s)\r", GetIgorProVersion(), StringByKey("BUILD", IgorInfo(0))
 		print "MIES version:"
 		print miesVersionStr
