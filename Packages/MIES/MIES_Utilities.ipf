@@ -161,20 +161,19 @@ End
 
 /// @brief Low overhead function to check assertions (threadsafe variant)
 ///
-/// @param var      if zero an error message is printed into the history and procedure execution is aborted,
-///                 nothing is done otherwise.
+/// @param var      if zero an error message is printed into the history and procedure
+///                 execution is aborted, nothing is done otherwise.
 /// @param errorMsg error message to output in failure case
 ///
 /// Example usage:
 /// \rst
 ///  .. code-block:: igorpro
 ///
-///		ASSERT(DataFolderExistsDFR(dfr), "MyFunc: dfr does not exist")
+///		ASSERT_TS(DataFolderExistsDFR(dfr), "dfr does not exist")
 ///		do something with dfr
 /// \endrst
 ///
-/// Unlike ASSERT() this function does not print a stacktrace or jumps into the debugger. The reasons are Igor Pro limitations.
-/// Therefore it is advised to prefix `errorMsg` with the current function name.
+/// Unlike ASSERT() this function does not jump into the debugger (Igor Pro limitation).
 ///
 /// @hidecallgraph
 /// @hidecallergraph
@@ -185,7 +184,41 @@ threadsafe Function ASSERT_TS(var, errorMsg)
 	try
 		AbortOnValue var==0, 1
 	catch
+#if IgorVersion() >= 9.0
+		// Recursion detection, if ASSERT_TS appears multiple times in StackTrace
+		if (ItemsInList(ListMatch(GetRTStackInfo(0), GetRTStackInfo(1))) > 1)
+
+			print "Double threadsafe assertion Fail encountered !"
+
+			AbortOnValue 1, 1
+		endif
+#endif
+
+		print "!!! Threadsafe assertion FAILED !!!"
+		printf "Message: \"%s\"\r", RemoveEnding(errorMsg, "\r")
+
+#ifndef AUTOMATED_TESTING
+
+		print "Please provide the following information if you contact the MIES developers:"
+		print "################################"
+		print "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
+
+#if IgorVersion() >= 9.0
+		print GetStackTrace()
+#else
+		print "stacktrace not available"
+#endif
+
+		print "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
+		printf "Time: %s\r", GetIso8601TimeStamp(localTimeZone = 1)
+		printf "Experiment: %s (%s)\r", GetExperimentName(), GetExperimentFileType()
+		printf "Igor Pro version: %s (%s)\r", GetIgorProVersion(), StringByKey("BUILD", IgorInfo(0))
+		print "################################"
+
 		printf "Assertion FAILED with message %s\r", errorMsg
+
+#endif // AUTOMATED_TESTING
+
 		AbortOnValue 1, 1
 	endtry
 End
