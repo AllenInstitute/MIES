@@ -2418,7 +2418,7 @@ threadsafe Function FuncRefIsAssigned(funcInfo)
 End
 
 /// @brief Return the seconds, including fractional part, since Igor Pro epoch (1/1/1904) in UTC time zone
-Function DateTimeInUTC()
+threadsafe Function DateTimeInUTC()
 	return DateTime - date2secs(-1, -1, -1)
 End
 
