@@ -74,7 +74,7 @@ Function MIES_fWaveAverage(ListOfWaves, ListOfXWaves, ErrorType, ErrorInterval, 
 		else
 			thisDeltax= deltax(w)
 			thisXMin= leftx(w)
-			thisXMax= rightx(w)-thisDeltax	// SetScale/I values.
+			thisXMax= pnt2x(w, numpnts(w) - 1)
 			XWavesAreSame=0	// at least 1 y wave has no x wave
 			// 6.35: point-for-point averaging requires the deltaX of all waves to be identical.
 			if( numtype(rawDeltaX) != 0 )
