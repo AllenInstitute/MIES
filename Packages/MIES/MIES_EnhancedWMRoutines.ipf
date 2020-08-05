@@ -198,7 +198,7 @@ Function MIES_fWaveAverage(ListOfWaves, ListOfXWaves, ErrorType, ErrorInterval, 
 			if(WaveExists(wx))
 				MultiThread TempYWave[firstAvePoint, lastAvePoint] = interp(pnt2x(AveW, p), wx, wy)
 			else
-				MultiThread TempYWave[firstAvePoint, lastAvePoint] = wy(pnt2x(AveW, p))
+				MultiThread TempYWave[firstAvePoint, lastAvePoint] = wy(limit(pnt2x(AveW, p), thisXMin, thisXMax))
 			endif
 
 			MultiThread AveW[firstAvePoint, lastAvePoint]      += !numtype(TempYWave[p]) * TempYWave[p]
