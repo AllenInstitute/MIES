@@ -1580,7 +1580,7 @@ Function/S UniqueFileOrFolder(symbPath, baseName, [suffix])
 End
 
 /// @brief Return the name of the experiment without the file suffix
-Function/S GetExperimentName()
+threadsafe Function/S GetExperimentName()
 	return IgorInfo(1)
 End
 
