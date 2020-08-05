@@ -4013,6 +4013,7 @@ Function/WAVE CalculateAverage(listOfWaves, averageDataFolder, averageWaveName, 
 	endif
 
 	ret = MIES_fWaveAverage(listOfWaves, "", 0, 0, GetDataFolder(1, averageDataFolder) + averageWaveName, "")
+	ASSERT(ClearRTError() == 0, "Unexpected RTE")
 	ASSERT(ret != -1, "Wave averaging failed")
 
 	WAVE/SDFR=averageDataFolder averageWave = $averageWaveName
