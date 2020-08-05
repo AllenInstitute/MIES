@@ -1584,6 +1584,22 @@ threadsafe Function/S GetExperimentName()
 	return IgorInfo(1)
 End
 
+/// @brief Return the experiment file type
+threadsafe Function/S GetExperimentFileType()
+
+#if IgorVersion() >= 9.0
+	return IgorInfo(11)
+#else
+	if(!cmpstr(GetExperimentName(), UNTITLED_EXPERIMENT))
+		return ""
+	else
+		// hardcoded to pxp
+		return "Packed"
+	endif
+#endif
+
+End
+
 /// @brief Return a formatted timestamp of the form `YY_MM_DD_HHMMSS`
 ///
 /// Uses the local time zone and *not* UTC.
