@@ -2427,7 +2427,7 @@ End
 ///                              in UTC (or local time zone depending on `localTimeZone`)
 /// @param numFracSecondsDigits  [optional, defaults to zero] Number of sub-second digits
 /// @param localTimeZone         [optional, defaults to false] Use the local time zone instead of UTC
-Function/S GetISO8601TimeStamp([secondsSinceIgorEpoch, numFracSecondsDigits, localTimeZone])
+threadsafe Function/S GetISO8601TimeStamp([secondsSinceIgorEpoch, numFracSecondsDigits, localTimeZone])
 	variable secondsSinceIgorEpoch, numFracSecondsDigits, localTimeZone
 
 	string str
@@ -2442,7 +2442,7 @@ Function/S GetISO8601TimeStamp([secondsSinceIgorEpoch, numFracSecondsDigits, loc
 	if(ParamIsDefault(numFracSecondsDigits))
 		numFracSecondsDigits = 0
 	else
-		ASSERT(IsInteger(numFracSecondsDigits) && numFracSecondsDigits >= 0, "Invalid value for numFracSecondsDigits")
+		ASSERT_TS(IsInteger(numFracSecondsDigits) && numFracSecondsDigits >= 0, "Invalid value for numFracSecondsDigits")
 	endif
 
 	if(ParamIsDefault(secondsSinceIgorEpoch))
