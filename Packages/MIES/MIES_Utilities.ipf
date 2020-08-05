@@ -2755,7 +2755,7 @@ Function GetArchitectureBits()
 End
 
 /// @brief Return the Igor Pro version string
-Function/S GetIgorProVersion()
+threadsafe Function/S GetIgorProVersion()
 	return StringByKey("IGORFILEVERSION", IgorInfo(3))
 End
 
