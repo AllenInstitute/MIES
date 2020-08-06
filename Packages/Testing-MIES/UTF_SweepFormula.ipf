@@ -924,14 +924,14 @@ static Function TestPlotting()
 	WAVE wvY = TraceNameToWaveRef(win, StringFromList(0, traces))
 	Redimension/N=(-1, 0) wvY
 	REQUIRE_EQUAL_WAVES(wvY, array1D)
-	GetAxisRange(win, "bottom", minimum, maximum, mode=AXIS_RANGE_INC_AUTOSCALED)
+	[minimum, maximum] = GetAxisRange(win, "bottom", mode=AXIS_RANGE_INC_AUTOSCALED)
 	REQUIRE_EQUAL_VAR(minimum, WaveMin(array2D))
 	REQUIRE_EQUAL_VAR(maximum, WaveMax(array2D))
-	GetAxisRange(win, "left", minimum, maximum, mode=AXIS_RANGE_INC_AUTOSCALED)
+	[minimum, maximum] = GetAxisRange(win, "left", mode=AXIS_RANGE_INC_AUTOSCALED)
 	REQUIRE_EQUAL_VAR(minimum, WaveMin(array1D))
 	REQUIRE_EQUAL_VAR(maximum, WaveMax(array1D))
 	SF_FormulaPlotter(sweepBrowser, strScale1D + " vs " + strArray2D); DoUpdate
-	GetAxisRange(win, "left", minimum, maximum, mode=AXIS_RANGE_INC_AUTOSCALED)
+	[minimum, maximum] = GetAxisRange(win, "left", mode=AXIS_RANGE_INC_AUTOSCALED)
 	REQUIRE_EQUAL_VAR(minimum, WaveMin(scale1D))
 	REQUIRE_CLOSE_VAR(maximum, WaveMax(scale1D))
 
@@ -944,31 +944,31 @@ static Function TestPlotting()
 	WAVE wvX = XWaveRefFromTrace(win, StringFromList(0, traces))
 	Redimension/N=(-1, 0) wvX
 	REQUIRE_EQUAL_WAVES(wvX, array1D)
-	GetAxisRange(win, "bottom", minimum, maximum, mode=AXIS_RANGE_INC_AUTOSCALED)
+	[minimum, maximum] = GetAxisRange(win, "bottom", mode=AXIS_RANGE_INC_AUTOSCALED)
 	REQUIRE_EQUAL_VAR(minimum, WaveMin(array1D))
 	REQUIRE_EQUAL_VAR(maximum, WaveMax(array1D))
-	GetAxisRange(win, "left", minimum, maximum, mode=AXIS_RANGE_INC_AUTOSCALED)
+	[minimum, maximum] = GetAxisRange(win, "left", mode=AXIS_RANGE_INC_AUTOSCALED)
 	REQUIRE_EQUAL_VAR(minimum, WaveMin(array2D))
 	REQUIRE_EQUAL_VAR(maximum, WaveMax(array2D))
 
 	SF_FormulaPlotter(sweepBrowser, strArray2D + " vs range(3)"); DoUpdate
 	traces = TraceNameList(win, ";", 0x1)
 	REQUIRE_EQUAL_VAR(ItemsInList(traces), DimSize(array2D, COLS))
-	GetAxisRange(win, "bottom", minimum, maximum, mode=AXIS_RANGE_INC_AUTOSCALED)
+	[minimum, maximum] = GetAxisRange(win, "bottom", mode=AXIS_RANGE_INC_AUTOSCALED)
 	REQUIRE_EQUAL_VAR(maximum, array1D[2])
 
 	SF_FormulaPlotter(sweepBrowser, "time(setscale(range(4),x,1,0.1)) vs [range(10), range(10,20), range(10), range(10,20)]"); DoUpdate
-	GetAxisRange(win, "left", minimum, maximum, mode=AXIS_RANGE_INC_AUTOSCALED)
+	[minimum, maximum] = GetAxisRange(win, "left", mode=AXIS_RANGE_INC_AUTOSCALED)
 	REQUIRE_EQUAL_VAR(minimum, WaveMin(scale1D))
 	REQUIRE_CLOSE_VAR(maximum, WaveMax(scale1D))
 
 	SF_FormulaPlotter(sweepBrowser, strArray1D + " vs " + strArray1D); DoUpdate
 	traces = TraceNameList(win, ";", 0x1)
 	REQUIRE_EQUAL_VAR(ItemsInList(traces), 1)
-	GetAxisRange(win, "left", minimum, maximum, mode=AXIS_RANGE_INC_AUTOSCALED)
+	[minimum, maximum] = GetAxisRange(win, "left", mode=AXIS_RANGE_INC_AUTOSCALED)
 	REQUIRE_EQUAL_VAR(minimum, WaveMin(array1D))
 	REQUIRE_CLOSE_VAR(maximum, WaveMax(array1D))
-	GetAxisRange(win, "bottom", minimum, maximum, mode=AXIS_RANGE_INC_AUTOSCALED)
+	[minimum, maximum] = GetAxisRange(win, "bottom", mode=AXIS_RANGE_INC_AUTOSCALED)
 	REQUIRE_EQUAL_VAR(minimum, WaveMin(array1D))
 	REQUIRE_CLOSE_VAR(maximum, WaveMax(array1D))
 

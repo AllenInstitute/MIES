@@ -444,8 +444,9 @@ Constant AXIS_ORIENTATION_RIGHT  = 0x22
 /// @name Constants for Set/GetAxesRanges modes, use binary pattern
 /// @anchor AxisRangeModeConstants
 /// @{
-Constant AXIS_RANGE_INC_AUTOSCALED = 0x01
-Constant AXIS_RANGE_USE_MINMAX     = 0x02
+Constant AXIS_RANGE_DEFAULT        = 0x00
+Constant AXIS_RANGE_USE_MINMAX     = 0x01
+Constant AXIS_RANGE_INC_AUTOSCALED = 0x02
 /// @}
 
 /// @name Constants for Axis name template
@@ -585,8 +586,8 @@ Constant HARDWARE_DAC_EXTERNAL_TRIGGER = 0x1
 
 /// Used to upgrade the GuiStateWave as well as the DA Ephys panel
 Constant DA_EPHYS_PANEL_VERSION     = 49
-Constant DATABROWSER_PANEL_VERSION  = 20
-Constant SWEEPBROWSER_PANEL_VERSION = 6
+Constant DATABROWSER_PANEL_VERSION  = 21
+Constant SWEEPBROWSER_PANEL_VERSION = 7
 Constant WAVEBUILDER_PANEL_VERSION  = 8
 
 /// Version of the labnotebooks (numerical and textual)
@@ -1304,3 +1305,6 @@ StrConstant TUD_INDEX_JSON = "INDEX_JSON"
 
 /// @brief sprintf field width for trace names
 Constant TRACE_NAME_NUM_DIGITS = 6
+
+/// Space used between numbers and their units
+StrConstant NUMBER_UNIT_SPACE = "\u2006"
