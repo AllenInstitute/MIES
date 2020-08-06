@@ -46,6 +46,8 @@ static StrConstant PA_USERDATA_REFERENCE_GRAPH  = "REFERENCE"
 static Constant PA_USE_WAVE_SCALES = 0x01
 static Constant PA_USE_AXIS_SCALES = 0x02
 
+static Constant PA_X_AXIS_OFFSET = 0.01
+
 static Constant PA_PLOT_STEPPING = 16
 
 // comment out to show all the axes, useful for debugging
@@ -1131,21 +1133,22 @@ static Function PA_DrawScaleBarsHelper(string win, variable mode, WAVE/WAVE setW
 	endswitch
 
 	SetDrawEnv/W=$graph push
-	SetDrawEnv/W=$graph xcoord=$horizAxis, ycoord=$vertAxis
 	SetDrawEnv/W=$graph linefgc=(0,0,0), textrgb=(0,0,0), fsize=10, linethick=1.5
-	SetDrawEnv/W=$graph save
 
 	if(drawYScaleBar)
 		// only for non-diagonal elements
 
 		// Y scale
 
-		labelOffset = horiz_min - AxisValFromPixel(graph, horizAxis, PixelFromAxisVal(graph, horizAxis, horiz_min) - 4)
+		SetDrawEnv/W=$graph xcoord=prel, ycoord=$vertAxis
+		SetDrawEnv/W=$graph save
+
+		labelOffset = 0.005
 
 		sprintf str, "scalebar_Y_R%d_C%d", activeRegionCount, activeChanCount
 		SetDrawEnv/W=$graph gstart, gname=$str
 
-		xBarBottom = AxisValFromPixel(graph, horizAxis, PixelFromAxisVal(graph, horizAxis, horiz_min) - 4)
+		xBarBottom = GetNumFromModifyStr(AxisInfo(graph, horizAxis), "axisEnab", "{", 0) - PA_X_AXIS_OFFSET
 		xBarTop    = xBarBottom
 		yBarBottom = 0
 		yBarTop    = ylength
@@ -1161,6 +1164,9 @@ static Function PA_DrawScaleBarsHelper(string win, variable mode, WAVE/WAVE setW
 	endif
 
 	if(drawXScaleBar)
+
+		SetDrawEnv/W=$graph xcoord=$horizAxis, ycoord=$vertAxis
+		SetDrawEnv/W=$graph save
 
 		// X scale
 
@@ -1539,7 +1545,7 @@ End
 static Function PA_LayoutGraphs(string win, DFREF dfr, WAVE regions, WAVE channels, STRUCT PulseAverageSettings &pa)
 
 	variable i, j, numRegions, numChannels, activeRegionCount, activeChanCount, numPulsesInSet
-	variable channelNumber, headstage, red, green, blue, region
+	variable channelNumber, headstage, red, green, blue, region, xStart
 	string graph, str, horizAxis, vertAxis
 
 	numRegions = DimSize(regions, ROWS)
@@ -1551,7 +1557,7 @@ static Function PA_LayoutGraphs(string win, DFREF dfr, WAVE regions, WAVE channe
 #ifdef PA_HIDE_AXIS
 		ModifyGraph/W=$graph mode=0, nticks=0, noLabel=2, axthick=0, margin(left)=30, margin(top)=20, margin(right)=14, margin(bottom)=14
 #endif
-		EquallySpaceAxis(graph, axisRegExp="bottom.*", sortOrder=0)
+		EquallySpaceAxis(graph, axisRegExp="bottom.*", sortOrder=0, axisOffset=PA_X_AXIS_OFFSET)
 
 		for(i = 0; i < numRegions; i += 1)
 			activeRegionCount = i + 1
@@ -1562,7 +1568,9 @@ static Function PA_LayoutGraphs(string win, DFREF dfr, WAVE regions, WAVE channe
 
 				activeChanCount = j + 1
 				[vertAxis, horizAxis] = PA_GetAxes(pa.multipleGraphs, activeRegionCount, activeChanCount)
-				ModifyGraph/W=$graph/Z freePos($vertAxis)={0, $horizAxis}
+
+				xStart = GetNumFromModifyStr(AxisInfo(graph, horizAxis), "axisEnab", "{", 0)
+				ModifyGraph/W=$graph/Z freePos($vertAxis)={xStart - PA_X_AXIS_OFFSET,kwFraction}
 			endfor
 
 			ModifyGraph/W=$graph/Z freePos($horizAxis)=0

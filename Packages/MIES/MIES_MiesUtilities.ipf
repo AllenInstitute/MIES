@@ -2919,14 +2919,15 @@ End
 ///
 /// @param graph           graph
 /// @param axisRegExp      [optional, defaults to ".*"] regular expression matching the axes names
+/// @param axisOffset      [optional, defaults to 0] offset of first axis in parts of total width
 /// @param axisOrientation [optional, defaults to all] allows to apply equalization to all axis of one orientation
 /// @param sortOrder       [optional, defaults to no sorting (NaN)] apply different sorting
 ///                        schemes to list of axes, see sortingOrder parameter of `SortList`
 /// @param listForBegin    [optional, defaults to an empty list] list of axes to move to the front of the sorted axis list
 /// @param listForEnd      [optional, defaults to an empty list] list of axes to move to the end of the sorted axis list
-Function EquallySpaceAxis(graph, [axisRegExp, axisOrientation, sortOrder, listForBegin, listForEnd])
+Function EquallySpaceAxis(graph, [axisRegExp, axisOffset, axisOrientation, sortOrder, listForBegin, listForEnd])
 	string graph, axisRegExp, listForBegin, listForEnd
-	variable axisOrientation, sortOrder
+	variable axisOffset, axisOrientation, sortOrder
 
 	variable numAxes, axisInc, axisStart, axisEnd, i, spacing
 	string axes, axis, list
@@ -2940,6 +2941,12 @@ Function EquallySpaceAxis(graph, [axisRegExp, axisOrientation, sortOrder, listFo
 		list = AxisList(graph)
 	else
 		list = GetAllAxesWithOrientation(graph, axisOrientation)
+	endif
+
+	if(ParamIsDefault(axisOffset))
+		axisOffset = 0
+	else
+		ASSERT(axisOffset >=0 && axisOffset <= 1.0, "Invalid axis offset")
 	endif
 
 	axes    = GrepList(list, axisRegExp)
@@ -2987,7 +2994,7 @@ Function EquallySpaceAxis(graph, [axisRegExp, axisOrientation, sortOrder, listFo
 	endif
 
 	numAxes = ItemsInList(adaptedList)
-	axisInc = 1 / numAxes
+	axisInc = (1.0 - axisOffset) / numAxes
 
 	if(axisInc < GRAPH_DIV_SPACING)
 		spacing = axisInc/5
@@ -2997,7 +3004,7 @@ Function EquallySpaceAxis(graph, [axisRegExp, axisOrientation, sortOrder, listFo
 
 	for(i = numAxes - 1; i >= 0; i -= 1)
 		axis = StringFromList(i, adaptedList)
-		axisStart = (i == 0 ? 0 : spacing + axisInc * i)
+		axisStart = (i == 0 ? axisOffset : spacing + axisInc * i)
 		axisEnd   = (i == numAxes - 1 ? 1 : axisInc * (i + 1) - spacing)
 		ModifyGraph/W=$graph axisEnab($axis) = {axisStart, axisEnd}
 	endfor

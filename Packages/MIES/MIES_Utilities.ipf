@@ -3694,7 +3694,7 @@ End
 /// @param key      keyword
 /// @param listChar empty, `{` or `(` depending on keyword style
 /// @param item     return the given element from the extracted list
-static Function GetNumFromModifyStr(info, key, listChar, item)
+Function GetNumFromModifyStr(info, key, listChar, item)
 	string info
 	string key
 	string listChar
