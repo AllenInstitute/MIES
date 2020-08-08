@@ -5336,3 +5336,22 @@ threadsafe Function [variable minimum, variable maximum] WaveMinAndMax(WAVE wv)
 End
 
 #endif
+
+/// @brief Helper function to be able to index waves stored in wave reference
+/// waves in wave assignment statements.
+///
+/// \rst
+/// .. code-block:: igorpro
+///
+/// Make/FREE data1 = p
+/// Make/FREE data2 = p^2
+/// Make/FREE/WAVE source = {data1, data2}
+///
+/// Make/FREE dest
+/// dest[] = WaveRef(source[0])[p] + WaveRef(source[1])[p]
+///
+/// \endrst
+///
+threadsafe Function/WAVE WaveRef(WAVE/WAVE wv)
+	return wv
+End
