@@ -4018,21 +4018,16 @@ Function/WAVE CalculateAverage(listOfWaves, averageDataFolder, averageWaveName, 
 	WAVE waveRefs = ListToWaveRefWave(listOfWaves, 1)
 	key = CA_AveragingKey(waveRefs)
 
-	WAVE/Z freeAverageWave = CA_TryFetchingEntryFromCache(key)
+	wvName = averageWaveName
+
+	WAVE/Z freeAverageWave = CA_TryFetchingEntryFromCache(key, options=CA_OPTS_NO_DUPLICATE)
 	if(WaveExists(freeAverageWave)) // found in the cache
-		wvName = averageWaveName
 		if(!skipCRC)
 			wvName += "_" + num2istr(GetNumberFromWaveNote(freeAverageWave, "DataCRC"))
 		endif
 
-		WAVE/Z/SDFR=averageDataFolder permAverageWave = $wvName
-		if(!WaveExists(permAverageWave))
-			MoveWave freeAverageWave, averageDataFolder:$wvName
-		else
-			Duplicate/O freeAverageWave averageDataFolder:$wvName
-		endif
+		Duplicate/O freeAverageWave, averageDataFolder:$wvName/WAVE=permAverageWave
 
-		WAVE/SDFR=averageDataFolder permAverageWave = $wvName
 		return permAverageWave
 	endif
 
