@@ -674,7 +674,8 @@ Function/S GetSettingsJSONid()
 	string path = GetNVARAsString(GetMiesPath(), "settingsJSONid", initialValue = NaN)
 	NVAR JSONid = $path
 
-	if(IsNaN(JSONid))
+	// missing or stale JSON document
+	if(IsNaN(JSONid) || !JSON_Exists(JSONid, ""))
 		JSONid = PS_ReadSettings("MIES", GenerateSettingsDefaults)
 	endif
 
