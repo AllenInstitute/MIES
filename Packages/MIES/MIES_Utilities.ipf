@@ -227,14 +227,10 @@ End
 ///
 /// @hidecallgraph
 /// @hidecallergraph
-Function windowExists(win)
+Function WindowExists(win)
 	string win
 
-	if(isNull(win) || WinType(win) == 0)
-		return 0
-	endif
-
-	return 1
+	return WinType(win) != 0
 End
 
 /// @brief Alternative implementation for WaveList/VariableList/etc. which honours a dfref and thus
