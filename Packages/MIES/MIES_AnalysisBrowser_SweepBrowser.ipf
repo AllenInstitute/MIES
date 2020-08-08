@@ -260,7 +260,7 @@ Function SB_UpdateSweepPlot(win)
 	scPanel   = BSP_GetSweepControlsPanel(win)
 	lbPanel   = BSP_GetNotebookSubWindow(win)
 
-	if(BSP_MainPanelNeedsUpdate(graph))
+	if(BSP_PanelNeedsUpdate(graph))
 		DoAbortNow("The main panel is too old to be usable. Please close it and open a new one.")
 	endif
 
@@ -407,7 +407,7 @@ Function/DF SB_OpenSweepBrowser()
 
 	mainWin = GetMainWindow(GetCurrentWindow())
 
-	AddVersionToPanel(mainWin, SWEEPBROWSER_PANEL_VERSION)
+	AddVersionToPanel(mainWin, DATA_SWEEP_BROWSER_PANEL_VERSION)
 	BSP_SetSweepBrowser(mainWin)
 
 	SetWindow $mainWin, hook(cleanup)=SB_SweepBrowserWindowHook
