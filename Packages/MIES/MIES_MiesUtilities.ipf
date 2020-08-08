@@ -3962,7 +3962,8 @@ static Function AverageWavesFromSameYAxisIfReq(graph, traces, averagingEnabled, 
 		endif
 		WaveClear rangeStart, rangeStop
 
-		WAVE averageWave = CalculateAverage(listOfWaves, averageDataFolder, averageWaveName)
+		WAVE/WAVE wavesToAverage = ListToWaveRefWave(listOfWaves)
+		WAVE averageWave = CalculateAverage(wavesToAverage, averageDataFolder, averageWaveName)
 
 		if(WaveListHasSameWaveNames(listOfHeadstages, headstage)&& hideSweep)
 			GetTraceColor(str2num(headstage), red, green, blue)
@@ -3998,24 +3999,23 @@ End
 /// - The average waves are cached
 /// - References to existing average waves are returned in case they already exist
 ///
-/// @param listOfWaves       list of 1D waves to average
+/// @param waveRefs          waves to average in a wave reference wave
 /// @param averageDataFolder folder where the data is to be stored
 /// @param averageWaveName   base name of the averaged data
 /// @param skipCRC           [optional, defaults to false] Add the average wave CRC as suffix to its name
 ///
 /// @return wave reference to the average wave
-Function/WAVE CalculateAverage(listOfWaves, averageDataFolder, averageWaveName, [skipCRC])
-	string listOfWaves
+Function/WAVE CalculateAverage(waveRefs, averageDataFolder, averageWaveName, [skipCRC])
+	WAVE/WAVE waverefs
 	DFREF averageDataFolder
 	string averageWaveName
 	variable skipCRC
 
-	variable ret, crc
+	variable crc
 	string key, wvName, dataUnit
 
 	skipCRC = ParamIsDefault(skipCRC) ? 0 : !!skipCRC
 
-	WAVE waveRefs = ListToWaveRefWave(listOfWaves, 1)
 	key = CA_AveragingKey(waveRefs)
 
 	wvName = averageWaveName
@@ -4031,32 +4031,26 @@ Function/WAVE CalculateAverage(listOfWaves, averageDataFolder, averageWaveName, 
 		return permAverageWave
 	endif
 
-	ret = MIES_fWaveAverage(listOfWaves, "", 0, 0, GetDataFolder(1, averageDataFolder) + averageWaveName, "")
+	WAVE/Z freeAverageWave = MIES_fWaveAverage(waveRefs, 1, IGOR_TYPE_64BIT_FLOAT)
+	ASSERT(WaveExists(freeAverageWave), "Wave averaging failed")
 	ASSERT(ClearRTError() == 0, "Unexpected RTE")
-	ASSERT(ret != -1, "Wave averaging failed")
 
-	WAVE/SDFR=averageDataFolder averageWave = $averageWaveName
-
-	dataUnit = WaveUnits($StringFromList(0, listOfWaves), -1)
-	SetScale d, 0, 0, dataUnit, averageWave
-
-	wvName = averageWaveName
+	dataUnit = WaveUnits(waveRefs[0], -1)
+	SetScale d, 0, 0, dataUnit, freeAverageWave
 
 	if(!skipCRC)
-		crc = WaveCRC(0, averageWave)
+		crc = WaveCRC(0, freeAverageWave)
 		wvName += "_" + num2istr(crc)
-
-		WAVE/Z/SDFR=averageDataFolder averageWaveToDelete = $wvName
-		KillOrMoveToTrash(wv=averageWaveToDelete)
-		MoveWave averageWave, averageDataFolder:$wvName
-		SetNumberInWaveNote(averageWave, "DataCRC", crc)
+		SetNumberInWaveNote(freeAverageWave, "DataCRC", crc)
 	endif
 
-	AddEntryIntoWaveNoteAsList(averageWave, "SourceWavesForAverage", str=ReplaceString(";", listOfWaves, "|"))
-	SetNumberInWaveNote(averageWave, "WaveMaximum", WaveMax(averageWave), format = "%.15f")
-	CA_StoreEntryIntoCache(key, averageWave)
+	AddEntryIntoWaveNoteAsList(freeAverageWave, "SourceWavesForAverage", str=ReplaceString(";", WaveRefWaveToList(waveRefs, 0), "|"))
+	SetNumberInWaveNote(freeAverageWave, "WaveMaximum", WaveMax(freeAverageWave), format = "%.15f")
 
-	return averageWave
+	Duplicate/O freeAverageWave, averageDataFolder:$wvName/WAVE=permAverageWave
+	CA_StoreEntryIntoCache(key, freeAverageWave, options=CA_OPTS_NO_DUPLICATE)
+
+	return permAverageWave
 End
 
 /// @brief Zero all given traces

@@ -758,7 +758,7 @@ static Function PA_ShowPulses(win, pa, recreatePulses)
 	variable red, green, blue, channelNumber, region, channelType, length
 	variable numChannelTypeTraces, activeRegionCount, activeChanCount, totalOnsetDelay, pulseHasFailed
 	variable numRegions, hideTrace, timeAlignmentReferencePulse, lastSweep, alpha
-	string listOfWaves, vertAxis, horizAxis, channelNumberStr
+	string vertAxis, horizAxis, channelNumberStr
 	string baseName, traceName, fullPath, tagName
 	string newlyCreatedGraphs = ""
 
@@ -958,10 +958,8 @@ static Function PA_ShowPulses(win, pa, recreatePulses)
 				continue
 			endif
 
-			listOfWaves = WaveRefWaveToList(setWaves, 0)
-
 			baseName = PA_BaseName(channelNumber, region)
-			WAVE averageWave = PA_Average(listOfWaves, pulseAverageDFR, PA_AVERAGE_WAVE_PREFIX + baseName)
+			WAVE averageWave = PA_Average(setWaves, pulseAverageDFR, PA_AVERAGE_WAVE_PREFIX + baseName)
 
 			activeChanCount = i + 1
 			activeRegionCount = j + 1
@@ -1036,7 +1034,7 @@ static Function PA_DrawScaleBars(string win, STRUCT PulseAverageSettings &pa, va
 
 	variable i, j, numChannels, numRegions, region, channelNumber
 	variable activeChanCount, activeRegionCount, maximum, length
-	string graph, vertAxis, horizAxis, listOfWaves, baseName
+	string graph, vertAxis, horizAxis, baseName
 
 	if(!pa.showIndividualTraces && !pa.showAverageTrace && !pa.deconvolution.enable)
 		// blank graph
@@ -1079,10 +1077,8 @@ static Function PA_DrawScaleBars(string win, STRUCT PulseAverageSettings &pa, va
 				continue
 			endif
 
-			listOfWaves = WaveRefWaveToList(setWaves, 0)
-
 			baseName = PA_BaseName(channelNumber, region)
-			WAVE averageWave = PA_Average(listOfWaves, pulseAverageDFR, PA_AVERAGE_WAVE_PREFIX + baseName)
+			WAVE averageWave = PA_Average(setWaves, pulseAverageDFR, PA_AVERAGE_WAVE_PREFIX + baseName)
 
 			maximum = GetNumberFromWaveNote(averageWave, "WaveMaximum")
 			ASSERT(IsFinite(maximum), "Invalid average maximum")
@@ -1260,14 +1256,9 @@ End
 /// Note: MIES_fWaveAverage() usually takes 5 times longer than CA_AveragingKey()
 ///
 /// @returns wave reference to the average wave specified by @p outputDFR and @p outputWaveName
-static Function/WAVE PA_Average(listOfWaves, outputDFR, outputWaveName)
-	string listOfWaves
-	DFREF outputDFR
-	string outputWaveName
+static Function/WAVE PA_Average(WAVE/WAVE set, DFREF outputDFR, string outputWaveName)
 
-	WAVE wv = CalculateAverage(listOfWaves, outputDFR, outputWaveName, skipCRC = 1)
-
-	return wv
+	return CalculateAverage(set, outputDFR, outputWaveName, skipCRC = 1)
 End
 
 static Function/WAVE PA_SmoothDeconv(input, deconvolution)
