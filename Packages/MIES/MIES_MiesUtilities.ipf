@@ -5444,18 +5444,23 @@ End
 ///
 /// @param win panel window as string
 /// @returns numeric panel version greater 0 and -1 if no version is present
+///          or -2 if the windows does not exist
 Function GetPanelVersion(win)
 	string win
 
 	variable version
 
-	ASSERT(windowExists(win), "Non existent window")
+	if(!WindowExists(win))
+		return -2
+	endif
 
 	version = str2numSafe(GetUserData(win, "", "panelVersion"))
 	version = abs(version)
+
 	if(IsNaN(version))
-		version = -1
+		return -1
 	endif
+
 	return version
 End
 
