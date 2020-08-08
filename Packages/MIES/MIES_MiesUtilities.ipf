@@ -6465,7 +6465,7 @@ Function RemoveSweepFromGraph(string win, variable index)
 
 	graph = GetMainWindow(win)
 
-	if(BSP_PanelNeedsUpdate(graph))
+	if(!HasPanelLatestVersion(graph, DATA_SWEEP_BROWSER_PANEL_VERSION))
 		DoAbortNow("Can not display data. The panel is too old to be usable. Please close it and open a new one.")
 	endif
 
@@ -6501,7 +6501,7 @@ End
 /// @param index overlay sweeps listbox index
 Function AddSweepToGraph(string win, variable index)
 
-	if(BSP_PanelNeedsUpdate(win))
+	if(!HasPanelLatestVersion(win, DATA_SWEEP_BROWSER_PANEL_VERSION))
 		DoAbortNow("Can not display data. The panel is too old to be usable. Please close it and open a new one.")
 	endif
 

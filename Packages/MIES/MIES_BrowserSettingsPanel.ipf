@@ -101,9 +101,8 @@ Function BSP_UnHideSettingsPanel(mainPanel)
 
 	string bsPanel
 
-	mainPanel = GetMainWindow(mainPanel)
-	if(BSP_PanelNeedsUpdate(mainPanel))
-		Abort "Can not display data. The main panel is too old to be usable. Please close it and open a new one."
+	if(!HasPanelLatestVersion(mainPanel, DATA_SWEEP_BROWSER_PANEL_VERSION))
+		DoAbortNow("The main panel is too old to be usable. Please close it and open a new one.")
 	endif
 
 	bsPanel = BSP_GetPanel(mainPanel)
@@ -316,7 +315,7 @@ Function/DF BSP_GetFolder(win, MIES_BSP_FOLDER_TYPE)
 
 	string mainPanel
 
-	if(BSP_PanelNeedsUpdate(win))
+	if(!HasPanelLatestVersion(win, DATA_SWEEP_BROWSER_PANEL_VERSION))
 		DoAbortNow("The main panel is too old to be usable. Please close it and open a new one.")
 	endif
 
@@ -836,7 +835,7 @@ Function BSP_UpdateSweepControls(win, ctrl, firstSweep, lastSweep)
 	graph   = GetMainWindow(win)
 	scPanel = BSP_GetSweepControlsPanel(graph)
 
-	if(BSP_PanelNeedsUpdate(graph))
+	if(!HasPanelLatestVersion(graph, DATA_SWEEP_BROWSER_PANEL_VERSION))
 		DoAbortNow("The main panel is too old to be usable. Please close it and open a new one.")
 	endif
 
@@ -860,16 +859,6 @@ Function BSP_UpdateSweepControls(win, ctrl, firstSweep, lastSweep)
 	return newSweep
 End
 
-/// @brief check the DataBrowser/SweepBrowser if it has the required version
-///
-/// @param win 	name of external panel or main window
-/// @return 0 if panel has latest version and 1 if update is required
-Function BSP_PanelNeedsUpdate(win)
-	string win
-
-	return GetPanelVersion(GetMainWindow(win)) < DATA_SWEEP_BROWSER_PANEL_VERSION
-End
-
 /// @brief check if the specified setting is activated
 ///
 /// @param win 			name of external panel or main window
@@ -884,7 +873,8 @@ Function BSP_IsActive(win, elementID)
 	bsPanel = BSP_GetPanel(win)
 
 	// return inactive if panel is outdated or does not exist
-	if(BSP_PanelNeedsUpdate(win))
+	if(!HasPanelLatestVersion(win, DATA_SWEEP_BROWSER_PANEL_VERSION))
+		DoAbortNow("The main panel is too old to be usable. Please close it and open a new one.")
 		return 0
 	endif
 
@@ -1111,7 +1101,7 @@ Function BSP_CheckProc_ChangedSetting(cba) : CheckBoxControl
 			graph   = GetMainWindow(cba.win)
 			bsPanel = BSP_GetPanel(graph)
 
-			if(BSP_PanelNeedsUpdate(graph))
+			if(!HasPanelLatestVersion(graph, DATA_SWEEP_BROWSER_PANEL_VERSION))
 				DoAbortNow("The main panel is too old to be usable. Please close it and open a new one.")
 			endif
 

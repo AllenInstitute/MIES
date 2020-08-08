@@ -363,7 +363,7 @@ Function DB_UpdateSweepPlot(win)
 	string device, lbPanel, scPanel, graph, experiment
 	STRUCT TiledGraphSettings tgs
 
-	if(BSP_PanelNeedsUpdate(win))
+	if(!HasPanelLatestVersion(win, DATA_SWEEP_BROWSER_PANEL_VERSION))
 		DoAbortNow("Can not display data. The Databrowser panel is too old to be usable. Please close it and open a new one.")
 	endif
 
@@ -534,7 +534,7 @@ Function DB_UpdateToLastSweep(win)
 	bsPanel = BSP_GetPanel(win)
 	scPanel = BSP_GetSweepControlsPanel(win)
 
-	if(BSP_PanelNeedsUpdate(win))
+	if(!HasPanelLatestVersion(win, DATA_SWEEP_BROWSER_PANEL_VERSION))
 		print "Can not display data. The Databrowser panel is too old to be usable. Please close it and open a new one."
 		ControlWindowToFront()
 		return NaN
