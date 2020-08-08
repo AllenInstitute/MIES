@@ -4003,37 +4003,49 @@ End
 /// @param averageDataFolder folder where the data is to be stored
 /// @param averageWaveName   base name of the averaged data
 /// @param skipCRC           [optional, defaults to false] Add the average wave CRC as suffix to its name
+/// @param writeSourcePaths  [optional, defaults to true] Write the full paths of the source waves into the average wave note
+/// @param inputAverage      [optional, defaults to invalid wave ref] Override the average calculation and use the given
+///                          wave as result. This is relevant for callers which want to leverage `MultiThread` statements
+///                          together with `MIES_fWaveAverage`.
 ///
 /// @return wave reference to the average wave
-Function/WAVE CalculateAverage(waveRefs, averageDataFolder, averageWaveName, [skipCRC])
-	WAVE/WAVE waverefs
+Function/WAVE CalculateAverage(waveRefs, averageDataFolder, averageWaveName, [skipCRC, writeSourcePaths, inputAverage])
+	WAVE/WAVE waveRefs
 	DFREF averageDataFolder
 	string averageWaveName
-	variable skipCRC
+	variable skipCRC, writeSourcePaths
+	WAVE inputAverage
 
 	variable crc
 	string key, wvName, dataUnit
 
 	skipCRC = ParamIsDefault(skipCRC) ? 0 : !!skipCRC
+	writeSourcePaths = ParamIsDefault(writeSourcePaths) ? 0 : !!writeSourcePaths
 
 	key = CA_AveragingKey(waveRefs)
 
 	wvName = averageWaveName
 
-	WAVE/Z freeAverageWave = CA_TryFetchingEntryFromCache(key, options=CA_OPTS_NO_DUPLICATE)
-	if(WaveExists(freeAverageWave)) // found in the cache
-		if(!skipCRC)
-			wvName += "_" + num2istr(GetNumberFromWaveNote(freeAverageWave, "DataCRC"))
+	if(ParamIsDefault(inputAverage))
+
+		WAVE/Z freeAverageWave = CA_TryFetchingEntryFromCache(key, options=CA_OPTS_NO_DUPLICATE)
+		if(WaveExists(freeAverageWave)) // found in the cache
+
+			if(!skipCRC)
+				wvName += "_" + num2istr(GetNumberFromWaveNote(freeAverageWave, "DataCRC"))
+			endif
+
+			Duplicate/O freeAverageWave, averageDataFolder:$wvName/WAVE=permAverageWave
+
+			return permAverageWave
 		endif
 
-		Duplicate/O freeAverageWave, averageDataFolder:$wvName/WAVE=permAverageWave
-
-		return permAverageWave
+		WAVE/Z freeAverageWave = MIES_fWaveAverage(waveRefs, 1, IGOR_TYPE_64BIT_FLOAT)
+		ASSERT(ClearRTError() == 0, "Unexpected RTE")
+		ASSERT(WaveExists(freeAverageWave), "Wave averaging failed")
+	else
+		WAVE freeAverageWave = inputAverage
 	endif
-
-	WAVE/Z freeAverageWave = MIES_fWaveAverage(waveRefs, 1, IGOR_TYPE_64BIT_FLOAT)
-	ASSERT(WaveExists(freeAverageWave), "Wave averaging failed")
-	ASSERT(ClearRTError() == 0, "Unexpected RTE")
 
 	dataUnit = WaveUnits(waveRefs[0], -1)
 	SetScale d, 0, 0, dataUnit, freeAverageWave
@@ -4044,7 +4056,9 @@ Function/WAVE CalculateAverage(waveRefs, averageDataFolder, averageWaveName, [sk
 		SetNumberInWaveNote(freeAverageWave, "DataCRC", crc)
 	endif
 
-	AddEntryIntoWaveNoteAsList(freeAverageWave, "SourceWavesForAverage", str=ReplaceString(";", WaveRefWaveToList(waveRefs, 0), "|"))
+	if(writeSourcePaths)
+		AddEntryIntoWaveNoteAsList(freeAverageWave, "SourceWavesForAverage", str=ReplaceString(";", WaveRefWaveToList(waveRefs, 0), "|"))
+	endif
 	SetNumberInWaveNote(freeAverageWave, "WaveMaximum", WaveMax(freeAverageWave), format = "%.15f")
 
 	Duplicate/O freeAverageWave, averageDataFolder:$wvName/WAVE=permAverageWave
