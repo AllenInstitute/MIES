@@ -456,51 +456,6 @@ Function BSP_HasBoundDevice(win)
 	return !BSP_IsDataBrowser(win) || !(IsEmpty(device) || !cmpstr(device, NONE))
 End
 
-/// @brief get the selected headstage from the slider position
-///
-/// if the slider is at position -1, all headstages are selected
-/// this equals to dDAQ checkbox beeing deactivated
-///
-/// @param win 	name of external panel or main window
-/// @returns the headstage number if active and -1 if the headstage slider was not found or is deactivated
-Function BSP_GetDDAQ(win)
-	string win
-
-	string bsPanel, ctrl
-
-	ctrl = "slider_BrowserSettings_dDAQ"
-	bsPanel = BSP_GetPanel(win)
-
-	if(!ControlExists(bsPanel, ctrl))
-		return -1
-	endif
-
-	if(!BSP_DDAQisActive(win))
-		return -1
-	endif
-
-	return GetSliderPositionIndex(bsPanel, ctrl)
-End
-
-/// @brief get the status of the dDAQ control
-///
-/// @param win 	name of external panel or main window
-/// @returns the status of the checkbox control "dDAQ" in the BrowserSettings Panel
-static Function BSP_DDAQisActive(win)
-	string win
-
-	string bsPanel, ctrl
-
-	ctrl = "check_BrowserSettings_dDAQ"
-	bsPanel = BSP_GetPanel(win)
-
-	if(!ControlExists(bsPanel, ctrl))
-		return 0
-	endif
-
-	return GetCheckboxState(bsPanel, ctrl)
-End
-
 /// @brief set the initial state of the enable/disable buttons
 ///
 /// @param win 		name of external panel or main window
