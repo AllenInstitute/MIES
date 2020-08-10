@@ -5362,3 +5362,14 @@ Function/WAVE GrepTextWave(Wave/T in, string regexp)
 
 	return result
 End
+
+/// @brief Helper function for multithread statements where `? :` does not work with wave references
+///
+/// The order of arguments is modelled after SelectString/SelectNumber.
+threadsafe Function/WAVE SelectWave(variable condition, WAVE/Z waveIfFalse, WAVE/Z waveIfTrue)
+	if(!!condition != 0)
+		return waveIfTrue
+	else
+		return waveIfFalse
+	endif
+End
