@@ -1636,18 +1636,23 @@ Function DAP_SetVarProc_NextSweepLimit(sva) : SetVariableControl
 
 			panelTitle = sva.win
 			sweepNo = AFH_GetLastSweepAcquired(panelTitle)
-
-			Make/FREE/N=(1, 1, LABNOTEBOOK_LAYER_COUNT) vals = NaN
-			vals[0][0][INDEP_HEADSTAGE] = sva.dval
-			Make/T/FREE/N=(3, 1) keys
-			keys[0] = "Sweep Rollback"
-			keys[1] = "a. u."
-			keys[2] = LABNOTEBOOK_NO_TOLERANCE
-			ED_AddEntriesToLabnotebook(vals, keys, sweepNo, panelTitle, UNKNOWN_MODE)
+			DAP_SweepRollback(paneltitle, sweepNo, sva.dval)
 			break
 	endswitch
 
 	return 0
+End
+
+Function DAP_SweepRollback(string paneltitle, variable sweepNo, variable newSweepNo)
+
+	Make/FREE/N=(1, 1, LABNOTEBOOK_LAYER_COUNT) vals = NaN
+	vals[0][0][INDEP_HEADSTAGE] = newSweepNo
+	Make/T/FREE/N=(3, 1) keys
+	keys[0] = "Sweep Rollback"
+	keys[1] = "a. u."
+	keys[2] = LABNOTEBOOK_NO_TOLERANCE
+	ED_AddEntriesToLabnotebook(vals, keys, sweepNo, panelTitle, UNKNOWN_MODE)
+
 End
 
 static Function DAP_UpdateSweepLimitsAndDisplay(panelTitle)
