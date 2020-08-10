@@ -1429,7 +1429,7 @@ End
 /// GetLastSettingNoCache().
 ///
 /// Rows:
-/// - Rows into `values`
+/// - Sweep numbers (only existing sweeps)
 ///
 /// Cols:
 /// - 0: First row
@@ -1476,7 +1476,7 @@ End
 /// @brief Index wave which serves as a labnotebook cache.
 ///
 /// Rows:
-/// - One for each sweep number
+/// - Sweep numbers
 ///
 /// Cols:
 /// - One for each LBN key
@@ -1487,6 +1487,10 @@ End
 /// The wave can be indexed with sweepNumber, settings column and
 /// entrySourceType to return the row index of the labnotebok wave where the
 /// desired value can be found.
+///
+/// Contents:
+/// - row index if the entry could be found, #LABNOTEBOOK_MISSING_VALUE if it
+///   could not be found, and #LABNOTEBOOK_UNCACHED_VALUE if the cache is empty.
 Function/WAVE GetLBIndexCache(values)
 	WAVE values
 
