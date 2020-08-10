@@ -4082,3 +4082,38 @@ Function ReplaceWaveWithBackupForAllWorks()
 End
 
 /// @}
+
+/// SelectWave
+/// @{
+
+Function/WAVE SW_TrueValues()
+	Make/D/FREE data = {1, Inf, -Inf, 1e-15, -1, NaN}
+	return data
+End
+
+Function/WAVE SW_FalseValues()
+	Make/D/FREE data = {0}
+	return data
+End
+
+// UTF_TD_GENERATOR SW_TrueValues
+Function SW_WorksWithTrue([var])
+	variable var
+
+	Make/FREE a, b
+	WAVE/Z trueWave = SelectWave(var, a, b)
+	CHECK_WAVE(trueWave, FREE_WAVE)
+	CHECK(WaveRefsEqual(trueWave, b))
+End
+
+// UTF_TD_GENERATOR SW_FalseValues
+Function SW_WorksWithFalse([var])
+	variable var
+
+	Make/FREE a, b
+	WAVE/Z falseWave = SelectWave(var, a, b)
+	CHECK_WAVE(falseWave, FREE_WAVE)
+	CHECK(WaveRefsEqual(falseWave, a))
+End
+
+/// @}
