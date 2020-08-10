@@ -1100,6 +1100,7 @@ Function/Wave GetLBTextualValues(panelTitle)
 	SetDimLabel COLS, 3, EntrySourceType           , wv
 
 	SetNumberInWaveNote(wv, NOTE_INDEX, 0)
+	SetNumberInWaveNote(wv, LABNOTEBOOK_ROLLBACK_COUNT, 0)
 
 	return wv
 End
@@ -1263,6 +1264,11 @@ static Function UpgradeLabNotebook(panelTitle)
 		SetDimensionLabels(numericalKeys, numericalValues)
 		SetDimensionLabels(textualKeys, textualValues)
 	endif
+
+	if(WaveVersionIsSmaller(numericalKeys, 39))
+		SetNumberInWaveNote(numericalValues, LABNOTEBOOK_ROLLBACK_COUNT, 0)
+		SetNumberInWaveNote(textualValues, LABNOTEBOOK_ROLLBACK_COUNT, 0)
+	endif
 End
 
 /// @brief Return a wave reference to the text labnotebook keys
@@ -1408,6 +1414,7 @@ Function/Wave GetLBNumericalValues(panelTitle)
 		SetDimLabel COLS, 3, EntrySourceType           , wv
 
 		SetNumberInWaveNote(wv, NOTE_INDEX, 0)
+		SetNumberInWaveNote(wv, LABNOTEBOOK_ROLLBACK_COUNT, 0)
 	endif
 
 	return wv

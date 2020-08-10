@@ -1649,6 +1649,8 @@ End
 
 Function DAP_SweepRollback(string paneltitle, variable sweepNo, variable newSweepNo)
 
+	variable rollbackCountNum, rollbackCountText
+
 	Make/FREE/N=(1, 1, LABNOTEBOOK_LAYER_COUNT) vals = NaN
 	vals[0][0][INDEP_HEADSTAGE] = newSweepNo
 	Make/T/FREE/N=(3, 1) keys
@@ -1657,6 +1659,21 @@ Function DAP_SweepRollback(string paneltitle, variable sweepNo, variable newSwee
 	keys[2] = LABNOTEBOOK_NO_TOLERANCE
 	ED_AddEntriesToLabnotebook(vals, keys, sweepNo, panelTitle, UNKNOWN_MODE)
 
+	// upgrade LBNs
+	GetLBNumericalKeys(panelTitle)
+	GetLBTextualKeys(panelTitle)
+
+	WAVE/Z numericalValues = GetLBNumericalValues(panelTitle)
+	rollbackCountNum = GetNumberFromWaveNote(numericalValues, LABNOTEBOOK_ROLLBACK_COUNT)
+	SetNumberInWaveNote(numericalValues, LABNOTEBOOK_ROLLBACK_COUNT, rollbackCountNum + 1)
+	WaveClear numericalValues
+
+	WAVE/Z textualValues = GetLBTextualValues(panelTitle)
+	rollbackCountText = GetNumberFromWaveNote(textualValues, LABNOTEBOOK_ROLLBACK_COUNT)
+	SetNumberInWaveNote(textualValues, LABNOTEBOOK_ROLLBACK_COUNT, rollbackCountText + 1)
+	WaveClear textualValues
+
+	ASSERT(rollbackCountNum == rollbackCountText, "Invalid rollback count")
 End
 
 static Function DAP_UpdateSweepLimitsAndDisplay(panelTitle)
