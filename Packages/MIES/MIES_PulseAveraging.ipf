@@ -43,6 +43,8 @@ static StrConstant PA_DECONVOLUTION_WAVE_PREFIX = "deconv_"
 static StrConstant PA_USERDATA_REFERENCE_TRACES = "REFERENCE_TRACES"
 static StrConstant PA_USERDATA_REFERENCE_GRAPH  = "REFERENCE"
 
+static StrConstant PA_SETTINGS = "PulseAverageSettings"
+
 static Constant PA_USE_WAVE_SCALES = 0x01
 static Constant PA_USE_AXIS_SCALES = 0x02
 
@@ -393,13 +395,18 @@ End
 /// - Now gather the pulse starting time from the region and create single pulse waves for all of them
 ///
 /// The result is feed into GetPulseAverageProperties() and GetPulseAveragepropertiesWaves() for further consumption.
-static Function PA_GenerateAllPulseWaves(string win, STRUCT PulseAverageSettings &pa)
+static Function PA_GenerateAllPulseWaves(string win, STRUCT PulseAverageSettings &pa, variable constantSinglePulseSettings, variable mode)
 
 	variable startingPulseSett, endingPulseSett, isDiagonalElement, pulseHasFailed, newChannel
 	variable i, j, k, numHeadstages, region, sweepNo, idx, numPulsesTotal, numPulses, startingPulse, endingPulse
 	variable headstage, pulseToPulseLength, totalOnsetDelay, numChannelTypeTraces, totalPulseCounter, jsonID, lastSweep
 	variable activeRegionCount, activeChanCount, channelNumber, first, length, dictId, channelType, numChannels, numRegions
 	string channelTypeStr, channelList, channelNumberStr, key, regionList, baseName, sweepList, sweepNoStr, experiment
+
+	if(mode == POST_PLOT_CONSTANT_SWEEPS && constantSinglePulseSettings)
+		// nothing to do
+		return NaN
+	endif
 
 	WAVE/T/Z traceData = GetTraceInfos(win)
 
@@ -622,16 +629,29 @@ End
 /// @brief Update the PA plot to accomodate changed settings
 Function PA_Update(string win, variable mode, [WAVE/Z additionalData])
 
-	string graph = GetMainWindow(win)
+	string graph
+	variable jsonIDOld, jsonID, constantSettings
 
 	if(ParamIsDefault(additionalData))
 		WAVE/Z additionalData = $""
 	endif
 
-	STRUCT PulseAverageSettings s
-	PA_GatherSettings(graph, s)
+	graph = GetMainWindow(win)
 
-	PA_ShowPulses(graph, s,  mode, additionalData)
+	STRUCT PulseAverageSettings old
+	jsonIDOld = PA_DeSerializeSettings(graph, old)
+
+	STRUCT PulseAverageSettings current
+	PA_GatherSettings(graph, current)
+	jsonID = PA_SerializeSettings(graph, current)
+
+	if(IsFinite(jsonIDOld))
+		constantSettings = !cmpstr(JSON_Dump(jsonID, indent=-1), JSON_Dump(jsonIDOld, indent=-1))
+		JSON_Release(jsonIDOld)
+	endif
+	JSON_Release(jsonID)
+
+	PA_ShowPulses(graph, current, old, constantSettings, mode, additionalData)
 End
 
 static Function/WAVE PA_GetSetWaves(DFREF dfr, variable channelNumber, variable region, [variable removeFailedPulses])
@@ -745,14 +765,14 @@ static Function PA_MarkFailedPulses(WAVE properties, WAVE/WAVE propertiesWaves, 
 	Multithread junkWave[] = SetNumberInWaveNote(propertiesWaves[p], NOTE_KEY_FAILED_PULSE_LEVEL, pa.failedPulsesLevel)
 End
 
-static Function PA_ShowPulses(string win, STRUCT PulseAverageSettings &pa, variable mode, WAVE/Z additionalData)
+static Function PA_ShowPulses(string win, STRUCT PulseAverageSettings &pa, STRUCT PulseAverageSettings &paOld, variable constantSettings, variable mode, WAVE/Z additionalData)
 
 	string pulseTrace, channelTypeStr, str, graph, preExistingGraphs, key
 	variable numChannels, i, j, sweepNo, headstage, numTotalPulses, pulse, xPos, yPos
 	variable first, numEntries, startingPulse, endingPulse, traceCount, step, isDiagonalElement
 	variable red, green, blue, channelNumber, region, channelType, length
 	variable numChannelTypeTraces, activeRegionCount, activeChanCount, totalOnsetDelay, pulseHasFailed
-	variable numRegions, hideTrace, timeAlignmentReferencePulse, lastSweep, alpha
+	variable numRegions, hideTrace, timeAlignmentReferencePulse, lastSweep, alpha, constantSinglePulseSettings
 	string vertAxis, horizAxis, channelNumberStr
 	string baseName, traceName, fullPath, tagName
 	string newlyCreatedGraphs = ""
@@ -783,9 +803,11 @@ static Function PA_ShowPulses(string win, STRUCT PulseAverageSettings &pa, varia
 		TUD_Clear(graph)
 	endfor
 
-	if(mode != POST_PLOT_CONSTANT_SWEEPS)
-		PA_GenerateAllPulseWaves(win, pa)
-	endif
+	constantSinglePulseSettings = (pa.startingPulse == paOld.startingPulse                \
+	                               && pa.endingPulse == paOld.endingPulse                 \
+	                               && pa.fallbackPulseLength == paOld.fallbackPulseLength)
+
+	PA_GenerateAllPulseWaves(win, pa, constantSinglePulseSettings, mode)
 
 	Make/FREE/T userDataKeys = {"fullPath", "sweepNumber", "headstage", "region", "channelNumber", "channelType",                           \
 	                            "pulseIndex", "traceType", "occurence", "XAXIS", "YAXIS", "DiagonalElement", "TimeAlignmentReferencePulse"}
@@ -1618,4 +1640,97 @@ static Function PA_LayoutGraphs(string win, DFREF dfr, WAVE regions, WAVE channe
 			ModifyGraph/W=$graph/Z freePos(bottom)=0
 		endfor
 	endfor
+End
+
+/// @brief Write the PA settings `pa` to the panel user data
+/// and return a JSON id with the settings.
+///
+///
+/// @return Valid JSON id, caller must release memory.
+Function PA_SerializeSettings(string win, STRUCT PulseAverageSettings &pa)
+
+	variable jsonID
+	string datafolder
+
+	jsonID = JSON_New()
+
+	JSON_AddVariable(jsonID, "/version", PA_SETTINGS_STRUCT_VERSION)
+
+	if(DataFolderExistsDFR(pa.dfr))
+		datafolder = GetDataFolder(1, pa.dfr)
+	else
+		datafolder = ""
+	endif
+
+	JSON_AddString(jsonID, "/dfr", datafolder)
+	JSON_AddVariable(jsonID, "/enabled", pa.enabled)
+	JSON_AddVariable(jsonID, "/showIndividualTraces", pa.showIndividualTraces)
+	JSON_AddVariable(jsonID, "/showAverageTrace", pa.showAverageTrace)
+	JSON_AddVariable(jsonID, "/startingPulse", pa.startingPulse)
+	JSON_AddVariable(jsonID, "/endingPulse", pa.endingPulse)
+	JSON_AddVariable(jsonID, "/regionSlider", pa.regionSlider)
+	JSON_AddVariable(jsonID, "/fallbackPulseLength", pa.fallbackPulseLength)
+	JSON_AddVariable(jsonID, "/multipleGraphs", pa.multipleGraphs)
+	JSON_AddVariable(jsonID, "/zeroTraces", pa.zeroTraces)
+	JSON_AddVariable(jsonID, "/autoTimeAlignment", pa.autoTimeAlignment)
+	JSON_AddVariable(jsonID, "/hideFailedPulses", pa.hideFailedPulses)
+	JSON_AddVariable(jsonID, "/searchFailedPulses", pa.searchFailedPulses)
+	JSON_AddVariable(jsonID, "/failedPulsesLevel", pa.failedPulsesLevel)
+	JSON_AddVariable(jsonID, "/yScaleBarLength", pa.yScaleBarLength)
+	JSON_AddTreeObject(jsonID, "/deconvolution")
+	JSON_AddVariable(jsonID, "/deconvolution/enable", pa.deconvolution.enable)
+	JSON_AddVariable(jsonID, "/deconvolution/smth", pa.deconvolution.smth)
+	JSON_AddVariable(jsonID, "/deconvolution/tau", pa.deconvolution.tau)
+	JSON_AddVariable(jsonID, "/deconvolution/range", pa.deconvolution.range)
+
+	SetWindow $win, userdata($PA_SETTINGS)=JSON_Dump(jsonID, indent = -1)
+	return jsonID
+End
+
+/// @brief Read the PA settings from the panel user data into
+/// `pa` and return a JSON id with the settings.
+///
+///
+/// @return Valid JSON id, caller must release memory, or NaN on error/incompatible struct
+Function PA_DeserializeSettings(string win, STRUCT PulseAverageSettings &pa)
+
+	variable jsonID, version
+
+	jsonID = JSON_Parse(GetUserData(win,"", PA_SETTINGS), ignoreErr=1)
+
+	if(IsNaN(jsonID))
+		InitPulseAverageSettings(pa)
+		return NaN
+	endif
+
+	version = JSON_GetVariable(jsonID, "/version")
+
+	// incompatible version
+	if(version != PA_SETTINGS_STRUCT_VERSION)
+		JSON_Release(jsonID)
+		InitPulseAverageSettings(pa)
+		return NaN
+	endif
+
+	DFREF pa.dfr            = $JSON_GetString(jsonID, "/dfr")
+	pa.enabled              = JSON_GetVariable(jsonID, "/enabled")
+	pa.showIndividualTraces = JSON_GetVariable(jsonID, "/showIndividualTraces")
+	pa.showAverageTrace     = JSON_GetVariable(jsonID, "/showAverageTrace")
+	pa.startingPulse        = JSON_GetVariable(jsonID, "/startingPulse")
+	pa.endingPulse          = JSON_GetVariable(jsonID, "/endingPulse")
+	pa.regionSlider         = JSON_GetVariable(jsonID, "/regionSlider")
+	pa.fallbackPulseLength  = JSON_GetVariable(jsonID, "/fallbackPulseLength")
+	pa.multipleGraphs       = JSON_GetVariable(jsonID, "/multipleGraphs")
+	pa.zeroTraces           = JSON_GetVariable(jsonID, "/zeroTraces")
+	pa.autoTimeAlignment    = JSON_GetVariable(jsonID, "/autoTimeAlignment")
+	pa.hideFailedPulses     = JSON_GetVariable(jsonID, "/hideFailedPulses")
+	pa.searchFailedPulses   = JSON_GetVariable(jsonID, "/searchFailedPulses")
+	pa.failedPulsesLevel    = JSON_GetVariable(jsonID, "/failedPulsesLevel")
+	pa.yScaleBarLength      = JSON_GetVariable(jsonID, "/yScaleBarLength")
+	pa.deconvolution.enable = JSON_GetVariable(jsonID, "/deconvolution/enable")
+	pa.deconvolution.smth   = JSON_GetVariable(jsonID, "/deconvolution/smth")
+	pa.deconvolution.tau    = JSON_GetVariable(jsonID, "/deconvolution/tau")
+	pa.deconvolution.range  = JSON_GetVariable(jsonID, "/deconvolution/range")
+
+	return jsonID
 End

@@ -60,13 +60,20 @@ Function InitPulseAverageSettings(pa)
 	pa.yScaleBarLength      = NaN
 End
 
+// If this structure changes, #PA_SETTINGS_STRUCT_VERSION/PA_SerializeSettings() and
+// PA_DeSerializeSettings() needs adaptation.
 Structure PulseAverageSettings
 	variable showIndividualTraces, showAverageTrace
-	variable startingPulse, endingPulse, regionSlider
-	variable fallbackPulseLength, multipleGraphs
+	variable regionSlider, multipleGraphs
 	variable zeroTraces, autoTimeAlignment, enabled
 	variable hideFailedPulses, searchFailedPulses
 	variable failedPulsesLevel, yScaleBarLength
+
+	/// @{
+	/// These settings influence the extracted single pulse waves, see also
+	/// PA_GenerateAllPulseWaves().
+	variable startingPulse, endingPulse, fallbackPulseLength
+	/// @}
 
 	DFREF dfr
 

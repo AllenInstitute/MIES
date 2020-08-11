@@ -1319,3 +1319,5 @@ Constant POST_PLOT_CONSTANT_SWEEPS = 0x4 ///< The displayed data in the databrow
 Constant POST_PLOT_FULL_UPDATE = 0x8     ///< Forces a complete update from scratch, use that if nothing else fits
 
 /// @}
+
+Constant PA_SETTINGS_STRUCT_VERSION = 1
