@@ -320,7 +320,7 @@ Function SB_UpdateSweepPlot(win)
 		ReplaceNotebookText(lbPanel, "Sweep note: \r " + sweepNote)
 	endif
 
-	PostPlotTransformations(graph)
+	PostPlotTransformations(graph, POST_PLOT_FULL_UPDATE)
 	SetAxesRanges(graph, axesRanges)
 End
 

@@ -1307,3 +1307,15 @@ Constant TRACE_NAME_NUM_DIGITS = 6
 
 /// Space used between numbers and their units
 StrConstant NUMBER_UNIT_SPACE = "\u2006"
+
+/// @name Incremental update modes for PostPlotTransformations()
+/// @anchor PostPlotUpdateModes
+///
+/// @{
+
+Constant POST_PLOT_ADDED_SWEEPS = 0x1    ///< The only change: Some sweeps were added
+Constant POST_PLOT_REMOVED_SWEEPS = 0x2  ///< The only change: Some sweeps were removed
+Constant POST_PLOT_CONSTANT_SWEEPS = 0x4 ///< The displayed data in the databrowser stayed *constant* but some settings changed
+Constant POST_PLOT_FULL_UPDATE = 0x8     ///< Forces a complete update from scratch, use that if nothing else fits
+
+/// @}

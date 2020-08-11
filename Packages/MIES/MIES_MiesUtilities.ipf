@@ -3516,10 +3516,30 @@ End
 /// Needs to be called after adding/removing/updating sweeps via
 /// AddSweepToGraph(), RemoveSweepFromGraph(), UpdateSweepInGraph().
 ///
-/// @param win graph with sweep traces
-Function PostPlotTransformations(string win)
+/// @param win  graph with sweep traces
+/// @param mode update mode, one of @ref PostPlotUpdateModes
+/// @param additionalData [optional, defaults to invalid wave reference] additional data for subsequent users.
+///                        Currently supported:
+///                        - POST_PLOT_REMOVED_SWEEPS -> OVS indizes of the removed sweep
+///                        - POST_PLOT_ADDED_SWEEPS   -> OVS indizes of the added sweep
+///                        Use OVS_GetSweepAndExperiment() to convert an index into a sweep/experiment pair.
+Function PostPlotTransformations(string win, variable mode, [WAVE/Z additionalData])
 	STRUCT TiledGraphSettings tgs
 	string graph
+
+	switch(mode)
+		case POST_PLOT_ADDED_SWEEPS:
+		case POST_PLOT_REMOVED_SWEEPS:
+			ASSERT(!ParamIsDefault(additionalData), "Missing optional additionalData")
+			break
+		case POST_PLOT_FULL_UPDATE:
+		case POST_PLOT_CONSTANT_SWEEPS:
+			ASSERT(ParamIsDefault(additionalData), "Not supported optional additionalData")
+			WAVE/Z additionalData = $""
+			break
+		default:
+			ASSERT(0, "Invalid mode")
+	endswitch
 
 	graph = GetMainWindow(win)
 
@@ -3537,7 +3557,13 @@ Function PostPlotTransformations(string win)
 
 	AverageWavesFromSameYAxisIfReq(graph, traces, pps.averageTraces, pps.averageDataFolder, pps.hideSweep)
 	AR_HighlightArtefactsEntry(graph)
-	PA_Update(graph)
+
+	if(ParamIsDefault(additionalData))
+		PA_Update(graph, mode)
+	else
+		PA_Update(graph, mode, additionalData = additionalData)
+	endif
+
 	BSP_ScaleAxes(graph)
 
 	[tgs] = BSP_GatherTiledGraphSettings(graph)

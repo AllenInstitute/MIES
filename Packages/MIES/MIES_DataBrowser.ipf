@@ -430,7 +430,7 @@ Function DB_UpdateSweepPlot(win)
 
 	DB_UpdateSweepNote(win)
 
-	PostPlotTransformations(graph)
+	PostPlotTransformations(graph, POST_PLOT_FULL_UPDATE)
 
 	SetAxesRanges(graph, axesRanges)
 	DEBUGPRINT_ELAPSED(referenceTime)

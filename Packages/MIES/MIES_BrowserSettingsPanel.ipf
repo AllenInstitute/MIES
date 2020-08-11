@@ -609,7 +609,7 @@ Function BSP_CheckBoxProc_PerPulseAver(cba) : CheckBoxControl
 	switch(cba.eventCode)
 		case 2: // mouse up
 			mainPanel = GetMainWindow(cba.win)
-			PA_Update(mainPanel)
+			PA_Update(mainPanel, POST_PLOT_FULL_UPDATE)
 			break
 	endswitch
 
@@ -713,7 +713,7 @@ Function BSP_DoTimeAlignment(ba) : ButtonControl
 				return NaN
 			endif
 
-			PostPlotTransformations(graph)
+			PostPlotTransformations(graph, POST_PLOT_FULL_UPDATE)
 			break
 	endswitch
 

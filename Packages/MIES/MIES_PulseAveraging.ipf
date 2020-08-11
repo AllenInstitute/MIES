@@ -620,20 +620,18 @@ static Function PA_DeconvGatherSettings(win, deconvolution)
 End
 
 /// @brief Update the PA plot to accomodate changed settings
-/// @todo add code to only generate new pulses for one sweep
-Function PA_Update(string win, [variable recreatePulses])
+Function PA_Update(string win, variable mode, [WAVE/Z additionalData])
 
 	string graph = GetMainWindow(win)
 
-	if(ParamIsDefault(recreatePulses))
-		recreatePulses = 1
-	else
-		recreatePulses = !!recreatePulses
+	if(ParamIsDefault(additionalData))
+		WAVE/Z additionalData = $""
 	endif
 
 	STRUCT PulseAverageSettings s
 	PA_GatherSettings(graph, s)
-	PA_ShowPulses(graph, s, recreatePulses)
+
+	PA_ShowPulses(graph, s,  mode, additionalData)
 End
 
 static Function/WAVE PA_GetSetWaves(DFREF dfr, variable channelNumber, variable region, [variable removeFailedPulses])
@@ -747,10 +745,7 @@ static Function PA_MarkFailedPulses(WAVE properties, WAVE/WAVE propertiesWaves, 
 	Multithread junkWave[] = SetNumberInWaveNote(propertiesWaves[p], NOTE_KEY_FAILED_PULSE_LEVEL, pa.failedPulsesLevel)
 End
 
-static Function PA_ShowPulses(win, pa, recreatePulses)
-	string win
-	STRUCT PulseAverageSettings &pa
-	variable recreatePulses
+static Function PA_ShowPulses(string win, STRUCT PulseAverageSettings &pa, variable mode, WAVE/Z additionalData)
 
 	string pulseTrace, channelTypeStr, str, graph, preExistingGraphs, key
 	variable numChannels, i, j, sweepNo, headstage, numTotalPulses, pulse, xPos, yPos
@@ -782,7 +777,7 @@ static Function PA_ShowPulses(win, pa, recreatePulses)
 		TUD_Clear(graph)
 	endfor
 
-	if(recreatePulses)
+	if(mode != POST_PLOT_CONSTANT_SWEEPS)
 		PA_GenerateAllPulseWaves(win, pa)
 	endif
 
@@ -1315,7 +1310,7 @@ Function PA_CheckProc_Common(cba) : CheckBoxControl
 
 	switch(cba.eventCode)
 		case 2: // mouse up
-			PA_Update(cba.win, recreatePulses = 0)
+			PA_Update(cba.win, POST_PLOT_CONSTANT_SWEEPS)
 			break
 	endswitch
 
@@ -1327,7 +1322,7 @@ Function PA_CheckProc_Individual(cba) : CheckBoxControl
 
 	switch(cba.eventCode)
 		case 2: // mouse up
-			PA_Update(cba.win, recreatePulses = 0)
+			PA_Update(cba.win, POST_PLOT_CONSTANT_SWEEPS)
 			break
 	endswitch
 
@@ -1339,7 +1334,7 @@ Function PA_CheckProc_Average(cba) : CheckBoxControl
 
 	switch(cba.eventCode)
 		case 2: // mouse up
-			PA_Update(cba.win, recreatePulses = 0)
+			PA_Update(cba.win, POST_PLOT_CONSTANT_SWEEPS)
 			break
 	endswitch
 
@@ -1367,7 +1362,7 @@ Function PA_SetVarProc_Common(sva) : SetVariableControl
 		case 1: // mouse up
 		case 2: // Enter key
 		case 3: // Live update
-			PA_Update(sva.win, recreatePulses = 0)
+			PA_Update(sva.win, POST_PLOT_CONSTANT_SWEEPS)
 			break
 	endswitch
 
