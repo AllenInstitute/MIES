@@ -837,8 +837,6 @@ static Function PA_ShowPulses(string win, STRUCT PulseAverageSettings &pa, STRUC
 	WAVE regions = ListToNumericWave(GetStringFromWaveNote(properties, "Regions"), ",")
 	numRegions = DimSize(regions, ROWS)
 
-	numChannels = DimSize(channels, ROWS)
-	numRegions = DimSize(regions, ROWS)
 	for(i = 0; i < numChannels; i += 1)
 		channelNumber = channels[i]
 		for(j = 0; j < numRegions; j += 1)
@@ -945,8 +943,6 @@ static Function PA_ShowPulses(string win, STRUCT PulseAverageSettings &pa, STRUC
 	// - zeroing
 	// - time alignment
 	// - averaging
-	numChannels = DimSize(channels, ROWS)
-	numRegions = DimSize(regions, ROWS)
 	for(i = 0; i < numChannels; i += 1)
 		channelNumber = channels[i]
 		for(j = 0; j < numRegions; j += 1)
@@ -973,8 +969,6 @@ static Function PA_ShowPulses(string win, STRUCT PulseAverageSettings &pa, STRUC
 		PA_AutomaticTimeAlignment(graph)
 	endif
 
-	numChannels = DimSize(channels, ROWS)
-	numRegions = DimSize(regions, ROWS)
 	for(i = 0; i < numChannels; i += 1)
 		channelNumber = channels[i]
 		for(j = 0; j < numRegions; j += 1)
