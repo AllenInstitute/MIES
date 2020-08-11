@@ -875,9 +875,12 @@ static Function PA_ShowPulses(string win, STRUCT PulseAverageSettings &pa, STRUC
 			continue
 		endif
 
-		graph = PA_GetGraph(win, pa.multipleGraphs, channelNumber, region, activeRegionCount, activeChanCount)
+		if(!pa.multipleGraphs && i == 0 || pa.multipleGraphs)
+			graph = PA_GetGraph(win, pa.multipleGraphs, channelNumber, region, activeRegionCount, activeChanCount)
+			traceCount = TUD_GetTraceCount(graph)
+		endif
+
 		[vertAxis, horizAxis] = PA_GetAxes(pa.multipleGraphs, activeRegionCount, activeChanCount)
-		traceCount = TUD_GetTraceCount(graph)
 
 		if(WhichListItem(graph, newlyCreatedGraphs) == -1)
 			RemoveTracesFromGraph(graph)
@@ -987,12 +990,14 @@ static Function PA_ShowPulses(string win, STRUCT PulseAverageSettings &pa, STRUC
 
 			activeChanCount = i + 1
 			activeRegionCount = j + 1
-			graph = PA_GetGraph(win, pa.multipleGraphs, channelNumber, region, activeRegionCount, activeChanCount)
+
+			if(!pa.multipleGraphs && i == 0 || pa.multipleGraphs)
+				graph = PA_GetGraph(win, pa.multipleGraphs, channelNumber, region, activeRegionCount, activeChanCount)
+				traceCount = TUD_GetTraceCount(graph)
+			endif
 			[vertAxis, horizAxis] = PA_GetAxes(pa.multipleGraphs, activeRegionCount, activeChanCount)
 
 			if(pa.showAverageTrace)
-				traceCount = TUD_GetTraceCount(graph)
-
 				sprintf traceName, "T%0*d%s%s", TRACE_NAME_NUM_DIGITS, traceCount, PA_AVERAGE_WAVE_PREFIX, baseName
 				traceCount += 1
 
