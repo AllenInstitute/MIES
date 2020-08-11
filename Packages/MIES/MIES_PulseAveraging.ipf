@@ -972,6 +972,11 @@ static Function PA_ShowPulses(string win, STRUCT PulseAverageSettings &pa, STRUC
 		PA_AutomaticTimeAlignment(graph)
 	endif
 
+	if(mode != POST_PLOT_CONSTANT_SWEEPS || !constantSinglePulseSettings)
+		WAVE/WAVE/Z targetForAverage, sourceForAverage
+		[targetForAverage, sourceForAverage] = PA_CalculateAllAverages(pa)
+	endif
+
 	for(i = 0; i < numChannels; i += 1)
 		channelNumber = channels[i]
 		for(j = 0; j < numRegions; j += 1)
@@ -979,14 +984,27 @@ static Function PA_ShowPulses(string win, STRUCT PulseAverageSettings &pa, STRUC
 
 			isDiagonalElement = (i == j)
 
-			WAVE/WAVE/Z setWaves = PA_GetSetWaves(pulseAverageHelperDFR, channelNumber, region, removeFailedPulses = 1)
+			if(WaveExists(targetForAverage))
+				WAVE/Z freeAverageWave = targetForAverage[i][j]
 
-			if(!WaveExists(setWaves))
-				continue
+				if(!WaveExists(freeAverageWave))
+					continue
+				endif
+
+				baseName = PA_BaseName(channelNumber, region)
+				WAVE averageWave = PA_Average(sourceForAverage[i][j], pulseAverageDFR, PA_AVERAGE_WAVE_PREFIX + baseName, \
+				                              inputAverage = freeAverageWave)
+				WaveClear freeAverageWave
+			else
+				WAVE/WAVE/Z setWaves = PA_GetSetWaves(pulseAverageHelperDFR, channelNumber, region, removeFailedPulses = 1)
+
+				if(!WaveExists(setWaves))
+					continue
+				endif
+
+				baseName = PA_BaseName(channelNumber, region)
+				WAVE averageWave = PA_Average(setWaves, pulseAverageDFR, PA_AVERAGE_WAVE_PREFIX + baseName)
 			endif
-
-			baseName = PA_BaseName(channelNumber, region)
-			WAVE averageWave = PA_Average(setWaves, pulseAverageDFR, PA_AVERAGE_WAVE_PREFIX + baseName)
 
 			activeChanCount = i + 1
 			activeRegionCount = j + 1
@@ -1030,6 +1048,43 @@ static Function PA_ShowPulses(string win, STRUCT PulseAverageSettings &pa, STRUC
 	PA_DrawScaleBars(win, pa, PA_USE_WAVE_SCALES)
 
 	PA_LayoutGraphs(win, pulseAverageHelperDFR, regions, channels, pa)
+End
+
+Function [WAVE/WAVE dest, WAVE/WAVE source] PA_CalculateAllAverages(STRUCT PulseAverageSettings &pa)
+
+	variable numChannels, numRegions, i, j, channelNumber, region, numThreads
+
+	DFREF pulseAverageHelperDFR = GetDevicePulseAverageHelperFolder(pa.dfr)
+
+	WAVE properties = GetPulseAverageProperties(pulseAverageHelperDFR)
+
+	WAVE channels = ListToNumericWave(GetStringFromWaveNote(properties, "Channels"), ",")
+	numChannels = DimSize(channels, ROWS)
+
+	WAVE regions = ListToNumericWave(GetStringFromWaveNote(properties, "Regions"), ",")
+	numRegions = DimSize(regions, ROWS)
+
+	Make/FREE/WAVE/N=(numChannels, numRegions) source, dest
+
+	for(i = 0; i < numChannels; i += 1)
+		channelNumber = channels[i]
+		for(j = 0; j < numRegions; j += 1)
+			region = regions[j]
+
+			WAVE/WAVE/Z setWaves = PA_GetSetWaves(pulseAverageHelperDFR, channelNumber, region, removeFailedPulses = 1)
+
+			if(!WaveExists(setWaves))
+				continue
+			endif
+
+			source[i][j] = setWaves
+		endfor
+	endfor
+
+	numThreads = min(numRegions * numChannels, ThreadProcessorCount)
+	Multithread/NT=(numThreads) dest[][] = MIES_fWaveAverage(source[p][q], 0, IGOR_TYPE_32BIT_FLOAT)
+
+	return [dest, source]
 End
 
 Function PA_AxisHook(s)
@@ -1285,9 +1340,13 @@ End
 /// Note: MIES_fWaveAverage() usually takes 5 times longer than CA_AveragingKey()
 ///
 /// @returns wave reference to the average wave specified by @p outputDFR and @p outputWaveName
-static Function/WAVE PA_Average(WAVE/WAVE set, DFREF outputDFR, string outputWaveName)
+static Function/WAVE PA_Average(WAVE/WAVE set, DFREF outputDFR, string outputWaveName, [WAVE inputAverage])
 
-	return CalculateAverage(set, outputDFR, outputWaveName, skipCRC = 1)
+	if(ParamIsDefault(inputAverage))
+		return CalculateAverage(set, outputDFR, outputWaveName, skipCRC = 1, writeSourcePaths = 0)
+	else
+		return CalculateAverage(set, outputDFR, outputWaveName, skipCRC = 1, writeSourcePaths = 0, inputAverage = inputAverage)
+	endif
 End
 
 static Function/WAVE PA_SmoothDeconv(input, deconvolution)
