@@ -1007,7 +1007,7 @@ static Function PA_ShowPulses(string win, STRUCT PulseAverageSettings &pa, STRUC
 				ModifyGraph/W=$graph lsize($traceName)=1.5
 
 				TUD_SetUserDataFromWaves(graph, traceName, {"traceType", "occurence", "XAXIS", "YAXIS", "DiagonalElement"}, \
-										 {"Average", "0", horizAxis, vertAxis, num2str(isDiagonalElement)})
+				                         {"Average", "0", horizAxis, vertAxis, num2str(isDiagonalElement)})
 				TUD_SetUserData(graph, traceName, "fullPath", GetWavesDataFolder(averageWave, 2))
 			endif
 
@@ -1022,7 +1022,7 @@ static Function PA_ShowPulses(string win, STRUCT PulseAverageSettings &pa, STRUC
 				ModifyGraph/W=$graph lsize($traceName)=2
 
 				TUD_SetUserDataFromWaves(graph, traceName, {"traceType", "occurence", "XAXIS", "YAXIS", "DiagonalElement"}, \
-										 {"Deconvolution", "0", horizAxis, vertAxis, num2str(isDiagonalElement)})
+				                         {"Deconvolution", "0", horizAxis, vertAxis, num2str(isDiagonalElement)})
 				TUD_SetUserData(graph, traceName, "fullPath", GetWavesDataFolder(deconv, 2))
 			endif
 		endfor
