@@ -2535,6 +2535,10 @@ Function CreateTiledChannelGraph(graph, config, sweepNo, numericalValues,  textu
 	WAVE/Z statusDAC = GetLastSetting(numericalValues, sweepNo, "DAC", DATA_ACQUISITION_MODE)
 	WAVE/Z statusADC = GetLastSetting(numericalValues, sweepNo, "ADC", DATA_ACQUISITION_MODE)
 
+	// introduced in 18e1406b (Labnotebook: Add DA/AD ChannelType, 2019-02-15)
+	WAVE/Z daChannelType = GetLastSetting(numericalValues, sweepNo, "DA ChannelType", DATA_ACQUISITION_MODE)
+	WAVE/Z adChannelType = GetLastSetting(numericalValues, sweepNo, "AD ChannelType", DATA_ACQUISITION_MODE)
+
 	MAKE/FREE/B/N=(NUM_CHANNEL_TYPES) channelTypes
 	channelTypes[0] = ITC_XOP_CHANNEL_TYPE_DAC
 	channelTypes[1] = ITC_XOP_CHANNEL_TYPE_ADC
@@ -2609,6 +2613,19 @@ Function CreateTiledChannelGraph(graph, config, sweepNo, numericalValues,  textu
 				headstage = GetRowIndex(status, val=chan)
 			else
 				headstage = NaN
+			endif
+
+			// ignore TP during DAQ channels
+			if(WaveExists(status) && IsFinite(headstage))
+				if(channelTypes[i] == ITC_XOP_CHANNEL_TYPE_DAC          \
+				   && WaveExists(daChannelType)                         \
+				   && daChannelType[headstage] != DAQ_CHANNEL_TYPE_DAQ)
+						continue
+				elseif(channelTypes[i] == ITC_XOP_CHANNEL_TYPE_ADC          \
+				       && WaveExists(adChannelType)                         \
+				       && adChannelType[headstage] != DAQ_CHANNEL_TYPE_DAQ)
+						continue
+				endif
 			endif
 
 			// number of vertically distributed
