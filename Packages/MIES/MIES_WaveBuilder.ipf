@@ -41,8 +41,10 @@ static Constant WB_IDX_ITI                      = 99
 /// @}
 
 static Constant DELTA_OPERATION_EXPLICIT  = 6
+
 /// @brief Return the stim set wave and create it permanently
 /// in the datafolder hierarchy
+///
 /// @return stimset wave ref or an invalid wave ref
 Function/Wave WB_CreateAndGetStimSet(setName)
 	string setName
