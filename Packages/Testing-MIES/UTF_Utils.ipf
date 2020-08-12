@@ -11,6 +11,38 @@ static Function TEST_CASE_BEGIN_OVERRIDE(name)
 	CA_FlushCache()
 End
 
+Function AssertionWorksWithPassingOne()
+
+	PASS()
+	ASSERT(1, "Nothing to see here")
+End
+
+Function AssertionFiresWithPassingZero()
+
+	try
+		ASSERT(0, "Kaboom")
+		FAIL()
+	catch
+		CHECK_EQUAL_VAR(V_AbortCode, -3)
+	endtry
+End
+
+Function AssertionThreadsafeWorksWithPassingOne()
+
+	PASS()
+	ASSERT_TS(1, "Nothing to see here")
+End
+
+Function AssertionThreadsafeFiresWithPassingZero()
+
+	try
+		ASSERT_TS(0, "Kaboom")
+		FAIL()
+	catch
+		CHECK(V_AbortCode >= 1)
+	endtry
+End
+
 /// RemoveAllEmptyDataFolders
 /// @{
 Function RemoveAllEmpty_init_IGNORE()

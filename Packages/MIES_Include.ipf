@@ -14,6 +14,13 @@
 #pragma IgorVersion=8.04
 #endif
 
+#if IgorVersion() >= 9.0
+#if (NumberByKey("BUILD", IgorInfo(0)) < 36145)
+#define *** Too old Igor Pro 9 version, click "Edit procedure" for instructions
+#pragma IgorVersion=9.00
+#endif
+#endif
+
 /// @file MIES_Include.ipf
 /// @brief Main include
 

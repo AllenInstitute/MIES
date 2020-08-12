@@ -169,13 +169,13 @@ threadsafe Function TS_ThreadGroupPutDFR(tgID, dfr)
 
 	string dfrName
 
-	ASSERT_TS(DataFolderExistsDFR(dfr), "ThreadGroupPutDFR: dfr does not exist")
+	ASSERT_TS(DataFolderExistsDFR(dfr), "dfr does not exist")
 
 	DFREF dfrSave = GetDataFolderDFR()
 
 	SetDataFolder NewFreeDataFolder()
 	DuplicateDataFolder/Z dfr, :
-	ASSERT_TS(!V_flag, "ThreadGroupPutDFR: Could not duplicate data folder")
+	ASSERT_TS(!V_flag, "Could not duplicate data folder")
 	dfrName = GetIndexedObjName(":", COUNTOBJECTS_DATAFOLDER, 0)
 
 	ThreadGroupPutDF tgID, $dfrName

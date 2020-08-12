@@ -145,7 +145,7 @@ Function ASSERT(var, errorMsg)
 		printf "Current sweep: [%s]\r", RemoveEnding(TextWaveToList(sweeps, ";"), ";")
 		printf "DAQ: [%s]\r", RemoveEnding(TextWaveToList(daqStates, ";"), ";")
 		printf "Testpulse: [%s]\r", RemoveEnding(TextWaveToList(tpStates, ";"), ";")
-		printf "Experiment: %s.pxp\r", GetExperimentName()
+		printf "Experiment: %s (%s)\r", GetExperimentName(), GetExperimentFileType()
 		printf "Igor Pro version: %s (%s)\r", GetIgorProVersion(), StringByKey("BUILD", IgorInfo(0))
 		print "MIES version:"
 		print miesVersionStr
@@ -161,20 +161,19 @@ End
 
 /// @brief Low overhead function to check assertions (threadsafe variant)
 ///
-/// @param var      if zero an error message is printed into the history and procedure execution is aborted,
-///                 nothing is done otherwise.
+/// @param var      if zero an error message is printed into the history and procedure
+///                 execution is aborted, nothing is done otherwise.
 /// @param errorMsg error message to output in failure case
 ///
 /// Example usage:
 /// \rst
 ///  .. code-block:: igorpro
 ///
-///		ASSERT(DataFolderExistsDFR(dfr), "MyFunc: dfr does not exist")
+///		ASSERT_TS(DataFolderExistsDFR(dfr), "dfr does not exist")
 ///		do something with dfr
 /// \endrst
 ///
-/// Unlike ASSERT() this function does not print a stacktrace or jumps into the debugger. The reasons are Igor Pro limitations.
-/// Therefore it is advised to prefix `errorMsg` with the current function name.
+/// Unlike ASSERT() this function does not jump into the debugger (Igor Pro limitation).
 ///
 /// @hidecallgraph
 /// @hidecallergraph
@@ -185,7 +184,41 @@ threadsafe Function ASSERT_TS(var, errorMsg)
 	try
 		AbortOnValue var==0, 1
 	catch
+#if IgorVersion() >= 9.0
+		// Recursion detection, if ASSERT_TS appears multiple times in StackTrace
+		if (ItemsInList(ListMatch(GetRTStackInfo(0), GetRTStackInfo(1))) > 1)
+
+			print "Double threadsafe assertion Fail encountered !"
+
+			AbortOnValue 1, 1
+		endif
+#endif
+
+		print "!!! Threadsafe assertion FAILED !!!"
+		printf "Message: \"%s\"\r", RemoveEnding(errorMsg, "\r")
+
+#ifndef AUTOMATED_TESTING
+
+		print "Please provide the following information if you contact the MIES developers:"
+		print "################################"
+		print "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
+
+#if IgorVersion() >= 9.0
+		print GetStackTrace()
+#else
+		print "stacktrace not available"
+#endif
+
+		print "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
+		printf "Time: %s\r", GetIso8601TimeStamp(localTimeZone = 1)
+		printf "Experiment: %s (%s)\r", GetExperimentName(), GetExperimentFileType()
+		printf "Igor Pro version: %s (%s)\r", GetIgorProVersion(), StringByKey("BUILD", IgorInfo(0))
+		print "################################"
+
 		printf "Assertion FAILED with message %s\r", errorMsg
+
+#endif // AUTOMATED_TESTING
+
 		AbortOnValue 1, 1
 	endtry
 End
@@ -575,7 +608,7 @@ threadsafe Function/DF createDFWithAllParents(dataFolder)
 end
 
 /// @brief Returns one if var is an integer and zero otherwise
-Function IsInteger(var)
+threadsafe Function IsInteger(var)
 	variable var
 
 	return IsFinite(var) && trunc(var) == var
@@ -1580,8 +1613,24 @@ Function/S UniqueFileOrFolder(symbPath, baseName, [suffix])
 End
 
 /// @brief Return the name of the experiment without the file suffix
-Function/S GetExperimentName()
+threadsafe Function/S GetExperimentName()
 	return IgorInfo(1)
+End
+
+/// @brief Return the experiment file type
+threadsafe Function/S GetExperimentFileType()
+
+#if IgorVersion() >= 9.0
+	return IgorInfo(11)
+#else
+	if(!cmpstr(GetExperimentName(), UNTITLED_EXPERIMENT))
+		return ""
+	else
+		// hardcoded to pxp
+		return "Packed"
+	endif
+#endif
+
 End
 
 /// @brief Return a formatted timestamp of the form `YY_MM_DD_HHMMSS`
@@ -2402,7 +2451,7 @@ threadsafe Function FuncRefIsAssigned(funcInfo)
 End
 
 /// @brief Return the seconds, including fractional part, since Igor Pro epoch (1/1/1904) in UTC time zone
-Function DateTimeInUTC()
+threadsafe Function DateTimeInUTC()
 	return DateTime - date2secs(-1, -1, -1)
 End
 
@@ -2411,7 +2460,7 @@ End
 ///                              in UTC (or local time zone depending on `localTimeZone`)
 /// @param numFracSecondsDigits  [optional, defaults to zero] Number of sub-second digits
 /// @param localTimeZone         [optional, defaults to false] Use the local time zone instead of UTC
-Function/S GetISO8601TimeStamp([secondsSinceIgorEpoch, numFracSecondsDigits, localTimeZone])
+threadsafe Function/S GetISO8601TimeStamp([secondsSinceIgorEpoch, numFracSecondsDigits, localTimeZone])
 	variable secondsSinceIgorEpoch, numFracSecondsDigits, localTimeZone
 
 	string str
@@ -2426,7 +2475,7 @@ Function/S GetISO8601TimeStamp([secondsSinceIgorEpoch, numFracSecondsDigits, loc
 	if(ParamIsDefault(numFracSecondsDigits))
 		numFracSecondsDigits = 0
 	else
-		ASSERT(IsInteger(numFracSecondsDigits) && numFracSecondsDigits >= 0, "Invalid value for numFracSecondsDigits")
+		ASSERT_TS(IsInteger(numFracSecondsDigits) && numFracSecondsDigits >= 0, "Invalid value for numFracSecondsDigits")
 	endif
 
 	if(ParamIsDefault(secondsSinceIgorEpoch))
@@ -2739,7 +2788,7 @@ Function GetArchitectureBits()
 End
 
 /// @brief Return the Igor Pro version string
-Function/S GetIgorProVersion()
+threadsafe Function/S GetIgorProVersion()
 	return StringByKey("IGORFILEVERSION", IgorInfo(3))
 End
 
@@ -3875,6 +3924,44 @@ Function/S NormalizeToEOL(str, eol)
 	return str
 End
 
+#if IgorVersion() >= 9.0
+
+/// @brief Return a nicely formatted multiline stacktrace
+threadsafe Function/S GetStackTrace([prefix])
+	string prefix
+
+	string stacktrace, entry, func, line, file, str
+	string output
+	variable i, numCallers
+
+	if(ParamIsDefault(prefix))
+		prefix = ""
+	endif
+
+	stacktrace = GetRTStackInfo(3)
+	numCallers = ItemsInList(stacktrace)
+
+	if(numCallers < 3)
+		// our caller was called directly
+		return "Stacktrace not available"
+	endif
+
+	output = prefix + "Stacktrace:\r"
+
+	for(i = 0; i < numCallers - 2; i += 1)
+		entry = StringFromList(i, stacktrace)
+		func  = StringFromList(0, entry, ",")
+		file  = StringFromList(1, entry, ",")
+		line  = StringFromList(2, entry, ",")
+		sprintf str, "%s%s(...)#L%s [%s]\r", prefix, func, line, file
+		output += str
+	endfor
+
+	return output
+End
+
+#else
+
 /// @brief Return a nicely formatted multiline stacktrace
 Function/S GetStackTrace([prefix])
 	string prefix
@@ -3914,6 +4001,8 @@ Function/S GetStackTrace([prefix])
 
 	return output
 End
+
+#endif
 
 /// @brief Stop all millisecond Igor Pro timers
 Function StopAllMSTimers()
