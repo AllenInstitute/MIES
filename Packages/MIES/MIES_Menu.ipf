@@ -83,6 +83,7 @@ End
 Function OpenAboutDialog()
 
 	string version, nb
+	variable sfactor
 	string panel = "AboutMIES"
 
 	DoWindow/F $panel
@@ -90,7 +91,8 @@ Function OpenAboutDialog()
 		return NaN
 	endif
 
-	NewPanel/N=$panel/K=1/W=(332,252,928,724) as "About MIES"
+	sfactor = ScreenResolution/96
+	NewPanel/N=$panel/K=1/W=(332 / sfactor, 252 / sfactor,928 / sfactor, 724 / sfactor) as "About MIES"
 
 	nb = "MiesVersionNB"
 	NewNotebook /F=1 /N=MiesVersionNB/FG=(FL,FT,FR,FB)/HOST=#/OPTS=3
@@ -128,8 +130,8 @@ Function OpenAboutDialog()
 	Notebook $nb text="\r"
 	Notebook $nb text="Data products:"
 	Notebook $nb text="\r"
-	NotebookAction/W=$nb name=Action5, title="", showmode=3, linkStyle=0,scaling={40,40}, procPICTName=SynPhys, ignoreErrors=1, padding={0,0,0,0,5}, commands="BrowseURL(\"https://portal.brain-map.org/explore/connectivity/synaptic-physiology\")"
-	NotebookAction/W=$nb name=Action6, title="", showmode=3, linkStyle=0,scaling={40,40}, procPICTName=CellTypes, ignoreErrors=1, padding={0,0,0,0,0}, commands="BrowseURL(\"http://celltypes.brain-map.org/\")"
+	NotebookAction/W=$nb name=Action5, title="", showmode=3, linkStyle=0, scaling={40.0 * sfactor, 40.0 * sfactor}, procPICTName=SynPhys, ignoreErrors=1, padding={0,0,0,0,5}, commands="BrowseURL(\"https://portal.brain-map.org/explore/connectivity/synaptic-physiology\")"
+	NotebookAction/W=$nb name=Action6, title="", showmode=3, linkStyle=0, scaling={40.0 * sfactor, 40.0 * sfactor}, procPICTName=CellTypes, ignoreErrors=1, padding={0,0,0,0,0}, commands="BrowseURL(\"http://celltypes.brain-map.org/\")"
 	SetActiveSubwindow ##
 EndMacro
 
