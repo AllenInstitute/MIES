@@ -3740,3 +3740,29 @@ Function LBP_Works()
 End
 
 /// @}
+
+/// GetSettingsJSONid
+/// @{
+
+Function GSJIWorks()
+
+	NVAR/Z jsonID = $GetSettingsJSONid()
+	CHECK(NVAR_Exists(jsonID))
+	CHECK(JSON_Exists(jsonID, ""))
+End
+
+Function GSJIWorksWithCorruptID()
+
+	NVAR/Z jsonID = $GetSettingsJSONid()
+	CHECK(NVAR_Exists(jsonID))
+
+	// close the JSON document to fake an invalid ID
+	JSON_Release(jsonID)
+
+	// fetching again now returns a valid ID again
+	NVAR/Z jsonID = $GetSettingsJSONid()
+	CHECK(NVAR_Exists(jsonID))
+	CHECK(JSON_Exists(jsonID, ""))
+End
+
+/// @}
