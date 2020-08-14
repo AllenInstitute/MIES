@@ -5349,3 +5349,16 @@ End
 threadsafe Function/WAVE WaveRef(WAVE/WAVE wv)
 	return wv
 End
+
+/// @brief Grep the given regular expression in the text wave
+Function/WAVE GrepTextWave(Wave/T in, string regexp)
+
+	Make/FREE/T/N=0 result
+	Grep/E=regexp in as result
+
+	if(DimSize(result, ROWS) == 0)
+		return $""
+	endif
+
+	return result
+End
