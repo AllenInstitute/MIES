@@ -794,6 +794,11 @@ static Function PA_ShowPulses(string win, STRUCT PulseAverageSettings &pa, STRUC
 	endif
 
 	if(TUD_GetTraceCount(graph) == 0) // no traces
+		// fake one graph
+		if(IsEmpty(preExistingGraphs))
+			preExistingGraphs = PA_GetGraph(win, 0, 1, 1, 1, 1)
+		endif
+
 		// clear all graphs from earlier runs
 		numEntries = ItemsInList(preExistingGraphs)
 		for(i = 0; i < numEntries; i += 1)
