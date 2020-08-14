@@ -178,7 +178,7 @@ static Function WBP_DisplaySetInPanel()
 
 	RemoveTracesFromGraph(waveBuilderGraph)
 
-	WAVE/Z stimSet = WB_GetStimSet()
+	WAVE/Z stimSet = WB_GetStimSetForWaveBuilder()
 	if(!WaveExists(stimSet))
 		return NaN
 	endif

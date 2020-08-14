@@ -41,8 +41,10 @@ static Constant WB_IDX_ITI                      = 99
 /// @}
 
 static Constant DELTA_OPERATION_EXPLICIT  = 6
+
 /// @brief Return the stim set wave and create it permanently
 /// in the datafolder hierarchy
+///
 /// @return stimset wave ref or an invalid wave ref
 Function/Wave WB_CreateAndGetStimSet(setName)
 	string setName
@@ -359,17 +361,19 @@ Function WB_GetLastModStimSet(setName)
 	return modDate(stimSet)
 End
 
+/// @brief Return the current stimset wave for the wavebuilder
+Function/WAVE WB_GetStimSetForWaveBuilder()
+	return WB_GetStimSet()
+End
+
 /// @brief Return the stim set wave
 ///
 /// As opposed to #WB_CreateAndGetStimSet this function returns a free wave only
 ///
-/// All external callers, outside the Wavebuilder, must call #WB_CreateAndGetStimSet
-/// instead of this function.
-///
 /// @param setName [optional, defaults to WaveBuilderPanel GUI settings] name of the set
 /// @return free wave with the stim set, invalid wave ref if the `WP*` parameter waves could
 /// not be found.
-Function/Wave WB_GetStimSet([setName])
+static Function/Wave WB_GetStimSet([setName])
 	string setName
 
 	variable i, numEpochs, numSweeps, numStimsets, updateEpochIDWave
