@@ -767,7 +767,13 @@ static Function PA_ShowPulses(string win, STRUCT PulseAverageSettings &pa, varia
 	endif
 
 	if(TUD_GetTraceCount(graph) == 0) // no traces
-		KillWindows(preExistingGraphs)
+		// clear all graphs from earlier runs
+		numEntries = ItemsInList(preExistingGraphs)
+		for(i = 0; i < numEntries; i += 1)
+			graph = StringFromList(i, preExistingGraphs)
+			RemoveTracesFromGraph(graph)
+			TUD_Clear(graph)
+		endfor
 		return NaN
 	endif
 
@@ -793,6 +799,13 @@ static Function PA_ShowPulses(string win, STRUCT PulseAverageSettings &pa, varia
 	numTotalPulses = GetNumberFromWaveNote(properties, NOTE_INDEX)
 
 	if(numTotalPulses == 0)
+		// clear all graphs from earlier runs
+		numEntries = ItemsInList(preExistingGraphs)
+		for(i = 0; i < numEntries; i += 1)
+			graph = StringFromList(i, preExistingGraphs)
+			RemoveTracesFromGraph(graph)
+			TUD_Clear(graph)
+		endfor
 		return NaN
 	endif
 

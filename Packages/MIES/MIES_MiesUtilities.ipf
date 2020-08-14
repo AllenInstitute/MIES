@@ -3545,10 +3545,6 @@ Function PostPlotTransformations(string win, variable mode, [WAVE/Z additionalDa
 
 	WAVE/T/Z traces = GetAllSweepTraces(graph, prefixTraces = 0)
 
-	if(!WaveExists(traces))
-		return NaN
-	endif
-
 	STRUCT PostPlotSettings pps
 	InitPostPlotSettings(graph, pps)
 
@@ -3877,7 +3873,7 @@ End
 /// @param hideSweep         are normal channel traces hidden or not
 static Function AverageWavesFromSameYAxisIfReq(graph, traces, averagingEnabled, averageDataFolder, hideSweep)
 	string graph
-	WAVE/T traces
+	WAVE/T/Z traces
 	variable averagingEnabled
 	DFREF averageDataFolder
 	variable hideSweep
@@ -3896,6 +3892,10 @@ static Function AverageWavesFromSameYAxisIfReq(graph, traces, averagingEnabled, 
 		listOfWaves = GetListOfObjects(averageDataFolder, "average.*", fullPath=1)
 		CallFunctionForEachListItem_TS(KillOrMoveToTrashPath, listOfWaves)
 		RemoveEmptyDataFolder(averageDataFolder)
+		return NaN
+	endif
+
+	if(!WaveExists(traces))
 		return NaN
 	endif
 
@@ -4097,12 +4097,12 @@ End
 static Function ZeroTracesIfReq(graph, traces, zeroTraces)
 	string graph
 	variable zeroTraces
-	WAVE/T traces
+	WAVE/T/Z traces
 
 	string trace
 	variable numTraces, i
 
-	if(!zeroTraces)
+	if(!zeroTraces || !WaveExists(traces))
 		return NaN
 	endif
 
