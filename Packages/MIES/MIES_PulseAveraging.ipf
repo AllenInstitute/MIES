@@ -428,6 +428,7 @@ static Function PA_GenerateAllPulseWaves(string win, STRUCT PulseAverageSettings
 
 	DFREF pulseAverageHelperDFR = GetDevicePulseAverageHelperFolder(pa.dfr)
 	WAVE properties = GetPulseAverageProperties(pulseAverageHelperDFR)
+	WAVE/T propertiesText = GetPulseAveragePropertiesText(pulseAverageHelperDFR)
 	WAVE/WAVE propertiesWaves = GetPulseAveragePropertiesWaves(pulseAverageHelperDFR)
 
 	channelType = ITC_XOP_CHANNEL_TYPE_ADC
@@ -483,6 +484,7 @@ static Function PA_GenerateAllPulseWaves(string win, STRUCT PulseAverageSettings
 
 			sweepNoStr = traceData[idx][%SweepNumber]
 			sweepNo = str2num(sweepNoStr)
+			experiment = traceData[idx][%Experiment]
 			channelNumberStr = traceData[idx][%channelNumber]
 			channelNumber = str2num(channelNumberStr)
 			experiment = traceData[idx][%Experiment]
@@ -542,6 +544,7 @@ static Function PA_GenerateAllPulseWaves(string win, STRUCT PulseAverageSettings
 				endif
 
 				EnsureLargeEnoughWave(properties, minimumSize = totalPulseCounter, initialValue = NaN)
+				EnsureLargeEnoughWave(propertiesText, minimumSize = totalPulseCounter)
 				EnsureLargeEnoughWave(propertiesWaves, minimumSize = totalPulseCounter)
 
 				properties[totalPulseCounter][%Sweep]                       = sweepNo
@@ -555,6 +558,8 @@ static Function PA_GenerateAllPulseWaves(string win, STRUCT PulseAverageSettings
 				properties[totalPulseCounter][%ActiveChanCount]             = activeChanCount
 				properties[totalPulseCounter][%TimeAlignmentReferencePulse] = (k == startingPulse && isDiagonalElement && newChannel == 1)
 				properties[totalPulseCounter][%LastSweep]                   = lastSweep
+
+				propertiesText[totalPulseCounter][%Experiment] = experiment
 
 				propertiesWaves[totalPulseCounter] = pulseWave
 
@@ -571,6 +576,7 @@ static Function PA_GenerateAllPulseWaves(string win, STRUCT PulseAverageSettings
 	endfor
 
 	SetNumberInWaveNote(properties, NOTE_INDEX, totalPulseCounter)
+	SetNumberInWaveNote(propertiesText, NOTE_INDEX, totalPulseCounter)
 	SetStringInWaveNote(properties, "Regions", ReplaceString(";", regionList, ","))
 	SetStringInWaveNote(properties, "Channels", ReplaceString(";", channelList, ","))
 	SetStringInWaveNote(properties, "Sweeps", ReplaceString(";", sweepList, ","))

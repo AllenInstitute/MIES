@@ -5606,6 +5606,32 @@ Function/WAVE GetPulseAverageProperties(DFREF dfr)
 	return wv
 End
 
+/// @brief Return the pulse average properties textwave
+///
+/// It is filled by PA_GenerateAllPulseWaves() and consumed by others.
+Function/WAVE GetPulseAveragePropertiesText(DFREF dfr)
+
+	variable versionOfNewWave = 1
+
+	ASSERT(DataFolderExistsDFR(dfr), "Invalid dfr")
+	WAVE/T/Z/SDFR=dfr wv = propertiesText
+
+	if(ExistsWithCorrectLayoutVersion(wv, versionOfNewWave))
+		return wv
+	elseif(WaveExists(wv))
+		// handle upgrade
+	else
+		Make/T/N=(MINIMUM_WAVE_SIZE_LARGE, 12) dfr:propertiesText/Wave=wv
+	endif
+
+	SetDimLabel COLS,  0, $"Experiment", wv
+
+	SetWaveVersion(wv, versionOfNewWave)
+	SetNumberInWaveNote(wv, NOTE_INDEX, 0)
+
+	return wv
+End
+
 /// @brief Return the pulse average properties wave with wave references
 ///
 /// Belongs to GetPulseAverageProperties() and also has the same
