@@ -195,11 +195,13 @@ End
 
 /// @brief Calculate all CRC values of the waves referenced in waveRefs
 ///
-/// @param waveRefs  wave reference wave
-/// @param crcMode   parameter to WaveCRC
-static Function/S CA_WaveCRCs(waveRefs, [crcMode])
+/// @param waveRefs                   wave reference wave
+/// @param crcMode                    [optional] parameter to WaveCRC
+/// @param includeWaveScalingAndUnits [optional] include the wave scaling and units of filled dimensions
+/// @param dims                       [optional] number of dimensions to include wave scaling and units in crc
+static Function/S CA_WaveCRCs(waveRefs, [crcMode, includeWaveScalingAndUnits, dims])
 	WAVE/WAVE waveRefs
-	variable crcMode
+	variable crcMode, includeWaveScalingAndUnits, dims
 
 	variable rows
 
@@ -207,11 +209,24 @@ static Function/S CA_WaveCRCs(waveRefs, [crcMode])
 		crcMode = 0
 	endif
 
+	if(ParamIsDefault(includeWaveScalingAndUnits))
+		includeWaveScalingAndUnits = 0
+	else
+		includeWaveScalingAndUnits = !!includeWaveScalingAndUnits
+		if(ParamIsDefault(dims))
+			dims = ROWS
+		endif
+	endif
+
 	rows = DimSize(waveRefs, ROWS)
 	ASSERT(rows > 0, "Unexpected number of entries")
 
 	Make/D/FREE/N=(rows) crc
 	MultiThread/NT=(rows < NUM_ENTRIES_FOR_MULTITHREAD) crc[] = WaveCRC(0, waveRefs[p], crcMode)
+
+	if(includeWaveScalingAndUnits)
+		MultiThread/NT=(rows < NUM_ENTRIES_FOR_MULTITHREAD) crc[] = CA_WaveScalingCRC(crc[p], waveRefs[p])
+	endif
 
 	return NumericWaveToList(crc, ";", format = "%d")
 End
