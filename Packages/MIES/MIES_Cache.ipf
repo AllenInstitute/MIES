@@ -139,7 +139,7 @@ Function/S CA_Deconv(wv, tau)
 	variable crc
 
 	crc = WaveCRC(0, wv)
-	crc = CA_WaveScalingCRC(crc, wv, ROWS)
+	crc = CA_WaveScalingCRC(crc, wv, dimension=ROWS)
 	crc = StringCRC(crc, num2str(tau))
 
 
@@ -166,18 +166,29 @@ Function/S CA_AveragingKey(waveRefs)
 	return CA_WaveCRCs(waveRefs, crcMode=2) + "Version 4"
 End
 
-/// @brief Calculate the CRC of all metadata of a dimension
-static Function CA_WaveScalingCRC(crc, wv, dimension)
-	variable crc
+/// @brief Calculate the CRC of all metadata of all or the given dimension
+threadsafe static Function CA_WaveScalingCRC(crc, wv, [dimension])
+	variable crc, dimension
 	WAVE wv
-	variable dimension
 
-	ASSERT(dimension >= ROWS && dimension <= CHUNKS, "Invalid dimension")
+	variable dims, i
 
-	crc = StringCRC(crc, num2str(DimSize(wv, dimension)))
-	crc = StringCRC(crc, num2str(DimOffset(wv, dimension)))
-	crc = StringCRC(crc, num2str(DimDelta(wv, dimension)))
-	crc = StringCRC(crc, WaveUnits(wv, dimension))
+	if(ParamIsDefault(dimension))
+		i = 0
+		dims = WaveDims(wv)
+	else
+		ASSERT_TS(dimension >= ROWS && dimension <= CHUNKS, "Invalid dimension")
+
+		i = dimension
+		dims = dimension + 1
+	endif
+
+	for(i = 0; i < dims; i += 1)
+		crc = StringCRC(crc, num2str(DimSize(wv, dimension)))
+		crc = StringCRC(crc, num2str(DimOffset(wv, dimension)))
+		crc = StringCRC(crc, num2str(DimDelta(wv, dimension)))
+		crc = StringCRC(crc, WaveUnits(wv, dimension))
+	endfor
 
 	return crc
 End
