@@ -3090,9 +3090,7 @@ Function/S NumericWaveToList(wv, sep, [format])
 	WAVE wv
 	string sep, format
 
-	string list = ""
-	string str
-	variable i, numRows
+	string list
 
 	if(ParamIsDefault(format))
 		format = "%g"
@@ -3101,11 +3099,7 @@ Function/S NumericWaveToList(wv, sep, [format])
 	ASSERT(IsNumericWave(wv), "Expected a numeric wave")
 	ASSERT(DimSize(wv, COLS) == 0, "Expected a 1D wave")
 
-	numRows = DimSize(wv, ROWS)
-	for(i = 0; i < numRows; i += 1)
-		sprintf str, format, wv[i]
-		list = AddListItem(str, list, sep, Inf)
-	endfor
+	wfprintf list, format + sep, wv
 
 	return list
 End
