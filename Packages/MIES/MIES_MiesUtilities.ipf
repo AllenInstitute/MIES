@@ -4059,6 +4059,11 @@ Function/WAVE CalculateAverage(waveRefs, averageDataFolder, averageWaveName, [sk
 
 			if(!skipCRC)
 				wvName += "_" + num2istr(GetNumberFromWaveNote(freeAverageWave, "DataCRC"))
+
+				WAVE/Z/SDFR=averageDataFolder permAverageWave = $wvName
+				if(WaveExists(permAverageWave))
+					return permAverageWave
+				endif
 			endif
 
 			Duplicate/O freeAverageWave, averageDataFolder:$wvName/WAVE=permAverageWave
