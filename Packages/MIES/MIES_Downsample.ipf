@@ -484,6 +484,9 @@ Function CreateDownsamplePanel()
 	GroupBox group1,pos={11,43},size={252,137}
 	GroupBox group2,pos={11,190},size={253,32}
 
+	NVAR JSONid = $GetSettingsJSONid()
+	PS_InitCoordinates(JSONid, panel, "downsample", addHook=0)
+
 	UpdatePanel(panel)
 	UpdatePopupMenuWindowFunction(panel)
 End
@@ -491,8 +494,14 @@ End
 Function DownsampleWindowHook(s)
 	STRUCT WMWinHookStruct &s
 
+	string win
+
 	switch(s.eventCode)
 		case EVENT_KILL_WINDOW_HOOK:
+			win = s.winName
+
+			NVAR JSONid = $GetSettingsJSONid()
+			PS_StoreWindowCoordinate(JSONid, win)
 
 			KillOrMoveToTrash(wv=GetDownsampleListWave())
 			KillOrMoveToTrash(wv=GetDownsampleDataRefWave())

@@ -54,6 +54,9 @@ Function WBP_CreateWaveBuilderPanel()
 	Execute "WaveBuilder()"
 	ListBox listbox_combineEpochMap, listWave=GetWBEpochCombineList()
 	AddVersionToPanel(panel, WAVEBUILDER_PANEL_VERSION)
+
+	NVAR JSONid = $GetSettingsJSONid()
+	PS_InitCoordinates(JSONid, panel, "wavebuilder")
 End
 
 Function WBP_StartupSettings()

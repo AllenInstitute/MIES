@@ -135,6 +135,8 @@ static Function/S PA_GetGraph(mainWin, multipleGraphs, channelNumber, region, ac
 				endif
 			endfor
 		endif
+		NVAR JSONid = $GetSettingsJSONid()
+		PS_InitCoordinates(JSONid, win, win)
 	endif
 
 	return win

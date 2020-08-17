@@ -2219,6 +2219,7 @@ Function AB_OpenAnalysisBrowser()
 	NVAR JSONid = $GetSettingsJSONid()
 	directory = JSON_GetString(jsonID, "/analysisbrowser/directory")
 	SetSetVariableString(panel, "setvar_baseFolder", directory)
+	PS_InitCoordinates(JSONid, panel, "analysisbrowser")
 End
 
 Window AnalysisBrowser() : Panel

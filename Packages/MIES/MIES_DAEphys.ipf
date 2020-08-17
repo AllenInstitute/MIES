@@ -737,6 +737,10 @@ Function DAP_WindowHook(s)
 	switch(s.eventCode)
 		case EVENT_KILL_WINDOW_HOOK:
 			panelTitle = s.winName
+
+			NVAR JSONid = $GetSettingsJSONid()
+			PS_StoreWindowCoordinate(JSONid, panelTitle)
+
 			DAP_UnlockDevice(panelTitle)
 			return 1
 		case 22: // mouse wheel
@@ -4320,6 +4324,9 @@ Function/S DAP_CreateDAEphysPanel()
 	panel = GetCurrentWindow()
 	SCOPE_OpenScopeWindow(panel)
 	AddVersionToPanel(panel, DA_EPHYS_PANEL_VERSION)
+
+	NVAR JSONid = $GetSettingsJSONid()
+	PS_InitCoordinates(JSONid, panel, "daephys")
 
 	return panel
 End
