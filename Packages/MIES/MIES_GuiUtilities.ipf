@@ -1421,8 +1421,7 @@ Function SearchForInvalidControlProcs(win, [warnOnEmpty])
 		result = result || SearchForInvalidControlProcs(subwindow, warnOnEmpty = warnOnEmpty)
 	endfor
 
-	// we still have old style GUI control procedures so we can not restrict it to one parameter
-	funcList    = FunctionList("*", ";", "KIND:2")
+	funcList    = FunctionList("*", ";", "NPARAMS:1,KIND:2")
 	controlList = ControlNameList(win)
 	numEntries  = ItemsInList(controlList)
 
