@@ -1744,43 +1744,41 @@ Function WBP_MainWindowHook(s)
 			break
 #endif
 		case 5:
+			win = s.winName
 
-		win = s.winName
-
-		if(cmpstr(win, WaveBuilderGraph))
-			break
-		endif
-
-		GetAxis/Q/W=$WaveBuilderGraph bottom
-		if(V_Flag)
-			break
-		endif
-
-		loc = AxisValFromPixel(WaveBuilderGraph, "bottom", s.mouseLoc.h)
-
-		if(loc < V_min || loc > V_max)
-			break
-		endif
-
-		GetMarquee/W=$WaveBuilderGraph/Z
-		if(V_flag)
-			break
-		endif
-
-		WAVE epochID = GetEpochID()
-		numEntries = DimSize(epochID, ROWS)
-		for(i = 0; i < numEntries; i += 1)
-			if(epochID[i][%timeBegin] < loc && epochID[i][%timeEnd] > loc)
-
-				if(GetSetVariable(panel, "setvar_WaveBuilder_CurrentEpoch") == i)
-					return 0
-				endif
-
-				PGC_SetAndActivateControl(panel, "setvar_WaveBuilder_CurrentEpoch", val = i)
-				return 1
+			if(cmpstr(win, WaveBuilderGraph))
+				break
 			endif
-		endfor
 
+			GetAxis/Q/W=$WaveBuilderGraph bottom
+			if(V_Flag)
+				break
+			endif
+
+			loc = AxisValFromPixel(WaveBuilderGraph, "bottom", s.mouseLoc.h)
+
+			if(loc < V_min || loc > V_max)
+				break
+			endif
+
+			GetMarquee/W=$WaveBuilderGraph/Z
+			if(V_flag)
+				break
+			endif
+
+			WAVE epochID = GetEpochID()
+			numEntries = DimSize(epochID, ROWS)
+			for(i = 0; i < numEntries; i += 1)
+				if(epochID[i][%timeBegin] < loc && epochID[i][%timeEnd] > loc)
+
+					if(GetSetVariable(panel, "setvar_WaveBuilder_CurrentEpoch") == i)
+						return 0
+					endif
+
+					PGC_SetAndActivateControl(panel, "setvar_WaveBuilder_CurrentEpoch", val = i)
+					return 1
+				endif
+			endfor
 		break
 	endswitch
 
