@@ -53,6 +53,11 @@ Function DB_ResetAndStoreCurrentDBPanel()
 		return NaN
 	endif
 
+	// allow an already used panel to be used again
+	if(!HasPanelLatestVersion(panelTitle, DATA_SWEEP_BROWSER_PANEL_VERSION))
+		AddVersionToPanel(panelTitle, DATA_SWEEP_BROWSER_PANEL_VERSION)
+	endif
+
 	bsPanel = BSP_GetPanel(panelTitle)
 	scPanel = BSP_GetSweepControlsPanel(panelTitle)
 	shPanel = DB_GetSettingsHistoryPanel(panelTitle)
