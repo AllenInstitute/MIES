@@ -227,14 +227,10 @@ End
 ///
 /// @hidecallgraph
 /// @hidecallergraph
-Function windowExists(win)
+Function WindowExists(win)
 	string win
 
-	if(isNull(win) || WinType(win) == 0)
-		return 0
-	endif
-
-	return 1
+	return WinType(win) != 0
 End
 
 /// @brief Alternative implementation for WaveList/VariableList/etc. which honours a dfref and thus
@@ -3094,9 +3090,7 @@ Function/S NumericWaveToList(wv, sep, [format])
 	WAVE wv
 	string sep, format
 
-	string list = ""
-	string str
-	variable i, numRows
+	string list
 
 	if(ParamIsDefault(format))
 		format = "%g"
@@ -3105,11 +3099,7 @@ Function/S NumericWaveToList(wv, sep, [format])
 	ASSERT(IsNumericWave(wv), "Expected a numeric wave")
 	ASSERT(DimSize(wv, COLS) == 0, "Expected a 1D wave")
 
-	numRows = DimSize(wv, ROWS)
-	for(i = 0; i < numRows; i += 1)
-		sprintf str, format, wv[i]
-		list = AddListItem(str, list, sep, Inf)
-	endfor
+	wfprintf list, format + sep, wv
 
 	return list
 End
@@ -5340,3 +5330,35 @@ threadsafe Function [variable minimum, variable maximum] WaveMinAndMax(WAVE wv)
 End
 
 #endif
+
+/// @brief Helper function to be able to index waves stored in wave reference
+/// waves in wave assignment statements.
+///
+/// \rst
+/// .. code-block:: igorpro
+///
+/// Make/FREE data1 = p
+/// Make/FREE data2 = p^2
+/// Make/FREE/WAVE source = {data1, data2}
+///
+/// Make/FREE dest
+/// dest[] = WaveRef(source[0])[p] + WaveRef(source[1])[p]
+///
+/// \endrst
+///
+threadsafe Function/WAVE WaveRef(WAVE/WAVE wv)
+	return wv
+End
+
+/// @brief Grep the given regular expression in the text wave
+Function/WAVE GrepTextWave(Wave/T in, string regexp)
+
+	Make/FREE/T/N=0 result
+	Grep/E=regexp in as result
+
+	if(DimSize(result, ROWS) == 0)
+		return $""
+	endif
+
+	return result
+End

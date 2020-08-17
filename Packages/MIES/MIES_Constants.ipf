@@ -585,10 +585,9 @@ Constant HARDWARE_DAC_EXTERNAL_TRIGGER = 0x1
 /// @}
 
 /// Used to upgrade the GuiStateWave as well as the DA Ephys panel
-Constant DA_EPHYS_PANEL_VERSION     = 49
-Constant DATABROWSER_PANEL_VERSION  = 21
-Constant SWEEPBROWSER_PANEL_VERSION = 7
-Constant WAVEBUILDER_PANEL_VERSION  = 8
+Constant DA_EPHYS_PANEL_VERSION           = 49
+Constant DATA_SWEEP_BROWSER_PANEL_VERSION = 22
+Constant WAVEBUILDER_PANEL_VERSION         = 8
 
 /// Version of the labnotebooks (numerical and textual)
 ///
@@ -1308,3 +1307,17 @@ Constant TRACE_NAME_NUM_DIGITS = 6
 
 /// Space used between numbers and their units
 StrConstant NUMBER_UNIT_SPACE = "\u2006"
+
+/// @name Incremental update modes for PostPlotTransformations()
+/// @anchor PostPlotUpdateModes
+///
+/// @{
+
+Constant POST_PLOT_ADDED_SWEEPS = 0x1    ///< The only change: Some sweeps were added
+Constant POST_PLOT_REMOVED_SWEEPS = 0x2  ///< The only change: Some sweeps were removed
+Constant POST_PLOT_CONSTANT_SWEEPS = 0x4 ///< The displayed data in the databrowser stayed *constant* but some settings changed
+Constant POST_PLOT_FULL_UPDATE = 0x8     ///< Forces a complete update from scratch, use that if nothing else fits
+
+/// @}
+
+Constant PA_SETTINGS_STRUCT_VERSION = 1

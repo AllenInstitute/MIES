@@ -290,7 +290,7 @@ Function OVS_ChangeSweepSelectionState(win, newState, [sweepNo, index])
 	endif
 
 	UpdateSweepInGraph(win, index)
-	PostPlotTransformations(win)
+	PostPlotTransformations(win, newState ? POST_PLOT_ADDED_SWEEPS : POST_PLOT_REMOVED_SWEEPS, additionalData = {index})
 End
 
 /// checks if OVS is active.
@@ -327,7 +327,7 @@ static Function OVS_AddToIgnoreList(win, headstage, [sweepNo, index])
 
 	listboxWave[index][%headstages] = AddListItem(num2str(headstage), listboxWave[index][%headstages], ";", inf)
 	UpdateSweepInGraph(win, index)
-	PostPlotTransformations(win)
+	PostPlotTransformations(win, POST_PLOT_FULL_UPDATE)
 End
 
 /// @brief Parse the ignore list of the given sweep.
@@ -644,6 +644,7 @@ static Function OVS_EndIncrementalUpdate(string win, WAVE/WAVE updateHandle)
 
 	variable newSize, i, displayedBefore, displayedAfter, needsPostProcessing
 	variable editableAfter, editableBefore, changedHeadstages
+	variable updatedSweeps, addedSweeps, removedSweeps, mode
 	string headstageBefore, headstageAfter, msg
 
 	if(GetNumberFromWaveNote(updateHandle, OVS_FULL_UPDATE_NOTE) == 1)
@@ -674,6 +675,9 @@ static Function OVS_EndIncrementalUpdate(string win, WAVE/WAVE updateHandle)
 	newSize = max(DimSize(listBoxWaveBefore, ROWS), DimSize(listBoxWaveAfter, ROWS))
 
 	Redimension/N=(newSize, -1) listBoxWaveBefore, listSelWaveBefore, listBoxWaveAfter, listSelWaveAfter
+
+	Make/FREE/N=(newSize) addedIndizes = NaN
+	Make/FREE/N=(newSize) removedIndizes = NaN
 
 	// now we have the list of changed sweeps
 	// so let's figure out what to do
@@ -706,12 +710,15 @@ static Function OVS_EndIncrementalUpdate(string win, WAVE/WAVE updateHandle)
 		elseif(displayedBefore && displayedAfter && changedHeadstages)
 			// needs just an update
 			needsPostProcessing += 1
+			updatedSweeps += 1
 			UpdateSweepInGraph(win, i)
 		elseif(displayedBefore && !displayedAfter)
 			needsPostProcessing += 1
+			removedIndizes[removedSweeps++] = i
 			RemoveSweepFromGraph(win, i)
 		elseif(!displayedBefore && displayedAfter)
 			needsPostProcessing += 1
+			addedIndizes[addedSweeps++] = i
 			AddSweepToGraph(win, i)
 		else
 			ASSERT(0, "Impossible case")
@@ -719,7 +726,20 @@ static Function OVS_EndIncrementalUpdate(string win, WAVE/WAVE updateHandle)
 	endfor
 
 	if(needsPostProcessing)
-		PostPlotTransformations(win)
+		if(updatedSweeps)
+			PostPlotTransformations(win, POST_PLOT_FULL_UPDATE)
+		else
+			if(removedSweeps == 0)
+				Redimension/N=(addedSweeps) addedIndizes
+				PostPlotTransformations(win, POST_PLOT_ADDED_SWEEPS, additionalData=addedIndizes)
+			elseif(addedSweeps == 0)
+				mode = POST_PLOT_REMOVED_SWEEPS
+				Redimension/N=(removedSweeps) removedIndizes
+				PostPlotTransformations(win, POST_PLOT_REMOVED_SWEEPS, additionalData=removedIndizes)
+			else
+				PostPlotTransformations(win, POST_PLOT_FULL_UPDATE)
+			endif
+		endif
 	endif
 End
 
@@ -727,28 +747,33 @@ Function OVS_MainListBoxProc(lba) : ListBoxControl
 	STRUCT WMListboxAction &lba
 
 	string win
+	variable index
 
 	switch(lba.eventCode)
 		case 6: //begin edit
 			win = lba.win
-			OVS_HighlightSweep(win, lba.row)
+			index = lba.row
+			OVS_HighlightSweep(win, index)
 			break
 		case 7:  // end edit
 			win = lba.win
+			index = lba.row
 			OVS_HighlightSweep(win, NaN)
 			if(lba.selWave[lba.row] & LISTBOX_CHECKBOX_SELECTED)
-				UpdateSweepInGraph(win, lba.row)
-				PostPlotTransformations(win)
+				UpdateSweepInGraph(win, index)
+				PostPlotTransformations(win, POST_PLOT_FULL_UPDATE)
 			endif
 			break
 		case 13: // checkbox clicked
 			win = lba.win
+			index = lba.row
 			if(lba.selWave[lba.row] & LISTBOX_CHECKBOX_SELECTED)
-				AddSweepToGraph(win, lba.row)
+				AddSweepToGraph(win, index)
+				PostPlotTransformations(win, POST_PLOT_ADDED_SWEEPS, additionalData={index})
 			else
-				RemoveSweepFromGraph(win, lba.row)
+				RemoveSweepFromGraph(win, index)
+				PostPlotTransformations(win, POST_PLOT_REMOVED_SWEEPS, additionalData={index})
 			endif
-			PostPlotTransformations(win)
 			break
 	endswitch
 

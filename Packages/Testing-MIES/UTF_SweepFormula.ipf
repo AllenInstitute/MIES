@@ -10,7 +10,7 @@ Function/S CreateFakeSweepBrowser_IGNORE()
 	Display
 	win = S_name
 	DFREF dfr = GetDataFolderDFR()
-	AddVersionToPanel(win, SWEEPBROWSER_PANEL_VERSION)
+	AddVersionToPanel(win, DATA_SWEEP_BROWSER_PANEL_VERSION)
 	BSP_SetFolder(win, dfr, MIES_BSP_PANEL_FOLDER)
 	BSP_SetSweepBrowser(win)
 

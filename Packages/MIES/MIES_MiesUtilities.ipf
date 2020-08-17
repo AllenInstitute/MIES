@@ -3516,18 +3516,34 @@ End
 /// Needs to be called after adding/removing/updating sweeps via
 /// AddSweepToGraph(), RemoveSweepFromGraph(), UpdateSweepInGraph().
 ///
-/// @param win graph with sweep traces
-Function PostPlotTransformations(string win)
+/// @param win  graph with sweep traces
+/// @param mode update mode, one of @ref PostPlotUpdateModes
+/// @param additionalData [optional, defaults to invalid wave reference] additional data for subsequent users.
+///                        Currently supported:
+///                        - POST_PLOT_REMOVED_SWEEPS -> OVS indizes of the removed sweep
+///                        - POST_PLOT_ADDED_SWEEPS   -> OVS indizes of the added sweep
+///                        Use OVS_GetSweepAndExperiment() to convert an index into a sweep/experiment pair.
+Function PostPlotTransformations(string win, variable mode, [WAVE/Z additionalData])
 	STRUCT TiledGraphSettings tgs
 	string graph
+
+	switch(mode)
+		case POST_PLOT_ADDED_SWEEPS:
+		case POST_PLOT_REMOVED_SWEEPS:
+			ASSERT(!ParamIsDefault(additionalData), "Missing optional additionalData")
+			break
+		case POST_PLOT_FULL_UPDATE:
+		case POST_PLOT_CONSTANT_SWEEPS:
+			ASSERT(ParamIsDefault(additionalData), "Not supported optional additionalData")
+			WAVE/Z additionalData = $""
+			break
+		default:
+			ASSERT(0, "Invalid mode")
+	endswitch
 
 	graph = GetMainWindow(win)
 
 	WAVE/T/Z traces = GetAllSweepTraces(graph, prefixTraces = 0)
-
-	if(!WaveExists(traces))
-		return NaN
-	endif
 
 	STRUCT PostPlotSettings pps
 	InitPostPlotSettings(graph, pps)
@@ -3537,7 +3553,13 @@ Function PostPlotTransformations(string win)
 
 	AverageWavesFromSameYAxisIfReq(graph, traces, pps.averageTraces, pps.averageDataFolder, pps.hideSweep)
 	AR_HighlightArtefactsEntry(graph)
-	PA_Update(graph)
+
+	if(ParamIsDefault(additionalData))
+		PA_Update(graph, mode)
+	else
+		PA_Update(graph, mode, additionalData = additionalData)
+	endif
+
 	BSP_ScaleAxes(graph)
 
 	[tgs] = BSP_GatherTiledGraphSettings(graph)
@@ -3851,7 +3873,7 @@ End
 /// @param hideSweep         are normal channel traces hidden or not
 static Function AverageWavesFromSameYAxisIfReq(graph, traces, averagingEnabled, averageDataFolder, hideSweep)
 	string graph
-	WAVE/T traces
+	WAVE/T/Z traces
 	variable averagingEnabled
 	DFREF averageDataFolder
 	variable hideSweep
@@ -3870,6 +3892,10 @@ static Function AverageWavesFromSameYAxisIfReq(graph, traces, averagingEnabled, 
 		listOfWaves = GetListOfObjects(averageDataFolder, "average.*", fullPath=1)
 		CallFunctionForEachListItem_TS(KillOrMoveToTrashPath, listOfWaves)
 		RemoveEmptyDataFolder(averageDataFolder)
+		return NaN
+	endif
+
+	if(!WaveExists(traces))
 		return NaN
 	endif
 
@@ -3962,7 +3988,8 @@ static Function AverageWavesFromSameYAxisIfReq(graph, traces, averagingEnabled, 
 		endif
 		WaveClear rangeStart, rangeStop
 
-		WAVE averageWave = CalculateAverage(listOfWaves, averageDataFolder, averageWaveName)
+		WAVE/WAVE wavesToAverage = ListToWaveRefWave(listOfWaves)
+		WAVE averageWave = CalculateAverage(wavesToAverage, averageDataFolder, averageWaveName)
 
 		if(WaveListHasSameWaveNames(listOfHeadstages, headstage)&& hideSweep)
 			GetTraceColor(str2num(headstage), red, green, blue)
@@ -3998,82 +4025,89 @@ End
 /// - The average waves are cached
 /// - References to existing average waves are returned in case they already exist
 ///
-/// @param listOfWaves       list of 1D waves to average
+/// @param waveRefs          waves to average in a wave reference wave
 /// @param averageDataFolder folder where the data is to be stored
 /// @param averageWaveName   base name of the averaged data
 /// @param skipCRC           [optional, defaults to false] Add the average wave CRC as suffix to its name
+/// @param writeSourcePaths  [optional, defaults to true] Write the full paths of the source waves into the average wave note
+/// @param inputAverage      [optional, defaults to invalid wave ref] Override the average calculation and use the given
+///                          wave as result. This is relevant for callers which want to leverage `MultiThread` statements
+///                          together with `MIES_fWaveAverage`.
 ///
 /// @return wave reference to the average wave
-Function/WAVE CalculateAverage(listOfWaves, averageDataFolder, averageWaveName, [skipCRC])
-	string listOfWaves
+Function/WAVE CalculateAverage(waveRefs, averageDataFolder, averageWaveName, [skipCRC, writeSourcePaths, inputAverage])
+	WAVE/WAVE waveRefs
 	DFREF averageDataFolder
 	string averageWaveName
-	variable skipCRC
+	variable skipCRC, writeSourcePaths
+	WAVE inputAverage
 
-	variable ret, crc
+	variable crc
 	string key, wvName, dataUnit
 
 	skipCRC = ParamIsDefault(skipCRC) ? 0 : !!skipCRC
+	writeSourcePaths = ParamIsDefault(writeSourcePaths) ? 0 : !!writeSourcePaths
 
-	WAVE waveRefs = ListToWaveRefWave(listOfWaves, 1)
 	key = CA_AveragingKey(waveRefs)
-
-	WAVE/Z freeAverageWave = CA_TryFetchingEntryFromCache(key)
-	if(WaveExists(freeAverageWave)) // found in the cache
-		wvName = averageWaveName
-		if(!skipCRC)
-			wvName += "_" + num2istr(GetNumberFromWaveNote(freeAverageWave, "DataCRC"))
-		endif
-
-		WAVE/Z/SDFR=averageDataFolder permAverageWave = $wvName
-		if(!WaveExists(permAverageWave))
-			MoveWave freeAverageWave, averageDataFolder:$wvName
-		else
-			Duplicate/O freeAverageWave averageDataFolder:$wvName
-		endif
-
-		WAVE/SDFR=averageDataFolder permAverageWave = $wvName
-		return permAverageWave
-	endif
-
-	ret = MIES_fWaveAverage(listOfWaves, "", 0, 0, GetDataFolder(1, averageDataFolder) + averageWaveName, "")
-	ASSERT(ClearRTError() == 0, "Unexpected RTE")
-	ASSERT(ret != -1, "Wave averaging failed")
-
-	WAVE/SDFR=averageDataFolder averageWave = $averageWaveName
-
-	dataUnit = WaveUnits($StringFromList(0, listOfWaves), -1)
-	SetScale d, 0, 0, dataUnit, averageWave
 
 	wvName = averageWaveName
 
-	if(!skipCRC)
-		crc = WaveCRC(0, averageWave)
-		wvName += "_" + num2istr(crc)
+	if(ParamIsDefault(inputAverage))
 
-		WAVE/Z/SDFR=averageDataFolder averageWaveToDelete = $wvName
-		KillOrMoveToTrash(wv=averageWaveToDelete)
-		MoveWave averageWave, averageDataFolder:$wvName
-		SetNumberInWaveNote(averageWave, "DataCRC", crc)
+		WAVE/Z freeAverageWave = CA_TryFetchingEntryFromCache(key, options=CA_OPTS_NO_DUPLICATE)
+		if(WaveExists(freeAverageWave)) // found in the cache
+
+			if(!skipCRC)
+				wvName += "_" + num2istr(GetNumberFromWaveNote(freeAverageWave, "DataCRC"))
+
+				WAVE/Z/SDFR=averageDataFolder permAverageWave = $wvName
+				if(WaveExists(permAverageWave))
+					return permAverageWave
+				endif
+			endif
+
+			Duplicate/O freeAverageWave, averageDataFolder:$wvName/WAVE=permAverageWave
+
+			return permAverageWave
+		endif
+
+		WAVE/Z freeAverageWave = MIES_fWaveAverage(waveRefs, 1, IGOR_TYPE_64BIT_FLOAT)
+		ASSERT(ClearRTError() == 0, "Unexpected RTE")
+		ASSERT(WaveExists(freeAverageWave), "Wave averaging failed")
+	else
+		WAVE freeAverageWave = inputAverage
 	endif
 
-	AddEntryIntoWaveNoteAsList(averageWave, "SourceWavesForAverage", str=ReplaceString(";", listOfWaves, "|"))
-	SetNumberInWaveNote(averageWave, "WaveMaximum", WaveMax(averageWave), format = "%.15f")
-	CA_StoreEntryIntoCache(key, averageWave)
+	dataUnit = WaveUnits(waveRefs[0], -1)
+	SetScale d, 0, 0, dataUnit, freeAverageWave
 
-	return averageWave
+	if(!skipCRC)
+		crc = WaveCRC(0, freeAverageWave)
+		wvName += "_" + num2istr(crc)
+		SetNumberInWaveNote(freeAverageWave, "DataCRC", crc)
+	endif
+
+	if(writeSourcePaths)
+		AddEntryIntoWaveNoteAsList(freeAverageWave, "SourceWavesForAverage", str=ReplaceString(";", WaveRefWaveToList(waveRefs, 0), "|"))
+	endif
+	SetNumberInWaveNote(freeAverageWave, "WaveMaximum", WaveMax(freeAverageWave), format = "%.15f")
+
+	Duplicate/O freeAverageWave, averageDataFolder:$wvName/WAVE=permAverageWave
+	CA_StoreEntryIntoCache(key, freeAverageWave, options=CA_OPTS_NO_DUPLICATE)
+
+	return permAverageWave
 End
 
 /// @brief Zero all given traces
 static Function ZeroTracesIfReq(graph, traces, zeroTraces)
 	string graph
 	variable zeroTraces
-	WAVE/T traces
+	WAVE/T/Z traces
 
 	string trace
 	variable numTraces, i
 
-	if(!zeroTraces)
+	if(!zeroTraces || !WaveExists(traces))
 		return NaN
 	endif
 
@@ -5444,18 +5478,23 @@ End
 ///
 /// @param win panel window as string
 /// @returns numeric panel version greater 0 and -1 if no version is present
+///          or -2 if the windows does not exist
 Function GetPanelVersion(win)
 	string win
 
 	variable version
 
-	ASSERT(windowExists(win), "Non existent window")
+	if(!WindowExists(win))
+		return -2
+	endif
 
 	version = str2numSafe(GetUserData(win, "", "panelVersion"))
 	version = abs(version)
+
 	if(IsNaN(version))
-		version = -1
+		return -1
 	endif
+
 	return version
 End
 
@@ -6473,7 +6512,7 @@ Function RemoveSweepFromGraph(string win, variable index)
 
 	graph = GetMainWindow(win)
 
-	if(BSP_MainPanelNeedsUpdate(graph))
+	if(!HasPanelLatestVersion(graph, DATA_SWEEP_BROWSER_PANEL_VERSION))
 		DoAbortNow("Can not display data. The panel is too old to be usable. Please close it and open a new one.")
 	endif
 
@@ -6509,7 +6548,7 @@ End
 /// @param index overlay sweeps listbox index
 Function AddSweepToGraph(string win, variable index)
 
-	if(BSP_MainPanelNeedsUpdate(win))
+	if(!HasPanelLatestVersion(win, DATA_SWEEP_BROWSER_PANEL_VERSION))
 		DoAbortNow("Can not display data. The panel is too old to be usable. Please close it and open a new one.")
 	endif
 

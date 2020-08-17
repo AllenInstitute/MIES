@@ -139,7 +139,7 @@ Function/S CA_Deconv(wv, tau)
 	variable crc
 
 	crc = WaveCRC(0, wv)
-	crc = CA_WaveScalingCRC(crc, wv, ROWS)
+	crc = CA_WaveScalingCRC(crc, wv, dimension=ROWS)
 	crc = StringCRC(crc, num2str(tau))
 
 
@@ -163,32 +163,45 @@ End
 Function/S CA_AveragingKey(waveRefs)
 	WAVE/WAVE waveRefs
 
-	return CA_WaveCRCs(waveRefs, crcMode=2) + "Version 4"
+	return CA_WaveCRCs(waveRefs, includeWaveScalingAndUnits=1, dims=ROWS) + "Version 5"
 End
 
-/// @brief Calculate the CRC of all metadata of a dimension
-static Function CA_WaveScalingCRC(crc, wv, dimension)
-	variable crc
+/// @brief Calculate the CRC of all metadata of all or the given dimension
+threadsafe static Function CA_WaveScalingCRC(crc, wv, [dimension])
+	variable crc, dimension
 	WAVE wv
-	variable dimension
 
-	ASSERT(dimension >= ROWS && dimension <= CHUNKS, "Invalid dimension")
+	variable dims, i
 
-	crc = StringCRC(crc, num2str(DimSize(wv, dimension)))
-	crc = StringCRC(crc, num2str(DimOffset(wv, dimension)))
-	crc = StringCRC(crc, num2str(DimDelta(wv, dimension)))
-	crc = StringCRC(crc, WaveUnits(wv, dimension))
+	if(ParamIsDefault(dimension))
+		i = 0
+		dims = WaveDims(wv)
+	else
+		ASSERT_TS(dimension >= ROWS && dimension <= CHUNKS, "Invalid dimension")
+
+		i = dimension
+		dims = dimension + 1
+	endif
+
+	for(i = 0; i < dims; i += 1)
+		crc = StringCRC(crc, num2str(DimSize(wv, dimension)))
+		crc = StringCRC(crc, num2str(DimOffset(wv, dimension)))
+		crc = StringCRC(crc, num2str(DimDelta(wv, dimension)))
+		crc = StringCRC(crc, WaveUnits(wv, dimension))
+	endfor
 
 	return crc
 End
 
 /// @brief Calculate all CRC values of the waves referenced in waveRefs
 ///
-/// @param waveRefs  wave reference wave
-/// @param crcMode   parameter to WaveCRC
-static Function/S CA_WaveCRCs(waveRefs, [crcMode])
+/// @param waveRefs                   wave reference wave
+/// @param crcMode                    [optional] parameter to WaveCRC
+/// @param includeWaveScalingAndUnits [optional] include the wave scaling and units of filled dimensions
+/// @param dims                       [optional] number of dimensions to include wave scaling and units in crc
+static Function/S CA_WaveCRCs(waveRefs, [crcMode, includeWaveScalingAndUnits, dims])
 	WAVE/WAVE waveRefs
-	variable crcMode
+	variable crcMode, includeWaveScalingAndUnits, dims
 
 	variable rows
 
@@ -196,15 +209,23 @@ static Function/S CA_WaveCRCs(waveRefs, [crcMode])
 		crcMode = 0
 	endif
 
+	if(ParamIsDefault(includeWaveScalingAndUnits))
+		includeWaveScalingAndUnits = 0
+	else
+		includeWaveScalingAndUnits = !!includeWaveScalingAndUnits
+		if(ParamIsDefault(dims))
+			dims = ROWS
+		endif
+	endif
+
 	rows = DimSize(waveRefs, ROWS)
 	ASSERT(rows > 0, "Unexpected number of entries")
 
-	if(rows < NUM_ENTRIES_FOR_MULTITHREAD)
-		Make/D/FREE/N=(rows) crc = WaveCRC(0, waveRefs[p], crcMode)
-	else
+	Make/D/FREE/N=(rows) crc
+	MultiThread/NT=(rows < NUM_ENTRIES_FOR_MULTITHREAD) crc[] = WaveCRC(0, waveRefs[p], crcMode)
 
-		Make/D/FREE/N=(rows) crc
-		MultiThread crc[] = WaveCRC(0, waveRefs[p], crcMode)
+	if(includeWaveScalingAndUnits)
+		MultiThread/NT=(rows < NUM_ENTRIES_FOR_MULTITHREAD) crc[] = CA_WaveScalingCRC(crc[p], waveRefs[p])
 	endif
 
 	return NumericWaveToList(crc, ";", format = "%d")

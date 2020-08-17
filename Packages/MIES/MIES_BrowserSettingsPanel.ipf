@@ -101,19 +101,12 @@ Function BSP_UnHideSettingsPanel(mainPanel)
 
 	string bsPanel
 
-	mainPanel = GetMainWindow(mainPanel)
-	ASSERT(windowExists(mainPanel), "HOST panel does not exist")
-
-	if(BSP_MainPanelNeedsUpdate(mainPanel))
-		Abort "Can not display data. The main panel is too old to be usable. Please close it and open a new one."
+	if(!HasPanelLatestVersion(mainPanel, DATA_SWEEP_BROWSER_PANEL_VERSION))
+		DoAbortNow("The main panel is too old to be usable. Please close it and open a new one.")
 	endif
 
 	bsPanel = BSP_GetPanel(mainPanel)
-	if(BSP_PanelNeedsUpdate(mainPanel))
-		Abort "The Browser Settings panel is too old to be usable. Please close main panel and open a new one."
-	endif
 
-	ASSERT(windowExists(bsPanel),"BrowserSettings panel does not exist")
 	SetWindow $bsPanel hide=0, needUpdate=1
 End
 
@@ -325,12 +318,11 @@ Function/DF BSP_GetFolder(win, MIES_BSP_FOLDER_TYPE)
 
 	string mainPanel
 
-	if(BSP_MainPanelNeedsUpdate(win))
+	if(!HasPanelLatestVersion(win, DATA_SWEEP_BROWSER_PANEL_VERSION))
 		DoAbortNow("The main panel is too old to be usable. Please close it and open a new one.")
 	endif
 
 	mainPanel = GetMainWindow(win)
-	ASSERT(WindowExists(mainPanel), "specified panel does not exist.")
 
 	DFREF dfr = $GetUserData(mainPanel, "", MIES_BSP_FOLDER_TYPE)
 	ASSERT(DataFolderExistsDFR(dfr), "DataFolder does not exist. Probably check device assignment.")
@@ -465,51 +457,6 @@ Function BSP_HasBoundDevice(win)
 	string device = BSP_GetDevice(win)
 
 	return !BSP_IsDataBrowser(win) || !(IsEmpty(device) || !cmpstr(device, NONE))
-End
-
-/// @brief get the selected headstage from the slider position
-///
-/// if the slider is at position -1, all headstages are selected
-/// this equals to dDAQ checkbox beeing deactivated
-///
-/// @param win 	name of external panel or main window
-/// @returns the headstage number if active and -1 if the headstage slider was not found or is deactivated
-Function BSP_GetDDAQ(win)
-	string win
-
-	string bsPanel, ctrl
-
-	ctrl = "slider_BrowserSettings_dDAQ"
-	bsPanel = BSP_GetPanel(win)
-
-	if(!ControlExists(bsPanel, ctrl))
-		return -1
-	endif
-
-	if(!BSP_DDAQisActive(win))
-		return -1
-	endif
-
-	return GetSliderPositionIndex(bsPanel, ctrl)
-End
-
-/// @brief get the status of the dDAQ control
-///
-/// @param win 	name of external panel or main window
-/// @returns the status of the checkbox control "dDAQ" in the BrowserSettings Panel
-static Function BSP_DDAQisActive(win)
-	string win
-
-	string bsPanel, ctrl
-
-	ctrl = "check_BrowserSettings_dDAQ"
-	bsPanel = BSP_GetPanel(win)
-
-	if(!ControlExists(bsPanel, ctrl))
-		return 0
-	endif
-
-	return GetCheckboxState(bsPanel, ctrl)
 End
 
 /// @brief set the initial state of the enable/disable buttons
@@ -665,7 +612,7 @@ Function BSP_CheckBoxProc_PerPulseAver(cba) : CheckBoxControl
 	switch(cba.eventCode)
 		case 2: // mouse up
 			mainPanel = GetMainWindow(cba.win)
-			PA_Update(mainPanel)
+			PA_Update(mainPanel, POST_PLOT_FULL_UPDATE)
 			break
 	endswitch
 
@@ -769,7 +716,7 @@ Function BSP_DoTimeAlignment(ba) : ButtonControl
 				return NaN
 			endif
 
-			PostPlotTransformations(graph)
+			PostPlotTransformations(graph, POST_PLOT_FULL_UPDATE)
 			break
 	endswitch
 
@@ -846,7 +793,7 @@ Function BSP_UpdateSweepControls(win, ctrl, firstSweep, lastSweep)
 	graph   = GetMainWindow(win)
 	scPanel = BSP_GetSweepControlsPanel(graph)
 
-	if(BSP_MainPanelNeedsUpdate(graph))
+	if(!HasPanelLatestVersion(graph, DATA_SWEEP_BROWSER_PANEL_VERSION))
 		DoAbortNow("The main panel is too old to be usable. Please close it and open a new one.")
 	endif
 
@@ -870,46 +817,6 @@ Function BSP_UpdateSweepControls(win, ctrl, firstSweep, lastSweep)
 	return newSweep
 End
 
-/// @brief check the DataBrowser or SweepBrowser panel if it has the required version
-///
-/// @param win 		name of external panel or main window
-/// @return 0 if panel has latest version and 1 if update is required
-Function BSP_MainPanelNeedsUpdate(win)
-	string win
-
-	variable panelVersion, version
-	string mainPanel
-
-	mainPanel = GetMainWindow(win)
-	panelVersion = GetPanelVersion(mainPanel)
-	if(BSP_IsDataBrowser(mainPanel))
-		version = DATABROWSER_PANEL_VERSION
-	else
-		version = SWEEPBROWSER_PANEL_VERSION
-	endif
-
-	return panelVersion < version
-End
-
-/// @brief check the BrowserSettings Panel if it has the required version
-///
-/// @param win 	name of external panel or main window
-/// @return 0 if panel has latest version and 1 if update is required
-static Function BSP_PanelNeedsUpdate(win)
-	string win
-
-	string bsPanel
-	variable version
-
-	bsPanel = BSP_GetPanel(win)
-	if(!WindowExists(bsPanel))
-		return 0
-	endif
-
-	version = GetPanelVersion(bsPanel)
-	return version < BROWSERSETTINGS_PANEL_VERSION
-End
-
 /// @brief check if the specified setting is activated
 ///
 /// @param win 			name of external panel or main window
@@ -922,12 +829,10 @@ Function BSP_IsActive(win, elementID)
 	string bsPanel, control
 
 	bsPanel = BSP_GetPanel(win)
-	if(!WindowExists(bsPanel))
-		return 0
-	endif
 
-	// return inactive if panel is outdated
-	if(BSP_MainPanelNeedsUpdate(win) || BSP_PanelNeedsUpdate(win))
+	// return inactive if panel is outdated or does not exist
+	if(!HasPanelLatestVersion(win, DATA_SWEEP_BROWSER_PANEL_VERSION))
+		DoAbortNow("The main panel is too old to be usable. Please close it and open a new one.")
 		return 0
 	endif
 
@@ -1154,7 +1059,7 @@ Function BSP_CheckProc_ChangedSetting(cba) : CheckBoxControl
 			graph   = GetMainWindow(cba.win)
 			bsPanel = BSP_GetPanel(graph)
 
-			if(BSP_MainPanelNeedsUpdate(graph))
+			if(!HasPanelLatestVersion(graph, DATA_SWEEP_BROWSER_PANEL_VERSION))
 				DoAbortNow("The main panel is too old to be usable. Please close it and open a new one.")
 			endif
 
