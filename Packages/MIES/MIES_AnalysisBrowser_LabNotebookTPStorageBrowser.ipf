@@ -48,6 +48,9 @@ Function LBN_OpenLabnotebookBrowser()
 
 	Execute panel + "()"
 
+	NVAR JSONid = $GetSettingsJSONid()
+	PS_InitCoordinates(JSONid, panel, "labnotebookbrowser")
+
 	SetPopupMenuIndex(leftPanel, "popup_select_experiment", 0)
 	SetPopupMenuIndex(leftPanel, "popup_select_device", 0)
 	SetPopupMenuIndex(leftPanel, "popup_LBNumericalKeys", 0)
@@ -255,6 +258,9 @@ Function LBN_OpenTPStorageBrowser()
 	endif
 
 	Execute panel + "()"
+
+	NVAR JSONid = $GetSettingsJSONid()
+	PS_InitCoordinates(JSONid, panel, "tpstoragebrowser")
 
 	DoUpdate/W=$leftPanel
 	SetPopupMenuIndex(leftPanel, "popup_select_experiment", 0)

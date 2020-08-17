@@ -955,6 +955,10 @@ Function DB_SweepBrowserWindowHook(s)
 		case 2: // Kill
 
 			win = s.winName
+
+			NVAR JSONid = $GetSettingsJSONid()
+			PS_StoreWindowCoordinate(JSONid, win)
+
 			if(!BSP_HasBoundDevice(win))
 				break
 			endif

@@ -192,6 +192,9 @@ Function BSP_DynamicStartupSettings(mainPanel)
 	SetWindow $bsPanel, hook(main)=BSP_ClosePanelHook
 	AddVersionToPanel(bsPanel, BROWSERSETTINGS_PANEL_VERSION)
 
+	NVAR JSONid = $GetSettingsJSONid()
+	PS_InitCoordinates(JSONid, mainPanel, "datasweepbrowser", addHook=0)
+
 	PopupMenu popup_overlaySweeps_select, win=$bsPanel, value= #("OVS_GetSweepSelectionChoices(\"" + bsPanel + "\")")
 
 	if(BSP_HasBoundDevice(mainPanel))

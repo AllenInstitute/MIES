@@ -1032,6 +1032,8 @@ Function SF_FormulaPlotter(graph, formula, [dfr])
 
 	if(!WindowExists(win))
 		Display/N=$win as win
+		NVAR JSONid = $GetSettingsJSONid()
+		PS_InitCoordinates(JSONid, win, "sweepformula")
 		win = S_name
 	endif
 

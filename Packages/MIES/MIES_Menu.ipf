@@ -56,6 +56,7 @@ Menu "Mies Panels"
 		"Output Cache statistics"                  , /Q, CA_OutputCacheStatistics()
 		"Show Diagnostics (crash dumps) directory" , /Q, ShowDiagnosticsDirectory()
 		"Upload crash dumps"                       , /Q, UploadCrashDumps()
+		"Clear package settings"                   , /Q, ClearPackageSettings()
 	End
 End
 
@@ -190,4 +191,12 @@ Function CreateIssueOnGithub()
 	sprintf url, "https://github.com/AllenInstitute/MIES/issues/new?title=%s&body=%s", URLEncode(title), URLEncode(body)
 
 	BrowseURL(url)
+End
+
+Function ClearPackageSettings()
+	NVAR JSONid = $GetSettingsJSONid()
+	JSON_Release(JSONId)
+
+	JSONid = GenerateSettingsDefaults()
+	PS_WriteSettings("MIES", JSONid)
 End
