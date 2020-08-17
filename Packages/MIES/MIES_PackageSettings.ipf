@@ -54,14 +54,14 @@ Function PS_WriteSettings(package, JSONid)
 	SaveTextFile(JSON_Dump(JSONid, indent=2), filepath)
 End
 
-// @brief Return the absolute path to the settings folder for `package`
+/// @brief Return the absolute path to the settings folder for `package`
 static Function/S PS_GetSettingsFolder(package)
 	string package
 
 	return SpecialDirPath("Igor Preferences", 0, 0, 1) + "Packages:" + CleanupName(package, 0)
 End
 
-// @brief Return the absolute path to the JSON settings file for `package`
+/// @brief Return the absolute path to the JSON settings file for `package`
 static Function/S PS_GetSettingsFile(package)
 	string package
 
