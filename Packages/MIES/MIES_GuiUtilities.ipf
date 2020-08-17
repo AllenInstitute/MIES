@@ -1394,7 +1394,7 @@ Function SearchForInvalidControlProcs(win, [warnOnEmpty])
 	variable warnOnEmpty
 
 	string controlList, control, controlProc
-	string subTypeStr
+	string subTypeStr, helpEntry
 	variable result, numEntries, i, subType, controlType
 	string funcList, subwindowList, subwindow
 
@@ -1433,6 +1433,12 @@ Function SearchForInvalidControlProcs(win, [warnOnEmpty])
 
 		if(controlType == CONTROL_TYPE_VALDISPLAY || controlType == CONTROL_TYPE_GROUPBOX)
 			continue
+		endif
+
+		helpEntry = GetValueFromRecMacro("help", S_recreation)
+
+		if(IsEmpty(helpEntry))
+			printf "SearchForInvalidControlProcs: Panel \"%s\" has the control \"%s\" which does not have a help entry.\r", win, control
 		endif
 
 		controlProc = GetValueFromRecMacro(REC_MACRO_PROCEDURE, S_recreation)
