@@ -71,7 +71,7 @@ End
 ///
 /// We also invalidate the stored json ID, so that on the next access
 /// it is read again.
-static Function PS_SerializeSettings()
+static Function IH_SerializeSettings()
 	NVAR JSONid = $GetSettingsJSONid()
 
 	try
@@ -135,7 +135,7 @@ static Function BeforeExperimentSaveHook(rN, fileName, path, type, creator, kind
 	endif
 
 	DAP_SerializeAllCommentNBs()
-	PS_SerializeSettings()
+	IH_SerializeSettings()
 
 	IH_KillTemporaries()
 #if !defined(IGOR64)
@@ -166,7 +166,7 @@ static Function IH_Cleanup()
 		IH_KillTemporaries(); AbortOnRTE
 		IH_KillStimSets(); AbortOnRTE
 		CA_FlushCache(); AbortOnRTE
-		PS_SerializeSettings(); AbortOnRTE
+		IH_SerializeSettings(); AbortOnRTE
 
 		DFREF dfrNWB = GetNWBFolder()
 		KilLVariables/Z dfrNWB:histRefNumber
