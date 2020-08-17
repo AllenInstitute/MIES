@@ -76,6 +76,7 @@ static Function PS_SerializeSettings()
 
 	try
 		ClearRTError()
+		PS_StoreWindowCoordinates(JSONid); AbortOnRTE
 		PS_WriteSettings("MIES", JSONid); AbortOnRTE
 	catch
 		ClearRTError()

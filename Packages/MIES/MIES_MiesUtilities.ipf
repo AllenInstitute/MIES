@@ -6351,16 +6351,28 @@ End
 /// \rst
 /// .. code-block:: json
 ///
-/// 	{
-/// 	  "diagnostics": {
-/// 	    "last upload": "2020-03-05T13:43:32Z"
-/// 	  },
-/// 	  "version": 1
-/// 	}
+///     {
+///       "diagnostics": {
+///         "last upload": "2020-03-05T13:43:32Z"
+///       },
+///       "version": 1
+///     }
 ///
-///	\endrst
+/// \endrst
 ///
 /// Explanation:
+///
+/// Window coordinates are stored as
+///
+/// \rst
+/// .. code-block:: json
+///
+/// {"coordinates" : {"left" : 123, "top" : 456, "bottom" 789, "right" : 101112}}
+///
+/// \endrst
+///
+/// Entries:
+///
 /// - "version": Major version number to track breaking changes
 /// - "diagnostics": Groups settings related to diagnostics and crash dump handling
 /// - "diagnostics/last upload": ISO8601 timestamp when the last successfull
@@ -6368,6 +6380,7 @@ End
 ///                              when no crash dumps have been uploadad.
 /// - "analysisbrowser": Groups settings related to the Analysisbrowser
 /// - "analysisbrowser/directory": The directory initially opened for browsing existing NWB/PXP files
+/// - "*[/*]/coordinates": window coordinates
 ///
 /// @return JSONid
 ///
@@ -6533,4 +6546,22 @@ Function UpdateSweepInGraph(string win, variable index)
 
 	RestoreCursors(graph, cursorInfos)
 	SetAxesRanges(graph, axesRanges)
+End
+
+/// @brief Generic window hooks for storing the window
+///        coordinates in the JSON settings file.
+Function StoreWindowCoordinatesHook(s)
+	STRUCT WMWinHookStruct &s
+
+	string win
+
+	switch(s.eventCode)
+		case 2: // kill
+			win = s.winName
+			NVAR JSONid = $GetSettingsJSONid()
+			PS_StoreWindowCoordinate(JSONid, win)
+			break
+	endswitch
+
+	return 0
 End
