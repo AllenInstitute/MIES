@@ -1428,13 +1428,14 @@ Function SearchForInvalidControlProcs(win, [warnOnEmpty])
 	for(i = 0; i < numEntries; i += 1)
 		control = StringFromList(i, controlList)
 
-		controlType = GetControlType(win, control)
+		ControlInfo/W=$win $control
+		controlType = abs(V_flag)
 
 		if(controlType == CONTROL_TYPE_VALDISPLAY || controlType == CONTROL_TYPE_GROUPBOX)
 			continue
 		endif
 
-		controlProc = GetControlProcedure(win, control)
+		controlProc = GetValueFromRecMacro(REC_MACRO_PROCEDURE, S_recreation)
 
 		if(IsEmpty(controlProc))
 			if(warnOnEmpty)
