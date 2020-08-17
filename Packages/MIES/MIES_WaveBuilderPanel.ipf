@@ -1686,6 +1686,8 @@ Function WBP_MainWindowHook(s)
 
 	string win
 	variable numEntries, i, loc
+	string controls, ctrl, name
+	variable row, found
 
 	switch(s.eventCode)
 		case 2:
@@ -1693,11 +1695,10 @@ Function WBP_MainWindowHook(s)
 			break
 #ifdef DEBUGGING_ENABLED
 		case 4:
-			string controls, ctrl, name
-			variable row, found
+			win = s.winName
 
 			if(DP_DebuggingEnabledForFile(GetFile(FunctionPath(""))))
-				controls = ControlNameList(s.winName)
+				controls = ControlNameList(win)
 				numEntries = ItemsInList(controls)
 				for(i = 0; i < numEntries; i += 1)
 					ctrl = StringFromList(i, controls)
