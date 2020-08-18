@@ -11,7 +11,7 @@
 
 Window DataBrowser() : Graph
 	PauseUpdate; Silent 1		// building window...
-	Display /W=(362.25,200.75,795,509)/K=1  as "DataBrowser"
+	Display /W=(366.75,136.25,799.5,445.25)/K=1  as "DataBrowser"
 	Button button_BSP_open,pos={3.00,3.00},size={24.00,24.00},disable=1,proc=DB_ButtonProc_Panel,title="<<"
 	Button button_BSP_open,help={"Open Side Panel"}
 	Button button_BSP_open,userdata(ResizeControlsInfo)= A"!!,>M!!#8L!!#=#!!#=#z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
@@ -27,6 +27,8 @@ Window DataBrowser() : Graph
 	SetWindow kwTopWin,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzzzzzzzzzzzzzzz"
 	SetWindow kwTopWin,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzzzzzzzzz!!!"
 	SetWindow kwTopWin,userdata(ResizeControlsHookStash)=  "ResizeControls#ResizeControlsHook"
+	SetWindow kwTopWin,userdata(JSONSettings_StoreCoordinates)=  "1"
+	SetWindow kwTopWin,userdata(JSONSettings_WindowName)=  "datasweepbrowser"
 	Execute/Q/Z "SetWindow kwTopWin sizeLimit={324,231,inf,inf}" // sizeLimit requires Igor 7 or later
 	NewPanel/HOST=#/EXT=2/W=(0,0,580,66)  as "Sweep Control"
 	Button button_SweepControl_NextSweep,pos={333.00,0.00},size={150.00,36.00},proc=BSP_ButtonProc_ChangeSweep,title="Next  \\W649"
@@ -63,7 +65,6 @@ Window DataBrowser() : Graph
 	SetActiveSubwindow ##
 	NewPanel/HOST=#/EXT=1/W=(399,0,0,414)  as " "
 	ModifyPanel fixedSize=0
-	SetDrawLayer UserBack
 	GroupBox group_properties_sweepFormula,pos={5.00,85.00},size={388.00,328.00},disable=1
 	GroupBox group_properties_sweepFormula,userdata(tabnum)=  "5"
 	GroupBox group_properties_sweepFormula,userdata(tabcontrol)=  "Settings"
@@ -76,7 +77,7 @@ Window DataBrowser() : Graph
 	GroupBox group_calc,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	GroupBox group_calc,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
 	TabControl Settings,pos={0.00,0.00},size={400.00,21.00},proc=ACL_DisplayTab
-	TabControl Settings,userdata(currenttab)=  "0"
+	TabControl Settings,help={"Main navigation tab"},userdata(currenttab)=  "0"
 	TabControl Settings,userdata(finalhook)=  "DB_MainTabControlFinal"
 	TabControl Settings,userdata(ResizeControlsInfo)= A"!!*'\"z!!#C-!!#<`z!!#](Aon\"Qzzzzzzzzzzzzzz!!#o2B4uAeBE3-fz"
 	TabControl Settings,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
@@ -181,6 +182,7 @@ Window DataBrowser() : Graph
 	GroupBox group_enable_pulse,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	GroupBox group_enable_pulse,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
 	CheckBox check_channelSel_DA_0,pos={121.00,60.00},size={22.00,15.00},disable=1,proc=BSP_CheckProc_ChangedSetting,title="0"
+	CheckBox check_channelSel_DA_0,help={"Toggle the DA channel display"}
 	CheckBox check_channelSel_DA_0,userdata(tabnum)=  "2"
 	CheckBox check_channelSel_DA_0,userdata(tabcontrol)=  "Settings"
 	CheckBox check_channelSel_DA_0,userdata(ResizeControlsInfo)= A"!!,FW!!#?)!!#<h!!#<(z!!#`-A7TLfzzzzzzzzzzzzzz!!#r+D.OhkBk2=!z"
@@ -189,6 +191,7 @@ Window DataBrowser() : Graph
 	CheckBox check_channelSel_DA_0,userdata(ControlArray)=  "DA Channel selection"
 	CheckBox check_channelSel_DA_0,userdata(ControlArrayIndex)=  "0",value= 1
 	CheckBox check_channelSel_DA_1,pos={121.00,81.00},size={22.00,15.00},disable=1,proc=BSP_CheckProc_ChangedSetting,title="1"
+	CheckBox check_channelSel_DA_1,help={"Toggle the DA channel display"}
 	CheckBox check_channelSel_DA_1,userdata(tabnum)=  "2"
 	CheckBox check_channelSel_DA_1,userdata(tabcontrol)=  "Settings"
 	CheckBox check_channelSel_DA_1,userdata(ResizeControlsInfo)= A"!!,FW!!#?[!!#<h!!#<(z!!#`-A7TLfzzzzzzzzzzzzzz!!#r+D.OhkBk2=!z"
@@ -197,6 +200,7 @@ Window DataBrowser() : Graph
 	CheckBox check_channelSel_DA_1,userdata(ControlArray)=  "DA Channel selection"
 	CheckBox check_channelSel_DA_1,userdata(ControlArrayIndex)=  "1",value= 1
 	CheckBox check_channelSel_DA_2,pos={121.00,102.00},size={22.00,15.00},disable=1,proc=BSP_CheckProc_ChangedSetting,title="2"
+	CheckBox check_channelSel_DA_2,help={"Toggle the DA channel display"}
 	CheckBox check_channelSel_DA_2,userdata(tabnum)=  "2"
 	CheckBox check_channelSel_DA_2,userdata(tabcontrol)=  "Settings"
 	CheckBox check_channelSel_DA_2,userdata(ResizeControlsInfo)= A"!!,FW!!#@0!!#<h!!#<(z!!#`-A7TLfzzzzzzzzzzzzzz!!#r+D.OhkBk2=!z"
@@ -205,6 +209,7 @@ Window DataBrowser() : Graph
 	CheckBox check_channelSel_DA_2,userdata(ControlArray)=  "DA Channel selection"
 	CheckBox check_channelSel_DA_2,userdata(ControlArrayIndex)=  "2",value= 1
 	CheckBox check_channelSel_DA_3,pos={121.00,123.00},size={22.00,15.00},disable=1,proc=BSP_CheckProc_ChangedSetting,title="3"
+	CheckBox check_channelSel_DA_3,help={"Toggle the DA channel display"}
 	CheckBox check_channelSel_DA_3,userdata(tabnum)=  "2"
 	CheckBox check_channelSel_DA_3,userdata(tabcontrol)=  "Settings"
 	CheckBox check_channelSel_DA_3,userdata(ResizeControlsInfo)= A"!!,FW!!#@Z!!#<h!!#<(z!!#`-A7TLfzzzzzzzzzzzzzz!!#r+D.OhkBk2=!z"
@@ -213,6 +218,7 @@ Window DataBrowser() : Graph
 	CheckBox check_channelSel_DA_3,userdata(ControlArray)=  "DA Channel selection"
 	CheckBox check_channelSel_DA_3,userdata(ControlArrayIndex)=  "3",value= 1
 	CheckBox check_channelSel_DA_4,pos={121.00,144.00},size={22.00,15.00},disable=1,proc=BSP_CheckProc_ChangedSetting,title="4"
+	CheckBox check_channelSel_DA_4,help={"Toggle the DA channel display"}
 	CheckBox check_channelSel_DA_4,userdata(tabnum)=  "2"
 	CheckBox check_channelSel_DA_4,userdata(tabcontrol)=  "Settings"
 	CheckBox check_channelSel_DA_4,userdata(ResizeControlsInfo)= A"!!,FW!!#@t!!#<h!!#<(z!!#`-A7TLfzzzzzzzzzzzzzz!!#r+D.OhkBk2=!z"
@@ -221,6 +227,7 @@ Window DataBrowser() : Graph
 	CheckBox check_channelSel_DA_4,userdata(ControlArray)=  "DA Channel selection"
 	CheckBox check_channelSel_DA_4,userdata(ControlArrayIndex)=  "4",value= 1
 	CheckBox check_channelSel_DA_5,pos={121.00,165.00},size={22.00,15.00},disable=1,proc=BSP_CheckProc_ChangedSetting,title="5"
+	CheckBox check_channelSel_DA_5,help={"Toggle the DA channel display"}
 	CheckBox check_channelSel_DA_5,userdata(tabnum)=  "2"
 	CheckBox check_channelSel_DA_5,userdata(tabcontrol)=  "Settings"
 	CheckBox check_channelSel_DA_5,userdata(ResizeControlsInfo)= A"!!,FW!!#A4!!#<h!!#<(z!!#`-A7TLfzzzzzzzzzzzzzz!!#r+D.OhkBk2=!z"
@@ -229,6 +236,7 @@ Window DataBrowser() : Graph
 	CheckBox check_channelSel_DA_5,userdata(ControlArray)=  "DA Channel selection"
 	CheckBox check_channelSel_DA_5,userdata(ControlArrayIndex)=  "5",value= 1
 	CheckBox check_channelSel_DA_6,pos={121.00,186.00},size={22.00,15.00},disable=1,proc=BSP_CheckProc_ChangedSetting,title="6"
+	CheckBox check_channelSel_DA_6,help={"Toggle the DA channel display"}
 	CheckBox check_channelSel_DA_6,userdata(tabnum)=  "2"
 	CheckBox check_channelSel_DA_6,userdata(tabcontrol)=  "Settings"
 	CheckBox check_channelSel_DA_6,userdata(ResizeControlsInfo)= A"!!,FW!!#AI!!#<h!!#<(z!!#`-A7TLfzzzzzzzzzzzzzz!!#r+D.OhkBk2=!z"
@@ -237,6 +245,7 @@ Window DataBrowser() : Graph
 	CheckBox check_channelSel_DA_6,userdata(ControlArray)=  "DA Channel selection"
 	CheckBox check_channelSel_DA_6,userdata(ControlArrayIndex)=  "6",value= 1
 	CheckBox check_channelSel_DA_7,pos={121.00,207.00},size={22.00,15.00},disable=1,proc=BSP_CheckProc_ChangedSetting,title="7"
+	CheckBox check_channelSel_DA_7,help={"Toggle the DA channel display"}
 	CheckBox check_channelSel_DA_7,userdata(tabnum)=  "2"
 	CheckBox check_channelSel_DA_7,userdata(tabcontrol)=  "Settings"
 	CheckBox check_channelSel_DA_7,userdata(ResizeControlsInfo)= A"!!,FW!!#A^!!#<h!!#<(z!!#`-A7TLfzzzzzzzzzzzzzz!!#r+D.OhkBk2=!z"
@@ -251,6 +260,7 @@ Window DataBrowser() : Graph
 	GroupBox group_channelSel_HEADSTAGE,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	GroupBox group_channelSel_HEADSTAGE,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
 	CheckBox check_channelSel_HEADSTAGE_0,pos={58.00,60.00},size={22.00,15.00},disable=1,proc=BSP_CheckProc_ChangedSetting,title="0"
+	CheckBox check_channelSel_HEADSTAGE_0,help={"Toggle the headstage display"}
 	CheckBox check_channelSel_HEADSTAGE_0,userdata(tabnum)=  "2"
 	CheckBox check_channelSel_HEADSTAGE_0,userdata(tabcontrol)=  "Settings"
 	CheckBox check_channelSel_HEADSTAGE_0,userdata(ResizeControlsInfo)= A"!!,E\"!!#?)!!#<h!!#<(z!!#`-A7TLfzzzzzzzzzzzzzz!!#r+D.OhkBk2=!z"
@@ -260,6 +270,7 @@ Window DataBrowser() : Graph
 	CheckBox check_channelSel_HEADSTAGE_0,userdata(ControlArray)=  "Headstage Channel selection"
 	CheckBox check_channelSel_HEADSTAGE_0,value= 1
 	CheckBox check_channelSel_HEADSTAGE_1,pos={58.00,81.00},size={22.00,15.00},disable=1,proc=BSP_CheckProc_ChangedSetting,title="1"
+	CheckBox check_channelSel_HEADSTAGE_1,help={"Toggle the headstage display"}
 	CheckBox check_channelSel_HEADSTAGE_1,userdata(tabnum)=  "2"
 	CheckBox check_channelSel_HEADSTAGE_1,userdata(tabcontrol)=  "Settings"
 	CheckBox check_channelSel_HEADSTAGE_1,userdata(ResizeControlsInfo)= A"!!,E\"!!#?[!!#<h!!#<(z!!#`-A7TLfzzzzzzzzzzzzzz!!#r+D.OhkBk2=!z"
@@ -269,6 +280,7 @@ Window DataBrowser() : Graph
 	CheckBox check_channelSel_HEADSTAGE_1,userdata(ControlArray)=  "Headstage Channel selection"
 	CheckBox check_channelSel_HEADSTAGE_1,value= 1
 	CheckBox check_channelSel_HEADSTAGE_2,pos={58.00,102.00},size={22.00,15.00},disable=1,proc=BSP_CheckProc_ChangedSetting,title="2"
+	CheckBox check_channelSel_HEADSTAGE_2,help={"Toggle the headstage display"}
 	CheckBox check_channelSel_HEADSTAGE_2,userdata(tabnum)=  "2"
 	CheckBox check_channelSel_HEADSTAGE_2,userdata(tabcontrol)=  "Settings"
 	CheckBox check_channelSel_HEADSTAGE_2,userdata(ResizeControlsInfo)= A"!!,E\"!!#@0!!#<h!!#<(z!!#`-A7TLfzzzzzzzzzzzzzz!!#r+D.OhkBk2=!z"
@@ -278,6 +290,7 @@ Window DataBrowser() : Graph
 	CheckBox check_channelSel_HEADSTAGE_2,userdata(ControlArray)=  "Headstage Channel selection"
 	CheckBox check_channelSel_HEADSTAGE_2,value= 1
 	CheckBox check_channelSel_HEADSTAGE_3,pos={58.00,123.00},size={22.00,15.00},disable=1,proc=BSP_CheckProc_ChangedSetting,title="3"
+	CheckBox check_channelSel_HEADSTAGE_3,help={"Toggle the headstage display"}
 	CheckBox check_channelSel_HEADSTAGE_3,userdata(tabnum)=  "2"
 	CheckBox check_channelSel_HEADSTAGE_3,userdata(tabcontrol)=  "Settings"
 	CheckBox check_channelSel_HEADSTAGE_3,userdata(ResizeControlsInfo)= A"!!,E\"!!#@Z!!#<h!!#<(z!!#`-A7TLfzzzzzzzzzzzzzz!!#r+D.OhkBk2=!z"
@@ -287,6 +300,7 @@ Window DataBrowser() : Graph
 	CheckBox check_channelSel_HEADSTAGE_3,userdata(ControlArray)=  "Headstage Channel selection"
 	CheckBox check_channelSel_HEADSTAGE_3,value= 1
 	CheckBox check_channelSel_HEADSTAGE_4,pos={58.00,144.00},size={22.00,15.00},disable=1,proc=BSP_CheckProc_ChangedSetting,title="4"
+	CheckBox check_channelSel_HEADSTAGE_4,help={"Toggle the headstage display"}
 	CheckBox check_channelSel_HEADSTAGE_4,userdata(tabnum)=  "2"
 	CheckBox check_channelSel_HEADSTAGE_4,userdata(tabcontrol)=  "Settings"
 	CheckBox check_channelSel_HEADSTAGE_4,userdata(ResizeControlsInfo)= A"!!,E\"!!#@t!!#<h!!#<(z!!#`-A7TLfzzzzzzzzzzzzzz!!#r+D.OhkBk2=!z"
@@ -296,6 +310,7 @@ Window DataBrowser() : Graph
 	CheckBox check_channelSel_HEADSTAGE_4,userdata(ControlArray)=  "Headstage Channel selection"
 	CheckBox check_channelSel_HEADSTAGE_4,value= 1
 	CheckBox check_channelSel_HEADSTAGE_5,pos={58.00,165.00},size={22.00,15.00},disable=1,proc=BSP_CheckProc_ChangedSetting,title="5"
+	CheckBox check_channelSel_HEADSTAGE_5,help={"Toggle the headstage display"}
 	CheckBox check_channelSel_HEADSTAGE_5,userdata(tabnum)=  "2"
 	CheckBox check_channelSel_HEADSTAGE_5,userdata(tabcontrol)=  "Settings"
 	CheckBox check_channelSel_HEADSTAGE_5,userdata(ResizeControlsInfo)= A"!!,E\"!!#A4!!#<h!!#<(z!!#`-A7TLfzzzzzzzzzzzzzz!!#r+D.OhkBk2=!z"
@@ -305,6 +320,7 @@ Window DataBrowser() : Graph
 	CheckBox check_channelSel_HEADSTAGE_5,userdata(ControlArray)=  "Headstage Channel selection"
 	CheckBox check_channelSel_HEADSTAGE_5,value= 1
 	CheckBox check_channelSel_HEADSTAGE_6,pos={58.00,186.00},size={22.00,15.00},disable=1,proc=BSP_CheckProc_ChangedSetting,title="6"
+	CheckBox check_channelSel_HEADSTAGE_6,help={"Toggle the headstage display"}
 	CheckBox check_channelSel_HEADSTAGE_6,userdata(tabnum)=  "2"
 	CheckBox check_channelSel_HEADSTAGE_6,userdata(tabcontrol)=  "Settings"
 	CheckBox check_channelSel_HEADSTAGE_6,userdata(ResizeControlsInfo)= A"!!,E\"!!#AI!!#<h!!#<(z!!#`-A7TLfzzzzzzzzzzzzzz!!#r+D.OhkBk2=!z"
@@ -314,6 +330,7 @@ Window DataBrowser() : Graph
 	CheckBox check_channelSel_HEADSTAGE_6,userdata(ControlArray)=  "Headstage Channel selection"
 	CheckBox check_channelSel_HEADSTAGE_6,value= 1
 	CheckBox check_channelSel_HEADSTAGE_7,pos={58.00,207.00},size={22.00,15.00},disable=1,proc=BSP_CheckProc_ChangedSetting,title="7"
+	CheckBox check_channelSel_HEADSTAGE_7,help={"Toggle the headstage display"}
 	CheckBox check_channelSel_HEADSTAGE_7,userdata(tabnum)=  "2"
 	CheckBox check_channelSel_HEADSTAGE_7,userdata(tabcontrol)=  "Settings"
 	CheckBox check_channelSel_HEADSTAGE_7,userdata(ResizeControlsInfo)= A"!!,E\"!!#A^!!#<h!!#<(z!!#`-A7TLfzzzzzzzzzzzzzz!!#r+D.OhkBk2=!z"
@@ -329,6 +346,7 @@ Window DataBrowser() : Graph
 	GroupBox group_channelSel_AD,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	GroupBox group_channelSel_AD,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
 	CheckBox check_channelSel_AD_0,pos={178.00,60.00},size={22.00,15.00},disable=1,proc=BSP_CheckProc_ChangedSetting,title="0"
+	CheckBox check_channelSel_AD_0,help={"Toggle the AD channel display"}
 	CheckBox check_channelSel_AD_0,userdata(tabnum)=  "2"
 	CheckBox check_channelSel_AD_0,userdata(tabcontrol)=  "Settings"
 	CheckBox check_channelSel_AD_0,userdata(ResizeControlsInfo)= A"!!,GB!!#?)!!#<h!!#<(z!!#`-A7TLfzzzzzzzzzzzzzz!!#r+D.OhkBk2=!z"
@@ -337,6 +355,7 @@ Window DataBrowser() : Graph
 	CheckBox check_channelSel_AD_0,userdata(ControlArray)=  "AD Channel selection"
 	CheckBox check_channelSel_AD_0,userdata(ControlArrayIndex)=  "0",value= 1
 	CheckBox check_channelSel_AD_1,pos={178.00,81.00},size={22.00,15.00},disable=1,proc=BSP_CheckProc_ChangedSetting,title="1"
+	CheckBox check_channelSel_AD_1,help={"Toggle the AD channel display"}
 	CheckBox check_channelSel_AD_1,userdata(tabnum)=  "2"
 	CheckBox check_channelSel_AD_1,userdata(tabcontrol)=  "Settings"
 	CheckBox check_channelSel_AD_1,userdata(ResizeControlsInfo)= A"!!,GB!!#?[!!#<h!!#<(z!!#`-A7TLfzzzzzzzzzzzzzz!!#r+D.OhkBk2=!z"
@@ -345,6 +364,7 @@ Window DataBrowser() : Graph
 	CheckBox check_channelSel_AD_1,userdata(ControlArray)=  "AD Channel selection"
 	CheckBox check_channelSel_AD_1,userdata(ControlArrayIndex)=  "1",value= 1
 	CheckBox check_channelSel_AD_2,pos={178.00,102.00},size={22.00,15.00},disable=1,proc=BSP_CheckProc_ChangedSetting,title="2"
+	CheckBox check_channelSel_AD_2,help={"Toggle the AD channel display"}
 	CheckBox check_channelSel_AD_2,userdata(tabnum)=  "2"
 	CheckBox check_channelSel_AD_2,userdata(tabcontrol)=  "Settings"
 	CheckBox check_channelSel_AD_2,userdata(ResizeControlsInfo)= A"!!,GB!!#@0!!#<h!!#<(z!!#`-A7TLfzzzzzzzzzzzzzz!!#r+D.OhkBk2=!z"
@@ -353,6 +373,7 @@ Window DataBrowser() : Graph
 	CheckBox check_channelSel_AD_2,userdata(ControlArray)=  "AD Channel selection"
 	CheckBox check_channelSel_AD_2,userdata(ControlArrayIndex)=  "2",value= 1
 	CheckBox check_channelSel_AD_3,pos={178.00,123.00},size={22.00,15.00},disable=1,proc=BSP_CheckProc_ChangedSetting,title="3"
+	CheckBox check_channelSel_AD_3,help={"Toggle the AD channel display"}
 	CheckBox check_channelSel_AD_3,userdata(tabnum)=  "2"
 	CheckBox check_channelSel_AD_3,userdata(tabcontrol)=  "Settings"
 	CheckBox check_channelSel_AD_3,userdata(ResizeControlsInfo)= A"!!,GB!!#@Z!!#<h!!#<(z!!#`-A7TLfzzzzzzzzzzzzzz!!#r+D.OhkBk2=!z"
@@ -361,6 +382,7 @@ Window DataBrowser() : Graph
 	CheckBox check_channelSel_AD_3,userdata(ControlArray)=  "AD Channel selection"
 	CheckBox check_channelSel_AD_3,userdata(ControlArrayIndex)=  "3",value= 1
 	CheckBox check_channelSel_AD_4,pos={178.00,144.00},size={22.00,15.00},disable=1,proc=BSP_CheckProc_ChangedSetting,title="4"
+	CheckBox check_channelSel_AD_4,help={"Toggle the AD channel display"}
 	CheckBox check_channelSel_AD_4,userdata(tabnum)=  "2"
 	CheckBox check_channelSel_AD_4,userdata(tabcontrol)=  "Settings"
 	CheckBox check_channelSel_AD_4,userdata(ResizeControlsInfo)= A"!!,GB!!#@t!!#<h!!#<(z!!#`-A7TLfzzzzzzzzzzzzzz!!#r+D.OhkBk2=!z"
@@ -369,6 +391,7 @@ Window DataBrowser() : Graph
 	CheckBox check_channelSel_AD_4,userdata(ControlArray)=  "AD Channel selection"
 	CheckBox check_channelSel_AD_4,userdata(ControlArrayIndex)=  "4",value= 1
 	CheckBox check_channelSel_AD_5,pos={178.00,165.00},size={22.00,15.00},disable=1,proc=BSP_CheckProc_ChangedSetting,title="5"
+	CheckBox check_channelSel_AD_5,help={"Toggle the AD channel display"}
 	CheckBox check_channelSel_AD_5,userdata(tabnum)=  "2"
 	CheckBox check_channelSel_AD_5,userdata(tabcontrol)=  "Settings"
 	CheckBox check_channelSel_AD_5,userdata(ResizeControlsInfo)= A"!!,GB!!#A4!!#<h!!#<(z!!#`-A7TLfzzzzzzzzzzzzzz!!#r+D.OhkBk2=!z"
@@ -377,6 +400,7 @@ Window DataBrowser() : Graph
 	CheckBox check_channelSel_AD_5,userdata(ControlArray)=  "AD Channel selection"
 	CheckBox check_channelSel_AD_5,userdata(ControlArrayIndex)=  "5",value= 1
 	CheckBox check_channelSel_AD_6,pos={178.00,186.00},size={22.00,15.00},disable=1,proc=BSP_CheckProc_ChangedSetting,title="6"
+	CheckBox check_channelSel_AD_6,help={"Toggle the AD channel display"}
 	CheckBox check_channelSel_AD_6,userdata(tabnum)=  "2"
 	CheckBox check_channelSel_AD_6,userdata(tabcontrol)=  "Settings"
 	CheckBox check_channelSel_AD_6,userdata(ResizeControlsInfo)= A"!!,GB!!#AI!!#<h!!#<(z!!#`-A7TLfzzzzzzzzzzzzzz!!#r+D.OhkBk2=!z"
@@ -385,6 +409,7 @@ Window DataBrowser() : Graph
 	CheckBox check_channelSel_AD_6,userdata(ControlArray)=  "AD Channel selection"
 	CheckBox check_channelSel_AD_6,userdata(ControlArrayIndex)=  "6",value= 1
 	CheckBox check_channelSel_AD_7,pos={178.00,207.00},size={22.00,15.00},disable=1,proc=BSP_CheckProc_ChangedSetting,title="7"
+	CheckBox check_channelSel_AD_7,help={"Toggle the AD channel display"}
 	CheckBox check_channelSel_AD_7,userdata(tabnum)=  "2"
 	CheckBox check_channelSel_AD_7,userdata(tabcontrol)=  "Settings"
 	CheckBox check_channelSel_AD_7,userdata(ResizeControlsInfo)= A"!!,GB!!#A^!!#<h!!#<(z!!#`-A7TLfzzzzzzzzzzzzzz!!#r+D.OhkBk2=!z"
@@ -393,6 +418,7 @@ Window DataBrowser() : Graph
 	CheckBox check_channelSel_AD_7,userdata(ControlArray)=  "AD Channel selection"
 	CheckBox check_channelSel_AD_7,userdata(ControlArrayIndex)=  "7",value= 1
 	CheckBox check_channelSel_AD_8,pos={203.00,60.00},size={22.00,15.00},disable=1,proc=BSP_CheckProc_ChangedSetting,title="8"
+	CheckBox check_channelSel_AD_8,help={"Toggle the AD channel display"}
 	CheckBox check_channelSel_AD_8,userdata(tabnum)=  "2"
 	CheckBox check_channelSel_AD_8,userdata(tabcontrol)=  "Settings"
 	CheckBox check_channelSel_AD_8,userdata(ResizeControlsInfo)= A"!!,G[!!#?)!!#<h!!#<(z!!#`-A7TLfzzzzzzzzzzzzzz!!#r+D.OhkBk2=!z"
@@ -401,6 +427,7 @@ Window DataBrowser() : Graph
 	CheckBox check_channelSel_AD_8,userdata(ControlArray)=  "AD Channel selection"
 	CheckBox check_channelSel_AD_8,userdata(ControlArrayIndex)=  "8",value= 1
 	CheckBox check_channelSel_AD_9,pos={203.00,81.00},size={22.00,15.00},disable=1,proc=BSP_CheckProc_ChangedSetting,title="9"
+	CheckBox check_channelSel_AD_9,help={"Toggle the AD channel display"}
 	CheckBox check_channelSel_AD_9,userdata(tabnum)=  "2"
 	CheckBox check_channelSel_AD_9,userdata(tabcontrol)=  "Settings"
 	CheckBox check_channelSel_AD_9,userdata(ResizeControlsInfo)= A"!!,G[!!#?[!!#<h!!#<(z!!#`-A7TLfzzzzzzzzzzzzzz!!#r+D.OhkBk2=!z"
@@ -409,6 +436,7 @@ Window DataBrowser() : Graph
 	CheckBox check_channelSel_AD_9,userdata(ControlArray)=  "AD Channel selection"
 	CheckBox check_channelSel_AD_9,userdata(ControlArrayIndex)=  "9",value= 1
 	CheckBox check_channelSel_AD_10,pos={203.00,102.00},size={28.00,15.00},disable=1,proc=BSP_CheckProc_ChangedSetting,title="10"
+	CheckBox check_channelSel_AD_10,help={"Toggle the AD channel display"}
 	CheckBox check_channelSel_AD_10,userdata(tabnum)=  "2"
 	CheckBox check_channelSel_AD_10,userdata(tabcontrol)=  "Settings"
 	CheckBox check_channelSel_AD_10,userdata(ResizeControlsInfo)= A"!!,G[!!#@0!!#=C!!#<(z!!#`-A7TLfzzzzzzzzzzzzzz!!#r+D.OhkBk2=!z"
@@ -417,6 +445,7 @@ Window DataBrowser() : Graph
 	CheckBox check_channelSel_AD_10,userdata(ControlArray)=  "AD Channel selection"
 	CheckBox check_channelSel_AD_10,userdata(ControlArrayIndex)=  "10",value= 1
 	CheckBox check_channelSel_AD_11,pos={203.00,123.00},size={28.00,15.00},disable=1,proc=BSP_CheckProc_ChangedSetting,title="11"
+	CheckBox check_channelSel_AD_11,help={"Toggle the AD channel display"}
 	CheckBox check_channelSel_AD_11,userdata(tabnum)=  "2"
 	CheckBox check_channelSel_AD_11,userdata(tabcontrol)=  "Settings"
 	CheckBox check_channelSel_AD_11,userdata(ResizeControlsInfo)= A"!!,G[!!#@Z!!#=C!!#<(z!!#`-A7TLfzzzzzzzzzzzzzz!!#r+D.OhkBk2=!z"
@@ -425,6 +454,7 @@ Window DataBrowser() : Graph
 	CheckBox check_channelSel_AD_11,userdata(ControlArray)=  "AD Channel selection"
 	CheckBox check_channelSel_AD_11,userdata(ControlArrayIndex)=  "11",value= 1
 	CheckBox check_channelSel_AD_12,pos={203.00,144.00},size={28.00,15.00},disable=1,proc=BSP_CheckProc_ChangedSetting,title="12"
+	CheckBox check_channelSel_AD_12,help={"Toggle the AD channel display"}
 	CheckBox check_channelSel_AD_12,userdata(tabnum)=  "2"
 	CheckBox check_channelSel_AD_12,userdata(tabcontrol)=  "Settings"
 	CheckBox check_channelSel_AD_12,userdata(ResizeControlsInfo)= A"!!,G[!!#@t!!#=C!!#<(z!!#`-A7TLfzzzzzzzzzzzzzz!!#r+D.OhkBk2=!z"
@@ -433,6 +463,7 @@ Window DataBrowser() : Graph
 	CheckBox check_channelSel_AD_12,userdata(ControlArray)=  "AD Channel selection"
 	CheckBox check_channelSel_AD_12,userdata(ControlArrayIndex)=  "12",value= 1
 	CheckBox check_channelSel_AD_13,pos={203.00,165.00},size={28.00,15.00},disable=1,proc=BSP_CheckProc_ChangedSetting,title="13"
+	CheckBox check_channelSel_AD_13,help={"Toggle the AD channel display"}
 	CheckBox check_channelSel_AD_13,userdata(tabnum)=  "2"
 	CheckBox check_channelSel_AD_13,userdata(tabcontrol)=  "Settings"
 	CheckBox check_channelSel_AD_13,userdata(ResizeControlsInfo)= A"!!,G[!!#A4!!#=C!!#<(z!!#`-A7TLfzzzzzzzzzzzzzz!!#r+D.OhkBk2=!z"
@@ -441,6 +472,7 @@ Window DataBrowser() : Graph
 	CheckBox check_channelSel_AD_13,userdata(ControlArray)=  "AD Channel selection"
 	CheckBox check_channelSel_AD_13,userdata(ControlArrayIndex)=  "13",value= 1
 	CheckBox check_channelSel_AD_14,pos={203.00,186.00},size={28.00,15.00},disable=1,proc=BSP_CheckProc_ChangedSetting,title="14"
+	CheckBox check_channelSel_AD_14,help={"Toggle the AD channel display"}
 	CheckBox check_channelSel_AD_14,userdata(tabnum)=  "2"
 	CheckBox check_channelSel_AD_14,userdata(tabcontrol)=  "Settings"
 	CheckBox check_channelSel_AD_14,userdata(ResizeControlsInfo)= A"!!,G[!!#AI!!#=C!!#<(z!!#`-A7TLfzzzzzzzzzzzzzz!!#r+D.OhkBk2=!z"
@@ -449,6 +481,7 @@ Window DataBrowser() : Graph
 	CheckBox check_channelSel_AD_14,userdata(ControlArray)=  "AD Channel selection"
 	CheckBox check_channelSel_AD_14,userdata(ControlArrayIndex)=  "14",value= 1
 	CheckBox check_channelSel_AD_15,pos={203.00,207.00},size={28.00,15.00},disable=1,proc=BSP_CheckProc_ChangedSetting,title="15"
+	CheckBox check_channelSel_AD_15,help={"Toggle the AD channel display"}
 	CheckBox check_channelSel_AD_15,userdata(tabnum)=  "2"
 	CheckBox check_channelSel_AD_15,userdata(tabcontrol)=  "Settings"
 	CheckBox check_channelSel_AD_15,userdata(ResizeControlsInfo)= A"!!,G[!!#A^!!#=C!!#<(z!!#`-A7TLfzzzzzzzzzzzzzz!!#r+D.OhkBk2=!z"
@@ -457,7 +490,8 @@ Window DataBrowser() : Graph
 	CheckBox check_channelSel_AD_15,userdata(ControlArray)=  "AD Channel selection"
 	CheckBox check_channelSel_AD_15,userdata(ControlArrayIndex)=  "15",value= 1
 	ListBox list_of_ranges1,pos={75.00,156.00},size={235.00,250.00},disable=3,proc=AR_MainListBoxProc
-	ListBox list_of_ranges1,userdata(tabnum)=  "3",userdata(tabcontrol)=  "Settings"
+	ListBox list_of_ranges1,help={"List of artefact ranges"},userdata(tabnum)=  "3"
+	ListBox list_of_ranges1,userdata(tabcontrol)=  "Settings"
 	ListBox list_of_ranges1,userdata(ResizeControlsInfo)= A"!!,EP!!#A+!!#B%!!#B4z!!#](Aon\"Qzzzzzzzzzzzzzz!!#o2B4uAezz"
 	ListBox list_of_ranges1,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	ListBox list_of_ranges1,userdata(ResizeControlsInfo) += A"zzz!!#?(FEDG<zzzzzzzzzzzzzz!!!"
@@ -465,6 +499,7 @@ Window DataBrowser() : Graph
 	ListBox list_of_ranges1,userdata(Config_DontSave)=  "1",mode= 1,selRow= 0
 	ListBox list_of_ranges1,widths={54,50,66}
 	Button button_RemoveRanges,pos={91.00,126.00},size={54.00,21.00},disable=3,proc=AR_ButtonProc_RemoveRanges,title="Remove"
+	Button button_RemoveRanges,help={"Remove the found artefacts"}
 	Button button_RemoveRanges,userdata(tabnum)=  "3"
 	Button button_RemoveRanges,userdata(tabcontrol)=  "Settings"
 	Button button_RemoveRanges,userdata(ResizeControlsInfo)= A"!!,Ep!!#@`!!#>f!!#<`z!!#`-A7TLfzzzzzzzzzzzzzz!!#r+D.OhkBk2=!z"
@@ -502,22 +537,24 @@ Window DataBrowser() : Graph
 	CheckBox check_highlightRanges,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	CheckBox check_highlightRanges,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
 	CheckBox check_highlightRanges,value= 0
-	SetVariable setvar_pulseAver_fallbackLength,pos={115.00,242.00},size={137.00,18.00},bodyWidth=50,disable=1,proc=PA_SetVarProc_Common,title="Fallback Length"
-	SetVariable setvar_pulseAver_fallbackLength,help={"Pulse To Pulse Length in ms for edge cases which can not be computed."}
+	SetVariable setvar_pulseAver_fallbackLength,pos={118.00,242.00},size={134.00,18.00},bodyWidth=50,disable=1,proc=PA_SetVarProc_Common,title="Fallback length"
+	SetVariable setvar_pulseAver_fallbackLength,help={"Pulse To Pulse length in ms for edge cases which can not be computed."}
 	SetVariable setvar_pulseAver_fallbackLength,userdata(tabnum)=  "4"
 	SetVariable setvar_pulseAver_fallbackLength,userdata(tabcontrol)=  "Settings"
 	SetVariable setvar_pulseAver_fallbackLength,userdata(ResizeControlsInfo)= A"!!,FK!!#B,!!#@m!!#<Hz!!#`-A7TLfzzzzzzzzzzzzzz!!#r+D.OhkBk2=!z"
 	SetVariable setvar_pulseAver_fallbackLength,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	SetVariable setvar_pulseAver_fallbackLength,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
 	SetVariable setvar_pulseAver_fallbackLength,value= _NUM:100
-	SetVariable setvar_pulseAver_endPulse,pos={130.00,220.00},size={122.00,18.00},bodyWidth=50,disable=1,proc=PA_SetVarProc_Common,title="Ending Pulse"
+	SetVariable setvar_pulseAver_endPulse,pos={130.00,220.00},size={122.00,18.00},bodyWidth=50,disable=1,proc=PA_SetVarProc_Common,title="Ending pulse"
+	SetVariable setvar_pulseAver_endPulse,help={"Index of the last pulse to display"}
 	SetVariable setvar_pulseAver_endPulse,userdata(tabnum)=  "4"
 	SetVariable setvar_pulseAver_endPulse,userdata(tabcontrol)=  "Settings"
 	SetVariable setvar_pulseAver_endPulse,userdata(ResizeControlsInfo)= A"!!,Fg!!#Ak!!#@X!!#<Hz!!#`-A7TLfzzzzzzzzzzzzzz!!#r+D.OhkBk2=!z"
 	SetVariable setvar_pulseAver_endPulse,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	SetVariable setvar_pulseAver_endPulse,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
 	SetVariable setvar_pulseAver_endPulse,value= _NUM:inf
-	SetVariable setvar_pulseAver_startPulse,pos={126.00,197.00},size={126.00,18.00},bodyWidth=50,disable=1,proc=PA_SetVarProc_Common,title="Starting Pulse"
+	SetVariable setvar_pulseAver_startPulse,pos={126.00,197.00},size={126.00,18.00},bodyWidth=50,disable=1,proc=PA_SetVarProc_Common,title="Starting pulse"
+	SetVariable setvar_pulseAver_startPulse,help={"Index of the first pulse to display"}
 	SetVariable setvar_pulseAver_startPulse,userdata(tabnum)=  "4"
 	SetVariable setvar_pulseAver_startPulse,userdata(tabcontrol)=  "Settings"
 	SetVariable setvar_pulseAver_startPulse,userdata(ResizeControlsInfo)= A"!!,Fa!!#AT!!#@`!!#<Hz!!#`-A7TLfzzzzzzzzzzzzzz!!#r+D.OhkBk2=!z"
@@ -557,22 +594,22 @@ Window DataBrowser() : Graph
 	CheckBox check_pulseAver_indTraces,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
 	CheckBox check_pulseAver_indTraces,value= 1
 	CheckBox check_pulseAver_deconv,pos={71.00,290.00},size={94.00,15.00},disable=1,proc=PA_CheckProc_Deconvolution,title="Deconvolution"
-	CheckBox check_pulseAver_deconv,help={"Show Deconvolution: tau * dV/dt + V"}
+	CheckBox check_pulseAver_deconv,help={"Show Deconvolution (requires enabled averaging): tau * dV/dt + V "}
 	CheckBox check_pulseAver_deconv,userdata(tabnum)=  "4"
 	CheckBox check_pulseAver_deconv,userdata(tabcontrol)=  "Settings"
 	CheckBox check_pulseAver_deconv,userdata(ResizeControlsInfo)= A"!!,EH!!#BK!!#?u!!#<(z!!#`-A7TLfzzzzzzzzzzzzzz!!#r+D.OhkBk2=!z"
 	CheckBox check_pulseAver_deconv,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	CheckBox check_pulseAver_deconv,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
 	CheckBox check_pulseAver_deconv,value= 0
-	CheckBox check_pulseAver_timeAlign,pos={123.00,139.00},size={101.00,15.00},disable=1,proc=PA_CheckProc_Common,title="Time Alignment"
-	CheckBox check_pulseAver_timeAlign,help={"Automatically align all traces in the PA graph to a reference trace from the diagonal element"}
+	CheckBox check_pulseAver_timeAlign,pos={123.00,139.00},size={99.00,15.00},disable=1,proc=PA_CheckProc_Common,title="Time alignment"
+	CheckBox check_pulseAver_timeAlign,help={"Align all traces of a set to the first pulse of the same sweep from the diagonal element"}
 	CheckBox check_pulseAver_timeAlign,userdata(tabnum)=  "4"
 	CheckBox check_pulseAver_timeAlign,userdata(tabcontrol)=  "Settings"
 	CheckBox check_pulseAver_timeAlign,userdata(ResizeControlsInfo)= A"!!,F[!!#@o!!#@.!!#<(z!!#`-A7TLfzzzzzzzzzzzzzz!!#r+D.OhkBk2=!z"
 	CheckBox check_pulseAver_timeAlign,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	CheckBox check_pulseAver_timeAlign,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
 	CheckBox check_pulseAver_timeAlign,value= 0
-	SetVariable setvar_pulseAver_deconv_tau,pos={79.00,309.00},size={98.00,18.00},bodyWidth=50,disable=1,proc=PA_SetVarProc_Common,title="tau [ms]"
+	SetVariable setvar_pulseAver_deconv_tau,pos={79.00,309.00},size={98.00,18.00},bodyWidth=50,disable=1,proc=PA_SetVarProc_Common,title="Tau [ms]"
 	SetVariable setvar_pulseAver_deconv_tau,help={"Deconvolution time tau: tau * dV/dt + V"}
 	SetVariable setvar_pulseAver_deconv_tau,userdata(tabnum)=  "4"
 	SetVariable setvar_pulseAver_deconv_tau,userdata(tabcontrol)=  "Settings"
@@ -580,7 +617,7 @@ Window DataBrowser() : Graph
 	SetVariable setvar_pulseAver_deconv_tau,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	SetVariable setvar_pulseAver_deconv_tau,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
 	SetVariable setvar_pulseAver_deconv_tau,limits={0,inf,0},value= _NUM:15
-	SetVariable setvar_pulseAver_deconv_smth,pos={65.00,333.00},size={112.00,18.00},bodyWidth=50,disable=1,proc=PA_SetVarProc_Common,title="smoothing"
+	SetVariable setvar_pulseAver_deconv_smth,pos={65.00,333.00},size={112.00,18.00},bodyWidth=50,disable=1,proc=PA_SetVarProc_Common,title="Smoothing"
 	SetVariable setvar_pulseAver_deconv_smth,help={"Smoothing factor to use before the deconvolution is calculated. Set to 1 to do the calculation without smoothing."}
 	SetVariable setvar_pulseAver_deconv_smth,userdata(tabnum)=  "4"
 	SetVariable setvar_pulseAver_deconv_smth,userdata(tabcontrol)=  "Settings"
@@ -588,7 +625,7 @@ Window DataBrowser() : Graph
 	SetVariable setvar_pulseAver_deconv_smth,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	SetVariable setvar_pulseAver_deconv_smth,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
 	SetVariable setvar_pulseAver_deconv_smth,limits={1,inf,0},value= _NUM:1000
-	SetVariable setvar_pulseAver_deconv_range,pos={59.00,354.00},size={118.00,18.00},bodyWidth=50,disable=1,proc=PA_SetVarProc_Common,title="display [ms]"
+	SetVariable setvar_pulseAver_deconv_range,pos={59.00,354.00},size={118.00,18.00},bodyWidth=50,disable=1,proc=PA_SetVarProc_Common,title="Display [ms]"
 	SetVariable setvar_pulseAver_deconv_range,help={"Time in ms from the beginning of the pulse that is used for the calculation"}
 	SetVariable setvar_pulseAver_deconv_range,userdata(tabnum)=  "4"
 	SetVariable setvar_pulseAver_deconv_range,userdata(tabcontrol)=  "Settings"
@@ -596,7 +633,7 @@ Window DataBrowser() : Graph
 	SetVariable setvar_pulseAver_deconv_range,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	SetVariable setvar_pulseAver_deconv_range,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
 	SetVariable setvar_pulseAver_deconv_range,limits={0,inf,0},value= _NUM:inf
-	GroupBox group_pulseAver_deconv,pos={39.00,285.00},size={153.00,96.00},disable=3
+	GroupBox group_pulseAver_deconv,pos={37.00,285.00},size={153.00,96.00},disable=3
 	GroupBox group_pulseAver_deconv,userdata(tabnum)=  "4"
 	GroupBox group_pulseAver_deconv,userdata(tabcontrol)=  "Settings"
 	GroupBox group_pulseAver_deconv,userdata(ResizeControlsInfo)= A"!!,D+!!#BHJ,hqS!!#@$z!!#`-A7TLfzzzzzzzzzzzzzz!!#r+D.OhkBk2=!z"
@@ -853,18 +890,21 @@ Window DataBrowser() : Graph
 	ValDisplay status_sweepFormula_parser,limits={-1,1,0},barmisc={0,0},mode= 1,highColor= (0,65535,0),lowColor= (0,0,0),zeroColor= (65535,0,0)
 	ValDisplay status_sweepFormula_parser,value= #"1"
 	Button button_sweepFormula_display,pos={4.00,382.00},size={55.00,22.00},disable=1,proc=SF_button_sweepFormula_display,title="Display"
+	Button button_sweepFormula_display,help={"Display the given sweep formula in a graph"}
 	Button button_sweepFormula_display,userdata(tabnum)=  "5"
 	Button button_sweepFormula_display,userdata(tabcontrol)=  "Settings"
 	Button button_sweepFormula_display,userdata(ResizeControlsInfo)= A"!!,?8!!#C$!!#>j!!#<hz!!#](Aon#azzzzzzzzzzzzzz!!#](Aon#SBk2=!z"
 	Button button_sweepFormula_display,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#?(FEDG<zzzzzzzzzzz"
 	Button button_sweepFormula_display,userdata(ResizeControlsInfo) += A"zzz!!#?(FEDG<zzzzzzzzzzzzzz!!!"
 	Button button_sweepFormula_check,pos={61.00,382.00},size={55.00,22.00},disable=1,proc=SF_button_sweepFormula_check,title="Check"
+	Button button_sweepFormula_check,help={"Check the sweep formula for syntax errors"}
 	Button button_sweepFormula_check,userdata(tabnum)=  "5"
 	Button button_sweepFormula_check,userdata(tabcontrol)=  "Settings"
 	Button button_sweepFormula_check,userdata(ResizeControlsInfo)= A"!!,E.!!#C$!!#>j!!#<hz!!#](Aon#azzzzzzzzzzzzzz!!#](Aon#SBk2=!z"
 	Button button_sweepFormula_check,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#?(FEDG<zzzzzzzzzzz"
 	Button button_sweepFormula_check,userdata(ResizeControlsInfo) += A"zzz!!#?(FEDG<zzzzzzzzzzzzzz!!!"
 	TabControl SF_InfoTab,pos={7.00,90.00},size={377.00,287.00},disable=3,proc=ACL_DisplayTab
+	TabControl SF_InfoTab,help={"Choose between sweep formula input, JSON representation and the help notebook"}
 	TabControl SF_InfoTab,userdata(finalhook)=  "SF_TabProc_Formula"
 	TabControl SF_InfoTab,userdata(currenttab)=  "0",userdata(tabnum)=  "5"
 	TabControl SF_InfoTab,userdata(tabcontrol)=  "Settings"
@@ -875,6 +915,7 @@ Window DataBrowser() : Graph
 	TabControl SF_InfoTab,userdata(Config_DontSave)=  "1",tabLabel(0)="Formula"
 	TabControl SF_InfoTab,tabLabel(1)="JSON",tabLabel(2)="Help",value= 0
 	ListBox list_dashboard,pos={5.00,90.00},size={388.00,318.00},disable=1,proc=AD_ListBoxProc
+	ListBox list_dashboard,help={"Show the triplett of stimulus set, analysis function and result for supported analysis functions."}
 	ListBox list_dashboard,userdata(tabnum)=  "7",userdata(tabcontrol)=  "Settings"
 	ListBox list_dashboard,userdata(ResizeControlsInfo)= A"!!,?X!!#?m!!#C'!!#BYz!!#](Aon\"Qzzzzzzzzzzzzzz!!#o2B4uAezz"
 	ListBox list_dashboard,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
@@ -905,6 +946,7 @@ Window DataBrowser() : Graph
 	CheckBox check_BrowserSettings_DB_Failed,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
 	CheckBox check_BrowserSettings_DB_Failed,value= 0
 	CheckBox check_BrowserSettings_SF,pos={164.00,47.00},size={51.00,15.00},disable=1,proc=BSP_CheckBoxProc_SweepFormula,title="enable"
+	CheckBox check_BrowserSettings_SF,help={"Enable the sweep formula support"}
 	CheckBox check_BrowserSettings_SF,userdata(tabnum)=  "5"
 	CheckBox check_BrowserSettings_SF,userdata(tabcontrol)=  "Settings"
 	CheckBox check_BrowserSettings_SF,userdata(ResizeControlsInfo)= A"!!,G4!!#>J!!#>Z!!#<(z!!#`-A7TLfzzzzzzzzzzzzzz!!#r+D.OhkBk2=!z"
@@ -912,6 +954,7 @@ Window DataBrowser() : Graph
 	CheckBox check_BrowserSettings_SF,userdata(ResizeControlsInfo) += A"zzz!!#N3Bk1ctAStpcCh5qOGX?=jFDl!rzzzzzzzzzz!!!"
 	CheckBox check_BrowserSettings_SF,value= 0
 	CheckBox check_channelSel_HEADSTAGE_ALL,pos={57.00,225.00},size={30.00,15.00},disable=1,proc=BSP_CheckProc_ChangedSetting,title="All"
+	CheckBox check_channelSel_HEADSTAGE_ALL,help={"Toggle the display of all headstages"}
 	CheckBox check_channelSel_HEADSTAGE_ALL,userdata(tabcontrol)=  "Settings"
 	CheckBox check_channelSel_HEADSTAGE_ALL,userdata(tabnum)=  "2"
 	CheckBox check_channelSel_HEADSTAGE_ALL,userdata(ResizeControlsInfo)= A"!!,Ds!!#Ap!!#=S!!#<(z!!#`-A7TLfzzzzzzzzzzzzzz!!#r+D.OhkBk2=!z"
@@ -919,6 +962,7 @@ Window DataBrowser() : Graph
 	CheckBox check_channelSel_HEADSTAGE_ALL,userdata(ResizeControlsInfo) += A"zzz!!#u:DuaGlAStpcCh5qOGX?=jFDl!rzzzzzzzzzz!!!"
 	CheckBox check_channelSel_HEADSTAGE_ALL,value= 0
 	CheckBox check_channelSel_DA_All,pos={121.00,225.00},size={30.00,15.00},disable=1,proc=BSP_CheckProc_ChangedSetting,title="All"
+	CheckBox check_channelSel_DA_All,help={"Toggle the display of all DA channels"}
 	CheckBox check_channelSel_DA_All,userdata(tabcontrol)=  "Settings"
 	CheckBox check_channelSel_DA_All,userdata(tabnum)=  "2"
 	CheckBox check_channelSel_DA_All,userdata(ResizeControlsInfo)= A"!!,FW!!#Ap!!#=S!!#<(z!!#`-A7TLfzzzzzzzzzzzzzz!!#r+D.OhkBk2=!z"
@@ -926,6 +970,7 @@ Window DataBrowser() : Graph
 	CheckBox check_channelSel_DA_All,userdata(ResizeControlsInfo) += A"zzz!!#u:DuaGlAStpcCh5qOGX?=jFDl!rzzzzzzzzzz!!!"
 	CheckBox check_channelSel_DA_All,value= 0
 	CheckBox check_channelSel_AD_All,pos={188.00,225.00},size={30.00,15.00},disable=1,proc=BSP_CheckProc_ChangedSetting,title="All"
+	CheckBox check_channelSel_AD_All,help={"Toggle the display of all AD channels"}
 	CheckBox check_channelSel_AD_All,userdata(tabcontrol)=  "Settings"
 	CheckBox check_channelSel_AD_All,userdata(tabnum)=  "2"
 	CheckBox check_channelSel_AD_All,userdata(ResizeControlsInfo)= A"!!,GL!!#Ap!!#=S!!#<(z!!#`-A7TLfzzzzzzzzzzzzzz!!#r+D.OhkBk2=!z"
@@ -962,7 +1007,7 @@ Window DataBrowser() : Graph
 	SetVariable setvar_pulseAver_failedPulses_level,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	SetVariable setvar_pulseAver_failedPulses_level,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
 	SetVariable setvar_pulseAver_failedPulses_level,limits={-inf,inf,0},value= _NUM:0
-	SetVariable setvar_pulseAver_vert_scale_bar,pos={110.00,264.00},size={142.00,18.00},bodyWidth=50,disable=1,proc=PA_SetVarProc_Common,title="Vertical Scale Bar"
+	SetVariable setvar_pulseAver_vert_scale_bar,pos={110.00,264.00},size={142.00,18.00},bodyWidth=50,disable=1,proc=PA_SetVarProc_Common,title="Vertical scale bar"
 	SetVariable setvar_pulseAver_vert_scale_bar,help={"Length of the vertical scale bar in data units."}
 	SetVariable setvar_pulseAver_vert_scale_bar,userdata(tabnum)=  "4"
 	SetVariable setvar_pulseAver_vert_scale_bar,userdata(tabcontrol)=  "Settings"
@@ -1045,6 +1090,7 @@ Window DataBrowser() : Graph
 	Button popupext_LBKeys,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:DuaGl<C]S6zzzzzzzzzz"
 	Button popupext_LBKeys,userdata(ResizeControlsInfo) += A"zzz!!#u:DuaGl<C]S6zzzzzzzzzzzzz!!!"
 	Button button_clearlabnotebookgraph,pos={407.00,55.00},size={80.00,25.00},proc=DB_ButtonProc_ClearGraph,title="Clear graph"
+	Button button_clearlabnotebookgraph,help={"Clear the labnotebook visualization graph"}
 	Button button_clearlabnotebookgraph,userdata(ResizeControlsInfo)= A"!!,I1J,ho@!!#?Y!!#=+z!!#N3Bk1ct<C^(Dzzzzzzzzzzzzz!!#N3Bk1ct<C^(Dz"
 	Button button_clearlabnotebookgraph,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:DuaGl<C]S6zzzzzzzzzz"
 	Button button_clearlabnotebookgraph,userdata(ResizeControlsInfo) += A"zzz!!#u:DuaGl<C]S6zzzzzzzzzzzzz!!!"
