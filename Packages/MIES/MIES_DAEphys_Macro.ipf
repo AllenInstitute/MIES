@@ -11,7 +11,7 @@
 
 Window DA_Ephys() : Panel
 	PauseUpdate; Silent 1		// building window...
-	NewPanel /K=1 /W=(157,552,661,1432)
+	NewPanel /K=1 /W=(164,321,668,1201)
 	ValDisplay valdisp_DataAcq_P_LED_Clear,pos={366.00,297.00},size={84.00,27.00},disable=1
 	ValDisplay valdisp_DataAcq_P_LED_Clear,help={"red:user"},userdata(tabnum)=  "0"
 	ValDisplay valdisp_DataAcq_P_LED_Clear,userdata(tabcontrol)=  "tab_DataAcq_Pressure"
@@ -714,8 +714,7 @@ Window DA_Ephys() : Panel
 	CheckBox Check_DataAcqHS_00,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	CheckBox Check_DataAcqHS_00,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
 	CheckBox Check_DataAcqHS_00,userdata(ControlArray)=  "Check_DataAcqHS"
-	CheckBox Check_DataAcqHS_00,userdata(ControlArrayIndex)=  "0"
-	CheckBox Check_DataAcqHS_00,value= 0
+	CheckBox Check_DataAcqHS_00,userdata(ControlArrayIndex)=  "0",value= 0
 	SetVariable SetVar_DataAcq_TPDuration,pos={30.00,417.00},size={127.00,18.00},bodyWidth=50,disable=1,proc=DAP_SetVarProc_TestPulseSett,title="Duration (ms)"
 	SetVariable SetVar_DataAcq_TPDuration,help={"Duration of the testpulse in milliseconds"}
 	SetVariable SetVar_DataAcq_TPDuration,userdata(tabnum)=  "0"
@@ -3719,7 +3718,6 @@ Window DA_Ephys() : Panel
 	CheckBox check_Settings_DisablePressure,userdata(ResizeControlsInfo)= A"!!,HqJ,hu!5QF-P!!#=Sz!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
 	CheckBox check_Settings_DisablePressure,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	CheckBox check_Settings_DisablePressure,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
-	CheckBox check_Settings_DisablePressure,labelBack=(4369,4369,4369)
 	CheckBox check_Settings_DisablePressure,value= 0,side= 1
 	CheckBox check_Settings_AmpIEQZstep,pos={324.00,714.00},size={122.00,15.00},disable=1,proc=DAP_CheckProc_UpdateGuiState,title="Mode switch via I=0"
 	CheckBox check_Settings_AmpIEQZstep,help={"Always switch from V-Clamp to I-Clamp and vice versa via I=0"}
@@ -4070,7 +4068,7 @@ Window DA_Ephys() : Panel
 	PopupMenu popup_Settings_UserPressure,userdata(Config_RestorePriority)=  "60"
 	PopupMenu popup_Settings_UserPressure,userdata(Config_DontSave)=  "1"
 	PopupMenu popup_Settings_UserPressure,userdata(Config_DontRestore)=  "1"
-	PopupMenu popup_Settings_UserPressure,mode=1,popvalue="- none -",value= #"\"- none -;Dev1;Dev2;\""
+	PopupMenu popup_Settings_UserPressure,mode=1,popvalue="- none -",value= #"\"- none -;\""
 	PopupMenu Popup_Settings_UserPressure_ADC,pos={267.00,618.00},size={47.00,19.00},proc=DAP_PopMenuProc_UpdateGuiState,title="AD"
 	PopupMenu Popup_Settings_UserPressure_ADC,userdata(tabnum)=  "6"
 	PopupMenu Popup_Settings_UserPressure_ADC,userdata(tabcontrol)=  "ADC"
