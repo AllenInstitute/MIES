@@ -597,3 +597,16 @@ Function RemoveUserDataWorks()
 	CHECK_EQUAL_VAR(JSON_GetVariable(jsonID, "/trace1"), 0)
 	CHECK_EQUAL_VAR(JSON_GetVariable(jsonID, "/trace2"), 1)
 End
+
+// Test: TUD_TraceIsOnGraph
+Function TraceIsOnGraphWorks()
+
+	SVAR graph = root:graph
+
+	WAVE/T/Z graphUserData = GetGraphUserData(graph)
+
+	TUD_SetUserData(graph, "trace1", "key1", "value1")
+
+	CHECK_EQUAL_VAR(TUD_TraceIsOnGraph(graph, "trace1"), 1)
+	CHECK_EQUAL_VAR(TUD_TraceIsOnGraph(graph, "trace2"), 0)
+End

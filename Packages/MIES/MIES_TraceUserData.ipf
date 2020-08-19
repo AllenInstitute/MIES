@@ -217,6 +217,12 @@ Function TUD_RemoveUserData(string graph, string trace)
 	TUD_RemoveTrace(graphUserData, trace)
 End
 
+/// @brief Check if the given trace is displayed on the graph
+Function TUD_TraceIsOnGraph(string graph, string trace)
+	WAVE/T graphUserData = GetGraphUserData(graph)
+	return TUD_ConvertTraceNameToRowIndex(graphUserData, trace, create = 0, allowMissing = 1) >= 0
+End
+
 static Function TUD_AddTrace(variable jsonID, WAVE/T graphUserData, string trace)
 
 	variable index, traceCol
@@ -256,7 +262,7 @@ static Function TUD_RemoveTrace(WAVE/T graphUserData, string trace)
 	Make/FREE/N=(tracesNeedingUpdate) junkWave = JSON_SetVariable(jsonID, "/" + graphUserData[row + p][%traceName], row + p)
 End
 
-static Function TUD_ConvertTraceNameToRowIndex(WAVE/T graphUserData, string trace, [variable create])
+static Function TUD_ConvertTraceNameToRowIndex(WAVE/T graphUserData, string trace, [variable create, variable allowMissing])
 
 	variable var, index, jsonID
 
@@ -266,12 +272,18 @@ static Function TUD_ConvertTraceNameToRowIndex(WAVE/T graphUserData, string trac
 		create = !!create
 	endif
 
+	if(ParamIsDefault(allowMissing))
+		allowMissing = 0
+	else
+		allowMissing = !!allowMissing
+	endif
+
 	ASSERT(IsValidObjectName(trace), "trace is not a valid object name")
 
 	jsonID = TUD_GetIndexJSON(graphUserData)
 
 	if(create == 0)
-		return JSON_GetVariable(jsonID, "/" + trace)
+		return JSON_GetVariable(jsonID, "/" + trace, ignoreErr=allowMissing)
 	endif
 
 	var = JSON_GetVariable(jsonID, "/" + trace, ignoreErr = 1)
