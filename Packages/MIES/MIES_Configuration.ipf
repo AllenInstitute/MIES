@@ -164,6 +164,10 @@ static StrConstant EXPCONFIG_JSON_PRESSTTLB = "TTLB"
 static StrConstant EXPCONFIG_JSON_PRESSCONSTNEG = "Constant Negative"
 static StrConstant EXPCONFIG_JSON_PRESSCONSTPOS = "Constant Positive"
 
+static StrConstant EXPCONFIG_JSON_SAVE_PATH = "Save data to"
+static StrConstant EXPCONFIG_JSON_STIMSET_NAME = "Stim set file name"
+static StrConstant EXPCONFIG_JSON_POSITION_MCC = "Position MCCs"
+
 static StrConstant EXPCONFIG_JSON_USERPRESSBLOCK = "User Pressure Devices"
 static StrConstant EXPCONFIG_JSON_USERPRESSDEV = "DAC Device"
 static StrConstant EXPCONFIG_JSON_USERPRESSDA = "DA"
@@ -220,9 +224,9 @@ static Function CONF_DefaultSettings()
 
 	jsonID = JSON_New()
 
-	JSON_AddString(jsonID, POSITION_MCC, NONE)
-	JSON_AddString(jsonID, STIMSET_NAME, "")
-	JSON_AddString(jsonID, SAVE_PATH, "C:MiesSave")
+	JSON_AddString(jsonID, EXPCONFIG_JSON_POSITION_MCC, NONE)
+	JSON_AddString(jsonID, EXPCONFIG_JSON_STIMSET_NAME, "")
+	JSON_AddString(jsonID, EXPCONFIG_JSON_SAVE_PATH, "C:MiesSave")
 
 	return jsonID
 End
@@ -539,7 +543,7 @@ Function/S CONF_RestoreDAEphys(jsonID, fullFilePath, [middleOfExperiment, forceN
 			winConfigChanged = 1
 		endif
 
-		StimSetPath = CONF_GetStringFromSettings(jsonID, STIMSET_NAME)
+		StimSetPath = CONF_GetStringFromSettings(jsonID, EXPCONFIG_JSON_STIMSET_NAME)
 		if(!IsEmpty(StimSetPath))
 			if(FileExists(StimSetPath))
 				err = NWB_LoadAllStimSets(overwrite = 1, fileName = StimSetPath)
@@ -571,7 +575,7 @@ Function/S CONF_RestoreDAEphys(jsonID, fullFilePath, [middleOfExperiment, forceN
 		CONF_RestoreUserPressure(panelTitle, jsonID)
 
 		filename = GetTimeStamp() + PACKED_FILE_EXPERIMENT_SUFFIX
-		path = CONF_GetStringFromSettings(jsonID, SAVE_PATH)
+		path = CONF_GetStringFromSettings(jsonID, EXPCONFIG_JSON_SAVE_PATH)
 
 		if(IsDriveValid(path))
 			CreateFolderOnDisk(path)
@@ -1796,7 +1800,7 @@ static Function CONF_RestoreHeadstageAssociation(panelTitle, jsonID, midExp)
 		Assert(AI_OpenMCCs(ampSerialList, ampTitleList = ampTitleList), "Evil kittens prevented MultiClamp from opening - FULL STOP" )
 	endif
 
-	CONF_Position_MCC_Win(ampSerialList, ampTitleList, CONF_GetStringFromSettings(jsonID, POSITION_MCC))
+	CONF_Position_MCC_Win(ampSerialList, ampTitleList, CONF_GetStringFromSettings(jsonID, EXPCONFIG_JSON_POSITION_MCC))
 
 	PGC_SetAndActivateControl(panelTitle, "button_Settings_UpdateAmpStatus")
 	PGC_SetAndActivateControl(panelTitle, "button_Settings_UpdateDACList")
