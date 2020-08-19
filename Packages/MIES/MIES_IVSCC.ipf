@@ -13,29 +13,6 @@ static Constant    IVS_DEFAULT_NWBVERSION = 2
 static Constant    IVS_DEFAULT_HEADSTAGE  = 0
 static StrConstant IVS_DEFAULT_PANELTITLE = "ITC18USB_Dev_0"
 
-Function IVS_Setup()
-
-	string win, panelTitle, ctrl
-	variable headstage
-
-	headstage = IVS_DEFAULT_HEADSTAGE
-	panelTitle = IVS_DEFAULT_PANELTITLE
-
-	win = DAP_CreateDAEphysPanel()
-	PGC_SetAndActivateControl(win, "popup_moreSettings_DeviceNo", val=0)
-	PGC_SetAndActivateControl(win, "popup_MoreSettings_DeviceType", val=5)
-	PGC_SetAndActivateControl(win, "button_SettingsPlus_LockDevice")
-
-	AI_FindConnectedAmps()
-	ExpConfig_ConfigureMIES()
-
-	PGC_SetAndActivateControl(panelTitle, "popup_Settings_Amplifier", val=0)
-	PGC_SetAndActivateControl(panelTitle, "button_Hardware_AutoGainAndUnit")
-	headstage = 0
-	ctrl = GetPanelControl(headstage, CHANNEL_TYPE_HEADSTAGE, CHANNEL_CONTROL_CHECK)
-	PGC_SetAndActivateControl(panelTitle, ctrl, val = CHECKBOX_SELECTED)
-End
-
 Function IVS_ConfigureMCC()
 	string panelTitle
 	variable headstage
@@ -482,7 +459,6 @@ Function IVS_ButtonProc_Setup(ba) : ButtonControl
 
 	switch(ba.eventCode)
 		case 2: // mouse up
-			IVS_Setup()
 			IVS_ConfigureMCC()
 			break
 	endswitch
