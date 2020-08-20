@@ -3010,20 +3010,20 @@ Function EquallySpaceAxis(graph, [axisRegExp, axisOffset, axisOrientation, sortO
 		adaptedList = axes
 	endif
 
-	numAxes = ItemsInList(adaptedList)
-	axisInc = (1.0 - axisOffset) / numAxes
-
-	if(axisInc < GRAPH_DIV_SPACING)
-		spacing = axisInc/5
+	if(numAxes > 1/GRAPH_DIV_SPACING)
+		spacing = GRAPH_DIV_SPACING / 5
 	else
 		spacing = GRAPH_DIV_SPACING
 	endif
 
-	for(i = numAxes - 1; i >= 0; i -= 1)
+	numAxes = ItemsInList(adaptedList)
+	axisInc = (1.0 - axisOffset - (numAxes - 1) * spacing) / numAxes
+
+	for(i = 0; i < numAxes; i += 1)
 		axis = StringFromList(i, adaptedList)
-		axisStart = (i == 0 ? axisOffset : spacing + axisInc * i)
-		axisEnd   = (i == numAxes - 1 ? 1 : axisInc * (i + 1) - spacing)
-		ModifyGraph/W=$graph axisEnab($axis) = {axisStart, axisEnd}
+		axisStart = axisOffset + i * (axisInc + spacing)
+		axisEnd   = limit(axisStart + axisInc, 0, 1)
+		ModifyGraph/Z/W=$graph axisEnab($axis) = {axisStart, axisEnd}
 	endfor
 End
 
