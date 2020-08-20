@@ -163,7 +163,7 @@ End
 Function/S CA_AveragingKey(waveRefs)
 	WAVE/WAVE waveRefs
 
-	return CA_WaveCRCs(waveRefs, includeWaveScalingAndUnits=1, dims=ROWS) + "Version 5"
+	return CA_WaveCRCs(waveRefs, includeWaveScalingAndUnits=1, dims=ROWS) + "Version 6"
 End
 
 /// @brief Calculate the CRC of all metadata of all or the given dimension
@@ -228,7 +228,7 @@ static Function/S CA_WaveCRCs(waveRefs, [crcMode, includeWaveScalingAndUnits, di
 		MultiThread/NT=(rows < NUM_ENTRIES_FOR_MULTITHREAD) crc[] = CA_WaveScalingCRC(crc[p], waveRefs[p])
 	endif
 
-	return NumericWaveToList(crc, ";", format = "%d")
+	return NumericWaveToList(crc, ";", format = "%.15g")
 End
 
 /// @brief Calculate the cache key for SI_FindMatchingTableEntry.

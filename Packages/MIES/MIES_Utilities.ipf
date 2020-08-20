@@ -3099,6 +3099,10 @@ Function/S NumericWaveToList(wv, sep, [format])
 	ASSERT(IsNumericWave(wv), "Expected a numeric wave")
 	ASSERT(DimSize(wv, COLS) == 0, "Expected a 1D wave")
 
+	if(IsFloatingPointWave(wv))
+		ASSERT(!GrepString(format, "%.*d"), "%d triggers an Igor bug")
+	endif
+
 	wfprintf list, format + sep, wv
 
 	return list
@@ -4580,10 +4584,10 @@ Function/WAVE FindLevelWrapper(data, level, edge, mode)
 	switch(mode)
 		case FINDLEVEL_MODE_SINGLE:
 			Make/D/FREE/N=(DimSize(resultSingle, ROWS)) numMaxLevels = 1
-			SetWaveDimLabel(resultSingle, NumericWaveToList(numMaxLevels, ";", format = "%d"), ROWS)
+			SetWaveDimLabel(resultSingle, NumericWaveToList(numMaxLevels, ";"), ROWS)
 			return resultSingle
 		case FINDLEVEL_MODE_MULTI:
-			SetWaveDimLabel(resultMulti, NumericWaveToList(numMaxLevels, ";", format = "%d"), ROWS)
+			SetWaveDimLabel(resultMulti, NumericWaveToList(numMaxLevels, ";"), ROWS)
 
 			// avoid single column waves
 			if(DimSize(resultMulti, COLS) == 1)
