@@ -3616,20 +3616,6 @@ Function/S TimeAlignGetAllTraces(graph)
 	return TextWaveToList(traces, ";")
 End
 
-/// @brief return a list of all graphs included in TimeAlignment
-Function/S TimeAlignGetAllGraphs(graph)
-	string graph
-
-	string graphs
-
-	graphs = AddListItem(graph, "")
-	if(PA_IsActive(graph))
-		graphs += PA_GetAverageGraphs(graph)
-	endif
-
-	return graphs
-End
-
 /// @brief Adds or removes the cursors from the graphs depending on the
 ///        panel settings
 ///
@@ -3648,7 +3634,7 @@ Function TimeAlignHandleCursorDisplay(win)
 		return NaN
 	endif
 
-	graphs = TimeAlignGetAllGraphs(win)
+	graphs = win
 
 	// deactivate cursor
 	if(!GetCheckBoxState(bsPanel, "check_BrowserSettings_TA"))
@@ -3729,16 +3715,6 @@ Function TimeAlignCursorMovedHook(s)
 			endif
 
 			bsPanel = BSP_GetPanel(s.winName)
-			if(!windowExists(bsPanel))
-				// check if hook was called from a PA graph
-				if(WhichListItem(s.winName, PA_GetAverageGraphs(bsPanel)) == -1)
-					return 0
-				endif
-				bsPanel = BSP_GetPanel(GetUserData(s.winName, "", MIES_BSP_PA_MAINPANEL))
-				if(!windowExists(bsPanel))
-					return 0
-				endif
-			endif
 
 			if(!GetCheckBoxState(bsPanel, "check_BrowserSettings_TA"))
 				return 0
@@ -4102,13 +4078,6 @@ End
 
 /// @brief Perform time alignment of features in the sweep traces
 ///
-/// PA time alignment:
-/// - Get the feature position of the reference trace and store it in `refPos`
-/// - Get them also for all pulses which belong to the same set. Store these
-///   feature positions using their sweep number and pulse index as key.
-/// - Now shift *all* pulses in all sets from the same region by `- (refPos +
-///   featurePos)` where `featurePos` is used from the same sweep and pulse index.
-///
 /// @param graphtrace reference trace in the form of graph#trace
 /// @param mode       time alignment mode
 /// @param level      level input to the @c FindLevel operation in @see CalculateFeatureLoc
@@ -4126,7 +4095,7 @@ Function TimeAlignmentIfReq(graphtrace, mode, level, pos1x, pos2x, [force])
 	endif
 
 	string str, refAxis, axis
-	string trace, refTrace, graph, refGraph, paGraphs, refRegion, browserGraph
+	string trace, refTrace, graph, refGraph
 	variable offset, refPos
 	variable first, last, pos, numTraces, i, idx
 	string sweepNo, pulseIndexStr, indexStr
@@ -4147,18 +4116,7 @@ Function TimeAlignmentIfReq(graphtrace, mode, level, pos1x, pos2x, [force])
 	// now determine the feature's time position
 	// using the traces from the same axis as the reference trace
 	refAxis = TUD_GetUserData(refGraph, refTrace, "YAXIS")
-
-	browserGraph = GetUserData(refGraph, "", MIES_BSP_PA_MAINPANEL)
-	paGraphs = PA_GetAverageGraphs(browserGraph)
-	if(WhichListItem(refGraph, paGraphs) == -1)
-		WAVE/T graphtraces = GetAllSweepTraces(refGraph)
-	else
-		// only do PA for sweeps with same region
-		refRegion = TUD_GetUserData(refGraph, refTrace, "region")
-		ASSERT(!isEmpty(refRegion), "region is empty. Set \"region\" in userData entry for trace.")
-		WAVE/T graphtraces = GetAllSweepTraces(paGraphs, region = str2num(refRegion))
-	endif
-
+	WAVE/T graphtraces = GetAllSweepTraces(refGraph)
 	refPos = NaN
 
 	numTraces = DimSize(graphtraces, ROWS)

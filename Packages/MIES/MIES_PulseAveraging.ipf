@@ -25,11 +25,7 @@
 /// - Averaging is done for all pulses in a set
 /// - Zeroing is done for all pulses
 /// - Deconvolution is done for the average wave only
-/// - Time alignment is done for all pulses of a region against the reference
-///   pulse which is the first pulse from the set where `activeRegionCount
-///   == activeChannelCount` (aka the diagonal trace set). The graph user data
-///   `REFERENCE` denotes if the graph has references pulses and
-///   `REFERENCE_TRACES` holds the names of the reference traces.
+/// - See also PA_AutomaticTimeAlignment
 ///
 /// The dDAQ slider in the Databrowse/Sweepbrowser is respected as is the
 /// channel selection.
@@ -39,9 +35,6 @@ static StrConstant SOURCE_WAVE_TIMESTAMP      = "SOURCE_WAVE_TS"
 
 static StrConstant PA_AVERAGE_WAVE_PREFIX       = "average_"
 static StrConstant PA_DECONVOLUTION_WAVE_PREFIX = "deconv_"
-
-static StrConstant PA_USERDATA_REFERENCE_TRACES = "REFERENCE_TRACES"
-static StrConstant PA_USERDATA_REFERENCE_GRAPH  = "REFERENCE"
 
 static StrConstant PA_SETTINGS = "PulseAverageSettings"
 
@@ -119,7 +112,6 @@ static Function/S PA_GetGraph(string mainWin, STRUCT PulseAverageSettings &pa, v
 		bottom += height_offset
 		Display/W=(left, top, right, bottom)/K=1/N=$win
 		SetWindow $win, userdata($MIES_BSP_PA_MAINPANEL) = mainWin
-		SetWindow $win, userdata($PA_USERDATA_REFERENCE_GRAPH) = num2str(activeRegionCount == activeChanCount)
 
 		if(pa.multipleGraphs)
 			winAbove = PA_GetGraphName(mainWin, pa, channelNumber - 1, activeRegionCount)
@@ -554,7 +546,6 @@ static Function PA_GenerateAllPulseWaves(string win, STRUCT PulseAverageSettings
 				properties[totalPulseCounter][%DiagonalElement]             = IsDiagonalElement
 				properties[totalPulseCounter][%ActiveRegionCount]           = activeRegionCount
 				properties[totalPulseCounter][%ActiveChanCount]             = activeChanCount
-				properties[totalPulseCounter][%TimeAlignmentReferencePulse] = (k == startingPulse && isDiagonalElement && newChannel == 1)
 				properties[totalPulseCounter][%LastSweep]                   = lastSweep
 
 				propertiesText[totalPulseCounter][%Experiment] = experiment
@@ -779,7 +770,7 @@ static Function PA_ShowPulses(string win, STRUCT PulseAverageSettings &pa, STRUC
 	variable first, numEntries, startingPulse, endingPulse, traceCount, step, isDiagonalElement
 	variable red, green, blue, channelNumber, region, channelType, length, newSweepCount
 	variable numChannelTypeTraces, activeRegionCount, activeChanCount, totalOnsetDelay, pulseHasFailed
-	variable numRegions, hideTrace, timeAlignmentReferencePulse, lastSweep, alpha, constantSinglePulseSettings
+	variable numRegions, hideTrace, lastSweep, alpha, constantSinglePulseSettings
 	string vertAxis, horizAxis, channelNumberStr, experiment
 	string baseName, traceName, fullPath, tagName
 	string newlyCreatedGraphs = ""
@@ -817,7 +808,7 @@ static Function PA_ShowPulses(string win, STRUCT PulseAverageSettings &pa, STRUC
 	PA_GenerateAllPulseWaves(win, pa, constantSinglePulseSettings, mode)
 
 	Make/FREE/T userDataKeys = {"fullPath", "sweepNumber", "headstage", "region", "channelNumber", "channelType",                           \
-	                            "pulseIndex", "traceType", "occurence", "XAXIS", "YAXIS", "DiagonalElement", "TimeAlignmentReferencePulse"}
+	                            "pulseIndex", "traceType", "occurence", "XAXIS", "YAXIS", "DiagonalElement"}
 
 	DFREF pulseAverageDFR = GetDevicePulseAverageFolder(pa.dfr)
 	DFREF pulseAverageHelperDFR = GetDevicePulseAverageHelperFolder(pa.dfr)
@@ -889,7 +880,6 @@ static Function PA_ShowPulses(string win, STRUCT PulseAverageSettings &pa, STRUC
 		activeRegionCount = properties[i][%ActiveRegionCount]
 		activeChanCount = properties[i][%ActiveChanCount]
 		pulseHasFailed = properties[i][%PulseHasFailed]
-		timeAlignmentReferencePulse = properties[i][%TimeAlignmentReferencePulse]
 		lastSweep = properties[i][%LastSweep]
 
 		if(!pa.multipleGraphs && i == 0 || pa.multipleGraphs)
@@ -955,7 +945,7 @@ static Function PA_ShowPulses(string win, STRUCT PulseAverageSettings &pa, STRUC
 				TUD_SetUserDataFromWaves(graph, pulseTrace, userDataKeys,                                                       \
 							             {fullPath, num2str(sweepNo), num2str(headstage), num2str(region), channelNumberStr,    \
 							             channelTypeStr, num2str(pulse), "Sweep", "0",                                          \
-							             horizAxis, vertAxis, num2str(isDiagonalElement), num2str(timeAlignmentReferencePulse)})
+							             horizAxis, vertAxis, num2str(isDiagonalElement)})
 			endif
 
 			if(pulseHasFailed && isDiagonalElement && (sweepNo == lastSweep))
@@ -997,19 +987,10 @@ static Function PA_ShowPulses(string win, STRUCT PulseAverageSettings &pa, STRUC
 			endif
 
 			PA_ZeroPulses(setWaves, pa)
-
-			if(pa.autoTimeAlignment && pa.multipleGraphs)
-				activeRegionCount = j + 1
-				graph = PA_GetGraphName(win, pa, channelNumber, activeRegionCount)
-				PA_AutomaticTimeAlignment(PA_GetReferenceTracesFromGraph(graph))
-			endif
 		endfor
 	endfor
 
-	if(pa.autoTimeAlignment && !pa.multipleGraphs)
-		graph = PA_GetReferenceTracesFromGraph(PA_GetGraphPrefix(win))
-		PA_AutomaticTimeAlignment(graph)
-	endif
+	PA_AutomaticTimeAlignment(win, pa)
 
 	if(mode != POST_PLOT_CONSTANT_SWEEPS || !constantSinglePulseSettings)
 		WAVE/WAVE/Z targetForAverage, sourceForAverage
@@ -1577,50 +1558,116 @@ static Function PA_UpdateSweepPlotDeconvolution(win)
 	endfor
 End
 
-/// @brief use reference trace from graph for time alignment
+/// @brief Time alignment for PA single pulses
 ///
-/// A reference trace for automatic time alignment is usually the first trace
-/// added to a graph where region and channelnumber have the same counter. These
-/// traces are plotted on the diagonal graphs/axes of the PA graph(s).
-///
-/// @param refTraces list of graph#trace entries as reference for time alignment
-static Function PA_AutomaticTimeAlignment(refTraces)
-	string refTraces
+/// - Get the feature position also for all pulses which belong to the same set. Store these
+///   feature positions using their sweep number and pulse index as key.
+/// - Now shift *all* pulses in all sets from the same region by `- featurePos`
+///   where `featurePos` is used from the same sweep and pulse index.
+static Function PA_AutomaticTimeAlignment(string win, STRUCT PulseAverageSettings& pa)
 
-	string graphtrace
-	variable i, numTraces
+	variable i, j, numChannels, numRegions, jsonID, numEntries
+	variable region, channelNumber
 
-	numTraces = ItemsInList(refTraces)
-	for(i = 0; i < numTraces; i += 1)
-		graphtrace = StringFromList(i, refTraces)
-		TimeAlignmentIfReq(graphtrace, TIME_ALIGNMENT_MAX, 0, -inf, inf)
+	if(!pa.autoTimeAlignment)
+		return NaN
+	endif
+
+	DFREF pulseAverageHelperDFR = GetDevicePulseAverageHelperFolder(pa.dfr)
+	WAVE properties = GetPulseAverageProperties(pulseAverageHelperDFR)
+	WAVE/WAVE propertiesWaves = GetPulseAveragePropertiesWaves(pulseAverageHelperDFR)
+
+	WAVE channels = ListToNumericWave(GetStringFromWaveNote(properties, "Channels"), ",")
+	numChannels = DimSize(channels, ROWS)
+
+	WAVE regions = ListToNumericWave(GetStringFromWaveNote(properties, "Regions"), ",")
+	numRegions = DimSize(regions, ROWS)
+
+	ASSERT(numChannels == numRegions, "Non-square input")
+
+	jsonID = JSON_New()
+
+	for(i = 0; i < numRegions; i += 1)
+		region = regions[i]
+		// diagonal element for the given region
+		channelNumber = channels[i]
+
+		// gather feature positions for all pulses diagonal set
+		WAVE setIndizes = GetPulseAverageSetIndizes(pulseAverageHelperDFR, channelNumber, region)
+
+		numEntries = GetNumberFromWaveNote(setIndizes, NOTE_INDEX)
+
+		if(numEntries == 0)
+			continue
+		endif
+
+		Make/D/FREE/N=(numEntries) featurePos, junk
+
+		Multithread featurePos[] = PA_GetFeaturePosition(propertiesWaves[setIndizes[p]])
+
+		Make/FREE/T/N=(numEntries) keys = "/" + num2str(properties[setIndizes[p]][%Sweep]) + "-" + num2str(properties[setIndizes[p]][%Pulse])
+
+		// store featurePos using sweep and pulse combination as key
+		junk[] = JSON_SetVariable(jsonID, keys[p], featurePos[p])
+
+		for(j = 0; j < numChannels; j += 1)
+			channelNumber = channels[j]
+			WAVE setIndizes = GetPulseAverageSetIndizes(pulseAverageHelperDFR, channelNumber, region)
+
+			numEntries = GetNumberFromWaveNote(setIndizes, NOTE_INDEX)
+
+			if(numEntries == 0)
+				continue
+			endif
+
+			Redimension/N=(numEntries) keys, junk
+
+			Multithread keys[] = "/" + num2str(properties[setIndizes[p]][%Sweep]) + "-" + num2str(properties[setIndizes[p]][%Pulse])
+			Multithread junk[] = PA_SetFeaturePosition(propertiesWaves[setIndizes[p]], JSON_GetVariable(jsonID, keys[p], ignoreErr=1))
+		endfor
 	endfor
+
+	JSON_Release(jsonID)
 End
 
-/// @brief Get all traces marked as reference traces for the current graph.
-///
-/// @param graph  Pulse Averaging Reference Graph (diagonal elements when multiple graphs)
-/// @returns graphtraces in the form graph#trace if the graph is a valid reference graph
-static Function/S PA_GetReferenceTracesFromGraph(graph)
-	string graph
+threadsafe static Function PA_GetFeaturePosition(WAVE wv)
 
-	ASSERT(WindowExists(graph), "specified PA graph does not exist")
+	variable featurePos
 
-	if(!str2num(GetUserData(graph, "", PA_USERDATA_REFERENCE_GRAPH)))
-		return ""
+	featurePos = GetNumberFromWaveNote(wv, "TimeAlignmentFeaturePosition")
+
+	if(IsFinite(featurePos))
+		return featurePos
 	endif
 
-	WAVE/T/Z traces = TUD_GetUserDataAsWave(graph, "traceName", \
-	                                        keys = {"TimeAlignmentReferencePulse"}, \
-	                                        values = {"1"})
+	WaveStats/M=1/Q wv
+	featurePos = V_maxLoc
+	SetNumberInWaveNote(wv, "TimeAlignmentFeaturePosition", featurePos, format="%.15g")
+	return featurePos
+End
 
-	if(!WaveExists(traces))
-		return ""
+threadsafe static Function PA_SetFeaturePosition(WAVE wv, variable featurePos)
+
+	variable offset
+	string name
+
+	if(GetNumberFromWaveNote(wv, NOTE_KEY_TIMEALIGN) == 1)
+		return NaN
 	endif
 
-	traces[] = graph + "#" + traces[p]
+	name = NameOfWave(wv)
 
-	return TextWaveToList(traces, ";")
+	if(IsNaN(featurePos))
+		return NaN
+	endif
+
+	offset = -featurePos
+	DEBUGPRINT_TS("pulse", str=name)
+	DEBUGPRINT_TS("old DimOffset", var=DimOffset(wv, ROWS))
+	DEBUGPRINT_TS("new DimOffset", var=DimOffset(wv, ROWS) + offset)
+	SetScale/P x, DimOffset(wv, ROWS) + offset, DimDelta(wv, ROWS), wv
+	SetNumberInWaveNote(wv, "TimeAlignmentTotalOffset", offset, format="%.15g")
+	SetNumberInWaveNote(wv, NOTE_KEY_TIMEALIGN, 1)
 End
 
 /// @brief Reset All Waves from a list of waves to its original state if they are outdated

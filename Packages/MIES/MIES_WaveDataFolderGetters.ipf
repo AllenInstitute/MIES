@@ -5573,7 +5573,7 @@ End
 /// It is filled by PA_GenerateAllPulseWaves() and consumed by others.
 Function/WAVE GetPulseAverageProperties(DFREF dfr)
 
-	variable versionOfNewWave = 1
+	variable versionOfNewWave = 2
 
 	ASSERT(DataFolderExistsDFR(dfr), "Invalid dfr")
 	WAVE/Z/SDFR=dfr wv = properties
@@ -5581,11 +5581,12 @@ Function/WAVE GetPulseAverageProperties(DFREF dfr)
 	if(ExistsWithCorrectLayoutVersion(wv, versionOfNewWave))
 		return wv
 	elseif(WaveExists(wv))
-		// handle upgrade
+		Redimension/N=(-1, 11) wv
 	else
-		Make/R/N=(MINIMUM_WAVE_SIZE_LARGE, 12) dfr:properties/Wave=wv
-		Multithread wv[] = NaN
+		Make/R/N=(MINIMUM_WAVE_SIZE_LARGE, 11) dfr:properties/Wave=wv
 	endif
+
+	Multithread wv[] = NaN
 
 	SetDimLabel COLS,  0, $"Sweep", wv
 	SetDimLabel COLS,  1, $"ChannelType", wv
@@ -5597,8 +5598,7 @@ Function/WAVE GetPulseAverageProperties(DFREF dfr)
 	SetDimLabel COLS,  7, $"ActiveRegionCount", wv
 	SetDimLabel COLS,  8, $"ActiveChanCount", wv
 	SetDimLabel COLS,  9, $"PulseHasFailed", wv
-	SetDimLabel COLS, 10, $"TimeAlignmentReferencePulse", wv
-	SetDimLabel COLS, 11, $"LastSweep", wv
+	SetDimLabel COLS, 10, $"LastSweep", wv
 
 	SetWaveVersion(wv, versionOfNewWave)
 	SetNumberInWaveNote(wv, NOTE_INDEX, 0)
