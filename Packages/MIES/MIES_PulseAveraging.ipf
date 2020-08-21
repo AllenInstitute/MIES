@@ -57,7 +57,7 @@ static Constant PA_PLOT_STEPPING = 16
 
 /// @brief Return a list of all average graphs
 Function/S PA_GetAverageGraphs(string win)
-	return WinList(PA_GetGraphPrefix(win) + "*", ";", "WIN:1")
+	return WinList(PA_GetGraphPrefix(GetMainWindow(win)) + "*", ";", "WIN:1")
 End
 
 static Function/S PA_GetGraphName(win, multipleGraphs, channelNumber, activeRegionCount)
