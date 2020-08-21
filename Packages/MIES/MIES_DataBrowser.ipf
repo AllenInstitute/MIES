@@ -97,6 +97,8 @@ Function DB_ResetAndStoreCurrentDBPanel()
 	SetWindow $panelTitle, userData(panelVersion) = ""
 	SetWindow $panelTitle, userdata(Config_FileName) = ""
 	SetWindow $panelTitle, userdata(Config_FileHash) = ""
+	SetWindow $panelTitle, userdata(Config_FileHash) = ""
+	SetWindow $panelTitle, userdata(PulseAverageSettings) = ""
 
 	// static defaults for SweepControl subwindow
 	PopupMenu Popup_SweepControl_Selector WIN = $scPanel, mode=1,popvalue=" ", value= #"\" \""
@@ -148,18 +150,26 @@ Function DB_ResetAndStoreCurrentDBPanel()
 	SetVariable setvar_cutoff_length_before WIN = $bsPanel, value= _NUM:0.1
 	CheckBox check_auto_remove WIN = $bsPanel, value= 0
 	CheckBox check_highlightRanges WIN = $bsPanel, value= 0
+
 	SetVariable setvar_pulseAver_fallbackLength WIN = $bsPanel, value= _NUM:100
 	SetVariable setvar_pulseAver_endPulse WIN = $bsPanel, value= _NUM:inf
 	SetVariable setvar_pulseAver_startPulse WIN = $bsPanel, value= _NUM:0
+	SetVariable setvar_pulseAver_vert_scale_bar WIN = $bsPanel, value= _NUM:1
+
 	CheckBox check_pulseAver_multGraphs WIN = $bsPanel, value= 0
-	CheckBox check_pulseAver_zeroTrac WIN = $bsPanel, value= 0
+	CheckBox check_pulseAver_zero WIN = $bsPanel, value= 0
 	CheckBox check_pulseAver_showAver WIN = $bsPanel, value= 0
-	CheckBox check_pulseAver_indTraces WIN = $bsPanel, value= 1
+	CheckBox check_pulseAver_indPulses WIN = $bsPanel, value= 1
 	CheckBox check_pulseAver_deconv WIN = $bsPanel, value= 0
 	CheckBox check_pulseAver_timeAlign WIN = $bsPanel, value= 0
+	CheckBox check_pulseAver_showTraces WIN = $bsPanel, value= 1
+	CheckBox check_pulseAver_ShowImage WIN = $bsPanel, value= 0
+	PopupMenu popup_pulseAver_colorscales WIN= $bsPanel, mode=60 // Classification
+
 	SetVariable setvar_pulseAver_deconv_tau WIN = $bsPanel, value= _NUM:15
 	SetVariable setvar_pulseAver_deconv_smth WIN = $bsPanel, value= _NUM:1000
 	SetVariable setvar_pulseAver_deconv_range WIN = $bsPanel, value= _NUM:inf
+
 	CheckBox check_BrowserSettings_OVS WIN = $bsPanel, value= 0
 	CheckBox check_BrowserSettings_AR WIN = $bsPanel, value= 0
 	CheckBox check_BrowserSettings_PA WIN = $bsPanel, value= 0

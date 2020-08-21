@@ -603,19 +603,22 @@ static Function PA_GatherSettings(win, s)
 
 	s.dfr                  = BSP_GetFolder(win, MIES_BSP_PANEL_FOLDER)
 	s.enabled              = GetCheckboxState(extPanel, "check_BrowserSettings_PA")
-	s.showIndividualTraces = GetCheckboxState(extPanel, "check_pulseAver_indTraces")
-	s.showAverageTrace     = GetCheckboxState(extPanel, "check_pulseAver_showAver")
+	s.showIndividualPulses = GetCheckboxState(extPanel, "check_pulseAver_indPulses")
+	s.showAverage          = GetCheckboxState(extPanel, "check_pulseAver_showAver")
 	s.multipleGraphs       = GetCheckboxState(extPanel, "check_pulseAver_multGraphs")
 	s.startingPulse        = GetSetVariable(extPanel, "setvar_pulseAver_startPulse")
 	s.endingPulse          = GetSetVariable(extPanel, "setvar_pulseAver_endPulse")
 	s.fallbackPulseLength  = GetSetVariable(extPanel, "setvar_pulseAver_fallbackLength")
 	s.regionSlider         = GetSliderPositionIndex(extPanel, "slider_BrowserSettings_dDAQ")
-	s.zeroTraces           = GetCheckboxState(extPanel, "check_pulseAver_zeroTrac")
+	s.zeroPulses           = GetCheckboxState(extPanel, "check_pulseAver_zero")
 	s.autoTimeAlignment    = GetCheckboxState(extPanel, "check_pulseAver_timeAlign")
 	s.searchFailedPulses   = GetCheckboxState(extPanel, "check_pulseAver_searchFailedPulses")
 	s.hideFailedPulses     = GetCheckboxState(extPanel, "check_pulseAver_hideFailedPulses")
 	s.failedPulsesLevel    = GetSetVariable(extPanel, "setvar_pulseAver_failedPulses_level")
 	s.yScaleBarLength      = GetSetVariable(extPanel, "setvar_pulseAver_vert_scale_bar")
+	s.showImage            = GetCheckboxState(extPanel, "check_pulseAver_ShowImage")
+	s.showTraces           = GetCheckboxState(extPanel, "check_pulseAver_ShowTraces")
+	s.imageColorScale      = GetPopupMenuString(extPanel, "popup_pulseAver_colorscales")
 
 	PA_DeconvGatherSettings(win, s.deconvolution)
 End
@@ -927,7 +930,7 @@ static Function PA_ShowPulses(string win, STRUCT PulseAverageSettings &pa, STRUC
 		WAVE plotWave = propertiesWaves[i]
 		fullPath = GetWavesDataFolder(plotWave, 2)
 
-		if(pa.showIndividualTraces)
+		if(pa.showIndividualPulses)
 
 			step = isDiagonalElement ? 1 : PA_PLOT_STEPPING
 
@@ -997,7 +1000,7 @@ static Function PA_ShowPulses(string win, STRUCT PulseAverageSettings &pa, STRUC
 				continue
 			endif
 
-			PA_ZeroTraces(setWaves, pa)
+			PA_ZeroPulses(setWaves, pa)
 
 			if(pa.autoTimeAlignment && pa.multipleGraphs)
 				activeRegionCount = j + 1
@@ -1057,7 +1060,7 @@ static Function PA_ShowPulses(string win, STRUCT PulseAverageSettings &pa, STRUC
 			endif
 			[vertAxis, horizAxis] = PA_GetAxes(pa.multipleGraphs, activeRegionCount, activeChanCount)
 
-			if(pa.showAverageTrace)
+			if(pa.showAverage)
 				if(WaveExists(averageTraceNames))
 					WAVE/Z foundAverageTraces = GrepTextWave(averageTraceNames, ".*\\E" + PA_AVERAGE_WAVE_PREFIX + basename + "\\Q" + "$")
 				else
@@ -1178,7 +1181,7 @@ static Function PA_DrawScaleBars(string win, STRUCT PulseAverageSettings &pa, va
 	variable activeChanCount, activeRegionCount, maximum, length
 	string graph, vertAxis, horizAxis, baseName
 
-	if(!pa.showIndividualTraces && !pa.showAverageTrace && !pa.deconvolution.enable)
+	if(!pa.showIndividualPulses && !pa.showAverage && !pa.deconvolution.enable)
 		// blank graph
 		return NaN
 	endif
@@ -1385,10 +1388,10 @@ static Function/S PA_BaseName(channelNumber, headStage)
 	return baseName
 End
 
-/// @brief Zero pulse averaging traces using @c ZeroWave
-static Function PA_ZeroTraces(WAVE/WAVE set, STRUCT PulseAverageSettings &pa)
+/// @brief Zero single pulses using @c ZeroWave
+static Function PA_ZeroPulses(WAVE/WAVE set, STRUCT PulseAverageSettings &pa)
 
-	if(!pa.zeroTraces)
+	if(!pa.zeroPulses)
 		return NaN
 	endif
 
@@ -1465,30 +1468,6 @@ static Function/WAVE PA_Deconvolution(average, outputDFR, outputWaveName, deconv
 End
 
 Function PA_CheckProc_Common(cba) : CheckBoxControl
-	STRUCT WMCheckboxAction &cba
-
-	switch(cba.eventCode)
-		case 2: // mouse up
-			PA_Update(cba.win, POST_PLOT_CONSTANT_SWEEPS)
-			break
-	endswitch
-
-	return 0
-End
-
-Function PA_CheckProc_Individual(cba) : CheckBoxControl
-	STRUCT WMCheckboxAction &cba
-
-	switch(cba.eventCode)
-		case 2: // mouse up
-			PA_Update(cba.win, POST_PLOT_CONSTANT_SWEEPS)
-			break
-	endswitch
-
-	return 0
-End
-
-Function PA_CheckProc_Average(cba) : CheckBoxControl
 	STRUCT WMCheckboxAction &cba
 
 	switch(cba.eventCode)
@@ -1672,13 +1651,13 @@ static Function PA_ResetWavesIfRequired(WAVE/WAVE wv, STRUCT PulseAverageSetting
 			continue // wave is unmodified
 		endif
 
-		if(statusZero == pa.zeroTraces                          \
+		if(statusZero == pa.zeroPulses                          \
 		   && statusTimeAlign == pa.autoTimeAlignment           \
 		   && statusSearchFailedPulse == pa.searchFailedPulses)
 
 			// when zeroing and failed pulse search is enabled, we always
 			// need to reset the waves when the level changes
-			if(!(pa.zeroTraces && pa.searchFailedPulses && pa.failedPulsesLevel != failedPulseLevel))
+			if(!(pa.zeroPulses && pa.searchFailedPulses && pa.failedPulsesLevel != failedPulseLevel))
 				continue // wave is up to date
 			endif
 		endif
@@ -1788,19 +1767,22 @@ Function PA_SerializeSettings(string win, STRUCT PulseAverageSettings &pa)
 
 	JSON_AddString(jsonID, "/dfr", datafolder)
 	JSON_AddVariable(jsonID, "/enabled", pa.enabled)
-	JSON_AddVariable(jsonID, "/showIndividualTraces", pa.showIndividualTraces)
-	JSON_AddVariable(jsonID, "/showAverageTrace", pa.showAverageTrace)
+	JSON_AddVariable(jsonID, "/showIndividualPulses", pa.showIndividualPulses)
+	JSON_AddVariable(jsonID, "/showAverage", pa.showAverage)
 	JSON_AddVariable(jsonID, "/startingPulse", pa.startingPulse)
 	JSON_AddVariable(jsonID, "/endingPulse", pa.endingPulse)
 	JSON_AddVariable(jsonID, "/regionSlider", pa.regionSlider)
 	JSON_AddVariable(jsonID, "/fallbackPulseLength", pa.fallbackPulseLength)
 	JSON_AddVariable(jsonID, "/multipleGraphs", pa.multipleGraphs)
-	JSON_AddVariable(jsonID, "/zeroTraces", pa.zeroTraces)
+	JSON_AddVariable(jsonID, "/zeroPulses", pa.zeroPulses)
 	JSON_AddVariable(jsonID, "/autoTimeAlignment", pa.autoTimeAlignment)
 	JSON_AddVariable(jsonID, "/hideFailedPulses", pa.hideFailedPulses)
 	JSON_AddVariable(jsonID, "/searchFailedPulses", pa.searchFailedPulses)
 	JSON_AddVariable(jsonID, "/failedPulsesLevel", pa.failedPulsesLevel)
 	JSON_AddVariable(jsonID, "/yScaleBarLength", pa.yScaleBarLength)
+	JSON_AddVariable(jsonID, "/showImage", pa.showImage)
+	JSON_AddVariable(jsonID, "/showTraces", pa.showTraces)
+	JSON_AddString(jsonID, "/imageColorScale", pa.imageColorScale)
 	JSON_AddTreeObject(jsonID, "/deconvolution")
 	JSON_AddVariable(jsonID, "/deconvolution/enable", pa.deconvolution.enable)
 	JSON_AddVariable(jsonID, "/deconvolution/smth", pa.deconvolution.smth)
@@ -1838,19 +1820,22 @@ Function PA_DeserializeSettings(string win, STRUCT PulseAverageSettings &pa)
 
 	DFREF pa.dfr            = $JSON_GetString(jsonID, "/dfr")
 	pa.enabled              = JSON_GetVariable(jsonID, "/enabled")
-	pa.showIndividualTraces = JSON_GetVariable(jsonID, "/showIndividualTraces")
-	pa.showAverageTrace     = JSON_GetVariable(jsonID, "/showAverageTrace")
+	pa.showIndividualPulses = JSON_GetVariable(jsonID, "/showIndividualPulses")
+	pa.showAverage          = JSON_GetVariable(jsonID, "/showAverage")
 	pa.startingPulse        = JSON_GetVariable(jsonID, "/startingPulse")
 	pa.endingPulse          = JSON_GetVariable(jsonID, "/endingPulse")
 	pa.regionSlider         = JSON_GetVariable(jsonID, "/regionSlider")
 	pa.fallbackPulseLength  = JSON_GetVariable(jsonID, "/fallbackPulseLength")
 	pa.multipleGraphs       = JSON_GetVariable(jsonID, "/multipleGraphs")
-	pa.zeroTraces           = JSON_GetVariable(jsonID, "/zeroTraces")
+	pa.zeroPulses           = JSON_GetVariable(jsonID, "/zeroPulses")
 	pa.autoTimeAlignment    = JSON_GetVariable(jsonID, "/autoTimeAlignment")
 	pa.hideFailedPulses     = JSON_GetVariable(jsonID, "/hideFailedPulses")
 	pa.searchFailedPulses   = JSON_GetVariable(jsonID, "/searchFailedPulses")
 	pa.failedPulsesLevel    = JSON_GetVariable(jsonID, "/failedPulsesLevel")
 	pa.yScaleBarLength      = JSON_GetVariable(jsonID, "/yScaleBarLength")
+	pa.showImage            = JSON_GetVariable(jsonID, "/showImage")
+	pa.showTraces           = JSON_GetVariable(jsonID, "/showTraces")
+	pa.imageColorScale      = JSON_GetString(jsonID, "/imageColorScale")
 	pa.deconvolution.enable = JSON_GetVariable(jsonID, "/deconvolution/enable")
 	pa.deconvolution.smth   = JSON_GetVariable(jsonID, "/deconvolution/smth")
 	pa.deconvolution.tau    = JSON_GetVariable(jsonID, "/deconvolution/tau")

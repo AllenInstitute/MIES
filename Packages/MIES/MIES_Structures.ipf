@@ -44,30 +44,35 @@ Function InitPulseAverageSettings(pa)
 	STRUCT PulseAverageSettings &pa
 
 	pa.enabled              = 0
-	pa.showIndividualTraces = NaN
-	pa.showAverageTrace     = NaN
+	pa.showIndividualPulses = NaN
+	pa.showAverage          = NaN
 	pa.startingPulse        = NaN
 	pa.endingPulse          = NaN
 	pa.regionSlider         = NaN
 	pa.fallbackPulseLength  = NaN
 	pa.multipleGraphs       = NaN
-	pa.zeroTraces           = NaN
+	pa.zeroPulses           = NaN
 	pa.autoTimeAlignment    = NaN
 	pa.dfr                  = $""
 	pa.hideFailedPulses     = NaN
 	pa.searchFailedPulses   = NaN
 	pa.failedPulsesLevel    = NaN
 	pa.yScaleBarLength      = NaN
+	pa.showImage            = NaN
+	pa.showTraces           = NaN
+	pa.imageColorScale      = ""
 End
 
 // If this structure changes, #PA_SETTINGS_STRUCT_VERSION/PA_SerializeSettings() and
 // PA_DeSerializeSettings() needs adaptation.
 Structure PulseAverageSettings
-	variable showIndividualTraces, showAverageTrace
+	variable showIndividualPulses, showAverage
 	variable regionSlider, multipleGraphs
-	variable zeroTraces, autoTimeAlignment, enabled
+	variable zeroPulses, autoTimeAlignment, enabled
 	variable hideFailedPulses, searchFailedPulses
 	variable failedPulsesLevel, yScaleBarLength
+	variable showImage, showTraces
+	string imageColorScale
 
 	/// @{
 	/// These settings influence the extracted single pulse waves, see also
