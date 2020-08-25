@@ -781,7 +781,6 @@ static Function PA_ShowPulses(string win, STRUCT PulseAverageSettings &pa, STRUC
 
 	if(!pa.enabled)
 		KillWindows(preExistingGraphs)
-		CallFunctionForEachListItem(TUD_Clear, preExistingGraphs)
 		return NaN
 	endif
 
@@ -966,7 +965,6 @@ static Function PA_ShowPulses(string win, STRUCT PulseAverageSettings &pa, STRUC
 		graph = StringFromList(i, preExistingGraphs)
 		if(WhichListItem(graph, newlyCreatedGraphs) == -1)
 			KillWindow/Z $graph
-			TUD_Clear(graph)
 		endif
 	endfor
 
