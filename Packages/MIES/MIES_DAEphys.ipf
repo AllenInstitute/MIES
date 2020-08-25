@@ -742,7 +742,8 @@ Function DAP_WindowHook(s)
 			PS_StoreWindowCoordinate(JSONid, panelTitle)
 
 			DAP_UnlockDevice(panelTitle)
-			return 1
+			// return zero so that other hooks are called as well
+			break
 		case 22: // mouse wheel
 			panelTitle = s.winName
 
@@ -4256,12 +4257,10 @@ End
 Function DAP_CommentPanelHook(s)
 	STRUCT WMWinHookStruct &s
 
-	variable hookResult
 	string panelTitle
 
 	switch(s.eventCode)
 		case 2: // kill
-			hookResult = 1
 			panelTitle = GetMainWindow(s.winName)
 
 			if(!DAP_DeviceIsUnlocked(panelTitle))
@@ -4270,7 +4269,8 @@ Function DAP_CommentPanelHook(s)
 			break
 	endswitch
 
-	return hookResult		// 0 if nothing done, else 1
+	// return zero so that other hooks are called as well
+	return 0
 End
 
 Function DAP_SetVarProc_TPAmp(sva) : SetVariableControl

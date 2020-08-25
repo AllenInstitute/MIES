@@ -664,15 +664,13 @@ Function DB_CloseSettingsHistoryHook(s)
 	STRUCT WMWinHookStruct &s
 
 	string mainPanel, shPanel
-	variable hookResult = 0
 
 	switch(s.eventCode)
 		case 17: // killVote
 			mainPanel = GetMainWindow(s.winName)
 
 			if(!BSP_IsDataBrowser(mainPanel))
-				hookResult = 0
-				break
+				return 0
 			endif
 
 			shPanel = DB_GetSettingsHistoryPanel(mainPanel)
@@ -683,11 +681,10 @@ Function DB_CloseSettingsHistoryHook(s)
 
 			BSP_MainPanelButtonToggle(mainPanel, 1)
 
-			hookResult = 2 // don't kill window
-			break
+			return 2 // don't kill window
 	endswitch
 
-	return hookResult
+	return 0
 End
 
 Function DB_ButtonProc_AutoScale(ba) : ButtonControl
@@ -970,7 +967,6 @@ End
 Function DB_SweepBrowserWindowHook(s)
 	STRUCT WMWinHookStruct &s
 
-	variable hookResult
 	string win
 
 	switch(s.eventCode)
@@ -994,9 +990,9 @@ Function DB_SweepBrowserWindowHook(s)
 				ClearRTError()
 			endtry
 
-			hookResult = 1
 			break
 	endswitch
 
-	return hookResult // 0 if nothing done, else 1
+	// return zero so that other hooks are called as well
+	return 0
 End

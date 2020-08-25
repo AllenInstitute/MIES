@@ -13,17 +13,15 @@
 Function TUD_RemoveUserDataWave(s)
 	STRUCT WMWinHookStruct &s
 
-	variable hookResult
-
 	switch(s.eventCode)
 		case 2: // Kill
 			TUD_Clear(s.winName)
-
-			hookResult = 1
 			break
 	endswitch
 
-	return hookResult // 0 if nothing done, else 1
+	// we always return zero here as other window hooks
+	// might be registered for the window
+	return 0
 End
 
 /// @brief Clear the user data wave and release the indexing JSON document
