@@ -1484,13 +1484,6 @@ Function PA_SetVarProc_Common(sva) : SetVariableControl
 	return 0
 End
 
-/// @brief checks if PA is active.
-Function PA_IsActive(win)
-	string win
-
-	return BSP_IsActive(win, MIES_BSP_PA)
-End
-
 /// @brief Update deconvolution traces in Sweep Plots
 static Function PA_UpdateSweepPlotDeconvolution(win)
 	string win
@@ -1501,7 +1494,7 @@ static Function PA_UpdateSweepPlotDeconvolution(win)
 	variable i, numGraphs, j, numTraces, traceIndex
 	STRUCT PulseAverageDeconvSettings deconvolution
 
-	if(!PA_IsActive(win))
+	if(!BSP_IsActive(win, MIES_BSP_PA))
 		return 0
 	endif
 
