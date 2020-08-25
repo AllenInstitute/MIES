@@ -30,18 +30,9 @@ Function CreatesWave()
 	CHECK(JSON_Exists(GetNumberFromWaveNote(graphUserData, TUD_INDEX_JSON), ""))
 End
 
-// Test: GetGraphUserData, TUD_Clear, TUD_RemoveUserDataWave
-Function ClearsWaveOnKillWindow()
+Function KillGraphAndCheckEmptyUserData_IGNORE(string graph, WAVE/T graphUserData)
 
-	variable modCount
-
-	SVAR graph = root:graph
-
-	WAVE/T/Z graphUserData = GetGraphUserData(graph)
-
-	TUD_SetUserData(graph, "trace1", "efgh", "ijkl")
-
-	modCount = WaveModCount(graphUserData)
+	variable modCount = WaveModCount(graphUserData)
 
 	KillWindow $graph
 	DoUpdate
@@ -52,8 +43,20 @@ Function ClearsWaveOnKillWindow()
 	CHECK_EQUAL_VAR(GetNumberFromWaveNote(graphUserData, NOTE_INDEX), 0)
 	CHECK_EQUAL_VAR(GetNumberFromWaveNote(graphUserData, TUD_INDEX_JSON), NaN)
 
-	Make/N=(DimSize(graphUserData, ROWS), DimSize(graphUserData, COLS)) sizes = strlen(graphUserData[p][q])
+	Make/FREE/N=(DimSize(graphUserData, ROWS), DimSize(graphUserData, COLS)) sizes = strlen(graphUserData[p][q])
 	CHECK_EQUAL_VAR(Sum(sizes), 0)
+End
+
+// Test: GetGraphUserData, TUD_Clear, TUD_Init
+Function ClearsWaveOnKillWindow()
+
+	SVAR graph = root:graph
+
+	WAVE/T/Z graphUserData = GetGraphUserData(graph)
+
+	TUD_SetUserData(graph, "trace1", "efgh", "ijkl")
+
+	KillGraphAndCheckEmptyUserData_IGNORE(graph, graphUserData)
 End
 
 // Test: TUD_SetUserData
