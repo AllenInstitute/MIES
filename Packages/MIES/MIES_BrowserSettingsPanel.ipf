@@ -563,9 +563,9 @@ End
 Function BSP_ClosePanelHook(s)
 	STRUCT WMWinHookStruct &s
 
-	string mainPanel, panelButton
-	string panels = ""
-	variable hookResult = 0
+	string mainPanel
+	string panels
+	variable hookResult
 
 	switch(s.eventCode)
 		case 17: // killVote
