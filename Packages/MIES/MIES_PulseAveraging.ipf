@@ -415,7 +415,7 @@ static Function PA_GenerateAllPulseWaves(string win, STRUCT PulseAverageSettings
 		return NaN
 	endif
 
-	WAVE/T/Z traceData = GetTraceInfos(win)
+	WAVE/T/Z traceData = GetTraceInfos(GetMainWindow(win))
 
 	if(!WaveExists(traceData))
 		return NaN
