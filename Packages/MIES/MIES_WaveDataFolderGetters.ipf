@@ -6548,8 +6548,7 @@ Function/WAVE GetGraphUserData(string graph)
 		// handle upgrade
 	else
 		Make/T/N=(MINIMUM_WAVE_SIZE_LARGE, 0) dfr:$name/WAVE=wv
-		ASSERT(WinType(graph) == 1, "Expected graph")
-		SetWindow $graph, hook(traceUserDataCleanup) = TUD_RemoveUserDataWave
+		TUD_Init(graph)
 	endif
 
 	SetWaveVersion(wv, versionOfNewWave)

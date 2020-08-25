@@ -221,6 +221,16 @@ Function TUD_TraceIsOnGraph(string graph, string trace)
 	return TUD_ConvertTraceNameToRowIndex(graphUserData, trace, create = 0, allowMissing = 1) >= 0
 End
 
+/// @brief Initialize the graph for our user trace data handling
+///
+/// This is done implicitly after the user data wave is created. Once that is cleared
+/// with TUD_Clear() and the window is gone, this function can be used to reattach
+/// the cleanup hook to the newly created graph.
+Function TUD_Init(string graph)
+	ASSERT(WinType(graph) == 1, "Expected graph")
+	SetWindow $graph, hook(traceUserDataCleanup) = TUD_RemoveUserDataWave
+End
+
 static Function TUD_AddTrace(variable jsonID, WAVE/T graphUserData, string trace)
 
 	variable index, traceCol

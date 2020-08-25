@@ -57,6 +57,16 @@ Function ClearsWaveOnKillWindow()
 	TUD_SetUserData(graph, "trace1", "efgh", "ijkl")
 
 	KillGraphAndCheckEmptyUserData_IGNORE(graph, graphUserData)
+
+	// recreate the graph
+	Display/N=$graph
+
+	// needs now a manual call
+	TUD_Init(graph)
+	TUD_SetUserData(graph, "trace1", "efgh", "ijkl")
+
+	// check that the window hook is reattached with TUD_Init()
+	KillGraphAndCheckEmptyUserData_IGNORE(graph, graphUserData)
 End
 
 // Test: TUD_SetUserData
