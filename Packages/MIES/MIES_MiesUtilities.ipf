@@ -4906,6 +4906,21 @@ Function RemoveFreeAxisFromGraph(graph)
 	endfor
 End
 
+/// @brief Remove all images from a graph
+Function RemoveImagesFromGraph(string graph)
+
+	variable i, numEntries
+	string images, instance
+
+	images = ImageNameList(graph, ";")
+
+	numEntries = ItemsInList(images)
+	for(i = 0; i < numEntries; i += 1)
+		instance = StringFromList(i, images)
+		RemoveImage/W=$graph $instance
+	endfor
+End
+
 /// @brief Remove traces from a graph and optionally try to kill their waves
 ///
 /// @param graph                            graph
