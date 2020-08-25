@@ -112,6 +112,7 @@ static Function/S PA_GetGraph(string mainWin, STRUCT PulseAverageSettings &pa, v
 		bottom += height_offset
 		Display/W=(left, top, right, bottom)/K=1/N=$win
 		SetWindow $win, userdata($MIES_BSP_PA_MAINPANEL) = mainWin
+		TUD_Init(win)
 
 		if(pa.multipleGraphs)
 			winAbove = PA_GetGraphName(mainWin, pa, channelNumber - 1, activeRegionCount)
