@@ -30,8 +30,8 @@
 /// The dDAQ slider in the Databrowse/Sweepbrowser is respected as is the
 /// channel selection.
 
-static StrConstant PULSE_AVERAGE_GRAPH_PREFIX = "PulseAverage"
-static StrConstant SOURCE_WAVE_TIMESTAMP      = "SOURCE_WAVE_TS"
+static StrConstant PA_GRAPH_PREFIX          = "PulseAverage"
+static StrConstant PA_SOURCE_WAVE_TIMESTAMP = "SOURCE_WAVE_TS"
 
 static StrConstant PA_AVERAGE_WAVE_PREFIX       = "average_"
 static StrConstant PA_DECONVOLUTION_WAVE_PREFIX = "deconv_"
@@ -48,8 +48,9 @@ static Constant PA_PLOT_STEPPING = 16
 // comment out to show all the axes, useful for debugging
 #define PA_HIDE_AXIS
 
-/// @brief Return a list of all average graphs
-Function/S PA_GetAverageGraphs(string win)
+/// @brief Return a list of all graphs
+static Function/S PA_GetGraphs(string win)
+
 	return WinList(PA_GetGraphPrefix(GetMainWindow(win)) + "*", ";", "WIN:1")
 End
 
@@ -65,7 +66,7 @@ End
 // @brief Return the window name prefix of all PA graphs for the given Browser window
 static Function/S PA_GetGraphPrefix(string win)
 
-	return GetMainWindow(win) + "_" + PULSE_AVERAGE_GRAPH_PREFIX
+	return GetMainWindow(win) + "_" + PA_GRAPH_PREFIX
 End
 
 /// @brief Return the name of the pulse average graph
@@ -330,7 +331,7 @@ static Function/WAVE PA_CreateAndFillPulseWaveIfReq(wv, singleSweepFolder, chann
 
 	if(existingLength != length)
 		Redimension/N=(length) singlePulseWave
-	elseif(GetNumberFromWaveNote(wv, SOURCE_WAVE_TIMESTAMP) == ModDate(wv))
+	elseif(GetNumberFromWaveNote(wv, PA_SOURCE_WAVE_TIMESTAMP) == ModDate(wv))
 		return singlePulseWave
 	endif
 
@@ -348,7 +349,7 @@ static Function/WAVE PA_CreateAndFillPulseWaveIfReq(wv, singleSweepFolder, chann
 
 	SetNumberInWaveNote(singlePulseWave, "PulseLength", length)
 
-	SetNumberInWaveNote(wv, SOURCE_WAVE_TIMESTAMP, ModDate(wv))
+	SetNumberInWaveNote(wv, PA_SOURCE_WAVE_TIMESTAMP, ModDate(wv))
 
 	CreateBackupWave(singlePulseWave)
 
@@ -584,7 +585,7 @@ static Function PA_GatherSettings(win, s)
 	win      = GetMainWindow(win)
 	extPanel = BSP_GetPanel(win)
 
-	if(!PA_IsActive(win))
+	if(!BSP_IsActive(win, MIES_BSP_PA))
 		InitPulseAverageSettings(s)
 		return 0
 	endif
@@ -778,7 +779,7 @@ static Function PA_ShowPulses(string win, STRUCT PulseAverageSettings &pa, STRUC
 
 	graph = GetMainWindow(win)
 
-	preExistingGraphs = PA_GetAverageGraphs(win)
+	preExistingGraphs = PA_GetGraphs(win)
 
 	if(!pa.enabled)
 		KillWindows(preExistingGraphs)
@@ -1087,7 +1088,7 @@ static Function PA_ShowPulses(string win, STRUCT PulseAverageSettings &pa, STRUC
 	PA_LayoutGraphs(win, pulseAverageHelperDFR, regions, channels, pa)
 End
 
-Function [WAVE/WAVE dest, WAVE/WAVE source] PA_CalculateAllAverages(STRUCT PulseAverageSettings &pa)
+static Function [WAVE/WAVE dest, WAVE/WAVE source] PA_CalculateAllAverages(STRUCT PulseAverageSettings &pa)
 
 	variable numChannels, numRegions, i, j, channelNumber, region, numThreads
 
@@ -1140,9 +1141,9 @@ Function PA_AxisHook(s)
 	return 0
 End
 
-Function PA_UpdateScaleBars(string win)
+static Function PA_UpdateScaleBars(string win)
 
-	if(GrepString(win, PULSE_AVERAGE_GRAPH_PREFIX))
+	if(GrepString(win, PA_GRAPH_PREFIX))
 		win = GetUserData(win, "", MIES_BSP_PA_MAINPANEL)
 	endif
 
@@ -1507,7 +1508,7 @@ static Function PA_UpdateSweepPlotDeconvolution(win)
 	bsPanel = BSP_GetPanel(win)
 	PA_DeconvGatherSettings(bsPanel, deconvolution)
 
-	graphs = PA_GetAverageGraphs(win)
+	graphs = PA_GetGraphs(win)
 	numGraphs = ItemsInList(graphs)
 	for(i = 0; i < numGraphs; i += 1)
 		graph = StringFromList(i, graphs)
@@ -1792,7 +1793,7 @@ End
 ///
 ///
 /// @return Valid JSON id, caller must release memory.
-Function PA_SerializeSettings(string win, STRUCT PulseAverageSettings &pa)
+static Function PA_SerializeSettings(string win, STRUCT PulseAverageSettings &pa)
 
 	variable jsonID
 	string datafolder
@@ -1840,7 +1841,7 @@ End
 ///
 ///
 /// @return Valid JSON id, caller must release memory, or NaN on error/incompatible struct
-Function PA_DeserializeSettings(string win, STRUCT PulseAverageSettings &pa)
+static Function PA_DeserializeSettings(string win, STRUCT PulseAverageSettings &pa)
 
 	variable jsonID, version
 
