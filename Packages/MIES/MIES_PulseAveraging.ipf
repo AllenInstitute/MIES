@@ -909,7 +909,7 @@ static Function PA_ShowPulses(string win, STRUCT PulseAverageSettings &pa, STRUC
 				RemoveTracesFromGraph(graph)
 				TUD_Clear(graph)
 			endif
-			DeleteAnnotations/W=$graph/A
+			RemoveAnnotationsFromGraph(graph)
 			newlyCreatedGraphs = AddListItem(graph, newlyCreatedGraphs, ";", inf)
 		endif
 
