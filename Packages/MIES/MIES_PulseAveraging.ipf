@@ -634,8 +634,7 @@ static Function PA_DeconvGatherSettings(win, deconvolution)
 
 	string bsPanel = BSP_GetPanel(win)
 
-	deconvolution.enable = GetCheckboxState(bsPanel, "check_pulseAver_deconv") \
-	                       && GetCheckboxState(bsPanel, "check_pulseAver_showAver")
+	deconvolution.enable = GetCheckboxState(bsPanel, "check_pulseAver_deconv")
 	deconvolution.smth   = GetSetVariable(bsPanel, "setvar_pulseAver_deconv_smth")
 	deconvolution.tau    = GetSetVariable(bsPanel, "setvar_pulseAver_deconv_tau")
 	deconvolution.range  = GetSetVariable(bsPanel, "setvar_pulseAver_deconv_range")
