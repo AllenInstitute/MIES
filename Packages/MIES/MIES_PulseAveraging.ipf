@@ -643,8 +643,8 @@ End
 /// @brief Update the PA plot to accomodate changed settings
 Function PA_Update(string win, variable mode, [WAVE/Z additionalData])
 
-	string graph
-	variable jsonIDOld, jsonID, constantSettings
+	string graph, preExistingGraphs, usedTraceGraphs
+	variable jsonIDOld, needsPlotting
 
 	if(ParamIsDefault(additionalData))
 		WAVE/Z additionalData = $""
@@ -654,18 +654,24 @@ Function PA_Update(string win, variable mode, [WAVE/Z additionalData])
 
 	STRUCT PulseAverageSettings old
 	jsonIDOld = PA_DeSerializeSettings(graph, old)
+	JSON_Release(jsonIDOld, ignoreErr=1)
 
 	STRUCT PulseAverageSettings current
 	PA_GatherSettings(graph, current)
-	jsonID = PA_SerializeSettings(graph, current)
+	PA_SerializeSettings(graph, current)
 
-	if(IsFinite(jsonIDOld))
-		constantSettings = !cmpstr(JSON_Dump(jsonID, indent=-1), JSON_Dump(jsonIDOld, indent=-1))
-		JSON_Release(jsonIDOld)
+	WAVE/WAVE/Z targetForAverage, sourceForAverage
+	[targetForAverage, sourceForAverage, needsPlotting] = PA_PreProcessPulses(win, current, old, mode)
+
+	if(!needsPlotting)
+		return NaN
 	endif
-	JSON_Release(jsonID)
 
-	PA_ShowPulses(graph, current, old, constantSettings, mode, additionalData)
+	preExistingGraphs = PA_GetGraphs(win, PA_DISPLAYMODE_ALL)
+
+	usedTraceGraphs = PA_ShowPulses(graph, current, targetForAverage, sourceForAverage, mode, additionalData)
+
+	KillWindows(RemoveFromList(usedTraceGraphs, preExistingGraphs))
 End
 
 static Function/WAVE PA_GetSetWaves(DFREF dfr, variable channelNumber, variable region, [variable removeFailedPulses])
@@ -779,9 +785,9 @@ static Function PA_MarkFailedPulses(WAVE properties, WAVE/WAVE propertiesWaves, 
 	Multithread junkWave[] = SetNumberInWaveNote(propertiesWaves[p], NOTE_KEY_FAILED_PULSE_LEVEL, pa.failedPulsesLevel)
 End
 
-static Function PA_ShowPulses(string win, STRUCT PulseAverageSettings &pa, STRUCT PulseAverageSettings &paOld, variable constantSettings, variable mode, WAVE/Z additionalData)
+static Function/S PA_ShowPulses(string win, STRUCT PulseAverageSettings &pa, WAVE/Z targetForAverageGeneric, WAVE/Z sourceForAverageGeneric, variable mode, WAVE/Z additionalData)
 
-	string pulseTrace, channelTypeStr, str, graph, preExistingGraphs, key
+	string pulseTrace, channelTypeStr, str, graph, key
 	variable numChannels, i, j, sweepNo, headstage, numTotalPulses, pulse, xPos, yPos, needsPlotting
 	variable first, numEntries, startingPulse, endingPulse, traceCount, step, isDiagonalElement
 	variable red, green, blue, channelNumber, region, channelType, length, newSweepCount
@@ -789,38 +795,14 @@ static Function PA_ShowPulses(string win, STRUCT PulseAverageSettings &pa, STRUC
 	variable numRegions, hideTrace, lastSweep, alpha, constantSinglePulseSettings
 	string vertAxis, horizAxis, channelNumberStr, experiment
 	string baseName, traceName, fullPath, tagName
-	string newlyCreatedGraphs = ""
+	string usedGraphs = ""
 
-	graph = GetMainWindow(win)
-
-	preExistingGraphs = PA_GetGraphs(win, PA_DISPLAYMODE_TRACES)
-
-	if(!pa.enabled)
-		KillWindows(preExistingGraphs)
-		return NaN
+	if(!pa.showTraces)
+		return usedGraphs
 	endif
 
-	if(TUD_GetTraceCount(graph) == 0) // no traces
-		// fake one graph
-		if(IsEmpty(preExistingGraphs))
-			preExistingGraphs = PA_GetGraph(win, pa, PA_DISPLAYMODE_TRACES, 1, 1, 1, 1)
-		endif
-
-		// clear all graphs from earlier runs
-		numEntries = ItemsInList(preExistingGraphs)
-		for(i = 0; i < numEntries; i += 1)
-			graph = StringFromList(i, preExistingGraphs)
-			RemoveTracesFromGraph(graph)
-			TUD_Clear(graph)
-		endfor
-		return NaN
-	endif
-
-	constantSinglePulseSettings = (pa.startingPulse == paOld.startingPulse                \
-	                               && pa.endingPulse == paOld.endingPulse                 \
-	                               && pa.fallbackPulseLength == paOld.fallbackPulseLength)
-
-	PA_GenerateAllPulseWaves(win, pa, constantSinglePulseSettings, mode)
+	WAVE/WAVE/Z targetForAverage = targetForAverageGeneric
+	WAVE/WAVE/Z sourceForAverage = sourceForAverageGeneric
 
 	Make/FREE/T userDataKeys = {"fullPath", "sweepNumber", "headstage", "region", "channelNumber", "channelType",                           \
 	                            "pulseIndex", "traceType", "occurence", "XAXIS", "YAXIS", "DiagonalElement"}
@@ -832,18 +814,13 @@ static Function PA_ShowPulses(string win, STRUCT PulseAverageSettings &pa, STRUC
 	WAVE/T propertiesText = GetPulseAveragePropertiesText(pulseAverageHelperDFR)
 	WAVE/WAVE propertiesWaves = GetPulseAveragePropertiesWaves(pulseAverageHelperDFR)
 
-	numTotalPulses = GetNumberFromWaveNote(properties, NOTE_INDEX)
+	WAVE channels = ListToNumericWave(GetStringFromWaveNote(properties, "Channels"), ",")
+	numChannels = DimSize(channels, ROWS)
 
-	if(numTotalPulses == 0)
-		// clear all graphs from earlier runs
-		numEntries = ItemsInList(preExistingGraphs)
-		for(i = 0; i < numEntries; i += 1)
-			graph = StringFromList(i, preExistingGraphs)
-			RemoveTracesFromGraph(graph)
-			TUD_Clear(graph)
-		endfor
-		return NaN
-	endif
+	WAVE regions = ListToNumericWave(GetStringFromWaveNote(properties, "Regions"), ",")
+	numRegions = DimSize(regions, ROWS)
+
+	numTotalPulses = GetNumberFromWaveNote(properties, NOTE_INDEX)
 
 	if(mode == POST_PLOT_ADDED_SWEEPS)
 		newSweepCount = DimSize(additionalData, ROWS)
@@ -856,29 +833,6 @@ static Function PA_ShowPulses(string win, STRUCT PulseAverageSettings &pa, STRUC
 			newExperiments[i] = experiment
 		endfor
 	endif
-
-	WAVE channels = ListToNumericWave(GetStringFromWaveNote(properties, "Channels"), ",")
-	numChannels = DimSize(channels, ROWS)
-
-	WAVE regions = ListToNumericWave(GetStringFromWaveNote(properties, "Regions"), ",")
-	numRegions = DimSize(regions, ROWS)
-
-	for(i = 0; i < numChannels; i += 1)
-		channelNumber = channels[i]
-		for(j = 0; j < numRegions; j += 1)
-			region = regions[j]
-
-			WAVE/WAVE/Z setWaves = PA_GetSetWaves(pulseAverageHelperDFR, channelNumber, region)
-
-			if(!WaveExists(setWaves))
-				continue
-			endif
-
-			PA_ResetWavesIfRequired(setWaves, pa)
-		endfor
-	endfor
-
-	PA_MarkFailedPulses(properties, propertiesWaves, pa)
 
 	for(i = 0; i < numTotalPulses; i += 1)
 
@@ -919,13 +873,13 @@ static Function PA_ShowPulses(string win, STRUCT PulseAverageSettings &pa, STRUC
 
 		[vertAxis, horizAxis] = PA_GetAxes(pa, activeRegionCount, activeChanCount)
 
-		if(WhichListItem(graph, newlyCreatedGraphs) == -1)
+		if(WhichListItem(graph, usedGraphs) == -1)
 			if(mode != POST_PLOT_ADDED_SWEEPS)
 				RemoveTracesFromGraph(graph)
 				TUD_Clear(graph)
 			endif
 			RemoveAnnotationsFromGraph(graph)
-			newlyCreatedGraphs = AddListItem(graph, newlyCreatedGraphs, ";", inf)
+			usedGraphs = AddListItem(graph, usedGraphs, ";", inf)
 		endif
 
 		WAVE plotWave = propertiesWaves[i]
@@ -974,42 +928,6 @@ static Function PA_ShowPulses(string win, STRUCT PulseAverageSettings &pa, STRUC
 			endif
 		endif
 	endfor
-
-	// kill all graphs from earlier runs which were not created anymore
-	numEntries = ItemsInList(preExistingGraphs)
-	for(i = 0; i < numEntries; i += 1)
-		graph = StringFromList(i, preExistingGraphs)
-		if(WhichListItem(graph, newlyCreatedGraphs) == -1)
-			KillWindow/Z $graph
-		endif
-	endfor
-
-	// do calculations on pulses for each set
-	// order:
-	// - zeroing
-	// - time alignment
-	// - averaging
-	for(i = 0; i < numChannels; i += 1)
-		channelNumber = channels[i]
-		for(j = 0; j < numRegions; j += 1)
-			region = regions[j]
-
-			WAVE/WAVE/Z setWaves = PA_GetSetWaves(pulseAverageHelperDFR, channelNumber, region)
-
-			if(!WaveExists(setWaves))
-				continue
-			endif
-
-			PA_ZeroPulses(setWaves, pa)
-		endfor
-	endfor
-
-	PA_AutomaticTimeAlignment(win, pa)
-
-	if(mode != POST_PLOT_CONSTANT_SWEEPS || !constantSinglePulseSettings)
-		WAVE/WAVE/Z targetForAverage, sourceForAverage
-		[targetForAverage, sourceForAverage] = PA_CalculateAllAverages(pa)
-	endif
 
 	for(i = 0; i < numChannels; i += 1)
 		channelNumber = channels[i]
@@ -1067,7 +985,7 @@ static Function PA_ShowPulses(string win, STRUCT PulseAverageSettings &pa, STRUC
 					ModifyGraph/W=$graph lsize($traceName)=1.5
 
 					TUD_SetUserDataFromWaves(graph, traceName, {"traceType", "occurence", "XAXIS", "YAXIS", "DiagonalElement"}, \
-											 {"Average", "0", horizAxis, vertAxis, num2str(isDiagonalElement)})
+					                         {"Average", "0", horizAxis, vertAxis, num2str(isDiagonalElement)})
 					TUD_SetUserData(graph, traceName, "fullPath", GetWavesDataFolder(averageWave, 2))
 				endif
 			endif
@@ -1090,7 +1008,7 @@ static Function PA_ShowPulses(string win, STRUCT PulseAverageSettings &pa, STRUC
 					ModifyGraph/W=$graph lsize($traceName)=2
 
 					TUD_SetUserDataFromWaves(graph, traceName, {"traceType", "occurence", "XAXIS", "YAXIS", "DiagonalElement"}, \
-											 {"Deconvolution", "0", horizAxis, vertAxis, num2str(isDiagonalElement)})
+					                         {"Deconvolution", "0", horizAxis, vertAxis, num2str(isDiagonalElement)})
 					TUD_SetUserData(graph, traceName, "fullPath", GetWavesDataFolder(deconv, 2))
 				endif
 			endif
@@ -1098,8 +1016,140 @@ static Function PA_ShowPulses(string win, STRUCT PulseAverageSettings &pa, STRUC
 	endfor
 
 	PA_DrawScaleBars(win, pa, PA_USE_WAVE_SCALES)
+	PA_LayoutGraphs(win, pulseAverageHelperDFR, PA_DISPLAYMODE_TRACES, regions, channels, pa)
 
-	PA_LayoutGraphs(win, pulseAverageHelperDFR, regions, channels, pa)
+	return usedGraphs
+End
+
+/// @brief Remove all traces, image and annotations from the graph and clears its trace user data
+static Function PA_ClearGraphs(string graphs)
+
+	string graph
+	variable numEntries, i
+
+	numEntries = ItemsInList(graphs)
+	for(i = 0; i < numEntries; i += 1)
+		graph = StringFromList(i, graphs)
+
+		RemoveTracesFromGraph(graph)
+		RemoveImagesFromGraph(graph)
+		RemoveAnnotationsFromGraph(graph)
+		TUD_Clear(graph)
+	endfor
+End
+
+/// @brief Gather and pre-process the single pulses for display
+///
+/// This function is display-type agnostic and only does preparational steps.
+/// No graphs are created or killed.
+///
+/// The work with pulses is done in the following order:
+/// - Gather pulses
+/// - Reset pulses to backup
+/// - Failed pulse marking
+/// - Zeroing
+/// - Time alignment
+/// - Averaging
+///
+/// @retval dest          wave reference wave with average data for each set or $""
+/// @retval source        wave reference wave with the data for each set or $""
+/// @retval needsPlotting boolean denoting if there are pulses to plot
+static Function [WAVE/WAVE dest, WAVE/WAVE source, variable needsPlotting] PA_PreProcessPulses(string win, STRUCT PulseAverageSettings &pa, STRUCT PulseAverageSettings &paOld, variable mode)
+
+	variable numChannels, numRegions, i, j, region, channelNumber
+	variable constantSinglePulseSettings, numTotalPulses
+	string preExistingGraphs, graph
+
+	preExistingGraphs = PA_GetGraphs(win, PA_DISPLAYMODE_ALL)
+	graph = GetMainWindow(win)
+
+	if(!pa.enabled)
+		KillWindows(preExistingGraphs)
+		return [$"", $"", 0]
+	endif
+
+	if(TUD_GetTraceCount(graph) == 0) // no traces
+		// fake one graph
+		if(IsEmpty(preExistingGraphs))
+			preExistingGraphs = PA_GetGraph(win, pa, PA_DISPLAYMODE_TRACES, 1, 1, 1, 1)
+		endif
+
+		PA_ClearGraphs(preExistingGraphs)
+
+		return [$"", $"", 0]
+	endif
+
+	constantSinglePulseSettings = (pa.startingPulse == paOld.startingPulse                \
+	                               && pa.endingPulse == paOld.endingPulse                 \
+	                               && pa.fallbackPulseLength == paOld.fallbackPulseLength)
+
+	PA_GenerateAllPulseWaves(win, pa, constantSinglePulseSettings, mode)
+
+	DFREF pulseAverageDFR = GetDevicePulseAverageFolder(pa.dfr)
+	DFREF pulseAverageHelperDFR = GetDevicePulseAverageHelperFolder(pa.dfr)
+
+	WAVE properties = GetPulseAverageProperties(pulseAverageHelperDFR)
+	WAVE/T propertiesText = GetPulseAveragePropertiesText(pulseAverageHelperDFR)
+	WAVE/WAVE propertiesWaves = GetPulseAveragePropertiesWaves(pulseAverageHelperDFR)
+
+	WAVE channels = ListToNumericWave(GetStringFromWaveNote(properties, "Channels"), ",")
+	numChannels = DimSize(channels, ROWS)
+
+	WAVE regions = ListToNumericWave(GetStringFromWaveNote(properties, "Regions"), ",")
+	numRegions = DimSize(regions, ROWS)
+
+	if(numChannels != numRegions)
+		return [$"", $"", 0]
+	endif
+
+	numTotalPulses = GetNumberFromWaveNote(properties, NOTE_INDEX)
+
+	if(numTotalPulses == 0)
+		PA_ClearGraphs(preExistingGraphs)
+		return [$"", $"", 0]
+	endif
+
+	for(i = 0; i < numChannels; i += 1)
+		channelNumber = channels[i]
+		for(j = 0; j < numRegions; j += 1)
+			region = regions[j]
+
+			WAVE/WAVE/Z setWaves = PA_GetSetWaves(pulseAverageHelperDFR, channelNumber, region)
+
+			if(!WaveExists(setWaves))
+				continue
+			endif
+
+			PA_ResetWavesIfRequired(setWaves, pa)
+		endfor
+	endfor
+
+	PA_MarkFailedPulses(properties, propertiesWaves, pa)
+
+	for(i = 0; i < numChannels; i += 1)
+		channelNumber = channels[i]
+		for(j = 0; j < numRegions; j += 1)
+			region = regions[j]
+
+			WAVE/WAVE/Z setWaves = PA_GetSetWaves(pulseAverageHelperDFR, channelNumber, region)
+
+			if(!WaveExists(setWaves))
+				continue
+			endif
+
+			PA_ZeroPulses(setWaves, pa)
+		endfor
+	endfor
+
+	PA_AutomaticTimeAlignment(win, pa)
+
+	if(mode != POST_PLOT_CONSTANT_SWEEPS || !constantSinglePulseSettings)
+		WAVE/WAVE/Z dest, source
+		[dest, source] = PA_CalculateAllAverages(pa)
+		return [dest, source, 1]
+	endif
+
+	return [$"", $"", 1]
 End
 
 static Function [WAVE/WAVE dest, WAVE/WAVE source] PA_CalculateAllAverages(STRUCT PulseAverageSettings &pa)
@@ -1711,7 +1761,7 @@ static Function PA_ResetWavesIfRequired(WAVE/WAVE wv, STRUCT PulseAverageSetting
 	endfor
 End
 
-static Function PA_LayoutGraphs(string win, DFREF dfr, WAVE regions, WAVE channels, STRUCT PulseAverageSettings &pa)
+static Function PA_LayoutGraphs(string win, DFREF dfr, variable displayMode, WAVE regions, WAVE channels, STRUCT PulseAverageSettings &pa)
 
 	variable i, j, numRegions, numChannels, activeRegionCount, activeChanCount, numPulsesInSet
 	variable channelNumber, headstage, red, green, blue, region, xStart
@@ -1721,7 +1771,7 @@ static Function PA_LayoutGraphs(string win, DFREF dfr, WAVE regions, WAVE channe
 	numChannels = DimSize(channels, ROWS)
 
 	if(!pa.multipleGraphs)
-		graph = PA_GetGraphName(win, pa, PA_DISPLAYMODE_TRACES, NaN, NaN)
+		graph = PA_GetGraphName(win, pa, displayMode, NaN, NaN)
 
 #ifdef PA_HIDE_AXIS
 		ModifyGraph/W=$graph mode=0, nticks=0, noLabel=2, axthick=0, margin(left)=30, margin(top)=20, margin(right)=14, margin(bottom)=14
