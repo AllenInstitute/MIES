@@ -181,7 +181,7 @@ Function OVS_UpdatePanel(win, [fullUpdate])
 	lastEntry = numEntries - 1
 
 	if(GetCheckBoxState(extPanel, "check_ovs_clear_on_new_ra_cycle"))
-		WAVE RACSweeps = AFH_GetSweepsFromSameRACycle(allNumericalValues[lastEntry], sweeps[lastEntry])
+		WAVE/Z RACSweeps = AFH_GetSweepsFromSameRACycle(allNumericalValues[lastEntry], sweeps[lastEntry])
 		newCycleHasStartedRAC = WaveExists(RACSweeps) && DimSize(RACSweeps, ROWS) == 1
 	endif
 	if(GetCheckBoxState(extPanel, "check_ovs_clear_on_new_stimset_cycle"))
