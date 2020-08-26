@@ -961,7 +961,7 @@ static Function/S PA_ShowPulses(string win, STRUCT PulseAverageSettings &pa, WAV
 			activeChanCount = i + 1
 			activeRegionCount = j + 1
 
-			if(!pa.multipleGraphs && i == 0 || pa.multipleGraphs)
+			if(!pa.multipleGraphs && i == 0 && j == 0 || pa.multipleGraphs)
 				graph = PA_GetGraph(win, pa, PA_DISPLAYMODE_TRACES, channelNumber, region, activeRegionCount, activeChanCount)
 				traceCount = TUD_GetTraceCount(graph)
 				WAVE/T/Z averageTraceNames = TUD_GetUserDataAsWave(graph, "traceName", keys = {"traceType"}, values = {"Average"})
