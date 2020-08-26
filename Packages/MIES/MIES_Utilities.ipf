@@ -4430,16 +4430,6 @@ Function StoreElapsedTime(referenceTime)
 	return elapsed
 End
 
-/// @brief Extracts a single wave from a wave ref wave
-///
-/// This can be used as helper function in multithread statements.
-threadsafe Function/WAVE MapWaveRefWave(input, row)
-	WAVE/WAVE input
-	variable row
-
-	return input[row]
-End
-
 Function GetPlotArea(win, s)
 	string win
 	STRUCT RectD &s
@@ -4574,7 +4564,7 @@ Function/WAVE FindLevelWrapper(data, level, edge, mode)
 		maxLevels = WaveMax(numMaxLevels)
 		Make/D/FREE/N=(numColsFixed, maxLevels) resultMulti
 
-		resultMulti[][] = q < numMaxLevels[p] ? MapWaveRefWave(allLevels, p)[q] : NaN
+		resultMulti[][] = q < numMaxLevels[p] ? WaveRef(allLevels[p])[q] : NaN
 	endif
 
 	// don't use numColsFixed here as we want to have the original shape
