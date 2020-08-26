@@ -5758,10 +5758,18 @@ End
 
 /// @brief Return the overlay sweeps wave with all sweep selection choices
 /// for the databrowser or the sweepbrowser
-Function/WAVE GetOverlaySweepSelectionChoices(dfr)
+Function/WAVE GetOverlaySweepSelectionChoices(win, dfr, [skipUpdate])
+	string win
 	DFREF dfr
+	variable skipUpdate
 
 	variable versionOfNewWave = 3
+
+	if(ParamIsDefault(skipUpdate))
+		skipUpdate = 0
+	else
+		skipUpdate = !!skipUpdate
+	endif
 
 	ASSERT(DataFolderExistsDFR(dfr), "Invalid dfr")
 	string newName = "overlaySweepSelectionChoices"
@@ -5774,6 +5782,9 @@ Function/WAVE GetOverlaySweepSelectionChoices(dfr)
 	WAVE/T/Z wv = UpgradeWaveLocationAndGetIt(p)
 
 	if(ExistsWithCorrectLayoutVersion(wv, versionOfNewWave))
+		if(!skipUpdate)
+			OVS_UpdateSweepSelectionChoices(win, wv)
+		endif
 		return wv
 	elseif(WaveExists(wv))
 		Redimension/N=(-1, -1, 3) wv
@@ -5783,8 +5794,9 @@ Function/WAVE GetOverlaySweepSelectionChoices(dfr)
 	endif
 
 	SetWaveDimLabel(wv, "Stimset;TTLStimset;StimsetAndClampMode", LAYERS)
-
+	SetNumberInWaveNote(wv, "NeedsUpdate", 1)
 	SetWaveVersion(wv, versionOfNewWave)
+
 	return wv
 End
 
