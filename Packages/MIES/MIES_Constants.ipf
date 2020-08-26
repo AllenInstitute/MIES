@@ -1258,3 +1258,5 @@ Constant POST_PLOT_FULL_UPDATE = 0x8     ///< Forces a complete update from scra
 Constant PA_SETTINGS_STRUCT_VERSION = 2
 
 StrConstant NOTE_NEEDS_UPDATE = "NeedsUpdate"
+
+Constant GRAPH_DIV_SPACING = 0.03

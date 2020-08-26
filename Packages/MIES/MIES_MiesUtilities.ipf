@@ -14,7 +14,6 @@
 static StrConstant LABNOTEBOOK_BOTTOM_AXIS_TIME  = "Timestamp (a. u.)"
 static StrConstant LABNOTEBOOK_BOTTOM_AXIS_SWEEP = "Sweep Number (a. u.)"
 
-static Constant GRAPH_DIV_SPACING   = 0.03
 static Constant ADC_SLOT_MULTIPLIER = 4
 static Constant NUM_CHANNEL_TYPES   = 3
 
