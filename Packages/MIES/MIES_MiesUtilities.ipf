@@ -3543,10 +3543,14 @@ Function PostPlotTransformations(string win, variable mode, [WAVE/Z additionalDa
 
 	graph = GetMainWindow(win)
 
-	WAVE/T/Z traces = GetAllSweepTraces(graph, prefixTraces = 0)
-
 	STRUCT PostPlotSettings pps
 	InitPostPlotSettings(graph, pps)
+
+	if(pps.zeroTraces || pps.averageTraces)
+		WAVE/T/Z traces = GetAllSweepTraces(graph, prefixTraces = 0)
+	else
+		WAVE/T/Z traces = $""
+	endif
 
 	ZeroTracesIfReq(graph, traces, pps.zeroTraces)
 	TimeAlignMainWindow(graph, pps)
