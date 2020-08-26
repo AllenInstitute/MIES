@@ -1475,9 +1475,7 @@ Function PA_CheckProc_Deconvolution(cba) : CheckBoxControl
 
 	switch( cba.eventCode )
 		case 2: // mouse up
-			PA_UpdateSweepPlotDeconvolution(cba.win)
-			break
-		case -1: // control being killed
+			PA_UpdateDeconvolution(cba.win)
 			break
 	endswitch
 
@@ -1498,29 +1496,26 @@ Function PA_SetVarProc_Common(sva) : SetVariableControl
 	return 0
 End
 
-/// @brief Update deconvolution traces in Sweep Plots
-static Function PA_UpdateSweepPlotDeconvolution(win)
+static Function PA_UpdateDeconvolution(win)
 	string win
 
 	string graph, graphs, horizAxis, vertAxis
 	string traceName, fullPath, avgTrace
-	string baseName, bsPanel
+	string baseName
 	variable i, numGraphs, j, numTraces, traceIndex
-	STRUCT PulseAverageDeconvSettings deconvolution
+	STRUCT PulseAverageSettings pa
+	PA_GatherSettings(win, pa)
 
-	if(!BSP_IsActive(win, MIES_BSP_PA))
-		return 0
+	if(!pa.enabled)
+		return NaN
 	endif
-
-	bsPanel = BSP_GetPanel(win)
-	PA_DeconvGatherSettings(bsPanel, deconvolution)
 
 	graphs = PA_GetGraphs(win, PA_DISPLAYMODE_TRACES)
 	numGraphs = ItemsInList(graphs)
 	for(i = 0; i < numGraphs; i += 1)
 		graph = StringFromList(i, graphs)
 
-		if(deconvolution.enable)
+		if(pa.deconvolution.enable)
 			WAVE/T/Z traces = TUD_GetUserDataAsWave(graph, "traceName", keys = {"traceType", "DiagonalElement"}, values = {"Average", "0"})
 
 			traceIndex = TUD_GetTraceCount(graph)
@@ -1542,7 +1537,7 @@ static Function PA_UpdateSweepPlotDeconvolution(win)
 				sprintf traceName, "T%0*d%s%s", TRACE_NAME_NUM_DIGITS, traceIndex, PA_DECONVOLUTION_WAVE_PREFIX, baseName
 				traceIndex += 1
 
-				WAVE deconv = PA_Deconvolution(averageWave, pulseAverageDFR, traceName, deconvolution)
+				WAVE deconv = PA_Deconvolution(averageWave, pulseAverageDFR, traceName, pa.deconvolution)
 
 				AppendToGraph/Q/W=$graph/L=$vertAxis/B=$horizAxis/C=(0,0,0) deconv/TN=$traceName
 				ModifyGraph/W=$graph lsize($traceName)=2
@@ -1551,7 +1546,7 @@ static Function PA_UpdateSweepPlotDeconvolution(win)
 							             {"Deconvolution", "0", horizAxis, vertAxis, "0"})
 				TUD_SetUserData(graph, traceName, "fullPath", GetWavesDataFolder(deconv, 2))
 			endfor
-		else // !deconvolution.enable
+		else // !pa.deconvolution.enable
 			WAVE/T/Z traces = TUD_GetUserDataAsWave(graph, "traceName", keys = {"traceType"}, values = {"Deconvolution"})
 
 			numTraces = WaveExists(traces) ? DimSize(traces, ROWS) : 0
