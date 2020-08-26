@@ -167,7 +167,7 @@ Function DB_ResetAndStoreCurrentDBPanel()
 	CheckBox check_pulseAver_timeAlign WIN = $bsPanel, value= 0
 	CheckBox check_pulseAver_showTraces WIN = $bsPanel, value= 1
 	CheckBox check_pulseAver_ShowImage WIN = $bsPanel, value= 0
-	PopupMenu popup_pulseAver_colorscales WIN= $bsPanel, mode=60 // Classification
+	PopupMenu popup_pulseAver_colorscales WIN= $bsPanel, mode=8 // Terrain
 
 	SetVariable setvar_pulseAver_deconv_tau WIN = $bsPanel, value= _NUM:15
 	SetVariable setvar_pulseAver_deconv_smth WIN = $bsPanel, value= _NUM:1000

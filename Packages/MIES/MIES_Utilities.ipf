@@ -5356,6 +5356,15 @@ Function/WAVE GrepTextWave(Wave/T in, string regexp)
 	return result
 End
 
+/// @brief Given a range `[a, b]` this returns a symmetric range around zero including both elements
+Function [variable minSym, variable maxSym] SymmetrizeRangeAroundZero(variable minimum, variable maximum)
+
+	variable maxVal
+
+	maxVal = max(abs(minimum), abs(maximum))
+	return [-maxVal, +maxVal]
+End
+
 /// @brief Helper function for multithread statements where `? :` does not work with wave references
 ///
 /// The order of arguments is modelled after SelectString/SelectNumber.

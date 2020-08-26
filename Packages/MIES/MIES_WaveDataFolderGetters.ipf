@@ -5646,6 +5646,37 @@ Function/WAVE GetPulseAverageSetIndizes(DFREF dfr, variable channelNumber, varia
 	return wv
 End
 
+/// @brief Returns the pulse average image wave
+///
+/// This is used for the image display mode.
+///
+/// `NOTE_INDEX` is used for marking the length of the used *columns* as there
+/// is one pulse per column.
+Function/WAVE GetPulseAverageSetImageWave(DFREF dfr, variable channelNumber, variable region)
+
+	string name
+	variable versionOfNewWave = 1
+
+	sprintf name, "setImage_AD%d_R%d", channelNumber, region
+
+	ASSERT(DataFolderExistsDFR(dfr), "Invalid dfr")
+	WAVE/Z/SDFR=dfr wv = $name
+
+	if(ExistsWithCorrectLayoutVersion(wv, versionOfNewWave))
+		return wv
+	elseif(WaveExists(wv))
+		// handle upgrade
+	else
+		Make/R/N=(1, MINIMUM_WAVE_SIZE) dfr:$name/Wave=wv
+		Multithread wv[] = NaN
+	endif
+
+	SetWaveVersion(wv, versionOfNewWave)
+	SetNumberInWaveNote(wv, NOTE_INDEX, 0)
+
+	return wv
+End
+
 /// @brief Return the pulse average properties wave
 ///
 /// It is filled by PA_GenerateAllPulseWaves() and consumed by others.

@@ -58,7 +58,7 @@ Function InitPulseAverageSettings(pa)
 	pa.searchFailedPulses   = NaN
 	pa.failedPulsesLevel    = NaN
 	pa.yScaleBarLength      = NaN
-	pa.showImage            = NaN
+	pa.showImages           = NaN
 	pa.showTraces           = NaN
 	pa.imageColorScale      = ""
 End
@@ -71,7 +71,7 @@ Structure PulseAverageSettings
 	variable zeroPulses, autoTimeAlignment, enabled
 	variable hideFailedPulses, searchFailedPulses
 	variable failedPulsesLevel, yScaleBarLength
-	variable showImage, showTraces
+	variable showImages, showTraces
 	string imageColorScale
 
 	/// @{
