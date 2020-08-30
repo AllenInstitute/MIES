@@ -4115,7 +4115,6 @@ static Function ZeroTracesIfReq(graph, traces, zeroTraces)
 	for(i = 0; i < numTraces; i += 1)
 		trace = traces[i]
 		WAVE wv = $TUD_GetUserData(graph, trace, "fullPath")
-		CreateBackupWave(wv)
 		ZeroWave(wv)
 	endfor
 End
@@ -4235,7 +4234,6 @@ Function TimeAlignmentIfReq(graphtrace, mode, level, pos1x, pos2x, [force])
 			continue
 		endif
 
-		WAVE backup = CreateBackupWave(wv)
 		offset = - (refPos + featurePos[idx])
 		DEBUGPRINT("trace", str=trace)
 		DEBUGPRINT("old DimOffset", var=DimOffset(wv, ROWS))
@@ -5064,6 +5062,18 @@ Function RemoveTracesFromGraph(graph, [kill, trace, wv, dfr])
 	return NaN
 End
 
+/// @brief Create backup waves for all waves in the datafolder
+Function CreateBackupWavesForAll(DFREF dfr)
+
+	variable i, numWaves
+
+	numWaves = CountObjectsDFR(dfr, COUNTOBJECTS_WAVES)
+	for(i = 0; i < numWaves; i += 1)
+		WAVE/SDFR=dfr wv = $GetIndexedObjNameDFR(dfr, COUNTOBJECTS_WAVES, i)
+		CreateBackupWave(wv)
+	endfor
+End
+
 /// @brief Create a backup of the wave wv if it does not already
 /// exist or if `forceCreation` is true.
 ///
@@ -5422,7 +5432,7 @@ Function SplitSweepIntoComponents(numericalValues, sweep, sweepWave, configWave,
 		DFREF targetDFR = GetWavesDataFolderDFR(sweepWave)
 	endif
 
-	ASSERT(DataFolderExistsDFR(targetDFR), "targetDFR must exist")
+	ASSERT(IsGlobalDataFolder(targetDFR), "targetDFR must exist and a global/permanent datafolder")
 	ASSERT(IsFinite(sweep), "Sweep number must be finite")
 	ASSERT(IsValidSweepAndConfig(sweepWave, configWave, configVersion = 0), "Sweep and config waves are not compatible")
 
@@ -5448,6 +5458,8 @@ Function SplitSweepIntoComponents(numericalValues, sweep, sweepWave, configWave,
 	endfor
 
 	string/G targetDFR:note = note(sweepWave)
+
+	CreateBackupWavesForAll(targetDFR)
 End
 
 /// @brief Add user data "panelVersion" to the panel

@@ -887,6 +887,7 @@ static Function DB_SplitSweepsIfReq(win, sweepNo)
 
 	string device, mainPanel
 	variable sweepModTime, numWaves, requireNewSplit, i
+	variable numBackupWaves
 
 	if(!BSP_HasBoundDevice(win))
 		return NaN
@@ -913,11 +914,17 @@ static Function DB_SplitSweepsIfReq(win, sweepNo)
 			requireNewSplit = 1
 			break
 		endif
+		if(GrepString(NameOfWave(wv), "\\Q" + WAVE_BACKUP_SUFFIX + "\\E$"))
+			numBackupWaves += 1
+		endif
 	endfor
 
-	if(!requireNewSplit)
+	if(!requireNewSplit && (numBackupWaves * 2 == numWaves))
 		return NaN
 	endif
+
+	KillOrMoveToTrash(dfr = singleSweepDFR)
+	DFREF singleSweepDFR = GetSingleSweepFolder(deviceDFR, sweepNo)
 
 	WAVE numericalValues = DB_GetNumericalValues(win)
 
