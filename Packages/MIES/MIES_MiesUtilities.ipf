@@ -3772,25 +3772,6 @@ Function TimeAlignCursorMovedHook(s)
 	return 0
 End
 
-/// @brief Replace all waves from the traces in the graph with their backup
-Function ReplaceAllWavesWithBackup(graph, tracePaths)
-	string graph
-	WAVE/T/Z tracePaths
-
-	variable numTraces, i
-
-	if(!WaveExists(tracePaths))
-		return NaN
-	endif
-
-	numTraces = DimSize(tracePaths, ROWS)
-
-	for(i = 0; i < numTraces; i += 1)
-		WAVE wv = $tracePaths[i]
-		ReplaceWaveWithBackup(wv, nonExistingBackupIsFatal=0)
-	endfor
-End
-
 /// @brief Get a textwave of all traces from a list of graphs
 ///
 /// @param graphs       semicolon separated list of graph names
@@ -5122,6 +5103,18 @@ Function/WAVE GetBackupWave(wv)
 	WAVE/Z/SDFR=dfr backup = $backupname
 
 	return backup
+End
+
+/// @brief Replace all waves from the datafolder with their backup
+Function ReplaceWaveWithBackupForAll(DFREF dfr)
+
+	variable numWaves, i
+
+	numWaves = CountObjectsDFR(dfr, COUNTOBJECTS_WAVES)
+	for(i = 0; i < numWaves; i += 1)
+		WAVE/SDFR=dfr wv = $GetIndexedObjNameDFR(dfr, COUNTOBJECTS_WAVES, i)
+		ReplaceWaveWithBackup(wv, nonExistingBackupIsFatal=0, keepBackup=1)
+	endfor
 End
 
 /// @brief Replace the wave wv with its backup. If possible the backup wave will be killed afterwards.
