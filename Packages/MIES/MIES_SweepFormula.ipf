@@ -49,15 +49,6 @@ static Constant SF_APFREQUENCY_FULL          = 0x0
 static Constant SF_APFREQUENCY_INSTANTANEOUS = 0x1
 static Constant SF_APFREQUENCY_APCOUNT       = 0x2
 
-static Function SF_FormulaCheck(condition, message)
-	Variable condition
-	String message
-
-	if(!condition)
-		Abort message
-	endif
-End
-
 static Function/S SF_StringifyState(variable state)
 
 	switch(state)
@@ -128,15 +119,20 @@ static Function/S SF_StringifyAction(variable action)
 	endswitch
 End
 
-/// @brief output an error message to a global variable
-static Function SF_FormulaError(condition, message)
+/// @brief Assertion for sweep formula
+///
+/// This assertion does *not* indicate a genearl programmer error but a
+/// sweep formula user error.
+///
+/// All programmer error checks must still use ASSERT().
+static Function SF_Assert(condition, message)
 	Variable condition
 	String message
 
 	if(!condition)
 		SVAR error = $GetSweepFormulaParseErrorMessage()
 		error = message
-		Abort message
+		Abort
 	endif
 End
 
@@ -146,8 +142,8 @@ End
 static Function/S SF_FormulaPreParser(formula)
 	String formula
 
-	SF_FormulaCheck(CountSubstrings(formula, "(") == CountSubstrings(formula, ")"), "Bracket missmatch in formula.")
-	SF_FormulaCheck(CountSubstrings(formula, "[") == CountSubstrings(formula, "]"), "Array bracket missmatch in formula.")
+	SF_Assert(CountSubstrings(formula, "(") == CountSubstrings(formula, ")"), "Bracket missmatch in formula.")
+	SF_Assert(CountSubstrings(formula, "[") == CountSubstrings(formula, "]"), "Array bracket missmatch in formula.")
 
 	formula = ReplaceString("...", formula, "…")
 
@@ -256,7 +252,7 @@ Function SF_FormulaParser(formula, [indentLevel])
 					continue
 				endif
 				state = SF_STATE_COLLECT
-				SF_FormulaCheck(GrepString(token, "[A-Za-z0-9_\.:;]"), "undefined pattern in formula: " + formula[i,i+5])
+				SF_Assert(GrepString(token, "[A-Za-z0-9_\.:;]"), "undefined pattern in formula: " + formula[i,i+5])
 		endswitch
 
 		if(level > 0 || arrayLevel > 0)
@@ -346,7 +342,7 @@ Function SF_FormulaParser(formula, [indentLevel])
 					action = SF_ACTION_COLLECT
 					break
 				default:
-					SF_FormulaCheck(0, "Encountered undefined transition " + num2str(state))
+					SF_Assert(0, "Encountered undefined transition " + num2str(state))
 			endswitch
 			lastState = state
 		endif
@@ -401,7 +397,7 @@ Function SF_FormulaParser(formula, [indentLevel])
 				JSON_Release(jsonIDdummy)
 				break
 			case SF_ACTION_ARRAY:
-				SF_FormulaCheck(!cmpstr(buffer[0], "["), "Encountered array ending without array start.")
+				SF_Assert(!cmpstr(buffer[0], "["), "Encountered array ending without array start.")
 				jsonIDarray = JSON_New()
 				jsonIDdummy = SF_FormulaParser(buffer[1,inf], indentLevel = indentLevel + 1)
 				if(JSON_GetType(jsonIDdummy, "") != JSON_ARRAY)
@@ -1102,10 +1098,10 @@ Function SF_FormulaPlotter(graph, formula, [dfr])
 	endif
 
 	SplitString/E=SF_SWEEPFORMULA_REGEXP formula, formula0, formula1
-	SF_FormulaError(V_Flag == 2 || V_flag == 1, "Display command must follow the \"y[ vs x]\" pattern.")
+	SF_Assert(V_Flag == 2 || V_flag == 1, "Display command must follow the \"y[ vs x]\" pattern.")
 	if(V_Flag == 2)
 		WAVE/Z wv = SF_FormulaExecutor(SF_FormulaParser(SF_FormulaPreParser(formula1)), graph = graph)
-		SF_FormulaError(WaveExists(wv), "Error in x part of formula.")
+		SF_Assert(WaveExists(wv), "Error in x part of formula.")
 		dim1X = max(1, DimSize(wv, COLS))
 		dim2X = max(1, DimSize(wv, LAYERS))
 		Redimension/N=(-1, dim1X * dim2X)/E=1 wv /// @todo Removes dimension labels in COLS and LAYERS
@@ -1120,7 +1116,7 @@ Function SF_FormulaPlotter(graph, formula, [dfr])
 	endif
 
 	WAVE/Z wv = SF_FormulaExecutor(SF_FormulaParser(SF_FormulaPreParser(formula0)), graph = graph)
-	SF_FormulaError(WaveExists(wv), "Error in y part of formula.")
+	SF_Assert(WaveExists(wv), "Error in y part of formula.")
 	dim1Y = max(1, DimSize(wv, COLS))
 	dim2Y = max(1, DimSize(wv, LAYERS))
 	Redimension/N=(-1, dim1Y * dim2Y)/E=1 wv /// @todo Removes dimension labels in COLS and LAYERS
@@ -1147,9 +1143,9 @@ Function SF_FormulaPlotter(graph, formula, [dfr])
 	RemoveTracesFromGraph(win)
 	ModifyGraph/W=$win swapXY = 0
 
-	SF_FormulaError(!(IsTextWave(wvY) && IsTextWave(wvX)), "One wave needs to be numeric for plotting")
+	SF_Assert(!(IsTextWave(wvY) && IsTextWave(wvX)), "One wave needs to be numeric for plotting")
 	if(IsTextWave(wvY) && WaveExists(wvX))
-		SF_FormulaError(WaveExists(wvX), "Cannot plot a single text wave")
+		SF_Assert(WaveExists(wvX), "Cannot plot a single text wave")
 		ModifyGraph/W=$win swapXY = 1
 		WAVE dummy = wvY
 		WAVE wvY = wvX
