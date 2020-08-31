@@ -258,6 +258,7 @@ Function SF_FormulaParser(formula, [indentLevel])
 				state = SF_STATE_COLLECT
 				SF_FormulaCheck(GrepString(token, "[A-Za-z0-9_\.:;]"), "undefined pattern in formula: " + formula[i,i+5])
 		endswitch
+
 		if(level > 0 || arrayLevel > 0)
 			state = SF_STATE_DEFAULT
 		endif
