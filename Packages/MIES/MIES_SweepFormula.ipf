@@ -128,14 +128,13 @@ static Function/S SF_StringifyAction(variable action)
 	endswitch
 End
 
-/// @brief output an error message to a global variable in dfr
-static Function SF_FormulaError(dfr, condition, message)
-	DFREF dfr
+/// @brief output an error message to a global variable
+static Function SF_FormulaError(condition, message)
 	Variable condition
 	String message
 
 	if(!condition)
-		SVAR error = $GetSweepFormulaParseErrorMessage(dfr)
+		SVAR error = $GetSweepFormulaParseErrorMessage()
 		error = message
 		Abort message
 	endif
@@ -1103,10 +1102,10 @@ Function SF_FormulaPlotter(graph, formula, [dfr])
 	endif
 
 	SplitString/E=SF_SWEEPFORMULA_REGEXP formula, formula0, formula1
-	SF_FormulaError(dfr, V_Flag == 2 || V_flag == 1, "Display command must follow the \"y[ vs x]\" pattern.")
+	SF_FormulaError(V_Flag == 2 || V_flag == 1, "Display command must follow the \"y[ vs x]\" pattern.")
 	if(V_Flag == 2)
 		WAVE/Z wv = SF_FormulaExecutor(SF_FormulaParser(SF_FormulaPreParser(formula1)), graph = graph)
-		SF_FormulaError(dfr, WaveExists(wv), "Error in x part of formula.")
+		SF_FormulaError(WaveExists(wv), "Error in x part of formula.")
 		dim1X = max(1, DimSize(wv, COLS))
 		dim2X = max(1, DimSize(wv, LAYERS))
 		Redimension/N=(-1, dim1X * dim2X)/E=1 wv /// @todo Removes dimension labels in COLS and LAYERS
@@ -1121,7 +1120,7 @@ Function SF_FormulaPlotter(graph, formula, [dfr])
 	endif
 
 	WAVE/Z wv = SF_FormulaExecutor(SF_FormulaParser(SF_FormulaPreParser(formula0)), graph = graph)
-	SF_FormulaError(dfr, WaveExists(wv), "Error in y part of formula.")
+	SF_FormulaError(WaveExists(wv), "Error in y part of formula.")
 	dim1Y = max(1, DimSize(wv, COLS))
 	dim2Y = max(1, DimSize(wv, LAYERS))
 	Redimension/N=(-1, dim1Y * dim2Y)/E=1 wv /// @todo Removes dimension labels in COLS and LAYERS
@@ -1148,9 +1147,9 @@ Function SF_FormulaPlotter(graph, formula, [dfr])
 	RemoveTracesFromGraph(win)
 	ModifyGraph/W=$win swapXY = 0
 
-	SF_FormulaError(dfr, !(IsTextWave(wvY) && IsTextWave(wvX)), "One wave needs to be numeric for plotting")
+	SF_FormulaError(!(IsTextWave(wvY) && IsTextWave(wvX)), "One wave needs to be numeric for plotting")
 	if(IsTextWave(wvY) && WaveExists(wvX))
-		SF_FormulaError(dfr, WaveExists(wvX), "Cannot plot a single text wave")
+		SF_FormulaError(WaveExists(wvX), "Cannot plot a single text wave")
 		ModifyGraph/W=$win swapXY = 1
 		WAVE dummy = wvY
 		WAVE wvY = wvX
@@ -1547,7 +1546,7 @@ Function SF_button_sweepFormula_check(ba) : ButtonControl
 			SetValDisplay(bsPanel, "status_sweepFormula_parser", var=1)
 			SetSetVariableString(bsPanel, "setvar_sweepFormula_parseResult", ":)")
 
-			SVAR result = $GetSweepFormulaParseErrorMessage(dfr)
+			SVAR result = $GetSweepFormulaParseErrorMessage()
 			result = ""
 
 			NVAR jsonID = $GetSweepFormulaJSONid(dfr)
@@ -1577,7 +1576,7 @@ Function SF_button_sweepFormula_check(ba) : ButtonControl
 			catch
 				SetValDisplay(bsPanel, "status_sweepFormula_parser", var=0)
 				JSON_Release(jsonID, ignoreErr = 1)
-				SVAR result = $GetSweepFormulaParseErrorMessage(dfr)
+				SVAR result = $GetSweepFormulaParseErrorMessage()
 				SetSetVariableString(bsPanel, "setvar_sweepFormula_parseResult", result)
 			endtry
 			break
@@ -1617,12 +1616,15 @@ Function SF_button_sweepFormula_display(ba) : ButtonControl
 
 			DFREF dfr = BSP_GetFolder(mainPanel, MIES_BSP_PANEL_FOLDER)
 
+			SVAR result = $GetSweepFormulaParseErrorMessage()
+			result = ""
+
 			try
 				ClearRTError()
 				SF_FormulaPlotter(mainPanel, code, dfr = dfr); AbortONRTE
 			catch
 				ClearRTError()
-				SVAR result = $GetSweepFormulaParseErrorMessage(dfr)
+				SVAR result = $GetSweepFormulaParseErrorMessage()
 				SetSetVariableString(bsPanel, "setvar_sweepFormula_parseResult", result)
 				break
 			endtry
