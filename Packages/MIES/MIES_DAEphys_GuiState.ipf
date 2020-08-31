@@ -190,7 +190,7 @@ Function DAG_GetNumericalValue(panelTitle, ctrl, [index])
 #if defined(AUTOMATED_TESTING) || defined(DEBUGGING_ENABLED)
 
 	// check if the GUI state wave is consistent
-	if(defined(AUTOMATED_TESTING) || DP_DebuggingEnabledForFile(GetFile(FunctionPath(""))))
+	if(defined(AUTOMATED_TESTING) || DP_DebuggingEnabledForCaller())
 		ControlInfo/W=$panelTitle $ctrl
 
 		if(!IsFinite(index))
@@ -244,7 +244,7 @@ Function/S DAG_GetTextualValue(panelTitle, ctrl, [index])
 #if defined(AUTOMATED_TESTING) || defined(DEBUGGING_ENABLED)
 
 	// check if the GUI state wave is consistent
-	if(defined(AUTOMATED_TESTING) || DP_DebuggingEnabledForFile(GetFile(FunctionPath(""))))
+	if(defined(AUTOMATED_TESTING) || DP_DebuggingEnabledForCaller())
 
 		if(!IsFinite(index))
 			ControlInfo/W=$panelTitle $ctrl

@@ -1697,7 +1697,7 @@ Function WBP_MainWindowHook(s)
 		case 4:
 			win = s.winName
 
-			if(DP_DebuggingEnabledForFile(GetFile(FunctionPath(""))))
+			if(DP_DebuggingEnabledForCaller())
 				controls = ControlNameList(win)
 				numEntries = ItemsInList(controls)
 				for(i = 0; i < numEntries; i += 1)

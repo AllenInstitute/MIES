@@ -1407,7 +1407,7 @@ Function HW_ITC_PrepareAcq(deviceID, [data, dataFunc, config, configFunc, flags,
 	HW_ITC_HandleReturnValues(flags, V_ITCError, V_ITCXOPError)
 
 #ifdef DEBUGGING_ENABLED
-	if(DP_DebuggingEnabledForFile(GetFile(FunctionPath(""))))
+	if(DP_DebuggingEnabledForCaller())
 		do
 			ITCGetAllChannelsConfig2/DEV=(deviceID)/O/Z=(HW_ITC_GetZValue(flags)) config_t, settings
 		while(V_ITCXOPError == SLOT_LOCKED_TO_OTHER_THREAD && V_ITCError == 0)
