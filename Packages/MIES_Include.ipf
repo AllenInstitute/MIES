@@ -84,7 +84,6 @@
 #include "MIES_DebugPanel"
 #include "MIES_Downsample"
 #include "MIES_EnhancedWMRoutines"
-#include "MIES_ExperimentConfig"
 #include "MIES_ExperimentDocumentation"
 #include "MIES_ForeignFunctionInterface"
 #include "MIES_GlobalStringAndVariableAccess"
