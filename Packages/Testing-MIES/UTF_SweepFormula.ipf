@@ -266,6 +266,27 @@ static Function orderOfCalculation()
 
 	jsonID1 = SF_FormulaParser("5*1+2*3+4+5*10")
 	REQUIRE_EQUAL_VAR(SF_FormulaExecutor(jsonID1)[0], 5*1+2*3+4+5*10)
+
+	// using - as sign
+	jsonID1 = SF_FormulaParser("1+-1")
+	REQUIRE_EQUAL_VAR(SF_FormulaExecutor(jsonID1)[0], 0)
+
+	jsonID1 = SF_FormulaParser("-1+2")
+	REQUIRE_EQUAL_VAR(SF_FormulaExecutor(jsonID1)[0], 1)
+
+	jsonID1 = SF_FormulaParser("-1*2")
+	REQUIRE_EQUAL_VAR(SF_FormulaExecutor(jsonID1)[0], -2)
+
+	jsonID1 = SF_FormulaParser("2+-1*3")
+	REQUIRE_EQUAL_VAR(SF_FormulaExecutor(jsonID1)[0], -1)
+End
+
+// UTF_EXPECTED_FAILURE
+static Function openParserBugs()
+
+	variable jsonID1
+	jsonID1 = SF_FormulaParser("-1-1")
+	REQUIRE_EQUAL_VAR(SF_FormulaExecutor(jsonID1)[0], -2)
 End
 
 static Function brackets()
@@ -291,7 +312,7 @@ static Function brackets()
 	WARN_EQUAL_JSON(jsonID0, jsonID1)
 	REQUIRE_EQUAL_VAR(SF_FormulaExecutor(jsonID1)[0], (4+3)+(2+1))
 
-	jsonID0 = JSON_Parse("{\"+\":[1,{\"+\":[2,3]},4]}")
+	jsonID0 = JSON_Parse("{\"+\":[1,{\"+\":[2,3]},{\"+\": [4]}]}")
 	jsonID1 = SF_FormulaParser("1+(2+3)+4")
 	WARN_EQUAL_JSON(jsonID0, jsonID1)
 	REQUIRE_EQUAL_VAR(SF_FormulaExecutor(jsonID1)[0], 1+(2+3)+4)
@@ -429,6 +450,11 @@ static Function minimaximu()
 	WARN_EQUAL_JSON(jsonID0, jsonID1)
 	REQUIRE_EQUAL_VAR(SF_FormulaExecutor(jsonID1)[0], min(1,2))
 
+	jsonID0 = JSON_Parse("{\"min\":[1,{\"-\":[1]}]}")
+	jsonID1 = SF_FormulaParser("min(1,-1)")
+	WARN_EQUAL_JSON(jsonID0, jsonID1)
+	REQUIRE_EQUAL_VAR(SF_FormulaExecutor(jsonID1)[0], min(1,-1))
+
 	jsonID0 = JSON_Parse("{\"max\":[1,2]}")
 	jsonID1 = SF_FormulaParser("max(1,2)")
 	WARN_EQUAL_JSON(jsonID0, jsonID1)
@@ -484,7 +510,7 @@ static Function minimaximu()
 	WARN_EQUAL_JSON(jsonID0, jsonID1)
 	REQUIRE_EQUAL_VAR(SF_FormulaExecutor(jsonID1)[0], 1+max(1,2))
 
-	jsonID0 = JSON_Parse("{\"+\":[1,{\"max\":[1,2]},1]}")
+	jsonID0 = JSON_Parse("{\"+\":[1,{\"max\":[1,2]},{\"+\":[1]}]}")
 	jsonID1 = SF_FormulaParser("1+max(1,2)+1")
 	WARN_EQUAL_JSON(jsonID0, jsonID1)
 	REQUIRE_EQUAL_VAR(SF_FormulaExecutor(jsonID1)[0], 1+max(1,2)+1)

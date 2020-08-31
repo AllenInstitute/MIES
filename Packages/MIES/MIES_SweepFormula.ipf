@@ -158,6 +158,7 @@ End
 /// @brief serialize a string formula into JSON
 ///
 /// @param formula  string formula
+/// @param indentLevel [internal use only] recursive call level, used for debug output
 /// @returns a JSONid representation
 Function SF_FormulaParser(formula, [indentLevel])
 	String formula
@@ -297,7 +298,7 @@ Function SF_FormulaParser(formula, [indentLevel])
 						if(lastCalculation == -1)
 							action = SF_ACTION_HIGHERORDER
 						else
-							action = SF_ACTION_SKIP
+							action = SF_ACTION_COLLECT
 						endif
 						break
 					endif
