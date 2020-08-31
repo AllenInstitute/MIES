@@ -11,6 +11,7 @@
 /// @brief __SF__ Sweep formula allows to do analysis on sweeps with a
 /// dedicated formula language
 
+static Constant SF_STATE_UNINITIALIZED = -1
 static Constant SF_STATE_DEFAULT = 0
 static Constant SF_STATE_COLLECT = 1
 static Constant SF_STATE_ADDITION = 2
@@ -28,6 +29,7 @@ static Constant SF_STATE_OPERATION = 13
 static Constant SF_STATE_STRING = 14
 static Constant SF_STATE_STRINGTERMINATOR = 15
 
+static Constant SF_ACTION_UNINITIALIZED = -1
 static Constant SF_ACTION_SKIP = 0
 static Constant SF_ACTION_COLLECT = 1
 static Constant SF_ACTION_CALCULATION = 2
@@ -92,12 +94,12 @@ Function SF_FormulaParser(formula)
 
 	Variable i, parenthesisStart, parenthesisEnd, jsonIDdummy, jsonIDarray
 	String tempPath
-	Variable action = -1
+	Variable action = SF_ACTION_UNINITIALIZED
 	String token = ""
 	String buffer = ""
-	Variable state = -1
-	Variable lastState = -1
-	Variable lastCalculation = -1
+	Variable state = SF_STATE_UNINITIALIZED
+	Variable lastState = SF_STATE_UNINITIALIZED
+	Variable lastCalculation = SF_STATE_UNINITIALIZED
 	Variable level = 0
 	Variable arrayLevel = 0
 
