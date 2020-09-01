@@ -335,7 +335,7 @@ static Function/S AD_GetDAScaleFailMsg(numericalValues, textualValues, sweepNo, 
 	if(Sum(fISlopeReached) == 0)
 		key = PSQ_CreateLBNKey(PSQ_DA_SCALE, PSQ_FMT_LBN_DA_fI_SLOPE, query = 1)
 		WAVE fISlope = GetLastSettingEachSCI(numericalValues, sweepNo, key, headstage, UNKNOWN_MODE)
-		fISlopeStr = RemoveEnding(NumericWaveToList(fISlope, "%, ", format = "%d"), "%, ")
+		fISlopeStr = RemoveEnding(NumericWaveToList(fISlope, "%, ", format = "%.15g"), "%, ")
 
 		finalSlopePercent = AFH_GetAnalysisParamNumerical("FinalSlopePercent", params[headstage])
 

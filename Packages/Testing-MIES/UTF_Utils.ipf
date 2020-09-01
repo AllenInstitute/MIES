@@ -3798,3 +3798,51 @@ Function GSJIWorksWithCorruptID()
 End
 
 /// @}
+
+/// NumericWaveToList
+/// @{
+
+Function NWLWorks()
+
+	string expected, result
+
+	Make/FREE dataFP = {1, 1e6, -inf, 1.5, NaN}
+	result = NumericWaveToList(dataFP, ";")
+	expected = "1;1e+06;-inf;1.5;nan;"
+	CHECK_EQUAL_STR(result, expected)
+
+	Make/FREE/I dataInt = {1, 1e6, -100}
+	result = NumericWaveToList(dataInt, ";", format="%d")
+	expected = "1;1000000;-100;"
+	CHECK_EQUAL_STR(result, expected)
+End
+
+Function NWLChecksInput()
+
+	try
+		Make/FREE/DF wrongWaveType
+		NumericWaveToList(wrongWaveType, ";"); AbortONRTE
+		FAIL()
+	catch
+		PASS()
+	endtry
+
+	try
+		Make/FREE/D/N=(2, 2) TwoDWave
+		NumericWaveToList(TwoDWave, ";"); AbortONRTE
+		FAIL()
+	catch
+		PASS()
+	endtry
+
+	// asserts out when triggering IP bug
+	try
+		Make/D/N=(2) input
+		NumericWaveToList(input, ";", format="%d"); AbortONRTE
+		FAIL()
+	catch
+		PASS()
+	endtry
+End
+
+/// @}
