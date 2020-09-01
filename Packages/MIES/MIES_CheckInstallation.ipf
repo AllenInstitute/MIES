@@ -193,17 +193,18 @@ Function CHI_CheckInstallation()
 	CHI_CheckJSONXOPVersion(state)
 
 	printf "Results: %d checks, %d number of errors\r", state.numTries, state.numErrors
-
-	CHI_InitInstallationState(state)
+	
+	STRUCT CHI_InstallationState stateExtended
+	CHI_InitInstallationState(stateExtended)
 	printf "\rChecking extended installation:\r"
 
 #if defined(IGOR64)
-	CHI_CheckXOP(listOfXOPs, "NIDAQmx64.xop", "NI-DAQ MX XOP", state, expectedHash = CHI_NIDAQ_XOP_64_HASH)
+	CHI_CheckXOP(listOfXOPs, "NIDAQmx64.xop", "NI-DAQ MX XOP", stateExtended, expectedHash = CHI_NIDAQ_XOP_64_HASH)
 #else
-	CHI_CheckXOP(listOfXOPs, "NIDAQmx.xop", "NI-DAQ MX XOP", state, expectedHash = CHI_NIDAQ_XOP_HASH)
+	CHI_CheckXOP(listOfXOPs, "NIDAQmx.xop", "NI-DAQ MX XOP", stateExtended, expectedHash = CHI_NIDAQ_XOP_HASH)
 #endif
 
-	printf "Results: %d checks, %d number of errors\r", state.numTries, state.numErrors
+	printf "Results: %d checks, %d number of errors\r", stateExtended.numTries, stateExtended.numErrors
 	ControlWindowToFront()
 
 	return state.numErrors
