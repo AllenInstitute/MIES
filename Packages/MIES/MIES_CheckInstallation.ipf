@@ -176,7 +176,9 @@ Function CHI_CheckInstallation()
 	CHI_CheckXOP(listOfXOPs, "itcxop2-64.xop", "ITC XOP", state)
 	CHI_CheckXOP(listOfXOPs, "JSON-64.xop", "JSON XOP", state)
 	CHI_CheckXOP(listOfXOPs, "VDT2-64.xop", "VDT2 XOP", state)
+#if IgorVersion() < 9.0
 	CHI_CheckXOP(listOfXOPs, "HDF5-64.xop", "HDF5 XOP", state)
+#endif
 	CHI_CheckXOP(listOfXOPs, "AxonTelegraph64.xop", "Axon Telegraph XOP", state)
 	CHI_CheckXOP(listOfXOPs, "MultiClamp700xCommander64.xop", "Multi Clamp Commander XOP", state)
 	CHI_CheckXOP(listOfXOPs, "ZeroMQ-64.xop", "ZeroMQ XOP", state)
@@ -184,7 +186,9 @@ Function CHI_CheckInstallation()
 	CHI_CheckXOP(listOfXOPs, "itcxop2.xop", "ITC XOP", state)
 	CHI_CheckXOP(listOfXOPs, "JSON.xop", "JSON XOP", state)
 	CHI_CheckXOP(listOfXOPs, "VDT2.xop", "VDT2 XOP", state)
+#if IgorVersion() < 9.0
 	CHI_CheckXOP(listOfXOPs, "HDF5.xop", "HDF5 XOP", state)
+#endif
 	CHI_CheckXOP(listOfXOPs, "AxonTelegraph.xop", "Axon Telegraph XOP", state)
 	CHI_CheckXOP(listOfXOPs, "MultiClamp700xCommander.xop", "Multi Clamp Commander XOP", state)
 	CHI_CheckXOP(listOfXOPs, "ZeroMQ.xop", "ZeroMQ XOP", state)
