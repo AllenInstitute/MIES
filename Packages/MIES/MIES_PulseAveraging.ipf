@@ -357,6 +357,8 @@ static Function/WAVE PA_CreateAndFillPulseWaveIfReq(wv, singleSweepFolder, chann
 	SetScale/P x, 0.0, DimDelta(wv, ROWS), WaveUnits(wv, ROWS), singlePulseWave
 	SetScale/P d, 0.0, 0.0, WaveUnits(wv, -1), singlePulseWave
 
+	ClearWaveNoteExceptWaveVersion(singlePulseWave)
+
 	SetNumberInWaveNote(singlePulseWave, NOTE_KEY_SEARCH_FAILED_PULSE, 0)
 	SetNumberInWaveNote(singlePulseWave, NOTE_KEY_TIMEALIGN, 0)
 	SetNumberInWaveNote(singlePulseWave, NOTE_KEY_ZEROED, 0)
