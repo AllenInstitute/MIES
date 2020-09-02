@@ -363,21 +363,35 @@ Setting up a continous integration server (Windows)
 Available CI servers
 ~~~~~~~~~~~~~~~~~~~~
 
-Linux:
+Given are the bamboo agent names, their capabilities and notable properties.
 
+Linux MIES Ephys:
+
+- Capabilities:
+
+  - Igor Pro (new) = Linux
+
+- Debian 10 (buster)
 - No Hardware
 - No Igor Pro
 - Docker
-- Wine (32bit and 64bit)
 
-Windows 10 (1):
+NI MIES Ephys:
+
+- Capabilities:
+
+  - Igor Pro (new) = Windows 10
 
 - ITC-1600 hardware with one rack, 2 AD/DA channels are looped
 - NI PCIe-6343, 2 AD/DA channels are looped
 - MCC demo amplifier only
 - Latest required nightly version of Igor Pro 8
 
-Windows 10 (2):
+Windows 10 S30 MIES CI:
+
+- Capabilities:
+
+  - Igor Pro (new) = Windows 7
 
 - ITC18-USB hardware, 2 AD/DA channels are looped
 - MCC demo amplifier only
