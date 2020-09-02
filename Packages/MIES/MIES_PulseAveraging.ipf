@@ -1403,10 +1403,11 @@ static Function PA_PulseHasFailed(WAVE singlePulseWave, STRUCT PulseAverageSetti
 
 	level = s.failedPulsesLevel
 
-	FindLevel/Q singlePulseWave, level
-	hasFailed = (V_flag == 1)
+	hasFailed = !(level >= GetNumberFromWaveNote(singlePulseWave, "WaveMinimum")     \
+	              && level <= GetNumberFromWaveNote(singlePulseWave, "WaveMaximum"))
 
 	SetNumberInWaveNote(singlePulseWave, PA_NOTE_KEY_PULSE_FAILED, hasFailed)
+	// NOTE_KEY_FAILED_PULSE_LEVEL is written in PA_MarkFailedPulses for all pulses
 
 	return hasFailed
 End
