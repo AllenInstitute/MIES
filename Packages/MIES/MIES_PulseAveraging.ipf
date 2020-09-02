@@ -353,8 +353,6 @@ static Function/WAVE PA_CreateAndFillPulseWaveIfReq(wv, singleSweepFolder, chann
 		return singlePulseWave
 	endif
 
-	KillOrMoveToTrash(wv = GetBackupWave(singlePulseWave))
-
 	MultiThread singlePulseWave[] = wv[first + p]
 	SetScale/P x, 0.0, DimDelta(wv, ROWS), WaveUnits(wv, ROWS), singlePulseWave
 	SetScale/P d, 0.0, 0.0, WaveUnits(wv, -1), singlePulseWave
@@ -369,7 +367,7 @@ static Function/WAVE PA_CreateAndFillPulseWaveIfReq(wv, singleSweepFolder, chann
 
 	SetNumberInWaveNote(wv, PA_SOURCE_WAVE_TIMESTAMP, ModDate(wv))
 
-	CreateBackupWave(singlePulseWave)
+	CreateBackupWave(singlePulseWave, forceCreation = 1)
 
 	return singlePulseWave
 End
