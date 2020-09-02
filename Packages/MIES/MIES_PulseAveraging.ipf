@@ -38,6 +38,9 @@ static StrConstant PA_DECONVOLUTION_WAVE_PREFIX = "deconv_"
 
 static StrConstant PA_SETTINGS = "PulseAverageSettings"
 
+/// Only present for diagonal pulses
+static StrConstant PA_NOTE_KEY_PULSE_FAILED = "PulseHasFailed"
+
 static Constant PA_USE_WAVE_SCALES = 0x01
 static Constant PA_USE_AXIS_SCALES = 0x02
 
@@ -1389,7 +1392,7 @@ static Function PA_PulseHasFailed(WAVE singlePulseWave, STRUCT PulseAverageSetti
 	endif
 
 	level     = GetNumberFromWaveNote(singlePulseWave, NOTE_KEY_FAILED_PULSE_LEVEL)
-	hasFailed = GetNumberFromWaveNote(singlePulseWave, "PulseHasFailed")
+	hasFailed = GetNumberFromWaveNote(singlePulseWave, PA_NOTE_KEY_PULSE_FAILED)
 
 	if(level == s.failedPulsesLevel && IsFinite(hasFailed))
 		// already investigated
@@ -1403,7 +1406,7 @@ static Function PA_PulseHasFailed(WAVE singlePulseWave, STRUCT PulseAverageSetti
 	FindLevel/Q singlePulseWave, level
 	hasFailed = (V_flag == 1)
 
-	SetNumberInWaveNote(singlePulseWave, "PulseHasFailed", hasFailed)
+	SetNumberInWaveNote(singlePulseWave, PA_NOTE_KEY_PULSE_FAILED, hasFailed)
 
 	return hasFailed
 End
