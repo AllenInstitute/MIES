@@ -58,9 +58,6 @@ case $MSYSTEM in
     MSYS_NO_PATHCONV=1 timeout ${timeoutValue} "${igorProPath}" /CompErrNoDialog /N /I "$experiment"
     ret=$?
     ;;
-  *)
-    env WINEPREFIX=/home/thomasb/.wine-igor wine "${igorProPath}" /CompErrNoDialog /N /I "$(pwd)/$experiment"
-    ;;
 esac
 
 rm -f $StateFile
