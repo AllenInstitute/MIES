@@ -50,9 +50,6 @@ case $MSYSTEM in
     # see https://github.com/git-for-windows/build-extra/blob/master/ReleaseNotes.md
     MSYS_NO_PATHCONV=1 "${igorProPath}" /CompErrNoDialog /N /I "$experiment"
     ;;
-  *)
-    env WINEPREFIX=/home/thomasb/.wine-igor wine "${igorProPath}" /CompErrNoDialog /N /I "$(pwd)/$experiment"
-    ;;
 esac
 
 rm -f $StateFile
