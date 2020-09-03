@@ -121,10 +121,8 @@ sed -i '1!G;h;$!d' ../installer/$NSISUNINSTDIRLIST
 sed -i 's/.\///;s/\//\\/g;s/.*/rmDir \"\$INSTDIR\\&\"/' ../installer/$NSISUNINSTDIRLIST
 # Run makensis to create installer
 cd ../installer
-if hash wine 2>/dev/null; then
-  wine nsis/makensis installer.nsi
-else
-  nsis/makensis installer.nsi
-fi
+
+nsis/makensis installer.nsi
+
 cd ..
 rm -rf $tmpdir
