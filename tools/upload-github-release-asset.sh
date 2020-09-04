@@ -2,7 +2,12 @@
 
 # Script to upload the release package and the installer to gitub
 #
-# Expects that ~/.credentials/github_api_token is a file with the github OAuth token
+# Expectations:
+# - ~/.credentials/github_api_token is a file with the github OAuth token
+# - $public_mies_repo exists and its origin remote is the github repository
+# - The deployment key is setup correctly for that repository in Github. See also $public_mies_repo/.git/config and ~/.ssh/config
+# - The release and installer packages are in the working tree root
+# - Either the main or a release branch are checked out
 
 set -e
 
@@ -31,7 +36,7 @@ fi
 cd $top_level
 
 zipfile=$(ls Release_*.zip)
-installerfile=$(ls tools/installer/MIES-Release*.exe)
+installerfile=$(ls MIES-Release*.exe)
 
 if [ ! -f $zipfile ]
 then
