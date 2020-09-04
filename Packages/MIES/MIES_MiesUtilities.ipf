@@ -5131,6 +5131,8 @@ Function/Wave ReplaceWaveWithBackup(wv, [nonExistingBackupIsFatal, keepBackup])
 
 	if(ParamIsDefault(nonExistingBackupIsFatal))
 		nonExistingBackupIsFatal = 1
+	else
+		nonExistingBackupIsFatal = !!nonExistingBackupIsFatal
 	endif
 
 	if(ParamIsDefault(keepBackup))
