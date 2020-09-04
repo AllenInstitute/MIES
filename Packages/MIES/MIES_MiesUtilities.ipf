@@ -6157,7 +6157,7 @@ threadsafe static Function DecimateMinMax(input, output, idx, firstRowInp, lastR
 
 // comment in for debugging
 // #ifdef DEBUGGING_ENABLED
-//   if(DP_DebuggingEnabledForFile(GetFile(FunctionPath(""))))
+//   if(DP_DebuggingEnabledForCaller())
 // 		printf "[%d, %d] -> [%d, %d]; min %g; max %g;\r", first, last, targetFirst, targetLast, V_min, V_max
 //   endif
 // #endif // DEBUGGING_ENABLED

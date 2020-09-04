@@ -1248,7 +1248,7 @@ static Function WB_NoiseSegment(pa)
 	WAVE SegmentWave = GetSegmentWave(duration=pa.duration)
 
 #ifdef DEBUGGING_ENABLED
-	if(DP_DebuggingEnabledForFile(GetFile(FunctionPath(""))))
+	if(DP_DebuggingEnabledForCaller())
 		Duplicate/O magphase, noiseEpochMagnitude
 		Redimension/R noiseEpochMagnitude
 		Duplicate/O magphase, noiseEpochPhase

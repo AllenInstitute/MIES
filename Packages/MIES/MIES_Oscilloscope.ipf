@@ -687,7 +687,7 @@ static Function SCOPE_ITC_UpdateOscilloscope(panelTitle, dataAcqOrTP, chunk, fif
 		ASSERT(first >= 0 && last < DimSize(ITCDataWave, ROWS) && first < last, "Invalid wave subrange")
 
 #ifdef DEBUGGING_ENABLED
-		if(DP_DebuggingEnabledForFile(GetFile(FunctionPath(""))))
+		if(DP_DebuggingEnabledForCaller())
 
 			ITCDataWave[0][0] += 0
 			if(!WindowExists("ITCDataWaveTPMD"))

@@ -28,6 +28,23 @@ Function DP_DebuggingEnabledForFile(file)
 	return listSelWave[V_Value] & LISTBOX_CHECKBOX_SELECTED
 End
 
+Function DP_DebuggingEnabledForCaller()
+
+	string stacktrace, callerInfo, callerFile
+	variable numEntries
+
+	stacktrace = GetRTStackInfo(3)
+
+	numEntries = ItemsInList(stacktrace)
+	ASSERT(numEntries >= 2, "Can not deduce calling function")
+
+	callerInfo = StringFromList(numEntries - 2, stacktrace)
+	callerFile = StringFromList(1, callerInfo, ",")
+	ASSERT(!IsEmpty(callerFile), "Missing caller file")
+
+	return DP_DebuggingEnabledForFile(callerFile)
+End
+
 Function DP_OpenDebugPanel()
 
 	variable debugMode

@@ -11,6 +11,7 @@
 /// @brief __SF__ Sweep formula allows to do analysis on sweeps with a
 /// dedicated formula language
 
+static Constant SF_STATE_UNINITIALIZED = -1
 static Constant SF_STATE_DEFAULT = 0
 static Constant SF_STATE_COLLECT = 1
 static Constant SF_STATE_ADDITION = 2
@@ -28,6 +29,7 @@ static Constant SF_STATE_OPERATION = 13
 static Constant SF_STATE_STRING = 14
 static Constant SF_STATE_STRINGTERMINATOR = 15
 
+static Constant SF_ACTION_UNINITIALIZED = -1
 static Constant SF_ACTION_SKIP = 0
 static Constant SF_ACTION_COLLECT = 1
 static Constant SF_ACTION_CALCULATION = 2
@@ -54,6 +56,76 @@ static Function SF_FormulaCheck(condition, message)
 	if(!condition)
 		Abort message
 	endif
+End
+
+static Function/S SF_StringifyState(variable state)
+
+	switch(state)
+		case SF_STATE_DEFAULT:
+			return "SF_STATE_DEFAULT"
+		case SF_STATE_COLLECT:
+			return "SF_STATE_COLLECT"
+		case SF_STATE_ADDITION:
+			return "SF_STATE_ADDITION"
+		case SF_STATE_SUBTRACTION:
+			return "SF_STATE_SUBTRACTION"
+		case SF_STATE_MULTIPLICATION:
+			return "SF_STATE_MULTIPLICATION"
+		case SF_STATE_DIVISION:
+			return "SF_STATE_DIVISION"
+		case SF_STATE_PARENTHESIS:
+			return "SF_STATE_PARENTHESIS"
+		case SF_STATE_FUNCTION:
+			return "SF_STATE_FUNCTION"
+		case SF_STATE_ARRAY:
+			return "SF_STATE_ARRAY"
+		case SF_STATE_ARRAYELEMENT:
+			return "SF_STATE_ARRAYELEMENT"
+		case SF_STATE_WHITESPACE:
+			return "SF_STATE_WHITESPACE"
+		case SF_STATE_COMMENT:
+			return "SF_STATE_COMMENT"
+		case SF_STATE_NEWLINE:
+			return "SF_STATE_NEWLINE"
+		case SF_STATE_OPERATION:
+			return "SF_STATE_OPERATION"
+		case SF_STATE_STRING:
+			return "SF_STATE_STRING"
+		case SF_STATE_STRINGTERMINATOR:
+			return "SF_STATE_STRINGTERMINATOR"
+		case SF_STATE_UNINITIALIZED:
+			return "SF_STATE_UNINITIALIZED"
+		default:
+			ASSERT(0, "unknown state")
+	endswitch
+End
+
+static Function/S SF_StringifyAction(variable action)
+
+	switch(action)
+		case SF_ACTION_SKIP:
+			return "SF_ACTION_SKIP"
+		case SF_ACTION_COLLECT:
+			return "SF_ACTION_COLLECT"
+		case SF_ACTION_CALCULATION:
+			return "SF_ACTION_CALCULATION"
+		case SF_ACTION_SAMECALCULATION:
+			return "SF_ACTION_SAMECALCULATION"
+		case SF_ACTION_HIGHERORDER:
+			return "SF_ACTION_HIGHERORDER"
+		case SF_ACTION_ARRAYELEMENT:
+			return "SF_ACTION_ARRAYELEMENT"
+		case SF_ACTION_PARENTHESIS:
+			return "SF_ACTION_PARENTHESIS"
+		case SF_ACTION_FUNCTION:
+			return "SF_ACTION_FUNCTION"
+		case SF_ACTION_ARRAY:
+			return "SF_ACTION_ARRAY"
+		case SF_ACTION_UNINITIALIZED:
+			return "SF_ACTION_UNINITIALIZED"
+		default:
+			ASSERT(0, "Unknown action")
+	endswitch
 End
 
 /// @brief output an error message to a global variable in dfr
@@ -86,23 +158,36 @@ End
 /// @brief serialize a string formula into JSON
 ///
 /// @param formula  string formula
+/// @param indentLevel [internal use only] recursive call level, used for debug output
 /// @returns a JSONid representation
-Function SF_FormulaParser(formula)
+Function SF_FormulaParser(formula, [indentLevel])
 	String formula
+	variable indentLevel
 
 	Variable i, parenthesisStart, parenthesisEnd, jsonIDdummy, jsonIDarray
 	String tempPath
-	Variable action = -1
+	string indentation = ""
+	Variable action = SF_ACTION_UNINITIALIZED
 	String token = ""
 	String buffer = ""
-	Variable state = -1
-	Variable lastState = -1
-	Variable lastCalculation = -1
+	Variable state = SF_STATE_UNINITIALIZED
+	Variable lastState = SF_STATE_UNINITIALIZED
+	Variable lastCalculation = SF_STATE_UNINITIALIZED
 	Variable level = 0
 	Variable arrayLevel = 0
 
 	Variable jsonID = JSON_New()
 	String jsonPath = ""
+
+	for(i = 0; i < indentLevel; i += 1)
+		indentation += "-> "
+	endfor
+
+#ifdef DEBUGGING_ENABLED
+	if(DP_DebuggingEnabledForCaller())
+		printf "%sformula %s\r", indentation, formula
+	endif
+#endif
 
 	if(strlen(formula) == 0)
 		return jsonID
@@ -174,9 +259,16 @@ Function SF_FormulaParser(formula)
 				state = SF_STATE_COLLECT
 				SF_FormulaCheck(GrepString(token, "[A-Za-z0-9_\.:;]"), "undefined pattern in formula: " + formula[i,i+5])
 		endswitch
+
 		if(level > 0 || arrayLevel > 0)
 			state = SF_STATE_DEFAULT
 		endif
+
+#ifdef DEBUGGING_ENABLED
+		if(DP_DebuggingEnabledForCaller())
+			printf "%stoken %s, state %s, ", indentation, token, SF_StringifyState(state)
+		endif
+#endif
 
 		// state transition
 		if(lastState == SF_STATE_STRING && state != SF_STATE_STRINGTERMINATOR)
@@ -206,7 +298,7 @@ Function SF_FormulaParser(formula)
 						if(lastCalculation == -1)
 							action = SF_ACTION_HIGHERORDER
 						else
-							action = SF_ACTION_SKIP
+							action = SF_ACTION_COLLECT
 						endif
 						break
 					endif
@@ -260,6 +352,12 @@ Function SF_FormulaParser(formula)
 			lastState = state
 		endif
 
+#ifdef DEBUGGING_ENABLED
+		if(DP_DebuggingEnabledForCaller())
+			printf "action %s, lastState %s\r", SF_StringifyAction(action), SF_StringifyState(lastState)
+		endif
+#endif
+
 		// action
 		switch(action)
 			case SF_ACTION_COLLECT:
@@ -284,12 +382,12 @@ Function SF_FormulaParser(formula)
 				JSON_Release(jsonIDdummy)
 				break
 			case SF_ACTION_PARENTHESIS:
-				JSON_AddJSON(jsonID, jsonPath, SF_FormulaParser(buffer[1, inf]))
+				JSON_AddJSON(jsonID, jsonPath, SF_FormulaParser(buffer[1, inf], indentLevel = indentLevel + 1))
 				break
 			case SF_ACTION_HIGHERORDER:
 				lastCalculation = state
 				if(!IsEmpty(buffer))
-					JSON_AddJSON(jsonID, jsonPath, SF_FormulaParser(buffer))
+					JSON_AddJSON(jsonID, jsonPath, SF_FormulaParser(buffer, indentLevel = indentLevel + 1))
 				endif
 				jsonPath = SF_EscapeJsonPath(token)
 				if(!cmpstr(jsonPath, ",") || !cmpstr(jsonPath, "]"))
@@ -306,7 +404,7 @@ Function SF_FormulaParser(formula)
 			case SF_ACTION_ARRAY:
 				SF_FormulaCheck(!cmpstr(buffer[0], "["), "Encountered array ending without array start.")
 				jsonIDarray = JSON_New()
-				jsonIDdummy = SF_FormulaParser(buffer[1,inf])
+				jsonIDdummy = SF_FormulaParser(buffer[1,inf], indentLevel = indentLevel + 1)
 				if(JSON_GetType(jsonIDdummy, "") != JSON_ARRAY)
 					JSON_AddTreeArray(jsonIDarray, "")
 				endif
@@ -327,7 +425,7 @@ Function SF_FormulaParser(formula)
 			case SF_ACTION_SAMECALCULATION:
 			default:
 				if(strlen(buffer) > 0)
-					JSON_AddJSON(jsonID, jsonPath, SF_FormulaParser(buffer))
+					JSON_AddJSON(jsonID, jsonPath, SF_FormulaParser(buffer, indentLevel = indentLevel + 1))
 				endif
 		endswitch
 		buffer = ""
@@ -380,6 +478,14 @@ Function/WAVE SF_FormulaExecutor(jsonID, [jsonPath, graph])
 	if(ParamIsDefault(graph))
 		graph = ""
 	endif
+
+#ifdef DEBUGGING_ENABLED
+	if(DP_DebuggingEnabledForCaller())
+		printf "##########################\r"
+		printf "%s\r", JSON_Dump(jsonID, indent = 2)
+		printf "##########################\r"
+	endif
+#endif
 
 	// object and array evaluation
 	JSONtype = JSON_GetType(jsonID, jsonPath)
