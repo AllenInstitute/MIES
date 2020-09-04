@@ -507,11 +507,15 @@ static Function/DF TestSweepData(entry, device, sweep)
 	WAVE/Z configWave = GetConfigWave(sweepWave)
 	CHECK_WAVE(sweepWave, NORMAL_WAVE)
 
-	DFREF pxpSweepsDFR = NewFreeDataFolder()
+	DFREF pxpSweepsDFR = UniqueDataFolder(GetDataFolderDFR(), "pxpSweeps")
 	SplitSweepIntoComponents(numericalValues, sweep, sweepWave, configWave, TTL_RESCALE_OFF, targetDFR=pxpSweepsDFR)
 
 	nwbSweeps = SortList(GetListOfObjects(nwbSweepsDFR, ".*"))
 	pxpSweeps = SortList(GetListOfObjects(pxpSweepsDFR, ".*"))
+
+	// remove backup waves
+	nwbSweeps = GrepList(nwbSweeps, ".*\\Q" + WAVE_BACKUP_SUFFIX + "\\E$", 1)
+	pxpSweeps = GrepList(pxpSweeps, ".*\\Q" + WAVE_BACKUP_SUFFIX + "\\E$", 1)
 
 	// remove IZero DA channels as we don't save these in NWB
 	pxpSweepsClean = ""
@@ -543,7 +547,7 @@ static Function/DF TestSweepData(entry, device, sweep)
 		WAVE/Z/SDFR=nwbSweepsDFR nwbWave = $StringFromList(i, nwbSweeps)
 		CHECK_WAVE(nwbWave, NORMAL_WAVE)
 		WAVE/Z/SDFR=pxpSweepsDFR pxpWave = $StringFromList(i, pxpSweepsClean)
-		CHECK_WAVE(pxpWave, FREE_WAVE)
+		CHECK_WAVE(pxpWave, NORMAL_WAVE)
 		CHECK_EQUAL_WAVES(nwbWave, pxpWave, mode = WAVE_DATA | WAVE_DATA_TYPE | WAVE_SCALING | DATA_UNITS | DIMENSION_UNITS | DIMENSION_LABELS | DATA_FULL_SCALE | DIMENSION_SIZES) // all except WAVE_NOTE
 	endfor
 
