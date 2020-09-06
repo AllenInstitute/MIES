@@ -1050,7 +1050,7 @@ static Function/S PA_ShowPulses(string win, STRUCT PulseAverageSettings &pa, WAV
 		endfor
 	endfor
 
-	PA_DrawScaleBars(win, pa, PA_USE_WAVE_SCALES)
+	PA_DrawScaleBars(win, pa, PA_DISPLAYMODE_TRACES, PA_USE_WAVE_SCALES)
 	PA_LayoutGraphs(win, PA_DISPLAYMODE_TRACES, regions, channels, pa)
 
 	return usedGraphs
@@ -1242,22 +1242,33 @@ End
 
 static Function PA_UpdateScaleBars(string win)
 
+	variable displayMode
+	string bsPanel
+
 	if(GrepString(win, PA_GRAPH_PREFIX))
-		win = GetUserData(win, "", MIES_BSP_PA_MAINPANEL)
+		bsPanel = GetUserData(win, "", MIES_BSP_PA_MAINPANEL)
+	else
+		bsPanel = BSP_GetPanel(win)
 	endif
 
+	ASSERT(WindowExists(win), "Missing window")
+
+	displayMode = ItemsInList(ImageNameList(win, ";")) > 0 ? PA_DISPLAYMODE_IMAGES : PA_DISPLAYMODE_TRACES
+
 	STRUCT PulseAverageSettings pa
-	PA_GatherSettings(win, pa)
-	PA_DrawScaleBars(win, pa, PA_USE_AXIS_SCALES)
+	PA_GatherSettings(bsPanel, pa)
+	PA_DrawScaleBars(bsPanel, pa, displayMode, PA_USE_AXIS_SCALES)
 End
 
-static Function PA_DrawScaleBars(string win, STRUCT PulseAverageSettings &pa, variable mode)
+static Function PA_DrawScaleBars(string win, STRUCT PulseAverageSettings &pa, variable displayMode, variable axisMode)
 
-	variable i, j, numChannels, numRegions, region, channelNumber
-	variable activeChanCount, activeRegionCount, maximum, length
+	variable i, j, numChannels, numRegions, region, channelNumber, drawXScaleBarOverride
+	variable activeChanCount, activeRegionCount, maximum, length, drawYScaleBarOverride
 	string graph, vertAxis, horizAxis, baseName
 
-	if(!pa.showIndividualPulses && !pa.showAverage && !pa.deconvolution.enable || !pa.showTraces)
+	if((!pa.showIndividualPulses && !pa.showAverage && !pa.deconvolution.enable) \
+	   || (!pa.showTraces && displayMode == PA_DISPLAYMODE_TRACES)               \
+	   || (!pa.showImages && displayMode == PA_DISPLAYMODE_IMAGES))
 		// blank graph
 		return NaN
 	endif
@@ -1282,14 +1293,14 @@ static Function PA_DrawScaleBars(string win, STRUCT PulseAverageSettings &pa, va
 
 			activeChanCount = i + 1
 			activeRegionCount = j + 1
-			graph = PA_GetGraph(win, pa, PA_DISPLAYMODE_TRACES, channelNumber, region, activeRegionCount, activeChanCount, numRegions)
+			graph = PA_GetGraph(win, pa, displayMode, channelNumber, region, activeRegionCount, activeChanCount, numRegions)
 			[vertAxis, horizAxis] = PA_GetAxes(pa, activeRegionCount, activeChanCount)
 
 			if(!pa.multipleGraphs && activeChanCount == 1 && activeRegionCount == 1 || pa.multipleGraphs)
 				NewFreeAxis/R/O/W=$graph fakeAxis
 				ModifyFreeAxis/W=$graph fakeAxis, master=$horizAxis, hook=PA_AxisHook
 				ModifyGraph/W=$graph nticks(fakeAxis)=0, noLabel(fakeAxis)=2, axthick(fakeAxis)=0
-				SetDrawLayer/K/W=$graph ProgFront
+				SetDrawLayer/K/W=$graph $PA_DRAWLAYER_SCALEBAR
 			endif
 
 			WAVE/WAVE/Z setWaves = PA_GetSetWaves(pulseAverageHelperDFR, channelNumber, region)
@@ -1307,7 +1318,8 @@ static Function PA_DrawScaleBars(string win, STRUCT PulseAverageSettings &pa, va
 			else
 				length = pa.yScaleBarLength
 			endif
-			PA_DrawScaleBarsHelper(graph, mode, setWaves, vertAxis, horizAxis, length, WaveUnits(averageWave, ROWS), WaveUnits(averageWave, -1), activeChanCount, numChannels, activeRegionCount, numRegions)
+
+			PA_DrawScaleBarsHelper(graph, axisMode, displayMode, setWaves, vertAxis, horizAxis, length, WaveUnits(averageWave, ROWS), WaveUnits(averageWave, -1), activeChanCount, numChannels, activeRegionCount, numRegions)
 		endfor
 	endfor
 End
@@ -1323,16 +1335,16 @@ static Function	[variable vert_min, variable vert_max, variable horiz_min, varia
 	return [WaveMin(vertDataMin), WaveMax(vertDataMax), WaveMin(horizDataMin), WaveMax(horizDataMax)]
 End
 
-static Function PA_DrawScaleBarsHelper(string win, variable mode, WAVE/WAVE setWaves, string vertAxis, string horizAxis, variable ylength, string xUnit, string yUnit, variable activeChanCount, variable numChannels, variable activeRegionCount, variable numRegions)
+static Function PA_DrawScaleBarsHelper(string win, variable axisMode, variable displayMode, WAVE/WAVE setWaves, string vertAxis, string horizAxis, variable ylength, string xUnit, string yUnit, variable activeChanCount, variable numChannels, variable activeRegionCount, variable numRegions)
 
-	string graph, msg, str
+	string graph, msg, str, axList
 	variable vertAxis_y, vertAxis_x, xLength
 	variable vert_min, vert_max, horiz_min, horiz_max, drawLength
 	variable xBarBottom, xBarTop, yBarBottom, yBarTop, labelOffset
 	variable xBarLeft, xBarRight, yBarLeft, yBarRight, drawXScaleBar, drawYScaleBar
 
 	drawXScaleBar = (activeChanCount == numChannels)
-	drawYScaleBar = (activeChanCount != activeRegionCount)
+	drawYScaleBar = (activeChanCount != activeRegionCount) && (displayMode != PA_DISPLAYMODE_IMAGES)
 
 	if(!drawXScaleBar && !drawYScaleBar)
 		return NaN
@@ -1340,9 +1352,20 @@ static Function PA_DrawScaleBarsHelper(string win, variable mode, WAVE/WAVE setW
 
 	graph = GetMainWindow(win)
 
-	switch(mode)
+	switch(axisMode)
 		case PA_USE_WAVE_SCALES:
-			[vert_min, vert_max, horiz_min, horiz_max] = PA_GetMinAndMax(setWaves)
+			switch(displayMode)
+				case PA_DISPLAYMODE_TRACES:
+					[vert_min, vert_max, horiz_min, horiz_max] = PA_GetMinAndMax(setWaves)
+					break
+				case PA_DISPLAYMODE_IMAGES:
+					[vert_min, vert_max, horiz_min, horiz_max] = PA_GetMinAndMax(setWaves)
+					vert_min = -0.5
+					vert_max = NaN
+					break
+				default:
+					ASSERT(0, "Invalid display mode")
+			endswitch
 			break
 		case PA_USE_AXIS_SCALES:
 			[vert_min, vert_max] = GetAxisRange(graph, vertAxis, mode=AXIS_RANGE_INC_AUTOSCALED)
@@ -1384,6 +1407,10 @@ static Function PA_DrawScaleBarsHelper(string win, variable mode, WAVE/WAVE setW
 	endif
 
 	if(drawXScaleBar)
+
+		axList = AxisList(graph)
+		ASSERT(WhichListItem(horizAxis, axList) != -1, "Missing horizontal axis")
+		ASSERT(WhichListItem(vertAxis, axList) != -1, "Missing vertical axis")
 
 		SetDrawEnv/W=$graph xcoord=$horizAxis, ycoord=$vertAxis
 		SetDrawEnv/W=$graph save
@@ -2413,7 +2440,7 @@ static Function/S PA_ShowImage(string win, STRUCT PulseAverageSettings &pa, WAVE
 		RemoveImage/W=$graph $image
 	endfor
 
-	PA_DrawScaleBars(win, pa, PA_USE_WAVE_SCALES)
+	PA_DrawScaleBars(win, pa, PA_DISPLAYMODE_IMAGES, PA_USE_WAVE_SCALES)
 	PA_AddColorScales(win, regions, channels, pa)
 	PA_DrawXZeroLines(win, regions, channels, pa)
 
