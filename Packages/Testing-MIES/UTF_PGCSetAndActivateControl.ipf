@@ -12,6 +12,8 @@ static Function TEST_CASE_BEGIN_OVERRIDE(testCase)
 	String/G root:panel = S_name
 
 	PopupMenu popup_ctrl proc=PGCT_PopMenuProc,value=#("\"" + PGCT_POPUPMENU_ENTRIES + "\""), mode = 1
+	PopupMenu popup_ctrl_colortable,pos={68.00,114.00},size={200.00,19.00},proc=PGCT_PopMenuProc
+	PopupMenu popup_ctrl_colortable,mode=2,value= #"\"*COLORTABLEPOP*\""
 	CheckBox checkbox_ctrl_mode_checkbox,pos={66.00,1.00},size={39.00,15.00},proc=PGCT_CheckProc
 	CheckBox checkbox_ctrl_mode_checkbox,value= 0
 
@@ -229,6 +231,40 @@ static Function PGCT_PopupMenuStrWorksWithWC()
 
 	DoUpdate
 	ControlInfo/W=$panel popup_ctrl
+	CHECK_EQUAL_STR(refString, S_Value)
+	CHECK_EQUAL_VAR(refValue, V_Value)
+	NVAR popNumSVAR = popNum
+	popNum = popNumSVAR
+	SVAR popStrSVAR = popStr
+	popStr = popStrSVAR
+
+	CHECK_EQUAL_VAR(refValue, popNum)
+	CHECK_EQUAL_STR(refString, popStr)
+End
+
+static Function PGCT_PopupMenuStrWorksWithColorTable()
+
+	variable refValue, popNum
+	string refString, popStr
+
+	SVAR/SDFR=root: panel
+
+	ControlInfo/W=$panel popup_ctrl_colortable
+	refValue  = V_Value
+	refString = S_Value
+
+	popStr = "Rainbow"
+	popNum = 2
+	CHECK_EQUAL_VAR(refValue, popNum)
+	CHECK_EQUAL_STR(refString, popStr)
+
+	refString = "YellowHot"
+	refValue  = 3
+
+	PGC_SetAndActivateControl(panel, "popup_ctrl_colortable", str = "YellowHot")
+
+	DoUpdate
+	ControlInfo/W=$panel popup_ctrl_colortable
 	CHECK_EQUAL_STR(refString, S_Value)
 	CHECK_EQUAL_VAR(refValue, V_Value)
 	NVAR popNumSVAR = popNum
