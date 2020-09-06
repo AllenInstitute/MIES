@@ -154,7 +154,7 @@ Function DB_ResetAndStoreCurrentDBPanel()
 	CheckBox check_auto_remove WIN = $bsPanel, value= 0
 	CheckBox check_highlightRanges WIN = $bsPanel, value= 0
 
-	SetVariable setvar_pulseAver_fallbackLength WIN = $bsPanel, value= _NUM:100
+	CheckBox check_pulseAver_fixedPulseLength WIN = $bsPanel, value= 0
 	SetVariable setvar_pulseAver_endPulse WIN = $bsPanel, value= _NUM:inf
 	SetVariable setvar_pulseAver_startPulse WIN = $bsPanel, value= _NUM:0
 	SetVariable setvar_pulseAver_vert_scale_bar WIN = $bsPanel, value= _NUM:1
@@ -168,6 +168,7 @@ Function DB_ResetAndStoreCurrentDBPanel()
 	CheckBox check_pulseAver_showTraces WIN = $bsPanel, value= 1
 	CheckBox check_pulseAver_ShowImage WIN = $bsPanel, value= 0
 	CheckBox check_pulseAver_drawXZeroLine WIN = $bsPanel, value= 0
+	SetVariable setvar_pulseAver_overridePulseLength WIN = $bsPanel, value= _NUM:10
 	PopupMenu popup_pulseAver_colorscales WIN= $bsPanel, mode=8 // Terrain
 
 	SetVariable setvar_pulseAver_deconv_tau WIN = $bsPanel, value= _NUM:15

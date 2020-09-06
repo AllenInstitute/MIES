@@ -316,16 +316,16 @@ Function/WAVE PA_GetPulseStartTimes(traceData, idx, region, channelTypeStr, [rem
 	return pulseStartTimes
 End
 
-static Function PA_GetPulseLength(pulseStartTimes, startingPulse, endingPulse, fallbackPulseLength)
+static Function PA_GetPulseLength(pulseStartTimes, startingPulse, endingPulse, overridePulseLength, fixedPulseLength)
 	WAVE pulseStartTimes
-	variable startingPulse, endingPulse, fallbackPulseLength
+	variable startingPulse, endingPulse, overridePulseLength, fixedPulseLength
 
 	variable numPulses, minimum
 
 	numPulses = DimSize(pulseStartTimes, ROWS)
 
-	if(numPulses <= 1)
-		return fallbackPulseLength
+	if(numPulses <= 1 || fixedPulseLength)
+		return overridePulseLength
 	endif
 
 	Make/FREE/D/N=(numPulses) pulseLengths
@@ -340,7 +340,7 @@ static Function PA_GetPulseLength(pulseStartTimes, startingPulse, endingPulse, f
 
 	ASSERT(minimum == 0, "pulse length expected to be zero")
 
-	return fallbackPulseLength
+	return overridePulseLength
 End
 
 /// @brief Single pulse wave creator
@@ -554,7 +554,7 @@ static Function PA_GenerateAllPulseWaves(string win, STRUCT PulseAverageSettings
 			endingPulse    = min(numPulsesTotal - 1, endingPulseSett)
 			numPulses = endingPulse - startingPulse + 1
 
-			pulseToPulseLength = PA_GetPulseLength(pulseStartTimes, startingPulse, endingPulse, pa.fallbackPulseLength)
+			pulseToPulseLength = PA_GetPulseLength(pulseStartTimes, startingPulse, endingPulse, pa.overridePulseLength, pa.fixedPulseLength)
 
 			WAVE numericalValues = $traceData[idx][%numericalValues]
 			DFREF singleSweepFolder = GetWavesDataFolderDFR($traceData[idx][%fullPath])
@@ -640,7 +640,8 @@ static Function PA_GatherSettings(win, s)
 	s.multipleGraphs       = GetCheckboxState(extPanel, "check_pulseAver_multGraphs")
 	s.startingPulse        = GetSetVariable(extPanel, "setvar_pulseAver_startPulse")
 	s.endingPulse          = GetSetVariable(extPanel, "setvar_pulseAver_endPulse")
-	s.fallbackPulseLength  = GetSetVariable(extPanel, "setvar_pulseAver_fallbackLength")
+	s.overridePulseLength  = GetSetVariable(extPanel, "setvar_pulseAver_overridePulseLength")
+	s.fixedPulseLength     = GetCheckboxState(extPanel, "check_pulseAver_fixedPulseLength")
 	s.regionSlider         = GetSliderPositionIndex(extPanel, "slider_BrowserSettings_dDAQ")
 	s.zeroPulses           = GetCheckboxState(extPanel, "check_pulseAver_zero")
 	s.autoTimeAlignment    = GetCheckboxState(extPanel, "check_pulseAver_timeAlign")
@@ -1116,7 +1117,8 @@ static Function [WAVE/WAVE dest, WAVE/WAVE source, variable needsPlotting] PA_Pr
 
 	constantSinglePulseSettings = (pa.startingPulse == paOld.startingPulse                \
 	                               && pa.endingPulse == paOld.endingPulse                 \
-	                               && pa.fallbackPulseLength == paOld.fallbackPulseLength)
+	                               && pa.overridePulseLength == paOld.overridePulseLength \
+	                               && pa.fixedPulseLength == paOld.fixedPulseLength)
 
 	PA_GenerateAllPulseWaves(win, pa, constantSinglePulseSettings, mode)
 
@@ -2195,7 +2197,8 @@ static Function PA_SerializeSettings(string win, STRUCT PulseAverageSettings &pa
 	JSON_AddVariable(jsonID, "/startingPulse", pa.startingPulse)
 	JSON_AddVariable(jsonID, "/endingPulse", pa.endingPulse)
 	JSON_AddVariable(jsonID, "/regionSlider", pa.regionSlider)
-	JSON_AddVariable(jsonID, "/fallbackPulseLength", pa.fallbackPulseLength)
+	JSON_AddVariable(jsonID, "/overridePulseLength", pa.overridePulseLength)
+	JSON_AddVariable(jsonID, "/fixedPulseLength", pa.fixedPulseLength)
 	JSON_AddVariable(jsonID, "/multipleGraphs", pa.multipleGraphs)
 	JSON_AddVariable(jsonID, "/zeroPulses", pa.zeroPulses)
 	JSON_AddVariable(jsonID, "/autoTimeAlignment", pa.autoTimeAlignment)
@@ -2249,7 +2252,8 @@ static Function PA_DeserializeSettings(string win, STRUCT PulseAverageSettings &
 	pa.startingPulse        = JSON_GetVariable(jsonID, "/startingPulse")
 	pa.endingPulse          = JSON_GetVariable(jsonID, "/endingPulse")
 	pa.regionSlider         = JSON_GetVariable(jsonID, "/regionSlider")
-	pa.fallbackPulseLength  = JSON_GetVariable(jsonID, "/fallbackPulseLength")
+	pa.overridePulseLength  = JSON_GetVariable(jsonID, "/overridePulseLength")
+	pa.fixedPulseLength     = JSON_GetVariable(jsonID, "/fixedPulseLength")
 	pa.multipleGraphs       = JSON_GetVariable(jsonID, "/multipleGraphs")
 	pa.zeroPulses           = JSON_GetVariable(jsonID, "/zeroPulses")
 	pa.autoTimeAlignment    = JSON_GetVariable(jsonID, "/autoTimeAlignment")

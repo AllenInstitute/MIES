@@ -49,7 +49,8 @@ Function InitPulseAverageSettings(pa)
 	pa.startingPulse        = NaN
 	pa.endingPulse          = NaN
 	pa.regionSlider         = NaN
-	pa.fallbackPulseLength  = NaN
+	pa.overridePulseLength  = NaN
+	pa.fixedPulseLength     = NaN
 	pa.multipleGraphs       = NaN
 	pa.zeroPulses           = NaN
 	pa.autoTimeAlignment    = NaN
@@ -78,7 +79,7 @@ Structure PulseAverageSettings
 	/// @{
 	/// These settings influence the extracted single pulse waves, see also
 	/// PA_GenerateAllPulseWaves().
-	variable startingPulse, endingPulse, fallbackPulseLength
+	variable startingPulse, endingPulse, overridePulseLength, fixedPulseLength
 	/// @}
 
 	DFREF dfr
