@@ -1267,7 +1267,7 @@ static Function PA_DrawScaleBars(string win, STRUCT PulseAverageSettings &pa, va
 				SetDrawLayer/K/W=$graph ProgFront
 			endif
 
-			WAVE/WAVE/Z setWaves = PA_GetSetWaves(pulseAverageHelperDFR, channelNumber, region, removeFailedPulses = 1)
+			WAVE/WAVE/Z setWaves = PA_GetSetWaves(pulseAverageHelperDFR, channelNumber, region)
 
 			if(!WaveExists(setWaves))
 				continue
