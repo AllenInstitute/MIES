@@ -651,6 +651,7 @@ static Function PA_GatherSettings(win, s)
 	s.showImages           = GetCheckboxState(extPanel, "check_pulseAver_ShowImage")
 	s.showTraces           = GetCheckboxState(extPanel, "check_pulseAver_ShowTraces")
 	s.imageColorScale      = GetPopupMenuString(extPanel, "popup_pulseAver_colorscales")
+	s.drawXZeroLine        = GetCheckboxState(extPanel, "check_pulseAver_timeAlign") && GetCheckboxState(extPanel, "check_pulseAver_drawXZeroLine")
 
 	PA_DeconvGatherSettings(win, s.deconvolution)
 End
@@ -2176,6 +2177,7 @@ static Function PA_SerializeSettings(string win, STRUCT PulseAverageSettings &pa
 	JSON_AddVariable(jsonID, "/failedPulsesLevel", pa.failedPulsesLevel)
 	JSON_AddVariable(jsonID, "/yScaleBarLength", pa.yScaleBarLength)
 	JSON_AddVariable(jsonID, "/showImage", pa.showImages)
+	JSON_AddVariable(jsonID, "/drawXZeroLine", pa.drawXZeroLine)
 	JSON_AddVariable(jsonID, "/showTraces", pa.showTraces)
 	JSON_AddString(jsonID, "/imageColorScale", pa.imageColorScale)
 	JSON_AddTreeObject(jsonID, "/deconvolution")
@@ -2229,6 +2231,7 @@ static Function PA_DeserializeSettings(string win, STRUCT PulseAverageSettings &
 	pa.failedPulsesLevel    = JSON_GetVariable(jsonID, "/failedPulsesLevel")
 	pa.yScaleBarLength      = JSON_GetVariable(jsonID, "/yScaleBarLength")
 	pa.showImages           = JSON_GetVariable(jsonID, "/showImage")
+	pa.drawXZeroLine        = JSON_GetVariable(jsonID, "/drawXZeroLine")
 	pa.showTraces           = JSON_GetVariable(jsonID, "/showTraces")
 	pa.imageColorScale      = JSON_GetString(jsonID, "/imageColorScale")
 	pa.deconvolution.enable = JSON_GetVariable(jsonID, "/deconvolution/enable")
@@ -2412,6 +2415,8 @@ static Function/S PA_ShowImage(string win, STRUCT PulseAverageSettings &pa, WAVE
 
 	PA_DrawScaleBars(win, pa, PA_USE_WAVE_SCALES)
 	PA_AddColorScales(win, regions, channels, pa)
+	PA_DrawXZeroLines(win, regions, channels, pa)
+
 	return usedGraphs
 End
 
@@ -2536,4 +2541,44 @@ Function PA_ImageWindowHook(s)
 	endswitch
 
 	return 0
+End
+
+static Function PA_DrawXZeroLines(string win, WAVE regions, WAVE channels, STRUCT PulseAverageSettings &pa)
+
+	variable i, j, numChannels, numRegions, channelNumber, activeChanCount, activeRegionCount, region
+	string vertAxis, horizAxis, graph
+
+	numChannels = DimSize(channels, ROWS)
+	numRegions = DimSize(regions, ROWS)
+
+	for(i = 0; i < numChannels; i += 1)
+		channelNumber = channels[i]
+		activeChanCount = i + 1
+
+		for(j = 0; j < numRegions; j += 1)
+			region = regions[j]
+			activeRegionCount = j + 1
+
+			if(!pa.multipleGraphs && i == 0 && j == 0 || pa.multipleGraphs)
+				graph = PA_GetGraph(win, pa, PA_DISPLAYMODE_IMAGES, channelNumber, region, activeRegionCount, activeChanCount, numRegions)
+				SetDrawLayer/W=$graph/K $PA_DRAWLAYER_XZEROLINE
+			endif
+
+			if(!pa.drawXZeroLine)
+				if(!pa.multipleGraphs)
+					return NaN
+				endif
+
+				continue
+			endif
+
+			[vertAxis, horizAxis] = PA_GetAxes(pa, activeRegionCount, activeChanCount)
+
+			SetDrawEnv/W=$graph push
+			SetDrawEnv/W=$graph xcoord=$horizAxis, ycoord=rel, dash=1
+			SetDrawEnv/W=$graph save
+			DrawLine/W=$graph 0,0,0,1
+			SetDrawEnv/W=$graph pop
+		endfor
+	endfor
 End
