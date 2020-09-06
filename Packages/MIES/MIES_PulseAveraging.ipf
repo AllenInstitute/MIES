@@ -304,7 +304,7 @@ static Function PA_GetPulseLength(pulseStartTimes, startingPulse, endingPulse, f
 
 	variable numPulses, minimum
 
-	numPulses = endingPulse - startingPulse + 1
+	numPulses = DimSize(pulseStartTimes, ROWS)
 
 	if(numPulses <= 1)
 		return fallbackPulseLength
