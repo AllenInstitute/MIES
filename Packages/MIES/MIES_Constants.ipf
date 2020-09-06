@@ -756,6 +756,7 @@ StrConstant NOTE_KEY_TIMEALIGN            = "TimeAlign"
 StrConstant NOTE_KEY_ARTEFACT_REMOVAL     = "ArtefactRemoval"
 StrConstant NOTE_KEY_SEARCH_FAILED_PULSE  = "SearchFailedPulses"
 StrConstant NOTE_KEY_FAILED_PULSE_LEVEL   = "FailedPulseLevel"
+StrConstant NOTE_KEY_PULSE_SORT_ORDER     = "PulseSortOrder"
 
 /// DA_Ephys Panel Tabs
 Constant DA_EPHYS_PANEL_DATA_ACQUISITION = 0
@@ -1255,7 +1256,7 @@ Constant POST_PLOT_FULL_UPDATE = 0x8     ///< Forces a complete update from scra
 
 /// @}
 
-Constant PA_SETTINGS_STRUCT_VERSION = 4
+Constant PA_SETTINGS_STRUCT_VERSION = 5
 
 StrConstant NOTE_NEEDS_UPDATE = "NeedsUpdate"
 

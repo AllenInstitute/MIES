@@ -154,26 +154,37 @@ Function DB_ResetAndStoreCurrentDBPanel()
 	CheckBox check_auto_remove WIN = $bsPanel, value= 0
 	CheckBox check_highlightRanges WIN = $bsPanel, value= 0
 
-	CheckBox check_pulseAver_fixedPulseLength WIN = $bsPanel, value= 0
-	SetVariable setvar_pulseAver_endPulse WIN = $bsPanel, value= _NUM:inf
-	SetVariable setvar_pulseAver_startPulse WIN = $bsPanel, value= _NUM:0
+	// BEGIN PA
+	CheckBox check_pulseAver_showTraces WIN = $bsPanel, value= 1
 	SetVariable setvar_pulseAver_vert_scale_bar WIN = $bsPanel, value= _NUM:1
 
-	CheckBox check_pulseAver_multGraphs WIN = $bsPanel, value= 0
-	CheckBox check_pulseAver_zero WIN = $bsPanel, value= 0
-	CheckBox check_pulseAver_showAver WIN = $bsPanel, value= 0
-	CheckBox check_pulseAver_indPulses WIN = $bsPanel, value= 1
-	CheckBox check_pulseAver_deconv WIN = $bsPanel, value= 0
-	CheckBox check_pulseAver_timeAlign WIN = $bsPanel, value= 0
-	CheckBox check_pulseAver_showTraces WIN = $bsPanel, value= 1
 	CheckBox check_pulseAver_ShowImage WIN = $bsPanel, value= 0
 	CheckBox check_pulseAver_drawXZeroLine WIN = $bsPanel, value= 0
 	SetVariable setvar_pulseAver_overridePulseLength WIN = $bsPanel, value= _NUM:10
 	PopupMenu popup_pulseAver_colorscales WIN= $bsPanel, mode=8 // Terrain
+	PopupMenu popup_pulseAver_pulseSortOrder WIN= $bsPanel, mode=1
 
+	CheckBox check_pulseAver_deconv WIN = $bsPanel, value= 0
 	SetVariable setvar_pulseAver_deconv_tau WIN = $bsPanel, value= _NUM:15
 	SetVariable setvar_pulseAver_deconv_smth WIN = $bsPanel, value= _NUM:1000
 	SetVariable setvar_pulseAver_deconv_range WIN = $bsPanel, value= _NUM:inf
+
+	CheckBox check_pulseAver_zero WIN = $bsPanel, value= 0
+	CheckBox check_pulseAver_timeAlign WIN = $bsPanel, value= 0
+	CheckBox check_pulseAver_showAver WIN = $bsPanel, value= 0
+	CheckBox check_pulseAver_multGraphs WIN = $bsPanel, value= 0
+	CheckBox check_pulseAver_indPulses WIN = $bsPanel, value= 1
+
+	SetVariable setvar_pulseAver_startPulse WIN = $bsPanel, value= _NUM:0
+	SetVariable setvar_pulseAver_endPulse WIN = $bsPanel, value= _NUM:inf
+	CheckBox check_pulseAver_fixedPulseLength WIN = $bsPanel, value= 0
+	SetVariable setvar_pulseAver_overridePulseLength WIN = $bsPanel, value= _NUM:10
+
+	CheckBox check_pulseAver_searchFailedPulses WIN = $bsPanel, value= 0
+	CheckBox check_pulseAver_hideFailedPulses WIN = $bsPanel, value= 0
+	SetVariable setvar_pulseAver_failedPulses_level WIN = $bsPanel, value= _NUM:0
+
+	// END PA
 
 	CheckBox check_BrowserSettings_OVS WIN = $bsPanel, value= 0
 	CheckBox check_BrowserSettings_AR WIN = $bsPanel, value= 0

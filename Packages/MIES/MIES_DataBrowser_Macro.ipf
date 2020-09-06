@@ -11,7 +11,7 @@
 
 Window DataBrowser() : Graph
 	PauseUpdate; Silent 1		// building window...
-	Display /W=(392.25,281.75,823.5,587)/K=1  as "DataBrowser"
+	Display /W=(388.5,182,819.75,487.25)/K=1  as "DataBrowser"
 	Button button_BSP_open,pos={3.00,3.00},size={24.00,24.00},disable=1,proc=DB_ButtonProc_Panel,title="<<"
 	Button button_BSP_open,help={"Open Side Panel"}
 	Button button_BSP_open,userdata(ResizeControlsInfo)= A"!!,>M!!#8L!!#=#!!#=#z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
@@ -92,7 +92,7 @@ Window DataBrowser() : Graph
 	ListBox list_of_ranges,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	ListBox list_of_ranges,userdata(ResizeControlsInfo) += A"zzz!!#?(FEDG<zzzzzzzzzzzzzz!!!"
 	ListBox list_of_ranges,userdata(Config_DontRestore)=  "1"
-	ListBox list_of_ranges,userdata(Config_DontSave)=  "1",row= 122,widths={50,50}
+	ListBox list_of_ranges,userdata(Config_DontSave)=  "1",widths={50,50}
 	PopupMenu popup_overlaySweeps_select,pos={123.00,99.00},size={143.00,19.00},bodyWidth=109,disable=3,proc=OVS_PopMenuProc_Select,title="Select"
 	PopupMenu popup_overlaySweeps_select,help={"Select sweeps according to various properties"}
 	PopupMenu popup_overlaySweeps_select,userdata(tabnum)=  "1"
@@ -1009,11 +1009,11 @@ Window DataBrowser() : Graph
 	SetVariable setvar_pulseAver_vert_scale_bar,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	SetVariable setvar_pulseAver_vert_scale_bar,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
 	SetVariable setvar_pulseAver_vert_scale_bar,value= _NUM:1
-	CheckBox check_pulseAver_ShowImage,pos={53.00,117.00},size={111.00,15.00},disable=1,proc=PA_CheckProc_Common,title="Enable image plot"
+	CheckBox check_pulseAver_ShowImage,pos={52.00,117.00},size={111.00,15.00},disable=1,proc=PA_CheckProc_Common,title="Enable image plot"
 	CheckBox check_pulseAver_ShowImage,help={"Enable the image plot which is *much* faster than the trace plot"}
 	CheckBox check_pulseAver_ShowImage,userdata(tabnum)=  "4"
 	CheckBox check_pulseAver_ShowImage,userdata(tabcontrol)=  "Settings"
-	CheckBox check_pulseAver_ShowImage,userdata(ResizeControlsInfo)= A"!!,Dc!!#@N!!#@B!!#<(z!!#`-A7TLfzzzzzzzzzzzzzz!!#r+D.OhkBk2=!z"
+	CheckBox check_pulseAver_ShowImage,userdata(ResizeControlsInfo)= A"!!,D_!!#@N!!#@B!!#<(z!!#`-A7TLfzzzzzzzzzzzzzz!!#r+D.OhkBk2=!z"
 	CheckBox check_pulseAver_ShowImage,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	CheckBox check_pulseAver_ShowImage,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
 	CheckBox check_pulseAver_ShowImage,value= 0
@@ -1023,23 +1023,23 @@ Window DataBrowser() : Graph
 	GroupBox group_pulseAver_general,userdata(ResizeControlsInfo)= A"!!,GW!!#@*!!#A)!!#BFz!!#`-A7TLfzzzzzzzzzzzzzz!!#r+D.OhkBk2=!z"
 	GroupBox group_pulseAver_general,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	GroupBox group_pulseAver_general,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
-	GroupBox group_pulseAver_trace_settings,pos={39.00,183.00},size={153.00,96.00},disable=3,title="Trace settings"
+	GroupBox group_pulseAver_trace_settings,pos={39.00,199.00},size={153.00,80.00},disable=3,title="Trace settings"
 	GroupBox group_pulseAver_trace_settings,userdata(tabnum)=  "4"
 	GroupBox group_pulseAver_trace_settings,userdata(tabcontrol)=  "Settings"
-	GroupBox group_pulseAver_trace_settings,userdata(ResizeControlsInfo)= A"!!,D+!!#AF!!#A(!!#@$z!!#`-A7TLfzzzzzzzzzzzzzz!!#r+D.OhkBk2=!z"
+	GroupBox group_pulseAver_trace_settings,userdata(ResizeControlsInfo)= A"!!,D+!!#AV!!#A(!!#?Yz!!#`-A7TLfzzzzzzzzzzzzzz!!#r+D.OhkBk2=!z"
 	GroupBox group_pulseAver_trace_settings,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	GroupBox group_pulseAver_trace_settings,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
-	GroupBox group_pulseAver_image_settings,pos={38.00,99.00},size={156.00,84.00},disable=3,title="Image settings"
+	GroupBox group_pulseAver_image_settings,pos={38.00,99.00},size={156.00,100.00},disable=3,title="Image settings"
 	GroupBox group_pulseAver_image_settings,userdata(tabnum)=  "4"
 	GroupBox group_pulseAver_image_settings,userdata(tabcontrol)=  "Settings"
-	GroupBox group_pulseAver_image_settings,userdata(ResizeControlsInfo)= A"!!,D'!!#@*!!#A+!!#?az!!#`-A7TLfzzzzzzzzzzzzzz!!#r+D.OhkBk2=!z"
+	GroupBox group_pulseAver_image_settings,userdata(ResizeControlsInfo)= A"!!,D'!!#@*!!#A+!!#@,z!!#`-A7TLfzzzzzzzzzzzzzz!!#r+D.OhkBk2=!z"
 	GroupBox group_pulseAver_image_settings,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	GroupBox group_pulseAver_image_settings,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
-	CheckBox check_pulseAver_showTraces,pos={48.00,205.00},size={104.00,15.00},disable=1,proc=PA_CheckProc_Common,title="Enable trace plot"
+	CheckBox check_pulseAver_showTraces,pos={48.00,215.00},size={104.00,15.00},disable=1,proc=PA_CheckProc_Common,title="Enable trace plot"
 	CheckBox check_pulseAver_showTraces,help={"Enable the trace plot"}
 	CheckBox check_pulseAver_showTraces,userdata(tabnum)=  "4"
 	CheckBox check_pulseAver_showTraces,userdata(tabcontrol)=  "Settings"
-	CheckBox check_pulseAver_showTraces,userdata(ResizeControlsInfo)= A"!!,DO!!#A\\!!#@4!!#<(z!!#`-A7TLfzzzzzzzzzzzzzz!!#r+D.OhkBk2=!z"
+	CheckBox check_pulseAver_showTraces,userdata(ResizeControlsInfo)= A"!!,DO!!#Af!!#@4!!#<(z!!#`-A7TLfzzzzzzzzzzzzzz!!#r+D.OhkBk2=!z"
 	CheckBox check_pulseAver_showTraces,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	CheckBox check_pulseAver_showTraces,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
 	CheckBox check_pulseAver_showTraces,value= 1
@@ -1051,11 +1051,11 @@ Window DataBrowser() : Graph
 	PopupMenu popup_pulseAver_colorscales,userdata(tabnum)=  "4"
 	PopupMenu popup_pulseAver_colorscales,userdata(tabcontrol)=  "Settings"
 	PopupMenu popup_pulseAver_colorscales,mode=60,value= #"\"*COLORTABLEPOP*\""
-	CheckBox check_pulseAver_drawXZeroLine,pos={53.00,137.00},size={100.00,15.00},disable=1,proc=PA_CheckProc_Common,title="Draw X zero line"
+	CheckBox check_pulseAver_drawXZeroLine,pos={52.00,137.00},size={100.00,15.00},disable=1,proc=PA_CheckProc_Common,title="Draw X zero line"
 	CheckBox check_pulseAver_drawXZeroLine,help={"Draw a vertical line at the X=0 crossing (only available with time alignment)"}
 	CheckBox check_pulseAver_drawXZeroLine,userdata(tabnum)=  "4"
 	CheckBox check_pulseAver_drawXZeroLine,userdata(tabcontrol)=  "Settings"
-	CheckBox check_pulseAver_drawXZeroLine,userdata(ResizeControlsInfo)= A"!!,Dc!!#@m!!#@,!!#<(z!!#`-A7TLfzzzzzzzzzzzzzz!!#r+D.OhkBk2=!z"
+	CheckBox check_pulseAver_drawXZeroLine,userdata(ResizeControlsInfo)= A"!!,D_!!#@m!!#@,!!#<(z!!#`-A7TLfzzzzzzzzzzzzzz!!#r+D.OhkBk2=!z"
 	CheckBox check_pulseAver_drawXZeroLine,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	CheckBox check_pulseAver_drawXZeroLine,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
 	CheckBox check_pulseAver_drawXZeroLine,value= 0
@@ -1067,6 +1067,14 @@ Window DataBrowser() : Graph
 	CheckBox check_pulseAver_fixedPulseLength,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	CheckBox check_pulseAver_fixedPulseLength,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
 	CheckBox check_pulseAver_fixedPulseLength,value= 0
+	PopupMenu popup_pulseAver_pulseSortOrder,pos={48.00,177.00},size={137.00,19.00},bodyWidth=82,disable=1,proc=PA_PopMenuProc_Common,title="Sort order"
+	PopupMenu popup_pulseAver_pulseSortOrder,help={"Sorting order for the pulses"}
+	PopupMenu popup_pulseAver_pulseSortOrder,userdata(ResizeControlsInfo)= A"!!,DO!!#A@!!#@m!!#<Pz!!#`-A7TLfzzzzzzzzzzzzzz!!#r+D.OhkBk2=!z"
+	PopupMenu popup_pulseAver_pulseSortOrder,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
+	PopupMenu popup_pulseAver_pulseSortOrder,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
+	PopupMenu popup_pulseAver_pulseSortOrder,userdata(tabnum)=  "4"
+	PopupMenu popup_pulseAver_pulseSortOrder,userdata(tabcontrol)=  "Settings"
+	PopupMenu popup_pulseAver_pulseSortOrder,mode=1,popvalue="Sweep",value= #"\"Sweep;PulseIndex\""
 	DefineGuide UGVL={FL,15},UGVR={FR,-20},UGVT={FT,113},UGVB={FB,-50},enableBoxTop={FT,25}
 	DefineGuide enableBoxBottom={enableBoxTop,50},MainBoxBottom={FB,3},MainBoxTop={enableBoxBottom,10}
 	SetWindow kwTopWin,hook(ResizeControls)=ResizeControls#ResizeControlsHook
@@ -1075,14 +1083,14 @@ Window DataBrowser() : Graph
 	SetWindow kwTopWin,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzzzzzzzzzzzzzzz"
 	SetWindow kwTopWin,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzzzzzzzzz!!!"
 	SetWindow kwTopWin,userdata(ResizeControlsGuides)=  "UGVL;UGVR;UGVT;UGVB;enableBoxTop;enableBoxBottom;MainBoxBottom;MainBoxTop;"
-	SetWindow kwTopWin,userdata(ResizeControlsInfoUGVL)=  "NAME:UGVL;WIN:DB_ITC1600_Dev_0#BrowserSettingsPanel;TYPE:User;HORIZONTAL:0;POSITION:15.00;GUIDE1:FL;GUIDE2:;RELPOSITION:15;"
-	SetWindow kwTopWin,userdata(ResizeControlsInfoUGVR)=  "NAME:UGVR;WIN:DB_ITC1600_Dev_0#BrowserSettingsPanel;TYPE:User;HORIZONTAL:0;POSITION:379.00;GUIDE1:FR;GUIDE2:;RELPOSITION:-20;"
-	SetWindow kwTopWin,userdata(ResizeControlsInfoUGVT)=  "NAME:UGVT;WIN:DB_ITC1600_Dev_0#BrowserSettingsPanel;TYPE:User;HORIZONTAL:1;POSITION:113.00;GUIDE1:FT;GUIDE2:;RELPOSITION:113;"
-	SetWindow kwTopWin,userdata(ResizeControlsInfoUGVB)=  "NAME:UGVB;WIN:DB_ITC1600_Dev_0#BrowserSettingsPanel;TYPE:User;HORIZONTAL:1;POSITION:364.00;GUIDE1:FB;GUIDE2:;RELPOSITION:-50;"
-	SetWindow kwTopWin,userdata(ResizeControlsInfoenableBoxTop)=  "NAME:enableBoxTop;WIN:DB_ITC1600_Dev_0#BrowserSettingsPanel;TYPE:User;HORIZONTAL:1;POSITION:25.00;GUIDE1:FT;GUIDE2:;RELPOSITION:25;"
-	SetWindow kwTopWin,userdata(ResizeControlsInfoenableBoxBottom)=  "NAME:enableBoxBottom;WIN:DB_ITC1600_Dev_0#BrowserSettingsPanel;TYPE:User;HORIZONTAL:1;POSITION:75.00;GUIDE1:enableBoxTop;GUIDE2:;RELPOSITION:50;"
-	SetWindow kwTopWin,userdata(ResizeControlsInfoMainBoxBottom)=  "NAME:MainBoxBottom;WIN:DB_ITC1600_Dev_0#BrowserSettingsPanel;TYPE:User;HORIZONTAL:1;POSITION:414.00;GUIDE1:FB;GUIDE2:;RELPOSITION:3;"
-	SetWindow kwTopWin,userdata(ResizeControlsInfoMainBoxTop)=  "NAME:MainBoxTop;WIN:DB_ITC1600_Dev_0#BrowserSettingsPanel;TYPE:User;HORIZONTAL:1;POSITION:85.00;GUIDE1:enableBoxBottom;GUIDE2:;RELPOSITION:10;"
+	SetWindow kwTopWin,userdata(ResizeControlsInfoUGVL)=  "NAME:UGVL;WIN:DataBrowser#BrowserSettingsPanel;TYPE:User;HORIZONTAL:0;POSITION:15.00;GUIDE1:FL;GUIDE2:;RELPOSITION:15;"
+	SetWindow kwTopWin,userdata(ResizeControlsInfoUGVR)=  "NAME:UGVR;WIN:DataBrowser#BrowserSettingsPanel;TYPE:User;HORIZONTAL:0;POSITION:379.00;GUIDE1:FR;GUIDE2:;RELPOSITION:-20;"
+	SetWindow kwTopWin,userdata(ResizeControlsInfoUGVT)=  "NAME:UGVT;WIN:DataBrowser#BrowserSettingsPanel;TYPE:User;HORIZONTAL:1;POSITION:113.00;GUIDE1:FT;GUIDE2:;RELPOSITION:113;"
+	SetWindow kwTopWin,userdata(ResizeControlsInfoUGVB)=  "NAME:UGVB;WIN:DataBrowser#BrowserSettingsPanel;TYPE:User;HORIZONTAL:1;POSITION:364.00;GUIDE1:FB;GUIDE2:;RELPOSITION:-50;"
+	SetWindow kwTopWin,userdata(ResizeControlsInfoenableBoxTop)=  "NAME:enableBoxTop;WIN:DataBrowser#BrowserSettingsPanel;TYPE:User;HORIZONTAL:1;POSITION:25.00;GUIDE1:FT;GUIDE2:;RELPOSITION:25;"
+	SetWindow kwTopWin,userdata(ResizeControlsInfoenableBoxBottom)=  "NAME:enableBoxBottom;WIN:DataBrowser#BrowserSettingsPanel;TYPE:User;HORIZONTAL:1;POSITION:75.00;GUIDE1:enableBoxTop;GUIDE2:;RELPOSITION:50;"
+	SetWindow kwTopWin,userdata(ResizeControlsInfoMainBoxBottom)=  "NAME:MainBoxBottom;WIN:DataBrowser#BrowserSettingsPanel;TYPE:User;HORIZONTAL:1;POSITION:414.00;GUIDE1:FB;GUIDE2:;RELPOSITION:3;"
+	SetWindow kwTopWin,userdata(ResizeControlsInfoMainBoxTop)=  "NAME:MainBoxTop;WIN:DataBrowser#BrowserSettingsPanel;TYPE:User;HORIZONTAL:1;POSITION:85.00;GUIDE1:enableBoxBottom;GUIDE2:;RELPOSITION:10;"
 	Execute/Q/Z "SetWindow kwTopWin sizeLimit={305.25,330,inf,inf}" // sizeLimit requires Igor 7 or later
 	NewNotebook /F=0 /N=sweepFormula_json /W=(12,71,378,358)/FG=(UGVL,UGVT,UGVR,UGVB) /HOST=# /V=0 /OPTS=12
 	Notebook kwTopWin, defaultTab=10, autoSave= 0, magnification=100, writeProtect=1

@@ -54,6 +54,14 @@ static Constant PA_DISPLAYMODE_ALL    = 0xFF
 
 static Constant PA_COLORSCALE_PANEL_WIDTH = 150
 
+/// @name Pulse sort order
+/// Popupmenu indizes for the PA plot controls
+/// @{
+static Constant PA_PULSE_SORTING_ORDER_SWEEP = 0x0
+static Constant PA_PULSE_SORTING_ORDER_PULSE = 0x1
+/// @}
+///
+
 // comment out to show all the axes, useful for debugging
 #define PA_HIDE_AXIS
 
@@ -618,6 +626,71 @@ static Function PA_GenerateAllPulseWaves(string win, STRUCT PulseAverageSettings
 	JSON_Release(jsonID)
 End
 
+static Function PA_ApplyPulseSortingOrder(string win, STRUCT PulseAverageSettings &pa)
+
+	variable numRegions, numChannels, i, j, region, channelNumber, numEntries, pulseSortOrder
+
+	DFREF pulseAverageDFR = GetDevicePulseAverageFolder(pa.dfr)
+	DFREF pulseAverageHelperDFR = GetDevicePulseAverageHelperFolder(pa.dfr)
+	WAVE properties = GetPulseAverageProperties(pulseAverageHelperDFR)
+
+	WAVE channels = ListToNumericWave(GetStringFromWaveNote(properties, "Channels"), ",")
+	numChannels = DimSize(channels, ROWS)
+
+	WAVE regions = ListToNumericWave(GetStringFromWaveNote(properties, "Regions"), ",")
+	numRegions = DimSize(regions, ROWS)
+
+	Make/FREE/N=(0, 3) elems
+
+	for(i = 0; i < numChannels; i += 1)
+		channelNumber = channels[i]
+		for(j = 0; j < numRegions; j += 1)
+			region = regions[j]
+
+			WAVE setIndizes = GetPulseAverageSetIndizes(pulseAverageHelperDFR, channelNumber, region)
+			numEntries = GetNumberFromWaveNote(setIndizes, NOTE_INDEX)
+
+			if(!numEntries)
+				continue
+			endif
+
+			pulseSortOrder = GetNumberFromWaveNote(setIndizes, NOTE_KEY_PULSE_SORT_ORDER)
+
+			if(IsFinite(pulseSortOrder) && pulseSortOrder == pa.pulseSortOrder)
+				continue
+			endif
+
+			if(DimSize(elems, ROWS) != numEntries)
+				Redimension/N=(numEntries, -1)/E=1 elems
+			else
+				// correct size
+			endif
+
+			Multithread elems[][0] = properties[setIndizes[p]][%Sweep]
+			Multithread elems[][1] = properties[setIndizes[p]][%Pulse]
+			Multithread elems[][2] = setIndizes[p]
+
+			switch(pa.pulseSortOrder)
+				case PA_PULSE_SORTING_ORDER_SWEEP:
+					// first sweep than pulse
+					SortColumns/KNDX={0, 1} sortWaves={elems}
+					break
+				case PA_PULSE_SORTING_ORDER_PULSE:
+					// first pulse than sweep
+					SortColumns/KNDX={1, 0} sortWaves={elems}
+					break
+				default:
+					ASSERT(0, "Invalid sorting order")
+			endswitch
+
+			// copy sorted result back
+			Multithread setIndizes[0, numEntries - 1] = elems[p][2]
+
+			SetNumberInWaveNote(setIndizes, NOTE_KEY_PULSE_SORT_ORDER, pa.pulseSortOrder)
+		endfor
+	endfor
+End
+
 /// @brief Populates pps.pulseAverSett with the user selection from the panel
 static Function PA_GatherSettings(win, s)
 	string win
@@ -653,6 +726,7 @@ static Function PA_GatherSettings(win, s)
 	s.showTraces           = GetCheckboxState(extPanel, "check_pulseAver_ShowTraces")
 	s.imageColorScale      = GetPopupMenuString(extPanel, "popup_pulseAver_colorscales")
 	s.drawXZeroLine        = GetCheckboxState(extPanel, "check_pulseAver_timeAlign") && GetCheckboxState(extPanel, "check_pulseAver_drawXZeroLine")
+	s.pulseSortOrder       = GetPopupMenuIndex(extPanel, "popup_pulseAver_pulseSortOrder")
 
 	PA_DeconvGatherSettings(win, s.deconvolution)
 End
@@ -1081,6 +1155,7 @@ End
 ///
 /// The work with pulses is done in the following order:
 /// - Gather pulses
+/// - Sort pulses (in setIndizes)
 /// - Reset pulses to backup
 /// - Failed pulse marking
 /// - Zeroing
@@ -1121,6 +1196,8 @@ static Function [WAVE/WAVE dest, WAVE/WAVE source, variable needsPlotting] PA_Pr
 	                               && pa.fixedPulseLength == paOld.fixedPulseLength)
 
 	PA_GenerateAllPulseWaves(win, pa, constantSinglePulseSettings, mode)
+
+	PA_ApplyPulseSortingOrder(win, pa)
 
 	DFREF pulseAverageDFR = GetDevicePulseAverageFolder(pa.dfr)
 	DFREF pulseAverageHelperDFR = GetDevicePulseAverageHelperFolder(pa.dfr)
@@ -1617,6 +1694,18 @@ Function PA_PopMenuProc_ColorScale(pa) : PopupMenuControl
 	switch(pa.eventCode)
 		case 2: // mouse up
 			PA_SetColorScale(pa.win, pa.popStr)
+			break
+	endswitch
+
+	return 0
+End
+
+Function PA_PopMenuProc_Common(pa) : PopupMenuControl
+	STRUCT WMPopupAction &pa
+
+	switch(pa.eventCode)
+		case 2: // mouse up
+			PA_Update(pa.win, POST_PLOT_CONSTANT_SWEEPS)
 			break
 	endswitch
 
@@ -2208,6 +2297,7 @@ static Function PA_SerializeSettings(string win, STRUCT PulseAverageSettings &pa
 	JSON_AddVariable(jsonID, "/yScaleBarLength", pa.yScaleBarLength)
 	JSON_AddVariable(jsonID, "/showImage", pa.showImages)
 	JSON_AddVariable(jsonID, "/drawXZeroLine", pa.drawXZeroLine)
+	JSON_AddVariable(jsonID, "/pulseSortOrder", pa.pulseSortOrder)
 	JSON_AddVariable(jsonID, "/showTraces", pa.showTraces)
 	JSON_AddString(jsonID, "/imageColorScale", pa.imageColorScale)
 	JSON_AddTreeObject(jsonID, "/deconvolution")
@@ -2263,6 +2353,7 @@ static Function PA_DeserializeSettings(string win, STRUCT PulseAverageSettings &
 	pa.yScaleBarLength      = JSON_GetVariable(jsonID, "/yScaleBarLength")
 	pa.showImages           = JSON_GetVariable(jsonID, "/showImage")
 	pa.drawXZeroLine        = JSON_GetVariable(jsonID, "/drawXZeroLine")
+	pa.pulseSortOrder       = JSON_GetVariable(jsonID, "/pulseSortOrder")
 	pa.showTraces           = JSON_GetVariable(jsonID, "/showTraces")
 	pa.imageColorScale      = JSON_GetString(jsonID, "/imageColorScale")
 	pa.deconvolution.enable = JSON_GetVariable(jsonID, "/deconvolution/enable")
@@ -2370,7 +2461,7 @@ static Function/S PA_ShowImage(string win, STRUCT PulseAverageSettings &pa, WAVE
 				Redimension/N=(DimSize(firstPulse, ROWS), -1) img
 				Make/FREE/N=(MAX_DIMENSION_COUNT) newSizes = DimSize(img, p)
 
-				if(mode != POST_PLOT_ADDED_SWEEPS || !EqualWaves(oldSizes, newSizes, 1))
+				if(mode != POST_PLOT_ADDED_SWEEPS || !EqualWaves(oldSizes, newSizes, 1) || pa.pulseSortOrder != PA_PULSE_SORTING_ORDER_SWEEP)
 					Multithread img[][] = NaN
 				else
 					ASSERT(WaveExists(additionalData) && DimSize(additionalData, ROWS) == 1, "Unexpected additionalData")

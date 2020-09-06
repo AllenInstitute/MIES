@@ -5642,6 +5642,7 @@ Function/WAVE GetPulseAverageSetIndizes(DFREF dfr, variable channelNumber, varia
 
 	SetWaveVersion(wv, versionOfNewWave)
 	SetNumberInWaveNote(wv, NOTE_INDEX, 0)
+	SetNumberInWaveNote(wv, NOTE_KEY_PULSE_SORT_ORDER, NaN)
 
 	return wv
 End
