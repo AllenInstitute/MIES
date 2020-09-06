@@ -26,6 +26,7 @@
 
 // stock igor
 #include <Resize Controls>
+#include <Resize Controls Panel>
 #include <ZoomBrowser>
 #include <FunctionProfiling>
 
