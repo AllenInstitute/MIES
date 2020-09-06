@@ -91,6 +91,9 @@ Function DB_ResetAndStoreCurrentDBPanel()
 	BSP_UnsetDynamicStartupSettingsOfDataBrowser(panelTitle)
 	DB_UnsetDynamicSettingsHistory(panelTitle)
 
+	// store current positions as reference
+	ResizeControlsPanel#SaveControlPositions(bsPanel, 0)
+
 	TabControl SF_InfoTab, WIN = $bsPanel, disable=2
 
 	// invalidate main panel
