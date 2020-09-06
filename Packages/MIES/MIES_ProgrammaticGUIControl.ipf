@@ -6,6 +6,9 @@
 #pragma ModuleName=MIES_PGC
 #endif
 
+/// @file MIES_ProgrammaticGUIControl.ipf
+/// @brief __PGC__ Control GUI controls from code
+
 /// @brief Bring all tabs which hold the control to the front (recursively).
 ///
 /// Requires that these are managed by `ACL_TabUtilities.ipf`.
@@ -52,9 +55,6 @@ static Function PGC_ShowControlInTab(win, control)
 		PGC_SetAndActivateControl(win, tabs[i][1], val = tab, switchTab = 0)
 	endfor
 End
-
-/// @file MIES_ProgrammaticGUIControl.ipf
-/// @brief __PGC__ Control GUI controls from code
 
 /// @brief Return the popupmenu list entries
 ///
