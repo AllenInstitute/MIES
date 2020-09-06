@@ -496,6 +496,7 @@ static Function DB_ClearGraph(win)
 
 	RemoveTracesFromGraph(graph)
 	RemoveFreeAxisFromGraph(graph)
+	RemoveDrawLayers(graph)
 	UpdateLBGraphLegend(graph)
 End
 

@@ -4924,6 +4924,19 @@ Function RemoveImagesFromGraph(string graph)
 	endfor
 End
 
+/// @brief Remove all draw layers from the graph
+Function RemoveDrawLayers(string graph)
+	variable i, numLayers
+
+	Make/FREE/T layers = {"ProgBack", "UserBack", "ProgAxes", "UserAxes", "ProgFront", "UserFront", "Overlay"}
+	ASSERT(WinType(graph) == 1, "Only works for graphs")
+
+	numLayers = DimSize(layers, ROWS)
+	for(i = 0; i < numLayers; i += 1)
+		SetDrawLayer/W=$graph/K $layers[i]
+	endfor
+End
+
 /// @brief Remove traces from a graph and optionally try to kill their waves
 ///
 /// @param graph                            graph
