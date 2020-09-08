@@ -1563,9 +1563,7 @@ static Function PA_DrawScaleBarsHelper(string win, variable axisMode, variable d
 		sprintf str, "scalebar_X_R%d_C%d", activeRegionCount, activeChanCount
 		SetDrawEnv/W=$graph gstart, gname=$str
 
-		// find a multiple of 5 which is closest to 10% of the full range
-		xLength = round(0.10 * abs(horiz_max - horiz_min) / 5) * 5
-		xLength = xLength == 0 ? 5 : xLength
+		xLength = CalculateNiceLength(0.10 * abs(horiz_max - horiz_min), 5)
 
 		xBarRight = horiz_max
 		xBarLeft  = horiz_max - xLength

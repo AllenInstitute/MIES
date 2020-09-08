@@ -4160,3 +4160,18 @@ Function DE_ManyElements()
 End
 
 /// @}
+
+/// CalculateNiceLength
+/// @{
+
+Function CNL_Works()
+
+	variable fraction = 0.1
+
+	CHECK_EQUAL_VAR(CalculateNiceLength(fraction * 90, 5), 10)
+	CHECK_EQUAL_VAR(CalculateNiceLength(fraction * 60, 5), 5)
+	CHECK_EQUAL_VAR(CalculateNiceLength(fraction * 20, 5), 5)
+	CHECK_EQUAL_VAR(CalculateNiceLength(fraction *  2, 5), 0.5)
+	CHECK_EQUAL_VAR(CalculateNiceLength(fraction *  1, 5), 0.05)
+	CHECK_EQUAL_VAR(CalculateNiceLength(fraction *  0.5, 5), 0.05)
+End

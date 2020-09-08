@@ -5404,3 +5404,20 @@ Function [WAVE/D start, WAVE/D stop] DistributeElements(variable numElements, [v
 
 	return [start, stop]
 End
+
+/// @brief Calculate a nice length which is an integer number of `multiple` long
+///
+/// For small values @f$ 10^{-x} @f$ times `multiple` are returned
+Function CalculateNiceLength(variable range , variable multiple)
+
+	variable div, numDigits
+
+	div = range / multiple
+	numDigits = log(div)
+
+	if(numDigits > 0)
+		return round(div) * multiple
+	endif
+
+	return multiple * 10^(round(numDigits))
+End
