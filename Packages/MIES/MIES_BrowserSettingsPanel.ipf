@@ -1088,28 +1088,53 @@ End
 Function BSP_ButtonProc_RestoreData(ba) : ButtonControl
 	STRUCT WMButtonAction &ba
 
-	string mainPanel, graph, bsPanel
-	variable autoRemoveOldState, zeroTracesOldState
+	string bspPanel, bsPanel, graph, device, datafolder
+	variable numEntries, i, sweepNo
 
 	switch(ba.eventCode)
 		case 2: // mouse up
-			mainPanel = GetMainWindow(ba.win)
-			graph     = DB_GetMainGraph(mainPanel)
-			bsPanel   = BSP_GetPanel(mainPanel)
+			graph = GetMainWindow(ba.win)
+			bsPanel = BSP_GetPanel(graph)
 
-			WAVE/T/Z tracePaths = GetSweepUserData(graph, "fullPath")
-			ReplaceAllWavesWithBackup(graph, tracePaths)
+			if(!BSP_HasBoundDevice(graph))
+				break
+			endif
 
-			zeroTracesOldState = GetCheckBoxState(bsPanel, "check_Calculation_ZeroTraces")
+			if(BSP_IsDataBrowser(graph))
+				device = BSP_GetDevice(graph)
+				DFREF deviceDFR = GetDeviceDataPath(device)
+
+				WAVE/Z sweeps = GetPlainSweepList(graph)
+
+				if(!WaveExists(sweeps))
+					break
+				endif
+
+				numEntries = DimSize(sweeps, ROWS)
+				for(i = 0; i < numEntries; i += 1)
+					DFREF singleSweepDFR = GetSingleSweepFolder(deviceDFR, i)
+					ReplaceWaveWithBackupForAll(singleSweepDFR)
+				endfor
+			else
+				DFREF sweepBrowserDFR = SB_GetSweepBrowserFolder(graph)
+				WAVE/T sweepMap = GetSweepBrowserMap(sweepBrowserDFR)
+
+				numEntries = GetNumberFromWaveNote(sweepMap, NOTE_INDEX)
+				for(i = 0; i < numEntries; i += 1)
+					dataFolder = sweepMap[i][%DataFolder]
+					device     = sweepMap[i][%Device]
+					sweepNo    = str2num(sweepMap[i][%Sweep])
+					DFREF sweepDFR = GetAnalysisSweepPath(dataFolder, device)
+					DFREF singleSweepDFR = GetSingleSweepFolder(sweepDFR, sweepNo)
+					ReplaceWaveWithBackupForAll(singleSweepDFR)
+				endfor
+			endif
+
 			SetCheckBoxState(bsPanel, "check_Calculation_ZeroTraces", CHECKBOX_UNSELECTED)
-
-			autoRemoveOldState = GetCheckBoxState(bsPanel, "check_auto_remove")
 			SetCheckBoxState(bsPanel, "check_auto_remove", CHECKBOX_UNSELECTED)
+			SetCheckBoxState(bsPanel, "check_BrowserSettings_TA", CHECKBOX_UNSELECTED)
 
-			UpdateSweepPlot(mainPanel)
-
-			SetCheckBoxState(bsPanel, "check_auto_remove", autoRemoveOldState)
-			SetCheckBoxState(bsPanel, "check_Calculation_ZeroTraces", zeroTracesOldState)
+			UpdateSweepPlot(graph)
 			break
 	endswitch
 

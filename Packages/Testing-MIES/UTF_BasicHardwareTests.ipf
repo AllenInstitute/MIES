@@ -3594,3 +3594,44 @@ Function LabnotebookEntriesCanBeQueried_REENTRY([str])
 
 	CheckLabnotebookKeys_IGNORE(textualKeys, textualValues)
 End
+
+// UTF_TD_GENERATOR HardwareMain#DeviceNameGeneratorMD1
+Function DataBrowserCreatesBackupsByDefault([str])
+	string str
+
+	STRUCT DAQSettings s
+	InitDAQSettingsFromString(s, "MD1_RA0_I0_L0_BKG_1")
+
+	AcquireData(s, str)
+End
+
+Function DataBrowserCreatesBackupsByDefault_REENTRY([str])
+	string str
+
+	variable sweepNo, numEntries, i
+	string list, name
+
+	CHECK_EQUAL_VAR(GetSetVariable(str, "SetVar_Sweep"), 1)
+
+	sweepNo = AFH_GetLastSweepAcquired(str)
+	CHECK_EQUAL_VAR(sweepNo, 0)
+
+	DB_OpenDataBrowser()
+
+	WAVE sweepWave = GetSweepWave(str, 0)
+	DFREF sweepFolder = GetWavesDataFolderDFR(sweepWave)
+	DFREF singleSweepFolder = GetSingleSweepFolder(sweepFolder, 0)
+
+	// check that all non-backup waves in singleSweepFolder have a backup
+	list = GetListOfObjects(singleSweepFolder, "^[A-Za-z]{1,}_[0-9]$")
+	numEntries = ItemsInList(list)
+	CHECK(numEntries > 0)
+
+	for(i = 0; i < numEntries; i += 1)
+		name = StringFromList(i, list)
+		WAVE/SDFR=singleSweepFolder/Z wv = $name
+		CHECK_WAVE(wv, NORMAL_WAVE)
+		WAVE/Z bak = GetBackupWave(wv)
+		CHECK_WAVE(bak, NORMAL_WAVE)
+	endfor
+End

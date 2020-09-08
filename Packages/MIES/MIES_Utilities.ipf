@@ -570,6 +570,12 @@ threadsafe Function DataFolderExistsDFR(dfr)
 	endswitch
 End
 
+/// @brief Check if the passed datafolder reference is a global/permanent datafolder
+threadsafe Function IsGlobalDataFolder(DFREF dfr)
+
+	return DataFolderExistsDFR(dfr) && DataFolderRefStatus(dfr) != 3
+End
+
 /// @brief Create a datafolder and all its parents,
 ///
 /// @hidecallgraph

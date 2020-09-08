@@ -3772,25 +3772,6 @@ Function TimeAlignCursorMovedHook(s)
 	return 0
 End
 
-/// @brief Replace all waves from the traces in the graph with their backup
-Function ReplaceAllWavesWithBackup(graph, tracePaths)
-	string graph
-	WAVE/T/Z tracePaths
-
-	variable numTraces, i
-
-	if(!WaveExists(tracePaths))
-		return NaN
-	endif
-
-	numTraces = DimSize(tracePaths, ROWS)
-
-	for(i = 0; i < numTraces; i += 1)
-		WAVE wv = $tracePaths[i]
-		ReplaceWaveWithBackup(wv, nonExistingBackupIsFatal=0)
-	endfor
-End
-
 /// @brief Get a textwave of all traces from a list of graphs
 ///
 /// @param graphs       semicolon separated list of graph names
@@ -4115,7 +4096,6 @@ static Function ZeroTracesIfReq(graph, traces, zeroTraces)
 	for(i = 0; i < numTraces; i += 1)
 		trace = traces[i]
 		WAVE wv = $TUD_GetUserData(graph, trace, "fullPath")
-		CreateBackupWave(wv)
 		ZeroWave(wv)
 	endfor
 End
@@ -4235,7 +4215,6 @@ Function TimeAlignmentIfReq(graphtrace, mode, level, pos1x, pos2x, [force])
 			continue
 		endif
 
-		WAVE backup = CreateBackupWave(wv)
 		offset = - (refPos + featurePos[idx])
 		DEBUGPRINT("trace", str=trace)
 		DEBUGPRINT("old DimOffset", var=DimOffset(wv, ROWS))
@@ -5064,6 +5043,18 @@ Function RemoveTracesFromGraph(graph, [kill, trace, wv, dfr])
 	return NaN
 End
 
+/// @brief Create backup waves for all waves in the datafolder
+Function CreateBackupWavesForAll(DFREF dfr)
+
+	variable i, numWaves
+
+	numWaves = CountObjectsDFR(dfr, COUNTOBJECTS_WAVES)
+	for(i = 0; i < numWaves; i += 1)
+		WAVE/SDFR=dfr wv = $GetIndexedObjNameDFR(dfr, COUNTOBJECTS_WAVES, i)
+		CreateBackupWave(wv)
+	endfor
+End
+
 /// @brief Create a backup of the wave wv if it does not already
 /// exist or if `forceCreation` is true.
 ///
@@ -5114,6 +5105,18 @@ Function/WAVE GetBackupWave(wv)
 	return backup
 End
 
+/// @brief Replace all waves from the datafolder with their backup
+Function ReplaceWaveWithBackupForAll(DFREF dfr)
+
+	variable numWaves, i
+
+	numWaves = CountObjectsDFR(dfr, COUNTOBJECTS_WAVES)
+	for(i = 0; i < numWaves; i += 1)
+		WAVE/SDFR=dfr wv = $GetIndexedObjNameDFR(dfr, COUNTOBJECTS_WAVES, i)
+		ReplaceWaveWithBackup(wv, nonExistingBackupIsFatal=0, keepBackup=1)
+	endfor
+End
+
 /// @brief Replace the wave wv with its backup. If possible the backup wave will be killed afterwards.
 ///
 /// @param wv                       wave to replace by its backup
@@ -5128,6 +5131,8 @@ Function/Wave ReplaceWaveWithBackup(wv, [nonExistingBackupIsFatal, keepBackup])
 
 	if(ParamIsDefault(nonExistingBackupIsFatal))
 		nonExistingBackupIsFatal = 1
+	else
+		nonExistingBackupIsFatal = !!nonExistingBackupIsFatal
 	endif
 
 	if(ParamIsDefault(keepBackup))
@@ -5422,7 +5427,7 @@ Function SplitSweepIntoComponents(numericalValues, sweep, sweepWave, configWave,
 		DFREF targetDFR = GetWavesDataFolderDFR(sweepWave)
 	endif
 
-	ASSERT(DataFolderExistsDFR(targetDFR), "targetDFR must exist")
+	ASSERT(IsGlobalDataFolder(targetDFR), "targetDFR must exist and a global/permanent datafolder")
 	ASSERT(IsFinite(sweep), "Sweep number must be finite")
 	ASSERT(IsValidSweepAndConfig(sweepWave, configWave, configVersion = 0), "Sweep and config waves are not compatible")
 
@@ -5448,6 +5453,8 @@ Function SplitSweepIntoComponents(numericalValues, sweep, sweepWave, configWave,
 	endfor
 
 	string/G targetDFR:note = note(sweepWave)
+
+	CreateBackupWavesForAll(targetDFR)
 End
 
 /// @brief Add user data "panelVersion" to the panel
