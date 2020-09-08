@@ -4117,3 +4117,46 @@ Function SW_WorksWithFalse([var])
 End
 
 /// @}
+
+/// DistributeElements
+/// @{
+
+Function DE_Basics()
+
+	WAVE/Z start, stop
+	[start, stop] = DistributeElements(2)
+	CHECK_WAVE(start, NUMERIC_WAVE, minorType=DOUBLE_WAVE)
+	CHECK_WAVE(stop, NUMERIC_WAVE, minorType=DOUBLE_WAVE)
+
+	CHECK_EQUAL_WAVES(start, {0.0, 0.515}, mode = WAVE_DATA, tol=1e-8)
+	CHECK_EQUAL_WAVES(stop,  {0.485, 1.0}, mode = WAVE_DATA, tol=1e-8)
+End
+
+Function DE_OffsetWorks()
+
+	variable offset = 0.01
+
+	WAVE/Z start, stop
+	[start, stop] = DistributeElements(2, offset = offset)
+	CHECK_WAVE(start, NUMERIC_WAVE, minorType=DOUBLE_WAVE)
+	CHECK_WAVE(stop, NUMERIC_WAVE, minorType=DOUBLE_WAVE)
+
+	CHECK_EQUAL_WAVES(start, {0.01, 0.52}, mode = WAVE_DATA, tol=1e-8)
+	CHECK_EQUAL_WAVES(stop,  {0.49, 1.0}, mode = WAVE_DATA, tol=1e-8)
+End
+
+Function DE_ManyElements()
+
+	WAVE/Z start, stop
+	[start, stop] = DistributeElements(10)
+	CHECK_WAVE(start, NUMERIC_WAVE, minorType=DOUBLE_WAVE)
+	CHECK_WAVE(stop, NUMERIC_WAVE, minorType=DOUBLE_WAVE)
+
+	Make/FREE/D refStart = {0,0.102222222222222,0.204444444444444,0.306666666666667,0.408888888888889,0.511111111111111,0.613333333333333,0.715555555555556,0.817777777777778,0.92}
+	Make/FREE/D refStop = {0.08,0.182222222222222,0.284444444444444,0.386666666666667,0.488888888888889,0.591111111111111,0.693333333333333,0.795555555555556,0.897777777777778,1}
+
+	CHECK_EQUAL_WAVES(start, refStart, mode = WAVE_DATA, tol=1e-8)
+	CHECK_EQUAL_WAVES(stop,  refStop, mode = WAVE_DATA, tol=1e-8)
+End
+
+/// @}

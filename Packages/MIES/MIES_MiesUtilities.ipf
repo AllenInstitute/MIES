@@ -2945,7 +2945,7 @@ Function EquallySpaceAxis(graph, [axisRegExp, axisOffset, axisOrientation, sortO
 	string graph, axisRegExp, listForBegin, listForEnd
 	variable axisOffset, axisOrientation, sortOrder
 
-	variable numAxes, axisInc, axisStart, axisEnd, i, spacing
+	variable numAxes, i
 	string axes, axis, list
 	string adaptedList = ""
 
@@ -3009,21 +3009,16 @@ Function EquallySpaceAxis(graph, [axisRegExp, axisOffset, axisOrientation, sortO
 		adaptedList = axes
 	endif
 
-	if(numAxes > 1/GRAPH_DIV_SPACING)
-		spacing = GRAPH_DIV_SPACING / 5
-	else
-		spacing = GRAPH_DIV_SPACING
+	if(numAxes > 0)
+		WAVE/Z axisStart, axisEnd
+		[axisStart, axisEnd] = DistributeElements(numAxes, offset = axisOffset)
+
+		numAxes = ItemsInList(adaptedList)
+		for(i = 0; i < numAxes; i += 1)
+			axis = StringFromList(i, adaptedList)
+			ModifyGraph/Z/W=$graph axisEnab($axis) = {axisStart[i], axisEnd[i]}
+		endfor
 	endif
-
-	numAxes = ItemsInList(adaptedList)
-	axisInc = (1.0 - axisOffset - (numAxes - 1) * spacing) / numAxes
-
-	for(i = 0; i < numAxes; i += 1)
-		axis = StringFromList(i, adaptedList)
-		axisStart = axisOffset + i * (axisInc + spacing)
-		axisEnd   = limit(axisStart + axisInc, 0, 1)
-		ModifyGraph/Z/W=$graph axisEnab($axis) = {axisStart, axisEnd}
-	endfor
 End
 
 /// @brief Update the legend in the labnotebook graph

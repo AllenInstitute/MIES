@@ -5366,3 +5366,32 @@ threadsafe Function/WAVE SelectWave(variable condition, WAVE/Z waveIfFalse, WAVE
 		return waveIfFalse
 	endif
 End
+
+/// @brief Distribute N elements over a range from 0.0 to 1.0 with spacing
+Function [WAVE/D start, WAVE/D stop] DistributeElements(variable numElements, [variable offset])
+
+	variable elementLength, spacing
+
+	ASSERT(numElements > 0, "Invalid number of elements")
+
+	if(!ParamIsDefault(offset))
+		ASSERT(IsFinite(offset) && offset >= 0.0 && offset < 1.0, "Invalid offset")
+	endif
+
+	// limit the spacing for a lot of entries
+	// we only want to use 20% for spacing in total
+	if((numElements - 1) * GRAPH_DIV_SPACING > 0.20)
+		spacing = 0.20 / (numElements - 1)
+	else
+		spacing = GRAPH_DIV_SPACING
+	endif
+
+	elementLength = (1.0 - offset - (numElements - 1) * spacing) / numElements
+
+	Make/FREE/D/N=(numElements) start, stop
+
+	start[] = limit(offset + p * (elementLength + spacing), 0.0, 1.0)
+	stop[] = limit(start[p] + elementLength, 0.0, 1.0)
+
+	return [start, stop]
+End
