@@ -438,7 +438,7 @@ End
 /// - Now gather the pulse starting time from the region and create single pulse waves for all of them
 ///
 /// The result is feed into GetPulseAverageProperties() and GetPulseAveragepropertiesWaves() for further consumption.
-static Function PA_GenerateAllPulseWaves(string win, STRUCT PulseAverageSettings &pa, variable constantSinglePulseSettings, variable mode)
+static Function PA_GenerateAllPulseWaves(string win, STRUCT PulseAverageSettings &pa, STRUCT PA_ConstantSettings &cs, variable mode)
 
 	variable startingPulseSett, endingPulseSett, isDiagonalElement, pulseHasFailed, newChannel
 	variable i, j, k, numHeadstages, region, sweepNo, idx, numPulsesTotal, numPulses, startingPulse, endingPulse
@@ -446,7 +446,7 @@ static Function PA_GenerateAllPulseWaves(string win, STRUCT PulseAverageSettings
 	variable activeRegionCount, activeChanCount, channelNumber, first, length, dictId, channelType, numChannels, numRegions
 	string channelTypeStr, channelList, channelNumberStr, key, regionList, baseName, sweepList, sweepNoStr, experiment
 
-	if(mode == POST_PLOT_CONSTANT_SWEEPS && constantSinglePulseSettings)
+	if(mode == POST_PLOT_CONSTANT_SWEEPS && cs.singlePulse)
 		// nothing to do
 		return NaN
 	endif
@@ -764,8 +764,11 @@ Function PA_Update(string win, variable mode, [WAVE/Z additionalData])
 	PA_GatherSettings(graph, current)
 	PA_SerializeSettings(graph, current)
 
+	STRUCT PA_ConstantSettings cs
+	[cs] = PA_DetermineConstantSettings(current, old, mode)
+
 	WAVE/WAVE/Z targetForAverage, sourceForAverage
-	[targetForAverage, sourceForAverage, needsPlotting] = PA_PreProcessPulses(win, current, old, mode)
+	[targetForAverage, sourceForAverage, needsPlotting] = PA_PreProcessPulses(win, current, cs, mode)
 
 	if(!needsPlotting)
 		return NaN
@@ -773,12 +776,13 @@ Function PA_Update(string win, variable mode, [WAVE/Z additionalData])
 
 	preExistingGraphs = PA_GetGraphs(win, PA_DISPLAYMODE_ALL)
 
-	usedTraceGraphs = PA_ShowPulses(graph, current, targetForAverage, sourceForAverage, mode, additionalData)
+	usedTraceGraphs = PA_ShowPulses(graph, current, cs, targetForAverage, sourceForAverage, mode, additionalData)
+
 	try
-		usedImageGraphs = PA_ShowImage(graph, current, targetForAverage, sourceForAverage, mode, additionalData); AbortOnRTE
+		usedImageGraphs = PA_ShowImage(graph, current, cs, targetForAverage, sourceForAverage, mode, additionalData); AbortOnRTE
 	catch
 		ASSERT(V_AbortCode == -3, "Unexpected abort")
-		usedImageGraphs = PA_ShowImage(graph, current, targetForAverage, sourceForAverage, POST_PLOT_FULL_UPDATE, $"")
+		usedImageGraphs = PA_ShowImage(graph, current, cs, targetForAverage, sourceForAverage, POST_PLOT_FULL_UPDATE, $"")
 	endtry
 
 	KillWindows(RemoveFromList(usedTraceGraphs + usedImageGraphs, preExistingGraphs))
@@ -895,7 +899,7 @@ static Function PA_MarkFailedPulses(WAVE properties, WAVE/WAVE propertiesWaves, 
 	Multithread junkWave[] = SetNumberInWaveNote(propertiesWaves[p], NOTE_KEY_FAILED_PULSE_LEVEL, pa.failedPulsesLevel)
 End
 
-static Function/S PA_ShowPulses(string win, STRUCT PulseAverageSettings &pa, WAVE/Z targetForAverageGeneric, WAVE/Z sourceForAverageGeneric, variable mode, WAVE/Z additionalData)
+static Function/S PA_ShowPulses(string win, STRUCT PulseAverageSettings &pa, STRUCT PA_ConstantSettings &cs, WAVE/Z targetForAverageGeneric, WAVE/Z sourceForAverageGeneric, variable mode, WAVE/Z additionalData)
 
 	string pulseTrace, channelTypeStr, str, graph, key
 	variable numChannels, i, j, sweepNo, headstage, numTotalPulses, pulse, xPos, yPos, needsPlotting
@@ -909,6 +913,8 @@ static Function/S PA_ShowPulses(string win, STRUCT PulseAverageSettings &pa, WAV
 
 	if(!pa.showTraces)
 		return usedGraphs
+	elseif(cs.traces)
+		return PA_GetGraphs(win, PA_DISPLAYMODE_TRACES)
 	endif
 
 	WAVE/WAVE/Z targetForAverage = targetForAverageGeneric
@@ -1148,6 +1154,59 @@ static Function PA_ClearGraphs(string graphs)
 	endfor
 End
 
+/// @brief Helper structure to store the constantness of various categories of settings.
+static Structure PA_ConstantSettings
+	variable singlePulse
+	variable traces // includes general and single pulse settings
+	variable images // includes general and single pulse settings
+EndStructure
+
+/// @brief Returns a filled structure #PA_ConstantSettings which has 1 for all
+///        constant entries of the given category.
+static Function [STRUCT PA_ConstantSettings cs] PA_DetermineConstantSettings(STRUCT PulseAverageSettings &pa, STRUCT PulseAverageSettings &paOld, variable mode)
+
+	variable generalSettings
+
+	if(mode != POST_PLOT_CONSTANT_SWEEPS)
+		cs.singlePulse = 0
+		cs.traces = 0
+		cs.images = 0
+		return [cs]
+	endif
+
+	cs.singlePulse = (pa.startingPulse == paOld.startingPulse                \
+	                  && pa.endingPulse == paOld.endingPulse                 \
+	                  && pa.overridePulseLength == paOld.overridePulseLength \
+	                  && pa.fixedPulseLength == paOld.fixedPulseLength)
+
+	generalSettings = (pa.showIndividualPulses == paOld.showIndividualPulses    \
+	                   && pa.showAverage == paOld.showAverage                   \
+	                   && pa.regionSlider == paOld.regionSlider                 \
+	                   && pa.multipleGraphs == paOld.multipleGraphs             \
+	                   && pa.zeroPulses == paOld.zeroPulses                     \
+	                   && pa.autoTimeAlignment == paOld.autoTimeAlignment       \
+	                   && pa.enabled == paOld.enabled                           \
+	                   && pa.hideFailedPulses == paOld.hideFailedPulses         \
+	                   && pa.searchFailedPulses == paOld.searchFailedPulses     \
+	                   && pa.deconvolution.enable == paOld.deconvolution.enable \
+	                   && pa.deconvolution.smth == pa.deconvolution.smth        \
+	                   && pa.deconvolution.tau == pa.deconvolution.tau          \
+	                   && pa.deconvolution.range == pa.deconvolution.range)
+
+	cs.traces = (generalSettings == 1                            \
+	             && cs.singlePulse == 1                          \
+	             && pa.showTraces == paOld.showTraces            \
+	             && pa.yScaleBarLength == paOld.yScaleBarLength)
+
+	cs.images = (generalSettings == 1                          \
+	             && cs.singlePulse == 1                        \
+	             && pa.showImages == paOld.showImages          \
+	             && pa.drawXZeroLine == paOld.drawXZeroLine    \
+	             && pa.pulseSortOrder == paOld.pulseSortOrder)
+
+	return [cs]
+End
+
 /// @brief Gather and pre-process the single pulses for display
 ///
 /// This function is display-type agnostic and only does preparational steps.
@@ -1165,7 +1224,7 @@ End
 /// @retval dest          wave reference wave with average data for each set or $""
 /// @retval source        wave reference wave with the data for each set or $""
 /// @retval needsPlotting boolean denoting if there are pulses to plot
-static Function [WAVE/WAVE dest, WAVE/WAVE source, variable needsPlotting] PA_PreProcessPulses(string win, STRUCT PulseAverageSettings &pa, STRUCT PulseAverageSettings &paOld, variable mode)
+static Function [WAVE/WAVE dest, WAVE/WAVE source, variable needsPlotting] PA_PreProcessPulses(string win, STRUCT PulseAverageSettings &pa, STRUCT PA_ConstantSettings &cs, variable mode)
 
 	variable numChannels, numRegions, i, j, region, channelNumber
 	variable constantSinglePulseSettings, numTotalPulses
@@ -1190,12 +1249,7 @@ static Function [WAVE/WAVE dest, WAVE/WAVE source, variable needsPlotting] PA_Pr
 		return [$"", $"", 0]
 	endif
 
-	constantSinglePulseSettings = (pa.startingPulse == paOld.startingPulse                \
-	                               && pa.endingPulse == paOld.endingPulse                 \
-	                               && pa.overridePulseLength == paOld.overridePulseLength \
-	                               && pa.fixedPulseLength == paOld.fixedPulseLength)
-
-	PA_GenerateAllPulseWaves(win, pa, constantSinglePulseSettings, mode)
+	PA_GenerateAllPulseWaves(win, pa, cs, mode)
 
 	PA_ApplyPulseSortingOrder(win, pa)
 
@@ -1257,7 +1311,7 @@ static Function [WAVE/WAVE dest, WAVE/WAVE source, variable needsPlotting] PA_Pr
 
 	PA_AutomaticTimeAlignment(win, pa)
 
-	if(mode != POST_PLOT_CONSTANT_SWEEPS || !constantSinglePulseSettings)
+	if(mode != POST_PLOT_CONSTANT_SWEEPS || !cs.singlePulse)
 		WAVE/WAVE/Z dest, source
 		[dest, source] = PA_CalculateAllAverages(pa)
 		return [dest, source, 1]
@@ -1727,7 +1781,8 @@ static Function PA_UpdateDeconvolution(win)
 	endif
 
 	if(pa.showImages)
-		PA_ShowImage(win, pa, $"", $"", POST_PLOT_FULL_UPDATE, $"")
+		STRUCT PA_ConstantSettings cs
+		PA_ShowImage(win, pa, cs, $"", $"", POST_PLOT_FULL_UPDATE, $"")
 	endif
 
 	if(!pa.showTraces)
@@ -2364,7 +2419,7 @@ static Function PA_DeserializeSettings(string win, STRUCT PulseAverageSettings &
 	return jsonID
 End
 
-static Function/S PA_ShowImage(string win, STRUCT PulseAverageSettings &pa, WAVE/Z targetForAverageGeneric, WAVE/Z sourceForAverageGeneric, variable mode, WAVE/Z additionalData)
+static Function/S PA_ShowImage(string win, STRUCT PulseAverageSettings &pa, STRUCT PA_ConstantSettings &cs, WAVE/Z targetForAverageGeneric, WAVE/Z sourceForAverageGeneric, variable mode, WAVE/Z additionalData)
 
 	variable channelNumber, region, numChannels, numRegions, i, j, k, err, isDiagonalElement
 	variable activeRegionCount, activeChanCount, requiredEntries, specialEntries, numPulses
@@ -2377,6 +2432,8 @@ static Function/S PA_ShowImage(string win, STRUCT PulseAverageSettings &pa, WAVE
 
 	if(!pa.showImages)
 		return usedGraphs
+	elseif(cs.images)
+		return PA_GetGraphs(win, PA_DISPLAYMODE_IMAGES)
 	endif
 
 	WAVE/WAVE/Z targetForAverage = targetForAverageGeneric

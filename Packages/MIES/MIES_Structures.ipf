@@ -67,7 +67,7 @@ Function InitPulseAverageSettings(pa)
 End
 
 // If this structure changes, #PA_SETTINGS_STRUCT_VERSION/PA_SerializeSettings() and
-// PA_DeSerializeSettings() needs adaptation.
+// PA_DeSerializeSettings() and PA_ConstantSettings() needs adaptation.
 Structure PulseAverageSettings
 	variable showIndividualPulses, showAverage
 	variable regionSlider, multipleGraphs
