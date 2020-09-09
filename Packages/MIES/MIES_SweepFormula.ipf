@@ -142,8 +142,8 @@ End
 static Function/S SF_FormulaPreParser(formula)
 	String formula
 
-	SF_Assert(CountSubstrings(formula, "(") == CountSubstrings(formula, ")"), "Bracket missmatch in formula.")
-	SF_Assert(CountSubstrings(formula, "[") == CountSubstrings(formula, "]"), "Array bracket missmatch in formula.")
+	SF_Assert(CountSubstrings(formula, "(") == CountSubstrings(formula, ")"), "Bracket mismatch in formula.")
+	SF_Assert(CountSubstrings(formula, "[") == CountSubstrings(formula, "]"), "Array bracket mismatch in formula.")
 
 	formula = ReplaceString("...", formula, "…")
 
@@ -1199,10 +1199,10 @@ Function SF_FormulaPlotter(graph, formula, [dfr])
 	else // 2D vs 2D
 		numTraces = WaveExists(wvX) ? max(1, max(dim1Y * dim2Y, dim1X * dim2X)) : max(1, dim1Y * dim2Y)
 		if(DimSize(wvY, ROWS) == DimSize(wvX, ROWS))
-			DebugPrint("Size missmatch in data rows for plotting waves.")
+			DebugPrint("Size mismatch in data rows for plotting waves.")
 		endif
 		if(DimSize(wvY, ROWS) == DimSize(wvX, ROWS))
-			DebugPrint("Size missmatch in entity columns for plotting waves.")
+			DebugPrint("Size mismatch in entity columns for plotting waves.")
 		endif
 		for(i = 0; i < numTraces; i += 1)
 			trace = traceName + num2istr(i)
