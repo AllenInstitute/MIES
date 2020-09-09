@@ -30,6 +30,16 @@
 /// The dDAQ slider in the Databrowse/Sweepbrowser is respected as is the
 /// channel selection.
 
+/// Drawing layers:
+/// - ProgAxes: X=0 line for images
+/// - ProgFront: Scale bars
+/// - ProgBack: Failed pulses triangles
+/// @{
+static StrConstant PA_DRAWLAYER_XZEROLINE = "ProgAxes"
+static StrConstant PA_DRAWLAYER_SCALEBAR = "ProgFront"
+static StrConstant PA_DRAWLAYER_FAILED_PULSES = "ProgBack"
+/// @}
+
 static StrConstant PA_GRAPH_PREFIX          = "PulseAverage"
 static StrConstant PA_SOURCE_WAVE_TIMESTAMP = "SOURCE_WAVE_TS"
 
