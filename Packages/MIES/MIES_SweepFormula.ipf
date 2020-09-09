@@ -1540,7 +1540,7 @@ Function SF_button_sweepFormula_check(ba) : ButtonControl
 			formula = GetNotebookText(formula_nb)
 
 			SetValDisplay(bsPanel, "status_sweepFormula_parser", var=1)
-			SetSetVariableString(bsPanel, "setvar_sweepFormula_parseResult", ":)")
+			SetSetVariableString(bsPanel, "setvar_sweepFormula_parseResult", "", setHelp = 1)
 
 			SVAR result = $GetSweepFormulaParseErrorMessage()
 			result = ""
@@ -1573,7 +1573,7 @@ Function SF_button_sweepFormula_check(ba) : ButtonControl
 				SetValDisplay(bsPanel, "status_sweepFormula_parser", var=0)
 				JSON_Release(jsonID, ignoreErr = 1)
 				SVAR result = $GetSweepFormulaParseErrorMessage()
-				SetSetVariableString(bsPanel, "setvar_sweepFormula_parseResult", result)
+				SetSetVariableString(bsPanel, "setvar_sweepFormula_parseResult", result, setHelp = 1)
 			endtry
 			break
 	endswitch
@@ -1615,17 +1615,18 @@ Function SF_button_sweepFormula_display(ba) : ButtonControl
 			SVAR result = $GetSweepFormulaParseErrorMessage()
 			result = ""
 
+			SetSetVariableString(bsPanel, "setvar_sweepFormula_parseResult", "", setHelp = 1)
+			SetValDisplay(bsPanel, "status_sweepFormula_parser", var=1)
+
 			try
 				ClearRTError()
 				SF_FormulaPlotter(mainPanel, code, dfr = dfr); AbortONRTE
 			catch
 				ClearRTError()
 				SVAR result = $GetSweepFormulaParseErrorMessage()
-				SetSetVariableString(bsPanel, "setvar_sweepFormula_parseResult", result)
-				break
+				SetValDisplay(bsPanel, "status_sweepFormula_parser", var=0)
+				SetSetVariableString(bsPanel, "setvar_sweepFormula_parseResult", result, setHelp = 1)
 			endtry
-
-			SetSetVariableString(bsPanel, "setvar_sweepFormula_parseResult", ":)")
 
 			break
 	endswitch
