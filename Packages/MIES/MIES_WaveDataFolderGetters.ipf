@@ -205,7 +205,7 @@ static Function WaveVersionIsAtLeast(wv, existingVersion)
 	variable waveVersion
 
 	ASSERT(WaveExists(wv), "Wave does not exist")
-	ASSERT(IsInteger(existingVersion) && existingVersion > 0, "existing version must be a positive integer")
+	ASSERT(IsValidWaveVersion(existingVersion), "existing version must be a positive integer")
 	waveVersion = GetWaveVersion(wv)
 
 	return !isNaN(waveVersion) && waveVersion >= existingVersion
@@ -219,7 +219,7 @@ static Function WaveVersionIsSmaller(wv, existingVersion)
 	variable waveVersion
 
 	ASSERT(WaveExists(wv), "Wave does not exist")
-	ASSERT(IsInteger(existingVersion) && existingVersion > 0, "existing version must be a positive integer")
+	ASSERT(IsValidWaveVersion(existingVersion), "existing version must be a positive integer")
 	waveVersion = GetWaveVersion(wv)
 
 	return isNaN(waveVersion) || waveVersion < existingVersion
@@ -237,8 +237,13 @@ static Function SetWaveVersion(wv, val)
 	Wave wv
 	variable val
 
-	ASSERT(val > 0 && IsInteger(val), "val must be a positive and non-zero integer")
+	ASSERT(IsValidWaveVersion(val), "val must be a positive and non-zero integer")
 	SetNumberInWaveNote(wv, WAVE_NOTE_LAYOUT_KEY, val)
+End
+
+/// @brief A valid wave version is a positive non-zero integer
+static Function IsValidWaveVersion(variable value)
+	return value > 0 && IsInteger(value)
 End
 
 /// @brief Move/Rename a datafolder across different locations
