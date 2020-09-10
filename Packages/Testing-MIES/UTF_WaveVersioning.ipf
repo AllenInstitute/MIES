@@ -185,3 +185,53 @@ Function WV_IsSmaller()
 	CHECK(MIES_WAVEGETTERS#WaveVersionIsSmaller(wv, 2))
 End
 /// @}
+
+/// @{ ClearWaveNoteExceptWaveVersion
+
+Function CWNE_ClearsNoteWithoutVersion()
+	string str
+
+	Make/FREE wv
+
+	Note wv, "abcd"
+	ClearWaveNoteExceptWaveVersion(wv)
+
+	str = note(wv)
+	CHECK_EMPTY_STR(str)
+End
+
+Function CWNE_ClearsNoteAndDropsInvalidVersion()
+	string str
+
+	Make/FREE wv
+
+	MIES_WAVEGETTERS#SetWaveVersion(wv, 111)
+	// by replacing just the wave version we don't need to know the exact key
+	Note/K wv, ReplaceString("111", "-1", note(wv))
+
+	str = note(wv)
+	CHECK_NON_EMPTY_STR(str)
+
+	ClearWaveNoteExceptWaveVersion(wv)
+
+	str = note(wv)
+	CHECK_EMPTY_STR(str)
+End
+
+Function CWNE_ClearsNoteAndKeepsValidWaveVersion()
+	string str, ref
+
+	Make/FREE wv
+
+	MIES_WAVEGETTERS#SetWaveVersion(wv, 111)
+	ref = note(wv)
+
+	Note wv, "abcd"
+
+	ClearWaveNoteExceptWaveVersion(wv)
+
+	str = note(wv)
+	CHECK_EQUAL_STR(ref, str)
+End
+
+/// @}

@@ -246,6 +246,18 @@ static Function IsValidWaveVersion(variable value)
 	return value > 0 && IsInteger(value)
 End
 
+/// @brief Clear the wave note but keep any valid wave version
+Function ClearWaveNoteExceptWaveVersion(WAVE wv)
+
+	variable version = GetWaveVersion(wv)
+
+	Note/K wv
+
+	if(IsValidWaveVersion(version))
+		SetWaveVersion(wv, version)
+	endif
+End
+
 /// @brief Move/Rename a datafolder across different locations
 ///
 /// Both parameters must be absolute datafolder locations.
