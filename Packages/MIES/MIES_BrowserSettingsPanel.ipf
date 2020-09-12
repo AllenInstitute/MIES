@@ -563,9 +563,8 @@ End
 Function BSP_ClosePanelHook(s)
 	STRUCT WMWinHookStruct &s
 
-	string mainPanel, panelButton
-	string panels = ""
-	variable hookResult = 0
+	string mainPanel
+	string panels
 
 	switch(s.eventCode)
 		case 17: // killVote
@@ -579,11 +578,10 @@ Function BSP_ClosePanelHook(s)
 
 			BSP_MainPanelButtonToggle(mainPanel, 1)
 
-			hookResult = 2 // don't kill window
-			break
+			return 2 // don't kill window
 	endswitch
 
-	return hookResult
+	return 0
 End
 
 /// @brief enable/disable checkbox control for side panel

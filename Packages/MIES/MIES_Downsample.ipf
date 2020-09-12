@@ -511,10 +511,10 @@ Function DownsampleWindowHook(s)
 			if(DataFolderExists(dataPath))
 				printf "Could not remove all contents of %s\r", dataPath
 			endif
-		return 1
 		break
 	endswitch
 
+	// return zero so that other hooks are called as well
 	return 0
 End
 

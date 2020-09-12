@@ -14,7 +14,6 @@
 static StrConstant LABNOTEBOOK_BOTTOM_AXIS_TIME  = "Timestamp (a. u.)"
 static StrConstant LABNOTEBOOK_BOTTOM_AXIS_SWEEP = "Sweep Number (a. u.)"
 
-static Constant GRAPH_DIV_SPACING   = 0.03
 static Constant ADC_SLOT_MULTIPLIER = 4
 static Constant NUM_CHANNEL_TYPES   = 3
 
@@ -2946,7 +2945,7 @@ Function EquallySpaceAxis(graph, [axisRegExp, axisOffset, axisOrientation, sortO
 	string graph, axisRegExp, listForBegin, listForEnd
 	variable axisOffset, axisOrientation, sortOrder
 
-	variable numAxes, axisInc, axisStart, axisEnd, i, spacing
+	variable numAxes, i
 	string axes, axis, list
 	string adaptedList = ""
 
@@ -3010,21 +3009,16 @@ Function EquallySpaceAxis(graph, [axisRegExp, axisOffset, axisOrientation, sortO
 		adaptedList = axes
 	endif
 
-	numAxes = ItemsInList(adaptedList)
-	axisInc = (1.0 - axisOffset) / numAxes
+	if(numAxes > 0)
+		WAVE/Z axisStart, axisEnd
+		[axisStart, axisEnd] = DistributeElements(numAxes, offset = axisOffset)
 
-	if(axisInc < GRAPH_DIV_SPACING)
-		spacing = axisInc/5
-	else
-		spacing = GRAPH_DIV_SPACING
+		numAxes = ItemsInList(adaptedList)
+		for(i = 0; i < numAxes; i += 1)
+			axis = StringFromList(i, adaptedList)
+			ModifyGraph/Z/W=$graph axisEnab($axis) = {axisStart[i], axisEnd[i]}
+		endfor
 	endif
-
-	for(i = numAxes - 1; i >= 0; i -= 1)
-		axis = StringFromList(i, adaptedList)
-		axisStart = (i == 0 ? axisOffset : spacing + axisInc * i)
-		axisEnd   = (i == numAxes - 1 ? 1 : axisInc * (i + 1) - spacing)
-		ModifyGraph/W=$graph axisEnab($axis) = {axisStart, axisEnd}
-	endfor
 End
 
 /// @brief Update the legend in the labnotebook graph
@@ -3543,10 +3537,14 @@ Function PostPlotTransformations(string win, variable mode, [WAVE/Z additionalDa
 
 	graph = GetMainWindow(win)
 
-	WAVE/T/Z traces = GetAllSweepTraces(graph, prefixTraces = 0)
-
 	STRUCT PostPlotSettings pps
 	InitPostPlotSettings(graph, pps)
+
+	if(pps.zeroTraces || pps.averageTraces)
+		WAVE/T/Z traces = GetAllSweepTraces(graph, prefixTraces = 0)
+	else
+		WAVE/T/Z traces = $""
+	endif
 
 	ZeroTracesIfReq(graph, traces, pps.zeroTraces)
 	TimeAlignMainWindow(graph, pps)
@@ -3616,20 +3614,6 @@ Function/S TimeAlignGetAllTraces(graph)
 	return TextWaveToList(traces, ";")
 End
 
-/// @brief return a list of all graphs included in TimeAlignment
-Function/S TimeAlignGetAllGraphs(graph)
-	string graph
-
-	string graphs
-
-	graphs = AddListItem(graph, "")
-	if(PA_IsActive(graph))
-		graphs += PA_GetAverageGraphs(graph)
-	endif
-
-	return graphs
-End
-
 /// @brief Adds or removes the cursors from the graphs depending on the
 ///        panel settings
 ///
@@ -3648,7 +3632,7 @@ Function TimeAlignHandleCursorDisplay(win)
 		return NaN
 	endif
 
-	graphs = TimeAlignGetAllGraphs(win)
+	graphs = win
 
 	// deactivate cursor
 	if(!GetCheckBoxState(bsPanel, "check_BrowserSettings_TA"))
@@ -3729,16 +3713,6 @@ Function TimeAlignCursorMovedHook(s)
 			endif
 
 			bsPanel = BSP_GetPanel(s.winName)
-			if(!windowExists(bsPanel))
-				// check if hook was called from a PA graph
-				if(WhichListItem(s.winName, PA_GetAverageGraphs(bsPanel)) == -1)
-					return 0
-				endif
-				bsPanel = BSP_GetPanel(GetUserData(s.winName, "", MIES_BSP_PA_MAINPANEL))
-				if(!windowExists(bsPanel))
-					return 0
-				endif
-			endif
 
 			if(!GetCheckBoxState(bsPanel, "check_BrowserSettings_TA"))
 				return 0
@@ -4102,13 +4076,6 @@ End
 
 /// @brief Perform time alignment of features in the sweep traces
 ///
-/// PA time alignment:
-/// - Get the feature position of the reference trace and store it in `refPos`
-/// - Get them also for all pulses which belong to the same set. Store these
-///   feature positions using their sweep number and pulse index as key.
-/// - Now shift *all* pulses in all sets from the same region by `- (refPos +
-///   featurePos)` where `featurePos` is used from the same sweep and pulse index.
-///
 /// @param graphtrace reference trace in the form of graph#trace
 /// @param mode       time alignment mode
 /// @param level      level input to the @c FindLevel operation in @see CalculateFeatureLoc
@@ -4126,7 +4093,7 @@ Function TimeAlignmentIfReq(graphtrace, mode, level, pos1x, pos2x, [force])
 	endif
 
 	string str, refAxis, axis
-	string trace, refTrace, graph, refGraph, paGraphs, refRegion, browserGraph
+	string trace, refTrace, graph, refGraph
 	variable offset, refPos
 	variable first, last, pos, numTraces, i, idx
 	string sweepNo, pulseIndexStr, indexStr
@@ -4147,18 +4114,7 @@ Function TimeAlignmentIfReq(graphtrace, mode, level, pos1x, pos2x, [force])
 	// now determine the feature's time position
 	// using the traces from the same axis as the reference trace
 	refAxis = TUD_GetUserData(refGraph, refTrace, "YAXIS")
-
-	browserGraph = GetUserData(refGraph, "", MIES_BSP_PA_MAINPANEL)
-	paGraphs = PA_GetAverageGraphs(browserGraph)
-	if(WhichListItem(refGraph, paGraphs) == -1)
-		WAVE/T graphtraces = GetAllSweepTraces(refGraph)
-	else
-		// only do PA for sweeps with same region
-		refRegion = TUD_GetUserData(refGraph, refTrace, "region")
-		ASSERT(!isEmpty(refRegion), "region is empty. Set \"region\" in userData entry for trace.")
-		WAVE/T graphtraces = GetAllSweepTraces(paGraphs, region = str2num(refRegion))
-	endif
-
+	WAVE/T graphtraces = GetAllSweepTraces(refGraph)
 	refPos = NaN
 
 	numTraces = DimSize(graphtraces, ROWS)
@@ -4945,6 +4901,34 @@ Function RemoveFreeAxisFromGraph(graph)
 		endif
 
 		KillFreeAxis/W=$graph $name
+	endfor
+End
+
+/// @brief Remove all images from a graph
+Function RemoveImagesFromGraph(string graph)
+
+	variable i, numEntries
+	string images, instance
+
+	images = ImageNameList(graph, ";")
+
+	numEntries = ItemsInList(images)
+	for(i = 0; i < numEntries; i += 1)
+		instance = StringFromList(i, images)
+		RemoveImage/W=$graph $instance
+	endfor
+End
+
+/// @brief Remove all draw layers from the graph
+Function RemoveDrawLayers(string graph)
+	variable i, numLayers
+
+	Make/FREE/T layers = {"ProgBack", "UserBack", "ProgAxes", "UserAxes", "ProgFront", "UserFront", "Overlay"}
+	ASSERT(WinType(graph) == 1, "Only works for graphs")
+
+	numLayers = DimSize(layers, ROWS)
+	for(i = 0; i < numLayers; i += 1)
+		SetDrawLayer/W=$graph/K $layers[i]
 	endfor
 End
 

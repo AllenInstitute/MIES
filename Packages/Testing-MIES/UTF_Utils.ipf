@@ -4082,3 +4082,96 @@ Function ReplaceWaveWithBackupForAllWorks()
 End
 
 /// @}
+
+/// SelectWave
+/// @{
+
+Function/WAVE SW_TrueValues()
+	Make/D/FREE data = {1, Inf, -Inf, 1e-15, -1, NaN}
+	return data
+End
+
+Function/WAVE SW_FalseValues()
+	Make/D/FREE data = {0}
+	return data
+End
+
+// UTF_TD_GENERATOR SW_TrueValues
+Function SW_WorksWithTrue([var])
+	variable var
+
+	Make/FREE a, b
+	WAVE/Z trueWave = SelectWave(var, a, b)
+	CHECK_WAVE(trueWave, FREE_WAVE)
+	CHECK(WaveRefsEqual(trueWave, b))
+End
+
+// UTF_TD_GENERATOR SW_FalseValues
+Function SW_WorksWithFalse([var])
+	variable var
+
+	Make/FREE a, b
+	WAVE/Z falseWave = SelectWave(var, a, b)
+	CHECK_WAVE(falseWave, FREE_WAVE)
+	CHECK(WaveRefsEqual(falseWave, a))
+End
+
+/// @}
+
+/// DistributeElements
+/// @{
+
+Function DE_Basics()
+
+	WAVE/Z start, stop
+	[start, stop] = DistributeElements(2)
+	CHECK_WAVE(start, NUMERIC_WAVE, minorType=DOUBLE_WAVE)
+	CHECK_WAVE(stop, NUMERIC_WAVE, minorType=DOUBLE_WAVE)
+
+	CHECK_EQUAL_WAVES(start, {0.0, 0.515}, mode = WAVE_DATA, tol=1e-8)
+	CHECK_EQUAL_WAVES(stop,  {0.485, 1.0}, mode = WAVE_DATA, tol=1e-8)
+End
+
+Function DE_OffsetWorks()
+
+	variable offset = 0.01
+
+	WAVE/Z start, stop
+	[start, stop] = DistributeElements(2, offset = offset)
+	CHECK_WAVE(start, NUMERIC_WAVE, minorType=DOUBLE_WAVE)
+	CHECK_WAVE(stop, NUMERIC_WAVE, minorType=DOUBLE_WAVE)
+
+	CHECK_EQUAL_WAVES(start, {0.01, 0.52}, mode = WAVE_DATA, tol=1e-8)
+	CHECK_EQUAL_WAVES(stop,  {0.49, 1.0}, mode = WAVE_DATA, tol=1e-8)
+End
+
+Function DE_ManyElements()
+
+	WAVE/Z start, stop
+	[start, stop] = DistributeElements(10)
+	CHECK_WAVE(start, NUMERIC_WAVE, minorType=DOUBLE_WAVE)
+	CHECK_WAVE(stop, NUMERIC_WAVE, minorType=DOUBLE_WAVE)
+
+	Make/FREE/D refStart = {0,0.102222222222222,0.204444444444444,0.306666666666667,0.408888888888889,0.511111111111111,0.613333333333333,0.715555555555556,0.817777777777778,0.92}
+	Make/FREE/D refStop = {0.08,0.182222222222222,0.284444444444444,0.386666666666667,0.488888888888889,0.591111111111111,0.693333333333333,0.795555555555556,0.897777777777778,1}
+
+	CHECK_EQUAL_WAVES(start, refStart, mode = WAVE_DATA, tol=1e-8)
+	CHECK_EQUAL_WAVES(stop,  refStop, mode = WAVE_DATA, tol=1e-8)
+End
+
+/// @}
+
+/// CalculateNiceLength
+/// @{
+
+Function CNL_Works()
+
+	variable fraction = 0.1
+
+	CHECK_EQUAL_VAR(CalculateNiceLength(fraction * 90, 5), 10)
+	CHECK_EQUAL_VAR(CalculateNiceLength(fraction * 60, 5), 5)
+	CHECK_EQUAL_VAR(CalculateNiceLength(fraction * 20, 5), 5)
+	CHECK_EQUAL_VAR(CalculateNiceLength(fraction *  2, 5), 0.5)
+	CHECK_EQUAL_VAR(CalculateNiceLength(fraction *  1, 5), 0.05)
+	CHECK_EQUAL_VAR(CalculateNiceLength(fraction *  0.5, 5), 0.05)
+End

@@ -1287,14 +1287,7 @@ End
 Function RemoveAnnotationsFromGraph(graph)
 	string graph
 
-	variable i, numEntries
-	string list
-
-	list = AnnotationList(graph)
-	numEntries = ItemsInList(list)
-	for(i = 0; i < numEntries; i += 1)
-		Textbox/W=$graph/K/N=$StringFromList(i, list)
-	endfor
+	DeleteAnnotations/W=$graph/A
 End
 
 /// @brief Sort 2D waves in-place with one column being the key
@@ -4437,16 +4430,6 @@ Function StoreElapsedTime(referenceTime)
 	return elapsed
 End
 
-/// @brief Extracts a single wave from a wave ref wave
-///
-/// This can be used as helper function in multithread statements.
-threadsafe Function/WAVE MapWaveRefWave(input, row)
-	WAVE/WAVE input
-	variable row
-
-	return input[row]
-End
-
 Function GetPlotArea(win, s)
 	string win
 	STRUCT RectD &s
@@ -4581,7 +4564,7 @@ Function/WAVE FindLevelWrapper(data, level, edge, mode)
 		maxLevels = WaveMax(numMaxLevels)
 		Make/D/FREE/N=(numColsFixed, maxLevels) resultMulti
 
-		resultMulti[][] = q < numMaxLevels[p] ? MapWaveRefWave(allLevels, p)[q] : NaN
+		resultMulti[][] = q < numMaxLevels[p] ? WaveRef(allLevels[p])[q] : NaN
 	endif
 
 	// don't use numColsFixed here as we want to have the original shape
@@ -5371,4 +5354,70 @@ Function/WAVE GrepTextWave(Wave/T in, string regexp)
 	endif
 
 	return result
+End
+
+/// @brief Given a range `[a, b]` this returns a symmetric range around zero including both elements
+Function [variable minSym, variable maxSym] SymmetrizeRangeAroundZero(variable minimum, variable maximum)
+
+	variable maxVal
+
+	maxVal = max(abs(minimum), abs(maximum))
+	return [-maxVal, +maxVal]
+End
+
+/// @brief Helper function for multithread statements where `? :` does not work with wave references
+///
+/// The order of arguments is modelled after SelectString/SelectNumber.
+threadsafe Function/WAVE SelectWave(variable condition, WAVE/Z waveIfFalse, WAVE/Z waveIfTrue)
+	if(!!condition != 0)
+		return waveIfTrue
+	else
+		return waveIfFalse
+	endif
+End
+
+/// @brief Distribute N elements over a range from 0.0 to 1.0 with spacing
+Function [WAVE/D start, WAVE/D stop] DistributeElements(variable numElements, [variable offset])
+
+	variable elementLength, spacing
+
+	ASSERT(numElements > 0, "Invalid number of elements")
+
+	if(!ParamIsDefault(offset))
+		ASSERT(IsFinite(offset) && offset >= 0.0 && offset < 1.0, "Invalid offset")
+	endif
+
+	// limit the spacing for a lot of entries
+	// we only want to use 20% for spacing in total
+	if((numElements - 1) * GRAPH_DIV_SPACING > 0.20)
+		spacing = 0.20 / (numElements - 1)
+	else
+		spacing = GRAPH_DIV_SPACING
+	endif
+
+	elementLength = (1.0 - offset - (numElements - 1) * spacing) / numElements
+
+	Make/FREE/D/N=(numElements) start, stop
+
+	start[] = limit(offset + p * (elementLength + spacing), 0.0, 1.0)
+	stop[] = limit(start[p] + elementLength, 0.0, 1.0)
+
+	return [start, stop]
+End
+
+/// @brief Calculate a nice length which is an integer number of `multiple` long
+///
+/// For small values @f$ 10^{-x} @f$ times `multiple` are returned
+Function CalculateNiceLength(variable range , variable multiple)
+
+	variable div, numDigits
+
+	div = range / multiple
+	numDigits = log(div)
+
+	if(numDigits > 0)
+		return round(div) * multiple
+	endif
+
+	return multiple * 10^(round(numDigits))
 End

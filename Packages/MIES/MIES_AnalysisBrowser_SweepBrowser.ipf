@@ -362,7 +362,6 @@ Function SB_SweepBrowserWindowHook(s)
 	STRUCT WMWinHookStruct &s
 
 	string graph, scPanel, ctrl
-	variable hookResult
 
 	switch(s.eventCode)
 		case 2:	 // Kill
@@ -372,8 +371,6 @@ Function SB_SweepBrowserWindowHook(s)
 
 			KillWindow $graph
 			KillOrMoveToTrash(dfr = sweepBrowserDFR)
-
-			hookResult = 1
 			break
 		case 22: // mouse wheel
 			graph = GetMainWindow(s.winName)
@@ -391,12 +388,11 @@ Function SB_SweepBrowserWindowHook(s)
 			endif
 
 			PGC_SetAndActivateControl(scPanel, ctrl)
-
-			hookResult = 1
 			break
 	endswitch
 
-	return hookResult // 0 if nothing done, else 1
+	// return zero so that other hooks are called as well
+	return 0
 End
 
 Function/DF SB_OpenSweepBrowser()

@@ -3635,3 +3635,89 @@ Function DataBrowserCreatesBackupsByDefault_REENTRY([str])
 		CHECK_WAVE(bak, NORMAL_WAVE)
 	endfor
 End
+
+Function ILCUSetup_IGNORE(device)
+	string device
+
+	// disable HS1
+	PGC_SetAndActivateControl(device, GetPanelControl(1, CHANNEL_TYPE_HEADSTAGE, CHANNEL_CONTROL_CHECK), val=0)
+
+	PGC_SetAndActivateControl(device, GetPanelControl(0, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_WAVE), str = "IncLabCacheUpdat*")
+End
+
+/// Test incremental labnotebook cache updates
+/// We have two sweeps in total. After the first sweeps we query LBN settings
+/// for the next sweep, we get all no-matches. But some of these no-matches are stored in
+/// the LBN cache waves. After the second sweep these LBN entries can now be queried thus "proving"
+/// that the LBN caches were successfully updated.
+///
+/// UTF_TD_GENERATOR HardwareMain#DeviceNameGeneratorMD1
+Function IncrementalLabnotebookCacheUpdate([str])
+	string str
+
+	STRUCT DAQSettings s
+	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG_1")
+
+	WAVE anaFuncTracker = TrackAnalysisFunctionCalls()
+	KillOrMoveToTrash(wv = anaFuncTracker)
+
+	AcquireData(s, str, preAcquireFunc = ILCUSetup_IGNORE)
+End
+
+Function IncrementalLabnotebookCacheUpdate_REENTRY([str])
+	string str
+
+	variable sweepNo
+
+	CHECK_EQUAL_VAR(GetSetVariable(str, "SetVar_Sweep"), 2)
+
+	sweepNo = AFH_GetLastSweepAcquired(str)
+	CHECK_EQUAL_VAR(sweepNo, 1)
+
+	WAVE anaFuncTracker = TrackAnalysisFunctionCalls()
+
+	CHECK_EQUAL_VAR(anaFuncTracker[POST_SWEEP_EVENT], 2)
+End
+
+Function ILCUCheck_IGNORE(string panelTitle, STRUCT AnalysisFunction_V3& s)
+
+	variable nonExistingSweep
+
+	WAVE/T textualValues = GetLBTextualValues(panelTitle)
+	WAVE numericalValues = GetLBNumericalValues(panelTitle)
+
+	// fetch some existing entries from the LBN
+	WAVE/Z sweepCounts = GetLastSetting(numericalValues, s.sweepNo, "Set Sweep Count", DATA_ACQUISITION_MODE)
+	CHECK_WAVE(sweepCounts, NUMERIC_WAVE)
+
+	WAVE/T/Z foundStimSets = GetLastSetting(textualValues, s.sweepNo, STIM_WAVE_NAME_KEY, DATA_ACQUISITION_MODE)
+	CHECK_WAVE(foundStimSets, TEXT_WAVE)
+
+	WAVE/Z sweeps = AFH_GetSweepsFromSameSCI(numericalValues, s.sweepNo, 0)
+	CHECK_WAVE(sweeps, NUMERIC_WAVE)
+	CHECK_EQUAL_VAR(DimSize(sweeps, ROWS), s.sweepNo + 1)
+
+	WAVE/Z sweeps = AFH_GetSweepsFromSameRACycle(numericalValues, s.sweepNo)
+	CHECK_WAVE(sweeps, NUMERIC_WAVE)
+	CHECK_EQUAL_VAR(DimSize(sweeps, ROWS), s.sweepNo + 1)
+
+	if(s.sweepNo == 0)
+		// now fetch non-existing ones from the next sweep
+		// this adds "missing" entries to the LBN cache
+		// our wave cache updating results in these missing values being move to uncached on the cache update
+		nonExistingSweep = s.sweepNo + 1
+		WAVE/Z sweepCounts = GetLastSetting(numericalValues, nonExistingSweep, "Set Sweep Count", DATA_ACQUISITION_MODE)
+		CHECK_WAVE(sweepCounts, NULL_WAVE)
+
+		WAVE/T/Z foundStimSets = GetLastSetting(textualValues, nonExistingSweep, STIM_WAVE_NAME_KEY, DATA_ACQUISITION_MODE)
+		CHECK_WAVE(foundStimSets, NULL_WAVE)
+
+		WAVE/Z sweeps = AFH_GetSweepsFromSameSCI(numericalValues, nonExistingSweep, 0)
+		CHECK_WAVE(sweeps, NULL_WAVE)
+
+		WAVE/Z sweeps = AFH_GetSweepsFromSameRACycle(numericalValues, nonExistingSweep)
+		CHECK_WAVE(sweeps, NULL_WAVE)
+	else
+		CHECK_EQUAL_VAR(s.sweepNo, 1)
+	endif
+End

@@ -596,7 +596,7 @@ Constant WAVEBUILDER_PANEL_VERSION         = 8
 /// - Changed names of entries
 /// - Changed units or meaning of entries
 /// - New/Changed layers of entries
-Constant LABNOTEBOOK_VERSION = 38
+Constant LABNOTEBOOK_VERSION = 39
 
 /// Version of the stimset wave note
 Constant STIMSET_NOTE_VERSION = 7
@@ -756,6 +756,7 @@ StrConstant NOTE_KEY_TIMEALIGN            = "TimeAlign"
 StrConstant NOTE_KEY_ARTEFACT_REMOVAL     = "ArtefactRemoval"
 StrConstant NOTE_KEY_SEARCH_FAILED_PULSE  = "SearchFailedPulses"
 StrConstant NOTE_KEY_FAILED_PULSE_LEVEL   = "FailedPulseLevel"
+StrConstant NOTE_KEY_PULSE_SORT_ORDER     = "PulseSortOrder"
 
 /// DA_Ephys Panel Tabs
 Constant DA_EPHYS_PANEL_DATA_ACQUISITION = 0
@@ -1033,9 +1034,10 @@ StrConstant REC_MACRO_MODE      = "mode"
 Constant CA_OPTS_NO_DUPLICATE = 0x1
 /// @}
 
-Constant LABNOTEBOOK_MISSING_VALUE  = -1
-Constant LABNOTEBOOK_UNCACHED_VALUE = -2
-StrConstant LABNOTEBOOK_MOD_COUNT   = "Labnotebook modification count"
+Constant LABNOTEBOOK_MISSING_VALUE     = -1
+Constant LABNOTEBOOK_UNCACHED_VALUE    = -2
+StrConstant LABNOTEBOOK_MOD_COUNT      = "Labnotebook modification count"
+StrConstant LABNOTEBOOK_ROLLBACK_COUNT = "Labnotebook sweep rollback count"
 
 /// @name Constants for the different delta operation modes in the Wavebuilder
 /// @anchor WaveBuilderDeltaOperationModes
@@ -1254,4 +1256,8 @@ Constant POST_PLOT_FULL_UPDATE = 0x8     ///< Forces a complete update from scra
 
 /// @}
 
-Constant PA_SETTINGS_STRUCT_VERSION = 1
+Constant PA_SETTINGS_STRUCT_VERSION = 5
+
+StrConstant NOTE_NEEDS_UPDATE = "NeedsUpdate"
+
+Constant GRAPH_DIV_SPACING = 0.03

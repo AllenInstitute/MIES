@@ -643,7 +643,7 @@ static Function SCOPE_NI_UpdateOscilloscope(panelTitle, dataAcqOrTP, deviceiD, f
 		NVAR fifoPosGlobal = $GetFifoPosition(panelTitle)
 
 		WAVE allGain = SWS_GetChannelGains(panelTitle, timing = GAIN_AFTER_DAQ)
-		Multithread scaledDataWave[fifoPosGlobal, fifoPos - 1][] = MapWaveRefWave(NIDataWave, q)[p] / allGain[q]
+		Multithread scaledDataWave[fifoPosGlobal, fifoPos - 1][] = WaveRef(NIDataWave[q])[p] / allGain[q]
 
 		decMethod = GetNumberFromWaveNote(OscilloscopeData, "DecimationMethod")
 		decFactor = GetNumberFromWaveNote(OscilloscopeData, "DecimationFactor")

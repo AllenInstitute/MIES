@@ -742,7 +742,8 @@ Function DAP_WindowHook(s)
 			PS_StoreWindowCoordinate(JSONid, panelTitle)
 
 			DAP_UnlockDevice(panelTitle)
-			return 1
+			// return zero so that other hooks are called as well
+			break
 		case 22: // mouse wheel
 			panelTitle = s.winName
 
@@ -1640,18 +1641,40 @@ Function DAP_SetVarProc_NextSweepLimit(sva) : SetVariableControl
 
 			panelTitle = sva.win
 			sweepNo = AFH_GetLastSweepAcquired(panelTitle)
-
-			Make/FREE/N=(1, 1, LABNOTEBOOK_LAYER_COUNT) vals = NaN
-			vals[0][0][INDEP_HEADSTAGE] = sva.dval
-			Make/T/FREE/N=(3, 1) keys
-			keys[0] = "Sweep Rollback"
-			keys[1] = "a. u."
-			keys[2] = LABNOTEBOOK_NO_TOLERANCE
-			ED_AddEntriesToLabnotebook(vals, keys, sweepNo, panelTitle, UNKNOWN_MODE)
+			DAP_SweepRollback(paneltitle, sweepNo, sva.dval)
 			break
 	endswitch
 
 	return 0
+End
+
+Function DAP_SweepRollback(string paneltitle, variable sweepNo, variable newSweepNo)
+
+	variable rollbackCountNum, rollbackCountText
+
+	Make/FREE/N=(1, 1, LABNOTEBOOK_LAYER_COUNT) vals = NaN
+	vals[0][0][INDEP_HEADSTAGE] = newSweepNo
+	Make/T/FREE/N=(3, 1) keys
+	keys[0] = "Sweep Rollback"
+	keys[1] = "a. u."
+	keys[2] = LABNOTEBOOK_NO_TOLERANCE
+	ED_AddEntriesToLabnotebook(vals, keys, sweepNo, panelTitle, UNKNOWN_MODE)
+
+	// upgrade LBNs
+	GetLBNumericalKeys(panelTitle)
+	GetLBTextualKeys(panelTitle)
+
+	WAVE/Z numericalValues = GetLBNumericalValues(panelTitle)
+	rollbackCountNum = GetNumberFromWaveNote(numericalValues, LABNOTEBOOK_ROLLBACK_COUNT)
+	SetNumberInWaveNote(numericalValues, LABNOTEBOOK_ROLLBACK_COUNT, rollbackCountNum + 1)
+	WaveClear numericalValues
+
+	WAVE/Z textualValues = GetLBTextualValues(panelTitle)
+	rollbackCountText = GetNumberFromWaveNote(textualValues, LABNOTEBOOK_ROLLBACK_COUNT)
+	SetNumberInWaveNote(textualValues, LABNOTEBOOK_ROLLBACK_COUNT, rollbackCountText + 1)
+	WaveClear textualValues
+
+	ASSERT(rollbackCountNum == rollbackCountText, "Invalid rollback count")
 End
 
 static Function DAP_UpdateSweepLimitsAndDisplay(panelTitle)
@@ -4256,12 +4279,10 @@ End
 Function DAP_CommentPanelHook(s)
 	STRUCT WMWinHookStruct &s
 
-	variable hookResult
 	string panelTitle
 
 	switch(s.eventCode)
 		case 2: // kill
-			hookResult = 1
 			panelTitle = GetMainWindow(s.winName)
 
 			if(!DAP_DeviceIsUnlocked(panelTitle))
@@ -4270,7 +4291,8 @@ Function DAP_CommentPanelHook(s)
 			break
 	endswitch
 
-	return hookResult		// 0 if nothing done, else 1
+	// return zero so that other hooks are called as well
+	return 0
 End
 
 Function DAP_SetVarProc_TPAmp(sva) : SetVariableControl

@@ -205,7 +205,7 @@ static Function WaveVersionIsAtLeast(wv, existingVersion)
 	variable waveVersion
 
 	ASSERT(WaveExists(wv), "Wave does not exist")
-	ASSERT(IsInteger(existingVersion) && existingVersion > 0, "existing version must be a positive integer")
+	ASSERT(IsValidWaveVersion(existingVersion), "existing version must be a positive integer")
 	waveVersion = GetWaveVersion(wv)
 
 	return !isNaN(waveVersion) && waveVersion >= existingVersion
@@ -219,7 +219,7 @@ static Function WaveVersionIsSmaller(wv, existingVersion)
 	variable waveVersion
 
 	ASSERT(WaveExists(wv), "Wave does not exist")
-	ASSERT(IsInteger(existingVersion) && existingVersion > 0, "existing version must be a positive integer")
+	ASSERT(IsValidWaveVersion(existingVersion), "existing version must be a positive integer")
 	waveVersion = GetWaveVersion(wv)
 
 	return isNaN(waveVersion) || waveVersion < existingVersion
@@ -237,8 +237,25 @@ static Function SetWaveVersion(wv, val)
 	Wave wv
 	variable val
 
-	ASSERT(val > 0 && IsInteger(val), "val must be a positive and non-zero integer")
+	ASSERT(IsValidWaveVersion(val), "val must be a positive and non-zero integer")
 	SetNumberInWaveNote(wv, WAVE_NOTE_LAYOUT_KEY, val)
+End
+
+/// @brief A valid wave version is a positive non-zero integer
+static Function IsValidWaveVersion(variable value)
+	return value > 0 && IsInteger(value)
+End
+
+/// @brief Clear the wave note but keep any valid wave version
+Function ClearWaveNoteExceptWaveVersion(WAVE wv)
+
+	variable version = GetWaveVersion(wv)
+
+	Note/K wv
+
+	if(IsValidWaveVersion(version))
+		SetWaveVersion(wv, version)
+	endif
 End
 
 /// @brief Move/Rename a datafolder across different locations
@@ -1100,6 +1117,7 @@ Function/Wave GetLBTextualValues(panelTitle)
 	SetDimLabel COLS, 3, EntrySourceType           , wv
 
 	SetNumberInWaveNote(wv, NOTE_INDEX, 0)
+	SetNumberInWaveNote(wv, LABNOTEBOOK_ROLLBACK_COUNT, 0)
 
 	return wv
 End
@@ -1263,6 +1281,11 @@ static Function UpgradeLabNotebook(panelTitle)
 		SetDimensionLabels(numericalKeys, numericalValues)
 		SetDimensionLabels(textualKeys, textualValues)
 	endif
+
+	if(WaveVersionIsSmaller(numericalKeys, 39))
+		SetNumberInWaveNote(numericalValues, LABNOTEBOOK_ROLLBACK_COUNT, 0)
+		SetNumberInWaveNote(textualValues, LABNOTEBOOK_ROLLBACK_COUNT, 0)
+	endif
 End
 
 /// @brief Return a wave reference to the text labnotebook keys
@@ -1408,6 +1431,7 @@ Function/Wave GetLBNumericalValues(panelTitle)
 		SetDimLabel COLS, 3, EntrySourceType           , wv
 
 		SetNumberInWaveNote(wv, NOTE_INDEX, 0)
+		SetNumberInWaveNote(wv, LABNOTEBOOK_ROLLBACK_COUNT, 0)
 	endif
 
 	return wv
@@ -1422,7 +1446,7 @@ End
 /// GetLastSettingNoCache().
 ///
 /// Rows:
-/// - Rows into `values`
+/// - Sweep numbers (only existing sweeps)
 ///
 /// Cols:
 /// - 0: First row
@@ -1433,13 +1457,14 @@ End
 Function/WAVE GetLBRowCache(values)
 	WAVE values
 
-	variable actual
+	variable actual, rollbackCount, sweepNo
 	string key, name
 
-	variable versionOfNewWave = 2
+	variable versionOfNewWave = 3
 
-	actual = WaveModCountWrapper(values)
-	name   = GetWavesDataFolder(values, 2)
+	actual        = WaveModCountWrapper(values)
+	name          = GetWavesDataFolder(values, 2)
+	rollbackCount = GetNumberFromWaveNote(values, LABNOTEBOOK_ROLLBACK_COUNT)
 	ASSERT(!isEmpty(name), "Invalid path to wave, free waves won't work.")
 
 	key = name + "_RowCache"
@@ -1449,9 +1474,30 @@ Function/WAVE GetLBRowCache(values)
 	if(ExistsWithCorrectLayoutVersion(wv, versionOfNewWave))
 		if(actual == GetNumberFromWaveNote(wv, LABNOTEBOOK_MOD_COUNT))
 			return wv
+		elseif(rollbackCount == GetNumberFromWaveNote(wv, LABNOTEBOOK_ROLLBACK_COUNT))
+			// new entries were added so we need to propagate all entries to LABNOTEBOOK_GET_RANGE
+			// for sweep numbers >= than the currently acquired sweep
+			// this is required as the `last` element of the range can be changed if you add labnotebook
+			// entries and then query them and then add again.
+
+			if(IsNumericWave(values))
+				WAVE/Z sweeps = GetLastSweepWithSetting(values, "SweepNum", sweepNo)
+			elseif(IsTextWave(values))
+				WAVE/Z sweeps = GetLastSweepWithSettingText(values, "SweepNum", sweepNo)
+			endif
+
+			if(IsFinite(sweepNo))
+				EnsureLargeEnoughWave(wv, minimumSize = sweepNo, dimension = ROWS)
+				Multithread wv[sweepNo][][] = LABNOTEBOOK_GET_RANGE
+
+				// now we are up to date
+				SetNumberInWaveNote(wv, LABNOTEBOOK_MOD_COUNT, actual)
+
+				return wv
+			endif
 		endif
 	else
-		Make/N=(MINIMUM_WAVE_SIZE_LARGE, 2, NUMBER_OF_LBN_DAQ_MODES)/D/FREE wv
+		Make/N=(MINIMUM_WAVE_SIZE, 2, NUMBER_OF_LBN_DAQ_MODES)/D/FREE wv
 		CA_StoreEntryIntoCache(key, wv, options = CA_OPTS_NO_DUPLICATE)
 	endif
 
@@ -1461,6 +1507,7 @@ Function/WAVE GetLBRowCache(values)
 	SetDimLabel COLS, 1, last,  wv
 
 	SetNumberInWaveNote(wv, LABNOTEBOOK_MOD_COUNT, actual)
+	SetNumberInWaveNote(wv, LABNOTEBOOK_ROLLBACK_COUNT, rollbackCount)
 	SetWaveVersion(wv, versionOfNewWave)
 
 	return wv
@@ -1469,7 +1516,7 @@ End
 /// @brief Index wave which serves as a labnotebook cache.
 ///
 /// Rows:
-/// - One for each sweep number
+/// - Sweep numbers
 ///
 /// Cols:
 /// - One for each LBN key
@@ -1480,16 +1527,21 @@ End
 /// The wave can be indexed with sweepNumber, settings column and
 /// entrySourceType to return the row index of the labnotebok wave where the
 /// desired value can be found.
+///
+/// Contents:
+/// - row index if the entry could be found, #LABNOTEBOOK_MISSING_VALUE if it
+///   could not be found, and #LABNOTEBOOK_UNCACHED_VALUE if the cache is empty.
 Function/WAVE GetLBIndexCache(values)
 	WAVE values
 
-	variable actual
+	variable actual, rollbackCount, sweepNo
 	string key, name
 
-	variable versionOfNewWave = 2
+	variable versionOfNewWave = 3
 
-	actual = WaveModCountWrapper(values)
-	name   = GetWavesDataFolder(values, 2)
+	actual        = WaveModCountWrapper(values)
+	name          = GetWavesDataFolder(values, 2)
+	rollbackCount = GetNumberFromWaveNote(values, LABNOTEBOOK_ROLLBACK_COUNT)
 	ASSERT(!isEmpty(name), "Invalid path to wave, free waves won't work.")
 
 	key = name + "_IndexCache"
@@ -1499,15 +1551,35 @@ Function/WAVE GetLBIndexCache(values)
 	if(ExistsWithCorrectLayoutVersion(wv, versionOfNewWave))
 		if(actual == GetNumberFromWaveNote(wv, LABNOTEBOOK_MOD_COUNT))
 			return wv
+		elseif(rollbackCount == GetNumberFromWaveNote(wv, LABNOTEBOOK_ROLLBACK_COUNT))
+			// new entries were added so we need to propagate all entries to uncached values
+			// for sweep numbers >= than the currently acquired sweep
+
+			if(IsNumericWave(values))
+				WAVE/Z sweeps = GetLastSweepWithSetting(values, "SweepNum", sweepNo)
+			elseif(IsTextWave(values))
+				WAVE/Z sweeps = GetLastSweepWithSettingText(values, "SweepNum", sweepNo)
+			endif
+
+			if(IsFinite(sweepNo))
+				EnsureLargeEnoughWave(wv, minimumSize = sweepNo, dimension = ROWS)
+				Multithread wv[sweepNo, inf][][] = LABNOTEBOOK_UNCACHED_VALUE
+
+				// now we are up to date
+				SetNumberInWaveNote(wv, LABNOTEBOOK_MOD_COUNT, actual)
+
+				return wv
+			endif
 		endif
 	else
-		Make/FREE/N=(MINIMUM_WAVE_SIZE_LARGE, 256, NUMBER_OF_LBN_DAQ_MODES)/D wv
+		Make/FREE/N=(MINIMUM_WAVE_SIZE, MINIMUM_WAVE_SIZE, NUMBER_OF_LBN_DAQ_MODES)/D wv
 		CA_StoreEntryIntoCache(key, wv, options = CA_OPTS_NO_DUPLICATE)
 	endif
 
 	Multithread wv = LABNOTEBOOK_UNCACHED_VALUE
 
 	SetNumberInWaveNote(wv, LABNOTEBOOK_MOD_COUNT, actual)
+	SetNumberInWaveNote(wv, LABNOTEBOOK_ROLLBACK_COUNT, rollbackCount)
 	SetWaveVersion(wv, versionOfNewWave)
 
 	return wv
@@ -1530,15 +1602,16 @@ End
 Function/WAVE GetLBNidCache(numericalValues)
 	WAVE numericalValues
 
-	variable actual
+	variable actual, rollbackCount
 	string key, name
 
-	variable versionOfNewWave = 2
+	variable versionOfNewWave = 3
 
 	ASSERT(!IsTextWave(numericalValues), "Expected numerical labnotebook")
 
-	actual = WaveModCountWrapper(numericalValues)
-	name   = GetWavesDataFolder(numericalValues, 2)
+	actual        = WaveModCountWrapper(numericalValues)
+	name          = GetWavesDataFolder(numericalValues, 2)
+	rollbackCount = GetNumberFromWaveNote(numericalValues, LABNOTEBOOK_ROLLBACK_COUNT)
 	ASSERT(!isEmpty(name), "Invalid path to wave, free waves won't work.")
 
 	key = name + "_RACidCache"
@@ -1548,17 +1621,22 @@ Function/WAVE GetLBNidCache(numericalValues)
 	if(ExistsWithCorrectLayoutVersion(wv, versionOfNewWave))
 		if(actual == GetNumberFromWaveNote(wv, LABNOTEBOOK_MOD_COUNT))
 			return wv
+		else
+			// we can't easily do an incremental update as we would need to
+			// update all RAC/SCI cycles which got changed by the new data
+			// and that is not so easy
 		endif
 	elseif(WaveExists(wv))
 		// handle upgrade
 	else
-		Make/FREE/N=(256, 2, NUM_HEADSTAGES)/WAVE wv
+		Make/FREE/N=(MINIMUM_WAVE_SIZE, 2, NUM_HEADSTAGES)/WAVE wv
 		CA_StoreEntryIntoCache(key, wv, options = CA_OPTS_NO_DUPLICATE)
 	endif
 
 	wv = $""
 
 	SetNumberInWaveNote(wv, LABNOTEBOOK_MOD_COUNT, actual)
+	SetNumberInWaveNote(wv, LABNOTEBOOK_ROLLBACK_COUNT, rollbackCount)
 	SetWaveVersion(wv, versionOfNewWave)
 
 	SetDimLabel COLS, 0, $RA_ACQ_CYCLE_ID_KEY     , wv
@@ -5564,6 +5642,38 @@ Function/WAVE GetPulseAverageSetIndizes(DFREF dfr, variable channelNumber, varia
 
 	SetWaveVersion(wv, versionOfNewWave)
 	SetNumberInWaveNote(wv, NOTE_INDEX, 0)
+	SetNumberInWaveNote(wv, NOTE_KEY_PULSE_SORT_ORDER, NaN)
+
+	return wv
+End
+
+/// @brief Returns the pulse average image wave
+///
+/// This is used for the image display mode.
+///
+/// `NOTE_INDEX` is used for marking the length of the used *columns* as there
+/// is one pulse per column.
+Function/WAVE GetPulseAverageSetImageWave(DFREF dfr, variable channelNumber, variable region)
+
+	string name
+	variable versionOfNewWave = 1
+
+	sprintf name, "setImage_AD%d_R%d", channelNumber, region
+
+	ASSERT(DataFolderExistsDFR(dfr), "Invalid dfr")
+	WAVE/Z/SDFR=dfr wv = $name
+
+	if(ExistsWithCorrectLayoutVersion(wv, versionOfNewWave))
+		return wv
+	elseif(WaveExists(wv))
+		// handle upgrade
+	else
+		Make/R/N=(1, MINIMUM_WAVE_SIZE) dfr:$name/Wave=wv
+		Multithread wv[] = NaN
+	endif
+
+	SetWaveVersion(wv, versionOfNewWave)
+	SetNumberInWaveNote(wv, NOTE_INDEX, 0)
 
 	return wv
 End
@@ -5573,7 +5683,7 @@ End
 /// It is filled by PA_GenerateAllPulseWaves() and consumed by others.
 Function/WAVE GetPulseAverageProperties(DFREF dfr)
 
-	variable versionOfNewWave = 1
+	variable versionOfNewWave = 2
 
 	ASSERT(DataFolderExistsDFR(dfr), "Invalid dfr")
 	WAVE/Z/SDFR=dfr wv = properties
@@ -5581,11 +5691,12 @@ Function/WAVE GetPulseAverageProperties(DFREF dfr)
 	if(ExistsWithCorrectLayoutVersion(wv, versionOfNewWave))
 		return wv
 	elseif(WaveExists(wv))
-		// handle upgrade
+		Redimension/N=(-1, 11) wv
 	else
-		Make/R/N=(MINIMUM_WAVE_SIZE_LARGE, 12) dfr:properties/Wave=wv
-		Multithread wv[] = NaN
+		Make/R/N=(MINIMUM_WAVE_SIZE_LARGE, 11) dfr:properties/Wave=wv
 	endif
+
+	Multithread wv[] = NaN
 
 	SetDimLabel COLS,  0, $"Sweep", wv
 	SetDimLabel COLS,  1, $"ChannelType", wv
@@ -5597,8 +5708,7 @@ Function/WAVE GetPulseAverageProperties(DFREF dfr)
 	SetDimLabel COLS,  7, $"ActiveRegionCount", wv
 	SetDimLabel COLS,  8, $"ActiveChanCount", wv
 	SetDimLabel COLS,  9, $"PulseHasFailed", wv
-	SetDimLabel COLS, 10, $"TimeAlignmentReferencePulse", wv
-	SetDimLabel COLS, 11, $"LastSweep", wv
+	SetDimLabel COLS, 10, $"LastSweep", wv
 
 	SetWaveVersion(wv, versionOfNewWave)
 	SetNumberInWaveNote(wv, NOTE_INDEX, 0)
@@ -5758,10 +5868,18 @@ End
 
 /// @brief Return the overlay sweeps wave with all sweep selection choices
 /// for the databrowser or the sweepbrowser
-Function/WAVE GetOverlaySweepSelectionChoices(dfr)
+Function/WAVE GetOverlaySweepSelectionChoices(win, dfr, [skipUpdate])
+	string win
 	DFREF dfr
+	variable skipUpdate
 
 	variable versionOfNewWave = 3
+
+	if(ParamIsDefault(skipUpdate))
+		skipUpdate = 0
+	else
+		skipUpdate = !!skipUpdate
+	endif
 
 	ASSERT(DataFolderExistsDFR(dfr), "Invalid dfr")
 	string newName = "overlaySweepSelectionChoices"
@@ -5774,6 +5892,9 @@ Function/WAVE GetOverlaySweepSelectionChoices(dfr)
 	WAVE/T/Z wv = UpgradeWaveLocationAndGetIt(p)
 
 	if(ExistsWithCorrectLayoutVersion(wv, versionOfNewWave))
+		if(!skipUpdate)
+			OVS_UpdateSweepSelectionChoices(win, wv)
+		endif
 		return wv
 	elseif(WaveExists(wv))
 		Redimension/N=(-1, -1, 3) wv
@@ -5783,8 +5904,9 @@ Function/WAVE GetOverlaySweepSelectionChoices(dfr)
 	endif
 
 	SetWaveDimLabel(wv, "Stimset;TTLStimset;StimsetAndClampMode", LAYERS)
-
+	SetNumberInWaveNote(wv, "NeedsUpdate", 1)
 	SetWaveVersion(wv, versionOfNewWave)
+
 	return wv
 End
 
@@ -6548,8 +6670,7 @@ Function/WAVE GetGraphUserData(string graph)
 		// handle upgrade
 	else
 		Make/T/N=(MINIMUM_WAVE_SIZE_LARGE, 0) dfr:$name/WAVE=wv
-		ASSERT(WinType(graph) == 1, "Expected graph")
-		SetWindow $graph, hook(traceUserDataCleanup) = TUD_RemoveUserDataWave
+		TUD_Init(graph)
 	endif
 
 	SetWaveVersion(wv, versionOfNewWave)

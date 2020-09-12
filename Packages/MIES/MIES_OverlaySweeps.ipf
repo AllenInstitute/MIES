@@ -69,7 +69,7 @@ Function/S OVS_GetSweepSelectionChoices(win)
 	endif
 	DFREF dfr = OVS_GetFolder(win)
 
-	WAVE/T sweepSelChoices = GetOverlaySweepSelectionChoices(dfr)
+	WAVE/T sweepSelChoices = GetOverlaySweepSelectionChoices(win, dfr)
 
 	Duplicate/FREE/R=[][][0]/T sweepSelChoices, sweepSelecChoicesDAStimSets
 
@@ -132,23 +132,25 @@ Function OVS_UpdatePanel(win, [fullUpdate])
 
 	DFREF dfr = BSP_GetFolder(win, MIES_BSP_PANEL_FOLDER)
 
+	WAVE/T sweepSelectionChoices = GetOverlaySweepSelectionChoices(win, dfr, skipUpdate = 1)
+	SetNumberInWaveNote(sweepSelectionChoices, NOTE_NEEDS_UPDATE, 1)
+	WaveClear sweepSelectionChoices
+
 	WAVE/T listBoxWave           = GetOverlaySweepsListWave(dfr)
 	WAVE listBoxSelWave          = GetOverlaySweepsListSelWave(dfr)
-	WAVE/T sweepSelectionChoices = GetOverlaySweepSelectionChoices(dfr)
 
 	WAVE/WAVE allNumericalValues = BSP_GetNumericalValues(win)
-	WAVE/WAVE allTextualValues   = BSP_GetTextualValues(win)
 
 	WAVE updateHandle = OVS_BeginIncrementalUpdate(win, fullUpdate = fullUpdate)
 
 	if(!WaveExists(sweeps))
-		Redimension/N=(0, -1, -1) listBoxWave, listBoxSelWave, sweepSelectionChoices
+		Redimension/N=(0, -1, -1) listBoxWave, listBoxSelWave
 		OVS_EndIncrementalUpdate(win, updateHandle)
 		return NaN
 	endif
 
 	numEntries = DimSize(sweeps, ROWS)
-	Redimension/N=(numEntries, -1, -1) listBoxWave, listBoxSelWave, sweepSelectionChoices
+	Redimension/N=(numEntries, -1, -1) listBoxWave, listBoxSelWave
 
 	MultiThread listBoxWave[][%Sweep] = num2str(sweeps[p])
 
@@ -157,6 +159,50 @@ Function OVS_UpdatePanel(win, [fullUpdate])
 	else
 		listBoxSelWave[][%Headstages] = ClearBit(listBoxSelWave[p][%Headstages], LISTBOX_CELL_EDITABLE)
 	endif
+
+	lastEntry = numEntries - 1
+
+	if(GetCheckBoxState(extPanel, "check_ovs_clear_on_new_ra_cycle"))
+		WAVE/Z RACSweeps = AFH_GetSweepsFromSameRACycle(allNumericalValues[lastEntry], sweeps[lastEntry])
+		newCycleHasStartedRAC = WaveExists(RACSweeps) && DimSize(RACSweeps, ROWS) == 1
+	endif
+	if(GetCheckBoxState(extPanel, "check_ovs_clear_on_new_stimset_cycle"))
+		Make/FREE/WAVE/N=(NUM_HEADSTAGES) sweepsInCycleForHS = AFH_GetSweepsFromSameSCI(allNumericalValues[lastEntry], sweeps[lastEntry], p)
+		Make/FREE/N=(NUM_HEADSTAGES) SCISweeps = WaveExists(sweepsInCycleForHS[p]) && DimSize(sweepsInCycleForHS[p], ROWS) == 1
+		newCycleHasStartedSCI = IsFinite(GetRowIndex(SCISweeps, val = 1))
+	endif
+
+	if(newCycleHasStartedRAC || newCycleHasStartedSCI)
+		listBoxSelWave[][%Sweep] = LISTBOX_CHECKBOX
+		listBoxSelWave[lastEntry][%Sweep] = LISTBOX_CHECKBOX | LISTBOX_CHECKBOX_SELECTED
+	else
+		listBoxSelWave[][%Sweep] = listBoxSelWave[p] & LISTBOX_CHECKBOX_SELECTED ? LISTBOX_CHECKBOX | LISTBOX_CHECKBOX_SELECTED : LISTBOX_CHECKBOX
+	endif
+
+	OVS_EndIncrementalUpdate(win, updateHandle)
+End
+
+/// @brief Update the sweep selection choices for the popup menu
+///
+/// This function is expensive as it iterates over all sweeps.
+Function OVS_UpdateSweepSelectionChoices(string win, WAVE/T sweepSelectionChoices)
+
+	variable numEntries, i, needsUpdate
+
+	needsUpdate = GetNumberFromWaveNote(sweepSelectionChoices, NOTE_NEEDS_UPDATE)
+
+	if(!needsUpdate)
+		return NaN
+	endif
+
+	WAVE/WAVE allNumericalValues = BSP_GetNumericalValues(win)
+	WAVE/WAVE allTextualValues   = BSP_GetTextualValues(win)
+
+	WAVE/Z sweeps = GetPlainSweepList(win)
+
+	numEntries = WaveExists(sweeps) ? DimSize(sweeps, ROWS) : 0
+
+	Redimension/N=(numEntries, -1, -1, -1) sweepSelectionChoices
 
 	for(i = 0; i < numEntries; i += 1)
 		WAVE/T stimsets = GetLastSetting(allTextualValues[i], sweeps[i], STIM_WAVE_NAME_KEY, DATA_ACQUISITION_MODE)
@@ -178,26 +224,7 @@ Function OVS_UpdatePanel(win, [fullUpdate])
 		sweepSelectionChoices[i][][%StimsetAndClampMode] = SelectString(IsFinite(clampMode[q]), "", stimsets[q] + " (" + ConvertAmplifierModeShortStr(clampMode[q]) + ")")
 	endfor
 
-	lastEntry = numEntries - 1
-
-	if(GetCheckBoxState(extPanel, "check_ovs_clear_on_new_ra_cycle"))
-		WAVE RACSweeps = AFH_GetSweepsFromSameRACycle(allNumericalValues[lastEntry], sweeps[lastEntry])
-		newCycleHasStartedRAC = WaveExists(RACSweeps) && DimSize(RACSweeps, ROWS) == 1
-	endif
-	if(GetCheckBoxState(extPanel, "check_ovs_clear_on_new_stimset_cycle"))
-		Make/FREE/WAVE/N=(NUM_HEADSTAGES) sweepsInCycleForHS = AFH_GetSweepsFromSameSCI(allNumericalValues[lastEntry], sweeps[lastEntry], p)
-		Make/FREE/N=(NUM_HEADSTAGES) SCISweeps = WaveExists(sweepsInCycleForHS[p]) && DimSize(sweepsInCycleForHS[p], ROWS) == 1
-		newCycleHasStartedSCI = IsFinite(GetRowIndex(SCISweeps, val = 1))
-	endif
-
-	if(newCycleHasStartedRAC || newCycleHasStartedSCI)
-		listBoxSelWave[][%Sweep] = LISTBOX_CHECKBOX
-		listBoxSelWave[lastEntry][%Sweep] = LISTBOX_CHECKBOX | LISTBOX_CHECKBOX_SELECTED
-	else
-		listBoxSelWave[][%Sweep] = listBoxSelWave[p] & LISTBOX_CHECKBOX_SELECTED ? LISTBOX_CHECKBOX | LISTBOX_CHECKBOX_SELECTED : LISTBOX_CHECKBOX
-	endif
-
-	OVS_EndIncrementalUpdate(win, updateHandle)
+	SetNumberInWaveNote(sweepSelectionChoices, NOTE_NEEDS_UPDATE, 0)
 End
 
 /// @brief Return the selected sweeps (either indizes or the real sweep numbers)
@@ -545,8 +572,6 @@ static Function OVS_ChangeSweepSelection(win, choiceString)
 
 	WAVE updateHandle = OVS_BeginIncrementalUpdate(win)
 
-	WAVE/T sweepSelectionChoices = GetOverlaySweepSelectionChoices(dfr)
-
 	offset = GetSetVariable(extPanel, "setvar_overlaySweeps_offset")
 	step   = GetSetVariable(extPanel, "setvar_overlaySweeps_step")
 
@@ -558,6 +583,8 @@ static Function OVS_ChangeSweepSelection(win, choiceString)
 	elseif(!cmpstr(choiceString, "All"))
 		listboxSelWave[offset, inf;step][%Sweep] = listboxSelWave[p][q] | LISTBOX_CHECKBOX_SELECTED
 	else
+		WAVE/T sweepSelectionChoices = GetOverlaySweepSelectionChoices(win, dfr)
+
 		numLayers = DimSize(sweepSelectionChoices, LAYERS)
 		for(i = 0; i < NUM_HEADSTAGES; i += 1)
 			for(j = 0; j < numLayers; j += 1)

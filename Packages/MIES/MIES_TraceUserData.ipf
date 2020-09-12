@@ -13,17 +13,15 @@
 Function TUD_RemoveUserDataWave(s)
 	STRUCT WMWinHookStruct &s
 
-	variable hookResult
-
 	switch(s.eventCode)
 		case 2: // Kill
 			TUD_Clear(s.winName)
-
-			hookResult = 1
 			break
 	endswitch
 
-	return hookResult // 0 if nothing done, else 1
+	// we always return zero here as other window hooks
+	// might be registered for the window
+	return 0
 End
 
 /// @brief Clear the user data wave and release the indexing JSON document
@@ -217,6 +215,22 @@ Function TUD_RemoveUserData(string graph, string trace)
 	TUD_RemoveTrace(graphUserData, trace)
 End
 
+/// @brief Check if the given trace is displayed on the graph
+Function TUD_TraceIsOnGraph(string graph, string trace)
+	WAVE/T graphUserData = GetGraphUserData(graph)
+	return TUD_ConvertTraceNameToRowIndex(graphUserData, trace, create = 0, allowMissing = 1) >= 0
+End
+
+/// @brief Initialize the graph for our user trace data handling
+///
+/// This is done implicitly after the user data wave is created. Once that is cleared
+/// with TUD_Clear() and the window is gone, this function can be used to reattach
+/// the cleanup hook to the newly created graph.
+Function TUD_Init(string graph)
+	ASSERT(WinType(graph) == 1, "Expected graph")
+	SetWindow $graph, hook(traceUserDataCleanup) = TUD_RemoveUserDataWave
+End
+
 static Function TUD_AddTrace(variable jsonID, WAVE/T graphUserData, string trace)
 
 	variable index, traceCol
@@ -256,7 +270,7 @@ static Function TUD_RemoveTrace(WAVE/T graphUserData, string trace)
 	Make/FREE/N=(tracesNeedingUpdate) junkWave = JSON_SetVariable(jsonID, "/" + graphUserData[row + p][%traceName], row + p)
 End
 
-static Function TUD_ConvertTraceNameToRowIndex(WAVE/T graphUserData, string trace, [variable create])
+static Function TUD_ConvertTraceNameToRowIndex(WAVE/T graphUserData, string trace, [variable create, variable allowMissing])
 
 	variable var, index, jsonID
 
@@ -266,12 +280,18 @@ static Function TUD_ConvertTraceNameToRowIndex(WAVE/T graphUserData, string trac
 		create = !!create
 	endif
 
+	if(ParamIsDefault(allowMissing))
+		allowMissing = 0
+	else
+		allowMissing = !!allowMissing
+	endif
+
 	ASSERT(IsValidObjectName(trace), "trace is not a valid object name")
 
 	jsonID = TUD_GetIndexJSON(graphUserData)
 
 	if(create == 0)
-		return JSON_GetVariable(jsonID, "/" + trace)
+		return JSON_GetVariable(jsonID, "/" + trace, ignoreErr=allowMissing)
 	endif
 
 	var = JSON_GetVariable(jsonID, "/" + trace, ignoreErr = 1)
