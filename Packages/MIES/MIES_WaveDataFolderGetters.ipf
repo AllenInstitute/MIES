@@ -643,6 +643,16 @@ threadsafe Function/S GetMiesPathAsString()
 	return "root:MIES"
 End
 
+/// @brief Returns a data folder reference to the sweep formula folder
+threadsafe Function/DF GetSweepFormulaPath()
+	return createDFWithAllParents(GetSweepFormulaPathAsString())
+End
+
+/// @brief Returns the temporary folder for Sweep formula, e.g. root:MIES:SweepFormula
+threadsafe Function/S GetSweepFormulaPathAsString()
+	return GetMiesPathAsString() + ":SweepFormula"
+End
+
 /// @brief Retuns data folder path to the manipulator folder, e.g. root:mies:manipulators
 Function/S GetManipulatorPathAsString()
 	return GetMiesPathAsString() + ":Manipulators"

@@ -342,14 +342,30 @@ Function SetSetVariable(win,Control, newValue, [respectLimits])
 	return newValue
 End
 
-Function SetSetVariableString(win,Control, newString)
-	string win, control, newString
+/// @brief Set the SetVariable contents as string
+///
+/// @param win     window
+/// @param control control of type SetVariable
+/// @param str     string to set
+/// @param setHelp [optional, defaults to false] set the help string as well.
+///                Allows to work around long text in small controls.
+Function SetSetVariableString(string win, string control, string str, [variable setHelp])
+
+	if(ParamIsDefault(setHelp))
+		setHelp = 0
+	else
+		setHelp = !!setHelp
+	endif
 
 	ControlInfo/W=$win $control
 	ASSERT(V_flag != 0, "Non-existing control or window")
 	ASSERT(abs(V_flag) == CONTROL_TYPE_SETVARIABLE, "Control is not a setvariable")
 
-	SetVariable $control, win = $win, value =_STR:newString
+	if(setHelp)
+		SetVariable $control, win = $win, value =_STR:str, help={str}
+	else
+		SetVariable $control, win = $win, value =_STR:str
+	endif
 End
 
 /// @brief Set the state of the checkbox

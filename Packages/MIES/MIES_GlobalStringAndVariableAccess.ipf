@@ -661,10 +661,9 @@ Function/S GetSweepFormulaJSONid(dfr)
 End
 
 /// @brief Return the formula error message for the sweep formula
-Function/S GetSweepFormulaParseErrorMessage(dfr)
-	DFREF dfr
+Function/S GetSweepFormulaParseErrorMessage()
 
-	return GetSVARAsString(dfr, "sweepFormulaParseResult")
+	return GetSVARAsString(GetSweepFormulaPath(), "parseResult")
 End
 
 /// @brief Return the JSON id of the settings file

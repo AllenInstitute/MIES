@@ -11,7 +11,7 @@
 
 Window DataBrowser() : Graph
 	PauseUpdate; Silent 1		// building window...
-	Display /W=(404.25,116.75,839.25,386)/K=1  as "DataBrowser"
+	Display /W=(437.25,555.5,872.25,863.75)/K=1  as "DataBrowser"
 	Button button_BSP_open,pos={3.00,3.00},size={24.00,24.00},disable=1,proc=DB_ButtonProc_Panel,title="<<"
 	Button button_BSP_open,help={"Open Side Panel"}
 	Button button_BSP_open,userdata(ResizeControlsInfo)= A"!!,>M!!#8L!!#=#!!#=#z!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"Qzz"
@@ -23,13 +23,13 @@ Window DataBrowser() : Graph
 	SetWindow kwTopWin,userdata(BROWSER)=  "D"
 	SetWindow kwTopWin,userdata(DEVICE)=  "- none -"
 	SetWindow kwTopWin,userdata(Config_PanelType)=  "DataBrowser"
-	SetWindow kwTopWin,userdata(ResizeControlsInfo)= A"!!*'\"z!!#C<TE%?HTE\"rlzzzzzzzzzzzzzzzzzzzz"
+	SetWindow kwTopWin,userdata(ResizeControlsInfo)= A"!!*'\"z!!#C>J,hrkTE\"rlzzzzzzzzzzzzzzzzzzzz"
 	SetWindow kwTopWin,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzzzzzzzzzzzzzzz"
 	SetWindow kwTopWin,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzzzzzzzzz!!!"
 	SetWindow kwTopWin,userdata(ResizeControlsHookStash)=  "ResizeControls#ResizeControlsHook"
 	SetWindow kwTopWin,userdata(JSONSettings_StoreCoordinates)=  "1"
 	SetWindow kwTopWin,userdata(JSONSettings_WindowName)=  "datasweepbrowser"
-	Execute/Q/Z "SetWindow kwTopWin sizeLimit={323.25,228,inf,inf}" // sizeLimit requires Igor 7 or later
+	Execute/Q/Z "SetWindow kwTopWin sizeLimit={326.25,201,inf,inf}" // sizeLimit requires Igor 7 or later
 	NewPanel/HOST=#/EXT=2/W=(0,0,580,66)  as "Sweep Control"
 	Button button_SweepControl_NextSweep,pos={333.00,0.00},size={150.00,36.00},proc=BSP_ButtonProc_ChangeSweep,title="Next  \\W649"
 	Button button_SweepControl_NextSweep,help={"Displays the next sweep (sweep no. = last sweep number + step)"}
@@ -65,7 +65,8 @@ Window DataBrowser() : Graph
 	SetActiveSubwindow ##
 	NewPanel/HOST=#/EXT=1/W=(399,0,0,414)  as " "
 	ModifyPanel fixedSize=0
-	GroupBox group_properties_sweepFormula,pos={5.00,85.00},size={388.00,328.00},disable=1
+	SetDrawLayer UserBack
+	GroupBox group_properties_sweepFormula,pos={5.00,85.00},size={388.00,328.00},disable=3
 	GroupBox group_properties_sweepFormula,userdata(tabnum)=  "5"
 	GroupBox group_properties_sweepFormula,userdata(tabcontrol)=  "Settings"
 	GroupBox group_properties_sweepFormula,userdata(ResizeControlsInfo)= A"!!,?X!!#?c!!#C'!!#B^z!!#](Aon#azzzzzzzzzzzzzz!!#o2B4uAeBk2=!z"
@@ -871,36 +872,36 @@ Window DataBrowser() : Graph
 	GroupBox group_enable_sweepFormula,userdata(ResizeControlsInfo)= A"!!,?X!!#=+!!#C'!!#>Vz!!#](Aon#azzzzzzzzzzzzzz!!#o2B4uAeBk2=!z"
 	GroupBox group_enable_sweepFormula,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#N3Bk1ctAStpcCh5qOGZ8U#zzzzzzzz"
 	GroupBox group_enable_sweepFormula,userdata(ResizeControlsInfo) += A"zzz!!#N3Bk1ctAStpcCh5qOGX?=jFDl!rzzzzzzzzzz!!!"
-	SetVariable setvar_sweepFormula_parseResult,pos={118.00,385.00},size={255.00,18.00},disable=1,title="◀"
-	SetVariable setvar_sweepFormula_parseResult,help={"Error Message from Formula Parsing"}
+	SetVariable setvar_sweepFormula_parseResult,pos={135.00,384.00},size={255.00,18.00},disable=3
+	SetVariable setvar_sweepFormula_parseResult,help={"Specified starting range does not lie completely inside the sweep."}
 	SetVariable setvar_sweepFormula_parseResult,userdata(tabnum)=  "5"
 	SetVariable setvar_sweepFormula_parseResult,userdata(tabcontrol)=  "Settings"
-	SetVariable setvar_sweepFormula_parseResult,userdata(ResizeControlsInfo)= A"!!,FQ!!#C%J,hrd!!#<Hz!!#](Aon#azzzzzzzzzzzzzz!!#](Aon#SBk2=!z"
+	SetVariable setvar_sweepFormula_parseResult,userdata(ResizeControlsInfo)= A"!!,Fl!!#C%!!#B9!!#<Hz!!#](Aon#azzzzzzzzzzzzzz!!#](Aon#SBk2=!z"
 	SetVariable setvar_sweepFormula_parseResult,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#?(FEDG<zzzzzzzzzzz"
 	SetVariable setvar_sweepFormula_parseResult,userdata(ResizeControlsInfo) += A"zzz!!#?(FEDG<zzzzzzzzzzzzzz!!!"
 	SetVariable setvar_sweepFormula_parseResult,frame=0
 	SetVariable setvar_sweepFormula_parseResult,limits={-inf,inf,0},value= _STR:"",noedit= 1,live= 1
-	ValDisplay status_sweepFormula_parser,pos={377.00,388.00},size={10.00,8.00},bodyWidth=10,disable=1
+	ValDisplay status_sweepFormula_parser,pos={121.00,389.00},size={10.00,8.00},bodyWidth=10,disable=3
 	ValDisplay status_sweepFormula_parser,help={"Current parsing status of the entered formula."}
 	ValDisplay status_sweepFormula_parser,userdata(tabnum)=  "5"
 	ValDisplay status_sweepFormula_parser,userdata(tabcontrol)=  "Settings"
-	ValDisplay status_sweepFormula_parser,userdata(ResizeControlsInfo)= A"!!,I\"J,hsR!!#;-!!#:bz!!#o2B4uAezzzzzzzzzzzzzz!!#o2B4uAeBk2=!z"
+	ValDisplay status_sweepFormula_parser,userdata(ResizeControlsInfo)= A"!!,FW!!#C'J,hkX!!#:bz!!#](Aon\"Qzzzzzzzzzzzzzz!!#](Aon\"QBk2=!z"
 	ValDisplay status_sweepFormula_parser,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#?(FEDG<zzzzzzzzzzz"
 	ValDisplay status_sweepFormula_parser,userdata(ResizeControlsInfo) += A"zzz!!#?(FEDG<zzzzzzzzzzzzzz!!!"
 	ValDisplay status_sweepFormula_parser,limits={-1,1,0},barmisc={0,0},mode= 1,highColor= (0,65535,0),lowColor= (0,0,0),zeroColor= (65535,0,0)
 	ValDisplay status_sweepFormula_parser,value= #"1"
-	Button button_sweepFormula_display,pos={4.00,382.00},size={55.00,22.00},disable=1,proc=SF_button_sweepFormula_display,title="Display"
+	Button button_sweepFormula_display,pos={9.00,382.00},size={51.00,22.00},disable=3,proc=SF_button_sweepFormula_display,title="Display"
 	Button button_sweepFormula_display,help={"Display the given sweep formula in a graph"}
 	Button button_sweepFormula_display,userdata(tabnum)=  "5"
 	Button button_sweepFormula_display,userdata(tabcontrol)=  "Settings"
-	Button button_sweepFormula_display,userdata(ResizeControlsInfo)= A"!!,?8!!#C$!!#>j!!#<hz!!#](Aon#azzzzzzzzzzzzzz!!#](Aon#SBk2=!z"
+	Button button_sweepFormula_display,userdata(ResizeControlsInfo)= A"!!,@s!!#C$!!#>Z!!#<hz!!#](Aon#azzzzzzzzzzzzzz!!#](Aon#SBk2=!z"
 	Button button_sweepFormula_display,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#?(FEDG<zzzzzzzzzzz"
 	Button button_sweepFormula_display,userdata(ResizeControlsInfo) += A"zzz!!#?(FEDG<zzzzzzzzzzzzzz!!!"
-	Button button_sweepFormula_check,pos={61.00,382.00},size={55.00,22.00},disable=1,proc=SF_button_sweepFormula_check,title="Check"
+	Button button_sweepFormula_check,pos={65.00,382.00},size={46.00,22.00},disable=3,proc=SF_button_sweepFormula_check,title="Check"
 	Button button_sweepFormula_check,help={"Check the sweep formula for syntax errors"}
 	Button button_sweepFormula_check,userdata(tabnum)=  "5"
 	Button button_sweepFormula_check,userdata(tabcontrol)=  "Settings"
-	Button button_sweepFormula_check,userdata(ResizeControlsInfo)= A"!!,E.!!#C$!!#>j!!#<hz!!#](Aon#azzzzzzzzzzzzzz!!#](Aon#SBk2=!z"
+	Button button_sweepFormula_check,userdata(ResizeControlsInfo)= A"!!,E<!!#C$!!#>F!!#<hz!!#](Aon#azzzzzzzzzzzzzz!!#](Aon#SBk2=!z"
 	Button button_sweepFormula_check,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#?(FEDG<zzzzzzzzzzz"
 	Button button_sweepFormula_check,userdata(ResizeControlsInfo) += A"zzz!!#?(FEDG<zzzzzzzzzzzzzz!!!"
 	TabControl SF_InfoTab,pos={7.00,90.00},size={377.00,287.00},disable=3,proc=ACL_DisplayTab
