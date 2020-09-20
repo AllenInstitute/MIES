@@ -167,6 +167,7 @@ End
 /// Opens a prefilled new issue on github.
 Function CreateIssueOnGithub()
 	string url, body, title, version, str
+	variable ref
 
 	title = "Please summarize your issue here"
 	body = ""
@@ -180,13 +181,22 @@ Function CreateIssueOnGithub()
 	body += "\n"
 	body += "Igor Pro Experiment files can be attached as zip file if needed.\n"
 	body += "\n"
-	body += "The following contains version information (keep unchanged):\n"
+	body += "The following contains installation information (keep unchanged):\n"
 
 	sprintf str, "```\nMIES version: %s\n```\n\n", version
 	body += str
 
 	sprintf str, "```\nIgor Pro version: %s\n```\n\n", IgorInfo(3)
 	body += str
+
+	body += "```\nInstallation self-test results:\n"
+
+	ref = CaptureHistoryStart()
+	CHI_CheckInstallation()
+	str = CaptureHistory(ref, 1)
+
+	body += str
+	body +=  "```\n\n"
 
 	sprintf url, "https://github.com/AllenInstitute/MIES/issues/new?title=%s&body=%s", URLEncode(title), URLEncode(body)
 
