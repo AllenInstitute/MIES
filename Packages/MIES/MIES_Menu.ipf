@@ -40,6 +40,7 @@ Menu "Mies Panels"
 		"Load Stimsets from NWB"               , /Q, NWB_LoadAllStimsets()
 	End
 	"-"
+	"Report an issue"                          , /Q, CreateIssueOnGithub()
 	"About MIES"                               , /Q, OpenAboutDialog()
 	"-"
 	SubMenu "Advanced"
