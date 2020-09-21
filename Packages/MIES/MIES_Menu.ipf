@@ -25,6 +25,7 @@ Menu "Mies Panels"
 		"Load Standard Configuration/1"        , /Q, CONF_AutoLoader()
 		"Load Window Configuration"            , /Q, CONF_RestoreWindow("", usePanelTypeFromFile = 1)
 		"Save Window Configuration"            , /Q, CONF_SaveWindow("")
+		"Open Configuration Files"             , /Q, CONF_OpenConfigInNotebook()
 		"Blowout/8"                            , /Q, BWO_SelectDevice()
 		"Save and Clear Experiment"            , /Q, SaveExperimentSpecial(SAVE_AND_CLEAR)
 		"Close Mies"                           , /Q, CloseMies()

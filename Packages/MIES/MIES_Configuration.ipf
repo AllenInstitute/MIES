@@ -231,6 +231,34 @@ static Function CONF_DefaultSettings()
 	return jsonID
 End
 
+/// @brief Open all configuration files in plain text notebooks
+///
+/// Existing notebooks with the files are brought to the front.
+Function CONF_OpenConfigInNotebook()
+	variable i, numFiles
+	string path, name
+
+	WAVE/T/Z rawFileList = CONF_GetConfigFiles()
+
+	if(!WaveExists(rawFileList))
+		printf "There are no files to load from the %s folder.\r", EXPCONFIG_SETTINGS_FOLDER
+		ControlWindowToFront()
+		return NaN
+	endif
+
+	numFiles = DimSize(rawFileList, ROWS)
+	for(i = 0; i < numFiles; i += 1)
+		path = rawFileList[i]
+		name = CleanupName(GetFile(path), 0)
+
+		if(WindowExists(name))
+			DoWindow/F $name
+		else
+			OpenNotebook/ENCG=1/N=$name path
+		endif
+	endfor
+End
+
 /// @brief Return a text wave with absolute paths to the JSON configuration files
 static Function/WAVE CONF_GetConfigFiles()
 
