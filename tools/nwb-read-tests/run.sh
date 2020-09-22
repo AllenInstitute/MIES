@@ -19,9 +19,9 @@ tag="nwb-read-tests"
 # build containter
 echo "Start building Docker container \"$tag\""
 
-docker build --build-arg USERID=$(id -u)                                                               \
-             --build-arg GROUPID=$(id -g)                                                              \
-             --build-arg PACKAGE_WITH_VERSION=git+https://github.com/neurodatawithoutborders/pynwb@dev \
+docker build --build-arg USERID=$(id -u)                     \
+             --build-arg GROUPID=$(id -g)                    \
+             --build-arg PACKAGE_WITH_VERSION="pynwb==1.4.0" \
              -t $tag $top_level/tools/nwb-read-tests
 
 # use 'docker run -it ..' for interactive debugging
