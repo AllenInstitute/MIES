@@ -21,7 +21,7 @@ acquisition, and analysis.
 
 ## Supported Hardware
 
-- Instrutech/HEKA ITC [18](http://www.heka.com/downloads/hardware/manual/m_itc18.pdf) and [1600](http://www.heka.com/downloads/hardware/manual/m_itc1600.pdf) devices
+- Instrutech/HEKA ITC [16](http://www.heka.com/downloads/hardware/manual/itc16.pdf), [18](http://www.heka.com/downloads/hardware/manual/m_itc18.pdf) and [1600](http://www.heka.com/downloads/hardware/manual/m_itc1600.pdf) devices
 - National Instruments:
   [PCIe-6343](https://www.ni.com/en-us/support/model.pcie-6343.html)
   and [PXI-6259](https://www.ni.com/en-us/support/model.pxi-6259.html)
