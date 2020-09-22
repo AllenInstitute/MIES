@@ -1377,6 +1377,23 @@ static Function MSQ_GetLastPassingLongRHSweep(panelTitle, headstage)
 	return -1
 End
 
+/// @brief Manually force the pre/post set events
+///
+/// Required to do before skipping sweeps.
+/// @todo this hack must go away.
+static Function MSQ_ForceSetEvent(panelTitle, headstage)
+	string panelTitle
+	variable headstage
+
+	variable DAC
+
+	WAVE setEventFlag = GetSetEventFlag(panelTitle)
+	DAC = AFH_GetDACFromHeadstage(panelTitle, headstage)
+
+	setEventFlag[DAC][%PRE_SET_EVENT]  = 1
+	setEventFlag[DAC][%POST_SET_EVENT] = 1
+End
+
 /// @brief Require parameters from stimset
 Function/S MSQ_DAScale_GetParams()
 	return "DAScales:wave"
@@ -1575,21 +1592,4 @@ Function MSQ_DAScale(panelTitle, s)
 			DAScalesIndex[i] += 1
 		endfor
 	endif
-End
-
-/// @brief Manually force the pre/post set events
-///
-/// Required to do before skipping sweeps.
-/// @todo this hack must go away.
-static Function MSQ_ForceSetEvent(panelTitle, headstage)
-	string panelTitle
-	variable headstage
-
-	variable DAC
-
-	WAVE setEventFlag = GetSetEventFlag(panelTitle)
-	DAC = AFH_GetDACFromHeadstage(panelTitle, headstage)
-
-	setEventFlag[DAC][%PRE_SET_EVENT]  = 1
-	setEventFlag[DAC][%POST_SET_EVENT] = 1
 End
