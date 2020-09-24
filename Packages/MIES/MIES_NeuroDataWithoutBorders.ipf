@@ -306,9 +306,17 @@ static Function NWB_AddDeviceSpecificData(locationID, panelTitle, nwbVersion, [c
 		IPNWB#WriteNeuroDataType(locationID, path, "LabNotebookDevice")
 	endif
 
-	IPNWB#H5_WriteDataset(groupID, "numericalValues", wv=numericalValues, writeIgorAttr=1, overwrite=1, compressionMode = compressionMode)
+	WAVE/Z numericalValuesTrimmed = RemoveUnusedRows(numericalValues)
+	if(WaveExists(numericalValuesTrimmed))
+		IPNWB#H5_WriteDataset(groupID, "numericalValues", wv=numericalValuesTrimmed, writeIgorAttr=1, overwrite=1, compressionMode = compressionMode)
+	endif
 	IPNWB#H5_WriteTextDataset(groupID, "numericalKeys", wvText=numericalKeys, writeIgorAttr=1, overwrite=1, compressionMode = compressionMode)
-	IPNWB#H5_WriteTextDataset(groupID, "textualValues", wvText=textualValues, writeIgorAttr=1, overwrite=1, compressionMode = compressionMode)
+
+	WAVE/Z textualValuesTrimmed = RemoveUnusedRows(textualValues)
+	if(WaveExists(textualValuesTrimmed))
+		IPNWB#H5_WriteTextDataset(groupID, "textualValues", wvText=textualValuesTrimmed, writeIgorAttr=1, overwrite=1, compressionMode = compressionMode)
+	endif
+
 	IPNWB#H5_WriteTextDataset(groupID, "textualKeys", wvText=textualKeys, writeIgorAttr=1, overwrite=1, compressionMode = compressionMode)
 
 	if(nwbVersion == 2)
@@ -364,10 +372,14 @@ static Function NWB_AddDeviceSpecificData(locationID, panelTitle, nwbVersion, [c
 	for(i = 0; i < numEntries; i += 1)
 		name = StringFromList(i, list)
 		WAVE/SDFR=dfr wv = $name
-		IPNWB#H5_WriteDataset(groupID, name, wv=wv, writeIgorAttr=1, overwrite=1, compressionMode = compressionMode)
 
-		if(nwbVersion == 2)
-			IPNWB#WriteNeuroDataType(groupID, name, "TestpulseMetadata")
+		WAVE/Z wvTrimmed = RemoveUnusedRows(wv)
+		if(WaveExists(wvTrimmed))
+			IPNWB#H5_WriteDataset(groupID, name, wv=wvTrimmed, writeIgorAttr=1, overwrite=1, compressionMode = compressionMode)
+
+			if(nwbVersion == 2)
+				IPNWB#WriteNeuroDataType(groupID, name, "TestpulseMetadata")
+			endif
 		endif
 	endfor
 
