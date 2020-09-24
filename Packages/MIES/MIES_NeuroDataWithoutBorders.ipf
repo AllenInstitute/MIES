@@ -271,7 +271,7 @@ static Function NWB_AddDeviceSpecificData(locationID, panelTitle, nwbVersion, [c
 	string panelTitle
 	variable nwbVersion, compressionMode, writeStoredTestPulses
 
-	variable groupID, i, numEntries, refTime
+	variable groupID, i, numEntries, refTime, compressionModeStoredTP
 	string path, list, name, contents
 
 	refTime = DEBUG_TIMER_START()
@@ -352,6 +352,12 @@ static Function NWB_AddDeviceSpecificData(locationID, panelTitle, nwbVersion, [c
 		IPNWB#WriteNeuroDataType(locationID, path, "TestpulseDevice")
 	endif
 
+	if(compressionMode == IPNWB#GetNoCompression())
+		compressionModeStoredTP = compressionMode
+	else
+		compressionModeStoredTP = IPNWB#GetSingleChunkCompression()
+	endif
+
 	DFREF dfr = GetDeviceTestPulse(panelTitle)
 	list = GetListOfObjects(dfr, TP_STORAGE_REGEXP)
 	numEntries = ItemsInList(list)
@@ -366,7 +372,7 @@ static Function NWB_AddDeviceSpecificData(locationID, panelTitle, nwbVersion, [c
 	endfor
 
 	if(writeStoredTestPulses)
-		NWB_AppendStoredTestPulses(panelTitle, nwbVersion, groupID)
+		NWB_AppendStoredTestPulses(panelTitle, nwbVersion, groupID, compressionModeStoredTP)
 	endif
 
 	HDF5CloseGroup/Z groupID
@@ -547,9 +553,9 @@ Function NWB_ExportWithDialog(exportType, [nwbVersion])
 End
 
 /// @brief Write the stored test pulses to the NWB file
-static Function NWB_AppendStoredTestPulses(panelTitle, nwbVersion, locationID)
+static Function NWB_AppendStoredTestPulses(panelTitle, nwbVersion, locationID, compressionMode)
 	string panelTitle
-	variable locationID, nwbVersion
+	variable locationID, nwbVersion, compressionMode
 
 	variable index, numZeros, i
 	string name
@@ -564,7 +570,7 @@ static Function NWB_AppendStoredTestPulses(panelTitle, nwbVersion, locationID)
 
 	for(i = 0; i < index; i += 1)
 		sprintf name, "StoredTestPulses_%d", i
-		IPNWB#H5_WriteDataset(locationID, name, wv = storedTP[i], compressionMode = IPNWB#GetSingleChunkCompression(), overwrite = 1, writeIgorAttr = 1)
+		IPNWB#H5_WriteDataset(locationID, name, wv = storedTP[i], compressionMode = compressionMode, overwrite = 1, writeIgorAttr = 1)
 
 		if(nwbVersion == 2)
 			IPNWB#WriteNeuroDataType(locationID, name, "TestpulseRawData")
