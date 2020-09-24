@@ -87,7 +87,8 @@ Often one is adding entries to a wave one at a time. In order to minimize the
 performance cost one can employ a technique where the actual size of the wave
 and the used size differ in order to minimize the number of resize operations.
 The relevant functions are :cpp:func:`EnsureLargeEnoughWave` (with example
-code), :cpp:func:`SetNumberInWaveNote` and :cpp:func:`GetNumberFromWaveNote`.
+code), :cpp:func:`SetNumberInWaveNote`, :cpp:func:`GetNumberFromWaveNote` and
+:cpp:func:`RemoveUnusedRows`.
 
 Datafolders
 -----------

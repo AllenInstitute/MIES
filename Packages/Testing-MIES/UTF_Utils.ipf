@@ -647,6 +647,42 @@ End
 
 /// @}
 
+/// RemoveUnusedRows
+/// @{
+
+Function RUR_ChecksNote()
+
+	Make/FREE wv
+	try
+		RemoveUnusedRows(wv); AbortOnRTE
+		FAIL()
+	catch
+		PASS()
+	endtry
+End
+
+Function RUR_ReturnsInvalidWaveRef()
+
+	Make/FREE wv
+	SetNumberInWaveNote(wv, NOTE_INDEX, 0)
+
+	WAVE/Z dup = RemoveUnusedRows(wv)
+	CHECK_WAVE(dup, NULL_WAVE)
+End
+
+Function RUR_Works()
+
+	Make/FREE/N=(10, 3, 2) wv
+	SetNumberInWaveNote(wv, NOTE_INDEX, 4)
+
+	WAVE dup = RemoveUnusedRows(wv)
+
+	Make/FREE/N=(MAX_DIMENSION_COUNT) dims = DimSize(dup, p)
+	CHECK_EQUAL_WAVES(dims, {4, 3, 2, 0}, mode = WAVE_DATA)
+	CHECK(!WaveRefsEqual(wv, dup))
+End
+/// @}
+
 /// DoAbortNow
 /// @{
 

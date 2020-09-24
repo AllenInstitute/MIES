@@ -5421,3 +5421,22 @@ Function CalculateNiceLength(variable range , variable multiple)
 
 	return multiple * 10^(round(numDigits))
 End
+
+/// @brief Remove unused rows from the passed wave and return a copy of it.
+///
+/// @see EnsureLargeEnoughWave()
+Function/WAVE RemoveUnusedRows(WAVE wv)
+
+	variable index
+
+	index = GetNumberFromWaveNote(wv, NOTE_INDEX)
+	ASSERT(IsInteger(index), "Unexpected index")
+
+	if(index == 0)
+		return $""
+	endif
+
+	Duplicate/FREE/RMD=[0, index - 1] wv, dup
+
+	return dup
+End
