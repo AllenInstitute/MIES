@@ -20,6 +20,8 @@ extensions = ['sphinx.ext.mathjax', 'sphinx.ext.todo', 'breathe', 'sphinxcontrib
 master_doc = "index"
 project= "MIES Igor"
 
+html_show_sourcelink = False
+
 exclude_patterns = [ 'releasenotes_template.rst', 'IPNWB/specifications']
 
 cpp_id_attributes = [ 'threadsafe' ]
