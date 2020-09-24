@@ -362,7 +362,8 @@ End
 /// The redimensioning is only done if it is required.
 ///
 /// Can be used to fill a wave one at a time with the minimum number of
-/// redimensions.
+/// redimensions. In the following example `NOTE_INDEX` is the index of the
+/// next free row *and* the total number of rows filled with data.
 ///
 /// \rst
 /// .. code-block:: igorpro
