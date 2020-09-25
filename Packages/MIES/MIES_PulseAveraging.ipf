@@ -1389,7 +1389,7 @@ static Function PA_DrawScaleBars(string win, STRUCT PulseAverageSettings &pa, va
 
 	variable i, j, numChannels, numRegions, region, channelNumber, drawXScaleBarOverride
 	variable activeChanCount, activeRegionCount, maximum, length, drawYScaleBarOverride
-	string graph, vertAxis, horizAxis, baseName
+	string graph, vertAxis, horizAxis, baseName, xUnit, yUnit
 
 	if((!pa.showIndividualPulses && !pa.showAverage && !pa.deconvolution.enable) \
 	   || (!pa.showTraces && displayMode == PA_DISPLAYMODE_TRACES)               \
@@ -1439,12 +1439,17 @@ static Function PA_DrawScaleBars(string win, STRUCT PulseAverageSettings &pa, va
 
 			if(WaveExists(averageWave))
 				maximum = GetNumberFromWaveNote(averageWave, "WaveMaximum")
-				length = pa.yScaleBarLength * (IsFinite(maximum) ? sign(maximum) : +1)
+				length  = pa.yScaleBarLength * (IsFinite(maximum) ? sign(maximum) : +1)
+				xUnit   = WaveUnits(averageWave, ROWS)
+				yUnit   = WaveUnits(averageWave, -1)
 			else
 				length = pa.yScaleBarLength
+				xUnit  = "n. a."
+				yUnit  = "n. a."
 			endif
 
-			PA_DrawScaleBarsHelper(graph, axisMode, displayMode, setWaves, vertAxis, horizAxis, length, WaveUnits(averageWave, ROWS), WaveUnits(averageWave, -1), activeChanCount, numChannels, activeRegionCount, numRegions)
+			PA_DrawScaleBarsHelper(graph, axisMode, displayMode, setWaves, vertAxis, horizAxis, length, xUnit, yUnit, \
+			                       activeChanCount, numChannels, activeRegionCount, numRegions)
 		endfor
 	endfor
 End
