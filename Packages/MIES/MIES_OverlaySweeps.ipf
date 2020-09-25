@@ -674,21 +674,23 @@ static Function OVS_EndIncrementalUpdate(string win, WAVE/WAVE updateHandle)
 	variable updatedSweeps, addedSweeps, removedSweeps, mode
 	string headstageBefore, headstageAfter, msg
 
-	if(GetNumberFromWaveNote(updateHandle, OVS_FULL_UPDATE_NOTE) == 1)
+	DFREF dfr = BSP_GetFolder(win, MIES_BSP_PANEL_FOLDER)
+	WAVE/T listBoxWaveAfterOriginal = GetOverlaySweepsListWave(dfr)
+	WAVE listSelWaveAfterOriginal = GetOverlaySweepsListSelWave(dfr)
+
+	if(GetNumberFromWaveNote(updateHandle, OVS_FULL_UPDATE_NOTE) == 1 \
+	   || (DimSize(listBoxWaveAfterOriginal, ROWS) == 0               \
+	       && DimSize(listSelWaveAfterOriginal, ROWS) == 0))
 		UpdateSweepPlot(win)
 		return NaN
 	endif
 
-	DFREF dfr = BSP_GetFolder(win, MIES_BSP_PANEL_FOLDER)
-
 	WAVE/T listBoxWaveBefore = updateHandle[%contents]
 	WAVE listSelWaveBefore   = updateHandle[%selection]
 
-	WAVE/T listBoxWaveAfterOriginal = GetOverlaySweepsListWave(dfr)
 	Duplicate/FREE/T listBoxWaveAfterOriginal, listBoxWaveAfter
 	WaveClear listBoxWaveAfterOriginal
 
-	WAVE listSelWaveAfterOriginal = GetOverlaySweepsListSelWave(dfr)
 	Duplicate/FREE listSelWaveAfterOriginal, listSelWaveAfter
 	WaveClear listSelWaveAfterOriginal
 
@@ -701,7 +703,9 @@ static Function OVS_EndIncrementalUpdate(string win, WAVE/WAVE updateHandle)
 
 	newSize = max(DimSize(listBoxWaveBefore, ROWS), DimSize(listBoxWaveAfter, ROWS))
 
-	Redimension/N=(newSize, -1) listBoxWaveBefore, listSelWaveBefore, listBoxWaveAfter, listSelWaveAfter
+	Redimension/N=(newSize, 2) listBoxWaveBefore, listSelWaveBefore, listBoxWaveAfter, listSelWaveAfter
+	CopyDimLabels listBoxWaveAfter, listBoxWaveBefore
+	CopyDimLabels listSelWaveAfter, listSelWaveBefore
 
 	Make/FREE/N=(newSize) addedIndizes = NaN
 	Make/FREE/N=(newSize) removedIndizes = NaN
