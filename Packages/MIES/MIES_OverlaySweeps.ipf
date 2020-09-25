@@ -139,8 +139,6 @@ Function OVS_UpdatePanel(win, [fullUpdate])
 	WAVE/T listBoxWave           = GetOverlaySweepsListWave(dfr)
 	WAVE listBoxSelWave          = GetOverlaySweepsListSelWave(dfr)
 
-	WAVE/WAVE allNumericalValues = BSP_GetNumericalValues(win)
-
 	WAVE updateHandle = OVS_BeginIncrementalUpdate(win, fullUpdate = fullUpdate)
 
 	if(!WaveExists(sweeps))
@@ -148,6 +146,8 @@ Function OVS_UpdatePanel(win, [fullUpdate])
 		OVS_EndIncrementalUpdate(win, updateHandle)
 		return NaN
 	endif
+
+	WAVE/WAVE allNumericalValues = BSP_GetNumericalValues(win)
 
 	numEntries = DimSize(sweeps, ROWS)
 	Redimension/N=(numEntries, -1, -1) listBoxWave, listBoxSelWave
