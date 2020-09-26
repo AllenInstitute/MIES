@@ -5830,6 +5830,11 @@ Function EntrySourceTypeMapper(entrySourceType)
 	return IsFinite(entrySourceType) ? ++entrySourceType : 0
 End
 
+/// @brief Rerverse the effect of EntrySourceTypeMapper()
+Function ReverseEntrySourceTypeMapper(variable mapped)
+	return	(mapped == 0 ? NaN : --mapped)
+End
+
 /// @brief constructs a fifo name for NI device ADC operations from the deviceID
 Function/S GetNIFIFOName(deviceID)
 	variable deviceID
