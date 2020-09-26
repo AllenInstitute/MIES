@@ -411,7 +411,7 @@ static Function TP_RecordTP(panelTitle, BaselineSSAvg, InstResistance, SSResista
 	wave 	BaselineSSAvg, InstResistance, SSResistance
 	variable now, tpMarker
 
-	variable delta, i, ret, lastPressureCtrl
+	variable delta, i, ret, lastPressureCtrl, timestamp
 	WAVE TPStorage = GetTPStorage(panelTitle)
 	WAVE hsProp = GetHSProperties(panelTitle)
 	variable count = GetNumberFromWaveNote(TPStorage, NOTE_INDEX)
@@ -455,8 +455,13 @@ static Function TP_RecordTP(panelTitle, BaselineSSAvg, InstResistance, SSResista
 	endif
 
 	TPStorage[count][][%TimeInSeconds]              = now
-	TPStorage[count][][%TimeStamp]                  = DateTime
-	TPStorage[count][][%TimeStampSinceIgorEpochUTC] = DateTimeInUTC()
+
+	// store the current time in a variable first
+	// so that all columns have the same timestamp
+	timestamp = DateTime
+	TPStorage[count][][%TimeStamp] = timestamp
+	timestamp = DateTimeInUTC()
+	TPStorage[count][][%TimeStampSinceIgorEpochUTC] = timestamp
 
 	TPStorage[count][][%PeakResistance]        = min(InstResistance[q], TP_MAX_VALID_RESISTANCE)
 	TPStorage[count][][%SteadyStateResistance] = min(SSResistance[q], TP_MAX_VALID_RESISTANCE)
