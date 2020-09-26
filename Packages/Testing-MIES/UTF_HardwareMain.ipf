@@ -231,6 +231,9 @@ Function TEST_CASE_END_OVERRIDE(name)
 		Duplicate/FREE sweeps, unsortedSweeps
 		Sort sweeps, sweeps
 		CHECK_EQUAL_WAVES(sweeps, unsortedSweeps, mode = WAVE_DATA)
+
+		CheckLBIndexCache_IGNORE(dev)
+		CheckLBRowCache_IGNORE(dev)
 	endfor
 
 	StopAllBackgroundTasks()
@@ -565,5 +568,127 @@ Function StopAllBackgroundTasks()
 		endif
 
 		CtrlNamedBackGround $name, stop
+	endfor
+End
+
+Function CheckLBIndexCache_IGNORE(string panelTitle)
+
+	variable i, j, k, l, numEntries, numSweeps, numRows, numCols, numLayers
+	variable entry, sweepNo, entrySourceType
+	string setting, msg
+
+	WAVE numericalValues = GetLBNumericalValues(panelTitle)
+	WAVE textualValues = GetLBTextualValues(panelTitle)
+
+	Make/FREE/WAVE entries = {numericalValues, textualValues}
+	numEntries = DimSize(entries, ROWS)
+	for(i = 0; i < numEntries; i += 1)
+		WAVE values = entries[i]
+		WAVE LBindexCache = GetLBindexCache(values)
+
+		numRows = DimSize(LBIndexCache, ROWS)
+		numCols = DimSize(LBIndexCache, COLS)
+		numLayers = DimSize(LBindexCache, LAYERS)
+
+		Make/FREE/N=(numCols, numLayers) match
+
+		for(j = 0; j < numRows; j += 1)
+			for(k = 0; k < numCols; k += 1)
+				MultiThread match[][] = LBindexCache[j][p][q]
+
+				if(IsConstant(match, LABNOTEBOOK_UNCACHED_VALUE))
+					continue
+				endif
+
+				for(l = 0; l < numLayers; l += 1)
+					entry = LBindexCache[j][k][l]
+
+					if(entry == LABNOTEBOOK_UNCACHED_VALUE)
+						continue
+					endif
+
+					sweepNo = j
+					setting = GetDimLabel(values, COLS, k)
+					entrySourceType = ReverseEntrySourceTypeMapper(l)
+
+					WAVE/Z settingsNoCache = MIES_MIESUTILS#GetLastSettingNoCache(values, sweepNo, setting, entrySourceType)
+
+					if(!WaveExists(settingsNoCache))
+						CHECK_EQUAL_VAR(entry, LABNOTEBOOK_MISSING_VALUE)
+						if(entry != LABNOTEBOOK_MISSING_VALUE)
+							sprintf msg, "bug: LBN %s, setting %s, sweep %d, entrySourceType %g\r", NameOfWave(values), setting, j, entrySourceType
+							ASSERT(0, msg)
+						endif
+					else
+						Duplicate/FREE/RMD=[entry][k] values, settings
+						Redimension/N=(LABNOTEBOOK_LAYER_COUNT)/E=1 settings
+
+						if(!EqualWaves(settings, settingsNoCache, WAVE_DATA))
+
+							Note/K settings, setting
+
+							Duplicate/O settings, root:settings
+							Duplicate/O settingsNoCache, root:settingsNoCache
+
+							sprintf msg, "bug: LBN %s, setting %s, sweep %d, entrySourceType %g\r", NameOfWave(values), setting, j, entrySourceType
+							ASSERT(0, msg)
+						endif
+
+						REQUIRE_EQUAL_WAVES(settings, settingsNoCache, mode = WAVE_DATA)
+					endif
+				endfor
+			endfor
+		endfor
+	endfor
+End
+
+Function CheckLBRowCache_IGNORE(string panelTitle)
+
+	variable i, j, k, numEntries, numRows, numCols, numLayers, first, last, sweepNo, entrySourceType
+
+	WAVE numericalValues = GetLBNumericalValues(panelTitle)
+	WAVE textualValues = GetLBTextualValues(panelTitle)
+
+	Make/FREE/WAVE entries = {numericalValues, textualValues}
+
+	numEntries = DimSize(entries, ROWS)
+	for(i = 0; i < numEntries; i += 1)
+		WAVE values = entries[i]
+		WAVE LBRowCache = GetLBRowCache(values)
+
+		numRows = DimSize(LBRowCache, ROWS)
+		numCols = DimSize(LBRowCache, COLS)
+		numLayers = DimSize(LBRowCache, LAYERS)
+
+		for(j = 0; j < numRows; j += 1)
+
+			Make/FREE/N=(numCols, numLayers) match
+
+			match[][] = LBRowCache[j][p][q]
+
+			if(IsConstant(match, LABNOTEBOOK_GET_RANGE))
+				continue
+			endif
+
+			for(k = 0; k < numLayers; k += 1)
+
+				if(LBRowCache[j][%first][k] == LABNOTEBOOK_GET_RANGE   \
+				   && LBRowCache[j][%last][k] == LABNOTEBOOK_GET_RANGE)
+					continue
+				endif
+
+				sweepNo = j
+				entrySourceType = ReverseEntrySourceTypeMapper(k)
+
+				first = LABNOTEBOOK_GET_RANGE
+				last  = LABNOTEBOOK_GET_RANGE
+
+				WAVE/Z settingsNoCache = MIES_MIESUTILS#GetLastSettingNoCache(values, sweepNo, "TimeStamp", entrySourceType, \
+							                                                  first = first, last = last)
+
+				CHECK_EQUAL_VAR(first, LBRowCache[j][%first][k])
+				CHECK_EQUAL_VAR(last, LBRowCache[j][%last][k])
+			endfor
+		endfor
 	endfor
 End
