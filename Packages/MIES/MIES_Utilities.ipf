@@ -5445,3 +5445,13 @@ Function/WAVE RemoveUnusedRows(WAVE wv)
 
 	return dup
 End
+
+/// @brief Checks wether `wv` is constant and has the value `val`
+Function IsConstant(WAVE wv, variable val)
+
+	variable minimum, maximum
+
+	[minimum, maximum] = WaveMinAndMax(wv)
+
+	return (minimum == val && maximum == val) || (IsNaN(minimum) && IsNaN(maximum) && IsNaN(val))
+End
