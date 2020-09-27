@@ -222,7 +222,7 @@ Function DB_ResetAndStoreCurrentDBPanel()
 	ValDisplay status_sweepFormula_parser, WIN = $bsPanel, value=1
 
 	SearchForInvalidControlProcs(panelTitle)
-	print "Do not forget to increase DATABROWSER_PANEL_VERSION and/or SWEEPBROWSER_PANEL_VERSION and/or BROWSERSETTINGS_PANEL_VERSION."
+	print "Do not forget to increase DATA_SWEEP_BROWSER_PANEL_VERSION."
 
 	Execute/P/Z "DoWindow/R " + DATABROWSER_WINDOW_TITLE
 	Execute/P/Q/Z "COMPILEPROCEDURES "
