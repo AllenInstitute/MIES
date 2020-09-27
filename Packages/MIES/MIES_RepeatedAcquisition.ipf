@@ -447,7 +447,7 @@ Function RA_SkipSweeps(panelTitle, skipCount, [limitToSetBorder])
 	string panelTitle
 	variable skipCount, limitToSetBorder
 
-	variable numFollower, i, sweepsInSet
+	variable numFollower, i, sweepsInSet, recalculatedCount
 	string followerPanelTitle, msg
 
 	NVAR count = $GetCount(panelTitle)
@@ -469,13 +469,23 @@ Function RA_SkipSweeps(panelTitle, skipCount, [limitToSetBorder])
 	DEBUGPRINT(msg)
 
 	if(limitToSetBorder)
-		skipCount = sign(skipCount) * limit(abs(skipCount), 0, activeSetCount - 1)
-		activeSetCount = 1
-		sprintf msg, "skipCount (clipped) %d, activeSetCount (resetted) %d", skipCount, activeSetCount
-		DEBUGPRINT(msg)
+		if(skipCount > 0)
+			skipCount = limit(skipCount, 0, activeSetCount - 1)
+		else
+			sweepsInSet = IDX_CalculcateActiveSetCount(panelTitle)
+			skipCount = limit(skipCount, activeSetCount - sweepsInSet - 1, 0)
+		endif
 	endif
 
-	count = RA_SkipSweepCalc(panelTitle, skipCount)
+	recalculatedCount = RA_SkipSweepCalc(panelTitle, skipCount)
+	skipCount = recalculatedCount - count
+	count = recalculatedCount
+
+	activeSetCount -= skipCount
+
+	sprintf msg, "skipCount (possibly clipped) %g, activeSetCount (adjusted) %d, count (adjusted) %d\r", skipCount, activeSetCount, count
+	DEBUGPRINT(msg)
+
 	RA_StepSweepsRemaining(panelTitle)
 
 	if(DeviceHasFollower(panelTitle))
