@@ -1703,6 +1703,83 @@ Function SweepSkipping_REENTRY([str])
 	CHECK_EQUAL_WAVES(sweepCounts, {0, 0, 0, 0}, mode = WAVE_DATA)
 End
 
+Function SkipSweepsStimsetsAdvancedP_IGNORE(device)
+	string device
+
+	WAVE/T wv = root:MIES:WaveBuilder:SavedStimulusSetParameters:DA:WPT_StimulusSetA_DA_0
+
+	wv[][%Set] = ""
+	wv[%$"Analysis function (generic)"][%Set] = "SkipSweepsAdvanced"
+
+	WAVE/T wv = root:MIES:WaveBuilder:SavedStimulusSetParameters:DA:WPT_StimulusSetB_DA_0
+
+	wv[][%Set] = ""
+	wv[%$"Analysis function (generic)"][%Set] = "SkipSweepsAdvanced"
+
+	WAVE/T wv = root:MIES:WaveBuilder:SavedStimulusSetParameters:DA:WPT_StimulusSetC_DA_0
+
+	wv[][%Set] = ""
+	wv[%$"Analysis function (generic)"][%Set] = "SkipSweepsAdvanced"
+
+	WAVE/T wv = root:MIES:WaveBuilder:SavedStimulusSetParameters:DA:WPT_StimulusSetD_DA_0
+
+	wv[][%Set] = ""
+	wv[%$"Analysis function (generic)"][%Set] = "SkipSweepsAdvanced"
+End
+
+static Function SkipSweepsStimsetsAdvanced_IGNORE(device)
+	string device
+
+	PGC_SetAndActivateControl(device, GetPanelControl(1, CHANNEL_TYPE_HEADSTAGE, CHANNEL_CONTROL_CHECK), val = 0)
+	PGC_SetAndActivateControl(device, GetPanelControl(0, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_WAVE), str = "StimulusSetA_*")
+End
+
+// UTF_TD_GENERATOR HardwareMain#DeviceNameGeneratorMD1
+Function SweepSkippingAdvanced([str])
+	string str
+
+	STRUCT DAQSettings s
+	InitDAQSettingsFromString(s, "MD1_RA1_I0_L0_BKG_1")
+	AcquireData(s, str, postInitializeFunc = SkipSweepsStimsetsAdvancedP_IGNORE, preAcquireFunc = SkipSweepsStimsetsAdvanced_IGNORE)
+End
+
+Function SweepSkippingAdvanced_REENTRY([str])
+	string str
+
+	variable numSweeps = 4
+	variable sweepNo   = 0
+	variable headstage = 0
+
+	CHECK_EQUAL_VAR(GetSetVariable(str, "SetVar_Sweep"), numSweeps)
+
+	WAVE/T textualValues   = GetLBTextualValues(str)
+	WAVE   numericalValues = GetLBNumericalValues(str)
+
+	WAVE/T/Z foundStimSets = GetLastSettingTextEachRAC(numericalValues, textualValues, sweepNo, STIM_WAVE_NAME_KEY, headstage, DATA_ACQUISITION_MODE)
+	REQUIRE_WAVE(foundStimSets, TEXT_WAVE)
+	CHECK_EQUAL_TEXTWAVES(foundStimSets, {"StimulusSetA_DA_0", "StimulusSetA_DA_0", "StimulusSetA_DA_0", "StimulusSetA_DA_0"})
+
+	WAVE/Z sweepCounts = GetLastSettingEachRAC(numericalValues, sweepNo, "Set Sweep Count", headstage, DATA_ACQUISITION_MODE)
+	REQUIRE_WAVE(sweepCounts, NUMERIC_WAVE)
+	CHECK_EQUAL_WAVES(sweepCounts, {0, 0, 2, 2}, mode = WAVE_DATA)
+
+	// XXX_SET_EVENT counts are subject to change with sweep skipping
+	WAVE anaFuncTracker = TrackAnalysisFunctionCalls()
+	CHECK_EQUAL_VAR(anaFuncTracker[PRE_DAQ_EVENT], 1)
+	CHECK_EQUAL_VAR(anaFuncTracker[PRE_SET_EVENT], 2)
+	CHECK_EQUAL_VAR(anaFuncTracker[PRE_SWEEP_EVENT], 4)
+	CHECK(anaFuncTracker[MID_SWEEP_EVENT] >= 1)
+	CHECK_EQUAL_VAR(anaFuncTracker[POST_SWEEP_EVENT], 4)
+	CHECK_EQUAL_VAR(anaFuncTracker[POST_SET_EVENT], 2)
+	CHECK_EQUAL_VAR(anaFuncTracker[POST_DAQ_EVENT], 1)
+	CHECK_EQUAL_VAR(anaFuncTracker[GENERIC_EVENT], 0)
+
+	WAVE anaFuncActiveSetCount = GetTrackActiveSetCount()
+
+	WaveTransform/O zapNans, anaFuncActiveSetCount
+	CHECK_EQUAL_WAVES(anaFuncActiveSetCount, {3, 3, 1, 1})
+End
+
 // UTF_TD_GENERATOR HardwareMain#DeviceNameGeneratorMD0
 Function SkipSweepsDuringITI_SD([str])
 	string str

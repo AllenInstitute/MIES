@@ -602,6 +602,38 @@ Function SkipSweeps(panelTitle, s)
 	RA_SkipSweeps(panelTitle, inf, limitToSetBorder = 1)
 End
 
+Function SkipSweepsAdvanced(panelTitle, s)
+	string panelTitle
+	STRUCT AnalysisFunction_V3& s
+
+	WAVE anaFuncTracker = TrackAnalysisFunctionCalls()
+
+	CHECK(s.eventType >= 0 && s.eventType < DimSize(anaFuncTracker, ROWS))
+	anaFuncTracker[s.eventType][s.headstage] += 1
+
+	if(s.eventType != POST_SWEEP_EVENT)
+		return NaN
+	endif
+
+	WAVE anaFuncActiveSetCount = GetTrackActiveSetCount()
+
+	NVAR activeSetCount = $GetActiveSetCount(panelTitle)
+	anaFuncActiveSetCount[s.sweepNo][s.headstage] = activeSetCount
+
+	// sweeps in stimset: 0, 1, 2
+	// we acquire: 0, 0, 2, 2
+	if(s.sweepNo == 0)
+		// repeat first sweep
+		RA_SkipSweeps(panelTitle, -10)
+	elseif(s.sweepNo == 1)
+		// skip one forward
+		RA_SkipSweeps(panelTitle, 1, limitToSetBorder = 1)
+	elseif(s.sweepNo == 2)
+		// and repeat the last one
+		RA_SkipSweeps(panelTitle, -1)
+	endif
+End
+
 Function WriteIntoLBNOnPreDAQ(panelTitle, s)
 	string panelTitle
 	STRUCT AnalysisFunction_V3& s
