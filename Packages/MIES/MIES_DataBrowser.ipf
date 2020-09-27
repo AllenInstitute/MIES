@@ -459,7 +459,7 @@ Function DB_UpdateSweepPlot(win)
 
 	DEBUGPRINT_ELAPSED(referenceTime)
 
-	DB_UpdateSweepNote(win)
+	BSP_UpdateSweepNote(win)
 
 	PostPlotTransformations(graph, POST_PLOT_FULL_UPDATE)
 
@@ -467,37 +467,6 @@ Function DB_UpdateSweepPlot(win)
 	DEBUGPRINT_ELAPSED(referenceTime)
 End
 
-static Function DB_UpdateSweepNote(win)
-	string win
-
-	string scPanel, lbPanel, bsPanel, device
-	variable sweepNo
-
-	if(!BSP_HasBoundDevice(win))
-		return NaN
-	endif
-
-	bsPanel = BSP_GetPanel(win)
-
-	if(GetTabID(bsPanel, "Settings") != 6)
-		// nothing to do
-		return NaN
-	endif
-
-	device = BSP_GetDevice(win)
-	DFREF dfr = GetDeviceDataPath(device)
-
-	scPanel = BSP_GetSweepControlsPanel(win)
-	sweepNo = GetSetVariable(scPanel, "setvar_SweepControl_SweepNo")
-
-	WAVE/Z/SDFR=dfr sweepWave = $GetSweepWaveName(sweepNo)
-	if(!WaveExists(sweepWave))
-		return NaN
-	endif
-
-	lbPanel = BSP_GetNotebookSubWindow(win)
-	ReplaceNotebookText(lbPanel, note(sweepWave))
-End
 
 static Function DB_ClearGraph(win)
 	string win
@@ -859,13 +828,6 @@ Function DB_ButtonProc_SwitchXAxis(ba) : ButtonControl
 	endswitch
 
 	return 0
-End
-
-// Called from ACL_DisplayTab after the new tab is selected
-Function DB_MainTabControlFinal(tca)
-	STRUCT WMTabControlAction &tca
-
-	DB_UpdateSweepNote(tca.win)
 End
 
 Function DB_AddSweepToGraph(string win, variable index)
