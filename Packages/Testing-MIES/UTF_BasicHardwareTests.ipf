@@ -43,6 +43,7 @@ static Function AcquireData(s, devices, [postInitializeFunc, preAcquireFunc, set
 
 	KillOrMoveToTrash(wv = GetTrackSweepCounts())
 	KillOrMoveToTrash(wv = GetTrackActiveSetCount())
+	KillOrMoveToTrash(wv = TrackAnalysisFunctionCalls())
 
 	if(!ParamIsDefault(postInitializeFunc))
 		postInitializeFunc(devices)
