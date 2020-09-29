@@ -788,8 +788,7 @@ static Function DC_PlaceDataInHardwareDataWave(panelTitle, numActiveChannels, da
 	variable distributedDAQDelay, onSetDelay, onsetDelayAuto, onsetDelayUser, terminationDelay
 	variable decimationFactor, cutoff
 	variable multiplier, powerSpectrum, distributedDAQOptOv, distributedDAQOptPre, distributedDAQOptPost, headstage
-	variable lastValidRow, isoodDAQMember, channel, tpAmp, DAScale, stimsetCol, startOffset
-	variable/C ret
+	variable lastValidRow, isoodDAQMember, channel, tpAmp, DAScale, stimsetCol, startOffset, ret
 	variable TPLength
 	variable epochBegin, epochEnd, epochOffset
 
@@ -893,9 +892,8 @@ static Function DC_PlaceDataInHardwareDataWave(panelTitle, numActiveChannels, da
 			setColumn[i] = 0
 		elseif(config[i][%DAQChannelType] == DAQ_CHANNEL_TYPE_DAQ)
 			// only call DC_CalculateChannelColumnNo for real data acquisition
-			ret = DC_CalculateChannelColumnNo(panelTitle, setName[i], channel, CHANNEL_TYPE_DAC)
-			setCycleCount = imag(ret)
-			setColumn[i] = real(ret)
+			[ret, setCycleCount] = DC_CalculateChannelColumnNo(panelTitle, setName[i], channel, CHANNEL_TYPE_DAC)
+			setColumn[i] = ret
 		endif
 
 		maxITI = max(maxITI, WB_GetITI(stimSet[i], setColumn[i]))
@@ -1669,7 +1667,7 @@ static Function DC_MakeITCTTLWave(panelTitle, rackNo)
 	string panelTitle
 	variable rackNo
 
-	variable first, last, i, col, maxRows, lastIdx, bit, bits
+	variable first, last, i, col, maxRows, lastIdx, bit, bits, setCycleCount
 	string set
 	string listOfSets = ""
 	string setSweepCounts = ""
@@ -1711,7 +1709,7 @@ static Function DC_MakeITCTTLWave(panelTitle, rackNo)
 
 		set = allSetNames[i]
 		WAVE TTLStimSet = WB_CreateAndGetStimSet(set)
-		col = DC_CalculateChannelColumnNo(panelTitle, set, i, CHANNEL_TYPE_TTL)
+		[col, setCycleCount] = DC_CalculateChannelColumnNo(panelTitle, set, i, CHANNEL_TYPE_TTL)
 		lastIdx = DimSize(TTLStimSet, ROWS) - 1
 		bit = 2^(i - first)
 		MultiThread TTLWave[0, lastIdx] += bit * TTLStimSet[p][col]
@@ -1732,7 +1730,7 @@ End
 static Function DC_MakeNITTLWave(panelTitle)
 	string panelTitle
 
-	variable col, i
+	variable col, i, setCycleCount
 	string set
 	string listOfSets = ""
 	string setSweepCounts = ""
@@ -1755,7 +1753,7 @@ static Function DC_MakeNITTLWave(panelTitle)
 
 		set = allSetNames[i]
 		WAVE TTLStimSet = WB_CreateAndGetStimSet(set)
-		col = DC_CalculateChannelColumnNo(panelTitle, set, i, CHANNEL_TYPE_TTL)
+		[col, setCycleCount] = DC_CalculateChannelColumnNo(panelTitle, set, i, CHANNEL_TYPE_TTL)
 
 		listOfSets = AddListItem(set, listOfSets, ";", inf)
 		setSweepCounts = AddListItem(num2str(col), setSweepCounts, ";", inf)
@@ -1775,19 +1773,15 @@ End
 ///        (as defined by SetVar_DataAcq_SetRepeats)
 ///
 /// @param panelTitle    panel title
-/// @param SetName       name of the stimulus set
+/// @param setName       name of the stimulus set
 /// @param channelNo     channel number
 /// @param channelType   channel type, one of @ref CHANNEL_TYPE_DAC or @ref CHANNEL_TYPE_TTL
 ///
-/// @return complex number with real part equals the stimset column and the
-///         imaginary part the set cycle count
-static Function/C DC_CalculateChannelColumnNo(panelTitle, SetName, channelNo, channelType)
-	string panelTitle, SetName
-	variable ChannelNo, channelType
+/// @retval column        stimset column
+/// @retval setCycleCount set cycle count
+static Function [variable column, variable setCycleCount] DC_CalculateChannelColumnNo(string panelTitle, string setName, variable channelNo, variable channelType)
 
 	variable ColumnsInSet = IDX_NumberOfSweepsInSet(SetName)
-	variable column
-	variable setCycleCount
 	variable localCount, repAcqRandom
 	string sequenceWaveName
 	variable skipAhead = DAP_GetskipAhead(panelTitle)
@@ -1855,7 +1849,7 @@ static Function/C DC_CalculateChannelColumnNo(panelTitle, SetName, channelNo, ch
 
 	ASSERT(IsFinite(column) && column >=0, "column has to be finite and non-negative")
 
-	return cmplx(column, setCycleCount)
+	return [column, setCycleCount]
 End
 
 /// @brief Returns the length increase of the ITCDataWave following onset/termination delay insertion and
