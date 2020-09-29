@@ -1290,3 +1290,66 @@ Function BSP_ButtonProc_ChangeSweep(ba) : ButtonControl
 
 	return 0
 End
+
+// Called from ACL_DisplayTab after the new tab is selected
+Function BSP_MainTabControlFinal(tca)
+	STRUCT WMTabControlAction &tca
+
+	BSP_UpdateSweepNote(tca.win)
+End
+
+Function BSP_UpdateSweepNote(win)
+	string win
+
+	string scPanel, lbPanel, bsPanel, device, sweepNote
+	string dataFolder, graph
+	variable sweepNo, index
+
+	bsPanel = BSP_GetPanel(win)
+
+	if(GetTabID(bsPanel, "Settings") != 6)
+		// nothing to do
+		return NaN
+	endif
+
+	if(BSP_IsDataBrowser(win))
+		if(!BSP_HasBoundDevice(win))
+			return NaN
+		endif
+
+		scPanel = BSP_GetSweepControlsPanel(win)
+		sweepNo = GetSetVariable(scPanel, "setvar_SweepControl_SweepNo")
+
+		device = BSP_GetDevice(win)
+		DFREF dfr = GetDeviceDataPath(device)
+
+		WAVE/Z/SDFR=dfr sweepWave = $GetSweepWaveName(sweepNo)
+		if(!WaveExists(sweepWave))
+			return NaN
+		endif
+
+		sweepNote = note(sweepWave)
+	else
+		graph = GetMainWindow(win)
+
+		scPanel = BSP_GetSweepControlsPanel(win)
+		index = GetSetVariable(scPanel, "setvar_SweepControl_SweepNo")
+
+		DFREF sweepBrowserDFR = SB_GetSweepBrowserFolder(graph)
+		WAVE/T sweepMap = GetSweepBrowserMap(sweepBrowserDFR)
+
+		dataFolder = sweepMap[index][%DataFolder]
+		device     = sweepMap[index][%Device]
+		sweepNo    = str2num(sweepMap[index][%Sweep])
+
+		DFREF dfr = GetAnalysisSweepDataPath(dataFolder, device, sweepNo)
+		SVAR/SDFR=dfr/Z sweepNoteSVAR = note
+		if(!SVAR_EXISTS(sweepNoteSVAR))
+			return NaN
+		endif
+		sweepNote = sweepNoteSVAR
+	endif
+
+	lbPanel = BSP_GetNotebookSubWindow(win)
+	ReplaceNotebookText(lbPanel, sweepNote)
+End

@@ -79,7 +79,7 @@ Window DataBrowser() : Graph
 	GroupBox group_calc,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"
 	TabControl Settings,pos={0.00,0.00},size={400.00,21.00},proc=ACL_DisplayTab
 	TabControl Settings,help={"Main navigation tab"},userdata(currenttab)=  "0"
-	TabControl Settings,userdata(finalhook)=  "DB_MainTabControlFinal"
+	TabControl Settings,userdata(finalhook)=  "BSP_MainTabControlFinal"
 	TabControl Settings,userdata(ResizeControlsInfo)= A"!!*'\"z!!#C-!!#<`z!!#](Aon\"Qzzzzzzzzzzzzzz!!#o2B4uAeBE3-fz"
 	TabControl Settings,userdata(ResizeControlsInfo) += A"zzzzzzzzzzzz!!#u:Du]k<zzzzzzzzzzz"
 	TabControl Settings,userdata(ResizeControlsInfo) += A"zzz!!#u:Du]k<zzzzzzzzzzzzzz!!!"

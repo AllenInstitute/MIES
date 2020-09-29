@@ -311,14 +311,7 @@ Function SB_UpdateSweepPlot(win)
 
 	RestoreCursors(graph, cursorInfos)
 
-	dataFolder = sweepMap[currentSweep][%DataFolder]
-	device     = sweepMap[currentSweep][%Device]
-	sweepNo    = str2num(sweepMap[currentSweep][%Sweep])
-	DFREF sweepDATAdfr = GetAnalysisSweepDataPath(dataFolder, device, sweepNo)
-	SVAR/Z sweepNote = sweepDATAdfr:note
-	if(SVAR_EXISTS(sweepNote))
-		ReplaceNotebookText(lbPanel, "Sweep note: \r " + sweepNote)
-	endif
+	BSP_UpdateSweepNote(win)
 
 	PostPlotTransformations(graph, POST_PLOT_FULL_UPDATE)
 	SetAxesRanges(graph, axesRanges)
