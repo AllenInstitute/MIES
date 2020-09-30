@@ -270,8 +270,6 @@ Function ValidFunc_V3(panelTitle, s)
 
 	variable hardwareType
 
-	print StringFromList(s.eventType, EVENT_NAME_LIST)
-
 	hardwareType = GetHardwareType(panelTitle)
 
 	CHECK_NON_EMPTY_STR(panelTitle)
