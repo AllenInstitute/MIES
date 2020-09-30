@@ -235,6 +235,8 @@ Function TEST_CASE_END_OVERRIDE(name)
 
 	StopAllBackgroundTasks()
 
+#ifdef AUTOMATED_TESTING_DEBUGGING
+
 	// accessing UTF internals, don't do that at home
 	// but it helps debugging flaky tests
 	DFREF dfr = GetPackageFolder()
@@ -244,6 +246,9 @@ Function TEST_CASE_END_OVERRIDE(name)
 		CtrlNamedBackGround _all_, status
 		print s_info
 	endif
+
+#endif
+
 End
 
 static Function/WAVE GetSweepsFromLBN_IGNORE(device, name)
