@@ -22,9 +22,9 @@
 ///    Function SetupPopupMenuExt()
 ///        KillWindow/Z panel0
 ///        NewPanel/N=$"panel0"/K=1
-///        Button popupext_menu1, pos={3.00, 20.00}, size={200,20},proc=PEXT_ButtonProc,title="DropDownMenu1 ▼", userdata($PEXT_UDATA_POPUPPROC)="DemoProc, userdata($PEXT_UDATA_ITEMGETTER)="GetMenuList1"
-///        Button popupext_menu2, pos={3.00, 55.00}, size={200,20},proc=PEXT_ButtonProc,title="DropDownMenu2 ▼", userdata($PEXT_UDATA_POPUPPROC)="DemoProc, userdata($PEXT_UDATA_ITEMGETTER)="GetMenuList2"
-///        Button popupext_menu3, pos={3.00, 90.00}, size={200,20},proc=PEXT_ButtonProc,title="DropDownMenu3 ▼", userdata($PEXT_UDATA_POPUPPROC)="DemoProc, userdata($PEXT_UDATA_ITEMGETTER)="GetMenuList3"
+///        Button popupext_menu1, pos={3.00, 20.00}, size={200,20},proc=PEXT_ButtonProc,title="DropDownMenu1 ▼", userdata($PEXT_UDATA_POPUPPROC)="DemoProc", userdata($PEXT_UDATA_ITEMGETTER)="GetMenuList1"
+///        Button popupext_menu2, pos={3.00, 55.00}, size={200,20},proc=PEXT_ButtonProc,title="DropDownMenu2 ▼", userdata($PEXT_UDATA_POPUPPROC)="DemoProc", userdata($PEXT_UDATA_ITEMGETTER)="GetMenuList2"
+///        Button popupext_menu3, pos={3.00, 90.00}, size={200,20},proc=PEXT_ButtonProc,title="DropDownMenu3 ▼", userdata($PEXT_UDATA_POPUPPROC)="DemoProc", userdata($PEXT_UDATA_ITEMGETTER)="GetMenuList3"
 ///    End
 ///
 ///    Function DemoProc(pa) : PopupMenuControl
