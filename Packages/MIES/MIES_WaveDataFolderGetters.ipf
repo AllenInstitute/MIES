@@ -5059,7 +5059,7 @@ End
 ///
 /// Rows:
 /// 0: DA (#CHANNEL_TYPE_DAC)
-/// 0: TTL (#CHANNEL_TYPE_TTL)
+/// 1: TTL (#CHANNEL_TYPE_TTL)
 ///
 /// Cols:
 /// 0: Popup menu index of Wave (stimset)
@@ -5092,6 +5092,41 @@ Function/Wave GetIndexingStorageWave(panelTitle)
 	SetDimLabel COLS, 0, CHANNEL_CONTROL_WAVE, wv
 	SetDimLabel COLS, 1, CHANNEL_CONTROL_INDEX_END, wv
 
+	SetWaveVersion(wv, versionOfNewWave)
+
+	return wv
+End
+
+/// @brief Return the indexing history wave
+///
+/// It stores the acquired stimset on each DA channel.
+///
+/// Values:
+///  - Stimset name
+///
+/// Rows:
+/// - running index
+///
+/// Cols:
+/// - DA channels
+Function/Wave GetIndexingHistoryWave(panelTitle)
+	string panelTitle
+
+	DFREF dfr = GetDevicePath(panelTitle)
+	variable versionOfNewWave = 1
+
+	WAVE/T/Z/SDFR=dfr wv = indexingHistoryWave
+
+	if(ExistsWithCorrectLayoutVersion(wv, versionOfNewWave))
+		return wv
+	elseif(WaveExists(wv))
+		// handle upgrade
+		return wv
+	endif
+
+	Make/T/N=(MINIMUM_WAVE_SIZE, NUM_DA_TTL_CHANNELS) dfr:indexingHistoryWave/Wave=wv
+
+	SetNumberInWaveNote(wv, NOTE_INDEX, 0)
 	SetWaveVersion(wv, versionOfNewWave)
 
 	return wv
@@ -6312,19 +6347,17 @@ Function/WAVE GetAnalysisFunctionStorage(panelTitle)
 	return wv
 End
 
-/// @brief Used for storing a true/false state that the pre and/or post set event
-/// should be fired *after* the sweep which is currently prepared in DC_PlaceDataInITCDataWave().
+/// @brief XXXX
 ///
 /// Rows:
-/// - NUM_DA_TTL_CHANNELS
+/// - NUM_HEADSTAGES
 ///
 /// Cols:
 /// - PRE_SET_EVENT
 /// - POST_SET_EVENT
-Function/WAVE GetSetEventFlag(panelTitle)
-	string panelTitle
+Function/WAVE GetSetEventFlag(string panelTitle)
 
-	variable versionOfWave = 1
+	variable versionOfWave = 2
 	DFREF dfr = GetDevicePath(panelTitle)
 	WAVE/D/Z/SDFR=dfr wv = setEventFlag
 
@@ -6333,13 +6366,52 @@ Function/WAVE GetSetEventFlag(panelTitle)
 	elseif(WaveExists(wv))
 		 // handle upgrade
 	else
-		Make/D/N=(NUM_DA_TTL_CHANNELS, 2) dfr:setEventFlag/WAVE=wv
+		Make/D/N=(NUM_HEADSTAGES, 2) dfr:setEventFlag/WAVE=wv
+		wv = 0
 	endif
 
 	SetWaveVersion(wv, versionOfWave)
 
 	SetDimLabel COLS, 0, PRE_SET_EVENT, wv
 	SetDimLabel COLS, 1, POST_SET_EVENT, wv
+
+	SetNumberInWaveNote(wv, NOTE_INDEX, 0)
+
+	return wv
+End
+
+/// @brief Return set event history wave
+///
+/// ROWS:
+/// - Stimset cycle ID or NaN if unset or -1 if it needs to be filled in
+///
+/// COLS:
+/// - NUM_HEADSTAGES
+///
+/// LAYERS:
+/// - PRE_SET_EVENT
+/// - POST_SET_EVENT
+Function/WAVE GetSetEventHistory(string panelTitle)
+
+	variable versionOfWave = 1
+	DFREF dfr = GetDevicePath(panelTitle)
+	WAVE/D/Z/SDFR=dfr wv = setEventHistory
+
+	if(ExistsWithCorrectLayoutVersion(wv, versionOfWave))
+		return wv
+	elseif(WaveExists(wv))
+		 // handle upgrade
+	else
+		Make/D/N=(MINIMUM_WAVE_SIZE, NUM_HEADSTAGES, 2) dfr:setEventHistory/WAVE=wv
+		wv = 0
+	endif
+
+	SetWaveVersion(wv, versionOfWave)
+
+	SetDimLabel LAYERS, 0, PRE_SET_EVENT, wv
+	SetDimLabel LAYERS, 1, POST_SET_EVENT, wv
+
+	SetNumberInWaveNote(wv, NOTE_INDEX, 0)
 
 	return wv
 End

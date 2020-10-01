@@ -821,17 +821,12 @@ static Function DC_PlaceDataInHardwareDataWave(panelTitle, numActiveChannels, da
 	WAVE/T sweepDataTxTLNB    = GetSweepSettingsTextWave(panelTitle)
 	WAVE/T cellElectrodeNames = GetCellElectrodeNames(panelTitle)
 	WAVE/T analysisFunctions  = GetAnalysisFunctionStorage(panelTitle)
-	WAVE setEventFlag         = GetSetEventFlag(panelTitle)
 	WAVE DAGain               = SWS_GetChannelGains(panelTitle, timing = GAIN_BEFORE_DAQ)
 	WAVE config               = GetITCChanConfigWave(panelTitle)
 	WAVE DACList              = GetDACListFromConfig(config)
 	WAVE ADCList              = GetADCListFromConfig(config)
 	WAVE/T epochsWave         = GetEpochsWave(panelTitle)
 	epochsWave = ""
-
-	if(dataAcqOrTP == DATA_ACQUISITION_MODE)
-		setEventFlag = 0
-	endif
 
 	numDACEntries = DimSize(DACList, ROWS)
 	Make/D/FREE/N=(numDACEntries) insertStart, setLength, setColumn, headstageDAC
@@ -981,7 +976,6 @@ static Function DC_PlaceDataInHardwareDataWave(panelTitle, numActiveChannels, da
 			fingerprint = DC_GenerateStimsetFingerprint(raCycleID, setName[i], setCycleCount, setChecksum, dataAcqOrTP)
 			stimsetCycleID = DC_GetStimsetAcqCycleID(panelTitle, fingerprint, channel)
 
-			setEventFlag[i][] = (setColumn[i] + 1 == IDX_NumberOfSweepsInSet(setName[i]))
 			DC_DocumentChannelProperty(panelTitle, STIMSET_ACQ_CYCLE_ID_KEY, headstage, channel, ITC_XOP_CHANNEL_TYPE_DAC, var=stimsetCycleID)
 		endif
 

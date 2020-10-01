@@ -22,8 +22,8 @@ Function IDX_StoreStartFinishForIndexing(panelTitle)
 			channelType = channelTypes[j]
 
 			[waveIdx, indexIdx] = IDX_GetCurrentSets(panelTitle, channelType, i)
-			IndexingStorageWave[channelType][%CHANNEL_CONTROL_WAVE][i] = waveIdx
-			IndexingStorageWave[channelType][%CHANNEL_CONTROL_INDEX_END][i] = indexIdx
+			indexingStorageWave[channelType][%CHANNEL_CONTROL_WAVE][i] = waveIdx
+			indexingStorageWave[channelType][%CHANNEL_CONTROL_INDEX_END][i] = indexIdx
 		endfor
 	endfor
 End
@@ -55,20 +55,36 @@ Function IDX_ResetStartFinishForIndexing(panelTitle)
 	DAP_UpdateDAQControls(panelTitle, REASON_STIMSET_CHANGE)
 End
 
+/// @brief Initialze the indexing history wave for the stimsets
+Function IDX_InitializeIndexHistoryWave(string panelTitle)
+
+	variable i
+	string stimset, lbl
+
+	WAVE/T indexingHistoryWave = GetIndexingHistoryWave(panelTitle)
+	indexingHistoryWave = ""
+	SetNumberInWaveNote(indexingHistoryWave, NOTE_INDEX, 0)
+
+	lbl = GetSpecialControlLabel(CHANNEL_TYPE_DAC, CHANNEL_CONTROL_WAVE)
+
+	for(i = 0; i < NUM_DA_TTL_CHANNELS; i += 1)
+		stimset = DAG_GetTextualValue(panelTitle, lbl, index = i)
+		indexingHistoryWave[0][i] = stimset
+	endfor
+
+	SetNumberInWaveNote(indexingHistoryWave, NOTE_INDEX, 1)
+End
+
 /// @brief Locked indexing, indexes all active channels at once
 static Function IDX_IndexingDoIt(panelTitle)
 	string panelTitle
 
-	variable i
+	variable i, index
 
 	for(i = 0; i < NUM_DA_TTL_CHANNELS; i += 1)
 		IDX_IndexSingleChannel(panelTitle, CHANNEL_TYPE_DAC, i)
 		IDX_IndexSingleChannel(panelTitle, CHANNEL_TYPE_TTL, i)
 	endfor
-
-	// need to fire pre set event on next occasion
-	WAVE setEventFlag = GetSetEventFlag(panelTitle)
-	setEventFlag[][%PRE_SET_EVENT] = 1
 
 	DAP_UpdateDAQControls(panelTitle, REASON_STIMSET_CHANGE_DUR_DAQ)
 	NVAR activeSetCount = $GetActiveSetCount(panelTitle)
@@ -83,7 +99,7 @@ static Function IDX_IndexSingleChannel(panelTitle, channelType, channel)
 	variable channelType, channel
 
 	variable first, last
-	variable waveIdx, indexIdx
+	variable waveIdx, indexIDx, index
 	string ctrl
 
 	ctrl = GetSpecialControlLabel(channelType, CHANNEL_CONTROL_CHECK)
@@ -365,8 +381,7 @@ Function IDX_NumberOfSweepsInSet(setName)
 
 	if(isEmpty(setName))
 		return 0
-	endif
-	if(!CmpStr(setName, STIMSET_TP_WHILE_DAQ))
+	elseif(!CmpStr(setName, STIMSET_TP_WHILE_DAQ))
 		return 1
 	endif
 
@@ -383,7 +398,7 @@ static Function IDX_ApplyUnLockedIndexing(panelTitle, count)
 	string panelTitle
 	variable count
 
-	variable i, update
+	variable i, update, index
 
 	WAVE statusDAFiltered = DC_GetFilteredChannelState(panelTitle, DATA_ACQUISITION_MODE, CHANNEL_TYPE_DAC, DAQChannelType = DAQ_CHANNEL_TYPE_DAQ)
 	WAVE statusTTLFiltered = DC_GetFilteredChannelState(panelTitle, DATA_ACQUISITION_MODE, CHANNEL_TYPE_TTL, DAQChannelType = DAQ_CHANNEL_TYPE_DAQ)
@@ -413,6 +428,10 @@ static Function IDX_ApplyUnLockedIndexing(panelTitle, count)
 	endfor
 
 	if(update)
+		WAVE indexingHistoryWave = GetIndexingHistoryWave(panelTitle)
+		index = GetNumberFromWaveNote(indexingHistoryWave, NOTE_INDEX)
+		SetNumberInWaveNote(indexingHistoryWave, NOTE_INDEX, ++index)
+
 		DAP_UpdateDAQControls(panelTitle, REASON_STIMSET_CHANGE_DUR_DAQ)
 		NVAR activeSetCount = $GetActiveSetCount(panelTitle)
 		activeSetCount = IDX_CalculcateActiveSetCount(panelTitle)
@@ -469,30 +488,88 @@ Function IDX_UnlockedIndexingStepNo(panelTitle, channelNumber, channelType, coun
 	return count - StepsInSummedSets
 end
 
+/// @brief Return true if the currently acquired sweep, as determined by count, is the last sweep in the stimulus set
+///
+/// Incrementing count by one would then cross the simulus set border.
 static Function IDX_DetIfCountIsAtSetBorder(panelTitle, count, channelNumber, channelType)
 	string panelTitle
 	variable count, channelNumber, channelType
 
 	variable i, stepsInSummedSets, totalListSteps, direction
-	variable first, last
+	variable first, last, numSweeps, result
+	string stimset
 
 	WAVE indexingStorageWave = GetIndexingStorageWave(panelTitle)
 	first = indexingStorageWave[channelType][%CHANNEL_CONTROL_WAVE][channelNumber]
 	last  = indexingStorageWave[channelType][%CHANNEL_CONTROL_INDEX_END][channelNumber]
 
 	WAVE stimsets = IDX_GetStimsets(panelTitle, channelNumber, channelType)
+
 	TotalListSteps = IDX_TotalIndexingListSteps(panelTitle, ChannelNumber, channelType)
 	ASSERT(TotalListSteps > 0, "Expected strictly positive value")
-	ASSERT(first != last, "Unexpected combo")
+	count = ((mod(count, totalListSteps) == 0 && count > 0) ? totalListSteps : mod(count, totalListSTeps))
 
-	count = (mod(count, totalListSteps) == 0 ? totalListSteps : mod(count, totalListSTeps))
 	direction = first < last ? +1 : -1
 
 	for(i = 0; stepsInSummedSets <= count; i += direction)
-		stepsInSummedSets += IDX_NumberOfSweepsInSet(IDX_GetSingleStimset(stimsets, first + i))
+		stimset = IDX_GetSingleStimset(stimsets, first + i)
+		stepsInSummedSets += IDX_NumberOfSweepsInSet(stimset)
 
 		if(stepsInSummedSets == count)
 			return 1
+		endif
+	endfor
+
+	return 0
+End
+
+/// @brief Return true if the currently acquired sweep, as determined by count, is the last sweep in the stimulus set
+///
+/// Incrementing count by one would then cross the simulus set border.
+Function IDX_DetIfCountIsAtStimsetSetBorder(panelTitle, count, channelNumber)
+	string panelTitle
+	variable count, channelNumber
+
+	variable i, stepsInSummedSets, totalListSteps, direction
+	variable first, last, numSweeps, result, index, numHistoryEntries
+	string stimset, lbl
+
+	if(count == -1)
+		return 1
+	endif
+
+	// count is 0-based
+	// so for equality comparison with a size value like numSweeps
+	// we need to add 1
+	count += 1
+
+// generic approach should work as well
+//
+//	if(!DAG_GetNumericalValue(panelTitle, "Check_DataAcq_Indexing"))
+//		lbl = GetSpecialControlLabel(channelType, CHANNEL_CONTROL_WAVE)
+//		stimset = DAG_GetTextualValue(panelTitle, lbl, index = channelNumber)
+//		numSweeps = IDX_NumberOfSweepsInSet(stimset)
+//
+//		result = count / numSweeps
+//		return IsInteger(result)
+//	endif
+//
+	WAVE/T indexingHistoryWave = GetIndexingHistoryWave(panelTitle)
+	numHistoryEntries = GetNumberFromWaveNote(indexingHistoryWave, NOTE_INDEX)
+
+	for(i = 0;i < numHistoryEntries; i += 1)
+		stimset = indexingHistoryWave[i][channelNumber]
+
+		if(IsEmpty(stimset))
+			continue
+		endif
+
+		stepsInSummedSets += IDX_NumberOfSweepsInSet(stimset)
+
+		if(stepsInSummedSets == count)
+			return 1
+		elseif(stepsInSummedSets > count)
+			return 0
 		endif
 	endfor
 
@@ -621,4 +698,41 @@ Function IDX_HandleIndexing(string panelTitle)
 			endfor
 		endif
 	endif
+End
+
+static Function IDX_IndexingHistoryUpdate(string panelTitle)
+
+	variable index, i, DAC
+	string stimset, lbl
+
+	WAVE setEventFlag = GetSetEventFlag(panelTitle)
+
+	if(Sum(setEventFlag) == 0)
+		return NaN
+	endif
+
+	WAVE statusHS = DAG_GetChannelState(panelTitle, CHANNEL_TYPE_HEADSTAGE)
+
+	WAVE/T indexingHistoryWave = GetIndexingHistoryWave(panelTitle)
+	index = GetNumberFromWaveNote(indexingHistoryWave, NOTE_INDEX)
+
+	lbl = GetSpecialControlLabel(CHANNEL_TYPE_DAC, CHANNEL_CONTROL_WAVE)
+
+	for(i = 0; i < NUM_HEADSTAGES; i += 1)
+
+		if(!statusHS[i])
+			continue
+		endif
+
+		if(setEventFlag[i][%POST_SET_EVENT] == 0)
+			continue
+		endif
+
+		DAC = AFH_GetDACFromHeadstage(panelTitle, i)
+		stimset = DAG_GetTextualValue(panelTitle, lbl, index = DAC)
+
+		indexingHistoryWave[index][DAC] = stimset
+	endfor
+
+	SetNumberInWaveNote(indexingHistoryWave, NOTE_INDEX, ++index)
 End

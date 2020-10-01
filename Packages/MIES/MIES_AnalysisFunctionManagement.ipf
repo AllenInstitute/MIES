@@ -29,10 +29,12 @@ Function AFM_CallAnalysisFunctions(panelTitle, eventType)
 	NVAR stopCollectionPoint = $GetStopCollectionPoint(panelTitle)
 	WAVE statusHS = DAG_GetChannelState(panelTitle, CHANNEL_TYPE_HEADSTAGE)
 	WAVE/T allSetNames = DAG_GetChannelTextual(panelTitle, CHANNEL_TYPE_DAC, CHANNEL_CONTROL_WAVE)
-	WAVE setEventFlag = GetSetEventFlag(panelTitle)
 	fifoPosition = ROVar(GetFifoPosition(panelTitle))
-
 	WAVE/T analysisFunctions = GetAnalysisFunctionStorage(panelTitle)
+
+	if(eventType == PRE_SET_EVENT || eventType == POST_SET_EVENT)
+		WAVE setEventFlagWithoutAlreadyFired = AFM_GetEventFlags(panelTitle, eventType, statusHS, count)
+	endif
 
 	if(eventType == PRE_DAQ_EVENT || eventType == PRE_SET_EVENT)
 		realDataLength = NaN
@@ -68,9 +70,8 @@ Function AFM_CallAnalysisFunctions(panelTitle, eventType)
 			continue
 		endif
 
-
-		if((eventType == PRE_SET_EVENT && !setEventFlag[DAC][%PRE_SET_EVENT]) \
-		   || (eventType == POST_SET_EVENT && !setEventFlag[DAC][%POST_SET_EVENT]))
+		if((eventType == PRE_SET_EVENT && !setEventFlagWithoutAlreadyFired[i][%PRE_SET_EVENT]) \
+		   || (eventType == POST_SET_EVENT && !setEventFlagWithoutAlreadyFired[i][%POST_SET_EVENT]))
 			sprintf msg, "Skipping event \"%s\" on headstage %d", StringFromList(eventType, EVENT_NAME_LIST), i
 			DEBUGPRINT(msg)
 			continue
@@ -158,6 +159,10 @@ Function AFM_CallAnalysisFunctions(panelTitle, eventType)
 		endif
 	endfor
 
+	if(eventType == PRE_SET_EVENT || eventType == POST_SET_EVENT)
+		AFM_SetHistoryEventFillIn(panelTitle, eventType, statusHS, count, setEventFlagWithoutAlreadyFired)
+	endif
+
 	return 0
 End
 
@@ -211,4 +216,113 @@ Function AFM_UpdateAnalysisFunctionWave(panelTitle)
 
 		analysisFunctions[i][ANALYSIS_FUNCTION_PARAMS] = ExtractAnalysisFunctionParams(stimSet)
 	endfor
+End
+
+static Function AFM_SetHistoryEventFillIn(string panelTitle, variable eventType, WAVE statusHS, variable count, WAVE setEventFlagWithoutAlreadyFired)
+
+	variable index, sweepNo, i, DAC
+
+	if(Sum(setEventFlagWithoutAlreadyFired) == 0)
+		return NaN
+	endif
+
+	// skipping the first sweep backwards results in count being  -1
+	index = limit(count, 0, inf)
+
+	WAVE setEventHistory = GetSetEventHistory(panelTitle)
+	EnsureLargeEnoughWave(setEventHistory, minimumSize=index)
+
+	switch(eventType)
+		case PRE_SET_EVENT:
+			setEventHistory[index][][%PRE_SET_EVENT]  += setEventFlagWithoutAlreadyFired[q][r]
+			break
+		case POST_SET_EVENT:
+			setEventHistory[index][][%POST_SET_EVENT] += setEventFlagWithoutAlreadyFired[q][r]
+			break
+		default:
+			ASSERT(0, "Unsupported event type")
+	endswitch
+
+	SetNumberInWaveNote(setEventHistory, NOTE_INDEX, index + 1)
+End
+
+static Function/WAVE AFM_GetEventFlags(string panelTitle, variable eventType, WAVE statusHS, variable count)
+
+	variable i, result, DAC
+	string msg
+
+	WAVE setEventFlag = GetSetEventFlag(panelTitle)
+
+	switch(eventType)
+		case PRE_SET_EVENT:
+			setEventFlag[][%PRE_SET_EVENT] = 0
+			break
+		case POST_SET_EVENT:
+			setEventFlag[][%POST_SET_EVENT] = 0
+			break
+		default:
+			ASSERT(0, "Unsupported event type")
+	endswitch
+
+	for(i = 0; i < NUM_HEADSTAGES; i += 1)
+
+		if(!statusHS[i])
+			continue
+		endif
+
+		DAC = AFH_GetDACFromHeadstage(panelTitle, i)
+
+		switch(eventType)
+			case PRE_SET_EVENT:
+				result = IDX_DetIfCountIsAtstimsetSetBorder(panelTitle, count - 1, DAC)
+				setEventFlag[i][%PRE_SET_EVENT] = result
+				break
+			case POST_SET_EVENT:
+				result = count >=0 && IDX_DetIfCountIsAtstimsetSetBorder(panelTitle, count, DAC)
+				setEventFlag[i][%POST_SET_EVENT] = result
+				break
+			default:
+				ASSERT(0, "Unsupported event type")
+		endswitch
+	endfor
+
+	WAVE alreadyFired = AFM_EventAlreadyFired(panelTitle, count)
+
+	sprintf msg, "count %d, setEventFlag PRE [%g, %g], POST [%g, %g], alreadyFired PRE [%g, %g], POST [%g, %g]\r", count, setEventFlag[0][%PRE_SET_EVENT], setEventFlag[1][%PRE_SET_EVENT], setEventFlag[0][%POST_SET_EVENT], setEventFlag[1][%POST_SET_EVENT], alreadyFired[0][%PRE_SET_EVENT], alreadyFired[1][%PRE_SET_EVENT], alreadyFired[0][%POST_SET_EVENT], alreadyFired[1][%POST_SET_EVENT]
+	DEBUGPRINT(msg)
+
+	Duplicate/FREE setEventFlag, setEventFlagWithoutAlreadyFired
+
+	switch(eventType)
+		case PRE_SET_EVENT:
+			setEventFlagWithoutAlreadyFired[][%PRE_SET_EVENT] = !alreadyFired[p][q] && setEventFlag[p][q]
+			break
+		case POST_SET_EVENT:
+			setEventFlagWithoutAlreadyFired[][%POST_SET_EVENT] = !alreadyFired[p][q] && setEventFlag[p][q]
+			break
+		default:
+			ASSERT(0, "Unsupported event type")
+	endswitch
+
+	return setEventFlagWithoutAlreadyFired
+End
+
+/// @brief Return a wave with NUM_HEADSTAGES rows and two columns with boolean
+/// values denoting if the PRE_SET_EVENT/POST_SET_EVENT were already fired once.
+static Function/WAVE AFM_EventAlreadyFired(string panelTitle, variable count)
+
+	variable index
+
+	WAVE setEventHistory = GetSetEventHistory(panelTitle)
+
+	Make/FREE/N=(NUM_HEADSTAGES, 2) result = 0
+
+	SetDimLabel COLS, 0, PRE_SET_EVENT, result
+	SetDimLabel COLS, 1, POST_SET_EVENT, result
+
+	index = limit(count, 0, inf)
+
+	result[][] = setEventHistory[index][p][q]
+
+	return result
 End

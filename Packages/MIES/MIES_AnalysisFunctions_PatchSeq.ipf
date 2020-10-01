@@ -1548,13 +1548,11 @@ Function PSQ_DAScale(panelTitle, s)
 			if(!sweepPassed)
 				// not enough sweeps left to pass the set
 				if((sweepsInSet - acquiredSweepsInSet) < (numSweepsPass - passesInSet))
-					PSQ_ForceSetEvent(panelTitle, s.headstage)
 					RA_SkipSweeps(panelTitle, inf)
 					return NaN
 				endif
 			else
 				if(passesInSet >= numSweepsPass)
-					PSQ_ForceSetEvent(panelTitle, s.headstage)
 					RA_SkipSweeps(panelTitle, inf, limitToSetBorder = 1)
 					return NaN
 				else
@@ -1866,7 +1864,6 @@ Function PSQ_SquarePulse(panelTitle, s)
 					WAVE spikeWithDAScaleZero = GetLastSettingIndepEachSCI(numericalValues, s.sweepNo, key, s.headstage, UNKNOWN_MODE)
 					WaveTransform/O zapNaNs, spikeWithDAScaleZero
 					if(DimSize(spikeWithDAScaleZero, ROWS) == PSQ_NUM_MAX_DASCALE_ZERO)
-						PSQ_ForceSetEvent(panelTitle, s.headstage)
 						RA_SkipSweeps(panelTitle, inf, limitToSetBorder = 1)
 					endif
 				elseif(CheckIfClose(stepSize, PSQ_SP_INIT_AMP_m50))
@@ -1879,7 +1876,6 @@ Function PSQ_SquarePulse(panelTitle, s)
 
 					sweepPassed = 1
 
-					PSQ_ForceSetEvent(panelTitle, s.headstage)
 					RA_SkipSweeps(panelTitle, inf, limitToSetBorder = 1)
 				elseif(CheckIfClose(stepSize, PSQ_SP_INIT_AMP_p100))
 					PSQ_StoreStepSizeInLBN(panelTitle, PSQ_SQUARE_PULSE, s.sweepNo, PSQ_SP_INIT_AMP_m50)
@@ -1918,7 +1914,6 @@ Function PSQ_SquarePulse(panelTitle, s)
 			setPassed = PSQ_NumPassesInSet(numericalValues, PSQ_SQUARE_PULSE, s.sweepNo, s.headstage) >= 1
 
 			if(!setPassed)
-				PSQ_ForceSetEvent(panelTitle, s.headstage)
 				RA_SkipSweeps(panelTitle, inf)
 			endif
 
@@ -2191,7 +2186,6 @@ Function PSQ_Rheobase(panelTitle, s)
 						key = PSQ_CreateLBNKey(PSQ_RHEOBASE, PSQ_FMT_LBN_SET_PASS)
 						result[INDEP_HEADSTAGE] = 1
 						ED_AddEntryToLabnotebook(panelTitle, key, result, unit = LABNOTEBOOK_BINARY_UNIT)
-						PSQ_ForceSetEvent(panelTitle, s.headstage)
 						RA_SkipSweeps(panelTitle, inf, limitToSetBorder = 1)
 
 						DEBUGPRINT("Sweep has passed")
@@ -2223,7 +2217,6 @@ Function PSQ_Rheobase(panelTitle, s)
 					result[s.headstage] = 1
 					ED_AddEntryToLabnotebook(panelTitle, key, result, unit = LABNOTEBOOK_BINARY_UNIT)
 
-					PSQ_ForceSetEvent(panelTitle, s.headstage)
 					RA_SkipSweeps(panelTitle, inf)
 
 					DEBUGPRINT("Set has failed")
@@ -2257,7 +2250,6 @@ Function PSQ_Rheobase(panelTitle, s)
 				key = PSQ_CreateLBNKey(PSQ_RHEOBASE, PSQ_FMT_LBN_RB_DASCALE_EXC)
 				ED_AddEntryToLabnotebook(panelTitle, key, result, unit = LABNOTEBOOK_BINARY_UNIT)
 
-				PSQ_ForceSetEvent(panelTitle, s.headstage)
 				RA_SkipSweeps(panelTitle, inf)
 
 				DEBUGPRINT("Set has failed")
@@ -2278,7 +2270,6 @@ Function PSQ_Rheobase(panelTitle, s)
 				result[INDEP_HEADSTAGE] = 0
 				ED_AddEntryToLabnotebook(panelTitle, key, result, unit = LABNOTEBOOK_BINARY_UNIT)
 
-				PSQ_ForceSetEvent(panelTitle, s.headstage)
 				RA_SkipSweeps(panelTitle, inf)
 
 				DEBUGPRINT("Set has failed")
@@ -2585,12 +2576,10 @@ Function PSQ_Ramp(panelTitle, s)
 			if(!sweepPassed)
 				// not enough sweeps left to pass the set
 				if((sweepsInSet - acquiredSweepsInSet) < (PSQ_RA_NUM_SWEEPS_PASS - passesInSet))
-					PSQ_ForceSetEvent(panelTitle, s.headstage)
 					RA_SkipSweeps(panelTitle, inf)
 				endif
 			else
 				if(passesInSet >= PSQ_RA_NUM_SWEEPS_PASS)
-					PSQ_ForceSetEvent(panelTitle, s.headstage)
 					RA_SkipSweeps(panelTitle, inf, limitToSetBorder = 1)
 				endif
 			endif
@@ -2842,21 +2831,4 @@ Function PSQ_MapFunctionToConstant(anaFunc)
 		default:
 			return NaN
 	endswitch
-End
-
-/// @brief Manually force the pre/post set events
-///
-/// Required to do before skipping sweeps.
-/// @todo this hack must go away.
-static Function PSQ_ForceSetEvent(panelTitle, headstage)
-	string panelTitle
-	variable headstage
-
-	variable DAC
-
-	WAVE setEventFlag = GetSetEventFlag(panelTitle)
-	DAC = AFH_GetDACFromHeadstage(panelTitle, headstage)
-
-	setEventFlag[DAC][%PRE_SET_EVENT]  = 1
-	setEventFlag[DAC][%POST_SET_EVENT] = 1
 End

@@ -1212,14 +1212,14 @@ Function DAP_OneTimeCallBeforeDAQ(panelTitle, runMode)
 	WAVE stimsetAcqIDHelper = GetStimsetAcqIDHelperWave(panelTitle)
 	stimsetAcqIDHelper = NaN
 
+	WAVE setEventHistory = GetSetEventHistory(panelTitle)
+	setEventHistory = 0
+	SetNumberInWaveNote(setEventHistory, NOTE_INDEX, 0)
+
 	DAP_ClearDelayedClampModeChange(panelTitle)
 
-	WAVE setEventFlag = GetSetEventFlag(panelTitle)
-	setEventFlag[][%PRE_SET_EVENT] = 1
-
-	if(DAG_GetNumericalValue(panelTitle, "Check_DataAcq_Indexing"))
-		IDX_StoreStartFinishForIndexing(panelTitle)
-	endif
+	IDX_StoreStartFinishForIndexing(panelTitle)
+	IDX_InitializeIndexHistoryWave(panelTitle)
 
 	// disable the clamp mode checkboxes of all active headstages
 	WAVE statusHS = DAG_GetChannelState(panelTitle, CHANNEL_TYPE_HEADSTAGE)
