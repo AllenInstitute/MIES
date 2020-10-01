@@ -274,11 +274,11 @@ static Function/WAVE AFM_GetEventFlags(string panelTitle, variable eventType, WA
 
 		switch(eventType)
 			case PRE_SET_EVENT:
-				result = IDX_DetIfCountIsAtstimsetSetBorder(panelTitle, count - 1, DAC)
+				result = IDX_DetIfCountIsAtstimsetSetBorder(panelTitle, count , DAC, PRE_SET_EVENT)
 				setEventFlag[i][%PRE_SET_EVENT] = result
 				break
 			case POST_SET_EVENT:
-				result = count >=0 && IDX_DetIfCountIsAtstimsetSetBorder(panelTitle, count, DAC)
+				result = count >=0 && IDX_DetIfCountIsAtstimsetSetBorder(panelTitle, count, DAC, POST_SET_EVENT)
 				setEventFlag[i][%POST_SET_EVENT] = result
 				break
 			default:
