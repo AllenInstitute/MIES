@@ -201,7 +201,7 @@ End
 Function RA_Counter(panelTitle)
 	string panelTitle
 
-	variable numTotalSweeps, indexing, indexingLocked, runMode
+	variable numTotalSweeps, runMode
 	string str
 
 	runMode = ROVar(GetDataAcqRunMode(panelTitle))
@@ -222,23 +222,13 @@ Function RA_Counter(panelTitle)
 	RA_PerfAddMark(panelTitle, count)
 #endif
 
-	numTotalSweeps = RA_GetTotalNumberOfSweeps(panelTitle)
-	indexing       = DAG_GetNumericalValue(panelTitle, "Check_DataAcq_Indexing")
-	indexingLocked = DAG_GetNumericalValue(panelTitle, "Check_DataAcq1_IndexingLocked")
-
-
 	sprintf str, "count=%d, activeSetCount=%d\r" count, activeSetCount
 	DEBUGPRINT(str)
 
 	RA_StepSweepsRemaining(panelTitle)
+	IDX_HandleIndexing(panelTitle)
 
-	if(indexing)
-		if(indexingLocked && activeSetcount == 0)
-			IDX_IndexingDoIt(panelTitle)
-		elseif(!indexingLocked)
-			IDX_ApplyUnLockedIndexing(panelTitle, count)
-		endif
-	endif
+	numTotalSweeps = RA_GetTotalNumberOfSweeps(panelTitle)
 
 	if(Count < numTotalSweeps)
 		try
@@ -329,11 +319,11 @@ End
 Function RA_CounterMD(panelTitle)
 	string panelTitle
 
-	variable numTotalSweeps, activeSetCountMax
+	variable numTotalSweeps
 	NVAR count = $GetCount(panelTitle)
 	NVAR activeSetCount = $GetActiveSetCount(panelTitle)
-	variable i, indexing, indexingLocked, numFollower, followerActiveSetCount, runMode
-	string str, followerPanelTitle
+	variable i, runMode
+	string str
 
 	runMode = ROVar(GetDataAcqRunMode(panelTitle))
 
@@ -350,64 +340,13 @@ Function RA_CounterMD(panelTitle)
 	RA_PerfAddMark(panelTitle, count)
 #endif
 
-	numTotalSweeps = RA_GetTotalNumberOfSweeps(panelTitle)
-	indexing       = DAG_GetNumericalValue(panelTitle, "Check_DataAcq_Indexing")
-	indexingLocked = DAG_GetNumericalValue(panelTitle, "Check_DataAcq1_IndexingLocked")
-
 	sprintf str, "count=%d, activeSetCount=%d\r" count, activeSetCount
 	DEBUGPRINT(str)
 
 	RA_StepSweepsRemaining(panelTitle)
+	IDX_HandleIndexing(panelTitle)
 
-	if(indexing)
-		if(indexingLocked && activeSetCount == 0)
-			IDX_IndexingDoIt(panelTitle)
-		elseif(!indexingLocked)
-			// indexing is not locked = channel indexes when set has completed all its steps
-			IDX_ApplyUnLockedIndexing(panelTitle, count)
-		endif
-	endif
-
-	if(DeviceHasFollower(panelTitle))
-
-		activeSetCountMax = activeSetCount
-
-		SVAR listOfFollowerDevices = $GetFollowerList(panelTitle)
-		numFollower = ItemsInList(listOfFollowerDevices)
-		for(i = 0; i < numFollower; i += 1)
-			followerPanelTitle = StringFromList(i, listOfFollowerDevices)
-			NVAR followerCount = $GetCount(followerPanelTitle)
-			followerCount += 1
-
-			RA_StepSweepsRemaining(followerPanelTitle)
-
-			if(indexing)
-				if(indexingLocked && activeSetCount == 0)
-					IDX_IndexingDoIt(followerPanelTitle)
-					followerActiveSetCount = IDX_CalculcateActiveSetCount(followerPanelTitle)
-					activeSetCountMax = max(activeSetCountMax, followerActiveSetCount)
-				elseif(!indexingLocked)
-					// channel indexes when set has completed all its steps
-					IDX_ApplyUnLockedIndexing(followerPanelTitle, count)
-					followerActiveSetCount = IDX_CalculcateActiveSetCount(followerPanelTitle)
-					activeSetCountMax = max(activeSetCountMax, followerActiveSetCount)
-				endif
-			endif
-		endfor
-
-		if(indexing)
-			// set maximum on leader and all followers
-			NVAR activeSetCount = $GetActiveSetCount(panelTitle)
-			activeSetCount = activeSetCountMax
-
-			for(i = 0; i < numFollower; i += 1)
-				followerPanelTitle = StringFromList(i, listOfFollowerDevices)
-
-				NVAR activeSetCount = $GetActiveSetCount(followerPanelTitle)
-				activeSetCount = activeSetCountMax
-			endfor
-		endif
-	endif
+	numTotalSweeps = RA_GetTotalNumberOfSweeps(panelTitle)
 
 	if(count < numTotalSweeps)
 		DQM_StartDAQMultiDevice(panelTitle, initialSetupReq=0)
