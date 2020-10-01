@@ -106,15 +106,17 @@ Input data for the worker is given through a free data folder that is created by
 
  .. code-block:: igorpro
 
-    DFREF threadDF = ASYNC_PrepareDF("WorkerFunction", "ReadOutFunction", inOrder)
+    DFREF threadDF = ASYNC_PrepareDF("WorkerFunction", "ReadOutFunction", "WorkLoadClass", inOrder=flag)
 
 The :cpp:func:`ASYNC_PrepareDF` function returns a reference to a prepared data
 folder. WorkerFunction and ReadOutFunction are the function names of worker and
-readout this job type.
+readout this job type. The work load class is a string that registers the work
+load in a named group. It allows to keep track of the work loads of this group,
+e.g. if all work loads that were pushed to execution are already read out and
+thus finished.
 
-A job type is defined by the combination of the names of the worker function and
-ReadOut function. For a job type the readout function gets called in the same
-order as the jobs were executed.
+For a work load class the readout function gets called in the same
+order as the work loads were executed by :cpp:func:`ASYNC_Execute`.
 
 Setting the optional parameter ``inOrder=0`` allows to process read outs as soon
 as output data arrives from the worker function.
@@ -144,22 +146,24 @@ If all desired input data was added the job is started by calling :cpp:func:`ASY
     ASYNC_Execute(threadDF)
 
 The function takes the prepared data folder as input and puts it into the queue
-for the workers. The registered worker will receive the input data and execute
+for the workers. If the work load class given when the ``threadDF`` was created was not known to the Async frame work it is registered and
+the execution order ``inOrder`` is set for this work load class. All following work loads of this class must have the same order set.
+The registered worker will receive the input data and execute
 in parallel. After the worker finishes its output data is queued to be received
 by the registered readout function.
 
-Job types and execution order
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Work class types and execution order
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-The job type is defined by the combination of worker function name and
-readout function name. The following code creates input data folders for two
-different job types.
+The work class type setup on :cpp:func:`ASYNC_PrepareDF` is also used to attribute jobs
+for ordered/unordered execution.
 
  .. code-block:: igorpro
 
-    DFREF threadDF1 = ASYNC_PrepareDF("Worker1", "ReadOut1")
+    DFREF threadDF1 = ASYNC_PrepareDF("Worker1", "ReadOut1", "workload1")
 
-    DFREF threadDF2 = ASYNC_PrepareDF("Worker2", "ReadOut2")
+    // This work load is read out unordered (as it is done executing).
+    DFREF threadDF2 = ASYNC_PrepareDF("Worker1", "ReadOut1", "workload2", inOrder=0)
 
 Any number of job types can be executed with :cpp:func:`ASYNC_Execute` .
 Their respective worker functions will be executed by the threads in parallel.
@@ -167,12 +171,41 @@ All jobs are scheduled in the order they were queued by :cpp:func:`ASYNC_Execute
 independent of their respective type.
 
 By default the Async framework tracks the order of jobs as they are queued by
-:cpp:func:`ASYNC_Execute` per job type. The associated readout functions are
+:cpp:func:`ASYNC_Execute` per work load class type. The associated readout functions are
 called in the same order. If a newer job finishes earlier, the jobs output data
 is buffered by the framework until it is the jobs turn to be readout.
 
-Execution of jobs with different types and in-order or without ordered
+Execution of different work load classes and in-order or without ordered
 readout can be mixed.
+
+Check if jobs are finished
+~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+With the work load class each job gets attributed to a named group as it is queued
+by :cpp:func:`ASYNC_Execute`. The Async framework keeps track if the queued and read out
+jobs of each work load class. By calling :cpp:func:`ASYNC_IsWorkloadClassDone`
+the user can check if for all queued work loads of this class the read out of
+their respective results were already called. If the number of sent work loads
+and received results match, the work load class is considered "done".
+Optionally the same function allows to remove the registration of the work load class,
+if it is done, from the Async framework. It is recommended to remove it, when
+it is finished.
+
+For the case that the user just wants to wait until work loads are finished the function
+:cpp:func:`ASYNC_WaitForWLCToFinishAndRemove` should be used. It allows to wait for a
+given work load class to finish with a time out. When the work loads finish within the time
+out they are removed automatically.
+
+Changing execution order of a work load class
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Generally for a new work load class :cpp:func:`ASYNC_Execute` registers the order for this class as well.
+Afterwards the order is fixed for all subsequent work loads of this class.
+
+The order can be changed by finishing and removing the work load class with :cpp:func:`ASYNC_WaitForWLCToFinishAndRemove`.
+Afterwards the work load class is unknown to Async frame work. Thus, :cpp:func:`ASYNC_Execute` will accept a ``threadDF``
+with the same work load class name but a different ``inOrder`` setting.
+
 
 Details on Stopping Threads
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~
