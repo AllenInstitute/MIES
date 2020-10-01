@@ -117,6 +117,8 @@ static StrConstant WAVE_NOTE_PROCNAME = "PROC"
 static StrConstant WAVE_NOTE_WINDOWNAME = "WINNAME"
 static StrConstant WAVE_NOTE_CTRLNAME = "CTRLNAME"
 static StrConstant MENUNAME_UNUSED = "*** bug, report to dev ***"
+static StrConstant MENU_DISABLE_SPECIAL = "\\M0"
+static StrConstant LSEP = ";"
 
 /// @brief Menu definition templates for up to 10 sub menus.
 ///        The constant MAX_SUBMENUS stores the number of these definitions
@@ -337,7 +339,7 @@ Function/S PEXT_SubMenuName(subMenuNr)
 		return MENUNAME_UNUSED
 	endif
 
-	return s
+	return MENU_DISABLE_SPECIAL + s
 End
 
 /// @brief Returns menu items for all PEXT menus
@@ -476,7 +478,7 @@ static Function PEXT_VerifyAndSetMenuWave(menuWave)
 				ASSERT(!IsEmpty(subItem), "Defined sub menu entry is empty")
 				SetDimLabel ROWS, i, $subItem, itemListWave
 			endfor
-			multithread itemListWave[] = menuWave[p]
+			multithread itemListWave[] = MENU_DISABLE_SPECIAL + ReplaceString(LSEP, menuWave[p], LSEP + MENU_DISABLE_SPECIAL)
 		endif
 	endif
 End
