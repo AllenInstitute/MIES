@@ -32,14 +32,13 @@ static Constant CHUNKS = 3
 static StrConstant ASYNC_THREAD_MARKER_STR = "threadDFMarker"
 static StrConstant ASYNC_WORKERFUNC_STR = "WorkerFunc"
 static StrConstant ASYNC_READOUTFUNC_STR = "ReadOutFunc"
-static StrConstant ASYNC_WORKLOADID_STR = "workloadID"
 static StrConstant ASYNC_WORKLOADCLASS_STR = "workloadClass"
 static StrConstant ASYNC_PARAMCOUNT_STR = "paramCount"
 static StrConstant ASYNC_INORDER_STR = "inOrder"
-static StrConstant ASYNC_ORDERID_STR = "orderID"
 static StrConstant ASYNC_ABORTFLAG_STR = "abortFlag"
 static StrConstant ASYNC_ERROR_STR = "err"
 static StrConstant ASYNC_ERRORMSG_STR = "errmsg"
+static StrConstant ASYNC_WLCOUNTER_STR = "workloadClassCounter"
 /// @}
 
 /// @brief Starts the Async Framework with numThreads parallel threads.
@@ -174,15 +173,12 @@ Function ASYNC_ThreadReadOut()
 	variable bufferSize, i
 	variable justBuffered
 
-	variable orderIndex, statCnt
+	variable wlcIndex, statCnt
 	string rterrmsg
 	NVAR tgID = $GetThreadGroupID()
 	ASSERT(!isNaN(tgID), "Async frame work is not running")
 	WAVE/DF DFREFbuffer = GetDFREFBuffer(getAsyncHomeDF())
-	WAVE/T workloadID = GetWorkloadID(getAsyncHomeDF())
-	WAVE workloadOrder = GetWorkloadOrder(getAsyncHomeDF())
 	WAVE track = GetWorkloadTracking(getAsyncHomeDF())
-	NVAR rc = $GetReadOutCounter()
 
 	for(;;)
 		DFREF dfr = ThreadGroupGetDFR(tgID, 0)
@@ -197,13 +193,12 @@ Function ASYNC_ThreadReadOut()
 			for(i = 0; i < bufferSize; i += 1)
 				DFREF dfr = DFREFbuffer[i]
 				DFREF dfrOut = dfr:freeroot
-				NVAR orderID = dfr:$ASYNC_ORDERID_STR
-				SVAR wID = dfr:$ASYNC_WORKLOADID_STR
 
-				FindValue/TXOP=4/TEXT=wID workloadID
-				orderIndex = V_Value
-				ASSERT(orderIndex != -1, "workloadID not found")
-				if(orderID == workloadOrder[orderIndex][%orderGlobal])
+				WAVE workloadClassCounter = dfr:$ASYNC_WLCOUNTER_STR
+				SVAR workloadClass = dfr:$ASYNC_WORKLOADCLASS_STR
+				wlcIndex = FindDimLabel(track, ROWS, workloadClass)
+				ASSERT(wlcIndex >= 0, "Could not find work load class")
+				if(workloadClassCounter[0] - track[wlcIndex][%OUTPUTCOUNT] == 0)
 					DeletePoints i, 1, DFREFbuffer
 					break
 				endif
@@ -211,21 +206,19 @@ Function ASYNC_ThreadReadOut()
 			endfor
 
 			if(i == bufferSize)
-				DEBUGPRINT("Async ReadOut: this run " + num2str(statCnt) + " RO functions called; " + num2str(rc) + " ever.")
+				DEBUGPRINT("Async: Number of ReadOut called: " + num2str(statCnt) + " Number buffered; " + num2str(DimSize(DFREFBuffer, ROWS)))
 				return 0
 			endif
 		else
 			// check for inOrder, do we need to buffer?
 			DFREF dfrOut = dfr:freeroot
 			NVAR inOrder = dfr:$ASYNC_INORDER_STR
+			SVAR workloadClass = dfr:$ASYNC_WORKLOADCLASS_STR
 			if(inOrder)
-				NVAR orderID = dfr:$ASYNC_ORDERID_STR
-				SVAR wID = dfr:$ASYNC_WORKLOADID_STR
-
-				FindValue/TXOP=4/TEXT=wID workloadID
-				orderIndex = V_Value
-				ASSERT(orderIndex != -1, "workloadID not found")
-				if(orderID != workloadOrder[orderIndex][%orderGlobal])
+				WAVE workloadClassCounter = dfr:$ASYNC_WLCOUNTER_STR
+				wlcIndex = FindDimLabel(track, ROWS, workloadClass)
+				ASSERT(wlcIndex >= 0, "Could not find work load class")
+				if(workloadClassCounter[0] - track[wlcIndex][%OUTPUTCOUNT] != 0)
 					bufferSize = numpnts(DFREFbuffer)
 					Redimension/N=(bufferSize + 1) DFREFbuffer
 					DFREFbuffer[bufferSize] = dfr
@@ -238,15 +231,12 @@ Function ASYNC_ThreadReadOut()
 			endif
 		endif
 
-		SVAR workloadClass = dfr:$ASYNC_WORKLOADCLASS_STR
 		track[%$workloadClass][%OUTPUTCOUNT] += 1
 
-		workloadOrder[orderIndex][%orderGlobal] += 1
 		SVAR RFunc = dfr:$ASYNC_READOUTFUNC_STR
 		FUNCREF ASYNC_ReadOut f = $RFunc
 		NVAR err = dfr:$ASYNC_ERROR_STR
 		SVAR errmsg = dfr:$ASYNC_ERRORMSG_STR
-		rc += 1
 
 		statCnt += 1
 		try
@@ -392,7 +382,8 @@ End
 Function ASYNC_Stop([timeout, fromAssert])
 	variable timeout, fromAssert
 
-	variable i, endtime, waitResult, localtgID, outatime, err, doe
+	variable i, endtime, waitResult, localtgID, outatime, err, doe, d
+	variable inputCount, outputCount
 
 	if(!ASYNC_IsASYNCRunning())
 		return 2
@@ -454,10 +445,19 @@ Function ASYNC_Stop([timeout, fromAssert])
 
 	if(!outatime)
 
-		NVAR ReadOutCounter = $GetReadOutCounter()
-		WAVE workerIDCounter = GetWorkerIDCounter(getAsyncHomeDF())
-		do
-			if(ReadOutCounter < workerIDCOunter[0] - numThreads)
+		WAVE track = GetWorkloadTracking(getAsyncHomeDF())
+		if(DimSize(track, ROWS) > 0)
+			for(;;)
+				d = FindDimLabel(track, COLS, "INPUTCOUNT")
+				WaveStats/Q/M=1/RMD=[][d] track
+				inputCount = V_Sum
+				d = FindDimLabel(track, COLS, "OUTPUTCOUNT")
+				WaveStats/Q/M=1/RMD=[][d] track
+				outputCount = V_Sum
+				if(inputCount == outputCount)
+					break
+				endif
+
 				if(fromAssert)
 					try
 						ClearRTError()
@@ -468,16 +468,14 @@ Function ASYNC_Stop([timeout, fromAssert])
 				else
 					ASYNC_ThreadReadOut()
 				endif
-			else
-				break
-			endif
 
-			if(datetime >= endtime)
-				outatime = 1
-			endif
+				if(datetime >= endtime)
+					outatime = 1
+					break
+				endif
 
-		while(!outatime)
-
+			endfor
+		endif
 	endif
 
 	ResetDebugOnError(doe)
@@ -525,7 +523,6 @@ Function/DF ASYNC_PrepareDF(string WorkerFunc, string ReadOutFunc, string worklo
 	string/G dfr:$ASYNC_WORKERFUNC_STR = WorkerFunc
 
 	string/G dfrAsync:$ASYNC_READOUTFUNC_STR = ReadOutFunc
-	string/G dfrAsync:$ASYNC_WORKLOADID_STR = ":" + WorkerFunc + ":" + ReadOutFunc + ":"
 	variable/G dfrAsync:$ASYNC_INORDER_STR = inOrder
 
 	variable/G dfrInp:$ASYNC_PARAMCOUNT_STR = 0
@@ -555,26 +552,6 @@ Function ASYNC_Execute(dfr)
 
 	DFREF dfrAsync = dfr:async
 
-	NVAR inOrder = dfrAsync:$ASYNC_INORDER_STR
-	if(inOrder)
-		WAVE/T workloadID = GetWorkloadID(getAsyncHomeDF())
-		WAVE workloadOrder = GetWorkloadOrder(getAsyncHomeDF())
-		SVAR wID = dfrAsync:$ASYNC_WORKLOADID_STR
-
-		FindValue/TXOP=4/TEXT=wID workloadID
-		orderIndex = V_Value
-		if(orderIndex == -1)
-			orderIndex = numpnts(workloadID)
-			Redimension/N=(orderIndex + 1) workLoadID
-			Redimension/N=(orderIndex + 1, -1) workloadOrder
-			workLoadID[orderIndex] = wID
-		endif
-
-		variable/G dfrAsync:$ASYNC_ORDERID_STR = workloadOrder[orderIndex][%orderID]
-		workloadOrder[orderIndex][%orderID] += 1
-
-	endif
-
 	SVAR/Z workloadClass = dfrAsync:$ASYNC_WORKLOADCLASS_STR
 	if(SVAR_Exists(workloadClass))
 		WAVE track = GetWorkloadTracking(getAsyncHomeDF())
@@ -583,13 +560,13 @@ Function ASYNC_Execute(dfr)
 			Redimension/N=(size + 1, -1) track
 			SetDimLabel ROWS, size, $workloadClass, track
 		endif
+
+		Make/L/U/N=1 dfrAsync:$ASYNC_WLCOUNTER_STR/Wave=wlCounter
+		wlCounter[0] = track[%$workloadClass][%INPUTCOUNT]
+
 		track[%$workloadClass][%INPUTCOUNT] += 1
+
 	endif
-
-	WAVE workerIDCounter = GetWorkerIDCounter(getAsyncHomeDF())
-	Duplicate workerIDCounter, dfrAsync:workerID
-
-	workerIDCounter[0] += 1
 
 	TS_ThreadGroupPutDFR(tgID, dfr)
 End
@@ -912,28 +889,6 @@ static Function/S GetTaskDisableStatus()
 	return GetNVARAsString(getAsyncHomeDF(), "disableTask", initialValue=0)
 End
 
-/// @brief Returns string path to thread DF marker
-static Function/S GetReadOutCounter()
-	return GetNVARAsString(getAsyncHomeDF(), "ReadOutCounter", initialValue=0)
-End
-
-/// @brief Returns workerIDCounter wave reference
-/// 1d wave with exactly one element of type UINT64
-/// It counts the jobs executed and is unique per job
-static Function/WAVE GetWorkerIDCounter(dfr)
-	DFREF dfr
-
-	ASSERT(DataFolderExistsDFR(dfr), "Invalid dfr")
-	WAVE/Z/L/U/SDFR=dfr wv = workerIDCounter
-
-	if(WaveExists(wv))
-		return wv
-	endif
-	Make/N=1/L/U dfr:workerIDCounter/Wave=wv
-
-	return wv
-End
-
 /// @brief Return wave reference to wave with data folder reference buffer for delayed readouts
 /// 1d wave for data folder references, starts with size 0
 /// when jobs should be read out in order, the waiting data folders are buffered in this wave
@@ -950,48 +905,6 @@ static Function/WAVE GetDFREFbuffer(dfr)
 	endif
 	Make/DF/N=0 dfr:DFREFbuffer/Wave=wv
 
-	return wv
-End
-
-/// @brief Returns workloadID wave reference
-/// 1d wave that stored the id strings for job types that are executed in order
-/// the id strings are a combination of the worker and readout function name
-/// The size of this wave is increased in ASYNC_Execute for each new job type
-/// that should be executed in order
-static Function/WAVE GetWorkloadID(dfr)
-	DFREF dfr
-
-	ASSERT(DataFolderExistsDFR(dfr), "Invalid dfr")
-	WAVE/Z/T/SDFR=dfr wv = workloadID
-
-	if(WaveExists(wv))
-		return wv
-	endif
-	Make/T/N=0 dfr:workloadID/Wave=wv
-
-	return wv
-End
-
-/// @brief Returns workloadOrder wave reference
-/// 2d wave,
-/// row counts job types
-/// column 0 stores the orderID which is unique and increased by 1 per in order executed job of a job type
-/// column 1 stores the order counter for readout per in order read out job per job type
-/// both counters are used to track the order of jobs, as orderID is set when executing a job it is
-/// running in advance of orderGlobal for a job type
-static Function/WAVE GetWorkloadOrder(dfr)
-	DFREF dfr
-
-	ASSERT(DataFolderExistsDFR(dfr), "Invalid dfr")
-	WAVE/Z/SDFR=dfr wv = WorkloadOrder
-
-	if(WaveExists(wv))
-		return wv
-	endif
-
-	Make/N=(0, 2) dfr:WorkloadOrder/Wave=wv
-	SetDimLabel 1, 0, $"orderID", wv
-	SetDimLabel 1, 1, $"orderGlobal", wv
 	return wv
 End
 
