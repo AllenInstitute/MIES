@@ -466,8 +466,8 @@ static Function MSQ_CalculateRMS(wv, column, startTime, rangeTime)
 	return rms[0]
 End
 
-/// @brief Return the number of already acquired sweeps from the given
-///        repeated acquisition cycle.
+/// @brief Return the number of already acquired sweeps
+///        of the given stimset cycle ID
 static Function MSQ_NumAcquiredSweepsInSet(panelTitle, sweepNo, headstage)
 	string panelTitle
 	variable sweepNo, headstage
