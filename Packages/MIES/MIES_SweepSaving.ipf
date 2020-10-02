@@ -48,12 +48,12 @@ Function SWS_SaveAcquiredData(panelTitle, [forcedStop])
 		NWB_AppendSweep(panelTitle, sweepWave, configWave, sweepNo, DAG_GetNumericalValue(panelTitle, "Popup_Settings_NwbVersion"))
 	endif
 
+	SWS_AfterSweepDataChangeHook(panelTitle)
+
 	if(!forcedStop)
 		AFM_CallAnalysisFunctions(panelTitle, POST_SWEEP_EVENT)
 		AFM_CallAnalysisFunctions(panelTitle, POST_SET_EVENT)
 	endif
-
-	SWS_AfterSweepDataChangeHook(panelTitle)
 End
 
 /// @brief General hook function which gets always executed after sweep data was added or removed
