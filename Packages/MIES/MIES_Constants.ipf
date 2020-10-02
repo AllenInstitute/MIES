@@ -1256,6 +1256,14 @@ Constant POST_PLOT_FULL_UPDATE = 0x8     ///< Forces a complete update from scra
 
 /// @}
 
+/// @name Work Load Class names used in ASYNC frame work
+/// @anchor AsyncWorkLoadClassNames
+///
+/// @{
+StrConstant WORKLOADCLASS_TP = "TestPulse"
+/// @}
+
+
 Constant PA_SETTINGS_STRUCT_VERSION = 5
 
 StrConstant NOTE_NEEDS_UPDATE = "NeedsUpdate"

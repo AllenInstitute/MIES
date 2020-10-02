@@ -17,6 +17,15 @@ static StrConstant ASYNC_BACKGROUND = "AsyncFramework"
 static Constant MAX_OBJECT_NAME_LENGTH_IN_BYTES = 255
 static Constant ASYNC_THREAD_MARKER = 299792458
 static Constant ASYNC_MAX_THREADS = 64
+static Constant ASYNC_SLEEP_ON_WAIT = 0.01
+
+/// @name Common Constants
+/// @{
+static Constant ROWS = 0
+static Constant COLS = 1
+static Constant LAYERS = 2
+static Constant CHUNKS = 3
+/// @}
 
 /// @name Variable names for free data folder structure
 /// @{
@@ -24,6 +33,7 @@ static StrConstant ASYNC_THREAD_MARKER_STR = "threadDFMarker"
 static StrConstant ASYNC_WORKERFUNC_STR = "WorkerFunc"
 static StrConstant ASYNC_READOUTFUNC_STR = "ReadOutFunc"
 static StrConstant ASYNC_WORKLOADID_STR = "workloadID"
+static StrConstant ASYNC_WORKLOADCLASS_STR = "workloadClass"
 static StrConstant ASYNC_PARAMCOUNT_STR = "paramCount"
 static StrConstant ASYNC_INORDER_STR = "inOrder"
 static StrConstant ASYNC_ORDERID_STR = "orderID"
@@ -55,6 +65,8 @@ Function ASYNC_Start(numThreads, [disableTask])
 	NVAR tgID = $GetThreadGroupID()
 	NVAR numT = $GetNumThreads()
 	numT = numThreads
+	WAVE track = GetWorkloadTracking(getAsyncHomeDF())
+	Redimension/N=(0, -1) track
 
 	tgID = ThreadGroupCreate(numThreads)
 
@@ -169,6 +181,7 @@ Function ASYNC_ThreadReadOut()
 	WAVE/DF DFREFbuffer = GetDFREFBuffer(getAsyncHomeDF())
 	WAVE/T workloadID = GetWorkloadID(getAsyncHomeDF())
 	WAVE workloadOrder = GetWorkloadOrder(getAsyncHomeDF())
+	WAVE track = GetWorkloadTracking(getAsyncHomeDF())
 	NVAR rc = $GetReadOutCounter()
 
 	for(;;)
@@ -225,6 +238,9 @@ Function ASYNC_ThreadReadOut()
 			endif
 		endif
 
+		SVAR workloadClass = dfr:$ASYNC_WORKLOADCLASS_STR
+		track[%$workloadClass][%OUTPUTCOUNT] += 1
+
 		workloadOrder[orderIndex][%orderGlobal] += 1
 		SVAR RFunc = dfr:$ASYNC_READOUTFUNC_STR
 		FUNCREF ASYNC_ReadOut f = $RFunc
@@ -242,6 +258,62 @@ Function ASYNC_ThreadReadOut()
 			ASSERT(0, "ReadOut function " + RFunc + " aborted with: " + rterrmsg)
 		endtry
 
+	endfor
+End
+
+/// @brief Allows to check if all executed work loads of a specific work load class were read out.
+///        For that case, the work load class can optionally be removed from Async.
+/// @param[in] workloadClass work load class string
+/// @param[in] removeClass [optional, default = 0] when set the specified work load class is removed from Async
+///                        The parameter has no effect, if the work loads of the specified class are not done.
+/// @returns 1 if work load class finished, 0 if work load class did not finish, NaN if work load class not known to ASYNC
+Function ASYNC_IsWorkloadClassDone(string workloadClass, [variable removeClass])
+
+	variable done, index
+
+	if(IsEmpty(workloadClass))
+		return NaN
+	endif
+	WAVE track = GetWorkloadTracking(getAsyncHomeDF())
+	index = FindDimLabel(track, ROWS, workloadClass)
+	if(!(index >= 0))
+		return NaN
+	endif
+
+	removeClass = ParamIsDefault(removeClass) ? 0 : !!removeClass
+
+	done = track[%$workloadClass][%INPUTCOUNT] - track[%$workloadClass][%OUTPUTCOUNT] == 0
+
+	if(removeClass && done)
+		DeleteWavePoint(track, ROWS, index)
+	endif
+
+	return done
+End
+
+/// @brief Wait for TP analysis from specific panel to finish and remove it
+/// @param[in] workloadClass name of work load class
+/// @param[in] timeout time out in seconds
+/// @returns 0 if work load class is unknown or has finished and was removed, 1 if timeout was encountered.
+Function ASYNC_WaitForWLCToFinishAndRemove(string workloadClass, variable timeout)
+
+	variable result
+
+	timeout += datetime
+	for(;;)
+		result = ASYNC_IsWorkloadClassDone(workloadClass, removeClass = 1)
+		if(IsNaN(result))
+			return 0
+		endif
+		if(result)
+			return 0
+		endif
+
+		ASYNC_ThreadReadOut()
+		if(datetime > timeout)
+			return 1
+		endif
+		Sleep/S ASYNC_SLEEP_ON_WAIT
 	endfor
 End
 
@@ -427,14 +499,16 @@ End
 ///
 /// @param ReadOutFunc string naming a readout function in the form of the ASYNC_ReadOut template
 ///
+/// @param workloadClass string naming a work load class for work load attribution like "TestPulse"
+///        The string must follow strict object naming rules.
+///
 /// @param inOrder [optional, default = 1] flag that allows to disable in order readout of results
 ///
 /// @return data folder for thread, where parameters can be put to with :cpp:func:`ASYNC_AddParam`
-Function/DF ASYNC_PrepareDF(WorkerFunc, ReadOutFunc, [inOrder])
-	string WorkerFunc
-	string ReadOutFunc
-	variable inOrder
+Function/DF ASYNC_PrepareDF(string WorkerFunc, string ReadOutFunc, string workloadClass,[variable inOrder])
 
+	ASSERT(!IsEmpty(workloadClass), "No work load class string specified")
+	ASSERT(IsValidObjectName(workloadClass), "Work load class name does not follow strict object naming rules")
 	FUNCREF ASYNC_Worker fw = $WorkerFunc
 	ASSERT(FuncRefIsAssigned(FuncRefInfo(fw)), "set worker function has the wrong parameter template")
 	FUNCREF ASYNC_ReadOut fr = $ReadOutFunc
@@ -460,6 +534,8 @@ Function/DF ASYNC_PrepareDF(WorkerFunc, ReadOutFunc, [inOrder])
 	NVAR marker = dfr:$ASYNC_THREAD_MARKER_STR
 	marker = ASYNC_THREAD_MARKER
 
+	string/G dfrAsync:$ASYNC_WORKLOADCLASS_STR = workloadClass
+
 	return dfr
 End
 
@@ -469,7 +545,7 @@ End
 Function ASYNC_Execute(dfr)
 	DFREF dfr
 
-	variable orderIndex
+	variable orderIndex, size
 
 	ASSERT(isThreadDF(dfr), "Invalid data folder or not a thread data folder")
 	NVAR tgID = $GetThreadGroupID()
@@ -497,6 +573,17 @@ Function ASYNC_Execute(dfr)
 		variable/G dfrAsync:$ASYNC_ORDERID_STR = workloadOrder[orderIndex][%orderID]
 		workloadOrder[orderIndex][%orderID] += 1
 
+	endif
+
+	SVAR/Z workloadClass = dfrAsync:$ASYNC_WORKLOADCLASS_STR
+	if(SVAR_Exists(workloadClass))
+		WAVE track = GetWorkloadTracking(getAsyncHomeDF())
+		if(!(FindDimLabel(track, ROWS, workloadClass) >= 0))
+			size = DimSize(track, ROWS)
+			Redimension/N=(size + 1, -1) track
+			SetDimLabel ROWS, size, $workloadClass, track
+		endif
+		track[%$workloadClass][%INPUTCOUNT] += 1
 	endif
 
 	WAVE workerIDCounter = GetWorkerIDCounter(getAsyncHomeDF())
@@ -905,6 +992,27 @@ static Function/WAVE GetWorkloadOrder(dfr)
 	Make/N=(0, 2) dfr:WorkloadOrder/Wave=wv
 	SetDimLabel 1, 0, $"orderID", wv
 	SetDimLabel 1, 1, $"orderGlobal", wv
+	return wv
+End
+
+/// @brief Returns wave ref for workload tracking
+/// 2d wave
+/// row stores work load classes named through dimension label
+/// column 0 stores how many work loads were pushed to Async
+/// column 1 stores how many work loads were read out from Async
+static Function/WAVE GetWorkloadTracking(dfr)
+	DFREF dfr
+
+	ASSERT(DataFolderExistsDFR(dfr), "Invalid dfr")
+	WAVE/Z/SDFR=dfr/L/U wv = WorkloadTracking
+
+	if(WaveExists(wv))
+		return wv
+	endif
+
+	Make/L/U/N=(0, 2) dfr:WorkloadTracking/Wave=wv
+	SetDimLabel COLS, 0, $"INPUTCOUNT", wv
+	SetDimLabel COLS, 1, $"OUTPUTCOUNT", wv
 	return wv
 End
 
