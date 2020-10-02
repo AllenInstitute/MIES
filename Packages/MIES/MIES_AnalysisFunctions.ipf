@@ -899,15 +899,16 @@ End
 /// @param headstage  MIES headstage
 /// @param absolute   (optional) DAScale value in `A` (Amperes)
 /// @param relative   (optional) relative DAScale modifier
+/// @param offset     (optional) offset DAScale value
 /// @param roundTopA  (optional, defaults to false) round the set DAScale to integer pA values
-Function SetDAScale(panelTitle, headstage, [absolute, relative, roundTopA])
+Function SetDAScale(panelTitle, headstage, [absolute, relative, offset, roundTopA])
 	string panelTitle
-	variable headstage, absolute, relative, roundTopA
+	variable headstage, absolute, relative, offset, roundTopA
 
 	variable amps, DAC
 	string DAUnit, ctrl, lbl
 
-	ASSERT(ParamIsDefault(absolute) + ParamIsDefault(relative) == 1, "One of absolute or relative has to be present")
+	ASSERT(ParamIsDefault(absolute) + ParamIsDefault(relative) + ParamIsDefault(offset) == 2, "One of absolute, relative or offset has to be present")
 
 	if(ParamIsDefault(roundTopA))
 		roundTopA = 0
@@ -930,6 +931,9 @@ Function SetDAScale(panelTitle, headstage, [absolute, relative, roundTopA])
 	elseif(!ParamIsDefault(relative))
 		lbl = GetSpecialControlLabel(CHANNEL_TYPE_DAC, CHANNEL_CONTROL_SCALE)
 		amps = DAG_GetNumericalValue(paneltitle, lbl, index = DAC) * relative
+	elseif(!ParamIsDefault(offset))
+		lbl = GetSpecialControlLabel(CHANNEL_TYPE_DAC, CHANNEL_CONTROL_SCALE)
+		amps = DAG_GetNumericalValue(paneltitle, lbl, index = DAC) + offset
 	endif
 
 	amps = roundTopA ? round(amps) : amps
