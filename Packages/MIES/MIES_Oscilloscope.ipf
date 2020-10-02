@@ -580,7 +580,7 @@ Function SCOPE_UpdateOscilloscopeData(panelTitle, dataAcqOrTP, [chunk, fifoPos, 
 					DEBUGPRINT("headstage: ", var = headstage)
 					DEBUGPRINT("channel: ", var = numDACs + j)
 
-					TP_SendToAnalysis(tpInput)
+					TP_SendToAnalysis(panelTitle, tpInput)
 
 					if(saveTP)
 						hsList = AddListItem(num2str(headstage), hsList, ",", Inf)

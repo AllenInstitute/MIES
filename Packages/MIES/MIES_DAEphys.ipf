@@ -29,6 +29,8 @@ static StrConstant GUI_CONTROLSAVESTATE_DISABLED = "oldDisabledState"
 // PCIe-6343 | PXI-6259
 static StrConstant NI_DAC_PATTERNS = "AI:32;AO:4;COUNTER:4;DIOPORTS:3;LINES:32,8,8|AI:32;AO:4;COUNTER:2;DIOPORTS:3;LINES:32,8,8"
 
+static Constant DAP_WAITFORTPANALYSIS_TIMEOUT = 2
+
 /// @brief Creates meta information about coupled CheckBoxes (Radio Button) controls
 ///        Used for saving/restoring the GUI state
 /// @return Free text wave with lists of coupled CheckBox controls
@@ -4787,6 +4789,7 @@ static Function DAP_UnlockDevice(panelTitle)
 	PGC_SetAndActivateControl(panelTitle, "check_Settings_TPAfterDAQ", val = CHECKBOX_UNSELECTED)
 	DQ_StopDAQ(panelTitle)
 	TP_StopTestPulse(panelTitle)
+	ASSERT(!ASYNC_WaitForWLCToFinishAndRemove(WORKLOADCLASS_TP + panelTitle, DAP_WAITFORTPANALYSIS_TIMEOUT), "TP analysis did not finish within timeout")
 	PGC_SetAndActivateControl(panelTitle, "check_Settings_TPAfterDAQ", val = state)
 
 	DAP_SerializeCommentNotebook(panelTitle)
