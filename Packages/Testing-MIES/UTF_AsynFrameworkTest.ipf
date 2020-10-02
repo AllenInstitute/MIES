@@ -979,6 +979,119 @@ static Function TASYNC_IODiffWLDirectStop()
 	endif
 End
 
+/// @brief Test if workloads tracking works based on class
+static Function TASYNC_RunClassSingle()
+
+	variable i
+	string myDF
+	DFREF threadDF
+	variable endtime, timeout
+	variable wlCount
+
+	ASYNC_Start(ThreadProcessorCount)
+
+	myDF = GetDataFolder(1)
+	for(i = 0;i < WORK_COUNT_GENERIC; i += 1)
+
+		threadDF = ASYNC_PrepareDF("RunGenericWorker", "RunGenericReadOut", "WorkLoadSingleClass1", inOrder=0)
+		ASYNC_AddParam(threadDF, var=wlCount)
+		Make/N=10 data
+		ASYNC_AddParam(threadDF, w=data, move=1)
+		ASYNC_AddParam(threadDF, str=myDF)
+
+		ASYNC_Execute(threadDF)
+		wlCount += 1
+	endfor
+
+	// We can not use the background task for readout, so we have to do it manually
+	// Correlate our own returnOrder counter with the tracking done by the frame work
+	Make/N=0 returnOrder
+	endtime = datetime + THREADING_TEST_TIMEOUT
+	for(;;)
+		ASYNC_ThreadReadOut()
+		if(numpnts(returnOrder) == WORK_COUNT_GENERIC)
+			CHECK(ASYNC_IsWorkloadClassDone("WorkLoadSingleClass1"))
+			break
+		else
+			CHECK(!ASYNC_IsWorkloadClassDone("WorkLoadSingleClass1"))
+		endif
+		if(endtime < datetime)
+			timeout = 1
+			break
+		endif
+	endfor
+	CHECK(!timeout)
+
+	ASYNC_Stop(timeout=1)
+End
+
+/// @brief Test if multiple workloads class tracking works based on class
+static Function TASYNC_RunClassDouble()
+
+	variable i
+	DFREF threadDF
+	string myDF
+	variable endtime, timeout
+	variable workCnt = WORK_COUNT_GENERIC * 2
+	variable wl1Count, wl2Count
+
+	ASYNC_Start(ThreadProcessorCount)
+
+	myDF = GetDataFolder(1)
+	for(i = 0;i < workCnt; i += 1)
+
+		if(mod(i, 2))
+			threadDF = ASYNC_PrepareDF("RunGenericWorker", "RunGenericReadOut", "WorkLoadDoubleClass1")
+			ASYNC_AddParam(threadDF, var=wl1Count)
+		else
+			threadDF = ASYNC_PrepareDF("RunGenericWorker2", "RunGenericReadOut2", "WorkLoadDoubleClass2")
+			ASYNC_AddParam(threadDF, var=wl2Count)
+		endif
+		Make/N=10 data
+		ASYNC_AddParam(threadDF, w=data, move=1)
+		ASYNC_AddParam(threadDF, str=myDF)
+
+		ASYNC_Execute(threadDF)
+		if(mod(i, 2))
+			wl1Count += 1
+		else
+			wl2Count += 1
+		endif
+	endfor
+	// We can not use the background task for readout, so we have to do it manually
+	Make/N=0 returnOrder
+	Make/N=0 returnOrder2
+	endtime = datetime + THREADING_TEST_TIMEOUT
+	timeout = 0
+	for(;;)
+		ASYNC_ThreadReadOut()
+		if(numpnts(returnOrder) == workCnt / 2 && numpnts(returnOrder2) == workCnt / 2)
+			CHECK(ASYNC_IsWorkloadClassDone("WorkLoadDoubleClass1"))
+			CHECK(ASYNC_IsWorkloadClassDone("WorkLoadDoubleClass2"))
+			break
+		endif
+		if(numpnts(returnOrder) != workCnt / 2)
+			CHECK(!ASYNC_IsWorkloadClassDone("WorkLoadDoubleClass1"))
+		endif
+		if(numpnts(returnOrder2) != workCnt / 2)
+			CHECK(!ASYNC_IsWorkloadClassDone("WorkLoadDoubleClass2"))
+		endif
+
+		if(endtime < datetime)
+			timeout = 1
+			break
+		endif
+	endfor
+	CHECK(!timeout)
+
+	ASYNC_Stop(timeout=1)
+End
+
+/// @brief Test if workloads class is known
+static Function TASYNC_RunClassFail()
+
+	CHECK(IsNaN(ASYNC_IsWorkloadClassDone("UnknownWorkLoadClass")))
+End
 
 /// Worker/Readout functions follow
 
