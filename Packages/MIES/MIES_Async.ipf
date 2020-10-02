@@ -925,3 +925,57 @@ static Function ASYNC_IsASYNCRunning()
 	ResetDebugOnError(doe)
 	return waitResult != 0
 End
+
+/// @brief Deletes one row, column, layer or chunk from a wave
+/// Advantages over DeletePoints:
+/// Keeps the dimensionality of the wave when deleting the last row, column, layer or chunk in a wave
+/// Implements range check
+/// Advantages over DeletePoints + KillWaves:
+/// The wave reference stays valid
+///
+/// @param wv wave where the row, column, layer or chunk should be deleted
+///
+/// @param dim dimension 0 - rows, 1 - column, 2 - layer, 3 - chunk
+///
+/// @param index index where one point in the given dimension is deleted
+static Function DeleteWavePoint(wv, dim, index)
+   WAVE wv
+   variable dim, index
+
+   variable size
+
+   ASSERT(WaveExists(wv), "wave does not exist")
+   ASSERT(dim >= 0 && dim < 4, "dim must be 0, 1, 2 or 3")
+   size = DimSize(wv, dim)
+   if(index >= 0 && index < size)
+	   if(size > 1)
+		   DeletePoints/M=(dim) index, 1, wv
+	   else
+		   switch(dim)
+			   case 0:
+				   Redimension/N=(0, -1, -1, -1) wv
+				   break
+			   case 1:
+				   Redimension/N=(-1, 0, -1, -1) wv
+				   break
+			   case 2:
+				   Redimension/N=(-1, -1, 0, -1) wv
+				   break
+			   case 3:
+				   Redimension/N=(-1, -1, -1, 0) wv
+				   break
+		   endswitch
+	   endif
+   else
+	   ASSERT(0, "index out of range")
+   endif
+End
+
+/// @brief Check if a name for an object adheres to the strict naming rules
+///
+/// @see `DisplayHelpTopic "ObjectName"`
+threadsafe static Function IsValidObjectName(name)
+	string name
+
+	return !cmpstr(name, CleanupName(name, 0, MAX_OBJECT_NAME_LENGTH_IN_BYTES))
+End
