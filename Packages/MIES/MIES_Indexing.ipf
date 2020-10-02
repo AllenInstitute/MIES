@@ -61,8 +61,24 @@ static Function IDX_IndexingDoIt(panelTitle)
 
 	variable i
 
+	WAVE statusDAFiltered = DC_GetFilteredChannelState(panelTitle, DATA_ACQUISITION_MODE, CHANNEL_TYPE_DAC, DAQChannelType = DAQ_CHANNEL_TYPE_DAQ)
+	WAVE statusTTLFiltered = DC_GetFilteredChannelState(panelTitle, DATA_ACQUISITION_MODE, CHANNEL_TYPE_TTL, DAQChannelType = DAQ_CHANNEL_TYPE_DAQ)
+
 	for(i = 0; i < NUM_DA_TTL_CHANNELS; i += 1)
+
+		if(!statusDAFiltered[i])
+			continue
+		endif
+
 		IDX_IndexSingleChannel(panelTitle, CHANNEL_TYPE_DAC, i)
+	endfor
+
+	for(i = 0; i < NUM_DA_TTL_CHANNELS; i += 1)
+
+		if(!statusTTLFiltered[i])
+			continue
+		endif
+
 		IDX_IndexSingleChannel(panelTitle, CHANNEL_TYPE_TTL, i)
 	endfor
 
