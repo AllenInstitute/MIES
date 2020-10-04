@@ -166,6 +166,11 @@ static Function AD_FillWaves(panelTitle, list, info)
 				// - MSQ_FMT_LBN_DASCALE_EXC present (optional)
 				// - Not enough sweeps
 
+				// MSQ_SC
+				// - MSQ_FMT_LBN_RERUN_TRIALS_EXC present
+				// - Failed pulses
+				// - Not enough sweeps
+
 				// PSQ_DA
 				// - needs at least $NUM_DA_SCALES passing sweeps
 				//   and for supra mode if the FinalSlopePercent parameter is present this has to be reached as well
@@ -187,6 +192,9 @@ static Function AD_FillWaves(panelTitle, list, info)
 						break
 					case MSQ_FAST_RHEO_EST:
 						msg = AD_GetFastRheoEstFailMsg(numericalValues, sweepNo, headstage)
+						break
+					case MSQ_SPIKE_CONTROL:
+						msg = AD_GetSpikeControlFailMsg(numericalValues, textualValues, sweepNo, headstage)
 						break
 					case PSQ_DA_SCALE:
 						msg = AD_GetDaScaleFailMsg(numericalValues, textualValues, sweepNo, headstage)
@@ -214,7 +222,7 @@ static Function AD_FillWaves(panelTitle, list, info)
 			list[index][3] = msg
 
 			// get the passing/failing sweeps
-			// PSQ_DA PSQ_RA, PSQ_SP, MSQ_DA, MSQ_FRE: use PSQ_FMT_LBN_SWEEP_PASS
+			// PSQ_DA PSQ_RA, PSQ_SP, MSQ_DA, MSQ_FRE, MSQ_SC: use PSQ_FMT_LBN_SWEEP_PASS
 			// PSQ_RB: If passed use last spiking/non-spiking duo
 			//     If not passed, all are failing
 
@@ -226,6 +234,7 @@ static Function AD_FillWaves(panelTitle, list, info)
 				case PSQ_SQUARE_PULSE:
 				case MSQ_DA_SCALE:
 				case MSQ_FAST_RHEO_EST:
+				case MSQ_SPIKE_CONTROL:
 					key = CreateAnaFuncLBNKey(anaFuncType, PSQ_FMT_LBN_SWEEP_PASS, query = 1)
 					WAVE sweepPass = GetLastSettingIndepEachSCI(numericalValues, sweepNo, key, headstage, UNKNOWN_MODE)
 					ASSERT(DimSize(sweeps, ROWS) == DimSize(sweepPass, ROWS), "Unexpected wave sizes")
@@ -456,6 +465,23 @@ static Function/S AD_GetFastRheoEstFailMsg(WAVE numericalValues, variable sweepN
 		WaveTransform/O zapNaNs, daScaleExc
 		if(Sum(daScaleExc) > 0)
 			return "Max DA scale exceeded failure"
+		endif
+	endif
+
+	return "Failure as we ran out of sweeps"
+End
+
+static Function/S AD_GetSpikeControlFailMsg(WAVE numericalValues, WAVE textualValues, variable sweepNo, variable headstage)
+
+	string key, msg
+
+	key = CreateAnaFuncLBNKey(MSQ_SPIKE_CONTROL, MSQ_FMT_LBN_RERUN_TRIAL_EXC, query = 1)
+	WAVE/Z trialsExceeded = GetLastSettingEachSCI(numericalValues, sweepNo, key, headstage, UNKNOWN_MODE)
+
+	if(WaveExists(trialsExceeded))
+		WaveTransform/O zapNaNs, trialsExceeded
+		if(Sum(trialsExceeded) > 0)
+			return "Maximum number of rerun trials exceeded"
 		endif
 	endif
 

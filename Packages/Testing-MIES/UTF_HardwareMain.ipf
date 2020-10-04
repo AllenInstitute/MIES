@@ -18,6 +18,7 @@
 #include "UTF_PatchSeqRamp"
 #include "UTF_MultiPatchSeqFastRheoEstimate"
 #include "UTF_MultiPatchSeqDAScale"
+#include "UTF_MultiPatchSeqSpikeControl"
 #include "UTF_SetControls"
 #include "UTF_TestNWBExportV1"
 #include "UTF_TestNWBExportV2"
@@ -37,6 +38,7 @@ Function run()
 	list = AddListItem("UTF_PatchSeqRamp.ipf", list)
 	list = AddListItem("UTF_MultiPatchSeqFastRheoEstimate.ipf", list)
 	list = AddListItem("UTF_MultiPatchSeqDAScale.ipf", list)
+	list = AddListItem("UTF_MultiPatchSeqSpikeControl.ipf", list)
 	list = AddListItem("UTF_Epochs.ipf", list)
 	list = AddListItem("UTF_SetControls.ipf", list)
 
