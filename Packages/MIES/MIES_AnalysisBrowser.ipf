@@ -2155,7 +2155,8 @@ End
 static Function AB_ScanFolder(win)
 	string win
 
-	string baseFolder, path, pxpList, uxpList, nwbList, list
+	string baseFolder, path, pxpList, uxpList, nwbList, list, entry
+	string nwbFileUsedForExport
 	variable i, numEntries
 
 	// create new symbolic path
@@ -2179,10 +2180,21 @@ static Function AB_ScanFolder(win)
 	// sort combined list for readability
 	list = SortList(pxpList + uxpList + nwbList, "|")
 
+	nwbFileUsedForExport = ROStr(GetNWBFilePathExport())
+
 	numEntries = ItemsInList(list, "|")
 	for(i = 0; i < numEntries; i += 1)
+		entry = StringFromList(i, list, "|")
+
+		if(!cmpstr(entry, nwbFileUsedForExport))
+			printf "Ignore %s for adding into the analysis browser\ras we currently export data into it!\r", nwbFileUsedForExport
+			ControlWindowToFront()
+
+			continue
+		endif
+
 		// analyse files and save content in global list (GetExperimentBrowserGUIList)
-		AB_AddFile(baseFolder, StringFromList(i, list, "|"))
+		AB_AddFile(baseFolder, entry)
 	endfor
 
 	// redimension to maximum size (all expanded)
