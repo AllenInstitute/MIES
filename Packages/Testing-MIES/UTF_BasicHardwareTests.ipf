@@ -3143,25 +3143,6 @@ End
 
 static Constant TP_WAIT_TIMEOUT = 5
 
-Function TPWaitForAsync_IGNORE(TPStorage, storedTP)
-	WAVE TPStorage
-	WAVE storedTP
-	variable timeOut
-
-	variable sizeAsyncOut, sizeMainThread, endTime
-
-	sizeMainThread = GetNumberFromWaveNote(storedTP, NOTE_INDEX)
-	endTime = DateTime + TP_WAIT_TIMEOUT
-	do
-		ASYNC_ThreadReadOut()
-		sizeAsyncOut = GetNumberFromWaveNote(TPStorage, NOTE_INDEX)
-		if(sizeMainThread == sizeAsyncOut)
-			return NaN
-		endif
-	while(DateTime < endTime)
-	FAIL() // TimeOut for TP data was reached
-End
-
 static Constant TP_WIDTH_EPSILON = 1
 static Constant TP_DYN_PERC_TRESHOLD = 0.2
 static Constant TP_EDGE_EPSILON = 0.2
@@ -3198,9 +3179,7 @@ Function WaitAndCheckStoredTPs_IGNORE(device, expectedNumTPchannels)
 	CHECK_WAVE(storedTestPulses, WAVE_WAVE)
 	numTP = GetNumberFromWaveNote(storedTestPulses, NOTE_INDEX)
 
-	if(numTP != numStored)
-		TPWaitForAsync_IGNORE(TPStorage, storedTestPulses)
-	endif
+	CHECK(!ASYNC_WaitForWLCToFinishAndRemove(WORKLOADCLASS_TP + device, TP_WAIT_TIMEOUT))
 
 	tpLength = TP_GetTestPulseLengthInPoints(device, DATA_ACQUISITION_MODE)
 
