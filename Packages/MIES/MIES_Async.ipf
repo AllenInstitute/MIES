@@ -212,9 +212,8 @@ Function ASYNC_ThreadReadOut()
 		else
 			// check for inOrder, do we need to buffer?
 			DFREF dfrOut = dfr:freeroot
-			NVAR inOrder = dfr:$ASYNC_INORDER_STR
 			SVAR workloadClass = dfr:$ASYNC_WORKLOADCLASS_STR
-			if(inOrder)
+			if(track[%$workloadClass][%INORDER])
 				WAVE workloadClassCounter = dfr:$ASYNC_WLCOUNTER_STR
 				wlcIndex = FindDimLabel(track, ROWS, workloadClass)
 				ASSERT(wlcIndex >= 0, "Could not find work load class")
@@ -554,18 +553,24 @@ Function ASYNC_Execute(dfr)
 
 	SVAR/Z workloadClass = dfrAsync:$ASYNC_WORKLOADCLASS_STR
 	if(SVAR_Exists(workloadClass))
+		NVAR inOrder = dfrAsync:$ASYNC_INORDER_STR
 		WAVE track = GetWorkloadTracking(getAsyncHomeDF())
 		if(!(FindDimLabel(track, ROWS, workloadClass) >= 0))
 			size = DimSize(track, ROWS)
 			Redimension/N=(size + 1, -1) track
 			SetDimLabel ROWS, size, $workloadClass, track
+
+			track[%$workloadClass][%INORDER] = inOrder
+		else
+			ASSERT(track[%$workloadClass][%INORDER] == inOrder, "Can not mix ordered/unordered work load execution in the same class.")
 		endif
+
+		KillVariables dfrAsync:$ASYNC_INORDER_STR
 
 		Make/L/U/N=1 dfrAsync:$ASYNC_WLCOUNTER_STR/Wave=wlCounter
 		wlCounter[0] = track[%$workloadClass][%INPUTCOUNT]
 
 		track[%$workloadClass][%INPUTCOUNT] += 1
-
 	endif
 
 	TS_ThreadGroupPutDFR(tgID, dfr)
@@ -923,9 +928,10 @@ static Function/WAVE GetWorkloadTracking(dfr)
 		return wv
 	endif
 
-	Make/L/U/N=(0, 2) dfr:WorkloadTracking/Wave=wv
+	Make/L/U/N=(0, 3) dfr:WorkloadTracking/Wave=wv
 	SetDimLabel COLS, 0, $"INPUTCOUNT", wv
 	SetDimLabel COLS, 1, $"OUTPUTCOUNT", wv
+	SetDimLabel COLS, 2, $"INORDER", wv
 	return wv
 End
 
