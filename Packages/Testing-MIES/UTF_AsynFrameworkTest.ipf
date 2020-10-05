@@ -1093,6 +1093,51 @@ static Function TASYNC_RunClassFail()
 	CHECK(IsNaN(ASYNC_IsWorkloadClassDone("UnknownWorkLoadClass")))
 End
 
+/// @brief Test if adding same workloads class with different order fails
+static Function TASYNC_RunClassMixedOrder()
+
+	DFREF threadDF1, threadDF2
+
+	ASYNC_Start(ThreadProcessorCount)
+
+	threadDF1 = ASYNC_PrepareDF("RunGenericWorker", "RunGenericReadOut", "WorkLoadMixedClassFail", inOrder = 1)
+	threadDF2 = ASYNC_PrepareDF("RunGenericWorker", "RunGenericReadOut", "WorkLoadMixedClassFail", inOrder = 0)
+	ASYNC_Execute(threadDF1)
+	try
+		ASYNC_Execute(threadDF2)
+		FAIL()
+	catch
+		PASS()
+	endtry
+End
+
+/// @brief Test if changing order of same workloads class works
+static Function TASYNC_RunClassChangeOrder()
+
+	DFREF threadDF1, threadDF2
+	string myDF
+
+	ASYNC_Start(ThreadProcessorCount)
+
+	myDF = GetDataFolder(1)
+	Make data
+	Make/N=0 returnOrder
+
+	threadDF1 = ASYNC_PrepareDF("RunGenericWorker", "RunGenericReadOut", "WorkLoadMixedClass", inOrder = 1)
+	ASYNC_AddParam(threadDF1, var=0)
+	ASYNC_AddParam(threadDF1, w=data)
+	ASYNC_AddParam(threadDF1, str=myDF)
+
+	threadDF2 = ASYNC_PrepareDF("RunGenericWorker", "RunGenericReadOut", "WorkLoadMixedClass", inOrder = 0)
+	ASYNC_AddParam(threadDF2, var=0)
+	ASYNC_AddParam(threadDF2, w=data)
+	ASYNC_AddParam(threadDF2, str=myDF)
+
+	ASYNC_Execute(threadDF1)
+	CHECK(!ASYNC_WaitForWLCToFinishAndRemove("WorkLoadMixedClass", THREADING_TEST_TIMEOUT))
+	ASYNC_Execute(threadDF2)
+End
+
 /// Worker/Readout functions follow
 
 /// @brief Generic worker with a variable runtime, the function transfers required data to the output folder
