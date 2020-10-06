@@ -47,7 +47,10 @@ case $MSYSTEM in
     # we don't want MSYS path conversion, as that would break the /X options,
     # see https://github.com/git-for-windows/build-extra/blob/master/ReleaseNotes.md
     MSYS_NO_PATHCONV=1 "${igorProPath}" /CompErrNoDialog /N /I "$experiment"
+    ret=$?
     ;;
 esac
 
 rm -f $StateFile
+
+exit $ret
