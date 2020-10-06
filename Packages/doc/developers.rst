@@ -150,6 +150,22 @@ Building the documentation
 - Install `Docker <https://docker.io>`__
 - Execute ``tools/docker/build-documentation.sh``
 
+Updating documentation
+~~~~~~~~~~~~~~~~~~~~~~
+
+Due to our excessive use of the breathe sphinx extension which feeds from
+doxygen, a full documentation build takes around 10 minutes. It is also not
+possible to use the sphinx autobuild feature, as it rebuilds all everything from
+scratch due to breathe.
+
+For fast read-write-view cycles while writing the user documentation do the following:
+
+- Start with a clean ``Packages/doc`` folder
+- Apply the :download:`patch <0001-WIP-fast-sphinx-rst-update-cyle.patch>`
+  which temporarily removes breathe via ``git am ...``
+- Call ``make autobuild`` which opens a local webbrowser and rebuilds after
+  every change. This time incremental updates work.
+
 Release Handling
 ----------------
 
