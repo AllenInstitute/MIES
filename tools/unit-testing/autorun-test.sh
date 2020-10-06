@@ -15,11 +15,11 @@ usage()
 
 while getopts ":p:v:" o; do
     case "${o}" in
-        v)
-            igorProVersion=${OPTARG}
-            ;;
         p)
             experiment=${OPTARG}
+            ;;
+        v)
+            igorProVersion=${OPTARG}
             ;;
         *)
             usage
@@ -28,16 +28,14 @@ while getopts ":p:v:" o; do
 done
 shift $((OPTIND-1))
 
-if [ -z "${igorProVersion}" ]
-then
-  # use former default
-  igorProVersion="IP_7_64"
-fi
-
 if [ -z "${experiment}" ]
 then
-  # use safe default
   experiment=$(ls *.pxp | head -n1)
+fi
+
+if [ -z "${igorProVersion}" ]
+then
+  igorProVersion="IP_8_64"
 fi
 
 igorProPath=$(./get-igor-path.sh ${igorProVersion})
