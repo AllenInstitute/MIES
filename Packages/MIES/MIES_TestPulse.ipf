@@ -862,11 +862,11 @@ End
 
 /// @brief Send a TP data set to the asynchroneous analysis function TP_TSAnalysis
 ///
+/// @param[in] panelTitle title of panel that ran this test pulse
 /// @param tpInput holds the parameters send to analysis
-Function TP_SendToAnalysis(tpInput)
-	STRUCT TPAnalysisInput &tpInput
+Function TP_SendToAnalysis(string panelTitle, STRUCT TPAnalysisInput &tpInput)
 
-	DFREF threadDF = ASYNC_PrepareDF("TP_TSAnalysis", "TP_ROAnalysis", inOrder=0)
+	DFREF threadDF = ASYNC_PrepareDF("TP_TSAnalysis", "TP_ROAnalysis", WORKLOADCLASS_TP + panelTitle, inOrder=0)
 	ASYNC_AddParam(threadDF, w=tpInput.data)
 	ASYNC_AddParam(threadDF, var=tpInput.clampAmp)
 	ASYNC_AddParam(threadDF, var=tpInput.clampMode)
