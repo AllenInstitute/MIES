@@ -47,6 +47,7 @@ case $MSYSTEM in
     # we don't want MSYS path conversion, as that would break the /X options,
     # see https://github.com/git-for-windows/build-extra/blob/master/ReleaseNotes.md
     MSYS_NO_PATHCONV=1 "${igorProPath}" /CompErrNoDialog /N /I "$experiment"
+    ret=$?
     ;;
   *)
     env WINEPREFIX=/home/thomasb/.wine-igor wine "${igorProPath}" /CompErrNoDialog /N /I "$(pwd)/$experiment"
@@ -54,3 +55,5 @@ case $MSYSTEM in
 esac
 
 rm -f $StateFile
+
+exit $ret
