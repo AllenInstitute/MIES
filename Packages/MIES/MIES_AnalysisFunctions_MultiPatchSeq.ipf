@@ -16,19 +16,24 @@
 ///
 /// \rst
 ///
-/// =========================== ========================================================= ================= ===================== =====================
-/// Naming constant             Description                                               Analysis function Per Chunk?            Headstage dependent?
-/// =========================== ========================================================= ================= ===================== =====================
-/// MSQ_FMT_LBN_SPIKE_DETECT    The required number of spikes were detected on the sweep  FRE               No                    Yes
-/// MSQ_FMT_LBN_STEPSIZE        Current DAScale step size                                 FRE               No                    Yes
-/// MSQ_FMT_LBN_FINAL_SCALE     Final DAScale of the given headstage, only set on success FRE               No                    Yes
-/// MSQ_FMT_LBN_HEADSTAGE_PASS  Pass/fail state of the headstage                          FRE, DS           No                    Yes
-/// MSQ_FMT_LBN_SWEEP_PASS      Pass/fail state of the complete sweep                     FRE, DS           No                    No
-/// MSQ_FMT_LBN_SET_PASS        Pass/fail state of the complete set                       FRE, DS           No                    No
-/// MSQ_FMT_LBN_ACTIVE_HS       Active headstages in pre DAQ event                        FRE, DS           No                    Yes
-/// MSQ_FMT_LBN_DASCALE_EXC     Allowed DAScale exceeded given limit                      FRE               No                    Yes
-/// MSQ_FMT_LBN_PULSE_DUR       Square pulse duration in ms                               FRE               No                    Yes
-/// =========================== ========================================================= ================= ===================== =====================
+/// =========================== ==================================================================== ================= ================= ===================== =====================
+/// Naming constant             Description                                                          Labnotebook       Analysis function Per Chunk?            Headstage dependent?
+/// =========================== ==================================================================== ================= ================= ===================== =====================
+/// MSQ_FMT_LBN_SPIKE_DETECT    The required number of spikes were detected on the sweep             Numerical         FRE               No                    Yes
+/// MSQ_FMT_LBN_STEPSIZE        Current DAScale step size                                            Numerical         FRE               No                    Yes
+/// MSQ_FMT_LBN_FINAL_SCALE     Final DAScale of the given headstage, only set on success            Numerical         FRE               No                    Yes
+/// MSQ_FMT_LBN_HEADSTAGE_PASS  Pass/fail state of the headstage                                     Numerical         FRE, DS, SC       No                    Yes
+/// MSQ_FMT_LBN_SWEEP_PASS      Pass/fail state of the complete sweep                                Numerical         FRE, DS, SC       No                    No
+/// MSQ_FMT_LBN_SET_PASS        Pass/fail state of the complete set                                  Numerical         FRE, DS, SC       No                    No
+/// MSQ_FMT_LBN_ACTIVE_HS       Active headstages in pre DAQ event                                   Numerical         FRE, DS           No                    Yes
+/// MSQ_FMT_LBN_DASCALE_EXC     Allowed DAScale exceeded given limit                                 Numerical         FRE               No                    Yes
+/// MSQ_FMT_LBN_PULSE_DUR       Square pulse duration in ms                                          Numerical         FRE               No                    Yes
+/// MSQ_FMT_LBN_FAILED_PULSES   Semicolon separated list of failed pulses in the format              Textual           SC                No                    Yes
+///                             ``P{1}_R{2}`` with the pulse index (``{1}``) and region
+///                             (``{2}``)
+/// MSQ_FMT_LBN_RERUN_TRIAL     Number of repetitions of given stimulus set sweep                    Numerical         SC                No                    Yes
+/// MSQ_FMT_LBN_RERUN_TRIAL_EXC Number of repetitions was exceeded for that stimulus sweep set count Numerical         SC                No                    Yes
+/// =========================== ==================================================================== ================= ================= ===================== =====================
 ///
 /// \endrst
 ///
