@@ -757,6 +757,7 @@ static Constant EPOCHS_WAVE_VERSION = 1
 /// Rows:
 /// - epochs
 ///
+/// Column numbers must use global column number constants @sa epochColumnNumber
 /// Columns:
 ///   0 Start time in sec
 ///   1 End time in sec
@@ -781,10 +782,10 @@ Function/Wave GetEpochsWave(panelTitle)
 	  Make/T/N=(MINIMUM_WAVE_SIZE, 4, NUM_DA_TTL_CHANNELS) dfr:EpochsWave/Wave=wv
 	endif
 
-	SetDimLabel COLS, 0, StartTime, wv
-	SetDimLabel COLS, 1, EndTime, wv
-	SetDimLabel COLS, 2, Name, wv
-	SetDimLabel COLS, 3, TreeLevel, wv
+	SetDimLabel COLS, EPOCH_COL_STARTTIME, StartTime, wv
+	SetDimLabel COLS, EPOCH_COL_ENDTIME, EndTime, wv
+	SetDimLabel COLS, EPOCH_COL_NAME, Name, wv
+	SetDimLabel COLS, EPOCH_COL_TREELEVEL, TreeLevel, wv
 
 	SetWaveVersion(wv, EPOCHS_WAVE_VERSION)
 

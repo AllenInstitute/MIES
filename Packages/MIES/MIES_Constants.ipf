@@ -1266,6 +1266,17 @@ StrConstant WORKLOADCLASS_TP = "TestPulse"
 /// @}
 
 
+/// @name Column numbers of epoch information
+/// @anchor epochColumnNumber
+///
+/// @{
+
+Constant EPOCH_COL_STARTTIME = 0
+Constant EPOCH_COL_ENDTIME = 1
+Constant EPOCH_COL_NAME = 2
+Constant EPOCH_COL_TREELEVEL = 3
+
+/// @}
 Constant PA_SETTINGS_STRUCT_VERSION = 5
 
 StrConstant NOTE_NEEDS_UPDATE = "NeedsUpdate"
