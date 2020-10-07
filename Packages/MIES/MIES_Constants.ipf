@@ -937,9 +937,6 @@ Constant MSQ_FAST_RHEO_EST = 0x10
 Constant MSQ_DA_SCALE      = 0x20
 /// @}
 
-/// List of analysis function types
-StrConstant PSQ_LIST_OF_TYPES = "0x1;0x2;0x4;0x8"
-StrConstant MSQ_LIST_OF_TYPES = "0x10;0x20"
 /// @}
 
 /// @name PatchSeq Rheobase
