@@ -155,32 +155,32 @@ static Function AD_FillWaves(panelTitle, list, info)
 			// DA, RB, RA, SP
 			// PSQ_FMT_LBN_BL_QC_PASS
 
-			// RB
-			// - Difference to initial DAScale larger than 60pA?
-			// - Not enough sweeps
-
-			// RA
-			// - needs at least PSQ_RA_NUM_SWEEPS_PASS passing sweeps
-
-			// SP
-			// - only reached PSQ_FMT_LBN_STEPSIZE step size and not PSQ_SP_INIT_AMP_p10 with a spike
-
 			// DA
 			// - needs at least $NUM_DA_SCALES passing sweeps
 			//   and for supra mode if the FinalSlopePercent parameter is present this has to be reached as well
 
+			// RA
+			// - needs at least PSQ_RA_NUM_SWEEPS_PASS passing sweeps
+
+			// RB
+			// - Difference to initial DAScale larger than 60pA?
+			// - Not enough sweeps
+
+			// SP
+			// - only reached PSQ_FMT_LBN_STEPSIZE step size and not PSQ_SP_INIT_AMP_p10 with a spike
+
 			switch(anaFuncType)
-				case PSQ_RHEOBASE:
-					msg = AD_GetRheobaseFailMsg(numericalValues, sweepNo, headstage)
+				case PSQ_DA_SCALE:
+					msg = AD_GetDaScaleFailMsg(numericalValues, textualValues, sweepNo, headstage)
 					break
 				case PSQ_RAMP:
 					msg = AD_GetRampFailMsg(numericalValues, sweepNo, headstage)
 					break
+				case PSQ_RHEOBASE:
+					msg = AD_GetRheobaseFailMsg(numericalValues, sweepNo, headstage)
+					break
 				case PSQ_SQUARE_PULSE:
 					msg = AD_GetSquarePulseFailMsg(numericalValues, sweepNo, headstage)
-					break
-				case PSQ_DA_SCALE:
-					msg = AD_GetDaScaleFailMsg(numericalValues, textualValues, sweepNo, headstage)
 					break
 				default:
 					ASSERT(0, "Unsupported analysis function")
