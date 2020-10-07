@@ -73,7 +73,7 @@ static Function/WAVE GetSpikePosition_IGNORE(sweepNo, device)
 	WAVE textualValues   = GetLBTextualValues(device)
 	WAVE numericalValues = GetLBNumericalValues(device)
 
-	key = PSQ_CreateLBNKey(PSQ_RAMP, PSQ_FMT_LBN_SPIKE_POSITIONS, query = 1)
+	key = CreateAnaFuncLBNKey(PSQ_RAMP, PSQ_FMT_LBN_SPIKE_POSITIONS, query = 1)
 	return GetLastSettingTextEachRAC(numericalValues, textualValues, sweepNo, key, HEADSTAGE, UNKNOWN_MODE)
 End
 
@@ -84,7 +84,7 @@ static Function/WAVE GetSpikeResults_IGNORE(sweepNo, device)
 	string key
 
 	WAVE numericalValues = GetLBNumericalValues(device)
-	key = PSQ_CreateLBNKey(PSQ_RAMP, PSQ_FMT_LBN_SPIKE_DETECT, query = 1)
+	key = CreateAnaFuncLBNKey(PSQ_RAMP, PSQ_FMT_LBN_SPIKE_DETECT, query = 1)
 	return GetLastSettingEachRAC(numericalValues, sweepNo, key, HEADSTAGE, UNKNOWN_MODE)
 End
 
@@ -95,7 +95,7 @@ static Function/WAVE GetSweepQCResults_IGNORE(sweepNo, device)
 	string key
 
 	WAVE numericalValues = GetLBNumericalValues(device)
-	key = PSQ_CreateLBNKey(PSQ_RAMP, PSQ_FMT_LBN_SWEEP_PASS, query = 1)
+	key = CreateAnaFuncLBNKey(PSQ_RAMP, PSQ_FMT_LBN_SWEEP_PASS, query = 1)
 	return GetLastSettingIndepEachRAC(numericalValues, sweepNo, key, UNKNOWN_MODE)
 End
 
@@ -106,7 +106,7 @@ static Function/WAVE GetBaselineQCResults_IGNORE(sweepNo, device)
 	string key
 
 	WAVE numericalValues = GetLBNumericalValues(device)
-	key = PSQ_CreateLBNKey(PSQ_RAMP, PSQ_FMT_LBN_BL_QC_PASS, query = 1)
+	key = CreateAnaFuncLBNKey(PSQ_RAMP, PSQ_FMT_LBN_BL_QC_PASS, query = 1)
 	return GetLastSettingEachRAC(numericalValues, sweepNo, key, HEADSTAGE, UNKNOWN_MODE)
 End
 
@@ -137,7 +137,7 @@ static Function PS_RA1_REENTRY([str])
 
 	WAVE numericalValues = GetLBNumericalValues(str)
 
-	key = PSQ_CreateLBNKey(PSQ_RAMP, PSQ_FMT_LBN_SET_PASS, query = 1)
+	key = CreateAnaFuncLBNKey(PSQ_RAMP, PSQ_FMT_LBN_SET_PASS, query = 1)
 	setPassed = GetLastSettingIndep(numericalValues, sweepNo, key, UNKNOWN_MODE)
 	CHECK_EQUAL_VAR(setPassed, 0)
 
@@ -172,7 +172,7 @@ static Function PS_RA1_REENTRY([str])
 
 	CHECK_EQUAL_WAVES(stimSetLengths, sweepLengths, mode = WAVE_DATA)
 
-	key = PSQ_CreateLBNKey(PSQ_RAMP, PSQ_FMT_LBN_PULSE_DUR, query = 1)
+	key = CreateAnaFuncLBNKey(PSQ_RAMP, PSQ_FMT_LBN_PULSE_DUR, query = 1)
 	WAVE/Z durations = GetLastSetting(numericalValues, sweeps[0], key, UNKNOWN_MODE)
 	CHECK_EQUAL_WAVES(durations, {15000, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN}, mode = WAVE_DATA, tol = 1)
 End
@@ -207,7 +207,7 @@ static Function PS_RA2_REENTRY([str])
 
 	WAVE numericalValues = GetLBNumericalValues(str)
 
-	key = PSQ_CreateLBNKey(PSQ_RAMP, PSQ_FMT_LBN_SET_PASS, query = 1)
+	key = CreateAnaFuncLBNKey(PSQ_RAMP, PSQ_FMT_LBN_SET_PASS, query = 1)
 	setPassed = GetLastSettingIndep(numericalValues, sweepNo, key, UNKNOWN_MODE)
 	CHECK_EQUAL_VAR(setPassed, 1)
 
@@ -228,7 +228,7 @@ static Function PS_RA2_REENTRY([str])
 	numEntries = DimSize(sweeps, ROWS)
 	CHECK_EQUAL_VAR(numEntries, 3)
 
-	key = PSQ_CreateLBNKey(PSQ_RAMP, PSQ_FMT_LBN_PULSE_DUR, query = 1)
+	key = CreateAnaFuncLBNKey(PSQ_RAMP, PSQ_FMT_LBN_PULSE_DUR, query = 1)
 	WAVE/Z durations = GetLastSetting(numericalValues, sweeps[0], key, UNKNOWN_MODE)
 	CHECK_EQUAL_WAVES(durations, {15000, NaN, NaN, NaN, NaN, NaN, NaN, NaN, NaN}, mode = WAVE_DATA, tol = 1)
 End
@@ -261,7 +261,7 @@ static Function PS_RA3_REENTRY([str])
 
 	WAVE numericalValues = GetLBNumericalValues(str)
 
-	key = PSQ_CreateLBNKey(PSQ_RAMP, PSQ_FMT_LBN_SET_PASS, query = 1)
+	key = CreateAnaFuncLBNKey(PSQ_RAMP, PSQ_FMT_LBN_SET_PASS, query = 1)
 	setPassed = GetLastSettingIndep(numericalValues, sweepNo, key, UNKNOWN_MODE)
 	CHECK_EQUAL_VAR(setPassed, 1)
 
@@ -282,7 +282,7 @@ static Function PS_RA3_REENTRY([str])
 	numEntries = DimSize(sweeps, ROWS)
 	CHECK_EQUAL_VAR(numEntries, 3)
 
-	key = PSQ_CreateLBNKey(PSQ_RAMP, PSQ_FMT_LBN_PULSE_DUR, query = 1)
+	key = CreateAnaFuncLBNKey(PSQ_RAMP, PSQ_FMT_LBN_PULSE_DUR, query = 1)
 	WAVE durations = GetLastSetting(numericalValues, sweeps[0], key, UNKNOWN_MODE)
 	CHECK(durations[0] > SPIKE_POSITION_MS - PSQ_RA_BL_EVAL_RANGE && durations[0] < SPIKE_POSITION_TEST_DELAY_MS)
 
@@ -321,7 +321,7 @@ static Function PS_RA4_REENTRY([str])
 
 	WAVE numericalValues = GetLBNumericalValues(str)
 
-	key = PSQ_CreateLBNKey(PSQ_RAMP, PSQ_FMT_LBN_SET_PASS, query = 1)
+	key = CreateAnaFuncLBNKey(PSQ_RAMP, PSQ_FMT_LBN_SET_PASS, query = 1)
 	setPassed = GetLastSettingIndep(numericalValues, sweepNo, key, UNKNOWN_MODE)
 	CHECK_EQUAL_VAR(setPassed, 1)
 
@@ -342,7 +342,7 @@ static Function PS_RA4_REENTRY([str])
 	numEntries = DimSize(sweeps, ROWS)
 	CHECK_EQUAL_VAR(numEntries, 3)
 
-	key = PSQ_CreateLBNKey(PSQ_RAMP, PSQ_FMT_LBN_PULSE_DUR, query = 1)
+	key = CreateAnaFuncLBNKey(PSQ_RAMP, PSQ_FMT_LBN_PULSE_DUR, query = 1)
 	WAVE durations = GetLastSetting(numericalValues, sweeps[0], key, UNKNOWN_MODE)
 	CHECK(durations[0] > SPIKE_POSITION_MS - PSQ_RA_BL_EVAL_RANGE && durations[0] < SPIKE_POSITION_TEST_DELAY_MS)
 End
@@ -375,7 +375,7 @@ static Function PS_RA5_REENTRY([str])
 
 	WAVE numericalValues = GetLBNumericalValues(str)
 
-	key = PSQ_CreateLBNKey(PSQ_RAMP, PSQ_FMT_LBN_SET_PASS, query = 1)
+	key = CreateAnaFuncLBNKey(PSQ_RAMP, PSQ_FMT_LBN_SET_PASS, query = 1)
 	setPassed = GetLastSettingIndep(numericalValues, sweepNo, key, UNKNOWN_MODE)
 	CHECK_EQUAL_VAR(setPassed, 1)
 
@@ -396,7 +396,7 @@ static Function PS_RA5_REENTRY([str])
 	numEntries = DimSize(sweeps, ROWS)
 	CHECK_EQUAL_VAR(numEntries, 3)
 
-	key = PSQ_CreateLBNKey(PSQ_RAMP, PSQ_FMT_LBN_PULSE_DUR, query = 1)
+	key = CreateAnaFuncLBNKey(PSQ_RAMP, PSQ_FMT_LBN_PULSE_DUR, query = 1)
 	WAVE durations = GetLastSetting(numericalValues, sweeps[0], key, UNKNOWN_MODE)
 	CHECK(durations[0] > 15000 - PSQ_RA_BL_EVAL_RANGE)
 
@@ -435,7 +435,7 @@ static Function PS_RA6_REENTRY([str])
 
 	WAVE numericalValues = GetLBNumericalValues(str)
 
-	key = PSQ_CreateLBNKey(PSQ_RAMP, PSQ_FMT_LBN_SET_PASS, query = 1)
+	key = CreateAnaFuncLBNKey(PSQ_RAMP, PSQ_FMT_LBN_SET_PASS, query = 1)
 	setPassed = GetLastSettingIndep(numericalValues, sweepNo, key, UNKNOWN_MODE)
 	CHECK_EQUAL_VAR(setPassed, 1)
 
@@ -456,7 +456,7 @@ static Function PS_RA6_REENTRY([str])
 	numEntries = DimSize(sweeps, ROWS)
 	CHECK_EQUAL_VAR(numEntries, 3)
 
-	key = PSQ_CreateLBNKey(PSQ_RAMP, PSQ_FMT_LBN_PULSE_DUR, query = 1)
+	key = CreateAnaFuncLBNKey(PSQ_RAMP, PSQ_FMT_LBN_PULSE_DUR, query = 1)
 	WAVE durations = GetLastSetting(numericalValues, sweeps[0], key, UNKNOWN_MODE)
 	CHECK(durations[0] > 15000 - PSQ_RA_BL_EVAL_RANGE)
 

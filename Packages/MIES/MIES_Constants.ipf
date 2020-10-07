@@ -889,7 +889,7 @@ Constant PSQ_TARGETV_THRESHOLD   = 1    // mV
 
 /// @name PatchSeq labnotebook constants
 ///
-/// Use with PSQ_PSQ_CreateLBNKey() only.
+/// Use with CreateAnaFuncLBNKey() only.
 ///
 /// The longest key must be tested in CheckLength().
 ///
@@ -917,15 +917,29 @@ StrConstant PSQ_FMT_LBN_DA_fI_SLOPE        = "%s f-I slope"
 StrConstant PSQ_FMT_LBN_DA_fI_SLOPE_REACHED= "%s f-I slope QC"
 /// @}
 
-/// @name PatchSeq types of analysis functions
+/// @name PatchSeq and MultiPatchSeq types of analysis functions
+/// @anchor SpecialAnalysisFunctionTypes
+///
+/// Constant values must *not* overlap between PSQ_XXX and MSQ_YYY.
+/// @{
+
 /// @anchor PatchSeqAnalysisFunctionTypes
 /// @{
-Constant PSQ_DA_SCALE     = 0x1
-Constant PSQ_SQUARE_PULSE = 0x2
-Constant PSQ_RHEOBASE     = 0x4
-Constant PSQ_RAMP         = 0x8
+Constant PSQ_DA_SCALE      = 0x01
+Constant PSQ_SQUARE_PULSE  = 0x02
+Constant PSQ_RHEOBASE      = 0x04
+Constant PSQ_RAMP          = 0x08
+/// @}
+
+/// @anchor MultiPatchSeqAnalysisFunctionTypes
+/// @{
+Constant MSQ_FAST_RHEO_EST = 0x10
+Constant MSQ_DA_SCALE      = 0x20
+/// @}
+
 /// List of analysis function types
 StrConstant PSQ_LIST_OF_TYPES = "0x1;0x2;0x4;0x8"
+StrConstant MSQ_LIST_OF_TYPES = "0x10;0x20"
 /// @}
 
 /// @name PatchSeq Rheobase
@@ -973,16 +987,6 @@ Constant MSQ_SPIKE_LEVEL         = -10.0 // mV
 Constant MSQ_RMS_SHORT_THRESHOLD = 0.07 // mV
 Constant MSQ_RMS_LONG_THRESHOLD  = 0.5  // mV
 Constant MSQ_TARGETV_THRESHOLD   = 1    // mV
-/// @}
-
-/// @name MultiPatchSeq types of analysis functions
-/// @anchor MultiPatchSeqAnalysisFunctionTypes
-/// @{
-Constant MSQ_FAST_RHEO_EST = 0x1
-Constant MSQ_DA_SCALE      = 0x2
-
-/// List of analysis function types
-StrConstant MSQ_LIST_OF_TYPES = "0x1;0x2"
 /// @}
 
 /// @anchor MultiPatchSeqLabnotebookFormatStrings

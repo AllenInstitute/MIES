@@ -82,7 +82,7 @@ static Function/WAVE GetResults_IGNORE(device, sweepNo, str, headstage, mode)
 	string key
 
 	WAVE numericalValues = GetLBNumericalValues(device)
-	key = MSQ_CreateLBNKey(MSQ_FAST_RHEO_EST, str, query = 1)
+	key = CreateAnaFuncLBNKey(MSQ_FAST_RHEO_EST, str, query = 1)
 
 	switch(mode)
 		case INDEP_EACH_SCI:

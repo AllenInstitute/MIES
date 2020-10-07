@@ -93,7 +93,7 @@ static Function AD_FillWaves(panelTitle, list, info)
 			continue
 		endif
 
-		Make/N=(LABNOTEBOOK_LAYER_COUNT)/FREE anaFuncTypes = PSQ_MapFunctionToConstant(anaFuncs[p])
+		Make/N=(LABNOTEBOOK_LAYER_COUNT)/FREE anaFuncTypes = MapAnaFuncToConstant(anaFuncs[p])
 
 		if(!HasOneValidEntry(anaFuncTypes))
 			continue
@@ -138,7 +138,7 @@ static Function AD_FillWaves(panelTitle, list, info)
 
 		stimset = stimsets[headstage]
 
-		key = PSQ_CreateLBNKey(anaFuncType, PSQ_FMT_LBN_SET_PASS, query = 1)
+		key = CreateAnaFuncLBNKey(anaFuncType, PSQ_FMT_LBN_SET_PASS, query = 1)
 		passed = GetLastSettingIndepSCI(numericalValues, sweepNo, key, headstage, UNKNOWN_MODE)
 
 		if(isNaN(passed))
@@ -149,7 +149,7 @@ static Function AD_FillWaves(panelTitle, list, info)
 		if(passed)
 			msg = "Pass"
 		else
-			anaFuncType = PSQ_MapFunctionToConstant(anaFunc)
+			anaFuncType = MapAnaFuncToConstant(anaFunc)
 			ASSERT(IsFinite(anaFuncType), "Invalid analysis function type")
 
 			// DA, RB, RA, SP
@@ -206,7 +206,7 @@ static Function AD_FillWaves(panelTitle, list, info)
 			case PSQ_RAMP:
 			case PSQ_SQUARE_PULSE:
 
-				key = PSQ_CreateLBNKey(anaFuncType, PSQ_FMT_LBN_SWEEP_PASS, query = 1)
+				key = CreateAnaFuncLBNKey(anaFuncType, PSQ_FMT_LBN_SWEEP_PASS, query = 1)
 				WAVE sweepPass = GetLastSettingIndepEachSCI(numericalValues, sweepNo, key, headstage, UNKNOWN_MODE)
 				ASSERT(DimSize(sweeps, ROWS) == DimSize(sweepPass, ROWS), "Unexpected wave sizes")
 
@@ -219,7 +219,7 @@ static Function AD_FillWaves(panelTitle, list, info)
 
 				break
 			case PSQ_RHEOBASE:
-				key = PSQ_CreateLBNKey(anaFuncType, PSQ_FMT_LBN_SPIKE_DETECT, query = 1)
+				key = CreateAnaFuncLBNKey(anaFuncType, PSQ_FMT_LBN_SPIKE_DETECT, query = 1)
 				if(passed)
 					WAVE spikeDetection = GetLastSettingEachSCI(numericalValues, sweepNo, key, headstage, UNKNOWN_MODE)
 					ASSERT(DimSize(sweeps, ROWS) == DimSize(spikeDetection, ROWS), "Unexpected wave sizes")
@@ -262,7 +262,7 @@ static Function/S AD_GetSquarePulseFailMsg(numericalValues, sweepNo, headstage)
 	string msg, key
 	variable stepSize
 
-	key = PSQ_CreateLBNKey(PSQ_SQUARE_PULSE, PSQ_FMT_LBN_SPIKE_DASCALE_ZERO, query = 1)
+	key = CreateAnaFuncLBNKey(PSQ_SQUARE_PULSE, PSQ_FMT_LBN_SPIKE_DASCALE_ZERO, query = 1)
 	WAVE/Z spikeWithDAScaleZero = GetLastSettingIndepEachSCI(numericalValues, sweepNo, key, headstage, UNKNOWN_MODE)
 	// Prior to 1e2f38ba (Merge pull request #1073 in ENG/mies-igor from
 	// ~THOMASB/mies-igor:feature/larger-fifo-for-NI to master, 2019-02-09)
@@ -274,7 +274,7 @@ static Function/S AD_GetSquarePulseFailMsg(numericalValues, sweepNo, headstage)
 		endif
 	endif
 
-	key = PSQ_CreateLBNKey(PSQ_SQUARE_PULSE, PSQ_FMT_LBN_STEPSIZE, query = 1)
+	key = CreateAnaFuncLBNKey(PSQ_SQUARE_PULSE, PSQ_FMT_LBN_STEPSIZE, query = 1)
 	stepSize = GetLastSettingIndepSCI(numericalValues, sweepNo, key, headstage, UNKNOWN_MODE)
 	ASSERT(IsFinite(stepSize), "Missing DAScale stepsize LBN entry")
 
@@ -283,7 +283,7 @@ static Function/S AD_GetSquarePulseFailMsg(numericalValues, sweepNo, headstage)
 		return msg
 	endif
 
-	key = PSQ_CreateLBNKey(PSQ_SQUARE_PULSE, PSQ_FMT_LBN_SPIKE_DETECT, query = 1)
+	key = CreateAnaFuncLBNKey(PSQ_SQUARE_PULSE, PSQ_FMT_LBN_SPIKE_DETECT, query = 1)
 	WAVE/Z spikeDetection = GetLastSettingSCI(numericalValues, sweepNo, key, headstage, UNKNOWN_MODE)
 
 	if(!spikeDetection[headstage])
@@ -328,12 +328,12 @@ static Function/S AD_GetDAScaleFailMsg(numericalValues, textualValues, sweepNo, 
 		return msg
 	endif
 
-	key = PSQ_CreateLBNKey(PSQ_DA_SCALE, PSQ_FMT_LBN_DA_fI_SLOPE_REACHED, query = 1)
+	key = CreateAnaFuncLBNKey(PSQ_DA_SCALE, PSQ_FMT_LBN_DA_fI_SLOPE_REACHED, query = 1)
 	WAVE/Z fISlopeReached = GetLastSettingIndepEachSCI(numericalValues, sweepNo, key, headstage, UNKNOWN_MODE)
 	ASSERT(WaveExists(fiSlopeReached), "Missing fI Slope reached LBN entry")
 
 	if(Sum(fISlopeReached) == 0)
-		key = PSQ_CreateLBNKey(PSQ_DA_SCALE, PSQ_FMT_LBN_DA_fI_SLOPE, query = 1)
+		key = CreateAnaFuncLBNKey(PSQ_DA_SCALE, PSQ_FMT_LBN_DA_fI_SLOPE, query = 1)
 		WAVE fISlope = GetLastSettingEachSCI(numericalValues, sweepNo, key, headstage, UNKNOWN_MODE)
 		fISlopeStr = RemoveEnding(NumericWaveToList(fISlope, "%, ", format = "%.15g"), "%, ")
 
@@ -394,7 +394,7 @@ static Function/S AD_GetRheobaseFailMsg(numericalValues, sweepNo, headstage)
 		return msg
 	endif
 
-	key = PSQ_CreateLBNKey(PSQ_RHEOBASE, PSQ_FMT_LBN_RB_DASCALE_EXC, query = 1)
+	key = CreateAnaFuncLBNKey(PSQ_RHEOBASE, PSQ_FMT_LBN_RB_DASCALE_EXC, query = 1)
 	WAVE/Z daScaleExc = GetLastSettingEachSCI(numericalValues, sweepNo, key, headstage, UNKNOWN_MODE)
 	ASSERT(WaveExists(daScaleExc), "Missing DAScale exceeded LBN entry")
 	WaveTransform/O zapNaNs, daScaleExc
@@ -403,7 +403,7 @@ static Function/S AD_GetRheobaseFailMsg(numericalValues, sweepNo, headstage)
 		return "Failure due to DAScale value exceeded"
 	endif
 
-	key = PSQ_CreateLBNKey(PSQ_RHEOBASE, PSQ_FMT_LBN_RB_LIMITED_RES, query = 1)
+	key = CreateAnaFuncLBNKey(PSQ_RHEOBASE, PSQ_FMT_LBN_RB_LIMITED_RES, query = 1)
 	WAVE/Z limitedResolution = GetLastSettingEachSCI(numericalValues, sweepNo, key, headstage, UNKNOWN_MODE)
 	ASSERT(WaveExists(limitedResolution), "Missing limited resolution labnotebook entry")
 	WaveTransform/O zapNaNs, limitedResolution
@@ -412,7 +412,7 @@ static Function/S AD_GetRheobaseFailMsg(numericalValues, sweepNo, headstage)
 		return "Failure due to limited resolution"
 	endif
 
-	key = PSQ_CreateLBNKey(PSQ_RHEOBASE, PSQ_FMT_LBN_SPIKE_DETECT, query = 1)
+	key = CreateAnaFuncLBNKey(PSQ_RHEOBASE, PSQ_FMT_LBN_SPIKE_DETECT, query = 1)
 	WAVE/Z spikeDetect = GetLastSettingEachSCI(numericalValues, sweepNo, key, headstage, UNKNOWN_MODE)
 
 	sprintf msg, "Failure as we were not able to find the correct on/off spike pattern (%s)", RemoveEnding(NumericWaveToList(spikeDetect, ", ", format="%g"), ", ")
@@ -437,13 +437,13 @@ static Function/S AD_GetBaselineFailMsg(anaFuncType, numericalValues, sweepNo, h
 		case PSQ_DA_SCALE:
 		case PSQ_RHEOBASE:
 		case PSQ_RAMP:
-			key = PSQ_CreateLBNKey(anaFuncType, PSQ_FMT_LBN_BL_QC_PASS, query = 1)
+			key = CreateAnaFuncLBNKey(anaFuncType, PSQ_FMT_LBN_BL_QC_PASS, query = 1)
 			WAVE/Z baselineQC = GetLastSettingSCI(numericalValues, sweepNo, key, headstage, UNKNOWN_MODE)
 			ASSERT(WaveExists(baselineQC), "Missing baseline QC LBN entry")
 
 			if(!baselineQC[headstage])
 				for(i = 0; ;i += 1)
-					key = PSQ_CreateLBNKey(anaFuncType, PSQ_FMT_LBN_CHUNK_PASS, query = 1, chunk = i)
+					key = CreateAnaFuncLBNKey(anaFuncType, PSQ_FMT_LBN_CHUNK_PASS, query = 1, chunk = i)
 					chunkQC = GetLastSettingIndepSCI(numericalValues, sweepNo, key, headstage, UNKNOWN_MODE)
 
 					if(IsNaN(chunkQC))

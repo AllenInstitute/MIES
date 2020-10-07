@@ -545,11 +545,11 @@ Function IVS_GetSetQCForSweep(panelTitle, sweepNo)
 
 	ASSERT(WaveExists(anaFuncs), "The queried sweep did not use an analysis function.")
 
-	Make/N=(LABNOTEBOOK_LAYER_COUNT)/FREE anaFuncTypes = PSQ_MapFunctionToConstant(anaFuncs[p])
+	Make/N=(LABNOTEBOOK_LAYER_COUNT)/FREE anaFuncTypes = MapAnaFuncToConstant(anaFuncs[p])
 
 	anaFuncType = anaFuncTypes[headstage]
 	ASSERT(IsFinite(anaFuncType), "The used analysis function is not a patch-seq one.")
 
-	key = PSQ_CreateLBNKey(anaFuncType, PSQ_FMT_LBN_SET_PASS, query = 1)
+	key = CreateAnaFuncLBNKey(anaFuncType, PSQ_FMT_LBN_SET_PASS, query = 1)
 	return GetLastSettingIndepSCI(numericalValues, sweepNo, key, headstage, UNKNOWN_MODE) == 1
 End
