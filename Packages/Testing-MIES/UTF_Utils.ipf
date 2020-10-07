@@ -3815,6 +3815,10 @@ Function NWLWorks()
 	result = NumericWaveToList(dataInt, ";", format="%d")
 	expected = "1;1000000;-100;"
 	CHECK_EQUAL_STR(result, expected)
+
+	Make/FREE/N=0 dataEmpty
+	result = NumericWaveToList(dataEmpty, ";")
+	CHECK_EMPTY_STR(result)
 End
 
 Function NWLChecksInput()
