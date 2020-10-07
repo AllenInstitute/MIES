@@ -1199,9 +1199,7 @@ Function MSQ_FastRheoEst(panelTitle, s)
 				SetDAScale(panelTitle, i, val)
 			endfor
 
-			// @todo add support in dashboard
-			// AD_UpdateAllDatabrowser()
-
+			AD_UpdateAllDatabrowser()
 			break
 		case POST_DAQ_EVENT:
 
@@ -1228,9 +1226,7 @@ Function MSQ_FastRheoEst(panelTitle, s)
 				endfor
 			endif
 
-			// @todo add support in dashboard
-			// AD_UpdateAllDatabrowser()
-
+			AD_UpdateAllDatabrowser()
 			break
 		default:
 			// do nothing
@@ -1468,8 +1464,7 @@ Function MSQ_DAScale(panelTitle, s)
 			key = CreateAnaFuncLBNKey(MSQ_DA_SCALE, MSQ_FMT_LBN_SET_PASS)
 			ED_AddEntryToLabnotebook(panelTitle, key, values, unit = LABNOTEBOOK_BINARY_UNIT)
 
-			/// @todo support
-			/// AD_UpdateAllDatabrowser()
+			AD_UpdateAllDatabrowser()
 			break
 		case POST_DAQ_EVENT:
 			WAVE statusHS = DAG_GetChannelState(panelTitle, CHANNEL_TYPE_HEADSTAGE)
@@ -1488,8 +1483,7 @@ Function MSQ_DAScale(panelTitle, s)
 				endfor
 			endif
 
-			/// @todo support
-			/// AD_UpdateAllDatabrowser()
+			AD_UpdateAllDatabrowser()
 			EnableControls(panelTitle, "Button_DataAcq_SkipBackwards;Button_DataAcq_SkipForward")
 			break
 		default:
