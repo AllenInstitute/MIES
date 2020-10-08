@@ -1692,13 +1692,12 @@ End
 ///        which were locked at some point
 Function/S GetAllDevices()
 
-	variable i, j, numEntries, numNumbers
-	string folder, number, device, folders
+	variable i, j, numEntries, numDevices
+	string folder, number, device, folders, subFolders, subFolder
 	string path, list = ""
 
+	string devicesFolderPath = GetITCDevicesFolderAsString()
 	DFREF devicesFolder = GetITCDevicesFolder()
-
-	numNumbers = ItemsInList(DEVICE_NUMBERS)
 
 	folders = GetListOfObjects(devicesFolder, ".*", typeFlag = COUNTOBJECTS_DATAFOLDER)
 	numEntries = ItemsInList(folders)
@@ -1706,9 +1705,14 @@ Function/S GetAllDevices()
 		folder = StringFromList(i, folders)
 
 		if(GrepString(folder, "^ITC.*"))
+			DFREF subFolderDFR = $(devicesFolderPath + ":" + folder)
+			subFolders = GetListOfObjects(subFolderDFR, ".*", typeFlag = COUNTOBJECTS_DATAFOLDER)
+
 			// ITC hardware is in a specific subfolder
-			for(j = 0; j < numNumbers ; j += 1)
-				number = StringFromList(j, DEVICE_NUMBERS)
+			numDevices = ItemsInList(subFolders)
+			for(j = 0; j < numDevices ; j += 1)
+				subFolder = StringFromList(j, subFolders)
+				number = RemovePrefix(subFolder, startStr = "Device")
 				device = BuildDeviceString(folder, number)
 				path   = GetDevicePathAsString(device)
 

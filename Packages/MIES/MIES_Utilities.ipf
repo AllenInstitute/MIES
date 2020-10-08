@@ -362,7 +362,8 @@ End
 /// The redimensioning is only done if it is required.
 ///
 /// Can be used to fill a wave one at a time with the minimum number of
-/// redimensions.
+/// redimensions. In the following example `NOTE_INDEX` is the index of the
+/// next free row *and* the total number of rows filled with data.
 ///
 /// \rst
 /// .. code-block:: igorpro
@@ -5420,4 +5421,23 @@ Function CalculateNiceLength(variable range , variable multiple)
 	endif
 
 	return multiple * 10^(round(numDigits))
+End
+
+/// @brief Remove unused rows from the passed wave and return a copy of it.
+///
+/// @see EnsureLargeEnoughWave()
+Function/WAVE RemoveUnusedRows(WAVE wv)
+
+	variable index
+
+	index = GetNumberFromWaveNote(wv, NOTE_INDEX)
+	ASSERT(IsInteger(index), "Unexpected index")
+
+	if(index == 0)
+		return $""
+	endif
+
+	Duplicate/FREE/RMD=[0, index - 1] wv, dup
+
+	return dup
 End

@@ -63,9 +63,9 @@ static Function TestLabnotebooks(fileID, device)
 
 	string lbnDevices, prefix
 
-	WAVE numericalValues = GetLBNumericalValues(device)
+	WAVE numericalValues = RemoveUnusedRows(GetLBNumericalValues(device))
 	WAVE/T numericalKeys = GetLBNumericalKeys(device)
-	WAVE/T textualValues = GetLBTextualValues(device)
+	WAVE/T textualValues = RemoveUnusedRows(GetLBTextualValues(device))
 	WAVE/T textualKeys = GetLBTextualKeys(device)
 
 	lbnDevices = RemoveEnding(IPNWB#ReadLabNoteBooks(fileID), ";")
@@ -93,8 +93,13 @@ static Function TestTPStorage(fileID, device)
 
 	prefix = "/general/testpulse/" + device + "/"
 	WAVE/Z TPStorageNWB = IPNWB#H5_LoadDataSet(fileID, prefix + "TPStorage")
-	WAVE TPStorage = GetTPStorage(device)
-	CHECK_EQUAL_WAVES(TPStorageNWB, TPStorage)
+	WAVE/Z TPStorage = RemoveUnusedRows(GetTPStorage(device))
+
+	if(!WaveExists(TPStorageNWB) && !WaveExists(TPStorage))
+		PASS()
+	else
+		CHECK_EQUAL_WAVES(TPStorageNWB, TPStorage)
+	endif
 End
 
 static Function TestStoredTestPulses(fileID, device)
