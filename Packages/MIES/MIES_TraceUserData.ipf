@@ -198,7 +198,7 @@ Function TUD_SetUserDataFromWaves(string graph, string trace, WAVE/T keys, WAVE/
 
 	ASSERT(last >= 0, "Invalid last key")
 	ASSERT(first >= 0, "Invalid first key")
-	graphUserData[row][first, last] = values[q - first]
+	multithread graphUserData[row][first, last] = values[q - first]
 End
 
 /// @brief Return the number of traces in the user data
