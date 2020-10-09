@@ -6697,3 +6697,29 @@ Function/WAVE GetGraphUserData(string graph)
 
 	return wv
 End
+
+/// @brief Return the wave for trace counts per graph for pulse averaging plot
+/// rows one per graph, dimlabel is graph name
+/// col 0 number of traces in graph
+/// col 1 bit encoded what plots are shown
+Function/WAVE GetPAGraphTraceCounts()
+
+	variable versionOfNewWave = 1
+	DFREF dfr = GetGraphUserDataFolderDFR()
+	string name = "PATraceCounts"
+	WAVE/D/Z/SDFR=dfr wv = $name
+
+	if(ExistsWithCorrectLayoutVersion(wv, versionOfNewWave))
+		return wv
+	elseif(WaveExists(wv))
+		// handle upgrade
+	else
+		Make/D/N=(0, 2) dfr:$name/WAVE=wv
+	endif
+
+	SetWaveVersion(wv, versionOfNewWave)
+	SetDimLabel COLS, 0, TRACECOUNT, wv
+	SetDimLabel COLS, 1, PLOTTYPESSHOWN, wv
+
+	return wv
+End
