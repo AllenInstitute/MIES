@@ -3166,6 +3166,7 @@ Function AddTraceToLBGraph(graph, keys, values, key)
 
 				GetTraceColor(j, red, green, blue)
 				sprintf tmp, "\\K(%d, %d, %d)%d:\\K(0, 0, 0)", red, green, blue, j + 1
+				text = ReplaceString("\\", text, "\\\\")
 				tagString = tagString + tmp + text + "\r"
 			endfor
 
