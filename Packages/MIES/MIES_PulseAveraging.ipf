@@ -60,6 +60,12 @@ static Constant PA_PULSE_SORTING_ORDER_PULSE = 0x1
 /// @}
 ///
 
+static Constant PA_AVGERAGE_PLOT_LSIZE = 1.5
+static Constant PA_DECONVOLUTION_PLOT_LSIZE = 2
+
+static Constant PA_PLOTTYPE_AVERAGE = 0x01
+static Constant PA_PLOTTYPE_DECONVOLUTION = 0x02
+
 // comment out to show all the axes, useful for debugging
 #define PA_HIDE_AXIS
 
@@ -960,6 +966,21 @@ static Function PA_MarkFailedPulses(WAVE properties, WAVE/WAVE propertiesWaves, 
 
 	// need to do that at the end, as PA_PulseHasFailed uses that entry for checking if it needs to rerun
 	Multithread junkWave[] = SetNumberInWaveNote(propertiesWaves[p], NOTE_KEY_FAILED_PULSE_LEVEL, pa.failedPulsesLevel)
+End
+
+static Function [variable idx, variable traceCount] PA_GetTraceCountFromGraph(string graph)
+
+	WAVE tc = GetPAGraphTraceCounts()
+	idx = FindDimLabel(tc, ROWS, graph)
+	if(idx >= 0)
+		return [idx, tc[idx][0]]
+	endif
+
+	idx = DimSize(tc, ROWS)
+	Redimension/N=(idx + 1, -1) tc
+	SetDimLabel ROWS, idx, $graph, tc
+
+	return [idx, 0]
 End
 
 static Function/S PA_ShowPulses(string win, STRUCT PulseAverageSettings &pa, STRUCT PA_ConstantSettings &cs, WAVE/Z targetForAverageGeneric, WAVE/Z sourceForAverageGeneric, variable mode, WAVE/Z additionalData)
