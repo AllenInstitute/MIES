@@ -195,12 +195,14 @@ Function OVS_UpdateSweepSelectionChoices(string win, WAVE/T sweepSelectionChoice
 		return NaN
 	endif
 
-	WAVE/WAVE allNumericalValues = BSP_GetNumericalValues(win)
-	WAVE/WAVE allTextualValues   = BSP_GetTextualValues(win)
-
 	WAVE/Z sweeps = GetPlainSweepList(win)
 
 	numEntries = WaveExists(sweeps) ? DimSize(sweeps, ROWS) : 0
+
+	if(numEntries > 0)
+		WAVE/WAVE allNumericalValues = BSP_GetNumericalValues(win)
+		WAVE/WAVE allTextualValues   = BSP_GetTextualValues(win)
+	endif
 
 	Redimension/N=(numEntries, -1, -1, -1) sweepSelectionChoices
 
