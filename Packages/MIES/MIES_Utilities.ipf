@@ -3094,7 +3094,7 @@ Function/S NumericWaveToList(wv, sep, [format])
 	WAVE wv
 	string sep, format
 
-	string list
+	string list = ""
 
 	if(ParamIsDefault(format))
 		format = "%g"

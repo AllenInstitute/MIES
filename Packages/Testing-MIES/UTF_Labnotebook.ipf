@@ -346,24 +346,6 @@ End
 
 /// @}
 
-/// Patch Seq
-/// Check that all LBN keys have the correct length
-
-Function CheckLength()
-
-	variable type, i, numEntries
-	string key
-
-	numEntries = ItemsInList(PSQ_LIST_OF_TYPES)
-	for(i = 0; i < numEntries; i += 1)
-		type = str2num(StringFromList(i, PSQ_LIST_OF_TYPES))
-		key = PSQ_CreateLBNKey(type, PSQ_FMT_LBN_RMS_SHORT_PASS, chunk = 99, query = 1)
-		CHECK(strlen(key) < MAX_OBJECT_NAME_LENGTH_IN_BYTES)
-		key = PSQ_CreateLBNKey(type, PSQ_FMT_LBN_SPIKE_DASCALE_ZERO, query = 1)
-		CHECK(strlen(key) < MAX_OBJECT_NAME_LENGTH_IN_BYTES)
-	endfor
-End
-
 Function LBNCache_InvalidSweep()
 
 	variable sweepNo = 1000

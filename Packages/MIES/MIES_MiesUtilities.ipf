@@ -22,6 +22,14 @@ static Constant GET_LB_MODE_READ  = 1
 
 static Constant GET_LB_MODE_WRITE = 2
 
+static StrConstant PSQ_SP_LBN_PREFIX = "Squ. Pul."
+static StrConstant PSQ_DS_LBN_PREFIX = "DA Scale"
+static StrConstant PSQ_RB_LBN_PREFIX = "Rheobase"
+static StrConstant PSQ_RA_LBN_PREFIX = "Ramp"
+
+static StrConstant MSQ_FRE_LBN_PREFIX = "F Rheo E"
+static StrConstant MSQ_DS_LBN_PREFIX  = "Da Scale"
+
 Menu "GraphMarquee"
 	"Horiz Expand (VisX)", HorizExpandWithVisX()
 End
@@ -6598,4 +6606,83 @@ Function StoreWindowCoordinatesHook(s)
 	endswitch
 
 	return 0
+End
+
+/// @brief Map from analysis function name to numeric constant
+///
+/// @return One of @ref SpecialAnalysisFunctionTypes
+Function MapAnaFuncToConstant(anaFunc)
+	string anaFunc
+
+	strswitch(anaFunc)
+		case "PSQ_Ramp":
+			return PSQ_RAMP
+		case "PSQ_DaScale":
+			return PSQ_DA_SCALE
+		case "PSQ_Rheobase":
+			return PSQ_RHEOBASE
+		case "PSQ_SquarePulse":
+			return PSQ_SQUARE_PULSE
+		case "MSQ_FastRheoEst":
+			return MSQ_FAST_RHEO_EST
+		case "MSQ_DAScale":
+			return MSQ_DA_SCALE
+		default:
+			return NaN
+	endswitch
+End
+
+/// @brief Return labnotebook keys for patch seq analysis functions
+///
+/// @param type                                One of @ref SpecialAnalysisFunctionTypes
+/// @param formatString                        One of  @ref PatchSeqLabnotebookFormatStrings or @ref MultiPatchSeqLabnotebookFormatStrings
+/// @param chunk [optional]                    Some format strings expect a chunk number
+/// @param query [optional, defaults to false] If the key is to be used for setting or querying the labnotebook
+Function/S CreateAnaFuncLBNKey(type, formatString, [chunk, query])
+	variable type, chunk, query
+	string formatString
+
+	string str, prefix
+
+	switch(type)
+		case MSQ_DA_SCALE:
+			prefix = MSQ_DS_LBN_PREFIX
+			break
+		case MSQ_FAST_RHEO_EST:
+			prefix = MSQ_FRE_LBN_PREFIX
+			break
+		case PSQ_DA_SCALE:
+			prefix = PSQ_DS_LBN_PREFIX
+			break
+		case PSQ_RAMP:
+			prefix = PSQ_RA_LBN_PREFIX
+			break
+		case PSQ_RHEOBASE:
+			prefix = PSQ_RB_LBN_PREFIX
+			break
+		case PSQ_SQUARE_PULSE:
+			prefix = PSQ_SP_LBN_PREFIX
+			break
+		default:
+			return ""
+			break
+	endswitch
+
+	if(ParamIsDefault(chunk))
+		sprintf str, formatString, prefix
+	else
+		sprintf str, formatString, prefix, chunk
+	endif
+
+	if(ParamIsDefault(query))
+		query = 0
+	else
+		query = !!query
+	endif
+
+	if(query)
+		return LABNOTEBOOK_USER_PREFIX + str
+	else
+		return str
+	endif
 End
