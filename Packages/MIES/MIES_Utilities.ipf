@@ -155,6 +155,10 @@ Function ASSERT(var, errorMsg)
 		Debugger
 #endif // AUTOMATED_TESTING
 
+#ifdef AUTOMATED_TESTING_DEBUGGING
+		Debugger
+#endif
+
 		Abort
 	endtry
 End

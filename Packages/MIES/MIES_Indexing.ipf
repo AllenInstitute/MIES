@@ -56,13 +56,29 @@ Function IDX_ResetStartFinishForIndexing(panelTitle)
 End
 
 /// @brief Locked indexing, indexes all active channels at once
-Function IDX_IndexingDoIt(panelTitle)
+static Function IDX_IndexingDoIt(panelTitle)
 	string panelTitle
 
 	variable i
 
+	WAVE statusDAFiltered = DC_GetFilteredChannelState(panelTitle, DATA_ACQUISITION_MODE, CHANNEL_TYPE_DAC, DAQChannelType = DAQ_CHANNEL_TYPE_DAQ)
+	WAVE statusTTLFiltered = DC_GetFilteredChannelState(panelTitle, DATA_ACQUISITION_MODE, CHANNEL_TYPE_TTL, DAQChannelType = DAQ_CHANNEL_TYPE_DAQ)
+
 	for(i = 0; i < NUM_DA_TTL_CHANNELS; i += 1)
+
+		if(!statusDAFiltered[i])
+			continue
+		endif
+
 		IDX_IndexSingleChannel(panelTitle, CHANNEL_TYPE_DAC, i)
+	endfor
+
+	for(i = 0; i < NUM_DA_TTL_CHANNELS; i += 1)
+
+		if(!statusTTLFiltered[i])
+			continue
+		endif
+
 		IDX_IndexSingleChannel(panelTitle, CHANNEL_TYPE_TTL, i)
 	endfor
 
@@ -379,7 +395,7 @@ Function IDX_NumberOfSweepsInSet(setName)
 	return max(1, DimSize(wv, COLS))
 End
 
-Function IDX_ApplyUnLockedIndexing(panelTitle, count)
+static Function IDX_ApplyUnLockedIndexing(panelTitle, count)
 	string panelTitle
 	variable count
 
@@ -553,4 +569,68 @@ static Function/S IDX_GetSingleStimset(listWave, idx, [allowNone])
 	ASSERT(!IsEmpty(setName), "Unexpected empty set")
 
 	return setName
+End
+
+Function IDX_HandleIndexing(string panelTitle)
+
+	variable i, indexing, indexingLocked, activeSetCountMax, numFollower, followerActiveSetCount
+	string followerPanelTitle
+
+	indexing = DAG_GetNumericalValue(panelTitle, "Check_DataAcq_Indexing")
+
+	if(!indexing)
+		return NaN
+	endif
+
+	indexingLocked = DAG_GetNumericalValue(panelTitle, "Check_DataAcq1_IndexingLocked")
+
+	NVAR count = $GetCount(panelTitle)
+	NVAR activeSetCount = $GetActiveSetCount(panelTitle)
+
+	if(indexingLocked && activeSetcount == 0)
+		IDX_IndexingDoIt(panelTitle)
+	elseif(!indexingLocked)
+		IDX_ApplyUnLockedIndexing(panelTitle, count)
+	endif
+
+	if(DeviceHasFollower(panelTitle))
+
+		activeSetCountMax = activeSetCount
+
+		SVAR listOfFollowerDevices = $GetFollowerList(panelTitle)
+		numFollower = ItemsInList(listOfFollowerDevices)
+		for(i = 0; i < numFollower; i += 1)
+			followerPanelTitle = StringFromList(i, listOfFollowerDevices)
+			NVAR followerCount = $GetCount(followerPanelTitle)
+			followerCount += 1
+
+			RA_StepSweepsRemaining(followerPanelTitle)
+
+			if(indexing)
+				if(indexingLocked && activeSetCount == 0)
+					IDX_IndexingDoIt(followerPanelTitle)
+					followerActiveSetCount = IDX_CalculcateActiveSetCount(followerPanelTitle)
+					activeSetCountMax = max(activeSetCountMax, followerActiveSetCount)
+				elseif(!indexingLocked)
+					// channel indexes when set has completed all its steps
+					IDX_ApplyUnLockedIndexing(followerPanelTitle, count)
+					followerActiveSetCount = IDX_CalculcateActiveSetCount(followerPanelTitle)
+					activeSetCountMax = max(activeSetCountMax, followerActiveSetCount)
+				endif
+			endif
+		endfor
+
+		if(indexing)
+			// set maximum on leader and all followers
+			NVAR activeSetCount = $GetActiveSetCount(panelTitle)
+			activeSetCount = activeSetCountMax
+
+			for(i = 0; i < numFollower; i += 1)
+				followerPanelTitle = StringFromList(i, listOfFollowerDevices)
+
+				NVAR activeSetCount = $GetActiveSetCount(followerPanelTitle)
+				activeSetCount = activeSetCountMax
+			endfor
+		endif
+	endif
 End
