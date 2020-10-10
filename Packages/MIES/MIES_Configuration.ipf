@@ -589,7 +589,10 @@ Function/S CONF_RestoreDAEphys(jsonID, fullFilePath, [middleOfExperiment, forceN
 		if(!IsEmpty(StimSetPath))
 			if(FileExists(StimSetPath))
 				err = NWB_LoadAllStimSets(overwrite = 1, fileName = StimSetPath)
-				if(err)
+				if(!err)
+					print "Specified StimSet file at " + StimSetPath + " loaded successfully."
+					SetWindow $panelTitle, userData($EXPCONFIG_UDATA_STIMSET_NWB_PATH)=StimSetPath
+				else
 					print "Stim set failed to load, check file path"
 					ControlWindowToFront()
 				endif
