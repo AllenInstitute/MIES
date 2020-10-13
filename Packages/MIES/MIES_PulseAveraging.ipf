@@ -2867,3 +2867,165 @@ static Function PA_DrawXZeroLines(string win, variable displayMode, WAVE regions
 		endfor
 	endfor
 End
+
+///@brief Runs through all graph groups in the json and appends them to the graph
+static Function PA_AccelerateAppendTraces(variable jsonID, WAVE/WAVE plotWaves)
+
+	string graph, vertAxis, horizAxis, redStr, greenStr, blueStr, alphaStr, stepStr
+	variable numGraphs, numVertAxis, numHorizAxis, numRed, numGreen, numBlue, numAlpha, numStep
+	variable red, green, blue, alpha, step
+	variable i0, i1, i2, i3, i4, i5, i6, i7
+	string i0Path, i1Path, i2Path, i3Path, i4Path, i5Path, i6Path, i7Path
+
+	WAVE/T wGraphs = JSON_GetKeys(jsonID, "")
+	numGraphs = DimSize(wGraphs, ROWS)
+	for(i0 = 0; i0 < numGraphs; i0 += 1)
+		graph = wGraphs[i0]
+		i0Path = "/" + graph
+		WAVE/T wVertAxis = JSON_GetKeys(jsonID, i0Path)
+		numVertAxis = DimSize(wVertAxis, ROWS)
+		for(i1 = 0; i1 < numVertAxis; i1 += 1)
+			vertAxis = wVertAxis[i1]
+			i1Path = i0Path + "/" + vertAxis
+			WAVE/T wHorizAxis = JSON_GetKeys(jsonID, i1Path)
+			numHorizAxis = DimSize(wHorizAxis, ROWS)
+			for(i2 = 0; i2 < numHorizAxis; i2 += 1)
+				horizAxis = wHorizAxis[i2]
+				i2Path = i1Path + "/" + horizAxis
+				WAVE/T wRed = JSON_GetKeys(jsonID, i2Path)
+				numRed = DimSize(wRed, ROWS)
+				for(i3 = 0; i3 < numRed; i3 += 1)
+					redStr = wRed[i3]
+					red = str2num(redStr)
+					i3Path = i2Path + "/" + redStr
+					WAVE/T wGreen = JSON_GetKeys(jsonID, i3Path)
+					numGreen = DimSize(wGreen, ROWS)
+					for(i4 = 0; i4 < numGreen; i4 += 1)
+						greenStr = wGreen[i4]
+						green = str2num(greenStr)
+						i4Path = i3Path + "/" + greenStr
+						WAVE/T wBlue = JSON_GetKeys(jsonID, i4Path)
+						numBlue = DimSize(wBlue, ROWS)
+						for(i5 = 0; i5 < numBlue; i5 += 1)
+							blueStr = wBlue[i5]
+							blue = str2num(blueStr)
+							i5Path = i4Path + "/" + blueStr
+							WAVE/T wAlpha = JSON_GetKeys(jsonID, i5Path)
+							numAlpha = DimSize(wAlpha, ROWS)
+							for(i6 = 0; i6 < numAlpha; i6 += 1)
+								alphaStr = wAlpha[i6]
+								alpha = str2num(alphaStr)
+								i6Path = i5Path + "/" + alphaStr
+								WAVE/T wStep = JSON_GetKeys(jsonID, i6Path)
+								numStep = DimSize(wStep, ROWS)
+								for(i7 = 0; i7 < numStep; i7 += 1)
+									stepStr = wStep[i7]
+									i7Path = i6Path + "/" + stepStr
+									WAVE indices = JSON_GetWave(jsonID, i7Path + "/index")
+									WAVE/T traceNames = JSON_GetTextWave(jsonID, i7Path + "/traceName")
+									PA_AccelerateAppendTracesImpl(graph, vertAxis, horizAxis, red, green, blue, alpha, str2num(stepStr), indices, traceNames, plotWaves)
+								endfor
+							endfor
+						endfor
+					endfor
+				endfor
+			endfor
+		endfor
+	endfor
+End
+
+///@brief Appends a group of traces to a graph, properties v to s must be constant for the group
+///@param[in] w name of graph window
+///@param[in] v name of vertical axis
+///@param[in] h name of horizontal axis
+///@param[in] r red color component
+///@param[in] g green color component
+///@param[in] b blue color component
+///@param[in] a alpha component
+///@param[in] s step width of graph display
+///@param[in] y 1D wave with indices into wave d for the actual plot data
+///@param[in] t 1D wave with trace names, same size as y
+///@param[in] d wave reference wave with plot data
+static Function PA_AccelerateAppendTracesImpl(string w, string v, string h, variable r, variable g, variable b, variable a, variable s, WAVE y, WAVE/T t, WAVE/WAVE d)
+
+	variable step, i
+	i = DimSize(y, ROWS)
+	if(s > 1)
+		do
+			step = min(2 ^ trunc(log(i) / log(2)), 100)
+			i -= step
+			switch(step)
+				case 100:
+					WAVE aa=d[y[i]];WAVE ab=d[y[i+1]];WAVE ac=d[y[i+2]];WAVE ad=d[y[i+3]];WAVE ae=d[y[i+4]];WAVE af=d[y[i+5]];WAVE ag=d[y[i+6]];WAVE ah=d[y[i+7]];WAVE ai=d[y[i+8]];WAVE aj=d[y[i+9]];WAVE ak=d[y[i+10]];WAVE al=d[y[i+11]];WAVE am=d[y[i+12]];WAVE an=d[y[i+13]];WAVE ap=d[y[i+14]];WAVE aq=d[y[i+15]];WAVE ar=d[y[i+16]];WAVE as=d[y[i+17]];WAVE at=d[y[i+18]];WAVE au=d[y[i+19]];WAVE av=d[y[i+20]];WAVE aw=d[y[i+21]];WAVE ax=d[y[i+22]];WAVE ay=d[y[i+23]];WAVE az=d[y[i+24]];WAVE ba=d[y[i+25]];WAVE bb=d[y[i+26]];WAVE bc=d[y[i+27]];WAVE bd=d[y[i+28]];WAVE be=d[y[i+29]];WAVE bf=d[y[i+30]];WAVE bg=d[y[i+31]];WAVE bh=d[y[i+32]];WAVE bi=d[y[i+33]];WAVE bj=d[y[i+34]];WAVE bk=d[y[i+35]];WAVE bl=d[y[i+36]];WAVE bm=d[y[i+37]];WAVE bn=d[y[i+38]];WAVE bp=d[y[i+39]];WAVE bq=d[y[i+40]];WAVE br=d[y[i+41]];WAVE bs=d[y[i+42]];WAVE bt=d[y[i+43]];WAVE bu=d[y[i+44]];WAVE bv=d[y[i+45]];WAVE bw=d[y[i+46]];WAVE bx=d[y[i+47]];WAVE by=d[y[i+48]];WAVE bz=d[y[i+49]];WAVE ca=d[y[i+50]];WAVE cb=d[y[i+51]];WAVE cc=d[y[i+52]];WAVE cd=d[y[i+53]];WAVE ce=d[y[i+54]];WAVE cf=d[y[i+55]];WAVE cg=d[y[i+56]];WAVE ch=d[y[i+57]];WAVE ci=d[y[i+58]];WAVE cj=d[y[i+59]];WAVE ck=d[y[i+60]];WAVE cl=d[y[i+61]];WAVE cm=d[y[i+62]];WAVE cn=d[y[i+63]];WAVE cp=d[y[i+64]];WAVE cq=d[y[i+65]];WAVE cr=d[y[i+66]];WAVE cs=d[y[i+67]];WAVE ct=d[y[i+68]];WAVE cu=d[y[i+69]];WAVE cv=d[y[i+70]];WAVE cw=d[y[i+71]];WAVE cx=d[y[i+72]];WAVE cy=d[y[i+73]];WAVE cz=d[y[i+74]];WAVE da=d[y[i+75]];WAVE db=d[y[i+76]];WAVE dc=d[y[i+77]];WAVE dd=d[y[i+78]];WAVE de=d[y[i+79]];WAVE df=d[y[i+80]];WAVE dg=d[y[i+81]];WAVE dh=d[y[i+82]];WAVE di=d[y[i+83]];WAVE dj=d[y[i+84]];WAVE dk=d[y[i+85]];WAVE dl=d[y[i+86]];WAVE dm=d[y[i+87]];WAVE dn=d[y[i+88]];WAVE dp=d[y[i+89]];WAVE dq=d[y[i+90]];WAVE dr=d[y[i+91]];WAVE ds=d[y[i+92]];WAVE dt=d[y[i+93]];WAVE du=d[y[i+94]];WAVE dv=d[y[i+95]];WAVE dw=d[y[i+96]];WAVE dx=d[y[i+97]];WAVE dy=d[y[i+98]];WAVE dz=d[y[i+99]]
+					AppendToGraph/Q/W=$w/L=$v/B=$h/C=(r, g, b, a) aa[0,*;s]/TN=$t[i],ab[0,*;s]/TN=$t[i+1],ac[0,*;s]/TN=$t[i+2],ad[0,*;s]/TN=$t[i+3],ae[0,*;s]/TN=$t[i+4],af[0,*;s]/TN=$t[i+5],ag[0,*;s]/TN=$t[i+6],ah[0,*;s]/TN=$t[i+7],ai[0,*;s]/TN=$t[i+8],aj[0,*;s]/TN=$t[i+9],ak[0,*;s]/TN=$t[i+10],al[0,*;s]/TN=$t[i+11],am[0,*;s]/TN=$t[i+12],an[0,*;s]/TN=$t[i+13],ap[0,*;s]/TN=$t[i+14],aq[0,*;s]/TN=$t[i+15],ar[0,*;s]/TN=$t[i+16],as[0,*;s]/TN=$t[i+17],at[0,*;s]/TN=$t[i+18],au[0,*;s]/TN=$t[i+19],av[0,*;s]/TN=$t[i+20],aw[0,*;s]/TN=$t[i+21],ax[0,*;s]/TN=$t[i+22],ay[0,*;s]/TN=$t[i+23],az[0,*;s]/TN=$t[i+24],ba[0,*;s]/TN=$t[i+25],bb[0,*;s]/TN=$t[i+26],bc[0,*;s]/TN=$t[i+27],bd[0,*;s]/TN=$t[i+28],be[0,*;s]/TN=$t[i+29],bf[0,*;s]/TN=$t[i+30],bg[0,*;s]/TN=$t[i+31],bh[0,*;s]/TN=$t[i+32],bi[0,*;s]/TN=$t[i+33],bj[0,*;s]/TN=$t[i+34],bk[0,*;s]/TN=$t[i+35],bl[0,*;s]/TN=$t[i+36],bm[0,*;s]/TN=$t[i+37],bn[0,*;s]/TN=$t[i+38],bp[0,*;s]/TN=$t[i+39],bq[0,*;s]/TN=$t[i+40],br[0,*;s]/TN=$t[i+41],bs[0,*;s]/TN=$t[i+42],bt[0,*;s]/TN=$t[i+43],bu[0,*;s]/TN=$t[i+44],bv[0,*;s]/TN=$t[i+45],bw[0,*;s]/TN=$t[i+46],bx[0,*;s]/TN=$t[i+47],by[0,*;s]/TN=$t[i+48],bz[0,*;s]/TN=$t[i+49],ca[0,*;s]/TN=$t[i+50],cb[0,*;s]/TN=$t[i+51],cc[0,*;s]/TN=$t[i+52],cd[0,*;s]/TN=$t[i+53],ce[0,*;s]/TN=$t[i+54],cf[0,*;s]/TN=$t[i+55],cg[0,*;s]/TN=$t[i+56],ch[0,*;s]/TN=$t[i+57],ci[0,*;s]/TN=$t[i+58],cj[0,*;s]/TN=$t[i+59],ck[0,*;s]/TN=$t[i+60],cl[0,*;s]/TN=$t[i+61],cm[0,*;s]/TN=$t[i+62],cn[0,*;s]/TN=$t[i+63],cp[0,*;s]/TN=$t[i+64],cq[0,*;s]/TN=$t[i+65],cr[0,*;s]/TN=$t[i+66],cs[0,*;s]/TN=$t[i+67],ct[0,*;s]/TN=$t[i+68],cu[0,*;s]/TN=$t[i+69],cv[0,*;s]/TN=$t[i+70],cw[0,*;s]/TN=$t[i+71],cx[0,*;s]/TN=$t[i+72],cy[0,*;s]/TN=$t[i+73],cz[0,*;s]/TN=$t[i+74],da[0,*;s]/TN=$t[i+75],db[0,*;s]/TN=$t[i+76],dc[0,*;s]/TN=$t[i+77],dd[0,*;s]/TN=$t[i+78],de[0,*;s]/TN=$t[i+79],df[0,*;s]/TN=$t[i+80],dg[0,*;s]/TN=$t[i+81],dh[0,*;s]/TN=$t[i+82],di[0,*;s]/TN=$t[i+83],dj[0,*;s]/TN=$t[i+84],dk[0,*;s]/TN=$t[i+85],dl[0,*;s]/TN=$t[i+86],dm[0,*;s]/TN=$t[i+87],dn[0,*;s]/TN=$t[i+88],dp[0,*;s]/TN=$t[i+89],dq[0,*;s]/TN=$t[i+90],dr[0,*;s]/TN=$t[i+91],ds[0,*;s]/TN=$t[i+92],dt[0,*;s]/TN=$t[i+93],du[0,*;s]/TN=$t[i+94],dv[0,*;s]/TN=$t[i+95],dw[0,*;s]/TN=$t[i+96],dx[0,*;s]/TN=$t[i+97],dy[0,*;s]/TN=$t[i+98],dz[0,*;s]/TN=$t[i+99]
+					break
+				case 64:
+					WAVE aa=d[y[i]];WAVE ab=d[y[i+1]];WAVE ac=d[y[i+2]];WAVE ad=d[y[i+3]];WAVE ae=d[y[i+4]];WAVE af=d[y[i+5]];WAVE ag=d[y[i+6]];WAVE ah=d[y[i+7]];WAVE ai=d[y[i+8]];WAVE aj=d[y[i+9]];WAVE ak=d[y[i+10]];WAVE al=d[y[i+11]];WAVE am=d[y[i+12]];WAVE an=d[y[i+13]];WAVE ap=d[y[i+14]];WAVE aq=d[y[i+15]];WAVE ar=d[y[i+16]];WAVE as=d[y[i+17]];WAVE at=d[y[i+18]];WAVE au=d[y[i+19]];WAVE av=d[y[i+20]];WAVE aw=d[y[i+21]];WAVE ax=d[y[i+22]];WAVE ay=d[y[i+23]];WAVE az=d[y[i+24]];WAVE ba=d[y[i+25]];WAVE bb=d[y[i+26]];WAVE bc=d[y[i+27]];WAVE bd=d[y[i+28]];WAVE be=d[y[i+29]];WAVE bf=d[y[i+30]];WAVE bg=d[y[i+31]];WAVE bh=d[y[i+32]];WAVE bi=d[y[i+33]];WAVE bj=d[y[i+34]];WAVE bk=d[y[i+35]];WAVE bl=d[y[i+36]];WAVE bm=d[y[i+37]];WAVE bn=d[y[i+38]];WAVE bp=d[y[i+39]];WAVE bq=d[y[i+40]];WAVE br=d[y[i+41]];WAVE bs=d[y[i+42]];WAVE bt=d[y[i+43]];WAVE bu=d[y[i+44]];WAVE bv=d[y[i+45]];WAVE bw=d[y[i+46]];WAVE bx=d[y[i+47]];WAVE by=d[y[i+48]];WAVE bz=d[y[i+49]];WAVE ca=d[y[i+50]];WAVE cb=d[y[i+51]];WAVE cc=d[y[i+52]];WAVE cd=d[y[i+53]];WAVE ce=d[y[i+54]];WAVE cf=d[y[i+55]];WAVE cg=d[y[i+56]];WAVE ch=d[y[i+57]];WAVE ci=d[y[i+58]];WAVE cj=d[y[i+59]];WAVE ck=d[y[i+60]];WAVE cl=d[y[i+61]];WAVE cm=d[y[i+62]];WAVE cn=d[y[i+63]]
+					AppendToGraph/Q/W=$w/L=$v/B=$h/C=(r, g, b, a) aa[0,*;s]/TN=$t[i],ab[0,*;s]/TN=$t[i+1],ac[0,*;s]/TN=$t[i+2],ad[0,*;s]/TN=$t[i+3],ae[0,*;s]/TN=$t[i+4],af[0,*;s]/TN=$t[i+5],ag[0,*;s]/TN=$t[i+6],ah[0,*;s]/TN=$t[i+7],ai[0,*;s]/TN=$t[i+8],aj[0,*;s]/TN=$t[i+9],ak[0,*;s]/TN=$t[i+10],al[0,*;s]/TN=$t[i+11],am[0,*;s]/TN=$t[i+12],an[0,*;s]/TN=$t[i+13],ap[0,*;s]/TN=$t[i+14],aq[0,*;s]/TN=$t[i+15],ar[0,*;s]/TN=$t[i+16],as[0,*;s]/TN=$t[i+17],at[0,*;s]/TN=$t[i+18],au[0,*;s]/TN=$t[i+19],av[0,*;s]/TN=$t[i+20],aw[0,*;s]/TN=$t[i+21],ax[0,*;s]/TN=$t[i+22],ay[0,*;s]/TN=$t[i+23],az[0,*;s]/TN=$t[i+24],ba[0,*;s]/TN=$t[i+25],bb[0,*;s]/TN=$t[i+26],bc[0,*;s]/TN=$t[i+27],bd[0,*;s]/TN=$t[i+28],be[0,*;s]/TN=$t[i+29],bf[0,*;s]/TN=$t[i+30],bg[0,*;s]/TN=$t[i+31],bh[0,*;s]/TN=$t[i+32],bi[0,*;s]/TN=$t[i+33],bj[0,*;s]/TN=$t[i+34],bk[0,*;s]/TN=$t[i+35],bl[0,*;s]/TN=$t[i+36],bm[0,*;s]/TN=$t[i+37],bn[0,*;s]/TN=$t[i+38],bp[0,*;s]/TN=$t[i+39],bq[0,*;s]/TN=$t[i+40],br[0,*;s]/TN=$t[i+41],bs[0,*;s]/TN=$t[i+42],bt[0,*;s]/TN=$t[i+43],bu[0,*;s]/TN=$t[i+44],bv[0,*;s]/TN=$t[i+45],bw[0,*;s]/TN=$t[i+46],bx[0,*;s]/TN=$t[i+47],by[0,*;s]/TN=$t[i+48],bz[0,*;s]/TN=$t[i+49],ca[0,*;s]/TN=$t[i+50],cb[0,*;s]/TN=$t[i+51],cc[0,*;s]/TN=$t[i+52],cd[0,*;s]/TN=$t[i+53],ce[0,*;s]/TN=$t[i+54],cf[0,*;s]/TN=$t[i+55],cg[0,*;s]/TN=$t[i+56],ch[0,*;s]/TN=$t[i+57],ci[0,*;s]/TN=$t[i+58],cj[0,*;s]/TN=$t[i+59],ck[0,*;s]/TN=$t[i+60],cl[0,*;s]/TN=$t[i+61],cm[0,*;s]/TN=$t[i+62],cn[0,*;s]/TN=$t[i+63]
+					break
+				case 32:
+					WAVE aa=d[y[i]];WAVE ab=d[y[i+1]];WAVE ac=d[y[i+2]];WAVE ad=d[y[i+3]];WAVE ae=d[y[i+4]];WAVE af=d[y[i+5]];WAVE ag=d[y[i+6]];WAVE ah=d[y[i+7]];WAVE ai=d[y[i+8]];WAVE aj=d[y[i+9]];WAVE ak=d[y[i+10]];WAVE al=d[y[i+11]];WAVE am=d[y[i+12]];WAVE an=d[y[i+13]];WAVE ap=d[y[i+14]];WAVE aq=d[y[i+15]];WAVE ar=d[y[i+16]];WAVE as=d[y[i+17]];WAVE at=d[y[i+18]];WAVE au=d[y[i+19]];WAVE av=d[y[i+20]];WAVE aw=d[y[i+21]];WAVE ax=d[y[i+22]];WAVE ay=d[y[i+23]];WAVE az=d[y[i+24]];WAVE ba=d[y[i+25]];WAVE bb=d[y[i+26]];WAVE bc=d[y[i+27]];WAVE bd=d[y[i+28]];WAVE be=d[y[i+29]];WAVE bf=d[y[i+30]];WAVE bg=d[y[i+31]]
+					AppendToGraph/Q/W=$w/L=$v/B=$h/C=(r, g, b, a) aa[0,*;s]/TN=$t[i],ab[0,*;s]/TN=$t[i+1],ac[0,*;s]/TN=$t[i+2],ad[0,*;s]/TN=$t[i+3],ae[0,*;s]/TN=$t[i+4],af[0,*;s]/TN=$t[i+5],ag[0,*;s]/TN=$t[i+6],ah[0,*;s]/TN=$t[i+7],ai[0,*;s]/TN=$t[i+8],aj[0,*;s]/TN=$t[i+9],ak[0,*;s]/TN=$t[i+10],al[0,*;s]/TN=$t[i+11],am[0,*;s]/TN=$t[i+12],an[0,*;s]/TN=$t[i+13],ap[0,*;s]/TN=$t[i+14],aq[0,*;s]/TN=$t[i+15],ar[0,*;s]/TN=$t[i+16],as[0,*;s]/TN=$t[i+17],at[0,*;s]/TN=$t[i+18],au[0,*;s]/TN=$t[i+19],av[0,*;s]/TN=$t[i+20],aw[0,*;s]/TN=$t[i+21],ax[0,*;s]/TN=$t[i+22],ay[0,*;s]/TN=$t[i+23],az[0,*;s]/TN=$t[i+24],ba[0,*;s]/TN=$t[i+25],bb[0,*;s]/TN=$t[i+26],bc[0,*;s]/TN=$t[i+27],bd[0,*;s]/TN=$t[i+28],be[0,*;s]/TN=$t[i+29],bf[0,*;s]/TN=$t[i+30],bg[0,*;s]/TN=$t[i+31]
+					break
+				case 16:
+					WAVE aa=d[y[i]];WAVE ab=d[y[i+1]];WAVE ac=d[y[i+2]];WAVE ad=d[y[i+3]];WAVE ae=d[y[i+4]];WAVE af=d[y[i+5]];WAVE ag=d[y[i+6]];WAVE ah=d[y[i+7]];WAVE ai=d[y[i+8]];WAVE aj=d[y[i+9]];WAVE ak=d[y[i+10]];WAVE al=d[y[i+11]];WAVE am=d[y[i+12]];WAVE an=d[y[i+13]];WAVE ap=d[y[i+14]];WAVE aq=d[y[i+15]]
+					AppendToGraph/Q/W=$w/L=$v/B=$h/C=(r, g, b, a) aa[0,*;s]/TN=$t[i],ab[0,*;s]/TN=$t[i+1],ac[0,*;s]/TN=$t[i+2],ad[0,*;s]/TN=$t[i+3],ae[0,*;s]/TN=$t[i+4],af[0,*;s]/TN=$t[i+5],ag[0,*;s]/TN=$t[i+6],ah[0,*;s]/TN=$t[i+7],ai[0,*;s]/TN=$t[i+8],aj[0,*;s]/TN=$t[i+9],ak[0,*;s]/TN=$t[i+10],al[0,*;s]/TN=$t[i+11],am[0,*;s]/TN=$t[i+12],an[0,*;s]/TN=$t[i+13],ap[0,*;s]/TN=$t[i+14],aq[0,*;s]/TN=$t[i+15]
+					break
+				case 8:
+					WAVE aa=d[y[i]];WAVE ab=d[y[i+1]];WAVE ac=d[y[i+2]];WAVE ad=d[y[i+3]];WAVE ae=d[y[i+4]];WAVE af=d[y[i+5]];WAVE ag=d[y[i+6]];WAVE ah=d[y[i+7]]
+					AppendToGraph/Q/W=$w/L=$v/B=$h/C=(r, g, b, a) aa[0,*;s]/TN=$t[i],ab[0,*;s]/TN=$t[i+1],ac[0,*;s]/TN=$t[i+2],ad[0,*;s]/TN=$t[i+3],ae[0,*;s]/TN=$t[i+4],af[0,*;s]/TN=$t[i+5],ag[0,*;s]/TN=$t[i+6],ah[0,*;s]/TN=$t[i+7]
+					break
+				case 4:
+					WAVE aa=d[y[i]];WAVE ab=d[y[i+1]];WAVE ac=d[y[i+2]];WAVE ad=d[y[i+3]]
+					AppendToGraph/Q/W=$w/L=$v/B=$h/C=(r, g, b, a) aa[0,*;s]/TN=$t[i],ab[0,*;s]/TN=$t[i+1],ac[0,*;s]/TN=$t[i+2],ad[0,*;s]/TN=$t[i+3]
+					break
+				case 2:
+					WAVE aa=d[y[i]];WAVE ab=d[y[i+1]]
+					AppendToGraph/Q/W=$w/L=$v/B=$h/C=(r, g, b, a) aa[0,*;s]/TN=$t[i],ab[0,*;s]/TN=$t[i+1]
+					break
+				case 1:
+					WAVE aa=d[y[i]]
+					AppendToGraph/Q/W=$w/L=$v/B=$h/C=(r, g, b, a) aa[0,*;s]/TN=$t[i]
+					break
+				default:
+					ASSERT(0, "Fail")
+					break
+			endswitch
+		while(i)
+	else
+		do
+			step = min(2 ^ trunc(log(i) / log(2)), 100)
+			i -= step
+			switch(step)
+				case 100:
+					AppendToGraph/Q/W=$w/L=$v/B=$h/C=(r, g, b, a) d[y[i]]/TN=$t[i],d[y[i+1]]/TN=$t[i+1],d[y[i+2]]/TN=$t[i+2],d[y[i+3]]/TN=$t[i+3],d[y[i+4]]/TN=$t[i+4],d[y[i+5]]/TN=$t[i+5],d[y[i+6]]/TN=$t[i+6],d[y[i+7]]/TN=$t[i+7],d[y[i+8]]/TN=$t[i+8],d[y[i+9]]/TN=$t[i+9],d[y[i+10]]/TN=$t[i+10],d[y[i+11]]/TN=$t[i+11],d[y[i+12]]/TN=$t[i+12],d[y[i+13]]/TN=$t[i+13],d[y[i+14]]/TN=$t[i+14],d[y[i+15]]/TN=$t[i+15],d[y[i+16]]/TN=$t[i+16],d[y[i+17]]/TN=$t[i+17],d[y[i+18]]/TN=$t[i+18],d[y[i+19]]/TN=$t[i+19],d[y[i+20]]/TN=$t[i+20],d[y[i+21]]/TN=$t[i+21],d[y[i+22]]/TN=$t[i+22],d[y[i+23]]/TN=$t[i+23],d[y[i+24]]/TN=$t[i+24],d[y[i+25]]/TN=$t[i+25],d[y[i+26]]/TN=$t[i+26],d[y[i+27]]/TN=$t[i+27],d[y[i+28]]/TN=$t[i+28],d[y[i+29]]/TN=$t[i+29],d[y[i+30]]/TN=$t[i+30],d[y[i+31]]/TN=$t[i+31],d[y[i+32]]/TN=$t[i+32],d[y[i+33]]/TN=$t[i+33],d[y[i+34]]/TN=$t[i+34],d[y[i+35]]/TN=$t[i+35],d[y[i+36]]/TN=$t[i+36],d[y[i+37]]/TN=$t[i+37],d[y[i+38]]/TN=$t[i+38],d[y[i+39]]/TN=$t[i+39],d[y[i+40]]/TN=$t[i+40],d[y[i+41]]/TN=$t[i+41],d[y[i+42]]/TN=$t[i+42],d[y[i+43]]/TN=$t[i+43],d[y[i+44]]/TN=$t[i+44],d[y[i+45]]/TN=$t[i+45],d[y[i+46]]/TN=$t[i+46],d[y[i+47]]/TN=$t[i+47],d[y[i+48]]/TN=$t[i+48],d[y[i+49]]/TN=$t[i+49],d[y[i+50]]/TN=$t[i+50],d[y[i+51]]/TN=$t[i+51],d[y[i+52]]/TN=$t[i+52],d[y[i+53]]/TN=$t[i+53],d[y[i+54]]/TN=$t[i+54],d[y[i+55]]/TN=$t[i+55],d[y[i+56]]/TN=$t[i+56],d[y[i+57]]/TN=$t[i+57],d[y[i+58]]/TN=$t[i+58],d[y[i+59]]/TN=$t[i+59],d[y[i+60]]/TN=$t[i+60],d[y[i+61]]/TN=$t[i+61],d[y[i+62]]/TN=$t[i+62],d[y[i+63]]/TN=$t[i+63],d[y[i+64]]/TN=$t[i+64],d[y[i+65]]/TN=$t[i+65],d[y[i+66]]/TN=$t[i+66],d[y[i+67]]/TN=$t[i+67],d[y[i+68]]/TN=$t[i+68],d[y[i+69]]/TN=$t[i+69],d[y[i+70]]/TN=$t[i+70],d[y[i+71]]/TN=$t[i+71],d[y[i+72]]/TN=$t[i+72],d[y[i+73]]/TN=$t[i+73],d[y[i+74]]/TN=$t[i+74],d[y[i+75]]/TN=$t[i+75],d[y[i+76]]/TN=$t[i+76],d[y[i+77]]/TN=$t[i+77],d[y[i+78]]/TN=$t[i+78],d[y[i+79]]/TN=$t[i+79],d[y[i+80]]/TN=$t[i+80],d[y[i+81]]/TN=$t[i+81],d[y[i+82]]/TN=$t[i+82],d[y[i+83]]/TN=$t[i+83],d[y[i+84]]/TN=$t[i+84],d[y[i+85]]/TN=$t[i+85],d[y[i+86]]/TN=$t[i+86],d[y[i+87]]/TN=$t[i+87],d[y[i+88]]/TN=$t[i+88],d[y[i+89]]/TN=$t[i+89],d[y[i+90]]/TN=$t[i+90],d[y[i+91]]/TN=$t[i+91],d[y[i+92]]/TN=$t[i+92],d[y[i+93]]/TN=$t[i+93],d[y[i+94]]/TN=$t[i+94],d[y[i+95]]/TN=$t[i+95],d[y[i+96]]/TN=$t[i+96],d[y[i+97]]/TN=$t[i+97],d[y[i+98]]/TN=$t[i+98],d[y[i+99]]/TN=$t[i+99]
+					break
+				case 64:
+					AppendToGraph/Q/W=$w/L=$v/B=$h/C=(r, g, b, a) d[y[i]]/TN=$t[i],d[y[i+1]]/TN=$t[i+1],d[y[i+2]]/TN=$t[i+2],d[y[i+3]]/TN=$t[i+3],d[y[i+4]]/TN=$t[i+4],d[y[i+5]]/TN=$t[i+5],d[y[i+6]]/TN=$t[i+6],d[y[i+7]]/TN=$t[i+7],d[y[i+8]]/TN=$t[i+8],d[y[i+9]]/TN=$t[i+9],d[y[i+10]]/TN=$t[i+10],d[y[i+11]]/TN=$t[i+11],d[y[i+12]]/TN=$t[i+12],d[y[i+13]]/TN=$t[i+13],d[y[i+14]]/TN=$t[i+14],d[y[i+15]]/TN=$t[i+15],d[y[i+16]]/TN=$t[i+16],d[y[i+17]]/TN=$t[i+17],d[y[i+18]]/TN=$t[i+18],d[y[i+19]]/TN=$t[i+19],d[y[i+20]]/TN=$t[i+20],d[y[i+21]]/TN=$t[i+21],d[y[i+22]]/TN=$t[i+22],d[y[i+23]]/TN=$t[i+23],d[y[i+24]]/TN=$t[i+24],d[y[i+25]]/TN=$t[i+25],d[y[i+26]]/TN=$t[i+26],d[y[i+27]]/TN=$t[i+27],d[y[i+28]]/TN=$t[i+28],d[y[i+29]]/TN=$t[i+29],d[y[i+30]]/TN=$t[i+30],d[y[i+31]]/TN=$t[i+31],d[y[i+32]]/TN=$t[i+32],d[y[i+33]]/TN=$t[i+33],d[y[i+34]]/TN=$t[i+34],d[y[i+35]]/TN=$t[i+35],d[y[i+36]]/TN=$t[i+36],d[y[i+37]]/TN=$t[i+37],d[y[i+38]]/TN=$t[i+38],d[y[i+39]]/TN=$t[i+39],d[y[i+40]]/TN=$t[i+40],d[y[i+41]]/TN=$t[i+41],d[y[i+42]]/TN=$t[i+42],d[y[i+43]]/TN=$t[i+43],d[y[i+44]]/TN=$t[i+44],d[y[i+45]]/TN=$t[i+45],d[y[i+46]]/TN=$t[i+46],d[y[i+47]]/TN=$t[i+47],d[y[i+48]]/TN=$t[i+48],d[y[i+49]]/TN=$t[i+49],d[y[i+50]]/TN=$t[i+50],d[y[i+51]]/TN=$t[i+51],d[y[i+52]]/TN=$t[i+52],d[y[i+53]]/TN=$t[i+53],d[y[i+54]]/TN=$t[i+54],d[y[i+55]]/TN=$t[i+55],d[y[i+56]]/TN=$t[i+56],d[y[i+57]]/TN=$t[i+57],d[y[i+58]]/TN=$t[i+58],d[y[i+59]]/TN=$t[i+59],d[y[i+60]]/TN=$t[i+60],d[y[i+61]]/TN=$t[i+61],d[y[i+62]]/TN=$t[i+62],d[y[i+63]]/TN=$t[i+63]
+					break
+				case 32:
+					AppendToGraph/Q/W=$w/L=$v/B=$h/C=(r, g, b, a) d[y[i]]/TN=$t[i],d[y[i+1]]/TN=$t[i+1],d[y[i+2]]/TN=$t[i+2],d[y[i+3]]/TN=$t[i+3],d[y[i+4]]/TN=$t[i+4],d[y[i+5]]/TN=$t[i+5],d[y[i+6]]/TN=$t[i+6],d[y[i+7]]/TN=$t[i+7],d[y[i+8]]/TN=$t[i+8],d[y[i+9]]/TN=$t[i+9],d[y[i+10]]/TN=$t[i+10],d[y[i+11]]/TN=$t[i+11],d[y[i+12]]/TN=$t[i+12],d[y[i+13]]/TN=$t[i+13],d[y[i+14]]/TN=$t[i+14],d[y[i+15]]/TN=$t[i+15],d[y[i+16]]/TN=$t[i+16],d[y[i+17]]/TN=$t[i+17],d[y[i+18]]/TN=$t[i+18],d[y[i+19]]/TN=$t[i+19],d[y[i+20]]/TN=$t[i+20],d[y[i+21]]/TN=$t[i+21],d[y[i+22]]/TN=$t[i+22],d[y[i+23]]/TN=$t[i+23],d[y[i+24]]/TN=$t[i+24],d[y[i+25]]/TN=$t[i+25],d[y[i+26]]/TN=$t[i+26],d[y[i+27]]/TN=$t[i+27],d[y[i+28]]/TN=$t[i+28],d[y[i+29]]/TN=$t[i+29],d[y[i+30]]/TN=$t[i+30],d[y[i+31]]/TN=$t[i+31]
+					break
+				case 16:
+					AppendToGraph/Q/W=$w/L=$v/B=$h/C=(r, g, b, a) d[y[i]]/TN=$t[i],d[y[i+1]]/TN=$t[i+1],d[y[i+2]]/TN=$t[i+2],d[y[i+3]]/TN=$t[i+3],d[y[i+4]]/TN=$t[i+4],d[y[i+5]]/TN=$t[i+5],d[y[i+6]]/TN=$t[i+6],d[y[i+7]]/TN=$t[i+7],d[y[i+8]]/TN=$t[i+8],d[y[i+9]]/TN=$t[i+9],d[y[i+10]]/TN=$t[i+10],d[y[i+11]]/TN=$t[i+11],d[y[i+12]]/TN=$t[i+12],d[y[i+13]]/TN=$t[i+13],d[y[i+14]]/TN=$t[i+14],d[y[i+15]]/TN=$t[i+15]
+					break
+				case 8:
+					AppendToGraph/Q/W=$w/L=$v/B=$h/C=(r, g, b, a) d[y[i]]/TN=$t[i],d[y[i+1]]/TN=$t[i+1],d[y[i+2]]/TN=$t[i+2],d[y[i+3]]/TN=$t[i+3],d[y[i+4]]/TN=$t[i+4],d[y[i+5]]/TN=$t[i+5],d[y[i+6]]/TN=$t[i+6],d[y[i+7]]/TN=$t[i+7]
+					break
+				case 4:
+					AppendToGraph/Q/W=$w/L=$v/B=$h/C=(r, g, b, a) d[y[i]]/TN=$t[i],d[y[i+1]]/TN=$t[i+1],d[y[i+2]]/TN=$t[i+2],d[y[i+3]]/TN=$t[i+3]
+					break
+				case 2:
+					AppendToGraph/Q/W=$w/L=$v/B=$h/C=(r, g, b, a) d[y[i]]/TN=$t[i],d[y[i+1]]/TN=$t[i+1]
+					break
+				case 1:
+					AppendToGraph/Q/W=$w/L=$v/B=$h/C=(r, g, b, a) d[y[i]]/TN=$t[i]
+					break
+				default:
+					ASSERT(0, "Fail")
+					break
+			endswitch
+		while(i)
+	endif
+
+End
