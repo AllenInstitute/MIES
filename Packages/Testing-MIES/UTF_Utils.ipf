@@ -4215,3 +4215,26 @@ Function CNL_Works()
 	CHECK_EQUAL_VAR(CalculateNiceLength(fraction *  1, 5), 0.05)
 	CHECK_EQUAL_VAR(CalculateNiceLength(fraction *  0.5, 5), 0.05)
 End
+
+/// @}
+
+/// IsConstant
+/// @{
+
+Function IC_Works()
+
+	CHECK_EQUAL_VAR(IsConstant({1, 1, 1}, 1), 1)
+	CHECK_EQUAL_VAR(IsConstant({-1, 2, 3}, 0), 0)
+End
+
+// UTF_TD_GENERATOR InfiniteValues
+Function IC_WorksSpecialValues([val])
+	variable val
+
+	CHECK_EQUAL_VAR(IsConstant({1, val, 1}, 0), 0)
+	CHECK_EQUAL_VAR(IsConstant({val, val}, val), 1)
+	CHECK_EQUAL_VAR(IsConstant({val, val}, 0), 0)
+	CHECK_EQUAL_VAR(IsConstant({val, -val}, 0), 0)
+End
+
+/// @}

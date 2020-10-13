@@ -1467,10 +1467,10 @@ End
 Function/WAVE GetLBRowCache(values)
 	WAVE values
 
-	variable actual, rollbackCount, sweepNo
+	variable actual, rollbackCount, sweepNo, first, last
 	string key, name
 
-	variable versionOfNewWave = 3
+	variable versionOfNewWave = 4
 
 	actual        = WaveModCountWrapper(values)
 	name          = GetWavesDataFolder(values, 2)
@@ -1497,8 +1497,10 @@ Function/WAVE GetLBRowCache(values)
 			endif
 
 			if(IsFinite(sweepNo))
-				EnsureLargeEnoughWave(wv, minimumSize = sweepNo, dimension = ROWS)
-				Multithread wv[sweepNo][][] = LABNOTEBOOK_GET_RANGE
+				EnsureLargeEnoughWave(wv, minimumSize = sweepNo, dimension = ROWS, initialValue = LABNOTEBOOK_GET_RANGE)
+				first = limit(sweepNo - 1, 0, inf)
+				last = sweepNo
+				Multithread wv[first, last][][] = LABNOTEBOOK_GET_RANGE
 
 				// now we are up to date
 				SetNumberInWaveNote(wv, LABNOTEBOOK_MOD_COUNT, actual)
@@ -1544,10 +1546,10 @@ End
 Function/WAVE GetLBIndexCache(values)
 	WAVE values
 
-	variable actual, rollbackCount, sweepNo
+	variable actual, rollbackCount, sweepNo, first, last
 	string key, name
 
-	variable versionOfNewWave = 3
+	variable versionOfNewWave = 4
 
 	actual        = WaveModCountWrapper(values)
 	name          = GetWavesDataFolder(values, 2)
@@ -1572,8 +1574,10 @@ Function/WAVE GetLBIndexCache(values)
 			endif
 
 			if(IsFinite(sweepNo))
-				EnsureLargeEnoughWave(wv, minimumSize = sweepNo, dimension = ROWS)
-				Multithread wv[sweepNo, inf][][] = LABNOTEBOOK_UNCACHED_VALUE
+				EnsureLargeEnoughWave(wv, minimumSize = sweepNo, dimension = ROWS, initialValue = LABNOTEBOOK_UNCACHED_VALUE)
+				first = limit(sweepNo - 1, 0, inf)
+				last = sweepNo
+				Multithread wv[first, last][][] = LABNOTEBOOK_UNCACHED_VALUE
 
 				// now we are up to date
 				SetNumberInWaveNote(wv, LABNOTEBOOK_MOD_COUNT, actual)

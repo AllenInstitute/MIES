@@ -139,8 +139,6 @@ Function OVS_UpdatePanel(win, [fullUpdate])
 	WAVE/T listBoxWave           = GetOverlaySweepsListWave(dfr)
 	WAVE listBoxSelWave          = GetOverlaySweepsListSelWave(dfr)
 
-	WAVE/WAVE allNumericalValues = BSP_GetNumericalValues(win)
-
 	WAVE updateHandle = OVS_BeginIncrementalUpdate(win, fullUpdate = fullUpdate)
 
 	if(!WaveExists(sweeps))
@@ -148,6 +146,8 @@ Function OVS_UpdatePanel(win, [fullUpdate])
 		OVS_EndIncrementalUpdate(win, updateHandle)
 		return NaN
 	endif
+
+	WAVE/WAVE allNumericalValues = BSP_GetNumericalValues(win)
 
 	numEntries = DimSize(sweeps, ROWS)
 	Redimension/N=(numEntries, -1, -1) listBoxWave, listBoxSelWave
@@ -195,12 +195,14 @@ Function OVS_UpdateSweepSelectionChoices(string win, WAVE/T sweepSelectionChoice
 		return NaN
 	endif
 
-	WAVE/WAVE allNumericalValues = BSP_GetNumericalValues(win)
-	WAVE/WAVE allTextualValues   = BSP_GetTextualValues(win)
-
 	WAVE/Z sweeps = GetPlainSweepList(win)
 
 	numEntries = WaveExists(sweeps) ? DimSize(sweeps, ROWS) : 0
+
+	if(numEntries > 0)
+		WAVE/WAVE allNumericalValues = BSP_GetNumericalValues(win)
+		WAVE/WAVE allTextualValues   = BSP_GetTextualValues(win)
+	endif
 
 	Redimension/N=(numEntries, -1, -1, -1) sweepSelectionChoices
 
@@ -674,21 +676,23 @@ static Function OVS_EndIncrementalUpdate(string win, WAVE/WAVE updateHandle)
 	variable updatedSweeps, addedSweeps, removedSweeps, mode
 	string headstageBefore, headstageAfter, msg
 
-	if(GetNumberFromWaveNote(updateHandle, OVS_FULL_UPDATE_NOTE) == 1)
+	DFREF dfr = BSP_GetFolder(win, MIES_BSP_PANEL_FOLDER)
+	WAVE/T listBoxWaveAfterOriginal = GetOverlaySweepsListWave(dfr)
+	WAVE listSelWaveAfterOriginal = GetOverlaySweepsListSelWave(dfr)
+
+	if(GetNumberFromWaveNote(updateHandle, OVS_FULL_UPDATE_NOTE) == 1 \
+	   || (DimSize(listBoxWaveAfterOriginal, ROWS) == 0               \
+	       && DimSize(listSelWaveAfterOriginal, ROWS) == 0))
 		UpdateSweepPlot(win)
 		return NaN
 	endif
 
-	DFREF dfr = BSP_GetFolder(win, MIES_BSP_PANEL_FOLDER)
-
 	WAVE/T listBoxWaveBefore = updateHandle[%contents]
 	WAVE listSelWaveBefore   = updateHandle[%selection]
 
-	WAVE/T listBoxWaveAfterOriginal = GetOverlaySweepsListWave(dfr)
 	Duplicate/FREE/T listBoxWaveAfterOriginal, listBoxWaveAfter
 	WaveClear listBoxWaveAfterOriginal
 
-	WAVE listSelWaveAfterOriginal = GetOverlaySweepsListSelWave(dfr)
 	Duplicate/FREE listSelWaveAfterOriginal, listSelWaveAfter
 	WaveClear listSelWaveAfterOriginal
 
@@ -701,7 +705,9 @@ static Function OVS_EndIncrementalUpdate(string win, WAVE/WAVE updateHandle)
 
 	newSize = max(DimSize(listBoxWaveBefore, ROWS), DimSize(listBoxWaveAfter, ROWS))
 
-	Redimension/N=(newSize, -1) listBoxWaveBefore, listSelWaveBefore, listBoxWaveAfter, listSelWaveAfter
+	Redimension/N=(newSize, 2) listBoxWaveBefore, listSelWaveBefore, listBoxWaveAfter, listSelWaveAfter
+	CopyDimLabels listBoxWaveAfter, listBoxWaveBefore
+	CopyDimLabels listSelWaveAfter, listSelWaveBefore
 
 	Make/FREE/N=(newSize) addedIndizes = NaN
 	Make/FREE/N=(newSize) removedIndizes = NaN

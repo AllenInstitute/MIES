@@ -5198,7 +5198,7 @@ Function DAP_GetHighestActiveHeadstage(panelTitle, [clampMode])
 		Make/FREE/N=(NUM_HEADSTAGES) activeHS = statusHS[p] * p
 	else
 		AI_AssertOnInvalidClampMode(clampMode)
-		Make/FREE/N=(NUM_HEADSTAGES) activeHS = statusHS[p] * p	* (DAG_GetHeadstageMode(panelTitle, p) == clampMode)
+		Make/FREE/N=(NUM_HEADSTAGES) activeHS = statusHS[p] * p * (DAG_GetHeadstageMode(panelTitle, p) == clampMode)
 	endif
 
 	return WaveMax(activeHS)
