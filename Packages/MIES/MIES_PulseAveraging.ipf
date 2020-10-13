@@ -511,6 +511,9 @@ static Function PA_GenerateAllPulseWaves(string win, STRUCT PulseAverageSettings
 	variable i, j, k, numHeadstages, region, sweepNo, idx, numPulsesTotal, numPulses, startingPulse, endingPulse
 	variable headstage, pulseToPulseLength, totalOnsetDelay, numChannelTypeTraces, totalPulseCounter, jsonID, lastSweep
 	variable activeRegionCount, activeChanCount, channelNumber, first, length, dictId, channelType, numChannels, numRegions
+	variable numPulseCreate, prevTotalPulseCounter
+	variable lblIndex, lblSweep, lblChannelType, lblChannelNumber, lblRegion, lblHeadstage, lblPulse, lblDiagonalElement, lblActiveRegionCount, lblActiveChanCount, lblLastSweep, lblExperiment
+	variable lblTraceHeadstage, lblTraceExperiment, lblTraceSweepNumber, lblTraceChannelNumber, lblTracenumericalValues, lblTraceFullpath
 	string channelTypeStr, channelList, channelNumberStr, key, regionList, baseName, sweepList, sweepNoStr, experiment
 
 	if(mode == POST_PLOT_CONSTANT_SWEEPS && cs.singlePulse)
@@ -545,11 +548,34 @@ static Function PA_GenerateAllPulseWaves(string win, STRUCT PulseAverageSettings
 	channelTypeStr = StringFromList(channelType, ITC_CHANNEL_NAMES)
 
 	WAVE/Z indizesChannelType = FindIndizes(traceData, colLabel="channelType", str=channelTypeStr)
+
 	WAVE/Z headstages         = PA_GetUniqueHeadstages(traceData, indizesChannelType)
 
 	if(!WaveExists(headstages))
 		return NaN
 	endif
+
+	lblIndex = -1
+
+	lblSweep = FindDimLabel(properties, COLS, "Sweep")
+	lblChannelType = FindDimLabel(properties, COLS, "ChannelType")
+	lblChannelNumber = FindDimLabel(properties, COLS, "ChannelNumber")
+	lblRegion = FindDimLabel(properties, COLS, "Region")
+	lblHeadstage = FindDimLabel(properties, COLS, "Headstage")
+	lblPulse = FindDimLabel(properties, COLS, "Pulse")
+	lblDiagonalElement = FindDimLabel(properties, COLS, "DiagonalElement")
+	lblActiveRegionCount = FindDimLabel(properties, COLS, "ActiveRegionCount")
+	lblActiveChanCount = FindDimLabel(properties, COLS, "ActiveChanCount")
+	lblLastSweep = FindDimLabel(properties, COLS, "LastSweep")
+
+	lblExperiment = FindDimLabel(propertiesText, COLS, "Experiment")
+
+	lblTraceHeadstage = FindDimLabel(traceData, COLS, "headstage")
+	lblTraceSweepNumber = FindDimLabel(traceData, COLS, "SweepNumber")
+	lblTraceChannelNumber = FindDimLabel(traceData, COLS, "ChannelNumber")
+	lblTracenumericalValues = FindDimLabel(traceData, COLS, "numericalValues")
+	lblTraceExperiment = FindDimLabel(traceData, COLS, "Experiment")
+	lblTraceFullpath = FindDimLabel(traceData, COLS, "fullpath")
 
 	numChannelTypeTraces = DimSize(indizesChannelType, ROWS)
 	numHeadstages        = DimSize(headstages, ROWS)
@@ -580,7 +606,7 @@ static Function PA_GenerateAllPulseWaves(string win, STRUCT PulseAverageSettings
 		// requested pulses for them
 		for(j = 0; j < numChannelTypeTraces; j += 1)
 			idx       = indizesChannelType[j]
-			headstage = str2num(traceData[idx][%headstage])
+			headstage = str2num(traceData[idx][lblTraceHeadstage])
 
 			if(!IsFinite(headstage)) // ignore unassociated channels or duplicated headstages in traceData
 				continue
@@ -592,12 +618,11 @@ static Function PA_GenerateAllPulseWaves(string win, STRUCT PulseAverageSettings
 				continue
 			endif
 
-			sweepNoStr = traceData[idx][%SweepNumber]
+			sweepNoStr = traceData[idx][lblTraceSweepNumber]
 			sweepNo = str2num(sweepNoStr)
-			experiment = traceData[idx][%Experiment]
-			channelNumberStr = traceData[idx][%channelNumber]
+			experiment = traceData[idx][lblTraceExperiment]
+			channelNumberStr = traceData[idx][lblTraceChannelNumber]
 			channelNumber = str2num(channelNumberStr)
-			experiment = traceData[idx][%Experiment]
 
 			if(WhichListItem(channelNumberStr, channelList) == -1)
 				activeChanCount += 1
@@ -615,10 +640,10 @@ static Function PA_GenerateAllPulseWaves(string win, STRUCT PulseAverageSettings
 
 			// we want to find the last acquired sweep from the experiment/device combination
 			// by just using the path to the numerical labnotebook we can achieve that
-			key = experiment + "_" + traceData[idx][%numericalValues]
+			key = experiment + "_" + traceData[idx][lblTracenumericalValues]
 			lastSweep = JSON_GetVariable(jsonID, key, ignoreErr = 1)
 			if(IsNaN(lastSweep))
-				WAVE numericalValues = $traceData[idx][%numericalValues]
+				WAVE numericalValues = $traceData[idx][lblTraceNumericalValues]
 				WAVE junkWave = GetLastSweepWithSetting(numericalValues, "Headstage Active", lastSweep)
 				ASSERT(IsValidSweepNumber(lastSweep), "Could not find last sweep")
 				JSON_SetVariable(jsonID, key, lastSweep)
@@ -631,14 +656,23 @@ static Function PA_GenerateAllPulseWaves(string win, STRUCT PulseAverageSettings
 
 			pulseToPulseLength = PA_GetPulseLength(pulseStartTimes, startingPulse, endingPulse, pa.overridePulseLength, pa.fixedPulseLength)
 
-			WAVE numericalValues = $traceData[idx][%numericalValues]
-			DFREF singleSweepFolder = GetWavesDataFolderDFR($traceData[idx][%fullPath])
+			WAVE numericalValues = $traceData[idx][lblTracenumericalValues]
+			DFREF singleSweepFolder = GetWavesDataFolderDFR($traceData[idx][lblTraceFullpath])
 			ASSERT(DataFolderExistsDFR(singleSweepFolder), "Missing singleSweepFolder")
 			WAVE wv = GetITCDataSingleColumnWave(singleSweepFolder, channelType, channelNumber)
 
 			DFREF singlePulseFolder = GetSingleSweepFolder(pulseAverageDFR, sweepNo)
 			totalOnsetDelay = GetTotalOnsetDelay(numericalValues, sweepNo)
+			// number of pulses that might be created
+			numPulseCreate = endingPulse - startingPulse
+			if(numPulseCreate)
+				numPulseCreate += totalPulseCounter
+				EnsureLargeEnoughWave(properties, minimumSize = numPulseCreate, initialValue = NaN)
+				EnsureLargeEnoughWave(propertiesText, minimumSize = numPulseCreate)
+				EnsureLargeEnoughWave(propertiesWaves, minimumSize = numPulseCreate)
+			endif
 
+			prevTotalPulseCounter = totalPulseCounter
 			for(k = startingPulse; k <= endingPulse; k += 1)
 
 				// ignore wave offset, as it is only used for display purposes
@@ -653,34 +687,35 @@ static Function PA_GenerateAllPulseWaves(string win, STRUCT PulseAverageSettings
 					continue
 				endif
 
-				EnsureLargeEnoughWave(properties, minimumSize = totalPulseCounter, initialValue = NaN)
-				EnsureLargeEnoughWave(propertiesText, minimumSize = totalPulseCounter)
-				EnsureLargeEnoughWave(propertiesWaves, minimumSize = totalPulseCounter)
+				properties[totalPulseCounter][lblSweep]                       = sweepNo
+				properties[totalPulseCounter][lblChannelType]                 = channelType
+				properties[totalPulseCounter][lblChannelNumber]               = channelNumber
+				properties[totalPulseCounter][lblRegion]                      = region
+				properties[totalPulseCounter][lblHeadstage]                   = headstage
+				properties[totalPulseCounter][lblPulse]                       = k
+				properties[totalPulseCounter][lblDiagonalElement]             = IsDiagonalElement
+				properties[totalPulseCounter][lblActiveRegionCount]           = activeRegionCount
+				properties[totalPulseCounter][lblActiveChanCount]             = activeChanCount
+				properties[totalPulseCounter][lblLastSweep]                   = lastSweep
 
-				properties[totalPulseCounter][%Sweep]                       = sweepNo
-				properties[totalPulseCounter][%ChannelType]                 = channelType
-				properties[totalPulseCounter][%ChannelNumber]               = channelNumber
-				properties[totalPulseCounter][%Region]                      = region
-				properties[totalPulseCounter][%Headstage]                   = headstage
-				properties[totalPulseCounter][%Pulse]                       = k
-				properties[totalPulseCounter][%DiagonalElement]             = IsDiagonalElement
-				properties[totalPulseCounter][%ActiveRegionCount]           = activeRegionCount
-				properties[totalPulseCounter][%ActiveChanCount]             = activeChanCount
-				properties[totalPulseCounter][%LastSweep]                   = lastSweep
-
-				propertiesText[totalPulseCounter][%Experiment] = experiment
+				propertiesText[totalPulseCounter][lblExperiment] = experiment
 
 				propertiesWaves[totalPulseCounter] = pulseWave
 
 				// gather all pulses from one set (used for averaging)
-				WAVE setIndizes = GetPulseAverageSetIndizes(pulseAverageHelperDFR, channelNumber, region)
-				idx = GetNumberFromWaveNote(setIndizes, NOTE_INDEX)
-				EnsureLargeEnoughWave(setIndizes, minimumSize = idx, initialValue = NaN)
-				setIndizes[idx][%Index] = totalPulseCounter
-				SetNumberInWaveNote(setIndizes, NOTE_INDEX, ++idx)
-
 				totalPulseCounter += 1
 			endfor
+
+			// Actual number of created pulses
+			numPulseCreate = totalPulseCounter - prevTotalPulseCounter
+			WAVE setIndizes = GetPulseAverageSetIndizes(pulseAverageHelperDFR, channelNumber, region)
+			if(lblIndex < 0)
+				lblIndex = FindDimLabel(setIndizes, COLS, "Index")
+			endif
+			idx = GetNumberFromWaveNote(setIndizes, NOTE_INDEX)
+			EnsureLargeEnoughWave(setIndizes, minimumSize = idx + numPulseCreate, initialValue = NaN)
+			setIndizes[idx, idx + numPulseCreate - 1][lblIndex] = prevTotalPulseCounter + p - idx
+			SetNumberInWaveNote(setIndizes, NOTE_INDEX, idx + numPulseCreate)
 		endfor
 	endfor
 
