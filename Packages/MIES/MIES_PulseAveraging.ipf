@@ -505,13 +505,13 @@ End
 /// - Now gather the pulse starting time from the region and create single pulse waves for all of them
 ///
 /// The result is feed into GetPulseAverageProperties() and GetPulseAveragepropertiesWaves() for further consumption.
-static Function PA_GenerateAllPulseWaves(string win, STRUCT PulseAverageSettings &pa, STRUCT PA_ConstantSettings &cs, variable mode)
+static Function PA_GenerateAllPulseWaves(string win, STRUCT PulseAverageSettings &pa, STRUCT PA_ConstantSettings &cs, variable mode, WAVE/Z additionalData)
 
 	variable startingPulseSett, endingPulseSett, isDiagonalElement, pulseHasFailed, newChannel
 	variable i, j, k, numHeadstages, region, sweepNo, idx, numPulsesTotal, numPulses, startingPulse, endingPulse
 	variable headstage, pulseToPulseLength, totalOnsetDelay, numChannelTypeTraces, totalPulseCounter, jsonID, lastSweep
 	variable activeRegionCount, activeChanCount, channelNumber, first, length, dictId, channelType, numChannels, numRegions
-	variable numPulseCreate, prevTotalPulseCounter
+	variable numPulseCreate, prevTotalPulseCounter, numNewSweeps, numNewIndicesSweep
 	variable lblIndex, lblSweep, lblChannelType, lblChannelNumber, lblRegion, lblHeadstage, lblPulse, lblDiagonalElement, lblActiveRegionCount, lblActiveChanCount, lblLastSweep, lblExperiment
 	variable lblTraceHeadstage, lblTraceExperiment, lblTraceSweepNumber, lblTraceChannelNumber, lblTracenumericalValues, lblTraceFullpath
 	string channelTypeStr, channelList, channelNumberStr, key, regionList, baseName, sweepList, sweepNoStr, experiment
@@ -537,7 +537,9 @@ static Function PA_GenerateAllPulseWaves(string win, STRUCT PulseAverageSettings
 
 	DFREF pulseAverageDFR = GetDevicePulseAverageFolder(pa.dfr)
 
-	KillorMoveToTrash(dfr = GetDevicePulseAverageHelperFolder(pa.dfr))
+	if(mode != POST_PLOT_ADDED_SWEEPS)
+		KillorMoveToTrash(dfr = GetDevicePulseAverageHelperFolder(pa.dfr))
+	endif
 
 	DFREF pulseAverageHelperDFR = GetDevicePulseAverageHelperFolder(pa.dfr)
 	WAVE properties = GetPulseAverageProperties(pulseAverageHelperDFR)
@@ -548,6 +550,23 @@ static Function PA_GenerateAllPulseWaves(string win, STRUCT PulseAverageSettings
 	channelTypeStr = StringFromList(channelType, ITC_CHANNEL_NAMES)
 
 	WAVE/Z indizesChannelType = FindIndizes(traceData, colLabel="channelType", str=channelTypeStr)
+
+	if(mode == POST_PLOT_ADDED_SWEEPS && WaveExists(additionalData))
+		Make/FREE/N=(DimSize(indizesChannelType, ROWS)) indizesToAdd
+		j = 0
+		numNewSweeps = DimSize(additionalData, ROWS)
+		for(i = 0; i < numNewSweeps; i += 1)
+			WAVE/Z indizesNewSweep = FindIndizes(traceData, colLabel="SweepNumber", str=num2str(additionalData[i]))
+			WAVE indizesToAddNewSweep = GetSetIntersection(indizesChannelType, indizesNewSweep)
+			numNewIndicesSweep = DimSize(indizesToAddNewSweep, ROWS)
+			indizesToAdd[j, j + numNewIndicesSweep - 1] = indizesToAddNewSweep[p - j]
+			j += numNewIndicesSweep
+		endfor
+		Redimension/N=(j) indizesToAdd
+
+		WAVE indizesChannelType = indizesToAdd
+		totalPulseCounter = GetNumberFromWaveNote(properties, NOTE_INDEX)
+	endif
 
 	WAVE/Z headstages         = PA_GetUniqueHeadstages(traceData, indizesChannelType)
 
@@ -870,7 +889,7 @@ Function PA_Update(string win, variable mode, [WAVE/Z additionalData])
 	[cs] = PA_DetermineConstantSettings(current, old, mode)
 
 	WAVE/WAVE/Z targetForAverage, sourceForAverage
-	[targetForAverage, sourceForAverage, needsPlotting] = PA_PreProcessPulses(win, current, cs, mode)
+	[targetForAverage, sourceForAverage, needsPlotting] = PA_PreProcessPulses(win, current, cs, mode, additionalData)
 
 	if(!needsPlotting)
 		return NaN
@@ -1440,7 +1459,7 @@ End
 /// @retval dest          wave reference wave with average data for each set or $""
 /// @retval source        wave reference wave with the data for each set or $""
 /// @retval needsPlotting boolean denoting if there are pulses to plot
-static Function [WAVE/WAVE dest, WAVE/WAVE source, variable needsPlotting] PA_PreProcessPulses(string win, STRUCT PulseAverageSettings &pa, STRUCT PA_ConstantSettings &cs, variable mode)
+static Function [WAVE/WAVE dest, WAVE/WAVE source, variable needsPlotting] PA_PreProcessPulses(string win, STRUCT PulseAverageSettings &pa, STRUCT PA_ConstantSettings &cs, variable mode, WAVE/Z additionalData)
 
 	variable numChannels, numRegions, i, j, region, channelNumber
 	variable constantSinglePulseSettings, numTotalPulses
