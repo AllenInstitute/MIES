@@ -4238,3 +4238,134 @@ Function IC_WorksSpecialValues([val])
 End
 
 /// @}
+
+/// DataFolderExistsDFR
+/// @{
+
+static structure dfrTest
+	DFREF structDFR
+endstructure
+
+Function DFED_WorksRegular1()
+
+	STRUCT dfrTest s
+	Make/FREE/DF/N=1 wDfr
+
+	NewDataFolder test
+	DFREF dfr = test
+	s.structDFR = test
+	wDfr[0] = test
+
+	CHECK(DataFolderExistsDFR(dfr))
+	CHECK(DataFolderExistsDFR(s.structDFR))
+	CHECK(DataFolderExistsDFR(wDfr[0]))
+End
+
+Function DFED_WorksRegular2()
+
+	STRUCT dfrTest s
+	Make/FREE/DF/N=1 wDfr
+
+	NewDataFolder test
+	DFREF dfr = test
+	s.structDFR = test
+	wDfr[0] = test
+
+	NewDataFolder test1
+	MoveDataFolder test, test1
+
+	CHECK(DataFolderExistsDFR(dfr))
+	CHECK(DataFolderExistsDFR(s.structDFR))
+	CHECK(DataFolderExistsDFR(wDfr[0]))
+End
+
+Function DFED_WorksRegular3()
+
+	STRUCT dfrTest s
+	Make/FREE/DF/N=1 wDfr
+
+	DFREF dfr = NewFreeDataFolder()
+	s.structDFR = dfr
+	wDfr[0] = dfr
+
+	NewDataFolder test
+	MoveDataFolder dfr, test
+
+	CHECK(DataFolderExistsDFR(dfr))
+	CHECK(DataFolderExistsDFR(s.structDFR))
+	CHECK(DataFolderExistsDFR(wDfr[0]))
+End
+
+Function DFED_WorksRegular4()
+
+	STRUCT dfrTest s
+	Make/FREE/DF/N=1 wDfr
+
+	DFREF dfr = NewFreeDataFolder()
+	s.structDFR = dfr
+	wDfr[0] = dfr
+
+	RenameDataFolder dfr, test1234
+
+	CHECK(DataFolderExistsDFR(dfr))
+	CHECK(DataFolderExistsDFR(s.structDFR))
+	CHECK(DataFolderExistsDFR(wDfr[0]))
+End
+
+Function DFED_FailsRegular1()
+
+	STRUCT dfrTest s
+	Make/FREE/DF/N=1 wDfr
+
+	DFREF dfr = $""
+	s.structDFR = $""
+	wDfr[0] = $""
+
+	CHECK(!DataFolderExistsDFR(dfr))
+	CHECK(!DataFolderExistsDFR(s.structDFR))
+	CHECK(!DataFolderExistsDFR(wDfr[0]))
+End
+
+Function DFED_FailsRegular2()
+
+	STRUCT dfrTest s
+	Make/FREE/DF/N=1 wDfr
+
+	NewDataFolder test
+
+	DFREF dfr = test
+	s.structDFR = test
+	wDfr[0] = test
+
+	KillDataFolder test
+
+	CHECK(!DataFolderExistsDFR(dfr))
+	CHECK(!DataFolderExistsDFR(s.structDFR))
+	CHECK(!DataFolderExistsDFR(wDfr[0]))
+End
+
+Function DFED_FailsRegular3()
+
+	DFREF dfr = NewFreeDataFolder()
+	Make/DF/N=1 dfr:wDfr/Wave=wDfr
+	wDfr[0] = dfr
+	CHECK(DataFolderExistsDFR(wDfr[0]))
+
+	dfr = NewFreeDataFolder()
+	CHECK(DataFolderExistsDFR(wDfr[0]))
+
+	dfr = GetWavesDataFolderDFR(wDfr)
+	CHECK(DataFolderExistsDFR(dfr))
+
+
+	wDfr[0] = root:
+
+	dfr = GetWavesDataFolderDFR(wDfr)
+	CHECK(DataFolderExistsDFR(dfr))
+
+	dfr = NewFreeDataFolder()
+	dfr = GetWavesDataFolderDFR(wDfr)
+	CHECK(!DataFolderExistsDFR(dfr))
+End
+
+/// @}
