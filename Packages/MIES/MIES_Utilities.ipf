@@ -553,26 +553,11 @@ End
 
 /// @brief Checks if the datafolder referenced by dfr exists.
 ///
-/// Unlike DataFolderExists() a dfref pointing to an empty ("") dataFolder is considered non-existing here.
+/// @param[in] dfr data folder to test
 /// @returns one if dfr is valid and references an existing or free datafolder, zero otherwise
-/// Taken from http://www.igorexchange.com/node/2055
-threadsafe Function DataFolderExistsDFR(dfr)
-	dfref dfr
+threadsafe Function DataFolderExistsDFR(DFREF dfr)
 
-	string dataFolder
-
-	switch(DataFolderRefStatus(dfr))
-		case 0: // invalid ref, does not exist
-			return 0
-		case 1: // might be valid
-			dataFolder = GetDataFolder(1,dfr)
-			return cmpstr(dataFolder,"") != 0 && DataFolderExists(dataFolder)
-		case 3: // free data folders always exist
-			return 1
-		default:
-			ASSERT_TS(0, "impossible case")
-			return 0
-	endswitch
+	return DataFolderRefStatus(dfr) != 0
 End
 
 /// @brief Check if the passed datafolder reference is a global/permanent datafolder
