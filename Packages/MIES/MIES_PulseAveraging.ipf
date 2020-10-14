@@ -1579,9 +1579,13 @@ static Function [WAVE/WAVE dest, WAVE/WAVE source] PA_CalculateAllAverages(STRUC
 	endfor
 
 	numThreads = min(numRegions * numChannels, ThreadProcessorCount)
-	Multithread/NT=(numThreads) dest[][] = MIES_fWaveAverage(source[p][q], 0, IGOR_TYPE_32BIT_FLOAT)
+	Multithread/NT=(numThreads) dest[][] = PA_ExtractAverageOnly(MIES_fWaveAverage(source[p][q], 0, IGOR_TYPE_32BIT_FLOAT))
 
 	return [dest, source]
+End
+
+threadsafe static Function/WAVE PA_ExtractAverageOnly(WAVE/WAVE w)
+	return w[0]
 End
 
 Function PA_AxisHook(s)

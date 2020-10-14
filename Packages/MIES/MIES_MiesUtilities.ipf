@@ -4055,7 +4055,8 @@ Function/WAVE CalculateAverage(waveRefs, averageDataFolder, averageWaveName, [sk
 			return permAverageWave
 		endif
 
-		WAVE/Z freeAverageWave = MIES_fWaveAverage(waveRefs, 1, IGOR_TYPE_64BIT_FLOAT)
+		WAVE/WAVE aveResult = MIES_fWaveAverage(waveRefs, 1, IGOR_TYPE_64BIT_FLOAT)
+		WAVE freeAverageWave = aveResult[0]
 		ASSERT(ClearRTError() == 0, "Unexpected RTE")
 		ASSERT(WaveExists(freeAverageWave), "Wave averaging failed")
 	else

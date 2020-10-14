@@ -15,9 +15,13 @@
 /// @param ignoreNaNs      Ignoring NaNs means that the average does skip over NaNs.
 /// @param averageWaveType wave type of the average wave. Currently supported
 ///                        are #IGOR_TYPE_64BIT_FLOAT and #IGOR_TYPE_32BIT_FLOAT.
+/// @param getComponents   [optional, default = 0] Return sum / count components as well
+/// @param prevAvgData     [optional, default = $""] wave reference wave with data from previous averaging for incremental averaging.
+///                        first entry refers to the sum per row wave and second to the counts per row wave.
 ///
-/// @return free wave with the average
-threadsafe Function/WAVE MIES_fWaveAverage(WAVE/Z yWaves, variable ignoreNaNs, variable averageWaveType)
+/// @return wave ref wave containing three free waves with the average per row, sums per row and counts per row. The latter two are only calculated when getComponents was set to 1.
+///         The latter two are undefined when getComponents is 0.
+threadsafe Function/WAVE MIES_fWaveAverage(WAVE/Z yWaves, variable ignoreNaNs, variable averageWaveType, [variable getComponents, WAVE/WAVE prevAvgData])
 
 	// check the input waves, and choose an appropriate algorithm
 	Variable maxLength = 0
@@ -29,21 +33,32 @@ threadsafe Function/WAVE MIES_fWaveAverage(WAVE/Z yWaves, variable ignoreNaNs, v
 	Variable minXmin, maxXmax, minDeltax
 	Variable numXWaves=0
 	Variable XWavesAreSame=1	// assume they are until proven differently. Irrelevant if	numXWaves!=numWaves
-	Variable i
+	Variable i, numWaves, gotPrevAvgData
 
 	ignoreNaNs = !!ignoreNaNs
+	getComponents = ParamIsDefault(getComponents) ? 0 : !!getComponents
+	Make/FREE/WAVE/N=3 result
 
 	if(!WaveExists(yWaves))
-		return $""
+		return result
 	endif
 
-	Variable numWaves = DimSize(ywaves, ROWS)
-
+	numWaves = DimSize(ywaves, ROWS)
 	if(numWaves == 0)
-		return $""
+		return result
 	endif
-
 	WAVE/WAVE waves = yWaves
+
+	if(!ParamIsDefault(prevAvgData))
+		ASSERT_TS(WaveExists(prevAvgData), "Specified previous average data wave does not exist")
+		ASSERT_TS(DimSize(prevAvgData, ROWS) == 2, "Specified previous average data wave must have exactly two rows, the sums and the counts.")
+		gotPrevAvgData = WaveExists(prevAvgData[0]) && WaveExists(prevAvgData[1])
+		if(gotPrevAvgData)
+			Redimension/N=(numWaves + 1) waves
+			waves[numWaves] = prevAvgData[0]
+			numWaves += 1
+		endif
+	endif
 
 	Make/D/N=(numWaves,2)/FREE xRange	// [i][0] is xMin, [i][1] is xMax
 
@@ -109,26 +124,83 @@ threadsafe Function/WAVE MIES_fWaveAverage(WAVE/Z yWaves, variable ignoreNaNs, v
 	if(doPointForPoint)
 		Concatenate/FREE {waves}, fullWave
 
-		if(ignoreNaNs)
-			if(averageWaveType == IGOR_TYPE_32BIT_FLOAT)
-				MatrixOP/FREE AveW = fp32(sumRows(replaceNaNs(fp64(fullWave), 0)) / sumRows(equal(numtype(fullWave), 0)))
-			elseif(averageWaveType == IGOR_TYPE_64BIT_FLOAT)
-				MatrixOP/FREE AveW = sumRows(replaceNaNs(fp64(fullWave), 0)) / sumRows(equal(numtype(fullWave), 0))
+		if(!getComponents)
+			if(ignoreNaNs)
+				if(averageWaveType == IGOR_TYPE_32BIT_FLOAT)
+					MatrixOP/FREE AveW = fp32(sumRows(replaceNaNs(fp64(fullWave), 0)) / sumRows(equal(numtype(fullWave), 0)))
+				elseif(averageWaveType == IGOR_TYPE_64BIT_FLOAT)
+					MatrixOP/FREE AveW = sumRows(replaceNaNs(fp64(fullWave), 0)) / sumRows(equal(numtype(fullWave), 0))
+				else
+					ASSERT_TS(0, "Not supported")
+				endif
 			else
-				ASSERT_TS(0, "Not supported")
+				Make/FREE/N=(maxLength)/Y=(averageWaveType) AveW
+				if(averageWaveType == IGOR_TYPE_32BIT_FLOAT)
+					MatrixOP/FREE AveW = fp32(sumRows(fp64(fullWave)) / numWaves)
+				elseif(averageWaveType == IGOR_TYPE_64BIT_FLOAT)
+					MatrixOP/FREE AveW = sumRows(fp64(fullWave)) / numWaves)
+				else
+					ASSERT_TS(0, "Not supported")
+				endif
 			endif
 		else
-			Make/FREE/N=(maxLength)/Y=(averageWaveType) AveW
-			if(averageWaveType == IGOR_TYPE_32BIT_FLOAT)
-				MatrixOP/FREE AveW = fp32(sumRows(fullWave) / numWaves)
-			elseif(averageWaveType == IGOR_TYPE_64BIT_FLOAT)
-				MatrixOP/FREE AveW = fp64(sumRows(fullWave) / numWaves)
+			if(ignoreNaNs)
+				if(averageWaveType == IGOR_TYPE_32BIT_FLOAT)
+					MatrixOP/FREE SumW = sumRows(replaceNaNs(fp64(fullWave), 0)
+					MatrixOP/FREE CntW = sumRows(equal(numtype(fullWave), 0)))
+					if(gotPrevAvgData)
+						WAVE prevCnt = prevAvgData[1]
+						MatrixOp/FREE CntW = CntW + prevCnt - 1
+					endif
+					MatrixOP/FREE AveW = fp32(SumW / CntW)
+				elseif(averageWaveType == IGOR_TYPE_64BIT_FLOAT)
+					MatrixOP/FREE SumW = sumRows(replaceNaNs(fp64(fullWave), 0))
+					MatrixOP/FREE CntW = sumRows(equal(numtype(fullWave), 0))
+					if(gotPrevAvgData)
+						WAVE prevCnt = prevAvgData[1]
+						MatrixOp/FREE CntW = CntW + prevCnt - 1
+					endif
+					MatrixOP/FREE AveW = SumW / CntW
+				else
+					ASSERT_TS(0, "Not supported")
+				endif
+			else
+				Make/FREE/N=(maxLength)/Y=(averageWaveType) AveW
+				if(averageWaveType == IGOR_TYPE_32BIT_FLOAT)
+					MatrixOP/FREE SumW = sumRows(fp64(fullWave))
+					if(gotPrevAvgData)
+						WAVE prevCnt = prevAvgData[1]
+						MatrixOP/FREE CntW = prevCnt + numWaves - 1
+						MatrixOP/FREE AveW = fp32(SumW / CntW)
+					else
+						MatrixOP/FREE AveW = fp32(SumW / numWaves)
+						Duplicate/FREE SumW, CntW
+						FastOp CntW = (numWaves)
+					endif
+				elseif(averageWaveType == IGOR_TYPE_64BIT_FLOAT)
+
+					MatrixOP/FREE SumW = sumRows(fp64(fullWave))
+					if(gotPrevAvgData)
+						WAVE prevCnt = prevAvgData[1]
+						MatrixOP/FREE CntW = prevCnt + numWaves - 1
+						MatrixOP/FREE AveW = SumW / CntW
+					else
+						MatrixOP/FREE AveW = SumW / numWaves
+						Duplicate/FREE SumW, CntW
+						FastOp CntW = (numWaves)
+					endif
+				else
+					ASSERT_TS(0, "Not supported")
+				endif
 			endif
+
+			CopyScales/P waves[0], SumW, CntW
 		endif
 
 		CopyScales/P waves[0], AveW
 
-		return AveW
+		result = {AveW, SumW, CntW}
+		return result
 	else
 		// can't do point-for-point because of different point range or scaling
 		Variable firstAvePoint,lastAvePoint,point,xVal,yVal
@@ -155,18 +227,31 @@ threadsafe Function/WAVE MIES_fWaveAverage(WAVE/Z yWaves, variable ignoreNaNs, v
 			MultiThread TempYWave[firstAvePoint, lastAvePoint] = wy(limit(pnt2x(AveW, p), thisXMin, thisXMax))
 
 			if(ignoreNaNs)
-				MultiThread AveW[firstAvePoint, lastAvePoint]      += !numtype(TempYWave[p]) ? TempYWave[p] : 0
-				MultiThread TempNWave[firstAvePoint, lastAvePoint] += !numtype(TempYWave[p])
+				MultiThread AveW[firstAvePoint, lastAvePoint]      += !IsNaN(TempYWave[p]) ? TempYWave[p] : 0
+				MultiThread TempNWave[firstAvePoint, lastAvePoint] += !IsNaN(TempYWave[p])
 			else
 				MultiThread AveW[firstAvePoint, lastAvePoint] += TempYWave[p]
 				MultiThread TempNWave[firstAvePoint, lastAvePoint] += 1
 			endif
 		endfor
 
+		if(getComponents)
+			Duplicate/FREE AveW, SumW
+			CopyScales/P AveW, TempNWave
+		endif
+
+		if(gotPrevAvgData)
+			WAVE prevCnt = prevAvgData[1]
+			Make/FREE/N=(maxLength)/Y=(averageWaveType) prevCntXAdapt
+			MultiThread prevCntXAdapt[firstAvePoint, lastAvePoint] = prevCnt(limit(pnt2x(AveW, p), thisXMin, thisXMax))
+			MultiThread TempNWave[firstAvePoint, lastAvePoint] += prevCntXAdapt - 1
+		endif
+
 		//  points with no values added are set to NaN here:
 		MultiThread AveW= (TempNWave[p] == 0) ? NaN : AveW[p] / TempNWave[p]
 
-		return AveW
+		result = {AveW, SumW, TempNWave}
+		return result
 	endif
 End
 
