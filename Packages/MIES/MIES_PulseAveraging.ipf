@@ -1575,21 +1575,7 @@ static Function [WAVE/WAVE dest, WAVE/WAVE source] PA_CalculateAllAverages(STRUC
 	numRegions = DimSize(regions, ROWS)
 
 	Make/FREE/WAVE/N=(numChannels, numRegions) source, dest
-
-	for(i = 0; i < numChannels; i += 1)
-		channelNumber = channels[i]
-		for(j = 0; j < numRegions; j += 1)
-			region = regions[j]
-
-			WAVE/WAVE/Z setWaves = PA_GetSetWaves(pulseAverageHelperDFR, channelNumber, region, removeFailedPulses = 1)
-
-			if(!WaveExists(setWaves))
-				continue
-			endif
-
-			source[i][j] = setWaves
-		endfor
-	endfor
+	source[][] = PA_GetSetWaves(pulseAverageHelperDFR, channels[p], regions[q], mode = mode, removeFailedPulses = 1)
 
 	WAVE/WAVE avgBuffer = GetPAAverageBuffer()
 
