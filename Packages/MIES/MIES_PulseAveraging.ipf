@@ -910,15 +910,12 @@ Function PA_Update(string win, variable mode, [WAVE/Z additionalData])
 	KillWindows(RemoveFromList(usedTraceGraphs + usedImageGraphs, preExistingGraphs))
 End
 
-static Function/WAVE PA_GetSetWaves(DFREF dfr, variable channelNumber, variable region, [variable removeFailedPulses])
+static Function/WAVE PA_GetSetWaves(DFREF dfr, variable channelNumber, variable region, [variable mode, variable removeFailedPulses])
 
-	variable numWaves, i
+	variable numWaves, i, numNewPulses, startIndexNewPulses, index
 
-	if(ParamIsDefault(removeFailedPulses))
-		removeFailedPulses = 0
-	else
-		removeFailedPulses = !!removeFailedPulses
-	endif
+	mode = ParamIsDefault(mode) ? 0 : mode
+	removeFailedPulses = ParamIsDefault(removeFailedPulses) ? 0 : !!removeFailedPulses
 
 	WAVE setIndizes = GetPulseAverageSetIndizes(dfr, channelNumber, region)
 
@@ -931,17 +928,50 @@ static Function/WAVE PA_GetSetWaves(DFREF dfr, variable channelNumber, variable 
 		return $""
 	endif
 
-	Make/FREE/N=(numWaves)/WAVE setWaves = propertiesWaves[setIndizes[p]]
+	if(mode == POST_PLOT_ADDED_SWEEPS)
+		startIndexNewPulses = GetNumberFromWaveNote(properties, NOTE_PA_NEW_PULSES_START)
+		Make/FREE/N=(numWaves)/WAVE setWaves
+		Make/FREE/D/N=(numWaves) indices
 
-	if(!removeFailedPulses)
-		return setWaves
+		for(i = 0; i < numWaves; i += 1)
+			index = setIndizes[i]
+			if(index >= startIndexNewPulses)
+				indices[numNewPulses] = index
+				setWaves[numNewPulses] = propertiesWaves[index]
+				numNewPulses += 1
+			endif
+		endfor
+
+		if(numNewPulses == 0)
+			return $""
+		endif
+
+		Redimension/N=(numNewPulses) setWaves
+
+		if(!removeFailedPulses)
+			return setWaves
+		endif
+
+		for(i = numNewPulses - 1; i >= 0; i -= 1)
+			if(properties[indices[i]][%PulseHasFailed])
+				DeletePoints/M=(ROWS) i, 1, setWaves
+			endif
+		endfor
+
+	else
+		Make/FREE/N=(numWaves)/WAVE setWaves = propertiesWaves[setIndizes[p]]
+
+		if(!removeFailedPulses)
+			return setWaves
+		endif
+
+		for(i = numWaves - 1; i >= 0; i -= 1)
+			if(properties[setIndizes[i]][%PulseHasFailed])
+				DeletePoints/M=(ROWS) i, 1, setWaves
+			endif
+		endfor
 	endif
 
-	for(i = numWaves - 1; i >= 0; i -= 1)
-		if(properties[setIndizes[i]][%PulseHasFailed])
-			DeletePoints/M=(ROWS) i, 1, setWaves
-		endif
-	endfor
 
 	if(DimSize(setWaves, ROWS) == 0)
 		return $""
@@ -1523,14 +1553,14 @@ static Function [WAVE/WAVE dest, WAVE/WAVE source, variable needsPlotting] PA_Pr
 
 	if(mode != POST_PLOT_CONSTANT_SWEEPS || !cs.singlePulse)
 		WAVE/WAVE/Z dest, source
-		[dest, source] = PA_CalculateAllAverages(pa)
+		[dest, source] = PA_CalculateAllAverages(pa, mode)
 		return [dest, source, 1]
 	endif
 
 	return [$"", $"", 1]
 End
 
-static Function [WAVE/WAVE dest, WAVE/WAVE source] PA_CalculateAllAverages(STRUCT PulseAverageSettings &pa)
+static Function [WAVE/WAVE dest, WAVE/WAVE source] PA_CalculateAllAverages(STRUCT PulseAverageSettings &pa, variable mode)
 
 	variable numChannels, numRegions, i, j, channelNumber, region, numThreads
 
@@ -1561,14 +1591,27 @@ static Function [WAVE/WAVE dest, WAVE/WAVE source] PA_CalculateAllAverages(STRUC
 		endfor
 	endfor
 
+	WAVE/WAVE avgBuffer = GetPAAverageBuffer()
+
 	numThreads = min(numRegions * numChannels, ThreadProcessorCount)
-	Multithread/NT=(numThreads) dest[][] = PA_ExtractAverageOnly(MIES_fWaveAverage(source[p][q], 0, IGOR_TYPE_32BIT_FLOAT))
+	if(mode == POST_PLOT_ADDED_SWEEPS)
+		Multithread/NT=(numThreads) avgBuffer[][] = MIES_fWaveAverage(source[p][q], 0, IGOR_TYPE_32BIT_FLOAT, getComponents = 1, prevAvgData = PA_ExtractSumsCountsOnly(avgBuffer[p][q]))
+	else
+		Redimension/N=(numChannels, numRegions) avgBuffer
+		Multithread/NT=(numThreads) avgBuffer[][] = MIES_fWaveAverage(source[p][q], 0, IGOR_TYPE_32BIT_FLOAT, getComponents = 1)
+	endif
+	dest[][] = PA_ExtractAverageOnly(avgBuffer[p][q])
 
 	return [dest, source]
 End
 
 threadsafe static Function/WAVE PA_ExtractAverageOnly(WAVE/WAVE w)
 	return w[0]
+End
+
+threadsafe static Function/WAVE PA_ExtractSumsCountsOnly(WAVE/WAVE w)
+	Make/FREE/WAVE result = {w[1], w[2]}
+	return result
 End
 
 Function PA_AxisHook(s)

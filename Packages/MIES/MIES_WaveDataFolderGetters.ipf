@@ -6743,3 +6743,26 @@ Function/WAVE GetPAGraphData()
 
 	return wv
 End
+
+/// @brief Return the wave of PA avergae buffer
+/// rows channels
+/// cols regions
+Function/WAVE GetPAAverageBuffer()
+
+	variable versionOfNewWave = 1
+	DFREF dfr = GetGraphUserDataFolderDFR()
+	string name = "PAAverageBuffer"
+	WAVE/WAVE/Z/SDFR=dfr wv = $name
+
+	if(ExistsWithCorrectLayoutVersion(wv, versionOfNewWave))
+		return wv
+	elseif(WaveExists(wv))
+		// handle upgrade
+	else
+		Make/WAVE/N=(0, 0) dfr:$name/WAVE=wv
+	endif
+
+	SetWaveVersion(wv, versionOfNewWave)
+
+	return wv
+End
