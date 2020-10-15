@@ -912,8 +912,6 @@ End
 
 static Function/WAVE PA_GetSetWaves(DFREF dfr, variable channelNumber, variable region, [variable mode, variable removeFailedPulses])
 
-	variable numWaves, i, numNewPulses, startIndexNewPulses, index
-
 	mode = ParamIsDefault(mode) ? 0 : mode
 	removeFailedPulses = ParamIsDefault(removeFailedPulses) ? 0 : !!removeFailedPulses
 
@@ -921,6 +919,13 @@ static Function/WAVE PA_GetSetWaves(DFREF dfr, variable channelNumber, variable 
 
 	WAVE properties = GetPulseAverageProperties(dfr)
 	WAVE/WAVE propertiesWaves = GetPulseAveragePropertiesWaves(dfr)
+
+	return PA_GetSetWaves_TS(properties, propertiesWaves, setIndizes, mode, removeFailedPulses)
+End
+
+threadsafe static Function/WAVE PA_GetSetWaves_TS(WAVE properties, WAVE/WAVE propertiesWaves, WAVE setIndizes, variable mode, variable removeFailedPulses)
+
+	variable numWaves, i, numNewPulses, startIndexNewPulses, index
 
 	numWaves = GetNumberFromWaveNote(setIndizes, NOTE_INDEX)
 
@@ -931,33 +936,25 @@ static Function/WAVE PA_GetSetWaves(DFREF dfr, variable channelNumber, variable 
 	if(mode == POST_PLOT_ADDED_SWEEPS)
 		startIndexNewPulses = GetNumberFromWaveNote(properties, NOTE_PA_NEW_PULSES_START)
 		Make/FREE/N=(numWaves)/WAVE setWaves
-		Make/FREE/D/N=(numWaves) indices
 
-		for(i = 0; i < numWaves; i += 1)
-			index = setIndizes[i]
-			if(index >= startIndexNewPulses)
-				indices[numNewPulses] = index
-				setWaves[numNewPulses] = propertiesWaves[index]
-				numNewPulses += 1
-			endif
-		endfor
-
-		if(numNewPulses == 0)
-			return $""
+		if(removeFailedPulses)
+			for(i = 0; i < numWaves; i += 1)
+				index = setIndizes[i]
+				if(index >= startIndexNewPulses && !properties[index][%PulseHasFailed])
+					setWaves[numNewPulses] = propertiesWaves[index]
+					numNewPulses += 1
+				endif
+			endfor
+		else
+			for(i = 0; i < numWaves; i += 1)
+				index = setIndizes[i]
+				if(index >= startIndexNewPulses)
+					setWaves[numNewPulses] = propertiesWaves[index]
+					numNewPulses += 1
+				endif
+			endfor
 		endif
-
 		Redimension/N=(numNewPulses) setWaves
-
-		if(!removeFailedPulses)
-			return setWaves
-		endif
-
-		for(i = numNewPulses - 1; i >= 0; i -= 1)
-			if(properties[indices[i]][%PulseHasFailed])
-				DeletePoints/M=(ROWS) i, 1, setWaves
-			endif
-		endfor
-
 	else
 		Make/FREE/N=(numWaves)/WAVE setWaves = propertiesWaves[setIndizes[p]]
 
@@ -971,7 +968,6 @@ static Function/WAVE PA_GetSetWaves(DFREF dfr, variable channelNumber, variable 
 			endif
 		endfor
 	endif
-
 
 	if(DimSize(setWaves, ROWS) == 0)
 		return $""
@@ -1567,19 +1563,20 @@ static Function [WAVE/WAVE dest, WAVE/WAVE source] PA_CalculateAllAverages(STRUC
 	DFREF pulseAverageHelperDFR = GetDevicePulseAverageHelperFolder(pa.dfr)
 
 	WAVE properties = GetPulseAverageProperties(pulseAverageHelperDFR)
-
+	WAVE/WAVE propertiesWaves = GetPulseAveragePropertiesWaves(pulseAverageHelperDFR)
 	WAVE channels = ListToNumericWave(GetStringFromWaveNote(properties, "Channels"), ",")
 	numChannels = DimSize(channels, ROWS)
-
 	WAVE regions = ListToNumericWave(GetStringFromWaveNote(properties, "Regions"), ",")
 	numRegions = DimSize(regions, ROWS)
 
-	Make/FREE/WAVE/N=(numChannels, numRegions) source, dest
-	source[][] = PA_GetSetWaves(pulseAverageHelperDFR, channels[p], regions[q], mode = mode, removeFailedPulses = 1)
+	Make/FREE/WAVE/N=(numChannels, numRegions) source, dest, setIndices
+	numThreads = min(numRegions * numChannels, ThreadProcessorCount)
+
+	setIndices[][] = GetPulseAverageSetIndizes(pulseAverageHelperDFR, channels[p], regions[q])
+	Multithread/NT=(numThreads) source[][] = PA_GetSetWaves_TS(properties, propertiesWaves, setIndices[p][q], mode, 1)
 
 	WAVE/WAVE avgBuffer = GetPAAverageBuffer()
 
-	numThreads = min(numRegions * numChannels, ThreadProcessorCount)
 	if(mode == POST_PLOT_ADDED_SWEEPS)
 		Multithread/NT=(numThreads) avgBuffer[][] = MIES_fWaveAverage(source[p][q], 0, IGOR_TYPE_32BIT_FLOAT, getComponents = 1, prevAvgData = PA_ExtractSumsCountsOnly(avgBuffer[p][q]))
 	else
